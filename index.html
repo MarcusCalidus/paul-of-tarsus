@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paul of Tarsus: The Roman Road Runner</title>
+<style>
+:root{--s:3;--gold:#d9a441;--hi:#fff3b8;--dim:#7a5a22;--ink:#0b0812;--pray:#9cc4f0}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;color:#ddd;overflow:hidden;
+  font-family:"Lucida Console",Monaco,"Courier New",monospace;font-weight:bold;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+body{display:flex;align-items:center;justify-content:center}
+#wrap{width:calc(var(--s)*320px);background:var(--ink)}
+#top{display:flex;justify-content:space-between;align-items:center;height:calc(var(--s)*10px);
+  padding:0 calc(var(--s)*3px);font-size:calc(var(--s)*5px);color:var(--dim);letter-spacing:.08em}
+#top button{font:inherit;color:var(--gold);background:none;border:1px solid var(--dim);
+  padding:0 calc(var(--s)*3px);height:calc(var(--s)*8px);cursor:pointer}
+#top button:hover{color:var(--hi);border-color:var(--gold)}
+#view{position:relative;width:calc(var(--s)*320px);height:calc(var(--s)*144px);overflow:hidden;cursor:crosshair}
+#screen{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+#speech{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+.line{position:absolute;transform:translateX(-50%);text-align:center;width:max-content;
+  max-width:calc(var(--s)*200px);font-size:calc(var(--s)*6.2px);line-height:1.25;
+  text-shadow:calc(var(--s)*1px) 0 #000,calc(var(--s)*-1px) 0 #000,0 calc(var(--s)*1px) #000,0 calc(var(--s)*-1px) #000,
+   calc(var(--s)*1px) calc(var(--s)*1px) #000,calc(var(--s)*-1px) calc(var(--s)*1px) #000,calc(var(--s)*1px) calc(var(--s)*-1px) #000,calc(var(--s)*-1px) calc(var(--s)*-1px) #000}
+#dim{position:absolute;inset:0;background:#05030c;opacity:0;pointer-events:none;transition:opacity .9s}
+#overlay{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:calc(var(--s)*8px);cursor:pointer}
+#overlay.on{display:flex}
+#overlay h1{margin:0;font-size:calc(var(--s)*17px);line-height:1;color:var(--gold);letter-spacing:.04em;
+  text-shadow:0 calc(var(--s)*1px) #7a3b12,0 calc(var(--s)*2px) #3a1608,calc(var(--s)*2px) calc(var(--s)*3px) #000}
+#overlay h2{margin:calc(var(--s)*3px) 0;font-size:calc(var(--s)*8px);color:#f0e2c0;letter-spacing:.2em;
+  text-shadow:calc(var(--s)*1px) calc(var(--s)*1px) #000}
+#overlay p{margin:calc(var(--s)*2px) 0;font-size:calc(var(--s)*5.4px);line-height:1.35;color:#d8cfe8;
+  max-width:calc(var(--s)*270px);text-shadow:calc(var(--s)*1px) calc(var(--s)*1px) #000}
+#overlay .small{font-size:calc(var(--s)*4.4px);color:#a99cc0}
+#overlay .go{color:var(--hi);animation:bl 1.1s steps(2) infinite}
+#overlay.end{background:rgba(6,4,14,.82)}
+@keyframes bl{50%{opacity:.25}}
+#status{height:calc(var(--s)*11px);line-height:calc(var(--s)*11px);text-align:center;
+  font-size:calc(var(--s)*6.2px);color:var(--hi);background:#140e22;white-space:nowrap;overflow:hidden;
+  border-top:calc(var(--s)*1px) solid #2a1d44;border-bottom:calc(var(--s)*1px) solid #2a1d44}
+#panel{display:flex;height:calc(var(--s)*46px);padding:calc(var(--s)*2px);gap:calc(var(--s)*3px);position:relative}
+#verbs{width:46%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:calc(var(--s)*1px)}
+#verbs button,#choices button{font:inherit;font-size:calc(var(--s)*6.2px);color:var(--gold);background:#1b1330;
+  border:0;cursor:pointer;padding:0;text-align:center}
+#verbs button:hover{color:var(--hi);background:#2a1d49}
+#verbs button.sel{color:#fff;background:#4a2f1a}
+#verbs #pray{grid-column:1/4;color:var(--pray);background:#12203a;letter-spacing:.06em}
+#verbs #pray:hover{color:#fff;background:#1c3358}
+#inv{flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(2,1fr);gap:calc(var(--s)*1px)}
+#inv .slot{background:#150f26;display:flex;align-items:center;justify-content:center;cursor:pointer;outline:0 solid var(--gold)}
+#inv .slot:hover{background:#2a1d49}
+#inv .slot.sel{outline-width:calc(var(--s)*1px);outline-offset:calc(var(--s)*-1px);background:#3a2714}
+#inv canvas{height:calc(var(--s)*20px);width:calc(var(--s)*20px);image-rendering:pixelated;image-rendering:crisp-edges;pointer-events:none}
+#choices{position:absolute;inset:calc(var(--s)*2px);display:none;flex-direction:column;gap:calc(var(--s)*1px);
+  background:var(--ink);overflow:auto}
+#choices.on{display:flex}
+#choices button{text-align:left;padding:0 calc(var(--s)*4px);flex:0 0 calc(var(--s)*7.6px);line-height:calc(var(--s)*7.6px);font-size:calc(var(--s)*5.4px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#choices button:hover{color:var(--hi);background:#2a1d49}
+#panel.locked #verbs,#panel.locked #inv{opacity:.35;pointer-events:none}
+#top button{margin-left:calc(var(--s)*2px)}
+#codebox{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--s)*3px);
+  background:rgba(6,4,14,.92);text-align:center;cursor:default;padding:calc(var(--s)*8px)}
+#codebox.on{display:flex}
+#codebox h2{margin:0;font-size:calc(var(--s)*9px);color:var(--gold);letter-spacing:.2em}
+#codebox p{margin:0;font-size:calc(var(--s)*5.2px);color:#d8cfe8;max-width:calc(var(--s)*250px);line-height:1.3}
+#codebox .big{font-size:calc(var(--s)*17px);line-height:1.1;color:var(--hi);letter-spacing:.12em;-webkit-user-select:text;user-select:text;
+  text-shadow:0 calc(var(--s)*1px) #7a3b12,calc(var(--s)*1px) calc(var(--s)*2px) #000}
+#codebox .row{display:flex;gap:calc(var(--s)*2px)}
+#codebox input{font:inherit;font-size:calc(var(--s)*8px);width:calc(var(--s)*74px);text-align:center;text-transform:uppercase;background:#150f26;
+  color:var(--hi);border:calc(var(--s)*1px) solid var(--dim);padding:calc(var(--s)*2px);letter-spacing:.1em;outline:none;-webkit-user-select:text;user-select:text}
+#codebox input:focus{border-color:var(--gold)}
+#codebox button{font:inherit;font-size:calc(var(--s)*6px);color:var(--gold);background:#1b1330;border:calc(var(--s)*1px) solid var(--dim);
+  padding:calc(var(--s)*2px) calc(var(--s)*5px);cursor:pointer}
+#codebox button:hover{color:var(--hi);border-color:var(--gold)}
+#codebox .small{font-size:calc(var(--s)*4.8px);color:#f0a090;min-height:1.3em}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="top"><span>PAUL OF TARSUS &middot; ESCAPE FROM DAMASCUS</span><span><button id="code" type="button">ENTER CODE</button><button id="mute" type="button">&#9835; SOUND ON</button></span></div>
+  <div id="view">
+    <canvas id="screen" width="640" height="288"></canvas>
+    <div id="speech"></div>
+    <div id="dim"></div>
+    <div id="overlay"></div>
+    <div id="codebox"></div>
+  </div>
+  <div id="status">&nbsp;</div>
+  <div id="panel">
+    <div id="verbs"></div>
+    <div id="inv"></div>
+    <div id="choices"></div>
+  </div>
+</div>
+<script>
+"use strict";
+/* ============ CORE ============ */
+const VW=320,VH=144;
+const $=s=>document.querySelector(s);
+const cv=$('#screen'),cx=cv.getContext('2d');
+cx.imageSmoothingEnabled=false;
+const G={room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,t:0,scene:null,
+  hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false};
+const VERBS=[['look','Look at'],['pickup','Pick up'],['use','Use'],['open','Open'],['talk','Talk to'],['give','Give']];
+const VNAME={walk:'Walk to',look:'Look at',pickup:'Pick up',use:'Use',open:'Open',talk:'Talk to',give:'Give'};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function mk(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');
+  g.imageSmoothingEnabled=false;return[c,g]}
+/* pixel helpers */
+const R=(g,x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))};
+function bands(g,x,y,w,h,cols){const n=cols.length,bh=h/n;for(let i=0;i<n;i++)R(g,x,y+Math.floor(i*bh),w,Math.ceil(bh)+1,cols[i])}
+function speck(g,x,y,w,h,c,n,r){g.fillStyle=c;for(let i=0;i<n;i++)g.fillRect(x+Math.floor(r()*w),y+Math.floor(r()*h),1,1)}
+function dith(g,x,y,w,h,c,step){g.fillStyle=c;for(let j=0;j<h;j++)for(let i=(j%2)*(step>>1);i<w;i+=step)g.fillRect(x+i,y+j,1,1)}
+function bricks(g,x,y,w,h,bw,bh,base,alt,mortar,r){R(g,x,y,w,h,mortar);
+  for(let j=0,row=0;j<h;j+=bh,row++){const off=row%2?-(bw>>1):0;
+    for(let i=off;i<w;i+=bw){const x0=Math.max(0,i),x1=Math.min(w,i+bw-1),hh=Math.min(bh-1,h-j);
+      if(x1>x0)R(g,x+x0,y+j,x1-x0,hh,r()<.3?alt:base)}}}
+function planks(g,x,y,w,h,pw,c1,c2,line){for(let i=0;i<w;i+=pw){R(g,x+i,y,Math.min(pw,w-i),h,(i/pw)%2?c1:c2);R(g,x+i,y,1,h,line)}}
+function ell(g,x,y,rx,ry,c){g.fillStyle=c;for(let j=-ry;j<=ry;j++){const hw=Math.round(rx*Math.sqrt(1-(j*j)/(ry*ry||1)));
+  g.fillRect(Math.round(x-hw),Math.round(y+j),hw*2+1,1)}}
+function glow(g,x,y,r,rgb,a){const o=g.globalCompositeOperation;g.globalCompositeOperation='lighter';
+  for(let i=4;i>=1;i--){ell(g,x,y,Math.round(r*i/4),Math.round(r*i/4*.8),`rgba(${rgb},${a})`)}
+  g.globalCompositeOperation=o}
+function line(g,x0,y0,x1,y1,c){g.fillStyle=c;x0|=0;y0|=0;x1|=0;y1|=0;const dx=Math.abs(x1-x0),dy=Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1;
+  let e=dx-dy;for(;;){g.fillRect(x0,y0,1,1);if(x0===x1&&y0===y1)break;const e2=2*e;if(e2>-dy){e-=dy;x0+=sx}if(e2<dx){e+=dx;y0+=sy}}}
+function starfield(g,w,h,n,r){for(let i=0;i<n;i++){const b=r();R(g,Math.floor(r()*w),Math.floor(r()*h),1,1,b>.85?'#fff':b>.5?'#b9b6e6':'#6c6aa8')}}
+/* layout scale */
+function fit(){const top=10,st=13,pn=50,tot=144+top+st+pn;
+  const s=Math.max(1,Math.min(innerWidth/320,innerHeight/tot));
+  document.documentElement.style.setProperty('--s',(s>=2?Math.floor(s*2)/2:s).toFixed(2))}
+addEventListener('resize',fit);fit();
+/* flags & inventory */
+const F=G.flags;
+const has=id=>G.inv.includes(id);
+function addItem(id,quiet){if(!has(id)){G.inv.push(id);drawInv();if(!quiet)SFX.pick()}}
+function delItem(id){const i=G.inv.indexOf(id);if(i>=0)G.inv.splice(i,1);if(G.item===id)G.item=null;drawInv()}
+/* ============ AUDIO: Web Audio chiptune synth ============ */
+const AU={ctx:null,muted:false,mood:'calm',step:0,next:0};
+function audioInit(){
+  if(AU.ctx){if(AU.ctx.state==='suspended')AU.ctx.resume();return}
+  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+  const c=AU.ctx=new AC();
+  AU.master=c.createGain();AU.master.gain.value=AU.muted?0:1;
+  const comp=c.createDynamicsCompressor();AU.master.connect(comp);comp.connect(c.destination);
+  AU.mus=c.createGain();AU.mus.gain.value=.55;AU.mus.connect(AU.master);
+  AU.fx=c.createGain();AU.fx.gain.value=.7;AU.fx.connect(AU.master);
+  const d=c.createDelay(1),fb=c.createGain(),lp=c.createBiquadFilter();
+  d.delayTime.value=.34;fb.gain.value=.3;lp.type='lowpass';lp.frequency.value=1700;
+  AU.send=c.createGain();AU.send.gain.value=.4;AU.send.connect(d);d.connect(lp);lp.connect(fb);fb.connect(d);lp.connect(AU.mus);
+  const nb=c.createBuffer(1,c.sampleRate,c.sampleRate),ch=nb.getChannelData(0);
+  for(let i=0;i<ch.length;i++)ch[i]=Math.random()*2-1;AU.nbuf=nb;
+  AU.next=c.currentTime+.15;setInterval(sched,60);
+}
+const now=()=>AU.ctx?AU.ctx.currentTime:0;
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+function tone(o){const c=AU.ctx;if(!c)return;const t=o.t||c.currentTime,osc=c.createOscillator(),g=c.createGain(),v=o.v||.2;
+  osc.type=o.type||'triangle';osc.frequency.setValueAtTime(o.f,t);
+  if(o.to)osc.frequency.exponentialRampToValueAtTime(o.to,t+o.d);
+  if(o.vib){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=5.2;lg.gain.value=o.vib;
+    l.connect(lg);lg.connect(osc.frequency);l.start(t);l.stop(t+o.d+.1)}
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+(o.a||.006));
+  if(o.sus){g.gain.setValueAtTime(v,t+o.d*.7);g.gain.linearRampToValueAtTime(.0001,t+o.d)}
+  else g.gain.exponentialRampToValueAtTime(.0001,t+o.d);
+  osc.connect(g);g.connect(o.dest||AU.fx);if(o.echo)g.connect(AU.send);
+  osc.start(t);osc.stop(t+o.d+.05)}
+function noise(o){const c=AU.ctx;if(!c)return;const t=o.t||c.currentTime,s=c.createBufferSource(),g=c.createGain(),fl=c.createBiquadFilter();
+  s.buffer=AU.nbuf;s.loop=true;fl.type=o.type||'bandpass';fl.frequency.value=o.f||1000;fl.Q.value=o.q||1;
+  g.gain.setValueAtTime(o.v||.2,t);g.gain.exponentialRampToValueAtTime(.0001,t+o.d);
+  s.connect(fl);fl.connect(g);g.connect(o.dest||AU.fx);s.start(t,Math.random()*.5);s.stop(t+o.d+.05)}
+/* --- score: D Hijaz (Phrygian dominant), 16 bars of 16 steps --- */
+const SC=[0,1,4,5,7,8,10],DT=.17;
+const deg=(n,root)=>root+12*Math.floor(n/7)+SC[((n%7)+7)%7];
+const LY={A:[0,-1,4,-1,7,-1,4,-1,0,-1,4,-1,8,-1,7,-1],B:[3,-1,5,-1,7,-1,5,-1,3,-1,5,-1,9,-1,7,-1],
+  C:[1,-1,3,-1,5,-1,3,-1,1,-1,4,-1,6,-1,4,-1]};
+const PROG='AABACABA';
+const FL=[[[0,4,6],[6,5,2],[8,4,4],[12,3,2],[14,2,2]],[[0,3,4],[4,2,2],[6,1,2],[8,0,8]],
+  [[0,2,4],[4,3,2],[6,4,2],[8,5,4],[12,4,4]],[[0,4,12]],
+  [[0,7,6],[6,6,2],[8,5,4],[12,4,4]],[[0,5,2],[2,4,2],[4,3,4],[8,2,4],[12,1,4]],
+  [[0,2,3],[3,1,1],[4,0,4],[8,1,2],[10,2,2],[12,1,4]],[[0,0,14]]];
+const DRUM={0:'d',2:'t',6:'t',8:'d',12:'t',14:'k'};
+function playStep(st,t){const bar=st>>4,s=st&15,m=AU.mood,M=AU.mus;
+  if(st%32===0){tone({f:mtof(38),t,d:32*DT+.4,type:'triangle',v:.16,a:.6,sus:1,dest:M});
+    tone({f:mtof(45),t,d:32*DT+.4,type:'sine',v:.09,a:.9,sus:1,dest:M})}
+  if(m!=='tense'){const n=LY[PROG[bar%8]][s];
+    if(n>=0){const f=mtof(deg(n,50));tone({f,t,d:.55,type:'triangle',v:.13,dest:M,echo:1});
+      tone({f:f*2,t,d:.18,type:'square',v:.018,dest:M})}}
+  else if(s===0||s===10){tone({f:mtof(deg(s?1:0,50)),t,d:1.2,type:'triangle',v:.1,dest:M,echo:1})}
+  const dr=DRUM[s];
+  if(dr&&(m!=='tense'||dr==='d')){
+    if(dr==='d')tone({f:95,to:48,t,d:.22,type:'sine',v:m==='tense'?.3:.22,dest:M});
+    else noise({t,d:dr==='t'?.06:.03,v:dr==='t'?.07:.04,f:2600,q:2,dest:M})}
+  if(bar>=8&&m!=='tense'){for(const[n0,dg,len]of FL[bar-8])if(n0===s)
+    tone({f:mtof(deg(dg,m==='hope'?74:62)),t,d:len*DT*.95,type:'sine',v:.1,a:.05,sus:1,vib:4,dest:M,echo:1})}}
+function sched(){const c=AU.ctx;if(!c||c.state!=='running')return;
+  if(AU.next<c.currentTime-.5)AU.next=c.currentTime+.05;
+  while(AU.next<c.currentTime+.25){playStep(AU.step,AU.next);AU.next+=DT;AU.step=(AU.step+1)%256}}
+/* --- sound effects --- */
+const SFX={
+  click(){tone({f:620,d:.04,type:'square',v:.06})},
+  pick(){tone({f:494,d:.08,type:'square',v:.09});tone({f:740,t:now()+.08,d:.14,type:'square',v:.09})},
+  nope(){tone({f:160,to:110,d:.16,type:'square',v:.07})},
+  step(){noise({d:.05,v:.09,f:500+Math.random()*250,q:1.2,type:'lowpass'})},
+  door(){tone({f:90,to:60,d:.25,type:'sawtooth',v:.1});noise({t:now()+.2,d:.09,v:.2,f:300,type:'lowpass'})},
+  talk(p){tone({f:p*(.94+Math.random()*.12),d:.045,type:'square',v:.035})},
+  sew(){for(let i=0;i<5;i++)noise({t:now()+i*.16,d:.07,v:.12,f:3200,q:4})},
+  cut(){for(let i=0;i<3;i++)noise({t:now()+i*.2,d:.14,v:.14,f:1800,q:1})},
+  creak(){tone({f:140,to:170,d:.3,type:'sawtooth',v:.05});tone({f:175,to:150,t:now()+.3,d:.3,type:'sawtooth',v:.04})},
+  splash(){noise({d:.4,v:.16,f:900,q:.6});tone({f:500,to:900,t:now()+.1,d:.2,type:'sine',v:.05})},
+  snuff(){noise({d:.25,v:.1,f:5000,q:.5,type:'highpass'})},
+  alert(){tone({f:330,d:.12,type:'square',v:.1});tone({f:311,t:now()+.14,d:.25,type:'square',v:.1})},
+  pray(){[62,69,74].forEach((m,i)=>tone({f:mtof(m),t:now()+i*.28,d:2.4-i*.3,type:'sine',v:.11,a:.25,sus:1,echo:1}))},
+  good(){[62,66,69,74].forEach((m,i)=>tone({f:mtof(m),t:now()+i*.09,d:.3,type:'triangle',v:.13,echo:1}))},
+  win(){[62,66,69,74,78,81].forEach((m,i)=>tone({f:mtof(m),t:now()+i*.16,d:i===5?1.6:.4,type:'triangle',v:.15,echo:1}))}
+};
+function setMute(m){AU.muted=m;if(AU.master)AU.master.gain.value=m?0:1;
+  $('#mute').innerHTML=m?'&#9835; SOUND OFF':'&#9835; SOUND ON';$('#mute').style.opacity=m?.6:1}
+$('#mute').onclick=e=>{e.stopPropagation();audioInit();setMute(!AU.muted);SFX.click()};
+/* ============ ART: rooms (procedural pixel art) ============ */
+const ART={};
+function jar(g,x,y,c){R(g,x+1,y-9,6,9,c);R(g,x,y-7,8,5,c);R(g,x+2,y-11,4,2,c);R(g,x+1,y-7,1,4,'rgba(255,220,160,.25)')}
+function flame(g,x,y,t,big){const f=Math.floor(t/110)%3,h=(big?5:3)+(f===1?1:0);
+  R(g,x-1,y-h+1,3,h,'#e8662a');R(g,x,y-h,1,h,'#ffd24a');if(f===2)R(g,x+1,y-h,1,2,'#ffb030')}
+function coil(g,x,y,c,c2,n){for(let i=0;i<n;i++){ell(g,x,y+i*2,5,2,i%2?c2:c);} R(g,x-3,y,7,n*2-2,'rgba(0,0,0,.25)')}
+function facade(g,x,y,w,h,c,c2,r){R(g,x,y,w,h,c);speck(g,x,y,w,h,c2,w*h/26|0,r);R(g,x,y,w,3,c2);
+  R(g,x-1,y-3,w+2,3,c2);for(let i=x+2;i<x+w-4;i+=9)R(g,i,y-5,5,2,c2);R(g,x,y,1,h,'rgba(0,0,0,.3)');R(g,x+w-1,y,1,h,'rgba(0,0,0,.35)')}
+function basketArt(g,x,y,strong){/* x,y = bottom-left; 28 wide, 24 tall */
+  for(let j=0;j<22;j++){const w=20+Math.round(8*Math.sin(Math.min(1,j/13)*1.5708)),x0=x+14-(w>>1);
+    R(g,x0,y-1-j,w,1,j%2?'#8a6a34':'#7a5c2c');for(let i=(j%4<2?0:3);i<w-2;i+=6)R(g,x0+i,y-1-j,3,1,'#b08c48');
+    R(g,x0,y-1-j,1,1,'#5a4420');R(g,x0+w-1,y-1-j,1,1,'#5a4420')}
+  R(g,x,y-24,28,2,'#6f5226');R(g,x+1,y-25,26,1,'#c9a55a');
+  if(strong){R(g,x+5,y-23,2,22,'#3a2416');R(g,x+21,y-23,2,22,'#3a2416');R(g,x+5,y-30,2,6,'#3a2416');R(g,x+21,y-30,2,6,'#3a2416');R(g,x+5,y-31,18,2,'#4a2f1a')}
+  else{R(g,x+4,y-28,1,3,'#9a8250');R(g,x+4,y-29,4,1,'#9a8250');R(g,x+9,y-27,1,2,'#9a8250');R(g,x+23,y-28,1,3,'#9a8250');R(g,x+19,y-29,3,1,'#9a8250')}}
+/* ---------- Eliab's workshop ---------- */
+ART.workshop={w:320,paint(g){const r=rng(11);
+  bands(g,0,0,320,104,['#3a261c','#46301f','#523924','#5a3f27','#523924','#46301f']);
+  speck(g,0,0,320,104,'#2e1e16',520,r);speck(g,0,0,320,104,'#6a4c30',260,r);
+  R(g,0,0,320,8,'#24160f');for(let i=0;i<320;i+=46)R(g,i+10,0,7,14,'#2e1c12');
+  bands(g,0,104,320,40,['#3b2a20','#352519','#2e2016','#281b13']);
+  for(let j=0;j<4;j++){R(g,0,107+j*10,320,1,'#221710');for(let i=-(j%2)*20;i<320;i+=40+j*6)R(g,i,108+j*10,1,9,'#1e140e')}
+  speck(g,0,104,320,40,'#4a3626',200,r);R(g,0,103,320,2,'#1d120c');
+  R(g,10,36,34,70,'#1a100a');planks(g,13,39,28,65,7,'#4a2f1a','#3f2816','#2a1a0e');
+  R(g,13,60,28,2,'#2a1a0e');R(g,13,86,28,2,'#2a1a0e');R(g,36,72,2,5,'#b08a3c');
+  R(g,70,24,22,18,'#1a100a');R(g,72,26,18,14,'#10173a');R(g,76,29,1,1,'#fff');R(g,85,34,1,1,'#b9b6e6');R(g,80,26,1,14,'#1a100a');
+  R(g,56,50,3,56,'#2a1a0e');R(g,112,50,3,56,'#2a1a0e');R(g,54,48,63,3,'#3a2414');
+  R(g,59,51,53,44,'#1b1512');dith(g,59,51,53,44,'#2a221c',3);for(let i=0;i<5;i++)R(g,62+i*11,51,1,44,'#120d0b');R(g,59,93,53,3,'#120d0b');
+  R(g,128,44,60,3,'#3a2414');R(g,130,47,2,5,'#2a1a0e');R(g,184,47,2,5,'#2a1a0e');
+  jar(g,132,44,'#8a4a2a');jar(g,144,44,'#6f5a3a');jar(g,174,44,'#7a3d24');
+  R(g,150,74,3,32,'#2a1a0e');R(g,145,104,13,3,'#2a1a0e');R(g,146,71,11,3,'#3a2414');R(g,148,67,8,4,'#9a5a30');R(g,155,66,3,2,'#9a5a30');
+  R(g,204,82,82,5,'#5a3a20');R(g,204,87,82,2,'#2e1c10');R(g,208,89,5,18,'#3f2816');R(g,277,89,5,18,'#3f2816');R(g,213,97,64,2,'#33200f');
+  R(g,222,40,3,3,'#2a1a0e');R(g,250,40,3,3,'#2a1a0e');R(g,278,40,3,3,'#2a1a0e');
+  R(g,247,43,9,3,'#5a3a20');R(g,250,46,3,10,'#7a5a34');/* mallet */
+  R(g,120,108,14,3,'#4a2f1a');R(g,121,111,2,8,'#33200f');R(g,131,111,2,8,'#33200f');
+  dith(g,0,0,320,144,'rgba(0,0,0,.18)',2);R(g,0,0,6,144,'rgba(0,0,0,.35)');R(g,314,0,6,144,'rgba(0,0,0,.35)')},
+ draw(g,t){
+  if(!F.gotRope){coil(g,223,46,'#b89a5a','#8f7440',5);R(g,223,41,1,4,'#b89a5a')}
+  if(!F.gotSkin){R(g,279,42,1,4,'#3a2414');ell(g,279,52,4,6,'#6a4526');R(g,278,45,3,3,'#4a2f1a');R(g,277,50,1,5,'#8a6238')}
+  if(!F.gotKnife){ell(g,219,80,5,2,'#c8c8d4');R(g,214,78,11,2,'#5a3a20');R(g,218,76,3,3,'#6a4020')}
+  if(!F.gotCloth){R(g,238,75,30,7,'#1b1512');ell(g,238,78,3,3,'#2a221c');ell(g,268,78,3,3,'#120d0b');dith(g,240,75,26,7,'#2e2620',3)}
+  if(!F.gotThread){R(g,159,38,7,6,'#d8c9a0');R(g,158,37,9,1,'#7a4a24');R(g,158,43,9,1,'#7a4a24');R(g,159,40,7,1,'#b5a67c')}
+  if(!F.gotBasket)basketArt(g,290,110,false);
+  flame(g,157,66,t);glow(g,156,62,30+Math.sin(t/190)*2,'70,40,10',.16)},
+ front(){}};
+/* ---------- The street by night ---------- */
+ART.street={w:480,paint(g){const r=rng(23);
+  bands(g,0,0,480,74,['#0b0e2a','#0e1233','#12173d','#161c47','#1b2251','#22295a']);starfield(g,480,56,120,r);
+  ell(g,402,16,7,7,'#e8e6d0');ell(g,399,14,2,2,'#c9c7b0');ell(g,405,19,1,1,'#c9c7b0');glow(g,402,16,20,'30,34,70',.3);
+  /* far city wall + gate */
+  R(g,0,48,480,30,'#161b40');for(let i=0;i<480;i+=8)R(g,i,45,5,3,'#161b40');
+  R(g,182,32,16,46,'#1a2049');R(g,222,32,16,46,'#1a2049');for(let i=0;i<16;i+=6){R(g,182+i,29,4,3,'#1a2049');R(g,222+i,29,4,3,'#1a2049')}
+  R(g,198,40,24,38,'#161b40');R(g,203,54,14,24,'#090b1c');ell(g,210,54,7,5,'#090b1c');
+  /* buildings */
+  facade(g,0,30,140,72,'#3a3350','#2c2742',r);facade(g,236,24,189,78,'#373049','#2a2540',r);facade(g,455,34,25,68,'#322b45','#262139',r);
+  R(g,425,40,30,62,'#07060f');R(g,425,40,2,62,'#15122a');
+  R(g,28,42,32,60,'#191226');planks(g,31,45,26,57,6,'#4a2f1a','#3f2816','#2a1a0e');R(g,52,74,2,4,'#b08a3c');
+  R(g,82,52,20,18,'#191226');R(g,84,54,16,14,'#c98a3a');R(g,91,54,2,14,'#191226');R(g,84,60,16,1,'#191226');
+  R(g,262,40,12,14,'#120e1e');R(g,300,40,12,14,'#120e1e');R(g,112,44,10,12,'#120e1e');
+  /* low wall across the gap */
+  R(g,140,84,96,18,'#2b2742');R(g,140,84,96,2,'#3d3859');
+  /* street paving */
+  bands(g,0,102,480,42,['#2a2638','#262233','#211d2d','#1c1927']);
+  for(let j=0;j<5;j++)for(let i=-(j%2)*9;i<480;i+=18+j*3)R(g,i,104+j*8,1,7,'#17141f');
+  for(let j=0;j<5;j++)R(g,0,103+j*8,480,1,'#17141f');speck(g,0,102,480,42,'#3a3550',300,r);
+  /* well */
+  R(g,172,94,34,14,'#4a4660');bricks(g,172,94,34,14,8,5,'#5a5672','#4c4862','#2a2738',r);R(g,172,92,34,3,'#6a6684');
+  R(g,174,70,3,24,'#3f2816');R(g,201,70,3,24,'#3f2816');R(g,172,68,34,3,'#4a2f1a');line(g,189,71,189,84,'#b89a5a');R(g,185,84,8,7,'#5a3a20');R(g,185,84,8,1,'#8a6238');
+  /* stall frame */
+  R(g,342,50,3,60,'#3f2816');R(g,402,50,3,60,'#3f2816');R(g,342,48,63,3,'#4a2f1a');
+  R(g,346,90,56,4,'#5a3a20');R(g,346,94,56,14,'#3a2414');planks(g,346,94,56,14,8,'#3a2414','#33200f','#22140a');
+  ell(g,356,86,5,4,'#7a3d6a');ell(g,368,86,5,4,'#3d5a7a');ell(g,380,86,5,4,'#8a6a2a');jar(g,390,90,'#8a4a2a');
+  /* brazier stand */
+  R(g,243,104,2,8,'#1a1420');R(g,251,104,2,8,'#1a1420');R(g,241,100,14,4,'#2a2030');R(g,242,99,12,1,'#5a2a1a')},
+ draw(g,t){
+  flame(g,200,50,t+70);flame(g,220,50,t);glow(g,210,50,9,'60,30,8',.2);
+  glow(g,92,61,16+Math.sin(t/230),'60,34,8',.14);
+  flame(g,246,99,t,1);flame(g,250,99,t+50,1);glow(g,248,96,34+Math.sin(t/170)*2,'70,34,8',.15);
+  if(!F.awning){R(g,345,51,22,12,'#5c2a24');R(g,348,63,12,6,'#4a1f1f');R(g,351,69,5,5,'#4a1f1f');R(g,367,51,3,7,'#4a1f1f');
+    R(g,384,51,18,5,'#5c2a24');R(g,392,56,8,4,'#4a1f1f')}
+  else{for(let i=0;i<60;i+=6)R(g,345+i,51,6,8,(i/6)%2?'#5c2a24':'#4a1f1f');R(g,345,59,58,1,'#2e1414')}},
+ front(g){if(F.awning){for(let i=0;i<56;i+=7)R(g,404+i,52,7,62-(i%14?0:1),(i/7)%2?'#4a1f1f':'#3d1919');
+    R(g,404,50,56,2,'#b89a5a');R(g,426,74,9,8,'#1b1512');dith(g,426,74,9,8,'#2e2620',3);R(g,404,112,56,1,'#2e1414')}}};
+/* ---------- Naomi's upper room on the city wall ---------- */
+ART.house={w:320,paint(g){const r=rng(37);
+  bricks(g,0,0,320,104,26,13,'#5b5462','#514a59','#2b2730',r);speck(g,0,0,320,104,'#6a6272',300,r);
+  R(g,0,0,320,7,'#24160f');for(let i=0;i<320;i+=52)R(g,i+16,0,7,12,'#2e1c12');
+  bands(g,0,104,320,40,['#4a3424','#40301f','#372819','#2e2014']);for(let i=0;i<320;i+=32)R(g,i,104,1,40,'#22160d');R(g,0,103,320,2,'#1d120c');
+  R(g,12,38,32,68,'#0d0a12');R(g,12,38,32,2,'#3a2414');R(g,12,38,2,68,'#3a2414');R(g,42,38,2,68,'#3a2414');
+  for(let i=0;i<4;i++)R(g,16+i*3,94+i*3,26-i*3,3,'#2a2230');
+  R(g,90,48,18,20,'#2b2730');R(g,92,50,14,16,'#1c1820');R(g,94,63,10,3,'#9a5a30');R(g,103,62,3,2,'#9a5a30');
+  R(g,192,32,48,54,'#3d3844');R(g,196,36,40,46,'#0f1330');R(g,190,86,52,3,'#6a6272');
+  R(g,176,20,80,7,'#3a2414');R(g,176,20,80,1,'#5a3a20');R(g,176,27,80,2,'rgba(0,0,0,.4)');
+  R(g,118,96,44,4,'#5a3a20');R(g,121,100,3,9,'#3f2816');R(g,156,100,3,9,'#3f2816');ell(g,130,94,5,2,'#c9a060');R(g,144,90,4,6,'#8a4a2a');
+  jar(g,280,109,'#8a4a2a');jar(g,292,109,'#6f5a3a');jar(g,304,107,'#7a3d24');
+  R(g,56,101,26,7,'#6a5a3a');ell(g,56,104,2,3,'#4a3e28');for(let i=0;i<4;i++)R(g,62+i*5,101,1,7,'#4a3e28');
+  dith(g,0,0,320,144,'rgba(0,0,0,.16)',2);R(g,0,0,6,144,'rgba(0,0,0,.35)');R(g,314,0,6,144,'rgba(0,0,0,.35)')},
+ draw(g,t){
+  if(F.shutters){R(g,196,36,40,46,'#12173d');R(g,196,66,40,16,'#161c47');
+    [[201,41],[209,50],[222,39],[230,47],[216,58],[204,60]].forEach((p,i)=>R(g,p[0],p[1],1,1,(Math.floor(t/600)+i)%5?'#dcdaf5':'#7a78b0'));
+    for(let x=0;x<40;x++){const h=4+Math.round(2*Math.sin(x/6)+1.5*Math.sin(x/2.7));R(g,196+x,82-h,1,h,'#0a0d22')}
+    planks(g,187,36,9,46,3,'#4a2f1a','#3f2816','#2a1a0e');planks(g,236,36,9,46,3,'#4a2f1a','#3f2816','#2a1a0e')}
+  else{planks(g,196,36,40,46,8,'#4a2f1a','#3f2816','#2a1a0e');R(g,196,48,40,2,'#2a1a0e');R(g,196,68,40,2,'#2a1a0e');R(g,215,36,2,46,'#1a100a');R(g,211,58,3,3,'#b08a3c')}
+  if(!F.lampOut){flame(g,105,61,t);glow(g,104,58,34+Math.sin(t/190)*2,'70,40,10',.16)}
+  if(F.ropeTied){R(g,213,19,6,9,'#b89a5a');R(g,213,22,6,1,'#8f7440');R(g,213,25,6,1,'#8f7440');
+    if(F.basketOn)line(g,216,28,216,58,'#b89a5a');
+    else{line(g,216,28,216,84,'#b89a5a');line(g,216,84,250,104,'#b89a5a');coil(g,254,102,'#b89a5a','#8f7440',3)}}
+  if(F.basketOn)basketArt(g,202,88,true)},
+ front(g){if(F.lampOut){R(g,0,0,320,144,'rgba(6,8,34,.5)');if(F.shutters)glow(g,216,118,34,'18,22,52',.22)}}};
+/* ---------- Outside the wall (title + ending) ---------- */
+ART.wall={w:320,paint(g){const r=rng(51);
+  bands(g,0,0,320,112,['#090c26','#0b0e2c','#0e1233','#12173d','#161c47','#1b2251','#22295a','#2a3166']);starfield(g,320,92,140,r);
+  ell(g,262,24,9,9,'#e8e6d0');ell(g,258,21,2,2,'#c9c7b0');ell(g,266,28,2,1,'#c9c7b0');glow(g,262,24,26,'30,34,70',.3);
+  for(let x=150;x<320;x++){const h=10+Math.round(6*Math.sin(x/23)+4*Math.sin(x/9+1)+(x>230&&x<290?8-Math.abs(x-260)/4:0));
+    R(g,x,112-h,1,h+2,'#1a1f4a');if(h>19)R(g,x,112-h,1,2,'#5a628f')}
+  bands(g,0,112,320,32,['#1c2138','#181c30','#141829','#101321']);speck(g,0,112,320,32,'#2a3050',160,r);
+  for(let i=0;i<58;i++)R(g,150+i*3,128-Math.round(i*.22),4,5-Math.floor(i/20),'#2c2f48');
+  R(g,224,98,3,18,'#1a1420');ell(g,225,94,10,7,'#1a2a30');ell(g,218,97,6,4,'#16242a');ell(g,232,97,6,4,'#1f3238');
+  ell(g,180,123,6,3,'#262a44');ell(g,290,133,8,3,'#262a44');
+  bricks(g,0,10,150,112,22,11,'#3d3a52','#353249','#1e1c2c',r);for(let i=0;i<150;i+=10)R(g,i,5,6,5,'#3d3a52');
+  R(g,146,10,4,112,'#2a2840');dith(g,0,84,150,38,'rgba(0,0,0,.3)',2);
+  R(g,70,0,66,48,'#4a4560');speck(g,70,0,66,48,'#3d3852',120,r);R(g,70,46,66,3,'#2a2840');R(g,134,0,2,48,'#2a2840');
+  for(let i=0;i<5;i++)R(g,74+i*14,49,4,5,'#2e2a40');
+  R(g,94,18,22,24,'#2a2840');R(g,96,20,18,20,'#07060f');R(g,92,42,26,2,'#5a5672');
+  ell(g,60,122,14,4,'#151a2c');ell(g,24,124,10,3,'#151a2c')},
+ draw(){},front(){}};
+function miniBasket(g,x,y,rider){line(g,x-6,y-11,x,y-22,'#b89a5a');line(g,x+6,y-11,x,y-22,'#b89a5a');
+  if(rider){R(g,x-3,y-18,6,7,'#c08a5c');R(g,x-4,y-19,7,3,'#2a1a12');R(g,x-1,y-13,4,3,'#2a1a12');R(g,x-5,y-12,10,3,'#6a4a30')}
+  ell(g,x,y-5,8,5,'#8a6a34');for(let j=0;j<4;j++)for(let i=(j%2)*2;i<14;i+=4)R(g,x-7+i,y-2-j*2,2,1,'#b08c48');
+  R(g,x-8,y-11,17,2,'#6f5226');R(g,x-7,y-12,15,1,'#c9a55a')}
+/* ============ ART: people & inventory icons ============ */
+/* People are drawn at twice the room resolution (half-size pixels) for extra detail. */
+const LOOK={
+  paul:{skin:'#c08a5c',hair:'#2a1a12',beard:'#2a1a12',tunic:'#c4b08a',cloak:'#6e4a2e',belt:'#3a2414',trim:'#8a6a4a',pouch:1,ph:0},
+  eliab:{skin:'#b88458',hair:'#a8a8a8',beard:'#bcbcbc',longBeard:1,bald:1,brow:'#8a8a8a',tunic:'#7a8a6a',cloak:'#44543e',long:1,belt:'#4a3a24',trim:'#56634a',ph:900},
+  naomi:{skin:'#c49268',veil:'#8a4a5a',tunic:'#4f7480',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#c9a14a',brow:'#3a2414',ph:1700},
+  jesse:{skin:'#c49268',hair:'#3a2414',tunic:'#a89060',belt:'#5a3a20',h:8,slim:1,trim:'#7a6238',ph:2600},
+  guard:{skin:'#a87850',helm:'#b08a3c',beard:'#1a100a',tunic:'#7a2a2a',cloak:'#3a3550',cape:1,belt:'#b08a3c',spear:1,armor:'#5a3a22',trim:'#c9a14a',brow:'#1a100a',ph:3300},
+  zakkai:{skin:'#b07a4c',wrap:'#d2c296',beard:'#4a3a2a',tunic:'#4a5a8a',stripe:'#3a4873',long:1,belt:'#c9a14a',trim:'#c9a14a',longSleeve:1,brow:'#3a2a1a',ph:2100}};
+function tint(c,f){const n=parseInt(c.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;
+  if(f<0){r*=1+f;g*=1+f;b*=1+f}else{r+=(255-r)*f;g+=(255-g)*f;b+=(255-b)*f}return`rgb(${r|0},${g|0},${b|0})`}
+function pal(o){if(o.p)return o.p;const d=(c,f)=>c?tint(c,f):null;
+  return o.p={sk:o.skin,skD:tint(o.skin,-.2),skL:tint(o.skin,.16),tu:o.tunic,tuD:tint(o.tunic,-.22),tuL:tint(o.tunic,.16),tuX:tint(o.tunic,-.42),
+    cl:o.cloak,clD:d(o.cloak,-.28),clL:d(o.cloak,.16),ha:o.hair,haL:d(o.hair,.22),be:o.beard,beL:d(o.beard,.2),beD:d(o.beard,-.28)}}
+function person(g,x,y,o,dir,fr,talk,bow,ges){
+  const c=pal(o);g.save();g.translate(Math.round(x),Math.round(y));g.scale(dir*.5,.5);
+  const B=(a,b,w,h,col)=>{if(w>0&&h>0){g.fillStyle=col;g.fillRect(a,b,w,h)}};
+  const bob=fr%2?-1:0,top=-54+(o.h||0)+bob,hem=(o.long?-7:-21)+bob,s=fr===1?3:fr===3?-3:0,sw=fr===1?2:fr===3?-2:0,W=o.slim?9:10,at=top+3;
+  const blink=bow||((G.t+o.ph)%4300)<140,sl=o.longSleeve?19:12;
+  B(-13,-2,26,3,'rgba(0,0,0,.26)');B(-9,-3,18,5,'rgba(0,0,0,.16)');
+  /* cape (behind the body) */
+  if(o.cape){B(-W-4,top,7,hem-top+7,c.cl);B(-W-4,top,2,hem-top+7,c.clD);B(-W,top+8,1,hem-top-3,c.clD);for(let i=0;i<6;i+=2)B(-W-4+i,hem+7,1,1,c.clD)}
+  /* far arm */
+  if(!o.cloak||o.cape){B(-W-2-(sw>>1),at,4,sl,c.tuD);B(-W-2-sw,at+sl,4,21-sl,c.skD);B(-W-2-sw,at+21,4,4,c.skD)}
+  /* legs and sandals */
+  const leg=(lx,far,lift)=>{B(lx,hem,5,-hem-3-lift,far?c.skD:c.sk);if(!far)B(lx+3,hem,1,-hem-5-lift,c.skL);
+    B(lx-1,-3-lift,8,3,'#2e1c10');B(lx,-6-lift,5,1,'#5a3a20');B(lx,-9-lift,5,1,'#5a3a20');B(lx+2,-9-lift,1,6,'#5a3a20')};
+  leg(-6+s,1,s>0?1:0);leg(1-s,0,s<0?1:0);
+  /* tunic */
+  B(-W,top,2*W,hem-top,c.tu);B(-W+1,top-1,2*W-2,1,c.tu);B(-W,top,4,hem-top,c.tuD);B(W-2,top+2,1,hem-top-2,c.tuL);
+  B(-3,top+26,1,hem-top-27,c.tuD);B(4,top+25,1,hem-top-26,c.tuD);
+  if(o.long){B(0,top+31,1,hem-top-32,c.tuD);B(7,top+33,1,hem-top-34,c.tuL);B(-6,top+30,1,hem-top-31,c.tuX)}
+  if(o.stripe)for(let i=-W+2;i<W-1;i+=5)B(i,top+1,2,hem-top-1,o.stripe);
+  B(-W,hem-2,2*W,2,o.trim||c.tuX);B(-W,hem-3,2*W,1,'rgba(0,0,0,.18)');
+  B(-1,top-1,6,2,c.sk);B(0,top+1,4,1,c.sk);B(1,top+2,2,1,c.skD);
+  if(o.armor){const a=o.armor,aD=tint(a,-.28),aL=tint(a,.3);B(-W+1,top+1,2*W-2,21,a);B(-W+1,top+1,3,21,aD);
+    for(let j=0;j<4;j++)for(let i=0;i<4;i++)B(-W+5+i*4+(j%2)*2,top+4+j*5,1,1,aL);
+    B(-1,top-1,6,2,c.sk);for(let i=0;i<5;i++){B(-W+1+i*4,top+25,3,7,a);B(-W+1+i*4,top+31,3,1,aD)}}
+  if(o.belt){B(-W,top+22,2*W,3,o.belt);B(-W,top+24,2*W,1,'rgba(0,0,0,.3)');if(!o.armor){B(3,top+25,2,7,o.belt);B(5,top+25,1,5,o.belt)}}
+  if(o.pouch){B(-8,top+25,6,6,'#7a4a24');B(-8,top+25,6,2,'#5a3418');B(-6,top+27,1,1,'#c9a14a')}
+  /* mantle over the far shoulder */
+  if(o.cloak&&!o.cape){B(-W-3,top-1,9,6,c.cl);B(-W-3,top+4,7,hem-top-8,c.cl);
+    for(let i=0;i<10;i++){const bx=-W+1+i*2;B(bx,top+3+i*2,Math.min(7,W-bx),4,i%3===2?c.clD:c.cl)}
+    B(-W-3,top+4,2,hem-top-8,c.clD);B(-W+1,top+9,1,hem-top-15,c.clD);B(-W+2,top,5,1,c.clL);B(-W+4,top+5,1,3,c.clL);
+    for(let i=0;i<7;i+=2)B(-W-3+i,hem-4,1,2,c.clD)}
+  if(o.cape){B(-W-2,top-1,2*W+3,3,c.cl);B(-W-2,top+2,2*W+3,1,c.clD);B(W-2,top-1,3,3,'#c9a14a')}
+  /* near arm */
+  const su=o.sleeve||c.tu;
+  if(o.spear){B(W-1,at,4,11,su);B(W-1,at+10,4,1,c.tuD);B(W+1,at+9,6,4,c.sk);
+    B(W+6,top-34,2,34-top,'#6a4a2a');B(W+6,top-34,1,34-top,'#8a6238');B(W+5,top-36,4,2,'#b08a3c');
+    B(W+5,top-46,4,10,'#c8c8d4');B(W+6,top-49,2,3,'#c8c8d4');B(W+6,top-46,1,10,'#f4f4fa');B(W+5,at+8,4,5,c.sk);B(W+5,at+12,4,1,c.skD)}
+  else if(ges&&!bow){B(W-1,at,4,11,su);B(W-1,at+10,4,1,c.tuD);B(W+1,at+7,8,4,o.longSleeve?su:c.sk);B(W+8,at+4,4,6,c.sk);B(W+11,at+3,1,3,c.sk);B(W+8,at+9,4,1,c.skD)}
+  else{B(W-1+(sw>>1),at,4,sl,su);B(W-1+(sw>>1),at+sl-1,4,1,c.tuD);B(W-1+sw,at+sl,4,21-sl,c.sk);B(W-1+sw,at+21,4,4,c.sk);B(W-1+sw,at+24,4,1,c.skD);B(W+2+sw,at+sl,1,21-sl,c.skL)}
+  /* head */
+  const hx=bow?2:0,hy=top-18+(bow?4:0);
+  B(-2+hx,top-5,6,5,c.skD);
+  B(-4+hx,hy,10,1,c.sk);B(-5+hx,hy+1,12,2,c.sk);B(-6+hx,hy+3,13,8,c.sk);B(-5+hx,hy+11,12,2,c.sk);B(-3+hx,hy+13,9,2,c.sk);
+  B(-6+hx,hy+3,3,8,c.skD);B(7+hx,hy+6,2,4,c.sk);B(7+hx,hy+10,1,1,c.skD);B(8+hx,hy+8,1,2,c.skL);
+  B(-1+hx,hy+6,2,4,c.skD);B(hx,hy+7,1,2,c.sk);B(4+hx,hy+9,2,1,c.skD);
+  if(blink)B(3+hx,hy+7,3,1,'#2a1a12');else{B(3+hx,hy+6,3,2,'#f4ecd8');B(5+hx,hy+6,1,2,'#1a0f0a')}
+  B(2+hx,hy+4,5,1,o.brow||o.hair||o.beard||'#2a1a12');
+  B(4+hx,hy+12,3,talk?2:1,'#5a1f1a');
+  if(o.hair){if(!o.bald){B(-5+hx,hy-2,10,3,c.ha);B(-6+hx,hy-1,12,2,c.ha);B(4+hx,hy+1,3,2,c.ha);B(-3+hx,hy-1,5,1,c.haL)}
+    B(-7+hx,hy+(o.bald?3:0),4,o.bald?8:11,c.ha);B(-4+hx,hy+(o.bald?2:1),3,3,c.ha);B(-6+hx,hy+4,1,5,c.haL)}
+  if(o.beard){const bl=o.longBeard?9:4;B(-2+hx,hy+9,4,4,c.be);B(-1+hx,hy+12,9,bl,c.be);B(1+hx,hy+12+bl,6,2,c.be);B(3+hx,hy+10,5,2,c.be);
+    B(4+hx,hy+12,3,talk?2:1,'#5a1f1a');B(1+hx,hy+14,1,bl-1,c.beL);B(5+hx,hy+15,1,bl-2,c.beL);B(-1+hx,hy+12,1,bl,c.beD)}
+  if(o.veil){const v=o.veil,vD=tint(v,-.25),vL=tint(v,.18);B(2+hx,hy+1,4,2,'#2a1a12');
+    B(-5+hx,hy-3,11,4,v);B(-6+hx,hy-2,13,2,v);B(-7+hx,hy-1,5,14,v);B(5+hx,hy,2,2,v);
+    B(-9+hx,hy+8,7,top+17-hy-8,v);B(-9+hx,hy+8,2,top+17-hy-8,vD);B(-5+hx,hy+12,1,top+12-hy-12,vD);
+    B(-4+hx,hy+14,10,4,v);B(-4+hx,hy+17,10,1,vD);B(-3+hx,hy-2,5,1,vL);B(-6+hx,hy+3,1,9,vD)}
+  if(o.wrap){const w=o.wrap,wD=tint(w,-.24),wL=tint(w,.25);B(-6+hx,hy-5,13,7,w);B(-7+hx,hy-3,15,4,w);B(-5+hx,hy-6,10,1,w);
+    B(-6+hx,hy,13,1,wD);B(-4+hx,hy-3,10,1,wD);B(-2+hx,hy-5,5,1,wL);B(5+hx,hy-2,2,1,wL);B(-8+hx,hy+1,3,10,w);B(-8+hx,hy+1,1,10,wD)}
+  if(o.helm){const m=o.helm,mD=tint(m,-.3),mL=tint(m,.4);B(-5+hx,hy-3,11,2,m);B(-7+hx,hy-1,15,5,m);B(-7+hx,hy+4,16,1,mD);
+    B(-8+hx,hy+4,4,6,m);B(-8+hx,hy+9,4,1,mD);B(hx,hy+5,3,7,m);B(hx,hy+11,3,1,mD);B(-1+hx,hy-6,3,3,m);B(-3+hx,hy-2,6,1,mL);B(3+hx,hy,2,2,mL)}
+  g.restore()}
+const ICON={
+  pouch(g){ell(g,12,15,7,6,'#7a4a24');R(g,7,8,10,3,'#5a3418');R(g,11,5,2,4,'#c9a14a');R(g,8,13,8,1,'#93603a');R(g,7,16,1,3,'#93603a')},
+  awl(g){line(g,4,20,15,9,'#e0e0ea');line(g,5,21,16,10,'#9a9aac');R(g,15,5,5,5,'#8a5a2c');R(g,16,4,4,1,'#a87238');R(g,17,9,2,2,'#5a3418')},
+  thread(g){R(g,8,6,8,12,'#d8c9a0');for(let i=0;i<5;i++)R(g,8,7+i*2,8,1,'#b5a67c');R(g,6,5,12,2,'#7a4a24');R(g,6,17,12,2,'#7a4a24');line(g,16,12,20,21,'#d8c9a0')},
+  knife(g){ell(g,12,15,9,6,'#c8c8d4');g.clearRect(2,8,20,6);R(g,4,14,16,1,'#f0f0f8');R(g,10,7,4,8,'#6a4020');R(g,9,5,6,3,'#8a5a2c')},
+  cloth(g){R(g,4,8,16,10,'#1b1512');dith(g,4,8,16,10,'#3a3028',3);ell(g,4,13,2,5,'#2a221c');ell(g,20,13,2,5,'#0e0a08');R(g,5,9,14,1,'#4a4038')},
+  patch(g){R(g,6,7,12,11,'#1b1512');dith(g,6,7,12,11,'#3a3028',2);for(let i=7;i<18;i+=2)R(g,i,6,1,1,'#3a3028')},
+  strips(g){for(let k=0;k<3;k++)for(let j=0;j<16;j++)R(g,6+k*5+Math.round(Math.sin(j/2.5+k)*1.4),4+j,3,1,j%4?'#1b1512':'#3a3028')},
+  rope(g){for(let i=0;i<4;i++)ell(g,12,9+i*3,6,2,i%2?'#8f7440':'#b89a5a');R(g,17,17,2,4,'#b89a5a')},
+  longrope(g){for(let i=0;i<6;i++)ell(g,12,6+i*3,8,2,i<3?(i%2?'#8f7440':'#b89a5a'):(i%2?'#2a221c':'#3a3028'));R(g,19,19,2,3,'#3a3028')},
+  basket(g){ell(g,12,14,9,7,'#8a6a34');for(let j=0;j<5;j++)for(let i=(j%2)*2;i<16;i+=4)R(g,4+i,18-j*2,2,1,'#b08c48');R(g,3,7,19,2,'#6f5226');R(g,4,6,17,1,'#c9a55a');R(g,5,3,1,3,'#9a8250');R(g,18,3,1,3,'#9a8250')},
+  strongbasket(g){ICON.basket(g);R(g,6,3,2,17,'#3a2416');R(g,16,3,2,17,'#3a2416');R(g,6,2,12,2,'#3a2416')},
+  straps(g){R(g,4,7,15,3,'#6a3e1e');R(g,6,12,15,3,'#7a4a26');R(g,3,17,15,3,'#5a3418');R(g,18,7,3,3,'#c9a14a');R(g,3,12,3,3,'#c9a14a');for(let i=6;i<17;i+=3)R(g,i,8,1,1,'#3a2414')},
+  skin(g){ell(g,12,14,5,7,'#6a4526');R(g,10,4,4,4,'#4a2f1a');R(g,11,3,2,1,'#c9a14a');R(g,9,11,1,6,'#8a6238');line(g,14,5,19,12,'#3a2414')},
+  skinfull(g){ell(g,12,14,7,7,'#6a4526');R(g,10,4,4,4,'#4a2f1a');R(g,11,3,2,1,'#c9a14a');R(g,8,11,1,6,'#8a6238');line(g,14,5,20,12,'#3a2414');R(g,15,16,2,3,'#6ab0e8');R(g,15,15,1,1,'#6ab0e8')}};
+/* ============ ENGINE: actors, script, rendering, input ============ */
+const ACT={},ROOMS={},ITEMS={},BG={};
+function actor(id,name,color,pitch){return ACT[id]={id,name,look:LOOK[id],color,pitch,x:0,y:0,dir:1,fr:0,room:null,walk:null,talk:false,bow:false,hs:null}}
+const P=actor('paul','Paul','#f5e6b8',150);
+actor('eliab','Eliab','#a8d8a0',118);actor('naomi','Naomi','#f0a8c0',250);actor('jesse','Jesse','#f0c878',215);
+actor('guard','the guard','#f08070',96);actor('zakkai','the merchant','#90b8f0',132);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function bg(id){if(!BG[id]){const[c,g]=mk(ART[id].w,VH);ART[id].paint(g);BG[id]=c}return BG[id]}
+function place(a,room,x,y,dir){a.room=room;a.x=x;a.y=y;a.dir=dir||1;a.walk=null}
+/* --- script primitives --- */
+function walk(a,x,y){return new Promise(res=>{const rm=ROOMS[a.room];
+  if(a===P&&rm&&!a.free){const w=rm.walk;x=clamp(x,w[0],w[1]);y=clamp(y,w[2],w[3])}
+  if(a.walk)a.walk.res(false);a.walk={x,y,res};if(Math.abs(x-a.x)>1)a.dir=x>a.x?1:-1})}
+let cur=null;
+function say(a,text,o={}){return new Promise(res=>{
+  const el=document.createElement('div');el.className='line';el.textContent=text;el.style.color=o.color||(a?a.color:'#e6d9ff');
+  if(o.thought)el.style.fontStyle='italic';
+  $('#speech').appendChild(el);if(a&&!o.thought)a.talk=true;
+  let n=0;const blip=a&&!o.thought?setInterval(()=>{if(n++<Math.min(9,text.length/5))SFX.talk(a.pitch*2)},85):0;
+  const done=()=>{clearTimeout(tm);clearInterval(blip);el.remove();if(a)a.talk=false;if(G.skip===done)G.skip=null;cur=null;res()};
+  const tm=setTimeout(done,o.dur||Math.max(2200,1400+text.length*65));
+  G.skip=done;G.lineT=performance.now();cur={el,a};posSpeech()})}
+const narr=(t,o)=>say(null,t,o);
+function posSpeech(){if(!cur)return;const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
+  if(a&&a.room===G.room&&!G.scene){el.style.left=clamp((a.x-G.cam)*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-46),40,132)*s+'px';el.style.top=''}
+  else{el.style.left='50%';el.style.top=10*s+'px';el.style.bottom=''}}
+function lock(b){$('#panel').classList.toggle('locked',b)}
+async function cut(fn,force){if(G.busy&&!force)return;G.busy=true;lock(true);status();
+  try{await fn()}catch(e){console.error(e)}
+  G.busy=false;lock(false);G.verb='walk';G.item=null;syncVerbs();drawInv();status();codeBtn()}
+function enterRoom(room,x,y,dir){G.room=room;place(P,room,x,y,dir);G.cam=clamp(x-160,0,ART[room].w-320);AU.mood=ROOMS[room].mood||'calm';G.hover=null}
+async function fade(on,ms=260){const d=$('#dim');d.style.transition=`opacity ${ms}ms`;d.style.opacity=on?1:0;await wait(ms+20);d.style.transition=''}
+async function go(room,x,y,dir){SFX.door();await fade(1);enterRoom(room,x,y,dir);await fade(0);const r=ROOMS[room];if(r.enter)await r.enter()}
+function choose(opts){return new Promise(res=>{const c=$('#choices');c.innerHTML='';c.classList.add('on');
+  opts.forEach((o,i)=>{const b=document.createElement('button');b.textContent='› '+o;
+    b.onclick=()=>{SFX.click();c.classList.remove('on');res(i)};c.appendChild(b)})})}
+const ASKED=new Set();
+async function talkTree(topics){for(;;){const av=topics.filter(t=>(!t.if||t.if())&&!(t.once&&ASKED.has(t.q)));
+  const t=av[await choose(av.map(t=>t.q))];ASKED.add(t.q);await say(P,t.q);if(t.a)await t.a();if(t.bye)return}}
+/* --- UI: verbs, inventory, status line --- */
+function buildVerbs(){const v=$('#verbs');v.innerHTML='';
+  VERBS.forEach(([id,label])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.v=id;
+    b.onclick=()=>{if(G.busy)return;audioInit();SFX.click();G.verb=G.verb===id?'walk':id;G.item=null;syncVerbs();drawInv();status()};v.appendChild(b)});
+  const p=document.createElement('button');p.type='button';p.id='pray';p.textContent='Pray to Jehovah';p.onclick=pray;v.appendChild(p)}
+function syncVerbs(){document.querySelectorAll('#verbs button').forEach(b=>b.classList.toggle('sel',b.dataset.v===G.verb))}
+function drawInv(){const el=$('#inv');el.innerHTML='';for(let i=0;i<10;i++){const s=document.createElement('div');s.className='slot';const id=G.inv[i];
+  if(id){const[c,g]=mk(24,24);ICON[ITEMS[id].icon||id](g);s.appendChild(c);if(G.item===id)s.classList.add('sel');
+    s.onmouseenter=()=>{G.hover={item:id};status()};s.onmouseleave=()=>{G.hover=null;status()};s.onclick=()=>clickItem(id)}
+  el.appendChild(s)}}
+function status(){const el=$('#status');if(G.busy){el.textContent=' ';return}
+  let s=VNAME[G.verb];const h=G.hover,hn=h?(h.item?ITEMS[h.item].name:h.name):'';
+  if(G.item){s+=' '+ITEMS[G.item].name+(G.verb==='give'?' to':' with');if(hn&&!(h&&h.item===G.item))s+=' '+hn}else if(hn)s+=' '+hn;
+  el.textContent=s}
+const DEF={look:h=>'Nothing more to see there.',pickup:h=>h.actor?'That would hardly be loving.':'I have no need of that.',
+  use:h=>h.actor?'People are not tools.':'I see no use in that right now.',open:h=>'That does not open.',
+  talk:h=>'I would get no answer.',give:h=>'First I should choose something to give.'};
+const NOPE=['That will not work.','Those do not go together.','No. I should think it through calmly.'];
+function clickItem(id){if(G.busy)return;audioInit();const it=ITEMS[id],a=G.item;
+  if(a&&a!==id)return cut(()=>combine(a,id));
+  if(G.verb==='use'||G.verb==='give'){G.item=a===id?null:id;SFX.click();drawInv();status();return}
+  if(G.verb==='open'&&it.open)return cut(it.open);
+  if(G.verb==='walk'||G.verb==='look')return cut(()=>say(P,it.look));
+  cut(()=>say(P,G.verb==='pickup'?'I am already carrying it.':G.verb==='open'?'That does not open.':'It is only '+it.name+'.'))}
+function hsAt(x,y){for(const a of Object.values(ACT))if(a!==P&&a.room===G.room&&a.hs&&Math.abs(x-a.x)<=9&&y>=a.y-40&&y<=a.y+1)return a.hs;
+  const hs=ROOMS[G.room].hs;for(let i=hs.length-1;i>=0;i--){const h=hs[i];if((!h.vis||h.vis())&&x>=h.x&&x<h.x+h.w&&y>=h.y&&y<h.y+h.h)return h}return null}
+async function act(v,h,item){
+  const run=async x=>{if(typeof x==='function')return x(h);for(const s of[].concat(x))await say(P,s)};
+  if(v==='exit')return h.exit();
+  if(item){const fn=v==='give'?h.give:h.useWith;if(fn&&await fn(item)!==false)return;
+    SFX.nope();return say(P,v==='give'?(h.actor?'I do not think that is needed.':'I cannot give anything to that.'):pick(NOPE))}
+  if((v==='use'||v==='open')&&h[v]==null&&h.exit)return h.exit();
+  if(h[v]!=null)return run(h[v]);
+  return say(P,DEF[v](h))}
+async function clickView(x,y){
+  if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
+  if(G.busy||G.scene||!G.room)return;audioInit();
+  const h=hsAt(x,y),item=G.item;let v=G.verb;
+  if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(P,x,y);return}
+  if(v==='walk')v=h.exit?'exit':h.actor?'talk':'look';
+  const A=h.actor,tx=A?A.x+(P.x<A.x?-22:22):(h.wx!=null?h.wx:h.x+h.w/2),ty=A?A.y+1:(h.wy!=null?h.wy:118);
+  if(!(await walk(P,tx,ty)))return;
+  if(G.busy)return;
+  P.dir=A?(A.x>P.x?1:-1):h.dir||((h.x+h.w/2)>=P.x?1:-1);
+  await cut(()=>act(v,h,item))}
+const vp=$('#view');
+function evPos(e){const r=vp.getBoundingClientRect();return[(e.clientX-r.left)/r.width*VW+G.cam,(e.clientY-r.top)/r.height*VH]}
+vp.addEventListener('mousemove',e=>{if(G.busy||G.scene||!G.room)return;const[x,y]=evPos(e);const h=hsAt(x,y);if(h!==G.hover){G.hover=h;status()}});
+vp.addEventListener('mouseleave',()=>{G.hover=null;status()});
+vp.addEventListener('click',e=>{const[x,y]=evPos(e);clickView(x,y)});
+addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;const k=e.key.toLowerCase();
+  if(k===' '||k==='escape'||k==='.'){if(G.skip){e.preventDefault();G.skip()}}
+  else if(k==='m')$('#mute').click();else if(k==='p')pray();
+  else if(k>='1'&&k<='6'){const b=document.querySelectorAll('#verbs button')[+k-1];if(b)b.click()}});
+/* --- main loop --- */
+let lastT=0,stepT=0;
+function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
+  for(const a of Object.values(ACT)){const w=a.walk;if(!w){a.fr=0;continue}
+    const dx=w.x-a.x,dy=w.y-a.y,d=Math.hypot(dx,dy*2),sp=(a.speed||88)*dt;
+    if(d<=sp){a.x=w.x;a.y=w.y;a.walk=null;a.fr=0;w.res(true)}
+    else{a.x+=dx/d*sp;a.y+=dy/d*sp;a.fr=Math.floor(ts/120)%4;if(a.room===G.room&&ts-stepT>250){stepT=ts;SFX.step()}}}
+  if(G.room&&!G.scene){const t=clamp(P.x-160,0,ART[G.room].w-320);G.cam+=(t-G.cam)*Math.min(1,dt*5);if(Math.abs(t-G.cam)<.5)G.cam=t}}
+function render(ts){G.t=ts;update(ts);cx.setTransform(2,0,0,2,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
+  if(G.scene)G.scene(cx,ts);
+  else if(G.room){const a=ART[G.room],cam=Math.round(G.cam);cx.drawImage(bg(G.room),-cam,0);cx.save();cx.translate(-cam,0);a.draw(cx,ts);
+    Object.values(ACT).filter(o=>o.room===G.room).sort((p,q)=>p.y-q.y)
+      .forEach(o=>person(cx,o.x,o.y,o.look,o.dir,o.fr,o.talk&&Math.floor(ts/130)%2,o.bow,o.talk&&Math.floor(ts/560)%3===1));
+    a.front(cx,ts);cx.restore()}
+  posSpeech();requestAnimationFrame(render)}
+/* ============ GAME: items, combinations, prayer hints ============ */
+Object.assign(ITEMS,{
+  pouch:{name:'tool pouch',look:'My leather tool pouch, tied shut. A tentmaker is never far from his tools.',
+    open:async()=>{await say(P,'I untie the pouch. My awl, just where it belongs.');delItem('pouch');addItem('awl');F.gotAwl=1}},
+  awl:{name:'awl',look:'A stout awl for piercing goat-hair cloth and leather. It has stitched more tents than I can count.'},
+  thread:{name:'waxed thread',look:'Strong linen thread, waxed against the weather.'},
+  knife:{name:"tentmaker's knife",look:'A half-moon blade for cutting cloth and leather. A tool for making, not for harming.'},
+  cloth:{name:'goat-hair cloth',look:'The dark goat-hair cloth of Cilicia, my home province. Tough enough for any tent.'},
+  patch:{name:'cloth patch',look:'A square of goat-hair cloth, cut to cover a tear.'},
+  strips:{name:'cloth strips',look:'Long strips of goat-hair cloth. Braided, they would be as strong as rope.'},
+  rope:{name:'short rope',look:'Good rope, but far too short to reach from a window in the wall to the ground.'},
+  longrope:{name:'long rope',look:'Rope spliced to a braided goat-hair cord. Long enough now, and every knot is sound.'},
+  basket:{name:'large basket',look:'A big provision basket of woven reeds. The carrying loops are worn nearly through.'},
+  strongbasket:{name:'reinforced basket',look:"Leather straps cradle the basket from rim to rim. It will bear a man's weight."},
+  straps:{name:'leather straps',look:'Old harness straps. Worn, but the leather is thick and sound.'},
+  skin:{name:'waterskin',look:'My waterskin. Empty.'},
+  skinfull:{name:'full waterskin',look:'My waterskin, heavy with cool well water.'}});
+async function reinforce(){
+  if(!has('straps'))return say(P,'Thread alone will not hold a man. The basket needs strong bands beneath it. Leather, perhaps.');
+  if(!has('awl'))return say(P,'I need my awl to pierce the leather.');
+  if(!has('thread'))return say(P,'I have nothing to stitch with.');
+  SFX.sew();await say(P,'Two straps under the base, crossed, and stitched up each side to the rim...');SFX.sew();await wait(700);
+  delItem('basket');delItem('straps');addItem('strongbasket',1);F.strong=1;SFX.good();
+  await say(P,'There. It would carry a full load of grain. Or one tentmaker.')}
+const COMBO={
+  'cloth+knife':async()=>{SFX.cut();await say(P,'Following the weave... one square patch, and the rest in long strips.');
+    delItem('cloth');addItem('patch',1);addItem('strips');F.cutCloth=1},
+  'rope+strips':async()=>{SFX.sew();await say(P,'I braid the strips three-fold into a cord, then splice it to the rope.');
+    delItem('rope');delItem('strips');addItem('longrope',1);F.longRope=1;SFX.good();
+    await say(P,'A threefold cord is not quickly torn apart. Now it will reach the ground.')},
+  'awl+basket':reinforce,'basket+straps':reinforce,'basket+thread':reinforce,
+  'awl+thread':()=>say(P,'Threaded and ready. Now, what needs stitching?'),
+  'awl+straps':()=>say(P,'The straps must be sewn onto something that needs their strength.'),
+  'straps+thread':()=>say(P,'The straps must be sewn onto something that needs their strength.'),
+  'knife+rope':()=>say(P,'Cut it? It is too short already.'),
+  'awl+patch':()=>say(P,'A patch needs a tear to cover.'),'patch+thread':()=>say(P,'A patch needs a tear to cover.'),
+  'awl+cloth':()=>say(P,'The cloth must be cut to shape before any stitching.'),
+  'cloth+thread':()=>say(P,'The cloth must be cut to shape before any stitching.'),
+  'cloth+rope':()=>say(P,'The cloth is too broad to join to a rope. It would need to be cut into strips.'),
+  'knife+strips':()=>say(P,'They are narrow enough.'),'knife+patch':()=>say(P,'It is the right size already.'),
+  'basket+rope':()=>say(P,'Neither the rope nor the basket is ready for that yet.'),
+  'basket+longrope':()=>say(P,'The rope is ready. The basket is not: its loops would tear away.'),
+  'longrope+strongbasket':()=>say(P,'I will join them at the window, once the rope is anchored.'),
+  'rope+strongbasket':()=>say(P,'The rope is still far too short.'),
+  'knife+longrope':()=>say(P,'After all that work? No.')};
+async function combine(a,b){const c=COMBO[[a,b].sort().join('+')];if(c)return c();SFX.nope();return say(P,pick(NOPE))}
+/* --- "Pray to Jehovah": a pause for calm, then a context-sensitive thought. Never changes the game state. --- */
+const PRAYERS=['Paul bows his head and quietly asks Jehovah for wisdom and a calm heart.',
+  'Paul pauses, and in prayer throws his anxiety on Jehovah.','In the stillness, Paul asks Jehovah to help him think clearly.'];
+function hint(){
+  if(!F.gotAwl)return['pouch',['A craftsman should know what he carries. My own tools are close at hand.','My tool pouch is tied shut. I should open it.']];
+  const m=[];if(!F.gotKnife||!F.gotCloth)m.push('the workbench');if(!F.gotThread)m.push('the shelf');if(!F.gotRope)m.push('the pegs on the wall');if(!F.gotBasket)m.push('the corner by the bench');
+  if(m.length)return['gather',["Eliab said to take what I need. A tentmaker's eye should miss nothing in his workshop: blade, cloth, thread, rope, basket.",
+    'Something useful still waits in the workshop. I should look to '+m.join(', and ')+'.']];
+  if(!F.cutCloth)return['cut',['Whole cloth serves no one. What does a tentmaker do first with a bolt of cloth?','My knife can cut the goat-hair cloth into useful pieces.']];
+  if(!F.longRope)return['braid',['The rope is too short, yet I hold the makings of more. Strands woven together are stronger than one.','I can braid the cloth strips and splice them onto the short rope.']];
+  if(!F.awning)return F.metZakkai?['mend',["The merchant's trouble is one my own hands know how to mend. Kindness can open a way where force cannot.",'His torn awning needs a patch, thread, and my awl.']]
+    :['street',['The way to the wall is watched. Yet not everyone in the street is an opposer. A neighbor in need may be close by.','I should go out and speak with the merchant at his stall.']];
+  if(!F.strong)return['straps',['The basket must not fail. What I was given in thanks is strong, and my tools can join strong things together.','I can stitch the leather straps onto the basket with awl and thread.']];
+  if(!F.inHouse)return['alley',['The soldier guards the alley, but he cannot watch what he cannot see. I need not confront him.','The hung awning shadows the alley mouth. I can slip behind it toward the wall quarter.']];
+  if(!F.lampOut)return['lamp',['A window toward freedom can also be a beacon to watchmen. What here would betray us in the dark?','The lamp should be put out before the shutters are opened.']];
+  if(!F.shutters)return['shut',['The way out is before me. It is only closed.','Now that the room is dark, I can open the shutters.']];
+  if(!F.ropeTied)return['beam',['A rope is only as sure as what holds it. Something in this room has borne weight for generations.','I should tie the long rope to the roof beam above the window.']];
+  if(!F.basketOn)return['hang',['All is nearly ready. The basket and the rope must become one.','I should fasten the reinforced basket to the rope at the window.']];
+  return['end',['Jehovah has provided helpers and a way out. It is time to trust, and go.']]}
+function pray(){if(G.busy||G.scene||!G.room)return;audioInit();
+  cut(async()=>{G.prays++;const d=$('#dim'),m=AU.mus;d.style.opacity=.55;P.bow=true;SFX.pray();
+    if(m)m.gain.setTargetAtTime(.12,now(),.3);
+    await wait(900);
+    await say(null,G.prays===1?PRAYERS[0]+' (James 1:5)':pick(PRAYERS),{dur:4200,color:'#cfe2ff'});
+    await wait(500);P.bow=false;d.style.opacity=0;if(m)m.gain.setTargetAtTime(.55,now(),.8);
+    await wait(600);
+    const[k,ls]=hint(),n=G.hintAt[k]=(G.hintAt[k]||0)+1;
+    await say(P,ls[Math.min(n,ls.length)-1],{thought:1,color:'#cfe2ff'})})}
+/* ============ GAME: rooms, hotspots, characters ============ */
+const take=(flag,item,line)=>async()=>{F[flag]=1;addItem(item);await say(P,line)};
+const E=ACT.eliab,Z=ACT.zakkai,GD=ACT.guard,N=ACT.naomi,J=ACT.jesse;
+/* ---------- Workshop ---------- */
+ROOMS.workshop={walk:[22,300,112,138],mood:'calm',hs:[
+  {name:'door to the street',x:10,y:36,w:34,h:70,wx:30,wy:113,dir:-1,look:'The door to the street. Beyond it, the city is being watched.',exit:()=>go('street',46,114,1)},
+  {name:'tent panel on the frame',x:54,y:48,w:63,h:58,look:'A tent panel stretched for seaming. Eliab lets me work here to earn my bread.',pickup:'That panel is promised to a customer. There is a spare bolt on the bench.'},
+  {name:'high window',x:70,y:24,w:22,h:18,look:'Night has fallen over Damascus. Somewhere out there, men are watching the gates for me.'},
+  {name:'shelf',x:128,y:30,w:60,h:18,wx:150,look:'Jars of dye and beeswax.',pickup:'I have no use for dye tonight.'},
+  {name:'spool of thread',x:156,y:35,w:12,h:10,wx:160,vis:()=>!F.gotThread,look:'A spool of waxed linen thread.',pickup:take('gotThread','thread','Waxed thread. Good and strong.')},
+  {name:'oil lamp',x:143,y:58,w:16,h:48,wx:134,dir:1,look:'A small clay lamp. Its light is enough to work by.',pickup:'Eliab needs its light, and I do not.',use:'It burns well enough.'},
+  {name:'stool',x:118,y:106,w:18,h:14,look:'A work stool. I have spent many hours on it, needle in hand.'},
+  {name:'workbench',x:204,y:80,w:82,h:27,wy:113,look:'A scarred old workbench. Honest work has been done here.'},
+  {name:"tentmaker's knife",x:211,y:73,w:16,h:10,wx:220,wy:113,vis:()=>!F.gotKnife,look:'A half-moon knife for cutting cloth and leather.',pickup:take('gotKnife','knife','Sharp. A good tool, for good work.')},
+  {name:'bolt of goat-hair cloth',x:234,y:70,w:38,h:13,wx:252,wy:113,vis:()=>!F.gotCloth,look:'Dark goat-hair cloth, the kind woven in Cilicia, my home province. Tents are made of it.',pickup:take('gotCloth','cloth','Heavy and tough. This I know how to work.')},
+  {name:'coil of rope',x:215,y:38,w:16,h:20,wx:224,wy:113,vis:()=>!F.gotRope,look:'A coil of rope on a peg. Not a long one.',pickup:take('gotRope','rope','Sound rope. But much too short to reach the foot of the city wall.')},
+  {name:'mallet',x:245,y:38,w:13,h:20,wx:252,wy:113,look:'A mallet for driving tent pegs. I will not need it tonight.',pickup:'Too heavy to carry without a reason.'},
+  {name:'waterskin',x:272,y:40,w:14,h:20,wx:274,wy:113,vis:()=>!F.gotSkin,look:'My waterskin, hanging where I left it. Empty.',pickup:take('gotSkin','skin','Empty. Still, a traveler should not leave it behind.')},
+  {name:'large basket',x:288,y:80,w:30,h:32,wx:284,wy:114,dir:1,vis:()=>!F.gotBasket,look:'A large provision basket, big enough to hold a man. But its carrying loops are frayed.',
+    pickup:take('gotBasket','basket','I can carry it. But those worn loops must be made strong before I trust my life to them.'),
+    useWith:async()=>{await say(P,'I had better pick it up and look it over first.')}}]};
+E.hs={name:'Eliab',actor:E,look:'Eliab, a basket weaver and a faithful brother. He has risked much to shelter me.',
+  give:async()=>{await say(E,'Keep it, brother. You will need it more than I.')},
+  talk:()=>talkTree([
+    {q:'Tell me the plan once more.',a:async()=>{await say(E,"Sister Naomi's house is built on the city wall. Her upper window looks out over open country.");
+      await say(E,'We lower you from it in a basket, by night. The gates will never see you.')}},
+    {q:'What will we need?',a:async()=>{await say(E,'A basket that will not fail, and a rope long enough to reach the ground. Mine are neither. Not yet.');
+      await say(E,'But you are a tentmaker, Saul. Take anything here that helps.')}},
+    {q:'What of the soldiers?',a:async()=>{await say(E,'The governor under King Aretas has men at every gate. One stands in our own street, by the alley to the wall quarter.');
+      await say(E,'Do not quarrel with him. A mild answer will serve better than a bold one.')}},
+    {q:'Why do you risk so much for me?',once:1,a:async()=>{await say(E,'You came to Damascus to bind us, and the Lord turned you around. How could we not help our brother?');
+      await say(P,'I do not deserve such kindness.');await say(E,'None of us do. That is why it is called undeserved kindness.')}},
+    {q:'I must get to work.',bye:1,a:async()=>{await say(E,"Jehovah be with you. I will gather the brothers and meet you at Naomi's.")}}])};
+/* ---------- Street ---------- */
+const MEND=['awl','thread','patch'];
+async function mend(it){if(!MEND.includes(it))return false;
+  if(!has('patch'))return say(P,has('cloth')?'The tear needs a patch. I must cut one from my goat-hair cloth first.':'The tear is too wide to draw closed. It needs a patch of strong cloth.');
+  if(!has('awl'))return say(P,'I cannot pierce this heavy cloth without my awl.');
+  if(!has('thread'))return say(P,'I have an awl, but nothing to stitch with.');
+  await say(P,'Hold the edge taut for me, friend.');SFX.sew();await wait(900);SFX.sew();
+  await say(P,'A patch beneath, a flat seam over... as I learned it in Tarsus.');
+  delItem('patch');SFX.good();await say(Z,'Stronger than new! Help me hang it across to the wall.');
+  await fade(1,220);F.awning=1;await wait(300);await fade(0,220);
+  await say(Z,'I have no coin tonight. But take these old harness straps. Good thick leather.');addItem('straps');
+  await say(P,'Thank you. They may be exactly what I need.');
+  await say(P,'The awning throws the alley mouth into shadow. From his brazier, the soldier cannot see it.',{thought:1,color:'#cfe2ff'})}
+ROOMS.street={walk:[16,466,112,138],mood:'tense',hs:[
+  {name:"Eliab's door",x:28,y:42,w:32,h:60,wx:44,wy:113,look:"The door of Eliab's workshop.",exit:()=>go('workshop',34,116,1)},
+  {name:'lit window',x:82,y:52,w:20,h:18,look:"Lamplight from Eliab's workshop. A small, brave light."},
+  {name:'city gate',x:178,y:28,w:62,h:50,wx:208,wy:113,look:['The city gate. Torches burn there, and men keep watch day and night.','I will not be leaving Damascus by that road.']},
+  {name:'well',x:170,y:66,w:38,h:44,wx:188,wy:114,look:'The neighborhood well. The water is cold and sweet.',use:'I would need something to carry the water in.',pickup:'A well stays where it is dug.',
+    useWith:async it=>{if(it==='skin'){SFX.splash();F.water=1;delItem('skin');addItem('skinfull',1);await say(P,'I lower the bucket and fill my waterskin.')}
+      else if(it==='skinfull')await say(P,'It is already full.');else return false}},
+  {name:'brazier',x:239,y:92,w:17,h:20,wx:226,dir:1,look:"The soldier's brazier. A small comfort on a long, cold watch.",pickup:'It is hot. And it is not mine.',use:'I am warm enough from walking.'},
+  {name:"merchant's stall",x:346,y:78,w:56,h:30,wx:372,wy:113,look:'Bundles of dyed wool in purple, blue and saffron. The night dew would ruin them.',pickup:'That would be stealing.'},
+  {name:'torn awning',x:344,y:50,w:60,h:26,wx:366,wy:113,vis:()=>!F.awning,look:'The awning is split from pole to hem. It hangs in tatters from the frame.',
+    pickup:'It is not mine to take. But perhaps it is mine to mend.',use:'It needs mending: a patch of cloth, thread, and an awl to drive the stitches.',useWith:mend},
+  {name:'mended awning',x:404,y:50,w:56,h:64,wx:392,wy:114,vis:()=>F.awning,look:'My patch holds well. The awning hangs like a dark wall between the stall and the alley.',pickup:'The merchant needs it. And tonight, so do I.'},
+  {name:'alley to the wall quarter',x:425,y:40,w:30,h:72,get wx(){return F.awning?440:398},wy:112,dir:1,look:"A narrow alley running toward the city wall. Naomi's house lies that way.",
+    exit:async()=>{if(F.awning){await say(P,'Behind the awning the alley lies in shadow. Quietly, now...',{thought:1,color:'#cfe2ff'});await walk(P,440,112);return go('house',52,118,1)}
+      SFX.alert();GD.dir=1;await say(GD,'Halt! The wall quarter is closed tonight. Orders of the ethnarch.');
+      await say(P,'As you say. Peace to you.');await walk(P,372,122);P.dir=1;
+      await say(P,'He watches that alley closely. I must pass unseen, and without a quarrel.',{thought:1,color:'#cfe2ff'})}}]};
+GD.hs={name:'the guard',actor:GD,look:'A soldier of the ethnarch, posted to watch the alley. He looks cold, tired and thirsty.',
+  talk:async()=>{if(F.kind)return say(GD,'Move along, tentmaker. ...And thank you for the water.');
+    await say(P,'Peace to you. A cold night for a long watch.');
+    await say(GD,'Cold, and dry. My waterskin was empty by the second watch, and I may not leave my post.');
+    await say(GD,'Now move along. No one enters the wall quarter tonight.')},
+  give:async it=>{if(it==='skin')return say(P,'An empty waterskin would be a poor gift.');if(it!=='skinfull')return false;
+    await say(P,'You are thirsty. Here. It is fresh from the well.');SFX.splash();await wait(700);
+    await say(GD,'...Most in this city curse us as they pass. Why would you do this?');
+    await say(P,'If a man is thirsty, I give him something to drink. That is all.');
+    await say(GD,'Hm. Then you have my thanks, stranger. I still cannot let you into the alley.');
+    F.kind=1;F.water=0;delItem('skinfull');addItem('skin',1)}};
+Z.hs={name:'the merchant',actor:Z,look:'A wool merchant, fretting over his stall.',
+  give:async it=>{if(!MEND.includes(it))return false;await say(P,'He does not need my tools. His awning needs my hands.')},
+  talk:async()=>{if(F.awning)return say(Z,'A stitch like that will outlast the cloth! Go in peace, tentmaker.');
+    if(!F.metZakkai){F.metZakkai=1;await say(P,'Peace to you. You are at your stall late.');
+      await say(Z,'Peace? The wind split my awning from pole to hem today!');
+      await say(Z,'If I cannot hang it across to that wall, the night dew will ruin my dyed wool.');
+      await say(P,'I am a tentmaker by trade. Perhaps I can be of use.');
+      await say(Z,'Truly? I have no coin tonight... but mend it, and I will find some way to repay you.')}
+    await talkTree([
+      {q:'What does the awning need?',a:()=>say(Z,'A patch of strong cloth over the tear, and someone who sews straighter than I do.')},
+      {q:'What do you know of the soldier?',a:async()=>{await say(Z,'Posted since sundown to watch the alley. He stops everyone who goes near it.');
+        await say(Z,'He grumbles that his waterskin is empty. I keep my distance.')}},
+      {q:'Peace to you.',bye:1}])}};
+/* ---------- Naomi's upper room ---------- */
+async function hangBasket(it){
+  if(it==='basket')return say(P,'With those frayed loops? It would drop me at the foot of the wall. It must be reinforced first.');
+  if(!F.ropeTied)return say(P,'First the rope must be anchored to something that will not give way.');
+  SFX.creak();delItem('strongbasket');F.basketOn=1;await say(P,'The rope through both straps, and a double knot.');return checkFinal()}
+async function shutters(){if(F.shutters)return say(P,'They are already open.');
+  if(!F.lampOut){SFX.alert();await say(N,'Wait, brother! Not with the lamp burning.');
+    return say(N,'A lit window high on the wall? The watchmen would see it at once.')}
+  SFX.creak();F.shutters=1;await say(P,'Slowly... quietly. The night air is cold.');return checkFinal()}
+async function checkFinal(){if(F.ropeTied&&F.basketOn&&F.shutters&&F.lampOut)return finale()}
+ROOMS.house={walk:[24,300,112,138],mood:'calm',
+  enter:async()=>{if(F.inHouse)return;F.inHouse=1;await say(N,'Brother Saul! Come in, quickly. Jesse told me to expect you.');
+    await say(N,'There is the window. Everything beyond it is outside the city.');
+    await say(N,'The rope must be made fast and the basket ready before the others come.')},
+  hs:[
+  {name:'stairs to the alley',x:12,y:38,w:32,h:68,wx:32,wy:113,dir:-1,look:'Steps leading down to the alley.',exit:()=>go('street',440,114,-1)},
+  {name:'sleeping mat',x:54,y:98,w:30,h:12,look:'A rolled sleeping mat. I will not be sleeping tonight.'},
+  {name:'oil lamp',x:88,y:46,w:22,h:24,wx:100,wy:113,look:()=>say(P,F.lampOut?'The lamp is out. Moonlight will have to do.':'A lamp burning in a wall niche. Its light fills the room, and would shine from any open window.'),
+    pickup:'Naomi will need it after I am gone.',
+    use:async()=>{if(F.lampOut)return say(P,'Better to leave it dark.');SFX.snuff();F.lampOut=1;await say(P,'I pinch out the wick. Darkness. But our eyes will soon adjust.')}},
+  {name:'table',x:116,y:86,w:48,h:24,look:'Bread and a cup, set out for a guest. Naomi has thought of everything.',pickup:'I have no appetite now. On the road I may regret that.'},
+  {get name(){return F.shutters?'window':'shutters'},x:187,y:32,w:58,h:56,wx:216,wy:113,
+    look:()=>say(P,F.shutters?'Open country, silver under the moon. And a long way down.':'Stout wooden shutters, barred from inside. Beyond them is the outer face of the city wall.'),
+    open:shutters,use:shutters,
+    useWith:async it=>{if(it==='basket'||it==='strongbasket')return hangBasket(it);
+      if(it==='rope'||it==='longrope')return say(P,'The window frame is only wood and plaster. The rope needs a stronger anchor.');return false}},
+  {name:'rope',x:210,y:28,w:12,h:58,wx:216,wy:113,vis:()=>F.ropeTied&&!F.basketOn,look:'Anchored to the beam. Now it needs something to carry me.',
+    useWith:async it=>(it==='basket'||it==='strongbasket')?hangBasket(it):false},
+  {name:'roof beam',x:176,y:16,w:80,h:14,wx:216,wy:113,look:'A thick cedar beam set deep into the stone. It has held this roof up for generations.',use:'I have no reason to hang from it myself.',
+    useWith:async it=>{if(it==='rope')return say(P,'This rope would leave me dangling halfway down the wall. It must be much longer.');
+      if(it!=='longrope')return false;
+      SFX.creak();delItem('longrope');F.ropeTied=1;await say(P,'Twice around the beam, and a hitch that tightens under load.');await say(P,'It will hold.');return checkFinal()}},
+  {name:'storage jars',x:276,y:92,w:36,h:20,look:'Oil, grain and lentils. A modest household, generously shared.'}]};
+N.hs={name:'Naomi',actor:N,look:'Sister Naomi. A widow who has opened her home, and risked it, for the congregation.',
+  give:async()=>{await say(N,'No, brother. Keep what you have for the road.')},
+  talk:()=>talkTree([
+    {q:'Is it safe here?',a:async()=>{await say(N,'As safe as anywhere in Damascus tonight. The watchmen walk the wall above, but they look outward, toward the roads.');
+      await say(N,'Only a light would draw their eyes down here.')}},
+    {q:'How far is it to the ground?',a:()=>say(N,'Far enough that I do not like to look. A short rope will not do, brother.')},
+    {q:'Where are the brothers?',a:()=>say(N,'Eliab and young Jesse are coming by the rooftops. They will be here when the basket is ready.')},
+    {q:'Thank you for opening your home.',once:1,a:async()=>{await say(N,'You once came to this city to take us away in bonds. Now you are my brother.');await say(N,'Jehovah does such things.')}},
+    {q:'I will make ready.',bye:1}])};
+function setup(){place(E,'workshop',196,118,-1);place(GD,'street',270,118,1);place(Z,'street',328,116,-1);place(N,'house',172,120,-1);
+  G.inv=['pouch'];drawInv()}
+/* ============ SCENES: title, intro, finale, chapter complete ============ */
+const ov=$('#overlay');
+function tween(ms,fn){return new Promise(res=>{const t0=performance.now();(function f(){const k=Math.min(1,(performance.now()-t0)/ms);fn(k);k<1?requestAnimationFrame(f):res()})()})}
+function wallScene(g,t){g.drawImage(bg('wall'),0,0);const S=G.end||{};
+  for(let i=0;i<6;i++)if((Math.floor(t/500)+i)%4===0)R(g,160+i*27,12+(i*17)%40,1,1,'#0e1233');
+  if(S.heads){R(g,99,35,3,4,'#b88458');R(g,99,34,3,1,'#a0a0a0');R(g,108,36,3,3,'#c49268');R(g,108,35,3,1,'#3a2414')}
+  if(S.by!=null){line(g,105,40,105,S.by-22,'#b89a5a');miniBasket(g,105,S.by,S.rider)}
+  if(S.px!=null){const x=Math.round(S.px),y=Math.round(S.py),f=Math.floor(t/160)%2;
+    R(g,x,y-9,3,3,'#c08a5c');R(g,x-1,y-10,4,1,'#2a1a12');R(g,x-1,y-6,5,4,'#6a4a30');R(g,x+(f?0:1),y-2,1,2,'#c08a5c');R(g,x+(f?2:1),y-2,1,2,'#c08a5c')}}
+function title(){G.scene=wallScene;G.end={};lock(true);
+  ov.className='on';ov.innerHTML='<h1>PAUL OF TARSUS</h1><h2>THE ROMAN ROAD RUNNER</h2>'+
+    '<p>Chapter One &middot; Escape from Damascus</p>'+
+    '<p class="small">A point-and-click adventure based on Acts 9:23-25 and 2 Corinthians 11:32, 33</p>'+
+    '<p class="go">Click to begin</p><p class="small">Returning? Use ENTER CODE, top right.</p>';
+  ov.onclick=start;codeBtn()}
+async function start(){ov.onclick=null;ov.className='';audioInit();SFX.good();G.started=performance.now();
+  await cut(async()=>{await wait(500);
+    await narr('Damascus, about 36 C.E.',{dur:2800});
+    await narr('Saul of Tarsus, later known as the apostle Paul, once came to this city to arrest the disciples of Jesus.');
+    await narr('Now he himself preaches in the synagogues that Jesus is the Son of God.');
+    await narr('Opposers have plotted to do away with him. The governor under King Aretas guards the city, and the gates are watched day and night.');
+    await narr('But tonight, the brothers have a plan.',{dur:2800});
+    await fade(1,500);G.scene=null;enterRoom('workshop',58,118,1);await fade(0,500);
+    await say(E,'Brother Saul! Come away from the door.');await walk(P,152,122);
+    await say(E,"The gates are watched. But Sister Naomi's house stands on the city wall itself.");
+    await say(E,'Tonight we lower you from her window. We need a basket that will hold, and a rope that will reach.');
+    await say(E,'Mine will do neither as they are. But you are the tentmaker. Take whatever you need.');
+    await say(P,'Then let us not be anxious. Jehovah gives wisdom, and he has given me a trade.')},true)}
+async function finale(){AU.mood='calm';await wait(500);
+  place(E,'house',30,116,1);place(J,'house',26,120,1);SFX.door();
+  await Promise.all([walk(E,84,122),walk(J,58,126)]);P.dir=-1;N.dir=-1;
+  await say(E,'The rooftops are clear. It is time, brother.');
+  await say(J,'The watch on the wall has just passed. We have until they come around again.');
+  N.dir=1;await say(N,'Take this bread for the road. Jerusalem is many days away.');N.dir=-1;
+  await say(P,'Brothers, sister: you have risked everything for me. Before I go, let us pray.');
+  const d=$('#dim');d.style.opacity=.5;[P,E,J,N].forEach(a=>a.bow=true);SFX.pray();await wait(900);
+  await narr('Together they thank Jehovah, and ask him to guide the steps ahead.',{dur:4200,color:'#cfe2ff'});
+  [P,E,J,N].forEach(a=>a.bow=false);d.style.opacity=0;await wait(500);
+  await say(P,'I entered this city through its gate, with letters and proud plans. I leave it through a window, in a basket.');
+  await say(E,'And with more brothers than you came with. Hold tight, Saul. We will not let go.');
+  await walk(P,216,113);await fade(1,600);
+  G.scene=wallScene;G.end={heads:1,by:46,rider:1};codeBtn();AU.mood='hope';await fade(0,600);
+  const creak=setInterval(()=>SFX.creak(),1300);
+  const down=tween(11000,k=>{G.end.by=46+74*(k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2)});
+  await narr('By night the disciples lowered him in a basket through an opening in the city wall. (Acts 9:25)',{dur:6500});
+  await down;clearInterval(creak);await wait(600);
+  G.end.rider=0;G.end.px=112;G.end.py=124;SFX.step();await wait(700);
+  const off=tween(9000,k=>{G.end.px=112+150*k;G.end.py=124+6*Math.sin(k*3)-k*8});
+  await narr("So Paul escaped the governor's hands: not by force, and not by a miracle, but by the courage of his brothers and trust in Jehovah. (2 Corinthians 11:32, 33)",{dur:8000});
+  await off;G.end.px=null;G.end.heads=0;
+  await narr('The road to Jerusalem lay ahead, and beyond it, many more.',{dur:3800});
+  SFX.win();const s=Math.round((performance.now()-G.started)/1000);
+  ov.className='on end';ov.innerHTML='<h2>CHAPTER COMPLETE</h2><h1 style="font-size:calc(var(--s)*12px)">Escape from Damascus</h1>'+
+    '<p>Paul used the skill of his hands, accepted the help of his brothers, and relied on Jehovah.</p>'+
+    `<p>Time: ${Math.floor(s/60)}m ${s%60}s &middot; Prayers for wisdom: ${G.prays}`+(F.kind?' &middot; Kindness shown to an opposer':'')+'</p>'+
+    '<p class="small">Based on Acts 9:23-25 and 2 Corinthians 11:32, 33. Supporting characters and dialogue are imaginative; the event is from the Scriptures.</p>'+
+    '<p class="go">Click to play again</p>';
+  await wait(1500);ov.onclick=()=>location.reload();
+  await new Promise(()=>{})}
+/* ============ SAFE-POINT CODES: the whole game state packed into six letters and numbers ============ */
+const SAVE_FLAGS=['gotAwl','gotThread','gotKnife','gotCloth','gotRope','gotSkin','gotBasket','cutCloth','longRope','metZakkai','kind',
+  'awning','strong','inHouse','lampOut','shutters','ropeTied','basketOn','water'];
+const RM=['workshop','street','house'],A32='0123456789ABCDEFGHJKMNPQRSTVWXYZ',cb=$('#codebox');
+const chk=b=>{let h=Math.imul(b^0x5A17,0x9E3779B1)>>>0;h^=h>>>13;return h>>>4&511};
+const msk=c=>Math.imul(c+1,0x2545F)&0x1FFFFF;
+function stateBits(){let b=0;SAVE_FLAGS.forEach((k,i)=>{if(F[k])b|=1<<i});return b|Math.max(0,RM.indexOf(G.room))<<19}
+function makeCode(){const b=stateBits(),c=chk(b),v=(b^msk(c))*512+c;let s='';
+  for(let i=5;i>=0;i--)s+=A32[Math.floor(v/Math.pow(32,i))%32];return s.slice(0,3)+'-'+s.slice(3)}
+function decode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1').replace(/U/g,'V').replace(/[^0-9A-Z]/g,'');
+  if(t.length!==6)return null;let v=0;for(const ch of t){const i=A32.indexOf(ch);if(i<0)return null;v=v*32+i}
+  const c=v%512,b=Math.floor(v/512)^msk(c);return chk(b)!==c||(b>>19&3)>2||b>>21?null:b}
+function applyState(b){for(const k in F)delete F[k];SAVE_FLAGS.forEach((k,i)=>{if(b>>i&1)F[k]=1});
+  const inv=[],add=(c,id)=>{if(c)inv.push(id)};
+  add(!F.gotAwl,'pouch');add(F.gotAwl,'awl');add(F.gotThread,'thread');add(F.gotKnife,'knife');
+  add(F.gotCloth&&!F.cutCloth,'cloth');add(F.cutCloth&&!F.awning,'patch');add(F.cutCloth&&!F.longRope,'strips');
+  add(F.gotRope&&!F.longRope,'rope');add(F.longRope&&!F.ropeTied,'longrope');
+  add(F.gotBasket&&!F.strong,'basket');add(F.awning&&!F.strong,'straps');add(F.strong&&!F.basketOn,'strongbasket');
+  add(F.gotSkin,F.water?'skinfull':'skin');
+  setup();G.inv=inv;J.room=null;Object.values(ACT).forEach(a=>{a.bow=a.talk=false});
+  ov.className='';ov.onclick=null;G.scene=null;G.end={};G.item=null;G.verb='walk';G.hover=null;$('#dim').style.opacity=0;
+  const room=RM[b>>19&3];enterRoom(room,...{workshop:[60,118,1],street:[46,114,1],house:[52,118,1]}[room]);
+  if(!G.started)G.started=performance.now();
+  G.busy=false;lock(false);syncVerbs();drawInv();status();codeBtn()}
+function codeBtn(){$('#code').textContent=G.room&&!G.scene?'CODE '+makeCode():'ENTER CODE'}
+function closeCode(){cb.classList.remove('on');G.busy=cb.was;if(!G.busy)lock(false);status()}
+function tryCode(){const b=decode($('#codein').value);
+  if(b==null){SFX.nope();$('#codemsg').textContent='That code is not valid. Please check each letter and number.';return}
+  cb.classList.remove('on');SFX.good();applyState(b)}
+function openCode(){audioInit();if(cb.classList.contains('on'))return closeCode();
+  const can=G.room&&!G.scene&&!G.busy;if(!can&&!ov.classList.contains('on')){SFX.nope();return}
+  SFX.click();cb.was=G.busy;G.busy=true;lock(true);status();
+  cb.innerHTML=(can?'<h2>SAFE POINT</h2><p>Your code for this exact point in the story:</p><div class="big">'+makeCode()+
+      '</div><p>Write it down. Enter it here, or from the title screen, to return to this point.</p>'
+      :'<h2>ENTER CODE</h2><p>Type a code from an earlier game to continue from that point.</p>')+
+    '<div class="row"><input id="codein" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXX-XXX">'+
+    '<button id="codego" type="button">GO</button></div><p id="codemsg" class="small">&nbsp;</p>'+
+    '<button id="codex" type="button">'+(can?'Back to the game':'Back')+'</button>';
+  cb.classList.add('on');$('#codego').onclick=tryCode;$('#codex').onclick=closeCode;
+  $('#codein').onkeydown=e=>{if(e.key==='Enter')tryCode();else if(e.key==='Escape')closeCode()};if(!can)$('#codein').focus()}
+$('#code').onclick=e=>{e.stopPropagation();openCode()};cb.onclick=e=>e.stopPropagation();
+buildVerbs();setup();title();requestAnimationFrame(render);
+</script>
+</body>
+</html>
