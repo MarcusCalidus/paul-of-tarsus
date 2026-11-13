@@ -110,4 +110,6 @@ Pass stop names to save screenshots to `tools/out/` instead, for example `node t
 
 Design, code, art and music by Marco Warm, built with Claude.
 
-Copyright © 2026 Marco Warm.
+## License
+
+Copyright © 2026 Marco Warm. Released under the [MIT License](LICENSE).
