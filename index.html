@@ -19,13 +19,13 @@ body{display:flex;align-items:center;justify-content:center}
 #top button:hover{color:var(--hi);border-color:var(--gold)}
 #view{position:relative;width:calc(var(--s)*320px);height:calc(var(--s)*144px);overflow:hidden;cursor:crosshair}
 #screen{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
-#speech{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+#speech{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3}
 .line{position:absolute;transform:translateX(-50%);text-align:center;width:max-content;
   max-width:calc(var(--s)*200px);font-size:calc(var(--s)*6.2px);line-height:1.25;
   text-shadow:calc(var(--s)*1px) 0 #000,calc(var(--s)*-1px) 0 #000,0 calc(var(--s)*1px) #000,0 calc(var(--s)*-1px) #000,
    calc(var(--s)*1px) calc(var(--s)*1px) #000,calc(var(--s)*-1px) calc(var(--s)*1px) #000,calc(var(--s)*1px) calc(var(--s)*-1px) #000,calc(var(--s)*-1px) calc(var(--s)*-1px) #000}
-#dim{position:absolute;inset:0;background:#05030c;opacity:0;pointer-events:none;transition:opacity .9s}
-#overlay{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+#dim{position:absolute;z-index:2;inset:0;background:#05030c;opacity:0;pointer-events:none;transition:opacity .9s}
+#overlay{position:absolute;z-index:4;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;padding:calc(var(--s)*8px);cursor:pointer}
 #overlay.on{display:flex}
 #overlay h1{margin:0;font-size:calc(var(--s)*17px);line-height:1;color:var(--gold);letter-spacing:.04em;
@@ -36,6 +36,9 @@ body{display:flex;align-items:center;justify-content:center}
   max-width:calc(var(--s)*270px);text-shadow:calc(var(--s)*1px) calc(var(--s)*1px) #000}
 #overlay .small{font-size:calc(var(--s)*4.4px);color:#a99cc0}
 #overlay .go{color:var(--hi);animation:bl 1.1s steps(2) infinite}
+#overlay .go,#overlay .pick{font-size:calc(var(--s)*6.2px);margin:calc(var(--s)*2.5px) 0}
+#overlay .pick{color:var(--gold)}
+#overlay .pick:hover{color:#fff}
 #overlay.end{background:rgba(6,4,14,.82)}
 @keyframes bl{50%{opacity:.25}}
 #status{height:calc(var(--s)*11px);line-height:calc(var(--s)*11px);text-align:center;
@@ -61,7 +64,7 @@ body{display:flex;align-items:center;justify-content:center}
 #choices button:hover{color:var(--hi);background:#2a1d49}
 #panel.locked #verbs,#panel.locked #inv{opacity:.35;pointer-events:none}
 #top button{margin-left:calc(var(--s)*2px)}
-#codebox{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--s)*3px);
+#codebox{position:absolute;z-index:5;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--s)*3px);
   background:rgba(6,4,14,.92);text-align:center;cursor:default;padding:calc(var(--s)*8px)}
 #codebox.on{display:flex}
 #codebox h2{margin:0;font-size:calc(var(--s)*9px);color:var(--gold);letter-spacing:.2em}
@@ -80,7 +83,7 @@ body{display:flex;align-items:center;justify-content:center}
 </head>
 <body>
 <div id="wrap">
-  <div id="top"><span>PAUL OF TARSUS &middot; ESCAPE FROM DAMASCUS</span><span><button id="code" type="button">ENTER CODE</button><button id="mute" type="button">&#9835; SOUND ON</button></span></div>
+  <div id="top"><span>PAUL OF TARSUS &middot; <span id="chname">ESCAPE FROM DAMASCUS</span></span><span><button id="code" type="button">ENTER CODE</button><button id="mute" type="button">&#9835; SOUND ON</button></span></div>
   <div id="view">
     <canvas id="screen" width="640" height="288"></canvas>
     <div id="speech"></div>
@@ -102,7 +105,7 @@ const VW=320,VH=144;
 const $=s=>document.querySelector(s);
 const cv=$('#screen'),cx=cv.getContext('2d');
 cx.imageSmoothingEnabled=false;
-const G={room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,t:0,scene:null,
+const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,t:0,scene:null,
   hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false};
 const VERBS=[['look','Look at'],['pickup','Pick up'],['use','Use'],['open','Open'],['talk','Talk to'],['give','Give']];
 const VNAME={walk:'Walk to',look:'Look at',pickup:'Pick up',use:'Use',open:'Open',talk:'Talk to',give:'Give'};
@@ -598,7 +601,7 @@ async function combine(a,b){const c=COMBO[[a,b].sort().join('+')];if(c)return c(
 /* --- "Pray to Jehovah": a pause for calm, then a context-sensitive thought. Never changes the game state. --- */
 const PRAYERS=['Paul bows his head and quietly asks Jehovah for wisdom and a calm heart.',
   'Paul pauses, and in prayer throws his anxiety on Jehovah.','In the stillness, Paul asks Jehovah to help him think clearly.'];
-function hint(){
+function hint(){if(G.ch===2)return hint2();
   if(!F.gotAwl)return['pouch',['A craftsman should know what he carries. My own tools are close at hand.','My tool pouch is tied shut. I should open it.']];
   const m=[];if(!F.gotKnife||!F.gotCloth)m.push('the workbench');if(!F.gotThread)m.push('the shelf');if(!F.gotRope)m.push('the pegs on the wall');if(!F.gotBasket)m.push('the corner by the bench');
   if(m.length)return['gather',["Eliab said to take what I need. A tentmaker's eye should miss nothing in his workshop: blade, cloth, thread, rope, basket.",
@@ -765,11 +768,12 @@ function wallScene(g,t){g.drawImage(bg('wall'),0,0);const S=G.end||{};
     R(g,x,y-9,3,3,'#c08a5c');R(g,x-1,y-10,4,1,'#2a1a12');R(g,x-1,y-6,5,4,'#6a4a30');R(g,x+(f?0:1),y-2,1,2,'#c08a5c');R(g,x+(f?2:1),y-2,1,2,'#c08a5c')}}
 function title(){G.scene=wallScene;G.end={};lock(true);
   ov.className='on';ov.innerHTML='<h1>PAUL OF TARSUS</h1><h2>THE ROMAN ROAD RUNNER</h2>'+
-    '<p>Chapter One &middot; Escape from Damascus</p>'+
-    '<p class="small">A point-and-click adventure based on Acts 9:23-25 and 2 Corinthians 11:32, 33</p>'+
-    '<p class="go">Click to begin</p><p class="small">Returning? Use ENTER CODE, top right.</p>';
-  ov.onclick=start;codeBtn()}
-async function start(){ov.onclick=null;ov.className='';audioInit();SFX.good();G.started=performance.now();
+    '<p class="small">A point-and-click adventure based on the book of Acts</p>'+
+    '<p class="go" data-ch="1">&#9656; Chapter One &middot; Escape from Damascus</p>'+
+    '<p class="pick" data-ch="2">&#9656; Chapter Two &middot; A Friend in Jerusalem</p>'+
+    '<p class="small">Click a chapter to begin. Returning? Use ENTER CODE, top right.</p>';
+  ov.onclick=e=>{(e.target.dataset&&e.target.dataset.ch)==='2'?start2():start()};codeBtn()}
+async function start(){ov.onclick=null;ov.className='';audioInit();SFX.good();G.started=performance.now();setChapter(1);
   await cut(async()=>{await wait(500);
     await narr('Damascus, about 36 C.E.',{dur:2800});
     await narr('Saul of Tarsus, later known as the apostle Paul, once came to this city to arrest the disciples of Jesus.');
@@ -810,32 +814,45 @@ async function finale(){AU.mood='calm';await wait(500);
     '<p>Paul used the skill of his hands, accepted the help of his brothers, and relied on Jehovah.</p>'+
     `<p>Time: ${Math.floor(s/60)}m ${s%60}s &middot; Prayers for wisdom: ${G.prays}`+(F.kind?' &middot; Kindness shown to an opposer':'')+'</p>'+
     '<p class="small">Based on Acts 9:23-25 and 2 Corinthians 11:32, 33. Supporting characters and dialogue are imaginative; the event is from the Scriptures.</p>'+
-    '<p class="go">Click to play again</p>';
-  await wait(1500);ov.onclick=()=>location.reload();
+    '<p class="go">Click to continue to Chapter Two</p><p class="small">Chapter Two code: '+codeOf(2,0)+'</p>';
+  await wait(1500);ov.onclick=()=>start2();
   await new Promise(()=>{})}
-/* ============ SAFE-POINT CODES: the whole game state packed into six letters and numbers ============ */
-const SAVE_FLAGS=['gotAwl','gotThread','gotKnife','gotCloth','gotRope','gotSkin','gotBasket','cutCloth','longRope','metZakkai','kind',
-  'awning','strong','inHouse','lampOut','shutters','ropeTied','basketOn','water'];
-const RM=['workshop','street','house'],A32='0123456789ABCDEFGHJKMNPQRSTVWXYZ',cb=$('#codebox');
-const chk=b=>{let h=Math.imul(b^0x5A17,0x9E3779B1)>>>0;h^=h>>>13;return h>>>4&511};
+/* ============ CHAPTERS & SAFE-POINT CODES: chapter and game state packed into letters and numbers ============ */
+const CHAP={
+  1:{name:'ESCAPE FROM DAMASCUS',salt:0x5A17,rooms:['workshop','street','house'],setup,
+    flags:['gotAwl','gotThread','gotKnife','gotCloth','gotRope','gotSkin','gotBasket','cutCloth','longRope','metZakkai','kind',
+      'awning','strong','inHouse','lampOut','shutters','ropeTied','basketOn','water'],
+    ent:{workshop:[60,118,1],street:[46,114,1],house:[52,118,1]},
+    inv(){const inv=[],add=(c,id)=>{if(c)inv.push(id)};
+      add(!F.gotAwl,'pouch');add(F.gotAwl,'awl');add(F.gotThread,'thread');add(F.gotKnife,'knife');
+      add(F.gotCloth&&!F.cutCloth,'cloth');add(F.cutCloth&&!F.awning,'patch');add(F.cutCloth&&!F.longRope,'strips');
+      add(F.gotRope&&!F.longRope,'rope');add(F.longRope&&!F.ropeTied,'longrope');
+      add(F.gotBasket&&!F.strong,'basket');add(F.awning&&!F.strong,'straps');add(F.strong&&!F.basketOn,'strongbasket');
+      add(F.gotSkin,F.water?'skinfull':'skin');return inv}},
+  2:{name:'A FRIEND IN JERUSALEM',salt:0x2B6D,rooms:['jerusalem','upper','harbor'],setup:()=>setup2(),
+    flags:['knocked','metBarn','gotStick','peg','wheelOn','cartFixed','told','metCapt','sailDown','gotPatch','gotTwine'],
+    ent:{jerusalem:[40,120,1],upper:[56,120,1],harbor:[40,122,1]},
+    inv(room){const inv=['awl','thread','knife'],add=(c,id)=>{if(c)inv.push(id)};
+      add(F.gotStick&&!F.peg,'stick');add(F.peg&&!F.cartFixed,'peg');add(room==='harbor'&&!F.gotTwine,'provisions');
+      add(F.gotPatch,'sailpatch');add(F.gotTwine,'twine');return inv}}};
+const A32='0123456789ABCDEFGHJKMNPQRSTVWXYZ',cb=$('#codebox');
+const chk=(b,s)=>{let h=Math.imul(b^s,0x9E3779B1)>>>0;h^=h>>>13;return h>>>4&511};
 const msk=c=>Math.imul(c+1,0x2545F)&0x1FFFFF;
-function stateBits(){let b=0;SAVE_FLAGS.forEach((k,i)=>{if(F[k])b|=1<<i});return b|Math.max(0,RM.indexOf(G.room))<<19}
-function makeCode(){const b=stateBits(),c=chk(b),v=(b^msk(c))*512+c;let s='';
-  for(let i=5;i>=0;i--)s+=A32[Math.floor(v/Math.pow(32,i))%32];return s.slice(0,3)+'-'+s.slice(3)}
+function stateBits(){const c=CHAP[G.ch];let b=0;c.flags.forEach((k,i)=>{if(F[k])b|=1<<i});return b|Math.max(0,c.rooms.indexOf(G.room))<<19}
+function codeOf(ch,b){const c=chk(b,CHAP[ch].salt),v=(b^msk(c))*512+c;let s='';
+  for(let i=5;i>=0;i--)s+=A32[Math.floor(v/Math.pow(32,i))%32];return(ch>1?ch+'-':'')+s.slice(0,3)+'-'+s.slice(3)}
+const makeCode=()=>codeOf(G.ch,stateBits());
 function decode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1').replace(/U/g,'V').replace(/[^0-9A-Z]/g,'');
-  if(t.length!==6)return null;let v=0;for(const ch of t){const i=A32.indexOf(ch);if(i<0)return null;v=v*32+i}
-  const c=v%512,b=Math.floor(v/512)^msk(c);return chk(b)!==c||(b>>19&3)>2||b>>21?null:b}
-function applyState(b){for(const k in F)delete F[k];SAVE_FLAGS.forEach((k,i)=>{if(b>>i&1)F[k]=1});
-  const inv=[],add=(c,id)=>{if(c)inv.push(id)};
-  add(!F.gotAwl,'pouch');add(F.gotAwl,'awl');add(F.gotThread,'thread');add(F.gotKnife,'knife');
-  add(F.gotCloth&&!F.cutCloth,'cloth');add(F.cutCloth&&!F.awning,'patch');add(F.cutCloth&&!F.longRope,'strips');
-  add(F.gotRope&&!F.longRope,'rope');add(F.longRope&&!F.ropeTied,'longrope');
-  add(F.gotBasket&&!F.strong,'basket');add(F.awning&&!F.strong,'straps');add(F.strong&&!F.basketOn,'strongbasket');
-  add(F.gotSkin,F.water?'skinfull':'skin');
-  setup();G.inv=inv;J.room=null;Object.values(ACT).forEach(a=>{a.bow=a.talk=false});
+  let ch=1;if(t.length===7&&t[0]!=='1'&&CHAP[t[0]]){ch=+t[0];t=t.slice(1)}
+  if(t.length!==6)return null;let v=0;for(const x of t){const i=A32.indexOf(x);if(i<0)return null;v=v*32+i}
+  const c=v%512,b=Math.floor(v/512)^msk(c);return chk(b,CHAP[ch].salt)!==c||(b>>19&3)>2||b>>21?null:{ch,b}}
+function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];
+  Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null});
+  $('#chname').textContent=CHAP[ch].name;G.ship=null;CHAP[ch].setup()}
+function applyState(s){setChapter(s.ch);const c=CHAP[s.ch],room=c.rooms[s.b>>19&3];c.flags.forEach((k,i)=>{if(s.b>>i&1)F[k]=1});
+  if(c.place)c.place(room);G.inv=c.inv(room);
   ov.className='';ov.onclick=null;G.scene=null;G.end={};G.item=null;G.verb='walk';G.hover=null;$('#dim').style.opacity=0;
-  const room=RM[b>>19&3];enterRoom(room,...{workshop:[60,118,1],street:[46,114,1],house:[52,118,1]}[room]);
-  if(!G.started)G.started=performance.now();
+  enterRoom(room,...c.ent[room]);if(!G.started)G.started=performance.now();
   G.busy=false;lock(false);syncVerbs();drawInv();status();codeBtn()}
 function codeBtn(){$('#code').textContent=G.room&&!G.scene?'CODE '+makeCode():'ENTER CODE'}
 function closeCode(){cb.classList.remove('on');G.busy=cb.was;if(!G.busy)lock(false);status()}
@@ -854,7 +871,345 @@ function openCode(){audioInit();if(cb.classList.contains('on'))return closeCode(
   cb.classList.add('on');$('#codego').onclick=tryCode;$('#codex').onclick=closeCode;
   $('#codein').onkeydown=e=>{if(e.key==='Enter')tryCode();else if(e.key==='Escape')closeCode()};if(!can)$('#codein').focus()}
 $('#code').onclick=e=>{e.stopPropagation();openCode()};cb.onclick=e=>e.stopPropagation();
-buildVerbs();setup();title();requestAnimationFrame(render);
+/* ============ CHAPTER TWO: ART ============ */
+function ring(g,x,y,r,c){for(let a=0;a<48;a++){const t=a/48*6.2832;R(g,x+Math.cos(t)*r-.5,y+Math.sin(t)*r-.5,2,2,c)}}
+function wheelArt(g,x,y){ring(g,x,y,7,'#4a3320');ring(g,x,y,6,'#6a4a2a');line(g,x-6,y,x+6,y,'#6a4a2a');line(g,x,y-6,x,y+6,'#6a4a2a');
+  line(g,x-4,y-4,x+4,y+4,'#6a4a2a');line(g,x-4,y+4,x+4,y-4,'#6a4a2a');ell(g,x,y,2,2,'#3a2414')}
+function cartArt(g){R(g,198,90,18,2,'#6a4a2a');
+  R(g,150,84,50,10,'#8a6238');R(g,150,84,50,2,'#a87a48');R(g,150,92,50,2,'#5a3e22');for(let i=0;i<50;i+=10)R(g,150+i,84,1,10,'#5a3e22');
+  ell(g,162,79,8,5,'#cdbb8c');R(g,159,73,5,3,'#b8a676');ell(g,178,78,9,6,'#d8c698');R(g,175,71,5,3,'#c2b080');jar(g,188,84,'#8a4a2a');ell(g,170,73,6,4,'#c4b282');
+  R(g,154,96,42,2,'#3a2414');wheelArt(g,190,98);
+  if(F.wheelOn)wheelArt(g,160,98);else{R(g,152,97,12,9,'#9a8f78');R(g,152,97,12,2,'#b5aa92');R(g,156,95,3,2,'#3a2414')}
+  if(F.cartFixed)R(g,159,95,2,5,'#e0c898')}
+/* ---------- Jerusalem: a street by day ---------- */
+ART.jerusalem={w:480,paint(g){const r=rng(71);
+  bands(g,0,0,480,74,['#6fa8dc','#7db3e2','#8bbde6','#9ac7ea','#aad1ee','#bcdcf2']);
+  ell(g,96,14,22,3,'#e4f0fa');ell(g,112,11,13,3,'#f0f7fc');ell(g,352,18,26,3,'#e4f0fa');ell(g,300,10,12,2,'#f0f7fc');
+  for(let x=0;x<480;x++){const h=12+Math.round(5*Math.sin(x/70+1)+3*Math.sin(x/19));R(g,x,74-h,1,h,'#a9b58a')}
+  R(g,146,30,70,14,'#e6dcc0');for(let i=0;i<11;i++)R(g,148+i*6,32,2,12,'#cfc4a4');
+  R(g,166,10,30,34,'#f4ecd6');R(g,163,7,36,4,'#fbf5e4');R(g,163,6,36,1,'#d9a441');R(g,163,11,36,1,'#d9a441');R(g,177,22,8,22,'#7a5a2c');R(g,166,12,2,32,'#e0d6ba');
+  R(g,0,64,480,40,'#cbbd94');for(let i=0;i<480;i+=9)R(g,i,61,5,3,'#cbbd94');speck(g,0,64,480,40,'#bbad84',300,r);R(g,0,98,480,6,'#b5a77e');
+  R(g,0,22,58,82,'#d6c79c');speck(g,0,22,58,82,'#c4b588',160,r);for(let i=0;i<58;i+=10)R(g,i,17,6,5,'#d6c79c');
+  R(g,12,58,34,46,'#4a3c2c');ell(g,29,58,17,11,'#4a3c2c');R(g,12,58,3,46,'#3a2e20');R(g,56,22,2,82,'#b8a97e');
+  facade(g,118,42,134,60,'#e2d5ae','#cfc198',r);R(g,140,52,10,12,'#5a4a36');R(g,222,52,10,12,'#5a4a36');
+  R(g,252,58,16,44,'#b9ab84');
+  facade(g,268,28,152,74,'#eadfba','#d6c9a0',r);
+  R(g,314,52,36,50,'#6a5238');planks(g,317,55,30,47,6,'#8a6a40','#7a5c36','#5a4226');R(g,326,66,12,8,'#3a2a1a');R(g,327,67,10,6,'#1e150e');R(g,343,82,2,4,'#c9a14a');
+  R(g,310,101,44,3,'#cfc198');
+  R(g,370,36,26,20,'#6a5238');R(g,372,38,22,16,'#2a1e14');for(let i=0;i<5;i++)R(g,374+i*5,38,1,16,'#8a6a40');R(g,372,45,22,1,'#8a6a40');
+  R(g,286,40,14,16,'#5a4a36');R(g,284,94,22,3,'#8a6a40');R(g,286,97,2,6,'#6a4e2c');R(g,302,97,2,6,'#6a4e2c');
+  facade(g,432,46,48,56,'#dccfa6','#c9bb92',r);R(g,446,58,10,12,'#5a4a36');
+  bands(g,0,102,480,42,['#d9cca6','#d2c59e','#cabd96','#c0b38c']);
+  for(let j=0;j<5;j++){R(g,0,103+j*8,480,1,'#b5a880');for(let i=-(j%2)*11;i<480;i+=22+j*3)R(g,i,104+j*8,1,7,'#b5a880')}
+  speck(g,0,102,480,42,'#e6dab6',260,r);speck(g,0,102,480,42,'#a89b74',160,r);
+  R(g,118,102,134,2,'rgba(60,40,20,.22)');R(g,268,104,152,2,'rgba(60,40,20,.22)');
+  R(g,84,70,5,34,'#5a4630');R(g,82,84,3,8,'#5a4630');R(g,88,76,6,3,'#5a4630');
+  ell(g,86,58,20,13,'#6f8a58');ell(g,74,62,12,8,'#5f7a4a');ell(g,98,54,13,9,'#7f9a66');ell(g,90,48,10,6,'#8aa672');speck(g,66,44,42,28,'#4f6a3e',60,r);
+  ell(g,88,105,22,3,'rgba(60,40,20,.2)')},
+ draw(g){if(!F.gotStick){line(g,99,107,116,104,'#7a5a34');line(g,99,108,116,105,'#5a3e22');R(g,108,103,3,2,'#6f8a58');R(g,114,102,3,2,'#6f8a58')}
+  cartArt(g);if(!F.wheelOn)wheelArt(g,134,95)},front(){}};
+/* ---------- The upper room ---------- */
+ART.upper={w:320,paint(g){const r=rng(83);
+  bands(g,0,0,320,104,['#b9a47c','#c4af86','#cdb98f','#d2be94','#cdb98f','#c4af86']);speck(g,0,0,320,104,'#a8946c',420,r);speck(g,0,0,320,104,'#dccaa2',200,r);
+  R(g,0,0,320,8,'#4a3320');for(let i=0;i<320;i+=44)R(g,i+12,0,7,13,'#5a4028');
+  bands(g,0,104,320,40,['#9a7a52','#8f704a','#846642','#785c3a']);
+  for(let j=0;j<4;j++){R(g,0,107+j*10,320,1,'#6a5032');for(let i=-(j%2)*18;i<320;i+=36+j*5)R(g,i,108+j*10,1,9,'#6a5032')}R(g,0,103,320,2,'#5a4028');
+  R(g,12,38,34,68,'#4a3320');planks(g,15,41,28,63,7,'#8a6a40','#7a5c36','#5a4226');R(g,38,72,2,5,'#c9a14a');
+  R(g,226,30,48,40,'#7a6242');R(g,230,34,40,32,'#9ac7ea');R(g,230,54,40,12,'#cfc39a');for(let i=0;i<40;i+=7)R(g,231+i,51,4,3,'#cfc39a');
+  R(g,240,42,12,12,'#f4ecd6');R(g,239,41,14,1,'#d9a441');R(g,249,34,2,32,'#7a6242');R(g,224,70,52,3,'#8a6a40');
+  dith(g,206,104,70,30,'rgba(255,240,200,.25)',2);
+  R(g,70,46,56,3,'#6a4e2c');R(g,72,49,2,5,'#5a4028');R(g,122,49,2,5,'#5a4028');
+  for(let i=0;i<3;i++){R(g,76+i*9,40,7,6,'#e6dcc0');R(g,75+i*9,41,1,4,'#8a6a40');R(g,83+i*9,41,1,4,'#8a6a40')}jar(g,106,46,'#8a4a2a');jar(g,116,46,'#6f5a3a');
+  R(g,128,94,74,4,'#7a5c36');R(g,128,98,74,1,'#5a4226');R(g,132,99,3,10,'#5a4226');R(g,195,99,3,10,'#5a4226');
+  R(g,146,91,24,3,'#efe6cc');R(g,144,90,3,5,'#8a6a40');R(g,169,90,3,5,'#8a6a40');for(let i=0;i<5;i++)R(g,149+i*4,92,2,1,'#6a5a48');
+  R(g,180,90,8,4,'#9a5a30');R(g,187,89,3,2,'#9a5a30');ell(g,136,92,4,2,'#c9a060');
+  R(g,282,92,34,4,'#7a5c36');R(g,284,96,3,12,'#5a4226');R(g,311,96,3,12,'#5a4226');ell(g,296,90,8,3,'#a8503a');
+  for(let i=0;i<60;i+=4)R(g,60+i,124,3,10,(i/4)%2?'#a88a5a':'#96784c');R(g,60,124,60,1,'#6a5032');R(g,60,133,60,1,'#6a5032');
+  R(g,0,0,5,144,'rgba(0,0,0,.18)');R(g,315,0,5,144,'rgba(0,0,0,.18)')},
+ draw(g,t){flame(g,188,89,t)},front(){}};
+/* ---------- Caesarea: the harbor ---------- */
+function shipArt(g,X,t,st,sh){const y=Math.round(Math.sin(t/900));
+  R(g,X+349,8+y,3,72,'#4a2f1a');line(g,X+350,8+y,X+254,78+y,'#3a2a1a');line(g,X+350,8+y,X+440,72+y,'#3a2a1a');
+  R(g,X+306,(st===1?72:18)+y,90,2,'#3f2816');
+  if(st===0)for(let j=0;j<40;j++){const gx=348+Math.round(j*.35),gw=2+(j%7<3?2:0)+(j>18?2:0),c=j%8<1?'#b8ad90':'#d8cdb0';
+    R(g,X+310,20+j+y,gx-310,1,c);R(g,X+gx+gw,20+j+y,392-gx-gw,1,c)}
+  else if(st===2){for(let j=0;j<40;j++){const w=Math.round(4*Math.sin(j/39*3.1416));R(g,X+310-w,20+j+y,82+w*2,1,j%8<1?'#b8ad90':'#d8cdb0')}
+    R(g,X+346,36+y,14,10,'#c8bc9c');for(let i=0;i<14;i+=3)R(g,X+346+i,36+y,1,1,'#5a4a36')}
+  if(sh.paul)person(g,X+300,92+y,LOOK.paul,-1,0,0,0,Math.floor(t/600)%2);
+  if(sh.capt)person(g,X+410,92+y,LOOK.captain,-1,0,0,0,0);
+  R(g,X+250,78+y,192,22,'#5a3a22');R(g,X+244,72+y,8,26,'#5a3a22');R(g,X+240,64+y,6,14,'#5a3a22');R(g,X+440,70+y,8,28,'#5a3a22');
+  R(g,X+446,60+y,5,16,'#5a3a22');R(g,X+449,56+y,4,6,'#6a4630');
+  R(g,X+246,76+y,198,2,'#3f2816');R(g,X+250,83+y,192,2,'#c9a14a');for(let j=0;j<3;j++)R(g,X+250,88+j*4+y,192,1,'#4a2e1a');
+  if(!X)for(let i=0;i<10;i++)R(g,268+i*2,84+i*2,6,2,'#8a6a40');
+  else for(let i=0;i<5;i++)R(g,X+234-i*9,97+(i%2),6,1,'#cfe6ee')}
+ART.harbor={w:480,paint(g){const r=rng(97);
+  bands(g,0,0,480,60,['#3f6fa8','#5a86b8','#7a9ec6','#a0b6cc','#d0c4b0','#f0c890']);
+  ell(g,150,47,8,8,'#fff0c0');glow(g,150,47,24,'60,40,10',.3);ell(g,150,20,26,3,'#f4d8b8');ell(g,330,12,30,3,'#e8d8cc');
+  bands(g,0,60,480,44,['#c8a880','#6f9cb0','#4f86a0','#3f7494','#356888','#2c5c7c']);speck(g,0,62,480,40,'#8fc0d0',220,r);
+  for(let i=0;i<34;i++)R(g,116+Math.floor(r()*72),62+Math.floor(r()*38),3+Math.floor(r()*4),1,'#ffe0a0');
+  R(g,170,54,310,6,'#b8a888');for(let i=170;i<480;i+=12)R(g,i,52,7,2,'#b8a888');R(g,170,58,310,2,'#8a7c62');
+  R(g,206,30,12,26,'#cfc0a0');R(g,204,28,16,3,'#e0d2b4');R(g,208,22,8,6,'#b8a888');R(g,206,30,2,26,'#b0a284');
+  R(g,300,44,10,12,'#c4b494');R(g,420,42,12,14,'#c4b494');
+  R(g,0,28,112,76,'#d6c8a2');speck(g,0,28,112,76,'#c2b48e',260,r);R(g,0,24,114,5,'#b85a3a');for(let i=0;i<114;i+=6)R(g,i,24,1,5,'#9a4428');
+  for(let i=0;i<2;i++){R(g,14+i*46,54,30,50,'#4a3c2c');ell(g,29+i*46,54,15,9,'#4a3c2c')}R(g,110,28,2,76,'#b0a27c');
+  bands(g,0,102,480,42,['#c9bc98','#c0b38e','#b6a984','#aa9d78']);
+  for(let j=0;j<5;j++){R(g,0,103+j*8,480,1,'#9a8d6a');for(let i=-(j%2)*13;i<480;i+=26+j*3)R(g,i,104+j*8,1,7,'#9a8d6a')}
+  speck(g,0,102,480,42,'#d8ccaa',200,r);R(g,112,100,368,3,'#8a7c5c');
+  for(const x of[236,300,420]){R(g,x,96,6,8,'#5a4a36');R(g,x-1,95,8,2,'#6a5842')}
+  ell(g,44,100,24,7,'#c8bc9c');ell(g,36,96,14,5,'#d8cdb0');ell(g,54,97,12,4,'#b8ac8c');line(g,26,100,60,97,'#a09474');line(g,34,95,48,99,'#a09474');
+  R(g,116,62,2,44,'#5a4630');R(g,166,62,2,44,'#5a4630');R(g,114,62,56,2,'#6a5238');
+  for(let j=0;j<34;j+=3)for(let i=(j/3%2)*2;i<46;i+=4)R(g,120+i,66+j,1,1,'#3f5a5a');for(let i=0;i<46;i+=4)R(g,120+i,64,1,36,'rgba(63,90,90,.35)');
+  ell(g,126,100,3,3,'#b85a3a');ell(g,160,98,3,3,'#b85a3a');
+  for(let i=0;i<3;i++){jar(g,432+i*11,108,'#a05a34');R(g,435+i*11,95,2,3,'#a05a34')}R(g,462,96,14,12,'#8a6a40');R(g,462,96,14,2,'#a88252');R(g,468,96,1,12,'#6a4e2c')},
+ draw(g,t){flame(g,212,22,t);const sh=G.ship||{ox:0},st=F.sailUp?2:F.sailDown?1:0;shipArt(g,sh.ox,t,st,sh);
+  if(st===1){R(g,300,104,104,10,'#d8cdb0');R(g,300,104,104,1,'#f0e8d0');R(g,300,113,104,1,'#a09474');for(let i=13;i<104;i+=13)R(g,300+i,104,1,10,'#c2b698');
+    if(F.sailMended){R(g,340,105,18,8,'#c8bc9c');for(let i=0;i<18;i+=3)R(g,340+i,105,1,1,'#5a4a36')}
+    else for(let i=0;i<9;i++)R(g,338+i*2,105+i,5-(i%2),1,'#8a7c5c')}},front(){}};
+/* ============ CHAPTER TWO: cast, items, combinations ============ */
+Object.assign(LOOK,{
+  barnabas:{skin:'#b8844f',hair:'#3a2a1a',beard:'#3a2a1a',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},
+  cephas:{skin:'#b07848',hair:'#6a5a4a',beard:'#7a6a58',tunic:'#3f6a8a',cloak:'#8a7a5a',belt:'#3a2414',long:1,brow:'#3a2a1a',ph:1300},
+  james:{skin:'#bd8a5a',hair:'#2a1a12',beard:'#2a1a12',longBeard:1,tunic:'#e0d6bc',cloak:'#6a5a7a',belt:'#4a3a24',long:1,ph:2900},
+  captain:{skin:'#a06a40',wrap:'#b03a2a',beard:'#2a2a2a',tunic:'#3a5a5a',belt:'#c9a14a',trim:'#22383a',brow:'#1a1a1a',ph:700},
+  fisher:{skin:'#a8703f',hair:'#d0d0d0',beard:'#d8d8d8',bald:1,brow:'#909090',tunic:'#8a8a6a',belt:'#4a3a24',ph:3700},
+  mattan:{skin:'#c08a5c',hair:'#4a2f1a',beard:'#4a2f1a',tunic:'#7a6a9a',cloak:'#c8b88a',belt:'#3a2414',long:1,ph:1900}});
+const BN=actor('barnabas','Barnabas','#f0b070',128),CE=actor('cephas','Cephas','#8ec8f0',108),JA=actor('james','James','#d8c8f0',122),
+  CP=actor('captain','the captain','#f09080',100),FI=actor('fisher','the fisherman','#b8e0c0',140),MT=actor('mattan','Mattan','#e8d890',126);
+const DK={x:332,y:100,color:'#f4c0a8',pitch:255,room:'jerusalem'},TH={thought:1,color:'#cfe2ff'};
+SFX.knock=()=>{for(let i=0;i<3;i++)noise({t:now()+i*.18,d:.07,v:.32,f:220,type:'lowpass'})};
+Object.assign(ICON,{
+  stick(g){line(g,4,19,19,5,'#7a5a34');line(g,5,19,20,5,'#5a3e22');line(g,12,12,17,13,'#7a5a34');R(g,17,12,3,2,'#6f8a58');R(g,19,3,2,2,'#6f8a58')},
+  peg(g){R(g,10,5,5,12,'#b08a56');R(g,11,17,3,3,'#b08a56');R(g,12,20,1,2,'#b08a56');R(g,9,4,7,2,'#8a6a3a');R(g,10,6,1,11,'#d0b080');R(g,10,9,5,1,'#8a6a3a')},
+  provisions(g){ell(g,10,14,7,4,'#c9a060');R(g,6,12,8,1,'#a8803e');R(g,8,14,1,1,'#8a6a34');R(g,12,13,1,1,'#8a6a34');ell(g,17,17,3,2,'#5a2a4a');ell(g,19,12,2,2,'#6a3458');R(g,17,15,1,1,'#8a4a70')},
+  twine(g){ell(g,12,13,7,6,'#8a7444');for(let i=-5;i<6;i+=2)line(g,9+i,8,15+i,18,'#5a4a2a');line(g,17,17,21,21,'#8a7444')},
+  sailpatch(g){R(g,5,6,14,12,'#d8cdb0');R(g,5,6,14,1,'#f0e8d0');for(let i=6;i<19;i+=3)R(g,i,17,1,2,'#b8ad90');R(g,9,9,6,1,'#b8ad90');R(g,9,13,6,1,'#b8ad90')}});
+Object.assign(ITEMS,{
+  stick:{name:'olive branch',look:'A pruned olive branch, seasoned and straight-grained. Good wood for a peg.'},
+  peg:{name:'wooden peg',look:'A stout peg with a tapered point. I have carved a thousand like it, for tents.'},
+  provisions:{name:'provisions',look:'Bread and dried figs from the brothers in Jerusalem, for the voyage.'},
+  twine:{name:'tarred twine',look:'Tarred twine, thick as a bowstring. It will hold a seam against the wind.'},
+  sailpatch:{name:'sailcloth patch',look:'A sound piece of sailcloth, cut from a worn-out sail.'}});
+Object.assign(COMBO,{
+  'knife+stick':async()=>{SFX.cut();await say(P,'A square shank, a tapered point...');delItem('stick');addItem('peg');F.peg=1;
+    await say(P,'I have carved a thousand tent pegs. This one will hold a wheel instead.')},
+  'knife+peg':()=>say(P,'It is the right shape already.'),
+  'awl+stick':()=>say(P,'An awl only makes holes. The branch needs a blade.'),
+  'awl+twine':()=>say(P,'Ready. Now, what needs sewing?'),
+  'sailpatch+twine':()=>say(P,'The patch must be sewn onto the torn sail itself.'),
+  'awl+sailpatch':()=>say(P,'The patch must be sewn onto the torn sail itself.'),
+  'sailpatch+thread':()=>say(P,'My thread is for tent seams. A sail under wind would snap it.'),
+  'knife+sailpatch':()=>say(P,'It is large enough to cover the tear. I will leave it whole.'),
+  'knife+provisions':()=>say(P,'I will break the bread when it is time to eat it.')});
+function setup2(){place(BN,'jerusalem',228,118,-1);place(CE,'upper',168,120,-1);place(JA,'upper',212,123,-1);
+  place(CP,'harbor',262,122,-1);place(FI,'harbor',186,116,-1);place(MT,'harbor',214,130,1);G.inv=['awl','thread','knife'];drawInv()}
+CHAP[2].place=room=>{if(F.told)place(BN,'jerusalem',360,114,-1);if(room==='upper')place(BN,'upper',96,124,1)};
+async function quiz(who,q,opts){await say(who,q);let av=opts.slice();
+  for(;;){const o=av[await choose(av.map(o=>o.q))];for(const l of o.p||[o.q])await say(P,l);for(const l of o.r)await say(who,l);
+    if(o.ok)return;av=av.filter(x=>x!==o);await say(who,q)}}
+/* ============ CHAPTER TWO: rooms, hotspots, characters ============ */
+async function knock(){SFX.knock();await wait(600);
+  if(F.told){await say(BN,'It is Barnabas! Open, sister, and do not be afraid.');await say(DK,'Barnabas? But the man beside you...');
+    await say(BN,'I will answer for him. Let us in, and let the brothers hear him for themselves.');SFX.door();await say(DK,'...If you say so. Come up.');
+    return go('upper',56,120,1)}
+  if(F.knocked){await say(DK,'Please, go away. No one here will open to you.');
+    return say(P,'Knocking louder will not help. I need someone they trust to speak for me.',TH)}
+  F.knocked=1;await say(DK,'Who is there?');await say(P,'Saul, of Tarsus. I have come to join the brothers.');
+  await say(DK,'Saul of... the one who dragged our brothers off to prison?');await say(DK,'Go away. Please. We know what you are.');
+  await say(P,'I cannot blame her. I gave them every reason to fear me.',TH)}
+async function liftWheel(){if(!F.metBarn)return say(P,'It belongs to that man and his cart. I should speak to him before I touch it.');
+  await say(P,'Take the other side, friend. Together, now!');await walk(BN,170,116);SFX.creak();await fade(1,220);F.wheelOn=1;await wait(250);await fade(0,220);
+  await say(BN,'It is on! But with no pin through the axle, it will roll off again before I reach the corner.');await walk(BN,228,118);BN.dir=-1}
+async function barnStory(){
+  await say(BN,'It holds! Friend, you have the hands of a craftsman and the heart of a brother.');
+  await say(BN,'I am Joseph, a Levite from Cyprus. The apostles call me Barnabas. And you?');
+  await say(P,'I am Saul. Of Tarsus.');await walk(BN,240,118);BN.dir=-1;
+  await say(BN,'Saul... the Saul who carried letters to Damascus, to bring the disciples back in bonds?');
+  await quiz(BN,'Is it true, then?',[
+    {q:'I acted in ignorance. Any man with my training would have done the same.',r:['Perhaps. But that is a man still defending himself.']},
+    {q:'Yes. I persecuted the congregation, and I was wrong.',ok:1,p:['Yes. I persecuted the congregation of God, and I was wrong.','I was a blasphemer and an insolent man. I will not pretend otherwise.'],r:['...You do not soften it. Good.']},
+    {q:'That is behind me. What matters is that I am here now.',r:['Those who lost family to your arrests cannot set it aside so quickly.']}]);
+  await quiz(BN,'Then what turned you around?',[
+    {q:'It is a long story. Must I tell all of it here in the street?',r:['If you want that door to open, yes. Tell me in detail.']},
+    {q:'Ask the brothers in Damascus. They will tell you.',r:['Damascus is many days away, and you are standing here. Tell me yourself.']},
+    {q:'On the road to Damascus, the Lord Jesus spoke to me.',ok:1,p:['Near Damascus a light from heaven flashed around me, and the Lord Jesus spoke to me.','For three days I could not see, until a disciple named Ananias was sent to me.'],
+      r:['Blind for three days, and then a brother sent to open your eyes... That sounds like our Lord.']}]);
+  await quiz(BN,'And since then?',[
+    {q:'I spoke in the name of Jesus in Damascus, until I had to flee.',ok:1,p:['In Damascus I spoke openly in the name of Jesus, until there was a plot against my life.',"The brothers lowered me down the city wall in a basket. Hardly a hero's exit."],
+      r:['Ha! A basket. No man invents a story like that to make himself look great.']},
+    {q:'I have worked harder than most. Surely that counts for something.',r:['It may. But a man who recommends himself convinces no one.']},
+    {q:'I would rather speak of that only to the apostles.',r:['They will ask why I trust you. Give me something to tell them.']}]);
+  await say(BN,'I believe you, Saul. And the brothers will hear it from me.');await say(BN,'Come. They know my voice at that door.');
+  F.told=1;await walk(BN,360,114);BN.dir=-1}
+ROOMS.jerusalem={walk:[16,466,110,138],mood:'calm',hs:[
+  {name:'city gate',x:0,y:22,w:58,h:82,wx:44,wy:114,dir:-1,look:'The gate I came in by. The road from Damascus was long.',use:'I did not walk all this way to turn back.'},
+  {name:'temple',x:150,y:6,w:64,h:34,wx:180,look:['The temple, gleaming above the rooftops.','I studied in its shadow, at the feet of Gamaliel. How much I thought I knew.']},
+  {name:'olive tree',x:66,y:44,w:44,h:58,wx:98,wy:114,look:'An old olive tree. Someone has pruned it recently.',pickup:'The tree is not mine to cut.'},
+  {name:'pruned branch',x:96,y:100,w:24,h:10,wx:108,wy:116,vis:()=>!F.gotStick,look:"A pruned olive branch, left on the ground for anyone's fire.",pickup:take('gotStick','stick','Seasoned olive wood. Hard and straight-grained.')},
+  {name:'loose wheel',x:124,y:84,w:20,h:24,wx:148,wy:114,dir:-1,vis:()=>!F.wheelOn,look:'A cart wheel, leaning on the wall. The pin that held it on the axle has sheared off.',pickup:'It is too heavy for one man.',use:liftWheel},
+  {name:'handcart',x:148,y:68,w:68,h:40,wx:176,wy:116,
+    look:()=>say(P,F.cartFixed?'Sound again, and ready to roll.':F.wheelOn?'The wheel is back on its axle, but nothing holds it there.':'A handcart loaded with grain and oil. It sits crippled on a stone block, one wheel off.'),
+    pickup:"It is another man's cart, and another man's errand.",
+    use:()=>say(P,!F.metBarn?'I should speak to its owner first.':F.wheelOn?'The axle needs a new pin to keep the wheel on.':'It needs its wheel back on, and a pin to keep it there.'),
+    useWith:async it=>{if(it==='stick')return say(P,'The branch is too thick for the pin hole. It needs shaping first.');
+      if(it==='awl'||it==='thread')return say(P,'No stitch will hold a wheel on.');if(it!=='peg')return false;
+      if(!F.wheelOn)return say(P,'The wheel must be on the axle before a pin can hold it.');
+      SFX.door();delItem('peg');F.cartFixed=1;await say(P,'Through the axle, and a tap to seat it. Like pegging a tent in hard ground.');return barnStory()}},
+  {name:'bench',x:282,y:90,w:26,h:14,look:'A stone bench by the door. I do not think I would be welcome to sit.'},
+  {name:'door of the house',x:312,y:50,w:40,h:54,wx:330,wy:112,look:'A plain, solid door. Disciples of the Lord meet in the room above.',use:knock,open:knock,talk:knock},
+  {name:'latticed window',x:368,y:34,w:30,h:24,wx:380,look:'A latticed window. I think someone is watching from behind it.'},
+  {name:'street to the markets',x:462,y:60,w:18,h:60,wx:456,wy:120,look:'The street runs on toward the markets and the temple mount.',use:'My business is at that door first.'}]};
+BN.hs={get name(){return F.cartFixed||G.room!=='jerusalem'?'Barnabas':'man with the handcart'},actor:BN,
+  look:()=>say(P,G.room==='upper'?'Barnabas. He staked his own good name on my word.':F.cartFixed?'Barnabas: "Son of Comfort", they call him. I can see why.':'A man in a red tunic, struggling with a loaded handcart.'),
+  give:async()=>{await say(BN,'Keep it, friend. You may need it yet.')},
+  talk:async()=>{if(G.room==='upper')return say(BN,'Someone once spoke up for me, Saul. Now go and prove me right.');
+    if(F.told)return say(BN,'Come, Saul. The door.');if(F.cartFixed)return barnStory();
+    if(!F.metBarn){F.metBarn=1;await say(P,'Peace to you. May I help?');await say(BN,'Peace! You may, if you have a wheelwright hidden in your cloak.');
+      await say(BN,'This grain and oil is for the widows. The wheel came off, the pin is snapped, and they are waiting.');
+      return say(P,'I am no wheelwright. But I work with my hands. Let me see what can be done.')}
+    await talkTree([
+      {q:'What happened to the cart?',a:()=>say(BN,'The pin sheared through and the wheel rolled off. I need a new pin, and a second pair of arms to lift.')},
+      {q:'Who is the food for?',a:()=>say(BN,'For the widows among the disciples. No one among us should be in need.')},
+      {q:'Do you know the people in that house?',a:async()=>{await say(BN,'Know them? I am on my way to them. Why do you ask, friend?');await say(P,'I will tell you. When your hands are free.')}},
+      {q:'I will see what I can do.',bye:1}])}};
+ROOMS.upper={walk:[24,300,112,138],mood:'calm',
+  enter:async()=>{place(BN,'upper',96,124,1);await say(BN,'Cephas, James: this is Saul of Tarsus. Before you answer, hear me.');
+    await narr('Barnabas told them in detail how Saul had seen the Lord on the road, and how in Damascus he had spoken boldly in the name of Jesus. (Acts 9:27)',{dur:8000});
+    await say(CE,'Saul. I too know what it is to fail my Lord, and to be shown mercy.');await say(CE,'Stay in my house, brother. We have much to speak about.');
+    await say(JA,'If Jehovah has opened this door, we will not be the ones to shut it.');await say(P,'Brothers... thank you. I do not deserve this.')},
+  hs:[
+  {name:'door to the city',x:12,y:38,w:34,h:68,wx:34,wy:113,dir:-1,look:'The door to the street, and to a city full of synagogues where I am known.',exit:()=>leaveUpper()},
+  {name:'shelf of scrolls',x:70,y:36,w:56,h:18,wx:98,look:'Scrolls of the Law and the Prophets. Every one of them points to the Christ. How did I not see it?',pickup:'They belong to the congregation.'},
+  {name:'table',x:128,y:86,w:74,h:24,wx:164,wy:114,look:'A low table. Bread, a lamp and the Scriptures: all a household needs.'},
+  {name:'open scroll',x:142,y:86,w:32,h:9,wx:158,wy:114,look:['The scroll of Isaiah, open on the table.','"A light of nations." I have read those words all my life. Now they read differently.'],pickup:'It belongs to the congregation.'},
+  {name:'window',x:224,y:30,w:52,h:44,wx:250,look:'The temple, bright in the sun. So near to this room, and yet so few there will listen.'},
+  {name:'bench',x:280,y:84,w:38,h:24,wx:290,wy:114,look:'A bench with a worn cushion. Many long conversations have happened here.'}]};
+CE.hs={name:'Cephas',actor:CE,look:'Cephas, whom many call Peter. A fisherman from Galilee, and an apostle of the Lord.',
+  give:async()=>{await say(CE,'Keep it. A guest brings nothing but himself.')},
+  talk:()=>talkTree([
+    {q:'Tell me about the Lord.',a:async()=>{await say(CE,'Fifteen days will not be enough, Saul. But sit, and I will begin where he found me:');await say(CE,'on a beach in Galilee, mending nets.')}},
+    {q:'The disciples in this city fear me.',a:()=>say(CE,'Fear fades when people see fruit. Give them time, and give them reasons.')},
+    {q:'I will speak with you again.',bye:1}])};
+JA.hs={name:'James',actor:JA,look:"James, the Lord's brother. Quiet, and listening closely.",
+  give:async()=>{await say(JA,'There are others who need it more. But thank you.')},
+  talk:()=>talkTree([
+    {q:"You are the Lord's brother.",a:async()=>{await say(JA,'I grew up in the same house, and for years I did not put faith in him.');await say(JA,'So I do not judge a man by how late he came to it.')}},
+    {q:'What should I do now?',a:()=>say(JA,'What you did in Damascus: speak. And listen to the brothers when they tell you it is time to go.')},
+    {q:'Thank you, James.',bye:1}])};
+/* ---------- Caesarea harbor ---------- */
+const SEW=['awl','twine','sailpatch','thread'];
+async function mendSail(it){if(!SEW.includes(it))return false;
+  if(it==='thread')return say(P,'My thread is for tent seams. A sail under wind would snap it. I need something heavier.');
+  if(!has('sailpatch'))return say(P,'The tear is too long to draw closed. It needs a patch of sound sailcloth.');
+  if(!has('twine'))return say(P,'I have a patch, but nothing strong enough to sew it on with.');
+  return finale2()}
+async function lowerSail(){if(!F.metCapt)return say(P,"I should not touch a ship's rigging without her captain's word.");
+  await say(P,'Easy... paying it out, hand over hand.');SFX.creak();await fade(1,220);F.sailDown=1;await wait(250);await fade(0,220);SFX.creak();
+  await say(CP,'Gently done. You have hauled a line before.');await say(P,'Tent ropes, mostly.')}
+ROOMS.harbor={walk:[16,466,110,138],mood:'hope',hs:[
+  {name:'warehouse',x:0,y:24,w:112,h:66,wx:60,look:'Grain warehouses. Caesarea feeds half the coast.'},
+  {name:'heap of old sailcloth',x:18,y:90,w:52,h:18,wx:48,wy:114,look:'Worn-out sails, heaped for rag. Some of the cloth is still sound.',
+    pickup:()=>say(P,F.gotPatch?'I have all I need from it.':'A whole sail is far too heavy. I only need one sound piece of it.'),
+    use:()=>say(P,F.gotPatch?'I have all I need from it.':'I would need a blade to take a piece of it.'),
+    useWith:async it=>{if(it!=='knife')return false;if(F.gotPatch)return say(P,'One patch is enough.');
+      SFX.cut();F.gotPatch=1;addItem('sailpatch');await say(P,'I cut a broad square from the soundest corner.')}},
+  {name:'drying nets',x:114,y:62,w:56,h:42,wx:142,wy:114,look:'Fishing nets, hung up to dry and mend.',pickup:"They are a man's livelihood."},
+  {name:'sea',x:172,y:60,w:68,h:36,wx:206,look:'The Great Sea. Beyond it lie Cyprus, Cilicia, Greece... nations far away.'},
+  {name:'harbor tower',x:202,y:20,w:20,h:38,wx:212,look:'The tower on the breakwater. Its fire guides ships in by night.'},
+  {name:'cargo',x:428,y:86,w:50,h:24,wx:440,wy:116,look:'Jars of oil and wine, waiting to be loaded.',pickup:'That would be stealing.'},
+  {name:'ship',x:240,y:56,w:214,h:44,wx:300,wy:112,
+    look:()=>say(P,F.sailDown?'A sturdy coasting ship, waiting on her sail.':'A sturdy coasting ship. Her sail hangs in two pieces from the yard.'),
+    use:"I cannot board without the captain's leave."},
+  {name:'torn sail',x:308,y:16,w:86,h:46,wx:350,wy:112,vis:()=>!F.sailDown,look:'Ripped nearly from top to bottom. No ship sails far on that.',
+    use:'I cannot reach it up there. It must come down first.',useWith:async it=>SEW.includes(it)?say(P,'I cannot sew it up there. It must come down first.'):false},
+  {name:'halyard',x:340,y:60,w:22,h:20,wx:350,wy:112,vis:()=>!F.sailDown,look:'The halyard, made fast at the foot of the mast. It raises and lowers the yard.',use:lowerSail,pickup:'It is holding up the yard.'},
+  {name:'torn sail',x:298,y:102,w:108,h:13,wx:350,wy:122,vis:()=>F.sailDown,look:'Spread on the quay, the tear is as long as a man. But the cloth around it is strong.',
+    pickup:'It is far too heavy, and it is not mine.',use:'It needs a patch, heavy twine, and a tool to drive the stitches.',useWith:mendSail}]};
+CP.hs={name:'the captain',actor:CP,look:'The master of the ship. He keeps glancing at the sky, judging the wind.',
+  give:async()=>{await say(CP,'Keep your things. What I need is a sail.')},
+  talk:async()=>{if(!F.metCapt){F.metCapt=1;await say(P,'Peace to you, captain. Is this the ship for Tarsus?');
+      await say(CP,'She is, when she has a sail. A squall off Dor split it from top to bottom.');
+      await say(CP,'My sailmaker is ashore in Joppa, and the wind will not wait for him.');
+      await say(P,'I am a tentmaker. Heavy cloth and I are old friends. Let me mend it.');
+      return say(CP,'A tentmaker! Mend it before the evening wind, and you sail to Tarsus without paying a coin. Bring the yard down by the halyard.')}
+    await talkTree([
+      {q:'What will the sail need?',a:()=>say(CP,'A patch of sound sailcloth, and tarred twine. Not thread: thread parts in the first gust.')},
+      {q:'Where can I find those?',a:async()=>{await say(CP,'There is old sailcloth heaped by the warehouse. Take what you like.');await say(CP,'Twine... ask the old fisherman. He hoards it like silver.')}},
+      {q:'I will get to work.',bye:1}])}};
+FI.hs={name:'the fisherman',actor:FI,look:'An old fisherman mending his nets. His hands never stop moving.',
+  give:async it=>{if(it!=='provisions')return false;
+    await say(P,'You have not eaten since dawn. Here: bread and figs.');await say(FI,'You would give a stranger your food for the voyage?');
+    await say(P,'There will be bread in Tarsus. You are hungry now.');SFX.good();delItem('provisions');F.gotTwine=1;addItem('twine',1);
+    await say(FI,'Then take this ball of twine, tentmaker. A gift for a gift.')},
+  talk:async()=>{if(F.gotTwine)return say(FI,'Fair winds to you, friend. And thank you.');
+    await say(P,'Peace to you. You are hard at work.');await say(FI,'Since before dawn. Nets tear faster than an old man can mend them, and I have not stopped to eat.');
+    await talkTree([
+      {q:'What do you mend nets with?',a:async()=>{await say(FI,'Tarred twine. Nothing else lasts in salt water.');await say(FI,'I have a ball to spare, if I had a reason to spare it.')}},
+      {q:'Is that ship bound for Tarsus?',a:()=>say(FI,'So her captain says. If he can ever hang a sail on her.')},
+      {q:'Peace to you.',bye:1}])}};
+MT.hs={name:'Mattan',actor:MT,look:'Mattan, one of the brothers who brought me down from Jerusalem.',
+  give:async()=>{await say(MT,'No, brother. That is for your journey.')},
+  talk:()=>talkTree([
+    {q:'Will the congregation be safe?',a:()=>say(MT,'With you gone, the opposers will lose interest. I think there will be peace for a while.')},
+    {q:'I had hoped to stay in Jerusalem.',a:async()=>{await say(MT,'And we hoped to keep you. But a living brother in Tarsus is worth more than a dead one here.');await say(MT,'Go where the Lord sends you.')}},
+    {q:'Let me see about that ship.',bye:1}])};
+/* ============ CHAPTER TWO: intro, journey, ending, hints ============ */
+async function start2(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();
+  await cut(async()=>{await fade(1,500);setChapter(2);G.scene=null;G.end={};enterRoom('jerusalem',24,122,1);codeBtn();await fade(0,600);
+    await narr('Jerusalem, some time later.',{dur:2800});
+    await narr('Three years ago Saul left this city to hunt the disciples of the Lord. Now he returns as one of them.');
+    await walk(P,96,122);
+    await say(P,'Jerusalem. I know these streets... and the doors I once had broken open.');
+    await say(P,'The disciples meet in the upper room of that house. I must try to join them.')},true)}
+async function leaveUpper(){
+  await say(P,'There are synagogues in this city where I am known. Let me speak there, in the name of the Lord.');
+  await say(BN,'Go, Saul. Speak as you did in Damascus.');await fade(1,700);const o={dur:8000};
+  await narr('Paul stayed with Cephas for fifteen days, moving about freely in Jerusalem and speaking boldly in the name of the Lord. (Acts 9:28; Galatians 1:18)',o);
+  await narr('But the Greek-speaking Jews with whom he disputed made attempts to do away with him. (Acts 9:29)',o);
+  await narr('While he was praying in the temple, the Lord directed him to leave Jerusalem quickly: he would be sent to nations far away. (Acts 22:17-21)',o);
+  await narr('When the brothers found out about the plot, they brought him down to Caesarea, to send him off to Tarsus. (Acts 9:30)',o);
+  enterRoom('harbor',36,124,1);G.inv=CHAP[2].inv('harbor');drawInv();codeBtn();await fade(0,700);
+  await narr('Caesarea, the great harbor on the coast.',{dur:3000});await walk(P,170,128);
+  await say(MT,'There she is, Saul: the only ship in harbor bound for Cilicia.');await say(MT,'But look at her sail. She is going nowhere like that.');
+  await say(MT,'You have the bread and figs the brothers packed for your voyage. I only wish we could give you a ship as well.');
+  await say(P,'A ship that cannot sail, and a tentmaker who must. Let us see her captain.')}
+async function finale2(){
+  SFX.sew();await say(P,'A patch laid under the tear, a flat seam doubled over it...');SFX.sew();await wait(800);
+  await say(P,'...and every stitch pulled tight in tarred twine.');delItem('sailpatch');delItem('twine');F.sailMended=1;SFX.good();
+  await say(CP,'I have paid sailmakers for worse work than that. Haul away!');
+  await fade(1,300);F.sailUp=1;SFX.creak();await wait(450);await fade(0,300);
+  await say(CP,'She draws! Come aboard, tentmaker. We sail on this wind.');
+  await walk(MT,P.x-26,P.y+2);MT.dir=1;P.dir=-1;
+  await say(MT,'This is where we part, brother.');await say(P,'I came to Jerusalem hoping to stay. It seems my road leads elsewhere.');
+  await say(MT,'Wherever it leads, you do not walk it alone now. And Barnabas says he will not forget where Tarsus is.');
+  await say(P,'Greet Cephas and James for me. Tell them a persecutor found brothers.');
+  await walk(P,278,112);await fade(1,400);P.room=null;CP.room=null;G.ship={ox:0,paul:1,capt:1};await fade(0,400);
+  walk(MT,262,120);await wait(900);
+  const sail=tween(14000,k=>{G.ship.ox=Math.round(300*k*k)});
+  await narr('So the brothers sent him off to Tarsus. (Acts 9:30)',{dur:6000});
+  await narr('The congregation throughout Judea, Galilee and Samaria then entered into a period of peace, and it was built up. (Acts 9:31)',{dur:8000});
+  await sail;await narr('Years would pass in Tarsus. Then, one day, a friend would come looking for him. (Acts 11:25)',{dur:6500});
+  SFX.win();ov.className='on end';ov.innerHTML='<h2>CHAPTER COMPLETE</h2><h1 style="font-size:calc(var(--s)*12px)">A Friend in Jerusalem</h1>'+
+    '<p>Paul forced no door. A friend spoke for him, and honest words and honest work did the rest.</p>'+
+    `<p>Prayers for wisdom: ${G.prays}</p>`+
+    '<p class="small">Based on Acts 9:26-31; 22:17-21 and Galatians 1:18, 19. Supporting characters and dialogue are imaginative; the events are from the Scriptures.</p>'+
+    '<p class="go">Click to return to the title</p>';
+  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+function hint2(){
+  if(G.room==='upper')return['upper',['I am among brothers at last. There is much to learn here, and then much to do.','When I am ready, the door leads out to the city and its synagogues.']];
+  if(G.room==='harbor'){
+    if(!F.metCapt)return['capt',['A ship without a sail, and a tentmaker without a passage. Each may be the answer to the other.',"I should speak with the ship's captain."]];
+    if(!F.sailDown)return['halyard',['No one can mend what is out of reach.','The halyard at the foot of the mast will lower the sail.']];
+    if(!F.gotPatch)return['patch',['Sound cloth is often thrown out with the worn. A trained eye can tell them apart.','I can cut a patch from the heap of old sailcloth by the warehouse.']];
+    if(!F.gotTwine)return['twine',['The man who has what I need has a need of his own. Giving comes before receiving.','The old fisherman has not eaten. I could share my provisions with him.']];
+    return['sew',['Everything is at hand. Now, the work itself.','I should sew the patch onto the torn sail with the twine and my awl.']]}
+  if(F.told)return['door',['I no longer stand alone. A trusted voice is ready to speak for me.','Barnabas waits at the door of the house. I should go and knock.']];
+  if(!F.knocked&&!F.metBarn)return['knock',['I came to join the brothers. The first step is the plainest one: ask.','I should knock at the door of the house where the disciples meet.']];
+  if(!F.metBarn)return['barn',["My name closes that door. Perhaps a stranger's need will open another. Who nearby could use a pair of hands?",'I should speak with the man struggling with his handcart.']];
+  if(!F.wheelOn)return['wheel',['Some loads cannot be lifted alone. That is true of wheels, and of more than wheels.','The loose wheel must go back on the axle. With its owner helping, I can lift it.']];
+  if(!F.gotStick)return['stick',['A wheel needs a pin. What does a tentmaker know how to make from a piece of wood?','There is a pruned branch lying under the olive tree.']];
+  if(!F.peg)return['peg',['Good wood, but the wrong shape. My hands know the right one.','My knife can shape the olive branch into a peg.']];
+  return['fix',['The peg is ready. It belongs where the old pin sheared off.',"I should fit the peg to the handcart's axle."]]}
+buildVerbs();setChapter(1);title();requestAnimationFrame(render);
 </script>
 </body>
 </html>

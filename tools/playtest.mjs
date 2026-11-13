@@ -11,7 +11,7 @@ import {fileURLToPath} from 'node:url';
 const here=path.dirname(fileURLToPath(import.meta.url)),root=path.join(here,'..');
 const CHROME=process.env.CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const out=process.env.SHOTS||path.join(here,'out'),PORT=9333;
-const stops=process.argv.slice(2);if(!stops.length)stops.push('final');
+const stops=process.argv.slice(2);if(!stops.length)stops.push('all');
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'paul-playtest-'));
 const game=fs.readFileSync(path.join(root,'index.html'),'utf8');
 fs.writeFileSync(path.join(tmp,'test.html'),game.replace('</body>',fs.readFileSync(path.join(here,'playtest-harness.html'),'utf8')+'</body>'));
@@ -40,5 +40,5 @@ try{
     if(/FAIL|ERR|JSERR|REJ/.test(log)||!/STOP|DONE/.test(log))failed=true;
   }
   ws.close();
-}finally{chrome.kill();fs.rmSync(tmp,{recursive:true,force:true})}
+}finally{chrome.kill();await sleep(600);try{fs.rmSync(tmp,{recursive:true,force:true,maxRetries:6,retryDelay:300})}catch{}}
 process.exit(failed?1:0);

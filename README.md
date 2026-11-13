@@ -2,13 +2,13 @@
 
 A browser point-and-click adventure in the style of early-1990s verb-and-inventory adventure games. You play Saul of Tarsus, later known as the apostle Paul, a tentmaker who gets out of tight spots with his trade, his brothers and prayer rather than with force.
 
-The whole game is one self-contained `index.html`. There are no image or audio files: every picture is drawn in code on a canvas and all music and sound effects are synthesized with the Web Audio API.
+There are two chapters so far. The whole game is one self-contained `index.html`. There are no image or audio files: every picture is drawn in code on a canvas and all music and sound effects are synthesized with the Web Audio API.
 
 ![Title screen](docs/screenshots/title.png)
 
 ## Play
 
-Open `index.html` in any current desktop browser. Nothing to install or build.
+Open `index.html` in any current desktop browser and pick a chapter on the title screen. Nothing to install or build.
 
 To put it online, push this repository to GitHub and enable GitHub Pages for the main branch; the game is served straight from the repository root.
 
@@ -38,6 +38,30 @@ Three connected locations, five characters to talk to, and a puzzle chain built 
 Optional: fill the waterskin at the well and give the guard a drink.
 </details>
 
+## Chapter Two: A Friend in Jerusalem
+
+Three years after his conversion, Saul returns to Jerusalem and tries to join the disciples, but they are all afraid of him and do not believe he is a disciple. Then Barnabas comes to his aid (Acts 9:26-31; 22:17-21; Galatians 1:18, 19). Later, when a plot forces him to leave, the brothers bring him down to Caesarea, where the only ship bound for Tarsus has a torn sail.
+
+| | |
+|---|---|
+| ![A street in Jerusalem](docs/screenshots/jerusalem.png) | ![The harbor of Caesarea](docs/screenshots/harbor.png) |
+| Jerusalem: a stranger's broken cart, and a closed door | Caesarea: a ship that cannot sail, and a tentmaker who must |
+
+Three more locations and six new characters. This chapter turns on honesty as much as handiwork: Paul has to give Barnabas a plain account of himself, and the answers that excuse or recommend him get nowhere.
+
+<details>
+<summary>Walkthrough (spoilers)</summary>
+
+1. Knock at the door of the house. Talk to the man with the handcart.
+2. Pick up the pruned branch under the olive tree and use the knife on it.
+3. Use the loose wheel, then use the peg with the handcart.
+4. Answer Barnabas honestly: admit the persecution, tell what happened on the road to Damascus, and what happened in Damascus afterwards.
+5. Knock at the door again. In the upper room, leave by the door to the city when you are ready.
+6. At the harbor, talk to the captain and use the halyard.
+7. Use the knife on the heap of old sailcloth. Give the provisions to the fisherman.
+8. Use the awl on the torn sail.
+</details>
+
 ## How to play
 
 | Action | How |
@@ -56,7 +80,7 @@ The blue button is the hint system. Paul pauses, bows his head and prays for wis
 
 ### Safe-point codes
 
-The top bar always shows a six-character code for exactly where you are. Write it down, and enter it later with **ENTER CODE** on the title screen (or the code button during play) to return to the same room with the same inventory and progress. Any moment outside a cutscene is a safe point.
+The top bar always shows a short code for exactly where you are: six characters in Chapter One, and the same with a leading `2-` in Chapter Two. Write it down, and enter it later with **ENTER CODE** on the title screen (or the code button during play) to return to the same room with the same inventory and progress. Any moment outside a cutscene is a safe point.
 
 ![Safe-point code](docs/screenshots/code.png)
 
@@ -64,25 +88,21 @@ The top bar always shows a six-character code for exactly where you are. Write i
 
 The game follows the scriptural understanding of Jehovah's Witnesses and the wording of the New World Translation. Paul is shown as a courageous, observant minister who relies on practical wisdom, cooperation with fellow believers and trust in Jehovah. There are no halos, crosses or mystical effects, and no puzzle is solved by a miracle or by violence.
 
-The escape itself is from the Scriptures. Supporting characters (Eliab, Naomi, Jesse, the merchant Zakkai, the guard) and all dialogue are imaginative dramatization.
+The events themselves are from the Scriptures. All dialogue is imaginative dramatization, including the words given to Barnabas, Cephas and James, and so are the supporting characters: Eliab, Naomi, Jesse, the merchant Zakkai and the guard in Chapter One; Mattan, the captain, the fisherman and the doorkeeper in Chapter Two.
 
 This is an independent, non-commercial fan project. It is not produced, endorsed or reviewed by Jehovah's Witnesses or the Watch Tower Bible and Tract Society.
-
-## Roadmap
-
-- **Chapter Two: A Friend in Jerusalem** (Acts 9:26-30), in development. The disciples in Jerusalem are afraid of Saul, until Barnabas comes to his aid.
 
 ## Development
 
 Everything lives in `index.html`: styles, engine, art, audio, rooms and dialogue. Edit it and reload.
 
-`tools/playtest.mjs` plays the game through the real interface in headless Chrome and checks each puzzle step, the save codes and the ending. It needs Node 22 or newer and Google Chrome.
+`tools/playtest.mjs` plays both chapters through the real interface in headless Chrome and checks each puzzle step, the save codes and the endings. It needs Node 22 or newer and Google Chrome.
 
 ```bash
 node tools/playtest.mjs
 ```
 
-Pass stop names to save screenshots to `tools/out/` instead, for example `node tools/playtest.mjs title workshop guard`. The stop names are defined in `tools/playtest-harness.html`.
+Pass stop names to save screenshots to `tools/out/` instead, for example `node tools/playtest.mjs title workshop harbor`. The stop names are defined in `tools/playtest-harness.html`.
 
 ## Credits
 

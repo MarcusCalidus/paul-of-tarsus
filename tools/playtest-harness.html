@@ -20,6 +20,7 @@
  (async()=>{try{
   const srt=()=>G.inv.slice().sort().join();
   halt('title');
+  if(stop==='title2'){document.querySelector('#overlay [data-ch="2"]').click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy,'title starts chapter two');halt('title2')}
   if(stop==='titlecode'){Object.assign(F,{gotAwl:1,gotThread:1,gotKnife:1,gotCloth:1,gotRope:1,gotSkin:1,gotBasket:1,cutCloth:1,longRope:1});G.room='street';
     const c=makeCode();for(const k in F)delete F[k];G.room=null;
     ok($('#code').textContent==='ENTER CODE','title shows ENTER CODE');$('#code').click();
@@ -38,9 +39,9 @@
   await use('knife','cloth');ok(has('patch')&&has('strips')&&!has('cloth'),'cloth cut');
   await use('strips','rope');ok(has('longrope')&&!has('rope'),'rope lengthened');
   const c1=makeCode(),b1=stateBits(),inv1=srt();
-  ok(decode(c1)===b1&&/^[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(c1)&&$('#code').textContent==='CODE '+c1,'code round-trips: '+c1);
+  ok(decode(c1).b===b1&&decode(c1).ch===1&&/^[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(c1)&&$('#code').textContent==='CODE '+c1,'code round-trips: '+c1);
   ok(decode('AAAAAA')===null&&decode('')===null&&decode(c1.slice(0,6)+(c1[6]==='A'?'B':'A'))===null,'bad codes rejected');
-  ok(decode(c1.toLowerCase().replace('-',' '))===b1,'lower case and spaces accepted');
+  ok(decode(c1.toLowerCase().replace('-',' ')).b===b1,'lower case and spaces accepted');
   await actor(null,E);ok(document.querySelectorAll('#choices button').length===5,'eliab has 5 topics');await choose(3);await choose(-1);
   await actor(null,E);ok(document.querySelectorAll('#choices button').length===4,'once-topic gone');
   halt('choices');await choose(-1);
@@ -75,7 +76,55 @@
   halt('descent',()=>{G.scene=wallScene;G.end={heads:1,by:92,rider:1};G.busy=true;lock(true);status();narr('By night the disciples lowered him in a basket through an opening in the city wall. (Acts 9:25)',{dur:9000})});
   await useOn('strongbasket','window');
   let n=0;while(!ov.classList.contains('end')&&n++<4000)await wait(50);
-  ok(ov.classList.contains('end'),'chapter complete screen shown');L('DONE');
+  ok(ov.classList.contains('end'),'chapter one complete screen shown');
+  ok(/Chapter Two code: 2-/.test(ov.textContent),'chapter one ends with a chapter two code');
+  halt('final');
+  /* ---------------- Chapter Two ---------------- */
+  const nq=()=>document.querySelectorAll('#choices button').length;
+  const pickQ=async txt=>{const b=[...document.querySelectorAll('#choices button')],i=b.findIndex(x=>x.textContent.includes(txt));if(i<0)throw new Error('no choice '+txt);b[i].click();await idle()};
+  const enter=async c=>{$('#code').click();$('#codein').value=c;$('#codego').click();await idle()};
+  await wait(1700);ov.click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy&&srt()==='awl,knife,thread','chapter two starts in Jerusalem');
+  halt('jerusalem',()=>{say(P,'The disciples meet in the upper room of that house. I must try to join them.')});
+  ok(/^2-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===2,'chapter two code format '+makeCode());
+  await act('use','door of the house');ok(F.knocked&&G.room==='jerusalem','door stays shut for Saul');
+  await act('use','loose wheel');ok(!F.wheelOn,'wheel needs its owner first');
+  await actor(null,BN);ok(F.metBarn,'met the man with the cart');
+  await act('pickup','pruned branch');ok(has('stick'),'branch picked up');
+  await useOn('stick','handcart');ok(has('stick')&&!F.cartFixed,'raw branch refused');
+  await use('knife','stick');ok(has('peg')&&!has('stick'),'peg carved');
+  await useOn('peg','handcart');ok(has('peg'),'peg refused before the wheel is on');
+  await act('use','loose wheel');ok(F.wheelOn,'wheel lifted together');
+  halt('cart',()=>{say(BN,'It is on! But with no pin through the axle, it will roll off again before I reach the corner.')});
+  const cj=makeCode();
+  verb('use');item('peg');view(...hs('handcart'));await idle();
+  ok(nq()===3,'story round 1 offers three answers');
+  await pickQ('I acted in ignorance');ok(nq()===2,'self-defending answer is set aside');
+  halt('quiz');
+  await pickQ('Yes. I persecuted');await pickQ('On the road to Damascus');await pickQ('I spoke in the name of Jesus');
+  ok(F.told&&F.cartFixed&&!G.busy&&BN.x>340,'Barnabas believes him and goes to the door');
+  const ct=makeCode();await enter(cj);
+  ok(G.ch===2&&has('peg')&&F.wheelOn&&!F.told&&BN.x<260,'chapter two code restores earlier state');
+  await enter(ct);ok(F.told&&BN.x>340&&!has('peg'),'chapter two code restores later state');
+  await act('use','door of the house');ok(G.room==='upper'&&!G.busy,'Barnabas gets him in');
+  halt('upper',()=>{say(CE,'Stay in my house, brother. We have much to speak about.')});
+  await actor(null,CE);await choose(0);await choose(-1);await actor(null,JA);await choose(0);await choose(-1);
+  pray();await idle();ok(hint()[0]==='upper','upper room hint');
+  await act(null,'door to the city');ok(G.room==='harbor'&&has('provisions')&&!G.busy,'brought down to Caesarea');
+  halt('harbor',()=>{say(MT,'There she is, Saul: the only ship in harbor bound for Cilicia.')});
+  await act('use','halyard');ok(!F.sailDown,"rigging needs the captain's word");
+  await actor(null,CP);ok(F.metCapt,'met the captain');
+  await act('use','halyard');ok(F.sailDown,'sail lowered');
+  await useOn('thread','torn sail');ok(!F.sailMended,'tent thread is too weak');
+  await useOn('knife','heap of old sailcloth');ok(has('sailpatch'),'patch cut');
+  await useOn('awl','torn sail');ok(!F.sailMended,'no twine yet');
+  await actor(null,FI);await choose(0);await choose(-1);
+  verb('give');item('provisions');view(FI.x,FI.y-18);await idle();ok(has('twine')&&!has('provisions'),'bread shared, twine given');
+  const chb=makeCode();await enter(chb);ok(G.room==='harbor'&&has('twine')&&has('sailpatch')&&F.sailDown&&!has('provisions'),'harbor code restores');
+  halt('sail',()=>{place(P,'harbor',330,126,1);say(CP,'A patch of sound sailcloth, and tarred twine. Not thread: thread parts in the first gust.')});
+  halt('sailing',()=>{F.sailMended=1;F.sailUp=1;P.room=null;CP.room=null;G.ship={ox:50,paul:1,capt:1};G.busy=true;lock(true);status();narr('So the brothers sent him off to Tarsus. (Acts 9:30)',{dur:9000})});
+  verb('use');item('awl');view(...hs('torn sail'));
+  n=0;while(!/A Friend in Jerusalem/.test(ov.textContent)&&n++<4000)await wait(50);
+  ok(ov.classList.contains('end')&&/A Friend in Jerusalem/.test(ov.textContent),'chapter two complete screen shown');L('DONE');
  }catch(e){if(e!=='halt')L('ERR '+(e&&e.message||e))}})();
 })();
 </script>
