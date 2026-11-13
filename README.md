@@ -8,9 +8,11 @@ There are two chapters so far. The whole game is one self-contained `index.html`
 
 ## Play
 
-Open `index.html` in any current desktop browser and pick a chapter on the title screen. Nothing to install or build.
+**Play online: https://marcuscalidus.github.io/paul-of-tarsus/**
 
-To put it online, push this repository to GitHub and enable GitHub Pages for the main branch; the game is served straight from the repository root.
+Or download this repository and open `index.html` in any current desktop browser. Pick a chapter on the title screen. Nothing to install or build.
+
+The online version is served by GitHub Pages straight from the root of the `main` branch.
 
 ## Chapter One: Escape from Damascus
 
