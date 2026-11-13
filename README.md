@@ -2,7 +2,7 @@
 
 A browser point-and-click adventure in the style of early-1990s verb-and-inventory adventure games. You play Saul of Tarsus, later known as the apostle Paul, a tentmaker who gets out of tight spots with his trade, his brothers and prayer rather than with force.
 
-There are two chapters so far. The whole game is one self-contained `index.html`. There are no image or audio files: every picture is drawn in code on a canvas and all music and sound effects are synthesized with the Web Audio API.
+There are three chapters so far. The whole game is one self-contained `index.html`. There are no image or audio files: every picture is drawn in code on a canvas and all music and sound effects are synthesized with the Web Audio API.
 
 ![Title screen](docs/screenshots/title.png)
 
@@ -64,6 +64,30 @@ Three more locations and six new characters. This chapter turns on honesty as mu
 8. Use the awl on the torn sail.
 </details>
 
+## Chapter Three: Called to Antioch
+
+Tarsus, about 45 C.E. A great number of Greek-speaking people in Antioch of Syria have become believers, and Barnabas comes to Tarsus to make a thorough search for Saul. For a whole year the two of them teach in the congregation there, where the disciples are first called Christians. Then the prophet Agabus foretells a great famine, and the disciples determine to send relief to the brothers in Judea, each according to what he can afford, by the hand of Barnabas and Saul (Acts 11:19-30; 12:25).
+
+| | |
+|---|---|
+| ![Saul's stall in Tarsus](docs/screenshots/tarsus.png) | ![The courtyard in Antioch](docs/screenshots/antioch.png) |
+| Tarsus: Barnabas finds his man, who has a promise to keep first | Antioch: the gifts are in, with weeks of road ahead of them |
+
+Three more locations and five new characters, with Barnabas back at Paul's side. Paul finishes a promised tent before he will leave Tarsus, sews pack bags for the relief, and sees the gift counted and sealed before the brothers. The puzzle about people is a spinner who stays away because she thinks she has nothing to give: pressure and pity both fail with her.
+
+<details>
+<summary>Walkthrough (spoilers)</summary>
+
+1. In Tarsus, use the awl on the tent; Barnabas holds the seam.
+2. Use the knife on the leather hide, then the leather loops on the tent.
+3. Pick up the finished tent and give it to Kleon. Leave by the east gate.
+4. In the courtyard at Antioch, use the knife with the goat-hair cloth.
+5. Go out to the street and talk to Xanthe. Tell her that each gives what he can afford, ask what is in her hands, and tell her that the gift has no bags and you have no thread.
+6. Use the awl with the cloth panels.
+7. Back in the courtyard, give your savings to Lucius, and ask for the purse to be counted before the brothers and sealed.
+8. Use the pack bags with the donkey.
+</details>
+
 ## How to play
 
 | Action | How |
@@ -82,7 +106,7 @@ The blue button is the hint system. Paul pauses, bows his head and prays for wis
 
 ### Safe-point codes
 
-The top bar always shows a short code for exactly where you are: six characters in Chapter One, and the same with a leading `2-` in Chapter Two. Write it down, and enter it later with **ENTER CODE** on the title screen (or the code button during play) to return to the same room with the same inventory and progress. Any moment outside a cutscene is a safe point.
+The top bar always shows a short code for exactly where you are: six characters in Chapter One, and the same with a leading `2-` or `3-` in the later chapters. Write it down, and enter it later with **ENTER CODE** on the title screen (or the code button during play) to return to the same room with the same inventory and progress. Any moment outside a cutscene is a safe point.
 
 ![Safe-point code](docs/screenshots/code.png)
 
@@ -90,7 +114,7 @@ The top bar always shows a short code for exactly where you are: six characters 
 
 The game follows the scriptural understanding of Jehovah's Witnesses and the wording of the New World Translation. Paul is shown as a courageous, observant minister who relies on practical wisdom, cooperation with fellow believers and trust in Jehovah. There are no halos, crosses or mystical effects, and no puzzle is solved by a miracle or by violence.
 
-The events themselves are from the Scriptures. All dialogue is imaginative dramatization, including the words given to Barnabas, Cephas and James, and so are the supporting characters: Eliab, Naomi, Jesse, the merchant Zakkai and the guard in Chapter One; Mattan, the captain, the fisherman and the doorkeeper in Chapter Two.
+The events themselves are from the Scriptures. All dialogue is imaginative dramatization, including the words given to Barnabas, Cephas, James, Agabus and Lucius, and so are the supporting characters: Eliab, Naomi, Jesse, the merchant Zakkai and the guard in Chapter One; Mattan, the captain, the fisherman and the doorkeeper in Chapter Two; Kleon, Xanthe and Theron in Chapter Three. The Scriptures say nothing of how the relief was packed or counted: those details are invented as well.
 
 This is an independent, non-commercial fan project. It is not produced, endorsed or reviewed by Jehovah's Witnesses or the Watch Tower Bible and Tract Society.
 
@@ -98,13 +122,13 @@ This is an independent, non-commercial fan project. It is not produced, endorsed
 
 Everything lives in `index.html`: styles, engine, art, audio, rooms and dialogue. Edit it and reload.
 
-`tools/playtest.mjs` plays both chapters through the real interface in headless Chrome and checks each puzzle step, the save codes and the endings. It needs Node 22 or newer and Google Chrome.
+`tools/playtest.mjs` plays all three chapters through the real interface in headless Chrome and checks each puzzle step, the save codes and the endings. It needs Node 22 or newer and Google Chrome.
 
 ```bash
 node tools/playtest.mjs
 ```
 
-Pass stop names to save screenshots to `tools/out/` instead, for example `node tools/playtest.mjs title workshop harbor`. The stop names are defined in `tools/playtest-harness.html`.
+Pass stop names to save screenshots to `tools/out/` instead, for example `node tools/playtest.mjs title workshop harbor`. The stop names are defined in `tools/playtest-harness.html`; Chapter Three stops such as `tarsus`, `court` and `antioch` start that chapter directly.
 
 ## Credits
 

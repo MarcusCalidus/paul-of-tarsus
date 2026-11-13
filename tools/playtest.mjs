@@ -32,7 +32,7 @@ try{
   await send('Emulation.setDeviceMetricsOverride',{width:960,height:651,deviceScaleFactor:1,mobile:false});
   for(const stop of stops){
     await send('Page.navigate',{url:`file://${path.join(tmp,'test.html')}?stop=${stop}`});
-    let log='';for(let i=0;i<900;i++){await sleep(250);log=await ev("(document.querySelector('#tlog')||{}).textContent||''");if(/STOP|DONE|ERR|JSERR|REJ/.test(log))break}
+    let log='';for(let i=0;i<1400;i++){await sleep(250);log=await ev("(document.querySelector('#tlog')||{}).textContent||''");if(/STOP|DONE|ERR|JSERR|REJ/.test(log))break}
     await sleep(1600);await ev("document.querySelector('#tlog').style.display='none'");await sleep(100);
     const shot=await send('Page.captureScreenshot',{format:'png'});
     fs.writeFileSync(path.join(out,`${stop}.png`),Buffer.from(shot.result.data,'base64'));

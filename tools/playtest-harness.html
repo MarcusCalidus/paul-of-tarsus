@@ -18,9 +18,15 @@
  const halt=(name,fn)=>{if(stop===name){clearInterval(sk);L('STOP '+name+' room='+G.room+' inv='+G.inv.join(','));if(fn)fn();throw 'halt'}};
  addEventListener('error',e=>L('JSERR '+e.message));addEventListener('unhandledrejection',e=>{if(e.reason!=='halt')L('REJ '+(e.reason&&e.reason.message||e.reason))});
  (async()=>{try{
-  const srt=()=>G.inv.slice().sort().join();
+  const srt=()=>G.inv.slice().sort().join(),nq=()=>document.querySelectorAll('#choices button').length;
+  const pickQ=async txt=>{const b=[...document.querySelectorAll('#choices button')],i=b.findIndex(x=>x.textContent.includes(txt));if(i<0)throw new Error('no choice '+txt);b[i].click();await idle()};
+  const enter=async c=>{$('#code').click();$('#codein').value=c;$('#codego').click();await idle()};
+  const give=async(id,a)=>{verb('give');item(id);view(a.x,a.y-18);await idle()};
+  /* Chapter Three stops start that chapter from the title screen, without replaying the first two. */
+  const C3=/^(tarsus|tent|frame|meeting|court|antioch|potter|quiz3|sealed|loaded|road|final3)$/.test(stop);let n=0;
   halt('title');
   if(stop==='title2'){document.querySelector('#overlay [data-ch="2"]').click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy,'title starts chapter two');halt('title2')}
+  if(stop==='title3'){document.querySelector('#overlay [data-ch="3"]').click();await idle();ok(G.ch===3&&G.room==='tarsus'&&!G.busy&&BN.x>100,'title starts chapter three');halt('title3')}
   if(stop==='titlecode'){Object.assign(F,{gotAwl:1,gotThread:1,gotKnife:1,gotCloth:1,gotRope:1,gotSkin:1,gotBasket:1,cutCloth:1,longRope:1});G.room='street';
     const c=makeCode();for(const k in F)delete F[k];G.room=null;
     ok($('#code').textContent==='ENTER CODE','title shows ENTER CODE');$('#code').click();
@@ -28,6 +34,7 @@
     $('#codein').value=c;$('#codego').click();await idle();
     ok(G.room==='street'&&!G.scene&&!ov.classList.contains('on')&&!G.busy&&has('longrope')&&has('patch')&&has('basket')&&!has('pouch'),'code from title starts mid-game: '+c);
     await act(null,"Eliab's door");ok(G.room==='workshop','playable after title code');halt('titlecode')}
+  if(!C3){
   ov.click();await idle();ok(G.room==='workshop'&&!G.busy,'intro ends in workshop');
   halt('workshop',()=>{say(E,'Tonight we lower you from her window. We need a basket that will hold, and a rope that will reach.')});
   halt('walk',()=>{P.speed=4;walk(P,60,130)});
@@ -75,14 +82,11 @@
   halt('house',()=>{say(P,'Twice around the beam, and a hitch that tightens under load.')});
   halt('descent',()=>{G.scene=wallScene;G.end={heads:1,by:92,rider:1};G.busy=true;lock(true);status();narr('By night the disciples lowered him in a basket through an opening in the city wall. (Acts 9:25)',{dur:9000})});
   await useOn('strongbasket','window');
-  let n=0;while(!ov.classList.contains('end')&&n++<4000)await wait(50);
+  n=0;while(!ov.classList.contains('end')&&n++<4000)await wait(50);
   ok(ov.classList.contains('end'),'chapter one complete screen shown');
   ok(/Chapter Two code: 2-/.test(ov.textContent),'chapter one ends with a chapter two code');
   halt('final');
   /* ---------------- Chapter Two ---------------- */
-  const nq=()=>document.querySelectorAll('#choices button').length;
-  const pickQ=async txt=>{const b=[...document.querySelectorAll('#choices button')],i=b.findIndex(x=>x.textContent.includes(txt));if(i<0)throw new Error('no choice '+txt);b[i].click();await idle()};
-  const enter=async c=>{$('#code').click();$('#codein').value=c;$('#codego').click();await idle()};
   await wait(1700);ov.click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy&&srt()==='awl,knife,thread','chapter two starts in Jerusalem');
   halt('jerusalem',()=>{say(P,'The disciples meet in the upper room of that house. I must try to join them.')});
   ok(/^2-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===2,'chapter two code format '+makeCode());
@@ -124,7 +128,71 @@
   halt('sailing',()=>{F.sailMended=1;F.sailUp=1;P.room=null;CP.room=null;G.ship={ox:50,paul:1,capt:1};G.busy=true;lock(true);status();narr('So the brothers sent him off to Tarsus. (Acts 9:30)',{dur:9000})});
   verb('use');item('awl');view(...hs('torn sail'));
   n=0;while(!/A Friend in Jerusalem/.test(ov.textContent)&&n++<4000)await wait(50);
-  ok(ov.classList.contains('end')&&/A Friend in Jerusalem/.test(ov.textContent),'chapter two complete screen shown');L('DONE');
+  ok(ov.classList.contains('end')&&/A Friend in Jerusalem/.test(ov.textContent),'chapter two complete screen shown');
+  ok(/Chapter Three code: 3-/.test(ov.textContent),'chapter two ends with a chapter three code');
+  halt('final2');await wait(1700)}
+  /* ---------------- Chapter Three ---------------- */
+  (C3?document.querySelector('#overlay [data-ch="3"]'):ov).click();await idle();ok(G.ch===3&&G.room==='tarsus'&&!G.busy&&srt()==='awl,knife,thread','chapter three starts in Tarsus');
+  halt('tarsus',()=>{say(BN,'I have asked for you along every row of tentmakers in this city. And here you are, at the very last stall.')});
+  ok(/^3-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===3,'chapter three code format '+makeCode());
+  await act(null,'east gate');ok(G.room==='tarsus'&&!F.sold&&!G.busy,'no leaving before the promise is kept');
+  await act('pickup','tent');ok(!has('tent')&&!F.gotTent,'unfinished tent stays on its frame');
+  await actor(null,KL);ok(F.metKleon,'met Kleon');await choose(0);await choose(-1);
+  await actor(null,BN);ok(nq()===4,'barnabas has 4 topics in Tarsus');await choose(-1);
+  await useOn('awl','tent');ok(F.seam&&BN.x<120,'seam sewn with Barnabas holding the edge');
+  await useOn('awl','tent');ok(!F.loopsOn,'no loops to sew yet');
+  await useOn('knife','leather hide');ok(has('loops')&&F.gotLoops,'peg loops cut from the hide');
+  halt('tent',()=>{place(P,'tarsus',182,113,-1);say(P,'One loop at every peg, and each stitched through twice...')});
+  const ta=makeCode();
+  await useOn('loops','tent');ok(F.loopsOn&&!has('loops'),'loops sewn to the hem');
+  await give('awl',KL);ok(!F.sold,'Kleon wants his tent, not tools');
+  await act('pickup','tent');ok(has('tent')&&F.gotTent,'finished tent rolled up');
+  await give('tent',KL);ok(F.sold&&!has('tent')&&!G.busy,'tent delivered as promised');
+  pray();await idle();ok(hint()[0]==='go3','tarsus hint points to the road');
+  const tb=makeCode();await enter(ta);
+  ok(G.ch===3&&G.room==='tarsus'&&has('loops')&&F.seam&&!F.loopsOn&&!F.sold&&BN.room==='tarsus','chapter three code restores earlier state');
+  await enter(tb);ok(F.sold&&F.gotTent&&!has('tent')&&srt()==='awl,knife,thread','chapter three code restores later state');
+  halt('frame',()=>{say(KL,'May your road be as sound as your seams, tentmaker.')});
+  halt('meeting',()=>{G.meet=1;enterRoom('court',112,126,1);place(BN,'court',86,122,1);place(LU,'court',140,118,1);place(XA,'court',62,130,1);place(TN,'court',40,124,1);place(AG,'court',204,118,-1);
+    say(AG,'A great famine is about to come on the entire inhabited earth.')});
+  await act(null,'east gate');
+  ok(G.room==='court'&&!G.busy&&srt()==='awl,bolt,knife,wages'&&BN.room==='court'&&XA.room==='antioch','brought to Antioch; a year later, the relief is gathered');
+  halt('court',()=>{say(BN,'But it has weeks of road ahead of it, and our old pack bags are rotten through.')});
+  await actor(null,BN);await choose(0);await choose(-1);await actor(null,AG);await choose(0);await choose(-1);
+  await useOn('awl','old pack bags');await useOn('bolt','donkey');ok(!F.bagsOn&&has('bolt'),'loose cloth carries nothing');
+  await use('awl','bolt');ok(has('bolt')&&!F.cutBolt,'cloth must be cut before sewing');
+  await use('knife','bolt');ok(has('panels')&&!has('bolt'),'panels cut');
+  await use('awl','panels');ok(!F.bags&&has('panels'),'no thread, no bags');
+  pray();await idle();ok(hint()[0]==='xan3','hint points to Xanthe');
+  await act(null,'gate to the street');ok(G.room==='antioch'&&!G.busy,'out in the street');
+  halt('antioch',()=>{place(P,'antioch',150,122,1);say(XA,'The others carry in sacks of grain. I earn two small coins a day. What could I give?')});
+  halt('potter',()=>{place(P,'antioch',320,124,1);G.cam=160;say(TN,'My oil jars went to the courtyard at dawn. A potter cannot send much, but he can send it well sealed.')});
+  await actor(null,TN);ok(nq()===5,'theron has 5 topics');await choose(2);await choose(-1);
+  await give('wages',XA);ok(has('wages'),'silver is not what Xanthe needs');
+  await actor(null,XA);ok(nq()===3,'Xanthe round 1 offers three answers');
+  await pickQ('everyone must give');ok(nq()===2&&!F.gotSpool,'pressure is set aside');
+  halt('quiz3');
+  await pickQ('you are excused');ok(nq()===1,'so is dismissal');
+  await pickQ('No one asks for what you do not have');await pickQ('What is in your hands');await pickQ('I could buy it');await pickQ('no bags to travel in');
+  ok(has('spool')&&F.gotSpool&&!G.busy,'Xanthe gives her thread gladly');
+  await actor(null,TN);ok(nq()===4,'topic about Xanthe is gone');await choose(-1);
+  await use('spool','panels');ok(has('bags')&&!has('panels')&&!has('spool'),'pack bags sewn');
+  const tc=makeCode();
+  await act('use','south gate');ok(G.room==='antioch','not leaving before the gift is ready');
+  await act(null,'gate to the courtyard');ok(G.room==='court'&&P.x>250,'back in the courtyard');
+  await give('wages',LU);ok(nq()===3&&!has('wages'),'Lucius offers the purse uncounted');
+  await pickQ('careful count on the road');ok(nq()===2&&!F.sealed,'a private count is set aside');
+  await pickQ('Count it before the brothers');ok(F.sealed&&!has('wages')&&!G.busy&&has('bags'),'gift counted, recorded and sealed');
+  const td=makeCode();await enter(tc);ok(G.room==='antioch'&&has('bags')&&has('wages')&&!F.sealed&&XA.room==='antioch','street code restores');
+  await enter(td);ok(G.room==='court'&&F.sealed&&has('bags')&&!has('wages')&&BN.room==='court','courtyard code restores');
+  pray();await idle();ok(hint()[0]==='load3','courtyard hint');
+  halt('sealed',()=>{place(P,'court',232,116,1);say(P,'He cannot carry grain on a bare saddle. He needs pack bags.')});
+  halt('loaded',()=>{F.bagsOn=1;F.loaded=1;place(XA,'court',216,128,-1);place(TN,'court',244,134,-1);place(P,'court',150,126,1);G.inv=CHAP[3].inv('court');drawInv();
+    say(XA,'And my thread in every seam of it. I did have something to give.')});
+  halt('road',()=>{G.scene=roadScene;G.trek={k:.52};G.busy=true;lock(true);status();narr('So they sent the relief to the elders in Judea by the hand of Barnabas and Saul. (Acts 11:30)',{dur:9000})});
+  verb('use');item('bags');view(...hs('donkey'));
+  n=0;while(!(ov.classList.contains('end')&&/Called to Antioch/.test(ov.textContent))&&n++<4000)await wait(50);
+  ok(ov.classList.contains('end')&&/Called to Antioch/.test(ov.textContent),'chapter three complete screen shown');halt('final3');L('DONE');
  }catch(e){if(e!=='halt')L('ERR '+(e&&e.message||e))}})();
 })();
 </script>
