@@ -416,70 +416,77 @@ const LOOK={
   paul:{skin:'#c08a5c',hair:'#2a1a12',beard:'#2a1a12',tunic:'#c4b08a',cloak:'#6e4a2e',belt:'#3a2414',trim:'#8a6a4a',pouch:1,ph:0}};
 
 /* ramp: the five tones a material is painted in: highlight, light, base, shadow, deep shadow. Shadows lean toward violet. */
-const ramp=c=>[tint(c,.38),tint(c,.17),c,mix(tint(c,-.28),'#3a2444',.14),mix(tint(c,-.55),'#22122c',.22)];
+const ramp=c=>{const[r,g,b]=hex(c),l=(r*.3+g*.59+b*.11)/255,k=l*l;return[tint(c,.38),tint(c,.17),c,mix(tint(c,-.28+.12*k),'#3a2444',.14),mix(tint(c,-.55+.22*k),'#22122c',.22-.08*k)]};
 function pal(o){return o.p||(o.p={sk:ramp(o.skin),tu:ramp(o.tunic),st:o.stripe?ramp(o.stripe):null,cl:o.cloak?ramp(o.cloak):null,ha:ramp(o.hair||'#2a1a12'),be:o.beard?ramp(o.beard):null,
   bt:o.belt?ramp(o.belt):null,le:ramp('#7a4e2a'),ar:o.armor?ramp(o.armor):null,hd:ramp(o.veil||o.wrap||o.helm||'#888888'),tr:o.trim?ramp(o.trim):null})}
 /* stamp: lay down a small pixel map. Each character names a color in the legend L; anything else is left alone. */
 function stamp(g,map,x,y,L){for(let j=0;j<map.length;j++){const r=map[j];for(let i=0;i<r.length;i++){const c=L[r[i]];if(c){g.fillStyle=c;g.fillRect(x+i,y+j,1,1)}}}}
 /* Heads are drawn by hand, pixel by pixel, in three-quarter view. Column 0 of FACE, HAIR, BALD and the beards is x=-4;
-   the head coverings are two columns wider and start at x=-5. s S L z: skin tones; w p: eye; b: brow; m: mouth; h H d: hair; B V v: beard; a A y q: covering. */
+   the head coverings are two columns wider and start at x=-5. s S L z: skin tones; w p: eye; b: brow; m: mouth; r: lips; c: cheek;
+   h H d: hair; k K: hair under a shawl; B V v: beard; a A y q: covering. A figure with a veil is drawn as a woman. */
 const HEADS={
  face:["...........","....zsss...","...zssSSs..","..zssSSSSs.","..zsSSSSSs.","..zsSSLLSs.","..zbbsSbbs.",".zswpsSwps.",".zzssSLsss.","..zssSLLss.","..zzssnnzs.","...zsmmmss.","...zzssss..","....zzss..."],
  hair:["...hhhhhh..","..hHHHHhhh.",".hhHHhhhhhd",".hhhhhhhhdd","hhhh.....hd","hhd.......d","hhd........","hd.........","hd.........",".d........."],
  bald:["...........","...........","....LL.....","...........","h..........","hh.........","hhd........","hhd........","hd.........",".d........."],
  beard:["..B........","..BB.......","..vBBvBBB..","..vBB...B..","...vBBBBB..","....vBBB...",".....vv...."],
  longBeard:["..B........","..BB.......","..vBBvBBB..","..vBB...B..","..vBBBBBB..","...vBVBBB..","...vBVBBB..","....BBVBv..","....vBVB...","....vBBB...",".....BBv...",".....vB....","......v...."],
- veil:["....aaaaa....","..aaAAAAAaa..",".aaAAaaaaaaa.",".aAaaaaaaaaaq","aaaaak...aaaq","aaaak......aq","aaaq.......aq","aaq.........q","aaq..........","aaq..........","aaq..........",".aaq.........",".aaaq........","..aaaq....aa.","..aaaaaaaaaa.",".aaaaAAaaaaaq","aaaaAAaaaaaaq"],
+ faceF:["...........","....zsss...","...zssSSs..","..zssSSSSs.","..zsSSSSSs.","..zsSSSSSs.","..zbbsSbbs.",".zswpsSwps.",".zzssSSsss.","..zcsSLsss.","..zsssnsss.","...zsrrrs..","...zzsss...","....zss...."],
+ veil:["....aaaaa....","..aaAAAAAaa..",".aaAAaaaaaaa.",".aAaakkkkkaaq","aaaakkK.kkkaq","aaakk....kkaq","aaak......kaq","aaq........kq","aaq.........q","aaq.........q","aaq........q.","aaaq.......q.","aaaq......qq.",".aaaq....qaq.",".aaaaq..qaaq."],
  wrap:["...aaAAAaa...",".aaAAAAAaaaa.","aaAAaaaAAaaaq","aAaaaAAaaaaqq","aaaAAaaaaaqqq","aaaaaaaaqqqq.",".qaaaaaqqqq..","aaq..........","aaq..........","aq...........","aq...........",".q..........."],
  helm:["......y......","....aAAAa....","..aaAAyAAaa..",".aaAAyAAaaaq.",".aAAyAaaaaaq.",".aAAAaaaaaqq.","qaaaaaaaaaqqq",".aa.........q",".aa..........",".aq..........",".aq..........",".aq..........","..q.........."]};
 /* person: one figure with its feet at x,y, one drawing unit per canvas pixel, facing right (dir -1 mirrors it).
    fr 0-3 walk cycle; talk opens the mouth; bow lowers the head; ges raises the far hand; blink closes the eyes. */
 function person(g,x,y,o,dir,fr,talk,bow,ges,blink){
-  const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=c.le;g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+  const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=c.le,fem=!!o.veil;g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
   const px=(a,b,col,w,h)=>{g.fillStyle=col;g.fillRect(a,b,w||1,h||1)};
   /* cloth: one pixel row of a rounded form lit from the front right. folds: [position 0-1, first row, drift per row, last row];
-     each is a dark crease with a light ridge beside it, wandering a little as it falls. hi: rows that catch a highlight. */
-  const cloth=(yy,x0,x1,R,i,folds,R2,hi)=>{const w=x1-x0+1,wob=Math.sin(yy*.47)*.035;for(let k=0;k<w;k++){const t=(k+.5)/w+wob;let v=t<.11?4:t<.27?3:t<.64?2:t<.9?1:2;
+     each is a dark crease with a light ridge beside it, wandering a little as it falls. hi: rows that catch a highlight.
+     soft: the left edge is only a crease (an arm lies against it), not the turn of the form into shadow. */
+  const cloth=(yy,x0,x1,R,i,folds,R2,hi,soft)=>{const w=x1-x0+1,wob=Math.sin(yy*.47)*.035;for(let k=0;k<w;k++){const t=(k+.5)/w+wob;let v=soft?(k===0?4:k<3?3:t<.64?2:t<.9?1:2):t<.11?4:t<.27?3:t<.64?2:t<.9?1:2;
       if(hi&&i>=hi[0]&&i<=hi[1]&&t>.68&&t<.84)v=0;
       if(folds)for(let f=0;f<folds.length;f++){const[u,s0,dr,s1]=folds[f];if(i<s0||(s1&&i>s1))continue;const fx=Math.round(w*u+(dr||0)*i+Math.sin(i*.31+f*2.1)*.7),deep=i-s0>7;
         if(k===fx||(deep&&k===fx-1))v=Math.min(4,v+1+(deep&&k===fx?1:0));else if(k===fx+1)v=Math.max(0,v-1)}
       px(x0+k,yy,(R2&&(x0+k+40)%5<2?R2:R)[v])}};
-  const kid=o.h?1:0,slim=o.slim?1:0,LEG=kid?21:25,SK=kid?13:16,TOR=kid?24:28,bob=fr%2?-1:0,st=fr===1?1:fr===3?-1:0;
+  const kid=o.h?1:0,slim=o.slim?1:0,LEG=kid?21:25,SK=kid?13:16,TOR=kid?24:fem?26:28,bob=fr%2?-1:0,st=fr===1?1:fr===3?-1:0;
   const yA=-4,yH=yA-LEG+bob,yB=yH-SK,yS=yB-3-TOR,SL=o.longSleeve?26:12;   /* ankle, hem, top of the skirt, shoulder line */
+  /* the sleeves are one garment with the body: PIT rows of shoulder yoke, then the arms part from the trunk */
+  const PIT=8,nw=slim+(fem?1:0),aw=fem?4:5,ax=-10+nw-aw,fx=11-nw,fw=5,waist=Math.round(TOR*.6);
   /* cape, behind everything */
-  if(o.cape)for(let yy=yS;yy<=yH+13;yy++){const i=yy-yS,e=yy>yH+10?1:0;cloth(yy,-17+e,-10,C,i,[[.45,6,0]]);cloth(yy,10,16-e,C,i,[[.5,8,0]])}
-  /* an arm hanging at the side. ax: its left edge; w: width at the shoulder; sw: how far the hand swings; dk: darker by so many tones;
-     side 1: the near arm (rounded on the left), -1: the far arm */
-  const arm=(ax,w,sw,dk,side)=>{const sh=v=>Math.min(4,v+dk),tr=c.tr||T;
-    for(let i=0;i<27;i++){const yy=yS+1+i,t=i/26,dx=Math.round(sw*t*t),ins=i<3?3-i:0,ww=i<SL?w:i>19?w-2:w-1,x0=ax+dx+(side>0?ins+w-ww:0),x1=ax+dx+(side>0?w-1:ww-1-ins),n=x1-x0+1;
-      for(let k=0;k<n;k++){const u=(k+.5)/n;px(x0+k,yy,i<SL?(o.longSleeve&&i>SL-3?tr:T)[sh(i===SL-1?4:u<.22?3:u<.68?2:i<8&&u>.5?0:1)]:S[sh(i===SL?3:u<.26?3:u<.7?2:1)])}}
-    const hx=(side>0?ax+w-5:ax)+Math.round(sw);[4,5,5,5,4].forEach((n,j)=>{const x0=hx+(j===0||j===4?side>0?1:0:0);
-      for(let k=0;k<n;k++)px(x0+k,yS+28+j,S[sh(j===4?3:k===0?3:k===n-1?1:j===3&&k===2?3:2)])})};
-  if(!o.spear&&!(ges&&!bow))arm(11,5,st*2,0,-1);else for(let i=0;i<13;i++)for(let k=0;k<5;k++)px(11+k,yS+1+i,T[i===12?4:k<1?3:k<3?2:1]);
+  if(o.cape)for(let yy=yS;yy<=yH+13;yy++){const i=yy-yS,e=yy>yH+10?1:0;cloth(yy,-18+e,-10,C,i,[[.45,6,0]]);cloth(yy,10,17-e,C,i,[[.5,8,0]])}
+  /* an arm, from the armpit down. near: the arm on the shadow side; sw: how far the hand swings; stub: the upper arm only */
+  const arm=(near,sw,stub)=>{const x00=near?ax:fx,w=near?aw:fw,tr=c.tr||T,lean=near?1:-1;
+    for(let i=PIT;i<(stub?14:28);i++){const t=(i-PIT)/(27-PIT),dx=Math.round(sw*t*t)+(i>waist?lean:0),sl=i<=SL,ww=sl?w:i>21?w-2:w-1,x0=near?x00+dx+w-ww:x00+dx,R=sl?(o.longSleeve&&i>SL-3?tr:T):S;
+      for(let k=0;k<ww;k++){const u=(k+.5)/ww;let v;
+        if(near)v=sl?(i===SL?4:u<.5?4:3):i===SL+1?4:u<.34?3:u<.8?2:3;else v=sl?(i===SL?3:k===0?(i>PIT+1?3:2):u<.78?1:2):i===SL+1?3:k===0?3:u<.78?1:2;px(x0+k,yS+i,R[v])}}
+    if(stub)return;const hx=(near?x00+w-5:x00)+Math.round(sw)+lean;[4,5,5,5,4].forEach((n,j)=>{const x0=hx+(j===0||j===4?near?1:0:0);
+      for(let k=0;k<n;k++)px(x0+k,yS+28+j,S[Math.min(4,(j===4?3:k===0?3:k===n-1?1:j===3&&k===2?3:2)+(near?1:0))])})};
+  arm(false,st*2,o.spear||(ges&&!bow));
   /* legs and sandals, or the feet under a long robe */
-  const foot=(fx,fy,R)=>{px(fx+1,fy,R[2],5);px(fx,fy+1,R[2],8);px(fx,fy+2,R[2],10);px(fx+8,fy+2,R[1],2);px(fx,fy+1,R[3]);px(fx,fy+2,R[3],2);px(fx-1,fy+3,'#2a1810',13);px(fx+9,fy+3,'#4a3020',3);
-    px(fx+1,fy,LE[2],5);px(fx+5,fy+1,LE[2],2);px(fx+6,fy+2,LE[3],2);px(fx+2,fy+1,LE[3]);px(fx+2,fy+2,LE[3]);px(fx+1,fy,LE[3])};
+  const foot=(fx0,fy,R)=>{px(fx0+1,fy,R[2],5);px(fx0,fy+1,R[2],8);px(fx0,fy+2,R[2],10);px(fx0+8,fy+2,R[1],2);px(fx0,fy+1,R[3]);px(fx0,fy+2,R[3],2);px(fx0-1,fy+3,'#2a1810',13);px(fx0+9,fy+3,'#4a3020',3);
+    px(fx0+1,fy,LE[2],5);px(fx0+5,fy+1,LE[2],2);px(fx0+6,fy+2,LE[3],2);px(fx0+2,fy+1,LE[3]);px(fx0+2,fy+2,LE[3]);px(fx0+1,fy,LE[3])};
   const leg=(kx,sh,lift,dk)=>{const y1=yA-lift,n=y1-yH,R=dk?[S[1],S[2],S[3],S[4],S[4]]:S;
     for(let i=0;i<n;i++){const t=i/(n-1),cx=Math.round(kx+sh*t*t),w=t<.12?7:t<.5?8:t<.7?7:t<.86?6:5,x0=cx+(t<.12?0:t<.5?-1:t<.7?0:1);
       for(let k=0;k<w;k++){const u=(k+.5)/w;let v=u<.18?4:u<.4?3:u<.76?2:1;if(i<2)v=Math.min(4,v+1);else if(t<.2&&u>.4&&u<.7)v=1;if(k===w-3&&t>.25&&t<.7)v=Math.max(0,v-1);px(x0+k,yH+i,R[v])}}
     foot(Math.round(kx+sh)+1,y1,R)};
-  if(o.long){foot(3-st*2,yA,[S[1],S[2],S[3],S[4],S[4]]);foot(-8+st*2,yA,S)}else{leg(1,-st*5,st>0?2:0,1);leg(-9,st*5,st<0?2:0,0)}
-  /* skirt of a short tunic, or a robe to the ankles */
+  if(o.long){foot(3-st*2,yA,[S[1],S[2],S[3],S[4],S[4]]);foot(-8+st*2,yA,S)}else{leg(1,st>0?-2:st<0?4:0,st>0?2:0,1);leg(-9,st>0?3:st<0?-3:0,st<0?2:0,0)}
+  /* skirt of a short tunic, or a robe to the ankles; a woman's robe widens over the hips */
   const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=o.long?yA+1:yH+1,n=y1-yB+1;
-  for(let i=0;i<n;i++){const t=i/(n-1),hw=10-slim+Math.round(t*(o.long?3.2:2)),sw=Math.round(st*t*(o.long?1.6:1)),x0=-hw+sw,x1=hw+1+sw,yy=yB+i;
+  for(let i=0;i<n;i++){const t=i/(n-1),hw=(fem?8+Math.min(3,Math.round(i*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=Math.round(st*t*(o.long?1.6:1)),x0=-hw+sw,x1=hw+1+sw,yy=yB+i;
     if(i>=n-2){for(let xx=x0;xx<=x1;xx++){const u=(xx-x0+.5)/(x1-x0+1);px(xx,yy,i===n-1?hem[u<.3?4:3]:hem[u<.2?4:u<.6?2:1])}}
     else cloth(yy,x0,x1,T,i,o.long?[[.16,6,.03],[.33,2,-.02,n-9],[.5,9,.02],[.66,3,.03],[.84,12,.02]]:[[.22,4,.03],[.47,1,0],[.72,5,.03]],SR,o.long?[n-16,n-6]:null)}
-  /* torso */
-  for(let i=0;i<TOR;i++){const x0=i===0?-6:i===1?-8:i===2?-9:i>TOR*.6?-9+slim:-10+slim,x1=i===0?8:i===1?10:i>TOR*.6?10-slim:11-slim;
-    cloth(yS+i,x0,x1,T,i,[[.24,TOR-9,.01],[.48,TOR-6,0],[.7,TOR-11,.01]],SR,[4,11])}
-  px(-1,yS,S[3],7);px(0,yS+1,S[2],5);px(0,yS+1,S[3]);px(1,yS+2,S[2],3);px(1,yS+2,S[3]);px(2,yS+3,S[3]);px(-2,yS,T[1]);px(6,yS,T[1]);
+  /* shoulders and trunk */
+  for(let i=0;i<TOR;i++){const yy=yS+i;
+    if(i<PIT)cloth(yy,i===0?-6:i===1?Math.max(ax+5,-10):i===2?ax+2:i===3?ax+1:ax,i===0?8:i===1?Math.min(11,13-nw):i===2?13-nw:i===3?14-nw:15-nw,T,i,null,SR,[2,6]);
+    else cloth(yy,i>waist?-9+nw:-10+nw,i>waist?10-nw:11-nw,T,i,[[.24,TOR-9,.01],[.48,TOR-6,0],[.7,TOR-11,.01]],SR,[PIT,fem?11:12],1)}
+  if(fem){for(let xx=-3;xx<=5;xx++)if(xx!==1)px(xx,yS+12,T[3]);px(-1,yS,S[3],6);px(0,yS+1,S[2],4);px(0,yS+1,S[3]);px(1,yS+2,S[3],2);const tr=c.tr||T;px(-2,yS,tr[1]);px(5,yS,tr[1]);px(-1,yS+1,tr[2]);px(4,yS+1,tr[1]);px(0,yS+2,tr[2]);px(3,yS+2,tr[1]);px(1,yS+3,tr[2],2)}
+  else{px(-1,yS,S[3],7);px(0,yS+1,S[2],5);px(0,yS+1,S[3]);px(1,yS+2,S[2],3);px(1,yS+2,S[3]);px(2,yS+3,S[3]);px(-2,yS,T[1]);px(6,yS,T[1])}
   /* scale armor with a skirt of leather strips */
   if(c.ar){const A=c.ar;for(let i=1;i<TOR;i++)for(let xx=-9;xx<=10;xx++){const q=(xx+9+(i>>1)%2*2)%4;let v=xx<-7?4:xx<-5?3:xx>8?1:2;if(i%2===0&&q===0)v=Math.max(0,v-2);else if(i%2===1&&q===0)v=Math.min(4,v+1);px(xx,yS+i,A[v])}
     for(let i=0;i<9;i++)for(let xx=-9;xx<=10;xx++){const q=(xx+9)%3;if(i===8&&q!==1)continue;px(xx,yB+i,A[q===0?1:q===1?2:4])}
     px(-1,yS,S[3],7);px(0,yS+1,S[2],5)}
-  /* belt, with its hanging end, and a pouch */
-  if(c.bt){const B=c.bt;for(let xx=-9+slim;xx<=10-slim;xx++){const dk=xx<-6?1:0;px(xx,yB-3,B[1+dk]);px(xx,yB-2,B[2+dk]);px(xx,yB-1,B[4])}
-    if(!c.ar){px(2,yB-3,B[0],2,2);px(3,yB,B[2],2,8);px(4,yB,B[3],1,8);px(3,yB+8,B[3],2)}}
+  /* belt or sash, with its hanging end, and a pouch */
+  if(c.bt){const B=c.bt;for(let xx=-9+nw;xx<=10-nw;xx++){const dk=xx<-6?1:0;px(xx,yB-3,B[1+dk]);px(xx,yB-2,B[2+dk]);px(xx,yB-1,B[4])}
+    if(!c.ar){px(2,yB-3,B[0],2,2);px(3,yB,B[2],2,fem?12:8);px(4,yB,B[3],1,fem?12:8);px(3,yB+(fem?12:8),B[3],2);if(fem){px(1,yB,B[2],1,9);px(1,yB+9,B[3])}}}
   if(o.pouch){px(-9,yB-2,LE[2],6,8);px(-9,yB-2,LE[3],6,2);px(-9,yB,LE[4],1,6);px(-5,yB,LE[1],1,4);px(-8,yB+6,LE[4],4);px(-7,yB-1,'#d8b860')}
   /* mantle: hanging from the near shoulder, and across the chest to the far hip */
   if(C&&!o.cape){const m1=o.long?yA-6:yH+6,mn=m1-yS+2;
@@ -487,26 +494,30 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink){
       cloth(yy,-16+(i<3?3-i:0)-bulge+zig,-9+(t>.45?1:0)-(zig>1?1:0),C,i,[[.3,4,.012],[.6,9,-.01],[.82,14,.01]],null,[6,14])}
     for(let xx=-10+slim;xx<=11-slim;xx++){const k=(xx+10)/21,ya=Math.round(yS-1+k*(TOR-8)),yb=ya+10-Math.round(k*3);
       for(let yy=ya;yy<=yb;yy++){const j=yy-ya;px(xx,yy,C[j===0?(k>.3?0:1):j===yb-ya?4:j===3||j===7?3:j===4?1:k>.72?1:2])}px(xx,yb+1,T[4]);if(xx%3)px(xx,yb+2,T[3])}}
-  if(o.cape){for(let xx=-12;xx<=12;xx++){px(xx,yS-1,C[1]);px(xx,yS,C[xx<-7?3:2]);px(xx,yS+1,C[xx<-7?4:3]);if(xx<-5||xx>7)px(xx,yS+2,C[4])}px(8,yS,'#f4dc8a',2,2);px(9,yS+1,'#b08a3c')}
+  if(o.cape){for(let xx=-16;xx<=15;xx++){const e=Math.abs(xx+.5)>14?1:0;px(xx,yS-1+e,C[1]);px(xx,yS+e,C[xx<-8?3:2]);px(xx,yS+1+e,C[xx<-8?4:3]);if(xx<-5||xx>7)px(xx,yS+2+e,C[4])}px(8,yS,'#f4dc8a',2,2);px(9,yS+1,'#b08a3c')}
   /* near arm (hidden when a mantle hangs over it) */
-  if(!C||o.cape)arm(-16,6,-st*2,1,1);
+  if(!C||o.cape)arm(true,-st*2);
   /* head */
-  const hx=-4+(bow?1:0),hy=yS-16+(bow?2:0),H=c.ha,Bd=c.be,Hd=c.hd,brow=o.brow||o.hair||o.beard||'#2a1a12';
+  const hx=-4+(bow?1:0),hy=yS-16+(bow?2:0),H=c.ha,Bd=c.be,Hd=c.hd,brow=fem?mix(o.brow||'#3a2414',o.skin,.3):o.brow||o.hair||o.beard||'#2a1a12';
   px(0,yS-3,S[3],5,3);px(1,yS-3,S[2],3,2);
-  const L={s:S[2],S:S[1],L:S[0],z:S[3],Z:S[4],n:S[3],w:S[0],p:'#1a1018',b:brow,m:'#6a2a22',h:H[2],H:H[1],d:H[3],k:'#2a1a12'};
+  const L={s:S[2],S:S[1],L:S[0],z:S[3],Z:S[4],n:S[3],w:fem?'#f6eedc':S[0],p:'#1a1018',b:brow,m:'#6a2a22',r:'#b04a44',c:mix(o.skin,'#d86a58',.4),h:H[2],H:H[1],d:H[3],k:'#2a1a12',K:'#4a3020'};
   if(Bd){L.B=Bd[2];L.V=Bd[1];L.v=Bd[3]}L.a=Hd[2];L.A=Hd[1];L.y=Hd[0];L.q=Hd[3];
-  stamp(g,HEADS.face,hx,hy,L);
+  stamp(g,fem?HEADS.faceF:HEADS.face,hx,hy,L);
   if(blink||bow){px(hx+3,hy+7,S[3],2);px(hx+7,hy+7,S[3],2)}
-  if(talk){px(hx+5,hy+11,'#3a0e0c',3);px(hx+5,hy+12,'#7a2a22',2)}
+  if(talk){px(hx+5,hy+11,'#3a0e0c',3);px(hx+5,hy+12,fem?'#b04a44':'#7a2a22',2)}
   if(o.hair&&!o.veil&&!o.wrap&&!o.helm)stamp(g,o.bald?HEADS.bald:HEADS.hair,hx,hy,L);
   if(Bd){stamp(g,o.longBeard?HEADS.longBeard:HEADS.beard,hx,hy+8,L);px(hx+5,hy+11,talk?'#3a0e0c':'#5a221c',3);if(talk)px(hx+5,hy+12,'#3a0e0c',3)}
-  if(o.veil)stamp(g,HEADS.veil,hx-1,hy-1,L);if(o.wrap)stamp(g,HEADS.wrap,hx-1,hy-3,L);if(o.helm)stamp(g,HEADS.helm,hx-1,hy-2,L);
+  if(o.veil){stamp(g,HEADS.veil,hx-1,hy-1,L);
+    /* the shawl runs on from the head over both shoulders, and hangs down the near arm */
+    [[-5,-2],[-7,-2],[-9,-3],[-11,-4],[ax-1,-5],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax,-6],[ax,-7],[ax+1,-7],[ax+2,-8]].forEach(([a,b],i)=>cloth(yS-4+i,a,b,Hd,i,[[.45,5,.02]],null,[4,8]));
+    [[5,7],[5,9],[6,11],[7,13-nw],[9,14-nw],[9,14-nw],[10,14-nw],[10,14-nw],[11,14-nw],[12,13-nw]].forEach(([a,b],i)=>{for(let xx=a;xx<=b;xx++)px(xx,yS-4+i,Hd[xx===a?3:i<5&&xx>a+1?1:2])})}
+  if(o.wrap)stamp(g,HEADS.wrap,hx-1,hy-3,L);if(o.helm)stamp(g,HEADS.helm,hx-1,hy-2,L);
   /* the far hand: holding a spear, or raised in speech */
   if(o.spear){const sx=18;px(sx,yS-34,'#8a6238',1,34-yS);px(sx+1,yS-34,'#5a3c20',1,34-yS);
     [1,1,3,3,5,5,5,5,3,3,1,1].forEach((w,i)=>{const x0=sx-(w>>1);px(x0,yS-47+i,'#c4c4d0',w);px(x0+(w>1?1:0),yS-47+i,'#f4f4fc');if(w>2)px(x0+w-1,yS-47+i,'#8a8a98')});px(sx-1,yS-35,'#b08a3c',4,2);
     for(let i=0;i<5;i++)px(13+i,yS+12+(i>2?-1:0),S[i<1?3:2],1,4);px(16,yS+9,S[2],5,5);px(16,yS+9,S[1],5);px(16,yS+13,S[3],5);px(20,yS+10,S[3],1,3);px(16,yS+11,S[3],4)}
-  else if(ges&&!bow){for(let k=0;k<10;k++){const ax=12+Math.round(k*.6),ay=yS+14-k,R=o.longSleeve?T:S;px(ax,ay,R[3]);px(ax+1,ay,R[2],2);px(ax+3,ay,R[1])}
-    px(17,yS+1,S[2],5,5);px(17,yS+1,S[1],4);px(17,yS+5,S[3],5);px(21,yS,S[2],1,3);px(18,yS-1,S[1],1,2);px(20,yS-1,S[2],1,2);px(16,yS+4,S[3])}
+  else if(ges&&!bow){for(let k=0;k<10;k++){const gx=12-nw+Math.round(k*.6),gy=yS+14-k,R=o.longSleeve?T:S;px(gx,gy,R[3]);px(gx+1,gy,R[2],2);px(gx+3,gy,R[1])}
+    const q=17-nw;px(q,yS+1,S[2],5,5);px(q,yS+1,S[1],4);px(q,yS+5,S[3],5);px(q+4,yS,S[2],1,3);px(q+1,yS-1,S[1],1,2);px(q+3,yS-1,S[2],1,2);px(q-1,yS+4,S[3])}
   g.restore()}
 /* A pack donkey in the same pixel manner, seen from the side. load: 0 saddle blanket only, 1 pack bags, 2 bags filled, with sacks on top. */
 const DONKEY_HEAD=["...e...e................","..eE..eE................","..eE..eE................","..eEe.eE................","..eEe.eEe...............","..eEeeeEe...............","..eeeeeeeh..............",
