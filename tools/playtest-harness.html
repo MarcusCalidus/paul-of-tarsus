@@ -559,6 +559,9 @@
   heard.length=0;await give('awl',BN);ok(!F.shod&&G.invs.barnabas.includes('awl'),'Give hands a tool to Barnabas');key('c');await idle();await give('awl',P);key('c');await idle();ok(has('awl')&&PC()===P,'and he hands it back');
   heard.length=0;verb('use');item('awl');view(BN.x,BN.y-18);await idle();ok(!F.shod&&said('The strap has parted where it passes under the sole. Thread alone will not hold that: it wants a new thong of leather.'),'a parted strap wants leather, not thread');
   /* John Mark leaves them: no reason is given, and nothing the player says changes it */
+  {const c=makeCode();key('c');await idle();await actor(null,ACT.mark);
+    ok(F.markTold&&PC()===BN&&srt()==='staff5'&&['roof','bread','thong'].every(id=>G.invs.paul.includes(id))&&!G.busy,'if Barnabas is the one who asks, John Mark says the same, and what he hands over goes to Paul');
+    await enter(c);ok(G.room==='perga'&&PC()===P&&!F.markTold&&!has('roof')&&ACT.mark.x>100,'back before the parting, by code')}
   heard.length=0;await actor(null,ACT.mark);
   ok(F.markTold&&!G.busy&&['roof','bread','thong'].every(has)&&said('But John left them and returned to Jerusalem. (Acts 13:13)')&&said('The account does not say why.')&&ACT.mark.room==='perga'&&!$('#choices').classList.contains('on'),
     'John Mark says he is going back to Jerusalem, and hands over what he looked after');
