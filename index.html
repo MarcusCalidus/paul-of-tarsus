@@ -784,7 +784,9 @@ async function clickView(x,y){
   const me=PC();
   if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(me,x,y);return}
   if(v==='walk'){v=defVerb(h);if(v==='walk')v=h.exit?'exit':'look'}
-  const A=h.actor,tx=h.wx!=null?h.wx:A?A.x+(me.x<A.x?-22:22):h.x+h.w/2,ty=h.wy!=null?h.wy:A?A.y+1:118;
+  const A=h.actor,ty=h.wy!=null?h.wy:A?A.y+1:118;let tx=h.wx!=null?h.wx:A?A.x+(me.x<A.x?-22:22):h.x+h.w/2;
+  /* beside a person, but not on the spot where a companion already stands: then the other side, if it is free */
+  if(A&&h.wx==null){const taken=x=>Object.values(ACT).some(a=>a!==me&&a!==A&&a.room===G.room&&Math.abs(a.x-x)<14&&Math.abs(a.y-ty)<8);if(taken(tx)&&!taken(2*A.x-tx))tx=2*A.x-tx}
   if(!(await walk(me,tx,ty)))return;
   if(G.busy||me!==PC())return;
   me.dir=A?(A.x>me.x?1:-1):h.dir||((h.x+h.w/2)>=me.x?1:-1);
@@ -891,16 +893,22 @@ const take=(flag,item,line)=>Object.assign(async()=>{F[flag]=1;addItem(item);awa
 const TH={thought:1,color:'#cfe2ff'};
 /* journey: between scenes, the chapter's route draws itself on the travel map (shared/map.js). The chapter declares it as
    route:[[from,to,kind],...], place ids as in shared/map.js; kind 'new' draws the leg now (earlier legs are shown at once), 'sea' takes
-   the sea lane. If the map cannot be loaded, the story simply goes on. */
-async function journey(o){const r=CHAP[G.ch].route;if(!r)return;try{await need('map')}catch(e){console.error(e);return}return SHARED.map.journey(r,o)}
+   the sea lane. If the map cannot be loaded, the story simply goes on. Where a name's usual side would lie across one of the chapter's
+   routes, the chapter says where it goes instead: labels:{salamis:{lab:'r',dy:4}}. */
+async function journey(o){const c=CHAP[G.ch],r=c.route;if(!r)return;try{await need('map')}catch(e){console.error(e);return}return SHARED.map.journey(r,Object.assign({labels:c.labels},o))}
 /* travel: for a hub chapter, which declares the places it can travel between: places:{id:{room,x,y,dir}}. An exit with exit:travel
-   opens the map; a click on a place draws the way there and enters that place's room. Esc or a right-click stays. */
-async function travel(){const c=CHAP[G.ch],ids=Object.keys(c.places||{}),here=ids.find(k=>c.places[k].room===G.room);if(!ids.length)return;
+   opens the map; a click on a place draws the way there and enters that place's room. Esc or a right-click stays.
+   A place may say when the way to it is open (if), and what happens when it is not (no: a line, a list of lines or a script, as in
+   lines, spoken by whoever is played, back in the room). hide() keeps a place off the map. The chapter's way() lists the legs already
+   travelled, which the map shows; its arrive(to,from) runs after the journey and before the room is shown: it brings the rest of the
+   party along, and may tell of the journey. */
+async function travel(){const c=CHAP[G.ch],all=c.places||{},ids=Object.keys(all).filter(k=>!all[k].hide||!all[k].hide()),here=ids.find(k=>all[k].room===G.room);if(!ids.length)return;
   try{await need('map')}catch(e){return narr(e.message)}
-  await fade(1,300);const chosen=SHARED.map.pick(ids,here);await fade(0,300);const to=await chosen;
-  if(to&&to!==here)await SHARED.map.go(here,to);await fade(1,400);G.scene=null;setScore(c.music);
-  if(to&&to!==here){const p=c.places[to];enterRoom(p.room,p.x,p.y,p.dir)}else viewOf(PC());codeBtn();await fade(0,400);
-  const r=to&&to!==here&&ROOMS[G.room];if(r&&r.enter)await r.enter()}
+  await fade(1,300);const chosen=SHARED.map.pick(ids,here,{legs:c.way&&c.way(),labels:c.labels});await fade(0,300);
+  const to=await chosen,p=to&&to!==here?all[to]:null,open=p&&(!p.if||p.if());
+  if(open)await SHARED.map.go(here,to);await fade(1,400);G.scene=null;setScore(c.music);
+  if(open){enterRoom(p.room,p.x,p.y,p.dir);if(c.arrive)await c.arrive(to,here)}else viewOf(PC());codeBtn();await fade(0,400);
+  if(open){const r=ROOMS[G.room];if(r.enter)await r.enter()}else if(p&&p.no!=null)await lines(PC(),p.no)}
 async function quiz(who,q,opts){await say(who,q);let av=opts.slice();
   for(;;){const o=av[await choose(av.map(o=>o.q))];for(const l of o.p||[o.q])await say(P,l);for(const l of o.r)await say(who,l);
     if(o.ok)return;av=av.filter(x=>x!==o);await say(who,q)}}
@@ -912,7 +920,8 @@ function tween(ms,fn){return new Promise(res=>{const t0=performance.now();(funct
 const CHAP={
   1:{name:'ESCAPE FROM DAMASCUS',label:'Chapter One',title:'Escape from Damascus',salt:0x5A17,src:'levels/chapter1.js'},
   2:{name:'A FRIEND IN JERUSALEM',label:'Chapter Two',title:'A Friend in Jerusalem',salt:0x2B6D,src:'levels/chapter2.js'},
-  3:{name:'CALLED TO ANTIOCH',label:'Chapter Three',title:'Called to Antioch',salt:0x3C91,src:'levels/chapter3.js'}};
+  3:{name:'CALLED TO ANTIOCH',label:'Chapter Three',title:'Called to Antioch',salt:0x3C91,src:'levels/chapter3.js'},
+  4:{name:'SENT OUT TO CYPRUS',label:'Chapter Four',title:'Sent Out to Cyprus',salt:0x4D2F,src:'levels/chapter4.js'}};
 const TITLE={level:1,scene:'wall',mood:'calm',amb:{crickets:.5,wind:.35,owl:.4}};
 /* A level file calls LEVEL(n, init). init() registers its art, cast, items and rooms, and returns the chapter definition. */
 function LEVEL(n,init){Object.assign(CHAP[n],init(),{ready:1})}

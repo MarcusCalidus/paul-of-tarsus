@@ -59,8 +59,10 @@
   const leaf=(i,t)=>[...$('#tablets').querySelectorAll('.leaf')[i].querySelectorAll('p')].map(p=>p.textContent).filter(x=>!t||x.includes(t));
   const enter=async c=>{$('#code').click();$('#codein').value=c;$('#codego').click();await idle()};
   const give=async(id,a)=>{verb('give');item(id);view(a.x,a.y-18);await idle()};
-  /* Chapter Three stops start that chapter from the title screen, without replaying the first two. */
-  const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3|map3|hubmap)$/.test(stop);let n=0;
+  /* Chapter Three stops start that chapter from the title screen, without replaying the first two; Chapter Four stops start Chapter Four;
+     the hub test stands on its own. */
+  const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3|map3)$/.test(stop),HUB=stop==='hubmap',
+    C4=/^(sendoff|seleucia|kallias|shelter|jair|voyage|map4|salamis|synagogue|speech|hubmap4|paphos|tools|daniel|blind|journey4|final4|deutsch4)$/.test(stop);let n=0;
   const lang=(location.search.match(/[?&]lang=(\w+)/)||[])[1]||'en',toLang=async l=>{for(let i=0;i<150&&G.lang!==l;i++)await wait(30);await wait(60)};
   ok(G.lang===lang&&document.documentElement.lang===lang,'the game is in '+LANGS[lang].native+', as the address asks');fitVerbs();
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
@@ -95,7 +97,7 @@
     $('#codein').value=c;$('#codego').click();await idle();
     ok(G.room==='street'&&!G.scene&&!ov.classList.contains('on')&&!G.busy&&has('longrope')&&has('patch')&&has('basket')&&!has('pouch'),'code from title starts mid-game: '+c);
     await act(null,"Eliab's door");ok(G.room==='workshop','playable after title code');halt('titlecode')}
-  if(!C3){
+  if(!C3&&!C4&&!HUB){
   ov.click();await idle();ok(G.room==='workshop'&&!G.busy,'intro ends in workshop');
   ok(!SHARED.map&&!SHARED.tablets,'the map and the tablets are not loaded until they are needed');
   if(lang==='de'){move(...hs('spool of thread'));ok($('#status').textContent==='Nimm Garnspule','German status line: Nimm Garnspule');
@@ -265,6 +267,7 @@
   halt('map2',()=>{ov.className=''});
   halt('final2');await wait(1700)}
   /* ---------------- Chapter Three ---------------- */
+  if(!C4&&!HUB){
   (C3?document.querySelector('#overlay [data-ch="3"]'):ov).click();await idle();ok(G.ch===3&&G.room==='tarsus'&&!G.busy&&srt()==='awl,knife,tablets,thread','chapter three starts in Tarsus');
   halt('tarsus',()=>{say(ACT.barnabas,'I have asked for you along every row of tentmakers in this city. And here you are, at the very last stall.')});
   ok(/^3-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===3,'chapter three code format (wide) '+makeCode());
@@ -366,9 +369,131 @@
     for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;
     ok(n===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
-  halt('map3',()=>{ov.className=''});halt('final3');
+  ok(ov.textContent.includes(T('Chapter Four code: {code}',{code:codeOf(4,0)})),'chapter three ends with a chapter four code');
+  halt('map3',()=>{ov.className=''});halt('final3');await wait(1700)}
+  /* ---------------- Chapter Four ---------------- */
+  if(!HUB){let BN;
+  const mapOpen=async()=>{for(let i=0;i<100&&!(SHARED.map&&G.scene===SHARED.map.draw);i++)await wait(50);await wait(450)},
+    mapClick=id=>{const[x,y]=SHARED.map.where(id),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+x/320*r.width,clientY:r.top+y/144*r.height,bubbles:true}))},
+    crossings=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
+      for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;return n};
+  if(stop==='sendoff'){await loadLevel(4);ov.className='';ov.onclick=null;setChapter(4);G.send={lay:1};G.scene=CHAP[4].scenes.sendoff;G.busy=true;lock(true);status();
+    halt('sendoff',()=>{narr('Then after fasting and praying, they laid their hands on them and sent them off. (Acts 13:3)',{dur:9000})})}
+  (C4?document.querySelector('#overlay [data-ch="4"]'):ov).click();
+  for(let i=0;i<200&&!(G.ch===4&&G.scene&&CHAP[4].scenes&&G.scene===CHAP[4].scenes.sendoff);i++)await wait(30);
+  ok(G.ch===4&&G.scene===CHAP[4].scenes.sendoff,'chapter four opens in Antioch, with the laying on of hands');
+  BN=ACT.barnabas;
+  await idle();ok(G.ch===4&&G.room==='seleucia'&&!G.scene&&!G.busy&&srt()==='awl,haircloth,knife,tablets,thread'&&BN.room==='seleucia'&&ACT.mark.room==='seleucia','chapter four starts on the quay at Seleucia');
+  halt('seleucia',()=>{say(BN,'Seleucia, Saul. And beyond that water lies Cyprus: the island where I was born.')});
+  ok(/^4-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===4&&decode(makeCode()).w!=null,'chapter four code format (wide, nine characters) '+makeCode());
+  ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Barnabas')),'a party again: the panel offers to switch to Barnabas');fitVerbs();
+  if(lang==='de'){move(...hs('gangplank'));ok($('#status').textContent==='Gehe zu Laufplanke','German status line: Gehe zu Laufplanke');
+    verb('use');item('knife');move(...hs('coil of cord'));ok($('#status').textContent==='Benutze Zeltmachermesser mit Seilrolle','German status line: Benutze Zeltmachermesser mit Seilrolle');verb('use');G.hover=null;status()}
+  heard.length=0;await act(null,'gangplank');ok(G.room==='seleucia'&&!G.scene&&heard.includes(T('Not so fast, friend! Nobody walks up my plank before I know who he is.')),'nobody boards before speaking to the shipmaster');
+  await useOn('knife','coil of cord');ok(!has('cord')&&!F.gotCord,"the ship's cord is not cut unasked");
+  await use('awl','haircloth');ok(has('haircloth')&&!F.shelter,'a tent on a deck needs more than a hem');
+  await actor(null,ACT.kallias);ok(F.metKal&&nq()===6&&hasQ('We need a shelter')&&hasQ('An old man of Salamis'),'met the shipmaster: three questions, and two things learned');
+  heard.length=0;await pickQ('We need a shelter');ok(heard.includes(T(ACT.kallias.hs.ask.roof[1]))&&!has('cord'),'asking about the shelter is a clue, not the cord');await choose(0);await choose(-1);
+  halt('kallias',()=>{place(P,'seleucia',306,120,1);G.cam=160;say(ACT.kallias,'You sleep on the deck, and the spray comes over the bow all night. Bring a shelter, or be wet until Cyprus.')});
+  await sweep(ACT.kallias,ACT.mark,BN,ACT.jair);
+  let t4=await tabs();ok(leaf(0,T('Kallias')).length===1&&leaf(0,T('John Mark')).length===1&&leaf(0,T('Make a shelter for the deck.')).length===1&&leaf(0,T('Find something to lash it down with.')).length===1&&leaf(1).length===7,
+    'the tablets at Seleucia: people, open tasks and seven passages');
+  ok(leaf(1).every(t=>/\((?:[1-5]\.? )?\p{Lu}\p{Ll}+ \d+:\d+/u.test(t)),'every passage carries its reference');key('Escape');await idle();
+  heard.length=0;await act(null,'gangplank');ok(G.room==='seleucia'&&!G.scene&&heard.includes(T('Aboard already, and no roof? I told you: the spray comes over the bow all night.')),'no boarding without a shelter');
+  pray();await idle();ok(hint()[0]==='cord4','the hint points to the coil of cord');
+  await useOn('knife','coil of cord');ok(has('cord')&&F.gotCord,'cord cut from the coil');
+  await act('look','our baggage');key('c');await idle();ok(PC()===BN&&srt()==='bstaff','C switches to Barnabas, with his staff');
+  heard.length=0;await useOn('bstaff','coil of cord');ok(heard.includes(T(BN.noCraft)),'Barnabas leaves the crafts to the tentmaker');
+  heard.length=0;verb('use');item('bstaff');view(P.x,P.y-18);await idle();ok(heard.length&&!heard.includes(T('Keep it, friend.'))&&has('bstaff'),'and Saul answers in his own voice when shown the staff');
+  heard.length=0;await act('look','ship');ok(heard.includes(T('A Cyprus trader. I crossed in one like her as a boy, wet to the skin.')),'and looks at things in his own words');
+  pray();await idle();ok(hint()[0]==='craft4','Barnabas prays, and gets his own hint');key('c');await idle();
+  halt('shelter',()=>{place(P,'seleucia',214,118,-1);say(P,'The tarred cord laid along the edge, the cloth folded over it, and every stitch drawn tight...')});
+  await use('cord','haircloth');ok(has('shelter')&&!has('haircloth')&&!has('cord')&&F.shelter,'the deck shelter is sewn, a rope in its edge');
+  /* the old disciple: Barnabas speaks for Saul, and then Saul says it himself */
+  heard.length=0;await act(null,'gangplank');ok(G.room==='seleucia'&&!G.scene&&heard.includes(T('Saul. The old man by the jars sails with us, and he has not one word for you. Let us not carry that aboard.')),'they will not sail with a brother unreconciled');
+  await actor(null,ACT.jair);ok(F.metJair&&!F.jairOk&&!F.jairB&&!$('#choices').classList.contains('on'),'the old man has nothing to say to Saul of Tarsus');
+  pray();await idle();ok(hint()[0]==='jair4','the hint points to Barnabas');
+  key('c');await idle();await actor(null,ACT.jair);ok(nq()===3,'Barnabas is asked why: three answers');
+  await pickQ('It is time to forget it');ok(nq()===2&&!F.jairB,'telling him to forget is set aside');
+  await pickQ('Then I heard him out');ok(F.jairB&&!F.jairOk&&!G.busy,'Barnabas tells what he saw for himself');
+  const c4a=makeCode();ok(decode(c4a).w!=null,'a code with Barnabas played: '+c4a);
+  pray();await idle();ok(hint()[0]==='own4b','Barnabas knows the rest is for Saul to say');
+  key('c');await idle();await actor(null,ACT.jair);ok(nq()===3,'Saul is asked what he has to say: three answers');
+  await pickQ('That is all behind me now');ok(nq()===2&&!F.jairOk,'moving on is set aside');
+  ok(Math.abs(P.x-BN.x)>20,'the two men do not stand on the same spot beside him');
+  halt('jair',()=>{say(ACT.jair,'So. What do you say about it, Saul of Tarsus?')});
+  await pickQ('I did it');ok(F.jairOk&&!G.busy,'a plain confession, and peace');
+  await enter(c4a);ok(G.ch===4&&PC()===BN&&F.jairB&&!F.jairOk&&F.shelter&&G.invs.paul.includes('shelter')&&srt()==='bstaff'&&G.room==='seleucia','the code restores the moment, with Barnabas played');
+  key('c');await idle();await actor(null,ACT.jair);await pickQ('I did it');ok(F.jairOk,'said again after the code');
+  pray();await idle();ok(hint()[0]==='board4','the hint points to the gangplank');
+  halt('voyage',()=>{G.sea={k:.45};G.scene=CHAP[4].scenes.voyage;G.busy=true;lock(true);status();narr('They sailed away to Cyprus. (Acts 13:4)',{dur:9000})});
+  /* the hub: the gangplank opens the map; a place that is not open yet says why; a click on Salamis sails there */
+  act(null,'gangplank');await mapOpen();
+  ok(G.scene===SHARED.map.draw&&SHARED.map.state.places.join()==='seleucia,salamis,paphos'&&G.busy,'the gangplank opens the map: Seleucia, Salamis and Paphos');
+  ok(mapClear(),'no name on the hub map crosses a coast, a lake or a route'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''));
+  halt('hubmap4',()=>{SHARED.map.state.hover='salamis'});
+  heard.length=0;mapClick('paphos');await idle();ok(G.room==='seleucia'&&!G.scene&&!G.busy&&heard.includes(T(CHAP[4].places.paphos.no)),'Paphos is not open from Seleucia, and Saul says why');
+  act(null,'gangplank');await mapOpen();mapClick('salamis');await idle();
+  ok(G.room==='salamis'&&!G.scene&&!G.busy&&F.landed&&!has('shelter')&&BN.room==='salamis'&&ACT.mark.room==='salamis'&&ACT.jair.room==='synagogue','a click on Salamis: the crossing, and all three land in Cyprus');
+  halt('salamis',()=>{say(BN,'Salamis! I ran about this harbor as a boy. For trade and for learning, it is the first city of the island.')});
+  heard.length=0;await act(null,'west gate');ok(G.room==='salamis'&&!G.scene&&heard.includes(T('The road west, right across the island. But we did not come to Salamis to walk through it.')),'no leaving Salamis before the word is spoken there');
+  await actor(null,ACT.mark);ok(hasQ('How does a stranger get a hearing'),'a new thing to ask about in Salamis');await choose(-1);
+  await act(null,'door of the synagogue');ok(G.room==='synagogue'&&BN.room==='synagogue'&&!G.busy,'into the synagogue, Barnabas with him');
+  halt('synagogue',()=>{say(ACT.zadok,'The platform is another matter. I do not know you, and I answer for what is said from it.')});
+  await actor(null,ACT.zadok);ok(F.metZad&&!F.vouched,'a stranger is welcome to a seat, not to the platform');
+  pray();await idle();ok(hint()[0]==='zad4','the hint points to Barnabas, who was born here');
+  await sweep(ACT.zadok,ACT.philon,ACT.jair);
+  key('c');await idle();await actor(null,ACT.zadok);ok(nq()===3,'Zadok asks why: three answers');
+  await pickQ('at the feet of Gamaliel');ok(nq()===2&&!F.vouched,'learning is not what he asked about');
+  await pickQ('test every word by the scroll');ok(F.vouched&&!G.busy,'tested by the scroll: Zadok cannot refuse');
+  key('c');await idle();const c4b=makeCode();
+  await actor(null,ACT.zadok);ok(nq()===3,'the word of encouragement: three ways to begin');
+  await pickQ('Jerusalem did not know him');ok(nq()===2,'an accusation is no beginning');
+  halt('speech');
+  await pickQ('the islands keep waiting');ok(nq()===3,'he begins with what was read');
+  await pickQ('for the nations as well');ok(nq()===2,'not ahead of his hearers');await pickQ('promised David');
+  await pickQ('signs and wonders');ok(nq()===2,'by the scroll, not by wonders');await pickQ("From David's offspring");
+  await pickQ('on our way across the island');await pickQ('forgiveness of sins');
+  ok(F.spoke&&!G.busy&&G.room==='synagogue','the word of God is proclaimed in the synagogue of Salamis');
+  await enter(c4b);ok(G.room==='synagogue'&&F.vouched&&!F.spoke&&PC()===P&&BN.room==='synagogue'&&ACT.jair.room==='synagogue','the synagogue code restores');
+  await actor(null,ACT.zadok);await pickQ('the islands keep waiting');await pickQ('promised David');await pickQ("From David's offspring");await pickQ('forgiveness of sins');ok(F.spoke&&!G.busy,'and the talk is given again');
+  pray();await idle();ok(hint()[0]==='west4','the hint points west');
+  await act(null,'door to the square');ok(G.room==='salamis'&&BN.room==='salamis'&&!G.busy,'out to the square');
+  act(null,'west gate');await mapOpen();ok(G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===1&&SHARED.map.state.seen.has('seleucia'),'the west gate opens the map, with the crossing already drawn');
+  ok(mapClear(),'no name on it crosses a coast, a lake or a route'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''));
+  halt('map4');
+  heard.length=0;mapClick('seleucia');await idle();ok(G.room==='salamis'&&!G.scene&&heard.includes(T(CHAP[4].places.seleucia.no)),'the road does not lead back');
+  act(null,'west gate');await mapOpen();mapClick('paphos');await idle();
+  ok(G.room==='paphos'&&!G.scene&&!G.busy&&F.heard&&P.called==='Paul'&&BN.room==='paphos'&&ACT.mark.room==='paphos','through the whole island as far as Paphos: the proconsul calls for them');
+  ok(T(P.hs.name)===T('Paul'),'from here on he is called Paul');
+  halt('paphos',()=>{place(P,'paphos',286,122,1);place(BN,'paphos',258,126,1);G.cam=80;say(ACT.sergius,'It is a fair question. What is Cyprus to you two, that you walk the length of it?')});
+  await sweep(ACT.sergius,ACT.elymas,ACT.mark);
+  await actor(null,ACT.sergius);ok(!F.ob1&&!G.busy,'Paul is a stranger on Cyprus, and says so');
+  pray();await idle();ok(hint()[0]==='isle4','the hint points to Barnabas');
+  await give('awl',ACT.sergius);ok(!F.ob2&&has('awl'),'the awl is no answer to the first question');
+  key('c');await idle();await actor(null,ACT.sergius);ok(F.ob1&&!F.ob2&&!G.busy,'Barnabas answers: he was born on the island');
+  const c4c=makeCode();
+  await actor(null,ACT.sergius);ok(!F.ob2,'it is Paul whom Elymas has challenged');
+  key('c');await idle();await actor(null,ACT.sergius);ok(!F.ob2&&!$('#choices').classList.contains('on'),'words alone do not answer the charge');
+  pray();await idle();ok(hint()[0]==='fee4','the hint points to the awl');
+  await enter(c4c);ok(G.room==='paphos'&&PC()===BN&&F.ob1&&!F.ob2&&P.called==='Paul'&&T(P.hs.name)===T('Paul'),'the Paphos code restores, and his name with it');key('c');await idle();
+  halt('tools',()=>{place(P,'paphos',308,114,1);place(BN,'paphos',280,124,1);G.cam=80;say(P,'This is my answer, sir. An awl. I am a tentmaker.')});
+  halt('blind',()=>{F.ob1=F.ob2=1;ACT.elymas.bow=true;place(ACT.elymas,'paphos',352,128,-1);place(P,'paphos',300,120,1);place(BN,'paphos',272,126,1);G.cam=80;G.busy=true;lock(true);status();
+    narr('Instantly a thick mist and darkness fell on him, and he went around trying to find someone to lead him by the hand. (Acts 13:11)',{dur:9000})});
+  await give('awl',ACT.sergius);ok(F.ob2&&has('awl')&&nq()===7,'the awl is the answer: he works for his bread. Then Elymas turns to the Scriptures');
+  heard.length=0;await pickQ(T(CHAP[4].tablets.scripture[5].ref));ok(nq()===6&&heard.some(h=>h.includes(T(CHAP[4].tablets.scripture[5].text))),'the Law is quoted exactly, and Elymas has a retort');
+  halt('daniel');
+  await pickQ(T(CHAP[4].tablets.scripture[6].ref));
+  n=0;while(!(ov.classList.contains('end')&&ov.textContent.includes(T('Sent Out to Cyprus')))&&n++<4000)await wait(50);
+  ok(ov.classList.contains('end')&&ov.textContent.includes(T('Sent Out to Cyprus')),'chapter four complete screen shown');
+  ok(!ACT.elymas.room,'Elymas has been led out');
+  {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===3&&L.every(l=>l.k===1)&&M.state.seen.has('paphos'),'chapter four ends on the map: Antioch, Seleucia, Salamis, Paphos');
+    ok(crossings(L)===0,'no two routes cross');
+    ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
+  halt('journey4',()=>{ov.className=''});halt('final4')}
   if(lang!=='en')ok(!MISSING.size,'every line shown in the game had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
-  /* a hub chapter (Chapter Four is not written): places on the map, six rooms, and wide codes that hold a room past the fourth */
+  /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
+  await loadLevel(1);await loadLevel(3);
   CHAP[9]={name:'HUB TEST',label:'',salt:0x7A55,src:'',ready:1,music:CHAP[3].music,rooms:['workshop','street','house','tarsus','court','antioch'],flags:['f0'],
     ent:{workshop:[60,118,1],street:[46,114,1],house:[52,118,1],tarsus:[150,122,1],court:[146,128,-1],antioch:[46,116,1]},
     places:{jerusalem:{room:'workshop',x:60,y:118,dir:1},damascus:{room:'street',x:46,y:114,dir:1},tarsus:{room:'tarsus',x:150,y:122,dir:1},antioch:{room:'antioch',x:46,y:116,dir:1}},
