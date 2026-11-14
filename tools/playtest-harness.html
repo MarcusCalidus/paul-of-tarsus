@@ -19,7 +19,18 @@
  const key=(k,type)=>dispatchEvent(new KeyboardEvent(type||'keydown',{key:k,bubbles:true,cancelable:true}));
  const lit=()=>[...document.querySelectorAll('#verbs button.def')].map(b=>b.dataset.v).join();
  const H=n=>ROOMS[G.room].hs.find(h=>h.name===n&&(!h.vis||h.vis()));
- const PASS2=k=>{const p=CHAP[2].tablets.scripture.find(s=>s.ref===({ps16:'Psalm 16:10'})[k]);return '"'+p.text+'" ('+p.ref+')'};
+ const PASS2=k=>{const p=CHAP[2].tablets.scripture.find(s=>s.ref===({ps16:'Psalm 16:10'})[k]);return T('"{text}" ({ref})',{text:T(p.text),ref:T(p.ref)})};
+ /* the game is checked in English and in each other language: expected lines are written in English and translated with T, as the game does */
+ const line=(v,name)=>T('{verb} {thing}',{verb:T(VNAME[v]),thing:T(name)});
+ /* layout: no text may overflow its box in any language. Speech must stay inside the view; choices, the status line, the verbs and the top bar must fit. */
+ /* one line of text must fit its width; a verb button may wrap, so it must also fit its height */
+ const tight=new Set(),fits=(el,what,tall)=>{if(el&&(el.scrollWidth>el.clientWidth+1||tall&&el.scrollHeight>el.clientHeight+1))tight.add(what+": "+el.textContent)};
+ new MutationObserver(()=>{const v=vp.getBoundingClientRect();for(const el of document.querySelectorAll("#speech .line")){const r=el.getBoundingClientRect();
+   if(r.top<v.top-1||r.bottom>v.bottom+1||r.left<v.left-1||r.right>v.right+1)tight.add("speech: "+el.textContent)}}).observe($("#speech"),{childList:true});
+ new MutationObserver(()=>{for(const b of document.querySelectorAll("#choices button"))fits(b,"choice")}).observe($("#choices"),{attributes:true,childList:true});
+ new MutationObserver(()=>fits($("#status"),"status")).observe($("#status"),{childList:true,characterData:true,subtree:true});
+ new MutationObserver(()=>fits($("#top"),"top bar")).observe($("#top"),{childList:true,characterData:true,subtree:true});
+ const fitVerbs=()=>{for(const b of document.querySelectorAll("#verbs button"))if(getComputedStyle(b).display!=="none")fits(b,"verb",1)};
  const heard=[];new MutationObserver(m=>m.forEach(r=>r.addedNodes.forEach(n=>heard.push(n.textContent)))).observe($('#speech'),{childList:true});
  const choose=async i=>{const b=document.querySelectorAll('#choices button');b[i<0?b.length+i:i].click();await idle()};
  const ok=(c,m)=>L((c?'ok   ':'FAIL ')+m);
@@ -28,12 +39,14 @@
  (async()=>{try{
   while(!G.ready)await wait(30);
   const srt=()=>G.inv.slice().sort().join(),nq=()=>document.querySelectorAll('#choices button').length;
-  const pickQ=async txt=>{const b=[...document.querySelectorAll('#choices button')],i=b.findIndex(x=>x.textContent.includes(txt));if(i<0)throw new Error('no choice '+txt);b[i].click();await idle()};
-  const hasQ=t=>[...document.querySelectorAll('#choices button')].some(b=>b.textContent.includes(t));
+  /* a choice is found by its English text (the button keeps it), or, for a line the level puts together, by the translation of a part of it */
+  const isQ=(b,t)=>(b.dataset.src||'').includes(t)||b.textContent.includes(T.peek(t)||t);
+  const pickQ=async txt=>{const b=[...document.querySelectorAll('#choices button')],i=b.findIndex(x=>isQ(x,txt));if(i<0)throw new Error('no choice '+txt);b[i].click();await idle()};
+  const hasQ=t=>[...document.querySelectorAll('#choices button')].some(b=>isQ(b,t));
   /* show sweep: every carried item shown to each person gets an answer in his own voice, and nothing in the game changes */
   const sweep=async(...as)=>{const f=JSON.stringify(F),inv=srt(),bad=[];let n=0,own=0;
     for(const a of as)for(const id of G.inv.slice()){heard.length=0;await cut(()=>show(a.hs,id));n++;if(a.hs.show&&a.hs.show[id]!=null)own++;
-      if(!heard.length||heard.includes('Keep it, friend.'))bad.push(a.id+'/'+id)}
+      if(!heard.length||heard.includes(T('Keep it, friend.')))bad.push(a.id+'/'+id)}
     ok(!bad.length&&JSON.stringify(F)===f&&srt()===inv,`show: ${n} item-person pairs answered, ${own} with their own line (${as.map(a=>a.id)})`+(bad.length?' MISSING '+bad:''))};
   /* the tablets stay open (and the game busy) until closed, so wait for the overlay rather than for idle */
   const tabs=async()=>{item('tablets');for(let i=0;i<150&&!document.querySelector('#tablets.on');i++)await wait(30);return $('#tablets')};
@@ -42,12 +55,16 @@
   const give=async(id,a)=>{verb('give');item(id);view(a.x,a.y-18);await idle()};
   /* Chapter Three stops start that chapter from the title screen, without replaying the first two. */
   const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3|map3|hubmap)$/.test(stop);let n=0;
+  const lang=(location.search.match(/[?&]lang=(\w+)/)||[])[1]||'en',toLang=async l=>{for(let i=0;i<150&&G.lang!==l;i++)await wait(30);await wait(60)};
+  ok(G.lang===lang&&document.documentElement.lang===lang,'the game is in '+LANGS[lang].native+', as the address asks');fitVerbs();
+  if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
+    &&ov.textContent.includes('PAULUS VON TARSUS')&&$('#code').textContent==='CODE EINGEBEN'&&$('#mute').textContent.includes('TON AN')&&document.title.startsWith('Paulus'),'German on the title screen, in the panel and in the top bar');
   halt('title');
   /* sound: the first press anywhere starts it; a press wakes sound that iOS interrupted; on iPhone and iPad a note says where Silent Mode is */
   {const hushOn=()=>$('#hush').classList.contains('on'),dev=AU.apple;
     ok(!dev,'desktop Chrome is not taken for an iPhone or iPad');ok(!AU.ctx,'no sound before the first press');
     AU.apple='iPad';dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
-    ok(AU.ctx&&hushOn()&&/iPad may be in Silent Mode/.test($('#hush').textContent),'the first press starts the sound; on an iPad it mentions Silent Mode');
+    ok(AU.ctx&&hushOn()&&$('#hush').textContent.includes(T('No music? This iPad may be in Silent Mode.')),'the first press starts the sound; on an iPad it mentions Silent Mode');
     dispatchEvent(new PointerEvent('pointerup',{bubbles:true}));ok(hushOn(),'the note outlasts the press that opened it');
     await wait(450);dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));ok(!hushOn(),'the next press puts the note away');
     $('#mute').click();ok(AU.muted&&!hushOn(),'sound off: no note');$('#mute').click();ok(!AU.muted&&hushOn(),'sound on again: the note comes back');
@@ -57,11 +74,16 @@
     AU.ctx=fake('interrupted');dispatchEvent(new PointerEvent('pointerup',{bubbles:true}));ok(n===1,'a tap wakes sound that iOS interrupted');
     AU.ctx=fake('suspended');key('Shift');ok(n===2,'a key wakes sound the browser held back');
     AU.ctx=fake('running');dispatchEvent(new MouseEvent('click'));ok(n===2,'running sound is left alone');AU.ctx=real}
+  /* the language picker on the title screen: it switches the text, remembers the choice, and starts nothing */
+  if(lang==='en'){document.querySelector('#overlay [data-lang="de"]').click();await toLang('de');
+    ok(ov.textContent.includes('PAULUS VON TARSUS')&&ov.textContent.includes('Ruf nach Antiochia')&&store('paul.lang')==='de'&&!G.room&&ov.classList.contains('on'),'the title screen switches to German, remembers it, and starts nothing');
+    fitVerbs();document.querySelector('#overlay [data-lang="en"]').click();await toLang('en');
+    ok(ov.textContent.includes('PAUL OF TARSUS')&&store('paul.lang')==='en'&&$('#verbs button').textContent==='Look at','and back to English')}
   if(stop==='title2'){document.querySelector('#overlay [data-ch="2"]').click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy,'title starts chapter two');halt('title2')}
   if(stop==='title3'){document.querySelector('#overlay [data-ch="3"]').click();await idle();ok(G.ch===3&&G.room==='tarsus'&&!G.busy&&ACT.barnabas.x>100,'title starts chapter three');halt('title3')}
   if(stop==='titlecode'){Object.assign(F,{gotAwl:1,gotThread:1,gotKnife:1,gotCloth:1,gotRope:1,gotSkin:1,gotBasket:1,cutCloth:1,longRope:1});G.room='street';
     const c=makeCode();for(const k in F)delete F[k];G.room=null;
-    ok($('#code').textContent==='ENTER CODE','title shows ENTER CODE');$('#code').click();
+    ok($('#code').textContent===T('ENTER CODE'),'title shows ENTER CODE');$('#code').click();
     ok(cb.classList.contains('on')&&!$('#codebox .big'),'title: entry-only screen');
     $('#codein').value=c;$('#codego').click();await idle();
     ok(G.room==='street'&&!G.scene&&!ov.classList.contains('on')&&!G.busy&&has('longrope')&&has('patch')&&has('basket')&&!has('pouch'),'code from title starts mid-game: '+c);
@@ -69,35 +91,38 @@
   if(!C3){
   ov.click();await idle();ok(G.room==='workshop'&&!G.busy,'intro ends in workshop');
   ok(!SHARED.map&&!SHARED.tablets,'the map and the tablets are not loaded until they are needed');
+  if(lang==='de'){move(...hs('spool of thread'));ok($('#status').textContent==='Nimm Garnspule','German status line: Nimm Garnspule');
+    verb('use');item('pouch');move(...hs('stool'));ok($('#status').textContent==='Benutze Werkzeugbeutel mit Hocker','German status line: Benutze Werkzeugbeutel mit Hocker');
+    verb('use');move(ACT.eliab.x,ACT.eliab.y-18);ok($('#status').textContent==='Rede mit Eliab'&&!G.item,'German status line: Rede mit Eliab');G.hover=null;status()}
   halt('workshop',()=>{say(ACT.eliab,'Tonight we lower you from her window. We need a basket that will hold, and a rope that will reach.')});
   halt('silent',()=>{AU.apple='iPad';$('#mute').click();$('#mute').click()});
   halt('walk',()=>{P.speed=4;walk(P,60,130)});
   /* the verb interface: default verbs, lit verb, right-click, double-click, Tab labels, keys */
   ok(defVerb(H('door to the street'))==='open'&&defVerb(ACT.eliab.hs)==='talk'&&defVerb(H('spool of thread'))==='pickup'&&defVerb(H('shelf'))==='look'
     &&defVerb(H('large basket'))==='pickup','default verbs inferred');
-  move(...hs('spool of thread'));ok(lit()==='pickup'&&$('#status').textContent==='Pick up spool of thread'&&!document.querySelector('#verbs button.sel'),'hover lights Pick up');
-  move(ACT.eliab.x,ACT.eliab.y-18);ok(lit()==='talk'&&$('#status').textContent==='Talk to Eliab','hover lights Talk to');
+  move(...hs('spool of thread'));ok(lit()==='pickup'&&$('#status').textContent===line('pickup','spool of thread')&&!document.querySelector('#verbs button.sel'),'hover lights Pick up');
+  move(ACT.eliab.x,ACT.eliab.y-18);ok(lit()==='talk'&&$('#status').textContent===line('talk','Eliab'),'hover lights Talk to');
   halt('defverb');
-  move(...hs('door to the street'));ok(lit()==='open'&&$('#status').textContent==='Open door to the street','hover lights Open on a door');
-  verb('look');move(...hs('spool of thread'));ok(lit()===''&&$('#status').textContent==='Look at spool of thread','no default lit while a verb is chosen');verb('look');
+  move(...hs('door to the street'));ok(lit()==='open'&&$('#status').textContent===line('open','door to the street'),'hover lights Open on a door');
+  verb('look');move(...hs('spool of thread'));ok(lit()===''&&$('#status').textContent===line('look','spool of thread'),'no default lit while a verb is chosen');verb('look');
   move(...hs('stool'));ok(lit()==='look','hover lights Look at');
-  heard.length=0;let px=P.x;ok(rclick(...hs('stool')),'right-click: no browser menu');await idle();ok(heard.includes(H('stool').look)&&P.x===px,'right-click looks without walking');
-  heard.length=0;ok(rclickEl(document.querySelectorAll('#inv .slot')[0]),'inventory right-click: no browser menu');await idle();ok(heard.includes(ITEMS.pouch.look),'right-click looks at an item');
+  heard.length=0;let px=P.x;ok(rclick(...hs('stool')),'right-click: no browser menu');await idle();ok(heard.includes(T(H('stool').look))&&P.x===px,'right-click looks without walking');
+  heard.length=0;ok(rclickEl(document.querySelectorAll('#inv .slot')[0]),'inventory right-click: no browser menu');await idle();ok(heard.includes(T(ITEMS.pouch.look)),'right-click looks at an item');
   ok(rclickEl($('#status'))&&rclickEl($('#overlay')),'no browser menu anywhere in the game');
   await act(null,'spool of thread');ok(has('thread')&&F.gotThread,'plain click on an item picks it up');
   place(P,'workshop',290,124,-1);G.cam=ART.workshop.w-320;G.speedAll=25;view(...hs('door to the street'));await wait(60);view(...hs('door to the street'));dbl(...hs('door to the street'));
   let t0=performance.now();await idle();ok(G.room==='street'&&performance.now()-t0<2500,'double-click on an exit skips the walk');G.speedAll=500;
   await act(null,"Eliab's door");ok(G.room==='workshop','back in the workshop');
   key('Tab');await wait(250);const want=ROOMS.workshop.hs.filter(h=>(!h.vis||h.vis())&&h.x+h.w>G.cam+4&&h.x<G.cam+316).length+1,tg=[...document.querySelectorAll('#tags .tag')];
-  ok($('#tags').classList.contains('on')&&tg.length===want&&tg.some(t=>t.textContent==='Eliab')&&tg.every(t=>t.textContent.length>2),'Tab labels every hotspot ('+tg.length+')');
+  ok($('#tags').classList.contains('on')&&tg.length===want&&tg.some(t=>t.textContent===T('Eliab'))&&tg.every(t=>t.textContent.length>2),'Tab labels every hotspot ('+tg.length+')');
   halt('tags');
   key('Tab','keyup');await wait(150);ok(!$('#tags').classList.contains('on')&&!document.querySelector('#tags .tag'),'labels go when Tab is let go');
   key('1');ok(G.verb==='look','key 1 picks Look at');key('1');ok(G.verb==='walk','key 1 again puts it down');
   key('m');ok(AU.muted,'M mutes');key('m');ok(!AU.muted,'M unmutes');
-  document.querySelectorAll('#inv .slot')[G.inv.indexOf('tablets')].dispatchEvent(new MouseEvent('mouseenter'));ok(lit()==='open'&&$('#status').textContent==='Open wax tablets','hovering the tablets lights Open');
-  let tw=await tabs();ok(tw.classList.contains('on')&&leaf(0,'Eliab').length===1&&leaf(0,'Untie my tool pouch').length===1&&leaf(0,'Make the basket strong').length===1&&leaf(1).length===4,
+  document.querySelectorAll('#inv .slot')[G.inv.indexOf('tablets')].dispatchEvent(new MouseEvent('mouseenter'));ok(lit()==='open'&&$('#status').textContent===line('open','wax tablets'),'hovering the tablets lights Open');
+  let tw=await tabs();ok(tw.classList.contains('on')&&leaf(0,T('Eliab')).length===1&&leaf(0,T('Untie my tool pouch.')).length===1&&leaf(0,T('Make the basket strong enough to carry a man.')).length===1&&leaf(1).length===4,
     'a click opens the tablets: people, open tasks and four passages');
-  ok(leaf(1).every(t=>/\([1-3]? ?[A-Z][a-z]+ \d+:\d+/.test(t)),'every passage carries its reference');
+  ok(leaf(1).every(t=>/\((?:[1-5]\.? )?\p{Lu}\p{Ll}+ \d+:\d+/u.test(t)),'every passage carries its reference');
   tw.click();await idle();ok(!tw.classList.contains('on')&&!G.busy,'a click closes them');
   await act('pickup','large basket');await use('pouch','basket');ok(has('basket')&&has('pouch'),'nonsense combination refused');
   verb('open');item('pouch');await idle();ok(has('awl')&&!has('pouch'),'pouch opens to awl');
@@ -107,15 +132,15 @@
   await use('knife','cloth');ok(has('patch')&&has('strips')&&!has('cloth'),'cloth cut');
   await use('strips','rope');ok(has('longrope')&&!has('rope'),'rope lengthened');
   const c1=makeCode(),b1=stateBits(),inv1=srt();
-  ok(decode(c1).b===b1&&decode(c1).ch===1&&/^[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(c1)&&$('#code').textContent==='CODE '+c1,'code round-trips: '+c1);
+  ok(decode(c1).b===b1&&decode(c1).ch===1&&/^[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(c1)&&$('#code').textContent===T('CODE {code}',{code:c1}),'code round-trips: '+c1);
   ok(decode('AAAAAA')===null&&decode('')===null&&decode(c1.slice(0,6)+(c1[6]==='A'?'B':'A'))===null,'bad codes rejected');
   ok(decode(c1.toLowerCase().replace('-',' ')).b===b1,'lower case and spaces accepted');
   await actor(null,ACT.eliab);ok(nq()===6&&hasQ('basket loops are frayed'),'eliab has 5 questions, and one about the frayed basket');await choose(3);await choose(-1);
   await actor(null,ACT.eliab);ok(nq()===5,'once-question gone');heard.length=0;await pickQ('basket loops are frayed');
-  ok(heard.includes(ACT.eliab.hs.ask.basket)&&nq()===4&&!F.strong,'learned topic answered once, and solves nothing');
+  ok(heard.includes(T(ACT.eliab.hs.ask.basket))&&nq()===4&&!F.strong,'learned topic answered once, and solves nothing');
   halt('choices');await choose(-1);
-  heard.length=0;await give('knife',ACT.eliab);ok(heard.includes(ACT.eliab.hs.show.knife)&&has('knife'),'knife shown to Eliab: his own reply, item kept');
-  heard.length=0;verb('use');item('longrope');view(ACT.eliab.x,ACT.eliab.y-18);await idle();ok(heard.includes(ACT.eliab.hs.show.longrope)&&has('longrope'),'using an item on a person shows it');
+  heard.length=0;await give('knife',ACT.eliab);ok(heard.includes(T(ACT.eliab.hs.show.knife))&&has('knife'),'knife shown to Eliab: his own reply, item kept');
+  heard.length=0;verb('use');item('longrope');view(ACT.eliab.x,ACT.eliab.y-18);await idle();ok(heard.includes(T(ACT.eliab.hs.show.longrope))&&has('longrope'),'using an item on a person shows it');
   ok(!/needed/.test(act.toString()),'the stock "not needed" line is gone');
   await sweep(ACT.eliab);
   halt('pray',()=>{pray()});
@@ -124,7 +149,7 @@
   await act(null,'alley to the wall quarter');ok(G.room==='street'&&P.x<400,'guard turns Paul back');
   halt('guard',()=>{ACT.guard.dir=1;say(ACT.guard,'Halt! The wall quarter is closed tonight. Orders of the governor.')});
   await actor(null,ACT.zakkai);ok(F.metZakkai&&nq()===5&&hasQ('soldier in the street is thirsty'),'met merchant; he mentions the thirsty soldier');
-  heard.length=0;await pickQ('soldier in the street is thirsty');ok(heard.includes(ACT.zakkai.hs.ask.thirst),'thirst topic answered');
+  heard.length=0;await pickQ('soldier in the street is thirsty');ok(heard.includes(T(ACT.zakkai.hs.ask.thirst)),'thirst topic answered');
   await choose(0);await choose(1);await choose(-1);
   await actor(null,ACT.guard);ok(nq()===2&&hasQ("merchant's awning"),'the guard can be asked about the awning');await choose(-1);
   await sweep(ACT.guard,ACT.zakkai);
@@ -141,6 +166,12 @@
   ok(G.room==='workshop'&&srt()===inv1&&!G.busy&&!F.awning&&!cb.classList.contains('on'),'code restores workshop state');
   $('#code').click();$('#codein').value=c2;$('#codego').click();await idle();
   ok(G.room==='street'&&srt()===inv2&&F.awning&&F.kind&&!F.water,'code restores street state');
+  /* the language can change at any moment: only the text changes, and a code is the same in every language */
+  if(lang==='en'){const c=makeCode(),f=JSON.stringify(F),inv=srt();$('#lang').click();await toLang('de');
+    ok(makeCode()===c&&JSON.stringify(F)===f&&srt()===inv&&$('#verbs button').textContent==='Betrachte'&&$('#code').textContent==='CODE '+c&&$('#lang').textContent==='DE',
+      'the top-bar button switches to German mid-game: the same state, the same code '+c);fitVerbs();
+    await enter(c1);ok(G.room==='workshop'&&srt()===inv1&&!F.awning&&G.lang==='de','a code written down in English restores the same point in German');
+    await enter(c);$('#lang').click();await toLang('en');ok(makeCode()===c&&$('#verbs button').textContent==='Look at'&&JSON.stringify(F)===f,'and back to English')}
   halt('street',()=>{place(P,'street',300,124,1)});
   await act(null,'alley to the wall quarter');ok(G.room==='house'&&F.inHouse,'reached house');
   await act('open','shutters');ok(!F.shutters,'shutters refused while lamp lit');
@@ -155,7 +186,7 @@
   await useOn('strongbasket','window');
   n=0;while(!ov.classList.contains('end')&&n++<4000)await wait(50);
   ok(ov.classList.contains('end'),'chapter one complete screen shown');
-  ok(/Chapter Two code: 2-/.test(ov.textContent),'chapter one ends with a chapter two code');
+  ok(ov.textContent.includes(T('Chapter Two code: {code}',{code:codeOf(2,0)})),'chapter one ends with a chapter two code');
   {const M=SHARED.map;ok(M&&G.scene===M.draw&&M.state.legs.length===1&&M.state.legs[0].k===1&&M.state.seen.has('jerusalem'),'chapter one ends on the map: the way from Damascus to Jerusalem has drawn itself')}
   halt('map1',()=>{ov.className=''});
   halt('final');
@@ -190,7 +221,7 @@
   await act(null,'door to the city');ok(G.room==='jerusalem'&&F.preach&&ACT.dositheus.room==='jerusalem'&&ACT.ariston.room==='jerusalem'&&ACT.barnabas.room==='upper'&&!G.busy,
     'fifteen days in Jerusalem: two Greek-speaking Jews wait in the street');
   pray();await idle();ok(hint()[0]==='reason','the hint points to the Scriptures');
-  tw=await tabs();ok(tw.classList.contains('on')&&leaf(0,'Dositheus').length===1&&leaf(0,'Cephas').length===1&&leaf(0,'Answer the Greek-speaking Jews').length===1&&leaf(1).length===6,
+  tw=await tabs();ok(tw.classList.contains('on')&&leaf(0,'Dositheus').length===1&&leaf(0,T('Cephas')).length===1&&leaf(0,T('Answer the Greek-speaking Jews from the Scriptures.')).length===1&&leaf(1).length===6,
     'the tablets hold the people met, the dispute and six passages');
   halt('tablets');
   key('Escape');await idle();ok(!tw.classList.contains('on')&&!G.busy,'Escape closes the tablets');
@@ -213,16 +244,16 @@
   await useOn('knife','heap of old sailcloth');ok(has('sailpatch'),'patch cut');
   await useOn('awl','torn sail');ok(!F.sailMended,'no twine yet');
   await actor(null,ACT.fisher);ok(nq()===6&&hasQ('tarred twine'),'fisherman: three questions and three learned topics');halt('topics');heard.length=0;await pickQ('tarred twine');
-  ok(heard.includes(ACT.fisher.hs.ask.twine[1])&&!has('twine'),'asking about the twine is a clue, not the twine');await choose(0);await choose(-1);
+  ok(heard.includes(T(ACT.fisher.hs.ask.twine[1]))&&!has('twine'),'asking about the twine is a clue, not the twine');await choose(0);await choose(-1);
   await sweep(ACT.captain,ACT.fisher,ACT.mattan);
   verb('give');item('provisions');view(ACT.fisher.x,ACT.fisher.y-18);await idle();ok(has('twine')&&!has('provisions'),'bread shared, twine given');
   const chb=makeCode();await enter(chb);ok(G.room==='harbor'&&has('twine')&&has('sailpatch')&&F.sailDown&&!has('provisions'),'harbor code restores');
   halt('sail',()=>{place(P,'harbor',330,126,1);say(ACT.captain,'A patch of sound sailcloth, and tarred twine. Not thread: thread parts in the first gust.')});
   halt('sailing',()=>{F.sailMended=1;F.sailUp=1;P.room=null;ACT.captain.room=null;G.ship={ox:50,paul:1,capt:1};G.busy=true;lock(true);status();narr('So the brothers sent him off to Tarsus. (Acts 9:30)',{dur:9000})});
   verb('use');item('awl');view(...hs('torn sail'));
-  n=0;while(!/A Friend in Jerusalem/.test(ov.textContent)&&n++<4000)await wait(50);
-  ok(ov.classList.contains('end')&&/A Friend in Jerusalem/.test(ov.textContent),'chapter two complete screen shown');
-  ok(/Chapter Three code: 3-/.test(ov.textContent),'chapter two ends with a chapter three code');
+  n=0;while(!ov.textContent.includes(T('A Friend in Jerusalem'))&&n++<4000)await wait(50);
+  ok(ov.classList.contains('end')&&ov.textContent.includes(T('A Friend in Jerusalem')),'chapter two complete screen shown');
+  ok(ov.textContent.includes(T('Chapter Three code: {code}',{code:codeOf(3,0)})),'chapter two ends with a chapter three code');
   {const L=SHARED.map.state.legs;ok(G.scene===SHARED.map.draw&&L.length===3&&L.every(l=>l.k===1)&&SHARED.map.state.seen.has('tarsus'),'chapter two ends on the map: Jerusalem, Caesarea, and by sea to Tarsus')}
   halt('map2',()=>{ov.className=''});
   halt('final2');await wait(1700)}
@@ -237,12 +268,12 @@
   await sweep(ACT.barnabas,ACT.kleon);
   /* the party: Barnabas can be played; the seam takes both men */
   const BN=ACT.barnabas;
-  ok($('#verbs').classList.contains('party')&&/Barnabas/.test($('#swap').textContent)&&getComputedStyle($('#swap')).display!=='none','a party: the panel offers to switch to Barnabas');
-  heard.length=0;await useOn('awl','tent');ok(!F.seam&&!F.held&&heard.some(l=>/show me where to stand/.test(l)),'one man cannot sew the seam straight');
+  ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Barnabas'))&&getComputedStyle($('#swap')).display!=='none','a party: the panel offers to switch to Barnabas');fitVerbs();
+  heard.length=0;await useOn('awl','tent');ok(!F.seam&&!F.held&&heard.includes(T('Then show me where to stand, Saul. I am a Levite, not a tentmaker.')),'one man cannot sew the seam straight');
   pray();await idle();ok(hint()[0]==='hold3','the hint points to Barnabas');
-  key('c');await idle();ok(PC()===BN&&srt()==='staff'&&/Paul/.test($('#swap').textContent)&&$('#status').textContent==='Walk to','C switches to Barnabas, with his own inventory');
-  heard.length=0;await act('look','workbench');ok(heard.includes('Scarred by years of cutting.'),'Barnabas looks at things in his own words');
-  heard.length=0;await act('use','leather hide');ok(heard.includes("That is Saul's trade, not mine.")&&!F.gotLoops,'and leaves the crafts to Saul');
+  key('c');await idle();ok(PC()===BN&&srt()==='staff'&&$('#swap').textContent.includes(T('Paul'))&&$('#status').textContent===T('Walk to'),'C switches to Barnabas, with his own inventory');
+  heard.length=0;await act('look','workbench');ok(heard.includes(T('Scarred by years of cutting.')),'Barnabas looks at things in his own words');
+  heard.length=0;await act('use','leather hide');ok(heard.includes(T("That is Saul's trade, not mine."))&&!F.gotLoops,'and leaves the crafts to Saul');
   pray();await idle();ok(hint()[0]==='hold3b'&&ACT.barnabas.bow===false,'Barnabas prays, and gets his own hint');
   heard.length=0;await act('use','tent');ok(F.held&&Math.abs(BN.x-146)<4&&PC()===BN,'Barnabas takes the far edge and holds it taut'+(F.held?'':' DEBUG held='+F.held+' x='+BN.x+' pc='+PC().id+' heard='+heard.join('|')));
   const cw=makeCode();ok(/^3-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(cw)&&decode(cw).w!=null,'chapter three codes are wide now: '+cw);
@@ -251,7 +282,7 @@
   key('c');await idle();ok(PC()===P&&srt()==='awl,knife,tablets,thread','back to Paul and his own inventory');
   await useOn('awl','tent');ok(F.seam&&!F.held&&BN.x<120,'two men: Barnabas holds, Saul sews');
   await give('knife',BN);ok(!has('knife')&&G.invs.barnabas.includes('knife'),'Give hands the knife to Barnabas');
-  key('c');await idle();heard.length=0;await use('knife','staff');ok(heard.includes(BN.noCraft)&&has('knife')&&has('staff'),'Barnabas will not cut anything');
+  key('c');await idle();heard.length=0;await use('knife','staff');ok(heard.includes(T(BN.noCraft))&&has('knife')&&has('staff'),'Barnabas will not cut anything');
   const ck=makeCode();await give('knife',P);ok(!has('knife')&&G.invs.paul.includes('knife'),'and Barnabas hands it back');
   await enter(ck);ok(G.ch===3&&PC()===BN&&srt()==='knife,staff'&&G.invs.paul.slice().sort().join()==='awl,tablets,thread'&&F.seam&&BN.room==='tarsus','a wide code restores the active character and both inventories');
   await enter(cw);ok(PC()===BN&&F.held&&Math.abs(BN.x-146)<4&&!F.seam&&srt()==='staff','and the held edge');
@@ -279,7 +310,7 @@
   halt('court',()=>{say(ACT.barnabas,'But it has weeks of road ahead of it, and our old pack bags are rotten through.')});
   await actor(null,ACT.barnabas);ok(hasQ('great famine'),'famine topic in Antioch');await choose(0);await choose(-1);await actor(null,ACT.agabus);ok(hasQ('no thread'),'thread topic');await choose(0);await choose(-1);
   await sweep(ACT.barnabas,ACT.agabus,ACT.lucius);
-  const tw3=await tabs();ok(leaf(0,'Agabus').length===1&&leaf(0,'Kleon').length===0&&leaf(0,'Make new pack bags').length===1&&leaf(0,'Find strong thread').length===1&&leaf(1).length===4,'Antioch tablets');
+  const tw3=await tabs();ok(leaf(0,'Agabus').length===1&&leaf(0,'Kleon').length===0&&leaf(0,T('Make new pack bags for the relief.')).length===1&&leaf(0,T('Find strong thread to sew them with.')).length===1&&leaf(1).length===4,'Antioch tablets');
   key(' ');await idle();ok(!tw3.classList.contains('on'),'Space closes them');
   await useOn('awl','old pack bags');await useOn('bolt','donkey');ok(!F.bagsOn&&has('bolt'),'loose cloth carries nothing');
   await use('awl','bolt');ok(has('bolt')&&!F.cutBolt,'cloth must be cut before sewing');
@@ -321,13 +352,14 @@
     say(ACT.xanthe,'And my thread in every seam of it. I did have something to give.')});
   halt('road',()=>{G.scene=CHAP[3].scenes.road;G.trek={k:.52};G.busy=true;lock(true);status();narr('So they sent the relief to the elders in Judea by the hand of Barnabas and Saul. (Acts 11:30)',{dur:9000})});
   verb('use');item('bags');view(...hs('donkey'));
-  n=0;while(!(ov.classList.contains('end')&&/Called to Antioch/.test(ov.textContent))&&n++<4000)await wait(50);
-  ok(ov.classList.contains('end')&&/Called to Antioch/.test(ov.textContent),'chapter three complete screen shown');
+  n=0;while(!(ov.classList.contains('end')&&ov.textContent.includes(T('Called to Antioch')))&&n++<4000)await wait(50);
+  ok(ov.classList.contains('end')&&ov.textContent.includes(T('Called to Antioch')),'chapter three complete screen shown');
   {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===4&&L.every(l=>l.k===1)&&M.state.seen.has('antioch'),'chapter three ends on the map: the whole road, from Damascus to Antioch');
     const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
     for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;
     ok(n===0,'no two routes cross')}
   halt('map3',()=>{ov.className=''});halt('final3');
+  if(lang!=='en')ok(!MISSING.size,'every line shown in the game had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter (Chapter Four is not written): places on the map, six rooms, and wide codes that hold a room past the fourth */
   CHAP[9]={name:'HUB TEST',label:'',salt:0x7A55,src:'',ready:1,music:CHAP[3].music,rooms:['workshop','street','house','tarsus','court','antioch'],flags:['f0'],
     ent:{workshop:[60,118,1],street:[46,114,1],house:[52,118,1],tarsus:[150,122,1],court:[146,128,-1],antioch:[46,116,1]},
@@ -342,6 +374,7 @@
   {const[jx,jy]=SHARED.map.where('jerusalem'),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+jx/320*r.width,clientY:r.top+jy/144*r.height,bubbles:true}))}
   await idle();ok(G.room==='workshop'&&!G.scene&&!G.busy&&SHARED.map.state.legs.length===1,'a click on a place travels there');
   cut(travel);for(let i=0;i<60&&G.scene!==SHARED.map.draw;i++)await wait(50);key('Escape');await idle();ok(G.room==='workshop'&&!G.scene&&!G.busy,'Esc stays where you are');
+  fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
   L('DONE');
  }catch(e){if(e!=='halt')L('ERR '+(e&&e.message||e))}})();
 })();

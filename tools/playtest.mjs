@@ -2,16 +2,20 @@
 // Headless playthrough test and screenshot tool (needs Node 22+ and Google Chrome).
 //   node tools/playtest.mjs                 full playthrough, prints one line per check
 //   node tools/playtest.mjs title street    stop at named points and save screenshots
+//   node tools/playtest.mjs de:title         the same in another language (screenshot de-title.png); the full run plays every language
+// It first checks the translations against the English text (tools/strings.mjs).
 // Screenshots go to tools/out/ (or $SHOTS). Set $CHROME to use another Chromium-based browser.
 import {spawn} from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
+import {checkTexts} from './strings.mjs';
 const here=path.dirname(fileURLToPath(import.meta.url)),root=path.join(here,'..');
 const CHROME=process.env.CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const out=process.env.SHOTS||path.join(here,'out');
-const stops=process.argv.slice(2);if(!stops.length)stops.push('all');
+const langs=fs.readdirSync(path.join(root,'lang')).filter(l=>fs.statSync(path.join(root,'lang',l)).isDirectory()).sort();
+const stops=process.argv.slice(2);if(!stops.length)stops.push('all',...langs.map(l=>l+':all'));
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'paul-playtest-'));
 const game=fs.readFileSync(path.join(root,'index.html'),'utf8');
 // The copy runs from a temp folder, so a <base> points it back at the repository for the level files.
@@ -27,6 +31,7 @@ async function target(){for(let i=0;i<60;i++){try{const port=fs.readFileSync(pat
   const j=await(await fetch(`http://127.0.0.1:${port}/json`)).json();
   const p=j.find(t=>t.type==='page');if(p)return p.webSocketDebuggerUrl}catch{}await sleep(250)}throw new Error('Chrome did not start')}
 let failed=false;
+{const r=checkTexts();console.log('=== text\n'+r.out.join('\n'));if(r.failed)failed=true}
 try{
   const ws=new WebSocket(await target());await new Promise(r=>ws.onopen=r);
   let id=0;const pend=new Map();
@@ -35,13 +40,13 @@ try{
   const ev=async x=>(await send('Runtime.evaluate',{expression:x,returnByValue:true,awaitPromise:true})).result?.result?.value;
   await send('Page.enable');
   await send('Emulation.setDeviceMetricsOverride',{width:960,height:669,deviceScaleFactor:1,mobile:false});
-  for(const stop of stops){
-    await send('Page.navigate',{url:`file://${path.join(tmp,'test.html')}?stop=${stop}`});
+  for(const name of stops){const[lang,stop]=name.includes(':')?name.split(':'):['en',name];
+    await send('Page.navigate',{url:`file://${path.join(tmp,'test.html')}?stop=${stop}&lang=${lang}`});
     let log='';for(let i=0;i<1400;i++){await sleep(250);log=await ev("(document.querySelector('#tlog')||{}).textContent||''");if(/STOP|DONE|ERR|JSERR|REJ/.test(log))break}
     await sleep(1600);await ev("document.querySelector('#tlog').style.display='none'");await sleep(100);
     const shot=await send('Page.captureScreenshot',{format:'png'});
-    fs.writeFileSync(path.join(out,`${stop}.png`),Buffer.from(shot.result.data,'base64'));
-    console.log(`=== ${stop}\n${log}`);
+    fs.writeFileSync(path.join(out,`${lang==='en'?'':lang+'-'}${stop}.png`),Buffer.from(shot.result.data,'base64'));
+    console.log(`=== ${name}\n${log}`);
     if(/FAIL|ERR|JSERR|REJ/.test(log)||!/STOP|DONE/.test(log))failed=true;
   }
   ws.close();
