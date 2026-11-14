@@ -66,3 +66,16 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 ## 7. Publishing
 
 GitHub Pages serves the game from the root of `main`, so a push to `main` publishes it. Push only changes that have been tested.
+
+## 8. Languages
+
+The game is written in English and plays in German too. The English text stays in the code; every other language is data under `lang/`, one folder per language.
+
+- New or changed player-visible text must be added in every supported language in the same change. Changing an English line changes its key: change the entry in every language file with it. The playtest fails on a line that has no translation and on a translation whose English line is gone.
+- Every rule in section 1 applies in each language. German Bible quotations come from the German New World Translation, Study Edition ("Neue-Welt-Übersetzung der Heiligen Schrift – Studienausgabe"), on [wol.jw.org](https://wol.jw.org/de/wol/binav/r10/lp-x/nwtsty) or [jw.org/de](https://www.jw.org/de/bibliothek/bibel/studienbibel/buecher/). Look up each verse there before you write it. Never translate an English verse yourself: a verse in another language is always quoted from that language's Study Edition. If you cannot check a verse's exact wording, give the reference only and list it for the maintainer.
+- References use the language's own book names and style, such as "(Apostelgeschichte 9:25)" or "(5. Mose 21:23)". Names of people and places follow that language's Study Edition, without the marks that show stress: Saulus, Paulus, Kephas, Jakobus, Stephanus, Damaskus, Cäsarea, Antiochia. Invented characters with a Bible name take its spelling there too (Noomi, Isai, Sakkai).
+- In German, use the terms Jehovah's Witnesses use: "Jehova", "u. Z." and "v. u. Z.", "die Versammlung", "die Brüder", "unverdiente Güte". Acts 11:26 says the disciples were "durch göttliche Vorsehung" called Christians. The characters say "du" to one another, as people do in the German Bible. German text uses „ and “ for quotation marks.
+- A translation says what the English line says, no more and no less. Paul never lies in any language, and the dialogue choices keep their order, so every walkthrough holds in every language.
+- In code, write player-visible text in English and let the engine translate it as it is shown (`say`, `choose`, names, the tablets, the map). A line put together from parts is a template, such as `T('It still needs {list}.', {list})`, so that each language can word it in its own order. Never let the story's logic compare translated text.
+- Names in the status line ("Use awl with torn awning") stand without an article. In a language with cases, choose names that read correctly after every verb, such as German compounds ("Vorratskorb (verstärkt)", not "verstärkter Korb").
+- Check every changed scene in each language: German is longer than English, and text must not overflow its box or cross a line on the map.
