@@ -2,7 +2,7 @@
 
 A browser point-and-click adventure in the style of early-1990s verb-and-inventory adventure games. You play Saul of Tarsus, later known as the apostle Paul, a tentmaker who gets out of tight spots with his trade, his brothers and prayer rather than with force.
 
-There are three chapters so far. The whole game is one self-contained `index.html`. There are no image or audio files: every picture is drawn in code on a canvas and all music and sound effects are synthesized with the Web Audio API.
+There are three chapters so far. The game is a small engine in `index.html` plus one level file per chapter in `levels/`, loaded only when that chapter is played. There are no image or audio files: every backdrop, character and icon is painted in code on a canvas, and all music, ambience and sound effects are synthesized with the Web Audio API.
 
 ![Title screen](docs/screenshots/title.png)
 
@@ -10,7 +10,7 @@ There are three chapters so far. The whole game is one self-contained `index.htm
 
 **Play online: https://marcuscalidus.github.io/paul-of-tarsus/**
 
-Or download this repository and open `index.html` in any current desktop browser. Pick a chapter on the title screen. Nothing to install or build.
+Or download this repository and open `index.html` in any current desktop browser (keep the `levels` folder next to it). Pick a chapter on the title screen. Nothing to install or build.
 
 The online version is served by GitHub Pages straight from the root of the `main` branch.
 
@@ -88,6 +88,18 @@ Three more locations and five new characters, with Barnabas back at Paul's side.
 8. Use the pack bags with the donkey.
 </details>
 
+## Look and sound
+
+The backdrops are painted in the manner of early-1990s VGA adventure games: perspective floors, textured plaster and stone, warm light against cool shadow, a foreground layer that slides past the scene as it scrolls, and a final ordered dither. Rooms are painted at twice the classic 320-pixel resolution. Night scenes and interiors are painted in daylight colors and then multiplied by a light map, so a lamp, a brazier or the moon through a window really lights the room; the same light falls on the characters as they walk through it.
+
+Each chapter has its own score, and each room its own sounds:
+
+| Chapter | Music | Around you |
+|---|---|---|
+| Escape from Damascus | Oud, frame drum and ney in D Hijaz; in the watched street only a drone and a heartbeat remain | Crickets, an owl, the soldier's brazier, night wind at the open window |
+| A Friend in Jerusalem | Lyre and ney in A Dorian; at the harbor a harp rocks in threes like the swell | Birds and a distant market, then waves, gulls and creaking timbers |
+| Called to Antioch | A quick lyre figure, walking bass and reed pipe in G Mixolydian, with claps in the busy street | A tentmakers' row, vine leaves in the courtyard, the fountain and the crowd |
+
 ## How to play
 
 | Action | How |
@@ -120,7 +132,23 @@ This is an independent, non-commercial fan project. It is not produced, endorsed
 
 ## Development
 
-Everything lives in `index.html`: styles, engine, art, audio, rooms and dialogue. Edit it and reload.
+```
+index.html            the engine: layout, paint toolkit, figures, audio sequencer, verbs, inventory, safe-point codes, level loader
+levels/chapter1.js    Escape from Damascus
+levels/chapter2.js    A Friend in Jerusalem
+levels/chapter3.js    Called to Antioch
+tools/                headless playtest
+```
+
+A level file holds everything that belongs to one chapter and nothing else does: its music and ambience, its artwork, its cast and items, its rooms with their hotspots and dialog, its cutscenes and its prayer hints. `index.html` keeps only a three-line manifest (`CHAP`: name, file, code salt), and fetches a level with a script tag the first time it is needed, so the game still runs when opened straight from disk. To add a chapter, write `levels/chapter4.js` and add its line to the manifest.
+
+Inside a level file:
+
+- **Music and ambience** are plain data. A score names a tempo, a tonic, a mode and a list of tracks (drone, drum pattern, step-sequenced instrument, melody); each track lists the moods it plays in, and each room names its mood (`calm`, `tense`, `hope`) and the sounds around it, for example `amb:{waves:.8,gulls:.6}`. The instruments, drums and ambience voices themselves live in the engine.
+- **Artwork** is a painter per room: `paint` draws the backdrop once, `fore` an optional foreground layer, `draw` whatever changes with the story (items that can be taken, a sail going up), and `light` says how the room lights the people in it. The painters use the engine's toolkit: `plaster`, `ashlar`, `pave`, `wood`, `vessel`, `foliage`, `lightmap`, `shade` and so on.
+- **Rooms and dialog** are tables of hotspots with their lines, and short async scripts for the puzzles and cutscenes.
+
+Edit a file and reload.
 
 `tools/playtest.mjs` plays all three chapters through the real interface in headless Chrome and checks each puzzle step, the save codes and the endings. It needs Node 22 or newer and Google Chrome.
 

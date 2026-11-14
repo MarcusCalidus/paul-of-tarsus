@@ -7,14 +7,16 @@ import {spawn} from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {fileURLToPath} from 'node:url';
+import {fileURLToPath,pathToFileURL} from 'node:url';
 const here=path.dirname(fileURLToPath(import.meta.url)),root=path.join(here,'..');
 const CHROME=process.env.CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const out=process.env.SHOTS||path.join(here,'out'),PORT=9333;
 const stops=process.argv.slice(2);if(!stops.length)stops.push('all');
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'paul-playtest-'));
 const game=fs.readFileSync(path.join(root,'index.html'),'utf8');
-fs.writeFileSync(path.join(tmp,'test.html'),game.replace('</body>',fs.readFileSync(path.join(here,'playtest-harness.html'),'utf8')+'</body>'));
+// The copy runs from a temp folder, so a <base> points it back at the repository for the level files.
+fs.writeFileSync(path.join(tmp,'test.html'),game.replace('<head>',`<head><base href="${pathToFileURL(root+path.sep).href}">`)
+  .replace('</body>',fs.readFileSync(path.join(here,'playtest-harness.html'),'utf8')+'</body>'));
 fs.mkdirSync(out,{recursive:true});
 const chrome=spawn(CHROME,['--headless=new','--disable-gpu','--mute-audio','--hide-scrollbars',`--remote-debugging-port=${PORT}`,
   `--user-data-dir=${path.join(tmp,'profile')}`,'about:blank'],{stdio:'ignore'});
@@ -29,7 +31,7 @@ try{
   const send=(method,params={})=>new Promise(r=>{const i=++id;pend.set(i,r);ws.send(JSON.stringify({id:i,method,params}))});
   const ev=async x=>(await send('Runtime.evaluate',{expression:x,returnByValue:true,awaitPromise:true})).result?.result?.value;
   await send('Page.enable');
-  await send('Emulation.setDeviceMetricsOverride',{width:960,height:651,deviceScaleFactor:1,mobile:false});
+  await send('Emulation.setDeviceMetricsOverride',{width:960,height:669,deviceScaleFactor:1,mobile:false});
   for(const stop of stops){
     await send('Page.navigate',{url:`file://${path.join(tmp,'test.html')}?stop=${stop}`});
     let log='';for(let i=0;i<1400;i++){await sleep(250);log=await ev("(document.querySelector('#tlog')||{}).textContent||''");if(/STOP|DONE|ERR|JSERR|REJ/.test(log))break}
