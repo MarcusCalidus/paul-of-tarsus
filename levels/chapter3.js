@@ -255,12 +255,14 @@ Object.assign(ITEMS,{
   bags:{name:'pack bags',look:'Two deep bags of goat-hair cloth, joined by a broad band to lie across a pack saddle.'},
   wages:{name:'my savings',look:'A little silver: what my awl has earned this year in Antioch, beyond my needs.'}});
 /* how Barnabas describes what he carries: everything but his staff belongs to Saul's trade or Saul's purse */
-Object.entries({awl:"Saul's awl. In his hand it is a wonder; in mine, a danger.",thread:'Waxed linen thread. Saul could tell you how strong it is.',
+const BY3={awl:"Saul's awl. In his hand it is a wonder; in mine, a danger.",thread:'Waxed linen thread. Saul could tell you how strong it is.',
   knife:"Saul's knife. I would only spoil good cloth with it.",tablets:"Saul's wax tablets: people, work and Scripture, in his small hand.",
   loops:'Leather loops, for the pegs of the tent.',tent:"Kleon's tent, finished. It is Kleon who should have it, from Saul's own hand.",
   bolt:'Goat-hair cloth from Cilicia. Saul knows what to make of it.',panels:'Cloth panels, cut for bags. They only want Saul and an awl.',
   spool:"Xanthe's thread. Strong, and given gladly.",bags:'The new pack bags. They belong on the donkey.',
-  wages:"Saul's savings. That is his to give, not mine."}).forEach(([id,t])=>(ITEMS[id].by=ITEMS[id].by||{}).barnabas=t);
+  wages:"Saul's savings. That is his to give, not mine."},
+  /* the tools are shared with other chapters, which word them in their own way: so these are set again whenever this chapter begins */
+  by3=()=>{for(const id in BY3)(ITEMS[id].by=ITEMS[id].by||{}).barnabas=BY3[id]};
 async function sewBags(){if(!has('spool'))return say(P,'I have the cloth and the awl, but my own spool is bare. I need strong thread, and a good deal of it.');
   SFX.sew();await say(P,'Two deep pockets, and a broad band between them to lie across the pack saddle...');SFX.sew();await wait(800);
   delItem('panels');delItem('spool');addItem('bags',1);F.bags=1;SFX.good();
@@ -275,7 +277,7 @@ Object.assign(COMBO,{
   'awl+loops':()=>say(P,"The loops belong on the hem of Kleon's tent."),'loops+thread':()=>say(P,"The loops belong on the hem of Kleon's tent."),
   'knife+loops':()=>say(P,'They are the right length already.'),'knife+tent':()=>say(P,'After a week of sewing? No.'),
   'awl+tent':()=>say(P,'It needs an owner now, not another stitch.'),'tent+thread':()=>say(P,'It needs an owner now, not another stitch.')});
-function setup3(){BN.hs=BN3;P.hs=PAUL3;P.called='Saul';Object.assign(BN,BARN3);place(BN,'tarsus',112,124,1);place(KL,'tarsus',224,119,-1);place(AG,'court',116,115,1);place(LU,'court',187,113,-1);
+function setup3(){BN.hs=BN3;P.hs=PAUL3;P.called='Saul';Object.assign(BN,BARN3);by3();place(BN,'tarsus',112,124,1);place(KL,'tarsus',224,119,-1);place(AG,'court',116,115,1);place(LU,'court',187,113,-1);
   place(XA,'antioch',190,116,1);place(TN,'antioch',354,116,-1);G.meet=0;G.trek=null;G.inv=['awl','thread','knife','tablets'];G.invs={paul:G.inv,barnabas:['staff']};drawInv()}
 /* Barnabas when he is the one being played: his answers where the level wrote nothing for him, and the crafts he leaves to Saul */
 const BARN3={noCraft:"That is Saul's trade, not mine. I would only spoil it.",
@@ -656,8 +658,8 @@ async function finale3(){playAs(P);AU.mood='hope';await wait(400);
   await journey();await narr('And in Antioch, a far longer road was about to open. (Acts 13:1-3)',{dur:5500});
   endScreen({title:'Called to Antioch',text:'Paul kept his word, worked with his hands, and helped a sister find what she had to give. The gift was carried honestly, in the sight of Jehovah and of men.',
     based:'Based on Acts 11:19-30; 12:25 and 2 Corinthians 8:12, 20, 21. Supporting characters and dialogue are imaginative; the events are from the Scriptures.',
-    go:'Click to return to the title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+    go:'Click to continue to Chapter Four',code:['Chapter Four code: {code}',codeOf(4,0)]});
+  await wait(1500);ov.onclick=()=>startChapter(4);await new Promise(()=>{})}
 function hint3(){const b=PC()!==P,saul=['saul3',["That is Saul's craft, not mine. A good partner knows when to step back.","Saul should do this part. I can leave it to him; he is never far away."]];
   if(G.room==='tarsus'&&!F.seam)return b?(holding()?['seam3b',["I have the far edge. The sewing is Saul's part.",'Saul can sew the seam now, while I hold it.']]
       :['hold3b',['Saul says a seam sews straight only when its far edge is held taut.','I should use the tent, and hold its far edge for him.']])

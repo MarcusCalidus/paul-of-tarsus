@@ -5,9 +5,12 @@
 
      journey(route, o)   between scenes: earlier legs are shown, the new ones draw themselves as dotted lines, city by city,
                          with a music sting. route: [[from, to, 'new sea'], ...]; 'new' legs animate, 'sea' legs follow waypoints.
-     pick(ids, here)     for a hub chapter: the places as dots; resolves with the place the player clicks, or null (Esc).
+     pick(ids, here, o)  for a hub chapter: the places as dots; resolves with the place the player clicks, or null (Esc).
+                         o.legs: the legs already travelled, [[from, to], ...], which are shown.
      go(from, to)        draw one leg and arrive.
-     where(id)           a place's position on the map, in view pixels. */
+     where(id)           a place's position on the map, in view pixels.
+   journey and pick take o.labels: where a place's name goes on this chapter's map, {id:{lab, dy}}, when its usual side would
+   lie across one of the chapter's routes. */
 SHARED.map=(()=>{
 "use strict";
 const W=320,H=144,LON0=23.2,LAT0=37.45,KX=18.4,KY=22.15;
@@ -18,11 +21,13 @@ const pts=a=>{const o=[];for(let i=0;i<a.length;i+=2)o.push(...xy(a[i],a[i+1]));
 const PLACES={
   damascus:{name:'Damascus',at:[36.29,33.51],lab:'r'},jerusalem:{name:'Jerusalem',at:[35.22,31.78],lab:'r',dy:-2},
   caesarea:{name:'Caesarea',at:[34.89,32.50],lab:'l'},tarsus:{name:'Tarsus',at:[34.89,36.92],lab:'l'},
-  antioch:{name:'Antioch',at:[36.16,36.20],lab:'r'},
+  antioch:{name:'Antioch',at:[36.16,36.20],lab:'r'},seleucia:{name:'Seleucia',at:[35.93,36.12],lab:'r',dy:4.6},
   tyre:{name:'Tyre',at:[35.20,33.27],lab:'r',minor:1},salamis:{name:'Salamis',at:[33.90,35.18],lab:'l',minor:1},
   paphos:{name:'Paphos',at:[32.42,34.76],lab:'l',minor:1},alexandria:{name:'Alexandria',at:[29.92,31.20],lab:'r',minor:1}};
-/* waypoints for legs that do not run straight: by sea up the coast and east of Cyprus; by road round the Gulf of Issus */
-const VIA={'caesarea-tarsus':[34.42,33.3,34.5,34.7,34.88,35.75],'tarsus-antioch':[35.6,37.02,36.2,37.03,36.32,36.7,36.3,36.45]};
+/* waypoints for legs that do not run straight: by sea up the coast and east of Cyprus; by road round the Gulf of Issus; and through
+   the south of Cyprus, the way tradition has them go from Salamis to Paphos */
+const VIA={'caesarea-tarsus':[34.42,33.3,34.5,34.7,34.88,35.75],'tarsus-antioch':[35.6,37.02,36.2,37.03,36.32,36.7,36.3,36.45],
+  'salamis-paphos':[33.45,34.99,32.95,34.8]};
 /* region names sit where no coast, lake or route runs through them */
 const REGIONS=[{name:'CILICIA',at:[32.7,36.72]},{name:'SYRIA',at:[37.6,35.2]},{name:'CYPRUS',at:[33.2,34.35],sea:1}];
 /* the coast of the mainland, from the Aegean round Asia Minor, down the Syrian and Phoenician coast, and west along Egypt */
@@ -80,7 +85,9 @@ function path(a,b){const v=VIA[a+'-'+b]||VIA[b+'-'+a],raw=[at(a)];if(v){const q=
   out.push(at(b));const dots=[];let s=0;
   for(let i=1;i<out.length;i++){const[x0,y0]=out[i-1],[x1,y1]=out[i],d=Math.hypot(x1-x0,y1-y0);for(;s<=d;s+=2.6)dots.push([x0+(x1-x0)*(d?s/d:0),y0+(y1-y0)*(d?s/d:0)]);s-=d}
   return dots}
-const ST={legs:[],seen:new Set(),pulse:null,places:null,hover:null,boxes:[]};
+const ST={legs:[],seen:new Set(),pulse:null,places:null,hover:null,boxes:[],over:null};
+/* a place as this chapter's map shows it: its usual entry, with the chapter's own side for its name */
+const placeOf=k=>ST.over&&ST.over[k]?Object.assign({},PLACES[k],ST.over[k]):PLACES[k];
 /* box: note where a name was drawn, so that the playtest can check that no name crosses a coast or a route, in any language */
 const box=(g,s,x,y,sz)=>ST.boxes.push([x,y-sz*.45,x+g.measureText(s).width,y+sz*.45,s]);
 function label(g,s,x,y,side,col,sz){sz=sz||4.6;g.font=`bold ${sz}px "Lucida Console",Monaco,"Courier New",monospace`;g.textBaseline='middle';
@@ -93,7 +100,7 @@ function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];const sea=T('THE GREAT
   for(const{name,at:[lon,lat],sea}of REGIONS){const[x,y]=xy(lon,lat),s=T(name);g.font='bold 4.2px "Lucida Console",Monaco,monospace';g.fillStyle=sea?'rgba(190,224,236,.55)':'rgba(70,46,20,.6)';const sp=s.split('').join(' ');g.fillText(sp,x-s.length*2.3,y);box(g,sp,x-s.length*2.3,y,4.2)}
   for(const L of ST.legs){const n=Math.floor(L.dots.length*L.k);for(let i=0;i<n;i++){const[x,y]=L.dots[i];R(g,x-.6,y-.6,1.2,1.2,'#5a140c');R(g,x-.35,y-.35,.7,.7,L.k<1&&i>n-4?'#ffe0a0':'#d84a32')}}
   const show=new Set(ST.places||Object.keys(PLACES).filter(k=>PLACES[k].minor||ST.seen.has(k)));
-  for(const k of show){const p=PLACES[k],[x,y]=at(k),main=!p.minor||ST.places;dot(g,x,y,ST.seen.has(k)||ST.hover===k);
+  for(const k of show){const p=placeOf(k),[x,y]=at(k),main=!p.minor||ST.places||ST.seen.has(k);dot(g,x,y,ST.seen.has(k)||ST.hover===k);
     label(g,T(p.name),x,y+(p.dy||0),p.lab,main?(ST.hover===k?'#ffffff':'#f4e4b8'):'rgba(232,220,190,.62)',main?4.8:4)}
   if(ST.pulse){const[x,y]=at(ST.pulse),k=(t/900)%1;g.strokeStyle=`rgba(255,226,150,${.9*(1-k)})`;g.lineWidth=.6;g.beginPath();g.arc(x,y,2.4+k*6,0,6.2832);g.stroke()}
   if(ST.places){g.font='bold 4.4px "Lucida Console",Monaco,monospace';g.fillStyle='rgba(244,228,184,.9)';/* the hint stands in open sea, clear of the coast of Egypt */
@@ -103,7 +110,7 @@ function sting(){const t=now()+.06;if(!AU.ctx)return;DRUMS.d(t,1.3);DRUMS.d(t+.3
 const arrive=()=>{tone({f:1175,d:.18,type:'sine',v:.05,echo:1});tone({f:1568,t:now()+.08,d:.22,type:'sine',v:.035,echo:1})};
 function show(){G.scene=draw;setScore(null);AU.amb={wind:.25,waves:.25}}
 /* journey: between scenes. Fades to the map, shows the legs already travelled, then draws the new ones, city by city. */
-async function journey(route,o){o=o||{};ST.places=null;ST.hover=null;ST.legs=[];ST.seen=new Set();ST.pulse=null;
+async function journey(route,o){o=o||{};ST.places=null;ST.hover=null;ST.legs=[];ST.seen=new Set();ST.pulse=null;ST.over=o.labels||null;
   for(const[a,b,kind]of route){const k=/new/.test(kind||'')?0:1;ST.legs.push({a,b,k,dots:path(a,b)});if(k){ST.seen.add(a);ST.seen.add(b)}}
   const first=ST.legs.find(L=>!L.k);if(first)ST.seen.add(first.a);
   if(o.instant){show();for(const L of ST.legs){L.k=1;ST.seen.add(L.a);ST.seen.add(L.b)}ST.pulse=route[route.length-1][1];return}
@@ -111,7 +118,8 @@ async function journey(route,o){o=o||{};ST.places=null;ST.hover=null;ST.legs=[];
   for(const L of ST.legs)if(!L.k){ST.pulse=L.a;await tween(o.speed||1900,k=>{L.k=k});ST.seen.add(L.b);arrive();ST.pulse=L.b;await wait(350)}
   if(o.text)for(const s of[].concat(o.text))await narr(s,{dur:Math.max(3200,1600+s.length*60)})}
 /* pick: a hub chapter's places as dots; hovering lights a name, a click resolves with that place, Esc or right-click with null */
-function pick(ids,here){ST.places=ids;ST.legs=[];ST.seen=new Set([here]);ST.pulse=here;ST.hover=null;show();
+function pick(ids,here,o){o=o||{};ST.places=ids;ST.over=o.labels||null;ST.legs=(o.legs||[]).map(([a,b])=>({a,b,k:1,dots:path(a,b)}));
+  ST.seen=new Set([here]);for(const L of ST.legs)for(const k of[L.a,L.b])if(ids.includes(k))ST.seen.add(k);ST.pulse=here;ST.hover=null;show();
   const vp=$('#view'),pos=e=>{const r=vp.getBoundingClientRect();return[(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H]},
     near=e=>{const[x,y]=pos(e);let best=null,bd=7;for(const k of ids){const[px,py]=at(k),d=Math.hypot(px-x,py-y);if(d<bd){bd=d;best=k}}return best};
   return new Promise(res=>{const end=v=>{vp.removeEventListener('click',ck,true);vp.removeEventListener('mousemove',mv,true);vp.removeEventListener('contextmenu',no,true);removeEventListener('keydown',kd,true);ST.places=null;res(v)},
