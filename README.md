@@ -2,7 +2,7 @@
 
 A browser point-and-click adventure in the style of early-1990s verb-and-inventory adventure games. You play Saul of Tarsus, later known as the apostle Paul, a tentmaker who gets out of tight spots with his trade, his brothers and prayer rather than with force.
 
-There are four chapters so far, in English and German. The game is a small engine in `index.html` plus one level file per chapter in `levels/`, loaded only when that chapter is played. There are no image or audio files: every backdrop, character and icon is painted in code on a canvas, and all music, ambience and sound effects are synthesized with the Web Audio API.
+There are five chapters so far, in English and German. The game is a small engine in `index.html` plus one level file per chapter in `levels/`, loaded only when that chapter is played. There are no image or audio files: every backdrop, character and icon is painted in code on a canvas, and all music, ambience and sound effects are synthesized with the Web Audio API.
 
 ![Title screen](docs/screenshots/title.png)
 
@@ -136,6 +136,43 @@ On his own island Barnabas is the one who is known. He asks the presiding office
 9. In Paphos, switch to Barnabas and talk to the proconsul. As Paul, give the awl to the proconsul to show it. Then answer with Daniel 2:27, 28.
 </details>
 
+## Chapter Five: A Light of Nations
+
+About 47 C.E. Paul and his companions put out to sea from Paphos and arrive at Perga in Pamphylia, where John Mark leaves them and returns to Jerusalem. The two go on, up through the Taurus, to Antioch in Pisidia. On the Sabbath they take a seat in the synagogue, and after the reading the presiding officers send word to them: "Men, brothers, if you have any word of encouragement for the people, tell it." The people plead to hear more, and the next Sabbath nearly all the city gathers to hear the word of Jehovah. When the Jews see the crowds, they are filled with jealousy and begin blasphemously contradicting the things Paul is saying. Paul and Barnabas answer boldly: "Since you are rejecting it and do not judge yourselves worthy of everlasting life, look! we turn to the nations. For Jehovah has commanded us in these words: 'I have appointed you as a light of nations, for you to be a salvation to the ends of the earth.'" Those of the nations rejoice, and all those who are rightly disposed for everlasting life become believers. Then persecution is stirred up: the two are thrown outside the city's boundaries, shake the dust off their feet and go on to Iconium, and the disciples continue to be filled with joy and holy spirit (Acts 13:13-52).
+
+| | |
+|---|---|
+| ![The north road at Perga](docs/screenshots/perga.png) | ![The ford in the Taurus](docs/screenshots/ford.png) |
+| Perga: the road north, a split sandal, and a parting | The ford: Barnabas carries the rope over, and Paul holds the line |
+| ![The square of Antioch in Pisidia](docs/screenshots/pisidia.png) | ![The next Sabbath](docs/screenshots/nations.png) |
+| Antioch in Pisidia: a week of questions at a tentmaker's bench | The next Sabbath: nearly all the city, and an objection |
+
+Five more locations and six new characters. The account gives no reason why John Mark turned back, so the game gives none: he says that he is going, Paul says once and plainly that he wishes he would stay with the work, and the bundles change hands. Whether John Mark starts for Jerusalem with a share of the bread is up to the player.
+
+The road to Antioch was about 180 kilometers over a mountain pass, through country known for its robbers and for rivers that dash down through narrow ravines (2 Corinthians 11:26). Nobody climbs it alone, so the two walk with a drover's pack train, and where a river has carried away the guide rope of a ford, the chapter's two-man puzzle begins. The rope Paul sewed into the edge of a deck shelter in Chapter Four comes out again, stitch by stitch, and is spliced to what is left on the post. Then somebody has to carry the end across, and only one of the two men has a staff.
+
+In Antioch nothing is forced. A visitor takes a seat and waits to be asked, and when Paul is asked, the player chooses whom he addresses and which passages he quotes, as Acts records them. In the week that follows, three people want an answer, and each needs a different one: a Greek who has stood by the synagogue door for years is shown what Isaiah wrote about the foreigner; a drover who has never heard the Prophets read hears first about the God who made the mountains he crosses; and a Jew who fears what his new faith will cost him wants Barnabas, not Paul. On the next Sabbath the objection is answered from the tablets with Isaiah 49:6. What follows is told as Acts tells it. Nothing the player does keeps the two men in the city, and the last thing to do there is for the disciples, not against the opposers.
+
+| | |
+|---|---|
+| ![The map's northern window](docs/screenshots/northmap.png) | ![Outside the boundaries of Antioch](docs/screenshots/boundary.png) |
+| The map looks further north: Perga, Antioch in Pisidia, Iconium | Outside the boundaries: three disciples have come out to stand with them |
+
+<details>
+<summary>Walkthrough (spoilers)</summary>
+
+1. At Perga, talk to Papias, the drover by his donkeys. Talk to John Mark: he hands over the roof, the food bag and a leather thong.
+2. Use the leather thong (or the awl) on Barnabas to mend his sandal. Leave by the road north, and click Antioch in Pisidia on the map.
+3. At the ford, use the knife on the tent roof, then the tarred rope on the near post.
+4. Switch to Barnabas and use his staff on the river. Switch back to Paul and talk to Papias (or use the river). Take the road to the pass.
+5. In Antioch, open the door of the synagogue and use the bench. Address "Men, Israelites and you others who fear God", then choose Psalm 2:7, Isaiah 55:3 (or Psalm 16:10) and Habakkuk 1:5.
+6. In the week, talk to Eumenes and show him what is written about the foreigner. Talk to Papias and begin with the God who made the mountains. Switch to Barnabas, talk to Joel, and urge him to remain in the undeserved kindness of God.
+7. Go to the door of the synagogue, and answer with Isaiah 49:6.
+8. Outside the boundaries, talk to Eumenes: it was never our word. Then use the boundary stone.
+
+Optional: give the bread to John Mark before leaving Perga.
+</details>
+
 ## Look and sound
 
 The backdrops are painted in the manner of early-1990s VGA adventure games: perspective floors, textured plaster and stone, warm light against cool shadow, a foreground layer that slides past the scene as it scrolls, and a final ordered dither. Rooms are painted at twice the classic 320-pixel resolution. Night scenes and interiors are painted in daylight colors and then multiplied by a light map, so a lamp, a brazier or the moon through a window really lights the room; the same light falls on the characters as they walk through it.
@@ -148,6 +185,8 @@ Each chapter ends on a travel map of the eastern Mediterranean, painted the same
 
 Chapter Four draws the first missionary journey on a map of its own: Antioch to Seleucia, by sea to Salamis, and across the island to Paphos. The earlier roads are left off it, because the sea lane from Caesarea to Tarsus runs between Cyprus and Syria, just where the ship from Seleucia has to pass. In that chapter the map is also how you travel.
 
+Antioch in Pisidia and Iconium lie north of that map's upper edge, so Chapter Five looks at the same map through a second window, further north: Asia Minor as far as Galatia, with the Aegean islands on the left and Jerusalem and Egypt out of sight below. The chapter opens on it, with the crossing from Paphos to Perga, and closes on it, with the road from Perga over the Taurus to Antioch and on to Iconium.
+
 ![The travel map at the end of Chapter Three](docs/screenshots/map.png)
 
 Each chapter has its own score, and each room its own sounds:
@@ -158,6 +197,7 @@ Each chapter has its own score, and each room its own sounds:
 | A Friend in Jerusalem | Lyre and ney in A Dorian; at the harbor a harp rocks in threes like the swell | Birds and a distant market, then waves, gulls and creaking timbers |
 | Called to Antioch | A quick lyre figure, walking bass and reed pipe in G Mixolydian, with claps in the busy street | A tentmakers' row, vine leaves in the courtyard, the fountain and the crowd |
 | Sent Out to Cyprus | A harp in E Aeolian that rocks in three, three and two like a hull on a swell, with a ney at sea and a reed pipe in the harbors; before the proconsul only a drone, a slow drum and a few notes of the lyre | Waves, gulls and creaking timbers, a coppersmith's hammer in the market of Salamis, lamps in the synagogue, a brazier in the proconsul's hall |
+| A Light of Nations | A walking tune in D Phrygian, the mode named after the country Antioch borders on: a lyre in even fours, a frame drum at the pace of a pack train, and a reed pipe; a ney in the synagogue; at the ford and before the opposers only a drone, a slow drum and a few notes of the oud | Crickets and hooves on the hot plain, the rush of the river in the gorge, the wool market of Antioch, the wind across the high plain |
 
 ## How to play
 
@@ -169,8 +209,8 @@ Each chapter has its own score, and each room its own sounds:
 | Leave a room at once | Double-click an exit to skip the walk to it |
 | Show what can be clicked | Hold `Tab`: everything in the room gets a dot and its name |
 | Combine things | **Use**, then an inventory item, then another item or something in the scene |
-| Play the other man | In Chapters Three and Four, click **⇄ Barnabas** (or **⇄ Paul**) beside the prayer button, or press `C`. Each man has his own inventory, and in Chapter Three he can stand in a different room; the view follows the one you play. **Give** an item to the other when they share a room to hand it over (**Use** on him only shows it). |
-| Travel | In Chapter Four the way out of a town opens the travel map. Click a place to go there; `Esc` or a right-click stays. A place the story has not reached yet, or one that lies behind, says why not. |
+| Play the other man | In Chapters Three, Four and Five, click **⇄ Barnabas** (or **⇄ Paul**) beside the prayer button, or press `C`. Each man has his own inventory, and in Chapter Three he can stand in a different room; the view follows the one you play. **Give** an item to the other when they share a room to hand it over (**Use** on him only shows it). |
+| Travel | In Chapters Four and Five the way out of a town opens the travel map. Click a place to go there; `Esc` or a right-click stays. A place the story has not reached yet, or one that lies behind, says why not. |
 | Read Paul's notes | Click the **wax tablets** in the inventory (their default verb is **Open**): the people he has met, what is still to be done, and the Scriptures for the chapter. Click or press Space to close them. |
 | Show something to someone | **Give** (or **Use**) an item on a person. Everyone has something to say about everything Paul carries, sometimes a clue. Only what someone actually needs changes hands. |
 | Ask about what you have learned | Once Paul learns something (a frayed basket, a torn sail, a famine), it appears as a new question when he talks to people in that chapter |
@@ -204,7 +244,7 @@ The blue button is the hint system. Paul pauses, bows his head and prays for wis
 
 ### Safe-point codes
 
-The top bar always shows a short code for exactly where you are: six characters in Chapter One, and the same with a leading `2-` in Chapter Two. Chapter Three and Chapter Four codes are nine characters (`3-XXX-XXX-XXX`, `4-XXX-XXX-XXX`), because they also remember which man you are playing, where each of them stands and who carries what; six-character Chapter Three codes from before still work. Write it down, and enter it later with **ENTER CODE** on the title screen (or the code button during play) to return to the same room with the same inventory and progress. Any moment outside a cutscene is a safe point.
+The top bar always shows a short code for exactly where you are: six characters in Chapter One, and the same with a leading `2-` in Chapter Two. Chapter Three, Four and Five codes are nine characters (`3-XXX-XXX-XXX`, `4-XXX-XXX-XXX`, `5-XXX-XXX-XXX`), because they also remember which man you are playing, where each of them stands and who carries what; six-character Chapter Three codes from before still work. Write it down, and enter it later with **ENTER CODE** on the title screen (or the code button during play) to return to the same room with the same inventory and progress. Any moment outside a cutscene is a safe point.
 
 The game also keeps that same point in your browser, every time it changes. Come back in the same browser and the title screen leads with **Continue**, naming the chapter, which returns you to the room, inventory and progress you left. A finished chapter leaves **Continue** at the next one, and a finished game leaves nothing. The code is still what carries your place to another browser or device, and what you write down; the browser's copy is only as lasting as the browser's site data, so clearing it, a private window or another browser starts without it.
 
@@ -216,9 +256,11 @@ The game also keeps that same point in your browser, every time it changes. Come
 
 The game follows the scriptural understanding of Jehovah's Witnesses and the wording of the New World Translation of the Holy Scriptures (Study Edition); the German version quotes the German edition, the *Neue-Welt-Übersetzung der Heiligen Schrift (Studienausgabe)*. Historical details are checked against jw.org and wol.jw.org. Paul is shown as a courageous, observant minister who relies on practical wisdom, cooperation with fellow believers and trust in Jehovah. There are no halos, crosses or mystical effects, and no puzzle is solved by a miracle or by violence.
 
-The events themselves are from the Scriptures. All dialogue is imaginative dramatization, including the words given to Barnabas, Cephas, James, Agabus, Lucius, John Mark, Sergius Paulus and Bar-Jesus, and so are the supporting characters: Eliab, Naomi, Jesse, the merchant Zakkai and the guard in Chapter One; Mattan, the captain, the fisherman, the doorkeeper and the two Greek-speaking Jews Dositheus and Ariston in Chapter Two; Kleon, Xanthe and Theron in Chapter Three; the shipmaster Kallias, the old disciple Jair, the presiding officer Zadok and the merchant Philon in Chapter Four. The Scriptures say nothing of how the relief was packed or counted: those details are invented as well.
+The events themselves are from the Scriptures. All dialogue is imaginative dramatization, including the words given to Barnabas, Cephas, James, Agabus, Lucius, John Mark, Sergius Paulus and Bar-Jesus, and so are the supporting characters: Eliab, Naomi, Jesse, the merchant Zakkai and the guard in Chapter One; Mattan, the captain, the fisherman, the doorkeeper and the two Greek-speaking Jews Dositheus and Ariston in Chapter Two; Kleon, Xanthe and Theron in Chapter Three; the shipmaster Kallias, the old disciple Jair, the presiding officer Zadok and the merchant Philon in Chapter Four; the drover Papias, the wool merchant Eumenes, Joel, the presiding officer Hanan, Ammia and her husband Straton in Chapter Five. The Scriptures say nothing of how the relief was packed or counted: those details are invented as well.
 
 Chapter Four fills several silences of the account in the same way. Acts does not say where on Cyprus Barnabas was born, what was said in the synagogues of Salamis or how the people there responded, or what Elymas said to turn the proconsul away. The chapter places Barnabas's boyhood in Salamis, keeps the response there small, and gives Elymas three objections of its own. The shelter on the ship's deck rests on what is known of sea travel then: passengers on a merchant ship slept on deck and brought their own food and bedding. The ship has no figurehead, because those commonly showed a god.
+
+Chapter Five does the same. Acts does not say why John Mark left, how the two men travelled from Perga to Antioch, what was said in the week between the two Sabbaths, or who carried out the expulsion. The game gives John Mark no reason; the pack train, the ford and its rope are invented, and rest on what is known of that road: it was notorious for bandits, and its rivers were dangerous. That those who feared God stood by the door of the synagogue, that Paul worked at his trade in Antioch, and the three conversations of the week are invented too. Paul is unwell after the climb: *Bearing Thorough Witness* (chapter 11) says it is likely that he had health problems at this point, and cites Galatians 4:13; the game does not say what the illness was. The opposers' words are kept mild, and that they spoke "blasphemously" is told only in the words of Acts 13:45. In his talk Paul quotes the Scriptures as Acts 13 words them, while the tablets hold the same passages as they stand in the Psalms and the Prophets.
 
 This is an independent, non-commercial fan project. It is not produced, endorsed or reviewed by Jehovah's Witnesses or the Watch Tower Bible and Tract Society.
 
@@ -230,13 +272,14 @@ levels/chapter1.js    Escape from Damascus
 levels/chapter2.js    A Friend in Jerusalem
 levels/chapter3.js    Called to Antioch
 levels/chapter4.js    Sent Out to Cyprus
+levels/chapter5.js    A Light of Nations
 shared/tablets.js     Paul's wax tablets, used by every chapter
 shared/map.js         the travel map: the journeys between chapters, and travel for a hub chapter
 lang/de/              the German text: main.js for the engine and shared files, chapterN.js for each chapter
 tools/                headless playtest, and the translation check (strings.mjs)
 ```
 
-A level file holds everything that belongs to one chapter and nothing else does: its music and ambience, its artwork, its cast and items, its rooms with their hotspots and dialog, its cutscenes and its prayer hints. `index.html` keeps only a manifest with one line per chapter (`CHAP`: name, file, code salt), and fetches a level with a script tag the first time it is needed, so the game still runs when opened straight from disk. To add a chapter, write `levels/chapter5.js` and add its line to the manifest.
+A level file holds everything that belongs to one chapter and nothing else does: its music and ambience, its artwork, its cast and items, its rooms with their hotspots and dialog, its cutscenes and its prayer hints. `index.html` keeps only a manifest with one line per chapter (`CHAP`: name, file, code salt), and fetches a level with a script tag the first time it is needed, so the game still runs when opened straight from disk. To add a chapter, write `levels/chapter6.js` and add its line to the manifest.
 
 Inside a level file:
 
@@ -265,7 +308,9 @@ A line with no entry is shown in English. `node tools/strings.mjs --check` (whic
 
 **The travel map.** `shared/map.js` holds the geography: `PLACES` (each city's longitude and latitude, and the side its name goes on), the coasts, islands, lakes and ranges, and `VIA`, waypoints for legs that should not run straight. A chapter declares the way out of it as `route:[['jerusalem','caesarea','new'],['caesarea','tarsus','new sea']]`, with the earlier legs first and `new` on the ones to draw now, and calls `await journey()` in its ending. Check a new leg against the others: the playtest fails if two routes cross. A name sits on the side its place gives it (`lab`, and `dy` to raise or lower it). Where that side would lie across one of a chapter's routes, the chapter says where the name goes on its own map: `labels:{salamis:{lab:'r',dy:4.2}}`.
 
-**A hub chapter** (Chapter Four is the first) is a chapter whose rooms are places on the map that the player travels between by clicking. It declares them in its definition, by their ids in `shared/map.js`, each with the room it leads to and where Paul stands on arrival:
+The map is larger than the screen. Everything on it keeps its coordinates, and a chapter whose road leaves the usual window names another one: `view:'north'` (Chapter Five). A view is declared in `VIEWS` as the distance its window lies to the right of and below the usual one, in whole pixels; `SEA` says where the name of the sea stands in each. The coast, the islands and the ranges are painted once per view. A new view may need coast that the others never showed: the Aegean shore north of Miletus was added for this one.
+
+**A hub chapter** (Chapter Four is the first, Chapter Five the second) is a chapter whose rooms are places on the map that the player travels between by clicking. It declares them in its definition, by their ids in `shared/map.js`, each with the room it leads to and where Paul stands on arrival:
 
 ```js
 rooms:['seleucia','salamis','synagogue','paphos'],
@@ -275,7 +320,7 @@ places:{
   paphos:{room:'paphos',x:150,y:124,dir:1,if:()=>G.room==='salamis'&&F.spoke,no:'Paphos lies at the far end of the island.'}},
 ```
 
-and gives the exits that lead out of town `exit:travel`, or an exit of its own that checks what the story still needs and then calls `travel()`. `travel()` opens the map with those places as dots; hovering lights a name, a click draws the way there and enters that room, and Esc or a right-click stays. A place can say when the way to it is open (`if`) and what the character says when it is not (`no`: a line, a list of lines or a script), and `hide` keeps it off the map. The chapter's `way()` lists the legs already travelled, which the map shows, and its `arrive(to, from)` runs after the journey and before the room appears: it brings the rest of the party along, and may tell of the journey, as the crossing to Salamis is told. A place that is not in `PLACES` yet is added there with its coordinates. A hub chapter will have more than three rooms, so it gets wide codes automatically; if it may grow, it reserves room with `codeBits` from the start.
+and gives the exits that lead out of town `exit:travel`, or an exit of its own that checks what the story still needs and then calls `travel()`. `travel()` opens the map with those places as dots; hovering lights a name, a click draws the way there and enters that room, and Esc or a right-click stays. A place can say when the way to it is open (`if`) and what the character says when it is not (`no`: a line, a list of lines or a script), and `hide` keeps it off the map. The chapter's `way()` lists the legs already travelled, which the map shows, and its `arrive(to, from)` runs after the journey and before the room appears: it brings the rest of the party along, and may tell of the journey, as the crossing to Salamis is told. It may also enter another room than the place's own: in Chapter Five the road to Antioch comes down to a ford first. A place that is not in `PLACES` yet is added there with its coordinates. A hub chapter will have more than three rooms, so it gets wide codes automatically; if it may grow, it reserves room with `codeBits` from the start.
 
 **Autosave.** The save is the safe-point code, not a second format: `codeBtn()` writes the string it shows to `localStorage` under `paul.save`, whenever the player is in a room outside a cutscene (so it always names a point they could have written down). The title screen reads it back with `saved()` and, if it still decodes, leads with **Continue**, which `resume()` restores the way typing the code does. `endScreen()` replaces the save with the next chapter's first code (or clears it, after the last chapter). A browser that refuses storage is fine: the game plays on and the code screen does not claim a save. Because the save is a code, every promise below holds for it too, and nothing else may go into it without a format the decoder can tell apart.
 
@@ -283,13 +328,13 @@ and gives the exits that lead out of town `exit:travel`, or an exit of its own t
 
 Edit a file and reload.
 
-`tools/playtest.mjs` plays all four chapters through the real interface in headless Chrome and checks each puzzle step, the save codes and the endings. It needs Node 22 or newer and Google Chrome. Each run asks Chrome for a free debugging port, so several runs can go side by side.
+`tools/playtest.mjs` plays all five chapters through the real interface in headless Chrome and checks each puzzle step, the save codes and the endings. It needs Node 22 or newer and Google Chrome. Each run asks Chrome for a free debugging port, so several runs can go side by side.
 
 ```bash
 node tools/playtest.mjs
 ```
 
-It plays the game once in English and once more in every other language under `lang/`, each followed by `resume`, which reloads the game to check that the autosave brings the player back (`continue` stops at the title screen that offers it). Pass stop names to save screenshots to `tools/out/` instead, for example `node tools/playtest.mjs title workshop harbor`; put a language in front of a stop to take it in that language: `node tools/playtest.mjs de:title de:tablets`. The stop names are defined in `tools/playtest-harness.html`; Chapter Three stops such as `tarsus`, `court` and `antioch` start that chapter directly, and so do Chapter Four stops such as `seleucia`, `salamis` and `paphos`.
+It plays the game once in English and once more in every other language under `lang/`, each followed by `resume`, which reloads the game to check that the autosave brings the player back (`continue` stops at the title screen that offers it). Pass stop names to save screenshots to `tools/out/` instead, for example `node tools/playtest.mjs title workshop harbor`; put a language in front of a stop to take it in that language: `node tools/playtest.mjs de:title de:tablets`. The stop names are defined in `tools/playtest-harness.html`; Chapter Three stops such as `tarsus`, `court` and `antioch` start that chapter directly, and so do Chapter Four stops such as `seleucia`, `salamis` and `paphos` and Chapter Five stops such as `perga`, `ford` and `pisidia`.
 
 ## Contributing
 

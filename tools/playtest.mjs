@@ -44,7 +44,8 @@ try{
   await send('Emulation.setDeviceMetricsOverride',{width:960,height:669,deviceScaleFactor:1,mobile:false});
   for(const name of stops){const[lang,stop]=name.includes(':')?name.split(':'):['en',name];
     await send('Page.navigate',{url:`file://${path.join(tmp,'test.html')}?stop=${stop}&lang=${lang}`});
-    let log='';for(let i=0;i<1400;i++){await sleep(250);log=await ev("(document.querySelector('#tlog')||{}).textContent||''");if(/STOP|DONE|ERR|JSERR|REJ/.test(log))break}
+    // five chapters take a while: wait up to fifteen minutes for a run to say STOP or DONE
+    let log='';for(let i=0;i<3600;i++){await sleep(250);log=await ev("(document.querySelector('#tlog')||{}).textContent||''");if(/STOP|DONE|ERR|JSERR|REJ/.test(log))break}
     await sleep(1600);await ev("document.querySelector('#tlog').style.display='none'");await sleep(100);
     const shot=await send('Page.captureScreenshot',{format:'png'});
     fs.writeFileSync(path.join(out,`${lang==='en'?'':lang+'-'}${stop}.png`),Buffer.from(shot.result.data,'base64'));
