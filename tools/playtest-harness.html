@@ -71,6 +71,7 @@
     ok(!dev,'desktop Chrome is not taken for an iPhone or iPad');ok(!AU.ctx,'no sound before the first press');
     AU.apple='iPad';dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
     ok(AU.ctx&&hushOn()&&$('#hush').textContent.includes(T('No music? This iPad may be in Silent Mode.')),'the first press starts the sound; on an iPad it mentions Silent Mode');
+    {const r=$('#hush').getBoundingClientRect(),v=vp.getBoundingClientRect();if(r.top<v.top-1||r.bottom>v.bottom+1||r.left<v.left-1||r.right>v.right+1)tight.add('Silent Mode note: '+$('#hush').textContent)}
     dispatchEvent(new PointerEvent('pointerup',{bubbles:true}));ok(hushOn(),'the note outlasts the press that opened it');
     await wait(450);dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));ok(!hushOn(),'the next press puts the note away');
     $('#mute').click();ok(AU.muted&&!hushOn(),'sound off: no note');$('#mute').click();ok(!AU.muted&&hushOn(),'sound on again: the note comes back');
