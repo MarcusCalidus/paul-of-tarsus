@@ -4,6 +4,7 @@
 // A string literal counts as text when it reads like a sentence or a phrase (letters and a space), when it is a one-word line
 // such as "Gladly.", when it sits where a name or a line goes (name:, called:, look:, q:..., a person's name in actor(...), the
 // branches of a get name() getter), or when it is passed to T(...). Code strings that happen to read like text are in NOT_TEXT.
+// A short string of the form "word: value" is taken for a style rule; a sentence that opens that way ("Beware: the road is long.") is text.
 // What the scan misses, the playtest still catches: it plays the whole game in each language and fails on any line shown untranslated.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -35,7 +36,7 @@ export function literals(src){
 /* strings with a space that are code, not text */
 const NOT_TEXT=new Set(['use strict','on end','italic bold 5px "Lucida Console",Monaco,monospace','bold 4.2px "Lucida Console",Monaco,monospace',
   'bold 4.4px "Lucida Console",Monaco,monospace','new sea','#overlay [data-ch]']);
-const looksCode=s=>/\{[^}]*:[^}]*;/.test(s)||/^[#.][\w-]+[\s.#\[]/.test(s)||/^[#.]?[\w-]+(\s*[,>]\s*|\s+)[#.\[]/.test(s)||/^(rgba?|calc|url)\(/.test(s)||/px\b.*(monospace|serif)/.test(s)||/^[\w-]+:\s*[\w#(]/.test(s)&&!/ /.test(s.split(':')[0]);
+const looksCode=s=>/\{[^}]*:[^}]*;/.test(s)||/^[#.][\w-]+[\s.#\[]/.test(s)||/^[#.]?[\w-]+(\s*[,>]\s*|\s+)[#.\[]/.test(s)||/^(rgba?|calc|url)\(/.test(s)||/px\b.*(monospace|serif)/.test(s)||/^[\w-]+:\s*[\w#(]/.test(s)&&!/ /.test(s.split(':')[0])&&s.trim().split(/\s+/).length<5;
 const wordsOf=s=>/\p{L}{2,}/u.test(s);
 /* text: what a player can see. b is the list of tokens before the literal. */
 export function isText(t,inGetName){const s=t.v,b=t.before,p1=b[b.length-1],p2=b[b.length-2],p3=b[b.length-3];
