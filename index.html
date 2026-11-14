@@ -63,6 +63,9 @@ body{display:flex;align-items:center;justify-content:center}
 #verbs button.def{color:var(--hi);background:rgba(52,36,16,.72);box-shadow:inset 0 0 0 var(--px) rgba(226,178,76,.9),inset 0 0 0 calc(var(--px)*2) rgba(0,0,0,.55)}
 #verbs #pray{grid-column:1/4;color:var(--pray);background:rgba(14,32,70,.78);letter-spacing:.06em}
 #verbs #pray:hover{color:#fff;background:rgba(30,60,116,.82)}
+#verbs #swap{display:none;color:#f4d8a0;background:rgba(88,48,22,.78);letter-spacing:.02em}
+#verbs #swap:hover{color:#fff;background:rgba(130,74,30,.85)}
+#verbs.party #pray{grid-column:1/3}#verbs.party #swap{display:block}
 #inv{flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(2,1fr);gap:calc(var(--s)*1px)}
 #inv .slot{background:rgba(8,5,4,.66);display:flex;align-items:center;justify-content:center;cursor:pointer;outline:0 solid var(--gold);
   box-shadow:inset var(--px) var(--px) 0 rgba(0,0,0,.75),inset calc(var(--px)*-1) calc(var(--px)*-1) 0 rgba(255,214,140,.2)}
@@ -84,7 +87,7 @@ body{display:flex;align-items:center;justify-content:center}
 #codebox .big{font-size:calc(var(--s)*17px);line-height:1.1;color:var(--hi);letter-spacing:.12em;-webkit-user-select:text;user-select:text;
   text-shadow:0 calc(var(--s)*1px) #7a3b12,calc(var(--s)*1px) calc(var(--s)*2px) #000}
 #codebox .row{display:flex;gap:calc(var(--s)*2px)}
-#codebox input{font:inherit;font-size:calc(var(--s)*8px);width:calc(var(--s)*74px);text-align:center;text-transform:uppercase;background:#150f26;
+#codebox input{font:inherit;font-size:calc(var(--s)*8px);width:calc(var(--s)*104px);text-align:center;text-transform:uppercase;background:#150f26;
   color:var(--hi);border:calc(var(--s)*1px) solid var(--dim);padding:calc(var(--s)*2px);letter-spacing:.1em;outline:none;-webkit-user-select:text;user-select:text}
 #codebox input:focus{border-color:var(--gold)}
 #codebox button{font:inherit;font-size:calc(var(--s)*6px);color:var(--gold);background:#1b1330;border:calc(var(--s)*1px) solid var(--dim);
@@ -122,7 +125,7 @@ const $=s=>document.querySelector(s);
 const cv=$('#screen'),cx=cv.getContext('2d');
 cx.imageSmoothingEnabled=false;
 const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,t:0,scene:null,
-  hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false};
+  hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false,pc:null,invs:{}};
 const VERBS=[['look','Look at'],['pickup','Pick up'],['use','Use'],['open','Open'],['talk','Talk to'],['give','Give']];
 const VNAME={walk:'Walk to',look:'Look at',pickup:'Pick up',use:'Use',open:'Open',talk:'Talk to',give:'Give'};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -594,6 +597,12 @@ const ICON={
 const ACT={},ROOMS={},ITEMS={},BG={},FG={};
 function actor(id,name,color,pitch){return ACT[id]||(ACT[id]={id,name,look:LOOK[id],color,pitch,x:0,y:0,dir:1,fr:0,room:null,walk:null,talk:false,bow:false,hs:null})}
 const P=actor('paul','Paul','#f5e6b8',150);
+/* P is always Paul: the level scripts speak and move him by name. PC() is whoever the player controls. A chapter can declare a party
+   of playable characters (party:['paul','barnabas']); each member then has his own inventory (G.invs, of which G.inv is the active
+   one's), stands in his own room, and can be handed things by the others. */
+const PC=()=>G.pc||P;
+const party=()=>(CHAP[G.ch]&&CHAP[G.ch].party||['paul']).map(id=>ACT[id]);
+const invOf=a=>a===PC()?G.inv:(G.invs[a.id]||(G.invs[a.id]=[]));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 /* Each room paints a backdrop once (ART[id].paint) and, optionally, a foreground layer (ART[id].fore) that is drawn over the actors. */
 function bake(w,fn,q){const[c,g]=mk(w*HR,VH*HR);g.scale(HR,HR);fn(g);g.setTransform(1,0,0,1,0,0);finish(c,g,q);return c}
@@ -604,7 +613,7 @@ const backdrop=(g,id,cam)=>g.drawImage(bg(id),-(cam||0),0,ART[id].w,VH);
 function place(a,room,x,y,dir){a.room=room;a.x=x;a.y=y;a.dir=dir||1;a.walk=null}
 /* --- script primitives --- */
 function walk(a,x,y){return new Promise(res=>{const rm=ROOMS[a.room];
-  if(a===P&&rm&&!a.free){const w=rm.walk;x=clamp(x,w[0],w[1]);y=clamp(y,w[2],w[3])}
+  if(a===PC()&&rm&&!a.free){const w=rm.walk;x=clamp(x,w[0],w[1]);y=clamp(y,w[2],w[3])}
   if(a.walk)a.walk.res(false);a.walk={x,y,res};if(Math.abs(x-a.x)>1)a.dir=x>a.x?1:-1})}
 let cur=null;
 function say(a,text,o={}){return new Promise(res=>{
@@ -623,7 +632,9 @@ function lock(b){$('#panel').classList.toggle('locked',b)}
 async function cut(fn,force){if(G.busy&&!force)return;G.busy=true;lock(true);status();
   try{await fn()}catch(e){console.error(e)}
   G.busy=false;lock(false);G.verb='walk';G.item=null;syncVerbs();drawInv();status();codeBtn()}
-function enterRoom(room,x,y,dir){G.room=room;place(P,room,x,y,dir);G.cam=clamp(x-160,0,ART[room].w-320);AU.mood=ROOMS[room].mood||'calm';AU.amb=ROOMS[room].amb;G.hover=null}
+/* viewOf: show the room a character stands in. enterRoom: move the character the player controls into a room, and show it. */
+function viewOf(a){G.room=a.room;G.cam=clamp(a.x-160,0,ART[a.room].w-VW);AU.mood=ROOMS[a.room].mood||'calm';AU.amb=ROOMS[a.room].amb;G.hover=null}
+function enterRoom(room,x,y,dir){G.room=room;place(PC(),room,x,y,dir);G.cam=clamp(x-160,0,ART[room].w-320);AU.mood=ROOMS[room].mood||'calm';AU.amb=ROOMS[room].amb;G.hover=null}
 async function fade(on,ms=260){const d=$('#dim');d.style.transition=`opacity ${ms}ms`;d.style.opacity=on?1:0;await wait(ms+20);d.style.transition=''}
 async function go(room,x,y,dir){SFX.door();await fade(1);enterRoom(room,x,y,dir);await fade(0);const r=ROOMS[room];if(r.enter)await r.enter()}
 function choose(opts){return new Promise(res=>{const c=$('#choices');c.innerHTML='';c.classList.add('on');
@@ -640,12 +651,26 @@ async function talkTree(topics,o){const A=G.talking,T=CHAP[G.ch].topics||[];
       .map(t=>({q:t.q,key:A.id+':'+t.id,a:()=>lines(A,A.hs.ask[t.id])})):[];
     const own=topics.filter(t=>(!t.if||t.if())&&!(t.once&&ASKED.has(t.q))),av=own.filter(t=>!t.bye).concat(known,own.filter(t=>t.bye));
     if(o&&o.quiet&&av.every(t=>t.bye))return;
-    const t=av[await choose(av.map(t=>t.q))];ASKED.add(t.key||t.q);await say(P,t.q);if(t.a)await t.a();if(t.bye)return}}
+    const t=av[await choose(av.map(t=>t.q))];ASKED.add(t.key||t.q);await say(PC(),t.q);if(t.a)await t.a();if(t.bye)return}}
 /* --- UI: verbs, inventory, status line --- */
 function buildVerbs(){const v=$('#verbs');v.innerHTML='';
   VERBS.forEach(([id,label])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.v=id;
     b.onclick=()=>{if(G.busy)return;audioInit();SFX.click();G.verb=G.verb===id?'walk':id;G.item=null;syncVerbs();drawInv();status()};v.appendChild(b)});
-  const p=document.createElement('button');p.type='button';p.id='pray';p.textContent='Pray to Jehovah';p.onclick=pray;v.appendChild(p)}
+  const p=document.createElement('button');p.type='button';p.id='pray';p.textContent='Pray to Jehovah';p.onclick=pray;v.appendChild(p);
+  const w=document.createElement('button');w.type='button';w.id='swap';w.onclick=()=>swap();v.appendChild(w)}
+/* swapBtn: in a chapter with a party, the prayer bar gives up a third of its width to a button naming the character to switch to. */
+function swapBtn(){const b=$('#swap'),ps=party(),on=ps.length>1;$('#verbs').classList.toggle('party',on);if(!on)return;
+  const n=ps[(ps.indexOf(PC())+1)%ps.length];b.textContent='\u21c4 '+n.name;b.title='Play as '+n.name+' (C)';b.disabled=!n.room}
+/* swap: hand control to the next member of the party. If he stands in another room, the view goes there. */
+function swap(to){if(G.busy||G.scene||!G.room)return;const ps=party();if(ps.length<2)return;
+  const a=to||ps[(ps.indexOf(PC())+1)%ps.length];if(!a||!a.room||a===PC())return;audioInit();
+  cut(async()=>{SFX.click();if(a.room!==G.room){await fade(1,200);playAs(a);await fade(0,200)}else playAs(a)})}
+/* playAs: give control to a character at once (cutscenes use playAs(P) before Paul takes the lead). */
+function playAs(a){const was=PC();if(a===was)return;if(was.walk){was.walk.res(false);was.walk=null}G.invs[was.id]=G.inv;G.pc=a;G.inv=G.invs[a.id]||(G.invs[a.id]=[]);
+  if(a.room&&a.room!==G.room)viewOf(a);G.item=null;drawInv();swapBtn()}
+/* handOver: Give to another member of the party moves the item from one inventory to the other. */
+async function handOver(to,id){const who=PC(),i=G.inv.indexOf(id);if(i<0)return;G.inv.splice(i,1);invOf(to).push(id);G.item=null;drawInv();SFX.pick();
+  await say(who,'Take this, '+(to.called||to.name)+'.')}
 function syncVerbs(){document.querySelectorAll('#verbs button').forEach(b=>b.classList.toggle('sel',b.dataset.v===G.verb));litVerb()}
 /* defVerb: what a plain click does to a hotspot. A hotspot may name it (def); otherwise a door is opened and any other exit
    walked to, a person is talked to, something that can be taken (see take) is picked up, and anything else is looked at. */
@@ -667,7 +692,7 @@ function skin(){const[c,g]=mk(256,64);for(let j=0;j<4;j++){R(g,0,j*16,256,16,tin
 function drawInv(){const el=$('#inv');el.innerHTML='';for(let i=0;i<10;i++){const s=document.createElement('div');s.className='slot';const id=G.inv[i];
   if(id){const src=iconArt(ITEMS[id].icon||id),[c,g]=mk(48,48);g.drawImage(src,0,0);s.appendChild(c);if(G.item===id)s.classList.add('sel');
     s.onmouseenter=()=>{G.hover={item:id};status()};s.onmouseleave=()=>{G.hover=null;status()};s.onclick=()=>clickItem(id);
-    s.oncontextmenu=e=>{e.preventDefault();if(G.busy)return;audioInit();G.verb='walk';G.item=null;syncVerbs();cut(()=>say(P,ITEMS[id].look))}}
+    s.oncontextmenu=e=>{e.preventDefault();if(G.busy)return;audioInit();G.verb='walk';G.item=null;syncVerbs();cut(()=>say(PC(),itemLook(id)))}}
   el.appendChild(s)}}
 function status(){const el=$('#status');litVerb();if(G.busy){el.textContent=' ';return}
   const h=G.hover,hn=h?(h.item?ITEMS[h.item].name:h.name):'';let s=VNAME[G.verb==='walk'&&h&&!G.item?(h.item?itemVerb(h.item):defVerb(h)):G.verb];
@@ -681,32 +706,39 @@ function clickItem(id){if(G.busy)return;audioInit();const it=ITEMS[id],a=G.item;
   if(a&&a!==id)return cut(()=>combine(a,id));
   if(G.verb==='use'||G.verb==='give'){G.item=a===id?null:id;SFX.click();drawInv();status();return}
   if((G.verb==='open'||G.verb==='walk'&&it.def==='open')&&it.open)return cut(it.open);
-  if(G.verb==='walk'||G.verb==='look')return cut(()=>say(P,it.look));
-  cut(()=>say(P,G.verb==='pickup'?'I am already carrying it.':G.verb==='open'?'That does not open.':'It is only '+it.name+'.'))}
-function hsAt(x,y){for(const a of Object.values(ACT))if(a!==P&&a.room===G.room&&a.hs&&Math.abs(x-a.x)<=10&&y>=a.y-49&&y<=a.y+1)return a.hs;
+  if(G.verb==='walk'||G.verb==='look')return cut(()=>say(PC(),itemLook(id)));
+  cut(()=>say(PC(),G.verb==='pickup'?'I am already carrying it.':G.verb==='open'?'That does not open.':'It is only '+it.name+'.'))}
+/* itemLook: an item described in the voice of whoever holds it (ITEMS[id].by[character id]); look is Paul's. */
+const itemLook=id=>{const it=ITEMS[id],w=PC();return w!==P&&it.by&&it.by[w.id]||it.look};
+function hsAt(x,y){for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&Math.abs(x-a.x)<=10&&y>=a.y-49&&y<=a.y+1)return a.hs;
   const hs=ROOMS[G.room].hs;for(let i=hs.length-1;i>=0;i--){const h=hs[i];if((!h.vis||h.vis())&&x>=h.x&&x<h.x+h.w&&y>=h.y&&y<h.y+h.h)return h}return null}
 /* show: an item given or shown to a person with no particular use for it. He answers in his own voice: from his show table
    (keyed by item id), else with his fallback, show['*']. Using an item on a person is the same as giving it. */
-function show(h,item){const s=h.show||{},r=s[item]!=null?s[item]:s['*'];return r!=null?lines(h.actor,r,item):say(h.actor,'Keep it, friend.')}
-async function act(v,h,item){
-  const run=async x=>{if(typeof x==='function')return x(h);for(const s of[].concat(x))await say(P,s)};
+function show(h,item){const w=PC(),s=(w===P?h.show:h.as&&h.as[w.id]&&h.as[w.id].show)||{},r=s[item]!=null?s[item]:s['*'];
+  return r!=null?lines(h.actor,r,item):say(h.actor,'Keep it, friend.')}
+/* act: what a verb does to a hotspot. Paul uses the hotspot's own handlers. Another member of the party uses only what the level
+   wrote for him (h.as[his id]: look, use, give, talk, show...); for anything else he answers in his own voice (his def table). */
+async function act(v,h,item){const who=PC(),o=who===P?h:(h.as&&h.as[who.id])||{},
+    run=async x=>{if(typeof x==='function')return x(h);for(const s of[].concat(x))await say(who,s)};
   if(v==='exit')return h.exit();
-  if(item){const fn=v==='give'||h.actor&&!h.useWith?h.give:h.useWith;if(fn&&await fn(item)!==false)return;
-    if(h.actor)return show(h,item);SFX.nope();return say(P,v==='give'?'I cannot give anything to that.':pick(NOPE))}
+  if(item){if(v==='give'&&h.actor&&h.actor.party&&h.actor!==who)return handOver(h.actor,item);
+    const fn=v==='give'||h.actor&&!o.useWith?o.give:o.useWith;if(fn&&await fn(item)!==false)return;
+    if(h.actor)return show(h,item);SFX.nope();return say(who,v==='give'?'I cannot give anything to that.':pick(NOPE))}
   if(v==='talk'&&h.actor)G.talking=h.actor;
-  if((v==='use'||v==='open')&&h[v]==null&&h.exit)return h.exit();
-  if(h[v]!=null)return run(h[v]);
-  return say(P,DEF[v](h))}
+  if((v==='use'||v==='open')&&o[v]==null&&h.exit)return h.exit();
+  if(o[v]!=null)return run(o[v]);
+  const d=(who.def||DEF)[v];return say(who,typeof d==='function'?d(h):d)}
 async function clickView(x,y){
   if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
   if(G.busy||G.scene||!G.room)return;audioInit();
   const h=hsAt(x,y),item=G.item;let v=G.verb;
-  if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(P,x,y);return}
+  const me=PC();
+  if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(me,x,y);return}
   if(v==='walk'){v=defVerb(h);if(v==='walk')v=h.exit?'exit':'look'}
-  const A=h.actor,tx=h.wx!=null?h.wx:A?A.x+(P.x<A.x?-22:22):h.x+h.w/2,ty=h.wy!=null?h.wy:A?A.y+1:118;
-  if(!(await walk(P,tx,ty)))return;
-  if(G.busy)return;
-  P.dir=A?(A.x>P.x?1:-1):h.dir||((h.x+h.w/2)>=P.x?1:-1);
+  const A=h.actor,tx=h.wx!=null?h.wx:A?A.x+(me.x<A.x?-22:22):h.x+h.w/2,ty=h.wy!=null?h.wy:A?A.y+1:118;
+  if(!(await walk(me,tx,ty)))return;
+  if(G.busy||me!==PC())return;
+  me.dir=A?(A.x>me.x?1:-1):h.dir||((h.x+h.w/2)>=me.x?1:-1);
   await cut(()=>act(v,h,item))}
 const vp=$('#view');
 function evPos(e){const r=vp.getBoundingClientRect();return[(e.clientX-r.left)/r.width*VW+G.cam,(e.clientY-r.top)/r.height*VH]}
@@ -716,17 +748,17 @@ vp.addEventListener('click',e=>{const[x,y]=evPos(e);clickView(x,y)});
 /* Right-click looks at whatever is under the pointer, from where Paul stands; on empty ground it puts the chosen verb down. */
 vp.addEventListener('contextmenu',e=>{e.preventDefault();if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
   if(G.busy||G.scene||!G.room)return;audioInit();const h=hsAt(...evPos(e));G.verb='walk';G.item=null;syncVerbs();drawInv();status();if(!h)return;
-  if(P.walk){P.walk.res(false);P.walk=null}const A=h.actor;P.dir=(A?A.x:h.x+h.w/2)>=P.x?1:-1;cut(()=>act('look',h))});
+  const me=PC();if(me.walk){me.walk.res(false);me.walk=null}const A=h.actor;me.dir=(A?A.x:h.x+h.w/2)>=me.x?1:-1;cut(()=>act('look',h))});
 $('#wrap').addEventListener('contextmenu',e=>{if(!e.target.closest('#codebox'))e.preventDefault()});
 /* Double-clicking an exit skips the walk to it: Paul is simply there, and goes through. */
-vp.addEventListener('dblclick',e=>{if(G.busy||G.scene||!G.room||!P.walk)return;const h=hsAt(...evPos(e));
-  if(h&&h.exit){P.x=P.walk.x;P.y=P.walk.y;G.cam=clamp(P.x-160,0,ART[G.room].w-VW)}});
+vp.addEventListener('dblclick',e=>{const me=PC();if(G.busy||G.scene||!G.room||!me.walk)return;const h=hsAt(...evPos(e));
+  if(h&&h.exit){me.x=me.walk.x;me.y=me.walk.y;G.cam=clamp(me.x-160,0,ART[G.room].w-VW)}});
 /* Holding Tab labels everything in the room that can be clicked: a small round dot and a name, never a marker or a cross. */
 const tagEl=$('#tags');let tagT=0;
 function tagsOn(on){if(!!G.tags===on)return;G.tags=on;tagEl.classList.toggle('on',on);tagT=0;if(!on)tagEl.innerHTML=''}
 function drawTags(ts){if(!G.tags||ts-tagT<90)return;tagT=ts;tagEl.innerHTML='';if(!G.room||G.scene)return;
   const s=vp.clientWidth/VW,cam=G.cam,list=[],put=[];
-  for(const a of Object.values(ACT))if(a!==P&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+VW)list.push([a.hs.name,a.x,a.y-52,'who']);
+  for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+VW)list.push([a.hs.name,a.x,a.y-52,'who']);
   for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const x0=Math.max(h.x,cam+4),x1=Math.min(h.x+h.w,cam+VW-4);if(x1>x0)list.push([h.name,(x0+x1)/2,h.y+h.h/2,h.exit?'exit':''])}
   list.sort((a,b)=>a[2]-b[2]);
   for(const[name,x,y,k]of list){const el=document.createElement('div');el.className='tag '+k;el.textContent=name;tagEl.appendChild(el);
@@ -737,7 +769,7 @@ addEventListener('keyup',e=>{if(e.key==='Tab')tagsOn(false)});addEventListener('
 addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;const k=e.key.toLowerCase();
   if(k==='tab'){e.preventDefault();tagsOn(true)}
   else if(k===' '||k==='escape'||k==='.'){if(G.skip){e.preventDefault();G.skip()}}
-  else if(k==='m')$('#mute').click();else if(k==='p')pray();
+  else if(k==='m')$('#mute').click();else if(k==='p')pray();else if(k==='c')swap();
   else if(k>='1'&&k<='6'){const b=document.querySelectorAll('#verbs button')[+k-1];if(b)b.click()}});
 /* --- main loop --- */
 let lastT=0,stepT=0;
@@ -746,7 +778,7 @@ function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
     const dx=w.x-a.x,dy=w.y-a.y,d=Math.hypot(dx,dy*2),sp=(a.speed||G.speedAll||88)*dt;
     if(d<=sp){a.x=w.x;a.y=w.y;a.walk=null;a.fr=0;w.res(true)}
     else{a.x+=dx/d*sp;a.y+=dy/d*sp;a.fr=Math.floor(ts/120)%4;if(a.room===G.room&&ts-stepT>250){stepT=ts;SFX.step()}}}
-  if(G.room&&!G.scene){const t=clamp(P.x-160,0,ART[G.room].w-320);G.cam+=(t-G.cam)*Math.min(1,dt*5);if(Math.abs(t-G.cam)<.5)G.cam=t}}
+  if(G.room&&!G.scene){const t=clamp(PC().x-160,0,ART[G.room].w-320);G.cam+=(t-G.cam)*Math.min(1,dt*5);if(Math.abs(t-G.cam)<.5)G.cam=t}}
 /* --- figures: each pose is drawn once into a cached sprite (dark contour, dither), then lit by the room and laid on the scene --- */
 const[SA,sa]=mk(FIG.W,FIG.H),[SB,sb]=mk(FIG.W,FIG.H),SPR=new Map();sa.imageSmoothingEnabled=false;
 /* sprite: draw a pose once and keep it. Edge pixels are darkened, more so on the side away from the light (dir tells which). */
@@ -788,20 +820,22 @@ Object.assign(ITEMS,{
   tablets:{name:'wax tablets',def:'open',look:'My wax tablets. Whom I have met, what is still to be done, and the Scriptures I want to keep before me.',
     open:async()=>{try{await need('tablets')}catch(e){return narr(e.message)}return SHARED.tablets.open(CHAP[G.ch].tablets||{})}}});
 const COMBO={'awl+thread':()=>say(P,'Threaded and ready. Now, what needs stitching?')};
-async function combine(a,b){const c=COMBO[[a,b].sort().join('+')];if(c)return c();SFX.nope();return say(P,pick(NOPE))}
+/* combine: two items used together. The crafts are Paul's; another character leaves them to him (noCraft). */
+async function combine(a,b){const c=COMBO[[a,b].sort().join('+')],w=PC();if(w!==P)return say(w,w.noCraft||'I had better leave that to Paul.');
+  if(c)return c();SFX.nope();return say(P,pick(NOPE))}
 /* --- "Pray to Jehovah": a pause for calm, then a context-sensitive thought. Never changes the game state. --- */
 const PRAYERS=['Paul bows his head and quietly asks Jehovah for wisdom and a calm heart. (James 1:5)',
   'Paul pauses, and in prayer throws his anxiety on Jehovah. (1 Peter 5:7)','In the stillness, Paul asks Jehovah to help him think clearly.'];
 function hint(){return CHAP[G.ch].hint()}
 function pray(){if(G.busy||G.scene||!G.room)return;audioInit();
-  cut(async()=>{G.prays++;const d=$('#dim'),m=AU.mus,ab=AU.ambG;d.style.opacity=.55;P.bow=true;SFX.pray();
+  cut(async()=>{G.prays++;const me=PC(),d=$('#dim'),m=AU.mus,ab=AU.ambG;d.style.opacity=.55;me.bow=true;SFX.pray();
     if(m){m.gain.setTargetAtTime(.12,now(),.3);ab.gain.setTargetAtTime(.15,now(),.3)}
     await wait(900);
-    await say(null,G.prays===1?PRAYERS[0]:pick(PRAYERS),{dur:4200,color:'#cfe2ff'});
-    await wait(500);P.bow=false;d.style.opacity=0;if(m){m.gain.setTargetAtTime(.55,now(),.8);ab.gain.setTargetAtTime(.5,now(),.8)}
+    await say(null,(G.prays===1?PRAYERS[0]:pick(PRAYERS)).replace('Paul',me.name),{dur:4200,color:'#cfe2ff'});
+    await wait(500);me.bow=false;d.style.opacity=0;if(m){m.gain.setTargetAtTime(.55,now(),.8);ab.gain.setTargetAtTime(.5,now(),.8)}
     await wait(600);
     const[k,ls]=hint(),n=G.hintAt[k]=(G.hintAt[k]||0)+1;
-    await say(P,ls[Math.min(n,ls.length)-1],{thought:1,color:'#cfe2ff'})})}
+    await say(me,ls[Math.min(n,ls.length)-1],{thought:1,color:'#cfe2ff'})})}
 /* ============ SHARED SCRIPT HELPERS ============ */
 /* take: pick something up for good. Marked, so that Pick up is its default verb. */
 const take=(flag,item,line)=>Object.assign(async()=>{F[flag]=1;addItem(item);await say(P,line)},{take:1});
@@ -847,24 +881,63 @@ const msk=c=>Math.imul(c+1,0x2545F)&0x1FFFFF;
 function stateBits(){const c=CHAP[G.ch];let b=0;c.flags.forEach((k,i)=>{if(F[k])b|=1<<i});return b|Math.max(0,c.rooms.indexOf(G.room))<<19}
 function codeOf(ch,b){const c=chk(b,CHAP[ch].salt),v=(b^msk(c))*512+c;let s='';
   for(let i=5;i>=0;i--)s+=A32[Math.floor(v/Math.pow(32,i))%32];return(ch>1?ch+'-':'')+s.slice(0,3)+'-'+s.slice(3)}
-const makeCode=()=>codeOf(G.ch,stateBits());
+/* Wide codes: for a chapter whose state does not fit the 21 bits of the six-character codes. That is a chapter with a party (where each
+   member stands, who is being played, and who carries each item that can change hands, listed in share), with more than 19 flags,
+   or with more than three rooms, such as a hub chapter that travels between places on the map. A wide code is 9, 12, 15... characters,
+   always a multiple of three, so the decoder tells it from a six-character code by its length alone; old codes keep working.
+   Bits, from the lowest: flags; each member's room; the member being played; for each item in share, the member who carries it.
+   Each field has a fixed width, so that a chapter can grow without breaking its codes: 19 flags (as in the six-character codes) and
+   two bits per room unless the chapter needs or reserves more (codeBits:{flags, rooms, share}). Append to flags, rooms and share;
+   never reorder them. All of it is masked and checked with 9 bits salted by the chapter, as in the six-character codes. */
+const wide=c=>!!(c.party||c.flags.length>19||c.rooms.length>3);
+const nbits=n=>{let b=0;while((1<<b)<n)b++;return b};
+const layout=c=>{const ps=c.party||['paul'],k=c.codeBits||{};
+  return{ps,fb:Math.max(k.flags||19,c.flags.length),rb:Math.max(k.rooms||2,nbits(c.rooms.length)),pb:nbits(ps.length),sb:Math.max(k.share||0,(c.share||[]).length)}};
+function wideChk(v,salt,len){let h=(salt^Math.imul(len,0x45D9F3B))>>>0;for(let x=v,i=0;i<8;i++,x>>=30n){h=Math.imul(h^Number(x&0x3FFFFFFFn),0x9E3779B1)>>>0;h^=h>>>15}return h>>>7&511}
+function wideMask(c,bits){let m=0n,q=Math.imul(c+1,0x2545F)|0;for(let i=0;i<bits;i+=16){q=Math.imul(q^q>>>13,0x5BD1E995)^c;m|=BigInt(q>>>8&0xFFFF)<<BigInt(i)}return m&((1n<<BigInt(bits))-1n)}
+function packWide(){const c=CHAP[G.ch],{ps,fb,rb,pb,sb}=layout(c),sh=c.share||[];let v=0n,n=0;const put=(x,b)=>{v|=BigInt(x)<<BigInt(n);n+=b};
+  for(let i=0;i<fb;i++)put(F[c.flags[i]]?1:0,1);ps.forEach(id=>put(Math.max(0,c.rooms.indexOf(ACT[id].room)),rb));put(Math.max(0,ps.indexOf(PC().id)),pb);
+  for(let i=0;i<sb;i++)put(i<sh.length?Math.max(0,ps.findIndex(m=>invOf(ACT[m]).includes(sh[i]))):0,pb);return[v,n]}
+function unpackWide(c,v){const{ps,fb,rb,pb,sb}=layout(c),sh=c.share||[];let n=0;const get=b=>{const x=Number(v>>BigInt(n)&((1n<<BigInt(b))-1n));n+=b;return x};
+  const fl=[];for(let i=0;i<fb;i++)if(get(1))fl.push(i);const flags=fl.map(i=>c.flags[i]),rooms=ps.map(()=>get(rb)),pc=get(pb),own={};
+  for(let i=0;i<sb;i++){const m=ps[get(pb)];if(i<sh.length)own[sh[i]]=m}
+  if(flags.some(k=>!k)||rooms.some(r=>r>=c.rooms.length)||pc>=ps.length||v>>BigInt(n)||Object.values(own).some(m=>!m))return null;
+  return{flags,ps,rooms:rooms.map(r=>c.rooms[r]),pc:ps[pc],own}}
+function wideCode(ch){const[v,n]=packWide(),len=Math.max(9,Math.ceil((n+9)/15)*3),c=wideChk(v,CHAP[ch].salt,len);
+  let x=(v^wideMask(c,len*5-9))<<9n|BigInt(c),s='';for(let i=0;i<len;i++){s=A32[Number(x&31n)]+s;x>>=5n}
+  return(ch>1?ch+'-':'')+s.match(/.{3}/g).join('-')}
+const makeCode=()=>wide(CHAP[G.ch])?wideCode(G.ch):codeOf(G.ch,stateBits());
 function decode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1').replace(/U/g,'V').replace(/[^0-9A-Z]/g,'');
-  let ch=1;if(t.length===7&&t[0]!=='1'&&CHAP[t[0]]){ch=+t[0];t=t.slice(1)}
+  let ch=1;if(t.length%3===1&&t.length>=7&&t[0]!=='1'&&CHAP[t[0]]){ch=+t[0];t=t.slice(1)}
+  if(t.length>=9&&t.length%3===0){let x=0n;for(const q of t){const i=A32.indexOf(q);if(i<0)return null;x=x*32n+BigInt(i)}
+    const c=Number(x&511n),v=x>>9n^wideMask(c,t.length*5-9);return wideChk(v,CHAP[ch].salt,t.length)===c?{ch,w:v}:null}
   if(t.length!==6)return null;let v=0;for(const x of t){const i=A32.indexOf(x);if(i<0)return null;v=v*32+i}
   const c=v%512,b=Math.floor(v/512)^msk(c);return chk(b,CHAP[ch].salt)!==c||(b>>19&3)>2||b>>21?null:{ch,b}}
-function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];
-  Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null});
-  $('#chname').textContent=CHAP[ch].name;G.ship=null;setScore(CHAP[ch].music);CHAP[ch].setup()}
-function applyState(s){setChapter(s.ch);const c=CHAP[s.ch],room=c.rooms[s.b>>19&3];c.flags.forEach((k,i)=>{if(s.b>>i&1)F[k]=1});
-  if(c.place)c.place(room);G.inv=c.inv(room);
+function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];G.pc=P;G.invs={};P.hs=null;
+  Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0});
+  (CHAP[ch].party||[]).forEach(id=>ACT[id].party=1);
+  $('#chname').textContent=CHAP[ch].name;G.ship=null;setScore(CHAP[ch].music);CHAP[ch].setup();swapBtn()}
+/* dealInv: rebuild the inventories from the story's flags (the level's inv). Each item goes to the member who carries it (own,
+   from a wide code), else to its usual owner (the level's home table), else to Paul. Paul must be the one being played. */
+function dealInv(room,own){const c=CHAP[G.ch];G.invs={};party().forEach(a=>G.invs[a.id]=[]);
+  for(const id of c.inv(room))(G.invs[own&&own[id]||c.home&&c.home[id]||'paul']||G.invs.paul).push(id);G.inv=G.invs[PC().id]}
+/* applyState: restore a decoded code. A six-character code holds Paul's room and the flags; a wide code holds the rest as well. */
+function applyState(s){const c=CHAP[s.ch],u=s.w!=null?unpackWide(c,s.w):null;if(s.w!=null&&!u)return false;
+  setChapter(s.ch);let room;
+  if(u){u.flags.forEach(k=>F[k]=1);room=u.rooms[0]}else{room=c.rooms[s.b>>19&3];c.flags.forEach((k,i)=>{if(s.b>>i&1)F[k]=1})}
+  if(c.place)c.place(room);dealInv(room,u&&u.own);
   ov.className='';ov.onclick=null;G.scene=null;G.end={};G.item=null;G.verb='walk';G.hover=null;$('#dim').style.opacity=0;
-  enterRoom(room,...c.ent[room]);if(!G.started)G.started=performance.now();
-  G.busy=false;lock(false);syncVerbs();drawInv();status();codeBtn()}
+  enterRoom(room,...c.ent[room]);
+  if(u){u.ps.forEach((id,i)=>{const a=ACT[id],r=u.rooms[i],e=c.ent[r];if(i&&a.room!==r)place(a,r,e[0]+(r===room?-26:0),e[1]+2,e[2])});
+    const a=ACT[u.pc];if(a!==P){G.invs.paul=G.inv;G.pc=a;G.inv=G.invs[a.id];viewOf(a)}}
+  if(!G.started)G.started=performance.now();
+  G.busy=false;lock(false);swapBtn();syncVerbs();drawInv();status();codeBtn();return true}
 function codeBtn(){$('#code').textContent=G.room&&!G.scene?'CODE '+makeCode():'ENTER CODE'}
 function closeCode(){cb.classList.remove('on');G.busy=cb.was;if(!G.busy)lock(false);status()}
 async function tryCode(){const b=decode($('#codein').value);
   if(b==null){SFX.nope();$('#codemsg').textContent='That code is not valid. Please check each letter and number.';return}
   try{await loadLevel(b.ch)}catch(e){SFX.nope();$('#codemsg').textContent=e.message;return}
+  if(b.w!=null&&!unpackWide(CHAP[b.ch],b.w)){SFX.nope();$('#codemsg').textContent='That code is not valid. Please check each letter and number.';return}
   cb.classList.remove('on');SFX.good();applyState(b)}
 function openCode(){audioInit();if(cb.classList.contains('on'))return closeCode();
   const can=G.room&&!G.scene&&!G.busy;if(!can&&!ov.classList.contains('on')){SFX.nope();return}
@@ -872,7 +945,7 @@ function openCode(){audioInit();if(cb.classList.contains('on'))return closeCode(
   cb.innerHTML=(can?'<h2>SAFE POINT</h2><p>Your code for this exact point in the story:</p><div class="big">'+makeCode()+
       '</div><p>Write it down. Enter it here, or from the title screen, to return to this point.</p>'
       :'<h2>ENTER CODE</h2><p>Type a code from an earlier game to continue from that point.</p>')+
-    '<div class="row"><input id="codein" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXX-XXX">'+
+    '<div class="row"><input id="codein" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXX-XXX">'+
     '<button id="codego" type="button">GO</button></div><p id="codemsg" class="small">&nbsp;</p>'+
     '<button id="codex" type="button">'+(can?'Back to the game':'Back')+'</button>';
   cb.classList.add('on');$('#codego').onclick=tryCode;$('#codex').onclick=closeCode;

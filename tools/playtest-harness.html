@@ -4,7 +4,7 @@
 (()=>{const stop=(location.href.match(/stop=(\w+)/)||[])[1]||'final';const L=m=>{$('#tlog').textContent+=m+'\n'};
  let sk=setInterval(()=>{if(G.skip)G.skip()},30);
  G.speedAll=500;
- const idle=async()=>{await wait(120);let n=0;while((G.busy||P.walk)&&n++<4000){if($('#choices').classList.contains('on')||ov.classList.contains('end'))break;await wait(50)}};
+ const idle=async()=>{await wait(120);let n=0;while((G.busy||P.walk||PC().walk)&&n++<4000){if($('#choices').classList.contains('on')||ov.classList.contains('end'))break;await wait(50)}};
  const verb=v=>document.querySelector(`#verbs button[data-v=${v}]`).click();
  const view=(x,y)=>{const r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+y/144*r.height,bubbles:true}))};
  const item=id=>{const i=G.inv.indexOf(id);if(i<0)throw new Error('no item '+id);document.querySelectorAll('#inv .slot')[i].click()};
@@ -41,7 +41,7 @@
   const enter=async c=>{$('#code').click();$('#codein').value=c;$('#codego').click();await idle()};
   const give=async(id,a)=>{verb('give');item(id);view(a.x,a.y-18);await idle()};
   /* Chapter Three stops start that chapter from the title screen, without replaying the first two. */
-  const C3=/^(tarsus|tent|frame|meeting|court|antioch|potter|quiz3|sealed|loaded|road|final3)$/.test(stop);let n=0;
+  const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3)$/.test(stop);let n=0;
   halt('title');
   if(stop==='title2'){document.querySelector('#overlay [data-ch="2"]').click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy,'title starts chapter two');halt('title2')}
   if(stop==='title3'){document.querySelector('#overlay [data-ch="3"]').click();await idle();ok(G.ch===3&&G.room==='tarsus'&&!G.busy&&ACT.barnabas.x>100,'title starts chapter three');halt('title3')}
@@ -209,13 +209,34 @@
   /* ---------------- Chapter Three ---------------- */
   (C3?document.querySelector('#overlay [data-ch="3"]'):ov).click();await idle();ok(G.ch===3&&G.room==='tarsus'&&!G.busy&&srt()==='awl,knife,tablets,thread','chapter three starts in Tarsus');
   halt('tarsus',()=>{say(ACT.barnabas,'I have asked for you along every row of tentmakers in this city. And here you are, at the very last stall.')});
-  ok(/^3-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===3,'chapter three code format '+makeCode());
+  ok(/^3-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===3,'chapter three code format (wide) '+makeCode());
   await act(null,'east gate');ok(G.room==='tarsus'&&!F.sold&&!G.busy,'no leaving before the promise is kept');
   await act('pickup','tent');ok(!has('tent')&&!F.gotTent,'unfinished tent stays on its frame');
   await actor(null,ACT.kleon);ok(F.metKleon,'met Kleon');await choose(0);await choose(-1);
   await actor(null,ACT.barnabas);ok(nq()===5&&hasQ("caravan leaves at noon"),'barnabas has 4 questions in Tarsus, and one about Kleon');await choose(-1);
   await sweep(ACT.barnabas,ACT.kleon);
-  await useOn('awl','tent');ok(F.seam&&ACT.barnabas.x<120,'seam sewn with Barnabas holding the edge');
+  /* the party: Barnabas can be played; the seam takes both men */
+  const BN=ACT.barnabas;
+  ok($('#verbs').classList.contains('party')&&/Barnabas/.test($('#swap').textContent)&&getComputedStyle($('#swap')).display!=='none','a party: the panel offers to switch to Barnabas');
+  heard.length=0;await useOn('awl','tent');ok(!F.seam&&!F.held&&heard.some(l=>/show me where to stand/.test(l)),'one man cannot sew the seam straight');
+  pray();await idle();ok(hint()[0]==='hold3','the hint points to Barnabas');
+  key('c');await idle();ok(PC()===BN&&srt()==='staff'&&/Paul/.test($('#swap').textContent)&&$('#status').textContent==='Walk to','C switches to Barnabas, with his own inventory');
+  heard.length=0;await act('look','workbench');ok(heard.includes('Scarred by years of cutting.'),'Barnabas looks at things in his own words');
+  heard.length=0;await act('use','leather hide');ok(heard.includes("That is Saul's trade, not mine.")&&!F.gotLoops,'and leaves the crafts to Saul');
+  pray();await idle();ok(hint()[0]==='hold3b'&&ACT.barnabas.bow===false,'Barnabas prays, and gets his own hint');
+  heard.length=0;await act('use','tent');ok(F.held&&Math.abs(BN.x-146)<4&&PC()===BN,'Barnabas takes the far edge and holds it taut'+(F.held?'':' DEBUG held='+F.held+' x='+BN.x+' pc='+PC().id+' heard='+heard.join('|')));
+  const cw=makeCode();ok(/^3-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(cw)&&decode(cw).w!=null,'chapter three codes are wide now: '+cw);
+  {const bad=[...'0123456789ABCDEF'].map(q=>cw.slice(0,-1)+q).filter(c=>c!==cw).map(decode).filter(d=>d&&unpackWide(CHAP[3],d.w));ok(bad.length===0,'mistyped wide codes are rejected')}
+  halt('barnabas');
+  key('c');await idle();ok(PC()===P&&srt()==='awl,knife,tablets,thread','back to Paul and his own inventory');
+  await useOn('awl','tent');ok(F.seam&&!F.held&&BN.x<120,'two men: Barnabas holds, Saul sews');
+  await give('knife',BN);ok(!has('knife')&&G.invs.barnabas.includes('knife'),'Give hands the knife to Barnabas');
+  key('c');await idle();heard.length=0;await use('knife','staff');ok(heard.includes(BN.noCraft)&&has('knife')&&has('staff'),'Barnabas will not cut anything');
+  const ck=makeCode();await give('knife',P);ok(!has('knife')&&G.invs.paul.includes('knife'),'and Barnabas hands it back');
+  await enter(ck);ok(G.ch===3&&PC()===BN&&srt()==='knife,staff'&&G.invs.paul.slice().sort().join()==='awl,tablets,thread'&&F.seam&&BN.room==='tarsus','a wide code restores the active character and both inventories');
+  await enter(cw);ok(PC()===BN&&F.held&&Math.abs(BN.x-146)<4&&!F.seam&&srt()==='staff','and the held edge');
+  key('c');await idle();await useOn('awl','tent');ok(F.seam,'sewn again after the code');
+  const old=codeOf(3,stateBits());await enter(old);ok(PC()===P&&F.seam&&BN.room==='tarsus'&&G.invs.barnabas.join()==='staff'&&srt()==='awl,knife,tablets,thread','a six-character chapter three code still works');
   await useOn('awl','tent');ok(!F.loopsOn,'no loops to sew yet');
   await useOn('knife','leather hide');ok(has('loops')&&F.gotLoops,'peg loops cut from the hide');
   halt('tent',()=>{place(P,'tarsus',182,113,-1);say(P,'One loop at every peg, and each stitched through twice...')});
@@ -225,6 +246,8 @@
   await act('pickup','tent');ok(has('tent')&&F.gotTent,'finished tent rolled up');
   await give('tent',ACT.kleon);ok(F.sold&&!has('tent')&&!G.busy,'tent delivered as promised');
   pray();await idle();ok(hint()[0]==='go3','tarsus hint points to the road');
+  const tg=makeCode();key('c');await idle();await act(null,'east gate');ok(G.room==='court'&&PC()===P&&F.sold,'Barnabas at the gate: Saul leads the way to Antioch');
+  await enter(tg);ok(G.room==='tarsus'&&F.sold&&PC()===P,'back to Tarsus by code');
   const tb=makeCode();await enter(ta);
   ok(G.ch===3&&G.room==='tarsus'&&has('loops')&&F.seam&&!F.loopsOn&&!F.sold&&ACT.barnabas.room==='tarsus','chapter three code restores earlier state');
   await enter(tb);ok(F.sold&&F.gotTent&&!has('tent')&&srt()==='awl,knife,tablets,thread','chapter three code restores later state');
@@ -245,7 +268,7 @@
   pray();await idle();ok(hint()[0]==='xan3','hint points to Xanthe');
   await act(null,'gate to the street');ok(G.room==='antioch'&&!G.busy,'out in the street');
   halt('antioch',()=>{place(P,'antioch',150,122,1);say(ACT.xanthe,'The others carry in sacks of grain. I earn two small coins a day. What could I give?')});
-  halt('potter',()=>{place(P,'antioch',320,124,1);G.cam=160;say(ACT.theron,'My oil jars went to the courtyard at dawn. A potter cannot send much, but he can send it well sealed.')});
+  halt('potter',()=>{place(P,'antioch',320,124,1);G.cam=160;say(ACT.theron,'My best jar of oil, sealed with my own mark. But it is a load for two men and a bar, and I cannot leave my stall.')});
   await actor(null,ACT.theron);ok(nq()===6,'theron has 5 questions and the famine');await choose(2);await choose(-1);await sweep(ACT.xanthe,ACT.theron);
   await give('wages',ACT.xanthe);ok(has('wages'),'silver is not what Xanthe needs');
   await actor(null,ACT.xanthe);ok(nq()===3,'Xanthe round 1 offers three answers');
@@ -258,13 +281,21 @@
   await use('spool','panels');ok(has('bags')&&!has('panels')&&!has('spool'),'pack bags sewn');
   const tc=makeCode();
   await act('use','south gate');ok(G.room==='antioch','not leaving before the gift is ready');
-  await act(null,'gate to the courtyard');ok(G.room==='court'&&P.x>250,'back in the courtyard');
-  await give('wages',ACT.lucius);ok(nq()===3&&!has('wages'),'Lucius offers the purse uncounted');
+  /* Theron's jar: a load for two men and a bar */
+  await act('use',"Theron's oil jar");ok(!F.jar,'one man cannot carry the jar');
+  key('c');await idle();ok(PC()===ACT.barnabas&&G.room==='court'&&P.room==='antioch','switching shows Barnabas, back in the courtyard');
+  await act(null,'gate to the street');ok(G.room==='antioch'&&ACT.barnabas.room==='antioch','Barnabas joins Saul in the street');
+  halt('jar',()=>{place(P,'antioch',404,120,1);place(ACT.barnabas,'antioch',446,121,-1);G.cam=160;say(ACT.barnabas,'My staff through both handles, and a man at each end.')});
+  await useOn('staff',"Theron's oil jar");ok(F.jar&&P.room==='court'&&ACT.barnabas.room==='court'&&G.room==='court'&&!G.busy,'two men and a bar: the jar reaches the courtyard');
+  key('c');await idle();ok(PC()===P&&has('wages'),'Paul again');
+  heard.length=0;await give('wages',ACT.lucius);ok(nq()===3&&!has('wages'),'Lucius offers the purse uncounted'+(nq()===3?'':' DEBUG '+[G.room,P.x,P.y,PC().id,G.inv,F.jar,heard.slice(-4).join('|')].join(' ')));
   await pickQ('careful count on the road');ok(nq()===2&&!F.sealed,'a private count is set aside');
   await pickQ('Count it before the brothers');ok(F.sealed&&!has('wages')&&!G.busy&&has('bags'),'gift counted, recorded and sealed');
   const td=makeCode();await enter(tc);ok(G.room==='antioch'&&has('bags')&&has('wages')&&!F.sealed&&ACT.xanthe.room==='antioch','street code restores');
   await enter(td);ok(G.room==='court'&&F.sealed&&has('bags')&&!has('wages')&&ACT.barnabas.room==='court','courtyard code restores');
   pray();await idle();ok(hint()[0]==='load3','courtyard hint');
+  await enter(tc);verb('give');item('wages');view(ACT.lucius.x,ACT.lucius.y-18);await idle();await act(null,'gate to the courtyard');await give('wages',ACT.lucius);
+  ok(!F.sealed&&has('wages')&&!$('#choices').classList.contains('on'),'Lucius will not close the tally before the oil is in');await enter(td);
   halt('sealed',()=>{place(P,'court',232,116,1);say(P,'He cannot carry grain on a bare saddle. He needs pack bags.')});
   halt('loaded',()=>{F.bagsOn=1;F.loaded=1;place(ACT.xanthe,'court',216,128,-1);place(ACT.theron,'court',244,134,-1);place(P,'court',150,126,1);G.inv=CHAP[3].inv('court');drawInv();
     say(ACT.xanthe,'And my thread in every seam of it. I did have something to give.')});
