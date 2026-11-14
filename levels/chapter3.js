@@ -223,7 +223,7 @@ function roadScene(g,t){backdrop(g,'road');const x=-50+420*((G.trek||{}).k||0),f
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
 Object.assign(LOOK,{
   barnabas:{skin:'#b8844f',hair:'#3a2a1a',beard:'#3a2a1a',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},
-  kleon:{skin:'#a87048',wrap:'#c8a050',beard:'#3a2a1a',tunic:'#7a5a3e',stripe:'#644830',belt:'#2e2016',trim:'#4a3424',brow:'#2a1a12',ph:1100},
+  kleon:{skin:'#a87048',wrap:'#c8a050',beard:'#3a2a1a',tunic:'#7a5a3e',belt:'#2e2016',trim:'#4a3424',brow:'#2a1a12',ph:1100},
   agabus:{skin:'#b88458',hair:'#8e8e8e',beard:'#a6a6a6',longBeard:1,brow:'#6e6e6e',tunic:'#a8b0a0',cloak:'#5a4634',long:1,belt:'#4a3a24',ph:2300},
   lucius:{skin:'#8a5a3a',hair:'#1a1210',beard:'#1a1210',tunic:'#c9a23a',cloak:'#4a5a7a',long:1,belt:'#5a3a20',trim:'#8a6a1a',brow:'#120c0a',ph:3100},
   xanthe:{skin:'#c89a70',veil:'#5a7a5a',tunic:'#a86a4a',long:1,belt:'#d8c9a0',slim:1,longSleeve:1,trim:'#d8c9a0',brow:'#3a2414',ph:400},

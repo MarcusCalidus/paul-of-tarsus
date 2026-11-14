@@ -300,7 +300,7 @@ Object.assign(LOOK,{
   naomi:{skin:'#c49268',veil:'#8a4a5a',tunic:'#4f7480',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#c9a14a',brow:'#3a2414',ph:1700},
   jesse:{skin:'#c49268',hair:'#3a2414',tunic:'#a89060',belt:'#5a3a20',h:8,slim:1,trim:'#7a6238',ph:2600},
   guard:{skin:'#a87850',helm:'#b08a3c',beard:'#1a100a',tunic:'#7a2a2a',cloak:'#3a3550',cape:1,belt:'#b08a3c',spear:1,armor:'#5a3a22',trim:'#c9a14a',brow:'#1a100a',ph:3300},
-  zakkai:{skin:'#b07a4c',wrap:'#d2c296',beard:'#4a3a2a',tunic:'#4a5a8a',stripe:'#3a4873',long:1,belt:'#c9a14a',trim:'#c9a14a',longSleeve:1,brow:'#3a2a1a',ph:2100}});
+  zakkai:{skin:'#b07a4c',wrap:'#d2c296',beard:'#4a3a2a',tunic:'#4a5a8a',long:1,belt:'#c9a14a',trim:'#c9a14a',longSleeve:1,brow:'#3a2a1a',ph:2100}});
 actor('eliab','Eliab','#a8d8a0',118);actor('naomi','Naomi','#f0a8c0',250);actor('jesse','Jesse','#f0c878',215);
 actor('guard','the guard','#f08070',96);actor('zakkai','the merchant','#90b8f0',132);
 Object.assign(ICON,{
