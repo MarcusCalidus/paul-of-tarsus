@@ -42,7 +42,7 @@ function coilArt(g,x,y,n,L,c){c=c||'#b89a5a';L=L||(k=>k);R(g,x-.5,y-5,1.5,5,L(ti
     g.strokeStyle=cc;g.lineWidth=1.6;g.stroke();for(let a=0;a<8;a++){const q=a/8*6.2832;R(g,x+.5+Math.cos(q)*4.6-.25,yy+1.2+Math.sin(q)*1.9-.25,.5,.5,L(tint(c,.3)))}}}
 /* ---------- Eliab's workshop: lamplight, reeds and goat-hair cloth ---------- */
 ART.workshop={w:320,
- light:()=>({amb:'#6f6078',lamps:[[157,60,135,'#b88a48']]}),
+ light:()=>({amb:'#827488',lamps:[[157,60,140,'#d8a860']]}),
  paint(g){const r=rng(11),W='#c9a476',T='#6b4a2e';
   plaster(g,0,0,320,105,W,r,{patch:7,cracks:8,brick:'#a8744c',bot:-.2,t:.55});
   comp(g,'multiply',.55,()=>R(g,0,84,320,21,'#b89070'));R(g,0,83.5,320,.5,'rgba(70,36,12,.4)');
@@ -201,7 +201,7 @@ ART.street={w:480,fp:1.3,
 /* ---------- Naomi's upper room on the city wall: lamplight first, then darkness and the moon ---------- */
 ART.house={w:320,
  variant:()=>F.lampOut?(F.shutters?'moon':'dark'):'lamp',
- light:()=>F.lampOut?(F.shutters?{amb:'#4a5484',lamps:[[216,104,70,'#5a6aa8']]}:{amb:'#444a74'}):{amb:'#6f6078',lamps:[[104,56,125,'#b88a48']]},
+ light:()=>F.lampOut?(F.shutters?{amb:'#4a5484',lamps:[[216,104,70,'#5a6aa8']]}:{amb:'#444a74'}):{amb:'#827488',lamps:[[104,56,135,'#d8a860']]},
  paint(g,v){const r=rng(37),S='#b4a894',T='#6b4a2e';
   ashlar(g,0,0,320,105,S,r,{bw:24,bh:11.5,v:.1,t:.5});
   /* ceiling joists over a great cedar beam */
