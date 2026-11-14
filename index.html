@@ -52,6 +52,9 @@ body{display:flex;align-items:center;justify-content:center}
 #overlay .go,#overlay .pick{font-size:calc(var(--s)*6.2px);margin:calc(var(--s)*2.5px) 0}
 #overlay .pick{color:var(--gold)}
 #overlay .pick:hover{color:#fff}
+#overlay .langs span{cursor:pointer;padding:0 calc(var(--s)*1.5px)}
+#overlay .langs span:hover{color:#fff}
+#overlay .langs span.on{color:var(--gold)}
 #overlay.end{background:rgba(6,4,14,.82)}
 @keyframes bl{50%{opacity:.25}}
 #status{height:calc(var(--s)*11px);line-height:calc(var(--s)*11px);text-align:center;
@@ -102,7 +105,7 @@ body{display:flex;align-items:center;justify-content:center}
 </head>
 <body>
 <div id="wrap">
-  <div id="top"><span>PAUL OF TARSUS &middot; <span id="chname">ESCAPE FROM DAMASCUS</span></span><span><button id="code" type="button">ENTER CODE</button><button id="mute" type="button">&#9835; SOUND ON</button></span></div>
+  <div id="top"><span><span id="gname">PAUL OF TARSUS</span> &middot; <span id="chname">ESCAPE FROM DAMASCUS</span></span><span><button id="code" type="button">ENTER CODE</button><button id="mute" type="button">&#9835; SOUND ON</button><button id="lang" type="button">EN</button></span></div>
   <div id="view">
     <canvas id="screen" width="640" height="288"></canvas>
     <div id="speech"></div>
@@ -130,7 +133,27 @@ const $=s=>document.querySelector(s);
 const cv=$('#screen'),cx=cv.getContext('2d');
 cx.imageSmoothingEnabled=false;
 const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,t:0,scene:null,
-  hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false,pc:null,invs:{}};
+  hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false,pc:null,invs:{},lang:'en'};
+/* ============ LANGUAGES: the game is written in English; every other language is data under lang/ ============ */
+/* Every line is translated as it is shown: by say and narr, choose, the status line, the labels, the overlays, the tablets and the map,
+   with the English text as the key. So the story's logic (its flags, and the names it compares) never sees a translation, and a
+   safe-point code is the same in every language. A language is a folder lang/xx/ of files that call TEXTS(xx, part, {english: text}):
+   main.js for the engine and the files under shared/, and chapterN.js for each chapter, loaded with that chapter. To add a language,
+   add its line to LANGS and write its folder. A line with no translation is shown in English and noted in MISSING (the playtest
+   checks that it stays empty). A translation may leave out a {slot} of its English line, but may not add one. */
+const LANGS={en:{native:'English'},de:{native:'Deutsch',dir:'lang/de/'}};   /* native: the language's name in itself */
+const DICT={},MISSING=new Set(),MADE=new Set();
+function TEXTS(lang,part,d){const L=DICT[lang]||(DICT[lang]={});Object.assign(L[part]||(L[part]={}),d)}
+/* T: a line in the player's language, looked up in the current chapter's text, then the engine's; vars fill its {slots}.
+   What T returns is noted in MADE, so that a line put together from translated parts is not translated twice. */
+function T(s,vars){if(typeof s!=='string')return s;let r=s;
+  if(G.lang!=='en'&&!MADE.has(s)){const L=DICT[G.lang]||{},c=L[G.ch]&&L[G.ch][s],m=L.main&&L.main[s];
+    if(c!=null)r=c;else if(m!=null)r=m;else if(!MISSING.has(G.ch+': '+s)){MISSING.add(G.ch+': '+s);console.warn(`No ${G.lang} text for: ${s}`)}}
+  if(vars)r=r.replace(/\{(\w+)\}/g,(m,k)=>vars[k]!=null?vars[k]:m);
+  MADE.add(r);return r}
+/* T.peek: the translation of a line, or null, without noting it as missing (for tests). */
+T.peek=s=>{const L=DICT[G.lang]||{};return G.lang==='en'?s:L[G.ch]&&L[G.ch][s]!=null?L[G.ch][s]:L.main&&L.main[s]!=null?L.main[s]:null};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
 const VERBS=[['look','Look at'],['pickup','Pick up'],['use','Use'],['open','Open'],['talk','Talk to'],['give','Give']];
 const VNAME={walk:'Walk to',look:'Look at',pickup:'Pick up',use:'Use',open:'Open',talk:'Talk to',give:'Give'};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -282,7 +305,7 @@ const SFX={
   win(){[62,66,69,74,78,81].forEach((m,i)=>tone({f:mtof(m),t:now()+i*.16,d:i===5?1.6:.4,type:'triangle',v:.15,echo:1}))}
 };
 function setMute(m){AU.muted=m;if(AU.master)AU.master.gain.value=m?0:1;
-  $('#mute').innerHTML=m?'&#9835; SOUND OFF':'&#9835; SOUND ON';$('#mute').style.opacity=m?.6:1}
+  $('#mute').textContent='♫ '+T(m?'SOUND OFF':'SOUND ON');$('#mute').style.opacity=m?.6:1}
 $('#mute').onclick=e=>{e.stopPropagation();audioInit();setMute(!AU.muted);hush(!AU.muted);SFX.click()};
 /* ============ PAINT: a small painterly toolkit ============ */
 /* Rooms are painted once, with gradients, textures, light and shadow, at twice the room resolution.
@@ -620,7 +643,7 @@ const ICON={
 /* ============ ENGINE: actors, script, rendering, input ============ */
 const ACT={},ROOMS={},ITEMS={},BG={},FG={};
 function actor(id,name,color,pitch){return ACT[id]||(ACT[id]={id,name,look:LOOK[id],color,pitch,x:0,y:0,dir:1,fr:0,room:null,walk:null,talk:false,bow:false,hs:null})}
-const P=actor('paul','Paul','#f5e6b8',150);
+const P=actor('paul','Paul','#f5e6b8',150);  /* a person's name is shown with T(a.name) */
 /* P is always Paul: the level scripts speak and move him by name. PC() is whoever the player controls. A chapter can declare a party
    of playable characters (party:['paul','barnabas']); each member then has his own inventory (G.invs, of which G.inv is the active
    one's), stands in his own room, and can be handed things by the others. */
@@ -640,7 +663,7 @@ function walk(a,x,y){return new Promise(res=>{const rm=ROOMS[a.room];
   if(a===PC()&&rm&&!a.free){const w=rm.walk;x=clamp(x,w[0],w[1]);y=clamp(y,w[2],w[3])}
   if(a.walk)a.walk.res(false);a.walk={x,y,res};if(Math.abs(x-a.x)>1)a.dir=x>a.x?1:-1})}
 let cur=null;
-function say(a,text,o={}){return new Promise(res=>{
+function say(a,text,o={}){text=T(text);return new Promise(res=>{
   const el=document.createElement('div');el.className='line';el.textContent=text;el.style.color=o.color||(a?a.color:'#e6d9ff');
   if(o.thought)el.style.fontStyle='italic';
   $('#speech').appendChild(el);if(a&&!o.thought)a.talk=true;
@@ -662,7 +685,7 @@ function enterRoom(room,x,y,dir){G.room=room;place(PC(),room,x,y,dir);G.cam=clam
 async function fade(on,ms=260){const d=$('#dim');d.style.transition=`opacity ${ms}ms`;d.style.opacity=on?1:0;await wait(ms+20);d.style.transition=''}
 async function go(room,x,y,dir){SFX.door();await fade(1);enterRoom(room,x,y,dir);await fade(0);const r=ROOMS[room];if(r.enter)await r.enter()}
 function choose(opts){return new Promise(res=>{const c=$('#choices');c.innerHTML='';c.classList.add('on');
-  opts.forEach((o,i)=>{const b=document.createElement('button');b.textContent='› '+o;
+  opts.forEach((o,i)=>{const b=document.createElement('button');b.textContent='› '+T(o);b.dataset.src=o;
     b.onclick=()=>{SFX.click();c.classList.remove('on');res(i)};c.appendChild(b)})})}
 /* lines: what a person says in reply. A reply is one line, a list of lines, or a script. */
 async function lines(a,x,arg){if(typeof x==='function')return x(arg);for(const s of[].concat(x))await say(a,s)}
@@ -678,13 +701,13 @@ async function talkTree(topics,o){const A=G.talking,T=CHAP[G.ch].topics||[];
     const t=av[await choose(av.map(t=>t.q))];ASKED.add(t.key||t.q);await say(PC(),t.q);if(t.a)await t.a();if(t.bye)return}}
 /* --- UI: verbs, inventory, status line --- */
 function buildVerbs(){const v=$('#verbs');v.innerHTML='';
-  VERBS.forEach(([id,label])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.v=id;
+  VERBS.forEach(([id,label])=>{const b=document.createElement('button');b.type='button';b.textContent=T(label);b.dataset.v=id;
     b.onclick=()=>{if(G.busy)return;audioInit();SFX.click();G.verb=G.verb===id?'walk':id;G.item=null;syncVerbs();drawInv();status()};v.appendChild(b)});
-  const p=document.createElement('button');p.type='button';p.id='pray';p.textContent='Pray to Jehovah';p.onclick=pray;v.appendChild(p);
-  const w=document.createElement('button');w.type='button';w.id='swap';w.onclick=()=>swap();v.appendChild(w)}
+  const p=document.createElement('button');p.type='button';p.id='pray';p.textContent=T('Pray to Jehovah');p.onclick=pray;v.appendChild(p);
+  const w=document.createElement('button');w.type='button';w.id='swap';w.onclick=()=>swap();v.appendChild(w);syncVerbs()}
 /* swapBtn: in a chapter with a party, the prayer bar gives up a third of its width to a button naming the character to switch to. */
 function swapBtn(){const b=$('#swap'),ps=party(),on=ps.length>1;$('#verbs').classList.toggle('party',on);if(!on)return;
-  const n=ps[(ps.indexOf(PC())+1)%ps.length];b.textContent='\u21c4 '+n.name;b.title='Play as '+n.name+' (C)';b.disabled=!n.room}
+  const n=ps[(ps.indexOf(PC())+1)%ps.length];b.textContent='\u21c4 '+T(n.name);b.title=T('Play as {name} (C)',{name:T(n.name)});b.disabled=!n.room}
 /* swap: hand control to the next member of the party. If he stands in another room, the view goes there. */
 function swap(to){if(G.busy||G.scene||!G.room)return;const ps=party();if(ps.length<2)return;
   const a=to||ps[(ps.indexOf(PC())+1)%ps.length];if(!a||!a.room||a===PC())return;audioInit();
@@ -694,7 +717,7 @@ function playAs(a){const was=PC();if(a===was)return;if(was.walk){was.walk.res(fa
   if(a.room&&a.room!==G.room)viewOf(a);G.item=null;drawInv();swapBtn()}
 /* handOver: Give to another member of the party moves the item from one inventory to the other. */
 async function handOver(to,id){const who=PC(),i=G.inv.indexOf(id);if(i<0)return;G.inv.splice(i,1);invOf(to).push(id);G.item=null;drawInv();SFX.pick();
-  await say(who,'Take this, '+(to.called||to.name)+'.')}
+  await say(who,T('Take this, {name}.',{name:T(to.called||to.name)}))}
 function syncVerbs(){document.querySelectorAll('#verbs button').forEach(b=>b.classList.toggle('sel',b.dataset.v===G.verb));litVerb()}
 /* defVerb: what a plain click does to a hotspot. A hotspot may name it (def); otherwise a door is opened and any other exit
    walked to, a person is talked to, something that can be taken (see take) is picked up, and anything else is looked at. */
@@ -718,10 +741,12 @@ function drawInv(){const el=$('#inv');el.innerHTML='';for(let i=0;i<10;i++){cons
     s.onmouseenter=()=>{G.hover={item:id};status()};s.onmouseleave=()=>{G.hover=null;status()};s.onclick=()=>clickItem(id);
     s.oncontextmenu=e=>{e.preventDefault();if(G.busy)return;audioInit();G.verb='walk';G.item=null;syncVerbs();cut(()=>say(PC(),itemLook(id)))}}
   el.appendChild(s)}}
-function status(){const el=$('#status');litVerb();if(G.busy){el.textContent=' ';return}
-  const h=G.hover,hn=h?(h.item?ITEMS[h.item].name:h.name):'';let s=VNAME[G.verb==='walk'&&h&&!G.item?(h.item?itemVerb(h.item):defVerb(h)):G.verb];
-  if(G.item){s+=' '+ITEMS[G.item].name+(G.verb==='give'?' to':' with');if(hn&&!(h&&h.item===G.item))s+=' '+hn}else if(hn)s+=' '+hn;
-  el.textContent=s}
+/* status: the sentence being built, such as "Use awl with torn awning". Each language words it through the templates in it. */
+function status(){const el=$('#status');litVerb();if(G.busy){el.textContent='\u00a0';return}
+  const h=G.hover,hn=h?T(h.item?ITEMS[h.item].name:h.name):'',v=VNAME[G.verb==='walk'&&h&&!G.item?(h.item?itemVerb(h.item):defVerb(h)):G.verb];
+  if(G.item){const on=hn&&!(h&&h.item===G.item),item=T(ITEMS[G.item].name);
+    el.textContent=G.verb==='give'?(on?T('Give {item} to {thing}',{item,thing:hn}):T('Give {item} to',{item})):(on?T('Use {item} with {thing}',{item,thing:hn}):T('Use {item} with',{item}))}
+  else el.textContent=hn?T('{verb} {thing}',{verb:T(v),thing:hn}):T(v)}
 const DEF={look:h=>'Nothing more to see there.',pickup:h=>h.actor?'That would hardly be loving.':'I have no need of that.',
   use:h=>h.actor?'People are not tools.':'I see no use in that right now.',open:h=>'That does not open.',
   talk:h=>'I would get no answer.',give:h=>'First I should choose something to give.'};
@@ -731,7 +756,7 @@ function clickItem(id){if(G.busy)return;audioInit();const it=ITEMS[id],a=G.item;
   if(G.verb==='use'||G.verb==='give'){G.item=a===id?null:id;SFX.click();drawInv();status();return}
   if((G.verb==='open'||G.verb==='walk'&&it.def==='open')&&it.open)return cut(it.open);
   if(G.verb==='walk'||G.verb==='look')return cut(()=>say(PC(),itemLook(id)));
-  cut(()=>say(PC(),G.verb==='pickup'?'I am already carrying it.':G.verb==='open'?'That does not open.':'It is only '+it.name+'.'))}
+  cut(()=>say(PC(),G.verb==='pickup'?'I am already carrying it.':G.verb==='open'?'That does not open.':T('It is only {item}.',{item:T(it.name)})))}
 /* itemLook: an item described in the voice of whoever holds it (ITEMS[id].by[character id]); look is Paul's. */
 const itemLook=id=>{const it=ITEMS[id],w=PC();return w!==P&&it.by&&it.by[w.id]||it.look};
 function hsAt(x,y){for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&Math.abs(x-a.x)<=10&&y>=a.y-49&&y<=a.y+1)return a.hs;
@@ -782,8 +807,8 @@ const tagEl=$('#tags');let tagT=0;
 function tagsOn(on){if(!!G.tags===on)return;G.tags=on;tagEl.classList.toggle('on',on);tagT=0;if(!on)tagEl.innerHTML=''}
 function drawTags(ts){if(!G.tags||ts-tagT<90)return;tagT=ts;tagEl.innerHTML='';if(!G.room||G.scene)return;
   const s=vp.clientWidth/VW,cam=G.cam,list=[],put=[];
-  for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+VW)list.push([a.hs.name,a.x,a.y-52,'who']);
-  for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const x0=Math.max(h.x,cam+4),x1=Math.min(h.x+h.w,cam+VW-4);if(x1>x0)list.push([h.name,(x0+x1)/2,h.y+h.h/2,h.exit?'exit':''])}
+  for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+VW)list.push([T(a.hs.name),a.x,a.y-52,'who']);
+  for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const x0=Math.max(h.x,cam+4),x1=Math.min(h.x+h.w,cam+VW-4);if(x1>x0)list.push([T(h.name),(x0+x1)/2,h.y+h.h/2,h.exit?'exit':''])}
   list.sort((a,b)=>a[2]-b[2]);
   for(const[name,x,y,k]of list){const el=document.createElement('div');el.className='tag '+k;el.textContent=name;tagEl.appendChild(el);
     const w=el.offsetWidth/s,hh=el.offsetHeight/s+3,lx=clamp(x-cam,w/2+1,VW-w/2-1);let ty=clamp(y,4,VH-hh);
@@ -848,14 +873,14 @@ const COMBO={'awl+thread':()=>say(P,'Threaded and ready. Now, what needs stitchi
 async function combine(a,b){const c=COMBO[[a,b].sort().join('+')],w=PC();if(w!==P)return say(w,w.noCraft||'I had better leave that to Paul.');
   if(c)return c();SFX.nope();return say(P,pick(NOPE))}
 /* --- "Pray to Jehovah": a pause for calm, then a context-sensitive thought. Never changes the game state. --- */
-const PRAYERS=['Paul bows his head and quietly asks Jehovah for wisdom and a calm heart. (James 1:5)',
-  'Paul pauses, and in prayer throws his anxiety on Jehovah. (1 Peter 5:7)','In the stillness, Paul asks Jehovah to help him think clearly.'];
+const PRAYERS=['{name} bows his head and quietly asks Jehovah for wisdom and a calm heart. (James 1:5)',
+  '{name} pauses, and in prayer throws his anxiety on Jehovah. (1 Peter 5:7)','In the stillness, {name} asks Jehovah to help him think clearly.'];
 function hint(){return CHAP[G.ch].hint()}
 function pray(){if(G.busy||G.scene||!G.room)return;audioInit();
   cut(async()=>{G.prays++;const me=PC(),d=$('#dim'),m=AU.mus,ab=AU.ambG;d.style.opacity=.55;me.bow=true;SFX.pray();
     if(m){m.gain.setTargetAtTime(.12,now(),.3);ab.gain.setTargetAtTime(.15,now(),.3)}
     await wait(900);
-    await say(null,(G.prays===1?PRAYERS[0]:pick(PRAYERS)).replace('Paul',me.name),{dur:4200,color:'#cfe2ff'});
+    await say(null,T(G.prays===1?PRAYERS[0]:pick(PRAYERS),{name:T(me.name)}),{dur:4200,color:'#cfe2ff'});
     await wait(500);me.bow=false;d.style.opacity=0;if(m){m.gain.setTargetAtTime(.55,now(),.8);ab.gain.setTargetAtTime(.5,now(),.8)}
     await wait(600);
     const[k,ls]=hint(),n=G.hintAt[k]=(G.hintAt[k]||0)+1;
@@ -885,31 +910,65 @@ function tween(ms,fn){return new Promise(res=>{const t0=performance.now();(funct
 /* ============ LEVELS: each chapter is a separate file under levels/, loaded on demand ============ */
 /* The manifest holds only what is needed before a level is loaded: its name, its file, and the salt that validates its codes. */
 const CHAP={
-  1:{name:'ESCAPE FROM DAMASCUS',label:'Chapter One &middot; Escape from Damascus',salt:0x5A17,src:'levels/chapter1.js'},
-  2:{name:'A FRIEND IN JERUSALEM',label:'Chapter Two &middot; A Friend in Jerusalem',salt:0x2B6D,src:'levels/chapter2.js'},
-  3:{name:'CALLED TO ANTIOCH',label:'Chapter Three &middot; Called to Antioch',salt:0x3C91,src:'levels/chapter3.js'}};
+  1:{name:'ESCAPE FROM DAMASCUS',label:'Chapter One',title:'Escape from Damascus',salt:0x5A17,src:'levels/chapter1.js'},
+  2:{name:'A FRIEND IN JERUSALEM',label:'Chapter Two',title:'A Friend in Jerusalem',salt:0x2B6D,src:'levels/chapter2.js'},
+  3:{name:'CALLED TO ANTIOCH',label:'Chapter Three',title:'Called to Antioch',salt:0x3C91,src:'levels/chapter3.js'}};
 const TITLE={level:1,scene:'wall',mood:'calm',amb:{crickets:.5,wind:.35,owl:.4}};
 /* A level file calls LEVEL(n, init). init() registers its art, cast, items and rooms, and returns the chapter definition. */
 function LEVEL(n,init){Object.assign(CHAP[n],init(),{ready:1})}
 /* loadScript: add a script tag (this works from disk, where fetch does not), and check that the file registered what it should. */
-function loadScript(src,ok,what){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=src;
-  el.onload=()=>ok()?res():rej(new Error(src+' did not register '+what));el.onerror=()=>{el.remove();rej(new Error('Could not load '+src))};document.head.appendChild(el)})}
-function loadLevel(n){const c=CHAP[n];if(c.ready)return Promise.resolve();
-  return c.loading||(c.loading=loadScript(c.src,()=>c.ready,'a level').catch(e=>{c.loading=null;throw e}))}
+function loadScript(src,ok){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=src;
+  el.onload=()=>ok()?res():rej(new Error(T('{file} did not register what it should.',{file:src})));el.onerror=()=>{el.remove();rej(new Error(T('Could not load {file}.',{file:src})))};document.head.appendChild(el)})}
+/* A level brings its text in the player's language with it (see LANGUAGES); if that file is missing, the chapter plays in English. */
+function loadLevel(n){const c=CHAP[n];if(c.ready)return langFile(G.lang,n);
+  return c.loading||(c.loading=loadScript(c.src,()=>c.ready).then(()=>langFile(G.lang,n)).catch(e=>{c.loading=null;throw e}))}
 /* Anything shared between chapters lives in its own file under shared/, which registers itself in SHARED and is loaded the first time it is needed. */
 const SHARED={},NEEDING={};
 function need(name){if(SHARED[name])return Promise.resolve(SHARED[name]);
-  return NEEDING[name]||(NEEDING[name]=loadScript('shared/'+name+'.js',()=>SHARED[name],'itself').then(()=>SHARED[name],e=>{NEEDING[name]=null;throw e}))}
-function loadFail(e){console.error(e);ov.className='on end';ov.onclick=()=>location.reload();
-  ov.innerHTML='<h2>LEVEL NOT FOUND</h2><p>'+e.message+'</p><p class="small">The chapter files live in the levels folder next to index.html.</p><p class="go">Click to reload</p>'}
+  return NEEDING[name]||(NEEDING[name]=loadScript('shared/'+name+'.js',()=>SHARED[name]).then(()=>SHARED[name],e=>{NEEDING[name]=null;throw e}))}
+/* --- languages: loading a language's files, choosing one, and redrawing what is on screen --- */
+const LANGLOAD={};
+function langFile(lang,part){const d=LANGS[lang]&&LANGS[lang].dir,k=lang+'/'+part;if(!d)return Promise.resolve();
+  return LANGLOAD[k]||(LANGLOAD[k]=loadScript(d+(part==='main'?'main':'chapter'+part)+'.js',()=>DICT[lang]&&DICT[lang][part]).catch(e=>{console.error(e);LANGLOAD[k]=null}))}
+const store=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
+/* the language to start in: ?lang=xx in the address, else the player's last choice, else the browser's language, else English */
+function firstLang(){const q=(location.search.match(/[?&]lang=([a-z]+)/)||[])[1],n=(navigator.language||'').slice(0,2).toLowerCase();
+  return[q,store('paul.lang'),n].find(l=>l&&LANGS[l])||'en'}
+/* setLang: load the language's text for the engine and every chapter loaded so far, then switch. The game's state is not touched. */
+async function setLang(l,keep){if(!LANGS[l])return;
+  await Promise.all(['main',...Object.keys(CHAP).filter(n=>CHAP[n].ready)].map(p=>langFile(l,p)));
+  G.lang=l;MADE.clear();if(keep)store('paul.lang',l);relang()}
+/* relang: redraw every fixed piece of text in the new language: the panel, the top bar, an open overlay, choices, the tablets */
+function relang(){document.documentElement.lang=G.lang;document.title=T('Paul of Tarsus: The Roman Road Runner');
+  $('#gname').textContent=T('PAUL OF TARSUS');$('#chname').textContent=T(CHAP[G.ch].name);
+  const ks=Object.keys(LANGS),nx=ks[(ks.indexOf(G.lang)+1)%ks.length];$('#lang').textContent=G.lang.toUpperCase();
+  $('#lang').title=LANGS[nx].native;$('#lang').style.display=ks.length>1?'':'none';
+  buildVerbs();swapBtn();setMute(AU.muted);codeBtn();drawInv();status();
+  for(const b of document.querySelectorAll('#choices button'))b.textContent='› '+T(b.dataset.src);
+  if(ov.classList.contains('on')&&ov.draw)ov.draw();if(cb.classList.contains('on')&&cb.draw)cb.draw();
+  if(SHARED.tablets)SHARED.tablets.redraw()}
+$('#lang').onclick=e=>{e.stopPropagation();const ks=Object.keys(LANGS);SFX.click();setLang(ks[(ks.indexOf(G.lang)+1)%ks.length],1)};
+/* overlay: show a screen on the overlay. draw paints it, and paints it again when the language changes. */
+function overlay(cls,draw){ov.className=cls;ov.draw=draw;draw()}
+function loadFail(e){console.error(e);ov.onclick=()=>location.reload();
+  overlay('on end',()=>{ov.innerHTML='<h2>'+T('LEVEL NOT FOUND')+'</h2><p>'+esc(e.message)+'</p><p class="small">'+T('The chapter files live in the levels folder next to index.html.')+
+    '</p><p class="go">'+T('Click to reload')+'</p>'})}
 async function startChapter(n){ov.onclick=null;try{await loadLevel(n)}catch(e){return loadFail(e)}return CHAP[n].start()}
-async function title(){lock(true);try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
+async function title(){lock(true);await setLang(firstLang());try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
   setChapter(TITLE.level);G.scene=CHAP[TITLE.level].scenes[TITLE.scene];G.end={};AU.mood=TITLE.mood;AU.amb=TITLE.amb;
-  ov.className='on';ov.innerHTML='<h1>PAUL OF TARSUS</h1><h2>THE ROMAN ROAD RUNNER</h2>'+
-    '<p class="small">A point-and-click adventure based on the book of Acts</p>'+
-    Object.keys(CHAP).map((n,i)=>`<p class="${i?'pick':'go'}" data-ch="${n}">&#9656; ${CHAP[n].label}</p>`).join('')+
-    '<p class="small">Click a chapter to begin. Returning? Use ENTER CODE, top right.</p>';
-  ov.onclick=e=>{const c=e.target.dataset&&e.target.dataset.ch;startChapter(+c||1)};codeBtn();G.ready=1}
+  overlay('on',()=>{ov.innerHTML='<h1>'+T('PAUL OF TARSUS')+'</h1><h2>'+T('THE ROMAN ROAD RUNNER')+'</h2>'+
+    '<p class="small">'+T('A point-and-click adventure based on the book of Acts')+'</p>'+
+    Object.keys(CHAP).map((n,i)=>`<p class="${i?'pick':'go'}" data-ch="${n}">&#9656; ${T(CHAP[n].label)} &middot; ${T(CHAP[n].title)}</p>`).join('')+
+    '<p class="small">'+T('Click a chapter to begin. Returning? Use ENTER CODE, top right.')+'</p>'+
+    (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'')});
+  ov.onclick=e=>{const d=e.target.dataset||{};if(d.lang){SFX.click();return setLang(d.lang,1)}
+    if(e.target.closest('.langs'))return;startChapter(+d.ch||1)};codeBtn();G.ready=1}
+/* endScreen: a chapter's closing screen. o: title; text; based (its passages, and that the dialogue is imagined); extra (more lines for
+   the score, such as kindness shown); go (what a click does next); code ([line, code] for the next chapter); time (show the time played). */
+function endScreen(o){const s=Math.round((performance.now()-G.started)/1000);SFX.win();
+  overlay('on end',()=>{ov.innerHTML='<h2>'+T('CHAPTER COMPLETE')+'</h2><h1 style="font-size:calc(var(--s)*12px)">'+esc(T(o.title))+'</h1><p>'+esc(T(o.text))+'</p><p>'+
+    [o.time&&T('Time: {m}m {s}s',{m:Math.floor(s/60),s:s%60}),T('Prayers for wisdom: {n}',{n:G.prays}),...(o.extra||[]).map(x=>T(x))].filter(Boolean).map(esc).join(' &middot; ')+'</p>'+
+    '<p class="small">'+esc(T(o.based))+'</p><p class="go">'+esc(T(o.go))+'</p>'+(o.code?'<p class="small">'+esc(T(o.code[0],{code:o.code[1]}))+'</p>':'')})}
 /* ============ SAFE-POINT CODES: chapter and game state packed into letters and numbers ============ */
 const A32='0123456789ABCDEFGHJKMNPQRSTVWXYZ',cb=$('#codebox');
 const chk=(b,s)=>{let h=Math.imul(b^s,0x9E3779B1)>>>0;h^=h>>>13;return h>>>4&511};
@@ -952,7 +1011,7 @@ function decode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1'
 function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];G.pc=P;G.invs={};P.hs=null;
   Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0});
   (CHAP[ch].party||[]).forEach(id=>ACT[id].party=1);
-  $('#chname').textContent=CHAP[ch].name;G.ship=null;setScore(CHAP[ch].music);CHAP[ch].setup();swapBtn()}
+  $('#chname').textContent=T(CHAP[ch].name);G.ship=null;setScore(CHAP[ch].music);CHAP[ch].setup();swapBtn()}
 /* dealInv: rebuild the inventories from the story's flags (the level's inv). Each item goes to the member who carries it (own,
    from a wide code), else to its usual owner (the level's home table), else to Paul. Paul must be the one being played. */
 function dealInv(room,own){const c=CHAP[G.ch];G.invs={};party().forEach(a=>G.invs[a.id]=[]);
@@ -968,24 +1027,28 @@ function applyState(s){const c=CHAP[s.ch],u=s.w!=null?unpackWide(c,s.w):null;if(
     const a=ACT[u.pc];if(a!==P){G.invs.paul=G.inv;G.pc=a;G.inv=G.invs[a.id];viewOf(a)}}
   if(!G.started)G.started=performance.now();
   G.busy=false;lock(false);swapBtn();syncVerbs();drawInv();status();codeBtn();return true}
-function codeBtn(){$('#code').textContent=G.room&&!G.scene?'CODE '+makeCode():'ENTER CODE'}
+function codeBtn(){$('#code').textContent=G.room&&!G.scene?T('CODE {code}',{code:makeCode()}):T('ENTER CODE')}
 function closeCode(){cb.classList.remove('on');G.busy=cb.was;if(!G.busy)lock(false);status()}
+const BADCODE='That code is not valid. Please check each letter and number.';
 async function tryCode(){const b=decode($('#codein').value);
-  if(b==null){SFX.nope();$('#codemsg').textContent='That code is not valid. Please check each letter and number.';return}
+  if(b==null){SFX.nope();$('#codemsg').textContent=T(BADCODE);return}
   try{await loadLevel(b.ch)}catch(e){SFX.nope();$('#codemsg').textContent=e.message;return}
-  if(b.w!=null&&!unpackWide(CHAP[b.ch],b.w)){SFX.nope();$('#codemsg').textContent='That code is not valid. Please check each letter and number.';return}
+  if(b.w!=null&&!unpackWide(CHAP[b.ch],b.w)){SFX.nope();$('#codemsg').textContent=T(BADCODE);return}
   cb.classList.remove('on');SFX.good();applyState(b)}
 function openCode(){audioInit();if(cb.classList.contains('on'))return closeCode();
   const can=G.room&&!G.scene&&!G.busy;if(!can&&!ov.classList.contains('on')){SFX.nope();return}
   SFX.click();cb.was=G.busy;G.busy=true;lock(true);status();
-  cb.innerHTML=(can?'<h2>SAFE POINT</h2><p>Your code for this exact point in the story:</p><div class="big">'+makeCode()+
-      '</div><p>Write it down. Enter it here, or from the title screen, to return to this point.</p>'
-      :'<h2>ENTER CODE</h2><p>Type a code from an earlier game to continue from that point.</p>')+
-    '<div class="row"><input id="codein" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXX-XXX">'+
-    '<button id="codego" type="button">GO</button></div><p id="codemsg" class="small">&nbsp;</p>'+
-    '<button id="codex" type="button">'+(can?'Back to the game':'Back')+'</button>';
-  cb.classList.add('on');$('#codego').onclick=tryCode;$('#codex').onclick=closeCode;
-  $('#codein').onkeydown=e=>{if(e.key==='Enter')tryCode();else if(e.key==='Escape')closeCode()};if(!can)$('#codein').focus()}
+  /* drawn again, with what has been typed so far, when the language changes */
+  cb.draw=()=>{const typed=$('#codein')?$('#codein').value:'';
+    cb.innerHTML=(can?'<h2>'+T('SAFE POINT')+'</h2><p>'+T('Your code for this exact point in the story:')+'</p><div class="big">'+makeCode()+
+        '</div><p>'+T('Write it down. Enter it here, or from the title screen, to return to this point.')+'</p>'
+      :'<h2>'+T('ENTER CODE')+'</h2><p>'+T('Type a code from an earlier game to continue from that point.')+'</p>')+
+      '<div class="row"><input id="codein" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXX-XXX">'+
+      '<button id="codego" type="button">'+T('GO')+'</button></div><p id="codemsg" class="small">&nbsp;</p>'+
+      '<button id="codex" type="button">'+(can?T('Back to the game'):T('Back'))+'</button>';
+    $('#codein').value=typed;$('#codego').onclick=tryCode;$('#codex').onclick=closeCode;
+    $('#codein').onkeydown=e=>{if(e.key==='Enter')tryCode();else if(e.key==='Escape')closeCode()}};
+  cb.innerHTML='';cb.draw();cb.classList.add('on');if(!can)$('#codein').focus()}
 $('#code').onclick=e=>{e.stopPropagation();openCode()};cb.onclick=e=>e.stopPropagation();
 skin();buildVerbs();requestAnimationFrame(render);title();
 </script>

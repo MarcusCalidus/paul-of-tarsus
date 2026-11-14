@@ -2,7 +2,8 @@
    Two leaves of dark wax in a wooden frame, tied at the middle: on the left the people Paul has met and the tasks still open,
    on the right the Scriptures he keeps before him. Each chapter supplies the entries as data, in its definition:
      tablets:{people:[{name, note, if}], tasks:[{t, if}], scripture:[{ref, text, if}]}
-   name, note and t may be functions; if is an optional condition on the story (usually on its flags). */
+   name, note and t may be functions; if is an optional condition on the story (usually on its flags). All of it is English, and is
+   translated as it is shown (T in index.html), so the tablets are drawn again when the language changes. */
 SHARED.tablets=(()=>{
 "use strict";
 const style=document.createElement('style');
@@ -30,18 +31,22 @@ document.head.appendChild(style);
 const[wc,wg]=mk(128,128),r=rng(4242);R(wg,0,0,128,128,'#2c2117');tex(wg,'mott',.55,0,0,128,128,'overlay',1);tex(wg,'grain',.18,0,0,128,128,'overlay',.5);
 for(let i=0;i<70;i++)R(wg,r()*120,r()*126,3+r()*14,.5+r()*.5,`rgba(${r()<.5?'255,232,190':'0,0,0'},${.03+r()*.05})`);
 const el=document.createElement('div');el.id='tablets';el.style.setProperty('--wax',`url(${wc.toDataURL()})`);$('#view').appendChild(el);
-const val=x=>typeof x==='function'?x():x,on=e=>!e.if||e.if(),esc=t=>String(val(t)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[c]);
+const val=x=>typeof x==='function'?x():x,on=e=>!e.if||e.if(),txt=t=>esc(T(val(t))),quoted=t=>esc(T('“{text}”',{text:T(val(t))}));
 const list=(a,f,none)=>a.length?a.map(f).join(''):`<p class="none">${none}</p>`;
-let closer=null;
+let closer=null,shown=null;
 addEventListener('keydown',e=>{if(closer&&[' ','Escape','Enter','.'].includes(e.key)){e.preventDefault();e.stopImmediatePropagation();closer()}},true);
+/* draw: the entries as they stand now, in the player's language. A passage is set in that language's quotation marks. */
+function draw(d){const ppl=(d.people||[]).filter(on),todo=(d.tasks||[]).filter(on),scr=(d.scripture||[]).filter(on);
+  el.innerHTML='<div class="leaf"><h3>'+T('PEOPLE')+'</h3>'+list(ppl,p=>`<p><b>${txt(p.name)}</b>: ${txt(p.note)}</p>`,T('No one yet.'))+
+    '<h3>'+T('STILL TO DO')+'</h3>'+list(todo,t=>`<p>&bull; ${txt(t.t)}</p>`,T('Nothing left undone.'))+'</div>'+
+    '<div class="leaf"><h3>'+T('SCRIPTURES')+'</h3>'+list(scr,s=>`<p>${quoted(s.text)} <span class="ref">(${txt(s.ref)})</span></p>`,T('Nothing written yet.'))+'</div>'+
+    '<i class="tie" style="top:28%"></i><i class="tie" style="top:66%"></i><div class="foot">'+T('Click or press Space to close')+'</div>'}
 /* open: show the tablets with the chapter's entries as they stand now, and resolve when the player closes them. */
-function open(d){const ppl=(d.people||[]).filter(on),todo=(d.tasks||[]).filter(on),scr=(d.scripture||[]).filter(on);
-  el.innerHTML='<div class="leaf"><h3>PEOPLE</h3>'+list(ppl,p=>`<p><b>${esc(p.name)}</b>: ${esc(p.note)}</p>`,'No one yet.')+
-    '<h3>STILL TO DO</h3>'+list(todo,t=>`<p>&bull; ${esc(t.t)}</p>`,'Nothing left undone.')+'</div>'+
-    '<div class="leaf"><h3>SCRIPTURES</h3>'+list(scr,s=>`<p>&ldquo;${esc(s.text)}&rdquo; <span class="ref">(${esc(s.ref)})</span></p>`,'Nothing written yet.')+'</div>'+
-    '<i class="tie" style="top:28%"></i><i class="tie" style="top:66%"></i><div class="foot">Click or press Space to close</div>';
+function open(d){shown=d;draw(d);
   noise({d:.09,v:.2,f:380,q:1.4,type:'lowpass'});tone({f:150,to:110,d:.08,type:'triangle',v:.05});
-  return new Promise(res=>{closer=()=>{closer=null;el.classList.remove('on');el.onclick=null;SFX.click();res()};
+  return new Promise(res=>{closer=()=>{closer=null;shown=null;el.classList.remove('on');el.onclick=null;SFX.click();res()};
     el.onclick=e=>{e.stopPropagation();if(closer)closer()};el.classList.add('on');for(const l of el.querySelectorAll('.leaf'))l.scrollTop=0})}
-return{open,el};
+/* redraw: the open tablets again, in another language */
+const redraw=()=>{if(shown)draw(shown)};
+return{open,redraw,el};
 })();

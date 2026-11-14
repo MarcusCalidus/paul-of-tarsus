@@ -498,7 +498,7 @@ async function leaveUpper(){if(F.preach)return go('jerusalem',330,116,1);
 /* ---------- Disputing with the Greek-speaking Jews (Acts 9:29) ----------
    Three objections. Every answer Paul can give is a passage from his tablets, and every passage is quoted exactly; a passage that
    does not meet the objection gets a reply, never a failure. The last objection is about Paul himself, and the answer is a confession. */
-const label=k=>PASS[k].ref+': '+PASS[k].short,quote=k=>'"'+PASS[k].text+'" ('+PASS[k].ref+')';
+const label=k=>T('{ref}: {short}',{ref:T(PASS[k].ref),short:T(PASS[k].short)}),quote=k=>T('"{text}" ({ref})',{text:T(PASS[k].text),ref:T(PASS[k].ref)});
 function round(who,q,right,p,r,wrong){return quiz(who,q,ORDER.map(k=>k===right?{q:label(k),ok:1,p,r}:{q:label(k),p:[quote(k)],r:[wrong[k]]}))}
 async function dispute(){DS.dir=1;AR.dir=1;
   await say(DS,'We heard you in the synagogue, speaking about the Nazarene. You were one of us once.');
@@ -569,11 +569,9 @@ async function finale2(){
   await narr('So the brothers sent him off to Tarsus. (Acts 9:30)',{dur:6000});
   await narr('The congregation throughout Judea, Galilee and Samaria then entered into a period of peace, and it was built up. (Acts 9:31)',{dur:8000});
   await sail;await journey();await narr('Years would pass in Tarsus. Then, one day, a friend would come looking for him. (Acts 11:25)',{dur:6500});
-  SFX.win();ov.className='on end';ov.innerHTML='<h2>CHAPTER COMPLETE</h2><h1 style="font-size:calc(var(--s)*12px)">A Friend in Jerusalem</h1>'+
-    '<p>Paul forced no door. A friend spoke for him, and honest words and honest work did the rest.</p>'+
-    `<p>Prayers for wisdom: ${G.prays}</p>`+
-    '<p class="small">Based on Acts 9:26-31; 22:17-21 and Galatians 1:18, 19. Supporting characters and dialogue are imaginative; the events are from the Scriptures.</p>'+
-    '<p class="go">Click to continue to Chapter Three</p><p class="small">Chapter Three code: '+codeOf(3,0)+'</p>';
+  endScreen({title:'A Friend in Jerusalem',text:'Paul forced no door. A friend spoke for him, and honest words and honest work did the rest.',
+    based:'Based on Acts 9:26-31; 22:17-21 and Galatians 1:18, 19. Supporting characters and dialogue are imaginative; the events are from the Scriptures.',
+    go:'Click to continue to Chapter Three',code:['Chapter Three code: {code}',codeOf(3,0)]});
   await wait(1500);ov.onclick=()=>startChapter(3);await new Promise(()=>{})}
 function hint2(){
   if(F.preach&&G.room!=='harbor')return['reason',['They want answers from the Scriptures, not from me. The passages are written on my tablets, and each objection has its answer there.',

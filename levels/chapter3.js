@@ -436,7 +436,7 @@ const BN3={name:'Barnabas',actor:BN,
       {q:'Give me a little time, brother.',bye:1}])):talkTree([
     {q:'What does the relief still need?',a:async()=>{const n=[];if(!F.bagsOn)n.push(F.bags?'the new bags hung on the donkey':'new pack bags to carry it');
       if(!F.jar)n.push("Theron's oil, which will take the two of us to carry");if(!F.sealed)n.push('the tally closed and the purse sealed');
-      await say(BN,n.length?'It still needs '+n.join(', and ')+'.':'Nothing more. We are ready.');
+      await say(BN,n.length?T('It still needs {list}.',{list:n.map(x=>T(x)).join(T(', and '))}):'Nothing more. We are ready.');
       if(!F.gotSpool)await say(BN,'For thread, try Xanthe the spinner, out in the street. Though she has not come near the courtyard since the gifts began.')}},
     {q:'Why send it by the two of us?',a:async()=>{await say(BN,'Jerusalem knows me, and Antioch knows us both. A gift should travel with men whom both ends can trust.');await say(BN,'And two can vouch for each other. I would not want to carry it alone.')}},
     {q:'I am glad you came looking for me.',once:1,a:()=>say(BN,'So am I. There has not been one day of this year that I regretted that walk.')},
@@ -654,11 +654,9 @@ async function finale3(){playAs(P);AU.mood='hope';await wait(400);
   await trek;
   await narr('After fully carrying out the relief work in Jerusalem, Barnabas and Saul returned and took along with them John, the one also called Mark. (Acts 12:25)',{dur:9000});
   await journey();await narr('And in Antioch, a far longer road was about to open. (Acts 13:1-3)',{dur:5500});
-  SFX.win();ov.className='on end';ov.innerHTML='<h2>CHAPTER COMPLETE</h2><h1 style="font-size:calc(var(--s)*12px)">Called to Antioch</h1>'+
-    '<p>Paul kept his word, worked with his hands, and helped a sister find what she had to give. The gift was carried honestly, in the sight of Jehovah and of men.</p>'+
-    `<p>Prayers for wisdom: ${G.prays}</p>`+
-    '<p class="small">Based on Acts 11:19-30; 12:25 and 2 Corinthians 8:12, 20, 21. Supporting characters and dialogue are imaginative; the events are from the Scriptures.</p>'+
-    '<p class="go">Click to return to the title</p>';
+  endScreen({title:'Called to Antioch',text:'Paul kept his word, worked with his hands, and helped a sister find what she had to give. The gift was carried honestly, in the sight of Jehovah and of men.',
+    based:'Based on Acts 11:19-30; 12:25 and 2 Corinthians 8:12, 20, 21. Supporting characters and dialogue are imaginative; the events are from the Scriptures.',
+    go:'Click to return to the title'});
   await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
 function hint3(){const b=PC()!==P,saul=['saul3',["That is Saul's craft, not mine. A good partner knows when to step back.","Saul should do this part. I can leave it to him; he is never far away."]];
   if(G.room==='tarsus'&&!F.seam)return b?(holding()?['seam3b',["I have the far edge. The sewing is Saul's part.",'Saul can sew the seam now, while I hold it.']]

@@ -363,7 +363,7 @@ function hint(){
   if(!F.gotAwl)return['pouch',['A craftsman should know what he carries. My own tools are close at hand.','My tool pouch is tied shut. I should open it.']];
   const m=[];if(!F.gotKnife||!F.gotCloth)m.push('the workbench');if(!F.gotThread)m.push('the shelf');if(!F.gotRope)m.push('the pegs on the wall');if(!F.gotBasket)m.push('the corner by the bench');
   if(m.length)return['gather',["Eliab said to take what I need. A tentmaker's eye should miss nothing in his workshop: blade, cloth, thread, rope, basket.",
-    'Something useful still waits in the workshop. I should look to '+m.join(', and ')+'.']];
+    T('Something useful still waits in the workshop. I should look to {places}.',{places:m.map(x=>T(x)).join(T(', and '))})]];
   if(!F.cutCloth)return['cut',['Whole cloth serves no one. What does a tentmaker do first with a bolt of cloth?','My knife can cut the goat-hair cloth into useful pieces.']];
   if(!F.longRope)return['braid',['The rope is too short, yet I hold the makings of more. Strands woven together are stronger than one.','I can braid the cloth strips and splice them onto the short rope.']];
   if(!F.awning)return F.metZakkai?['mend',["The merchant's trouble is one my own hands know how to mend. Kindness can open a way where force cannot.",'His torn awning needs a patch, thread, and my awl.']]
@@ -631,12 +631,10 @@ async function finale(){AU.mood='calm';await wait(500);
   await narr("So Paul escaped the governor's hands: not by force, and not by a miracle, but by the courage of his brothers and trust in Jehovah. (2 Corinthians 11:32, 33)",{dur:8000});
   await off;G.end.px=null;G.end.heads=0;
   await journey();await narr('The road to Jerusalem lay ahead, and beyond it, many more.',{dur:3800});
-  SFX.win();const s=Math.round((performance.now()-G.started)/1000);
-  ov.className='on end';ov.innerHTML='<h2>CHAPTER COMPLETE</h2><h1 style="font-size:calc(var(--s)*12px)">Escape from Damascus</h1>'+
-    '<p>Paul used the skill of his hands, accepted the help of his brothers, and relied on Jehovah.</p>'+
-    `<p>Time: ${Math.floor(s/60)}m ${s%60}s &middot; Prayers for wisdom: ${G.prays}`+(F.kind?' &middot; Kindness shown to an opposer':'')+'</p>'+
-    '<p class="small">Based on Acts 9:23-25 and 2 Corinthians 11:32, 33. Supporting characters and dialogue are imaginative; the event is from the Scriptures.</p>'+
-    '<p class="go">Click to continue to Chapter Two</p><p class="small">Chapter Two code: '+codeOf(2,0)+'</p>';
+  endScreen({title:'Escape from Damascus',time:1,text:'Paul used the skill of his hands, accepted the help of his brothers, and relied on Jehovah.',
+    extra:F.kind?['Kindness shown to an opposer']:[],
+    based:'Based on Acts 9:23-25 and 2 Corinthians 11:32, 33. Supporting characters and dialogue are imaginative; the event is from the Scriptures.',
+    go:'Click to continue to Chapter Two',code:['Chapter Two code: {code}',codeOf(2,0)]});
   await wait(1500);ov.onclick=()=>startChapter(2);
   await new Promise(()=>{})}
 /* ============ CHAPTER DEFINITION ============ */
