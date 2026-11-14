@@ -304,7 +304,7 @@ ROOMS.jerusalem={walk:[16,466,110,138],mood:'calm',amb:{birds:.5,crowd:.35,wind:
       if(!F.wheelOn)return say(P,'The wheel must be on the axle before a pin can hold it.');
       SFX.door();delItem('peg');F.cartFixed=1;await say(P,'Through the axle, and a tap to seat it. Like pegging a tent in hard ground.');return barnStory()}},
   {name:'bench',x:282,y:90,w:26,h:14,look:'A stone bench by the door. I do not think I would be welcome to sit.'},
-  {name:'door of the house',x:312,y:50,w:40,h:54,wx:330,wy:112,look:'A plain, solid door. Disciples of the Lord meet in the room above.',use:knock,open:knock,talk:knock},
+  {name:'door of the house',def:'open',x:312,y:50,w:40,h:54,wx:330,wy:112,look:'A plain, solid door. Disciples of the Lord meet in the room above.',use:knock,open:knock,talk:knock},
   {name:'latticed window',x:368,y:34,w:30,h:24,wx:380,look:'A latticed window. I think someone is watching from behind it.'},
   {name:'street to the markets',x:462,y:60,w:18,h:60,wx:456,wy:120,look:'The street runs on toward the markets and the temple mount.',use:'My business is at that door first.'}]};
 BN.hs={get name(){return F.cartFixed||G.room!=='jerusalem'?'Barnabas':'man with the handcart'},actor:BN,

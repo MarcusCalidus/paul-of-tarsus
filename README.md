@@ -108,11 +108,18 @@ Each chapter has its own score, and each room its own sounds:
 
 | Action | How |
 |---|---|
-| Walk, look, talk, use an exit | Click in the scene |
+| Do the obvious thing | Point at something: its usual verb lights up in the panel and shows on the status line (**Open** a door, **Talk to** a person, **Pick up** what can be taken, **Look at** anything else). Click to do it. |
 | Use a verb | Click **Look at**, **Pick up**, **Use**, **Open**, **Talk to** or **Give**, then the target |
+| Look at something | Right-click it, in the scene or in the inventory. Paul looks from where he stands. |
+| Leave a room at once | Double-click an exit to skip the walk to it |
+| Show what can be clicked | Hold `Tab`: everything in the room gets a dot and its name |
 | Combine things | **Use**, then an inventory item, then another item or something in the scene |
 | Skip a line of dialogue | Click the scene or press Space |
-| Keyboard | `1`-`6` verbs, `P` pray, `M` mute |
+| Keyboard | `1`-`6` verbs, `P` pray, `M` mute, `Tab` names |
+
+![Pointing at Eliab lights Talk to](docs/screenshots/verbs.png)
+
+![Holding Tab names everything in the room](docs/screenshots/hotspots.png)
 
 ### Pray to Jehovah
 
@@ -150,7 +157,7 @@ Inside a level file:
 
 - **Music and ambience** are plain data. A score names a tempo, a tonic, a mode and a list of tracks (drone, drum pattern, step-sequenced instrument, melody); each track lists the moods it plays in, and each room names its mood (`calm`, `tense`, `hope`) and the sounds around it, for example `amb:{waves:.8,gulls:.6}`. The instruments, drums and ambience voices themselves live in the engine.
 - **Artwork** is a painter per room: `paint` draws the backdrop once, `fore` an optional foreground layer, `draw` whatever changes with the story (items that can be taken, a sail going up), and `light` says how the room lights the people in it. The painters use the engine's toolkit: `plaster`, `ashlar`, `pave`, `wood`, `vessel`, `foliage`, `lightmap`, `shade` and so on.
-- **Rooms and dialog** are tables of hotspots with their lines, and short async scripts for the puzzles and cutscenes.
+- **Rooms and dialog** are tables of hotspots with their lines, and short async scripts for the puzzles and cutscenes. A hotspot's default verb (what a plain click does) is worked out by the engine: a door is opened, another exit is walked to, a person is talked to, something picked up with `take(...)` is picked up, and anything else is looked at. A hotspot can name its own with `def:'use'`, or with a getter when it changes with the story.
 
 Edit a file and reload.
 

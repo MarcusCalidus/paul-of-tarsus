@@ -482,7 +482,7 @@ ROOMS.house={walk:[24,300,112,138],mood:'calm',floor:'wood',amb:()=>F.shutters?{
     pickup:'Naomi will need it after I am gone.',
     use:async()=>{if(F.lampOut)return say(P,'Better to leave it dark.');SFX.snuff();F.lampOut=1;await say(P,'I pinch out the wick. Darkness. But our eyes will soon adjust.')}},
   {name:'table',x:116,y:86,w:48,h:24,look:'Bread and a cup, set out for a guest. Naomi has thought of everything.',pickup:'I have no appetite now. On the road I may regret that.'},
-  {get name(){return F.shutters?'window':'shutters'},x:187,y:32,w:58,h:56,wx:216,wy:113,
+  {get name(){return F.shutters?'window':'shutters'},get def(){return F.shutters?'look':'open'},x:187,y:32,w:58,h:56,wx:216,wy:113,
     look:()=>say(P,F.shutters?'Open country, silver under the moon. And a long way down.':'Stout wooden shutters, barred from inside. Beyond them is the outer face of the city wall.'),
     open:shutters,use:shutters,
     useWith:async it=>{if(it==='basket'||it==='strongbasket')return hangBasket(it);

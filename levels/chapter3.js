@@ -313,7 +313,7 @@ ROOMS.tarsus={walk:[16,304,110,138],mood:'calm',amb:{birds:.5,crowd:.25,wind:.2,
       SFX.cut();F.gotLoops=1;addItem('loops');await say(P,'Seven strips, each doubled into a loop. One for every peg.')}},
   {name:'bolt of goat-hair cloth',x:50,y:80,w:36,h:9,wx:68,wy:113,look:'My last bolt of goat-hair cloth. Cilicium, they call it, after this province.',pickup:"It comes with me when I go. But first, Kleon's tent.",
     useWith:async it=>it==='knife'?say(P,'I will not cut it without a purpose. The tent needs leather now, not more cloth.'):false},
-  {name:'tent',x:139,y:56,w:55,h:50,wx:182,wy:113,dir:-1,vis:()=>!F.gotTent,
+  {name:'tent',x:139,y:56,w:55,h:50,wx:182,wy:113,dir:-1,vis:()=>!F.gotTent,get def(){return F.seam&&F.loopsOn?'pickup':'look'},
     look:()=>say(P,tentNeeds()||'Finished. Every seam doubled, and leather at every peg. Kleon will not be let down by it.'),
     use:()=>say(P,tentNeeds()||'It is finished. It only needs rolling up and handing over.'),
     pickup:async()=>{const n=tentNeeds();if(n){await say(P,'I promised Kleon a finished tent, not most of one.');return say(P,n)}

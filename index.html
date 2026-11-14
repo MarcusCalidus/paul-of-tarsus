@@ -26,6 +26,13 @@ body{display:flex;align-items:center;justify-content:center}
   max-width:calc(var(--s)*200px);font-size:calc(var(--s)*6.2px);line-height:1.25;
   text-shadow:calc(var(--s)*1px) 0 #000,calc(var(--s)*-1px) 0 #000,0 calc(var(--s)*1px) #000,0 calc(var(--s)*-1px) #000,
    calc(var(--s)*1px) calc(var(--s)*1px) #000,calc(var(--s)*-1px) calc(var(--s)*1px) #000,calc(var(--s)*1px) calc(var(--s)*-1px) #000,calc(var(--s)*-1px) calc(var(--s)*-1px) #000}
+#tags{position:absolute;inset:0;pointer-events:none;z-index:3;display:none}
+#tags.on{display:block}
+.tag{position:absolute;transform:translateX(-50%);font-size:calc(var(--s)*4.4px);line-height:1.25;color:#f0e2c0;white-space:nowrap;
+  padding:0 calc(var(--s)*1.5px);background:rgba(10,6,4,.66);text-shadow:var(--px) var(--px) 0 #000;margin-top:calc(var(--s)*2.5px)}
+.tag::before{content:'';position:absolute;left:50%;top:calc(var(--s)*-3px);width:calc(var(--s)*2px);height:calc(var(--s)*2px);
+  margin-left:calc(var(--s)*-1px);border-radius:50%;background:var(--gold);box-shadow:0 0 0 var(--px) #000}
+.tag.exit::before{background:#9fd8b0}.tag.who::before{background:#f0a8a0}
 #dim{position:absolute;z-index:2;inset:0;background:#05030c;opacity:0;pointer-events:none;transition:opacity .9s}
 #overlay{position:absolute;z-index:4;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;padding:calc(var(--s)*8px);cursor:pointer}
@@ -53,6 +60,7 @@ body{display:flex;align-items:center;justify-content:center}
   box-shadow:inset var(--px) var(--px) 0 rgba(255,214,140,.26),inset calc(var(--px)*-1) calc(var(--px)*-1) 0 rgba(0,0,0,.7)}
 #verbs button:hover{color:var(--hi);background:rgba(96,62,28,.6)}
 #verbs button.sel{color:#fff;background:rgba(168,98,30,.66);box-shadow:inset var(--px) var(--px) 0 rgba(0,0,0,.6),inset calc(var(--px)*-1) calc(var(--px)*-1) 0 rgba(255,214,140,.3)}
+#verbs button.def{color:var(--hi);background:rgba(52,36,16,.72);box-shadow:inset 0 0 0 var(--px) rgba(226,178,76,.9),inset 0 0 0 calc(var(--px)*2) rgba(0,0,0,.55)}
 #verbs #pray{grid-column:1/4;color:var(--pray);background:rgba(14,32,70,.78);letter-spacing:.06em}
 #verbs #pray:hover{color:#fff;background:rgba(30,60,116,.82)}
 #inv{flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(2,1fr);gap:calc(var(--s)*1px)}
@@ -91,6 +99,7 @@ body{display:flex;align-items:center;justify-content:center}
   <div id="view">
     <canvas id="screen" width="640" height="288"></canvas>
     <div id="speech"></div>
+    <div id="tags"></div>
     <div id="dim"></div>
     <div id="overlay"></div>
     <div id="codebox"></div>
@@ -625,7 +634,14 @@ function buildVerbs(){const v=$('#verbs');v.innerHTML='';
   VERBS.forEach(([id,label])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.v=id;
     b.onclick=()=>{if(G.busy)return;audioInit();SFX.click();G.verb=G.verb===id?'walk':id;G.item=null;syncVerbs();drawInv();status()};v.appendChild(b)});
   const p=document.createElement('button');p.type='button';p.id='pray';p.textContent='Pray to Jehovah';p.onclick=pray;v.appendChild(p)}
-function syncVerbs(){document.querySelectorAll('#verbs button').forEach(b=>b.classList.toggle('sel',b.dataset.v===G.verb))}
+function syncVerbs(){document.querySelectorAll('#verbs button').forEach(b=>b.classList.toggle('sel',b.dataset.v===G.verb));litVerb()}
+/* defVerb: what a plain click does to a hotspot. A hotspot may name it (def); otherwise a door is opened and any other exit
+   walked to, a person is talked to, something that can be taken (see take) is picked up, and anything else is looked at. */
+function defVerb(h){if(h.def)return h.def;if(h.exit)return/\bdoor\b/i.test(h.name)?'open':'walk';if(h.actor)return'talk';
+  return typeof h.pickup==='function'&&h.pickup.take?'pickup':'look'}
+/* litVerb: while the pointer rests on something and no verb is chosen, the verb a click would use is lit in the panel. */
+function litVerb(){const h=G.hover,d=h&&!G.busy&&G.verb==='walk'&&!G.item?(h.item?'look':defVerb(h)):'';
+  document.querySelectorAll('#verbs button').forEach(b=>b.classList.toggle('def',b.dataset.v===d))}
 /* Inventory icons are drawn on a 24-unit grid at double resolution, then given a contour and the same dither as everything else. */
 const ICONS={};
 function iconArt(k){if(ICONS[k])return ICONS[k];const[c,g]=mk(48,48),[m,mg]=mk(48,48),[o,og]=mk(48,48);g.scale(2,2);ICON[k](g);
@@ -637,10 +653,11 @@ function skin(){const[c,g]=mk(256,64);for(let j=0;j<4;j++){R(g,0,j*16,256,16,tin
   document.documentElement.style.setProperty('--wood',`url(${c.toDataURL()})`)}
 function drawInv(){const el=$('#inv');el.innerHTML='';for(let i=0;i<10;i++){const s=document.createElement('div');s.className='slot';const id=G.inv[i];
   if(id){const src=iconArt(ITEMS[id].icon||id),[c,g]=mk(48,48);g.drawImage(src,0,0);s.appendChild(c);if(G.item===id)s.classList.add('sel');
-    s.onmouseenter=()=>{G.hover={item:id};status()};s.onmouseleave=()=>{G.hover=null;status()};s.onclick=()=>clickItem(id)}
+    s.onmouseenter=()=>{G.hover={item:id};status()};s.onmouseleave=()=>{G.hover=null;status()};s.onclick=()=>clickItem(id);
+    s.oncontextmenu=e=>{e.preventDefault();if(G.busy)return;audioInit();G.verb='walk';G.item=null;syncVerbs();cut(()=>say(P,ITEMS[id].look))}}
   el.appendChild(s)}}
-function status(){const el=$('#status');if(G.busy){el.textContent=' ';return}
-  let s=VNAME[G.verb];const h=G.hover,hn=h?(h.item?ITEMS[h.item].name:h.name):'';
+function status(){const el=$('#status');litVerb();if(G.busy){el.textContent=' ';return}
+  const h=G.hover,hn=h?(h.item?ITEMS[h.item].name:h.name):'';let s=VNAME[G.verb==='walk'&&h&&!G.item?(h.item?'look':defVerb(h)):G.verb];
   if(G.item){s+=' '+ITEMS[G.item].name+(G.verb==='give'?' to':' with');if(hn&&!(h&&h.item===G.item))s+=' '+hn}else if(hn)s+=' '+hn;
   el.textContent=s}
 const DEF={look:h=>'Nothing more to see there.',pickup:h=>h.actor?'That would hardly be loving.':'I have no need of that.',
@@ -668,7 +685,7 @@ async function clickView(x,y){
   if(G.busy||G.scene||!G.room)return;audioInit();
   const h=hsAt(x,y),item=G.item;let v=G.verb;
   if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(P,x,y);return}
-  if(v==='walk')v=h.exit?'exit':h.actor?'talk':'look';
+  if(v==='walk'){v=defVerb(h);if(v==='walk')v=h.exit?'exit':'look'}
   const A=h.actor,tx=A?A.x+(P.x<A.x?-22:22):(h.wx!=null?h.wx:h.x+h.w/2),ty=A?A.y+1:(h.wy!=null?h.wy:118);
   if(!(await walk(P,tx,ty)))return;
   if(G.busy)return;
@@ -679,8 +696,30 @@ function evPos(e){const r=vp.getBoundingClientRect();return[(e.clientX-r.left)/r
 vp.addEventListener('mousemove',e=>{if(G.busy||G.scene||!G.room)return;const[x,y]=evPos(e);const h=hsAt(x,y);if(h!==G.hover){G.hover=h;status()}});
 vp.addEventListener('mouseleave',()=>{G.hover=null;status()});
 vp.addEventListener('click',e=>{const[x,y]=evPos(e);clickView(x,y)});
+/* Right-click looks at whatever is under the pointer, from where Paul stands; on empty ground it puts the chosen verb down. */
+vp.addEventListener('contextmenu',e=>{e.preventDefault();if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
+  if(G.busy||G.scene||!G.room)return;audioInit();const h=hsAt(...evPos(e));G.verb='walk';G.item=null;syncVerbs();drawInv();status();if(!h)return;
+  if(P.walk){P.walk.res(false);P.walk=null}const A=h.actor;P.dir=(A?A.x:h.x+h.w/2)>=P.x?1:-1;cut(()=>act('look',h))});
+$('#wrap').addEventListener('contextmenu',e=>{if(!e.target.closest('#codebox'))e.preventDefault()});
+/* Double-clicking an exit skips the walk to it: Paul is simply there, and goes through. */
+vp.addEventListener('dblclick',e=>{if(G.busy||G.scene||!G.room||!P.walk)return;const h=hsAt(...evPos(e));
+  if(h&&h.exit){P.x=P.walk.x;P.y=P.walk.y;G.cam=clamp(P.x-160,0,ART[G.room].w-VW)}});
+/* Holding Tab labels everything in the room that can be clicked: a small round dot and a name, never a marker or a cross. */
+const tagEl=$('#tags');let tagT=0;
+function tagsOn(on){if(!!G.tags===on)return;G.tags=on;tagEl.classList.toggle('on',on);tagT=0;if(!on)tagEl.innerHTML=''}
+function drawTags(ts){if(!G.tags||ts-tagT<90)return;tagT=ts;tagEl.innerHTML='';if(!G.room||G.scene)return;
+  const s=vp.clientWidth/VW,cam=G.cam,list=[],put=[];
+  for(const a of Object.values(ACT))if(a!==P&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+VW)list.push([a.hs.name,a.x,a.y-52,'who']);
+  for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const x0=Math.max(h.x,cam+4),x1=Math.min(h.x+h.w,cam+VW-4);if(x1>x0)list.push([h.name,(x0+x1)/2,h.y+h.h/2,h.exit?'exit':''])}
+  list.sort((a,b)=>a[2]-b[2]);
+  for(const[name,x,y,k]of list){const el=document.createElement('div');el.className='tag '+k;el.textContent=name;tagEl.appendChild(el);
+    const w=el.offsetWidth/s,hh=el.offsetHeight/s+3,lx=clamp(x-cam,w/2+1,VW-w/2-1);let ty=clamp(y,4,VH-hh);
+    for(let n=0;n<10;n++){const hit=put.find(p=>Math.abs(p.x-lx)<(p.w+w)/2+1&&Math.abs(p.y-ty)<hh);if(!hit)break;ty=hit.y+hh}
+    if(ty>VH-hh)ty=VH-hh;put.push({x:lx,y:ty,w});el.style.left=lx*s+'px';el.style.top=ty*s+'px'}}
+addEventListener('keyup',e=>{if(e.key==='Tab')tagsOn(false)});addEventListener('blur',()=>tagsOn(false));
 addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;const k=e.key.toLowerCase();
-  if(k===' '||k==='escape'||k==='.'){if(G.skip){e.preventDefault();G.skip()}}
+  if(k==='tab'){e.preventDefault();tagsOn(true)}
+  else if(k===' '||k==='escape'||k==='.'){if(G.skip){e.preventDefault();G.skip()}}
   else if(k==='m')$('#mute').click();else if(k==='p')pray();
   else if(k>='1'&&k<='6'){const b=document.querySelectorAll('#verbs button')[+k-1];if(b)b.click()}});
 /* --- main loop --- */
@@ -722,7 +761,7 @@ function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmo
     Object.values(ACT).filter(o=>o.room===id).sort((p,q)=>p.y-q.y).forEach(o=>drawActor(cx,o,ts,id));
     cx.restore();if(f)cx.drawImage(f,-hp(cam*(a.fp||1)),0,f.width/HR,VH);
     cx.save();cx.translate(-cam,0);a.front(cx,ts);cx.restore()}
-  posSpeech();requestAnimationFrame(render)}
+  posSpeech();drawTags(ts);requestAnimationFrame(render)}
 /* ============ GAME: items, combinations, prayer hints ============ */
 Object.assign(ITEMS,{
   awl:{name:'awl',look:'A stout awl for piercing goat-hair cloth and leather. It has stitched more tents than I can count.'},
@@ -744,7 +783,8 @@ function pray(){if(G.busy||G.scene||!G.room)return;audioInit();
     const[k,ls]=hint(),n=G.hintAt[k]=(G.hintAt[k]||0)+1;
     await say(P,ls[Math.min(n,ls.length)-1],{thought:1,color:'#cfe2ff'})})}
 /* ============ SHARED SCRIPT HELPERS ============ */
-const take=(flag,item,line)=>async()=>{F[flag]=1;addItem(item);await say(P,line)};
+/* take: pick something up for good. Marked, so that Pick up is its default verb. */
+const take=(flag,item,line)=>Object.assign(async()=>{F[flag]=1;addItem(item);await say(P,line)},{take:1});
 const TH={thought:1,color:'#cfe2ff'};
 async function quiz(who,q,opts){await say(who,q);let av=opts.slice();
   for(;;){const o=av[await choose(av.map(o=>o.q))];for(const l of o.p||[o.q])await say(P,l);for(const l of o.r)await say(who,l);

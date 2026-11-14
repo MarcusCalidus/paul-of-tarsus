@@ -13,6 +13,13 @@
  const use=async(a,b)=>{verb('use');item(a);item(b);await idle()};
  const useOn=async(a,name,v)=>{verb(v||'use');item(a);view(...hs(name));await idle()};
  const actor=async(v,a)=>{if(v)verb(v);view(a.x,a.y-18);await idle()};
+ const at=(type,x,y)=>{const r=vp.getBoundingClientRect(),e=new MouseEvent(type,{clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+y/144*r.height,bubbles:true,cancelable:true});vp.dispatchEvent(e);return e.defaultPrevented};
+ const move=(x,y)=>at('mousemove',x,y),rclick=(x,y)=>at('contextmenu',x,y),dbl=(x,y)=>at('dblclick',x,y);
+ const rclickEl=el=>{const e=new MouseEvent('contextmenu',{bubbles:true,cancelable:true});el.dispatchEvent(e);return e.defaultPrevented};
+ const key=(k,type)=>dispatchEvent(new KeyboardEvent(type||'keydown',{key:k,bubbles:true,cancelable:true}));
+ const lit=()=>[...document.querySelectorAll('#verbs button.def')].map(b=>b.dataset.v).join();
+ const H=n=>ROOMS[G.room].hs.find(h=>h.name===n&&(!h.vis||h.vis()));
+ const heard=[];new MutationObserver(m=>m.forEach(r=>r.addedNodes.forEach(n=>heard.push(n.textContent)))).observe($('#speech'),{childList:true});
  const choose=async i=>{const b=document.querySelectorAll('#choices button');b[i<0?b.length+i:i].click();await idle()};
  const ok=(c,m)=>L((c?'ok   ':'FAIL ')+m);
  const halt=(name,fn)=>{if(stop===name){clearInterval(sk);L('STOP '+name+' room='+G.room+' inv='+G.inv.join(','));if(fn)fn();throw 'halt'}};
@@ -39,9 +46,31 @@
   ov.click();await idle();ok(G.room==='workshop'&&!G.busy,'intro ends in workshop');
   halt('workshop',()=>{say(ACT.eliab,'Tonight we lower you from her window. We need a basket that will hold, and a rope that will reach.')});
   halt('walk',()=>{P.speed=4;walk(P,60,130)});
+  /* the verb interface: default verbs, lit verb, right-click, double-click, Tab labels, keys */
+  ok(defVerb(H('door to the street'))==='open'&&defVerb(ACT.eliab.hs)==='talk'&&defVerb(H('spool of thread'))==='pickup'&&defVerb(H('shelf'))==='look'
+    &&defVerb(H('large basket'))==='pickup','default verbs inferred');
+  move(...hs('spool of thread'));ok(lit()==='pickup'&&$('#status').textContent==='Pick up spool of thread'&&!document.querySelector('#verbs button.sel'),'hover lights Pick up');
+  move(ACT.eliab.x,ACT.eliab.y-18);ok(lit()==='talk'&&$('#status').textContent==='Talk to Eliab','hover lights Talk to');
+  halt('defverb');
+  move(...hs('door to the street'));ok(lit()==='open'&&$('#status').textContent==='Open door to the street','hover lights Open on a door');
+  verb('look');move(...hs('spool of thread'));ok(lit()===''&&$('#status').textContent==='Look at spool of thread','no default lit while a verb is chosen');verb('look');
+  move(...hs('stool'));ok(lit()==='look','hover lights Look at');
+  heard.length=0;let px=P.x;ok(rclick(...hs('stool')),'right-click: no browser menu');await idle();ok(heard.includes(H('stool').look)&&P.x===px,'right-click looks without walking');
+  heard.length=0;ok(rclickEl(document.querySelectorAll('#inv .slot')[0]),'inventory right-click: no browser menu');await idle();ok(heard.includes(ITEMS.pouch.look),'right-click looks at an item');
+  ok(rclickEl($('#status'))&&rclickEl($('#overlay')),'no browser menu anywhere in the game');
+  await act(null,'spool of thread');ok(has('thread')&&F.gotThread,'plain click on an item picks it up');
+  place(P,'workshop',290,124,-1);G.cam=ART.workshop.w-320;G.speedAll=25;view(...hs('door to the street'));await wait(60);view(...hs('door to the street'));dbl(...hs('door to the street'));
+  let t0=performance.now();await idle();ok(G.room==='street'&&performance.now()-t0<2500,'double-click on an exit skips the walk');G.speedAll=500;
+  await act(null,"Eliab's door");ok(G.room==='workshop','back in the workshop');
+  key('Tab');await wait(250);const want=ROOMS.workshop.hs.filter(h=>(!h.vis||h.vis())&&h.x+h.w>G.cam+4&&h.x<G.cam+316).length+1,tg=[...document.querySelectorAll('#tags .tag')];
+  ok($('#tags').classList.contains('on')&&tg.length===want&&tg.some(t=>t.textContent==='Eliab')&&tg.every(t=>t.textContent.length>2),'Tab labels every hotspot ('+tg.length+')');
+  halt('tags');
+  key('Tab','keyup');await wait(150);ok(!$('#tags').classList.contains('on')&&!document.querySelector('#tags .tag'),'labels go when Tab is let go');
+  key('1');ok(G.verb==='look','key 1 picks Look at');key('1');ok(G.verb==='walk','key 1 again puts it down');
+  key('m');ok(AU.muted,'M mutes');key('m');ok(!AU.muted,'M unmutes');
   await act('pickup','large basket');await use('pouch','basket');ok(has('basket')&&has('pouch'),'nonsense combination refused');
   verb('open');item('pouch');await idle();ok(has('awl')&&!has('pouch'),'pouch opens to awl');
-  for(const n of['spool of thread',"tentmaker's knife",'bolt of goat-hair cloth','coil of rope','waterskin'])await act('pickup',n);
+  for(const n of["tentmaker's knife",'bolt of goat-hair cloth','coil of rope','waterskin'])await act('pickup',n);
   ok(['thread','knife','cloth','rope','skin','basket'].every(has),'workshop items collected');
   await use('thread','basket');ok(has('basket')&&!F.strong,'no reinforcing without straps');
   await use('knife','cloth');ok(has('patch')&&has('strips')&&!has('cloth'),'cloth cut');
