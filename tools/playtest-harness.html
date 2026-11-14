@@ -65,6 +65,7 @@
   ok(G.lang===lang&&document.documentElement.lang===lang,'the game is in '+LANGS[lang].native+', as the address asks');fitVerbs();
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
     &&ov.textContent.includes('PAULUS VON TARSUS')&&$('#code').textContent==='CODE EINGEBEN'&&$('#mute').textContent.includes('TON AN')&&document.title.startsWith('Paulus'),'German on the title screen, in the panel and in the top bar');
+  if(!/[?&]keep=1/.test(location.search))ok(store('paul.save')===null&&!ov.querySelector('[data-cont]')&&ov.querySelector('[data-ch="1"]').classList.contains('go'),'a first visit has nothing to continue: Chapter One leads the list');
   halt('title');
   /* sound: the first press anywhere starts it; a press wakes sound that iOS interrupted; on iPhone and iPad a note says where Silent Mode is */
   {const hushOn=()=>$('#hush').classList.contains('on'),dev=AU.apple;
@@ -95,6 +96,39 @@
     $('#codein').value=c;$('#codego').click();await idle();
     ok(G.room==='street'&&!G.scene&&!ov.classList.contains('on')&&!G.busy&&has('longrope')&&has('patch')&&has('basket')&&!has('pouch'),'code from title starts mid-game: '+c);
     await act(null,"Eliab's door");ok(G.room==='workshop','playable after title code');halt('titlecode')}
+  /* autosave: the game keeps the safe-point code in the browser, and a new visit offers to continue from it. The game is reloaded for real
+     (keep=1 stops the runner clearing the save), and the first half's log is carried over in sessionStorage. */
+  if(stop==='continue'||stop==='resume'){
+    if(!/[?&]keep=1/.test(location.search)){const from=$('#tlog').textContent.length;
+      ov.click();await idle();ok(G.room==='workshop'&&!G.busy,'the intro ends in the workshop');
+      await act('pickup','spool of thread');await act('pickup',"tentmaker's knife");
+      const c=makeCode();ok(store('paul.save')===c&&decode(c).ch===1&&c===codeOf(1,stateBits()),'the point is kept in the browser as it is reached: '+c);
+      $('#code').click();ok(cb.classList.contains('on')&&cb.textContent.includes(T('This point is also saved in this browser.')),'the safe-point screen says the browser keeps it too');$('#codex').click();
+      sessionStorage.setItem('plog',$('#tlog').textContent.slice(from));sessionStorage.setItem('pcode',c);sessionStorage.setItem('pinv',srt());
+      location.href=location.href+'&keep=1';await new Promise(()=>{})}
+    L(sessionStorage.getItem('plog').trimEnd());const c=sessionStorage.getItem('pcode'),inv=sessionStorage.getItem('pinv');
+    const cont=ov.querySelector('[data-cont]');
+    ok(!G.room&&ov.classList.contains('on')&&store('paul.save')===c,'a new visit starts on the title screen, and the save is still there');
+    ok(cont&&ov.querySelector('p.go,p.pick')===cont&&ov.querySelector('p.go')===cont&&!ov.querySelector('[data-ch].go')&&cont.textContent.includes(T('Continue'))&&cont.textContent.includes(T('Chapter One'))&&cont.textContent.includes(T('Escape from Damascus')),
+      'the title offers Continue first, and names the chapter');fitVerbs();{const r=cont.getBoundingClientRect(),v=ov.getBoundingClientRect();if(cont.scrollWidth>cont.clientWidth+1||r.left<v.left||r.right>v.right)tight.add('Continue: '+cont.textContent)}
+    ok(ov.querySelectorAll('[data-ch]').length===3,'the three chapters are still listed');
+    halt('continue');
+    cont.click();await idle();
+    ok(G.ch===1&&G.room==='workshop'&&!G.scene&&!G.busy&&!ov.classList.contains('on')&&makeCode()===c&&srt()===inv&&F.gotThread&&F.gotKnife&&!F.gotCloth,'Continue returns to the kept point, with its inventory and progress');
+    await act('pickup','bolt of goat-hair cloth');ok(has('cloth')&&F.gotCloth&&store('paul.save')===makeCode()&&store('paul.save')!==c,'play goes on from there, and the save follows');
+    $('#code').click();ok($('#codebox .big').textContent===makeCode()&&cb.textContent.includes(T('This point is also saved in this browser.')),'the code on screen is the one the browser keeps');$('#codex').click();
+    /* a new visit: the page starts with no room, then shows the title */
+    const boot=async()=>{G.room=null;G.scene=null;await title()};
+    /* a chapter with a wide code */
+    await startChapter(3);await idle();const w=makeCode();ok(G.ch===3&&G.room==='tarsus'&&decode(w).w!=null&&store('paul.save')===w,'a wide Chapter Three code is kept too: '+w);
+    await boot();ok(ov.querySelector('[data-cont]')&&ov.querySelector('[data-cont]').textContent.includes(T('Chapter Three'))&&ov.querySelector('[data-cont]').textContent.includes(T('Called to Antioch')),'Continue names Chapter Three');
+    ov.querySelector('[data-cont]').click();await idle();ok(G.ch===3&&G.room==='tarsus'&&PC()===P&&makeCode()===w&&!ov.classList.contains('on')&&!G.busy,'and returns to it');
+    /* a chapter finished leaves the next chapter's first code; a damaged or foreign entry is ignored */
+    autosave(codeOf(2,0));await boot();ok(ov.querySelector('[data-cont]').textContent.includes(T('Chapter Two')),'a finished chapter leaves Continue at the next one');
+    ov.querySelector('[data-cont]').click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy&&makeCode()===codeOf(2,0),'Continue starts Chapter Two');
+    for(const bad of['garbage','XXX-XXX',w.slice(0,-1)+(w.slice(-1)==='A'?'B':'A'),'']){store('paul.save',bad);await boot();ok(!ov.querySelector('[data-cont]')&&ov.querySelector('[data-ch="1"]').classList.contains('go'),'a damaged save is not offered: '+JSON.stringify(bad))}
+    const lost=localStorage.setItem;Storage.prototype.setItem=()=>{throw new Error('full')};autosave('x');ok(G.saved===false,'a browser that will not store anything is no problem');Storage.prototype.setItem=lost;
+    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(!C3){
   ov.click();await idle();ok(G.room==='workshop'&&!G.busy,'intro ends in workshop');
   ok(!SHARED.map&&!SHARED.tablets,'the map and the tablets are not loaded until they are needed');
@@ -140,6 +174,7 @@
   await use('strips','rope');ok(has('longrope')&&!has('rope'),'rope lengthened');
   const c1=makeCode(),b1=stateBits(),inv1=srt();
   ok(decode(c1).b===b1&&decode(c1).ch===1&&/^[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(c1)&&$('#code').textContent===T('CODE {code}',{code:c1}),'code round-trips: '+c1);
+  ok(store('paul.save')===c1,'the browser keeps the same code: '+c1);
   ok(decode('AAAAAA')===null&&decode('')===null&&decode(c1.slice(0,6)+(c1[6]==='A'?'B':'A'))===null,'bad codes rejected');
   ok(decode(c1.toLowerCase().replace('-',' ')).b===b1,'lower case and spaces accepted');
   await actor(null,ACT.eliab);ok(nq()===6&&hasQ('basket loops are frayed'),'eliab has 5 questions, and one about the frayed basket');await choose(3);await choose(-1);
@@ -166,7 +201,7 @@
   await useOn('awl','torn awning');ok(F.awning&&has('straps')&&!has('patch'),'awning mended, straps received');
   await use('straps','basket');ok(has('strongbasket'),'basket reinforced');
   const c2=makeCode(),inv2=srt();
-  $('#code').click();ok(cb.classList.contains('on')&&$('#codebox .big').textContent===c2,'safe point screen shows '+c2);
+  $('#code').click();ok(cb.classList.contains('on')&&$('#codebox .big').textContent===c2&&cb.textContent.includes(T('This point is also saved in this browser.')),'safe point screen shows '+c2+', and that the browser keeps it');
   halt('code');
   $('#codein').value='ZZZ-ZZ2';$('#codego').click();ok(cb.classList.contains('on')&&G.room==='street','invalid code refused');
   $('#codein').value=c1;$('#codego').click();await idle();
@@ -194,6 +229,7 @@
   n=0;while(!ov.classList.contains('end')&&n++<4000)await wait(50);
   ok(ov.classList.contains('end'),'chapter one complete screen shown');
   ok(ov.textContent.includes(T('Chapter Two code: {code}',{code:codeOf(2,0)})),'chapter one ends with a chapter two code');
+  ok(store('paul.save')===codeOf(2,0),'and the browser keeps that code: the next visit continues with Chapter Two');
   {const M=SHARED.map;ok(M&&G.scene===M.draw&&M.state.legs.length===1&&M.state.legs[0].k===1&&M.state.seen.has('jerusalem'),'chapter one ends on the map: the way from Damascus to Jerusalem has drawn itself')}
   halt('map1',()=>{ov.className=''});
   halt('final');
@@ -261,6 +297,7 @@
   n=0;while(!ov.textContent.includes(T('A Friend in Jerusalem'))&&n++<4000)await wait(50);
   ok(ov.classList.contains('end')&&ov.textContent.includes(T('A Friend in Jerusalem')),'chapter two complete screen shown');
   ok(ov.textContent.includes(T('Chapter Three code: {code}',{code:codeOf(3,0)})),'chapter two ends with a chapter three code');
+  ok(store('paul.save')===codeOf(3,0),'and the browser keeps it');
   {const L=SHARED.map.state.legs;ok(G.scene===SHARED.map.draw&&L.length===3&&L.every(l=>l.k===1)&&SHARED.map.state.seen.has('tarsus'),'chapter two ends on the map: Jerusalem, Caesarea, and by sea to Tarsus')}
   halt('map2',()=>{ov.className=''});
   halt('final2');await wait(1700)}
@@ -361,6 +398,7 @@
   verb('use');item('bags');view(...hs('donkey'));
   n=0;while(!(ov.classList.contains('end')&&ov.textContent.includes(T('Called to Antioch')))&&n++<4000)await wait(50);
   ok(ov.classList.contains('end')&&ov.textContent.includes(T('Called to Antioch')),'chapter three complete screen shown');
+  ok(store('paul.save')===null,'a finished game keeps no save');
   {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===4&&L.every(l=>l.k===1)&&M.state.seen.has('antioch'),'chapter three ends on the map: the whole road, from Damascus to Antioch');
     const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
     for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;
