@@ -94,6 +94,8 @@ The backdrops are painted in the manner of early-1990s VGA adventure games: pers
 
 The characters are sprites in the manner of the same era: placed pixel by pixel in a three-quarter view, shaded in flat bands of tone with dark edges on the shadow side instead of an outline. Faces, beards and head coverings are small hand-drawn pixel maps; one figure serves the whole cast through its palette and dress.
 
+![The cast](docs/screenshots/cast.png)
+
 Each chapter has its own score, and each room its own sounds:
 
 | Chapter | Music | Around you |
