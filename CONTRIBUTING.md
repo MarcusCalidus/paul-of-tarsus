@@ -55,7 +55,7 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 
 - `index.html` is the engine. Each chapter is one file, `levels/chapterN.js`, loaded only when that chapter is played. It holds the chapter's music, artwork, cast, items, rooms, dialog, cutscenes and prayer hints. A new chapter adds its file and one line to the `CHAP` manifest. Anything shared between chapters goes in its own file, also loaded on demand, not in a chapter file or the engine.
 - The game must keep running when `index.html` is opened straight from disk: no build step, no server and no dependencies.
-- Safe-point codes are a promise to players. Every code that works today must keep working. If a change needs more state, add a new code format that the decoder can tell apart from the old one. Never reorder a chapter's `flags`, `rooms` or `share`; only append to them, within the widths the code format reserves.
+- Safe-point codes are a promise to players. Every code that works today must keep working. The browser's autosave (`localStorage`, key `paul.save`) is that same code and nothing else, so the promise covers it: never keep other state there without a format the decoder can tell apart from the code. If a change needs more state, add a new code format that the decoder can tell apart from the old one. Never reorder a chapter's `flags`, `rooms` or `share`; only append to them, within the widths the code format reserves.
 
 ## 6. Testing and documentation
 

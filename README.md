@@ -10,7 +10,7 @@ There are four chapters so far, in English and German. The game is a small engin
 
 **Play online: https://marcuscalidus.github.io/paul-of-tarsus/**
 
-Or download this repository and open `index.html` in any current desktop browser (keep the `levels` folder next to it). Pick a chapter on the title screen. Nothing to install or build.
+Or download this repository and open `index.html` in any current desktop browser (keep the `levels` folder next to it). Pick a chapter on the title screen; the game saves your place by itself, so next time the title screen offers to continue. Nothing to install or build.
 
 The online version is served by GitHub Pages straight from the root of the `main` branch.
 
@@ -206,7 +206,11 @@ The blue button is the hint system. Paul pauses, bows his head and prays for wis
 
 The top bar always shows a short code for exactly where you are: six characters in Chapter One, and the same with a leading `2-` in Chapter Two. Chapter Three and Chapter Four codes are nine characters (`3-XXX-XXX-XXX`, `4-XXX-XXX-XXX`), because they also remember which man you are playing, where each of them stands and who carries what; six-character Chapter Three codes from before still work. Write it down, and enter it later with **ENTER CODE** on the title screen (or the code button during play) to return to the same room with the same inventory and progress. Any moment outside a cutscene is a safe point.
 
+The game also keeps that same point in your browser, every time it changes. Come back in the same browser and the title screen leads with **Continue**, naming the chapter, which returns you to the room, inventory and progress you left. A finished chapter leaves **Continue** at the next one, and a finished game leaves nothing. The code is still what carries your place to another browser or device, and what you write down; the browser's copy is only as lasting as the browser's site data, so clearing it, a private window or another browser starts without it.
+
 ![Safe-point code](docs/screenshots/code.png)
+
+![Returning: the title screen offers to continue](docs/screenshots/continue.png)
 
 ## About the content
 
@@ -273,6 +277,8 @@ places:{
 
 and gives the exits that lead out of town `exit:travel`, or an exit of its own that checks what the story still needs and then calls `travel()`. `travel()` opens the map with those places as dots; hovering lights a name, a click draws the way there and enters that room, and Esc or a right-click stays. A place can say when the way to it is open (`if`) and what the character says when it is not (`no`: a line, a list of lines or a script), and `hide` keeps it off the map. The chapter's `way()` lists the legs already travelled, which the map shows, and its `arrive(to, from)` runs after the journey and before the room appears: it brings the rest of the party along, and may tell of the journey, as the crossing to Salamis is told. A place that is not in `PLACES` yet is added there with its coordinates. A hub chapter will have more than three rooms, so it gets wide codes automatically; if it may grow, it reserves room with `codeBits` from the start.
 
+**Autosave.** The save is the safe-point code, not a second format: `codeBtn()` writes the string it shows to `localStorage` under `paul.save`, whenever the player is in a room outside a cutscene (so it always names a point they could have written down). The title screen reads it back with `saved()` and, if it still decodes, leads with **Continue**, which `resume()` restores the way typing the code does. `endScreen()` replaces the save with the next chapter's first code (or clears it, after the last chapter). A browser that refuses storage is fine: the game plays on and the code screen does not claim a save. Because the save is a code, every promise below holds for it too, and nothing else may go into it without a format the decoder can tell apart.
+
 **Safe-point codes.** A chapter whose state fits in 19 flags and three rooms, with Paul alone, gets the original six-character codes. Any other chapter (a party, more flags, more rooms) gets wide codes of 9, 12 or more characters, always a multiple of three, so the decoder tells the two apart by length. A wide code packs, from the lowest bit: the flags, each member's room, the member being played, and for each item in `share` the member who carries it; then it is masked and checked with 9 bits salted by the chapter, like the short codes. Every field has a fixed width, so a chapter can grow without breaking its codes: room for 19 flags and two bits per room (four rooms), unless the chapter needs more or reserves more with `codeBits:{flags, rooms, share}`. Never reorder a chapter's `flags`, `rooms` or `share`; only append, within those widths.
 
 Edit a file and reload.
@@ -283,7 +289,7 @@ Edit a file and reload.
 node tools/playtest.mjs
 ```
 
-It plays the game once in English and once more in every other language under `lang/`. Pass stop names to save screenshots to `tools/out/` instead, for example `node tools/playtest.mjs title workshop harbor`; put a language in front of a stop to take it in that language: `node tools/playtest.mjs de:title de:tablets`. The stop names are defined in `tools/playtest-harness.html`; Chapter Three stops such as `tarsus`, `court` and `antioch` start that chapter directly, and so do Chapter Four stops such as `seleucia`, `salamis` and `paphos`.
+It plays the game once in English and once more in every other language under `lang/`, each followed by `resume`, which reloads the game to check that the autosave brings the player back (`continue` stops at the title screen that offers it). Pass stop names to save screenshots to `tools/out/` instead, for example `node tools/playtest.mjs title workshop harbor`; put a language in front of a stop to take it in that language: `node tools/playtest.mjs de:title de:tablets`. The stop names are defined in `tools/playtest-harness.html`; Chapter Three stops such as `tarsus`, `court` and `antioch` start that chapter directly, and so do Chapter Four stops such as `seleucia`, `salamis` and `paphos`.
 
 ## Contributing
 

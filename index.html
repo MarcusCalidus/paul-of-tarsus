@@ -101,6 +101,7 @@ body{display:flex;align-items:center;justify-content:center}
   padding:calc(var(--s)*2px) calc(var(--s)*5px);cursor:pointer}
 #codebox button:hover{color:var(--hi);border-color:var(--gold)}
 #codebox .small{font-size:calc(var(--s)*4.8px);color:#f0a090;min-height:1.3em}
+#codebox .kept{font-size:calc(var(--s)*4.4px);color:#a99cc0}
 </style>
 </head>
 <body>
@@ -939,7 +940,7 @@ function need(name){if(SHARED[name])return Promise.resolve(SHARED[name]);
 const LANGLOAD={};
 function langFile(lang,part){const d=LANGS[lang]&&LANGS[lang].dir,k=lang+'/'+part;if(!d)return Promise.resolve();
   return LANGLOAD[k]||(LANGLOAD[k]=loadScript(d+(part==='main'?'main':'chapter'+part)+'.js',()=>DICT[lang]&&DICT[lang][part]).catch(e=>{console.error(e);LANGLOAD[k]=null}))}
-const store=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
+const store=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}};
 /* the language to start in: ?lang=xx in the address, else the player's last choice, else the browser's language, else English */
 function firstLang(){const q=(location.search.match(/[?&]lang=([a-z]+)/)||[])[1],n=(navigator.language||'').slice(0,2).toLowerCase();
   return[q,store('paul.lang'),n].find(l=>l&&LANGS[l])||'en'}
@@ -965,16 +966,17 @@ function loadFail(e){console.error(e);ov.onclick=()=>location.reload();
 async function startChapter(n){ov.onclick=null;try{await loadLevel(n)}catch(e){return loadFail(e)}return CHAP[n].start()}
 async function title(){lock(true);await setLang(firstLang());try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
   setChapter(TITLE.level);G.scene=CHAP[TITLE.level].scenes[TITLE.scene];G.end={};AU.mood=TITLE.mood;AU.amb=TITLE.amb;
-  overlay('on',()=>{ov.innerHTML='<h1>'+T('PAUL OF TARSUS')+'</h1><h2>'+T('THE ROMAN ROAD RUNNER')+'</h2>'+
+  overlay('on',()=>{const sv=saved();ov.innerHTML='<h1>'+T('PAUL OF TARSUS')+'</h1><h2>'+T('THE ROMAN ROAD RUNNER')+'</h2>'+
     '<p class="small">'+T('A point-and-click adventure based on the book of Acts')+'</p>'+
-    Object.keys(CHAP).map((n,i)=>`<p class="${i?'pick':'go'}" data-ch="${n}">&#9656; ${T(CHAP[n].label)} &middot; ${T(CHAP[n].title)}</p>`).join('')+
+    (sv?'<p class="go" data-cont="1">&#9656; '+T('Continue')+' &middot; '+T(CHAP[sv.ch].label)+' &middot; '+T(CHAP[sv.ch].title)+'</p>':'')+
+    Object.keys(CHAP).map((n,i)=>`<p class="${i||sv?'pick':'go'}" data-ch="${n}">&#9656; ${T(CHAP[n].label)} &middot; ${T(CHAP[n].title)}</p>`).join('')+
     '<p class="small">'+T('Click a chapter to begin. Returning? Use ENTER CODE, top right.')+'</p>'+
     (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'')});
   ov.onclick=e=>{const d=e.target.dataset||{};if(d.lang){SFX.click();return setLang(d.lang,1)}
-    if(e.target.closest('.langs'))return;startChapter(+d.ch||1)};codeBtn();G.ready=1}
+    if(e.target.closest('.langs'))return;if(d.cont)return resume();startChapter(+d.ch||1)};codeBtn();G.ready=1}
 /* endScreen: a chapter's closing screen. o: title; text; based (its passages, and that the dialogue is imagined); extra (more lines for
    the score, such as kindness shown); go (what a click does next); code ([line, code] for the next chapter); time (show the time played). */
-function endScreen(o){const s=Math.round((performance.now()-G.started)/1000);SFX.win();
+function endScreen(o){const s=Math.round((performance.now()-G.started)/1000);SFX.win();autosave(o.code?o.code[1]:null);
   overlay('on end',()=>{ov.innerHTML='<h2>'+T('CHAPTER COMPLETE')+'</h2><h1 style="font-size:calc(var(--s)*12px)">'+esc(T(o.title))+'</h1><p>'+esc(T(o.text))+'</p><p>'+
     [o.time&&T('Time: {m}m {s}s',{m:Math.floor(s/60),s:s%60}),T('Prayers for wisdom: {n}',{n:G.prays}),...(o.extra||[]).map(x=>T(x))].filter(Boolean).map(esc).join(' &middot; ')+'</p>'+
     '<p class="small">'+esc(T(o.based))+'</p><p class="go">'+esc(T(o.go))+'</p>'+(o.code?'<p class="small">'+esc(T(o.code[0],{code:o.code[1]}))+'</p>':'')})}
@@ -1036,7 +1038,20 @@ function applyState(s){const c=CHAP[s.ch],u=s.w!=null?unpackWide(c,s.w):null;if(
     const a=ACT[u.pc];if(a!==P){G.invs.paul=G.inv;G.pc=a;G.inv=G.invs[a.id];viewOf(a)}}
   if(!G.started)G.started=performance.now();
   G.busy=false;lock(false);swapBtn();syncVerbs();drawInv();status();codeBtn();return true}
-function codeBtn(){$('#code').textContent=G.room&&!G.scene?T('CODE {code}',{code:makeCode()}):T('ENTER CODE')}
+/* ============ AUTOSAVE: the safe-point code of the current point, kept in this browser as well ============ */
+/* The code is the save: it is already a complete, checked, language-free record of the story's state, and every code that has ever worked
+   keeps working, so the browser keeps the same string the top bar shows. It is written whenever that string is shown (codeBtn), so it
+   always names a point the player could have written down; during a cutscene, on the map and on the title screen it is left alone. */
+const SAVE='paul.save';
+function autosave(code){try{if(code==null)localStorage.removeItem(SAVE);else localStorage.setItem(SAVE,code);return G.saved=code!=null}catch(e){return G.saved=false}}
+/* saved: the kept point, if it is still a valid code for a chapter we have ({ch, code}), else nothing */
+function saved(){const code=store(SAVE),b=decode(code);return b&&CHAP[b.ch]?{ch:b.ch,code}:null}
+/* resume: the title screen's Continue. It does what typing the kept code does; one that cannot be restored is dropped. */
+async function resume(){const sv=saved();audioInit();
+  if(sv){const b=decode(sv.code);try{await loadLevel(b.ch)}catch(e){return loadFail(e)}
+    if((b.w==null||unpackWide(CHAP[b.ch],b.w))&&applyState(b)){SFX.good();return}}
+  autosave(null);SFX.nope();ov.draw()}
+function codeBtn(){const on=G.room&&!G.scene,code=on&&makeCode();if(on)autosave(code);$('#code').textContent=on?T('CODE {code}',{code}):T('ENTER CODE')}
 function closeCode(){cb.classList.remove('on');G.busy=cb.was;if(!G.busy)lock(false);status()}
 const BADCODE='That code is not valid. Please check each letter and number.';
 async function tryCode(){const b=decode($('#codein').value);
@@ -1050,7 +1065,8 @@ function openCode(){audioInit();if(cb.classList.contains('on'))return closeCode(
   /* drawn again, with what has been typed so far, when the language changes */
   cb.draw=()=>{const typed=$('#codein')?$('#codein').value:'';
     cb.innerHTML=(can?'<h2>'+T('SAFE POINT')+'</h2><p>'+T('Your code for this exact point in the story:')+'</p><div class="big">'+makeCode()+
-        '</div><p>'+T('Write it down. Enter it here, or from the title screen, to return to this point.')+'</p>'
+        '</div><p>'+T('Write it down. Enter it here, or from the title screen, to return to this point.')+'</p>'+
+        (G.saved?'<p class="kept">'+T('This point is also saved in this browser.')+'</p>':'')
       :'<h2>'+T('ENTER CODE')+'</h2><p>'+T('Type a code from an earlier game to continue from that point.')+'</p>')+
       '<div class="row"><input id="codein" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXX-XXX">'+
       '<button id="codego" type="button">'+T('GO')+'</button></div><p id="codemsg" class="small">&nbsp;</p>'+
