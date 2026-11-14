@@ -10,11 +10,20 @@
      go(from, to)        draw one leg and arrive.
      where(id)           a place's position on the map, in view pixels.
    journey and pick take o.labels: where a place's name goes on this chapter's map, {id:{lab, dy}}, when its usual side would
-   lie across one of the chapter's routes. */
+   lie across one of the chapter's routes; and o.view: the window a chapter looks through (see VIEWS), when its road leaves the usual one. */
 SHARED.map=(()=>{
 "use strict";
 const W=320,H=144,LON0=23.2,LAT0=37.45,KX=18.4,KY=22.15;
 const xy=(lon,lat)=>[(lon-LON0)*KX,(LAT0-lat)*KY];
+/* views: the map is larger than the screen, and a chapter may look at another part of it. A view is how far its window lies to the right
+   of and below the usual one, in view pixels (whole ones, so that the painting stays crisp). north: Asia Minor as far as Galatia, with
+   its upper edge at about 39.3 degrees north and its left edge at about 24.6 east; Jerusalem and Egypt lie below it. Everything on the
+   map keeps its coordinates in every view (the usual window's pixels); only the window moves. */
+const VIEWS={north:[26,-41]};
+let OX=0,OY=0;
+/* where the name of the sea stands: in open water, clear of the routes and of the hint under it, in each view */
+const SEA={'0,0':[92,84],'26,-41':[60,65]};
+const inView=(x,y,m)=>x>=OX-m&&x<=OX+W+m&&y>=OY-m&&y<=OY+H+m;
 const pts=a=>{const o=[];for(let i=0;i<a.length;i+=2)o.push(...xy(a[i],a[i+1]));return o};
 /* places: lon, lat, the side the name goes on, and dy to raise or lower a name clear of a line. Names, here and below, are English and
    translated as they are drawn (T); a name may be longer in another language, and the playtest checks that none crosses a line. */
@@ -23,50 +32,66 @@ const PLACES={
   caesarea:{name:'Caesarea',at:[34.89,32.50],lab:'l'},tarsus:{name:'Tarsus',at:[34.89,36.92],lab:'l'},
   antioch:{name:'Antioch',at:[36.16,36.20],lab:'r'},seleucia:{name:'Seleucia',at:[35.93,36.12],lab:'r',dy:4.6},
   tyre:{name:'Tyre',at:[35.20,33.27],lab:'r',minor:1},salamis:{name:'Salamis',at:[33.90,35.18],lab:'l',minor:1},
-  paphos:{name:'Paphos',at:[32.42,34.76],lab:'l',minor:1},alexandria:{name:'Alexandria',at:[29.92,31.20],lab:'r',minor:1}};
-/* waypoints for legs that do not run straight: by sea up the coast and east of Cyprus; by road round the Gulf of Issus; and through
-   the south of Cyprus, the way tradition has them go from Salamis to Paphos */
+  paphos:{name:'Paphos',at:[32.42,34.76],lab:'l',minor:1},alexandria:{name:'Alexandria',at:[29.92,31.20],lab:'r',minor:1},
+  perga:{name:'Perga',at:[30.85,36.96],lab:'l',dy:-3},antiochp:{name:'Antioch in Pisidia',at:[31.19,38.30],lab:'l'},
+  iconium:{name:'Iconium',at:[32.49,37.87],lab:'r'}};
+/* waypoints for legs that do not run straight: by sea up the coast and east of Cyprus; by road round the Gulf of Issus; through
+   the south of Cyprus, the way tradition has them go from Salamis to Paphos; by sea clear of the western cape of Cyprus; up the valley
+   through the Taurus; and along the foot of the mountains to Iconium */
 const VIA={'caesarea-tarsus':[34.42,33.3,34.5,34.7,34.88,35.75],'tarsus-antioch':[35.6,37.02,36.2,37.03,36.32,36.7,36.3,36.45],
-  'salamis-paphos':[33.45,34.99,32.95,34.8]};
+  'salamis-paphos':[33.45,34.99,32.95,34.8],'paphos-perga':[32.0,35.2,31.35,36.25],'perga-antiochp':[31.0,37.6],'antiochp-iconium':[31.85,38.02]};
 /* region names sit where no coast, lake or route runs through them */
-const REGIONS=[{name:'CILICIA',at:[32.7,36.72]},{name:'SYRIA',at:[37.6,35.2]},{name:'CYPRUS',at:[33.2,34.35],sea:1}];
-/* the coast of the mainland, from the Aegean round Asia Minor, down the Syrian and Phoenician coast, and west along Egypt */
-const COAST=pts([27.2,37.45,27.25,37.3,27.6,37.12,27.45,36.98,28.0,36.98,28.25,36.84,27.42,36.72,28.1,36.74,28.6,36.74,28.92,36.64,29.12,36.6,29.35,36.26,
+const REGIONS=[{name:'CILICIA',at:[32.7,36.72]},{name:'SYRIA',at:[37.6,35.2]},{name:'CYPRUS',at:[33.2,34.35],sea:1},
+  {name:'PISIDIA',at:[29.62,37.68]},{name:'GALATIA',at:[33.6,38.75]}];
+/* the coast of the mainland, from the Aegean round Asia Minor, down the Syrian and Phoenician coast, and west along Egypt. The first
+   line is the Aegean shore above the usual window: the gulfs of Smyrna and Ephesus, and the long capes between them. */
+const COAST=pts([26.7,39.7,26.72,39.3,26.9,39.07,27.0,38.92,26.96,38.8,26.76,38.68,26.85,38.54,27.1,38.45,26.88,38.37,26.66,38.34,26.6,38.5,26.5,38.64,26.36,38.66,26.4,38.42,
+  26.26,38.3,26.42,38.24,26.78,38.18,26.86,38.03,27.24,37.96,27.26,37.84,27.2,37.72,27.0,37.66,27.2,37.58,27.2,37.45,27.25,37.3,27.6,37.12,27.45,36.98,28.0,36.98,28.25,36.84,27.42,36.72,28.1,36.74,28.6,36.74,28.92,36.64,29.12,36.6,29.35,36.26,
   29.66,36.15,30.15,36.25,30.46,36.32,30.56,36.64,30.72,36.88,31.02,36.85,31.42,36.74,31.76,36.55,32.02,36.5,32.3,36.22,32.62,36.08,32.96,36.1,33.32,36.14,
   33.66,36.2,33.96,36.3,34.16,36.45,34.46,36.7,34.66,36.8,34.92,36.74,35.3,36.6,35.56,36.58,35.76,36.75,35.96,36.86,36.16,36.95,36.2,36.72,36.06,36.56,
   35.96,36.36,35.95,36.1,35.84,35.86,35.75,35.52,35.92,35.35,35.95,35.18,35.87,34.9,35.8,34.45,35.65,34.25,35.63,34.12,35.48,33.9,35.44,33.7,35.36,33.56,
   35.2,33.28,35.12,33.1,35.07,32.92,34.96,32.84,34.93,32.68,34.89,32.5,34.85,32.33,34.75,32.06,34.64,31.8,34.55,31.67,34.45,31.52,34.24,31.32,33.8,31.13,
   33.2,31.15,32.75,31.08,32.55,31.05,32.3,31.26,31.85,31.52,31.5,31.56,31.0,31.6,30.6,31.5,30.36,31.46,30.06,31.32,29.9,31.2,29.5,31.04,29.3,30.95]);
-const LAND=COAST.concat(pts([40.6,30.95,40.6,37.45]));
+/* the land is closed far outside every window */
+const LAND=COAST.concat(pts([29.3,27,46,27,46,42,26.7,42]));
 const ISLES=[
   pts([32.27,35.08,32.6,35.18,32.95,35.38,33.4,35.34,33.9,35.37,34.3,35.55,34.59,35.69,34.2,35.45,33.95,35.27,34.05,35.0,33.62,34.88,33.02,34.62,32.62,34.68,32.4,34.75]),
   pts([23.55,35.3,23.6,35.58,24.0,35.52,24.3,35.37,24.9,35.42,25.4,35.32,25.72,35.2,26.1,35.22,26.3,35.31,26.22,35.04,25.73,35.0,25.0,34.95,24.72,34.94,24.3,35.15,23.9,35.25]),
   pts([27.7,36.15,28.0,36.45,28.25,36.4,28.2,36.1,27.85,35.9,27.7,35.98]),pts([27.08,35.42,27.22,35.4,27.25,35.85,27.12,35.86]),
   pts([26.86,36.86,27.3,36.9,27.36,36.8,26.95,36.78]),pts([25.36,37.14,25.56,37.12,25.52,36.98,25.36,36.96]),pts([25.26,36.48,25.46,36.44,25.42,36.36,25.28,36.36]),
-  pts([24.32,36.76,24.56,36.78,24.52,36.66,24.36,36.64]),pts([25.74,36.9,26.0,36.86,25.98,36.8,25.74,36.82]),pts([26.28,36.62,26.44,36.6,26.38,36.52,26.26,36.54])];
+  pts([24.32,36.76,24.56,36.78,24.52,36.66,24.36,36.64]),pts([25.74,36.9,26.0,36.86,25.98,36.8,25.74,36.82]),pts([26.28,36.62,26.44,36.6,26.38,36.52,26.26,36.54]),
+  /* above the usual window: Samos, Icaria, Chios, Lesbos, Andros and Tinos */
+  pts([26.57,37.73,26.7,37.8,26.9,37.78,27.07,37.72,26.95,37.66,26.7,37.66]),pts([25.98,37.52,26.12,37.62,26.36,37.68,26.3,37.6,26.05,37.5]),
+  pts([25.86,38.56,26.0,38.6,26.16,38.52,26.14,38.3,26.1,38.17,25.98,38.16,25.9,38.3]),pts([25.85,39.2,26.0,39.3,26.35,39.38,26.6,39.3,26.6,39.05,26.4,38.97,26.15,39.02,26.05,39.12]),
+  pts([24.7,37.98,24.78,38.0,24.96,37.86,24.9,37.76,24.76,37.86]),pts([25.0,37.66,25.1,37.68,25.24,37.58,25.2,37.52,25.05,37.58])];
 const LAKES=[pts([35.46,31.77,35.6,31.76,35.6,31.4,35.52,31.08,35.38,31.12,35.42,31.5]),pts([35.54,32.9,35.64,32.88,35.62,32.72,35.54,32.74])];
 /* ranges of hills and mountains: a line of small peaks, each lit on its north-western face */
 const RANGES=[[29.2,37.25,30.4,37.15,31.4,37.05,32.4,36.95,33.4,36.98,34.3,37.25,35.0,37.35],[35.75,37.3,36.3,37.05,36.38,36.6,36.3,36.3],
   [35.95,34.55,35.86,34.1,35.7,33.62],[36.42,34.28,36.2,33.86,35.9,33.38],[35.22,32.6,35.24,32.2,35.2,31.92,35.1,31.5],
   [32.7,34.98,33.05,34.92],[23.9,35.28,24.5,35.25,25.0,35.17,25.6,35.08],[36.95,36.55,37.4,36.3]];
+/* in the northern view the Taurus opens where the road from Perga climbs through it, and stands back from the names beside that road;
+   the mountains north-east of Antioch in Pisidia run along the road to Iconium */
+const RANGES_N=[[28.6,37.42,29.3,37.34,29.95,37.3],[31.5,37.12,32.4,36.95,33.4,36.98,34.3,37.25,35.0,37.35],...RANGES.slice(1),[31.45,38.58,31.9,38.36,32.3,38.2],[28.3,38.3,28.9,38.42],[33.9,37.9,34.5,38.2]];
 function poly(g,p){g.beginPath();g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1]);g.closePath()}
 function line(g,p){g.beginPath();g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1])}
 function paint(g){const r=rng(1913),lands=[LAND,...ISLES];
   /* the sea: deep in the open water, lighter toward the east and the coasts */
   g.fillStyle=lg(g,0,0,W,H,['#1c4772','#255a88','#2f6d98']);g.fillRect(0,0,W,H);tex(g,'mott',.42,0,0,W,H,'overlay',1);
   for(let i=0;i<260;i++){const x=r()*W,y=r()*H;R(g,x,y,1.5+r()*3,.5,rgba(r()<.5?'#6aa6c8':'#163a60',.35))}
+  /* from here on in the map's own coordinates, with the window moved to its view */
+  g.save();g.translate(-OX,-OY);
   g.lineJoin='round';g.lineCap='round';
   for(const[w,a]of[[11,.07],[7,.1],[4.5,.14],[2.4,.22],[1.2,.35]])for(const p of[COAST,...ISLES]){(p===COAST?line:poly)(g,p);g.lineWidth=w;g.strokeStyle=rgba('#8cd2d2',a);g.stroke()}
   /* the land: ochre and dust, greener along the coasts and in the Nile delta, sand toward the deserts */
   clipTo(g,()=>{g.beginPath();for(const p of lands){g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1]);g.closePath()}},()=>{
-    g.fillStyle=lg(g,0,0,0,H,['#a88a52','#b8995c','#c4a466']);g.fillRect(0,0,W,H);
+    g.fillStyle=lg(g,0,OY,0,OY+H,['#a88a52','#b8995c','#c4a466']);g.fillRect(OX,OY,W,H);
     for(const[x,y,rx,ry]of[[300,92,70,42],[205,152,60,22],[60,150,90,30],[318,40,40,30]])pool(g,x,y,rx,ry,'#e2cc98',.75,'source-over');
     for(const p of[COAST,...ISLES]){(p===COAST?line:poly)(g,p);g.lineWidth=9;g.strokeStyle=rgba('#6f8a44',.32);g.stroke();g.lineWidth=4;g.strokeStyle=rgba('#62803c',.3);g.stroke()}
     pool(g,...xy(31.0,31.15),26,9,'#5f8a40',.55,'source-over');
-    tex(g,'mott',.55,0,0,W,H,'overlay',1);tex(g,'grain',.16,0,0,W,H,'overlay',.5);
-    for(let i=0;i<500;i++){const x=r()*W,y=r()*H;oval(g,x,y,.6+r()*1.4,.4+r()*.6,rgba(r()<.5?'#d8c08a':'#7a6a3c',.28))}
+    tex(g,'mott',.55,OX,OY,W,H,'overlay',1);tex(g,'grain',.16,OX,OY,W,H,'overlay',.5);
+    for(let i=0;i<500;i++){const x=OX+r()*W,y=OY+r()*H;oval(g,x,y,.6+r()*1.4,.4+r()*.6,rgba(r()<.5?'#d8c08a':'#7a6a3c',.28))}
     /* relief: small peaks along each range, light on the north-west face and shadow on the south-east */
-    for(const rg of RANGES){const q=pts(rg);for(let i=0;i<q.length-2;i+=2){const x0=q[i],y0=q[i+1],x1=q[i+2],y1=q[i+3],n=Math.max(2,Math.round(Math.hypot(x1-x0,y1-y0)/3.2));
+    for(const rg of OY<0?RANGES_N:RANGES){const q=pts(rg);for(let i=0;i<q.length-2;i+=2){const x0=q[i],y0=q[i+1],x1=q[i+2],y1=q[i+3],n=Math.max(2,Math.round(Math.hypot(x1-x0,y1-y0)/3.2));
       for(let k=0;k<n;k++){const t=k/n,x=x0+(x1-x0)*t+(r()-.5)*2.4,y=y0+(y1-y0)*t+(r()-.5)*2,w=1.8+r()*1.2,h=2.2+r()*1.6;
         g.beginPath();g.moveTo(x-w,y);g.lineTo(x,y-h);g.lineTo(x+w,y);g.closePath();g.fillStyle='#7a5c38';g.fill();
         g.beginPath();g.moveTo(x-w,y);g.lineTo(x,y-h);g.lineTo(x+w*.15,y);g.closePath();g.fillStyle='#d6be88';g.fill();
@@ -74,8 +99,11 @@ function paint(g){const r=rng(1913),lands=[LAND,...ISLES];
     for(const p of LAKES){poly(g,p);g.fillStyle='#2f6d98';g.fill();g.lineWidth=.6;g.strokeStyle=rgba('#8cd2d2',.6);g.stroke()}});
   /* the edge of the land, darker on the shadow side */
   for(const p of[COAST,...ISLES]){(p===COAST?line:poly)(g,p);g.lineWidth=.7;g.strokeStyle='#5a4428';g.stroke()}
+  g.restore();
   ao(g,0,0,W,18,'t',.35,'#0a1428');ao(g,0,H-16,W,16,'b',.3,'#0a1428');ao(g,0,0,22,H,'l',.4,'#0a1428');ao(g,W-14,0,14,H,'r',.25,'#0a1428')}
-let baked=null;const art=()=>baked||(baked=bake(W,paint,10));
+const baked={},art=()=>baked[OX+','+OY]||(baked[OX+','+OY]=bake(W,paint,10));
+/* setView: the window a chapter looks through; a name that is not a view gives the usual one */
+function setView(v){[OX,OY]=VIEWS[v]||[0,0]}
 /* a leg as a path of points, through its waypoints, then sampled every couple of pixels for the dotted line */
 const at=id=>xy(...PLACES[id].at);
 function path(a,b){const v=VIA[a+'-'+b]||VIA[b+'-'+a],raw=[at(a)];if(v){const q=pts(v);if(VIA[a+'-'+b])for(let i=0;i<q.length;i+=2)raw.push([q[i],q[i+1]]);
@@ -96,21 +124,24 @@ function label(g,s,x,y,side,col,sz){sz=sz||4.6;g.font=`bold ${sz}px "Lucida Cons
 function dot(g,x,y,lit){oval(g,x,y,1.9,1.9,'#1a0e08');oval(g,x,y,1.15,1.15,lit?'#f4dc8a':'#c8b48a')}
 /* draw: the baked map, then everything that moves: the routes, the city dots and their names */
 function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];const sea=T('THE GREAT SEA').split('').join(' ');
-  g.font='italic bold 5px "Lucida Console",Monaco,monospace';g.textBaseline='middle';g.fillStyle='rgba(190,224,236,.55)';g.fillText(sea,92,84);box(g,sea,92,84,5);
-  for(const{name,at:[lon,lat],sea}of REGIONS){const[x,y]=xy(lon,lat),s=T(name);g.font='bold 4.2px "Lucida Console",Monaco,monospace';g.fillStyle=sea?'rgba(190,224,236,.55)':'rgba(70,46,20,.6)';const sp=s.split('').join(' ');g.fillText(sp,x-s.length*2.3,y);box(g,sp,x-s.length*2.3,y,4.2)}
+  g.save();g.translate(-OX,-OY);
+  g.font='italic bold 5px "Lucida Console",Monaco,monospace';g.textBaseline='middle';g.fillStyle='rgba(190,224,236,.55)';{const[sx,sy]=SEA[OX+','+OY]||SEA['0,0'];g.fillText(sea,sx,sy);box(g,sea,sx,sy,5)}
+  for(const{name,at:[lon,lat],sea}of REGIONS){const[x,y]=xy(lon,lat),s=T(name);if(!inView(x-s.length*2.3,y,-2)||!inView(x+s.length*2.3,y,-2))continue;
+    g.font='bold 4.2px "Lucida Console",Monaco,monospace';g.fillStyle=sea?'rgba(190,224,236,.55)':'rgba(70,46,20,.6)';const sp=s.split('').join(' ');g.fillText(sp,x-s.length*2.3,y);box(g,sp,x-s.length*2.3,y,4.2)}
   for(const L of ST.legs){const n=Math.floor(L.dots.length*L.k);for(let i=0;i<n;i++){const[x,y]=L.dots[i];R(g,x-.6,y-.6,1.2,1.2,'#5a140c');R(g,x-.35,y-.35,.7,.7,L.k<1&&i>n-4?'#ffe0a0':'#d84a32')}}
   const show=new Set(ST.places||Object.keys(PLACES).filter(k=>PLACES[k].minor||ST.seen.has(k)));
-  for(const k of show){const p=placeOf(k),[x,y]=at(k),main=!p.minor||ST.places||ST.seen.has(k);dot(g,x,y,ST.seen.has(k)||ST.hover===k);
+  for(const k of show){const p=placeOf(k),[x,y]=at(k),main=!p.minor||ST.places||ST.seen.has(k);if(!inView(x,y,-3))continue;dot(g,x,y,ST.seen.has(k)||ST.hover===k);
     label(g,T(p.name),x,y+(p.dy||0),p.lab,main?(ST.hover===k?'#ffffff':'#f4e4b8'):'rgba(232,220,190,.62)',main?4.8:4)}
   if(ST.pulse){const[x,y]=at(ST.pulse),k=(t/900)%1;g.strokeStyle=`rgba(255,226,150,${.9*(1-k)})`;g.lineWidth=.6;g.beginPath();g.arc(x,y,2.4+k*6,0,6.2832);g.stroke()}
-  if(ST.places){g.font='bold 4.4px "Lucida Console",Monaco,monospace';g.fillStyle='rgba(244,228,184,.9)';/* the hint stands in open sea, clear of the coast of Egypt */
-    const s=T('Click a place to travel there. Esc to stay.');g.fillText(s,8,H-14);box(g,s,8,H-14,4.4)}}
+  g.restore();
+  if(ST.places){g.font='bold 4.4px "Lucida Console",Monaco,monospace';g.textBaseline='middle';g.fillStyle='rgba(244,228,184,.9)';/* the hint stands in open sea, clear of the coast of Egypt */
+    const s=T('Click a place to travel there. Esc to stay.');g.fillText(s,8,H-14);box(g,s,8+OX,H-14+OY,4.4)}}
 function sting(){const t=now()+.06;if(!AU.ctx)return;DRUMS.d(t,1.3);DRUMS.d(t+.36,.9);INST.drone(mtof(50),t,2.6,.8);
   [62,66,69,74].forEach((m,i)=>INST.harp(mtof(m),t+i*.13,.5,1.3));[74,76,78,81,78].forEach((m,i)=>INST.ney(mtof(m),t+.62+i*.2,i===4?.9:.34,.9))}
 const arrive=()=>{tone({f:1175,d:.18,type:'sine',v:.05,echo:1});tone({f:1568,t:now()+.08,d:.22,type:'sine',v:.035,echo:1})};
 function show(){G.scene=draw;setScore(null);AU.amb={wind:.25,waves:.25}}
 /* journey: between scenes. Fades to the map, shows the legs already travelled, then draws the new ones, city by city. */
-async function journey(route,o){o=o||{};ST.places=null;ST.hover=null;ST.legs=[];ST.seen=new Set();ST.pulse=null;ST.over=o.labels||null;
+async function journey(route,o){o=o||{};setView(o.view);ST.places=null;ST.hover=null;ST.legs=[];ST.seen=new Set();ST.pulse=null;ST.over=o.labels||null;
   for(const[a,b,kind]of route){const k=/new/.test(kind||'')?0:1;ST.legs.push({a,b,k,dots:path(a,b)});if(k){ST.seen.add(a);ST.seen.add(b)}}
   const first=ST.legs.find(L=>!L.k);if(first)ST.seen.add(first.a);
   if(o.instant){show();for(const L of ST.legs){L.k=1;ST.seen.add(L.a);ST.seen.add(L.b)}ST.pulse=route[route.length-1][1];return}
@@ -118,17 +149,18 @@ async function journey(route,o){o=o||{};ST.places=null;ST.hover=null;ST.legs=[];
   for(const L of ST.legs)if(!L.k){ST.pulse=L.a;await tween(o.speed||1900,k=>{L.k=k});ST.seen.add(L.b);arrive();ST.pulse=L.b;await wait(350)}
   if(o.text)for(const s of[].concat(o.text))await narr(s,{dur:Math.max(3200,1600+s.length*60)})}
 /* pick: a hub chapter's places as dots; hovering lights a name, a click resolves with that place, Esc or right-click with null */
-function pick(ids,here,o){o=o||{};ST.places=ids;ST.over=o.labels||null;ST.legs=(o.legs||[]).map(([a,b])=>({a,b,k:1,dots:path(a,b)}));
+function pick(ids,here,o){o=o||{};setView(o.view);ST.places=ids;ST.over=o.labels||null;ST.legs=(o.legs||[]).map(([a,b])=>({a,b,k:1,dots:path(a,b)}));
   ST.seen=new Set([here]);for(const L of ST.legs)for(const k of[L.a,L.b])if(ids.includes(k))ST.seen.add(k);ST.pulse=here;ST.hover=null;show();
   const vp=$('#view'),pos=e=>{const r=vp.getBoundingClientRect();return[(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H]},
-    near=e=>{const[x,y]=pos(e);let best=null,bd=7;for(const k of ids){const[px,py]=at(k),d=Math.hypot(px-x,py-y);if(d<bd){bd=d;best=k}}return best};
+    near=e=>{const[x,y]=pos(e);let best=null,bd=7;for(const k of ids){const[px,py]=where(k),d=Math.hypot(px-x,py-y);if(d<bd){bd=d;best=k}}return best};
   return new Promise(res=>{const end=v=>{vp.removeEventListener('click',ck,true);vp.removeEventListener('mousemove',mv,true);vp.removeEventListener('contextmenu',no,true);removeEventListener('keydown',kd,true);ST.places=null;res(v)},
     ck=e=>{e.stopImmediatePropagation();const k=near(e);if(k)end(k)},mv=e=>{ST.hover=near(e)},no=e=>{e.preventDefault();e.stopImmediatePropagation();end(null)},
     kd=e=>{if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();end(null)}};
     vp.addEventListener('click',ck,true);vp.addEventListener('mousemove',mv,true);vp.addEventListener('contextmenu',no,true);addEventListener('keydown',kd,true)})}
 /* go: draw one leg from a to b on the map that is showing, and arrive */
 async function go(a,b){const L={a,b,k:0,dots:path(a,b)};ST.legs.push(L);ST.seen.add(a);ST.pulse=a;show();await tween(1500,k=>{L.k=k});ST.seen.add(b);arrive();ST.pulse=b;await wait(500)}
-const where=id=>at(id);
+/* where: a place in the window that is showing */
+const where=id=>{const[x,y]=at(id);return[x-OX,y-OY]};
 /* lines: every thin line on the map that a name must not cross: the coasts, the islands and the lakes, as lists of points */
 const lines=()=>[COAST,...ISLES.map(p=>p.concat(p.slice(0,2))),...LAKES.map(p=>p.concat(p.slice(0,2)))];
 return{journey,pick,go,where,lines,places:PLACES,state:ST,draw};

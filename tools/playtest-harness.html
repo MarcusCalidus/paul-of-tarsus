@@ -59,10 +59,11 @@
   const leaf=(i,t)=>[...$('#tablets').querySelectorAll('.leaf')[i].querySelectorAll('p')].map(p=>p.textContent).filter(x=>!t||x.includes(t));
   const enter=async c=>{$('#code').click();$('#codein').value=c;$('#codego').click();await idle()};
   const give=async(id,a)=>{verb('give');item(id);view(a.x,a.y-18);await idle()};
-  /* Chapter Three stops start that chapter from the title screen, without replaying the first two; Chapter Four stops start Chapter Four;
-     the hub test stands on its own. */
+  /* Chapter Three stops start that chapter from the title screen, without replaying the first two; Chapter Four stops start Chapter Four,
+     and Chapter Five stops Chapter Five; the hub test stands on its own. */
   const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3|map3)$/.test(stop),HUB=stop==='hubmap',
-    C4=/^(sendoff|seleucia|kallias|shelter|jair|voyage|map4|salamis|synagogue|speech|hubmap4|paphos|tools|daniel|blind|journey4|final4|deutsch4)$/.test(stop);let n=0;
+    C4=/^(sendoff|seleucia|kallias|shelter|jair|voyage|map4|salamis|synagogue|speech|hubmap4|paphos|tools|daniel|blind|journey4|final4|deutsch4)$/.test(stop),
+    C5=/^(voyage5|perga|parting|sandal|hubmap5|ford|splice|wade|line|pisidia|synp|speech5|week|greek|sabbath2|border|dust|journey5|final5)$/.test(stop);let n=0;
   const lang=(location.search.match(/[?&]lang=(\w+)/)||[])[1]||'en',toLang=async l=>{for(let i=0;i<150&&G.lang!==l;i++)await wait(30);await wait(60)};
   ok(G.lang===lang&&document.documentElement.lang===lang,'the game is in '+LANGS[lang].native+', as the address asks');fitVerbs();
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
@@ -131,7 +132,7 @@
     for(const bad of['garbage','XXX-XXX',w.slice(0,-1)+(w.slice(-1)==='A'?'B':'A'),'']){store('paul.save',bad);await boot();ok(!ov.querySelector('[data-cont]')&&ov.querySelector('[data-ch="1"]').classList.contains('go'),'a damaged save is not offered: '+JSON.stringify(bad))}
     const lost=localStorage.setItem;Storage.prototype.setItem=()=>{throw new Error('full')};autosave('x');ok(G.saved===false,'a browser that will not store anything is no problem');Storage.prototype.setItem=lost;
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
-  if(!C3&&!C4&&!HUB){
+  if(!C3&&!C4&&!C5&&!HUB){
   ov.click();await idle();ok(G.room==='workshop'&&!G.busy,'intro ends in workshop');
   ok(!SHARED.map&&!SHARED.tablets,'the map and the tablets are not loaded until they are needed');
   if(lang==='de'){move(...hs('spool of thread'));ok($('#status').textContent==='Nimm Garnspule','German status line: Nimm Garnspule');
@@ -304,7 +305,7 @@
   halt('map2',()=>{ov.className=''});
   halt('final2');await wait(1700)}
   /* ---------------- Chapter Three ---------------- */
-  if(!C4&&!HUB){
+  if(!C4&&!C5&&!HUB){
   (C3?document.querySelector('#overlay [data-ch="3"]'):ov).click();await idle();ok(G.ch===3&&G.room==='tarsus'&&!G.busy&&srt()==='awl,knife,tablets,thread','chapter three starts in Tarsus');
   halt('tarsus',()=>{say(ACT.barnabas,'I have asked for you along every row of tentmakers in this city. And here you are, at the very last stall.')});
   ok(/^3-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===3,'chapter three code format (wide) '+makeCode());
@@ -410,11 +411,11 @@
   ok(ov.textContent.includes(T('Chapter Four code: {code}',{code:codeOf(4,0)})),'chapter three ends with a chapter four code');
   halt('map3',()=>{ov.className=''});halt('final3');await wait(1700)}
   /* ---------------- Chapter Four ---------------- */
-  if(!HUB){let BN;
   const mapOpen=async()=>{for(let i=0;i<100&&!(SHARED.map&&G.scene===SHARED.map.draw);i++)await wait(50);await wait(450)},
     mapClick=id=>{const[x,y]=SHARED.map.where(id),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+x/320*r.width,clientY:r.top+y/144*r.height,bubbles:true}))},
     crossings=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
       for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;return n};
+  if(!C5&&!HUB){let BN;
   if(stop==='sendoff'){await loadLevel(4);ov.className='';ov.onclick=null;setChapter(4);G.send={lay:1};G.scene=CHAP[4].scenes.sendoff;G.busy=true;lock(true);status();
     halt('sendoff',()=>{narr('Then after fasting and praying, they laid their hands on them and sent them off. (Acts 13:3)',{dur:9000})})}
   (C4?document.querySelector('#overlay [data-ch="4"]'):ov).click();
@@ -524,12 +525,171 @@
   await pickQ(T(CHAP[4].tablets.scripture[6].ref));
   n=0;while(!(ov.classList.contains('end')&&ov.textContent.includes(T('Sent Out to Cyprus')))&&n++<4000)await wait(50);
   ok(ov.classList.contains('end')&&ov.textContent.includes(T('Sent Out to Cyprus')),'chapter four complete screen shown');
-  ok(store('paul.save')===null,'a finished game keeps no save');
+  ok(store('paul.save')===codeOf(5,0),'and the browser keeps the first code of Chapter Five');
+  ok(ov.textContent.includes(T('Chapter Five code: {code}',{code:codeOf(5,0)})),'chapter four ends with a chapter five code');
   ok(!ACT.elymas.room,'Elymas has been led out');
   {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===3&&L.every(l=>l.k===1)&&M.state.seen.has('paphos'),'chapter four ends on the map: Antioch, Seleucia, Salamis, Paphos');
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
-  halt('journey4',()=>{ov.className=''});halt('final4')}
+  halt('journey4',()=>{ov.className=''});halt('final4');await wait(1700)}
+  /* ---------------- Chapter Five ---------------- */
+  if(!HUB){let BN;const S5=i=>T(CHAP[5].tablets.scripture[i].ref),said=t=>heard.includes(T(t));
+  (C5?document.querySelector('#overlay [data-ch="5"]'):ov).click();
+  for(let i=0;i<300&&!(G.ch===5&&SHARED.map&&G.scene===SHARED.map.draw);i++)await wait(30);
+  ok(G.ch===5&&G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===4&&SHARED.map.state.legs[3].a==='paphos','chapter five opens on the map: by sea from Paphos to Perga');
+  if(stop==='voyage5'){await wait(2600);ok(mapClear(),'no name on the opening map crosses a coast, a lake or a route'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
+  halt('voyage5');BN=ACT.barnabas;
+  await idle();ok(G.ch===5&&G.room==='perga'&&!G.scene&&!G.busy&&srt()==='awl,knife,tablets,thread'&&BN.room==='perga'&&ACT.mark.room==='perga'&&T(P.hs.name)===T('Paul'),'chapter five starts on the north road outside Perga');
+  halt('perga',()=>{say(BN,'The north road, Paul. Beyond the plain it climbs into the Taurus, and beyond the Taurus lies Antioch in Pisidia.')});
+  ok(/^5-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===5&&decode(makeCode()).w!=null,'chapter five code format (wide, nine characters) '+makeCode());
+  ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Barnabas')),'a party: the panel offers to switch to Barnabas');fitVerbs();
+  if(lang==='de'){move(...hs('road north'));ok($('#status').textContent==='Gehe zu Straße nach Norden','German status line: Gehe zu Straße nach Norden');
+    verb('use');item('knife');move(...hs('watering trough'));ok($('#status').textContent==='Benutze Zeltmachermesser mit Tränke','German status line: Benutze Zeltmachermesser mit Tränke');verb('use');G.hover=null;status()}
+  heard.length=0;await act(null,'road north');ok(G.room==='perga'&&!G.scene&&said('Up into those mountains, the three of us? First I should learn what that road is like, and who else is taking it.'),'no setting out before asking about the road');
+  heard.length=0;await act('look','mountains');ok(heard.some(h=>h.includes(T(CHAP[5].tablets.scripture[0].text).slice(0,30))),'looking at the Taurus, Paul quotes the psalm on his tablets, word for word');
+  await actor(null,ACT.papias);ok(F.metPap&&nq()===6&&hasQ('no one climbs to the pass alone')&&hasQ("sandal strap has parted"),'met the drover: three questions, and two things learned');
+  heard.length=0;await pickQ("sandal strap has parted");ok(said(ACT.papias.hs.ask.sandal)&&!has('thong'),'asking the drover about the sandal is no thong');await choose(0);await choose(-1);
+  await actor(null,ACT.eumenes);ok(F.metEum&&hasQ('Are there Jews in Antioch?'),'met Eumenes of Antioch, who fears God');await choose(1);await choose(-1);
+  await sweep(ACT.papias,ACT.eumenes,ACT.mark,BN);
+  let t5=await tabs();ok(leaf(0,T('Papias')).length===1&&leaf(0,T('Eumenes')).length===1&&leaf(0,T('Find out what weighs on John Mark.')).length===1&&leaf(0,T("Mend Barnabas's sandal before the climb.")).length===1&&leaf(1).length===9,
+    'the tablets at Perga: people, open tasks and nine passages');
+  ok(leaf(1).every(t=>/\((?:[1-5]\.? )?\p{Lu}\p{Ll}+ \d+:\d+/u.test(t)),'every passage carries its reference');key('Escape');await idle();
+  heard.length=0;await act(null,'road north');ok(G.room==='perga'&&said('John Mark has not stirred from the bundles. Something is on his mind. I will not set out before I know what.'),'no setting out before John Mark has spoken');
+  pray();await idle();ok(hint()[0]==='mark5','the hint points to John Mark');
+  heard.length=0;await give('awl',BN);ok(!F.shod&&G.invs.barnabas.includes('awl'),'Give hands a tool to Barnabas');key('c');await idle();await give('awl',P);key('c');await idle();ok(has('awl')&&PC()===P,'and he hands it back');
+  heard.length=0;verb('use');item('awl');view(BN.x,BN.y-18);await idle();ok(!F.shod&&said('The strap has parted where it passes under the sole. Thread alone will not hold that: it wants a new thong of leather.'),'a parted strap wants leather, not thread');
+  /* John Mark leaves them: no reason is given, and nothing the player says changes it */
+  heard.length=0;await actor(null,ACT.mark);
+  ok(F.markTold&&!G.busy&&['roof','bread','thong'].every(has)&&said('But John left them and returned to Jerusalem. (Acts 13:13)')&&said('The account does not say why.')&&ACT.mark.room==='perga'&&!$('#choices').classList.contains('on'),
+    'John Mark says he is going back to Jerusalem, and hands over what he looked after');
+  halt('parting',()=>{place(P,'perga',176,123,-1);place(BN,'perga',204,126,-1);place(ACT.mark,'perga',146,121,1);say(ACT.mark,'I am not going up into the mountains with you. I am going back to Jerusalem.')});
+  heard.length=0;await act(null,'road north');ok(G.room==='perga'&&!G.scene&&said('I told you. I take no one who cannot keep up.'),'the drover takes no one who cannot keep up');
+  pray();await idle();ok(hint()[0]==='shoe5','the hint points to the sandal');
+  await give('thong',BN);ok(!has('thong')&&G.invs.barnabas.includes('thong'),'the thong can be handed to Barnabas');
+  const c5a=makeCode();key('c');await idle();pray();await idle();ok(hint()[0]==='shoe5b'&&PC()===BN,'Barnabas prays, and gets his own hint');
+  heard.length=0;await use('thong','staff5');ok(said(BN.noCraft)&&has('thong'),'Barnabas leaves the crafts to the tentmaker');key('c');await idle();
+  heard.length=0;await give('bread',ACT.mark);ok(F.bread&&has('bread')&&said('You packed this bread for three, John Mark. A third of it is yours. It is a long way to Jerusalem.'),'an optional kindness: bread for John Mark\'s road');
+  verb('use');item('awl');view(BN.x,BN.y-18);await idle();ok(F.shod&&!has('thong')&&!G.invs.barnabas.includes('thong')&&!G.busy,"Barnabas's sandal is mended, with the thong he was holding");
+  await enter(c5a);ok(G.ch===5&&G.room==='perga'&&PC()===P&&F.markTold&&!F.shod&&!F.bread&&G.invs.barnabas.includes('thong')&&has('roof')&&has('bread')&&ACT.mark.x<100,'the Perga code restores, with the thong in Barnabas\'s hands');
+  verb('use');item('awl');view(BN.x,BN.y-18);await idle();ok(F.shod,'mended again after the code');
+  halt('sandal',()=>{place(BN,'perga',236,112,-1);place(P,'perga',214,116,1);BN.bow=true;say(P,'The old strap out, the new thong through the sole, and a stitch to lock it at either side...')});
+  pray();await idle();ok(hint()[0]==='go5','the hint points to the road');
+  heard.length=0;await use('knife','roof');ok(has('roof')&&!F.gotLine&&said('Take our roof to pieces? We will want it every night on that mountain.'),'the roof is not cut up before it is needed');
+  /* the hub: the road north opens the map, in its northern window */
+  act(null,'road north');await mapOpen();
+  ok(G.scene===SHARED.map.draw&&SHARED.map.state.places.join()==='paphos,perga,antiochp,iconium'&&G.busy&&SHARED.map.state.legs.length===4,'the road north opens the map: Paphos, Perga, Antioch in Pisidia and Iconium, and the way so far');
+  {const[x,y]=SHARED.map.where('antiochp'),[x2,y2]=SHARED.map.where('iconium');ok(x>20&&x<300&&y>8&&y<136&&x2>20&&x2<300&&y2>8&&y2<136,'Antioch in Pisidia and Iconium lie inside the northern window of the map')}
+  ok(mapClear(),'no name on the hub map crosses a coast, a lake or a route'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''));
+  ok(crossings(SHARED.map.state.legs)===0,'no two routes cross');
+  halt('hubmap5',()=>{SHARED.map.state.hover='antiochp'});
+  heard.length=0;mapClick('iconium');await idle();ok(G.room==='perga'&&!G.scene&&!G.busy&&said(CHAP[5].places.iconium.no),'Iconium is not open from Perga, and Paul says why');
+  act(null,'road north');await mapOpen();heard.length=0;mapClick('paphos');await idle();ok(G.room==='perga'&&!G.scene&&said(CHAP[5].places.paphos.no),'the road does not lead back to Paphos');
+  act(null,'road north');await mapOpen();heard.length=0;mapClick('antiochp');await idle();
+  ok(G.room==='ford'&&!G.scene&&!G.busy&&BN.room==='ford'&&ACT.papias.room==='ford'&&ACT.eumenes.room==='ford'&&!ACT.mark.room&&heard.some(h=>h.includes('2')&&h.includes('11:26')),'a click on Antioch: the road climbs into the Taurus, and comes down to a river');
+  halt('ford',()=>{say(ACT.papias,'Hold the beasts! ...Look at that. The guide rope has parted.')});
+  heard.length=0;await act('use','river');ok(!F.lineUp&&said('Alone, and with no line? It would have my feet from under me in three steps.'),'one man does not wade that river');
+  await actor(null,ACT.papias);ok(hasQ('The guide rope at the ford has parted.'),'a new thing to ask about at the ford');await choose(-1);
+  await sweep(ACT.papias,ACT.eumenes,BN);
+  heard.length=0;await useOn('awl','near post');ok(!F.spliced&&said('The awl will open the strands for a splice. But I have nothing to splice in: the rope is short by half a river.'),'a splice needs rope to splice in');
+  pray();await idle();ok(hint()[0]==='rope5','the hint points to the roof');
+  key('c');await idle();heard.length=0;await useOn('staff5','river');ok(!F.lineUp&&said('With my staff I might stand in that water. But stand to do what? There is no rope long enough to carry over.'),'Barnabas will not wade before there is a rope to carry');
+  pray();await idle();ok(hint()[0]==='craft5','Barnabas prays, and leaves the craft to Paul');key('c');await idle();
+  await use('knife','roof');ok(has('line')&&!has('roof')&&F.gotLine,'the rope comes out of the edge of the roof');
+  heard.length=0;await act('use','river');ok(!F.lineUp,'a rope does not cross a river by itself');
+  halt('splice',()=>{place(P,'ford',176,122,1);say(P,'The awl to open the strands, each one laid into its neighbor, and every end tucked under three times...')});
+  await useOn('line','near post');ok(F.spliced&&!has('line')&&!G.busy,'the guide rope is spliced whole');
+  pray();await idle();ok(hint()[0]==='wade5','the hint points to Barnabas and his staff');
+  const c5b=makeCode();key('c');await idle();pray();await idle();ok(hint()[0]==='wade5b','and Barnabas knows what is his to do');
+  halt('wade',()=>{BN.free=true;place(BN,'ford',238,125,1);place(P,'ford',178,122,1);G.wade={x:238,y:125};G.busy=true;lock(true);status();say(BN,'It pulls like an ox!')});
+  heard.length=0;await useOn('staff5','river');
+  ok(F.lineUp&&BN.x>290&&P.x<200&&PC()===BN&&!G.busy&&!G.wade&&heard.some(h=>h.includes(T(CHAP[5].tablets.scripture[2].text)))&&said('"For if one of them falls, the other can help his partner up." (Ecclesiastes 4:10)'),
+    'two are better than one: Barnabas carries the rope over on his staff, and Paul holds the line');
+  heard.length=0;await act(null,'road to the pass');ok(G.room==='ford'&&said('Not without Paul, and not without the train. I will wait by the post.'),'Barnabas waits on the far bank');
+  view(100,126);await idle();ok(BN.x>=300&&BN.room==='ford','and cannot walk back through the river');
+  const c5c=makeCode();await enter(c5b);ok(G.room==='ford'&&PC()===P&&F.spliced&&!F.lineUp&&BN.x<200&&P.x<200,'the ford code restores the moment before the crossing');
+  key('c');await idle();await useOn('staff5','river');ok(F.lineUp&&BN.x>290,'carried over again after the code');
+  await enter(c5c);ok(G.room==='ford'&&PC()===BN&&F.lineUp&&!F.crossed&&BN.x>290&&P.x<200,'and a code holds the two men on their two banks');
+  halt('line',()=>{say(BN,'Twice round the post, and hauled tight. It is fast, Paul!')});
+  key('c');await idle();pray();await idle();ok(hint()[0]==='cross5','the hint points to the drover');
+  await actor(null,ACT.papias);ok(F.crossed&&P.x>300&&ACT.papias.x>300&&ACT.eumenes.x>300&&!G.busy,'the whole train crosses, a hand on the line');
+  pray();await idle();ok(hint()[0]==='pass5','the hint points up to the pass');
+  {const c=makeCode();await enter(c);ok(G.room==='ford'&&F.crossed&&P.x>300&&BN.x>290,'a code on the far bank restores there')}
+  heard.length=0;await act(null,'road to the pass');
+  ok(G.room==='pisidia'&&!G.busy&&!has('bread')&&!has('roof')&&srt()==='awl,knife,tablets,thread'&&BN.room==='pisidia'&&ACT.eumenes.room==='pisidia'&&said('However, they went on from Perga and came to Antioch in Pisidia. (Acts 13:14)'),'over the pass, and into Antioch in Pisidia');
+  halt('pisidia',()=>{say(ACT.eumenes,'Antioch! My own city. Greeks, Phrygians and Jews in one street, and every one of them speaking Greek.')});
+  heard.length=0;await act(null,'east gate');ok(G.room==='pisidia'&&said('We have only just come. Nothing has been said here yet.'),'no leaving Antioch before anything has been said');
+  await actor(null,ACT.papias);ok(hasQ('How does a visitor come to speak in the synagogue?'),'a new thing to ask about in Antioch');await choose(-1);
+  await sweep(ACT.papias,ACT.eumenes,BN);
+  pray();await idle();ok(hint()[0]==='syn5','the hint points to the synagogue');
+  await act(null,'door of the synagogue');ok(G.room==='synp'&&BN.room==='synp'&&ACT.hanan.room==='synp'&&ACT.eumenes.room==='synp'&&!G.busy,'into the synagogue on the Sabbath, Barnabas with him');
+  halt('synp',()=>{say(ACT.hanan,'Peace to you, strangers. I am Hanan: I preside in this house. Visitors are welcome to a seat.')});
+  await actor(null,ACT.hanan);await sweep(ACT.hanan,ACT.joel,ACT.ammia,ACT.eumenes);
+  heard.length=0;await act('use','reading platform');ok(!F.spoke1&&said('Unasked? No. A visitor takes a seat, and waits.'),'a visitor does not take the platform unasked');
+  pray();await idle();ok(hint()[0]==='seat5','the hint: take a seat, and wait');
+  const c5d=makeCode();
+  /* the first Sabbath: whom he addresses, and the passages he quotes */
+  heard.length=0;act(null,'bench');for(let i=0;i<400&&!$('#choices').classList.contains('on');i++)await wait(50);
+  ok(nq()===3&&said('"Men, brothers, if you have any word of encouragement for the people, tell it." (Acts 13:15)'),'they take a seat, and are asked to speak: three ways to begin');
+  await pickQ('Men, Israelites, listen.');ok(nq()===2,'not to the Israelites alone');
+  await pickQ('you others who fear God');ok(nq()===6,'he addresses both; then, the passage for the Son: six on the tablets speak of the Christ');
+  halt('speech5');
+  await pickQ(S5(8));ok(nq()===5,'a light of nations: not yet');await pickQ(S5(3));
+  ok(nq()===5&&said('God has completely fulfilled it to us, their children, by resurrecting Jesus; just as it is written in the second psalm: "You are my son; today I have become your father." (Acts 13:33)'),'the second psalm, as Acts quotes it');
+  await pickQ(S5(6));ok(nq()===4,'a warning comes last');await pickQ(S5(5));ok(nq()===3,'either promise to David carries the point; then the warning');
+  await pickQ(S5(6));
+  ok(F.spoke1&&G.room==='pisidia'&&!G.busy&&ACT.joel.room==='pisidia'&&P.x>200&&said('Many of the Jews and the proselytes who worshipped God followed Paul and Barnabas. (Acts 13:43)')&&
+    said('and that from all the things from which you could not be declared guiltless by means of the Law of Moses, everyone who believes is declared guiltless by means of this one. (Acts 13:39)'),
+    'the word of encouragement is given, and they are asked to speak again');
+  await enter(c5d);ok(G.room==='synp'&&!F.spoke1&&BN.room==='synp'&&ACT.hanan.room==='synp','the synagogue code restores');
+  act(null,'bench');for(let i=0;i<400&&!$('#choices').classList.contains('on');i++)await wait(50);
+  await pickQ('you others who fear God');await pickQ(S5(3));await pickQ(S5(4));await pickQ(S5(6));ok(F.spoke1&&G.room==='pisidia'&&!G.busy,'and the talk is given again');
+  halt('week',()=>{say(BN,'Three days, Paul, and you have not sewn one seam without somebody standing over you with a question.')});
+  /* the week between: three hearers, three ways of answering */
+  heard.length=0;await act(null,'door of the synagogue');ok(G.room==='pisidia'&&said('It is not the Sabbath yet. And there are people in this square whose questions I have not answered.'),'the next Sabbath has not come yet');
+  await sweep(ACT.joel);t5=await tabs();ok(leaf(0,T('Joel')).length>=1&&leaf(0,T('Hanan')).length===1&&leaf(0,T('Ammia')).length===1&&leaf(0,T('John Mark')).length===0&&leaf(0,T('Answer Eumenes: is this for a Greek?')).length===1&&leaf(0,T('Answer Papias: what is it to a drover?')).length===1,'the tablets in the week');key('Escape');await idle();
+  pray();await idle();ok(hint()[0]==='eum5','the hint points to Eumenes, and to what is written');
+  await actor(null,ACT.eumenes);ok(nq()===3,'Eumenes asks whether it is for a Greek: three answers');
+  await pickQ('I said everyone, and I meant it');ok(nq()===2&&!F.eum,'his own word is not enough');
+  halt('greek');
+  heard.length=0;await pickQ('what is written about the foreigner');ok(F.eum&&!G.busy&&heard.some(h=>h.includes(T(CHAP[5].tablets.scripture[7].text))),'Isaiah has a word for the foreigner, quoted exactly');
+  await actor(null,ACT.joel);ok(!F.joel&&!$('#choices').classList.contains('on'),'Joel will not tell Paul what troubles him');
+  await actor(null,ACT.papias);ok(nq()===3,'the drover asks what it is to him: three answers');
+  await pickQ('written in the Prophets');ok(nq()===2&&!F.pap,'the Prophets mean nothing to a man who has never heard them');
+  await pickQ('made the mountains');ok(F.pap&&!G.busy,'he begins with the God who made the mountains');
+  pray();await idle();ok(hint()[0]==='joel5','the hint points to Barnabas');
+  key('c');await idle();pray();await idle();ok(hint()[0]==='joel5b','Barnabas knows what Joel needs');
+  await actor(null,ACT.joel);ok(nq()===3,'Joel asks Barnabas what to do: three answers');
+  await pickQ('sold a field');ok(nq()===2&&!F.joel,'his own story is not what Joel needs');
+  await pickQ('Remain in it');ok(F.joel&&!G.busy,'Barnabas urges him to remain in the undeserved kindness of God');
+  const c5e=makeCode();pray();await idle();ok(hint()[0]==='sab5','the hint points to the Sabbath');
+  /* the next Sabbath */
+  heard.length=0;act(null,'door of the synagogue');for(let i=0;i<400&&!$('#choices').classList.contains('on');i++)await wait(50);
+  ok(nq()===6&&G.crowd&&PC()===P&&said('The next Sabbath nearly all the city gathered together to hear the word of Jehovah. (Acts 13:44)'),'the next Sabbath: nearly all the city, and an objection');
+  heard.length=0;await pickQ(S5(7));ok(nq()===5&&heard.some(h=>h.includes(T(CHAP[5].tablets.scripture[7].text))),'the foreigner who joins himself: quoted exactly, and contradicted');
+  halt('sabbath2');
+  heard.length=0;await pickQ(S5(8));
+  ok(F.out&&G.room==='border'&&!G.busy&&!G.crowd&&BN.room==='border'&&ACT.eumenes.room==='border'&&ACT.joel.room==='border'&&ACT.papias.room==='border'&&ACT.straton.room==='border'&&
+    said('For Jehovah has commanded us in these words: "I have appointed you as a light of nations, for you to be a salvation to the ends of the earth." (Acts 13:47)')&&
+    said('Since you are rejecting it and do not judge yourselves worthy of everlasting life, look! we turn to the nations. (Acts 13:46)'),'a light of nations: they turn to the nations, and are thrown outside the boundaries');
+  halt('border',()=>{say(ACT.straton,'That stone is the boundary of Antioch. You will not come back across it. That is the order of the principal men of the city.')});
+  await sweep(ACT.straton,ACT.eumenes,ACT.joel,ACT.papias);
+  heard.length=0;await act(null,'boundary stone');ok(!ov.classList.contains('end')&&!G.busy&&said('Not yet. They came all this way out to stand with us. I will not turn my back on them without a word.'),'not before the disciples are strengthened');
+  pray();await idle();ok(hint()[0]==='cheer5','the hint points to Eumenes');
+  await actor(null,ACT.eumenes);ok(nq()===3,'what becomes of us now? three answers');
+  await pickQ('Come with us to Iconium');ok(nq()===2&&!F.cheered,'the congregation is here, not on the road');
+  await pickQ('It was never our word');ok(F.cheered&&!G.busy,'they did not put their faith in Paul or in Barnabas');
+  const c5f=makeCode();await enter(c5e);ok(G.room==='pisidia'&&PC()===BN&&F.eum&&F.joel&&F.pap&&!F.out&&ACT.joel.room==='pisidia','the code from the week restores, with Barnabas played');
+  await enter(c5f);ok(G.room==='border'&&F.cheered&&PC()===P&&ACT.straton.room==='border','and the code from outside the boundaries');
+  pray();await idle();ok(hint()[0]==='dust5','the hint: shake off the dust, and not in anger');
+  halt('dust',()=>{place(P,'border',238,123,-1);place(BN,'border',264,126,-1);P.bow=BN.bow=true;G.dust=1;G.busy=true;lock(true);status();narr('So they shook the dust off their feet against them and went to Iconium. (Acts 13:51)',{dur:9000})});
+  heard.length=0;act(null,'road to Iconium');
+  n=0;while(!(ov.classList.contains('end')&&ov.textContent.includes(T('A Light of Nations')))&&n++<4000)await wait(50);
+  ok(ov.classList.contains('end')&&ov.textContent.includes(T('A Light of Nations'))&&said('And the disciples continued to be filled with joy and holy spirit. (Acts 13:52)'),'chapter five complete screen shown');
+  ok(store('paul.save')===null,'a finished game keeps no save');
+  {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===6&&L.every(l=>l.k===1)&&M.state.seen.has('iconium'),'chapter five ends on the map: from Paphos by Perga and Antioch to Iconium');
+    ok(crossings(L)===0,'no two routes cross');
+    ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
+  halt('journey5',()=>{ov.className=''});halt('final5')}
   if(lang!=='en')ok(!MISSING.size,'every line shown in the game had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);

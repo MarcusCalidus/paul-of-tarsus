@@ -794,8 +794,8 @@ async function finale4(){playAs(P);await wait(300);
   await journey();await narr('From Paphos, Paul and his companions would put out to sea for Asia Minor. (Acts 13:13)',{dur:6000});
   endScreen({title:'Sent Out to Cyprus',text:"Paul sewed a roof for a ship's deck, and shared it with a man he had once driven from his home. Before a governor he asked for nothing, hid nothing, and answered from the Scriptures.",
     based:'Based on Acts 13:1-12; 4:36, 37; 8:1-3; 11:19 and Galatians 1:23. Supporting characters and dialogue are imaginative; the events are from the Scriptures.',
-    go:'Click to return to the title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+    go:'Click to continue to Chapter Five',code:['Chapter Five code: {code}',codeOf(5,0)]});
+  await wait(1500);ov.onclick=()=>startChapter(5);await new Promise(()=>{})}
 function hint4(){const b=PC()!==P,craft=['craft4',["That is the tentmaker's craft, not mine. A good partner knows when to step back.",'Saul should do this part. I can leave it to him; he is never far away.']];
   if(inSel()){
     if(!F.metKal)return['kal4',['We were sent off to cross the sea. Someone on this quay decides who goes aboard.','I should talk to the shipmaster by the gangplank.']];
