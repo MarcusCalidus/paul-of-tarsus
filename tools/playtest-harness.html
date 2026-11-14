@@ -43,6 +43,20 @@
   /* Chapter Three stops start that chapter from the title screen, without replaying the first two. */
   const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3|map3|hubmap)$/.test(stop);let n=0;
   halt('title');
+  /* sound: the first press anywhere starts it; a press wakes sound that iOS interrupted; on iPhone and iPad a note says where Silent Mode is */
+  {const hushOn=()=>$('#hush').classList.contains('on'),dev=AU.apple;
+    ok(!dev,'desktop Chrome is not taken for an iPhone or iPad');ok(!AU.ctx,'no sound before the first press');
+    AU.apple='iPad';dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
+    ok(AU.ctx&&hushOn()&&/iPad may be in Silent Mode/.test($('#hush').textContent),'the first press starts the sound; on an iPad it mentions Silent Mode');
+    dispatchEvent(new PointerEvent('pointerup',{bubbles:true}));ok(hushOn(),'the note outlasts the press that opened it');
+    await wait(450);dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));ok(!hushOn(),'the next press puts the note away');
+    $('#mute').click();ok(AU.muted&&!hushOn(),'sound off: no note');$('#mute').click();ok(!AU.muted&&hushOn(),'sound on again: the note comes back');
+    await wait(450);key('Shift');ok(!hushOn(),'a key puts the note away');
+    AU.apple=dev;$('#mute').click();$('#mute').click();ok(!AU.muted&&!hushOn(),'no note on a desktop');
+    const real=AU.ctx;let n=0;const fake=st=>({state:st,resume(){n++;return Promise.resolve()},createBuffer(){return{}},createBufferSource(){return{connect(){},start(){}}},destination:{}});
+    AU.ctx=fake('interrupted');dispatchEvent(new PointerEvent('pointerup',{bubbles:true}));ok(n===1,'a tap wakes sound that iOS interrupted');
+    AU.ctx=fake('suspended');key('Shift');ok(n===2,'a key wakes sound the browser held back');
+    AU.ctx=fake('running');dispatchEvent(new MouseEvent('click'));ok(n===2,'running sound is left alone');AU.ctx=real}
   if(stop==='title2'){document.querySelector('#overlay [data-ch="2"]').click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy,'title starts chapter two');halt('title2')}
   if(stop==='title3'){document.querySelector('#overlay [data-ch="3"]').click();await idle();ok(G.ch===3&&G.room==='tarsus'&&!G.busy&&ACT.barnabas.x>100,'title starts chapter three');halt('title3')}
   if(stop==='titlecode'){Object.assign(F,{gotAwl:1,gotThread:1,gotKnife:1,gotCloth:1,gotRope:1,gotSkin:1,gotBasket:1,cutCloth:1,longRope:1});G.room='street';
@@ -56,6 +70,7 @@
   ov.click();await idle();ok(G.room==='workshop'&&!G.busy,'intro ends in workshop');
   ok(!SHARED.map&&!SHARED.tablets,'the map and the tablets are not loaded until they are needed');
   halt('workshop',()=>{say(ACT.eliab,'Tonight we lower you from her window. We need a basket that will hold, and a rope that will reach.')});
+  halt('silent',()=>{AU.apple='iPad';$('#mute').click();$('#mute').click()});
   halt('walk',()=>{P.speed=4;walk(P,60,130)});
   /* the verb interface: default verbs, lit verb, right-click, double-click, Tab labels, keys */
   ok(defVerb(H('door to the street'))==='open'&&defVerb(ACT.eliab.hs)==='talk'&&defVerb(H('spool of thread'))==='pickup'&&defVerb(H('shelf'))==='look'

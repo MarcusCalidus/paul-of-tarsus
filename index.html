@@ -34,6 +34,10 @@ body{display:flex;align-items:center;justify-content:center}
   margin-left:calc(var(--s)*-1px);border-radius:50%;background:var(--gold);box-shadow:0 0 0 var(--px) #000}
 .tag.exit::before{background:#9fd8b0}.tag.who::before{background:#f0a8a0}
 #dim{position:absolute;z-index:2;inset:0;background:#05030c;opacity:0;pointer-events:none;transition:opacity .9s}
+#hush{position:absolute;z-index:6;top:calc(var(--s)*3px);right:calc(var(--s)*3px);display:none;pointer-events:none;max-width:calc(var(--s)*170px);
+  padding:calc(var(--s)*2px) calc(var(--s)*4px);font-size:calc(var(--s)*4.6px);line-height:1.35;color:#f0e2c0;text-align:right;
+  background:rgba(10,6,4,.86);border:var(--px) solid var(--dim);box-shadow:0 calc(var(--px)*2) calc(var(--s)*3px) rgba(0,0,0,.7);text-shadow:var(--px) var(--px) 0 #000}
+#hush.on{display:block}
 #overlay{position:absolute;z-index:4;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;padding:calc(var(--s)*8px);cursor:pointer}
 #overlay.on{display:flex}
@@ -106,6 +110,7 @@ body{display:flex;align-items:center;justify-content:center}
     <div id="dim"></div>
     <div id="overlay"></div>
     <div id="codebox"></div>
+    <div id="hush"></div>
   </div>
   <div id="status">&nbsp;</div>
   <div id="panel">
@@ -149,10 +154,14 @@ function addItem(id,quiet){if(!has(id)){G.inv.push(id);drawInv();if(!quiet)SFX.p
 function delItem(id){const i=G.inv.indexOf(id);if(i>=0)G.inv.splice(i,1);if(G.item===id)G.item=null;drawInv()}
 /* ============ AUDIO: Web Audio chiptune synth ============ */
 const AU={ctx:null,muted:false,mood:'calm',step:0,next:0,score:null,amb:null};
+/* Browsers let sound start only inside a tap, click or key press, and iOS stops it ("interrupted") when the player switches apps or
+   locks the screen. So every press anywhere wakes the sound if it is not running, and the first press creates it. */
 function audioInit(){
-  if(AU.ctx){if(AU.ctx.state==='suspended')AU.ctx.resume();return}
+  if(AU.ctx)return audioWake();
   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
-  const c=AU.ctx=new AC();
+  /* "ambient": on iPhone and iPad the game stays quiet in Silent Mode, like any other game. Never work around Silent Mode. */
+  try{if(navigator.audioSession)navigator.audioSession.type='ambient'}catch(e){}
+  const c=AU.ctx=new AC();audioWake();if(!AU.muted)hush(1);
   AU.master=c.createGain();AU.master.gain.value=AU.muted?0:1;
   const comp=c.createDynamicsCompressor();AU.master.connect(comp);comp.connect(c.destination);
   AU.mus=c.createGain();AU.mus.gain.value=.55;AU.mus.connect(AU.master);
@@ -166,6 +175,21 @@ function audioInit(){
   for(let i=0;i<ch.length;i++)ch[i]=Math.random()*2-1;AU.nbuf=nb;
   AU.next=c.currentTime+.15;setInterval(sched,60);
 }
+/* audioWake: resume sound the browser holds back, inside the press that allows it. The one-sample buffer unlocks older iOS. */
+function audioWake(){const c=AU.ctx;if(!c||c.state==='running'||c.state==='closed')return;
+  try{const r=c.resume();if(r&&r.catch)r.catch(()=>{});const b=c.createBufferSource();b.buffer=c.createBuffer(1,1,22050);b.connect(c.destination);b.start(0)}catch(e){}}
+for(const t of['pointerdown','pointerup','touchend','click','keydown'])addEventListener(t,()=>audioInit(),true);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)audioWake()});
+/* Silent Mode: iPhone and iPad mute the game in Silent Mode, and Safari does not tell a page whether it is on. So on those devices
+   the game says where to look: once when the sound first starts, and again whenever the player switches sound on. */
+AU.apple=/iPhone|iPod/.test(navigator.userAgent)?'iPhone':/iPad/.test(navigator.userAgent)||/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1?'iPad':'';
+let hushT=0;
+function hush(on){const el=$('#hush');clearTimeout(hushT);
+  if(!on||!AU.apple){el.classList.remove('on');return}
+  const l1=AU.apple==='iPhone'?'No music? This iPhone may be in Silent Mode.':'No music? This iPad may be in Silent Mode.';
+  el.innerHTML='&#9835; '+l1+'<br>'+'The game stays quiet until Silent Mode is off.';
+  el.classList.add('on');el.dataset.t=performance.now();hushT=setTimeout(()=>hush(0),8000)}
+for(const t of['pointerdown','keydown'])addEventListener(t,()=>{const el=$('#hush');if(el.classList.contains('on')&&performance.now()-el.dataset.t>400)hush(0)},true);
 const now=()=>AU.ctx?AU.ctx.currentTime:0;
 const mtof=m=>440*Math.pow(2,(m-69)/12);
 function tone(o){const c=AU.ctx;if(!c)return;const t=o.t||c.currentTime,osc=c.createOscillator(),g=c.createGain(),v=o.v||.2;
@@ -259,7 +283,7 @@ const SFX={
 };
 function setMute(m){AU.muted=m;if(AU.master)AU.master.gain.value=m?0:1;
   $('#mute').innerHTML=m?'&#9835; SOUND OFF':'&#9835; SOUND ON';$('#mute').style.opacity=m?.6:1}
-$('#mute').onclick=e=>{e.stopPropagation();audioInit();setMute(!AU.muted);SFX.click()};
+$('#mute').onclick=e=>{e.stopPropagation();audioInit();setMute(!AU.muted);hush(!AU.muted);SFX.click()};
 /* ============ PAINT: a small painterly toolkit ============ */
 /* Rooms are painted once, with gradients, textures, light and shadow, at twice the room resolution.
    A final pass quantizes the colors with an ordered dither, which gives the hand-pixelled look of early-90s VGA backdrops. */

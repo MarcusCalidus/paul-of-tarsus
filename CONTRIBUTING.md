@@ -49,6 +49,7 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 - Characters are pixel-placed sprites drawn to the same standard as the backdrops: three-quarter view, crisp hand-placed pixels, flat bands of light and shadow, no outline, and lit by the room they stand in. Dress and head coverings fit the period, the place and the person.
 - There are no image or audio files. Everything is painted in code on a canvas, and all music and sound are synthesized with the Web Audio API.
 - Each chapter has its own score, and each room has a mood and ambience to match.
+- Sound follows the player's device. On iPhone and iPad the game stays quiet in Silent Mode; never work around it (no HTML audio element, no `playback` audio session). The game may say that Silent Mode could be on, but it must not claim to know: Safari does not tell a page.
 
 ## 5. Code
 

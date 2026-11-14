@@ -10,7 +10,7 @@ import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 const here=path.dirname(fileURLToPath(import.meta.url)),root=path.join(here,'..');
 const CHROME=process.env.CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-const out=process.env.SHOTS||path.join(here,'out'),PORT=9333;
+const out=process.env.SHOTS||path.join(here,'out');
 const stops=process.argv.slice(2);if(!stops.length)stops.push('all');
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'paul-playtest-'));
 const game=fs.readFileSync(path.join(root,'index.html'),'utf8');
@@ -18,10 +18,13 @@ const game=fs.readFileSync(path.join(root,'index.html'),'utf8');
 fs.writeFileSync(path.join(tmp,'test.html'),game.replace('<head>',`<head><base href="${pathToFileURL(root+path.sep).href}">`)
   .replace('</body>',fs.readFileSync(path.join(here,'playtest-harness.html'),'utf8')+'</body>'));
 fs.mkdirSync(out,{recursive:true});
-const chrome=spawn(CHROME,['--headless=new','--disable-gpu','--mute-audio','--hide-scrollbars',`--remote-debugging-port=${PORT}`,
-  `--user-data-dir=${path.join(tmp,'profile')}`,'about:blank'],{stdio:'ignore'});
+// Port 0: Chrome picks a free port and writes it to DevToolsActivePort, so several runs can play side by side.
+const prof=path.join(tmp,'profile');
+const chrome=spawn(CHROME,['--headless=new','--disable-gpu','--mute-audio','--hide-scrollbars','--remote-debugging-port=0',
+  `--user-data-dir=${prof}`,'about:blank'],{stdio:'ignore'});
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-async function target(){for(let i=0;i<60;i++){try{const j=await(await fetch(`http://127.0.0.1:${PORT}/json`)).json();
+async function target(){for(let i=0;i<60;i++){try{const port=fs.readFileSync(path.join(prof,'DevToolsActivePort'),'utf8').split('\n')[0].trim();
+  const j=await(await fetch(`http://127.0.0.1:${port}/json`)).json();
   const p=j.find(t=>t.type==='page');if(p)return p.webSocketDebuggerUrl}catch{}await sleep(250)}throw new Error('Chrome did not start')}
 let failed=false;
 try{
