@@ -568,7 +568,7 @@ async function finale2(){
   const sail=tween(14000,k=>{G.ship.ox=Math.round(300*k*k)});
   await narr('So the brothers sent him off to Tarsus. (Acts 9:30)',{dur:6000});
   await narr('The congregation throughout Judea, Galilee and Samaria then entered into a period of peace, and it was built up. (Acts 9:31)',{dur:8000});
-  await sail;await narr('Years would pass in Tarsus. Then, one day, a friend would come looking for him. (Acts 11:25)',{dur:6500});
+  await sail;await journey();await narr('Years would pass in Tarsus. Then, one day, a friend would come looking for him. (Acts 11:25)',{dur:6500});
   SFX.win();ov.className='on end';ov.innerHTML='<h2>CHAPTER COMPLETE</h2><h1 style="font-size:calc(var(--s)*12px)">A Friend in Jerusalem</h1>'+
     '<p>Paul forced no door. A friend spoke for him, and honest words and honest work did the rest.</p>'+
     `<p>Prayers for wisdom: ${G.prays}</p>`+
@@ -595,6 +595,7 @@ function hint2(){
 /* ============ CHAPTER DEFINITION ============ */
 const BNhs=BN.hs;
 return{rooms:['jerusalem','upper','harbor'],setup:()=>{BN.hs=BNhs;setup2()},start:start2,hint:hint2,music:MUSIC,topics:TOPICS,tablets:TABLETS,
+  route:[['damascus','jerusalem'],['jerusalem','caesarea','new'],['caesarea','tarsus','new sea']],
   place:room=>{if(F.told)place(BN,'jerusalem',360,114,-1);if(room==='upper'||F.preach)place(BN,'upper',96,124,1);if(room==='upper')F.upper=1;if(F.preach&&room==='jerusalem')disputers()},
     flags:['knocked','metBarn','gotStick','peg','wheelOn','cartFixed','told','metCapt','sailDown','gotPatch','gotTwine','upper','preach'],
     ent:{jerusalem:[40,120,1],upper:[56,120,1],harbor:[40,122,1]},

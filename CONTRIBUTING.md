@@ -8,7 +8,8 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 
 - Every Bible quotation, paraphrase and reference uses the **New World Translation of the Holy Scriptures (Study Edition)**, on [jw.org](https://www.jw.org/en/library/bible/study-bible/books/) or in the [Watchtower Online Library](https://wol.jw.org/en/wol/binav/r1/lp-e/nwtsty).
 - Look up every verse there before you write it. Do not quote from memory, from another translation, or from another edition of the New World Translation.
-- Quote briefly and exactly. Prefer a short paraphrase with its reference to a long quotation. A paraphrase must not say more or less than the verse does.
+- Quote briefly and exactly. Prefer a short paraphrase with its reference to a long quotation. A paraphrase must not say more or less than the verse does. Never invent a quotation, or present a paraphrase as one.
+- If you cannot check a verse's exact wording, give the reference only, and list it for the maintainer to check.
 - Give the reference with the line it belongs to, for example "(James 1:5)", or on the chapter's end screen.
 
 ### Historical information
@@ -37,8 +38,9 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 - This includes cross shapes that appear by accident in pixel art. Watch for:
   - a tiny ellipse one pixel high, which rasterizes as a plus sign;
   - a vertical line over a horizontal band, such as rope lashings or yarn skeins;
-  - grid lines or map lines that meet at right angles;
-  - "+" or "x" markers and cursors.
+  - grid lines or map lines that meet at right angles, and route lines on a map that cross each other;
+  - a label or text laid across a thin line, such as a lake, river or coast;
+  - "+" or "x" markers, and cross-shaped cursors or highlights.
 - Look at screenshots of every changed scene before committing.
 
 ## 4. Look and sound
@@ -52,12 +54,13 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 
 - `index.html` is the engine. Each chapter is one file, `levels/chapterN.js`, loaded only when that chapter is played. It holds the chapter's music, artwork, cast, items, rooms, dialog, cutscenes and prayer hints. A new chapter adds its file and one line to the `CHAP` manifest. Anything shared between chapters goes in its own file, also loaded on demand, not in a chapter file or the engine.
 - The game must keep running when `index.html` is opened straight from disk: no build step, no server and no dependencies.
-- Safe-point codes are a promise to players. Every code that works today must keep working. If a change needs more state, add a new code format that the decoder can tell apart from the old one.
+- Safe-point codes are a promise to players. Every code that works today must keep working. If a change needs more state, add a new code format that the decoder can tell apart from the old one. Never reorder a chapter's `flags`, `rooms` or `share`; only append to them, within the widths the code format reserves.
 
 ## 6. Testing and documentation
 
 - `node tools/playtest.mjs` must pass (it needs Node 22 or newer and Google Chrome). Extend it for every new puzzle step or feature.
-- Keep the README current: the walkthroughs, "How to play", "About the content" and the screenshots.
+- Add a stop to `tools/playtest-harness.html` for every new scene or feature, and look at its screenshot.
+- Keep the README current: the walkthroughs, "How to play", "About the content", the "Development" section and the screenshots. Every new feature gets a screenshot in `docs/screenshots/`.
 
 ## 7. Publishing
 

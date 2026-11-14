@@ -840,6 +840,18 @@ function pray(){if(G.busy||G.scene||!G.room)return;audioInit();
 /* take: pick something up for good. Marked, so that Pick up is its default verb. */
 const take=(flag,item,line)=>Object.assign(async()=>{F[flag]=1;addItem(item);await say(P,line)},{take:1});
 const TH={thought:1,color:'#cfe2ff'};
+/* journey: between scenes, the chapter's route draws itself on the travel map (shared/map.js). The chapter declares it as
+   route:[[from,to,kind],...], place ids as in shared/map.js; kind 'new' draws the leg now (earlier legs are shown at once), 'sea' takes
+   the sea lane. If the map cannot be loaded, the story simply goes on. */
+async function journey(o){const r=CHAP[G.ch].route;if(!r)return;try{await need('map')}catch(e){console.error(e);return}return SHARED.map.journey(r,o)}
+/* travel: for a hub chapter, which declares the places it can travel between: places:{id:{room,x,y,dir}}. An exit with exit:travel
+   opens the map; a click on a place draws the way there and enters that place's room. Esc or a right-click stays. */
+async function travel(){const c=CHAP[G.ch],ids=Object.keys(c.places||{}),here=ids.find(k=>c.places[k].room===G.room);if(!ids.length)return;
+  try{await need('map')}catch(e){return narr(e.message)}
+  await fade(1,300);const chosen=SHARED.map.pick(ids,here);await fade(0,300);const to=await chosen;
+  if(to&&to!==here)await SHARED.map.go(here,to);await fade(1,400);G.scene=null;setScore(c.music);
+  if(to&&to!==here){const p=c.places[to];enterRoom(p.room,p.x,p.y,p.dir)}else viewOf(PC());codeBtn();await fade(0,400);
+  const r=to&&to!==here&&ROOMS[G.room];if(r&&r.enter)await r.enter()}
 async function quiz(who,q,opts){await say(who,q);let av=opts.slice();
   for(;;){const o=av[await choose(av.map(o=>o.q))];for(const l of o.p||[o.q])await say(P,l);for(const l of o.r)await say(who,l);
     if(o.ok)return;av=av.filter(x=>x!==o);await say(who,q)}}

@@ -630,7 +630,7 @@ async function finale(){AU.mood='calm';await wait(500);
   const off=tween(9000,k=>{G.end.px=112+150*k;G.end.py=124+6*Math.sin(k*3)-k*8});
   await narr("So Paul escaped the governor's hands: not by force, and not by a miracle, but by the courage of his brothers and trust in Jehovah. (2 Corinthians 11:32, 33)",{dur:8000});
   await off;G.end.px=null;G.end.heads=0;
-  await narr('The road to Jerusalem lay ahead, and beyond it, many more.',{dur:3800});
+  await journey();await narr('The road to Jerusalem lay ahead, and beyond it, many more.',{dur:3800});
   SFX.win();const s=Math.round((performance.now()-G.started)/1000);
   ov.className='on end';ov.innerHTML='<h2>CHAPTER COMPLETE</h2><h1 style="font-size:calc(var(--s)*12px)">Escape from Damascus</h1>'+
     '<p>Paul used the skill of his hands, accepted the help of his brothers, and relied on Jehovah.</p>'+
@@ -641,6 +641,8 @@ async function finale(){AU.mood='calm';await wait(500);
   await new Promise(()=>{})}
 /* ============ CHAPTER DEFINITION ============ */
 return{rooms:['workshop','street','house'],setup,start,hint,music:MUSIC,scenes:{wall:wallScene},topics:TOPICS,tablets:TABLETS,
+    /* the way out of this chapter, drawn on the travel map at its end (place ids from shared/map.js) */
+    route:[['damascus','jerusalem','new']],
     flags:['gotAwl','gotThread','gotKnife','gotCloth','gotRope','gotSkin','gotBasket','cutCloth','longRope','metZakkai','kind',
       'awning','strong','inHouse','lampOut','shutters','ropeTied','basketOn','water'],
     ent:{workshop:[60,118,1],street:[46,114,1],house:[52,118,1]},

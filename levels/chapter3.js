@@ -653,7 +653,7 @@ async function finale3(){playAs(P);AU.mood='hope';await wait(400);
   await narr('The great famine came, as foretold, in the time of Claudius. The brothers in Judea did not face it alone. (Acts 11:28)',{dur:8000});
   await trek;
   await narr('After fully carrying out the relief work in Jerusalem, Barnabas and Saul returned and took along with them John, the one also called Mark. (Acts 12:25)',{dur:9000});
-  await narr('And in Antioch, a far longer road was about to open. (Acts 13:1-3)',{dur:5500});
+  await journey();await narr('And in Antioch, a far longer road was about to open. (Acts 13:1-3)',{dur:5500});
   SFX.win();ov.className='on end';ov.innerHTML='<h2>CHAPTER COMPLETE</h2><h1 style="font-size:calc(var(--s)*12px)">Called to Antioch</h1>'+
     '<p>Paul kept his word, worked with his hands, and helped a sister find what she had to give. The gift was carried honestly, in the sight of Jehovah and of men.</p>'+
     `<p>Prayers for wisdom: ${G.prays}</p>`+
@@ -685,6 +685,7 @@ function hint3(){const b=PC()!==P,saul=['saul3',["That is Saul's craft, not mine
   return['end3',['Everything is ready. It is time to go.']]}
 /* ============ CHAPTER DEFINITION ============ */
 return{rooms:['tarsus','court','antioch'],setup:setup3,start:start3,hint:hint3,music:MUSIC,scenes:{road:roadScene},topics:TOPICS,tablets:TABLETS,
+  route:[['damascus','jerusalem'],['jerusalem','caesarea'],['caesarea','tarsus','sea'],['tarsus','antioch','new']],
   flags:['metKleon','seam','gotLoops','loopsOn','gotTent','sold','cutBolt','gotSpool','bags','bagsOn','sealed','held','jar'],
   party:['paul','barnabas'],home:{staff:'barnabas'},share:['awl','thread','knife','tablets','loops','tent','bolt','panels','spool','bags','wages','staff'],
   ent:{tarsus:[150,122,1],court:[146,128,-1],antioch:[46,116,1]},
