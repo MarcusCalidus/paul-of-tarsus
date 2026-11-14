@@ -30,6 +30,12 @@
  new MutationObserver(()=>{for(const b of document.querySelectorAll("#choices button"))fits(b,"choice")}).observe($("#choices"),{attributes:true,childList:true});
  new MutationObserver(()=>fits($("#status"),"status")).observe($("#status"),{childList:true,characterData:true,subtree:true});
  new MutationObserver(()=>fits($("#top"),"top bar")).observe($("#top"),{childList:true,characterData:true,subtree:true});
+ /* mapClear: no name or line of text on the map that is showing crosses a coast, an island, a lake or a route (CONTRIBUTING section 3) */
+ const mapClear=()=>{const M=SHARED.map,bx=M.state.boxes,bad=mapClear.bad=new Set(),hit=(b,[x0,y0],[x1,y1])=>{if(Math.max(x0,x1)<b[0]||Math.min(x0,x1)>b[2]||Math.max(y0,y1)<b[1]||Math.min(y0,y1)>b[3])return false;
+     for(let k=0;k<=20;k++){const x=x0+(x1-x0)*k/20,y=y0+(y1-y0)*k/20;if(x>=b[0]&&x<=b[2]&&y>=b[1]&&y<=b[3])return true}return false};
+   for(const b of bx){M.lines().forEach((p,j)=>{for(let i=2;i<p.length;i+=2)if(hit(b,[p[i-2],p[i-1]],[p[i],p[i+1]]))bad.add(b[4]+(j?' (island or lake)':' (coast)'))});
+     for(const L of M.state.legs)for(const[x,y]of L.dots)if(x>=b[0]-.6&&x<=b[2]+.6&&y>=b[1]-.6&&y<=b[3]+.6)bad.add(b[4]+' (route)')}
+   return bx.length>0&&!bad.size};
  const fitVerbs=()=>{for(const b of document.querySelectorAll("#verbs button"))if(getComputedStyle(b).display!=="none")fits(b,"verb",1)};
  const heard=[];new MutationObserver(m=>m.forEach(r=>r.addedNodes.forEach(n=>heard.push(n.textContent)))).observe($('#speech'),{childList:true});
  const choose=async i=>{const b=document.querySelectorAll('#choices button');b[i<0?b.length+i:i].click();await idle()};
@@ -357,7 +363,8 @@
   {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===4&&L.every(l=>l.k===1)&&M.state.seen.has('antioch'),'chapter three ends on the map: the whole road, from Damascus to Antioch');
     const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
     for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;
-    ok(n===0,'no two routes cross')}
+    ok(n===0,'no two routes cross');
+    ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('map3',()=>{ov.className=''});halt('final3');
   if(lang!=='en')ok(!MISSING.size,'every line shown in the game had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter (Chapter Four is not written): places on the map, six rooms, and wide codes that hold a room past the fourth */
@@ -370,6 +377,7 @@
   enterRoom('street',46,114,1);await enter(h9);ok(G.ch===9&&G.room==='antioch'&&!G.busy,'the sixth room round-trips through a code');
   cut(travel);for(let i=0;i<60&&G.scene!==SHARED.map.draw;i++)await wait(50);await wait(400);
   ok(G.scene===SHARED.map.draw&&SHARED.map.state.places.length===4&&G.busy,'the hub opens the map with its places');
+  ok(mapClear(),'no name or hint on the hub map crosses a coast, a lake or a route'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''));
   halt('hubmap');
   {const[jx,jy]=SHARED.map.where('jerusalem'),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+jx/320*r.width,clientY:r.top+jy/144*r.height,bubbles:true}))}
   await idle();ok(G.room==='workshop'&&!G.scene&&!G.busy&&SHARED.map.state.legs.length===1,'a click on a place travels there');

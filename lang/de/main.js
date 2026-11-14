@@ -102,5 +102,5 @@ TEXTS('de','main',{
   "SYRIA":"SYRIEN",
   "CYPRUS":"ZYPERN",
   "THE GREAT SEA":"DAS GROSSE MEER",
-  "Click a place to travel there. Esc to stay.":"Klicke auf einen Ort, um dorthin zu reisen. Esc: hierbleiben."
+  "Click a place to travel there. Esc to stay.":"Ort anklicken, um zu reisen. Esc: bleiben."
 });
