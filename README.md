@@ -49,7 +49,12 @@ Three years after his conversion, Saul returns to Jerusalem and tries to join th
 | ![A street in Jerusalem](docs/screenshots/jerusalem.png) | ![The harbor of Caesarea](docs/screenshots/harbor.png) |
 | Jerusalem: a stranger's broken cart, and a closed door | Caesarea: a ship that cannot sail, and a tentmaker who must |
 
-Three more locations and six new characters. This chapter turns on honesty as much as handiwork: Paul has to give Barnabas a plain account of himself, and the answers that excuse or recommend him get nowhere.
+Three more locations and eight new characters. This chapter turns on honesty as much as handiwork: Paul has to give Barnabas a plain account of himself, and the answers that excuse or recommend him get nowhere. Later, speaking boldly in Jerusalem, he disputes with two Greek-speaking Jews and answers them from the passages on his wax tablets; the last objection is about his own part in Stephen's death, and the answer to it is a confession (Acts 9:28, 29; 22:20).
+
+| | |
+|---|---|
+| ![Paul's wax tablets](docs/screenshots/tablets.png) | ![Disputing with the Greek-speaking Jews](docs/screenshots/dispute.png) |
+| The wax tablets: people met, what is still to do, and Scripture | Every answer is a passage from the tablets |
 
 <details>
 <summary>Walkthrough (spoilers)</summary>
@@ -59,9 +64,10 @@ Three more locations and six new characters. This chapter turns on honesty as mu
 3. Use the loose wheel, then use the peg with the handcart.
 4. Answer Barnabas honestly: admit the persecution, tell what happened on the road to Damascus, and what happened in Damascus afterwards.
 5. Knock at the door again. In the upper room, leave by the door to the city when you are ready.
-6. At the harbor, talk to the captain and use the halyard.
-7. Use the knife on the heap of old sailcloth. Give the provisions to the fisherman.
-8. Use the awl on the torn sail.
+6. In the street, talk to Dositheus. Answer each objection with a passage from your wax tablets: Isaiah 53:5 for the stake, Psalm 16:10 for the tomb, and Proverbs 28:13 when they ask about Stephen.
+7. At the harbor, talk to the captain and use the halyard.
+8. Use the knife on the heap of old sailcloth. Give the provisions to the fisherman.
+9. Use the awl on the torn sail.
 </details>
 
 ## Chapter Three: Called to Antioch
@@ -114,6 +120,7 @@ Each chapter has its own score, and each room its own sounds:
 | Leave a room at once | Double-click an exit to skip the walk to it |
 | Show what can be clicked | Hold `Tab`: everything in the room gets a dot and its name |
 | Combine things | **Use**, then an inventory item, then another item or something in the scene |
+| Read Paul's notes | Click the **wax tablets** in the inventory (their default verb is **Open**): the people he has met, what is still to be done, and the Scriptures for the chapter. Click or press Space to close them. |
 | Show something to someone | **Give** (or **Use**) an item on a person. Everyone has something to say about everything Paul carries, sometimes a clue. Only what someone actually needs changes hands. |
 | Ask about what you have learned | Once Paul learns something (a frayed basket, a torn sail, a famine), it appears as a new question when he talks to people in that chapter |
 | Skip a line of dialogue | Click the scene or press Space |
@@ -144,7 +151,7 @@ The top bar always shows a short code for exactly where you are: six characters 
 
 The game follows the scriptural understanding of Jehovah's Witnesses and the wording of the New World Translation of the Holy Scriptures (Study Edition). Historical details are checked against jw.org and wol.jw.org. Paul is shown as a courageous, observant minister who relies on practical wisdom, cooperation with fellow believers and trust in Jehovah. There are no halos, crosses or mystical effects, and no puzzle is solved by a miracle or by violence.
 
-The events themselves are from the Scriptures. All dialogue is imaginative dramatization, including the words given to Barnabas, Cephas, James, Agabus and Lucius, and so are the supporting characters: Eliab, Naomi, Jesse, the merchant Zakkai and the guard in Chapter One; Mattan, the captain, the fisherman and the doorkeeper in Chapter Two; Kleon, Xanthe and Theron in Chapter Three. The Scriptures say nothing of how the relief was packed or counted: those details are invented as well.
+The events themselves are from the Scriptures. All dialogue is imaginative dramatization, including the words given to Barnabas, Cephas, James, Agabus and Lucius, and so are the supporting characters: Eliab, Naomi, Jesse, the merchant Zakkai and the guard in Chapter One; Mattan, the captain, the fisherman, the doorkeeper and the two Greek-speaking Jews Dositheus and Ariston in Chapter Two; Kleon, Xanthe and Theron in Chapter Three. The Scriptures say nothing of how the relief was packed or counted: those details are invented as well.
 
 This is an independent, non-commercial fan project. It is not produced, endorsed or reviewed by Jehovah's Witnesses or the Watch Tower Bible and Tract Society.
 
@@ -155,6 +162,7 @@ index.html            the engine: layout, paint toolkit, figures, audio sequence
 levels/chapter1.js    Escape from Damascus
 levels/chapter2.js    A Friend in Jerusalem
 levels/chapter3.js    Called to Antioch
+shared/tablets.js     Paul's wax tablets, used by every chapter
 tools/                headless playtest
 ```
 
@@ -166,6 +174,7 @@ Inside a level file:
 - **Artwork** is a painter per room: `paint` draws the backdrop once, `fore` an optional foreground layer, `draw` whatever changes with the story (items that can be taken, a sail going up), and `light` says how the room lights the people in it. The painters use the engine's toolkit: `plaster`, `ashlar`, `pave`, `wood`, `vessel`, `foliage`, `lightmap`, `shade` and so on.
 - **Rooms and dialog** are tables of hotspots with their lines, and short async scripts for the puzzles and cutscenes. A hotspot's default verb (what a plain click does) is worked out by the engine: a door is opened, another exit is walked to, a person is talked to, something picked up with `take(...)` is picked up, and anything else is looked at. A hotspot can name its own with `def:'use'`, or with a getter when it changes with the story.
 - **People** are hotspots with an `actor`. Besides `look` and `talk`, a person has a `give` script for the items that really matter to him (it returns `false` for the rest), a `show` table with his reply to every other item, keyed by item id, and a fallback `show['*']`, all in his own voice. Replies can be a line, a list of lines or a script. Using an item on a person is the same as giving it.
+- **Wax tablets** are data too: `TABLETS` holds the chapter's `people` (name and note), `tasks` and `scripture` (reference and exact text), each with an optional condition `if` on the story, and the chapter definition passes it on as `tablets`. The overlay that shows them is `shared/tablets.js`, which the engine loads with `need('tablets')` the first time the tablets are opened. Anything else shared between chapters goes under `shared/` the same way.
 - **Topics** are what Paul learns in a chapter: `TOPICS` lists them, each with its question and a condition on the flags, for example `{id:'sail',q:"The captain's sail is torn.",if:()=>F.metCapt}`. A person's `ask` table holds his answer to each topic he can be asked about. `talkTree` adds the topics that are open to its own questions, each asked once.
 
 Edit a file and reload.

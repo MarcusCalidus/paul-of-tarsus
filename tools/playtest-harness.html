@@ -19,6 +19,7 @@
  const key=(k,type)=>dispatchEvent(new KeyboardEvent(type||'keydown',{key:k,bubbles:true,cancelable:true}));
  const lit=()=>[...document.querySelectorAll('#verbs button.def')].map(b=>b.dataset.v).join();
  const H=n=>ROOMS[G.room].hs.find(h=>h.name===n&&(!h.vis||h.vis()));
+ const PASS2=k=>{const p=CHAP[2].tablets.scripture.find(s=>s.ref===({ps16:'Psalm 16:10'})[k]);return '"'+p.text+'" ('+p.ref+')'};
  const heard=[];new MutationObserver(m=>m.forEach(r=>r.addedNodes.forEach(n=>heard.push(n.textContent)))).observe($('#speech'),{childList:true});
  const choose=async i=>{const b=document.querySelectorAll('#choices button');b[i<0?b.length+i:i].click();await idle()};
  const ok=(c,m)=>L((c?'ok   ':'FAIL ')+m);
@@ -34,6 +35,9 @@
     for(const a of as)for(const id of G.inv.slice()){heard.length=0;await cut(()=>show(a.hs,id));n++;if(a.hs.show&&a.hs.show[id]!=null)own++;
       if(!heard.length||heard.includes('Keep it, friend.'))bad.push(a.id+'/'+id)}
     ok(!bad.length&&JSON.stringify(F)===f&&srt()===inv,`show: ${n} item-person pairs answered, ${own} with their own line (${as.map(a=>a.id)})`+(bad.length?' MISSING '+bad:''))};
+  /* the tablets stay open (and the game busy) until closed, so wait for the overlay rather than for idle */
+  const tabs=async()=>{item('tablets');for(let i=0;i<150&&!document.querySelector('#tablets.on');i++)await wait(30);return $('#tablets')};
+  const leaf=(i,t)=>[...$('#tablets').querySelectorAll('.leaf')[i].querySelectorAll('p')].map(p=>p.textContent).filter(x=>!t||x.includes(t));
   const enter=async c=>{$('#code').click();$('#codein').value=c;$('#codego').click();await idle()};
   const give=async(id,a)=>{verb('give');item(id);view(a.x,a.y-18);await idle()};
   /* Chapter Three stops start that chapter from the title screen, without replaying the first two. */
@@ -74,6 +78,11 @@
   key('Tab','keyup');await wait(150);ok(!$('#tags').classList.contains('on')&&!document.querySelector('#tags .tag'),'labels go when Tab is let go');
   key('1');ok(G.verb==='look','key 1 picks Look at');key('1');ok(G.verb==='walk','key 1 again puts it down');
   key('m');ok(AU.muted,'M mutes');key('m');ok(!AU.muted,'M unmutes');
+  document.querySelectorAll('#inv .slot')[G.inv.indexOf('tablets')].dispatchEvent(new MouseEvent('mouseenter'));ok(lit()==='open'&&$('#status').textContent==='Open wax tablets','hovering the tablets lights Open');
+  let tw=await tabs();ok(tw.classList.contains('on')&&leaf(0,'Eliab').length===1&&leaf(0,'Untie my tool pouch').length===1&&leaf(0,'Make the basket strong').length===1&&leaf(1).length===4,
+    'a click opens the tablets: people, open tasks and four passages');
+  ok(leaf(1).every(t=>/\([1-3]? ?[A-Z][a-z]+ \d+:\d+/.test(t)),'every passage carries its reference');
+  tw.click();await idle();ok(!tw.classList.contains('on')&&!G.busy,'a click closes them');
   await act('pickup','large basket');await use('pouch','basket');ok(has('basket')&&has('pouch'),'nonsense combination refused');
   verb('open');item('pouch');await idle();ok(has('awl')&&!has('pouch'),'pouch opens to awl');
   for(const n of["tentmaker's knife",'bolt of goat-hair cloth','coil of rope','waterskin'])await act('pickup',n);
@@ -133,7 +142,7 @@
   ok(/Chapter Two code: 2-/.test(ov.textContent),'chapter one ends with a chapter two code');
   halt('final');
   /* ---------------- Chapter Two ---------------- */
-  await wait(1700);ov.click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy&&srt()==='awl,knife,thread','chapter two starts in Jerusalem');
+  await wait(1700);ov.click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy&&srt()==='awl,knife,tablets,thread','chapter two starts in Jerusalem');
   halt('jerusalem',()=>{say(P,'The disciples meet in the upper room of that house. I must try to join them.')});
   ok(/^2-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===2,'chapter two code format '+makeCode());
   await act('use','door of the house');ok(F.knocked&&G.room==='jerusalem','door stays shut for Saul');
@@ -160,7 +169,24 @@
   await actor(null,ACT.cephas);ok(nq()===4&&hasQ('Barnabas spoke up'),'Cephas can be asked about Barnabas');await choose(0);await choose(-1);
   await actor(null,ACT.james);await choose(0);await choose(-1);await sweep(ACT.cephas,ACT.james,ACT.barnabas);
   pray();await idle();ok(hint()[0]==='upper','upper room hint');
-  await act(null,'door to the city');ok(G.room==='harbor'&&has('provisions')&&!G.busy,'brought down to Caesarea');
+  await act(null,'door to the city');ok(G.room==='jerusalem'&&F.preach&&ACT.dositheus.room==='jerusalem'&&ACT.ariston.room==='jerusalem'&&ACT.barnabas.room==='upper'&&!G.busy,
+    'fifteen days in Jerusalem: two Greek-speaking Jews wait in the street');
+  pray();await idle();ok(hint()[0]==='reason','the hint points to the Scriptures');
+  tw=await tabs();ok(tw.classList.contains('on')&&leaf(0,'Dositheus').length===1&&leaf(0,'Cephas').length===1&&leaf(0,'Answer the Greek-speaking Jews').length===1&&leaf(1).length===6,
+    'the tablets hold the people met, the dispute and six passages');
+  halt('tablets');
+  key('Escape');await idle();ok(!tw.classList.contains('on')&&!G.busy,'Escape closes the tablets');
+  await sweep(ACT.dositheus,ACT.ariston);
+  const cd=makeCode();
+  await actor(null,ACT.dositheus);ok(nq()===6,'objection 1 (the stake): the six passages on the tablets');
+  heard.length=0;await pickQ('Psalm 16:10');ok(nq()===5&&G.room==='jerusalem'&&heard.includes(PASS2('ps16')),'a passage that misses the point is quoted exactly and answered, not failed');
+  halt('dispute');
+  await pickQ('Isaiah 53:5');ok(nq()===6,'objection 2 (the tomb)');await pickQ('Deuteronomy 18:15');ok(nq()===5,'Moses is not the answer to a tomb');await pickQ('Psalm 16:10');
+  ok(nq()===6,'objection 3 (Stephen): about Saul himself');await pickQ('Isaiah 49:6');await pickQ('Proverbs 28:13');
+  ok(G.room==='harbor'&&has('provisions')&&!G.busy&&!ACT.dositheus.room,'they try to do away with him; the brothers bring him down to Caesarea');
+  await enter(cd);ok(G.room==='jerusalem'&&F.preach&&F.upper&&ACT.dositheus.room==='jerusalem'&&ACT.barnabas.room==='upper'&&has('tablets'),'a code from the fifteen days restores them');
+  await act(null,'door of the house');ok(G.room==='upper'&&!G.busy,'the brothers let him in now');await act(null,'door to the city');ok(G.room==='jerusalem'&&!G.busy,'and out again');
+  await actor(null,ACT.ariston);await pickQ('Isaiah 53:5');await pickQ('Psalm 16:10');await pickQ('Proverbs 28:13');ok(G.room==='harbor'&&!G.busy,'Ariston starts the same dispute');
   halt('harbor',()=>{say(ACT.mattan,'There she is, Saul: the only ship in harbor bound for Cilicia.')});
   await act('use','halyard');ok(!F.sailDown,"rigging needs the captain's word");
   await actor(null,ACT.captain);ok(F.metCapt,'met the captain');
@@ -181,7 +207,7 @@
   ok(/Chapter Three code: 3-/.test(ov.textContent),'chapter two ends with a chapter three code');
   halt('final2');await wait(1700)}
   /* ---------------- Chapter Three ---------------- */
-  (C3?document.querySelector('#overlay [data-ch="3"]'):ov).click();await idle();ok(G.ch===3&&G.room==='tarsus'&&!G.busy&&srt()==='awl,knife,thread','chapter three starts in Tarsus');
+  (C3?document.querySelector('#overlay [data-ch="3"]'):ov).click();await idle();ok(G.ch===3&&G.room==='tarsus'&&!G.busy&&srt()==='awl,knife,tablets,thread','chapter three starts in Tarsus');
   halt('tarsus',()=>{say(ACT.barnabas,'I have asked for you along every row of tentmakers in this city. And here you are, at the very last stall.')});
   ok(/^3-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===3,'chapter three code format '+makeCode());
   await act(null,'east gate');ok(G.room==='tarsus'&&!F.sold&&!G.busy,'no leaving before the promise is kept');
@@ -201,15 +227,17 @@
   pray();await idle();ok(hint()[0]==='go3','tarsus hint points to the road');
   const tb=makeCode();await enter(ta);
   ok(G.ch===3&&G.room==='tarsus'&&has('loops')&&F.seam&&!F.loopsOn&&!F.sold&&ACT.barnabas.room==='tarsus','chapter three code restores earlier state');
-  await enter(tb);ok(F.sold&&F.gotTent&&!has('tent')&&srt()==='awl,knife,thread','chapter three code restores later state');
+  await enter(tb);ok(F.sold&&F.gotTent&&!has('tent')&&srt()==='awl,knife,tablets,thread','chapter three code restores later state');
   halt('frame',()=>{say(ACT.kleon,'May your road be as sound as your seams, tentmaker.')});
   halt('meeting',()=>{G.meet=1;enterRoom('court',112,126,1);place(ACT.barnabas,'court',86,122,1);place(ACT.lucius,'court',140,118,1);place(ACT.xanthe,'court',62,130,1);place(ACT.theron,'court',40,124,1);place(ACT.agabus,'court',204,118,-1);
     say(ACT.agabus,'A great famine is about to come on the entire inhabited earth.')});
   await act(null,'east gate');
-  ok(G.room==='court'&&!G.busy&&srt()==='awl,bolt,knife,wages'&&ACT.barnabas.room==='court'&&ACT.xanthe.room==='antioch','brought to Antioch; a year later, the relief is gathered');
+  ok(G.room==='court'&&!G.busy&&srt()==='awl,bolt,knife,tablets,wages'&&ACT.barnabas.room==='court'&&ACT.xanthe.room==='antioch','brought to Antioch; a year later, the relief is gathered');
   halt('court',()=>{say(ACT.barnabas,'But it has weeks of road ahead of it, and our old pack bags are rotten through.')});
   await actor(null,ACT.barnabas);ok(hasQ('great famine'),'famine topic in Antioch');await choose(0);await choose(-1);await actor(null,ACT.agabus);ok(hasQ('no thread'),'thread topic');await choose(0);await choose(-1);
   await sweep(ACT.barnabas,ACT.agabus,ACT.lucius);
+  const tw3=await tabs();ok(leaf(0,'Agabus').length===1&&leaf(0,'Kleon').length===0&&leaf(0,'Make new pack bags').length===1&&leaf(0,'Find strong thread').length===1&&leaf(1).length===4,'Antioch tablets');
+  key(' ');await idle();ok(!tw3.classList.contains('on'),'Space closes them');
   await useOn('awl','old pack bags');await useOn('bolt','donkey');ok(!F.bagsOn&&has('bolt'),'loose cloth carries nothing');
   await use('awl','bolt');ok(has('bolt')&&!F.cutBolt,'cloth must be cut before sewing');
   await use('knife','bolt');ok(has('panels')&&!has('bolt'),'panels cut');

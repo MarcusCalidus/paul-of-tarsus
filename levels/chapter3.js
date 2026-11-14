@@ -261,12 +261,36 @@ Object.assign(COMBO,{
   'knife+loops':()=>say(P,'They are the right length already.'),'knife+tent':()=>say(P,'After a week of sewing? No.'),
   'awl+tent':()=>say(P,'It needs an owner now, not another stitch.'),'tent+thread':()=>say(P,'It needs an owner now, not another stitch.')});
 function setup3(){BN.hs=BN3;place(BN,'tarsus',112,124,1);place(KL,'tarsus',224,119,-1);place(AG,'court',116,115,1);place(LU,'court',187,113,-1);
-  place(XA,'antioch',190,116,1);place(TN,'antioch',354,116,-1);G.meet=0;G.trek=null;G.inv=['awl','thread','knife'];drawInv()}
+  place(XA,'antioch',190,116,1);place(TN,'antioch',354,116,-1);G.meet=0;G.trek=null;G.inv=['awl','thread','knife','tablets'];drawInv()}
 /* ============ TOPICS: what Paul has learned, which he can raise with anyone (see each person's ask table) ============ */
 const TOPICS=[
   {id:'kleon',q:"Kleon's caravan leaves at noon.",if:()=>F.metKleon&&!F.sold},
   {id:'famine',q:'Agabus foretold a great famine.',if:()=>G.room!=='tarsus'},
   {id:'thread',q:'I have no thread to sew the new bags.',if:()=>G.room!=='tarsus'&&!F.gotSpool}];
+/* ============ WAX TABLETS: people met, tasks still open, Scripture (shown by shared/tablets.js) ============ */
+const ant=()=>G.room!=='tarsus';
+const TABLETS={
+  people:[
+    {name:'Barnabas',note:()=>ant()?'A good man, and full of faith. A whole year we have taught side by side.':'He came all the way to Tarsus, searching every row of stalls for me.'},
+    {name:'Kleon',note:'A caravan master, bound over the mountains. His tent is promised for noon.',if:()=>F.metKleon&&!ant()},
+    {name:'Agabus',note:'A prophet from Jerusalem. He foretold a great famine.',if:ant},
+    {name:'Lucius',note:'Lucius of Cyrene, a teacher here. He keeps the tally of the gifts.',if:ant},
+    {name:'Theron',note:'A potter in the colonnaded street. He came to believe in that very street.',if:ant},
+    {name:'Xanthe',note:'A widow who spins thread for her living. She came to believe this year.',if:ant}],
+  tasks:[
+    {t:"Close the last seam of Kleon's tent.",if:()=>!ant()&&!F.seam},
+    {t:'Give the hem something a peg will not tear through.',if:()=>!ant()&&!F.loopsOn},
+    {t:'Hand Kleon his tent, as I promised.',if:()=>!ant()&&!F.sold},
+    {t:'Go with Barnabas to Antioch.',if:()=>!ant()&&F.sold},
+    {t:'Make new pack bags for the relief.',if:()=>ant()&&!F.bags},
+    {t:'Find strong thread to sew them with.',if:()=>ant()&&!F.gotSpool&&!F.bags},
+    {t:'Put the bags on the donkey.',if:()=>ant()&&!F.bagsOn},
+    {t:'See the gift counted and sealed before the brothers.',if:()=>ant()&&!F.sealed}],
+  scripture:[
+    {ref:'Psalm 15:4',text:'He does not go back on his promise, even when it is bad for him.'},
+    {ref:'Ecclesiastes 4:9, 10',text:'Two are better than one because they have a good reward for their hard work. For if one of them falls, the other can help his partner up.'},
+    {ref:'Proverbs 3:27',text:'Do not withhold good from those to whom you should give it If it is within your power to help.'},
+    {ref:'Deuteronomy 15:11',text:'You should generously open up your hand to your afflicted and poor brother in your land.'}]};
 /* ============ ROOMS, HOTSPOTS, CHARACTERS ============ */
 const tentNeeds=()=>!F.seam?'The last seam still gapes open. It needs closing, with awl and thread.':!F.loopsOn?'The seam is closed. The hem still needs loops for the pegs, of something tougher than cloth.':'';
 async function sewSeam(){
@@ -334,6 +358,7 @@ ROOMS.tarsus={walk:[16,304,110,138],mood:'calm',amb:{birds:.5,crowd:.25,wind:.2,
 KL.hs={name:'Kleon',actor:KL,look:()=>say(P,F.sold?'Kleon, well pleased with his tent, and making ready to leave.':'Kleon, a caravan master. His mules are loaded, and he keeps looking at the sun.'),
   show:{awl:'An awl is not a tent, tentmaker.',thread:()=>say(KL,F.seam?'Thread? The seam is closed. Now see to the pegs!':'Thread. Good. Is that seam closed yet? I can see daylight through it.'),
     knife:'Cut me nothing, tentmaker. Finish me something.',loops:'Leather! A peg will not tear through that. Sew them on, and quickly.',
+    tablets:'Write this down: one tent, due at noon.',
     '*':'Keep your tools, tentmaker. It is my tent I am waiting for.'},
   give:async it=>{if(it!=='tent')return false;
     await say(P,'Your tent, Kleon. Finished, as I said it would be.');
@@ -362,6 +387,7 @@ const BN3={name:'Barnabas',actor:BN,
     bolt:'Your last goat-hair cloth from Tarsus. Bags of that would shed the rain all the way to Judea.',
     panels:'Bags already, nearly. They only want sewing.',spool:"Xanthe's thread! So she did have something to give.",
     bags:'Fine work! Hang them on the donkey, and let us see them filled.',wages:'Lucius keeps the tally, brother. Give it to him.',
+    tablets:()=>say(BN,G.room==='tarsus'?'Still scratching notes into the wax, Saul? Write this down: Barnabas is waiting.':'Put the relief on your list, brother. It is the most important thing on it.'),
     '*':'Keep it, brother. You will find a use for it.'},
   ask:{kleon:'Then we had better work faster than we talk. Show me where to hold.',
     famine:['And Antioch answered before anyone in Judea went hungry.','I have seen many congregations, Saul. I have not often seen that.']},
@@ -419,6 +445,7 @@ LU.hs={name:'Lucius',actor:LU,look:'Lucius of Cyrene, one of the teachers in the
     bolt:'For the bags? Good. The old ones would not survive the gate.',panels:'Well cut. I would not know where to begin.',
     spool:'Thread from Xanthe? Then her gift will be in every seam. No list could hold it better.',
     bags:'Bags fit for the road. Hang them on the donkey, and let us fill them.',
+    tablets:'Wax tablets! A man after my own heart. Every gift goes on mine.',
     '*':'That is yours, brother. Keep it, unless you mean to add it to the gift.'},
   ask:{famine:'It will fall hardest on Judea. That is why I count so carefully.',thread:'I count, brother, I do not spin. But the street is full of stalls.'},
   give:async it=>it==='wages'?seal():false,
@@ -432,6 +459,7 @@ AG.hs={name:'Agabus',actor:AG,look:'Agabus, one of the prophets who came down fr
   show:{awl:'A good tool for good work. Use it.',knife:'Keep it for your cloth, brother.',bolt:'Cloth that sheds the rain. The road to Judea will test it.',
     panels:'Sew them, and the grain will travel dry.',spool:'Thread from a sister in the street? Then her gift will travel the whole road to Judea.',
     bags:'Strong work. They will carry the grain to Judea.',wages:'That is for Lucius and the tally, not for me.',
+    tablets:'Write down what was foretold, brother. And then write down what Antioch did about it.',
     '*':'I need nothing, brother. Let it go to Judea.'},
   ask:{thread:'Then ask, brother. This congregation is not short of willing hands.'},
   talk:()=>talkTree([
@@ -479,7 +507,7 @@ XA.hs={name:'Xanthe',actor:XA,look:()=>say(P,F.gotSpool?'Xanthe, spinning again,
   show:{awl:()=>say(XA,F.gotSpool?'Threaded with my thread now, I hope!':'An awl with no thread on it. Is that what troubles you, brother?'),
     knife:'A sharp blade. Mine is only a little one, for cutting thread.',bolt:'Goat-hair cloth from Cilicia. That will want strong thread.',
     panels:()=>say(XA,F.gotSpool?'My thread is waiting for those.':'Cut for sewing... And what will you sew them with, brother?'),
-    bags:'My thread in every seam! I can hardly believe it.','*':'No, brother. Keep it.'},
+    bags:'My thread in every seam! I can hardly believe it.',tablets:'You can read and write, brother? I only know thread.','*':'No, brother. Keep it.'},
   ask:{famine:'I heard. And now a little of my thread will go to meet it.'},
   talk:async()=>{if(!F.gotSpool)return xanthe();await say(XA,F.bags?'My thread, on the road to Judea. Who would have thought it?':'Sew well, brother Saul. I waxed that thread myself.');
     return talkTree([{q:'Peace to you, sister.',bye:1}],{quiet:1})}};
@@ -488,6 +516,7 @@ TN.hs={name:'Theron',actor:TN,look:'Theron, a potter. He first heard the good ne
     bolt:'Cloth for the relief? You will want good thread for that. Xanthe spins the best in the street.',
     panels:'Sew them strong. My oil jars will be riding in them!',spool:"Xanthe's! So she gave after all. I knew she would, once she saw a reason.",
     bags:'Those will carry my jars to Judea, and not one will crack.',wages:'Give it to Lucius, brother. He will count it twice.',
+    tablets:'Write down that a potter in Antioch is a Christian, and glad of the name.',
     '*':'Keep it, brother. I deal in clay.'},
   ask:{famine:'Then Judea will need oil as well as grain. I sent my best jars.'},
   talk:()=>talkTree([
@@ -556,10 +585,10 @@ function hint3(){
     'I should give my savings to Lucius, and ask that everything be counted and sealed before the brothers.']];
   return['end3',['Everything is ready. It is time to go.']]}
 /* ============ CHAPTER DEFINITION ============ */
-return{rooms:['tarsus','court','antioch'],setup:setup3,start:start3,hint:hint3,music:MUSIC,scenes:{road:roadScene},topics:TOPICS,
+return{rooms:['tarsus','court','antioch'],setup:setup3,start:start3,hint:hint3,music:MUSIC,scenes:{road:roadScene},topics:TOPICS,tablets:TABLETS,
   flags:['metKleon','seam','gotLoops','loopsOn','gotTent','sold','cutBolt','gotSpool','bags','bagsOn','sealed'],
   ent:{tarsus:[150,122,1],court:[146,128,-1],antioch:[46,116,1]},
-  inv(room){const ant=room!=='tarsus',inv=ant?['awl','knife']:['awl','thread','knife'],add=(c,id)=>{if(c)inv.push(id)};
+  inv(room){const ant=room!=='tarsus',inv=ant?['awl','knife','tablets']:['awl','thread','knife','tablets'],add=(c,id)=>{if(c)inv.push(id)};
     add(F.gotLoops&&!F.loopsOn,'loops');add(F.gotTent&&!F.sold,'tent');add(ant&&!F.cutBolt,'bolt');add(F.cutBolt&&!F.bags,'panels');
     add(F.gotSpool&&!F.bags,'spool');add(F.bags&&!F.bagsOn,'bags');add(ant&&!F.sealed,'wages');return inv},
   place(room){if(room!=='tarsus')place(BN,'court',92,124,1)}}

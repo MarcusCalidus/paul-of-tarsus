@@ -221,9 +221,13 @@ Object.assign(LOOK,{
   james:{skin:'#bd8a5a',hair:'#2a1a12',beard:'#2a1a12',longBeard:1,tunic:'#e0d6bc',cloak:'#6a5a7a',belt:'#4a3a24',long:1,ph:2900},
   captain:{skin:'#a06a40',wrap:'#b03a2a',beard:'#2a2a2a',tunic:'#3a5a5a',belt:'#c9a14a',trim:'#22383a',brow:'#1a1a1a',ph:700},
   fisher:{skin:'#a8703f',hair:'#d0d0d0',beard:'#d8d8d8',bald:1,brow:'#909090',tunic:'#8a8a6a',belt:'#4a3a24',ph:3700},
-  mattan:{skin:'#c08a5c',hair:'#4a2f1a',beard:'#4a2f1a',tunic:'#7a6a9a',cloak:'#c8b88a',belt:'#3a2414',long:1,ph:1900}});
+  mattan:{skin:'#c08a5c',hair:'#4a2f1a',beard:'#4a2f1a',tunic:'#7a6a9a',cloak:'#c8b88a',belt:'#3a2414',long:1,ph:1900},
+  /* two Greek-speaking Jews: a white tunic and a blue mantle in the Greek manner; ochre and dark red */
+  dositheus:{skin:'#b88458',hair:'#6a5a4a',beard:'#7a6a58',brow:'#4a3a2a',tunic:'#ddd4be',cloak:'#46557a',belt:'#4a3a24',trim:'#8a8270',long:1,ph:2400},
+  ariston:{skin:'#c49064',hair:'#2a1a12',beard:'#2a1a12',tunic:'#c49a58',cloak:'#7a3434',belt:'#3a2414',trim:'#5a2a1e',long:1,ph:3500}});
 const BN=actor('barnabas','Barnabas','#f0b070',128),CE=actor('cephas','Cephas','#8ec8f0',108),JA=actor('james','James','#d8c8f0',122),
-  CP=actor('captain','the captain','#f09080',100),FI=actor('fisher','the fisherman','#b8e0c0',140),MT=actor('mattan','Mattan','#e8d890',126);
+  CP=actor('captain','the captain','#f09080',100),FI=actor('fisher','the fisherman','#b8e0c0',140),MT=actor('mattan','Mattan','#e8d890',126),
+  DS=actor('dositheus','Dositheus','#b8c8f0',112),AR=actor('ariston','Ariston','#f0b8a0',138);
 const DK={x:332,y:100,color:'#f4c0a8',pitch:255,room:'jerusalem'};
 SFX.knock=()=>{for(let i=0;i<3;i++)noise({t:now()+i*.18,d:.07,v:.32,f:220,type:'lowpass'})};
 Object.assign(ICON,{
@@ -254,7 +258,40 @@ Object.assign(COMBO,{
   'knife+sailpatch':()=>say(P,'It is large enough to cover the tear. I will leave it whole.'),
   'knife+provisions':()=>say(P,'I will break the bread when it is time to eat it.')});
 function setup2(){place(BN,'jerusalem',228,118,-1);place(CE,'upper',168,120,-1);place(JA,'upper',212,123,-1);
-  place(CP,'harbor',262,122,-1);place(FI,'harbor',186,116,-1);place(MT,'harbor',214,130,1);G.inv=['awl','thread','knife'];drawInv()}
+  place(CP,'harbor',262,122,-1);place(FI,'harbor',186,116,-1);place(MT,'harbor',214,130,1);G.inv=['awl','thread','knife','tablets'];drawInv()}
+/* in Jerusalem, while Saul speaks in the synagogues, the two who dispute with him wait in the street */
+const disputers=()=>{place(DS,'jerusalem',252,118,1);place(AR,'jerusalem',226,123,1)};
+/* ============ WAX TABLETS: people met, tasks still open, Scripture (shown by shared/tablets.js) ============ */
+/* The passages are the ones Paul answers with in the dispute. Each is quoted exactly from the New World Translation (Study Edition). */
+const PASS={
+  deut:{ref:'Deuteronomy 18:15',short:'a prophet like Moses',text:'Jehovah your God will raise up for you from among your brothers a prophet like me. You must listen to him.'},
+  ps16:{ref:'Psalm 16:10',short:'not left in the Grave',text:'For you will not leave me in the Grave. You will not allow your loyal one to see the pit.'},
+  prov16:{ref:'Proverbs 16:9',short:"Jehovah directs a man's steps",text:'A man may plot out his course in his heart, But it is Jehovah who directs his steps.'},
+  prov28:{ref:'Proverbs 28:13',short:'whoever confesses is shown mercy',text:'The one covering over his transgressions will not succeed, But whoever confesses and abandons them will be shown mercy.'},
+  isa49:{ref:'Isaiah 49:6',short:'a light of nations',text:'I have also given you as a light of nations, So that my salvation may reach the ends of the earth.'},
+  isa53:{ref:'Isaiah 53:5',short:'pierced for our transgression',text:'But he was pierced for our transgression; He was crushed for our errors.'}};
+const ORDER=Object.keys(PASS);
+const TABLETS={
+  people:[
+    {name:'A sister at the door',note:'She remembers what I did to the disciples, and will not open.',if:()=>F.knocked&&!F.told},
+    {name:()=>F.cartFixed?'Barnabas':'A man with a handcart',note:()=>F.cartFixed?'Joseph, a Levite from Cyprus. The apostles call him Barnabas: Son of Comfort.':'He is taking grain and oil to the widows, and his wheel has come off.',if:()=>F.metBarn},
+    {name:'Cephas',note:'An apostle, whom many call Peter. I am staying in his house.',if:()=>F.upper},
+    {name:'James',note:'The brother of the Lord.',if:()=>F.upper},
+    {name:'Dositheus',note:'A Greek-speaking Jew from Cilicia, my own province. He knew me before.',if:()=>F.preach},
+    {name:'Ariston',note:'A Greek-speaking Jew from Alexandria. He has an answer for everything.',if:()=>F.preach},
+    {name:'Mattan',note:'One of the brothers who brought me down to Caesarea.',if:()=>G.room==='harbor'},
+    {name:'The captain',note:'Master of the only ship bound for Tarsus. Her sail is torn.',if:()=>F.metCapt},
+    {name:'The fisherman',note:'An old man mending nets. He has not stopped to eat since dawn.',if:()=>G.room==='harbor'}],
+  tasks:[
+    {t:'Join the disciples who meet in the upper room.',if:()=>!F.told},
+    {t:'Help the man with the handcart.',if:()=>F.metBarn&&!F.cartFixed},
+    {t:'Speak in the name of the Lord, as I did in Damascus.',if:()=>F.upper&&!F.preach},
+    {t:'Answer the Greek-speaking Jews from the Scriptures.',if:()=>F.preach&&G.room!=='harbor'},
+    {t:'Find a passage to Tarsus.',if:()=>G.room==='harbor'&&!F.metCapt},
+    {t:'Bring the torn sail down.',if:()=>F.metCapt&&!F.sailDown},
+    {t:'Find a patch of sound sailcloth.',if:()=>F.metCapt&&!F.gotPatch},
+    {t:'Find something stronger than thread to sew it with.',if:()=>F.metCapt&&!F.gotTwine}],
+  scripture:ORDER.map(k=>PASS[k])};
 /* ============ TOPICS: what Paul has learned, which he can raise with anyone (see each person's ask table) ============ */
 const TOPICS=[
   {id:'barnabas',q:'Barnabas spoke up for me.',if:()=>F.told},
@@ -262,6 +299,7 @@ const TOPICS=[
   {id:'twine',q:'The captain says there is tarred twine to be had.',if:()=>F.metCapt&&!F.gotTwine}];
 /* ============ ROOMS, HOTSPOTS, CHARACTERS ============ */
 async function knock(){SFX.knock();await wait(600);
+  if(F.preach){SFX.door();return go('upper',56,120,1)}
   if(F.told){await say(BN,'It is Barnabas! Open, sister, and do not be afraid.');await say(DK,'Barnabas? But the man beside you...');
     await say(BN,'I will answer for him. Let us in, and let the brothers hear him for themselves.');SFX.door();await say(DK,'...If you say so. Come up.');
     return go('upper',56,120,1)}
@@ -311,13 +349,15 @@ ROOMS.jerusalem={walk:[16,466,110,138],mood:'calm',amb:{birds:.5,crowd:.35,wind:
   {name:'bench',x:282,y:90,w:26,h:14,look:'A stone bench by the door. I do not think I would be welcome to sit.'},
   {name:'door of the house',def:'open',x:312,y:50,w:40,h:54,wx:330,wy:112,look:'A plain, solid door. Disciples of the Lord meet in the room above.',use:knock,open:knock,talk:knock},
   {name:'latticed window',x:368,y:34,w:30,h:24,wx:380,look:'A latticed window. I think someone is watching from behind it.'},
-  {name:'street to the markets',x:462,y:60,w:18,h:60,wx:456,wy:120,look:'The street runs on toward the markets and the temple mount.',use:'My business is at that door first.'}]};
+  {name:'street to the markets',x:462,y:60,w:18,h:60,wx:456,wy:120,look:'The street runs on toward the markets and the temple mount.',
+    use:()=>say(P,F.preach?'Not before I have answered those two men.':'My business is at that door first.')}]};
 BN.hs={get name(){return F.cartFixed||G.room!=='jerusalem'?'Barnabas':'man with the handcart'},actor:BN,
   look:()=>say(P,G.room==='upper'?'Barnabas. He staked his own good name on my word.':F.cartFixed?'Barnabas: "Son of Comfort", they call him. I can see why.':'A man in a red tunic, struggling with a loaded handcart.'),
   show:{awl:()=>say(BN,G.room==='upper'?'Keep it busy, brother. Honest work speaks well of a man.':'An awl? A craftsman, then. But that cart needs a pin, not a stitch.'),
     thread:()=>say(BN,G.room==='upper'?'Keep it for your trade, Saul.':'Thread will not hold a wheel on, friend.'),
     knife:()=>say(BN,G.room==='upper'?'Put it away, brother. Some here still remember why they feared you.':'A good blade. With the right piece of wood, a craftsman could make a pin with it.'),
     stick:'Olive wood! Seasoned like that, it is nearly as hard as iron. Shaped right, it would make a pin.',
+    tablets:()=>say(BN,F.told?'Fill them well, Saul. You will need every word of them in this city.':'Wax tablets? A scholar as well as a craftsman, friend.'),
     peg:()=>say(BN,F.wheelOn?'That will do for a pin! The wheel is on. Now it only needs seating.':'A fine pin. But the wheel must go back on the axle first, and that takes two men.'),
     '*':'Keep it, friend. You may need it yet.'},
   talk:async()=>{if(G.room==='upper')return say(BN,'Someone once spoke up for me, Saul. Now go and prove me right.');
@@ -331,7 +371,7 @@ BN.hs={get name(){return F.cartFixed||G.room!=='jerusalem'?'Barnabas':'man with 
       {q:'Do you know the people in that house?',a:async()=>{await say(BN,'Know them? I am on my way to them. Why do you ask, friend?');await say(P,'I will tell you. When your hands are free.')}},
       {q:'I will see what I can do.',bye:1}])}};
 ROOMS.upper={walk:[24,300,112,138],mood:'calm',amb:{birds:.25,crowd:.12},
-  enter:async()=>{place(BN,'upper',96,124,1);await say(BN,'Cephas, James: this is Saul of Tarsus. Before you answer, hear me.');
+  enter:async()=>{if(F.upper)return;F.upper=1;place(BN,'upper',96,124,1);await say(BN,'Cephas, James: this is Saul of Tarsus. Before you answer, hear me.');
     await narr('Barnabas told them in detail how Saul had seen the Lord on the road, and how in Damascus he had spoken boldly in the name of Jesus. (Acts 9:27)',{dur:8000});
     await say(CE,'Saul. I too know what it is to fail my Lord, and to be shown mercy.');await say(CE,'Stay in my house, brother. We have much to speak about.');
     await say(JA,'If Jehovah has opened this door, we will not be the ones to shut it.');await say(P,'Brothers... thank you. I do not deserve this.')},
@@ -346,6 +386,7 @@ CE.hs={name:'Cephas',actor:CE,look:'Cephas, whom many call Peter. A fisherman fr
   show:{awl:"A tentmaker's awl. I worked with nets once, until the Lord called me to fish for men. (Matthew 4:18, 19)",
     thread:'Good linen. We mended our nets with cord much like it.',
     knife:'Put it away, brother. I once drew a sword in his name, and he told me to put it into its sheath. (John 18:10, 11)',
+    tablets:'Write down what I tell you of the Lord, Saul. My memory is not as young as it was.',
     '*':'Keep it. A guest brings nothing but himself.'},
   ask:{barnabas:['Then you have a good friend, Saul. He sold a field and laid the money at our feet. (Acts 4:36, 37)','When Barnabas speaks for a man, we listen.']},
   talk:()=>talkTree([
@@ -355,6 +396,7 @@ CE.hs={name:'Cephas',actor:CE,look:'Cephas, whom many call Peter. A fisherman fr
 JA.hs={name:'James',actor:JA,look:"James, the Lord's brother. Quiet, and listening closely.",
   show:{awl:'My brother worked with his hands too. In his home territory they called him "the carpenter." (Mark 6:1-3)',
     thread:'Keep it for your trade, Saul. Honest work will speak for you when words cannot.',knife:'A tool for making things. Keep it so.',
+    tablets:'The Scriptures on wax. Good. Keep them where your heart can read them too.',
     '*':'There are others who need it more. But thank you.'},
   ask:{barnabas:'The apostles call him "Son of Comfort." Today you have seen why. (Acts 4:36)'},
   talk:()=>talkTree([
@@ -395,6 +437,7 @@ CP.hs={name:'the captain',actor:CP,look:'The master of the ship. He keeps glanci
     thread:'Thread? It would part in the first gust. Twine, man. Tarred twine.',knife:'Sharp? Good. There is old sailcloth heaped by the warehouse.',
     provisions:'Keep your bread. You will want it at sea.',sailpatch:'Sound cloth. That will cover the tear, sewn on with twine.',
     twine:'Tarred twine! From the old man? Then you have a gift for people as well as for cloth.',
+    tablets:'Can you write a sail back together? No? Then put those away.',
     '*':'Keep your things. What I need is a sail.'},
   ask:{barnabas:'Never heard of him. Can he sew?'},
   talk:async()=>{if(!F.metCapt){F.metCapt=1;await say(P,'Peace to you, captain. Is this the ship for Tarsus?');
@@ -409,7 +452,7 @@ CP.hs={name:'the captain',actor:CP,look:'The master of the ship. He keeps glanci
 FI.hs={name:'the fisherman',actor:FI,look:'An old fisherman mending his nets. His hands never stop moving.',
   show:{awl:'A good awl. Mine is a bone needle, older than this harbor.',thread:'Linen? Salt water rots it in a month. Tarred twine is what lasts.',
     knife:'Sharp. Mind my nets with it.',sailpatch:'Sailcloth. Sew that on with linen thread and you will be sewing it again before Cyprus.',
-    twine:'Use it well, friend. It is the best I had.','*':'No, no. Keep it, friend.'},
+    twine:'Use it well, friend. It is the best I had.',tablets:'Letters. I never learned them. Nets I can read.','*':'No, no. Keep it, friend.'},
   ask:{barnabas:'I know no Barnabas. I know nets.',sail:'So the whole harbor heard. A squall off Dor will do that.',
     twine:['He talks too much, that captain.','I have a ball to spare, it is true. If I had a reason to spare it.']},
   give:async it=>{if(it!=='provisions')return false;
@@ -425,7 +468,8 @@ FI.hs={name:'the fisherman',actor:FI,look:'An old fisherman mending his nets. Hi
 MT.hs={name:'Mattan',actor:MT,look:'Mattan, one of the brothers who brought me down from Jerusalem.',
   show:{awl:'You and your awl. The brothers in Jerusalem will miss your mending.',thread:'Is that strong enough for a sail? I would not know.',
     knife:'Careful with that, brother.',provisions:'That is your bread for the voyage. Though that old fisherman looks as if he has not eaten all day.',
-    sailpatch:'A big patch. It is a big tear.',twine:'Tarred twine. It smells like the harbor itself.','*':'No, brother. That is for your journey.'},
+    sailpatch:'A big patch. It is a big tear.',twine:'Tarred twine. It smells like the harbor itself.',
+    tablets:'Keep them safe, brother. They have heard a great deal in Jerusalem.','*':'No, brother. That is for your journey.'},
   ask:{barnabas:'Barnabas told the whole congregation how a stranger mended a cart for the widows before he ever asked to be let in.',
     sail:'If anyone in Caesarea can mend it, it is you, brother.',
     twine:'From the old man by the nets, I would guess. Speak to him kindly. He has worked since dawn without a bite to eat.'},
@@ -441,11 +485,57 @@ async function start2(){ov.onclick=null;ov.className='';audioInit();SFX.good();i
     await walk(P,96,122);
     await say(P,'Jerusalem. I know these streets... and the doors I once had broken open.');
     await say(P,'The disciples meet in the upper room of that house. I must try to join them.')},true)}
-async function leaveUpper(){
+/* Leaving the upper room for the first time begins the fifteen days in Jerusalem (Acts 9:28; Galatians 1:18). After that the door
+   simply leads back to the street, where two Greek-speaking Jews are waiting to dispute with him. */
+async function leaveUpper(){if(F.preach)return go('jerusalem',330,116,1);
   await say(P,'There are synagogues in this city where I am known. Let me speak there, in the name of the Lord.');
-  await say(BN,'Go, Saul. Speak as you did in Damascus.');await fade(1,700);const o={dur:8000};
-  await narr('Paul stayed with Cephas for fifteen days, moving about freely in Jerusalem and speaking boldly in the name of the Lord. (Acts 9:28; Galatians 1:18)',o);
-  await narr('But the Greek-speaking Jews with whom he disputed made attempts to do away with him. (Acts 9:29)',o);
+  await say(BN,'Go, Saul. Speak as you did in Damascus.');await fade(1,700);
+  await narr('Paul stayed with Cephas for fifteen days, moving about freely in Jerusalem and speaking boldly in the name of the Lord. (Acts 9:28; Galatians 1:18)',{dur:8000});
+  F.preach=1;disputers();enterRoom('jerusalem',330,118,1);codeBtn();await fade(0,700);
+  await say(DS,'Saul! Saul of Tarsus! A word with you.');P.dir=-1;
+  await say(P,'Men from the synagogue. They will want answers from the Scriptures, and nothing less.',TH);
+  await say(P,'The passages I need are written on my tablets.',TH)}
+/* ---------- Disputing with the Greek-speaking Jews (Acts 9:29) ----------
+   Three objections. Every answer Paul can give is a passage from his tablets, and every passage is quoted exactly; a passage that
+   does not meet the objection gets a reply, never a failure. The last objection is about Paul himself, and the answer is a confession. */
+const label=k=>PASS[k].ref+': '+PASS[k].short,quote=k=>'"'+PASS[k].text+'" ('+PASS[k].ref+')';
+function round(who,q,right,p,r,wrong){return quiz(who,q,ORDER.map(k=>k===right?{q:label(k),ok:1,p,r}:{q:label(k),p:[quote(k)],r:[wrong[k]]}))}
+async function dispute(){DS.dir=1;AR.dir=1;
+  await say(DS,'We heard you in the synagogue, speaking about the Nazarene. You were one of us once.');
+  await say(AR,'So answer us from the Scriptures, Saul, if you can.');
+  await say(P,'Ask, and I will answer from the Scriptures.');
+  await round(DS,'The Law says that the one hung up on a stake is something accursed of God. (Deuteronomy 21:22, 23) How can an accursed man be the Christ?','isa53',
+    ['Isaiah wrote of the servant of Jehovah: "He was pierced for our transgression; He was crushed for our errors." (Isaiah 53:5)','The curse he bore was not his own. He bore it for us.'],
+    ['Isaiah...','I have read that passage many times. I never once read it with a stake in mind.'],
+    {deut:'A prophet like Moses, yes. Moses was not hung on a stake, Saul.',ps16:'The Grave? I asked you about the stake, not the tomb.',
+      prov16:'Jehovah directs our steps, and the Law directs our judgment. The Law calls such a man accursed.',
+      prov28:'Confession? We asked about your Jesus. We will come to you soon enough.',
+      isa49:"A light of nations? First tell us how a man under the Law's curse can be anyone's light."});
+  await round(AR,'And then he died, and was buried. A dead man is no Christ. Where is your Messiah now?','ps16',
+    ['David wrote: "You will not leave me in the Grave. You will not allow your loyal one to see the pit." (Psalm 16:10)',
+      'Yet David died and was buried, and his tomb is with us to this day. He was speaking of the one whom God raised up. (Acts 2:29-31; 13:35-37)',
+      'And I have seen him myself, alive, on the road to Damascus.'],
+    ["David's tomb is here, it is true...",'But you say you saw a dead man alive. Many men say many things, Saul.'],
+    {deut:'Moses died too, Saul. No one claims that he rose.',isa53:'Wounds and healing. But a healer has to be alive, Saul.',
+      prov16:'Then Jehovah directed your Nazarene into a tomb.',prov28:'We are not speaking of you. Not yet.',isa49:'A dead man is a light to no one.'});
+  await round(DS,'We are from Cilicia, Saul, as you are. We know what you did. You stood by when Stephen was stoned, and you approved. Now you preach what he preached?','prov28',
+    ['It is true. I stood by and approved, and I guarded the outer garments of those who did away with him. (Acts 22:20)',
+      'I will not cover it over. "The one covering over his transgressions will not succeed, But whoever confesses and abandons them will be shown mercy." (Proverbs 28:13)',
+      'I have confessed it, before God and before you. And I have been shown mercy.'],
+    ['...He does not even deny it.'],
+    {deut:'Do not hide behind Moses, Saul. We asked about you.',ps16:'Stephen is in his grave. Answer for that.',
+      prov16:'Your own steps took you to Damascus with letters to bind men. Who directed that, Saul?',
+      isa49:'The nations can wait. Answer us.',isa53:'We know the prophet. We asked about Stephen.'});
+  await say(AR,'Then let him say it in the synagogue once more. It will be the last time he says it anywhere.');
+  await say(DS,'Come, Ariston. We have heard enough.');
+  await Promise.all([walk(DS,-30,116),walk(AR,-30,122)]);DS.room=AR.room=null;
+  return toCaesarea()}
+async function toCaesarea(){const o={dur:8000};
+  await narr('He was talking and disputing with the Greek-speaking Jews, but these made attempts to do away with him. (Acts 9:29)',o);
+  place(BN,'jerusalem',330,112,1);SFX.door();await walk(BN,P.x-28,P.y);BN.dir=1;P.dir=-1;
+  await say(BN,'Saul! The brothers have heard what those men are planning.');
+  await say(BN,'You have said what you came to say. Now listen to the brothers.');
+  await say(P,'James told me I would hear those words. I did not think it would be so soon.');await fade(1,700);
   await narr('While he was praying in the temple, the Lord directed him to leave Jerusalem quickly: he would be sent to nations far away. (Acts 22:17-21)',o);
   await narr('When the brothers found out about the plot, they brought him down to Caesarea, to send him off to Tarsus. (Acts 9:30)',o);
   enterRoom('harbor',36,124,1);G.inv=CHAP[2].inv('harbor');drawInv();codeBtn();await fade(0,700);
@@ -453,6 +543,16 @@ async function leaveUpper(){
   await say(MT,'There she is, Saul: the only ship in harbor bound for Cilicia.');await say(MT,'But look at her sail. She is going nowhere like that.');
   await say(MT,'You have the bread and figs the brothers packed for your voyage. I only wish we could give you a ship as well.');
   await say(P,'A ship that cannot sail, and a tentmaker who must. Let us see her captain.')}
+DS.hs={name:'Dositheus',actor:DS,wx:278,wy:119,look:'Dositheus, a Greek-speaking Jew from Cilicia. He has heard me in the synagogue, and he has questions.',
+  talk:dispute,
+  show:{awl:"A tentmaker's awl. Make your tents, Saul, and leave the Scriptures to those who keep the Law.",thread:'We did not come to buy thread.',
+    knife:'Put that away. We came to talk, not to quarrel.',tablets:'Your tablets? Then read us what you have written there.',
+    '*':'Keep it. It is answers we want from you.'}};
+AR.hs={name:'Ariston',actor:AR,wx:278,wy:119,look:'Ariston, a Greek-speaking Jew from Alexandria. Quick-witted, and quicker to object.',
+  talk:async()=>{await say(AR,'Dositheus speaks for us both. Answer him.');return dispute()},
+  show:{awl:'Every Pharisee learns a trade. Few of them forget the Law.',thread:'Keep your thread, tentmaker. We are not buying.',
+    knife:'Put that away, Saul.',tablets:'Read from them if you must. I know the Scriptures as well as you do.',
+    '*':'Dositheus asked you a question. Answer it.'}};
 async function finale2(){
   SFX.sew();await say(P,'A patch laid under the tear, a flat seam doubled over it...');SFX.sew();await wait(800);
   await say(P,'...and every stitch pulled tight in tarred twine.');delItem('sailpatch');delItem('twine');F.sailMended=1;SFX.good();
@@ -476,6 +576,8 @@ async function finale2(){
     '<p class="go">Click to continue to Chapter Three</p><p class="small">Chapter Three code: '+codeOf(3,0)+'</p>';
   await wait(1500);ov.onclick=()=>startChapter(3);await new Promise(()=>{})}
 function hint2(){
+  if(F.preach&&G.room!=='harbor')return['reason',['They want answers from the Scriptures, not from me. The passages are written on my tablets, and each objection has its answer there.',
+    'I should talk to Dositheus, and answer each objection with the passage that speaks to it. When they ask about my own past, I will not cover it over.']];
   if(G.room==='upper')return['upper',['I am among brothers at last. There is much to learn here, and then much to do.','When I am ready, the door leads out to the city and its synagogues.']];
   if(G.room==='harbor'){
     if(!F.metCapt)return['capt',['A ship without a sail, and a tentmaker without a passage. Each may be the answer to the other.',"I should speak with the ship's captain."]];
@@ -492,11 +594,11 @@ function hint2(){
   return['fix',['The peg is ready. It belongs where the old pin sheared off.',"I should fit the peg to the handcart's axle."]]}
 /* ============ CHAPTER DEFINITION ============ */
 const BNhs=BN.hs;
-return{rooms:['jerusalem','upper','harbor'],setup:()=>{BN.hs=BNhs;setup2()},start:start2,hint:hint2,music:MUSIC,topics:TOPICS,
-  place:room=>{if(F.told)place(BN,'jerusalem',360,114,-1);if(room==='upper')place(BN,'upper',96,124,1)},
-    flags:['knocked','metBarn','gotStick','peg','wheelOn','cartFixed','told','metCapt','sailDown','gotPatch','gotTwine'],
+return{rooms:['jerusalem','upper','harbor'],setup:()=>{BN.hs=BNhs;setup2()},start:start2,hint:hint2,music:MUSIC,topics:TOPICS,tablets:TABLETS,
+  place:room=>{if(F.told)place(BN,'jerusalem',360,114,-1);if(room==='upper'||F.preach)place(BN,'upper',96,124,1);if(room==='upper')F.upper=1;if(F.preach&&room==='jerusalem')disputers()},
+    flags:['knocked','metBarn','gotStick','peg','wheelOn','cartFixed','told','metCapt','sailDown','gotPatch','gotTwine','upper','preach'],
     ent:{jerusalem:[40,120,1],upper:[56,120,1],harbor:[40,122,1]},
-    inv(room){const inv=['awl','thread','knife'],add=(c,id)=>{if(c)inv.push(id)};
+    inv(room){const inv=['awl','thread','knife','tablets'],add=(c,id)=>{if(c)inv.push(id)};
       add(F.gotStick&&!F.peg,'stick');add(F.peg&&!F.cartFixed,'peg');add(room==='harbor'&&!F.gotTwine,'provisions');
       add(F.gotPatch,'sailpatch');add(F.gotTwine,'twine');return inv}};
 });

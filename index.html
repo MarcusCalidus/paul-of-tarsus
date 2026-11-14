@@ -586,7 +586,10 @@ const ICON={
     for(const y of[4.6,17.2]){g.fillStyle=lg(g,5.6,0,18.4,0,['#6a4020','#b07a44','#8a5a2c','#4a2c14']);g.fillRect(5.6,y,12.8,2.4);R(g,5.6,y,12.8,.6,'#c8945a')}stroke(g,[16.4,12,19,15,20.4,21],'#e2d4aa',.8)},
   knife(g){g.fillStyle=lg(g,0,13,0,21,['#f4f4fc','#c4c4d0','#8a8a98']);g.beginPath();g.ellipse(12,13.6,9.4,7,0,0,3.1416);g.fill();R(g,2.8,13.6,18.4,.8,'#ffffff');stroke(g,[4,15.4,7,18.6,12,20,17,18.6,20,15.4],'rgba(90,90,110,.6)',.5);
     g.fillStyle=lg(g,9.6,0,14.4,0,['#6a4020','#a8703c','#5a3418']);g.fillRect(9.8,6,4.4,7.8);R(g,8.6,4,6.8,2.6,'#8a5a2c');R(g,8.6,4,6.8,.7,'#c8945a');R(g,9.8,11.6,4.4,1,'#c9a14a')},
-  cloth(g){IH.roll(g,'#2a211c')}};
+  cloth(g){IH.roll(g,'#2a211c')},
+  /* wax tablets: two wax-filled leaves in wooden frames, side by side. The writing is short level strokes that stop short of the frame. */
+  tablets(g){for(const x of[2.4,12.6]){g.fillStyle=lg(g,x,0,x+9,0,['#b07a42','#7e5428','#4e3218']);g.fillRect(x,4.6,9,15.2);R(g,x,4.6,9,.7,'#d09a5e');R(g,x,19,9,.8,'#3a2410');
+      R(g,x+1.3,6.2,6.4,12,'#2e2218');R(g,x+1.3,6.2,6.4,.8,'#160e08');for(let j=8.2,k=0;j<17;j+=2.1,k++)R(g,x+2.1,j,3.4+(k*5+x)%2.6,.6,'#9a8862')}}};
 /* ============ ENGINE: actors, script, rendering, input ============ */
 const ACT={},ROOMS={},ITEMS={},BG={},FG={};
 function actor(id,name,color,pitch){return ACT[id]||(ACT[id]={id,name,look:LOOK[id],color,pitch,x:0,y:0,dir:1,fr:0,room:null,walk:null,talk:false,bow:false,hs:null})}
@@ -649,7 +652,8 @@ function syncVerbs(){document.querySelectorAll('#verbs button').forEach(b=>b.cla
 function defVerb(h){if(h.def)return h.def;if(h.exit)return/\bdoor\b/i.test(h.name)?'open':'walk';if(h.actor)return'talk';
   return typeof h.pickup==='function'&&h.pickup.take?'pickup':'look'}
 /* litVerb: while the pointer rests on something and no verb is chosen, the verb a click would use is lit in the panel. */
-function litVerb(){const h=G.hover,d=h&&!G.busy&&G.verb==='walk'&&!G.item?(h.item?'look':defVerb(h)):'';
+const itemVerb=id=>ITEMS[id].def||'look';
+function litVerb(){const h=G.hover,d=h&&!G.busy&&G.verb==='walk'&&!G.item?(h.item?itemVerb(h.item):defVerb(h)):'';
   document.querySelectorAll('#verbs button').forEach(b=>b.classList.toggle('def',b.dataset.v===d))}
 /* Inventory icons are drawn on a 24-unit grid at double resolution, then given a contour and the same dither as everything else. */
 const ICONS={};
@@ -666,7 +670,7 @@ function drawInv(){const el=$('#inv');el.innerHTML='';for(let i=0;i<10;i++){cons
     s.oncontextmenu=e=>{e.preventDefault();if(G.busy)return;audioInit();G.verb='walk';G.item=null;syncVerbs();cut(()=>say(P,ITEMS[id].look))}}
   el.appendChild(s)}}
 function status(){const el=$('#status');litVerb();if(G.busy){el.textContent=' ';return}
-  const h=G.hover,hn=h?(h.item?ITEMS[h.item].name:h.name):'';let s=VNAME[G.verb==='walk'&&h&&!G.item?(h.item?'look':defVerb(h)):G.verb];
+  const h=G.hover,hn=h?(h.item?ITEMS[h.item].name:h.name):'';let s=VNAME[G.verb==='walk'&&h&&!G.item?(h.item?itemVerb(h.item):defVerb(h)):G.verb];
   if(G.item){s+=' '+ITEMS[G.item].name+(G.verb==='give'?' to':' with');if(hn&&!(h&&h.item===G.item))s+=' '+hn}else if(hn)s+=' '+hn;
   el.textContent=s}
 const DEF={look:h=>'Nothing more to see there.',pickup:h=>h.actor?'That would hardly be loving.':'I have no need of that.',
@@ -676,7 +680,7 @@ const NOPE=['That will not work.','Those do not go together.','No. I should thin
 function clickItem(id){if(G.busy)return;audioInit();const it=ITEMS[id],a=G.item;
   if(a&&a!==id)return cut(()=>combine(a,id));
   if(G.verb==='use'||G.verb==='give'){G.item=a===id?null:id;SFX.click();drawInv();status();return}
-  if(G.verb==='open'&&it.open)return cut(it.open);
+  if((G.verb==='open'||G.verb==='walk'&&it.def==='open')&&it.open)return cut(it.open);
   if(G.verb==='walk'||G.verb==='look')return cut(()=>say(P,it.look));
   cut(()=>say(P,G.verb==='pickup'?'I am already carrying it.':G.verb==='open'?'That does not open.':'It is only '+it.name+'.'))}
 function hsAt(x,y){for(const a of Object.values(ACT))if(a!==P&&a.room===G.room&&a.hs&&Math.abs(x-a.x)<=10&&y>=a.y-49&&y<=a.y+1)return a.hs;
@@ -699,7 +703,7 @@ async function clickView(x,y){
   const h=hsAt(x,y),item=G.item;let v=G.verb;
   if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(P,x,y);return}
   if(v==='walk'){v=defVerb(h);if(v==='walk')v=h.exit?'exit':'look'}
-  const A=h.actor,tx=A?A.x+(P.x<A.x?-22:22):(h.wx!=null?h.wx:h.x+h.w/2),ty=A?A.y+1:(h.wy!=null?h.wy:118);
+  const A=h.actor,tx=h.wx!=null?h.wx:A?A.x+(P.x<A.x?-22:22):h.x+h.w/2,ty=h.wy!=null?h.wy:A?A.y+1:118;
   if(!(await walk(P,tx,ty)))return;
   if(G.busy)return;
   P.dir=A?(A.x>P.x?1:-1):h.dir||((h.x+h.w/2)>=P.x?1:-1);
@@ -779,7 +783,10 @@ function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmo
 Object.assign(ITEMS,{
   awl:{name:'awl',look:'A stout awl for piercing goat-hair cloth and leather. It has stitched more tents than I can count.'},
   thread:{name:'waxed thread',look:'Strong linen thread, waxed against the weather.'},
-  knife:{name:"tentmaker's knife",look:'A half-moon blade for cutting cloth and leather. A tool for making, not for harming.'}});
+  knife:{name:"tentmaker's knife",look:'A half-moon blade for cutting cloth and leather. A tool for making, not for harming.'},
+  /* Paul's notebook in every chapter. The overlay lives in shared/tablets.js; each level supplies the entries (tablets in its definition). */
+  tablets:{name:'wax tablets',def:'open',look:'My wax tablets. Whom I have met, what is still to be done, and the Scriptures I want to keep before me.',
+    open:async()=>{try{await need('tablets')}catch(e){return narr(e.message)}return SHARED.tablets.open(CHAP[G.ch].tablets||{})}}});
 const COMBO={'awl+thread':()=>say(P,'Threaded and ready. Now, what needs stitching?')};
 async function combine(a,b){const c=COMBO[[a,b].sort().join('+')];if(c)return c();SFX.nope();return say(P,pick(NOPE))}
 /* --- "Pray to Jehovah": a pause for calm, then a context-sensitive thought. Never changes the game state. --- */
@@ -814,10 +821,15 @@ const CHAP={
 const TITLE={level:1,scene:'wall',mood:'calm',amb:{crickets:.5,wind:.35,owl:.4}};
 /* A level file calls LEVEL(n, init). init() registers its art, cast, items and rooms, and returns the chapter definition. */
 function LEVEL(n,init){Object.assign(CHAP[n],init(),{ready:1})}
+/* loadScript: add a script tag (this works from disk, where fetch does not), and check that the file registered what it should. */
+function loadScript(src,ok,what){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=src;
+  el.onload=()=>ok()?res():rej(new Error(src+' did not register '+what));el.onerror=()=>{el.remove();rej(new Error('Could not load '+src))};document.head.appendChild(el)})}
 function loadLevel(n){const c=CHAP[n];if(c.ready)return Promise.resolve();
-  return c.loading||(c.loading=new Promise((res,rej)=>{const el=document.createElement('script');el.src=c.src;
-    el.onload=()=>c.ready?res():rej(new Error(c.src+' did not register a level'));
-    el.onerror=()=>{c.loading=null;el.remove();rej(new Error('Could not load '+c.src))};document.head.appendChild(el)}))}
+  return c.loading||(c.loading=loadScript(c.src,()=>c.ready,'a level').catch(e=>{c.loading=null;throw e}))}
+/* Anything shared between chapters lives in its own file under shared/, which registers itself in SHARED and is loaded the first time it is needed. */
+const SHARED={},NEEDING={};
+function need(name){if(SHARED[name])return Promise.resolve(SHARED[name]);
+  return NEEDING[name]||(NEEDING[name]=loadScript('shared/'+name+'.js',()=>SHARED[name],'itself').then(()=>SHARED[name],e=>{NEEDING[name]=null;throw e}))}
 function loadFail(e){console.error(e);ov.className='on end';ov.onclick=()=>location.reload();
   ov.innerHTML='<h2>LEVEL NOT FOUND</h2><p>'+e.message+'</p><p class="small">The chapter files live in the levels folder next to index.html.</p><p class="go">Click to reload</p>'}
 async function startChapter(n){ov.onclick=null;try{await loadLevel(n)}catch(e){return loadFail(e)}return CHAP[n].start()}

@@ -343,7 +343,7 @@ Object.assign(COMBO,{
     delItem('cloth');addItem('patch',1);addItem('strips');F.cutCloth=1},
   'rope+strips':async()=>{SFX.sew();await say(P,'I braid the strips three-fold into a cord, then splice it to the rope.');
     delItem('rope');delItem('strips');addItem('longrope',1);F.longRope=1;SFX.good();
-    await say(P,'A threefold cord is not quickly torn apart. Now it will reach the ground.')},
+    await say(P,'"A threefold cord cannot quickly be torn apart." (Ecclesiastes 4:12) Now it will reach the ground.')},
   'awl+basket':reinforce,'basket+straps':reinforce,'basket+thread':reinforce,
   'awl+straps':()=>say(P,'The straps must be sewn onto something that needs their strength.'),
   'straps+thread':()=>say(P,'The straps must be sewn onto something that needs their strength.'),
@@ -381,6 +381,28 @@ const TOPICS=[
   {id:'rope',q:'My rope is far too short.',if:()=>F.gotRope&&!F.longRope},
   {id:'awning',q:"The merchant's awning is torn.",if:()=>F.metZakkai&&!F.awning},
   {id:'thirst',q:'The soldier in the street is thirsty.',if:()=>F.metZakkai&&!F.kind}];
+/* ============ WAX TABLETS: people met, tasks still open, Scripture (shown by shared/tablets.js) ============ */
+const TABLETS={
+  people:[
+    {name:'Eliab',note:'A basket weaver, and a faithful brother. He is hiding me in his workshop.'},
+    {name:'The soldier',note:"One of the governor's men. He watches the alley to the wall quarter.",if:()=>F.metZakkai||F.kind||F.inHouse},
+    {name:'The merchant',note:()=>F.awning?'A wool merchant. His awning is mended, and it shades the alley.':'A wool merchant. The wind split his awning from pole to hem.',if:()=>F.metZakkai},
+    {name:'Naomi',note:'A widow. Her upper room is built on the city wall itself.',if:()=>F.inHouse}],
+  tasks:[
+    {t:'Untie my tool pouch.',if:()=>!F.gotAwl},
+    {t:'Gather what a tentmaker needs from the workshop.',if:()=>!(F.gotKnife&&F.gotCloth&&F.gotThread&&F.gotRope&&F.gotBasket)},
+    {t:'Make a rope long enough to reach the ground.',if:()=>!F.longRope},
+    {t:'Make the basket strong enough to carry a man.',if:()=>!F.strong},
+    {t:"Help the merchant with his awning.",if:()=>F.metZakkai&&!F.awning},
+    {t:"Reach Naomi's house in the wall quarter, without a quarrel.",if:()=>!F.inHouse},
+    {t:'Let no light show from the window.',if:()=>F.inHouse&&!F.lampOut},
+    {t:'Make the rope fast to something that will hold.',if:()=>F.inHouse&&!F.ropeTied},
+    {t:'Fasten the basket to the rope, and open the way out.',if:()=>F.inHouse&&!(F.basketOn&&F.shutters)}],
+  scripture:[
+    {ref:'Proverbs 3:5, 6',text:'Trust in Jehovah with all your heart, And do not rely on your own understanding. In all your ways take notice of him, And he will make your paths straight.'},
+    {ref:'Proverbs 15:1',text:'A mild answer turns away rage, But a harsh word stirs up anger.'},
+    {ref:'Proverbs 25:21',text:'If your enemy is hungry, give him bread to eat; If he is thirsty, give him water to drink.'},
+    {ref:'Ecclesiastes 4:12',text:'A threefold cord cannot quickly be torn apart.'}]};
 /* ============ ROOMS, HOTSPOTS, CHARACTERS ============ */
 const E=ACT.eliab,Z=ACT.zakkai,GD=ACT.guard,N=ACT.naomi,J=ACT.jesse;
 /* ---------- Workshop ---------- */
@@ -416,6 +438,7 @@ E.hs={name:'Eliab',actor:E,look:'Eliab, a basket weaver and a faithful brother. 
     straps:'Harness leather! Thick enough to carry a man, if it is sewn on well.',
     skin:'Empty? The well is just across the street. A traveler should not set out dry.',
     skinfull:'Fresh from the well. Keep it for the road, unless someone needs it more than you.',
+    tablets:'Your tablets. Write down the brothers who helped you tonight, and thank Jehovah for every one of them.',
     '*':'Keep it, brother. You will need it more than I.'},
   ask:{basket:'I know. I wove it, and then I wore it out. Reeds alone will not bear a man; it wants leather beneath it.',
     rope:'Then make it longer. You have cloth, and a tentmaker knows how cloth becomes cord.',
@@ -470,6 +493,7 @@ GD.hs={name:'the guard',actor:GD,look:'A soldier of the governor, posted to watc
     strips:'Rags. You are a strange one.',rope:'What would I want with rope?',longrope:'That is a lot of rope for one man. Move along.',
     basket:'Fill it at the market in the morning. Not here.',strongbasket:'A basket in a harness. Sell it in the morning.',
     straps:'Harness straps. Have you got a mule hidden somewhere?',skin:'Empty. Like mine. A fine pair we make.',
+    tablets:'Writing? Write down that the night is cold and the guard is thirsty.',
     '*':'Move along, tentmaker. I am not trading.'},
   ask:{awning:'So I have heard, all evening. Let him mend it, and let me have some quiet.'},
   give:async it=>{if(it==='skin')return say(P,'An empty waterskin would be a poor gift.');if(it!=='skinfull')return false;
@@ -491,6 +515,7 @@ Z.hs={name:'the merchant',actor:Z,look:'A wool merchant, fretting over his stall
     straps:'They served my mule for ten years. May they serve you as well.',
     skin:'Empty? The well is just there.',
     skinfull:'Water. That soldier has been grumbling for a drink since the second watch.',
+    tablets:()=>say(Z,F.awning?'Write it down, tentmaker: Zakkai owes you a debt.':'Write this down, then: one awning, torn from pole to hem.'),
     '*':'Not tonight, friend. My mind is on my wool.'},
   ask:{basket:'Leather is what you want for weight, not more reeds.',rope:'Every rope in this street is holding something up tonight. Mine included.',
     thirst:'So he keeps telling me. I sell wool, not water.'},
@@ -550,6 +575,7 @@ N.hs={name:'Naomi',actor:N,look:'Sister Naomi. A widow who has opened her home, 
     strongbasket:'Now that is a basket I would trust with a brother.',
     straps:'Leather. Sewn under the basket, that would hold.',
     skin:'Empty, brother? The road to Jerusalem is long and dry.',skinfull:'Good. You will need it on the road.',
+    tablets:'Keep them dry on the road, brother. Wax remembers what men forget.',
     '*':'No, brother. Keep what you have for the road.'},
   ask:{basket:'Then it must be made strong before it carries anyone out of my window.',rope:'Then it is no use to us. It is a long way down, brother.',
     thirst:'Then someone should give him a drink. Even a soldier is somebody\'s son.'},
@@ -561,7 +587,7 @@ N.hs={name:'Naomi',actor:N,look:'Sister Naomi. A widow who has opened her home, 
     {q:'Thank you for opening your home.',once:1,a:async()=>{await say(N,'You once came to this city to take us away in bonds. Now you are my brother.');await say(N,'Jehovah does such things.')}},
     {q:'I will make ready.',bye:1}])};
 function setup(){place(E,'workshop',196,118,-1);place(GD,'street',270,118,1);place(Z,'street',328,116,-1);place(N,'house',172,120,-1);
-  G.inv=['pouch'];drawInv()}
+  G.inv=['pouch','tablets'];drawInv()}
 /* ============ SCENES: intro, finale, chapter complete ============ */
 function wallScene(g,t){backdrop(g,'wall');const S=G.end||{};
   for(let i=0;i<6;i++)if((Math.floor(t/500)+i)%4===0)R(g,160+i*27,12+(i*17)%40,1,1,'#0a0f2e');
@@ -614,11 +640,11 @@ async function finale(){AU.mood='calm';await wait(500);
   await wait(1500);ov.onclick=()=>startChapter(2);
   await new Promise(()=>{})}
 /* ============ CHAPTER DEFINITION ============ */
-return{rooms:['workshop','street','house'],setup,start,hint,music:MUSIC,scenes:{wall:wallScene},topics:TOPICS,
+return{rooms:['workshop','street','house'],setup,start,hint,music:MUSIC,scenes:{wall:wallScene},topics:TOPICS,tablets:TABLETS,
     flags:['gotAwl','gotThread','gotKnife','gotCloth','gotRope','gotSkin','gotBasket','cutCloth','longRope','metZakkai','kind',
       'awning','strong','inHouse','lampOut','shutters','ropeTied','basketOn','water'],
     ent:{workshop:[60,118,1],street:[46,114,1],house:[52,118,1]},
-    inv(){const inv=[],add=(c,id)=>{if(c)inv.push(id)};
+    inv(){const inv=['tablets'],add=(c,id)=>{if(c)inv.push(id)};
       add(!F.gotAwl,'pouch');add(F.gotAwl,'awl');add(F.gotThread,'thread');add(F.gotKnife,'knife');
       add(F.gotCloth&&!F.cutCloth,'cloth');add(F.cutCloth&&!F.awning,'patch');add(F.cutCloth&&!F.longRope,'strips');
       add(F.gotRope&&!F.longRope,'rope');add(F.longRope&&!F.ropeTied,'longrope');
