@@ -329,13 +329,13 @@ ROOMS.upper={walk:[24,300,112,138],mood:'calm',amb:{birds:.25,crowd:.12},
   {name:'door to the city',x:12,y:38,w:34,h:68,wx:34,wy:113,dir:-1,look:'The door to the street, and to a city full of synagogues where I am known.',exit:()=>leaveUpper()},
   {name:'shelf of scrolls',x:70,y:36,w:56,h:18,wx:98,look:'Scrolls of the Law and the Prophets. Every one of them points to the Christ. How did I not see it?',pickup:'They belong to the congregation.'},
   {name:'table',x:128,y:86,w:74,h:24,wx:164,wy:114,look:'A low table. Bread, a lamp and the Scriptures: all a household needs.'},
-  {name:'open scroll',x:142,y:86,w:32,h:9,wx:158,wy:114,look:['The scroll of Isaiah, open on the table.','"A light of nations." I have read those words all my life. Now they read differently.'],pickup:'It belongs to the congregation.'},
+  {name:'open scroll',x:142,y:86,w:32,h:9,wx:158,wy:114,look:['The scroll of Isaiah, open where it says: "a light of nations." (Isaiah 49:6)','I have read those words all my life. Now they read differently.'],pickup:'It belongs to the congregation.'},
   {name:'window',x:224,y:30,w:52,h:44,wx:250,look:'The temple, bright in the sun. So near to this room, and yet so few there will listen.'},
   {name:'bench',x:280,y:84,w:38,h:24,wx:290,wy:114,look:'A bench with a worn cushion. Many long conversations have happened here.'}]};
 CE.hs={name:'Cephas',actor:CE,look:'Cephas, whom many call Peter. A fisherman from Galilee, and an apostle of the Lord.',
   give:async()=>{await say(CE,'Keep it. A guest brings nothing but himself.')},
   talk:()=>talkTree([
-    {q:'Tell me about the Lord.',a:async()=>{await say(CE,'Fifteen days will not be enough, Saul. But sit, and I will begin where he found me:');await say(CE,'on a beach in Galilee, mending nets.')}},
+    {q:'Tell me about the Lord.',a:async()=>{await say(CE,'Fifteen days will not be enough, Saul. But sit, and I will begin where he found me:');await say(CE,'by the Sea of Galilee, casting a net into the sea.')}},
     {q:'The disciples in this city fear me.',a:()=>say(CE,'Fear fades when people see fruit. Give them time, and give them reasons.')},
     {q:'I will speak with you again.',bye:1}])};
 JA.hs={name:'James',actor:JA,look:"James, the Lord's brother. Quiet, and listening closely.",

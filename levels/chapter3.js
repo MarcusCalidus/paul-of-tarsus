@@ -492,8 +492,8 @@ async function finale3(){AU.mood='hope';await wait(400);
   await narr('So they sent the relief to the elders in Judea by the hand of Barnabas and Saul. (Acts 11:30)',{dur:6500});
   await narr('The great famine came, as foretold, in the time of Claudius. The brothers in Judea did not face it alone. (Acts 11:28)',{dur:8000});
   await trek;
-  await narr('When the relief work in Jerusalem had been fully carried out, the two returned to Antioch, taking John Mark along with them. (Acts 12:25)',{dur:8000});
-  await narr('And in Antioch, a far longer road was about to open. (Acts 13:2, 3)',{dur:5500});
+  await narr('After fully carrying out the relief work in Jerusalem, Barnabas and Saul returned and took along with them John, the one also called Mark. (Acts 12:25)',{dur:9000});
+  await narr('And in Antioch, a far longer road was about to open. (Acts 13:1-3)',{dur:5500});
   SFX.win();ov.className='on end';ov.innerHTML='<h2>CHAPTER COMPLETE</h2><h1 style="font-size:calc(var(--s)*12px)">Called to Antioch</h1>'+
     '<p>Paul kept his word, worked with his hands, and helped a sister find what she had to give. The gift was carried honestly, in the sight of Jehovah and of men.</p>'+
     `<p>Prayers for wisdom: ${G.prays}</p>`+

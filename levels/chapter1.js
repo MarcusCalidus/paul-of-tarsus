@@ -434,10 +434,10 @@ ROOMS.street={walk:[16,466,112,138],mood:'tense',amb:{crickets:.7,wind:.3,fire:.
   {name:'mended awning',x:404,y:50,w:56,h:64,wx:392,wy:114,vis:()=>F.awning,look:'My patch holds well. The awning hangs like a dark wall between the stall and the alley.',pickup:'The merchant needs it. And tonight, so do I.'},
   {name:'alley to the wall quarter',x:425,y:40,w:30,h:72,get wx(){return F.awning?440:398},wy:112,dir:1,look:"A narrow alley running toward the city wall. Naomi's house lies that way.",
     exit:async()=>{if(F.awning){await say(P,'Behind the awning the alley lies in shadow. Quietly, now...',{thought:1,color:'#cfe2ff'});await walk(P,440,112);return go('house',52,118,1)}
-      SFX.alert();GD.dir=1;await say(GD,'Halt! The wall quarter is closed tonight. Orders of the ethnarch.');
+      SFX.alert();GD.dir=1;await say(GD,'Halt! The wall quarter is closed tonight. Orders of the governor.');
       await say(P,'As you say. Peace to you.');await walk(P,372,122);P.dir=1;
       await say(P,'He watches that alley closely. I must pass unseen, and without a quarrel.',{thought:1,color:'#cfe2ff'})}}]};
-GD.hs={name:'the guard',actor:GD,look:'A soldier of the ethnarch, posted to watch the alley. He looks cold, tired and thirsty.',
+GD.hs={name:'the guard',actor:GD,look:'A soldier of the governor, posted to watch the alley. He looks cold, tired and thirsty.',
   talk:async()=>{if(F.kind)return say(GD,'Move along, tentmaker. ...And thank you for the water.');
     await say(P,'Peace to you. A cold night for a long watch.');
     await say(GD,'Cold, and dry. My waterskin was empty by the second watch, and I may not leave my post.');
@@ -541,7 +541,7 @@ async function finale(){AU.mood='calm';await wait(500);
   G.scene=wallScene;G.end={heads:1,by:46,rider:1};codeBtn();AU.mood='hope';AU.amb={crickets:.8,wind:.5};await fade(0,600);
   const creak=setInterval(()=>SFX.creak(),1300);
   const down=tween(11000,k=>{G.end.by=46+74*(k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2)});
-  await narr('By night the disciples lowered him in a basket through an opening in the city wall. (Acts 9:25)',{dur:6500});
+  await narr('His disciples took him and let him down by night through an opening in the wall, lowering him in a basket. (Acts 9:25)',{dur:7500});
   await down;clearInterval(creak);await wait(600);
   G.end.rider=0;G.end.px=112;G.end.py=124;SFX.step();await wait(700);
   const off=tween(9000,k=>{G.end.px=112+150*k;G.end.py=124+6*Math.sin(k*3)-k*8});

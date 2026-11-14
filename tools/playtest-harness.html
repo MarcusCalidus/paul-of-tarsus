@@ -57,7 +57,7 @@
   pray();await idle();ok(G.prays===1&&!G.busy,'prayer returns control, hint='+hint()[0]);
   await act(null,'door to the street');ok(G.room==='street','in street');
   await act(null,'alley to the wall quarter');ok(G.room==='street'&&P.x<400,'guard turns Paul back');
-  halt('guard',()=>{ACT.guard.dir=1;say(ACT.guard,'Halt! The wall quarter is closed tonight. Orders of the ethnarch.')});
+  halt('guard',()=>{ACT.guard.dir=1;say(ACT.guard,'Halt! The wall quarter is closed tonight. Orders of the governor.')});
   await actor(null,ACT.zakkai);ok(F.metZakkai,'met merchant');await choose(0);await choose(1);await choose(-1);
   await useOn('skin','well');ok(has('skinfull'),'waterskin filled');
   await actor(null,ACT.guard);verb('give');item('skinfull');view(ACT.guard.x,ACT.guard.y-18);await idle();ok(F.kind&&has('skin'),'water given to guard');
@@ -81,7 +81,7 @@
   await useOn('longrope','roof beam');ok(F.ropeTied&&!has('longrope'),'rope tied');
   await actor(null,ACT.naomi);await choose(-1);
   halt('house',()=>{say(P,'Twice around the beam, and a hitch that tightens under load.')});
-  halt('descent',()=>{G.scene=CHAP[1].scenes.wall;G.end={heads:1,by:92,rider:1};G.busy=true;lock(true);status();narr('By night the disciples lowered him in a basket through an opening in the city wall. (Acts 9:25)',{dur:9000})});
+  halt('descent',()=>{G.scene=CHAP[1].scenes.wall;G.end={heads:1,by:92,rider:1};G.busy=true;lock(true);status();narr('His disciples took him and let him down by night through an opening in the wall, lowering him in a basket. (Acts 9:25)',{dur:9000})});
   await useOn('strongbasket','window');
   n=0;while(!ov.classList.contains('end')&&n++<4000)await wait(50);
   ok(ov.classList.contains('end'),'chapter one complete screen shown');

@@ -21,7 +21,7 @@ Damascus, about 36 C.E. Opposers have plotted to do away with Saul, and the gove
 | | |
 |---|---|
 | ![Eliab's workshop](docs/screenshots/workshop.png) | ![The guarded street](docs/screenshots/guard.png) |
-| Eliab's workshop: gather what a tentmaker needs | The street: a soldier of the ethnarch bars the alley |
+| Eliab's workshop: gather what a tentmaker needs | The street: a soldier of the governor bars the alley |
 | ![Naomi's upper room](docs/screenshots/house.png) | ![Lowered in a basket](docs/screenshots/descent.png) |
 | Naomi's room on the wall: no light may show | By night, through an opening in the wall |
 
@@ -66,7 +66,7 @@ Three more locations and six new characters. This chapter turns on honesty as mu
 
 ## Chapter Three: Called to Antioch
 
-Tarsus, about 45 C.E. A great number of Greek-speaking people in Antioch of Syria have become believers, and Barnabas comes to Tarsus to make a thorough search for Saul. For a whole year the two of them teach in the congregation there, where the disciples are first called Christians. Then the prophet Agabus foretells a great famine, and the disciples determine to send relief to the brothers in Judea, each according to what he can afford, by the hand of Barnabas and Saul (Acts 11:19-30; 12:25).
+Tarsus, about 45 C.E. A great number of Greek-speaking people in Antioch of Syria have become believers, and Barnabas comes to Tarsus to make a thorough search for Saul. For a whole year the two of them teach in the congregation there, where the disciples are first called Christians by divine providence. Then the prophet Agabus foretells a great famine, and the disciples determine to send relief to the brothers in Judea, each according to what he can afford, by the hand of Barnabas and Saul (Acts 11:19-30; 12:25).
 
 | | |
 |---|---|

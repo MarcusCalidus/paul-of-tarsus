@@ -731,14 +731,14 @@ Object.assign(ITEMS,{
 const COMBO={'awl+thread':()=>say(P,'Threaded and ready. Now, what needs stitching?')};
 async function combine(a,b){const c=COMBO[[a,b].sort().join('+')];if(c)return c();SFX.nope();return say(P,pick(NOPE))}
 /* --- "Pray to Jehovah": a pause for calm, then a context-sensitive thought. Never changes the game state. --- */
-const PRAYERS=['Paul bows his head and quietly asks Jehovah for wisdom and a calm heart.',
-  'Paul pauses, and in prayer throws his anxiety on Jehovah.','In the stillness, Paul asks Jehovah to help him think clearly.'];
+const PRAYERS=['Paul bows his head and quietly asks Jehovah for wisdom and a calm heart. (James 1:5)',
+  'Paul pauses, and in prayer throws his anxiety on Jehovah. (1 Peter 5:7)','In the stillness, Paul asks Jehovah to help him think clearly.'];
 function hint(){return CHAP[G.ch].hint()}
 function pray(){if(G.busy||G.scene||!G.room)return;audioInit();
   cut(async()=>{G.prays++;const d=$('#dim'),m=AU.mus,ab=AU.ambG;d.style.opacity=.55;P.bow=true;SFX.pray();
     if(m){m.gain.setTargetAtTime(.12,now(),.3);ab.gain.setTargetAtTime(.15,now(),.3)}
     await wait(900);
-    await say(null,G.prays===1?PRAYERS[0]+' (James 1:5)':pick(PRAYERS),{dur:4200,color:'#cfe2ff'});
+    await say(null,G.prays===1?PRAYERS[0]:pick(PRAYERS),{dur:4200,color:'#cfe2ff'});
     await wait(500);P.bow=false;d.style.opacity=0;if(m){m.gain.setTargetAtTime(.55,now(),.8);ab.gain.setTargetAtTime(.5,now(),.8)}
     await wait(600);
     const[k,ls]=hint(),n=G.hintAt[k]=(G.hintAt[k]||0)+1;
