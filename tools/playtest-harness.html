@@ -69,7 +69,7 @@
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
     &&ov.textContent.includes('PAULUS VON TARSUS')&&$('#code').textContent==='CODE EINGEBEN'&&$('#mute').textContent.includes('TON AN')&&document.title.startsWith('Paulus'),'German on the title screen, in the panel and in the top bar');
   if(!/[?&]keep=1/.test(location.search))ok(store('paul.save')===null&&!ov.querySelector('[data-cont]')&&ov.querySelector('[data-ch="1"]').classList.contains('go'),'a first visit has nothing to continue: Chapter One leads the list');
-  halt('title');
+  halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
   /* sound: the first press anywhere starts it; a press wakes sound that iOS interrupted; on iPhone and iPad a note says where Silent Mode is */
   {const hushOn=()=>$('#hush').classList.contains('on'),dev=AU.apple;
     ok(!dev,'desktop Chrome is not taken for an iPhone or iPad');ok(!AU.ctx,'no sound before the first press');
