@@ -375,6 +375,12 @@ function hint(){
   if(!F.ropeTied)return['beam',['A rope is only as sure as what holds it. Something in this room has borne weight for generations.','I should tie the long rope to the roof beam above the window.']];
   if(!F.basketOn)return['hang',['All is nearly ready. The basket and the rope must become one.','I should fasten the reinforced basket to the rope at the window.']];
   return['end',['Jehovah has provided helpers and a way out. It is time to trust, and go.']]}
+/* ============ TOPICS: what Paul has learned, which he can raise with anyone (see each person's ask table) ============ */
+const TOPICS=[
+  {id:'basket',q:'The basket loops are frayed through.',if:()=>F.gotBasket&&!F.strong},
+  {id:'rope',q:'My rope is far too short.',if:()=>F.gotRope&&!F.longRope},
+  {id:'awning',q:"The merchant's awning is torn.",if:()=>F.metZakkai&&!F.awning},
+  {id:'thirst',q:'The soldier in the street is thirsty.',if:()=>F.metZakkai&&!F.kind}];
 /* ============ ROOMS, HOTSPOTS, CHARACTERS ============ */
 const E=ACT.eliab,Z=ACT.zakkai,GD=ACT.guard,N=ACT.naomi,J=ACT.jesse;
 /* ---------- Workshop ---------- */
@@ -396,7 +402,24 @@ ROOMS.workshop={walk:[22,300,112,138],mood:'calm',amb:{crickets:.22,fire:.22},hs
     pickup:take('gotBasket','basket','I can carry it. But those worn loops must be made strong before I trust my life to them.'),
     useWith:async()=>{await say(P,'I had better pick it up and look it over first.')}}]};
 E.hs={name:'Eliab',actor:E,look:'Eliab, a basket weaver and a faithful brother. He has risked much to shelter me.',
-  give:async()=>{await say(E,'Keep it, brother. You will need it more than I.')},
+  show:{pouch:'Your tools are in there, Saul. Untie it, and let us see what a tentmaker can do.',
+    awl:'The awl that has stitched half the tents in Cilicia. Do not lose it tonight.',
+    thread:'Waxed linen. Good for a seam. For the weight of a man you will want more than thread alone.',
+    knife:'Mind that edge. Cut the cloth, not your fingers.',
+    cloth:'Good Cilician cloth. But a whole bolt is no use to anyone. Cut it to the job.',
+    patch:'A neat square. Something somewhere is torn, and you mean to mend it.',
+    strips:'Twist those together and you have cord. You know that better than I do.',
+    rope:'It was long enough for my baskets. Not for a city wall.',
+    longrope:'Now that will reach the ground. I would trust my own neck to those knots.',
+    basket:['My best basket, and I have worn its loops through.','Reeds alone will not carry a man. It wants something stronger underneath.'],
+    strongbasket:'Leather, sewn from rim to rim. I wove that basket, and now I hardly know it.',
+    straps:'Harness leather! Thick enough to carry a man, if it is sewn on well.',
+    skin:'Empty? The well is just across the street. A traveler should not set out dry.',
+    skinfull:'Fresh from the well. Keep it for the road, unless someone needs it more than you.',
+    '*':'Keep it, brother. You will need it more than I.'},
+  ask:{basket:'I know. I wove it, and then I wore it out. Reeds alone will not bear a man; it wants leather beneath it.',
+    rope:'Then make it longer. You have cloth, and a tentmaker knows how cloth becomes cord.',
+    thirst:['Is he? He stands there to catch you, Saul.','And yet it is written: "If he is thirsty, give him water to drink." (Proverbs 25:21)']},
   talk:()=>talkTree([
     {q:'Tell me the plan once more.',a:async()=>{await say(E,"Sister Naomi's house is built on the city wall. Her upper window looks out over open country.");
       await say(E,'We lower you from it in a basket, by night. The gates will never see you.')}},
@@ -441,7 +464,14 @@ GD.hs={name:'the guard',actor:GD,look:'A soldier of the governor, posted to watc
   talk:async()=>{if(F.kind)return say(GD,'Move along, tentmaker. ...And thank you for the water.');
     await say(P,'Peace to you. A cold night for a long watch.');
     await say(GD,'Cold, and dry. My waterskin was empty by the second watch, and I may not leave my post.');
-    await say(GD,'Now move along. No one enters the wall quarter tonight.')},
+    await say(GD,'Now move along. No one enters the wall quarter tonight.');return talkTree([{q:'Peace to you.',bye:1}],{quiet:1})},
+  show:{pouch:'Tools? Keep them. I am not buying.',awl:'Put that away. It has been a long night.',thread:'I am a soldier, not a seamstress.',
+    knife:'Put that blade away, tentmaker. Slowly.',cloth:'Cloth. Do I look as if I need cloth? I need a drink.',patch:'A rag. Keep it.',
+    strips:'Rags. You are a strange one.',rope:'What would I want with rope?',longrope:'That is a lot of rope for one man. Move along.',
+    basket:'Fill it at the market in the morning. Not here.',strongbasket:'A basket in a harness. Sell it in the morning.',
+    straps:'Harness straps. Have you got a mule hidden somewhere?',skin:'Empty. Like mine. A fine pair we make.',
+    '*':'Move along, tentmaker. I am not trading.'},
+  ask:{awning:'So I have heard, all evening. Let him mend it, and let me have some quiet.'},
   give:async it=>{if(it==='skin')return say(P,'An empty waterskin would be a poor gift.');if(it!=='skinfull')return false;
     await say(P,'You are thirsty. Here. It is fresh from the well.');SFX.splash();await wait(700);
     await say(GD,'...Most in this city curse us as they pass. Why would you do this?');
@@ -449,13 +479,28 @@ GD.hs={name:'the guard',actor:GD,look:'A soldier of the governor, posted to watc
     await say(GD,'Hm. Then you have my thanks, stranger. I still cannot let you into the alley.');
     F.kind=1;F.water=0;delItem('skinfull');addItem('skin',1)}};
 Z.hs={name:'the merchant',actor:Z,look:'A wool merchant, fretting over his stall.',
-  give:async it=>{if(!MEND.includes(it))return false;await say(P,'He does not need my tools. His awning needs my hands.')},
-  talk:async()=>{if(F.awning)return say(Z,'A stitch like that will outlast the cloth! Go in peace, tentmaker.');
+  give:async it=>{if(!MEND.includes(it)||F.awning)return false;await say(P,'He does not need my tools. His awning needs my hands.')},
+  show:{pouch:"A tentmaker's pouch. I hope there is an awl in it.",awl:'The awl that saved my wool! Keep it sharp, friend.',thread:'Not one stitch has given. Good thread, that.',
+    knife:'A fine blade. The wind cut my awning cleaner than that.',
+    cloth:'Goat-hair cloth! A square of that would cover my tear twice over.',
+    strips:'Ribbons? My awning wants a patch, friend, not ribbons.',
+    rope:'Too short to hang anything from. I have tried.',
+    longrope:'Now that is a rope. You could hang an awning across the whole street with it.',
+    basket:'Those loops will not last the week. You want leather under a basket like that.',
+    strongbasket:'My old straps, doing honest work again. I am glad of it.',
+    straps:'They served my mule for ten years. May they serve you as well.',
+    skin:'Empty? The well is just there.',
+    skinfull:'Water. That soldier has been grumbling for a drink since the second watch.',
+    '*':'Not tonight, friend. My mind is on my wool.'},
+  ask:{basket:'Leather is what you want for weight, not more reeds.',rope:'Every rope in this street is holding something up tonight. Mine included.',
+    thirst:'So he keeps telling me. I sell wool, not water.'},
+  talk:async()=>{if(F.awning){await say(Z,'A stitch like that will outlast the cloth! Go in peace, tentmaker.');return talkTree([{q:'Peace to you.',bye:1}],{quiet:1})}
     if(!F.metZakkai){F.metZakkai=1;await say(P,'Peace to you. You are at your stall late.');
       await say(Z,'Peace? The wind split my awning from pole to hem today!');
       await say(Z,'If I cannot hang it across to that wall, the night dew will ruin my dyed wool.');
       await say(P,'I am a tentmaker by trade. Perhaps I can be of use.');
-      await say(Z,'Truly? I have no coin tonight... but mend it, and I will find some way to repay you.')}
+      await say(Z,'Truly? I have no coin tonight... but mend it, and I will find some way to repay you.');
+      await say(Z,'And mind that soldier. He has grumbled at my stall all night that his waterskin is empty.')}
     await talkTree([
       {q:'What does the awning need?',a:()=>say(Z,'A patch of strong cloth over the tear, and someone who sews straighter than I do.')},
       {q:'What do you know of the soldier?',a:async()=>{await say(Z,'Posted since sundown to watch the alley. He stops everyone who goes near it.');
@@ -495,7 +540,19 @@ ROOMS.house={walk:[24,300,112,138],mood:'calm',floor:'wood',amb:()=>F.shutters?{
       SFX.creak();delItem('longrope');F.ropeTied=1;await say(P,'Twice around the beam, and a hitch that tightens under load.');await say(P,'It will hold.');return checkFinal()}},
   {name:'storage jars',x:276,y:92,w:36,h:20,look:'Oil, grain and lentils. A modest household, generously shared.'}]};
 N.hs={name:'Naomi',actor:N,look:'Sister Naomi. A widow who has opened her home, and risked it, for the congregation.',
-  give:async()=>{await say(N,'No, brother. Keep what you have for the road.')},
+  show:{pouch:'Your tools, brother? Then there is still work to do.',awl:'Keep it close. You may need it before the night is out.',
+    thread:'Good thread. Is anything still to be sewn?',knife:'Put it away, brother, unless something here truly needs cutting.',
+    cloth:'Goat-hair cloth. It will not reach the ground as it is, brother.',patch:'A patch? Our trouble tonight is not a tear.',
+    strips:'Strips of cloth... braided, they make a cord. My mother made them so.',
+    rope:'That will not reach the ground. It will not reach halfway.',
+    longrope:'That will reach. Tie it to something stronger than my window frame.',
+    basket:'Those loops are worn through. I will not lower a brother in that.',
+    strongbasket:'Now that is a basket I would trust with a brother.',
+    straps:'Leather. Sewn under the basket, that would hold.',
+    skin:'Empty, brother? The road to Jerusalem is long and dry.',skinfull:'Good. You will need it on the road.',
+    '*':'No, brother. Keep what you have for the road.'},
+  ask:{basket:'Then it must be made strong before it carries anyone out of my window.',rope:'Then it is no use to us. It is a long way down, brother.',
+    thirst:'Then someone should give him a drink. Even a soldier is somebody\'s son.'},
   talk:()=>talkTree([
     {q:'Is it safe here?',a:async()=>{await say(N,'As safe as anywhere in Damascus tonight. The watchmen walk the wall above, but they look outward, toward the roads.');
       await say(N,'Only a light would draw their eyes down here.')}},
@@ -557,7 +614,7 @@ async function finale(){AU.mood='calm';await wait(500);
   await wait(1500);ov.onclick=()=>startChapter(2);
   await new Promise(()=>{})}
 /* ============ CHAPTER DEFINITION ============ */
-return{rooms:['workshop','street','house'],setup,start,hint,music:MUSIC,scenes:{wall:wallScene},
+return{rooms:['workshop','street','house'],setup,start,hint,music:MUSIC,scenes:{wall:wallScene},topics:TOPICS,
     flags:['gotAwl','gotThread','gotKnife','gotCloth','gotRope','gotSkin','gotBasket','cutCloth','longRope','metZakkai','kind',
       'awning','strong','inHouse','lampOut','shutters','ropeTied','basketOn','water'],
     ent:{workshop:[60,118,1],street:[46,114,1],house:[52,118,1]},

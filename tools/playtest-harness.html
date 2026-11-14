@@ -28,6 +28,12 @@
   while(!G.ready)await wait(30);
   const srt=()=>G.inv.slice().sort().join(),nq=()=>document.querySelectorAll('#choices button').length;
   const pickQ=async txt=>{const b=[...document.querySelectorAll('#choices button')],i=b.findIndex(x=>x.textContent.includes(txt));if(i<0)throw new Error('no choice '+txt);b[i].click();await idle()};
+  const hasQ=t=>[...document.querySelectorAll('#choices button')].some(b=>b.textContent.includes(t));
+  /* show sweep: every carried item shown to each person gets an answer in his own voice, and nothing in the game changes */
+  const sweep=async(...as)=>{const f=JSON.stringify(F),inv=srt(),bad=[];let n=0,own=0;
+    for(const a of as)for(const id of G.inv.slice()){heard.length=0;await cut(()=>show(a.hs,id));n++;if(a.hs.show&&a.hs.show[id]!=null)own++;
+      if(!heard.length||heard.includes('Keep it, friend.'))bad.push(a.id+'/'+id)}
+    ok(!bad.length&&JSON.stringify(F)===f&&srt()===inv,`show: ${n} item-person pairs answered, ${own} with their own line (${as.map(a=>a.id)})`+(bad.length?' MISSING '+bad:''))};
   const enter=async c=>{$('#code').click();$('#codein').value=c;$('#codego').click();await idle()};
   const give=async(id,a)=>{verb('give');item(id);view(a.x,a.y-18);await idle()};
   /* Chapter Three stops start that chapter from the title screen, without replaying the first two. */
@@ -79,17 +85,27 @@
   ok(decode(c1).b===b1&&decode(c1).ch===1&&/^[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(c1)&&$('#code').textContent==='CODE '+c1,'code round-trips: '+c1);
   ok(decode('AAAAAA')===null&&decode('')===null&&decode(c1.slice(0,6)+(c1[6]==='A'?'B':'A'))===null,'bad codes rejected');
   ok(decode(c1.toLowerCase().replace('-',' ')).b===b1,'lower case and spaces accepted');
-  await actor(null,ACT.eliab);ok(document.querySelectorAll('#choices button').length===5,'eliab has 5 topics');await choose(3);await choose(-1);
-  await actor(null,ACT.eliab);ok(document.querySelectorAll('#choices button').length===4,'once-topic gone');
+  await actor(null,ACT.eliab);ok(nq()===6&&hasQ('basket loops are frayed'),'eliab has 5 questions, and one about the frayed basket');await choose(3);await choose(-1);
+  await actor(null,ACT.eliab);ok(nq()===5,'once-question gone');heard.length=0;await pickQ('basket loops are frayed');
+  ok(heard.includes(ACT.eliab.hs.ask.basket)&&nq()===4&&!F.strong,'learned topic answered once, and solves nothing');
   halt('choices');await choose(-1);
+  heard.length=0;await give('knife',ACT.eliab);ok(heard.includes(ACT.eliab.hs.show.knife)&&has('knife'),'knife shown to Eliab: his own reply, item kept');
+  heard.length=0;verb('use');item('longrope');view(ACT.eliab.x,ACT.eliab.y-18);await idle();ok(heard.includes(ACT.eliab.hs.show.longrope)&&has('longrope'),'using an item on a person shows it');
+  ok(!/needed/.test(act.toString()),'the stock "not needed" line is gone');
+  await sweep(ACT.eliab);
   halt('pray',()=>{pray()});
   pray();await idle();ok(G.prays===1&&!G.busy,'prayer returns control, hint='+hint()[0]);
   await act(null,'door to the street');ok(G.room==='street','in street');
   await act(null,'alley to the wall quarter');ok(G.room==='street'&&P.x<400,'guard turns Paul back');
   halt('guard',()=>{ACT.guard.dir=1;say(ACT.guard,'Halt! The wall quarter is closed tonight. Orders of the governor.')});
-  await actor(null,ACT.zakkai);ok(F.metZakkai,'met merchant');await choose(0);await choose(1);await choose(-1);
+  await actor(null,ACT.zakkai);ok(F.metZakkai&&nq()===5&&hasQ('soldier in the street is thirsty'),'met merchant; he mentions the thirsty soldier');
+  heard.length=0;await pickQ('soldier in the street is thirsty');ok(heard.includes(ACT.zakkai.hs.ask.thirst),'thirst topic answered');
+  await choose(0);await choose(1);await choose(-1);
+  await actor(null,ACT.guard);ok(nq()===2&&hasQ("merchant's awning"),'the guard can be asked about the awning');await choose(-1);
+  await sweep(ACT.guard,ACT.zakkai);
+  halt('show',()=>{P.dir=1;say(ACT.guard,ACT.guard.hs.show.longrope)});
   await useOn('skin','well');ok(has('skinfull'),'waterskin filled');
-  await actor(null,ACT.guard);verb('give');item('skinfull');view(ACT.guard.x,ACT.guard.y-18);await idle();ok(F.kind&&has('skin'),'water given to guard');
+  await actor(null,ACT.guard);if($('#choices').classList.contains('on'))await choose(-1);verb('give');item('skinfull');view(ACT.guard.x,ACT.guard.y-18);await idle();ok(F.kind&&has('skin'),'water given to guard');
   await useOn('awl','torn awning');ok(F.awning&&has('straps')&&!has('patch'),'awning mended, straps received');
   await use('straps','basket');ok(has('strongbasket'),'basket reinforced');
   const c2=makeCode(),inv2=srt();
@@ -108,7 +124,7 @@
   halt('dark');
   await act('open','shutters');ok(F.shutters,'shutters open');
   await useOn('longrope','roof beam');ok(F.ropeTied&&!has('longrope'),'rope tied');
-  await actor(null,ACT.naomi);await choose(-1);
+  await actor(null,ACT.naomi);await choose(-1);await sweep(ACT.naomi);
   halt('house',()=>{say(P,'Twice around the beam, and a hitch that tightens under load.')});
   halt('descent',()=>{G.scene=CHAP[1].scenes.wall;G.end={heads:1,by:92,rider:1};G.busy=true;lock(true);status();narr('His disciples took him and let him down by night through an opening in the wall, lowering him in a basket. (Acts 9:25)',{dur:9000})});
   await useOn('strongbasket','window');
@@ -123,7 +139,7 @@
   await act('use','door of the house');ok(F.knocked&&G.room==='jerusalem','door stays shut for Saul');
   await act('use','loose wheel');ok(!F.wheelOn,'wheel needs its owner first');
   await actor(null,ACT.barnabas);ok(F.metBarn,'met the man with the cart');
-  await act('pickup','pruned branch');ok(has('stick'),'branch picked up');
+  await act('pickup','pruned branch');ok(has('stick'),'branch picked up');await sweep(ACT.barnabas);
   await useOn('stick','handcart');ok(has('stick')&&!F.cartFixed,'raw branch refused');
   await use('knife','stick');ok(has('peg')&&!has('stick'),'peg carved');
   await useOn('peg','handcart');ok(has('peg'),'peg refused before the wheel is on');
@@ -141,7 +157,8 @@
   await enter(ct);ok(F.told&&ACT.barnabas.x>340&&!has('peg'),'chapter two code restores later state');
   await act('use','door of the house');ok(G.room==='upper'&&!G.busy,'Barnabas gets him in');
   halt('upper',()=>{say(ACT.cephas,'Stay in my house, brother. We have much to speak about.')});
-  await actor(null,ACT.cephas);await choose(0);await choose(-1);await actor(null,ACT.james);await choose(0);await choose(-1);
+  await actor(null,ACT.cephas);ok(nq()===4&&hasQ('Barnabas spoke up'),'Cephas can be asked about Barnabas');await choose(0);await choose(-1);
+  await actor(null,ACT.james);await choose(0);await choose(-1);await sweep(ACT.cephas,ACT.james,ACT.barnabas);
   pray();await idle();ok(hint()[0]==='upper','upper room hint');
   await act(null,'door to the city');ok(G.room==='harbor'&&has('provisions')&&!G.busy,'brought down to Caesarea');
   halt('harbor',()=>{say(ACT.mattan,'There she is, Saul: the only ship in harbor bound for Cilicia.')});
@@ -151,7 +168,9 @@
   await useOn('thread','torn sail');ok(!F.sailMended,'tent thread is too weak');
   await useOn('knife','heap of old sailcloth');ok(has('sailpatch'),'patch cut');
   await useOn('awl','torn sail');ok(!F.sailMended,'no twine yet');
-  await actor(null,ACT.fisher);await choose(0);await choose(-1);
+  await actor(null,ACT.fisher);ok(nq()===6&&hasQ('tarred twine'),'fisherman: three questions and three learned topics');halt('topics');heard.length=0;await pickQ('tarred twine');
+  ok(heard.includes(ACT.fisher.hs.ask.twine[1])&&!has('twine'),'asking about the twine is a clue, not the twine');await choose(0);await choose(-1);
+  await sweep(ACT.captain,ACT.fisher,ACT.mattan);
   verb('give');item('provisions');view(ACT.fisher.x,ACT.fisher.y-18);await idle();ok(has('twine')&&!has('provisions'),'bread shared, twine given');
   const chb=makeCode();await enter(chb);ok(G.room==='harbor'&&has('twine')&&has('sailpatch')&&F.sailDown&&!has('provisions'),'harbor code restores');
   halt('sail',()=>{place(P,'harbor',330,126,1);say(ACT.captain,'A patch of sound sailcloth, and tarred twine. Not thread: thread parts in the first gust.')});
@@ -168,7 +187,8 @@
   await act(null,'east gate');ok(G.room==='tarsus'&&!F.sold&&!G.busy,'no leaving before the promise is kept');
   await act('pickup','tent');ok(!has('tent')&&!F.gotTent,'unfinished tent stays on its frame');
   await actor(null,ACT.kleon);ok(F.metKleon,'met Kleon');await choose(0);await choose(-1);
-  await actor(null,ACT.barnabas);ok(nq()===4,'barnabas has 4 topics in Tarsus');await choose(-1);
+  await actor(null,ACT.barnabas);ok(nq()===5&&hasQ("caravan leaves at noon"),'barnabas has 4 questions in Tarsus, and one about Kleon');await choose(-1);
+  await sweep(ACT.barnabas,ACT.kleon);
   await useOn('awl','tent');ok(F.seam&&ACT.barnabas.x<120,'seam sewn with Barnabas holding the edge');
   await useOn('awl','tent');ok(!F.loopsOn,'no loops to sew yet');
   await useOn('knife','leather hide');ok(has('loops')&&F.gotLoops,'peg loops cut from the hide');
@@ -188,7 +208,8 @@
   await act(null,'east gate');
   ok(G.room==='court'&&!G.busy&&srt()==='awl,bolt,knife,wages'&&ACT.barnabas.room==='court'&&ACT.xanthe.room==='antioch','brought to Antioch; a year later, the relief is gathered');
   halt('court',()=>{say(ACT.barnabas,'But it has weeks of road ahead of it, and our old pack bags are rotten through.')});
-  await actor(null,ACT.barnabas);await choose(0);await choose(-1);await actor(null,ACT.agabus);await choose(0);await choose(-1);
+  await actor(null,ACT.barnabas);ok(hasQ('great famine'),'famine topic in Antioch');await choose(0);await choose(-1);await actor(null,ACT.agabus);ok(hasQ('no thread'),'thread topic');await choose(0);await choose(-1);
+  await sweep(ACT.barnabas,ACT.agabus,ACT.lucius);
   await useOn('awl','old pack bags');await useOn('bolt','donkey');ok(!F.bagsOn&&has('bolt'),'loose cloth carries nothing');
   await use('awl','bolt');ok(has('bolt')&&!F.cutBolt,'cloth must be cut before sewing');
   await use('knife','bolt');ok(has('panels')&&!has('bolt'),'panels cut');
@@ -197,7 +218,7 @@
   await act(null,'gate to the street');ok(G.room==='antioch'&&!G.busy,'out in the street');
   halt('antioch',()=>{place(P,'antioch',150,122,1);say(ACT.xanthe,'The others carry in sacks of grain. I earn two small coins a day. What could I give?')});
   halt('potter',()=>{place(P,'antioch',320,124,1);G.cam=160;say(ACT.theron,'My oil jars went to the courtyard at dawn. A potter cannot send much, but he can send it well sealed.')});
-  await actor(null,ACT.theron);ok(nq()===5,'theron has 5 topics');await choose(2);await choose(-1);
+  await actor(null,ACT.theron);ok(nq()===6,'theron has 5 questions and the famine');await choose(2);await choose(-1);await sweep(ACT.xanthe,ACT.theron);
   await give('wages',ACT.xanthe);ok(has('wages'),'silver is not what Xanthe needs');
   await actor(null,ACT.xanthe);ok(nq()===3,'Xanthe round 1 offers three answers');
   await pickQ('everyone must give');ok(nq()===2&&!F.gotSpool,'pressure is set aside');
@@ -205,7 +226,7 @@
   await pickQ('you are excused');ok(nq()===1,'so is dismissal');
   await pickQ('No one asks for what you do not have');await pickQ('What is in your hands');await pickQ('I could buy it');await pickQ('no bags to travel in');
   ok(has('spool')&&F.gotSpool&&!G.busy,'Xanthe gives her thread gladly');
-  await actor(null,ACT.theron);ok(nq()===4,'topic about Xanthe is gone');await choose(-1);
+  await actor(null,ACT.theron);ok(nq()===5,'question about Xanthe is gone');await choose(-1);
   await use('spool','panels');ok(has('bags')&&!has('panels')&&!has('spool'),'pack bags sewn');
   const tc=makeCode();
   await act('use','south gate');ok(G.room==='antioch','not leaving before the gift is ready');

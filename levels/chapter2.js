@@ -255,6 +255,11 @@ Object.assign(COMBO,{
   'knife+provisions':()=>say(P,'I will break the bread when it is time to eat it.')});
 function setup2(){place(BN,'jerusalem',228,118,-1);place(CE,'upper',168,120,-1);place(JA,'upper',212,123,-1);
   place(CP,'harbor',262,122,-1);place(FI,'harbor',186,116,-1);place(MT,'harbor',214,130,1);G.inv=['awl','thread','knife'];drawInv()}
+/* ============ TOPICS: what Paul has learned, which he can raise with anyone (see each person's ask table) ============ */
+const TOPICS=[
+  {id:'barnabas',q:'Barnabas spoke up for me.',if:()=>F.told},
+  {id:'sail',q:"The captain's sail is torn.",if:()=>F.metCapt},
+  {id:'twine',q:'The captain says there is tarred twine to be had.',if:()=>F.metCapt&&!F.gotTwine}];
 /* ============ ROOMS, HOTSPOTS, CHARACTERS ============ */
 async function knock(){SFX.knock();await wait(600);
   if(F.told){await say(BN,'It is Barnabas! Open, sister, and do not be afraid.');await say(DK,'Barnabas? But the man beside you...');
@@ -309,7 +314,12 @@ ROOMS.jerusalem={walk:[16,466,110,138],mood:'calm',amb:{birds:.5,crowd:.35,wind:
   {name:'street to the markets',x:462,y:60,w:18,h:60,wx:456,wy:120,look:'The street runs on toward the markets and the temple mount.',use:'My business is at that door first.'}]};
 BN.hs={get name(){return F.cartFixed||G.room!=='jerusalem'?'Barnabas':'man with the handcart'},actor:BN,
   look:()=>say(P,G.room==='upper'?'Barnabas. He staked his own good name on my word.':F.cartFixed?'Barnabas: "Son of Comfort", they call him. I can see why.':'A man in a red tunic, struggling with a loaded handcart.'),
-  give:async()=>{await say(BN,'Keep it, friend. You may need it yet.')},
+  show:{awl:()=>say(BN,G.room==='upper'?'Keep it busy, brother. Honest work speaks well of a man.':'An awl? A craftsman, then. But that cart needs a pin, not a stitch.'),
+    thread:()=>say(BN,G.room==='upper'?'Keep it for your trade, Saul.':'Thread will not hold a wheel on, friend.'),
+    knife:()=>say(BN,G.room==='upper'?'Put it away, brother. Some here still remember why they feared you.':'A good blade. With the right piece of wood, a craftsman could make a pin with it.'),
+    stick:'Olive wood! Seasoned like that, it is nearly as hard as iron. Shaped right, it would make a pin.',
+    peg:()=>say(BN,F.wheelOn?'That will do for a pin! The wheel is on. Now it only needs seating.':'A fine pin. But the wheel must go back on the axle first, and that takes two men.'),
+    '*':'Keep it, friend. You may need it yet.'},
   talk:async()=>{if(G.room==='upper')return say(BN,'Someone once spoke up for me, Saul. Now go and prove me right.');
     if(F.told)return say(BN,'Come, Saul. The door.');if(F.cartFixed)return barnStory();
     if(!F.metBarn){F.metBarn=1;await say(P,'Peace to you. May I help?');await say(BN,'Peace! You may, if you have a wheelwright hidden in your cloak.');
@@ -333,13 +343,20 @@ ROOMS.upper={walk:[24,300,112,138],mood:'calm',amb:{birds:.25,crowd:.12},
   {name:'window',x:224,y:30,w:52,h:44,wx:250,look:'The temple, bright in the sun. So near to this room, and yet so few there will listen.'},
   {name:'bench',x:280,y:84,w:38,h:24,wx:290,wy:114,look:'A bench with a worn cushion. Many long conversations have happened here.'}]};
 CE.hs={name:'Cephas',actor:CE,look:'Cephas, whom many call Peter. A fisherman from Galilee, and an apostle of the Lord.',
-  give:async()=>{await say(CE,'Keep it. A guest brings nothing but himself.')},
+  show:{awl:"A tentmaker's awl. I worked with nets once, until the Lord called me to fish for men. (Matthew 4:18, 19)",
+    thread:'Good linen. We mended our nets with cord much like it.',
+    knife:'Put it away, brother. I once drew a sword in his name, and he told me to put it into its sheath. (John 18:10, 11)',
+    '*':'Keep it. A guest brings nothing but himself.'},
+  ask:{barnabas:['Then you have a good friend, Saul. He sold a field and laid the money at our feet. (Acts 4:36, 37)','When Barnabas speaks for a man, we listen.']},
   talk:()=>talkTree([
     {q:'Tell me about the Lord.',a:async()=>{await say(CE,'Fifteen days will not be enough, Saul. But sit, and I will begin where he found me:');await say(CE,'by the Sea of Galilee, casting a net into the sea.')}},
     {q:'The disciples in this city fear me.',a:()=>say(CE,'Fear fades when people see fruit. Give them time, and give them reasons.')},
     {q:'I will speak with you again.',bye:1}])};
 JA.hs={name:'James',actor:JA,look:"James, the Lord's brother. Quiet, and listening closely.",
-  give:async()=>{await say(JA,'There are others who need it more. But thank you.')},
+  show:{awl:'My brother worked with his hands too. In his home territory they called him "the carpenter." (Mark 6:1-3)',
+    thread:'Keep it for your trade, Saul. Honest work will speak for you when words cannot.',knife:'A tool for making things. Keep it so.',
+    '*':'There are others who need it more. But thank you.'},
+  ask:{barnabas:'The apostles call him "Son of Comfort." Today you have seen why. (Acts 4:36)'},
   talk:()=>talkTree([
     {q:"You are the Lord's brother.",a:async()=>{await say(JA,'I grew up in the same house, and for years I did not put faith in him.');await say(JA,'So I do not judge a man by how late he came to it.')}},
     {q:'What should I do now?',a:()=>say(JA,'What you did in Damascus: speak. And listen to the brothers when they tell you it is time to go.')},
@@ -374,7 +391,12 @@ ROOMS.harbor={walk:[16,466,110,138],mood:'hope',amb:{waves:.8,gulls:.6,wind:.3,c
   {name:'torn sail',x:298,y:102,w:108,h:13,wx:350,wy:122,vis:()=>F.sailDown,look:'Spread on the quay, the tear is as long as a man. But the cloth around it is strong.',
     pickup:'It is far too heavy, and it is not mine.',use:'It needs a patch, heavy twine, and a tool to drive the stitches.',useWith:mendSail}]};
 CP.hs={name:'the captain',actor:CP,look:'The master of the ship. He keeps glancing at the sky, judging the wind.',
-  give:async()=>{await say(CP,'Keep your things. What I need is a sail.')},
+  show:{awl:"An awl, near enough a sailmaker's. Good. Now you need a patch, and twine.",
+    thread:'Thread? It would part in the first gust. Twine, man. Tarred twine.',knife:'Sharp? Good. There is old sailcloth heaped by the warehouse.',
+    provisions:'Keep your bread. You will want it at sea.',sailpatch:'Sound cloth. That will cover the tear, sewn on with twine.',
+    twine:'Tarred twine! From the old man? Then you have a gift for people as well as for cloth.',
+    '*':'Keep your things. What I need is a sail.'},
+  ask:{barnabas:'Never heard of him. Can he sew?'},
   talk:async()=>{if(!F.metCapt){F.metCapt=1;await say(P,'Peace to you, captain. Is this the ship for Tarsus?');
       await say(CP,'She is, when she has a sail. A squall off Dor split it from top to bottom.');
       await say(CP,'My sailmaker is ashore in Joppa, and the wind will not wait for him.');
@@ -385,18 +407,28 @@ CP.hs={name:'the captain',actor:CP,look:'The master of the ship. He keeps glanci
       {q:'Where can I find those?',a:async()=>{await say(CP,'There is old sailcloth heaped by the warehouse. Take what you like.');await say(CP,'Twine... ask the old fisherman. He hoards it like silver.')}},
       {q:'I will get to work.',bye:1}])}};
 FI.hs={name:'the fisherman',actor:FI,look:'An old fisherman mending his nets. His hands never stop moving.',
+  show:{awl:'A good awl. Mine is a bone needle, older than this harbor.',thread:'Linen? Salt water rots it in a month. Tarred twine is what lasts.',
+    knife:'Sharp. Mind my nets with it.',sailpatch:'Sailcloth. Sew that on with linen thread and you will be sewing it again before Cyprus.',
+    twine:'Use it well, friend. It is the best I had.','*':'No, no. Keep it, friend.'},
+  ask:{barnabas:'I know no Barnabas. I know nets.',sail:'So the whole harbor heard. A squall off Dor will do that.',
+    twine:['He talks too much, that captain.','I have a ball to spare, it is true. If I had a reason to spare it.']},
   give:async it=>{if(it!=='provisions')return false;
     await say(P,'You have not eaten since dawn. Here: bread and figs.');await say(FI,'You would give a stranger your food for the voyage?');
     await say(P,'There will be bread in Tarsus. You are hungry now.');SFX.good();delItem('provisions');F.gotTwine=1;addItem('twine',1);
     await say(FI,'Then take this ball of twine, tentmaker. A gift for a gift.')},
-  talk:async()=>{if(F.gotTwine)return say(FI,'Fair winds to you, friend. And thank you.');
+  talk:async()=>{if(F.gotTwine){await say(FI,'Fair winds to you, friend. And thank you.');return talkTree([{q:'Peace to you.',bye:1}],{quiet:1})}
     await say(P,'Peace to you. You are hard at work.');await say(FI,'Since before dawn. Nets tear faster than an old man can mend them, and I have not stopped to eat.');
     await talkTree([
       {q:'What do you mend nets with?',a:async()=>{await say(FI,'Tarred twine. Nothing else lasts in salt water.');await say(FI,'I have a ball to spare, if I had a reason to spare it.')}},
       {q:'Is that ship bound for Tarsus?',a:()=>say(FI,'So her captain says. If he can ever hang a sail on her.')},
       {q:'Peace to you.',bye:1}])}};
 MT.hs={name:'Mattan',actor:MT,look:'Mattan, one of the brothers who brought me down from Jerusalem.',
-  give:async()=>{await say(MT,'No, brother. That is for your journey.')},
+  show:{awl:'You and your awl. The brothers in Jerusalem will miss your mending.',thread:'Is that strong enough for a sail? I would not know.',
+    knife:'Careful with that, brother.',provisions:'That is your bread for the voyage. Though that old fisherman looks as if he has not eaten all day.',
+    sailpatch:'A big patch. It is a big tear.',twine:'Tarred twine. It smells like the harbor itself.','*':'No, brother. That is for your journey.'},
+  ask:{barnabas:'Barnabas told the whole congregation how a stranger mended a cart for the widows before he ever asked to be let in.',
+    sail:'If anyone in Caesarea can mend it, it is you, brother.',
+    twine:'From the old man by the nets, I would guess. Speak to him kindly. He has worked since dawn without a bite to eat.'},
   talk:()=>talkTree([
     {q:'Will the congregation be safe?',a:()=>say(MT,'With you gone, the opposers will lose interest. I think there will be peace for a while.')},
     {q:'I had hoped to stay in Jerusalem.',a:async()=>{await say(MT,'And we hoped to keep you. But a living brother in Tarsus is worth more than a dead one here.');await say(MT,'Go where the Lord sends you.')}},
@@ -460,7 +492,7 @@ function hint2(){
   return['fix',['The peg is ready. It belongs where the old pin sheared off.',"I should fit the peg to the handcart's axle."]]}
 /* ============ CHAPTER DEFINITION ============ */
 const BNhs=BN.hs;
-return{rooms:['jerusalem','upper','harbor'],setup:()=>{BN.hs=BNhs;setup2()},start:start2,hint:hint2,music:MUSIC,
+return{rooms:['jerusalem','upper','harbor'],setup:()=>{BN.hs=BNhs;setup2()},start:start2,hint:hint2,music:MUSIC,topics:TOPICS,
   place:room=>{if(F.told)place(BN,'jerusalem',360,114,-1);if(room==='upper')place(BN,'upper',96,124,1)},
     flags:['knocked','metBarn','gotStick','peg','wheelOn','cartFixed','told','metCapt','sailDown','gotPatch','gotTwine'],
     ent:{jerusalem:[40,120,1],upper:[56,120,1],harbor:[40,122,1]},

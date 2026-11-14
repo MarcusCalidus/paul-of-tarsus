@@ -72,7 +72,7 @@ body{display:flex;align-items:center;justify-content:center}
 #choices{position:absolute;inset:calc(var(--s)*2px);display:none;flex-direction:column;gap:calc(var(--s)*1px);
   background:#120c08;overflow:auto}
 #choices.on{display:flex}
-#choices button{text-align:left;padding:0 calc(var(--s)*4px);flex:0 0 calc(var(--s)*7.6px);line-height:calc(var(--s)*7.6px);font-size:calc(var(--s)*5.4px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#choices button{text-align:left;padding:0 calc(var(--s)*4px);flex:0 0 calc(var(--s)*7.2px);line-height:calc(var(--s)*7.2px);font-size:calc(var(--s)*5.4px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #choices button:hover{color:var(--hi);background:rgba(96,62,28,.6)}
 #panel.locked #verbs,#panel.locked #inv{opacity:.35;pointer-events:none}
 #top button{margin-left:calc(var(--s)*2px)}
@@ -626,9 +626,18 @@ async function go(room,x,y,dir){SFX.door();await fade(1);enterRoom(room,x,y,dir)
 function choose(opts){return new Promise(res=>{const c=$('#choices');c.innerHTML='';c.classList.add('on');
   opts.forEach((o,i)=>{const b=document.createElement('button');b.textContent='› '+o;
     b.onclick=()=>{SFX.click();c.classList.remove('on');res(i)};c.appendChild(b)})})}
+/* lines: what a person says in reply. A reply is one line, a list of lines, or a script. */
+async function lines(a,x,arg){if(typeof x==='function')return x(arg);for(const s of[].concat(x))await say(a,s)}
+/* talkTree: a menu of questions. Besides his own questions, a person can be asked about whatever Paul has learned in the chapter:
+   the chapter's topics (each with a condition on the story's flags) that this person has an answer for in hs.ask, each asked once.
+   o.quiet: if there is nothing to ask but the farewell, say nothing and return. */
 const ASKED=new Set();
-async function talkTree(topics){for(;;){const av=topics.filter(t=>(!t.if||t.if())&&!(t.once&&ASKED.has(t.q)));
-  const t=av[await choose(av.map(t=>t.q))];ASKED.add(t.q);await say(P,t.q);if(t.a)await t.a();if(t.bye)return}}
+async function talkTree(topics,o){const A=G.talking,T=CHAP[G.ch].topics||[];
+  for(;;){const known=A&&A.hs&&A.hs.ask?T.filter(t=>A.hs.ask[t.id]!=null&&(!t.if||t.if())&&!ASKED.has(A.id+':'+t.id))
+      .map(t=>({q:t.q,key:A.id+':'+t.id,a:()=>lines(A,A.hs.ask[t.id])})):[];
+    const own=topics.filter(t=>(!t.if||t.if())&&!(t.once&&ASKED.has(t.q))),av=own.filter(t=>!t.bye).concat(known,own.filter(t=>t.bye));
+    if(o&&o.quiet&&av.every(t=>t.bye))return;
+    const t=av[await choose(av.map(t=>t.q))];ASKED.add(t.key||t.q);await say(P,t.q);if(t.a)await t.a();if(t.bye)return}}
 /* --- UI: verbs, inventory, status line --- */
 function buildVerbs(){const v=$('#verbs');v.innerHTML='';
   VERBS.forEach(([id,label])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.v=id;
@@ -672,11 +681,15 @@ function clickItem(id){if(G.busy)return;audioInit();const it=ITEMS[id],a=G.item;
   cut(()=>say(P,G.verb==='pickup'?'I am already carrying it.':G.verb==='open'?'That does not open.':'It is only '+it.name+'.'))}
 function hsAt(x,y){for(const a of Object.values(ACT))if(a!==P&&a.room===G.room&&a.hs&&Math.abs(x-a.x)<=10&&y>=a.y-49&&y<=a.y+1)return a.hs;
   const hs=ROOMS[G.room].hs;for(let i=hs.length-1;i>=0;i--){const h=hs[i];if((!h.vis||h.vis())&&x>=h.x&&x<h.x+h.w&&y>=h.y&&y<h.y+h.h)return h}return null}
+/* show: an item given or shown to a person with no particular use for it. He answers in his own voice: from his show table
+   (keyed by item id), else with his fallback, show['*']. Using an item on a person is the same as giving it. */
+function show(h,item){const s=h.show||{},r=s[item]!=null?s[item]:s['*'];return r!=null?lines(h.actor,r,item):say(h.actor,'Keep it, friend.')}
 async function act(v,h,item){
   const run=async x=>{if(typeof x==='function')return x(h);for(const s of[].concat(x))await say(P,s)};
   if(v==='exit')return h.exit();
-  if(item){const fn=v==='give'?h.give:h.useWith;if(fn&&await fn(item)!==false)return;
-    SFX.nope();return say(P,v==='give'?(h.actor?'I do not think that is needed.':'I cannot give anything to that.'):pick(NOPE))}
+  if(item){const fn=v==='give'||h.actor&&!h.useWith?h.give:h.useWith;if(fn&&await fn(item)!==false)return;
+    if(h.actor)return show(h,item);SFX.nope();return say(P,v==='give'?'I cannot give anything to that.':pick(NOPE))}
+  if(v==='talk'&&h.actor)G.talking=h.actor;
   if((v==='use'||v==='open')&&h[v]==null&&h.exit)return h.exit();
   if(h[v]!=null)return run(h[v]);
   return say(P,DEF[v](h))}
