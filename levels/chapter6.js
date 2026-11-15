@@ -493,7 +493,7 @@ TA.hs={name:'Tatia',actor:TA,
   as:{barnabas:{look:()=>say(BN,F.tatia?'Tatia. She will do well. Better than her husband deserves.':'Tatia, with her jar still empty. She did not come to the fountain for water.'),
     talk:()=>F.tatia?say(TA,'What he sees, not what I say. I have it by heart, Barnabas.'):comfort6(),
     show:{staff6:'You are packed for the road already.','*':'Keep it, Barnabas. You will need all you have.'}}}};
-ROOMS.iconium={walk:[16,464,110,138],mood:'tense',amb:{crowd:.4,fountain:.7,birds:.3,hammer:.3,leaves:.3},hs:[
+ROOMS.iconium={space:0.9,walk:[16,464,110,138],mood:'tense',amb:{crowd:.4,fountain:.7,birds:.3,hammer:.3,leaves:.3},hs:[
   {name:'mountains',x:188,y:26,w:110,h:24,wx:244,look:'Mountains on every side of this plain, and snow on them. Iconium sits in the middle like a well-watered garden.'},
   {name:'street to the synagogue',x:0,y:36,w:60,h:68,wx:42,wy:113,dir:-1,look:['The street to the synagogue of the Jews. We spoke there for weeks, and a great multitude believed.','By tomorrow that street will be full of men with stones in their hands.'],
     use:'Back to the synagogue, today? No. Everything we had to say there has been said.',open:'Back to the synagogue, today? No. Everything we had to say there has been said.'},
@@ -673,7 +673,7 @@ LM.hs={name:'man from the well',actor:LM,
 PR.hs={name:'priest of Zeus',actor:PR,look:'The priest of Zeus, all in white, with the bulls behind him. He looks like a man whose great day has come at last.',
   show:{'*':'An offering? It is we who bring the offerings, lord.'},talk:stop6,
   as:{barnabas:{look:'The priest. He keeps bowing in my direction. I could sink into the ground.',talk:stop6,show:{'*':'An offering? It is we who bring the offerings, lord.'}}}};
-ROOMS.lystra={walk:[16,464,110,138],get mood(){return G.bulls?'feast':F.healed?'tense':'hope'},amb:()=>G.crowd?{crowd:.9,wind:.3,birds:.2}:{birds:.5,wind:.35,crickets:.3,crowd:.12},enter:lysIntro,hs:[
+ROOMS.lystra={space:0.8,walk:[16,464,110,138],get mood(){return G.bulls?'feast':F.healed?'tense':'hope'},amb:()=>G.crowd?{crowd:.9,wind:.3,birds:.2}:{birds:.5,wind:.35,crickets:.3,crowd:.12},enter:lysIntro,hs:[
   {name:'hills',x:238,y:44,w:240,h:24,wx:360,look:'Low hills round a secluded valley, and the Taurus far off to the south. No main road comes through here.'},
   {name:'fields',x:300,y:68,w:92,h:22,wx:350,look:async()=>{await say(P,'Fields, orchards and good pasture. The valley is well watered, and whoever farms it does not go hungry.');await say(P,quote('ps65'))}},
   {name:'city wall',x:0,y:18,w:100,h:28,wx:76,look:'The wall of Lystra. Caesar made a colony of this town, and put soldiers in it against the mountain tribes.'},
@@ -698,7 +698,7 @@ async function enterCity(){playAs(P);
   await say(BN,'We ripped our garments at the gate, Paul, and we have gone about ever since like two beggars. And today has not improved yours.');
   await say(P,'Torn from the neck to the belt, both of them. In the morning we leave for Derbe. Not like this.',TH)}
 const derbeRoad=()=>say(PC(),PC()===P?'Tonight, in the dark? The disciples are inside that gate. I will not slip away from them like a thief.':'Not without a word to the disciples, and not while he can hardly stand. He will want to go in. I know him.');
-ROOMS.outside={walk:[16,304,112,138],mood:'tense',amb:{wind:.6,crickets:.6,owl:.3},hs:[
+ROOMS.outside={space:0.5,walk:[16,304,112,138],mood:'tense',amb:{wind:.6,crickets:.6,owl:.3},hs:[
   {name:'hills',x:0,y:60,w:150,h:22,wx:80,look:'The hills are going dark. Somewhere beyond them is Derbe, and the road to it starts here.'},
   {name:'Lystra',x:196,y:30,w:124,h:22,wx:240,look:['Lystra, on its low hill. At noon they would have sacrificed bulls to me there. Before evening they dragged me out by the heels.','And still there are disciples inside that wall.']},
   {name:'city gate',x:254,y:52,w:24,h:30,wx:250,wy:113,dir:1,look:'The gate. A lamp is burning in it. They did not trouble to shut it behind me.',exit:enterCity},
@@ -737,7 +737,7 @@ async function backIntro(){if(!F.back||F.strong)return;
   await say(LO,'Paul! Barnabas! We did not think to see either of you in Lystra again.');
   await say(TI,'You came in at the same gate, sir.');
   await say(EN,'Sit down, both of you. There is much to tell, and not all of it is good.')}
-ROOMS.house={walk:[16,304,110,136],mood:'calm',amb:()=>F.back?{birds:.3,crowd:.1}:{fire:.5,crickets:.3,owl:.2},enter:backIntro,hs:[
+ROOMS.house={space:1.25,walk:[16,304,110,136],mood:'calm',amb:()=>F.back?{birds:.3,crowd:.1}:{fire:.5,crickets:.3,owl:.2},enter:backIntro,hs:[
   {name:'window',x:48,y:24,w:24,h:26,wx:64,look:()=>say(P,F.back?'Daylight, and the lane. Children are playing in it. Not one of them has thrown anything today.':'Night over Lystra. The street is quiet now, as if nothing had happened in it.')},
   {name:'lamp',x:140,y:42,w:20,h:24,wx:150,look:()=>say(P,F.back?'The lamp in its niche. It was by this lamp that I mended two garments.':'One lamp, in a niche. It is light enough to sew by.'),pickup:'It gives light to the whole house where it stands.'},
   {name:'shelf',x:172,y:48,w:60,h:18,wx:200,look:'Jars of oil, meal and olives. It is a careful household, and not a rich one.',pickup:'It is their winter store.'},
@@ -763,7 +763,7 @@ ZE.hs={name:'Zenon',actor:ZE,
     {q:'What will the brothers here do when we are gone?',a:async()=>{await say(ZE,'We meet on my threshing floor. There are quite a few of us now, and not one of us a season older in the faith than the rest.');await say(P,'Quite a few, and no one has troubled them. Derbe has been kind to us.')}},
     {q:'Thank you for the offer, Zenon.',bye:1}]),
   as:{barnabas:{look:'Zenon. A plain man with a loaded wagon and an honest offer.',talk:()=>say(ZE,'Room for two, Barnabas, and the oxen will not notice you. Talk to your friend.'),show:{staff6:'You would not need that on my wagon.','*':'Stow it on the load, if you are coming.'}}}};
-ROOMS.derbe={walk:[16,304,110,138],mood:'hope',amb:{wind:.5,birds:.4,crickets:.3,hooves:.2},enter:derIntro,hs:[
+ROOMS.derbe={space:0.5,walk:[16,304,110,138],mood:'hope',amb:{wind:.5,birds:.4,crickets:.3,hooves:.2},enter:derIntro,hs:[
   {name:'mountains',x:90,y:20,w:230,h:34,wx:220,look:'The Taurus, with new snow on it. Through that gap lies Cilicia, and Tarsus, where I was born.'},
   {name:'east gate of Derbe',x:18,y:50,w:42,h:54,wx:52,wy:113,dir:-1,look:'The east gate of Derbe. We declared the good news in that city and no one raised a hand against us.',
     use:'There are disciples enough in Derbe to go on without us. The question now is which road we take out of it.',open:'There are disciples enough in Derbe to go on without us. The question now is which road we take out of it.'},

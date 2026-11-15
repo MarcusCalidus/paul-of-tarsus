@@ -406,7 +406,7 @@ const TABLETS={
 /* ============ ROOMS, HOTSPOTS, CHARACTERS ============ */
 const E=ACT.eliab,Z=ACT.zakkai,GD=ACT.guard,N=ACT.naomi,J=ACT.jesse;
 /* ---------- Workshop ---------- */
-ROOMS.workshop={walk:[22,300,112,138],mood:'calm',amb:{crickets:.22,fire:.22},hs:[
+ROOMS.workshop={space:1.2,walk:[22,300,112,138],mood:'calm',amb:{crickets:.22,fire:.22},hs:[
   {name:'door to the street',x:10,y:36,w:34,h:70,wx:30,wy:113,dir:-1,look:'The door to the street. Beyond it, the city is being watched.',exit:()=>go('street',46,114,1)},
   {name:'tent panel on the frame',x:54,y:48,w:63,h:58,look:'A tent panel stretched for seaming. Eliab lets me work here to earn my bread.',pickup:'That panel is promised to a customer. There is a spare bolt on the bench.'},
   {name:'high window',x:70,y:24,w:22,h:18,look:'Night has fallen over Damascus. Somewhere out there, men are watching the gates for me.'},
@@ -466,7 +466,7 @@ async function mend(it){if(!MEND.includes(it))return false;
   await say(Z,'I have no coin tonight. But take these old harness straps. Good thick leather.');addItem('straps');
   await say(P,'Thank you. They may be exactly what I need.');
   await say(P,'The awning throws the alley mouth into shadow. From his brazier, the soldier cannot see it.',{thought:1,color:'#cfe2ff'})}
-ROOMS.street={walk:[16,466,112,138],mood:'tense',amb:{crickets:.7,wind:.3,fire:.5,owl:.5},hs:[
+ROOMS.street={space:0.9,walk:[16,466,112,138],mood:'tense',amb:{crickets:.7,wind:.3,fire:.5,owl:.5},hs:[
   {name:"Eliab's door",x:28,y:42,w:32,h:60,wx:44,wy:113,look:"The door of Eliab's workshop.",exit:()=>go('workshop',34,116,1)},
   {name:'lit window',x:82,y:52,w:20,h:18,look:"Lamplight from Eliab's workshop. A small, brave light."},
   {name:'city gate',x:178,y:28,w:62,h:50,wx:208,wy:113,look:['The city gate. Torches burn there, and men keep watch day and night.','I will not be leaving Damascus by that road.']},
@@ -541,7 +541,7 @@ async function shutters(){if(F.shutters)return say(P,'They are already open.');
     return say(N,'A lit window high on the wall? The watchmen would see it at once.')}
   SFX.creak();F.shutters=1;await say(P,'Slowly... quietly. The night air is cold.');return checkFinal()}
 async function checkFinal(){if(F.ropeTied&&F.basketOn&&F.shutters&&F.lampOut)return finale()}
-ROOMS.house={walk:[24,300,112,138],mood:'calm',floor:'wood',amb:()=>F.shutters?{crickets:.6,wind:.5,owl:.3}:{crickets:.18,wind:.15,fire:F.lampOut?0:.2},
+ROOMS.house={space:1.2,walk:[24,300,112,138],mood:'calm',floor:'wood',amb:()=>F.shutters?{crickets:.6,wind:.5,owl:.3}:{crickets:.18,wind:.15,fire:F.lampOut?0:.2},
   enter:async()=>{if(F.inHouse)return;F.inHouse=1;await say(N,'Brother Saul! Come in, quickly. Jesse told me to expect you.');
     await say(N,'There is the window. Everything beyond it is outside the city.');
     await say(N,'The rope must be made fast and the basket ready before the others come.')},

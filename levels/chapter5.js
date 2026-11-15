@@ -602,7 +602,7 @@ const BN5={name:'Barnabas',actor:BN,
       {q:'What do you make of this city?',a:()=>say(BN,F.spoke1?'It listens. I have not seen a city listen like this since Antioch in Syria.':'It is full of people who have never heard. That is all I need to know of a city.')},
       {q:'How do I look to you?',once:1,a:async()=>{await say(BN,'Like a man who waded a river and then climbed a mountain in a wet cloak. You should rest, Paul.');await say(P,'I will rest. On the Sabbath, on a bench, until I am asked to stand.')}},
       {q:'Stay close, brother.',bye:1}])};
-ROOMS.perga={walk:[16,464,110,138],mood:'hope',amb:{crickets:.5,birds:.4,wind:.2,hooves:.5},hs:[
+ROOMS.perga={space:0.6,walk:[16,464,110,138],mood:'hope',amb:{crickets:.5,birds:.4,wind:.2,hooves:.5},hs:[
   {name:'mountains',x:120,y:6,w:330,h:40,wx:300,look:['The Taurus. From here it stands like a wall across the whole of the north.','"I raise my eyes to the mountains. From where will my help come?" (Psalm 121:1)']},
   {name:'city wall',x:0,y:18,w:122,h:30,wx:76,look:'The wall of Perga, a prominent city of Pamphylia. We did not stay to see more of it than this.'},
   {name:'north gate of Perga',x:26,y:50,w:44,h:54,wx:48,wy:112,look:'The north gate of Perga. Behind it lie the city, and the way back down to the coast.',
@@ -650,7 +650,7 @@ const overPass=()=>F.crossed?toAntioch():say(PC(),PC()===P?'Not without the othe
 const river=async it=>{if(it==='roof')return say(P,'A roof will not get us over. But what I sewed into its edge might.');
   if(it==='staff5')return say(P,'The staff is cut to his hand, and he has the longer legs. This part is for Barnabas.');
   if(it==='line')return say(P,F.spliced?'It is joined already.':'Thrown from here it would only go downstream. It must be joined to the rope on the post, and then carried over.');return false};
-ROOMS.ford={get walk(){return PC().x>240?[300,464,112,138]:[16,186,112,138]},mood:'tense',amb:{fountain:.9,waves:.6,wind:.45,birds:.15},enter:fordIntro,hs:[
+ROOMS.ford={space:0.7,get walk(){return PC().x>240?[300,464,112,138]:[16,186,112,138]},mood:'tense',amb:{fountain:.9,waves:.6,wind:.45,birds:.15},enter:fordIntro,hs:[
   {name:'pass',x:404,y:36,w:76,h:40,wx:440,look:'The road climbs on beyond the ford, and over the saddle between those two shoulders of rock.'},
   {name:'rocks above the road',x:330,y:0,w:150,h:34,wx:400,look:['Something moved, up among those rocks. A goat, perhaps.','Perhaps not. Papias has not taken his eyes off them.']},
   {name:'cliff',x:150,y:10,w:190,h:36,wx:176,look:'The river does not run down to this place. It bursts out at the foot of that cliff, full grown, as if the mountain had been struck.'},
@@ -802,7 +802,7 @@ AM.hs={name:'Ammia',actor:AM,look:'A woman of standing, by her dress, and no dau
   ask:{sabbath:'I could not tell you. I come to listen, not to be heard.'},
   talk:async()=>{await say(AM,'Ammia. My husband sits among the principal men of this city.');await say(AM,'I come here for the reading, and for the quiet. There is little enough of either in Antioch.')},
   as:{barnabas:{look:'A prominent woman, and one who fears God. She likes this house as it is.',talk:()=>say(AM,'You are strangers here. I trust you will respect the order of this house.'),show:{'*':'They have no place in this house.'}}}};
-ROOMS.pisidia={walk:[16,464,110,138],mood:'hope',amb:{crowd:.5,birds:.3,wind:.3,hammer:.2,hooves:.3},hs:[
+ROOMS.pisidia={space:0.8,walk:[16,464,110,138],mood:'hope',amb:{crowd:.5,birds:.3,wind:.3,hammer:.2,hooves:.3},hs:[
   {name:'mountains',x:60,y:2,w:370,h:20,wx:240,look:'Snow on them, half way down. And the plain we stand on is already higher than most mountains I have climbed.'},
   {name:'street to the south gate',x:0,y:36,w:58,h:68,wx:40,wy:113,dir:-1,look:'The street we came in by, from the south gate and the road down to Perga.',
     use:'Back down to the coast? We have only just climbed up from it.',open:'Back down to the coast? We have only just climbed up from it.'},
@@ -819,7 +819,7 @@ ROOMS.pisidia={walk:[16,464,110,138],mood:'hope',amb:{crowd:.5,birds:.3,wind:.3,
   {name:'door of the synagogue',x:371,y:60,w:30,h:44,wx:386,wy:112,look:()=>say(P,F.spoke1?'The door of the synagogue. Next Sabbath it will not be wide enough.':'The door of the synagogue. Tomorrow it will stand open.'),exit:synDoor},
   {name:'east gate',x:444,y:50,w:32,h:54,wx:458,wy:113,dir:1,look:'The east gate. Beyond it the road runs on across the plain, to Iconium.',
     exit:()=>say(PC(),PC()===P?(week()?'Not while a whole city is asking questions.':'We have only just come. Nothing has been said here yet.'):'Not yet. There is work in this city first.')}]};
-ROOMS.synp={walk:[16,304,110,136],mood:'calm',amb:{crowd:.14,fire:.15},hs:[
+ROOMS.synp={space:1.5,walk:[16,304,110,136],mood:'calm',amb:{crowd:.14,fire:.15},hs:[
   {name:'door to the square',x:286,y:53,w:24,h:51,wx:288,wy:113,dir:1,look:'The door to the square.',exit:()=>go5('pisidia',386,116,-1)},
   {name:'window',x:54,y:16,w:22,h:24,wx:70,look:'A high window. The light falls on the reading desk.'},
   {name:'window',x:149,y:16,w:22,h:24,wx:160,look:'A high window. The light falls on the reading desk.'},
@@ -883,7 +883,7 @@ const dust=()=>F.cheered?finale5():say(PC(),PC()===P?'Not yet. They came all thi
 SN.hs={name:'Straton',actor:SN,look:'Straton, one of the principal men of the city, and the husband of Ammia. He means to stand at that stone until we are out of sight.',
   show:{'*':'I want nothing of yours. I want your backs.'},talk:()=>say(SN,'I have nothing more to say to you. The order stands.'),
   as:{barnabas:{look:'One of the principal men. He has done what he was asked to do, and he does not look proud of it.',talk:()=>say(SN,'The order stands, for both of you.'),show:{'*':'I want nothing of yours.'}}}};
-ROOMS.border={walk:[16,304,112,138],mood:'tense',amb:{wind:.6,birds:.4,crickets:.2},hs:[
+ROOMS.border={space:0.5,walk:[16,304,112,138],mood:'tense',amb:{wind:.6,birds:.4,crickets:.2},hs:[
   {name:'mountains',x:0,y:30,w:320,h:22,wx:200,look:'The same mountains that stood over the square. From out here they look no further away.'},
   {name:'Antioch',x:2,y:48,w:118,h:30,wx:120,look:['Antioch, on its rise. We came to it as two strangers with the dust of the pass on us.','There are disciples inside that wall now.']},
   {name:'poplars',x:198,y:72,w:92,h:22,wx:240,look:'Poplars along a stream. The plain is wide and bare, and the wind crosses it without stopping.'},

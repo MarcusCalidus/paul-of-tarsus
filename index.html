@@ -192,6 +192,8 @@ function audioInit(){
   const c=AU.ctx=new AC();audioWake();if(!AU.muted)hush(1);audioGraph(c);
   AU.next=c.currentTime+.15;setInterval(sched,60);
 }
+/* ROOM: how much room a voice sent with echo:1 gets, where a room does not say (its space is 1) */
+const ROOM=.42;
 /* audioGraph: the mixer, the echo and the noise every sound draws on, built on a context. The playtest builds the same graph offline. */
 function audioGraph(c){
   AU.master=c.createGain();AU.master.gain.value=AU.muted?0:1;
@@ -201,9 +203,18 @@ function audioGraph(c){
   AU.ambG=c.createGain();AU.ambG.gain.value=.5;AU.ambG.connect(AU.master);
   /* the lyre's wooden body: one resonance near 1 kHz that all its notes pass through, whatever their pitch */
   AU.body=c.createBiquadFilter();AU.body.type='peaking';AU.body.frequency.value=1000;AU.body.Q.value=1.4;AU.body.gain.value=6;AU.body.connect(AU.mus);
-  const d=c.createDelay(1),fb=c.createGain(),lp=c.createBiquadFilter();
-  d.delayTime.value=.34;fb.gain.value=.3;lp.type='lowpass';lp.frequency.value=1700;
-  AU.send=c.createGain();AU.send.gain.value=.4;AU.send.connect(d);d.connect(lp);lp.connect(fb);fb.connect(d);lp.connect(AU.mus);
+  /* the room: voices with echo:1 feed AU.send, which sounds through one convolver into AU.wet. Its response is built here: five early
+     reflections, then 1.1 s of noise that dies away (60 dB in about 0.9 s) and darkens as it goes, because a one-pole lowpass closes
+     over it from 7 kHz towards 300 Hz, so high notes die sooner than low ones, as in a room. Two channels with different noise give it
+     width. It is scaled to unit energy; AU.wet sets how much room there is (ROOM times the room's space, see ambience). */
+  const sr=c.sampleRate,n=Math.round(sr*1.1),ir=c.createBuffer(2,n,sr);let e=0;
+  for(let k=0;k<2;k++){const x=ir.getChannelData(k);let y=0;
+    for(let i=0;i<n;i++){const t=i/sr,q=Math.exp(-2*Math.PI*(300+7000*Math.exp(-t/.25))/sr);y=(1-q)*(Math.random()*2-1)+q*y;x[i]=t<.012?0:y*Math.exp(-t/.13)*Math.min(1,(t-.012)/.01)}
+    [[7,.5],[13,.4],[19,.32],[29,.26],[37,.2]].forEach(([ms,g],j)=>{x[Math.round((ms+k*1.7)*sr/1000)]+=g*(j%2?-1:1)*.25})}
+  for(let k=0;k<2;k++)for(const v of ir.getChannelData(k))e+=v*v;
+  for(let k=0;k<2;k++){const x=ir.getChannelData(k);for(let i=0;i<n;i++)x[i]/=Math.sqrt(e/2)}
+  const cv=c.createConvolver();cv.normalize=false;cv.buffer=ir;
+  AU.send=c.createGain();AU.wet=c.createGain();AU.wet.gain.value=ROOM;AU.space=1;AU.send.connect(cv);cv.connect(AU.wet);AU.wet.connect(AU.mus);
   const nb=c.createBuffer(1,c.sampleRate,c.sampleRate),ch=nb.getChannelData(0);
   for(let i=0;i<ch.length;i++)ch[i]=Math.random()*2-1;AU.nbuf=nb}
 /* audioWake: resume sound the browser holds back, inside the press that allows it. The one-sample buffer unlocks older iOS. */
@@ -336,7 +347,10 @@ const CALLS={
   creak:[4,10,(t,d)=>{tone({f:120,to:150,t,d:.4,type:'sawtooth',v:.03,dest:d});tone({f:150,to:118,t:t+.4,d:.45,type:'sawtooth',v:.025,dest:d})}],
   hooves:[5,12,(t,d)=>{for(let i=0;i<4;i++)noise({t:t+i*.16+(i%2)*.05,d:.04,v:.09,f:900,q:2,dest:d})}],
   hammer:[3,8,(t,d)=>{const n=2+(Math.random()*3|0);for(let i=0;i<n;i++){noise({t:t+i*.3,d:.03,v:.05,f:3000,q:3,dest:d});tone({f:1250,t:t+i*.3,d:.08,type:'triangle',v:.02,dest:d})}}]};
-function ambience(t){const c=AU.ctx,want=(typeof AU.amb==='function'?AU.amb():AU.amb)||{},L=AU.layers||(AU.layers={});
+/* space: how much room the place has, 1 by default. A room may say (space: .5 on an open road, 1.5 in a synagogue); a scene that covers
+   the room (the map, the title, a cutscene) has the default. The amount glides to the new value over a second or so, never jumps. */
+function roomSpace(t){const sp=!G.scene&&ROOMS[G.room]&&ROOMS[G.room].space||1;if(AU.space!==sp){AU.space=sp;AU.wet.gain.setTargetAtTime(ROOM*sp,t,.35)}}
+function ambience(t){const c=AU.ctx,want=(typeof AU.amb==='function'?AU.amb():AU.amb)||{},L=AU.layers||(AU.layers={});roomSpace(t);
   for(const k in BEDS){const w=want[k]||0;let l=L[k];if(!l&&!w)continue;
     if(!l){const b=BEDS[k],s=c.createBufferSource(),f=c.createBiquadFilter(),sw=c.createGain(),g=c.createGain(),lfo=c.createOscillator(),lg0=c.createGain();
       s.buffer=AU.nbuf;s.loop=true;f.type=b.type;f.frequency.value=b.f;f.Q.value=b.q;sw.gain.value=b.v*(1-b.depth/2);lfo.frequency.value=b.lfo;lg0.gain.value=b.v*b.depth/2;lfo.connect(lg0);lg0.connect(sw.gain);

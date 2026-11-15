@@ -129,7 +129,21 @@
        bx=await offline(()=>DRUMS.b(.02,1),.3),[c0]=top(bx,2000,3200,5,.02,.22),at=r=>amp(bx,c0*r,.02,.22),
        ratios=[1.47,2.11,2.89].map(at),whole=[2,3].map(at);
      ok(f1>=75&&f1<=140&&f2/f1>1.45&&f2/f1<1.75&&dB(m2,m1)>-20,`the low drum stroke sounds at ${f1} Hz, with its second mode at ${(f2/f1).toFixed(2)} times that (${dB(m2,m1).toFixed(0)} dB)`);
-     ok(Math.min(...ratios)>Math.max(...whole)*3,`the finger cymbal rings at ${c0} Hz with partials at 1.47, 2.11 and 2.89 times it, and nothing at twice or three times (${dB(Math.max(...whole),Math.min(...ratios)).toFixed(0)} dB)`)}}
+     ok(Math.min(...ratios)>Math.max(...whole)*3,`the finger cymbal rings at ${c0} Hz with partials at 1.47, 2.11 and 2.89 times it, and nothing at twice or three times (${dB(Math.max(...whole),Math.min(...ratios)).toFixed(0)} dB)`)}
+    /* the room: one click sent to it comes back as a tail that dies away, with no single echo standing out at 340 ms (the old slapback),
+       and its high band dies sooner than its low band; its amount follows the room's space and glides there */
+    {const x=await offline(off=>{const b=off.createBufferSource(),u=off.createBuffer(1,1,SR);u.getChannelData(0)[0]=1;b.buffer=u;b.connect(AU.send);b.start(.02)},1.3),
+       en=(y,a,b)=>{let s=0;for(let i=Math.round(a*SR);i<Math.round(b*SR);i++)s+=y[i]*y[i];return s/(Math.round(b*SR)-Math.round(a*SR))},
+       hi=x.map((v,i)=>i?v-x[i-1]:0),lo=x.map((v,i)=>{let s=0;for(let j=Math.max(0,i-15);j<=i;j++)s+=x[j];return s/16}),
+       early=en(x,.04,.24),late=en(x,.82,1.02),at340=en(x,.355,.365),near=(en(x,.33,.35)+en(x,.37,.39))/2,
+       tilt=(a,b)=>en(hi,a,b)/en(lo,a,b),t0=tilt(.04,.2),t1=tilt(.4,.6);
+     ok(early>0&&10*Math.log10(early/late)>20&&at340<near*2&&t1<t0/2,`the room: a click comes back as a tail that falls ${(10*Math.log10(early/late)).toFixed(0)} dB in 0.8 s, with nothing standing out at 340 ms, and its highs fall ${(10*Math.log10(t0/t1)).toFixed(0)} dB more than its lows by half a second`);
+     const r0=G.room,s0=G.scene;ROOMS.__hall={space:1.5};let g=[];
+     try{const y=await offline(off=>{G.room='__hall';G.scene=null;roomSpace(0);G.room=r0;G.scene=s0;AU.master.disconnect();AU.master.connect(off.destination);const o=off.createConstantSource();o.offset.value=.01;o.connect(AU.wet);o.start(0)},2.5);
+       g=[[.01,.03],[.3,.4],[2.2,2.4]].map(([a,b])=>Math.sqrt(en(y,a,b)))}
+     finally{delete ROOMS.__hall;G.room=r0;G.scene=s0}
+     const r=g.map(v=>v/g[0]);
+     ok(r[1]>1.1&&r[1]<1.45&&Math.abs(r[2]-1.5)<.1,`a room's space sets how much room there is, and it glides there: a room of 1.5 brings the room up by ${r.map(v=>v.toFixed(2)).join(', ')} over two seconds`)}}
   /* played by hand: the plucked strings and the drums land a few ms off the grid and never in the past, the held voices exactly on it;
      accents follow the beats a track declares, not a square four */
   {const sc0=AU.score,I0=Object.assign({},INST),D0=Object.assign({},DRUMS),seen=[];let early=0,held=0,moved=0,wide=0,down=0,offbeat=0;
