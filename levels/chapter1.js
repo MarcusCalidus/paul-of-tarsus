@@ -326,7 +326,7 @@ Object.assign(ITEMS,{
   strips:{name:'cloth strips',look:'Long strips of goat-hair cloth. Braided, they would be as strong as rope.'},
   rope:{name:'short rope',look:'Good rope, but far too short to reach from a window in the wall to the ground.'},
   longrope:{name:'long rope',look:'Rope spliced to a braided goat-hair cord. Long enough now, and every knot is sound.'},
-  basket:{name:'large basket',look:'A big provision basket of woven reeds. The carrying loops are worn nearly through.'},
+  basket:{name:'large basket',look:'A big provision basket of plaited wicker. The carrying loops are worn nearly through.'},
   strongbasket:{name:'reinforced basket',look:"Leather straps cradle the basket from rim to rim. It will bear a man's weight."},
   straps:{name:'leather straps',look:'Old harness straps. Worn, but the leather is thick and sound.'},
   skin:{name:'waterskin',look:'My waterskin. Empty.'},
@@ -433,14 +433,14 @@ E.hs={name:'Eliab',actor:E,look:'Eliab, a basket weaver and a faithful brother. 
     strips:'Twist those together and you have cord. You know that better than I do.',
     rope:'It was long enough for my baskets. Not for a city wall.',
     longrope:'Now that will reach the ground. I would trust my own neck to those knots.',
-    basket:['My best basket, and I have worn its loops through.','Reeds alone will not carry a man. It wants something stronger underneath.'],
+    basket:['My best basket, and I have worn its loops through.','Wicker alone will not carry a man. It wants something stronger underneath.'],
     strongbasket:'Leather, sewn from rim to rim. I wove that basket, and now I hardly know it.',
     straps:'Harness leather! Thick enough to carry a man, if it is sewn on well.',
     skin:'Empty? The well is just across the street. A traveler should not set out dry.',
     skinfull:'Fresh from the well. Keep it for the road, unless someone needs it more than you.',
     tablets:'Your tablets. Write down the brothers who helped you tonight, and thank Jehovah for every one of them.',
     '*':'Keep it, brother. You will need it more than I.'},
-  ask:{basket:'I know. I wove it, and then I wore it out. Reeds alone will not bear a man; it wants leather beneath it.',
+  ask:{basket:'I know. I wove it, and then I wore it out. Wicker alone will not bear a man; it wants leather beneath it.',
     rope:'Then make it longer. You have cloth, and a tentmaker knows how cloth becomes cord.',
     thirst:['Is he? He stands there to catch you, Saul.','And yet it is written: "If he is thirsty, give him water to drink." (Proverbs 25:21)']},
   talk:()=>talkTree([
@@ -517,7 +517,7 @@ Z.hs={name:'the merchant',actor:Z,look:'A wool merchant, fretting over his stall
     skinfull:'Water. That soldier has been grumbling for a drink since the second watch.',
     tablets:()=>say(Z,F.awning?'Write it down, tentmaker: Zakkai owes you a debt.':'Write this down, then: one awning, torn from pole to hem.'),
     '*':'Not tonight, friend. My mind is on my wool.'},
-  ask:{basket:'Leather is what you want for weight, not more reeds.',rope:'Every rope in this street is holding something up tonight. Mine included.',
+  ask:{basket:'Leather is what you want for weight, not more wicker.',rope:'Every rope in this street is holding something up tonight. Mine included.',
     thirst:'So he keeps telling me. I sell wool, not water.'},
   talk:async()=>{if(F.awning){await say(Z,'A stitch like that will outlast the cloth! Go in peace, tentmaker.');return talkTree([{q:'Peace to you.',bye:1}],{quiet:1})}
     if(!F.metZakkai){F.metZakkai=1;await say(P,'Peace to you. You are at your stall late.');
@@ -631,7 +631,7 @@ async function finale(){AU.mood='calm';await wait(500);
   await narr("So Saul escaped the governor's hands: not by force, and not by a miracle, but by the courage of his brothers and trust in Jehovah. (2 Corinthians 11:32, 33)",{dur:8000});
   await off;G.end.px=null;G.end.heads=0;
   await journey();await narr('The road to Jerusalem lay ahead, and beyond it, many more.',{dur:3800});
-  endScreen({title:'Escape from Damascus',time:1,text:'Paul used the skill of his hands, accepted the help of his brothers, and relied on Jehovah.',
+  endScreen({title:'Escape from Damascus',time:1,text:'Saul used the skill of his hands, accepted the help of his brothers, and relied on Jehovah.',
     extra:F.kind?['Kindness shown to an opposer']:[],
     based:'Based on Acts 9:23-25 and 2 Corinthians 11:32, 33. Supporting characters and dialogue are imaginative; the event is from the Scriptures.',
     go:'Click to continue to Chapter Two',code:['Chapter Two code: {code}',codeOf(2,0)]});
