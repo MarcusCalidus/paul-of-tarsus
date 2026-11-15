@@ -93,6 +93,14 @@
     AU.ctx=fake('interrupted');dispatchEvent(new PointerEvent('pointerup',{bubbles:true}));ok(n===1,'a tap wakes sound that iOS interrupted');
     AU.ctx=fake('suspended');key('Shift');ok(n===2,'a key wakes sound the browser held back');
     AU.ctx=fake('running');dispatchEvent(new MouseEvent('click'));ok(n===2,'running sound is left alone');AU.ctx=real}
+  /* the voices, rendered offline on the game's own mixer (audioGraph): every instrument and drum stroke sounds, stays finite and does not clip */
+  {const SR=22050,offline=async(fn,dur)=>{const off=new OfflineAudioContext(1,Math.ceil(SR*dur),SR),keep=Object.assign({},AU);AU.ctx=off;audioGraph(off);
+      try{fn(off)}finally{for(const k in AU)AU[k]=keep[k]}return(await off.startRendering()).getChannelData(0)},
+    peak=x=>{let p=0;for(const v of x){if(!isFinite(v))return NaN;p=Math.max(p,Math.abs(v))}return p},bad=[];
+    for(const k in INST){const p=peak(await offline(()=>INST[k](mtof(k==='bass'||k==='drone'?40:69),.02,k==='drone'?3:.6,1),3));if(!(p>.003&&p<.9))bad.push(k+' '+p)}
+    for(const k in DRUMS){const p=peak(await offline(()=>DRUMS[k](.02,1),1));if(!(p>.003&&p<.9))bad.push('drum '+k+' '+p)}
+    const pk=peak(await offline(()=>pluck(440,.02,.09,5),.1));if(!(pk>.003&&pk<.9))bad.push('pluck '+pk);
+    ok(!bad.length,`offline: ${Object.keys(INST).length} instruments, ${Object.keys(DRUMS).length} drum strokes and the pluck render finite, audible and unclipped`+(bad.length?' BAD '+bad:''))}
   /* the language picker on the title screen: it switches the text, remembers the choice, and starts nothing */
   if(lang==='en'){document.querySelector('#overlay [data-lang="de"]').click();await toLang('de');
     ok(ov.textContent.includes('PAULUS VON TARSUS')&&ov.textContent.includes('Ruf nach Antiochia')&&store('paul.lang')==='de'&&!G.room&&ov.classList.contains('on'),'the title screen switches to German, remembers it, and starts nothing');

@@ -189,7 +189,11 @@ function audioInit(){
   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
   /* "ambient": on iPhone and iPad the game stays quiet in Silent Mode, like any other game. Never work around Silent Mode. */
   try{if(navigator.audioSession)navigator.audioSession.type='ambient'}catch(e){}
-  const c=AU.ctx=new AC();audioWake();if(!AU.muted)hush(1);
+  const c=AU.ctx=new AC();audioWake();if(!AU.muted)hush(1);audioGraph(c);
+  AU.next=c.currentTime+.15;setInterval(sched,60);
+}
+/* audioGraph: the mixer, the echo and the noise every sound draws on, built on a context. The playtest builds the same graph offline. */
+function audioGraph(c){
   AU.master=c.createGain();AU.master.gain.value=AU.muted?0:1;
   const comp=c.createDynamicsCompressor();AU.master.connect(comp);comp.connect(c.destination);
   AU.mus=c.createGain();AU.mus.gain.value=.55;AU.mus.connect(AU.master);
@@ -200,9 +204,7 @@ function audioInit(){
   d.delayTime.value=.34;fb.gain.value=.3;lp.type='lowpass';lp.frequency.value=1700;
   AU.send=c.createGain();AU.send.gain.value=.4;AU.send.connect(d);d.connect(lp);lp.connect(fb);fb.connect(d);lp.connect(AU.mus);
   const nb=c.createBuffer(1,c.sampleRate,c.sampleRate),ch=nb.getChannelData(0);
-  for(let i=0;i<ch.length;i++)ch[i]=Math.random()*2-1;AU.nbuf=nb;
-  AU.next=c.currentTime+.15;setInterval(sched,60);
-}
+  for(let i=0;i<ch.length;i++)ch[i]=Math.random()*2-1;AU.nbuf=nb}
 /* audioWake: resume sound the browser holds back, inside the press that allows it. The one-sample buffer unlocks older iOS. */
 function audioWake(){const c=AU.ctx;if(!c||c.state==='running'||c.state==='closed')return;
   try{const r=c.resume();if(r&&r.catch)r.catch(()=>{});const b=c.createBufferSource();b.buffer=c.createBuffer(1,1,22050);b.connect(c.destination);b.start(0)}catch(e){}}
@@ -220,20 +222,29 @@ function hush(on){const el=$('#hush');clearTimeout(hushT);
 for(const t of['pointerdown','keydown'])addEventListener(t,()=>{const el=$('#hush');if(el.classList.contains('on')&&performance.now()-el.dataset.t>400)hush(0)},true);
 const now=()=>AU.ctx?AU.ctx.currentTime:0;
 const mtof=m=>440*Math.pow(2,(m-69)/12);
+/* tone: one oscillator note. f Hz, t start, d seconds, v level, a attack (6 ms if not given), sus holds the level to 70% of d,
+   to glides the pitch to that frequency over d, vib is vibrato depth in Hz, echo also feeds the echo.
+   lp gives the note its own lowpass that moves through [[Hz, seconds after t], ...]: the first point is set, the next ones are reached
+   by exponential ramps (lpq sets its Q). */
 function tone(o){const c=AU.ctx;if(!c)return;const t=o.t||c.currentTime,osc=c.createOscillator(),g=c.createGain(),v=o.v||.2;
   osc.type=o.type||'triangle';osc.frequency.setValueAtTime(o.f,t);
   if(o.to)osc.frequency.exponentialRampToValueAtTime(o.to,t+o.d);
+  let src=osc;if(o.lp){const fl=c.createBiquadFilter(),ny=c.sampleRate*.45;fl.type='lowpass';fl.Q.value=o.lpq||.7;
+    o.lp.forEach(([hz,dt],i)=>i?fl.frequency.exponentialRampToValueAtTime(Math.min(hz,ny),t+dt):fl.frequency.setValueAtTime(Math.min(hz,ny),t+dt));osc.connect(fl);src=fl}
   if(o.vib){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=5.2;lg.gain.value=o.vib;
     l.connect(lg);lg.connect(osc.frequency);l.start(t);l.stop(t+o.d+.1)}
   g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+(o.a||.006));
   if(o.sus){g.gain.setValueAtTime(v,t+o.d*.7);g.gain.linearRampToValueAtTime(.0001,t+o.d)}
   else g.gain.exponentialRampToValueAtTime(.0001,t+o.d);
-  osc.connect(g);g.connect(o.dest||AU.fx);if(o.echo)g.connect(AU.send);
+  src.connect(g);g.connect(o.dest||AU.fx);if(o.echo)g.connect(AU.send);
   osc.start(t);osc.stop(t+o.d+.05)}
 function noise(o){const c=AU.ctx;if(!c)return;const t=o.t||c.currentTime,s=c.createBufferSource(),g=c.createGain(),fl=c.createBiquadFilter();
   s.buffer=AU.nbuf;s.loop=true;fl.type=o.type||'bandpass';fl.frequency.value=o.f||1000;fl.Q.value=o.q||1;
   g.gain.setValueAtTime(o.v||.2,t);g.gain.exponentialRampToValueAtTime(.0001,t+o.d);
   s.connect(fl);fl.connect(g);g.connect(o.dest||AU.fx);s.start(t,Math.random()*.5);s.stop(t+o.d+.05)}
+/* pluck: the finger or plectrum leaving a string, a burst of noise of d seconds (12 ms if not given), tuned to b times the note
+   (shared by the plucked voices) */
+function pluck(f,t,v,b,d){noise({t,d:d||.012,v,f:Math.min(f*b,6000),q:1.6,dest:AU.mus})}
 /* --- music: every level brings its own score as plain data (see "music" in the level files) ---
    score = {dt: seconds per step, root: MIDI note of the tonic, scale: semitones of the mode, bars, tracks: [...]}
    A bar has 16 steps. A track plays only in the moods it lists (each room names its mood), and is one of:
@@ -243,9 +254,10 @@ function noise(o){const c=AU.ctx;if(!c)return;const t=o.t||c.currentTime,s=c.cre
      {inst, from: bar, loop: bars, lines:[[[step,degree,length],..] per bar]}  a melody
    oct shifts a track by semitones, vol scales it, len sets note length in steps. */
 const INST={
-  oud(f,t,d,v){tone({f,t,d:.55,type:'triangle',v:v*.13,dest:AU.mus,echo:1});tone({f:f*2,t,d:.18,type:'square',v:v*.018,dest:AU.mus})},
-  lyre(f,t,d,v){tone({f,t,d:.8,type:'triangle',v:v*.1,dest:AU.mus,echo:1});tone({f:f*2,t,d:.3,type:'sine',v:v*.045,dest:AU.mus});tone({f:f*3,t,d:.1,type:'sine',v:v*.02,dest:AU.mus})},
-  harp(f,t,d,v){tone({f,t,d:.45,type:'sine',v:v*.11,dest:AU.mus,echo:1});tone({f:f*2,t,d:.14,type:'triangle',v:v*.04,dest:AU.mus})},
+  /* the plucked strings start fast, with a pluck and an overtone whose brightness falls away in the first tenth of a second */
+  oud(f,t,d,v){tone({f,t,d:.55,type:'triangle',v:v*.13,a:.003,dest:AU.mus,echo:1});tone({f:f*2,t,d:.18,type:'square',v:v*.018,a:.003,lp:[[f*12,0],[f*3,.09]],dest:AU.mus});pluck(f,t,v*.09,5)},
+  lyre(f,t,d,v){tone({f,t,d:.8,type:'triangle',v:v*.1,a:.003,lp:[[f*8,0],[f*2.5,.12]],dest:AU.mus,echo:1});tone({f:f*2,t,d:.3,type:'sine',v:v*.045,dest:AU.mus});tone({f:f*3,t,d:.1,type:'sine',v:v*.02,dest:AU.mus});pluck(f,t,v*.07,4,.01)},
+  harp(f,t,d,v){tone({f,t,d:.45,type:'sine',v:v*.11,a:.004,dest:AU.mus,echo:1});tone({f:f*2,t,d:.14,type:'triangle',v:v*.04,a:.004,lp:[[f*8,0],[f*3,.06]],dest:AU.mus});pluck(f,t,v*.06,3,.015)},
   ney(f,t,d,v){tone({f,t,d,type:'sine',v:v*.1,a:.05,sus:1,vib:4,dest:AU.mus,echo:1})},
   aulos(f,t,d,v){tone({f,t,d,type:'sawtooth',v:v*.05,a:.03,sus:1,vib:3,dest:AU.reed,echo:1});tone({f:f*1.003,t,d,type:'square',v:v*.012,a:.03,sus:1,dest:AU.reed})},
   bass(f,t,d,v){tone({f,t,d:Math.max(.3,d),type:'triangle',v:v*.17,dest:AU.mus});tone({f:f/2,t,d:Math.max(.3,d),type:'sine',v:v*.08,dest:AU.mus})},
