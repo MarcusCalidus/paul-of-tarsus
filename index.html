@@ -591,15 +591,19 @@ function donkey(g,x,y,dir,fr,load){g.save();g.translate(x,y);g.scale(dir*FIG.K,F
       for(let k=0;k<w+knee;k++){const u=(k+.5)/(w+knee);px(x0+k,y0+i,D[Math.min(4,(u<.22?4:u<.5?3:u<.82?2:1)+(far?1:0))])}}
     px(lx+Math.round(sh)+1,-3,hoof,7,3);px(lx+Math.round(sh)+6,-3,'#4a3a2c',2)};
   leg(-17,s,1);leg(14,-s,1);
-  /* tail */
-  for(let i=0;i<24;i++)px(-29-(i>4?1:0)+(i>18?1:0),-46+o+i,i>17?hoof:D[i%5?3:4],i>17?3:2);
+  /* tail: set on at the top of the rump and lying along it, then hanging free to its tuft */
+  const rump=yy=>{const dy=(yy+37.5)/13.5;return-Math.round(27*Math.sqrt(Math.max(0,1-dy*dy)))-1};
+  for(let yy=-49;yy<=-23;yy++){const i=yy+49,tuft=i>20;px(tuft?-31:yy<-38?rump(yy)-2:-30,yy+o,tuft?hoof:D[i%5?3:4],tuft?3:2)}
   /* barrel of the body: lit along the back, pale under the belly */
   for(let yy=-51;yy<=-24;yy++){const dy=(yy+37.5)/13.5,hw=Math.round(27*Math.sqrt(Math.max(0,1-dy*dy)));
     for(let xx=-hw-1;xx<=hw-1;xx++){let v=dy<-.7?1:dy<-.2?2:dy<.45?3:4;if(xx<-hw+3)v=Math.min(4,v+1);if(xx>hw-6&&dy<.3)v=Math.max(1,v-1);px(xx,yy+o,dy>.72&&xx>-hw+4?pale:D[v])}}
-  for(let xx=-20;xx<16;xx+=3)px(xx,-51+o+((xx+20)%2),D[0],2);
+  /* a broken highlight along the line of the back: each dash lies on the top row of the body where it is */
+  for(let xx=-20;xx<16;xx+=3)px(xx,Math.ceil(-37.5-13.5*Math.sqrt(1-Math.pow((Math.abs(xx)+3)/27,2)))+o,D[0],2);
   leg(-25,-s,0);leg(18,s,0);
   /* a short thick neck with its dark mane, the head carried low and forward */
   for(let yy=-59;yy<=-41;yy++){const t=(yy+59)/18,x0=Math.round(25-13*t),x1=Math.round(38-9*t);for(let xx=x0;xx<=x1;xx++){const u=(xx-x0+.5)/(x1-x0+1);px(xx,yy+o,xx-x0<2?'#3a2e24':D[u<.3?3:u<.7?2:1])}}
+  /* the breast, rounding the foot of the neck back into the body */
+  for(let yy=-40;yy<=-33;yy++){const x1=Math.round(29-(yy+41)*.6);for(let xx=24;xx<=x1;xx++)px(xx,yy+o,D[xx>x1-2?1:2])}
   stamp(g,DONKEY_HEAD,24,-75+o,{h:D[2],H:D[1],d:D[3],e:D[2],E:'#5a4636',k:'#1a120c',m:pale,M:'#dccdb6',n:hoof});
   for(let i=0;i<6;i++)px(38,-63+o+i,'#7a4a24');for(let i=0;i<9;i++)px(38-i,-64+o-Math.round(i*.35),'#7a4a24');
   /* saddle blanket, held by two girths */

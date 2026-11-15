@@ -51,27 +51,37 @@ function bundles(g,x,y){for(const[dx,dy,w,hh,c]of[[0,-5,17,5,'#8a5a4a'],[4,-9.6,
 /* earth: trodden ground between y0 and y1, with small stones in it */
 function earth(g,x,y0,w,y1,c,r,n){g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.12),c,tint(c,.1)]);g.fillRect(x,y0,w,y1-y0);tex(g,'mott',.55,x,y0,w,y1-y0,'overlay',1);tex(g,'grain',.14,x,y0,w,y1-y0,'overlay',.5);
   for(let i=0;i<(n||w*.4);i++){const k=r(),sy=y0+1+k*(y1-y0-2),sx=x+r()*w,s=.5+k*1.3;oval(g,sx,sy,s*1.5,s*.6,r()<.5?tint(c,.2):tint(c,-.24));if(r()<.3)oval(g,sx+s*.5,sy+s*.4,s*1.3,s*.3,'rgba(40,36,70,.22)')}}
-/* An ox or a bull, in the pixel manner of the engine's pack donkey and seen from the side. c: its coat. gar: a garland of leaves round its neck. */
-const OX_HEAD=["..w........w........","..ww......ww........","...ww....ww.........","...hwhhhhwh.........","..ehhHHHHhhh........",".eehHHHHHHhhh.......","..dhHHkHHHHhhh......",
-  "..dhhHHHHHHHhhhh....","..dhhhHHHHHHHhhhmm..","...dhhhhHHHHhhhmmmm.","...ddhhhhhhhhhmmMmm.","....dddhhhhhhhmmmnm.","......ddddhhhdmmmmm.","..........ddd..mmm.."];
+/* An ox or a bull, in the pixel manner of the engine's pack donkey and seen from the side. c: its coat. gar: a garland of leaves round its neck.
+   Every part grows out of the one before it: the tail is set on at the top of the rump and lies along it before it hangs free, the crest of
+   the shoulders sits on the back, and the neck is painted in the same bands of tone as the body it comes out of, so that no seam shows. */
+const OX_HEAD=["......www.............","....wwW.ww............","...wwW................","...wWhhhhhhh..........",".eehhHHHHHhhh.........","eEehHHHHHHHhhh........",".eehHHHkHHHHHhhh......",
+  "..dhHHHHHHHHHHhhhh....","..dhhHHHHHHHHHHhhhmm..","..dhhhHHHHHHHHHhhmmmm.","...dhhhhHHHHHHhhmmmMmm","...ddhhhhhhhhhhhmmMMmm","....ddhhhhhhhhhhmmmnmm",".....dddhhhhhhhhmmmmm.",".......ddddhhhhdmmmm..","...........dddd.mmm..."];
 function ox(g,x,y,dir,fr,c,gar){g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
   const px=(a,b,col,w,h)=>{g.fillStyle=col;g.fillRect(a,b,w||1,h||1)},D=ramp(c),hoof='#2a2018',s=fr===1?3:fr===3?-3:0,o=fr%2?-1:0;
-  const leg=(lx,sh,far)=>{const y0=-30+o,n=-3-y0;for(let i=0;i<n;i++){const t=i/(n-1),cx=lx+Math.round(sh*t*t),w=t<.3?9:t<.6?7:6,x0=cx+(t<.3?0:1);
-      for(let k=0;k<w;k++){const u=(k+.5)/w;px(x0+k,y0+i,D[Math.min(4,(u<.22?4:u<.5?3:u<.82?2:1)+(far?1:0))])}}
+  /* hw: the half-width of the barrel of the body in each row. band: the tone a row is painted in, for the body and the neck alike. */
+  const hw=yy=>{const dy=(yy+43.5)/16.5;return Math.round(34*Math.sqrt(Math.max(0,1-dy*dy*.9)))},band=yy=>yy<-55?1:yy<-46?2:yy<-35?3:4;
+  /* back: the line of the back, rising to the crest of the shoulders */
+  const back=xx=>-60-2.6*Math.exp(-Math.pow((xx-18)/7,2));
+  /* a leg: the far ones start under the belly. The near ones start higher, inside the body, and are painted in the body's own tones as far
+     down as the belly, so that haunch and shoulder grow out of it instead of being laid on top */
+  const leg=(lx,sh,far)=>{const y0=(far?-30:-37)+o,n=-3-y0;for(let i=0;i<n;i++){const yy=y0+i-o,t=i/(n-1),cx=lx+Math.round(sh*t*t),w=t<.36?9:t<.64?7:6,x0=cx+(t<.36?0:1);
+      for(let k=0;k<w;k++){const u=(k+.5)/w;px(x0+k,y0+i,D[!far&&yy<-27?Math.min(4,band(yy)+(u<.22?1:0)):Math.min(4,(u<.22?4:u<.5?3:u<.82?2:1)+(far?1:0))])}}
     px(lx+Math.round(sh)+1,-3,hoof,7,3);px(lx+Math.round(sh)+6,-3,'#4a3a2c',2)};
   leg(-22,s,1);leg(17,-s,1);
-  /* tail, with its tuft */
-  for(let i=0;i<27;i++)px(-37-(i>5?1:0)+(i>20?-1:0),-55+o+i,i>20?hoof:D[i%4?3:4],i>20?4:2);
+  /* the tail */
+  for(let yy=-57;yy<=-24;yy++){const i=yy+57,tuft=yy>-31;px(tuft?-38:yy<-44?-hw(yy)-3:-37,yy+o,tuft?hoof:D[i%4?3:4],tuft?4:2)}
   /* the body: a deep barrel, lit along the back */
-  for(let yy=-60;yy<=-27;yy++){const dy=(yy+43.5)/16.5,hw=Math.round(34*Math.sqrt(Math.max(0,1-dy*dy*.9)));
-    for(let xx=-hw-1;xx<=hw-1;xx++){let v=dy<-.72?1:dy<-.2?2:dy<.5?3:4;if(xx<-hw+3)v=Math.min(4,v+1);if(xx>hw-8&&dy<.3)v=Math.max(1,v-1);px(xx,yy+o,D[v])}}
-  px(8,-62+o,D[1],18);px(11,-63+o,D[1],12);px(13,-64+o,D[0],7);
+  for(let yy=-60;yy<=-27;yy++){const w=hw(yy);for(let xx=-w-1;xx<=w-1;xx++)px(xx,yy+o,D[Math.min(4,band(yy)+(xx<-w+3?1:0))])}
+  /* the crest of the shoulders, on the line of the back */
+  for(let xx=2;xx<20;xx++){const yb=Math.round(back(xx));let top=-60;while(hw(top)<xx+1)top++;if(top>yb)px(xx,yb+o,D[1],1,top-yb)}
   leg(-30,-s,0);leg(23,s,0);
-  /* a thick neck with its dewlap, the head carried low */
-  for(let yy=-60;yy<=-34;yy++){const t=(yy+60)/26,x0=Math.round(27-3*t),x1=Math.round(46-12*t);for(let xx=x0;xx<=x1;xx++){const u=(xx-x0+.5)/(x1-x0+1);px(xx,yy+o,D[u<.3?3:u<.7?2:t>.7?3:1])}}
-  stamp(g,OX_HEAD,36,-70+o,{h:D[2],H:D[1],d:D[3],e:D[3],k:'#1a120c',m:mix(c,'#d8c8b8',.5),M:'#e6dccc',n:hoof,w:'#e8dcc0'});
-  /* a garland: leaves and a few yellow flowers in a band round the neck */
-  if(gar)for(let i=0;i<13;i++){const gx=27+Math.round(i*.55),gy=-62+o+i*2;px(gx,gy,i%2?'#4f7a3a':'#6f9a4a',6,2);px(gx+1,gy,'#8fb45a',2);if(i%3===1)px(gx+3,gy,'#f0d060',2,2)}
+  /* a thick neck, from the shoulders to the poll, with the dewlap hanging under it */
+  for(let xx=20;xx<=44;xx++){const t=(xx-20)/24,y0=Math.round(back(xx)+2*t),y1=Math.round(-29-19*t+1.8*Math.sin(t*Math.PI));
+    for(let yy=y0;yy<=y1;yy++)px(xx,yy+o,D[yy===y0?1:yy>=y1-1?4:band(yy)])}
+  /* the head, carried low and forward: one horn in a crescent, an ear behind it, a broad pale muzzle */
+  stamp(g,OX_HEAD,38,-62+o,{h:D[2],H:D[1],d:D[3],e:D[3],E:mix(c,'#6a4a40',.55),k:'#1a120c',m:mix(c,'#d8c8b8',.5),M:'#e6dccc',n:hoof,w:'#efe4c8',W:'#b8a888'});
+  /* a garland: leaves and a few yellow flowers in a band round the neck, hanging a little below the throat */
+  if(gar)for(let i=0;i<11;i++){const gx=28+Math.round(i*.75),gy=-61+o+i*2;px(gx,gy,i%2?'#4f7a3a':'#6f9a4a',6,2);px(gx+1,gy,'#8fb45a',2);if(i%3===1)px(gx+3,gy,'#f0d060',2,2)}
   g.restore()}
 const cattle=(g,x,y,dir,fr,c,gar,lit)=>figure(g,x,y,lit,'ox'+dir+fr+c+(gar?'g':''),s=>ox(s,0,0,dir,fr,c,gar),17);
 /* wagon: a four-wheeled wagon with solid wheels, its bed at x, standing on the ground at y. cov: 1 the cover is on its hoops, 0 the hoops stand bare, -1 an open wagon with no hoops. load: sacks on its bed. */
@@ -200,7 +210,8 @@ ART.lystra={w:480,fp:1.3,
   /* the people of Lystra, when they come running: first they face the well, then the gate */
   if(G.crowd)CROWD.forEach(([id,x,y],i)=>man(g,x,y+((Math.floor(t/700)+i)%5===0?-.6:0),id,G.bulls?-1:1,0,null,G.crowd>1&&(Math.floor(t/500)+i)%3===0?1:0,7));
   /* the bulls, garlanded, brought to the gates (Acts 14:13) */
-  if(G.bulls){cattle(g,62,113,1,0,'#e6dccc',1);cattle(g,36,117,1,0,'#d8c8b0',1)}},
+  /* side by side, the far one half a head in front, so that neither hides the other's head */
+  if(G.bulls){cattle(g,51,112.6,1,0,'#d8c8b0',1);cattle(g,44,116.4,1,0,'#e6dccc',1)}},
  front(){}};
 /* ---------- Outside Lystra, at dusk ---------- */
 ART.outside={w:320,
@@ -307,9 +318,11 @@ ART.derbe={w:320,
   shade(g,[0,104,83,104,98,112,0,114],SH,.55);pool(g,210,0,240,150,'#fff0c8',.16,'screen');ao(g,0,0,70,144,'l',.1,'#2a2050')},
  fore(g){const r=rng(468);rock(g,22,150,30,14,'#8a8478');for(let i=0;i<40;i++){const sx=r()*320;stroke(g,[sx,150,sx+(r()-.5)*5,137-r()*7],r()<.5?'#a89850':'#c8b868',.8)}
   comp(g,'source-atop',.36,()=>R(g,0,0,320,150,'#34305a'))},
- draw(g,t){/* chaff on the wind; Zenon's wagon, loaded and yoked for the road east */
+ draw(g,t){/* chaff on the wind; Zenon's wagon, loaded for the road east */
   for(let i=0;i<9;i++){const k=((t/2600+i*.111)%1);R(g,176+k*60+Math.sin(i*2.1)*6,90-k*14-Math.sin(k*9+i)*3,1,.6,`rgba(244,236,200,${.8*(1-k)})`)}
-  cattle(g,266,108.6,1,0,'#6f4630',0);wagon(g,174,110,-1,1);cattle(g,262,111,1,0,'#8a5a3a',0);bundles(g,60,112)},
+  /* the far ox, the wagon and its pole, the near ox, and the yoke that lies across both their necks */
+  cattle(g,266,108.6,1,0,'#6f4630',0);wagon(g,174,110,-1,1);cattle(g,262,111,1,0,'#8a5a3a',0);
+  R(g,275,79,5,2.5,'#5a3e22');R(g,275,79,5,.5,'#a8845a');R(g,279.5,77.5,1.5,1.5,'#5a3e22');bundles(g,60,112)},
  front(){}};
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
 Object.assign(LOOK,{
@@ -528,7 +541,7 @@ async function hear(A){if(F.heard)return say(A,'They are at the gate with the bu
   await say(A,'They think it has happened again.');
   await narr('And they started calling Barnabas Zeus, but Paul Hermes, since he was taking the lead in speaking. (Acts 14:12)',{dur:7500});
   await say(BN,'Zeus? They cannot mean it, Paul.');
-  G.bulls=1;G.crowd=2;AU.mood='feast';place(PR,'lystra',86,116,1);
+  G.bulls=1;G.crowd=2;AU.mood='feast';place(PR,'lystra',94,117,1);
   await narr('And the priest of Zeus, whose temple was at the entrance of the city, brought bulls and garlands to the gates and wanted to offer sacrifices with the crowds. (Acts 14:13)',{dur:10000});
   await say(A,A===TI?'Bulls, sir, with garlands on them. They mean to sacrifice. To you.':'Bulls, with garlands on them. They mean to sacrifice. To the two of you.');
   F.heard=1;
@@ -537,7 +550,7 @@ async function hear(A){if(F.heard)return say(A,'They are at the gate with the bu
 /* stop6: at the gate (Acts 14:14-18). The player chooses how Paul begins, to whom he turns them, and what witness he names. */
 async function stop6(){playAs(P);
   await narr('However, when the apostles Barnabas and Paul heard of it, they ripped their garments and leaped out into the crowd and cried out: (Acts 14:14)',{dur:9000});
-  SFX.cut();await Promise.all([walk(P,112,117),walk(BN,134,122)]);P.dir=1;BN.dir=1;SFX.cut();
+  SFX.cut();await Promise.all([walk(P,116,118),walk(BN,138,123)]);P.dir=1;BN.dir=1;SFX.cut();
   await think('They take us for gods. How do I begin?',[
     {q:'We are Jews, and our Law forbids this.',no:'True. And the Law of Moses is nothing to them: they have never heard it read.'},
     {q:'Stop! This is an offense against God.',no:'True again. But to them a god offended is a god who wants a bigger sacrifice.'},
@@ -665,7 +678,7 @@ ROOMS.lystra={walk:[16,464,110,138],get mood(){return G.bulls?'feast':F.healed?'
   {name:'fields',x:300,y:68,w:92,h:22,wx:350,look:async()=>{await say(P,'Fields, orchards and good pasture. The valley is well watered, and whoever farms it does not go hungry.');await say(P,quote('ps65'))}},
   {name:'city wall',x:0,y:18,w:100,h:28,wx:76,look:'The wall of Lystra. Caesar made a colony of this town, and put soldiers in it against the mountain tribes.'},
   {name:'city gate',x:26,y:48,w:48,h:56,wx:98,wy:116,dir:-1,look:()=>say(P,G.bulls?'Bulls at the gates, garlanded for sacrifice, and half the town behind them.':'The gate of Lystra. The road outside it runs down past a temple of Zeus, at the entrance of the city.'),exit:gate6},
-  {name:'bulls',x:20,y:84,w:60,h:34,wx:104,wy:117,dir:-1,vis:()=>!!G.bulls,look:'Two white bulls with garlands round their necks. They are meant for us: for a tentmaker and a Levite.',use:stop6,pickup:'They are not mine, and what they were brought for is not mine either.'},
+  {name:'bulls',x:24,y:84,w:58,h:34,wx:112,wy:118,dir:-1,vis:()=>!!G.bulls,look:'Two white bulls with garlands round their necks. They are meant for us: for a tentmaker and a Levite.',use:stop6,pickup:'They are not mine, and what they were brought for is not mine either.'},
   {name:'door of a house',x:140,y:68,w:14,h:36,wx:147,wy:112,look:'A house of mud brick, with its door shut.',use:'It is not my house.',open:'It is not my house.'},
   {name:"door of Lois's house",x:190,y:63,w:22,h:41,wx:201,wy:112,look:'The door of a house where the Sabbath is kept. There is no other like it in the street.',use:'I will go in when I am asked in.',open:'I will go in when I am asked in.'},
   {name:'well',x:262,y:70,w:36,h:38,wx:262,wy:118,dir:1,def:'use',look:['The well of Lystra. The whole town comes here, sooner or later, and stays to talk.','With no synagogue, this is where a stranger can be heard.'],use:speak6,pickup:'The bucket belongs to the well.'},
@@ -886,7 +899,7 @@ function place6(room){const o=other(),e=ENT[room];for(const a of[NA,XA,TA,TI,EN,
   if(room==='iconium'){place(NA,room,92,114,1);place(TA,room,278,116,-1);place(XA,room,400,117,-1)}
   else if(room==='lystra'){place(TI,room,224,119,1);place(EN,room,204,115,1);place(LO,room,180,113,1);
     if(F.healed){place(LM,room,344,118,-1);G.crowd=F.heard?2:1}
-    if(F.heard){G.bulls=1;place(PR,room,86,116,1)}}
+    if(F.heard){G.bulls=1;place(PR,room,94,117,1)}}
   else if(room==='outside'){place(TI,room,194,123,-1);place(EN,room,210,130,-1);place(LO,room,104,131,1);place(LM,room,226,124,-1)}
   else if(room==='house'){place(LO,room,120,116,1);place(EN,room,214,117,-1);place(TI,room,90,124,1);if(F.back)place(LM,room,176,114,-1)}
   else if(room==='derbe')place(ZE,room,158,119,-1)}
@@ -970,6 +983,8 @@ function hint6(){const b=PC()!==P,craft=['craft6',["That is the tentmaker's craf
   return['back6',['The short way home lies east. But the disciples lie behind us, and no one has been back to them.','We can take the road, and choose Lystra on the map.']]}
 /* ============ CHAPTER DEFINITION ============ */
 return{rooms:['iconium','lystra','outside','house','derbe'],setup:setup6,start:start6,hint:hint6,music:MUSIC,topics:TOPICS,tablets:TABLETS,
+  /* painters: the chapter's animal, for the playtest, which checks that every part of it is attached and shows it enlarged */
+  painters:{ox},
   /* Iconium, Lystra and Derbe lie north of the map's usual window, so this chapter looks through the northern one */
   view:'north',
   places:{

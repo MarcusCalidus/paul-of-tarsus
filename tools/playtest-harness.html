@@ -64,7 +64,7 @@
   const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3|map3)$/.test(stop),HUB=stop==='hubmap',
     C4=/^(sendoff|seleucia|kallias|shelter|jair|voyage|map4|salamis|synagogue|speech|hubmap4|paphos|tools|daniel|blind|journey4|final4|deutsch4)$/.test(stop),
     C5=/^(voyage5|perga|parting|sandal|hubmap5|ford|splice|wade|line|pisidia|synp|speech5|week|greek|sabbath2|border|dust|journey5|final5)$/.test(stop),
-    C6=/^(iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house|mend|derbe|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
+    C6=/^(beasts|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house|mend|derbe|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
   const lang=(location.search.match(/[?&]lang=(\w+)/)||[])[1]||'en',toLang=async l=>{for(let i=0;i<150&&G.lang!==l;i++)await wait(30);await wait(60)};
   ok(G.lang===lang&&document.documentElement.lang===lang,'the game is in '+LANGS[lang].native+', as the address asks');fitVerbs();
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
@@ -705,6 +705,18 @@
   halt('iconium',()=>{place(A('nathan'),'iconium',128,118,1);P.dir=-1;BN.dir=-1;say(A('nathan'),'Paul! Barnabas! Leave the bench and listen. I have it from a man who was in the room.')});
   ok(/^6-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===6&&decode(makeCode()).w!=null,'chapter six code format (wide, nine characters) '+makeCode());
   ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Barnabas')),'a party: the panel offers to switch to Barnabas');fitVerbs();
+  /* the animals: every part of each must be attached. A sprite is one piece: no tail, head, hump or highlight floats free of the body. */
+  {const ox=CHAP[6].painters.ox,BEASTS=[['pack donkey',s=>donkey(s,0,0,1,0,0)],['pack donkey, walking',s=>donkey(s,0,0,1,1,0)],['pack donkey with bags',s=>donkey(s,0,0,-1,2,1)],['pack donkey, loaded',s=>donkey(s,0,0,1,3,2)],
+      ['bull with its garland',s=>ox(s,0,0,1,0,'#e6dccc',1)],['bull, walking',s=>ox(s,0,0,1,1,'#d8c8b0',1)],['ox',s=>ox(s,0,0,-1,0,'#8a5a3a',0)],['ox, walking',s=>ox(s,0,0,1,3,'#6f4630',0)]],
+    pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
+      for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
+        for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n},
+    sheet=BEASTS.map(([n,fn],i)=>[n,sprite('beast-test'+i,fn,1)]),bad=sheet.filter(([n,c])=>pieces(c)!==1).map(b=>b[0]);
+    ok(!bad.length,'animals: every part is attached, in '+sheet.length+' poses of the donkey and the ox'+(bad.length?'. IN PIECES: '+bad.join(', '):''));
+    halt('beasts',()=>{const c=document.createElement('canvas');c.width=960;c.height=432;c.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;z-index:8';$('#view').appendChild(c);
+      const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,960,432);
+      sheet.forEach(([n,sp],i)=>{const x=(i%4)*240,y=Math.floor(i/4)*216;g.fillStyle='#a8b0bc';g.fillRect(x+2,y+2,236,212);g.fillStyle='#6f7a6a';g.fillRect(x+2,y+196,236,18);
+        g.drawImage(sp,FIG.OX-59,FIG.OY-96,118,105,x+2,y+2,236,210);g.fillStyle='#101418';g.font='bold 12px monospace';g.fillText(n,x+8,y+16)})})}
   if(lang==='de'){move(...hs('south gate'));ok($('#status').textContent==='Gehe zu Südtor','German status line: Gehe zu Südtor');
     verb('use');item('knife');move(...hs('unfinished cover'));ok($('#status').textContent==='Benutze Zeltmachermesser mit Wagenplane (unfertig)','German status line: Benutze Zeltmachermesser mit Wagenplane (unfertig)');verb('use');G.hover=null;status()}
   /* Iconium: nothing is left owing, and nothing unsaid */

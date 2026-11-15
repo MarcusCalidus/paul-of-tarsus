@@ -51,6 +51,7 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 
 - Backdrops are painted in the manner of early-1990s VGA adventure games: painterly and detailed, with depth and real lighting. The scenes are our own. Never copy another game's art, characters or music.
 - Characters are pixel-placed sprites drawn to the same standard as the backdrops: three-quarter view, crisp hand-placed pixels, flat bands of light and shadow, no outline, and lit by the room they stand in. Dress and head coverings fit the period, the place and the person.
+- Animals are drawn to the same standard as the people. Every part grows out of the one before it: a tail is set on at the rump, a neck comes out of the shoulders in the body's own tones, a head sits on its neck, and nothing floats free. Two animals that stand together must not overlap so that the head of one seems to belong to the body of the other. Look at them enlarged, in every walking frame and facing both ways: `node tools/playtest.mjs beasts`. The playtest fails if a sprite is in more than one piece.
 - There are no image or audio files. Everything is painted in code on a canvas, and all music and sound are synthesized with the Web Audio API.
 - Each chapter has its own score, and each room has a mood and ambience to match.
 - Sound follows the player's device. On iPhone and iPad the game stays quiet in Silent Mode; never work around it (no HTML audio element, no `playback` audio session). The game may say that Silent Mode could be on, but it must not claim to know: Safari does not tell a page.
