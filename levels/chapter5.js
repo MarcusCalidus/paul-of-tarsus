@@ -942,8 +942,8 @@ async function finale5(){playAs(P);await wait(300);
   endScreen({title:'A Light of Nations',text:'Paul took his own roof to pieces for a rope, waited to be asked before he spoke, and answered each hearer in the way that hearer could follow. Put out of the city, he left no anger behind him: only disciples.',
     extra:F.bread?['Bread shared with John Mark for his road']:[],
     based:'Based on Acts 13:13-52; 14:21 and 2 Corinthians 11:26. Supporting characters and dialogue are imaginative; the events are from the Scriptures.',
-    go:'Click to return to the title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+    go:'Click to continue to Chapter Six',code:['Chapter Six code: {code}',codeOf(6,0)]});
+  await wait(1500);ov.onclick=()=>startChapter(6);await new Promise(()=>{})}
 function hint5(){const b=PC()!==P,craft=['craft5',["That is the tentmaker's craft, not mine. A good partner knows when to step back.",'Paul should do this part. I can leave it to him; he is never far away.']];
   if(inPerga()){
     if(!F.metPap)return['road5',['Two men do not walk into those mountains without asking what the road is like. Someone here climbs it for a living.','I should talk to the drover, by his donkeys.']];

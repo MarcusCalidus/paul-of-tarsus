@@ -30,6 +30,7 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 - Paul never lies. That includes every dialogue choice offered to the player: a wrong choice may be unwise, but never untrue.
 - **Pray to Jehovah** is the hint system. It never changes the game's state. The first prayer at a point gives a gentle hint, and praying again gives a more direct one.
 - Invented characters and all dialogue are dramatization. Each chapter's end screen says so, and the README's "About the content" section names the invented characters.
+- A person named in the Scriptures appears only in events where the account places that person, or where the Study Edition's notes or the publications on wol.jw.org say that the person was likely there. In the second case the chapter's end screen and the README say what the account itself leaves unsaid. For example, Acts 14 does not name the disciples at Lystra; the note on 2 Timothy 1:5 says that Lois and Eunice likely became believers during that stay, so Chapter Six shows them with Timothy, and says that Acts does not.
 - Before building a new chapter, agree on its episode with the maintainer by opening an issue.
 
 ## 3. Images and symbols
@@ -40,7 +41,10 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
   - a vertical line over a horizontal band, such as rope lashings or yarn skeins;
   - grid lines or map lines that meet at right angles, and route lines on a map that cross each other;
   - a label or text laid across a thin line, such as a lake, river or coast;
-  - "+" or "x" markers, and cross-shaped cursors or highlights.
+  - "+" or "x" markers, and cross-shaped cursors or highlights;
+  - four small squares set two by two, where the gap between them is a plus sign;
+  - a rope or strap hanging straight down from the middle of a beam, which makes a T, and ties drawn across a roll or a bundle.
+- Where the account itself names something used in false worship, it may be shown plainly when the scene is about refusing it: the bulls and garlands of Acts 14:13 are shown at the gate of Lystra. A temple, an altar, a statue or an image of a god is never shown.
 - Look at screenshots of every changed scene before committing.
 
 ## 4. Look and sound

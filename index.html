@@ -926,7 +926,8 @@ const CHAP={
   2:{name:'A FRIEND IN JERUSALEM',label:'Chapter Two',title:'A Friend in Jerusalem',salt:0x2B6D,src:'levels/chapter2.js'},
   3:{name:'CALLED TO ANTIOCH',label:'Chapter Three',title:'Called to Antioch',salt:0x3C91,src:'levels/chapter3.js'},
   4:{name:'SENT OUT TO CYPRUS',label:'Chapter Four',title:'Sent Out to Cyprus',salt:0x4D2F,src:'levels/chapter4.js'},
-  5:{name:'A LIGHT OF NATIONS',label:'Chapter Five',title:'A Light of Nations',salt:0x5E73,src:'levels/chapter5.js'}};
+  5:{name:'A LIGHT OF NATIONS',label:'Chapter Five',title:'A Light of Nations',salt:0x5E73,src:'levels/chapter5.js'},
+  6:{name:'THE DOOR TO FAITH',label:'Chapter Six',title:'The Door to Faith',salt:0x6F19,src:'levels/chapter6.js'}};
 const TITLE={level:1,scene:'wall',mood:'calm',amb:{crickets:.5,wind:.35,owl:.4}};
 /* A level file calls LEVEL(n, init). init() registers its art, cast, items and rooms, and returns the chapter definition. */
 function LEVEL(n,init){Object.assign(CHAP[n],init(),{ready:1})}
