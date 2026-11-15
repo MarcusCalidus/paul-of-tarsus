@@ -290,6 +290,7 @@ function pluck(f,t,v,b,d){noise({t,d:d||.012,v,f:Math.min(f*b,6000),q:1.6,dest:A
      {drum:1, prog:'AB..', seq:{A:'d.t...t.'}}                  one character per step: see DRUMS
      {inst, prog:'AABA', seq:{A:[a scale degree per step, null = rest]}} a pattern per bar, chosen by prog
      {inst, from: bar, loop: bars, lines:[[[step,degree,length],..] per bar]}  a melody
+   An instrument is called as inst(f, t, d, v, down, track): down on the first step of a bar, track for options such as the aulos's hold.
    oct shifts a track by semitones, vol scales it, len sets note length in steps.
    A score may bring its own voices, which win over the engine's of the same name for that score only: inst:{name(f,t,d,v,down){..}},
    drums:{x(t,v){..}}. They write to AU.out (the lyre-like to AU.body) and send to the room with echo:1, so the track's fade covers them;
@@ -307,13 +308,20 @@ const INST={
   harp(f,t,d,v){tone({f,t,d:1.2,type:'sine',v:v*.084,a:.004,dest:AU.out,echo:1});tone({f:f*2,t,d:.3,type:'triangle',v:v*.028*bite(f*2),a:.004,lp:[[f*5,0],[f*2,.08]],dest:AU.out});pluck(f,t,v*.04,2.5,.015)},
   /* the ney: a breath of noise around the second harmonic that follows the note, and a vibrato that comes in after the attack */
   ney(f,t,d,v){v*=bite(f);tone({f,t,d,type:'sine',v:v*.1,a:.05,sus:1,vib:4,vibd:.15,dest:AU.out,echo:1});noise({t,d,v:v*.08,a:.05,sus:1,f:f*2,q:4,dest:AU.out})},
-  /* the aulos: each note scoops up 15 cents onto its pitch, and its reed opens bright on the attack and settles to 1900 Hz */
-  aulos(f,t,d,v){v*=bite(f);const lp=[[f*1.5,0],[Math.max(3600,f*5),.03],[1900,.25]],bend=[-15,.025];
-    tone({f,t,d,type:'sawtooth',v:v*.05,a:.03,sus:1,vib:3,bend,lp,lpq:1.2,dest:AU.out,echo:1});tone({f:f*1.003,t,d,type:'square',v:v*.012,a:.03,sus:1,bend,lp,lpq:1.2,dest:AU.out})},
+  /* the aulos: a pair of reed pipes. Each is a square wave, whose odd harmonics give the hollow sound of a cylindrical pipe. The second
+     starts with the first but swells in more slowly (a 70 ms attack against 30), at half its level and 6 cents above it, so the two beat
+     gently, about as deep as the voice before. Each note scoops up 15 cents onto its pitch, and the reed opens bright on the attack and
+     settles to 1900 Hz. A track with hold (semitones above the tonic: 0 or 7) keeps its second pipe for a held note instead: playStep
+     gives it aulos.hold at the start of each bar in which the melody plays, re-breathed bar by bar. */
+  aulos(f,t,d,v,down,tr){v*=bite(f);const lp=[[f*1.5,0],[Math.max(3600,f*5),.03],[1900,.25]],bend=[-15,.025];
+    tone({f,t,d,type:'square',v:v*.03,a:.03,sus:1,vib:3,bend,lp,lpq:1.2,dest:AU.out,echo:1});
+    if(!tr||tr.hold==null)tone({f:f*1.0035,t,d,type:'square',v:v*.015,a:.07,sus:1,bend,lp,lpq:1.2,dest:AU.out,echo:1})},
   /* the bass: a low plucked string. A sawtooth gives it every harmonic; its lowpass closes from the eighth harmonic to the third as the
      note dies away over its length, so the second and third stay clear and the top dulls first. No octave below. */
   bass(f,t,d,v){d=Math.max(.3,d);tone({f,t,d,type:'sawtooth',v:v*.24,a:.004,lp:[[f*8,0],[f*3,d*.6]],dest:AU.out});pluck(f,t,v*.12,6,.015)},
   drone(f,t,d,v){tone({f,t,d,type:'triangle',v:v*.16,a:.6,sus:1,dest:AU.out});tone({f:f*1.4983,t,d,type:'sine',v:v*.09,a:.9,sus:1,dest:AU.out})}};
+/* the held pipe: under the melody, a reed tone that swells in, holds and is let go 80 ms before the next breath */
+INST.aulos.hold=(f,t,d,v)=>tone({f,t,d,type:'square',v:v*bite(f)*.012,a:.08,sus:1,lp:[[1900,0]],lpq:1.2,dest:AU.out,echo:1});
 const DRUMS={
   /* doum: the deep stroke of a frame drum held in the hand, a membrane falling from 130 to 76 Hz, its second mode at 1.59 times that,
      and the slap of the palm */
@@ -344,7 +352,8 @@ const FADE=1.5,FADEN=7;
 function mixFor(sc){const c=AU.ctx,o=AU.mix;if(o&&o.sc===sc&&o.c===c)return o;
   if(o&&o.c===c)setTimeout(()=>o.tr.forEach(x=>{x.g.disconnect();x.r.disconnect()}),4000);
   return AU.mix={sc,c,tr:sc.tracks.map(tr=>{const g=c.createGain(),r=c.createGain();g.connect(AU.mus);r.connect(AU.send);return{g,r,body:tr.inst==='lyre'?lyreBody(c,g):null,on:null,off:0}})}}
-function playStep(st,t){const sc=AU.score;if(!sc)return;const N=sc.steps||16,bar=Math.floor(st/N),s=st%N,m=AU.mood,mx=mixFor(sc),out=AU.out,body=AU.body,room=AU.toRoom,
+function playStep(st,t){const sc=AU.score;if(!sc)return;const N=sc.steps||16,
+  held=(tr,play,t,v)=>play.hold(mtof(snap(sc.root+(tr.oct||0)+tr.hold,sc)),t,N*sc.dt-.08,v),bar=Math.floor(st/N),s=st%N,m=AU.mood,mx=mixFor(sc),out=AU.out,body=AU.body,room=AU.toRoom,
   deg=(n,oct)=>mtof(note(n,oct,sc));
   try{sc.tracks.forEach((tr,j)=>{const x=mx.tr[j],want=!tr.moods||tr.moods.includes(m),first=x.on===null;
     if(first){for(const p of[x.g.gain,x.r.gain])p.setValueAtTime(want?1:0,t);x.off=want?0:FADEN}
@@ -354,8 +363,10 @@ function playStep(st,t){const sc=AU.score;if(!sc)return;const N=sc.steps||16,bar
     const own=sc.inst&&sc.inst[tr.inst],play=own||INST[tr.inst],v=tr.vol==null?1:tr.vol,pr=tr.prog||'A',hand=tr.drum||(own?!!own.hand:LOOSE.has(tr.inst)),tt=()=>hand?loose(t):t,vv=hand?v*accent(s,N,tr.group||sc.group):v;
     if(tr.drone){const ev=tr.every||2*N;if(want&&(st%ev===0||join))for(const n of tr.drone)(sc.inst&&sc.inst.drone||INST.drone)(mtof(sc.root+n),t,(ev-st%ev)*sc.dt+.4,v)}
     else if(tr.drum){const ch=tr.seq[pr[bar%pr.length]][s],hit=ch&&(sc.drums&&sc.drums[ch]||DRUMS[ch]);if(hit)hit(tt(),vv)}
-    else if(tr.seq){const n=tr.seq[pr[bar%pr.length]][s];if(n!=null)play(deg(n,tr.oct),tt(),(tr.len||3)*sc.dt,vv,s===0)}
-    else if(tr.lines){let i=bar-(tr.from||0);if(i<0)return;if(tr.loop)i%=tr.loop;for(const[n0,dg,len]of tr.lines[i]||[])if(n0===s)play(deg(dg,tr.oct),tt(),len*sc.dt*.95,vv,s===0)}})}
+    else if(tr.seq){const p=tr.seq[pr[bar%pr.length]],n=p[s];if(want&&s===0&&tr.hold!=null&&play.hold&&p.some(x=>x!=null))held(tr,play,t,v);
+      if(n!=null)play(deg(n,tr.oct),tt(),(tr.len||3)*sc.dt,vv,s===0,tr)}
+    else if(tr.lines){let i=bar-(tr.from||0);if(i<0)return;if(tr.loop)i%=tr.loop;const ln=tr.lines[i]||[];if(want&&s===0&&tr.hold!=null&&play.hold&&ln.length)held(tr,play,t,v);
+      for(const[n0,dg,len]of ln)if(n0===s)play(deg(dg,tr.oct),tt(),len*sc.dt*.95,vv,s===0,tr)}})}
   finally{AU.out=out;AU.toRoom=room;AU.body=body}}
 /* loopOf: how many steps a score plays before it starts again */
 const loopOf=sc=>(sc.bars||16)*(sc.steps||16);

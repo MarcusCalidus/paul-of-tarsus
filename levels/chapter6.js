@@ -10,7 +10,8 @@ LEVEL(6,()=>{
 /* A tune for a high, well-watered plain, in F Lydian: a lyre in even fours over a bass, a frame drum, and a reed pipe carrying the tune
    (mood "hope": the streets and the roads). Indoors (mood "calm") a harp takes the lyre's place and a ney the pipe's. When stones are
    spoken of (mood "tense") only a drone, a slow drum and a few notes of the oud remain. And when a whole town runs to the gate with
-   garlands (mood "feast") the drum doubles, hands clap, and the pipe goes round and round on four notes. */
+   garlands (mood "feast") the drum doubles, hands clap, a drone sounds the keynote, and the pipe goes round and round on four notes while its
+   second pipe holds the keynote under it (hold:0). */
 const _=null,
  TUNE=[[[0,4,4],[4,3,2],[6,4,2],[8,6,4],[12,4,4]],[[0,3,4],[4,2,2],[6,1,2],[8,2,8]],[[0,4,2],[2,5,2],[4,6,4],[8,7,2],[10,6,2],[12,4,4]],[[0,5,4],[4,3,4],[8,4,8]],
   [[0,7,4],[4,8,2],[6,7,2],[8,6,4],[12,4,4]],[[0,5,4],[4,6,2],[6,4,2],[8,3,8]],[[0,2,2],[2,3,2],[4,4,2],[6,6,2],[8,4,4],[12,2,4]],[[0,1,4],[4,0,12]]],
@@ -26,7 +27,7 @@ const _=null,
   {drum:1,moods:['feast'],prog:'AB',seq:{A:'d.tkd.t.d.tkd.tc',B:'d.tkd.tcd.tkc.tc'},vol:1.1},
   {drum:1,moods:['feast'],seq:{A:'s.s.s.s.s.s.s.s.'},vol:.9},
   {drone:[0],every:16,moods:['feast'],vol:.6},
-  {inst:'aulos',moods:['feast'],prog:'AAAB',len:2,oct:12,seq:{A:[4,_,6,_,4,_,3,_,4,_,6,_,7,_,6,_],B:[4,_,6,_,7,_,8,_,7,_,6,_,4,_,3,_]},vol:.9},
+  {inst:'aulos',moods:['feast'],hold:0,prog:'AAAB',len:2,oct:12,seq:{A:[4,_,6,_,4,_,3,_,4,_,6,_,7,_,6,_],B:[4,_,6,_,7,_,8,_,7,_,6,_,4,_,3,_]},vol:.9},
   {inst:'aulos',moods:['hope'],loop:8,oct:12,lines:TUNE},
   {inst:'ney',moods:['calm'],from:8,oct:12,lines:TUNE}]};
 
