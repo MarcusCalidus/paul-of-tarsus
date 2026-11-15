@@ -199,6 +199,8 @@ function audioGraph(c){
   AU.mus=c.createGain();AU.mus.gain.value=.55;AU.mus.connect(AU.master);
   AU.fx=c.createGain();AU.fx.gain.value=.7;AU.fx.connect(AU.master);
   AU.ambG=c.createGain();AU.ambG.gain.value=.5;AU.ambG.connect(AU.master);
+  /* the lyre's wooden body: one resonance near 1 kHz that all its notes pass through, whatever their pitch */
+  AU.body=c.createBiquadFilter();AU.body.type='peaking';AU.body.frequency.value=1000;AU.body.Q.value=1.4;AU.body.gain.value=6;AU.body.connect(AU.mus);
   const d=c.createDelay(1),fb=c.createGain(),lp=c.createBiquadFilter();
   d.delayTime.value=.34;fb.gain.value=.3;lp.type='lowpass';lp.frequency.value=1700;
   AU.send=c.createGain();AU.send.gain.value=.4;AU.send.connect(d);d.connect(lp);lp.connect(fb);fb.connect(d);lp.connect(AU.mus);
@@ -261,8 +263,12 @@ function pluck(f,t,v,b,d){noise({t,d:d||.012,v,f:Math.min(f*b,6000),q:1.6,dest:A
 const INST={
   /* the plucked strings start fast, with a pluck and an overtone whose brightness falls away in the first tenth of a second */
   oud(f,t,d,v){tone({f,t,d:.55,type:'triangle',v:v*.13,a:.003,dest:AU.mus,echo:1});tone({f:f*2,t,d:.18,type:'square',v:v*.018,a:.003,lp:[[f*12,0],[f*3,.09]],dest:AU.mus});pluck(f,t,v*.09,5)},
-  lyre(f,t,d,v){tone({f,t,d:.8,type:'triangle',v:v*.1,a:.003,lp:[[f*8,0],[f*2.5,.12]],dest:AU.mus,echo:1});tone({f:f*2,t,d:.3,type:'sine',v:v*.045,dest:AU.mus});tone({f:f*3,t,d:.1,type:'sine',v:v*.02,dest:AU.mus});pluck(f,t,v*.07,4,.01)},
-  harp(f,t,d,v){tone({f,t,d:.45,type:'sine',v:v*.11,a:.004,dest:AU.mus,echo:1});tone({f:f*2,t,d:.14,type:'triangle',v:v*.04,a:.004,lp:[[f*8,0],[f*3,.06]],dest:AU.mus});pluck(f,t,v*.06,3,.015)},
+  /* the lyre is the bright one: strong upper harmonics, sounding through its body (AU.body). On the first step of a bar (down) it
+     strums: the octave above follows 25 ms after the note, which stays in any mode. */
+  lyre(f,t,d,v,down){tone({f,t,d:.8,type:'triangle',v:v*.085,a:.003,lp:[[f*10,0],[f*4,.15]],dest:AU.body,echo:1});tone({f:f*2,t,d:.4,type:'triangle',v:v*.038,dest:AU.body});
+    tone({f:f*3,t,d:.22,type:'sine',v:v*.026,dest:AU.body});pluck(f,t,v*.06,4,.01);if(down)INST.lyre(f*2,t+.025,d,v*.4)},
+  /* the harp is the warm one: a round fundamental, a soft octave that dulls quickly, a gentle pluck, and the longest ring */
+  harp(f,t,d,v){tone({f,t,d:1.2,type:'sine',v:v*.084,a:.004,dest:AU.mus,echo:1});tone({f:f*2,t,d:.3,type:'triangle',v:v*.028,a:.004,lp:[[f*5,0],[f*2,.08]],dest:AU.mus});pluck(f,t,v*.04,2.5,.015)},
   /* the ney: a breath of noise around the second harmonic that follows the note, and a vibrato that comes in after the attack */
   ney(f,t,d,v){tone({f,t,d,type:'sine',v:v*.1,a:.05,sus:1,vib:4,vibd:.15,dest:AU.mus,echo:1});noise({t,d,v:v*.08,a:.05,sus:1,f:f*2,q:4,dest:AU.mus})},
   /* the aulos: each note scoops up 15 cents onto its pitch, and its reed opens bright on the attack and settles to 1900 Hz */
@@ -291,8 +297,8 @@ function playStep(st,t){const sc=AU.score;if(!sc)return;const N=16,bar=Math.floo
       hand=tr.drum||LOOSE.has(tr.inst),tt=()=>hand?loose(t):t,vv=hand?v*accent(s,N,tr.group||sc.group):v;
     if(tr.drone){const ev=tr.every||32;if(st%ev===0)for(const n of tr.drone)INST.drone(mtof(sc.root+n),t,ev*sc.dt+.4,v)}
     else if(tr.drum){const ch=tr.seq[pr[bar%pr.length]][s];if(ch&&DRUMS[ch])DRUMS[ch](tt(),vv)}
-    else if(tr.seq){const n=tr.seq[pr[bar%pr.length]][s];if(n!=null)INST[tr.inst](deg(n,tr.oct),tt(),(tr.len||3)*sc.dt,vv)}
-    else if(tr.lines){let i=bar-(tr.from||0);if(i<0)continue;if(tr.loop)i%=tr.loop;for(const[n0,dg,len]of tr.lines[i]||[])if(n0===s)INST[tr.inst](deg(dg,tr.oct),tt(),len*sc.dt*.95,vv)}}}
+    else if(tr.seq){const n=tr.seq[pr[bar%pr.length]][s];if(n!=null)INST[tr.inst](deg(n,tr.oct),tt(),(tr.len||3)*sc.dt,vv,s===0)}
+    else if(tr.lines){let i=bar-(tr.from||0);if(i<0)continue;if(tr.loop)i%=tr.loop;for(const[n0,dg,len]of tr.lines[i]||[])if(n0===s)INST[tr.inst](deg(dg,tr.oct),tt(),len*sc.dt*.95,vv,s===0)}}}
 function setScore(sc){if(AU.score!==sc){AU.score=sc;AU.step=0}}
 function sched(){const c=AU.ctx;if(!c||c.state!=='running')return;const sc=AU.score;
   if(AU.next<c.currentTime-.5)AU.next=c.currentTime+.05;

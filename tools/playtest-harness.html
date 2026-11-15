@@ -115,17 +115,24 @@
     const amp=(x,f,a,b)=>{let re=0,im=0;const i0=Math.round(a*SR),i1=Math.round(b*SR);for(let i=i0;i<i1;i++){const w=2*Math.PI*f*i/SR;re+=x[i]*Math.cos(w);im+=x[i]*Math.sin(w)}return 2*Math.hypot(re,im)/(i1-i0)},
       dB=(a,b)=>20*Math.log10(a/b);
     {const f=mtof(40),x=await offline(()=>INST.bass(f,.02,.85,1),.4),[h,f1,f2,f3]=[f/2,f,2*f,3*f].map(q=>amp(x,q,.03,.33));
-     ok(dB(h,f1)<-25&&dB(f2,f1)>-12&&dB(f3,f1)>-15,`the bass is a plucked string with no octave below: half its pitch at ${dB(h,f1).toFixed(0)} dB, the second and third harmonics at ${dB(f2,f1).toFixed(0)} and ${dB(f3,f1).toFixed(0)} dB`)}}
+     ok(dB(h,f1)<-25&&dB(f2,f1)>-12&&dB(f3,f1)>-15,`the bass is a plucked string with no octave below: half its pitch at ${dB(h,f1).toFixed(0)} dB, the second and third harmonics at ${dB(f2,f1).toFixed(0)} and ${dB(f3,f1).toFixed(0)} dB`)}
+    /* the lyre is the bright one and the harp the warm one that rings longer; ring is how long a note takes to fall 30 dB, dry */
+    {const cen=(x,a,b)=>{let n=0,d=0;for(let f=50;f<=6000;f+=50){const m=amp(x,f,a,b);n+=f*m*m;d+=m*m}return n/d},
+       ring=x=>{const w=Math.round(SR*.01),e=[];for(let i=0;i+w<=x.length;i+=w){let s=0;for(let j=i;j<i+w;j++)s+=x[j]*x[j];e.push(Math.sqrt(s/w))}const p=Math.max(...e);let k=e.indexOf(p);while(k<e.length&&e[k]>p*.0316)k++;return(k-e.indexOf(p))*.01},
+       dry=k=>offline(()=>{AU.send.disconnect();INST[k](mtof(69),.02,.5,1)},1.5),ly=await dry('lyre'),hp=await dry('harp'),cl=cen(ly,.02,.22),ch=cen(hp,.02,.22),rl=ring(ly),rh=ring(hp),
+       st=asks(()=>INST.lyre(440,.1,.5,1,true)).filter(o=>Math.abs(o.f-880)<.01&&Math.abs(o.t-.125)<1e-6);
+     ok(cl>ch*1.25&&rh>rl+.1&&st.length,`lyre and harp at A4: the lyre brighter (centroid ${cl|0} Hz against ${ch|0}), the harp ringing longer (${rh.toFixed(2)} s to fall 30 dB against ${rl.toFixed(2)}); on a downbeat the lyre strums its octave`)}}
   /* played by hand: the plucked strings and the drums land a few ms off the grid and never in the past, the held voices exactly on it;
      accents follow the beats a track declares, not a square four */
-  {const sc0=AU.score,I0=Object.assign({},INST),D0=Object.assign({},DRUMS),seen=[];let early=0,held=0,moved=0,wide=0;
-    try{for(const k in INST)INST[k]=(f,t,d,v)=>seen.push([k,t,v]);for(const k in DRUMS)DRUMS[k]=(t,v)=>seen.push(['drum',t,v]);
+  {const sc0=AU.score,I0=Object.assign({},INST),D0=Object.assign({},DRUMS),seen=[];let early=0,held=0,moved=0,wide=0,down=0,offbeat=0;
+    try{for(const k in INST)INST[k]=(f,t,d,v,dn)=>seen.push([k,t,v,dn]);for(const k in DRUMS)DRUMS[k]=(t,v)=>seen.push(['drum',t,v]);
       AU.score={dt:.17,root:50,scale:[0,2,4,5,7,9,11],tracks:Object.keys(INST).filter(k=>k!=='drone').map(k=>({inst:k,seq:{A:Array(16).fill(0)}}))
         .concat({inst:'lyre',lines:[[[0,0,2],[5,0,2]]]},{drum:1,seq:{A:'dddddddddddddddd'}},{drone:[0],every:1})};
       for(let r=0;r<12;r++)for(let st=0;st<16;st++)for(const ahead of[0,.1]){seen.length=0;const t=AU.ctx.currentTime+ahead;playStep(st,t);
-        for(const[k,tt]of seen){if(tt<t-(ahead?.0041:0))early++;if(/ney|aulos|drone/.test(k)){if(tt!==t)held++}else{if(tt!==t)moved++;if(ahead&&Math.abs(tt-t)>.0041)wide++}}}}
+        for(const[k,tt,,dn]of seen){if(dn)st?offbeat++:down++;if(tt<t-(ahead?.0041:0))early++;if(/ney|aulos|drone/.test(k)){if(tt!==t)held++}else{if(tt!==t)moved++;if(ahead&&Math.abs(tt-t)>.0041)wide++}}}}
     finally{Object.assign(INST,I0);Object.assign(DRUMS,D0);AU.score=sc0}
     ok(!early&&!held&&moved>100&&!wide,`by hand: ${moved} plucked or struck notes moved up to 4 ms, none into the past; the ney, aulos and drone stay on the grid`);
+    ok(down>0&&!offbeat,'an instrument is told when it plays the first step of a bar, and only then');
     const w=(g,n,...st)=>st.map(s=>accent(s,n,g)).join();
     ok(w([3,3,2],16,0,3,6,8,11,14)==='1.12,1.05,1.05,1.05,1.05,1.05'&&w([3,3,2],16,4,12)==='0.94,0.94'&&w(null,16,4,8,12,3,6)==='1.05,1.05,1.05,0.94,0.94'
       &&w([3,3,4,4,2],16,10,14,8)==='1.05,1.05,0.94'&&w(null,12,4,8,6)==='1.05,1.05,0.94'&&w(null,9,3,6,4)==='1.05,1.05,0.94'&&w(null,10,2,5)==='1.05,0.94'&&w([4,3],14,4,7,11)==='1.05,1.05,1.05',
