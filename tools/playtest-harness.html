@@ -121,7 +121,15 @@
        ring=x=>{const w=Math.round(SR*.01),e=[];for(let i=0;i+w<=x.length;i+=w){let s=0;for(let j=i;j<i+w;j++)s+=x[j]*x[j];e.push(Math.sqrt(s/w))}const p=Math.max(...e);let k=e.indexOf(p);while(k<e.length&&e[k]>p*.0316)k++;return(k-e.indexOf(p))*.01},
        dry=k=>offline(()=>{AU.send.disconnect();INST[k](mtof(69),.02,.5,1)},1.5),ly=await dry('lyre'),hp=await dry('harp'),cl=cen(ly,.02,.22),ch=cen(hp,.02,.22),rl=ring(ly),rh=ring(hp),
        st=asks(()=>INST.lyre(440,.1,.5,1,true)).filter(o=>Math.abs(o.f-880)<.01&&Math.abs(o.t-.125)<1e-6);
-     ok(cl>ch*1.25&&rh>rl+.1&&st.length,`lyre and harp at A4: the lyre brighter (centroid ${cl|0} Hz against ${ch|0}), the harp ringing longer (${rh.toFixed(2)} s to fall 30 dB against ${rl.toFixed(2)}); on a downbeat the lyre strums its octave`)}}
+     ok(cl>ch*1.25&&rh>rl+.1&&st.length,`lyre and harp at A4: the lyre brighter (centroid ${cl|0} Hz against ${ch|0}), the harp ringing longer (${rh.toFixed(2)} s to fall 30 dB against ${rl.toFixed(2)}); on a downbeat the lyre strums its octave`)}
+    /* the drums: the low stroke's fundamental and its second membrane mode, and the cymbal's partials, found by scanning for the loudest bin */
+    {const han=(x,f,a,b)=>{let re=0,im=0;const i0=Math.round(a*SR),n=Math.round(b*SR)-i0;for(let i=0;i<n;i++){const w=2*Math.PI*f*(i0+i)/SR,h=.5-.5*Math.cos(2*Math.PI*i/n);re+=x[i0+i]*h*Math.cos(w);im+=x[i0+i]*h*Math.sin(w)}return 4*Math.hypot(re,im)/n},
+       top=(x,lo,hi,step,a,b)=>{let bf=lo,bm=0;for(let f=lo;f<=hi;f+=step){const m=han(x,f,a,b);if(m>bm){bm=m;bf=f}}return[bf,bm]},
+       dx=await offline(()=>DRUMS.d(.02,1),.3),[f1,m1]=top(dx,40,160,2,.02,.07),[f2,m2]=top(dx,1.35*f1,320,2,.02,.07),
+       bx=await offline(()=>DRUMS.b(.02,1),.3),[c0]=top(bx,2000,3200,5,.02,.22),at=r=>amp(bx,c0*r,.02,.22),
+       ratios=[1.47,2.11,2.89].map(at),whole=[2,3].map(at);
+     ok(f1>=75&&f1<=140&&f2/f1>1.45&&f2/f1<1.75&&dB(m2,m1)>-20,`the low drum stroke sounds at ${f1} Hz, with its second mode at ${(f2/f1).toFixed(2)} times that (${dB(m2,m1).toFixed(0)} dB)`);
+     ok(Math.min(...ratios)>Math.max(...whole)*3,`the finger cymbal rings at ${c0} Hz with partials at 1.47, 2.11 and 2.89 times it, and nothing at twice or three times (${dB(Math.max(...whole),Math.min(...ratios)).toFixed(0)} dB)`)}}
   /* played by hand: the plucked strings and the drums land a few ms off the grid and never in the past, the held voices exactly on it;
      accents follow the beats a track declares, not a square four */
   {const sc0=AU.score,I0=Object.assign({},INST),D0=Object.assign({},DRUMS),seen=[];let early=0,held=0,moved=0,wide=0,down=0,offbeat=0;

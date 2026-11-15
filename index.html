@@ -279,12 +279,17 @@ const INST={
   bass(f,t,d,v){d=Math.max(.3,d);tone({f,t,d,type:'sawtooth',v:v*.24,a:.004,lp:[[f*8,0],[f*3,d*.6]],dest:AU.mus});pluck(f,t,v*.12,6,.015)},
   drone(f,t,d,v){tone({f,t,d,type:'triangle',v:v*.16,a:.6,sus:1,dest:AU.mus});tone({f:f*1.4983,t,d,type:'sine',v:v*.09,a:.9,sus:1,dest:AU.mus})}};
 const DRUMS={
-  d(t,v){tone({f:95,to:48,t,d:.22,type:'sine',v:v*.22,dest:AU.mus})},                    /* doum: the deep stroke of a frame drum */
+  /* doum: the deep stroke of a frame drum held in the hand, a membrane falling from 130 to 76 Hz, its second mode at 1.59 times that,
+     and the slap of the palm */
+  d(t,v){tone({f:130,to:76,t,d:.3,type:'sine',v:v*.22,dest:AU.mus});tone({f:207,to:121,t,d:.12,type:'sine',v:v*.08,dest:AU.mus});noise({t,d:.03,v:v*.12,f:550,q:1.4,dest:AU.mus})},
   t(t,v){noise({t,d:.06,v:v*.07,f:2600,q:2,dest:AU.mus})},                               /* tek: the rim */
   k(t,v){noise({t,d:.03,v:v*.04,f:2600,q:2,dest:AU.mus})},                               /* ka: a lighter rim stroke */
   s(t,v){noise({t,d:.05,v:v*.035,f:6500,q:.8,type:'highpass',dest:AU.mus})},             /* shaker */
   c(t,v){noise({t,d:.09,v:v*.08,f:1500,q:1.4,dest:AU.mus});noise({t:t+.012,d:.07,v:v*.05,f:1700,q:1.4,dest:AU.mus})},   /* hand clap */
-  b(t,v){tone({f:2637,t,d:.6,type:'sine',v:v*.03,dest:AU.mus,echo:1});tone({f:3520,t,d:.3,type:'sine',v:v*.012,dest:AU.mus})}};   /* finger cymbal */
+  /* finger cymbal: struck metal, so its partials are not whole multiples of the lowest (1 : 1.47 : 2.11 : 2.89); a twin 6 Hz above
+     the lowest beats against it, a short shimmer */
+  b(t,v){[[1,.024,.6],[1.47,.014,.4],[2.11,.01,.3],[2.89,.007,.2]].forEach(([r,l,d],i)=>tone({f:2637*r,t,d,type:'sine',v:v*l,dest:AU.mus,echo:!i}));
+    tone({f:2643,t,d:.45,type:'sine',v:v*.01,dest:AU.mus})}};
 /* The plucked strings and the drums are played by hand: the first note of a bar is a little louder, a note that starts a beat (see
    group) a little louder too, any other a little softer, and each lands up to 4 ms off the grid, never before now. The held voices
    (ney, aulos, drone) play as written. accent gives the weight of step s in a bar of n steps grouped by g. */
