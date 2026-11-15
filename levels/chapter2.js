@@ -385,10 +385,10 @@ ROOMS.upper={walk:[24,300,112,138],mood:'calm',amb:{birds:.25,crowd:.12},
 CE.hs={name:'Cephas',actor:CE,look:'Cephas, whom many call Peter. A fisherman from Galilee, and an apostle of the Lord.',
   show:{awl:"A tentmaker's awl. I worked with nets once, until the Lord called me to fish for men. (Matthew 4:18, 19)",
     thread:'Good linen. We mended our nets with cord much like it.',
-    knife:'Put it away, brother. I once drew a sword in his name, and he told me to put it into its sheath. (John 18:10, 11)',
+    knife:'Put it away, brother. I once drew a sword for him, and he told me to put it into its sheath. (John 18:10, 11)',
     tablets:'Write down what I tell you of the Lord, Saul. My memory is not as young as it was.',
     '*':'Keep it. A guest brings nothing but himself.'},
-  ask:{barnabas:['Then you have a good friend, Saul. He sold a field and laid the money at our feet. (Acts 4:36, 37)','When Barnabas speaks for a man, we listen.']},
+  ask:{barnabas:['Then you have a good friend, Saul. He sold a piece of land and laid the money at our feet. (Acts 4:36, 37)','When Barnabas speaks for a man, we listen.']},
   talk:()=>talkTree([
     {q:'Tell me about the Lord.',a:async()=>{await say(CE,'Fifteen days will not be enough, Saul. But sit, and I will begin where he found me:');await say(CE,'by the Sea of Galilee, casting a net into the sea.')}},
     {q:'The disciples in this city fear me.',a:()=>say(CE,'Fear fades when people see fruit. Give them time, and give them reasons.')},
@@ -505,7 +505,7 @@ async function dispute(){DS.dir=1;AR.dir=1;
   await say(AR,'So answer us from the Scriptures, Saul, if you can.');
   await say(P,'Ask, and I will answer from the Scriptures.');
   await round(DS,'The Law says that the one hung up on a stake is something accursed of God. (Deuteronomy 21:22, 23) How can an accursed man be the Christ?','isa53',
-    ['Isaiah wrote of the servant of Jehovah: "He was pierced for our transgression; He was crushed for our errors." (Isaiah 53:5)','The curse he bore was not his own. He bore it for us.'],
+    ['Isaiah wrote of the servant of Jehovah: "He was pierced for our transgression; He was crushed for our errors." (Isaiah 53:5)','The curse he bore was not his own. He bore it for us. (Galatians 3:13)'],
     ['Isaiah...','I have read that passage many times. I never once read it with a stake in mind.'],
     {deut:'A prophet like Moses, yes. Moses was not hung on a stake, Saul.',ps16:'The Grave? I asked you about the stake, not the tomb.',
       prov16:'Jehovah directs our steps, and the Law directs our judgment. The Law calls such a man accursed.',
@@ -569,7 +569,7 @@ async function finale2(){
   await narr('So the brothers sent him off to Tarsus. (Acts 9:30)',{dur:6000});
   await narr('The congregation throughout Judea, Galilee and Samaria then entered into a period of peace, and it was built up. (Acts 9:31)',{dur:8000});
   await sail;await journey();await narr('Years would pass in Tarsus. Then, one day, a friend would come looking for him. (Acts 11:25)',{dur:6500});
-  endScreen({title:'A Friend in Jerusalem',text:'Paul forced no door. A friend spoke for him, and honest words and honest work did the rest.',
+  endScreen({title:'A Friend in Jerusalem',text:'Saul forced no door. A friend spoke for him, and honest words and honest work did the rest.',
     based:'Based on Acts 9:26-31; 22:17-21 and Galatians 1:18, 19. Supporting characters and dialogue are imaginative; the events are from the Scriptures.',
     go:'Click to continue to Chapter Three',code:['Chapter Three code: {code}',codeOf(3,0)]});
   await wait(1500);ov.onclick=()=>startChapter(3);await new Promise(()=>{})}

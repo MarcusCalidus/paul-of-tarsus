@@ -628,7 +628,7 @@ TI.hs={name:'Timothy',actor:TI,
         await say(BN,'Peace, Timothy. Barnabas, of Cyprus, and my friend is Paul, of Tarsus. Have you a synagogue here?');
         return say(TI,'No, sir. There are too few of us. My mother and my grandmother taught me the holy writings at home. Most people here speak Lycaonian, and Greek only to strangers.')}
       if(inLys()&&F.healed)return hear(TI);
-      return say(TI,inOut()?'He stood up, sir. I saw him stand up.':night()?'Is it true that you sold a field, sir, and gave away all of the price?':F.back?'You came back, sir. Both of you.':'Everybody comes to the well, sir. If you have something to say to Lystra, say it there.')},
+      return say(TI,inOut()?'He stood up, sir. I saw him stand up.':night()?'Is it true that you sold a piece of land, sir, and gave away all of the price?':F.back?'You came back, sir. Both of you.':'Everybody comes to the well, sir. If you have something to say to Lystra, say it there.')},
     show:{staff6:'Did you really carry a rope across a river on that, sir?','*':'Is it from Cyprus, sir?'}}}};
 EN.hs={name:'Eunice',actor:EN,
   look:()=>say(P,inOut()?'Eunice. She came out past the gate of her own town to stand over a stranger\'s body.':night()?'Eunice. She has given us her own supper, and she will not hear of thanks.':F.back?(F.strong?'Eunice. Her faith is without hypocrisy: what she is by lamplight, she is in the street.':'Eunice. These months have cost her something, and she is still here.')
