@@ -164,6 +164,31 @@
         N=mtof(62),A=mtof(69),fall=y=>dB(lv(y,N,sw+.5,sw+.7),lv(y,N,1.1,1.35)),rise=y=>lv(y,A,sw+.02,sw+.12)/lv(y,A,sw+.8,sw+1),
         fr=fall(rm),fd=fall(dr),rr=rise(rm),rd=rise(dr);
       ok(Math.abs(fr-fd)<3&&fr<-10&&rr<=rd*1.25,`and in the room: the leaving ney falls ${(-fr).toFixed(0)} dB in the room as it falls ${(-fd).toFixed(0)} dB dry; the joining aulos is at ${(rr*100).toFixed(0)}% of its level in the room after the first step, ${(rd*100).toFixed(0)}% dry`)}
+     /* voices a chapter owns: a score's own instrument and drum stroke play in place of the engine's and are gone with that score; one that
+        says hand:true is played by hand and one that does not is not; and its notes fade with their track, dry and in the room. A chapter's
+        own call sounds while that chapter is played and not in another, and its own bed comes up in its room and falls silent when another
+        chapter is played */
+     {const I0=Object.assign({},INST),D0=Object.assign({},DRUMS),sc0=AU.score,m0=AU.mood,got=[],dt=.17,base={dt,root:50,scale:[0,2,4,5,7,9,11]},
+        tracks=[{inst:'oud',seq:{A:[0,null,null,null,2,null,null,null,4,null,null,null,2,null,null,null]}},{drum:1,seq:{A:'d...d...d...d...'}}];
+      let a,b,moved=0,held=0;
+      try{INST.oud=()=>got.push('engine oud');DRUMS.d=()=>got.push('engine d');
+        const run=sc=>{got.length=0;AU.score=sc;AU.mood='calm';for(let st=0;st<16;st++)playStep(st,1000+st*dt);return[...new Set(got)].sort().join()};
+        a=run(Object.assign({inst:{oud:()=>got.push('own oud')},drums:{d:()=>got.push('own d')},tracks},base));b=run(Object.assign({tracks},base));
+        const tk=[],sc={inst:{buzz:Object.assign((f,t)=>tk.push(['buzz',t]),{hand:true}),hum:(f,t)=>tk.push(['hum',t])},tracks:[{inst:'buzz',seq:{A:Array(16).fill(0)}},{inst:'hum',seq:{A:Array(16).fill(0)}}]};
+        AU.score=Object.assign(sc,base);for(let r=0;r<6;r++)for(let st=0;st<16;st++){const t=AU.ctx.currentTime+.1;tk.length=0;playStep(st,t);for(const[k,tt]of tk)k==='buzz'?tt!==t&&moved++:tt!==t&&held++}}
+      finally{Object.assign(INST,I0);Object.assign(DRUMS,D0);AU.score=sc0;AU.mood=m0}
+      const sw=.05+8*dt,reed=(f,t,d,v)=>tone({f,t,d,type:'square',v:v*.04,a:.02,sus:1,dest:AU.out,echo:1}),
+        sc={...base,inst:{reed},tracks:[{inst:'reed',oct:12,lines:[[[0,0,16]]],moods:['a']}]},
+        run=room=>offline(off=>{AU.master.disconnect();AU.send.disconnect();if(room)AU.send.connect(off.destination);else AU.master.connect(off.destination);
+          const s0=AU.score;AU.score=sc;try{for(let st=0;st<16;st++){AU.mood=st<8?'a':'b';playStep(st,.05+st*dt)}}finally{AU.score=s0;AU.mood=m0}},3),
+        lv=(y,f,a,b)=>{let re=0,im=0;const i0=Math.round(a*SR),n=Math.round(b*SR)-i0;for(let i=0;i<n;i++){const w=2*Math.PI*f*(i0+i)/SR,h=.5-.5*Math.cos(2*Math.PI*i/n);re+=y[i0+i]*h*Math.cos(w);im+=y[i0+i]*h*Math.sin(w)}return 4*Math.hypot(re,im)/n},
+        N=mtof(62),fall=y=>dB(lv(y,N,sw+.5,sw+.7),lv(y,N,1.1,1.35)),fr=fall(await run(1)),fd=fall(await run(0));
+      const hits=[],amb0=AU.amb,ch0=G.ch;CHAP[99]={calls:{tick:[0,0,()=>hits.push(G.ch)]},beds:{hum:{type:'bandpass',f:300,q:1,lfo:.2,depth:.3,v:.2}}};let one,other,bedUp,bedDown;
+      try{AU.amb={tick:1,hum:.7};G.ch=99;ambience(AU.ctx.currentTime);one=hits.length;bedUp=AU.layers['99:hum']&&AU.layers['99:hum'].v===.7&&!AU.layers.hum;
+        G.ch=ch0;ambience(AU.ctx.currentTime+1);other=hits.length-one;bedDown=AU.layers['99:hum'].v===0}
+      finally{G.ch=ch0;AU.amb=amb0;delete CHAP[99];const Ly=AU.layers||{};for(const id of['99:tick','99:hum'])if(Ly[id]){Ly[id].g.disconnect();if(Ly[id].s)Ly[id].s.stop();delete Ly[id]}}
+      ok(a==='own d,own oud'&&b==='engine d,engine oud'&&moved>20&&!held&&fr<-20&&Math.abs(fr-fd)<3&&one===1&&other===0&&bedUp&&bedDown,
+        `voices a chapter owns: a score's own instrument and drum stroke play instead of the engine's, and only in that score; one marked hand:true is moved off the grid (${moved} notes) and one that is not stays on it; its notes fade with their track (${(-fr).toFixed(0)} dB in the room, ${(-fd).toFixed(0)} dB dry); a chapter's own call sounds while it is played (${one}) and not in another (${other}), and its own bed comes up (${!!bedUp}) and falls silent with another chapter (${!!bedDown})`)}
      ok(r[1]>1.1&&r[1]<1.45&&Math.abs(r[2]-1.5)<.1,`a room's space sets how much room there is, and it glides there: a room of 1.5 brings the room up by ${r.map(v=>v.toFixed(2)).join(', ')} over two seconds`)}}
   /* played by hand: the plucked strings and the drums land a few ms off the grid and never in the past, the held voices exactly on it;
      accents follow the beats a track declares, not a square four */

@@ -291,6 +291,9 @@ function pluck(f,t,v,b,d){noise({t,d:d||.012,v,f:Math.min(f*b,6000),q:1.6,dest:A
      {inst, prog:'AABA', seq:{A:[a scale degree per step, null = rest]}} a pattern per bar, chosen by prog
      {inst, from: bar, loop: bars, lines:[[[step,degree,length],..] per bar]}  a melody
    oct shifts a track by semitones, vol scales it, len sets note length in steps.
+   A score may bring its own voices, which win over the engine's of the same name for that score only: inst:{name(f,t,d,v,down){..}},
+   drums:{x(t,v){..}}. They write to AU.out (the lyre-like to AU.body) and send to the room with echo:1, so the track's fade covers them;
+   an instrument with hand:true is played by hand like the engine's plucked strings (drum strokes always are).
    group says how the steps of a bar fall into beats, e.g. group:[3,3,2] for 3+3+2 (repeated to fill the bar); a track's group wins
    over the score's, and without either the beats are fours (threes or twos for a bar that fours do not divide). */
 const INST={
@@ -348,11 +351,11 @@ function playStep(st,t){const sc=AU.score;if(!sc)return;const N=sc.steps||16,bar
     else if(want!==x.on)for(const p of[x.g.gain,x.r.gain])p.setTargetAtTime(want?1:0,t,FADE*sc.dt);
     const join=want&&x.on===false;x.on=want;x.off=want?0:x.off+1;if(!want&&x.off>FADEN)return;
     AU.out=x.g;AU.toRoom=x.r;AU.body=x.body||body;
-    const v=tr.vol==null?1:tr.vol,pr=tr.prog||'A',hand=tr.drum||LOOSE.has(tr.inst),tt=()=>hand?loose(t):t,vv=hand?v*accent(s,N,tr.group||sc.group):v;
-    if(tr.drone){const ev=tr.every||2*N;if(want&&(st%ev===0||join))for(const n of tr.drone)INST.drone(mtof(sc.root+n),t,(ev-st%ev)*sc.dt+.4,v)}
-    else if(tr.drum){const ch=tr.seq[pr[bar%pr.length]][s];if(ch&&DRUMS[ch])DRUMS[ch](tt(),vv)}
-    else if(tr.seq){const n=tr.seq[pr[bar%pr.length]][s];if(n!=null)INST[tr.inst](deg(n,tr.oct),tt(),(tr.len||3)*sc.dt,vv,s===0)}
-    else if(tr.lines){let i=bar-(tr.from||0);if(i<0)return;if(tr.loop)i%=tr.loop;for(const[n0,dg,len]of tr.lines[i]||[])if(n0===s)INST[tr.inst](deg(dg,tr.oct),tt(),len*sc.dt*.95,vv,s===0)}})}
+    const own=sc.inst&&sc.inst[tr.inst],play=own||INST[tr.inst],v=tr.vol==null?1:tr.vol,pr=tr.prog||'A',hand=tr.drum||(own?!!own.hand:LOOSE.has(tr.inst)),tt=()=>hand?loose(t):t,vv=hand?v*accent(s,N,tr.group||sc.group):v;
+    if(tr.drone){const ev=tr.every||2*N;if(want&&(st%ev===0||join))for(const n of tr.drone)(sc.inst&&sc.inst.drone||INST.drone)(mtof(sc.root+n),t,(ev-st%ev)*sc.dt+.4,v)}
+    else if(tr.drum){const ch=tr.seq[pr[bar%pr.length]][s],hit=ch&&(sc.drums&&sc.drums[ch]||DRUMS[ch]);if(hit)hit(tt(),vv)}
+    else if(tr.seq){const n=tr.seq[pr[bar%pr.length]][s];if(n!=null)play(deg(n,tr.oct),tt(),(tr.len||3)*sc.dt,vv,s===0)}
+    else if(tr.lines){let i=bar-(tr.from||0);if(i<0)return;if(tr.loop)i%=tr.loop;for(const[n0,dg,len]of tr.lines[i]||[])if(n0===s)play(deg(dg,tr.oct),tt(),len*sc.dt*.95,vv,s===0)}})}
   finally{AU.out=out;AU.toRoom=room;AU.body=body}}
 /* loopOf: how many steps a score plays before it starts again */
 const loopOf=sc=>(sc.bars||16)*(sc.steps||16);
@@ -362,7 +365,9 @@ function sched(){const c=AU.ctx;if(!c||c.state!=='running')return;const sc=AU.sc
   while(sc&&AU.next<c.currentTime+.25){playStep(AU.step,AU.next);AU.next+=sc.dt;AU.step=(AU.step+1)%loopOf(sc)}
   ambience(c.currentTime)}
 /* --- ambience: each room names the sounds around it and how loud they are, e.g. amb:{crickets:.6,wind:.3}.
-   Beds are filtered noise that runs all the time; calls are short sounds scattered at random intervals. --- */
+   Beds are filtered noise that runs all the time; calls are short sounds scattered at random intervals. A chapter may bring its own,
+   beds:{..} and calls:{..} in what its level file returns, made like these and named unlike them; they are heard only while that
+   chapter is the one being played (on its map and its end too), and fade out when another chapter begins. --- */
 const BEDS={wind:{type:'lowpass',f:420,q:.6,lfo:.13,depth:.5,v:.5},waves:{type:'lowpass',f:760,q:.5,lfo:.1,depth:.8,v:.55},fountain:{type:'highpass',f:2200,q:.7,lfo:2.1,depth:.12,v:.16},
   crowd:{type:'bandpass',f:520,q:.7,lfo:.37,depth:.45,v:.3},leaves:{type:'bandpass',f:3400,q:.6,lfo:.21,depth:.7,v:.14}};
 const CALLS={
@@ -377,14 +382,16 @@ const CALLS={
 /* space: how much room the place has, 1 by default. A room may say (space: .5 on an open road, 1.5 in a synagogue); a scene that covers
    the room (the map, the title, a cutscene) has the default. The amount glides to the new value over a second or so, never jumps. */
 function roomSpace(t){const sp=!G.scene&&ROOMS[G.room]&&ROOMS[G.room].space||1;if(AU.space!==sp){AU.space=sp;AU.wet.gain.setTargetAtTime(ROOM*sp,t,.35)}}
-function ambience(t){const c=AU.ctx,want=(typeof AU.amb==='function'?AU.amb():AU.amb)||{},L=AU.layers||(AU.layers={});roomSpace(t);
-  for(const k in BEDS){const w=want[k]||0;let l=L[k];if(!l&&!w)continue;
-    if(!l){const b=BEDS[k],s=c.createBufferSource(),f=c.createBiquadFilter(),sw=c.createGain(),g=c.createGain(),lfo=c.createOscillator(),lg0=c.createGain();
+function ambience(t){const c=AU.ctx,want=(typeof AU.amb==='function'?AU.amb():AU.amb)||{},L=AU.layers||(AU.layers={}),ch=CHAP[G.ch]||{},seen=new Set(),
+    mine=(eng,own)=>Object.keys(eng).map(k=>[k,k,eng[k]]).concat(Object.keys(own||{}).map(k=>[G.ch+':'+k,k,own[k]]));roomSpace(t);
+  for(const[id,k,b]of mine(BEDS,ch.beds)){seen.add(id);const w=want[k]||0;let l=L[id];if(!l&&!w)continue;
+    if(!l){const s=c.createBufferSource(),f=c.createBiquadFilter(),sw=c.createGain(),g=c.createGain(),lfo=c.createOscillator(),lg0=c.createGain();
       s.buffer=AU.nbuf;s.loop=true;f.type=b.type;f.frequency.value=b.f;f.Q.value=b.q;sw.gain.value=b.v*(1-b.depth/2);lfo.frequency.value=b.lfo;lg0.gain.value=b.v*b.depth/2;lfo.connect(lg0);lg0.connect(sw.gain);
-      g.gain.value=0;s.connect(f);f.connect(sw);sw.connect(g);g.connect(AU.ambG);s.start(0,Math.random());lfo.start();l=L[k]={g,v:0}}
+      g.gain.value=0;s.connect(f);f.connect(sw);sw.connect(g);g.connect(AU.ambG);s.start(0,Math.random());lfo.start();l=L[id]={g,v:0,s}}
     if(l.v!==w){l.v=w;l.g.gain.setTargetAtTime(w,t,.7)}}
-  for(const k in CALLS){const w=want[k]||0,[lo,hi,fn]=CALLS[k];let l=L[k];if(!l){if(!w)continue;const g=c.createGain();g.gain.value=w;g.connect(AU.ambG);l=L[k]={g,v:w,next:t+Math.random()*hi}}
-    if(l.v!==w){l.v=w;l.g.gain.setTargetAtTime(w,t,.5)}if(w&&t>=l.next){fn(t+.02,l.g);l.next=t+lo+Math.random()*(hi-lo)}}}
+  for(const[id,k,[lo,hi,fn]]of mine(CALLS,ch.calls)){seen.add(id);const w=want[k]||0;let l=L[id];if(!l){if(!w)continue;const g=c.createGain();g.gain.value=w;g.connect(AU.ambG);l=L[id]={g,v:w,next:t+Math.random()*hi}}
+    if(l.v!==w){l.v=w;l.g.gain.setTargetAtTime(w,t,.5)}if(w&&t>=l.next){fn(t+.02,l.g);l.next=t+lo+Math.random()*(hi-lo)}}
+  for(const id in L)if(!seen.has(id)&&L[id].v){L[id].v=0;L[id].g.gain.setTargetAtTime(0,t,.5)}}
 /* --- sound effects --- */
 const SFX={
   click(){tone({f:620,d:.04,type:'square',v:.06})},
