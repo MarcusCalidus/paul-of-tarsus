@@ -89,6 +89,7 @@ TEXTS('de','main',{
   "Prayers for wisdom: {n}":"Gebete um Weisheit: {n}",
   "CODE {code}":"CODE {code}",
   "ENTER CODE":"CODE EINGEBEN",
+  "NAMES":"NAMEN",
   "That code is not valid. Please check each letter and number.":"Dieser Code ist ungültig. Bitte prüfe jeden Buchstaben und jede Ziffer.",
   "SAFE POINT":"SPEICHERPUNKT",
   "Your code for this exact point in the story:":"Dein Code für genau diese Stelle der Geschichte:",
