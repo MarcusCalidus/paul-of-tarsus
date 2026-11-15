@@ -268,7 +268,9 @@ const INST={
   /* the aulos: each note scoops up 15 cents onto its pitch, and its reed opens bright on the attack and settles to 1900 Hz */
   aulos(f,t,d,v){const lp=[[f*1.5,0],[Math.max(3600,f*5),.03],[1900,.25]],bend=[-15,.025];
     tone({f,t,d,type:'sawtooth',v:v*.05,a:.03,sus:1,vib:3,bend,lp,lpq:1.2,dest:AU.mus,echo:1});tone({f:f*1.003,t,d,type:'square',v:v*.012,a:.03,sus:1,bend,lp,lpq:1.2,dest:AU.mus})},
-  bass(f,t,d,v){tone({f,t,d:Math.max(.3,d),type:'triangle',v:v*.17,dest:AU.mus});tone({f:f/2,t,d:Math.max(.3,d),type:'sine',v:v*.08,dest:AU.mus})},
+  /* the bass: a low plucked string. A sawtooth gives it every harmonic; its lowpass closes from the eighth harmonic to the third as the
+     note dies away over its length, so the second and third stay clear and the top dulls first. No octave below. */
+  bass(f,t,d,v){d=Math.max(.3,d);tone({f,t,d,type:'sawtooth',v:v*.24,a:.004,lp:[[f*8,0],[f*3,d*.6]],dest:AU.mus});pluck(f,t,v*.12,6,.015)},
   drone(f,t,d,v){tone({f,t,d,type:'triangle',v:v*.16,a:.6,sus:1,dest:AU.mus});tone({f:f*1.4983,t,d,type:'sine',v:v*.09,a:.9,sus:1,dest:AU.mus})}};
 const DRUMS={
   d(t,v){tone({f:95,to:48,t,d:.22,type:'sine',v:v*.22,dest:AU.mus})},                    /* doum: the deep stroke of a frame drum */
