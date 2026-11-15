@@ -342,7 +342,7 @@ async function leave3(){
   if(!F.sold){await say(P,'The road to Antioch. And I will take it.');return say(P,"But not with a promise left unfinished behind me. First, Kleon's tent.",TH)}
   await say(BN,'Your word is kept, Saul. Now will you come?');
   await say(P,'I will. My tools, and my last bolt of goat-hair cloth: a tentmaker does not travel empty-handed.');
-  await say(P,'Tarsus is no obscure city. But my road does not end here.');
+  await say(P,'Tarsus is no obscure city. (Acts 21:39) But my road does not end here.');
   walk(BN,276,116);await walk(P,292,112);await fade(1,700);const o={dur:7500};
   await narr('After he found him, Barnabas brought him to Antioch in Syria. (Acts 11:25, 26)',o);
   await narr('For a whole year they assembled with the congregation there and taught quite a crowd. (Acts 11:26)',o);
@@ -656,7 +656,7 @@ async function finale3(){playAs(P);AU.mood='hope';await wait(400);
   await trek;
   await narr('After fully carrying out the relief work in Jerusalem, Barnabas and Saul returned and took along with them John, the one also called Mark. (Acts 12:25)',{dur:9000});
   await journey();await narr('And in Antioch, a far longer road was about to open. (Acts 13:1-3)',{dur:5500});
-  endScreen({title:'Called to Antioch',text:'Paul kept his word, worked with his hands, and helped a sister find what she had to give. The gift was carried honestly, in the sight of Jehovah and of men.',
+  endScreen({title:'Called to Antioch',text:'Saul kept his word, worked with his hands, and helped a sister find what she had to give. The gift was carried honestly, in the sight of Jehovah and of men.',
     based:'Based on Acts 11:19-30; 12:25 and 2 Corinthians 8:12, 20, 21. Supporting characters and dialogue are imaginative; the events are from the Scriptures.',
     go:'Click to continue to Chapter Four',code:['Chapter Four code: {code}',codeOf(4,0)]});
   await wait(1500);ov.onclick=()=>startChapter(4);await new Promise(()=>{})}
