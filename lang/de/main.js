@@ -124,6 +124,7 @@ TEXTS('de','main',{
   "CYPRUS":"ZYPERN",
   "PISIDIA":"PISIDIEN",
   "GALATIA":"GALATIEN",
+  "PAMPHYLIA":"PAMPHYLIEN",
   "THE GREAT SEA":"DAS GROSSE MEER",
   "Click a place to travel there. Esc to stay.":"Ort anklicken, um zu reisen. Esc: bleiben."
 });

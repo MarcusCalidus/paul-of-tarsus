@@ -220,9 +220,16 @@ ART.synp={w:320,
   for(const x of[112,202]){g.fillStyle=lg(g,x,0,x+8,0,['#bdb39a','#f2ead2','#d8ceb4','#a49c88']);g.fillRect(x,12,8,92);R(g,x-1.4,10,10.8,3,'#f4ecd6');R(g,x-1.4,100,10.8,4,'#cfc5aa');R(g,x-1.4,100,10.8,.6,'#f4ecd6')}
   for(const x of[92,216]){poly(g,[x,58,x+12,58,x+12,59.6,x+9,63.4,x+3,63.4,x,59.6],'#bdb196');R(g,x,58,12,.6,'#f0e6cc');poly(g,[x+3,63.4,x+9,63.4,x+8,64.6,x+4,64.6],'#9a917c');
     R(g,x+3,55.6,6,2.4,'#b8733c');R(g,x+3,55.6,6,.6,'#e0a064');R(g,x+8.6,54.6,2,1.4,'#b8733c')}
-  /* the chest of the scrolls in its recess, behind a hanging */
-  arch(g,27,40,40,64,tint(W,-.34));arch(g,29,42,36,62,'#3a2c22');wood(g,33,62,28,40,'#6a4a2c',1);boards(g,35.4,67,23.2,31,5.8,'#8a6238',r);R(g,46.6,67,.8,31,'#3a2414');R(g,33,98,28,4,'#5a3e22');R(g,33,98,28,.6,'#9a7040');
-  R(g,44.4,81,1.6,1.6,'#d8b860');R(g,48,81,1.6,1.6,'#d8b860');for(let i=0;i<6;i++){const x=29+i*6,c=i%2?'#3f5a7a':'#4a6a8c';g.fillStyle=lg(g,0,44,0,64,[tint(c,.14),c,tint(c,-.3)]);g.fillRect(x,44,6,16+(i%2)*1.4+(i===0||i===5?5:0))}R(g,28,43,38,1.6,'#8a6a2a');R(g,28,43,38,.5,'#d8b860');
+  /* the chest of the scrolls. It is no part of the building: a chest that is carried in and put in position for worship (Insight,
+     "Synagogue"). So it stands free on a low stand against the wall, a ring at either end to carry it by (square, so that no small round shape turns into a plus), and a blue cloth laid over its lid.
+     Nothing crosses it: the planks run its whole length, the cloth covers its whole lid, and the stand has no rail between its legs. */
+  shade(g,[29,104,65,104,72,109,36,109],SH,.5);R(g,31,84,33,20,'rgba(40,30,60,.22)');
+  wood(g,33.6,87,3,17,'#5a4226',1);wood(g,57.4,87,3,17,'#5a4226',1);wood(g,31,84.6,32,3,'#7a5c36');R(g,31,84.6,32,.6,'#b89460');R(g,31,87,32,.6,'#3e2c18');
+  g.fillStyle=lg(g,0,68,0,84.6,['#96703e','#7e5a30','#5e4022']);g.fillRect(33,68,28,16.6);inRect(g,33,68,28,16.6,()=>tex(g,'wood',.5,33,68,28,16.6,'overlay',.5));
+  for(const y of[73.6,79])R(g,33,y,28,.6,'#3a2414');R(g,33,68,1,16.6,'#a88250');R(g,60,68,1,16.6,'#4a3220');
+  for(const x of[36,55]){R(g,x-.5,75,4,3.5,'#3a2414');R(g,x,74.5,3,3,'#d8b860');R(g,x,74.5,3,.5,'#f0d890');R(g,x+1,75.5,1,1,'#5e4022')}
+  poly(g,[31.4,71,31.8,66.6,35,64,47,63.2,59,64,62.2,66.6,62.6,71,58,70,52.6,71.4,47,70,41.4,71.4,36,70]);g.fillStyle=lg(g,0,63,0,71.4,['#6c8cae','#4a6a8c','#34506e']);g.fill();
+  stroke(g,[32,66.6,35,64.2,47,63.5,59,64.2,62,66.6],'#9cb8d4',.6);
   /* benches of stone in two steps along the wall, where the people sit */
   const bench=(x,w,y)=>{R(g,x,y+3,w,104-y-3,'rgba(40,30,60,.25)');R(g,x,y,w,3.4,ST);R(g,x,y,w,.7,'#f0e6cc');R(g,x,y+3.4,w,104-y-3.4,'#b4a88c');R(g,x,y+3.4,w,1,'rgba(60,50,80,.35)')};
   bench(214,66,80);bench(206,74,90);
@@ -252,7 +259,7 @@ ART.border={w:320,
   ashlar(g,4,62,112,14,'#e2d6b8',r,{bw:9,bh:4,v:.07,t:.25});for(let i=4;i<116;i+=7)R(g,i,59,4,3.4,'#e2d6b8');
   R(g,78,54,14,22,'#ece2c6');for(let i=78;i<92;i+=5)R(g,i,51,3,3.4,'#ece2c6');R(g,89,54,3,22,'#bcb8c0');arch(g,81.6,64,6.8,12,'#4a4050');
   for(const[hx,hy,hw,hh]of[[12,54,16,8],[36,50,18,12],[58,55,12,7]]){R(g,hx,hy,hw,hh,'#ece2c6');R(g,hx,hy-2,hw,2.2,'#b8603c');R(g,hx+hw-3,hy,3,hh,'#bcb8c0')}
-  /* the high plain: stubble and fallow, a line of poplars along a stream */
+  /* the high plain in spring: fields and fallow, a line of poplars along a stream */
   g.fillStyle=lg(g,0,76,0,108,['#c8c08c','#cdbf7e','#c4b470']);g.fillRect(0,76,320,32);tex(g,'mott',.5,0,76,320,32,'overlay',1);
   for(let i=0;i<9;i++){const fx=r()*300,fy=79+r()*20;poly(g,[fx,fy,fx+34,fy-1.6,fx+42,fy+7,fx+4,fy+9],i%3===0?'rgba(150,120,70,.32)':i%3===1?'rgba(226,206,120,.4)':'rgba(120,150,84,.3)')}
   for(let i=0;i<9;i++)cypress(g,206+i*9+r()*3,92-i*.5,12+r()*5,'#5a7a4a');stroke(g,[198,94,242,91,292,89],'rgba(120,170,200,.6)',1);
@@ -420,7 +427,7 @@ const TABLETS={
     {name:'Barnabas',note:()=>inAnt()||inOut()?'Named first when we were sent out. He lets me take the lead, and has never once made me feel it.':'A Levite of Cyprus, the Son of Comfort. On a mountain road he is worth two men.'},
     {name:'John Mark',note:()=>F.markTold?'He has left us, and returned to Jerusalem. He gave no reason, and he forgot nothing.':'The cousin of Barnabas, our attendant. He has been very quiet since we landed.',if:()=>inPerga()||inFord()},
     {name:'Papias',note:()=>F.pap?'A drover. He had never set foot in a synagogue. Now he carries the word along every road he walks.':'A drover of the mountain road, with salt fish for Antioch. No one climbs to the pass alone, he says.',if:()=>F.metPap},
-    {name:'Eumenes',note:()=>F.eum?'No longer at the back. He brings the whole wool market with him.':'A wool merchant of Antioch, a Greek who fears God. He stands at the back of the synagogue.',if:()=>F.metEum},
+    {name:'Eumenes',note:()=>F.eum?'No longer by the door. He brings the whole wool market with him.':'A wool merchant of Antioch, a Greek who fears God. In the synagogue he keeps to the place by the door.',if:()=>F.metEum},
     {name:'Joel',note:()=>F.joel?'He has opened his house to us, and will not shut it again whatever it costs him.':'A Jew of Antioch. We lodge under his roof, and I work at his door.',if:()=>F.spoke1},
     {name:'Hanan',note:()=>F.out?'He asked us to speak. A week later he could not bear to see who had come to listen.':'A presiding officer of the synagogue in Antioch. He asked us to speak.',if:()=>F.spoke1},
     {name:'Ammia',note:'A prominent woman of Antioch who fears God. Her husband is one of the principal men of the city.',if:()=>F.spoke1}],
@@ -535,7 +542,7 @@ PA.hs={name:'Papias',actor:PA,
     show:{staff5:'Olive wood. It will see you over the pass.','*':'It is your load, friend, not mine.'}}}};
 EU.hs={name:'Eumenes',actor:EU,
   look:()=>say(P,inPerga()?'A traveler of some means, in a Greek mantle. He is going up with the pack train as we are.':inFord()?'Eumenes. He has not said a word since he saw the river.'
-    :G.room==='synp'?'Eumenes. He stands by the door with the others who fear God, where he has stood for years.':inOut()?'Eumenes. He walked out here beside us, in front of the whole city.'
+    :G.room==='synp'?'Eumenes, in the place nearest the door. He stands there like a man who has had it for years.':inOut()?'Eumenes. He walked out here beside us, in front of the whole city.'
     :F.eum?'Eumenes, at his stall. He has sold very little wool this week, and talked a great deal.':'Eumenes, the wool merchant, at home among his bales and fleeces.'),
   show:{tablets:()=>say(EU,'The Prophets of Israel, in wax? In the synagogue I hear them read, and I have never once held a line of them in my hand.'),
     roof:'Goat-hair. We sell sheep\'s wool in Antioch, but I know good cloth when I see it.',line:'You cut that out of your own roof? For people you met four days ago?',
@@ -550,11 +557,11 @@ EU.hs={name:'Eumenes',actor:EU,
         await say(P,'Paul, of Tarsus, a tentmaker. And this is Barnabas. We are bound for your city.')}
       return talkTree([
         {q:'What is Antioch like?',a:async()=>{await say(EU,'High, and cold at night. The air is like well water after this coast.');await say(EU,'We belong to the province of Galatia, and we stand where Phrygia ends and Pisidia begins. Neither will own us, and both trade with us.')}},
-        {q:'Are there Jews in Antioch?',a:async()=>{await say(EU,'Many. They have a synagogue, and I go to it every Sabbath. Not as a Jew: I am a Greek.');await say(EU,'They call people like me those who fear God. We listen to the Law and the Prophets, and we stand at the back.')}},
+        {q:'Are there Jews in Antioch?',a:async()=>{await say(EU,'Many. They have a synagogue, and I go to it every Sabbath. Not as a Jew: I am a Greek.');await say(EU,'They call people like me those who fear God. I listen to the Law and the Prophets, from the place nearest the door.')}},
         {q:'Until the road, then.',bye:1}])}
     if(inFord())return F.crossed?say(EU,'I crossed that river on my own feet. I shall be telling it to my grandchildren.')
       :say(EU,F.lineUp?'A line, from post to post. I can hold a line. Tell me when.':'I have crossed here a dozen times, always with a rope under my hand. Without one I would not put a foot in it.');
-    if(G.room==='synp')return say(EU,'This is my place, by the door. Go and sit down, Paul. You are a son of Israel: the benches are for you.');
+    if(G.room==='synp')return say(EU,'This is my place, by the door. No one sent me to it: I chose it myself, years ago. Go further in and sit down, Paul.');
     if(inOut())return F.cheered?say(EU,'Go in peace. We have everything you brought.'):comfort();
     if(week())return F.eum?say(EU,'The fullers are coming, and the dyers, and my own brother. I have never looked forward to a Sabbath so much.'):greek();
     return talkTree([
@@ -589,7 +596,7 @@ const BN5={name:'Barnabas',actor:BN,
       {q:'And of those rocks?',a:()=>say(BN,'I make of them that we should be over this ford before dark.')},
       {q:'Stand ready, brother.',bye:1}])
     :inOut()?talkTree([
-      {q:'Are you sorry we came?',a:()=>say(BN,'Sorry? Look at them, Paul. When we came over that pass, not one of them had heard the name of Jesus.')},
+      {q:'Are you sorry we came?',a:()=>say(BN,'Sorry? Look at them, Paul. When we came over that pass, not one of them knew our Lord.')},
       {q:'Then let us finish here.',bye:1}])
     :talkTree([
       {q:'What do you make of this city?',a:()=>say(BN,F.spoke1?'It listens. I have not seen a city listen like this since Antioch in Syria.':'It is full of people who have never heard. That is all I need to know of a city.')},
@@ -613,7 +620,7 @@ ROOMS.perga={walk:[16,464,110,138],mood:'hope',amb:{crickets:.5,birds:.4,wind:.2
 async function fordIntro(){
   await narr('On the fourth day the road came down to a river.',{dur:3600});
   await say(PA,'Hold the beasts! ...Look at that. The guide rope has parted.');
-  await say(PA,'The river came down in the night. There hangs the near half, on its post. The far half is trailing in the water, over there.');
+  await say(PA,'It rained in the mountains, and the river came down in the night. There hangs the near half, on its post. The far half is trailing in the water, over there.');
   await say(EU,'Then we wait for the river to fall?');
   await say(PA,'Two days. Perhaps three. And I do not like these rocks by night: men watch this ford.');
   await say(P,'A parted rope, a river, and two posts. This is a tentmaker\'s trouble before it is anyone else\'s.',TH)}
@@ -648,7 +655,7 @@ ROOMS.ford={get walk(){return PC().x>240?[300,464,112,138]:[16,186,112,138]},moo
   {name:'rocks above the road',x:330,y:0,w:150,h:34,wx:400,look:['Something moved, up among those rocks. A goat, perhaps.','Perhaps not. Papias has not taken his eyes off them.']},
   {name:'cliff',x:150,y:10,w:190,h:36,wx:176,look:'The river does not run down to this place. It bursts out at the foot of that cliff, full grown, as if the mountain had been struck.'},
   {name:'pines',x:0,y:8,w:150,h:80,wx:90,look:'Mountain pines, rooted in cracks a hand could not enter. They hold on. So shall we.'},
-  {name:'river',x:200,y:48,w:78,h:96,wx:166,wy:126,dir:1,look:['Snow water. It is not deep here: a shelf of stones lies just under the surface.','But it runs like a mill race, and below the ford the gorge drops away.'],
+  {name:'river',x:200,y:48,w:78,h:96,wx:166,wy:126,dir:1,look:['Cold water, swollen with rain. It is not deep here: a shelf of stones lies just under the surface.','But it runs like a mill race, and below the ford the gorge drops away.'],
     use:()=>F.lineUp&&!F.crossed?crossAll():say(P,F.crossed?'I have crossed it once. That will do.'
       :F.spliced?'I have a rope that will reach now. But the man who carries it over needs a third leg against that current, and I have none.':'Alone, and with no line? It would have my feet from under me in three steps.'),
     useWith:river,pickup:'I could sooner pick up the road.'},
@@ -696,8 +703,8 @@ async function sabbath1(){playAs(P);
   await say(HA,'"Men, brothers, if you have any word of encouragement for the people, tell it." (Acts 13:15)');
   await walk(P,166,111);P.dir=1;
   await narr('So Paul stood up, and motioning with his hand, he said: (Acts 13:16)',{dur:4500});
-  await think('Israelites on the benches. And by the door, standing, the Greeks who fear God. To whom do I speak?',[
-    {q:'Men, Israelites, listen.',no:'And leave the ones by the door to overhear? They came to listen too.'},
+  await think('Israelites, and among them Greeks who fear God. One of them has not come a step further in than the door. To whom do I speak?',[
+    {q:'Men, Israelites, listen.',no:'And leave those who fear God to overhear? They came to listen too.'},
     {q:'Men of Antioch, listen.',no:'They did not come here as citizens of a city. They came to hear the Law and the Prophets.'},
     {q:'Men, Israelites and you others who fear God, listen.',ok:1}]);
   await say(P,'Men, Israelites and you others who fear God, listen. (Acts 13:16)');
@@ -713,7 +720,7 @@ async function sabbath1(){playAs(P);
   await think('Raised, never again to return to corruption. Which promise says that it will hold?',passages(TALK.filter(k=>k!=='ps2'),['isa55','ps16']));
   await say(P,'And the fact that He resurrected him from the dead never again to return to corruption, He has stated in this way: "I will give you the expressions of loyal love promised to David, which are faithful." (Acts 13:34)');
   await say(P,'So it also says in another psalm: "You will not allow your loyal one to see corruption." (Acts 13:35)');
-  await say(P,'David fell asleep in death, and did see corruption. "On the other hand, the one whom God raised up did not see corruption." (Acts 13:37)');
+  await say(P,'David fell asleep in death, and did see corruption. "On the other hand, the one whom God raised up did not see corruption." (Acts 13:36, 37)');
   await say(P,'Let it therefore be known to you, brothers, that through this one a forgiveness of sins is being proclaimed to you, (Acts 13:38)');
   await say(P,'and that from all the things from which you could not be declared guiltless by means of the Law of Moses, everyone who believes is declared guiltless by means of this one. (Acts 13:39)');
   await say(EU,'Everyone who believes...');
@@ -724,7 +731,7 @@ async function sabbath1(){playAs(P);
   await narr('Now when they were going out, the people pleaded with them to speak about these matters on the following Sabbath. (Acts 13:42)',{dur:8000});
   await say(HA,'You have given this house a great deal to weigh, Paul of Tarsus. Come again on the next Sabbath, and we will hear the rest.');
   await say(JO,'And until then you lodge with me, both of you. My house is on the square, and there is room at my door for a tentmaker\'s bench.');
-  await say(EU,'Paul. May a man who stands by the door ask you something? ...Not here. I will come to you in the week.');
+  await say(EU,'Paul. May a man who keeps by the door ask you something? ...Not here. I will come to you in the week.');
   await narr('Many of the Jews and the proselytes who worshipped God followed Paul and Barnabas. (Acts 13:43)',{dur:7000});
   F.spoke1=1;SFX.good();await fade(1,600);enterRoom('pisidia',...ENT.pisidia);place5('pisidia');codeBtn();await fade(0,600);
   await narr('All that week Paul worked at his trade by Joel\'s door, and the questions came to him there.',{dur:6500});
@@ -734,9 +741,10 @@ const weekDone=async()=>{if(allThree()){await say(BN,'It is the day before the S
 /* The week between the Sabbaths: three hearers, and each is answered in the way he can follow. */
 async function greek(){
   await say(EU,'Paul. On the Sabbath you said: everyone who believes. I have said it over to myself ever since, so as not to lose it.');
-  await say(EU,'I have stood by that door for eleven years. I keep the Sabbath, and I give to the poor of the synagogue. And still I am a Greek, and I stand by the door.');
+  await say(EU,'For eleven years I have kept to the place by that door. No one put me there, Paul. I put myself there.');
+  await say(EU,'I keep the Sabbath, and I give to the poor of the synagogue. And still I am a Greek, and every Sabbath I tell myself that this people is not mine.');
   await quiz(EU,'So tell me plainly. Is this good news for a Greek?',[
-    {q:'You heard me rightly. I said everyone, and I meant it.',r:['A word in a talk, Paul. I have been called "everyone" before, and gone on standing by the door.']},
+    {q:'You heard me rightly. I said everyone, and I meant it.',r:['A word in a talk, Paul. I have heard "everyone" before, and gone back to my place by the door.']},
     {q:'It was promised to Israel, and it had to come to Israel first.',r:['So I have always been told. First to them. I am asking what comes after "first".']},
     {q:'Let me show you what is written about the foreigner.',ok:1,
       p:['Do not take my word for it, Eumenes. Take what is written. Isaiah has a word for a man in your place:',quote('isa56'),
@@ -762,7 +770,7 @@ async function troubled(){
   await say(JO,'He did not say that I must choose. He did not need to. I have sat on that bench since I was a boy.');
   await ask(BN,JO,'If this goes on, it may cost me my place among my own people. What do I do, Barnabas?',[
     {q:'Hanan asked us to speak. He may yet be glad of the rest.',r:['He may. And if he is not?']},
-    {q:'I sold a field once for this, and I have never missed it.',r:['A field. I am speaking of my seat among my own people, Barnabas. That is not sold and bought again.']},
+    {q:'I sold a piece of land once for this, and I have never missed it.',r:['A piece of land. I am speaking of my seat among my own people, Barnabas. That is not sold and bought again.']},
     {q:'What you were given is undeserved kindness. Remain in it.',ok:1,
       p:['What you heard on the Sabbath was not Paul\'s gift to you, Joel, and it is not mine. It is the undeserved kindness of God.','Remain in it. Whatever it costs you, it is worth more than a seat. (Acts 13:43)'],
       r:['Remain in it. Yes. That I can do: one day, and then the next.','Then my door stays open. My household will be there on the Sabbath, and my neighbors with them.']}]);
@@ -818,7 +826,7 @@ ROOMS.synp={walk:[16,304,110,136],mood:'calm',amb:{crowd:.14,fire:.15},hs:[
   {name:'window',x:244,y:16,w:22,h:24,wx:250,look:'A high window. The light falls on the reading desk.'},
   {name:'lamp',x:90,y:48,w:16,h:14,wx:112,look:'A lamp on a bracket, burning even by day.',pickup:'It gives light to the whole house where it is.'},
   {name:'lamp',x:214,y:48,w:16,h:14,wx:206,look:'A lamp on a bracket, burning even by day.',pickup:'It gives light to the whole house where it is.'},
-  {name:'chest of the scrolls',x:26,y:40,w:42,h:64,wx:60,wy:113,look:['The chest of the scrolls, in its recess, behind a blue hanging.','The Law, the Prophets and the Psalms. Everything I have to say in this city is in there already.'],
+  {name:'chest of the scrolls',x:29,y:61,w:36,h:43,wx:60,wy:113,look:['The chest of the scrolls, carried in and set in its place for the Sabbath.','The Law, the Prophets and the Psalms. Everything I have to say in this city is in there already.'],
     open:'It is not mine to open. The scrolls are in the keeping of the synagogue.',use:'It is not mine to open. The scrolls are in the keeping of the synagogue.',pickup:'It is not mine to open. The scrolls are in the keeping of the synagogue.'},
   {name:'seats of the presiding officers',x:70,y:70,w:44,h:34,wx:124,wy:114,dir:-1,look:'The seats of the presiding officers, beside the chest and facing the people.'},
   {name:'reading platform',x:118,y:80,w:96,h:28,wx:166,wy:113,look:['The platform and the reading desk, with benches on three sides of it.','Any son of Israel may be asked to read here, or to speak. But he must be asked.'],
@@ -877,16 +885,16 @@ SN.hs={name:'Straton',actor:SN,look:'Straton, one of the principal men of the ci
   as:{barnabas:{look:'One of the principal men. He has done what he was asked to do, and he does not look proud of it.',talk:()=>say(SN,'The order stands, for both of you.'),show:{'*':'I want nothing of yours.'}}}};
 ROOMS.border={walk:[16,304,112,138],mood:'tense',amb:{wind:.6,birds:.4,crickets:.2},hs:[
   {name:'mountains',x:0,y:30,w:320,h:22,wx:200,look:'The same mountains that stood over the square. From out here they look no further away.'},
-  {name:'Antioch',x:2,y:48,w:118,h:30,wx:120,look:['Antioch, on its rise. We came to it as two strangers with the dust of the pass on us.','There are disciples inside that wall now. There were none when we came.']},
+  {name:'Antioch',x:2,y:48,w:118,h:30,wx:120,look:['Antioch, on its rise. We came to it as two strangers with the dust of the pass on us.','There are disciples inside that wall now.']},
   {name:'poplars',x:198,y:72,w:92,h:22,wx:240,look:'Poplars along a stream. The plain is wide and bare, and the wind crosses it without stopping.'},
   {name:'our baggage',x:260,y:100,w:48,h:13,wx:250,wy:116,dir:1,look:'Two bed rolls and a bundle. They let us fetch them, at least.',pickup:'In a moment. One thing remains to be done here.'},
   {name:'boundary stone',x:94,y:86,w:18,h:24,wx:128,wy:116,dir:-1,def:'use',look:'The boundary stone of Antioch. On this side of it we are no longer the city\'s concern.',use:dust,pickup:'It marks their boundary. Let it stand.'},
-  {name:'road to Iconium',x:296,y:84,w:24,h:44,wx:300,wy:122,dir:1,look:'The road southeast, to Iconium: many days across the high plain.',exit:dust}]};
+  {name:'road to Iconium',x:296,y:84,w:24,h:44,wx:300,wy:122,dir:1,look:'The road southeast, to Iconium: several days across the high plain.',exit:dust}]};
 /* ---------- Barnabas's side of things, when he is the one being played ---------- */
 const AS_B={
   perga:{'mountains':{look:'The Taurus. I have seen it from the sea all my life, and never once thought to climb it.'},'city wall':{look:'Perga. We came, and we are going. Something tells me we shall be back.'},
     'north gate of Perga':{look:'The gate back into Perga, and to the coast.',use:'Not that way. Not while Paul is looking at those mountains.',open:'Not that way. Not while Paul is looking at those mountains.'},
-    'plain':{look:'Good land, and hot. In Cyprus we would have the grapes in by now.'},'watering trough':{look:'A good trough, and cold water.',use:'I drink my fill. It will be a long while to the next such water.'},
+    'plain':{look:'Good land, and hot already, and it is only spring. Up there the snow has not gone yet.'},'watering trough':{look:'A good trough, and cold water.',use:'I drink my fill. It will be a long while to the next such water.'},
     'pack donkeys':{look:'Thirty beasts, and every one loaded. The drover will not carry so much as a bed roll for us.'},'milestone':{look:'A milestone. I shall count every one of them, with this foot.'},
     'plane tree':{look:'Shade. I could stand in it all day, if Paul would let me.'},
     'our baggage':{look:()=>say(BN,F.markTold?'The bundles. My cousin tied every knot on them.':'John Mark has it all in order, as always.'),pickup:'When we go, I take my share.'},'road north':{look:'The road north. It does not look steep from here. It never does.'}},
@@ -896,7 +904,7 @@ const AS_B={
     'near post':{look:()=>say(BN,F.lineUp?'Fast at both ends.':F.spliced?'Paul has made the rope whole. It only wants carrying over.':'Half a rope. The other half is in the river.'),use:wade,useWith:async it=>it==='staff5'?wade():false},
     'far post':{look:()=>say(BN,F.lineUp?'I tied it myself: twice round, and hauled tight.':'The far post. That is where the rope has to go.'),use:wade,useWith:async it=>it==='staff5'?wade():false},
     'pack donkeys':{look:'They do not like the sound of that water any better than I do.'},'road to the pass':{look:'The road on, up to the pass.'}},
-  pisidia:{'mountains':{look:'Snow, in sight of a market. Cyprus has nothing like this.'},'street to the south gate':{look:'The street from the south gate. We came up it yesterday, wet to the knee.',use:'We are not going back that way.',open:'We are not going back that way.'},
+  pisidia:{'mountains':{look:'Snow, in sight of a market. Cyprus has nothing like this.'},'street to the south gate':{look:'The street from the south gate. We came up it with the dust of the pass still on us.',use:'We are not going back that way.',open:'We are not going back that way.'},
     'wool market':{look:'Wool, wool and more wool. Every sheep on this plain must come here in the end.'},'wool stall':{look:'Eumenes keeps a tidy stall. His father kept it before him, he says.'},
     'panniers of salt fish':{look:'The salt fish that crossed the river with us. It smells no better here.'},
     "tentmaker's bench":{look:'Paul\'s bench. He will not eat a crust in this city that he has not earned.',use:BARN5.noCraft},
@@ -968,7 +976,7 @@ function hint5(){const b=PC()!==P,craft=['craft5',["That is the tentmaker's craf
     :['syn5',['Tomorrow is the Sabbath, and there is a synagogue across the square.','We can go in at the door of the synagogue.']];
   if(b){if(!F.joel)return['joel5b',['Joel has tasted something good, and he is afraid of what it will cost him. He does not need my story. He needs to keep hold of what he was given.','I should talk to Joel, and urge him to remain in the undeserved kindness of God.']];
     return allThree()?['sab5',['The week is over, and the city is waiting.','We can go to the door of the synagogue.']]:['paul5b',['The others are asking for Paul. It was his word that they heard.','Paul should talk to Eumenes and to Papias.']]}
-  if(!F.eum)return['eum5',['Eumenes wants more than my word for it. And something is written for a man who stands by the door.','I should talk to Eumenes, and show him what is written about the foreigner.']];
+  if(!F.eum)return['eum5',['Eumenes wants more than my word for it. And something is written for a foreigner who keeps himself by the door.','I should talk to Eumenes, and show him what is written about the foreigner.']];
   if(!F.pap)return['pap5',['Papias has never heard the Prophets read. But he has crossed mountains all his life.','I should talk to Papias, and begin with the God who made the mountains.']];
   if(!F.joel)return['joel5',['Joel will not tell me what weighs on him. It is Barnabas he trusts with it.','Barnabas should talk to Joel. I can let him.']];
   return['sab5',['The week is over, and the city is waiting.','We can go to the door of the synagogue.']]}
