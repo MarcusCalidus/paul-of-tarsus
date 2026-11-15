@@ -628,7 +628,7 @@ async function finale(){AU.mood='calm';await wait(500);
   await down;clearInterval(creak);await wait(600);
   G.end.rider=0;G.end.px=112;G.end.py=124;SFX.step();await wait(700);
   const off=tween(9000,k=>{G.end.px=112+150*k;G.end.py=124+6*Math.sin(k*3)-k*8});
-  await narr("So Paul escaped the governor's hands: not by force, and not by a miracle, but by the courage of his brothers and trust in Jehovah. (2 Corinthians 11:32, 33)",{dur:8000});
+  await narr("So Saul escaped the governor's hands: not by force, and not by a miracle, but by the courage of his brothers and trust in Jehovah. (2 Corinthians 11:32, 33)",{dur:8000});
   await off;G.end.px=null;G.end.heads=0;
   await journey();await narr('The road to Jerusalem lay ahead, and beyond it, many more.',{dur:3800});
   endScreen({title:'Escape from Damascus',time:1,text:'Paul used the skill of his hands, accepted the help of his brothers, and relied on Jehovah.',
