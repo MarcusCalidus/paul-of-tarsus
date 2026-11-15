@@ -376,7 +376,7 @@
   await actor(null,ACT.theron);ok(nq()===6,'theron has 5 questions and the famine');await choose(2);await choose(-1);await sweep(ACT.xanthe,ACT.theron);
   await give('wages',ACT.xanthe);ok(has('wages'),'silver is not what Xanthe needs');
   await actor(null,ACT.xanthe);ok(nq()===3,'Xanthe round 1 offers three answers');
-  await pickQ('everyone must give');ok(nq()===2&&!F.gotSpool,'pressure is set aside');
+  await pickQ('Everyone else is giving');ok(nq()===2&&!F.gotSpool,'pressure is set aside');
   halt('quiz3');
   await pickQ('you are excused');ok(nq()===1,'so is dismissal');
   await pickQ('No one asks for what you do not have');await pickQ('What is in your hands');await pickQ('I could buy it');await pickQ('no bags to travel in');
