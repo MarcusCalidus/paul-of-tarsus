@@ -274,6 +274,10 @@ function noise(o){const c=AU.ctx;if(!c)return;const t=o.t||c.currentTime,s=c.cre
   g.gain.setValueAtTime(o.a?.0001:v,t);if(o.a)g.gain.linearRampToValueAtTime(v,t+o.a);
   if(o.sus){g.gain.setValueAtTime(v,t+o.d*.7);g.gain.linearRampToValueAtTime(.0001,t+o.d)}else g.gain.exponentialRampToValueAtTime(.0001,t+o.d);
   s.connect(fl);fl.connect(g);g.connect(o.dest||AU.fx);s.start(t,Math.random()*.5);s.stop(t+o.d+.05)}
+/* bite: the ear is most sensitive between 1 and 4 kHz, so a voice held at one level grows harsher as it climbs. bite(f) is the gain for a
+   tone at f Hz: exactly 1 up to 550 Hz, then falling smoothly, about 3.4 dB down at 1200 Hz and 7.6 dB at 2400. It applies to the ney
+   (tone and breath, by the note), the aulos, and the overtones of the plucked strings; vibrato is in Hz, so it narrows on its own. */
+function bite(f){return f<=550?1:Math.pow(1+((f-550)/325)**2,-.25)}
 /* pluck: the finger or plectrum leaving a string, a burst of noise of d seconds (12 ms if not given), tuned to b times the note
    (shared by the plucked voices) */
 function pluck(f,t,v,b,d){noise({t,d:d||.012,v,f:Math.min(f*b,6000),q:1.6,dest:AU.out})}
@@ -289,17 +293,17 @@ function pluck(f,t,v,b,d){noise({t,d:d||.012,v,f:Math.min(f*b,6000),q:1.6,dest:A
    over the score's, and without either the beats are fours (threes or twos for a bar that fours do not divide). */
 const INST={
   /* the plucked strings start fast, with a pluck and an overtone whose brightness falls away in the first tenth of a second */
-  oud(f,t,d,v){tone({f,t,d:.55,type:'triangle',v:v*.13,a:.003,dest:AU.out,echo:1});tone({f:f*2,t,d:.18,type:'square',v:v*.018,a:.003,lp:[[f*12,0],[f*3,.09]],dest:AU.out});pluck(f,t,v*.09,5)},
+  oud(f,t,d,v){tone({f,t,d:.55,type:'triangle',v:v*.13,a:.003,dest:AU.out,echo:1});tone({f:f*2,t,d:.18,type:'square',v:v*.018*bite(f*2),a:.003,lp:[[f*12,0],[f*3,.09]],dest:AU.out});pluck(f,t,v*.09,5)},
   /* the lyre is the bright one: strong upper harmonics, sounding through its body (AU.body). On the first step of a bar (down) it
      strums: the octave above follows 25 ms after the note, which stays in any mode. */
-  lyre(f,t,d,v,down){tone({f,t,d:.8,type:'triangle',v:v*.085,a:.003,lp:[[f*10,0],[f*4,.15]],dest:AU.body,echo:1});tone({f:f*2,t,d:.4,type:'triangle',v:v*.038,dest:AU.body});
-    tone({f:f*3,t,d:.22,type:'sine',v:v*.026,dest:AU.body});pluck(f,t,v*.06,4,.01);if(down)INST.lyre(f*2,t+.025,d,v*.4)},
+  lyre(f,t,d,v,down){tone({f,t,d:.8,type:'triangle',v:v*.085,a:.003,lp:[[f*10,0],[f*4,.15]],dest:AU.body,echo:1});tone({f:f*2,t,d:.4,type:'triangle',v:v*.038*bite(f*2),dest:AU.body});
+    tone({f:f*3,t,d:.22,type:'sine',v:v*.026*bite(f*3),dest:AU.body});pluck(f,t,v*.06,4,.01);if(down)INST.lyre(f*2,t+.025,d,v*.4)},
   /* the harp is the warm one: a round fundamental, a soft octave that dulls quickly, a gentle pluck, and the longest ring */
-  harp(f,t,d,v){tone({f,t,d:1.2,type:'sine',v:v*.084,a:.004,dest:AU.out,echo:1});tone({f:f*2,t,d:.3,type:'triangle',v:v*.028,a:.004,lp:[[f*5,0],[f*2,.08]],dest:AU.out});pluck(f,t,v*.04,2.5,.015)},
+  harp(f,t,d,v){tone({f,t,d:1.2,type:'sine',v:v*.084,a:.004,dest:AU.out,echo:1});tone({f:f*2,t,d:.3,type:'triangle',v:v*.028*bite(f*2),a:.004,lp:[[f*5,0],[f*2,.08]],dest:AU.out});pluck(f,t,v*.04,2.5,.015)},
   /* the ney: a breath of noise around the second harmonic that follows the note, and a vibrato that comes in after the attack */
-  ney(f,t,d,v){tone({f,t,d,type:'sine',v:v*.1,a:.05,sus:1,vib:4,vibd:.15,dest:AU.out,echo:1});noise({t,d,v:v*.08,a:.05,sus:1,f:f*2,q:4,dest:AU.out})},
+  ney(f,t,d,v){v*=bite(f);tone({f,t,d,type:'sine',v:v*.1,a:.05,sus:1,vib:4,vibd:.15,dest:AU.out,echo:1});noise({t,d,v:v*.08,a:.05,sus:1,f:f*2,q:4,dest:AU.out})},
   /* the aulos: each note scoops up 15 cents onto its pitch, and its reed opens bright on the attack and settles to 1900 Hz */
-  aulos(f,t,d,v){const lp=[[f*1.5,0],[Math.max(3600,f*5),.03],[1900,.25]],bend=[-15,.025];
+  aulos(f,t,d,v){v*=bite(f);const lp=[[f*1.5,0],[Math.max(3600,f*5),.03],[1900,.25]],bend=[-15,.025];
     tone({f,t,d,type:'sawtooth',v:v*.05,a:.03,sus:1,vib:3,bend,lp,lpq:1.2,dest:AU.out,echo:1});tone({f:f*1.003,t,d,type:'square',v:v*.012,a:.03,sus:1,bend,lp,lpq:1.2,dest:AU.out})},
   /* the bass: a low plucked string. A sawtooth gives it every harmonic; its lowpass closes from the eighth harmonic to the third as the
      note dies away over its length, so the second and third stay clear and the top dulls first. No octave below. */
