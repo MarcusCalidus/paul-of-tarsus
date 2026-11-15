@@ -955,8 +955,8 @@ async function finale6(){playAs(P);AU.mood='calm';await Promise.all([walk(P,156,
   endScreen({title:'The Door to Faith',text:'Paul paid what he owed before he fled, would not take a garland that belonged to the living God, and walked back in through the gate of the city that stoned him. Then he took the long road home, by way of every disciple.',
     extra:[F.debt&&'Silver left for the brothers in Iconium',F.copy&&'A passage read with young Timothy'].filter(Boolean),
     based:'Based on Acts 14:1-28 and 2 Timothy 1:5; 3:10, 11, 15. Supporting characters and dialogue are imaginative; the events are from the Scriptures. Acts does not say when Lois, Eunice and Timothy became believers; it was likely during this first stay in Lystra.',
-    go:'Click to return to the title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+    go:'Click to continue to Chapter Seven',code:['Chapter Seven code: {code}',codeOf(7,0)]});
+  await wait(1500);ov.onclick=()=>startChapter(7);await new Promise(()=>{})}
 /* HOME: the roads already travelled, as the closing map shows them. The crossing from Paphos to Perga is left off: the voyage home passes
    north of Cyprus, and two routes on the map must not cross. */
 const HOME=[['perga','antiochp'],['antiochp','iconium'],['iconium','lystra'],['lystra','derbe']];

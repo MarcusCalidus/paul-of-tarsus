@@ -38,6 +38,7 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 - No halos, crosses, mystical effects or pagan symbols.
 - This includes cross shapes that appear by accident in pixel art. Watch for:
   - a tiny ellipse one pixel high, which rasterizes as a plus sign;
+  - any small round shape with a radius under about one pixel of the view, such as the hole of a ring, a bead or the rim of a very small jar, which rasterizes as a plus sign too: draw it as a small square;
   - a vertical line over a horizontal band, such as rope lashings or yarn skeins;
   - grid lines or map lines that meet at right angles, and route lines on a map that cross each other;
   - a label or text laid across a thin line, such as a lake, river or coast;

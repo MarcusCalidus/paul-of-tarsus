@@ -70,6 +70,9 @@
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
     &&ov.textContent.includes('PAULUS VON TARSUS')&&$('#code').textContent==='CODE EINGEBEN'&&$('#mute').textContent.includes('TON AN')&&document.title.startsWith('Paulus'),'German on the title screen, in the panel and in the top bar');
   if(!/[?&]keep=1/.test(location.search))ok(store('paul.save')===null&&!ov.querySelector('[data-cont]')&&ov.querySelector('[data-ch="1"]').classList.contains('go'),'a first visit has nothing to continue: Chapter One leads the list');
+  /* the title screen holds its whole list: nothing on it lies above or below the view, with seven chapters or more */
+  const inOv=()=>{const r=ov.getBoundingClientRect();return[...ov.children].every(el=>{const q=el.getBoundingClientRect();return q.top>=r.top-1&&q.bottom<=r.bottom+1})};
+  ok(inOv()&&ov.querySelectorAll('[data-ch]').length===Object.keys(CHAP).length,'the title screen holds every chapter: '+Object.keys(CHAP).length);
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
   /* sound: the first press anywhere starts it; a press wakes sound that iOS interrupted; on iPhone and iPad a note says where Silent Mode is */
   {const hushOn=()=>$('#hush').classList.contains('on'),dev=AU.apple;
@@ -116,6 +119,7 @@
     ok(cont&&ov.querySelector('p.go,p.pick')===cont&&ov.querySelector('p.go')===cont&&!ov.querySelector('[data-ch].go')&&cont.textContent.includes(T('Continue'))&&cont.textContent.includes(T('Chapter One'))&&cont.textContent.includes(T('Escape from Damascus')),
       'the title offers Continue first, and names the chapter');fitVerbs();{const r=cont.getBoundingClientRect(),v=ov.getBoundingClientRect();if(cont.scrollWidth>cont.clientWidth+1||r.left<v.left||r.right>v.right)tight.add('Continue: '+cont.textContent)}
     ok(ov.querySelectorAll('[data-ch]').length===Object.keys(CHAP).length,'every chapter is still listed');
+    ok(inOv(),'and the list still fits the screen, with the line that offers to continue');
     halt('continue',()=>{cont.style.animation='none'});
     cont.click();await idle();
     ok(G.ch===1&&G.room==='workshop'&&!G.scene&&!G.busy&&!ov.classList.contains('on')&&makeCode()===c&&srt()===inv&&F.gotThread&&F.gotKnife&&!F.gotCloth,'Continue returns to the kept point, with its inventory and progress');
@@ -132,6 +136,230 @@
     ov.querySelector('[data-cont]').click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy&&makeCode()===codeOf(2,0),'Continue starts Chapter Two');
     for(const bad of['garbage','XXX-XXX',w.slice(0,-1)+(w.slice(-1)==='A'?'B':'A'),'']){store('paul.save',bad);await boot();ok(!ov.querySelector('[data-cont]')&&ov.querySelector('[data-ch="1"]').classList.contains('go'),'a damaged save is not offered: '+JSON.stringify(bad))}
     const lost=localStorage.setItem;Storage.prototype.setItem=()=>{throw new Error('full')};autosave('x');ok(G.saved===false,'a browser that will not store anything is no problem');Storage.prototype.setItem=lost;
+    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+  /* ---------------- Chapter Seven ---------------- */
+  /* Chapter Seven stops start Chapter Seven from the title screen. Its test is a function of its own: the full run calls it when Chapter Six
+     has ended, and a Chapter Seven stop calls it at once. The stop all7 halts nowhere: it plays the chapter through, and then checks that
+     every line was translated and that no text overflowed its box. */
+  const C7=/^(dispute7|council|letter7|parting7|map7|tarsus7|witness|reading|hubmap7|gates|holdline|pitched|case7|lystra7|myron|hubmap7b|iconium7|tatia7|invite|hands|journey7|final7|deutsch7|all7)$/.test(stop);
+  const ch7=async()=>{let SI;const P7=i=>T(CHAP[7].tablets.scripture[i].text),said=t=>heard.includes(T(t)),quoted=i=>heard.some(h=>h.includes(P7(i))),A=id=>ACT[id];
+  const mapOpen=async()=>{for(let i=0;i<100&&!(SHARED.map&&G.scene===SHARED.map.draw);i++)await wait(50);await wait(450)},
+    mapClick=id=>{const[x,y]=SHARED.map.where(id),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+x/320*r.width,clientY:r.top+y/144*r.height,bubbles:true}))},
+    cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
+      for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;return n},
+    inWin=id=>{const[x,y]=SHARED.map.where(id);return x>20&&x<300&&y>8&&y<136},clear=()=>mapClear()?'':': '+[...mapClear.bad].join(', ');
+  /* the scenes that open the chapter, each on its own */
+  const scene=async(k,st,line)=>{await loadLevel(7);ov.className='';ov.onclick=null;setChapter(7);G.st=st;G.scene=CHAP[7].scenes[k];G.busy=true;lock(true);status();narr(line,{dur:9000})};
+  if(stop==='dispute7'){await scene('antioch',{k:0},'Now some men came down from Judea and began to teach the brothers: "Unless you get circumcised according to the custom of Moses, you cannot be saved." (Acts 15:1)');halt('dispute7')}
+  if(stop==='council'){await scene('council',{who:0},'In Jerusalem the apostles and the elders gathered together to look into this matter. (Acts 15:6)');halt('council')}
+  if(stop==='letter7'){await scene('antioch',{k:1},'And Judas and Silas, since they were also prophets, encouraged the brothers with many talks and strengthened them. (Acts 15:32)');halt('letter7')}
+  if(stop==='parting7'){await scene('antioch',{k:2,away:.42},'At this there was a sharp burst of anger, so that they separated from each other; and Barnabas took Mark along and sailed away to Cyprus. (Acts 15:39)');halt('parting7')}
+  if(stop==='map7'){await loadLevel(7);await need('map');ov.className='';ov.onclick=null;setChapter(7);G.busy=true;lock(true);status();
+    await SHARED.map.journey([['antioch','syriangates','new'],['syriangates','tarsus','new']],{labels:CHAP[7].labels,view:'north',speed:300});
+    ok(G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===2&&inWin('antioch')&&inWin('syriangates')&&inWin('tarsus'),'the chapter opens on the map: from Antioch by the Syrian Gates to Tarsus');
+    ok(mapClear(),'no name on the opening map crosses a coast, a lake or a route'+clear());ok(cross(SHARED.map.state.legs)===0,'no two routes cross');
+    narr('He went through Syria and Cilicia, strengthening the congregations. (Acts 15:41)',{dur:9000});halt('map7')}
+  let sawMap=0;heard.length=0;(C7?document.querySelector('#overlay [data-ch="7"]'):ov).click();
+  for(let i=0;i<4000&&!(G.ch===7&&G.room==='tarsus7'&&!G.scene&&!G.busy);i++){if(SHARED.map&&G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===2)sawMap=1;await wait(30)}
+  await idle();SI=ACT.silas;
+  ok(G.ch===7&&G.room==='tarsus7'&&!G.scene&&!G.busy&&srt()==='awl,knife,letter,tablets,thread'&&SI.room==='tarsus7'&&A('reuben').room==='tarsus7'&&A('agathon').room==='tarsus7'&&A('eirene').room==='tarsus7'&&T(P.hs.name)===T('Paul')&&sawMap&&
+    said('Then James spoke. It appears that he presided over the discussion.')&&said('"Therefore, my decision is not to trouble those from the nations who are turning to God." (Acts 15:19)')&&
+    said('At this there was a sharp burst of anger, so that they separated from each other; and Barnabas took Mark along and sailed away to Cyprus. (Acts 15:39)')&&
+    said('Paul selected Silas and departed after he had been entrusted by the brothers to the undeserved kindness of Jehovah. (Acts 15:40)')&&said('He went through Syria and Cilicia, strengthening the congregations. (Acts 15:41)'),
+    'chapter seven opens with the meeting in Jerusalem and the parting at Antioch, and starts in Tarsus ['+[G.ch,G.room,!!G.scene,G.busy,srt(),sawMap,heard.length].join()+']');
+  ok(!heard.some(h=>/15:33|15:34/.test(h)),'the opening shows Silas neither leaving Antioch nor staying behind');
+  halt('tarsus7',()=>{place(A('reuben'),'tarsus7',300,120,-1);P.dir=1;say(A('reuben'),'A man who carries home the verdict in his own dispute should not wonder if he is asked for more than his own word.')});
+  ok(/^7-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===7&&decode(makeCode()).w!=null,'chapter seven code format (wide, nine characters) '+makeCode());
+  ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Silas')),'a party: the panel offers to switch to Silas');fitVerbs();
+  /* the oxen on the Taurus road: every part attached, like the animals of Chapter Six */
+  {const ox=CHAP[7].painters.ox,pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
+      for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
+        for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n},
+    bad=[['ox',s=>ox(s,0,0,1,0,'#8a5a3a')],['ox, walking',s=>ox(s,0,0,-1,1,'#6f4630')],['ox, the other step',s=>ox(s,0,0,1,3,'#8a5a3a')]].filter(([n,fn],i)=>pieces(sprite('ox7-test'+i,fn,1))!==1).map(b=>b[0]);
+    ok(!bad.length,'animals: every part of the oxen on the Taurus road is attached'+(bad.length?'. IN PIECES: '+bad.join(', '):''))}
+  if(lang==='de'){move(...hs('gate to the street'));ok($('#status').textContent==='Gehe zu Tor zur Straße','German status line: Gehe zu Tor zur Straße');
+    verb('use');item('letter');move(...hs('loom'));ok($('#status').textContent==='Benutze Brief aus Jerusalem mit Webstuhl','German status line: Benutze Brief aus Jerusalem mit Webstuhl');verb('use');G.hover=null;status()}
+  halt('deutsch7',()=>{item('tablets')});
+  /* Tarsus: the letter, and the second witness */
+  heard.length=0;await act(null,'gate to the street');ok(G.room==='tarsus7'&&!G.scene&&said('Not while this congregation is of two minds. That is what we came through Cilicia for.'),'no leaving Tarsus while the congregation is of two minds');
+  pray();await idle();ok(hint()[0]==='reu7','the hint points to Reuben');
+  heard.length=0;await act('look','benches');ok(quoted(1),'looking at the half-empty benches, Paul quotes the proverb on his tablets, word for word');
+  await actor(null,A('reuben'));ok(nq()===4,'Reuben asks why Tarsus should take the letter on Paul\'s word: three answers, and a way to stop');
+  await pickQ('I was in the room');ok(nq()===3&&!F.silas,'no man is a witness in his own case');
+  await pickQ("apostles' letter");ok(nq()===2&&!F.silas,'the letter praises the man who carries it');
+  heard.length=0;await pickQ('Peter himself');ok(!F.silas&&!G.busy&&quoted(0)&&said('Every word I said to him is true, and none of it is of any use. He is asking for a second witness. And he is right to ask.'),'Paul cannot win it by arguing: Reuben asks for two witnesses, in the words of the Law');
+  pray();await idle();ok(hint()[0]==='wit7','the hint points to Silas');
+  heard.length=0;await give('letter',A('reuben'));ok(!F.read&&has('letter')&&said('I can read, Paul. What I cannot read in it is what was said in that room.'),'the letter alone does not answer him');
+  heard.length=0;await give('letter',A('eirene'));ok(!F.read&&has('letter')&&heard.length===1,'Eirene cannot gather a congregation that Reuben will not sit down with');
+  await sweep(A('reuben'),A('agathon'),A('eirene'),SI);
+  let t7=await tabs();ok(leaf(0,T('Silas')).length>=1&&leaf(0,T('Reuben')).length>=1&&leaf(0,T('Eirene')).length>=1&&leaf(0,T('Reuben asks for a second witness. I was a party to the dispute, and I cannot be it.')).length===1&&leaf(1).length===7,
+    'the tablets in Tarsus: people, open tasks and seven passages');
+  ok(leaf(1).every(t=>/\((?:[1-5]\.? )?\p{Lu}\p{Ll}+ \d+:\d+/u.test(t)),'every passage carries its reference');key('Escape');await idle();
+  await actor(null,SI);ok(nq()===4&&hasQ('Reuben will not take the letter on my word.'),'Silas: two questions, and a thing learned');heard.length=0;await pickQ('Reuben will not take the letter');ok(said(SI.hs.ask.witness[1]),'Silas was not sent all this way to carry a bundle');await choose(-1);
+  key('c');await idle();pray();await idle();ok(hint()[0]==='wit7b'&&PC()===SI,'Silas knows what he was sent for');
+  await actor(null,A('reuben'));ok(nq()===3,'what has the man from Jerusalem to say? three answers');
+  await pickQ('Paul has told you the truth');ok(nq()===2&&!F.silas,'that only adds a voice to Paul\'s');
+  heard.length=0;await pickQ('sent from Jerusalem');ok(F.silas&&!G.busy&&said('"We are therefore sending Judas and Silas, so that they also may report the same things by word of mouth." (Acts 15:27)')&&
+    said('Two witnesses. One who was a party to the matter, and one who was sent. That is enough for the Law, and it is enough for me.'),'the second witness: Silas was sent to report the same things by word of mouth');
+  key('c');await idle();const c7a=makeCode();
+  pray();await idle();ok(hint()[0]==='read7','the hint: the whole congregation, as in Antioch');
+  heard.length=0;await give('letter',A('reuben'));ok(!F.read&&has('letter')&&said('To Reuben alone, here beside the loom? Then three men know it, and the rest of Tarsus hears it at second hand. This trouble was sown in the whole congregation.'),'the letter is not read to one man beside a loom');
+  heard.length=0;await give('letter',A('agathon'));ok(!F.read&&has('letter')&&heard.length===1,'nor to Agathon by himself');
+  halt('witness',()=>{place(P,'tarsus7',300,126,1);place(SI,'tarsus7',324,124,1);G.cam=140;say(SI,'"We are therefore sending Judas and Silas, so that they also may report the same things by word of mouth." (Acts 15:27)')});
+  await give('letter',SI);ok(!has('letter')&&G.invs.silas.includes('letter'),'the letter can be handed to Silas');
+  key('c');await idle();heard.length=0;await give('letter',A('eirene'));
+  ok(F.read&&PC()===P&&!G.busy&&AU.mood==='calm'&&said('"The apostles and the elders, your brothers, to those brothers in Antioch, Syria, and Cilicia who are from the nations: Greetings!" (Acts 15:23)')&&
+    said('"If you carefully keep yourselves from these things, you will prosper. Good health to you!" (Acts 15:29)')&&said('When that letter was read in Antioch, "they rejoiced over the encouragement." (Acts 15:31) It was no different in Tarsus.'),
+    'Silas gives the letter to Eirene: the whole congregation is called together, and he reads it to them');
+  await enter(c7a);ok(G.ch===7&&G.room==='tarsus7'&&PC()===P&&F.silas&&!F.read&&has('letter')&&A('eirene').x<120,'the Tarsus code restores, before the reading');
+  halt('reading',()=>{G.gath=1;place(SI,'tarsus7',268,124,1);place(P,'tarsus7',244,128,1);place(A('eirene'),'tarsus7',220,119,1);place(A('agathon'),'tarsus7',304,119,-1);place(A('reuben'),'tarsus7',328,124,-1);G.cam=108;G.busy=true;lock(true);status();
+    say(SI,'"The apostles and the elders, your brothers, to those brothers in Antioch, Syria, and Cilicia who are from the nations: Greetings!" (Acts 15:23)')});
+  await give('letter',A('eirene'));ok(F.read&&has('letter')&&!G.busy,'read again after the code, with the letter in Paul\'s hand');
+  pray();await idle();ok(hint()[0]==='north7','the hint points north, over the Taurus');
+  /* the hub: the gate to the street opens the map */
+  act(null,'gate to the street');await mapOpen();
+  ok(G.scene===SHARED.map.draw&&SHARED.map.state.places.join()==='antioch,syriangates,tarsus,ciliciangates,derbe,lystra,iconium'&&G.busy&&SHARED.map.state.legs.length===2&&SHARED.map.state.pulse==='tarsus','the gate opens the map: this journey on its own, from Antioch by the Syrian Gates to Tarsus');
+  ok(['antioch','syriangates','tarsus','ciliciangates','derbe','lystra','iconium'].every(inWin),'every place of this journey lies inside the northern window of the map');
+  ok(mapClear(),'no name on the hub map crosses a coast, a lake or a route'+clear());ok(cross(SHARED.map.state.legs)===0,'no two routes cross');
+  halt('hubmap7',()=>{SHARED.map.state.hover='ciliciangates'});
+  heard.length=0;mapClick('derbe');await idle();ok(G.room==='tarsus7'&&!G.scene&&!G.busy&&said('Derbe lies beyond the Taurus, and the road to it goes through the Cilician Gates. One stage at a time.'),'Derbe is not open from Tarsus, and Paul says why');
+  act(null,'gate to the street');await mapOpen();heard.length=0;mapClick('antioch');await idle();ok(G.room==='tarsus7'&&said(CHAP[7].places.antioch.no),'the road does not lead back to Antioch');
+  act(null,'gate to the street');await mapOpen();heard.length=0;mapClick('ciliciangates');await idle();
+  ok(G.room==='gates'&&!G.scene&&!G.busy&&SI.room==='gates'&&A('zenon7').room==='gates'&&A('bion').room==='gates'&&A('charis').room==='gates'&&A('melissa').room==='gates'&&!A('reuben').room&&AU.mood==='storm'&&
+    said('Acts does not describe the road. But this was the trade route to the cities beyond the mountains, and the natural way for Paul to take.')&&said('A family, Paul. Their tent is down, and they have a child with them.'),
+    'a click on the Cilician Gates: the Taurus road, Zenon and his wagon, and a family whose tent is down');
+  /* the Cilician Gates */
+  halt('gates',()=>{say(A('zenon7'),'This is as far as we go tonight, brothers. Look at that sky. When the wind comes down the Gates like this, there is rain behind it, and plenty.')});
+  ok(H('torn tent')&&!H('tent')&&!H('mended tent'),'the tent is down');
+  heard.length=0;await act(null,'Cilician Gates');ok(G.room==='gates'&&!G.scene&&said('And leave a child in the open, with that sky coming down the gorge? Not for every congregation in Galatia. They would not thank me for it.'),'no going on while a family stands in the storm');
+  heard.length=0;await act(null,'road to Tarsus');ok(G.room==='gates'&&heard.length===1,'and no going back');
+  heard.length=0;await act('use','torn tent');ok(!F.mended&&said('I can close the seam now, and it will open again at the corner in the first gust. The loop first: and a loop wants leather. A carter carries leather.'),'the torn-out loop wants leather');
+  pray();await idle();ok(hint()[0]==='strap7','the hint points to the carter');
+  await actor(null,A('bion'));ok(nq()===4&&hasQ('corner loop wants a strip of leather'),'Bion: two questions, and a thing learned');await choose(0);await choose(-1);
+  await actor(null,A('zenon7'));ok(nq()===5&&hasQ('corner loop wants a strip of leather'),'Zenon: three questions, and a thing learned');await pickQ('corner loop wants');ok(F.strap&&has('strap')&&nq()===4,'Zenon gives a spare yoke strap');await choose(-1);
+  await sweep(A('zenon7'),A('bion'),A('charis'),A('melissa'),SI);
+  pray();await idle();ok(hint()[0]==='mend7','the hint points to the tent');
+  key('c');await idle();pray();await idle();ok(hint()[0]==='craft7'&&PC()===SI,'Silas prays, and leaves the craft to Paul');
+  heard.length=0;await act('use','torn tent');ok(!F.line&&!F.mended&&said('Paul will want me on that line once it is sewn. Not before: I should only be holding a rag in a gale.'),'Silas does not sew, and there is no line to hold yet');key('c');await idle();place(SI,'gates',196,128,1);
+  const c7b=makeCode();await useOn('strap','torn tent');ok(F.mended&&!has('strap')&&H('mended tent')&&!H('torn tent')&&!G.busy,'the long seam is closed, and a leather loop sewn in where the corner tore out');
+  await enter(c7b);ok(G.room==='gates'&&F.strap&&!F.mended&&has('strap')&&H('torn tent')&&A('charis').room==='gates','the Gates code restores, with the strap in Paul\'s hand');await useOn('awl','torn tent');ok(F.mended,'mended again after the code');
+  heard.length=0;await act('use','mended tent');ok(!F.up&&!F.line&&said('I get the pole upright, and the wind lays the whole tent flat again. It wants a man on the windward line while I set the pole and drive the pins.'),'one man cannot raise a tent in this wind');
+  pray();await idle();ok(hint()[0]==='line7','the hint points to Silas');
+  key('c');await idle();pray();await idle();ok(hint()[0]==='line7b','Silas knows where he is wanted');
+  await act('use','mended tent');ok(F.line&&PC()===SI&&Math.abs(SI.x-338)<4&&!F.up,'Silas takes the windward line');
+  pray();await idle();ok(hint()[0]==='pitch7b','Silas holds, and leaves the pole to Paul');
+  const c7c=makeCode();key('c');await idle();pray();await idle();ok(hint()[0]==='pitch7','Paul can raise it now');
+  halt('holdline',()=>{place(P,'gates',254,118,1);P.bow=true;G.cam=130;say(SI,'I have the windward line, and both heels dug in. Set your pole, Paul!')});
+  heard.length=0;await act('use','mended tent');
+  ok(F.up&&!F.line&&has('cloth7')&&H('tent')&&!A('charis').room&&!A('melissa').room&&AU.mood==='calm'&&!G.busy&&quoted(2)&&said('The first drops fell as the last pin went in. Then the rain came down the gorge like a wall.'),
+    'the tent goes up with Silas on its line, and then the rain comes: the merchant pays in cloth');
+  await enter(c7c);ok(G.room==='gates'&&F.mended&&F.line&&!F.up&&PC()===SI&&Math.abs(SI.x-338)<4&&A('charis').room==='gates','the code restores Silas on the line');key('c');await idle();await act('use','mended tent');ok(F.up&&has('cloth7'),'raised again after the code');
+  halt('pitched',()=>{say(A('bion'),'Dry! All three of us, and the lamp alight. I have slept worse in inns.')});
+  heard.length=0;await act('look','tent');ok(quoted(3),'looking at the tent in the rain, Paul quotes Isaiah, word for word');
+  heard.length=0;await act(null,'Cilician Gates');ok(G.room==='gates'&&!G.scene&&said('By morning that stream will be over the road, and the letter is wrapped in a wet rag. First a case for it: one that sheds water.'),'not on with the letter in a wet rag');
+  pray();await idle();ok(hint()[0]==='case7','the hint points to the cloth');
+  await use('awl','cloth7');ok(F.sewn&&has('pcase')&&!has('cloth7'),'a case sewn from the merchant\'s cloth');
+  heard.length=0;await use('letter','pcase');ok(!F.cased&&said('Not yet. Cloth alone drinks water, and the letter would drink it after. First something to turn the rain.'),'cloth alone drinks water');
+  pray();await idle();ok(hint()[0]==='tallow7','the hint points to the carter again');
+  await actor(null,A('zenon7'));ok(hasQ('The copies of the letter must be kept dry.'),'a new thing to ask about');await pickQ('must be kept dry');ok(F.tallow&&has('tallow'),'Zenon gives tallow from his grease pot');await choose(-1);
+  pray();await idle();ok(hint()[0]==='proof7','the hint: tallow, and the case');
+  const c7d=makeCode();await use('tallow','pcase');ok(F.cased&&!has('tallow')&&!has('pcase')&&has('letter')&&ITEMS.letter.icon==='lcase'&&!G.busy,'tallow in the weave: the letter and its copies are in a case that sheds water');
+  halt('case7',()=>{say(SI,'A letter from Jerusalem, in a case that smells of oxen. I do not think that the apostles will mind.')});
+  await enter(c7d);ok(G.room==='gates'&&F.up&&F.sewn&&F.tallow&&!F.cased&&has('pcase')&&has('tallow')&&!A('charis').room,'the code holds the case and the tallow');await use('pcase','tallow');ok(F.cased,'proofed again after the code');
+  await sweep(A('zenon7'),A('bion'),SI);
+  await actor(null,A('bion'));ok(nq()===3,'Bion, dry: two questions');heard.length=0;await pickQ('wondering why');ok(said('I may do that. It is a long night, and I am not sleepy.'),'Paul says why, and offers to say more');await choose(-1);
+  pray();await idle();ok(hint()[0]==='derbe7','the hint points on through the Gates');
+  act(null,'Cilician Gates');await mapOpen();ok(G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===3&&SHARED.map.state.pulse==='ciliciangates','at first light the road opens the map, with the way from Tarsus drawn');
+  ok(mapClear(),'no name on the map at the Gates crosses a coast, a lake or a route'+clear());ok(cross(SHARED.map.state.legs)===0,'no two routes cross');
+  heard.length=0;mapClick('lystra');await idle();ok(G.room==='gates'&&!G.scene&&said('Lystra lies beyond Derbe, and beyond the mountains. One stage at a time.'),'Lystra lies beyond Derbe');
+  act(null,'Cilician Gates');await mapOpen();heard.length=0;mapClick('derbe');await idle();
+  ok(G.room==='lystra7'&&!G.scene&&!G.busy&&SI.room==='lystra7'&&A('timothy7').room==='lystra7'&&A('eunice7').room==='lystra7'&&A('lois7').room==='lystra7'&&A('myron').room==='lystra7'&&!A('zenon7').room&&SHARED.map.state.legs.length===5&&
+    said('So he arrived at Derbe and also at Lystra. (Acts 16:1)')&&said('And a disciple named Timothy was there, the son of a believing Jewish woman but of a Greek father. (Acts 16:1)')&&
+    said('No, Eunice. Barnabas has sailed for Cyprus, with John Mark. He and I did not agree about this journey. There was a sharp burst of anger, and we separated.'),
+    'a click on Derbe: he arrived at Derbe and also at Lystra, and a disciple named Timothy was there');
+  /* Lystra: the decrees, and what the brothers say of Timothy */
+  halt('lystra7',()=>{say(A('lois7'),'I said that this door would be open. Come in, Paul. And you, brother: a friend of his has a place at this hearth.')});
+  heard.length=0;await act(null,'door to the lane');ok(G.room==='lystra7'&&!G.scene&&said('We have only just come in, and the letter is still in my bag. Lystra hears it first.'),'Lystra hears the letter first');
+  pray();await idle();ok(hint()[0]==='readL7','the hint points to the older man');
+  await actor(null,A('timothy7'));ok(nq()===3,'Timothy would come at a word: three things Paul might say');
+  await pickQ('and come now');ok(nq()===2,'too soon: those who have watched him have not been asked');await pickQ('young for such a road');ok(nq()===1,'that would be judging by what appears to the eyes');
+  await choose(0);ok(!G.busy&&!ov.classList.contains('end')&&G.room==='lystra7','a hasty word is set aside, and never spoken');
+  heard.length=0;await actor(null,A('myron'));ok(!F.eld&&said('First the letter, brother. Lystra has waited a long time for a word from Jerusalem.'),'first the letter');
+  await sweep(A('timothy7'),A('eunice7'),A('lois7'),A('myron'),SI);
+  heard.length=0;await give('letter',A('myron'));ok(F.readL&&has('letter')&&!G.busy&&said('That evening the congregation of Lystra heard the letter read, and the older men received the decrees, to be observed.'),'the decrees are delivered in Lystra');
+  heard.length=0;await give('tablets',A('lois7'));ok(F.psalm&&has('tablets')&&quoted(6),'an optional kindness: a psalm read to Lois, word for word');
+  pray();await idle();ok(hint()[0]==='eld7','the hint: ask what he does, not how he looks');
+  key('c');await idle();pray();await idle();ok(hint()[0]==='paul7b','Silas leaves the asking to Paul');
+  heard.length=0;await actor(null,A('myron'));ok(!F.eld&&heard.length===1,'the older man has nothing to tell Silas about Timothy');key('c');await idle();
+  await actor(null,A('myron'));ok(nq()===3,'what does Paul need to know? three questions');
+  halt('myron',()=>{say(A('myron'),'You have been watching him, and I have been watching you do it. Ask, then. What is it that you need to know?')});
+  await pickQ('speak well before');ok(nq()===2&&!F.eld,'a question about his tongue gets a short answer');
+  heard.length=0;await pickQ('What do you give him to do');ok(F.eld&&!G.busy&&said('I have never had to ask him for a thing twice. And I have never once heard him say how much he had done.'),'the older men of Lystra: what he is given, he does, and does not count it');
+  pray();await idle();ok(hint()[0]==='fam7','the hint points to his own household');
+  await actor(null,A('eunice7'));ok(nq()===3,'his mother will speak well of him whatever is asked: three questions');
+  await pickQ('quick pupil');ok(nq()===2&&!F.fam,'many a quick boy has learned the Psalms');
+  heard.length=0;await pickQ('when the brothers are not looking');ok(F.fam&&!G.busy&&said('I taught my daughter, and she taught him. But the faith in that boy is his own now. Nobody is holding it up for him.'),'Eunice and Lois: he is the same at home');
+  pray();await idle();ok(hint()[0]==='ico7','the hint points to Iconium');
+  t7=await tabs();ok(leaf(0,T('Timothy')).length>=1&&leaf(0,T('Myron')).length>=1&&leaf(0,T('Lois')).length>=1&&leaf(0,T('Reuben')).length===0&&leaf(0,T('Carry the decrees to Iconium, and ask about Timothy there.')).length===1,'the tablets in Lystra');key('Escape');await idle();
+  const c7e=makeCode();
+  act(null,'door to the lane');await mapOpen();ok(G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===5&&SHARED.map.state.pulse==='lystra','the door opens the map, with the road by Derbe drawn');
+  ok(mapClear(),'no name on the map at Lystra crosses a coast, a lake or a route'+clear());ok(cross(SHARED.map.state.legs)===0,'no two routes cross');
+  halt('hubmap7b',()=>{SHARED.map.state.hover='iconium'});
+  heard.length=0;mapClick('derbe');await idle();ok(G.room==='lystra7'&&!G.scene&&said('Derbe has its letter, and Zenon is at home there. Our road does not lead back.'),'not back to Derbe');
+  act(null,'door to the lane');await mapOpen();heard.length=0;mapClick('iconium');await idle();
+  ok(G.room==='iconium7'&&!G.scene&&!G.busy&&SI.room==='iconium7'&&A('nathan7').room==='iconium7'&&A('tatia7').room==='iconium7'&&!A('timothy7').room&&said('Iconium lay about 30 kilometers away: a day on foot, across the winter fields.'),'a click on Iconium: a day on foot');
+  /* Iconium */
+  halt('iconium7',()=>{say(A('nathan7'),'Paul! Alive, and in my street again! Come under the awning, both of you.')});
+  heard.length=0;await act(null,'south gate');ok(G.room==='iconium7'&&!G.scene&&said('We walked a day to bring Iconium a letter, and it is still in my bag.'),'Iconium must have its letter');
+  pray();await idle();ok(hint()[0]==='readI7','the hint points to Nathan');
+  heard.length=0;await actor(null,A('tatia7'));ok(!F.tat&&heard.length===1,'Tatia sends them to Nathan first');
+  await sweep(A('nathan7'),A('tatia7'),SI);
+  heard.length=0;await give('letter',A('nathan7'));ok(F.readI&&has('letter')&&!G.busy&&said('So the congregation in Iconium heard the letter too, and received the decrees.'),'the decrees are delivered in Iconium');
+  pray();await idle();ok(hint()[0]==='nat7','the hint: how does Iconium come to know him?');
+  await actor(null,A('nathan7'));ok(nq()===3,'what does Paul want to know? three questions');
+  await pickQ('look like a man');ok(nq()===2&&!F.nat,'a saddler knows what a fine finish is worth');
+  heard.length=0;await pickQ('come to know a young man');ok(F.nat&&!G.busy&&said('He has done it every few weeks since. Nobody here is of his own congregation, Paul. He does it all the same.'),'Nathan: he walked a day with a sack on his back, for brothers not of his own congregation');
+  heard.length=0;await act(null,'south gate');ok(G.room==='iconium7'&&!G.scene&&said('Not yet. The older men of Lystra told me to ask in Iconium about Timothy, and I have not finished asking.'),'not before Iconium has been heard out');
+  pray();await idle();ok(hint()[0]==='tat7','the hint points to Tatia');
+  await actor(null,A('tatia7'));ok(nq()===3,'Tatia can tell what she has seen: three questions');
+  await pickQ('Is he bold');ok(nq()===2&&!F.tat,'Barnabas was never loud either');
+  halt('tatia7',()=>{});
+  heard.length=0;await pickQ('What does he do');ok(F.tat&&!G.busy&&said('He is not pretending, Paul. I have watched for it. He truly cares what becomes of us.'),'Tatia: he genuinely cares, even for the man who shouted at him');
+  pray();await idle();ok(hint()[0]==='back7','the hint points back to Lystra');
+  {const c=makeCode();await enter(c7e);ok(G.room==='lystra7'&&F.readL&&F.eld&&F.fam&&F.psalm&&!F.readI&&!F.nat&&PC()===P&&A('myron').room==='lystra7'&&!A('nathan7').room,'the code from Lystra restores');
+    await enter(c);ok(G.room==='iconium7'&&F.readI&&F.nat&&F.tat&&A('nathan7').room==='iconium7'&&!A('myron').room,'and the code from Iconium')}
+  act(null,'south gate');await mapOpen();ok(SHARED.map.state.legs.length===6&&SHARED.map.state.pulse==='iconium','the south gate opens the map, with the road from Lystra drawn');
+  heard.length=0;mapClick('lystra');await idle();
+  ok(G.room==='lystra7'&&!G.scene&&!G.busy&&SI.room==='lystra7'&&A('timothy7').room==='lystra7'&&!A('nathan7').room&&said('They walked back the way they had come. In two cities Paul had heard one account of the same young man.'),'back to Lystra, with four witnesses heard');
+  heard.length=0;await act(null,'door to the lane');ok(G.room==='lystra7'&&!G.scene&&!ov.classList.contains('end')&&said('Not yet. There is a question I must put to a young man first, in front of his mother, his grandmother and the older men.'),'not out of the door before Timothy has been asked');
+  pray();await idle();ok(hint()[0]==='ask7','the hint: it is time to ask him');
+  heard.length=0;await actor('look',A('timothy7'));ok(quoted(5),'looking at Timothy, Paul quotes the proverb about a good name, word for word');
+  key('c');await idle();pray();await idle();ok(hint()[0]==='paul7b','Silas leaves that to Paul too');key('c');await idle();
+  await sweep(A('timothy7'),A('eunice7'),A('lois7'),A('myron'),SI);
+  /* Paul asks, the older men stand with him, and Timothy comes */
+  heard.length=0;await actor(null,A('timothy7'));
+  ok(nq()===3&&said('He was well-reported-on by the brothers in Lystra and Iconium. (Acts 16:2)'),'well-reported-on by the brothers in Lystra and Iconium: three ways to put it to him');
+  await pickQ('You must come');ok(nq()===2,'a volunteer is wanted, not a porter');
+  halt('invite',()=>{});
+  await pickQ('carry the bundles');ok(nq()===1,'true, and the least part of it');
+  halt('hands',()=>{$('#choices').classList.remove('on');place(A('myron'),'lystra7',128,127,1);for(const a of[P,SI,A('timothy7'),A('myron'),A('eunice7'),A('lois7')])a.bow=true;
+    narr('There were prophecies about Timothy, and the body of elders laid their hands on him, as Paul did. It may have been at this time. (1 Timothy 1:18; 4:14; 2 Timothy 1:6)',{dur:9000})});
+  heard.length=0;choose(0);
+  n=0;while(!(ov.classList.contains('end')&&ov.textContent.includes(T('Timothy of Lystra')))&&n++<4000)await wait(50);
+  ok(ov.classList.contains('end')&&ov.textContent.includes(T('Timothy of Lystra'))&&said('Paul expressed the desire for Timothy to accompany him. (Acts 16:3)')&&
+    said('Paul expressed the desire for Timothy to accompany him, and he took him and circumcised him because of the Jews in those places, for they all knew that his father was a Greek. (Acts 16:3)')&&
+    said('As they traveled on through the cities, they would deliver to them for observance the decrees that had been decided on by the apostles and the elders who were in Jerusalem. (Acts 16:4)')&&
+    said('Then, indeed, the congregations continued to be made firm in the faith and to increase in number day by day. (Acts 16:5)'),'chapter seven complete screen shown');
+  ok(said('There were prophecies about Timothy, and the body of elders laid their hands on him, as Paul did. It may have been at this time. (1 Timothy 1:18; 4:14; 2 Timothy 1:6)'),'the laying on of hands is told with its hedge: it may have been at this time');
+  ok(ov.textContent.includes(T('A psalm read to Lois')),'the kindness is named on the closing screen');
+  ok(/Tarsus/.test(ov.textContent)&&/Lois/.test(ov.textContent)&&ov.textContent.includes(T('Click to return to the title')),'the closing screen says what the account leaves unsaid');
+  {const r=ov.getBoundingClientRect(),bad=[...ov.children].filter(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});if(bad.length)tight.add('closing screen: '+bad[0].textContent.slice(0,40))}
+  ok(store('paul.save')===null,'a finished game keeps no save');
+  {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===6&&L.every(l=>l.k===1)&&M.state.seen.has('antioch')&&M.state.seen.has('ciliciangates')&&M.state.seen.has('iconium'),'chapter seven ends on the map: from Antioch by Tarsus and the Cilician Gates to Derbe, Lystra and Iconium');
+    ok(cross(L)===0,'no two routes cross');
+    ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+clear())}
+  halt('journey7',()=>{ov.className=''});halt('final7')};
+  if(C7){await ch7();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(!C3&&!C4&&!C5&&!C6&&!HUB){
   ov.click();await idle();ok(G.room==='workshop'&&!G.busy,'intro ends in workshop');
@@ -872,11 +1100,13 @@
   ok(ov.classList.contains('end')&&ov.textContent.includes(T('The Door to Faith'))&&said('Moreover, they appointed elders for them in each congregation, offering prayer with fasting, and they entrusted them to Jehovah, in whom they had become believers. (Acts 14:23)')&&
     said('When they had arrived and had gathered the congregation together, they related the many things God had done by means of them, and that he had opened to the nations the door to faith. (Acts 14:27)'),'chapter six complete screen shown');
   ok(ov.textContent.includes(T('Silver left for the brothers in Iconium'))&&ov.textContent.includes(T('A passage read with young Timothy')),'both kindnesses are named on the closing screen');
-  ok(store('paul.save')===null,'a finished game keeps no save');
+  ok(store('paul.save')===codeOf(7,0),'and the browser keeps the first code of Chapter Seven');
+  ok(ov.textContent.includes(T('Chapter Seven code: {code}',{code:codeOf(7,0)})),'chapter six ends with a chapter seven code');
   {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===7&&L.every(l=>l.k===1)&&M.state.seen.has('attalia')&&M.state.seen.has('antioch'),'chapter six ends on the map: back by Perga to Attalia, and home by sea to Antioch');
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
-  halt('journey6',()=>{ov.className=''});halt('final6')}
+  halt('journey6',()=>{ov.className=''});halt('final6');await wait(1700)}
+  if(!HUB)await ch7();
   if(lang!=='en')ok(!MISSING.size,'every line shown in the game had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);
