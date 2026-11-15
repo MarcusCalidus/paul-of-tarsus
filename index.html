@@ -192,6 +192,7 @@ function audioInit(){
   const c=AU.ctx=new AC();audioWake();if(!AU.muted)hush(1);audioGraph(c);
   AU.next=c.currentTime+.15;setInterval(sched,60);
 }
+function lyreBody(c,to){const b=c.createBiquadFilter();b.type='peaking';b.frequency.value=1000;b.Q.value=1.4;b.gain.value=6;b.connect(to);return b}
 /* ROOM: how much room a voice sent with echo:1 gets, where a room does not say (its space is 1) */
 const ROOM=.42;
 /* audioGraph: the mixer, the echo and the noise every sound draws on, built on a context. The playtest builds the same graph offline. */
@@ -201,9 +202,10 @@ function audioGraph(c){
   AU.mus=c.createGain();AU.mus.gain.value=.55;AU.mus.connect(AU.master);
   AU.fx=c.createGain();AU.fx.gain.value=.7;AU.fx.connect(AU.master);
   AU.ambG=c.createGain();AU.ambG.gain.value=.5;AU.ambG.connect(AU.master);
-  /* the lyre's wooden body: one resonance near 1 kHz that all its notes pass through, whatever their pitch */
-  AU.body=c.createBiquadFilter();AU.body.type='peaking';AU.body.frequency.value=1000;AU.body.Q.value=1.4;AU.body.gain.value=6;AU.body.connect(AU.mus);
-  /* the room: voices with echo:1 feed AU.send, which sounds through one convolver into AU.wet. Its response is built here: five early
+  /* the instruments write to AU.out, and the lyre to AU.body, its wooden body: one resonance near 1 kHz that all its notes pass through,
+     whatever their pitch. Outside the score (the map's sting) they are the music bus; playStep points them at a track's own gain. */
+  AU.out=AU.mus;AU.body=lyreBody(c,AU.mus);
+  /* the room: voices with echo:1 feed AU.send (inside a score through their track's send, see mixFor), which sounds through one convolver into AU.wet. Its response is built here: five early
      reflections, then 1.1 s of noise that dies away (60 dB in about 0.9 s) and darkens as it goes, because a one-pole lowpass closes
      over it from 7 kHz towards 300 Hz, so high notes die sooner than low ones, as in a room. Two channels with different noise give it
      width. It is scaled to unit energy; AU.wet sets how much room there is (ROOM times the room's space, see ambience). */
@@ -214,7 +216,7 @@ function audioGraph(c){
   for(let k=0;k<2;k++)for(const v of ir.getChannelData(k))e+=v*v;
   for(let k=0;k<2;k++){const x=ir.getChannelData(k);for(let i=0;i<n;i++)x[i]/=Math.sqrt(e/2)}
   const cv=c.createConvolver();cv.normalize=false;cv.buffer=ir;
-  AU.send=c.createGain();AU.wet=c.createGain();AU.wet.gain.value=ROOM;AU.space=1;AU.send.connect(cv);cv.connect(AU.wet);AU.wet.connect(AU.mus);
+  AU.send=c.createGain();AU.wet=c.createGain();AU.wet.gain.value=ROOM;AU.space=1;AU.toRoom=AU.send;AU.send.connect(cv);cv.connect(AU.wet);AU.wet.connect(AU.mus);
   const nb=c.createBuffer(1,c.sampleRate,c.sampleRate),ch=nb.getChannelData(0);
   for(let i=0;i<ch.length;i++)ch[i]=Math.random()*2-1;AU.nbuf=nb}
 /* audioWake: resume sound the browser holds back, inside the press that allows it. The one-sample buffer unlocks older iOS. */
@@ -264,7 +266,7 @@ function tone(o){const c=AU.ctx;if(!c)return;const t=o.t||c.currentTime,osc=c.cr
   g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+(o.a||.006));
   if(o.sus){g.gain.setValueAtTime(v,t+o.d*.7);g.gain.linearRampToValueAtTime(.0001,t+o.d)}
   else g.gain.exponentialRampToValueAtTime(.0001,t+o.d);
-  src.connect(g);g.connect(o.dest||AU.fx);if(o.echo)g.connect(AU.send);
+  src.connect(g);g.connect(o.dest||AU.fx);if(o.echo)g.connect(AU.toRoom);
   osc.start(t);osc.stop(t+o.d+.05)}
 /* noise: filtered noise that starts at v and dies away over d; with a it swells in over a seconds, and with sus it holds like tone() */
 function noise(o){const c=AU.ctx;if(!c)return;const t=o.t||c.currentTime,s=c.createBufferSource(),g=c.createGain(),fl=c.createBiquadFilter(),v=o.v||.2;
@@ -274,7 +276,7 @@ function noise(o){const c=AU.ctx;if(!c)return;const t=o.t||c.currentTime,s=c.cre
   s.connect(fl);fl.connect(g);g.connect(o.dest||AU.fx);s.start(t,Math.random()*.5);s.stop(t+o.d+.05)}
 /* pluck: the finger or plectrum leaving a string, a burst of noise of d seconds (12 ms if not given), tuned to b times the note
    (shared by the plucked voices) */
-function pluck(f,t,v,b,d){noise({t,d:d||.012,v,f:Math.min(f*b,6000),q:1.6,dest:AU.mus})}
+function pluck(f,t,v,b,d){noise({t,d:d||.012,v,f:Math.min(f*b,6000),q:1.6,dest:AU.out})}
 /* --- music: every level brings its own score as plain data (see "music" in the level files) ---
    score = {dt: seconds per step, root: MIDI note of the tonic, scale: semitones of the mode, bars, tracks: [...]}
    A bar has 16 steps. A track plays only in the moods it lists (each room names its mood), and is one of:
@@ -287,48 +289,65 @@ function pluck(f,t,v,b,d){noise({t,d:d||.012,v,f:Math.min(f*b,6000),q:1.6,dest:A
    over the score's, and without either the beats are fours (threes or twos for a bar that fours do not divide). */
 const INST={
   /* the plucked strings start fast, with a pluck and an overtone whose brightness falls away in the first tenth of a second */
-  oud(f,t,d,v){tone({f,t,d:.55,type:'triangle',v:v*.13,a:.003,dest:AU.mus,echo:1});tone({f:f*2,t,d:.18,type:'square',v:v*.018,a:.003,lp:[[f*12,0],[f*3,.09]],dest:AU.mus});pluck(f,t,v*.09,5)},
+  oud(f,t,d,v){tone({f,t,d:.55,type:'triangle',v:v*.13,a:.003,dest:AU.out,echo:1});tone({f:f*2,t,d:.18,type:'square',v:v*.018,a:.003,lp:[[f*12,0],[f*3,.09]],dest:AU.out});pluck(f,t,v*.09,5)},
   /* the lyre is the bright one: strong upper harmonics, sounding through its body (AU.body). On the first step of a bar (down) it
      strums: the octave above follows 25 ms after the note, which stays in any mode. */
   lyre(f,t,d,v,down){tone({f,t,d:.8,type:'triangle',v:v*.085,a:.003,lp:[[f*10,0],[f*4,.15]],dest:AU.body,echo:1});tone({f:f*2,t,d:.4,type:'triangle',v:v*.038,dest:AU.body});
     tone({f:f*3,t,d:.22,type:'sine',v:v*.026,dest:AU.body});pluck(f,t,v*.06,4,.01);if(down)INST.lyre(f*2,t+.025,d,v*.4)},
   /* the harp is the warm one: a round fundamental, a soft octave that dulls quickly, a gentle pluck, and the longest ring */
-  harp(f,t,d,v){tone({f,t,d:1.2,type:'sine',v:v*.084,a:.004,dest:AU.mus,echo:1});tone({f:f*2,t,d:.3,type:'triangle',v:v*.028,a:.004,lp:[[f*5,0],[f*2,.08]],dest:AU.mus});pluck(f,t,v*.04,2.5,.015)},
+  harp(f,t,d,v){tone({f,t,d:1.2,type:'sine',v:v*.084,a:.004,dest:AU.out,echo:1});tone({f:f*2,t,d:.3,type:'triangle',v:v*.028,a:.004,lp:[[f*5,0],[f*2,.08]],dest:AU.out});pluck(f,t,v*.04,2.5,.015)},
   /* the ney: a breath of noise around the second harmonic that follows the note, and a vibrato that comes in after the attack */
-  ney(f,t,d,v){tone({f,t,d,type:'sine',v:v*.1,a:.05,sus:1,vib:4,vibd:.15,dest:AU.mus,echo:1});noise({t,d,v:v*.08,a:.05,sus:1,f:f*2,q:4,dest:AU.mus})},
+  ney(f,t,d,v){tone({f,t,d,type:'sine',v:v*.1,a:.05,sus:1,vib:4,vibd:.15,dest:AU.out,echo:1});noise({t,d,v:v*.08,a:.05,sus:1,f:f*2,q:4,dest:AU.out})},
   /* the aulos: each note scoops up 15 cents onto its pitch, and its reed opens bright on the attack and settles to 1900 Hz */
   aulos(f,t,d,v){const lp=[[f*1.5,0],[Math.max(3600,f*5),.03],[1900,.25]],bend=[-15,.025];
-    tone({f,t,d,type:'sawtooth',v:v*.05,a:.03,sus:1,vib:3,bend,lp,lpq:1.2,dest:AU.mus,echo:1});tone({f:f*1.003,t,d,type:'square',v:v*.012,a:.03,sus:1,bend,lp,lpq:1.2,dest:AU.mus})},
+    tone({f,t,d,type:'sawtooth',v:v*.05,a:.03,sus:1,vib:3,bend,lp,lpq:1.2,dest:AU.out,echo:1});tone({f:f*1.003,t,d,type:'square',v:v*.012,a:.03,sus:1,bend,lp,lpq:1.2,dest:AU.out})},
   /* the bass: a low plucked string. A sawtooth gives it every harmonic; its lowpass closes from the eighth harmonic to the third as the
      note dies away over its length, so the second and third stay clear and the top dulls first. No octave below. */
-  bass(f,t,d,v){d=Math.max(.3,d);tone({f,t,d,type:'sawtooth',v:v*.24,a:.004,lp:[[f*8,0],[f*3,d*.6]],dest:AU.mus});pluck(f,t,v*.12,6,.015)},
-  drone(f,t,d,v){tone({f,t,d,type:'triangle',v:v*.16,a:.6,sus:1,dest:AU.mus});tone({f:f*1.4983,t,d,type:'sine',v:v*.09,a:.9,sus:1,dest:AU.mus})}};
+  bass(f,t,d,v){d=Math.max(.3,d);tone({f,t,d,type:'sawtooth',v:v*.24,a:.004,lp:[[f*8,0],[f*3,d*.6]],dest:AU.out});pluck(f,t,v*.12,6,.015)},
+  drone(f,t,d,v){tone({f,t,d,type:'triangle',v:v*.16,a:.6,sus:1,dest:AU.out});tone({f:f*1.4983,t,d,type:'sine',v:v*.09,a:.9,sus:1,dest:AU.out})}};
 const DRUMS={
   /* doum: the deep stroke of a frame drum held in the hand, a membrane falling from 130 to 76 Hz, its second mode at 1.59 times that,
      and the slap of the palm */
-  d(t,v){tone({f:130,to:76,t,d:.3,type:'sine',v:v*.22,dest:AU.mus});tone({f:207,to:121,t,d:.12,type:'sine',v:v*.08,dest:AU.mus});noise({t,d:.03,v:v*.12,f:550,q:1.4,dest:AU.mus})},
-  t(t,v){noise({t,d:.06,v:v*.07,f:2600,q:2,dest:AU.mus})},                               /* tek: the rim */
-  k(t,v){noise({t,d:.03,v:v*.04,f:2600,q:2,dest:AU.mus})},                               /* ka: a lighter rim stroke */
-  s(t,v){noise({t,d:.05,v:v*.035,f:6500,q:.8,type:'highpass',dest:AU.mus})},             /* shaker */
-  c(t,v){noise({t,d:.09,v:v*.08,f:1500,q:1.4,dest:AU.mus});noise({t:t+.012,d:.07,v:v*.05,f:1700,q:1.4,dest:AU.mus})},   /* hand clap */
+  d(t,v){tone({f:130,to:76,t,d:.3,type:'sine',v:v*.22,dest:AU.out});tone({f:207,to:121,t,d:.12,type:'sine',v:v*.08,dest:AU.out});noise({t,d:.03,v:v*.12,f:550,q:1.4,dest:AU.out})},
+  t(t,v){noise({t,d:.06,v:v*.07,f:2600,q:2,dest:AU.out})},                               /* tek: the rim */
+  k(t,v){noise({t,d:.03,v:v*.04,f:2600,q:2,dest:AU.out})},                               /* ka: a lighter rim stroke */
+  s(t,v){noise({t,d:.05,v:v*.035,f:6500,q:.8,type:'highpass',dest:AU.out})},             /* shaker */
+  c(t,v){noise({t,d:.09,v:v*.08,f:1500,q:1.4,dest:AU.out});noise({t:t+.012,d:.07,v:v*.05,f:1700,q:1.4,dest:AU.out})},   /* hand clap */
   /* finger cymbal: struck metal, so its partials are not whole multiples of the lowest (1 : 1.47 : 2.11 : 2.89); a twin 6 Hz above
      the lowest beats against it, a short shimmer */
-  b(t,v){[[1,.024,.6],[1.47,.014,.4],[2.11,.01,.3],[2.89,.007,.2]].forEach(([r,l,d],i)=>tone({f:2637*r,t,d,type:'sine',v:v*l,dest:AU.mus,echo:!i}));
-    tone({f:2643,t,d:.45,type:'sine',v:v*.01,dest:AU.mus})}};
+  b(t,v){[[1,.024,.6],[1.47,.014,.4],[2.11,.01,.3],[2.89,.007,.2]].forEach(([r,l,d],i)=>tone({f:2637*r,t,d,type:'sine',v:v*l,dest:AU.out,echo:!i}));
+    tone({f:2643,t,d:.45,type:'sine',v:v*.01,dest:AU.out})}};
 /* The plucked strings and the drums are played by hand: the first note of a bar is a little louder, a note that starts a beat (see
    group) a little louder too, any other a little softer, and each lands up to 4 ms off the grid, never before now. The held voices
    (ney, aulos, drone) play as written. accent gives the weight of step s in a bar of n steps grouped by g. */
 const LOOSE=new Set(['oud','lyre','harp','bass']);
 function accent(s,n,g){if(s===0)return 1.12;g=g||(n%4?n%3?[2]:[3]:[4]);let p=0,i=0;while(p<s)p+=Math.max(1,g[i++%g.length]);return p===s?1.05:.94}
 const loose=t=>Math.max(AU.ctx.currentTime,t+(Math.random()*2-1)*.004);
-function playStep(st,t){const sc=AU.score;if(!sc)return;const N=16,bar=Math.floor(st/N),s=st%N,m=AU.mood,
+/* Moods cross-fade. Each track of the score playing has its own gain (AU.mix, built for that score on that context and rebuilt when either
+   changes; nothing is kept on the score). When the mood changes, a track that leaves it glides to silence and one that joins it glides
+   in, with a time constant of FADE steps: in at about half its level after one step, out by 40 dB within seven. A leaving track goes on
+   playing for FADEN steps under its falling gain, so nothing stops dead. A drone that joins its mood between strikes is struck at once,
+   to ring until its next strike. A track has a second gain on its way into the room, which glides with the first: tone() sends echo:1
+   to AU.toRoom, as it writes to AU.out, and playStep points both at the track's, so a voice fades in the room as it fades dry. Outside the
+   score (the fanfares, the map) they are the music bus and AU.send. While the mood holds, every playing track's gains are 1 and its
+   notes are exactly what they were without cross-fades. */
+const FADE=1.5,FADEN=7;
+function mixFor(sc){const c=AU.ctx,o=AU.mix;if(o&&o.sc===sc&&o.c===c)return o;
+  if(o&&o.c===c)setTimeout(()=>o.tr.forEach(x=>{x.g.disconnect();x.r.disconnect()}),4000);
+  return AU.mix={sc,c,tr:sc.tracks.map(tr=>{const g=c.createGain(),r=c.createGain();g.connect(AU.mus);r.connect(AU.send);return{g,r,body:tr.inst==='lyre'?lyreBody(c,g):null,on:null,off:0}})}}
+function playStep(st,t){const sc=AU.score;if(!sc)return;const N=16,bar=Math.floor(st/N),s=st%N,m=AU.mood,mx=mixFor(sc),out=AU.out,body=AU.body,room=AU.toRoom,
   deg=(n,oct)=>mtof(note(n,oct,sc));
-  for(const tr of sc.tracks){if(tr.moods&&!tr.moods.includes(m))continue;const v=tr.vol==null?1:tr.vol,pr=tr.prog||'A',
-      hand=tr.drum||LOOSE.has(tr.inst),tt=()=>hand?loose(t):t,vv=hand?v*accent(s,N,tr.group||sc.group):v;
-    if(tr.drone){const ev=tr.every||32;if(st%ev===0)for(const n of tr.drone)INST.drone(mtof(sc.root+n),t,ev*sc.dt+.4,v)}
+  try{sc.tracks.forEach((tr,j)=>{const x=mx.tr[j],want=!tr.moods||tr.moods.includes(m),first=x.on===null;
+    if(first){for(const p of[x.g.gain,x.r.gain])p.setValueAtTime(want?1:0,t);x.off=want?0:FADEN}
+    else if(want!==x.on)for(const p of[x.g.gain,x.r.gain])p.setTargetAtTime(want?1:0,t,FADE*sc.dt);
+    const join=want&&x.on===false;x.on=want;x.off=want?0:x.off+1;if(!want&&x.off>FADEN)return;
+    AU.out=x.g;AU.toRoom=x.r;AU.body=x.body||body;
+    const v=tr.vol==null?1:tr.vol,pr=tr.prog||'A',hand=tr.drum||LOOSE.has(tr.inst),tt=()=>hand?loose(t):t,vv=hand?v*accent(s,N,tr.group||sc.group):v;
+    if(tr.drone){const ev=tr.every||32;if(want&&(st%ev===0||join))for(const n of tr.drone)INST.drone(mtof(sc.root+n),t,(ev-st%ev)*sc.dt+.4,v)}
     else if(tr.drum){const ch=tr.seq[pr[bar%pr.length]][s];if(ch&&DRUMS[ch])DRUMS[ch](tt(),vv)}
     else if(tr.seq){const n=tr.seq[pr[bar%pr.length]][s];if(n!=null)INST[tr.inst](deg(n,tr.oct),tt(),(tr.len||3)*sc.dt,vv,s===0)}
-    else if(tr.lines){let i=bar-(tr.from||0);if(i<0)continue;if(tr.loop)i%=tr.loop;for(const[n0,dg,len]of tr.lines[i]||[])if(n0===s)INST[tr.inst](deg(dg,tr.oct),tt(),len*sc.dt*.95,vv,s===0)}}}
+    else if(tr.lines){let i=bar-(tr.from||0);if(i<0)return;if(tr.loop)i%=tr.loop;for(const[n0,dg,len]of tr.lines[i]||[])if(n0===s)INST[tr.inst](deg(dg,tr.oct),tt(),len*sc.dt*.95,vv,s===0)}})}
+  finally{AU.out=out;AU.toRoom=room;AU.body=body}}
 function setScore(sc){if(sc)AU.key=sc;if(AU.score!==sc){AU.score=sc;AU.step=0}}
 function sched(){const c=AU.ctx;if(!c||c.state!=='running')return;const sc=AU.score;
   if(AU.next<c.currentTime-.5)AU.next=c.currentTime+.05;

@@ -143,6 +143,27 @@
        g=[[.01,.03],[.3,.4],[2.2,2.4]].map(([a,b])=>Math.sqrt(en(y,a,b)))}
      finally{delete ROOMS.__hall;G.room=r0;G.scene=s0}
      const r=g.map(v=>v/g[0]);
+     /* moods cross-fade: a drone for mood a, then the mood turns to b at step 16, whose drone lies a minor third higher. The old one is gone
+        within a second and a half, the new one sounds within two steps; and while a mood holds, the notes are what they were before */
+     {const dt=.17,sw=.05+16*dt,m0=AU.mood,sc={dt,root:50,scale:[0,2,4,5,7,9,11],tracks:[{drone:[0],every:32,moods:['a']},{drone:[3],every:32,moods:['b']}]},
+        y=await offline(()=>{const s0=AU.score;AU.score=sc;try{for(let st=0;st<40;st++){AU.mood=st<16?'a':'b';playStep(st,.05+st*dt)}}finally{AU.score=s0;AU.mood=m0}},7.5),
+        A=mtof(50),B=mtof(53),lv=(f,a,b)=>{let re=0,im=0;const i0=Math.round(a*SR),n=Math.round(b*SR)-i0;for(let i=0;i<n;i++){const w=2*Math.PI*f*(i0+i)/SR,h=.5-.5*Math.cos(2*Math.PI*i/n);re+=y[i0+i]*h*Math.cos(w);im+=y[i0+i]*h*Math.sin(w)}return 4*Math.hypot(re,im)/n},a0=lv(A,2.2,2.6),a1=lv(A,sw+1.5,sw+1.8),b0=lv(B,2.2,2.6),b1=lv(B,sw+.2,sw+.34),b2=lv(B,sw+2,sw+2.4),
+        I0=Object.assign({},INST),D0=Object.assign({},DRUMS),calls=[],rec=sc2=>{calls.length=0;const s0=AU.score;AU.score=sc2;try{for(let st=0;st<32;st++)playStep(st,1000+st*dt)}finally{AU.score=s0}return calls.map(c=>c.join()).join('|')},
+        mk=all=>({dt,root:50,scale:[0,2,4,5,7,9,11],tracks:[{drone:[0],every:8,moods:['a']},{inst:'ney',lines:[[[0,0,4],[8,2,4]]],moods:['a']},{inst:'aulos',seq:{A:[0,null,null,null,2,null,null,null,4,null,null,null,2,null,null,null]},moods:['a']},
+          ...(all?[{drone:[7],every:8,moods:['b']},{inst:'ney',lines:[[[4,4,4]]],moods:['b']},{drum:1,seq:{A:'d.......d.......'},moods:['b']}]:[])]});
+      let same;try{for(const k in INST)INST[k]=(f,t,d,v,dn)=>calls.push([k,f.toFixed(3),t,d.toFixed(3),v,dn]);for(const k in DRUMS)DRUMS[k]=(t,v)=>calls.push(['drum',t,v]);
+        AU.mood='a';const one=rec(mk(0)),two=rec(mk(1));same=one===two&&one.length>0}finally{Object.assign(INST,I0);Object.assign(DRUMS,D0);AU.mood=m0}
+      ok(dB(a1,a0)<-30&&b0<b2*.03&&dB(b1,b2)>-15&&same,`moods cross-fade: the old drone is ${(-dB(a1,a0)).toFixed(0)} dB down a second and a half after the change, the new one sounds within two steps (${dB(b1,b2).toFixed(0)} dB of its full level), and a mood that holds plays exactly what it did`+(same?'':' (NOT THE SAME)'))}
+     /* and in the room: a held ney note of the leaving mood falls in the room as it falls dry, and an aulos joining the new mood rises in the
+        room no faster than it rises dry. Each path is rendered alone: the dry one with the room cut off, the room's share at its input */
+     {const dt=.17,sw=.05+8*dt,m0=AU.mood,sc={dt,root:50,scale:[0,2,4,5,7,9,11],tracks:[{inst:'ney',oct:12,lines:[[[0,0,16]]],moods:['a']},{inst:'aulos',oct:12,lines:[[[8,4,8]]],moods:['b']}]},
+        run=room=>offline(off=>{AU.master.disconnect();AU.send.disconnect();if(room)AU.send.connect(off.destination);else AU.master.connect(off.destination);
+          const s0=AU.score;AU.score=sc;try{for(let st=0;st<16;st++){AU.mood=st<8?'a':'b';playStep(st,.05+st*dt)}}finally{AU.score=s0;AU.mood=m0}},3),
+        rm=await run(1),dr=await run(0),
+        lv=(y,f,a,b)=>{let re=0,im=0;const i0=Math.round(a*SR),n=Math.round(b*SR)-i0;for(let i=0;i<n;i++){const w=2*Math.PI*f*(i0+i)/SR,h=.5-.5*Math.cos(2*Math.PI*i/n);re+=y[i0+i]*h*Math.cos(w);im+=y[i0+i]*h*Math.sin(w)}return 4*Math.hypot(re,im)/n},
+        N=mtof(62),A=mtof(69),fall=y=>dB(lv(y,N,sw+.5,sw+.7),lv(y,N,1.1,1.35)),rise=y=>lv(y,A,sw+.02,sw+.12)/lv(y,A,sw+.8,sw+1),
+        fr=fall(rm),fd=fall(dr),rr=rise(rm),rd=rise(dr);
+      ok(Math.abs(fr-fd)<3&&fr<-10&&rr<=rd*1.25,`and in the room: the leaving ney falls ${(-fr).toFixed(0)} dB in the room as it falls ${(-fd).toFixed(0)} dB dry; the joining aulos is at ${(rr*100).toFixed(0)}% of its level in the room after the first step, ${(rd*100).toFixed(0)}% dry`)}
      ok(r[1]>1.1&&r[1]<1.45&&Math.abs(r[2]-1.5)<.1,`a room's space sets how much room there is, and it glides there: a room of 1.5 brings the room up by ${r.map(v=>v.toFixed(2)).join(', ')} over two seconds`)}}
   /* played by hand: the plucked strings and the drums land a few ms off the grid and never in the past, the held voices exactly on it;
      accents follow the beats a track declares, not a square four */
