@@ -199,7 +199,6 @@ function audioGraph(c){
   AU.mus=c.createGain();AU.mus.gain.value=.55;AU.mus.connect(AU.master);
   AU.fx=c.createGain();AU.fx.gain.value=.7;AU.fx.connect(AU.master);
   AU.ambG=c.createGain();AU.ambG.gain.value=.5;AU.ambG.connect(AU.master);
-  AU.reed=c.createBiquadFilter();AU.reed.type='lowpass';AU.reed.frequency.value=1900;AU.reed.Q.value=1.2;AU.reed.connect(AU.mus);
   const d=c.createDelay(1),fb=c.createGain(),lp=c.createBiquadFilter();
   d.delayTime.value=.34;fb.gain.value=.3;lp.type='lowpass';lp.frequency.value=1700;
   AU.send=c.createGain();AU.send.gain.value=.4;AU.send.connect(d);d.connect(lp);lp.connect(fb);fb.connect(d);lp.connect(AU.mus);
@@ -223,12 +222,13 @@ for(const t of['pointerdown','keydown'])addEventListener(t,()=>{const el=$('#hus
 const now=()=>AU.ctx?AU.ctx.currentTime:0;
 const mtof=m=>440*Math.pow(2,(m-69)/12);
 /* tone: one oscillator note. f Hz, t start, d seconds, v level, a attack (6 ms if not given), sus holds the level to 70% of d,
-   to glides the pitch to that frequency over d, vib is vibrato depth in Hz (vibd: seconds it takes to come in), echo also feeds the echo.
+   to glides the pitch to that frequency over d, bend:[cents, seconds] starts the note that far off and slides it onto f, vib is vibrato depth in Hz (vibd: seconds it takes to come in), echo also feeds the echo.
    lp gives the note its own lowpass that moves through [[Hz, seconds after t], ...]: the first point is set, the next ones are reached
    by exponential ramps (lpq sets its Q). */
 function tone(o){const c=AU.ctx;if(!c)return;const t=o.t||c.currentTime,osc=c.createOscillator(),g=c.createGain(),v=o.v||.2;
   osc.type=o.type||'triangle';osc.frequency.setValueAtTime(o.f,t);
   if(o.to)osc.frequency.exponentialRampToValueAtTime(o.to,t+o.d);
+  if(o.bend){osc.frequency.setValueAtTime(o.f*Math.pow(2,o.bend[0]/1200),t);osc.frequency.exponentialRampToValueAtTime(o.f,t+o.bend[1])}
   let src=osc;if(o.lp){const fl=c.createBiquadFilter(),ny=c.sampleRate*.45;fl.type='lowpass';fl.Q.value=o.lpq||.7;
     o.lp.forEach(([hz,dt],i)=>i?fl.frequency.exponentialRampToValueAtTime(Math.min(hz,ny),t+dt):fl.frequency.setValueAtTime(Math.min(hz,ny),t+dt));osc.connect(fl);src=fl}
   if(o.vib){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=5.2;
@@ -263,7 +263,9 @@ const INST={
   harp(f,t,d,v){tone({f,t,d:.45,type:'sine',v:v*.11,a:.004,dest:AU.mus,echo:1});tone({f:f*2,t,d:.14,type:'triangle',v:v*.04,a:.004,lp:[[f*8,0],[f*3,.06]],dest:AU.mus});pluck(f,t,v*.06,3,.015)},
   /* the ney: a breath of noise around the second harmonic that follows the note, and a vibrato that comes in after the attack */
   ney(f,t,d,v){tone({f,t,d,type:'sine',v:v*.1,a:.05,sus:1,vib:4,vibd:.15,dest:AU.mus,echo:1});noise({t,d,v:v*.08,a:.05,sus:1,f:f*2,q:4,dest:AU.mus})},
-  aulos(f,t,d,v){tone({f,t,d,type:'sawtooth',v:v*.05,a:.03,sus:1,vib:3,dest:AU.reed,echo:1});tone({f:f*1.003,t,d,type:'square',v:v*.012,a:.03,sus:1,dest:AU.reed})},
+  /* the aulos: each note scoops up 15 cents onto its pitch, and its reed opens bright on the attack and settles to 1900 Hz */
+  aulos(f,t,d,v){const lp=[[f*1.5,0],[Math.max(3600,f*5),.03],[1900,.25]],bend=[-15,.025];
+    tone({f,t,d,type:'sawtooth',v:v*.05,a:.03,sus:1,vib:3,bend,lp,lpq:1.2,dest:AU.mus,echo:1});tone({f:f*1.003,t,d,type:'square',v:v*.012,a:.03,sus:1,bend,lp,lpq:1.2,dest:AU.mus})},
   bass(f,t,d,v){tone({f,t,d:Math.max(.3,d),type:'triangle',v:v*.17,dest:AU.mus});tone({f:f/2,t,d:Math.max(.3,d),type:'sine',v:v*.08,dest:AU.mus})},
   drone(f,t,d,v){tone({f,t,d,type:'triangle',v:v*.16,a:.6,sus:1,dest:AU.mus});tone({f:f*1.4983,t,d,type:'sine',v:v*.09,a:.9,sus:1,dest:AU.mus})}};
 const DRUMS={
