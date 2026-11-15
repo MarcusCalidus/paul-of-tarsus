@@ -454,7 +454,7 @@ async function seal(){
     {q:'Thank you. Barnabas and I will keep a careful count on the road.',r:['I am sure you would. But what could you show a man in Judea who asked how much left Antioch?']},
     {q:'Count it before the brothers, write the sum twice, and seal the purse.',ok:1,
       p:['Not as it is. Count it here, before the brothers, and write the sum twice: one list to stay in Antioch, one to travel with the purse. Then seal it.',
-        'We care for everything honestly, not only in the sight of Jehovah but also in the sight of men.'],r:['Well said. Then let us do exactly that.']},
+        'We care for everything honestly, not only in the sight of Jehovah but also in the sight of men. (2 Corinthians 8:21)'],r:['Well said. Then let us do exactly that.']},
     {q:'As you think best. Among brothers, trust is seal enough.',r:['Here, yes. But this gift will pass through many hands before it is bread on a table.']}]);
   await fade(1,300);F.sealed=1;await narr('The silver is counted aloud before the brothers. The sum is written on two tablets, and the purse is tied and sealed.',{dur:6500});await fade(0,300);SFX.good();
   await say(LU,'One tablet stays here, and one goes with you. No one will be able to find fault with this gift, or with the men who carry it.');return checkFinal3()}
@@ -523,10 +523,10 @@ async function xanthe(){
   await say(XA,'Peace, brother Saul. You have come about the gift for Judea. I know: I have brought nothing.');
   await quiz(XA,'The others carry in sacks of grain. I earn two small coins a day. What could I give?',[
     {q:'Then you are excused, sister. Let those who have more give more.',r:['Excused. Yes... that is the very word I was afraid of.']},
-    {q:'In a time like this, everyone must give something.',r:["Must? Then it is a tax, like Caesar's. I had hoped it was something else."]},
+    {q:'Everyone else is giving something, sister.',r:['Everyone else. I know, brother: I can see the sacks from my stall. That only tells me what I do not have.']},
     {q:'No one asks for what you do not have. Each gives what he can afford.',ok:1,
       p:['No one asks for what you do not have, Xanthe. Each according to what he can afford: that is what the congregation determined.',
-        'Where the readiness is there first, a gift is welcome for what a person has, not for what a person does not have.'],
+        'If the readiness is there first, it is especially acceptable according to what a person has, not according to what a person does not have. (2 Corinthians 8:12)'],
       r:['According to what I can afford... Then even a little would truly be mine to give.']}]);
   await quiz(XA,'But what do I have that hungry people need?',[
     {q:'Jehovah sees your heart. Let that be enough for you.',r:['I know that he does. But I wanted my hands to have a share in it, and not only my heart.']},
@@ -542,7 +542,7 @@ async function xanthe(){
       r:['My thread, holding the whole gift together?','Then take the best spool I have, and take it gladly! Tell the brothers in Judea that a spinner in Antioch thought of them.']}]);
   F.gotSpool=1;addItem('spool');await say(P,'I will tell them. Thank you, sister.');await say(P,'She has given more than thread. And now I can sew.',TH)}
 ROOMS.antioch={walk:[16,466,110,138],mood:'hope',amb:{crowd:.6,fountain:.7,birds:.3,hooves:.3},hs:[
-  {name:'Mount Silpius',x:230,y:4,w:200,h:24,wx:300,look:'Mount Silpius, with the city wall climbing over its shoulder.'},
+  {name:'mountain',x:230,y:4,w:200,h:24,wx:300,look:'The mountain above the city, with the city wall climbing over its shoulder.'},
   {name:'colonnade',x:112,y:30,w:318,h:28,wx:270,look:['The great street of Antioch, paved and colonnaded from end to end.','In its shade, people from every nation pass each other all day long. Many of them have stopped to listen.']},
   {name:'gate to the courtyard',x:16,y:44,w:44,h:60,wx:38,wy:112,dir:-1,look:'The gate of the house where the congregation meets.',exit:()=>go('court',296,116,-1)},
   {name:'thread stall',x:150,y:44,w:80,h:60,wx:176,wy:114,look:"Xanthe's stall: skeins of yarn in every color, and spools of waxed linen thread.",pickup:'That would be stealing.'},
@@ -614,7 +614,7 @@ const AS_B={
     'old pack bags':{look:'Rotten through. They would not survive the gate.'},
     'donkey':{look:'He has walked the road to Judea before. He knows it better than I do.',talk:async()=>{SFX.bray();await say(BN,'A fine traveling companion. He never argues.')},
       useWith:async it=>say(BN,it==='bags'?"Saul sewed them, so let Saul hang them. I will hold the donkey's head.":'He has no use for that.')}},
-  antioch:{'Mount Silpius':{look:'Mount Silpius, and the wall climbing over it.'},
+  antioch:{'mountain':{look:'The mountain above the city, and the wall climbing over it.'},
     'colonnade':{look:'When I first walked this street, I saw the undeserved kindness of God at work everywhere. (Acts 11:23)'},
     'thread stall':{look:"Xanthe's stall. The best thread in Antioch, Theron says."},'fountain':{look:'Water from the springs above the city.'},
     'pottery stall':{look:"Theron's stall. Plain, sound work."},'south gate':{look:'The road to Judea. Not yet.'},

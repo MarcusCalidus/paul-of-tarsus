@@ -760,7 +760,7 @@ async function arrive4(to){place4(G.room);for(const a of party()){const inv=invO
     await narr('Ahead lay Cyprus: the island where Barnabas was born. (Acts 4:36)',{dur:5000});
     await fade(1,500);G.scene=null;G.sea=null;AU.mood=ROOMS.salamis.mood;AU.amb=ROOMS.salamis.amb}
   if(to==='paphos'){const o={dur:7500};
-    await narr('They went through the whole island as far as Paphos: at least 150 kilometers on foot. (Acts 13:6)',o);
+    await narr('They went through the whole island as far as Paphos (Acts 13:6): perhaps 150 kilometers or more on foot.',o);
     await narr("At night the roof that Saul had sewn for a ship's deck stood beside the road, on Barnabas's staff.",{dur:6000});
     await narr('In Paphos they met a Jewish man named Bar-Jesus, who was a sorcerer and a false prophet. (Acts 13:6)',o);
     await narr('He was with the proconsul Sergius Paulus, an intelligent man. Calling Barnabas and Saul to him, this man was eager to hear the word of God. (Acts 13:7)',{dur:9000})}}

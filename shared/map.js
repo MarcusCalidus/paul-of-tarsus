@@ -46,9 +46,11 @@ const VIA={'caesarea-tarsus':[34.42,33.3,34.5,34.7,34.88,35.75],'tarsus-antioch'
   'attalia-seleucia':[31.2,36.4,32.2,35.92,33.2,35.74,34.2,35.9,35.1,36.14],
   /* from the Syrian Gates round the Gulf of Issus to Tarsus; and from the Cilician Gates out onto the plateau, and west to Derbe */
   'syriangates-tarsus':[36.32,36.7,36.2,37.03,35.6,37.02],'ciliciangates-derbe':[34.55,37.47,34.05,37.5]};
-/* region names sit where no coast, lake or route runs through them */
+/* region names sit where no coast, lake or route runs through them. close: a name with its letters set closer together, for a region
+   too small to hold a widely spaced one; north: a name shown only in the northern window, where the mountains make room for it */
 const REGIONS=[{name:'CILICIA',at:[32.7,36.72]},{name:'SYRIA',at:[37.6,35.2]},{name:'CYPRUS',at:[33.2,34.35],sea:1},
-  {name:'PISIDIA',at:[29.62,37.68]},{name:'GALATIA',at:[33.6,38.75]}];
+  {name:'PISIDIA',at:[29.62,37.68]},{name:'GALATIA',at:[33.6,38.75]},
+  {name:'PAMPHYLIA',at:[32.015,37.02],close:1,north:1}];
 /* the coast of the mainland, from the Aegean round Asia Minor, down the Syrian and Phoenician coast, and west along Egypt. The first
    line is the Aegean shore above the usual window: the gulfs of Smyrna and Ephesus, and the long capes between them. */
 const COAST=pts([26.7,39.7,26.72,39.3,26.9,39.07,27.0,38.92,26.96,38.8,26.76,38.68,26.85,38.54,27.1,38.45,26.88,38.37,26.66,38.34,26.6,38.5,26.5,38.64,26.36,38.66,26.4,38.42,
@@ -75,9 +77,10 @@ const LAKES=[pts([35.46,31.77,35.6,31.76,35.6,31.4,35.52,31.08,35.38,31.12,35.42
 const RANGES=[[29.2,37.25,30.4,37.15,31.4,37.05,32.4,36.95,33.4,36.98,34.3,37.25,35.0,37.35],[35.75,37.3,36.3,37.05,36.38,36.6,36.3,36.3],
   [35.95,34.55,35.86,34.1,35.7,33.62],[36.42,34.28,36.2,33.86,35.9,33.38],[35.22,32.6,35.24,32.2,35.2,31.92,35.1,31.5],
   [32.7,34.98,33.05,34.92],[23.9,35.28,24.5,35.25,25.0,35.17,25.6,35.08],[36.95,36.55,37.4,36.3]];
-/* in the northern view the Taurus opens where the road from Perga climbs through it, and stands back from the names beside that road;
+/* in the northern view the Taurus opens where the road from Perga climbs through it, and stands back from the names beside that road:
+   behind Pamphylia, a strip of coast up to 50 km wide, it runs further inland, clear of the region's name;
    the mountains north-east of Antioch in Pisidia run along the road to Iconium */
-const RANGES_N=[[28.6,37.42,29.3,37.34,29.95,37.3],[31.5,37.12,32.4,36.95,33.4,36.98,34.3,37.25,35.0,37.35],...RANGES.slice(1),[31.45,38.58,31.9,38.36,32.3,38.2],[28.3,38.3,28.9,38.42],[33.9,37.9,34.5,38.2]];
+const RANGES_N=[[28.6,37.42,29.3,37.34,29.95,37.3],[31.62,37.22,32.28,37.2],[33.25,36.97,34.3,37.25,35.0,37.35],...RANGES.slice(1),[31.45,38.58,31.9,38.36,32.3,38.2],[28.3,38.3,28.9,38.42],[33.9,37.9,34.5,38.2]];
 function poly(g,p){g.beginPath();g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1]);g.closePath()}
 function line(g,p){g.beginPath();g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1])}
 function paint(g){const r=rng(1913),lands=[LAND,...ISLES];
@@ -132,8 +135,10 @@ function dot(g,x,y,lit){oval(g,x,y,1.9,1.9,'#1a0e08');oval(g,x,y,1.15,1.15,lit?'
 function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];const sea=T('THE GREAT SEA').split('').join(' ');
   g.save();g.translate(-OX,-OY);
   g.font='italic bold 5px "Lucida Console",Monaco,monospace';g.textBaseline='middle';g.fillStyle='rgba(190,224,236,.55)';{const[sx,sy]=SEA[OX+','+OY]||SEA['0,0'];g.fillText(sea,sx,sy);box(g,sea,sx,sy,5)}
-  for(const{name,at:[lon,lat],sea}of REGIONS){const[x,y]=xy(lon,lat),s=T(name);if(!inView(x-s.length*2.3,y,-2)||!inView(x+s.length*2.3,y,-2))continue;
-    g.font='bold 4.2px "Lucida Console",Monaco,monospace';g.fillStyle=sea?'rgba(190,224,236,.55)':'rgba(70,46,20,.6)';const sp=s.split('').join(' ');g.fillText(sp,x-s.length*2.3,y);box(g,sp,x-s.length*2.3,y,4.2)}
+  for(const{name,at:[lon,lat],sea,close,north}of REGIONS){if(north&&OY>=0)continue;const[x,y]=xy(lon,lat),s=T(name),hw=s.length*(close?1.66:2.3);if(!inView(x-hw,y,-2)||!inView(x+hw,y,-2))continue;
+    g.font='bold 4.2px "Lucida Console",Monaco,monospace';g.fillStyle=sea?'rgba(190,224,236,.55)':'rgba(70,46,20,.6)';
+    if(close){/* letter by letter, a third of a letter apart */for(let i=0;i<s.length;i++)g.fillText(s[i],x-hw+i*3.32,y);ST.boxes.push([x-hw,y-1.9,x+hw,y+1.9,s])}
+    else{const sp=s.split('').join(' ');g.fillText(sp,x-hw,y);box(g,sp,x-hw,y,4.2)}}
   for(const L of ST.legs){const n=Math.floor(L.dots.length*L.k);for(let i=0;i<n;i++){const[x,y]=L.dots[i];R(g,x-.6,y-.6,1.2,1.2,'#5a140c');R(g,x-.35,y-.35,.7,.7,L.k<1&&i>n-4?'#ffe0a0':'#d84a32')}}
   const show=new Set(ST.places||Object.keys(PLACES).filter(k=>PLACES[k].minor||ST.seen.has(k)));
   for(const k of show){const p=placeOf(k),[x,y]=at(k),main=!p.minor||ST.places||ST.seen.has(k);if(!inView(x,y,-3))continue;dot(g,x,y,ST.seen.has(k)||ST.hover===k);
