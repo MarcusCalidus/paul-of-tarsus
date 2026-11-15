@@ -18,15 +18,15 @@ const _=null,
   [[0,5,4],[4,6,2],[6,7,2],[8,6,4],[12,5,4]],[[0,4,4],[4,3,2],[6,4,2],[8,2,8]],[[0,1,2],[2,2,2],[4,3,2],[6,4,2],[8,3,4],[12,1,4]],[[0,0,4],[4,-1,2],[6,0,10]]],
  MUSIC={dt:.17,root:51,scale:[0,2,4,7,9],bars:16,tracks:[
   {inst:'lyre',moods:['hope'],prog:'AABAACBA',len:3,seq:{A:[0,_,2,_,3,_,2,_,0,_,2,_,3,_,5,_],B:[1,_,3,_,4,_,3,_,1,_,3,_,4,_,6,_],C:[-1,_,1,_,3,_,1,_,-2,_,0,_,2,_,0,_]}},
-  {inst:'harp',moods:['calm'],prog:'AABAACBA',len:3,oct:12,seq:{A:[0,_,_,2,_,_,3,_,_,_,2,_,_,_,0,_],B:[1,_,_,3,_,_,4,_,_,_,3,_,_,_,1,_],C:[-1,_,_,1,_,_,3,_,_,_,1,_,_,_,-2,_]}},
+  {inst:'harp',moods:['calm'],group:[3,3,4,4,2],prog:'AABAACBA',len:3,oct:12,seq:{A:[0,_,_,2,_,_,3,_,_,_,2,_,_,_,0,_],B:[1,_,_,3,_,_,4,_,_,_,3,_,_,_,1,_],C:[-1,_,_,1,_,_,3,_,_,_,1,_,_,_,-2,_]}},
   {inst:'bass',moods:['hope','calm'],prog:'AABAACBA',len:6,seq:{A:[-5,_,_,_,_,_,_,_,-2,_,_,_,_,_,_,_],B:[-4,_,_,_,_,_,_,_,-1,_,_,_,_,_,_,_],C:[-6,_,_,_,_,_,_,_,-7,_,_,_,_,_,-4,_]}},
   {drum:1,moods:['hope'],prog:'AAAB',seq:{A:'d...t.k.d.d.t...',B:'d...t.k.d.k.t.tk'}},
   {drum:1,moods:['calm'],seq:{A:'d.......t.......'},vol:.45},
   {drum:1,moods:['tense'],seq:{A:'d.......d.......'},vol:.7},
   {drone:[0,7],every:32,moods:['tense','storm']},
   {inst:'oud',moods:['tense'],prog:'AB',len:4,seq:{A:[0,_,_,_,_,_,_,_,2,_,_,_,1,_,_,_],B:[0,_,_,_,_,_,_,_,-1,_,_,_,0,_,_,_]},vol:.6},
-  {drum:1,moods:['storm'],prog:'AB',seq:{A:'d..d..k.d.......',B:'d..d..k.d..kd.k.'},vol:.9},
-  {inst:'oud',moods:['storm'],prog:'AB',len:4,seq:{A:[0,_,_,_,_,_,2,_,_,_,_,_,1,_,_,_],B:[0,_,_,_,-1,_,_,_,_,_,1,_,_,_,_,_]},vol:.7},
+  {drum:1,moods:['storm'],group:[3,3,2],prog:'AB',seq:{A:'d..d..k.d.......',B:'d..d..k.d..kd.k.'},vol:.9},
+  {inst:'oud',moods:['storm'],group:[3,3,2,2,2,4],prog:'AB',len:4,seq:{A:[0,_,_,_,_,_,2,_,_,_,_,_,1,_,_,_],B:[0,_,_,_,-1,_,_,_,_,_,1,_,_,_,_,_]},vol:.7},
   {inst:'aulos',moods:['hope'],loop:8,oct:12,lines:TUNE},
   {inst:'ney',moods:['calm'],from:8,oct:12,lines:TUNE}]};
 
@@ -714,7 +714,7 @@ ME.hs={name:'Melissa',actor:ME,
   show:{awl:'Is it sharp?',tablets:'Are there pictures in it?','*':'Is that for our tent?'},
   talk:async()=>{await say(ME,'Does the big ox bite?');await say(P,'He does not. He is too busy thinking about his supper.')},
   as:{silas:{look:'The merchant\'s daughter. She is the only one here who is enjoying the wind.',talk:async()=>{await say(ME,'Are you cold too?');await say(SI,'A little. Not for much longer, I think.')},show:{'*':'Is that for our tent?'}}}};
-ROOMS.gates={walk:[16,388,112,138],get mood(){return F.up?'calm':'storm'},amb:()=>F.up?{fountain:.9,leaves:.9,wind:.5}:{wind:1,leaves:.5,fountain:.25,creak:.3},enter:gatesIntro,hs:[
+ROOMS.gates={space:0.8,walk:[16,388,112,138],get mood(){return F.up?'calm':'storm'},amb:()=>F.up?{fountain:.9,leaves:.9,wind:.5}:{wind:1,leaves:.5,fountain:.25,creak:.3},enter:gatesIntro,hs:[
   {name:'rock wall',x:0,y:0,w:338,h:82,wx:180,look:'Limestone, as high as I can see. The marks of the picks are still on it where the road was cut.'},
   {name:'Cilician Gates',x:342,y:8,w:54,h:58,wx:360,wy:113,dir:1,exit:leaveGates,look:['The Cilician Gates. The gorge is so narrow here that the stream and the road could not both have room: so the road was cut out of the rock.','Every wagon between Tarsus and the plateau goes through that gap. So does every wind. Beyond it the road comes out onto the plateau, and runs to Derbe.']},
   {name:'stream',x:398,y:100,w:82,h:44,wx:384,wy:127,dir:1,look:'Snow water, coming down fast. If this rain lasts, it will be over the road by morning.',use:'I fill my hands and drink. It is cold enough to hurt the teeth.',pickup:'A stream stays in its bed. I hope.'},
@@ -843,7 +843,7 @@ MY.hs={name:'Myron',actor:MY,
   talk:askMyron,
   as:{silas:{look:'Myron, one of the older men of this congregation. He has helped to keep the flock together for two years, with stones not far behind him.',give:deliverL,
     talk:()=>say(MY,F.readL?'A good letter, brother, and well carried. Lystra thanks Jerusalem for it.':'Peace, brother. You carry something for us, I think. I am one of the older men here: put it into my hand.'),show:{'*':'Keep it by you, brother.'}}}};
-ROOMS.lystra7={walk:[16,304,110,136],mood:'calm',amb:{fire:.5,birds:.25,wind:.2},enter:lysIntro,hs:[
+ROOMS.lystra7={space:1.25,walk:[16,304,110,136],mood:'calm',amb:{fire:.5,birds:.25,wind:.2},enter:lysIntro,hs:[
   {name:'window',x:48,y:24,w:24,h:26,wx:64,look:'The lane, in winter daylight. Two years ago I was dragged down it by the heels. Today a child waved at me from a doorway.'},
   {name:'lamp',x:140,y:42,w:20,h:24,wx:150,look:'The lamp in its niche. I mended two garments by it once, and a boy watched every stitch.',pickup:'It gives light to the whole house where it stands.'},
   {name:'shelf',x:172,y:48,w:60,h:18,wx:200,look:'Oil, meal and olives. It is a careful household still, and still not a rich one.',pickup:'It is their winter store.'},
@@ -911,7 +911,7 @@ TA.hs={name:'Tatia',actor:TA,
   talk:()=>F.readI?askTatia():say(TA,'Paul! In Iconium again, and in daylight! Go to Nathan first: he has been saying for a month that you would come.'),
   as:{silas:{look:'A sister at the fountain, with a jar she is in no hurry to fill.',
     talk:()=>say(TA,'You are the brother from Jerusalem? Then tell them there that the door is open in Iconium too. Even in the house of a carrier.'),show:{'*':'Keep it, brother.'}}}};
-ROOMS.iconium7={walk:[16,464,110,138],mood:'hope',amb:{fountain:.7,birds:.2,hammer:.3,wind:.3,crowd:.2},enter:icoIntro,hs:[
+ROOMS.iconium7={space:0.9,walk:[16,464,110,138],mood:'hope',amb:{fountain:.7,birds:.2,hammer:.3,wind:.3,crowd:.2},enter:icoIntro,hs:[
   {name:'mountains',x:188,y:26,w:110,h:24,wx:244,look:'The mountains round the plain, white almost to their feet. Winter comes early up here.'},
   {name:'street to the synagogue',x:0,y:36,w:60,h:68,wx:42,wy:113,dir:-1,look:'The street to the synagogue of the Jews. I have not walked up it since the day we fled.',use:'Not today. I have a letter for the congregation, and a question for the brothers.',open:'Not today. I have a letter for the congregation, and a question for the brothers.'},
   {name:'saddlery',x:84,y:56,w:84,h:30,wx:126,wy:113,look:"Nathan's shop: pack saddles, collars, girths and bridles. The congregation of Iconium meets behind it.",pickup:"They are Nathan's living."},

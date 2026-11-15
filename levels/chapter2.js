@@ -11,12 +11,12 @@ const _=null,
  MUSIC={dt:.19,root:57,scale:[0,2,3,5,7,9,10],bars:16,tracks:[
   {drone:[-12],every:64,vol:.5,moods:['calm']},
   {inst:'lyre',moods:['calm'],prog:'AABACDAA',seq:{A:[0,_,2,_,4,_,7,_,4,_,2,_,4,_,2,_],B:[-1,_,1,_,3,_,6,_,3,_,1,_,3,_,1,_],C:[3,_,5,_,7,_,10,_,7,_,5,_,7,_,5,_],D:[4,_,6,_,8,_,6,_,4,_,6,_,8,_,6,_]}},
-  {drum:1,moods:['calm'],prog:'AB',seq:{A:'d.....t.d...t...',B:'d.....t.d.b.t...'},vol:.8},
+  {drum:1,moods:['calm'],prog:'AB',seq:{A:'d.....t.d...t...',B:'d.....t.d.b.t...'},vol:.8,group:[3,3,2,4,4]},
   {inst:'ney',moods:['calm'],from:4,oct:12,lines:[[[0,4,4],[4,5,2],[6,4,2],[8,2,6]],[[0,1,4],[4,2,2],[6,3,2],[8,4,8]],[[0,7,6],[6,6,2],[8,5,4],[12,4,4]],[[0,2,4],[4,1,4],[8,0,8]],[],[],[],[],
     [[0,4,3],[3,5,1],[4,7,4],[8,6,4],[12,4,4]],[[0,5,4],[4,4,2],[6,3,2],[8,2,8]],[[0,3,4],[4,2,2],[6,1,2],[8,2,4],[12,1,4]],[[0,0,14]]]},
-  {inst:'harp',moods:['hope'],prog:'GCGDGCDG',seq:{G:[-1,_,_,1,_,_,3,_,6,_,_,3,_,_,1,_],C:[2,_,_,4,_,_,6,_,9,_,_,6,_,_,4,_],D:[3,_,_,5,_,_,7,_,10,_,_,7,_,_,5,_]}},
-  {inst:'bass',moods:['hope'],prog:'GCGDGCDG',seq:{G:[-8,_,_,_,_,_,_,_,-8,_,_,_,_,_,-4,_],C:[-5,_,_,_,_,_,_,_,-5,_,_,_,_,_,-8,_],D:[-4,_,_,_,_,_,_,_,-4,_,_,_,_,_,-6,_]},len:5},
-  {drum:1,moods:['hope'],prog:'AB',seq:{A:'d..t..t.d..t..k.',B:'d..t..t.d..t.bk.'},vol:.8},
+  {inst:'harp',moods:['hope'],group:[3,3,2],prog:'GCGDGCDG',seq:{G:[-1,_,_,1,_,_,3,_,6,_,_,3,_,_,1,_],C:[2,_,_,4,_,_,6,_,9,_,_,6,_,_,4,_],D:[3,_,_,5,_,_,7,_,10,_,_,7,_,_,5,_]}},
+  {inst:'bass',moods:['hope'],group:[3,3,2],prog:'GCGDGCDG',seq:{G:[-8,_,_,_,_,_,_,_,-8,_,_,_,_,_,-4,_],C:[-5,_,_,_,_,_,_,_,-5,_,_,_,_,_,-8,_],D:[-4,_,_,_,_,_,_,_,-4,_,_,_,_,_,-6,_]},len:5},
+  {drum:1,moods:['hope'],group:[3,3,2],prog:'AB',seq:{A:'d..t..t.d..t..k.',B:'d..t..t.d..t.bk.'},vol:.8},
   {inst:'ney',moods:['hope'],loop:8,oct:12,lines:[[[0,6,6],[6,8,2],[8,10,8]],[[0,9,4],[4,8,4],[8,6,8]],[[0,8,6],[6,10,2],[8,13,8]],[[0,12,4],[4,10,4],[8,7,8]],
     [[0,6,6],[6,8,2],[8,10,4],[12,13,4]],[[0,11,4],[4,9,4],[8,8,4],[12,6,4]],[[0,7,4],[4,8,4],[8,10,4],[12,12,4]],[[0,13,14]]]}]};
 
@@ -332,7 +332,7 @@ async function barnStory(){
     {q:'I would rather speak of that only to the apostles.',r:['They will ask why I trust you. Give me something to tell them.']}]);
   await say(BN,'I believe you, Saul. And the brothers will hear it from me.');await say(BN,'Come. They know my voice at that door.');
   F.told=1;await walk(BN,360,114);BN.dir=-1}
-ROOMS.jerusalem={walk:[16,466,110,138],mood:'calm',amb:{birds:.5,crowd:.35,wind:.15,hooves:.25},hs:[
+ROOMS.jerusalem={space:0.9,walk:[16,466,110,138],mood:'calm',amb:{birds:.5,crowd:.35,wind:.15,hooves:.25},hs:[
   {name:'city gate',x:0,y:22,w:58,h:82,wx:44,wy:114,dir:-1,look:'The gate I came in by. The road from Damascus was long.',use:'I did not walk all this way to turn back.'},
   {name:'temple',x:150,y:6,w:64,h:34,wx:180,look:['The temple, gleaming above the rooftops.','I studied in its shadow, at the feet of Gamaliel. How much I thought I knew.']},
   {name:'olive tree',x:66,y:44,w:44,h:58,wx:98,wy:114,look:'An old olive tree. Someone has pruned it recently.',pickup:'The tree is not mine to cut.'},
@@ -370,7 +370,7 @@ BN.hs={get name(){return F.cartFixed||G.room!=='jerusalem'?'Barnabas':'man with 
       {q:'Who is the food for?',a:()=>say(BN,'For the widows among the disciples. No one among us should be in need.')},
       {q:'Do you know the people in that house?',a:async()=>{await say(BN,'Know them? I am on my way to them. Why do you ask, friend?');await say(P,'I will tell you. When your hands are free.')}},
       {q:'I will see what I can do.',bye:1}])}};
-ROOMS.upper={walk:[24,300,112,138],mood:'calm',amb:{birds:.25,crowd:.12},
+ROOMS.upper={space:1.25,walk:[24,300,112,138],mood:'calm',amb:{birds:.25,crowd:.12},
   enter:async()=>{if(F.upper)return;F.upper=1;place(BN,'upper',96,124,1);await say(BN,'Cephas, James: this is Saul of Tarsus. Before you answer, hear me.');
     await narr('Barnabas told them in detail how Saul had seen the Lord on the road, and how in Damascus he had spoken boldly in the name of Jesus. (Acts 9:27)',{dur:8000});
     await say(CE,'Saul. I too know what it is to fail my Lord, and to be shown mercy.');await say(CE,'Stay in my house, brother. We have much to speak about.');
@@ -413,7 +413,7 @@ async function mendSail(it){if(!SEW.includes(it))return false;
 async function lowerSail(){if(!F.metCapt)return say(P,"I should not touch a ship's rigging without her captain's word.");
   await say(P,'Easy... paying it out, hand over hand.');SFX.creak();await fade(1,220);F.sailDown=1;await wait(250);await fade(0,220);SFX.creak();
   await say(CP,'Gently done. You have hauled a line before.');await say(P,'Tent ropes, mostly.')}
-ROOMS.harbor={walk:[16,466,110,138],mood:'hope',amb:{waves:.8,gulls:.6,wind:.3,creak:.5},hs:[
+ROOMS.harbor={space:0.6,walk:[16,466,110,138],mood:'hope',amb:{waves:.8,gulls:.6,wind:.3,creak:.5},hs:[
   {name:'warehouse',x:0,y:24,w:112,h:66,wx:60,look:'Grain warehouses. Caesarea feeds half the coast.'},
   {name:'heap of old sailcloth',x:18,y:90,w:52,h:18,wx:48,wy:114,look:'Worn-out sails, heaped for rag. Some of the cloth is still sound.',
     pickup:()=>say(P,F.gotPatch?'I have all I need from it.':'A whole sail is far too heavy. I only need one sound piece of it.'),

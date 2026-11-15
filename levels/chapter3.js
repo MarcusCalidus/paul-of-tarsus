@@ -11,10 +11,10 @@ LEVEL(3,()=>{
 const _=null,
  TUNE=[[[0,4,2],[2,5,2],[4,7,4],[8,5,2],[10,4,2],[12,2,4]],[[0,4,4],[4,2,2],[6,1,2],[8,0,8]],[[0,3,2],[2,4,2],[4,5,4],[8,7,2],[10,5,2],[12,4,4]],[[0,2,4],[4,1,4],[8,2,8]],
   [[0,7,4],[4,8,2],[6,7,2],[8,5,4],[12,4,4]],[[0,6,4],[4,5,2],[6,4,2],[8,3,8]],[[0,4,2],[2,5,2],[4,7,2],[6,8,2],[8,9,4],[12,7,4]],[[0,8,4],[4,7,12]]],
- MUSIC={dt:.155,root:55,scale:[0,2,4,5,7,9,10],bars:16,tracks:[
+ MUSIC={dt:.155,root:55,scale:[0,2,4,5,7,9,10],bars:16,group:[3,3,2],tracks:[
   {inst:'lyre',prog:'AABACADA',len:2,seq:{A:[0,_,2,4,_,2,7,_,4,_,2,4,_,2,4,_],B:[-1,_,1,3,_,1,6,_,3,_,1,3,_,1,3,_],C:[3,_,5,7,_,5,10,_,7,_,5,7,_,5,7,_],D:[4,_,6,8,_,6,11,_,8,_,6,8,_,6,8,_]}},
   {inst:'bass',prog:'AABACADA',len:5,seq:{A:[-7,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],B:[-8,_,_,_,_,_,_,_,-4,_,_,_,_,_,_,_],C:[-4,_,_,_,_,_,_,_,-7,_,_,_,_,_,_,_],D:[-3,_,_,_,_,_,_,_,-6,_,_,_,_,_,-5,_]}},
-  {drum:1,moods:['calm'],seq:{A:'d..k..t.d.k.t...'},vol:.7},
+  {drum:1,moods:['calm'],seq:{A:'d..k..t.d.k.t...'},vol:.7,group:[3,3,2,2,2,4]},
   {drum:1,moods:['hope'],prog:'AB',seq:{A:'d.sk.st.d.sk.st.',B:'d.sk.st.d.skcstc'}},
   {inst:'aulos',moods:['calm'],from:8,oct:12,lines:TUNE},
   {inst:'aulos',moods:['hope'],loop:8,oct:12,lines:TUNE}]};
@@ -369,7 +369,7 @@ async function leave3(){
   await say(LU,'And nothing leaves this courtyard uncounted. I am keeping the tally here at the table.');
   await say(P,'Then there is work here for a tentmaker. I have goat-hair cloth, a knife and an awl...');
   await say(P,"...and not an arm's length of thread. My spool ran out days ago.",TH)}
-ROOMS.tarsus={walk:[16,304,110,138],mood:'calm',amb:{birds:.5,crowd:.25,wind:.2,hammer:.35},hs:[
+ROOMS.tarsus={space:0.8,walk:[16,304,110,138],mood:'calm',amb:{birds:.5,crowd:.25,wind:.2,hammer:.35},hs:[
   {name:'Taurus mountains',x:118,y:22,w:150,h:26,wx:190,look:['The Taurus mountains, with snow on them even now.','The road through the Cilician Gates climbs straight into them. Kleon will need a sound tent up there.']},
   {name:'my workshop',x:12,y:52,w:94,h:34,wx:58,wy:113,look:'My stall and workshop. Tents have gone out from under this awning to half of Cilicia.'},
   {name:'awning',x:4,y:40,w:112,h:11,wx:58,wy:113,look:'Goat-hair cloth of my own sewing. It has kept sun and rain off this bench for years.',pickup:'It can stay. Whoever takes this stall after me will be glad of it.'},
@@ -541,7 +541,7 @@ async function xanthe(){
         "I have the cloth and the awl, and not an arm's length of thread. Yours would hold every sack of it together, all the way to Jerusalem."],
       r:['My thread, holding the whole gift together?','Then take the best spool I have, and take it gladly! Tell the brothers in Judea that a spinner in Antioch thought of them.']}]);
   F.gotSpool=1;addItem('spool');await say(P,'I will tell them. Thank you, sister.');await say(P,'She has given more than thread. And now I can sew.',TH)}
-ROOMS.antioch={walk:[16,466,110,138],mood:'hope',amb:{crowd:.6,fountain:.7,birds:.3,hooves:.3},hs:[
+ROOMS.antioch={space:0.9,walk:[16,466,110,138],mood:'hope',amb:{crowd:.6,fountain:.7,birds:.3,hooves:.3},hs:[
   {name:'mountain',x:230,y:4,w:200,h:24,wx:300,look:'The mountain above the city, with the city wall climbing over its shoulder.'},
   {name:'colonnade',x:112,y:30,w:318,h:28,wx:270,look:['The great street of Antioch, paved and colonnaded from end to end.','In its shade, people from every nation pass each other all day long. Many of them have stopped to listen.']},
   {name:'gate to the courtyard',x:16,y:44,w:44,h:60,wx:38,wy:112,dir:-1,look:'The gate of the house where the congregation meets.',exit:()=>go('court',296,116,-1)},

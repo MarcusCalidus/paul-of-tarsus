@@ -93,6 +93,150 @@
     AU.ctx=fake('interrupted');dispatchEvent(new PointerEvent('pointerup',{bubbles:true}));ok(n===1,'a tap wakes sound that iOS interrupted');
     AU.ctx=fake('suspended');key('Shift');ok(n===2,'a key wakes sound the browser held back');
     AU.ctx=fake('running');dispatchEvent(new MouseEvent('click'));ok(n===2,'running sound is left alone');AU.ctx=real}
+  /* the voices, rendered offline on the game's own mixer (audioGraph): every instrument and drum stroke sounds, stays finite and does not clip */
+  {const SR=22050,offline=async(fn,dur)=>{const off=new OfflineAudioContext(1,Math.ceil(SR*dur),SR),keep=Object.assign({},AU);AU.ctx=off;audioGraph(off);
+      try{fn(off)}finally{for(const k in AU)AU[k]=keep[k]}return(await off.startRendering()).getChannelData(0)},
+    peak=x=>{let p=0;for(const v of x){if(!isFinite(v))return NaN;p=Math.max(p,Math.abs(v))}return p},bad=[];
+    for(const k in INST){const p=peak(await offline(()=>INST[k](mtof(k==='bass'||k==='drone'?40:69),.02,k==='drone'?3:.6,1),3));if(!(p>.0005&&p<.9))bad.push(k+' '+p)}
+    for(const k in DRUMS){const p=peak(await offline(()=>DRUMS[k](.02,1),1));if(!(p>.0005&&p<.9))bad.push('drum '+k+' '+p)}
+    const pk=peak(await offline(()=>pluck(440,.02,.09,5),.1));if(!(pk>.0005&&pk<.9))bad.push('pluck '+pk);
+    ok(!bad.length,`offline: ${Object.keys(INST).length} instruments, ${Object.keys(DRUMS).length} drum strokes and the pluck render finite, audible and unclipped`+(bad.length?' BAD '+bad:''));
+    /* pitch: hz lists the frequency of each cycle between two times, from the upward zero crossings; asks lists the tone() calls an instrument makes */
+    const hz=(x,a,b)=>{const r=[];let c0=null;for(let i=Math.ceil(a*SR)+1;i<b*SR;i++)if(x[i-1]<0&&x[i]>=0){const c=i-1+x[i-1]/(x[i-1]-x[i]);if(c0!=null)r.push(SR/(c-c0));c0=c}return r.slice(1)},
+      dev=(r,f)=>Math.max(...r.map(v=>Math.abs(v-f))),asks=fn=>{const t0=window.tone,seen=[];window.tone=o=>{seen.push(o);return t0(o)};try{fn()}finally{window.tone=t0}return seen};
+    {const ny=asks(()=>INST.ney(440,0,.5,1)).find(o=>o.vib),x=await offline(()=>tone({f:1000,t:.02,d:.6,type:'sine',v:.2,a:.05,sus:1,vib:30,vibd:.15,dest:AU.mus}),.7),
+       x0=await offline(()=>tone({f:1000,t:.02,d:.6,type:'sine',v:.2,a:.05,sus:1,vib:30,dest:AU.mus}),.7),early=dev(hz(x,.025,.055),1000),late=dev(hz(x,.2,.5),1000),now0=dev(hz(x0,.025,.055),1000);
+     ok(ny&&ny.vibd>=.1&&early<12&&late>22&&now0>early*2,`the ney's vibrato comes in after the attack: ${early.toFixed(1)} Hz off in the first 35 ms (${now0.toFixed(1)} without the delay), ${late.toFixed(1)} Hz later`)}
+    {const au=asks(()=>INST.aulos(440,0,.5,1)),x=await offline(()=>tone({f:1000,t:.02,d:.4,type:'sine',v:.2,a:.03,sus:1,bend:[-15,.025],dest:AU.mus}),.45),
+       mean=r=>r.reduce((a,b)=>a+b,0)/r.length,early=mean(hz(x,.021,.033)),late=mean(hz(x,.1,.3)),lp=au[0]&&au[0].lp;
+     ok(au.length&&au.every(o=>o.bend&&o.bend[0]<0&&o.lp)&&lp[1][0]>lp[0][0]&&lp[1][0]>lp[lp.length-1][0]&&early<997&&Math.abs(late-1000)<.5,
+       `the aulos scoops up to its pitch (${early.toFixed(1)} Hz in the first 12 ms of a 1000 Hz note, ${late.toFixed(1)} after) and its reed opens on the attack and settles`)}
+    /* spectra: amp is the amplitude at one frequency between two times (a single-bin DFT), dB a ratio in decibels */
+    const amp=(x,f,a,b)=>{let re=0,im=0;const i0=Math.round(a*SR),i1=Math.round(b*SR);for(let i=i0;i<i1;i++){const w=2*Math.PI*f*i/SR;re+=x[i]*Math.cos(w);im+=x[i]*Math.sin(w)}return 2*Math.hypot(re,im)/(i1-i0)},
+      dB=(a,b)=>20*Math.log10(a/b);
+    {const f=mtof(40),x=await offline(()=>INST.bass(f,.02,.85,1),.4),[h,f1,f2,f3]=[f/2,f,2*f,3*f].map(q=>amp(x,q,.03,.33));
+     ok(dB(h,f1)<-25&&dB(f2,f1)>-12&&dB(f3,f1)>-15,`the bass is a plucked string with no octave below: half its pitch at ${dB(h,f1).toFixed(0)} dB, the second and third harmonics at ${dB(f2,f1).toFixed(0)} and ${dB(f3,f1).toFixed(0)} dB`)}
+    /* the lyre is the bright one and the harp the warm one that rings longer; ring is how long a note takes to fall 30 dB, dry */
+    {const cen=(x,a,b)=>{let n=0,d=0;for(let f=50;f<=6000;f+=50){const m=amp(x,f,a,b);n+=f*m*m;d+=m*m}return n/d},
+       ring=x=>{const w=Math.round(SR*.01),e=[];for(let i=0;i+w<=x.length;i+=w){let s=0;for(let j=i;j<i+w;j++)s+=x[j]*x[j];e.push(Math.sqrt(s/w))}const p=Math.max(...e);let k=e.indexOf(p);while(k<e.length&&e[k]>p*.0316)k++;return(k-e.indexOf(p))*.01},
+       dry=k=>offline(()=>{AU.send.disconnect();INST[k](mtof(69),.02,.5,1)},1.5),ly=await dry('lyre'),hp=await dry('harp'),cl=cen(ly,.02,.22),ch=cen(hp,.02,.22),rl=ring(ly),rh=ring(hp),
+       st=asks(()=>INST.lyre(440,.1,.5,1,true)).filter(o=>Math.abs(o.f-880)<.01&&Math.abs(o.t-.125)<1e-6);
+     ok(cl>ch*1.25&&rh>rl+.1&&st.length,`lyre and harp at A4: the lyre brighter (centroid ${cl|0} Hz against ${ch|0}), the harp ringing longer (${rh.toFixed(2)} s to fall 30 dB against ${rl.toFixed(2)}); on a downbeat the lyre strums its octave`)}
+    /* the drums: the low stroke's fundamental and its second membrane mode, and the cymbal's partials, found by scanning for the loudest bin */
+    {const han=(x,f,a,b)=>{let re=0,im=0;const i0=Math.round(a*SR),n=Math.round(b*SR)-i0;for(let i=0;i<n;i++){const w=2*Math.PI*f*(i0+i)/SR,h=.5-.5*Math.cos(2*Math.PI*i/n);re+=x[i0+i]*h*Math.cos(w);im+=x[i0+i]*h*Math.sin(w)}return 4*Math.hypot(re,im)/n},
+       top=(x,lo,hi,step,a,b)=>{let bf=lo,bm=0;for(let f=lo;f<=hi;f+=step){const m=han(x,f,a,b);if(m>bm){bm=m;bf=f}}return[bf,bm]},
+       dx=await offline(()=>DRUMS.d(.02,1),.3),[f1,m1]=top(dx,40,160,2,.02,.07),[f2,m2]=top(dx,1.35*f1,320,2,.02,.07),
+       bx=await offline(()=>DRUMS.b(.02,1),.3),[c0]=top(bx,2000,3200,5,.02,.22),at=r=>amp(bx,c0*r,.02,.22),
+       ratios=[1.47,2.11,2.89].map(at),whole=[2,3].map(at);
+     ok(f1>=75&&f1<=140&&f2/f1>1.45&&f2/f1<1.75&&dB(m2,m1)>-20,`the low drum stroke sounds at ${f1} Hz, with its second mode at ${(f2/f1).toFixed(2)} times that (${dB(m2,m1).toFixed(0)} dB)`);
+     ok(Math.min(...ratios)>Math.max(...whole)*3,`the finger cymbal rings at ${c0} Hz with partials at 1.47, 2.11 and 2.89 times it, and nothing at twice or three times (${dB(Math.max(...whole),Math.min(...ratios)).toFixed(0)} dB)`)}
+    /* the room: one click sent to it comes back as a tail that dies away, with no single echo standing out at 340 ms (the old slapback),
+       and its high band dies sooner than its low band; its amount follows the room's space and glides there */
+    {const x=await offline(off=>{const b=off.createBufferSource(),u=off.createBuffer(1,1,SR);u.getChannelData(0)[0]=1;b.buffer=u;b.connect(AU.send);b.start(.02)},1.3),
+       en=(y,a,b)=>{let s=0;for(let i=Math.round(a*SR);i<Math.round(b*SR);i++)s+=y[i]*y[i];return s/(Math.round(b*SR)-Math.round(a*SR))},
+       hi=x.map((v,i)=>i?v-x[i-1]:0),lo=x.map((v,i)=>{let s=0;for(let j=Math.max(0,i-15);j<=i;j++)s+=x[j];return s/16}),
+       early=en(x,.04,.24),late=en(x,.82,1.02),at340=en(x,.355,.365),near=(en(x,.33,.35)+en(x,.37,.39))/2,
+       tilt=(a,b)=>en(hi,a,b)/en(lo,a,b),t0=tilt(.04,.2),t1=tilt(.4,.6);
+     ok(early>0&&10*Math.log10(early/late)>20&&at340<near*2&&t1<t0/2,`the room: a click comes back as a tail that falls ${(10*Math.log10(early/late)).toFixed(0)} dB in 0.8 s, with nothing standing out at 340 ms, and its highs fall ${(10*Math.log10(t0/t1)).toFixed(0)} dB more than its lows by half a second`);
+     const r0=G.room,s0=G.scene;ROOMS.__hall={space:1.5};let g=[];
+     try{const y=await offline(off=>{G.room='__hall';G.scene=null;roomSpace(0);G.room=r0;G.scene=s0;AU.master.disconnect();AU.master.connect(off.destination);const o=off.createConstantSource();o.offset.value=.01;o.connect(AU.wet);o.start(0)},2.5);
+       g=[[.01,.03],[.3,.4],[2.2,2.4]].map(([a,b])=>Math.sqrt(en(y,a,b)))}
+     finally{delete ROOMS.__hall;G.room=r0;G.scene=s0}
+     const r=g.map(v=>v/g[0]);
+     /* moods cross-fade: a drone for mood a, then the mood turns to b at step 16, whose drone lies a minor third higher. The old one is gone
+        within a second and a half, the new one sounds within two steps; and while a mood holds, the notes are what they were before */
+     {const dt=.17,sw=.05+16*dt,m0=AU.mood,sc={dt,root:50,scale:[0,2,4,5,7,9,11],tracks:[{drone:[0],every:32,moods:['a']},{drone:[3],every:32,moods:['b']}]},
+        y=await offline(()=>{const s0=AU.score;AU.score=sc;try{for(let st=0;st<40;st++){AU.mood=st<16?'a':'b';playStep(st,.05+st*dt)}}finally{AU.score=s0;AU.mood=m0}},7.5),
+        A=mtof(50),B=mtof(53),lv=(f,a,b)=>{let re=0,im=0;const i0=Math.round(a*SR),n=Math.round(b*SR)-i0;for(let i=0;i<n;i++){const w=2*Math.PI*f*(i0+i)/SR,h=.5-.5*Math.cos(2*Math.PI*i/n);re+=y[i0+i]*h*Math.cos(w);im+=y[i0+i]*h*Math.sin(w)}return 4*Math.hypot(re,im)/n},a0=lv(A,2.2,2.6),a1=lv(A,sw+1.5,sw+1.8),b0=lv(B,2.2,2.6),b1=lv(B,sw+.2,sw+.34),b2=lv(B,sw+2,sw+2.4),
+        I0=Object.assign({},INST),D0=Object.assign({},DRUMS),calls=[],rec=sc2=>{calls.length=0;const s0=AU.score;AU.score=sc2;try{for(let st=0;st<32;st++)playStep(st,1000+st*dt)}finally{AU.score=s0}return calls.map(c=>c.join()).join('|')},
+        mk=all=>({dt,root:50,scale:[0,2,4,5,7,9,11],tracks:[{drone:[0],every:8,moods:['a']},{inst:'ney',lines:[[[0,0,4],[8,2,4]]],moods:['a']},{inst:'aulos',seq:{A:[0,null,null,null,2,null,null,null,4,null,null,null,2,null,null,null]},moods:['a']},
+          ...(all?[{drone:[7],every:8,moods:['b']},{inst:'ney',lines:[[[4,4,4]]],moods:['b']},{drum:1,seq:{A:'d.......d.......'},moods:['b']}]:[])]});
+      let same;try{for(const k in INST)INST[k]=(f,t,d,v,dn)=>calls.push([k,f.toFixed(3),t,d.toFixed(3),v,dn]);for(const k in DRUMS)DRUMS[k]=(t,v)=>calls.push(['drum',t,v]);
+        AU.mood='a';const one=rec(mk(0)),two=rec(mk(1));same=one===two&&one.length>0}finally{Object.assign(INST,I0);Object.assign(DRUMS,D0);AU.mood=m0}
+      ok(dB(a1,a0)<-30&&b0<b2*.03&&dB(b1,b2)>-15&&same,`moods cross-fade: the old drone is ${(-dB(a1,a0)).toFixed(0)} dB down a second and a half after the change, the new one sounds within two steps (${dB(b1,b2).toFixed(0)} dB of its full level), and a mood that holds plays exactly what it did`+(same?'':' (NOT THE SAME)'))}
+     /* and in the room: a held ney note of the leaving mood falls in the room as it falls dry, and an aulos joining the new mood rises in the
+        room no faster than it rises dry. Each path is rendered alone: the dry one with the room cut off, the room's share at its input */
+     {const dt=.17,sw=.05+8*dt,m0=AU.mood,sc={dt,root:50,scale:[0,2,4,5,7,9,11],tracks:[{inst:'ney',oct:12,lines:[[[0,0,16]]],moods:['a']},{inst:'aulos',oct:12,lines:[[[8,4,8]]],moods:['b']}]},
+        run=room=>offline(off=>{AU.master.disconnect();AU.send.disconnect();if(room)AU.send.connect(off.destination);else AU.master.connect(off.destination);
+          const s0=AU.score;AU.score=sc;try{for(let st=0;st<16;st++){AU.mood=st<8?'a':'b';playStep(st,.05+st*dt)}}finally{AU.score=s0;AU.mood=m0}},3),
+        rm=await run(1),dr=await run(0),
+        lv=(y,f,a,b)=>{let re=0,im=0;const i0=Math.round(a*SR),n=Math.round(b*SR)-i0;for(let i=0;i<n;i++){const w=2*Math.PI*f*(i0+i)/SR,h=.5-.5*Math.cos(2*Math.PI*i/n);re+=y[i0+i]*h*Math.cos(w);im+=y[i0+i]*h*Math.sin(w)}return 4*Math.hypot(re,im)/n},
+        N=mtof(62),A=mtof(69),fall=y=>dB(lv(y,N,sw+.5,sw+.7),lv(y,N,1.1,1.35)),rise=y=>lv(y,A,sw+.02,sw+.12)/lv(y,A,sw+.8,sw+1),
+        fr=fall(rm),fd=fall(dr),rr=rise(rm),rd=rise(dr);
+      ok(Math.abs(fr-fd)<3&&fr<-10&&rr<=rd*1.25,`and in the room: the leaving ney falls ${(-fr).toFixed(0)} dB in the room as it falls ${(-fd).toFixed(0)} dB dry; the joining aulos is at ${(rr*100).toFixed(0)}% of its level in the room after the first step, ${(rd*100).toFixed(0)}% dry`)}
+     /* voices a chapter owns: a score's own instrument and drum stroke play in place of the engine's and are gone with that score; one that
+        says hand:true is played by hand and one that does not is not; and its notes fade with their track, dry and in the room. A chapter's
+        own call sounds while that chapter is played and not in another, and its own bed comes up in its room and falls silent when another
+        chapter is played */
+     {const I0=Object.assign({},INST),D0=Object.assign({},DRUMS),sc0=AU.score,m0=AU.mood,got=[],dt=.17,base={dt,root:50,scale:[0,2,4,5,7,9,11]},
+        tracks=[{inst:'oud',seq:{A:[0,null,null,null,2,null,null,null,4,null,null,null,2,null,null,null]}},{drum:1,seq:{A:'d...d...d...d...'}}];
+      let a,b,moved=0,held=0;
+      try{INST.oud=()=>got.push('engine oud');DRUMS.d=()=>got.push('engine d');
+        const run=sc=>{got.length=0;AU.score=sc;AU.mood='calm';for(let st=0;st<16;st++)playStep(st,1000+st*dt);return[...new Set(got)].sort().join()};
+        a=run(Object.assign({inst:{oud:()=>got.push('own oud')},drums:{d:()=>got.push('own d')},tracks},base));b=run(Object.assign({tracks},base));
+        const tk=[],sc={inst:{buzz:Object.assign((f,t)=>tk.push(['buzz',t]),{hand:true}),hum:(f,t)=>tk.push(['hum',t])},tracks:[{inst:'buzz',seq:{A:Array(16).fill(0)}},{inst:'hum',seq:{A:Array(16).fill(0)}}]};
+        AU.score=Object.assign(sc,base);for(let r=0;r<6;r++)for(let st=0;st<16;st++){const t=AU.ctx.currentTime+.1;tk.length=0;playStep(st,t);for(const[k,tt]of tk)k==='buzz'?tt!==t&&moved++:tt!==t&&held++}}
+      finally{Object.assign(INST,I0);Object.assign(DRUMS,D0);AU.score=sc0;AU.mood=m0}
+      const sw=.05+8*dt,reed=(f,t,d,v)=>tone({f,t,d,type:'square',v:v*.04,a:.02,sus:1,dest:AU.out,echo:1}),
+        sc={...base,inst:{reed},tracks:[{inst:'reed',oct:12,lines:[[[0,0,16]]],moods:['a']}]},
+        run=room=>offline(off=>{AU.master.disconnect();AU.send.disconnect();if(room)AU.send.connect(off.destination);else AU.master.connect(off.destination);
+          const s0=AU.score;AU.score=sc;try{for(let st=0;st<16;st++){AU.mood=st<8?'a':'b';playStep(st,.05+st*dt)}}finally{AU.score=s0;AU.mood=m0}},3),
+        lv=(y,f,a,b)=>{let re=0,im=0;const i0=Math.round(a*SR),n=Math.round(b*SR)-i0;for(let i=0;i<n;i++){const w=2*Math.PI*f*(i0+i)/SR,h=.5-.5*Math.cos(2*Math.PI*i/n);re+=y[i0+i]*h*Math.cos(w);im+=y[i0+i]*h*Math.sin(w)}return 4*Math.hypot(re,im)/n},
+        N=mtof(62),fall=y=>dB(lv(y,N,sw+.5,sw+.7),lv(y,N,1.1,1.35)),fr=fall(await run(1)),fd=fall(await run(0));
+      const hits=[],amb0=AU.amb,ch0=G.ch;CHAP[99]={calls:{tick:[0,0,()=>hits.push(G.ch)]},beds:{hum:{type:'bandpass',f:300,q:1,lfo:.2,depth:.3,v:.2}}};let one,other,bedUp,bedDown;
+      try{AU.amb={tick:1,hum:.7};G.ch=99;ambience(AU.ctx.currentTime);one=hits.length;bedUp=AU.layers['99:hum']&&AU.layers['99:hum'].v===.7&&!AU.layers.hum;
+        G.ch=ch0;ambience(AU.ctx.currentTime+1);other=hits.length-one;bedDown=AU.layers['99:hum'].v===0}
+      finally{G.ch=ch0;AU.amb=amb0;delete CHAP[99];const Ly=AU.layers||{};for(const id of['99:tick','99:hum'])if(Ly[id]){Ly[id].g.disconnect();if(Ly[id].s)Ly[id].s.stop();delete Ly[id]}}
+      ok(a==='own d,own oud'&&b==='engine d,engine oud'&&moved>20&&!held&&fr<-20&&Math.abs(fr-fd)<3&&one===1&&other===0&&bedUp&&bedDown,
+        `voices a chapter owns: a score's own instrument and drum stroke play instead of the engine's, and only in that score; one marked hand:true is moved off the grid (${moved} notes) and one that is not stays on it; its notes fade with their track (${(-fr).toFixed(0)} dB in the room, ${(-fd).toFixed(0)} dB dry); a chapter's own call sounds while it is played (${one}) and not in another (${other}), and its own bed comes up (${!!bedUp}) and falls silent with another chapter (${!!bedDown})`)}
+     /* the aulos as a pair of pipes: a held note wavers as the two beat, no deeper than about 10 dB and about as deep as the voice before
+        (a sawtooth and a quieter square, rebuilt here from its figures); its even harmonics lie well under the odd ones beside them; its
+        level is within 2 dB of the old voice's; a note starts as loud at one pitch as at another, A4 to A5 (the high-note curve divided
+        out), because both pipes start together; and a track with hold plays one pipe per note, one without plays two */
+     {const f=440,dry=(fn,d)=>offline(()=>{AU.send.disconnect();AU.master.disconnect();AU.master.connect(AU.ctx.destination);fn()},d||2.2),
+        x=await dry(()=>INST.aulos(f,.02,2,1)),
+        old=await dry(()=>{const lp=[[f*1.5,0],[3600,.03],[1900,.25]],bend=[-15,.025];tone({f,t:.02,d:2,type:'sawtooth',v:.05*bite(f),a:.03,sus:1,vib:3,bend,lp,lpq:1.2,dest:AU.out});
+          tone({f:f*1.003,t:.02,d:2,type:'square',v:.012*bite(f),a:.03,sus:1,bend,lp,lpq:1.2,dest:AU.out})}),
+        hn=(y,q,a,b)=>{let re=0,im=0;const i0=Math.round(a*SR),n=Math.round(b*SR)-i0;for(let i=0;i<n;i++){const w=2*Math.PI*q*(i0+i)/SR,h=.5-.5*Math.cos(2*Math.PI*i/n);re+=y[i0+i]*h*Math.cos(w);im+=y[i0+i]*h*Math.sin(w)}return 4*Math.hypot(re,im)/n},
+        waver=y=>{const e=[];for(let a=.3;a<1.35;a+=.05)e.push(hn(y,f,a,a+.1));return dB(Math.max(...e),Math.min(...e))};
+      const wv=waver(x),wo=waver(old),H=k=>hn(x,k*f,.3,1.3),ev=dB(H(2),Math.min(H(1),H(3))),ev4=dB(H(4),Math.min(H(3),H(5))),
+        rms=(y,a,b)=>{let s=0;for(let i=Math.round(a*SR);i<Math.round(b*SR);i++)s+=y[i]*y[i];return Math.sqrt(s)},lvl=dB(rms(x,.3,1.3),rms(old,.3,1.3)),
+        on=[];for(let k=0;k<=12;k++){const g=f*2**(k/12),y=await dry(()=>INST.aulos(g,.02,.4,1),.3);on.push(dB(rms(y,.02,.17)/bite(g),1))}
+      const spread=Math.max(...on)-Math.min(...on),
+        one=asks(()=>INST.aulos(f,0,.5,1,false,{hold:0})).length,two=asks(()=>INST.aulos(f,0,.5,1,false,{})).length;
+      ok(wv<=10&&Math.abs(wv-wo)<2.5&&ev<-15&&ev4<-10&&Math.abs(lvl)<2&&spread<=2&&one===1&&two===2,`the aulos is a pair of pipes: a held note wavers by ${wv.toFixed(1)} dB as they beat (the voice before: ${wo.toFixed(1)} dB); the second and fourth harmonics lie ${(-ev).toFixed(0)} and ${(-ev4).toFixed(0)} dB under the odd ones beside them; ${lvl>=0?'+':''}${lvl.toFixed(1)} dB against the old voice; the first 150 ms of a note vary by ${spread.toFixed(1)} dB from A4 to A5; a track with hold plays ${one} pipe per note, one without ${two}`)}
+     ok(r[1]>1.1&&r[1]<1.45&&Math.abs(r[2]-1.5)<.1,`a room's space sets how much room there is, and it glides there: a room of 1.5 brings the room up by ${r.map(v=>v.toFixed(2)).join(', ')} over two seconds`)}}
+  /* played by hand: the plucked strings and the drums land a few ms off the grid and never in the past, the held voices exactly on it;
+     accents follow the beats a track declares, not a square four */
+  {const sc0=AU.score,I0=Object.assign({},INST),D0=Object.assign({},DRUMS),seen=[];let early=0,held=0,moved=0,wide=0,down=0,offbeat=0;
+    try{for(const k in INST)INST[k]=(f,t,d,v,dn)=>seen.push([k,t,v,dn]);for(const k in DRUMS)DRUMS[k]=(t,v)=>seen.push(['drum',t,v]);
+      AU.score={dt:.17,root:50,scale:[0,2,4,5,7,9,11],tracks:Object.keys(INST).filter(k=>k!=='drone').map(k=>({inst:k,seq:{A:Array(16).fill(0)}}))
+        .concat({inst:'lyre',lines:[[[0,0,2],[5,0,2]]]},{drum:1,seq:{A:'dddddddddddddddd'}},{drone:[0],every:1})};
+      for(let r=0;r<12;r++)for(let st=0;st<16;st++)for(const ahead of[0,.1]){seen.length=0;const t=AU.ctx.currentTime+ahead;playStep(st,t);
+        for(const[k,tt,,dn]of seen){if(dn)st?offbeat++:down++;if(tt<t-(ahead?.0041:0))early++;if(/ney|aulos|drone/.test(k)){if(tt!==t)held++}else{if(tt!==t)moved++;if(ahead&&Math.abs(tt-t)>.0041)wide++}}}}
+    finally{Object.assign(INST,I0);Object.assign(DRUMS,D0);AU.score=sc0}
+    ok(!early&&!held&&moved>100&&!wide,`by hand: ${moved} plucked or struck notes moved up to 4 ms, none into the past; the ney, aulos and drone stay on the grid`);
+    ok(down>0&&!offbeat,'an instrument is told when it plays the first step of a bar, and only then');
+    const w=(g,n,...st)=>st.map(s=>accent(s,n,g)).join();
+    ok(w([3,3,2],16,0,3,6,8,11,14)==='1.12,1.05,1.05,1.05,1.05,1.05'&&w([3,3,2],16,4,12)==='0.94,0.94'&&w(null,16,4,8,12,3,6)==='1.05,1.05,1.05,0.94,0.94'
+      &&w([3,3,4,4,2],16,10,14,8)==='1.05,1.05,0.94'&&w(null,12,4,8,6)==='1.05,1.05,0.94'&&w(null,9,3,6,4)==='1.05,1.05,0.94'&&w(null,10,2,5)==='1.05,0.94'&&w([4,3],14,4,7,11)==='1.05,1.05,1.05',
+      'accents fall on the beats a track declares (3+3+2 and others), on fours by default, and in bars of 9, 10, 12 and 14 steps')}
+  /* bars of any length: in scores of 12, 14 and 16 steps every written note fires on its step, the downbeat is the first step of each
+     bar, a drone that does not say strikes every two bars, and the loop is bars times steps; a 16-step score that says nothing plays as one
+     that says 16 */
+  {const I0=Object.assign({},INST),D0=Object.assign({},DRUMS),sc0=AU.score,m0=AU.mood,got=[],bad=[];
+    const mk=(N,say)=>{const seq=[],str=[];for(let i=0;i<N;i++){seq.push(i%3?null:i%7);str.push(i%4?'.':'d')}
+      return Object.assign({dt:.17,root:50,scale:[0,2,4,5,7,9,11],bars:3,tracks:[{inst:'ney',seq:{A:seq}},{inst:'lyre',seq:{A:seq.map((x,i)=>i%2?null:x)}},
+        {inst:'aulos',lines:[[[0,0,3],[N-1,1,1]],[[5,2,2]],[]]},{drum:1,seq:{A:str.join('')}},{drone:[0]}]},say?{steps:N}:{})};
+    const want=sc=>{const N=sc.steps||16,L=loopOf(sc),e=[];for(let st=0;st<L;st++){const s=st%N,b=Math.floor(st/N);
+        sc.tracks.forEach(tr=>{if(tr.drone){if(st%(2*N)===0)e.push('drone@'+st)}else if(tr.drum){if(tr.seq.A[s]!=='.')e.push('drum@'+st)}
+          else if(tr.seq){if(tr.seq.A[s]!=null)e.push(tr.inst+'@'+st+(tr.inst==='lyre'&&s===0?'v':''))}else for(const[n0]of tr.lines[b]||[])if(n0===s)e.push(tr.inst+'@'+st)})}return e.sort().join()},
+      play=sc=>{got.length=0;AU.score=sc;AU.mood='calm';for(let st=0;st<loopOf(sc);st++)playStep(st,1000+st);return got.slice().sort().join()};
+    let same;try{for(const k in INST)INST[k]=(f,t,d,v,dn)=>got.push(k+'@'+Math.round(t-1000)+(k==='lyre'&&dn?'v':''));for(const k in DRUMS)DRUMS[k]=t=>got.push('drum@'+Math.round(t-1000));
+      for(const N of[12,14,16]){const sc=mk(N,1);if(play(sc)!==want(sc))bad.push(N)}
+      same=play(mk(16,0))===play(mk(16,1))}
+    finally{Object.assign(INST,I0);Object.assign(DRUMS,D0);AU.score=sc0;AU.mood=m0}
+    ok(!bad.length&&same&&loopOf(mk(12,1))===36&&loopOf(mk(14,1))===42&&loopOf(mk(16,0))===48,'bars of 12, 14 and 16 steps: every note on its step, the downbeat on the first, a drone every two bars, the loop bars times steps; a score that says nothing plays as one of 16'+(bad.length?' WRONG '+bad:''))}
   /* the language picker on the title screen: it switches the text, remembers the choice, and starts nothing */
   if(lang==='en'){document.querySelector('#overlay [data-lang="de"]').click();await toLang('de');
     ok(ov.textContent.includes('PAULUS VON TARSUS')&&ov.textContent.includes('Ruf nach Antiochia')&&store('paul.lang')==='de'&&!G.room&&ov.classList.contains('on'),'the title screen switches to German, remembers it, and starts nothing');
@@ -1143,6 +1287,55 @@
   {const[jx,jy]=SHARED.map.where('jerusalem'),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+jx/320*r.width,clientY:r.top+jy/144*r.height,bubbles:true}))}
   await idle();ok(G.room==='workshop'&&!G.scene&&!G.busy&&SHARED.map.state.legs.length===1,'a click on a place travels there');
   cut(travel);for(let i=0;i<60&&G.scene!==SHARED.map.draw;i++)await wait(50);key('Escape');await idle();ok(G.room==='workshop'&&!G.scene&&!G.busy,'Esc stays where you are');
+  /* keys: good, win and pray start on the tonic of the chapter's key and stay in its mode, whichever of the seven it is, also with no score
+     playing (on the map, at a chapter's end), and never more than a tritone from where they were tuned in D; Chapter One, the title
+     screen's key, keeps them exactly as they were; a typed code is greeted in its own chapter's key.
+     Checked at the end of the run, when every chapter has been loaded and played (loading them earlier would replace rooms of the same name). */
+  {for(let n=1;n<=7;n++)await loadLevel(n);
+    const k0=AU.key,midi=f=>69+12*Math.log2(f/440),pc=(m,k)=>((Math.round(m)-k.root)%12+12)%12,inKey=(m,k)=>Math.abs(m-Math.round(m))<.01&&k.scale.includes(pc(m,k)),
+      tones=fn=>{const t0=window.tone,fs=[];window.tone=o=>{fs.push(Math.round(midi(o.f)*100)/100)};try{fn()}finally{window.tone=t0}return fs},
+      fan=()=>[SFX.good,SFX.win,SFX.pray].map(f=>tones(()=>f.call(SFX))),D=[[62,66,69,74],[62,66,69,74,78,81],[62,69,74]],out=[],far=[],ends=[];
+    try{for(let n=1;n<=7;n++){const k=CHAP[n].music;AU.key=k;fan().forEach((ms,j)=>{ms.forEach((m,i)=>{if(!inKey(m,k))out.push(n+':'+m);if(Math.abs(m-D[j][i])>6)far.push(n+':'+m)});
+        if(pc(ms[0],k)!==0||![0,7].includes(pc(ms[ms.length-1],k)))ends.push(n+':'+ms)})}
+      AU.key=CHAP[1].music;const f1=fan();AU.key=CHAP[3].music;const g3=fan()[0];
+      setScore(CHAP[5].music);setScore(null);const g5=fan()[0];
+      openCode();$('#codein').value=codeOf(7,0);const a0=window.applyState,t0=window.tone,g7=[];window.applyState=()=>true;window.tone=o=>{g7.push(Math.round(midi(o.f)*100)/100)};
+      try{await tryCode()}finally{window.applyState=a0;window.tone=t0;closeCode()}
+      ok(!out.length&&!ends.length,`good, win and pray begin on the tonic of each of the seven chapters' keys, end on its tonic or fifth, and stay in its mode (Chapter Three's good: ${g3})`+(out.length?' OUT '+out:'')+(ends.length?' ENDS '+ends:''));
+      ok(!far.length&&f1.map(x=>x.join()).join('|')===D.map(x=>x.join()).join('|'),'none lies more than a tritone from where it was tuned, and Chapter One\'s are exactly as before'+(far.length?' FAR '+far:''));
+      ok(!AU.score&&g5.every(m=>inKey(m,CHAP[5].music))&&g5.join()!==f1[0].join(),`with no score playing they keep the last chapter's key (Chapter Five: ${g5})`);
+      ok(g7.length&&g7.every(m=>inKey(m,CHAP[7].music))&&pc(g7[0],CHAP[7].music)===0,`a typed code is greeted in its own chapter's key (Chapter Seven: ${g7})`);
+      /* the map's sting and arrival chime, with no score playing, as on the map; and a chapter that opens on the map has its key first */
+      const M=await need('map'),I0=Object.assign({},INST),D0=Object.assign({},DRUMS),tw=window.tone,mo=[],by={};let ps=[];
+      try{for(const k of['drone','harp','ney'])INST[k]=f=>ps.push([k,midi(f)]);DRUMS.d=()=>{};window.tone=o=>{ps.push(['chime',midi(o.f)])};setScore(null);
+        for(let n=1;n<=7;n++){AU.key=CHAP[n].music;ps=[];M.sting();M.arrive();by[n]=ps;if(ps.length!==12)mo.push(n+': '+ps.length+' notes');
+          for(const[,m]of ps)if(!inKey(m,CHAP[n].music))mo.push(n+':'+m.toFixed(2))}}
+      finally{Object.assign(INST,I0);Object.assign(DRUMS,D0);window.tone=tw}
+      const s5=CHAP[5].start,oc=ov.onclick;let k5;CHAP[5].start=()=>{k5=AU.key};AU.key=CHAP[4].music;
+      try{await startChapter(5)}finally{CHAP[5].start=s5;ov.onclick=oc}
+      const part=(n,k)=>by[n].filter(x=>x[0]===k).map(x=>Math.round(x[1])),one=['drone','harp','ney','chime'].map(k=>part(1,k).join()).join('|'),h7=part(7,'harp');
+      ok(!mo.length&&k5===CHAP[5].music,`the map's sting and arrival chime sound in each of the seven chapters' keys, and Chapter Five, which opens on the map, has its own key before it starts`+(mo.length?' OUT '+mo:''));
+      ok(one==='50|62,66,69,74|74,75,78,81,78|81,86'&&h7.some(m=>pc(m,CHAP[7].music)===7),`Chapter One's sting keeps its register (${one}), and in Chapter Seven's five notes its harp reaches the fifth (${h7})`)}
+    finally{AU.key=k0}}
+  /* high notes: bite is exactly 1 up to its knee and falls, never rising, above it; Chapter One's ney is quieter at the top of its hope tune
+     and exactly as it was below the knee in the calm one */
+  {let flat=true,down=true,prev=1;for(let f=20;f<=550;f+=5)if(bite(f)!==1)flat=false;for(let f=555;f<=8000;f+=5){const b=bite(f);if(!(b<1&&b<=prev))down=false;prev=b}
+    const sc=CHAP[1].music,ny=sc.tracks.filter(tr=>tr.inst==='ney'),fs=tr=>[...new Set(tr.lines.flat().map(([,dg])=>mtof(note(dg,tr.oct,sc))))],
+      hope=fs(ny.find(tr=>tr.moods.includes('hope'))),calm=fs(ny.find(tr=>tr.moods.includes('calm'))).filter(f=>f<=550),top=Math.max(...hope),
+      lvl=f=>{const t0=window.tone,n0=window.noise,seen=[];window.tone=o=>seen.push(o.v);window.noise=o=>seen.push(o.v);try{INST.ney(f,0,.5,1)}finally{window.tone=t0;window.noise=n0}return seen};
+    ok(flat&&down&&lvl(top).every((v,i)=>v<[.1,.08][i])&&calm.length&&calm.every(f=>lvl(f).join()==='0.1,0.08'),
+      `high notes: the curve is 1 up to 550 Hz and only falls above it; Chapter One's top ney note (${top.toFixed(0)} Hz) is ${(-20*Math.log10(bite(top))).toFixed(1)} dB quieter, its ${calm.length} calm notes below the knee are as they were`)}
+  /* the held pipe: in each of the seven chapters' keys, an aulos track with hold:0 or hold:7 gets one held note per bar in which its melody
+     plays, on the tonic or the fifth under it; a track without hold gets none; and Chapter Six's feast asks for the tonic, over its drone */
+  {const a0=INST.aulos,sc0=AU.score,m0=AU.mood,hd=[],bad=[];let none=0;
+    try{INST.aulos=()=>{};INST.aulos.hold=(f,t,d,v)=>hd.push(f);
+      for(let n=1;n<=7;n++)for(const h of[0,7,null]){const k=CHAP[n].music,tr={inst:'aulos',oct:12,seq:{A:[0,null,2,null,4,null,2,null,0,null,2,null,4,null,2,null],B:Array(16).fill(null)},prog:'AB'};
+        if(h!=null)tr.hold=h;hd.length=0;AU.score={dt:.16,root:k.root,scale:k.scale,tracks:[tr]};AU.mood='calm';for(let st=0;st<64;st++)playStep(st,1000+st*.16);
+        if(h==null){none+=hd.length;continue}
+        const pcs=hd.map(f=>((Math.round(69+12*Math.log2(f/440))-k.root)%12+12)%12);if(hd.length!==2||pcs.some(p=>p!==h))bad.push(n+'/'+h+':'+pcs)}}
+    finally{INST.aulos=a0;AU.score=sc0;AU.mood=m0}
+    const feast=CHAP[6].music.tracks.filter(tr=>tr.moods&&tr.moods.includes('feast'));
+    ok(!bad.length&&!none&&feast.some(tr=>tr.inst==='aulos'&&tr.hold===0)&&feast.some(tr=>tr.drone&&tr.drone.join()==='0'&&tr.every===16&&tr.vol===.6),'the held pipe: on the tonic or the fifth in all seven keys, once a bar while the melody plays and not in a silent bar; none without hold; Chapter Six\'s feast holds the tonic over its drone'+(bad.length?' WRONG '+bad:''))}
   ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
   fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
   L('DONE');

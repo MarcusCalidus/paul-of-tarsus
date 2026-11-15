@@ -13,7 +13,7 @@ LEVEL(4,()=>{
 const _=null,
  TUNE=[[[0,4,4],[4,5,2],[6,4,2],[8,2,4],[12,4,4]],[[0,3,4],[4,2,2],[6,1,2],[8,0,8]],[[0,2,4],[4,4,2],[6,5,2],[8,6,4],[12,4,4]],[[0,5,4],[4,4,4],[8,4,8]],
   [[0,7,4],[4,6,2],[6,5,2],[8,4,4],[12,2,4]],[[0,3,4],[4,4,2],[6,5,2],[8,4,8]],[[0,2,2],[2,3,2],[4,4,2],[6,6,2],[8,7,4],[12,6,4]],[[0,4,4],[4,2,4],[8,0,8]]],
- MUSIC={dt:.17,root:52,scale:[0,2,3,5,7,8,10],bars:16,tracks:[
+ MUSIC={dt:.17,root:52,scale:[0,2,3,5,7,8,10],bars:16,group:[3,3,2],tracks:[
   {inst:'harp',moods:['calm','hope'],prog:'AABAACDA',len:3,seq:{A:[0,_,_,2,_,_,4,_,7,_,_,4,_,_,2,_],B:[-1,_,_,1,_,_,3,_,6,_,_,3,_,_,1,_],C:[2,_,_,4,_,_,6,_,9,_,_,6,_,_,4,_],D:[-2,_,_,0,_,_,2,_,5,_,_,2,_,_,0,_]}},
   {inst:'bass',moods:['calm','hope'],prog:'AABAACDA',len:5,seq:{A:[-7,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],B:[-8,_,_,_,_,_,_,_,-4,_,_,_,_,_,_,_],C:[-5,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],D:[-9,_,_,_,_,_,_,_,-5,_,_,_,_,_,-4,_]}},
   {drum:1,moods:['calm'],seq:{A:'d..k..t.d..k..t.'},vol:.6},
@@ -513,7 +513,7 @@ const BN4={name:'Barnabas',actor:BN,
       {q:'Where do we begin?',a:()=>say(BN,!F.vouched?'In the synagogue. Zadok presides there. He will not know your face, but he may know mine.':!F.spoke?'With you, on the platform. Zadok is waiting for you to come to him.':'On the road west. All the way to Paphos.')},
       {q:'Did you know this city as a boy?',once:1,a:async()=>{await say(BN,'Every street of it. More trade passes through Salamis than through any other town on the island.');await say(BN,'I never thought I would come back to it with a message like this one.')}},
       {q:'Lead on.',bye:1}])};
-ROOMS.seleucia={walk:[16,464,110,138],mood:'hope',amb:{waves:.6,gulls:.6,creak:.5,crowd:.2},hs:[
+ROOMS.seleucia={space:0.6,walk:[16,464,110,138],mood:'hope',amb:{waves:.6,gulls:.6,creak:.5,crowd:.2},hs:[
   {name:'mountain',x:120,y:14,w:100,h:36,wx:170,look:['The mountain stands with its feet in the sea, and the town wall climbs half way up it.','Seleucia is a fortress as much as a harbor.']},
   {name:'town wall',x:0,y:18,w:112,h:32,wx:70,look:'Walls of dressed stone. Antioch keeps its harbor well guarded.'},
   {name:'gate to the Antioch road',x:22,y:52,w:40,h:52,wx:42,wy:112,look:'The road back to Antioch: half a day on foot.',
@@ -539,7 +539,7 @@ async function landed(){if(F.landed)return;F.landed=1;
   await walk(JR,365,113);SFX.door();place(JR,'synagogue',88,116,1);
   await say(P,'The word of God, first in the synagogues of the Jews. Let us begin where the Law and the Prophets are read.')}
 const westRoad=()=>F.spoke?travel():say(PC(),PC()===P?'The road west, right across the island. But we did not come to Salamis to walk through it.':'The road to Paphos. I know every bend of it. But first, the synagogues of Salamis.');
-ROOMS.salamis={walk:[16,464,110,138],mood:'hope',amb:{crowd:.55,gulls:.4,waves:.3,hammer:.4,birds:.2},enter:landed,hs:[
+ROOMS.salamis={space:0.8,walk:[16,464,110,138],mood:'hope',amb:{crowd:.55,gulls:.4,waves:.3,hammer:.4,birds:.2},enter:landed,hs:[
   {name:'harbor',x:0,y:44,w:110,h:58,wx:62,look:["The harbor of Salamis, and Kallias's ship riding at anchor with her sail furled.",'A day and a night under a roof of goat-hair cloth. I have slept worse on dry land.']},
   {name:'rooftops of Salamis',x:112,y:2,w:186,h:23,wx:210,look:'Salamis. For trade and for learning the first city of Cyprus, though the proconsul sits in Paphos.'},
   {name:'marketplace',x:112,y:26,w:188,h:17,wx:206,look:'The stoa of the marketplace, shop after shop in its shade.'},
@@ -631,7 +631,7 @@ PH.hs={name:'Philon',actor:PH,look:()=>say(P,F.spoke?'Philon. He is still frowni
   talk:async()=>{await say(PH,F.spoke?'I said I would search it out, and I will. Do not think you have persuaded me. You have only made me curious.':'Philon, of Salamis. I deal in copper. And you are?');
     if(!F.spoke){await say(P,'Saul, of Tarsus. A tentmaker.');await say(PH,'A tentmaker, come to a synagogue in Cyprus. Then you have not come to sell tents.')}},
   as:{barnabas:{look:'Philon. His father sold copper too, and argued just as well.',talk:()=>say(PH,'The son of the Levite! They said you had gone to Jerusalem for good.'),show:{'*':'I am not buying today.'}}}};
-ROOMS.synagogue={walk:[16,304,110,136],mood:'calm',amb:{crowd:.12,fire:.15},hs:[
+ROOMS.synagogue={space:1.5,walk:[16,304,110,136],mood:'calm',amb:{crowd:.12,fire:.15},hs:[
   {name:'door to the square',x:8,y:53,w:24,h:51,wx:32,wy:113,dir:-1,look:'The door to the square.',exit:()=>go4('salamis',365,116,-1)},
   {name:'window',x:66,y:20,w:22,h:26,wx:92,look:'A high window. The light falls where the reader stands.'},
   {name:'window',x:232,y:20,w:22,h:26,wx:228,look:'A high window. The light falls where the reader stands.'},
@@ -715,7 +715,7 @@ EL.hs={name:'Bar-Jesus',actor:EL,wx:296,wy:124,look:'Bar-Jesus, whom they call E
   talk:()=>say(EL,'I have nothing to say to you. What I have to say, I say to the proconsul.'),
   as:{barnabas:{look:'The one they call Elymas. He watches the proconsul as a merchant watches his best customer.',
     talk:()=>say(EL,'A Levite, are you? Then go back to your temple, and leave the governing of Cyprus to those who understand it.'),show:{'*':'Take it away.'}}}};
-ROOMS.paphos={walk:[16,384,110,138],mood:'tense',amb:{waves:.35,fire:.35,gulls:.25},enter:hearing0,hs:[
+ROOMS.paphos={space:1.2,walk:[16,384,110,138],mood:'tense',amb:{waves:.35,fire:.35,gulls:.25},enter:hearing0,hs:[
   {name:'door to the city',x:30,y:48,w:32,h:56,wx:48,wy:112,dir:-1,look:'The door to the city. We were brought in by it an hour ago, dust and all.',
     use:'The proconsul has called for us, and he has not finished. I will not walk out on a man who wants to hear the word of God.',
     open:'The proconsul has called for us, and he has not finished. I will not walk out on a man who wants to hear the word of God.'},
