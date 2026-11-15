@@ -180,6 +180,22 @@
     ok(w([3,3,2],16,0,3,6,8,11,14)==='1.12,1.05,1.05,1.05,1.05,1.05'&&w([3,3,2],16,4,12)==='0.94,0.94'&&w(null,16,4,8,12,3,6)==='1.05,1.05,1.05,0.94,0.94'
       &&w([3,3,4,4,2],16,10,14,8)==='1.05,1.05,0.94'&&w(null,12,4,8,6)==='1.05,1.05,0.94'&&w(null,9,3,6,4)==='1.05,1.05,0.94'&&w(null,10,2,5)==='1.05,0.94'&&w([4,3],14,4,7,11)==='1.05,1.05,1.05',
       'accents fall on the beats a track declares (3+3+2 and others), on fours by default, and in bars of 9, 10, 12 and 14 steps')}
+  /* bars of any length: in scores of 12, 14 and 16 steps every written note fires on its step, the downbeat is the first step of each
+     bar, a drone that does not say strikes every two bars, and the loop is bars times steps; a 16-step score that says nothing plays as one
+     that says 16 */
+  {const I0=Object.assign({},INST),D0=Object.assign({},DRUMS),sc0=AU.score,m0=AU.mood,got=[],bad=[];
+    const mk=(N,say)=>{const seq=[],str=[];for(let i=0;i<N;i++){seq.push(i%3?null:i%7);str.push(i%4?'.':'d')}
+      return Object.assign({dt:.17,root:50,scale:[0,2,4,5,7,9,11],bars:3,tracks:[{inst:'ney',seq:{A:seq}},{inst:'lyre',seq:{A:seq.map((x,i)=>i%2?null:x)}},
+        {inst:'aulos',lines:[[[0,0,3],[N-1,1,1]],[[5,2,2]],[]]},{drum:1,seq:{A:str.join('')}},{drone:[0]}]},say?{steps:N}:{})};
+    const want=sc=>{const N=sc.steps||16,L=loopOf(sc),e=[];for(let st=0;st<L;st++){const s=st%N,b=Math.floor(st/N);
+        sc.tracks.forEach(tr=>{if(tr.drone){if(st%(2*N)===0)e.push('drone@'+st)}else if(tr.drum){if(tr.seq.A[s]!=='.')e.push('drum@'+st)}
+          else if(tr.seq){if(tr.seq.A[s]!=null)e.push(tr.inst+'@'+st+(tr.inst==='lyre'&&s===0?'v':''))}else for(const[n0]of tr.lines[b]||[])if(n0===s)e.push(tr.inst+'@'+st)})}return e.sort().join()},
+      play=sc=>{got.length=0;AU.score=sc;AU.mood='calm';for(let st=0;st<loopOf(sc);st++)playStep(st,1000+st);return got.slice().sort().join()};
+    let same;try{for(const k in INST)INST[k]=(f,t,d,v,dn)=>got.push(k+'@'+Math.round(t-1000)+(k==='lyre'&&dn?'v':''));for(const k in DRUMS)DRUMS[k]=t=>got.push('drum@'+Math.round(t-1000));
+      for(const N of[12,14,16]){const sc=mk(N,1);if(play(sc)!==want(sc))bad.push(N)}
+      same=play(mk(16,0))===play(mk(16,1))}
+    finally{Object.assign(INST,I0);Object.assign(DRUMS,D0);AU.score=sc0;AU.mood=m0}
+    ok(!bad.length&&same&&loopOf(mk(12,1))===36&&loopOf(mk(14,1))===42&&loopOf(mk(16,0))===48,'bars of 12, 14 and 16 steps: every note on its step, the downbeat on the first, a drone every two bars, the loop bars times steps; a score that says nothing plays as one of 16'+(bad.length?' WRONG '+bad:''))}
   /* the language picker on the title screen: it switches the text, remembers the choice, and starts nothing */
   if(lang==='en'){document.querySelector('#overlay [data-lang="de"]').click();await toLang('de');
     ok(ov.textContent.includes('PAULUS VON TARSUS')&&ov.textContent.includes('Ruf nach Antiochia')&&store('paul.lang')==='de'&&!G.room&&ov.classList.contains('on'),'the title screen switches to German, remembers it, and starts nothing');

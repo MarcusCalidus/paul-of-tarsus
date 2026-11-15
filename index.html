@@ -283,10 +283,12 @@ function bite(f){return f<=550?1:Math.pow(1+((f-550)/325)**2,-.25)}
 function pluck(f,t,v,b,d){noise({t,d:d||.012,v,f:Math.min(f*b,6000),q:1.6,dest:AU.out})}
 /* --- music: every level brings its own score as plain data (see "music" in the level files) ---
    score = {dt: seconds per step, root: MIDI note of the tonic, scale: semitones of the mode, bars, tracks: [...]}
-   A bar has 16 steps. A track plays only in the moods it lists (each room names its mood), and is one of:
-     {drone:[semitones from the root], every: steps}            a held note, struck again every so often
+   A bar has as many steps as the score's steps: 16 if it does not say, or 12, 10, 14 for bars in threes, fives or sevens; the patterns, the melody
+   lines' step numbers, the loop (bars * steps), the default drone strike, the lyre's downbeat and the accents all follow it.
+   A track plays only in the moods it lists (each room names its mood), and is one of:
+     {drone:[semitones from the root], every: steps}            a held note, struck again every so often (every two bars if not said)
      {drum:1, prog:'AB..', seq:{A:'d.t...t.'}}                  one character per step: see DRUMS
-     {inst, prog:'AABA', seq:{A:[16 scale degrees, null = rest]}} a pattern per bar, chosen by prog
+     {inst, prog:'AABA', seq:{A:[a scale degree per step, null = rest]}} a pattern per bar, chosen by prog
      {inst, from: bar, loop: bars, lines:[[[step,degree,length],..] per bar]}  a melody
    oct shifts a track by semitones, vol scales it, len sets note length in steps.
    group says how the steps of a bar fall into beats, e.g. group:[3,3,2] for 3+3+2 (repeated to fill the bar); a track's group wins
@@ -339,7 +341,7 @@ const FADE=1.5,FADEN=7;
 function mixFor(sc){const c=AU.ctx,o=AU.mix;if(o&&o.sc===sc&&o.c===c)return o;
   if(o&&o.c===c)setTimeout(()=>o.tr.forEach(x=>{x.g.disconnect();x.r.disconnect()}),4000);
   return AU.mix={sc,c,tr:sc.tracks.map(tr=>{const g=c.createGain(),r=c.createGain();g.connect(AU.mus);r.connect(AU.send);return{g,r,body:tr.inst==='lyre'?lyreBody(c,g):null,on:null,off:0}})}}
-function playStep(st,t){const sc=AU.score;if(!sc)return;const N=16,bar=Math.floor(st/N),s=st%N,m=AU.mood,mx=mixFor(sc),out=AU.out,body=AU.body,room=AU.toRoom,
+function playStep(st,t){const sc=AU.score;if(!sc)return;const N=sc.steps||16,bar=Math.floor(st/N),s=st%N,m=AU.mood,mx=mixFor(sc),out=AU.out,body=AU.body,room=AU.toRoom,
   deg=(n,oct)=>mtof(note(n,oct,sc));
   try{sc.tracks.forEach((tr,j)=>{const x=mx.tr[j],want=!tr.moods||tr.moods.includes(m),first=x.on===null;
     if(first){for(const p of[x.g.gain,x.r.gain])p.setValueAtTime(want?1:0,t);x.off=want?0:FADEN}
@@ -347,15 +349,17 @@ function playStep(st,t){const sc=AU.score;if(!sc)return;const N=16,bar=Math.floo
     const join=want&&x.on===false;x.on=want;x.off=want?0:x.off+1;if(!want&&x.off>FADEN)return;
     AU.out=x.g;AU.toRoom=x.r;AU.body=x.body||body;
     const v=tr.vol==null?1:tr.vol,pr=tr.prog||'A',hand=tr.drum||LOOSE.has(tr.inst),tt=()=>hand?loose(t):t,vv=hand?v*accent(s,N,tr.group||sc.group):v;
-    if(tr.drone){const ev=tr.every||32;if(want&&(st%ev===0||join))for(const n of tr.drone)INST.drone(mtof(sc.root+n),t,(ev-st%ev)*sc.dt+.4,v)}
+    if(tr.drone){const ev=tr.every||2*N;if(want&&(st%ev===0||join))for(const n of tr.drone)INST.drone(mtof(sc.root+n),t,(ev-st%ev)*sc.dt+.4,v)}
     else if(tr.drum){const ch=tr.seq[pr[bar%pr.length]][s];if(ch&&DRUMS[ch])DRUMS[ch](tt(),vv)}
     else if(tr.seq){const n=tr.seq[pr[bar%pr.length]][s];if(n!=null)INST[tr.inst](deg(n,tr.oct),tt(),(tr.len||3)*sc.dt,vv,s===0)}
     else if(tr.lines){let i=bar-(tr.from||0);if(i<0)return;if(tr.loop)i%=tr.loop;for(const[n0,dg,len]of tr.lines[i]||[])if(n0===s)INST[tr.inst](deg(dg,tr.oct),tt(),len*sc.dt*.95,vv,s===0)}})}
   finally{AU.out=out;AU.toRoom=room;AU.body=body}}
+/* loopOf: how many steps a score plays before it starts again */
+const loopOf=sc=>(sc.bars||16)*(sc.steps||16);
 function setScore(sc){if(sc)AU.key=sc;if(AU.score!==sc){AU.score=sc;AU.step=0}}
 function sched(){const c=AU.ctx;if(!c||c.state!=='running')return;const sc=AU.score;
   if(AU.next<c.currentTime-.5)AU.next=c.currentTime+.05;
-  while(sc&&AU.next<c.currentTime+.25){playStep(AU.step,AU.next);AU.next+=sc.dt;AU.step=(AU.step+1)%((sc.bars||16)*16)}
+  while(sc&&AU.next<c.currentTime+.25){playStep(AU.step,AU.next);AU.next+=sc.dt;AU.step=(AU.step+1)%loopOf(sc)}
   ambience(c.currentTime)}
 /* --- ambience: each room names the sounds around it and how loud they are, e.g. amb:{crickets:.6,wind:.3}.
    Beds are filtered noise that runs all the time; calls are short sounds scattered at random intervals. --- */
