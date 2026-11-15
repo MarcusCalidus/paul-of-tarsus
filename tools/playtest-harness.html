@@ -151,7 +151,10 @@
     mapClick=id=>{const[x,y]=SHARED.map.where(id),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+x/320*r.width,clientY:r.top+y/144*r.height,bubbles:true}))},
     cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
       for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;return n},
-    inWin=id=>{const[x,y]=SHARED.map.where(id);return x>20&&x<300&&y>8&&y<136},clear=()=>mapClear()?'':': '+[...mapClear.bad].join(', ');
+    inWin=id=>{const[x,y]=SHARED.map.where(id);return x>20&&x<300&&y>8&&y<136},clear=()=>mapClear()?'':': '+[...mapClear.bad].join(', '),
+    /* apart: no place's name touches the name of a region, or stands in one line with it less than a letter away (Derbe, beside Pamphylia) */
+    apart=()=>{const reg=['PAMPHYLIA','CILICIA','SYRIA','GALATIA','PISIDIA','CYPRUS'].map(n=>T(n)),is=b=>reg.includes(b[4].replace(/ /g,'')),b=SHARED.map.state.boxes,Rg=b.filter(is),N=b.filter(x=>!is(x));
+      const near=N.filter(n=>Rg.some(r=>!(n[2]+3<r[0]||n[0]>r[2]+3||n[3]<r[1]||n[1]>r[3]))).map(n=>n[4]);return Rg.some(r=>r[4]===T('PAMPHYLIA'))&&!near.length?'':': '+(near.join(', ')||'Pamphylia is not named')};
   /* the scenes that open the chapter, each on its own */
   const scene=async(k,st,line)=>{await loadLevel(7);ov.className='';ov.onclick=null;setChapter(7);G.st=st;G.scene=CHAP[7].scenes[k];G.busy=true;lock(true);status();narr(line,{dur:9000})};
   if(stop==='dispute7'){await scene('antioch',{k:0},'Now some men came down from Judea and began to teach the brothers: "Unless you get circumcised according to the custom of Moses, you cannot be saved." (Acts 15:1)');halt('dispute7')}
@@ -225,6 +228,7 @@
   ok(G.scene===SHARED.map.draw&&SHARED.map.state.places.join()==='antioch,syriangates,tarsus,ciliciangates,derbe,lystra,iconium'&&G.busy&&SHARED.map.state.legs.length===2&&SHARED.map.state.pulse==='tarsus','the gate opens the map: this journey on its own, from Antioch by the Syrian Gates to Tarsus');
   ok(['antioch','syriangates','tarsus','ciliciangates','derbe','lystra','iconium'].every(inWin),'every place of this journey lies inside the northern window of the map');
   ok(mapClear(),'no name on the hub map crosses a coast, a lake or a route'+clear());ok(cross(SHARED.map.state.legs)===0,'no two routes cross');
+  ok(!apart(),'no place on this map stands in the name of a region, or beside it in one line: Derbe is clear of Pamphylia'+apart());
   halt('hubmap7',()=>{SHARED.map.state.hover='ciliciangates'});
   heard.length=0;mapClick('derbe');await idle();ok(G.room==='tarsus7'&&!G.scene&&!G.busy&&said('Derbe lies beyond the Taurus, and the road to it goes through the Cilician Gates. One stage at a time.'),'Derbe is not open from Tarsus, and Paul says why');
   act(null,'gate to the street');await mapOpen();heard.length=0;mapClick('antioch');await idle();ok(G.room==='tarsus7'&&said(CHAP[7].places.antioch.no),'the road does not lead back to Antioch');
@@ -361,9 +365,11 @@
   ok(store('paul.save')===null,'a finished game keeps no save');
   {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===6&&L.every(l=>l.k===1)&&M.state.seen.has('antioch')&&M.state.seen.has('ciliciangates')&&M.state.seen.has('iconium'),'chapter seven ends on the map: from Antioch by Tarsus and the Cilician Gates to Derbe, Lystra and Iconium');
     ok(cross(L)===0,'no two routes cross');
-    ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+clear())}
+    ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+clear());
+    ok(!apart(),'and no place on it stands in the name of a region, or beside it in one line'+apart())}
   halt('journey7',()=>{ov.className=''});halt('final7')};
   if(C7){await ch7();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(!C3&&!C4&&!C5&&!C6&&!HUB){
   ov.click();await idle();ok(G.room==='workshop'&&!G.busy,'intro ends in workshop');

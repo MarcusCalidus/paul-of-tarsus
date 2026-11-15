@@ -1065,8 +1065,10 @@ function councilScene(g,t){backdrop(g,'council');const w=(G.st||{}).who||0,talk=
   cast(g,[['ap1',30,113,1],['ap2',52,117,1],['ap4',76,113,1],['ap5',98,117,1],['ap3',226,113,-1],['ap1',250,117,-1],['ap2',274,113,-1],['ap4',296,117,-1],
     ['judas7',214,121,-1],['silas',238,125,-1],['james7',192,127,-1,{ges:w===2&&talk}],
     ['barnabas7',w===1?124:72,w===1?126:122,1],['paul',w===1?148:50,w===1?129:125,1,{ges:w===1&&talk}],['peter7',w===0?140:108,w===0?128:121,1,{ges:w===0&&talk}]],'#e4d6c4')}
-/* OPENING: the road from Antioch, as the map draws it when the chapter opens. LABELS: where a name goes on this chapter's map. */
-const OPENING=[['antioch','syriangates','new'],['syriangates','tarsus','new']],LABELS={derbe:{lab:'b'}};
+/* OPENING: the road from Antioch, as the map draws it when the chapter opens. LABELS: where a name goes on this chapter's map. The road
+   from the Cilician Gates comes to Derbe from the east, where the name usually stands; the name goes under that road, to the right of the
+   place and a little below it. Under the place itself it would stand in one line with PAMPHYLIA, and read as part of that name. */
+const OPENING=[['antioch','syriangates','new'],['syriangates','tarsus','new']],LABELS={derbe:{lab:'r',dy:3.3}};
 /* arrive7: after the map has drawn a leg, and before the room is shown: who is there, and what is known of the road. */
 async function arrive7(to,from){
   if(to==='ciliciangates'){place7('gates');
