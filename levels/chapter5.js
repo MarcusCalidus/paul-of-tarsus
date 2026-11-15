@@ -19,9 +19,9 @@ const _=null,
   {inst:'bass',moods:['hope','calm'],prog:'AABAACBA',len:6,seq:{A:[-7,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],B:[-6,_,_,_,_,_,_,_,-2,_,_,_,_,_,_,_],C:[-4,_,_,_,_,_,_,_,-5,_,_,_,_,_,-6,_]}},
   {drum:1,moods:['hope'],prog:'AAAB',seq:{A:'d.s.t.s.d.s.t.sk',B:'d.s.t.s.d.k.t.tk'}},
   {drum:1,moods:['calm'],seq:{A:'d.......t.......'},vol:.5},
-  {drum:1,moods:['tense'],seq:{A:'d.....d.........'},vol:.8},
+  {drum:1,moods:['tense'],seq:{A:'d.....d.........'},vol:.8,group:[3,3,2]},
   {drone:[0,7],every:32,moods:['tense']},
-  {inst:'oud',moods:['tense'],prog:'AB',len:4,seq:{A:[0,_,_,_,_,_,1,_,_,_,_,_,0,_,_,_],B:[0,_,_,_,_,_,-1,_,_,_,1,_,_,_,_,_]},vol:.7},
+  {inst:'oud',moods:['tense'],group:[3,3,2,2,2,4],prog:'AB',len:4,seq:{A:[0,_,_,_,_,_,1,_,_,_,_,_,0,_,_,_],B:[0,_,_,_,_,_,-1,_,_,_,1,_,_,_,_,_]},vol:.7},
   {inst:'aulos',moods:['hope'],loop:8,oct:12,lines:TUNE},
   {inst:'ney',moods:['calm'],from:8,oct:12,lines:TUNE}]};
 
