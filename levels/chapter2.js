@@ -317,7 +317,7 @@ async function barnStory(){
   await say(P,'I am Saul. Of Tarsus.');await walk(BN,240,118);BN.dir=-1;
   await say(BN,'Saul... the Saul who carried letters to Damascus, to bring the disciples back in bonds?');
   await quiz(BN,'Is it true, then?',[
-    {q:'I acted in ignorance. Any man with my training would have done the same.',r:['Perhaps. But that is a man still defending himself.']},
+    {q:'I acted in ignorance. I was convinced that I was serving God.',r:['Perhaps. But that is a man still defending himself.']},
     {q:'Yes. I persecuted the congregation, and I was wrong.',ok:1,p:['Yes. I persecuted the congregation of God, and I was wrong.','I was a blasphemer and an insolent man. I will not pretend otherwise.'],r:['...You do not soften it. Good.']},
     {q:'That is behind me. What matters is that I am here now.',r:['Those who lost family to your arrests cannot set it aside so quickly.']}]);
   await quiz(BN,'Then what turned you around?',[
@@ -490,7 +490,7 @@ async function start2(){ov.onclick=null;ov.className='';audioInit();SFX.good();i
 async function leaveUpper(){if(F.preach)return go('jerusalem',330,116,1);
   await say(P,'There are synagogues in this city where I am known. Let me speak there, in the name of the Lord.');
   await say(BN,'Go, Saul. Speak as you did in Damascus.');await fade(1,700);
-  await narr('Paul stayed with Cephas for fifteen days, moving about freely in Jerusalem and speaking boldly in the name of the Lord. (Acts 9:28; Galatians 1:18)',{dur:8000});
+  await narr('Saul stayed with Cephas for fifteen days, moving about freely in Jerusalem and speaking boldly in the name of the Lord. (Acts 9:28; Galatians 1:18)',{dur:8000});
   F.preach=1;disputers();enterRoom('jerusalem',330,118,1);codeBtn();await fade(0,700);
   await say(DS,'Saul! Saul of Tarsus! A word with you.');P.dir=-1;
   await say(P,'Men from the synagogue. They will want answers from the Scriptures, and nothing less.',TH);
