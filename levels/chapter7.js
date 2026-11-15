@@ -1158,8 +1158,8 @@ async function invite7(){playAs(P);AU.mood='calm';await Promise.all([walk(P,178,
   endScreen({title:'Timothy of Lystra',text:'Paul could not be his own witness, so he let another man speak. He sewed a stranger\'s tent in a storm, with a brother on the windward line. And before he asked a young man to leave his home, he asked those who knew him.',
     extra:[F.psalm&&'A psalm read to Lois'].filter(Boolean),
     based:'Based on Acts 15:1-16:5; Philippians 2:20-22; 1 Timothy 1:18; 4:14 and 2 Timothy 1:5, 6. Supporting characters and dialogue are imaginative; the events are from the Scriptures. Acts names no city in Cilicia and describes no road: Tarsus and the Cilician Gates are likely, not stated. Lystra was apparently Timothy\'s home; Acts 16 does not name his mother, or mention Lois. How Paul heard what the brothers in Iconium said, and when hands were laid on Timothy, is not told.',
-    go:'Click to return to the title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+    go:'Click to continue to Chapter Eight',code:['Chapter Eight code: {code}',codeOf(8,0)]});
+  await wait(1500);ov.onclick=()=>startChapter(8);await new Promise(()=>{})}
 function hint7(){const b=PC()!==P,craft=['craft7',["That is the tentmaker's craft, not mine. A good partner knows when to step back.",'Paul should do this part. I can leave it to him; he is never far away.']],
     his=['paul7b',['This is for Paul to ask. He knew the boy, and he will answer for the man.','Paul should do this. I can leave it to him.']],carry=id=>invOf(SI).includes(id);
   if(inTar()){

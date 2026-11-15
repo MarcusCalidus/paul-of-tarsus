@@ -9,6 +9,7 @@
                          o.legs: the legs already travelled, [[from, to], ...], which are shown.
      go(from, to)        draw one leg and arrive.
      where(id)           a place's position on the map, in view pixels.
+   A place with hide:1 is a point on a road and nothing more: a leg may start or end there, and neither a dot nor a name is drawn.
    journey and pick take o.labels: where a place's name goes on this chapter's map, {id:{lab, dy}}, when its usual side would
    lie across one of the chapter's routes; and o.view: the window a chapter looks through (see VIEWS), when its road leaves the usual one. */
 SHARED.map=(()=>{
@@ -17,12 +18,14 @@ const W=320,H=144,LON0=23.2,LAT0=37.45,KX=18.4,KY=22.15;
 const xy=(lon,lat)=>[(lon-LON0)*KX,(LAT0-lat)*KY];
 /* views: the map is larger than the screen, and a chapter may look at another part of it. A view is how far its window lies to the right
    of and below the usual one, in view pixels (whole ones, so that the painting stays crisp). north: Asia Minor as far as Galatia, with
-   its upper edge at about 39.3 degrees north and its left edge at about 24.6 east; Jerusalem and Egypt lie below it. Everything on the
-   map keeps its coordinates in every view (the usual window's pixels); only the window moves. */
-const VIEWS={north:[26,-41]};
+   its upper edge at about 39.3 degrees north and its left edge at about 24.6 east; Jerusalem and Egypt lie below it. aegean: the lands
+   round the Aegean, from about 21 to 38.4 degrees east and 35.5 to 42 north: Macedonia and Achaia on the left, Asia Minor as far as
+   Iconium on the right, the Black Sea along the top. Everything on the map keeps its coordinates in every view (the usual window's
+   pixels); only the window moves. */
+const VIEWS={north:[26,-41],aegean:[-40,-101]};
 let OX=0,OY=0;
 /* where the name of the sea stands: in open water, clear of the routes and of the hint under it, in each view */
-const SEA={'0,0':[92,84],'26,-41':[60,65]};
+const SEA={'0,0':[92,84],'26,-41':[60,65],'-40,-101':[95.7,35.4]};
 const inView=(x,y,m)=>x>=OX-m&&x<=OX+W+m&&y>=OY-m&&y<=OY+H+m;
 const pts=a=>{const o=[];for(let i=0;i<a.length;i+=2)o.push(...xy(a[i],a[i+1]));return o};
 /* places: lon, lat, the side the name goes on, and dy to raise or lower a name clear of a line. Names, here and below, are English and
@@ -37,7 +40,14 @@ const PLACES={
   iconium:{name:'Iconium',at:[32.49,37.87],lab:'r'},lystra:{name:'Lystra',at:[32.35,37.58],lab:'l'},derbe:{name:'Derbe',at:[33.39,37.35],lab:'r'},
   attalia:{name:'Attalia',at:[30.66,36.86],lab:'l',dy:3.6},
   /* two passes on the trade road from Syria: through the Amanus north of Antioch, and through the Taurus north of Tarsus */
-  syriangates:{name:'Syrian Gates',at:[36.28,36.48],lab:'r'},ciliciangates:{name:'Cilician Gates',at:[34.78,37.28],lab:'r'}};
+  syriangates:{name:'Syrian Gates',at:[36.28,36.48],lab:'r'},ciliciangates:{name:'Cilician Gates',at:[34.78,37.28],lab:'r'},
+  /* round the Aegean. Philippi lay some 15 km inland of its port, less than two dots apart on this map: it stands a little further
+     north-west than it lay, so that the two can be told apart. The name of Samothrace is set small, between Thasos and Athos. */
+  troas:{name:'Troas',at:[26.15,39.75],lab:'l',dy:3},samothrace:{name:'Samothrace',at:[25.56,40.5],lab:'l',dy:1.2,sz:4},
+  neapolis:{name:'Neapolis',at:[24.41,40.94],lab:'r',dy:-3.6},philippi:{name:'Philippi',at:[24.22,41.1],lab:'l'},
+  /* two points on the road of Acts 16:6-8 that the account does not name: where a paved road ran west toward Ephesus, and where the
+     road north came near Bithynia */
+  westroad:{name:'',at:[30.95,39.0],hide:1},bithynianroad:{name:'',at:[29.8,40.2],hide:1}};
 /* waypoints for legs that do not run straight: by sea up the coast and east of Cyprus; by road round the Gulf of Issus; through
    the south of Cyprus, the way tradition has them go from Salamis to Paphos; by sea clear of the western cape of Cyprus; up the valley
    through the Taurus; along the foot of the mountains to Iconium; and home from Attalia by sea, between Cyprus and the coast of Cilicia */
@@ -45,15 +55,27 @@ const VIA={'caesarea-tarsus':[34.42,33.3,34.5,34.7,34.88,35.75],'tarsus-antioch'
   'salamis-paphos':[33.45,34.99,32.95,34.8],'paphos-perga':[32.0,35.2,31.35,36.25],'perga-antiochp':[31.0,37.6],'antiochp-iconium':[31.85,38.02],
   'attalia-seleucia':[31.2,36.4,32.2,35.92,33.2,35.74,34.2,35.9,35.1,36.14],
   /* from the Syrian Gates round the Gulf of Issus to Tarsus; and from the Cilician Gates out onto the plateau, and west to Derbe */
-  'syriangates-tarsus':[36.32,36.7,36.2,37.03,35.6,37.02],'ciliciangates-derbe':[34.55,37.47,34.05,37.5]};
+  'syriangates-tarsus':[36.32,36.7,36.2,37.03,35.6,37.02],'ciliciangates-derbe':[34.55,37.47,34.05,37.5],
+  /* north through Phrygia and Galatia, then west through Mysia to the sea; from Troas between Lemnos and Imbros to Samothrace, and
+     through the strait north of Thasos to Neapolis */
+  'antiochp-westroad':[31.05,38.7],'westroad-bithynianroad':[30.6,39.72],'bithynianroad-troas':[28.9,40.02,27.9,39.95,27.0,39.86],
+  'troas-samothrace':[25.92,39.9,25.57,40.06,25.5,40.3],'samothrace-neapolis':[25.1,40.72,24.72,40.86]};
 /* region names sit where no coast, lake or route runs through them. close: a name with its letters set closer together, for a region
-   too small to hold a widely spaced one; north: a name shown only in the northern window, where the mountains make room for it */
+   too small to hold a widely spaced one; north: a name shown only in the northern window and the Aegean one, where the mountains make
+   room for it; west: a name shown only in the Aegean window */
 const REGIONS=[{name:'CILICIA',at:[32.7,36.72]},{name:'SYRIA',at:[37.6,35.2]},{name:'CYPRUS',at:[33.2,34.35],sea:1},
   {name:'PISIDIA',at:[29.62,37.68]},{name:'GALATIA',at:[33.6,38.75]},
-  {name:'PAMPHYLIA',at:[32.015,37.02],close:1,north:1}];
-/* the coast of the mainland, from the Aegean round Asia Minor, down the Syrian and Phoenician coast, and west along Egypt. The first
-   line is the Aegean shore above the usual window: the gulfs of Smyrna and Ephesus, and the long capes between them. */
-const COAST=pts([26.7,39.7,26.72,39.3,26.9,39.07,27.0,38.92,26.96,38.8,26.76,38.68,26.85,38.54,27.1,38.45,26.88,38.37,26.66,38.34,26.6,38.5,26.5,38.64,26.36,38.66,26.4,38.42,
+  {name:'PAMPHYLIA',at:[32.015,37.02],close:1,north:1},
+  {name:'PHRYGIA',at:[29.6,38.9],west:1},{name:'ASIA',at:[27.75,38.8],west:1},{name:'MYSIA',at:[27.9,39.6],west:1},
+  {name:'BITHYNIA',at:[31.3,40.72],west:1},{name:'MACEDONIA',at:[22.75,41.5],west:1}];
+/* the coast of the mainland of Asia: along the Black Sea to the Bosporus, the Propontis and the Hellespont, round the Troad and down
+   the Aegean shore, round Asia Minor, down the Syrian and Phoenician coast, and west along Egypt. The first three lines lie above the
+   usual window: the Black Sea shore; the Propontis, with the gulfs on its Asian side, and the Troad; then the gulfs of Smyrna and
+   Ephesus, and the long capes between them. */
+const COAST=pts([40.5,41.0,39.7,41.0,38.4,40.93,37.9,41.0,37.7,41.13,37.28,41.13,36.95,41.28,36.65,41.38,36.33,41.29,36.05,41.45,35.95,41.72,35.5,41.66,35.2,41.98,34.95,42.06,34.2,41.95,33.76,41.98,33.34,42.02,
+  32.9,41.87,32.39,41.75,32.05,41.58,31.79,41.45,31.42,41.3,31.16,41.09,30.65,41.13,30.23,41.2,29.61,41.18,29.17,41.23,29.11,41.12,29.05,41.02,
+  29.3,40.84,29.93,40.76,29.5,40.68,29.28,40.65,28.78,40.53,29.0,40.47,29.15,40.42,28.9,40.37,28.6,40.38,28.25,40.4,27.97,40.36,28.05,40.48,27.85,40.53,27.62,40.49,27.7,40.38,27.5,40.33,27.3,40.42,27.0,40.4,
+  26.72,40.33,26.43,40.14,26.24,40.0,26.16,39.86,26.15,39.75,26.1,39.6,26.07,39.48,26.34,39.49,26.62,39.54,26.95,39.58,26.88,39.47,26.72,39.3,26.9,39.07,27.0,38.92,26.96,38.8,26.76,38.68,26.85,38.54,27.1,38.45,26.88,38.37,26.66,38.34,26.6,38.5,26.5,38.64,26.36,38.66,26.4,38.42,
   26.26,38.3,26.42,38.24,26.78,38.18,26.86,38.03,27.24,37.96,27.26,37.84,27.2,37.72,27.0,37.66,27.2,37.58,27.2,37.45,27.25,37.3,27.6,37.12,27.45,36.98,28.0,36.98,28.25,36.84,27.42,36.72,28.1,36.74,28.6,36.74,28.92,36.64,29.12,36.6,29.35,36.26,
   29.66,36.15,30.15,36.25,30.46,36.32,30.56,36.64,30.72,36.88,31.02,36.85,31.42,36.74,31.76,36.55,32.02,36.5,32.3,36.22,32.62,36.08,32.96,36.1,33.32,36.14,
   33.66,36.2,33.96,36.3,34.16,36.45,34.46,36.7,34.66,36.8,34.92,36.74,35.3,36.6,35.56,36.58,35.76,36.75,35.96,36.86,36.16,36.95,36.2,36.72,36.06,36.56,
@@ -61,8 +83,24 @@ const COAST=pts([26.7,39.7,26.72,39.3,26.9,39.07,27.0,38.92,26.96,38.8,26.76,38.
   35.2,33.28,35.12,33.1,35.07,32.92,34.96,32.84,34.93,32.68,34.89,32.5,34.85,32.33,34.75,32.06,34.64,31.8,34.55,31.67,34.45,31.52,34.24,31.32,33.8,31.13,
   33.2,31.15,32.75,31.08,32.55,31.05,32.3,31.26,31.85,31.52,31.5,31.56,31.0,31.6,30.6,31.5,30.36,31.46,30.06,31.32,29.9,31.2,29.5,31.04,29.3,30.95]);
 /* the land is closed far outside every window */
-const LAND=COAST.concat(pts([29.3,27,46,27,46,42,26.7,42]));
-const ISLES=[
+const LAND=COAST.concat(pts([29.3,27,46,27,46,41.0]));
+/* Europe: from the Bosporus along the Propontis and the Hellespont, round the Thracian Chersonese, along Thrace and Macedonia with the
+   three fingers of Chalcidice, down the east of Greece, round the Peloponnese (which hangs by its isthmus), up the western coast, and
+   closed far outside every window. The straits are narrower than a pixel of this map, and are drawn a little wider than they are.
+   The usual window begins at 23.2 degrees east and 37.45 north: the Argolid is cut a little short, so that nothing of Europe shows in it. */
+const EUROPE=pts([29.02,41.25,28.97,41.12,28.93,41.02,28.6,40.97,28.25,41.07,27.97,40.97,27.51,40.98,27.3,40.78,27.11,40.61,26.85,40.5,26.62,40.44,26.4,40.27,26.3,40.14,26.17,40.04,26.14,40.1,26.25,40.22,26.45,40.38,26.65,40.52,
+  26.8,40.62,26.55,40.63,26.3,40.62,26.08,40.7,25.87,40.84,25.5,40.87,25.1,40.95,24.85,40.9,24.62,40.93,24.41,40.94,24.3,40.83,24.1,40.72,23.85,40.78,23.71,40.72,23.7,40.66,23.79,40.59,23.88,40.42,24.15,40.32,24.39,40.13,24.2,40.2,23.98,40.32,
+  23.74,40.3,23.9,40.15,23.98,39.96,23.76,40.05,23.7,40.2,23.5,40.27,23.6,40.1,23.72,39.93,23.4,39.98,23.3,40.15,23.0,40.27,22.9,40.37,22.95,40.55,22.95,40.63,22.75,40.6,22.65,40.47,22.6,40.3,22.6,40.1,22.75,39.85,22.92,39.68,
+  23.25,39.35,23.3,39.15,23.05,39.02,22.85,38.98,22.6,38.9,22.78,38.8,23.03,38.75,23.1,38.65,23.3,38.55,23.48,38.46,23.62,38.38,23.82,38.28,24.02,38.12,24.01,38.02,24.06,37.72,24.03,37.65,23.8,37.8,23.63,37.94,23.5,38.04,23.35,37.98,
+  23.05,37.9,23.16,37.63,23.45,37.5,23.3,37.46,23.15,37.31,22.8,37.57,22.72,37.6,22.75,37.4,22.9,37.1,23.05,36.8,23.2,36.44,22.95,36.52,22.8,36.8,22.57,36.76,22.48,36.39,22.37,36.5,22.15,36.9,22.11,37.02,21.95,36.8,21.7,36.8,
+  21.65,37.0,21.57,37.25,21.3,37.65,21.12,37.93,21.35,38.17,21.73,38.25,21.78,38.31,22.08,38.26,22.6,38.02,22.9,37.97,22.98,38.0,22.86,38.04,23.1,38.06,23.22,38.15,22.9,38.2,22.63,38.37,22.42,38.43,22.38,38.37,22.1,38.35,
+  21.83,38.39,21.77,38.33,21.43,38.36,21.15,38.3,21.1,38.36,21.0,38.6,20.9,38.8,20.75,38.95,20.5,39.25,20.25,39.5,20.0,39.7,19.9,39.9,19.45,40.35,19.4,41.0,19.5,41.6,19.0,42.5,18.5,44,27.9,44,27.9,42.3,28.05,41.9,28.6,41.4]);
+const ISLES=[EUROPE,
+  /* the northern Aegean: Samothrace, Thasos, Imbros, Lemnos; and off the coast of Greece, Euboea and Skyros */
+  pts([25.45,40.5,25.6,40.51,25.72,40.46,25.7,40.4,25.55,40.38,25.44,40.43]),pts([24.52,40.69,24.65,40.79,24.78,40.7,24.73,40.59,24.6,40.57]),
+  pts([25.67,40.17,25.85,40.24,26.02,40.16,25.9,40.1,25.7,40.11]),pts([25.04,39.92,25.2,40.03,25.44,39.98,25.36,39.8,25.2,39.83,25.08,39.84]),
+  pts([23.0,38.87,23.3,39.03,23.45,38.9,23.75,38.72,24.15,38.65,24.25,38.35,24.58,38.15,24.5,37.97,24.25,38.02,24.05,38.3,23.72,38.42,23.62,38.52,23.3,38.7,23.1,38.82]),
+  pts([24.4,38.95,24.54,38.9,24.6,38.78,24.46,38.76]),
   pts([32.27,35.08,32.6,35.18,32.95,35.38,33.4,35.34,33.9,35.37,34.3,35.55,34.59,35.69,34.2,35.45,33.95,35.27,34.05,35.0,33.62,34.88,33.02,34.62,32.62,34.68,32.4,34.75]),
   pts([23.55,35.3,23.6,35.58,24.0,35.52,24.3,35.37,24.9,35.42,25.4,35.32,25.72,35.2,26.1,35.22,26.3,35.31,26.22,35.04,25.73,35.0,25.0,34.95,24.72,34.94,24.3,35.15,23.9,35.25]),
   pts([27.7,36.15,28.0,36.45,28.25,36.4,28.2,36.1,27.85,35.9,27.7,35.98]),pts([27.08,35.42,27.22,35.4,27.25,35.85,27.12,35.86]),
@@ -80,6 +118,10 @@ const RANGES=[[29.2,37.25,30.4,37.15,31.4,37.05,32.4,36.95,33.4,36.98,34.3,37.25
 /* in the northern view the Taurus opens where the road from Perga climbs through it, and stands back from the names beside that road:
    behind Pamphylia, a strip of coast up to 50 km wide, it runs further inland, clear of the region's name;
    the mountains north-east of Antioch in Pisidia run along the road to Iconium */
+/* in the Aegean view as well: the mountains along the Black Sea and north of Galatia, Rhodope behind the coast of Thrace, Olympus
+   and the Pindus, the heights of central Greece and of the Peloponnese. They stand back from every name on that map. */
+const RANGES_W=[[32.7,41.3,33.6,41.52,34.7,41.45,36.0,41.02,37.6,40.76],[32.3,40.25,33.2,40.48,34.2,40.4],[36.2,39.9,37.2,39.6,38.0,39.2],[24.4,41.62,25.0,41.52,25.7,41.46],
+  [21.25,40.6,21.4,40.0,21.6,39.4,21.9,38.95],[22.3,40.12,22.5,39.84],[22.2,38.66,22.75,38.5],[22.1,37.9,22.3,37.42,22.36,36.98]];
 const RANGES_N=[[28.6,37.42,29.3,37.34,29.95,37.3],[31.62,37.22,32.28,37.2],[33.25,36.97,34.3,37.25,35.0,37.35],...RANGES.slice(1),[31.45,38.58,31.9,38.36,32.3,38.2],[28.3,38.3,28.9,38.42],[33.9,37.9,34.5,38.2]];
 function poly(g,p){g.beginPath();g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1]);g.closePath()}
 function line(g,p){g.beginPath();g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1])}
@@ -100,7 +142,7 @@ function paint(g){const r=rng(1913),lands=[LAND,...ISLES];
     tex(g,'mott',.55,OX,OY,W,H,'overlay',1);tex(g,'grain',.16,OX,OY,W,H,'overlay',.5);
     for(let i=0;i<500;i++){const x=OX+r()*W,y=OY+r()*H;oval(g,x,y,.6+r()*1.4,.4+r()*.6,rgba(r()<.5?'#d8c08a':'#7a6a3c',.28))}
     /* relief: small peaks along each range, light on the north-west face and shadow on the south-east */
-    for(const rg of OY<0?RANGES_N:RANGES){const q=pts(rg);for(let i=0;i<q.length-2;i+=2){const x0=q[i],y0=q[i+1],x1=q[i+2],y1=q[i+3],n=Math.max(2,Math.round(Math.hypot(x1-x0,y1-y0)/3.2));
+    for(const rg of OX<0?RANGES_N.concat(RANGES_W):OY<0?RANGES_N:RANGES){const q=pts(rg);for(let i=0;i<q.length-2;i+=2){const x0=q[i],y0=q[i+1],x1=q[i+2],y1=q[i+3],n=Math.max(2,Math.round(Math.hypot(x1-x0,y1-y0)/3.2));
       for(let k=0;k<n;k++){const t=k/n,x=x0+(x1-x0)*t+(r()-.5)*2.4,y=y0+(y1-y0)*t+(r()-.5)*2,w=1.8+r()*1.2,h=2.2+r()*1.6;
         g.beginPath();g.moveTo(x-w,y);g.lineTo(x,y-h);g.lineTo(x+w,y);g.closePath();g.fillStyle='#7a5c38';g.fill();
         g.beginPath();g.moveTo(x-w,y);g.lineTo(x,y-h);g.lineTo(x+w*.15,y);g.closePath();g.fillStyle='#d6be88';g.fill();
@@ -135,14 +177,14 @@ function dot(g,x,y,lit){oval(g,x,y,1.9,1.9,'#1a0e08');oval(g,x,y,1.15,1.15,lit?'
 function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];const sea=T('THE GREAT SEA').split('').join(' ');
   g.save();g.translate(-OX,-OY);
   g.font='italic bold 5px "Lucida Console",Monaco,monospace';g.textBaseline='middle';g.fillStyle='rgba(190,224,236,.55)';{const[sx,sy]=SEA[OX+','+OY]||SEA['0,0'];g.fillText(sea,sx,sy);box(g,sea,sx,sy,5)}
-  for(const{name,at:[lon,lat],sea,close,north}of REGIONS){if(north&&OY>=0)continue;const[x,y]=xy(lon,lat),s=T(name),hw=s.length*(close?1.66:2.3);if(!inView(x-hw,y,-2)||!inView(x+hw,y,-2))continue;
+  for(const{name,at:[lon,lat],sea,close,north,west}of REGIONS){if(north&&OY>=0||west&&OX>=0)continue;const[x,y]=xy(lon,lat),s=T(name),hw=s.length*(close?1.66:2.3);if(!inView(x-hw,y,-2)||!inView(x+hw,y,-2))continue;
     g.font='bold 4.2px "Lucida Console",Monaco,monospace';g.fillStyle=sea?'rgba(190,224,236,.55)':'rgba(70,46,20,.6)';
     if(close){/* letter by letter, a third of a letter apart */for(let i=0;i<s.length;i++)g.fillText(s[i],x-hw+i*3.32,y);ST.boxes.push([x-hw,y-1.9,x+hw,y+1.9,s])}
     else{const sp=s.split('').join(' ');g.fillText(sp,x-hw,y);box(g,sp,x-hw,y,4.2)}}
   for(const L of ST.legs){const n=Math.floor(L.dots.length*L.k);for(let i=0;i<n;i++){const[x,y]=L.dots[i];R(g,x-.6,y-.6,1.2,1.2,'#5a140c');R(g,x-.35,y-.35,.7,.7,L.k<1&&i>n-4?'#ffe0a0':'#d84a32')}}
   const show=new Set(ST.places||Object.keys(PLACES).filter(k=>PLACES[k].minor||ST.seen.has(k)));
-  for(const k of show){const p=placeOf(k),[x,y]=at(k),main=!p.minor||ST.places||ST.seen.has(k);if(!inView(x,y,-3))continue;dot(g,x,y,ST.seen.has(k)||ST.hover===k);
-    label(g,T(p.name),x,y+(p.dy||0),p.lab,main?(ST.hover===k?'#ffffff':'#f4e4b8'):'rgba(232,220,190,.62)',main?4.8:4)}
+  for(const k of show){const p=placeOf(k),[x,y]=at(k),main=!p.minor||ST.places||ST.seen.has(k);if(p.hide||!inView(x,y,-3))continue;dot(g,x,y,ST.seen.has(k)||ST.hover===k);
+    label(g,T(p.name),x,y+(p.dy||0),p.lab,main?(ST.hover===k?'#ffffff':'#f4e4b8'):'rgba(232,220,190,.62)',main?p.sz||4.8:4)}
   if(ST.pulse){const[x,y]=at(ST.pulse),k=(t/900)%1;g.strokeStyle=`rgba(255,226,150,${.9*(1-k)})`;g.lineWidth=.6;g.beginPath();g.arc(x,y,2.4+k*6,0,6.2832);g.stroke()}
   g.restore();
   if(ST.places){g.font='bold 4.4px "Lucida Console",Monaco,monospace';g.textBaseline='middle';g.fillStyle='rgba(244,228,184,.9)';/* the hint stands in open sea, clear of the coast of Egypt */
