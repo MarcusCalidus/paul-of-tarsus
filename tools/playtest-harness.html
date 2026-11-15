@@ -1212,7 +1212,18 @@
       ok(!out.length&&!ends.length,`good, win and pray begin on the tonic of each of the seven chapters' keys, end on its tonic or fifth, and stay in its mode (Chapter Three's good: ${g3})`+(out.length?' OUT '+out:'')+(ends.length?' ENDS '+ends:''));
       ok(!far.length&&f1.map(x=>x.join()).join('|')===D.map(x=>x.join()).join('|'),'none lies more than a tritone from where it was tuned, and Chapter One\'s are exactly as before'+(far.length?' FAR '+far:''));
       ok(!AU.score&&g5.every(m=>inKey(m,CHAP[5].music))&&g5.join()!==f1[0].join(),`with no score playing they keep the last chapter's key (Chapter Five: ${g5})`);
-      ok(g7.length&&g7.every(m=>inKey(m,CHAP[7].music))&&pc(g7[0],CHAP[7].music)===0,`a typed code is greeted in its own chapter's key (Chapter Seven: ${g7})`)}
+      ok(g7.length&&g7.every(m=>inKey(m,CHAP[7].music))&&pc(g7[0],CHAP[7].music)===0,`a typed code is greeted in its own chapter's key (Chapter Seven: ${g7})`);
+      /* the map's sting and arrival chime, with no score playing, as on the map; and a chapter that opens on the map has its key first */
+      const M=await need('map'),I0=Object.assign({},INST),D0=Object.assign({},DRUMS),tw=window.tone,mo=[],by={};let ps=[];
+      try{for(const k of['drone','harp','ney'])INST[k]=f=>ps.push([k,midi(f)]);DRUMS.d=()=>{};window.tone=o=>{ps.push(['chime',midi(o.f)])};setScore(null);
+        for(let n=1;n<=7;n++){AU.key=CHAP[n].music;ps=[];M.sting();M.arrive();by[n]=ps;if(ps.length!==12)mo.push(n+': '+ps.length+' notes');
+          for(const[,m]of ps)if(!inKey(m,CHAP[n].music))mo.push(n+':'+m.toFixed(2))}}
+      finally{Object.assign(INST,I0);Object.assign(DRUMS,D0);window.tone=tw}
+      const s5=CHAP[5].start,oc=ov.onclick;let k5;CHAP[5].start=()=>{k5=AU.key};AU.key=CHAP[4].music;
+      try{await startChapter(5)}finally{CHAP[5].start=s5;ov.onclick=oc}
+      const part=(n,k)=>by[n].filter(x=>x[0]===k).map(x=>Math.round(x[1])),one=['drone','harp','ney','chime'].map(k=>part(1,k).join()).join('|'),h7=part(7,'harp');
+      ok(!mo.length&&k5===CHAP[5].music,`the map's sting and arrival chime sound in each of the seven chapters' keys, and Chapter Five, which opens on the map, has its own key before it starts`+(mo.length?' OUT '+mo:''));
+      ok(one==='50|62,66,69,74|74,75,78,81,78|81,86'&&h7.some(m=>pc(m,CHAP[7].music)===7),`Chapter One's sting keeps its register (${one}), and in Chapter Seven's five notes its harp reaches the fifth (${h7})`)}
     finally{AU.key=k0}}
   ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
   fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));

@@ -147,9 +147,14 @@ function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];const sea=T('THE GREAT
   g.restore();
   if(ST.places){g.font='bold 4.4px "Lucida Console",Monaco,monospace';g.textBaseline='middle';g.fillStyle='rgba(244,228,184,.9)';/* the hint stands in open sea, clear of the coast of Egypt */
     const s=T('Click a place to travel there. Esc to stay.');g.fillText(s,8,H-14);box(g,s,8+OX,H-14+OY,4.4)}}
-function sting(){const t=now()+.06;if(!AU.ctx)return;DRUMS.d(t,1.3);DRUMS.d(t+.36,.9);INST.drone(mtof(50),t,2.6,.8);
-  [62,66,69,74].forEach((m,i)=>INST.harp(mtof(m),t+i*.13,.5,1.3));[74,76,78,81,78].forEach((m,i)=>INST.ney(mtof(m),t+.62+i*.2,i===4?.9:.34,.9))}
-const arrive=()=>{tone({f:1175,d:.18,type:'sine',v:.05,echo:1});tone({f:1568,t:now()+.08,d:.22,type:'sine',v:.035,echo:1})};
+/* the map's music, in the key of the chapter: each part is semitones above the tonic, and oct says which octave of the tonic, counting
+   from the one nearest D4; the engine's tune() places and snaps it. The sting: two low drum strokes, a drone on the tonic, a harp rising
+   through the third and fifth to the octave, and a ney phrase. The chime as a leg arrives: the fifth rising to the tonic. */
+const STING={drone:{oct:-1,n:[0]},harp:{oct:0,n:[0,4,7,12]},ney:{oct:1,n:[0,2,4,7,4]}},CHIME={oct:2,n:[-5,0]};
+const hz=p=>tune(p.n,p.oct).map(mtof);
+function sting(){const t=now()+.06;if(!AU.ctx)return;DRUMS.d(t,1.3);DRUMS.d(t+.36,.9);INST.drone(hz(STING.drone)[0],t,2.6,.8);
+  hz(STING.harp).forEach((f,i)=>INST.harp(f,t+i*.13,.5,1.3));hz(STING.ney).forEach((f,i)=>INST.ney(f,t+.62+i*.2,i===4?.9:.34,.9))}
+const arrive=()=>{const[a,b]=hz(CHIME);tone({f:a,d:.18,type:'sine',v:.05,echo:1});tone({f:b,t:now()+.08,d:.22,type:'sine',v:.035,echo:1})};
 function show(){G.scene=draw;setScore(null);AU.amb={wind:.25,waves:.25}}
 /* journey: between scenes. Fades to the map, shows the legs already travelled, then draws the new ones, city by city. */
 async function journey(route,o){o=o||{};setView(o.view);ST.places=null;ST.hover=null;ST.legs=[];ST.seen=new Set();ST.pulse=null;ST.over=o.labels||null;
@@ -174,5 +179,5 @@ async function go(a,b){const L={a,b,k:0,dots:path(a,b)};ST.legs.push(L);ST.seen.
 const where=id=>{const[x,y]=at(id);return[x-OX,y-OY]};
 /* lines: every thin line on the map that a name must not cross: the coasts, the islands and the lakes, as lists of points */
 const lines=()=>[COAST,...ISLES.map(p=>p.concat(p.slice(0,2))),...LAKES.map(p=>p.concat(p.slice(0,2)))];
-return{journey,pick,go,where,lines,places:PLACES,state:ST,draw};
+return{journey,pick,go,where,lines,places:PLACES,state:ST,draw,sting,arrive};
 })();
