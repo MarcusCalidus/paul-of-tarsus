@@ -35,13 +35,17 @@ const PLACES={
   paphos:{name:'Paphos',at:[32.42,34.76],lab:'l',minor:1},alexandria:{name:'Alexandria',at:[29.92,31.20],lab:'r',minor:1},
   perga:{name:'Perga',at:[30.85,36.96],lab:'l',dy:-3},antiochp:{name:'Antioch in Pisidia',at:[31.19,38.30],lab:'l'},
   iconium:{name:'Iconium',at:[32.49,37.87],lab:'r'},lystra:{name:'Lystra',at:[32.35,37.58],lab:'l'},derbe:{name:'Derbe',at:[33.39,37.35],lab:'r'},
-  attalia:{name:'Attalia',at:[30.66,36.86],lab:'l',dy:3.6}};
+  attalia:{name:'Attalia',at:[30.66,36.86],lab:'l',dy:3.6},
+  /* two passes on the trade road from Syria: through the Amanus north of Antioch, and through the Taurus north of Tarsus */
+  syriangates:{name:'Syrian Gates',at:[36.28,36.48],lab:'r'},ciliciangates:{name:'Cilician Gates',at:[34.78,37.28],lab:'r'}};
 /* waypoints for legs that do not run straight: by sea up the coast and east of Cyprus; by road round the Gulf of Issus; through
    the south of Cyprus, the way tradition has them go from Salamis to Paphos; by sea clear of the western cape of Cyprus; up the valley
    through the Taurus; along the foot of the mountains to Iconium; and home from Attalia by sea, between Cyprus and the coast of Cilicia */
 const VIA={'caesarea-tarsus':[34.42,33.3,34.5,34.7,34.88,35.75],'tarsus-antioch':[35.6,37.02,36.2,37.03,36.32,36.7,36.3,36.45],
   'salamis-paphos':[33.45,34.99,32.95,34.8],'paphos-perga':[32.0,35.2,31.35,36.25],'perga-antiochp':[31.0,37.6],'antiochp-iconium':[31.85,38.02],
-  'attalia-seleucia':[31.2,36.4,32.2,35.92,33.2,35.74,34.2,35.9,35.1,36.14]};
+  'attalia-seleucia':[31.2,36.4,32.2,35.92,33.2,35.74,34.2,35.9,35.1,36.14],
+  /* from the Syrian Gates round the Gulf of Issus to Tarsus; and from the Cilician Gates out onto the plateau, and west to Derbe */
+  'syriangates-tarsus':[36.32,36.7,36.2,37.03,35.6,37.02],'ciliciangates-derbe':[34.55,37.47,34.05,37.5]};
 /* region names sit where no coast, lake or route runs through them. close: a name with its letters set closer together, for a region
    too small to hold a widely spaced one; north: a name shown only in the northern window, where the mountains make room for it */
 const REGIONS=[{name:'CILICIA',at:[32.7,36.72]},{name:'SYRIA',at:[37.6,35.2]},{name:'CYPRUS',at:[33.2,34.35],sea:1},

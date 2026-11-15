@@ -503,7 +503,7 @@ const BN4={name:'Barnabas',actor:BN,
         await say(BN,'And many Jews live there. Salamis alone has more than one synagogue.')}},
       {q:'What do we still need for the crossing?',a:()=>say(BN,!F.metKal?'A word with the shipmaster, first of all. He is the one by the gangplank.':!F.shelter?'A roof for the deck, he says. You are the tentmaker.'
         :!F.jairOk?'Peace with the old man by the jars. I would not sail without it.':'Nothing. We can go aboard.')},
-      {q:'Are you glad to be going home?',once:1,a:()=>say(BN,'Glad? I left Cyprus a Levite with a field to my name. I am going back with good news for the whole island.')},
+      {q:'Are you glad to be going home?',once:1,a:()=>say(BN,'Glad? I am going back with good news for the whole island.')},
       {q:'Let us get on.',bye:1}])
     :inPaph()?talkTree([
       {q:'What do you make of the proconsul?',a:()=>say(BN,'He listens before he speaks. I have not met many rulers of whom I could say that.')},
@@ -630,7 +630,7 @@ PH.hs={name:'Philon',actor:PH,look:()=>say(P,F.spoke?'Philon. He is still frowni
   ask:{hearing:'Do not ask me. Ask Zadok. Though I warn you: I shall have questions.'},
   talk:async()=>{await say(PH,F.spoke?'I said I would search it out, and I will. Do not think you have persuaded me. You have only made me curious.':'Philon, of Salamis. I deal in copper. And you are?');
     if(!F.spoke){await say(P,'Saul, of Tarsus. A tentmaker.');await say(PH,'A tentmaker, come to a synagogue in Cyprus. Then you have not come to sell tents.')}},
-  as:{barnabas:{look:'Philon. His father sold copper too, and argued just as well.',talk:()=>say(PH,'The son of the Levite! They said you had sold up and gone to Jerusalem for good.'),show:{'*':'I am not buying today.'}}}};
+  as:{barnabas:{look:'Philon. His father sold copper too, and argued just as well.',talk:()=>say(PH,'The son of the Levite! They said you had gone to Jerusalem for good.'),show:{'*':'I am not buying today.'}}}};
 ROOMS.synagogue={walk:[16,304,110,136],mood:'calm',amb:{crowd:.12,fire:.15},hs:[
   {name:'door to the square',x:8,y:53,w:24,h:51,wx:32,wy:113,dir:-1,look:'The door to the square.',exit:()=>go4('salamis',365,116,-1)},
   {name:'window',x:66,y:20,w:22,h:26,wx:92,look:'A high window. The light falls where the reader stands.'},
@@ -654,7 +654,7 @@ async function hearing0(){if(F.heard)return;
   await say(EL,'Proconsul, is this wise? You have me to tell you what tomorrow holds.');
   await say(SP,'I have you, Elymas. And today I have them as well. Your names?');
   await say(BN,'Barnabas, sir.');
-  await say(P,'Saul, of Tarsus. But I was born a Roman, and among Romans I go by my Roman name: Paul.');
+  await say(P,'Saul, of Tarsus. But I was born a Roman, and among the nations I go by my Roman name: Paul.');
   await say(SP,'Paulus? That is my own name. Sergius Paulus.');
   await say(P,'I have had it as long as I can remember, sir.');F.heard=1;P.called='Paul';
   await narr('From this point on, the account calls him Paul. (Acts 13:9)',{dur:4200});
@@ -665,7 +665,7 @@ async function sayFee(){await say(EL,'And what will this teaching cost you, Proc
   await say(EL,'Ask them their fee before you hear another word.');
   await say(SP,'Another fair question. Every teacher who has stood where you stand wanted something of me. What do you two want?')}
 async function hearPaul(){
-  if(!F.ob1){await say(P,'Sir, I set foot on Cyprus for the first time at Salamis, not many weeks ago.');
+  if(!F.ob1){await say(P,'Sir, Cyprus is not my island.');
     await say(SP,'Then you are a stranger here, as Elymas says.');
     return say(P,'I am. But Barnabas is not: he was born on this island. This answer is his to give.',TH)}
   if(!F.ob2){await say(P,'We ask nothing of you, sir. Not one coin.');

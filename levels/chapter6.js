@@ -628,7 +628,7 @@ TI.hs={name:'Timothy',actor:TI,
         await say(BN,'Peace, Timothy. Barnabas, of Cyprus, and my friend is Paul, of Tarsus. Have you a synagogue here?');
         return say(TI,'No, sir. There are too few of us. My mother and my grandmother taught me the holy writings at home. Most people here speak Lycaonian, and Greek only to strangers.')}
       if(inLys()&&F.healed)return hear(TI);
-      return say(TI,inOut()?'He stood up, sir. I saw him stand up.':night()?'Is it true that you sold a field, sir, and gave away all of the price?':F.back?'You came back, sir. Both of you.':'Everybody comes to the well, sir. If you have something to say to Lystra, say it there.')},
+      return say(TI,inOut()?'He stood up, sir. I saw him stand up.':night()?'Is it true that you sold a piece of land, sir, and gave away all of the price?':F.back?'You came back, sir. Both of you.':'Everybody comes to the well, sir. If you have something to say to Lystra, say it there.')},
     show:{staff6:'Did you really carry a rope across a river on that, sir?','*':'Is it from Cyprus, sir?'}}}};
 EN.hs={name:'Eunice',actor:EN,
   look:()=>say(P,inOut()?'Eunice. She came out past the gate of her own town to stand over a stranger\'s body.':night()?'Eunice. She has given us her own supper, and she will not hear of thanks.':F.back?(F.strong?'Eunice. Her faith is without hypocrisy: what she is by lamplight, she is in the street.':'Eunice. These months have cost her something, and she is still here.')
@@ -955,8 +955,8 @@ async function finale6(){playAs(P);AU.mood='calm';await Promise.all([walk(P,156,
   endScreen({title:'The Door to Faith',text:'Paul paid what he owed before he fled, would not take a garland that belonged to the living God, and walked back in through the gate of the city that stoned him. Then he took the long road home, by way of every disciple.',
     extra:[F.debt&&'Silver left for the brothers in Iconium',F.copy&&'A passage read with young Timothy'].filter(Boolean),
     based:'Based on Acts 14:1-28 and 2 Timothy 1:5; 3:10, 11, 15. Supporting characters and dialogue are imaginative; the events are from the Scriptures. Acts does not say when Lois, Eunice and Timothy became believers; it was likely during this first stay in Lystra.',
-    go:'Click to return to the title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+    go:'Click to continue to Chapter Seven',code:['Chapter Seven code: {code}',codeOf(7,0)]});
+  await wait(1500);ov.onclick=()=>startChapter(7);await new Promise(()=>{})}
 /* HOME: the roads already travelled, as the closing map shows them. The crossing from Paphos to Perga is left off: the voyage home passes
    north of Cyprus, and two routes on the map must not cross. */
 const HOME=[['perga','antiochp'],['antiochp','iconium'],['iconium','lystra'],['lystra','derbe']];
