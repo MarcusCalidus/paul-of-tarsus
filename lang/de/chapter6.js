@@ -297,7 +297,7 @@ TEXTS('de',6,{
   "Peace, Timothy. Barnabas, of Cyprus, and my friend is Paul, of Tarsus. Have you a synagogue here?":"Friede, Timotheus. Barnabas aus Zypern, und mein Freund ist Paulus aus Tarsus. Habt ihr hier eine Synagoge?",
   "No, sir. There are too few of us. My mother and my grandmother taught me the holy writings at home. Most people here speak Lycaonian, and Greek only to strangers.":"Nein, Herr. Wir sind zu wenige. Meine Mutter und meine Großmutter haben mich zu Hause die heiligen Schriften gelehrt. Die meisten hier sprechen Lykaonisch, und Griechisch nur mit Fremden.",
   "He stood up, sir. I saw him stand up.":"Er ist aufgestanden, Herr. Ich habe gesehen, wie er aufgestanden ist.",
-  "Is it true that you sold a field, sir, and gave away all of the price?":"Stimmt es, Herr, dass du ein Feld verkauft und den ganzen Erlös weggegeben hast?",
+  "Is it true that you sold a piece of land, sir, and gave away all of the price?":"Stimmt es, Herr, dass du ein Stück Land verkauft und den ganzen Erlös weggegeben hast?",
   "You came back, sir. Both of you.":"Ihr seid zurückgekommen, Herr. Alle beide.",
   "Everybody comes to the well, sir. If you have something to say to Lystra, say it there.":"Jeder kommt zum Brunnen, Herr. Wenn ihr Lystra etwas zu sagen habt, sagt es dort.",
   "Did you really carry a rope across a river on that, sir?":"Hast du darauf wirklich ein Seil durch einen Fluss getragen, Herr?",
