@@ -2,7 +2,7 @@
 
 A browser point-and-click adventure in the style of early-1990s verb-and-inventory adventure games. You play Saul of Tarsus, later known as the apostle Paul, a tentmaker who gets out of tight spots with his trade, his brothers and prayer rather than with force.
 
-There are six chapters so far, in English and German. The game is a small engine in `index.html` plus one level file per chapter in `levels/`, loaded only when that chapter is played. There are no image or audio files: every backdrop, character and icon is painted in code on a canvas, and all music, ambience and sound effects are synthesized with the Web Audio API.
+There are seven chapters so far, in English and German. The game is a small engine in `index.html` plus one level file per chapter in `levels/`, loaded only when that chapter is played. There are no image or audio files: every backdrop, character and icon is painted in code on a canvas, and all music, ambience and sound effects are synthesized with the Web Audio API.
 
 ![Title screen](docs/screenshots/title.png)
 
@@ -211,6 +211,47 @@ What follows is told in the words of Acts 14:19 on a dark screen, and nothing of
 Optional: give the silver coins to Nathan before leaving Iconium, and give the wax tablets to Timothy during the night in Lystra.
 </details>
 
+## Chapter Seven: Timothy of Lystra
+
+About 49 C.E. Some men come down from Judea to Antioch and teach the brothers: "Unless you get circumcised according to the custom of Moses, you cannot be saved." Paul, Barnabas and some of the others are sent up to the apostles and elders in Jerusalem. There Peter speaks, Barnabas and Paul relate what God has done through them among the nations, and James gives his decision. Judas called Barsabbas and Silas, "leading men among the brothers", are sent back with them and with a letter "to those brothers in Antioch, Syria, and Cilicia who are from the nations", and Antioch rejoices over the encouragement. After some days Paul proposes to visit the brothers in every city. Barnabas is determined to take along John Mark, and Paul is not in favor of it. "At this there was a sharp burst of anger, so that they separated from each other"; Barnabas sails away to Cyprus with Mark. Paul selects Silas and goes "through Syria and Cilicia, strengthening the congregations". So he arrives at Derbe and also at Lystra, where there is a disciple named Timothy, "well-reported-on by the brothers in Lystra and Iconium". Paul expresses the desire for Timothy to accompany him. As they travel on through the cities they deliver the decrees, and the congregations continue "to be made firm in the faith and to increase in number day by day" (Acts 15:1–16:5).
+
+| | |
+|---|---|
+| ![The meeting in Jerusalem](docs/screenshots/council.png) | ![The letter read in Tarsus](docs/screenshots/reading.png) |
+| Jerusalem: the apostles and the elders look into the matter | Tarsus: the letter, read to the whole congregation by the man who was sent with it |
+| ![The Cilician Gates](docs/screenshots/gates.png) | ![The house of Lois, two years on](docs/screenshots/timothy.png) |
+| The Cilician Gates: a torn tent, and a storm an hour away | Lystra: the door that Lois said would be open |
+
+Four more locations, eight new characters, and a new man to play: Silas. The meeting in Jerusalem is told as the chapter opens, in the words of Acts 15 and in three scenes without a puzzle. So is the parting from Barnabas. The account gives no explanation for it, and the game adds none.
+
+In Tarsus the congregation has heard the teaching from Judea, and a careful brother will not take the letter on the word of the man who carries it: Paul was one of the two sides in that dispute. Everything Paul can answer is true, and none of it helps. The answer is standing beside him. Silas was sent out from Jerusalem with the letter, "so that they also may report the same things by word of mouth" (Acts 15:27), and two witnesses are what the Law asks for (Deuteronomy 19:15). Then the letter has to be read, and not to one man beside a loom: in Antioch "they gathered the whole group together and handed them the letter" (Acts 15:30).
+
+The road north climbs to the Cilician Gates, a cleft in the Taurus so narrow that the way for wagons was cut into its rock. Zenon, the carter of Derbe who offered this road in Chapter Six, is on it with his oxen; so is a cloth merchant whose tent has torn, with his wife and daughter, and the wind that comes before rain. Paul can close the seam and sew in a new corner loop, with leather from the carter's harness box. Raising a tent in that wind takes two: Silas, who has never pitched one, holds the windward line while Paul sets the pole and drives the pins. That night the rain finds the letter. The copies of the decrees are for every congregation on the road (Acts 16:4), so the merchant's thanks, a length of goat-hair cloth, becomes a case for them, and the carter's axle tallow keeps the water out of it.
+
+In Lystra the door that Lois said would be open is open, and Timothy is a man's height. Paul would like to ask him at once, and the game lets the player try: it is a hasty choice, not an untrue one, and Paul sets it aside. First he hears what Acts 16:2 reports. He asks the older men appointed in Chapter Six, Timothy's mother and grandmother, and, a day's walk away in Iconium, the saddler Nathan and Tatia. What he asks matters. A question about what appears to the eyes (does he speak well, is he strong, does he come of a good family?) gets a short answer; a question about what Timothy does gets a true one (1 Samuel 16:7). Then Paul asks him, and tells him what it will cost.
+
+| | |
+|---|---|
+| ![Silas speaks for the letter](docs/screenshots/witness.png) | ![Silas on the windward line](docs/screenshots/windward.png) |
+| The second witness: sent to report the same things by word of mouth | A tent goes up in a wind only with a man on its windward line |
+| ![Three questions about Timothy](docs/screenshots/questions.png) | ![The opening of the second journey](docs/screenshots/secondjourney.png) |
+| What to ask an older man about a young one | By the Syrian Gates to Tarsus, over the Taurus, and on to Iconium |
+
+<details>
+<summary>Walkthrough (spoilers)</summary>
+
+1. In Tarsus, talk to Reuben: nothing Paul says persuades him. Switch to Silas (the **⇄ Silas** button, or `C`) and talk to Reuben: "I was sent from Jerusalem to report it by word of mouth."
+2. Give the letter from Jerusalem to Eirene (either man can carry it). Leave by the gate to the street, and click the Cilician Gates on the map.
+3. At the Gates, talk to Zenon and ask for leather. Use the yoke strap (or the awl) on the torn tent.
+4. Switch to Silas and use the mended tent: he takes its windward line. Switch back to Paul and use the tent.
+5. Use the awl with the goat-hair cloth. Ask Zenon how to keep the letter dry, and use the axle tallow with the letter case. Walk on to the Cilician Gates, and click Derbe on the map.
+6. In Lystra, give the letter to Myron. Talk to Myron: "What do you give him to do, and how does he do it?" Talk to Eunice: "What is he at home, when the brothers are not looking?" Leave by the door to the lane, and click Iconium on the map.
+7. In Iconium, give the letter to Nathan. Talk to Nathan: "How does Iconium come to know a young man from Lystra?" Talk to Tatia: "What does he do, when he comes to Iconium?" Leave by the south gate, and click Lystra on the map.
+8. Talk to Timothy: "I want you with us. It will cost you your home."
+
+Optional: give the wax tablets to Lois.
+</details>
+
 ## Look and sound
 
 The backdrops are painted in the manner of early-1990s VGA adventure games: perspective floors, textured plaster and stone, warm light against cool shadow, a foreground layer that slides past the scene as it scrolls, and a final ordered dither. Rooms are painted at twice the classic 320-pixel resolution. Night scenes and interiors are painted in daylight colors and then multiplied by a light map, so a lamp, a brazier or the moon through a window really lights the room; the same light falls on the characters as they walk through it.
@@ -227,6 +268,8 @@ Antioch in Pisidia and Iconium lie north of that map's upper edge, so Chapter Fi
 
 Chapter Six looks through the same window, and travels on it: from Iconium to Lystra, on to Derbe, and back. The way home is the road they came by, so the closing map does not draw it a second time: a light walks back from city to city, to Lystra, Iconium, Antioch and Perga. Then two new legs draw themselves, from Perga down to Attalia and by sea, between Cyprus and the coast of Cilicia, to Seleucia and Antioch. The crossing from Paphos to Perga is left off this map, because the voyage home would have to cross it.
 
+Chapter Seven draws the opening of the second journey on a map of its own, as Chapter Four did, and through the northern window: from Antioch by the Syrian Gates and round the Gulf of Issus to Tarsus, over the Taurus by the Cilician Gates to Derbe and Lystra, and on to Iconium. The roads of the first journey are left off it. The chapter opens on this map and travels on it; Derbe is passed on the way, and the walk from Lystra to Iconium is made in both directions. Acts names neither of the two passes: the map shows the road that was likely.
+
 ![The travel map at the end of Chapter Three](docs/screenshots/map.png)
 
 Each chapter has its own score, and each room its own sounds:
@@ -239,6 +282,7 @@ Each chapter has its own score, and each room its own sounds:
 | Sent Out to Cyprus | A harp in E Aeolian that rocks in three, three and two like a hull on a swell, with a ney at sea and a reed pipe in the harbors; before the proconsul only a drone, a slow drum and a few notes of the lyre | Waves, gulls and creaking timbers, a coppersmith's hammer in the market of Salamis, lamps in the synagogue, a brazier in the proconsul's hall |
 | A Light of Nations | A walking tune in D Phrygian, the mode named after the country Antioch borders on: a lyre in even fours, a frame drum at the pace of a pack train, and a reed pipe; a ney in the synagogue; at the ford and before the opposers only a drone, a slow drum and a few notes of the oud | Crickets and hooves on the hot plain, the rush of the river in the gorge, the wool market of Antioch, the wind across the high plain |
 | The Door to Faith | A tune for a high, well-watered plain in F Lydian: lyre, bass, frame drum and reed pipe on the roads; harp and ney indoors; a drone, a slow drum and a few notes of the oud when stones are spoken of; and when a whole town runs to the gate with garlands, a doubled drum, hand claps and a pipe that goes round and round on four notes | The fountain and the saddlers' hammers of Iconium, the well and the crowd of Lystra, crickets and an owl at dusk outside the city, a thorn fire in the house of Lois, wind over the stubble at Derbe |
+| Timothy of Lystra | A road tune on five notes, in E flat, such as a shepherd's pipe plays: lyre, bass, frame drum and reed pipe on the roads; harp and ney in the courtyard and by the hearth; a drone, a slow drum and a few notes of the oud while a congregation is of two minds; and in the gorge a drum that rolls like thunder a long way off | Birds in a fig tree over a divided congregation, the wind coming down the Gates and then rain on a goat-hair tent, a thorn fire in the house of Lois, the fountain and the saddlers' hammers of Iconium |
 
 ## How to play
 
@@ -251,6 +295,7 @@ Each chapter has its own score, and each room its own sounds:
 | Show what can be clicked | Hold `Tab`: everything in the room gets a dot and its name |
 | Combine things | **Use**, then an inventory item, then another item or something in the scene |
 | Play the other man | In Chapters Three, Four and Five, click **⇄ Barnabas** (or **⇄ Paul**) beside the prayer button, or press `C`. Each man has his own inventory, and in Chapter Three he can stand in a different room; the view follows the one you play. **Give** an item to the other when they share a room to hand it over (**Use** on him only shows it). |
+| Play Silas | In Chapter Seven the button reads **⇄ Silas**: he was sent out with the letter, and he has two hands. He leaves the tentmaker's crafts to Paul, as Barnabas did. |
 | Travel | In Chapters Four and Five the way out of a town opens the travel map. Click a place to go there; `Esc` or a right-click stays. A place the story has not reached yet, or one that lies behind, says why not. |
 | Read Paul's notes | Click the **wax tablets** in the inventory (their default verb is **Open**): the people he has met, what is still to be done, and the Scriptures for the chapter. Click or press Space to close them. |
 | Show something to someone | **Give** (or **Use**) an item on a person. Everyone has something to say about everything Paul carries, sometimes a clue. Only what someone actually needs changes hands. |
@@ -289,6 +334,8 @@ The top bar always shows a short code for exactly where you are: six characters 
 
 The game also keeps that same point in your browser, every time it changes. Come back in the same browser and the title screen leads with **Continue**, naming the chapter, which returns you to the room, inventory and progress you left. A finished chapter leaves **Continue** at the next one, and a finished game leaves nothing. The code is still what carries your place to another browser or device, and what you write down; the browser's copy is only as lasting as the browser's site data, so clearing it, a private window or another browser starts without it.
 
+Chapter Six and Chapter Seven codes are nine characters too (`6-XXX-XXX-XXX`, `7-XXX-XXX-XXX`).
+
 ![Safe-point code](docs/screenshots/code.png)
 
 ![Returning: the title screen offers to continue](docs/screenshots/continue.png)
@@ -305,6 +352,8 @@ Chapter Five does the same. Acts does not say why John Mark left, how the two me
 
 Chapter Six does the same. Acts does not say who informed the two men of the attempt to stone them, what Paul worked at in Iconium, where in Lystra he spoke, or who told them what the crowds were crying out in Lycaonian. The wagon cover, the saddler and the carrier's divided household are invented; so is the well, though *Bearing Thorough Witness* (chapter 12) notes that Lystra possibly had no synagogue, so that they preached in a public area. The old story of Zeus and Hermes that the household of Lois tells is the legend that the same chapter cites. Acts does not name the disciples who surrounded Paul. The game makes them Lois, Eunice and Timothy: the Study Edition's note on 2 Timothy 1:5 says that Eunice and Lois likely became Christians during this first stay in Lystra, and Timothy knew what happened to Paul there (2 Timothy 3:10, 11); but the account does not say so, and the chapter's end screen says that it does not. The healing of the lame man is told as Acts tells it and solves no puzzle. The stoning is not shown. The bulls and garlands of Acts 14:13 are shown, because the scene is about refusing them; the temple of Zeus is not, and nothing in the chapter shows a statue, an altar or an image of a god. That a road ran on from Derbe to Tarsus, and that the two men could have gone home that way, is from *The Watchtower* of September 1, 1992; the carter who offers it is invented. Of the return visits only the one to Lystra is shown, and the appointing of elders is told in the words of Acts 14:23.
 
+Chapter Seven does the same, and its end screen says so. Acts 15:41 says that Paul "went through Syria and Cilicia, strengthening the congregations", and names no city. The game sets one of those congregations in Tarsus, the chief city of the Cilician plain: *Insight on the Scriptures* ("Tarsus") says that he no doubt passed through there on some of his missionary journeys. Acts does not describe the road beyond it either. *Insight* ("Cilicia") names the Cilician Gates, a gorge in the Taurus some 50 kilometers north of Tarsus, as the natural route for his second journey, so the game takes him that way, and its narration says that the account does not. The doubting brother, the reading in a weaver's courtyard, the torn tent, the storm, the case for the copies of the decrees, the tallow that proofs it, and the reading on a threshing floor at Derbe are invented; that the decrees were delivered in each city is from Acts 16:4. After Acts 15:32 Silas is shown neither leaving Antioch nor staying behind: the Study Edition leaves out verse 34, and its note says that those words are not found in the earliest and most reliable manuscripts; where Silas was in between is uncertain. James is said to have presided because the Study Edition's note on Acts 15:13 says that it appears so, and the narration keeps the "it appears". Lystra was apparently Timothy's home. Acts 16:1 speaks of his mother only as "a believing Jewish woman": her name, and that of his grandmother Lois, are from 2 Timothy 1:5, and the account does not say that Lois lived in that house, as she does here and in Chapter Six. Of Timothy's father Acts says only that he was a Greek, and the Study Edition's note on Acts 16:1 adds that he was apparently not a Christian; that he is living, keeps sheep and does not hinder his household is invented. Acts says that Timothy was well-reported-on by the brothers in Lystra and Iconium, but not how Paul came to hear it: the four conversations, the walk to Iconium and back, and what each witness says are invented, around the qualities that *Bearing Thorough Witness* (chapter 15) draws from Philippians 2:20-22 and 2 Timothy 1:5. That book says that Paul and the local elders recommended him; that there were prophecies about Timothy, and that the body of elders and Paul laid their hands on him, is from 1 Timothy 1:18; 4:14 and 2 Timothy 1:6. That this was the occasion is only likely, and the narration says "it may have been at this time". His circumcision is told in the words of Acts 16:3, with the reason it gives, and is not shown. What Peter and James say in the opening scenes is quoted from Acts 15; the words given to Silas are dramatization, like the rest of the dialogue. The supporting characters are invented: Reuben, Agathon and Eirene in Tarsus; the merchant Bion, his wife Charis and their daughter Melissa at the Cilician Gates; and Myron, one of the older men of Lystra. Zenon, Nathan and Tatia come back from Chapter Six.
+
 This is an independent, non-commercial fan project. It is not produced, endorsed or reviewed by Jehovah's Witnesses or the Watch Tower Bible and Tract Society.
 
 ## Development
@@ -317,13 +366,14 @@ levels/chapter3.js    Called to Antioch
 levels/chapter4.js    Sent Out to Cyprus
 levels/chapter5.js    A Light of Nations
 levels/chapter6.js    The Door to Faith
+levels/chapter7.js    Timothy of Lystra
 shared/tablets.js     Paul's wax tablets, used by every chapter
 shared/map.js         the travel map: the journeys between chapters, and travel for a hub chapter
 lang/de/              the German text: main.js for the engine and shared files, chapterN.js for each chapter
 tools/                headless playtest, and the translation check (strings.mjs)
 ```
 
-A level file holds everything that belongs to one chapter and nothing else does: its music and ambience, its artwork, its cast and items, its rooms with their hotspots and dialog, its cutscenes and its prayer hints. `index.html` keeps only a manifest with one line per chapter (`CHAP`: name, file, code salt), and fetches a level with a script tag the first time it is needed, so the game still runs when opened straight from disk. To add a chapter, write `levels/chapter7.js` and add its line to the manifest.
+A level file holds everything that belongs to one chapter and nothing else does: its music and ambience, its artwork, its cast and items, its rooms with their hotspots and dialog, its cutscenes and its prayer hints. `index.html` keeps only a manifest with one line per chapter (`CHAP`: name, file, code salt), and fetches a level with a script tag the first time it is needed, so the game still runs when opened straight from disk. To add a chapter, write `levels/chapter8.js` and add its line to the manifest.
 
 Inside a level file:
 
@@ -334,6 +384,7 @@ Inside a level file:
 - **People** are hotspots with an `actor`. Besides `look` and `talk`, a person has a `give` script for the items that really matter to him (it returns `false` for the rest), a `show` table with his reply to every other item, keyed by item id, and a fallback `show['*']`, all in his own voice. Replies can be a line, a list of lines or a script. Using an item on a person is the same as giving it.
 - **Wax tablets** are data too: `TABLETS` holds the chapter's `people` (name and note), `tasks` and `scripture` (reference and exact text), each with an optional condition `if` on the story, and the chapter definition passes it on as `tablets`. The overlay that shows them is `shared/tablets.js`, which the engine loads with `need('tablets')` the first time the tablets are opened. Anything else shared between chapters goes under `shared/` the same way.
 - **A party** of playable characters is declared in the chapter definition: `party:['paul','barnabas']`. `P` is always Paul and the scripts use him by name; `PC()` is whoever is being played, and `playAs(P)` hands control back before a cutscene. Each member has his own inventory: `home` says who usually carries an item (`{staff:'barnabas'}`), and `share` lists the items that can change hands. Another member does only what the level writes for him, in `as:{barnabas:{look, use, useWith, give, talk, show}}` on a hotspot or a person; otherwise he answers from his own `def` table, leaves the crafts to Paul (`noCraft`), and describes items in his own words (`ITEMS[id].by.barnabas`).
+- **Ids are shared.** Rooms, artwork, items, icons, looks and actors are kept in tables that every chapter writes into (`ROOMS`, `ART`, `ITEMS`, `ICON`, `LOOK`, `ACT`), so an id must be new in the whole game, not only in its file. A place or a person that comes back gets a second id: Chapter Seven's Lystra is `lystra7`, and its Timothy is `timothy7`, a man's height now. Otherwise the later chapter would redraw the earlier one's room, and a code for the earlier chapter would open the wrong scene.
 - **Topics** are what Paul learns in a chapter: `TOPICS` lists them, each with its question and a condition on the flags, for example `{id:'sail',q:"The captain's sail is torn.",if:()=>F.metCapt}`. A person's `ask` table holds his answer to each topic he can be asked about. `talkTree` adds the topics that are open to its own questions, each asked once.
 
 **Text and translations.** All player-visible text is written in English, in the code where it belongs: a look line on its hotspot, a reply in a person's `show` table, a line in a script. The engine translates it as it is shown, with `T(line)`: `say` and `narr`, `choose`, the status line, the Tab labels, the tablets, the map and the overlays all do this, so a level writes plain English and never calls `T` itself, except for a line put together from parts, which it writes as a template: `T('It still needs {list}.',{list})`. The game's logic only ever sees the English, so flags, hotspot names and safe-point codes are the same in every language.
@@ -354,7 +405,7 @@ A line with no entry is shown in English. `node tools/strings.mjs --check` (whic
 
 The map is larger than the screen. Everything on it keeps its coordinates, and a chapter whose road leaves the usual window names another one: `view:'north'` (Chapters Five and Six). A view is declared in `VIEWS` as the distance its window lies to the right of and below the usual one, in whole pixels; `SEA` says where the name of the sea stands in each. The coast, the islands and the ranges are painted once per view. A new view may need coast that the others never showed: the Aegean shore north of Miletus was added for this one.
 
-**A hub chapter** (Chapters Four, Five and Six) is a chapter whose rooms are places on the map that the player travels between by clicking. It declares them in its definition, by their ids in `shared/map.js`, each with the room it leads to and where Paul stands on arrival:
+**A hub chapter** (Chapters Four, Five, Six and Seven) is a chapter whose rooms are places on the map that the player travels between by clicking. It declares them in its definition, by their ids in `shared/map.js`, each with the room it leads to and where Paul stands on arrival:
 
 ```js
 rooms:['seleucia','salamis','synagogue','paphos'],
@@ -372,13 +423,13 @@ and gives the exits that lead out of town `exit:travel`, or an exit of its own t
 
 Edit a file and reload.
 
-`tools/playtest.mjs` plays all six chapters through the real interface in headless Chrome and checks each puzzle step, the save codes and the endings. It needs Node 22 or newer and Google Chrome. Each run asks Chrome for a free debugging port, so several runs can go side by side.
+`tools/playtest.mjs` plays all seven chapters through the real interface in headless Chrome and checks each puzzle step, the save codes and the endings. It needs Node 22 or newer and Google Chrome. Each run asks Chrome for a free debugging port, so several runs can go side by side.
 
 ```bash
 node tools/playtest.mjs
 ```
 
-It plays the game once in English and once more in every other language under `lang/`, each followed by `resume`, which reloads the game to check that the autosave brings the player back (`continue` stops at the title screen that offers it). Pass stop names to save screenshots to `tools/out/` instead, for example `node tools/playtest.mjs title workshop harbor`; put a language in front of a stop to take it in that language: `node tools/playtest.mjs de:title de:tablets`. The stop names are defined in `tools/playtest-harness.html`; Chapter Three stops such as `tarsus`, `court` and `antioch` start that chapter directly, and so do Chapter Four stops such as `seleucia`, `salamis` and `paphos` Chapter Five stops such as `perga`, `ford` and `pisidia`, and Chapter Six stops such as `iconium`, `lystra` and `derbe`. The stop `beasts` shows the animal sprites enlarged; the playtest fails if any part of one (a tail, a head, a highlight) is not attached to the rest.
+It plays the game once in English and once more in every other language under `lang/`, each followed by `resume`, which reloads the game to check that the autosave brings the player back (`continue` stops at the title screen that offers it). Pass stop names to save screenshots to `tools/out/` instead, for example `node tools/playtest.mjs title workshop harbor`; put a language in front of a stop to take it in that language: `node tools/playtest.mjs de:title de:tablets`. The stop names are defined in `tools/playtest-harness.html`; Chapter Three stops such as `tarsus`, `court` and `antioch` start that chapter directly, and so do Chapter Four stops such as `seleucia`, `salamis` and `paphos` Chapter Five stops such as `perga`, `ford` and `pisidia`, and Chapter Six stops such as `iconium`, `lystra` and `derbe`. Chapter Seven stops such as `council`, `gates` and `lystra7` start that chapter in the same way; its opening scenes have stops of their own (`dispute7`, `council`, `letter7`, `parting7`, `map7`). The stop `beasts` shows the animal sprites enlarged; the playtest fails if any part of one (a tail, a head, a highlight) is not attached to the rest.
 
 ## Contributing
 

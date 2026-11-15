@@ -52,6 +52,8 @@ body{display:flex;align-items:center;justify-content:center}
 #overlay .go,#overlay .pick{font-size:calc(var(--s)*6.2px);margin:calc(var(--s)*2.5px) 0}
 #overlay.long .go,#overlay.long .pick{margin:calc(var(--s)*1.5px) 0}
 #overlay.long h2{margin:calc(var(--s)*2px) 0}
+#overlay.longer .go,#overlay.longer .pick{font-size:calc(var(--s)*5.8px);margin:calc(var(--s)*.7px) 0}
+#overlay.longer p.small{margin:calc(var(--s)*1px) 0}
 #overlay .pick{color:var(--gold)}
 #overlay .pick:hover{color:#fff}
 #overlay .langs span{cursor:pointer;padding:0 calc(var(--s)*1.5px)}
@@ -931,7 +933,8 @@ const CHAP={
   3:{name:'CALLED TO ANTIOCH',label:'Chapter Three',title:'Called to Antioch',salt:0x3C91,src:'levels/chapter3.js'},
   4:{name:'SENT OUT TO CYPRUS',label:'Chapter Four',title:'Sent Out to Cyprus',salt:0x4D2F,src:'levels/chapter4.js'},
   5:{name:'A LIGHT OF NATIONS',label:'Chapter Five',title:'A Light of Nations',salt:0x5E73,src:'levels/chapter5.js'},
-  6:{name:'THE DOOR TO FAITH',label:'Chapter Six',title:'The Door to Faith',salt:0x6F19,src:'levels/chapter6.js'}};
+  6:{name:'THE DOOR TO FAITH',label:'Chapter Six',title:'The Door to Faith',salt:0x6F19,src:'levels/chapter6.js'},
+  7:{name:'TIMOTHY OF LYSTRA',label:'Chapter Seven',title:'Timothy of Lystra',salt:0x7B43,src:'levels/chapter7.js'}};
 const TITLE={level:1,scene:'wall',mood:'calm',amb:{crickets:.5,wind:.35,owl:.4}};
 /* A level file calls LEVEL(n, init). init() registers its art, cast, items and rooms, and returns the chapter definition. */
 function LEVEL(n,init){Object.assign(CHAP[n],init(),{ready:1})}
@@ -975,8 +978,8 @@ function loadFail(e){console.error(e);ov.onclick=()=>location.reload();
 async function startChapter(n){ov.onclick=null;try{await loadLevel(n)}catch(e){return loadFail(e)}return CHAP[n].start()}
 async function title(){lock(true);await setLang(firstLang());try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
   setChapter(TITLE.level);G.scene=CHAP[TITLE.level].scenes[TITLE.scene];G.end={};AU.mood=TITLE.mood;AU.amb=TITLE.amb;
-  /* a long list of chapters is set a little closer, so that the title keeps its room above it */
-  overlay(Object.keys(CHAP).length>4?'on long':'on',()=>{const sv=saved();ov.innerHTML='<h1>'+T('PAUL OF TARSUS')+'</h1><h2>'+T('THE ROMAN ROAD RUNNER')+'</h2>'+
+  /* a long list of chapters is set a little closer, so that the title keeps its room above it; a list of seven or more, closer still */
+  overlay((Object.keys(CHAP).length>4?'on long':'on')+(Object.keys(CHAP).length>6?' longer':''),()=>{const sv=saved();ov.innerHTML='<h1>'+T('PAUL OF TARSUS')+'</h1><h2>'+T('THE ROMAN ROAD RUNNER')+'</h2>'+
     '<p class="small">'+T('A point-and-click adventure based on the book of Acts')+'</p>'+
     (sv?'<p class="go" data-cont="1">&#9656; '+T('Continue')+' &middot; '+T(CHAP[sv.ch].label)+' &middot; '+T(CHAP[sv.ch].title)+'</p>':'')+
     Object.keys(CHAP).map((n,i)=>`<p class="${i||sv?'pick':'go'}" data-ch="${n}">&#9656; ${T(CHAP[n].label)} &middot; ${T(CHAP[n].title)}</p>`).join('')+
