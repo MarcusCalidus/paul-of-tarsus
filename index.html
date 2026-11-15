@@ -181,7 +181,7 @@ const has=id=>G.inv.includes(id);
 function addItem(id,quiet){if(!has(id)){G.inv.push(id);drawInv();if(!quiet)SFX.pick()}}
 function delItem(id){const i=G.inv.indexOf(id);if(i>=0)G.inv.splice(i,1);if(G.item===id)G.item=null;drawInv()}
 /* ============ AUDIO: Web Audio chiptune synth ============ */
-const AU={ctx:null,muted:false,mood:'calm',step:0,next:0,score:null,amb:null};
+const AU={ctx:null,muted:false,mood:'calm',step:0,next:0,score:null,key:null,amb:null};
 /* Browsers let sound start only inside a tap, click or key press, and iOS stops it ("interrupted") when the player switches apps or
    locks the screen. So every press anywhere wakes the sound if it is not running, and the first press creates it. */
 function audioInit(){
@@ -223,6 +223,20 @@ function hush(on){const el=$('#hush');clearTimeout(hushT);
 for(const t of['pointerdown','keydown'])addEventListener(t,()=>{const el=$('#hush');if(el.classList.contains('on')&&performance.now()-el.dataset.t>400)hush(0)},true);
 const now=()=>AU.ctx?AU.ctx.currentTime:0;
 const mtof=m=>440*Math.pow(2,(m-69)/12);
+/* the key: a root (MIDI note) and a scale (semitones above it), as every score has. AU.key is the chapter's: setScore keeps the last
+   score that played, and starting or restoring a chapter sets it before the chapter's music begins. So the map and the end of a
+   chapter, which play with no score, still sound in the chapter's key. Before any chapter, the key is Chapter One's, as on the title screen. */
+const KEY0={root:50,scale:[0,1,4,5,7,8,10]};
+const key=()=>AU.key||KEY0;
+/* note: the MIDI note of degree n of the key's scale (past its length it climbs by octaves, below 0 it falls), plus oct semitones */
+function note(n,oct,k){k=k||key();const L=k.scale.length;return k.root+12*Math.floor(n/L)+k.scale[((n%L)+L)%L]+(oct||0)}
+/* snap: the note of the key nearest MIDI note m, a tie going down */
+function snap(m,k){k=k||key();let best=m,bd=99;const o=Math.floor((m-k.root)/12);
+  for(let j=o-1;j<=o+1;j++)for(const x of k.scale){const c=k.root+12*j+x,d=Math.abs(c-m);if(d<bd||d===bd&&c<best){bd=d;best=c}}return best}
+/* tune: a figure written as semitones above the tonic, in any key. Its tonic is the key's tonic nearest D4 (MIDI 62, where the fanfares
+   and the map's music were tuned) moved by oct octaves, an exact tritone going down, so the figure never moves more than a tritone
+   from its tuning; each note is then snapped into the key. Returns MIDI notes. In Chapter One, in D, every figure sounds as tuned. */
+function tune(semis,oct,k){k=k||key();const ref=62+12*(oct||0),d=((ref-k.root)%12+12)%12,t=ref-d+(d>6?12:0);return semis.map(x=>snap(t+x,k))}
 /* tone: one oscillator note. f Hz, t start, d seconds, v level, a attack (6 ms if not given), sus holds the level to 70% of d,
    to glides the pitch to that frequency over d, bend:[cents, seconds] starts the note that far off and slides it onto f, vib is vibrato depth in Hz (vibd: seconds it takes to come in), echo also feeds the echo.
    lp gives the note its own lowpass that moves through [[Hz, seconds after t], ...]: the first point is set, the next ones are reached
@@ -296,15 +310,15 @@ const DRUMS={
 const LOOSE=new Set(['oud','lyre','harp','bass']);
 function accent(s,n,g){if(s===0)return 1.12;g=g||(n%4?n%3?[2]:[3]:[4]);let p=0,i=0;while(p<s)p+=Math.max(1,g[i++%g.length]);return p===s?1.05:.94}
 const loose=t=>Math.max(AU.ctx.currentTime,t+(Math.random()*2-1)*.004);
-function playStep(st,t){const sc=AU.score;if(!sc)return;const N=16,bar=Math.floor(st/N),s=st%N,m=AU.mood,L=sc.scale.length,
-  deg=(n,oct)=>mtof(sc.root+12*Math.floor(n/L)+sc.scale[((n%L)+L)%L]+(oct||0));
+function playStep(st,t){const sc=AU.score;if(!sc)return;const N=16,bar=Math.floor(st/N),s=st%N,m=AU.mood,
+  deg=(n,oct)=>mtof(note(n,oct,sc));
   for(const tr of sc.tracks){if(tr.moods&&!tr.moods.includes(m))continue;const v=tr.vol==null?1:tr.vol,pr=tr.prog||'A',
       hand=tr.drum||LOOSE.has(tr.inst),tt=()=>hand?loose(t):t,vv=hand?v*accent(s,N,tr.group||sc.group):v;
     if(tr.drone){const ev=tr.every||32;if(st%ev===0)for(const n of tr.drone)INST.drone(mtof(sc.root+n),t,ev*sc.dt+.4,v)}
     else if(tr.drum){const ch=tr.seq[pr[bar%pr.length]][s];if(ch&&DRUMS[ch])DRUMS[ch](tt(),vv)}
     else if(tr.seq){const n=tr.seq[pr[bar%pr.length]][s];if(n!=null)INST[tr.inst](deg(n,tr.oct),tt(),(tr.len||3)*sc.dt,vv,s===0)}
     else if(tr.lines){let i=bar-(tr.from||0);if(i<0)continue;if(tr.loop)i%=tr.loop;for(const[n0,dg,len]of tr.lines[i]||[])if(n0===s)INST[tr.inst](deg(dg,tr.oct),tt(),len*sc.dt*.95,vv,s===0)}}}
-function setScore(sc){if(AU.score!==sc){AU.score=sc;AU.step=0}}
+function setScore(sc){if(sc)AU.key=sc;if(AU.score!==sc){AU.score=sc;AU.step=0}}
 function sched(){const c=AU.ctx;if(!c||c.state!=='running')return;const sc=AU.score;
   if(AU.next<c.currentTime-.5)AU.next=c.currentTime+.05;
   while(sc&&AU.next<c.currentTime+.25){playStep(AU.step,AU.next);AU.next+=sc.dt;AU.step=(AU.step+1)%((sc.bars||16)*16)}
@@ -345,9 +359,10 @@ const SFX={
   splash(){noise({d:.4,v:.16,f:900,q:.6});tone({f:500,to:900,t:now()+.1,d:.2,type:'sine',v:.05})},
   snuff(){noise({d:.25,v:.1,f:5000,q:.5,type:'highpass'})},
   alert(){tone({f:330,d:.12,type:'square',v:.1});tone({f:311,t:now()+.14,d:.25,type:'square',v:.1})},
-  pray(){[62,69,74].forEach((m,i)=>tone({f:mtof(m),t:now()+i*.28,d:2.4-i*.3,type:'sine',v:.11,a:.25,sus:1,echo:1}))},
-  good(){[62,66,69,74].forEach((m,i)=>tone({f:mtof(m),t:now()+i*.09,d:.3,type:'triangle',v:.13,echo:1}))},
-  win(){[62,66,69,74,78,81].forEach((m,i)=>tone({f:mtof(m),t:now()+i*.16,d:i===5?1.6:.4,type:'triangle',v:.15,echo:1}))}
+  /* pray, good and win start on the tonic of the key that is sounding and are tuned into its mode (see tune) */
+  pray(){tune([0,7,12]).forEach((m,i)=>tone({f:mtof(m),t:now()+i*.28,d:2.4-i*.3,type:'sine',v:.11,a:.25,sus:1,echo:1}))},
+  good(){tune([0,4,7,12]).forEach((m,i)=>tone({f:mtof(m),t:now()+i*.09,d:.3,type:'triangle',v:.13,echo:1}))},
+  win(){tune([0,4,7,12,16,19]).forEach((m,i)=>tone({f:mtof(m),t:now()+i*.16,d:i===5?1.6:.4,type:'triangle',v:.15,echo:1}))}
 };
 function setMute(m){AU.muted=m;if(AU.master)AU.master.gain.value=m?0:1;
   $('#mute').textContent='♫ '+T(m?'SOUND OFF':'SOUND ON');$('#mute').style.opacity=m?.6:1}
@@ -1015,7 +1030,7 @@ function overlay(cls,draw){ov.className=cls;ov.draw=draw;draw()}
 function loadFail(e){console.error(e);ov.onclick=()=>location.reload();
   overlay('on end',()=>{ov.innerHTML='<h2>'+T('LEVEL NOT FOUND')+'</h2><p>'+esc(e.message)+'</p><p class="small">'+T('The chapter files live in the levels folder next to index.html.')+
     '</p><p class="go">'+T('Click to reload')+'</p>'})}
-async function startChapter(n){ov.onclick=null;try{await loadLevel(n)}catch(e){return loadFail(e)}return CHAP[n].start()}
+async function startChapter(n){ov.onclick=null;try{await loadLevel(n)}catch(e){return loadFail(e)}AU.key=CHAP[n].music;return CHAP[n].start()}
 async function title(){lock(true);await setLang(firstLang());try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
   setChapter(TITLE.level);G.scene=CHAP[TITLE.level].scenes[TITLE.scene];G.end={};AU.mood=TITLE.mood;AU.amb=TITLE.amb;
   /* a long list of chapters is set a little closer, so that the title keeps its room above it; a list of seven or more, closer still */
@@ -1111,7 +1126,7 @@ async function tryCode(){const b=decode($('#codein').value);
   if(b==null){SFX.nope();$('#codemsg').textContent=T(BADCODE);return}
   try{await loadLevel(b.ch)}catch(e){SFX.nope();$('#codemsg').textContent=e.message;return}
   if(b.w!=null&&!unpackWide(CHAP[b.ch],b.w)){SFX.nope();$('#codemsg').textContent=T(BADCODE);return}
-  cb.classList.remove('on');SFX.good();applyState(b)}
+  cb.classList.remove('on');AU.key=CHAP[b.ch].music;SFX.good();applyState(b)}
 function openCode(){audioInit();if(cb.classList.contains('on'))return closeCode();
   const can=G.room&&!G.scene&&!G.busy;if(!can&&!ov.classList.contains('on')){SFX.nope();return}
   SFX.click();cb.was=G.busy;G.busy=true;lock(true);status();
