@@ -161,6 +161,65 @@ function gateView(g,x,y,w,h,st){g.save();arch(g,x,y,w,h);g.clip();sky(g,480,y+h-
 /* dyed: a bale or a bolt of dyed cloth lying at x,y, banded where it is corded. No cord runs across the bands. */
 function dyed(g,x,y,w,h,c){oval(g,x+w/2+1,y+.4,w/2+2,1.3,'rgba(30,26,50,.35)');g.fillStyle=lg(g,0,y-h,0,y,[tint(c,.3),c,tint(c,-.45)]);g.fillRect(x,y-h,w,h);
   for(let i=2;i<w;i+=3)R(g,x+i,y-h,.5,h,'rgba(0,0,0,.16)');R(g,x,y-h,w,.5,tint(c,.42));R(g,x,y-h,.6,h,tint(c,.2));R(g,x+w-.6,y-h,.6,h,tint(c,-.4))}
+/* blob: a soft closed outline through the given points, for cloth and for spilt oil. fold: a soft open line through them, for a crease or a hem. */
+function blob(g,p,c){const n=p.length/2,m=i=>{const a=(i%n)*2,b=((i+1)%n)*2;return[(p[a]+p[b])/2,(p[a+1]+p[b+1])/2]};g.beginPath();g.moveTo(...m(n-1));
+  for(let i=0;i<n;i++)g.quadraticCurveTo(p[i*2],p[i*2+1],...m(i));g.closePath();if(c){g.fillStyle=c;g.fill()}}
+function fold(g,p,c,w){const n=p.length/2;g.beginPath();g.moveTo(p[0],p[1]);if(n<3)g.lineTo(p[2],p[3]);
+  for(let i=1;i<n-1;i++){const e=i===n-2,j=i*2;g.quadraticCurveTo(p[j],p[j+1],e?p[j+2]:(p[j]+p[j+2])/2,e?p[j+3]:(p[j+1]+p[j+3])/2)}
+  g.strokeStyle=c;g.lineWidth=w||.5;g.lineCap='round';g.lineJoin='round';g.stroke()}
+/* brokenJar: the jar that slipped from its sling, one of the jars of oil that stand by the warehouse. It has broken in two at the shoulder. The belly lies on
+   its side with its foot away from us, open at the break and dark inside; the neck lies beside it, open toward the belly; the shards lie where they flew, no
+   two of them alike and none in a row; and the oil has run out over the stones and into the joint in front of them. */
+function brokenJar(g){const C='#a8562e',LIT=tint(C,.44),DK=tint(C,-.4),IN=['#1c0c06','#3a1b0e','#74401e'];
+  /* the oil: the stone golden where it is wet, darker where the oil stands, the evening sky lying in it, and a dark line where it has found the joint */
+  comp(g,'multiply',.9,()=>blob(g,[267.6,118.8,271.6,116.6,277,115.6,283,115.6,288.8,116.4,292.4,118.2,291.2,120.2,286.4,121.6,280,122.2,274,121.9,269.4,120.6],'#c8a44e'));
+  comp(g,'multiply',.75,()=>blob(g,[271.6,119,276,117.3,282,117,287.6,117.6,289.8,119,286,120.5,280,121.1,274.6,120.6],'#b4883a'));
+  stroke(g,[271.4,122.1,297.4,122.2],'rgba(104,72,22,.75)',.9);
+  for(const p of[[275.6,117.9,280.6,117.5],[283.4,119.5,287.6,119.1]])stroke(g,p,'rgba(255,232,180,.8)',.6);
+  /* the shade under the two halves */
+  comp(g,'multiply',.6,()=>{blob(g,[264,111.4,267.4,116.2,271.4,118.7,277,118.4,278.6,116.4,273,115],'#5a5078');blob(g,[280.6,116.6,283.6,119.2,290.4,117.2,291.4,115.4,286,115.6],'#5a5078')});
+  /* the belly, turned on its side: its own outline, cut off at the break */
+  g.save();g.translate(264.5,110.4);g.rotate(1.885);{const M=[4.9,-9,4.5,-10.3,3.5,-10.2,2.9,-11.6,1.6,-11,.5,-12.4,-.6,-11.3,-1.8,-12,-2.9,-10.6,-4,-10.8,-4.9,-9.2,
+      -4.5,-8,-3.4,-7.9,-2.6,-6.9,-1.4,-7.3,-.2,-6.5,1,-7.2,2.2,-6.8,3.2,-7.7,4.2,-7.6];
+    clipTo(g,()=>poly(g,[-7,2,7,2,7,-9].concat(M.slice(0,22),[-7,-9.2])),()=>vessel(g,0,0,5.2,17,C,'amph',{noShadow:1}));
+    /* the broken edge all round, which shows how thick the wall is; and the hollow, with a little oil still standing in it */
+    poly(g,M,LIT);poly(g,M.map((v,i)=>i%2?-9.1+(v+9.2)*.78:v*.84));g.fillStyle=lg(g,-4.2,0,4.2,0,IN);g.fill();stroke(g,[2.5,-8.2,3,-9.6],'rgba(236,196,104,.7)',.6)}g.restore();
+  /* the neck: rim, throat and what is left of the shoulder, open toward the belly */
+  g.save();g.translate(281.8,114.4);g.rotate(-.2);{const E=[-.2,3.6,-.5,2.4,-1.2,1.6,-.8,.4,-1.3,-.6,-.7,-1.8,-.9,-2.8,0,-3.6];
+    poly(g,[.6,-4.2,1.8,-3.2,2.8,-2,3.4,-1.6,5.6,-1.6,6,-2.2,6.9,-2.3,6.9,2.3,6,2.2,5.6,1.6,3.4,1.6,2.8,2,1.8,3.2,.6,4.2].concat(E));
+    g.fillStyle=lg(g,0,-4,0,4,[[0,tint(C,-.2)],[.3,tint(C,.3)],[.58,C],[1,DK]]);g.fill();
+    R(g,6,-2.3,.9,4.6,tint(C,.16));R(g,6,-2.3,.9,1.4,LIT);stroke(g,[3.4,-1.5,5.6,-1.5],tint(C,.36),.5);
+    poly(g,[.6,-4.2,1.7,-3,2.3,-1.2,2.2,1,1.7,3,.6,4.2].concat(E),LIT);
+    poly(g,[.6,-3.5,1.5,-2.4,1.9,-1,1.7,.6,1.9,1.8,1.3,2.9,.6,3.5,-.1,2.8,-.5,1.6,-.2,.4,-.7,-.6,-.2,-1.8,-.4,-2.7]);g.fillStyle=lg(g,0,-3.5,0,3.5,IN);g.fill()}g.restore();
+  /* the shards: the red outside of some, the paler inside of others, and each with a lit edge where it broke */
+  for(const[p,c]of[[[260.8,114.6,263.8,113.8,264.8,115.5,262,116.4],C],[[277.6,109.6,280.2,109,280.8,110.6,278.4,111.2],DK],[[291.6,113.2,294.2,112.6,294.8,114.2,292.6,114.8],C],
+      [[274.4,119.7,278.6,118.7,279.8,120.6,276.2,121.7],tint(C,.2)],[[285.8,122.8,287.8,122.4,288.2,123.7,286.4,124.1],DK],[[266.6,119.3,268.8,118.8,269.2,120.2],tint(C,.2)]]){
+    poly(g,p.map((v,i)=>i%2?v+.7:v+.5),'rgba(40,30,50,.4)');poly(g,p,c);stroke(g,p.slice(0,4),LIT,.5)}}
+/* sailHeap: old sailcloth thrown down in a heap. It is cloth and not a stone: stiff cloth stands up in peaks where it is thrown down, and hangs from them in
+   hollow slopes; its folds run down from each peak like a fan, each with the light on the side that faces it and shade on the other, soft across the fold
+   and sharp along its ridge; its hem lies on the paving in waves, forward where a fold comes forward; one corner lies out flat on the left, and a torn end
+   lies frayed on the right. A patch is sewn on it, and a seam runs down it between two folds: no seam lies across a fold. Old sail is grayer than the
+   stone it lies on, and it throws a shadow on it. The steering oar of the ship comes down behind the hollow between the two high peaks, not behind a peak:
+   the heap is not a tent, and the oar is no pole. */
+function sailHeap(g){const LIT='#f6f0de',C='#e0d9c2',MID='#b4ac96',SHD='#80796a',DEEP='#565048',SH='#6a6488',SEAM='rgba(100,88,66,.6)',
+    OUT=[410.6,116.4,413.6,114.2,416,111.8,418.6,110.2,420.8,109.4,423,107,425,104.6,427,102.8,428.8,101.8,430.6,101.6,432.4,102.6,434.2,104.6,437,106.2,440.4,107,443.4,106.2,445.6,104.8,447.6,104,
+      449.6,104.4,451.2,105.8,452.8,108.2,454.8,110.8,457,113.6,458.4,116,454.8,117.4,450.8,116.2,447.2,117.6,443,116.2,439.4,117.8,435.8,116.4,432,118,427.8,116.4,424,117.8,420,116.4,416,117.8,412.6,116.8],
+    /* the folds, each from under a peak to the hem: ridge, hollow, ridge, hollow... The first and the last lie outside the heap, and close its two slopes. */
+    F=[[404,118,412,110,420,104],[419,110.2,417.2,114,416,117.8],[421,109.4,420.2,113.6,420,116.4],[428.6,102.2,426.4,108.6,424.6,113.4,424,117.8],[429.2,102.4,428.2,109.4,427.6,113.6,427.8,116.4],
+      [429.8,102,431,109.6,431.4,114,432,118],[430.6,102.6,433.8,109.6,435.2,113.6,435.8,116.4],[431.4,102.6,436.6,109.4,438.6,113.6,439.4,117.8],[440.6,100,440.6,107,442.4,112,443,116.2],
+      [447,100,446.8,104.6,446.4,111,447.2,117.6],[448,104.4,449.8,110.6,450.8,116.2],[449.2,104.6,453,110.8,454.8,117.4],[452,102,458,110,462,118]],
+    rev=p=>{const o=[];for(let i=p.length-2;i>=0;i-=2)o.push(p[i],p[i+1]);return o},mid=p=>p[(p.length>>2)*2];
+  comp(g,'multiply',.65,()=>blob(g,[408.6,115.8,420,113.6,440,113.8,453,114,461.4,116.4,455,118.6,440,118.8,426,119,412,119,406.8,117.8],SH));
+  /* the corner that lies out flat, with its seam, and the torn end */
+  poly(g,[407.4,117.9,413.6,114.6,418.6,116.6,413.4,119]);g.fillStyle=lg(g,408,115,417,119,[LIT,C]);g.fill();stroke(g,[409.8,117.6,415.4,116.4],SEAM,.4);
+  poly(g,[453.6,115.4,457.4,114.6,458.4,115.6,460.6,115.4,460,116.6,461.8,117.2,459.6,117.6,460,118.6,457,118,454,118.4],MID);
+  blob(g,OUT,MID);
+  clipTo(g,()=>blob(g,OUT),()=>{
+    for(let i=0;i+1<F.length;i++){const lit=!(i%2),x0=mid(F[i]),x1=mid(F[i+1]);poly(g,F[i].concat(rev(F[i+1])));
+      g.fillStyle=lg(g,x0,0,x1,0,lit?[i?MID:C,i<7?LIT:C]:[i<7?C:MID,i===7?DEEP:SHD]);g.fill()}
+    /* a patch, sewn on long ago, and a seam */
+    poly(g,[420.8,111.4,423.8,110.6,424.4,114,421.4,114.8],'#c4b28c');stroke(g,[420.8,111.4,421.4,114.8,424.4,114],SHD,.4);fold(g,[432.8,105.6,435.6,110.4,437,116],SEAM,.4);
+    tex(g,'mott',.3,404,98,60,22,'overlay',.5);ao(g,404,113,60,5,'b',.2,'#3a3450')})}
 /* The ship lies alongside the quay with her bow to the left. In harbor her mast stands bare between its two stays, and her yard is on
    deck abaft the mast with the sail furled on it: it begins at the mast and runs aft, so that mast and yard make a corner and not a
    cross. She has no figurehead: those commonly showed a god. HULL: her side, from the quay up to the rail. */
@@ -206,9 +265,9 @@ ART.troas={w:480,fp:1.25,q:12,
   /* cargo on the quay: jars of oil, bales of dyed wool out of Asia, and the jar that slipped from its sling */
   for(const[x,h]of[[158,15],[168,16],[178,14]])vessel(g,x,110,4.6,h,'#a8562e','amph');vessel(g,170,113,4.6,15,'#9a4c28','amph');
   dyed(g,204,112,26,7,'#7a2a4a');dyed(g,208,105,22,6.4,'#6a3a7a');dyed(g,232,112,24,7,'#a03a3a');
-  if(eve){poly(g,[262,113.6,288,113,292,117.6,268,118.6],'rgba(70,50,30,.45)');for(const[sx,sy,a]of[[266,114,0],[274,116.4,1],[282,113.6,0],[286,116.6,1]])poly(g,[sx,sy,sx+4.6,sy-.8-a,sx+5.4,sy+1.6,sx+1,sy+2],a?'#b8683a':'#8a4a26')}
+  if(eve)brokenJar(g);
   /* old sailcloth in a heap, and a coil of line */
-  poly(g,[414,113,420,106,432,104.6,444,107,450,113],'#b8ad90');poly(g,[420,106,432,104.6,438,109,426,110],'#d6ccb0');stroke(g,[424,110,428,113],'rgba(60,50,40,.4)',.5);stroke(g,[438,109,441,113],'rgba(60,50,40,.4)',.5);
+  sailHeap(g);
   for(const[q,c]of[[5,'#a8946a'],[3.4,'#c4b084'],[1.9,'#a8946a']]){g.strokeStyle=tint(c,-.4);g.lineWidth=1.8;g.beginPath();g.ellipse(398,112,q*1.5,q*.5,0,0,6.2832);g.stroke();g.strokeStyle=c;g.lineWidth=1;g.stroke()}
   /* the light */
   if(eve)lightmap(g,480,'#8c7c98',l=>{pool(l,372,60,230,120,'#ffd8a0',.9);l.fillStyle=lg(l,0,100,0,144,['rgba(255,214,160,.55)','rgba(255,214,160,0)']);poly(l,[300,100,444,100,480,144,230,144]);l.fill();
@@ -711,12 +770,12 @@ ROOMS.troas={space:.7,walk:[16,464,112,138],get mood(){return F.vision?(F.concl?
   {name:'warehouse',x:100,y:58,w:90,h:46,wx:146,wy:114,look:'A warehouse, its doors open and its sacks waiting. Everything that leaves this coast for Macedonia goes over this quay.',use:'I have nothing to store, and nothing to fetch.',open:'It is open already, and it is not mine.'},
   {name:'jars of oil',x:152,y:92,w:32,h:22,wx:186,wy:117,dir:-1,look:()=>say(P,eve()?'Jars of oil, waiting to be slung aboard. One of them will not be going.':'Jars of oil. Leon has had them counted twice since yesterday.'),pickup:"They are Leon's cargo."},
   {name:'bales',x:202,y:96,w:56,h:18,wx:230,wy:118,look:'Bales of dyed wool: purple, crimson and violet. They have come out of Asia, from the cities of the dyers, and they are going over the sea to somebody who sells such things.',pickup:'They are worth more than everything that I have ever sewn.'},
-  {name:'broken jar',x:260,y:110,w:34,h:10,wx:278,wy:124,look:'The jar that slipped from the sling: shards, and good oil running between the stones.',pickup:'Shards cut. One arm on this quay is enough.',vis:()=>eve()},
+  {name:'broken jar',x:260,y:108,w:36,h:16,wx:252,wy:121,dir:1,look:'The jar that slipped from the sling: shards, and good oil running between the stones.',pickup:'Shards cut. One arm on this quay is enough.',vis:()=>eve()},
   {name:'gangplank',x:294,y:82,w:34,h:25,wx:300,wy:113,dir:1,def:'use',exit:aboard,
     look:()=>say(P,F.concl?"The gangplank of Leon's ship. She is bound for Neapolis, and so are we.":"The gangplank of a coaster. Her master is loading for Neapolis, in Macedonia.")},
   {name:'ship',x:226,y:12,w:220,h:70,wx:340,wy:113,look:()=>say(P,"A coaster, with her yard on deck and her sail furled on it. She has carried many cargoes. I should like to know who sewed her sail."),use:aboard},
   {name:'coil of rope',x:388,y:108,w:20,h:8,wx:398,wy:120,look:'A coil of good line, laid down by somebody who cares for it.',pickup:"It is the ship's."},
-  {name:'heap of old sailcloth',x:412,y:103,w:40,h:11,wx:430,wy:119,
+  {name:'heap of old sailcloth',x:408,y:101,w:54,h:18,wx:403,wy:122,dir:1,
     look:()=>say(P,F.offcut?'Old sailcloth. I have taken what I needed, and I asked first.':'A heap of old sailcloth: what is left when a sail is past mending. Some of it is still sound.'),
     pickup:Object.assign(async()=>{if(F.offcut)return say(P,'I have what I needed.');if(!eve())return say(P,'It is rags, and this morning I have no use for rags.');await say(P,'Leon, may I have a piece of this?');await say(LE,'That? It is past saving. Take the heap, if rags are any use to you.');
       F.offcut=1;toPaul('offcut');await say(P,'One sound piece is enough.')},{take:1})}]};
