@@ -1,6 +1,6 @@
 # Chapter One: Escape from Damascus
 
-Damascus, about 36 C.E. Opposers have plotted to do away with Saul, and the governor under King Aretas has the city gates watched day and night. The brothers have a plan: lower him by night in a basket from a window in the city wall (Acts 9:23-25; 2 Corinthians 11:32, 33). The basket is frayed, the rope is too short, and a soldier is watching the alley to the wall.
+Damascus, about 36 C.E. Opposers have agreed among themselves to kill Saul, and the governor under King Aretas has the city gates watched by day and by night. The brothers have a plan: to let him down at night, in a basket, through a window in the city wall (Acts 9:23-25; 2 Corinthians 11:32, 33). The basket is frayed, the rope is too short, and a soldier is watching the alley to the wall.
 
 | | |
 |---|---|

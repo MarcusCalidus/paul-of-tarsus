@@ -1,13 +1,13 @@
 # Chapter Two: A Friend in Jerusalem
 
-Three years after his conversion, Saul returns to Jerusalem and tries to join the disciples, but they are all afraid of him and do not believe he is a disciple. Then Barnabas comes to his aid (Acts 9:26-31; 22:17-21; Galatians 1:18, 19). Later, when a plot forces him to leave, the brothers bring him down to Caesarea, where the only ship bound for Tarsus has a torn sail.
+Three years after his conversion, Saul comes back to Jerusalem and wants to join the disciples there. Every one of them fears him, and nobody believes that he has become a disciple, until Barnabas takes his part (Acts 9:26-31; 22:17-21; Galatians 1:18, 19). Later, when a plot forces him to leave, the brothers take him down to Caesarea, where the only ship bound for Tarsus has a torn sail.
 
 | | |
 |---|---|
 | ![A street in Jerusalem](screenshots/jerusalem.png) | ![The harbor of Caesarea](screenshots/harbor.png) |
 | Jerusalem: a stranger's broken cart, and a closed door | Caesarea: a ship that cannot sail, and a tentmaker who must |
 
-Three more locations and eight new characters. This chapter turns on honesty as much as handiwork: Paul has to give Barnabas a plain account of himself, and the answers that excuse or recommend him get nowhere. Later, speaking boldly in Jerusalem, he disputes with two Greek-speaking Jews and answers them from the passages on his wax tablets; the last objection is about his own part in Stephen's death, and the answer to it is a confession (Acts 9:28, 29; 22:20).
+Three more locations and eight new characters. This chapter turns on honesty as much as handiwork: Paul has to give Barnabas a plain account of himself, and the answers that excuse or recommend him get nowhere. Later, speaking out fearlessly in Jerusalem, he debates with two Jews who speak Greek and answers them from the passages on his wax tablets; the last objection is about his own part in Stephen's death, and the answer to it is a confession (Acts 9:28, 29; 22:20).
 
 | | |
 |---|---|

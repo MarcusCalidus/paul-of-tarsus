@@ -1,6 +1,6 @@
 # Chapter Three: Called to Antioch
 
-Tarsus, about 45 C.E. A great number of Greek-speaking people in Antioch of Syria have become believers, and Barnabas comes to Tarsus to make a thorough search for Saul. For a whole year the two of them teach in the congregation there, where the disciples are first called Christians by divine providence. Then the prophet Agabus foretells a great famine, and the disciples determine to send relief to the brothers in Judea, each according to what he can afford, by the hand of Barnabas and Saul (Acts 11:19-30; 12:25).
+Tarsus, about 45 C.E. In Antioch of Syria very many who speak Greek have come to believe, and Barnabas travels to Tarsus and searches until he has found Saul. A full year long the two of them teach in the congregation at Antioch, the first place where the disciples, by divine providence, come to be called Christians. Then the prophet Agabus foretells a great famine. The disciples decide to send help to the brothers in Judea, each as much as his means allow, and Barnabas and Saul are to deliver it (Acts 11:19-30; 12:25).
 
 | | |
 |---|---|

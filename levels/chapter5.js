@@ -410,17 +410,17 @@ const TOPICS=[
 /* ============ SCRIPTURE: the passages on the tablets. short: how a passage is named when it is offered as an answer.
    road: a passage for the journey, which is not among the answers when Paul speaks of the Christ. ============ */
 const PASS={
-  ps121:{ref:'Psalm 121:1, 2',short:'my help comes from Jehovah',road:1,text:'I raise my eyes to the mountains. From where will my help come? My help comes from Jehovah, The Maker of heaven and earth.'},
-  ecc4:{ref:'Ecclesiastes 4:9, 10',short:'two are better than one',road:1,text:'Two are better than one because they have a good reward for their hard work. For if one of them falls, the other can help his partner up.'},
-  isa43:{ref:'Isaiah 43:2',short:'through the rivers',road:1,text:'When you pass through the waters, I will be with you, And through the rivers, they will not flood over you.'},
-  ps2:{ref:'Psalm 2:7',short:'you are my son',text:'You are my son; Today I have become your father.'},
-  isa55:{ref:'Isaiah 55:3',short:'loyal love to David',text:'Incline your ear and come to me. Listen, and you will keep alive, And I will readily make with you an everlasting covenant In harmony with the expressions of loyal love to David, which are faithful.'},
-  ps16:{ref:'Psalm 16:10',short:'not left in the Grave',text:'For you will not leave me in the Grave. You will not allow your loyal one to see the pit.'},
-  hab1:{ref:'Habakkuk 1:5',short:'you will not believe it',text:'Look among the nations and pay attention! Stare in amazement and be astounded; For something will happen in your days That you will not believe even if it is told to you.'},
-  isa56:{ref:'Isaiah 56:3',short:'the foreigner should not say',text:'The foreigner who joins himself to Jehovah should not say, ‘Jehovah will surely separate me from his people.’'},
-  isa49:{ref:'Isaiah 49:6',short:'a light of nations',text:'It is not enough that you are my servant To raise up the tribes of Jacob And to bring back those who were preserved of Israel. I have also given you as a light of nations, So that my salvation may reach the ends of the earth.'}},
+  ps121:{ref:'Psalm 121:1, 2',short:'help from Jehovah',road:1,gist:'I look up toward the mountains and ask where my help will come from. It comes from Jehovah, who made heaven and earth.'},
+  ecc4:{ref:'Ecclesiastes 4:9, 10',short:'two are better than one',road:1,gist:'Two are better off than one, since their toil brings them a good return; and if either falls, the other can lift his companion up.'},
+  isa43:{ref:'Isaiah 43:2',short:'through the rivers',road:1,gist:'When your way leads through water, I will be at your side; when you cross rivers, they will not close over you.'},
+  ps2:{ref:'Psalm 2:7',short:'you are my son',gist:'I announce what Jehovah has decreed: he told me that I am his son, and that today he has become my father.'},
+  isa55:{ref:'Isaiah 55:3',short:'loyal love toward David',gist:'Turn your ear my way and draw near to me; if you listen, you will stay alive. I will gladly bind myself to you by a covenant that lasts forever, in keeping with my acts of loyal love toward David, which can be relied on.'},
+  ps16:{ref:'Psalm 16:10',short:'not abandoned to the Grave',gist:'You will not abandon me to the Grave, nor let the one who is loyal to you see the pit.'},
+  hab1:{ref:'Habakkuk 1:5',short:'you will not believe it',gist:'Search among the nations and mark what you see; gaze, and be struck with wonder. In your own days a thing will be done that you will find beyond belief, even when you are told of it.'},
+  isa56:{ref:'Isaiah 56:3',short:'a word for the foreigner',gist:'If a foreigner has attached himself to Jehovah, let him not say that Jehovah is sure to set him apart from his people.'},
+  isa49:{ref:'Isaiah 49:6',short:'a light of nations',gist:'To be my servant who lifts up the tribes of Jacob and brings back those of Israel who were kept safe is too little. I have made you a light of nations as well, so that salvation from me may reach the farthest parts of the earth.'}},
   ORDER=['ps121','ecc4','isa43','ps2','isa55','ps16','hab1','isa56','isa49'],TALK=ORDER.filter(k=>!PASS[k].road);
-const label=k=>T('{ref}: {short}',{ref:T(PASS[k].ref),short:T(PASS[k].short)}),quote=k=>T('"{text}" ({ref})',{text:T(PASS[k].text),ref:T(PASS[k].ref)});
+const label=k=>T('{ref}: {short}',{ref:T(PASS[k].ref),short:T(PASS[k].short)}),quote=k=>T('{text} ({ref})',{text:T(PASS[k].gist),ref:T(PASS[k].ref)});
 /* ============ WAX TABLETS: people met, tasks still open, Scripture (shown by shared/tablets.js) ============ */
 const TABLETS={
   people:[
@@ -430,7 +430,7 @@ const TABLETS={
     {name:'Eumenes',note:()=>F.eum?'No longer by the door. He brings the whole wool market with him.':'A wool merchant of Antioch, a Greek who fears God. In the synagogue he keeps to the place by the door.',if:()=>F.metEum},
     {name:'Joel',note:()=>F.joel?'He has opened his house to us, and will not shut it again whatever it costs him.':'A Jew of Antioch. We lodge under his roof, and I work at his door.',if:()=>F.spoke1},
     {name:'Hanan',note:()=>F.out?'He asked us to speak. A week later he could not bear to see who had come to listen.':'A presiding officer of the synagogue in Antioch. He asked us to speak.',if:()=>F.spoke1},
-    {name:'Ammia',note:'A prominent woman of Antioch who fears God. Her husband is one of the principal men of the city.',if:()=>F.spoke1}],
+    {name:'Ammia',note:'A woman of high standing in Antioch, who fears God. Her husband is one of the leading men of the city.',if:()=>F.spoke1}],
   tasks:[
     {t:'Find out what the road to Antioch is like, and who is taking it.',if:()=>inPerga()&&!F.metPap},
     {t:'Find out what weighs on John Mark.',if:()=>inPerga()&&!F.markTold},
@@ -468,7 +468,7 @@ async function parting(){F.markTold=1;const b=other();MK.dir=PC().x>MK.x?1:-1;
   await say(MK,'I know, cousin. I have turned it over ever since Paphos. I am going back.');
   await say(P,'I wish you would stay with the work, John Mark. I will say that once, and plainly.');
   await say(MK,'You have said it, brother Paul. I am still going.');
-  await narr('But John left them and returned to Jerusalem. (Acts 13:13)',{dur:5200});
+  await narr('There John parted from them and went back to Jerusalem. (Acts 13:13)',{dur:5200});
   await narr('The account does not say why.',{dur:3200});
   await say(MK,'Everything is counted. The bed rolls are in the bundles. Here is the roof, and the food bag: bread and figs.');
   toPaul('roof');toPaul('bread',1);
@@ -603,7 +603,7 @@ const BN5={name:'Barnabas',actor:BN,
       {q:'How do I look to you?',once:1,a:async()=>{await say(BN,'Like a man who waded a river and then climbed a mountain in a wet cloak. You should rest, Paul.');await say(P,'I will rest. On the Sabbath, on a bench, until I am asked to stand.')}},
       {q:'Stay close, brother.',bye:1}])};
 ROOMS.perga={space:0.6,walk:[16,464,110,138],mood:'hope',amb:{crickets:.5,birds:.4,wind:.2,hooves:.5},hs:[
-  {name:'mountains',x:120,y:6,w:330,h:40,wx:300,look:['The Taurus. From here it stands like a wall across the whole of the north.','"I raise my eyes to the mountains. From where will my help come?" (Psalm 121:1)']},
+  {name:'mountains',x:120,y:6,w:330,h:40,wx:300,look:['The Taurus. From here it stands like a wall across the whole of the north.','I look up toward the mountains and ask where my help will come from. (Psalm 121:1)']},
   {name:'city wall',x:0,y:18,w:122,h:30,wx:76,look:'The wall of Perga, a prominent city of Pamphylia. We did not stay to see more of it than this.'},
   {name:'north gate of Perga',x:26,y:50,w:44,h:54,wx:48,wy:112,look:'The north gate of Perga. Behind it lie the city, and the way back down to the coast.',
     use:'Our road lies the other way: north, and up.',open:'Our road lies the other way: north, and up.'},
@@ -637,7 +637,7 @@ async function wade(){
   SFX.splash();await walk(BN,288,124);clearInterval(tick);BN.speed=0;BN.free=false;await walk(BN,300,122);BN.dir=-1;
   G.wade=null;F.lineUp=1;SFX.good();
   await say(BN,'Twice round the post, and hauled tight. It is fast, Paul!');
-  await say(P,'"For if one of them falls, the other can help his partner up." (Ecclesiastes 4:10)');
+  await say(P,'If either falls, the other can lift his companion up. (Ecclesiastes 4:10)');
   await say(P,'Now the train can cross, a hand on the line. I should tell the drover.',TH)}
 async function crossAll(){playAs(P);
   await say(PA,'A line! I had thought to be counting my losses by nightfall. One beast at a time, and every man a hand on the rope!');
@@ -673,7 +673,7 @@ ROOMS.ford={space:0.7,get walk(){return PC().x>240?[300,464,112,138]:[16,186,112
 /* ---------- Antioch in Pisidia ---------- */
 async function toAntioch(){playAs(P);await fade(1,600);AU.mood='hope';
   await narr('Beyond the pass the road came down onto a high plain, some 1,100 meters above the sea.',{dur:6500});
-  await narr('However, they went on from Perga and came to Antioch in Pisidia. (Acts 13:14)',{dur:6000});
+  await narr('The two of them traveled on from Perga and reached Antioch in Pisidia. (Acts 13:14)',{dur:6000});
   for(const id of['bread','roof','line'])dropAll(id);enterRoom('pisidia',...ENT.pisidia);place5('pisidia');codeBtn();await fade(0,600);
   await narr('Antioch in Pisidia, a city of the province of Galatia.',{dur:4200});
   await say(EU,'Antioch! My own city. Greeks, Phrygians and Jews in one street, and every one of them speaking Greek.');
@@ -691,48 +691,48 @@ async function think(q,opts){let av=opts.slice();
   for(;;){await say(P,q,TH);const o=av[await choose(av.map(o=>o.q))];if(o.ok)return;await say(P,o.no,TH);av=av.filter(x=>x!==o)}}
 /* passages: the choices for one point of the talk, from the passages named; ok lists those that carry the point */
 const passages=(ks,ok)=>ks.map(k=>ok.includes(k)?{q:label(k),ok:1}:{q:label(k),no:NOT[k]});
-const NOT={isa55:'The loyal love promised to David. Yes: but that comes next. First, who he is.',ps16:'Not left in the Grave. Yes: but that comes next. First, who he is.',
+const NOT={isa55:'The loyal love promised to David. Yes: but that comes next. First, who he is.',ps16:'Not abandoned to the Grave. Yes: but that comes next. First, who he is.',
   hab1:'A warning comes last, if it comes at all.',isa56:'That is for a man who thinks he has no part in this. It is not for the whole house.',isa49:'A light of nations. Not yet: first they must hear what was promised to Israel.'};
 /* The first Sabbath (Acts 13:14-43). They take a seat and wait to be asked; then Paul chooses whom he addresses, and the passages he quotes. */
 async function sabbath1(){playAs(P);
   await Promise.all([walk(P,258,126),walk(BN,282,128)]);P.dir=-1;BN.dir=-1;
-  await narr('And going into the synagogue on the Sabbath day, they took a seat. (Acts 13:14)',{dur:6000});
+  await narr('When the Sabbath came they went to the synagogue, and there they sat down. (Acts 13:14)',{dur:6000});
   await walk(HA,166,110);HA.dir=1;
-  await narr('After the public reading of the Law and the Prophets, the presiding officers of the synagogue sent word to them. (Acts 13:15)',{dur:7500});
+  await narr('The Law and the Prophets were read aloud. Then the presiding officers of the synagogue had a message brought to them. (Acts 13:15)',{dur:7500});
   await walk(HA,92,114);HA.dir=1;
-  await say(HA,'"Men, brothers, if you have any word of encouragement for the people, tell it." (Acts 13:15)');
+  await say(HA,'Brothers: if there is a word of encouragement in you for the people, let us hear it. (Acts 13:15)');
   await walk(P,166,111);P.dir=1;
-  await narr('So Paul stood up, and motioning with his hand, he said: (Acts 13:16)',{dur:4500});
+  await narr('Paul rose, and with a movement of his hand he began: (Acts 13:16)',{dur:4500});
   await think('Israelites, and among them Greeks who fear God. One of them has not come a step further in than the door. To whom do I speak?',[
-    {q:'Men, Israelites, listen.',no:'And leave those who fear God to overhear? They came to listen too.'},
-    {q:'Men of Antioch, listen.',no:'They did not come here as citizens of a city. They came to hear the Law and the Prophets.'},
-    {q:'Men, Israelites and you others who fear God, listen.',ok:1}]);
-  await say(P,'Men, Israelites and you others who fear God, listen. (Acts 13:16)');
-  await say(EU,'You others who fear God. He means us.');
-  await say(P,'The God of this people Israel chose our forefathers. He brought them out of Egypt with an uplifted arm, and gave them the land as an inheritance.');
-  await say(P,'He gave them judges, and then kings. And of David he said: "I have found David the son of Jesse a man agreeable to my heart." (Acts 13:22)');
-  await say(P,'According to his promise, from the offspring of this man, God has brought to Israel a savior, Jesus. (Acts 13:23)');
+    {q:'Listen, Israelites.',no:'And leave those who fear God to overhear? They came to listen too.'},
+    {q:'Listen, men of Antioch.',no:'They did not come here as citizens of a city. They came to hear the Law and the Prophets.'},
+    {q:'Listen, Israelites, and listen, all the rest of you who fear God.',ok:1}]);
+  await say(P,'Listen, Israelites, and listen, all the rest of you who fear God. (Acts 13:16)');
+  await say(EU,'All the rest who fear God. He means us.');
+  await say(P,'The God of Israel, this people, made our forefathers his choice. With his arm raised high he led them out of Egypt, and he gave them their land to inherit.');
+  await say(P,'He gave them judges, and then kings. Of David, the son of Jesse, he testified that in him he had found a man after his own heart. (Acts 13:22)');
+  await say(P,"And God has done what he promised: from that man's descendants he has brought Israel a savior, Jesus. (Acts 13:23)");
   await say(JO,'A savior. From the house of David!');
-  await say(P,'The inhabitants of Jerusalem and their rulers did not recognize this one. They demanded of Pilate to have him executed, and he was laid in a tomb.');
-  await say(P,'But God raised him up from the dead, and for many days he became visible to those who had gone with him from Galilee up to Jerusalem. (Acts 13:30, 31)');
+  await say(P,'The people of Jerusalem and their rulers did not see who he was. They pressed Pilate to have him put to death, and he was buried in a tomb.');
+  await say(P,'But God raised him from the dead, and over many days he showed himself to the companions of his journey from Galilee up to Jerusalem. (Acts 13:30, 31)');
   await think('Raised up: and so the promise to the forefathers is kept. Where is it written of the Son?',passages(TALK,['ps2']));
-  await say(P,'God has completely fulfilled it to us, their children, by resurrecting Jesus; just as it is written in the second psalm: "You are my son; today I have become your father." (Acts 13:33)');
-  await think('Raised, never again to return to corruption. Which promise says that it will hold?',passages(TALK.filter(k=>k!=='ps2'),['isa55','ps16']));
-  await say(P,'And the fact that He resurrected him from the dead never again to return to corruption, He has stated in this way: "I will give you the expressions of loyal love promised to David, which are faithful." (Acts 13:34)');
-  await say(P,'So it also says in another psalm: "You will not allow your loyal one to see corruption." (Acts 13:35)');
-  await say(P,'David fell asleep in death, and did see corruption. "On the other hand, the one whom God raised up did not see corruption." (Acts 13:36, 37)');
-  await say(P,'Let it therefore be known to you, brothers, that through this one a forgiveness of sins is being proclaimed to you, (Acts 13:38)');
-  await say(P,'and that from all the things from which you could not be declared guiltless by means of the Law of Moses, everyone who believes is declared guiltless by means of this one. (Acts 13:39)');
+  await say(P,'For us, their children, God has made that promise come wholly true by raising Jesus, as the second psalm says where God calls him his son and declares that he has become his father that day. (Acts 13:33)');
+  await think('Raised, and never to go back to decay. Which promise says that it will hold?',passages(TALK.filter(k=>k!=='ps2'),['isa55','ps16']));
+  await say(P,'That God raised him from the dead, never to go back to decay, he had put this way: that he would give you the proofs of loyal love pledged to David, which can be relied on. (Acts 13:34)');
+  await say(P,'Another psalm says the same: God will not let the one who is loyal to him see decay. (Acts 13:35)');
+  await say(P,'David died, and his body did decay. The one God raised up did not decay. (Acts 13:36, 37)');
+  await say(P,'So, brothers, you should know this: through him you are being told that sins are forgiven. (Acts 13:38)');
+  await say(P,'There were things of which the Law of Moses could not clear you. Of all of them, everyone who believes is cleared through him. (Acts 13:39)');
   await say(EU,'Everyone who believes...');
   await think('They have heard the good news. And the Prophets warned those who would not believe it.',passages(['hab1','isa56','isa49'],['hab1']));
-  await say(P,'Therefore, watch out that what is said in the Prophets does not come upon you: (Acts 13:40)');
-  await say(P,'"Look at it, you scorners, and be amazed, and perish, for I am doing a work in your days, a work that you will never believe even if anyone relates it to you in detail." (Acts 13:41)');
+  await say(P,'So take care that the saying in the Prophets does not come true of you: (Acts 13:40)');
+  await say(P,'Scoffers are to look on, to wonder, and to perish; for in their days a work is being done that they will never believe, even when it is told them point by point. (Acts 13:41)');
   await walk(P,258,126);P.dir=-1;
-  await narr('Now when they were going out, the people pleaded with them to speak about these matters on the following Sabbath. (Acts 13:42)',{dur:8000});
+  await narr('As the two went out, the people begged them to speak about all this on the Sabbath after. (Acts 13:42)',{dur:8000});
   await say(HA,'You have given this house a great deal to weigh, Paul of Tarsus. Come again on the next Sabbath, and we will hear the rest.');
   await say(JO,'And until then you lodge with me, both of you. My house is on the square, and there is room at my door for a tentmaker\'s bench.');
   await say(EU,'Paul. May a man who keeps by the door ask you something? ...Not here. I will come to you in the week.');
-  await narr('Many of the Jews and the proselytes who worshipped God followed Paul and Barnabas. (Acts 13:43)',{dur:7000});
+  await narr('Many Jews went with Paul and Barnabas, and so did many proselytes who worshipped God. (Acts 13:43)',{dur:7000});
   F.spoke1=1;SFX.good();await fade(1,600);enterRoom('pisidia',...ENT.pisidia);place5('pisidia');codeBtn();await fade(0,600);
   await narr('All that week Paul worked at his trade by Joel\'s door, and the questions came to him there.',{dur:6500});
   await say(BN,'Three days, Paul, and you have not sewn one seam without somebody standing over you with a question.');
@@ -748,8 +748,8 @@ async function greek(){
     {q:'It was promised to Israel, and it had to come to Israel first.',r:['So I have always been told. First to them. I am asking what comes after "first".']},
     {q:'Let me show you what is written about the foreigner.',ok:1,
       p:['Do not take my word for it, Eumenes. Take what is written. Isaiah has a word for a man in your place:',quote('isa56'),
-        'And what I said on the Sabbath stands: everyone who believes is declared guiltless by means of this one. (Acts 13:39)'],
-      r:['"Should not say." ...I have said exactly that, Paul. Every Sabbath, for eleven years.',
+        'And what I said on the Sabbath stands: everyone who believes is cleared of guilt through him. (Acts 13:39)'],
+      r:['Let him not say it... And I have said exactly that, Paul. Every Sabbath, for eleven years.',
         'My brother must hear this. And the fullers, and every man in the dyers\' street. On the Sabbath I shall not come alone.']}]);
   F.eum=1;SFX.good();return weekDone()}
 async function drover(){
@@ -771,9 +771,9 @@ async function troubled(){
   await ask(BN,JO,'If this goes on, it may cost me my place among my own people. What do I do, Barnabas?',[
     {q:'Hanan asked us to speak. He may yet be glad of the rest.',r:['He may. And if he is not?']},
     {q:'I sold a piece of land once for this, and I have never missed it.',r:['A piece of land. I am speaking of my seat among my own people, Barnabas. That is not sold and bought again.']},
-    {q:'What you were given is undeserved kindness. Remain in it.',ok:1,
-      p:['What you heard on the Sabbath was not Paul\'s gift to you, Joel, and it is not mine. It is the undeserved kindness of God.','Remain in it. Whatever it costs you, it is worth more than a seat. (Acts 13:43)'],
-      r:['Remain in it. Yes. That I can do: one day, and then the next.','Then my door stays open. My household will be there on the Sabbath, and my neighbors with them.']}]);
+    {q:'What you were given is undeserved kindness. Hold on to it.',ok:1,
+      p:['What you heard on the Sabbath was not Paul\'s gift to you, Joel, and it is not mine. It is the undeserved kindness of God.','Hold on to it. Whatever it costs you, it is worth more than a seat. (Acts 13:43)'],
+      r:['Hold on to it. Yes. That I can do: one day, and then the next.','Then my door stays open. My household will be there on the Sabbath, and my neighbors with them.']}]);
   F.joel=1;SFX.good();return weekDone()}
 JO.hs={name:'Joel',actor:JO,
   look:()=>say(P,G.room==='synp'?'A man of my own people, with dye under his fingernails. He has made room beside him on the bench.':inOut()?'Joel. He has walked out past the boundary of his own city to stand with us.'
@@ -786,8 +786,8 @@ JO.hs={name:'Joel',actor:JO,
     if(inOut())return say(JO,F.cheered?'We will go on meeting in my house. There is room, and the door is open.':'I have no words, Paul. Speak to Eumenes: he is taking it harder than any of us.');
     return F.joel?say(JO,'My door is open, Paul, and it stays open.'):say(JO,'It is good to have you under my roof, Paul. ...It is nothing. Ask Barnabas to come and sit with me a while, when he can.')},
   as:{barnabas:{look:()=>say(BN,F.joel||!week()?'Joel. A good man, and a glad one.':'Joel. He has the face of a man doing sums that will not come out.'),
-    talk:()=>G.room==='synp'?say(JO,'A Levite! Then you will know every word of the reading. Sit, sit.'):inOut()?say(JO,F.cheered?'Remain in it, you told me. I am remaining.':'You told me it would cost something, Barnabas. Here is the cost. I do not regret it.')
-      :F.joel?say(JO,'Remain in it. I have said it to myself all day, Barnabas.'):troubled(),
+    talk:()=>G.room==='synp'?say(JO,'A Levite! Then you will know every word of the reading. Sit, sit.'):inOut()?say(JO,F.cheered?'Hold on to it, you told me. I am holding on.':'You told me it would cost something, Barnabas. Here is the cost. I do not regret it.')
+      :F.joel?say(JO,'Hold on to it. I have said it to myself all day, Barnabas.'):troubled(),
     show:{staff5:'The staff that carried a rope across the river? Eumenes has told the whole street.','*':'Put it by, brother. My house is yours.'}}}};
 HA.hs={name:'Hanan',actor:HA,look:()=>say(P,G.room==='synp'?'A presiding officer of the synagogue, with a beard like fleece. He watches his house as a shepherd watches a fold.':'Hanan. He asked us to speak. Now he cannot bear to see who has come to listen.'),
   show:{tablets:'The Prophets, in wax. Keep them closed until you are asked to open your mouth.','*':'This is a house of reading and prayer, stranger. Put it away.'},
@@ -800,8 +800,8 @@ HA.hs={name:'Hanan',actor:HA,look:()=>say(P,G.room==='synp'?'A presiding officer
 AM.hs={name:'Ammia',actor:AM,look:'A woman of standing, by her dress, and no daughter of Israel. Yet she knows when to rise and when to sit.',
   show:{'*':'A workman\'s things. They have no place in this house.'},
   ask:{sabbath:'I could not tell you. I come to listen, not to be heard.'},
-  talk:async()=>{await say(AM,'Ammia. My husband sits among the principal men of this city.');await say(AM,'I come here for the reading, and for the quiet. There is little enough of either in Antioch.')},
-  as:{barnabas:{look:'A prominent woman, and one who fears God. She likes this house as it is.',talk:()=>say(AM,'You are strangers here. I trust you will respect the order of this house.'),show:{'*':'They have no place in this house.'}}}};
+  talk:async()=>{await say(AM,'Ammia. My husband sits among the leading men of this city.');await say(AM,'I come here for the reading, and for the quiet. There is little enough of either in Antioch.')},
+  as:{barnabas:{look:'A woman of high standing, and one who fears God. She likes this house as it is.',talk:()=>say(AM,'You are strangers here. I trust you will respect the order of this house.'),show:{'*':'They have no place in this house.'}}}};
 ROOMS.pisidia={space:0.8,walk:[16,464,110,138],mood:'hope',amb:{crowd:.5,birds:.3,wind:.3,hammer:.2,hooves:.3},hs:[
   {name:'mountains',x:60,y:2,w:370,h:20,wx:240,look:'Snow on them, half way down. And the plain we stand on is already higher than most mountains I have climbed.'},
   {name:'street to the south gate',x:0,y:36,w:58,h:68,wx:40,wy:113,dir:-1,look:'The street we came in by, from the south gate and the road down to Perga.',
@@ -834,41 +834,41 @@ ROOMS.synp={space:1.5,walk:[16,304,110,136],mood:'calm',amb:{crowd:.14,fire:.15}
   {name:'bench',x:250,y:78,w:32,h:26,wx:258,wy:126,dir:-1,def:'use',look:'Benches of stone in two steps, worn smooth. There is room on the lower one.',use:sabbath1}]};
 /* ---------- The next Sabbath, and what came of it (Acts 13:44-50) ---------- */
 const WRONG={ps2:'A psalm for the king of Israel! You prove my case for me.',isa55:'Promised to David. To David! Was David a Greek?',ps16:'You said all that last Sabbath. I asked what these people are doing on my steps.',
-  hab1:'You warn us? At the door of our own house of prayer?',isa56:'The foreigner who joins himself: who is circumcised, and keeps the whole Law. These people have joined nothing.'};
+  hab1:'You warn us? At the door of our own house of prayer?',isa56:'The foreigner who has attached himself: who is circumcised, and keeps the whole Law. These people have attached themselves to nothing.'};
 async function sabbath2(){playAs(P);await fade(1,500);G.crowd=1;AU.mood='tense';
   place(P,'pisidia',386,116,-1);place(BN,'pisidia',410,119,-1);place(HA,'pisidia',442,118,-1);place(AM,'pisidia',462,122,-1);place(EU,'pisidia',330,121,1);place(PA,'pisidia',304,125,1);place(JO,'pisidia',350,127,1);
   G.cam=160;await fade(0,500);
-  await narr('The next Sabbath nearly all the city gathered together to hear the word of Jehovah. (Acts 13:44)',{dur:7000});
+  await narr('A week later, on the Sabbath, almost the whole city came together to hear the word of Jehovah. (Acts 13:44)',{dur:7000});
   await say(EU,'The fullers are here, Paul, and the dyers, and my brother with all his household!');
   await say(PA,'And every drover from the yard. I told you I would not come alone.');
   P.dir=1;BN.dir=1;
   await say(HA,'Greeks on the steps of the house of prayer. Greeks in the doorway, Greeks in the street. In thirty years I have not seen so many at this door.');
   await say(HA,'And he fetches them here in a week.');
-  await narr('When the Jews saw the crowds, they were filled with jealousy and began blasphemously contradicting the things Paul was saying. (Acts 13:45)',{dur:9000});
+  await narr('The sight of the crowds filled the Jews with jealousy. They began to contradict what Paul said, and to speak blasphemously. (Acts 13:45)',{dur:9000});
   await ask(P,HA,'The promises were given to Israel! What have these people of the nations to do with them?',TALK.map(k=>k==='isa49'?{q:label(k),ok:1,
       p:['It is written in Isaiah, of the servant of Jehovah. And what is written there is a command to us.'],r:['A light of... You would hand the inheritance of Israel to the whole market!']}
     :{q:label(k),p:[quote(k)],r:[WRONG[k]]}));
-  await say(P,'It was necessary for the word of God to be spoken first to you. (Acts 13:46)');
-  await say(BN,'Since you are rejecting it and do not judge yourselves worthy of everlasting life, look! we turn to the nations. (Acts 13:46)');
+  await say(P,'The word of God had to be spoken to you before anyone else. (Acts 13:46)');
+  await say(BN,'But you push it away, and by that you judge that everlasting life is not for you. So now we turn to the nations. (Acts 13:46)');
   P.dir=-1;
-  await say(P,'For Jehovah has commanded us in these words: "I have appointed you as a light of nations, for you to be a salvation to the ends of the earth." (Acts 13:47)');
+  await say(P,'For this is what Jehovah has commanded us. He has set us as a light of nations, and through us salvation is to go out to the ends of the earth. (Acts 13:47)');
   SFX.good();AU.mood='hope';
-  await narr('When those of the nations heard this, they began to rejoice and to glorify the word of Jehovah, and all those who were rightly disposed for everlasting life became believers. (Acts 13:48)',{dur:10000});
+  await narr('The people of the nations heard this with joy and gave glory to the word of Jehovah, and everyone who had the right disposition for everlasting life came to believe. (Acts 13:48)',{dur:10000});
   await say(EU,'A light of nations. Of nations, Papias! Did you hear it?');
   await say(PA,'I heard it. I am one.');
-  await narr('Furthermore, the word of Jehovah was being spread throughout the whole country. (Acts 13:49)',{dur:6500});
+  await narr('And the word of Jehovah went on spreading through all that country. (Acts 13:49)',{dur:6500});
   await say(HA,'Lady Ammia. Is this the quiet you came to our house for?');
   await say(AM,'It is not. My husband shall hear of this before the day is out.');
   await fade(1,700);G.crowd=0;AU.mood='tense';
-  await narr('But the Jews incited the prominent women who were God-fearing and the principal men of the city, and they stirred up persecution against Paul and Barnabas and threw them outside their boundaries. (Acts 13:50)',{dur:11000});
+  await narr('But the Jews worked on the God-fearing women of high standing and on the leading men of the city. They got a persecution going against Paul and Barnabas, and had the two driven out beyond their borders. (Acts 13:50)',{dur:11000});
   F.out=1;enterRoom('border',...ENT.border);place5('border');codeBtn();await fade(0,700);
-  await say(SN,'That stone is the boundary of Antioch. You will not come back across it. That is the order of the principal men of the city.');
+  await say(SN,'That stone is the boundary of Antioch. You will not come back across it. That is the order of the leading men of the city.');
   await say(SN,'You have unsettled a quiet town. Go and unsettle another.');
   await say(JO,'They would not let us walk beside you through the gate. So we came round by the fields.');
   await say(P,'Put out like thieves. And three of them have walked out here to stand with us, in front of the whole city.',TH)}
 /* ---------- Outside the boundaries ---------- */
 async function comfort(){
-  await say(EU,'They have put you out like thieves, Paul! And we are left here, a handful, with Hanan and the principal men against us.');
+  await say(EU,'They have put you out like thieves, Paul! And we are left here, a handful, with Hanan and the leading men against us.');
   await quiz(EU,'What becomes of us now?',[
     {q:'We did nothing to deserve this.',r:['I know it. That is what frightens me. If they do this to you, what will they do to a wool merchant?']},
     {q:'Come with us to Iconium.',r:['And leave Joel, and the fullers, and Papias\'s drovers? Who would tell them the rest?']},
@@ -880,9 +880,9 @@ async function comfort(){
   await say(JO,'We will meet in my house. My door was open to you, and it will be open to them.');
   await say(PA,'And I carry more than salt fish now, on every road I walk.')}
 const dust=()=>F.cheered?finale5():say(PC(),PC()===P?'Not yet. They came all this way out to stand with us. I will not turn my back on them without a word.':'Not yet. Paul has something to say to them first, and so have they to him.');
-SN.hs={name:'Straton',actor:SN,look:'Straton, one of the principal men of the city, and the husband of Ammia. He means to stand at that stone until we are out of sight.',
+SN.hs={name:'Straton',actor:SN,look:'Straton, one of the leading men of the city, and the husband of Ammia. He means to stand at that stone until we are out of sight.',
   show:{'*':'I want nothing of yours. I want your backs.'},talk:()=>say(SN,'I have nothing more to say to you. The order stands.'),
-  as:{barnabas:{look:'One of the principal men. He has done what he was asked to do, and he does not look proud of it.',talk:()=>say(SN,'The order stands, for both of you.'),show:{'*':'I want nothing of yours.'}}}};
+  as:{barnabas:{look:'One of the leading men. He has done what he was asked to do, and he does not look proud of it.',talk:()=>say(SN,'The order stands, for both of you.'),show:{'*':'I want nothing of yours.'}}}};
 ROOMS.border={space:0.5,walk:[16,304,112,138],mood:'tense',amb:{wind:.6,birds:.4,crickets:.2},hs:[
   {name:'mountains',x:0,y:30,w:320,h:22,wx:200,look:'The same mountains that stood over the square. From out here they look no further away.'},
   {name:'Antioch',x:2,y:48,w:118,h:30,wx:120,look:['Antioch, on its rise. We came to it as two strangers with the dust of the pass on us.','There are disciples inside that wall now.']},
@@ -926,10 +926,10 @@ const LABELS={salamis:{lab:'r',dy:4.2},paphos:{lab:'l',dy:2.6}},VOYAGE=[['antioc
 async function arrive5(to){if(to!=='antiochp')return;MK.room=null;enterRoom('ford',...ENT.ford);place5('ford');
   await narr('From Perga the road climbed north into the Taurus: about 180 kilometers, over a mountain pass.',{dur:7000});
   await narr('Those mountains were known for their robbers, and for rivers that burst out at the foot of the cliffs and tore down through narrow ravines.',{dur:8500});
-  await narr('Years later Paul would write of "dangers from rivers" and "dangers from robbers." (2 Corinthians 11:26)',{dur:7000})}
+  await narr('Years later Paul would write of the dangers he had met from rivers and from robbers. (2 Corinthians 11:26)',{dur:7000})}
 async function start5(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();
   await cut(async()=>{await fade(1,500);setChapter(5);G.end={};enterRoom('perga',...ENT.perga);codeBtn();
-    try{await need('map');await SHARED.map.journey(VOYAGE,{labels:LABELS,view:'north',text:['Now Paul and his companions put out to sea from Paphos and arrived at Perga in Pamphylia. (Acts 13:13)']})}catch(e){console.error(e)}
+    try{await need('map');await SHARED.map.journey(VOYAGE,{labels:LABELS,view:'north',text:['Paul and those with him sailed from Paphos and came to Perga in Pamphylia. (Acts 13:13)']})}catch(e){console.error(e)}
     await fade(1,500);G.scene=null;setScore(MUSIC);AU.mood=ROOMS.perga.mood;AU.amb=ROOMS.perga.amb;codeBtn();await fade(0,600);
     await narr('Perga in Pamphylia, about 47 C.E.',{dur:3000});
     await say(BN,'The north road, Paul. Beyond the plain it climbs into the Taurus, and beyond the Taurus lies Antioch in Pisidia.');
@@ -939,13 +939,13 @@ async function start5(){ov.onclick=null;ov.className='';audioInit();SFX.good();i
 async function finale5(){playAs(P);await wait(300);
   await say(P,'One thing remains, Barnabas. Our Lord told those he sent out what to do on leaving a city that would not receive them. (Luke 9:5)');
   await Promise.all([walk(P,238,123),walk(BN,264,126)]);P.dir=-1;BN.dir=-1;P.bow=BN.bow=true;G.dust=1;SFX.step();await wait(500);SFX.step();await wait(1300);
-  await narr('So they shook the dust off their feet against them and went to Iconium. (Acts 13:51)',{dur:6500});
+  await narr('The two shook the dust from their feet against those people, and moved on to Iconium. (Acts 13:51)',{dur:6500});
   P.bow=BN.bow=false;G.dust=0;
   await say(BN,'Not in anger, Paul.');
   await say(P,'No. They have heard, and what they do with it is theirs to answer for. We are free of it.');
   await say(JO,'Go in peace. You leave more behind you than you found.');
   P.dir=1;BN.dir=1;walk(BN,318,125);await walk(P,300,122);await fade(1,600);AU.mood='hope';
-  await narr('And the disciples continued to be filled with joy and holy spirit. (Acts 13:52)',{dur:6500});
+  await narr('As for the disciples, joy and holy spirit went on filling them. (Acts 13:52)',{dur:6500});
   await journey();await narr('Iconium lay about 140 kilometers to the southeast. And in time they would see Antioch again. (Acts 14:21)',{dur:7000});
   endScreen({title:'A Light of Nations',text:'Paul took his own roof to pieces for a rope, waited to be asked before he spoke, and answered each hearer in the way that hearer could follow. Put out of the city, he left no anger behind him: only disciples.',
     extra:F.bread?['Bread shared with John Mark for his road']:[],
@@ -974,7 +974,7 @@ function hint5(){const b=PC()!==P,craft=['craft5',["That is the tentmaker's craf
     return['dust5',['One thing is left to do, as our Lord told those he sent out. And not in anger.','I should use the boundary stone, and shake the dust from my feet.']]}
   if(!F.spoke1)return G.room==='synp'?['seat5',['A visitor does not ask for the platform. He takes a seat, and waits to be asked.',b?'Paul and I should take a seat. I can use the bench.':'I should use the bench, and wait.']]
     :['syn5',['Tomorrow is the Sabbath, and there is a synagogue across the square.','We can go in at the door of the synagogue.']];
-  if(b){if(!F.joel)return['joel5b',['Joel has tasted something good, and he is afraid of what it will cost him. He does not need my story. He needs to keep hold of what he was given.','I should talk to Joel, and urge him to remain in the undeserved kindness of God.']];
+  if(b){if(!F.joel)return['joel5b',['Joel has tasted something good, and he is afraid of what it will cost him. He does not need my story. He needs to keep hold of what he was given.','I should talk to Joel, and urge him to hold on to the undeserved kindness of God.']];
     return allThree()?['sab5',['The week is over, and the city is waiting.','We can go to the door of the synagogue.']]:['paul5b',['The others are asking for Paul. It was his word that they heard.','Paul should talk to Eumenes and to Papias.']]}
   if(!F.eum)return['eum5',['Eumenes wants more than my word for it. And something is written for a foreigner who keeps himself by the door.','I should talk to Eumenes, and show him what is written about the foreigner.']];
   if(!F.pap)return['pap5',['Papias has never heard the Prophets read. But he has crossed mountains all his life.','I should talk to Papias, and begin with the God who made the mountains.']];

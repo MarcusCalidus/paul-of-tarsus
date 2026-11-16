@@ -475,15 +475,15 @@ async function think(q,opts){let av=opts.slice();
   for(;;){await say(P,q,TH);const o=av[await choose(av.map(o=>o.q))];if(o.ok)return;await say(P,o.no,TH);av=av.filter(x=>x!==o)}}
 /* ============ SCRIPTURE: the passages on the tablets ============ */
 const PASS={
-  deut19:{ref:'Deuteronomy 19:15',text:'On the testimony of two witnesses or on the testimony of three witnesses the matter should be established.'},
-  prov18:{ref:'Proverbs 18:17',text:'The first to state his case seems right, Until the other party comes and cross-examines him.'},
-  ecc4:{ref:'Ecclesiastes 4:9, 10',text:'Two are better than one because they have a good reward for their hard work. For if one of them falls, the other can help his partner up.'},
-  isa32:{ref:'Isaiah 32:2',text:'And each one will be like a hiding place from the wind, A place of concealment from the rainstorm, Like streams of water in a waterless land, Like the shadow of a massive crag in a parched land.'},
-  sam16:{ref:'1 Samuel 16:7',text:'For the way man sees is not the way God sees, because mere man sees what appears to the eyes, but Jehovah sees into the heart.'},
-  prov22:{ref:'Proverbs 22:1',text:'A good name is to be chosen rather than great wealth; To be respected is better than silver and gold.'},
-  ps71:{ref:'Psalm 71:17, 18',text:'O God, you have taught me from my youth, And until now I keep declaring your wonderful works. Even when I am old and gray, O God, do not abandon me. Let me tell the next generation about your power And about your mightiness to all those who are to come.'}},
+  deut19:{ref:'Deuteronomy 19:15',gist:'A matter stands when two witnesses, or three, have given their testimony.'},
+  prov18:{ref:'Proverbs 18:17',gist:'Whoever pleads his case first sounds right, until the other side arrives and questions him closely.'},
+  ecc4:{ref:'Ecclesiastes 4:9, 10',gist:'Two are better off than one, since their toil brings them a good return; and if either falls, the other can lift his companion up.'},
+  isa32:{ref:'Isaiah 32:2',gist:'Every one of them will be like shelter out of the wind and cover from the cloudburst, like running water in dry country, like the shade of a great rock in a thirsty land.'},
+  sam16:{ref:'1 Samuel 16:7',gist:'God does not look at things as a man does: a man goes by what his eyes show him, but Jehovah looks into the heart.'},
+  prov22:{ref:'Proverbs 22:1',gist:'Choose a good name before great riches; to be held in respect is worth more than silver and gold.'},
+  ps71:{ref:'Psalm 71:17, 18',gist:'Since I was young, O God, you have been my teacher, and to this day I go on telling of your wonderful works. Do not leave me, O God, when I am old and my hair is gray. Let me tell the generation after mine of your power, and all who are still to come of your might.'}},
   ORDER=['deut19','prov18','ecc4','isa32','sam16','prov22','ps71'];
-const quote=k=>T('"{text}" ({ref})',{text:T(PASS[k].text),ref:T(PASS[k].ref)});
+const quote=k=>T('{text} ({ref})',{text:T(PASS[k].gist),ref:T(PASS[k].ref)});
 /* ============ TARSUS: the letter, and the second witness ============ */
 /* A man who was a party to a dispute cannot be the only witness to how it ended. Paul argues, every word of it true, and gets nowhere. */
 async function argue(){
@@ -491,7 +491,7 @@ async function argue(){
   if(F.silas)return say(RE,'I have heard your second witness, Paul, and I will hear your letter. Where it is read, and to whom, is for you to say.');
   let av=[
     {q:'I was in the room, Reuben. I heard it decided.',r:'You were in the room as one side of the dispute. I do not say that you lie, Paul. I say that no man is a witness in his own case.'},
-    {q:"Read it. It is the apostles' letter, not mine.",r:'It speaks of "our beloved Barnabas and Paul". Of course it reads well in your hand. What I cannot read in it is what was said in that room.'},
+    {q:"Read it. It is the apostles' letter, not mine.",r:'It speaks of Barnabas and Paul as men dear to those who wrote it. Of course it reads well in your hand. What I cannot read in it is what was said in that room.'},
     {q:'Peter himself spoke as I do.',r:'So you tell me. The men from Judea came from Jerusalem too, and they spoke as if Jerusalem had sent them.'}];
   await say(RE,'Well, Paul? Why should Tarsus take this letter on your word?');
   for(;;){const i=await choose(av.map(o=>o.q).concat('I will not argue it with you, Reuben.'));
@@ -500,7 +500,7 @@ async function argue(){
   if(G.tried){await say(RE,quote('deut19'));await say(RE,'That is not my rule, Paul. It is the Law\'s.');
     await say(P,'Every word I said to him is true, and none of it is of any use. He is asking for a second witness. And he is right to ask.',TH)}}
 /* The men from Judea were heard first in Tarsus, and seemed right (Proverbs 18:17): Paul's look at the benches says so. */
-/* Silas was no party to the dispute. He was sent, with Judas, to report the same things by word of mouth (Acts 15:27). */
+/* Silas was no party to the dispute. He was sent, with Judas, to tell the same things in person (Acts 15:27). */
 async function vouch(){
   if(F.read)return say(RE,'You read it well, brother. Stay a week in Tarsus, and tell us the rest.');
   if(F.silas)return say(RE,'I have heard you, Silas. Now I would hear the letter.');
@@ -509,9 +509,9 @@ async function vouch(){
     {q:'It is settled, brother. Let it rest.',r:['Settled in Jerusalem, perhaps. Not yet in me. I would rather be persuaded than hushed.']},
     {q:'I was sent from Jerusalem to report it by word of mouth.',ok:1,
       p:['I am not here as Paul\'s friend, Reuben, though I am that. I am one of the two men whom the apostles and the elders sent out with this letter.',
-        '"We are therefore sending Judas and Silas, so that they also may report the same things by word of mouth." (Acts 15:27)','I was there when it was written. Ask me what you like.'],
-      r:['Then tell me this. The men who taught us: did Jerusalem send them?',[SI,'The letter answers that itself: "although we did not give them any instructions." (Acts 15:24)'],
-        'And the decision? Was it Paul\'s party against the rest?',[SI,'The letter says: "we have come to a unanimous decision". (Acts 15:25) Peter spoke, and James. When they had done, no one spoke against it.'],
+        'It says that Judas and Silas are sent so that you may hear the same things from their own lips. (Acts 15:27)','I was there when it was written. Ask me what you like.'],
+      r:['Then tell me this. The men who taught us: did Jerusalem send them?',[SI,'The letter answers that itself: they had no instructions from us. (Acts 15:24)'],
+        'And the decision? Was it Paul\'s party against the rest?',[SI,'The letter says that we decided it with one mind. (Acts 15:25) Peter spoke, and James. When they had done, no one spoke against it.'],
         'Two witnesses. One who was a party to the matter, and one who was sent. That is enough for the Law, and it is enough for me.','I will hear your letter.']}]);
   F.silas=1;SFX.good();
   await say(P,'He did not raise his voice once. A man sent to settle a quarrel, who sounds like it.',TH)}
@@ -521,20 +521,20 @@ async function readTarsus(){const me=PC();
   await say(EI,'I have been waiting two months for someone to ask me that.');
   playAs(P);await fade(1,500);G.gath=1;
   place(SI,'tarsus7',268,124,1);place(P,'tarsus7',244,128,1);place(EI,'tarsus7',220,119,1);place(AG,'tarsus7',304,119,-1);place(RE,'tarsus7',328,124,-1);G.cam=108;
-  await narr('In Antioch they had "gathered the whole group together and handed them the letter." (Acts 15:30) Now the same was done in Tarsus.',{dur:8000});
+  await narr('In Antioch everyone had been assembled before the letter was handed over. (Acts 15:30) Now the same was done in Tarsus.',{dur:8000});
   await fade(0,600);
   await say(P,'Read it to them, Silas. You carried it out of Jerusalem.');
-  await say(SI,'"The apostles and the elders, your brothers, to those brothers in Antioch, Syria, and Cilicia who are from the nations: Greetings!" (Acts 15:23)');
+  await say(SI,'To the brothers from the nations in Antioch, Syria and Cilicia: greetings from your brothers, the apostles and the elders. (Acts 15:23)');
   await say(AG,'Cilicia! They wrote it to us. By name.');
-  await say(SI,'"Since we have heard that some went out from among us and caused you trouble with what they have said, trying to subvert you, although we did not give them any instructions..." (Acts 15:24)');
-  await say(SI,'"For the holy spirit and we ourselves have favored adding no further burden to you except these necessary things: to keep abstaining from things sacrificed to idols, from blood, from what is strangled, and from sexual immorality." (Acts 15:28, 29)');
-  await say(SI,'"If you carefully keep yourselves from these things, you will prosper. Good health to you!" (Acts 15:29)');
+  await say(SI,'We hear that some who came from us have upset you with their talk and tried to unsettle you. They had no instructions from us... (Acts 15:24)');
+  await say(SI,'It seemed right to the holy spirit, and to us as well, to lay no burden on you beyond the necessary things: have nothing to do with what is sacrificed to idols, with blood, with anything strangled, or with sexual immorality. (Acts 15:28, 29)');
+  await say(SI,'Guard yourselves well against these, and it will go well with you. Stay in good health! (Acts 15:29)');
   F.read=1;AU.mood='calm';SFX.good();
-  await narr('When that letter was read in Antioch, "they rejoiced over the encouragement." (Acts 15:31) It was no different in Tarsus.',{dur:8000});
-  await say(AG,'No further burden. I have carried that one for two months, and it is gone.');
+  await narr('When that letter was read in Antioch, there was joy at the encouragement it gave. (Acts 15:31) It was no different in Tarsus.',{dur:8000});
+  await say(AG,'No burden beyond the necessary things. I have carried another for two months, and it is gone.');
   await say(RE,'I asked for a second witness, and I was given the whole council. Forgive an old man his caution, Paul.');
   await say(P,'There is nothing to forgive, Reuben. You asked what the Law asks, and you listened when it was answered.');
-  await narr('Silas spoke on until the lamps were lit. He was a prophet, and in Antioch he and Judas had "encouraged the brothers with many talks and strengthened them." (Acts 15:32)',{dur:9500});
+  await narr('Silas spoke on until the lamps were lit. He was a prophet, and in Antioch he and Judas had given many a talk that encouraged the brothers and made them strong. (Acts 15:32)',{dur:9500});
   codeBtn()}
 /* letterTo: the letter, offered to one of the three by whoever carries it */
 const letterTo=A=>async it=>{if(it!=='letter')return false;const me=PC();
@@ -543,7 +543,7 @@ const letterTo=A=>async it=>{if(it!=='letter')return false;const me=PC();
   if(A===AG)return say(AG,'For me to read, by myself? I would sooner hear it with the brothers around me. If it is good news, they need it as much as I do.');
   if(!F.silas)return say(RE,me===P?'I can read, Paul. What I cannot read in it is what was said in that room.':'I can read, brother. First tell me by what right you carry it.');
   return say(me,me===P?'To Reuben alone, here beside the loom? Then three men know it, and the rest of Tarsus hears it at second hand. This trouble was sown in the whole congregation.'
-    :'To him alone? In Antioch we gathered the whole group together, and it was the whole group that rejoiced.',TH)};
+    :'To him alone? In Antioch we called everyone together, and it was everyone who rejoiced.',TH)};
 async function leaveTar(){const me=PC();
   if(!F.read)return say(me,me===P?(F.silas?'Reuben is ready to hear the letter, and so is all Tarsus. I am not leaving before it has been read.':'Not while this congregation is of two minds. That is what we came through Cilicia for.')
     :'We were sent to strengthen the congregations, not to walk past them.');
@@ -564,11 +564,11 @@ AG.hs={name:'Agathon',actor:AG,
   show:{tablets:'You read to us from those when I first believed. I should like to hear them again, when this is over.',awl:'My wife still has the awning you sewed for her stall.','*':'Not now, Paul. I cannot think of anything but that letter.'},
   ask:{witness:['Reuben is not a hard man, Paul. He was told one thing by men from Jerusalem, and now he is told another by you.','He says that he will believe it when he hears it from someone who has nothing to win by it.']},
   talk:()=>F.read?say(AG,'I can look my sons in the face again, and tell them plainly what is asked of us, and what is not.'):talkTree([
-    {q:'What did the men from Judea tell you?',a:async()=>{await say(AG,'"Unless you get circumcised according to the custom of Moses, you cannot be saved." (Acts 15:1)');await say(AG,'It was said in this courtyard too, Paul. And they looked at me while they said it.')}},
+    {q:'What did the men from Judea tell you?',a:async()=>{await say(AG,'That unless we were circumcised, as the custom of Moses has it, we could not be saved. (Acts 15:1)');await say(AG,'It was said in this courtyard too, Paul. And they looked at me while they said it.')}},
     {q:'What does Reuben say to it?',a:()=>say(AG,'That he no longer knows. And if Reuben does not know, who am I to be sure?')},
     {q:'You will have your answer today, Agathon.',bye:1}]),
   as:{silas:{look:'A brother of the nations. He has the look of a man who was told that the door he came in by was the wrong one.',give:letterTo(AG),
-    talk:()=>say(AG,F.read?'I heard you read it: "to those brothers in Antioch, Syria, and Cilicia who are from the nations". Cilicia! That is my country, and they wrote to it.':'You are from Jerusalem? Then you know whether it is true, what they told us. ...No. Do not tell me alone. Tell us all.'),
+    talk:()=>say(AG,F.read?'I heard you read it: to the brothers from the nations in Antioch, Syria and Cilicia. Cilicia! That is my country, and they wrote to it.':'You are from Jerusalem? Then you know whether it is true, what they told us. ...No. Do not tell me alone. Tell us all.'),
     show:{'*':'Not now, brother. I cannot think of anything but that letter.'}}}};
 EI.hs={name:'Eirene',actor:EI,
   look:()=>say(P,F.read?'Eirene. Her courtyard is full, and she is counting heads to see how far the bread will go.':'Eirene, a weaver of linen. The congregation of Tarsus meets in her courtyard, and lately it has met there in two halves.'),
@@ -734,7 +734,7 @@ ROOMS.gates={space:0.8,walk:[16,388,112,138],get mood(){return F.up?'calm':'stor
       if(it==='cloth7')return say(P,'His tent needs no new cloth. It needed a seam, and it has one.');return false}},
   {name:'road to Tarsus',x:0,y:114,w:14,h:24,wx:20,wy:128,dir:-1,look:'The road back down to Tarsus, two days behind us.',exit:()=>say(PC(),PC()===P?'We did not climb for two days in order to walk down again.':'Back down? Our road goes up, and through.')}]};
 /* ============ LYSTRA AND ICONIUM: what the brothers say of Timothy ============ */
-/* "He was well-reported-on by the brothers in Lystra and Iconium" (Acts 16:2). Before Paul asks Timothy to come, he hears it for himself:
+/* The brothers in Lystra and Iconium spoke well of Timothy (Acts 16:2). Before Paul asks Timothy to come, he hears it for himself:
    from the older men, from the household that raised him, and from the brothers a day's walk away. What he asks each of them matters.
    A question about what appears to the eyes gets a short answer; a question about what Timothy does gets a true one (1 Samuel 16:7). */
 async function lysIntro(){if(F.readL||G.metLys)return;G.metLys=1;
@@ -742,7 +742,7 @@ async function lysIntro(){if(F.readL||G.metLys)return;G.metLys=1;
   await say(TI,'Paul! You came again. I have counted the new moons since you left.');
   await say(P,'Timothy? When I left, you were a boy with a water jar. Now I must look you in the eye.');
   await say(EN,'And Barnabas? Is he behind you on the road?');
-  await say(P,'No, Eunice. Barnabas has sailed for Cyprus, with John Mark. He and I did not agree about this journey. There was a sharp burst of anger, and we separated.');
+  await say(P,'No, Eunice. Barnabas has sailed for Cyprus, with John Mark. He and I did not agree about this journey. Anger flared up between us, sharply, and we parted.');
   await say(P,'I will not dress it up for you. He is my brother still, and he is about the same work.');
   await say(P,'This is Silas, of Jerusalem. We carry a letter from the apostles and the elders, for every congregation on this road.');
   await say(MY,'Then Lystra shall hear it this evening. Peace to you both. I am Myron: one of the older men whom you and Barnabas appointed in this room, with prayer and fasting.')}
@@ -763,7 +763,7 @@ async function askMyron(){
   await say(P,'Myron. Tell me about Timothy.');
   await ask(P,MY,'You have been watching him, and I have been watching you do it. Ask, then. What is it that you need to know?',[
     {q:'Does he speak well before the congregation?',r:['Well enough. He goes red, he says what is written, and he sits down. If it is an orator you want, there are better in Iconium.',[P,'A fair answer to a poor question. I asked about his tongue. I should have asked about his hands.',TH]]},
-    {q:'Is he strong enough for the road?',r:['He is no ox, Paul. Neither are you, and you have been over the Taurus and back.',[P,'True. I am judging by what appears to the eyes, and I know who does not judge so.',TH]]},
+    {q:'Is he strong enough for the road?',r:['He is no ox, Paul. Neither are you, and you have been over the Taurus and back.',[P,'True. I am judging by what my eyes show me, and I know who does not judge so.',TH]]},
     {q:'What do you give him to do, and how does he do it?',ok:1,
       r:['Everything that needs feet, or a clear hand, or patience. He reads to the brothers who cannot read. He carries what we can spare to the widows in the hill villages, and he goes again the next week without being sent.',
         'I have never had to ask him for a thing twice. And I have never once heard him say how much he had done.',
@@ -788,7 +788,7 @@ async function talkTim(){
     await say(TI,'Is there something I can fetch for you, Paul? Water? The older men say that I am to see that you want for nothing.');
     await think('He would come if I asked him. I can see it in his face. Do I ask him now?',[
       {q:'Come with us, Timothy, and come now.',no:'It is what I want, and it is too soon. I have been in Lystra two days. Those who have watched him for two years have not been asked.'},
-      {q:'You are young for such a road, Timothy.',no:'Is he? I have not asked one person who knows him. That would be judging by what appears to the eyes.'},
+      {q:'You are young for such a road, Timothy.',no:'Is he? I have not asked one person who knows him. That would be judging by what the eyes show.'},
       {q:'Say nothing yet. First hear what the brothers say of him.',ok:1}]);
     await say(P,'Nothing, Timothy. But before I leave Lystra I shall want a word with you. Not yet.');
     return say(TI,'Whenever you say. I shall be wherever the water jars are.')}
@@ -966,7 +966,7 @@ const PAUL7={name:'Paul',actor:P,as:{silas:{
       :inGates()?(!F.mended?'Leave the sewing to me. But stay near: I shall want you.':!F.up?'Take the windward line of that tent, and hold it while I set the pole.':F.cased?'Sleep, if you can. So shall I.':'Keep the letter under your mantle until its case is ready.')
       :inLys()?(!F.readL?'See that Lystra hears the letter as Tarsus heard it.':heard()?'Stand by me. I am going to ask him.':'Watch that young man with me. You see people more quickly than I do.')
       :'Greet the brothers. They have not had a visitor from Jerusalem before.')},
-    {q:'Why were two of us sent with one letter?',if:()=>inTar()&&!F.read,once:1,a:()=>say(P,'So that it should not rest on one man\'s word. It says of you and Judas: "so that they also may report the same things by word of mouth". (Acts 15:27) I had nearly forgotten it.')},
+    {q:'Why were two of us sent with one letter?',if:()=>inTar()&&!F.read,once:1,a:()=>say(P,"So that it should not rest on one man's word. It says of you and Judas that you are to tell the same things with your own lips. (Acts 15:27) I had nearly forgotten it.")},
     {q:'I will leave you to it.',bye:1}]),
   show:{sstaff:'Keep your staff by you, Silas. There is a great deal of road yet.',letter:()=>say(P,inTar()&&!F.read?'Keep it for a moment, Silas. When the whole congregation is here, it is you who should read it.':'You carry it as well as I do. Better: nobody can say that it is yours.'),'*':'Keep it by you, Silas.'}}}};
 /* ============ TOPICS: what Paul has learned, which he can raise with anyone (see each person's ask table) ============ */
@@ -978,14 +978,14 @@ const TOPICS=[
 /* ============ WAX TABLETS: people met, tasks still open, Scripture (shown by shared/tablets.js) ============ */
 const TABLETS={
   people:[
-    {name:'Silas',note:()=>inTar()?'A leading man among the brothers in Jerusalem, and a prophet. He was sent out with the letter, to report the same things by word of mouth. (Acts 15:27, 32)'
+    {name:'Silas',note:()=>inTar()?'A leading man among the brothers in Jerusalem, and a prophet. He was sent out with the letter, to tell the same things with his own lips. (Acts 15:27, 32)'
       :inGates()?'He has never pitched a tent in his life. He has two hands, and he offers them.':'A stranger in these cities, and already the brothers bring him their questions.'},
     {name:'Reuben',note:()=>F.read?'He asked for a second witness, and listened when he was given one.':'A brother of Israel in Tarsus, careful and well thought of. He will not take the letter on the word of a man who was a party to the dispute.',if:inTar},
     {name:'Agathon',note:'A brother of the nations in Tarsus. He was told that without circumcision he could not be saved.',if:inTar},
     {name:'Eirene',note:'A weaver of linen. The congregation of Tarsus meets in her courtyard.',if:inTar},
     {name:'Zenon',note:'The carter of Derbe, and a disciple. He drives the road over the Taurus, and he carries spare harness.',if:inGates},
     {name:'Bion',note:()=>F.up?'He is dry, with his wife and his daughter. He asked why we did it.':'A cloth merchant of Tarsus, with his wife Charis and their daughter Melissa. His tent is torn, and a storm is coming.',if:inGates},
-    {name:'Timothy',note:()=>heard()?'Well-reported-on by the brothers in Lystra and Iconium. (Acts 16:2)':'The son of Eunice; his father is a Greek. A man\'s height now. He does what he is given, and does not count it.',if:()=>inLys()||inIco()},
+    {name:'Timothy',note:()=>heard()?'The brothers in Lystra and Iconium speak well of him. (Acts 16:2)':'The son of Eunice; his father is a Greek. A man\'s height now. He does what he is given, and does not count it.',if:()=>inLys()||inIco()},
     {name:'Eunice',note:'The mother of Timothy. Her faith is the same by lamplight and by daylight.',if:inLys},
     {name:'Lois',note:'The mother of Eunice. What Timothy knows of the holy writings began with her.',if:inLys},
     {name:'Myron',note:'One of the older men appointed in Lystra. (Acts 14:23)',if:inLys},
@@ -1079,12 +1079,12 @@ async function arrive7(to,from){
     await narr('From Tarsus the road climbed into the Taurus for some fifty kilometers, to the Cilician Gates: a cleft so narrow that a way for wagons had to be cut into its rock.',{dur:9500});
     await narr('Acts does not describe the road. But this was the trade route to the cities beyond the mountains, and the natural way for Paul to take.',{dur:8500})}
   else if(to==='derbe'){place7('lystra7');
-    await narr('So he arrived at Derbe and also at Lystra. (Acts 16:1)',{dur:5500});
+    await narr('In this way he reached Derbe, and Lystra after it. (Acts 16:1)',{dur:5500});
     await narr("At Derbe the oxen were unyoked on Zenon's own threshing floor, and there the congregation heard the letter read.",{dur:8000});
     try{const M=SHARED.map;G.scene=M.draw;await fade(0,350);await M.go('derbe','lystra');await fade(1,400)}catch(e){console.error(e)}
     G.scene=null;setScore(MUSIC);AU.mood=ROOMS.lystra7.mood;AU.amb=ROOMS.lystra7.amb;
     await narr('It was late in the year 49, or early in 50. Two or three years had passed since the stones.',{dur:7000});
-    await narr('And a disciple named Timothy was there, the son of a believing Jewish woman but of a Greek father. (Acts 16:1)',{dur:8000})}
+    await narr('There lived a disciple whose name was Timothy. His mother was a Jewish woman and a believer; his father was a Greek. (Acts 16:1)',{dur:8000})}
   else if(to==='iconium'){place7('iconium7');
     await narr('Iconium lay about 30 kilometers away: a day on foot, across the winter fields.',{dur:6500})}
   else if(to==='lystra'){place7('lystra7');
@@ -1092,31 +1092,31 @@ async function arrive7(to,from){
 async function start7(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();
   await cut(async()=>{await fade(1,500);setChapter(7);G.end={};enterRoom('tarsus7',...ENT.tarsus7);G.st={k:0};G.scene=antiochScene;AU.mood='tense';AU.amb={birds:.4,leaves:.4,crowd:.3};codeBtn();await fade(0,600);
     await narr('Antioch in Syria, about 49 C.E.',{dur:3000});
-    await narr('Now some men came down from Judea and began to teach the brothers: "Unless you get circumcised according to the custom of Moses, you cannot be saved." (Acts 15:1)',{dur:9500});
-    await narr('But after quite a bit of dissension and disputing by Paul and Barnabas with them, it was arranged for Paul, Barnabas, and some of the others to go up to the apostles and elders in Jerusalem regarding this issue. (Acts 15:2)',{dur:11500});
+    await narr('Some men arrived from Judea and started teaching the brothers that nobody could be saved without being circumcised as the custom of Moses requires. (Acts 15:1)',{dur:9500});
+    await narr('Paul and Barnabas disagreed and argued with them at length. In the end it was settled that Paul, Barnabas and some others should take the question up to the apostles and elders in Jerusalem. (Acts 15:2)',{dur:11500});
     await fade(1,500);G.st={who:0};G.scene=councilScene;AU.mood='calm';AU.amb={birds:.2,crowd:.15};await fade(0,600);
-    await narr('In Jerusalem the apostles and the elders gathered together to look into this matter. (Acts 15:6)',{dur:6500});
-    await say(PE,'"So why are you now making a test of God by imposing on the neck of the disciples a yoke that neither our forefathers nor we were capable of bearing?" (Acts 15:10)');
-    await say(PE,'"On the contrary, we have faith that we are saved through the undeserved kindness of the Lord Jesus in the same way that they are." (Acts 15:11)');
+    await narr('In Jerusalem the apostles and the elders met to examine the question. (Acts 15:6)',{dur:6500});
+    await say(PE,'Why, then, do you put God to the test? You would lay on the necks of the disciples a yoke that was too heavy for our forefathers, and too heavy for us. (Acts 15:10)');
+    await say(PE,'No: we trust that the undeserved kindness of the Lord Jesus saves us, and it saves them in just the same way. (Acts 15:11)');
     G.st.who=1;
-    await narr('At that the entire group became silent, and they began to listen to Barnabas and Paul relate the many signs and wonders that God had done through them among the nations. (Acts 15:12)',{dur:10500});
+    await narr('The whole gathering fell quiet. Then they listened as Barnabas and Paul told of the many signs and wonders God had worked through them among the nations. (Acts 15:12)',{dur:10500});
     G.st.who=2;
     await narr('Then James spoke. It appears that he presided over the discussion.',{dur:5000});
-    await say(JA,'"Therefore, my decision is not to trouble those from the nations who are turning to God." (Acts 15:19)');
-    await narr('Then the apostles and the elders, together with the whole congregation, decided to send chosen men from among them to Antioch, along with Paul and Barnabas; they sent Judas who was called Barsabbas and Silas, who were leading men among the brothers. (Acts 15:22)',{dur:12500});
-    await narr('They wrote a letter and sent it through them, "to those brothers in Antioch, Syria, and Cilicia who are from the nations". (Acts 15:23)',{dur:8000});
+    await say(JA,'My decision, then, is that we should not make difficulties for people of the nations who turn to God. (Acts 15:19)');
+    await narr('The apostles and the elders, and the whole congregation with them, then resolved to choose men of their own and send them to Antioch with Paul and Barnabas. Their choice fell on Judas, called Barsabbas, and Silas, both of whom took the lead among the brothers. (Acts 15:22)',{dur:12500});
+    await narr('With them went a letter, addressed to the brothers from the nations in Antioch, Syria and Cilicia. (Acts 15:23)',{dur:8000});
     await fade(1,500);G.st={k:1};G.scene=antiochScene;AU.amb={birds:.4,leaves:.4,crowd:.5};await fade(0,600);
-    await narr('So when these men were dismissed, they went down to Antioch, and they gathered the whole group together and handed them the letter. After reading it, they rejoiced over the encouragement. (Acts 15:30, 31)',{dur:11500});
-    await narr('And Judas and Silas, since they were also prophets, encouraged the brothers with many talks and strengthened them. (Acts 15:32)',{dur:8000});
+    await narr('The men were sent on their way and went down to Antioch. There they assembled everyone and delivered the letter; and when it had been read, there was joy at the encouragement it gave. (Acts 15:30, 31)',{dur:11500});
+    await narr('Judas and Silas were prophets themselves, and in many a talk they encouraged the brothers and made them strong. (Acts 15:32)',{dur:8000});
     await fade(1,500);G.st={k:2,away:0};AU.mood='tense';AU.amb={birds:.4,leaves:.4};await fade(0,600);
-    await narr('After some days, Paul said to Barnabas:',{dur:3200});
-    await say(P,'"Let us now return and visit the brothers in every one of the cities where we proclaimed the word of Jehovah, to see how they are." (Acts 15:36)');
-    await narr('Barnabas was determined to take along John, who was called Mark. Paul, however, was not in favor of taking him along with them, seeing that he had departed from them in Pamphylia and had not gone with them to the work. (Acts 15:37, 38)',{dur:12500});
+    await narr('Some days later Paul put a plan to Barnabas:',{dur:3200});
+    await say(P,'Come, let us go back to all the cities where we made the word of Jehovah known, and call on the brothers, and see how they fare. (Acts 15:36)');
+    await narr('Barnabas had made up his mind that John, the one called Mark, should come too. Paul was against it: Mark had left them in Pamphylia, and had not gone on with them into the work. (Acts 15:37, 38)',{dur:12500});
     const st=G.st;tween(5200,k=>{st.away=k});
-    await narr('At this there was a sharp burst of anger, so that they separated from each other; and Barnabas took Mark along and sailed away to Cyprus. (Acts 15:39)',{dur:9500});
+    await narr('Anger flared up over this, so sharply that the two parted. Barnabas took Mark and sailed for Cyprus. (Acts 15:39)',{dur:9500});
     st.away=1;st.bow=1;SFX.pray();
-    await narr('Paul selected Silas and departed after he had been entrusted by the brothers to the undeserved kindness of Jehovah. (Acts 15:40)',{dur:8500});
-    try{await need('map');await SHARED.map.journey(OPENING,{labels:LABELS,view:'north',text:['He went through Syria and Cilicia, strengthening the congregations. (Acts 15:41)',
+    await narr('Paul chose Silas. The brothers commended him to the undeserved kindness of Jehovah, and he set out. (Acts 15:40)',{dur:8500});
+    try{await need('map');await SHARED.map.journey(OPENING,{labels:LABELS,view:'north',text:['His way led through Syria and Cilicia, and wherever he came he made the congregations stronger. (Acts 15:41)',
       'Acts does not name the congregations of Cilicia. The trade road ran north through the Syrian Gates, and across the plain to Tarsus: its chief city, where Paul was born.']})}catch(e){console.error(e)}
     await fade(1,500);G.scene=null;G.st=null;setScore(MUSIC);AU.mood=ROOMS.tarsus7.mood;AU.amb=ROOMS.tarsus7.amb;codeBtn();await fade(0,600);
     await narr('Tarsus, in Cilicia. In this story the congregation there meets in the courtyard of a weaver of linen.',{dur:6500});
@@ -1133,13 +1133,13 @@ async function invite7(){playAs(P);AU.mood='calm';await Promise.all([walk(P,178,
   await say(P,'Timothy. I have been asking about you in two cities, and you did not know it.');
   await say(TI,'About me? What did they say, Paul?');
   await say(P,"That what you are given, you do, and do not count it. That you are the same man at the hearth as at the well. That you walked a day's road with a sack on your back for brothers you hardly knew, and went again to see how they did.");
-  await narr('He was well-reported-on by the brothers in Lystra and Iconium. (Acts 16:2)',{dur:6500});
+  await narr('The brothers in Lystra and in Iconium spoke well of him. (Acts 16:2)',{dur:6500});
   await think('He is looking at the floor. How do I put it to him?',[
     {q:'The brothers have spoken for you. You must come.',no:"Must? Then it would be the older men's errand that he ran, and not his own. I want a volunteer, not a porter."},
     {q:'I need someone to carry the bundles.',no:'True, and the least part of it. He would say yes at once, and never know what he had been offered.'},
     {q:'I want you with us. It will cost you your home.',ok:1}]);
   await say(P,'I want you to come with us, Timothy: with Silas and me, to the congregations, and beyond them to cities that have never heard. It will cost you this house. And you have seen for yourself what that road can be like, outside the gate of this town.');
-  await narr('Paul expressed the desire for Timothy to accompany him. (Acts 16:3)',{dur:5500});
+  await narr('Paul let it be known that he wanted Timothy to travel with him. (Acts 16:3)',{dur:5500});
   await say(TI,'I am young, Paul. I go red when I read before twenty people.');
   await say(P,'I did not ask what you think of yourself. I asked the brothers, and I asked your mother. And I have eyes of my own.');
   await walk(MY,128,127);MY.dir=1;
@@ -1151,13 +1151,13 @@ async function invite7(){playAs(P);AU.mood='calm';await Promise.all([walk(P,178,
   await narr('There were prophecies about Timothy, and the body of elders laid their hands on him, as Paul did. It may have been at this time. (1 Timothy 1:18; 4:14; 2 Timothy 1:6)',{dur:10500});
   for(const a of[P,TI,MY,SI,EN,LO])a.bow=false;G.hands=0;
   await fade(1,700);AU.mood='hope';
-  await narr('Paul expressed the desire for Timothy to accompany him, and he took him and circumcised him because of the Jews in those places, for they all knew that his father was a Greek. (Acts 16:3)',{dur:11000});
+  await narr('Paul wanted Timothy as his companion. So he took him and circumcised him, on account of the Jews who lived in those parts: every one of them knew that his father was a Greek. (Acts 16:3)',{dur:11000});
   await narr("Paul knew very well that no Christian had to be circumcised: the letter in his bag laid no such burden on anyone. But everyone knew that Timothy's father was a Greek, and to the Jews in the cities ahead of them that would have been an obstacle.",{dur:11500});
-  await narr('So that nothing about him would stand in the way of the good news, Timothy submitted to it. Paul would later write: "To the Jews I became as a Jew in order to gain Jews." (1 Corinthians 9:20)',{dur:10500});
+  await narr('So that nothing about him would stand in the way of the good news, Timothy submitted to it. Paul would later write that for the Jews he made himself like a Jew, so as to win Jews. (1 Corinthians 9:20)',{dur:10500});
   await journey();
-  await narr('As they traveled on through the cities, they would deliver to them for observance the decrees that had been decided on by the apostles and the elders who were in Jerusalem. (Acts 16:4)',{dur:10500});
-  await narr('Then, indeed, the congregations continued to be made firm in the faith and to increase in number day by day. (Acts 16:5)',{dur:8000});
-  await narr('Some eleven years later Paul wrote of Timothy: "I have no one else of a disposition like his who will genuinely care for your concerns." (Philippians 2:20)',{dur:9500});
+  await narr('In city after city on their way they handed on the decrees that the apostles and the elders in Jerusalem had decided on, to be kept by the brothers there. (Acts 16:4)',{dur:10500});
+  await narr('And so the congregations kept growing firmer in the faith, and larger in number with every day. (Acts 16:5)',{dur:8000});
+  await narr("Some eleven years later Paul wrote to a congregation that he had no one else with Timothy's disposition, no one who would care so sincerely about how they fared. (Philippians 2:20)",{dur:9500});
   endScreen({title:'Timothy of Lystra',text:'Paul could not be his own witness, so he let another man speak. He sewed a stranger\'s tent in a storm, with a brother on the windward line. And before he asked a young man to leave his home, he asked those who knew him.',
     extra:[F.psalm&&'A psalm read to Lois'].filter(Boolean),
     based:'Based on Acts 15:1-16:5; Philippians 2:20-22; 1 Timothy 1:18; 4:14 and 2 Timothy 1:5, 6. Supporting characters and dialogue are imaginative; the events are from the Scriptures. Acts names no city in Cilicia and describes no road: Tarsus and the Cilician Gates are likely, not stated. Lystra was apparently Timothy\'s home; Acts 16 does not name his mother, or mention Lois. How Paul heard what the brothers in Iconium said, and when hands were laid on Timothy, is not told.',
@@ -1166,8 +1166,8 @@ async function invite7(){playAs(P);AU.mood='calm';await Promise.all([walk(P,178,
 function hint7(){const b=PC()!==P,craft=['craft7',["That is the tentmaker's craft, not mine. A good partner knows when to step back.",'Paul should do this part. I can leave it to him; he is never far away.']],
     his=['paul7b',['This is for Paul to ask. He knew the boy, and he will answer for the man.','Paul should do this. I can leave it to him.']],carry=id=>invOf(SI).includes(id);
   if(inTar()){
-    if(!F.silas)return b?['wit7b',['I was no party to that dispute. I was sent out with the letter, to report the same things by word of mouth.','I should talk to Reuben, and tell him who sent me.']]
-      :G.tried?['wit7',['He asks for a second witness. And the letter itself names two men who were sent to say the same things by word of mouth.','Silas should talk to Reuben. I can let him.']]
+    if(!F.silas)return b?['wit7b',['I was no party to that dispute. I was sent out with the letter, to tell the same things with my own lips.','I should talk to Reuben, and tell him who sent me.']]
+      :G.tried?['wit7',['He asks for a second witness. And the letter itself names two men who were sent to say the same things in person.','Silas should talk to Reuben. I can let him.']]
       :['reu7',['Reuben is a careful man, not an enemy. I should hear exactly what it is that he asks for.','I should talk to Reuben.']];
     if(!F.read)return['read7',['In Antioch the whole group was gathered, and then the letter was handed over. Read to one man in a corner, it would settle one man.',
       (b?carry('letter'):!carry('letter'))?'I should give the letter to Eirene, and ask her to call the congregation together.':b?'Paul carries the letter. He should give it to Eirene, who can call the congregation together.':'Silas has the letter. He can give it to Eirene, who can call the congregation together.']];
@@ -1185,7 +1185,7 @@ function hint7(){const b=PC()!==P,craft=['craft7',["That is the tentmaker's craf
   if(inLys()){
     if(!F.readL)return['readL7',['The decrees are for every congregation on this road, and Lystra has older men of its own now.',(b?carry('letter'):!carry('letter'))?'I should give the letter to Myron.':b?'Paul should give the letter to Myron.':'Silas has the letter. He can give it to Myron.']];
     if(heard())return b?his:['ask7',['Four witnesses in two cities, and my own eyes besides. It is time to ask him: and to tell him what it will cost.','I should talk to Timothy.']];
-    if(!F.eld)return b?his:['eld7',['Mere man sees what appears to the eyes. I should not ask whether he speaks well, or looks strong. I should ask what he does.','I should talk to Myron, and ask what Timothy is given to do.']];
+    if(!F.eld)return b?his:['eld7',['A man goes by what his eyes show him. I should not ask whether he speaks well, or looks strong. I should ask what he does.','I should talk to Myron, and ask what Timothy is given to do.']];
     if(!F.fam)return b?his:['fam7',['The older men see him in the congregation. His mother and his grandmother see him when nobody from the congregation is looking.','I should talk to Eunice, and ask what he is at home.']];
     return['ico7',['Lystra has spoken. Myron says that he is known in Iconium too: and Iconium must have its letter.','We can leave by the door to the lane, and choose Iconium on the map.']]}
   if(!F.readI)return['readI7',['Iconium must have the decrees, like every other city.',(b?carry('letter'):!carry('letter'))?'I should give the letter to Nathan.':b?'Paul should give the letter to Nathan.':'Silas has the letter. He can give it to Nathan.']];
@@ -1201,7 +1201,7 @@ return{rooms:['tarsus7','gates','lystra7','iconium7'],setup:setup7,start:start7,
   view:'north',labels:LABELS,
   route:[['antioch','syriangates'],['syriangates','tarsus'],['tarsus','ciliciangates'],['ciliciangates','derbe'],['derbe','lystra'],['lystra','iconium','new']],
   places:{
-    antioch:{room:'-',if:()=>false,no:'Antioch entrusted us to the undeserved kindness of Jehovah for this road. It leads on, not back.'},
+    antioch:{room:'-',if:()=>false,no:'Antioch commended us to the undeserved kindness of Jehovah for this road. It leads on, not back.'},
     syriangates:{room:'-',if:()=>false,no:'The Syrian Gates lie behind us, and the congregations of Syria with them. Our road leads on.'},
     tarsus:{room:'tarsus7',x:150,y:124,dir:1,if:()=>false,no:()=>say(PC(),inGates()?'Back down to Tarsus? We did not spend that night in the gorge in order to walk down again. And Tarsus has its letter.':'Tarsus has its letter, and its peace. Our road leads on.')},
     ciliciangates:{room:'gates',x:226,y:127,dir:1,if:inTar,no:'The Gates are behind us, and I am not sorry. One night in that gorge was enough.'},

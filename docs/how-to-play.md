@@ -39,9 +39,9 @@ The pointer over the scene is the game's own: a gold arrow with a dark contour, 
 
 ## Languages
 
-The game plays in English and in German (Deutsch). It starts in your browser's language and remembers your choice; switch on the title screen or with the **EN**/**DE** button in the top bar, even in the middle of a scene. Only the words change: the puzzles, the answers and their order are the same, so the walkthroughs above hold in German too. A safe-point code works in either language. The German Bible quotations are from the *Neue-Welt-Übersetzung der Heiligen Schrift (Studienausgabe)*, and names follow it: Saulus, Kephas, Jakobus, Damaskus, Antiochia. A link can choose the language with `?lang=de` or `?lang=en`.
+The game plays in English and in German (Deutsch). It starts in your browser's language and remembers your choice; switch on the title screen or with the **EN**/**DE** button in the top bar, even in the middle of a scene. Only the words change: the puzzles, the answers and their order are the same, so the walkthroughs above hold in German too. A safe-point code works in either language. The German text tells the verses in its own words, checked against the *Neue-Welt-Übersetzung der Heiligen Schrift (Studienausgabe)*, and names follow that edition: Saulus, Kephas, Jakobus, Damaskus, Antiochia. A link can choose the language with `?lang=de` or `?lang=en`.
 
-![Paul's wax tablets in German, with the Scriptures from the Neue-Welt-Übersetzung](screenshots/deutsch.png)
+![Paul's wax tablets in German, with his notes of the Scriptures](screenshots/deutsch.png)
 
 ## Pray to Jehovah
 

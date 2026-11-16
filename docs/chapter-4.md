@@ -1,6 +1,6 @@
 # Chapter Four: Sent Out to Cyprus
 
-Antioch, about 47 C.E. As the prophets and teachers of the congregation are ministering to Jehovah and fasting, the holy spirit says: "Set aside for me Barnabas and Saul for the work to which I have called them." They lay their hands on them and send them off. With John Mark as their attendant, the two go down to Seleucia and sail to Cyprus, where Barnabas was born. At Salamis they proclaim the word of God in the synagogues of the Jews. Then they go through the whole island as far as Paphos, where the proconsul Sergius Paulus, an intelligent man, calls for them, and the sorcerer Bar-Jesus, also called Elymas, tries to turn him away from the faith (Acts 13:1-12; 4:36).
+Antioch, about 47 C.E. While the prophets and teachers of the congregation are serving Jehovah and fasting, the holy spirit tells them to set Barnabas and Saul apart for the work to which it has called the two (Acts 13:2). Hands are laid on them, and they are sent out. With John Mark to assist them, they go down to Seleucia and take ship for Cyprus, where Barnabas was born. At Salamis they preach the word of God in the Jewish synagogues. Then they cross the island from end to end, to Paphos, where the proconsul Sergius Paulus, a man of understanding, sends for them, and the sorcerer Bar-Jesus, also called Elymas, does what he can to keep him from the faith (Acts 13:1-12; 4:36).
 
 | | |
 |---|---|
@@ -13,7 +13,7 @@ Four more locations and seven new characters, and the first chapter in which the
 
 A merchant ship of those days gave its passengers drinking water and nothing else, so Paul sews a shelter for the deck, with a rope in its edge to lash it to the rail. On the quay sits an old disciple of Salamis whom Saul's persecution once drove out of Jerusalem (Acts 8:1-3; 11:19). He has nothing to say to Saul of Tarsus. Barnabas has to speak for his friend first, and then Saul has to say it himself, without an excuse.
 
-On his own island Barnabas is the one who is known. He asks the presiding officer of a synagogue in Salamis for a hearing, and Paul builds his "word of encouragement" in the right order, beginning with what has just been read: the islands keep waiting for his law (Isaiah 42:4). In Paphos, Elymas raises three objections before the proconsul, and each is answered in its own way: one by Barnabas, one by showing Paul's awl, and one from the Scriptures. Then the account takes its course. What happens to Elymas is told as Acts tells it, and it solves no puzzle. From that hearing on the game calls Saul by his Roman name, Paul, as Acts does from chapter 13, verse 9.
+On his own island Barnabas is the one who is known. He asks the presiding officer of a synagogue in Salamis for a hearing, and Paul builds his word of encouragement in the right order, beginning with what has just been read: the islands are still waiting for his law (Isaiah 42:4). In Paphos, Elymas raises three objections before the proconsul, and each is answered in its own way: one by Barnabas, one by showing Paul's awl, and one from the Scriptures. Then the account takes its course. What happens to Elymas is told as Acts tells it, and it solves no puzzle. From that hearing on the game calls Saul by his Roman name, Paul, as Acts does from chapter 13, verse 9.
 
 | | |
 |---|---|
@@ -29,7 +29,7 @@ On his own island Barnabas is the one who is known. He asks the presiding office
 4. As Paul, talk to the old man, Jair, and say plainly what you did.
 5. Walk up the gangplank, and click Salamis on the map.
 6. In Salamis, open the door of the synagogue. Switch to Barnabas and talk to Zadok: let Saul speak after the reading, and test every word by the scroll.
-7. As Paul, talk to Zadok. Build the talk in this order: the islands keep waiting; the promise to David; the savior from David's offspring, raised up; forgiveness of sins.
+7. As Paul, talk to Zadok. Build the talk in this order: the islands are still waiting; the promise to David; the savior from David's offspring, raised up; forgiveness of sins.
 8. Leave by the door and then by the west gate, and click Paphos on the map.
 9. In Paphos, switch to Barnabas and talk to the proconsul. As Paul, give the awl to the proconsul to show it. Then answer with Daniel 2:27, 28.
 </details>

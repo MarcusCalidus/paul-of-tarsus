@@ -36,7 +36,7 @@ Point at something and click: its usual verb lights up. Use the verbs, the inven
 
 ## About the content
 
-The game follows the scriptural understanding of Jehovah's Witnesses and the wording of the New World Translation of the Holy Scriptures (Study Edition); the German version quotes the German edition, the *Neue-Welt-Übersetzung der Heiligen Schrift (Studienausgabe)*. Historical details are checked against jw.org and wol.jw.org. Paul is shown as a courageous, observant minister who relies on practical wisdom, cooperation with fellow believers and trust in Jehovah. There are no halos, crosses or mystical effects, and no puzzle is solved by a miracle or by violence.
+The game follows the scriptural understanding of Jehovah's Witnesses and the New World Translation of the Holy Scriptures (Study Edition); the German version follows the German edition, the *Neue-Welt-Übersetzung der Heiligen Schrift (Studienausgabe)*. Verses are told in the game's own words with their references, and no text, artwork or other material of jw.org is reproduced. Historical details are checked by hand against jw.org and wol.jw.org. Paul is shown as a courageous, observant minister who relies on practical wisdom, cooperation with fellow believers and trust in Jehovah. There are no halos, crosses or mystical effects, and no puzzle is solved by a miracle or by violence.
 
 The events themselves are from the Scriptures. All dialogue is imaginative dramatization, including the words given to Barnabas, Cephas, James, Agabus, Lucius, John Mark, Sergius Paulus, Bar-Jesus, Timothy, Eunice, Lois, the man who was lame and the priest of Zeus. The supporting characters are invented too. Each chapter's page has an "About the content" section that says what the account leaves unsaid, what is invented and which publications the details come from, and each chapter's end screen says so too:
 
@@ -50,7 +50,7 @@ The events themselves are from the Scriptures. All dialogue is imaginative drama
 - [Chapter Eight: The Man from Macedonia](docs/chapter-8.md#about-the-content)
 - [Chapter Nine: Midnight in Philippi](docs/chapter-9.md#about-the-content)
 
-This is an independent, non-commercial fan project. It is not produced, endorsed or reviewed by Jehovah's Witnesses or the Watch Tower Bible and Tract Society.
+This is an independent, non-commercial fan project. It is not produced, endorsed or reviewed by Jehovah's Witnesses or the Watch Tower Bible and Tract Society, and it is not affiliated with jw.org. It contains no material from jw.org or its subdomains; it only refers to them as sources that its authors read. Their [Terms of Use](https://www.jw.org/en/terms-of-use/) apply to their content.
 
 ## Development
 
@@ -58,7 +58,7 @@ There is no build step: `index.html` is the engine and `levels/chapterN.js` hold
 
 ## Contributing
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing the game. It holds the rules every change must follow: Bible wording from the New World Translation (Study Edition), historical details checked against jw.org and wol.jw.org, no violence, deceit or miracle shortcuts, no crosses, and the art, audio, code and save-code rules. The same rules apply in a fork. AI coding assistants find them through [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md).
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing the game. It holds the rules every change must follow: Bible accounts told in your own words and checked against the New World Translation (Study Edition), historical details checked against jw.org and wol.jw.org without copying anything from them, no violence, deceit or miracle shortcuts, no crosses, and the art, audio, code and save-code rules. The same rules apply in a fork. AI coding assistants find them through [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md).
 
 ## Credits
 

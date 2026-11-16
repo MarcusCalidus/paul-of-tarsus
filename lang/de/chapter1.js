@@ -1,7 +1,8 @@
 /* Paul of Tarsus: the German text (Deutsch) for Chapter One, "Escape from Damascus" (levels/chapter1.js).
    Loaded on demand by index.html (see LANGUAGES there). Each entry is an English line, exactly as it stands in the game, and its German.
-   A line with no entry is shown in English, and the playtest reports it. Bible verses are quoted from the Neue-Welt-Übersetzung der
-   Heiligen Schrift (Studienausgabe) on wol.jw.org; names and places follow its spelling, without the marks that show stress. */
+   A line with no entry is shown in English, and the playtest reports it. Bible verses are told in the game's own German words, never
+   copied: they are checked against the Neue-Welt-Übersetzung der Heiligen Schrift (Studienausgabe), and names and places follow its
+   spelling, without the marks that show stress (CONTRIBUTING sections 1 and 8). */
 TEXTS('de',1,{
   "Eliab":"Eliab",
   "Naomi":"Noomi",
@@ -38,7 +39,7 @@ TEXTS('de',1,{
   "There. It would carry a full load of grain. Or one tentmaker.":"So. Er würde eine volle Ladung Getreide tragen. Oder einen Zeltmacher.",
   "Following the weave... one square patch, and the rest in long strips.":"Dem Gewebe nach ... ein viereckiger Flicken, und der Rest in langen Streifen.",
   "I braid the strips three-fold into a cord, then splice it to the rope.":"Ich flechte die Streifen dreifach zu einer Schnur und spleiße sie an das Seil.",
-  "\"A threefold cord cannot quickly be torn apart.\" (Ecclesiastes 4:12) Now it will reach the ground.":"„Eine dreifache Schnur lässt sich nicht so schnell zerreißen.“ (Prediger 4:12) Jetzt reicht es bis zum Boden.",
+  "A cord of three strands is not soon torn. (Ecclesiastes 4:12) Now it will reach the ground.":"Eine Schnur aus drei Strängen reißt so bald nicht. (Prediger 4:12) Jetzt reicht es bis zum Boden.",
   "The straps must be sewn onto something that needs their strength.":"Die Riemen müssen an etwas genäht werden, das ihre Stärke braucht.",
   "Cut it? It is too short already.":"Abschneiden? Es ist doch schon zu kurz.",
   "A patch needs a tear to cover.":"Ein Flicken braucht einen Riss, den er abdeckt.",
@@ -102,13 +103,13 @@ TEXTS('de',1,{
   "Make the rope fast to something that will hold.":"Das Seil an etwas festmachen, das hält.",
   "Fasten the basket to the rope, and open the way out.":"Den Korb an das Seil binden und den Weg hinaus öffnen.",
   "Proverbs 3:5, 6":"Sprüche 3:5, 6",
-  "Trust in Jehovah with all your heart, And do not rely on your own understanding. In all your ways take notice of him, And he will make your paths straight.":"Vertraue auf Jehova mit deinem ganzen Herzen und verlass dich nicht auf deinen eigenen Verstand. Beachte ihn auf allen deinen Wegen und er wird deine Pfade ebnen.",
+  "Let your whole heart rely on Jehovah, and not on your own insight. Keep him in view wherever you go, and he will straighten the road before you.":"Verlass dich von ganzem Herzen auf Jehova und nicht auf die eigene Einsicht. Behalte ihn im Blick, wohin du auch gehst, dann macht er deinen Weg gerade.",
   "Proverbs 15:1":"Sprüche 15:1",
-  "A mild answer turns away rage, But a harsh word stirs up anger.":"Eine sanfte Antwort wendet Wut ab, doch ein hartes Wort lässt Zorn aufkommen.",
+  "A gentle reply turns rage aside, but a rough word kindles anger.":"Eine milde Antwort lässt Wut abklingen; ein schroffes Wort dagegen weckt Zorn.",
   "Proverbs 25:21":"Sprüche 25:21",
-  "If your enemy is hungry, give him bread to eat; If he is thirsty, give him water to drink.":"Wenn dein Feind hungrig ist, gib ihm Brot zu essen, und wenn er durstig ist, gib ihm Wasser zu trinken.",
+  "Is your enemy hungry? Feed him bread. Is he thirsty? Give him water.":"Hat dein Feind Hunger, dann gib ihm Brot; hat er Durst, dann gib ihm Wasser.",
   "Ecclesiastes 4:12":"Prediger 4:12",
-  "A threefold cord cannot quickly be torn apart.":"Eine dreifache Schnur lässt sich nicht so schnell zerreißen.",
+  "A cord of three strands is not soon torn.":"Eine Schnur aus drei Strängen reißt so bald nicht.",
   "door to the street":"Tür zur Straße",
   "The door to the street. Beyond it, the city is being watched.":"Die Tür zur Straße. Draußen wird die Stadt bewacht.",
   "tent panel on the frame":"Zeltbahn im Rahmen",
@@ -167,7 +168,7 @@ TEXTS('de',1,{
   "I know. I wove it, and then I wore it out. Wicker alone will not bear a man; it wants leather beneath it.":"Ich weiß. Ich habe ihn geflochten und dann abgenutzt. Weidengeflecht allein trägt keinen Mann; er braucht Leder darunter.",
   "Then make it longer. You have cloth, and a tentmaker knows how cloth becomes cord.":"Dann mach es länger. Du hast Tuch, und ein Zeltmacher weiß, wie aus Tuch eine Schnur wird.",
   "Is he? He stands there to catch you, Saul.":"So? Er steht dort, um dich zu fangen, Saulus.",
-  "And yet it is written: \"If he is thirsty, give him water to drink.\" (Proverbs 25:21)":"Und doch steht geschrieben: „Wenn er durstig ist, gib ihm Wasser zu trinken.“ (Sprüche 25:21)",
+  "And yet it is written that an enemy who is thirsty is to be given water. (Proverbs 25:21)":"Und doch steht geschrieben, dass man dem Feind, der Durst hat, Wasser geben soll. (Sprüche 25:21)",
   "Tell me the plan once more.":"Erklär mir den Plan noch einmal.",
   "Sister Naomi's house is built on the city wall. Her upper window looks out over open country.":"Das Haus von Schwester Noomi ist auf die Stadtmauer gebaut. Ihr oberes Fenster geht hinaus aufs offene Land.",
   "We lower you from it in a basket, by night. The gates will never see you.":"Wir lassen dich nachts in einem Korb hinunter. Die Tore werden dich nie zu sehen bekommen.",
@@ -357,7 +358,7 @@ TEXTS('de',1,{
   "Damascus, about 36 C.E.":"Damaskus, um 36 u. Z.",
   "Saul of Tarsus, later known as the apostle Paul, once came to this city to arrest the disciples of Jesus.":"Saulus von Tarsus, später als der Apostel Paulus bekannt, kam einst in diese Stadt, um die Jünger Jesu festzunehmen.",
   "Now he himself preaches in the synagogues that Jesus is the Son of God.":"Jetzt predigt er selbst in den Synagogen, dass Jesus der Sohn Gottes ist.",
-  "Opposers have plotted to do away with him. The governor under King Aretas guards the city, and the gates are watched day and night.":"Gegner wollen ihn umbringen. Der Statthalter unter König Aretas bewacht die Stadt, und an den Toren wird Tag und Nacht Wache gehalten.",
+  "Opposers have agreed among themselves to kill him. The governor under King Aretas has the city guarded, and the gates are watched by day and by night.":"Gegner haben sich verabredet, ihn zu töten. Der Statthalter unter König Aretas lässt die Stadt bewachen, und an den Toren stehen bei Tag und bei Nacht Posten.",
   "But tonight, the brothers have a plan.":"Doch heute Nacht haben die Brüder einen Plan.",
   "Brother Saul! Come away from the door.":"Bruder Saulus! Komm weg von der Tür.",
   "The gates are watched. But Sister Naomi's house stands on the city wall itself.":"Die Tore werden bewacht. Aber das Haus von Schwester Noomi steht direkt auf der Stadtmauer.",
@@ -371,7 +372,7 @@ TEXTS('de',1,{
   "Together they thank Jehovah, and ask him to guide the steps ahead.":"Gemeinsam danken sie Jehova und bitten ihn, die Schritte vor ihnen zu lenken.",
   "I entered this city through its gate, with letters and proud plans. I leave it through a window, in a basket.":"Ich kam durch das Tor in diese Stadt, mit Briefen und stolzen Plänen. Ich verlasse sie durch ein Fenster, in einem Korb.",
   "And with more brothers than you came with. Hold tight, Saul. We will not let go.":"Und mit mehr Brüdern, als du mitgebracht hast. Halt dich gut fest, Saulus. Wir lassen nicht los.",
-  "His disciples took him and let him down by night through an opening in the wall, lowering him in a basket. (Acts 9:25)":"Seine Jünger nahmen ihn und ließen ihn nachts in einem Korb durch eine Öffnung in der Stadtmauer hinunter. (Apostelgeschichte 9:25)",
+  "One night his disciples took him to an opening in the wall and let him down in a basket. (Acts 9:25)":"Eines Nachts brachten ihn seine Jünger zu einer Öffnung in der Stadtmauer und ließen ihn dort in einem Korb hinab. (Apostelgeschichte 9:25)",
   "So Saul escaped the governor's hands: not by force, and not by a miracle, but by the courage of his brothers and trust in Jehovah. (2 Corinthians 11:32, 33)":"So entkam Saulus dem Statthalter: nicht durch Gewalt und nicht durch ein Wunder, sondern durch den Mut seiner Brüder und durch Vertrauen auf Jehova. (2. Korinther 11:32, 33)",
   "The road to Jerusalem lay ahead, and beyond it, many more.":"Vor ihm lag der Weg nach Jerusalem, und dahinter noch viele mehr.",
   "Saul used the skill of his hands, accepted the help of his brothers, and relied on Jehovah.":"Saulus setzte das Geschick seiner Hände ein, nahm die Hilfe seiner Brüder an und verließ sich auf Jehova.",

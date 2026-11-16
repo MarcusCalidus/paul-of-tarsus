@@ -1083,7 +1083,7 @@ async function combine(a,b){const c=COMBO[[a,b].sort().join('+')],w=PC();if(w!==
   if(c)return c();SFX.nope();return say(P,pick(NOPE))}
 /* --- "Pray to Jehovah": a pause for calm, then a context-sensitive thought. Never changes the game state. --- */
 const PRAYERS=['{name} bows his head and quietly asks Jehovah for wisdom and a calm heart. (James 1:5)',
-  '{name} pauses, and in prayer throws his anxiety on Jehovah. (1 Peter 5:7)','In the stillness, {name} asks Jehovah to help him think clearly.'];
+  '{name} pauses, and in prayer leaves his cares with Jehovah. (1 Peter 5:7)','In the stillness, {name} asks Jehovah to help him think clearly.'];
 function hint(){return CHAP[G.ch].hint()}
 function pray(){if(G.busy||G.scene||!G.room)return;audioInit();
   cut(async()=>{G.prays++;const me=PC(),d=$('#dim'),m=AU.mus,ab=AU.ambG;d.style.opacity=.55;me.bow=true;SFX.pray();

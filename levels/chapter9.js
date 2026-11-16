@@ -395,29 +395,29 @@ const SI=actor('silas9','Silas','#9fd8c8',118),TI=actor('timothy9','Timothy','#b
    in the first two, as Acts does, and "they" from the verse in which Paul and Silas are seized. */
 const TOLD={
  v16:'On our way to the place of prayer a servant girl met us. A spirit was in her, a demon of divination, and her fortune-telling made her masters a great deal of money. (Acts 16:16)',
- v17:'She kept following Paul and the rest of us, and crying out that these men were slaves of the Most High God, who were making known the way of salvation. (Acts 16:17)',
- v18:'She did this for many days. In the end Paul got tired of it. He turned and ordered the spirit, in the name of Jesus Christ, to come out of her: and it came out that very hour. (Acts 16:18)',
- v19:'Her masters saw that their hope of gain had gone with it. They seized Paul and Silas, and dragged them into the marketplace before the rulers. (Acts 16:19)',
- v20:'They led them up to the civil magistrates and said that these men were disturbing their city very much: they were Jews, and they were proclaiming customs that it was not lawful for Romans, as they themselves were, to adopt or to practice. (Acts 16:20, 21)',
- v22:'The crowd rose up against them as one. The civil magistrates had their garments torn off them, and gave the order to beat them with rods. (Acts 16:22)',
- v23:'After many blows they threw them into prison, and the jailer was told to guard them securely. On such an order he put them into the inner prison, and made their feet fast in the stocks. (Acts 16:23, 24)',
- v25:'It was about the middle of the night. Paul and Silas prayed, and praised God with song; and the prisoners listened to them. (Acts 16:25)',
- v26:'Suddenly there was a great earthquake, and the jail was shaken to its foundations. At once every door stood open, and the bonds of every prisoner came loose. (Acts 16:26)',
- v27:'The jailer woke and saw the doors of the prison open. He supposed that the prisoners had escaped; so he drew his sword, and was about to kill himself. (Acts 16:27)',
- v28:'But Paul called out with a loud voice that he should do himself no harm, because they were all there. (Acts 16:28)',
- v29:'The jailer asked for lights and rushed in. Trembling, he fell down before Paul and Silas. (Acts 16:29)',
- v30:'He brought them outside, and asked them what he had to do to get saved. (Acts 16:30)',
- v31:'They told him to believe in the Lord Jesus: then he would get saved, he and his household. (Acts 16:31)',
- v32:'And they spoke the word of Jehovah to him, and to everyone in his house. (Acts 16:32)',
- v33:'In that hour of the night he took them and washed their wounds. Then he and his whole household were baptized without delay. (Acts 16:33)',
- v34:'He brought them into his house and set a table before them, and he was overjoyed, with all his household, now that he had come to believe in God. (Acts 16:34)',
- v35:'When it was day, the civil magistrates sent the constables with the order to release those men. (Acts 16:35)',
- v36:'The jailer passed their words on to Paul: the magistrates had sent men to have the two of them released. They could come out now, he said, and go in peace. (Acts 16:36)',
- v37:'But Paul said to them that the two of them had been flogged in public, uncondemned, though they were Romans, and thrown into prison. Were they now to be thrown out in secret? No. The magistrates should come themselves and escort them out. (Acts 16:37)',
- v38:'The constables reported this to the civil magistrates, who became afraid when they heard that the men were Romans. (Acts 16:38)',
- v39:'So they came and pleaded with them. They escorted them out, and asked them to leave the city. (Acts 16:39)',
- v40a:'The two came out of the prison and went to the home of Lydia. (Acts 16:40)',
- v40b:'When they saw the brothers, they encouraged them. And then they departed. (Acts 16:40)'};
+ v17:'She came along behind Paul and the rest of us, and kept shouting that these men were slaves of the Most High God and were announcing the way of salvation. (Acts 16:17)',
+ v18:'This went on for many days, until Paul had had enough. He turned round and, in the name of Jesus Christ, commanded the spirit to leave her; and in that same hour it was gone. (Acts 16:18)',
+ v19:"With the spirit went her masters' hope of making money, and they saw it. They laid hold of Paul and Silas and hauled them into the marketplace, to the rulers. (Acts 16:19)",
+ v20:'They brought them before the civil magistrates with this charge: these men, who were Jews, were throwing the city into great disorder, and were advocating customs that Romans like themselves were not allowed to take up or to follow. (Acts 16:20, 21)',
+ v22:'The whole crowd turned on the two together. The civil magistrates had the clothes torn from their backs, and ordered them beaten with rods. (Acts 16:22)',
+ v23:'When they had been struck many times they were put in prison, and the jailer was charged to keep them safe. With such orders, he shut them in the inner prison and locked their feet in the stocks. (Acts 16:23, 24)',
+ v25:'Toward midnight Paul and Silas were at prayer and were singing praise to God, while the prisoners listened. (Acts 16:25)',
+ v26:"All at once the earth quaked, so violently that the jail shook to its foundations. In that instant every door flew open and every prisoner's bonds fell away. (Acts 16:26)",
+ v27:'The jailer started out of his sleep and saw the prison doors standing open. Sure that the prisoners had got away, he drew his sword and meant to take his own life. (Acts 16:27)',
+ v28:'But Paul shouted to him not to harm himself: they were all still there. (Acts 16:28)',
+ v29:'The jailer called for lights and ran inside, and there he dropped to the ground in front of Paul and Silas, shaking. (Acts 16:29)',
+ v30:'He led them out, addressed them with respect, and asked what he had to do to be saved. (Acts 16:30)',
+ v31:'Their answer was that he should put faith in the Lord Jesus; then he would be saved, and his household too. (Acts 16:31)',
+ v32:'Then the two made the word of Jehovah known to him, and to everyone under his roof. (Acts 16:32)',
+ v33:'Late as the hour was, he took them with him and bathed their wounds; and straightaway he was baptized, he and his whole household. (Acts 16:33)',
+ v34:'Then he took them into his own house and gave them a meal at his table. Great was his joy, and that of all his household, now that he believed in God. (Acts 16:34)',
+ v35:'At daybreak the civil magistrates sent their constables with the word that those men were to be let go. (Acts 16:35)',
+ v36:'The jailer brought the message to Paul: the civil magistrates had sent word that both were to be freed, so they should come out now and go their way in peace. (Acts 16:36)',
+ v37:'Paul answered them that he and Silas were Romans, and that without any trial they had been publicly flogged and put in prison. And now they were to be put out on the quiet? By no means: the magistrates were to come in person and lead them out. (Acts 16:37)',
+ v38:'The constables carried his answer back. When the civil magistrates heard that the men were Romans, fear took hold of them. (Acts 16:38)',
+ v39:'They came themselves and entreated the two; then they led them out, with the request that they leave the city. (Acts 16:39)',
+ v40a:"Leaving the prison, the two made their way to Lydia's house. (Acts 16:40)",
+ v40b:'There they saw the brothers and gave them encouragement; and after that they left. (Acts 16:40)'};
 const tell=(k,ms)=>narr(TOLD[k],{dur:ms||Math.max(6500,2200+TOLD[k].length*62)});
 /* PS: the psalm, as Paul has noted it on his tablets: four of its calls, and the answer that follows every one. A note in his own words,
    with its reference, and shown as that (gist: see shared/tablets.js). Acts does not say what the two men sang. */
@@ -454,7 +454,7 @@ async function riverIntro(){if(G.metRiv||F.jail)return;G.metRiv=1;
     await say(SI,'The women are waiting on the stones, Paul. Let her cry. We came to teach them a psalm.')}
   codeBtn()}
 /* ============ THE RIVER, ON THREE DAYS: the psalm that could not be finished ============ */
-/* "This girl kept following Paul and us" (Acts 16:17), "for many days" (16:18). The player leads the psalm, and the cry breaks it off:
+/* The girl followed Paul and the others (Acts 16:17), and went on doing so for many days (16:18). The player leads the psalm, and the cry breaks it off:
    then it has to be taken up again at the line that was broken. It is never sung to its end here. Nothing the player does ends the
    crying; the account does, in verse 18, and that is told. Paul speaks to the spirit, not to the girl. Nothing is shown when it leaves. */
 const before=(k,want)=>ORDER.indexOf(k)<ORDER.indexOf(want);
@@ -514,7 +514,7 @@ async function expel(){AU.mood='tense';P.dir=1;await wait(500);await tell('v18')
   await fade(1,700);await narr('Two men were dragged up the road to the city. Two were left standing beside the river.',{dur:6500});
   return market()}
 /* ============ THE MARKETPLACE: told, not played ============ */
-/* The charge is told in the words of the account (Acts 16:20, 21); what follows it stands on a dark screen (16:22-24), and nothing of it is
+/* The charge is told as the account tells it, in paraphrase (Acts 16:20, 21); what follows it stands on a dark screen (16:22-24), and nothing of it is
    shown. The account does not say whether the two spoke of being Romans in the uproar, and the game does not decide it. */
 async function market(){G.st={k:0};G.scene=forumScene;AU.mood='tense';AU.amb={crowd:.8};await fade(0,700);await tell('v20');
   await fade(1,600);G.scene=dark;AU.amb={};await fade(0,300);await tell('v22');await tell('v23');await fade(1,500);
@@ -573,7 +573,7 @@ async function callOut(){await seeJailer();
   if(!allHere())return say(P,'All? I have not counted. There were three men in this dark besides the two of us, and I will not call out what I do not know.',TH);
   P.dir=1;await tell('v28');SFX.good();return lights()}
 /* ============ THE JAILER: lights, a question, and a night in his house (told, with a few lines) ============ */
-/* No choice of the player's wins him, as none won Lydia. His question and the answer are told in the words of the account (Acts 16:30, 31).
+/* No choice of the player's wins him, as none won Lydia. His question and the answer are told as the account tells them, in paraphrase (Acts 16:30, 31).
    The study note on 16:33 says the household was likely unfamiliar with basic Scriptural truths, and that the two no doubt spoke
    extensively: the game shows them speaking, and does not invent the talk. The baptism is told and not drawn. Those of his house are
    seen, and nobody says who they are. */
@@ -648,7 +648,7 @@ async function outer(){const me=P;
     return say(me,'And at daybreak this man would stand before the magistrates with an empty prison.',TH)}
   return answer()}
 /* ============ LYDIA'S HOUSE: so that nobody has to ask for Paul ============ */
-/* "When they saw the brothers, they encouraged them and departed" (Acts 16:40). Luke stays: the study note on 16:33 says he was perhaps
+/* The two saw the brothers, encouraged them, and left (Acts 16:40). Luke stays: the study note on 16:33 says he was perhaps
    able to remain and give the new ones extra help. So the last thing to do is to leave nothing in Philippi that waits for Paul. Each of
    his cares is handed to one who stays, and to the right one. Bearing Thorough Witness (the box on Lydia) says the account suggests
    that her home became a meeting place. Acts does not say who the brothers in her house were: the jailer's household is spoken of here,
@@ -691,7 +691,7 @@ async function done(){await say(P,'Then nobody in this house has to ask for Paul
 /* The chapter closes on the map, with Philippi lit: nobody has travelled in it. The road so far is shown, and none of it draws itself. */
 const ROAD9=[['iconium','antiochp'],['antiochp','westroad'],['westroad','bithynianroad'],['bithynianroad','troas'],['troas','samothrace','sea'],['samothrace','neapolis','sea'],['neapolis','philippi']];
 async function finale(){AU.mood='hope';
-  await narr('Luke did not leave with them. Some ten years later Paul wrote to the brothers in Philippi about the defending and legally establishing of the good news, and about the struggle that they had seen him face. (Philippians 1:7, 30)',{dur:13500});
+  await narr('Luke did not leave with them. Some ten years later Paul wrote to the brothers in Philippi of how the good news was being defended and given a firm footing in law, and of the struggle that they had watched him go through. (Philippians 1:7, 30)',{dur:13500});
   try{await need('map');await fade(1,450);await SHARED.map.journey(ROAD9,{instant:1,view:'aegean'});await fade(0,550);SHARED.map.sting();
     await narr('From Philippi they travelled on through Amphipolis and Apollonia, toward Thessalonica. (Acts 17:1)',{dur:8500})}catch(e){console.error(e)}
   endScreen({title:'Midnight in Philippi',text:'Paul sang where nobody could see him, stayed where every door stood open, and asked of frightened men only what the brothers needed.',

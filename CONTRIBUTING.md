@@ -6,10 +6,12 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 
 ### The Bible text
 
-- Every Bible quotation, paraphrase and reference uses the **New World Translation of the Holy Scriptures (Study Edition)**, on [jw.org](https://www.jw.org/en/library/bible/study-bible/books/) or in the [Watchtower Online Library](https://wol.jw.org/en/wol/binav/r1/lp-e/nwtsty).
-- Look up every verse there before you write it. Do not quote from memory, from another translation, or from another edition of the New World Translation.
-- Quote briefly and exactly. Prefer a short paraphrase with its reference to a long quotation. A paraphrase must not say more or less than the verse does. Never invent a quotation, or present a paraphrase as one.
-- If you cannot check a verse's exact wording, give the reference only, and list it for the maintainer to check.
+- Every Bible paraphrase and reference follows the **New World Translation of the Holy Scriptures (Study Edition)**, which you read on [jw.org](https://www.jw.org/en/library/bible/study-bible/books/) or in the [Watchtower Online Library](https://wol.jw.org/en/wol/binav/r1/lp-e/nwtsty).
+- Look up every verse there before you write about it. Do not work from memory, and do not take what a verse means from another translation or from another edition of the New World Translation.
+- Tell what a verse says in your own words, with its reference. Do not copy the Study Edition's wording into the game or its documentation (see "Terms of use of jw.org" below). A paraphrase follows the meaning of the New World Translation and must not say more or less than the verse does. Never invent a quotation, or present a paraphrase as one: a paraphrase stands without quotation marks, on the wax tablets too.
+- Other translations may be consulted for ideas on wording and sentence shape, never for the meaning: in English, Byington's *The Bible in Living English* and Rotherham's *Emphasised Bible*; in German, BIBEL.HEUTE and *Hoffnung für Alle*. Never copy any of them 1:1 either, and do not stitch a sentence together from their fragments. Write your own wording with your own sentence structure, shorter where possible.
+- Use the divine name wherever the New World Translation has it in the passage: "Jehovah" (in German "Jehova"), never "the Lord", "der Herr" or "God" in its place. Where the New World Translation has "God" or "Lord", keep that.
+- If you cannot check what a verse says, give the reference only, and list it for the maintainer to check.
 - Give the reference with the line it belongs to, for example "(James 1:5)", or on the chapter's end screen.
 
 ### Historical information
@@ -23,6 +25,16 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 - Follow the scriptural understanding of Jehovah's Witnesses. Use "Jehovah", "C.E." and "B.C.E.", "the congregation" and "the brothers".
 - Watch for details that are easy to get wrong. Acts 11:26 says the disciples were called Christians "by divine providence", so the name must not be presented as a nickname coined by outsiders.
 - Use jw.org and wol.jw.org to check facts only. Do not copy their artwork, photographs, maps or publication text into the game.
+
+### Terms of use of jw.org
+
+The [Terms of Use](https://www.jw.org/en/terms-of-use/) of jw.org (which cover its subdomains, such as wol.jw.org) let you view, download and print its text, artwork, music, photos and videos for your own personal, non-commercial use, and share links to downloadable publications. They do not let you post that material or its trademarks on any website, distribute it with or as part of a software application, use it for a commercial purpose, or use it for marketing. This game is a software application and its repository is a website, so:
+
+- Neither the game nor the documentation reproduces text from the Study Edition (verses, study notes, footnotes), from *Insight on the Scriptures* or from any other publication on jw.org or wol.jw.org: no quotation marks around their wording, and no close paraphrase that keeps a source sentence's structure and changes only a word here and there. A verse is told with its reference in wording and sentence structure of your own, as "The Bible text" above describes; for anything else, name the publication, chapter or article and say in your own words what it establishes.
+- No artwork, photograph, map, music, video, logo or trademark of the Watch Tower Bible and Tract Society or of jw.org appears in the game, its icon, its screenshots or its documentation. Everything is painted and synthesized in code (section 4).
+- The game and its pages are not marketed with the name, logo or authority of jw.org or of Jehovah's Witnesses. The README says that this is an independent, non-commercial project that they do not produce, endorse or review; keep that sentence, and keep the game free of charge and free of advertising.
+- Do not build or ship a tool that collects, copies or scrapes data from jw.org or wol.jw.org. Look things up by hand.
+- Check the Terms of Use again when you change anything in this section: they may be revised.
 
 ## 2. Story and puzzles
 
@@ -83,7 +95,7 @@ GitHub Pages serves the game from the root of `main`, so a push to `main` publis
 The game is written in English and plays in German too. The English text stays in the code; every other language is data under `lang/`, one folder per language.
 
 - New or changed player-visible text must be added in every supported language in the same change. Changing an English line changes its key: change the entry in every language file with it. The playtest fails on a line that has no translation and on a translation whose English line is gone.
-- Every rule in section 1 applies in each language. German Bible quotations come from the German New World Translation, Study Edition ("Neue-Welt-Übersetzung der Heiligen Schrift – Studienausgabe"), on [wol.jw.org](https://wol.jw.org/de/wol/binav/r10/lp-x/nwtsty) or [jw.org/de](https://www.jw.org/de/bibliothek/bibel/studienbibel/buecher/). Look up each verse there before you write it. Never translate an English verse yourself: a verse in another language is always quoted from that language's Study Edition. If you cannot check a verse's exact wording, give the reference only and list it for the maintainer.
+- Every rule in section 1 applies in each language. German verses are read in the German New World Translation, Study Edition ("Neue-Welt-Übersetzung der Heiligen Schrift – Studienausgabe"), on [wol.jw.org](https://wol.jw.org/de/wol/binav/r10/lp-x/nwtsty) or [jw.org/de](https://www.jw.org/de/bibliothek/bibel/studienbibel/buecher/). Look up each verse there before you write about it, and tell it in your own German words with the reference; the terms of use in section 1 apply to the German text just as they do to the English. Never base a German line on your own translation of the English verse: check what the German Study Edition says, and write the German paraphrase from that. For wording ideas BIBEL.HEUTE and *Hoffnung für Alle* may be consulted as section 1 allows, and never copied; the divine name is "Jehova" wherever the German Study Edition has it. If you cannot check a verse, give the reference only and list it for the maintainer.
 - References use the language's own book names and style, such as "(Apostelgeschichte 9:25)" or "(5. Mose 21:23)". Names of people and places follow that language's Study Edition, without the marks that show stress: Saulus, Paulus, Kephas, Jakobus, Stephanus, Damaskus, Cäsarea, Antiochia. Invented characters with a Bible name take its spelling there too (Noomi, Isai, Sakkai).
 - In German, use the terms Jehovah's Witnesses use: "Jehova", "u. Z." and "v. u. Z.", "die Versammlung", "die Brüder", "unverdiente Güte". Acts 11:26 says the disciples were "durch göttliche Vorsehung" called Christians. The characters say "du" to one another, as people do in the German Bible. German text uses „ and “ for quotation marks.
 - A translation says what the English line says, no more and no less. Paul never lies in any language, and the dialogue choices keep their order, so every walkthrough holds in every language.
