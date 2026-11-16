@@ -12,7 +12,7 @@ There are nine chapters so far, in English and German. The game is a small engin
 
 Or download this repository and open `index.html` in any current desktop browser (keep the `levels` folder next to it). Pick a chapter on the title screen (scroll the list for the later ones); the game saves your place by itself, so next time the title screen offers to continue. Nothing to install or build.
 
-The online version is served by GitHub Pages straight from the root of the `main` branch.
+The online version is served by GitHub Pages straight from the root of the `main` branch. In a current browser it can be installed as an app ("Install" in Chrome and Edge, "Add to Home Screen" on iPhone and iPad), and once it has loaded it plays without a connection.
 
 ## Chapters
 

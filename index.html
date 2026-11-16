@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1c130c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Paul of Tarsus">
 <title>Paul of Tarsus: On the Roads of Rome</title>
 <style>
 :root{--s:3;--gold:#e2b24c;--hi:#fff3b8;--dim:#8a6628;--ink:#0b0812;--pray:#a8d0f8;--px:calc(var(--s)*.5px);--wood:none}
@@ -1296,3 +1300,5 @@ if(['paul-of-tarsus.theunknownones.net','marcuscalidus.github.io'].includes(loca
 </script>
 </body>
 </html>
+/* An installable app that plays offline (shared/pwa.js, sw.js): only where the game is served over http(s), never from disk or in the playtest's pages. */
+if(/^https?:$/.test(location.protocol)&&'serviceWorker' in navigator)need('logo').then(()=>need('pwa')).then(p=>p.install({CHAP,LANGS})).catch(e=>console.error(e));

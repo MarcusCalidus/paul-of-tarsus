@@ -5,6 +5,7 @@
 //   node tools/playtest.mjs de:title         the same in another language (screenshot de-title.png); the full run plays every language
 //   node tools/playtest.mjs titlescroll      the title screen with its chapter list scrolled to the end
 //   node tools/playtest.mjs logo de:logo     the title's logo enlarged, in each language: look for crosses and for letters run together
+//   node tools/playtest.mjs pwa              the installable app: service worker, manifest, offline play (served over http; icon saved as pwa-icon.png)
 //   node tools/playtest.mjs continue         the title screen of a returning player (the game is reloaded; its autosave must bring them back)
 // It first checks the translations against the English text (tools/strings.mjs).
 // Screenshots go to tools/out/ (or $SHOTS). Set $CHROME to use another Chromium-based browser.
@@ -14,11 +15,12 @@ import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {checkTexts} from './strings.mjs';
+import {checkPwa} from './pwa.mjs';
 const here=path.dirname(fileURLToPath(import.meta.url)),root=path.join(here,'..');
 const CHROME=process.env.CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const out=process.env.SHOTS||path.join(here,'out');
 const langs=fs.readdirSync(path.join(root,'lang')).filter(l=>fs.statSync(path.join(root,'lang',l)).isDirectory()).sort();
-const stops=process.argv.slice(2);if(!stops.length)stops.push('all','resume',...langs.flatMap(l=>[l+':all',l+':resume']));
+const stops=process.argv.slice(2);if(!stops.length)stops.push('pwa','all','resume',...langs.flatMap(l=>[l+':all',l+':resume']));
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'paul-playtest-'));
 const game=fs.readFileSync(path.join(root,'index.html'),'utf8');
 // The copy runs from a temp folder, so a <base> points it back at the repository for the level files. Every page starts without a
@@ -44,7 +46,8 @@ try{
   const ev=async x=>(await send('Runtime.evaluate',{expression:x,returnByValue:true,awaitPromise:true})).result?.result?.value;
   await send('Page.enable');
   await send('Emulation.setDeviceMetricsOverride',{width:960,height:669,deviceScaleFactor:1,mobile:false});
-  for(const name of stops){const[lang,stop]=name.includes(':')?name.split(':'):['en',name];
+  for(const name of stops){if(name==='pwa'){const r=await checkPwa({send,ev,sleep,root,out});console.log('=== pwa\n'+r.log.join('\n'));if(r.failed)failed=true;continue}
+    const[lang,stop]=name.includes(':')?name.split(':'):['en',name];
     await send('Page.navigate',{url:`file://${path.join(tmp,'test.html')}?stop=${stop}&lang=${lang}`});
     // five chapters take a while: wait up to fifteen minutes for a run to say STOP or DONE
     let log='';for(let i=0;i<3600;i++){await sleep(250);log=await ev("(document.querySelector('#tlog')||{}).textContent||''");if(/STOP|DONE|ERR|JSERR|REJ/.test(log))break}

@@ -65,6 +65,7 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 - The game must keep running when `index.html` is opened straight from disk: no build step, no server and no dependencies.
 - Safe-point codes are a promise to players. Every code that works today must keep working. The browser's autosave (`localStorage`, key `paul.save`) is that same code and nothing else, so the promise covers it: never keep other state there without a format the decoder can tell apart from the code. If a change needs more state, add a new code format that the decoder can tell apart from the old one. Never reorder a chapter's `flags`, `rooms` or `share`; only append to them, within the widths the code format reserves.
 
+- The game is also an installable app that plays offline (`sw.js`, `shared/pwa.js`). It loads its service worker only over http(s), so it still runs from disk. Its icon and manifest are made in code like everything else: no icon or manifest file. A new file in `shared/` goes on the offline list in `shared/pwa.js`; `node tools/playtest.mjs pwa` checks it.
 ## 6. Testing and documentation
 
 - `node tools/playtest.mjs` must pass (it needs Node 22 or newer and Google Chrome). Extend it for every new puzzle step or feature.
