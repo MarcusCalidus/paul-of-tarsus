@@ -8,7 +8,7 @@ There are nine chapters so far, in English and German. The game is a small engin
 
 ## Play
 
-**Play online: https://marcuscalidus.github.io/paul-of-tarsus/**
+**Play online: https://paul-of-tarsus.theunknownones.net/**
 
 Or download this repository and open `index.html` in any current desktop browser (keep the `levels` folder next to it). Pick a chapter on the title screen (scroll the list for the later ones); the game saves your place by itself, so next time the title screen offers to continue. Nothing to install or build.
 
