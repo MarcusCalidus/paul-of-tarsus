@@ -41,7 +41,11 @@ function coilArt(g,x,y,n,L,c){c=c||'#b89a5a';L=L||(k=>k);R(g,x-.5,y-5,1.5,5,L(ti
   for(let i=0;i<n;i++){const yy=y+i*2,cc=L(i%2?tint(c,-.22):c);g.strokeStyle=L(tint(c,-.5));g.lineWidth=2.6;g.beginPath();g.ellipse(x+.5,yy+1.2,4.6,1.9,0,0,6.2832);g.stroke();
     g.strokeStyle=cc;g.lineWidth=1.6;g.stroke();for(let a=0;a<8;a++){const q=a/8*6.2832;R(g,x+.5+Math.cos(q)*4.6-.25,yy+1.2+Math.sin(q)*1.9-.25,.5,.5,L(tint(c,.3)))}}}
 /* ---------- Eliab's workshop: lamplight, reeds and goat-hair cloth ---------- */
+/* the stool: it stands out on the floor of the workshop, so it is a prop as well, and hides the legs of whoever walks behind it */
+function stoolArt(g){stroke(g,[122,111,120.5,119],'#3e2a1a',1.6);stroke(g,[133,111,134.5,119],'#3e2a1a',1.6);stroke(g,[127.5,111,127.5,118],'#2e1e12',1.4);
+  wood(g,119.5,108,16,3,'#7a5632');R(g,119.5,110.5,16,.5,'#3e2a1a')}
 ART.workshop={w:320,
+ props:[{y:119,shape:stoolArt}],
  light:()=>({amb:'#827488',lamps:[[157,60,140,'#d8a860']]}),
  paint(g){const r=rng(11),W='#c9a476',T='#6b4a2e';
   plaster(g,0,0,320,105,W,r,{patch:7,cracks:8,brick:'#a8744c',bot:-.2,t:.55});
@@ -81,8 +85,7 @@ ART.workshop={w:320,
   oval(g,152,106,9,2,'rgba(0,0,0,.35)');stroke(g,[151.5,98,146,106],'#3e2a1a',1.5);stroke(g,[151.5,98,157.5,106],'#3e2a1a',1.5);wood(g,150.5,72,2.5,33,'#4e3622',1);
   oval(g,151.6,71,4.6,1.4,'#6b4a2e');vessel(g,151.6,70.4,4.6,3.4,'#b06a3a','bowl',{noShadow:1});poly(g,[154.6,67.4,159,67,159.5,68.4,154.6,69.6],'#a05c30');R(g,156.5,66.5,1.5,1,'#3a2416');
   /* stool */
-  oval(g,127.5,119.5,10,2,'rgba(0,0,0,.4)');stroke(g,[122,111,120.5,119],'#3e2a1a',1.6);stroke(g,[133,111,134.5,119],'#3e2a1a',1.6);stroke(g,[127.5,111,127.5,118],'#2e1e12',1.4);
-  wood(g,119.5,108,16,3,'#7a5632');R(g,119.5,110.5,16,.5,'#3e2a1a');
+  oval(g,127.5,119.5,10,2,'rgba(0,0,0,.4)');stoolArt(g);
   /* workbench, with a peg rail above it */
   wood(g,211,38,82,2.6,'#70502e');ao(g,211,40.6,82,4,'t',.35);for(const px of[222,250,278]){R(g,px,37.5,2.5,4,'#3e2a1a');R(g,px,37.5,2.5,.5,'#8a6842')}
   stroke(g,[251.3,41,250,44,252.6,44,251.3,41],'#3a2a1a',.6);wood(g,250,43.5,2.6,10,'#a67c4a',1);wood(g,246.3,53,10,5,'#8a6238');R(g,246.3,53,.5,5,'#b08a56');

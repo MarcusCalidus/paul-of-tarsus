@@ -109,6 +109,8 @@ ART.fork={w:480,fp:1.25,
 const bith8=x=>15+6*Math.sin(x/83+1)+3*Math.sin(x/29)+1.4*Math.sin(x/7);
 const FERRY=[236,318];
 ART.ferry={w:480,fp:1.25,
+ /* the two stones on the near bank lie a little way out on the ground */
+ props:[{y:113,shape:g=>rock(g,96,113,12,6,'#948e80')},{y:114,shape:g=>rock(g,22,114,14,7,'#9a9486')}],
  paint(g){const r=rng(823);
   sky(g,480,70,['#4a80c0','#84acd6','#c2d4e2','#e8e8da']);cloud(g,70,14,54,6,r);cloud(g,330,9,62,7,r);cloud(g,438,24,36,4,r);
   /* far off beyond the river, one great mountain with snow on it; nearer, the wooded hills of Bithynia */
@@ -169,15 +171,16 @@ function fold(g,p,c,w){const n=p.length/2;g.beginPath();g.moveTo(p[0],p[1]);if(n
   g.strokeStyle=c;g.lineWidth=w||.5;g.lineCap='round';g.lineJoin='round';g.stroke()}
 /* brokenJar: the jar that slipped from its sling, one of the jars of oil that stand by the warehouse. It has broken in two at the shoulder. The belly lies on
    its side with its foot away from us, open at the break and dark inside; the neck lies beside it, open toward the belly; the shards lie where they flew, no
-   two of them alike and none in a row; and the oil has run out over the stones and into the joint in front of them. */
-function brokenJar(g){const C='#a8562e',LIT=tint(C,.44),DK=tint(C,-.4),IN=['#1c0c06','#3a1b0e','#74401e'];
+   two of them alike and none in a row; and the oil has run out over the stones and into the joint in front of them. cut: only the two halves, which
+   stand up from the paving, and not what lies flat on it (for the room's props). */
+function brokenJar(g,cut){const C='#a8562e',LIT=tint(C,.44),DK=tint(C,-.4),IN=['#1c0c06','#3a1b0e','#74401e'];
   /* the oil: the stone golden where it is wet, darker where the oil stands, the evening sky lying in it, and a dark line where it has found the joint */
-  comp(g,'multiply',.9,()=>blob(g,[267.6,118.8,271.6,116.6,277,115.6,283,115.6,288.8,116.4,292.4,118.2,291.2,120.2,286.4,121.6,280,122.2,274,121.9,269.4,120.6],'#c8a44e'));
+  if(!cut){comp(g,'multiply',.9,()=>blob(g,[267.6,118.8,271.6,116.6,277,115.6,283,115.6,288.8,116.4,292.4,118.2,291.2,120.2,286.4,121.6,280,122.2,274,121.9,269.4,120.6],'#c8a44e'));
   comp(g,'multiply',.75,()=>blob(g,[271.6,119,276,117.3,282,117,287.6,117.6,289.8,119,286,120.5,280,121.1,274.6,120.6],'#b4883a'));
   stroke(g,[271.4,122.1,297.4,122.2],'rgba(104,72,22,.75)',.9);
   for(const p of[[275.6,117.9,280.6,117.5],[283.4,119.5,287.6,119.1]])stroke(g,p,'rgba(255,232,180,.8)',.6);
   /* the shade under the two halves */
-  comp(g,'multiply',.6,()=>{blob(g,[264,111.4,267.4,116.2,271.4,118.7,277,118.4,278.6,116.4,273,115],'#5a5078');blob(g,[280.6,116.6,283.6,119.2,290.4,117.2,291.4,115.4,286,115.6],'#5a5078')});
+  comp(g,'multiply',.6,()=>{blob(g,[264,111.4,267.4,116.2,271.4,118.7,277,118.4,278.6,116.4,273,115],'#5a5078');blob(g,[280.6,116.6,283.6,119.2,290.4,117.2,291.4,115.4,286,115.6],'#5a5078')})}
   /* the belly, turned on its side: its own outline, cut off at the break */
   g.save();g.translate(264.5,110.4);g.rotate(1.885);{const M=[4.9,-9,4.5,-10.3,3.5,-10.2,2.9,-11.6,1.6,-11,.5,-12.4,-.6,-11.3,-1.8,-12,-2.9,-10.6,-4,-10.8,-4.9,-9.2,
       -4.5,-8,-3.4,-7.9,-2.6,-6.9,-1.4,-7.3,-.2,-6.5,1,-7.2,2.2,-6.8,3.2,-7.7,4.2,-7.6];
@@ -192,7 +195,7 @@ function brokenJar(g){const C='#a8562e',LIT=tint(C,.44),DK=tint(C,-.4),IN=['#1c0
     poly(g,[.6,-4.2,1.7,-3,2.3,-1.2,2.2,1,1.7,3,.6,4.2].concat(E),LIT);
     poly(g,[.6,-3.5,1.5,-2.4,1.9,-1,1.7,.6,1.9,1.8,1.3,2.9,.6,3.5,-.1,2.8,-.5,1.6,-.2,.4,-.7,-.6,-.2,-1.8,-.4,-2.7]);g.fillStyle=lg(g,0,-3.5,0,3.5,IN);g.fill()}g.restore();
   /* the shards: the red outside of some, the paler inside of others, and each with a lit edge where it broke */
-  for(const[p,c]of[[[260.8,114.6,263.8,113.8,264.8,115.5,262,116.4],C],[[277.6,109.6,280.2,109,280.8,110.6,278.4,111.2],DK],[[291.6,113.2,294.2,112.6,294.8,114.2,292.6,114.8],C],
+  if(!cut)for(const[p,c]of[[[260.8,114.6,263.8,113.8,264.8,115.5,262,116.4],C],[[277.6,109.6,280.2,109,280.8,110.6,278.4,111.2],DK],[[291.6,113.2,294.2,112.6,294.8,114.2,292.6,114.8],C],
       [[274.4,119.7,278.6,118.7,279.8,120.6,276.2,121.7],tint(C,.2)],[[285.8,122.8,287.8,122.4,288.2,123.7,286.4,124.1],DK],[[266.6,119.3,268.8,118.8,269.2,120.2],tint(C,.2)]]){
     poly(g,p.map((v,i)=>i%2?v+.7:v+.5),'rgba(40,30,50,.4)');poly(g,p,c);stroke(g,p.slice(0,4),LIT,.5)}}
 /* sailHeap: old sailcloth thrown down in a heap. It is cloth and not a stone: stiff cloth stands up in peaks where it is thrown down, and hangs from them in
@@ -200,8 +203,8 @@ function brokenJar(g){const C='#a8562e',LIT=tint(C,.44),DK=tint(C,-.4),IN=['#1c0
    and sharp along its ridge; its hem lies on the paving in waves, forward where a fold comes forward; one corner lies out flat on the left, and a torn end
    lies frayed on the right. A patch is sewn on it, and a seam runs down it between two folds: no seam lies across a fold. Old sail is grayer than the
    stone it lies on, and it throws a shadow on it. The steering oar of the ship comes down behind the hollow between the two high peaks, not behind a peak:
-   the heap is not a tent, and the oar is no pole. */
-function sailHeap(g){const LIT='#f6f0de',C='#e0d9c2',MID='#b4ac96',SHD='#80796a',DEEP='#565048',SH='#6a6488',SEAM='rgba(100,88,66,.6)',
+   the heap is not a tent, and the oar is no pole. cut: only the outline of the heap itself (for the room's props). */
+function sailHeap(g,cut){const LIT='#f6f0de',C='#e0d9c2',MID='#b4ac96',SHD='#80796a',DEEP='#565048',SH='#6a6488',SEAM='rgba(100,88,66,.6)',
     OUT=[410.6,116.4,413.6,114.2,416,111.8,418.6,110.2,420.8,109.4,423,107,425,104.6,427,102.8,428.8,101.8,430.6,101.6,432.4,102.6,434.2,104.6,437,106.2,440.4,107,443.4,106.2,445.6,104.8,447.6,104,
       449.6,104.4,451.2,105.8,452.8,108.2,454.8,110.8,457,113.6,458.4,116,454.8,117.4,450.8,116.2,447.2,117.6,443,116.2,439.4,117.8,435.8,116.4,432,118,427.8,116.4,424,117.8,420,116.4,416,117.8,412.6,116.8],
     /* the folds, each from under a peak to the hem: ridge, hollow, ridge, hollow... The first and the last lie outside the heap, and close its two slopes. */
@@ -209,6 +212,7 @@ function sailHeap(g){const LIT='#f6f0de',C='#e0d9c2',MID='#b4ac96',SHD='#80796a'
       [429.8,102,431,109.6,431.4,114,432,118],[430.6,102.6,433.8,109.6,435.2,113.6,435.8,116.4],[431.4,102.6,436.6,109.4,438.6,113.6,439.4,117.8],[440.6,100,440.6,107,442.4,112,443,116.2],
       [447,100,446.8,104.6,446.4,111,447.2,117.6],[448,104.4,449.8,110.6,450.8,116.2],[449.2,104.6,453,110.8,454.8,117.4],[452,102,458,110,462,118]],
     rev=p=>{const o=[];for(let i=p.length-2;i>=0;i-=2)o.push(p[i],p[i+1]);return o},mid=p=>p[(p.length>>2)*2];
+  if(cut)return blob(g,OUT,MID);
   comp(g,'multiply',.65,()=>blob(g,[408.6,115.8,420,113.6,440,113.8,453,114,461.4,116.4,455,118.6,440,118.8,426,119,412,119,406.8,117.8],SH));
   /* the corner that lies out flat, with its seam, and the torn end */
   poly(g,[407.4,117.9,413.6,114.6,418.6,116.6,413.4,119]);g.fillStyle=lg(g,408,115,417,119,[LIT,C]);g.fill();stroke(g,[409.8,117.6,415.4,116.4],SEAM,.4);
@@ -226,6 +230,9 @@ function sailHeap(g){const LIT='#f6f0de',C='#e0d9c2',MID='#b4ac96',SHD='#80796a'
 const HULL=[226,90,240,83,422,83,434,75,440,65,444,65,443,79,434,93,420,100,250,100,236,96];
 ART.troas={w:480,fp:1.25,q:12,
  variant:()=>F.vision?'m':'e',
+ /* what stands or lies out on the quay, where a man can walk behind it: the jar that stands forward of the others, the two halves of the broken one
+    (the oil and the shards lie flat, and hide nobody), and the heap of sailcloth */
+ props:[{y:113,shape:g=>vessel(g,170,113,4.6,15,'#9a4c28','amph',{noShadow:1})},{y:118.6,shape:(g,v)=>{if(v!=='m')brokenJar(g,1)}},{y:118,shape:g=>sailHeap(g,1)}],
  light:()=>F.vision?null:{amb:'#e6c2a8',lamps:[[52,92,46,'#5a3c10']]},
  paint(g,v){const r=rng(829),eve=v!=='m',W=eve?'#d8c4a0':'#e6dcc0',ST='#cfc4a6';
   /* the sky over the sea: the sun going down into it, or the clear light of a morning with the wind in the south */

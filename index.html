@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Paul of Tarsus: The Roman Road Runner</title>
+<title>Paul of Tarsus: On the Roads of Rome</title>
 <style>
 :root{--s:3;--gold:#e2b24c;--hi:#fff3b8;--dim:#8a6628;--ink:#0b0812;--pray:#a8d0f8;--px:calc(var(--s)*.5px);--wood:none}
 *{box-sizing:border-box}
@@ -54,10 +54,19 @@ body{display:flex;align-items:center;justify-content:center}
 #overlay .small{font-size:calc(var(--s)*4.4px);color:#a99cc0}
 #overlay .go{color:var(--hi);animation:bl 1.1s steps(2) infinite}
 #overlay .go,#overlay .pick{font-size:calc(var(--s)*6.2px);margin:calc(var(--s)*2.5px) 0}
-#overlay.long .go,#overlay.long .pick{margin:calc(var(--s)*1.5px) 0}
-#overlay.long h2{margin:calc(var(--s)*2px) 0}
-#overlay.longer .go,#overlay.longer .pick{font-size:calc(var(--s)*5.8px);margin:calc(var(--s)*.7px) 0}
-#overlay.longer p.small{margin:calc(var(--s)*1px) 0}
+/* the title screen's chapters scroll in a box that takes whatever room the title leaves; an entry that runs past its top or bottom
+   edge fades out over a band of the box, and the band is there only while there is more to scroll that way */
+@property --ft{syntax:'<length>';inherits:false;initial-value:0px}
+@property --fb{syntax:'<length>';inherits:false;initial-value:0px}
+#overlay .chs{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;
+  padding:0 calc(var(--s)*4px);--ft:0px;--fb:0px;transition:--ft .35s,--fb .35s;
+  -webkit-mask-image:linear-gradient(to bottom,transparent,#000 var(--ft),#000 calc(100% - var(--fb)),transparent);
+  mask-image:linear-gradient(to bottom,transparent,#000 var(--ft),#000 calc(100% - var(--fb)),transparent)}
+#overlay .chs::-webkit-scrollbar{display:none}
+#overlay .chs.up{--ft:calc(var(--s)*14px)}
+#overlay .chs.down{--fb:calc(var(--s)*14px)}
+#overlay .chs p{margin-left:auto;margin-right:auto}
+#overlay h1,#overlay h2,#overlay p{flex-shrink:0}
 #overlay .pick{color:var(--gold)}
 #overlay .pick:hover{color:#fff}
 #overlay .langs span{cursor:pointer;padding:0 calc(var(--s)*1.5px)}
@@ -134,7 +143,7 @@ body{display:flex;align-items:center;justify-content:center}
 </div>
 <script>
 "use strict";
-/* Paul of Tarsus: The Roman Road Runner. This file is the engine: layout, the paint toolkit, figures, the audio sequencer,
+/* Paul of Tarsus: On the Roads of Rome. This file is the engine: layout, the paint toolkit, figures, the audio sequencer,
    verbs and inventory, safe-point codes and the level loader. Each chapter (its music, artwork, cast, rooms and dialog)
    is a separate file under levels/, loaded on demand. */
 /* ============ CORE ============ */
@@ -779,7 +788,8 @@ const PC=()=>G.pc||P;
 const party=()=>(CHAP[G.ch]&&CHAP[G.ch].party||['paul']).map(id=>ACT[id]);
 const invOf=a=>a===PC()?G.inv:(G.invs[a.id]||(G.invs[a.id]=[]));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-/* Each room paints a backdrop once (ART[id].paint) and, optionally, a foreground layer (ART[id].fore) that is drawn over the actors. */
+/* Each room paints a backdrop once (ART[id].paint) and, optionally, a foreground layer (ART[id].fore) that is drawn over the actors. What stands
+   inside the walkable strip, where a person can walk behind it, takes its place among the actors by depth: see figure(), depth() and props(). */
 function bake(w,fn,q){const[c,g]=mk(w*HR,VH*HR);g.scale(HR,HR);fn(g);g.setTransform(1,0,0,1,0,0);finish(c,g,q);return c}
 /* A room whose light changes (a lamp put out, shutters opened) names its current variant, and gets one backdrop per variant. */
 function bg(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;return BG[k]||(BG[k]=bake(a.w,g=>a.paint(g,v),a.q))}
@@ -987,8 +997,25 @@ function lightAt(id,x,y){let L=id&&ART[id].light;if(typeof L==='function')L=L();
   for(const[lx,ly,lr,c]of L.lamps||[]){const d=Math.hypot(x-lx,(y-22-ly)*1.5)/lr;if(d<1){const k=(1-d)*(1-d),q=hex(c);r+=q[0]*k;g+=q[1]*k;b+=q[2]*k}}
   for(const[x0,x1,c]of L.shade||[]){const k=clamp(Math.min(x-x0,x1-x)/8,0,1);if(k>0){const q=hex(c);r*=1-k+k*q[0]/255;g*=1-k+k*q[1]/255;b*=1-k+k*q[2]/255}}
   return r>=254&&g>=254&&b>=254?null:toHex(r,g,b)}
+/* Depth: whatever stands on the ground is drawn from the back of the room to the front, so that the nearer hides the farther. A room's draw() runs
+   first. What it places with figure() (man, beast, a chapter's cattle) is not drawn at once: it waits in a queue at the y of its feet, and depth(y,fn)
+   puts any other drawing in that queue. Then the queue, the room's props and its actors are drawn in order of y; where two stand level, the actor is
+   in front. Inside fn figures are drawn at once, in the order written: a team of oxen with its wagon and yoke is one thing, at one depth. Outside a
+   room's draw() (a cutscene, the front layer) there is no queue, and everything is drawn where it is written. */
+let DQ=null;
+function depth(y,fn){if(DQ)DQ.push([y,fn]);else fn()}
+/* props: a thing that is painted into the backdrop and stands inside the walkable strip (a stool, a low table, a heap of sailcloth) is named once more
+   in ART[id].props, as {y, shape(g,variant)}: y is where it stands on the floor, and shape() fills its outline in any color, without its shadow. The
+   engine cuts that outline out of the finished backdrop, so the piece is the painting itself, and lays it over whoever stands behind it. */
+const CUT={};
+function props(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;if(!a.props)return[];return CUT[k]||(CUT[k]=a.props.map(p=>{
+  const W=a.w*HR,Hh=VH*HR,[c,g]=mk(W,Hh);g.scale(HR,HR);p.shape(g,v);g.setTransform(1,0,0,1,0,0);
+  const im=g.getImageData(0,0,W,Hh),d=im.data;let x0=W,y0=Hh,x1=-1,y1=-1;
+  for(let y=0,i=3;y<Hh;y++)for(let x=0;x<W;x++,i+=4){if(d[i]<128){d[i]=0;continue}d[i]=255;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+  if(x1<0)return null;g.putImageData(im,0,0);g.globalCompositeOperation='source-in';g.drawImage(bg(id),0,0);
+  const w=x1-x0+1,h=y1-y0+1,[o,og]=mk(w,h);og.drawImage(c,-x0,-y0);return{y:p.y,c:o,x:x0/HR,t:y0/HR,w:w/HR,h:h/HR}}).filter(Boolean))}
 /* figure: place a sprite with its feet at x,y. lit: the light on it; key: names the pose for the cache; sw: shadow half-width (0 for none). */
-function figure(g,x,y,lit,key,fn,sw){x=hp(x);y=hp(y);if(sw!==0){oval(g,x,y-.4,sw||8.5,2,'rgba(0,0,0,.2)');oval(g,x,y-.4,(sw||8.5)*.68,1.3,'rgba(0,0,0,.24)')}
+function figure(g,x,y,lit,key,fn,sw){if(DQ){DQ.push([y,()=>figure(g,x,y,lit,key,fn,sw)]);return}x=hp(x);y=hp(y);if(sw!==0){oval(g,x,y-.4,sw||8.5,2,'rgba(0,0,0,.2)');oval(g,x,y-.4,(sw||8.5)*.68,1.3,'rgba(0,0,0,.24)')}
   const c=sprite(key,fn,key.includes('-1')?-1:1),W=FIG.W/HR,Hh=FIG.H/HR,dx=x-FIG.OX/HR,dy=y-FIG.OY/HR;if(!lit){g.drawImage(c,dx,dy,W,Hh);return}
   sb.globalCompositeOperation='copy';sb.drawImage(c,0,0);sb.globalCompositeOperation='multiply';sb.fillStyle=lit;sb.fillRect(0,0,FIG.W,FIG.H);
   sb.globalCompositeOperation='destination-in';sb.drawImage(c,0,0);g.drawImage(SB,dx,dy,W,Hh)}
@@ -1000,8 +1027,11 @@ function drawActor(g,o,ts,id){const talk=o.talk&&Math.floor(ts/130)%2?1:0,ges=o.
   figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+o.dir+o.fr+talk+bow+ges+bl,s=>person(s,0,0,o.look,o.dir,o.fr,talk,bow,ges,bl))}
 function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
-  else if(G.room){const id=G.room,a=ART[id],cam=hp(G.cam),f=fg(id);backdrop(cx,id,cam);cx.save();cx.translate(-cam,0);a.draw(cx,ts);
-    Object.values(ACT).filter(o=>o.room===id).sort((p,q)=>p.y-q.y).forEach(o=>drawActor(cx,o,ts,id));
+  else if(G.room){const id=G.room,a=ART[id],cam=hp(G.cam),f=fg(id);backdrop(cx,id,cam);cx.save();cx.translate(-cam,0);
+    const q=DQ=[];a.draw(cx,ts);DQ=null;
+    for(const p of props(id))q.push([p.y,()=>cx.drawImage(p.c,p.x,p.t,p.w,p.h)]);
+    for(const o of Object.values(ACT))if(o.room===id)q.push([o.y,()=>drawActor(cx,o,ts,id)]);
+    q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());
     cx.restore();if(f)cx.drawImage(f,-hp(cam*(a.fp||1)),0,f.width/HR,VH);
     cx.save();cx.translate(-cam,0);a.front(cx,ts);cx.restore()}
   posSpeech();drawTags(ts);requestAnimationFrame(render)}
@@ -1096,7 +1126,7 @@ async function setLang(l,keep){if(!LANGS[l])return;
   await Promise.all(['main',...Object.keys(CHAP).filter(n=>CHAP[n].ready)].map(p=>langFile(l,p)));
   G.lang=l;MADE.clear();if(keep)store('paul.lang',l);relang()}
 /* relang: redraw every fixed piece of text in the new language: the panel, the top bar, an open overlay, choices, the tablets */
-function relang(){document.documentElement.lang=G.lang;document.title=T('Paul of Tarsus: The Roman Road Runner');
+function relang(){document.documentElement.lang=G.lang;document.title=T('Paul of Tarsus: On the Roads of Rome');
   $('#gname').textContent=T('PAUL OF TARSUS');$('#chname').textContent=T(CHAP[G.ch].name);
   const ks=Object.keys(LANGS),nx=ks[(ks.indexOf(G.lang)+1)%ks.length];$('#lang').textContent=G.lang.toUpperCase();
   $('#lang').title=LANGS[nx].native;$('#lang').style.display=ks.length>1?'':'none';
@@ -1111,16 +1141,20 @@ function loadFail(e){console.error(e);ov.onclick=()=>location.reload();
   overlay('on end',()=>{ov.innerHTML='<h2>'+T('LEVEL NOT FOUND')+'</h2><p>'+esc(e.message)+'</p><p class="small">'+T('The chapter files live in the levels folder next to index.html.')+
     '</p><p class="go">'+T('Click to reload')+'</p>'})}
 async function startChapter(n){ov.onclick=null;try{await loadLevel(n)}catch(e){return loadFail(e)}AU.key=CHAP[n].music;return CHAP[n].start()}
+/* chsFade: fades the chapter list's top edge while entries are scrolled away above it, and its bottom edge while more wait below */
+function chsFade(l){l.classList.toggle('up',l.scrollTop>1);l.classList.toggle('down',l.scrollTop+l.clientHeight<l.scrollHeight-1)}
+addEventListener('resize',()=>{const l=ov.querySelector('.chs');if(l)chsFade(l)});
 async function title(){lock(true);await setLang(firstLang());try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
   setChapter(TITLE.level);G.scene=CHAP[TITLE.level].scenes[TITLE.scene];G.end={};AU.mood=TITLE.mood;AU.amb=TITLE.amb;
-  /* a long list of chapters is set a little closer, so that the title keeps its room above it; a list of seven or more, closer still */
-  overlay((Object.keys(CHAP).length>4?'on long':'on')+(Object.keys(CHAP).length>6?' longer':''),()=>{const sv=saved();ov.innerHTML='<h1>'+T('PAUL OF TARSUS')+'</h1><h2>'+T('THE ROMAN ROAD RUNNER')+'</h2>'+
+  /* the chapters scroll in their own box below the title (see .chs); Continue stays above it, always in view */
+  overlay('on',()=>{const sv=saved();ov.innerHTML='<h1>'+T('PAUL OF TARSUS')+'</h1><h2>'+T('ON THE ROADS OF ROME')+'</h2>'+
     '<p class="small">'+T('A point-and-click adventure based on the book of Acts')+'</p>'+
     (sv?'<p class="go" data-cont="1">&#9656; '+T('Continue')+' &middot; '+T(CHAP[sv.ch].label)+' &middot; '+T(CHAP[sv.ch].title)+'</p>':'')+
-    Object.keys(CHAP).map((n,i)=>`<p class="${i||sv?'pick':'go'}" data-ch="${n}">&#9656; ${T(CHAP[n].label)} &middot; ${T(CHAP[n].title)}</p>`).join('')+
+    '<div class="chs">'+Object.keys(CHAP).map((n,i)=>`<p class="${i||sv?'pick':'go'}" data-ch="${n}">&#9656; ${T(CHAP[n].label)} &middot; ${T(CHAP[n].title)}</p>`).join('')+'</div>'+
     '<p class="small">'+T('Click a chapter to begin. Returning? Use ENTER CODE, top right.')+'</p>'+
-    (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'')});
-  ov.onclick=e=>{const d=e.target.dataset||{};if(d.lang){SFX.click();return setLang(d.lang,1)}
+    (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'');
+    const l=ov.querySelector('.chs');l.onscroll=()=>chsFade(l);requestAnimationFrame(()=>chsFade(l))});
+  ov.onclick=e=>{const d=e.target.dataset||{};if(d.lang){SFX.click();return setLang(d.lang,1)}if(e.target.classList.contains('chs'))return;
     if(e.target.closest('.langs'))return;if(d.cont)return resume();startChapter(+d.ch||1)};codeBtn();G.ready=1}
 /* endScreen: a chapter's closing screen. o: title; text; based (its passages, and that the dialogue is imagined); extra (more lines for
    the score, such as kindness shown); go (what a click does next); code ([line, code] for the next chapter); time (show the time played). */

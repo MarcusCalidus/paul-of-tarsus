@@ -3,6 +3,7 @@
 //   node tools/playtest.mjs                 full playthrough, prints one line per check
 //   node tools/playtest.mjs title street    stop at named points and save screenshots
 //   node tools/playtest.mjs de:title         the same in another language (screenshot de-title.png); the full run plays every language
+//   node tools/playtest.mjs titlescroll      the title screen with its chapter list scrolled to the end
 //   node tools/playtest.mjs continue         the title screen of a returning player (the game is reloaded; its autosave must bring them back)
 // It first checks the translations against the English text (tools/strings.mjs).
 // Screenshots go to tools/out/ (or $SHOTS). Set $CHROME to use another Chromium-based browser.
