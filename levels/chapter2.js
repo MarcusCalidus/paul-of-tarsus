@@ -262,14 +262,15 @@ function setup2(){place(BN,'jerusalem',228,118,-1);place(CE,'upper',168,120,-1);
 /* in Jerusalem, while Saul speaks in the synagogues, the two who dispute with him wait in the street */
 const disputers=()=>{place(DS,'jerusalem',252,118,1);place(AR,'jerusalem',226,123,1)};
 /* ============ WAX TABLETS: people met, tasks still open, Scripture (shown by shared/tablets.js) ============ */
-/* The passages are the ones Paul answers with in the dispute. Each is quoted exactly from the New World Translation (Study Edition). */
+/* The passages are the ones Paul answers with in the dispute. Each is a note in his own words (gist), checked against the New World
+   Translation (Study Edition) and never copied from it: see CONTRIBUTING section 1. */
 const PASS={
-  deut:{ref:'Deuteronomy 18:15',short:'a prophet like Moses',text:'Jehovah your God will raise up for you from among your brothers a prophet like me. You must listen to him.'},
-  ps16:{ref:'Psalm 16:10',short:'not left in the Grave',text:'For you will not leave me in the Grave. You will not allow your loyal one to see the pit.'},
-  prov16:{ref:'Proverbs 16:9',short:"Jehovah directs a man's steps",text:'A man may plot out his course in his heart, But it is Jehovah who directs his steps.'},
-  prov28:{ref:'Proverbs 28:13',short:'whoever confesses is shown mercy',text:'The one covering over his transgressions will not succeed, But whoever confesses and abandons them will be shown mercy.'},
-  isa49:{ref:'Isaiah 49:6',short:'a light of nations',text:'I have also given you as a light of nations, So that my salvation may reach the ends of the earth.'},
-  isa53:{ref:'Isaiah 53:5',short:'pierced for our transgression',text:'But he was pierced for our transgression; He was crushed for our errors.'}};
+  deut:{ref:'Deuteronomy 18:15',short:'a prophet like Moses',gist:'Moses told Israel that Jehovah their God would bring forward a prophet like himself for them, one of their own brothers, and that they must listen to him.'},
+  ps16:{ref:'Psalm 16:10',short:'not abandoned to the Grave',gist:'You will not abandon me to the Grave, nor let the one who is loyal to you see the pit.'},
+  prov16:{ref:'Proverbs 16:9',short:"Jehovah guides a man's steps",gist:'In his heart a man maps out the way he means to go, yet his steps are guided by Jehovah.'},
+  prov28:{ref:'Proverbs 28:13',short:'mercy for the one who confesses',gist:'Nobody prospers by hiding his transgressions; mercy is for the one who admits them and gives them up.'},
+  isa49:{ref:'Isaiah 49:6',short:'a light of nations',gist:'I have made you a light of nations as well, so that salvation from me may reach the farthest parts of the earth.'},
+  isa53:{ref:'Isaiah 53:5',short:'pierced on our account',gist:'Our offense is why he was pierced; our errors are why he was crushed.'}};
 const ORDER=Object.keys(PASS);
 const TABLETS={
   people:[
@@ -352,7 +353,7 @@ ROOMS.jerusalem={space:0.9,walk:[16,466,110,138],mood:'calm',amb:{birds:.5,crowd
   {name:'street to the markets',x:462,y:60,w:18,h:60,wx:456,wy:120,look:'The street runs on toward the markets and the temple mount.',
     use:()=>say(P,F.preach?'Not before I have answered those two men.':'My business is at that door first.')}]};
 BN.hs={get name(){return F.cartFixed||G.room!=='jerusalem'?'Barnabas':'man with the handcart'},actor:BN,
-  look:()=>say(P,G.room==='upper'?'Barnabas. He staked his own good name on my word.':F.cartFixed?'Barnabas: "Son of Comfort", they call him. I can see why.':'A man in a red tunic, struggling with a loaded handcart.'),
+  look:()=>say(P,G.room==='upper'?'Barnabas. He staked his own good name on my word.':F.cartFixed?'Barnabas: a son of comfort, as his name says. I can see why.':'A man in a red tunic, struggling with a loaded handcart.'),
   show:{awl:()=>say(BN,G.room==='upper'?'Keep it busy, brother. Honest work speaks well of a man.':'An awl? A craftsman, then. But that cart needs a pin, not a stitch.'),
     thread:()=>say(BN,G.room==='upper'?'Keep it for your trade, Saul.':'Thread will not hold a wheel on, friend.'),
     knife:()=>say(BN,G.room==='upper'?'Put it away, brother. Some here still remember why they feared you.':'A good blade. With the right piece of wood, a craftsman could make a pin with it.'),
@@ -372,20 +373,20 @@ BN.hs={get name(){return F.cartFixed||G.room!=='jerusalem'?'Barnabas':'man with 
       {q:'I will see what I can do.',bye:1}])}};
 ROOMS.upper={space:1.25,walk:[24,300,112,138],mood:'calm',amb:{birds:.25,crowd:.12},
   enter:async()=>{if(F.upper)return;F.upper=1;place(BN,'upper',96,124,1);await say(BN,'Cephas, James: this is Saul of Tarsus. Before you answer, hear me.');
-    await narr('Barnabas told them in detail how Saul had seen the Lord on the road, and how in Damascus he had spoken boldly in the name of Jesus. (Acts 9:27)',{dur:8000});
+    await narr('Barnabas gave them the whole account: on the road Saul had seen the Lord, who spoke to him, and in Damascus he had spoken out fearlessly in the name of Jesus. (Acts 9:27)',{dur:8000});
     await say(CE,'Saul. I too know what it is to fail my Lord, and to be shown mercy.');await say(CE,'Stay in my house, brother. We have much to speak about.');
     await say(JA,'If Jehovah has opened this door, we will not be the ones to shut it.');await say(P,'Brothers... thank you. I do not deserve this.')},
   hs:[
   {name:'door to the city',x:12,y:38,w:34,h:68,wx:34,wy:113,dir:-1,look:'The door to the street, and to a city full of synagogues where I am known.',exit:()=>leaveUpper()},
   {name:'shelf of scrolls',x:70,y:36,w:56,h:18,wx:98,look:'Scrolls of the Law and the Prophets. Every one of them points to the Christ. How did I not see it?',pickup:'They belong to the congregation.'},
   {name:'table',x:128,y:86,w:74,h:24,wx:164,wy:114,look:'A low table. Bread, a lamp and the Scriptures: all a household needs.'},
-  {name:'open scroll',x:142,y:86,w:32,h:9,wx:158,wy:114,look:['The scroll of Isaiah, open where it says: "a light of nations." (Isaiah 49:6)','I have read those words all my life. Now they read differently.'],pickup:'It belongs to the congregation.'},
+  {name:'open scroll',x:142,y:86,w:32,h:9,wx:158,wy:114,look:['The scroll of Isaiah, open where it speaks of a light of nations. (Isaiah 49:6)','I have read those words all my life. Now they read differently.'],pickup:'It belongs to the congregation.'},
   {name:'window',x:224,y:30,w:52,h:44,wx:250,look:'The temple, bright in the sun. So near to this room, and yet so few there will listen.'},
   {name:'bench',x:280,y:84,w:38,h:24,wx:290,wy:114,look:'A bench with a worn cushion. Many long conversations have happened here.'}]};
 CE.hs={name:'Cephas',actor:CE,look:'Cephas, whom many call Peter. A fisherman from Galilee, and an apostle of the Lord.',
   show:{awl:"A tentmaker's awl. I worked with nets once, until the Lord called me to fish for men. (Matthew 4:18, 19)",
     thread:'Good linen. We mended our nets with cord much like it.',
-    knife:'Put it away, brother. I once drew a sword for him, and he told me to put it into its sheath. (John 18:10, 11)',
+    knife:'Put it away, brother. I once drew a sword for him, and he told me to sheathe it. (John 18:10, 11)',
     tablets:'Write down what I tell you of the Lord, Saul. My memory is not as young as it was.',
     '*':'Keep it. A guest brings nothing but himself.'},
   ask:{barnabas:['Then you have a good friend, Saul. He sold a piece of land and laid the money at our feet. (Acts 4:36, 37)','When Barnabas speaks for a man, we listen.']},
@@ -394,11 +395,11 @@ CE.hs={name:'Cephas',actor:CE,look:'Cephas, whom many call Peter. A fisherman fr
     {q:'The disciples in this city fear me.',a:()=>say(CE,'Fear fades when people see fruit. Give them time, and give them reasons.')},
     {q:'I will speak with you again.',bye:1}])};
 JA.hs={name:'James',actor:JA,look:"James, the Lord's brother. Quiet, and listening closely.",
-  show:{awl:'My brother worked with his hands too. In his home territory they called him "the carpenter." (Mark 6:1-3)',
+  show:{awl:'My brother worked with his hands too. In his home country they knew him as the carpenter. (Mark 6:1-3)',
     thread:'Keep it for your trade, Saul. Honest work will speak for you when words cannot.',knife:'A tool for making things. Keep it so.',
     tablets:'The Scriptures on wax. Good. Keep them where your heart can read them too.',
     '*':'There are others who need it more. But thank you.'},
-  ask:{barnabas:'The apostles call him "Son of Comfort." Today you have seen why. (Acts 4:36)'},
+  ask:{barnabas:'The apostles named him Barnabas, a son of comfort. Today you have seen why. (Acts 4:36)'},
   talk:()=>talkTree([
     {q:"You are the Lord's brother.",a:async()=>{await say(JA,'I grew up in the same house, and for years I did not put faith in him.');await say(JA,'So I do not judge a man by how late he came to it.')}},
     {q:'What should I do now?',a:()=>say(JA,'What you did in Damascus: speak. And listen to the brothers when they tell you it is time to go.')},
@@ -490,37 +491,37 @@ async function start2(){ov.onclick=null;ov.className='';audioInit();SFX.good();i
 async function leaveUpper(){if(F.preach)return go('jerusalem',330,116,1);
   await say(P,'There are synagogues in this city where I am known. Let me speak there, in the name of the Lord.');
   await say(BN,'Go, Saul. Speak as you did in Damascus.');await fade(1,700);
-  await narr('Saul stayed with Cephas for fifteen days, moving about freely in Jerusalem and speaking boldly in the name of the Lord. (Acts 9:28; Galatians 1:18)',{dur:8000});
+  await narr('For fifteen days Saul was the guest of Cephas. He went in and out freely in Jerusalem, and spoke without fear in the name of the Lord. (Acts 9:28; Galatians 1:18)',{dur:8000});
   F.preach=1;disputers();enterRoom('jerusalem',330,118,1);codeBtn();await fade(0,700);
   await say(DS,'Saul! Saul of Tarsus! A word with you.');P.dir=-1;
   await say(P,'Men from the synagogue. They will want answers from the Scriptures, and nothing less.',TH);
   await say(P,'The passages I need are written on my tablets.',TH)}
 /* ---------- Disputing with the Greek-speaking Jews (Acts 9:29) ----------
-   Three objections. Every answer Paul can give is a passage from his tablets, and every passage is quoted exactly; a passage that
+   Three objections. Every answer Paul can give is a passage from his tablets, said as his tablets have it, in his own words; a passage that
    does not meet the objection gets a reply, never a failure. The last objection is about Paul himself, and the answer is a confession. */
-const label=k=>T('{ref}: {short}',{ref:T(PASS[k].ref),short:T(PASS[k].short)}),quote=k=>T('"{text}" ({ref})',{text:T(PASS[k].text),ref:T(PASS[k].ref)});
+const label=k=>T('{ref}: {short}',{ref:T(PASS[k].ref),short:T(PASS[k].short)}),quote=k=>T('{text} ({ref})',{text:T(PASS[k].gist),ref:T(PASS[k].ref)});
 function round(who,q,right,p,r,wrong){return quiz(who,q,ORDER.map(k=>k===right?{q:label(k),ok:1,p,r}:{q:label(k),p:[quote(k)],r:[wrong[k]]}))}
 async function dispute(){DS.dir=1;AR.dir=1;
   await say(DS,'We heard you in the synagogue, speaking about the Nazarene. You were one of us once.');
   await say(AR,'So answer us from the Scriptures, Saul, if you can.');
   await say(P,'Ask, and I will answer from the Scriptures.');
-  await round(DS,'The Law says that the one hung up on a stake is something accursed of God. (Deuteronomy 21:22, 23) How can an accursed man be the Christ?','isa53',
-    ['Isaiah wrote of the servant of Jehovah: "He was pierced for our transgression; He was crushed for our errors." (Isaiah 53:5)','The curse he bore was not his own. He bore it for us. (Galatians 3:13)'],
+  await round(DS,'The Law says that a man who is hung on a stake is under the curse of God. (Deuteronomy 21:22, 23) How can an accursed man be the Christ?','isa53',
+    ['Isaiah wrote of the servant of Jehovah that our offense is why he was pierced, and our errors are why he was crushed. (Isaiah 53:5)','The curse he bore was not his own. He bore it for us. (Galatians 3:13)'],
     ['Isaiah...','I have read that passage many times. I never once read it with a stake in mind.'],
     {deut:'A prophet like Moses, yes. Moses was not hung on a stake, Saul.',ps16:'The Grave? I asked you about the stake, not the tomb.',
       prov16:'Jehovah directs our steps, and the Law directs our judgment. The Law calls such a man accursed.',
       prov28:'Confession? We asked about your Jesus. We will come to you soon enough.',
       isa49:"A light of nations? First tell us how a man under the Law's curse can be anyone's light."});
   await round(AR,'And then he died, and was buried. A dead man is no Christ. Where is your Messiah now?','ps16',
-    ['David wrote: "You will not leave me in the Grave. You will not allow your loyal one to see the pit." (Psalm 16:10)',
-      'Yet David died and was buried, and his tomb is with us to this day. He was speaking of the one whom God raised up. (Acts 2:29-31; 13:35-37)',
+    ['David wrote that God would not abandon him to the Grave, nor let the one who is loyal to him see the pit. (Psalm 16:10)',
+      'Yet David is dead and buried, and his tomb stands among us still. He was speaking of the one God has raised from the dead. (Acts 2:29-31; 13:35-37)',
       'And I have seen him myself, alive, on the road to Damascus.'],
     ["David's tomb is here, it is true...",'But you say you saw a dead man alive. Many men say many things, Saul.'],
     {deut:'Moses died too, Saul. No one claims that he rose.',isa53:'Wounds and healing. But a healer has to be alive, Saul.',
       prov16:'Then Jehovah directed your Nazarene into a tomb.',prov28:'We are not speaking of you. Not yet.',isa49:'A dead man is a light to no one.'});
   await round(DS,'We are from Cilicia, Saul, as you are. We know what you did. You stood by when Stephen was stoned, and you approved. Now you preach what he preached?','prov28',
-    ['It is true. I stood by and approved, and I guarded the outer garments of those who did away with him. (Acts 22:20)',
-      'I will not cover it over. "The one covering over his transgressions will not succeed, But whoever confesses and abandons them will be shown mercy." (Proverbs 28:13)',
+    ['It is true. I was there and I agreed with it, and I minded the garments of the men who killed him. (Acts 22:20)',
+      'I will not cover it over. Nobody prospers by hiding his transgressions; mercy is for the one who admits them and gives them up. (Proverbs 28:13)',
       'I have confessed it, before God and before you. And I have been shown mercy.'],
     ['...He does not even deny it.'],
     {deut:'Do not hide behind Moses, Saul. We asked about you.',ps16:'Stephen is in his grave. Answer for that.',
@@ -531,13 +532,13 @@ async function dispute(){DS.dir=1;AR.dir=1;
   await Promise.all([walk(DS,-30,116),walk(AR,-30,122)]);DS.room=AR.room=null;
   return toCaesarea()}
 async function toCaesarea(){const o={dur:8000};
-  await narr('He was talking and disputing with the Greek-speaking Jews, but these made attempts to do away with him. (Acts 9:29)',o);
+  await narr('He talked and debated with the Jews who spoke Greek; they, for their part, tried to kill him. (Acts 9:29)',o);
   place(BN,'jerusalem',330,112,1);SFX.door();await walk(BN,P.x-28,P.y);BN.dir=1;P.dir=-1;
   await say(BN,'Saul! The brothers have heard what those men are planning.');
   await say(BN,'You have said what you came to say. Now listen to the brothers.');
   await say(P,'James told me I would hear those words. I did not think it would be so soon.');await fade(1,700);
-  await narr('While he was praying in the temple, the Lord directed him to leave Jerusalem quickly: he would be sent to nations far away. (Acts 22:17-21)',o);
-  await narr('When the brothers found out about the plot, they brought him down to Caesarea, to send him off to Tarsus. (Acts 9:30)',o);
+  await narr('While he prayed in the temple, the Lord told him to get out of Jerusalem without delay: he was to be sent to distant nations. (Acts 22:17-21)',o);
+  await narr('Once the brothers had learned of the plot, they took him down to Caesarea, meaning to send him on to Tarsus. (Acts 9:30)',o);
   enterRoom('harbor',36,124,1);G.inv=CHAP[2].inv('harbor');drawInv();codeBtn();await fade(0,700);
   await narr('Caesarea, the great harbor on the coast.',{dur:3000});await walk(P,170,128);
   await say(MT,'There she is, Saul: the only ship in harbor bound for Cilicia.');await say(MT,'But look at her sail. She is going nowhere like that.');
@@ -566,8 +567,8 @@ async function finale2(){
   await walk(P,278,112);await fade(1,400);P.room=null;CP.room=null;G.ship={ox:0,paul:1,capt:1};await fade(0,400);
   walk(MT,262,120);await wait(900);
   const sail=tween(14000,k=>{G.ship.ox=Math.round(300*k*k)});
-  await narr('So the brothers sent him off to Tarsus. (Acts 9:30)',{dur:6000});
-  await narr('The congregation throughout Judea, Galilee and Samaria then entered into a period of peace, and it was built up. (Acts 9:31)',{dur:8000});
+  await narr('And so the brothers sent him on his way to Tarsus. (Acts 9:30)',{dur:6000});
+  await narr('Then a time of peace began for the congregation in all of Judea, Galilee and Samaria, and it grew strong. (Acts 9:31)',{dur:8000});
   await sail;await journey();await narr('Years would pass in Tarsus. Then, one day, a friend would come looking for him. (Acts 11:25)',{dur:6500});
   endScreen({title:'A Friend in Jerusalem',text:'Saul forced no door. A friend spoke for him, and honest words and honest work did the rest.',
     based:'Based on Acts 9:26-31; 22:17-21 and Galatians 1:18, 19. Supporting characters and dialogue are imaginative; the events are from the Scriptures.',

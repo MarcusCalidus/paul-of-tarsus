@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1c130c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Paul of Tarsus">
 <title>Paul of Tarsus: On the Roads of Rome</title>
 <style>
 :root{--s:3;--gold:#e2b24c;--hi:#fff3b8;--dim:#8a6628;--ink:#0b0812;--pray:#a8d0f8;--px:calc(var(--s)*.5px);--wood:none}
@@ -974,8 +978,14 @@ vp.addEventListener('dblclick',e=>{const me=PC();if(G.busy||G.scene||!G.room||!m
    can be tapped, and a tap on one acts on its hotspot as a tap on the hotspot would. Labels are shown only while the player can
    act: they step aside during a cutscene, a menu of questions and a change of room, behind the safe-point box, and while someone speaks. */
 const tagEl=$('#tags');let tagT=0,tagSig='',tagHs=[];
-function tagsOn(on){on=!!(on||G.tagPin);if(!!G.tags===on)return;G.tags=on;tagEl.classList.toggle('on',on);tagT=0;tagSig='';if(!on)tagEl.innerHTML=''}
-function namesBtn(){const b=$('#names');b.textContent=T('NAMES');b.classList.toggle('on',!!G.tagPin);tagEl.classList.toggle('pin',!!G.tagPin)}
+/* A room that is heard and not seen (heard:1, or a function of the story) shows its names all the time, as pinned labels do: in the dark
+   they are all there is to see, and a click on one acts on what it names. */
+const heardRoom=()=>{const r=G.room&&!G.scene&&ROOMS[G.room],h=r&&r.heard;return!!(typeof h==='function'?h():h)};
+const tagTap=()=>!!(G.tagPin||heardRoom());
+/* tagsOn(on): Tab is held (true) or let go (false); with nothing, only what is wanted now is worked out again (the main loop asks, as rooms change). */
+function tagsOn(on){if(on!=null)G.tagKey=!!on;on=!!(G.tagKey||G.tagPin||heardRoom());const tap=tagTap();if(tagEl.tap!==tap){tagEl.tap=tap;tagEl.classList.toggle('pin',tap)}
+  if(!!G.tags===on)return;G.tags=on;tagEl.classList.toggle('on',on);tagT=0;tagSig='';if(!on)tagEl.innerHTML=''}
+function namesBtn(){const b=$('#names');b.textContent=T('NAMES');b.classList.toggle('on',!!G.tagPin);tagsOn()}
 $('#names').onclick=e=>{e.stopPropagation();audioInit();SFX.click();G.tagPin=!G.tagPin;namesBtn();tagsOn(G.tagPin)};
 function drawTags(ts){if(!G.tags||ts-tagT<90)return;tagT=ts;
   const s=vp.clientWidth/VW,cam=G.cam,list=[],put=[];
@@ -987,7 +997,7 @@ function drawTags(ts){if(!G.tags||ts-tagT<90)return;tagT=ts;
   const sig=s+'|'+cam+'|'+list.map(l=>l.slice(0,4).join(',')).join('|');if(sig===tagSig&&list.every((l,i)=>l[4]===tagHs[i]))return;tagSig=sig;tagHs=list.map(l=>l[4]);tagEl.innerHTML='';
   list.sort((a,b)=>a[2]-b[2]);
   for(const[name,x,y,k,h]of list){const el=document.createElement('div');el.className='tag '+k;el.textContent=name;el.hs=h;tagEl.appendChild(el);
-    el.onclick=e=>{e.stopPropagation();if(G.tagPin)clickView(x,y,h)};
+    el.onclick=e=>{e.stopPropagation();if(tagTap())clickView(x,y,h)};
     const w=el.offsetWidth/s,hh=el.offsetHeight/s+3,lx=clamp(x-cam,w/2+1,VW-w/2-1);let ty=clamp(y,4,VH-hh);
     for(let n=0;n<10;n++){const hit=put.find(p=>Math.abs(p.x-lx)<(p.w+w)/2+1&&Math.abs(p.y-ty)<hh);if(!hit)break;ty=hit.y+hh}
     if(ty>VH-hh)ty=VH-hh;put.push({x:lx,y:ty,w});el.style.left=lx*s+'px';el.style.top=ty*s+'px'}}
@@ -1045,8 +1055,10 @@ const blinks=(o,ts)=>((ts+o.ph)%4300)<140;
 /* man: a person by look id, for scenes that pose figures themselves (the ship, the road). */
 function man(g,x,y,id,dir,fr,lit,ges,sw){const o=LOOK[id];figure(g,x,y,lit,id+dir+fr+(ges?'g':''),s=>person(s,0,0,o,dir,fr,0,0,ges,0),sw)}
 const beast=(g,x,y,dir,fr,load,lit)=>figure(g,x,y,lit,'donkey'+dir+fr+load,s=>donkey(s,0,0,dir,fr,load),15);
+/* An actor whose dress changes with the story (a cloak torn off him) is given another look and says so in wear, a letter or two that
+   names it: the poses of each look are kept apart. A chapter's start gives everyone his own look back (see setChapter). */
 function drawActor(g,o,ts,id){const talk=o.talk&&Math.floor(ts/130)%2?1:0,ges=o.talk&&Math.floor(ts/560)%3===1?1:0,bl=o.bow||blinks(o.look,ts)?1:0,bow=o.bow?1:0;
-  figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+o.dir+o.fr+talk+bow+ges+bl,s=>person(s,0,0,o.look,o.dir,o.fr,talk,bow,ges,bl))}
+  figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+o.dir+o.fr+talk+bow+ges+bl,s=>person(s,0,0,o.look,o.dir,o.fr,talk,bow,ges,bl))}
 function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
   else if(G.room){const id=G.room,a=ART[id],cam=hp(G.cam),f=fg(id);backdrop(cx,id,cam);cx.save();cx.translate(-cam,0);
@@ -1056,7 +1068,7 @@ function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmo
     q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());
     cx.restore();if(f)cx.drawImage(f,-hp(cam*(a.fp||1)),0,f.width/HR,VH);
     cx.save();cx.translate(-cam,0);a.front(cx,ts);cx.restore()}
-  posSpeech();drawTags(ts);requestAnimationFrame(render)}
+  posSpeech();tagsOn();drawTags(ts);requestAnimationFrame(render)}
 /* ============ GAME: items, combinations, prayer hints ============ */
 Object.assign(ITEMS,{
   awl:{name:'awl',look:'A stout awl for piercing goat-hair cloth and leather. It has stitched more tents than I can count.'},
@@ -1071,7 +1083,7 @@ async function combine(a,b){const c=COMBO[[a,b].sort().join('+')],w=PC();if(w!==
   if(c)return c();SFX.nope();return say(P,pick(NOPE))}
 /* --- "Pray to Jehovah": a pause for calm, then a context-sensitive thought. Never changes the game state. --- */
 const PRAYERS=['{name} bows his head and quietly asks Jehovah for wisdom and a calm heart. (James 1:5)',
-  '{name} pauses, and in prayer throws his anxiety on Jehovah. (1 Peter 5:7)','In the stillness, {name} asks Jehovah to help him think clearly.'];
+  '{name} pauses, and in prayer leaves his cares with Jehovah. (1 Peter 5:7)','In the stillness, {name} asks Jehovah to help him think clearly.'];
 function hint(){return CHAP[G.ch].hint()}
 function pray(){if(G.busy||G.scene||!G.room)return;audioInit();
   cut(async()=>{G.prays++;const me=PC(),d=$('#dim'),m=AU.mus,ab=AU.ambG;d.style.opacity=.55;me.bow=true;SFX.pray();
@@ -1121,7 +1133,8 @@ const CHAP={
   5:{name:'A LIGHT OF NATIONS',label:'Chapter Five',title:'A Light of Nations',salt:0x5E73,src:'levels/chapter5.js'},
   6:{name:'THE DOOR TO FAITH',label:'Chapter Six',title:'The Door to Faith',salt:0x6F19,src:'levels/chapter6.js'},
   7:{name:'TIMOTHY OF LYSTRA',label:'Chapter Seven',title:'Timothy of Lystra',salt:0x7B43,src:'levels/chapter7.js'},
-  8:{name:'THE MAN FROM MACEDONIA',label:'Chapter Eight',title:'The Man from Macedonia',salt:0x8C57,src:'levels/chapter8.js'}};
+  8:{name:'THE MAN FROM MACEDONIA',label:'Chapter Eight',title:'The Man from Macedonia',salt:0x8C57,src:'levels/chapter8.js'},
+  9:{name:'MIDNIGHT IN PHILIPPI',label:'Chapter Nine',title:'Midnight in Philippi',salt:0x9D61,src:'levels/chapter9.js'}};
 const TITLE={level:1,scene:'wall',mood:'calm',amb:{crickets:.5,wind:.35,owl:.4}};
 /* A level file calls LEVEL(n, init). init() registers its art, cast, items and rooms, and returns the chapter definition. */
 function LEVEL(n,init){Object.assign(CHAP[n],init(),{ready:1})}
@@ -1232,7 +1245,7 @@ function decode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1'
   if(t.length!==6)return null;let v=0;for(const x of t){const i=A32.indexOf(x);if(i<0)return null;v=v*32+i}
   const c=v%512,b=Math.floor(v/512)^msk(c);return chk(b,CHAP[ch].salt)!==c||(b>>19&3)>2||b>>21?null:{ch,b}}
 function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];G.pc=P;G.invs={};P.hs=null;
-  Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0});
+  Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;if(a.wear){a.wear='';a.look=LOOK[a.id]}});
   (CHAP[ch].party||[]).forEach(id=>ACT[id].party=1);
   $('#chname').textContent=T(CHAP[ch].name);G.ship=null;setScore(CHAP[ch].music);CHAP[ch].setup();swapBtn()}
 /* dealInv: rebuild the inventories from the story's flags (the level's inv). Each item goes to the member who carries it (own,
@@ -1288,10 +1301,12 @@ function openCode(){audioInit();if(cb.classList.contains('on'))return closeCode(
   cb.innerHTML='';cb.draw();cb.classList.add('on');if(!can)$('#codein').focus()}
 $('#code').onclick=e=>{e.stopPropagation();openCode()};cb.onclick=e=>e.stopPropagation();
 skin();buildVerbs();requestAnimationFrame(render);title();
+/* An installable app that plays offline (shared/pwa.js, sw.js): only where the game is served over http(s), never from disk or in the playtest's pages. */
+if(/^https?:$/.test(location.protocol)&&'serviceWorker' in navigator)need('logo').then(()=>need('pwa')).then(p=>p.install({CHAP,LANGS})).catch(e=>console.error(e));
 </script>
 <script>
 // GoatCounter page-view count, only on the published site (never from disk or in the playtest)
-if(location.hostname==='marcuscalidus.github.io'){const g=document.createElement('script');g.async=true;
+if(['paul-of-tarsus.theunknownones.net','marcuscalidus.github.io'].includes(location.hostname)){const g=document.createElement('script');g.async=true;
   g.dataset.goatcounter='https://marcuscalidus.goatcounter.com/count';g.src='https://gc.zgo.at/count.js';document.body.appendChild(g)}
 </script>
 </body>

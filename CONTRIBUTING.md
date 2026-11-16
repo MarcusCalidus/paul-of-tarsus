@@ -6,10 +6,12 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 
 ### The Bible text
 
-- Every Bible quotation, paraphrase and reference uses the **New World Translation of the Holy Scriptures (Study Edition)**, on [jw.org](https://www.jw.org/en/library/bible/study-bible/books/) or in the [Watchtower Online Library](https://wol.jw.org/en/wol/binav/r1/lp-e/nwtsty).
-- Look up every verse there before you write it. Do not quote from memory, from another translation, or from another edition of the New World Translation.
-- Quote briefly and exactly. Prefer a short paraphrase with its reference to a long quotation. A paraphrase must not say more or less than the verse does. Never invent a quotation, or present a paraphrase as one.
-- If you cannot check a verse's exact wording, give the reference only, and list it for the maintainer to check.
+- Every Bible paraphrase and reference follows the **New World Translation of the Holy Scriptures (Study Edition)**, which you read on [jw.org](https://www.jw.org/en/library/bible/study-bible/books/) or in the [Watchtower Online Library](https://wol.jw.org/en/wol/binav/r1/lp-e/nwtsty).
+- Look up every verse there before you write about it. Do not work from memory, and do not take what a verse means from another translation or from another edition of the New World Translation.
+- Tell what a verse says in your own words, with its reference. Do not copy the Study Edition's wording into the game or its documentation (see "Terms of use of jw.org" below). A paraphrase follows the meaning of the New World Translation and must not say more or less than the verse does. Never invent a quotation, or present a paraphrase as one: a paraphrase stands without quotation marks, on the wax tablets too.
+- Other translations may be consulted for ideas on wording and sentence shape, never for the meaning: in English, Byington's *The Bible in Living English* and Rotherham's *Emphasised Bible*; in German, BIBEL.HEUTE and *Hoffnung für Alle*. Never copy any of them 1:1 either, and do not stitch a sentence together from their fragments. Write your own wording with your own sentence structure, shorter where possible.
+- Use the divine name wherever the New World Translation has it in the passage: "Jehovah" (in German "Jehova"), never "the Lord", "der Herr" or "God" in its place. Where the New World Translation has "God" or "Lord", keep that.
+- If you cannot check what a verse says, give the reference only, and list it for the maintainer to check.
 - Give the reference with the line it belongs to, for example "(James 1:5)", or on the chapter's end screen.
 
 ### Historical information
@@ -24,12 +26,22 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 - Watch for details that are easy to get wrong. Acts 11:26 says the disciples were called Christians "by divine providence", so the name must not be presented as a nickname coined by outsiders.
 - Use jw.org and wol.jw.org to check facts only. Do not copy their artwork, photographs, maps or publication text into the game.
 
+### Terms of use of jw.org
+
+The [Terms of Use](https://www.jw.org/en/terms-of-use/) of jw.org (which cover its subdomains, such as wol.jw.org) let you view, download and print its text, artwork, music, photos and videos for your own personal, non-commercial use, and share links to downloadable publications. They do not let you post that material or its trademarks on any website, distribute it with or as part of a software application, use it for a commercial purpose, or use it for marketing. This game is a software application and its repository is a website, so:
+
+- Neither the game nor the documentation reproduces text from the Study Edition (verses, study notes, footnotes), from *Insight on the Scriptures* or from any other publication on jw.org or wol.jw.org: no quotation marks around their wording, and no close paraphrase that keeps a source sentence's structure and changes only a word here and there. A verse is told with its reference in wording and sentence structure of your own, as "The Bible text" above describes; for anything else, name the publication, chapter or article and say in your own words what it establishes.
+- No artwork, photograph, map, music, video, logo or trademark of the Watch Tower Bible and Tract Society or of jw.org appears in the game, its icon, its screenshots or its documentation. Everything is painted and synthesized in code (section 4).
+- The game and its pages are not marketed with the name, logo or authority of jw.org or of Jehovah's Witnesses. The README says that this is an independent, non-commercial project that they do not produce, endorse or review; keep that sentence, and keep the game free of charge and free of advertising.
+- Do not build or ship a tool that collects, copies or scrapes data from jw.org or wol.jw.org. Look things up by hand.
+- Check the Terms of Use again when you change anything in this section: they may be revised.
+
 ## 2. Story and puzzles
 
 - Paul gets out of trouble with his trade, cooperation with fellow believers, honesty, practical wisdom and trust in Jehovah. No puzzle is solved by violence, deceit or a miracle used as a shortcut.
 - Paul never lies. That includes every dialogue choice offered to the player: a wrong choice may be unwise, but never untrue.
 - **Pray to Jehovah** is the hint system. It never changes the game's state. The first prayer at a point gives a gentle hint, and praying again gives a more direct one.
-- Invented characters and all dialogue are dramatization. Each chapter's end screen says so, and the README's "About the content" section names the invented characters.
+- Invented characters and all dialogue are dramatization. Each chapter's end screen says so, and the "About the content" section of the chapter's page in `docs/` names the invented characters.
 - A person named in the Scriptures appears only in events where the account places that person, or where the Study Edition's notes or the publications on wol.jw.org say that the person was likely there. In the second case the chapter's end screen and the README say what the account itself leaves unsaid. For example, Acts 14 does not name the disciples at Lystra; the note on 2 Timothy 1:5 says that Lois and Eunice likely became believers during that stay, so Chapter Six shows them with Timothy, and says that Acts does not.
 - The narration follows the account's own voice. It calls him Saul until Acts 13:9 and Paul from there on, and it says "we" where Acts does: from Troas in Chapter Eight (Acts 16:10), and "they" again where the account returns to it (Acts 16:19).
 - Before building a new chapter, agree on its episode with the maintainer by opening an issue.
@@ -45,7 +57,9 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
   - a label or text laid across a thin line, such as a lake, river or coast;
   - "+" or "x" markers, and cross-shaped cursors or highlights;
   - four small squares set two by two, where the gap between them is a plus sign;
-  - a rope or strap hanging straight down from the middle of a beam, which makes a T, and ties drawn across a roll or a bundle.
+  - a rope or strap hanging straight down from the middle of a beam, which makes a T, and ties drawn across a roll or a bundle;
+  - a tower that rises from the middle of a wall, or a post from the middle of a rail: set it at the end;
+  - a sword with its guard. Where the account names a drawn sword (Acts 16:27), the hand covers the guard and the blade is one slanting line.
 - Where the account itself names something used in false worship, it may be shown plainly when the scene is about refusing it: the bulls and garlands of Acts 14:13 are shown at the gate of Lystra. A temple, an altar, a statue or an image of a god is never shown.
 - Look at screenshots of every changed scene before committing.
 
@@ -63,13 +77,14 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 
 - `index.html` is the engine. Each chapter is one file, `levels/chapterN.js`, loaded only when that chapter is played. It holds the chapter's music, artwork, cast, items, rooms, dialog, cutscenes and prayer hints. A new chapter adds its file and one line to the `CHAP` manifest. Anything shared between chapters goes in its own file, also loaded on demand, not in a chapter file or the engine.
 - The game must keep running when `index.html` is opened straight from disk: no build step, no server and no dependencies.
+- The game is also an installable app that plays offline (`sw.js`, `shared/pwa.js`). It loads its service worker only over http(s), so it still runs from disk. Its icon and manifest are made in code like everything else: no icon or manifest file. A new file in `shared/` goes on the offline list in `shared/pwa.js`; `node tools/playtest.mjs pwa` checks it.
 - Safe-point codes are a promise to players. Every code that works today must keep working. The browser's autosave (`localStorage`, key `paul.save`) is that same code and nothing else, so the promise covers it: never keep other state there without a format the decoder can tell apart from the code. If a change needs more state, add a new code format that the decoder can tell apart from the old one. Never reorder a chapter's `flags`, `rooms` or `share`; only append to them, within the widths the code format reserves.
 
 ## 6. Testing and documentation
 
 - `node tools/playtest.mjs` must pass (it needs Node 22 or newer and Google Chrome). Extend it for every new puzzle step or feature.
 - Add a stop to `tools/playtest-harness.html` for every new scene or feature, and look at its screenshot.
-- Keep the README current: the walkthroughs, "How to play", "About the content", the "Development" section and the screenshots. Every new feature gets a screenshot in `docs/screenshots/`.
+- Keep the documentation current. Each chapter has its own page, `docs/chapter-N.md`, with its walkthrough, music, map and "About the content"; a new chapter adds its page and a line in the README's chapter list and "About the content" list. Keep `docs/how-to-play.md`, `docs/look-and-sound.md` and `docs/development.md` current too, and the README short: what the game is, how to play, how to contribute, with links. Every new feature gets a screenshot in `docs/screenshots/`.
 
 ## 7. Publishing
 
@@ -80,10 +95,11 @@ GitHub Pages serves the game from the root of `main`, so a push to `main` publis
 The game is written in English and plays in German too. The English text stays in the code; every other language is data under `lang/`, one folder per language.
 
 - New or changed player-visible text must be added in every supported language in the same change. Changing an English line changes its key: change the entry in every language file with it. The playtest fails on a line that has no translation and on a translation whose English line is gone.
-- Every rule in section 1 applies in each language. German Bible quotations come from the German New World Translation, Study Edition ("Neue-Welt-Übersetzung der Heiligen Schrift – Studienausgabe"), on [wol.jw.org](https://wol.jw.org/de/wol/binav/r10/lp-x/nwtsty) or [jw.org/de](https://www.jw.org/de/bibliothek/bibel/studienbibel/buecher/). Look up each verse there before you write it. Never translate an English verse yourself: a verse in another language is always quoted from that language's Study Edition. If you cannot check a verse's exact wording, give the reference only and list it for the maintainer.
+- Every rule in section 1 applies in each language. German verses are read in the German New World Translation, Study Edition ("Neue-Welt-Übersetzung der Heiligen Schrift – Studienausgabe"), on [wol.jw.org](https://wol.jw.org/de/wol/binav/r10/lp-x/nwtsty) or [jw.org/de](https://www.jw.org/de/bibliothek/bibel/studienbibel/buecher/). Look up each verse there before you write about it, and tell it in your own German words with the reference; the terms of use in section 1 apply to the German text just as they do to the English. Never base a German line on your own translation of the English verse: check what the German Study Edition says, and write the German paraphrase from that. For wording ideas BIBEL.HEUTE and *Hoffnung für Alle* may be consulted as section 1 allows, and never copied; the divine name is "Jehova" wherever the German Study Edition has it. If you cannot check a verse, give the reference only and list it for the maintainer.
 - References use the language's own book names and style, such as "(Apostelgeschichte 9:25)" or "(5. Mose 21:23)". Names of people and places follow that language's Study Edition, without the marks that show stress: Saulus, Paulus, Kephas, Jakobus, Stephanus, Damaskus, Cäsarea, Antiochia. Invented characters with a Bible name take its spelling there too (Noomi, Isai, Sakkai).
 - In German, use the terms Jehovah's Witnesses use: "Jehova", "u. Z." and "v. u. Z.", "die Versammlung", "die Brüder", "unverdiente Güte". Acts 11:26 says the disciples were "durch göttliche Vorsehung" called Christians. The characters say "du" to one another, as people do in the German Bible. German text uses „ and “ for quotation marks.
 - A translation says what the English line says, no more and no less. Paul never lies in any language, and the dialogue choices keep their order, so every walkthrough holds in every language.
 - In code, write player-visible text in English and let the engine translate it as it is shown (`say`, `choose`, names, the tablets, the map). A line put together from parts is a template, such as `T('It still needs {list}.', {list})`, so that each language can word it in its own order. Never let the story's logic compare translated text.
 - Names in the status line ("Use awl with torn awning") stand without an article. In a language with cases, choose names that read correctly after every verb, such as German compounds ("Vorratskorb (verstärkt)", not "verstärkter Korb").
+- A line that is sung is written as its notes, syllable by syllable, each with the vowel of its syllable. The vowels and the rhythm follow the words on the screen, so they are language data: each language gives its own under the same key, as it gives the line itself, and the playtest checks that it does.
 - Check every changed scene in each language: German is longer than English, and text must not overflow its box or cross a line on the map.

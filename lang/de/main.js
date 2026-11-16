@@ -1,7 +1,8 @@
 /* Paul of Tarsus: the German text (Deutsch) for the engine (index.html) and the shared files (shared/tablets.js, shared/map.js).
    Loaded on demand by index.html (see LANGUAGES there). Each entry is an English line, exactly as it stands in the game, and its German.
-   A line with no entry is shown in English, and the playtest reports it. Bible verses are quoted from the Neue-Welt-Übersetzung der
-   Heiligen Schrift (Studienausgabe) on wol.jw.org; names and places follow its spelling, without the marks that show stress. */
+   A line with no entry is shown in English, and the playtest reports it. Bible verses are told in the game's own German words, never
+   copied: they are checked against the Neue-Welt-Übersetzung der Heiligen Schrift (Studienausgabe), and names and places follow its
+   spelling, without the marks that show stress (CONTRIBUTING sections 1 and 8). */
 TEXTS('de','main',{
   "Look at":"Betrachte",
   "Pick up":"Nimm",
@@ -50,7 +51,7 @@ TEXTS('de','main',{
   "Threaded and ready. Now, what needs stitching?":"Eingefädelt und bereit. Was muss jetzt genäht werden?",
   "I had better leave that to Paul.":"Das überlasse ich besser Paulus.",
   "{name} bows his head and quietly asks Jehovah for wisdom and a calm heart. (James 1:5)":"{name} senkt den Kopf und bittet Jehova leise um Weisheit und ein ruhiges Herz. (Jakobus 1:5)",
-  "{name} pauses, and in prayer throws his anxiety on Jehovah. (1 Peter 5:7)":"{name} hält inne und wirft im Gebet seine Sorgen auf Jehova. (1. Petrus 5:7)",
+  "{name} pauses, and in prayer leaves his cares with Jehovah. (1 Peter 5:7)":"{name} hält inne und überlässt im Gebet seine Sorgen Jehova. (1. Petrus 5:7)",
   "In the stillness, {name} asks Jehovah to help him think clearly.":"In der Stille bittet {name} Jehova, ihm zu helfen, klar zu denken.",
   "ESCAPE FROM DAMASCUS":"FLUCHT AUS DAMASKUS",
   "Chapter One":"Erstes Kapitel",
@@ -76,6 +77,9 @@ TEXTS('de','main',{
   "THE MAN FROM MACEDONIA":"DER MANN AUS MAZEDONIEN",
   "Chapter Eight":"Achtes Kapitel",
   "The Man from Macedonia":"Der Mann aus Mazedonien",
+  "MIDNIGHT IN PHILIPPI":"MITTERNACHT IN PHILIPPI",
+  "Chapter Nine":"Neuntes Kapitel",
+  "Midnight in Philippi":"Mitternacht in Philippi",
   "{file} did not register what it should.":"{file} wurde nicht richtig geladen.",
   "Could not load {file}.":"{file} konnte nicht geladen werden.",
   "Paul of Tarsus: On the Roads of Rome":"Paulus von Tarsus: Auf Roms Straßen",
@@ -102,7 +106,6 @@ TEXTS('de','main',{
   "GO":"LOS",
   "Back to the game":"Zurück zum Spiel",
   "Back":"Zurück",
-  "“{text}”":"„{text}“",
   "PEOPLE":"PERSONEN",
   "No one yet.":"Noch niemand.",
   "STILL TO DO":"NOCH ZU TUN",

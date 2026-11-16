@@ -317,10 +317,10 @@ const TABLETS={
     {t:"Bring Theron's oil from his stall. It is a load for two.",if:()=>ant()&&!F.jar},
     {t:'See the gift counted and sealed before the brothers.',if:()=>ant()&&!F.sealed}],
   scripture:[
-    {ref:'Psalm 15:4',text:'He does not go back on his promise, even when it is bad for him.'},
-    {ref:'Ecclesiastes 4:9, 10',text:'Two are better than one because they have a good reward for their hard work. For if one of them falls, the other can help his partner up.'},
-    {ref:'Proverbs 3:27',text:'Do not withhold good from those to whom you should give it If it is within your power to help.'},
-    {ref:'Deuteronomy 15:11',text:'You should generously open up your hand to your afflicted and poor brother in your land.'}]};
+    {ref:'Psalm 15:4',gist:'What he has promised he does, even when it turns out to his own loss.'},
+    {ref:'Ecclesiastes 4:9, 10',gist:'Two are better off than one, since their toil brings them a good return; and if either falls, the other can lift his companion up.'},
+    {ref:'Proverbs 3:27',gist:'When you are able to help, do not keep back any good from those who ought to receive it.'},
+    {ref:'Deuteronomy 15:11',gist:'Be openhanded and generous toward your brother in your land who is poor and in distress.'}]};
 /* ============ ROOMS, HOTSPOTS, CHARACTERS ============ */
 const tentNeeds=()=>!F.seam?'The last seam still gapes open. It needs closing, with awl and thread.':!F.loopsOn?'The seam is closed. The hem still needs loops for the pegs, of something tougher than cloth.':'';
 /* The seam takes two men: Barnabas holds the far edge taut (played as Barnabas: use the tent), then Saul sews it. */
@@ -342,17 +342,17 @@ async function leave3(){
   if(!F.sold){await say(P,'The road to Antioch. And I will take it.');return say(P,"But not with a promise left unfinished behind me. First, Kleon's tent.",TH)}
   await say(BN,'Your word is kept, Saul. Now will you come?');
   await say(P,'I will. My tools, and my last bolt of goat-hair cloth: a tentmaker does not travel empty-handed.');
-  await say(P,'Tarsus is no obscure city. (Acts 21:39) But my road does not end here.');
+  await say(P,'Tarsus is not a city anyone overlooks. (Acts 21:39) But my road does not end here.');
   walk(BN,276,116);await walk(P,292,112);await fade(1,700);const o={dur:7500};
-  await narr('After he found him, Barnabas brought him to Antioch in Syria. (Acts 11:25, 26)',o);
-  await narr('For a whole year they assembled with the congregation there and taught quite a crowd. (Acts 11:26)',o);
-  await narr('It was first in Antioch that the disciples were by divine providence called Christians. (Acts 11:26)',o);
-  await narr('In those days prophets came down from Jerusalem to Antioch. One of them was named Agabus. (Acts 11:27, 28)',o);
+  await narr('Barnabas found him, and took him along to Antioch in Syria. (Acts 11:25, 26)',o);
+  await narr('They met with the congregation there a full year long, and the people they taught were many. (Acts 11:26)',o);
+  await narr('And Antioch was the first place where the disciples, by divine providence, came to be called Christians. (Acts 11:26)',o);
+  await narr('About that time some prophets arrived in Antioch from Jerusalem, among them a man called Agabus. (Acts 11:27, 28)',o);
   G.meet=1;enterRoom('court',112,126,1);dealInv('court');drawInv();codeBtn();
   place(BN,'court',86,122,1);place(LU,'court',140,118,1);place(XA,'court',62,130,1);place(TN,'court',40,124,1);place(AG,'court',204,118,-1);await fade(0,700);
   await narr('Antioch. The congregation has gathered in the courtyard, as it has all this year.',{dur:4200});
   await say(AG,'Brothers and sisters. I must tell you what has been made known through the spirit.');
-  await say(AG,'A great famine is about to come on the entire inhabited earth.');
+  await say(AG,'A great famine is coming, and the whole inhabited earth will feel it.');
   await say(TN,'On the whole earth? Then on Antioch too.');
   await say(LU,'And on Judea hardest of all. Many of the brothers there had little even before this.');
   await say(TN,'Then let us not wait until they are hungry. I will send what I can spare.');
@@ -360,7 +360,7 @@ async function leave3(){
   await say(BN,'And when it is gathered?');
   await say(LU,'Jerusalem sent you to us, Barnabas. Who better to carry our answer back? You, and Saul with you.');
   await say(P,'Gladly.');
-  await narr('The disciples determined to send relief to the brothers living in Judea, each according to what he could afford. (Acts 11:29)',o);
+  await narr('The disciples decided to send help to the brothers in Judea, every one of them as much as his means allowed. (Acts 11:29)',o);
   await fade(1,600);G.meet=0;place(XA,'antioch',190,116,1);place(TN,'antioch',354,116,-1);place(LU,'court',187,113,-1);place(AG,'court',116,115,1);
   place(BN,'court',92,124,1);place(P,'court',146,128,-1);
   await narr('In the days that followed, the gifts came in.',{dur:3200});await fade(0,600);
@@ -454,7 +454,7 @@ async function seal(){
     {q:'Thank you. Barnabas and I will keep a careful count on the road.',r:['I am sure you would. But what could you show a man in Judea who asked how much left Antioch?']},
     {q:'Count it before the brothers, write the sum twice, and seal the purse.',ok:1,
       p:['Not as it is. Count it here, before the brothers, and write the sum twice: one list to stay in Antioch, one to travel with the purse. Then seal it.',
-        'We care for everything honestly, not only in the sight of Jehovah but also in the sight of men. (2 Corinthians 8:21)'],r:['Well said. Then let us do exactly that.']},
+        'Our care is that all of it is handled honestly, where Jehovah sees it and where men see it too. (2 Corinthians 8:21)'],r:['Well said. Then let us do exactly that.']},
     {q:'As you think best. Among brothers, trust is seal enough.',r:['Here, yes. But this gift will pass through many hands before it is bread on a table.']}]);
   await fade(1,300);F.sealed=1;await narr('The silver is counted aloud before the brothers. The sum is written on two tablets, and the purse is tied and sealed.',{dur:6500});await fade(0,300);SFX.good();
   await say(LU,'One tablet stays here, and one goes with you. No one will be able to find fault with this gift, or with the men who carry it.');return checkFinal3()}
@@ -526,7 +526,7 @@ async function xanthe(){
     {q:'Everyone else is giving something, sister.',r:['Everyone else. I know, brother: I can see the sacks from my stall. That only tells me what I do not have.']},
     {q:'No one asks for what you do not have. Each gives what he can afford.',ok:1,
       p:['No one asks for what you do not have, Xanthe. Each according to what he can afford: that is what the congregation determined.',
-        'If the readiness is there first, it is especially acceptable according to what a person has, not according to what a person does not have. (2 Corinthians 8:12)'],
+        'Where the willingness comes first, a gift is most welcome, measured by what a person has and not by what he lacks. (2 Corinthians 8:12)'],
       r:['According to what I can afford... Then even a little would truly be mine to give.']}]);
   await quiz(XA,'But what do I have that hungry people need?',[
     {q:'Jehovah sees your heart. Let that be enough for you.',r:['I know that he does. But I wanted my hands to have a share in it, and not only my heart.']},
@@ -625,9 +625,9 @@ for(const r in AS_B)for(const h of ROOMS[r].hs)if(AS_B[r][h.name])h.as={barnabas
 async function start3(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();
   await cut(async()=>{await fade(1,500);setChapter(3);G.scene=null;G.end={};enterRoom('tarsus',150,122,-1);place(BN,'tarsus',-14,124,1);codeBtn();await fade(0,600);
     await narr('Tarsus in Cilicia, about 45 C.E.',{dur:2800});
-    await narr('For years Saul has been declaring the good news in the regions of Syria and Cilicia. (Galatians 1:21-23)');
-    await narr('Meanwhile, in Antioch of Syria, a great number of Greek-speaking people have become believers, and Jerusalem has sent Barnabas to them. (Acts 11:20-22)');
-    await narr('Barnabas knows who could help. He sets out for Tarsus to make a thorough search for Saul. (Acts 11:25)');
+    await narr('For years Saul has been preaching the good news in Syria and Cilicia. (Galatians 1:21-23)');
+    await narr('Meanwhile, in Antioch of Syria, very many who speak Greek have come to believe, and Jerusalem has sent Barnabas to them. (Acts 11:20-22)');
+    await narr('Barnabas knows who could help. He sets out for Tarsus, and means to search until he has found Saul. (Acts 11:25)');
     await say(BN,'Saul! Saul of Tarsus!');await walk(BN,112,124);
     await say(BN,'I have asked for you along every row of tentmakers in this city. And here you are, at the very last stall.');
     await say(P,'Barnabas! Peace to you, my brother. What brings you all the way to Tarsus?');
@@ -651,10 +651,10 @@ async function finale3(){playAs(P);AU.mood='hope';await wait(400);
   walk(BN,280,118);await walk(P,296,114);await fade(1,600);
   G.scene=roadScene;G.trek={k:0};codeBtn();AU.amb={birds:.7,wind:.4,leaves:.4};await fade(0,600);
   const trek=tween(17000,k=>{G.trek.k=k});
-  await narr('So they sent the relief to the elders in Judea by the hand of Barnabas and Saul. (Acts 11:30)',{dur:6500});
+  await narr('And so the help was sent to the elders in Judea, with Barnabas and Saul to deliver it. (Acts 11:30)',{dur:6500});
   await narr('The great famine came, as foretold, in the time of Claudius. The brothers in Judea did not face it alone. (Acts 11:28)',{dur:8000});
   await trek;
-  await narr('After fully carrying out the relief work in Jerusalem, Barnabas and Saul returned and took along with them John, the one also called Mark. (Acts 12:25)',{dur:9000});
+  await narr('Their relief work in Jerusalem done in full, Barnabas and Saul went back, and they took with them John, also known as Mark. (Acts 12:25)',{dur:9000});
   await journey();await narr('And in Antioch, a far longer road was about to open. (Acts 13:1-3)',{dur:5500});
   endScreen({title:'Called to Antioch',text:'Saul kept his word, worked with his hands, and helped a sister find what she had to give. The gift was carried honestly, in the sight of Jehovah and of men.',
     based:'Based on Acts 11:19-30; 12:25 and 2 Corinthians 8:12, 20, 21. Supporting characters and dialogue are imaginative; the events are from the Scriptures.',

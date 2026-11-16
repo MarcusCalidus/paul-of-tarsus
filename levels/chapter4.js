@@ -352,15 +352,15 @@ const TOPICS=[
   {id:'elymas',q:'Who is the man beside the proconsul?',if:()=>inPaph()}];
 /* ============ SCRIPTURE: the passages on the tablets. short: how a passage is named when it is offered as an answer ============ */
 const PASS={
-  ps133:{ref:'Psalm 133:1',short:'brothers dwelling in unity',text:'Look! How good and how pleasant it is For brothers to dwell together in unity!'},
-  isa42:{ref:'Isaiah 42:4',short:'the islands keep waiting',text:'He will not grow dim or be crushed until he establishes justice in the earth; And the islands keep waiting for his law.'},
-  sam7:{ref:'2 Samuel 7:12',short:'the offspring of David',text:'When your days come to an end and you are laid to rest with your forefathers, then I will raise up your offspring after you, your own son, and I will firmly establish his kingdom.'},
-  ps16:{ref:'Psalm 16:10',short:'not left in the Grave',text:'For you will not leave me in the Grave. You will not allow your loyal one to see the pit.'},
-  hos14:{ref:'Hosea 14:9',short:'the ways of Jehovah are upright',text:'For the ways of Jehovah are upright, And the righteous will walk in them; But the transgressors will stumble in them.'},
-  deut18:{ref:'Deuteronomy 18:10',short:'no one who practices magic',text:'There should not be found in you anyone who makes his son or his daughter pass through the fire, anyone who employs divination, anyone practicing magic, anyone who looks for omens, a sorcerer'},
-  dan2:{ref:'Daniel 2:27, 28',short:'a God who reveals secrets',text:'None of the wise men, conjurers, magic-practicing priests, or astrologers are able to tell the king the secret that he is asking. But there is a God in the heavens who is a Revealer of secrets'}},
+  ps133:{ref:'Psalm 133:1',short:'brothers at one',gist:'What a good and delightful thing it is when brothers live side by side and are at one!'},
+  isa42:{ref:'Isaiah 42:4',short:'the islands still wait',gist:'He will not burn low or be broken before he has set justice in place on the earth; and the islands are still waiting for his law.'},
+  sam7:{ref:'2 Samuel 7:12',short:'a son promised to David',gist:'When your days are over and you rest with your forefathers, I will bring forward a descendant of yours to follow you, your own son, and I will make his kingdom secure.'},
+  ps16:{ref:'Psalm 16:10',short:'not abandoned to the Grave',gist:'You will not abandon me to the Grave, nor let the one who is loyal to you see the pit.'},
+  hos14:{ref:'Hosea 14:9',short:"Jehovah's ways are straight",gist:"Jehovah's ways are straight: the righteous walk along them, but those who transgress lose their footing on them."},
+  deut18:{ref:'Deuteronomy 18:10',short:'no one who practices magic',gist:'Among you there must be nobody who sends a son or a daughter through the fire, nobody who divines or practices magic or reads omens, and no sorcerer.'},
+  dan2:{ref:'Daniel 2:27, 28',short:'a God who reveals secrets',gist:'The secret the king asks about is more than any wise man, conjurer, priest who practices magic or astrologer can tell him. But in heaven there is a God who brings secrets to light.'}},
   ORDER=['ps133','isa42','sam7','ps16','hos14','deut18','dan2'];
-const label=k=>T('{ref}: {short}',{ref:T(PASS[k].ref),short:T(PASS[k].short)}),quote=k=>T('"{text}" ({ref})',{text:T(PASS[k].text),ref:T(PASS[k].ref)});
+const label=k=>T('{ref}: {short}',{ref:T(PASS[k].ref),short:T(PASS[k].short)}),quote=k=>T('{text} ({ref})',{text:T(PASS[k].gist),ref:T(PASS[k].ref)});
 /* ============ WAX TABLETS: people met, tasks still open, Scripture (shown by shared/tablets.js) ============ */
 const TABLETS={
   people:[
@@ -434,10 +434,10 @@ async function jairSaul(){
     {q:'That is all behind me now. Let us look to the work ahead.',r:['Behind you. It is not behind me. I have lived on Cyprus ever since because of it.']},
     {q:'Jehovah has shown me mercy for it. I hope that you can, too.',r:['I do not doubt his mercy. But you have told me what he did, and what I should do. Not what you did.']},
     {q:'I did it. I dragged men and women out of their houses. I was wrong.',ok:1,
-      p:['I did it. I went into one house after another, I dragged out men and women, and I handed them over to prison. (Acts 8:3)',
+      p:['I did it. House by house I broke in, hauled out the men and the women too, and had them put in prison. (Acts 8:3)',
         'I was wrong, Jair. I cannot give you back your house, or the years. I can only say so to your face.'],
       r:['To my face.','In all these years, no one who came through my door that night has said as much.']}]);
-  await say(JR,'In Judea they used to say: "The man who formerly persecuted us is now declaring the good news about the faith that he formerly devastated." (Galatians 1:23)');
+  await say(JR,'In Judea the word went round that the man who used to persecute us now preaches the good news of the very faith he once laid waste. (Galatians 1:23)');
   await say(JR,'I heard it, and I did not know whether to believe it. Now I have heard it from you.');
   F.jairOk=1;SFX.good();await say(JR,'Peace to you, brother Saul. And this time I mean it.');
   await say(P,F.shelter?'An old man, a night at sea, and no roof of his own. It is as well that I cut ours wide.':'An old man, a night at sea, and no roof of his own. Whatever I sew, I will sew it wide.',TH)}
@@ -568,51 +568,51 @@ async function part(think,opts){let av=opts.slice();
 async function speak(){
   await say(ZA,'Take your seats, all of you. The reading today is from the prophet Isaiah.');
   await Promise.all([walk(ZA,160,110),walk(P,118,124),walk(BN,54,128)]);ZA.dir=-1;P.dir=1;BN.dir=1;
-  await say(ZA,'"Look! My servant, whom I support! My chosen one, whom I have approved!" (Isaiah 42:1)');
+  await say(ZA,'Here is my servant, the one I hold up; here is my chosen one, who has my approval. (Isaiah 42:1)');
   await say(ZA,quote('isa42'));
   await walk(ZA,214,113);ZA.dir=-1;
-  await say(ZA,'Brothers, visitors: if you have a word of encouragement for the people, say it.');
+  await say(ZA,'Brothers, visitors: if you have something to say that will encourage the people, say it.');
   await walk(P,160,111);P.dir=-1;
   await part('A word of encouragement. Where do I begin?',[
     {q:'The one you wait for has come, and Jerusalem did not know him.',p:['Men, brothers: the one you are waiting for has already come, and the rulers in Jerusalem did not recognize him.'],
       r:[[PH,'He begins with an accusation! And against Jerusalem!'],[ZA,'Stranger, we do not yet know of whom you speak. Begin where we can follow you.']]},
     {q:'I was educated at the feet of Gamaliel, and still I was wrong.',p:['Men, brothers: I was educated at the feet of Gamaliel, and still I was wrong about the greatest matter of all.'],
       r:[[PH,'Is it himself he has come to tell us about?'],[ZA,'The reading was about the servant of Jehovah, visitor. Not about you.']]},
-    {q:'You have just heard it read: the islands keep waiting.',ok:1,
-      p:['Men, brothers. You have just heard it read: the islands keep waiting for his law.',
+    {q:'You have just heard it read: the islands are still waiting.',ok:1,
+      p:['Men, brothers. You have just heard it read: the islands are still waiting for his law.',
         'You are an island, and you have waited a long time. Let me begin with the God who chose our forefathers, and who keeps every promise he makes.'],
       r:[[PH,'That is true enough. We have waited.'],[ZA,'Go on.']]}]);
   await part('They are with me. What comes next?',[
-    {q:'The Law of Moses could never declare you guiltless.',p:['Brothers, there are things from which the Law of Moses could never declare you guiltless.'],
+    {q:'The Law of Moses could never clear you of guilt.',p:['Brothers, there are things of which the Law of Moses could never clear you.'],
       r:[[PH,'Now he speaks against Moses!'],[ZA,'You are far ahead of us, visitor. What has that to do with the servant?']]},
     {q:'God promised David an offspring whose kingdom would stand.',ok:1,
-      p:['He brought our forefathers out of Egypt, and in time he gave them David as king.','And to David he promised an offspring whose kingdom he would firmly establish. (2 Samuel 7:12)'],
+      p:['He brought our forefathers out of Egypt, and in time he gave them David as king.','And to David he promised a descendant whose kingdom he would set firmly in place. (2 Samuel 7:12)'],
       r:[[JR,'The son of David. Yes.'],[ZA,'Every child here knows that promise. Go on.']]},
     {q:'This good news is for the nations as well.',p:['And this good news is not for Israel alone. It is for the nations as well.'],
       r:[[PH,'For the Greeks? Before we have so much as heard what it is?'],[ZA,'First tell us what it is, visitor. Then we may speak of whom it is for.']]}]);
   await part('The promise is before them. Now, the one in whom it is kept.',[
-    {q:'The apostles have done many signs and wonders.',p:['Through the hands of the apostles in Jerusalem, many signs and wonders have occurred among the people. (Acts 5:12)'],
+    {q:'The apostles have done many signs and wonders.',p:['The apostles in Jerusalem have worked many signs and wonders among the people. (Acts 5:12)'],
       r:[[PH,'Paphos is full of men who do wonders, for a fee.'],[ZA,'You asked to be tested by the scroll, visitor. Not by wonders.']]},
     {q:"From David's offspring God brought a savior, and raised him up.",ok:1,
-      p:['From the offspring of David, as he promised, God has brought to Israel a savior: Jesus of Nazareth.',
-        'They put him to death in Jerusalem, and laid him in a tomb. But God raised him up from the dead, and many saw him.',
-        'David wrote: "You will not allow your loyal one to see the pit." David died, and was buried. This one, God raised up. (Psalm 16:10)'],
+      p:["God kept that promise: out of David's line he has given Israel a savior, Jesus of Nazareth.",
+        'In Jerusalem they had him put to death, and he was laid in a grave. But God brought him back from the dead, and many saw him.',
+        'David wrote that God would not let the one who is loyal to him see the pit. David died, and was buried. This one, God raised up. (Psalm 16:10)'],
       r:[[PH,'Raised from the dead. If that were so, it would change everything.'],[JR,'It is so. I was in Jerusalem. I knew men who saw him.'],[ZA,'Let him finish, Jair.']]},
-    {q:'Take care: the Prophets warn those who will not believe.',p:['Beware, brothers. The Prophets speak of something that will happen in your days, that you will not believe even if it is told to you. (Habakkuk 1:5)'],
+    {q:'Take care: the Prophets warn those who will not believe.',p:['Beware, brothers. The Prophets speak of a thing to come in your own days, a thing you will find beyond belief, even when you are told of it. (Habakkuk 1:5)'],
       r:[[PH,'He threatens us before he has told us anything!'],[ZA,'A warning comes last, visitor, if it comes at all.']]}]);
   await part('They have heard who he is. What do I leave with them?',[
-    {q:'Whoever rejects this judges himself unworthy of life.',p:['Whoever rejects this word judges himself unworthy of everlasting life.'],
+    {q:'Whoever rejects this declares himself unfit for life.',p:['Whoever rejects this word is declaring himself unfit for everlasting life.'],
       r:[[PH,'We have not rejected anything yet!'],[ZA,'No one here has refused you, visitor. Do not answer what has not been said.']]},
     {q:'That is all. Now we must be on our way across the island.',p:['That is what I came to say. Now we must be on our way across the island.'],
       r:[[ZA,'You tell us that the Christ has come, and then you speak of the road? Finish what you began.']]},
-    {q:'Through him, forgiveness of sins is proclaimed to you.',ok:1,
-      p:['So let it be known to you, brothers: through this one a forgiveness of sins is being proclaimed to you.',
+    {q:'Through him, forgiveness of sins is announced to you.',ok:1,
+      p:['So know this, brothers: through him the forgiveness of sins is announced to you.',
         'You said you would test it by the scroll, Zadok. Do. Search it, and see whether these things are so.'],
       r:[[ZA,'You have given us a great deal to search, Saul of Tarsus. I will not say yes or no today. I will read.'],
         [PH,'So will I. And I will come and tell you if I find it otherwise.'],
         [JR,'And any who want to hear more today, come home with me. My house is small, but the door is open.']]}]);
   F.spoke=1;SFX.good();await fade(1,500);place(P,'synagogue',126,122,-1);place(BN,'synagogue',100,126,1);
-  await narr('They began proclaiming the word of God in the synagogues of the Jews: in that one, and in the others of Salamis. (Acts 13:5)',{dur:7500});await fade(0,500);
+  await narr('They set about preaching the word of God in the Jewish synagogues: in that one, and in the others of Salamis. (Acts 13:5)',{dur:7500});await fade(0,500);
   await say(BN,'One end of the island has heard, Saul. The other is many days away on foot. The west gate, when you are ready.')}
 ZA.hs={name:'Zadok',actor:ZA,look:'Zadok, a presiding officer of the synagogue. He weighs a stranger as a merchant weighs silver.',
   show:{tablets:'Wax tablets. And what is written on them: your own words, or the words of the Prophets?',awl:'A craftsman. Good. A man who works with his hands does not talk for his bread.',
@@ -686,7 +686,7 @@ async function showTools(it){if(!['awl','knife','thread'].includes(it)||!F.ob1||
   await say(SP,"A craftsman's hands. I noticed them when you came in.");
   await say(SP,'Elymas, you are paid by this house. This man has walked across my island at his own cost.');F.ob2=1;SFX.good();
   await say(EL,'Proconsul, I am of their own nation. I know their writings better than any tentmaker does. Let me tell you what is in them.');
-  await say(EL,'Their prophet Daniel served the king of Babylon as chief of the magic-practicing priests. He did there what I do here. My art is in their own holy books.');
+  await say(EL,'Their prophet Daniel served the king of Babylon as chief of the priests who practiced magic. He did there what I do here. My art is in their own holy books.');
   return daniel()}
 async function daniel(){
   await ask(P,SP,'Is that written, Paulus? Was your prophet a sorcerer?',ORDER.map(k=>k==='dan2'?{q:label(k),ok:1,
@@ -698,7 +698,7 @@ async function daniel(){
       isa42:[SP,'A fine saying about islands, and I govern one. But it does not answer him.'],
       sam7:[SP,'That concerns a king of yours. I asked about Daniel.'],
       ps16:[EL,'He changes the subject, Proconsul! I spoke of Daniel.'],
-      hos14:[EL,'Upright ways! Daniel was chief of the magic-practicing priests. Is that written, or is it not?'],
+      hos14:[EL,'Straight ways! Daniel was chief of the priests who practiced magic. Is that written, or is it not?'],
       deut18:[EL,'And yet your Daniel held the office, Paulus! Did your own prophet break your Law?']}[k]]}));
   return finale4()}
 SP.hs={name:'Sergius Paulus',actor:SP,look:'Sergius Paulus, proconsul of Cyprus. No armor and no sword: a governor sent by the Senate, with a table full of books.',
@@ -751,7 +751,7 @@ for(const r in AS_B)for(const h of ROOMS[r].hs)if(AS_B[r][h.name])h.as={barnabas
 async function arrive4(to){place4(G.room);for(const a of party()){const inv=invOf(a),i=inv.indexOf('shelter');if(i>=0)inv.splice(i,1)}drawInv();
   if(to==='salamis'){place(JR,'salamis',330,118,-1);const sea=G.sea={k:0};G.scene=voyageScene;AU.mood='calm';AU.amb={waves:.8,wind:.5,creak:.5};await fade(0,600);
     tween(30000,k=>{sea.k=k});
-    await narr('They sailed away to Cyprus. (Acts 13:4)',{dur:4500});
+    await narr('They put to sea, bound for Cyprus. (Acts 13:4)',{dur:4500});
     await narr('A merchant ship gave its passengers water, and nothing more. They slept on the deck, and ate what they had brought with them.',{dur:7000});
     await say(BN,'My staff for a ridge pole, and your rope edge lashed to the rail. It stands, Saul!');
     await say(P,'There is a place under it for you tonight, Jair.');
@@ -760,38 +760,38 @@ async function arrive4(to){place4(G.room);for(const a of party()){const inv=invO
     await narr('Ahead lay Cyprus: the island where Barnabas was born. (Acts 4:36)',{dur:5000});
     await fade(1,500);G.scene=null;G.sea=null;AU.mood=ROOMS.salamis.mood;AU.amb=ROOMS.salamis.amb}
   if(to==='paphos'){const o={dur:7500};
-    await narr('They went through the whole island as far as Paphos (Acts 13:6): perhaps 150 kilometers or more on foot.',o);
+    await narr('They crossed the island from end to end, all the way to Paphos (Acts 13:6): perhaps 150 kilometers or more on foot.',o);
     await narr("At night the roof that Saul had sewn for a ship's deck stood beside the road, on Barnabas's staff.",{dur:6000});
-    await narr('In Paphos they met a Jewish man named Bar-Jesus, who was a sorcerer and a false prophet. (Acts 13:6)',o);
-    await narr('He was with the proconsul Sergius Paulus, an intelligent man. Calling Barnabas and Saul to him, this man was eager to hear the word of God. (Acts 13:7)',{dur:9000})}}
+    await narr('There, in Paphos, they came upon Bar-Jesus, a Jew who practiced sorcery and was a false prophet. (Acts 13:6)',o);
+    await narr('This man kept company with the proconsul, Sergius Paulus, who was a man of understanding. The proconsul sent for Barnabas and Saul, because he very much wanted to hear the word of God. (Acts 13:7)',{dur:9000})}}
 async function start4(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();
   await cut(async()=>{await fade(1,500);setChapter(4);G.end={};enterRoom('seleucia',...ENT.seleucia);G.send={lay:0};G.scene=sendoffScene;AU.mood='calm';AU.amb={birds:.3,wind:.15};codeBtn();await fade(0,600);
     await narr('Antioch in Syria, about 47 C.E.',{dur:2800});
-    await narr('In the congregation there were prophets and teachers: Barnabas, Symeon who was called Niger, Lucius of Cyrene, Manaen, and Saul. (Acts 13:1)',{dur:8000});
-    await narr('As they were ministering to Jehovah and fasting, the holy spirit said: "Set aside for me Barnabas and Saul for the work to which I have called them." (Acts 13:2)',{dur:9500});
+    await narr('The congregation there had its prophets and teachers: Barnabas, Symeon (known as Niger), Lucius of Cyrene, Manaen, and Saul. (Acts 13:1)',{dur:8000});
+    await narr('While they were serving Jehovah and fasting, the holy spirit told them to set Barnabas and Saul apart for the work to which it had called the two. (Acts 13:2)',{dur:9500});
     G.send.lay=1;SFX.pray();await wait(900);
-    await narr('Then after fasting and praying, they laid their hands on them and sent them off. (Acts 13:3)',{dur:7000});
+    await narr('So they fasted and prayed, laid their hands on the two, and let them go. (Acts 13:3)',{dur:7000});
     await fade(1,600);G.scene=null;G.send=null;AU.mood=ROOMS.seleucia.mood;AU.amb=ROOMS.seleucia.amb;codeBtn();await fade(0,600);
-    await narr('So these men, sent out by the holy spirit, went down to Seleucia, the harbor of Antioch. They had John Mark with them as an attendant. (Acts 13:4, 5)',{dur:9000});
+    await narr('Sent on their way by the holy spirit, the two went down to Seleucia, the harbor of Antioch. John Mark came with them to assist them. (Acts 13:4, 5)',{dur:9000});
     await say(BN,'Seleucia, Saul. And beyond that water lies Cyprus: the island where I was born.');
     await say(MK,'The bed rolls, the food bag, the water flask and the purse. Everything is here, cousin.');
     await say(P,'Then all we lack is a ship. That one is taking on cargo. Let us ask her master where she is bound.')},true)}
 async function finale4(){playAs(P);await wait(300);
   await say(EL,'Proconsul, enough! Send these men away, and hear no more of this. Nothing good will come to you from their God!');
-  await narr('But Elymas the sorcerer began opposing them, trying to turn the proconsul away from the faith. (Acts 13:8)',{dur:7000});
+  await narr('Elymas the sorcerer set himself against them, and did what he could to keep the proconsul from the faith. (Acts 13:8)',{dur:7000});
   await walk(P,300,120);P.dir=1;
-  await narr('Then Saul, also called Paul, becoming filled with holy spirit, looked at him intently. (Acts 13:9)',{dur:6500});
-  await say(P,'O man full of every sort of fraud and every sort of villainy, you son of the Devil, you enemy of everything righteous,');
-  await say(P,'will you not quit distorting the right ways of Jehovah? (Acts 13:10)');
-  await say(P,"Look! Jehovah's hand is upon you, and you will be blind, not seeing the sunlight for a time. (Acts 13:11)");
+  await narr('At that Saul, who is also called Paul, was filled with holy spirit. He looked the man hard in the eye. (Acts 13:9)',{dur:6500});
+  await say(P,'Son of the Devil! You are deceit and wickedness through and through, and the enemy of all that is right.');
+  await say(P,'Will you never stop bending the right ways of Jehovah out of shape? (Acts 13:10)');
+  await say(P,"Now Jehovah's hand comes down on you: you will go blind, and for a time you will not see the light of the sun. (Acts 13:11)");
   EL.bow=true;await wait(700);
-  await narr('Instantly a thick mist and darkness fell on him, and he went around trying to find someone to lead him by the hand. (Acts 13:11)',{dur:8500});
+  await narr('At once a dense mist and darkness closed over his eyes, and he groped about for somebody who would take his hand and guide him. (Acts 13:11)',{dur:8500});
   EL.speed=24;await walk(EL,352,128);await say(EL,'A hand. Someone, give me your hand...');await walk(EL,330,134);await fade(1,400);EL.room=null;EL.bow=false;EL.speed=0;await fade(0,400);
   await say(SP,'Every morning that man told me what the day would bring. He did not see this coming.');
   await say(SP,'And you, Paulus: you asked me for nothing, and you hid nothing. Go on. Tell me the rest.');
   await fade(1,600);AU.mood='hope';
-  await narr('Then the proconsul, on seeing what had happened, became a believer, for he was astounded at the teaching of Jehovah. (Acts 13:12)',{dur:8500});
-  await journey();await narr('From Paphos, Paul and his companions would put out to sea for Asia Minor. (Acts 13:13)',{dur:6000});
+  await narr('The proconsul saw it happen, and he became a believer: the teaching of Jehovah had filled him with amazement. (Acts 13:12)',{dur:8500});
+  await journey();await narr('From Paphos, Paul and his companions would sail on to Asia Minor. (Acts 13:13)',{dur:6000});
   endScreen({title:'Sent Out to Cyprus',text:"Paul sewed a roof for a ship's deck, and shared it with a man he had once driven from his home. Before a governor he asked for nothing, hid nothing, and answered from the Scriptures.",
     based:'Based on Acts 13:1-12; 4:36, 37; 8:1-3; 11:19 and Galatians 1:23. Supporting characters and dialogue are imaginative; the events are from the Scriptures.',
     go:'Click to continue to Chapter Five',code:['Chapter Five code: {code}',codeOf(5,0)]});

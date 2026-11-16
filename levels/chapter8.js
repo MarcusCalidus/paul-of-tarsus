@@ -526,16 +526,16 @@ async function think(q,opts){let av=opts.slice();
   for(;;){await say(P,q,TH);const o=av[await choose(av.map(o=>o.q))];if(o.ok)return;await say(P,o.no,TH);av=av.filter(x=>x!==o)}}
 /* ============ SCRIPTURE: the passages on the tablets ============ */
 const PASS={
-  prov16:{ref:'Proverbs 16:9',text:'A man may plot out his course in his heart, But it is Jehovah who directs his steps.'},
-  isa30:{ref:'Isaiah 30:21',text:'And your own ears will hear a word behind you saying, ‘This is the way. Walk in it,’ in case you should go to the right or in case you should go to the left.'},
-  prov15:{ref:'Proverbs 15:22',text:'Plans fail when there is no consultation, But there is accomplishment through many advisers.'},
-  isa42:{ref:'Isaiah 42:4',text:'He will not grow dim or be crushed until he establishes justice in the earth; And the islands keep waiting for his law.'},
-  ps65:{ref:'Psalm 65:2',text:'O Hearer of prayer, to you people of all sorts will come.'},
-  isa53:{ref:'Isaiah 53:5',text:'But he was pierced for our transgression; He was crushed for our errors.'},
-  ps16:{ref:'Psalm 16:10',text:'For you will not leave me in the Grave. You will not allow your loyal one to see the pit.'},
-  kings:{ref:'2 Kings 4:8',text:'One day Elisha went to Shunem, where there was a prominent woman, and she urged him to eat a meal there. As often as he would pass by, he would stop there to eat.'}},
+  prov16:{ref:'Proverbs 16:9',gist:'In his heart a man maps out the way he means to go, yet his steps are guided by Jehovah.'},
+  isa30:{ref:'Isaiah 30:21',gist:'Should you stray to the right or to the left, your own ears will catch a word spoken behind you, telling you which is the way and to walk in it.'},
+  prov15:{ref:'Proverbs 15:22',gist:'Without counsel taken together, plans come to nothing; where many advise, they succeed.'},
+  isa42:{ref:'Isaiah 42:4',gist:'He will not burn low or be broken before he has set justice in place on the earth; and the islands are still waiting for his law.'},
+  ps65:{ref:'Psalm 65:2',gist:'You are the one who hears prayer; people of every sort will come to you.'},
+  isa53:{ref:'Isaiah 53:5',gist:'Our offense is why he was pierced; our errors are why he was crushed.'},
+  ps16:{ref:'Psalm 16:10',gist:'You will not abandon me to the Grave, nor let the one who is loyal to you see the pit.'},
+  kings:{ref:'2 Kings 4:8',gist:'Elisha once came to Shunem. A woman of high standing lived there, and she pressed him to stay for a meal; after that he stopped to eat at her house whenever he passed.'}},
   ORDER=['prov16','isa30','prov15','isa42','ps65','isa53','ps16','kings'];
-const quote=k=>T('"{text}" ({ref})',{text:T(PASS[k].text),ref:T(PASS[k].ref)});
+const quote=k=>T('{text} ({ref})',{text:T(PASS[k].gist),ref:T(PASS[k].ref)});
 /* ============ THE MAP: the road of this chapter, leg by leg ============ */
 /* ROAD: from Iconium by Antioch in Pisidia to where a paved road ran west; north until Bithynia was near; west through Mysia to Troas;
    by sea to Samothrace and to Neapolis; and up to Philippi. Acts 16:6-8 names the regions and not the roads: the line shows what is likely.
@@ -547,14 +547,14 @@ async function leg(n,text,m){const route=ROAD.slice(0,n+1).map((l,i)=>i>=n-(m||0
 /* come: the room is shown after a journey, with everyone in his place */
 async function come(room,mood){place8(room);const a=PC();enterRoom(room,a.x,a.y,a.dir);if(mood)AU.mood=mood;codeBtn();await fade(0,600)}
 /* ============ THE PLATEAU: a road that is closed, and a road that is open ============ */
-/* "They were forbidden by the holy spirit to speak the word in the province of Asia" (Acts 16:6). How, the account does not say, and
+/* The holy spirit forbade them to speak the word in the province of Asia (Acts 16:6). How, the account does not say, and
    nothing here shows it. What the player decides is what Paul does next: he was turned only after he had set out. */
 async function roadWest(){const me=PC();
   if(F.asia)return say(me,'That road is closed to us. It was no man who closed it.');
   await say(P,'West, brothers: to Ephesus. Attalos, we will walk beside your mule for as far as the road goes.');
   await say(AT,'Then step out, friends. It is downhill for a week.');
   await Promise.all([walk(P,104,126),walk(SI,136,129),walk(TI,164,131)]);AU.mood='tense';await fade(1,700);
-  await narr('But they were "forbidden by the holy spirit to speak the word in the province of Asia." (Acts 16:6)',{dur:9500});
+  await narr('But the province of Asia was closed to their preaching of the word: the holy spirit forbade it. (Acts 16:6)',{dur:9500});
   await narr('How this was made known to them, the account does not say.',{dur:6000});
   place(P,'fork',222,124,-1);place(SI,'fork',336,127,-1);place(TI,'fork',362,129,-1);await fade(0,700);
   await say(P,'Not Asia. Not now. And not one word of where instead.',TH);
@@ -575,7 +575,7 @@ async function trackNorth(){const me=PC();
   if(!F.asia)return say(me,'North? That track runs toward Bithynia. Our road is the paved one: west, to Ephesus and the cities of Asia.');
   await say(P,'North, then, until we are told otherwise.');
   await leg(2,['From the paved road they turned north. They may have walked for days on unpaved tracks, through the thinly peopled country where Phrygia and Galatia meet.',
-    'When they came down to Mysia, "they made efforts to go into Bithynia". (Acts 16:7)']);
+    'On reaching Mysia they tried to go on into Bithynia. (Acts 16:7)']);
   await come('ferry');
   await say(KL,'Bithynia, is it? You are looking at it: everything beyond the water. Two coppers a man, and I do not turn back for hats.');
   await say(SI,'Towns, Paul, and good roads between them: so they told us in the last village.');
@@ -604,14 +604,14 @@ AT.hs={name:'Attalos',actor:AT,
       await say(P,'I was not sent to keep my mouth shut, Attalos. If I may not speak there, I will find where I may.')}},
     {q:'A safe road to you, Attalos.',bye:1}])};
 /* ============ THE EDGE OF BITHYNIA: a second road that is closed ============ */
-/* "They made efforts to go into Bithynia, but the spirit of Jesus did not permit them" (Acts 16:7). Mysia belonged to the province of
+/* They tried to go into Bithynia, and the spirit of Jesus would not let them (Acts 16:7). Mysia belonged to the province of
    Asia, so what was forbidden in Asia was forbidden there: they went through it without stopping to preach (study note on Acts 16:8). */
 async function ferry(){const me=PC();
   if(F.bith)return say(me,'That bank is not for us. Not now.');
   await say(P,'Three men to cross, Kleitos. Here are your coppers.');
   await say(KL,'Step aboard, then, and sit low. She is steady, but she is slow.');
   await walk(P,FERRY[0]+38,113);AU.mood='tense';await fade(1,700);
-  await narr('But "the spirit of Jesus did not permit them." (Acts 16:7)',{dur:8000});
+  await narr('But the spirit of Jesus would not let them. (Acts 16:7)',{dur:8000});
   place(P,'ferry',300,122,1);place(SI,'ferry',330,125,-1);place(TI,'ferry',356,128,-1);await fade(0,700);
   await say(P,'Not Bithynia either. Twice now.',TH);
   await think('A second road is closed to us. What do we do?',[
@@ -629,7 +629,7 @@ async function ferry(){const me=PC();
 async function roadSea(){const me=PC();
   if(!F.bith)return say(me,'West, along the bank? That road leads to the sea, and to nothing that I have planned for. Bithynia is in front of us.');
   await say(P,'West, brothers. Somebody is knocking on doors for us, and has not finished.');
-  await leg(3,['So they passed by Mysia and came down to Troas. (Acts 16:8)',
+  await leg(3,['So they went on past Mysia, down to Troas. (Acts 16:8)',
     'It was a walk of some 550 kilometers, past city after city. They went through Mysia without stopping to preach there.']);
   await come('troas','tense');await troasIntro()}
 ROOMS.ferry={space:.6,walk:[16,464,112,138],mood:'hope',amb:{fountain:.35,leaves:.6,birds:.6,wind:.2},hs:[
@@ -715,13 +715,13 @@ async function slung(){playAs(P);F.slung=1;AU.mood='calm';SFX.good();
   await say(LU,'Where are you bound?');
   await say(P,'I do not know, Luke. We were turned away from Asia, and from Bithynia, and this is where the road ran out.');
   await say(LU,'Then sleep on it. A harbor looks different by daylight. I lodge at the inn yonder: there is room.');codeBtn()}
-/* The night, and the vision: told in the words of Acts 16:9 on a dark screen. Nothing of it is shown. */
+/* The night, and the vision: told as Acts 16:9 tells it, in paraphrase, on a dark screen. Nothing of it is shown. */
 async function night(){const me=PC();
   if(F.vision)return say(me,me===P?'We have slept. What I saw there in the night, I must now tell.':'We have slept, and Paul has not. Something happened in the night.');
   if(!F.slung)return say(me,me===P?'Not while that man is bleeding on the quay.':'Not while my work is lying half done on a bale.');
   playAs(P);await say(P,'To the inn, then. We have walked for weeks to stand on this quay, and tonight I cannot tell you why.');
   await fade(1,900);G.scene=dark;AU.mood='night';AU.amb={waves:.4,wind:.2};await fade(0,600);await wait(1500);
-  await narr('And during the night a vision appeared to Paul—a Macedonian man was standing there urging him and saying: "Step over into Macedonia and help us." (Acts 16:9)',{dur:14000});
+  await narr('That night Paul had a vision. He saw a man of Macedonia standing there, who begged him to cross over into Macedonia and help them. (Acts 16:9)',{dur:14000});
   await wait(800);await fade(1,600);F.vision=1;G.scene=null;AU.amb=ROOMS.troas.amb;await come('troas','calm');
   await say(TI,'Paul? You are up before the gulls. Have you slept at all?');
   await say(P,'I must tell them. But what do I tell them, and how?',TH)}
@@ -733,7 +733,7 @@ async function tell(){
     {q:'It was one night. Let us wait and see whether it comes again.',no:'Two roads were closed to me without a second telling. If this is a door opening, I will not ask for it to be opened twice.'},
     {q:'Tell them exactly what I saw, and no more.',ok:1}]);
   await Promise.all([walk(SI,P.x+30,P.y+2),walk(TI,P.x-28,P.y+3),walk(LU,P.x+56,P.y-2)]);SI.dir=-1;LU.dir=-1;TI.dir=1;
-  await say(P,'Brothers. During the night I saw a vision. A man was standing there, a Macedonian. He was urging me, and he said: "Step over into Macedonia and help us."');
+  await say(P,'Brothers. In the night I saw a vision. A man stood before me, a Macedonian. He begged me to cross over into Macedonia and help them.');
   await say(P,'That is all of it. I have added nothing, and I will not guess at more than I saw.');
   await say(SI,'Then let us weigh it together. What else do we know, besides what you saw?');
   let av=[{q:'In Asia we were forbidden to speak.',ok:1,r:[SI,'So the road west was not ours. That is one.']},
@@ -748,15 +748,15 @@ async function tell(){
   await say(P,'That is my conclusion too. And I am glad that it is not mine alone.');
   await say(P,quote('prov15'));
   F.concl=1;AU.mood='hope';SFX.good();
-  await narr('As soon as he had seen the vision, we tried to go into Macedonia, drawing the conclusion that God had summoned us to declare the good news to them. (Acts 16:10)',{dur:12000});
+  await narr('Once Paul had seen the vision, we set about getting to Macedonia without delay, for we concluded that God had called us to bring the good news to its people. (Acts 16:10)',{dur:12000});
   await narr('From this verse on the account says "we". Luke, who wrote it, was with them.',{dur:7000});codeBtn();return true}
-/* aboard: the crossing. A straight run to Samothrace, a night at anchor, and on the following day Neapolis (Acts 16:11). */
+/* aboard: the crossing. One course to Samothrace, a night at anchor, and on the following day Neapolis (Acts 16:11). */
 async function aboard(){const me=PC();
   if(eve())return say(me,me===P?"She is Leon's ship, and he is loading her. I have no business aboard.":'I have no business aboard. My business is sitting on that bale, holding his arm.');
   if(!F.concl)return say(me,me===P?'Not before the brothers have heard what I saw in the night.':'Paul has something to tell us first. I can see it in his face.');
   playAs(P);await say(P,'Leon. You are bound for Neapolis. Have you room for four men, who mean to pay their way?');
   await say(LE,'Room, yes. Pay it in hands, not in coin: I am short of two good arms until that one mends. Come aboard. This wind will not wait for any of us.');
-  await leg(4,['So we put out to sea from Troas and made a straight run to Samothrace. (Acts 16:11)']);
+  await leg(4,['So we left Troas by ship, and held one course all the way to Samothrace. (Acts 16:11)']);
   G.scene=deckScene;AU.mood='night';AU.amb={waves:.6,creak:.5,wind:.3};await fade(0,700);
   await narr('Samothrace has no good harbor. That night we lay at anchor under its mountain, and nobody went ashore.',{dur:8000});
   await say(TI,'I had never seen the sea before Troas. Now there is nothing else, and I cannot see the bottom of it.');
@@ -766,7 +766,7 @@ async function aboard(){const me=PC();
   await say(LU,'If this wind holds, we shall be in Neapolis tomorrow. Leon says that the same crossing can take far longer.');
   await say(TI,'What shall we find there, Paul?');
   await say(P,'People who need help. That is all that I was told. It is enough to sail on.');
-  await leg(6,['On the following day we came to Neapolis, "and from there we went to Philippi, a colony, which is the principal city of the district of Macedonia." (Acts 16:11, 12)',
+  await leg(6,['The next day brought us to Neapolis, and from there we went on to Philippi: a colony, and the foremost city of that district of Macedonia. (Acts 16:11, 12)',
     'From the harbor the great road to the west climbed over a pass and came down into the plain: some fifteen kilometers, three or four hours on foot.'],1);
   await come('philippi');await philIntro()}
 ROOMS.troas={space:.7,walk:[16,464,112,138],get mood(){return F.vision?(F.concl?'hope':'calm'):F.slung?'calm':'tense'},amb:()=>F.vision?{waves:.6,gulls:.6,creak:.3,wind:.3}:{waves:.5,gulls:.3,creak:.4,crowd:.15},hs:[
@@ -859,7 +859,7 @@ async function bench(){
   if(!clues())return say(P,'There is work on this bench for some days. But first I want to know where the worshippers of God meet in this city. That is what I crossed the sea for, and it was not the hemming of awnings.');
   await say(P,'Then until the Sabbath I sew, and the others find what work there is for them.');
   await walk(P,122,113);P.dir=-1;P.bow=true;SFX.sew();await wait(700);await fade(1,700);P.bow=false;
-  await narr('We stayed in this city for some days. (Acts 16:12)',{dur:6500});
+  await narr('We spent several days in that city. (Acts 16:12)',{dur:6500});
   await narr('Paul worked at his trade, and we lodged where we could pay for it. Then the seventh day came.',{dur:7500});
   F.sab=1;place8('philippi');enterRoom('philippi',P.x,P.y,P.dir);await fade(0,700);SFX.good();
   await say(P,'The Sabbath. Come, brothers: out by the gate, and down to the river. I think that there is a place of prayer there.');codeBtn()}
@@ -900,11 +900,11 @@ ZO.hs={name:'Zosime',actor:ZO,
   ask:{syn:askZosime},talk:askZosime,
   as:{luke:{look:'A seller of purple, and a talker. I should think that she knows the business of everybody in this row.',talk:()=>say(ZO,'A physician! Then you will want a cloak that tells people so. Violet is very well thought of.'),show:{'*':'I sell, sir. I do not buy.'}}}};
 /* ============ THE RIVER: a place of prayer, and a sister who asks to give ============ */
-/* "We sat down and began speaking to the women who had assembled" (Acts 16:13). Whatever Paul chooses to say, the scene comes to the same
-   sentence: "Jehovah opened her heart wide" (Acts 16:14). Nothing the player does wins her. Her baptism is told in the words of Acts
+/* They sit down and speak with the women who have come together (Acts 16:13). Whatever Paul chooses to say, the scene comes to the same
+   point: Jehovah opened her heart (Acts 16:14). Nothing the player does wins her. Her baptism is told as Acts tells it, in paraphrase,
    16:15 over the river, and not drawn. Then she urges them, and Paul has reasons to decline that are all true; she has one answer. */
 async function riverIntro(){if(F.sat||G.metRiv)return;G.metRiv=1;
-  await narr('On the Sabbath day we went outside the gate beside a river, where we thought there was a place of prayer. (Acts 16:13)',{dur:9500});
+  await narr('On the Sabbath we walked out through the gate to the riverside, where we supposed there would be a place of prayer. (Acts 16:13)',{dur:9500});
   await say(TI,'Women, Paul. Only women. And they are praying.');
   await say(P,quote('ps65'),TH);
   await say(P,'They have not seen us yet.',TH);codeBtn()}
@@ -918,59 +918,59 @@ async function approach(){const me=PC();
   await say(P,'Peace to you. We are strangers in Philippi, and we worship the God to whom you are praying. May we sit with you?');
   await say(PH,'Then you are not strangers on this bank. Sit, sirs. We have no synagogue to offer you: only the river, and each other.');
   F.sat=1;SFX.good();
-  await narr('"...and we sat down and began speaking to the women who had assembled." (Acts 16:13)',{dur:8500});codeBtn()}
+  await narr('...and there we sat down, and talked with the women who had come together. (Acts 16:13)',{dur:8500});codeBtn()}
 async function speak(){
   await think('These women pray to the God of Israel already. Where do I begin?',[
-    {q:'With the rains and the fruitful seasons, as at Lystra.',no:'At Lystra they had never heard his name. These women were praying to him when we came down the bank. I need not show them that he lives.'},
+    {q:'With the rain and the seasons of harvest, as at Lystra.',no:'At Lystra they had never heard his name. These women were praying to him when we came down the bank. I need not show them that he lives.'},
     {q:'With the letter from Jerusalem.',no:'The decrees are for congregations. There is no congregation on this bank yet: only women who are waiting, and do not know that what they are waiting for has come.'},
     {q:'With the Scriptures they know, and the one they promise.',ok:1}]);
-  await say(P,'You pray to Jehovah, the Hearer of prayer, and you know what the prophets wrote of the one whom he would send.');
+  await say(P,'You pray to Jehovah, who hears prayer, and you know what the prophets wrote of the one whom he would send.');
   await say(P,quote('isa53'));
   await say(P,'Isaiah wrote that of the Christ. It has happened, in our own days, in Jerusalem. His name is Jesus.');
   await say(P,quote('ps16'));
-  await say(P,'God did not leave him in the Grave. He raised him up, and many saw him alive. I am one of them.');
+  await say(P,'God did not abandon him to the Grave. He raised him up, and many saw him alive. I am one of them.');
   await say(SI,'I am from Jerusalem. I know men who ate with him after he was raised.');
   await say(TI,'My mother and my grandmother taught me the holy writings, as somebody taught them to you. Everything in them led here.');
   await say(LU,'I am a physician. I know what one life is worth to those who are losing it. This one was given for all of us.');
-  await narr('And a woman named Lydia, a seller of purple from the city of Thyatira and a worshipper of God, was listening, and Jehovah opened her heart wide to pay attention to the things Paul was saying. (Acts 16:14)',{dur:14000});
+  await narr('One of the listeners was a woman called Lydia, from the city of Thyatira, who sold purple and worshipped God. Jehovah opened her heart fully, so that she paid close attention to what Paul said. (Acts 16:14)',{dur:14000});
   await say(LY,'I came down here this morning to pray, sir, as I do on every Sabbath. I did not know that I was coming to hear this. Tell it to me again: all of it, from the beginning.');
   await say(P,'It was not my words that opened that heart. I have planted nothing here that was not waited for.',TH);
   await say(LY,'I am Lydia. I sell purple in this city. My home is Thyatira.');
   await say(TI,'Thyatira... That is in Asia, Paul.');
   await say(P,'It is.');
   await fade(1,800);place(LY,'river',260,127,-1);place(P,'river',230,131,1);await fade(0,800);
-  await narr('"Now when she and her household got baptized, she urged us:" (Acts 16:15)',{dur:8500});
+  await narr('She was baptized, and her household with her. Then she pressed us: (Acts 16:15)',{dur:8500});
   return invite()}
-/* She urged them, and "she just made us come". That she had to insist implies that they held back, and Paul's reasons were good ones
+/* She urged them, and would take no refusal (Acts 16:15). That she had to insist implies that they held back, and Paul's reasons were good ones
    (1 Corinthians 9:18; 2 Corinthians 12:14). But she is not asking about lodgings. */
 async function invite(){
-  await say(LY,'"If you have considered me to be faithful to Jehovah, come and stay at my house." (Acts 16:15)');
+  await say(LY,'If in your eyes I am faithful to Jehovah, then come: stay under my roof. (Acts 16:15)');
   await say(P,'You are kind, Lydia. But we have lodgings in the city, and we pay for them.');
-  await say(LY,'I did not ask whether you have a roof.');await say(LY,'If you have considered me to be faithful to Jehovah, come and stay at my house.');
+  await say(LY,'I did not ask whether you have a roof.');await say(LY,'If in your eyes I am faithful to Jehovah, then come: stay under my roof.');
   let av=[{q:'I have a trade, Lydia. I work, so that I need be a burden to nobody.',r:'I know what work is, sir: I have a trade too. I did not ask whether you can pay.'},
     {q:'We are four men. That is a heavy load for any house.',r:'My house has held more than four, and so has my table. That is not what I asked you.'},
     {q:'I want to offer the good news without cost.',r:'And so you have. It cost me nothing, and it is worth more than everything in my store. Now it is I who am offering.'}],n=0;
   for(;;){const i=await choose(av.map(o=>o.q).concat('Then we will come, Lydia, and gladly.'));if(i===av.length)break;
-    const o=av[i];await say(P,o.q);await say(LY,o.r);await say(LY,'If you have considered me to be faithful to Jehovah, come and stay at my house.');av=av.filter(x=>x!==o);n++;
+    const o=av[i];await say(P,o.q);await say(LY,o.r);await say(LY,'If in your eyes I am faithful to Jehovah, then come: stay under my roof.');av=av.filter(x=>x!==o);n++;
     if(n===1)await say(P,'The same sentence again. She is not asking about lodgings, or about silver.',TH);
     if(n===2){await say(P,quote('kings'),TH);await say(P,'Elisha did not tell the woman of Shunem that he had lodgings.',TH)}}
   await say(P,'Forgive me, Lydia. I have been answering a question that you did not ask. You asked whether we consider you faithful to Jehovah. We do. We will come, and gladly.');
   await say(LY,'Then come now. My household is waiting, and so is the bread.');
-  await narr('And she just made us come. (Acts 16:15)',{dur:6500});
+  await narr('She would take no refusal, and we went. (Acts 16:15)',{dur:6500});
   return finale()}
 async function finale(){await fade(1,800);G.scene=houseScene;AU.mood='rest';AU.amb={fire:.3,crowd:.15};await fade(0,800);
   await narr("Lydia's house was large enough for four guests. That evening it held her whole household besides.",{dur:8000});
   await say(LY,'This room is yours for as long as you stay in Philippi. And when there are brothers in this city, let them meet in it.');
   await say(TI,'At the ferry we did not know where we were going.');
   await say(P,'We know now where we were sent, Timothy. What we were sent into, we shall see. But tonight we have a table, and a sister.');
-  await narr('Some ten years later Paul wrote to the congregation in Philippi: "I thank my God always when I remember you ... because of the contribution you have made to the good news from the first day until this moment." (Philippians 1:3, 5)',{dur:13500});
-  await narr('And of the man who was with them from Troas on, he wrote: "Luke, the beloved physician". (Colossians 4:14)',{dur:8500});
+  await narr('Some ten years later Paul wrote to the congregation in Philippi that he thanked his God every time he remembered them, for the share they had had in the good news ever since the very first day. (Philippians 1:3, 5)',{dur:13500});
+  await narr('And of the man who was with them from Troas on, he wrote that Luke was a physician, and beloved. (Colossians 4:14)',{dur:8500});
   await journey();
   endScreen({title:'The Man from Macedonia',text:'Paul set out and was turned, set out again and was turned again, and kept walking until a door opened. He told three brothers exactly what he had seen, and no more. And when a new sister asked to give, he let her.',
     extra:[F.awn&&'An awning mended in the street of the purple sellers'].filter(Boolean),
     based:"Based on Acts 16:6-15; Philippians 1:3-5 and Colossians 4:14. Supporting characters and dialogue are imaginative; the events are from the Scriptures. Acts does not say how the spirit forbade them, what road they took, how Luke came to be with them, which river it was, why Philippi had no synagogue, what was said beside the river, or who belonged to Lydia's household.",
-    go:'Click to return to the title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+    go:'Click to continue to Chapter Nine',code:['Chapter Nine code: {code}',codeOf(9,0)]});
+  await wait(1500);ov.onclick=()=>startChapter(9);await new Promise(()=>{})}
 async function toCity(){const me=PC();
   if(F.sat)return say(me,me===P?'Not now. We have sat down among them, and I have not yet said what I crossed the sea to say.':'Paul has not spoken yet. I would not miss it.');
   if(F.sab)return say(me,me===P?'They are here, and they are praying. I am not going back through that gate without a word to them.':'With those women on the bank? Paul will not go, and neither will I.');
@@ -1101,7 +1101,7 @@ const TABLETS={
     {name:'Sosias',note:"Leon's steersman. A jar slipped from its sling and laid his forearm open.",if:eve},
     {name:'Quintus',note:'An old soldier, who sits by the west gate of Philippi and sees everybody who goes through it.',if:()=>inPhi()||inRiv()},
     {name:'Zosime',note:'A seller of purple in Philippi. The shop beside hers is closed every seventh day.',if:()=>inPhi()||inRiv()},
-    {name:'Lydia',note:()=>F.sat?'A seller of purple from the city of Thyatira, and a worshipper of God. (Acts 16:14)':'A seller of purple from Thyatira, who closes her shop every seventh day.',if:()=>!!F.shop}],
+    {name:'Lydia',note:()=>F.sat?'She comes from the city of Thyatira, sells purple, and worships God. (Acts 16:14)':'A seller of purple from Thyatira, who closes her shop every seventh day.',if:()=>!!F.shop}],
   tasks:[
     {t:'Take the paved road west, to Ephesus and the cities of Asia.',if:()=>inFork()&&!F.asia},
     {t:'Asia is closed to us. Go on by the road that is still open.',if:()=>inFork()&&F.asia},
@@ -1151,7 +1151,7 @@ const OPENING=[['iconium','antiochp','new'],['antiochp','westroad','new']];
 async function start8(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();
   await cut(async()=>{await fade(1,500);setChapter(8);G.end={};enterRoom('fork',...ENT.fork);codeBtn();
     try{await need('map');await SHARED.map.journey(OPENING,{labels:LABELS,view:'aegean',text:[
-      'About 50 C.E. Paul, Silas and Timothy had delivered the decrees in the cities, and the congregations continued to be made firm in the faith and to increase in number day by day. (Acts 16:4, 5)',
+      'About 50 C.E. Paul, Silas and Timothy had delivered the decrees in the cities, and the congregations kept growing firmer in the faith, and larger in number with every day. (Acts 16:4, 5)',
       'Acts does not name those cities, or the road beyond them. Some days further on, a paved road ran west: down to Ephesus, and the most populated part of the province of Asia.']})}catch(e){console.error(e)}
     await fade(1,500);G.scene=null;setScore(MUSIC);AU.mood=ROOMS.fork.mood;AU.amb=ROOMS.fork.amb;codeBtn();await fade(0,600);G.metFork=1;
     await say(P,'There it is, brothers: the road to Ephesus. City after city, and thousands of people in them who have never heard the name of Jesus.');

@@ -346,7 +346,7 @@ Object.assign(COMBO,{
     delItem('cloth');addItem('patch',1);addItem('strips');F.cutCloth=1},
   'rope+strips':async()=>{SFX.sew();await say(P,'I braid the strips three-fold into a cord, then splice it to the rope.');
     delItem('rope');delItem('strips');addItem('longrope',1);F.longRope=1;SFX.good();
-    await say(P,'"A threefold cord cannot quickly be torn apart." (Ecclesiastes 4:12) Now it will reach the ground.')},
+    await say(P,'A cord of three strands is not soon torn. (Ecclesiastes 4:12) Now it will reach the ground.')},
   'awl+basket':reinforce,'basket+straps':reinforce,'basket+thread':reinforce,
   'awl+straps':()=>say(P,'The straps must be sewn onto something that needs their strength.'),
   'straps+thread':()=>say(P,'The straps must be sewn onto something that needs their strength.'),
@@ -402,10 +402,10 @@ const TABLETS={
     {t:'Make the rope fast to something that will hold.',if:()=>F.inHouse&&!F.ropeTied},
     {t:'Fasten the basket to the rope, and open the way out.',if:()=>F.inHouse&&!(F.basketOn&&F.shutters)}],
   scripture:[
-    {ref:'Proverbs 3:5, 6',text:'Trust in Jehovah with all your heart, And do not rely on your own understanding. In all your ways take notice of him, And he will make your paths straight.'},
-    {ref:'Proverbs 15:1',text:'A mild answer turns away rage, But a harsh word stirs up anger.'},
-    {ref:'Proverbs 25:21',text:'If your enemy is hungry, give him bread to eat; If he is thirsty, give him water to drink.'},
-    {ref:'Ecclesiastes 4:12',text:'A threefold cord cannot quickly be torn apart.'}]};
+    {ref:'Proverbs 3:5, 6',gist:'Let your whole heart rely on Jehovah, and not on your own insight. Keep him in view wherever you go, and he will straighten the road before you.'},
+    {ref:'Proverbs 15:1',gist:'A gentle reply turns rage aside, but a rough word kindles anger.'},
+    {ref:'Proverbs 25:21',gist:'Is your enemy hungry? Feed him bread. Is he thirsty? Give him water.'},
+    {ref:'Ecclesiastes 4:12',gist:'A cord of three strands is not soon torn.'}]};
 /* ============ ROOMS, HOTSPOTS, CHARACTERS ============ */
 const E=ACT.eliab,Z=ACT.zakkai,GD=ACT.guard,N=ACT.naomi,J=ACT.jesse;
 /* ---------- Workshop ---------- */
@@ -445,7 +445,7 @@ E.hs={name:'Eliab',actor:E,look:'Eliab, a basket weaver and a faithful brother. 
     '*':'Keep it, brother. You will need it more than I.'},
   ask:{basket:'I know. I wove it, and then I wore it out. Wicker alone will not bear a man; it wants leather beneath it.',
     rope:'Then make it longer. You have cloth, and a tentmaker knows how cloth becomes cord.',
-    thirst:['Is he? He stands there to catch you, Saul.','And yet it is written: "If he is thirsty, give him water to drink." (Proverbs 25:21)']},
+    thirst:['Is he? He stands there to catch you, Saul.','And yet it is written that an enemy who is thirsty is to be given water. (Proverbs 25:21)']},
   talk:()=>talkTree([
     {q:'Tell me the plan once more.',a:async()=>{await say(E,"Sister Naomi's house is built on the city wall. Her upper window looks out over open country.");
       await say(E,'We lower you from it in a basket, by night. The gates will never see you.')}},
@@ -603,7 +603,7 @@ async function start(){ov.onclick=null;ov.className='';audioInit();SFX.good();G.
     await narr('Damascus, about 36 C.E.',{dur:2800});
     await narr('Saul of Tarsus, later known as the apostle Paul, once came to this city to arrest the disciples of Jesus.');
     await narr('Now he himself preaches in the synagogues that Jesus is the Son of God.');
-    await narr('Opposers have plotted to do away with him. The governor under King Aretas guards the city, and the gates are watched day and night.');
+    await narr('Opposers have agreed among themselves to kill him. The governor under King Aretas has the city guarded, and the gates are watched by day and by night.');
     await narr('But tonight, the brothers have a plan.',{dur:2800});
     await fade(1,500);G.scene=null;enterRoom('workshop',58,118,1);await fade(0,500);
     await say(E,'Brother Saul! Come away from the door.');await walk(P,152,122);
@@ -627,7 +627,7 @@ async function finale(){AU.mood='calm';await wait(500);
   G.scene=wallScene;G.end={heads:1,by:46,rider:1};codeBtn();AU.mood='hope';AU.amb={crickets:.8,wind:.5};await fade(0,600);
   const creak=setInterval(()=>SFX.creak(),1300);
   const down=tween(11000,k=>{G.end.by=46+74*(k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2)});
-  await narr('His disciples took him and let him down by night through an opening in the wall, lowering him in a basket. (Acts 9:25)',{dur:7500});
+  await narr('One night his disciples took him to an opening in the wall and let him down in a basket. (Acts 9:25)',{dur:7500});
   await down;clearInterval(creak);await wait(600);
   G.end.rider=0;G.end.px=112;G.end.py=124;SFX.step();await wait(700);
   const off=tween(9000,k=>{G.end.px=112+150*k;G.end.py=124+6*Math.sin(k*3)-k*8});
