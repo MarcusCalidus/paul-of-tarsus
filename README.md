@@ -1,4 +1,4 @@
-# Paul of Tarsus: The Roman Road Runner
+# Paul of Tarsus: On the Roads of Rome
 
 A browser point-and-click adventure in the style of early-1990s verb-and-inventory adventure games. You play Saul of Tarsus, later known as the apostle Paul, a tentmaker who gets out of tight spots with his trade, his brothers and prayer rather than with force.
 
@@ -10,7 +10,7 @@ There are eight chapters so far, in English and German. The game is a small engi
 
 **Play online: https://marcuscalidus.github.io/paul-of-tarsus/**
 
-Or download this repository and open `index.html` in any current desktop browser (keep the `levels` folder next to it). Pick a chapter on the title screen; the game saves your place by itself, so next time the title screen offers to continue. Nothing to install or build.
+Or download this repository and open `index.html` in any current desktop browser (keep the `levels` folder next to it). Pick a chapter on the title screen (scroll the list for the later ones); the game saves your place by itself, so next time the title screen offers to continue. Nothing to install or build.
 
 The online version is served by GitHub Pages straight from the root of the `main` branch.
 
@@ -488,7 +488,7 @@ Edit a file and reload.
 node tools/playtest.mjs
 ```
 
-It plays the game once in English and once more in every other language under `lang/`, each followed by `resume`, which reloads the game to check that the autosave brings the player back (`continue` stops at the title screen that offers it). Pass stop names to save screenshots to `tools/out/` instead, for example `node tools/playtest.mjs title workshop harbor`; put a language in front of a stop to take it in that language: `node tools/playtest.mjs de:title de:tablets`. The stop names are defined in `tools/playtest-harness.html`; Chapter Three stops such as `tarsus`, `court` and `antioch` start that chapter directly, and so do Chapter Four stops such as `seleucia`, `salamis` and `paphos` Chapter Five stops such as `perga`, `ford` and `pisidia`, and Chapter Six stops such as `iconium`, `lystra` and `derbe`. Chapter Seven stops such as `council`, `gates` and `lystra7` start that chapter in the same way; its opening scenes have stops of their own (`dispute7`, `council`, `letter7`, `parting7`, `map7`). Chapter Eight stops such as `fork8`, `troas8` and `river8` do the same, and its scenes and maps have theirs (`vision8`, `deck8`, `house8`, `map8`, `sea8`). The stop `beasts` shows the animal sprites enlarged; the playtest fails if any part of one (a tail, a head, a highlight) is not attached to the rest.
+It plays the game once in English and once more in every other language under `lang/`, each followed by `resume`, which reloads the game to check that the autosave brings the player back (`continue` stops at the title screen that offers it, and `titlescroll` at the title screen with its chapter list scrolled to the end). Pass stop names to save screenshots to `tools/out/` instead, for example `node tools/playtest.mjs title workshop harbor`; put a language in front of a stop to take it in that language: `node tools/playtest.mjs de:title de:tablets`. The stop names are defined in `tools/playtest-harness.html`; Chapter Three stops such as `tarsus`, `court` and `antioch` start that chapter directly, and so do Chapter Four stops such as `seleucia`, `salamis` and `paphos` Chapter Five stops such as `perga`, `ford` and `pisidia`, and Chapter Six stops such as `iconium`, `lystra` and `derbe`. Chapter Seven stops such as `council`, `gates` and `lystra7` start that chapter in the same way; its opening scenes have stops of their own (`dispute7`, `council`, `letter7`, `parting7`, `map7`). Chapter Eight stops such as `fork8`, `troas8` and `river8` do the same, and its scenes and maps have theirs (`vision8`, `deck8`, `house8`, `map8`, `sea8`). The stop `beasts` shows the animal sprites enlarged; the playtest fails if any part of one (a tail, a head, a highlight) is not attached to the rest.
 
 ## Contributing
 

@@ -93,6 +93,15 @@
     AU.ctx=fake('interrupted');dispatchEvent(new PointerEvent('pointerup',{bubbles:true}));ok(n===1,'a tap wakes sound that iOS interrupted');
     AU.ctx=fake('suspended');key('Shift');ok(n===2,'a key wakes sound the browser held back');
     AU.ctx=fake('running');dispatchEvent(new MouseEvent('click'));ok(n===2,'running sound is left alone');AU.ctx=real}
+  /* the chapters scroll in their own box: its far edge fades while more lies beyond it, and a click between entries starts nothing */
+  {const l=ov.querySelector('.chs'),fade=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+    ok(l&&[...l.children].every(p=>p.dataset.ch)&&l.children.length===Object.keys(CHAP).length,'the chapters sit in a list of their own');
+    await fade();const more=l.scrollHeight>l.clientHeight+1;
+    ok(!l.classList.contains('up')&&l.classList.contains('down')===more,'at the top, only the bottom edge fades, and only when there is more below');
+    if(more){l.scrollTop=l.scrollHeight;l.dispatchEvent(new Event('scroll'));
+      ok(l.classList.contains('up')&&!l.classList.contains('down'),'scrolled to the end, the top edge fades and the bottom does not');
+      l.click();await wait(60);ok(ov.classList.contains('on')&&!G.room,'a click on the list between entries starts no chapter');
+      halt('titlescroll',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});l.scrollTop=0;l.dispatchEvent(new Event('scroll'))}}
   /* the voices, rendered offline on the game's own mixer (audioGraph): every instrument and drum stroke sounds, stays finite and does not clip */
   {const SR=22050,offline=async(fn,dur)=>{const off=new OfflineAudioContext(1,Math.ceil(SR*dur),SR),keep=Object.assign({},AU);AU.ctx=off;audioGraph(off);
       try{fn(off)}finally{for(const k in AU)AU[k]=keep[k]}return(await off.startRendering()).getChannelData(0)},
