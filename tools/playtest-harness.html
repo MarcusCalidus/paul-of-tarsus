@@ -15,6 +15,9 @@
  const actor=async(v,a)=>{if(v)verb(v);view(a.x,a.y-18);await idle()};
  const at=(type,x,y)=>{const r=vp.getBoundingClientRect(),e=new MouseEvent(type,{clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+y/144*r.height,bubbles:true,cancelable:true});vp.dispatchEvent(e);return e.defaultPrevented};
  const move=(x,y)=>at('mousemove',x,y),rclick=(x,y)=>at('contextmenu',x,y),dbl=(x,y)=>at('dblclick',x,y);
+ /* a screenshot does not show the mouse pointer: paintPointer points at a place in the room and paints the game's own pointer there */
+ const paintPointer=(x,y)=>{const sc=vp.getBoundingClientRect().width/320,d=devicePixelRatio||1,u=clamp(Math.round(sc*d/2),1,6),p=pointerArt(u);move(x,y);
+   p.style.cssText=`position:absolute;z-index:8;pointer-events:none;left:${(x-G.cam)*sc-1.5*u/d}px;top:${y*sc-1.5*u/d}px;width:${p.width/d}px;height:${p.height/d}px`;vp.appendChild(p)};
  const rclickEl=el=>{const e=new MouseEvent('contextmenu',{bubbles:true,cancelable:true});el.dispatchEvent(e);return e.defaultPrevented};
  const key=(k,type)=>dispatchEvent(new KeyboardEvent(type||'keydown',{key:k,bubbles:true,cancelable:true}));
  const lit=()=>[...document.querySelectorAll('#verbs button.def')].map(b=>b.dataset.v).join();
@@ -776,6 +779,19 @@
   move(...hs('spool of thread'));ok(lit()==='pickup'&&$('#status').textContent===line('pickup','spool of thread')&&!document.querySelector('#verbs button.sel'),'hover lights Pick up');
   move(ACT.eliab.x,ACT.eliab.y-18);ok(lit()==='talk'&&$('#status').textContent===line('talk','Eliab'),'hover lights Talk to');
   halt('defverb');
+  /* the pointer over the view is the game's own arrow, painted in code, and never the browser's crosshair, which is a cross (CONTRIBUTING section 3).
+     Every light pixel of it lies inside a dark contour, so it shows on any backdrop; it is one piece; its tip is the pixel that points; it grows with the game. */
+  {const cur=getComputedStyle(vp).cursor,a=pointerArt(1),w=a.width,h=a.height,d=a.getContext('2d').getImageData(0,0,w,h).data,
+     on=(x,y)=>x>=0&&y>=0&&x<w&&y<h&&d[(y*w+x)*4+3]>0,light=(x,y)=>on(x,y)&&d[(y*w+x)*4]>100;
+   ok(/^(url|image-set|-webkit-image-set)\(/.test(cur)&&/data:image\/png/.test(cur)&&!/crosshair/.test(cur),"the view has the game's own pointer, not a crosshair");
+   let n=0,bare=0,all=0;for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(on(x,y))all++;if(light(x,y)){n++;for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++)if(!on(x+i,y+j))bare++}}
+   ok(n>60&&!bare,'every light pixel of the pointer lies inside its dark contour ('+n+')');
+   const todo=[[1,1]],got=new Set(['1,1']);while(todo.length){const[x,y]=todo.pop();for(const[i,j]of[[1,0],[-1,0],[0,1],[0,-1]]){const k=(x+i)+','+(y+j);if(on(x+i,y+j)&&!got.has(k)){got.add(k);todo.push([x+i,y+j])}}}
+   ok(got.size===all,'the pointer is one piece');
+   const sc=vp.getBoundingClientRect().width/320,u=clamp(Math.round(sc*(devicePixelRatio||1)/2),1,6),hot=cur.match(/\) (\d+) (\d+), default$/);
+   ok(light(1,1)&&!light(0,0)&&hot&&+hot[1]===Math.round(1.5*u)&&+hot[2]===+hot[1],'its tip is the pixel that points');
+   const big=pointerArt(3),c0=vp.style.cursor;pointer(sc+2);const c1=vp.style.cursor;fit();
+   ok(big.width===3*w&&big.height===3*h&&c1!==c0&&vp.style.cursor===c0,'the pointer grows with the game')}
   move(...hs('door to the street'));ok(lit()==='open'&&$('#status').textContent===line('open','door to the street'),'hover lights Open on a door');
   verb('look');move(...hs('spool of thread'));ok(lit()===''&&$('#status').textContent===line('look','spool of thread'),'no default lit while a verb is chosen');verb('look');
   move(...hs('stool'));ok(lit()==='look','hover lights Look at');
@@ -785,6 +801,7 @@
   await act(null,'spool of thread');ok(has('thread')&&F.gotThread,'plain click on an item picks it up');
   place(P,'workshop',290,124,-1);G.cam=ART.workshop.w-320;G.speedAll=25;view(...hs('door to the street'));await wait(60);view(...hs('door to the street'));dbl(...hs('door to the street'));
   let t0=performance.now();await idle();ok(G.room==='street'&&performance.now()-t0<2500,'double-click on an exit skips the walk');G.speedAll=500;
+  halt('pointer',()=>paintPointer(...hs('city gate')));
   await act(null,"Eliab's door");ok(G.room==='workshop','back in the workshop');
   key('Tab');await wait(250);const want=ROOMS.workshop.hs.filter(h=>(!h.vis||h.vis())&&h.x+h.w>G.cam+4&&h.x<G.cam+316).length+1,tg=[...document.querySelectorAll('#tags .tag')];
   ok($('#tags').classList.contains('on')&&tg.length===want&&tg.some(t=>t.textContent===T('Eliab'))&&tg.every(t=>t.textContent.length>2),'Tab labels every hotspot ('+tg.length+')');

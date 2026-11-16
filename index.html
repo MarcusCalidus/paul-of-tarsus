@@ -19,7 +19,7 @@ body{display:flex;align-items:center;justify-content:center}
 #top button{font:inherit;color:var(--gold);background:rgba(10,6,4,.55);border:var(--px) solid var(--dim);text-shadow:inherit;
   padding:0 calc(var(--s)*3px);height:calc(var(--s)*8px);cursor:pointer}
 #top button:hover{color:var(--hi);border-color:var(--gold)}
-#view{position:relative;width:calc(var(--s)*320px);height:calc(var(--s)*144px);overflow:hidden;cursor:crosshair}
+#view{position:relative;width:calc(var(--s)*320px);height:calc(var(--s)*144px);overflow:hidden;cursor:default}
 #screen{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 #speech{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3}
 .line{position:absolute;transform:translateX(-50%);text-align:center;width:max-content;
@@ -183,10 +183,29 @@ function mk(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;c
 /* Rooms are painted at HR canvas pixels per room pixel, so the basic rectangle snaps to half a room pixel. */
 const HR=2,hp=v=>Math.round(v*HR)/HR;
 const R=(g,x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(hp(x),hp(y),hp(w),hp(h))};
+/* The pointer over the view is painted here, like everything else: a gold arrow on the grid of the view's canvas pixels, with a dark contour
+   all round it, so that it shows in a night scene and on a sunlit wall alike. The browser's own crosshair is thin and easily lost, and it is
+   a cross (CONTRIBUTING section 3). h is the lit edge, g the gold and d the shade; the tip is the first pixel. */
+const PTR=['h','hg','hgg','hggg','hgggg','hggggg','hgggggg','hggggggg','hgggggggg','hggggggggg','hggggggdddd','hgggggd','hgg.ggd','hg..ggd','h....ggd','.....ggd','......ggd','......ggd'],
+  PTRC={h:'#fff3b8',g:'#e2b24c',d:'#a8782c'};
+/* u canvas pixels to the grid pixel. The contour adds one grid pixel on every side and goes round all eight neighbours of a painted pixel. */
+function pointerArt(u){const w=Math.max(...PTR.map(r=>r.length)),h=PTR.length,[c,g]=mk((w+2)*u,(h+2)*u),at=(x,y)=>PTRC[(PTR[y]||'')[x]];
+  for(let y=-1;y<=h;y++)for(let x=-1;x<=w;x++){let col=at(x,y);
+    for(let j=-1;j<=1&&!col;j++)for(let i=-1;i<=1;i++)if(at(x+i,y+j)){col='#0b0812';break}
+    if(col){g.fillStyle=col;g.fillRect((x+1)*u,(y+1)*u,u,u)}}
+  return c}
+/* The pointer grows with the layout (s CSS pixels to the room pixel) and is painted anew only when its size changes. On a display with more
+   than one device pixel to the CSS pixel the picture is handed over at that density; a browser that does not take that form keeps the plain
+   one set just before it. Browsers refuse a cursor larger than 128 pixels, so the grid pixel stops growing at six. */
+let ptrKey='';
+function pointer(s){const d=window.devicePixelRatio||1,u=clamp(Math.round(s*d/2),1,6),key=u+'@'+d;if(key===ptrKey)return;ptrKey=key;
+  const el=$('#view'),css=(n,img)=>`${img} ${Math.round(1.5*n)} ${Math.round(1.5*n)},default`,u1=clamp(Math.round(u/d),1,6);
+  el.style.cursor=css(u1,`url(${pointerArt(u1).toDataURL()})`);
+  if(d!==1)el.style.cursor=css(u/d,`-webkit-image-set(url(${pointerArt(u).toDataURL()}) ${d}x)`)}
 /* layout scale */
 function fit(){const top=10,st=13,pn=53,tot=144+top+st+pn;
-  const d=window.devicePixelRatio||1,s=Math.min(innerWidth/320,innerHeight/tot),k=Math.floor(s*d)/d;
-  document.documentElement.style.setProperty('--s',(k>=1?k:Math.max(.5,s)).toFixed(3))}
+  const d=window.devicePixelRatio||1,s=Math.min(innerWidth/320,innerHeight/tot),k=Math.floor(s*d)/d,sc=k>=1?k:Math.max(.5,s);
+  document.documentElement.style.setProperty('--s',sc.toFixed(3));pointer(sc)}
 addEventListener('resize',fit);fit();
 /* flags & inventory */
 const F=G.flags;
