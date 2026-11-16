@@ -74,7 +74,7 @@
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
     &&ov.textContent.includes('PAULUS VON TARSUS')&&$('#code').textContent==='CODE EINGEBEN'&&$('#mute').textContent.includes('TON AN')&&document.title.startsWith('Paulus'),'German on the title screen, in the panel and in the top bar');
   if(!/[?&]keep=1/.test(location.search))ok(store('paul.save')===null&&!ov.querySelector('[data-cont]')&&ov.querySelector('[data-ch="1"]').classList.contains('go'),'a first visit has nothing to continue: Chapter One leads the list');
-  /* the title screen holds its whole list: nothing on it lies above or below the view, with seven chapters or more */
+  /* the title screen holds its whole list: nothing on it lies above or below the view, with eight chapters or more */
   const inOv=()=>{const r=ov.getBoundingClientRect();return[...ov.children].every(el=>{const q=el.getBoundingClientRect();return q.top>=r.top-1&&q.bottom<=r.bottom+1})};
   ok(inOv()&&ov.querySelectorAll('[data-ch]').length===Object.keys(CHAP).length,'the title screen holds every chapter: '+Object.keys(CHAP).length);
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
@@ -504,15 +504,220 @@
     said('Then, indeed, the congregations continued to be made firm in the faith and to increase in number day by day. (Acts 16:5)'),'chapter seven complete screen shown');
   ok(said('There were prophecies about Timothy, and the body of elders laid their hands on him, as Paul did. It may have been at this time. (1 Timothy 1:18; 4:14; 2 Timothy 1:6)'),'the laying on of hands is told with its hedge: it may have been at this time');
   ok(ov.textContent.includes(T('A psalm read to Lois')),'the kindness is named on the closing screen');
-  ok(/Tarsus/.test(ov.textContent)&&/Lois/.test(ov.textContent)&&ov.textContent.includes(T('Click to return to the title')),'the closing screen says what the account leaves unsaid');
+  ok(/Tarsus/.test(ov.textContent)&&/Lois/.test(ov.textContent)&&ov.textContent.includes(T('Click to continue to Chapter Eight')),'the closing screen says what the account leaves unsaid');
   {const r=ov.getBoundingClientRect(),bad=[...ov.children].filter(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});if(bad.length)tight.add('closing screen: '+bad[0].textContent.slice(0,40))}
-  ok(store('paul.save')===null,'a finished game keeps no save');
+  ok(store('paul.save')===codeOf(8,0)&&ov.textContent.includes(T('Chapter Eight code: {code}',{code:codeOf(8,0)})),'chapter seven ends with a chapter eight code, and the browser keeps it');
   {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===6&&L.every(l=>l.k===1)&&M.state.seen.has('antioch')&&M.state.seen.has('ciliciangates')&&M.state.seen.has('iconium'),'chapter seven ends on the map: from Antioch by Tarsus and the Cilician Gates to Derbe, Lystra and Iconium');
     ok(cross(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+clear());
     ok(!apart(),'and no place on it stands in the name of a region, or beside it in one line'+apart())}
   halt('journey7',()=>{ov.className=''});halt('final7')};
   if(C7){await ch7();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+  /* ---------------- Chapter Eight ---------------- */
+  /* Chapter Eight stops start Chapter Eight from the title screen. Like Chapter Seven's, its test is a function of its own: the full run
+     calls it when Chapter Seven has ended, and a Chapter Eight stop calls it at once. all8 halts nowhere. */
+  const C8=/^(map8|sea8|vision8|deck8|house8|fork8|closed8|ferry8|troas8|bind8|sling8|morning8|concl8|philippi8|gate8|riverw8|shop8|river8|sit8|lydia8|journey8|final8|deutsch8|all8)$/.test(stop);
+  const ch8=async()=>{let LU;const P8=i=>T(CHAP[8].tablets.scripture[i].text),said=t=>heard.includes(T(t)),quoted=i=>heard.some(h=>h.includes(P8(i))),A=id=>ACT[id];
+  const cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
+      for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;return n},
+    inWin=id=>{const[x,y]=SHARED.map.where(id);return x>20&&x<300&&y>8&&y<136},clear=()=>mapClear()?'':': '+[...mapClear.bad].join(', '),
+    until=async(fn,n)=>{for(let i=0;i<(n||6000)&&!fn();i++)await wait(30);await idle()},
+    /* apart: no two names on the map overlap */
+    apart=()=>{const b=SHARED.map.state.boxes,bad=[];for(let i=0;i<b.length;i++)for(let j=i+1;j<b.length;j++)if(!(b[i][2]+1<b[j][0]||b[j][2]+1<b[i][0]||b[i][3]+.5<b[j][1]||b[j][3]+.5<b[i][1]))bad.push(b[i][4]+' / '+b[j][4]);return bad.length?': '+bad.join(', '):''};
+  /* the scenes of the chapter, each on its own */
+  const scene=async(k,line)=>{await loadLevel(8);ov.className='';ov.onclick=null;setChapter(8);G.scene=CHAP[8].scenes[k];G.busy=true;lock(true);status();narr(line,{dur:9000})};
+  if(stop==='vision8'){await scene('dark','And during the night a vision appeared to Paul—a Macedonian man was standing there urging him and saying: "Step over into Macedonia and help us." (Acts 16:9)');halt('vision8')}
+  if(stop==='deck8'){await scene('deck','Samothrace has no good harbor. That night we lay at anchor under its mountain, and nobody went ashore.');halt('deck8')}
+  if(stop==='house8'){await scene('house','And she just made us come. (Acts 16:15)');halt('house8')}
+  if(stop==='map8'||stop==='sea8'){await loadLevel(8);await need('map');ov.className='';ov.onclick=null;setChapter(8);G.busy=true;lock(true);status();const R8=CHAP[8].route;
+    await SHARED.map.journey(stop==='map8'?[['iconium','antiochp','new'],['antiochp','westroad','new']]:R8.map((l,i)=>i>3?[l[0],l[1],'new']:l),{view:'aegean',speed:300});
+    ok(G.scene===SHARED.map.draw&&inWin('iconium')&&inWin('antiochp')&&(stop==='map8'||inWin('troas')&&inWin('samothrace')&&inWin('neapolis')&&inWin('philippi')),'the map looks through its Aegean window: from Iconium to Philippi');
+    ok(mapClear(),'no name on the map crosses a coast, an island or a route ('+SHARED.map.state.boxes.length+' names)'+clear());ok(cross(SHARED.map.state.legs)===0,'no two routes cross');ok(!apart(),'no two names overlap'+apart());
+    narr(stop==='map8'?'About 50 C.E. Paul, Silas and Timothy had delivered the decrees in the cities, and the congregations continued to be made firm in the faith and to increase in number day by day. (Acts 16:4, 5)':'So we put out to sea from Troas and made a straight run to Samothrace. (Acts 16:11)',{dur:9000});halt(stop)}
+  let sawMap=0;heard.length=0;(C8?document.querySelector('#overlay [data-ch="8"]'):ov).click();
+  for(let i=0;i<4000&&!(G.ch===8&&G.room==='fork'&&!G.scene&&!G.busy);i++){if(SHARED.map&&G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===2)sawMap=1;await wait(30)}
+  await idle();LU=ACT.luke;const SI=A('silas8'),TI=A('timothy8');
+  ok(G.ch===8&&G.room==='fork'&&!G.scene&&!G.busy&&srt()==='awl,knife,tablets,thread'&&SI.room==='fork'&&TI.room==='fork'&&!LU.room&&A('attalos').room==='fork'&&sawMap&&
+    said('We know what to preach, and how. And there lies the where, paved and waiting.'),'chapter eight opens on the map and starts on the plateau, with Silas and Timothy, and without Luke ['+[G.ch,G.room,!!G.scene,G.busy,srt(),sawMap,heard.length].join()+']');
+  ok(!heard.some(h=>h.includes('16:6')||h.includes('16:7')),'the opening does not tell beforehand that the road will be closed');
+  halt('fork8',()=>{say(A('attalos'),'To Ephesus? Then walk with me, friends. I take wool down that road four times a year, and a road is shorter in company.')});
+  ok(/^8-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===8&&decode(makeCode()).w!=null,'chapter eight code format (wide, nine characters) '+makeCode());
+  ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Luke'))&&$('#swap').disabled,'the panel names Luke, and the button waits until he is with them');fitVerbs();
+  key('c');await idle();ok(PC()===P,'C does nothing while Luke is away');
+  if(lang==='de'){move(...hs('track to the north'));ok($('#status').textContent==='Gehe zu Weg nach Norden','German status line: Gehe zu Weg nach Norden');verb('use');item('awl');move(...hs('milestone'));
+    ok($('#status').textContent==='Benutze Ahle mit Meilenstein','German status line: Benutze Ahle mit Meilenstein');verb('use');G.hover=null;status()}
+  halt('deutsch8',()=>{item('tablets')});
+  /* the plateau: a road that is closed, and a road that is open */
+  {const el=await tabs();ok(leaf(0).length>=3&&leaf(1).length===8&&leaf(1,P8(1)).length===1&&leaf(0,T('Take the paved road west, to Ephesus and the cities of Asia.')).length===1,'the tablets on the plateau: people, the open task and eight passages');el.click();await idle()}
+  heard.length=0;await act(null,'track to the north');ok(G.room==='fork'&&!F.asia&&said('North? That track runs toward Bithynia. Our road is the paved one: west, to Ephesus and the cities of Asia.'),'the track north is not Paul\'s road yet');
+  heard.length=0;await act(null,'road east');ok(G.room==='fork'&&heard.length===1,'and there is no going back');
+  pray();await idle();ok(hint()[0]==='west8','the hint points down the paved road');
+  heard.length=0;await act('look','paved road west');ok(quoted(1),'looking down the road west, Paul quotes Isaiah on his tablets, word for word');
+  heard.length=0;await act('look','milestone');ok(quoted(0),'and at the milestone, the proverb');
+  await sweep(A('attalos'),SI,TI);
+  heard.length=0;await act(null,'paved road west');
+  ok(nq()===3&&!F.asia&&said('But they were "forbidden by the holy spirit to speak the word in the province of Asia." (Acts 16:6)')&&said('How this was made known to them, the account does not say.'),'the road west: forbidden, in the words of Acts 16:6; how, the game does not say. Three things Paul could do');
+  halt('closed8');
+  await pickQ('We wait here');ok(nq()===2&&!F.asia,'waiting at a fork chooses nothing');
+  await pickQ('We turn back');ok(nq()===1&&!F.asia,'nor were they sent to walk one road twice');
+  heard.length=0;await choose(0);ok(F.asia&&!G.busy&&said('I do not know why, Timothy. I know who it is that forbids. That is enough to turn my feet.')&&said('Nothing is wrong with your road, Attalos. The one who sent us has closed it to us. I cannot tell you more, because I do not know more.'),
+    'Paul goes on by the road that is still open, and says plainly what he does not know');
+  pray();await idle();ok(hint()[0]==='north8','the hint points north');
+  heard.length=0;await act(null,'paved road west');ok(G.room==='fork'&&said('That road is closed to us. It was no man who closed it.'),'the road west stays closed');
+  const c8a=makeCode();
+  /* the edge of Bithynia */
+  heard.length=0;act(null,'track to the north');await until(()=>G.room==='ferry'&&!G.scene&&!G.busy);
+  ok(G.room==='ferry'&&SI.room==='ferry'&&TI.room==='ferry'&&A('kleitos').room==='ferry'&&!LU.room&&SHARED.map.state.legs.length===3&&said('When they came down to Mysia, "they made efforts to go into Bithynia". (Acts 16:7)'),'north on the map, to the edge of Bithynia');
+  ok(mapClear(),'no name on that map crosses a coast or a route'+clear());
+  halt('ferry8',()=>{say(A('kleitos'),'Bithynia, is it? You are looking at it: everything beyond the water. Two coppers a man, and I do not turn back for hats.')});
+  await enter(c8a);ok(G.ch===8&&G.room==='fork'&&F.asia&&!F.bith&&!LU.room&&$('#swap').disabled&&SI.room==='fork','a code from the plateau restores it, and does not put Luke on a road he never walked');
+  heard.length=0;act(null,'track to the north');await until(()=>G.room==='ferry'&&!G.scene&&!G.busy);
+  pray();await idle();ok(hint()[0]==='bith8','the hint points to the ferry');
+  heard.length=0;await act(null,'road west');ok(G.room==='ferry'&&!F.bith&&heard.length===1,'the road to the sea is not yet Paul\'s road');
+  heard.length=0;await act(null,'ferry');ok(nq()===3&&!F.bith&&said('But "the spirit of Jesus did not permit them." (Acts 16:7)'),'the ferry: not permitted, in the words of Acts 16:7. Three things Paul could do');
+  await pickQ('We wait at the ferry');ok(nq()===2,'sitting on a river bank is not obedience');
+  await pickQ('We go home');ok(nq()===1,'nobody has told him to go home');
+  heard.length=0;await choose(0);ok(F.bith&&!G.busy&&said('It does, and we shall pass them by. Mysia is part of Asia: what was forbidden to us there is forbidden here. I do not like it, Silas. I do not have to like it.'),'west, through Mysia: and they will pass it by');
+  pray();await idle();ok(hint()[0]==='sea8','the hint points west');
+  await sweep(A('kleitos'),SI,TI);
+  /* Troas: the fourth man */
+  heard.length=0;act(null,'road west');await until(()=>G.room==='troas'&&!G.scene&&!G.busy);
+  ok(G.room==='troas'&&LU.room==='troas'&&A('leon').room==='troas'&&A('sosias').room==='troas'&&!$('#swap').disabled&&PC()===P&&said('So they passed by Mysia and came down to Troas. (Acts 16:8)')&&
+    said('It was a walk of some 550 kilometers, past city after city. They went through Mysia without stopping to preach there.')&&said('Troas: the principal seaport of that coast, and a colony of Rome. It was probably the spring of the year 50.'),'Troas at dusk: a hurt man, a physician, and the Luke button comes alive');
+  ok(mapClear(),'no name on that map crosses a coast or a route'+clear());
+  halt('troas8',()=>{say(LU,'It is not nothing. Sit down, man, and hold the arm up. Let me through: I am a physician.')});
+  pray();await idle();ok(hint()[0]==='linen8','the hint points to Timothy\'s bundle');
+  heard.length=0;await act(null,'gangplank');ok(G.room==='troas'&&heard.length===1,'no going aboard yet');
+  heard.length=0;await act(null,'door of the inn');ok(G.room==='troas'&&!F.vision&&said('Not while that man is bleeding on the quay.'),'and no going to bed while a man is bleeding');
+  key('c');await idle();ok(PC()===LU&&srt()==='lbag','Luke can be played, and carries his bag');pray();await idle();ok(hint()[0]==='clean8','Luke\'s hint: wine and oil first');
+  heard.length=0;await use('lbag','lbag').catch(()=>{});
+  heard.length=0;await give('lbag',A('sosias'));ok(F.clean&&!F.bound&&said('Wine first. It will sting, and it will clean.'),'Luke washes the wound with wine and oil');
+  pray();await idle();ok(hint()[0]==='wait8','then he waits for linen: that is the tentmaker\'s part');
+  key('c');await idle();await actor(null,TI);ok(hasQ('The physician needs clean linen.'),'what Paul has learned can be asked');await pickQ('The physician needs clean linen.');ok(F.linen&&has('linen'),'Timothy\'s mother packed a clean cloth');await choose(-1);
+  pray();await idle();ok(hint()[0]==='cut8','the hint: cut it');
+  await use('knife','linen');ok(F.strips&&has('bandage')&&!has('linen'),'strips, cut along the thread');
+  heard.length=0;await give('bandage',A('sosias'));ok(!F.bound&&has('bandage')&&said("Binding a wound is the physician's craft, not mine. This belongs in his hand, not on that arm by way of mine."),'binding a wound is not the tentmaker\'s craft');
+  pray();await idle();ok(hint()[0]==='give8','the hint: into the physician\'s hand');
+  await give('bandage',LU);ok(G.invs.luke.includes('bandage')&&!has('bandage'),'Give puts the strips into Luke\'s hand');
+  const c8b=makeCode();key('c');await idle();pray();await idle();ok(hint()[0]==='bind8','Luke\'s hint: bind it');
+  heard.length=0;await give('bandage',A('sosias'));ok(F.bound&&!G.inv.includes('bandage')&&said('A sling. That is cloth, and a hem. That is my craft.'),'Luke binds the arm, and asks for a sling');
+  halt('bind8',()=>{place(LU,'troas',202,125,1);LU.bow=true;say(LU,'Round, and round again. Firm, but not tight: the hand must stay warm.')});
+  pray();await idle();ok(hint()[0]==='wait8b','and waits again');
+  heard.length=0;await use('lbag','lbag').catch(()=>{});key('c');await idle();
+  await enter(c8b);ok(G.ch===8&&G.room==='troas'&&PC()===P&&F.strips&&!F.bound&&G.invs.luke.includes('bandage')&&!has('bandage')&&LU.room==='troas'&&!$('#swap').disabled,'the code restores the moment, with the strips in Luke\'s hand');
+  key('c');await idle();await give('bandage',A('sosias'));key('c');await idle();ok(F.bound&&PC()===P,'bound again');
+  pray();await idle();ok(hint()[0]==='off8','the hint: old sailcloth');
+  heard.length=0;await use('awl','thread');
+  await act('pickup','heap of old sailcloth');ok(F.offcut&&has('offcut'),'an offcut of old sailcloth, asked for and given');
+  pray();await idle();ok(hint()[0]==='sew8','the hint: sew');
+  await use('awl','offcut');ok(F.sling&&has('sling')&&!has('offcut'),'a sling for an arm: the first he ever made');
+  halt('sling8',()=>{say(P,'An arm sling. I have sewn for camels, for wagons and for ships. Never before for an arm.')});
+  pray();await idle();ok(hint()[0]==='give8b','the hint: give it to Luke');
+  await give('sling',LU);key('c');await idle();pray();await idle();ok(hint()[0]==='hang8','Luke\'s hint: the sling');
+  heard.length=0;await give('sling',A('sosias'));
+  ok(F.slung&&PC()===P&&!G.busy&&said('I heard the young man call you "brother". Not many in Troas use that word as he used it. I use it so too.')&&said('I do not know, Luke. We were turned away from Asia, and from Bithynia, and this is where the road ran out.'),
+    'the arm is slung; Luke is a brother, and Paul tells him that he does not know where he is bound');
+  pray();await idle();ok(hint()[0]==='inn8','the hint: the inn');
+  await sweep(A('leon'),A('sosias'),SI,TI,LU);
+  /* the night, and the morning */
+  heard.length=0;act(null,'door of the inn');await until(()=>F.vision&&G.room==='troas'&&!G.scene&&!G.busy);
+  ok(F.vision&&said('And during the night a vision appeared to Paul—a Macedonian man was standing there urging him and saying: "Step over into Macedonia and help us." (Acts 16:9)'),'the vision, in the words of Acts 16:9');
+  halt('morning8',()=>{say(TI,'Paul? You are up before the gulls. Have you slept at all?')});
+  pray();await idle();ok(hint()[0]==='tell8','the hint: tell the brothers');
+  heard.length=0;await act(null,'gangplank');ok(G.room==='troas'&&said('Not before the brothers have heard what I saw in the night.'),'no going aboard on one man\'s word');
+  key('c');await idle();pray();await idle();ok(hint()[0]==='paul8b','Luke leaves that to Paul');key('c');await idle();
+  await actor(null,SI);ok(nq()===3&&!F.concl,'how to begin: three ways');
+  await pickQ('I have decided');ok(nq()===2,'it is not his to settle alone');
+  await pickQ('It was one night');ok(nq()===1,'nor does he ask for it twice');
+  heard.length=0;await choose(0);ok(nq()===5&&said('That is all of it. I have added nothing, and I will not guess at more than I saw.'),'he reports what he saw, and no more; then they weigh it together');
+  halt('concl8');
+  await pickQ('I am tired of walking');ok(nq()===4&&!F.concl,'true, and no reason at all');
+  await pickQ('Macedonia is a great country');ok(nq()===3&&!F.concl,'nor is that a reason');
+  await choose(0);await choose(0);heard.length=0;await choose(0);
+  ok(F.concl&&!G.busy&&quoted(2)&&said('As soon as he had seen the vision, we tried to go into Macedonia, drawing the conclusion that God had summoned us to declare the good news to them. (Acts 16:10)')&&
+    said('From this verse on the account says "we". Luke, who wrote it, was with them.'),'the conclusion is drawn by all four (Acts 16:10), and the account says "we"');
+  pray();await idle();ok(hint()[0]==='ship8','the hint: the ship');
+  const c8c=makeCode();
+  /* the crossing */
+  heard.length=0;act(null,'gangplank');let sawDeck=0;for(let i=0;i<6000&&!(G.room==='philippi'&&!G.scene&&!G.busy);i++){if(G.scene===CHAP[8].scenes.deck)sawDeck=1;await wait(30)}await idle();
+  ok(G.room==='philippi'&&sawDeck&&LU.room==='philippi'&&A('quintus').room==='philippi'&&A('zosime').room==='philippi'&&quoted(3)&&said('So we put out to sea from Troas and made a straight run to Samothrace. (Acts 16:11)')&&
+    said('Samothrace has no good harbor. That night we lay at anchor under its mountain, and nobody went ashore.')&&
+    said('On the following day we came to Neapolis, "and from there we went to Philippi, a colony, which is the principal city of the district of Macedonia." (Acts 16:11, 12)'),'the crossing: a straight run to Samothrace, a night at anchor, Neapolis and Philippi');
+  {const M=SHARED.map,L=M.state.legs;ok(L.length===7&&cross(L)===0&&mapClear()&&!apart(),'the whole road on the map: seven legs, none crossing another, no name across a coast or a route'+clear()+apart())}
+  halt('philippi8',()=>{say(LU,'I have asked in three streets, Paul. Nobody knows of a synagogue in Philippi.')});
+  await enter(c8c);ok(G.ch===8&&G.room==='troas'&&F.concl&&F.vision&&LU.room==='troas'&&!A('sosias').room,'a code from the morning at Troas restores it');
+  act(null,'gangplank');await until(()=>G.room==='philippi'&&!G.scene&&!G.busy);
+  /* Philippi: a city without a synagogue */
+  pray();await idle();ok(hint()[0]==='gate8','the hint: ask the man at the gate what he has seen');
+  heard.length=0;await act(null,'west gate');ok(G.room==='philippi'&&heard.length===1,'no leaving by the gate before anything is known');
+  heard.length=0;await act(null,'bench');ok(!F.sab&&heard.length===1,'the bench can wait: first, where do they meet?');
+  heard.length=0;await act(null,'street to the marketplace');ok(G.room==='philippi'&&heard.length===1,'the marketplace is for another day');
+  heard.length=0;await actor(null,A('quintus'));ok(nq()===3&&said('A synagogue? This is a colony, stranger. We are Romans here. There is no such house inside these walls.'),'no synagogue in Philippi: three questions for an old soldier');
+  halt('gate8');
+  await pickQ('Why is there no synagogue');ok(nq()===2&&!F.gate,'he does not know why, and nobody in the game says');
+  await pickQ('Do you know any who worship');ok(nq()===1&&!F.gate,'nor whom other people pray to');
+  heard.length=0;await choose(0);ok(F.gate&&!F.shop&&!G.busy,'what he has seen: women who go out to the river on some mornings');
+  pray();await idle();ok(hint()[0]==='shop8','the hint: the shutters');
+  heard.length=0;act(null,'west gate');await until(()=>G.room==='river'&&!G.busy);ok(G.room==='river'&&!A('lydia').room&&said('A river, trees, and nobody. The old soldier did not say on which mornings they come.'),'on a weekday there is only the river');
+  halt('riverw8',()=>{say(P,'Flat stones, set in a half circle and worn smooth, and the grass trodden between them. People sit here, and often.')});
+  pray();await idle();ok(hint()[0]==='back8','the hint: back to the city');
+  act(null,'road to the gate');await until(()=>G.room==='philippi'&&!G.busy);
+  heard.length=0;await actor(null,A('zosime'));ok(nq()===3,'three questions for a seller of purple');
+  await pickQ('Do you know any Jews');await pickQ('Is your neighbor');heard.length=0;await choose(0);
+  ok(F.shop&&!G.busy&&said('A gate, a river, and a seventh day. I think that there is a place of prayer outside this city. And I think that I know on which morning it will be full.'),'shutters closed every seventh day: Paul thinks, and does not say that he knows');
+  halt('shop8',()=>{say(A('zosime'),"Every seventh day those shutters stay closed, market or no market. She is from Thyatira, and she worships the God of the Jews. She loses one day's trade in seven, and she says that she loses nothing by it.")});
+  ok(!heard.some(h=>/military|ten men|ten Jewish/i.test(h)),'nobody gives a reason why Philippi has no synagogue');
+  pray();await idle();ok(hint()[0]==='work8','the hint: the bench, until the Sabbath');key('c');await idle();pray();await idle();ok(hint()[0]==='craft8','Luke leaves the bench to Paul');key('c');await idle();
+  heard.length=0;await act(null,'west gate');ok(G.room==='philippi'&&heard.length===1,'the day matters now, not the place');
+  await useOn('awl','torn awning');ok(F.awn&&H('mended awning'),'an awning mended, unasked');
+  const c8d=makeCode();
+  heard.length=0;await act(null,'bench');ok(F.sab&&!G.busy&&said('We stayed in this city for some days. (Acts 16:12)'),'some days at the bench, and then the Sabbath');
+  pray();await idle();ok(hint()[0]==='riv8','the hint: out by the gate');
+  await sweep(A('quintus'),A('zosime'),SI,TI,LU);
+  /* the river */
+  heard.length=0;act(null,'west gate');await until(()=>G.room==='river'&&!G.busy);
+  ok(G.room==='river'&&A('lydia').room==='river'&&A('phila').room==='river'&&A('elpis').room==='river'&&quoted(4)&&said('On the Sabbath day we went outside the gate beside a river, where we thought there was a place of prayer. (Acts 16:13)'),'the Sabbath: women at prayer beside the river');
+  halt('river8',()=>{say(TI,'Women, Paul. Only women. And they are praying.')});
+  await enter(c8d);ok(G.ch===8&&G.room==='philippi'&&F.gate&&F.shop&&F.awn&&!F.sab&&LU.room==='philippi','a code from Philippi restores it');
+  await act(null,'bench');act(null,'west gate');await until(()=>G.room==='river'&&!G.busy);
+  pray();await idle();ok(hint()[0]==='sit8','the hint: sit down among them');
+  heard.length=0;await act(null,'road to the gate');ok(G.room==='river'&&heard.length===1,'no going back without a word to them');
+  key('c');await idle();heard.length=0;await actor(null,A('lydia'));ok(!F.sat&&said('Paul is weighing how we should come to them. Where he sits down, I shall sit.'),'Luke waits for Paul');key('c');await idle();
+  await actor(null,A('phila'));ok(nq()===3&&!F.sat,'how to come to them: three ways');
+  await pickQ('Stand before them');ok(nq()===2,'there is no platform here');
+  await pickQ('Keep our distance');ok(nq()===1,'nor did he cross the sea to stand behind a tree');
+  heard.length=0;await choose(0);ok(F.sat&&!G.busy&&said('"...and we sat down and began speaking to the women who had assembled." (Acts 16:13)'),'they sit down among the women (Acts 16:13)');
+  halt('sit8',()=>{say(A('phila'),'Then you are not strangers on this bank. Sit, sirs. We have no synagogue to offer you: only the river, and each other.')});
+  pray();await idle();ok(hint()[0]==='speak8','the hint: speak');
+  await sweep(A('lydia'),A('phila'),A('elpis'));
+  key('c');await idle();heard.length=0;await actor(null,A('elpis'));ok(heard.length===1&&!G.busy,'Luke speaks with one of the women');key('c');await idle();
+  await actor(null,A('lydia'));ok(nq()===3,'where to begin: three ways');
+  await pickQ('With the rains');ok(nq()===2,'these women know him already');
+  await pickQ('With the letter');ok(nq()===1,'there is no congregation here yet');
+  heard.length=0;choose(0);await until(()=>nq()===4&&$('#choices').classList.contains('on'),3000);
+  ok(nq()===4&&quoted(5)&&quoted(6)&&said('And a woman named Lydia, a seller of purple from the city of Thyatira and a worshipper of God, was listening, and Jehovah opened her heart wide to pay attention to the things Paul was saying. (Acts 16:14)')&&
+    said('"Now when she and her household got baptized, she urged us:" (Acts 16:15)')&&said('"If you have considered me to be faithful to Jehovah, come and stay at my house." (Acts 16:15)')&&said('It is.'),
+    'all four speak; Jehovah opens her heart (Acts 16:14); her baptism is told (Acts 16:15); and she urges them');
+  ok(said('It was not my words that opened that heart. I have planted nothing here that was not waited for.')&&!heard.some(h=>/that is why|therefore the spirit/i.test(h)),'Paul takes no credit, and nobody draws a conclusion from Thyatira');
+  halt('lydia8');
+  heard.length=0;await pickQ('I have a trade');ok(nq()===3&&said('If you have considered me to be faithful to Jehovah, come and stay at my house.'),'she has one answer');
+  heard.length=0;await pickQ('We are four men');ok(nq()===2&&quoted(7),'Paul remembers the woman of Shunem');
+  await pickQ('without cost');ok(nq()===1,'the last reason, and the same answer');
+  heard.length=0;choose(0);
+  n=0;while(!(ov.classList.contains('end')&&ov.textContent.includes(T('The Man from Macedonia')))&&n++<4000)await wait(50);
+  ok(ov.classList.contains('end')&&ov.textContent.includes(T('The Man from Macedonia'))&&said('And she just made us come. (Acts 16:15)')&&
+    said('Some ten years later Paul wrote to the congregation in Philippi: "I thank my God always when I remember you ... because of the contribution you have made to the good news from the first day until this moment." (Philippians 1:3, 5)')&&
+    said('And of the man who was with them from Troas on, he wrote: "Luke, the beloved physician". (Colossians 4:14)'),'the puzzle is solved by accepting; chapter eight complete screen shown');
+  ok(ov.textContent.includes(T('An awning mended in the street of the purple sellers')),'the kindness is named on the closing screen');
+  ok(/Luke|Lukas/.test(ov.textContent)&&ov.textContent.includes(T('Click to return to the title')),'the closing screen says what the account leaves unsaid');
+  {const r=ov.getBoundingClientRect(),bad=[...ov.children].filter(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});if(bad.length)tight.add('closing screen: '+bad[0].textContent.slice(0,40))}
+  ok(store('paul.save')===null,'a finished game keeps no save');
+  {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===7&&L.every(l=>l.k===1)&&M.state.seen.has('iconium')&&M.state.seen.has('troas')&&M.state.seen.has('philippi'),'chapter eight ends on the map: from Iconium to Troas, and over the sea to Philippi');
+    ok(cross(L)===0,'no two routes cross');ok(mapClear(),'no name on the map crosses a coast, an island or a route ('+M.state.boxes.length+' names)'+clear());ok(!apart(),'and no two names overlap'+apart())}
+  halt('journey8',()=>{ov.className=''});halt('final8')};
+  if(C8){await ch8();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(!C3&&!C4&&!C5&&!C6&&!HUB){
@@ -1269,7 +1474,7 @@
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('journey6',()=>{ov.className=''});halt('final6');await wait(1700)}
-  if(!HUB)await ch7();
+  if(!HUB){await ch7();await wait(1700);await ch8()}
   if(lang!=='en')ok(!MISSING.size,'every line shown in the game had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);
@@ -1287,34 +1492,34 @@
   {const[jx,jy]=SHARED.map.where('jerusalem'),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+jx/320*r.width,clientY:r.top+jy/144*r.height,bubbles:true}))}
   await idle();ok(G.room==='workshop'&&!G.scene&&!G.busy&&SHARED.map.state.legs.length===1,'a click on a place travels there');
   cut(travel);for(let i=0;i<60&&G.scene!==SHARED.map.draw;i++)await wait(50);key('Escape');await idle();ok(G.room==='workshop'&&!G.scene&&!G.busy,'Esc stays where you are');
-  /* keys: good, win and pray start on the tonic of the chapter's key and stay in its mode, whichever of the seven it is, also with no score
+  /* keys: good, win and pray start on the tonic of the chapter's key and stay in its mode, whichever of the eight it is, also with no score
      playing (on the map, at a chapter's end), and never more than a tritone from where they were tuned in D; Chapter One, the title
      screen's key, keeps them exactly as they were; a typed code is greeted in its own chapter's key.
      Checked at the end of the run, when every chapter has been loaded and played (loading them earlier would replace rooms of the same name). */
-  {for(let n=1;n<=7;n++)await loadLevel(n);
+  {for(let n=1;n<=8;n++)await loadLevel(n);
     const k0=AU.key,midi=f=>69+12*Math.log2(f/440),pc=(m,k)=>((Math.round(m)-k.root)%12+12)%12,inKey=(m,k)=>Math.abs(m-Math.round(m))<.01&&k.scale.includes(pc(m,k)),
       tones=fn=>{const t0=window.tone,fs=[];window.tone=o=>{fs.push(Math.round(midi(o.f)*100)/100)};try{fn()}finally{window.tone=t0}return fs},
       fan=()=>[SFX.good,SFX.win,SFX.pray].map(f=>tones(()=>f.call(SFX))),D=[[62,66,69,74],[62,66,69,74,78,81],[62,69,74]],out=[],far=[],ends=[];
-    try{for(let n=1;n<=7;n++){const k=CHAP[n].music;AU.key=k;fan().forEach((ms,j)=>{ms.forEach((m,i)=>{if(!inKey(m,k))out.push(n+':'+m);if(Math.abs(m-D[j][i])>6)far.push(n+':'+m)});
+    try{for(let n=1;n<=8;n++){const k=CHAP[n].music;AU.key=k;fan().forEach((ms,j)=>{ms.forEach((m,i)=>{if(!inKey(m,k))out.push(n+':'+m);if(Math.abs(m-D[j][i])>6)far.push(n+':'+m)});
         if(pc(ms[0],k)!==0||![0,7].includes(pc(ms[ms.length-1],k)))ends.push(n+':'+ms)})}
       AU.key=CHAP[1].music;const f1=fan();AU.key=CHAP[3].music;const g3=fan()[0];
       setScore(CHAP[5].music);setScore(null);const g5=fan()[0];
       openCode();$('#codein').value=codeOf(7,0);const a0=window.applyState,t0=window.tone,g7=[];window.applyState=()=>true;window.tone=o=>{g7.push(Math.round(midi(o.f)*100)/100)};
       try{await tryCode()}finally{window.applyState=a0;window.tone=t0;closeCode()}
-      ok(!out.length&&!ends.length,`good, win and pray begin on the tonic of each of the seven chapters' keys, end on its tonic or fifth, and stay in its mode (Chapter Three's good: ${g3})`+(out.length?' OUT '+out:'')+(ends.length?' ENDS '+ends:''));
+      ok(!out.length&&!ends.length,`good, win and pray begin on the tonic of each of the eight chapters' keys, end on its tonic or fifth, and stay in its mode (Chapter Three's good: ${g3})`+(out.length?' OUT '+out:'')+(ends.length?' ENDS '+ends:''));
       ok(!far.length&&f1.map(x=>x.join()).join('|')===D.map(x=>x.join()).join('|'),'none lies more than a tritone from where it was tuned, and Chapter One\'s are exactly as before'+(far.length?' FAR '+far:''));
       ok(!AU.score&&g5.every(m=>inKey(m,CHAP[5].music))&&g5.join()!==f1[0].join(),`with no score playing they keep the last chapter's key (Chapter Five: ${g5})`);
       ok(g7.length&&g7.every(m=>inKey(m,CHAP[7].music))&&pc(g7[0],CHAP[7].music)===0,`a typed code is greeted in its own chapter's key (Chapter Seven: ${g7})`);
       /* the map's sting and arrival chime, with no score playing, as on the map; and a chapter that opens on the map has its key first */
       const M=await need('map'),I0=Object.assign({},INST),D0=Object.assign({},DRUMS),tw=window.tone,mo=[],by={};let ps=[];
       try{for(const k of['drone','harp','ney'])INST[k]=f=>ps.push([k,midi(f)]);DRUMS.d=()=>{};window.tone=o=>{ps.push(['chime',midi(o.f)])};setScore(null);
-        for(let n=1;n<=7;n++){AU.key=CHAP[n].music;ps=[];M.sting();M.arrive();by[n]=ps;if(ps.length!==12)mo.push(n+': '+ps.length+' notes');
+        for(let n=1;n<=8;n++){AU.key=CHAP[n].music;ps=[];M.sting();M.arrive();by[n]=ps;if(ps.length!==12)mo.push(n+': '+ps.length+' notes');
           for(const[,m]of ps)if(!inKey(m,CHAP[n].music))mo.push(n+':'+m.toFixed(2))}}
       finally{Object.assign(INST,I0);Object.assign(DRUMS,D0);window.tone=tw}
       const s5=CHAP[5].start,oc=ov.onclick;let k5;CHAP[5].start=()=>{k5=AU.key};AU.key=CHAP[4].music;
       try{await startChapter(5)}finally{CHAP[5].start=s5;ov.onclick=oc}
       const part=(n,k)=>by[n].filter(x=>x[0]===k).map(x=>Math.round(x[1])),one=['drone','harp','ney','chime'].map(k=>part(1,k).join()).join('|'),h7=part(7,'harp');
-      ok(!mo.length&&k5===CHAP[5].music,`the map's sting and arrival chime sound in each of the seven chapters' keys, and Chapter Five, which opens on the map, has its own key before it starts`+(mo.length?' OUT '+mo:''));
+      ok(!mo.length&&k5===CHAP[5].music,`the map's sting and arrival chime sound in each of the eight chapters' keys, and Chapter Five, which opens on the map, has its own key before it starts`+(mo.length?' OUT '+mo:''));
       ok(one==='50|62,66,69,74|74,75,78,81,78|81,86'&&h7.some(m=>pc(m,CHAP[7].music)===7),`Chapter One's sting keeps its register (${one}), and in Chapter Seven's five notes its harp reaches the fifth (${h7})`)}
     finally{AU.key=k0}}
   /* high notes: bite is exactly 1 up to its knee and falls, never rising, above it; Chapter One's ney is quieter at the top of its hope tune
@@ -1325,17 +1530,17 @@
       lvl=f=>{const t0=window.tone,n0=window.noise,seen=[];window.tone=o=>seen.push(o.v);window.noise=o=>seen.push(o.v);try{INST.ney(f,0,.5,1)}finally{window.tone=t0;window.noise=n0}return seen};
     ok(flat&&down&&lvl(top).every((v,i)=>v<[.1,.08][i])&&calm.length&&calm.every(f=>lvl(f).join()==='0.1,0.08'),
       `high notes: the curve is 1 up to 550 Hz and only falls above it; Chapter One's top ney note (${top.toFixed(0)} Hz) is ${(-20*Math.log10(bite(top))).toFixed(1)} dB quieter, its ${calm.length} calm notes below the knee are as they were`)}
-  /* the held pipe: in each of the seven chapters' keys, an aulos track with hold:0 or hold:7 gets one held note per bar in which its melody
+  /* the held pipe: in each of the eight chapters' keys, an aulos track with hold:0 or hold:7 gets one held note per bar in which its melody
      plays, on the tonic or the fifth under it; a track without hold gets none; and Chapter Six's feast asks for the tonic, over its drone */
   {const a0=INST.aulos,sc0=AU.score,m0=AU.mood,hd=[],bad=[];let none=0;
     try{INST.aulos=()=>{};INST.aulos.hold=(f,t,d,v)=>hd.push(f);
-      for(let n=1;n<=7;n++)for(const h of[0,7,null]){const k=CHAP[n].music,tr={inst:'aulos',oct:12,seq:{A:[0,null,2,null,4,null,2,null,0,null,2,null,4,null,2,null],B:Array(16).fill(null)},prog:'AB'};
+      for(let n=1;n<=8;n++)for(const h of[0,7,null]){const k=CHAP[n].music,tr={inst:'aulos',oct:12,seq:{A:[0,null,2,null,4,null,2,null,0,null,2,null,4,null,2,null],B:Array(16).fill(null)},prog:'AB'};
         if(h!=null)tr.hold=h;hd.length=0;AU.score={dt:.16,root:k.root,scale:k.scale,tracks:[tr]};AU.mood='calm';for(let st=0;st<64;st++)playStep(st,1000+st*.16);
         if(h==null){none+=hd.length;continue}
         const pcs=hd.map(f=>((Math.round(69+12*Math.log2(f/440))-k.root)%12+12)%12);if(hd.length!==2||pcs.some(p=>p!==h))bad.push(n+'/'+h+':'+pcs)}}
     finally{INST.aulos=a0;AU.score=sc0;AU.mood=m0}
     const feast=CHAP[6].music.tracks.filter(tr=>tr.moods&&tr.moods.includes('feast'));
-    ok(!bad.length&&!none&&feast.some(tr=>tr.inst==='aulos'&&tr.hold===0)&&feast.some(tr=>tr.drone&&tr.drone.join()==='0'&&tr.every===16&&tr.vol===.6),'the held pipe: on the tonic or the fifth in all seven keys, once a bar while the melody plays and not in a silent bar; none without hold; Chapter Six\'s feast holds the tonic over its drone'+(bad.length?' WRONG '+bad:''))}
+    ok(!bad.length&&!none&&feast.some(tr=>tr.inst==='aulos'&&tr.hold===0)&&feast.some(tr=>tr.drone&&tr.drone.join()==='0'&&tr.every===16&&tr.vol===.6),'the held pipe: on the tonic or the fifth in all eight keys, once a bar while the melody plays and not in a silent bar; none without hold; Chapter Six\'s feast holds the tonic over its drone'+(bad.length?' WRONG '+bad:''))}
   ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
   fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
   L('DONE');

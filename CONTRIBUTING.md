@@ -31,6 +31,7 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 - **Pray to Jehovah** is the hint system. It never changes the game's state. The first prayer at a point gives a gentle hint, and praying again gives a more direct one.
 - Invented characters and all dialogue are dramatization. Each chapter's end screen says so, and the README's "About the content" section names the invented characters.
 - A person named in the Scriptures appears only in events where the account places that person, or where the Study Edition's notes or the publications on wol.jw.org say that the person was likely there. In the second case the chapter's end screen and the README say what the account itself leaves unsaid. For example, Acts 14 does not name the disciples at Lystra; the note on 2 Timothy 1:5 says that Lois and Eunice likely became believers during that stay, so Chapter Six shows them with Timothy, and says that Acts does not.
+- The narration follows the account's own voice. It calls him Saul until Acts 13:9 and Paul from there on, and it says "we" where Acts does: from Troas in Chapter Eight (Acts 16:10), and "they" again where the account returns to it (Acts 16:19).
 - Before building a new chapter, agree on its episode with the maintainer by opening an issue.
 
 ## 3. Images and symbols
