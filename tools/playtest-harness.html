@@ -758,6 +758,29 @@
   {const[x,y]=hs('large basket'),r=vp.getBoundingClientRect();G.hover=null;status();
     vp.dispatchEvent(new PointerEvent('pointerdown',{pointerType:'touch',clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+y/144*r.height,bubbles:true}));
     ok(lit()==='pickup'&&$('#status').textContent===line('pickup','large basket'),'a finger on the scene lights its verb, as hover does')}
+  /* a name stands for its thing wherever it sits (names are moved apart): each event is sent to a name, with the pointer's place given as the stool's */
+  {await wait(250);   /* the names are drawn again a moment after the game comes to rest */
+    const tag=n=>[...document.querySelectorAll('#tags .tag')].find(t=>t.textContent===T(n)),count=()=>document.querySelectorAll('#tags .tag').length,all=count(),
+     on=(el,type,x,y)=>{const r=vp.getBoundingClientRect();el.dispatchEvent(new MouseEvent(type,{clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+y/144*r.height,bubbles:true,cancelable:true}))};
+    on(tag("tentmaker's knife"),'mousemove',...hs('stool'));ok(lit()==='pickup'&&$('#status').textContent===line('pickup',"tentmaker's knife"),'pointing at a name lights the verb of its own thing');
+    heard.length=0;on(tag("tentmaker's knife"),'contextmenu',...hs('stool'));await idle();await wait(250);
+    ok(heard.includes(T(H("tentmaker's knife").look))&&!heard.includes(T(H('stool').look)),'a right-click on a name looks at its own thing');
+    /* a name acts on the thing that is there now: a twin with the same name in the same place (as a place has that comes back in a later chapter) takes the name over */
+    {const l=ROOMS.workshop.hs,i=l.indexOf(H('stool')),old=l[i];let twin=0;l[i]=Object.assign({},old,{look:()=>{twin++}});await wait(250);
+      heard.length=0;tag('stool').click();await idle();ok(twin===1&&!heard.length,'a name acts on the thing that is there now, not on one that was');l[i]=old;await wait(250)}
+    /* names are shown only while the player can act: not during a menu of questions, behind the safe-point box, or on a dark screen */
+    {const p=cut(()=>window.choose(['I must get to work.']));await wait(250);ok($('#choices').classList.contains('on')&&$('#tags').classList.contains('on')&&!count(),'the names step aside for a menu of questions');
+      document.querySelector('#choices button').click();await p;await wait(250);ok(count()===all,'and come back after it')}
+    $('#code').click();await wait(250);ok(cb.classList.contains('on')&&!count(),'the names step aside for the safe-point box');closeCode();await wait(250);ok(count()===all,'and come back after it');
+    /* through the door by its name: a double-click on it skips the walk, the screen goes dark without names, and the street has its own */
+    {const e0=enterRoom;let dark=-1;window.enterRoom=function(){dark=count();return e0.apply(this,arguments)};
+      place(P,'workshop',290,124,-1);G.cam=ART.workshop.w-320;G.speedAll=25;await wait(250);
+      tag('door to the street').click();await wait(60);tag('door to the street').click();on(tag('door to the street'),'dblclick',...hs('stool'));
+      const t0=performance.now();await idle();window.enterRoom=e0;ok(G.room==='street'&&performance.now()-t0<2500,"a double-click on an exit's name skips the walk");G.speedAll=500;
+      ok(dark===0,'the screen goes dark without names');await wait(250);
+      const ts=[...document.querySelectorAll('#tags .tag')];ok(ts.length>0&&ts.every(t=>ROOMS.street.hs.includes(t.hs)||Object.values(ACT).some(a=>a.room==='street'&&a.hs===t.hs)),'in the next room every name belongs to a thing of that room ('+ts.length+')');
+      await act(null,"Eliab's door");await wait(250);ok(G.room==='workshop'&&$('#tags').classList.contains('pin')&&count()>0,'back in the workshop, names still on')}
+    G.hover=null;status()}
   $('#names').click();await wait(150);ok(!$('#tags').classList.contains('on')&&!$('#names').classList.contains('on')&&!document.querySelector('#tags .tag'),'NAMES again takes the labels away');
   key('1');ok(G.verb==='look','key 1 picks Look at');key('1');ok(G.verb==='walk','key 1 again puts it down');
   key('m');ok(AU.muted,'M mutes');key('m');ok(!AU.muted,'M unmutes');

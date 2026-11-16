@@ -921,34 +921,38 @@ async function clickView(x,y,at){
   await cut(()=>act(v,h,item))}
 const vp=$('#view');
 function evPos(e){const r=vp.getBoundingClientRect();return[(e.clientX-r.left)/r.width*VW+G.cam,(e.clientY-r.top)/r.height*VH]}
-vp.addEventListener('mousemove',e=>{if(G.busy||G.scene||!G.room)return;const[x,y]=evPos(e);const h=hsAt(x,y);if(h!==G.hover){G.hover=h;status()}});
+/* hsOf: what a pointer event is about: the thing a pinned label names if the pointer is on a label, else whatever lies under it.
+   Labels are moved apart and do not always sit on what they name, so pointing, a tap, a right-click and a double-click all ask here. */
+const hsOf=e=>{const t=e.target.closest('.tag');return t&&t.hs||hsAt(...evPos(e))};
+vp.addEventListener('mousemove',e=>{if(G.busy||G.scene||!G.room)return;const h=hsOf(e);if(h!==G.hover){G.hover=h;status()}});
 vp.addEventListener('mouseleave',()=>{G.hover=null;status()});
 /* A finger has no hover: as it touches the scene, the status line names what is under it and its verb lights up, as the mouse would show. */
-vp.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||G.busy||G.scene||!G.room)return;const t=e.target.closest('.tag');
-  const h=t&&t.hs||hsAt(...evPos(e));if(h!==G.hover){G.hover=h;status()}});
+vp.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||G.busy||G.scene||!G.room)return;const h=hsOf(e);if(h!==G.hover){G.hover=h;status()}});
 vp.addEventListener('click',e=>{const[x,y]=evPos(e);clickView(x,y)});
 /* Right-click looks at whatever is under the pointer, from where Paul stands; on empty ground it puts the chosen verb down. */
 vp.addEventListener('contextmenu',e=>{e.preventDefault();if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
-  if(G.busy||G.scene||!G.room)return;audioInit();const h=hsAt(...evPos(e));G.verb='walk';G.item=null;syncVerbs();drawInv();status();if(!h)return;
+  if(G.busy||G.scene||!G.room)return;audioInit();const h=hsOf(e);G.verb='walk';G.item=null;syncVerbs();drawInv();status();if(!h)return;
   const me=PC();if(me.walk){me.walk.res(false);me.walk=null}const A=h.actor;me.dir=(A?A.x:h.x+h.w/2)>=me.x?1:-1;cut(()=>act('look',h))});
 $('#wrap').addEventListener('contextmenu',e=>{if(!e.target.closest('#codebox'))e.preventDefault()});
 /* Double-clicking an exit skips the walk to it: Paul is simply there, and goes through. */
-vp.addEventListener('dblclick',e=>{const me=PC();if(G.busy||G.scene||!G.room||!me.walk)return;const h=hsAt(...evPos(e));
+vp.addEventListener('dblclick',e=>{const me=PC();if(G.busy||G.scene||!G.room||!me.walk)return;const h=hsOf(e);
   if(h&&h.exit){me.x=me.walk.x;me.y=me.walk.y;G.cam=clamp(me.x-160,0,ART[G.room].w-VW)}});
 /* Holding Tab labels everything in the room that can be clicked: a small round dot and a name, never a marker or a cross.
    The NAMES button in the top bar pins the labels on, for touch screens that have no Tab key and no hover; pinned labels
-   can be tapped, and a tap on one acts on its hotspot as a tap on the hotspot would. Labels step aside while someone speaks. */
-const tagEl=$('#tags');let tagT=0,tagSig='';
+   can be tapped, and a tap on one acts on its hotspot as a tap on the hotspot would. Labels are shown only while the player can
+   act: they step aside during a cutscene, a menu of questions and a change of room, behind the safe-point box, and while someone speaks. */
+const tagEl=$('#tags');let tagT=0,tagSig='',tagHs=[];
 function tagsOn(on){on=!!(on||G.tagPin);if(!!G.tags===on)return;G.tags=on;tagEl.classList.toggle('on',on);tagT=0;tagSig='';if(!on)tagEl.innerHTML=''}
 function namesBtn(){const b=$('#names');b.textContent=T('NAMES');b.classList.toggle('on',!!G.tagPin);tagEl.classList.toggle('pin',!!G.tagPin)}
 $('#names').onclick=e=>{e.stopPropagation();audioInit();SFX.click();G.tagPin=!G.tagPin;namesBtn();tagsOn(G.tagPin)};
 function drawTags(ts){if(!G.tags||ts-tagT<90)return;tagT=ts;
   const s=vp.clientWidth/VW,cam=G.cam,list=[],put=[];
-  if(G.room&&!G.scene&&!G.skip){
+  if(G.room&&!G.scene&&!G.busy&&!G.skip){
     for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+VW)list.push([T(a.hs.name),a.x,a.y-52,'who',a.hs]);
     for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const x0=Math.max(h.x,cam+4),x1=Math.min(h.x+h.w,cam+VW-4);if(x1>x0)list.push([T(h.name),(x0+x1)/2,h.y+h.h/2,h.exit?'exit':'',h])}}
-  /* rebuilt only when something changed, so that a label is not replaced under the finger tapping it */
-  const sig=s+'|'+cam+'|'+list.map(l=>l.slice(0,4).join(',')).join('|');if(sig===tagSig)return;tagSig=sig;tagEl.innerHTML='';
+  /* rebuilt only when something changed, so that a label is not replaced under the finger tapping it. What changed may be the thing
+     itself and nothing that shows (a place that comes back in a later chapter keeps its names), so the hotspots are compared as well. */
+  const sig=s+'|'+cam+'|'+list.map(l=>l.slice(0,4).join(',')).join('|');if(sig===tagSig&&list.every((l,i)=>l[4]===tagHs[i]))return;tagSig=sig;tagHs=list.map(l=>l[4]);tagEl.innerHTML='';
   list.sort((a,b)=>a[2]-b[2]);
   for(const[name,x,y,k,h]of list){const el=document.createElement('div');el.className='tag '+k;el.textContent=name;el.hs=h;tagEl.appendChild(el);
     el.onclick=e=>{e.stopPropagation();if(G.tagPin)clickView(x,y,h)};
