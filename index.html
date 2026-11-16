@@ -834,10 +834,11 @@ function say(a,text,o={}){text=T(text);return new Promise(res=>{
   let n=0;const blip=a&&!o.thought?setInterval(()=>{if(n++<Math.min(9,text.length/5))SFX.talk(a.pitch*2)},85):0;
   const done=()=>{clearTimeout(tm);clearInterval(blip);el.remove();if(a)a.talk=false;if(G.skip===done)G.skip=null;cur=null;res()};
   const tm=setTimeout(done,o.dur||Math.max(2200,1400+text.length*65));
-  G.skip=done;G.lineT=performance.now();cur={el,a};posSpeech()})}
+  G.skip=done;G.lineT=performance.now();cur={el,a,low:o.low};posSpeech()})}
 const narr=(t,o)=>say(null,t,o);
 function posSpeech(){if(!cur)return;const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
   if(a&&a.room===G.room&&!G.scene){el.style.left=clamp((a.x-G.cam)*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-56),40,132)*s+'px';el.style.top=''}
+  else if(cur.low){el.style.left='50%';el.style.top='';el.style.bottom=7*s+'px'}   /* low: a line told over a map whose road runs along its upper edge stands at the foot of the view */
   else{el.style.left='50%';el.style.top=10*s+'px';el.style.bottom=''}}
 function lock(b){$('#panel').classList.toggle('locked',b)}
 async function cut(fn,force){if(G.busy&&!force)return;G.busy=true;lock(true);status();
@@ -1134,7 +1135,8 @@ const CHAP={
   6:{name:'THE DOOR TO FAITH',label:'Chapter Six',title:'The Door to Faith',salt:0x6F19,src:'levels/chapter6.js'},
   7:{name:'TIMOTHY OF LYSTRA',label:'Chapter Seven',title:'Timothy of Lystra',salt:0x7B43,src:'levels/chapter7.js'},
   8:{name:'THE MAN FROM MACEDONIA',label:'Chapter Eight',title:'The Man from Macedonia',salt:0x8C57,src:'levels/chapter8.js'},
-  9:{name:'MIDNIGHT IN PHILIPPI',label:'Chapter Nine',title:'Midnight in Philippi',salt:0x9D61,src:'levels/chapter9.js'}};
+  9:{name:'MIDNIGHT IN PHILIPPI',label:'Chapter Nine',title:'Midnight in Philippi',salt:0x9D61,src:'levels/chapter9.js'},
+  10:{name:'IS IT SO?',label:'Chapter Ten',title:'Is It So?',salt:0xA37B,src:'levels/chapter10.js'}};
 const TITLE={level:1,scene:'wall',mood:'calm',amb:{crickets:.5,wind:.35,owl:.4}};
 /* A level file calls LEVEL(n, init). init() registers its art, cast, items and rooms, and returns the chapter definition. */
 function LEVEL(n,init){Object.assign(CHAP[n],init(),{ready:1})}
@@ -1219,7 +1221,11 @@ function codeOf(ch,b){const c=chk(b,CHAP[ch].salt),v=(b^msk(c))*512+c;let s='';
    two bits per room unless the chapter needs or reserves more (codeBits:{flags, rooms, share}). Append to flags, rooms and share;
    never reorder them. All of it is masked and checked with 9 bits salted by the chapter, as in the six-character codes.
    A member who has not joined the story yet stands in no room, and the code holds the first room for him. The chapter says who is
-   still away (away(id), from where the story stands), and such a member is left where the chapter's place() put him: nowhere. */
+   still away (away(id), from where the story stands), and such a member is left where the chapter's place() put him: nowhere.
+   Paul himself may be away (away('paul')): in Chapter Ten he is sent to the sea and Timothy is played. Then the one who is played leads
+   when a code is restored, and Paul stands in no room.
+   The chapter's number stands in front of the code: nothing for Chapter One, one digit for Chapters Two to Nine, two digits from Chapter
+   Ten on. So a code's length is a multiple of three, or one more, or two more, and the decoder tells the three apart by that alone. */
 const wide=c=>!!(c.party||c.flags.length>19||c.rooms.length>3);
 const nbits=n=>{let b=0;while((1<<b)<n)b++;return b};
 const layout=c=>{const ps=c.party||['paul'],k=c.codeBits||{};
@@ -1240,6 +1246,7 @@ function wideCode(ch){const[v,n]=packWide(),len=Math.max(9,Math.ceil((n+9)/15)*3
 const makeCode=()=>wide(CHAP[G.ch])?wideCode(G.ch):codeOf(G.ch,stateBits());
 function decode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1').replace(/U/g,'V').replace(/[^0-9A-Z]/g,'');
   let ch=1;if(t.length%3===1&&t.length>=7&&t[0]!=='1'&&CHAP[t[0]]){ch=+t[0];t=t.slice(1)}
+  else if(t.length%3===2&&t.length>=8&&/^[1-9][0-9]$/.test(t.slice(0,2))&&CHAP[t.slice(0,2)]){ch=+t.slice(0,2);t=t.slice(2)}
   if(t.length>=9&&t.length%3===0){let x=0n;for(const q of t){const i=A32.indexOf(q);if(i<0)return null;x=x*32n+BigInt(i)}
     const c=Number(x&511n),v=x>>9n^wideMask(c,t.length*5-9);return wideChk(v,CHAP[ch].salt,t.length)===c?{ch,w:v}:null}
   if(t.length!==6)return null;let v=0;for(const x of t){const i=A32.indexOf(x);if(i<0)return null;v=v*32+i}
@@ -1256,11 +1263,13 @@ function dealInv(room,own){const c=CHAP[G.ch];G.invs={};party().forEach(a=>G.inv
 function applyState(s){const c=CHAP[s.ch],u=s.w!=null?unpackWide(c,s.w):null;if(s.w!=null&&!u)return false;
   setChapter(s.ch);let room;
   if(u){u.flags.forEach(k=>F[k]=1);room=u.rooms[0]}else{room=c.rooms[s.b>>19&3];c.flags.forEach((k,i)=>{if(s.b>>i&1)F[k]=1})}
+  /* gone: Paul has left the story for a while, and another member is played. He leads, and Paul stands in no room. */
+  const gone=!!(u&&u.pc!=='paul'&&c.away&&c.away('paul'));if(gone){G.pc=ACT[u.pc];room=u.rooms[u.ps.indexOf(u.pc)];P.room=null}
   if(c.place)c.place(room);dealInv(room,u&&u.own);
   ov.className='';ov.onclick=null;G.scene=null;G.end={};G.item=null;G.verb='walk';G.hover=null;$('#dim').style.opacity=0;
   enterRoom(room,...c.ent[room]);
-  if(u){u.ps.forEach((id,i)=>{const a=ACT[id],r=u.rooms[i],e=c.ent[r];if(i&&a.room!==r&&!(c.away&&c.away(id)))place(a,r,e[0]+(r===room?-26:0),e[1]+2,e[2])});
-    const a=ACT[u.pc];if(a!==P){G.invs.paul=G.inv;G.pc=a;G.inv=G.invs[a.id];viewOf(a)}}
+  if(u){u.ps.forEach((id,i)=>{const a=ACT[id],r=u.rooms[i],e=c.ent[r];if((i||gone)&&a!==PC()&&a.room!==r&&!(c.away&&c.away(id)))place(a,r,e[0]+(r===room?-26:0),e[1]+2,e[2])});
+    const a=ACT[u.pc];if(a!==P&&!gone){G.invs.paul=G.inv;G.pc=a;G.inv=G.invs[a.id];viewOf(a)}}
   if(!G.started)G.started=performance.now();
   G.busy=false;lock(false);swapBtn();syncVerbs();drawInv();status();codeBtn();return true}
 /* ============ AUTOSAVE: the safe-point code of the current point, kept in this browser as well ============ */
@@ -1293,7 +1302,7 @@ function openCode(){audioInit();if(cb.classList.contains('on'))return closeCode(
         '</div><p>'+T('Write it down. Enter it here, or from the title screen, to return to this point.')+'</p>'+
         (G.saved?'<p class="kept">'+T('This point is also saved in this browser.')+'</p>':'')
       :'<h2>'+T('ENTER CODE')+'</h2><p>'+T('Type a code from an earlier game to continue from that point.')+'</p>')+
-      '<div class="row"><input id="codein" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXX-XXX">'+
+      '<div class="row"><input id="codein" maxlength="24" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXX-XXX">'+
       '<button id="codego" type="button">'+T('GO')+'</button></div><p id="codemsg" class="small">&nbsp;</p>'+
       '<button id="codex" type="button">'+(can?T('Back to the game'):T('Back'))+'</button>';
     $('#codein').value=typed;$('#codego').onclick=tryCode;$('#codex').onclick=closeCode;

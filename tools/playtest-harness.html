@@ -893,13 +893,218 @@
   heard.length=0;await actor(null,PH);await pickQ('Who begins the psalm');
   while(!(ov.classList.contains('end')&&ov.textContent.includes(T('Midnight in Philippi')))&&n9++<4000)await wait(50);
   ok(ov.classList.contains('end')&&F.k3&&told('v40b')&&said('It was sung to its end, for the first time, by people who would go on singing it.')&&said(C().psalm.c4.full),'the psalm is sung to its end; chapter nine complete screen shown');
-  ok(ov.textContent.includes(T('Click to return to the title'))&&/Psalm 136/.test(ov.textContent),'the closing screen says what the account leaves unsaid');
+  ok(ov.textContent.includes(T('Click to continue to Chapter Ten'))&&/Psalm 136/.test(ov.textContent),'the closing screen says what the account leaves unsaid');
   {const r=ov.getBoundingClientRect(),bad=[...ov.children].filter(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});if(bad.length)tight.add('closing screen: '+bad[0].textContent.slice(0,40))}
-  ok(store('paul.save')===null,'a finished game keeps no save');
+  ok(store('paul.save')===codeOf(10,0)&&ov.textContent.includes(T('Chapter Ten code: {code}',{code:codeOf(10,0)}))&&/^10-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(codeOf(10,0))&&decode(codeOf(10,0)).ch===10,'chapter nine ends with a chapter ten code, which begins with the two digits of its number, and the browser keeps it: '+codeOf(10,0));
   {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===7&&L.every(l=>l.k===1)&&M.state.pulse==='philippi','chapter nine ends on the map: the road that led there, and Philippi lit');
     ok(mapClear(),'no name on the map crosses a coast, an island or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('map9',()=>{ov.className=''});halt('final9')};
   if(C9){await ch9();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+  /* ---------------- Chapter Ten ---------------- */
+  /* Chapter Ten stops start Chapter Ten from the title screen. Its test is a function of its own: the full run calls it when Chapter Nine
+     has ended, and a Chapter Ten stop calls it at once. all10 halts nowhere. The stops that begin with "p" open one room at once, with the
+     story's flags set for it, so that its picture can be looked at without playing up to it. */
+  const C10=/^(map10|yard10|bolt10|wrong10|laid10|deutsch10|sab10|table10|row10|gift10|sewn10|sold10|third10|dusk10|night10|nightmap10|ber10|tableb10|finds10|cyrus10|tim10|seamap10|quay10|final10|all10)$/.test(stop);
+  if(/^p[a-z]+10$/.test(stop)){await loadLevel(10);ov.className='';ov.onclick=null;const ALL=CHAP[10].flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      S={pyard10:[[],'yard10'],pyardn10:[upto('r2'),'yard10'],pyardc10:[upto('r3'),'yard10'],pbolt10:[[],'bolt10'],pboltd10:[['laid'],'bolt10'],psyn10:[upto('cutd'),'syn10'],ptable10:[upto('r1'),'table10'],
+        pnight10:[upto('night'),'night10'],pber10:[upto('gone'),'ber10'],ptableb10:[upto('gone'),'table10'],ptim10:[upto('sea'),'ber10'],pquay10:[upto('ath'),'quay10'],pdusk10:[upto('r4'),null]}[stop];
+    if(!S)throw new Error('no such stop '+stop);setChapter(10);for(const k of S[0])F[k]=1;
+    if(!S[1]){G.up10=1;G.scene=CHAP[10].scenes.yard;G.busy=true;lock(true);status();narr(CHAP[10].told.v5,{dur:9000});await wait(700);halt(stop)}
+    const room=S[1],gone=F.sea&&!F.ath;if(gone){G.pc=ACT.tim10;P.room=null}CHAP[10].place(room);dealInv(room);G.scene=null;enterRoom(room,...CHAP[10].ent[room]);
+    if(stop==='ptable10'){G.tab10.s=['ps22m','is533'];G.tab10.t='mock'}if(stop==='ptableb10'){G.tab10.s=['ex12','is535','ps34'];G.tab10.t='pierce'}
+    if(stop==='pbolt10'){G.bolt10.at.roof={x:8,y:0,w:4,h:4};G.bolt10.sel='long';G.bolt10.mx=CHAP[10].bolt.x+2.5*CHAP[10].bolt.cell;G.bolt10.my=CHAP[10].bolt.y+.5*CHAP[10].bolt.cell}
+    G.busy=false;lock(false);status();swapBtn();codeBtn();await wait(900);halt(stop)}
+  const ch10=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[10],told=k=>heard.includes(T(C().told[k])),Q=p=>T('{text} ({ref})',{text:T(p.gist),ref:T(p.ref)}),read=p=>heard.includes(Q(p)),
+    until=async(fn,n)=>{for(let i=0;i<(n||6000)&&!fn();i++)await wait(30);await idle()},on=async name=>{clickView(...hs(name),H(name));await idle()},
+    cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
+      for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;return n},
+    apart=()=>{const b=SHARED.map.state.boxes,bad=[];for(let i=0;i<b.length;i++)for(let j=i+1;j<b.length;j++)if(!(b[i][2]+1<b[j][0]||b[j][2]+1<b[i][0]||b[i][3]+.5<b[j][1]||b[j][3]+.5<b[i][1]))bad.push(b[i][4]+' / '+b[j][4]);return bad.length?': '+bad.join(', '):''},
+    clear=()=>mapClear()?'':': '+[...mapClear.bad].join(', '),inWin=id=>{const[x,y]=SHARED.map.where(id);return x>6&&x<314&&y>6&&y<138},
+    /* the map as it stands when its legs are drawn: n legs, every name clear of the coasts and the routes, no two names on one another, no routes crossing */
+    mapOK=async(n,ids,what)=>{for(let i=0;i<9000&&!(SHARED.map&&G.scene===SHARED.map.draw);i++)await wait(30);
+      /* the line that is told over the map stays on the screen while the map is looked at: nothing is skipped until the checks are done */
+      clearInterval(sk);for(let i=0;i<900&&!(SHARED.map.state.legs.length===n&&SHARED.map.state.legs.every(l=>l.k===1));i++)await wait(30);await wait(250);const M=SHARED.map,L=M.state.legs;
+      ok(G.scene===M.draw&&L.length===n&&ids.every(id=>M.state.seen.has(id)&&inWin(id)),what);ok(cross(L)===0,'no two routes cross');
+      ok(mapClear(),'no name on the map crosses a coast, an island or a route ('+M.state.boxes.length+' names)'+clear());ok(!apart(),'and no two names overlap'+apart());
+      if(stop!=={3:'map10',1:'nightmap10'}[n]&&!(n===3&&stop==='seamap10'&&ids.includes('athens')))sk=setInterval(()=>{if(G.skip)G.skip()},30)},
+    /* the scroll table: its parts as they are shown, a scroll wound to a place, the tablets turned to a line, and the setting laid before those who listen */
+    TH10=()=>ROOMS.table10.hs.filter(h=>!h.vis||h.vis()),tclick=async h=>{clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},nS=()=>G.tab10.n,
+    roller=(i,d)=>TH10()[i*3+(d<0?0:2)],column=i=>TH10()[i*3+1],leafH=()=>TH10()[nS()*3],benchH=()=>TH10()[nS()*3+1],stepsH=()=>TH10()[nS()*3+2],
+    setS=async(i,to)=>{const list=C().lists[G.tab10.c][G.tab10.kinds[i]],ix=k=>k?list.indexOf(k)+1:0;for(let n=0;n<14&&G.tab10.s[i]!==to;n++)await tclick(roller(i,ix(to)>ix(G.tab10.s[i])?1:-1))},
+    setT=async to=>{for(let n=0;n<14&&G.tab10.t!==to;n++)await tclick(leafH())},lay=async()=>{heard.length=0;await tclick(benchH())},
+    capsFit=()=>G.caps10.length>=nS()&&G.caps10.every(c=>c.w<=c.max+.5&&c.sz>=3.2),
+    /* the bolt: a panel is taken from the board, turned if need be, and laid with its corner on a cubit of the cloth */
+    B=()=>C().bolt,cell=(cx,cy)=>[B().x+cx*B().cell+7,B().y+cy*B().cell+7],take=async id=>{const p=C().pieces.find(p=>p.id===id);await on(p.name)},
+    putP=async(id,cx,cy,turn)=>{if(G.bolt10.at[id]){await take(id)}else if(G.bolt10.sel!==id)await take(id);if(!!G.bolt10.turn[id]!==!!turn)await take(id);heard.length=0;view(...cell(cx,cy));await idle()};
+  let n10=0;
+  heard.length=0;(C10?document.querySelector('#overlay [data-ch="10"]'):ov).click();
+  await mapOK(3,['philippi','amphipolis','apollonia','thessalonica'],'chapter ten opens on the map, through its western window: from Philippi through Amphipolis and Apollonia to Thessalonica');
+  halt('map10');
+  await until(()=>G.ch===10&&G.room==='yard10'&&!G.scene&&!G.busy);
+  const SI=A('silas10'),TI=A('timothy10'),TP=A('tim10'),JA=A('jason10'),PA=A('parmenon10'),LM=A('lysimachos10'),ME=A('menandros10'),ST=A('stratonike10'),EU=A('eupolemos10'),DO=A('dorotheos10'),KL=A('kleonike10'),LT=A('late10'),E1=A('esc101');
+  ok(G.ch===10&&G.room==='yard10'&&srt()==='awl,knife,tablets,thread'&&[SI,TI,JA].every(a=>a.room==='yard10')&&!PA.room&&told('v1')&&told('t22')&&said('A roof, two walls, a door flap and two gussets. You shall have it.'),"chapter ten starts in Jason's courtyard, with the order for a tent ["+[G.ch,G.room,srt(),heard.length].join()+']');
+  ok(/^10-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===10&&decode(makeCode()).w!=null&&decode('9'+makeCode().slice(2))===null,'chapter ten code format: two digits for the chapter, then nine characters '+makeCode());
+  ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Timothy'))&&$('#swap').disabled&&!TP.room,'the swap button names Timothy and is grey: until Acts 17:14 only Paul is played');fitVerbs();
+  halt('yard10',()=>{say(TI,'It is pegged out along the wall, Paul, as you said, and your cord is knotted to the cubit.')});
+  heard.length=0;await act(null,'gate to the street');ok(G.room==='yard10'&&said('Not yet. Parmenon is waiting for a tent, and the cloth is not even cut.'),'no Sabbath walk before the cloth is cut');
+  {const el=await tabs();ok(leaf(0,T('Lay out the six panels of the tent on the bolt, before the knife touches it.')).length===1&&leaf(1).length===8&&!leaf(1).some(x=>/[“”„"]/.test(x)),"the tablets hold the eight places of Thessalonica as Paul's notes, none in quotation marks");
+    halt('deutsch10');el.click();await idle()}
+  pray();await idle();ok(hint()[0]==='bolt10','the hint points to the bolt');
+  await sweep(SI,TI,JA);
+  /* measured twice: the bolt is laid out before it is cut */
+  heard.length=0;await useOn('knife','bolt of goat-hair cloth');ok(!F.cutd&&said('Not before every panel has its place. Cloth that is cut wrong stays cut.'),'the knife waits until the bolt is laid out');
+  await act(null,'bolt of goat-hair cloth');await until(()=>G.room==='bolt10'&&!G.busy);
+  ok(G.room==='bolt10'&&said('And what is left over I want in one length: six cubits, for the loops.')&&PC().y>144+80,'the close view of the bolt: nobody stands in it, and the three rules are said once');
+  heard.length=0;view(...cell(5,1));await idle();ok(said('First a panel from the board. Then its place on the cloth.'),'a click on the cloth with empty hands');
+  await putP('roof',1,0);ok(!G.bolt10.at.roof&&said('Not across the thin strip. A panel may end on it, where the seam folds the cloth double. It must not run over it.'),'a panel may not run across the thin strip');
+  await putP('roof',9,0);ok(!G.bolt10.at.roof&&said('That would hang over the edge of the bolt.'),'nor hang over the edge');
+  await putP('roof',2,0);ok(G.bolt10.at.roof&&G.bolt10.at.roof.x===2&&!heard.length,'it may end on the thin strip');
+  await putP('long',4,2);ok(!G.bolt10.at.long&&said('Not there. Two panels would want the same cloth.'),'two panels cannot share the same cloth');
+  halt('bolt10');
+  await putP('long',6,0);await putP('end',6,2);await putP('flap',0,0);await putP('g1',0,2);await putP('g2',9,2);
+  ok(!F.laid&&said('Every panel has a place. But what is left over lies in pieces, and the loops want one length of six cubits.'),'every panel placed, but the spare cloth in pieces: not yet');
+  halt('wrong10');
+  pray();await idle();ok(hint()[0]==='lay10','the hint: where the thin strip may lie');
+  heard.length=0;view(...cell(3,1));await idle();ok(!G.bolt10.at.roof&&G.bolt10.sel==='roof','with empty hands a panel is lifted off the cloth again');
+  for(const p of C().pieces)if(G.bolt10.at[p.id])await take(p.id);ok(!Object.keys(G.bolt10.at).length,'every panel can be lifted off again by its place on the board');
+  for(const p of C().pieces){const w=C().way[p.id];await putP(p.id,w.x,w.y,p.w!==w.w)}
+  ok(F.laid&&said('Measured twice. Roof, walls, flap and gussets, and six cubits in one length for the loops. Now the knife may come.'),'the one way: the end wall upright beside the thin strip, the roof at the far end, six cubits left in one length');
+  halt('laid10');
+  {const c=makeCode();await enter(c);ok(G.room==='bolt10'&&F.laid&&C().pieces.every(p=>G.bolt10.at[p.id])&&makeCode()===c,'a code from the close view round-trips, and the panels lie where they lay: '+c)}
+  pray();await idle();ok(hint()[0]==='cut10','the hint: the knife');
+  heard.length=0;await useOn('knife','bolt of goat-hair cloth');await until(()=>G.room==='yard10'&&!G.busy);
+  ok(F.cutd&&has('panels10')&&G.room==='yard10'&&said('Tomorrow is the Sabbath, Paul. Jason says that the synagogue is three streets from his gate.'),'the bolt is cut into six panels, and it is nearly the Sabbath');
+  heard.length=0;await use('awl','panels10');ok(!F.sewn&&said('Stitch by stitch, every evening. It will not be done before the Sabbath, and it need not be.'),'the seams are not done in a day');
+  /* the first Sabbath */
+  heard.length=0;await act(null,'gate to the street');await until(()=>G.room==='syn10'&&!G.busy);
+  ok(G.room==='syn10'&&told('v2')&&[LM,ME,ST,JA,SI,TI].every(a=>a.room==='syn10')&&said(C().told.v2)&&said('It is. And he need not take my word for it: the scrolls are on the table.'),'the synagogue of Thessalonica: he is asked to speak, and a hearer asks whether the sour wine is written (Acts 17:2)');
+  halt('sab10');
+  heard.length=0;await act(null,'door to the street');ok(G.room==='syn10'&&said('Not while a man is waiting for his answer.'),'nobody leaves a question standing');
+  pray();await idle();ok(hint()[0]==='v10'&&hint()[1][0].includes('Luke 24:44'),'the hint recalls the Law, the Prophets and the Psalms (Luke 24:44)');
+  await act(null,'reading table');await until(()=>G.room==='table10'&&!G.busy);
+  ok(G.room==='table10'&&nS()===2&&G.tab10.s.every(x=>!x)&&!G.tab10.t&&TH10().length===9&&capsFit(),'the scroll table: two scrolls rolled shut, the tablets closed, and a name under each that fits its place');
+  await lay();ok(said('My tablets are shut. What is written has to lie beside what was done, or I have shown them nothing.'),'nothing can be shown with the tablets shut');
+  await setT('wine');await lay();ok(said('Both scrolls are rolled shut. I have laid nothing beside what I say.'),'nor with both scrolls rolled shut');
+  await setS(0,'ps34');await lay();ok(heard.some(h=>h.includes(T(C().places.ps34.cap))&&h.includes(T(C().ev.wine.cap))),'a psalm that says another thing: a hearer names both, and not the answer');
+  await setS(0,'ps69');await setS(1,'is50');await lay();ok(!F.r1&&heard.some(h=>h.includes(T(C().places.is50.cap))),'the right psalm, and a prophet who says another thing: not yet');
+  heard.length=0;await tclick(column(0));ok(read(C().places.ps69),'a look at an open column reads the place, with its reference');
+  halt('table10');
+  await setS(1,null);await lay();ok(F.r1&&read(C().places.ps69)&&read(C().ev.wine)&&said('So it is written. One small thing.')&&capsFit(),'the psalm of the vinegar beside the sour wine, and the Prophets rolled shut: the first row holds');
+  ok(G.tab10.key==='tM'&&G.tab10.s.every(x=>!x)&&!G.tab10.t,'a new question clears the table');
+  {const c=makeCode();await enter(c);ok(G.room==='table10'&&F.r1&&!F.r2&&makeCode()===c,'a code from the scroll table round-trips: '+c)}
+  await setT('mock');await setS(0,'ps22m');await lay();ok(!F.r2&&said('One witness, and that one David. Does any prophet say the same?'),'one scroll that agrees is one witness: the hearer asks for the prophet');
+  await setT('wine');await setS(0,'ps69');await lay();ok(!F.r2&&said('You showed us that, and it holds. It is not what I asked today.')&&said('He asked about the mockery.'),'a row that holds, and was not asked for, is granted and set aside');
+  pray();await idle();ok(hint()[0]==='m10','the hint: the mockery');
+  await setT('mock');await setS(0,'ps22m');await setS(1,'is533');halt('row10');await lay();await until(()=>G.room==='yard10'&&!G.busy);
+  ok(F.r2&&read(C().places.ps22m)&&read(C().places.is533)&&read(C().ev.mock)&&G.room==='yard10'&&told('t29')&&said('By day he sewed and talked. By night he sewed.')&&said('They said that you would say so. I am to tell you that they were not asking.'),
+    'David and Isaiah beside the mocking: the Sabbath ends, the lamp is lit over the bench, and Philippi sends for the first time (1 Thessalonians 2:9)');
+  ok(ART.yard10.variant()==='n'&&ROOMS.yard10.mood==='night','the courtyard by night');
+  halt('gift10');
+  heard.length=0;await act(null,'gate to the street');ok(G.room==='yard10'&&said('Not with the panels lying loose on the bench. The seams first: the Sabbath will come without my help.'),'the seams come before the next Sabbath');
+  pray();await idle();ok(hint()[0]==='sew10','the hint: the seams');
+  heard.length=0;await use('awl','panels10');await until(()=>F.sewn&&!G.busy);
+  ok(F.sewn&&has('tent10')&&!has('panels10')&&ART.yard10.variant()===''&&said('People have begun to ask at my gate for the tentmaker, Paul. They do not all want tents.'),'four nights of sewing: the tent is done');
+  halt('sewn10');
+  /* the second Sabbath */
+  heard.length=0;await act(null,'gate to the street');await until(()=>G.room==='syn10'&&!G.busy);ok(told('v3')&&said('He died, and he was buried. And he did not stay there. That is written too; and it was seen.'),'the second Sabbath: a dead Christ is no Christ (Acts 17:3)');
+  await act(null,'reading table');await until(()=>G.room==='table10'&&!G.busy);
+  await setT('raised');await setS(0,'ps16');await lay();await until(()=>G.room==='yard10'&&!G.busy);
+  ok(F.r3&&read(C().places.ps16)&&read(C().ev.raised)&&said('Then you are not telling us what somebody told you. You are telling us what you saw.')&&PA.room==='yard10'&&ART.yard10.variant()==='','the psalm of the Grave beside those who saw him, Paul last of all (1 Corinthians 15:4-8); and Parmenon has come for his tent');
+  heard.length=0;await act(null,'gate to the street');ok(G.room==='yard10'&&said('Parmenon comes for his tent this morning. He shall find it here, and me with it.'),'the tent is delivered before the third Sabbath');
+  await sweep(PA);
+  heard.length=0;await give('tent10',PA);await until(()=>F.sold&&!G.busy);
+  ok(F.sold&&!has('tent10')&&!PA.room&&told('p416')&&said('For the tent, the price. The rest has no price, and it was not mine to sell.')&&said('Twice. Tell them that I know what it cost them. And tell them that it arrived.'),'the tent is paid for, the good news is not; and Philippi sends for the second time (Philippians 4:16)');
+  halt('sold10');
+  {const c=makeCode();F.sold=0;await enter(c);ok(G.room==='yard10'&&F.sold&&F.r3&&!F.r4&&srt()==='awl,knife,tablets,thread'&&makeCode()===c,'a code from the courtyard round-trips: '+c)}
+  /* the third Sabbath, and what followed */
+  heard.length=0;await act(null,'gate to the street');await until(()=>G.room==='syn10'&&!G.busy);ok(said('On the third Sabbath nobody found a place on the benches.'),'the third Sabbath');
+  await act(null,'reading table');await until(()=>G.room==='table10'&&!G.busy);
+  await setT('pierce');await setS(0,'ps34');await setS(1,'is535');halt('third10');heard.length=0;{const h=benchH();clickView(h.x+h.w/2,h.y+h.h/2,h)}
+  for(let i=0;i<3000&&G.scene!==C().scenes.yard;i++)await wait(30);clearInterval(sk);await wait(300);ok(F.r4&&read(C().places.ps34)&&read(C().places.is535)&&read(C().ev.pierce)&&told('v4')&&G.scene===C().scenes.yard&&G.up10===1,'the unbroken bones and the pierced one beside one afternoon (John 19:33-37); who believed is told, and then the courtyard at dusk, with nobody in it');
+  halt('dusk10');sk=setInterval(()=>{if(G.skip)G.skip()},30);
+  await until(()=>G.room==='night10'&&!G.scene&&!G.busy);
+  ok(F.night&&['v5','v6','v7','v8','v9'].every(told)&&[SI,TI,JA,A('host10')].every(a=>a.room==='night10')&&said('The city rulers. We have given them security. Then they let us go.'),'the mob, the city rulers and the security are told, not shown (Acts 17:5-9); night finds them in another house');
+  halt('night10');
+  heard.length=0;await act(null,'door to the lane');ok(G.room==='night10'&&heard.length===1,'the door stays shut until Jason has been heard');
+  pray();await idle();ok(hint()[0]==='night10','the hint: Jason');
+  await actor(null,JA);ok(nq()===4,'four things he could do with the night');await pickQ('Stand before the city rulers');ok(nq()===3&&!F.gone,'what was right in Philippi would cost Jason here');
+  await pickQ('Stay in this house');await pickQ('Go back to my bench');ok(nq()===1,'two more, each true and of no use to Jason');
+  heard.length=0;choose(0);await mapOK(1,['thessalonica','beroea'],'the road to Beroea is told on the map');
+  ok(F.gone&&SHARED.map.state.night===true&&said('You told us that it would come to this. I thought you meant: for you.'),'he goes the same night, and the window of the map is dark');
+  halt('nightmap10');
+  await until(()=>G.room==='ber10'&&!G.scene&&!G.busy,9000);
+  ok(told('v10a')&&told('t217')&&told('v10b')&&AU.score===C().musicB&&[EU,DO,KL,SI,TI].every(a=>a.room==='ber10')&&said(T('Yesterday you said that not a bone of him was broken. In the night I found two places. Moses says it of the Passover lamb, and David says it of a righteous man. Of whom do you say it?')),
+    'Beroea (Acts 17:10): the tune runs in even bars, and a man who found two places in the night asks about them');
+  halt('ber10');
+  {const el=await tabs();ok(leaf(1).length===12,'the tablets now hold the places that the Beroeans found as well');el.click();await idle()}
+  await sweep(EU,DO,KL);
+  /* sifted: the hearers bring the places */
+  await act(null,'reading table');await until(()=>G.room==='table10'&&!G.busy);
+  ok(nS()===3&&G.tab10.s.join()==='ex12,,ps34'&&TH10().length===12&&capsFit(),'three scrolls in Beroea: Moses and the Psalms lie open where Eupolemos left them, and the Prophets are rolled shut');
+  await setT('pierce');await lay();ok(!F.b1&&said('The prophet is rolled shut. You said that a prophet speaks of this as well.'),'two scrolls are not the whole row');
+  pray();await idle();ok(hint()[0]==='b110','the hint: the pierced one');
+  await setS(1,'is535');halt('tableb10');await lay();await until(()=>F.b1&&G.room==='ber10'&&!G.busy);
+  ok(F.b1&&told('v11')&&said('A lamb, a righteous man, and a servant who is pierced. Three scrolls. And you say: one afternoon.')&&heard.includes(T(C().told.v11)),'Moses, the Prophets and the Psalms beside one afternoon: the row that John lays out (John 19:36, 37); and they search every day (Acts 17:11)');
+  await act(null,'reading table');await until(()=>G.room==='table10'&&!G.busy);
+  for(const[f,row,set,evk,line]of[['b2a','L',',,ps22l','lots','For a garment. While he was dying.'],['b2b','Q',',is537,','silent','He could have. He chose the silence that was written.'],['b2c','T',',is539,','tomb','A new tomb. So even that.']]){
+    ok(G.tab10.s.join()===set&&!G.tab10.t,'the next find lies on the table as its finder left it: '+set);
+    if(f==='b2a'){await setT('tomb');await lay();ok(!F.b2a&&heard.some(h=>h.includes(T(C().places.ps22l.cap))&&h.includes(T(C().ev.tomb.cap))),'a line of the tablets that does not belong beside it is turned down');pray();await idle();ok(hint()[0]==='b2a10','the hint: who cast the lots')}
+    if(f==='b2b')halt('finds10');
+    await setT(evk);await lay();await until(()=>F[f]&&!G.busy);ok(F[f]&&read(C().ev[evk])&&said(line)&&capsFit(),'the Beroeans found the place; Paul lays beside it what was done: '+evk)}
+  await until(()=>G.room==='ber10'&&!G.busy);ok(said('Paul! I read on by the lamp, column after column. Here: “his anointed one”. That is he. Is it not?'),'on the third day a young man brings a line of his own finding');
+  /* the line that names another man */
+  await act(null,'reading table');await until(()=>G.room==='table10'&&!G.busy);ok(G.tab10.s.join()===',is45,','Isaiah lies open at the words "his anointed one"');
+  await setT('raised');await lay();ok(!F.b3&&said('No. I have not read that line to its end, and I lay nothing beside a line that I have not read.'),'Paul lays nothing beside a line that he has not read to its end');
+  heard.length=0;await tclick(column(1));ok(read(C().places.is45)&&/Cyrus/.test(heard.join()),'reading on gives the name');
+  pray();await idle();ok(hint()[0]==='b310','the hint: read the line to its end');
+  await setT(null);halt('cyrus10');await lay();await until(()=>F.sea&&!G.busy&&G.room==='ber10',9000);
+  ok(F.b3&&said('I have nothing to lay beside that line, and I will lay nothing beside it.')&&said('You read on to the end of the line. That is not being wrong. That is how it is done.'),'for the first time "I have nothing to lay beside that" is the right answer (Isaiah 45:1)');
+  /* without Paul */
+  ok(told('v12')&&told('v13')&&told('v14')&&PC()===TP&&!P.room&&TP.room==='ber10'&&!TI.room&&SI.room==='ber10'&&$('#swap').textContent.includes(T('Paul'))&&$('#swap').disabled&&!G.inv.length,
+    'Paul is sent to the sea (Acts 17:13, 14): the player is Timothy, who carries nothing, and the button that led back to Paul is grey');
+  halt('tim10');
+  {const c=makeCode();F.sea=0;await enter(c);ok(G.ch===10&&G.room==='ber10'&&F.sea&&PC()===TP&&!P.room&&TP.room==='ber10'&&$('#swap').disabled&&LT.room==='ber10'&&makeCode()===c,'a code from the scene without Paul round-trips: Timothy is played, and Paul stands in no room: '+c)}
+  key('c');await idle();ok(PC()===TP,'C does not bring Paul back');
+  heard.length=0;await act(null,'reading table');ok(G.room==='ber10'&&said('The table is theirs. They do not need my hands on it.'),'Timothy does not set the table');
+  heard.length=0;await act('look','window');ok(said('The mountain. Paul is walking away from it, toward the sea.'),'Timothy looks at things in his own words');
+  heard.length=0;await act('pickup','chest of the scrolls');ok(said('It is not mine to take.'),'and has his own answers where nothing was written for him');
+  pray();await idle();ok(hint()[0]==='own10'&&heard.some(h=>h.includes(T('Timothy'))),'Timothy prays, and the hint is his');
+  await actor(null,LT);ok(nq()===3,'three things Timothy could do');await pickQ('Set the table for him myself');ok(nq()===2&&!F.own,'he could: and next week he may be sent for too');
+  await pickQ('wait until Paul is back');heard.length=0;choose(0);
+  await mapOK(3,['beroea','athens'],'the way to the sea, and by sea to Athens, is told on the map');
+  ok(F.own&&said('Eupolemos. You found two of the three places yourself. Will you show him?')&&read(C().ev.pierce)&&said('Outside, strangers were shouting in the street. Inside, somebody wound a scroll on to its next place.'),'the last round at the table is solved by taking the hand away from it: the Beroeans set all three scrolls themselves');
+  halt('seamap10');
+  await until(()=>G.room==='quay10'&&!G.scene&&!G.busy,9000);
+  ok(F.ath&&told('v15a')&&PC()===P&&P.room==='quay10'&&!TP.room&&$('#swap').disabled&&$('#swap').textContent.includes(T('Timothy'))&&srt()==='awl,knife,tablets,thread'&&E1.room==='quay10','the quay at Athens: Paul again, with his tools, and two brothers who must sail home');
+  halt('quay10');
+  {const c=makeCode();await enter(c);ok(G.room==='quay10'&&F.ath&&PC()===P&&!TP.room&&makeCode()===c,'a code from the quay round-trips: '+c)}
+  heard.length=0;await act(null,'gangplank');ok(G.room==='quay10'&&heard.length===1,'Paul is not sailing');
+  pray();await idle();ok(hint()[0]==='msg10','the hint: a message short enough to arrive whole');
+  await sweep(E1);
+  /* carried by mouth */
+  await actor(null,E1);ok(nq()===5&&!hasQ('That is the whole message.'),'five things he could send');
+  await pickQ('It is for Silas and Timothy.');ok(nq()===5&&hasQ('That is the whole message.'),'the message can be ended once it has begun');
+  heard.length=0;await pickQ('That is the whole message.');ok(!F.msg&&said('And what are they to do? Send word? Wait for you? Come?'),'a part is missing, and the brother asks for it');
+  await pickQ('They are to come to me');await pickQ('Greet Eupolemos');await pickQ('As quickly as they can.');heard.length=0;await pickQ('That is the whole message.');
+  ok(!F.msg&&said('Too much for one mouth and so many days. Only what must not be lost.')&&nq()===3,'a greeting too many, and the brother loses his thread: only what must not be lost');
+  heard.length=0;pickQ('That is the whole message.');
+  while(!(ov.classList.contains('end')&&ov.textContent.includes(T('Is It So?')))&&n10++<4000)await wait(50);
+  ok(ov.classList.contains('end')&&F.msg&&told('v15b')&&said('Silas and Timothy are to come to you in Athens, as quickly as they can. That I can carry.'),'the instruction is carried by mouth (Acts 17:15); chapter ten complete screen shown');
+  ok(ov.textContent.includes(T('Click to return to the title'))&&/17:1-15/.test(ov.textContent),'the closing screen says what the account leaves unsaid');
+  {const r=ov.getBoundingClientRect(),bad=[...ov.children].filter(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});if(bad.length)tight.add('closing screen: '+bad[0].textContent.slice(0,40))}
+  ok(store('paul.save')===null,'a finished game keeps no save');
+  /* the uproar and the chord of a row that holds, rendered offline on the game's own mixer: heard, finite and unclipped */
+  {const SR=22050,off=async(fn,dur)=>{const o=new OfflineAudioContext(1,Math.ceil(SR*dur),SR),keep=Object.assign({},AU);AU.ctx=o;audioGraph(o);try{fn(o)}finally{for(const k in AU)AU[k]=keep[k]}return(await o.startRendering()).getChannelData(0)},
+     peak=x=>{let p=0;for(const v of x){if(!isFinite(v))return NaN;p=Math.max(p,Math.abs(v))}return p},a=peak(await off(()=>C().uproar(),8)),b=peak(await off(()=>C().chord(),2));
+   ok(a>.01&&a<.98&&b>.005&&b<.9,`offline: the uproar and the chord of a row that holds render finite, audible and unclipped (peaks ${a.toFixed(2)}, ${b.toFixed(2)})`)}
+  /* every row of the table is one whose parts name each other, and each language names every place and line */
+  {const R=C().rows,PL=C().places,EV=C().ev,bad=[];for(const k in EV){const r=R[EV[k].row];if(!r)bad.push('no row for '+k);else for(const s in r)if(!PL[r[s]]||PL[r[s]].k!==s)bad.push(k+'/'+s)}
+   for(const k in PL)if(!T.peek(PL[k].cap)||!T.peek(PL[k].gist)||!T.peek(PL[k].ref))bad.push('untranslated '+k);for(const k in EV)if(!T.peek(EV[k].cap)||!T.peek(EV[k].gist)||!T.peek(EV[k].ref))bad.push('untranslated '+k);
+   ok(!bad.length&&Object.keys(EV).length===9&&Object.keys(PL).length===13,'the table: nine lines of the tablets, each with its row, and thirteen places, each in its scroll and named in this language'+(bad.length?' BAD '+bad:''))}
+  halt('final10')};
+  if(C10){await ch10();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(!C3&&!C4&&!C5&&!C6&&!HUB){
@@ -1703,7 +1908,7 @@
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('journey6',()=>{ov.className=''});halt('final6');await wait(1700)}
-  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9()}
+  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10()}
   if(lang!=='en')ok(!MISSING.size,'every line shown in the game had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);
@@ -1723,34 +1928,34 @@
   cut(travel);for(let i=0;i<60&&G.scene!==SHARED.map.draw;i++)await wait(50);key('Escape');await idle();ok(G.room==='workshop'&&!G.scene&&!G.busy,'Esc stays where you are');
   /* the hub test took Chapter Nine's number for a chapter of its own: Chapter Nine gets it back */
   CHAP[9]=real9;setChapter(1);enterRoom('workshop',60,118,1);
-  /* keys: good, win and pray start on the tonic of the chapter's key and stay in its mode, whichever of the nine it is, also with no score
+  /* keys: good, win and pray start on the tonic of the chapter's key and stay in its mode, whichever of the ten it is, also with no score
      playing (on the map, at a chapter's end), and never more than a tritone from where they were tuned in D; Chapter One, the title
      screen's key, keeps them exactly as they were; a typed code is greeted in its own chapter's key.
      Checked at the end of the run, when every chapter has been loaded and played (loading them earlier would replace rooms of the same name). */
-  {for(let n=1;n<=9;n++)await loadLevel(n);
+  {for(let n=1;n<=10;n++)await loadLevel(n);
     const k0=AU.key,midi=f=>69+12*Math.log2(f/440),pc=(m,k)=>((Math.round(m)-k.root)%12+12)%12,inKey=(m,k)=>Math.abs(m-Math.round(m))<.01&&k.scale.includes(pc(m,k)),
       tones=fn=>{const t0=window.tone,fs=[];window.tone=o=>{fs.push(Math.round(midi(o.f)*100)/100)};try{fn()}finally{window.tone=t0}return fs},
       fan=()=>[SFX.good,SFX.win,SFX.pray].map(f=>tones(()=>f.call(SFX))),D=[[62,66,69,74],[62,66,69,74,78,81],[62,69,74]],out=[],far=[],ends=[];
-    try{for(let n=1;n<=9;n++){const k=CHAP[n].music;AU.key=k;fan().forEach((ms,j)=>{ms.forEach((m,i)=>{if(!inKey(m,k))out.push(n+':'+m);if(Math.abs(m-D[j][i])>6)far.push(n+':'+m)});
+    try{for(let n=1;n<=10;n++){const k=CHAP[n].music;AU.key=k;fan().forEach((ms,j)=>{ms.forEach((m,i)=>{if(!inKey(m,k))out.push(n+':'+m);if(Math.abs(m-D[j][i])>6)far.push(n+':'+m)});
         if(pc(ms[0],k)!==0||![0,7].includes(pc(ms[ms.length-1],k)))ends.push(n+':'+ms)})}
       AU.key=CHAP[1].music;const f1=fan();AU.key=CHAP[3].music;const g3=fan()[0];
       setScore(CHAP[5].music);setScore(null);const g5=fan()[0];
       openCode();$('#codein').value=codeOf(7,0);const a0=window.applyState,t0=window.tone,g7=[];window.applyState=()=>true;window.tone=o=>{g7.push(Math.round(midi(o.f)*100)/100)};
       try{await tryCode()}finally{window.applyState=a0;window.tone=t0;closeCode()}
-      ok(!out.length&&!ends.length,`good, win and pray begin on the tonic of each of the nine chapters' keys, end on its tonic or fifth, and stay in its mode (Chapter Three's good: ${g3})`+(out.length?' OUT '+out:'')+(ends.length?' ENDS '+ends:''));
+      ok(!out.length&&!ends.length,`good, win and pray begin on the tonic of each of the ten chapters' keys, end on its tonic or fifth, and stay in its mode (Chapter Three's good: ${g3})`+(out.length?' OUT '+out:'')+(ends.length?' ENDS '+ends:''));
       ok(!far.length&&f1.map(x=>x.join()).join('|')===D.map(x=>x.join()).join('|'),'none lies more than a tritone from where it was tuned, and Chapter One\'s are exactly as before'+(far.length?' FAR '+far:''));
       ok(!AU.score&&g5.every(m=>inKey(m,CHAP[5].music))&&g5.join()!==f1[0].join(),`with no score playing they keep the last chapter's key (Chapter Five: ${g5})`);
       ok(g7.length&&g7.every(m=>inKey(m,CHAP[7].music))&&pc(g7[0],CHAP[7].music)===0,`a typed code is greeted in its own chapter's key (Chapter Seven: ${g7})`);
       /* the map's sting and arrival chime, with no score playing, as on the map; and a chapter that opens on the map has its key first */
       const M=await need('map'),I0=Object.assign({},INST),D0=Object.assign({},DRUMS),tw=window.tone,mo=[],by={};let ps=[];
       try{for(const k of['drone','harp','ney'])INST[k]=f=>ps.push([k,midi(f)]);DRUMS.d=()=>{};window.tone=o=>{ps.push(['chime',midi(o.f)])};setScore(null);
-        for(let n=1;n<=9;n++){AU.key=CHAP[n].music;ps=[];M.sting();M.arrive();by[n]=ps;if(ps.length!==12)mo.push(n+': '+ps.length+' notes');
+        for(let n=1;n<=10;n++){AU.key=CHAP[n].music;ps=[];M.sting();M.arrive();by[n]=ps;if(ps.length!==12)mo.push(n+': '+ps.length+' notes');
           for(const[,m]of ps)if(!inKey(m,CHAP[n].music))mo.push(n+':'+m.toFixed(2))}}
       finally{Object.assign(INST,I0);Object.assign(DRUMS,D0);window.tone=tw}
       const s5=CHAP[5].start,oc=ov.onclick;let k5;CHAP[5].start=()=>{k5=AU.key};AU.key=CHAP[4].music;
       try{await startChapter(5)}finally{CHAP[5].start=s5;ov.onclick=oc}
       const part=(n,k)=>by[n].filter(x=>x[0]===k).map(x=>Math.round(x[1])),one=['drone','harp','ney','chime'].map(k=>part(1,k).join()).join('|'),h7=part(7,'harp');
-      ok(!mo.length&&k5===CHAP[5].music,`the map's sting and arrival chime sound in each of the nine chapters' keys, and Chapter Five, which opens on the map, has its own key before it starts`+(mo.length?' OUT '+mo:''));
+      ok(!mo.length&&k5===CHAP[5].music,`the map's sting and arrival chime sound in each of the ten chapters' keys, and Chapter Five, which opens on the map, has its own key before it starts`+(mo.length?' OUT '+mo:''));
       ok(one==='50|62,66,69,74|74,75,78,81,78|81,86'&&h7.some(m=>pc(m,CHAP[7].music)===7),`Chapter One's sting keeps its register (${one}), and in Chapter Seven's five notes its harp reaches the fifth (${h7})`)}
     finally{AU.key=k0}}
   /* high notes: bite is exactly 1 up to its knee and falls, never rising, above it; Chapter One's ney is quieter at the top of its hope tune
@@ -1761,17 +1966,17 @@
       lvl=f=>{const t0=window.tone,n0=window.noise,seen=[];window.tone=o=>seen.push(o.v);window.noise=o=>seen.push(o.v);try{INST.ney(f,0,.5,1)}finally{window.tone=t0;window.noise=n0}return seen};
     ok(flat&&down&&lvl(top).every((v,i)=>v<[.1,.08][i])&&calm.length&&calm.every(f=>lvl(f).join()==='0.1,0.08'),
       `high notes: the curve is 1 up to 550 Hz and only falls above it; Chapter One's top ney note (${top.toFixed(0)} Hz) is ${(-20*Math.log10(bite(top))).toFixed(1)} dB quieter, its ${calm.length} calm notes below the knee are as they were`)}
-  /* the held pipe: in each of the nine chapters' keys, an aulos track with hold:0 or hold:7 gets one held note per bar in which its melody
+  /* the held pipe: in each of the ten chapters' keys, an aulos track with hold:0 or hold:7 gets one held note per bar in which its melody
      plays, on the tonic or the fifth under it; a track without hold gets none; and Chapter Six's feast asks for the tonic, over its drone */
   {const a0=INST.aulos,sc0=AU.score,m0=AU.mood,hd=[],bad=[];let none=0;
     try{INST.aulos=()=>{};INST.aulos.hold=(f,t,d,v)=>hd.push(f);
-      for(let n=1;n<=9;n++)for(const h of[0,7,null]){const k=CHAP[n].music,tr={inst:'aulos',oct:12,seq:{A:[0,null,2,null,4,null,2,null,0,null,2,null,4,null,2,null],B:Array(16).fill(null)},prog:'AB'};
+      for(let n=1;n<=10;n++)for(const h of[0,7,null]){const k=CHAP[n].music,tr={inst:'aulos',oct:12,seq:{A:[0,null,2,null,4,null,2,null,0,null,2,null,4,null,2,null],B:Array(16).fill(null)},prog:'AB'};
         if(h!=null)tr.hold=h;hd.length=0;AU.score={dt:.16,root:k.root,scale:k.scale,tracks:[tr]};AU.mood='calm';for(let st=0;st<64;st++)playStep(st,1000+st*.16);
         if(h==null){none+=hd.length;continue}
         const pcs=hd.map(f=>((Math.round(69+12*Math.log2(f/440))-k.root)%12+12)%12);if(hd.length!==2||pcs.some(p=>p!==h))bad.push(n+'/'+h+':'+pcs)}}
     finally{INST.aulos=a0;AU.score=sc0;AU.mood=m0}
     const feast=CHAP[6].music.tracks.filter(tr=>tr.moods&&tr.moods.includes('feast'));
-    ok(!bad.length&&!none&&feast.some(tr=>tr.inst==='aulos'&&tr.hold===0)&&feast.some(tr=>tr.drone&&tr.drone.join()==='0'&&tr.every===16&&tr.vol===.6),'the held pipe: on the tonic or the fifth in all nine keys, once a bar while the melody plays and not in a silent bar; none without hold; Chapter Six\'s feast holds the tonic over its drone'+(bad.length?' WRONG '+bad:''))}
+    ok(!bad.length&&!none&&feast.some(tr=>tr.inst==='aulos'&&tr.hold===0)&&feast.some(tr=>tr.drone&&tr.drone.join()==='0'&&tr.every===16&&tr.vol===.6),'the held pipe: on the tonic or the fifth in all ten keys, once a bar while the melody plays and not in a silent bar; none without hold; Chapter Six\'s feast holds the tonic over its drone'+(bad.length?' WRONG '+bad:''))}
   {const real=Object.values(CHAP).filter(c=>c.src);/* the chapters that are level files: not the hub test's own */
     ok(real.length>=9&&real.every(c=>c.ready)&&!taken.length,'ids: all '+real.length+' chapters are loaded, and none took a room, a backdrop or an item from another'+(taken.length?'. TAKEN: '+taken.join(' | '):''))}
   ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));

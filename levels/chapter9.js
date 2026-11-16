@@ -696,8 +696,8 @@ async function finale(){AU.mood='hope';
     await narr('From Philippi they travelled on through Amphipolis and Apollonia, toward Thessalonica. (Acts 17:1)',{dur:8500})}catch(e){console.error(e)}
   endScreen({title:'Midnight in Philippi',text:'Paul sang where nobody could see him, stayed where every door stood open, and asked of frightened men only what the brothers needed.',
     based:"Based on Acts 16:16-40; 17:1; Philippians 1:7, 30 and Psalm 136. Supporting characters and dialogue are imaginative; the events are from the Scriptures, and are told here in paraphrase. Acts does not say what became of the girl, whether the two spoke of being Romans before they were beaten, what they sang, how many prisoners there were or why none of them fled, how Paul knew what the jailer was about to do, who belonged to the jailer's house or where they were baptized, how the two came to be in the prison again by morning, who the brothers in Lydia's house were, or who left Philippi with Paul and Silas.",
-    go:'Click to return to the title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+    go:'Click to continue to Chapter Ten',code:['Chapter Ten code: {code}',codeOf(10,0)]});
+  await wait(1500);ov.onclick=()=>startChapter(10);await new Promise(()=>{})}
 /* ============ ROOMS ============ */
 ROOMS.lydia9={space:1.2,walk:[16,304,110,136],get mood(){return F.free?'hope':'calm'},amb:{crowd:.15,birds:.3},hs:[
   {name:'door to the street',x:17,y:47,w:28,h:57,wx:44,wy:114,dir:-1,exit:toRiver,

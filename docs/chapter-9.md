@@ -51,7 +51,7 @@ Chapter Nine has the game's first voices. There are still no audio files: a voic
 
 ## The travel map
 
-Nobody travels in Chapter Nine. It closes on the same Aegean window, with the road that led to Philippi drawn and the city lit, and Chapter Ten will draw the road on from there.
+Nobody travels in Chapter Nine. It closes on the same Aegean window, with the road that led to Philippi drawn and the city lit, and [Chapter Ten](chapter-10.md#the-travel-map) draws the road on from there.
 
 ## About the content
 
