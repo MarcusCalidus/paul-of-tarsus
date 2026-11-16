@@ -90,6 +90,19 @@
   /* the title screen holds its whole list: nothing on it lies above or below the view, with eight chapters or more */
   const inOv=()=>{const r=ov.getBoundingClientRect();return[...ov.children].every(el=>{const q=el.getBoundingClientRect();return q.top>=r.top-1&&q.bottom<=r.bottom+1})};
   ok(inOv()&&ov.querySelectorAll('[data-ch]').length===Object.keys(CHAP).length,'the title screen holds every chapter: '+Object.keys(CHAP).length);
+  /* the title's name is a painting (shared/logo.js): it stands in this language and keeps the words, it is shown at the size of its
+     pixels and inside the view, and nothing of it is left unpainted. The stop `logo` shows it enlarged three times, in two halves:
+     look there for crosses and for letters that have run together, in every language (`de:logo`). */
+  {const c=ov.querySelector('h1.art canvas.logo'),words=T('PAUL OF TARSUS')+' '+T('ON THE ROADS OF ROME');
+    ok(c&&SHARED.logo.can(words)&&c.textContent===words&&!ov.querySelector('h2')&&c.getAttribute('aria-label')===T('Paul of Tarsus: On the Roads of Rome'),'the title is the painted logo, in '+LANGS[lang].native+', and it keeps the words: '+(c&&c.textContent));
+    if(c){const r=c.getBoundingClientRect(),v=ov.getBoundingClientRect(),sc=vp.getBoundingClientRect().width/320,d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+      ok(Math.abs(r.width-c.width/HR*sc)<1&&Math.abs(r.height-c.height/HR*sc)<1&&r.left>=v.left&&r.right<=v.right,'the logo is shown at the size of its pixels, inside the view: '+c.width/HR+' by '+c.height/HR+' room pixels');
+      let n=0,soft=0;for(let i=3;i<d.length;i+=4){if(d[i]===255)n++;else if(d[i]&&d[i]!==128)soft++}
+      ok(n>c.width*c.height*.2&&!soft,'the logo is painted in whole pixels: '+n+' of them, none blurred');
+      ok(!SHARED.logo.can('PAUL & TARSUS')&&SHARED.logo.paint(T('PAUL OF TARSUS'),T('ON THE ROADS OF ROME'))===c,'a title with a letter the logo cannot write is left as text, and a logo is painted only once');
+      halt('logo',()=>{const k=document.createElement('canvas'),W=innerWidth,Hh=innerHeight,Z=3,half=Math.ceil(c.width/2)+6;k.width=W;k.height=Hh;k.style.cssText='position:fixed;left:0;top:0;z-index:8';document.body.appendChild(k);
+        const g=k.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#3a4474';g.fillRect(0,0,W,Hh);
+        for(let j=0;j<2;j++)g.drawImage(c,j*(c.width-half),0,half,c.height,Math.round((W-half*Z)/2),30+j*(c.height*Z+40),half*Z,c.height*Z)})}}
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
   /* sound: the first press anywhere starts it; a press wakes sound that iOS interrupted; on iPhone and iPad a note says where Silent Mode is */
   {const hushOn=()=>$('#hush').classList.contains('on'),dev=AU.apple;
@@ -262,6 +275,7 @@
   /* the language picker on the title screen: it switches the text, remembers the choice, and starts nothing */
   if(lang==='en'){document.querySelector('#overlay [data-lang="de"]').click();await toLang('de');
     ok(ov.textContent.includes('PAULUS VON TARSUS')&&ov.textContent.includes('Ruf nach Antiochia')&&store('paul.lang')==='de'&&!G.room&&ov.classList.contains('on'),'the title screen switches to German, remembers it, and starts nothing');
+    {const c=ov.querySelector('h1.art canvas.logo');ok(c&&c.textContent==='PAULUS VON TARSUS AUF ROMS STRASSEN'&&c!==SHARED.logo.paint('PAUL OF TARSUS','ON THE ROADS OF ROME'),'and its logo is painted again in German')}
     fitVerbs();document.querySelector('#overlay [data-lang="en"]').click();await toLang('en');
     ok(ov.textContent.includes('PAUL OF TARSUS')&&store('paul.lang')==='en'&&$('#verbs button').textContent==='Look at','and back to English')}
   if(stop==='title2'){document.querySelector('#overlay [data-ch="2"]').click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy,'title starts chapter two');halt('title2')}

@@ -45,6 +45,9 @@ body{display:flex;align-items:center;justify-content:center}
   text-shadow:0 calc(var(--s)*1px) #7a3b12,0 calc(var(--s)*2px) #3a1608,calc(var(--s)*2px) calc(var(--s)*3px) #000}
 #overlay h2{margin:calc(var(--s)*3px) 0;font-size:calc(var(--s)*8px);color:#f0e2c0;letter-spacing:.2em;
   text-shadow:calc(var(--s)*1px) calc(var(--s)*1px) #000}
+/* the title's logo is a painting (shared/logo.js): one canvas pixel is half a room pixel, as in the view */
+#overlay h1.art{font-size:0;text-shadow:none}
+#overlay .logo{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 #overlay p{margin:calc(var(--s)*2px) 0;font-size:calc(var(--s)*5.4px);line-height:1.35;color:#d8cfe8;
   max-width:calc(var(--s)*270px);text-shadow:calc(var(--s)*1px) calc(var(--s)*1px) #000}
 #overlay .small{font-size:calc(var(--s)*4.4px);color:#a99cc0}
@@ -1127,13 +1130,19 @@ function chsFade(l){l.classList.toggle('up',l.scrollTop>1);l.classList.toggle('d
 addEventListener('resize',()=>{const l=ov.querySelector('.chs');if(l)chsFade(l)});
 async function title(){lock(true);await setLang(firstLang());try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
   setChapter(TITLE.level);G.scene=CHAP[TITLE.level].scenes[TITLE.scene];G.end={};AU.mood=TITLE.mood;AU.amb=TITLE.amb;
+  /* The name and the subtitle are painted as a logo (shared/logo.js). If its file is missing, or a language's title has a letter the
+     logo cannot write, they stand as plain text instead. The canvas keeps the words, for a screen reader and for the playtest. */
+  const logo=await need('logo').catch(e=>{console.error(e);return null});
   /* the chapters scroll in their own box below the title (see .chs); Continue stays above it, always in view */
-  overlay('on',()=>{const sv=saved();ov.innerHTML='<h1>'+T('PAUL OF TARSUS')+'</h1><h2>'+T('ON THE ROADS OF ROME')+'</h2>'+
+  overlay('on',()=>{const sv=saved(),name=T('PAUL OF TARSUS'),sub=T('ON THE ROADS OF ROME'),art=logo&&logo.can(name+sub)?logo.paint(name,sub):null;
+    ov.innerHTML=(art?'<h1 class="art"></h1>':'<h1>'+name+'</h1><h2>'+sub+'</h2>')+
     '<p class="small">'+T('A point-and-click adventure based on the book of Acts')+'</p>'+
     (sv?'<p class="go" data-cont="1">&#9656; '+T('Continue')+' &middot; '+T(CHAP[sv.ch].label)+' &middot; '+T(CHAP[sv.ch].title)+'</p>':'')+
     '<div class="chs">'+Object.keys(CHAP).map((n,i)=>`<p class="${i||sv?'pick':'go'}" data-ch="${n}">&#9656; ${T(CHAP[n].label)} &middot; ${T(CHAP[n].title)}</p>`).join('')+'</div>'+
     '<p class="small">'+T('Click a chapter to begin. Returning? Use ENTER CODE, top right.')+'</p>'+
     (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'');
+    if(art){art.textContent=name+' '+sub;art.setAttribute('role','img');art.setAttribute('aria-label',T('Paul of Tarsus: On the Roads of Rome'));
+      art.style.width='calc(var(--s)*'+art.width/HR+'px)';art.style.height='calc(var(--s)*'+art.height/HR+'px)';ov.querySelector('h1').appendChild(art)}
     const l=ov.querySelector('.chs');l.onscroll=()=>chsFade(l);requestAnimationFrame(()=>chsFade(l))});
   ov.onclick=e=>{const d=e.target.dataset||{};if(d.lang){SFX.click();return setLang(d.lang,1)}if(e.target.classList.contains('chs'))return;
     if(e.target.closest('.langs'))return;if(d.cont)return resume();startChapter(+d.ch||1)};codeBtn();G.ready=1}
