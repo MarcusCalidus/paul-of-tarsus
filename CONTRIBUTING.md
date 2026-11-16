@@ -62,14 +62,24 @@ The [Terms of Use](https://www.jw.org/en/terms-of-use/) of jw.org (which cover i
   - a sword with its guard. Where the account names a drawn sword (Acts 16:27), the hand covers the guard and the blade is one slanting line;
   - a mast or a post that stands across the level line where the sea meets the sky: keep the upright out of the picture, or the horizon behind something;
   - the joints of a bench or a wall drawn across its courses, and the threads of a loose weave drawn both ways: let each joint stop at the edge of its own course, and the threads run one way;
-  - in a close view of a thing, such as a scroll or a bolt of cloth: a roller with a handle standing out of it or a tie round it, ruled lines that meet a margin, and four corners of laid-out pieces meeting in one point.
-- Where the account itself names something used in false worship, it may be shown plainly when the scene is about refusing it: the bulls and garlands of Acts 14:13 are shown at the gate of Lystra. A temple, an altar, a statue or an image of a god is never shown.
+  - in a close view of a thing, such as a scroll or a bolt of cloth: a roller with a handle standing out of it or a tie round it, ruled lines that meet a margin, and four corners of laid-out pieces meeting in one point;
+  - a column under a beam: paint a colonnade as a row of columns under a deep beam and a roof, give a column a capital hardly wider than its shaft, and lay no single block across two columns that stand free;
+  - a statue with an arm stretched out, or with a spear held upright beside a shield: every arm is down, bent, or folded into the mantle.
+- A letter in an inscription is a letter, not a cross shape: Greek capitals cut in stone may include tau and chi. Each inscription is still looked at enlarged.
+- Where the account itself names something used in false worship, it may be shown plainly when the scene is about refusing it: the bulls and garlands of Acts 14:13 are shown at the gate of Lystra.
+- A temple, an altar, a statue or an image of a god is not shown, with one exception, made for historical accuracy: in **Athens, Ephesus and Rome** pagan temples, altars and deities may be displayed, because those cities cannot be shown as they were without them. Athens is Chapter Eleven, where the account itself turns on what Paul saw (Acts 17:16, 23, 24, 29). Wherever the exception is used:
+  - What is shown is recognizable and restrained: a temple from outside, an altar as an inscribed block, a statue as a draped figure. Nothing is unclothed, no image of a god is seen in close-up, and what the publications describe as indecent is left out altogether (the pillars at the entrance to the marketplace of Athens, for one).
+  - No rite is shown: no sacrifice, fire, smoke or offering on an altar, no procession, and nobody praying or bowing to an image.
+  - A god is named on the screen only where the scene needs it.
+  - Paul never admires one, and the player never uses one as a tool, a key or a hiding place. The one use the game makes of any of them is the one Paul made of the altar in Acts 17:23.
+  - Every other rule of this section holds for them.
 - Look at screenshots of every changed scene before committing.
 
 ## 4. Look and sound
 
 - Backdrops are painted in the manner of early-1990s VGA adventure games: painterly and detailed, with depth and real lighting. The scenes are our own. Never copy another game's art, characters or music.
 - Characters are pixel-placed sprites drawn to the same standard as the backdrops: three-quarter view, crisp hand-placed pixels, flat bands of light and shadow, no outline, and lit by the room they stand in. Dress and head coverings fit the period, the place and the person.
+- In a Greek city the men of standing wear the Greek outer garment: a rectangular length of cloth wrapped over a tunic. The game's text calls it a mantle, not a toga, which the publications keep for a Roman garment. Greek women look as they did in the first century: a tunic to the feet, the mantle over it, and the hair parted and bound up, or the mantle drawn over the head. No woman is shown on the Areopagus: Damaris (Acts 17:34) listens from the path below it.
 - A scene has depth. Whoever stands farther back is drawn behind: a man who walks behind the carrier's mule is hidden by it, and hides it when he stands in front. This holds for everything that stands inside a room's walkable strip, whether it is a person, an animal, or a thing painted into the backdrop such as a stool, a low table or a heap of sailcloth. In a new room, walk behind and in front of everything that stands out on the floor, and look.
 - Animals are drawn to the same standard as the people. Every part grows out of the one before it: a tail is set on at the rump, a neck comes out of the shoulders in the body's own tones, a head sits on its neck, and nothing floats free. Two animals that stand together must not overlap so that the head of one seems to belong to the body of the other. Look at them enlarged, in every walking frame and facing both ways: `node tools/playtest.mjs beasts`. The playtest fails if a sprite is in more than one piece.
 - There are no image or audio files. Everything is painted in code on a canvas, and all music and sound are synthesized with the Web Audio API.

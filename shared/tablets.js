@@ -1,7 +1,9 @@
 /* Paul of Tarsus: Paul's wax tablets, shared by every chapter. Loaded the first time the tablets are opened (see need() in index.html).
    Two leaves of dark wax in a wooden frame, tied at the middle: on the left the people Paul has met and the tasks still open,
    on the right the Scriptures he keeps before him. Each chapter supplies the entries as data, in its definition:
-     tablets:{people:[{name, note, if}], tasks:[{t, if}], scripture:[{ref, gist, if}]}
+     tablets:{people:[{name, note, if}], tasks:[{t, if}], scripture:[{ref, gist, if}], notes:{title, none, list:[{t, if}]}}
+   notes is optional: a third list with a heading of its own, under the Scriptures, for what a chapter has Paul write down as he goes
+   (what he saw in Athens, in Chapter Eleven).
    name, note and t may be functions; if is an optional condition on the story (usually on its flags). A passage is a note in Paul's
    own words (gist), with its reference: no wording is copied out of a translation, and it is shown without quotation marks, because a
    paraphrase is never presented as a quotation (CONTRIBUTING section 1). All of it is English, and is
@@ -41,7 +43,8 @@ addEventListener('keydown',e=>{if(closer&&[' ','Escape','Enter','.'].includes(e.
 function draw(d){const ppl=(d.people||[]).filter(on),todo=(d.tasks||[]).filter(on),scr=(d.scripture||[]).filter(on);
   el.innerHTML='<div class="leaf"><h3>'+T('PEOPLE')+'</h3>'+list(ppl,p=>`<p><b>${txt(p.name)}</b>: ${txt(p.note)}</p>`,T('No one yet.'))+
     '<h3>'+T('STILL TO DO')+'</h3>'+list(todo,t=>`<p>&bull; ${txt(t.t)}</p>`,T('Nothing left undone.'))+'</div>'+
-    '<div class="leaf"><h3>'+T('SCRIPTURES')+'</h3>'+list(scr,s=>`<p>${txt(s.gist)} <span class="ref">(${txt(s.ref)})</span></p>`,T('Nothing written yet.'))+'</div>'+
+    '<div class="leaf"><h3>'+T('SCRIPTURES')+'</h3>'+list(scr,s=>`<p>${txt(s.gist)} <span class="ref">(${txt(s.ref)})</span></p>`,T('Nothing written yet.'))+
+    (d.notes?'<h3>'+txt(d.notes.title)+'</h3>'+list((d.notes.list||[]).filter(on),t=>`<p>&bull; ${txt(t.t)}</p>`,txt(d.notes.none||'Nothing written yet.')):'')+'</div>'+
     '<i class="tie" style="top:28%"></i><i class="tie" style="top:66%"></i><div class="foot">'+T('Click or press Space to close')+'</div>'}
 /* open: show the tablets with the chapter's entries as they stand now, and resolve when the player closes them. */
 function open(d){shown=d;draw(d);

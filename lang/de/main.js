@@ -81,6 +81,9 @@ TEXTS('de','main',{
   "Chapter Nine":"Neuntes Kapitel",
   "Midnight in Philippi":"Mitternacht in Philippi",
   "IS IT SO?":"STIMMT DAS?",
+  "THE UNKNOWN GOD":"DER UNBEKANNTE GOTT",
+  "Chapter Eleven":"Elftes Kapitel",
+  "The Unknown God":"Der unbekannte Gott",
   "Chapter Ten":"Zehntes Kapitel",
   "Is It So?":"Stimmt das?",
   "{file} did not register what it should.":"{file} wurde nicht richtig geladen.",
@@ -154,6 +157,7 @@ TEXTS('de','main',{
   "Beroea":"Beröa",
   "Athens":"Athen",
   "PAMPHYLIA":"PAMPHYLIEN",
+  "ACHAIA":"ACHAIA",
   "THE GREAT SEA":"DAS GROSSE MEER",
   "Click a place to travel there. Esc to stay.":"Ort anklicken, um zu reisen. Esc: bleiben."
 });

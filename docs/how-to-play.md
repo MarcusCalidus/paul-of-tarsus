@@ -13,6 +13,9 @@
 | Play Luke | In Chapter Eight the button reads **⇄ Luke**. It is there from the start and cannot be used until Troas, where he is with them. He is a physician: binding a wound is his craft, and Paul leaves it to him. |
 | Play Timothy | In Chapter Ten the button reads **⇄ Timothy** and stays grey until Paul is sent to the sea (Acts 17:14). Then you are Timothy, and the button reads **⇄ Paul**, grey, until Athens. |
 | Set something by hand | Chapter Ten has two close views, in which nobody walks. On the bolt of cloth, click a panel on the board to take it, click it again to turn it, and click the cloth to lay it there; a click on a panel that lies on the cloth lifts it off. At the scroll table, click a scroll's left or right roller to wind it back or on, click the tablets to turn to their next line, and talk to those who listen when everything on the table says one thing. What lies open is named under it. The stool, or the steps, lead back. |
+| Carry a question | In Chapter Eleven Paul is alone, and his tablets stay shut. He carries four questions in his pack instead, like tools: choose **Use**, then a question, then something in the city. Put to the right thing, a question becomes something he has seen, noted on the tablets under "Seen in Athens". |
+| Listen | In the painted colonnade of Chapter Eleven two men teach, one at each end. Walk toward one to hear him; **Talk to** him to listen on, or to keep the one saying of his that Paul can hold with him. |
+| Build the speech | On the Areopagus Paul stands still. Click **what I begin from** and **how I say it**, at the foot of the view, until they are set as you want them, then click the men on the seats. What is to be said next stands over the two settings. Using one of the things he has seen on the men does the same as setting it. |
 | Travel | In Chapters Four and Five the way out of a town opens the travel map. Click a place to go there; `Esc` or a right-click stays. A place the story has not reached yet, or one that lies behind, says why not. |
 | Read Paul's notes | Click the **wax tablets** in the inventory (their default verb is **Open**): the people he has met, what is still to be done, and the Scriptures for the chapter. Click or press Space to close them. |
 | Show something to someone | **Give** (or **Use**) an item on a person. Everyone has something to say about everything Paul carries, sometimes a clue. Only what someone actually needs changes hands. |
@@ -57,7 +60,7 @@ The top bar always shows a short code for exactly where you are: six characters 
 
 The game also keeps that same point in your browser, every time it changes. Come back in the same browser and the title screen leads with **Continue**, naming the chapter, which returns you to the room, inventory and progress you left. A finished chapter leaves **Continue** at the next one, and a finished game leaves nothing. The code is still what carries your place to another browser or device, and what you write down; the browser's copy is only as lasting as the browser's site data, so clearing it, a private window or another browser starts without it.
 
-Chapter Six, Seven, Eight and Nine codes are nine characters too (`6-XXX-XXX-XXX`, `7-XXX-XXX-XXX`, `8-XXX-XXX-XXX`, `9-XXX-XXX-XXX`), and so are Chapter Ten's, which begin with both digits of its number (`10-XXX-XXX-XXX`).
+Chapter Six, Seven, Eight and Nine codes are nine characters too (`6-XXX-XXX-XXX`, `7-XXX-XXX-XXX`, `8-XXX-XXX-XXX`, `9-XXX-XXX-XXX`), and so are Chapter Ten's and Chapter Eleven's, which begin with both digits of the chapter's number (`10-XXX-XXX-XXX`, `11-XXX-XXX-XXX`).
 
 ![Safe-point code](screenshots/code.png)
 

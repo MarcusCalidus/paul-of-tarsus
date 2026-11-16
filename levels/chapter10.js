@@ -767,8 +767,8 @@ async function finale(){AU.mood='rest';
   await narr('The ship turned round the same day. Paul stood on the quay of a city in which he knew nobody.',{dur:7600});
   endScreen({title:'Is It So?',text:'In one city he laid the Scriptures beside what had happened. In the next they did it themselves, every day, and went on when he was gone.',
     based:'Based on Acts 17:1-15; 1 Thessalonians 2:2, 9, 17; Philippians 4:16; Luke 24:44 and 1 Corinthians 15:3-8. Supporting characters and dialogue are imaginative; the events are from the Scriptures, and are told here in paraphrase. Acts does not say how long they were in Thessalonica, what Paul worked at there, which passages he used, whether Timothy was with them there, where Paul and Silas were when the house was stormed, what the security was, what the Beroeans examined, or from which harbor Paul sailed.',
-    go:'Click to return to the title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+    go:'Click to continue to Chapter Eleven',code:['Chapter Eleven code: {code}',codeOf(11,0)]});
+  await wait(1500);ov.onclick=()=>startChapter(11);await new Promise(()=>{})}
 /* the courtyard at dusk, as the uproar is told: nobody is in it */
 function yardScene(g,t){backdrop(g,'yard10');ART.yard10.draw(g,t)}
 function dark(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}

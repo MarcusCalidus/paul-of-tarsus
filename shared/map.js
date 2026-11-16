@@ -79,7 +79,7 @@ const REGIONS=[{name:'CILICIA',at:[32.7,36.72]},{name:'SYRIA',at:[37.6,35.2]},{n
   {name:'PISIDIA',at:[29.62,37.68]},{name:'GALATIA',at:[33.6,38.75]},
   {name:'PAMPHYLIA',at:[32.015,37.02],close:1,north:1},
   {name:'PHRYGIA',at:[29.6,38.9],west:1},{name:'ASIA',at:[27.75,38.8],west:1},{name:'MYSIA',at:[27.9,39.6],west:1},
-  {name:'BITHYNIA',at:[31.3,40.72],west:1},{name:'MACEDONIA',at:[22.75,41.5],west:1}];
+  {name:'BITHYNIA',at:[31.3,40.72],west:1},{name:'MACEDONIA',at:[22.75,41.5],west:1},{name:'ACHAIA',at:[22.2,38.62],west:1}];
 /* the coast of the mainland of Asia: along the Black Sea to the Bosporus, the Propontis and the Hellespont, round the Troad and down
    the Aegean shore, round Asia Minor, down the Syrian and Phoenician coast, and west along Egypt. The first three lines lie above the
    usual window: the Black Sea shore; the Propontis, with the gulfs on its Asian side, and the Troad; then the gulfs of Smyrna and
