@@ -59,7 +59,10 @@ The [Terms of Use](https://www.jw.org/en/terms-of-use/) of jw.org (which cover i
   - four small squares set two by two, where the gap between them is a plus sign;
   - a rope or strap hanging straight down from the middle of a beam, which makes a T, and ties drawn across a roll or a bundle;
   - a tower that rises from the middle of a wall, or a post from the middle of a rail: set it at the end;
-  - a sword with its guard. Where the account names a drawn sword (Acts 16:27), the hand covers the guard and the blade is one slanting line.
+  - a sword with its guard. Where the account names a drawn sword (Acts 16:27), the hand covers the guard and the blade is one slanting line;
+  - a mast or a post that stands across the level line where the sea meets the sky: keep the upright out of the picture, or the horizon behind something;
+  - the joints of a bench or a wall drawn across its courses, and the threads of a loose weave drawn both ways: let each joint stop at the edge of its own course, and the threads run one way;
+  - in a close view of a thing, such as a scroll or a bolt of cloth: a roller with a handle standing out of it or a tie round it, ruled lines that meet a margin, and four corners of laid-out pieces meeting in one point.
 - Where the account itself names something used in false worship, it may be shown plainly when the scene is about refusing it: the bulls and garlands of Acts 14:13 are shown at the gate of Lystra. A temple, an altar, a statue or an image of a god is never shown.
 - Look at screenshots of every changed scene before committing.
 

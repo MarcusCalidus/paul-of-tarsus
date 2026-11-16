@@ -49,8 +49,8 @@ try{
   for(const name of stops){if(name==='pwa'){const r=await checkPwa({send,ev,sleep,root,out});console.log('=== pwa\n'+r.log.join('\n'));if(r.failed)failed=true;continue}
     const[lang,stop]=name.includes(':')?name.split(':'):['en',name];
     await send('Page.navigate',{url:`file://${path.join(tmp,'test.html')}?stop=${stop}&lang=${lang}`});
-    // five chapters take a while: wait up to fifteen minutes for a run to say STOP or DONE
-    let log='';for(let i=0;i<3600;i++){await sleep(250);log=await ev("(document.querySelector('#tlog')||{}).textContent||''");if(/STOP|DONE|ERR|JSERR|REJ/.test(log))break}
+    // ten chapters take a while (about twenty minutes): wait up to forty-five minutes for a run to say STOP or DONE
+    let log='';for(let i=0;i<10800;i++){await sleep(250);log=await ev("(document.querySelector('#tlog')||{}).textContent||''");if(/STOP|DONE|ERR|JSERR|REJ/.test(log))break}
     await sleep(1600);await ev("document.querySelector('#tlog').style.display='none'");await sleep(100);
     const shot=await send('Page.captureScreenshot',{format:'png'});
     fs.writeFileSync(path.join(out,`${lang==='en'?'':lang+'-'}${stop}.png`),Buffer.from(shot.result.data,'base64'));
