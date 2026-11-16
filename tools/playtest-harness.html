@@ -49,6 +49,11 @@
    place(P,...was);return n};
  const hides=async(box,far,behind,front)=>{const a=await seen(...far,box),b=await seen(...behind,box),c=await seen(...front,box),t=clamp(P.x-160,0,ART[G.room].w-320);
    for(let i=0;i<300&&G.cam!==t;i++)await wait(20);return a===b&&a!==c};
+ /* ids (README, "Ids are shared"): a room, a backdrop and an item each belong to one chapter. LEVEL is watched as every chapter registers itself, and an
+    id that a chapter takes over from the engine or from a chapter loaded before it is noted; the playthrough fails on it at its end. (A look or an
+    icon may be repeated, the same, by a chapter that brings a person or a thing back.) */
+ const taken=[];{const L0=LEVEL;window.LEVEL=function(n,init){const tabs=[ROOMS,ART,ITEMS],was=tabs.map(t=>({...t}));L0(n,init);
+   tabs.forEach((t,i)=>{for(const k in was[i])if(t[k]!==was[i][k])taken.push('chapter '+n+' takes '+['room','backdrop','item'][i]+' '+k)})}}
  const snap=()=>JSON.stringify([F,G.invs,G.inv,G.room,G.ch]),prayBad=[];let prayed=null,prayers=0;
  {const p0=pray;window.pray=function(){prayed=snap();prayers++;return p0.apply(this,arguments)}}
  const ok=(c,m)=>{if(prayed!=null){if(snap()!==prayed)prayBad.push(m);prayed=null}L((c?'ok   ':'FAIL ')+m)};
@@ -76,7 +81,7 @@
   const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3|map3)$/.test(stop),HUB=stop==='hubmap',
     C4=/^(sendoff|seleucia|kallias|shelter|jair|voyage|map4|salamis|synagogue|speech|hubmap4|paphos|tools|daniel|blind|journey4|final4|deutsch4)$/.test(stop),
     C5=/^(voyage5|perga|parting|sandal|hubmap5|ford|splice|wade|line|pisidia|synp|speech5|week|greek|sabbath2|border|dust|journey5|final5)$/.test(stop),
-    C6=/^(beasts|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house|mend|derbe|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
+    C6=/^(beasts|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house6|mend|derbe|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
   const lang=(location.search.match(/[?&]lang=(\w+)/)||[])[1]||'en',toLang=async l=>{for(let i=0;i<150&&G.lang!==l;i++)await wait(30);await wait(60)};
   ok(G.lang===lang&&document.documentElement.lang===lang,'the game is in '+LANGS[lang].native+', as the address asks');fitVerbs();
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
@@ -1435,21 +1440,21 @@
   {const c=makeCode();key('c');await idle();const cb2=makeCode();await enter(c);ok(G.room==='outside'&&PC()===P&&F.stopped&&P.x>100&&BN.room==='outside'&&A('eunice').room==='outside','the code from outside the city restores, with Paul on his feet');
     await enter(cb2);ok(G.room==='outside'&&PC()===BN&&P.room==='outside'&&P.x>100,'and with Barnabas played');key('c');await idle()}
   heard.length=0;await act(null,'city gate');
-  ok(G.room==='house'&&!F.back&&!G.busy&&BN.room==='house'&&A('lois').room==='house'&&A('timothy').room==='house'&&!A('lame').room&&said('...and entered the city. (Acts 14:20)'),'he got up and entered the city');
+  ok(G.room==='house6'&&!F.back&&!G.busy&&BN.room==='house6'&&A('lois').room==='house6'&&A('timothy').room==='house6'&&!A('lame').room&&said('...and entered the city. (Acts 14:20)'),'he got up and entered the city');
   /* the night in the house of Lois */
-  halt('house',()=>{say(A('lois'),'Sit. Not one word until I have washed those cuts.')});
-  heard.length=0;await act(null,'door to the lane');ok(G.room==='house'&&!G.scene&&said('On the next day, yes. But I will not walk Barnabas to Derbe through this cold in a mantle torn to the belt. I have thread.'),'not to Derbe in torn garments');
+  halt('house6',()=>{say(A('lois'),'Sit. Not one word until I have washed those cuts.')});
+  heard.length=0;await act(null,'door to the lane');ok(G.room==='house6'&&!G.scene&&said('On the next day, yes. But I will not walk Barnabas to Derbe through this cold in a mantle torn to the belt. I have thread.'),'not to Derbe in torn garments');
   pray();await idle();ok(hint()[0]==='mend6','the hint points to the thread');
   key('c');await idle();pray();await idle();ok(hint()[0]==='craft6','Barnabas leaves the mending to Paul');key('c');await idle();
   await sweep(A('timothy'),A('eunice'),A('lois'),BN);
   heard.length=0;await give('tablets',A('timothy'));ok(F.copy&&has('tablets')&&quoted(6),'an optional kindness: a passage read with young Timothy, word for word');
-  halt('mend',()=>{place(P,'house',176,120,-1);place(BN,'house',150,118,1);P.bow=true;say(P,'A tear along the weave is soon closed: a row of small stitches, drawn tight, and it is stronger there than anywhere else.')});
+  halt('mend',()=>{place(P,'house6',176,120,-1);place(BN,'house6',150,118,1);P.bow=true;say(P,'A tear along the weave is soon closed: a row of small stitches, drawn tight, and it is stronger there than anywhere else.')});
   verb('use');item('thread');view(BN.x,BN.y-18);await idle();ok(F.mended&&!G.busy,'by lamplight, the garments they ripped at the gate are mended');
   await actor(null,A('timothy'));ok(nq()===3,'Timothy has questions of his own');await choose(1);await choose(0);await choose(-1);
   pray();await idle();ok(hint()[0]==='derbe6','the hint points to Derbe');
   const c6c=makeCode();
   act(null,'door to the lane');await mapOpen();ok(G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===2&&SHARED.map.state.pulse==='lystra','the next day, the door opens the map, with the road from Iconium drawn');
-  heard.length=0;mapClick('iconium');await idle();ok(G.room==='house'&&!G.scene&&said('There are stones waiting for us in Iconium. Not yet.'),'not back to Iconium yet');
+  heard.length=0;mapClick('iconium');await idle();ok(G.room==='house6'&&!G.scene&&said('There are stones waiting for us in Iconium. Not yet.'),'not back to Iconium yet');
   act(null,'door to the lane');await mapOpen();heard.length=0;mapClick('derbe');await idle();
   ok(G.room==='derbe'&&!G.scene&&!G.busy&&BN.room==='derbe'&&A('zenon').room==='derbe'&&!A('timothy').room&&said('There they declared the good news, and made quite a few disciples. (Acts 14:21)'),'on the next day they leave for Derbe, and make quite a few disciples');
   /* Derbe: the short road home, and the other road */
@@ -1466,11 +1471,11 @@
   heard.length=0;mapClick('tarsus');await idle();ok(G.room==='derbe'&&!G.scene&&!G.busy&&heard.length===1&&heard[0].includes('Zenon'),'the short way home through Tarsus is not taken, and Paul says why');
   key('c');await idle();act(null,'road');await mapOpen();heard.length=0;mapClick('tarsus');await idle();ok(G.room==='derbe'&&PC()===BN&&heard.length===1,'Barnabas says the same in his own words');key('c');await idle();
   act(null,'road');await mapOpen();heard.length=0;mapClick('lystra');await idle();
-  ok(G.room==='house'&&F.back&&!G.scene&&!G.busy&&BN.room==='house'&&A('lame').room==='house'&&A('eunice').room==='house'&&!A('zenon').room&&
+  ok(G.room==='house6'&&F.back&&!G.scene&&!G.busy&&BN.room==='house6'&&A('lame').room==='house6'&&A('eunice').room==='house6'&&!A('zenon').room&&
     said('After declaring the good news to that city and making quite a few disciples, they returned to Lystra, Iconium, and Antioch. (Acts 14:21)'),'they return to Lystra, Iconium and Antioch: back to the house of Lois, by day');
   /* the way back: the disciples are strengthened */
   halt('return',()=>{say(A('lois'),'Paul! Barnabas! We did not think to see either of you in Lystra again.')});
-  heard.length=0;await act(null,'door to the lane');ok(G.room==='house'&&!ov.classList.contains('end')&&!G.busy&&said('We came all the way back for them. I will not go before they have heard what we came to say.'),'not before the disciples are strengthened');
+  heard.length=0;await act(null,'door to the lane');ok(G.room==='house6'&&!ov.classList.contains('end')&&!G.busy&&said('We came all the way back for them. I will not go before they have heard what we came to say.'),'not before the disciples are strengthened');
   pray();await idle();ok(hint()[0]==='strong6','the hint points to Eunice');
   key('c');await idle();pray();await idle();ok(hint()[0]==='strong6b','Barnabas knows whom she is asking');
   heard.length=0;await actor(null,A('eunice'));ok(!F.strong&&said('It is Paul I must ask, Barnabas. It was Paul they stoned, and Paul who came back.'),'it is Paul whom Eunice asks');key('c');await idle();
@@ -1480,10 +1485,10 @@
   await pickQ('In Derbe no one');ok(nq()===2&&!F.strong,'Derbe is not Lystra');
   heard.length=0;await pickQ('I will not tell you that it gets easier');
   ok(F.strong&&!G.busy&&said('"We must enter into the Kingdom of God through many tribulations." (Acts 14:22)')&&said('There they strengthened the disciples, encouraging them to remain in the faith. (Acts 14:22)'),'he tells her the truth: through many tribulations');
-  {const c=makeCode();await enter(c6c);ok(G.room==='house'&&!F.back&&F.mended&&F.copy&&!F.strong&&PC()===P&&!A('lame').room,'the code from the night in Lystra restores');
-    await enter(c);ok(G.room==='house'&&F.back&&F.strong&&A('lame').room==='house','and the code from the way back')}
+  {const c=makeCode();await enter(c6c);ok(G.room==='house6'&&!F.back&&F.mended&&F.copy&&!F.strong&&PC()===P&&!A('lame').room,'the code from the night in Lystra restores');
+    await enter(c);ok(G.room==='house6'&&F.back&&F.strong&&A('lame').room==='house6','and the code from the way back')}
   pray();await idle();ok(hint()[0]==='home6','the hint: entrust them to Jehovah, and take the road');
-  halt('elders',()=>{place(P,'house',156,126,1);place(BN,'house',140,131,1);for(const a of[P,BN,A('timothy'),A('eunice'),A('lois'),A('lame')])a.bow=true;G.busy=true;lock(true);status();
+  halt('elders',()=>{place(P,'house6',156,126,1);place(BN,'house6',140,131,1);for(const a of[P,BN,A('timothy'),A('eunice'),A('lois'),A('lame')])a.bow=true;G.busy=true;lock(true);status();
     narr('Moreover, they appointed elders for them in each congregation, offering prayer with fasting, and they entrusted them to Jehovah, in whom they had become believers. (Acts 14:23)',{dur:9000})});
   heard.length=0;act(null,'door to the lane');
   n=0;while(!(ov.classList.contains('end')&&ov.textContent.includes(T('The Door to Faith')))&&n++<4000)await wait(50);
@@ -1563,6 +1568,8 @@
     finally{INST.aulos=a0;AU.score=sc0;AU.mood=m0}
     const feast=CHAP[6].music.tracks.filter(tr=>tr.moods&&tr.moods.includes('feast'));
     ok(!bad.length&&!none&&feast.some(tr=>tr.inst==='aulos'&&tr.hold===0)&&feast.some(tr=>tr.drone&&tr.drone.join()==='0'&&tr.every===16&&tr.vol===.6),'the held pipe: on the tonic or the fifth in all eight keys, once a bar while the melody plays and not in a silent bar; none without hold; Chapter Six\'s feast holds the tonic over its drone'+(bad.length?' WRONG '+bad:''))}
+  {const real=Object.values(CHAP).filter(c=>c.src);/* the chapters that are level files: not the hub test's own */
+    ok(real.length>=8&&real.every(c=>c.ready)&&!taken.length,'ids: all '+real.length+' chapters are loaded, and none took a room, a backdrop or an item from another'+(taken.length?'. TAKEN: '+taken.join(' | '):''))}
   ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
   fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
   L('DONE');

@@ -256,7 +256,7 @@ ART.outside={w:320,
 /* the low table of the house at Lystra, and the supper on it by night. It stands out on the mat, so it is a prop as well: whoever walks behind it is hidden by it */
 function lowTable(g,day){wood(g,170,112,40,3,'#96703e');wood(g,172,115,2.6,8,'#5a4226',1);wood(g,205,115,2.6,8,'#5a4226',1);
   if(!day){vessel(g,182,112,4.6,3.6,'#a8844e','bowl',{noShadow:1});g.fillStyle=lg(g,0,107,0,112,['#e8c078','#c9a060','#8a6630']);g.beginPath();g.ellipse(197,110.4,5.6,2.2,0,0,6.2832);g.fill()}}
-ART.house={w:320,q:12,
+ART.house6={w:320,q:12,
  variant:()=>F.back?'d':'n',
  props:[{y:123,shape:(g,v)=>lowTable(g,v==='d')}],
  light:()=>F.back?{amb:'#f0e8dc'}:{amb:'#7c6f86',lamps:[[150,58,60,'#7a5420'],[92,96,46,'#7a3c14']]},
@@ -380,7 +380,7 @@ Object.assign(ITEMS,{
 /* how Barnabas describes the tools of the trade (set again whenever this chapter begins: see setup6) */
 const BY6={awl:"The tentmaker's awl. It has opened a seam, a sandal and a rope, and now it is at leather.",thread:'Waxed linen thread, and strong.',
   knife:'A knife for cloth and leather. I would only spoil good cloth with it.',tablets:'His wax tablets: people, work and Scripture, in a small hand.'};
-const inIco=()=>G.room==='iconium',inLys=()=>G.room==='lystra',inOut=()=>G.room==='outside',inHouse=()=>G.room==='house',inDer=()=>G.room==='derbe',
+const inIco=()=>G.room==='iconium',inLys=()=>G.room==='lystra',inOut=()=>G.room==='outside',inHouse=()=>G.room==='house6',inDer=()=>G.room==='derbe',
   night=()=>inHouse()&&!F.back,atLystra=()=>inLys()||inOut()||inHouse(),other=()=>PC()===P?BN:P;
 /* toPaul: something handed to Paul, whoever is being played at the moment */
 function toPaul(id,quiet){const inv=invOf(P);if(!inv.includes(id)){inv.push(id);drawInv();if(!quiet)SFX.pick()}}
@@ -698,7 +698,7 @@ async function enterCity(){playAs(P);
   await say(BN,'Then I go in beside you.');
   walk(BN,262,114);await walk(P,250,112);await fade(1,600);AU.mood='calm';
   await narr('...and entered the city. (Acts 14:20)',{dur:5000});
-  enterRoom('house',...ENT.house);place6('house');codeBtn();await fade(0,700);
+  enterRoom('house6',...ENT.house6);place6('house6');codeBtn();await fade(0,700);
   await narr('Lois and Eunice took them in for the night.',{dur:4000});
   await say(LO,'Sit. Not one word until I have washed those cuts.');
   await say(BN,'We ripped our garments at the gate, Paul, and we have gone about ever since like two beggars. And today has not improved yours.');
@@ -743,7 +743,7 @@ async function backIntro(){if(!F.back||F.strong)return;
   await say(LO,'Paul! Barnabas! We did not think to see either of you in Lystra again.');
   await say(TI,'You came in at the same gate, sir.');
   await say(EN,'Sit down, both of you. There is much to tell, and not all of it is good.')}
-ROOMS.house={space:1.25,walk:[16,304,110,136],mood:'calm',amb:()=>F.back?{birds:.3,crowd:.1}:{fire:.5,crickets:.3,owl:.2},enter:backIntro,hs:[
+ROOMS.house6={space:1.25,walk:[16,304,110,136],mood:'calm',amb:()=>F.back?{birds:.3,crowd:.1}:{fire:.5,crickets:.3,owl:.2},enter:backIntro,hs:[
   {name:'window',x:48,y:24,w:24,h:26,wx:64,look:()=>say(P,F.back?'Daylight, and the lane. Children are playing in it. Not one of them has thrown anything today.':'Night over Lystra. The street is quiet now, as if nothing had happened in it.')},
   {name:'lamp',x:140,y:42,w:20,h:24,wx:150,look:()=>say(P,F.back?'The lamp in its niche. It was by this lamp that I mended two garments.':'One lamp, in a niche. It is light enough to sew by.'),pickup:'It gives light to the whole house where it stands.'},
   {name:'shelf',x:172,y:48,w:60,h:18,wx:200,look:'Jars of oil, meal and olives. It is a careful household, and not a rich one.',pickup:'It is their winter store.'},
@@ -886,7 +886,7 @@ const AS_B={
   outside:{'hills':{look:'It is getting dark. I do not want him out here when it is.'},'Lystra':{look:'Lystra. I stood inside that gate and could do nothing.'},
     'city gate':{look:'The gate. They have gone home, every one of them.'},'bare tree':{look:'A bare tree, and winter coming.'},
     'stones':{look:'I will not count them.',pickup:'No.'},'road to Derbe':{look:'The Derbe road. Tomorrow, perhaps. Not tonight.'}},
-  house:{'window':{look:()=>say(BN,F.back?'The lane, in daylight. It looks like any other lane.':'The street is quiet. A few hours ago it was full of people looking for stones.')},'lamp':{look:'A small lamp. It is doing a great deal of work tonight.'},
+  house6:{'window':{look:()=>say(BN,F.back?'The lane, in daylight. It looks like any other lane.':'The street is quiet. A few hours ago it was full of people looking for stones.')},'lamp':{look:'A small lamp. It is doing a great deal of work tonight.'},
     'shelf':{look:'Their winter store. And they have fed two strangers out of it.'},'hearth':{look:()=>say(BN,F.back?'Cold and swept. They are fasting with us.':'A good fire.'),use:'I warm my hands. I had not known how cold they were.'},
     'bench':{look:'A bench and a blanket. It looks to me like a king\'s bed.',use:()=>say(BN,F.back?'Not yet.':F.mended?'In a moment. I want to see Paul lie down first.':'In this mantle I should catch my death. Paul has thread.')},
     'water jar':{look:'Water, carried from the well where it all began.'},'table':{look:()=>say(BN,F.back?'An empty table. A fast day.':'Their supper, set in front of us.')},'door to the lane':{look:'The door to the lane.'}},
@@ -898,7 +898,7 @@ const AS_B={
 for(const r in AS_B)for(const h of ROOMS[r].hs)if(AS_B[r][h.name])h.as={barnabas:AS_B[r][h.name]};
 /* ============ PLACING THE CAST, SETUP ============ */
 /* ENT: where Paul stands when a room is entered by a code. */
-const ENT={iconium:[178,124,1],get lystra(){return F.healed?[262,126,1]:[112,124,1]},outside:[156,127,1],house:[236,124,-1],derbe:[120,124,1]};
+const ENT={iconium:[178,124,1],get lystra(){return F.healed?[262,126,1]:[112,124,1]},outside:[156,127,1],house6:[236,124,-1],derbe:[120,124,1]};
 /* place6: put everyone where the story has them, for the room the two men are in. They keep together throughout. */
 function place6(room){const o=other(),e=ENT[room];for(const a of[NA,XA,TA,TI,EN,LO,LM,PR,ZE])a.room=null;G.crowd=0;G.bulls=0;G.down=0;
   place(o,room,e[0]-e[2]*26,e[1]+2,e[2]);
@@ -907,7 +907,7 @@ function place6(room){const o=other(),e=ENT[room];for(const a of[NA,XA,TA,TI,EN,
     if(F.healed){place(LM,room,344,118,-1);G.crowd=F.heard?2:1}
     if(F.heard){G.bulls=1;place(PR,room,94,117,1)}}
   else if(room==='outside'){place(TI,room,194,123,-1);place(EN,room,210,130,-1);place(LO,room,104,131,1);place(LM,room,226,124,-1)}
-  else if(room==='house'){place(LO,room,120,116,1);place(EN,room,214,117,-1);place(TI,room,90,124,1);if(F.back)place(LM,room,176,114,-1)}
+  else if(room==='house6'){place(LO,room,120,116,1);place(EN,room,214,117,-1);place(TI,room,90,124,1);if(F.back)place(LM,room,176,114,-1)}
   else if(room==='derbe')place(ZE,room,158,119,-1)}
 function setup6(){BN.hs=BN6;P.hs=PAUL6;P.called='Paul';Object.assign(BN,BARN6);BN.speed=0;BN.free=false;for(const id in BY6)(ITEMS[id].by=ITEMS[id].by||{}).barnabas=BY6[id];
   place6('iconium');G.inv=['awl','thread','knife','tablets'];G.invs={paul:G.inv,barnabas:['staff6']};drawInv()}
@@ -921,7 +921,7 @@ async function arrive6(to,from){
     await narr('Derbe lay about 100 kilometers further on: the easternmost city of the province.',{dur:6500});
     await narr('There they declared the good news, and made quite a few disciples. (Acts 14:21)',{dur:6000});
     await narr('No one followed them there with stones. And the year was turning toward winter.',{dur:6000})}
-  else if(to==='lystra'){F.back=1;place6('house');AU.mood='calm';
+  else if(to==='lystra'){F.back=1;place6('house6');AU.mood='calm';
     await narr('After declaring the good news to that city and making quite a few disciples, they returned to Lystra, Iconium, and Antioch. (Acts 14:21)',{dur:9500});
     await narr('They went back by the road they had come, into the very cities where the stones had been.',{dur:6500})}}
 async function start6(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();
@@ -988,7 +988,7 @@ function hint6(){const b=PC()!==P,craft=['craft6',["That is the tentmaker's craf
     return['derbe6',['Mended, fed, and alive. Tomorrow: Derbe.','We can leave by the door to the lane, and choose Derbe on the map.']]}
   return['back6',['The short way home lies east. But the disciples lie behind us, and no one has been back to them.','We can take the road, and choose Lystra on the map.']]}
 /* ============ CHAPTER DEFINITION ============ */
-return{rooms:['iconium','lystra','outside','house','derbe'],setup:setup6,start:start6,hint:hint6,music:MUSIC,topics:TOPICS,tablets:TABLETS,
+return{rooms:['iconium','lystra','outside','house6','derbe'],setup:setup6,start:start6,hint:hint6,music:MUSIC,topics:TOPICS,tablets:TABLETS,
   /* painters: the chapter's animal, for the playtest, which checks that every part of it is attached and shows it enlarged */
   painters:{ox},
   /* Iconium, Lystra and Derbe lie north of the map's usual window, so this chapter looks through the northern one */
@@ -996,7 +996,7 @@ return{rooms:['iconium','lystra','outside','house','derbe'],setup:setup6,start:s
   places:{
     antiochp:{room:'-',if:()=>false,no:()=>say(PC(),inDer()?'Antioch, yes: the last of the three. Lystra lies first on the way back, and then Iconium.':'They threw us outside its boundaries, and the disciples there are full of joy. Our road lies on.')},
     iconium:{room:'iconium',x:178,y:124,dir:1,if:()=>false,no:()=>say(PC(),inDer()?'Iconium, yes. But Lystra lies first on the way back. One city at a time.':'There are stones waiting for us in Iconium. Not yet.')},
-    lystra:{get room(){return atLystra()?G.room:inDer()?'house':'lystra'},get x(){return ENT[this.room][0]},get y(){return ENT[this.room][1]},get dir(){return ENT[this.room][2]},if:()=>inIco()||inDer()},
+    lystra:{get room(){return atLystra()?G.room:inDer()?'house6':'lystra'},get x(){return ENT[this.room][0]},get y(){return ENT[this.room][1]},get dir(){return ENT[this.room][2]},if:()=>inIco()||inDer()},
     derbe:{room:'derbe',x:120,y:124,dir:1,if:night,no:'Derbe lies beyond Lystra, and Lystra has not heard either. One city at a time.'},
     tarsus:{room:'-',hide:()=>!inDer(),if:()=>false,no:eastNo}},
   way:()=>[['antiochp','iconium']].concat(inIco()?[]:[['iconium','lystra']],inDer()||F.back?[['lystra','derbe']]:[]),arrive:arrive6,
