@@ -189,7 +189,7 @@ ART.antioch={w:480,fp:1.3,
   g.fillStyle=lg(g,0,0,22,0,['#8a8494','#c8c2c0','#6a6478']);g.fillRect(0,0,20,150);R(g,-2,128,25,22,'#7a7488');R(g,-2,128,25,1,'#d8d2d0');
   for(const[bx,bw,bh]of[[52,13,11],[494,15,13]]){vessel(g,bx,148,bw,bh,'#6a5230','bowl',{noShadow:1});for(let i=0;i<12;i++)oval(g,bx-bw+3+r()*(bw*2-6),148-bh-r()*2.4,1.8,1.4,r()<.5?'#a8503a':'#c9a23a')}
   vessel(g,518,152,10,30,'#5a2e1e','amph',{noShadow:1});comp(g,'source-atop',.4,()=>R(g,0,0,530,150,'#34305a'))},
- draw(g,t){if(!F.jar)oilJar(g,426,113);const f=t/90;R(g,266.2,79,1.8,14,'#a8d8ec');for(let i=0;i<4;i++)R(g,266.2,79+((f+i*3.6)%14),1.8,1.4,'#f0fafe');
+ draw(g,t){if(!F.jar)depth(113,()=>oilJar(g,426,113));const f=t/90;R(g,266.2,79,1.8,14,'#a8d8ec');for(let i=0;i<4;i++)R(g,266.2,79+((f+i*3.6)%14),1.8,1.4,'#f0fafe');
   for(let i=0;i<4;i++){const k=((t/400+i*.25)%1);g.strokeStyle=`rgba(230,246,252,${.7*(1-k)})`;g.lineWidth=.5;g.beginPath();g.ellipse(267.1,94.5,1.5+k*9,.3+k*.7,0,0,6.2832);g.stroke()}},
  front(){}};
 /* ---------- The road south (ending) ---------- */

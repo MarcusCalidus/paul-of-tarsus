@@ -269,8 +269,8 @@ ART.gates={w:480,fp:1.25,q:12,
  draw(g,t){const lit=lightAt('gates',70,112);
   /* the far ox, the carter's wagon and its pole, the near ox, and the yoke that lies across both their necks: they face the cleft, and the wind.
      The pole ends behind the near ox's tail: if it ran on under the tail, the two would make a T upside down. */
-  cattle(g,115,110.6,1,0,'#6f4630',lit);wagon(g,20,112,-1,1);cattle(g,111,113,1,0,'#8a5a3a',lit);
-  R(g,124,81,5,2.5,'#5a3e22');R(g,124,81,5,.5,'#a8845a');R(g,128.5,79.5,1.5,1.5,'#5a3e22');
+  depth(113,()=>{cattle(g,115,110.6,1,0,'#6f4630',lit);wagon(g,20,112,-1,1);cattle(g,111,113,1,0,'#8a5a3a',lit);
+    R(g,124,81,5,2.5,'#5a3e22');R(g,124,81,5,.5,'#a8845a');R(g,128.5,79.5,1.5,1.5,'#5a3e22')});
   tentArt(g,t)},
  /* the weather: before the tent is up, the wind, and what it carries; after it, the rain */
  front(g,t){if(!F.up){for(let i=0;i<14;i++){const k=((t/900+i*.0714)%1),x=500-k*540,y=18+((i*37)%96)+Math.sin(k*9+i)*3;R(g,x,y,5+(i%3)*2,.5,`rgba(226,220,206,${.34*(1-Math.abs(k-.5)*2)})`)}return}
@@ -280,7 +280,10 @@ ART.gates={w:480,fp:1.25,q:12,
    rim would be an ellipse one pixel high, which rasterizes as a plus sign. */
 function wellJar(g,x,y,c){R(g,x-3,y-.4,8,1,'rgba(30,20,40,.3)');poly(g,[x-1.6,y-10,x+1.6,y-10,x+1.8,y-8.4,x+3.6,y-5.6,x+3,y-1,x+1.6,y,x-1.6,y,x-3,y-1,x-3.6,y-5.6,x-1.8,y-8.4]);
   g.fillStyle=lg(g,x-3.6,0,x+3.6,0,[tint(c,-.3),tint(c,.26),c,tint(c,-.5)]);g.fill();R(g,x-2,y-10.6,4,1,tint(c,-.5));R(g,x-2,y-10.6,4,.4,tint(c,.2))}
+/* the low table of the house at Lystra. It stands out on the mat, so it is a prop as well: whoever walks behind it is hidden by it */
+function lowTable(g){wood(g,170,112,40,3,'#96703e');wood(g,170,115,2.6,8,'#5a4226',1);wood(g,207.4,115,2.6,8,'#5a4226',1);vessel(g,190,112,4.6,3.6,'#a8844e','bowl',{noShadow:1})}
 ART.lystra7={w:320,q:12,
+ props:[{y:123,shape:lowTable}],
  light:()=>({amb:'#f0e8dc',lamps:[[92,96,38,'#4a2410']]}),
  paint(g){const r=rng(461),W='#d8c8a4';
   plaster(g,0,0,320,104,W,r,{patch:4,cracks:6,brick:'#a8875a',t:.5});for(let i=14;i<320;i+=34)wood(g,i,0,6,8,'#5a4226',1);wood(g,0,8,320,2.4,'#6a4e2c');ao(g,0,10.4,320,12,'t',.42,'#2a2030');
@@ -304,7 +307,7 @@ ART.lystra7={w:320,q:12,
   earth(g,0,103,320,144,'#b8a482',r,90);ao(g,0,103,320,6,'t',.4,'#3a3050');
   clipTo(g,()=>poly(g,[128,112,214,112,224,130,116,130]),()=>{R(g,116,112,110,18,'#9a6a4a');for(let i=0;i<6;i++)R(g,116,113.4+i*3,110,1.1,i%2?'#d8b878':'#5a3a2c');tex(g,'mott',.4,116,112,110,18,'overlay',1);ao(g,116,112,110,5,'t',.25)});
   /* a low table */
-  R(g,168,122,44,3,'rgba(30,20,40,.4)');wood(g,170,112,40,3,'#96703e');wood(g,170,115,2.6,8,'#5a4226',1);wood(g,207.4,115,2.6,8,'#5a4226',1);vessel(g,190,112,4.6,3.6,'#a8844e','bowl',{noShadow:1});
+  R(g,168,122,44,3,'rgba(30,20,40,.4)');lowTable(g);
   lightmap(g,320,'#b4aca8',l=>{pool(l,60,36,30,26,'#f4f4ec',1);l.fillStyle=lg(l,0,44,0,140,['rgba(240,240,228,.5)','rgba(240,240,228,0)']);poly(l,[52,44,68,44,150,140,70,140]);l.fill();
       pool(l,283,80,40,60,'#f4f0e4',.6);pool(l,160,120,170,44,'#fff0d8',.45);pool(l,92,98,48,36,'#ff9a48',.55)})},
  fore(g){/* the edge of a storage chest, nearest us */

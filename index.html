@@ -784,7 +784,8 @@ const PC=()=>G.pc||P;
 const party=()=>(CHAP[G.ch]&&CHAP[G.ch].party||['paul']).map(id=>ACT[id]);
 const invOf=a=>a===PC()?G.inv:(G.invs[a.id]||(G.invs[a.id]=[]));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-/* Each room paints a backdrop once (ART[id].paint) and, optionally, a foreground layer (ART[id].fore) that is drawn over the actors. */
+/* Each room paints a backdrop once (ART[id].paint) and, optionally, a foreground layer (ART[id].fore) that is drawn over the actors. What stands
+   inside the walkable strip, where a person can walk behind it, takes its place among the actors by depth: see figure(), depth() and props(). */
 function bake(w,fn,q){const[c,g]=mk(w*HR,VH*HR);g.scale(HR,HR);fn(g);g.setTransform(1,0,0,1,0,0);finish(c,g,q);return c}
 /* A room whose light changes (a lamp put out, shutters opened) names its current variant, and gets one backdrop per variant. */
 function bg(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;return BG[k]||(BG[k]=bake(a.w,g=>a.paint(g,v),a.q))}
@@ -977,8 +978,25 @@ function lightAt(id,x,y){let L=id&&ART[id].light;if(typeof L==='function')L=L();
   for(const[lx,ly,lr,c]of L.lamps||[]){const d=Math.hypot(x-lx,(y-22-ly)*1.5)/lr;if(d<1){const k=(1-d)*(1-d),q=hex(c);r+=q[0]*k;g+=q[1]*k;b+=q[2]*k}}
   for(const[x0,x1,c]of L.shade||[]){const k=clamp(Math.min(x-x0,x1-x)/8,0,1);if(k>0){const q=hex(c);r*=1-k+k*q[0]/255;g*=1-k+k*q[1]/255;b*=1-k+k*q[2]/255}}
   return r>=254&&g>=254&&b>=254?null:toHex(r,g,b)}
+/* Depth: whatever stands on the ground is drawn from the back of the room to the front, so that the nearer hides the farther. A room's draw() runs
+   first. What it places with figure() (man, beast, a chapter's cattle) is not drawn at once: it waits in a queue at the y of its feet, and depth(y,fn)
+   puts any other drawing in that queue. Then the queue, the room's props and its actors are drawn in order of y; where two stand level, the actor is
+   in front. Inside fn figures are drawn at once, in the order written: a team of oxen with its wagon and yoke is one thing, at one depth. Outside a
+   room's draw() (a cutscene, the front layer) there is no queue, and everything is drawn where it is written. */
+let DQ=null;
+function depth(y,fn){if(DQ)DQ.push([y,fn]);else fn()}
+/* props: a thing that is painted into the backdrop and stands inside the walkable strip (a stool, a low table, a heap of sailcloth) is named once more
+   in ART[id].props, as {y, shape(g,variant)}: y is where it stands on the floor, and shape() fills its outline in any color, without its shadow. The
+   engine cuts that outline out of the finished backdrop, so the piece is the painting itself, and lays it over whoever stands behind it. */
+const CUT={};
+function props(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;if(!a.props)return[];return CUT[k]||(CUT[k]=a.props.map(p=>{
+  const W=a.w*HR,Hh=VH*HR,[c,g]=mk(W,Hh);g.scale(HR,HR);p.shape(g,v);g.setTransform(1,0,0,1,0,0);
+  const im=g.getImageData(0,0,W,Hh),d=im.data;let x0=W,y0=Hh,x1=-1,y1=-1;
+  for(let y=0,i=3;y<Hh;y++)for(let x=0;x<W;x++,i+=4){if(d[i]<128){d[i]=0;continue}d[i]=255;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+  if(x1<0)return null;g.putImageData(im,0,0);g.globalCompositeOperation='source-in';g.drawImage(bg(id),0,0);
+  const w=x1-x0+1,h=y1-y0+1,[o,og]=mk(w,h);og.drawImage(c,-x0,-y0);return{y:p.y,c:o,x:x0/HR,t:y0/HR,w:w/HR,h:h/HR}}).filter(Boolean))}
 /* figure: place a sprite with its feet at x,y. lit: the light on it; key: names the pose for the cache; sw: shadow half-width (0 for none). */
-function figure(g,x,y,lit,key,fn,sw){x=hp(x);y=hp(y);if(sw!==0){oval(g,x,y-.4,sw||8.5,2,'rgba(0,0,0,.2)');oval(g,x,y-.4,(sw||8.5)*.68,1.3,'rgba(0,0,0,.24)')}
+function figure(g,x,y,lit,key,fn,sw){if(DQ){DQ.push([y,()=>figure(g,x,y,lit,key,fn,sw)]);return}x=hp(x);y=hp(y);if(sw!==0){oval(g,x,y-.4,sw||8.5,2,'rgba(0,0,0,.2)');oval(g,x,y-.4,(sw||8.5)*.68,1.3,'rgba(0,0,0,.24)')}
   const c=sprite(key,fn,key.includes('-1')?-1:1),W=FIG.W/HR,Hh=FIG.H/HR,dx=x-FIG.OX/HR,dy=y-FIG.OY/HR;if(!lit){g.drawImage(c,dx,dy,W,Hh);return}
   sb.globalCompositeOperation='copy';sb.drawImage(c,0,0);sb.globalCompositeOperation='multiply';sb.fillStyle=lit;sb.fillRect(0,0,FIG.W,FIG.H);
   sb.globalCompositeOperation='destination-in';sb.drawImage(c,0,0);g.drawImage(SB,dx,dy,W,Hh)}
@@ -990,8 +1008,11 @@ function drawActor(g,o,ts,id){const talk=o.talk&&Math.floor(ts/130)%2?1:0,ges=o.
   figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+o.dir+o.fr+talk+bow+ges+bl,s=>person(s,0,0,o.look,o.dir,o.fr,talk,bow,ges,bl))}
 function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
-  else if(G.room){const id=G.room,a=ART[id],cam=hp(G.cam),f=fg(id);backdrop(cx,id,cam);cx.save();cx.translate(-cam,0);a.draw(cx,ts);
-    Object.values(ACT).filter(o=>o.room===id).sort((p,q)=>p.y-q.y).forEach(o=>drawActor(cx,o,ts,id));
+  else if(G.room){const id=G.room,a=ART[id],cam=hp(G.cam),f=fg(id);backdrop(cx,id,cam);cx.save();cx.translate(-cam,0);
+    const q=DQ=[];a.draw(cx,ts);DQ=null;
+    for(const p of props(id))q.push([p.y,()=>cx.drawImage(p.c,p.x,p.t,p.w,p.h)]);
+    for(const o of Object.values(ACT))if(o.room===id)q.push([o.y,()=>drawActor(cx,o,ts,id)]);
+    q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());
     cx.restore();if(f)cx.drawImage(f,-hp(cam*(a.fp||1)),0,f.width/HR,VH);
     cx.save();cx.translate(-cam,0);a.front(cx,ts);cx.restore()}
   posSpeech();drawTags(ts);requestAnimationFrame(render)}

@@ -153,7 +153,7 @@ ART.ford={w:480,fp:1.25,
     rope([FAR[0],FAR[1]+.6,278,106,274,112.6,270+Math.sin(t/260)*1.2,118,268+Math.sin(t/300)*1.6,124]);R(g,265,123.6,6,.8,'rgba(240,250,252,.8)')}
   /* the pack train: waiting on this bank, or safe on the other */
   const d=F.crossed?1:-1;beast(g,(F.crossed?372:84),108.6,1,0,2);beast(g,(F.crossed?414:44),109.4,d,0,2);if(!F.crossed)beast(g,124,108,1,0,2);else beast(g,452,108.4,1,0,2);
-  bundles(g,F.crossed?332:134,111)},
+  depth(111,()=>bundles(g,F.crossed?332:134,111))},
  front(g,t){/* the river closes over the legs of a man who wades it */
   for(const a of[P,BN])if(a.room==='ford'&&a.x>199&&a.x<277){const d=Math.min(1,Math.min(a.x-199,277-a.x)/12),h=4+d*9;g.fillStyle=lg(g,0,a.y-h,0,a.y+1,['rgba(150,206,214,.7)','rgba(78,146,168,.94)']);g.fillRect(a.x-9,a.y-h,18,h+1.5);
     for(let i=0;i<3;i++)R(g,a.x-9+((t/80+i*7)%16),a.y-h+(i%2),4,.7,'rgba(245,252,252,.9)');R(g,a.x-10,a.y-h-.4,20,.8,'rgba(245,252,252,.55)')}}};

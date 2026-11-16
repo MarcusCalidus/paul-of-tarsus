@@ -41,6 +41,14 @@
  const choose=async i=>{const b=document.querySelectorAll('#choices button');b[i<0?b.length+i:i].click();await idle()};
  /* Pray to Jehovah is the hint system, and it never changes the game's state (CONTRIBUTING section 2). Every prayer of the playthrough is
     held to that: the flags, what everyone carries and the room are noted as a prayer begins, and compared at the check that follows it. */
+ /* depth (CONTRIBUTING section 4): seen() stands Paul at a place in the room and returns a number for the picture inside a small box [x,y,w,h]; the
+    number changes when the picture there does. A box that lies inside a thing must look the same with Paul behind that thing as with Paul far
+    away, and different with Paul in front of it. */
+ const seen=async(px,py,[x,y,w,h])=>{const was=[P.room,P.x,P.y,P.dir],t=clamp(px-160,0,ART[G.room].w-320);place(P,G.room,px,py,1);
+   for(let i=0;i<300&&G.cam!==t;i++)await wait(20);await wait(90);const d=cx.getImageData((x-G.cam)*HR,y*HR,w*HR,h*HR).data;let n=0;for(let i=0;i<d.length;i++)n=(Math.imul(n,31)+d[i])>>>0;
+   place(P,...was);return n};
+ const hides=async(box,far,behind,front)=>{const a=await seen(...far,box),b=await seen(...behind,box),c=await seen(...front,box),t=clamp(P.x-160,0,ART[G.room].w-320);
+   for(let i=0;i<300&&G.cam!==t;i++)await wait(20);return a===b&&a!==c};
  const snap=()=>JSON.stringify([F,G.invs,G.inv,G.room,G.ch]),prayBad=[];let prayed=null,prayers=0;
  {const p0=pray;window.pray=function(){prayed=snap();prayers++;return p0.apply(this,arguments)}}
  const ok=(c,m)=>{if(prayed!=null){if(snap()!==prayed)prayBad.push(m);prayed=null}L((c?'ok   ':'FAIL ')+m)};
@@ -527,7 +535,7 @@
   /* ---------------- Chapter Eight ---------------- */
   /* Chapter Eight stops start Chapter Eight from the title screen. Like Chapter Seven's, its test is a function of its own: the full run
      calls it when Chapter Seven has ended, and a Chapter Eight stop calls it at once. all8 halts nowhere. */
-  const C8=/^(map8|sea8|vision8|deck8|house8|fork8|closed8|ferry8|troas8|bind8|sling8|morning8|concl8|philippi8|gate8|riverw8|shop8|river8|sit8|lydia8|journey8|final8|deutsch8|all8)$/.test(stop);
+  const C8=/^(map8|sea8|vision8|deck8|house8|fork8|depth8|closed8|ferry8|troas8|bind8|sling8|morning8|concl8|philippi8|gate8|riverw8|shop8|river8|sit8|lydia8|journey8|final8|deutsch8|all8)$/.test(stop);
   const ch8=async()=>{let LU;const P8=i=>T(CHAP[8].tablets.scripture[i].text),said=t=>heard.includes(T(t)),quoted=i=>heard.some(h=>h.includes(P8(i))),A=id=>ACT[id];
   const cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
       for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;return n},
@@ -552,6 +560,9 @@
     said('We know what to preach, and how. And there lies the where, paved and waiting.'),'chapter eight opens on the map and starts on the plateau, with Silas and Timothy, and without Luke ['+[G.ch,G.room,!!G.scene,G.busy,srt(),sawMap,heard.length].join()+']');
   ok(!heard.some(h=>h.includes('16:6')||h.includes('16:7')),'the opening does not tell beforehand that the road will be closed');
   halt('fork8',()=>{say(A('attalos'),'To Ephesus? Then walk with me, friends. I take wool down that road four times a year, and a road is shorter in company.')});
+  /* depth: the mule stands out on the road. A man who walks behind it is hidden by it, and a man in front of it hides it */
+  ok(await hides([146,105,8,6],[60,126],[150,117],[150,129]),'depth: the mule hides the man who stands behind it, and is hidden by the man in front of it');
+  halt('depth8',()=>{place(P,'fork',148,118,-1);place(TI,'fork',166,131,-1)});
   ok(/^8-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===8&&decode(makeCode()).w!=null,'chapter eight code format (wide, nine characters) '+makeCode());
   ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Luke'))&&$('#swap').disabled,'the panel names Luke, and the button waits until he is with them');fitVerbs();
   key('c');await idle();ok(PC()===P,'C does nothing while Luke is away');
@@ -597,6 +608,8 @@
     said('It was a walk of some 550 kilometers, past city after city. They went through Mysia without stopping to preach there.')&&said('Troas: the principal seaport of that coast, and a colony of Rome. It was probably the spring of the year 50.'),'Troas at dusk: a hurt man, a physician, and the Luke button comes alive');
   ok(mapClear(),'no name on that map crosses a coast or a route'+clear());
   halt('troas8',()=>{say(LU,'It is not nothing. Sit down, man, and hold the arm up. Let me through: I am a physician.')});
+  /* depth: the heap of sailcloth is part of the painted backdrop, and it hides a man's legs all the same when he walks behind it */
+  ok(props('troas').length===3&&await hides([428,109,8,5],[380,130],[432,113],[432,126]),'depth: a painted prop, the heap of sailcloth, hides the man who stands behind it ('+props('troas').length+' props on the quay)');
   pray();await idle();ok(hint()[0]==='linen8','the hint points to Timothy\'s bundle');
   heard.length=0;await act(null,'gangplank');ok(G.room==='troas'&&heard.length===1,'no going aboard yet');
   heard.length=0;await act(null,'door of the inn');ok(G.room==='troas'&&!F.vision&&said('Not while that man is bleeding on the quay.'),'and no going to bed while a man is bleeding');

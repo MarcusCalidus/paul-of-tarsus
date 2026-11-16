@@ -205,9 +205,9 @@ ART.lystra={w:480,fp:1.3,
   for(let i=0;i<20;i++){const sx=590+r()*46;stroke(g,[sx,150,sx+(r()-.5)*5,136-r()*8],'#4f6c3a',.8)}
   comp(g,'source-atop',.4,()=>R(g,0,0,640,150,'#34305a'))},
  draw(g,t){/* the man who has never walked: he sits by the well with his back to its curb, a blanket over his feet */
-  if(!F.healed){g.save();g.beginPath();g.rect(300,60,40,50);g.clip();man(g,324,127.4,'lame',-1,0,null,0,0);g.restore();
+  if(!F.healed)depth(111.4,()=>{g.save();g.beginPath();g.rect(300,60,40,50);g.clip();man(g,324,127.4,'lame',-1,0,null,0,0);g.restore();
     oval(g,316,111.4,20,2.2,'rgba(30,26,50,.3)');poly(g,[297,111,298,107.4,303,105.6,313,105.4,323,103.6,333,105.6,337,111],'#7a5a4a');poly(g,[297,111,298,107.4,303,105.6,313,105.4,323,103.6,322,111],'#94705c');
-    for(let i=0;i<6;i++)R(g,302+i*5.6,106.8+(i%2)*.6,.6,3.6,'rgba(40,24,20,.4)');R(g,297,110.4,40,.9,'#5a4034')}
+    for(let i=0;i<6;i++)R(g,302+i*5.6,106.8+(i%2)*.6,.6,3.6,'rgba(40,24,20,.4)');R(g,297,110.4,40,.9,'#5a4034')});
   /* the people of Lystra, when they come running: first they face the well, then the gate */
   if(G.crowd)CROWD.forEach(([id,x,y],i)=>man(g,x,y+((Math.floor(t/700)+i)%5===0?-.6:0),id,G.bulls?-1:1,0,null,G.crowd>1&&(Math.floor(t/500)+i)%3===0?1:0,7));
   /* the bulls, garlanded, brought to the gates (Acts 14:13) */
@@ -216,6 +216,8 @@ ART.lystra={w:480,fp:1.3,
  front(){}};
 /* ---------- Outside Lystra, at dusk ---------- */
 ART.outside={w:320,
+ /* the stones at the roadside that lie a little way out on the ground */
+ props:[[82,113,7,4],[104,113,6,3.6],[61,113.4,6,3.4]].map(([x,y,w,h])=>({y,shape:g=>rock(g,x,y,w,h,'#7c7078')})),
  light:()=>({amb:'#e8b49c'}),
  paint(g){const r=rng(457);
   sky(g,320,86,['#27356e','#5a4f8e','#b0667a','#e8905a','#f6c878']);pool(g,70,84,90,26,'#ffe0a0',.5,'screen');
@@ -239,20 +241,24 @@ ART.outside={w:320,
  fore(g){const r=rng(458);rock(g,300,150,34,16,'#4a4458');for(let i=0;i<40;i++){const sx=r()*320;stroke(g,[sx,150,sx+(r()-.5)*6,136-r()*8],r()<.5?'#5a5440':'#3a3848',.8)}
   comp(g,'source-atop',.5,()=>R(g,0,0,320,150,'#2a2450'))},
  draw(g,t){/* the stones that were thrown, lying where they fell */
-  for(const[x,y,w,h]of[[118,127,5,3],[134,131,6,3.4],[150,124,4.6,2.6],[164,130,5.6,3],[176,126,4,2.4],[142,121,4,2.2],[126,134,5,2.8]])rock(g,x,y,w,h,'#8a7c7c');
-  /* Paul, as they left him: face down, his mantle over him */
-  if(G.down){const x=0,y=0,L='#e8b49c',sk=mul('#c08a5c',L),cl=mul('#6e4a2e',L),tu=mul('#c4b08a',L),hr=mul('#2a1a12',L);
+  for(const[x,y,w,h]of[[118,127,5,3],[134,131,6,3.4],[150,124,4.6,2.6],[164,130,5.6,3],[176,126,4,2.4],[142,121,4,2.2],[126,134,5,2.8]])depth(y,()=>rock(g,x,y,w,h,'#8a7c7c'));
+  /* Paul, as they left him: face down, his mantle over him. Those who stand around him stand behind him or before him, by where their feet are */
+  if(G.down)depth(129,()=>{const x=0,y=0,L='#e8b49c',sk=mul('#c08a5c',L),cl=mul('#6e4a2e',L),tu=mul('#c4b08a',L),hr=mul('#2a1a12',L);
     g.save();g.translate(132,129);g.scale(1,1.4);oval(g,x+25,y+.4,29,2,'rgba(20,16,40,.42)');
     R(g,x+41,y-3.5,9,2.5,sk);R(g,x+41,y-1.5,9,.5,tint(sk,-.3));R(g,x+49.5,y-5,2.5,5,sk);R(g,x+51.5,y-5,.5,5,'#2a1810');R(g,x+36,y-4.5,6,4.5,tu);R(g,x+36,y-1,6,1,tint(tu,-.3));
     poly(g,[x+7,y,x+8,y-4.6,x+14,y-6.6,x+26,y-7,x+35,y-5.6,x+38,y-3,x+38.6,y],cl);poly(g,[x+8,y-4.6,x+14,y-6.6,x+26,y-7,x+35,y-5.6,x+33,y-4.4,x+24,y-5.4,x+14,y-5],tint(cl,.22));
     for(const fx of[16,23,30])stroke(g,[x+fx,y-6.4,x+fx+1.6,y-.6],tint(cl,-.35),.6);R(g,x+7,y-1,31.5,1,tint(cl,-.45));
     R(g,x+10,y-2.5,9,2,sk);R(g,x+18.5,y-3,2.5,2.5,sk);R(g,x+10,y-.5,11,.5,tint(sk,-.35));
-    oval(g,x+4,y-3.4,3.4,3.2,sk);poly(g,[x+.4,y-3.4,x+1.2,y-6,x+4,y-7,x+6.6,y-6,x+5,y-5,x+2.4,y-4.4,x+1.6,y-1.4],hr);oval(g,x+6.4,y-1.8,2,1.5,hr);g.restore()}
+    oval(g,x+4,y-3.4,3.4,3.2,sk);poly(g,[x+.4,y-3.4,x+1.2,y-6,x+4,y-7,x+6.6,y-6,x+5,y-5,x+2.4,y-4.4,x+1.6,y-1.4],hr);oval(g,x+6.4,y-1.8,2,1.5,hr);g.restore()});
   pool(g,265,70,6+Math.sin(t/230),6,'#ffb860',.25,'screen')},
  front(){}};
 /* ---------- Lystra: the house of Lois and Eunice ---------- */
+/* the low table of the house at Lystra, and the supper on it by night. It stands out on the mat, so it is a prop as well: whoever walks behind it is hidden by it */
+function lowTable(g,day){wood(g,170,112,40,3,'#96703e');wood(g,172,115,2.6,8,'#5a4226',1);wood(g,205,115,2.6,8,'#5a4226',1);
+  if(!day){vessel(g,182,112,4.6,3.6,'#a8844e','bowl',{noShadow:1});g.fillStyle=lg(g,0,107,0,112,['#e8c078','#c9a060','#8a6630']);g.beginPath();g.ellipse(197,110.4,5.6,2.2,0,0,6.2832);g.fill()}}
 ART.house={w:320,q:12,
  variant:()=>F.back?'d':'n',
+ props:[{y:123,shape:(g,v)=>lowTable(g,v==='d')}],
  light:()=>F.back?{amb:'#f0e8dc'}:{amb:'#7c6f86',lamps:[[150,58,60,'#7a5420'],[92,96,46,'#7a3c14']]},
  paint(g,v){const r=rng(461),W='#d8c8a4',day=v==='d';
   plaster(g,0,0,320,104,W,r,{patch:4,cracks:6,brick:'#a8875a',t:.5});for(let i=14;i<320;i+=34)wood(g,i,0,6,8,'#5a4226',1);wood(g,0,8,320,2.4,'#6a4e2c');ao(g,0,10.4,320,12,'t',.42,'#2a2030');
@@ -276,8 +282,7 @@ ART.house={w:320,q:12,
   earth(g,0,103,320,144,'#b8a482',r,90);ao(g,0,103,320,6,'t',.4,'#3a3050');
   clipTo(g,()=>poly(g,[128,112,240,112,252,130,116,130]),()=>{R(g,116,112,136,18,'#9a6a4a');for(let i=0;i<6;i++)R(g,116,113.4+i*3,136,1.1,i%2?'#d8b878':'#5a3a2c');tex(g,'mott',.4,116,112,136,18,'overlay',1);ao(g,116,112,136,5,'t',.25)});
   /* a low table with the supper on it */
-  R(g,168,122,44,3,'rgba(30,20,40,.4)');wood(g,170,112,40,3,'#96703e');wood(g,172,115,2.6,8,'#5a4226',1);wood(g,205,115,2.6,8,'#5a4226',1);
-  if(!day){vessel(g,182,112,4.6,3.6,'#a8844e','bowl',{noShadow:1});g.fillStyle=lg(g,0,107,0,112,['#e8c078','#c9a060','#8a6630']);g.beginPath();g.ellipse(197,110.4,5.6,2.2,0,0,6.2832);g.fill()}
+  R(g,168,122,44,3,'rgba(30,20,40,.4)');lowTable(g,day);
   if(day)lightmap(g,320,'#b8b0a8',l=>{pool(l,60,36,30,26,'#fff8e4',1);l.fillStyle=lg(l,0,44,0,140,['rgba(255,244,210,.5)','rgba(255,244,210,0)']);poly(l,[52,44,68,44,150,140,70,140]);l.fill();
       pool(l,283,80,40,60,'#fff4dc',.7);pool(l,160,120,170,44,'#fff0d8',.5)});
   else lightmap(g,320,'#5a5068',l=>{pool(l,150,56,64,50,'#ffc070',.95);pool(l,92,98,52,40,'#ff9a48',.8);pool(l,170,122,120,30,'#ffd090',.35);pool(l,60,36,16,14,'#8090c8',.5)})},
@@ -322,8 +327,8 @@ ART.derbe={w:320,
  draw(g,t){/* chaff on the wind; Zenon's wagon, loaded for the road east */
   for(let i=0;i<9;i++){const k=((t/2600+i*.111)%1);R(g,176+k*60+Math.sin(i*2.1)*6,90-k*14-Math.sin(k*9+i)*3,1,.6,`rgba(244,236,200,${.8*(1-k)})`)}
   /* the far ox, the wagon and its pole, the near ox, and the yoke that lies across both their necks */
-  cattle(g,266,108.6,1,0,'#6f4630',0);wagon(g,174,110,-1,1);cattle(g,262,111,1,0,'#8a5a3a',0);
-  R(g,275,79,5,2.5,'#5a3e22');R(g,275,79,5,.5,'#a8845a');R(g,279.5,77.5,1.5,1.5,'#5a3e22');bundles(g,60,112)},
+  depth(111,()=>{cattle(g,266,108.6,1,0,'#6f4630',0);wagon(g,174,110,-1,1);cattle(g,262,111,1,0,'#8a5a3a',0);
+    R(g,275,79,5,2.5,'#5a3e22');R(g,275,79,5,.5,'#a8845a');R(g,279.5,77.5,1.5,1.5,'#5a3e22')});depth(112,()=>bundles(g,60,112))},
  front(){}};
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
 Object.assign(LOOK,{
