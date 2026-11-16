@@ -19,6 +19,9 @@ body{display:flex;align-items:center;justify-content:center}
 #top button{font:inherit;color:var(--gold);background:rgba(10,6,4,.55);border:var(--px) solid var(--dim);text-shadow:inherit;
   padding:0 calc(var(--s)*3px);height:calc(var(--s)*8px);cursor:pointer}
 #top button:hover{color:var(--hi);border-color:var(--gold)}
+#top #names.on{color:#fff;border-color:var(--gold);background:rgba(168,98,30,.66)}
+#top #names::before{content:'';display:inline-block;vertical-align:middle;width:calc(var(--s)*2px);height:calc(var(--s)*2px);border-radius:50%;
+  background:var(--gold);box-shadow:0 0 0 var(--px) #000;margin:0 calc(var(--s)*1.5px) calc(var(--s)*.5px) 0}
 #view{position:relative;width:calc(var(--s)*320px);height:calc(var(--s)*144px);overflow:hidden;cursor:crosshair}
 #screen{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 #speech{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3}
@@ -33,6 +36,7 @@ body{display:flex;align-items:center;justify-content:center}
 .tag::before{content:'';position:absolute;left:50%;top:calc(var(--s)*-3px);width:calc(var(--s)*2px);height:calc(var(--s)*2px);
   margin-left:calc(var(--s)*-1px);border-radius:50%;background:var(--gold);box-shadow:0 0 0 var(--px) #000}
 .tag.exit::before{background:#9fd8b0}.tag.who::before{background:#f0a8a0}
+#tags.pin .tag{pointer-events:auto;cursor:pointer}
 #dim{position:absolute;z-index:2;inset:0;background:#05030c;opacity:0;pointer-events:none;transition:opacity .9s}
 #hush{position:absolute;z-index:6;top:calc(var(--s)*3px);right:calc(var(--s)*3px);display:none;pointer-events:none;max-width:calc(var(--s)*170px);
   padding:calc(var(--s)*2px) calc(var(--s)*4px);font-size:calc(var(--s)*4.6px);line-height:1.35;color:#f0e2c0;text-align:right;
@@ -111,7 +115,7 @@ body{display:flex;align-items:center;justify-content:center}
 </head>
 <body>
 <div id="wrap">
-  <div id="top"><span><span id="gname">PAUL OF TARSUS</span> &middot; <span id="chname">ESCAPE FROM DAMASCUS</span></span><span><button id="code" type="button">ENTER CODE</button><button id="mute" type="button">&#9835; SOUND ON</button><button id="lang" type="button">EN</button></span></div>
+  <div id="top"><span><span id="gname">PAUL OF TARSUS</span> &middot; <span id="chname">ESCAPE FROM DAMASCUS</span></span><span><button id="code" type="button">ENTER CODE</button><button id="names" type="button">NAMES</button><button id="mute" type="button">&#9835; SOUND ON</button><button id="lang" type="button">EN</button></span></div>
   <div id="view">
     <canvas id="screen" width="640" height="288"></canvas>
     <div id="speech"></div>
@@ -901,10 +905,10 @@ async function act(v,h,item){const who=PC(),o=who===P?h:(h.as&&h.as[who.id])||{}
   if((v==='use'||v==='open')&&o[v]==null&&h.exit)return h.exit();
   if(o[v]!=null)return run(o[v]);
   const d=(who.def||DEF)[v];return say(who,typeof d==='function'?d(h):d)}
-async function clickView(x,y){
+async function clickView(x,y,at){
   if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
   if(G.busy||G.scene||!G.room)return;audioInit();
-  const h=hsAt(x,y),item=G.item;let v=G.verb;
+  const h=at||hsAt(x,y),item=G.item;let v=G.verb;
   const me=PC();
   if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(me,x,y);return}
   if(v==='walk'){v=defVerb(h);if(v==='walk')v=h.exit?'exit':'look'}
@@ -919,6 +923,9 @@ const vp=$('#view');
 function evPos(e){const r=vp.getBoundingClientRect();return[(e.clientX-r.left)/r.width*VW+G.cam,(e.clientY-r.top)/r.height*VH]}
 vp.addEventListener('mousemove',e=>{if(G.busy||G.scene||!G.room)return;const[x,y]=evPos(e);const h=hsAt(x,y);if(h!==G.hover){G.hover=h;status()}});
 vp.addEventListener('mouseleave',()=>{G.hover=null;status()});
+/* A finger has no hover: as it touches the scene, the status line names what is under it and its verb lights up, as the mouse would show. */
+vp.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||G.busy||G.scene||!G.room)return;const t=e.target.closest('.tag');
+  const h=t&&t.hs||hsAt(...evPos(e));if(h!==G.hover){G.hover=h;status()}});
 vp.addEventListener('click',e=>{const[x,y]=evPos(e);clickView(x,y)});
 /* Right-click looks at whatever is under the pointer, from where Paul stands; on empty ground it puts the chosen verb down. */
 vp.addEventListener('contextmenu',e=>{e.preventDefault();if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
@@ -928,15 +935,23 @@ $('#wrap').addEventListener('contextmenu',e=>{if(!e.target.closest('#codebox'))e
 /* Double-clicking an exit skips the walk to it: Paul is simply there, and goes through. */
 vp.addEventListener('dblclick',e=>{const me=PC();if(G.busy||G.scene||!G.room||!me.walk)return;const h=hsAt(...evPos(e));
   if(h&&h.exit){me.x=me.walk.x;me.y=me.walk.y;G.cam=clamp(me.x-160,0,ART[G.room].w-VW)}});
-/* Holding Tab labels everything in the room that can be clicked: a small round dot and a name, never a marker or a cross. */
-const tagEl=$('#tags');let tagT=0;
-function tagsOn(on){if(!!G.tags===on)return;G.tags=on;tagEl.classList.toggle('on',on);tagT=0;if(!on)tagEl.innerHTML=''}
-function drawTags(ts){if(!G.tags||ts-tagT<90)return;tagT=ts;tagEl.innerHTML='';if(!G.room||G.scene)return;
+/* Holding Tab labels everything in the room that can be clicked: a small round dot and a name, never a marker or a cross.
+   The NAMES button in the top bar pins the labels on, for touch screens that have no Tab key and no hover; pinned labels
+   can be tapped, and a tap on one acts on its hotspot as a tap on the hotspot would. Labels step aside while someone speaks. */
+const tagEl=$('#tags');let tagT=0,tagSig='';
+function tagsOn(on){on=!!(on||G.tagPin);if(!!G.tags===on)return;G.tags=on;tagEl.classList.toggle('on',on);tagT=0;tagSig='';if(!on)tagEl.innerHTML=''}
+function namesBtn(){const b=$('#names');b.textContent=T('NAMES');b.classList.toggle('on',!!G.tagPin);tagEl.classList.toggle('pin',!!G.tagPin)}
+$('#names').onclick=e=>{e.stopPropagation();audioInit();SFX.click();G.tagPin=!G.tagPin;namesBtn();tagsOn(G.tagPin)};
+function drawTags(ts){if(!G.tags||ts-tagT<90)return;tagT=ts;
   const s=vp.clientWidth/VW,cam=G.cam,list=[],put=[];
-  for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+VW)list.push([T(a.hs.name),a.x,a.y-52,'who']);
-  for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const x0=Math.max(h.x,cam+4),x1=Math.min(h.x+h.w,cam+VW-4);if(x1>x0)list.push([T(h.name),(x0+x1)/2,h.y+h.h/2,h.exit?'exit':''])}
+  if(G.room&&!G.scene&&!G.skip){
+    for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+VW)list.push([T(a.hs.name),a.x,a.y-52,'who',a.hs]);
+    for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const x0=Math.max(h.x,cam+4),x1=Math.min(h.x+h.w,cam+VW-4);if(x1>x0)list.push([T(h.name),(x0+x1)/2,h.y+h.h/2,h.exit?'exit':'',h])}}
+  /* rebuilt only when something changed, so that a label is not replaced under the finger tapping it */
+  const sig=s+'|'+cam+'|'+list.map(l=>l.slice(0,4).join(',')).join('|');if(sig===tagSig)return;tagSig=sig;tagEl.innerHTML='';
   list.sort((a,b)=>a[2]-b[2]);
-  for(const[name,x,y,k]of list){const el=document.createElement('div');el.className='tag '+k;el.textContent=name;tagEl.appendChild(el);
+  for(const[name,x,y,k,h]of list){const el=document.createElement('div');el.className='tag '+k;el.textContent=name;el.hs=h;tagEl.appendChild(el);
+    el.onclick=e=>{e.stopPropagation();if(G.tagPin)clickView(x,y,h)};
     const w=el.offsetWidth/s,hh=el.offsetHeight/s+3,lx=clamp(x-cam,w/2+1,VW-w/2-1);let ty=clamp(y,4,VH-hh);
     for(let n=0;n<10;n++){const hit=put.find(p=>Math.abs(p.x-lx)<(p.w+w)/2+1&&Math.abs(p.y-ty)<hh);if(!hit)break;ty=hit.y+hh}
     if(ty>VH-hh)ty=VH-hh;put.push({x:lx,y:ty,w});el.style.left=lx*s+'px';el.style.top=ty*s+'px'}}
@@ -1081,7 +1096,7 @@ function relang(){document.documentElement.lang=G.lang;document.title=T('Paul of
   $('#gname').textContent=T('PAUL OF TARSUS');$('#chname').textContent=T(CHAP[G.ch].name);
   const ks=Object.keys(LANGS),nx=ks[(ks.indexOf(G.lang)+1)%ks.length];$('#lang').textContent=G.lang.toUpperCase();
   $('#lang').title=LANGS[nx].native;$('#lang').style.display=ks.length>1?'':'none';
-  buildVerbs();swapBtn();setMute(AU.muted);codeBtn();drawInv();status();
+  buildVerbs();swapBtn();setMute(AU.muted);namesBtn();codeBtn();drawInv();status();
   for(const b of document.querySelectorAll('#choices button'))b.textContent='› '+T(b.dataset.src);
   if(ov.classList.contains('on')&&ov.draw)ov.draw();if(cb.classList.contains('on')&&cb.draw)cb.draw();
   if(SHARED.tablets)SHARED.tablets.redraw()}

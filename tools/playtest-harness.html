@@ -749,6 +749,16 @@
   ok($('#tags').classList.contains('on')&&tg.length===want&&tg.some(t=>t.textContent===T('Eliab'))&&tg.every(t=>t.textContent.length>2),'Tab labels every hotspot ('+tg.length+')');
   halt('tags');
   key('Tab','keyup');await wait(150);ok(!$('#tags').classList.contains('on')&&!document.querySelector('#tags .tag'),'labels go when Tab is let go');
+  /* touch screens: the NAMES button pins the labels on, a label can be tapped, and a finger on the scene previews its verb */
+  ok($('#names').textContent===T('NAMES'),'the top bar offers NAMES');
+  $('#names').click();await wait(250);ok($('#tags').classList.contains('on')&&$('#tags').classList.contains('pin')&&$('#names').classList.contains('on')&&document.querySelectorAll('#tags .tag').length===want,'NAMES pins the labels on');
+  key('Tab');key('Tab','keyup');await wait(150);ok($('#tags').classList.contains('on'),'letting go of Tab leaves pinned labels on');
+  halt('names');
+  {const t=[...document.querySelectorAll('#tags .tag')].find(t=>t.textContent===T('stool'));heard.length=0;t.click();await idle();ok(heard.includes(T(H('stool').look))&&G.room==='workshop','tapping a label acts on its hotspot')}
+  {const[x,y]=hs('large basket'),r=vp.getBoundingClientRect();G.hover=null;status();
+    vp.dispatchEvent(new PointerEvent('pointerdown',{pointerType:'touch',clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+y/144*r.height,bubbles:true}));
+    ok(lit()==='pickup'&&$('#status').textContent===line('pickup','large basket'),'a finger on the scene lights its verb, as hover does')}
+  $('#names').click();await wait(150);ok(!$('#tags').classList.contains('on')&&!$('#names').classList.contains('on')&&!document.querySelector('#tags .tag'),'NAMES again takes the labels away');
   key('1');ok(G.verb==='look','key 1 picks Look at');key('1');ok(G.verb==='walk','key 1 again puts it down');
   key('m');ok(AU.muted,'M mutes');key('m');ok(!AU.muted,'M unmutes');
   document.querySelectorAll('#inv .slot')[G.inv.indexOf('tablets')].dispatchEvent(new MouseEvent('mouseenter'));ok(lit()==='open'&&$('#status').textContent===line('open','wax tablets'),'hovering the tablets lights Open');

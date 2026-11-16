@@ -338,11 +338,11 @@ Each chapter has its own score, and each room its own sounds; the music rings lo
 
 | Action | How |
 |---|---|
-| Do the obvious thing | Point at something: its usual verb lights up in the panel and shows on the status line (**Open** a door, **Talk to** a person, **Pick up** what can be taken, **Look at** anything else). Click to do it. |
+| Do the obvious thing | Point at something: its usual verb lights up in the panel and shows on the status line (**Open** a door, **Talk to** a person, **Pick up** what can be taken, **Look at** anything else). Click to do it. On a touch screen the status line shows it as your finger touches the scene. |
 | Use a verb | Click **Look at**, **Pick up**, **Use**, **Open**, **Talk to** or **Give**, then the target |
 | Look at something | Right-click it, in the scene or in the inventory. Paul looks from where he stands. |
 | Leave a room at once | Double-click an exit to skip the walk to it |
-| Show what can be clicked | Hold `Tab`: everything in the room gets a dot and its name |
+| Show what can be clicked | Hold `Tab`: everything in the room gets a dot and its name. On a touch screen, or to keep them on, tap **NAMES** in the top bar; tap it again to hide them. While they are on, tapping a name does what tapping the thing would. |
 | Combine things | **Use**, then an inventory item, then another item or something in the scene |
 | Play the other man | In Chapters Three, Four and Five, click **⇄ Barnabas** (or **⇄ Paul**) beside the prayer button, or press `C`. Each man has his own inventory, and in Chapter Three he can stand in a different room; the view follows the one you play. **Give** an item to the other when they share a room to hand it over (**Use** on him only shows it). |
 | Play Silas | In Chapter Seven the button reads **⇄ Silas**: he was sent out with the letter, and he has two hands. He leaves the tentmaker's crafts to Paul, as Barnabas did. |
@@ -359,6 +359,8 @@ Each chapter has its own score, and each room its own sounds; the music rings lo
 ![Pointing at Eliab lights Talk to](docs/screenshots/verbs.png)
 
 ![Holding Tab names everything in the room](docs/screenshots/hotspots.png)
+
+![NAMES in the top bar keeps the names on, for touch screens](docs/screenshots/names.png)
 
 ![On an iPad the game says where Silent Mode is](docs/screenshots/silent.png)
 
@@ -446,7 +448,7 @@ Inside a level file:
 - **Ids are shared.** Rooms, artwork, items, icons, looks and actors are kept in tables that every chapter writes into (`ROOMS`, `ART`, `ITEMS`, `ICON`, `LOOK`, `ACT`), so an id must be new in the whole game, not only in its file. A place or a person that comes back gets a second id: Chapter Seven's Lystra is `lystra7`, and its Timothy is `timothy7`, a man's height now. Otherwise the later chapter would redraw the earlier one's room, and a code for the earlier chapter would open the wrong scene.
 - **Topics** are what Paul learns in a chapter: `TOPICS` lists them, each with its question and a condition on the flags, for example `{id:'sail',q:"The captain's sail is torn.",if:()=>F.metCapt}`. A person's `ask` table holds his answer to each topic he can be asked about. `talkTree` adds the topics that are open to its own questions, each asked once.
 
-**Text and translations.** All player-visible text is written in English, in the code where it belongs: a look line on its hotspot, a reply in a person's `show` table, a line in a script. The engine translates it as it is shown, with `T(line)`: `say` and `narr`, `choose`, the status line, the Tab labels, the tablets, the map and the overlays all do this, so a level writes plain English and never calls `T` itself, except for a line put together from parts, which it writes as a template: `T('It still needs {list}.',{list})`. The game's logic only ever sees the English, so flags, hotspot names and safe-point codes are the same in every language.
+**Text and translations.** All player-visible text is written in English, in the code where it belongs: a look line on its hotspot, a reply in a person's `show` table, a line in a script. The engine translates it as it is shown, with `T(line)`: `say` and `narr`, `choose`, the status line, the top bar, the Tab labels, the tablets, the map and the overlays all do this, so a level writes plain English and never calls `T` itself, except for a line put together from parts, which it writes as a template: `T('It still needs {list}.',{list})`. The game's logic only ever sees the English, so flags, hotspot names and safe-point codes are the same in every language.
 
 Each other language is a folder under `lang/`: `lang/de/main.js` for the engine and `shared/`, and `lang/de/chapter1.js` and so on, each loaded with its chapter. A file is a table from each English line, exactly as it stands in the code, to its translation:
 
