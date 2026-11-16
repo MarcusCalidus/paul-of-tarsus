@@ -755,13 +755,151 @@
     said('Some ten years later Paul wrote to the congregation in Philippi: "I thank my God always when I remember you ... because of the contribution you have made to the good news from the first day until this moment." (Philippians 1:3, 5)')&&
     said('And of the man who was with them from Troas on, he wrote: "Luke, the beloved physician". (Colossians 4:14)'),'the puzzle is solved by accepting; chapter eight complete screen shown');
   ok(ov.textContent.includes(T('An awning mended in the street of the purple sellers')),'the kindness is named on the closing screen');
-  ok(/Luke|Lukas/.test(ov.textContent)&&ov.textContent.includes(T('Click to return to the title')),'the closing screen says what the account leaves unsaid');
+  ok(/Luke|Lukas/.test(ov.textContent)&&ov.textContent.includes(T('Click to continue to Chapter Nine')),'the closing screen says what the account leaves unsaid');
   {const r=ov.getBoundingClientRect(),bad=[...ov.children].filter(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});if(bad.length)tight.add('closing screen: '+bad[0].textContent.slice(0,40))}
-  ok(store('paul.save')===null,'a finished game keeps no save');
+  ok(store('paul.save')===codeOf(9,0)&&ov.textContent.includes(T('Chapter Nine code: {code}',{code:codeOf(9,0)})),'chapter eight ends with a chapter nine code, and the browser keeps it');
   {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===7&&L.every(l=>l.k===1)&&M.state.seen.has('iconium')&&M.state.seen.has('troas')&&M.state.seen.has('philippi'),'chapter eight ends on the map: from Iconium to Troas, and over the sea to Philippi');
     ok(cross(L)===0,'no two routes cross');ok(mapClear(),'no name on the map crosses a coast, an island or a route ('+M.state.boxes.length+' names)'+clear());ok(!apart(),'and no two names overlap'+apart())}
   halt('journey8',()=>{ov.className=''});halt('final8')};
   if(C8){await ch8();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+  /* Chapter Nine stops start Chapter Nine from the title screen. Like the two before it, its test is a function of its own: the full run
+     calls it when Chapter Eight has ended, and a Chapter Nine stop calls it at once. all9 halts nowhere. The scenes that are told and
+     not played (the marketplace, the dark screen, the earthquake, the jailer's house) each have a stop of their own. */
+  const C9=/^(house9|deutsch9|river9|psalm9|market9|dark9|shake9|cell9|song9|open9|lights9|court9|teach9|wash9|table9|morning9|mags9|escort9|home9|cares9|map9|final9|voice9|all9)$/.test(stop);
+  if(/^(market9|escort9|dark9|shake9|teach9|wash9|table9)$/.test(stop)){await loadLevel(9);ov.className='';ov.onclick=null;setChapter(9);const t=CHAP[9].told,
+      S={market9:['forum',{k:0},t.v20],escort9:['forum',{k:1,t0:performance.now()-4200},t.v39],dark9:['dark',null,t.v22],shake9:['shake',null,t.v26],teach9:['jailer',{k:0},t.v32],wash9:['jailer',{k:1},t.v33],table9:['jailer',{k:2},t.v34]}[stop];
+    G.st=S[1];G.shake=performance.now()-1500;G.scene=CHAP[9].scenes[S[0]];G.busy=true;lock(true);status();narr(S[2],{dur:9000});await wait(500);halt(stop)}
+  if(stop==='lights9'){await loadLevel(9);ov.className='';ov.onclick=null;setChapter(9);for(const k of['went','d1','d2','jail','voice','s1','s2','s3','quake','c1','c2','c3'])F[k]=1;CHAP[9].place('cell9');dealInv('cell9');
+    G.lit9=1;place(ACT.jailer9,'cell9',122,134,1);ACT.jailer9.bow=true;G.scene=null;enterRoom('cell9',P.x,P.y,P.dir);G.busy=true;lock(true);status();narr(CHAP[9].told.v29,{dur:9000});await wait(500);halt('lights9')}
+  const ch9=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[9],told=k=>heard.includes(T(C().told[k])),pickL=k=>pickQ(C().psalm[k].gist),
+    until=async(fn,n)=>{for(let i=0;i<(n||6000)&&!fn();i++)await wait(30);await idle()},on=async name=>{clickView(...hs(name),H(name));await idle()},stones=()=>on('flat stones');let n9=0;   /* on: a thing is clicked itself, whoever stands in front of it */
+  heard.length=0;(C9?document.querySelector('#overlay [data-ch="9"]'):ov).click();
+  await until(()=>G.ch===9&&G.room==='lydia9'&&!G.scene&&!G.busy);
+  const SI=A('silas9'),TI=A('timothy9'),LU=A('luke'),LK=A('luke9'),LY=A('lydia9'),PH=A('phila9'),EL=A('elpis9'),GI=A('girl9'),MA=A('master91'),JA=A('jailer9'),MG=A('mag91'),CO=A('lic91'),PR=['pr91','pr92','pr93'].map(A);
+  ok(G.ch===9&&G.room==='lydia9'&&srt()==='awl,knife,tablets,thread'&&[SI,TI,LU,LY].every(a=>a.room==='lydia9')&&said('That one. Its lines are on my tablets. But a psalm is learned with the mouth: beside the river, then, where they pray.'),"chapter nine starts in Lydia's house, with the four men and Lydia ["+[G.ch,G.room,srt(),heard.length].join()+']');
+  ok(/^9-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===9&&decode(makeCode()).w!=null,'chapter nine code format (wide, nine characters) '+makeCode());
+  ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Luke'))&&!$('#swap').disabled,'Luke can be played, as far as the account says "we"');fitVerbs();
+  /* the sung voice, rendered offline on the game's own mixer: one voice or five, it sounds, stays finite and does not clip; and every sung line has its notes in this language */
+  {const SR=22050,off=async(fn,dur)=>{const o=new OfflineAudioContext(1,Math.ceil(SR*dur),SR),keep=Object.assign({},AU);AU.ctx=o;audioGraph(o);try{fn(o)}finally{for(const k in AU)AU[k]=keep[k]}return(await o.startRendering()).getChannelData(0)},
+     peak=x=>{let p=0;for(const v of x){if(!isFinite(v))return NaN;p=Math.max(p,Math.abs(v))}return p},bad=[],V=C().voices,pk=[];
+   for(const[by,key,o]of[['P','c1',{rough:.9}],['S','a',{}],['PS','a',{fourths:1}],['H','a',{}],['W','c4',{}],['ALL','a',{fourths:1}],['P','c2',{}],['P','c3',{}]]){let d=0;const x=await off(()=>{d=V(by,key,Object.assign({force:1},o))},9),p=peak(x);pk.push(p.toFixed(2));
+     if(!(p>.002&&p<.9)||!(d>2&&d<9))bad.push(by+'/'+key+' '+p+' '+d)}
+   /* the sounds of the inner prison, and the earthquake: each is heard, finite and unclipped too */
+   for(const k in C().calls){const p=peak(await off(()=>C().calls[k][2](.05,AU.fx),2));if(!(p>.0005&&p<.9))bad.push('call '+k+' '+p)}
+   {const p=peak(await off(()=>C().rumble(),8));if(!(p>.01&&p<.98))bad.push('rumble '+p)}
+   const und=Object.keys(C().song).map(k=>T(C().song[k]).split(' ').filter(x=>/^(-?\d+|-)\.\d+.?$/.test(x)).length);
+   ok(!bad.length&&und.every(n=>n>=6),`offline: the sung lines render finite, audible and unclipped, for one voice and for five (peaks ${pk}), and so do the four sounds of the prison and the earthquake; each sung line has its notes in this language (${und})`+(bad.length?' BAD '+bad:''))}
+  halt('voice9');
+  halt('house9',()=>{say(LY,'Paul, Phila asked me last night to say the prophets again as you say them. I could not. We have no scroll in this house, and Philippi has no synagogue to keep one.')});
+  {const el=await tabs(),ps=C().psalm;ok(leaf(1).length===5&&leaf(1,T(ps.c2.gist)).length===1&&leaf(1,T(ps.a.gist)).length===1&&!leaf(1).some(x=>/[“”„"]/.test(x))&&leaf(0,T('Go out to the river: a psalm is learned with the mouth.')).length===1,
+     "the tablets hold the psalm as Paul's notes: four calls and the answer, each with its reference, and none in quotation marks");
+   halt('deutsch9');el.click();await idle()}
+  pray();await idle();ok(hint()[0]==='door9','the hint points to the river');
+  key('c');await idle();ok(PC()===LU,'C plays Luke');heard.length=0;await act('look','stair');ok(said('The stair to our room. I have slept worse in dearer places.'),'Luke looks at things in his own words');
+  pray();await idle();ok(hint()[0]==='l9a','and he has a hint of his own');key('c');await idle();ok(PC()===P,'C hands back to Paul');
+  /* the river, on three days: the psalm that could not be finished */
+  heard.length=0;await act(null,'door to the street');await until(()=>G.room==='river9'&&!G.busy);
+  ok(F.went&&told('v16')&&told('v17')&&[GI,MA,LY,PH,EL,SI,TI,LU].every(a=>a.room==='river9')&&said('Every word that she cries is true. And I did not ask for that witness.'),'the girl meets them on the way to the place of prayer: told with its verses');
+  ok(/\bus\b/.test(C().told.v16)&&/\bus\b/.test(C().told.v17)&&!/\b(we|us|our)\b/i.test(Object.keys(C().told).filter(k=>!/^v1[67]$/.test(k)).map(k=>C().told[k]).join(' ')),'the narration says "us" at Acts 16:16, 17, and "they" from there on');
+  halt('river9',()=>{say(SI,'The women are waiting on the stones, Paul. Let her cry. We came to teach them a psalm.')});
+  pray();await idle();ok(hint()[0]==='ps19','the hint: the first line');
+  heard.length=0;await actor(null,GI);ok(said('It is not the girl who chose those words. And it is not the girl whom I should answer.')&&!F.d1,'Paul does not answer the girl');
+  heard.length=0;await actor(null,MA);ok(said('A word with the girl, stranger? One denarius. She says that you come from the Most High, so to you it should be worth two.'),'her masters sell what she says');
+  heard.length=0;await on('road to the gate');ok(G.room==='river9'&&heard.length===1,'nobody leaves while the women wait');
+  key('c');await idle();heard.length=0;await stones();ok(PC()===LU&&said("The psalm is Paul's to give out. I shall sing the answer with the rest."),"the psalm is Paul's to give out");key('c');await idle();
+  heard.length=0;await stones();ok(nq()===4,'the first day: four lines to choose from ['+nq()+']');
+  await pickL('c3');ok(said('That comes later. A psalm of thanks begins with the thanks.')&&nq()===4,'a later line is not the first');
+  heard.length=0;await pickL('c1');ok(said(C().psalm.c1.full)&&said(C().psalm.a.full)&&nq()===4,'the first call is sung, and everyone answers');
+  await pickL('c1');ok(said('We have sung that one, sir.'),'a line already sung is not the next');
+  heard.length=0;await pickL('c2');ok(said('The girl cried out again, over the singing. One after another the women stopped.')&&said('I have lost it, sir. Where were we?')&&nq()===4,'the cry breaks the answer off, and the women lose their place');
+  halt('psalm9');
+  await pickL('c1');ok(said('That one we sang to its end, sir. It was the next that she broke.'),'it is not taken up at a line that was finished');
+  await pickL('c3');ok(said('They have not heard that line yet. I take it up where it broke.'),'nor at one they have not heard');
+  heard.length=0;await pickL('c2');ok(said('And again she cried out who these men were. The psalm was over for that day.')&&nq()===3,'taken up where it broke, and broken again');
+  await pickQ('Sing louder');await pickQ('Move down the bank');ok(nq()===1&&!F.d1,'singing louder and moving away are set aside');
+  heard.length=0;await choose(0);await until(()=>F.d1&&!G.busy);ok(F.d1&&!F.d2&&G.room==='river9'&&said('She followed us that day, and the next.'),'the first day ends with two lines learned');
+  pray();await idle();ok(hint()[0]==='ps29','the hint: the third line');
+  heard.length=0;await stones();await pickL('c4');ok(said('Not yet. One line comes before that one.'),'the last line is not the third');
+  await pickL('c3');await pickL('c3');await until(()=>F.d2&&!G.busy);
+  ok(F.d2&&said('People ask me in the street whether you and she are of one house, Paul. She tells fortunes for silver, and she tells everyone that you come from God.'),'the second day: a third line, and what the city makes of the crying');
+  {const c=makeCode();F.d2=0;await enter(c);ok(G.ch===9&&G.room==='river9'&&F.d1&&F.d2&&LU.room==='river9'&&GI.room==='river9'&&makeCode()===c,'a code from the river round-trips: '+c)}
+  heard.length=0;await stones();await pickL('c4');await until(()=>G.room==='cell9'&&!G.busy,12000);
+  ok(F.jail&&told('v18')&&said('It was quiet beside the river.')&&told('v19')&&said('Two men were dragged up the road to the city. Two were left standing beside the river.')&&told('v20')&&told('v22')&&told('v23'),'the spirit is ordered out, and the account takes its course: told, verse by verse');
+  ok(heard.filter(h=>h===T(C().psalm.c4.full)).length===1&&!heard.includes(T(C().psalm.a.full)),'the last line was begun and never answered');
+  /* the inner prison: empty hands, and a song by heart */
+  ok(G.inv.length===0&&P.wear==='b'&&!LU.room&&$('#swap').disabled&&said('The door shut, and took the light with it.'),'in the inner prison: no tools, no tablets, no cloak; and Luke is no longer with them');
+  key('c');await idle();ok(PC()===P,'C does nothing: the account says "they" now');
+  await wait(300);ok(G.tags&&document.querySelectorAll('#tags .tag').length>=8&&$('#tags').classList.contains('pin'),'the dark shows the names of what is heard ['+document.querySelectorAll('#tags .tag').length+']');
+  halt('cell9');
+  {const x0=P.x;view(60,134);await idle();view(280,60);await idle();ok(P.x===x0&&P.y===131,'Paul cannot take a step: his feet are in the stocks')}
+  heard.length=0;await act('use','darkness');ok(said('The stocks hold my feet. I am not going anywhere.'),'Use: the stocks hold');
+  heard.length=0;await act('open','door');ok(said('It is barred on the far side, and four paces away. It might as well be forty.'),'Open: the door is out of reach');
+  heard.length=0;await act('pickup','stocks');ok(said('It holds me. I do not hold it.'),'Pick up: nothing here is his');
+  heard.length=0;await actor('talk',PR[0]);ok(said('The muttering stopped for a breath. Then it went on.'),'a voice in the dark does not answer');
+  await wait(250);{const tag=[...document.querySelectorAll('#tags .tag')].find(t=>t.textContent===T('dripping water'));heard.length=0;if(tag)tag.click();await idle();ok(tag&&said('Water, dripping somewhere to my left. It has not missed a beat since they shut the door.'),'a name in the dark can be clicked')}
+  pray();await idle();ok(hint()[0]==='voice9','the hint: what is within reach');
+  heard.length=0;await actor(null,SI);ok(nq()===3&&said('Did they take what was on them?'),'Silas asks about the tablets');
+  await pickQ('Nothing at all');await pickQ('Patience');heard.length=0;await choose(0);ok(F.voice&&said('They did not, brother. It is all still there. And they have left us our voices.'),'what is left: what they know by heart, and two voices');
+  heard.length=0;await actor(null,SI);ok(nq()===4,'the psalm, from memory');await pickL('c2');ok(said('No. That comes later: it begins with thanks to Jehovah by his name.'),'the second line is not the first');
+  heard.length=0;await pickL('c1');await until(()=>F.s1&&!G.busy);ok(F.s1&&told('v25')&&said('The muttering had stopped.')&&!PR[0].room&&PR[1].room==='cell9','Paul begins, Silas answers, and one sound in the dark falls silent');
+  pray();await idle();ok(hint()[0]==='song91','the hint gives the next line');
+  heard.length=0;await actor(null,SI);await pickL('c1');ok(said('We have sung that one, brother.'),'not the same line twice');await pickL('c2');await until(()=>F.s2&&!G.busy);ok(!PR[1].room&&said('The chain was still.'),'the second line: the chain is still');
+  halt('song9');
+  await actor(null,SI);await pickL('c3');await until(()=>F.s3&&!G.busy);ok(!PR[2].room,'the third: nobody coughs');
+  {const c=makeCode();F.s3=0;await enter(c);ok(G.room==='cell9'&&F.s3&&F.jail&&G.inv.length===0&&!LU.room&&!PR[2].room&&P.wear==='b'&&makeCode()===c,'a code from the dark round-trips, with empty hands and without Luke: '+c)}
+  heard.length=0;await actor(null,SI);await pickL('c4');await until(()=>F.quake&&!G.busy,12000);
+  ok(F.quake&&told('v26')&&PR.every(a=>a.room==='cell9')&&!$('#tags').classList.contains('pin'),'after the last answer the earthquake is told, and the room is seen by the grey of the door');
+  await wait(250);ok(!G.tags,'the names are gone with the dark');
+  ok(await hides([150,132.4,8,2.4],[60,120],[154,128],[154,136]),'depth: the beams of the stocks lie in front of a man who stands behind them');
+  halt('open9');
+  /* after the earthquake: all of us, counted */
+  heard.length=0;await on('doorway');ok(G.room==='cell9'&&told('v27')&&said('The door is open, and the outer door beyond it. I am not going through. And before I call to that man that we are all here, I must know that we are.'),'the open door is not the way; the jailer is seen, as the verse tells');
+  heard.length=0;await act(null,'jailer');ok(said('All? I have not counted. There were three men in this dark besides the two of us, and I will not call out what I do not know.')&&!F.saved,'Paul will not call out what he does not know');
+  pray();await idle();ok(hint()[0]==='count9','the hint: count them');
+  for(let i=0;i<3;i++)await actor(null,PR[i]);
+  ok(F.c1&&F.c2&&F.c3&&said('Three who listened, and Silas, and I. Nobody has gone. Now I can say it.'),'each of the three answers from the dark');
+  heard.length=0;await act(null,'jailer');await until(()=>F.saved&&G.room==='gaol9'&&!G.busy,15000);
+  ok(['v28','v29','v30','v31','v32','v33','v34'].every(told)&&said('I shut the stocks on these feet with my own hands. Let the same hands do this.')&&!G.lit9,"Paul calls out; the night in the jailer's house is told as the account tells it");
+  halt('court9');
+  pray();await idle();ok(hint()[0]==='back9','the hint: where should the morning find them?');
+  heard.length=0;await act(null,'outer door');ok(G.room==='gaol9'&&!F.back&&said('And at daybreak this man would stand before the magistrates with an empty prison.'),'the outer door stands open, and they do not take it');
+  await actor(null,JA);await pickQ('What will you tell');await pickQ('Rest, brother');
+  heard.length=0;await act(null,'door of the inner prison');await until(()=>F.back&&!G.busy);
+  ok(F.back&&said('Before it was light, the two prisoners were in the prison again.')&&told('v35')&&told('v36')&&CO.room==='gaol9','they walk back in; in the morning the constables come');
+  halt('morning9');
+  /* the morning: what a Roman may ask */
+  pray();await idle();ok(hint()[0]==='ans9','the hint: not in secret');
+  heard.length=0;await actor(null,JA);ok(nq()===3,'three things Paul could answer');await pickQ('thank God for it');await pickQ('take this to Rome');heard.length=0;await choose(0);await until(()=>F.open&&!G.busy);
+  ok(told('v37')&&told('v38')&&MG.room==='gaol9'&&said('There has been a mistake. Nobody regrets it more than we do. It need go no further than this court.'),"Paul's answer is told; the magistrates come themselves");
+  halt('mags9');
+  pray();await idle();ok(hint()[0]==='ask9','the hint: what the brothers need');
+  heard.length=0;await actor(null,MG);ok(nq()===4,'four things he could ask of them');await pickQ('Silver');await pickQ('The rods');await pickQ('Their leave to stay');heard.length=0;await choose(0);
+  await until(()=>F.free&&G.room==='lydia9'&&!G.busy,15000);
+  ok(told('v39')&&told('v40a')&&srt()==='awl,knife,tablets,thread'&&P.wear===''&&LK.room==='lydia9'&&!LU.room&&$('#swap').disabled&&said('Then nothing in Philippi must be left waiting for me to come back.'),"led out by daylight; at Lydia's house Timothy gives back what was torn off them");
+  halt('home9');
+  /* Lydia's house: so that nobody has to ask for Paul */
+  {const el=await tabs();ok(leaf(0,T('Who begins the psalm by the river?')).length===1&&leaf(0,T('Where do the brothers meet, when we are gone?')).length===1,'the tablets list what must not wait for Paul');el.click();await idle()}
+  heard.length=0;await actor(null,LY);ok(nq()===4,'three cares, and a way out of the question');await pickQ('household by the prison');
+  ok(!F.k1&&said('I shall send them bread today, Paul, and gladly. But they need somebody who can sit with them every day and answer what they ask. I have a shop to keep.'),'Lydia is not the one for the household by the prison');
+  await actor(null,LK);await pickQ('household by the prison');ok(F.k1,'Luke is: he stays in Philippi');
+  heard.length=0;await act(null,'door to the street');ok(G.room==='lydia9'&&said('Not yet. I will not go out by that door while something in this city still waits for me to come back.'),'Paul does not leave yet');
+  await actor(null,PH);await pickQ('Where do the brothers');ok(!F.k2,"the room is not Phila's to offer");
+  await actor(null,LY);await pickQ('Where do the brothers');ok(F.k2,"it is Lydia's");
+  {const c=makeCode();F.k2=0;await enter(c);ok(G.room==='lydia9'&&F.free&&F.k1&&F.k2&&!F.k3&&srt()==='awl,knife,tablets,thread'&&P.wear===''&&!LU.room&&LK.room==='lydia9'&&makeCode()===c,'a code from the last scene round-trips: '+c)}
+  halt('cares9');
+  pray();await idle();ok(hint()[0]==='k39','the hint: who begins the psalm');
+  heard.length=0;await actor(null,PH);await pickQ('Who begins the psalm');
+  while(!(ov.classList.contains('end')&&ov.textContent.includes(T('Midnight in Philippi')))&&n9++<4000)await wait(50);
+  ok(ov.classList.contains('end')&&F.k3&&told('v40b')&&said('It was sung to its end, for the first time, by people who would go on singing it.')&&said(C().psalm.c4.full),'the psalm is sung to its end; chapter nine complete screen shown');
+  ok(ov.textContent.includes(T('Click to return to the title'))&&/Psalm 136/.test(ov.textContent),'the closing screen says what the account leaves unsaid');
+  {const r=ov.getBoundingClientRect(),bad=[...ov.children].filter(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});if(bad.length)tight.add('closing screen: '+bad[0].textContent.slice(0,40))}
+  ok(store('paul.save')===null,'a finished game keeps no save');
+  {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===7&&L.every(l=>l.k===1)&&M.state.pulse==='philippi','chapter nine ends on the map: the road that led there, and Philippi lit');
+    ok(mapClear(),'no name on the map crosses a coast, an island or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
+  halt('map9',()=>{ov.className=''});halt('final9')};
+  if(C9){await ch9();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(!C3&&!C4&&!C5&&!C6&&!HUB){
@@ -1565,11 +1703,11 @@
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('journey6',()=>{ov.className=''});halt('final6');await wait(1700)}
-  if(!HUB){await ch7();await wait(1700);await ch8()}
+  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9()}
   if(lang!=='en')ok(!MISSING.size,'every line shown in the game had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);
-  CHAP[9]={name:'HUB TEST',label:'',salt:0x7A55,src:'',ready:1,music:CHAP[3].music,rooms:['workshop','street','house','tarsus','court','antioch'],flags:['f0'],
+  const real9=CHAP[9];await loadLevel(9);CHAP[9]={name:'HUB TEST',label:'',salt:0x7A55,src:'',ready:1,music:CHAP[3].music,rooms:['workshop','street','house','tarsus','court','antioch'],flags:['f0'],
     ent:{workshop:[60,118,1],street:[46,114,1],house:[52,118,1],tarsus:[150,122,1],court:[146,128,-1],antioch:[46,116,1]},
     places:{jerusalem:{room:'workshop',x:60,y:118,dir:1},damascus:{room:'street',x:46,y:114,dir:1},tarsus:{room:'tarsus',x:150,y:122,dir:1},antioch:{room:'antioch',x:46,y:116,dir:1}},
     setup(){G.inv=['tablets']},inv:()=>['tablets'],hint:()=>['hub',['A test.']]};
@@ -1583,34 +1721,36 @@
   {const[jx,jy]=SHARED.map.where('jerusalem'),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+jx/320*r.width,clientY:r.top+jy/144*r.height,bubbles:true}))}
   await idle();ok(G.room==='workshop'&&!G.scene&&!G.busy&&SHARED.map.state.legs.length===1,'a click on a place travels there');
   cut(travel);for(let i=0;i<60&&G.scene!==SHARED.map.draw;i++)await wait(50);key('Escape');await idle();ok(G.room==='workshop'&&!G.scene&&!G.busy,'Esc stays where you are');
-  /* keys: good, win and pray start on the tonic of the chapter's key and stay in its mode, whichever of the eight it is, also with no score
+  /* the hub test took Chapter Nine's number for a chapter of its own: Chapter Nine gets it back */
+  CHAP[9]=real9;setChapter(1);enterRoom('workshop',60,118,1);
+  /* keys: good, win and pray start on the tonic of the chapter's key and stay in its mode, whichever of the nine it is, also with no score
      playing (on the map, at a chapter's end), and never more than a tritone from where they were tuned in D; Chapter One, the title
      screen's key, keeps them exactly as they were; a typed code is greeted in its own chapter's key.
      Checked at the end of the run, when every chapter has been loaded and played (loading them earlier would replace rooms of the same name). */
-  {for(let n=1;n<=8;n++)await loadLevel(n);
+  {for(let n=1;n<=9;n++)await loadLevel(n);
     const k0=AU.key,midi=f=>69+12*Math.log2(f/440),pc=(m,k)=>((Math.round(m)-k.root)%12+12)%12,inKey=(m,k)=>Math.abs(m-Math.round(m))<.01&&k.scale.includes(pc(m,k)),
       tones=fn=>{const t0=window.tone,fs=[];window.tone=o=>{fs.push(Math.round(midi(o.f)*100)/100)};try{fn()}finally{window.tone=t0}return fs},
       fan=()=>[SFX.good,SFX.win,SFX.pray].map(f=>tones(()=>f.call(SFX))),D=[[62,66,69,74],[62,66,69,74,78,81],[62,69,74]],out=[],far=[],ends=[];
-    try{for(let n=1;n<=8;n++){const k=CHAP[n].music;AU.key=k;fan().forEach((ms,j)=>{ms.forEach((m,i)=>{if(!inKey(m,k))out.push(n+':'+m);if(Math.abs(m-D[j][i])>6)far.push(n+':'+m)});
+    try{for(let n=1;n<=9;n++){const k=CHAP[n].music;AU.key=k;fan().forEach((ms,j)=>{ms.forEach((m,i)=>{if(!inKey(m,k))out.push(n+':'+m);if(Math.abs(m-D[j][i])>6)far.push(n+':'+m)});
         if(pc(ms[0],k)!==0||![0,7].includes(pc(ms[ms.length-1],k)))ends.push(n+':'+ms)})}
       AU.key=CHAP[1].music;const f1=fan();AU.key=CHAP[3].music;const g3=fan()[0];
       setScore(CHAP[5].music);setScore(null);const g5=fan()[0];
       openCode();$('#codein').value=codeOf(7,0);const a0=window.applyState,t0=window.tone,g7=[];window.applyState=()=>true;window.tone=o=>{g7.push(Math.round(midi(o.f)*100)/100)};
       try{await tryCode()}finally{window.applyState=a0;window.tone=t0;closeCode()}
-      ok(!out.length&&!ends.length,`good, win and pray begin on the tonic of each of the eight chapters' keys, end on its tonic or fifth, and stay in its mode (Chapter Three's good: ${g3})`+(out.length?' OUT '+out:'')+(ends.length?' ENDS '+ends:''));
+      ok(!out.length&&!ends.length,`good, win and pray begin on the tonic of each of the nine chapters' keys, end on its tonic or fifth, and stay in its mode (Chapter Three's good: ${g3})`+(out.length?' OUT '+out:'')+(ends.length?' ENDS '+ends:''));
       ok(!far.length&&f1.map(x=>x.join()).join('|')===D.map(x=>x.join()).join('|'),'none lies more than a tritone from where it was tuned, and Chapter One\'s are exactly as before'+(far.length?' FAR '+far:''));
       ok(!AU.score&&g5.every(m=>inKey(m,CHAP[5].music))&&g5.join()!==f1[0].join(),`with no score playing they keep the last chapter's key (Chapter Five: ${g5})`);
       ok(g7.length&&g7.every(m=>inKey(m,CHAP[7].music))&&pc(g7[0],CHAP[7].music)===0,`a typed code is greeted in its own chapter's key (Chapter Seven: ${g7})`);
       /* the map's sting and arrival chime, with no score playing, as on the map; and a chapter that opens on the map has its key first */
       const M=await need('map'),I0=Object.assign({},INST),D0=Object.assign({},DRUMS),tw=window.tone,mo=[],by={};let ps=[];
       try{for(const k of['drone','harp','ney'])INST[k]=f=>ps.push([k,midi(f)]);DRUMS.d=()=>{};window.tone=o=>{ps.push(['chime',midi(o.f)])};setScore(null);
-        for(let n=1;n<=8;n++){AU.key=CHAP[n].music;ps=[];M.sting();M.arrive();by[n]=ps;if(ps.length!==12)mo.push(n+': '+ps.length+' notes');
+        for(let n=1;n<=9;n++){AU.key=CHAP[n].music;ps=[];M.sting();M.arrive();by[n]=ps;if(ps.length!==12)mo.push(n+': '+ps.length+' notes');
           for(const[,m]of ps)if(!inKey(m,CHAP[n].music))mo.push(n+':'+m.toFixed(2))}}
       finally{Object.assign(INST,I0);Object.assign(DRUMS,D0);window.tone=tw}
       const s5=CHAP[5].start,oc=ov.onclick;let k5;CHAP[5].start=()=>{k5=AU.key};AU.key=CHAP[4].music;
       try{await startChapter(5)}finally{CHAP[5].start=s5;ov.onclick=oc}
       const part=(n,k)=>by[n].filter(x=>x[0]===k).map(x=>Math.round(x[1])),one=['drone','harp','ney','chime'].map(k=>part(1,k).join()).join('|'),h7=part(7,'harp');
-      ok(!mo.length&&k5===CHAP[5].music,`the map's sting and arrival chime sound in each of the eight chapters' keys, and Chapter Five, which opens on the map, has its own key before it starts`+(mo.length?' OUT '+mo:''));
+      ok(!mo.length&&k5===CHAP[5].music,`the map's sting and arrival chime sound in each of the nine chapters' keys, and Chapter Five, which opens on the map, has its own key before it starts`+(mo.length?' OUT '+mo:''));
       ok(one==='50|62,66,69,74|74,75,78,81,78|81,86'&&h7.some(m=>pc(m,CHAP[7].music)===7),`Chapter One's sting keeps its register (${one}), and in Chapter Seven's five notes its harp reaches the fifth (${h7})`)}
     finally{AU.key=k0}}
   /* high notes: bite is exactly 1 up to its knee and falls, never rising, above it; Chapter One's ney is quieter at the top of its hope tune
@@ -1621,19 +1761,19 @@
       lvl=f=>{const t0=window.tone,n0=window.noise,seen=[];window.tone=o=>seen.push(o.v);window.noise=o=>seen.push(o.v);try{INST.ney(f,0,.5,1)}finally{window.tone=t0;window.noise=n0}return seen};
     ok(flat&&down&&lvl(top).every((v,i)=>v<[.1,.08][i])&&calm.length&&calm.every(f=>lvl(f).join()==='0.1,0.08'),
       `high notes: the curve is 1 up to 550 Hz and only falls above it; Chapter One's top ney note (${top.toFixed(0)} Hz) is ${(-20*Math.log10(bite(top))).toFixed(1)} dB quieter, its ${calm.length} calm notes below the knee are as they were`)}
-  /* the held pipe: in each of the eight chapters' keys, an aulos track with hold:0 or hold:7 gets one held note per bar in which its melody
+  /* the held pipe: in each of the nine chapters' keys, an aulos track with hold:0 or hold:7 gets one held note per bar in which its melody
      plays, on the tonic or the fifth under it; a track without hold gets none; and Chapter Six's feast asks for the tonic, over its drone */
   {const a0=INST.aulos,sc0=AU.score,m0=AU.mood,hd=[],bad=[];let none=0;
     try{INST.aulos=()=>{};INST.aulos.hold=(f,t,d,v)=>hd.push(f);
-      for(let n=1;n<=8;n++)for(const h of[0,7,null]){const k=CHAP[n].music,tr={inst:'aulos',oct:12,seq:{A:[0,null,2,null,4,null,2,null,0,null,2,null,4,null,2,null],B:Array(16).fill(null)},prog:'AB'};
+      for(let n=1;n<=9;n++)for(const h of[0,7,null]){const k=CHAP[n].music,tr={inst:'aulos',oct:12,seq:{A:[0,null,2,null,4,null,2,null,0,null,2,null,4,null,2,null],B:Array(16).fill(null)},prog:'AB'};
         if(h!=null)tr.hold=h;hd.length=0;AU.score={dt:.16,root:k.root,scale:k.scale,tracks:[tr]};AU.mood='calm';for(let st=0;st<64;st++)playStep(st,1000+st*.16);
         if(h==null){none+=hd.length;continue}
         const pcs=hd.map(f=>((Math.round(69+12*Math.log2(f/440))-k.root)%12+12)%12);if(hd.length!==2||pcs.some(p=>p!==h))bad.push(n+'/'+h+':'+pcs)}}
     finally{INST.aulos=a0;AU.score=sc0;AU.mood=m0}
     const feast=CHAP[6].music.tracks.filter(tr=>tr.moods&&tr.moods.includes('feast'));
-    ok(!bad.length&&!none&&feast.some(tr=>tr.inst==='aulos'&&tr.hold===0)&&feast.some(tr=>tr.drone&&tr.drone.join()==='0'&&tr.every===16&&tr.vol===.6),'the held pipe: on the tonic or the fifth in all eight keys, once a bar while the melody plays and not in a silent bar; none without hold; Chapter Six\'s feast holds the tonic over its drone'+(bad.length?' WRONG '+bad:''))}
+    ok(!bad.length&&!none&&feast.some(tr=>tr.inst==='aulos'&&tr.hold===0)&&feast.some(tr=>tr.drone&&tr.drone.join()==='0'&&tr.every===16&&tr.vol===.6),'the held pipe: on the tonic or the fifth in all nine keys, once a bar while the melody plays and not in a silent bar; none without hold; Chapter Six\'s feast holds the tonic over its drone'+(bad.length?' WRONG '+bad:''))}
   {const real=Object.values(CHAP).filter(c=>c.src);/* the chapters that are level files: not the hub test's own */
-    ok(real.length>=8&&real.every(c=>c.ready)&&!taken.length,'ids: all '+real.length+' chapters are loaded, and none took a room, a backdrop or an item from another'+(taken.length?'. TAKEN: '+taken.join(' | '):''))}
+    ok(real.length>=9&&real.every(c=>c.ready)&&!taken.length,'ids: all '+real.length+' chapters are loaded, and none took a room, a backdrop or an item from another'+(taken.length?'. TAKEN: '+taken.join(' | '):''))}
   ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
   fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
   L('DONE');

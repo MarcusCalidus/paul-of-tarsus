@@ -45,7 +45,9 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
   - a label or text laid across a thin line, such as a lake, river or coast;
   - "+" or "x" markers, and cross-shaped cursors or highlights;
   - four small squares set two by two, where the gap between them is a plus sign;
-  - a rope or strap hanging straight down from the middle of a beam, which makes a T, and ties drawn across a roll or a bundle.
+  - a rope or strap hanging straight down from the middle of a beam, which makes a T, and ties drawn across a roll or a bundle;
+  - a tower that rises from the middle of a wall, or a post from the middle of a rail: set it at the end;
+  - a sword with its guard. Where the account names a drawn sword (Acts 16:27), the hand covers the guard and the blade is one slanting line.
 - Where the account itself names something used in false worship, it may be shown plainly when the scene is about refusing it: the bulls and garlands of Acts 14:13 are shown at the gate of Lystra. A temple, an altar, a statue or an image of a god is never shown.
 - Look at screenshots of every changed scene before committing.
 
@@ -63,9 +65,9 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 
 - `index.html` is the engine. Each chapter is one file, `levels/chapterN.js`, loaded only when that chapter is played. It holds the chapter's music, artwork, cast, items, rooms, dialog, cutscenes and prayer hints. A new chapter adds its file and one line to the `CHAP` manifest. Anything shared between chapters goes in its own file, also loaded on demand, not in a chapter file or the engine.
 - The game must keep running when `index.html` is opened straight from disk: no build step, no server and no dependencies.
+- The game is also an installable app that plays offline (`sw.js`, `shared/pwa.js`). It loads its service worker only over http(s), so it still runs from disk. Its icon and manifest are made in code like everything else: no icon or manifest file. A new file in `shared/` goes on the offline list in `shared/pwa.js`; `node tools/playtest.mjs pwa` checks it.
 - Safe-point codes are a promise to players. Every code that works today must keep working. The browser's autosave (`localStorage`, key `paul.save`) is that same code and nothing else, so the promise covers it: never keep other state there without a format the decoder can tell apart from the code. If a change needs more state, add a new code format that the decoder can tell apart from the old one. Never reorder a chapter's `flags`, `rooms` or `share`; only append to them, within the widths the code format reserves.
 
-- The game is also an installable app that plays offline (`sw.js`, `shared/pwa.js`). It loads its service worker only over http(s), so it still runs from disk. Its icon and manifest are made in code like everything else: no icon or manifest file. A new file in `shared/` goes on the offline list in `shared/pwa.js`; `node tools/playtest.mjs pwa` checks it.
 ## 6. Testing and documentation
 
 - `node tools/playtest.mjs` must pass (it needs Node 22 or newer and Google Chrome). Extend it for every new puzzle step or feature.
@@ -87,4 +89,5 @@ The game is written in English and plays in German too. The English text stays i
 - A translation says what the English line says, no more and no less. Paul never lies in any language, and the dialogue choices keep their order, so every walkthrough holds in every language.
 - In code, write player-visible text in English and let the engine translate it as it is shown (`say`, `choose`, names, the tablets, the map). A line put together from parts is a template, such as `T('It still needs {list}.', {list})`, so that each language can word it in its own order. Never let the story's logic compare translated text.
 - Names in the status line ("Use awl with torn awning") stand without an article. In a language with cases, choose names that read correctly after every verb, such as German compounds ("Vorratskorb (verstärkt)", not "verstärkter Korb").
+- A line that is sung is written as its notes, syllable by syllable, each with the vowel of its syllable. The vowels and the rhythm follow the words on the screen, so they are language data: each language gives its own under the same key, as it gives the line itself, and the playtest checks that it does.
 - Check every changed scene in each language: German is longer than English, and text must not overflow its box or cross a line on the map.

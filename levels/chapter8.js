@@ -969,8 +969,8 @@ async function finale(){await fade(1,800);G.scene=houseScene;AU.mood='rest';AU.a
   endScreen({title:'The Man from Macedonia',text:'Paul set out and was turned, set out again and was turned again, and kept walking until a door opened. He told three brothers exactly what he had seen, and no more. And when a new sister asked to give, he let her.',
     extra:[F.awn&&'An awning mended in the street of the purple sellers'].filter(Boolean),
     based:"Based on Acts 16:6-15; Philippians 1:3-5 and Colossians 4:14. Supporting characters and dialogue are imaginative; the events are from the Scriptures. Acts does not say how the spirit forbade them, what road they took, how Luke came to be with them, which river it was, why Philippi had no synagogue, what was said beside the river, or who belonged to Lydia's household.",
-    go:'Click to return to the title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+    go:'Click to continue to Chapter Nine',code:['Chapter Nine code: {code}',codeOf(9,0)]});
+  await wait(1500);ov.onclick=()=>startChapter(9);await new Promise(()=>{})}
 async function toCity(){const me=PC();
   if(F.sat)return say(me,me===P?'Not now. We have sat down among them, and I have not yet said what I crossed the sea to say.':'Paul has not spoken yet. I would not miss it.');
   if(F.sab)return say(me,me===P?'They are here, and they are praying. I am not going back through that gate without a word to them.':'With those women on the bank? Paul will not go, and neither will I.');
