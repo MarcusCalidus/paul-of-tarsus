@@ -127,6 +127,62 @@
         list.forEach(([n,o],i)=>{const cw=Math.floor(W/7),chh=Math.floor(Hh/3),x=(i%7)*cw,y=Math.floor(i/7)*chh;g.fillStyle=(i+Math.floor(i/7))%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw-2,chh-2);
           const sp=sprite('ages-test'+i,q=>person(q,0,0,o,1,0,0,0,0,0),1);g.drawImage(sp,FIG.OX-30,FIG.OY-104,60,106,x+Math.floor((cw-120)/2),y+chh-214,120,212);
           g.fillStyle='#101418';g.font='bold 11px monospace';g.fillText(n,x+5,y+14)})})}}
+  /* A trial of proportions (branch paul-proportions): Paul in each build of BUILDS, beside the figure as it is. The stop `proportions` hands
+     its sheets to the playtest (window.SHEETS), which saves them beside the screenshot: the line-up of a young Paul and of the Paul of the
+     second journey, their heads enlarged, the poses, and the line-up at the scale of the game in the street of Corinth. Nothing on a sheet
+     crosses a figure: the mark of today's height is a notch at the edge of each field. */
+  if(stop==='proportions'){await loadLevel(12);
+    const VAR=[['A','','as it is now','head 11 wide'],['B','m','head 13 wide','body kept, 2 taller'],['C','mc','head 13 wide','height kept'],['D','l','head 15 wide','body kept, 4 taller'],
+        ['E','lc','head 15 wide','height kept'],['F','ls','head 15 wide','kept by short legs'],['G','lw','head 15, as F','and broader'],['H','xl','head 17 wide','height kept']],
+      bad=[];for(const k in BUILDS){const H=BUILDS[k].H;for(const m in H)if(H[m].some(r=>r.length!==H[m][0].length||(m!=='faceF'&&r.length!==H.face[0].length)))bad.push(k+'.'+m)}
+    ok(!bad.length&&VAR.every(v=>!v[1]||BUILDS[v[1]]),'every head map of a build has rows of one width'+(bad.length?'. RAGGED: '+bad:''));
+    const lk=(ch,b)=>Object.assign({},paulLook(ch),b?{build:b}:null),
+      spr=(ch,b,dir,fr,talk,bow,ges)=>sprite(['prop',ch,b,dir,fr||0,talk||0,bow||0,ges||0].join('|'),q=>person(q,0,0,lk(ch,b),dir,fr||0,talk||0,bow||0,ges||0,0),dir),
+      /* tall: the height of a build from the ground to the top of its head map */
+      tall=b=>{const d=b?BUILDS[b]:{};return 4+25+(d.leg||0)+16+(d.sk||0)+3+28+(d.tor||0)+(d.top||16)},
+      sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,w,h);return[c,g]},
+      text=(g,s,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||17}px Menlo,Consolas,monospace`;g.fillText(s,x,y)},
+      /* cut: a part of a sprite, given in drawing units from its feet (x0 left of them is negative, y0 above them is negative), enlarged z times */
+      cut=(g,sp,x0,y0,w,h,dx,dy,z)=>g.drawImage(sp,FIG.OX+x0,FIG.OY+y0,w,h,dx,dy,w*z,h*z),
+      field=(g,i,x,y,w,h)=>{g.fillStyle=i%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,w-2,h-2)},SHEETS={};
+    /* the line-up: every build standing, four times enlarged; the notch on the left marks the height of today's figure */
+    const lineup=(ch,title)=>{const Z=4,cw=200,chh=516,cols=4,[c,g]=sheet(cols*cw,40+2*chh);text(g,title,10,27,19,'#f4f0e6');
+      VAR.forEach(([n,b,l1,l2],i)=>{const x=(i%cols)*cw,y=40+Math.floor(i/cols)*chh,gy=y+chh-66;field(g,i+Math.floor(i/cols),x,y,cw,chh);
+        g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,gy,34*Z,3);
+        cut(g,spr(ch,b,1),-22,-108,44,109,x+cw/2-22*Z,gy-108*Z,Z);
+        g.fillStyle='#7a2a22';g.fillRect(x+1,gy-92*Z,9,2);
+        text(g,n,x+10,y+28,26);text(g,l1,x+10,gy+26,15);text(g,l2,x+10,gy+46,15);text(g,'height '+tall(b)+', '+(tall(b)/((b?BUILDS[b].top:16)-1)).toFixed(1)+' heads tall',x+10,gy+62,12,'#4a4038')});
+      return c.toDataURL()};
+    SHEETS['proportions-1-young']=lineup(1,'Paul, Chapters 1-2: the builds side by side');
+    SHEETS['proportions-2-older']=lineup(12,'Paul, Chapters 7-12: the builds side by side');
+    /* the heads, eight times enlarged: look here for a head that has come apart, and for crosses */
+    {const Z=8,cw=208,chh=300,cols=4,[c,g]=sheet(cols*cw,40+4*chh);text(g,'The heads, eight times enlarged (above: Chapters 1-2, below: 7-12)',10,27,17,'#f4f0e6');
+      [1,12].forEach((ch,r)=>VAR.forEach(([n,b],i)=>{const x=(i%cols)*cw,y=40+(r*2+Math.floor(i/cols))*chh;field(g,i+Math.floor(i/cols)+r,x,y,cw,chh);
+        cut(g,spr(ch,b,1),-13,-tall(b)-2,26,34,x,y+26,Z);text(g,n,x+8,y+24,22)}));
+      SHEETS['proportions-3-heads']=c.toDataURL()}
+    /* the poses, three times enlarged: standing, both steps, speaking with the hand raised, head bowed, and facing left */
+    {const Z=3,cw=138,chh=342,P=[[1,0],[1,1],[1,3],[1,0,1,0,1],[1,0,0,1],[-1,0]],[c,g]=sheet(40+P.length*cw,40+VAR.length*chh);
+      text(g,'The poses: standing, two steps, speaking, praying, facing left',10,27,17,'#f4f0e6');
+      VAR.forEach(([n,b],i)=>{const y=40+i*chh;P.forEach((p,j)=>{const x=40+j*cw;field(g,i+j,x,y,cw,chh);cut(g,spr(1,b,...p),-23,-110,46,112,x,y+chh-112*Z-4,Z)});
+        g.fillStyle=i%2?'#c9c2b2':'#b9c2cc';g.fillRect(1,y+1,38,chh-2);text(g,n,9,y+34,26)});
+      SHEETS['proportions-4-poses']=c.toDataURL()}
+    /* in the street of Corinth, at the scale of the game: one room pixel is four pixels of the sheet */
+    {const ALL=CHAP[12].flags;setChapter(12);for(const k of ALL.slice(0,ALL.indexOf('met')+1))F[k]=1;
+      const id='street12',cam=62,scene=(ch,title)=>{const[w,wg]=mk(VW*HR,VH*HR);wg.setTransform(HR,0,0,HR,0,0);wg.imageSmoothingEnabled=false;backdrop(wg,id,cam);wg.translate(-cam,0);
+          VAR.forEach(([n,b],i)=>{const x=cam+30+i*37,y=124;figure(wg,x,y,lightAt(id,x,y),['prop',ch,b,1,0,0,0,0].join('|'),q=>person(q,0,0,lk(ch,b),1,0,0,0,0,0))});
+          const[c,g]=sheet(VW*4,VH*4+70);g.drawImage(w,0,0,VW*HR,VH*HR,0,34,VW*4,VH*4);text(g,title,10,23,17,'#f4f0e6');
+          VAR.forEach(([n],i)=>text(g,n,(30+i*37)*4-8,VH*4+34+27,24,'#f4f0e6'));return c.toDataURL()};
+      SHEETS['proportions-5-street']=scene(12,'In the street of Corinth, as the game shows it (Paul of Chapters 7-12)');
+      SHEETS['proportions-6-street-young']=scene(1,'The same street with the young Paul of Chapters 1-2');
+      /* the same close by, for a telephone held upright: four stand before the plaster on either side of the door, and the other four below
+         them at the same places. One room pixel is six pixels of the sheet. */
+      {const Z=6,cw=136,top=58,hh=80,cam2=198,at=[221,241,287,308],[c,g]=sheet(cw*Z,34+2*(hh*Z+44));text(g,'Close by, the same wall and door behind each (Chapters 7-12)',10,23,17,'#f4f0e6');
+        [0,1].forEach(r=>{const[w,wg]=mk(cw*HR,VH*HR);wg.setTransform(HR,0,0,HR,0,0);wg.imageSmoothingEnabled=false;backdrop(wg,id,cam2);wg.translate(-cam2,0);
+          VAR.slice(r*4,r*4+4).forEach(([n,b],i)=>{const x=at[i],y=124;figure(wg,x,y,lightAt(id,x,y),['prop',12,b,1,0,0,0,0].join('|'),q=>person(q,0,0,lk(12,b),1,0,0,0,0,0))});
+          const y0=34+r*(hh*Z+44);g.drawImage(w,0,top*HR,cw*HR,hh*HR,0,y0,cw*Z,hh*Z);
+          VAR.slice(r*4,r*4+4).forEach(([n],i)=>text(g,n,(at[i]-cam2)*Z-8,y0+hh*Z+31,26,'#f4f0e6'))});
+        SHEETS['proportions-7-street-close']=c.toDataURL()}}
+    window.SHEETS=SHEETS;halt('proportions')}
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
   ok(document.documentElement.classList.contains('pf')&&SHARED.font&&document.fonts.check('12px "Paul Pixel"')&&document.fonts.check('italic 12px "Paul Pixel"')&&document.fonts.check('9px "Paul Pixel Small"'),'pixel font loaded and active');
   {const G=SHARED.font&&SHARED.font.glyphs,foot=(f,c)=>G[f][c].yTop-G[f][c].rows.length;

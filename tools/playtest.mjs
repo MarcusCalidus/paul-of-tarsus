@@ -54,6 +54,8 @@ try{
     await sleep(1600);await ev("document.querySelector('#tlog').style.display='none'");await sleep(100);
     const shot=await send('Page.captureScreenshot',{format:'png'});
     fs.writeFileSync(path.join(out,`${lang==='en'?'':lang+'-'}${stop}.png`),Buffer.from(shot.result.data,'base64'));
+    /* a stop may hand over pictures of its own, at their own size (window.SHEETS: name -> PNG data URL): they are saved beside the screenshot */
+    for(const[k,v]of Object.entries(JSON.parse(await ev("JSON.stringify(window.SHEETS||{})")||'{}')))fs.writeFileSync(path.join(out,k+'.png'),Buffer.from(v.split(',')[1],'base64'));
     console.log(`=== ${name}\n${log}`);
     if(/FAIL|ERR|JSERR|REJ/.test(log)||!/STOP|DONE/.test(log))failed=true;
   }

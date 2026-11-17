@@ -723,6 +723,37 @@ const HEADS={
  veil:["....aaaaa....","..aaAAAAAaa..",".aaAAaaaaaaa.",".aAaakkkkkaaq","aaaakkK.kkkaq","aaakk....kkaq","aaak......kaq","aaq........kq","aaq.........q","aaq.........q","aaq........q.","aaaq.......q.","aaaq......qq.",".aaaq....qaq.",".aaaaq..qaaq."],
  wrap:["...aaAAAaa...",".aaAAAAAaaaa.","aaAAaaaAAaaaq","aAaaaAAaaaaqq","aaaAAaaaaaqqq","aaaaaaaaqqqq.",".qaaaaaqqqq..","aaq..........","aaq..........","aq...........","aq...........",".q..........."],
  helm:["......y......","....aAAAa....","..aaAAyAAaa..",".aaAAyAAaaaq.",".aAAyAaaaaaq.",".aAAAaaaaaqq.","qaaaaaaaaaqqq",".aa.........q",".aa..........",".aq..........",".aq..........",".aq..........","..q.........."]};
+/* BUILDS: a trial of other proportions (branch paul-proportions). A look that names a build is drawn with a larger head, as the sprites of
+   the early-1990s adventures had them, and its body gives up what the build says (leg, sk, tor, arm: rows added to the legs, the skirt,
+   the trunk and the arms). H: the head maps, drawn by hand at their own size like HEADS; hx: the x of their column 0; top: rows from the
+   top of the map down to the shoulder line; neck: [x, width]; by: the row the beard map starts on; eyes: [x, row, width] of each eye,
+   for a blink; mouth: [x, row, width]. Only Paul's maps are drawn so far: face, hair, thin, beard. */
+const HEADS_M={
+ face:[".............",".....zssss...","...zzsSSSSs..","..zssSSSSSSs.","..zsSSSSLLSs.","..zsSSSLLSSs.","..zsbbbSbbbs.","..zszzsSszzs.",".zzswpsSswps.",".zzsssSLssss.","..zssSSLLsss.","..zzssnnnzss.","..zzsssssss..","...zsmmmmss..","...zzsssss...","....zzsss...."],
+ hair:["....hhhhhh...","..hhHHHHhhhh.",".hhHHhhHhhhhd",".hhhhdhhhdhdd","hhhhh.....hdd","hhh.........d","hhd..........","hhd..........","hd...........","hd..........."],
+ thin:[".............","...hhhh......",".hhHhhLL.....",".hhhh........","hhh..........","hhh..........","hhd..........","hhd..........","hd...........","hd..........."],
+ beard:["..B..........","..BB.........","..vBBvBBBB...","..vBB....B...","...vBVBBBB...","....vBVBB....",".....vvv....."]};
+const HEADS_L={
+ face:["...............","......zsssss...","....zzsSSSSSs..","...zssSSSSSSSs.","...zsSSSSSSSSs.","..zzsSSSSLLLSs.","..zssSSSLLLSSs.","..zsbbbsSSbbbs.","..zszzssSSzzss.",".zzswpssSSwpss.",".zZzsssSSLssss.",".zzsssSSLLLsss.","..zzssssnnnzss.","..zzsssssssss..","...zsssmmmmss..","...zzsssssss...","....zzsssss....",".....zzsss....."],
+ hair:[".....hhhhhhh...","...hhHHHHhhhhh.","..hhHHHhhHhhhhd",".hhHHhhhhhhhhdd",".hhhhhdhhhdhhdd","hhhhdh.....hhdd","hhhh..........d","hhhd...........","hhhd...........","hhd............","hhd............","hd............."],
+ thin:["...............","....hhhhh......","..hhHHhhhLLL...",".hhHhhh........",".hhhh..........","hhhh...........","hhhh...........","hhhd...........","hhhd...........","hhd............","hhd............","hd............."],
+ beard:["..BB...........","..BBB..........","..vBBBBvBBBBB..","...vBVB....BB..","...vBBVBBBBVB..","....vBBVBBBB...","....vvBBVBBv...","......vvBv....."]};
+const HEADS_XL={
+ face:[".................",".......zssssss...",".....zzsSSSSSSs..","....zssSSSSSSSSs.","...zssSSSSSSSSSs.","...zsSSSSSSSSSSs.","..zzsSSSSSLLLLSs.","..zssSSSSLLLLSSs.","..zsbbbbsSSbbbbs.","..zszzzssSSzzzss.",".zzswwpssSSwwpss.",".zZzssssSSLsssss.",".zzzsssSSLLLssss.","..zzsssSSLLLLsss.","..zzsssssnnnnzss.","..zzsssssssssss..","...zzssssmmmmss..","...zzssssssssss..","....zzssssssss...",".....zzssssss....","......zzssss....."],
+ hair:["......hhhhhhhh...","....hhHHHHHhhhhh.","..hhhHHHHhhHhhhhd",".hhhHHhhhhhhhhhdd",".hhhhhdhhhhdhhhdd","hhhhhhhhdhhhhdhdd","hhhhdh.......hhdd","hhhhh..........hd","hhhhd...........d","hhhhd............","hhhd.............","hhhd.............","hhd..............","hhd..............","hd..............."],
+ thin:[".................",".....hhhhh.......","..hhhHHhhhhLLL...",".hhhHhhh.........",".hhhhh...........","hhhhh............","hhhhh............","hhhhd............","hhhhd............","hhhd.............","hhhd.............","hhhd.............","hhd..............","hhd..............","hd..............."],
+ beard:["...B.............","...BB............","..BBBB...........","..vBBBBBvBBBBBB..","...vBVBBB....BB..","...vBBBVBBBBBVB..","....vBBBVBBBBB...","....vvBBBVBBBv...",".....vvBBBVBv....",".......vvBv......"]};
+const BUILD_M={H:HEADS_M,hx:-5,top:18,neck:[-1,6],by:10,eyes:[[4,8,2],[9,8,2]],mouth:[5,13,4]},
+  BUILD_L={H:HEADS_L,hx:-6,top:20,neck:[-1,7],by:11,eyes:[[4,9,2],[10,9,2]],mouth:[7,14,4]},
+  BUILD_XL={H:HEADS_XL,hx:-7,top:23,neck:[-1,8],by:12,eyes:[[4,10,3],[11,10,3]],mouth:[9,16,4]};
+const BUILDS={
+  m:BUILD_M,                                                   /* head 13 wide: the body as it is, the figure 2 rows taller */
+  mc:Object.assign({},BUILD_M,{leg:-1,tor:-1,arm:-1}),         /* the same head, the height kept */
+  l:BUILD_L,                                                   /* head 15 wide: the body as it is, 4 rows taller */
+  lc:Object.assign({},BUILD_L,{leg:-2,tor:-2,arm:-2}),         /* the height kept: legs and trunk give up two rows each */
+  ls:Object.assign({},BUILD_L,{leg:-3,sk:-1,arm:-1}),          /* the height kept by the legs alone: a stockier man */
+  lw:Object.assign({},BUILD_L,{leg:-3,sk:-1,arm:-1,wide:1}),   /* the stockier man with shoulders, trunk and skirt a pixel broader on each side (wide) */
+  xl:Object.assign({},BUILD_XL,{leg:-3,sk:-1,tor:-3,arm:-3})}; /* head 17 wide, the height kept */
 /* person: one figure with its feet at x,y, one drawing unit per canvas pixel, facing right (dir -1 mirrors it).
    fr 0-3 walk cycle; talk opens the mouth; bow lowers the head; ges raises the far hand; blink closes the eyes. */
 function person(g,x,y,o,dir,fr,talk,bow,ges,blink){
@@ -736,7 +767,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink){
       if(folds)for(let f=0;f<folds.length;f++){const[u,s0,dr,s1]=folds[f];if(i<s0||(s1&&i>s1))continue;const fx=Math.round(w*u+(dr||0)*i+Math.sin(i*.31+f*2.1)*.7),deep=i-s0>7;
         if(k===fx||(deep&&k===fx-1))v=Math.min(4,v+1+(deep&&k===fx?1:0));else if(k===fx+1)v=Math.max(0,v-1)}
       px(x0+k,yy,(R2&&(x0+k+40)%5<2?R2:R)[v])}};
-  const kid=o.h?1:0,slim=o.slim?1:0,LEG=kid?21:25,SK=kid?13:16,TOR=kid?24:fem?26:28,bob=fr%2?-1:0,st=fr===1?1:fr===3?-1:0;
+  const bd=o.build?BUILDS[o.build]:null,wd=bd&&bd.wide||0,kid=o.h?1:0,slim=(o.slim?1:0)-wd,LEG=(kid?21:25)+(bd&&bd.leg||0),SK=(kid?13:16)+(bd&&bd.sk||0),TOR=(kid?24:fem?26:28)+(bd&&bd.tor||0),AL=28+(bd&&bd.arm||0),bob=fr%2?-1:0,st=fr===1?1:fr===3?-1:0;
   const yA=-4,yH=yA-LEG+bob,yB=yH-SK,yS=yB-3-TOR,SL=o.longSleeve?26:12;   /* ankle, hem, top of the skirt, shoulder line */
   /* the sleeves are one garment with the body: PIT rows of shoulder yoke, then the arms part from the trunk */
   const PIT=8,nw=slim+(fem?1:0),aw=fem?4:5,ax=-10+nw-aw,fx=11-nw,fw=5,waist=Math.round(TOR*.6);
@@ -744,11 +775,11 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink){
   if(o.cape)for(let yy=yS;yy<=yH+13;yy++){const i=yy-yS,e=yy>yH+10?1:0;cloth(yy,-18+e,-10,C,i,[[.45,6,0]]);cloth(yy,10,17-e,C,i,[[.5,8,0]])}
   /* an arm, from the armpit down. near: the arm on the shadow side; sw: how far the hand swings; stub: the upper arm only */
   const arm=(near,sw,stub)=>{const x00=near?ax:fx,w=near?aw:fw,tr=c.tr||T,lean=near?1:-1;
-    for(let i=PIT;i<(stub?14:28);i++){const t=(i-PIT)/(27-PIT),dx=Math.round(sw*t*t)+(i>waist?lean:0),sl=i<=SL,ww=sl?w:i>21?w-2:w-1,x0=near?x00+dx+w-ww:x00+dx,R=sl?(o.longSleeve&&i>SL-3?tr:T):S;
+    for(let i=PIT;i<(stub?14:AL);i++){const t=(i-PIT)/(AL-1-PIT),dx=Math.round(sw*t*t)+(i>waist?lean:0),sl=i<=SL,ww=sl?w:i>AL-7?w-2:w-1,x0=near?x00+dx+w-ww:x00+dx,R=sl?(o.longSleeve&&i>SL-3?tr:T):S;
       for(let k=0;k<ww;k++){const u=(k+.5)/ww;let v;
         if(near)v=sl?(i===SL?4:u<.5?4:3):i===SL+1?4:u<.34?3:u<.8?2:3;else v=sl?(i===SL?3:k===0?(i>PIT+1?3:2):u<.78?1:2):i===SL+1?3:k===0?3:u<.78?1:2;px(x0+k,yS+i,R[v])}}
     if(stub)return;const hx=(near?x00+w-5:x00)+Math.round(sw)+lean;[4,5,5,5,4].forEach((n,j)=>{const x0=hx+(j===0||j===4?near?1:0:0);
-      for(let k=0;k<n;k++)px(x0+k,yS+28+j,S[Math.min(4,(j===4?3:k===0?3:k===n-1?1:j===3&&k===2?3:2)+(near?1:0))])})};
+      for(let k=0;k<n;k++)px(x0+k,yS+AL+j,S[Math.min(4,(j===4?3:k===0?3:k===n-1?1:j===3&&k===2?3:2)+(near?1:0))])})};
   arm(false,st*2,o.spear||o.stub||(ges&&!bow));
   /* legs and sandals, or the feet under a long robe */
   const foot=(fx0,fy,R)=>{px(fx0+1,fy,R[2],5);px(fx0,fy+1,R[2],8);px(fx0,fy+2,R[2],10);px(fx0+8,fy+2,R[1],2);px(fx0,fy+1,R[3]);px(fx0,fy+2,R[3],2);px(fx0-1,fy+3,'#2a1810',13);px(fx0+9,fy+3,'#4a3020',3);
@@ -782,8 +813,8 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink){
   /* mantle: hanging from the near shoulder, and across the chest to the far hip */
   if(C&&!o.cape){const m1=o.long?yA-6:yH+6,mn=m1-yS+2,ED=o.edge?ramp(o.edge):null;   /* edge: a band of color along the mantle where it crosses the chest */
     for(let yy=yS-1;yy<=m1;yy++){const i=yy-yS+1,t=i/(mn-1),bulge=t>.25&&t<.6?1:0,zig=yy>m1-3?(m1-yy<1?3:m1-yy<2?1:0):0;
-      cloth(yy,-16+(i<3?3-i:0)-bulge+zig,-9+(t>.45?1:0)-(zig>1?1:0),C,i,[[.3,4,.012],[.6,9,-.01],[.82,14,.01]],null,[6,14])}
-    for(let xx=-10+slim;xx<=11-slim;xx++){const k=(xx+10)/21,ya=Math.round(yS-1+k*(TOR-8)),yb=ya+10-Math.round(k*3);
+      cloth(yy,-16-wd+(i<3?3-i:0)-bulge+zig,-9-wd+(t>.45?1:0)-(zig>1?1:0),C,i,[[.3,4,.012],[.6,9,-.01],[.82,14,.01]],null,[6,14])}
+    for(let xx=-10+slim;xx<=11-slim;xx++){const k=clamp((xx+10)/21,0,1),ya=Math.round(yS-1+k*(TOR-8)),yb=ya+10-Math.round(k*3);
       for(let yy=ya;yy<=yb;yy++){const j=yy-ya;px(xx,yy,(ED&&j>0&&j<3?ED:C)[j===0?(k>.3?0:1):j===yb-ya?4:j===3||j===7?3:j===4?1:k>.72?1:2])}
       if(HIM){for(let yy=yb+1;yy<=yB;yy++){const j=yy-yb,q=(xx+j*.5+40)%7;px(xx,yy,C[j===1?3:xx<-7+slim?4:xx<-4?3:q<1?3:q<2?1:xx>8-slim?1:2])}}
       else{px(xx,yb+1,T[4]);if(xx%3)px(xx,yb+2,T[3])}}}
@@ -791,17 +822,17 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink){
   /* near arm (hidden when a mantle hangs over it) */
   if(!C||o.cape)arm(true,-st*2);
   /* head */
-  const hx=-4+(bow?1:0),hy=yS-16+(bow?2:0),H=c.ha,Bd=c.be,Hd=c.hd,Gr=c.gr,brow=fem?mix(o.brow||'#3a2414',o.skin,.3):o.brow||o.hair||o.beard||'#2a1a12';
-  px(0,yS-3,S[3],5,3);px(1,yS-3,S[2],3,2);
+  const HM=bd?bd.H:HEADS,hx=(bd?bd.hx:-4)+(bow?1:0),hy=yS-(bd?bd.top:16)+(bow?2:0),EY=bd?bd.eyes:[[3,7,2],[7,7,2]],[mx,my,mw]=bd?bd.mouth:[5,11,3],H=c.ha,Bd=c.be,Hd=c.hd,Gr=c.gr,brow=fem?mix(o.brow||'#3a2414',o.skin,.3):o.brow||o.hair||o.beard||'#2a1a12';
+  if(bd){px(bd.neck[0],yS-3,S[3],bd.neck[1],3);px(bd.neck[0]+1,yS-3,S[2],bd.neck[1]-2,2)}else{px(0,yS-3,S[3],5,3);px(1,yS-3,S[2],3,2)}
   const L={s:S[2],S:S[1],L:S[0],z:S[3],Z:S[4],n:S[3],w:fem?'#f6eedc':S[0],p:'#1a1018',b:brow,m:'#6a2a22',r:'#b04a44',c:mix(o.skin,'#d86a58',.4),h:H[2],H:Gr?Gr[2]:H[1],d:H[3],k:'#2a1a12',K:'#4a3020'};
   if(Bd){L.B=Bd[2];L.V=Gr?Gr[2]:Bd[1];L.v=Bd[3]}L.a=Hd[2];L.A=Hd[1];L.y=Hd[0];L.q=Hd[3];
   if(o.stone)Object.assign(L,{w:S[1],p:S[3],b:S[3],m:S[4],r:S[3],c:S[2],k:H[3],K:H[2]});
-  stamp(g,fem?HEADS.faceF:HEADS.face,hx,hy,L);
-  if(blink||bow){px(hx+3,hy+7,S[3],2);px(hx+7,hy+7,S[3],2)}
-  if(talk){px(hx+5,hy+11,'#3a0e0c',3);px(hx+5,hy+12,fem?'#b04a44':'#7a2a22',2)}
-  if(o.hair&&!o.veil&&!o.wrap&&!o.helm){if(o.fem){L.f=o.band||'#c9a14a';stamp(g,HEADS.hairF,hx-2,hy,L)}
-    else stamp(g,o.bald?HEADS.bald:o.crop&&o.thin?HEADS.cropThin:o.crop?HEADS.crop:o.thin?HEADS.thin:o.receding?HEADS.receding:HEADS.hair,hx,hy,L)}
-  if(Bd){stamp(g,o.longBeard?HEADS.longBeard:o.fullBeard?HEADS.fullBeard:o.shortBeard?HEADS.shortBeard:HEADS.beard,hx,hy+8,L);px(hx+5,hy+11,o.stone?Bd[4]:talk?'#3a0e0c':'#5a221c',3);if(talk)px(hx+5,hy+12,'#3a0e0c',3)}
+  stamp(g,fem?HM.faceF:HM.face,hx,hy,L);
+  if(blink||bow)for(const[a,b,w]of EY)px(hx+a,hy+b,S[3],w);
+  if(talk){px(hx+mx,hy+my,'#3a0e0c',mw);px(hx+mx,hy+my+1,fem?'#b04a44':'#7a2a22',mw-1)}
+  if(o.hair&&!o.veil&&!o.wrap&&!o.helm){if(o.fem){L.f=o.band||'#c9a14a';stamp(g,HM.hairF,hx-2,hy,L)}
+    else stamp(g,o.bald?HM.bald:o.crop&&o.thin?HM.cropThin:o.crop?HM.crop:o.thin?HM.thin:o.receding?HM.receding:HM.hair,hx,hy,L)}
+  if(Bd){stamp(g,o.longBeard?HM.longBeard:o.fullBeard?HM.fullBeard:o.shortBeard?HM.shortBeard:HM.beard,hx,hy+(bd?bd.by:8),L);px(hx+mx,hy+my,o.stone?Bd[4]:talk?'#3a0e0c':'#5a221c',mw);if(talk)px(hx+mx,hy+my+1,'#3a0e0c',mw)}
   if(o.veil){stamp(g,HEADS.veil,hx-1,hy-1,L);
     /* the shawl runs on from the head over both shoulders, and hangs down the near arm */
     [[-5,-2],[-7,-2],[-9,-3],[-11,-4],[ax-1,-5],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax,-6],[ax,-7],[ax+1,-7],[ax+2,-8]].forEach(([a,b],i)=>cloth(yS-4+i,a,b,Hd,i,[[.45,5,.02]],null,[4,8]));
