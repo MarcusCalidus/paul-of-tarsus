@@ -320,7 +320,7 @@ ART.gaol9={w:320,q:12,variant:()=>F.back?'d':'',
  light(){return F.back?null:{amb:'#6c6e96',lamps:[[258,90,84,'#7a5220']]}},
  draw(g,t){if(!F.back)flame(g,258.2,74.6,t);
   /* what the constables carry, drawn with them */
-  for(const a of[CO,C2])if(a.room==='gaol9')depth(a.y+.2,()=>rods(g,a.x-a.dir*3.4,a.y-29,-a.dir))},
+  for(const a of[CO,C2])if(a.room==='gaol9')depth(a.y+.2,()=>rods(g,a.x-a.dir*3.4,a.y-28,-a.dir))},
  front(){}};
 
 /* ---------- The jailer's house, in that hour of the night ---------- */
