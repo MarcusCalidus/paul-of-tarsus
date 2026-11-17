@@ -348,7 +348,7 @@ Object.assign(LOOK,{
      disturbs the other; Luke is the same man to play. paul9b and silas9b: without their cloaks, after the marketplace. */
   silas9:{skin:'#b98658',hair:'#3a2c22',beard:'#3a2c22',tunic:'#3f5f86',cloak:'#b89a62',belt:'#4a3a24',trim:'#2a4466',long:1,brow:'#2a1a12',ph:700},
   silas9b:{skin:'#b98658',hair:'#3a2c22',beard:'#3a2c22',tunic:'#3f5f86',belt:'#4a3a24',trim:'#2a4466',long:1,brow:'#2a1a12',ph:700},
-  paul9b:{skin:'#c08a5c',hair:'#2a1a12',beard:'#2a1a12',tunic:'#c4b08a',belt:'#3a2414',trim:'#8a6a4a',ph:0},
+  paul9b:{skin:'#c08a5c',hair:'#483a32',beard:'#483a32',brow:'#3a2e28',grey:'#8a827a',thin:1,tunic:'#c4b08a',belt:'#3a2414',trim:'#8a6a4a',ph:0},
   timothy9:{skin:'#c89868',hair:'#3a2616',tunic:'#d8cfb0',belt:'#5a3a20',trim:'#7a8a6a',brow:'#2a1a12',slim:1,ph:1700},
   luke:{skin:'#c4946a',hair:'#3a2a1c',beard:'#3a2a1c',tunic:'#e4dec8',cloak:'#4f7a6a',belt:'#4a3a24',trim:'#3a5a4a',long:1,brow:'#2a1a12',ph:1100},
   luke9:{skin:'#c4946a',hair:'#3a2a1c',beard:'#3a2a1c',tunic:'#e4dec8',cloak:'#4f7a6a',belt:'#4a3a24',trim:'#3a5a4a',long:1,brow:'#2a1a12',ph:1100},

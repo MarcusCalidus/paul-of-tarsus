@@ -332,7 +332,7 @@ ART.derbe={w:320,
  front(){}};
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
 Object.assign(LOOK,{
-  barnabas:{skin:'#b8844f',hair:'#3a2a1a',beard:'#3a2a1a',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},
+  barnabas:{skin:'#b8844f',hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1,tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},
   /* a saddler of Iconium, a Jew: a head cloth, and a tunic the color of his own leather */
   nathan:{skin:'#b47e52',wrap:'#c8b48a',beard:'#3a2a1a',brow:'#2a1a12',tunic:'#8a5a34',belt:'#3a2414',trim:'#5a3a20',ph:1300},
   /* a Greek carrier of Iconium: bareheaded, a short beard, a good mantle */

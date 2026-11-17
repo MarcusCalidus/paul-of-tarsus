@@ -347,10 +347,10 @@ Object.assign(LOOK,{
   jason10:{skin:'#c08c5c',hair:'#3a2a1c',beard:'#3a2a1c',tunic:'#e0d6ba',cloak:'#7a8a5a',long:1,belt:'#5a3a20',trim:'#4a5a34',brow:'#2a1a12',ph:400},
   parmenon10:{skin:'#b8845a',hair:'#5a4026',beard:'#5a4026',tunic:'#d8b060',cloak:'#8a3a2a',belt:'#c9a14a',trim:'#6a2418',brow:'#3a2a1a',ph:1300},
   brother10:{skin:'#a8703f',hair:'#2a1a12',tunic:'#9aa88a',belt:'#4a3a24',slim:1,brow:'#1a1210',ph:2100},
-  host10:{skin:'#b47e52',hair:'#8a8a8a',beard:'#8a8a8a',brow:'#5a5a5a',tunic:'#8a7a62',belt:'#2e2016',ph:900},
+  host10:{skin:'#b47e52',hair:'#8a8a8a',beard:'#8a8a8a',receding:1,brow:'#5a5a5a',tunic:'#8a7a62',belt:'#2e2016',ph:900},
   /* the synagogue of Thessalonica: its attendant, two who ask, and a woman of standing */
-  theodotos10:{skin:'#b88a62',hair:'#c8c8c8',beard:'#c8c8c8',longBeard:1,brow:'#8a8a8a',tunic:'#ece4d0',long:1,stripe:'#3f5f86',belt:'#4a3a24',ph:2500},
-  lysimachos10:{skin:'#a8703f',hair:'#8a8a8a',beard:'#8a8a8a',brow:'#5a5a5a',tunic:'#6a5a70',cloak:'#c8b890',long:1,belt:'#2e2016',trim:'#4a3a50',ph:300},
+  theodotos10:{skin:'#b88a62',hair:'#c8c8c8',beard:'#c8c8c8',receding:1,longBeard:1,brow:'#8a8a8a',tunic:'#ece4d0',long:1,stripe:'#3f5f86',belt:'#4a3a24',ph:2500},
+  lysimachos10:{skin:'#a8703f',hair:'#8a8a8a',beard:'#8a8a8a',receding:1,fullBeard:1,brow:'#5a5a5a',tunic:'#6a5a70',cloak:'#c8b890',long:1,belt:'#2e2016',trim:'#4a3a50',ph:300},
   menandros10:{skin:'#c69870',hair:'#5a4026',tunic:'#e8e2d0',cloak:'#5f7f8c',long:1,belt:'#8a6a2a',trim:'#3a5a6a',brow:'#3a2a1a',ph:1500},
   stratonike10:{skin:'#c8a078',veil:'#7a2a5a',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#7a2a5a',brow:'#3a2414',ph:1900},
   /* others who stand before the benches: seen, and not named */

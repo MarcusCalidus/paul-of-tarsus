@@ -12,7 +12,9 @@
    A place with hide:1 is a point on a road and nothing more: a leg may start or end there, and neither a dot nor a name is drawn.
    journey and pick take o.labels: where a place's name goes on this chapter's map, {id:{lab, dx, dy, sz}}, when its usual side would
    lie across one of the chapter's routes; and o.view: the window a chapter looks through (see VIEWS), when its road leaves the usual one.
-   journey takes o.night: the window is darkened, for a road travelled by night; the route and the names stay bright. */
+   journey takes o.night: the window is darkened, for a road travelled by night; the route and the names stay bright; o.seen: places that
+   are shown from the start although no leg of this map reaches them (Athens and Corinth, in Chapter Twelve: the account names no road
+   between them, so none is drawn); and o.pulse: the place where the light stands. */
 SHARED.map=(()=>{
 "use strict";
 const W=320,H=144,LON0=23.2,LAT0=37.45,KX=18.4,KY=22.15;
@@ -55,7 +57,12 @@ const PLACES={
      they go. The account sends Paul from Beroea to the sea and names no harbor: the point on the coast has no dot and no name. */
   amphipolis:{name:'Amphipolis',at:[23.85,40.82],lab:'l',sz:4},apollonia:{name:'Apollonia',at:[23.47,40.63],lab:'l',sz:4},
   thessalonica:{name:'Thessalonica',at:[22.95,40.63],lab:'l'},beroea:{name:'Beroea',at:[22.2,40.52],lab:'l'},
-  seaward:{name:'',at:[22.64,40.42],hide:1},athens:{name:'Athens',at:[23.73,37.98],lab:'b'}};
+  seaward:{name:'',at:[22.64,40.42],hide:1},athens:{name:'Athens',at:[23.73,37.98],lab:'b'},
+  /* Corinth, by its isthmus (Acts 18:1). Cenchreae, its eastern harbor (Acts 18:18), lay 11 km away, less than a dot on this map: it
+     is the point on the coast where the sea road begins, and has no dot and no name of its own. Ephesus (Acts 18:19); and a point
+     off Samos where the course home to Caesarea leaves the course that came in, so that no stretch of sea is drawn twice. */
+  corinth:{name:'Corinth',at:[22.9,37.9],lab:'l'},cenchreae:{name:'',at:[23.06,37.87],hide:1},
+  ephesus:{name:'Ephesus',at:[27.32,37.93],lab:'r'},offsamos:{name:'',at:[26.46,37.92],hide:1}};
 /* waypoints for legs that do not run straight: by sea up the coast and east of Cyprus; by road round the Gulf of Issus; through
    the south of Cyprus, the way tradition has them go from Salamis to Paphos; by sea clear of the western cape of Cyprus; up the valley
    through the Taurus; along the foot of the mountains to Iconium; and home from Attalia by sea, between Cyprus and the coast of Cilicia */
@@ -71,7 +78,14 @@ const VIA={'caesarea-tarsus':[34.42,33.3,34.5,34.7,34.88,35.75],'tarsus-antioch'
   /* round the head of the gulf to Beroea; and by sea down the gulf, outside Euboea, between it and Andros, and round the cape of
      Attica. The account names neither the harbor nor the course: the line shows open water. */
   'thessalonica-beroea':[22.6,40.67],
-  'seaward-athens':[22.95,40.1,23.2,39.75,23.65,39.3,24.1,38.95,24.55,38.55,24.8,38.2,24.62,37.99,24.4,37.75,24.1,37.58,23.8,37.68,23.63,37.84]};
+  'seaward-athens':[22.95,40.1,23.2,39.75,23.65,39.3,24.1,38.95,24.55,38.55,24.8,38.2,24.62,37.99,24.4,37.75,24.1,37.58,23.8,37.68,23.63,37.84],
+  /* from Cenchreae out of the gulf, well south of the cape of Attica (and of the name of Athens), south of Tinos, north of Icaria
+     and of Samos, into the gulf of Ephesus;
+     and home: between Icaria and Samos, west of Cos, between Carpathus and Rhodes, south of Cyprus, to Caesarea. The account names
+     no course for either: the lines show open water. Then up to Jerusalem, and north to Antioch behind the mountains of the coast. */
+  'cenchreae-offsamos':[23.4,37.74,23.62,37.5,23.8,37.3,24.2,37.14,24.8,37.16,25.3,37.3,25.72,37.72,26.12,37.88],
+  'offsamos-caesarea':[26.47,37.62,26.52,37.3,26.72,36.95,27.05,36.5,27.45,35.98,27.75,35.62,28.6,35.3,30.2,34.7,31.8,34.25,33.2,33.85,34.2,33.2],
+  'jerusalem-antioch':[35.5,32.5,36.2,33.2,36.62,34.4,36.6,35.4]};
 /* region names sit where no coast, lake or route runs through them. close: a name with its letters set closer together, for a region
    too small to hold a widely spaced one; north: a name shown only in the northern window and the Aegean one, where the mountains make
    room for it; west: a name shown only in the Aegean window */
@@ -215,10 +229,10 @@ function sting(){const t=now()+.06;if(!AU.ctx)return;DRUMS.d(t,1.3);DRUMS.d(t+.3
 const arrive=()=>{const[a,b]=hz(CHIME);tone({f:a,d:.18,type:'sine',v:.05,echo:1});tone({f:b,t:now()+.08,d:.22,type:'sine',v:.035,echo:1})};
 function show(){G.scene=draw;setScore(null);AU.amb={wind:.25,waves:.25}}
 /* journey: between scenes. Fades to the map, shows the legs already travelled, then draws the new ones, city by city. */
-async function journey(route,o){o=o||{};setView(o.view);ST.places=null;ST.hover=null;ST.legs=[];ST.seen=new Set();ST.pulse=null;ST.over=o.labels||null;ST.night=!!o.night;
+async function journey(route,o){o=o||{};setView(o.view);ST.places=null;ST.hover=null;ST.legs=[];ST.seen=new Set(o.seen||[]);ST.pulse=o.pulse||null;ST.over=o.labels||null;ST.night=!!o.night;
   for(const[a,b,kind]of route){const k=/new/.test(kind||'')?0:1;ST.legs.push({a,b,k,dots:path(a,b)});if(k){ST.seen.add(a);ST.seen.add(b)}}
   const first=ST.legs.find(L=>!L.k);if(first)ST.seen.add(first.a);
-  if(o.instant){show();for(const L of ST.legs){L.k=1;ST.seen.add(L.a);ST.seen.add(L.b)}ST.pulse=route[route.length-1][1];return}
+  if(o.instant){show();for(const L of ST.legs){L.k=1;ST.seen.add(L.a);ST.seen.add(L.b)}ST.pulse=o.pulse||(route.length?route[route.length-1][1]:null);return}
   await fade(1,450);show();codeBtn();await fade(0,550);sting();await wait(700);
   for(const L of ST.legs)if(!L.k){ST.pulse=L.a;await tween(o.speed||1900,k=>{L.k=k});ST.seen.add(L.b);arrive();ST.pulse=L.b;await wait(350)}
   if(o.text)for(const s of[].concat(o.text))await narr(s,{dur:Math.max(3200,1600+s.length*60)})}
@@ -237,5 +251,6 @@ async function go(a,b){const L={a,b,k:0,dots:path(a,b)};ST.legs.push(L);ST.seen.
 const where=id=>{const[x,y]=at(id);return[x-OX,y-OY]};
 /* lines: every thin line on the map that a name must not cross: the coasts, the islands and the lakes, as lists of points */
 const lines=()=>[COAST,...ISLES.map(p=>p.concat(p.slice(0,2))),...LAKES.map(p=>p.concat(p.slice(0,2)))];
-return{journey,pick,go,where,lines,places:PLACES,state:ST,draw,sting,arrive};
+/* window: where the window that is showing lies on the map, [left, top, width, height], so that a test can see whether a name runs out of it */
+return{journey,pick,go,where,lines,places:PLACES,state:ST,draw,sting,arrive,window:()=>[OX,OY,W,H]};
 })();
