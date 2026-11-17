@@ -127,88 +127,52 @@
         list.forEach(([n,o],i)=>{const cw=Math.floor(W/7),chh=Math.floor(Hh/3),x=(i%7)*cw,y=Math.floor(i/7)*chh;g.fillStyle=(i+Math.floor(i/7))%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw-2,chh-2);
           const sp=sprite('ages-test'+i,q=>person(q,0,0,o,1,0,0,0,0,0),1);g.drawImage(sp,FIG.OX-30,FIG.OY-104,60,106,x+Math.floor((cw-120)/2),y+chh-214,120,212);
           g.fillStyle='#101418';g.font='bold 11px monospace';g.fillText(n,x+5,y+14)})})}}
-  /* A trial of proportions (branch paul-proportions): Paul in each build of BUILDS, beside the figure as it is. The stop `proportions` hands
-     its sheets to the playtest (window.SHEETS), which saves them beside the screenshot: the line-up of a young Paul and of the Paul of the
-     second journey, their heads enlarged, the poses, and the line-up at the scale of the game in the street of Corinth. Nothing on a sheet
-     crosses a figure: the mark of today's height is a notch at the edge of each field. */
-  if(stop==='proportions'){await loadLevel(12);
-    const VAR=[['A','','as it is now','head 11 wide'],['B','m','head 13 wide','body kept, 2 taller'],['C','mc','head 13 wide','height kept'],['D','l','head 15 wide','body kept, 4 taller'],
-        ['E','lc','head 15 wide','height kept'],['F','ls','head 15 wide','kept by short legs'],['G','lw','head 15, as F','and broader'],['H','xl','head 17 wide','height kept']],
-      bad=[];for(const k in BUILDS){const H=BUILDS[k].H;for(const m in H)if(H[m].some(r=>r.length!==H.face[0].length+(/^(veil|wrap|helm|hairF)$/.test(m)?2:0)))bad.push(k+'.'+m)}
-    ok(!bad.length&&VAR.every(v=>!v[1]||BUILDS[v[1]]),'every head map of a build has rows of one width'+(bad.length?'. RAGGED: '+bad:''));
-    const lk=(ch,b)=>Object.assign({},paulLook(ch),b?{build:b}:null),
-      spr=(ch,b,dir,fr,talk,bow,ges)=>sprite(['prop',ch,b,dir,fr||0,talk||0,bow||0,ges||0].join('|'),q=>person(q,0,0,lk(ch,b),dir,fr||0,talk||0,bow||0,ges||0,0),dir),
-      /* tall: the height of a build from the ground to the top of its head map */
-      tall=b=>{const d=b?BUILDS[b]:{};return 4+25+(d.leg||0)+16+(d.sk||0)+3+28+(d.tor||0)+(d.top||16)},
+  /* The whole cast. The stop `cast` loads every chapter and hands its sheets to the playtest (window.SHEETS: a name and a PNG data URL
+     for each, saved beside the screenshot at the sheet's own size): for every chapter the looks it brings, each standing and three times
+     enlarged (cast-1.png and so on), and on cast-heads.png every kind of head eight times enlarged: each state of the hair, each beard,
+     the head coverings, a woman veiled and bareheaded, a boy, a statue. Look there when a head map or the figure painter changes: for a
+     head that has come apart, for a covering that does not sit, and for crosses. Nothing on a sheet crosses a figure. cast-main.png and
+     cast-closeup.png are the two pictures kept in docs/screenshots as cast.png and cast-closeup.png. */
+  if(stop==='cast'){const SHEETS={},
       sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,w,h);return[c,g]},
-      text=(g,s,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||17}px Menlo,Consolas,monospace`;g.fillText(s,x,y)},
-      /* cut: a part of a sprite, given in drawing units from its feet (x0 left of them is negative, y0 above them is negative), enlarged z times */
+      text=(g,t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},
+      /* cut: a part of a sprite, given in drawing units from its feet (left of them and above them are negative), enlarged z times */
       cut=(g,sp,x0,y0,w,h,dx,dy,z)=>g.drawImage(sp,FIG.OX+x0,FIG.OY+y0,w,h,dx,dy,w*z,h*z),
-      field=(g,i,x,y,w,h)=>{g.fillStyle=i%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,w-2,h-2)},SHEETS={};
-    /* the line-up: every build standing, four times enlarged; the notch on the left marks the height of today's figure */
-    const lineup=(ch,title)=>{const Z=4,cw=200,chh=516,cols=4,[c,g]=sheet(cols*cw,40+2*chh);text(g,title,10,27,19,'#f4f0e6');
-      VAR.forEach(([n,b,l1,l2],i)=>{const x=(i%cols)*cw,y=40+Math.floor(i/cols)*chh,gy=y+chh-66;field(g,i+Math.floor(i/cols),x,y,cw,chh);
-        g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,gy,34*Z,3);
-        cut(g,spr(ch,b,1),-22,-108,44,109,x+cw/2-22*Z,gy-108*Z,Z);
-        g.fillStyle='#7a2a22';g.fillRect(x+1,gy-92*Z,9,2);
-        text(g,n,x+10,y+28,26);text(g,l1,x+10,gy+26,15);text(g,l2,x+10,gy+46,15);text(g,'height '+tall(b)+', '+(tall(b)/((b?BUILDS[b].top:16)-1)).toFixed(1)+' heads tall',x+10,gy+62,12,'#4a4038')});
-      return c.toDataURL()};
-    SHEETS['proportions-1-young']=lineup(1,'Paul, Chapters 1-2: the builds side by side');
-    SHEETS['proportions-2-older']=lineup(12,'Paul, Chapters 7-12: the builds side by side');
-    /* the heads, eight times enlarged: look here for a head that has come apart, and for crosses */
-    {const Z=8,cw=208,chh=300,cols=4,[c,g]=sheet(cols*cw,40+4*chh);text(g,'The heads, eight times enlarged (above: Chapters 1-2, below: 7-12)',10,27,17,'#f4f0e6');
-      [1,12].forEach((ch,r)=>VAR.forEach(([n,b],i)=>{const x=(i%cols)*cw,y=40+(r*2+Math.floor(i/cols))*chh;field(g,i+Math.floor(i/cols)+r,x,y,cw,chh);
-        cut(g,spr(ch,b,1),-13,-tall(b)-2,26,34,x,y+26,Z);text(g,n,x+8,y+24,22)}));
-      SHEETS['proportions-3-heads']=c.toDataURL()}
-    /* the poses, three times enlarged: standing, both steps, speaking with the hand raised, head bowed, and facing left */
-    {const Z=3,cw=138,chh=342,P=[[1,0],[1,1],[1,3],[1,0,1,0,1],[1,0,0,1],[-1,0]],[c,g]=sheet(40+P.length*cw,40+VAR.length*chh);
-      text(g,'The poses: standing, two steps, speaking, praying, facing left',10,27,17,'#f4f0e6');
-      VAR.forEach(([n,b],i)=>{const y=40+i*chh;P.forEach((p,j)=>{const x=40+j*cw;field(g,i+j,x,y,cw,chh);cut(g,spr(1,b,...p),-23,-110,46,112,x,y+chh-112*Z-4,Z)});
-        g.fillStyle=i%2?'#c9c2b2':'#b9c2cc';g.fillRect(1,y+1,38,chh-2);text(g,n,9,y+34,26)});
-      SHEETS['proportions-4-poses']=c.toDataURL()}
-    /* in the street of Corinth, at the scale of the game: one room pixel is four pixels of the sheet */
-    {const ALL=CHAP[12].flags;setChapter(12);for(const k of ALL.slice(0,ALL.indexOf('met')+1))F[k]=1;
-      const id='street12',cam=62,scene=(ch,title)=>{const[w,wg]=mk(VW*HR,VH*HR);wg.setTransform(HR,0,0,HR,0,0);wg.imageSmoothingEnabled=false;backdrop(wg,id,cam);wg.translate(-cam,0);
-          VAR.forEach(([n,b],i)=>{const x=cam+30+i*37,y=124;figure(wg,x,y,lightAt(id,x,y),['prop',ch,b,1,0,0,0,0].join('|'),q=>person(q,0,0,lk(ch,b),1,0,0,0,0,0))});
-          const[c,g]=sheet(VW*4,VH*4+70);g.drawImage(w,0,0,VW*HR,VH*HR,0,34,VW*4,VH*4);text(g,title,10,23,17,'#f4f0e6');
-          VAR.forEach(([n],i)=>text(g,n,(30+i*37)*4-8,VH*4+34+27,24,'#f4f0e6'));return c.toDataURL()};
-      SHEETS['proportions-5-street']=scene(12,'In the street of Corinth, as the game shows it (Paul of Chapters 7-12)');
-      SHEETS['proportions-6-street-young']=scene(1,'The same street with the young Paul of Chapters 1-2');
-      /* the same close by, for a telephone held upright: four stand before the plaster on either side of the door, and the other four below
-         them at the same places. One room pixel is six pixels of the sheet. */
-      {const Z=6,cw=136,top=58,hh=80,cam2=198,at=[221,241,287,308],[c,g]=sheet(cw*Z,34+2*(hh*Z+44));text(g,'Close by, the same wall and door behind each (Chapters 7-12)',10,23,17,'#f4f0e6');
-        [0,1].forEach(r=>{const[w,wg]=mk(cw*HR,VH*HR);wg.setTransform(HR,0,0,HR,0,0);wg.imageSmoothingEnabled=false;backdrop(wg,id,cam2);wg.translate(-cam2,0);
-          VAR.slice(r*4,r*4+4).forEach(([n,b],i)=>{const x=at[i],y=124;figure(wg,x,y,lightAt(id,x,y),['prop',12,b,1,0,0,0,0].join('|'),q=>person(q,0,0,lk(12,b),1,0,0,0,0,0))});
-          const y0=34+r*(hh*Z+44);g.drawImage(w,0,top*HR,cw*HR,hh*HR,0,y0,cw*Z,hh*Z);
-          VAR.slice(r*4,r*4+4).forEach(([n],i)=>text(g,n,(at[i]-cam2)*Z-8,y0+hh*Z+31,26,'#f4f0e6'))});
-        SHEETS['proportions-7-street-close']=c.toDataURL()}}
-    /* The women: Lydia of Chapter Eight as she is and in build E (lc), with the Paul of that chapter beside her in each. */
-    {await loadLevel(8);const ly=b=>Object.assign({},LOOK.lydia,{p:null},b?{build:b}:null),PAIR=[['A','','as they are now'],['E','lc','head 15 wide, height kept']],
-        sp=(o,key,dir,fr,talk,bow,ges)=>sprite(['prop',key,dir,fr||0,talk||0,bow||0,ges||0].join('|'),q=>person(q,0,0,o,dir,fr||0,talk||0,bow||0,ges||0,0),dir),
-        tallF=b=>tall(b)-2+1;   /* a woman's trunk is two rows shorter, and her veil begins a row above her head map */
-      /* side by side, four times enlarged */
-      {const Z=4,cw=400,chh=516,[c,g]=sheet(2*cw,40+chh);text(g,'Lydia and Paul (Chapter Eight): as they are, and in build E',10,27,19,'#f4f0e6');
-        PAIR.forEach(([n,b,l],i)=>{const x=i*cw,y=40,gy=y+chh-66;field(g,i,x,y,cw,chh);
-          [[ly(b),'ly'+b,-24],[lk(8,b),'pl'+b,24]].forEach(([o,k,dx])=>{g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2+(dx-17)*Z,gy,34*Z,3);cut(g,sp(o,k,1),-22,-108,44,109,x+cw/2+(dx-22)*Z,gy-108*Z,Z)});
-          text(g,n,x+10,y+28,26);text(g,l,x+10,gy+30,15)});
-        SHEETS['proportions-8-lydia']=c.toDataURL()}
-      /* her head, eight times enlarged: plain, speaking, bowed with the eyes closed, and facing left */
-      {const Z=8,cw=208,chh=316,P=[[1,0],[1,0,1],[1,0,0,1],[-1,0]],[c,g]=sheet(P.length*cw,40+2*chh);text(g,"Lydia's head, eight times enlarged: plain, speaking, bowed, facing left",10,27,17,'#f4f0e6');
-        PAIR.forEach(([n,b],r)=>P.forEach((p,i)=>{const x=i*cw,y=40+r*chh;field(g,i+r,x,y,cw,chh);cut(g,sp(ly(b),'ly'+b,...p),-13,-tallF(b)-3,26,36,x,y+26,Z);if(!i)text(g,n,x+8,y+24,22)}));
-        SHEETS['proportions-9-lydia-head']=c.toDataURL()}
-      /* her poses, three times enlarged */
-      {const Z=3,cw=138,chh=342,P=[[1,0],[1,1],[1,3],[1,0,1,0,1],[1,0,0,1],[-1,0]],[c,g]=sheet(40+P.length*cw,40+2*chh);
-        text(g,"Lydia's poses: standing, two steps, speaking, praying, facing left",10,27,17,'#f4f0e6');
-        PAIR.forEach(([n,b],i)=>{const y=40+i*chh;P.forEach((p,j)=>{const x=40+j*cw;field(g,i+j,x,y,cw,chh);cut(g,sp(ly(b),'ly'+b,...p),-23,-110,46,112,x,y+chh-112*Z-4,Z)});
-          g.fillStyle=i%2?'#c9c2b2':'#b9c2cc';g.fillRect(1,y+1,38,chh-2);text(g,n,9,y+34,26)});
-        SHEETS['proportions-10-lydia-poses']=c.toDataURL()}
-      /* by the river at Philippi, close by: one room pixel is six pixels of the sheet */
-      {setChapter(8);const id='river',Z=6,cw=136,top=54,hh=86,cam2=172,[c,g]=sheet(cw*Z,34+2*(hh*Z+44));text(g,'By the river at Philippi: as they are (above), and in build E (below)',10,23,17,'#f4f0e6');
-        PAIR.forEach(([n,b],r)=>{const[w,wg]=mk(cw*HR,VH*HR);wg.setTransform(HR,0,0,HR,0,0);wg.imageSmoothingEnabled=false;backdrop(wg,id,cam2);wg.translate(-cam2,0);
-          [[lk(8,b),'pl'+b,222,130,1],[ly(b),'ly'+b,256,127,-1]].forEach(([o,k,x,y,d])=>figure(wg,x,y,lightAt(id,x,y),['prop',k,d,0,0,0,0].join('|'),q=>person(q,0,0,o,d,0,0,0,0,0)));
-          const y0=34+r*(hh*Z+44);g.drawImage(w,0,top*HR,cw*HR,hh*HR,0,y0,cw*Z,hh*Z);text(g,n,12,y0+hh*Z+31,26,'#f4f0e6')});
-        SHEETS['proportions-11-river']=c.toDataURL()}}
-    window.SHEETS=SHEETS;halt('proportions')}
+      field=(g,i,x,y,w,h)=>{g.fillStyle=i%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,w-2,h-2)},
+      spr=(o,key,dir,fr,talk,bow,ges)=>sprite(['cast',key,dir,fr||0,talk||0,bow||0,ges||0].join('|'),q=>person(q,0,0,o,dir,fr||0,talk||0,bow||0,ges||0,0),dir);
+    let all=0;
+    for(const n of Object.keys(CHAP)){const had=new Set(+n===1?[]:Object.keys(LOOK));await loadLevel(+n);const ids=Object.keys(LOOK).filter(k=>!had.has(k));all+=ids.length;if(!ids.length)continue;
+      const Z=3,cw=138,chh=396,cols=6,rows=Math.ceil(ids.length/cols),[c,g]=sheet(cols*cw,34+rows*chh);text(g,'Chapter '+n+': '+ids.length+' looks, three times enlarged',10,23,17,'#f4f0e6');
+      ids.forEach((id,i)=>{const x=(i%cols)*cw,y=34+Math.floor(i/cols)*chh;field(g,i+Math.floor(i/cols),x,y,cw,chh);
+        g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);cut(g,spr(LOOK[id],id,1),-23,-124,46,125,x,y+chh-22-124*Z,Z);text(g,id,x+5,y+chh-6,11)});
+      SHEETS['cast-'+n]=c.toDataURL()}
+    ok(all>60,'the cast of every chapter is drawn: '+all+' looks');
+    {const B={skin:'#c08a5c',tunic:'#c4b08a',hair:'#34241c',brow:'#2a1a12',belt:'#3a2414'},bd={beard:'#34241c'},gr={hair:'#6e6660',beard:'#787068',brow:'#5a524c',grey:'#a8a098'},
+        fm={skin:'#c8a078',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#6a2a5a',brow:'#3a2414'},
+        HEAD=[['hair',{}],['hair, beard',bd],['receding',{...bd,receding:1}],['thin',{...bd,thin:1}],['bald',{...bd,bald:1}],['crop',{...bd,crop:1}],['crop, thin',{...bd,crop:1,thin:1}],['short beard',{...bd,shortBeard:1}],
+          ['full beard',{...bd,fullBeard:1}],['long beard',{...bd,longBeard:1}],['grey, thin, full',{...gr,thin:1,fullBeard:1}],['grey, bald, long',{...gr,bald:1,longBeard:1}],['wrap',{...bd,hair:null,wrap:'#b8402c'}],['wrap, no beard',{hair:null,wrap:'#d8c9a0'}],
+          ['helmet',{...bd,hair:null,helm:'#b08a3c',armor:'#8a3a34',cloak:'#7a2a2a',cape:1}],['boy',{h:1}],['veil',{...fm,hair:null,veil:'#6a2a5a'},1],['veil, old',{...fm,hair:null,veil:'#e2dccb',brow:'#8a8a8a'},1],['hair bound',{...fm,hair:'#3a2616',fem:1,band:'#a8402c',longSleeve:0},1],
+          ['statue',{skin:'#cfc8b4',tunic:'#cfc8b4',hair:'#cfc8b4',beard:'#c4bda8',belt:null,stone:1,long:1}]],
+        P=[[1,0],[1,0,1,0,1],[1,0,0,1],[-1,0]],Z=8,cw=208,chh=330,[c,g]=sheet(P.length*cw,34+HEAD.length*chh);
+      text(g,'Every kind of head, eight times enlarged: plain, speaking, bowed, facing left',10,23,17,'#f4f0e6');
+      HEAD.forEach(([n,o,f],r)=>{const lk=Object.assign({},B,o),top=4+(lk.h?19:23)+(lk.h?13:16)+3+(lk.h?22:f?24:26)+20;
+        P.forEach((p,i)=>{const x=i*cw,y=34+r*chh;field(g,i+r,x,y,cw,chh);cut(g,spr(lk,'head'+r,...p),-13,-top-6,26,39,x,y+18,Z);if(!i)text(g,n,x+6,y+16,15)})});
+      SHEETS['cast-heads']=c.toDataURL()}
+    /* the two pictures of docs/screenshots: the people who carry the story, with the pack donkey (cast.png), and eight heads (cast-closeup.png) */
+    {const WHO=[paulLook(1),'guard','zakkai','barnabas','cephas','james','mark','sergius','timothy','eunice','silas','luke','lydia','jailer9','dama11','dion11','aquila12','prisca12'],
+        miss=WHO.filter(w=>typeof w==='string'&&!LOOK[w]),Z=3,cw=128,chh=384,cols=10,[c,g]=sheet(cols*cw,2*chh);g.fillStyle='#cbbda2';g.fillRect(0,0,cols*cw,2*chh);
+      ok(!miss.length,'the people of the cast sheet all have a look'+(miss.length?'. MISSING: '+miss:''));
+      WHO.concat('donkey').forEach((w,i)=>{const x=(i%cols)*cw,y=Math.floor(i/cols)*chh,gy=y+chh-18;g.fillStyle='rgba(60,48,40,.22)';
+        if(w==='donkey'){g.fillRect(x+cw-30*Z,gy,60*Z,3);cut(g,sprite('cast|donkey',q=>donkey(q,0,0,1,0,2),1),-40,-80,80,81,x+cw-40*Z,gy-80*Z,Z)}   /* the donkey takes the last two fields */
+        else{g.fillRect(x+cw/2-15*Z,gy,30*Z,3);cut(g,spr(typeof w==='string'?LOOK[w]:w,'main'+i,1),-21,-124,42,125,x+cw/2-21*Z,gy-124*Z,Z)}});
+      SHEETS['cast-main']=c.toDataURL()}
+    {const B={skin:'#c08a5c',tunic:'#c4b08a',belt:'#3a2414'},fm={skin:'#c8a078',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#6a2a5a',brow:'#3a2414'},
+        HEAD=[paulLook(1),paulLook(7),{...B,hair:'#969088',beard:'#a49e96',brow:'#78726c',grey:'#c8c2ba',bald:1,longBeard:1},{...B,beard:'#34241c',wrap:'#b8402c'},
+          {...B,beard:'#34241c',helm:'#b08a3c',armor:'#8a3a34',cloak:'#7a2a2a',cape:1},{...fm,veil:'#6a2a5a'},{...fm,hair:'#3a2616',fem:1,band:'#a8402c',longSleeve:0},{...B,hair:'#34241c',h:1}],
+        Z=8,cw=208,chh=300,[c,g]=sheet(4*cw,2*chh);
+      HEAD.forEach((o,i)=>{const x=(i%4)*cw,y=Math.floor(i/4)*chh,f=o.veil||o.fem,top=4+(o.h?19:23)+(o.h?13:16)+3+(o.h?22:f?24:26)+20;field(g,i+Math.floor(i/4),x,y,cw,chh);cut(g,spr(o,'close'+i,1),-13,-top-6,26,39,x,y-6,Z)});
+      SHEETS['cast-closeup']=c.toDataURL()}
+    window.SHEETS=SHEETS;halt('cast')}
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
   ok(document.documentElement.classList.contains('pf')&&SHARED.font&&document.fonts.check('12px "Paul Pixel"')&&document.fonts.check('italic 12px "Paul Pixel"')&&document.fonts.check('9px "Paul Pixel Small"'),'pixel font loaded and active');
   {const G=SHARED.font&&SHARED.font.glyphs,foot=(f,c)=>G[f][c].yTop-G[f][c].rows.length;

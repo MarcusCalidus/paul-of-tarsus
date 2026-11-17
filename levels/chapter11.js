@@ -375,7 +375,7 @@ function cap11(g,s,x,y,w,col){s=T(s);const pf=SHARED.font&&SHARED.font.onCanvas&
    who only stand and listen stay there, below the seats. Evening. */
 /* sitter: a man sitting, his mantle over his knees. The figure painter draws him standing; his body down to the waist is kept and set
    lower, and under it are painted his lap, the fall of the mantle from his knees, the cloth hanging behind him, and his feet. */
-function sitter(g,x,y,id,dir,lit,lean){figure(g,x,y,lit,id+dir+'sit'+(lean?1:0),s=>{const o=LOOK[id],[c,t]=mk(FIG.W,FIG.H),CUT=FIG.OY-46,DROP=18;
+function sitter(g,x,y,id,dir,lit,lean){figure(g,x,y,lit,id+dir+'sit'+(lean?1:0),s=>{const o=LOOK[id],[c,t]=mk(FIG.W,FIG.H),CUT=FIG.OY-44,DROP=16;
     t.setTransform(HR,0,0,HR,FIG.OX,FIG.OY);person(t,0,0,o,dir,0,0,lean,0,lean);
     s.save();s.setTransform(1,0,0,1,0,0);s.drawImage(c,0,0,FIG.W,CUT,dir*(lean?1:0),DROP,FIG.W,CUT);s.restore();
     s.save();s.scale(dir*FIG.K,FIG.K);const P=pal(o),C=P.cl||P.tu,TU=P.tu,S=P.sk,px=(a,b,col,w,h)=>{s.fillStyle=col;s.fillRect(a,b,w||1,h||1)};
