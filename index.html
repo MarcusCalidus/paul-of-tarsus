@@ -630,13 +630,22 @@ function flame(g,x,y,t,big){const f=Math.floor(t/110)%3,h=(big?5.5:3.5)+(f===1?1
 /* Figures are pixel art in the manner of early-90s adventure sprites: placed pixel by pixel, one drawing unit per canvas pixel
    (FIG.K), in a three-quarter view, shaded in flat bands of tone with dark edges on the shadow side instead of an outline. */
 const FIG={W:168,H:160,OX:84,OY:150,K:.5};
-const LOOK={
-  paul:{skin:'#c08a5c',hair:'#2a1a12',beard:'#2a1a12',tunic:'#c4b08a',cloak:'#6e4a2e',belt:'#3a2414',trim:'#8a6a4a',pouch:1,ph:0}};
+const PAUL_BASE={skin:'#c08a5c',tunic:'#c4b08a',cloak:'#6e4a2e',belt:'#3a2414',trim:'#8a6a4a',pouch:1,ph:0};
+/* Paul ages across the twenty-five years of Acts: a young man at Damascus and Jerusalem (Chapters One and Two), receding at the temples
+   after the years in Syria and Cilicia (Three to Six), thinning on the crown and greying on the second journey (Seven to Twelve), iron-grey
+   with a fuller beard on the third, and bald with a grey beard as an older man in Caesarea and Rome (Philemon 9). */
+function paulLook(ch){return Object.assign({},PAUL_BASE,
+  ch<=2?{hair:'#2a1a12',beard:'#2a1a12',brow:'#2a1a12'}:
+  ch<=6?{hair:'#34241c',beard:'#34241c',brow:'#2a1a12',grey:'#6e645c',receding:1}:
+  ch<=12?{hair:'#483a32',beard:'#483a32',brow:'#3a2e28',grey:'#8a827a',thin:1}:
+  ch<=18?{hair:'#6e6660',beard:'#787068',brow:'#5a524c',grey:'#a8a098',thin:1,fullBeard:1}:
+  {hair:'#969088',beard:'#a49e96',brow:'#78726c',grey:'#c8c2ba',bald:1,fullBeard:1})}
+const LOOK={paul:paulLook(1)};
 
 /* ramp: the five tones a material is painted in: highlight, light, base, shadow, deep shadow. Shadows lean toward violet. */
 const ramp=c=>{const[r,g,b]=hex(c),l=(r*.3+g*.59+b*.11)/255,k=l*l;return[tint(c,.38),tint(c,.17),c,mix(tint(c,-.28+.12*k),'#3a2444',.14),mix(tint(c,-.55+.22*k),'#22122c',.22-.08*k)]};
 function pal(o){return o.p||(o.p={sk:ramp(o.skin),tu:ramp(o.tunic),st:o.stripe?ramp(o.stripe):null,cl:o.cloak?ramp(o.cloak):null,ha:ramp(o.hair||'#2a1a12'),be:o.beard?ramp(o.beard):null,
-  bt:o.belt?ramp(o.belt):null,le:ramp('#7a4e2a'),ar:o.armor?ramp(o.armor):null,hd:ramp(o.veil||o.wrap||o.helm||'#888888'),tr:o.trim?ramp(o.trim):null})}
+  bt:o.belt?ramp(o.belt):null,le:ramp('#7a4e2a'),ar:o.armor?ramp(o.armor):null,hd:ramp(o.veil||o.wrap||o.helm||'#888888'),tr:o.trim?ramp(o.trim):null,gr:o.grey?ramp(o.grey):null})}
 /* stamp: lay down a small pixel map. Each character names a color in the legend L; anything else is left alone. */
 function stamp(g,map,x,y,L){for(let j=0;j<map.length;j++){const r=map[j];for(let i=0;i<r.length;i++){const c=L[r[i]];if(c){g.fillStyle=c;g.fillRect(x+i,y+j,1,1)}}}}
 /* Heads are drawn by hand, pixel by pixel, in three-quarter view. Column 0 of FACE, HAIR, BALD and the beards is x=-4;
@@ -645,13 +654,21 @@ function stamp(g,map,x,y,L){for(let j=0;j<map.length;j++){const r=map[j];for(let
    woman, and so is one with fem:1, who goes bareheaded: her hair (hairF, two columns wider, from x=-6) is parted, bound with a band
    (band: its color) and drawn back to a knot, as Greek women wore it. himation:1 wraps the mantle (cloak) round the body below the
    chest as well, down to the shins, and leaves the far shoulder and arm free: the Greek outer garment, for men and women. stone:1 is a
-   statue: eyes, mouth and sandals take the tones of its one material (marble or bronze), and stub:1 breaks its far arm off at the elbow. */
+   statue: eyes, mouth and sandals take the tones of its one material (marble or bronze), and stub:1 breaks its far arm off at the elbow.
+   receding:1 and thin:1 are the stages of hair loss between hair and bald; crop:1 is hair clipped short, leaving the neck bare;
+   shortBeard:1 is a young man's close beard, fullBeard:1 a fuller one short of longBeard; grey colors the highlight of hair (H) and beard (V). */
 const HEADS={
  face:["...........","....zsss...","...zssSSs..","..zssSSSSs.","..zsSSSSSs.","..zsSSLLSs.","..zbbsSbbs.",".zswpsSwps.",".zzssSLsss.","..zssSLLss.","..zzssnnzs.","...zsmmmss.","...zzssss..","....zzss..."],
  hair:["...hhhhhh..","..hHHHHhhh.",".hhHHhhhhhd",".hhhhhhhhdd","hhhh.....hd","hhd.......d","hhd........","hd.........","hd.........",".d........."],
+ receding:["...hhhhhh..","..hHHHHhhh.",".hhHHhhhhdd",".hhh.....dd","hhh.......d","hhd........","hhd........","hd.........","hd.........",".d........."],
+ thin:["...........","...hhh.....",".hhHhLL....",".hhh.......","hh.........","hhd........","hhd........","hd.........","hd.........",".d........."],
  hairF:[".....hhhhhh..","....hHHHHhhh.","...hhHHhhhhhd","...ffffffffhd","..hhhh.....hd",".hHhhd......d","hHHhhd.......","hHhhd........",".hhd.........","..d.........."],
  bald:["...........","...........","....LL.....","...........","h..........","hh.........","hhd........","hhd........","hd.........",".d........."],
- beard:["..B........","..BB.......","..vBBvBBB..","..vBB...B..","...vBBBBB..","....vBBB...",".....vv...."],
+ crop:["...........","...hhhhhh..","..hhHhhhhd.","..hhhhhhdd.",".hhh....hd.",".hd.......d",".d.........","...........","...........","..........."],
+ cropThin:["...........","...hhh.....","..hHhLL....",".hhh.......",".hh........",".hd........",".d.........","...........","...........","..........."],
+ shortBeard:["...........","..B........","..vBBvBBB..","..vBB...B..","...vBVBBB..","....vBBB..."],
+ beard:["..B........","..BB.......","..vBBvBBB..","..vBB...B..","...vBVBBB..","....vBVB...",".....vv...."],
+ fullBeard:["..B........","..BB.......","..vBBvBBB..","..vBB...B..","..vBVBBBB..","...vBVBBB..","...vBVBBv..","....vBBB...",".....vv...."],
  longBeard:["..B........","..BB.......","..vBBvBBB..","..vBB...B..","..vBBBBBB..","...vBVBBB..","...vBVBBB..","....BBVBv..","....vBVB...","....vBBB...",".....BBv...",".....vB....","......v...."],
  faceF:["...........","....zsss...","...zssSSs..","..zssSSSSs.","..zsSSSSSs.","..zsSSSSSs.","..zbbsSbbs.",".zswpsSwps.",".zzssSSsss.","..zcsSLsss.","..zsssnsss.","...zsrrrs..","...zzsss...","....zss...."],
  veil:["....aaaaa....","..aaAAAAAaa..",".aaAAaaaaaaa.",".aAaakkkkkaaq","aaaakkK.kkkaq","aaakk....kkaq","aaak......kaq","aaq........kq","aaq.........q","aaq.........q","aaq........q.","aaaq.......q.","aaaq......qq.",".aaaq....qaq.",".aaaaq..qaaq."],
@@ -725,16 +742,17 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink){
   /* near arm (hidden when a mantle hangs over it) */
   if(!C||o.cape)arm(true,-st*2);
   /* head */
-  const hx=-4+(bow?1:0),hy=yS-16+(bow?2:0),H=c.ha,Bd=c.be,Hd=c.hd,brow=fem?mix(o.brow||'#3a2414',o.skin,.3):o.brow||o.hair||o.beard||'#2a1a12';
+  const hx=-4+(bow?1:0),hy=yS-16+(bow?2:0),H=c.ha,Bd=c.be,Hd=c.hd,Gr=c.gr,brow=fem?mix(o.brow||'#3a2414',o.skin,.3):o.brow||o.hair||o.beard||'#2a1a12';
   px(0,yS-3,S[3],5,3);px(1,yS-3,S[2],3,2);
-  const L={s:S[2],S:S[1],L:S[0],z:S[3],Z:S[4],n:S[3],w:fem?'#f6eedc':S[0],p:'#1a1018',b:brow,m:'#6a2a22',r:'#b04a44',c:mix(o.skin,'#d86a58',.4),h:H[2],H:H[1],d:H[3],k:'#2a1a12',K:'#4a3020'};
-  if(Bd){L.B=Bd[2];L.V=Bd[1];L.v=Bd[3]}L.a=Hd[2];L.A=Hd[1];L.y=Hd[0];L.q=Hd[3];
+  const L={s:S[2],S:S[1],L:S[0],z:S[3],Z:S[4],n:S[3],w:fem?'#f6eedc':S[0],p:'#1a1018',b:brow,m:'#6a2a22',r:'#b04a44',c:mix(o.skin,'#d86a58',.4),h:H[2],H:Gr?Gr[2]:H[1],d:H[3],k:'#2a1a12',K:'#4a3020'};
+  if(Bd){L.B=Bd[2];L.V=Gr?Gr[2]:Bd[1];L.v=Bd[3]}L.a=Hd[2];L.A=Hd[1];L.y=Hd[0];L.q=Hd[3];
   if(o.stone)Object.assign(L,{w:S[1],p:S[3],b:S[3],m:S[4],r:S[3],c:S[2],k:H[3],K:H[2]});
   stamp(g,fem?HEADS.faceF:HEADS.face,hx,hy,L);
   if(blink||bow){px(hx+3,hy+7,S[3],2);px(hx+7,hy+7,S[3],2)}
   if(talk){px(hx+5,hy+11,'#3a0e0c',3);px(hx+5,hy+12,fem?'#b04a44':'#7a2a22',2)}
-  if(o.hair&&!o.veil&&!o.wrap&&!o.helm){if(o.fem){L.f=o.band||'#c9a14a';stamp(g,HEADS.hairF,hx-2,hy,L)}else stamp(g,o.bald?HEADS.bald:HEADS.hair,hx,hy,L)}
-  if(Bd){stamp(g,o.longBeard?HEADS.longBeard:HEADS.beard,hx,hy+8,L);px(hx+5,hy+11,o.stone?Bd[4]:talk?'#3a0e0c':'#5a221c',3);if(talk)px(hx+5,hy+12,'#3a0e0c',3)}
+  if(o.hair&&!o.veil&&!o.wrap&&!o.helm){if(o.fem){L.f=o.band||'#c9a14a';stamp(g,HEADS.hairF,hx-2,hy,L)}
+    else stamp(g,o.bald?HEADS.bald:o.crop&&o.thin?HEADS.cropThin:o.crop?HEADS.crop:o.thin?HEADS.thin:o.receding?HEADS.receding:HEADS.hair,hx,hy,L)}
+  if(Bd){stamp(g,o.longBeard?HEADS.longBeard:o.fullBeard?HEADS.fullBeard:o.shortBeard?HEADS.shortBeard:HEADS.beard,hx,hy+8,L);px(hx+5,hy+11,o.stone?Bd[4]:talk?'#3a0e0c':'#5a221c',3);if(talk)px(hx+5,hy+12,'#3a0e0c',3)}
   if(o.veil){stamp(g,HEADS.veil,hx-1,hy-1,L);
     /* the shawl runs on from the head over both shoulders, and hangs down the near arm */
     [[-5,-2],[-7,-2],[-9,-3],[-11,-4],[ax-1,-5],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax,-6],[ax,-7],[ax+1,-7],[ax+2,-8]].forEach(([a,b],i)=>cloth(yS-4+i,a,b,Hd,i,[[.45,5,.02]],null,[4,8]));
@@ -1150,7 +1168,7 @@ const CHAP={
   11:{name:'THE UNKNOWN GOD',label:'Chapter Eleven',title:'The Unknown God',salt:0xB48D,src:'levels/chapter11.js'}};
 const TITLE={level:1,scene:'wall',mood:'calm',amb:{crickets:.5,wind:.35,owl:.4}};
 /* A level file calls LEVEL(n, init). init() registers its art, cast, items and rooms, and returns the chapter definition. */
-function LEVEL(n,init){Object.assign(CHAP[n],init(),{ready:1})}
+function LEVEL(n,init){LOOK.paul=paulLook(n);Object.assign(CHAP[n],init(),{ready:1});LOOK.paul=paulLook(G.ch)}
 /* loadScript: add a script tag (this works from disk, where fetch does not), and check that the file registered what it should. */
 function loadScript(src,ok){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=src;
   el.onload=()=>ok()?res():rej(new Error(T('{file} did not register what it should.',{file:src})));el.onerror=()=>{el.remove();rej(new Error(T('Could not load {file}.',{file:src})))};document.head.appendChild(el)})}
@@ -1263,7 +1281,8 @@ function decode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1'
   if(t.length!==6)return null;let v=0;for(const x of t){const i=A32.indexOf(x);if(i<0)return null;v=v*32+i}
   const c=v%512,b=Math.floor(v/512)^msk(c);return chk(b,CHAP[ch].salt)!==c||(b>>19&3)>2||b>>21?null:{ch,b}}
 function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];G.pc=P;G.invs={};P.hs=null;
-  Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;if(a.wear){a.wear='';a.look=LOOK[a.id]}});
+  LOOK.paul=paulLook(ch);if(LOOK.barnabas)LOOK.barnabas=Object.assign({skin:'#b8844f',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},ch>2?{hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1}:{hair:'#3a2a1a',beard:'#3a2a1a'});
+  SPR.clear();Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;a.wear='';a.look=LOOK[a.id]});
   (CHAP[ch].party||[]).forEach(id=>ACT[id].party=1);
   $('#chname').textContent=T(CHAP[ch].name);G.ship=null;setScore(CHAP[ch].music);CHAP[ch].setup();swapBtn()}
 /* dealInv: rebuild the inventories from the story's flags (the level's inv). Each item goes to the member who carries it (own,

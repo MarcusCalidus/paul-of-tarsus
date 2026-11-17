@@ -283,7 +283,7 @@ ART.border={w:320,
   if(G.dust)for(const a of[P,BN])for(let i=0;i<7;i++){const k=((t/700+i*.143)%1);pool(g,a.x-6+i*2+Math.sin(i*3)*3,a.y-2-k*9,2.4+k*4,1.2+k*2,'#b89a68',.7*(1-k),'source-over')}}};
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
 Object.assign(LOOK,{
-  barnabas:{skin:'#b8844f',hair:'#3a2a1a',beard:'#3a2a1a',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},
+  barnabas:{skin:'#b8844f',hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1,tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},
   mark:{skin:'#c08c5c',hair:'#2a1a12',tunic:'#8aa08a',belt:'#5a3a20',trim:'#5a705a',brow:'#2a1a12',slim:1,ph:900},
   /* a drover of the mountain road: a felt cap, a short tunic the color of the dust */
   papias:{skin:'#9a6238',wrap:'#7a5a3a',beard:'#2a1a12',tunic:'#a8763e',belt:'#2e2016',trim:'#6a4a26',brow:'#1a1210',ph:1500},

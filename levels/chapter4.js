@@ -263,7 +263,7 @@ function voyageScene(g,t){backdrop(g,'voyage');const k=(G.sea||{}).k||0,X=Math.r
   for(let i=0;i<5;i++)R(g,X-10-i*7+(t/70%7),y+96+(i%2)*1.6,6-i,.6,'#f4f8fa')}
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
 Object.assign(LOOK,{
-  barnabas:{skin:'#b8844f',hair:'#3a2a1a',beard:'#3a2a1a',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},
+  barnabas:{skin:'#b8844f',hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1,tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},
   mark:{skin:'#c08c5c',hair:'#2a1a12',tunic:'#8aa08a',belt:'#5a3a20',trim:'#5a705a',brow:'#2a1a12',slim:1,ph:900},
   kallias:{skin:'#9c6238',wrap:'#3f6a8a',beard:'#3a2a1a',tunic:'#b8643c',belt:'#2e2016',trim:'#7a3a20',brow:'#1a1210',ph:1500},
   jair:{skin:'#b88458',hair:'#d8d8d8',beard:'#e2e2e2',longBeard:1,bald:1,brow:'#a0a0a0',tunic:'#8a7a9a',cloak:'#c8b890',long:1,belt:'#4a3a24',ph:2100},

@@ -222,7 +222,7 @@ function roadScene(g,t){backdrop(g,'road');const x=-50+420*((G.trek||{}).k||0),f
   man(g,x+46,121,'barnabas',1,f);beast(g,x+8,120,1,f,2);man(g,x-30,122,'paul',1,(f+2)%4);g.drawImage(fg('road'),0,0,320,VH)}
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
 Object.assign(LOOK,{
-  barnabas:{skin:'#b8844f',hair:'#3a2a1a',beard:'#3a2a1a',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},
+  barnabas:{skin:'#b8844f',hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1,tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},
   kleon:{skin:'#a87048',wrap:'#c8a050',beard:'#3a2a1a',tunic:'#7a5a3e',belt:'#2e2016',trim:'#4a3424',brow:'#2a1a12',ph:1100},
   agabus:{skin:'#b88458',hair:'#8e8e8e',beard:'#a6a6a6',longBeard:1,brow:'#6e6e6e',tunic:'#a8b0a0',cloak:'#5a4634',long:1,belt:'#4a3a24',ph:2300},
   lucius:{skin:'#8a5a3a',hair:'#1a1210',beard:'#1a1210',tunic:'#c9a23a',cloak:'#4a5a7a',long:1,belt:'#5a3a20',trim:'#8a6a1a',brow:'#120c0a',ph:3100},

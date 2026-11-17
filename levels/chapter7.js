@@ -380,11 +380,11 @@ ART.iconium7={w:480,fp:1.3,
 Object.assign(LOOK,{
   /* Silas, a leading man among the brothers in Jerusalem, and a prophet */
   silas:{skin:'#b98658',hair:'#3a2c22',beard:'#3a2c22',tunic:'#3f5f86',cloak:'#b89a62',belt:'#4a3a24',trim:'#2a4466',long:1,brow:'#2a1a12',ph:700},
-  /* seen only as the chapter opens: Barnabas and John Mark; Peter and James, as they looked in Chapter Two; Judas called Barsabbas; the men from Judea */
-  barnabas7:{skin:'#b8844f',hair:'#3a2a1a',beard:'#3a2a1a',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},
-  mark7:{skin:'#c08c5c',hair:'#2a1a12',tunic:'#8aa08a',belt:'#5a3a20',trim:'#5a705a',brow:'#2a1a12',slim:1,ph:900},
-  peter7:{skin:'#b07848',hair:'#6a5a4a',beard:'#7a6a58',tunic:'#3f6a8a',cloak:'#8a7a5a',belt:'#3a2414',long:1,brow:'#3a2a1a',ph:1300},
-  james7:{skin:'#bd8a5a',hair:'#2a1a12',beard:'#2a1a12',longBeard:1,tunic:'#e0d6bc',cloak:'#6a5a7a',belt:'#4a3a24',long:1,ph:2900},
+  /* seen only as the chapter opens: Barnabas and John Mark; Peter and James, thirteen years after Chapter Two; Judas called Barsabbas; the men from Judea */
+  barnabas7:{skin:'#b8844f',hair:'#685a4c',beard:'#685a4c',grey:'#9a9086',fullBeard:1,tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},
+  mark7:{skin:'#c08c5c',hair:'#2a1a12',beard:'#2a1a12',shortBeard:1,tunic:'#8aa08a',belt:'#5a3a20',trim:'#5a705a',brow:'#2a1a12',slim:1,ph:900},
+  peter7:{skin:'#b07848',hair:'#968e84',beard:'#a69e94',thin:1,tunic:'#3f6a8a',cloak:'#8a7a5a',belt:'#3a2414',long:1,brow:'#6a6258',ph:1300},
+  james7:{skin:'#bd8a5a',hair:'#46382e',beard:'#52443a',grey:'#7a7068',longBeard:1,tunic:'#e0d6bc',cloak:'#6a5a7a',belt:'#4a3a24',long:1,ph:2900},
   judas7:{skin:'#a8703f',wrap:'#d8cdb0',beard:'#4a3a2a',brow:'#2a1a12',tunic:'#8a6a4a',cloak:'#5a6a4a',long:1,belt:'#3a2414',ph:0},
   jud1:{skin:'#b47e52',wrap:'#3a3a5a',beard:'#2a1a12',longBeard:1,brow:'#1a1210',tunic:'#e2dcc8',cloak:'#3a4a6a',long:1,belt:'#8a6a2a',trim:'#3a4a6a',ph:0},
   jud2:{skin:'#c08c5c',wrap:'#e2dcc8',beard:'#5a4a3a',brow:'#3a2a1a',tunic:'#6a5a70',cloak:'#d8cdb0',long:1,belt:'#4a3a24',ph:0},
