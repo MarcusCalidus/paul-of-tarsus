@@ -1,6 +1,6 @@
 /* Paul of Tarsus: a pixel font painted in code (CONTRIBUTING section 4).
    Two bitmap faces on the grid of the view's canvas pixels (two font pixels to one room pixel):
-     - "Paul Pixel"       12-pixel em (used at calc(var(--s)*6px) or integer multiples).
+     - "Paul Pixel"       12-pixel em (used at calc(var(--s)*6px) or integer multiples), upright, and slanted for thoughts.
      - "Paul Pixel Small"  9-pixel em (used at calc(var(--s)*4.5px)) for the top bar, tags, notes and footers.
    Each glyph is built in memory as a TrueType font (head, hhea, maxp, OS/2, hmtx, cmap, loca, glyf, name, post) from merged pixel
    rectangles and registered with FontFace. No font file, no network; works from disk. If any browser refuses it, the page keeps
@@ -293,7 +293,10 @@ function toRects(glyphs){
 
 /* --- TrueType binary writer --- */
 const UNIT=100;
-function buildTTF(name,sub,em,asc,desc,xH,capH,italic,glyphMap){
+/* buildTTF: a font from glyphs of pixel rectangles. slant leans every rectangle into a parallelogram, moving a point slant font pixels
+   to the right for each pixel it stands above the baseline; the glyph's box covers the slanted shape, or a browser clips its top. */
+function buildTTF(name,sub,em,asc,desc,xH,capH,italic,glyphMap,slant){
+  const K=slant||0,lean=(x,y)=>Math.round(x+K*y);
   const upm=em*UNIT,codes=Object.keys(glyphMap).map(c=>c.codePointAt(0)).sort((a,b)=>a-b);
   const glyphs=[{code:0,rects:[],adv:Math.round(em*.5)}];
   for(const cp of codes){const ch=String.fromCodePoint(cp),g=glyphMap[ch];glyphs.push({code:cp,rects:g.rects,adv:g.adv})}
@@ -310,7 +313,7 @@ function buildTTF(name,sub,em,asc,desc,xH,capH,italic,glyphMap){
     if(!g.rects.length){continue}
     let x0=32767,y0=32767,x1=-32768,y1=-32768;
     const rs=g.rects.map(r=>[r[0]*UNIT,r[1]*UNIT,r[2]*UNIT,r[3]*UNIT]);
-    for(const[a,b,c,d]of rs){x0=Math.min(x0,a);y0=Math.min(y0,b);x1=Math.max(x1,c);y1=Math.max(y1,d)}
+    for(const[a,b,c,d]of rs){x0=Math.min(x0,lean(a,b));y0=Math.min(y0,b);x1=Math.max(x1,lean(c,d));y1=Math.max(y1,d)}
     gXMin=Math.min(gXMin,x0);gYMin=Math.min(gYMin,y0);gXMax=Math.max(gXMax,x1);gYMax=Math.max(gYMax,y1);
     minLsb=Math.min(minLsb,x0);minRsb=Math.min(minRsb,adv-x1);maxExt=Math.max(maxExt,x1);
     const nc=rs.length,np=nc*4;maxCts=Math.max(maxCts,nc);maxPts=Math.max(maxPts,np);
@@ -322,7 +325,7 @@ function buildTTF(name,sub,em,asc,desc,xH,capH,italic,glyphMap){
     dv.setUint16(p,0);p+=2;
     for(let k=0;k<np;k++)dv.setUint8(p++,1);
     let px=0;
-    for(const[a,b,c,d]of rs)for(const nx of[a,a,c,c]){dv.setInt16(p,nx-px);p+=2;px=nx}
+    for(const[a,b,c,d]of rs)for(const nx of[lean(a,b),lean(a,d),lean(c,d),lean(c,b)]){dv.setInt16(p,nx-px);p+=2;px=nx}
     let py=0;
     for(const[a,b,c,d]of rs)for(const ny of[b,d,d,b]){dv.setInt16(p,ny-py);p+=2;py=ny}
     const pad=(4-(buf.byteLength%4))%4,u8=new Uint8Array(buf.byteLength+pad);u8.set(new Uint8Array(buf));
@@ -336,7 +339,7 @@ function buildTTF(name,sub,em,asc,desc,xH,capH,italic,glyphMap){
   for(let i=0;i<=nG;i++)locaDv.setUint32(i*4,loca[i]);
 
   const hmtxBuf=new ArrayBuffer(nG*4),hmtxDv=new DataView(hmtxBuf);
-  for(let i=0;i<nG;i++){const g=glyphs[i],lx=g.rects.length?Math.min(...g.rects.map(r=>r[0]))*UNIT:0;hmtxDv.setUint16(i*4,g.adv*UNIT);hmtxDv.setInt16(i*4+2,lx)}
+  for(let i=0;i<nG;i++){const g=glyphs[i],lx=g.rects.length?Math.min(...g.rects.map(r=>lean(r[0]*UNIT,r[1]*UNIT))):0;hmtxDv.setUint16(i*4,g.adv*UNIT);hmtxDv.setInt16(i*4+2,lx)}
 
   /* cmap format 4 */
   const segs=[];
@@ -425,16 +428,18 @@ function buildTTF(name,sub,em,asc,desc,xH,capH,italic,glyphMap){
 }
 
 const REG_G=expand(REG,REG_META),SML_G=expand(SML,SML_META);
-const REG_R=toRects(REG_G),SML_R=toRects(SML_G);
+const REG_R=toRects(REG_G),SML_R=toRects(SML_G),SLANT=.2;
 
 /* Under html.pf: the sizes that put one font pixel on half a room pixel. Speech is outlined one font pixel all round, as thick as the
-   letters' strokes: a thicker outline runs together between the letters on a bright scene. Thoughts stand upright like speech, told
-   apart by their pale blue (a slanted pixel letter tears where its strokes step over). */
+   letters' strokes: a thicker outline runs together between the letters on a bright scene. Thoughts are slanted: the
+   pixel shapes lean about 11 degrees and the browser smooths their edges, the one text that is not on the pixel grid. A slant in whole
+   pixels tears where a stroke steps over, and one in half pixels blurs on most screens. */
 const CSS=`
 html.pf body{font-family:"Paul Pixel","Lucida Console",Monaco,"Courier New",monospace;font-weight:normal;font-synthesis:none;-webkit-font-smoothing:none;font-smooth:never}
 html.pf #top{font-family:"Paul Pixel Small","Paul Pixel","Lucida Console",Monaco,"Courier New",monospace;font-size:calc(var(--s)*4.5px);letter-spacing:.04em}
 html.pf #top button{font:inherit}
-html.pf .line{font-size:calc(var(--s)*6px);line-height:1.25;font-style:normal!important;
+html.pf .line.th{-webkit-font-smoothing:antialiased;font-smooth:auto}
+html.pf .line{font-size:calc(var(--s)*6px);line-height:1.25;
   text-shadow:var(--px) 0 #000,calc(var(--px)*-1) 0 #000,0 var(--px) #000,0 calc(var(--px)*-1) #000,
    var(--px) var(--px) #000,calc(var(--px)*-1) var(--px) #000,var(--px) calc(var(--px)*-1) #000,calc(var(--px)*-1) calc(var(--px)*-1) #000}
 html.pf .tag{font-family:"Paul Pixel Small","Paul Pixel","Lucida Console",Monaco,"Courier New",monospace;font-size:calc(var(--s)*4.5px);line-height:1.25}
@@ -469,9 +474,10 @@ const ready=(async()=>{
   try{
     if(typeof FontFace==='undefined'||!document.fonts)return false;
     const f1=new FontFace('Paul Pixel',buildTTF('Paul Pixel','Regular',12,10,-2,5,8,0,REG_R),{weight:'100 900',style:'normal'});
+    const f2=new FontFace('Paul Pixel',buildTTF('Paul Pixel','Italic',12,10,-2,5,8,1,REG_R,SLANT),{weight:'100 900',style:'italic'});
     const f3=new FontFace('Paul Pixel Small',buildTTF('Paul Pixel Small','Regular',9,7,-2,4,6,0,SML_R),{weight:'100 900',style:'normal'});
-    await Promise.all([f1.load(),f3.load()]);
-    document.fonts.add(f1);document.fonts.add(f3);
+    await Promise.all([f1.load(),f2.load(),f3.load()]);
+    document.fonts.add(f1);document.fonts.add(f2);document.fonts.add(f3);
     const st=document.createElement('style');st.textContent=CSS;document.head.appendChild(st);
     return true
   }catch(e){console.error(e);return false}

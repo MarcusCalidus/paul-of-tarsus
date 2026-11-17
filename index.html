@@ -906,7 +906,7 @@ function walk(a,x,y){return new Promise(res=>{const rm=ROOMS[a.room];
 let cur=null;
 function say(a,text,o={}){text=T(text);return new Promise(res=>{
   const el=document.createElement('div');el.className='line';el.textContent=text;el.style.color=o.color||(a?a.color:'#e6d9ff');
-  if(o.thought)el.style.fontStyle='italic';
+  if(o.thought){el.style.fontStyle='italic';el.classList.add('th')}
   $('#speech').appendChild(el);if(a&&!o.thought)a.talk=true;
   let n=0;const blip=a&&!o.thought?setInterval(()=>{if(n++<Math.min(9,text.length/5))SFX.talk(a.pitch*2)},85):0;
   const done=()=>{clearTimeout(tm);clearInterval(blip);el.remove();if(a)a.talk=false;if(G.skip===done)G.skip=null;cur=null;res()};
