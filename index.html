@@ -23,8 +23,6 @@ body{display:flex;align-items:center;justify-content:center}
 #top button{font:inherit;color:var(--gold);background:rgba(10,6,4,.55);border:var(--px) solid var(--dim);text-shadow:inherit;
   padding:0 calc(var(--s)*3px);height:calc(var(--s)*8px);cursor:pointer}
 #top button:hover{color:var(--hi);border-color:var(--gold)}
-/* tight: a long chapter name beside a long code (the German of Chapter Twelve) would not fit the one line; its letters close up and its buttons narrow (fitTop) */
-#top.tight{letter-spacing:0}#top.tight button{padding:0 calc(var(--s)*2px);margin-left:calc(var(--s)*1px)}
 #top #names.on{color:#fff;border-color:var(--gold);background:rgba(168,98,30,.66)}
 #top #names::before{content:'';display:inline-block;vertical-align:middle;width:calc(var(--s)*2px);height:calc(var(--s)*2px);border-radius:50%;
   background:var(--gold);box-shadow:0 0 0 var(--px) #000;margin:0 calc(var(--s)*1.5px) calc(var(--s)*.5px) 0}
@@ -95,6 +93,8 @@ body{display:flex;align-items:center;justify-content:center}
 #status,#panel{transition:transform .45s ease-in-out,opacity .45s ease-in-out}
 #wrap.full #status,#wrap.full #panel{transform:translateY(calc(var(--s)*70px));opacity:0;pointer-events:none}
 #wrap.full #top>span:first-child{visibility:hidden}
+/* tight: a long chapter name beside a long code and every button leaves no room for the game's name; the chapter's name stays */
+#top.tight #gname,#top.tight #gdot{display:none}
 @keyframes bl{50%{opacity:.25}}
 #status{height:calc(var(--s)*11px);line-height:calc(var(--s)*11px);text-align:center;
   font-size:calc(var(--s)*6.2px);color:var(--hi);white-space:nowrap;overflow:hidden;text-shadow:var(--px) var(--px) 0 #000;background-blend-mode:multiply;background-color:#5a4630;
@@ -163,7 +163,7 @@ body{display:flex;align-items:center;justify-content:center}
 </head>
 <body>
 <div id="wrap">
-  <div id="top"><span><span id="gname">PAUL OF TARSUS</span> &middot; <span id="chname">ESCAPE FROM DAMASCUS</span></span><span><button id="code" type="button">ENTER CODE</button><button id="names" type="button">NAMES</button><button id="mute" type="button">&#9835; SOUND ON</button><button id="lang" type="button">EN</button><button id="opts" type="button" title="Options" aria-label="Options">&#8801;</button></span></div>
+  <div id="top"><span><span id="gname">PAUL OF TARSUS</span><span id="gdot"> &middot; </span><span id="chname">ESCAPE FROM DAMASCUS</span></span><span><button id="code" type="button">ENTER CODE</button><button id="names" type="button">NAMES</button><button id="mute" type="button">&#9835; SOUND ON</button><button id="lang" type="button">EN</button><button id="opts" type="button" title="Options" aria-label="Options">&#8801;</button></span></div>
   <div id="view">
     <canvas id="screen" width="640" height="288"></canvas>
     <div id="speech"></div>
@@ -261,6 +261,10 @@ function fit(){const top=10,st=13,pn=53,tot=144+top+st+pn;
   const d=window.devicePixelRatio||1,s=Math.min(innerWidth/320,innerHeight/tot),k=Math.floor(s*d)/d,sc=k>=1?k:Math.max(.5,s);
   document.documentElement.style.setProperty('--s',sc.toFixed(3));pointer(sc,pointerKind(G.hover))}
 addEventListener('resize',fit);fit();
+/* fitTop: the top bar is one line. When the chapter's name, the code and the buttons do not fit on it, the game's name gives way. It is
+   checked whenever the bar's words change and when the window does. */
+function fitTop(){const t=$('#top');t.classList.remove('tight');if(t.scrollWidth>t.clientWidth+1||t.scrollHeight>t.clientHeight+1)t.classList.add('tight')}
+new MutationObserver(fitTop).observe($('#top'),{childList:true,characterData:true,subtree:true});addEventListener('resize',fitTop);
 /* flags & inventory */
 const F=G.flags;
 const has=id=>G.inv.includes(id);
@@ -1260,7 +1264,7 @@ async function setLang(l,keep){if(!LANGS[l])return;
   G.lang=l;MADE.clear();if(keep)store('paul.lang',l);relang()}
 /* relang: redraw every fixed piece of text in the new language: the panel, the top bar, an open overlay, choices, the tablets */
 function relang(){document.documentElement.lang=G.lang;document.title=T('Paul of Tarsus: On the Roads of Rome');
-  $('#gname').textContent=T('PAUL OF TARSUS');$('#chname').textContent=T(CHAP[G.ch].name);
+  $('#gname').textContent=T('PAUL OF TARSUS');$('#chname').textContent=T(CHAP[G.ch].name);fitTop();
   const ks=Object.keys(LANGS),nx=ks[(ks.indexOf(G.lang)+1)%ks.length];$('#lang').textContent=G.lang.toUpperCase();
   $('#lang').title=LANGS[nx].native;$('#lang').style.display=ks.length>1?'':'none';
   buildVerbs();swapBtn();setMute(AU.muted);namesBtn();codeBtn();drawInv();status();
@@ -1402,9 +1406,6 @@ async function resume(){const sv=saved();audioInit();
     if((b.w==null||unpackWide(CHAP[b.ch],b.w))&&applyState(b)){SFX.good();if(atStart(b))await showCard(b.ch);return}}
   autosave(null);SFX.nope();ov.draw()}
 function codeBtn(){const on=G.room&&!G.scene,code=on&&makeCode();if(on)autosave(code);$('#code').textContent=on?T('CODE {code}',{code}):T('ENTER CODE')}
-/* fitTop: the top bar is one line. Whenever a text in it changes it is measured again, and is set tight only while it would not fit. */
-const fitTop=()=>{const t=$('#top');t.classList.remove('tight');if(t.scrollWidth>t.clientWidth+1||t.scrollHeight>t.clientHeight+1)t.classList.add('tight')};
-new MutationObserver(fitTop).observe($('#top'),{childList:true,characterData:true,subtree:true});addEventListener('resize',fitTop);
 function closeCode(){cb.classList.remove('on');G.busy=cb.was;if(!G.busy)lock(false);status()}
 const BADCODE='That code is not valid. Please check each letter and number.';
 async function tryCode(){const b=decode($('#codein').value);
