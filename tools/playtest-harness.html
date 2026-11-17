@@ -1134,7 +1134,7 @@
      the story's flags set for it, so that its picture can be looked at without playing up to it. */
   const C11=/^(map11|road11|street11|way11|wrong11|syn11|basin11|agora11|isaiah11|shut11|yard11|block11|slave11|zeus11|bases11|ivy11|altar11|stoa11|sift11|picker11|dispute11|hill11|part11|voice11|speech11|stop11|broke11|later11|down11|deutsch11|final11|all11)$/.test(stop);
   if(/^p[a-z]+11$/.test(stop)){await loadLevel(11);ov.className='';ov.onclick=null;const ALL=CHAP[11].flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
-      S={proad11:[upto('shut'),'road11',[330,124]],proadb11:[[],'road11',[560,124]],pstreet11:[[],'street11',[70,122]],pstreetb11:[['way'],'street11',[440,122]],psyn11:[['way'],'syn11'],pagora11:[upto('shut'),'agora11',[380,120]],pagorab11:[upto('basin'),'agora11',[100,124]],pagorac11:[upto('shut'),'agora11',[560,122]],
+      S={proad11:[upto('shut'),'road11',[330,124]],proadb11:[[],'road11',[560,124]],pstreet11:[[],'street11',[70,122]],pstreetb11:[['way'],'street11',[440,122]],pstreetc11:[['way'],'street11',[600,122]],psyn11:[['way'],'syn11'],pagora11:[upto('shut'),'agora11',[380,120]],pagorab11:[upto('basin'),'agora11',[100,124]],pagorac11:[upto('shut'),'agora11',[560,122]],
         pyard11:[upto('shut'),'yard11',[120,124]],pstoa11:[upto('shut'),'stoa11',[110,128]],pstoab11:[upto('shut'),'stoa11',[330,128]],pbases11:[upto('shut'),'bases11'],pbasesb11:[upto('shut'),'bases11'],
         phill11:[upto('led'),'hill11'],phillb11:[upto('s4'),'hill11'],phillc11:[upto('spoke'),'hill11',[340,128]],pfoot11:[upto('down'),'hill11',[150,126]]}[stop];
     if(!S)throw new Error('no such stop '+stop);setChapter(11);for(const k of S[0])F[k]=1;
