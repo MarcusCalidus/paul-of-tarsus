@@ -134,7 +134,7 @@
   if(stop==='proportions'){await loadLevel(12);
     const VAR=[['A','','as it is now','head 11 wide'],['B','m','head 13 wide','body kept, 2 taller'],['C','mc','head 13 wide','height kept'],['D','l','head 15 wide','body kept, 4 taller'],
         ['E','lc','head 15 wide','height kept'],['F','ls','head 15 wide','kept by short legs'],['G','lw','head 15, as F','and broader'],['H','xl','head 17 wide','height kept']],
-      bad=[];for(const k in BUILDS){const H=BUILDS[k].H;for(const m in H)if(H[m].some(r=>r.length!==H[m][0].length||(m!=='faceF'&&r.length!==H.face[0].length)))bad.push(k+'.'+m)}
+      bad=[];for(const k in BUILDS){const H=BUILDS[k].H;for(const m in H)if(H[m].some(r=>r.length!==H.face[0].length+(/^(veil|wrap|helm|hairF)$/.test(m)?2:0)))bad.push(k+'.'+m)}
     ok(!bad.length&&VAR.every(v=>!v[1]||BUILDS[v[1]]),'every head map of a build has rows of one width'+(bad.length?'. RAGGED: '+bad:''));
     const lk=(ch,b)=>Object.assign({},paulLook(ch),b?{build:b}:null),
       spr=(ch,b,dir,fr,talk,bow,ges)=>sprite(['prop',ch,b,dir,fr||0,talk||0,bow||0,ges||0].join('|'),q=>person(q,0,0,lk(ch,b),dir,fr||0,talk||0,bow||0,ges||0,0),dir),
@@ -182,6 +182,32 @@
           const y0=34+r*(hh*Z+44);g.drawImage(w,0,top*HR,cw*HR,hh*HR,0,y0,cw*Z,hh*Z);
           VAR.slice(r*4,r*4+4).forEach(([n],i)=>text(g,n,(at[i]-cam2)*Z-8,y0+hh*Z+31,26,'#f4f0e6'))});
         SHEETS['proportions-7-street-close']=c.toDataURL()}}
+    /* The women: Lydia of Chapter Eight as she is and in build E (lc), with the Paul of that chapter beside her in each. */
+    {await loadLevel(8);const ly=b=>Object.assign({},LOOK.lydia,{p:null},b?{build:b}:null),PAIR=[['A','','as they are now'],['E','lc','head 15 wide, height kept']],
+        sp=(o,key,dir,fr,talk,bow,ges)=>sprite(['prop',key,dir,fr||0,talk||0,bow||0,ges||0].join('|'),q=>person(q,0,0,o,dir,fr||0,talk||0,bow||0,ges||0,0),dir),
+        tallF=b=>tall(b)-2+1;   /* a woman's trunk is two rows shorter, and her veil begins a row above her head map */
+      /* side by side, four times enlarged */
+      {const Z=4,cw=400,chh=516,[c,g]=sheet(2*cw,40+chh);text(g,'Lydia and Paul (Chapter Eight): as they are, and in build E',10,27,19,'#f4f0e6');
+        PAIR.forEach(([n,b,l],i)=>{const x=i*cw,y=40,gy=y+chh-66;field(g,i,x,y,cw,chh);
+          [[ly(b),'ly'+b,-24],[lk(8,b),'pl'+b,24]].forEach(([o,k,dx])=>{g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2+(dx-17)*Z,gy,34*Z,3);cut(g,sp(o,k,1),-22,-108,44,109,x+cw/2+(dx-22)*Z,gy-108*Z,Z)});
+          text(g,n,x+10,y+28,26);text(g,l,x+10,gy+30,15)});
+        SHEETS['proportions-8-lydia']=c.toDataURL()}
+      /* her head, eight times enlarged: plain, speaking, bowed with the eyes closed, and facing left */
+      {const Z=8,cw=208,chh=316,P=[[1,0],[1,0,1],[1,0,0,1],[-1,0]],[c,g]=sheet(P.length*cw,40+2*chh);text(g,"Lydia's head, eight times enlarged: plain, speaking, bowed, facing left",10,27,17,'#f4f0e6');
+        PAIR.forEach(([n,b],r)=>P.forEach((p,i)=>{const x=i*cw,y=40+r*chh;field(g,i+r,x,y,cw,chh);cut(g,sp(ly(b),'ly'+b,...p),-13,-tallF(b)-3,26,36,x,y+26,Z);if(!i)text(g,n,x+8,y+24,22)}));
+        SHEETS['proportions-9-lydia-head']=c.toDataURL()}
+      /* her poses, three times enlarged */
+      {const Z=3,cw=138,chh=342,P=[[1,0],[1,1],[1,3],[1,0,1,0,1],[1,0,0,1],[-1,0]],[c,g]=sheet(40+P.length*cw,40+2*chh);
+        text(g,"Lydia's poses: standing, two steps, speaking, praying, facing left",10,27,17,'#f4f0e6');
+        PAIR.forEach(([n,b],i)=>{const y=40+i*chh;P.forEach((p,j)=>{const x=40+j*cw;field(g,i+j,x,y,cw,chh);cut(g,sp(ly(b),'ly'+b,...p),-23,-110,46,112,x,y+chh-112*Z-4,Z)});
+          g.fillStyle=i%2?'#c9c2b2':'#b9c2cc';g.fillRect(1,y+1,38,chh-2);text(g,n,9,y+34,26)});
+        SHEETS['proportions-10-lydia-poses']=c.toDataURL()}
+      /* by the river at Philippi, close by: one room pixel is six pixels of the sheet */
+      {setChapter(8);const id='river',Z=6,cw=136,top=54,hh=86,cam2=172,[c,g]=sheet(cw*Z,34+2*(hh*Z+44));text(g,'By the river at Philippi: as they are (above), and in build E (below)',10,23,17,'#f4f0e6');
+        PAIR.forEach(([n,b],r)=>{const[w,wg]=mk(cw*HR,VH*HR);wg.setTransform(HR,0,0,HR,0,0);wg.imageSmoothingEnabled=false;backdrop(wg,id,cam2);wg.translate(-cam2,0);
+          [[lk(8,b),'pl'+b,222,130,1],[ly(b),'ly'+b,256,127,-1]].forEach(([o,k,x,y,d])=>figure(wg,x,y,lightAt(id,x,y),['prop',k,d,0,0,0,0].join('|'),q=>person(q,0,0,o,d,0,0,0,0,0)));
+          const y0=34+r*(hh*Z+44);g.drawImage(w,0,top*HR,cw*HR,hh*HR,0,y0,cw*Z,hh*Z);text(g,n,12,y0+hh*Z+31,26,'#f4f0e6')});
+        SHEETS['proportions-11-river']=c.toDataURL()}}
     window.SHEETS=SHEETS;halt('proportions')}
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
   ok(document.documentElement.classList.contains('pf')&&SHARED.font&&document.fonts.check('12px "Paul Pixel"')&&document.fonts.check('italic 12px "Paul Pixel"')&&document.fonts.check('9px "Paul Pixel Small"'),'pixel font loaded and active');

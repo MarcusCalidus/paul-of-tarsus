@@ -1,6 +1,6 @@
 # A trial of proportions: Paul with a larger head
 
-A trial on the branch `paul-proportions`, not part of the game. Paul is drawn in eight builds, A to H: A is the figure as it is today, and the others give him a larger head, in the manner of the adventure sprites of the early 1990s. Only Paul is drawn so far. Everything is painted by the game's own figure painter; the heads are new pixel maps drawn by hand at their own size, not the old head enlarged.
+A trial on the branch `paul-proportions`, not part of the game. Paul is drawn in eight builds, A to H: A is the figure as it is today, and the others give him a larger head, in the manner of the adventure sprites of the early 1990s. Paul is drawn in all eight, and Lydia in the one that was chosen (E). Everything is painted by the game's own figure painter; the heads are new pixel maps drawn by hand at their own size, not the old head enlarged.
 
 | | Head | Body | Height | Heads tall |
 |---|---|---|---|---|
@@ -13,13 +13,27 @@ A trial on the branch `paul-proportions`, not part of the game. Paul is drawn in
 | **G** | 15 wide | as F, with shoulders, trunk and skirt a pixel broader on each side | 92 | 4.8 |
 | **H** | 17 wide | legs and trunk three rows shorter each | 92 | 4.2 |
 
-## In the street of Corinth, close by
+## Round two: Lydia in build E
+
+The maintainer chose E. To see how a woman looks in it, Lydia of Chapter Eight is drawn as she is today (A) and in build E, with a face and a veil drawn by hand at the larger size. The Paul of that chapter stands beside her in the same build.
+
+![Lydia and Paul by the river at Philippi](11-river.png)
+
+![Lydia and Paul side by side](8-lydia.png)
+
+![Lydia's head](9-lydia-head.png)
+
+![Lydia's poses](10-lydia-poses.png)
+
+## Round one: Paul in eight builds
+
+### In the street of Corinth, close by
 
 The Paul of Chapters Seven to Twelve, with the same wall and door behind each build.
 
 ![Close by in the street of Corinth](7-street-close.png)
 
-## The line-up
+### The line-up
 
 Four times enlarged. The small red notch at the left of each field marks the height of today's figure.
 
@@ -27,13 +41,13 @@ Four times enlarged. The small red notch at the left of each field marks the hei
 
 ![The Paul of Chapters Seven to Twelve](2-older.png)
 
-## The heads
+### The heads
 
 Eight times enlarged.
 
 ![The heads](3-heads.png)
 
-## As the game shows them
+### As the game shows them
 
 The whole width of the screen, all eight in a row.
 
@@ -41,7 +55,7 @@ The whole width of the screen, all eight in a row.
 
 ![The same street with the young Paul](6-street-young.png)
 
-## The poses
+### The poses
 
 Standing, the two steps of the walk, speaking with the hand raised, the head bowed in prayer, and facing left.
 
@@ -49,4 +63,4 @@ Standing, the two steps of the walk, speaking with the hand raised, the head bow
 
 ## Making the sheets again
 
-`node tools/playtest.mjs proportions` saves them to `tools/out/` as `proportions-1-young.png` and so on. The builds are `BUILDS` in `index.html`; a look that says `build:'lc'` is drawn in that build, and a look that names none is drawn exactly as before.
+`node tools/playtest.mjs proportions` saves them to `tools/out/` as `proportions-1-young.png` and so on, Lydia's among them. The builds are `BUILDS` in `index.html`; a look that says `build:'lc'` is drawn in that build, and a look that names none is drawn exactly as before.
