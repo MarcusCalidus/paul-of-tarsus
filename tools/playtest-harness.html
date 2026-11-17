@@ -1092,9 +1092,9 @@
   heard.length=0;pickQ('That is the whole message.');
   while(!(ov.classList.contains('end')&&ov.textContent.includes(T('Is It So?')))&&n10++<4000)await wait(50);
   ok(ov.classList.contains('end')&&F.msg&&told('v15b')&&said('Silas and Timothy are to come to you in Athens, as quickly as they can. That I can carry.'),'the instruction is carried by mouth (Acts 17:15); chapter ten complete screen shown');
-  ok(ov.textContent.includes(T('Click to return to the title'))&&/17:1-15/.test(ov.textContent),'the closing screen says what the account leaves unsaid');
+  ok(ov.textContent.includes(T('Click to continue to Chapter Eleven'))&&/17:1-15/.test(ov.textContent),'the closing screen says what the account leaves unsaid');
   {const r=ov.getBoundingClientRect(),bad=[...ov.children].filter(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});if(bad.length)tight.add('closing screen: '+bad[0].textContent.slice(0,40))}
-  ok(store('paul.save')===null,'a finished game keeps no save');
+  ok(store('paul.save')===codeOf(11,0)&&ov.textContent.includes(T('Chapter Eleven code: {code}',{code:codeOf(11,0)}))&&/^11-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(codeOf(11,0))&&decode(codeOf(11,0)).ch===11,'chapter ten ends with a chapter eleven code, and the browser keeps it: '+codeOf(11,0));
   /* the uproar and the chord of a row that holds, rendered offline on the game's own mixer: heard, finite and unclipped */
   {const SR=22050,off=async(fn,dur)=>{const o=new OfflineAudioContext(1,Math.ceil(SR*dur),SR),keep=Object.assign({},AU);AU.ctx=o;audioGraph(o);try{fn(o)}finally{for(const k in AU)AU[k]=keep[k]}return(await o.startRendering()).getChannelData(0)},
      peak=x=>{let p=0;for(const v of x){if(!isFinite(v))return NaN;p=Math.max(p,Math.abs(v))}return p},a=peak(await off(()=>C().uproar(),8)),b=peak(await off(()=>C().chord(),2));
@@ -1105,6 +1105,236 @@
    ok(!bad.length&&Object.keys(EV).length===9&&Object.keys(PL).length===13,'the table: nine lines of the tablets, each with its row, and thirteen places, each in its scroll and named in this language'+(bad.length?' BAD '+bad:''))}
   halt('final10')};
   if(C10){await ch10();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+  /* ---------------- Chapter Eleven ---------------- */
+  /* Chapter Eleven stops start Chapter Eleven from the title screen. Its test is a function of its own: the full run calls it when Chapter
+     Ten has ended, and a Chapter Eleven stop calls it at once. all11 halts nowhere. The stops that begin with "p" open one room at once, with
+     the story's flags set for it, so that its picture can be looked at without playing up to it. */
+  const C11=/^(map11|road11|street11|way11|wrong11|syn11|basin11|agora11|isaiah11|shut11|yard11|block11|slave11|zeus11|bases11|ivy11|altar11|stoa11|sift11|picker11|dispute11|hill11|part11|voice11|speech11|stop11|broke11|later11|down11|deutsch11|final11|all11)$/.test(stop);
+  if(/^p[a-z]+11$/.test(stop)){await loadLevel(11);ov.className='';ov.onclick=null;const ALL=CHAP[11].flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      S={proad11:[upto('shut'),'road11',[330,124]],proadb11:[[],'road11',[560,124]],pstreet11:[[],'street11',[70,122]],pstreetb11:[['way'],'street11',[440,122]],psyn11:[['way'],'syn11'],pagora11:[upto('shut'),'agora11',[380,120]],pagorab11:[upto('basin'),'agora11',[100,124]],pagorac11:[upto('shut'),'agora11',[560,122]],
+        pyard11:[upto('shut'),'yard11',[120,124]],pstoa11:[upto('shut'),'stoa11',[110,128]],pstoab11:[upto('shut'),'stoa11',[330,128]],pbases11:[upto('shut'),'bases11'],pbasesb11:[upto('shut'),'bases11'],
+        phill11:[upto('led'),'hill11'],phillb11:[upto('s4'),'hill11'],phillc11:[upto('spoke'),'hill11',[340,128]],pfoot11:[upto('down'),'hill11',[150,126]]}[stop];
+    if(!S)throw new Error('no such stop '+stop);setChapter(11);for(const k of S[0])F[k]=1;
+    const room=S[1];CHAP[11].place(room);dealInv(room);G.scene=null;enterRoom(room,...CHAP[11].ent[room]);
+    if(S[2]){place(P,room,S[2][0],S[2][1],1);G.cam=clamp(S[2][0]-160,0,ART[room].w-320)}
+    if(stop==='pbasesb11'){Object.assign(G.b11,{ivy:1,frag:1,last:'unknown'});G.b11.read={pity:1,ivy:1,broken:1,unknown:1}}
+    if(stop==='phillb11'){G.sp11.ground='line';G.sp11.voice='we'}
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();await wait(1100);halt(stop)}
+  const ch11=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[11],told=k=>heard.includes(T(C().told[k])),Q=p=>T('{text} ({ref})',{text:T(p.gist),ref:T(p.ref)}),
+    until=async(fn,n)=>{for(let i=0;i<(n||6000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(h,v)=>{if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},useH=async(id,h,v)=>{verb(v||'use');item(id);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    LN=k=>ROOMS.street11.hs.filter(h=>h.name==='lane')[C().lanes.findIndex(l=>l[1]===k)],STA=id=>ROOMS.street11.hs.find(h=>h.y===46&&h.w===16&&h.x===C().stat.find(s=>s.id===id).x-8),
+    SH=()=>ROOMS.bases11.hs.slice(0,7),stone=id=>SH()[C().stones.findIndex(s=>s.id===id)],
+    setG=async k=>{for(let i=0;i<8&&G.sp11&&G.sp11.ground!==k;i++)await act(null,'what I begin from')},setV=async v=>{for(let i=0;i<4&&G.sp11&&G.sp11.voice!==v;i++)await act(null,'how I say it')},
+    spk=async()=>{heard.length=0;await act(null,'men on the seats')},capsFit=n=>G.caps11.length>=n&&G.caps11.every(c=>c.w<=c.max+.5&&c.sz>=3.2),
+    walkTo=async(x,y)=>{view(x,y);await idle();await wait(160);await idle()},seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+  let n11=0;
+  heard.length=0;(C11?document.querySelector('#overlay [data-ch="11"]'):ov).click();
+  /* the map: Athens, and Beroea far to the north; nobody travels. The line told over it stays while the map is looked at. */
+  for(let i=0;i<9000&&!(SHARED.map&&G.scene===SHARED.map.draw);i++)await wait(30);clearInterval(sk);await wait(900);
+  {const M=SHARED.map,L=M.state.legs,inWin=id=>{const[x,y]=M.where(id);return x>6&&x<314&&y>6&&y<138};
+    ok(G.scene===M.draw&&L.length===3&&L.every(l=>l.k===1)&&inWin('athens')&&inWin('beroea'),'chapter eleven opens on the map, once: Athens, and Beroea far to the north');
+    ok(mapClear(),'no name on the map crosses a coast, an island or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''));
+    ok(M.state.boxes.some(b=>b[4]===T('ACHAIA').split('').join(' ')),'the region is named on it: Achaia')}
+  halt('map11');sk=setInterval(()=>{if(G.skip)G.skip()},30);
+  await until(()=>G.ch===11&&G.room==='road11'&&!G.scene&&!G.busy);note();
+  const NI=A('nikias11'),CH=A('charm11'),AR=A('arist11'),XE=A('xeno11'),SL=A('slave11'),PH=A('philo11'),AN=A('antig11'),DS=A('dosi11'),DI=A('dion11'),DM=A('dama11');
+  ok(G.ch===11&&G.room==='road11'&&srt()==='tablets'&&told('v16')&&said('He had seen idols in every city. Here he gave up counting them.'),'chapter eleven starts on the road up from the harbor, with nothing in his pack but the tablets ['+[G.ch,G.room,srt(),heard.length].join()+']');
+  ok(/^11-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===11&&decode(makeCode()).w!=null,'chapter eleven code format: two digits for the chapter, then nine characters '+makeCode());
+  ok(!$('#verbs').classList.contains('party'),'Paul is alone in Athens: there is nobody to change to');fitVerbs();
+  halt('road11');
+  {const el=await tabs();ok(leaf(0,T('Find the synagogue. Somebody in the street will know the way.')).length===1&&leaf(1).length===4&&!leaf(1).some(x=>/[“”„"]/.test(x))&&el.textContent.includes(T('SEEN IN ATHENS'))&&leaf(1,T('Nothing yet. I have not looked.')).length===1,
+      "the tablets hold three passages as Paul's notes, none in quotation marks, and an empty list of what he has seen in Athens");el.click();await idle()}
+  pray();await idle();ok(hint()[0]==='gate11','the hint points to the city gate');
+  heard.length=0;await act(null,'road down to the harbor');ok(G.room==='road11'&&said('Not while Silas and Timothy are on their way to me. The message said: Athens.'),'he does not go back to the harbour');
+  heard.length=0;await act(null,'altars by the road');ok(G.room==='road11'&&said('Altars, one after another. I have not counted them, and today I am not going to.'),'on the first day he does not stop at the altars');
+  await act(null,'city gate');await until(()=>G.room==='street11'&&!G.busy);
+  /* the way by the statues */
+  ok(G.room==='street11'&&NI.room==='street11'&&ROOMS.street11.hs.filter(h=>h.name==='statue').length===6,'the streets: six figures in bronze and marble, and each is only a statue until it is looked at');
+  halt('street11');
+  heard.length=0;await onH(LN('c'));ok(G.room==='street11'&&said('A lane between two houses. In a city that I do not know, I ask before I turn.'),'no lane before he has asked the way');
+  heard.length=0;await act(null,'way to the marketplace');ok(G.room==='street11'&&said('That way lies the marketplace. First the synagogue: there, at least, they will know the names I use.'),'the synagogue first (Acts 17:17)');
+  pray();await idle();ok(hint()[0]==='way11','the hint points to the man by the fountain');
+  heard.length=0;await actor(null,NI);ok(F.way&&said(C().way),'Nikias gives the way by the statues');
+  {const el=await tabs();ok(leaf(0,T(C().way)).length===1,'and the way is noted on the tablets');el.click();await idle()}
+  halt('way11');await sweep(NI);
+  heard.length=0;await onH(LN('a'));ok(G.room==='street11'&&!F.syn&&P.x<130&&said('Not that one. I should look at these figures properly, one by one, before I turn again.'),'a wrong lane leads back to the fountain, and nothing is lost');
+  halt('wrong11');
+  for(const id of['gen','scr','old','maim','p1'])await onH(STA(id),'look');
+  ok(H('bronze man in a helmet')&&H('marble man with a scroll')&&H('old lawgiver in marble')&&H('marble youth without a right hand')&&ROOMS.street11.hs.filter(h=>h.name==='bronze that faces another').length===2&&!ROOMS.street11.hs.some(h=>h.name==='statue'),'looked at, each figure has its name');
+  heard.length=0;await onH(LN('d'));ok(G.room==='street11'&&!F.syn,'the lane before the marble youth is the wrong one too');
+  pray();await idle();ok(hint()[0]==='lane11','the hint names the lane');
+  await onH(LN('c'));await until(()=>G.room==='syn11'&&!G.busy);
+  ok(G.room==='syn11'&&DS.room==='syn11'&&said('Peace, stranger. From the harbor, by the dust on you. A son of Israel?'),'the lane just beyond the marble youth leads to the synagogue');
+  halt('syn11');
+  heard.length=0;await act(null,'door to the lane');ok(G.room==='syn11'&&said('Not before I have said what I came to say.'),'he does not leave before he has spoken');
+  pray();await idle();ok(hint()[0]==='syn11','the hint points to Dositheos');await sweep(DS);
+  heard.length=0;await actor(null,DS);note();
+  ok(F.syn&&G.room==='agora11'&&told('v17a')&&told('v17b')&&told('v21')&&said('Here, at least, they knew the names he used.')&&hasQ('Decline, and tell him plainly why.')&&nq()===4,'he reasons in the synagogue, and the next day in the marketplace (Acts 17:17, 21): and at its boundary stone he is shown the basin');
+  halt('basin11');
+  /* the basin at the boundary stone: one choice among true sentences */
+  heard.length=0;await pickQ('Dip my hands. It is only water.');ok(!F.basin&&said('Only water. And with it my hands would say that this ground is holy to their gods, and that I come before them clean. My hands will not say that.'),'he does not wash at their basin');
+  await pickQ('Go round, and come in by another street.');await pickQ('Tell him what his gods are worth.');ok(!F.basin&&nq()===1,'nor slip past it, nor scorn it');
+  heard.length=0;await pickQ('Decline, and tell him plainly why.');
+  ok(F.basin&&said('I thank you, but no. I worship one God, who made heaven and earth, and he has asked no such washing of me. I mean no insult to you by it.')&&CH.x>380&&AR.room==='agora11','he declines plainly and without scorn, and that gathers his first hearers on the steps');
+  /* a code noted at the boundary stone, before he has answered, leads back to it */
+  {F.basin=0;const c=makeCode();F.basin=1;await enter(c);ok(G.room==='agora11'&&!F.basin&&F.syn&&CH.x<120,'a code noted at the boundary stone leads back to it');pray();await idle();ok(hint()[0]==='basin11','and the hint points to Charmides');
+   heard.length=0;await act(null,'lane to the craftsmen');ok(G.room==='agora11'&&hasQ('Decline, and tell him plainly why.'),'whichever way he turns, Charmides points to the basin first');await pickQ('Decline, and tell him plainly why.');ok(F.basin&&CH.x>380,'and he declines as before')}
+  halt('agora11');
+  heard.length=0;await act(null,'painted colonnade');ok(G.room==='agora11'&&said('Two men are teaching in there, each to his own circle. I have hearers of my own on the steps first.'),'the men on the steps first');
+  heard.length=0;await act(null,'path up the hill of Ares');ok(G.room==='agora11'&&said('The hill of Ares, where their court sits. Nobody climbs it to talk unless he is taken there.'),'nobody climbs the hill of Ares unless he is taken');
+  pray();await idle();ok(hint()[0]==='steps11','the hint points to the men on the steps');
+  /* the tablets fail: three passages, all true, and to these men only names */
+  heard.length=0;await actor(null,CH);ok(nq()===3&&said('Men of Athens, hear what is written.'),'he opens his tablets, as in every city');
+  await pickQ('Read them Isaiah');ok(heard.includes(Q(C().ps.is42))&&said('Isaiah. Who is Isaiah? A poet? From which city?')&&nq()===2,'Isaiah is only a name to them');
+  halt('isaiah11');
+  await pickQ('Read them Moses');await pickQ('Read them David');
+  ok(F.shut&&heard.includes(Q(C().ps.de4))&&heard.includes(Q(C().ps.ps145))&&said('Then the tablets stay shut. I shall look at their city instead: slowly, the way a craftsman looks at another man\'s work. And I shall ask it four things.')
+    &&srt()==='q11house,q11made,q11need,q11unk,tablets','so the tablets are shut, and he carries four questions instead ['+srt()+']');
+  halt('shut11');
+  {const el=await tabs();ok(leaf(0,T('Who made them? Find where it can be seen.')).length===1&&leaf(0,T('Is there one they do not know? Read the altars by the road.')).length===1,'the four questions are on the tablets as things still to do');el.click();await idle()}
+  await sweep(CH,AR);
+  heard.length=0;await use('q11made','q11need');ok(said('One question at a time, and each of them to the thing that can answer it.'),'two questions are not put to each other');
+  heard.length=0;await use('q11made','tablets');ok(said('Not into the tablets. They stay shut in this city until somebody asks for them.'),'and nothing goes into the tablets');
+  /* a question put to the wrong thing gets an honest answer and no more */
+  heard.length=0;await useOn('q11made','image in the colonnade');ok(!F.qmade&&said('Who made it? It does not say. Finished, it looks as if no hand had ever touched it.'),'who made them, asked of a finished image');
+  heard.length=0;await useOn('q11house','temple of Hephaestus');ok(!F.qhouse&&said('In there, they would say; and that house was finished long ago. I want one where the hands can still be seen.'),'where does he live, asked of a finished temple');
+  pray();await idle();ok(hint()[0]==='made11','the hint points to the craftsmen');
+  await act(null,'lane to the craftsmen');await until(()=>G.room==='yard11'&&!G.busy);
+  ok(G.room==='yard11'&&XE.room==='yard11','the stonecutter\'s yard, under the temple of Hephaestus');halt('yard11');
+  heard.length=0;await useOn('q11house','block with half a figure');ok(!F.qhouse&&said('Nowhere yet. He is still in the stone.'),'where does he live, asked of the block');
+  heard.length=0;await useOn('q11made','block with half a figure');
+  ok(F.qmade&&has('g11block')&&!has('q11made')&&said('Who made them? He did. I am standing here watching him do it.'),'who made them: he watches it being done (Acts 17:29)');
+  halt('block11');await sweep(XE);
+  await actor(null,XE);await pickQ('What are you making?');await pickQ('Good work to you.');ok(said('A god. Which one, I shall know when he is sold. One buyer wants a god for the sea, the next a god for his door. Up to the neck they are all the same god.'),'the stonecutter says when a god gets his name');
+  await act(null,'gate to the lane');await until(()=>G.room==='agora11'&&!G.busy);await act(null,'street');await until(()=>G.room==='street11'&&!G.busy);await act(null,'city gate');await until(()=>G.room==='road11'&&!G.busy);
+  ok(G.room==='road11'&&SL.room==='road11','back on the road: a slave rests beside it, with a robe and a dish');halt('slave11');
+  heard.length=0;await give('q11house',SL);ok(!F.qhouse&&said('He is carrying it to the door of a house. He does not live there himself.'),'where does he live, asked of the slave');
+  heard.length=0;await give('q11need',SL);await until(()=>!SL.room&&!G.busy);
+  ok(F.qneed&&has('g11dish')&&!SL.room&&said('What does he need? A clean robe, because the old one is dusty. And a dish of food at noon.'),'what does he need: a robe and a dish, carried up to an image (Acts 17:25)');
+  heard.length=0;await use('g11dish','q11house');ok(said('That question is answered already. The open ones belong to the city.'),'what he has seen is not put to a question that is still open');
+  heard.length=0;await useOn('q11house','temple of Zeus');
+  ok(F.qhouse&&has('g11roof')&&said('Where does he live? Here, they say: in a house that six hundred years have not finished.'),'where does he live: in a temple that six hundred years have not roofed (Acts 17:24)');
+  halt('zeus11');
+  pray();await idle();ok(hint()[0]==='unk11','the hint points to the stones');
+  /* between the statues: three stones seem to name nobody */
+  await act(null,'altars by the road');await until(()=>G.room==='bases11'&&!G.busy);
+  ok(G.room==='bases11'&&PC().y>144+80&&SH().every(h=>h.name==='altar'||h.name==='base of a statue')&&said('Seven stones in this stretch alone, and a band of letters on each. This time I read them: one by one.'),'the close view of the altars: seven stones, none of them read yet');
+  halt('bases11');
+  heard.length=0;await useH('q11unk',stone('unknown'));ok(!F.qunk&&said('I have not even read it yet.'),'the question is not put to a stone he has not read');
+  await onH(stone('unknown'),'look');ok(stone('unknown').name==='altar to a god not known'&&capsFit(1),'the altar is read: to a god not known');
+  heard.length=0;await useH('q11unk',stone('unknown'));ok(!F.qunk&&said('It seems to name nobody. But so do two others in this row, and I have not got to the bottom of those. I will not build on this stone until I know that it stands alone.'),'two other stones seem to name nobody too');
+  heard.length=0;await useH('q11unk',stone('ivy'));ok(said('I cannot read it. That does not mean that they cannot.'),'under the ivy: covered is not unknown');
+  await act(null,'ivy');ok(G.b11.ivy&&!H('ivy'),'the ivy is drawn aside');halt('ivy11');
+  await onH(stone('ivy'),'look');ok(stone('ivy').name==='base of the hero Timandros','and there is a name under it');
+  heard.length=0;await useH('q11unk',stone('broken'));ok(said('The name is broken off. Broken is not unknown. Where is the piece?'),'broken off: lost is not unknown');
+  await act('look','piece of stone');await onH(stone('broken'),'look');ok(stone('broken').name==='base of the hero Xenodamos','the piece in the grass has the rest of the name');
+  await onH(stone('pity'),'look');heard.length=0;await useH('q11unk',stone('pity'));ok(said('This one they know well enough to name.')&&stone('pity').name==='altar to Pity','an altar with a name is not the one');
+  heard.length=0;await useH('q11unk',stone('unknown'));
+  ok(F.qunk&&has('g11altar')&&!has('q11unk')&&said('Not lost, like the name in the grass. Not covered, like the one under the ivy. They never had a name to write.'),'is there one they do not know: an altar to an unknown god (Acts 17:23)');
+  halt('altar11');
+  {const el=await tabs();ok(leaf(1,T(C().grain.altar.note)).length===1&&leaf(1,T(C().grain.roof.note)).length===1&&leaf(1,T(C().grain.dish.note)).length===1&&leaf(1,T(C().grain.block.note)).length===1,'what he has seen in Athens is on the tablets: four notes');el.click();await idle()}
+  await act(null,'back to the road');await until(()=>G.room==='road11'&&!G.busy);await act(null,'city gate');await until(()=>G.room==='street11'&&!G.busy);
+  await act(null,'way to the marketplace');await until(()=>G.room==='agora11'&&!G.busy);ok(G.room==='agora11'&&!F.led,'four grains, and no dispute yet: he has not listened to the teachers');
+  pray();await idle();ok(hint()[0]==='stoa11a','the hint points to the painted colonnade');
+  /* seed picker: whom he hears depends on where he stands */
+  await act(null,'painted colonnade');await until(()=>G.room==='stoa11'&&!G.busy);await wait(200);await idle();
+  ok(G.room==='stoa11'&&AU.mood==='stoic'&&said(C().says.s[0].say),'in the painted colonnade, at the Stoic\'s end, he hears the Stoic');
+  halt('stoa11');
+  heard.length=0;await walkTo(240,126);ok(AU.mood==='both'&&said('From here I hear both of them at once, and follow neither. I shall have to stand with the one, and then with the other.'),'between them he hears both, and follows neither');
+  heard.length=0;await walkTo(380,128);ok(AU.mood==='epic'&&said(C().says.e[0].say),'at the other end he hears the Epicurean');
+  heard.length=0;await actor(null,AN);ok(hasQ('Pleasure is the goal.')&&hasQ('Listen a while longer.')&&!hasQ('A god lacks nothing.'),'he can keep only what he has heard');
+  await pickQ('Pleasure is the goal.');ok(!F.epic&&said('If pleasure were where life is going, I took the wrong road at Damascus. I do not think that I did.'),'a saying that he cannot hold with him');
+  halt('sift11');
+  await pickQ('Listen a while longer.');await pickQ('Listen a while longer.');await pickQ('Listen a while longer.');ok(hasQ('A god lacks nothing.')&&!hasQ('Listen a while longer.'),'heard out, the Epicurean has said four things');
+  await pickQ('The gods are far away.');heard.length=0;await pickQ('A god lacks nothing.');
+  ok(F.epic&&said('A god lacks nothing. He draws the wrong end from it: that the gods do not care. But the sentence itself is true, and he has granted it before I have opened my mouth.'),'what the Epicurean grants: a god lacks nothing');
+  await walkTo(100,128);pray();await idle();ok(hint()[0]==='stoa11','the hint points to the Stoic');
+  await actor(null,PH);for(let i=0;i<4&&hasQ('Listen a while longer.');i++)await pickQ('Listen a while longer.');
+  await pickQ('The divine is not anyone.');ok(!F.stoic&&said('Not anyone? He is someone. He hears, and he has a name. On that sentence we part.'),'the Stoic\'s god is nobody: there they part');
+  heard.length=0;await pickQ('We too are his children.');
+  ok(F.stoic&&has('g11line')&&said('A seed picker.')&&said('Let them call it picking. I know what I am gathering it for.'),'the line of their poets (Acts 17:28): and they have a name for a man who gathers so');
+  ok(said('An altar, a temple, a dish, a block of marble, and a line of their own poets. I have what I came for. Now back to the marketplace: whoever happens to be there will be there.'),'he has what he came for');
+  halt('picker11');
+  pray();await idle();ok(hint()[0]==='back11','the hint points back to the marketplace');
+  /* led to the Areopagus */
+  heard.length=0;act(null,'steps down to the marketplace');await until(()=>G.room==='agora11'&&$('#choices').classList.contains('on'));note();
+  ok(told('v18a')&&told('v18b')&&said('A seed picker.')===false||told('v18a'),'the philosophers take him on (Acts 17:18)');
+  ok(nq()===3&&hasQ('I bring no new god: I announce the One who made you.'),'he is asked plainly whether he brings new gods');
+  halt('dispute11');
+  await pickQ('Call it what you like. I have nothing to hide.');await pickQ('Ask me that in the synagogue, on the Sabbath.');heard.length=0;pickQ('I bring no new god: I announce the One who made you.');
+  await until(()=>G.room==='hill11'&&!G.busy&&!G.scene);note();
+  ok(F.led&&G.room==='hill11'&&seenTold.has('v19')&&seenTold.has('v20')&&told('v22')&&said('They did not drag him. They did not let go of him either.'),'he answers plainly, and is led to the Areopagus (Acts 17:19, 20)');
+  /* in the midst */
+  {const x0=P.x;view(250,118);await idle();ok(P.x===x0&&P.x===366,'on the rock he stands in the midst, and takes no step')}
+  ok(G.sp11&&G.sp11.ground===null&&G.sp11.voice==='you'&&capsFit(3)&&srt()==='g11altar,g11block,g11dish,g11line,g11roof,tablets','five grains, empty hands, and the voice "you": and what is to be said next stands over them ['+srt()+']');
+  ok(DM.room==='hill11'&&DM.x<200&&!C().parts.some(p=>p&&p.woman)&&ROOMS.hill11.hs.every(h=>!/wom/i.test(h.name)),'Damaris stands on the path below, out of the picture; the seats hold men only');
+  halt('hill11');
+  pray();await idle();ok(hint()[0]==='sp111','the hint for the first part of the speech');
+  heard.length=0;await useOn('tablets','men on the seats');ok(said('Not here. There is no scroll that these men would know.'),'the tablets stay shut on the hill');
+  await spk();ok(!F.s1&&heard.some(x=>x.includes(T(C().parts[1].claim))),'empty hands at the beginning: what has he seen that says so?');
+  await setG('roof');await spk();ok(!F.s1&&heard.some(x=>x.includes(T(C().grain.roof.cap))),'the wrong ground: somebody says what he heard, and not what to change');
+  halt('part11');
+  await setG('altar');await setV('we');await spk();ok(!F.s1&&said('We? You came off a ship ten days ago. Tell us what you have seen in our city, stranger, and leave us to say "we".'),'the right ground in the wrong voice');
+  halt('voice11');
+  await setV('you');await spk();note();ok(F.s1&&told('v23')&&!has('g11altar')&&G.sp11.lean===1,'he begins from their own altar (Acts 17:22, 23), and the grain is spent');
+  verb('use');item('g11roof');view(...hs('men on the seats'));await idle();note();ok(F.s2&&seenTold.has('v24'),'a grain used on the men on the seats is what he begins from (Acts 17:24)');
+  await setG('line');await spk();ok(!F.s3,'a line of their poets does not carry the third part');
+  await setG('dish');await spk();note();ok(F.s3&&told('v25'),'the robe and the dish (Acts 17:25)');
+  await setG('block');await spk();ok(!F.s4&&said('He is right. Nothing of theirs says this. I can only say it, and stand among them while I do.'),'nothing of theirs says that all nations come from one man');
+  await setG(null);await spk();ok(!F.s4&&said('Said like that, I stand outside and point. He is not far from any one of us; and I am one of us.'),'said as "you", he stands outside');
+  await setV('we');await spk();note();ok(F.s4&&told('v26')&&told('v27'),'with empty hands, and as one of them (Acts 17:26, 27)');
+  halt('speech11');
+  await setG('line');await spk();note();ok(F.s5&&told('v28'),'their own poets (Acts 17:28)');
+  await setG('block');await setV('you');await spk();ok(!F.s6&&said('Said like that, it is an accusation. I have thought such things myself. We should not: I say it of all of us.'),'"you should not" is an accusation');
+  await setV('we');await spk();note();ok(F.s6&&told('v29')&&srt()==='tablets'&&G.sp11.lean===6,'"we should not" (Acts 17:29): every grain is spent, and every man on the seats leans in');
+  {const el=await tabs();ok(leaf(1,T(C().ps.is40.gist)).length===1&&leaf(1,T(C().ps.k8.gist)).length===1&&!leaf(1,T(C().ps.ps96.gist)).length,'what the Scriptures say behind each part stands on the tablets once it has been spoken');el.click();await idle()}
+  /* the offer to stop */
+  await spk();ok(!F.s7&&nq()===3&&hasQ('Say all of it, now.'),'before the last part he could stop: every man is with him');halt('stop11');
+  await pickQ('Stop here. They are listening as never before.');await pickQ('Keep it for another day, when they know me better.');ok(nq()===1,'every reason for stopping is true, and he sets each aside');
+  await pickQ('Say all of it, now.');
+  await setV('we');await spk();ok(!F.s7&&said('This is not said to Athens alone, nor by one of them. It is said to everyone, everywhere.'),'the last part is not "we"');
+  await setV('all');await spk();note();
+  ok(F.s7&&F.spoke&&told('v30')&&told('v31')&&told('v32')&&said('He got as far as the resurrection.')&&!G.sp11,'the last part, with empty hands, to all people everywhere (Acts 17:30, 31); and at the resurrection some scoff (17:32)');
+  halt('broke11');
+  /* so Paul left them */
+  {const x0=P.x;await walkTo(320,130);ok(P.x!==x0,'now he can walk')}
+  heard.length=0;await act(null,'path down');ok(!F.down&&said('Some of them asked to hear more, and I have not told them where to find me.'),'he does not leave before those who would hear more know where');
+  pray();await idle();ok(hint()[0]==='later11','the hint points to those who would hear more');
+  heard.length=0;await act(null,'men who are laughing');await pickQ('He is not dead. That is the whole of it.');ok(said('Not dead! Do you hear him? Not dead!'),'every answer makes the scoffers merrier');
+  await act(null,'men who are laughing');heard.length=0;await pickQ('Say no more to them.');ok(said('Every answer I gave them would be true, and each would make them merrier. The answer to this is the path down.'),'and the answer to them is the path down');
+  heard.length=0;await act(null,'men who would hear more');ok(F.later&&said('In the marketplace, every day, by the steps of the long colonnade. And on the Sabbath in the synagogue: the lane just beyond the marble youth who has lost his hand.'),'those who would hear more are told where');
+  halt('later11');await sweep(PH,AN);
+  heard.length=0;await act(null,'path down');await until(()=>F.down&&!G.busy);note();
+  ok(F.down&&F.rose&&told('v33')&&told('v34')&&DI.room==='hill11'&&DM.room==='hill11'&&P.x<200,'so Paul left them, and some joined him: Dionysius, and Damaris (Acts 17:33, 34)');
+  halt('down11');
+  pray();await idle();ok(hint()[0]==='open11','the hint: the tablets, for those who ask');
+  {const el=await tabs();ok(leaf(0,T('Dionysius asks whether any of it is written.')).length===1&&leaf(1).length>=12,'the tablets, as they stand at the end');halt('deutsch11');el.click();await idle()}
+  await sweep(DI,DM);
+  heard.length=0;give('tablets',DM);
+  while(!(ov.classList.contains('end')&&ov.textContent.includes(T('The Unknown God')))&&n11++<4000)await wait(50);
+  ok(ov.classList.contains('end')&&F.open&&heard.includes(Q(C().ps.ge1))&&said('The tablets that nobody in the marketplace had wanted lay open on the rock until the stars came out.'),'for those who ask, the tablets open, at their first line (Genesis 1:1); chapter eleven complete screen shown');
+  ok(ov.textContent.includes(T('Click to return to the title'))&&/17:16-34/.test(ov.textContent),'the closing screen says what the account leaves unsaid');
+  {const r=ov.getBoundingClientRect(),bad=[...ov.children].filter(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});if(bad.length)tight.add('closing screen: '+bad[0].textContent.slice(0,40))}
+  ok(store('paul.save')===null,'a finished game keeps no save');
+  /* what the account says was all told; and the chapter's data is whole */
+  {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length&&Object.keys(C().told).length===21,'every verse of Acts 17:16-34 was told by the narrator'+(miss.length?' MISSING '+miss:''))}
+  {const bad=[],P0=C().parts,GR=C().grain;for(const k in GR){if(P0.filter(p=>p&&p.g===k).length!==1)bad.push('grain '+k);for(const f of['cap','note'])if(!T.peek(GR[k][f]))bad.push('untranslated '+k)}
+   for(const s of C().stones)if(!T.peek(s.nm))bad.push('untranslated '+s.id);for(const k in C().ps)if(!T.peek(C().ps[k].gist)||!T.peek(C().ps[k].ref))bad.push('untranslated '+k);
+   for(const w of['s','e']){if(C().says[w].filter(x=>x.ok).length!==1)bad.push('sayings '+w);for(const x of C().says[w])if(!T.peek(x.q)||!T.peek(x.say))bad.push('untranslated saying')}
+   for(const v of C().voices)if(!T.peek({you:'you',we:'we',all:'all people everywhere'}[v]))bad.push('untranslated voice '+v);
+   ok(!bad.length&&P0.filter(p=>p&&!p.g).length===2&&C().stones.filter(s=>s.k==='altar').length===5,'the speech: five grains, each carrying one part, and two parts with empty hands; seven stones, each named in this language'+(bad.length?' BAD '+bad:''))}
+  /* dress (CONTRIBUTING section 4): the men on the seats wear the Greek mantle, and none of them is a woman; the women of the marketplace wear a long tunic and have their hair bound or covered */
+  {const seats=['ep11a','ep11b','ep11c','j11a','dion11s','j11b','j11c','stc11a','stc11b','stc11c'].map(k=>LOOK[k]),women=['w11a','w11b','dama11'].map(k=>LOOK[k]);
+   ok(seats.every(o=>o&&o.himation&&o.cloak&&o.long&&!o.veil&&!o.fem)&&women.every(o=>o&&o.long&&(o.veil||o.fem&&o.hair)),'the men on the seats wear the mantle over a long tunic, and no woman sits among them; the women wear a tunic to the feet, their hair bound or covered')}
+  /* the chord of the speech, rendered offline on the game's own mixer: heard, finite and unclipped */
+  {const SR=22050,off=async(fn,dur)=>{const o=new OfflineAudioContext(1,Math.ceil(SR*dur),SR),keep=Object.assign({},AU);AU.ctx=o;audioGraph(o);try{fn(o)}finally{for(const k in AU)AU[k]=keep[k]}return(await o.startRendering()).getChannelData(0)},
+     peak=x=>{let p=0;for(const v of x){if(!isFinite(v))return NaN;p=Math.max(p,Math.abs(v))}return p},a=peak(await off(()=>C().ring(6),3));
+   ok(a>.005&&a<.9,`offline: the chord of a speech that holds renders finite, audible and unclipped (peak ${a.toFixed(2)})`)}
+  halt('final11')};
+  if(C11){await ch11();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(!C3&&!C4&&!C5&&!C6&&!HUB){
@@ -1908,7 +2138,7 @@
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('journey6',()=>{ov.className=''});halt('final6');await wait(1700)}
-  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10()}
+  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11()}
   if(lang!=='en')ok(!MISSING.size,'every line shown in the game had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);
