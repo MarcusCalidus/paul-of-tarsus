@@ -1136,12 +1136,13 @@
   if(/^p[a-z]+11$/.test(stop)){await loadLevel(11);ov.className='';ov.onclick=null;const ALL=CHAP[11].flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
       S={proad11:[upto('shut'),'road11',[330,124]],proadb11:[[],'road11',[560,124]],pstreet11:[[],'street11',[70,122]],pstreetb11:[['way'],'street11',[440,122]],pstreetc11:[['way'],'street11',[600,122]],psyn11:[['way'],'syn11'],pagora11:[upto('shut'),'agora11',[380,120]],pagorab11:[upto('basin'),'agora11',[100,124]],pagorac11:[upto('shut'),'agora11',[560,122]],
         pyard11:[upto('shut'),'yard11',[120,124]],pstoa11:[upto('shut'),'stoa11',[110,128]],pstoab11:[upto('shut'),'stoa11',[330,128]],pbases11:[upto('shut'),'bases11'],pbasesb11:[upto('shut'),'bases11'],
-        phill11:[upto('led'),'hill11'],phillb11:[upto('s4'),'hill11'],phillc11:[upto('spoke'),'hill11',[340,128]],pfoot11:[upto('down'),'hill11',[150,126]]}[stop];
+        phill11:[upto('led'),'hill11'],phillw11:[upto('s3'),'hill11'],phillb11:[upto('s4'),'hill11'],phills11:[upto('s5'),'hill11'],philla11:[upto('s6'),'hill11'],phillc11:[upto('spoke'),'hill11',[340,128]],pfoot11:[upto('down'),'hill11',[150,126]]}[stop];
     if(!S)throw new Error('no such stop '+stop);setChapter(11);for(const k of S[0])F[k]=1;
     const room=S[1];CHAP[11].place(room);dealInv(room);G.scene=null;enterRoom(room,...CHAP[11].ent[room]);
     if(S[2]){place(P,room,S[2][0],S[2][1],1);G.cam=clamp(S[2][0]-160,0,ART[room].w-320)}
     if(stop==='pbasesb11'){Object.assign(G.b11,{ivy:1,frag:1,last:'unknown'});G.b11.read={pity:1,ivy:1,broken:1,unknown:1}}
     if(stop==='phillb11'){G.sp11.ground='line';G.sp11.voice='we'}
+    if(stop==='phillw11')G.sp11.voice='we';if(stop==='phills11'){G.sp11.ground='block';G.sp11.voice='we'}if(stop==='philla11'){G.sp11.voice='all';G.sp11.warned=1}
     G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();await wait(1100);halt(stop)}
   const ch11=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[11],told=k=>heard.includes(T(C().told[k])),Q=p=>T('{text} ({ref})',{text:T(p.gist),ref:T(p.ref)}),
     until=async(fn,n)=>{for(let i=0;i<(n||6000)&&!fn();i++)await wait(30);await idle()},
@@ -1306,6 +1307,8 @@
   await setG('dish');await spk();note();ok(F.s3&&told('v25'),'the robe and the dish (Acts 17:25)');
   await setG('block');await spk();ok(!F.s4&&said('He is right. Nothing of theirs says this. I can only say it, and stand among them while I do.'),'nothing of theirs says that all nations come from one man');
   await setG(null);await spk();ok(!F.s4&&said('Said like that, I stand outside and point. He is not far from any one of us; and I am one of us.'),'said as "you", he stands outside');
+  ok(/us$/.test(C().parts[4].claim)&&/^we /.test(C().parts[6].claim)&&C().parts[7].claim.includes('all people everywhere')&&[1,2,3].every(n=>!/\b(we|us)\b|all people/.test(C().parts[n].claim)),'what is to be said next has the account\'s own word for whom it is said of: "us" (17:27), "we" (17:29), all people everywhere (17:30)');
+  await setV('all');await spk();ok(!F.s4&&said('All people everywhere? You are in Athens, and it was Athens that asked you.')&&said('Not yet. Said like that, it goes over their heads. This I say as one of them: "we".')&&capsFit(3)&&G.caps11.some(c=>c.s===T('I say it {voice}',{voice:T(C().voice.all)})),'said to all people everywhere, it goes over their heads: not yet');
   await setV('we');await spk();note();ok(F.s4&&told('v26')&&told('v27'),'with empty hands, and as one of them (Acts 17:26, 27)');
   halt('speech11');
   await setG('line');await spk();note();ok(F.s5&&told('v28'),'their own poets (Acts 17:28)');
@@ -1345,7 +1348,7 @@
   {const bad=[],P0=C().parts,GR=C().grain;for(const k in GR){if(P0.filter(p=>p&&p.g===k).length!==1)bad.push('grain '+k);for(const f of['cap','note'])if(!T.peek(GR[k][f]))bad.push('untranslated '+k)}
    for(const s of C().stones)if(!T.peek(s.nm))bad.push('untranslated '+s.id);for(const k in C().ps)if(!T.peek(C().ps[k].gist)||!T.peek(C().ps[k].ref))bad.push('untranslated '+k);
    for(const w of['s','e']){if(C().says[w].filter(x=>x.ok).length!==1)bad.push('sayings '+w);for(const x of C().says[w])if(!T.peek(x.q)||!T.peek(x.say))bad.push('untranslated saying')}
-   for(const v of C().voices)if(!T.peek({you:'you',we:'we',all:'all people everywhere'}[v]))bad.push('untranslated voice '+v);
+   for(const v of C().voices)if(!C().voice[v]||!T.peek(C().voice[v]))bad.push('untranslated voice '+v);
    ok(!bad.length&&P0.filter(p=>p&&!p.g).length===2&&C().stones.filter(s=>s.k==='altar').length===5,'the speech: five grains, each carrying one part, and two parts with empty hands; seven stones, each named in this language'+(bad.length?' BAD '+bad:''))}
   /* dress (CONTRIBUTING section 4): the men on the seats wear the Greek mantle, and none of them is a woman; the women of the marketplace wear a long tunic and have their hair bound or covered */
   {const seats=['ep11a','ep11b','ep11c','j11a','dion11s','j11b','j11c','stc11a','stc11b','stc11c'].map(k=>LOOK[k]),women=['w11a','w11b','dama11'].map(k=>LOOK[k]);

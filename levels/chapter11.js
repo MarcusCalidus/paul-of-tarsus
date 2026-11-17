@@ -416,7 +416,7 @@ ART.hill11={w:560,q:12,
   g.fillStyle='rgba(10,8,14,.7)';g.fillRect(x,123,320,21);R(g,x,123,320,.6,'rgba(244,228,184,.3)');
   cap11(g,T('To say next: {claim}',{claim:T(PARTS[partNo()].claim)}),x+160,128,312,'#cfe2ff');
   cap11(g,T('I begin from: {ground}',{ground:T(st.ground?GRAIN[st.ground].cap:'empty hands')}),x+88,138,168);
-  cap11(g,T('I say: {voice}',{voice:T(VOICE[st.voice])}),x+248,138,136)}};
+  cap11(g,T('I say it {voice}',{voice:T(VOICE[st.voice])}),x+248,138,136)}};
 
 /* ============ CAST ============ */
 /* Dress follows Insight ("Dress") and Awake! of 1995 ("Fashion: Ancient Greek Style"). The men of standing wear the Greek mantle, a
@@ -516,7 +516,7 @@ const GRAIN={
  dish:{item:'g11dish',f:'qneed',cap:'the robe and the dish',note:'A robe and a dish of food, carried up to an image as to a master.'},
  line:{item:'g11line',f:'stoic',cap:'a line of their poets',note:'A Stoic, in the words of a poet: we too are his children.'},
  block:{item:'g11block',f:'qmade',cap:'the block of marble',note:'A block of marble: this morning rock to the knees, and by the new moon a god.'}};
-const VOICE={you:'you',we:'we',all:'all people everywhere'},VOICES=['you','we','all'];
+const VOICE={you:'to them: "you"',we:'as one of them: "we"',all:'to all people everywhere'},VOICES=['you','we','all'];
 const QS={q11made:'block',q11house:'roof',q11need:'dish',q11unk:'altar'},isQ=id=>!!QS[id],GITEM={g11altar:'altar',g11roof:'roof',g11dish:'dish',g11line:'line',g11block:'block'};
 const gathered=()=>Object.keys(GRAIN).filter(k=>F[GRAIN[k].f]),all5=()=>gathered().length===5&&!!F.epic;
 
@@ -714,18 +714,21 @@ async function dispute(){place(PH,'agora11',P.x+46,120,-1);place(AN,'agora11',P.
 /* The speech goes in the order of the account, part by part (PARTS). For each part the player sets what Paul begins from (one of the
    grains, or empty hands) and the voice he says it in, and then speaks. When both carry the sentence the narrator tells that part;
    when they do not, somebody says what he heard, and never which of the two to change. The three rules are the three things that
-   Bearing Thorough Witness (chapter 18, paragraph 12) says he did: no scroll, "we", and their own poets. Paragraph 19 points to "we
-   should not" in verse 29, paragraph 21 says that he did not name the judge, and paragraph 24 that he did not trade the truth away to
-   please them: before the last part the game offers to stop, and every reason for stopping is true. ps: the passages that the Study
-   Edition's marginal references set beside that part, which then appear on his tablets. */
+   Bearing Thorough Witness (chapter 18, paragraph 12) says he did: no scroll, "we", and their own poets. Paragraph 16 points to "us"
+   in verse 27, paragraph 19 to "we should not" in verse 29, paragraph 21 says that he did not name the judge, and paragraph 24 that
+   he did not trade the truth away to please them: before the last part the game offers to stop, and every reason for stopping is
+   true. The voice can be read from the sentence at the foot of the view (claim): where the account says "us" or "we" (17:27-29) or
+   names all people everywhere (17:30), the claim says so too; what he declares "to you" (17:23) has neither. A voice is named on its
+   control by whom it is said to or with (VOICE). ps: the passages that the Study Edition's marginal references set beside that part,
+   which then appear on his tablets. */
 const PARTS=[null,
  {g:'altar',v:'you',told:['v22','v23'],claim:'there is a God whom Athens worships without knowing him',ps:[]},
  {g:'roof',v:'you',told:['v24'],claim:'God lives in no temple made by hands',ps:['k8']},
  {g:'dish',v:'you',told:['v25'],claim:'God needs nothing from human hands',ps:['ps50','is42']},
- {g:null,v:'we',told:['v26','v27'],claim:'every nation comes from one man, and God is not far from any of them',ps:['de4','ps145']},
+ {g:null,v:'we',told:['v26','v27'],claim:'every nation comes from one man, and God is not far from any one of us',ps:['de4','ps145']},
  {g:'line',v:'we',told:['v28'],claim:'it is by him that we live',ps:['ps36']},
- {g:'block',v:'we',told:['v29'],claim:'the Divine Being is not like gold or silver or stone',ps:['is40']},
- {g:null,v:'all',told:['v30','v31'],claim:'God has set a day, and a man to judge on it',ps:['ps96']}];
+ {g:'block',v:'we',told:['v29'],claim:'we should not liken the Divine Being to gold or silver or stone',ps:['is40']},
+ {g:null,v:'all',told:['v30','v31'],claim:'God tells all people everywhere to repent, for he has set a day, and a man as judge',ps:['ps96']}];
 const partNo=()=>{let n=1;while(n<=7&&F['s'+n])n++;return n};
 function sp11(){if(!G.sp11)G.sp11={ground:null,voice:'you',lean:partNo()-1,warned:0};return G.sp11}
 async function hillIntro(){AU.mood='hill';await narr('The sun was low when they came to the top. The men of the court were in their seats.',{dur:6200});await tell('v22');
@@ -754,6 +757,8 @@ async function speak(){if(F.spoke)return;const st=sp11(),n=partNo(),p=PARTS[n];
       return say(P,'What I saw, I saw in their streets. It is to them that I am saying it.',TH)}
     if(n===7){await say(JU,st.voice==='you'?'We are to repent? Athens? Of what, and before whom?':'You too, then. And who else?');
       return say(P,'This is not said to Athens alone, nor by one of them. It is said to everyone, everywhere.',TH)}
+    if(st.voice==='all'){await say(AN,'All people everywhere? You are in Athens, and it was Athens that asked you.');
+      return say(P,'Not yet. Said like that, it goes over their heads. This I say as one of them: "we".',TH)}
     await say(n===4?AN:PH,n===4?'You were all made out of one man? We are Athenians, stranger. We are not "all".':n===5?'You live by him, you say. And you? Do you stand outside it?':'We are not to think so? You stand there and point at us.');
     return say(P,n===6?'Said like that, it is an accusation. I have thought such things myself. We should not: I say it of all of us.':'Said like that, I stand outside and point. He is not far from any one of us; and I am one of us.',TH)}
   for(const k of p.told)if(!(n===1&&k==='v22'))await tell(k);
@@ -908,8 +913,8 @@ ROOMS.bases11={space:.5,walk:NOW,get mood(){return'walk'},amb:{wind:.3,birds:.4}
   {name:'piece of stone',x:sx(3)+BW-10,y:122,w:24,h:14,wx:160,wy:236,look:fragment,pickup:fragment,use:fragment},
   {name:'back to the road',x:248,y:126,w:72,h:18,wx:160,wy:236,exit:()=>step('road11',150,116,1),look:'The road, and the rest of the row.'}]};
 const NEXT=[null,'They want to know what I am announcing, and whether it is foreign to them. Where in their own city does it begin?','Next: the God who made the world does not live in a house that hands have made.',
-  'Next: he is not waited on, as though he lacked something. He is the one who gives.','Next: from one man he made every nation, so that they would look for him. And he is not far.',
-  'Next: it is by him that we live. Their own writers have said as much.','Next: then the Divine Being is not like gold or silver or stone.',
+  'Next: he is not waited on, as though he lacked something. He is the one who gives.','Next: from one man he made every nation, so that they would look for him. And he is not far from any one of us.',
+  'Next: it is by him that we live. Their own writers have said as much.','Next: then we should not liken the Divine Being to gold or silver or stone.',
   'Now the rest: he has looked past the ignorance, he calls on all to repent, he has set a day and a man, and he raised that man from the dead.'];
 ROOMS.hill11={space:.4,get walk(){return F.spoke?[30,524,116,138]:[366,366,120,120]},mood:'hill',amb:{wind:.6},hs:[
   {name:'Acropolis',x:300,y:10,w:248,h:50,wx:400,wy:120,look:'Their goddess and her house, straight above us, with the last of the sun on the marble. From here I could count the columns.'},
@@ -1057,7 +1062,7 @@ function hint11(){
 /* ============ CHAPTER DEFINITION ============ */
 return{rooms:['road11','street11','syn11','agora11','yard11','stoa11','bases11','hill11'],setup:setup11,start:start11,hint:hint11,music:MUSIC,scenes:{},topics:[],tablets:TABLETS,calls:CALLS,
   /* for the playtest: what is told, the passages, the grains and the parts of the speech, the stones and the statues, and the sayings */
-  told:TOLD,ps:PS,grain:GRAIN,parts:PARTS,stones:STONES,stat:STAT,says:SAYS,way:WAY,lanes:LANES,voices:VOICES,sx,ring:ring11,
+  told:TOLD,ps:PS,grain:GRAIN,parts:PARTS,stones:STONES,stat:STAT,says:SAYS,way:WAY,lanes:LANES,voices:VOICES,voice:VOICE,sx,ring:ring11,
   /* The chapter opens on the map, once: Athens, and Beroea far to the north. Nobody travels. */
   view:'west',labels:LAB,route:ROAD,
   flags:['way','syn','basin','shut','qmade','qhouse','qneed','qunk','stoic','epic','led','s1','s2','s3','s4','s5','s6','s7','spoke','later','rose','down','open'],
