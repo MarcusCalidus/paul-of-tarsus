@@ -30,7 +30,21 @@ const GL={
  S:{w:.60,s:[{p:['M',.51,.16,'C',.43,-.03,.10,-.04,.095,.23,'C',.09,.37,.20,.43,.31,.49,'C',.43,.55,.535,.62,.535,.77,'C',.535,1.05,.15,1.04,.06,.82]}],f:[]},
  T:{w:.80,s:[stem(.40),{p:['M',.04,.035,'L',.76,.035],h:1}],f:[[.40,1,'b'],[.04,.035,'d-'],[.76,.035,'d']]},
  U:{w:.86,s:[{p:['M',.13,0,'L',.13,.66,'C',.13,1.08,.73,1.08,.73,.66,'L',.73,0]}],f:[[.13,0,'t'],[.73,0,'t']]},
- V:{w:.86,s:[{p:['M',.04,0,'L',.43,1.02]},{p:['M',.82,0,'L',.43,1.02],h:1}],f:[[.04,0,'t'],[.82,0,'t',1]]}};
+ V:{w:.86,s:[{p:['M',.04,0,'L',.43,1.02]},{p:['M',.82,0,'L',.43,1.02],h:1}],f:[[.04,0,'t'],[.82,0,'t',1]]},
+ /* the rest of the alphabet, for the chapters' title cards. X is a letter here, as chi in a carved inscription (CONTRIBUTING section 3). */
+ B:{w:.68,s:[stem(.13),{p:['M',.13,.035,'L',.30,.035,'C',.58,.035,.58,.48,.30,.48,'L',.13,.48]},{p:['M',.13,.48,'L',.33,.48,'C',.66,.48,.66,.965,.33,.965,'L',.13,.965]}],f:[[.13,0,'tl'],[.13,1,'bl']]},
+ C:{w:.84,s:[{p:['M',.78,.21,'C',.68,-.03,.08,-.06,.07,.5,'C',.06,1.06,.70,1.04,.80,.78]}],f:[]},
+ G:{w:.88,s:[{p:['M',.78,.21,'C',.68,-.03,.08,-.06,.07,.5,'C',.06,1.06,.66,1.06,.78,.84,'L',.78,.58]},{p:['M',.54,.58,'L',.78,.58],h:1}],f:[]},
+ I:{w:.38,s:[stem(.19)],f:[[.19,0,'t'],[.19,1,'b']]},
+ J:{w:.46,s:[{p:['M',.32,0,'L',.32,.80,'C',.32,1.08,.08,1.10,.02,.92]}],f:[[.32,0,'t']]},
+ K:{w:.80,s:[stem(.13),{p:['M',.70,0,'L',.15,.57],h:1},{p:['M',.32,.40,'L',.76,1]}],f:[[.13,0,'t'],[.13,1,'b'],[.70,0,'t',1],[.76,1,'br']]},
+ W:{w:1.14,s:[{p:['M',.02,0,'L',.29,1.02]},{p:['M',.56,.04,'L',.29,1.02],h:1},{p:['M',.56,.04,'L',.83,1.02]},{p:['M',1.10,0,'L',.83,1.02],h:1}],f:[[.02,0,'t'],[1.10,0,'t',1]]},
+ X:{w:.84,s:[{p:['M',.06,0,'L',.76,1]},{p:['M',.74,0,'L',.08,1],h:1}],f:[[.06,0,'t'],[.76,1,'b'],[.74,0,'t',1],[.08,1,'b',1]]},
+ Y:{w:.82,s:[{p:['M',.04,0,'L',.40,.52]},{p:['M',.78,0,'L',.40,.52],h:1},{p:['M',.40,.52,'L',.40,1]}],f:[[.04,0,'t'],[.78,0,'t',1],[.40,1,'b']]},
+ Z:{w:.74,s:[{p:['M',.08,.035,'L',.66,.035],h:1},{p:['M',.66,.035,'L',.08,.965]},{p:['M',.08,.965,'L',.68,.965],h:1}],f:[[.08,.035,'d-'],[.68,.965,'u']]},
+ '?':{w:.70,s:[{p:['M',.12,.22,'C',.14,-.04,.62,-.06,.62,.22,'C',.62,.42,.38,.46,.38,.68]},{p:['E',.38,.93,.05,.05]}],f:[]}};
+/* letters with dots above them: the dots stand over the capital, and the line makes room for them (see paint) */
+for(const[u,b,xs]of[['Ä','A',[.28,.60]],['Ö','O',[.32,.68]],['Ü','U',[.25,.61]]])GL[u]={w:GL[b].w,s:GL[b].s.concat(xs.map(x=>({p:['E',x,-.2,.05,.05]}))),f:GL[b].f};
 /* pairs of letters that stand closer together than their widths say */
 const KERN={PA:-.13,TA:-.15,AT:-.12,AV:-.16,VA:-.16,VO:-.07,OV:-.07,LT:-.1,LO:-.03,AU:-.03,UA:-.03,RS:-.01,AR:-.02,RO:-.03,OA:-.06,AD:-.02,FR:-.02,TR:-.02,ST:-.02,SS:.01,RA:-.06,TE:-.02,FT:-.04,LU:-.02};
 /* The pens: nib is the length of the pen's edge and ang its angle in degrees; thin is added all round; a hairline is written with
@@ -82,7 +96,7 @@ function paint(name,sub){const key=name+'|'+sub;if(KEPT[key])return KEPT[key];
   /* the name: as tall as the room allows, standing on a level line, each letter stretched to the arch above it */
   const o1={pen:NAME,track:.13,space:.44},cap=Math.min(37,Math.floor(540/width(name,{cap:1,...o1}))),tw=Math.ceil(width(name,{cap,...o1}));
   /* the canvas is a whole number of room pixels each way, and a multiple of four across, so that it sits on whole screen pixels */
-  const W=Math.ceil((tw+(DEPTH+9)*2)/4)*4,pad=(W-tw)>>1,base=3+Math.round(cap*(1+RISE)),o2={pen:SUB,track:.26,space:.8,cap:11},sw=Math.ceil(width(sub,o2)),sy=base+DEPTH+8,H=Math.ceil((sy+o2.cap+6)/2)*2;
+  const W=Math.ceil((tw+(DEPTH+9)*2)/4)*4,pad=(W-tw)>>1,up=/[ÄÖÜ]/.test(name)?Math.round(cap*.34):0,base=3+up+Math.round(cap*(1+RISE)),o2={pen:SUB,track:.26,space:.8,cap:11},sw=Math.ceil(width(sub,o2)),sy=base+DEPTH+8,H=Math.ceil((sy+o2.cap+6)/2)*2;
   const arch=u=>1+RISE*Math.cos(Math.PI*(clamp(u,0,1)-.5));
   const face=mask(W,H,g=>write(g,name,{x:pad,y:base-cap,cap,...o1,warp:(x,y,u)=>[x,base-(base-y)*arch(u)]}));
   /* the subtitle, and a rule on each side of it that thins away from it and stops short of it */

@@ -159,21 +159,29 @@ ART.street11={w:640,q:12,
   sky(g,640,60,['#4a86c8','#86b2dc','#d2e2ea']);cloud(g,120,10,50,4,r);cloud(g,520,14,44,4,r);
   acropolis(g,330,50,.7,r);
   /* house fronts, with a lane between each two */
-  const H=[[0,160,'#e2d4b0',30],[190,60,'#d8c8a2',26],[280,60,'#e6dabb',32],[370,60,'#dccca6',28],[460,180,'#e0d2ae',30]];
+  const H=[[0,160,'#e2d4b0',30],[190,60,'#d8c8a2',26],[280,60,'#e6dabb',32],[370,60,'#dccca6',28],[460,150,'#e0d2ae',30]];
   for(const[x,w,c,top]of H){house(g,x,top,w,104-top,c,r,{patch:2,cracks:3,beams:14});R(g,x,top-3.5,w,1.6,'#b8603c');for(let i=x;i<x+w;i+=4)R(g,i,top-3.5,.5,1.6,'rgba(90,40,24,.35)')}
   /* each lane: a house at its far end, the ground running back to it, and the walls on either side in shade */
   for(const[x]of LANES){const c=tint('#d8caa6',(r()-.5)*.12);R(g,x,56,30,48,c);R(g,x,56,30,1.2,'#b8603c');R(g,x+18,66,5,5,'#3a2c22');R(g,x+7,76,8,14,'#4a3624');R(g,x+7,76,8,.6,'#7a5c36');
     poly(g,[x,104,x+30,104,x+22,90,x+8,90],'#c2b594');poly(g,[x,26,x+8,56,x+8,90,x,104],'#8f8aa0');poly(g,[x+30,26,x+22,56,x+22,90,x+30,104],'#a09aa6');
     ao(g,x,56,30,12,'t',.3,'#2a2440');comp(g,'multiply',.5,()=>R(g,x,56,30,48,'#a8a4c4'))}
   windowArt(g,26,48,12,10,'#e2d4b0',{shut:1});windowArt(g,104,46,12,10,'#e2d4b0',{bars:2});windowArt(g,208,50,10,9,'#d8c8a2',{shut:1});windowArt(g,300,52,10,9,'#e6dabb',{bars:2});windowArt(g,388,50,10,9,'#dccca6',{shut:1});
-  windowArt(g,566,50,12,10,'#e0d2ae',{shut:1});doorArt(g,596,62,24,42,'#6a4a2c',r,{bands:[]});
+  windowArt(g,468,50,12,10,'#e0d2ae',{shut:1});doorArt(g,554,62,24,42,'#6a4a2c',r,{bands:[]});
+  /* the street runs on to the marketplace: the last house ends, and beyond its corner the way lies open in the sun */
+  {const c='#e8dcbc';R(g,620,64,20,28,tint(c,.04));R(g,620,61,20,3,'#b8603c');for(let i=620;i<640;i+=4)R(g,i,61,.5,3,'rgba(90,40,24,.35)');ao(g,620,64,20,6,'t',.25,'#2a2440');
+   /* a stall of the marketplace at the far end: a cloth awning over a counter, and baskets on it */
+   R(g,621,82,19,10,'#9a7a4a');R(g,621,82,19,.8,'#c8a874');R(g,621,88,19,4,'#7a5c36');
+   poly(g,[620,72,640,72,640,77,620,78],'#b8563a');R(g,620,72,20,.8,'#d8826a');for(let i=620;i<640;i+=4)poly(g,[i,77.6,i+4,77.4,i+2,79.4],'#a04a32');
+   ao(g,621,79,19,3,'t',.4,'#2a2040');R(g,623,79.6,5,2.6,'#c89a4c');R(g,623,79.6,5,.6,'#e8c070');R(g,630,79.4,5,2.8,'#8a6a3a');R(g,630,79.4,5,.6,'#b8945a');R(g,636,80,4,2.2,'#a8642e');
+   comp(g,'screen',.3,()=>R(g,620,58,20,34,'#dfe8ee'));
+   poly(g,[610,104,640,104,640,92,620,92],'#ddd0aa');poly(g,[610,26,620,58,620,92,610,104],'#8f8aa0');R(g,610,26,1,78,tint('#e0d2ae',-.08))}
   /* the fountain: a basin of stone under a spout in the wall */
   R(g,44,78,30,26,tint('#e2d4b0',-.16));R(g,48,82,22,12,'#5a5248');R(g,53.6,86,6,2.6,'#8a7a5a');R(g,58.2,88.6,1.4,9.4,'rgba(200,230,240,.8)');
   R(g,42,104,36,2,'rgba(40,30,60,.3)');g.fillStyle=lg(g,42,0,76,0,['#9a9484','#dcd4c0','#bcb4a0','#7e786c']);g.fillRect(42,96,34,9);R(g,42,96,34,1,'#eee8d8');R(g,44,97,30,1.6,'#6a9ab0');
   /* the figures, each on its base against a wall */
   statue(g,138,104,11,'st11gen',1);statue(g,226,104,11,'st11scr',1,{ges:1});poly(g,[235.2,62.4,238,59.4,239.2,60.4,236.4,63.4],MAR);stroke(g,[235.2,62.4,238,59.4],tint(MAR,.3),.5);
   statue(g,316,104,11,'st11old',-1);statue(g,406,104,11,'st11maim',-1);statue(g,502,104,11,'st11brz',1);statue(g,534,104,11,'st11brz',-1);
-  for(const[x,c,k]of[[98,'#9a5a36','jar'],[204,'#8a4a2a','amph'],[384,'#a8642e','jar'],[584,'#9a5a36','pithos']])vessel(g,x,105,k==='pithos'?5:3.4,k==='pithos'?14:10,c,k);
+  for(const[x,c,k]of[[98,'#9a5a36','jar'],[204,'#8a4a2a','amph'],[384,'#a8642e','jar'],[598,'#9a5a36','pithos']])vessel(g,x,105,k==='pithos'?5:3.4,k==='pithos'?14:10,c,k);
   pave(g,0,103,640,144,'#cdc09e',r,{vx:320,vy:60,rows:4,step:44,v:.07});ao(g,0,103,640,6,'t',.35,'#3a3050');
   shade(g,[0,104,640,104,640,111,0,114],SH,.34);comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(250,244,222,0)','rgba(250,244,222,.9)']);g.fillRect(0,103,640,41)})},
  light:null,
@@ -356,9 +364,10 @@ ART.bases11={w:320,q:12,
  /* what the stone last read says, in the player's language, at the foot of the view */
  front(g){const st=G.b11;G.caps11=[];if(st&&st.last)cap11(g,STONES.find(s=>s.id===st.last).nm,160,139,300)}};
 /* cap11: a caption in small letters with a dark edge, as the names on the map are written. It is made to fit its width. */
-function cap11(g,s,x,y,w,col){s=T(s);let sz=4.8;const font=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;g.font=font(sz);g.textBaseline='middle';
-  while(g.measureText(s).width>w&&sz>3.2){sz-=.2;g.font=font(sz)}const tw=g.measureText(s).width,tx=x-tw/2;
-  if(G.caps11)G.caps11.push({s,w:tw,max:w,sz});g.fillStyle='rgba(8,6,10,.85)';for(const[dx,dy]of[[.5,0],[-.5,0],[0,.5],[0,-.5],[.5,.5]])g.fillText(s,tx+dx,y+dy);g.fillStyle=col||'#f4e4b8';g.fillText(s,tx,y)}
+function cap11(g,s,x,y,w,col){s=T(s);const pf=SHARED.font&&SHARED.font.onCanvas&&SHARED.font.onCanvas(g,s,w);let sz=pf?4.5:4.8;
+  const font=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;if(!pf){g.font=font(sz);g.textBaseline='middle';while(g.measureText(s).width>w&&sz>3.2){sz-=.2;g.font=font(sz)}}
+  const tw=g.measureText(s).width,tx=pf?SHARED.font.pin(x-tw/2):x-tw/2,ty=pf?SHARED.font.mid(y):y;
+  if(G.caps11)G.caps11.push({s,w:tw,max:w,sz});g.fillStyle='rgba(8,6,10,.85)';for(const[dx,dy]of[[.5,0],[-.5,0],[0,.5],[0,-.5],[.5,.5]])g.fillText(s,tx+dx,ty+dy);g.fillStyle=col||'#f4e4b8';g.fillText(s,tx,ty)}
 
 /* ---------- The Areopagus ---------- */
 /* A narrow, bare ridge of limestone below the Acropolis, with seats cut in the rock (Insight, "Areopagus"). The men who hear Paul
@@ -408,7 +417,7 @@ ART.hill11={w:560,q:12,
   g.fillStyle='rgba(10,8,14,.7)';g.fillRect(x,123,320,21);R(g,x,123,320,.6,'rgba(244,228,184,.3)');
   cap11(g,T('To say next: {claim}',{claim:T(PARTS[partNo()].claim)}),x+160,128,312,'#cfe2ff');
   cap11(g,T('I begin from: {ground}',{ground:T(st.ground?GRAIN[st.ground].cap:'empty hands')}),x+88,138,168);
-  cap11(g,T('I say: {voice}',{voice:T(VOICE[st.voice])}),x+248,138,136)}};
+  cap11(g,T('I say it {voice}',{voice:T(VOICE[st.voice])}),x+248,138,136)}};
 
 /* ============ CAST ============ */
 /* Dress follows Insight ("Dress") and Awake! of 1995 ("Fashion: Ancient Greek Style"). The men of standing wear the Greek mantle, a
@@ -508,7 +517,7 @@ const GRAIN={
  dish:{item:'g11dish',f:'qneed',cap:'the robe and the dish',note:'A robe and a dish of food, carried up to an image as to a master.'},
  line:{item:'g11line',f:'stoic',cap:'a line of their poets',note:'A Stoic, in the words of a poet: we too are his children.'},
  block:{item:'g11block',f:'qmade',cap:'the block of marble',note:'A block of marble: this morning rock to the knees, and by the new moon a god.'}};
-const VOICE={you:'you',we:'we',all:'all people everywhere'},VOICES=['you','we','all'];
+const VOICE={you:'to them: "you"',we:'as one of them: "we"',all:'to all people everywhere'},VOICES=['you','we','all'];
 const QS={q11made:'block',q11house:'roof',q11need:'dish',q11unk:'altar'},isQ=id=>!!QS[id],GITEM={g11altar:'altar',g11roof:'roof',g11dish:'dish',g11line:'line',g11block:'block'};
 const gathered=()=>Object.keys(GRAIN).filter(k=>F[GRAIN[k].f]),all5=()=>gathered().length===5&&!!F.epic;
 
@@ -706,18 +715,21 @@ async function dispute(){place(PH,'agora11',P.x+46,120,-1);place(AN,'agora11',P.
 /* The speech goes in the order of the account, part by part (PARTS). For each part the player sets what Paul begins from (one of the
    grains, or empty hands) and the voice he says it in, and then speaks. When both carry the sentence the narrator tells that part;
    when they do not, somebody says what he heard, and never which of the two to change. The three rules are the three things that
-   Bearing Thorough Witness (chapter 18, paragraph 12) says he did: no scroll, "we", and their own poets. Paragraph 19 points to "we
-   should not" in verse 29, paragraph 21 says that he did not name the judge, and paragraph 24 that he did not trade the truth away to
-   please them: before the last part the game offers to stop, and every reason for stopping is true. ps: the passages that the Study
-   Edition's marginal references set beside that part, which then appear on his tablets. */
+   Bearing Thorough Witness (chapter 18, paragraph 12) says he did: no scroll, "we", and their own poets. Paragraph 16 points to "us"
+   in verse 27, paragraph 19 to "we should not" in verse 29, paragraph 21 says that he did not name the judge, and paragraph 24 that
+   he did not trade the truth away to please them: before the last part the game offers to stop, and every reason for stopping is
+   true. The voice can be read from the sentence at the foot of the view (claim): where the account says "us" or "we" (17:27-29) or
+   names all people everywhere (17:30), the claim says so too; what he declares "to you" (17:23) has neither. A voice is named on its
+   control by whom it is said to or with (VOICE). ps: the passages that the Study Edition's marginal references set beside that part,
+   which then appear on his tablets. */
 const PARTS=[null,
  {g:'altar',v:'you',told:['v22','v23'],claim:'there is a God whom Athens worships without knowing him',ps:[]},
  {g:'roof',v:'you',told:['v24'],claim:'God lives in no temple made by hands',ps:['k8']},
  {g:'dish',v:'you',told:['v25'],claim:'God needs nothing from human hands',ps:['ps50','is42']},
- {g:null,v:'we',told:['v26','v27'],claim:'every nation comes from one man, and God is not far from any of them',ps:['de4','ps145']},
+ {g:null,v:'we',told:['v26','v27'],claim:'every nation comes from one man, and God is not far from any one of us',ps:['de4','ps145']},
  {g:'line',v:'we',told:['v28'],claim:'it is by him that we live',ps:['ps36']},
- {g:'block',v:'we',told:['v29'],claim:'the Divine Being is not like gold or silver or stone',ps:['is40']},
- {g:null,v:'all',told:['v30','v31'],claim:'God has set a day, and a man to judge on it',ps:['ps96']}];
+ {g:'block',v:'we',told:['v29'],claim:'we should not liken the Divine Being to gold or silver or stone',ps:['is40']},
+ {g:null,v:'all',told:['v30','v31'],claim:'God tells all people everywhere to repent, for he has set a day, and a man as judge',ps:['ps96']}];
 const partNo=()=>{let n=1;while(n<=7&&F['s'+n])n++;return n};
 function sp11(){if(!G.sp11)G.sp11={ground:null,voice:'you',lean:partNo()-1,warned:0};return G.sp11}
 async function hillIntro(){AU.mood='hill';await narr('The sun was low when they came to the top. The men of the court were in their seats.',{dur:6200});await tell('v22');
@@ -746,6 +758,8 @@ async function speak(){if(F.spoke)return;const st=sp11(),n=partNo(),p=PARTS[n];
       return say(P,'What I saw, I saw in their streets. It is to them that I am saying it.',TH)}
     if(n===7){await say(JU,st.voice==='you'?'We are to repent? Athens? Of what, and before whom?':'You too, then. And who else?');
       return say(P,'This is not said to Athens alone, nor by one of them. It is said to everyone, everywhere.',TH)}
+    if(st.voice==='all'){await say(AN,'All people everywhere? You are in Athens, and it was Athens that asked you.');
+      return say(P,'Not yet. Said like that, it goes over their heads. This I say as one of them: "we".',TH)}
     await say(n===4?AN:PH,n===4?'You were all made out of one man? We are Athenians, stranger. We are not "all".':n===5?'You live by him, you say. And you? Do you stand outside it?':'We are not to think so? You stand there and point at us.');
     return say(P,n===6?'Said like that, it is an accusation. I have thought such things myself. We should not: I say it of all of us.':'Said like that, I stand outside and point. He is not far from any one of us; and I am one of us.',TH)}
   for(const k of p.told)if(!(n===1&&k==='v22'))await tell(k);
@@ -842,11 +856,11 @@ ROOMS.street11={space:.8,walk:[16,624,112,138],get mood(){return F.shut?'walk':'
   {name:'city gate',x:0,y:40,w:14,h:64,wx:18,wy:122,dir:-1,exit:()=>goto('road11',604,122,-1),look:'The gate, and the road down to the harbor.'},
   {name:'fountain',x:42,y:78,w:36,h:28,wx:86,wy:114,dir:-1,look:'A fountain in the wall: clean water, and a basin of good stone. It is the one thing in this street that nobody has put a face on.',use:'I drink. The road up from the sea was long, and I walked it alone.',pickup:'A fountain stays where it is.'},
   {name:'houses',x:462,y:30,w:120,h:30,wx:560,wy:114,look:'Plastered houses with tiled eaves, like the houses of any city. It is what stands in front of them that is different.'},
-  {name:'door',x:596,y:62,w:24,h:42,wx:608,wy:114,look:'Somebody\'s door. I know nobody in this city yet.',open:'It is not my door, and I have not been asked in.'},
+  {name:'door',x:554,y:62,w:24,h:42,wx:566,wy:114,look:'Somebody\'s door. I know nobody in this city yet.',open:'It is not my door, and I have not been asked in.'},
   ...STAT.map(s=>({get name(){return seenS(s.id)?s.nm:'statue'},x:s.x-8,y:46,w:16,h:58,wx:s.x+(s.id==='p2'?-24:22),wy:114,dir:s.id==='p2'?1:-1,
     look:async()=>{(G.s11||(G.s11={}))[s.id]=1;if(s.id==='p1'||s.id==='p2')G.s11.p1=G.s11.p2=1;await say(P,s.look)},useWith:qOn('statue'),pickup:'It is bronze and marble, and it is theirs.',use:'There is nothing that I want from it.'})),
   ...LANES.map(([x,k])=>({name:'lane',x,y:56,w:30,h:48,wx:x+15,wy:114,exit:()=>lane(k),look:'A lane between two houses, with another house at the end of it. They all look alike to a stranger.'})),
-  {name:'way to the marketplace',x:626,y:40,w:14,h:66,wx:622,wy:124,dir:1,exit:toAgora,look:'The street runs on to the marketplace. I can hear it from here.'}]};
+  {name:'way to the marketplace',x:608,y:40,w:32,h:66,wx:622,wy:124,dir:1,exit:toAgora,look:'The street runs on to the marketplace. I can hear it from here.'}]};
 ROOMS.syn11={space:1.4,walk:[16,304,112,137],mood:'still',amb:{crowd:.1},hs:[
   {name:'door to the lane',x:17,y:47,w:30,h:57,wx:44,wy:116,dir:-1,exit:()=>say(P,'Not before I have said what I came to say.'),look:'The door to the lane. Beyond it stands a marble youth without a hand; in here nothing has a face but the people.'},
   {name:'benches',x:56,y:84,w:62,h:20,wx:90,wy:113,look:'Benches of stone along the wall. A small house, and a full one.',use:'I have been asked to sit, and then to speak.'},
@@ -900,8 +914,8 @@ ROOMS.bases11={space:.5,walk:NOW,get mood(){return'walk'},amb:{wind:.3,birds:.4}
   {name:'piece of stone',x:sx(3)+BW-10,y:122,w:24,h:14,wx:160,wy:236,look:fragment,pickup:fragment,use:fragment},
   {name:'back to the road',x:248,y:126,w:72,h:18,wx:160,wy:236,exit:()=>step('road11',150,116,1),look:'The road, and the rest of the row.'}]};
 const NEXT=[null,'They want to know what I am announcing, and whether it is foreign to them. Where in their own city does it begin?','Next: the God who made the world does not live in a house that hands have made.',
-  'Next: he is not waited on, as though he lacked something. He is the one who gives.','Next: from one man he made every nation, so that they would look for him. And he is not far.',
-  'Next: it is by him that we live. Their own writers have said as much.','Next: then the Divine Being is not like gold or silver or stone.',
+  'Next: he is not waited on, as though he lacked something. He is the one who gives.','Next: from one man he made every nation, so that they would look for him. And he is not far from any one of us.',
+  'Next: it is by him that we live. Their own writers have said as much.','Next: then we should not liken the Divine Being to gold or silver or stone.',
   'Now the rest: he has looked past the ignorance, he calls on all to repent, he has set a day and a man, and he raised that man from the dead.'];
 ROOMS.hill11={space:.4,get walk(){return F.spoke?[30,524,116,138]:[366,366,120,120]},mood:'hill',amb:{wind:.6},hs:[
   {name:'Acropolis',x:300,y:10,w:248,h:50,wx:400,wy:120,look:'Their goddess and her house, straight above us, with the last of the sun on the marble. From here I could count the columns.'},
@@ -1049,7 +1063,7 @@ function hint11(){
 /* ============ CHAPTER DEFINITION ============ */
 return{rooms:['road11','street11','syn11','agora11','yard11','stoa11','bases11','hill11'],setup:setup11,start:start11,hint:hint11,music:MUSIC,scenes:{},topics:[],tablets:TABLETS,calls:CALLS,
   /* for the playtest: what is told, the passages, the grains and the parts of the speech, the stones and the statues, and the sayings */
-  told:TOLD,ps:PS,grain:GRAIN,parts:PARTS,stones:STONES,stat:STAT,says:SAYS,way:WAY,lanes:LANES,voices:VOICES,sx,ring:ring11,
+  told:TOLD,ps:PS,grain:GRAIN,parts:PARTS,stones:STONES,stat:STAT,says:SAYS,way:WAY,lanes:LANES,voices:VOICES,voice:VOICE,sx,ring:ring11,
   /* The chapter opens on the map, once: Athens, and Beroea far to the north. Nobody travels. */
   view:'west',labels:LAB,route:ROAD,
   flags:['way','syn','basin','shut','qmade','qhouse','qneed','qunk','stoic','epic','led','s1','s2','s3','s4','s5','s6','s7','spoke','later','rose','down','open'],

@@ -16,8 +16,8 @@
  const at=(type,x,y)=>{const r=vp.getBoundingClientRect(),e=new MouseEvent(type,{clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+y/144*r.height,bubbles:true,cancelable:true});vp.dispatchEvent(e);return e.defaultPrevented};
  const move=(x,y)=>at('mousemove',x,y),rclick=(x,y)=>at('contextmenu',x,y),dbl=(x,y)=>at('dblclick',x,y);
  /* a screenshot does not show the mouse pointer: paintPointer points at a place in the room and paints the game's own pointer there */
- const paintPointer=(x,y)=>{const sc=vp.getBoundingClientRect().width/320,d=devicePixelRatio||1,u=clamp(Math.round(sc*d/2),1,6),p=pointerArt(u);move(x,y);
-   p.style.cssText=`position:absolute;z-index:8;pointer-events:none;left:${(x-G.cam)*sc-1.5*u/d}px;top:${y*sc-1.5*u/d}px;width:${p.width/d}px;height:${p.height/d}px`;vp.appendChild(p)};
+ const paintPointer=(x,y)=>{move(x,y);const sc=vp.getBoundingClientRect().width/320,d=devicePixelRatio||1,u=clamp(Math.round(sc*d/2),1,6),p=pointerArt(u,pointerKind(G.hover));
+   p.style.cssText=`position:absolute;z-index:8;pointer-events:none;left:${(x-G.cam)*sc-p.hx*u/d}px;top:${y*sc-p.hy*u/d}px;width:${p.width/d}px;height:${p.height/d}px`;vp.appendChild(p)};
  const rclickEl=el=>{const e=new MouseEvent('contextmenu',{bubbles:true,cancelable:true});el.dispatchEvent(e);return e.defaultPrevented};
  const key=(k,type)=>dispatchEvent(new KeyboardEvent(type||'keydown',{key:k,bubbles:true,cancelable:true}));
  const lit=()=>[...document.querySelectorAll('#verbs button.def')].map(b=>b.dataset.v).join();
@@ -128,6 +128,27 @@
           const sp=sprite('ages-test'+i,q=>person(q,0,0,o,1,0,0,0,0,0),1);g.drawImage(sp,FIG.OX-30,FIG.OY-104,60,106,x+Math.floor((cw-120)/2),y+chh-214,120,212);
           g.fillStyle='#101418';g.font='bold 11px monospace';g.fillText(n,x+5,y+14)})})}}
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
+  ok(document.documentElement.classList.contains('pf')&&SHARED.font&&document.fonts.check('12px "Paul Pixel"')&&document.fonts.check('italic 12px "Paul Pixel"')&&document.fonts.check('9px "Paul Pixel Small"'),'pixel font loaded and active');
+  {const G=SHARED.font&&SHARED.font.glyphs,foot=(f,c)=>G[f][c].yTop-G[f][c].rows.length;
+    ok(G&&['regular','small'].every(f=>[...'acemnorsuvwxz'].every(c=>foot(f,c)===0&&G[f][c].yTop===G[f].o.yTop)&&[...'bdhiklt0123456789ABCDEFGHIJKLMNOPRSTUVWXYZÄÖÜäöüß'].every(c=>foot(f,c)===0)&&[...'gpqy'].every(c=>foot(f,c)===-2)),
+      'every letter of the pixel font stands on the baseline, the short ones at one x-height')}
+  if(stop==='font'){
+    halt('font',()=>{const k=document.createElement('canvas'),W=innerWidth,Hh=innerHeight;k.width=W;k.height=Hh;k.style.cssText='position:fixed;left:0;top:0;z-index:8';document.body.appendChild(k);
+      /* every glyph of both faces, wrapped, then speech and a thought outlined one font pixel as in the game, on a dark and on a bright ground */
+      const g=k.getContext('2d'),half=Math.round(Hh*.56);g.imageSmoothingEnabled=false;g.fillStyle='#141824';g.fillRect(0,0,W,half);g.fillStyle='#e9dcb8';g.fillRect(0,half,W,Hh-half);
+      const set=f=>Object.keys(SHARED.font.glyphs[f]).filter(c=>c!==' '&&c!==' '),rows=(a,n)=>{const o=[];for(let i=0;i<a.length;i+=n)o.push(a.slice(i,i+n).join(' '));return o};
+      const said=(t,x,y,col,o)=>{g.fillStyle='#000';for(const[i,j]of[[o,0],[-o,0],[0,o],[0,-o],[o,o],[-o,o],[o,-o],[-o,-o]])g.fillText(t,x+i,y+j);g.fillStyle=col;g.fillText(t,x,y)};
+      let y=36;g.font='24px "Paul Pixel"';g.fillStyle='#fff3b8';for(const r of rows(set('regular'),30)){g.fillText(r,16,y);y+=32}
+      g.font='18px "Paul Pixel Small"';g.fillStyle='#e2b24c';for(const r of rows(set('small'),40)){g.fillText(r,16,y);y+=24}
+      y+=10;g.font='24px "Paul Pixel"';said('Peace, stranger. „Grüße, Paulus!“ ÄÖÜ äöü ß',16,y,'#fff',2);g.font='italic 24px "Paul Pixel"';said('A thought: Paul pauses, and asks Jehovah.',16,y+32,'#cfe2ff',2);
+      y=half+40;g.font='24px "Paul Pixel"';said('Peace, stranger. „Grüße, Paulus!“ ÄÖÜ äöü ß',16,y,'#fff',2);g.font='italic 24px "Paul Pixel"';said('A thought: Paul pauses, and asks Jehovah.',16,y+32,'#cfe2ff',2);g.font='24px "Paul Pixel"';
+      g.fillStyle='#2a1c10';g.fillText('Escape from Damascus · Flucht aus Damaskus · 0123456789',16,y+72);
+      g.font='18px "Paul Pixel Small"';g.fillText('CODE 12-ABC-DEF-GHI · NAMEN · TON AN · EN · Tür zur Werkstatt',16,y+104)})}
+  /* the title card at full length, and a room change caught half-way through its cross-fade */
+  if(stop==='card'){await loadLevel(1);AU.key=CHAP[1].music;G.speedAll=0;clearInterval(sk);showCard(1);await wait(300);halt('card')}
+  if(stop==='xfade'){await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();const r=CHAP[1].rooms[1];
+    tween=(ms,fn)=>{fn(.5);return new Promise(()=>{})};go(r,...CHAP[1].ent[r]);await wait(150);halt('xfade')}
+  if(stop==='menu'){openMenu();halt('menu')}
   /* sound: the first press anywhere starts it; a press wakes sound that iOS interrupted; on iPhone and iPad a note says where Silent Mode is */
   {const hushOn=()=>$('#hush').classList.contains('on'),dev=AU.apple;
     ok(!dev,'desktop Chrome is not taken for an iPhone or iPad');ok(!AU.ctx,'no sound before the first press');
@@ -143,6 +164,14 @@
     AU.ctx=fake('interrupted');dispatchEvent(new PointerEvent('pointerup',{bubbles:true}));ok(n===1,'a tap wakes sound that iOS interrupted');
     AU.ctx=fake('suspended');key('Shift');ok(n===2,'a key wakes sound the browser held back');
     AU.ctx=fake('running');dispatchEvent(new MouseEvent('click'));ok(n===2,'running sound is left alone');AU.ctx=real}
+  /* options menu & paul.opts persistence (paul.save stays untouched) */
+  {const wasSave=store('paul.save');$('#opts').click();ok($('#menu.on')&&$('#wrap.full'),'options menu opens full-screen');
+    $('#menu [data-spd="0.7"]').click();ok(OPTS.spd===.7&&JSON.parse(store('paul.opts')).spd===.7&&store('paul.save')===wasSave,'text speed saved in paul.opts without touching paul.save');
+    $('#menu [data-spd="1"]').click();key('Escape');ok(!$('#menu.on'),'Escape closes options menu');
+    for(const k of['default','hot','left','right','up','down']){const c=pointerArt(2,k);ok(c.width>0&&c.height>0,'context pointer '+k+' paints')}
+    store('paul.opts',JSON.stringify({mus:.3,fx:.6,spd:1.35}));OPTS.mus=OPTS.fx=OPTS.spd=1;loadOpts();
+    ok(OPTS.mus===.3&&OPTS.fx===.6&&OPTS.spd===1.35,'the options come back from paul.opts after a reload');OPTS.mus=OPTS.fx=OPTS.spd=1;
+    store('paul.opts',null)}
   /* the chapters scroll in their own box: its far edge fades while more lies beyond it, and a click between entries starts nothing */
   {const l=ov.querySelector('.chs'),fade=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
     ok(l&&[...l.children].every(p=>p.dataset.ch)&&l.children.length===Object.keys(CHAP).length,'the chapters sit in a list of their own');
@@ -1134,14 +1163,15 @@
      the story's flags set for it, so that its picture can be looked at without playing up to it. */
   const C11=/^(map11|road11|street11|way11|wrong11|syn11|basin11|agora11|isaiah11|shut11|yard11|block11|slave11|zeus11|bases11|ivy11|altar11|stoa11|sift11|picker11|dispute11|hill11|part11|voice11|speech11|stop11|broke11|later11|down11|deutsch11|final11|all11)$/.test(stop);
   if(/^p[a-z]+11$/.test(stop)){await loadLevel(11);ov.className='';ov.onclick=null;const ALL=CHAP[11].flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
-      S={proad11:[upto('shut'),'road11',[330,124]],proadb11:[[],'road11',[560,124]],pstreet11:[[],'street11',[70,122]],pstreetb11:[['way'],'street11',[440,122]],psyn11:[['way'],'syn11'],pagora11:[upto('shut'),'agora11',[380,120]],pagorab11:[upto('basin'),'agora11',[100,124]],pagorac11:[upto('shut'),'agora11',[560,122]],
+      S={proad11:[upto('shut'),'road11',[330,124]],proadb11:[[],'road11',[560,124]],pstreet11:[[],'street11',[70,122]],pstreetb11:[['way'],'street11',[440,122]],pstreetc11:[['way'],'street11',[600,122]],psyn11:[['way'],'syn11'],pagora11:[upto('shut'),'agora11',[380,120]],pagorab11:[upto('basin'),'agora11',[100,124]],pagorac11:[upto('shut'),'agora11',[560,122]],
         pyard11:[upto('shut'),'yard11',[120,124]],pstoa11:[upto('shut'),'stoa11',[110,128]],pstoab11:[upto('shut'),'stoa11',[330,128]],pbases11:[upto('shut'),'bases11'],pbasesb11:[upto('shut'),'bases11'],
-        phill11:[upto('led'),'hill11'],phillb11:[upto('s4'),'hill11'],phillc11:[upto('spoke'),'hill11',[340,128]],pfoot11:[upto('down'),'hill11',[150,126]]}[stop];
+        phill11:[upto('led'),'hill11'],phillw11:[upto('s3'),'hill11'],phillb11:[upto('s4'),'hill11'],phills11:[upto('s5'),'hill11'],philla11:[upto('s6'),'hill11'],phillc11:[upto('spoke'),'hill11',[340,128]],pfoot11:[upto('down'),'hill11',[150,126]]}[stop];
     if(!S)throw new Error('no such stop '+stop);setChapter(11);for(const k of S[0])F[k]=1;
     const room=S[1];CHAP[11].place(room);dealInv(room);G.scene=null;enterRoom(room,...CHAP[11].ent[room]);
     if(S[2]){place(P,room,S[2][0],S[2][1],1);G.cam=clamp(S[2][0]-160,0,ART[room].w-320)}
     if(stop==='pbasesb11'){Object.assign(G.b11,{ivy:1,frag:1,last:'unknown'});G.b11.read={pity:1,ivy:1,broken:1,unknown:1}}
     if(stop==='phillb11'){G.sp11.ground='line';G.sp11.voice='we'}
+    if(stop==='phillw11')G.sp11.voice='we';if(stop==='phills11'){G.sp11.ground='block';G.sp11.voice='we'}if(stop==='philla11'){G.sp11.voice='all';G.sp11.warned=1}
     G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();await wait(1100);halt(stop)}
   const ch11=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[11],told=k=>heard.includes(T(C().told[k])),Q=p=>T('{text} ({ref})',{text:T(p.gist),ref:T(p.ref)}),
     until=async(fn,n)=>{for(let i=0;i<(n||6000)&&!fn();i++)await wait(30);await idle()},
@@ -1306,6 +1336,8 @@
   await setG('dish');await spk();note();ok(F.s3&&told('v25'),'the robe and the dish (Acts 17:25)');
   await setG('block');await spk();ok(!F.s4&&said('He is right. Nothing of theirs says this. I can only say it, and stand among them while I do.'),'nothing of theirs says that all nations come from one man');
   await setG(null);await spk();ok(!F.s4&&said('Said like that, I stand outside and point. He is not far from any one of us; and I am one of us.'),'said as "you", he stands outside');
+  ok(/us$/.test(C().parts[4].claim)&&/^we /.test(C().parts[6].claim)&&C().parts[7].claim.includes('all people everywhere')&&[1,2,3].every(n=>!/\b(we|us)\b|all people/.test(C().parts[n].claim)),'what is to be said next has the account\'s own word for whom it is said of: "us" (17:27), "we" (17:29), all people everywhere (17:30)');
+  await setV('all');await spk();ok(!F.s4&&said('All people everywhere? You are in Athens, and it was Athens that asked you.')&&said('Not yet. Said like that, it goes over their heads. This I say as one of them: "we".')&&capsFit(3)&&G.caps11.some(c=>c.s===T('I say it {voice}',{voice:T(C().voice.all)})),'said to all people everywhere, it goes over their heads: not yet');
   await setV('we');await spk();note();ok(F.s4&&told('v26')&&told('v27'),'with empty hands, and as one of them (Acts 17:26, 27)');
   halt('speech11');
   await setG('line');await spk();note();ok(F.s5&&told('v28'),'their own poets (Acts 17:28)');
@@ -1345,7 +1377,7 @@
   {const bad=[],P0=C().parts,GR=C().grain;for(const k in GR){if(P0.filter(p=>p&&p.g===k).length!==1)bad.push('grain '+k);for(const f of['cap','note'])if(!T.peek(GR[k][f]))bad.push('untranslated '+k)}
    for(const s of C().stones)if(!T.peek(s.nm))bad.push('untranslated '+s.id);for(const k in C().ps)if(!T.peek(C().ps[k].gist)||!T.peek(C().ps[k].ref))bad.push('untranslated '+k);
    for(const w of['s','e']){if(C().says[w].filter(x=>x.ok).length!==1)bad.push('sayings '+w);for(const x of C().says[w])if(!T.peek(x.q)||!T.peek(x.say))bad.push('untranslated saying')}
-   for(const v of C().voices)if(!T.peek({you:'you',we:'we',all:'all people everywhere'}[v]))bad.push('untranslated voice '+v);
+   for(const v of C().voices)if(!C().voice[v]||!T.peek(C().voice[v]))bad.push('untranslated voice '+v);
    ok(!bad.length&&P0.filter(p=>p&&!p.g).length===2&&C().stones.filter(s=>s.k==='altar').length===5,'the speech: five grains, each carrying one part, and two parts with empty hands; seven stones, each named in this language'+(bad.length?' BAD '+bad:''))}
   /* dress (CONTRIBUTING section 4): the men on the seats wear the Greek mantle, and none of them is a woman; the women of the marketplace wear a long tunic and have their hair bound or covered */
   {const seats=['ep11a','ep11b','ep11c','j11a','dion11s','j11b','j11c','stc11a','stc11b','stc11c'].map(k=>LOOK[k]),women=['w11a','w11b','dama11'].map(k=>LOOK[k]);
@@ -2511,6 +2543,12 @@
   {const real=Object.values(CHAP).filter(c=>c.src);/* the chapters that are level files: not the hub test's own */
     ok(real.length>=9&&real.every(c=>c.ready)&&!taken.length,'ids: all '+real.length+' chapters are loaded, and none took a room, a backdrop or an item from another'+(taken.length?'. TAKEN: '+taken.join(' | '):''))}
   ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+  /* the pixel font has a letter for every character of every text, English and translated, checked where a translation is loaded (sung
+     notes and {placeholders} are not shown) */
+  {const cs=new Set();for(const L of Object.values(DICT))for(const part of Object.values(L))for(const[k,v]of Object.entries(part))for(const t of[k,v])
+      if(typeof t==='string'&&!/\d\.\d+[a-z@]/i.test(t))for(const c of t.replace(/\{\w+\}/g,''))cs.add(c);
+    const lack=f=>[...cs].filter(c=>!/\s/.test(c)&&!SHARED.font.glyphs[f][c]).join(''),a=lack('regular'),b=lack('small');
+    if(Object.keys(DICT).length)ok(cs.size>40&&!a&&!b,'the pixel font has a letter for each of the '+cs.size+' characters the game shows'+(a||b?'. MISSING: '+a+' / '+b:''))}
   fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
   L('DONE');
  }catch(e){if(e!=='halt')L('ERR '+(e&&e.message||e))}})();
