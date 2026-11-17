@@ -793,8 +793,8 @@ async function openTablets(){if(!F.down)return false;if(F.open)return;F.open=1;
 async function finale(){AU.mood='rest';
   endScreen({title:'The Unknown God',text:'He had no scroll that they would have known. He began with an altar of theirs, and ended where he always ended.',
     based:'Based on Acts 17:16-34. Supporting characters and dialogue are imaginative; the events are from the Scriptures, and are told here in paraphrase. Acts does not say how long Paul waited in Athens or where he lodged, what he said in the synagogue, where the altar stood or what else he looked at, what the philosophers argued, whether he was taken to the hill or to a sitting of the council elsewhere, which poets he meant, where Damaris stood, or whether Silas and Timothy reached him there.',
-    go:'Click to return to the title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+    go:'Click to continue to Chapter Twelve',code:['Chapter Twelve code: {code}',codeOf(12,0)]});
+  await wait(1500);ov.onclick=()=>startChapter(12);await new Promise(()=>{})}
 
 /* ============ ITEMS ============ */
 /* A thought is carried and used like a thing. A question is a leaf of wax with a few pale strokes scratched into it; a grain is

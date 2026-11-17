@@ -2,7 +2,7 @@
 
 A browser point-and-click adventure in the style of early-1990s verb-and-inventory adventure games. You play Saul of Tarsus, later known as the apostle Paul, a tentmaker who gets out of tight spots with his trade, his brothers and prayer rather than with force.
 
-There are eleven chapters so far, in English and German. The game is a small engine in `index.html` plus one level file per chapter in `levels/`, loaded only when that chapter is played. There are no image or audio files: every backdrop, character and icon is painted in code on a canvas, and all music, ambience and sound effects are synthesized with the Web Audio API.
+There are twelve chapters so far, in English and German. The game is a small engine in `index.html` plus one level file per chapter in `levels/`, loaded only when that chapter is played. There are no image or audio files: every backdrop, character and icon is painted in code on a canvas, and all music, ambience and sound effects are synthesized with the Web Audio API.
 
 ![Title screen](docs/screenshots/title.png)
 
@@ -29,6 +29,7 @@ Each chapter has its own page with screenshots, a walkthrough, its music and map
 9. [Chapter Nine: Midnight in Philippi](docs/chapter-9.md)
 10. [Chapter Ten: Is It So?](docs/chapter-10.md)
 11. [Chapter Eleven: The Unknown God](docs/chapter-11.md)
+12. [Chapter Twelve: Tentmakers of Corinth](docs/chapter-12.md)
 
 ## How to play
 
@@ -40,7 +41,7 @@ Point at something and click: its usual verb lights up. Use the verbs, the inven
 
 The game follows the scriptural understanding of Jehovah's Witnesses and the New World Translation of the Holy Scriptures (Study Edition); the German version follows the German edition, the *Neue-Welt-Übersetzung der Heiligen Schrift (Studienausgabe)*. Verses are told in the game's own words with their references, and no text, artwork or other material of jw.org is reproduced. Historical details are checked by hand against jw.org and wol.jw.org. Paul is shown as a courageous, observant minister who relies on practical wisdom, cooperation with fellow believers and trust in Jehovah. There are no halos, crosses or mystical effects, and no puzzle is solved by a miracle or by violence.
 
-The events themselves are from the Scriptures. All dialogue is imaginative dramatization, including the words given to Barnabas, Cephas, James, Agabus, Lucius, John Mark, Sergius Paulus, Bar-Jesus, Timothy, Eunice, Lois, Jason, Dionysius, Damaris, the man who was lame and the priest of Zeus. The supporting characters are invented too. Each chapter's page has an "About the content" section that says what the account leaves unsaid, what is invented and which publications the details come from, and each chapter's end screen says so too:
+The events themselves are from the Scriptures. All dialogue is imaginative dramatization, including the words given to Barnabas, Cephas, James, Agabus, Lucius, John Mark, Sergius Paulus, Bar-Jesus, Timothy, Eunice, Lois, Jason, Dionysius, Damaris, Aquila, Priscilla, Titius Justus, Crispus, Stephanas, Gaius, the man who was lame and the priest of Zeus. Where a chapter shows somebody whom Acts does not name at that place (Stephanas and Gaius in Corinth, who are known from 1 Corinthians 1:14, 16), its page and its end screen say so. The supporting characters are invented too. Each chapter's page has an "About the content" section that says what the account leaves unsaid, what is invented and which publications the details come from, and each chapter's end screen says so too:
 
 - [Chapter One: Escape from Damascus](docs/chapter-1.md#about-the-content)
 - [Chapter Two: A Friend in Jerusalem](docs/chapter-2.md#about-the-content)
@@ -53,6 +54,7 @@ The events themselves are from the Scriptures. All dialogue is imaginative drama
 - [Chapter Nine: Midnight in Philippi](docs/chapter-9.md#about-the-content)
 - [Chapter Ten: Is It So?](docs/chapter-10.md#about-the-content)
 - [Chapter Eleven: The Unknown God](docs/chapter-11.md#about-the-content)
+- [Chapter Twelve: Tentmakers of Corinth](docs/chapter-12.md#about-the-content)
 
 This is an independent, non-commercial fan project. It is not produced, endorsed or reviewed by Jehovah's Witnesses or the Watch Tower Bible and Tract Society, and it is not affiliated with jw.org. It contains no material from jw.org or its subdomains; it only refers to them as sources that its authors read. Their [Terms of Use](https://www.jw.org/en/terms-of-use/) apply to their content.
 

@@ -655,6 +655,7 @@ function stamp(g,map,x,y,L){for(let j=0;j<map.length;j++){const r=map[j];for(let
    (band: its color) and drawn back to a knot, as Greek women wore it. himation:1 wraps the mantle (cloak) round the body below the
    chest as well, down to the shins, and leaves the far shoulder and arm free: the Greek outer garment, for men and women. stone:1 is a
    statue: eyes, mouth and sandals take the tones of its one material (marble or bronze), and stub:1 breaks its far arm off at the elbow.
+   edge: a band of another color along the mantle where it crosses the chest, as on the garment of a Roman magistrate.
    receding:1 and thin:1 are the stages of hair loss between hair and bald; crop:1 is hair clipped short, leaving the neck bare;
    shortBeard:1 is a young man's close beard, fullBeard:1 a fuller one short of longBeard; grey colors the highlight of hair (H) and beard (V). */
 const HEADS={
@@ -731,11 +732,11 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink){
     if(!c.ar){px(2,yB-3,B[0],2,2);px(3,yB,B[2],2,fem?12:8);px(4,yB,B[3],1,fem?12:8);px(3,yB+(fem?12:8),B[3],2);if(fem){px(1,yB,B[2],1,9);px(1,yB+9,B[3])}}}
   if(o.pouch&&!HIM){px(-9,yB-2,LE[2],6,8);px(-9,yB-2,LE[3],6,2);px(-9,yB,LE[4],1,6);px(-5,yB,LE[1],1,4);px(-8,yB+6,LE[4],4);px(-7,yB-1,'#d8b860')}
   /* mantle: hanging from the near shoulder, and across the chest to the far hip */
-  if(C&&!o.cape){const m1=o.long?yA-6:yH+6,mn=m1-yS+2;
+  if(C&&!o.cape){const m1=o.long?yA-6:yH+6,mn=m1-yS+2,ED=o.edge?ramp(o.edge):null;   /* edge: a band of color along the mantle where it crosses the chest */
     for(let yy=yS-1;yy<=m1;yy++){const i=yy-yS+1,t=i/(mn-1),bulge=t>.25&&t<.6?1:0,zig=yy>m1-3?(m1-yy<1?3:m1-yy<2?1:0):0;
       cloth(yy,-16+(i<3?3-i:0)-bulge+zig,-9+(t>.45?1:0)-(zig>1?1:0),C,i,[[.3,4,.012],[.6,9,-.01],[.82,14,.01]],null,[6,14])}
     for(let xx=-10+slim;xx<=11-slim;xx++){const k=(xx+10)/21,ya=Math.round(yS-1+k*(TOR-8)),yb=ya+10-Math.round(k*3);
-      for(let yy=ya;yy<=yb;yy++){const j=yy-ya;px(xx,yy,C[j===0?(k>.3?0:1):j===yb-ya?4:j===3||j===7?3:j===4?1:k>.72?1:2])}
+      for(let yy=ya;yy<=yb;yy++){const j=yy-ya;px(xx,yy,(ED&&j>0&&j<3?ED:C)[j===0?(k>.3?0:1):j===yb-ya?4:j===3||j===7?3:j===4?1:k>.72?1:2])}
       if(HIM){for(let yy=yb+1;yy<=yB;yy++){const j=yy-yb,q=(xx+j*.5+40)%7;px(xx,yy,C[j===1?3:xx<-7+slim?4:xx<-4?3:q<1?3:q<2?1:xx>8-slim?1:2])}}
       else{px(xx,yb+1,T[4]);if(xx%3)px(xx,yb+2,T[3])}}}
   if(o.cape){for(let xx=-16;xx<=15;xx++){const e=Math.abs(xx+.5)>14?1:0;px(xx,yS-1+e,C[1]);px(xx,yS+e,C[xx<-8?3:2]);px(xx,yS+1+e,C[xx<-8?4:3]);if(xx<-5||xx>7)px(xx,yS+2+e,C[4])}px(8,yS,'#f4dc8a',2,2);px(9,yS+1,'#b08a3c')}
@@ -952,7 +953,7 @@ function clickItem(id){if(G.busy)return;audioInit();const it=ITEMS[id],a=G.item;
   cut(()=>say(PC(),G.verb==='pickup'?'I am already carrying it.':G.verb==='open'?'That does not open.':T('It is only {item}.',{item:T(it.name)})))}
 /* itemLook: an item described in the voice of whoever holds it (ITEMS[id].by[character id]); look is Paul's. */
 const itemLook=id=>{const it=ITEMS[id],w=PC();return w!==P&&it.by&&it.by[w.id]||it.look};
-function hsAt(x,y){for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&Math.abs(x-a.x)<=10&&y>=a.y-49&&y<=a.y+1)return a.hs;
+function hsAt(x,y){for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&(Math.abs(x-a.x)<=10||a.mate&&Math.abs(x-a.x-a.mate.dx*a.dir)<=10)&&y>=a.y-49&&y<=a.y+1)return a.hs;
   const hs=ROOMS[G.room].hs;for(let i=hs.length-1;i>=0;i--){const h=hs[i];if((!h.vis||h.vis())&&x>=h.x&&x<h.x+h.w&&y>=h.y&&y<h.y+h.h)return h}return null}
 /* show: an item given or shown to a person with no particular use for it. He answers in his own voice: from his show table
    (keyed by item id), else with his fallback, show['*']. Using an item on a person is the same as giving it. */
@@ -1087,6 +1088,10 @@ const beast=(g,x,y,dir,fr,load,lit)=>figure(g,x,y,lit,'donkey'+dir+fr+load,s=>do
 /* An actor whose dress changes with the story (a cloak torn off him) is given another look and says so in wear, a letter or two that
    names it: the poses of each look are kept apart. A chapter's start gives everyone his own look back (see setChapter). */
 function drawActor(g,o,ts,id){const talk=o.talk&&Math.floor(ts/130)%2?1:0,ges=o.talk&&Math.floor(ts/560)%3===1?1:0,bl=o.bow||blinks(o.look,ts)?1:0,bow=o.bow?1:0;
+  /* a mate: two who are never apart are one actor (Aquila and Priscilla, in Chapter Twelve). The mate {fig, dx, talk}, fig being the id of her look,
+     walks, stands and bows with the actor, a step behind and beside, and has a mouth of her own. */
+  const m=o.mate;if(m){const mt=m.talk&&Math.floor(ts/130)%2?1:0,mg=m.talk&&Math.floor(ts/560)%3===1?1:0,L=LOOK[m.fig],mb=bow||blinks(L,ts)?1:0,mx=o.x+m.dx*o.dir;
+    figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+o.dir+o.fr+mt+bow+mg+mb,s=>person(s,0,0,L,o.dir,o.fr,mt,bow,mg,mb))}
   figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+o.dir+o.fr+talk+bow+ges+bl,s=>person(s,0,0,o.look,o.dir,o.fr,talk,bow,ges,bl))}
 function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
@@ -1113,12 +1118,15 @@ async function combine(a,b){const c=COMBO[[a,b].sort().join('+')],w=PC();if(w!==
 /* --- "Pray to Jehovah": a pause for calm, then a context-sensitive thought. Never changes the game state. --- */
 const PRAYERS=['{name} bows his head and quietly asks Jehovah for wisdom and a calm heart. (James 1:5)',
   '{name} pauses, and in prayer leaves his cares with Jehovah. (1 Peter 5:7)','In the stillness, {name} asks Jehovah to help him think clearly.'];
+/* when two are played as one (an actor with a mate), the two of them pray */
+const PRAYERS2=['{name} bow their heads and quietly ask Jehovah for wisdom and a calm heart. (James 1:5)',
+  '{name} pause, and in prayer leave their cares with Jehovah. (1 Peter 5:7)','In the stillness, {name} ask Jehovah to help them think clearly.'];
 function hint(){return CHAP[G.ch].hint()}
 function pray(){if(G.busy||G.scene||!G.room)return;audioInit();
   cut(async()=>{G.prays++;const me=PC(),d=$('#dim'),m=AU.mus,ab=AU.ambG;d.style.opacity=.55;me.bow=true;SFX.pray();
     if(m){m.gain.setTargetAtTime(.12,now(),.3);ab.gain.setTargetAtTime(.15,now(),.3)}
     await wait(900);
-    await say(null,T(G.prays===1?PRAYERS[0]:pick(PRAYERS),{name:T(me.name)}),{dur:4200,color:'#cfe2ff'});
+    {const PR=me.mate?PRAYERS2:PRAYERS;await say(null,T(G.prays===1?PR[0]:pick(PR),{name:T(me.name)}),{dur:4200,color:'#cfe2ff'})}
     await wait(500);me.bow=false;d.style.opacity=0;if(m){m.gain.setTargetAtTime(.55,now(),.8);ab.gain.setTargetAtTime(.5,now(),.8)}
     await wait(600);
     const[k,ls]=hint(),n=G.hintAt[k]=(G.hintAt[k]||0)+1;
@@ -1165,7 +1173,8 @@ const CHAP={
   8:{name:'THE MAN FROM MACEDONIA',label:'Chapter Eight',title:'The Man from Macedonia',salt:0x8C57,src:'levels/chapter8.js'},
   9:{name:'MIDNIGHT IN PHILIPPI',label:'Chapter Nine',title:'Midnight in Philippi',salt:0x9D61,src:'levels/chapter9.js'},
   10:{name:'IS IT SO?',label:'Chapter Ten',title:'Is It So?',salt:0xA37B,src:'levels/chapter10.js'},
-  11:{name:'THE UNKNOWN GOD',label:'Chapter Eleven',title:'The Unknown God',salt:0xB48D,src:'levels/chapter11.js'}};
+  11:{name:'THE UNKNOWN GOD',label:'Chapter Eleven',title:'The Unknown God',salt:0xB48D,src:'levels/chapter11.js'},
+  12:{name:'TENTMAKERS OF CORINTH',label:'Chapter Twelve',title:'Tentmakers of Corinth',salt:0xC59F,src:'levels/chapter12.js'}};
 const TITLE={level:1,scene:'wall',mood:'calm',amb:{crickets:.5,wind:.35,owl:.4}};
 /* A level file calls LEVEL(n, init). init() registers its art, cast, items and rooms, and returns the chapter definition. */
 function LEVEL(n,init){LOOK.paul=paulLook(n);Object.assign(CHAP[n],init(),{ready:1});LOOK.paul=paulLook(G.ch)}
