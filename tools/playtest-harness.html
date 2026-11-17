@@ -128,24 +128,11 @@
           const sp=sprite('ages-test'+i,q=>person(q,0,0,o,1,0,0,0,0,0),1);g.drawImage(sp,FIG.OX-30,FIG.OY-104,60,106,x+Math.floor((cw-120)/2),y+chh-214,120,212);
           g.fillStyle='#101418';g.font='bold 11px monospace';g.fillText(n,x+5,y+14)})})}}
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
-  ok(document.documentElement.classList.contains('pf')&&SHARED.font&&document.fonts.check('12px "Paul Pixel"')&&document.fonts.check('italic 12px "Paul Pixel"')&&document.fonts.check('9px "Paul Pixel Small"'),'pixel font loaded and active');
-  {const G=SHARED.font&&SHARED.font.glyphs,foot=(f,c)=>G[f][c].yTop-G[f][c].rows.length;
-    ok(G&&['regular','small'].every(f=>[...'acemnorsuvwxz'].every(c=>foot(f,c)===0&&G[f][c].yTop===G[f].o.yTop)&&[...'bdhiklt0123456789ABCDEFGHIJKLMNOPRSTUVWXYZÄÖÜäöüß'].every(c=>foot(f,c)===0)&&[...'gpqy'].every(c=>foot(f,c)===-2)),
-      'every letter of the pixel font stands on the baseline, the short ones at one x-height')}
-  if(stop==='font'){
-    halt('font',()=>{const k=document.createElement('canvas'),W=innerWidth,Hh=innerHeight;k.width=W;k.height=Hh;k.style.cssText='position:fixed;left:0;top:0;z-index:8';document.body.appendChild(k);
-      /* every glyph of both faces, wrapped, then speech and a thought outlined one font pixel as in the game, on a dark and on a bright ground */
-      const g=k.getContext('2d'),half=Math.round(Hh*.56);g.imageSmoothingEnabled=false;g.fillStyle='#141824';g.fillRect(0,0,W,half);g.fillStyle='#e9dcb8';g.fillRect(0,half,W,Hh-half);
-      const set=f=>Object.keys(SHARED.font.glyphs[f]).filter(c=>c!==' '&&c!==' '),rows=(a,n)=>{const o=[];for(let i=0;i<a.length;i+=n)o.push(a.slice(i,i+n).join(' '));return o};
-      const said=(t,x,y,col,o)=>{g.fillStyle='#000';for(const[i,j]of[[o,0],[-o,0],[0,o],[0,-o],[o,o],[-o,o],[o,-o],[-o,-o]])g.fillText(t,x+i,y+j);g.fillStyle=col;g.fillText(t,x,y)};
-      let y=36;g.font='24px "Paul Pixel"';g.fillStyle='#fff3b8';for(const r of rows(set('regular'),30)){g.fillText(r,16,y);y+=32}
-      g.font='18px "Paul Pixel Small"';g.fillStyle='#e2b24c';for(const r of rows(set('small'),40)){g.fillText(r,16,y);y+=24}
-      y+=10;g.font='24px "Paul Pixel"';said('Peace, stranger. „Grüße, Paulus!“ ÄÖÜ äöü ß',16,y,'#fff',2);g.font='italic 24px "Paul Pixel"';said('A thought: Paul pauses, and asks Jehovah.',16,y+32,'#cfe2ff',2);
-      y=half+40;g.font='24px "Paul Pixel"';said('Peace, stranger. „Grüße, Paulus!“ ÄÖÜ äöü ß',16,y,'#fff',2);g.font='italic 24px "Paul Pixel"';said('A thought: Paul pauses, and asks Jehovah.',16,y+32,'#cfe2ff',2);g.font='24px "Paul Pixel"';
-      g.fillStyle='#2a1c10';g.fillText('Escape from Damascus · Flucht aus Damaskus · 0123456789',16,y+72);
-      g.font='18px "Paul Pixel Small"';g.fillText('CODE 12-ABC-DEF-GHI · NAMEN · TON AN · EN · Tür zur Werkstatt',16,y+104)})}
   /* the title card at full length, and a room change caught half-way through its cross-fade */
   if(stop==='card'){await loadLevel(1);AU.key=CHAP[1].music;G.speedAll=0;clearInterval(sk);showCard(1);await wait(300);halt('card')}
+  /* one of Paul's thoughts, in italics, over the busy square of Antioch */
+  if(stop==='thought'){await loadLevel(3);applyState(decode(codeOf(3,0)));await idle();enterRoom('antioch',...CHAP[3].ent.antioch);clearInterval(sk);
+    say(PC(),'She has given more than thread. And now I can sew.',TH);await wait(300);halt('thought')}
   if(stop==='xfade'){await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();const r=CHAP[1].rooms[1];
     tween=(ms,fn)=>{fn(.5);return new Promise(()=>{})};go(r,...CHAP[1].ent[r]);await wait(150);halt('xfade')}
   if(stop==='menu'){openMenu();halt('menu')}
@@ -2543,12 +2530,6 @@
   {const real=Object.values(CHAP).filter(c=>c.src);/* the chapters that are level files: not the hub test's own */
     ok(real.length>=9&&real.every(c=>c.ready)&&!taken.length,'ids: all '+real.length+' chapters are loaded, and none took a room, a backdrop or an item from another'+(taken.length?'. TAKEN: '+taken.join(' | '):''))}
   ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-  /* the pixel font has a letter for every character of every text, English and translated, checked where a translation is loaded (sung
-     notes and {placeholders} are not shown) */
-  {const cs=new Set();for(const L of Object.values(DICT))for(const part of Object.values(L))for(const[k,v]of Object.entries(part))for(const t of[k,v])
-      if(typeof t==='string'&&!/\d\.\d+[a-z@]/i.test(t))for(const c of t.replace(/\{\w+\}/g,''))cs.add(c);
-    const lack=f=>[...cs].filter(c=>!/\s/.test(c)&&!SHARED.font.glyphs[f][c]).join(''),a=lack('regular'),b=lack('small');
-    if(Object.keys(DICT).length)ok(cs.size>40&&!a&&!b,'the pixel font has a letter for each of the '+cs.size+' characters the game shows'+(a||b?'. MISSING: '+a+' / '+b:''))}
   fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
   L('DONE');
  }catch(e){if(e!=='halt')L('ERR '+(e&&e.message||e))}})();

@@ -33,6 +33,9 @@ body{display:flex;align-items:center;justify-content:center}
   max-width:calc(var(--s)*200px);font-size:calc(var(--s)*6.2px);line-height:1.25;
   text-shadow:calc(var(--s)*1px) 0 #000,calc(var(--s)*-1px) 0 #000,0 calc(var(--s)*1px) #000,0 calc(var(--s)*-1px) #000,
    calc(var(--s)*1px) calc(var(--s)*1px) #000,calc(var(--s)*-1px) calc(var(--s)*1px) #000,calc(var(--s)*1px) calc(var(--s)*-1px) #000,calc(var(--s)*-1px) calc(var(--s)*-1px) #000}
+/* where the browser can paint a stroke behind the letters, the edge is that stroke, a room pixel wide outside every letter and even on
+   its curves; eight shifted shadows leave steps there. A browser that cannot keeps the shadows above. */
+@supports (paint-order:stroke fill){.line{text-shadow:none;-webkit-text-stroke:calc(var(--s)*2px) #000;paint-order:stroke fill}}
 #tags{position:absolute;inset:0;pointer-events:none;z-index:3;display:none}
 #tags.on{display:block}
 .tag{position:absolute;transform:translateX(-50%);font-size:calc(var(--s)*4.4px);line-height:1.25;color:#f0e2c0;white-space:nowrap;
@@ -90,6 +93,8 @@ body{display:flex;align-items:center;justify-content:center}
 #status,#panel{transition:transform .45s ease-in-out,opacity .45s ease-in-out}
 #wrap.full #status,#wrap.full #panel{transform:translateY(calc(var(--s)*70px));opacity:0;pointer-events:none}
 #wrap.full #top>span:first-child{visibility:hidden}
+/* tight: a long chapter name beside a long code and every button leaves no room for the game's name; the chapter's name stays */
+#top.tight #gname,#top.tight #gdot{display:none}
 @keyframes bl{50%{opacity:.25}}
 #status{height:calc(var(--s)*11px);line-height:calc(var(--s)*11px);text-align:center;
   font-size:calc(var(--s)*6.2px);color:var(--hi);white-space:nowrap;overflow:hidden;text-shadow:var(--px) var(--px) 0 #000;background-blend-mode:multiply;background-color:#5a4630;
@@ -158,7 +163,7 @@ body{display:flex;align-items:center;justify-content:center}
 </head>
 <body>
 <div id="wrap">
-  <div id="top"><span><span id="gname">PAUL OF TARSUS</span> &middot; <span id="chname">ESCAPE FROM DAMASCUS</span></span><span><button id="code" type="button">ENTER CODE</button><button id="names" type="button">NAMES</button><button id="mute" type="button">&#9835; SOUND ON</button><button id="lang" type="button">EN</button><button id="opts" type="button" title="Options" aria-label="Options">&#8801;</button></span></div>
+  <div id="top"><span><span id="gname">PAUL OF TARSUS</span><span id="gdot"> &middot; </span><span id="chname">ESCAPE FROM DAMASCUS</span></span><span><button id="code" type="button">ENTER CODE</button><button id="names" type="button">NAMES</button><button id="mute" type="button">&#9835; SOUND ON</button><button id="lang" type="button">EN</button><button id="opts" type="button" title="Options" aria-label="Options">&#8801;</button></span></div>
   <div id="view">
     <canvas id="screen" width="640" height="288"></canvas>
     <div id="speech"></div>
@@ -256,6 +261,10 @@ function fit(){const top=10,st=13,pn=53,tot=144+top+st+pn;
   const d=window.devicePixelRatio||1,s=Math.min(innerWidth/320,innerHeight/tot),k=Math.floor(s*d)/d,sc=k>=1?k:Math.max(.5,s);
   document.documentElement.style.setProperty('--s',sc.toFixed(3));pointer(sc,pointerKind(G.hover))}
 addEventListener('resize',fit);fit();
+/* fitTop: the top bar is one line. When the chapter's name, the code and the buttons do not fit on it, the game's name gives way. It is
+   checked whenever the bar's words change and when the window does. */
+function fitTop(){const t=$('#top');t.classList.remove('tight');if(t.scrollWidth>t.clientWidth+1||t.scrollHeight>t.clientHeight+1)t.classList.add('tight')}
+new MutationObserver(fitTop).observe($('#top'),{childList:true,characterData:true,subtree:true});addEventListener('resize',fitTop);
 /* flags & inventory */
 const F=G.flags;
 const has=id=>G.inv.includes(id);
@@ -906,7 +915,7 @@ function walk(a,x,y){return new Promise(res=>{const rm=ROOMS[a.room];
 let cur=null;
 function say(a,text,o={}){text=T(text);return new Promise(res=>{
   const el=document.createElement('div');el.className='line';el.textContent=text;el.style.color=o.color||(a?a.color:'#e6d9ff');
-  if(o.thought){el.style.fontStyle='italic';el.classList.add('th')}
+  if(o.thought)el.style.fontStyle='italic';
   $('#speech').appendChild(el);if(a&&!o.thought)a.talk=true;
   let n=0;const blip=a&&!o.thought?setInterval(()=>{if(n++<Math.min(9,text.length/5))SFX.talk(a.pitch*2)},85):0;
   const done=()=>{clearTimeout(tm);clearInterval(blip);el.remove();if(a)a.talk=false;if(G.skip===done)G.skip=null;cur=null;res()};
@@ -1254,7 +1263,7 @@ async function setLang(l,keep){if(!LANGS[l])return;
   G.lang=l;MADE.clear();if(keep)store('paul.lang',l);relang()}
 /* relang: redraw every fixed piece of text in the new language: the panel, the top bar, an open overlay, choices, the tablets */
 function relang(){document.documentElement.lang=G.lang;document.title=T('Paul of Tarsus: On the Roads of Rome');
-  $('#gname').textContent=T('PAUL OF TARSUS');$('#chname').textContent=T(CHAP[G.ch].name);
+  $('#gname').textContent=T('PAUL OF TARSUS');$('#chname').textContent=T(CHAP[G.ch].name);fitTop();
   const ks=Object.keys(LANGS),nx=ks[(ks.indexOf(G.lang)+1)%ks.length];$('#lang').textContent=G.lang.toUpperCase();
   $('#lang').title=LANGS[nx].native;$('#lang').style.display=ks.length>1?'':'none';
   buildVerbs();swapBtn();setMute(AU.muted);namesBtn();codeBtn();drawInv();status();
@@ -1270,7 +1279,7 @@ function loadFail(e){console.error(e);ov.onclick=()=>location.reload();
   overlay('on end',()=>{ov.innerHTML='<h2>'+T('LEVEL NOT FOUND')+'</h2><p>'+esc(e.message)+'</p><p class="small">'+T('The chapter files live in the levels folder next to index.html.')+
     '</p><p class="go">'+T('Click to reload')+'</p>'})}
 /* showCard: a chapter's title card, for about three seconds or until a click, Space or Esc. The name is painted in the letters of the
-   title's logo (shared/logo.js), with "Chapter One" beneath it; a language whose name needs a letter the logo lacks gets the pixel font.
+   title's logo (shared/logo.js), with "Chapter One" beneath it; a language whose name needs a letter the logo lacks gets plain text.
    A short sting in the key of the chapter's own score: a drone on the tonic under a harp rising through the fifth to the octave. */
 function cardSting(){if(!AU.ctx)return;const t=now()+.05,[d]=tune([0],-1).map(mtof);INST.drone(d,t,2.2,.6);
   tune([0,7,12]).map(mtof).forEach((f,i)=>INST.harp(f,t+.1+i*.24,.5,1.1))}
@@ -1290,10 +1299,7 @@ async function startChapter(n){ov.onclick=null;try{await loadLevel(n)}catch(e){r
 /* chsFade: fades the chapter list's top edge while entries are scrolled away above it, and its bottom edge while more wait below */
 function chsFade(l){l.classList.toggle('up',l.scrollTop>1);l.classList.toggle('down',l.scrollTop+l.clientHeight<l.scrollHeight-1)}
 addEventListener('resize',()=>{const l=ov.querySelector('.chs');if(l)chsFade(l)});
-/* pixelFont: the game's letters are a pixel font made in code (shared/font.js), on the grid of the view's canvas pixels. When it is ready the
-   page is given the class pf, under which the font and its sizes apply. If it cannot be loaded, the browser's monospace stands in as before. */
-function pixelFont(){return need('font').then(f=>f.ready).then(ok=>{if(ok)document.documentElement.classList.add('pf')}).catch(e=>console.error(e))}
-async function title(){lock(true);await Promise.all([setLang(firstLang()),pixelFont()]);try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
+async function title(){lock(true);await setLang(firstLang());try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
   setChapter(TITLE.level);G.scene=CHAP[TITLE.level].scenes[TITLE.scene];G.end={};AU.mood=TITLE.mood;AU.amb=TITLE.amb;
   /* The name and the subtitle are painted as a logo (shared/logo.js). If its file is missing, or a language's title has a letter the
      logo cannot write, they stand as plain text instead. The canvas keeps the words, for a screen reader and for the playtest. */

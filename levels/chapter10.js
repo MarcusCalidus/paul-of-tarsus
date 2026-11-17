@@ -259,10 +259,12 @@ ART.table10={w:320,q:12,variant:tabV,
   st.s.forEach((k,i)=>{const[x,w]=slots[i];cap10(g,(k?PLACE[k]:SHUT).cap,x+w/2,SY+SHH+9,w+8)});
   if(st.has)cap10(g,(st.t?EV[st.t]:CLOSED).cap,186,138.4,150)}};
 /* cap10: a caption on the table, in small letters with a dark edge, as the names on the map are written. It is made to fit its width. */
-function cap10(g,s,x,y,w){s=T(s);const pf=SHARED.font&&SHARED.font.onCanvas&&SHARED.font.onCanvas(g,s,w);let sz=pf?4.5:4.6;
-  const font=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;if(!pf){g.font=font(sz);g.textBaseline='middle';while(g.measureText(s).width>w&&sz>3.2){sz-=.2;g.font=font(sz)}}
-  const tw=g.measureText(s).width,tx=pf?SHARED.font.pin(x-tw/2):x-tw/2,ty=pf?SHARED.font.mid(y):y;
-  G.caps10.push({s,w:tw,max:w,sz});g.fillStyle='rgba(8,6,10,.85)';for(const[dx,dy]of[[.5,0],[-.5,0],[0,.5],[0,-.5],[.5,.5]])g.fillText(s,tx+dx,ty+dy);g.fillStyle='#f4e4b8';g.fillText(s,tx,ty)}
+/* edge: the dark edge round words painted on the picture, a stroke with round joins behind the letters (five shifted copies of the
+   words left steps on their curves) */
+const edge=(g,s,x,y)=>{g.save();g.strokeStyle='rgba(8,6,10,.85)';g.lineWidth=1;g.lineJoin='round';g.strokeText(s,x,y);g.restore()};
+function cap10(g,s,x,y,w){s=T(s);let sz=4.6;const font=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;g.font=font(sz);g.textBaseline='middle';
+  while(g.measureText(s).width>w&&sz>3.2){sz-=.2;g.font=font(sz)}const tw=g.measureText(s).width,tx=x-tw/2;
+  G.caps10.push({s,w:tw,max:w,sz});edge(g,s,tx,y);g.fillStyle='#f4e4b8';g.fillText(s,tx,y)}
 
 /* ---------- A house in Thessalonica, by night: not Jason's ---------- */
 /* Where Paul and Silas were when the house was stormed, the account does not say. This is where the night finds them. The door has no
