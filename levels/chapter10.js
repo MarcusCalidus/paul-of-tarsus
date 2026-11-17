@@ -209,14 +209,30 @@ ART.syn10={w:320,q:12,
    under it, in the player's language (cap10). */
 const tabV=()=>F.gone?'b':'';
 /* where the scrolls lie: [left edge, width] for two, and for three */
-const SLOT={2:[[26,122],[172,122]],3:[[10,94],[113,94],[216,94]]},SY=20,SHH=52,ROLLW=11;
+const SLOT={2:[[26,122],[172,122]],3:[[10,94],[113,94],[216,94]]},SY=23,SHH=52,ROLLW=11;
 ART.table10={w:320,q:12,variant:tabV,
- paint(g,v){const r=rng(1019),b=v==='b',WD=b?'#8a6a3e':'#7a5a34';
+ paint(g,v){const r=rng(1019),b=v==='b',WD=b?'#8a6a3e':'#7a5a34',rim=15;
   R(g,0,0,320,144,WD);tex(g,'wood',.32,0,0,320,144,'overlay',1.6);tex(g,'grain',.1,0,0,320,144,'overlay',.5);
-  /* those who listen, across the table: their robes, cut off by the edge of the view. No faces. */
-  R(g,0,0,320,12,'#2a2018');for(const[x,w,c]of b?[[18,50,'#8e7a5a'],[92,44,'#5f7f8c'],[168,52,'#a89468'],[250,48,'#7a6a8a']]:[[30,48,'#7a6a52'],[112,52,'#8a5a4a'],[196,46,'#5a6a7a'],[262,44,'#9a8a6a']]){
-    g.fillStyle=lg(g,x,0,x+w,0,[tint(c,-.3),tint(c,.14),c,tint(c,-.4)]);g.fillRect(x,0,w,10.6);for(let i=4;i<w-3;i+=7)R(g,x+i,0,.6,10.6,'rgba(0,0,0,.2)');R(g,x,10,w,.8,'rgba(0,0,0,.4)')}
-  ao(g,0,12,320,7,'t',.4);
+  /* those who listen, across the table: seen from above, their shoulders in tunic and mantle and the crowns of their heads over the table's edge */
+  R(g,0,0,320,rim,'#231b15');R(g,0,rim,320,1.1,'#b08a58');R(g,0,rim+1.1,320,.9,'#5a4226');ao(g,0,rim+2,320,6,'t',.38);
+  const men=b?[[57,96,11.4,8.8,'#9a8664','#b8a47c','#b88a62','#d0d0d0',1,'#d0d0d0'],[160,92,11,8.5,'#6e8c82','#4f6f7c','#c89868','#2a1a12',0,null],[263,96,11.4,8.8,'#8e7a56','#b09a6c','#b47e52','#4a3220',0,'#4a3220']]
+    :[[57,96,11.4,8.8,'#7a6880','#b8a680','#a8703f','#8a8a8a',0,'#8a8a8a'],[160,92,11,8.5,'#b8b09c','#587482','#c69870','#5a4026',0,null],[263,96,11.4,8.8,'#9a705a','#7a8a5a','#c08c5c','#3a2a1c',0,'#3a2a1c']];
+  men.forEach(([cx,w,hrx,hry,tu,cl,sk,ha,bald,bd],i)=>{const mr=rng(4001+i*77+(b?0:300)),hw=w/2,shY=rim-10,hy=rim-5.2;
+    oval(g,cx+1.5,shY+3.5,hw+2,11.2,'rgba(14,10,8,.55)');
+    oval(g,cx,shY,hw,11.4,tint(tu,-.2));oval(g,cx-1.2,shY-.5,hw-2,10.6,tu);oval(g,cx-4,shY-1.5,hw*.72,8.5,tint(tu,.14));
+    poly(g,[cx+hw*.42,0,cx+hw*.52,0,cx+hw*.25,rim-2,cx+hw*.17,rim-1.6],tint(tu,-.24));
+    poly(g,[cx-hrx-3,0,cx+hrx+3,0,cx+4,hy+2,cx-4,hy+2],tint(tu,-.38));poly(g,[cx-hrx-1,0,cx+hrx+1,0,cx+3,hy+1,cx-3,hy+1],tint(sk,-.22));
+    poly(g,[cx-hw+1,0,cx-2,0,cx-5,rim-.5,cx-hw+3,rim-2.5],cl);poly(g,[cx-hw+2,0,cx-6,0,cx-9,rim-.9,cx-hw+5,rim-3.5],tint(cl,.16));
+    poly(g,[cx-hw*.58,0,cx-hw*.46,0,cx-hw*.68,rim-2.2,cx-hw*.78,rim-2.8],tint(cl,-.22));poly(g,[cx-5,0,cx-2,0,cx-5,rim-.5,cx-8,rim-.7],tint(cl,-.28));
+    oval(g,cx+1,hy+2.2,hrx+.8,hry+1,'rgba(18,12,8,.55)');
+    if(bd){oval(g,cx,hy+hry*.62,hrx*.82,hry*.68,tint(bd,-.22));oval(g,cx-.6,hy+hry*.56,hrx*.72,hry*.6,bd);oval(g,cx-1.5,hy+hry*.52,hrx*.45,hry*.42,tint(bd,.14))}
+    oval(g,cx,hy+hry*.32,hrx*.84,hry*.58,tint(sk,-.1));oval(g,cx-.6,hy+hry*.28,hrx*.72,hry*.48,sk);
+    oval(g,cx,hy+hry*.88,2.2,1.8,tint(sk,-.05));R(g,cx-1.2,hy+hry*.78,2,1.4,tint(sk,.18));
+    oval(g,cx-hrx-.4,hy+.4,1.8,2.6,tint(sk,.05));oval(g,cx+hrx+.4,hy+.4,1.8,2.6,tint(sk,-.18));
+    oval(g,cx,hy-1.2,hrx,hry*.85,tint(ha,-.22));oval(g,cx-.8,hy-1.6,hrx*.88,hry*.76,ha);
+    for(let j=0;j<18;j++){const a=mr()*6.2832,d=Math.sqrt(mr())*.78,lx=cx+Math.cos(a)*d*hrx,ly=(hy-1.4)+Math.sin(a)*d*hry*.75,
+      sh=(-(lx-cx)/hrx-(ly-hy)/hry)*.22+(mr()-.5)*.14;oval(g,lx,ly,2.2+mr()*1.8,1.6+mr()*1.2,tint(ha,sh))}
+    if(bald){oval(g,cx,hy+.4,hrx*.68,hry*.82,tint(sk,-.04));oval(g,cx-1.2,hy-.6,hrx*.48,hry*.58,tint(sk,.18))}});
   /* the steps down from the platform, at the near corner */
   poly(g,[250,144,320,104,320,144],'#4a3620');poly(g,[262,144,320,112,320,116,270,144],'#6a4e2c');poly(g,[284,144,320,124,320,128,292,144],'#6a4e2c');
   lightmap(g,320,b?'#c8c0b8':'#b8aeb0',l=>{pool(l,b?200:120,60,230,110,'#fff0d0',.8);pool(l,160,118,150,40,'#ffe8c0',.4)})},
@@ -240,7 +256,7 @@ ART.table10={w:320,q:12,variant:tabV,
       const sd=rng(1051+dx+(EV[st.t]?EV[st.t].seed:0));for(let j=0;j<7;j++)R(g,tx+dx+7,ty+8+j*3.8,22+sd()*14,.8,dx&&j>1&&j<5?'#e8d8a8':'#9a8862')}}},
  /* the names of what lies open: under each scroll, and on the near edge of the table for the tablets */
  front(g,t){const st=G.tab10;if(!st)return;const slots=SLOT[st.n];G.caps10=[];
-  st.s.forEach((k,i)=>{const[x,w]=slots[i];cap10(g,(k?PLACE[k]:SHUT).cap,x+w/2,SY+SHH+10,w+8)});
+  st.s.forEach((k,i)=>{const[x,w]=slots[i];cap10(g,(k?PLACE[k]:SHUT).cap,x+w/2,SY+SHH+9,w+8)});
   if(st.has)cap10(g,(st.t?EV[st.t]:CLOSED).cap,186,138.4,150)}};
 /* cap10: a caption on the table, in small letters with a dark edge, as the names on the map are written. It is made to fit its width. */
 function cap10(g,s,x,y,w){s=T(s);let sz=4.6;const font=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;g.font=font(sz);g.textBaseline='middle';
@@ -829,7 +845,7 @@ const tabHs=n=>{const out=[];for(let i=0;i<n;i++){const live=()=>atTable()&&tabS
 ROOMS.table10={space:1.5,walk:NOW,mood:'table',amb:{},hs:[
   ...tabHs(2),...tabHs(3),
   {name:'my tablets on the table',x:104,y:90,w:112,h:44,wx:160,wy:236,def:'use',vis:()=>atTable()&&tabSt().has,use:leaf,look:readLeaf,pickup:'They lie where I need them: beside the scrolls.'},
-  {get name(){return F.gone?'Beroeans at the table':'men on the benches'},x:0,y:0,w:320,h:13,wx:160,wy:236,def:'talk',talk:lay,use:lay,
+  {get name(){return F.gone?'Beroeans at the table':'men on the benches'},x:0,y:0,w:320,h:17,wx:160,wy:236,def:'talk',talk:lay,use:lay,
     look:()=>say(P,F.gone?'They stand round the table with their hands on the rollers. Nobody here waits to be told.':'They are waiting. Whatever lies on this table when I look up is what I have shown them.')},
   {name:'steps of the platform',x:250,y:100,w:70,h:44,wx:160,wy:236,exit:fromTable,look:'The way back down from the table.'}]};
 ROOMS.night10={space:1.1,walk:[16,304,112,137],mood:'night',amb:{crickets:.4,fire:.15},hs:[
