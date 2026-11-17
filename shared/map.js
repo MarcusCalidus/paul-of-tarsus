@@ -198,19 +198,25 @@ const ST={legs:[],seen:new Set(),pulse:null,places:null,hover:null,boxes:[],over
 /* a place as this chapter's map shows it: its usual entry, with the chapter's own side for its name */
 const placeOf=k=>ST.over&&ST.over[k]?Object.assign({},PLACES[k],ST.over[k]):PLACES[k];
 /* box: note where a name was drawn, so that the playtest can check that no name crosses a coast or a route, in any language */
-const box=(g,s,x,y,sz)=>ST.boxes.push([x,y-sz*.45,x+g.measureText(s).width,y+sz*.45,s]);
-function label(g,s,x,y,side,col,sz){sz=sz||4.6;g.font=`bold ${sz}px "Lucida Console",Monaco,"Courier New",monospace`;g.textBaseline='middle';
-  const w=g.measureText(s).width,tx=side==='r'?x+3.2:side==='l'?x-3.2-w:x-w/2,ty=side==='t'?y-5:side==='b'?y+5:y;box(g,s,tx,ty,sz);
-  g.fillStyle='rgba(8,6,10,.85)';for(const[dx,dy]of[[.5,0],[-.5,0],[0,.5],[0,-.5],[.5,.5]])g.fillText(s,tx+dx,ty+dy);g.fillStyle=col;g.fillText(s,tx,ty)}
+const box=(g,s,x,y,sz,w)=>ST.boxes.push([x,y-sz*.45,x+(w!=null?w:g.measureText(s).width),y+sz*.45,s]);
+/* the names are in the game's pixel font (shared/font.js) when it is in use, set on whole canvas pixels; otherwise in the monospace */
+const PF=()=>SHARED.font&&SHARED.font.onCanvas?SHARED.font:null;
+function label(g,s,x,y,side,col,sz){sz=sz||4.6;const pf=PF()&&PF().onCanvas(g,s);if(!pf){g.font=`bold ${sz}px "Lucida Console",Monaco,"Courier New",monospace`;g.textBaseline='middle'}
+  /* in the pixel font a name is as wide as its letters, without the space the last one leaves after it */
+  const w=g.measureText(s).width-(pf?.5:0);let tx=side==='r'?x+3.2:side==='l'?x-3.2-w:x-w/2;const ty=side==='t'?y-5:side==='b'?y+5:y;box(g,s,tx,ty,sz,w);
+  let by=ty;if(pf){tx=PF().pin(tx);by=PF().mid(ty)}
+  g.fillStyle='rgba(8,6,10,.85)';for(const[dx,dy]of[[.5,0],[-.5,0],[0,.5],[0,-.5],[.5,.5]])g.fillText(s,tx+dx,by+dy);g.fillStyle=col;g.fillText(s,tx,by)}
 function dot(g,x,y,lit){oval(g,x,y,1.9,1.9,'#1a0e08');oval(g,x,y,1.15,1.15,lit?'#f4dc8a':'#c8b48a')}
 /* draw: the baked map, then everything that moves: the routes, the city dots and their names */
 function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];if(ST.night){g.fillStyle='rgba(6,10,38,.6)';g.fillRect(0,0,W,H)}const sea=T('THE GREAT SEA').split('').join(' ');
   g.save();g.translate(-OX,-OY);
-  g.font='italic bold 5px "Lucida Console",Monaco,monospace';g.textBaseline='middle';g.fillStyle='rgba(190,224,236,.55)';{const[sx,sy]=SEA[OX+','+OY]||SEA['0,0'];g.fillText(sea,sx,sy);box(g,sea,sx,sy,5)}
+  {const[sx,sy]=SEA[OX+','+OY]||SEA['0,0'],pf=PF()&&PF().onCanvas(g,sea);if(!pf){g.font='italic bold 5px "Lucida Console",Monaco,monospace';g.textBaseline='middle'}
+    g.fillStyle='rgba(190,224,236,.55)';g.fillText(sea,pf?PF().pin(sx):sx,pf?PF().mid(sy):sy);box(g,sea,sx,sy,5)}
   for(const{name,at:[lon,lat],sea,close,north,west}of REGIONS){if(north&&OY>=0||west&&OX>=0)continue;const[x,y]=xy(lon,lat),s=T(name),hw=s.length*(close?1.66:2.3);if(!inView(x-hw,y,-2)||!inView(x+hw,y,-2))continue;
-    g.font='bold 4.2px "Lucida Console",Monaco,monospace';g.fillStyle=sea?'rgba(190,224,236,.55)':'rgba(70,46,20,.6)';
-    if(close){/* letter by letter, a third of a letter apart */for(let i=0;i<s.length;i++)g.fillText(s[i],x-hw+i*3.32,y);ST.boxes.push([x-hw,y-1.9,x+hw,y+1.9,s])}
-    else{const sp=s.split('').join(' ');g.fillText(sp,x-hw,y);box(g,sp,x-hw,y,4.2)}}
+    const pf=PF()&&PF().onCanvas(g,s),px=v=>pf?PF().pin(v):v,py=pf?PF().mid(y):y;if(!pf){g.font='bold 4.2px "Lucida Console",Monaco,monospace';g.textBaseline='middle'}
+    g.fillStyle=sea?'rgba(190,224,236,.55)':'rgba(70,46,20,.6)';
+    if(close){/* letter by letter, a third of a letter apart */for(let i=0;i<s.length;i++)g.fillText(s[i],px(x-hw+i*3.32),py);ST.boxes.push([x-hw,y-1.9,x+hw,y+1.9,s])}
+    else{const sp=s.split('').join(' ');g.fillText(sp,px(x-hw),py);box(g,sp,x-hw,y,4.2)}}
   for(const L of ST.legs){const n=Math.floor(L.dots.length*L.k);for(let i=0;i<n;i++){const[x,y]=L.dots[i];R(g,x-.6,y-.6,1.2,1.2,'#5a140c');R(g,x-.35,y-.35,.7,.7,L.k<1&&i>n-4?'#ffe0a0':'#d84a32')}}
   const show=new Set(ST.places||Object.keys(PLACES).filter(k=>PLACES[k].minor||ST.seen.has(k)));
   for(const k of show){const p=placeOf(k),[x,y]=at(k),main=!p.minor||ST.places||ST.seen.has(k);if(p.hide||!inView(x,y,-3))continue;dot(g,x,y,ST.seen.has(k)||ST.hover===k);

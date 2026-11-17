@@ -35,3 +35,15 @@ Each chapter ends on a travel map of the eastern Mediterranean, painted the same
 ![The travel map at the end of Chapter Three](screenshots/map.png)
 
 Each chapter has its own score and room sounds, and the end-of-chapter map is described in the chapter's own page (see [the chapter list](../README.md#chapters)).
+
+All text uses two bitmap fonts painted in code (`shared/font.js`) on the grid of the backdrops, two font pixels to the room pixel: **Paul Pixel** for speech, verbs, choices and headings, and **Paul Pixel Small** for the top bar, the names, notes and the names on the map. Every letter stands on one baseline, the short ones at one x-height, and only g, j, p, q and y hang below it. Speech is outlined one font pixel all round, as thick as the strokes, so that it reads on a sunlit quay as well as at night. Paul's thoughts and the answers to prayer stand upright like speech, told apart by their pale blue: a slanted pixel letter tears where its strokes step over. The fonts are built in memory as TrueType fonts from the pixels, with no font file, and the system's monospace stands in if a browser refuses them. The Greek letters cut in stone in Chapters Eleven and Twelve are part of the painting and keep their own lettering.
+
+![The pixel font on a dark and a bright ground](screenshots/font.png)
+
+A chapter opens with a title card: its name in the gold capitals of the title's logo, with "Chapter One" between two rules beneath it, over a short sting in the key of the chapter's score. It stays about three seconds; a click, Space or Esc moves on. The card is shown when a chapter is begun from the title, or from a code at its very beginning, and never when a code puts the player in the middle of one.
+
+![The title card of Chapter One](screenshots/card.png)
+
+The title, the safe-point screen, the options and the end of a chapter own the whole screen: the verb panel slides down out of sight and comes back when play goes on, and the top bar keeps only its buttons. Walking from one room into the next cross-fades from the old picture to the new; a fade to black is kept for where the story wants it, such as nightfall or the map.
+
+![A room change half-way through its cross-fade](screenshots/xfade.png)

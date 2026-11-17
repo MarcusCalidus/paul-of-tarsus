@@ -25,7 +25,7 @@ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'paul-playtest-'));
 const game=fs.readFileSync(path.join(root,'index.html'),'utf8');
 // The copy runs from a temp folder, so a <base> points it back at the repository for the level files. Every page starts without a
 // kept autosave (the browser profile outlives a stop), unless the address says keep=1: the test that reloads the game on purpose.
-fs.writeFileSync(path.join(tmp,'test.html'),game.replace('<head>',`<head><base href="${pathToFileURL(root+path.sep).href}"><script>if(!/[?&]keep=1/.test(location.search))try{localStorage.removeItem('paul.save')}catch(e){}</script>`)
+fs.writeFileSync(path.join(tmp,'test.html'),game.replace('<head>',`<head><base href="${pathToFileURL(root+path.sep).href}"><script>if(!/[?&]keep=1/.test(location.search))try{localStorage.removeItem('paul.save');localStorage.removeItem('paul.opts')}catch(e){}</script>`)
   .replace('</body>',fs.readFileSync(path.join(here,'playtest-harness.html'),'utf8')+'</body>'));
 fs.mkdirSync(out,{recursive:true});
 // Port 0: Chrome picks a free port and writes it to DevToolsActivePort, so several runs can play side by side.

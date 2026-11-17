@@ -356,9 +356,10 @@ ART.bases11={w:320,q:12,
  /* what the stone last read says, in the player's language, at the foot of the view */
  front(g){const st=G.b11;G.caps11=[];if(st&&st.last)cap11(g,STONES.find(s=>s.id===st.last).nm,160,139,300)}};
 /* cap11: a caption in small letters with a dark edge, as the names on the map are written. It is made to fit its width. */
-function cap11(g,s,x,y,w,col){s=T(s);let sz=4.8;const font=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;g.font=font(sz);g.textBaseline='middle';
-  while(g.measureText(s).width>w&&sz>3.2){sz-=.2;g.font=font(sz)}const tw=g.measureText(s).width,tx=x-tw/2;
-  if(G.caps11)G.caps11.push({s,w:tw,max:w,sz});g.fillStyle='rgba(8,6,10,.85)';for(const[dx,dy]of[[.5,0],[-.5,0],[0,.5],[0,-.5],[.5,.5]])g.fillText(s,tx+dx,y+dy);g.fillStyle=col||'#f4e4b8';g.fillText(s,tx,y)}
+function cap11(g,s,x,y,w,col){s=T(s);const pf=SHARED.font&&SHARED.font.onCanvas&&SHARED.font.onCanvas(g,s,w);let sz=pf?4.5:4.8;
+  const font=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;if(!pf){g.font=font(sz);g.textBaseline='middle';while(g.measureText(s).width>w&&sz>3.2){sz-=.2;g.font=font(sz)}}
+  const tw=g.measureText(s).width,tx=pf?SHARED.font.pin(x-tw/2):x-tw/2,ty=pf?SHARED.font.mid(y):y;
+  if(G.caps11)G.caps11.push({s,w:tw,max:w,sz});g.fillStyle='rgba(8,6,10,.85)';for(const[dx,dy]of[[.5,0],[-.5,0],[0,.5],[0,-.5],[.5,.5]])g.fillText(s,tx+dx,ty+dy);g.fillStyle=col||'#f4e4b8';g.fillText(s,tx,ty)}
 
 /* ---------- The Areopagus ---------- */
 /* A narrow, bare ridge of limestone below the Acropolis, with seats cut in the rock (Insight, "Areopagus"). The men who hear Paul

@@ -41,7 +41,7 @@ body{display:flex;align-items:center;justify-content:center}
   margin-left:calc(var(--s)*-1px);border-radius:50%;background:var(--gold);box-shadow:0 0 0 var(--px) #000}
 .tag.exit::before{background:#9fd8b0}.tag.who::before{background:#f0a8a0}
 #tags.pin .tag{pointer-events:auto;cursor:pointer}
-#dim{position:absolute;z-index:2;inset:0;background:#05030c;opacity:0;pointer-events:none;transition:opacity .9s}
+#dim{position:absolute;z-index:2;inset:0;background:#05030c;opacity:0;pointer-events:none;transition:opacity .9s ease-in-out}
 #hush{position:absolute;z-index:6;top:calc(var(--s)*3px);right:calc(var(--s)*3px);display:none;pointer-events:none;max-width:calc(var(--s)*170px);
   padding:calc(var(--s)*2px) calc(var(--s)*4px);font-size:calc(var(--s)*4.6px);line-height:1.35;color:#f0e2c0;text-align:right;
   background:rgba(10,6,4,.86);border:var(--px) solid var(--dim);box-shadow:0 calc(var(--px)*2) calc(var(--s)*3px) rgba(0,0,0,.7);text-shadow:var(--px) var(--px) 0 #000}
@@ -80,6 +80,16 @@ body{display:flex;align-items:center;justify-content:center}
 #overlay .langs span:hover{color:#fff}
 #overlay .langs span.on{color:var(--gold)}
 #overlay.end{background:rgba(6,4,14,.82)}
+#overlay.card{background:rgba(6,4,14,.62)}
+#overlay.card h2{margin:0 0 calc(var(--s)*2px)}
+#overlay.card h1{font-size:calc(var(--s)*12px);margin:0;padding:calc(var(--s)*2px) calc(var(--s)*8px);border-top:var(--px) solid var(--dim);border-bottom:var(--px) solid var(--dim)}
+#overlay.card h1.art{font-size:0;padding:0;border:0}
+/* full: a menu, the safe point or an end screen owns the screen. The status line and the panel slide down out of sight and keep their
+   place, so that the picture does not move, and slide back when play goes on. */
+#wrap{overflow:hidden;background:#3a2a1c var(--wood);background-size:calc(var(--s)*128px) calc(var(--s)*32px);background-blend-mode:multiply;image-rendering:pixelated}
+#status,#panel{transition:transform .45s ease-in-out,opacity .45s ease-in-out}
+#wrap.full #status,#wrap.full #panel{transform:translateY(calc(var(--s)*70px));opacity:0;pointer-events:none}
+#wrap.full #top>span:first-child{visibility:hidden}
 @keyframes bl{50%{opacity:.25}}
 #status{height:calc(var(--s)*11px);line-height:calc(var(--s)*11px);text-align:center;
   font-size:calc(var(--s)*6.2px);color:var(--hi);white-space:nowrap;overflow:hidden;text-shadow:var(--px) var(--px) 0 #000;background-blend-mode:multiply;background-color:#5a4630;
@@ -90,6 +100,7 @@ body{display:flex;align-items:center;justify-content:center}
   border:0;cursor:pointer;padding:0;text-align:center;text-shadow:var(--px) var(--px) 0 #000;
   box-shadow:inset var(--px) var(--px) 0 rgba(255,214,140,.26),inset calc(var(--px)*-1) calc(var(--px)*-1) 0 rgba(0,0,0,.7)}
 #verbs button:hover{color:var(--hi);background:rgba(96,62,28,.6)}
+#verbs button:active:not(:disabled){transform:translateY(var(--px));box-shadow:inset var(--px) var(--px) 0 rgba(0,0,0,.75),inset calc(var(--px)*-1) calc(var(--px)*-1) 0 rgba(255,214,140,.2)}
 #verbs button.sel{color:#fff;background:rgba(168,98,30,.66);box-shadow:inset var(--px) var(--px) 0 rgba(0,0,0,.6),inset calc(var(--px)*-1) calc(var(--px)*-1) 0 rgba(255,214,140,.3)}
 #verbs button.def{color:var(--hi);background:rgba(52,36,16,.72);box-shadow:inset 0 0 0 var(--px) rgba(226,178,76,.9),inset 0 0 0 calc(var(--px)*2) rgba(0,0,0,.55)}
 #verbs #pray{grid-column:1/4;color:var(--pray);background:rgba(14,32,70,.78);letter-spacing:.06em}
@@ -103,6 +114,9 @@ body{display:flex;align-items:center;justify-content:center}
   box-shadow:inset var(--px) var(--px) 0 rgba(0,0,0,.75),inset calc(var(--px)*-1) calc(var(--px)*-1) 0 rgba(255,214,140,.2)}
 #inv .slot:hover{background:rgba(96,62,28,.5)}
 #inv .slot.sel{outline-width:calc(var(--s)*1px);outline-offset:calc(var(--s)*-1px);background:rgba(168,98,30,.5)}
+#inv .slot.glow{animation:invglow .5s ease-out}
+@keyframes invglow{0%{box-shadow:inset 0 0 calc(var(--s)*5px) var(--hi),0 0 calc(var(--s)*3px) var(--gold);background:rgba(226,178,76,.45)}100%{box-shadow:inset var(--px) var(--px) 0 rgba(0,0,0,.75),inset calc(var(--px)*-1) calc(var(--px)*-1) 0 rgba(255,214,140,.2)}}
+.flyitem{position:fixed;pointer-events:none;z-index:20;image-rendering:pixelated;image-rendering:crisp-edges}
 #inv canvas{height:calc(var(--s)*24px);width:calc(var(--s)*24px);image-rendering:pixelated;image-rendering:crisp-edges;pointer-events:none}
 #choices{position:absolute;inset:calc(var(--s)*2px);display:none;flex-direction:column;gap:calc(var(--s)*1px);
   background:#120c08;overflow:auto}
@@ -127,11 +141,24 @@ body{display:flex;align-items:center;justify-content:center}
 #codebox button:hover{color:var(--hi);border-color:var(--gold)}
 #codebox .small{font-size:calc(var(--s)*4.8px);color:#f0a090;min-height:1.3em}
 #codebox .kept{font-size:calc(var(--s)*4.4px);color:#a99cc0}
+#menu{position:absolute;z-index:5;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--s)*2.5px);
+  background:rgba(6,4,14,.92);text-align:center;cursor:default;padding:calc(var(--s)*6px)}
+#menu.on{display:flex}
+#menu h2{margin:0 0 calc(var(--s)*1px);font-size:calc(var(--s)*9px);color:var(--gold);letter-spacing:.2em}
+#menu .row{display:flex;align-items:center;justify-content:space-between;width:calc(var(--s)*210px);gap:calc(var(--s)*4px);font-size:calc(var(--s)*5.4px);color:#d8cfe8}
+#menu .row label{text-align:left;color:#f0e2c0}
+#menu input[type=range]{width:calc(var(--s)*88px);accent-color:var(--gold);cursor:pointer}
+#menu .seg{display:flex;gap:calc(var(--s)*1.5px)}
+#menu button{font:inherit;font-size:calc(var(--s)*5.4px);color:var(--gold);background:#1b1330;border:calc(var(--s)*1px) solid var(--dim);
+  padding:calc(var(--s)*1.2px) calc(var(--s)*3.5px);cursor:pointer}
+#menu button:hover{color:var(--hi);border-color:var(--gold)}
+#menu button.on{color:#fff;background:rgba(168,98,30,.66);border-color:var(--gold)}
+#menu .acts{display:flex;gap:calc(var(--s)*3px);margin-top:calc(var(--s)*2px)}
 </style>
 </head>
 <body>
 <div id="wrap">
-  <div id="top"><span><span id="gname">PAUL OF TARSUS</span> &middot; <span id="chname">ESCAPE FROM DAMASCUS</span></span><span><button id="code" type="button">ENTER CODE</button><button id="names" type="button">NAMES</button><button id="mute" type="button">&#9835; SOUND ON</button><button id="lang" type="button">EN</button></span></div>
+  <div id="top"><span><span id="gname">PAUL OF TARSUS</span> &middot; <span id="chname">ESCAPE FROM DAMASCUS</span></span><span><button id="code" type="button">ENTER CODE</button><button id="names" type="button">NAMES</button><button id="mute" type="button">&#9835; SOUND ON</button><button id="lang" type="button">EN</button><button id="opts" type="button" title="Options" aria-label="Options">&#8801;</button></span></div>
   <div id="view">
     <canvas id="screen" width="640" height="288"></canvas>
     <div id="speech"></div>
@@ -139,6 +166,7 @@ body{display:flex;align-items:center;justify-content:center}
     <div id="dim"></div>
     <div id="overlay"></div>
     <div id="codebox"></div>
+    <div id="menu"></div>
     <div id="hush"></div>
   </div>
   <div id="status">&nbsp;</div>
@@ -160,6 +188,7 @@ const cv=$('#screen'),cx=cv.getContext('2d');
 cx.imageSmoothingEnabled=false;
 const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,t:0,scene:null,
   hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false,pc:null,invs:{},lang:'en'};
+const OPTS_KEY='paul.opts',OPTS={mus:1,fx:1,spd:1};
 /* ============ LANGUAGES: the game is written in English; every other language is data under lang/ ============ */
 /* Every line is translated as it is shown: by say and narr, choose, the status line, the labels, the overlays, the tablets and the map,
    with the English text as the key. So the story's logic (its flags, and the names it compares) never sees a translation, and a
@@ -195,30 +224,49 @@ const R=(g,x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(hp(x),hp(y),hp(w),hp(h))};
    all round it, so that it shows in a night scene and on a sunlit wall alike. The browser's own crosshair is thin and easily lost, and it is
    a cross (CONTRIBUTING section 3). h is the lit edge, g the gold and d the shade; the tip is the first pixel. */
 const PTR=['h','hg','hgg','hggg','hgggg','hggggg','hgggggg','hggggggg','hgggggggg','hggggggggg','hggggggdddd','hgggggd','hgg.ggd','hg..ggd','h....ggd','.....ggd','......ggd','......ggd'],
-  PTRC={h:'#fff3b8',g:'#e2b24c',d:'#a8782c'};
+  PTRS={
+    default:PTR,hot:PTR,
+    left:['......hh','.....hhg','....hhgg','...hhggg','..hhgggg','.hhggggg','hhggggggggggggg','ddggggggggggggd','.ddgggggdddddd.','..ddggggd......','...ddgggd......','....ddggd......','.....ddgd......','......ddd......'],
+    right:['.......hh......','.......hgg.....','.......hggg....','.......hgggg...','.......hggggg..','.......hgggggg.','hhhhhhhhggggggh','dddddddgggggggd','.......dggggdd.','.......dgggdd..','.......dggdd...','.......dgdd....','.......ddd.....'],
+    up:['......h......','.....hgh.....','....hgggh....','...hgggggh...','..hgggggggh..','.hgggggggggh.','hgggggggggggh','ddddgggggdddd','....dgggd....','....dgggd....','....dgggd....','....dgggd....','....ddddd....'],
+    down:['....hhhhh....','....hgggd....','....hgggd....','....dgggd....','....dgggd....','hhhhdgggdhddd','hgggggggggggd','.hgggggggggd.','..hgggggggd..','...hgggggd...','....hgggd....','.....hgd.....','......d......']
+  },
+  PTRC={h:'#fff3b8',g:'#e2b24c',d:'#a8782c'},
+  PTRC_HOT={h:'#ffffff',g:'#ffe07d',d:'#c89030'};
 /* u canvas pixels to the grid pixel. The contour adds one grid pixel on every side and goes round all eight neighbours of a painted pixel. */
-function pointerArt(u){const w=Math.max(...PTR.map(r=>r.length)),h=PTR.length,[c,g]=mk((w+2)*u,(h+2)*u),at=(x,y)=>PTRC[(PTR[y]||'')[x]];
+function pointerArt(u,kind='default'){const P=PTRS[kind]||PTR,pal=kind==='hot'?PTRC_HOT:PTRC,w=Math.max(...P.map(r=>r.length)),h=P.length,[c,g]=mk((w+2)*u,(h+2)*u),at=(x,y)=>pal[(P[y]||'')[x]];
   for(let y=-1;y<=h;y++)for(let x=-1;x<=w;x++){let col=at(x,y);
     for(let j=-1;j<=1&&!col;j++)for(let i=-1;i<=1;i++)if(at(x+i,y+j)){col='#0b0812';break}
     if(col){g.fillStyle=col;g.fillRect((x+1)*u,(y+1)*u,u,u)}}
-  return c}
-/* The pointer grows with the layout (s CSS pixels to the room pixel) and is painted anew only when its size changes. On a display with more
+  c.hx=kind==='default'||kind==='hot'?1.5:(w+2)/2;c.hy=kind==='default'||kind==='hot'?1.5:(h+2)/2;return c}
+/* The pointer grows with the layout (s CSS pixels to the room pixel) and is painted anew only when its size or kind changes. On a display with more
    than one device pixel to the CSS pixel the picture is handed over at that density; a browser that does not take that form keeps the plain
    one set just before it. Browsers refuse a cursor larger than 128 pixels, so the grid pixel stops growing at six. */
-let ptrKey='';
-function pointer(s){const d=window.devicePixelRatio||1,u=clamp(Math.round(s*d/2),1,6),key=u+'@'+d;if(key===ptrKey)return;ptrKey=key;
-  const el=$('#view'),css=(n,img)=>`${img} ${Math.round(1.5*n)} ${Math.round(1.5*n)},default`,u1=clamp(Math.round(u/d),1,6);
-  el.style.cursor=css(u1,`url(${pointerArt(u1).toDataURL()})`);
-  if(d!==1)el.style.cursor=css(u/d,`-webkit-image-set(url(${pointerArt(u).toDataURL()}) ${d}x)`)}
+const PTR_CACHE={};let ptrKey='',ptrScale=3;
+function pointerKind(h){if(!h||G.busy||G.scene||!G.room)return'default';if(!h.exit)return'hot';
+  const rw=ART[G.room]?ART[G.room].w:VW;if(h.x<=24)return'left';if(h.x+h.w>=rw-24)return'right';
+  return/\b(down|below|cellar)\b/i.test(h.name)?'down':'up'}
+function pointer(s,kind='default'){ptrScale=s;const d=window.devicePixelRatio||1,u=clamp(Math.round(s*d/2),1,6),key=kind+'@'+u+'@'+d;if(key===ptrKey)return;ptrKey=key;
+  const el=$('#view'),u1=clamp(Math.round(u/d),1,6),art=(k,sz)=>PTR_CACHE[k+'@'+sz]||(PTR_CACHE[k+'@'+sz]=pointerArt(sz,k));
+  const a1=art(kind,u1),css=(a,sc,img)=>`${img} ${Math.round(a.hx*sc)} ${Math.round(a.hy*sc)},default`;
+  el.style.cursor=css(a1,u1,`url(${a1.toDataURL()})`);
+  if(d!==1){const a=art(kind,u);el.style.cursor=css(a,u/d,`-webkit-image-set(url(${a.toDataURL()}) ${d}x)`)}}
 /* layout scale */
 function fit(){const top=10,st=13,pn=53,tot=144+top+st+pn;
   const d=window.devicePixelRatio||1,s=Math.min(innerWidth/320,innerHeight/tot),k=Math.floor(s*d)/d,sc=k>=1?k:Math.max(.5,s);
-  document.documentElement.style.setProperty('--s',sc.toFixed(3));pointer(sc)}
+  document.documentElement.style.setProperty('--s',sc.toFixed(3));pointer(sc,pointerKind(G.hover))}
 addEventListener('resize',fit);fit();
 /* flags & inventory */
 const F=G.flags;
 const has=id=>G.inv.includes(id);
-function addItem(id,quiet){if(!has(id)){G.inv.push(id);drawInv();if(!quiet)SFX.pick()}}
+function flyItem(id,idx){if(G.speedAll>200||!G.room||G.scene)return;const slot=$('#inv').children[idx];if(!slot)return;
+  const vr=$('#view').getBoundingClientRect(),sr=slot.getBoundingClientRect(),src=iconArt(ITEMS[id].icon||id),[c,g]=mk(48,48);g.drawImage(src,0,0);
+  const p=G.actPos||[PC().x-G.cam,PC().y-24],sx=vr.left+clamp(p[0],12,VW-12)/VW*vr.width,sy=vr.top+clamp(p[1],12,VH-12)/VH*vr.height;
+  const tx=sr.left+sr.width/2,ty=sr.top+sr.height/2,sz=sr.height*.8;
+  c.className='flyitem';c.style.width=sz+'px';c.style.height=sz+'px';document.body.appendChild(c);
+  tween(320,k=>{const e=1-(1-k)*(1-k),x=sx+(tx-sx)*e,y=sy+(ty-sy)*e-Math.sin(k*Math.PI)*24*ptrScale;
+    c.style.left=(x-sz/2)+'px';c.style.top=(y-sz/2)+'px'}).then(()=>{c.remove();slot.classList.add('glow');setTimeout(()=>slot.classList.remove('glow'),520)})}
+function addItem(id,quiet){if(!has(id)){const idx=G.inv.length;G.inv.push(id);drawInv();if(!quiet){SFX.pick();flyItem(id,idx)}}}
 function delItem(id){const i=G.inv.indexOf(id);if(i>=0)G.inv.splice(i,1);if(G.item===id)G.item=null;drawInv()}
 /* ============ AUDIO: Web Audio chiptune synth ============ */
 const AU={ctx:null,muted:false,mood:'calm',step:0,next:0,score:null,key:null,amb:null};
@@ -239,9 +287,9 @@ const ROOM=.42;
 function audioGraph(c){
   AU.master=c.createGain();AU.master.gain.value=AU.muted?0:1;
   const comp=c.createDynamicsCompressor();AU.master.connect(comp);comp.connect(c.destination);
-  AU.mus=c.createGain();AU.mus.gain.value=.55;AU.mus.connect(AU.master);
-  AU.fx=c.createGain();AU.fx.gain.value=.7;AU.fx.connect(AU.master);
-  AU.ambG=c.createGain();AU.ambG.gain.value=.5;AU.ambG.connect(AU.master);
+  AU.mus=c.createGain();AU.mus.gain.value=.55*OPTS.mus;AU.mus.connect(AU.master);
+  AU.fx=c.createGain();AU.fx.gain.value=.7*OPTS.fx;AU.fx.connect(AU.master);
+  AU.ambG=c.createGain();AU.ambG.gain.value=.5*OPTS.fx;AU.ambG.connect(AU.master);
   /* the instruments write to AU.out, and the lyre to AU.body, its wooden body: one resonance near 1 kHz that all its notes pass through,
      whatever their pitch. Outside the score (the map's sting) they are the music bus; playStep points them at a track's own gain. */
   AU.out=AU.mus;AU.body=lyreBody(c,AU.mus);
@@ -862,7 +910,7 @@ function say(a,text,o={}){text=T(text);return new Promise(res=>{
   $('#speech').appendChild(el);if(a&&!o.thought)a.talk=true;
   let n=0;const blip=a&&!o.thought?setInterval(()=>{if(n++<Math.min(9,text.length/5))SFX.talk(a.pitch*2)},85):0;
   const done=()=>{clearTimeout(tm);clearInterval(blip);el.remove();if(a)a.talk=false;if(G.skip===done)G.skip=null;cur=null;res()};
-  const tm=setTimeout(done,o.dur||Math.max(2200,1400+text.length*65));
+  const tm=setTimeout(done,(o.dur||Math.max(2200,1400+text.length*65))*(G.speedAll>200?1:OPTS.spd));
   G.skip=done;G.lineT=performance.now();cur={el,a,low:o.low};posSpeech()})}
 const narr=(t,o)=>say(null,t,o);
 function posSpeech(){if(!cur)return;const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
@@ -876,8 +924,9 @@ async function cut(fn,force){if(G.busy&&!force)return;G.busy=true;lock(true);sta
 /* viewOf: show the room a character stands in. enterRoom: move the character the player controls into a room, and show it. */
 function viewOf(a){G.room=a.room;G.cam=clamp(a.x-160,0,ART[a.room].w-VW);AU.mood=ROOMS[a.room].mood||'calm';AU.amb=ROOMS[a.room].amb;G.hover=null}
 function enterRoom(room,x,y,dir){G.room=room;place(PC(),room,x,y,dir);G.cam=clamp(x-160,0,ART[room].w-320);AU.mood=ROOMS[room].mood||'calm';AU.amb=ROOMS[room].amb;G.hover=null}
-async function fade(on,ms=260){const d=$('#dim');d.style.transition=`opacity ${ms}ms`;d.style.opacity=on?1:0;await wait(ms+20);d.style.transition=''}
-async function go(room,x,y,dir){SFX.door();await fade(1);enterRoom(room,x,y,dir);await fade(0);const r=ROOMS[room];if(r.enter)await r.enter()}
+async function fade(on,ms=260){const d=$('#dim');d.style.transition=`opacity ${ms}ms ease-in-out`;d.style.opacity=on?1:0;await wait(ms+20);d.style.transition=''}
+async function go(room,x,y,dir){SFX.door();tagEl.innerHTML='';tagSig='';const[snap,sg]=mk(VW*HR,VH*HR);sg.drawImage(cv,0,0);enterRoom(room,x,y,dir);
+  G.xfade={img:snap,a:1};await tween(320,k=>{G.xfade.a=1-(k*k*(3-2*k))});G.xfade=null;const r=ROOMS[room];if(r.enter)await r.enter()}
 function choose(opts){return new Promise(res=>{const c=$('#choices');c.innerHTML='';c.classList.add('on');
   opts.forEach((o,i)=>{const b=document.createElement('button');b.textContent='› '+T(o);b.dataset.src=o;
     b.onclick=()=>{SFX.click();c.classList.remove('on');res(i)};c.appendChild(b)})})}
@@ -936,7 +985,7 @@ function drawInv(){const el=$('#inv');el.innerHTML='';for(let i=0;i<10;i++){cons
     s.oncontextmenu=e=>{e.preventDefault();if(G.busy)return;audioInit();G.verb='walk';G.item=null;syncVerbs();cut(()=>say(PC(),itemLook(id)))}}
   el.appendChild(s)}}
 /* status: the sentence being built, such as "Use awl with torn awning". Each language words it through the templates in it. */
-function status(){const el=$('#status');litVerb();if(G.busy){el.textContent='\u00a0';return}
+function status(){const el=$('#status');litVerb();pointer(ptrScale,pointerKind(G.hover));if(G.busy){el.textContent='\u00a0';return}
   const h=G.hover,hn=h?T(h.item?ITEMS[h.item].name:h.name):'',v=VNAME[G.verb==='walk'&&h&&!G.item?(h.item?itemVerb(h.item):defVerb(h)):G.verb];
   if(G.item){const on=hn&&!(h&&h.item===G.item),item=T(ITEMS[G.item].name);
     el.textContent=G.verb==='give'?(on?T('Give {item} to {thing}',{item,thing:hn}):T('Give {item} to',{item})):(on?T('Use {item} with {thing}',{item,thing:hn}):T('Use {item} with',{item}))}
@@ -974,7 +1023,7 @@ async function act(v,h,item){const who=PC(),o=who===P?h:(h.as&&h.as[who.id])||{}
 async function clickView(x,y,at){
   if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
   if(G.busy||G.scene||!G.room)return;audioInit();
-  const h=at||hsAt(x,y),item=G.item;let v=G.verb;
+  const h=at||hsAt(x,y),item=G.item;let v=G.verb;G.actPos=[x-G.cam,y];
   const me=PC();
   if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(me,x,y);return}
   if(v==='walk'){v=defVerb(h);if(v==='walk')v=h.exit?'exit':'look'}
@@ -1017,9 +1066,9 @@ function tagsOn(on){if(on!=null)G.tagKey=!!on;on=!!(G.tagKey||G.tagPin||heardRoo
   if(!!G.tags===on)return;G.tags=on;tagEl.classList.toggle('on',on);tagT=0;tagSig='';if(!on)tagEl.innerHTML=''}
 function namesBtn(){const b=$('#names');b.textContent=T('NAMES');b.classList.toggle('on',!!G.tagPin);tagsOn()}
 $('#names').onclick=e=>{e.stopPropagation();audioInit();SFX.click();G.tagPin=!G.tagPin;namesBtn();tagsOn(G.tagPin)};
-function drawTags(ts){if(!G.tags||ts-tagT<90)return;tagT=ts;
+function drawTags(ts){if(!G.tags)return;const act=G.room&&!G.scene&&!G.busy&&!G.skip;if(act&&ts-tagT<90)return;tagT=ts;
   const s=vp.clientWidth/VW,cam=G.cam,list=[],put=[];
-  if(G.room&&!G.scene&&!G.busy&&!G.skip){
+  if(act){
     for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+VW)list.push([T(a.hs.name),a.x,a.y-52,'who',a.hs]);
     for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const x0=Math.max(h.x,cam+4),x1=Math.min(h.x+h.w,cam+VW-4);if(x1>x0)list.push([T(h.name),(x0+x1)/2,h.y+h.h/2,h.exit?'exit':'',h])}}
   /* rebuilt only when something changed, so that a label is not replaced under the finger tapping it. What changed may be the thing
@@ -1034,7 +1083,9 @@ function drawTags(ts){if(!G.tags||ts-tagT<90)return;tagT=ts;
 addEventListener('keyup',e=>{if(e.key==='Tab')tagsOn(false)});addEventListener('blur',()=>tagsOn(false));
 addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;const k=e.key.toLowerCase();
   if(k==='tab'){e.preventDefault();tagsOn(true)}
-  else if(k===' '||k==='escape'||k==='.'){if(G.skip){e.preventDefault();G.skip()}}
+  else if(k===' '||k==='escape'||k==='.'){if(G.skip){e.preventDefault();G.skip()}
+    else if(k==='escape'){if(cb.classList.contains('on'))closeCode();else if($('#menu').classList.contains('on'))closeMenu();
+      else if(!$('#tablets.on')&&!G.busy&&(!G.scene||ov.classList.contains('on')))openMenu()}}
   else if(k==='m')$('#mute').click();else if(k==='p')pray();else if(k==='c')swap();
   else if(k>='1'&&k<='6'){const b=document.querySelectorAll('#verbs button')[+k-1];if(b)b.click()}});
 /* --- main loop --- */
@@ -1102,6 +1153,7 @@ function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmo
     q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());
     cx.restore();if(f)cx.drawImage(f,-hp(cam*(a.fp||1)),0,f.width/HR,VH);
     cx.save();cx.translate(-cam,0);a.front(cx,ts);cx.restore()}
+  if(G.xfade){cx.save();cx.setTransform(1,0,0,1,0,0);cx.globalAlpha=G.xfade.a;cx.drawImage(G.xfade.img,0,0);cx.restore()}
   posSpeech();tagsOn();drawTags(ts);requestAnimationFrame(render)}
 /* ============ GAME: items, combinations, prayer hints ============ */
 Object.assign(ITEMS,{
@@ -1124,10 +1176,10 @@ const PRAYERS2=['{name} bow their heads and quietly ask Jehovah for wisdom and a
 function hint(){return CHAP[G.ch].hint()}
 function pray(){if(G.busy||G.scene||!G.room)return;audioInit();
   cut(async()=>{G.prays++;const me=PC(),d=$('#dim'),m=AU.mus,ab=AU.ambG;d.style.opacity=.55;me.bow=true;SFX.pray();
-    if(m){m.gain.setTargetAtTime(.12,now(),.3);ab.gain.setTargetAtTime(.15,now(),.3)}
+    if(m){m.gain.setTargetAtTime(.12*OPTS.mus,now(),.3);ab.gain.setTargetAtTime(.15*OPTS.fx,now(),.3)}
     await wait(900);
     {const PR=me.mate?PRAYERS2:PRAYERS;await say(null,T(G.prays===1?PR[0]:pick(PR),{name:T(me.name)}),{dur:4200,color:'#cfe2ff'})}
-    await wait(500);me.bow=false;d.style.opacity=0;if(m){m.gain.setTargetAtTime(.55,now(),.8);ab.gain.setTargetAtTime(.5,now(),.8)}
+    await wait(500);me.bow=false;d.style.opacity=0;if(m){m.gain.setTargetAtTime(.55*OPTS.mus,now(),.8);ab.gain.setTargetAtTime(.5*OPTS.fx,now(),.8)}
     await wait(600);
     const[k,ls]=hint(),n=G.hintAt[k]=(G.hintAt[k]||0)+1;
     await say(me,ls[Math.min(n,ls.length)-1],{thought:1,color:'#cfe2ff'})})}
@@ -1206,8 +1258,10 @@ function relang(){document.documentElement.lang=G.lang;document.title=T('Paul of
   const ks=Object.keys(LANGS),nx=ks[(ks.indexOf(G.lang)+1)%ks.length];$('#lang').textContent=G.lang.toUpperCase();
   $('#lang').title=LANGS[nx].native;$('#lang').style.display=ks.length>1?'':'none';
   buildVerbs();swapBtn();setMute(AU.muted);namesBtn();codeBtn();drawInv();status();
+  $('#opts').title=T('Options');$('#opts').setAttribute('aria-label',T('Options'));
   for(const b of document.querySelectorAll('#choices button'))b.textContent='› '+T(b.dataset.src);
   if(ov.classList.contains('on')&&ov.draw)ov.draw();if(cb.classList.contains('on')&&cb.draw)cb.draw();
+  if($('#menu').classList.contains('on')&&$('#menu').draw)$('#menu').draw();
   if(SHARED.tablets)SHARED.tablets.redraw()}
 $('#lang').onclick=e=>{e.stopPropagation();const ks=Object.keys(LANGS);SFX.click();setLang(ks[(ks.indexOf(G.lang)+1)%ks.length],1)};
 /* overlay: show a screen on the overlay. draw paints it, and paints it again when the language changes. */
@@ -1215,11 +1269,31 @@ function overlay(cls,draw){ov.className=cls;ov.draw=draw;draw()}
 function loadFail(e){console.error(e);ov.onclick=()=>location.reload();
   overlay('on end',()=>{ov.innerHTML='<h2>'+T('LEVEL NOT FOUND')+'</h2><p>'+esc(e.message)+'</p><p class="small">'+T('The chapter files live in the levels folder next to index.html.')+
     '</p><p class="go">'+T('Click to reload')+'</p>'})}
-async function startChapter(n){ov.onclick=null;try{await loadLevel(n)}catch(e){return loadFail(e)}AU.key=CHAP[n].music;return CHAP[n].start()}
+/* showCard: a chapter's title card, for about three seconds or until a click, Space or Esc. The name is painted in the letters of the
+   title's logo (shared/logo.js), with "Chapter One" beneath it; a language whose name needs a letter the logo lacks gets the pixel font.
+   A short sting in the key of the chapter's own score: a drone on the tonic under a harp rising through the fifth to the octave. */
+function cardSting(){if(!AU.ctx)return;const t=now()+.05,[d]=tune([0],-1).map(mtof);INST.drone(d,t,2.2,.6);
+  tune([0,7,12]).map(mtof).forEach((f,i)=>INST.harp(f,t+.1+i*.24,.5,1.1))}
+async function showCard(n){const c=CHAP[n],logo=await need('logo').catch(()=>null),was=G.busy;G.busy=true;lock(true);status();
+  return new Promise(res=>{
+    overlay('on card',()=>{const name=T(c.name),sub=T(c.label).toUpperCase(),art=logo&&logo.can(name+sub)?logo.paint(name,sub):null;
+      ov.innerHTML=art?'<h1 class="art"></h1>':'<h2>'+esc(T(c.label))+'</h2><h1>'+esc(T(c.title))+'</h1>';
+      if(art){const h=ov.querySelector('h1');art.textContent=name+' '+sub;art.setAttribute('role','img');art.setAttribute('aria-label',T(c.label)+': '+T(c.title));
+        art.style.width='calc(var(--s)*'+art.width/HR+'px)';art.style.height='calc(var(--s)*'+art.height/HR+'px)';h.appendChild(art)}});
+    cardSting();
+    let done=false;const fin=()=>{if(done)return;done=true;clearTimeout(tm);ov.onclick=null;if(G.skip===fin)G.skip=null;ov.className='';ov.innerHTML='';
+      G.busy=was;if(!was)lock(false);status();res()};
+    const tm=setTimeout(fin,G.speedAll>200?400:3000);ov.onclick=fin;G.skip=fin;G.lineT=performance.now()})}
+/* a code at the very beginning of a chapter (no flag set, in its first room) opens with the card too; one in the middle never does */
+const atStart=b=>b&&b.w==null&&b.b===0;
+async function startChapter(n){ov.onclick=null;try{await loadLevel(n)}catch(e){return loadFail(e)}AU.key=CHAP[n].music;await showCard(n);return CHAP[n].start()}
 /* chsFade: fades the chapter list's top edge while entries are scrolled away above it, and its bottom edge while more wait below */
 function chsFade(l){l.classList.toggle('up',l.scrollTop>1);l.classList.toggle('down',l.scrollTop+l.clientHeight<l.scrollHeight-1)}
 addEventListener('resize',()=>{const l=ov.querySelector('.chs');if(l)chsFade(l)});
-async function title(){lock(true);await setLang(firstLang());try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
+/* pixelFont: the game's letters are a pixel font made in code (shared/font.js), on the grid of the view's canvas pixels. When it is ready the
+   page is given the class pf, under which the font and its sizes apply. If it cannot be loaded, the browser's monospace stands in as before. */
+function pixelFont(){return need('font').then(f=>f.ready).then(ok=>{if(ok)document.documentElement.classList.add('pf')}).catch(e=>console.error(e))}
+async function title(){lock(true);await Promise.all([setLang(firstLang()),pixelFont()]);try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
   setChapter(TITLE.level);G.scene=CHAP[TITLE.level].scenes[TITLE.scene];G.end={};AU.mood=TITLE.mood;AU.amb=TITLE.amb;
   /* The name and the subtitle are painted as a logo (shared/logo.js). If its file is missing, or a language's title has a letter the
      logo cannot write, they stand as plain text instead. The canvas keeps the words, for a screen reader and for the playtest. */
@@ -1322,7 +1396,7 @@ function saved(){const code=store(SAVE),b=decode(code);return b&&CHAP[b.ch]?{ch:
 /* resume: the title screen's Continue. It does what typing the kept code does; one that cannot be restored is dropped. */
 async function resume(){const sv=saved();audioInit();
   if(sv){const b=decode(sv.code);try{await loadLevel(b.ch)}catch(e){return loadFail(e)}
-    if((b.w==null||unpackWide(CHAP[b.ch],b.w))&&applyState(b)){SFX.good();return}}
+    if((b.w==null||unpackWide(CHAP[b.ch],b.w))&&applyState(b)){SFX.good();if(atStart(b))await showCard(b.ch);return}}
   autosave(null);SFX.nope();ov.draw()}
 function codeBtn(){const on=G.room&&!G.scene,code=on&&makeCode();if(on)autosave(code);$('#code').textContent=on?T('CODE {code}',{code}):T('ENTER CODE')}
 function closeCode(){cb.classList.remove('on');G.busy=cb.was;if(!G.busy)lock(false);status()}
@@ -1331,7 +1405,7 @@ async function tryCode(){const b=decode($('#codein').value);
   if(b==null){SFX.nope();$('#codemsg').textContent=T(BADCODE);return}
   try{await loadLevel(b.ch)}catch(e){SFX.nope();$('#codemsg').textContent=e.message;return}
   if(b.w!=null&&!unpackWide(CHAP[b.ch],b.w)){SFX.nope();$('#codemsg').textContent=T(BADCODE);return}
-  cb.classList.remove('on');AU.key=CHAP[b.ch].music;SFX.good();applyState(b)}
+  cb.classList.remove('on');AU.key=CHAP[b.ch].music;SFX.good();if(applyState(b)!==false&&atStart(b))await showCard(b.ch)}
 function openCode(){audioInit();if(cb.classList.contains('on'))return closeCode();
   const can=G.room&&!G.scene&&!G.busy;if(!can&&!ov.classList.contains('on')){SFX.nope();return}
   SFX.click();cb.was=G.busy;G.busy=true;lock(true);status();
@@ -1348,7 +1422,40 @@ function openCode(){audioInit();if(cb.classList.contains('on'))return closeCode(
     $('#codein').onkeydown=e=>{if(e.key==='Enter')tryCode();else if(e.key==='Escape')closeCode()}};
   cb.innerHTML='';cb.draw();cb.classList.add('on');if(!can)$('#codein').focus()}
 $('#code').onclick=e=>{e.stopPropagation();openCode()};cb.onclick=e=>e.stopPropagation();
-skin();buildVerbs();requestAnimationFrame(render);title();
+/* ============ OPTIONS: volumes, text speed, names, language, back to title (kept in paul.opts, separate from paul.save) ============ */
+const mn=$('#menu');
+function loadOpts(){try{const o=JSON.parse(store(OPTS_KEY)||'{}');if(typeof o.mus==='number')OPTS.mus=clamp(o.mus,0,1);
+  if(typeof o.fx==='number')OPTS.fx=clamp(o.fx,0,1);if(typeof o.spd==='number'&&[1.35,1,.7].includes(o.spd))OPTS.spd=o.spd}catch(e){}}
+function saveOpts(){store(OPTS_KEY,JSON.stringify(OPTS))}
+function applyOpts(){if(!AU.ctx)return;if(AU.mus)AU.mus.gain.value=.55*OPTS.mus;if(AU.fx)AU.fx.gain.value=.7*OPTS.fx;if(AU.ambG)AU.ambG.gain.value=.5*OPTS.fx}
+function closeMenu(){mn.classList.remove('on');G.busy=mn.was;if(!G.busy)lock(false);status()}
+function openMenu(){audioInit();if(mn.classList.contains('on'))return closeMenu();
+  if(cb.classList.contains('on'))closeCode();
+  /* in play only between scenes, as Esc: never during a cutscene or a dialogue, which would go on unseen behind it, nor over a title card */
+  const inGame=!!(G.room&&!G.scene&&!G.busy&&!ov.classList.contains('on'));
+  if(!inGame&&!ov.classList.contains('on')||ov.classList.contains('card')){SFX.nope();return}
+  SFX.click();mn.was=G.busy;G.busy=true;lock(true);status();
+  mn.draw=()=>{const spds=[[1.35,'Slow'],[1,'Normal'],[.7,'Fast']];
+    mn.innerHTML='<h2>'+esc(T('OPTIONS'))+'</h2>'+
+      '<div class="row"><label for="opt-mus">'+esc(T('Music'))+'</label><input id="opt-mus" type="range" min="0" max="100" step="10" value="'+Math.round(OPTS.mus*100)+'"></div>'+
+      '<div class="row"><label for="opt-fx">'+esc(T('Effects'))+'</label><input id="opt-fx" type="range" min="0" max="100" step="10" value="'+Math.round(OPTS.fx*100)+'"></div>'+
+      '<div class="row"><label>'+esc(T('Text speed'))+'</label><div class="seg">'+spds.map(([v,l])=>`<button type="button" data-spd="${v}"${OPTS.spd===v?' class="on"':''}>${esc(T(l))}</button>`).join('')+'</div></div>'+
+      '<div class="row"><label>'+esc(T('Names'))+'</label><div class="seg"><button type="button" id="opt-names"'+(G.tagPin?' class="on"':'')+'>'+esc(T(G.tagPin?'On':'Off'))+'</button></div></div>'+
+      (Object.keys(LANGS).length>1?'<div class="row"><label>'+esc(T('Language'))+'</label><div class="seg">'+Object.keys(LANGS).map(l=>`<button type="button" data-lang="${l}"${l===G.lang?' class="on"':''}>${esc(LANGS[l].native)}</button>`).join('')+'</div></div>':'')+
+      '<div class="acts">'+(inGame?'<button type="button" id="opt-title">'+esc(T('Back to title'))+'</button>':'')+
+      '<button type="button" id="opt-x">'+esc(inGame?T('Back to the game'):T('Back'))+'</button></div>';
+    $('#opt-mus').oninput=e=>{OPTS.mus=+e.target.value/100;applyOpts();saveOpts()};
+    $('#opt-fx').oninput=e=>{OPTS.fx=+e.target.value/100;applyOpts();saveOpts()};
+    mn.querySelectorAll('[data-spd]').forEach(b=>b.onclick=()=>{SFX.click();OPTS.spd=+b.dataset.spd;saveOpts();mn.draw()});
+    $('#opt-names').onclick=()=>{SFX.click();G.tagPin=!G.tagPin;namesBtn();mn.draw()};
+    mn.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>{SFX.click();setLang(b.dataset.lang,1)});
+    if($('#opt-title'))$('#opt-title').onclick=()=>{SFX.click();mn.classList.remove('on');G.room=null;G.scene=null;G.hover=null;title()};
+    $('#opt-x').onclick=()=>{SFX.click();closeMenu()}};
+  mn.draw();mn.classList.add('on')}
+$('#opts').onclick=e=>{e.stopPropagation();openMenu()};mn.onclick=e=>e.stopPropagation();
+const syncFull=()=>$('#wrap').classList.toggle('full',ov.classList.contains('on')||cb.classList.contains('on')||mn.classList.contains('on'));
+for(const el of[ov,cb,mn])new MutationObserver(syncFull).observe(el,{attributes:true,attributeFilter:['class']});
+loadOpts();skin();buildVerbs();requestAnimationFrame(render);title();
 /* An installable app that plays offline (shared/pwa.js, sw.js): only where the game is served over http(s), never from disk or in the playtest's pages. */
 if(/^https?:$/.test(location.protocol)&&'serviceWorker' in navigator)need('logo').then(()=>need('pwa')).then(p=>p.install({CHAP,LANGS})).catch(e=>console.error(e));
 </script>

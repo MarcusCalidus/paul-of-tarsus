@@ -25,8 +25,10 @@
 | Ask about what you have learned | Once Paul learns something (a frayed basket, a torn sail, a famine), it appears as a new question when he talks to people in that chapter |
 | Skip a line of dialogue | Click the scene or press Space |
 | Change the language | Click **English** or **Deutsch** on the title screen, or the **EN**/**DE** button in the top bar at any time |
-| Keyboard | `1`-`6` verbs, `P` pray, `M` mute, `Tab` names, `C` switch character |
-| Sound | It starts with your first click, tap or key. **♫ SOUND ON** (or `M`) switches it off and on. On iPhone and iPad the game respects Silent Mode, and Safari cannot tell the game whether it is on, so a short note at the top right says where to look when the sound starts and whenever you switch it on. |
+| Keyboard | `1`-`6` verbs, `P` pray, `M` mute, `Tab` names, `C` switch character, `Esc` options |
+| Options | Click **≡** in the top right or press `Esc` to set the music and effects volume, the text speed, **NAMES** and the language, or to go back to the title screen. It opens between scenes, not during a cutscene or a conversation. The options are kept in your browser apart from your safe point (`paul.opts`). |
+| Skip the title card | A chapter opens with its title card for a few seconds. Click or press Space or `Esc` to go on at once. |
+| Sound | It starts with your first click, tap or key. **♫ SOUND ON** (or `M`) switches it off and on, and the options menu adjusts music and effects levels independently. On iPhone and iPad the game respects Silent Mode, and Safari cannot tell the game whether it is on, so a short note at the top right says where to look when the sound starts and whenever you switch it on. |
 
 ![Pointing at Eliab lights Talk to](screenshots/verbs.png)
 
@@ -34,9 +36,13 @@
 
 ![NAMES in the top bar keeps the names on, for touch screens](screenshots/names.png)
 
-The pointer over the scene is the game's own: a gold arrow with a dark contour, painted in code like everything else, so that it shows in a night scene as well as on a sunlit quay. It grows with the window.
+The pointer over the scene is the game's own: a gold arrow with a dark contour, painted in code like everything else, so that it shows in a night scene as well as on a sunlit quay. It grows with the window, brightens over objects and people, and turns into a directional arrow over exits.
 
 ![The pointer at the city gate, in the street by night](screenshots/pointer.png)
+
+The options (**≡** or `Esc`) take the whole screen while they are open, and are the same in every chapter.
+
+![The options, in German](screenshots/options.png)
 
 ![On an iPad the game says where Silent Mode is](screenshots/silent.png)
 

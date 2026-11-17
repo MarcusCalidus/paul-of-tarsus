@@ -103,9 +103,10 @@ const GFONT=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;
 function cutLetters(g,words,cx,y,w,sz){sz=sz||5;g.textBaseline='middle';g.font=GFONT(sz);while(Math.max(...words.map(s=>g.measureText(s).width))>w&&sz>2.8){sz-=.2;g.font=GFONT(sz)}
   words.forEach((s,i)=>{const tw=g.measureText(s).width,tx=cx-tw/2,ty=y+i*(sz+.8);g.fillStyle='rgba(255,250,232,.6)';g.fillText(s,tx+.5,ty+.5);g.fillStyle='rgba(58,46,40,.9)';g.fillText(s,tx,ty)})}
 /* cap12: a caption in small letters with a dark edge, as the names on the map are written. It is made to fit its width. */
-function cap12(g,s,x,y,w,col,left){s=T(s);let sz=4.8;g.font=GFONT(sz);g.textBaseline='middle';while(g.measureText(s).width>w&&sz>3.2){sz-=.2;g.font=GFONT(sz)}
-  const tw=g.measureText(s).width,tx=left?x:x-tw/2;if(G.caps12)G.caps12.push({s,w:tw,max:w,sz});
-  g.fillStyle='rgba(8,6,10,.85)';for(const[dx,dy]of[[.5,0],[-.5,0],[0,.5],[0,-.5],[.5,.5]])g.fillText(s,tx+dx,y+dy);g.fillStyle=col||'#f4e4b8';g.fillText(s,tx,y)}
+function cap12(g,s,x,y,w,col,left){s=T(s);const pf=SHARED.font&&SHARED.font.onCanvas&&SHARED.font.onCanvas(g,s,w);let sz=pf?4.5:4.8;
+  if(!pf){g.font=GFONT(sz);g.textBaseline='middle';while(g.measureText(s).width>w&&sz>3.2){sz-=.2;g.font=GFONT(sz)}}
+  const tw=g.measureText(s).width,tx0=left?x:x-tw/2,tx=pf?SHARED.font.pin(tx0):tx0,ty=pf?SHARED.font.mid(y):y;if(G.caps12)G.caps12.push({s,w:tw,max:w,sz});
+  g.fillStyle='rgba(8,6,10,.85)';for(const[dx,dy]of[[.5,0],[-.5,0],[0,.5],[0,-.5],[.5,.5]])g.fillText(s,tx+dx,ty+dy);g.fillStyle=col||'#f4e4b8';g.fillText(s,tx,ty)}
 /* roll: a roll of cloth lying on its side, seen from its end; nothing is tied round it */
 function roll(g,x,y,w,h,c){g.fillStyle=lg(g,0,y-h,0,y,[tint(c,.3),c,tint(c,-.45)]);g.fillRect(x,y-h,w,h);for(let i=2;i<w-2;i+=2.4)R(g,x+i,y-h+.6,.5,h-1.2,'rgba(0,0,0,.2)');
   oval(g,x,y-h/2,h*.28,h/2,tint(c,.12));oval(g,x+w,y-h/2,h*.28,h/2,tint(c,-.3));oval(g,x+w,y-h/2,h*.14,h*.26,tint(c,-.55))}
