@@ -23,6 +23,8 @@ body{display:flex;align-items:center;justify-content:center}
 #top button{font:inherit;color:var(--gold);background:rgba(10,6,4,.55);border:var(--px) solid var(--dim);text-shadow:inherit;
   padding:0 calc(var(--s)*3px);height:calc(var(--s)*8px);cursor:pointer}
 #top button:hover{color:var(--hi);border-color:var(--gold)}
+/* tight: a long chapter name beside a long code (the German of Chapter Twelve) would not fit the one line; its letters close up and its buttons narrow (fitTop) */
+#top.tight{letter-spacing:0}#top.tight button{padding:0 calc(var(--s)*2px);margin-left:calc(var(--s)*1px)}
 #top #names.on{color:#fff;border-color:var(--gold);background:rgba(168,98,30,.66)}
 #top #names::before{content:'';display:inline-block;vertical-align:middle;width:calc(var(--s)*2px);height:calc(var(--s)*2px);border-radius:50%;
   background:var(--gold);box-shadow:0 0 0 var(--px) #000;margin:0 calc(var(--s)*1.5px) calc(var(--s)*.5px) 0}
@@ -1400,6 +1402,9 @@ async function resume(){const sv=saved();audioInit();
     if((b.w==null||unpackWide(CHAP[b.ch],b.w))&&applyState(b)){SFX.good();if(atStart(b))await showCard(b.ch);return}}
   autosave(null);SFX.nope();ov.draw()}
 function codeBtn(){const on=G.room&&!G.scene,code=on&&makeCode();if(on)autosave(code);$('#code').textContent=on?T('CODE {code}',{code}):T('ENTER CODE')}
+/* fitTop: the top bar is one line. Whenever a text in it changes it is measured again, and is set tight only while it would not fit. */
+const fitTop=()=>{const t=$('#top');t.classList.remove('tight');if(t.scrollWidth>t.clientWidth+1||t.scrollHeight>t.clientHeight+1)t.classList.add('tight')};
+new MutationObserver(fitTop).observe($('#top'),{childList:true,characterData:true,subtree:true});addEventListener('resize',fitTop);
 function closeCode(){cb.classList.remove('on');G.busy=cb.was;if(!G.busy)lock(false);status()}
 const BADCODE='That code is not valid. Please check each letter and number.';
 async function tryCode(){const b=decode($('#codein').value);
