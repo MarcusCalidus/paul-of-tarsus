@@ -36,9 +36,7 @@ Each chapter ends on a travel map of the eastern Mediterranean, painted the same
 
 Each chapter has its own score and room sounds, and the end-of-chapter map is described in the chapter's own page (see [the chapter list](../README.md#chapters)).
 
-All text uses two bitmap fonts painted in code (`shared/font.js`) on the grid of the backdrops, two font pixels to the room pixel: **Paul Pixel** for speech, verbs, choices and headings, and **Paul Pixel Small** for the top bar, the names, notes and the names on the map. Every letter stands on one baseline, the short ones at one x-height, and only g, j, p, q and y hang below it. Speech is outlined one font pixel all round, as thick as the strokes, so that it reads on a sunlit quay as well as at night. Paul's thoughts and the answers to prayer are slanted and pale blue. Their letters are the same pixel shapes leaned about 11 degrees and smoothed by the browser, the one text with soft edges: a slant made of whole pixels tears where a stroke steps over. The fonts are built in memory as TrueType fonts from the pixels, with no font file, and the system's monospace stands in if a browser refuses them. The Greek letters cut in stone in Chapters Eleven and Twelve are part of the painting and keep their own lettering.
-
-![The pixel font on a dark and a bright ground](screenshots/font.png)
+Speech stands over the scene in a bold monospace with a dark edge all round: a stroke painted behind the letters, even on every curve, so that a line reads over a busy backdrop as well as at night. The names on the map and the captions of a close view are edged the same way. Paul's thoughts and the answers to prayer are in italics and pale blue.
 
 A chapter opens with a title card: its name in the gold capitals of the title's logo, with "Chapter One" between two rules beneath it, over a short sting in the key of the chapter's score. It stays about three seconds; a click, Space or Esc moves on. The card is shown when a chapter is begun from the title, or from a code at its very beginning, and never when a code puts the player in the middle of one.
 
