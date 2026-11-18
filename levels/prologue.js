@@ -49,7 +49,8 @@ ART.pro_wall={w:320,
     poly(g,wall,ST);clipTo(g,()=>poly(g,wall),()=>{
       ashlar(g,34,18,120,96,ST,r,{bw:16,bh:8,v:.1,t:.4});
       ao(g,34,88,120,26,'b',.35,'#4a3828');ao(g,34,18,18,96,'l',.28,'#3a3050')});
-    for(let i=0;i<7;i++){const x=38+i*16,k=(x-34)/120,y=18+36*k;R(g,x,y-4,8,4.5,ST);R(g,x,y-4,8,.6,'#f2e6c8')}
+    /* its battlements stand on the sloping top of the wall: the foot of each follows the slope, so that no sky shows under its far corner */
+    for(let i=0;i<7;i++){const x=38+i*16,top=v=>18+36*(v-34)/120;poly(g,[x,top(x)-4,x+8,top(x+8)-4,x+8,top(x+8)+.6,x,top(x)+.6],ST);poly(g,[x,top(x)-4,x+8,top(x+8)-4,x+8,top(x+8)-3.4,x,top(x)-3.4],'#f2e6c8')}
     ashlar(g,0,6,36,110,'#cdbda0',r,{bw:18,bh:9,v:.1,t:.45});
     for(let i=2;i<34;i+=11){R(g,i,1.5,7,5,'#cdbda0');R(g,i,1.5,7,.6,'#efe2c4')}
     R(g,35,6,1,110,'#8a7c66');ao(g,0,92,36,24,'b',.4,'#3a2c20');

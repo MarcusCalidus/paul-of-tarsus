@@ -302,10 +302,13 @@ ART.wall={w:320,paint(g){const r=rng(51);
   poly(g,side,'#4a5486');clipTo(g,()=>poly(g,side),()=>{for(let j=1;j<12;j++)stroke(g,[146,sy(146,j/12),236,sy(236,j/12)],'#2c3360',.5);
     for(let j=0;j<12;j++)for(let i=0,x=146+(j%2)*5;x<236;i++,x+=11-i*.55){stroke(g,[x,sy(x,j/12),x,sy(x,(j+1)/12)],'#2c3360',.5)}
     tex(g,'mott',.45,146,10,92,114);ao(g,146,92,92,32,'b',.45,'#0a0c24');ao(g,146,10,92,114,'r',.25,'#0a0c24')});
-  for(let i=0;i<9;i++){const x=148+i*10-i*i*.25,k=(x-146)/90;R(g,x,10+46*k-4+k*1.6,5-k*2.4,4.5-k*1.6,'#4a5486')}
+  /* the battlements of a wall that runs away stand on its sloping top: each is a block whose foot follows the slope, so that no sky shows
+     under its far corner (merlon: x, width, height, and the line of the wall's top) */
+  const merlon=(x,w,h,top,c)=>poly(g,[x,top(x)-h,x+w,top(x+w)-h,x+w,top(x+w)+.6,x,top(x)+.6],c);
+  for(let i=0;i<9;i++){const x=148+i*10-i*i*.25,k=(x-146)/90;merlon(x,5-k*2.4,4-k*1.6,v=>10+46*(v-146)/90,'#4a5486')}
   ashlar(g,234,47,13,66,'#404a7c',r,{bw:6,bh:4,v:.08,t:.3,m:'#262c58'});for(let i=0;i<13;i+=5)R(g,234+i,44,3.5,3.5,'#404a7c');R(g,246,47,1,66,'#20264c');R(g,238.5,58,2,4,'#0a0c20');
   const far=[247,62,300,84,300,110,247,113];poly(g,far,'#3a4274');clipTo(g,()=>poly(g,far),()=>{for(let j=1;j<9;j++)stroke(g,[247,62+j*5.7,300,84+j*2.9],'#272e58',.5);
-    tex(g,'mott',.4,247,60,54,54);ao(g,247,96,54,18,'b',.4,'#0a0c24')});for(let i=0;i<6;i++)R(g,250+i*8,61+i*3.3,3,2.5,'#3a4274');R(g,298,78,6,32,'#2c3462');R(g,298,78,6,.6,'#5a629a');
+    tex(g,'mott',.4,247,60,54,54);ao(g,247,96,54,18,'b',.4,'#0a0c24')});for(let i=0;i<6;i++)merlon(250+i*8,3,2.2,v=>62+22*(v-247)/53,'#3a4274');R(g,298,78,6,32,'#2c3462');R(g,298,78,6,.6,'#5a629a');
   ashlar(g,0,10,146,113,'#4a4f78',r,{bw:21,bh:10,v:.1,t:.45,m:'#22264a'});for(let i=0;i<146;i+=10)ashlar(g,i,4.5,6,6,'#4a4f78',r,{bw:6,bh:6,t:.3,m:'#22264a'});
   ao(g,0,84,146,39,'b',.45,'#0a0c24');ao(g,0,10,30,113,'l',.35,'#0a0c24');R(g,145,10,1,113,'#6a70a0');
   plaster(g,70,0,66,48,'#5c6090',r,{patch:3,cracks:4,brick:'#3a3e66',t:.4});poly(g,[136,0,141,3,141,45,136,48],'#33385e');R(g,69,46.5,68,2.5,'#2c3058');
