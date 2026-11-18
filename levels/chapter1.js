@@ -641,7 +641,10 @@ async function finale(){AU.mood='calm';await wait(500);
   await wait(1500);ov.onclick=()=>startChapter(2);
   await new Promise(()=>{})}
 /* ============ CHAPTER DEFINITION ============ */
-return{rooms:['workshop','street','house'],setup,start,hint,music:MUSIC,scenes:{wall:wallScene},topics:TOPICS,tablets:TABLETS,
+/* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
+   plainly says no. Each is a line of this chapter, in English, as it stands above. */
+const ACTING={shake:['No, brother. Keep what you have for the road.']};
+return{acting:ACTING,rooms:['workshop','street','house'],setup,start,hint,music:MUSIC,scenes:{wall:wallScene},topics:TOPICS,tablets:TABLETS,
     /* the way out of this chapter, drawn on the travel map at its end (place ids from shared/map.js) */
     route:[['damascus','jerusalem','new']],
     flags:['gotAwl','gotThread','gotKnife','gotCloth','gotRope','gotSkin','gotBasket','cutCloth','longRope','metZakkai','kind',

@@ -26,7 +26,7 @@
 | Skip a line of dialogue | Click the scene or press Space |
 | Change the language | Click **English** or **Deutsch** on the title screen, or the **EN**/**DE** button in the top bar at any time |
 | Keyboard | `1`-`6` verbs, `P` pray, `M` mute, `Tab` names, `C` switch character, `Esc` options |
-| Options | Click **≡** in the top right or press `Esc` to set the music and effects volume, the text speed, **NAMES** and the language, to save and load games (see [Saved games](#saved-games)), or to go back to the title screen. It opens between scenes, not during a cutscene or a conversation. The options are kept in your browser apart from your safe point (`paul.opts`). |
+| Options | Click **≡** in the top right or press `Esc` to set the music and effects volume, the text speed, how much the figures move (**Movement**: lively, or calm, which keeps the mouths and leaves the rest still; a device set to reduce motion starts in calm), **NAMES** and the language, to save and load games (see [Saved games](#saved-games)), or to go back to the title screen. It opens between scenes, not during a cutscene or a conversation. The options are kept in your browser apart from your safe point (`paul.opts`). |
 | Skip the title card | A chapter opens with its title card for a few seconds. Click or press Space or `Esc` to go on at once. |
 | Sound | It starts with your first click, tap or key. **♫ SOUND ON** (or `M`) switches it off and on, and the options menu adjusts music and effects levels independently. On iPhone and iPad the game respects Silent Mode, and Safari cannot tell the game whether it is on, so a short note at the top right says where to look when the sound starts and whenever you switch it on. |
 
@@ -39,6 +39,10 @@
 The pointer over the scene is the game's own: a gold arrow with a dark contour, painted in code like everything else, so that it shows in a night scene as well as on a sunlit quay. It grows with the window, brightens over objects and people, and turns into a directional arrow over exits.
 
 ![The pointer at the city gate, in the street by night](screenshots/pointer.png)
+
+While a verb is chosen, the pointer shows it: a magnifying glass for **Look at**, an open hand for **Pick up**, a pointing hand for **Use**, a key for **Open**, two speech balloons for **Talk to**, and a hand holding out a purse for **Give**. It brightens over anything the verb can be used on, and becomes the arrow again once the verb is put down.
+
+![Talk to chosen: the pointer is two speech balloons, lit over the soldier](screenshots/verb-pointer.png)
 
 The options (**≡** or `Esc`) take the whole screen while they are open, and are the same in every chapter.
 
