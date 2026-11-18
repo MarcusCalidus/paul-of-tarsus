@@ -42,6 +42,9 @@ body{display:flex;align-items:center;justify-content:center}
 .line.ink{left:calc(var(--s)*170px);top:50%;transform:translate(-50%,-50%);max-width:calc(var(--s)*164px);text-align:left;text-wrap:balance;
   color:#2c1a0e;opacity:.94;text-shadow:none;-webkit-text-stroke:0;paint-order:normal;letter-spacing:.01em;animation:ink .35s ease-out}
 .line.ink span{white-space:nowrap}
+/* a line told on the white screen on the road to Damascus stands in dark ink, centered, with no dark edge */
+.line.white{left:50%;top:50%;transform:translate(-50%,-50%);max-width:calc(var(--s)*230px);text-wrap:balance;
+  color:#1c140e;text-shadow:none;-webkit-text-stroke:0;paint-order:normal}
 @keyframes ink{from{opacity:0}}
 #scroll{position:absolute;z-index:2;inset:0;width:100%;height:100%;opacity:0;pointer-events:none;image-rendering:pixelated;image-rendering:crisp-edges}
 #tags{position:absolute;inset:0;pointer-events:none;z-index:3;display:none}
@@ -106,9 +109,17 @@ body{display:flex;align-items:center;justify-content:center}
    the upper part of the picture has not moved. A menu or the code box opened over the title covers all of it. */
 #wrap.title #view{height:calc(var(--s)*210px)}
 #wrap.title #status,#wrap.title #panel{display:none}
-/* with that height the title holds its twelve chapters without scrolling; the list still scrolls when there are more lines than room */
+/* with that height the title holds its prologue and twelve chapters without scrolling; the list still scrolls when there are more lines than room */
 #overlay.title{padding-top:calc(var(--s)*5px);padding-bottom:calc(var(--s)*5px)}
-#overlay.title .chs p{margin:calc(var(--s)*2px) auto}
+#overlay.title .chs p{margin:calc(var(--s)*1.4px) auto;font-size:calc(var(--s)*5.9px);line-height:1.28}
+/* splash: the opening picture (shared/splash.js). The title is laid out as it always is, so that its name does not move when the chapters
+   appear, but only the name and the line under it are seen; the rest comes in when the splash is left. begin: the one line that asks for a click,
+   seen until the overture starts. */
+#overlay.title>*{transition:opacity 1.6s ease-in-out}
+/* a line that blinks (Continue, on a return) would blink through: its blinking sets its opacity, so it is stopped here too */
+#overlay.splash>:not(h1):not(.lede):not(.begin){opacity:0;pointer-events:none;animation:none}
+#overlay .begin{position:absolute;left:0;right:0;bottom:calc(var(--s)*9px);margin:0 auto;opacity:0;pointer-events:none;transition:opacity .5s}
+#overlay.splash:not(.playing) .begin{opacity:1}
 /* tight: a long chapter name beside a long code and every button leaves no room for the game's name; the chapter's name stays */
 #top.tight #gname,#top.tight #gdot{display:none}
 @keyframes bl{50%{opacity:.25}}
@@ -189,7 +200,7 @@ body{display:flex;align-items:center;justify-content:center}
 </head>
 <body>
 <div id="wrap">
-  <div id="top"><span><span id="gname">PAUL OF TARSUS</span><span id="gdot"> &middot; </span><span id="chname">ESCAPE FROM DAMASCUS</span></span><span><button id="code" type="button">ENTER CODE</button><button id="names" type="button">NAMES</button><button id="mute" type="button">&#9835; SOUND ON</button><button id="lang" type="button">EN</button><button id="opts" type="button" title="Options" aria-label="Options">&#8801;</button></span></div>
+  <div id="top"><span><span id="gname">PAUL OF TARSUS</span><span id="gdot"> &middot; </span><span id="chname">ESCAPE FROM DAMASCUS</span></span><span><button id="skip" type="button" style="display:none">SKIP</button><button id="code" type="button">ENTER CODE</button><button id="names" type="button">NAMES</button><button id="mute" type="button">&#9835; SOUND ON</button><button id="lang" type="button">EN</button><button id="opts" type="button" title="Options" aria-label="Options">&#8801;</button></span></div>
   <div id="view">
     <canvas id="screen" width="640" height="420"></canvas>
     <div id="speech"></div>
@@ -233,12 +244,12 @@ function TEXTS(lang,part,d){const L=DICT[lang]||(DICT[lang]={});Object.assign(L[
 /* T: a line in the player's language, looked up in the current chapter's text, then the engine's; vars fill its {slots}.
    What T returns is noted in MADE, so that a line put together from translated parts is not translated twice. */
 function T(s,vars){if(typeof s!=='string')return s;let r=s;
-  if(G.lang!=='en'&&!MADE.has(s)){const L=DICT[G.lang]||{},c=L[G.ch]&&L[G.ch][s],m=L.main&&L.main[s];
-    if(c!=null)r=c;else if(m!=null)r=m;else if(!MISSING.has(G.ch+': '+s)){MISSING.add(G.ch+': '+s);console.warn(`No ${G.lang} text for: ${s}`)}}
+  if(G.lang!=='en'&&!MADE.has(s)){const L=DICT[G.lang]||{},c=L[G.ch]&&L[G.ch][s],p=L.prologue&&L.prologue[s],m=L.main&&L.main[s];
+    if(c!=null)r=c;else if(p!=null)r=p;else if(m!=null)r=m;else if(!MISSING.has(G.ch+': '+s)){MISSING.add(G.ch+': '+s);console.warn(`No ${G.lang} text for: ${s}`)}}
   if(vars)r=r.replace(/\{(\w+)\}/g,(m,k)=>vars[k]!=null?vars[k]:m);
   MADE.add(r);return r}
 /* T.peek: the translation of a line, or null, without noting it as missing (for tests). */
-T.peek=s=>{const L=DICT[G.lang]||{};return G.lang==='en'?s:L[G.ch]&&L[G.ch][s]!=null?L[G.ch][s]:L.main&&L.main[s]!=null?L.main[s]:null};
+T.peek=s=>{const L=DICT[G.lang]||{};return G.lang==='en'?s:L[G.ch]&&L[G.ch][s]!=null?L[G.ch][s]:L.prologue&&L.prologue[s]!=null?L.prologue[s]:L.main&&L.main[s]!=null?L.main[s]:null};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
 const VERBS=[['look','Look at'],['pickup','Pick up'],['use','Use'],['open','Open'],['talk','Talk to'],['give','Give']];
 const VNAME={walk:'Walk to',look:'Look at',pickup:'Pick up',use:'Use',open:'Open',talk:'Talk to',give:'Give'};
@@ -458,6 +469,12 @@ const INST={
   /* the bass: a low plucked string. A sawtooth gives it every harmonic; its lowpass closes from the eighth harmonic to the third as the
      note dies away over its length, so the second and third stay clear and the top dulls first. No octave below. */
   bass(f,t,d,v){d=Math.max(.3,d);tone({f,t,d,type:'sawtooth',v:v*.24,a:.004,lp:[[f*8,0],[f*3,d*.6]],dest:AU.out});pluck(f,t,v*.12,6,.015)},
+  /* the horn: a low call. A sawtooth has every harmonic, as a horn's tone has; its lowpass opens on the attack and closes again as the
+     breath settles, which is the swell of a blown horn. A second voice 4 cents above it beats slowly, and a sine carries the fundamental. */
+  horn(f,t,d,v){v*=bite(f);const lp=[[f*1.8,0],[Math.min(2800,f*6.5),.055],[Math.min(1600,f*3.6),Math.max(.18,d*.75)]];
+    tone({f,t,d,type:'sawtooth',v:v*.085,a:.035,sus:1,vib:2.5,vibd:.2,bend:[-10,.03],lp,lpq:1.35,dest:AU.out,echo:1});
+    tone({f:f*1.0025,t,d,type:'sawtooth',v:v*.045,a:.06,sus:1,lp,lpq:1.1,dest:AU.out,echo:1});
+    tone({f,t,d,type:'sine',v:v*.06,a:.03,sus:1,dest:AU.out,echo:1})},
   drone(f,t,d,v){tone({f,t,d,type:'triangle',v:v*.16,a:.6,sus:1,dest:AU.out});tone({f:f*1.4983,t,d,type:'sine',v:v*.09,a:.9,sus:1,dest:AU.out})}};
 /* the held pipe: under the melody, a reed tone that swells in, holds and is let go 80 ms before the next breath */
 INST.aulos.hold=(f,t,d,v)=>tone({f,t,d,type:'square',v:v*bite(f)*.012,a:.08,sus:1,lp:[[1900,0]],lpq:1.2,dest:AU.out,echo:1});
@@ -492,7 +509,9 @@ function mixFor(sc){const c=AU.ctx,o=AU.mix;if(o&&o.sc===sc&&o.c===c)return o;
   if(o&&o.c===c)setTimeout(()=>o.tr.forEach(x=>{x.g.disconnect();x.r.disconnect()}),4000);
   return AU.mix={sc,c,tr:sc.tracks.map(tr=>{const g=c.createGain(),r=c.createGain();g.connect(AU.mus);r.connect(AU.send);return{g,r,body:tr.inst==='lyre'?lyreBody(c,g):null,on:null,off:0}})}}
 function playStep(st,t){const sc=AU.score;if(!sc)return;const N=sc.steps||16,
-  held=(tr,play,t,v)=>play.hold(mtof(snap(sc.root+(tr.oct||0)+tr.hold,sc)),t,N*sc.dt-.08,v),bar=Math.floor(st/N),s=st%N,m=AU.mood,mx=mixFor(sc),out=AU.out,body=AU.body,room=AU.toRoom,
+  held=(tr,play,t,v)=>play.hold(mtof(snap(sc.root+(tr.oct||0)+tr.hold,sc)),t,N*sc.dt-.08,v),bar=Math.floor(st/N),s=st%N;
+  if(sc.overture&&AU.mood===sc.overture&&bar===10&&s===0)AU.mood='calm';
+  const m=AU.mood,mx=mixFor(sc),out=AU.out,body=AU.body,room=AU.toRoom,
   deg=(n,oct)=>mtof(note(n,oct,sc));
   try{sc.tracks.forEach((tr,j)=>{const x=mx.tr[j],want=!tr.moods||tr.moods.includes(m),first=x.on===null;
     if(first){for(const p of[x.g.gain,x.r.gain])p.setValueAtTime(want?1:0,t);x.off=want?0:FADEN}
@@ -510,9 +529,16 @@ function playStep(st,t){const sc=AU.score;if(!sc)return;const N=sc.steps||16,
 /* loopOf: how many steps a score plays before it starts again */
 const loopOf=sc=>(sc.bars||16)*(sc.steps||16);
 function setScore(sc){if(sc)AU.key=sc;if(AU.score!==sc){AU.score=sc;AU.step=0}}
-function sched(){const c=AU.ctx;if(!c||c.state!=='running')return;const sc=AU.score;
+/* silenceNow: cut off every playing track and room sound at once (when the light flashes on the road to Damascus) */
+function silenceNow(){AU.mood='none';AU.amb=null;const c=AU.ctx;if(!c)return;const t=c.currentTime;
+  if(AU.mix&&AU.mix.c===c)for(const x of AU.mix.tr){for(const p of[x.g.gain,x.r.gain]){p.cancelScheduledValues(t);p.setValueAtTime(0,t)}x.on=false;x.off=FADEN+1}
+  if(AU.layers)for(const id in AU.layers){const l=AU.layers[id];l.v=0;l.g.gain.cancelScheduledValues(t);l.g.gain.setValueAtTime(0,t)}}
+/* A score plays round and round. One that names another (then: a score) is played once, and that one follows it: the overture of the
+   opening picture (shared/splash.js) is followed by the title's music. */
+function stepOn(sc){if(++AU.step>=loopOf(sc)){AU.step=0;if(sc.then)setScore(sc.then)}}
+function sched(){const c=AU.ctx;if(!c||c.state!=='running')return;
   if(AU.next<c.currentTime-.5)AU.next=c.currentTime+.05;
-  while(sc&&AU.next<c.currentTime+.25){playStep(AU.step,AU.next);AU.next+=sc.dt;AU.step=(AU.step+1)%loopOf(sc)}
+  while(AU.score&&AU.next<c.currentTime+.25){const sc=AU.score;playStep(AU.step,AU.next);AU.next+=sc.dt;stepOn(sc)}
   ambience(c.currentTime)}
 /* --- ambience: each room names the sounds around it and how loud they are, e.g. amb:{crickets:.6,wind:.3}.
    Beds are filtered noise that runs all the time; calls are short sounds scattered at random intervals. A chapter may bring its own,
@@ -846,7 +872,7 @@ function gaitPose(o,ph,amp){const q=gaitOf(o),long=!!o.long,LIFT=long?1:4,c=Math
 function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=o.stone?c.sk:c.le,fem=!!(o.veil||o.fem),HIM=!!(o.himation&&C);g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
   mv=o.stone||bow?0:mv|0;talk=o.stone?0:talk|0;
-  const W=fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):fr?gaitPose(o,[0,0,.25,.5][fr]||0,1):null,bob=W?W.bob:0;let SH=null;
+  const seat=fr<0,W=!seat&&fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):!seat&&fr?gaitPose(o,[0,0,.25,.5][fr]||0,1):null,bob=W?W.bob:0;let SH=null;
   /* px: a run of pixels. While a foot is painted, SH lets each of its columns sit higher than the next: a heel that is up, or the toes */
   const px=(a,b,col,w,h)=>{g.fillStyle=col;if(SH)for(let i=0;i<(w||1);i++)g.fillRect(a+i,b+SH(a+i),1,h||1);else g.fillRect(a,b,w||1,h||1)};
   const body=()=>{
@@ -859,7 +885,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
         if(k===fx||(deep&&k===fx-1))v=Math.min(4,v+1+(deep&&k===fx?1:0));else if(k===fx+1)v=Math.max(0,v-1)}
       px(x0+k,yy,(R2&&(x0+k+40)%5<2?R2:R)[v])}};
   const kid=o.h?1:0,slim=o.slim?1:0,LEG=kid?19:23,SK=kid?13:16,TOR=kid?22:fem?24:26,AL=26;
-  const yA=-4,yH=yA-LEG+bob,yB=yH-SK,yS=yB-3-TOR,SL=o.longSleeve?AL-2:12;   /* ankle, hem, top of the skirt, shoulder line; AL: rows of an arm down to the wrist */
+  const yA=-4,yH=yA-LEG+bob,yB=yH-SK+(seat?10:0),yS=yB-3-TOR,SL=o.longSleeve?AL-2:12;   /* ankle, hem, top of the skirt, shoulder line; AL: rows of an arm down to the wrist */
   /* the sleeves are one garment with the body: PIT rows of shoulder yoke, then the arms part from the trunk */
   const PIT=8,nw=slim+(fem?1:0),aw=fem?4:5,ax=-10+nw-aw,fx=11-nw,fw=5,waist=Math.round(TOR*.6);
   /* cape, behind everything */
@@ -872,7 +898,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
         if(near)v=sl?(i===SL?4:u<.5?4:3):i===SL+1?4:u<.34?3:u<.8?2:3;else v=sl?(i===SL?3:k===0?(i>PIT+1?3:2):u<.78?1:2):i===SL+1?3:k===0?3:u<.78?1:2;px(x0+k,yS+i,R[v])}}
     if(stub)return;const hx=(near?x00+w-5:x00)+Math.round(sw+bd)+lean;[4,5,5,5,4].forEach((n,j)=>{const x0=hx+(j===0||j===4?near?1:0:0);
       for(let k=0;k<n;k++)px(x0+k,yS+AL+j,S[Math.min(4,(j===4?3:k===0?3:k===n-1?1:j===3&&k===2?3:2)+(near?1:0))])})};
-  arm(false,W?W.fa:0,o.spear||o.stub||(ges&&!bow),W?W.fb:0);
+  arm(false,W?W.fa:0,o.spear||o.stub||(ges&&ges!==4&&!bow),W?W.fb:0);
   /* legs and sandals, or the feet under a long robe */
   const foot=(fx0,fy,R)=>{px(fx0+1,fy,R[2],5);px(fx0,fy+1,R[2],8);px(fx0,fy+2,R[2],10);px(fx0+8,fy+2,R[1],2);px(fx0,fy+1,R[3]);px(fx0,fy+2,R[3],2);px(fx0-1,fy+3,'#2a1810',13);px(fx0+9,fy+3,'#4a3020',3);
     px(fx0+1,fy,LE[2],5);px(fx0+5,fy+1,LE[2],2);px(fx0+6,fy+2,LE[3],2);px(fx0+2,fy+1,LE[3]);px(fx0+2,fy+2,LE[3]);px(fx0+1,fy,LE[3])};
@@ -885,10 +911,11 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
       for(let k=0;k<w;k++){const u=(k+.5)/w;let v=u<.18?4:u<.4?3:u<.76?2:1;if(i<2)v=Math.min(4,v+1);else if(t<.2&&u>.4&&u<.7)v=1;if(k===w-3&&t>.25&&t<.7)v=Math.max(0,v-1);px(x0+k,yH+i,R[v])}}
     footP(Math.round(k0+P.ax)+1,P,R)};
   {const REST={ax:0,kx:0,ly:0,p:0},L0=W?W.legs[0]:REST,L1=W?W.legs[1]:REST,hip=W?W.hip:0;
-    if(o.long){footP(Math.round(3+L0.ax),L0,[S[1],S[2],S[3],S[4],S[4]]);footP(Math.round(-8+L1.ax),L1,S)}else{leg(1-hip*2,L0,1);leg(-9+hip,L1,0)}}
+    if(seat){leg(5,REST,1);leg(-2,REST,0)}
+    else if(o.long){footP(Math.round(3+L0.ax),L0,[S[1],S[2],S[3],S[4],S[4]]);footP(Math.round(-8+L1.ax),L1,S)}else{leg(1-hip*2,L0,1);leg(-9+hip,L1,0)}}
   /* skirt of a short tunic, or a robe to the ankles; a woman's robe widens over the hips */
-  const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=o.long?yA+1:yH+1,n=y1-yB+1;
-  for(let i=0;i<n;i++){const t=i/(n-1),hw=(fem?8+Math.min(3,Math.round(i*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,x0=-hw+sw,x1=hw+1+sw,yy=yB+i;
+  const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=seat?yH+3:o.long?yA+1:yH+1,n=y1-yB+1;
+  for(let i=0;i<n;i++){const t=i/(n-1),hw=(fem?8+Math.min(3,Math.round(i*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,x0=-hw+sw,x1=hw+1+sw+(seat?Math.round(t*5):0),yy=yB+i;
     if(i>=n-2){for(let xx=x0;xx<=x1;xx++){const u=(xx-x0+.5)/(x1-x0+1);px(xx,yy,i===n-1?hem[u<.3?4:3]:hem[u<.2?4:u<.6?2:1])}}
     else if(HIM&&i<n-6){const xc=i<=n-14?x1:x1-Math.round((x1-x0+1)*(i-(n-14))/8),F=[[.2,3,.05],[.42,1,.06],[.63,6,.05],[.84,10,.04]];
       cloth(yy,x0,xc,C,i,F,null,[n-20,n-12]);if(xc<x1)cloth(yy,xc+1,x1,T,i,[[.5,9,.02]],SR)}
@@ -916,8 +943,11 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
       if(HIM){for(let yy=yb+1;yy<=yB;yy++){const j=yy-yb,q=(xx+j*.5+40)%7;px(xx,yy,C[j===1?3:xx<-7+slim?4:xx<-4?3:q<1?3:q<2?1:xx>8-slim?1:2])}}
       else{px(xx,yb+1,T[4]);if(xx%3)px(xx,yb+2,T[3])}}}
   if(o.cape){for(let xx=-16;xx<=15;xx++){const e=Math.abs(xx+.5)>14?1:0;px(xx,yS-1+e,C[1]);px(xx,yS+e,C[xx<-8?3:2]);px(xx,yS+1+e,C[xx<-8?4:3]);if(xx<-5||xx>7)px(xx,yS+2+e,C[4])}px(8,yS,'#f4dc8a',2,2);px(9,yS+1,'#b08a3c')}
-  /* near arm (hidden when a mantle hangs over it) */
-  if(!C||o.cape)arm(true,W?W.na:0,0,W?W.nb:0);
+  /* near arm (hidden when a mantle hangs over it, unless reaching back to lead by the hand) */
+  if(!C||o.cape||ges===4)arm(true,W?W.na:0,ges===4,W?W.nb:0);
+  if(ges===4&&!bow&&!o.stub){const R=o.longSleeve?T:S;
+    for(let k=0;k<6;k++){const gx=ax+1-k,gy=yS+12+Math.round(k*.6);px(gx,gy,R[2]);px(gx,gy+1,R[3],1,2);px(gx,gy+3,R[4])}
+    px(ax-8,yS+15,S[2],5);px(ax-8,yS+16,S[3],5);px(ax-7,yS+17,S[4],4)}
   /* head */
   const hx=-6+(bow?1:0)+(mv&MV.fwd?1:0)-(mv&MV.back?1:0),hy=yS-20+(bow?2:0)+(mv&MV.dip?1:mv&MV.lift?-1:0),jaw=talk>2,H=c.ha,Bd=c.be,Hd=c.hd,Gr=c.gr,brow=fem?mix(o.brow||'#3a2414',o.skin,.3):o.brow||o.hair||o.beard||'#2a1a12';
   px(-1,yS-3,S[3],7,3);px(0,yS-3,S[2],5,2);
@@ -953,7 +983,10 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   else if(ges===3&&!bow&&!o.stub){const R=o.longSleeve?T:S;   /* on the chest: the forearm slants back across the body, and the hand lies flat on it */
     for(let k=0;k<8;k++){const gx=14-nw-k,gy=yS+13-Math.round(k*.5);px(gx,gy,R[1]);px(gx,gy+1,R[2],1,2);px(gx,gy+3,R[3])}
     px(2,yS+7,S[2],5,4);px(2,yS+7,S[1],5);px(2,yS+10,S[3],5);px(1,yS+8,S[3],1,2);px(3,yS+6,S[2],3)}
-  else if(ges&&!bow&&!o.stub){for(let k=0;k<10;k++){const gx=12-nw+Math.round(k*.6),gy=yS+14-k,R=o.longSleeve?T:S;px(gx,gy,R[3]);px(gx+1,gy,R[2],2);px(gx+3,gy,R[1])}
+  else if(ges===5&&!bow&&!o.stub){const R=o.longSleeve?T:S,q=18-nw;   /* held out to be led: the forearm slants forward and down from the elbow */
+    for(let k=0;k<7;k++){const gx=12-nw+k,gy=yS+12+Math.round(k*.5);px(gx,gy,R[1]);px(gx,gy+1,R[2],1,2);px(gx,gy+3,R[3])}
+    px(q,yS+15,S[1],5);px(q,yS+16,S[2],6);px(q+1,yS+17,S[3],5)}
+  else if(ges&&ges!==4&&!bow&&!o.stub){for(let k=0;k<10;k++){const gx=12-nw+Math.round(k*.6),gy=yS+14-k,R=o.longSleeve?T:S;px(gx,gy,R[3]);px(gx+1,gy,R[2],2);px(gx+3,gy,R[1])}
     const q=17-nw;px(q,yS+1,S[2],5,5);px(q,yS+1,S[1],4);px(q,yS+5,S[3],5);px(q+4,yS,S[2],1,3);px(q+1,yS-1,S[1],1,2);px(q+3,yS-1,S[2],1,2);px(q-1,yS+4,S[3])}};
   /* leaning: the figure is painted twice, below the belt as it stands and above it a pixel forward */
   if(mv&MV.lean){const yb=-7-(o.h?32:39)+bob;for(const up of[0,1]){g.save();g.beginPath();g.rect(-90,up?-220:yb,180,up?220+yb:220);g.clip();if(up)g.translate(1,0);body();g.restore()}}
@@ -1113,12 +1146,12 @@ let cur=null;
    without him. While it stands, cur holds its cadence and when it began, and the mouth and head of whoever speaks or sings follow that
    (see moves). The blips of a speaking voice fall on its first syllables; a sung line has its own voice and no blips. A line of the
    narrator's that is told in the dark is read from his scroll (see DARK, below); o.plain keeps such a line a plain one. */
-function say(a,text,o={}){const S=SHARED.scroll,ink=!a&&!o.plain&&inDark();
+function say(a,text,o={}){const S=SHARED.scroll,white=!a&&!o.plain&&!!G.white,ink=!a&&!o.plain&&!white&&inDark();
   if(ink&&!S)return need('scroll').then(()=>say(a,text,o),()=>say(a,text,Object.assign({},o,{plain:1})));   /* without its file, a plain line */
   if(ink&&S.state!=='up')return S.up().then(()=>say(a,text,o));
   if(!ink&&S&&S.state!=='down')return S.down().then(()=>say(a,text,o));
   const src=text;text=T(text);return new Promise(res=>{
-  const el=document.createElement('div');el.className='line';el.textContent=text;if(ink)el.classList.add('ink');else el.style.color=o.color||(a?a.color:'#e6d9ff');
+  const el=document.createElement('div');el.className='line';el.textContent=text;if(ink)el.classList.add('ink');else if(white)el.classList.add('white');else el.style.color=o.color||(a?a.color:'#e6d9ff');
   if(o.thought)el.style.fontStyle='italic';
   const voiced=a&&!o.thought,choir=o.choir||[],dur=(o.dur||Math.max(2200,1400+text.length*65))*(G.speedAll>200?1:OPTS.spd),plan=voiced||choir.length?cadence(text,dur,o.sung):null;
   $('#speech').appendChild(el);if(ink)S.fit(el);if(voiced){a.talk=true;const k=o.act||acted(src);if(k)gesture(a,k,0,140)}choir.forEach(x=>x.talk=true);
@@ -1126,7 +1159,7 @@ function say(a,text,o={}){const S=SHARED.scroll,ink=!a&&!o.plain&&inDark();
   const done=()=>{clearTimeout(tm);blips.forEach(clearTimeout);el.remove();if(a)a.talk=false;choir.forEach(x=>x.talk=false);if(G.skip===done)G.skip=null;cur=null;if(ink)S.rest();res()};
   const tm=setTimeout(done,dur),me=PC();
   /* to: the one who is spoken to, as far as the engine can know: whoever is played, or the person he is talking with (G.with, see act) */
-  G.skip=done;G.lineT=performance.now();cur={el,a,ink,low:o.low,plan,t0:G.lineT,choir,to:!voiced||o.sung?null:a===me?G.with:me.room===a.room?me:null};posSpeech()})}
+  G.skip=done;G.lineT=performance.now();cur={el,a,ink,white,low:o.low,plan,t0:G.lineT,choir,to:!voiced||o.sung?null:a===me?G.with:me.room===a.room?me:null};posSpeech()})}
 const narr=(t,o)=>say(null,t,o);
 /* The narrator's scroll (shared/scroll.js). A line of narration told in the dark, that is, while the view is faded out or the scene is DARK,
    is not set on a black screen: it is read from an open roll of papyrus, held in two hands by lamplight. The scroll comes up out of the dark
@@ -1134,8 +1167,8 @@ const narr=(t,o)=>say(null,t,o);
    the end screen see to that, and a scroll left with no line on it goes down by itself. A chapter writes nothing for it: it fades out and
    tells, as it always did. DARK is the scene for what is told and not shown (a vision by night, a beating): a chapter sets it as G.scene. */
 function DARK(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}
-const inDark=()=>+$('#dim').style.opacity>=1||G.scene===DARK;
-function posSpeech(){if(!cur||cur.ink)return;const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
+const inDark=()=>!G.white&&(+$('#dim').style.opacity>=1||G.scene===DARK);
+function posSpeech(){if(!cur||cur.ink||cur.white)return;const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
   if(a&&a.room===G.room&&!G.scene){el.style.left=clamp((a.x-G.cam)*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-56),40,132)*s+'px';el.style.top=''}
   else if(cur.low){el.style.left='50%';el.style.top='';el.style.bottom=7*s+'px'}   /* low: a line told over a map whose road runs along its upper edge stands at the foot of the view */
   else{el.style.left='50%';el.style.top=10*s+'px';el.style.bottom=''}}
@@ -1146,7 +1179,10 @@ async function cut(fn,force){if(G.busy&&!force)return;G.busy=true;lock(true);sta
 /* viewOf: show the room a character stands in. enterRoom: move the character the player controls into a room, and show it. */
 function viewOf(a){G.room=a.room;G.cam=clamp(a.x-160,0,ART[a.room].w-VW);AU.mood=ROOMS[a.room].mood||'calm';AU.amb=ROOMS[a.room].amb;G.hover=null}
 function enterRoom(room,x,y,dir){G.room=room;place(PC(),room,x,y,dir);G.cam=clamp(x-160,0,ART[room].w-320);AU.mood=ROOMS[room].mood||'calm';AU.amb=ROOMS[room].amb;G.hover=null}
-async function fade(on,ms=260){const S=SHARED.scroll;if(S&&S.state!=='down')await S.down();const d=$('#dim');d.style.transition=`opacity ${ms}ms ease-in-out`;d.style.opacity=on?1:0;await wait(ms+20);d.style.transition=''}
+async function fade(on,ms=260,white){const S=SHARED.scroll;if(S&&S.state!=='down')await S.down();const d=$('#dim');
+  G.white=on&&white?1:0;if(white)d.style.background='#faf8f2';else if(on)d.style.background='#05030c';
+  d.style.transition=`opacity ${ms}ms ease-in-out,background-color ${ms}ms ease-in-out`;d.style.opacity=on?1:0;await wait(ms+20);
+  d.style.transition='';if(!on)d.style.background='#05030c'}
 async function go(room,x,y,dir){SFX.door();tagEl.innerHTML='';tagSig='';const[snap,sg]=mk(VW*HR,VH*HR);sg.drawImage(cv,0,0);enterRoom(room,x,y,dir);
   G.xfade={img:snap,a:1};await tween(320,k=>{G.xfade.a=1-(k*k*(3-2*k))});G.xfade=null;const r=ROOMS[room];if(r.enter)await r.enter()}
 function choose(opts){return new Promise(res=>{const c=$('#choices');c.innerHTML='';c.classList.add('on');
@@ -1306,6 +1342,7 @@ function drawTags(ts){if(!G.tags)return;const act=G.room&&!G.scene&&!G.busy&&!G.
 addEventListener('keyup',e=>{if(e.key==='Tab')tagsOn(false)});addEventListener('blur',()=>tagsOn(false));
 addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;const k=e.key.toLowerCase();
   if(k==='tab'){e.preventDefault();tagsOn(true)}
+  else if((k===' '||k==='enter')&&splashGo&&ov.classList.contains('splash')&&!cb.classList.contains('on')&&!$('#menu').classList.contains('on')){e.preventDefault();splashGo()}
   else if(k===' '||k==='escape'||k==='.'){if(G.skip){e.preventDefault();G.skip()}
     else if(k==='escape'){if(cb.classList.contains('on'))closeCode();else if($('#menu').classList.contains('on'))closeMenu();
       else if(!$('#tablets.on')&&!G.busy&&(!G.scene||ov.classList.contains('on')))openMenu()}}
@@ -1362,8 +1399,8 @@ function figure(g,x,y,lit,key,fn,sw){if(DQ){DQ.push([y,()=>figure(g,x,y,lit,key,
   sb.globalCompositeOperation='copy';sb.drawImage(c,0,0);sb.globalCompositeOperation='multiply';sb.fillStyle=lit;sb.fillRect(0,0,FIG.W,FIG.H);
   sb.globalCompositeOperation='destination-in';sb.drawImage(c,0,0);g.drawImage(SB,dx,dy,W,Hh)}
 const blinks=(o,ts)=>((ts+o.ph)%4300)<140;
-/* man: a person by look id, for scenes that pose figures themselves (the ship, the road). */
-function man(g,x,y,id,dir,fr,lit,ges,sw){const o=LOOK[id];figure(g,x,y,lit,id+dir+fr+(ges?'g':''),s=>person(s,0,0,o,dir,fr,0,0,ges,0),sw)}
+/* man: a person by look id, for scenes that pose figures themselves (the ship, the road, the prologue). */
+function man(g,x,y,id,dir,fr,lit,ges,sw,bow,bl){const o=LOOK[id];figure(g,x,y,lit,id+dir+'f'+fr+(ges?'g'+ges:'')+(bow?'b':'')+(bl?'k':''),s=>person(s,0,0,o,dir,fr,0,bow||0,ges||0,bl||0),sw)}
 const beast=(g,x,y,dir,fr,load,lit)=>figure(g,x,y,lit,'donkey'+dir+fr+load,s=>donkey(s,0,0,dir,fr,load),15);
 /* An actor whose dress changes with the story (a cloak torn off him) is given another look and says so in wear, a letter or two that
    names it: the poses of each look are kept apart. A chapter's start gives everyone his own look back (see setChapter). */
@@ -1492,15 +1529,19 @@ const CHAP={
   10:{name:'IS IT SO?',label:'Chapter Ten',title:'Is It So?',salt:0xA37B,src:'levels/chapter10.js'},
   11:{name:'THE UNKNOWN GOD',label:'Chapter Eleven',title:'The Unknown God',salt:0xB48D,src:'levels/chapter11.js'},
   12:{name:'TENTMAKERS OF CORINTH',label:'Chapter Twelve',title:'Tentmakers of Corinth',salt:0xC59F,src:'levels/chapter12.js'}};
-const TITLE={level:1,scene:'title',mood:'calm',amb:{crickets:.5,wind:.35,owl:.4}};
+const TITLE={level:1,scene:'title',mood:'ancient',amb:{crickets:.5,wind:.35,owl:.4}};
+const PRO={name:'THE ROAD TO DAMASCUS',label:'Prologue',title:'The Road to Damascus',src:'levels/prologue.js'};
 /* A level file calls LEVEL(n, init). init() registers its art, cast, items and rooms, and returns the chapter definition. */
 function LEVEL(n,init){LOOK.paul=paulLook(n);Object.assign(CHAP[n],init(),{ready:1});LOOK.paul=paulLook(G.ch)}
+function PROLOGUE(init){LOOK.paul=paulLook(1);Object.assign(PRO,init(),{ready:1});LOOK.paul=paulLook(G.ch)}
 /* loadScript: add a script tag (this works from disk, where fetch does not), and check that the file registered what it should. */
 function loadScript(src,ok){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=src;
   el.onload=()=>ok()?res():rej(new Error(T('{file} did not register what it should.',{file:src})));el.onerror=()=>{el.remove();rej(new Error(T('Could not load {file}.',{file:src})))};document.head.appendChild(el)})}
 /* A level brings its text in the player's language with it (see LANGUAGES); if that file is missing, the chapter plays in English. */
 function loadLevel(n){const c=CHAP[n];if(c.ready)return langFile(G.lang,n);
   return c.loading||(c.loading=loadScript(c.src,()=>c.ready).then(()=>langFile(G.lang,n)).catch(e=>{c.loading=null;throw e}))}
+function loadPrologue(){if(PRO.ready)return langFile(G.lang,'prologue');
+  return PRO.loading||(PRO.loading=loadScript(PRO.src,()=>PRO.ready).then(()=>langFile(G.lang,'prologue')).catch(e=>{PRO.loading=null;throw e}))}
 /* Anything shared between chapters lives in its own file under shared/, which registers itself in SHARED and is loaded the first time it is needed. */
 const SHARED={},NEEDING={};
 function need(name){if(SHARED[name])return Promise.resolve(SHARED[name]);
@@ -1508,18 +1549,18 @@ function need(name){if(SHARED[name])return Promise.resolve(SHARED[name]);
 /* --- languages: loading a language's files, choosing one, and redrawing what is on screen --- */
 const LANGLOAD={};
 function langFile(lang,part){const d=LANGS[lang]&&LANGS[lang].dir,k=lang+'/'+part;if(!d)return Promise.resolve();
-  return LANGLOAD[k]||(LANGLOAD[k]=loadScript(d+(part==='main'?'main':'chapter'+part)+'.js',()=>DICT[lang]&&DICT[lang][part]).catch(e=>{console.error(e);LANGLOAD[k]=null}))}
+  return LANGLOAD[k]||(LANGLOAD[k]=loadScript(d+(part==='main'||part==='prologue'?part:'chapter'+part)+'.js',()=>DICT[lang]&&DICT[lang][part]).catch(e=>{console.error(e);LANGLOAD[k]=null}))}
 const store=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}};
 /* the language to start in: ?lang=xx in the address, else the player's last choice, else the browser's language, else English */
 function firstLang(){const q=(location.search.match(/[?&]lang=([a-z]+)/)||[])[1],n=(navigator.language||'').slice(0,2).toLowerCase();
   return[q,store('paul.lang'),n].find(l=>l&&LANGS[l])||'en'}
 /* setLang: load the language's text for the engine and every chapter loaded so far, then switch. The game's state is not touched. */
 async function setLang(l,keep){if(!LANGS[l])return;
-  await Promise.all(['main',...Object.keys(CHAP).filter(n=>CHAP[n].ready)].map(p=>langFile(l,p)));
+  await Promise.all(['main',...(PRO.ready?['prologue']:[]),...Object.keys(CHAP).filter(n=>CHAP[n].ready)].map(p=>langFile(l,p)));
   G.lang=l;MADE.clear();if(keep)store('paul.lang',l);relang()}
 /* relang: redraw every fixed piece of text in the new language: the panel, the top bar, an open overlay, choices, the tablets */
 function relang(){document.documentElement.lang=G.lang;document.title=T('Paul of Tarsus: On the Roads of Rome');
-  $('#gname').textContent=T('PAUL OF TARSUS');$('#chname').textContent=T(CHAP[G.ch].name);fitTop();
+  $('#gname').textContent=T('PAUL OF TARSUS');$('#chname').textContent=T(G.inPro?PRO.name:CHAP[G.ch].name);$('#skip').textContent=T('SKIP');fitTop();
   const ks=Object.keys(LANGS),nx=ks[(ks.indexOf(G.lang)+1)%ks.length];$('#lang').textContent=G.lang.toUpperCase();
   $('#lang').title=LANGS[nx].native;$('#lang').style.display=ks.length>1?'':'none';
   buildVerbs();swapBtn();setMute(AU.muted);namesBtn();codeBtn();drawInv();status();
@@ -1529,6 +1570,7 @@ function relang(){document.documentElement.lang=G.lang;document.title=T('Paul of
   if($('#menu').classList.contains('on')&&$('#menu').draw)$('#menu').draw();
   if(SHARED.tablets)SHARED.tablets.redraw()}
 $('#lang').onclick=e=>{e.stopPropagation();const ks=Object.keys(LANGS);SFX.click();setLang(ks[(ks.indexOf(G.lang)+1)%ks.length],1)};
+$('#skip').onclick=e=>{e.stopPropagation();if(G.onSkip){audioInit();SFX.click();G.onSkip()}};
 /* overlay: show a screen on the overlay. draw paints it, and paints it again when the language changes. */
 function overlay(cls,draw){ov.className=cls;ov.draw=draw;draw()}
 function loadFail(e){console.error(e);ov.onclick=()=>location.reload();
@@ -1539,7 +1581,7 @@ function loadFail(e){console.error(e);ov.onclick=()=>location.reload();
    A short sting in the key of the chapter's own score: a drone on the tonic under a harp rising through the fifth to the octave. */
 function cardSting(){if(!AU.ctx)return;const t=now()+.05,[d]=tune([0],-1).map(mtof);INST.drone(d,t,2.2,.6);
   tune([0,7,12]).map(mtof).forEach((f,i)=>INST.harp(f,t+.1+i*.24,.5,1.1))}
-async function showCard(n){const c=CHAP[n],logo=await need('logo').catch(()=>null),was=G.busy;G.busy=true;lock(true);status();
+async function showCard(n){const c=n==='prologue'?PRO:CHAP[n],logo=await need('logo').catch(()=>null),was=G.busy;G.busy=true;lock(true);status();
   return new Promise(res=>{
     overlay('on card',()=>{const name=T(c.name),sub=T(c.label).toUpperCase(),art=logo&&logo.can(name+sub)?logo.paint(name,sub):null;
       ov.innerHTML=art?'<h1 class="art"></h1>':'<h2>'+esc(T(c.label))+'</h2><h1>'+esc(T(c.title))+'</h1>';
@@ -1552,30 +1594,60 @@ async function showCard(n){const c=CHAP[n],logo=await need('logo').catch(()=>nul
 /* a code at the very beginning of a chapter (no flag set, in its first room) opens with the card too; one in the middle never does */
 const atStart=b=>b&&b.w==null&&b.b===0;
 async function startChapter(n){ov.onclick=null;try{await loadLevel(n)}catch(e){return loadFail(e)}AU.key=CHAP[n].music;await showCard(n);return CHAP[n].start()}
+/* startPrologue: play the Road to Damascus prologue and run without a break into Chapter One; SKIP in the top bar jumps straight to Chapter One */
+async function startPrologue(){ov.onclick=null;try{await Promise.all([loadLevel(1),loadPrologue()])}catch(e){return loadFail(e)}
+  audioInit();SFX.good();G.started=performance.now();setChapter(1);G.inPro=1;$('#chname').textContent=T(PRO.name);
+  const sk=$('#skip');sk.style.display='';let skipped=false;
+  G.onSkip=()=>{if(skipped)return;skipped=true;G.proSkip=1;if(G.skip)G.skip()};
+  /* the prologue plays on Chapter One's score, by its moods: if the overture of the opening picture is still playing, it ends here */
+  setScore(CHAP[1].music);await showCard('prologue');
+  if(!skipped)await PRO.play();
+  G.onSkip=null;G.proSkip=0;G.inPro=0;sk.style.display='none';$('#chname').textContent=T(CHAP[1].name);
+  const d=$('#dim');d.style.transition='';d.style.opacity=0;d.style.background='#05030c';G.white=0;
+  if(skipped){G.scene=CHAP[1].scenes.wall;G.end={};AU.mood='calm';AU.amb=TITLE.amb;await showCard(1);return CHAP[1].start(false)}
+  return CHAP[1].start(true)}
 /* chsFade: fades the chapter list's top edge while entries are scrolled away above it, and its bottom edge while more wait below */
 function chsFade(l){l.classList.toggle('up',l.scrollTop>1);l.classList.toggle('down',l.scrollTop+l.clientHeight<l.scrollHeight-1)}
 addEventListener('resize',()=>{const l=ov.querySelector('.chs');if(l)chsFade(l)});
+/* The game opens on its opening picture (shared/splash.js): the name over a tentmaker's bench by lamplight, once each time the game is
+   opened. It waits, silent, because a browser lets a page sound only after a click or a key. That click starts the overture; when its
+   melody has been heard, or on a second click, the picture passes into the title's own and the chapters appear, and the title's music
+   follows the overture by itself. G.splash: 1 it waits, 2 the overture plays, 0 it is over (undefined: it has not been shown yet).
+   Coming back to the title from a game shows the chapters at once. If the file is missing, so does opening the game. */
+/* The title's own music opens with an overture too (TITLE.mood). After the opening picture, whose overture has just been heard, the title's
+   music begins quiet instead; a later return to the title plays its own. */
+let splashGo=null;   /* while the opening picture is up: what a click on it does, for Space and Enter to do too */
 async function title(){lock(true);if(SHARED.scroll)SHARED.scroll.off();await setLang(firstLang());try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
-  setChapter(TITLE.level);G.scene=CHAP[TITLE.level].scenes[TITLE.scene];G.end={};AU.mood=TITLE.mood;AU.amb=TITLE.amb;
+  const sp=G.splash===undefined?await need('splash').catch(e=>{console.error(e);return null}):null,own=CHAP[TITLE.level].scenes[TITLE.scene];let tm=0;
+  setChapter(TITLE.level);G.scene=sp?sp.scene:own;G.end={};AU.step=0;AU.mood=sp?'calm':TITLE.mood;AU.amb=sp?null:TITLE.amb;G.splash=sp?1:0;if(sp)setScore(null);
   /* The name and the subtitle are painted as a logo (shared/logo.js). If its file is missing, or a language's title has a letter the
      logo cannot write, they stand as plain text instead. The canvas keeps the words, for a screen reader and for the playtest. */
   const logo=await need('logo').catch(e=>{console.error(e);return null});
   /* the chapters scroll in their own box below the title (see .chs); Continue stays above it, always in view */
-  overlay('on title',()=>{const sv=saved(),fs=saves().far,far=fs&&(!sv||fs.code!==sv.code)?decode(fs.code).ch:0,
+  overlay('on title'+(sp?' splash':''),()=>{const sv=saved(),fs=saves().far,far=fs&&(!sv||fs.code!==sv.code)?decode(fs.code).ch:0,
       name=T('PAUL OF TARSUS'),sub=T('ON THE ROADS OF ROME'),art=logo&&logo.can(name+sub)?logo.paint(name,sub):null;
     ov.innerHTML=(art?'<h1 class="art"></h1>':'<h1>'+name+'</h1><h2>'+sub+'</h2>')+
-    '<p class="small">'+T('A point-and-click adventure based on the book of Acts')+'</p>'+
+    '<p class="small lede">'+T('A point-and-click adventure based on the book of Acts')+'</p>'+
     (sv?'<p class="go" data-cont="1">&#9656; '+T('Continue')+' &middot; '+T(CHAP[sv.ch].label)+' &middot; '+T(CHAP[sv.ch].title)+'</p>':'')+
     /* the farthest point, when it is not where Continue goes: someone who went back to try an earlier chapter finds the way forward again */
     (far?`<p class="${sv?'pick':'go'}" data-far="1">&#9656; ${T('Farthest point')} &middot; ${T(CHAP[far].label)} &middot; ${T(CHAP[far].title)}</p>`:'')+
-    '<div class="chs">'+Object.keys(CHAP).map((n,i)=>`<p class="${i||sv||far?'pick':'go'}" data-ch="${n}">&#9656; ${T(CHAP[n].label)} &middot; ${T(CHAP[n].title)}</p>`).join('')+'</div>'+
+    '<div class="chs">'+`<p class="${sv||far?'pick':'go'}" data-pro="1">&#9656; ${T('Prologue')} &middot; ${T(PRO.title)}</p>`+Object.keys(CHAP).map(n=>`<p class="pick" data-ch="${n}">&#9656; ${T(CHAP[n].label)} &middot; ${T(CHAP[n].title)}</p>`).join('')+'</div>'+
     '<p class="small">'+T('Click a chapter to begin. Returning? Use ENTER CODE, top right.')+'</p>'+
-    (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'');
+    (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'')+
+    (G.splash?'<p class="begin"><span class="go">'+T('Click to begin')+'</span></p>':'');
     if(art){art.textContent=name+' '+sub;art.setAttribute('role','img');art.setAttribute('aria-label',T('Paul of Tarsus: On the Roads of Rome'));
       art.style.width='calc(var(--s)*'+art.width/HR+'px)';art.style.height='calc(var(--s)*'+art.height/HR+'px)';ov.querySelector('h1').appendChild(art)}
     const l=ov.querySelector('.chs');l.onscroll=()=>chsFade(l);requestAnimationFrame(()=>chsFade(l))});
-  ov.onclick=e=>{const d=e.target.dataset||{};if(d.lang){SFX.click();return setLang(d.lang,1)}if(e.target.classList.contains('chs'))return;
-    if(e.target.closest('.langs'))return;if(d.cont)return resume();if(d.far)return resumeFar();startChapter(+d.ch||1)};codeBtn();G.ready=1}
+  const pick=e=>{const d=e.target.dataset||{};if(d.lang){SFX.click();return setLang(d.lang,1)}if(e.target.classList.contains('chs'))return;
+    if(e.target.closest('.langs'))return;if(d.cont)return resume();if(d.far)return resumeFar();if(d.pro)return startPrologue();startChapter(+d.ch||1)};
+  /* leave: the splash is over. The picture passes into the title's own (at once in a playthrough at speed), and the chapters come in */
+  const leave=()=>{if(!G.splash||!ov.classList.contains('splash'))return;G.splash=0;clearTimeout(tm);splashGo=null;sp.leave(own,G.speedAll>200?1:1800);
+      AU.amb=TITLE.amb;ov.classList.remove('splash','playing');ov.onclick=pick},
+    go=()=>{if(G.splash===1&&ov.classList.contains('splash')){G.splash=2;audioInit();sp.score.then=CHAP[TITLE.level].music;setScore(sp.score);ov.classList.add('playing');tm=setTimeout(leave,sp.turn*1000);kick()}else leave()},
+    /* kick: the overture begins with the click, not at the sequencer's next look: its first step is set at once, and again when a context that
+       was only just made says that it runs */
+    kick=()=>{const c=AU.ctx,on=()=>{if(AU.score===sp.score&&!AU.step&&c.state==='running'){AU.next=c.currentTime+.03;sched()}};if(!c)return;on();if(c.state!=='running'){const r=c.resume();if(r&&r.then)r.then(on,()=>{})}};
+  splashGo=sp?go:null;ov.onclick=sp?go:pick;codeBtn();G.ready=1}
 /* resumeFar: the title screen's farthest point. One that cannot be restored is left for the player to delete, as it is never dropped unasked. */
 async function resumeFar(){audioInit();const f=saves().far;if(f&&await restore(f.code)!==false)return;SFX.nope()}
 /* endScreen: a chapter's closing screen. o: title; text; based (its passages, and that the dialogue is imagined); extra (more lines for

@@ -72,6 +72,40 @@
  addEventListener('error',e=>L('JSERR '+e.message));addEventListener('unhandledrejection',e=>{if(e.reason!=='halt')L('REJ '+(e.reason&&e.reason.message||e.reason))});
  (async()=>{try{
   while(!G.ready)await wait(30);
+  /* The game opens on its opening picture (shared/splash.js), on every visit: the name over a tentmaker's bench by lamplight, silent, with
+     one line that asks for a click. That click starts the overture and nothing else; a second click, or the end of the melody, brings the
+     chapters, and the title's music follows the overture by itself. Every run passes through it here. The stop `splash` shows it. */
+  {const sp=SHARED.splash,cls=ov.classList,seen=e=>!!e&&+getComputedStyle(e).opacity>.9,own=CHAP[1].scenes.title;
+    ok(sp&&G.splash===1&&G.scene===sp.scene&&cls.contains('splash')&&cls.contains('title')&&!AU.score&&!AU.amb&&!G.room&&ov.querySelector('.begin').textContent===T('Click to begin'),
+      'the game opens on its opening picture: the name over the bench, silent, waiting for a click');
+    ok(seen(ov.querySelector('.begin'))&&seen(ov.querySelector('.lede'))&&seen(ov.querySelector('h1'))&&!seen(ov.querySelector('.chs'))&&!seen(ov.querySelector('.langs'))
+      &&[...ov.children].filter(e=>!e.matches('h1,.lede,.begin')).every(e=>{const c=getComputedStyle(e);return c.opacity==='0'&&c.animationName==='none'}),'the name, the line under it and "Click to begin" are seen; nothing else is yet, and Continue does not blink through');
+    {const b=ov.querySelector('.begin').getBoundingClientRect(),v=ov.getBoundingClientRect();if(b.left<v.left||b.right>v.right||b.bottom>v.bottom)tight.add('Click to begin')}
+    /* the picture: painted down to the foot of the window, brightest round the lamp, dark behind the name, and it does not flicker as a whole */
+    {const[a,ga]=mk(VW*HR,VT*HR),[b,gb]=mk(VW*HR,VT*HR);ga.scale(HR,HR);gb.scale(HR,HR);sp.scene(ga,0);sp.scene(gb,170);
+      const A=ga.getImageData(0,0,VW*HR,VT*HR).data,B=gb.getImageData(0,0,VW*HR,VT*HR).data,lum=(x,y,w,h)=>{let s=0;for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++){const k=(j*HR*VW*HR+i*HR)*4;s+=A[k]+A[k+1]+A[k+2]}return s/(3*w*h)};
+      let diff=0,far=0;for(let k=0;k<A.length;k+=4)if(A[k]!==B[k]||A[k+1]!==B[k+1]||A[k+2]!==B[k+2]){diff++;const x=(k/4)%(VW*HR)/HR,y=Math.floor(k/4/(VW*HR))/HR;if(Math.hypot(x-sp.lamp[0],y-sp.lamp[1])>30)far++}
+      const lamp=lum(sp.lamp[0]-20|0,sp.lamp[1]+2|0,40,14),top=lum(60,6,200,40),foot=lum(0,VT-6,VW,6);
+      ok(lamp>90&&top<60&&top>4&&foot>2&&lamp>top*2.5,'its picture is lit by the one lamp and dark behind the name (lamp '+Math.round(lamp)+', behind the name '+Math.round(top)+')');
+      ok(diff>0&&far===0,'only the flame moves, and the small glow round it: '+diff+' pixels change, none farther than 30 from the wick')}
+    ok(loopOf(sp.score)===160&&Math.abs(sp.len-26.4)<.01&&sp.turn<sp.len&&sp.turn>sp.len-5&&sp.score.tracks.every(t=>t.drone||t.drum||typeof INST[t.inst]==='function')&&sp.score.tracks.some(t=>t.inst==='horn')
+      &&sp.score.root===CHAP[1].music.root&&sp.score.scale.join()===CHAP[1].music.scale.join(),'the overture is ten bars in Chapter One\'s key, about 26 seconds, on voices the engine has, the horn among them');
+    halt('splash',()=>{ov.querySelectorAll('.go').forEach(g=>g.style.animation='none')});
+    /* that click is the press that wakes the sound. The sound itself is tested further down, from silence: here the call is only counted */
+    const wake=audioInit;let woke=0;window.audioInit=()=>{woke++};
+    ov.click();ok(woke>0&&G.splash===2&&AU.mood==='calm'&&TITLE.mood===CHAP[1].music.overture&&AU.score===sp.score&&sp.score.then===CHAP[1].music&&cls.contains('playing')&&cls.contains('splash')&&!G.room&&G.scene===sp.scene,'a click wakes the sound, starts the overture, and starts nothing else; the title\'s music will follow it quiet, without an overture of its own');
+    await wait(560);ok(!seen(ov.querySelector('.begin'))&&!seen(ov.querySelector('.chs')),'"Click to begin" goes, and the name stays alone over the picture while the overture plays');
+    /* the sequencer: a score that names another is played once, and that one follows it */
+    {const st=AU.step;AU.step=loopOf(sp.score)-2;stepOn(sp.score);const mid=AU.score===sp.score&&AU.step===loopOf(sp.score)-1;stepOn(sp.score);
+      ok(mid&&AU.score===CHAP[1].music&&AU.step===0&&AU.key===CHAP[1].music,'when the overture ends the title\'s music follows it, from its first bar');
+      AU.step=3;stepOn(AU.score);const loops=AU.score===CHAP[1].music&&AU.step===4;AU.step=loopOf(AU.score)-1;stepOn(AU.score);ok(loops&&AU.step===0&&AU.score===CHAP[1].music,'and that music plays round and round, as every other score does');
+      setScore(sp.score);AU.step=st}
+    const h0=ov.querySelector('h1').getBoundingClientRect().top;
+    ov.click();ok(G.splash===0&&!cls.contains('splash')&&!cls.contains('playing')&&AU.score===sp.score&&AU.amb===TITLE.amb&&!G.room,'a second click brings the chapters, and the overture plays on');
+    await wait(120);ok(G.scene===own&&sp.out&&Math.abs(ov.querySelector('h1').getBoundingClientRect().top-h0)<.5,'the picture has passed into the title\'s own, and the name has not moved');
+    /* from here on the title is tested as it stands, without waiting for its lines to fade in */
+    {const st=document.createElement('style');st.textContent='#overlay.title>*{transition:none!important}';document.head.appendChild(st)}
+    window.audioInit=wake;setScore(CHAP[1].music);ok(ov.onclick&&seen(ov.querySelector('.chs')),'the chapters are there to be clicked')}
   const srt=()=>G.inv.slice().sort().join(),nq=()=>document.querySelectorAll('#choices button').length;
   /* a choice is found by its English text (the button keeps it), or, for a line the level puts together, by the translation of a part of it */
   const isQ=(b,t)=>(b.dataset.src||'').includes(t)||b.textContent.includes(T.peek(t)||t);
@@ -97,10 +131,10 @@
   ok(G.lang===lang&&document.documentElement.lang===lang,'the game is in '+LANGS[lang].native+', as the address asks');fitVerbs();
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
     &&ov.textContent.includes('PAULUS VON TARSUS')&&$('#code').textContent==='CODE EINGEBEN'&&$('#mute').textContent.includes('TON AN')&&document.title.startsWith('Paulus'),'German on the title screen, in the panel and in the top bar');
-  if(!/[?&]keep=1/.test(location.search))ok(store('paul.save')===null&&!ov.querySelector('[data-cont]')&&ov.querySelector('[data-ch="1"]').classList.contains('go'),'a first visit has nothing to continue: Chapter One leads the list');
+  if(!/[?&]keep=1/.test(location.search))ok(store('paul.save')===null&&!ov.querySelector('[data-cont]')&&ov.querySelector('[data-pro="1"]').classList.contains('go'),'a first visit has nothing to continue: the Prologue leads the list');
   /* the title screen holds its whole list: nothing on it lies above or below the view, with eight chapters or more */
   const inOv=()=>{const r=ov.getBoundingClientRect();return[...ov.children].every(el=>{const q=el.getBoundingClientRect();return q.top>=r.top-1&&q.bottom<=r.bottom+1})};
-  ok(inOv()&&ov.querySelectorAll('[data-ch]').length===Object.keys(CHAP).length,'the title screen holds every chapter: '+Object.keys(CHAP).length);
+  ok(inOv()&&ov.querySelector('[data-pro="1"]')&&ov.querySelectorAll('[data-ch]').length===Object.keys(CHAP).length,'the title screen holds the prologue and every chapter: '+Object.keys(CHAP).length);
   /* The title screen alone uses the whole height: the status line and the panel give up their place, the view runs down to the foot of the
      window, and the title's picture is painted that tall. Its upper part is the wall's backdrop pixel for pixel, so that nothing moves
      when the title is left. */
@@ -205,6 +239,7 @@
       field=(g,i,x,y,w,h)=>{g.fillStyle=i%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,w-2,h-2)},
       spr=(o,key,dir,fr,talk,bow,ges)=>sprite(['cast',key,dir,fr||0,talk||0,bow||0,ges||0].join('|'),q=>person(q,0,0,o,dir,fr||0,talk||0,bow||0,ges||0,0),dir);
     let all=0;
+    await loadPrologue();
     for(const n of Object.keys(CHAP)){const had=new Set(+n===1?[]:Object.keys(LOOK));await loadLevel(+n);const ids=Object.keys(LOOK).filter(k=>!had.has(k));all+=ids.length;if(!ids.length)continue;
       const Z=3,cw=138,chh=396,cols=6,rows=Math.ceil(ids.length/cols),[c,g]=sheet(cols*cw,34+rows*chh);text(g,'Chapter '+n+': '+ids.length+' looks, three times enlarged',10,23,17,'#f4f0e6');
       ids.forEach((id,i)=>{const x=(i%cols)*cw,y=34+Math.floor(i/cols)*chh;field(g,i+Math.floor(i/cols),x,y,cw,chh);
@@ -226,12 +261,13 @@
        every look of every chapter. Each pose is as many pieces as the figure at rest, which is one; and a statue is the same picture whatever it
        is asked to do. cast-talk.png shows the frames: the heads six times enlarged, the figures three times. Look there, in every row, for a chin or
        a beard that has come apart from its face, for a hand that floats, and for crosses (CONTRIBUTING section 3). */
-    {const POSES=[[1,0,0],[2,0,0],[3,0,0],[4,0,0],[0,0,MV.dip],[0,0,MV.lift|MV.brow],[0,0,MV.fwd],[0,0,MV.back|MV.glance],[3,0,MV.dip],[4,0,MV.lift|MV.brow],[3,0,MV.back],[2,1,MV.fwd],[2,2,0],[0,3,0],[3,3,MV.dip],[2,1,MV.lean|MV.fwd],[4,2,MV.lean]],
-        ids=Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'),bad=[],apart=[],stone=[];let n=0;
+    {const POSES=[[1,0,0],[2,0,0],[3,0,0],[4,0,0],[0,0,MV.dip],[0,0,MV.lift|MV.brow],[0,0,MV.fwd],[0,0,MV.back|MV.glance],[3,0,MV.dip],[4,0,MV.lift|MV.brow],[3,0,MV.back],[2,1,MV.fwd],[2,2,0],[0,3,0],[3,3,MV.dip],[2,1,MV.lean|MV.fwd],[4,2,MV.lean],[0,4,0],[0,5,0]],
+        ids=Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'),bad=[],apart=[],stone=[],seatBad=[];let n=0;
       for(const id of ids){const o=LOOK[id],at=(t,g,m,d)=>sprite(['pose',id,d<0?'-1':'1',t,g,m].join('|'),q=>person(q,0,0,o,d,0,t,0,g,0,m),d),rest=at(0,0,0,1),r0=parts(rest);if(r0!==1)apart.push(id+' ('+r0+')');
-        for(const[t,g,m]of POSES)for(const d of m&MV.lean?[1,-1]:[1]){n++;const c=at(t,g,m,d);if(parts(c)!==r0)bad.push(id+' '+[t,g,m,d]);if(o.stone&&!g&&d>0&&c.toDataURL()!==rest.toDataURL())stone.push(id)}}
+        for(const[t,g,m]of POSES)for(const d of m&MV.lean?[1,-1]:[1]){n++;const c=at(t,g,m,d);if(parts(c)!==r0)bad.push(id+' '+[t,g,m,d]);if(o.stone&&!g&&d>0&&c.toDataURL()!==rest.toDataURL())stone.push(id)}
+        if(!o.stone)for(const bw of[0,1]){const sc=sprite(['seat',id,bw].join('|'),q=>person(q,0,0,o,1,-1,0,bw,0,bw,0),1);if(parts(sc)!==1)seatBad.push(id+' seat '+bw)}}
       ok(!apart.length,'every figure at rest is one piece: '+ids.length+' looks'+(apart.length?'. IN PIECES: '+apart.join(', '):''));
-      ok(!bad.length,`speaking: ${n} poses of mouth, head and hand, and none comes apart`+(bad.length?'. IN PIECES: '+bad.slice(0,12).join('; '):''));
+      ok(!bad.length&&!seatBad.length,`speaking, seated and leading by the hand: ${n} poses of mouth, head and hand, plus seated bowed/upright, and none comes apart`+(bad.length?'. IN PIECES: '+bad.slice(0,12).join('; '):'')+(seatBad.length?'. SEAT: '+seatBad.join(', '):''));
       ok(ids.some(k=>LOOK[k].stone)&&!stone.length,'a statue never moves: its picture is the same with any mouth and any head'+(stone.length?'. MOVED: '+[...new Set(stone)].join(', '):''));
       /* the gestures that the chapters direct: each is one the engine knows, and there are as many as the maintainer has looked at (docs/look-and-sound.md lists them) */
       {const tab=Object.keys(CHAP).map(k=>CHAP[k].acting||{}),kinds=new Set(tab.flatMap(t=>Object.keys(t))),count=k=>tab.reduce((s,t)=>s+(t[k]||[]).length,0);
@@ -240,11 +276,18 @@
         WHO=[['a bearded man',paulLook(7)],['a long beard',{...B,hair:'#969088',beard:'#a49e96',brow:'#78726c',grey:'#c8c2ba',bald:1,longBeard:1,long:1,cloak:'#6a5a7a'}],['a veiled woman',{...fm,veil:'#6a2a5a'}],['hair bound',{...fm,hair:'#3a2616',fem:1,band:'#a8402c',longSleeve:0}],['a boy',{...B,hair:'#34241c',h:1}]],
         HD=[['shut',0,0],['parted',1,0],['open',2,0],['wide, chin down',3,0],['round, chin down',4,0],['head dipped',2,MV.dip],['lifted, brows up',2,MV.lift|MV.brow],['forward',0,MV.fwd],['back, a glance',0,MV.back|MV.glance]],
         BD=[['at rest',0,0,0],['half raised',2,2,0],['raised',2,1,0],['on the chest',0,3,0],['leaning in',3,1,MV.lean|MV.fwd]],Z=6,cw=160,chh=226,bw=150,bh=392,[c,g]=sheet(HD.length*cw,34+WHO.length*chh+bh);
-      text(g,'Speaking: the mouth, the chin and the head, six times enlarged; below, the far hand and the lean, three times',10,23,17,'#f4f0e6');
+      text(g,'Speaking: the mouth, the chin and the head, six times enlarged; below, the far hand, seated and led, three times',10,23,17,'#f4f0e6');
       WHO.forEach(([nm,o],r)=>{const f=o.veil||o.fem,top=4+(o.h?19:23)+(o.h?13:16)+3+(o.h?22:f?24:26)+20;HD.forEach(([cap,t,m],i)=>{const x=i*cw,y=34+r*chh;field(g,i+r,x,y,cw,chh);
         cut(g,sprite(['talk',r,t,m].join('|'),q=>person(q,0,0,o,1,0,t,0,0,0,m),1),-13,-top-7,26,34,x+2,y+4,Z);text(g,i?cap:cap+': '+nm,x+5,y+chh-7,11)})});
-      [WHO[0],WHO[2]].forEach(([nm,o],r)=>BD.forEach(([cap,t,ge,m],i)=>{const k=r*BD.length+i;if(k>=Math.floor(HD.length*cw/bw))return;const x=k*bw,y=34+WHO.length*chh;field(g,k,x,y,bw,bh);
+      [WHO[0],WHO[2]].forEach(([nm,o],r)=>BD.forEach(([cap,t,ge,m],i)=>{const k=r*BD.length+i;if(k>=7)return;const x=k*bw,y=34+WHO.length*chh;field(g,k,x,y,bw,bh);
         cut(g,sprite(['talkb',r,t,ge,m].join('|'),q=>person(q,0,0,o,1,0,t,0,ge,0,m),1),-25,-124,50,125,x,y,3);text(g,cap,x+5,y+bh-7,11)}));
+      /* the two new prologue poses in columns 7 and 8: a man seated with bowed head, and a man led by the hand */
+      {const y=34+WHO.length*chh;
+        field(g,7,7*bw,y,bw,bh);cut(g,sprite('talkb|seat',q=>person(q,0,0,paulLook(1),1,-1,0,1,0,1,0),1),-25,-124,50,125,7*bw,y,3);text(g,'seated, bowed',7*bw+5,y+bh-7,11);
+        field(g,8,8*bw,y,bw,bh);
+        cut(g,sprite('talkb|led1',q=>person(q,0,0,paulLook(1),1,0,0,0,5,0,0),1),-25,-124,50,125,8*bw-24,y,3);
+        cut(g,sprite('talkb|led2',q=>person(q,0,0,LOOK.pro_m1,1,0,0,0,4,0,0),1),-25,-124,50,125,8*bw+33,y,3);
+        text(g,'led by the hand',8*bw+5,y+bh-7,11)}
       SHEETS['cast-talk']=c.toDataURL()}
     /* walking (person's fr from 4 up): the sixteen moments of a stride at a full step, and every second one at a shorter step and at a half step, for
        every look that is not a statue. Each is one piece. The three frames of the old walk are three of them. cast-walk.png shows every second
@@ -279,8 +322,21 @@
       SHEETS['cast-closeup']=c.toDataURL()}
     window.SHEETS=SHEETS;halt('cast')}
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
-  /* the title card at full length, and a room change caught half-way through its cross-fade */
+  /* the title card at full length, the prologue stops, and a room change caught half-way through its cross-fade */
   if(stop==='card'){await loadLevel(1);AU.key=CHAP[1].music;G.speedAll=0;clearInterval(sk);showCard(1);await wait(300);halt('card')}
+  if(/^pro(card|1|2|3|4|5|7|8|8b|9)$/.test(stop)){await loadLevel(1);await loadPrologue();ov.className='';ov.onclick=null;setChapter(1);G.inPro=1;$('#chname').textContent=T(PRO.name);$('#skip').style.display='';G.busy=true;lock(true);status();clearInterval(sk);G.speedAll=0;
+    if(stop==='procard'){showCard('prologue');await wait(300);halt('procard')}
+    const S=PRO.scenes;
+    if(stop==='pro1'){G.scene=S.stones;narr('Outside Jerusalem, a disciple of Jesus named Stephen was put to death with stones. Those who testified against him laid their outer garments at the feet of a young man called Saul. (Acts 7:58)',{dur:9000});await wait(200);halt('pro1')}
+    if(stop==='pro2'){G.scene=S.zeal;narr('A Pharisee, zealous for the traditions of his fathers beyond many of his own age, he believed he was serving Jehovah, the God of his forefathers. (Acts 22:3; Galatians 1:14; Philippians 3:5)',{dur:9000});await wait(200);halt('pro2')}
+    if(stop==='pro3'){G.scene=S.door;narr('Still threatening the disciples with death, he asked the high priest for letters to the synagogues of Damascus, to bring bound to Jerusalem any he found who belonged to The Way, as the disciples were known. (Acts 9:1, 2)',{dur:9000});await wait(200);halt('pro3')}
+    if(stop==='pro4'){G.pro={x:128,d:20,blind:0};G.scene=S.road;narr('After days on the road he drew near to Damascus, about midday. (Acts 9:3; 22:6)',{dur:9000});await wait(200);halt('pro4')}
+    if(stop==='pro5'){G.pro={x:148,d:40,blind:0};G.scene=S.road;await fade(1,60,1);narr('When he asked who was speaking, the voice answered that it was Jesus, whom he was persecuting, and told him to get up and go into the city, where he would be told what he must do. (Acts 9:5, 6)',{dur:9000});await wait(200);
+      ok(G.white===1&&$('#speech .line.white')&&(!SHARED.scroll||SHARED.scroll.state==='down'),'on the white screen the words stand in dark ink, and the scroll stays down');halt('pro5')}
+    if(stop==='pro7'){G.pro={x:142,d:16,blind:1};G.scene=S.road;narr('Saul rose from the ground, and though his eyes were open he could see nothing. So they took him by the hand and led him into Damascus. (Acts 9:8; 22:11)',{dur:9000});await wait(200);halt('pro7')}
+    if(stop==='pro8'){G.pro={ax:38,afr:0,hand:0,sight:0};G.scene=S.judas;narr("The Lord sent a disciple named Ananias to him. Ananias had heard how much harm Saul had done in Jerusalem, but he was told to go, because this man had been chosen to carry the Lord's name to the nations, to kings, and to the sons of Israel. (Acts 9:10-15)",{dur:9000});await wait(200);halt('pro8')}
+    if(stop==='pro8b'){G.pro={ax:174,afr:0,hand:1,sight:1};G.scene=S.judas;narr("Ananias came in, laid his hands on him, and called him brother. At once something like scales fell from Saul's eyes; he saw again, rose, and was baptized. (Acts 9:17, 18)",{dur:9000});await wait(200);halt('pro8b')}
+    if(stop==='pro9'){G.scene=CHAP[1].scenes.wall;G.end={};narr('Right away he began preaching in the synagogues of Damascus that Jesus is the Son of God, proving that he is the Christ, the one whom God had promised; and all who heard him were astonished. (Acts 9:20-22)',{dur:9000});await wait(200);halt('pro9')}}
   /* one of Paul's thoughts, in italics, over the busy square of Antioch */
   if(stop==='thought'){await loadLevel(3);applyState(decode(codeOf(3,0)));await idle();enterRoom('antioch',...CHAP[3].ent.antioch);clearInterval(sk);
     say(PC(),'She has given more than thread. And now I can sew.',TH);await wait(300);halt('thought')}
@@ -403,7 +459,7 @@
      Continue and the farthest point, and then the box scrolls: its far edge fades while more lies beyond it, and a click between entries
      starts nothing. The stop `titlescroll` shows that title, scrolled to its end. */
   {const fade=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))),l0=ov.querySelector('.chs');
-    ok(l0&&[...l0.children].every(p=>p.dataset.ch)&&l0.children.length===Object.keys(CHAP).length,'the chapters sit in a list of their own');
+    ok(l0&&[...l0.children].every(p=>p.dataset.ch||p.dataset.pro)&&l0.children.length===Object.keys(CHAP).length+1,'the prologue and the chapters sit in a list of their own');
     if(!/[?&]keep=1/.test(location.search)){
     await fade();ok(!l0.classList.contains('up')&&!l0.classList.contains('down'),'on a first visit neither edge of the list fades: there is nothing beyond it');
     store('paul.save',codeOf(2,0));keepSaves({far:{code:codeOf(3,0),t:1}});ov.draw();await fade();
@@ -587,7 +643,7 @@
     L(sessionStorage.getItem('plog').trimEnd());const c=sessionStorage.getItem('pcode'),inv=sessionStorage.getItem('pinv');
     const cont=ov.querySelector('[data-cont]');
     ok(!G.room&&ov.classList.contains('on')&&store('paul.save')===c,'a new visit starts on the title screen, and the save is still there');
-    ok(cont&&ov.querySelector('p.go,p.pick')===cont&&ov.querySelector('p.go')===cont&&!ov.querySelector('[data-ch].go')&&cont.textContent.includes(T('Continue'))&&cont.textContent.includes(T('Chapter One'))&&cont.textContent.includes(T('Escape from Damascus')),
+    ok(cont&&ov.querySelector('p.go,p.pick')===cont&&ov.querySelector('p.go')===cont&&!ov.querySelector('[data-ch].go,[data-pro].go')&&cont.textContent.includes(T('Continue'))&&cont.textContent.includes(T('Chapter One'))&&cont.textContent.includes(T('Escape from Damascus')),
       'the title offers Continue first, and names the chapter');fitVerbs();{const r=cont.getBoundingClientRect(),v=ov.getBoundingClientRect();if(cont.scrollWidth>cont.clientWidth+1||r.left<v.left||r.right>v.right)tight.add('Continue: '+cont.textContent)}
     ok(ov.querySelectorAll('[data-ch]').length===Object.keys(CHAP).length,'every chapter is still listed');
     ok(inOv(),'and the list still fits the screen, with the line that offers to continue');
@@ -642,7 +698,7 @@
       store('paul.saves','{not json');ok(sv().far===null&&sv().slots.every(e=>e===null),'a damaged paul.saves reads as empty');
       store('paul.saves',JSON.stringify({far:{code:'XXX-XXX',t:1},slots:[{code:c2,t:1},{code:'nonsense'}]}));ok(!sv().far&&sv().slots[0].code===c2&&!sv().slots[1],'an entry that is not a valid code reads as empty, and the rest is kept');
       store('paul.saves',null)}
-    for(const bad of['garbage','XXX-XXX',w.slice(0,-1)+(w.slice(-1)==='A'?'B':'A'),'']){store('paul.save',bad);await boot();ok(!ov.querySelector('[data-cont]')&&ov.querySelector('[data-ch="1"]').classList.contains('go'),'a damaged save is not offered: '+JSON.stringify(bad))}
+    for(const bad of['garbage','XXX-XXX',w.slice(0,-1)+(w.slice(-1)==='A'?'B':'A'),'']){store('paul.save',bad);await boot();ok(!ov.querySelector('[data-cont]')&&ov.querySelector('[data-pro="1"]').classList.contains('go'),'a damaged save is not offered: '+JSON.stringify(bad))}
     const lost=localStorage.setItem;Storage.prototype.setItem=()=>{throw new Error('full')};autosave('x');ok(G.saved===false,'a browser that will not store anything is no problem');Storage.prototype.setItem=lost;
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ---------------- Chapter Seven ---------------- */
@@ -1948,7 +2004,41 @@
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(!C3&&!C4&&!C5&&!C6&&!HUB){
-  ov.click();await idle();ok(G.room==='workshop'&&!G.busy,'intro ends in workshop');
+  /* Prologue ("The Road to Damascus"): only when stop==='all', test skipping the whole prologue with SKIP, then playing the whole prologue through into Chapter One */
+  if(stop==='all'){
+    /* 1. The overture on the title screen cross-fades from 'ancient' to 'calm' at bar 11 (step 160), and silenceNow() cuts all tracks and beds at once */
+    {const sc0=AU.score,m0=AU.mood,st0=AU.step;AU.score=CHAP[1].music;AU.mood='ancient';
+      playStep(159,AU.ctx.currentTime+.05);const before=AU.mood;playStep(160,AU.ctx.currentTime+.1);const after=AU.mood;
+      silenceNow();const cutM=AU.mood,cutOn=AU.mix.tr.every(x=>!x.on&&x.off>FADEN);
+      AU.score=sc0;AU.mood=m0;AU.step=st0;
+      ok(before==='ancient'&&after==='calm'&&cutM==='none'&&cutOn,'opening theme: ancient overture cross-fades to calm at bar 11, and silenceNow cuts all tracks at once')}
+    /* 2. Starting the Prologue and skipping it as a whole via the top-bar SKIP button */
+    heard.length=0;document.querySelector('#overlay [data-pro="1"]').click();
+    for(let i=0;i<200&&!(G.inPro&&PRO.scenes&&G.scene===PRO.scenes.stones);i++)await wait(20);
+    const inPro1=G.inPro&&$('#skip').style.display!=='none'&&$('#skip').textContent===T('SKIP')&&$('#chname').textContent===T(PRO.name)&&AU.mood==='stones';
+    $('#skip').click();await idle();
+    ok(inPro1&&G.room==='workshop'&&!G.busy&&!G.inPro&&$('#skip').style.display==='none'&&
+      heard.includes(T('Saul of Tarsus, later known as the apostle Paul, once came to this city to arrest the disciples of Jesus.'))&&
+      !heard.includes(T('He fell to the ground and heard a voice call him twice by name, asking why he was persecuting him. (Acts 9:4)')),
+      'SKIP in the top bar skips the whole prologue and plays Chapter One\'s full opening into the workshop');
+    /* 3. Playing the whole Prologue through from the title screen into Chapter One */
+    G.room=null;G.scene=null;await title();
+    let sawWhite=0,scrollOnWhite=0;const moods=new Set();
+    const obs=new MutationObserver(()=>{if(G.white&&$('#speech .line.white')){sawWhite++;if(SHARED.scroll&&SHARED.scroll.state!=='down')scrollOnWhite++}if(G.inPro&&AU.mood)moods.add(AU.mood)});
+    obs.observe($('#speech'),{childList:true});
+    heard.length=0;document.querySelector('#overlay [data-pro="1"]').click();await idle();obs.disconnect();
+    ok(G.room==='workshop'&&!G.busy&&!G.inPro&&$('#skip').style.display==='none'&&sawWhite===3&&!scrollOnWhite&&
+      ['stones','tense','none','harp','ancient'].every(m=>moods.has(m))&&
+      heard.includes(T('Outside Jerusalem, a disciple of Jesus named Stephen was put to death with stones. Those who testified against him laid their outer garments at the feet of a young man called Saul. (Acts 7:58)'))&&
+      heard.includes(T('When he asked who was speaking, the voice answered that it was Jesus, whom he was persecuting, and told him to get up and go into the city, where he would be told what he must do. (Acts 9:5, 6)'))&&
+      heard.includes(T("Ananias came in, laid his hands on him, and called him brother. At once something like scales fell from Saul's eyes; he saw again, rose, and was baptized. (Acts 9:17, 18)"))&&
+      heard.includes(T('Right away he began preaching in the synagogues of Damascus that Jesus is the Son of God, proving that he is the Christ, the one whom God had promised; and all who heard him were astonished. (Acts 9:20-22)'))&&
+      heard.includes(T('Damascus, about 36 C.E.'))&&
+      !heard.includes(T('Saul of Tarsus, later known as the apostle Paul, once came to this city to arrest the disciples of Jesus.')),
+      'Prologue plays through all nine steps (white screen in dark ink without the scroll, all five moods) and runs into Chapter One without repeating its two background lines');
+  }else{
+    ov.click();await idle();ok(G.room==='workshop'&&!G.busy,'intro ends in workshop');
+  }
   {const v=vp.getBoundingClientRect(),k=v.width/320,shown=el=>getComputedStyle(el).display!=='none';
     ok(!$('#wrap').classList.contains('title')&&Math.abs(v.height/k-VH)<.5&&shown($('#status'))&&shown($('#panel')),'in play the view is '+Math.round(v.height/k)+' room pixels high, with the status line and the panel under it: only the title is taller')}
   ok(!SHARED.map&&!SHARED.tablets,'the map and the tablets are not loaded until they are needed');

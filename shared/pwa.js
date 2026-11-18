@@ -7,7 +7,7 @@
                               (the playtest checks this). */
 SHARED.pwa=(()=>{
 "use strict";
-const FILES=['shared/logo.js','shared/map.js','shared/pwa.js','shared/scroll.js','shared/tablets.js'];
+const FILES=['shared/logo.js','shared/map.js','shared/pwa.js','shared/scroll.js','shared/splash.js','shared/tablets.js'];
 const SKY=['#2c1c3e','#161026','#0b0812'];
 /* the icon at a size in pixels: a gold P on a night sky. pad is the margin all round, as a part of the size; the 'maskable' icon is
    given a wide one, because a phone may cut it to a circle or a rounded square. */
@@ -21,9 +21,9 @@ function icon(size,pad){
   g.imageSmoothingEnabled=false;g.drawImage(p,x0,y0,w,h,Math.round((size-w*k)/2),Math.round((size-h*k)/2),Math.round(w*k),Math.round(h*k));
   return c.toDataURL('image/png')}
 /* every file the game may ask for, for the service worker to keep: the page, the chapters, the shared files, each language's files */
-function files(CHAP,LANGS,base){const u=[base];
+function files(CHAP,LANGS,base){const u=[base,'levels/prologue.js'];
   Object.keys(CHAP).forEach(n=>u.push(CHAP[n].src));u.push(...FILES);
-  Object.keys(LANGS).forEach(l=>{const d=LANGS[l].dir;if(d)u.push(d+'main.js',...Object.keys(CHAP).map(n=>d+'chapter'+n+'.js'))});
+  Object.keys(LANGS).forEach(l=>{const d=LANGS[l].dir;if(d)u.push(d+'main.js',d+'prologue.js',...Object.keys(CHAP).map(n=>d+'chapter'+n+'.js'))});
   return u}
 async function install({CHAP,LANGS}){
   const base=new URL('./',location.href).href,abs=u=>new URL(u,base).href;

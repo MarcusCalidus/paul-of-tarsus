@@ -78,6 +78,8 @@ pisidia week
 plateau closed8
 pointer pointer
 pray pray
+pro-judas pro8b
+pro-wall pro1
 psalm psalm9
 questions myron
 reading reading
@@ -87,6 +89,7 @@ road road
 saves saves
 scroll scroll
 speak speak
+splash splash
 stride stride
 scrolltable row10
 seamap seamap10

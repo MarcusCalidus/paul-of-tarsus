@@ -73,6 +73,7 @@ const BOOKS='Genesis|Exodus|Leviticus|Numbers|Deuteronomy|Joshua|Judges|Kings|Ch
 const RULES={de:[[/"/,'a straight quotation mark (German uses „ and “)'],[/\bC\.E\.|B\.C\.E\./,'C.E. or B.C.E. (German uses u. Z. and v. u. Z.)']]};
 export function checkTexts(){
   const parts={main:[engineSource(),...['tablets','map'].map(n=>fs.readFileSync(path.join(ROOT,'shared',n+'.js'),'utf8'))]};
+  if(fs.existsSync(path.join(ROOT,'levels','prologue.js')))parts.prologue=[fs.readFileSync(path.join(ROOT,'levels','prologue.js'),'utf8')];
   for(const f of fs.readdirSync(path.join(ROOT,'levels')).sort()){const m=f.match(/^chapter(\d+)\.js$/);if(m)parts[m[1]]=[fs.readFileSync(path.join(ROOT,'levels',f),'utf8')]}
   const text={},lit={};for(const k in parts){text[k]=new Set();lit[k]=new Set();for(const s of parts[k]){for(const x of scan(s))text[k].add(x.s);for(const t of literals(s))lit[k].add(t.v)}}
   const out=[];let failed=false;const ok=(c,m,list)=>{if(!c)failed=true;out.push((c?'ok   ':'FAIL ')+m+(c?'':'\n       '+list.slice(0,12).map(s=>JSON.stringify(s)).join('\n       ')+(list.length>12?`\n       ... ${list.length-12} more`:'')))};
