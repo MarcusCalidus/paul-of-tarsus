@@ -26,7 +26,7 @@
 | Skip a line of dialogue | Click the scene or press Space |
 | Change the language | Click **English** or **Deutsch** on the title screen, or the **EN**/**DE** button in the top bar at any time |
 | Keyboard | `1`-`6` verbs, `P` pray, `M` mute, `Tab` names, `C` switch character, `Esc` options |
-| Options | Click **≡** in the top right or press `Esc` to set the music and effects volume, the text speed, **NAMES** and the language, or to go back to the title screen. It opens between scenes, not during a cutscene or a conversation. The options are kept in your browser apart from your safe point (`paul.opts`). |
+| Options | Click **≡** in the top right or press `Esc` to set the music and effects volume, the text speed, **NAMES** and the language, to save and load games (see [Saved games](#saved-games)), or to go back to the title screen. It opens between scenes, not during a cutscene or a conversation. The options are kept in your browser apart from your safe point (`paul.opts`). |
 | Skip the title card | A chapter opens with its title card for a few seconds. Click or press Space or `Esc` to go on at once. |
 | Sound | It starts with your first click, tap or key. **♫ SOUND ON** (or `M`) switches it off and on, and the options menu adjusts music and effects levels independently. On iPhone and iPad the game respects Silent Mode, and Safari cannot tell the game whether it is on, so a short note at the top right says where to look when the sound starts and whenever you switch it on. |
 
@@ -74,4 +74,16 @@ Chapter Six, Seven, Eight and Nine codes are nine characters too (`6-XXX-XXX-XXX
 ![Safe-point code](screenshots/code.png)
 
 ![Returning: the title screen offers to continue](screenshots/continue.png)
+
+## Saved games
+
+Open the options (**≡** or `Esc`) and choose **Saved games** to see what this browser keeps:
+
+- **Farthest point**: the farthest you have played: the latest chapter, and within it the point with the most of the story done. Going back to an earlier chapter to try something never moves it back, and finishing a chapter moves it to the start of the next. Only you can delete it. A point you return to by typing a code does not count, but playing on from there does.
+- **Last point**: where you were last, the same point **Continue** returns to.
+- **Slot 1** to **Slot 4**: four points of your own. **Save** keeps the point you are at, with its chapter and the date and time.
+
+Saving over a kept game, deleting one, and loading one while a game is in play each ask first, in the row itself. On the title screen the slots and both points can be loaded too, and when the farthest point is not where **Continue** goes, the title screen offers it as well. Like the last point, all of this lives only in this browser; a safe-point code is still what carries your place anywhere else.
+
+![Saved games](screenshots/saves.png)
 

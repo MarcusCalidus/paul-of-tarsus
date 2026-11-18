@@ -1,6 +1,6 @@
 # Contributing
 
-Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Witness families. The rules below apply to everyone who changes it: the maintainer, contributors, anyone who forks the game to improve it, and AI coding assistants working in this repository. When a new rule is agreed, it is added to this file in the same change.
+Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Witness families. The rules below apply to everyone who changes it: the maintainer, contributors who propose changes, and AI coding assistants working in this repository. When a new rule is agreed, it is added to this file in the same change.
 
 ## 1. Scripture and history
 
@@ -93,7 +93,7 @@ The [Terms of Use](https://www.jw.org/en/terms-of-use/) of jw.org (which cover i
 - `index.html` is the engine. Each chapter is one file, `levels/chapterN.js`, loaded only when that chapter is played. It holds the chapter's music, artwork, cast, items, rooms, dialog, cutscenes and prayer hints. A new chapter adds its file and one line to the `CHAP` manifest. Anything shared between chapters goes in its own file, also loaded on demand, not in a chapter file or the engine.
 - The game must keep running when `index.html` is opened straight from disk: no build step, no server and no dependencies.
 - The game is also an installable app that plays offline (`sw.js`, `shared/pwa.js`). It loads its service worker only over http(s), so it still runs from disk. Its icon and manifest are made in code like everything else: no icon or manifest file. A new file in `shared/` goes on the offline list in `shared/pwa.js`; `node tools/playtest.mjs pwa` checks it.
-- Safe-point codes are a promise to players. Every code that works today must keep working. The browser's autosave (`localStorage`, key `paul.save`) is that same code and nothing else, so the promise covers it: never keep other state there without a format the decoder can tell apart from the code. If a change needs more state, add a new code format that the decoder can tell apart from the old one. Never reorder a chapter's `flags`, `rooms` or `share`; only append to them, within the widths the code format reserves. Player options (volumes, text speed) live in their own key (`paul.opts`), separate from `paul.save`.
+- Safe-point codes are a promise to players. Every code that works today must keep working. The browser's autosave (`localStorage`, key `paul.save`) is that same code and nothing else, so the promise covers it: never keep other state there without a format the decoder can tell apart from the code. If a change needs more state, add a new code format that the decoder can tell apart from the old one. Never reorder a chapter's `flags`, `rooms` or `share`; only append to them, within the widths the code format reserves. Player options (volumes, text speed) live in their own key (`paul.opts`), separate from `paul.save`. Saved games (the farthest point, the last point's time and the four slots) live in `paul.saves`, and every entry in it is a safe-point code, so the same promise covers each one. The farthest point is never overwritten by a point that is not farther, and only the player deletes it.
 
 ## 6. Testing and documentation
 
@@ -118,3 +118,10 @@ The game is written in English and plays in German too. The English text stays i
 - Names in the status line ("Use awl with torn awning") stand without an article. In a language with cases, choose names that read correctly after every verb, such as German compounds ("Vorratskorb (verstärkt)", not "verstärkter Korb").
 - A line that is sung is written as its notes, syllable by syllable, each with the vowel of its syllable. The vowels and the rhythm follow the words on the screen, so they are language data: each language gives its own under the same key, as it gives the line itself, and the playtest checks that it does.
 - Check every changed scene in each language: German is longer than English, and text must not overflow its box or cross a line on the map.
+
+## 9. License
+
+- The game is not open source. [LICENSE](LICENSE) lets people play it, download it to play on their own devices, read its code, change their own copy for private use and propose changes to this repository; it does not let them publish, host or sell a copy or a changed version, or use the name "Paul of Tarsus" for another game.
+- A fork is only for preparing a pull request to this repository. It is not published as a website, for example with GitHub Pages.
+- Whoever proposes a change grants the maintainer the right to use, change, publish and relicense it (LICENSE, section 3). Do not propose anything you have no right to give.
+- Code contributed under the MIT License before 18 November 2026 keeps its MIT notice in LICENSE.

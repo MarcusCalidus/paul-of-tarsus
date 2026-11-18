@@ -64,7 +64,7 @@ There is no build step: `index.html` is the engine and `levels/chapterN.js` hold
 
 ## Contributing
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing the game. It holds the rules every change must follow: Bible accounts told in your own words and checked against the New World Translation (Study Edition), historical details checked against jw.org and wol.jw.org without copying anything from them, no violence, deceit or miracle shortcuts, no crosses, and the art, audio, code and save-code rules. The same rules apply in a fork. AI coding assistants find them through [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md).
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing the game. It holds the rules every change must follow: Bible accounts told in your own words and checked against the New World Translation (Study Edition), historical details checked against jw.org and wol.jw.org without copying anything from them, no violence, deceit or miracle shortcuts, no crosses, and the art, audio, code and save-code rules. AI coding assistants find them through [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md).
 
 ## Credits
 
@@ -72,4 +72,4 @@ Design, code, art and music by Marco Warm, built with Claude.
 
 ## License
 
-Copyright © 2026 Marco Warm. Released under the [MIT License](LICENSE).
+Copyright © 2026 Marco Warm. All rights reserved. The source is public, but the game is not open source: you may play it, download it to play on your own devices, read its code, change your own copy for private use and propose changes as pull requests, but not publish, host or sell a copy or a changed version, or use its name for another game. Contributions are made under the terms in [LICENSE](LICENSE). Versions released before 18 November 2026 were under the MIT License.

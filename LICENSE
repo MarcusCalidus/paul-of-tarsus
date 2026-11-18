@@ -1,21 +1,96 @@
-MIT License
+Paul of Tarsus: On the Roads of Rome
+Copyright (c) 2026 Marco Warm. All rights reserved.
 
-Copyright (c) 2026 Marco Warm
+The source code of this game is public so that it can be read, played and
+improved together. It is not open source. "The game" below means everything in
+this repository: the code, the artwork and music it paints and synthesizes,
+the text in every language, and the documentation.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+1. What you may do
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+   a. Play. You may play the game at its official address,
+      https://paul-of-tarsus.theunknownones.net/, install it as an app from
+      there, and download an unchanged copy to play on your own devices. All
+      of this is free of charge.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+   b. Read. You may read the source code and the documentation.
+
+   c. Propose changes. You may copy the game and change it only to prepare a
+      change that you propose to the official repository,
+      https://github.com/MarcusCalidus/paul-of-tarsus, as a pull request. This
+      includes a fork on GitHub and running your changed copy on your own
+      computer to test it. A change is proposed under the rules in
+      CONTRIBUTING.md.
+
+   d. Change your own copy. You may change a copy for your own private use,
+      for example for your family or to try out an idea, as long as you do
+      not pass it on or put it online.
+
+   e. Link. You are welcome to share links to the official address and to the
+      official repository.
+
+2. What you may not do
+
+   Anything not allowed in section 1 needs the written permission of the
+   copyright holder. In particular, you may not:
+
+   a. publish, host or pass on a copy of the game, changed or unchanged,
+      anywhere other than as described in section 1. A fork is only a
+      place to prepare a pull request: it must not be published as a
+      website, for example with GitHub Pages;
+   b. publish a changed version of the game, or a game built from its code,
+      art, music or text;
+   c. use the game or any part of it commercially: sell it, charge for it,
+      show advertising with it, or include it in a paid product or service;
+   d. use the name "Paul of Tarsus" for another game, or present a copy or a
+      changed version as the official game.
+
+3. Contributions
+
+   When you propose a change (a pull request, a patch, a translation, a text or
+   any other contribution), you grant Marco Warm a worldwide, free of charge,
+   perpetual and irrevocable right to use, change, publish and sublicense it,
+   as part of the game or otherwise, under these terms or any other license he
+   chooses. You confirm that the contribution is your own work, or that you
+   have the right to grant this, and that it contains no material that
+   CONTRIBUTING.md forbids. Contributors are named in the credits on request.
+
+4. No warranty
+
+   THE GAME IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE GAME OR THE USE OR OTHER DEALINGS IN
+   THE GAME.
+
+5. Earlier versions
+
+   Until 18 November 2026 the game was released under the MIT License. Copies
+   obtained before that date keep the rights the MIT License gave for them.
+   These terms apply to every later version.
+
+   Some code was contributed under the MIT License, by Benjamin Schwarze
+   (commit f8c8e15, names in the top bar on touch screens). For that code the
+   following notice applies:
+
+   Copyright (c) 2026 Benjamin Schwarze
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
