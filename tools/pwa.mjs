@@ -28,6 +28,9 @@ export async function checkPwa({send,ev,sleep,root,out}){
     await send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:-1,uploadThroughput:-1});
     await send('Page.navigate',{url:url+'?lang=de'});await sleep(4000);
     ok(/TARSUS/.test(await ev("(document.querySelector('#overlay')||{}).textContent||''")),'with no network the game starts from what was kept, in German');
+    /* the opening picture comes from what was kept too (shared/splash.js); two clicks pass it */
+    ok(await ev("!!SHARED.splash&&G.splash===1&&document.querySelector('#overlay').classList.contains('splash')"),'with no network the game opens on its opening picture');
+    await ev("document.querySelector('#overlay').click(),document.querySelector('#overlay').click(),1");
     await ev("document.querySelector('#overlay [data-ch=\"9\"]')&&document.querySelector('#overlay [data-ch=\"9\"]').click(),1");await sleep(3000);
     ok(await ev("!!(window.CHAP&&CHAP[9].ready)||CHAP[9].ready"),'with no network Chapter Nine loads');
   }finally{
