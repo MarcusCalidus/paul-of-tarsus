@@ -28,8 +28,11 @@
  /* layout: no text may overflow its box in any language. Speech must stay inside the view; choices, the status line, the verbs and the top bar must fit. */
  /* one line of text must fit its width; a verb button may wrap, so it must also fit its height */
  const tight=new Set(),fits=(el,what,tall)=>{if(el&&(el.scrollWidth>el.clientWidth+1||tall&&el.scrollHeight>el.clientHeight+1))tight.add(what+": "+el.textContent)};
- new MutationObserver(()=>{const v=vp.getBoundingClientRect();for(const el of document.querySelectorAll("#speech .line")){const r=el.getBoundingClientRect();
-   if(r.top<v.top-1||r.bottom>v.bottom+1||r.left<v.left-1||r.right>v.right+1)tight.add("speech: "+el.textContent)}}).observe($("#speech"),{childList:true});
+ let inked=0;
+ new MutationObserver(m=>{const v=vp.getBoundingClientRect();for(const el of document.querySelectorAll("#speech .line")){const r=el.getBoundingClientRect();
+   if(r.top<v.top-1||r.bottom>v.bottom+1||r.left<v.left-1||r.right>v.right+1)tight.add("speech: "+el.textContent)}
+   /* a line read from the narrator's scroll must fit on the open part of the roll, in every language (shared/scroll.js notes one that does not) */
+   m.forEach(r=>r.addedNodes.forEach(n=>{if(n.classList&&n.classList.contains('ink'))inked++}));if(SHARED.scroll)for(const t of SHARED.scroll.over)tight.add("scroll: "+t)}).observe($("#speech"),{childList:true});
  new MutationObserver(()=>{for(const b of document.querySelectorAll("#choices button"))fits(b,"choice")}).observe($("#choices"),{attributes:true,childList:true});
  new MutationObserver(()=>fits($("#status"),"status")).observe($("#status"),{childList:true,characterData:true,subtree:true});
  /* the top bar is one line high: a chapter name that is too long for it, beside a long code, wraps and shows as too tall */
@@ -131,6 +134,52 @@
         list.forEach(([n,o],i)=>{const cw=Math.floor(W/7),chh=Math.floor(Hh/3),x=(i%7)*cw,y=Math.floor(i/7)*chh;g.fillStyle=(i+Math.floor(i/7))%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw-2,chh-2);
           const sp=sprite('ages-test'+i,q=>person(q,0,0,o,1,0,0,0,0,0),1);g.drawImage(sp,FIG.OX-30,FIG.OY-104,60,106,x+Math.floor((cw-120)/2),y+chh-214,120,212);
           g.fillStyle='#101418';g.font='bold 11px monospace';g.fillText(n,x+5,y+14)})})}}
+  /* The narrator's scroll (shared/scroll.js): a line of narration told in the dark is read from an open roll of papyrus held in two hands, and
+     no longer stands on a black screen. The stop `scroll` checks how it comes and goes and stops on a line of Chapter Five; `scrolllong` stops
+     on the longest line that is told in the dark (Chapter Seven). Look at both in every language (`de:scroll`), for cross shapes too. */
+  if(stop==='scroll'||stop==='scrolllong'){clearInterval(sk);sk=0;let rustles=0;{const u0=SFX.unroll;SFX.unroll=function(){rustles++;return u0.apply(this,arguments)}}
+   await loadLevel(5);await loadLevel(7);ov.className='';ov.onclick=null;setChapter(5);G.busy=true;lock(true);status();
+    const A='Beyond the pass the road came down onto a high plain, some 1,100 meters above the sea.',B='The two of them traveled on from Perga and reached Antioch in Pisidia. (Acts 13:14)',
+      LONG="Paul knew very well that no Christian had to be circumcised: the letter in his bag laid no such burden on anyone. But everyone knew that Timothy's father was a Greek, and to the Jews in the cities ahead of them that would have been an obstacle.",
+      line=()=>$('#speech .line'),S=()=>SHARED.scroll,op=el=>+getComputedStyle(el).opacity,till=async(fn,n)=>{for(let i=0;i<(n||400)&&!fn();i++)await wait(10);return!!fn()},
+      /* inside the open part of the roll: between the two rolled-up ends, and clear of its upper and lower edge */
+      onRoll=el=>{const v=vp.getBoundingClientRect(),k=v.width/320,r=el.getBoundingClientRect(),sh=S().sheet;return r.left>=v.left+79*k&&r.right<=v.left+261*k&&r.top>=v.top+(sh.y0+6)*k&&r.bottom<=v.top+(sh.y1-6)*k};
+    ok(!S()&&!$('#scroll'),'the scroll is not loaded before a line is told in the dark');
+    /* over a picture, a line of narration is what it always was */
+    G.scene=CHAP[1].scenes.wall;{const p=narr(A,{dur:300});await wait(60);ok(line()&&!line().classList.contains('ink')&&!S(),'a line told over a picture is a plain line, and needs no scroll');await p}
+    /* in the dark: at the game's own pace the scroll first comes up, and only then is the line written on it */
+    G.speedAll=0;await fade(1,200);{const p=narr(A,{dur:700});await till(()=>S()&&S().state==='moving',300);const early=S()&&S().state==='moving'&&!line();
+      await till(()=>line());const el=line(),c=$('#scroll');
+      ok(early&&S().state==='up'&&el&&el.classList.contains('ink')&&op(c)>.99&&c.width===640&&c.height===288,'in the dark the scroll comes up first, and then the line stands on it in ink');
+      ok(onRoll(el)&&el.textContent===T(A)&&getComputedStyle(el).color==='rgb(44, 26, 14)','the line lies on the open part of the roll, between its rolled-up ends: '+el.textContent.slice(0,40));
+      await p;const q=narr(B,{dur:700});await wait(40);const el2=line(),sp=el2&&el2.querySelector('span');
+      ok(S().state==='up'&&el2&&el2.classList.contains('ink')&&onRoll(el2),'the scroll stays up for the line that follows at once');
+      ok(sp&&/^\(.*\d+:\d+\)$/.test(sp.textContent)&&sp.getClientRects().length===1&&el2.textContent===T(B),'a reference is kept whole on one line, and the words of the line are unchanged: '+(sp&&sp.textContent));
+      await q;const f=fade(0,200);await wait(60);const going=S().state==='moving'&&+$('#dim').style.opacity===1;await f;
+      ok(going&&S().state==='down'&&op(c)<.01&&+$('#dim').style.opacity===0,'before the picture fades in, the scroll goes down into the dark')}
+    G.speedAll=500;
+    /* the longest line that is told in the dark fits on the roll; a line is written smaller as it grows longer; and one that is too long for
+       the roll even in the smallest writing is noted, so that a playthrough fails on it */
+    {await fade(1,60);setChapter(7);const p=narr(LONG,{dur:200});await till(()=>line());const fits=onRoll(line())&&!S().over.length;await p;
+      const probe=n=>{const el=document.createElement('div');el.className='line';el.classList.add('ink');el.textContent=(T(A)+' ').repeat(n).trim();$('#speech').appendChild(el);S().fit(el);
+          const r=[parseFloat(getComputedStyle(el).fontSize),onRoll(el),S().over.length];el.remove();S().over.length=0;return r},x=probe(1),y=probe(4),z=probe(30);
+      ok(fits&&x[0]>y[0]&&x[1]&&y[1]&&!x[2]&&!y[2]&&z[2]===1,'the longest line told in the dark fits on the roll; a longer line is written smaller ('+x[0].toFixed(1)+' and '+y[0].toFixed(1)+' pixels), and one too long for the roll is noted')}
+    /* somebody speaks in the dark: the scroll goes down first */
+    {setChapter(5);const p=narr(A,{dur:200});await till(()=>line());await p;const q=say(ACT.barnabas,'The north road, Paul. Beyond the plain it climbs into the Taurus, and beyond the Taurus lies Antioch in Pisidia.',{dur:300});
+      await till(()=>line());ok(S().state==='down'&&!line().classList.contains('ink'),'when somebody speaks in the dark, the scroll has gone down before his words stand');await q}
+    /* the dark scene of a chapter: what is told in it is read from the scroll too */
+    {await fade(0,60);await loadLevel(8);await loadLevel(9);G.scene=CHAP[9].scenes.dark;const p=narr(A,{dur:200});await till(()=>line());
+      ok(CHAP[9].scenes.dark===DARK&&CHAP[8].scenes.dark===DARK&&line().classList.contains('ink')&&S().state==='up'&&+$('#dim').style.opacity===0,'what a chapter tells in its dark scene is read from the scroll too');await p;
+      await fade(1,60);ok(S().state==='down','and the next fade puts the scroll down')}
+    /* the picture: the line on the roll, and a flame on each wick */
+    setChapter(stop==='scroll'?5:7);narr(stop==='scroll'?B:LONG,{dur:1e6});await till(()=>line()&&S().state==='up');await wait(200);
+    {const g=$('#scroll').getContext('2d'),lit=([x,y])=>{const d=g.getImageData(Math.round(x*2)-3,Math.round(y*2)-9,8,10).data;let n=0;for(let i=0;i<d.length;i+=4)if(d[i]>200&&d[i+1]>80&&d[i+2]<150)n++;return n};
+      ok(S().lamps.every(p=>lit(p)>3)&&onRoll(line()),'both lamps burn, and the line of the picture lies on the roll')}
+    /* the rustle: heard once as the scroll comes up, four times in this stop, and not for every line; rendered on the game's own mixer it is finite, audible and soft */
+    {const SR=22050,off=new OfflineAudioContext(1,SR,SR),keep=Object.assign({},AU);AU.ctx=off;audioGraph(off);try{SFX.unroll()}finally{for(const k in AU)AU[k]=keep[k]}rustles--;
+      const x=(await off.startRendering()).getChannelData(0);let pk=0;for(const v of x){if(!isFinite(v)){pk=NaN;break}pk=Math.max(pk,Math.abs(v))}
+      ok(rustles===4&&pk>.002&&pk<.15,'the scroll rustles once as it comes up, not for every line ('+rustles+' times here), and softly: peak '+(20*Math.log10(pk)).toFixed(1)+' dB')}
+    halt(stop)}
   /* The whole cast. The stop `cast` loads every chapter and hands its sheets to the playtest (window.SHEETS: a name and a PNG data URL
      for each, saved beside the screenshot at the sheet's own size): for every chapter the looks it brings, each standing and three times
      enlarged (cast-1.png and so on), and on cast-heads.png every kind of head eight times enlarged: each state of the hair, each beard,
@@ -2796,6 +2845,8 @@
   {const real=Object.values(CHAP).filter(c=>c.src);/* the chapters that are level files: not the hub test's own */
     ok(real.length>=9&&real.every(c=>c.ready)&&!taken.length,'ids: all '+real.length+' chapters are loaded, and none took a room, a backdrop or an item from another'+(taken.length?'. TAKEN: '+taken.join(' | '):''))}
   ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+  /* the narrator's scroll: every line of narration told in the dark was read from it, and it is down again at the end */
+  ok(inked>=80&&SHARED.scroll&&SHARED.scroll.state==='down'&&!SHARED.scroll.over.length,inked+' lines of narration were told in the dark, and each was read from the scroll');
   fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
   L('DONE');
  }catch(e){if(e!=='halt')L('ERR '+(e&&e.message||e))}})();
