@@ -72,4 +72,4 @@ Design, code, art and music by Marco Warm, built with Claude.
 
 ## License
 
-Copyright © 2026 Marco Warm. All rights reserved. The source is public, but the game is not open source: you may play it, download it to play on your own devices, read its code and propose changes as pull requests, but not publish, host or sell a copy or a changed version, or use its name for another game. Contributions are made under the terms in [LICENSE](LICENSE). Versions released before 18 November 2026 were under the MIT License.
+Copyright © 2026 Marco Warm. All rights reserved. The source is public, but the game is not open source: you may play it, download it to play on your own devices, read its code, change your own copy for private use and propose changes as pull requests, but not publish, host or sell a copy or a changed version, or use its name for another game. Contributions are made under the terms in [LICENSE](LICENSE). Versions released before 18 November 2026 were under the MIT License.

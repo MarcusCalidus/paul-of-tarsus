@@ -121,7 +121,7 @@ The game is written in English and plays in German too. The English text stays i
 
 ## 9. License
 
-- The game is not open source. [LICENSE](LICENSE) lets people play it, download it to play on their own devices, read its code and propose changes to this repository; it does not let them publish, host or sell a copy or a changed version, or use the name "Paul of Tarsus" for another game.
-- A fork is only for preparing a pull request to this repository.
+- The game is not open source. [LICENSE](LICENSE) lets people play it, download it to play on their own devices, read its code, change their own copy for private use and propose changes to this repository; it does not let them publish, host or sell a copy or a changed version, or use the name "Paul of Tarsus" for another game.
+- A fork is only for preparing a pull request to this repository. It is not published as a website, for example with GitHub Pages.
 - Whoever proposes a change grants the maintainer the right to use, change, publish and relicense it (LICENSE, section 3). Do not propose anything you have no right to give.
 - Code contributed under the MIT License before 18 November 2026 keeps its MIT notice in LICENSE.

@@ -22,7 +22,11 @@ the text in every language, and the documentation.
       computer to test it. A change is proposed under the rules in
       CONTRIBUTING.md.
 
-   d. Link. You are welcome to share links to the official address and to the
+   d. Change your own copy. You may change a copy for your own private use,
+      for example for your family or to try out an idea, as long as you do
+      not pass it on or put it online.
+
+   e. Link. You are welcome to share links to the official address and to the
       official repository.
 
 2. What you may not do
@@ -31,7 +35,9 @@ the text in every language, and the documentation.
    copyright holder. In particular, you may not:
 
    a. publish, host or pass on a copy of the game, changed or unchanged,
-      anywhere other than as described in section 1;
+      anywhere other than as described in section 1. A fork is only a
+      place to prepare a pull request: it must not be published as a
+      website, for example with GitHub Pages;
    b. publish a changed version of the game, or a game built from its code,
       art, music or text;
    c. use the game or any part of it commercially: sell it, charge for it,
