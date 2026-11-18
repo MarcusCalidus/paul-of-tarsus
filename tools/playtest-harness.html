@@ -201,7 +201,7 @@
   {const wasSave=store('paul.save');$('#opts').click();ok($('#menu.on')&&$('#wrap.full'),'options menu opens full-screen');
     $('#menu [data-spd="0.7"]').click();ok(OPTS.spd===.7&&JSON.parse(store('paul.opts')).spd===.7&&store('paul.save')===wasSave,'text speed saved in paul.opts without touching paul.save');
     $('#menu [data-spd="1"]').click();key('Escape');ok(!$('#menu.on'),'Escape closes options menu');
-    for(const k of['default','hot','left','right','up','down']){const c=pointerArt(2,k);ok(c.width>0&&c.height>0,'context pointer '+k+' paints')}
+    for(const k of['default','hot','left','right','up','down',...VERBS.flatMap(([v])=>[v,v+'-hot'])]){const c=pointerArt(2,k);ok(c.width>0&&c.height>0,'context pointer '+k+' paints')}
     store('paul.opts',JSON.stringify({mus:.3,fx:.6,spd:1.35}));OPTS.mus=OPTS.fx=OPTS.spd=1;loadOpts();
     ok(OPTS.mus===.3&&OPTS.fx===.6&&OPTS.spd===1.35,'the options come back from paul.opts after a reload');OPTS.mus=OPTS.fx=OPTS.spd=1;
     store('paul.opts',null)}
@@ -1768,6 +1768,18 @@
    ok(light(1,1)&&!light(0,0)&&hot&&+hot[1]===Math.round(1.5*u)&&+hot[2]===+hot[1],'its tip is the pixel that points');
    const big=pointerArt(3),c0=vp.style.cursor;pointer(sc+2);const c1=vp.style.cursor;fit();
    ok(big.width===3*w&&big.height===3*h&&c1!==c0&&vp.style.cursor===c0,'the pointer grows with the game')}
+  /* While a verb is chosen the pointer shows it, lit over anything it can be used on, and it is the arrow again once the verb is put down.
+     Each verb's picture is checked as the arrow is: it is one piece, every light pixel lies inside its contour, the point that clicks lies within it,
+     and at the largest grid pixel it stays within the 128 pixels a browser takes for a cursor. */
+  {const look=k=>{const a=pointerArt(1,k),w=a.width,h=a.height,d=a.getContext('2d').getImageData(0,0,w,h).data,on=(x,y)=>x>=0&&y>=0&&x<w&&y<h&&d[(y*w+x)*4+3]>0;
+      let all=0,bare=0,s=null;for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(on(x,y)){all++;s=s||[x,y];if(d[(y*w+x)*4]>100)for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++)if(!on(x+i,y+j))bare++}
+      const todo=[s],got=new Set([s+'']);while(todo.length){const[x,y]=todo.pop();for(const[i,j]of[[1,0],[-1,0],[0,1],[0,-1]]){const q=[x+i,y+j];if(on(...q)&&!got.has(q+'')){got.add(q+'');todo.push(q)}}}
+      return{one:got.size===all,bare,inside:a.hx>0&&a.hy>0&&a.hx<w&&a.hy<h,fits:pointerArt(6,k).width<=128&&pointerArt(6,k).height<=128,url:a.toDataURL()}};
+    move(...hs('stool'));const plain=vp.style.cursor,seen=new Set([plain]),bad=[];
+    for(const[v]of VERBS){verb(v);const k=pointerKind(G.hover),c=vp.style.cursor;seen.add(c);const a=look(v),b=look(v+'-hot');
+      if(k!==v+'-hot'||!/data:image\/png/.test(c)||!a.one||!b.one||a.bare||b.bare||!a.inside||!a.fits||a.url===b.url||pointerKind(null)!==v)bad.push(v);verb(v)}
+    ok(!bad.length&&seen.size===VERBS.length+1&&vp.style.cursor===plain&&G.verb==='walk',
+      'each verb has a pointer of its own, one piece inside its contour and lit over a thing, and the arrow comes back when the verb is put down'+(bad.length?': '+bad.join():''))}
   move(...hs('door to the street'));ok(lit()==='open'&&$('#status').textContent===line('open','door to the street'),'hover lights Open on a door');
   verb('look');move(...hs('spool of thread'));ok(lit()===''&&$('#status').textContent===line('look','spool of thread'),'no default lit while a verb is chosen');verb('look');
   move(...hs('stool'));ok(lit()==='look','hover lights Look at');
@@ -1778,6 +1790,13 @@
   place(P,'workshop',290,124,-1);G.cam=ART.workshop.w-320;G.speedAll=25;view(...hs('door to the street'));await wait(60);view(...hs('door to the street'));dbl(...hs('door to the street'));
   let t0=performance.now();await idle();ok(G.room==='street'&&performance.now()-t0<2500,'double-click on an exit skips the walk');G.speedAll=500;
   halt('pointer',()=>paintPointer(...hs('city gate')));
+  /* the stop `verbpointer` shows a chosen verb's pointer in the street (Talk to, over the soldier), and `cursors` every verb's pointer
+     enlarged six times, as it is over a night scene and lit over a sunlit one: look there for crosses */
+  halt('verbpointer',()=>{verb('talk');paintPointer(ACT.guard.x,ACT.guard.y-18)});
+  halt('cursors',()=>{const k=document.createElement('canvas'),W=innerWidth,Hh=innerHeight,u=6,cw=Math.floor((W-40)/VERBS.length);k.width=W;k.height=Hh;
+    k.style.cssText=`position:fixed;left:0;top:0;width:${W}px;height:${Hh}px;z-index:20`;document.body.appendChild(k);const g=k.getContext('2d');g.imageSmoothingEnabled=false;
+    g.fillStyle='#1c2240';g.fillRect(0,0,W,Hh/2);g.fillStyle='#c9b48a';g.fillRect(0,Hh/2,W,Hh/2);g.font='bold 14px monospace';
+    VERBS.forEach(([v,n],i)=>{const x=20+i*cw;g.fillStyle='#fff';g.fillText(T(n),x,28);g.drawImage(pointerArt(u,v),x,48);g.drawImage(pointerArt(u,v+'-hot'),x,Math.round(Hh/2)+30)})});
   await act(null,"Eliab's door");ok(G.room==='workshop','back in the workshop');
   key('Tab');await wait(250);const want=ROOMS.workshop.hs.filter(h=>(!h.vis||h.vis())&&h.x+h.w>G.cam+4&&h.x<G.cam+316).length+1,tg=[...document.querySelectorAll('#tags .tag')];
   ok($('#tags').classList.contains('on')&&tg.length===want&&tg.some(t=>t.textContent===T('Eliab'))&&tg.every(t=>t.textContent.length>2),'Tab labels every hotspot ('+tg.length+')');

@@ -40,6 +40,10 @@ The pointer over the scene is the game's own: a gold arrow with a dark contour, 
 
 ![The pointer at the city gate, in the street by night](screenshots/pointer.png)
 
+While a verb is chosen, the pointer shows it: a magnifying glass for **Look at**, an open hand for **Pick up**, a pointing hand for **Use**, a key for **Open**, two speech balloons for **Talk to**, and a hand holding out a purse for **Give**. It brightens over anything the verb can be used on, and becomes the arrow again once the verb is put down.
+
+![Talk to chosen: the pointer is two speech balloons, lit over the soldier](screenshots/verb-pointer.png)
+
 The options (**≡** or `Esc`) take the whole screen while they are open, and are the same in every chapter.
 
 ![The options, in German](screenshots/options.png)

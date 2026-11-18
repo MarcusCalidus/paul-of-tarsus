@@ -108,6 +108,7 @@ titlescroll titlescroll
 topics topics
 travel hubmap4
 troas troas8
+verb-pointer verbpointer
 verbs defverb
 voyage voyage
 westmap map10

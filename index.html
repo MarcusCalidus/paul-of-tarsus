@@ -244,21 +244,37 @@ const PTR=['h','hg','hgg','hggg','hgggg','hggggg','hgggggg','hggggggg','hggggggg
     left:['......hh','.....hhg','....hhgg','...hhggg','..hhgggg','.hhggggg','hhggggggggggggg','ddggggggggggggd','.ddgggggdddddd.','..ddggggd......','...ddgggd......','....ddggd......','.....ddgd......','......ddd......'],
     right:['.......hh......','.......hgg.....','.......hggg....','.......hgggg...','.......hggggg..','.......hgggggg.','hhhhhhhhggggggh','dddddddgggggggd','.......dggggdd.','.......dgggdd..','.......dggdd...','.......dgdd....','.......ddd.....'],
     up:['......h......','.....hgh.....','....hgggh....','...hgggggh...','..hgggggggh..','.hgggggggggh.','hgggggggggggh','ddddgggggdddd','....dgggd....','....dgggd....','....dgggd....','....dgggd....','....ddddd....'],
-    down:['....hhhhh....','....hgggd....','....hgggd....','....dgggd....','....dgggd....','hhhhdgggdhddd','hgggggggggggd','.hgggggggggd.','..hgggggggd..','...hgggggd...','....hgggd....','.....hgd.....','......d......']
+    down:['....hhhhh....','....hgggd....','....hgggd....','....dgggd....','....dgggd....','hhhhdgggdhddd','hgggggggggggd','.hgggggggggd.','..hgggggggd..','...hgggggd...','....hgggd....','.....hgd.....','......d......'],
+    /* While a verb is chosen, the pointer shows it: a magnifying glass for Look at, an open hand for Pick up, a pointing hand for Use,
+       a key for Open, two speech balloons for Talk to, and a hand holding out a purse for Give. o is a deeper shade and k near-black. */
+    look:['....hhhgg','..hhhhggggg','.hhhg...gggg','.hh.......gg','hh.........gg','hh.........gd','hg.........gd','gg.........dd','gg.........dd','.gg.......dd','.gggd...dddd','..ggddddddddg','....ddddd..odg','............odg','.............odg','..............odg','...............od'],
+    pickup:['......hh','...hh.hd.hh','...hd.hd.hd','...hd.hd.hd.hh','...hd.hd.hd.hd','h..hd.hd.hd.hd','hh.hghgghgghgd','hd.hgggggggggd','.hhggggggggggd','..hggggggggggd','..hgggggggggd','...hggggggggd','....hddddddd','....gggggggg','....gooooooo'],
+    use:['..hg','.hggd','.hggd','.hggd','.hggd.hg','.hggdhggd.hg','.hggdhggdhggd','hgggdgggdgggd','hgggggggggggd','hgggggggggggd','.hggggggggggd','..ggggggggdd','...gggggggd','...hhhhhhhh','...gggggggg','...dddddddd'],
+    open:['............hhhh','...........hgddgh','hhhhhhhhhhhgd..hd','hgdggddddddgd..hd','hd.hd......hghhgd','hd.hd.......hddd','hdhdd'],
+    talk:['.........ggggggg','........gdodododg','.......gdo.g.g.gdg','.......googdgdgddo','.......kkkkgdddddo','..hhhhhhhhkkgdddo','.hgggggggghkkgoo','hgddgddgddgh...gg','hd..h..h..hd.....g','hd..h..h..hd','hghhghhghhgd','.hggggggggd','.hdddddddd','hd'],
+    give:['.............g','............go','...........gddg','........hh.gddo','.......hgd.gooo','gggg..hgd.hhhh','gddohhggghgdddhh','gddohgggggddddd','gddohgggggghhhhh','gddohgggggddddd','gddo.hdddddhhh','gooo']
   },
-  PTRC={h:'#fff3b8',g:'#e2b24c',d:'#a8782c'},
-  PTRC_HOT={h:'#ffffff',g:'#ffe07d',d:'#c89030'};
-/* u canvas pixels to the grid pixel. The contour adds one grid pixel on every side and goes round all eight neighbours of a painted pixel. */
-function pointerArt(u,kind='default'){const P=PTRS[kind]||PTR,pal=kind==='hot'?PTRC_HOT:PTRC,w=Math.max(...P.map(r=>r.length)),h=P.length,[c,g]=mk((w+2)*u,(h+2)*u),at=(x,y)=>pal[(P[y]||'')[x]];
+  /* The point that clicks, in grid pixels from the top left of a verb's picture: the middle of the glass, the palm, the fingertip,
+     the bit of the key, the tail of the front balloon and the fingertips. The arrow points with its tip, and the arrows of the exits with their middle. */
+  PTRP={look:[6,6],pickup:[7,8],use:[2.5,0],open:[0,3],talk:[0,13],give:[15,8]},
+  PTRC={h:'#fff3b8',g:'#e2b24c',d:'#a8782c',o:'#74501c',k:'#0b0812'},
+  PTRC_HOT={h:'#ffffff',g:'#ffe07d',d:'#c89030',o:'#8c6224',k:'#0b0812'};
+/* u canvas pixels to the grid pixel. The contour adds one grid pixel on every side and goes round all eight neighbours of a painted pixel.
+   A kind that ends in -hot (and 'hot' itself, the arrow) is painted brighter: the pointer rests on something. */
+function pointerArt(u,kind='default'){const lit=kind==='hot'||/-hot$/.test(kind),base=kind.replace(/-hot$/,''),P=PTRS[base]||PTR,pal=lit?PTRC_HOT:PTRC,
+  w=Math.max(...P.map(r=>r.length)),h=P.length,[c,g]=mk((w+2)*u,(h+2)*u),at=(x,y)=>pal[(P[y]||'')[x]];
   for(let y=-1;y<=h;y++)for(let x=-1;x<=w;x++){let col=at(x,y);
     for(let j=-1;j<=1&&!col;j++)for(let i=-1;i<=1;i++)if(at(x+i,y+j)){col='#0b0812';break}
     if(col){g.fillStyle=col;g.fillRect((x+1)*u,(y+1)*u,u,u)}}
-  c.hx=kind==='default'||kind==='hot'?1.5:(w+2)/2;c.hy=kind==='default'||kind==='hot'?1.5:(h+2)/2;return c}
+  const p=PTRP[base];c.hx=P===PTR?1.5:p?p[0]+1.5:(w+2)/2;c.hy=P===PTR?1.5:p?p[1]+1.5:(h+2)/2;return c}
 /* The pointer grows with the layout (s CSS pixels to the room pixel) and is painted anew only when its size or kind changes. On a display with more
    than one device pixel to the CSS pixel the picture is handed over at that density; a browser that does not take that form keeps the plain
    one set just before it. Browsers refuse a cursor larger than 128 pixels, so the grid pixel stops growing at six. */
 const PTR_CACHE={};let ptrKey='',ptrScale=3;
-function pointerKind(h){if(!h||G.busy||G.scene||!G.room)return'default';if(!h.exit)return'hot';
+/* pointerKind: what the pointer shows. A chosen verb shows itself, lit over anything it can be used on; with no verb, the arrow brightens
+   over a thing or a person and points the way over an exit. */
+function pointerKind(h){if(G.busy||G.scene||!G.room)return'default';if(G.verb!=='walk'&&PTRS[G.verb])return G.verb+(h?'-hot':'');
+  if(!h)return'default';if(!h.exit)return'hot';
   const rw=ART[G.room]?ART[G.room].w:VW;if(h.x<=24)return'left';if(h.x+h.w>=rw-24)return'right';
   return/\b(down|below|cellar)\b/i.test(h.name)?'down':'up'}
 function pointer(s,kind='default'){ptrScale=s;const d=window.devicePixelRatio||1,u=clamp(Math.round(s*d/2),1,6),key=kind+'@'+u+'@'+d;if(key===ptrKey)return;ptrKey=key;
