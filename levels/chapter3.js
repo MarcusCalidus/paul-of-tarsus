@@ -20,11 +20,8 @@ const _=null,
   {inst:'aulos',moods:['hope'],loop:8,oct:12,lines:TUNE}]};
 
 /* ============ ART ============ */
-/* What is seen through a city gate: sky, hills and the road running on. */
-function gateView(g,x,y,w,h){g.save();arch(g,x,y,w,h);g.clip();sky(g,480,y+h-20,['#5a98d8','#a8cdea','#dfeaf0']);
-  ridge(g,x,x+w,y+h-12,q=>7+3*Math.sin(q/5),['#8ea284','#a8b890']);ridge(g,x,x+w,y+h-12,q=>3+2*Math.sin(q/3+1),['#7c9668','#8fa87a']);
-  R(g,x,y+h-12,w,12,'#b8c090');poly(g,[x+w*.5-1,y+h-12,x+w*.5+1.5,y+h-12,x+w*.95,y+h,x+w*.2,y+h],'#ead9ae');
-  ao(g,x,y,w,10,'t',.55,'#2a2440');ao(g,x,y,5,h,'l',.5,'#2a2440');ao(g,x+w-4,y,4,h,'r',.35,'#2a2440');g.restore()}
+/* What is seen through the gates of Tarsus and Antioch: green hills, and the road running on. Each gate adds the horizon and the sky of its own scene. */
+const GATE3={far:['#8ea284','#a8b890'],near:['#7c9668','#8fa87a'],land:'#b8c090',road:'#ead9ae'};
 /* A hank of goat-hair cloth rolled on itself: x,y left end of the roll, w long. */
 function bolt(g,x,y,w,hh,c){c=c||'#2a211c';oval(g,x+w/2+2,y+hh+.4,w/2+3,1.4,'rgba(40,30,60,.35)');g.fillStyle=lg(g,0,y,0,y+hh,[tint(c,.3),c,tint(c,-.5)]);g.fillRect(x,y,w,hh);
   for(let i=0;i<w;i+=2.5)R(g,x+i,y,.5,hh,'rgba(0,0,0,.25)');oval(g,x,y+hh/2,hh*.32,hh/2,tint(c,.12));oval(g,x+w,y+hh/2,hh*.32,hh/2,tint(c,-.35));
@@ -42,7 +39,7 @@ ART.tarsus={w:320,
   /* city wall and the east gate */
   ashlar(g,112,62,208,42,ST,r,{bw:13,bh:6,v:.09,t:.35});for(let i=112;i<320;i+=9){R(g,i,58.5,5.5,3.5,ST);R(g,i,58.5,5.5,.5,'#f4e8c8')}
   ashlar(g,268,46,52,58,'#e0d0a8',r,{bw:12,bh:6,v:.09});for(let i=268;i<320;i+=8){R(g,i,41.5,5,4.5,'#e0d0a8');R(g,i,41.5,5,.5,'#f8eccc')}R(g,268,45.5,52,1,'#a8987a');poly(g,[268,41.5,262,45,262,104,268,104],'#a8a0b0');
-  arch(g,278,64,32,40,'#c2b28c');gateView(g,280,66,28,38);for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,294+Math.cos(a)*16-.3,80+Math.sin(a)*16-1,.6,2.6,'#a8987a')}
+  arch(g,278,64,32,40,'#c2b28c');gateView(g,280,66,28,38,{...GATE3,hz:74,sky:[76,['#3a78c8','#66a0dc','#9cc4ea','#d0e2ee']],rise:4});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,294+Math.cos(a)*16-.3,80+Math.sin(a)*16-1,.6,2.6,'#a8987a')}
   /* my workshop: an open front under an awning of my own cloth */
   house(g,0,24,116,80,'#e2d0a4',r,{side:6,patch:4,cracks:5});windowArt(g,26,29,12,8,'#e2d0a4',{bars:2});windowArt(g,76,29,12,8,'#e2d0a4',{bars:2});
   R(g,10,50,98,54,'#cbb88c');g.fillStyle=lg(g,0,52,0,104,['#1e1612','#3a2c22']);g.fillRect(12,52,94,52);
@@ -162,7 +159,7 @@ ART.antioch={w:480,fp:1.3,
     for(let j=0;j<3;j++)R(g,x+1.6+j*1.8,47,.5,53,'rgba(120,112,104,.28)');R(g,x-1.2,43.5,9.4,2.6,MB);R(g,x-1.2,45.8,9.4,.6,'#a8a094');R(g,x-1.2,100.4,9.4,3.6,'#e2dac6');R(g,x-1.2,100.4,9.4,.6,'#fffdf4')}
   /* the south gate */
   ashlar(g,430,20,50,84,'#e4d6b0',r,{bw:13,bh:6.4,v:.09});for(let i=430;i<480;i+=8){R(g,i,15.5,5,4.5,'#e4d6b0');R(g,i,15.5,5,.5,'#f8eccc')}R(g,430,19.6,50,1,'#a8987a');poly(g,[430,15.5,424,19,424,104,430,104],'#a8a0b0');
-  arch(g,438,54,36,50,'#c2b28c');gateView(g,440,56,32,48);for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,456+Math.cos(a)*18-.3,72+Math.sin(a)*18-1,.6,2.6,'#a8987a')}
+  arch(g,438,54,36,50,'#c2b28c');gateView(g,440,56,32,48,{...GATE3,hz:66,sky:[70,['#3a78c8','#66a0dc','#9cc4ea','#d4e4ee']]});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,456+Math.cos(a)*18-.3,72+Math.sin(a)*18-1,.6,2.6,'#a8987a')}
   /* paving of pale stone */
   pave(g,0,103,480,144,'#e6dfce',r,{vx:240,vy:62,rows:5,step:36,v:.07,joint:'#a8a092'});ao(g,0,103,480,5,'t',.3,'#4a4460');
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(255,240,200,0)','rgba(255,240,200,.9)']);g.fillRect(0,103,480,41)});

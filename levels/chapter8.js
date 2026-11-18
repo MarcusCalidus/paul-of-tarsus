@@ -155,11 +155,8 @@ ART.ferry={w:480,fp:1.25,
   stroke(g,[x0+6,100,x1-10,97],'#7a5c36',1.2);stroke(g,[x0+6,99.6,x1-10,96.6],'#b89460',.5)},
  front(){}};
 /* ---------- Troas: the quay, at dusk on the day they arrive and in the morning after ---------- */
-/* What is seen through a city gate: sky, hills and the road running on. */
-function gateView(g,x,y,w,h,st){g.save();arch(g,x,y,w,h);g.clip();sky(g,480,y+h-18,st||['#5a98d8','#a8cdea','#dfeaf0']);
-  ridge(g,x,x+w,y+h-12,q=>9+3*Math.sin(q/5+1),['#8ea0b8','#b2bcc8']);ridge(g,x,x+w,y+h-12,q=>3+2*Math.sin(q/3),['#86a064','#9cb074']);
-  R(g,x,y+h-12,w,12,'#b4bc84');poly(g,[x+w*.45,y+h-12,x+w*.6,y+h-12,x+w*.95,y+h,x+w*.15,y+h],'#e2d6b2');
-  ao(g,x,y,w,10,'t',.55,'#2a2440');ao(g,x,y,5,h,'l',.5,'#2a2440');ao(g,x+w-4,y,4,h,'r',.35,'#2a2440');g.restore()}
+/* What is seen through the west gate of Philippi: the plain, the hills beyond it, and the road to the river. The gate adds the horizon and the sky of its scene. */
+const GATE8={far:['#8ea0b8','#b2bcc8'],near:['#86a064','#9cb074'],land:'#b4bc84',road:'#e2d6b2'};
 /* dyed: a bale or a bolt of dyed cloth lying at x,y, banded where it is corded. No cord runs across the bands. */
 function dyed(g,x,y,w,h,c){oval(g,x+w/2+1,y+.4,w/2+2,1.3,'rgba(30,26,50,.35)');g.fillStyle=lg(g,0,y-h,0,y,[tint(c,.3),c,tint(c,-.45)]);g.fillRect(x,y-h,w,h);
   for(let i=2;i<w;i+=3)R(g,x+i,y-h,.5,h,'rgba(0,0,0,.16)');R(g,x,y-h,w,.5,tint(c,.42));R(g,x,y-h,.6,h,tint(c,.2));R(g,x+w-.6,y-h,.6,h,tint(c,-.4))}
@@ -332,7 +329,7 @@ ART.philippi={w:480,fp:1.3,
   for(const[x,h]of[[226,12],[236,9],[424,11]])cypress(g,x,50,h);
   /* the city wall, and the west gate: the road to the river goes out by it */
   ashlar(g,0,16,58,88,ST,r,{bw:14,bh:7,v:.09,t:.35});for(let i=0;i<58;i+=9){R(g,i,11,5.6,5,ST);R(g,i,11,5.6,.5,'#f0e6cc')}R(g,0,15.6,58,1,'#a09678');poly(g,[58,11,63,15,63,104,58,104],'#9a94a8');
-  arch(g,10,52,36,52,tint(ST,-.26));gateView(g,12,54,32,50);for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,28+Math.cos(a)*18-.3,70+Math.sin(a)*18-1,.6,2.6,'#a09678')}
+  arch(g,10,52,36,52,tint(ST,-.26));gateView(g,12,54,32,50,{...GATE8,hz:66,sky:[60,['#3d7cc6','#76a8dc','#bcd4e6','#e8e8dc']]});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,28+Math.cos(a)*18-.3,70+Math.sin(a)*18-1,.6,2.6,'#a09678')}
   /* the awning maker's house: he has let a corner of his bench to a stranger from Tarsus */
   house(g,63,22,89,82,W,r,{side:0,patch:3,cracks:5,beams:12});windowArt(g,76,32,10,10,W,{bars:2,wood:'#6a4e2c'});windowArt(g,126,32,10,10,W,{shut:1,wood:'#6a4e2c'});
   R(g,72,56,72,48,'#231a15');g.fillStyle=lg(g,0,56,0,104,['#2a2018','#4c3a2a']);g.fillRect(74,58,68,46);

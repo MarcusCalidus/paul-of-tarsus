@@ -27,11 +27,8 @@ const _=null,
 
 /* ============ ART ============ */
 const SH='#8f95c8';
-/* What is seen through a city gate: sky, hills and the road running on. */
-function gateView(g,x,y,w,h){g.save();arch(g,x,y,w,h);g.clip();sky(g,480,y+h-18,['#5a98d8','#a8cdea','#dfeaf0']);
-  ridge(g,x,x+w,y+h-12,q=>9+3*Math.sin(q/5+1),['#a9b4c8','#c2cad4']);ridge(g,x,x+w,y+h-12,q=>3+2*Math.sin(q/3),['#a8a878','#b8b488']);
-  R(g,x,y+h-12,w,12,'#cdc296');poly(g,[x+w*.45,y+h-12,x+w*.6,y+h-12,x+w*.95,y+h,x+w*.15,y+h],'#ead9ae');
-  ao(g,x,y,w,10,'t',.55,'#2a2440');ao(g,x,y,5,h,'l',.5,'#2a2440');ao(g,x+w-4,y,4,h,'r',.35,'#2a2440');g.restore()}
+/* What is seen through the east gate of Antioch: the plateau, blue ranges round it, and the road running on. The gate adds the horizon and the sky of its scene. */
+const GATE5={far:['#a9b4c8','#c2cad4'],near:['#a8a878','#b8b488'],land:'#cdc296',road:'#ead9ae'};
 /* snowy: a far range under f(x), blue with distance, with snow lying on everything above the line s */
 function snowy(g,x0,x1,base,f,st,s){ridge(g,x0,x1,base,f,st);for(let x=x0;x<x1;x+=.5){const h=f(x);if(h>s)R(g,x,base-h,.5,Math.min(h-s,2.2+1.6*Math.sin(x*.9)+(h-s)*.3),'#f4f4f8')}}
 /* crag: a face of bare limestone inside the outline p: bedded, cracked, lit from the upper left */
@@ -193,7 +190,7 @@ ART.pisidia={w:480,fp:1.3,
   vessel(g,348,106,5.6,17,'#a05a34','pithos');shade(g,[334,104,357,104,351,110,334,110],SH,.4);
   /* the east gate, and the road to Iconium */
   ashlar(g,438,22,42,82,'#dccfaa',r,{bw:13,bh:6.4,v:.09});for(let i=438;i<480;i+=8){R(g,i,17.6,5,4.4,'#dccfaa');R(g,i,17.6,5,.5,'#f8eccc')}R(g,438,21.6,42,1,'#a8987a');poly(g,[438,17.6,433,21,433,104,438,104],'#a8a0b0');
-  arch(g,444,54,32,50,'#c2b28c');gateView(g,446,56,28,48);for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,460+Math.cos(a)*16-.3,70+Math.sin(a)*16-1,.6,2.6,'#a8987a')}
+  arch(g,444,54,32,50,'#c2b28c');gateView(g,446,56,28,48,{...GATE5,seed:5,hz:66,sky:[70,['#3470c4','#629ad8','#9ec2e6','#d8e6ee']]});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,460+Math.cos(a)*16-.3,70+Math.sin(a)*16-1,.6,2.6,'#a8987a')}
   /* paving */
   pave(g,0,103,480,144,'#ddd4bc',r,{vx:240,vy:62,rows:5,step:36,v:.08,joint:'#a59c88'});ao(g,58,103,422,5,'t',.3,'#4a4460');
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(255,244,214,0)','rgba(255,244,214,.9)']);g.fillRect(0,103,480,41)});

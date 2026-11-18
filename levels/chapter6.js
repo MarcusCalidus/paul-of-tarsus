@@ -33,11 +33,8 @@ const _=null,
 
 /* ============ ART ============ */
 const SH='#8f95c8';
-/* What is seen through a city gate: sky, hills and the road running on. */
-function gateView(g,x,y,w,h,st){g.save();arch(g,x,y,w,h);g.clip();sky(g,480,y+h-18,st||['#5a98d8','#a8cdea','#dfeaf0']);
-  ridge(g,x,x+w,y+h-12,q=>9+3*Math.sin(q/5+1),['#a9b4c8','#c2cad4']);ridge(g,x,x+w,y+h-12,q=>3+2*Math.sin(q/3),['#98a86c','#a8b47c']);
-  R(g,x,y+h-12,w,12,'#c4c08a');poly(g,[x+w*.45,y+h-12,x+w*.6,y+h-12,x+w*.95,y+h,x+w*.15,y+h],'#ead9ae');
-  ao(g,x,y,w,10,'t',.55,'#2a2440');ao(g,x,y,5,h,'l',.5,'#2a2440');ao(g,x+w-4,y,4,h,'r',.35,'#2a2440');g.restore()}
+/* What is seen through the gates of Lycaonia: the plateau, with blue ranges round it. Each gate adds the horizon and the sky of its own scene. */
+const GATE6={far:['#8f9ec4','#b4bfd2'],near:['#8fa468','#a2b274'],land:'#a8b464',road:'#ead9ae'};
 /* snowy: a far range under f(x), blue with distance, with snow lying on everything above the line s */
 function snowy(g,x0,x1,base,f,st,s){ridge(g,x0,x1,base,f,st);for(let x=x0;x<x1;x+=.5){const h=f(x);if(h>s)R(g,x,base-h,.5,Math.min(h-s,2.2+1.6*Math.sin(x*.9)+(h-s)*.3),'#f4f4f8')}}
 /* rock: a stone sitting on the ground at x,y */
@@ -139,7 +136,7 @@ ART.iconium={w:480,fp:1.3,
   windowArt(g,318,46,9,9,ST,{bars:2});for(const x of[312,340]){oval(g,x,96,1.6,1.6,'#4a443c');oval(g,x,96,.8,.8,ST)}
   /* the south gate, and the road to Lycaonia */
   ashlar(g,438,22,42,82,'#dccfaa',r,{bw:13,bh:6.4,v:.09});for(let i=438;i<480;i+=8){R(g,i,17.6,5,4.4,'#dccfaa');R(g,i,17.6,5,.5,'#f8eccc')}R(g,438,21.6,42,1,'#a8987a');poly(g,[438,17.6,433,21,433,104,438,104],'#a8a0b0');
-  arch(g,444,54,32,50,'#c2b28c');gateView(g,446,56,28,48);for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,460+Math.cos(a)*16-.3,70+Math.sin(a)*16-1,.6,2.6,'#a8987a')}
+  arch(g,444,54,32,50,'#c2b28c');gateView(g,446,56,28,48,{...GATE6,hz:66,sky:[72,['#3c7ac8','#6ea4dc','#a8cae6','#e2e8dc']]});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,460+Math.cos(a)*16-.3,70+Math.sin(a)*16-1,.6,2.6,'#a8987a')}
   /* paving */
   pave(g,0,103,480,144,'#d8ceb4',r,{vx:240,vy:62,rows:5,step:36,v:.08,joint:'#a59c88'});ao(g,0,103,480,5,'t',.3,'#4a4460');
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(255,244,214,0)','rgba(255,244,214,.9)']);g.fillRect(0,103,480,41)});
@@ -171,7 +168,7 @@ ART.lystra={w:480,fp:1.3,
   for(const[x,y]of[[252,82],[300,78],[328,84],[452,80],[470,86]]){oval(g,x+2,y+3.4,5,1,'rgba(50,60,90,.34)');R(g,x-.4,y+1,1.2,2.8,'#5a4630');foliage(g,x,y-.6,4.6,3,'#6f8a58',r,20)}
   /* the wall of the colony, and the gate that leads out to the valley */
   ashlar(g,0,22,100,82,ST,r,{bw:12,bh:6,v:.1,t:.4});for(let i=0;i<98;i+=9){R(g,i,17.6,5.6,4.4,ST);R(g,i,17.6,5.6,.5,'#eadcb4')}R(g,0,21.6,100,1,'#98886a');
-  arch(g,26,48,48,56,'#b2a27c');gateView(g,29,51,42,53);for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,50+Math.cos(a)*24-.3,72+Math.sin(a)*24-1,.6,2.6,'#98886a')}
+  arch(g,26,48,48,56,'#b2a27c');gateView(g,29,51,42,53,{...GATE6,hz:69,sky:[74,['#4080c8','#74aadc','#b0cee6','#e8e8d4']],rise:6});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,50+Math.cos(a)*24-.3,72+Math.sin(a)*24-1,.6,2.6,'#98886a')}
   poly(g,[100,17.6,105,21,105,104,100,104],'#9a94a8');
   /* a house of mud brick and timber, and beside it the house of Lois */
   house(g,105,32,58,72,MB2,r,{side:0,patch:4,cracks:5,beams:10,brick:'#a8875a'});windowArt(g,118,46,9,9,MB2,{bars:2,wood:'#6a4e2c'});R(g,138,66,18,38,'#bca67c');doorArt(g,140,68,14,36,'#6a4a2c',r,{pw:4.6});

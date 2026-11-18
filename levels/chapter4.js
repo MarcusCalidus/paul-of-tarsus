@@ -26,11 +26,8 @@ const _=null,
 
 /* ============ ART ============ */
 const SH='#8f95c8';
-/* What is seen through a city gate: sky, hills and the road running on. */
-function gateView(g,x,y,w,h){g.save();arch(g,x,y,w,h);g.clip();sky(g,480,y+h-18,['#5a98d8','#a8cdea','#dfeaf0']);
-  ridge(g,x,x+w,y+h-12,q=>8+3*Math.sin(q/5+1),['#9aa890','#b0ba98']);ridge(g,x,x+w,y+h-12,q=>3+2*Math.sin(q/3),['#86a070','#98b082']);
-  R(g,x,y+h-12,w,12,'#c2c494');poly(g,[x+w*.45,y+h-12,x+w*.6,y+h-12,x+w*.95,y+h,x+w*.15,y+h],'#ead9ae');
-  ao(g,x,y,w,10,'t',.55,'#2a2440');ao(g,x,y,5,h,'l',.5,'#2a2440');ao(g,x+w-4,y,4,h,'r',.35,'#2a2440');g.restore()}
+/* What is seen through a gate of Seleucia or of Salamis: hills, and the road running on. Each gate adds the horizon and the sky of its own scene. */
+const GATE4={far:['#9aa890','#b0ba98'],near:['#86a070','#98b082'],land:'#c2c494',road:'#ead9ae'};
 /* a strip of sea between y0 and y1, lighter toward the horizon, with glints */
 function seaArt(g,x,y0,w,y1,r,st){g.fillStyle=lg(g,0,y0,0,y1,st||['#a9cbd6','#62a0bc','#3f80a6','#2f6a92','#245a80']);g.fillRect(x,y0,w,y1-y0);
   for(let i=0;i<w*.6;i++){const k=r()*r(),sy=y0+1+k*(y1-y0-2);R(g,x+r()*w,sy,2+k*6+r()*4,.5,r()<.55?'rgba(214,238,244,.5)':'rgba(20,50,84,.35)')}}
@@ -85,7 +82,7 @@ ART.seleucia={w:480,fp:1.3,
   /* the town wall and the gate to the Antioch road */
   ashlar(g,0,24,112,80,ST,r,{bw:13,bh:6.4,v:.09,t:.35});for(let i=0;i<112;i+=9){R(g,i,19.6,5.6,4.4,ST);R(g,i,19.6,5.6,.5,'#f4e8c8')}R(g,0,23.6,112,1,'#a8987a');
   poly(g,[112,19.6,119,23,119,104,112,104],'#a9a2b4');
-  arch(g,22,52,40,52,'#c2b28c');gateView(g,24,54,36,50);for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,42+Math.cos(a)*20-.3,72+Math.sin(a)*20-1,.6,2.6,'#a8987a')}
+  arch(g,22,52,40,52,'#c2b28c');gateView(g,24,54,36,50,{...GATE4,hz:60,sky:[64,['#3f7cc6','#6ea4dc','#a6c8e6','#dfe9ec']],rise:3});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,42+Math.cos(a)*20-.3,72+Math.sin(a)*20-1,.6,2.6,'#a8987a')}
   windowArt(g,84,42,9,10,ST,{bars:2});
   /* the quay */
   pave(g,0,103,480,144,'#cdbd98',r,{vx:210,vy:58,rows:5,step:36,v:.09});ao(g,0,103,119,5,'t',.3,'#4a3a60');
@@ -140,7 +137,7 @@ ART.salamis={w:480,fp:1.3,
   vessel(g,328,106,5.6,17,'#a05a34','pithos');shade(g,[304,104,336,104,330,110,304,110],SH,.4);
   /* the west gate, and the road across the island */
   ashlar(g,434,22,46,82,'#dccfaa',r,{bw:13,bh:6.4,v:.09});for(let i=434;i<480;i+=8){R(g,i,17.6,5,4.4,'#dccfaa');R(g,i,17.6,5,.5,'#f8eccc')}R(g,434,21.6,46,1,'#a8987a');poly(g,[434,17.6,429,21,429,104,434,104],'#a8a0b0');
-  arch(g,440,54,34,50,'#c2b28c');gateView(g,442,56,30,48);for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,457+Math.cos(a)*17-.3,71+Math.sin(a)*17-1,.6,2.6,'#a8987a')}
+  arch(g,440,54,34,50,'#c2b28c');gateView(g,442,56,30,48,{...GATE4,hz:62,sky:[70,['#3a78c8','#66a0dc','#9cc4ea','#d6e6ee']],rise:3});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,457+Math.cos(a)*17-.3,71+Math.sin(a)*17-1,.6,2.6,'#a8987a')}
   /* paving */
   pave(g,0,103,480,144,'#ddd2b8',r,{vx:250,vy:62,rows:5,step:36,v:.08,joint:'#a59c88'});ao(g,112,103,368,5,'t',.3,'#4a4460');
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(255,240,200,0)','rgba(255,240,200,.9)']);g.fillRect(0,103,480,41)});
