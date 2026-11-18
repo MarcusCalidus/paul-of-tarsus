@@ -87,6 +87,7 @@ road road
 saves saves
 scroll scroll
 speak speak
+splash splash
 stride stride
 scrolltable row10
 seamap seamap10

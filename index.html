@@ -109,6 +109,13 @@ body{display:flex;align-items:center;justify-content:center}
 /* with that height the title holds its twelve chapters without scrolling; the list still scrolls when there are more lines than room */
 #overlay.title{padding-top:calc(var(--s)*5px);padding-bottom:calc(var(--s)*5px)}
 #overlay.title .chs p{margin:calc(var(--s)*2px) auto}
+/* splash: the opening picture (shared/splash.js). The title is laid out as it always is, so that its name does not move when the chapters
+   appear, but only the name and the line under it are seen; the rest comes in when the splash is left. begin: the one line that asks for a click,
+   seen until the overture starts. */
+#overlay.title>*{transition:opacity 1.6s ease-in-out}
+#overlay.splash>:not(h1):not(.lede):not(.begin){opacity:0;pointer-events:none}
+#overlay .begin{position:absolute;left:0;right:0;bottom:calc(var(--s)*9px);margin:0 auto;opacity:0;pointer-events:none;transition:opacity .5s}
+#overlay.splash:not(.playing) .begin{opacity:1}
 /* tight: a long chapter name beside a long code and every button leaves no room for the game's name; the chapter's name stays */
 #top.tight #gname,#top.tight #gdot{display:none}
 @keyframes bl{50%{opacity:.25}}
@@ -458,6 +465,12 @@ const INST={
   /* the bass: a low plucked string. A sawtooth gives it every harmonic; its lowpass closes from the eighth harmonic to the third as the
      note dies away over its length, so the second and third stay clear and the top dulls first. No octave below. */
   bass(f,t,d,v){d=Math.max(.3,d);tone({f,t,d,type:'sawtooth',v:v*.24,a:.004,lp:[[f*8,0],[f*3,d*.6]],dest:AU.out});pluck(f,t,v*.12,6,.015)},
+  /* the horn: a low call. A sawtooth has every harmonic, as a horn's tone has; its lowpass opens on the attack and closes again as the
+     breath settles, which is the swell of a blown horn. A second voice 4 cents above it beats slowly, and a sine carries the fundamental. */
+  horn(f,t,d,v){v*=bite(f);const lp=[[f*1.8,0],[Math.min(2800,f*6.5),.055],[Math.min(1600,f*3.6),Math.max(.18,d*.75)]];
+    tone({f,t,d,type:'sawtooth',v:v*.085,a:.035,sus:1,vib:2.5,vibd:.2,bend:[-10,.03],lp,lpq:1.35,dest:AU.out,echo:1});
+    tone({f:f*1.0025,t,d,type:'sawtooth',v:v*.045,a:.06,sus:1,lp,lpq:1.1,dest:AU.out,echo:1});
+    tone({f,t,d,type:'sine',v:v*.06,a:.03,sus:1,dest:AU.out,echo:1})},
   drone(f,t,d,v){tone({f,t,d,type:'triangle',v:v*.16,a:.6,sus:1,dest:AU.out});tone({f:f*1.4983,t,d,type:'sine',v:v*.09,a:.9,sus:1,dest:AU.out})}};
 /* the held pipe: under the melody, a reed tone that swells in, holds and is let go 80 ms before the next breath */
 INST.aulos.hold=(f,t,d,v)=>tone({f,t,d,type:'square',v:v*bite(f)*.012,a:.08,sus:1,lp:[[1900,0]],lpq:1.2,dest:AU.out,echo:1});
@@ -510,9 +523,12 @@ function playStep(st,t){const sc=AU.score;if(!sc)return;const N=sc.steps||16,
 /* loopOf: how many steps a score plays before it starts again */
 const loopOf=sc=>(sc.bars||16)*(sc.steps||16);
 function setScore(sc){if(sc)AU.key=sc;if(AU.score!==sc){AU.score=sc;AU.step=0}}
-function sched(){const c=AU.ctx;if(!c||c.state!=='running')return;const sc=AU.score;
+/* A score plays round and round. One that names another (then: a score) is played once, and that one follows it: the overture of the
+   opening picture (shared/splash.js) is followed by the title's music. */
+function stepOn(sc){if(++AU.step>=loopOf(sc)){AU.step=0;if(sc.then)setScore(sc.then)}}
+function sched(){const c=AU.ctx;if(!c||c.state!=='running')return;
   if(AU.next<c.currentTime-.5)AU.next=c.currentTime+.05;
-  while(sc&&AU.next<c.currentTime+.25){playStep(AU.step,AU.next);AU.next+=sc.dt;AU.step=(AU.step+1)%loopOf(sc)}
+  while(AU.score&&AU.next<c.currentTime+.25){const sc=AU.score;playStep(AU.step,AU.next);AU.next+=sc.dt;stepOn(sc)}
   ambience(c.currentTime)}
 /* --- ambience: each room names the sounds around it and how loud they are, e.g. amb:{crickets:.6,wind:.3}.
    Beds are filtered noise that runs all the time; calls are short sounds scattered at random intervals. A chapter may bring its own,
@@ -1306,6 +1322,7 @@ function drawTags(ts){if(!G.tags)return;const act=G.room&&!G.scene&&!G.busy&&!G.
 addEventListener('keyup',e=>{if(e.key==='Tab')tagsOn(false)});addEventListener('blur',()=>tagsOn(false));
 addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;const k=e.key.toLowerCase();
   if(k==='tab'){e.preventDefault();tagsOn(true)}
+  else if((k===' '||k==='enter')&&splashGo&&ov.classList.contains('splash')&&!cb.classList.contains('on')&&!$('#menu').classList.contains('on')){e.preventDefault();splashGo()}
   else if(k===' '||k==='escape'||k==='.'){if(G.skip){e.preventDefault();G.skip()}
     else if(k==='escape'){if(cb.classList.contains('on'))closeCode();else if($('#menu').classList.contains('on'))closeMenu();
       else if(!$('#tablets.on')&&!G.busy&&(!G.scene||ov.classList.contains('on')))openMenu()}}
@@ -1555,27 +1572,43 @@ async function startChapter(n){ov.onclick=null;try{await loadLevel(n)}catch(e){r
 /* chsFade: fades the chapter list's top edge while entries are scrolled away above it, and its bottom edge while more wait below */
 function chsFade(l){l.classList.toggle('up',l.scrollTop>1);l.classList.toggle('down',l.scrollTop+l.clientHeight<l.scrollHeight-1)}
 addEventListener('resize',()=>{const l=ov.querySelector('.chs');if(l)chsFade(l)});
+/* The game opens on its opening picture (shared/splash.js): the name over a tentmaker's bench by lamplight, once each time the game is
+   opened. It waits, silent, because a browser lets a page sound only after a click or a key. That click starts the overture; when its
+   melody has been heard, or on a second click, the picture passes into the title's own and the chapters appear, and the title's music
+   follows the overture by itself. G.splash: 1 it waits, 2 the overture plays, 0 it is over (undefined: it has not been shown yet).
+   Coming back to the title from a game shows the chapters at once. If the file is missing, so does opening the game. */
+let splashGo=null;   /* while the opening picture is up: what a click on it does, for Space and Enter to do too */
 async function title(){lock(true);if(SHARED.scroll)SHARED.scroll.off();await setLang(firstLang());try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
-  setChapter(TITLE.level);G.scene=CHAP[TITLE.level].scenes[TITLE.scene];G.end={};AU.mood=TITLE.mood;AU.amb=TITLE.amb;
+  const sp=G.splash===undefined?await need('splash').catch(e=>{console.error(e);return null}):null,own=CHAP[TITLE.level].scenes[TITLE.scene];let tm=0;
+  setChapter(TITLE.level);G.scene=sp?sp.scene:own;G.end={};AU.mood=TITLE.mood;AU.amb=sp?null:TITLE.amb;G.splash=sp?1:0;if(sp)setScore(null);
   /* The name and the subtitle are painted as a logo (shared/logo.js). If its file is missing, or a language's title has a letter the
      logo cannot write, they stand as plain text instead. The canvas keeps the words, for a screen reader and for the playtest. */
   const logo=await need('logo').catch(e=>{console.error(e);return null});
   /* the chapters scroll in their own box below the title (see .chs); Continue stays above it, always in view */
-  overlay('on title',()=>{const sv=saved(),fs=saves().far,far=fs&&(!sv||fs.code!==sv.code)?decode(fs.code).ch:0,
+  overlay('on title'+(sp?' splash':''),()=>{const sv=saved(),fs=saves().far,far=fs&&(!sv||fs.code!==sv.code)?decode(fs.code).ch:0,
       name=T('PAUL OF TARSUS'),sub=T('ON THE ROADS OF ROME'),art=logo&&logo.can(name+sub)?logo.paint(name,sub):null;
     ov.innerHTML=(art?'<h1 class="art"></h1>':'<h1>'+name+'</h1><h2>'+sub+'</h2>')+
-    '<p class="small">'+T('A point-and-click adventure based on the book of Acts')+'</p>'+
+    '<p class="small lede">'+T('A point-and-click adventure based on the book of Acts')+'</p>'+
     (sv?'<p class="go" data-cont="1">&#9656; '+T('Continue')+' &middot; '+T(CHAP[sv.ch].label)+' &middot; '+T(CHAP[sv.ch].title)+'</p>':'')+
     /* the farthest point, when it is not where Continue goes: someone who went back to try an earlier chapter finds the way forward again */
     (far?`<p class="${sv?'pick':'go'}" data-far="1">&#9656; ${T('Farthest point')} &middot; ${T(CHAP[far].label)} &middot; ${T(CHAP[far].title)}</p>`:'')+
     '<div class="chs">'+Object.keys(CHAP).map((n,i)=>`<p class="${i||sv||far?'pick':'go'}" data-ch="${n}">&#9656; ${T(CHAP[n].label)} &middot; ${T(CHAP[n].title)}</p>`).join('')+'</div>'+
     '<p class="small">'+T('Click a chapter to begin. Returning? Use ENTER CODE, top right.')+'</p>'+
-    (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'');
+    (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'')+
+    (G.splash?'<p class="begin"><span class="go">'+T('Click to begin')+'</span></p>':'');
     if(art){art.textContent=name+' '+sub;art.setAttribute('role','img');art.setAttribute('aria-label',T('Paul of Tarsus: On the Roads of Rome'));
       art.style.width='calc(var(--s)*'+art.width/HR+'px)';art.style.height='calc(var(--s)*'+art.height/HR+'px)';ov.querySelector('h1').appendChild(art)}
     const l=ov.querySelector('.chs');l.onscroll=()=>chsFade(l);requestAnimationFrame(()=>chsFade(l))});
-  ov.onclick=e=>{const d=e.target.dataset||{};if(d.lang){SFX.click();return setLang(d.lang,1)}if(e.target.classList.contains('chs'))return;
-    if(e.target.closest('.langs'))return;if(d.cont)return resume();if(d.far)return resumeFar();startChapter(+d.ch||1)};codeBtn();G.ready=1}
+  const pick=e=>{const d=e.target.dataset||{};if(d.lang){SFX.click();return setLang(d.lang,1)}if(e.target.classList.contains('chs'))return;
+    if(e.target.closest('.langs'))return;if(d.cont)return resume();if(d.far)return resumeFar();startChapter(+d.ch||1)};
+  /* leave: the splash is over. The picture passes into the title's own (at once in a playthrough at speed), and the chapters come in */
+  const leave=()=>{if(!G.splash||!ov.classList.contains('splash'))return;G.splash=0;clearTimeout(tm);splashGo=null;sp.leave(own,G.speedAll>200?1:1800);
+      AU.amb=TITLE.amb;ov.classList.remove('splash','playing');ov.onclick=pick},
+    go=()=>{if(G.splash===1&&ov.classList.contains('splash')){G.splash=2;audioInit();sp.score.then=CHAP[TITLE.level].music;setScore(sp.score);ov.classList.add('playing');tm=setTimeout(leave,sp.turn*1000);kick()}else leave()},
+    /* kick: the overture begins with the click, not at the sequencer's next look: its first step is set at once, and again when a context that
+       was only just made says that it runs */
+    kick=()=>{const c=AU.ctx,on=()=>{if(AU.score===sp.score&&!AU.step&&c.state==='running'){AU.next=c.currentTime+.03;sched()}};if(!c)return;on();if(c.state!=='running'){const r=c.resume();if(r&&r.then)r.then(on,()=>{})}};
+  splashGo=sp?go:null;ov.onclick=sp?go:pick;codeBtn();G.ready=1}
 /* resumeFar: the title screen's farthest point. One that cannot be restored is left for the player to delete, as it is never dropped unasked. */
 async function resumeFar(){audioInit();const f=saves().far;if(f&&await restore(f.code)!==false)return;SFX.nope()}
 /* endScreen: a chapter's closing screen. o: title; text; based (its passages, and that the dialogue is imagined); extra (more lines for

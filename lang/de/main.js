@@ -103,6 +103,7 @@ TEXTS('de','main',{
   "Click to reload":"Zum Neuladen klicken",
   "ON THE ROADS OF ROME":"AUF ROMS STRASSEN",
   "A point-and-click adventure based on the book of Acts":"Ein Point-and-Click-Abenteuer nach dem Bibelbuch Apostelgeschichte",
+  "Click to begin":"Zum Beginnen klicken",
   "Click a chapter to begin. Returning? Use ENTER CODE, top right.":"Klicke auf ein Kapitel, um zu beginnen. Schon einmal gespielt? Oben rechts auf CODE EINGEBEN klicken.",
   "Continue":"Weiterspielen",
   "CHAPTER COMPLETE":"KAPITEL ABGESCHLOSSEN",

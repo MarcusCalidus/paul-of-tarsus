@@ -72,6 +72,39 @@
  addEventListener('error',e=>L('JSERR '+e.message));addEventListener('unhandledrejection',e=>{if(e.reason!=='halt')L('REJ '+(e.reason&&e.reason.message||e.reason))});
  (async()=>{try{
   while(!G.ready)await wait(30);
+  /* The game opens on its opening picture (shared/splash.js), on every visit: the name over a tentmaker's bench by lamplight, silent, with
+     one line that asks for a click. That click starts the overture and nothing else; a second click, or the end of the melody, brings the
+     chapters, and the title's music follows the overture by itself. Every run passes through it here. The stop `splash` shows it. */
+  {const sp=SHARED.splash,cls=ov.classList,seen=e=>!!e&&+getComputedStyle(e).opacity>.9,own=CHAP[1].scenes.title;
+    ok(sp&&G.splash===1&&G.scene===sp.scene&&cls.contains('splash')&&cls.contains('title')&&!AU.score&&!AU.amb&&!G.room&&ov.querySelector('.begin').textContent===T('Click to begin'),
+      'the game opens on its opening picture: the name over the bench, silent, waiting for a click');
+    ok(seen(ov.querySelector('.begin'))&&seen(ov.querySelector('.lede'))&&seen(ov.querySelector('h1'))&&!seen(ov.querySelector('.chs'))&&!seen(ov.querySelector('.langs')),'the name, the line under it and "Click to begin" are seen; the chapters are not yet');
+    {const b=ov.querySelector('.begin').getBoundingClientRect(),v=ov.getBoundingClientRect();if(b.left<v.left||b.right>v.right||b.bottom>v.bottom)tight.add('Click to begin')}
+    /* the picture: painted down to the foot of the window, brightest round the lamp, dark behind the name, and it does not flicker as a whole */
+    {const[a,ga]=mk(VW*HR,VT*HR),[b,gb]=mk(VW*HR,VT*HR);ga.scale(HR,HR);gb.scale(HR,HR);sp.scene(ga,0);sp.scene(gb,170);
+      const A=ga.getImageData(0,0,VW*HR,VT*HR).data,B=gb.getImageData(0,0,VW*HR,VT*HR).data,lum=(x,y,w,h)=>{let s=0;for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++){const k=(j*HR*VW*HR+i*HR)*4;s+=A[k]+A[k+1]+A[k+2]}return s/(3*w*h)};
+      let diff=0,far=0;for(let k=0;k<A.length;k+=4)if(A[k]!==B[k]||A[k+1]!==B[k+1]||A[k+2]!==B[k+2]){diff++;const x=(k/4)%(VW*HR)/HR,y=Math.floor(k/4/(VW*HR))/HR;if(Math.hypot(x-sp.lamp[0],y-sp.lamp[1])>30)far++}
+      const lamp=lum(sp.lamp[0]-20|0,sp.lamp[1]+2|0,40,14),top=lum(60,6,200,40),foot=lum(0,VT-6,VW,6);
+      ok(lamp>90&&top<60&&top>4&&foot>2&&lamp>top*2.5,'its picture is lit by the one lamp and dark behind the name (lamp '+Math.round(lamp)+', behind the name '+Math.round(top)+')');
+      ok(diff>0&&far===0,'only the flame moves, and the small glow round it: '+diff+' pixels change, none farther than 30 from the wick')}
+    ok(loopOf(sp.score)===160&&Math.abs(sp.len-26.4)<.01&&sp.turn<sp.len&&sp.turn>sp.len-5&&sp.score.tracks.every(t=>t.drone||t.drum||typeof INST[t.inst]==='function')&&sp.score.tracks.some(t=>t.inst==='horn')
+      &&sp.score.root===CHAP[1].music.root&&sp.score.scale.join()===CHAP[1].music.scale.join(),'the overture is ten bars in Chapter One\'s key, about 26 seconds, on voices the engine has, the horn among them');
+    halt('splash',()=>{ov.querySelectorAll('.go').forEach(g=>g.style.animation='none')});
+    /* that click is the press that wakes the sound. The sound itself is tested further down, from silence: here the call is only counted */
+    const wake=audioInit;let woke=0;window.audioInit=()=>{woke++};
+    ov.click();ok(woke>0&&G.splash===2&&AU.score===sp.score&&sp.score.then===CHAP[1].music&&cls.contains('playing')&&cls.contains('splash')&&!G.room&&G.scene===sp.scene,'a click wakes the sound, starts the overture, and starts nothing else');
+    await wait(560);ok(!seen(ov.querySelector('.begin'))&&!seen(ov.querySelector('.chs')),'"Click to begin" goes, and the name stays alone over the picture while the overture plays');
+    /* the sequencer: a score that names another is played once, and that one follows it */
+    {const st=AU.step;AU.step=loopOf(sp.score)-2;stepOn(sp.score);const mid=AU.score===sp.score&&AU.step===loopOf(sp.score)-1;stepOn(sp.score);
+      ok(mid&&AU.score===CHAP[1].music&&AU.step===0&&AU.key===CHAP[1].music,'when the overture ends the title\'s music follows it, from its first bar');
+      AU.step=3;stepOn(AU.score);const loops=AU.score===CHAP[1].music&&AU.step===4;AU.step=loopOf(AU.score)-1;stepOn(AU.score);ok(loops&&AU.step===0&&AU.score===CHAP[1].music,'and that music plays round and round, as every other score does');
+      setScore(sp.score);AU.step=st}
+    const h0=ov.querySelector('h1').getBoundingClientRect().top;
+    ov.click();ok(G.splash===0&&!cls.contains('splash')&&!cls.contains('playing')&&AU.score===sp.score&&AU.amb===TITLE.amb&&!G.room,'a second click brings the chapters, and the overture plays on');
+    await wait(120);ok(G.scene===own&&sp.out&&Math.abs(ov.querySelector('h1').getBoundingClientRect().top-h0)<.5,'the picture has passed into the title\'s own, and the name has not moved');
+    /* from here on the title is tested as it stands, without waiting for its lines to fade in */
+    {const st=document.createElement('style');st.textContent='#overlay.title>*{transition:none!important}';document.head.appendChild(st)}
+    window.audioInit=wake;setScore(CHAP[1].music);ok(ov.onclick&&seen(ov.querySelector('.chs')),'the chapters are there to be clicked')}
   const srt=()=>G.inv.slice().sort().join(),nq=()=>document.querySelectorAll('#choices button').length;
   /* a choice is found by its English text (the button keeps it), or, for a line the level puts together, by the translation of a part of it */
   const isQ=(b,t)=>(b.dataset.src||'').includes(t)||b.textContent.includes(T.peek(t)||t);
