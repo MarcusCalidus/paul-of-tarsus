@@ -375,7 +375,7 @@
     await act(null,"Eliab's door");ok(G.room==='workshop','playable after title code');halt('titlecode')}
   /* autosave: the game keeps the safe-point code in the browser, and a new visit offers to continue from it. The game is reloaded for real
      (keep=1 stops the runner clearing the save), and the first half's log is carried over in sessionStorage. */
-  if(stop==='continue'||stop==='resume'){
+  if(stop==='continue'||stop==='resume'||stop==='saves'||stop==='titlefar'){
     if(!/[?&]keep=1/.test(location.search)){const from=$('#tlog').textContent.length;
       ov.click();await idle();ok(G.room==='workshop'&&!G.busy,'the intro ends in the workshop');
       await act('pickup','spool of thread');await act('pickup',"tentmaker's knife");
@@ -404,6 +404,43 @@
     /* a chapter finished leaves the next chapter's first code; a damaged or foreign entry is ignored */
     autosave(codeOf(2,0));await boot();ok(ov.querySelector('[data-cont]').textContent.includes(T('Chapter Two')),'a finished chapter leaves Continue at the next one');
     ov.querySelector('[data-cont]').click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy&&makeCode()===codeOf(2,0),'Continue starts Chapter Two');
+    /* saved games: the farthest point, the last point and four slots, kept apart from paul.save under paul.saves */
+    {const sv=()=>saves(),bt=(k,a)=>mn.querySelector(`[data-k="${k}"][data-a="${a}"]`),c2=makeCode(),
+        rowsFit=()=>mn.querySelectorAll('.slot').forEach(r=>{fits(r,'saved game');fits(r.querySelector('.sl'),'saved game')}),
+        openSaves=()=>{$('#opts').click();$('#opt-saves').click()};
+      ok(sv().far&&decode(sv().far.code).ch===3&&sv().last.code===c2&&store('paul.save')===c2,'Chapter Two is played after Chapter Three: the last point follows play, the farthest point stays in Chapter Three');
+      openSaves();ok(mn.classList.contains('on')&&mn.querySelectorAll('.slot').length===6&&mn.textContent.includes(T('SAVED GAMES'))&&mn.textContent.includes(T('Farthest point'))&&mn.textContent.includes(T('Slot {n}',{n:4})),
+        'the options open the saved games: the farthest point, the last point and four slots');
+      ok(bt(0,'save')&&!bt(0,'load')&&!bt(0,'del')&&!bt('last','del')&&bt('far','del'),'an empty slot can only be saved into; the last point cannot be deleted, the farthest can');
+      bt(0,'save').click();ok(sv().slots[0]&&sv().slots[0].code===c2&&bt(0,'load')&&mn.querySelector('[data-slot="0"]').textContent.includes(T('Chapter Two')),'saving into an empty slot keeps the point at once, and names its chapter');
+      ok(store('paul.save')===c2,'paul.save still holds the code alone');
+      bt(0,'save').click();ok(mn.textContent.includes(T('Overwrite?'))&&bt(0,'yes')&&bt(0,'no'),'saving over a kept game asks first, in the row');bt(0,'no').click();ok(!mn.textContent.includes(T('Overwrite?'))&&sv().slots[0].code===c2,'No leaves it as it was');
+      bt(1,'save').click();bt('far','del').click();ok(mn.textContent.includes(T('Delete?'))&&sv().far,'deleting asks first');bt('far','no').click();ok(sv().far&&decode(sv().far.code).ch===3,'No keeps the farthest point');
+      rowsFit();halt('saves',()=>{});
+      bt('far','load').click();ok(mn.textContent.includes(T('Leave this game?')),'loading over a game in play asks first');bt('far','yes').click();await wait(200);await idle();
+      ok(G.ch===3&&G.room==='tarsus'&&!mn.classList.contains('on')&&!G.busy&&store('paul.save')===sv().far.code,'Yes returns to the farthest point, which becomes the last point too');
+      ok(farther(codeOf(3,1),codeOf(3,0))&&!farther(codeOf(3,0),codeOf(3,1))&&farther(codeOf(4,0),codeOf(3,3))&&!farther(codeOf(2,7),codeOf(3,0))&&!farther(codeOf(3,0),codeOf(3,0)),
+        'farther: a later chapter, or more of the story done in the same one; never the same point');
+      /* a typed code does not move the farthest point, but play that goes on from there does */
+      const f3=sv().far.code;$('#code').click();$('#codein').value=codeOf(5,0);$('#codego').click();await wait(200);await idle();
+      ok(G.ch===5&&sv().far.code===f3&&sv().last.code===makeCode(),'a typed Chapter Five code becomes the last point, not the farthest');
+      reached(codeOf(5,1));ok(sv().far.code===codeOf(5,1),'the next point played from there moves the farthest point on');
+      reached(codeOf(2,0));ok(sv().far.code===codeOf(5,1),'an earlier point never overwrites it');
+      openSaves();bt('far','del').click();bt('far','yes').click();ok(!sv().far&&!bt('far','load')&&mn.querySelector('[data-slot="far"]').textContent.includes(T('Empty')),'Yes deletes the farthest point; its row says it is empty');
+      bt(1,'del').click();bt(1,'yes').click();ok(!sv().slots[1]&&sv().slots[0],'a slot is deleted on its own');
+      key('Escape');ok(!mn.classList.contains('on'),'Escape closes the saved games');
+      reached(codeOf(4,0));ok(sv().far&&sv().far.code===codeOf(4,0),'a deleted farthest point is filled again by the next point reached');
+      /* from the title screen: the farthest point is offered beside Continue, and a slot loads without asking */
+      autosave(codeOf(2,0));await boot();const fe=ov.querySelector('[data-far]');
+      ok(fe&&fe.classList.contains('pick')&&ov.querySelector('[data-cont]')&&fe.textContent.includes(T('Chapter Four'))&&inOv(),'the title offers the farthest point after Continue, and still fits');
+      fits(fe,'farthest point');halt('titlefar',()=>{ov.querySelectorAll('.go').forEach(g=>g.style.animation='none')});
+      openSaves();ok(!bt(0,'save')&&bt(0,'load')&&!mn.querySelector('[data-a="save"]'),'on the title screen the slots load but nothing is saved');rowsFit();
+      bt(0,'load').click();await wait(200);await idle();ok(G.ch===2&&makeCode()===c2&&!ov.classList.contains('on')&&!mn.classList.contains('on')&&!G.busy,'slot 1 loads from the title screen without asking');
+      await boot();ov.querySelector('[data-far]').click();await wait(200);await idle();ok(G.ch===4&&makeCode()===codeOf(4,0)||G.ch===4&&!G.busy,'the title\'s farthest point loads');
+      autosave(sv().far.code);await boot();ok(!ov.querySelector('[data-far]'),'when Continue goes to the farthest point, it is not offered twice');
+      store('paul.saves','{not json');ok(sv().far===null&&sv().slots.every(e=>e===null),'a damaged paul.saves reads as empty');
+      store('paul.saves',JSON.stringify({far:{code:'XXX-XXX',t:1},slots:[{code:c2,t:1},{code:'nonsense'}]}));ok(!sv().far&&sv().slots[0].code===c2&&!sv().slots[1],'an entry that is not a valid code reads as empty, and the rest is kept');
+      store('paul.saves',null)}
     for(const bad of['garbage','XXX-XXX',w.slice(0,-1)+(w.slice(-1)==='A'?'B':'A'),'']){store('paul.save',bad);await boot();ok(!ov.querySelector('[data-cont]')&&ov.querySelector('[data-ch="1"]').classList.contains('go'),'a damaged save is not offered: '+JSON.stringify(bad))}
     const lost=localStorage.setItem;Storage.prototype.setItem=()=>{throw new Error('full')};autosave('x');ok(G.saved===false,'a browser that will not store anything is no problem');Storage.prototype.setItem=lost;
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
