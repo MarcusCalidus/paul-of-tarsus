@@ -203,7 +203,7 @@ const cv=$('#screen'),cx=cv.getContext('2d');
 cx.imageSmoothingEnabled=false;
 const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,t:0,scene:null,
   hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false,pc:null,invs:{},lang:'en'};
-const OPTS_KEY='paul.opts',OPTS={mus:1,fx:1,spd:1};
+const OPTS_KEY='paul.opts',OPTS={mus:1,fx:1,spd:1,mov:1};   /* mov: 1 lively, 0 calm (see moves) */
 /* ============ LANGUAGES: the game is written in English; every other language is data under lang/ ============ */
 /* Every line is translated as it is shown: by say and narr, choose, the status line, the labels, the overlays, the tablets and the map,
    with the English text as the key. So the story's logic (its flags, and the names it compares) never sees a translation, and a
@@ -743,11 +743,20 @@ const HEADS={
  veil:["......aaaaaaa....","....aaAAAAAAaaa..","..aaaAAAAaaaaaaa.",".aaAAAaaaaaaaaaaq",".aAAaaaakkkkkkaaq","aaAaaakkkKkkkkkaq","aaaaakkkK...kkkaq","aaaaakk......kkaq","aaaak.........kaq","aaaq..........kq.","aaaq...........q.","aaaq...........q.","aaaq...........q.","aaaaq..........q.","aaaaq.........q..","aaaaq.........q..",".aaaaq.......qq..",".aaaaq......qaq..",".aaaaaq....qaaq..","..aaaaaq..qaaaq.."],
  wrap:["....aaaAAAAaaa...","..aaaAAAAAAaaaaa.",".aaAAAAaaaAAAaaaq","aaAAaaaaAAAaaaaqq","aAAaaaAAAaaaaaaqq","aaaaAAAaaaaaaaqqq","aaaAAaaaaaaaqqqqq","aaaaaaaaaaqqqqqq.",".qqaaaaaaqqqqqq..","aaaq.............","aaaq.............","aaq..............","aaq..............","aq...............",".q..............."],
  helm:["........yy.......","......aAAAAa.....","....aaAAAyAAaa...","..aaaAAAyAAAaaaa.",".aaAAAAyAAaaaaaq.",".aaAAAyAAaaaaaaq.",".aAAAAAaaaaaaaqq.",".aaaaaaaaaaaaqqqq",".aaa.............",".aaa.............",".aaq.............",".aaq.............",".aaq.............","aaq..............","qaq..............","..q.............."]};
+/* MV: how a figure carries its head and body beyond its pose, as a sum of these. dip, lift: the head a pixel down or up; fwd, back: a pixel
+   forward or back; brow: the brows raised; glance: the eyes turned back; lean: everything above the belt a pixel forward. */
+const MV={dip:1,lift:2,fwd:4,back:8,brow:16,glance:32,lean:64};
 /* person: one figure with its feet at x,y, one drawing unit per canvas pixel, facing right (dir -1 mirrors it).
-   fr 0-3 walk cycle; talk opens the mouth; bow lowers the head; ges raises the far hand; blink closes the eyes. */
-function person(g,x,y,o,dir,fr,talk,bow,ges,blink){
+   fr 0-3 walk cycle; bow lowers the head; blink closes the eyes; mv is a sum of MV.
+   talk is the mouth: 0 shut, 1 parted, 2 open, 3 wide, 4 round; the last two with the chin a pixel down, and a beard goes down with it.
+   ges is the far hand: 0 down, 1 raised, 2 half raised and open, 3 laid on the chest. A forearm is always bent and slanting: no arm is
+   stretched out, and never are both raised (CONTRIBUTING section 3). A figure that bows keeps its head still, and a statue (stone:1)
+   never moves: its mouth stays shut and its head where it is. */
+function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=o.stone?c.sk:c.le,fem=!!(o.veil||o.fem),HIM=!!(o.himation&&C);g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+  mv=o.stone||bow?0:mv|0;talk=o.stone?0:talk|0;
   const px=(a,b,col,w,h)=>{g.fillStyle=col;g.fillRect(a,b,w||1,h||1)};
+  const body=()=>{
   /* cloth: one pixel row of a rounded form lit from the front right. folds: [position 0-1, first row, drift per row, last row];
      each is a dark crease with a light ridge beside it, wandering a little as it falls. hi: rows that catch a highlight.
      soft: the left edge is only a crease (an arm lies against it), not the turn of the form into shadow. */
@@ -811,28 +820,45 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink){
   /* near arm (hidden when a mantle hangs over it) */
   if(!C||o.cape)arm(true,-st*2);
   /* head */
-  const hx=-6+(bow?1:0),hy=yS-20+(bow?2:0),H=c.ha,Bd=c.be,Hd=c.hd,Gr=c.gr,brow=fem?mix(o.brow||'#3a2414',o.skin,.3):o.brow||o.hair||o.beard||'#2a1a12';
+  const hx=-6+(bow?1:0)+(mv&MV.fwd?1:0)-(mv&MV.back?1:0),hy=yS-20+(bow?2:0)+(mv&MV.dip?1:mv&MV.lift?-1:0),jaw=talk>2,H=c.ha,Bd=c.be,Hd=c.hd,Gr=c.gr,brow=fem?mix(o.brow||'#3a2414',o.skin,.3):o.brow||o.hair||o.beard||'#2a1a12';
   px(-1,yS-3,S[3],7,3);px(0,yS-3,S[2],5,2);
   const L={s:S[2],S:S[1],L:S[0],z:S[3],Z:S[4],n:S[3],w:fem?'#f6eedc':S[0],p:'#1a1018',b:brow,m:'#6a2a22',r:'#b04a44',c:mix(o.skin,'#d86a58',.4),h:H[2],H:Gr?Gr[2]:H[1],d:H[3],k:'#2a1a12',K:'#4a3020'};
   if(Bd){L.B=Bd[2];L.V=Gr?Gr[2]:Bd[1];L.v=Bd[3]}L.a=Hd[2];L.A=Hd[1];L.y=Hd[0];L.q=Hd[3];
   if(o.stone)Object.assign(L,{w:S[1],p:S[3],b:S[3],m:S[4],r:S[3],c:S[2],k:H[3],K:H[2]});
-  stamp(g,fem?HEADS.faceF:HEADS.face,hx,hy,L);
-  if(blink||bow){px(hx+4,hy+9,S[3],2);px(hx+10,hy+9,S[3],2)}
-  if(talk){px(hx+7,hy+14,'#3a0e0c',4);px(hx+7,hy+15,fem?'#b04a44':'#7a2a22',3)}
-  if(o.hair&&!o.veil&&!o.wrap&&!o.helm){if(o.fem){L.f=o.band||'#c9a14a';stamp(g,HEADS.hairF,hx-2,hy,L)}
-    else stamp(g,o.bald?HEADS.bald:o.crop&&o.thin?HEADS.cropThin:o.crop?HEADS.crop:o.thin?HEADS.thin:o.receding?HEADS.receding:HEADS.hair,hx,hy,L)}
-  if(Bd){stamp(g,o.longBeard?HEADS.longBeard:o.fullBeard?HEADS.fullBeard:o.shortBeard?HEADS.shortBeard:HEADS.beard,hx,hy+11,L);px(hx+7,hy+14,o.stone?Bd[4]:talk?'#3a0e0c':'#5a221c',4);if(talk)px(hx+7,hy+15,'#3a0e0c',4)}
-  if(o.veil){stamp(g,HEADS.veil,hx-1,hy-1,L);
+  /* sh: lay down a map of the head. With the chin down, the rows of a face or a beard (low) below the mouth sink by a pixel, and the row under the mouth is doubled */
+  const sh=(map,x0,y0,low)=>{for(let j=0;j<map.length;j++){const r=map[j],yy=y0+j,d=low&&jaw?(yy>hy+15?1:yy===hy+15?2:0):0;
+    for(let i=0;i<r.length;i++){const q=L[r[i]];if(q){g.fillStyle=q;g.fillRect(x0+i,d===1?yy+1:yy,1,d===2?2:1)}}}};
+  sh(fem?HEADS.faceF:HEADS.face,hx,hy,1);
+  if(blink||bow){px(hx+4,hy+9,S[3],2);px(hx+10,hy+9,S[3],2)}else if(mv&MV.glance){px(hx+4,hy+9,L.p);px(hx+5,hy+9,L.w);px(hx+10,hy+9,L.p);px(hx+11,hy+9,L.w)}
+  if(mv&MV.brow){px(hx+4,hy+6,L.b,3);px(hx+10,hy+6,L.b,3);px(hx+4,hy+7,L.s,3);px(hx+10,hy+7,L.S,3)}
+  /* the mouth of a shaven face: parted; open, with the lower lip under it; wide, over two rows; round */
+  if(talk){const D='#3a0e0c',lp=fem?'#b04a44':'#7a2a22';if(talk===1)px(hx+8,hy+14,D,2);else if(talk===2){px(hx+7,hy+14,D,4);px(hx+7,hy+15,lp,3)}
+    else if(talk===3){px(hx+7,hy+14,D,4,2);px(hx+7,hy+16,lp,3)}else{px(hx+8,hy+14,D,2,2);px(hx+8,hy+16,lp,2)}}
+  if(o.hair&&!o.veil&&!o.wrap&&!o.helm){if(o.fem){L.f=o.band||'#c9a14a';sh(HEADS.hairF,hx-2,hy)}
+    else sh(o.bald?HEADS.bald:o.crop&&o.thin?HEADS.cropThin:o.crop?HEADS.crop:o.thin?HEADS.thin:o.receding?HEADS.receding:HEADS.hair,hx,hy)}
+  /* a bearded mouth is a gap in the beard: the same four shapes, without the lower lip */
+  if(Bd){const D='#3a0e0c';sh(o.longBeard?HEADS.longBeard:o.fullBeard?HEADS.fullBeard:o.shortBeard?HEADS.shortBeard:HEADS.beard,hx,hy+11,1);px(hx+7,hy+14,o.stone?Bd[4]:'#5a221c',4);
+    if(talk===1)px(hx+8,hy+14,D,2);else if(talk===2)px(hx+7,hy+14,D,4);else if(talk===3)px(hx+7,hy+14,D,4,2);else if(talk===4)px(hx+8,hy+14,D,2,2)}
+  if(o.veil){sh(HEADS.veil,hx-1,hy-1);
     /* the shawl runs on from the head over both shoulders, and hangs down the near arm */
     [[-5,-2],[-7,-2],[-9,-3],[-11,-4],[ax-1,-5],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax,-6],[ax,-7],[ax+1,-7],[ax+2,-8]].forEach(([a,b],i)=>cloth(yS-4+i,a,b,Hd,i,[[.45,5,.02]],null,[4,8]));
     [[5,7],[5,9],[6,11],[7,13-nw],[9,14-nw],[9,14-nw],[10,14-nw],[10,14-nw],[11,14-nw],[12,13-nw]].forEach(([a,b],i)=>{for(let xx=a;xx<=b;xx++)px(xx,yS-4+i,Hd[xx===a?3:i<5&&xx>a+1?1:2])})}
-  if(o.wrap)stamp(g,HEADS.wrap,hx-1,hy-4,L);if(o.helm)stamp(g,HEADS.helm,hx-1,hy-2,L);
+  if(o.wrap)sh(HEADS.wrap,hx-1,hy-4);if(o.helm)sh(HEADS.helm,hx-1,hy-2);
   /* the far hand: holding a spear, or raised in speech */
   if(o.spear){const sx=18;px(sx,yS-34,'#8a6238',1,34-yS);px(sx+1,yS-34,'#5a3c20',1,34-yS);
     [1,1,3,3,5,5,5,5,3,3,1,1].forEach((w,i)=>{const x0=sx-(w>>1);px(x0,yS-47+i,'#c4c4d0',w);px(x0+(w>1?1:0),yS-47+i,'#f4f4fc');if(w>2)px(x0+w-1,yS-47+i,'#8a8a98')});px(sx-1,yS-35,'#b08a3c',4,2);
     for(let i=0;i<5;i++)px(13+i,yS+12+(i>2?-1:0),S[i<1?3:2],1,4);px(16,yS+9,S[2],5,5);px(16,yS+9,S[1],5);px(16,yS+13,S[3],5);px(20,yS+10,S[3],1,3);px(16,yS+11,S[3],4)}
+  else if(ges===2&&!bow&&!o.stub){const R=o.longSleeve?T:S,q=19-nw;   /* half raised: the forearm slants forward, and the hand is open with its palm up */
+    for(let k=0;k<8;k++){const gx=12-nw+k,gy=yS+13-Math.round(k*.6);px(gx,gy,R[1]);px(gx,gy+1,R[2],1,2);px(gx,gy+3,R[3])}
+    px(q+1,yS+7,S[1]);px(q,yS+8,S[1],6);px(q,yS+9,S[2],7);px(q+1,yS+10,S[3],5)}
+  else if(ges===3&&!bow&&!o.stub){const R=o.longSleeve?T:S;   /* on the chest: the forearm slants back across the body, and the hand lies flat on it */
+    for(let k=0;k<8;k++){const gx=14-nw-k,gy=yS+13-Math.round(k*.5);px(gx,gy,R[1]);px(gx,gy+1,R[2],1,2);px(gx,gy+3,R[3])}
+    px(2,yS+7,S[2],5,4);px(2,yS+7,S[1],5);px(2,yS+10,S[3],5);px(1,yS+8,S[3],1,2);px(3,yS+6,S[2],3)}
   else if(ges&&!bow&&!o.stub){for(let k=0;k<10;k++){const gx=12-nw+Math.round(k*.6),gy=yS+14-k,R=o.longSleeve?T:S;px(gx,gy,R[3]);px(gx+1,gy,R[2],2);px(gx+3,gy,R[1])}
-    const q=17-nw;px(q,yS+1,S[2],5,5);px(q,yS+1,S[1],4);px(q,yS+5,S[3],5);px(q+4,yS,S[2],1,3);px(q+1,yS-1,S[1],1,2);px(q+3,yS-1,S[2],1,2);px(q-1,yS+4,S[3])}
+    const q=17-nw;px(q,yS+1,S[2],5,5);px(q,yS+1,S[1],4);px(q,yS+5,S[3],5);px(q+4,yS,S[2],1,3);px(q+1,yS-1,S[1],1,2);px(q+3,yS-1,S[2],1,2);px(q-1,yS+4,S[3])}};
+  /* leaning: the figure is painted twice, below the belt as it stands and above it a pixel forward */
+  if(mv&MV.lean){const yb=-7-(o.h?32:39)-(fr%2);for(const up of[0,1]){g.save();g.beginPath();g.rect(-90,up?-220:yb,180,up?220+yb:220);g.clip();if(up)g.translate(1,0);body();g.restore()}}
+  else body();
   g.restore()}
 /* A pack donkey in the same pixel manner, seen from the side. load: 0 saddle blanket only, 1 pack bags, 2 bags filled, with sacks on top. */
 const DONKEY_HEAD=["...e...e................","..eE..eE................","..eE..eE................","..eEe.eE................","..eEe.eEe...............","..eEeeeEe...............","..eeeeeeeh..............",
@@ -923,15 +949,45 @@ function place(a,room,x,y,dir){a.room=room;a.x=x;a.y=y;a.dir=dir||1;a.walk=null}
 function walk(a,x,y){return new Promise(res=>{const rm=ROOMS[a.room];
   if(a===PC()&&rm&&!a.free){const w=rm.walk;x=clamp(x,w[0],w[1]);y=clamp(y,w[2],w[3])}
   if(a.walk)a.walk.res(false);a.walk={x,y,res};if(Math.abs(x-a.x)>1)a.dir=x>a.x?1:-1})}
+/* cadence: the words of a line, as they stand on the screen, read into what a mouth does with them. ev: a row of {t0, t1, m, beat}, the
+   mouth m (see person) from t0 to t1 in milliseconds, beat on a stressed syllable; cl: the clauses, {t0, t1, end, n}, end being the mark
+   that closes it (, . ! ?). A vowel opens the mouth: an a wide and an o or a u round, both with the chin down, but only on a stressed
+   syllable and on every other one, or everyone would seem to shout; any other vowel half. Consonants part the lips; m, b and p shut
+   them. A comma is a short rest and a full stop a longer one, and when the words are through the mouth is still. The words are read
+   in the player's language, so each language has its own rhythm and gives no data for it. They are spoken faster if they would not be
+   through in nine tenths of the time the line stands (dur).
+   sung: the notes of a line that is sung, [from, to, vowel] in milliseconds: the mouth holds each vowel as long as its note. */
+const VOWELS='aeiouyäöüáéíóúàèâêô',isLetter=c=>/\p{L}/u.test(c),mouthOf=v=>'aáàâä'.includes(v)?3:'oóôuúüöy'.includes(v)?4:2;
+function cadence(text,dur,sung){const ev=[],cl=[],low=text.toLowerCase(),SYL=175;let h=0;for(let i=0;i<low.length;i++)h=Math.imul(h,31)+low.charCodeAt(i)|0;
+  if(sung&&sung.length){let was=-1e9;for(const[a,b,v]of sung){const on=Math.min(60,(b-a)/4);ev.push({t0:a,t1:a+on,m:1},{t0:a+on,t1:b,m:v==='@'?2:mouthOf(v),beat:a-was>120});was=b}
+    return{ev,cl:[{t0:sung[0][0],t1:was,end:'.',n:0}],end:was,h,sung:1}}
+  let t=160,i=0,n=0,c0=t,first=true,syl=0,lastBeat=-9,wlen=0,wfirst=true;
+  const close=(end,rest)=>{if(t>c0){cl.push({t0:c0,t1:t,end,n:n++});t+=rest;c0=t;first=true}};
+  while(i<low.length){const ch=low[i],v=VOWELS.includes(ch);
+    if(wfirst&&isLetter(ch)){let j=i;while(j<low.length&&isLetter(low[j]))j++;wlen=j-i}
+    if(v||ch>='0'&&ch<='9'){let j=i+1;while(v&&j<low.length&&VOWELS.includes(low[j]))j++;const d=(j-i>1?1.25:1)*SYL*.62,beat=first||wfirst&&wlen>=6&&syl-lastBeat>=3;
+      if(beat)lastBeat=syl;ev.push({t0:t,t1:t+d,m:beat||j-i>1||syl%2===0?mouthOf(ch):2,beat});t+=d;first=wfirst=false;syl++;i=j}
+    else if(isLetter(ch)){let j=i,shut=false;while(j<low.length&&isLetter(low[j])&&!VOWELS.includes(low[j])){if('mbp'.includes(low[j]))shut=true;j++}
+      const d=SYL*.38*Math.min(1.6,.7+.3*(j-i));ev.push({t0:t,t1:t+d,m:shut?0:1});t+=d;wfirst=false;i=j}
+    else{if(',;:–—'.includes(ch))close(',',230);else if('.!?…'.includes(ch))close(ch==='…'?'.':ch,400);else if(ch===' '){t+=18;wfirst=true}i++}}
+  close('.',0);const end=cl.length?cl[cl.length-1].t1:t,k=Math.min(1,dur*.9/end);
+  if(k<1)for(const x of ev.concat(cl)){x.t0*=k;x.t1*=k}
+  return{ev,cl,end:end*k,h}}
 let cur=null;
+/* say: a line stands over whoever speaks it (a: null for the narrator) until its time is up or the player moves on. o.thought: a thought,
+   in italics and with the mouth shut; o.dur: how long it stands; o.sung: its notes (see cadence); o.choir: others who sing it with him, or
+   without him. While it stands, cur holds its cadence and when it began, and the mouth and head of whoever speaks or sings follow that
+   (see moves). The blips of a speaking voice fall on its first syllables; a sung line has its own voice and no blips. */
 function say(a,text,o={}){text=T(text);return new Promise(res=>{
   const el=document.createElement('div');el.className='line';el.textContent=text;el.style.color=o.color||(a?a.color:'#e6d9ff');
   if(o.thought)el.style.fontStyle='italic';
-  $('#speech').appendChild(el);if(a&&!o.thought)a.talk=true;
-  let n=0;const blip=a&&!o.thought?setInterval(()=>{if(n++<Math.min(9,text.length/5))SFX.talk(a.pitch*2)},85):0;
-  const done=()=>{clearTimeout(tm);clearInterval(blip);el.remove();if(a)a.talk=false;if(G.skip===done)G.skip=null;cur=null;res()};
-  const tm=setTimeout(done,(o.dur||Math.max(2200,1400+text.length*65))*(G.speedAll>200?1:OPTS.spd));
-  G.skip=done;G.lineT=performance.now();cur={el,a,low:o.low};posSpeech()})}
+  const voiced=a&&!o.thought,choir=o.choir||[],dur=(o.dur||Math.max(2200,1400+text.length*65))*(G.speedAll>200?1:OPTS.spd),plan=voiced||choir.length?cadence(text,dur,o.sung):null;
+  $('#speech').appendChild(el);if(voiced)a.talk=true;choir.forEach(x=>x.talk=true);
+  const blips=voiced&&!plan.sung?plan.ev.filter(e=>e.m>1).slice(0,Math.ceil(Math.min(9,text.length/5))).map(e=>setTimeout(()=>SFX.talk(a.pitch*2),e.t0)):[];
+  const done=()=>{clearTimeout(tm);blips.forEach(clearTimeout);el.remove();if(a)a.talk=false;choir.forEach(x=>x.talk=false);if(G.skip===done)G.skip=null;cur=null;res()};
+  const tm=setTimeout(done,dur),me=PC();
+  /* to: the one who is spoken to, as far as the engine can know: whoever is played, or the person he is talking with (G.with, see act) */
+  G.skip=done;G.lineT=performance.now();cur={el,a,low:o.low,plan,t0:G.lineT,choir,to:!voiced||o.sung?null:a===me?G.with:me.room===a.room?me:null};posSpeech()})}
 const narr=(t,o)=>say(null,t,o);
 function posSpeech(){if(!cur)return;const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
   if(a&&a.room===G.room&&!G.scene){el.style.left=clamp((a.x-G.cam)*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-56),40,132)*s+'px';el.style.top=''}
@@ -940,7 +996,7 @@ function posSpeech(){if(!cur)return;const{el,a}=cur,vw=$('#view').clientWidth,s=
 function lock(b){$('#panel').classList.toggle('locked',b)}
 async function cut(fn,force){if(G.busy&&!force)return;G.busy=true;lock(true);status();
   try{await fn()}catch(e){console.error(e)}
-  G.busy=false;lock(false);G.verb='walk';G.item=null;syncVerbs();drawInv();status();codeBtn()}
+  G.with=null;G.busy=false;lock(false);G.verb='walk';G.item=null;syncVerbs();drawInv();status();codeBtn()}
 /* viewOf: show the room a character stands in. enterRoom: move the character the player controls into a room, and show it. */
 function viewOf(a){G.room=a.room;G.cam=clamp(a.x-160,0,ART[a.room].w-VW);AU.mood=ROOMS[a.room].mood||'calm';AU.amb=ROOMS[a.room].amb;G.hover=null}
 function enterRoom(room,x,y,dir){G.room=room;place(PC(),room,x,y,dir);G.cam=clamp(x-160,0,ART[room].w-320);AU.mood=ROOMS[room].mood||'calm';AU.amb=ROOMS[room].amb;G.hover=null}
@@ -1033,6 +1089,7 @@ function show(h,item){const w=PC(),s=(w===P?h.show:h.as&&h.as[w.id]&&h.as[w.id].
 async function act(v,h,item){const who=PC(),o=who===P?h:(h.as&&h.as[who.id])||{},
     run=async x=>{if(typeof x==='function')return x(h);for(const s of[].concat(x))await say(who,s)};
   if(v==='exit')return h.exit();
+  if(h.actor&&h.actor!==who&&(v==='talk'||item))G.with=h.actor;   /* the one he talks with, or shows something to, until this is over (see cut) */
   if(item){if(v==='give'&&h.actor&&h.actor.party&&h.actor!==who)return handOver(h.actor,item);
     const fn=v==='give'||h.actor&&!o.useWith?o.give:o.useWith;if(fn&&await fn(item)!==false)return;
     if(h.actor)return show(h,item);SFX.nope();return say(who,v==='give'?'I cannot give anything to that.':pick(NOPE))}
@@ -1118,8 +1175,9 @@ function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
   if(G.room&&!G.scene){const t=clamp(PC().x-160,0,ART[G.room].w-320);G.cam+=(t-G.cam)*Math.min(1,dt*5);if(Math.abs(t-G.cam)<.5)G.cam=t}}
 /* --- figures: each pose is drawn once into a cached sprite (dark contour, dither), then lit by the room and laid on the scene --- */
 const[SA,sa]=mk(FIG.W,FIG.H),[SB,sb]=mk(FIG.W,FIG.H),SPR=new Map();sa.imageSmoothingEnabled=false;
-/* sprite: draw a pose once and keep it. Edge pixels are darkened, more so on the side away from the light (dir tells which). */
-function sprite(key,fn,dir){let c=SPR.get(key);if(c)return c;if(SPR.size>500)SPR.clear();const W=FIG.W,Hh=FIG.H;
+/* sprite: draw a pose once and keep it. Edge pixels are darkened, more so on the side away from the light (dir tells which).
+   A speaking figure has many poses (mouth, head, hand), so the store holds up to 500 and then lets the 150 oldest go. */
+function sprite(key,fn,dir){let c=SPR.get(key);if(c)return c;if(SPR.size>=500){let n=150;for(const k of SPR.keys()){SPR.delete(k);if(!--n)break}}const W=FIG.W,Hh=FIG.H;
   sa.setTransform(1,0,0,1,0,0);sa.clearRect(0,0,W,Hh);sa.setTransform(HR,0,0,HR,FIG.OX,FIG.OY);fn(sa);
   const im=sa.getImageData(0,0,W,Hh),d=im.data,A=new Uint8Array(W*Hh);for(let i=0;i<W*Hh;i++){A[i]=d[i*4+3]>127?1:0;d[i*4+3]=A[i]?255:0}
   const far=dir<0?1:-1;for(let y=1;y<Hh-1;y++)for(let x=1;x<W-1;x++){const i=y*W+x;if(!A[i])continue;
@@ -1158,12 +1216,32 @@ function man(g,x,y,id,dir,fr,lit,ges,sw){const o=LOOK[id];figure(g,x,y,lit,id+di
 const beast=(g,x,y,dir,fr,load,lit)=>figure(g,x,y,lit,'donkey'+dir+fr+load,s=>donkey(s,0,0,dir,fr,load),15);
 /* An actor whose dress changes with the story (a cloak torn off him) is given another look and says so in wear, a letter or two that
    names it: the poses of each look are kept apart. A chapter's start gives everyone his own look back (see setChapter). */
-function drawActor(g,o,ts,id){const talk=o.talk&&Math.floor(ts/130)%2?1:0,ges=o.talk&&Math.floor(ts/560)%3===1?1:0,bl=o.bow||blinks(o.look,ts)?1:0,bow=o.bow?1:0;
+/* moves: what a figure does at this moment, as [mouth, far hand, eyes shut, a sum of MV]. o: the actor; L: its look; ln: the line it is
+   speaking (cur), if it has one on the screen; ts: now.
+   Who speaks: the mouth follows the line's cadence. The head dips on a stressed syllable, lifts with raised brows as a question ends,
+   sits a pixel forward for a clause now and then, and the eyes blink as a sentence closes.
+   Who is spoken to (cur.to) takes it in without a sign of yes or no: the brows rise at a question, and the eyes may blink as a sentence
+   ends. A nod is a yes, and the engine never gives one by itself. Everybody else glances aside now and then.
+   A mouth that a script sets talking with no line of its own on the screen (talk, while the narrator tells of a cry) babbles.
+   Calm movement (OPTS.mov 0) keeps the mouth and leaves the rest. A figure that bows or walks keeps its head still, and a statue never moves. */
+const BABBLE=[2,1,3,1,0,2,4,1],hash=n=>{n=Math.imul(n^0x9e3779b9,0x85ebca6b);n^=n>>>13;n=Math.imul(n,0xc2b2ae35);return(n^n>>>16)>>>0};
+function moves(o,L,ln,ts){if(L.stone)return[0,0,0,0];
+  let m=0,ges=0,bl=o.bow||blinks(L,ts)?1:0,mv=0;const live=OPTS.mov&&!o.bow&&!o.fr;
+  if(ln){const p=ln.plan,t=ts-ln.t0,e=p.ev.find(x=>t>=x.t0&&t<x.t1),c=p.cl.find(c=>t>=c.t0&&t<c.t1+(c.end===','?140:300));if(e)m=e.m;
+    if(live){if(e&&e.beat&&e.m>1)mv|=MV.dip;if(!p.sung&&t<p.end&&Math.floor(ts/560)%3===1)ges=1;
+      if(c){const h=hash(p.h+c.n*7);if(c.end==='?'&&t>c.t1-320)mv=mv&~MV.dip|MV.lift|MV.brow;else if(c.end==='!'&&t>c.t1-300&&t<c.t1+160)mv|=MV.brow;
+        if(h%3===0&&t<c.t1)mv|=MV.fwd;if(t>=c.t1&&t<c.t1+130&&h%2===0)bl=1}}}
+  else if(o.talk){m=BABBLE[Math.floor(ts/120)%8];if(live&&Math.floor(ts/560)%3===1)ges=1}
+  else if(live){const s=cur&&cur.plan&&cur.to===o?cur:null;
+    if(s){const u=ts-s.t0,c=s.plan.cl.find(c=>c.end!==','&&u>=c.t1&&u<c.t1+380);if(c&&c.end==='?')mv|=MV.brow;else if(c&&u<c.t1+130&&hash(s.plan.h+c.n)%2)bl=1}
+    else{const ph=ts+(L.ph||0)*5+o.x*53;if(ph%5200<650&&hash(Math.floor(ph/5200)*131+(L.ph||0))%3===0)mv|=MV.glance}}
+  return[m,ges,bl,mv]}
+function drawActor(g,o,ts,id){const bow=o.bow?1:0,ln=cur&&cur.plan?cur:null,[talk,ges,bl,mv]=moves(o,o.look,ln&&o.talk&&(ln.a===o||ln.choir.includes(o))?ln:null,ts);
   /* a mate: two who are never apart are one actor (Aquila and Priscilla, in Chapter Twelve). The mate {fig, dx, talk}, fig being the id of her look,
-     walks, stands and bows with the actor, a step behind and beside, and has a mouth of her own. */
-  const m=o.mate;if(m){const mt=m.talk&&Math.floor(ts/130)%2?1:0,mg=m.talk&&Math.floor(ts/560)%3===1?1:0,L=LOOK[m.fig],mb=bow||blinks(L,ts)?1:0,mx=o.x+m.dx*o.dir;
-    figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+o.dir+o.fr+mt+bow+mg+mb,s=>person(s,0,0,L,o.dir,o.fr,mt,bow,mg,mb))}
-  figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+o.dir+o.fr+talk+bow+ges+bl,s=>person(s,0,0,o.look,o.dir,o.fr,talk,bow,ges,bl))}
+     walks, stands and bows with the actor, a step behind and beside, and has a mouth of her own: when she talks, the line on the screen is hers. */
+  const m=o.mate;if(m){const L=LOOK[m.fig],mx=o.x+m.dx*o.dir,[mt,mg,mb,mm]=moves({talk:m.talk,bow:o.bow,fr:o.fr,x:mx},L,m.talk&&ln&&ln.a&&ln.a!==o?ln:null,ts);
+    figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+o.dir+o.fr+mt+bow+mg+mb+'m'+mm,s=>person(s,0,0,L,o.dir,o.fr,mt,bow,mg,mb,mm))}
+  figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+o.dir+o.fr+talk+bow+ges+bl+'m'+mv,s=>person(s,0,0,o.look,o.dir,o.fr,talk,bow,ges,bl,mv))}
 function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
   else if(G.room){const id=G.room,a=ART[id],cam=hp(G.cam),f=fg(id);backdrop(cx,id,cam);cx.save();cx.translate(-cam,0);
@@ -1466,10 +1544,12 @@ function openCode(){audioInit();if(cb.classList.contains('on'))return closeCode(
     $('#codein').onkeydown=e=>{if(e.key==='Enter')tryCode();else if(e.key==='Escape')closeCode()}};
   cb.innerHTML='';cb.draw();cb.classList.add('on');if(!can)$('#codein').focus()}
 $('#code').onclick=e=>{e.stopPropagation();openCode()};cb.onclick=e=>e.stopPropagation();
-/* ============ OPTIONS: volumes, text speed, names, language, back to title (kept in paul.opts, separate from paul.save) ============ */
+/* ============ OPTIONS: volumes, text speed, movement, names, language, back to title (kept in paul.opts, separate from paul.save) ============ */
 const mn=$('#menu');
 function loadOpts(){try{const o=JSON.parse(store(OPTS_KEY)||'{}');if(typeof o.mus==='number')OPTS.mus=clamp(o.mus,0,1);
-  if(typeof o.fx==='number')OPTS.fx=clamp(o.fx,0,1);if(typeof o.spd==='number'&&[1.35,1,.7].includes(o.spd))OPTS.spd=o.spd}catch(e){}}
+  if(typeof o.fx==='number')OPTS.fx=clamp(o.fx,0,1);if(typeof o.spd==='number'&&[1.35,1,.7].includes(o.spd))OPTS.spd=o.spd;
+  /* movement: as the player chose; until he has, calm on a device that asks for less motion */
+  OPTS.mov=o.mov===0||o.mov===1?o.mov:window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches?0:1}catch(e){}}
 function saveOpts(){store(OPTS_KEY,JSON.stringify(OPTS))}
 function applyOpts(){if(!AU.ctx)return;if(AU.mus)AU.mus.gain.value=.55*OPTS.mus;if(AU.fx)AU.fx.gain.value=.7*OPTS.fx;if(AU.ambG)AU.ambG.gain.value=.5*OPTS.fx}
 function closeMenu(){mn.classList.remove('on');G.busy=mn.was;if(!G.busy)lock(false);status()}
@@ -1479,11 +1559,12 @@ function openMenu(){audioInit();if(mn.classList.contains('on'))return closeMenu(
   const inGame=!!(G.room&&!G.scene&&!G.busy&&!ov.classList.contains('on'));
   if(!inGame&&!ov.classList.contains('on')||ov.classList.contains('card')){SFX.nope();return}
   SFX.click();mn.was=G.busy;G.busy=true;lock(true);status();mn.view='opts';mn.ask=null;mn.inGame=inGame;
-  mn.draw=()=>{if(mn.view==='saves')return drawSaves();const spds=[[1.35,'Slow'],[1,'Normal'],[.7,'Fast']];
+  mn.draw=()=>{if(mn.view==='saves')return drawSaves();const spds=[[1.35,'Slow'],[1,'Normal'],[.7,'Fast']],movs=[[1,'Lively'],[0,'Calm']];
     mn.innerHTML='<h2>'+esc(T('OPTIONS'))+'</h2>'+
       '<div class="row"><label for="opt-mus">'+esc(T('Music'))+'</label><input id="opt-mus" type="range" min="0" max="100" step="10" value="'+Math.round(OPTS.mus*100)+'"></div>'+
       '<div class="row"><label for="opt-fx">'+esc(T('Effects'))+'</label><input id="opt-fx" type="range" min="0" max="100" step="10" value="'+Math.round(OPTS.fx*100)+'"></div>'+
       '<div class="row"><label>'+esc(T('Text speed'))+'</label><div class="seg">'+spds.map(([v,l])=>`<button type="button" data-spd="${v}"${OPTS.spd===v?' class="on"':''}>${esc(T(l))}</button>`).join('')+'</div></div>'+
+      '<div class="row"><label>'+esc(T('Movement'))+'</label><div class="seg">'+movs.map(([v,l])=>`<button type="button" data-mov="${v}"${OPTS.mov===v?' class="on"':''}>${esc(T(l))}</button>`).join('')+'</div></div>'+
       '<div class="row"><label>'+esc(T('Names'))+'</label><div class="seg"><button type="button" id="opt-names"'+(G.tagPin?' class="on"':'')+'>'+esc(T(G.tagPin?'On':'Off'))+'</button></div></div>'+
       (Object.keys(LANGS).length>1?'<div class="row"><label>'+esc(T('Language'))+'</label><div class="seg">'+Object.keys(LANGS).map(l=>`<button type="button" data-lang="${l}"${l===G.lang?' class="on"':''}>${esc(LANGS[l].native)}</button>`).join('')+'</div></div>':'')+
       '<div class="row"><label>'+esc(T('Saved games'))+'</label><div class="seg"><button type="button" id="opt-saves">'+esc(T(inGame?'Save / Load':'Load'))+'</button></div></div>'+
@@ -1492,6 +1573,7 @@ function openMenu(){audioInit();if(mn.classList.contains('on'))return closeMenu(
     $('#opt-mus').oninput=e=>{OPTS.mus=+e.target.value/100;applyOpts();saveOpts()};
     $('#opt-fx').oninput=e=>{OPTS.fx=+e.target.value/100;applyOpts();saveOpts()};
     mn.querySelectorAll('[data-spd]').forEach(b=>b.onclick=()=>{SFX.click();OPTS.spd=+b.dataset.spd;saveOpts();mn.draw()});
+    mn.querySelectorAll('[data-mov]').forEach(b=>b.onclick=()=>{SFX.click();OPTS.mov=+b.dataset.mov;saveOpts();mn.draw()});
     $('#opt-names').onclick=()=>{SFX.click();G.tagPin=!G.tagPin;namesBtn();mn.draw()};
     $('#opt-saves').onclick=()=>{SFX.click();mn.view='saves';mn.ask=null;mn.draw()};
     mn.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>{SFX.click();setLang(b.dataset.lang,1)});

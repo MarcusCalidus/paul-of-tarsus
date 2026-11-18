@@ -94,6 +94,11 @@ const SONG={c1:'0.2a 2.1@ 4.2o 3.2a -.1 2.1i 3.1o 1.1i 1.1i 0.4u',c2:'4.1i 4.1i 
   c3:'0.1@ 2.2e 2.1a 4.1@ 5.2e -.1 4.1i 5.2e 4.1a 6.1o 6.2a 5.1e 4.1@ 4.3i',c4:'4.2a 5.1@ 4.2o 2.1o 3.2e 0.4@',a:'4.1i 5.2o 4.1@ 3.2a 2.2a 3.1o 1.2e 0.4@'};
 /* who sings a line: Paul, Silas, both, a household (Silas among them), one woman who begins it, or everyone in the house */
 const CHOIR={P:['P'],S:['S'],PS:['S','P'],H:['S','W1','W2','M3'],W:['W1'],ALL:['S','P','W1','W2','M3']};
+/* whose mouths sing it: the same people, as far as they stand in the room. A household is everyone of the congregation there but Paul. */
+const SINGERS={P:()=>[P],S:()=>[SI],PS:()=>[SI,P],H:()=>[SI,TI,LU,LK,LY,PH,EL],W:()=>[PH],ALL:()=>[P,SI,TI,LU,LK,LY,PH,EL]};
+/* notes: when each note of a sung line falls, [from, to, vowel] in milliseconds from the moment the line appears: the singer's mouth holds
+   each vowel for its note (cadence, in index.html). The voice draws breath first, as in voices. */
+const notes=key=>{const out=[];let y=500;for(const n of parse(SONG[key])){const d=n[1]*STEP*1000;if(n[0]!=null)out.push([y,y+d,n[2]]);y+=d}return out};
 const parse=s=>T(s).split(' ').map(x=>{const m=/^(-?\d+|-)\.(\d+)(.?)$/.exec(x)||['','-','1',''];return[m[1]==='-'?null:+m[1],+m[2],m[3]||'a']});
 /* the second voice under a line: a fourth below (three steps of this scale), closing onto the same last note */
 const lower=l=>l.map((n,i)=>n[0]==null?n:[i===l.length-1?0:i===l.length-2?n[0]-2:n[0]-3,n[1],n[2]]);
@@ -108,7 +113,8 @@ function voices(by,key,o){o=o||{};const L=parse(SONG[key]),dur=L.reduce((s,n)=>s
       const f=mtof(note(n[0],W.up||0,MUSIC)),nx=line[i+1];sing(bus,{f,t:y,d,v,who:W,vow:n[2],from:prev,tie:!!(nx&&nx[0]!=null),rough:o.rough});prev={f,vow:n[2]};y+=d})});
   return dur}
 /* sung: a line is sung while it stands on the screen. o.cut: it breaks off after that many seconds. A line that the player skips breaks off too. */
-async function sung(by,key,a,text,o){o=o||{};hushSong();const d=voices(by,key,o);await say(a,text,{dur:Math.round((o.cut||d+.25)*1000),color:o.color});hushSong()}
+async function sung(by,key,a,text,o){o=o||{};hushSong();const d=voices(by,key,o);
+  await say(a,text,{dur:Math.round((o.cut||d+.25)*1000),color:o.color,sung:notes(key),choir:SINGERS[by]().filter(x=>x!==a&&x.room===G.room)});hushSong()}
 /* the sounds of the inner prison, heard only in this chapter: water, a chain, a cough, and a man muttering */
 const CALLS9={
   drip9:[2.2,3.6,(t,d)=>{tone({f:1700,to:800,t,d:.07,type:'sine',v:.05,a:.002,dest:d,echo:1});tone({f:2300,to:1500,t:t+.11,d:.05,type:'sine',v:.02,a:.002,dest:d,echo:1})}],

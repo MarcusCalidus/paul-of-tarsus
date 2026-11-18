@@ -84,6 +84,7 @@ reading reading
 river river8
 samothrace deck8
 saves saves
+speak speak
 scrolltable row10
 seamap seamap10
 secondjourney journey7
@@ -100,6 +101,7 @@ tablets tablets
 tarsus tarsus
 tentshop pshop12
 thessalonica yard10
+talk cast cast-talk
 thought thought
 thought-de de:thought
 timothy lystra7

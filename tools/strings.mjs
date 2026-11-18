@@ -35,7 +35,7 @@ export function literals(src){
 
 /* strings with a space that are code, not text */
 const NOT_TEXT=new Set(['use strict','on end','on card','on long','italic bold 5px "Lucida Console",Monaco,monospace','bold 4.2px "Lucida Console",Monaco,monospace',
-  'bold 4.4px "Lucida Console",Monaco,monospace','new sea','#overlay [data-ch]']);
+  'bold 4.4px "Lucida Console",Monaco,monospace','new sea','#overlay [data-ch]','(prefers-reduced-motion: reduce)']);
 const looksCode=s=>/\{[^}]*:[^}]*;/.test(s)||/^[#.][\w-]+[\s.#\[]/.test(s)||/^[#.]?[\w-]+(\s*[,>]\s*|\s+)[#.\[]/.test(s)||/^(rgba?|calc|url)\(/.test(s)||/px\b.*(monospace|serif)/.test(s)||/^[\w-]+:\s*[\w#(]/.test(s)&&!/ /.test(s.split(':')[0])&&s.trim().split(/\s+/).length<5;
 const wordsOf=s=>/\p{L}{2,}/u.test(s);
 /* text: what a player can see. b is the list of tokens before the literal. */

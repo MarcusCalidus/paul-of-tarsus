@@ -58,6 +58,10 @@
     icon may be repeated, the same, by a chapter that brings a person or a thing back.) */
  const taken=[];{const L0=LEVEL;window.LEVEL=function(n,init){const tabs=[ROOMS,ART,ITEMS],was=tabs.map(t=>({...t}));L0(n,init);
    tabs.forEach((t,i)=>{for(const k in was[i])if(t[k]!==was[i][k])taken.push('chapter '+n+' takes '+['room','backdrop','item'][i]+' '+k)})}}
+ /* parts: in how many pieces a sprite is (pixels that touch, corners too, are one piece). A figure or a beast is one piece in every pose. */
+ const parts=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
+   for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
+     for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n};
  const snap=()=>JSON.stringify([F,G.invs,G.inv,G.room,G.ch]),prayBad=[];let prayed=null,prayers=0;
  {const p0=pray;window.pray=function(){prayed=snap();prayers++;return p0.apply(this,arguments)}}
  const ok=(c,m)=>{if(prayed!=null){if(snap()!==prayed)prayBad.push(m);prayed=null}L((c?'ok   ':'FAIL ')+m)};
@@ -153,11 +157,32 @@
           ['full beard',{...bd,fullBeard:1}],['long beard',{...bd,longBeard:1}],['grey, thin, full',{...gr,thin:1,fullBeard:1}],['grey, bald, long',{...gr,bald:1,longBeard:1}],['wrap',{...bd,hair:null,wrap:'#b8402c'}],['wrap, no beard',{hair:null,wrap:'#d8c9a0'}],
           ['helmet',{...bd,hair:null,helm:'#b08a3c',armor:'#8a3a34',cloak:'#7a2a2a',cape:1}],['boy',{h:1}],['veil',{...fm,hair:null,veil:'#6a2a5a'},1],['veil, old',{...fm,hair:null,veil:'#e2dccb',brow:'#8a8a8a'},1],['hair bound',{...fm,hair:'#3a2616',fem:1,band:'#a8402c',longSleeve:0},1],
           ['statue',{skin:'#cfc8b4',tunic:'#cfc8b4',hair:'#cfc8b4',beard:'#c4bda8',belt:null,stone:1,long:1}]],
-        P=[[1,0],[1,0,1,0,1],[1,0,0,1],[-1,0]],Z=8,cw=208,chh=330,[c,g]=sheet(P.length*cw,34+HEAD.length*chh);
+        P=[[1,0],[1,0,2,0,1],[1,0,0,1],[-1,0]],Z=8,cw=208,chh=330,[c,g]=sheet(P.length*cw,34+HEAD.length*chh);
       text(g,'Every kind of head, eight times enlarged: plain, speaking, bowed, facing left',10,23,17,'#f4f0e6');
       HEAD.forEach(([n,o,f],r)=>{const lk=Object.assign({},B,o),top=4+(lk.h?19:23)+(lk.h?13:16)+3+(lk.h?22:f?24:26)+20;
         P.forEach((p,i)=>{const x=i*cw,y=34+r*chh;field(g,i+r,x,y,cw,chh);cut(g,spr(lk,'head'+r,...p),-13,-top-6,26,39,x,y+18,Z);if(!i)text(g,n,x+6,y+16,15)})});
       SHEETS['cast-heads']=c.toDataURL()}
+    /* speaking and moving (person's talk, ges and mv): every mouth, every carriage of the head and every pose of the far hand, alone and together, for
+       every look of every chapter. Each pose is as many pieces as the figure at rest, which is one; and a statue is the same picture whatever it
+       is asked to do. cast-talk.png shows the frames: the heads six times enlarged, the figures three times. Look there, in every row, for a chin or
+       a beard that has come apart from its face, for a hand that floats, and for crosses (CONTRIBUTING section 3). */
+    {const POSES=[[1,0,0],[2,0,0],[3,0,0],[4,0,0],[0,0,MV.dip],[0,0,MV.lift|MV.brow],[0,0,MV.fwd],[0,0,MV.back|MV.glance],[3,0,MV.dip],[4,0,MV.lift|MV.brow],[3,0,MV.back],[2,1,MV.fwd],[2,2,0],[0,3,0],[3,3,MV.dip],[2,1,MV.lean|MV.fwd],[4,2,MV.lean]],
+        ids=Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'),bad=[],apart=[],stone=[];let n=0;
+      for(const id of ids){const o=LOOK[id],at=(t,g,m,d)=>sprite(['pose',id,d<0?'-1':'1',t,g,m].join('|'),q=>person(q,0,0,o,d,0,t,0,g,0,m),d),rest=at(0,0,0,1),r0=parts(rest);if(r0!==1)apart.push(id+' ('+r0+')');
+        for(const[t,g,m]of POSES)for(const d of m&MV.lean?[1,-1]:[1]){n++;const c=at(t,g,m,d);if(parts(c)!==r0)bad.push(id+' '+[t,g,m,d]);if(o.stone&&!g&&d>0&&c.toDataURL()!==rest.toDataURL())stone.push(id)}}
+      ok(!apart.length,'every figure at rest is one piece: '+ids.length+' looks'+(apart.length?'. IN PIECES: '+apart.join(', '):''));
+      ok(!bad.length,`speaking: ${n} poses of mouth, head and hand, and none comes apart`+(bad.length?'. IN PIECES: '+bad.slice(0,12).join('; '):''));
+      ok(ids.some(k=>LOOK[k].stone)&&!stone.length,'a statue never moves: its picture is the same with any mouth and any head'+(stone.length?'. MOVED: '+[...new Set(stone)].join(', '):''));
+      const B={skin:'#c08a5c',tunic:'#c4b08a',belt:'#3a2414'},fm={skin:'#c8a078',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#6a2a5a',brow:'#3a2414'},
+        WHO=[['a bearded man',paulLook(7)],['a long beard',{...B,hair:'#969088',beard:'#a49e96',brow:'#78726c',grey:'#c8c2ba',bald:1,longBeard:1,long:1,cloak:'#6a5a7a'}],['a veiled woman',{...fm,veil:'#6a2a5a'}],['hair bound',{...fm,hair:'#3a2616',fem:1,band:'#a8402c',longSleeve:0}],['a boy',{...B,hair:'#34241c',h:1}]],
+        HD=[['shut',0,0],['parted',1,0],['open',2,0],['wide, chin down',3,0],['round, chin down',4,0],['head dipped',2,MV.dip],['lifted, brows up',2,MV.lift|MV.brow],['forward',0,MV.fwd],['back, a glance',0,MV.back|MV.glance]],
+        BD=[['at rest',0,0,0],['half raised',2,2,0],['raised',2,1,0],['on the chest',0,3,0],['leaning in',3,1,MV.lean|MV.fwd]],Z=6,cw=160,chh=226,bw=150,bh=392,[c,g]=sheet(HD.length*cw,34+WHO.length*chh+bh);
+      text(g,'Speaking: the mouth, the chin and the head, six times enlarged; below, the far hand and the lean, three times',10,23,17,'#f4f0e6');
+      WHO.forEach(([nm,o],r)=>{const f=o.veil||o.fem,top=4+(o.h?19:23)+(o.h?13:16)+3+(o.h?22:f?24:26)+20;HD.forEach(([cap,t,m],i)=>{const x=i*cw,y=34+r*chh;field(g,i+r,x,y,cw,chh);
+        cut(g,sprite(['talk',r,t,m].join('|'),q=>person(q,0,0,o,1,0,t,0,0,0,m),1),-13,-top-7,26,34,x+2,y+4,Z);text(g,i?cap:cap+': '+nm,x+5,y+chh-7,11)})});
+      [WHO[0],WHO[2]].forEach(([nm,o],r)=>BD.forEach(([cap,t,ge,m],i)=>{const k=r*BD.length+i;if(k>=Math.floor(HD.length*cw/bw))return;const x=k*bw,y=34+WHO.length*chh;field(g,k,x,y,bw,bh);
+        cut(g,sprite(['talkb',r,t,ge,m].join('|'),q=>person(q,0,0,o,1,0,t,0,ge,0,m),1),-25,-124,50,125,x,y,3);text(g,cap,x+5,y+bh-7,11)}));
+      SHEETS['cast-talk']=c.toDataURL()}
     /* the two pictures of docs/screenshots: the people who carry the story, with the pack donkey (cast.png), and eight heads (cast-closeup.png) */
     {const WHO=[paulLook(1),'guard','zakkai','barnabas','cephas','james','mark','sergius','timothy','eunice','silas','luke','lydia','jailer9','dama11','dion11','aquila12','prisca12'],
         miss=WHO.filter(w=>typeof w==='string'&&!LOOK[w]),Z=3,cw=128,chh=384,cols=10,[c,g]=sheet(cols*cw,2*chh);g.fillStyle='#cbbda2';g.fillRect(0,0,cols*cw,2*chh);
@@ -179,6 +204,14 @@
   /* one of Paul's thoughts, in italics, over the busy square of Antioch */
   if(stop==='thought'){await loadLevel(3);applyState(decode(codeOf(3,0)));await idle();enterRoom('antioch',...CHAP[3].ent.antioch);clearInterval(sk);
     say(PC(),'She has given more than thread. And now I can sew.',TH);await wait(300);halt('thought')}
+  /* a line being spoken, held at the moment its question ends: Eliab's head is lifted and his brows are raised, and Paul is the one he speaks to */
+  if(stop==='speak'){await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();place(P,'workshop',166,122,1);clearInterval(sk);const E=ACT.eliab;
+    say(E,'You came to Damascus to bind us, and the Lord turned you around. How could we not help our brother?');
+    const p=cur.plan,last=p.cl[p.cl.length-1],at=last.t1-110;setInterval(()=>{if(cur)cur.t0=performance.now()-at},8);await wait(60);
+    const[m,ges,bl,mv]=moves(E,E.look,cur,performance.now());
+    ok(p.cl.length===3&&last.end==='?'&&cur.to===P&&E.talk,'a spoken line has its cadence (three clauses, the last a question), and Paul is the one spoken to');
+    ok((mv&MV.lift)&&(mv&MV.brow)&&!(mv&MV.dip),'as the question ends, the speaker lifts his head and raises his brows');
+    halt('speak')}
   if(stop==='xfade'){await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();const r=CHAP[1].rooms[1];
     tween=(ms,fn)=>{fn(.5);return new Promise(()=>{})};go(r,...CHAP[1].ent[r]);await wait(150);halt('xfade')}
   if(stop==='menu'){openMenu();halt('menu')}
@@ -205,6 +238,36 @@
     store('paul.opts',JSON.stringify({mus:.3,fx:.6,spd:1.35}));OPTS.mus=OPTS.fx=OPTS.spd=1;loadOpts();
     ok(OPTS.mus===.3&&OPTS.fx===.6&&OPTS.spd===1.35,'the options come back from paul.opts after a reload');OPTS.mus=OPTS.fx=OPTS.spd=1;
     store('paul.opts',null)}
+  /* movement: lively or calm, kept in paul.opts. A device that asks for less motion starts calm, until the player has chosen */
+  {const mm=window.matchMedia;$('#opts').click();$('#menu [data-mov="0"]').click();
+    ok(OPTS.mov===0&&JSON.parse(store('paul.opts')).mov===0&&$('#menu [data-mov="0"]').classList.contains('on'),'calm movement is chosen on the options screen and kept in paul.opts');
+    $('#menu [data-mov="1"]').click();key('Escape');
+    window.matchMedia=()=>({matches:true});store('paul.opts','{}');loadOpts();const calm=OPTS.mov;store('paul.opts','{"mov":1}');loadOpts();const chose=OPTS.mov;
+    window.matchMedia=mm;store('paul.opts',null);loadOpts();ok(calm===0&&chose===1&&OPTS.mov===1,'a device that asks for less motion starts calm; what the player chose is kept');store('paul.opts',null)}
+  /* speech: the mouth, the chin and the head follow the words that stand on the screen, in the player's language (cadence, moves) */
+  {const EN='Threaded and ready. Now, what needs stitching?',txt=T(EN),dur=Math.max(2200,1400+txt.length*65),p=cadence(txt,dur),open=p.ev.filter(e=>e.m>1),
+      seq=p.ev.every((e,i)=>e.t1>e.t0&&(!i||e.t0>=p.ev[i-1].t1-.01)&&e.m>=0&&e.m<=4),last=p.cl[p.cl.length-1];
+    ok(seq&&open.length>=6&&open.some(e=>e.m>2)&&p.ev.some(e=>e.m<2)&&p.cl.length>=2&&last.end==='?'&&p.end<=dur*.9+1&&Math.abs(p.end-last.t1)<1,
+      `a line is read into a mouth: ${open.length} open syllables, some with the chin down, in ${p.cl.length} clauses, the last a question, and through before the line goes`);
+    ok(lang==='en'||txt!==EN&&p.h!==cadence(EN,dur).h,'the rhythm is that of the words in '+LANGS[lang].native);
+    const tight2=cadence(txt,900),A={talk:true,bow:false,fr:0,x:100},L=paulLook(7),ln={plan:p,t0:1000,a:A},all=(o,lk)=>{const r=[];for(let t=1000;t<1000+dur;t+=12)r.push(moves(o,lk,ln,t));return r},
+      live=all(A,L),mouths=new Set(live.map(r=>r[0])),after=moves(A,L,ln,1000+p.end+60),ask=moves(A,L,ln,1000+last.t1-100);
+    ok(tight2.end<=811&&tight2.ev.length===p.ev.length,'a line that stands only briefly is spoken faster, not cut short');
+    ok(mouths.size>=4&&live.some(r=>r[3]&MV.dip)&&after[0]===0&&(ask[3]&MV.lift)&&(ask[3]&MV.brow),'who speaks moves his mouth in '+mouths.size+' shapes, dips his head on a stressed syllable, lifts it as he asks, and is still when the words are through');
+    OPTS.mov=0;const calm=all(A,L);OPTS.mov=1;const bowed=all({...A,bow:true},L),walks=all({...A,fr:1},L),stone=all(A,{...L,stone:1});
+    ok(new Set(calm.map(r=>r[0])).size>=4&&calm.every(r=>!r[1]&&!r[3]),'calm movement keeps the mouth and leaves head and hand still');
+    ok(bowed.every(r=>!r[3]&&r[2])&&walks.every(r=>!r[3])&&stone.every(r=>!r.some(Boolean)),'a figure that bows or walks keeps its head still, and a statue never moves');
+    /* a sung line: the mouth holds the vowel of each note for as long as the note, and rests where the tune does */
+    const s=cadence('la',5000,[[500,900,'a'],[900,1300,'o'],[1500,2300,'i']]),at=t=>(s.ev.find(e=>t>=e.t0&&t<e.t1)||{m:0}).m;
+    ok(s.sung&&at(700)===3&&at(1100)===4&&at(1400)===0&&at(2000)===2&&at(520)===1&&s.end===2300,'a sung line holds each vowel for its note: a wide, o round, a rest shut, i half open');
+    /* who is spoken to shows no yes and no no: never a dip of the head; the brows rise at a question */
+    const was=cur,B={talk:false,bow:false,fr:0,x:60};cur={plan:p,t0:1000,to:B,a:A};const hear=[];for(let t=1000;t<1000+dur;t+=12)hear.push(moves(B,L,null,t));const q=moves(B,L,null,1000+last.t1+100);cur=was;
+    ok(hear.every(r=>!r[0]&&!r[1]&&!(r[3]&MV.dip))&&(q[3]&MV.brow),'who is spoken to never nods by himself: his brows rise at a question, and that is all');
+    /* the blips of a voice fall on the first syllables of the line, as many as before */
+    {clearInterval(sk);const t0=SFX.talk,got=[];SFX.talk=()=>got.push(performance.now());const st=performance.now(),done=say(P,EN,{dur:1500}),want=cur.plan.ev.filter(e=>e.m>1).slice(0,Math.ceil(Math.min(9,txt.length/5)));
+      await done;SFX.talk=t0;sk=setInterval(()=>{if(G.skip)G.skip()},30);
+      ok(got.length===want.length&&got.length>=6&&got.every((t,i)=>Math.abs(t-st-want[i].t0)<90),`the ${got.length} blips of a line fall on its first syllables`);
+      heard.length=0;const th=say(P,EN,{thought:1,dur:60});ok(cur.plan===null&&!P.talk,'a thought has no cadence: the mouth stays shut');await th}}
   /* the chapters scroll in their own box: its far edge fades while more lies beyond it, and a click between entries starts nothing */
   {const l=ov.querySelector('.chs'),fade=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
     ok(l&&[...l.children].every(p=>p.dataset.ch)&&l.children.length===Object.keys(CHAP).length,'the chapters sit in a list of their own');
@@ -893,6 +956,8 @@
     G.st=S[1];G.shake=performance.now()-1500;G.scene=CHAP[9].scenes[S[0]];G.busy=true;lock(true);status();narr(S[2],{dur:9000});await wait(500);halt(stop)}
   if(stop==='lights9'){await loadLevel(9);ov.className='';ov.onclick=null;setChapter(9);for(const k of['went','d1','d2','jail','voice','s1','s2','s3','quake','c1','c2','c3'])F[k]=1;CHAP[9].place('cell9');dealInv('cell9');
     G.lit9=1;place(ACT.jailer9,'cell9',122,134,1);ACT.jailer9.bow=true;G.scene=null;enterRoom('cell9',P.x,P.y,P.dir);G.busy=true;lock(true);status();narr(CHAP[9].told.v29,{dur:9000});await wait(500);halt('lights9')}
+  /* every line that is sung is noted as it is said: who leads it, how many notes its mouth has, and who sings with him */
+  const sungAs=[];{const say0=say;window.say=function(a,t,o){if(o&&o.sung)sungAs.push({a:a&&a.id,n:o.sung.length,choir:(o.choir||[]).map(x=>x.id)});return say0.apply(this,arguments)}}
   const ch9=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[9],told=k=>heard.includes(T(C().told[k])),pickL=k=>pickQ(C().psalm[k].gist),
     until=async(fn,n)=>{for(let i=0;i<(n||6000)&&!fn();i++)await wait(30);await idle()},on=async name=>{clickView(...hs(name),H(name));await idle()},stones=()=>on('flat stones');let n9=0;   /* on: a thing is clicked itself, whoever stands in front of it */
   heard.length=0;(C9?document.querySelector('#overlay [data-ch="9"]'):ov).click();
@@ -932,6 +997,10 @@
   heard.length=0;await stones();ok(nq()===4,'the first day: four lines to choose from ['+nq()+']');
   await pickL('c3');ok(said('That comes later. A psalm of thanks begins with the thanks.')&&nq()===4,'a later line is not the first');
   heard.length=0;await pickL('c1');ok(said(C().psalm.c1.full)&&said(C().psalm.a.full)&&nq()===4,'the first call is sung, and everyone answers');
+  /* whoever sings moves his mouth with the notes: Paul leads, and everyone of the congregation who stands at the river answers with Silas, Paul's mouth shut */
+  {const lead=sungAs.find(x=>x.a==='paul'),all=sungAs.find(x=>!x.a);
+    ok(lead&&all&&lead.n>=6&&!lead.choir.length&&all.n>=6&&['silas9','timothy9','lydia9','phila9','elpis9'].every(i=>all.choir.includes(i))&&!all.choir.includes('paul')&&!all.choir.includes('girl9'),
+      'a sung line moves the mouths of those who sing it, note by note: Paul alone ('+(lead&&lead.n)+' notes), then '+(all&&all.choir.length)+' who answer')}
   await pickL('c1');ok(said('We have sung that one, sir.'),'a line already sung is not the next');
   heard.length=0;await pickL('c2');ok(said('The girl cried out again, over the singing. One after another the women stopped.')&&said('I have lost it, sir. Where were we?')&&nq()===4,'the cry breaks the answer off, and the women lose their place');
   halt('psalm9');
