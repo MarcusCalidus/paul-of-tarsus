@@ -32,8 +32,7 @@ const GATE4={far:['#9aa890','#b0ba98'],near:['#86a070','#98b082'],land:'#c2c494'
 function seaArt(g,x,y0,w,y1,r,st){g.fillStyle=lg(g,0,y0,0,y1,st||['#a9cbd6','#62a0bc','#3f80a6','#2f6a92','#245a80']);g.fillRect(x,y0,w,y1-y0);
   for(let i=0;i<w*.6;i++){const k=r()*r(),sy=y0+1+k*(y1-y0-2);R(g,x+r()*w,sy,2+k*6+r()*4,.5,r()<.55?'rgba(214,238,244,.5)':'rgba(20,50,84,.35)')}}
 /* a roll of bedding or cloth lying on the ground: x,y the left end, w long */
-function roll(g,x,y,w,hh,c){oval(g,x+w/2+2,y+hh+.4,w/2+3,1.4,'rgba(40,30,60,.35)');g.fillStyle=lg(g,0,y,0,y+hh,[tint(c,.3),c,tint(c,-.5)]);g.fillRect(x,y,w,hh);
-  for(let i=0;i<w;i+=2.5)R(g,x+i,y,.5,hh,'rgba(0,0,0,.22)');oval(g,x,y+hh/2,hh*.32,hh/2,tint(c,.12));oval(g,x+w,y+hh/2,hh*.32,hh/2,tint(c,-.35))}
+function roll(g,x,y,w,hh,c){oval(g,x+w/2+2,y+hh+.4,w/2+3,1.4,'rgba(40,30,60,.35)');clothRoll(g,x,y+hh,w,hh,c,{k:.32})}
 /* the travelers' baggage, which John Mark looks after: two bed rolls, a leather bag, a food bag and a water flask */
 function baggage(g,x,y){roll(g,x,y-5,17,5,'#8a5a4a');roll(g,x+3,y-9.6,15,4.6,'#6f7a5a');
   g.fillStyle=lg(g,x+20,0,x+31,0,['#a8703e','#8a5830','#5a3618']);g.beginPath();g.ellipse(x+25.6,y-4.4,5.6,4.6,0,0,6.2832);g.fill();R(g,x+23,y-10,5.2,2.6,'#7a4e28');R(g,x+22.4,y-8,6.4,1,'#3e2612');

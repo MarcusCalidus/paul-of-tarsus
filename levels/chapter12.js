@@ -109,9 +109,8 @@ const edge=(g,s,x,y)=>{g.save();g.strokeStyle='rgba(8,6,10,.85)';g.lineWidth=1;g
 function cap12(g,s,x,y,w,col,left){s=T(s);let sz=4.8;g.font=GFONT(sz);g.textBaseline='middle';while(g.measureText(s).width>w&&sz>3.2){sz-=.2;g.font=GFONT(sz)}
   const tw=g.measureText(s).width,tx=left?x:x-tw/2;if(G.caps12)G.caps12.push({s,w:tw,max:w,sz});
   edge(g,s,tx,y);g.fillStyle=col||'#f4e4b8';g.fillText(s,tx,y)}
-/* roll: a roll of cloth lying on its side, seen from its end; nothing is tied round it */
-function roll(g,x,y,w,h,c){g.fillStyle=lg(g,0,y-h,0,y,[tint(c,.3),c,tint(c,-.45)]);g.fillRect(x,y-h,w,h);for(let i=2;i<w-2;i+=2.4)R(g,x+i,y-h+.6,.5,h-1.2,'rgba(0,0,0,.2)');
-  oval(g,x,y-h/2,h*.28,h/2,tint(c,.12));oval(g,x+w,y-h/2,h*.28,h/2,tint(c,-.3));oval(g,x+w,y-h/2,h*.14,h*.26,tint(c,-.55))}
+/* roll: a roll of cloth lying on its side, its foot at y; nothing is tied round it (clothRoll in the engine: one end faces us) */
+function roll(g,x,y,w,h,c){clothRoll(g,x,y,w,h,c)}
 /* the seasons of the year and six months: autumn 50, winter, the spring of the games, summer 51; and the spring of 52, when he sails.
    Each has its sky and its light. */
 const SKY={a:['#5489c4','#8fb4d8','#d4e0e4','#f0e2c0'],w:['#77818c','#959da4','#b4babc','#c6c8c2'],s:['#4686cc','#84b4e0','#d0e2ec','#eef0dc'],u:['#3b78c6','#74a6da','#c4daea','#f4ecd2'],f:['#4c8aca','#8ab6de','#d2e2ea','#f0ecd8']},

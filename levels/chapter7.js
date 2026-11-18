@@ -98,9 +98,8 @@ function wagon(g,x,y,cov,load){oval(g,x+30,y+.6,36,2.2,'rgba(30,26,50,.35)');
       tex(g,'mott',.4,x,y-36,60,24,'overlay',1);ao(g,x,y-22,60,9,'b',.4)});
     for(const cx of[x+1.6,x+55.2]){R(g,cx,y-17,3.2,3,'#a8703c');R(g,cx,y-17,3.2,.6,'#d09a5e');R(g,cx+1.1,y-15.9,1,1,'#2a1a10')}}
   for(const wx of[x+13,x+47]){oval(g,wx,y-6,6.2,6.2,'#4a341e');oval(g,wx,y-6,5,5,'#8a6638');oval(g,wx-.8,y-6.8,3.6,3.6,'#9a7646');stroke(g,[wx-4.2,y-8.4,wx+4.2,y-8.4],'#5a4026',.5);stroke(g,[wx-4.2,y-3.6,wx+4.2,y-3.6],'#5a4026',.5);oval(g,wx,y-6,1.5,1.5,'#33261a')}}
-/* bale: a bale of goat-hair cloth, rolled tight, lying on the ground at x,y */
-function bale(g,x,y,w,h,c){oval(g,x+w/2+1,y+.4,w/2+2,1.3,'rgba(30,26,50,.35)');g.fillStyle=lg(g,0,y-h,0,y,[tint(c,.28),c,tint(c,-.5)]);g.fillRect(x,y-h,w,h);
-  for(let i=1.5;i<w;i+=2.4)R(g,x+i,y-h,.5,h,'rgba(0,0,0,.2)');oval(g,x,y-h/2,h*.3,h/2,tint(c,.14));oval(g,x+w,y-h/2,h*.3,h/2,tint(c,-.36));R(g,x,y-h,w,.5,tint(c,.4))}
+/* bale: a bale of goat-hair cloth, rolled tight, lying on the ground at x,y (clothRoll in the engine: one end faces us) */
+function bale(g,x,y,w,h,c){clothRoll(g,x,y,w,h,c,{shadow:1,hi:1,k:.3})}
 /* ---------- Antioch: the courtyard where the congregation meets (opening scenes) ---------- */
 ART.antioch7={w:320,
  paint(g){const r=rng(703),W='#e6d6ac';
