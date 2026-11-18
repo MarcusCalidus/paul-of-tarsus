@@ -223,7 +223,7 @@
     say(E,'You came to Damascus to bind us, and the Lord turned you around. How could we not help our brother?');
     const p=cur.plan,last=p.cl[p.cl.length-1],at=last.t1-110;setInterval(()=>{if(cur)cur.t0=performance.now()-at},8);await wait(60);
     const[m,ges,bl,mv]=moves(E,E.look,cur,performance.now());
-    ok(p.cl.length===3&&last.end==='?'&&cur.to===P&&E.talk,'a spoken line has its cadence (three clauses, the last a question), and Paul is the one spoken to');
+    ok(p.cl.length>=3&&last.end==='?'&&cur.to===P&&E.talk,`a spoken line has its cadence (${p.cl.length} clauses in ${LANGS[lang].native}, the last a question), and Paul is the one spoken to`);
     ok((mv&MV.lift)&&(mv&MV.brow)&&!(mv&MV.dip),'as the question ends, the speaker lifts his head and raises his brows');
     halt('speak')}
   if(stop==='xfade'){await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();const r=CHAP[1].rooms[1];
