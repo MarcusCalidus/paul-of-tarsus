@@ -2,7 +2,7 @@
 
 The backdrops are painted in the manner of early-1990s VGA adventure games: perspective floors, textured plaster and stone, warm light against cool shadow, a foreground layer that slides past the scene as it scrolls, and a final ordered dither. Rooms are painted at twice the classic 320-pixel resolution. Night scenes and interiors are painted in daylight colors and then multiplied by a light map, so a lamp, a brazier or the moon through a window really lights the room; the same light falls on the characters as they walk through it.
 
-The characters are sprites in the manner of the same era: placed pixel by pixel in a three-quarter view, shaded in flat bands of tone with dark edges on the shadow side instead of an outline. Faces, beards and head coverings are small hand-drawn pixel maps; one figure serves the whole cast through its palette and dress.
+The characters are sprites in the manner of the same era: placed pixel by pixel in a three-quarter view, shaded in flat bands of tone with dark edges on the shadow side instead of an outline. Faces, beards and head coverings are small hand-drawn pixel maps; one figure serves the whole cast through its palette and dress. A figure stands about five heads tall. That is a larger head than life gives, and it is how the sprites of those games were drawn: a face has to be read on a small screen.
 
 ![The cast](screenshots/cast.png)
 
@@ -36,9 +36,7 @@ Each chapter ends on a travel map of the eastern Mediterranean, painted the same
 
 Each chapter has its own score and room sounds, and the end-of-chapter map is described in the chapter's own page (see [the chapter list](../README.md#chapters)).
 
-All text uses two bitmap fonts painted in code (`shared/font.js`) on the grid of the backdrops, two font pixels to the room pixel: **Paul Pixel** for speech, verbs, choices and headings, and **Paul Pixel Small** for the top bar, the names, notes and the names on the map. Every letter stands on one baseline, the short ones at one x-height, and only g, j, p, q and y hang below it. Speech is outlined one font pixel all round, as thick as the strokes, so that it reads on a sunlit quay as well as at night. Paul's thoughts and the answers to prayer are slanted and pale blue. Their letters are the same pixel shapes leaned about 11 degrees and smoothed by the browser, the one text with soft edges: a slant made of whole pixels tears where a stroke steps over. The fonts are built in memory as TrueType fonts from the pixels, with no font file, and the system's monospace stands in if a browser refuses them. The Greek letters cut in stone in Chapters Eleven and Twelve are part of the painting and keep their own lettering.
-
-![The pixel font on a dark and a bright ground](screenshots/font.png)
+Speech stands over the scene in a bold monospace with a dark edge all round: a stroke painted behind the letters, even on every curve, so that a line reads over a busy backdrop as well as at night. The names on the map and the captions of a close view are edged the same way. Paul's thoughts and the answers to prayer are in italics and pale blue.
 
 A chapter opens with a title card: its name in the gold capitals of the title's logo, with "Chapter One" between two rules beneath it, over a short sting in the key of the chapter's score. It stays about three seconds; a click, Space or Esc moves on. The card is shown when a chapter is begun from the title, or from a code at its very beginning, and never when a code puts the player in the middle of one.
 

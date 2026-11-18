@@ -127,25 +127,58 @@
         list.forEach(([n,o],i)=>{const cw=Math.floor(W/7),chh=Math.floor(Hh/3),x=(i%7)*cw,y=Math.floor(i/7)*chh;g.fillStyle=(i+Math.floor(i/7))%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw-2,chh-2);
           const sp=sprite('ages-test'+i,q=>person(q,0,0,o,1,0,0,0,0,0),1);g.drawImage(sp,FIG.OX-30,FIG.OY-104,60,106,x+Math.floor((cw-120)/2),y+chh-214,120,212);
           g.fillStyle='#101418';g.font='bold 11px monospace';g.fillText(n,x+5,y+14)})})}}
+  /* The whole cast. The stop `cast` loads every chapter and hands its sheets to the playtest (window.SHEETS: a name and a PNG data URL
+     for each, saved beside the screenshot at the sheet's own size): for every chapter the looks it brings, each standing and three times
+     enlarged (cast-1.png and so on), and on cast-heads.png every kind of head eight times enlarged: each state of the hair, each beard,
+     the head coverings, a woman veiled and bareheaded, a boy, a statue. Look there when a head map or the figure painter changes: for a
+     head that has come apart, for a covering that does not sit, and for crosses. Nothing on a sheet crosses a figure. cast-main.png and
+     cast-closeup.png are the two pictures kept in docs/screenshots as cast.png and cast-closeup.png. */
+  if(stop==='cast'){const SHEETS={},
+      sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,w,h);return[c,g]},
+      text=(g,t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},
+      /* cut: a part of a sprite, given in drawing units from its feet (left of them and above them are negative), enlarged z times */
+      cut=(g,sp,x0,y0,w,h,dx,dy,z)=>g.drawImage(sp,FIG.OX+x0,FIG.OY+y0,w,h,dx,dy,w*z,h*z),
+      field=(g,i,x,y,w,h)=>{g.fillStyle=i%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,w-2,h-2)},
+      spr=(o,key,dir,fr,talk,bow,ges)=>sprite(['cast',key,dir,fr||0,talk||0,bow||0,ges||0].join('|'),q=>person(q,0,0,o,dir,fr||0,talk||0,bow||0,ges||0,0),dir);
+    let all=0;
+    for(const n of Object.keys(CHAP)){const had=new Set(+n===1?[]:Object.keys(LOOK));await loadLevel(+n);const ids=Object.keys(LOOK).filter(k=>!had.has(k));all+=ids.length;if(!ids.length)continue;
+      const Z=3,cw=138,chh=396,cols=6,rows=Math.ceil(ids.length/cols),[c,g]=sheet(cols*cw,34+rows*chh);text(g,'Chapter '+n+': '+ids.length+' looks, three times enlarged',10,23,17,'#f4f0e6');
+      ids.forEach((id,i)=>{const x=(i%cols)*cw,y=34+Math.floor(i/cols)*chh;field(g,i+Math.floor(i/cols),x,y,cw,chh);
+        g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);cut(g,spr(LOOK[id],id,1),-23,-124,46,125,x,y+chh-22-124*Z,Z);text(g,id,x+5,y+chh-6,11)});
+      SHEETS['cast-'+n]=c.toDataURL()}
+    ok(all>60,'the cast of every chapter is drawn: '+all+' looks');
+    {const B={skin:'#c08a5c',tunic:'#c4b08a',hair:'#34241c',brow:'#2a1a12',belt:'#3a2414'},bd={beard:'#34241c'},gr={hair:'#6e6660',beard:'#787068',brow:'#5a524c',grey:'#a8a098'},
+        fm={skin:'#c8a078',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#6a2a5a',brow:'#3a2414'},
+        HEAD=[['hair',{}],['hair, beard',bd],['receding',{...bd,receding:1}],['thin',{...bd,thin:1}],['bald',{...bd,bald:1}],['crop',{...bd,crop:1}],['crop, thin',{...bd,crop:1,thin:1}],['short beard',{...bd,shortBeard:1}],
+          ['full beard',{...bd,fullBeard:1}],['long beard',{...bd,longBeard:1}],['grey, thin, full',{...gr,thin:1,fullBeard:1}],['grey, bald, long',{...gr,bald:1,longBeard:1}],['wrap',{...bd,hair:null,wrap:'#b8402c'}],['wrap, no beard',{hair:null,wrap:'#d8c9a0'}],
+          ['helmet',{...bd,hair:null,helm:'#b08a3c',armor:'#8a3a34',cloak:'#7a2a2a',cape:1}],['boy',{h:1}],['veil',{...fm,hair:null,veil:'#6a2a5a'},1],['veil, old',{...fm,hair:null,veil:'#e2dccb',brow:'#8a8a8a'},1],['hair bound',{...fm,hair:'#3a2616',fem:1,band:'#a8402c',longSleeve:0},1],
+          ['statue',{skin:'#cfc8b4',tunic:'#cfc8b4',hair:'#cfc8b4',beard:'#c4bda8',belt:null,stone:1,long:1}]],
+        P=[[1,0],[1,0,1,0,1],[1,0,0,1],[-1,0]],Z=8,cw=208,chh=330,[c,g]=sheet(P.length*cw,34+HEAD.length*chh);
+      text(g,'Every kind of head, eight times enlarged: plain, speaking, bowed, facing left',10,23,17,'#f4f0e6');
+      HEAD.forEach(([n,o,f],r)=>{const lk=Object.assign({},B,o),top=4+(lk.h?19:23)+(lk.h?13:16)+3+(lk.h?22:f?24:26)+20;
+        P.forEach((p,i)=>{const x=i*cw,y=34+r*chh;field(g,i+r,x,y,cw,chh);cut(g,spr(lk,'head'+r,...p),-13,-top-6,26,39,x,y+18,Z);if(!i)text(g,n,x+6,y+16,15)})});
+      SHEETS['cast-heads']=c.toDataURL()}
+    /* the two pictures of docs/screenshots: the people who carry the story, with the pack donkey (cast.png), and eight heads (cast-closeup.png) */
+    {const WHO=[paulLook(1),'guard','zakkai','barnabas','cephas','james','mark','sergius','timothy','eunice','silas','luke','lydia','jailer9','dama11','dion11','aquila12','prisca12'],
+        miss=WHO.filter(w=>typeof w==='string'&&!LOOK[w]),Z=3,cw=128,chh=384,cols=10,[c,g]=sheet(cols*cw,2*chh);g.fillStyle='#cbbda2';g.fillRect(0,0,cols*cw,2*chh);
+      ok(!miss.length,'the people of the cast sheet all have a look'+(miss.length?'. MISSING: '+miss:''));
+      WHO.concat('donkey').forEach((w,i)=>{const x=(i%cols)*cw,y=Math.floor(i/cols)*chh,gy=y+chh-18;g.fillStyle='rgba(60,48,40,.22)';
+        if(w==='donkey'){g.fillRect(x+cw-30*Z,gy,60*Z,3);cut(g,sprite('cast|donkey',q=>donkey(q,0,0,1,0,2),1),-40,-80,80,81,x+cw-40*Z,gy-80*Z,Z)}   /* the donkey takes the last two fields */
+        else{g.fillRect(x+cw/2-15*Z,gy,30*Z,3);cut(g,spr(typeof w==='string'?LOOK[w]:w,'main'+i,1),-21,-124,42,125,x+cw/2-21*Z,gy-124*Z,Z)}});
+      SHEETS['cast-main']=c.toDataURL()}
+    {const B={skin:'#c08a5c',tunic:'#c4b08a',belt:'#3a2414'},fm={skin:'#c8a078',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#6a2a5a',brow:'#3a2414'},
+        HEAD=[paulLook(1),paulLook(7),{...B,hair:'#969088',beard:'#a49e96',brow:'#78726c',grey:'#c8c2ba',bald:1,longBeard:1},{...B,beard:'#34241c',wrap:'#b8402c'},
+          {...B,beard:'#34241c',helm:'#b08a3c',armor:'#8a3a34',cloak:'#7a2a2a',cape:1},{...fm,veil:'#6a2a5a'},{...fm,hair:'#3a2616',fem:1,band:'#a8402c',longSleeve:0},{...B,hair:'#34241c',h:1}],
+        Z=8,cw=208,chh=300,[c,g]=sheet(4*cw,2*chh);
+      HEAD.forEach((o,i)=>{const x=(i%4)*cw,y=Math.floor(i/4)*chh,f=o.veil||o.fem,top=4+(o.h?19:23)+(o.h?13:16)+3+(o.h?22:f?24:26)+20;field(g,i+Math.floor(i/4),x,y,cw,chh);cut(g,spr(o,'close'+i,1),-13,-top-6,26,39,x,y-6,Z)});
+      SHEETS['cast-closeup']=c.toDataURL()}
+    window.SHEETS=SHEETS;halt('cast')}
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
-  ok(document.documentElement.classList.contains('pf')&&SHARED.font&&document.fonts.check('12px "Paul Pixel"')&&document.fonts.check('italic 12px "Paul Pixel"')&&document.fonts.check('9px "Paul Pixel Small"'),'pixel font loaded and active');
-  {const G=SHARED.font&&SHARED.font.glyphs,foot=(f,c)=>G[f][c].yTop-G[f][c].rows.length;
-    ok(G&&['regular','small'].every(f=>[...'acemnorsuvwxz'].every(c=>foot(f,c)===0&&G[f][c].yTop===G[f].o.yTop)&&[...'bdhiklt0123456789ABCDEFGHIJKLMNOPRSTUVWXYZÄÖÜäöüß'].every(c=>foot(f,c)===0)&&[...'gpqy'].every(c=>foot(f,c)===-2)),
-      'every letter of the pixel font stands on the baseline, the short ones at one x-height')}
-  if(stop==='font'){
-    halt('font',()=>{const k=document.createElement('canvas'),W=innerWidth,Hh=innerHeight;k.width=W;k.height=Hh;k.style.cssText='position:fixed;left:0;top:0;z-index:8';document.body.appendChild(k);
-      /* every glyph of both faces, wrapped, then speech and a thought outlined one font pixel as in the game, on a dark and on a bright ground */
-      const g=k.getContext('2d'),half=Math.round(Hh*.56);g.imageSmoothingEnabled=false;g.fillStyle='#141824';g.fillRect(0,0,W,half);g.fillStyle='#e9dcb8';g.fillRect(0,half,W,Hh-half);
-      const set=f=>Object.keys(SHARED.font.glyphs[f]).filter(c=>c!==' '&&c!==' '),rows=(a,n)=>{const o=[];for(let i=0;i<a.length;i+=n)o.push(a.slice(i,i+n).join(' '));return o};
-      const said=(t,x,y,col,o)=>{g.fillStyle='#000';for(const[i,j]of[[o,0],[-o,0],[0,o],[0,-o],[o,o],[-o,o],[o,-o],[-o,-o]])g.fillText(t,x+i,y+j);g.fillStyle=col;g.fillText(t,x,y)};
-      let y=36;g.font='24px "Paul Pixel"';g.fillStyle='#fff3b8';for(const r of rows(set('regular'),30)){g.fillText(r,16,y);y+=32}
-      g.font='18px "Paul Pixel Small"';g.fillStyle='#e2b24c';for(const r of rows(set('small'),40)){g.fillText(r,16,y);y+=24}
-      y+=10;g.font='24px "Paul Pixel"';said('Peace, stranger. „Grüße, Paulus!“ ÄÖÜ äöü ß',16,y,'#fff',2);g.font='italic 24px "Paul Pixel"';said('A thought: Paul pauses, and asks Jehovah.',16,y+32,'#cfe2ff',2);
-      y=half+40;g.font='24px "Paul Pixel"';said('Peace, stranger. „Grüße, Paulus!“ ÄÖÜ äöü ß',16,y,'#fff',2);g.font='italic 24px "Paul Pixel"';said('A thought: Paul pauses, and asks Jehovah.',16,y+32,'#cfe2ff',2);g.font='24px "Paul Pixel"';
-      g.fillStyle='#2a1c10';g.fillText('Escape from Damascus · Flucht aus Damaskus · 0123456789',16,y+72);
-      g.font='18px "Paul Pixel Small"';g.fillText('CODE 12-ABC-DEF-GHI · NAMEN · TON AN · EN · Tür zur Werkstatt',16,y+104)})}
   /* the title card at full length, and a room change caught half-way through its cross-fade */
   if(stop==='card'){await loadLevel(1);AU.key=CHAP[1].music;G.speedAll=0;clearInterval(sk);showCard(1);await wait(300);halt('card')}
+  /* one of Paul's thoughts, in italics, over the busy square of Antioch */
+  if(stop==='thought'){await loadLevel(3);applyState(decode(codeOf(3,0)));await idle();enterRoom('antioch',...CHAP[3].ent.antioch);clearInterval(sk);
+    say(PC(),'She has given more than thread. And now I can sew.',TH);await wait(300);halt('thought')}
   if(stop==='xfade'){await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();const r=CHAP[1].rooms[1];
     tween=(ms,fn)=>{fn(.5);return new Promise(()=>{})};go(r,...CHAP[1].ent[r]);await wait(150);halt('xfade')}
   if(stop==='menu'){openMenu();halt('menu')}
@@ -2543,12 +2576,6 @@
   {const real=Object.values(CHAP).filter(c=>c.src);/* the chapters that are level files: not the hub test's own */
     ok(real.length>=9&&real.every(c=>c.ready)&&!taken.length,'ids: all '+real.length+' chapters are loaded, and none took a room, a backdrop or an item from another'+(taken.length?'. TAKEN: '+taken.join(' | '):''))}
   ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-  /* the pixel font has a letter for every character of every text, English and translated, checked where a translation is loaded (sung
-     notes and {placeholders} are not shown) */
-  {const cs=new Set();for(const L of Object.values(DICT))for(const part of Object.values(L))for(const[k,v]of Object.entries(part))for(const t of[k,v])
-      if(typeof t==='string'&&!/\d\.\d+[a-z@]/i.test(t))for(const c of t.replace(/\{\w+\}/g,''))cs.add(c);
-    const lack=f=>[...cs].filter(c=>!/\s/.test(c)&&!SHARED.font.glyphs[f][c]).join(''),a=lack('regular'),b=lack('small');
-    if(Object.keys(DICT).length)ok(cs.size>40&&!a&&!b,'the pixel font has a letter for each of the '+cs.size+' characters the game shows'+(a||b?'. MISSING: '+a+' / '+b:''))}
   fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
   L('DONE');
  }catch(e){if(e!=='halt')L('ERR '+(e&&e.message||e))}})();

@@ -147,7 +147,7 @@ ART.ford={w:480,fp:1.25,
   /* the guide rope: parted, then spliced and coiled at the near post, then carried over and made fast */
   const rope=(p,w)=>{stroke(g,p,'#2c241c',(w||1)+.8);stroke(g,p,'#7a664c',w||1)},W=G.wade;
   if(F.lineUp)rope([NEAR[0],NEAR[1]+.6,214,101.6,237,102.6,260,101.6,FAR[0],FAR[1]+.6]);
-  else{if(W)rope([NEAR[0],NEAR[1]+.6,(NEAR[0]+W.x)/2,104+Math.min(8,(W.x-NEAR[0])*.08),W.x-3,W.y-24]);
+  else{if(W)rope([NEAR[0],NEAR[1]+.6,(NEAR[0]+W.x)/2,104+Math.min(8,(W.x-NEAR[0])*.08),W.x-3,W.y-23]);
     else if(F.spliced){rope([NEAR[0],NEAR[1]+.6,190,104,184,108.6]);for(let i=0;i<3;i++){g.strokeStyle=i%2?'#5a4a38':'#7a664c';g.lineWidth=1.6;g.beginPath();g.ellipse(180,110-i*1.3,5.6-i*.4,1.5,0,0,6.2832);g.stroke()}}
     else rope([NEAR[0],NEAR[1]+.6,196,105,200,110.6,207,113]);
     rope([FAR[0],FAR[1]+.6,278,106,274,112.6,270+Math.sin(t/260)*1.2,118,268+Math.sin(t/300)*1.6,124]);R(g,265,123.6,6,.8,'rgba(240,250,252,.8)')}

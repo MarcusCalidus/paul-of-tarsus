@@ -7,7 +7,8 @@
 //   node tools/playtest.mjs logo de:logo     the title's logo enlarged, in each language: look for crosses and for letters run together
 //   node tools/playtest.mjs pwa              the installable app: service worker, manifest, offline play (served over http; icon saved as pwa-icon.png)
 //   node tools/playtest.mjs continue         the title screen of a returning player (the game is reloaded; its autosave must bring them back)
-// It first checks the translations against the English text (tools/strings.mjs).
+// It first checks the translations against the English text (tools/strings.mjs), and that every picture in docs/screenshots is listed
+// with its stop in tools/screenshots.txt (tools/retake.mjs takes the pictures again from that list).
 // Screenshots go to tools/out/ (or $SHOTS). Set $CHROME to use another Chromium-based browser.
 import {spawn} from 'node:child_process';
 import fs from 'node:fs';
@@ -38,6 +39,11 @@ async function target(){for(let i=0;i<60;i++){try{const port=fs.readFileSync(pat
   const p=j.find(t=>t.type==='page');if(p)return p.webSocketDebuggerUrl}catch{}await sleep(250)}throw new Error('Chrome did not start')}
 let failed=false;
 {const r=checkTexts();console.log('=== text\n'+r.out.join('\n'));if(r.failed)failed=true}
+/* every picture in docs/screenshots is listed in tools/screenshots.txt with the stop that takes it, and nothing is listed that is not there */
+{const listed=fs.readFileSync(path.join(here,'screenshots.txt'),'utf8').split('\n').filter(l=>l&&!l.startsWith('#')).map(l=>l.trim().split(/\s+/)[0]),
+    have=fs.readdirSync(path.join(root,'docs','screenshots')).filter(f=>f.endsWith('.png')).map(f=>f.slice(0,-4)),a=have.filter(p=>!listed.includes(p)),b=listed.filter(p=>!have.includes(p));
+  console.log('=== pictures\n'+(a.length||b.length?'FAIL ':'ok   ')+`each of the ${have.length} pictures in docs/screenshots has its stop in tools/screenshots.txt`+(a.length?'. NOT LISTED: '+a.join(', '):'')+(b.length?'. NO PICTURE: '+b.join(', '):''));
+  if(a.length||b.length)failed=true}
 try{
   const ws=new WebSocket(await target());await new Promise(r=>ws.onopen=r);
   let id=0;const pend=new Map();
@@ -54,6 +60,8 @@ try{
     await sleep(1600);await ev("document.querySelector('#tlog').style.display='none'");await sleep(100);
     const shot=await send('Page.captureScreenshot',{format:'png'});
     fs.writeFileSync(path.join(out,`${lang==='en'?'':lang+'-'}${stop}.png`),Buffer.from(shot.result.data,'base64'));
+    /* a stop may hand over pictures of its own, at their own size (window.SHEETS: name -> PNG data URL): they are saved beside the screenshot */
+    for(const[k,v]of Object.entries(JSON.parse(await ev("JSON.stringify(window.SHEETS||{})")||'{}')))fs.writeFileSync(path.join(out,k+'.png'),Buffer.from(v.split(',')[1],'base64'));
     console.log(`=== ${name}\n${log}`);
     if(/FAIL|ERR|JSERR|REJ/.test(log)||!/STOP|DONE/.test(log))failed=true;
   }
