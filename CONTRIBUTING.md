@@ -1,6 +1,6 @@
 # Contributing
 
-Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Witness families. The rules below apply to everyone who changes it: the maintainer, contributors, anyone who forks the game to improve it, and AI coding assistants working in this repository. When a new rule is agreed, it is added to this file in the same change.
+Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Witness families. The rules below apply to everyone who changes it: the maintainer, contributors who propose changes, and AI coding assistants working in this repository. When a new rule is agreed, it is added to this file in the same change.
 
 ## 1. Scripture and history
 
@@ -118,3 +118,10 @@ The game is written in English and plays in German too. The English text stays i
 - Names in the status line ("Use awl with torn awning") stand without an article. In a language with cases, choose names that read correctly after every verb, such as German compounds ("Vorratskorb (verstärkt)", not "verstärkter Korb").
 - A line that is sung is written as its notes, syllable by syllable, each with the vowel of its syllable. The vowels and the rhythm follow the words on the screen, so they are language data: each language gives its own under the same key, as it gives the line itself, and the playtest checks that it does.
 - Check every changed scene in each language: German is longer than English, and text must not overflow its box or cross a line on the map.
+
+## 9. License
+
+- The game is not open source. [LICENSE](LICENSE) lets people play it, download it to play on their own devices, read its code and propose changes to this repository; it does not let them publish, host or sell a copy or a changed version, or use the name "Paul of Tarsus" for another game.
+- A fork is only for preparing a pull request to this repository.
+- Whoever proposes a change grants the maintainer the right to use, change, publish and relicense it (LICENSE, section 3). Do not propose anything you have no right to give.
+- Code contributed under the MIT License before 18 November 2026 keeps its MIT notice in LICENSE.
