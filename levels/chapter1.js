@@ -6,17 +6,41 @@ LEVEL(1,()=>{
 
 /* ============ MUSIC AND AMBIENCE (plain data, played by the engine's sequencer) ============ */
 /* Damascus by night, in D Hijaz: an oud over a drone, a frame drum, and a ney that enters in the second half.
-   In the watched street (mood "tense") only the drone, a heartbeat on the drum and two low notes are left.
-   When Paul is safely outside the wall (mood "hope") the ney plays an octave higher. */
+   On the title screen and at the end of the prologue (mood "ancient") the full Eastern Mediterranean ensemble opens with a two-bar
+   fanfare and states the eight-bar melody on ney, aulos with tonic drone pipe, strumming lyre, harp, oud, walking bass and road
+   percussion before cross-fading at bar 11 into "calm". In the prologue's opening (mood "stones") only the drone and the slow drum
+   sound; in the house of Judas (mood "harp") a harp plays alone; in the watched street (mood "tense") only the drone, a heartbeat
+   on the drum and two low notes are left; and when Paul is safely outside the wall (mood "hope") the ney plays an octave higher. */
 const _=null,
  NEY=[[[0,4,6],[6,5,2],[8,4,4],[12,3,2],[14,2,2]],[[0,3,4],[4,2,2],[6,1,2],[8,0,8]],[[0,2,4],[4,3,2],[6,4,2],[8,5,4],[12,4,4]],[[0,4,12]],
   [[0,7,6],[6,6,2],[8,5,4],[12,4,4]],[[0,5,2],[2,4,2],[4,3,4],[8,2,4],[12,1,4]],[[0,2,3],[3,1,1],[4,0,4],[8,1,2],[10,2,2],[12,1,4]],[[0,0,14]]],
- MUSIC={dt:.17,root:50,scale:[0,1,4,5,7,8,10],bars:16,tracks:[
-  {drone:[-12],every:32},
-  {inst:'oud',moods:['calm','hope'],prog:'AABACABA',seq:{A:[0,_,4,_,7,_,4,_,0,_,4,_,8,_,7,_],B:[3,_,5,_,7,_,5,_,3,_,5,_,9,_,7,_],C:[1,_,3,_,5,_,3,_,1,_,4,_,6,_,4,_]}},
+ FANFARE_HARP=[[[0,0,2],[2,2,2],[4,4,4],[8,7,2],[10,8,2],[12,7,4]],[[0,4,2],[2,7,2],[4,9,2],[6,11,2],[8,14,8]]],
+ MUSIC={dt:.165,root:50,scale:[0,1,4,5,7,8,10],bars:16,overture:'ancient',tracks:[
+  {drone:[-12],every:32,moods:['ancient','calm','hope','tense','stones']},
+  {inst:'bass',moods:['ancient'],prog:'MMAABACABA',len:6,seq:{
+    M:[-7,_,_,_,_,_,_,-3,-7,_,_,_,_,_,_,_],A:[-7,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],
+    B:[-4,_,_,_,_,_,_,_,-7,_,_,_,_,_,_,_],C:[-6,_,_,_,_,_,_,_,-3,_,_,_,_,_,-5,_]}},
+  {inst:'oud',moods:['ancient','calm','hope'],prog:'MMAABACABAABACAB',seq:{
+    M:[0,_,4,_,7,_,4,_,0,_,4,_,7,_,11,_],A:[0,_,4,_,7,_,4,_,0,_,4,_,8,_,7,_],
+    B:[3,_,5,_,7,_,5,_,3,_,5,_,9,_,7,_],C:[1,_,3,_,5,_,3,_,1,_,4,_,6,_,4,_]}},
   {inst:'oud',moods:['tense'],seq:{A:[0,_,_,_,_,_,_,_,_,_,1,_,_,_,_,_]},vol:.8},
+  {inst:'lyre',moods:['ancient'],prog:'MMAABACABA',len:3,vol:.95,seq:{
+    M:[0,_,_,4,_,_,7,_,4,_,_,7,_,11,_,_],A:[0,_,_,4,_,_,7,_,4,_,_,8,_,_,7,_],
+    B:[3,_,_,5,_,_,7,_,5,_,_,9,_,_,7,_],C:[1,_,_,3,_,_,5,_,3,_,_,6,_,_,4,_]}},
+  {inst:'harp',moods:['ancient'],oct:12,vol:.95,lines:[
+    ...FANFARE_HARP,
+    [[4,4,4],[12,8,4]],[[4,3,4],[8,7,6]],[[4,4,4],[12,9,4]],[[4,7,2],[6,8,2],[8,9,2],[10,11,6]],
+    [[2,4,2],[4,7,2],[6,11,2],[10,9,2],[12,7,4]],[[2,5,2],[4,7,2],[6,9,2],[10,7,2],[12,4,4]],
+    [[2,4,2],[6,7,2],[10,5,2],[14,4,2]],[[0,0,2],[2,4,2],[4,7,4],[8,14,8]]]},
+  {inst:'harp',moods:['harp'],prog:'ABAC',len:6,oct:12,vol:.75,seq:{
+    A:[0,_,_,_,4,_,_,_,2,_,_,_,0,_,_,_],B:[3,_,_,_,5,_,_,_,4,_,_,_,2,_,_,_],C:[1,_,_,_,4,_,_,_,3,_,_,_,0,_,_,_]}},
+  {inst:'ney',moods:['ancient'],oct:12,vol:1.15,lines:[[],[],...NEY]},
+  {inst:'aulos',moods:['ancient'],hold:0,oct:12,vol:.85,lines:[
+    [],[],[[0,4,6]],[[8,0,8]],[[8,5,4],[12,4,4]],[[0,4,8],[8,5,4],[12,6,4]],...NEY.slice(4)]},
+  {drum:1,moods:['ancient'],prog:'FFAAABAAAC',seq:{
+    F:'b...d.t.d.ktd.tk',A:'d.skt.s.d.skt.sk',B:'b.skt.s.d.skt.tk',C:'b.skt.s.b...d...'}},
   {drum:1,moods:['calm','hope'],seq:{A:'d.t...t.d...t.k.'}},
-  {drum:1,moods:['tense'],seq:{A:'d.......d.......'},vol:1.35},
+  {drum:1,moods:['tense','stones'],seq:{A:'d.......d.......'},vol:1.35},
   {inst:'ney',moods:['calm'],from:8,oct:12,lines:NEY},
   {inst:'ney',moods:['hope'],from:8,oct:24,lines:NEY}]};
 
@@ -619,11 +643,13 @@ function tallWall(){return TALL||(TALL=bake(320,g=>{const r=rng(77),H=VT-144;
     ao(g,0,VT-30,320,30,'b',.55,'#04050e');ao(g,0,144,36,H,'l',.3,'#04050e');ao(g,284,144,36,H,'r',.3,'#04050e')});
   ART.wall.paint(g)},0,VT))}
 function titleScene(g,t){g.drawImage(tallWall(),0,0,320,VT);twinkle(g,t)}
-async function start(){ov.onclick=null;ov.className='';audioInit();SFX.good();G.started=performance.now();setChapter(1);
-  await cut(async()=>{await wait(500);
+async function start(fromPro){ov.onclick=null;ov.className='';audioInit();if(!fromPro){SFX.good();G.started=performance.now();setChapter(1)}
+  await cut(async()=>{if(!fromPro)await wait(500);
     await narr('Damascus, about 36 C.E.',{dur:2800});
-    await narr('Saul of Tarsus, later known as the apostle Paul, once came to this city to arrest the disciples of Jesus.');
-    await narr('Now he himself preaches in the synagogues that Jesus is the Son of God.');
+    if(!fromPro){
+      await narr('Saul of Tarsus, later known as the apostle Paul, once came to this city to arrest the disciples of Jesus.');
+      await narr('Now he himself preaches in the synagogues that Jesus is the Son of God.');
+    }
     await narr('Opposers have agreed among themselves to kill him. The governor under King Aretas has the city guarded, and the gates are watched by day and by night.');
     await narr('But tonight, the brothers have a plan.',{dur:2800});
     await fade(1,500);G.scene=null;enterRoom('workshop',58,118,1);await fade(0,500);
@@ -665,7 +691,8 @@ async function finale(){AU.mood='calm';await wait(500);
 /* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
    plainly says no. Each is a line of this chapter, in English, as it stands above. */
 const ACTING={shake:['No, brother. Keep what you have for the road.']};
-return{acting:ACTING,rooms:['workshop','street','house'],setup,start,hint,music:MUSIC,scenes:{wall:wallScene,title:titleScene},topics:TOPICS,tablets:TABLETS,
+const CALLS1={cicadas:[.8,2.2,(t,d)=>{noise({t,d:.55+Math.random()*.4,v:.045,f:5200+Math.random()*400,q:3.5,a:.15,sus:1,dest:d})}]};
+return{acting:ACTING,calls:CALLS1,rooms:['workshop','street','house'],setup,start,hint,music:MUSIC,scenes:{wall:wallScene,title:titleScene},topics:TOPICS,tablets:TABLETS,
     /* the way out of this chapter, drawn on the travel map at its end (place ids from shared/map.js) */
     route:[['damascus','jerusalem','new']],
     flags:['gotAwl','gotThread','gotKnife','gotCloth','gotRope','gotSkin','gotBasket','cutCloth','longRope','metZakkai','kind',

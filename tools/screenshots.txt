@@ -78,6 +78,8 @@ pisidia week
 plateau closed8
 pointer pointer
 pray pray
+pro-judas pro8b
+pro-wall pro1
 psalm psalm9
 questions myron
 reading reading

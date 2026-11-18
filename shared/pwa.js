@@ -21,9 +21,9 @@ function icon(size,pad){
   g.imageSmoothingEnabled=false;g.drawImage(p,x0,y0,w,h,Math.round((size-w*k)/2),Math.round((size-h*k)/2),Math.round(w*k),Math.round(h*k));
   return c.toDataURL('image/png')}
 /* every file the game may ask for, for the service worker to keep: the page, the chapters, the shared files, each language's files */
-function files(CHAP,LANGS,base){const u=[base];
+function files(CHAP,LANGS,base){const u=[base,'levels/prologue.js'];
   Object.keys(CHAP).forEach(n=>u.push(CHAP[n].src));u.push(...FILES);
-  Object.keys(LANGS).forEach(l=>{const d=LANGS[l].dir;if(d)u.push(d+'main.js',...Object.keys(CHAP).map(n=>d+'chapter'+n+'.js'))});
+  Object.keys(LANGS).forEach(l=>{const d=LANGS[l].dir;if(d)u.push(d+'main.js',d+'prologue.js',...Object.keys(CHAP).map(n=>d+'chapter'+n+'.js'))});
   return u}
 async function install({CHAP,LANGS}){
   const base=new URL('./',location.href).href,abs=u=>new URL(u,base).href;
