@@ -173,6 +173,9 @@
       ok(!apart.length,'every figure at rest is one piece: '+ids.length+' looks'+(apart.length?'. IN PIECES: '+apart.join(', '):''));
       ok(!bad.length,`speaking: ${n} poses of mouth, head and hand, and none comes apart`+(bad.length?'. IN PIECES: '+bad.slice(0,12).join('; '):''));
       ok(ids.some(k=>LOOK[k].stone)&&!stone.length,'a statue never moves: its picture is the same with any mouth and any head'+(stone.length?'. MOVED: '+[...new Set(stone)].join(', '):''));
+      /* the gestures that the chapters direct: each is one the engine knows, and there are as many as the maintainer has looked at (docs/look-and-sound.md lists them) */
+      {const tab=Object.keys(CHAP).map(k=>CHAP[k].acting||{}),kinds=new Set(tab.flatMap(t=>Object.keys(t))),count=k=>tab.reduce((s,t)=>s+(t[k]||[]).length,0);
+        ok([...kinds].every(k=>GEST[k])&&count('nod')===3&&count('shake')===15,`the chapters direct ${count('nod')} nods and ${count('shake')} shakes of the head, and nothing the engine does not know`)}
       const B={skin:'#c08a5c',tunic:'#c4b08a',belt:'#3a2414'},fm={skin:'#c8a078',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#6a2a5a',brow:'#3a2414'},
         WHO=[['a bearded man',paulLook(7)],['a long beard',{...B,hair:'#969088',beard:'#a49e96',brow:'#78726c',grey:'#c8c2ba',bald:1,longBeard:1,long:1,cloak:'#6a5a7a'}],['a veiled woman',{...fm,veil:'#6a2a5a'}],['hair bound',{...fm,hair:'#3a2616',fem:1,band:'#a8402c',longSleeve:0}],['a boy',{...B,hair:'#34241c',h:1}]],
         HD=[['shut',0,0],['parted',1,0],['open',2,0],['wide, chin down',3,0],['round, chin down',4,0],['head dipped',2,MV.dip],['lifted, brows up',2,MV.lift|MV.brow],['forward',0,MV.fwd],['back, a glance',0,MV.back|MV.glance]],
@@ -210,6 +213,10 @@
     {place(P,'workshop',240,122,-1);let seen=null;const say0=say;window.say=function(a){if(a===E&&!seen)seen=[facing(E),E.dir,G.with===E];return say0.apply(this,arguments)};
       await cut(()=>window.act('give',E.hs,'tablets'));window.say=say0;   /* window.act: the engine's own, not this file's helper of the same name */
       ok(seen&&seen[0]===1&&seen[1]===-1&&seen[2]&&G.with==null&&facing(E)===-1,'whoever Paul shows something to turns to him while they talk, and stands as the scene had him afterwards; only the picture turned');
+      /* a line that plainly says no is spoken with a shake of the head: the chapter lists it (acting), and say gives the gesture as the line begins */
+      {const line=CHAP[1].acting.shake[0],a=say(E,line,{dur:90}),k1=E.gest&&E.gest.kind;await a;E.gest=null;const b=say(E,'Do not quarrel with him. A mild answer will serve better than a bold one.',{dur:90}),k2=E.gest;await b;const c=say(E,line,{thought:1,dur:90}),k3=E.gest;await c;
+        const d=say(E,'Do not quarrel with him. A mild answer will serve better than a bold one.',{dur:90,act:'nod'}),k4=E.gest&&E.gest.kind;await d;E.gest=null;
+        ok(k1==='shake'&&!k2&&!k3&&k4==='nod','a line that the chapter lists as a plain no is spoken with a shake of the head; another line, and a thought, with none; a script can ask for a nod: '+line)}
       G.with=E;G.withDir=E.dir;E.noTurn=1;const kept=facing(E);E.noTurn=0;E.dir=1;const script=facing(E);E.dir=-1;G.with=null;
       ok(kept===-1&&script===1,'an actor marked noTurn keeps his back turned, and a script that turns him is obeyed')}
     place(P,'workshop',166,122,1);clearInterval(sk);
@@ -282,6 +289,16 @@
       ok(!jumps&&[0,1,2,3].every(k=>seen.has(k)),'over six lines the hand takes all its poses, and never jumps: it goes up and comes down through the half-raised one');
       const spear=TXT.map(t=>run(t,{...L,spear:1})[1]).flat(),song={plan:s,t0:0,a:A},sing=[];for(let t=0;t<2600;t+=10)sing.push(moves(A,L,song,t));
       ok(spear.every(x=>!x[1]&&!(x[3]&MV.lean))&&sing.every(x=>!x[1]&&!(x[3]&MV.lean))&&new Set(sing.map(x=>x[0])).size>=4,'a spearman and a singer keep the hand down and do not lean; the singer\'s mouth moves')}
+    /* gestures that a script directs (gesture): a nod dips the head twice and never lifts it; a shake turns it from side to side, with no dip;
+       a hand is laid on the chest and taken away through the half-raised pose. In calm movement too. A figure that bows, and a statue, make none. */
+    {const play=(kind,o,lk)=>{const X={talk:false,bow:false,fr:0,x:80,...o};gesture(X,kind);const t0=X.gest.t0,r=[];for(let t=0;t<GEST[kind]+40;t+=10)r.push(moves(X,lk||L,null,t0+t));return[r,X]},
+        runs=a=>{let n=0,on=false;for(const v of a){if(v&&!on)n++;on=!!v}return n},was=cur;cur=null;
+      const[nd,NX]=play('nod'),[sk2]=play('shake'),[he]=play('heart');OPTS.mov=0;const[cn]=play('nod');OPTS.mov=1;const[bw,BX]=play('nod',{bow:true}),[st]=play('shake',null,{...L,stone:1}),[sp]=play('heart',null,{...L,spear:1});cur=was;
+      ok(runs(nd.map(r=>r[3]&MV.dip))===2&&nd.every(r=>!(r[3]&MV.lift))&&NX.gest===null&&runs(cn.map(r=>r[3]&MV.dip))===2,'a nod dips the head twice and is then over, in calm movement too');
+      ok(runs(sk2.map(r=>r[3]&MV.back))===2&&runs(sk2.map(r=>r[3]&MV.fwd))===2&&sk2.every(r=>!(r[3]&MV.dip)&&!((r[3]&MV.back)&&(r[3]&MV.fwd))),'a shake turns the head from side to side twice, and never dips it');
+      const hg=he.map(r=>r[1]);ok(hg[0]===2&&hg.includes(3)&&hg.every((v,i)=>!i||v===hg[i-1]||v===2||hg[i-1]===2)&&hg[hg.length-1]===0,'a hand is laid on the chest and taken away again through the half-raised pose');
+      ok(bw.every(r=>!r[3])&&BX.gest===null&&st.every(r=>!r.some(Boolean))&&sp.every(r=>!r[1]),'who bows makes no gesture, a statue never moves, and a spearman keeps his hand on the spear');
+      ok(typeof nod==='function'&&typeof shakeHead==='function'&&typeof handOnChest==='function'&&nod(null)instanceof Promise,'scripts have nod, shakeHead and handOnChest')}
     /* the blips of a voice fall on the first syllables of the line, as many as before */
     {clearInterval(sk);const t0=SFX.talk,got=[];SFX.talk=()=>got.push(performance.now());const st=performance.now(),done=say(P,EN,{dur:1500}),want=cur.plan.ev.filter(e=>e.m>1).slice(0,Math.ceil(Math.min(9,txt.length/5)));
       await done;SFX.talk=t0;sk=setInterval(()=>{if(G.skip)G.skip()},30);

@@ -14,7 +14,9 @@ A figure that speaks moves as it speaks. Its mouth has five shapes, and they are
 
 The head moves with the sentence: it dips on a stressed syllable, lifts with raised brows as a question ends, and sits a pixel forward for a clause now and then. The far hand speaks in phrases, one to a clause and not to every clause: half raised and open for a question, raised for an exclamation, and otherwise half raised, raised, laid on the chest or left down, as the words of the line decide, so that a line is always spoken the same way. A hand goes up and comes down through the half-raised pose and never jumps, and on an exclamation the speaker leans in by a pixel. Every forearm is bent and slanting; no arm is ever stretched out. Whoever sings or holds a spear keeps his hand down.
 
-Whoever Paul talks with turns to face him for as long as they talk, and afterwards stands as the scene had him. Whoever is spoken to raises his brows at a question and may blink as a sentence ends; everybody else glances aside from time to time. Nobody nods by himself, because a nod is a yes. A figure that bows keeps its head still, and a statue never moves.
+Whoever Paul talks with turns to face him for as long as they talk, and afterwards stands as the scene had him. Whoever is spoken to raises his brows at a question and may blink as a sentence ends; everybody else glances aside from time to time. Nobody nods by himself, because a nod is a yes.
+
+Where a line plainly says yes or no, its speaker says it with his head as well: a nod dips the head twice, and a shake turns it from side to side. These are directed by the chapter, never guessed by the engine, and there are few of them: three nods (Paul's admission to Barnabas in Chapter Two, a householder in Chapter Five, the boy Timothy in Chapter Six) and fifteen shakes of the head, most of them a brother or sister who will not take back what Paul offers. A script can also have a hand laid on the chest. A figure that bows keeps its head still, and a statue never moves.
 
 ![The frames of a speaking figure, enlarged](screenshots/talk.png)
 

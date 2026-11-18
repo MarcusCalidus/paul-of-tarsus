@@ -973,16 +973,26 @@ function cadence(text,dur,sung){const ev=[],cl=[],low=text.toLowerCase(),SYL=175
   close('.',0);const end=cl.length?cl[cl.length-1].t1:t,k=Math.min(1,dur*.9/end);
   if(k<1)for(const x of ev.concat(cl)){x.t0*=k;x.t1*=k}
   return{ev,cl,end:end*k,h}}
+/* gesture: a movement that says something, and that the words alone do not give: 'nod', the head dips twice, a yes; 'shake', it turns
+   from side to side, a no; 'heart', the far hand is laid on the chest for a while. The engine never gives one by itself (CONTRIBUTING
+   section 4): a script directs it, with nod(a), shakeHead(a) or handOnChest(a, ms), each of which is over when its promise resolves,
+   or with say(a, line, {act:'nod'}); or the chapter lists the lines that are spoken with one in its definition,
+   acting:{nod:[...], shake:[...], heart:[...]}, each line in English as it stands in the script, and say gives the gesture as the line
+   begins. A gesture is given in calm movement too, since it says something. A figure that bows or walks does not make one. */
+const GEST={nod:620,shake:700,heart:1500};
+function gesture(a,kind,ms,after){if(!a||!GEST[kind])return Promise.resolve();a.gest={kind,t0:performance.now()+(after||0),ms:ms||GEST[kind]};return wait(a.gest.ms+(after||0))}
+const nod=a=>gesture(a,'nod'),shakeHead=a=>gesture(a,'shake'),handOnChest=(a,ms)=>gesture(a,'heart',ms);
+function acted(line){const c=CHAP[G.ch],m=c&&c.acting;if(!m)return null;if(!c.acts){c.acts={};for(const k in m)for(const l of m[k])c.acts[l]=k}return c.acts[line]||null}
 let cur=null;
 /* say: a line stands over whoever speaks it (a: null for the narrator) until its time is up or the player moves on. o.thought: a thought,
    in italics and with the mouth shut; o.dur: how long it stands; o.sung: its notes (see cadence); o.choir: others who sing it with him, or
    without him. While it stands, cur holds its cadence and when it began, and the mouth and head of whoever speaks or sings follow that
    (see moves). The blips of a speaking voice fall on its first syllables; a sung line has its own voice and no blips. */
-function say(a,text,o={}){text=T(text);return new Promise(res=>{
+function say(a,text,o={}){const src=text;text=T(text);return new Promise(res=>{
   const el=document.createElement('div');el.className='line';el.textContent=text;el.style.color=o.color||(a?a.color:'#e6d9ff');
   if(o.thought)el.style.fontStyle='italic';
   const voiced=a&&!o.thought,choir=o.choir||[],dur=(o.dur||Math.max(2200,1400+text.length*65))*(G.speedAll>200?1:OPTS.spd),plan=voiced||choir.length?cadence(text,dur,o.sung):null;
-  $('#speech').appendChild(el);if(voiced)a.talk=true;choir.forEach(x=>x.talk=true);
+  $('#speech').appendChild(el);if(voiced){a.talk=true;const k=o.act||acted(src);if(k)gesture(a,k,0,140)}choir.forEach(x=>x.talk=true);
   const blips=voiced&&!plan.sung?plan.ev.filter(e=>e.m>1).slice(0,Math.ceil(Math.min(9,text.length/5))).map(e=>setTimeout(()=>SFX.talk(a.pitch*2),e.t0)):[];
   const done=()=>{clearTimeout(tm);blips.forEach(clearTimeout);el.remove();if(a)a.talk=false;choir.forEach(x=>x.talk=false);if(G.skip===done)G.skip=null;cur=null;res()};
   const tm=setTimeout(done,dur),me=PC();
@@ -1226,7 +1236,8 @@ const beast=(g,x,y,dir,fr,load,lit)=>figure(g,x,y,lit,'donkey'+dir+fr+load,s=>do
    Who is spoken to (cur.to) takes it in without a sign of yes or no: the brows rise at a question, and the eyes may blink as a sentence
    ends. A nod is a yes, and the engine never gives one by itself. Everybody else glances aside now and then.
    A mouth that a script sets talking with no line of its own on the screen (talk, while the narrator tells of a cry) babbles.
-   Calm movement (OPTS.mov 0) keeps the mouth and leaves the rest. A figure that bows or walks keeps its head still, and a statue never moves. */
+   Calm movement (OPTS.mov 0) keeps the mouth and leaves the rest, but for a gesture that a script directs. A figure that bows or walks
+   keeps its head still, and a statue never moves. */
 const BABBLE=[2,1,3,1,0,2,4,1],hash=n=>{n=Math.imul(n^0x9e3779b9,0x85ebca6b);n^=n>>>13;n=Math.imul(n,0xc2b2ae35);return(n^n>>>16)>>>0};
 function moves(o,L,ln,ts){if(L.stone)return[0,0,0,0];
   let m=0,ges=0,bl=o.bow||blinks(L,ts)?1:0,mv=0;const live=OPTS.mov&&!o.bow&&!o.fr;
@@ -1240,6 +1251,11 @@ function moves(o,L,ln,ts){if(L.stone)return[0,0,0,0];
   else if(live){const s=cur&&cur.plan&&cur.to===o?cur:null;
     if(s){const u=ts-s.t0,c=s.plan.cl.find(c=>c.end!==','&&u>=c.t1&&u<c.t1+380);if(c&&c.end==='?')mv|=MV.brow;else if(c&&u<c.t1+130&&hash(s.plan.h+c.n)%2)bl=1}
     else{const ph=ts+(L.ph||0)*5+o.x*53;if(ph%5200<650&&hash(Math.floor(ph/5200)*131+(L.ph||0))%3===0)mv|=MV.glance}}
+  /* a gesture that a script has directed (see gesture) takes the head, or the hand, for as long as it lasts */
+  const q=o.gest;if(q){const u=ts-q.t0;if(u>=q.ms||o.bow)o.gest=null;else if(u>=0&&!o.fr){
+    if(q.kind==='nod')mv=mv&~(MV.lift|MV.dip|MV.brow)|(u<470&&u%300<170?MV.dip:0);
+    else if(q.kind==='shake')mv=mv&~(MV.fwd|MV.back|MV.dip|MV.lift|MV.brow|MV.glance|MV.lean)|(u<560?Math.floor(u/140)%2?MV.fwd:MV.back|MV.glance:0);
+    else if(!L.spear&&!L.stub)ges=u<110||q.ms-u<110?2:3}}
   return[m,ges,bl,mv]}
 /* Whoever the played character talks with (G.with, see act) turns to face him for as long as they talk, and stands afterwards as the scene had
    him. Only the picture turns: dir, which the scripts read and set, is left alone, and if a script turns him or walks him meanwhile, that holds.

@@ -684,7 +684,12 @@ function hint3(){const b=PC()!==P,saul=['saul3',["That is Saul's craft, not mine
     'I should give my savings to Lucius, and ask that everything be counted and sealed before the brothers.']];
   return['end3',['Everything is ready. It is time to go.']]}
 /* ============ CHAPTER DEFINITION ============ */
-return{rooms:['tarsus','court','antioch'],setup:setup3,start:start3,hint:hint3,music:MUSIC,scenes:{road:roadScene},topics:TOPICS,tablets:TABLETS,
+/* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
+   plainly says no. Each is a line of this chapter, in English, as it stands above. */
+const ACTING={shake:['No, brother! It is given. Use it.',
+  'No, brother. Keep it.',
+  'No, brother Barnabas. Keep it.']};
+return{acting:ACTING,rooms:['tarsus','court','antioch'],setup:setup3,start:start3,hint:hint3,music:MUSIC,scenes:{road:roadScene},topics:TOPICS,tablets:TABLETS,
   route:[['damascus','jerusalem'],['jerusalem','caesarea'],['caesarea','tarsus','sea'],['tarsus','antioch','new']],
   flags:['metKleon','seam','gotLoops','loopsOn','gotTent','sold','cutBolt','gotSpool','bags','bagsOn','sealed','held','jar'],
   party:['paul','barnabas'],home:{staff:'barnabas'},share:['awl','thread','knife','tablets','loops','tent','bolt','panels','spool','bags','wages','staff'],

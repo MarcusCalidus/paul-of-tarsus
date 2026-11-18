@@ -981,7 +981,11 @@ function hint5(){const b=PC()!==P,craft=['craft5',["That is the tentmaker's craf
   if(!F.joel)return['joel5',['Joel will not tell me what weighs on him. It is Barnabas he trusts with it.','Barnabas should talk to Joel. I can let him.']];
   return['sab5',['The week is over, and the city is waiting.','We can go to the door of the synagogue.']]}
 /* ============ CHAPTER DEFINITION ============ */
-return{rooms:['perga','ford','pisidia','synp','border'],setup:setup5,start:start5,hint:hint5,music:MUSIC,topics:TOPICS,tablets:TABLETS,
+/* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
+   plainly says no. Each is a line of this chapter, in English, as it stands above. */
+const ACTING={nod:['Yes. The whole house asked it. Hanan asked it himself.'],
+  shake:['No. They have heard, and what they do with it is theirs to answer for. We are free of it.']};
+return{acting:ACTING,rooms:['perga','ford','pisidia','synp','border'],setup:setup5,start:start5,hint:hint5,music:MUSIC,topics:TOPICS,tablets:TABLETS,
   /* Antioch in Pisidia and Iconium lie north of the map's usual window, so this chapter looks through the northern one. The whole of the
      first journey so far is on it; the chapter's own road draws itself at the end */
   view:'north',route:VOYAGE.map(l=>l.slice(0,2)).concat([['perga','antiochp','new'],['antiochp','iconium','new']]),

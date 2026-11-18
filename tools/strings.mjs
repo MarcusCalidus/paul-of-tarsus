@@ -76,6 +76,10 @@ export function checkTexts(){
   for(const f of fs.readdirSync(path.join(ROOT,'levels')).sort()){const m=f.match(/^chapter(\d+)\.js$/);if(m)parts[m[1]]=[fs.readFileSync(path.join(ROOT,'levels',f),'utf8')]}
   const text={},lit={};for(const k in parts){text[k]=new Set();lit[k]=new Set();for(const s of parts[k]){for(const x of scan(s))text[k].add(x.s);for(const t of literals(s))lit[k].add(t.v)}}
   const out=[];let failed=false;const ok=(c,m,list)=>{if(!c)failed=true;out.push((c?'ok   ':'FAIL ')+m+(c?'':'\n       '+list.slice(0,12).map(s=>JSON.stringify(s)).join('\n       ')+(list.length>12?`\n       ... ${list.length-12} more`:'')))};
+  /* a line that is spoken with a gesture (a chapter's ACTING table) is a line of that chapter: it stands in the file once more, where it is spoken */
+  {const orphan=[];let n=0;for(const k in parts){if(k==='main')continue;const src=parts[k][0],m=/\nconst ACTING=\{([\s\S]*?)\};\n/.exec(src);if(!m)continue;
+      const count=s=>literals(src).filter(t=>t.v===s).length;for(const t of literals(m[1])){n++;if(count(t.v)<2)orphan.push('chapter '+k+': '+t.v)}}
+    ok(!orphan.length&&n>0,`every line that is given a gesture is a line of its chapter (${n} lines)`,orphan)}
   const langDir=path.join(ROOT,'lang');
   for(const lang of fs.existsSync(langDir)?fs.readdirSync(langDir).sort():[]){const D={},sb={TEXTS:(l,p,d)=>{if(l===lang)Object.assign(D[p]||(D[p]={}),d)}};
     for(const f of fs.readdirSync(path.join(langDir,lang)))if(f.endsWith('.js'))vm.runInNewContext(fs.readFileSync(path.join(langDir,lang,f),'utf8'),sb,{filename:f});

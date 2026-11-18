@@ -1193,7 +1193,10 @@ function hint7(){const b=PC()!==P,craft=['craft7',["That is the tentmaker's craf
   if(!F.tat)return b?his:['tat7',['Tatia has watched him come and go. What does he do, when he is here?','I should talk to Tatia at the fountain.']];
   return['back7',['Two cities, and one account of him. What is left to do is in Lystra.','We can leave by the south gate, and choose Lystra on the map.']]}
 /* ============ CHAPTER DEFINITION ============ */
-return{rooms:['tarsus7','gates','lystra7','iconium7'],setup:setup7,start:start7,hint:hint7,music:MUSIC,scenes:{antioch:antiochScene,council:councilScene},topics:TOPICS,tablets:TABLETS,
+/* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
+   plainly says no. Each is a line of this chapter, in English, as it stands above. */
+const ACTING={shake:['No, Eunice. Barnabas has sailed for Cyprus, with John Mark. He and I did not agree about this journey. Anger flared up between us, sharply, and we parted.']};
+return{acting:ACTING,rooms:['tarsus7','gates','lystra7','iconium7'],setup:setup7,start:start7,hint:hint7,music:MUSIC,scenes:{antioch:antiochScene,council:councilScene},topics:TOPICS,tablets:TABLETS,
   /* painters: the chapter's animal, for the playtest, which checks that every part of it is attached */
   painters:{ox},
   /* Tarsus, the Gates and the cities of Lycaonia lie in the map's northern window. This journey is drawn on its own, as Chapter Four's was:
