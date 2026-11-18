@@ -28,9 +28,13 @@ People walk as the ground passes under them. A stride has sixteen moments, and t
 
 Everybody covers ground at the same speed, so that companions stay together, but each has a step of his own: a long robe shortens it, a boy and a grey-haired man take shorter and quicker steps, a youth longer ones, and whoever carries a spear steps short. At the game's walking speed a man in a short tunic still slips by about a fifth of a step; a walk that planted every foot would be a good deal slower.
 
+The pack donkey walks in four beats, near hind, near fore, far hind, far fore: each hoof stands while the body passes over it and is then lifted and swung forward with the joint bent, and the body sinks a pixel as each fore hoof lands. On the road of Chapter Three its hooves stay where they are set down.
+
 ![Every second moment of a stride, enlarged](screenshots/walk.png)
 
 ![Paul in the workshop, as a heel lands](screenshots/stride.png)
+
+![The road to Judea in Chapter Three: two men and the donkey, each at a stride of its own](screenshots/road.png)
 
 A scene has depth: whoever stands farther back is drawn behind. A man who walks behind the carrier's mule is hidden by it up to the waist, and hides it when he stands in front; the same holds for a stool, a low table or a heap of sailcloth that stands out on the floor.
 
