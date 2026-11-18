@@ -592,12 +592,33 @@ N.hs={name:'Naomi',actor:N,look:'Sister Naomi. A widow who has opened her home, 
 function setup(){place(E,'workshop',196,118,-1);place(GD,'street',270,118,1);place(Z,'street',328,116,-1);place(N,'house',172,120,-1);
   G.inv=['pouch','tablets'];drawInv()}
 /* ============ SCENES: intro, finale, chapter complete ============ */
-function wallScene(g,t){backdrop(g,'wall');const S=G.end||{};
-  for(let i=0;i<6;i++)if((Math.floor(t/500)+i)%4===0)R(g,160+i*27,12+(i*17)%40,1,1,'#0a0f2e');
+const twinkle=(g,t)=>{for(let i=0;i<6;i++)if((Math.floor(t/500)+i)%4===0)R(g,160+i*27,12+(i*17)%40,1,1,'#0a0f2e')};
+function wallScene(g,t){backdrop(g,'wall');twinkle(g,t);const S=G.end||{};
   if(S.heads){R(g,99,35.5,3,4,'#8a6a58');R(g,99,34.5,3,1.2,'#8a8a94');R(g,108,36.5,3,3.5,'#927058');R(g,108,35.5,3,1.2,'#2a1c18')}
   if(S.by!=null){stroke(g,[105.5,41,105.5,S.by-22],'#b89a5a',.8);miniBasket(g,105.5,S.by,S.rider)}
   if(S.px!=null){const x=hp(S.px),y=hp(S.py),f=Math.floor(t/160)%2;oval(g,x+1.5,y,4,1,'rgba(0,0,0,.4)');
     R(g,x,y-9,3,3,'#8f6a50');R(g,x-.5,y-10,4,1.4,'#1e1410');R(g,x+2,y-7.5,1,1.2,'#1e1410');R(g,x-1,y-6,5,4,'#4e3c36');R(g,x-1,y-6,1.5,4,'#3a2c2a');R(g,x+(f?0:1),y-2,1,2,'#7a5a46');R(g,x+(f?2:1),y-2,1,2,'#7a5a46')}}
+/* The title's picture is taller than a room's (VT): the same country under the moon, with the ground running on toward us, rocks and thorn
+   bushes in it, under the list of chapters. Only the title screen shows all of it. Its upper 144 pixels are the backdrop of the wall, pixel
+   for pixel: the ground below is painted first and only below, so that nothing moves when the title is left and the story begins. */
+let TALL=null;
+function tallWall(){return TALL||(TALL=bake(320,g=>{const r=rng(77),H=VT-144;
+  inRect(g,0,144,320,H,()=>{g.fillStyle=lg(g,0,144,0,VT,['#0e1226','#0b0e20','#070916']);g.fillRect(0,144,320,H);tex(g,'mott',.5,0,144,320,H,'overlay',1);
+    /* the ground rises and falls a little: long hollows lie in shadow */
+    for(const[hx,hy,hw]of[[70,158,60],[250,166,70],[150,182,90],[40,196,50],[280,198,60]])pool(g,hx,hy,hw,5,'#05060f',.35,'source-over');
+    /* rocks, larger as they lie nearer: a dark body, the moon on its top and brightest on the side toward the moon, a shadow toward us.
+       Few of them lie in the middle, where the chapters are listed */
+    const rock=(x,y,w)=>{const h=w*.5,p=[];for(let i=0;i<=7;i++){const a=Math.PI*(1-i/7),k=.78+r()*.36;p.push(x+Math.cos(a)*w*k,y-Math.sin(a)*h*k*1.3)}p.push(x+w*.92,y+h*.3,x+w*.2,y+h*.45,x-w*.9,y+h*.3);
+      oval(g,x-w*.2,y+h*.4,w*1.3,h*.5,'rgba(2,3,10,.6)');poly(g,p,'#131836');
+      clipTo(g,()=>poly(g,p),()=>{poly(g,[x-w*1.2,y-h*.2,x+w*1.3,y-h*.55,x+w*1.3,y-h*2,x-w*1.2,y-h*2],'#20284e');poly(g,[x+w*.05,y-h*.5,x+w*1.3,y-h*.85,x+w*1.3,y-h*2,x+w*.35,y-h*2],'#2c3668')})};
+    for(const[bx,by,bw]of[[252,152,4.5],[36,154,5],[298,160,6.5],[14,170,8],[270,172,9],[76,166,4],[306,190,11],[46,187,9.5],[236,198,7],[22,205,10],[286,207,12],[104,202,5.5]])rock(bx,by,bw);
+    /* thorn bushes, and tufts of dry grass: two short blades from one root, leaning apart */
+    foliage(g,4,192,13,6,'#0f1630',r,50);foliage(g,317,174,12,5.5,'#101832',r,44);foliage(g,172,208,24,6,'#0c1228',r,70);foliage(g,214,178,7,3,'#101830',r,18);
+    for(let i=0;i<34;i++){const tx=r()*320,ty=150+r()*58,k=(ty-144)/H,hh=1.5+r()*(1.5+2.5*k),c=r()<.5?'#262e5a':'#1a2044';
+      stroke(g,[tx,ty,tx-.7-r(),ty-hh],c,.5);stroke(g,[tx,ty,tx+.9+r(),ty-hh*.8],c,.5)}
+    ao(g,0,VT-30,320,30,'b',.55,'#04050e');ao(g,0,144,36,H,'l',.3,'#04050e');ao(g,284,144,36,H,'r',.3,'#04050e')});
+  ART.wall.paint(g)},0,VT))}
+function titleScene(g,t){g.drawImage(tallWall(),0,0,320,VT);twinkle(g,t)}
 async function start(){ov.onclick=null;ov.className='';audioInit();SFX.good();G.started=performance.now();setChapter(1);
   await cut(async()=>{await wait(500);
     await narr('Damascus, about 36 C.E.',{dur:2800});
@@ -644,7 +665,7 @@ async function finale(){AU.mood='calm';await wait(500);
 /* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
    plainly says no. Each is a line of this chapter, in English, as it stands above. */
 const ACTING={shake:['No, brother. Keep what you have for the road.']};
-return{acting:ACTING,rooms:['workshop','street','house'],setup,start,hint,music:MUSIC,scenes:{wall:wallScene},topics:TOPICS,tablets:TABLETS,
+return{acting:ACTING,rooms:['workshop','street','house'],setup,start,hint,music:MUSIC,scenes:{wall:wallScene,title:titleScene},topics:TOPICS,tablets:TABLETS,
     /* the way out of this chapter, drawn on the travel map at its end (place ids from shared/map.js) */
     route:[['damascus','jerusalem','new']],
     flags:['gotAwl','gotThread','gotKnife','gotCloth','gotRope','gotSkin','gotBasket','cutCloth','longRope','metZakkai','kind',
