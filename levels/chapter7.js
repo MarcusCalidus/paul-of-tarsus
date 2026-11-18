@@ -32,11 +32,8 @@ const _=null,
 
 /* ============ ART ============ */
 const SH='#8f95c8';
-/* What is seen through a city gate: sky, hills and the road running on. */
-function gateView(g,x,y,w,h,st){g.save();arch(g,x,y,w,h);g.clip();sky(g,480,y+h-18,st||['#5a98d8','#a8cdea','#dfeaf0']);
-  ridge(g,x,x+w,y+h-12,q=>9+3*Math.sin(q/5+1),['#a9b4c8','#c2cad4']);ridge(g,x,x+w,y+h-12,q=>3+2*Math.sin(q/3),['#98a86c','#a8b47c']);
-  R(g,x,y+h-12,w,12,'#c4c08a');poly(g,[x+w*.45,y+h-12,x+w*.6,y+h-12,x+w*.95,y+h,x+w*.15,y+h],'#ead9ae');
-  ao(g,x,y,w,10,'t',.55,'#2a2440');ao(g,x,y,5,h,'l',.5,'#2a2440');ao(g,x+w-4,y,4,h,'r',.35,'#2a2440');g.restore()}
+/* What is seen through the south gate of Iconium: the plateau, blue ranges round it, and the road running on. The gate adds the horizon and the sky of its scene. */
+const GATE7={far:['#a9b4c8','#c2cad4'],near:['#98a86c','#a8b47c'],land:'#c4c08a',road:'#ead9ae'};
 /* snowy: a far range under f(x), blue with distance, with snow lying on everything above the line s */
 function snowy(g,x0,x1,base,f,st,s){ridge(g,x0,x1,base,f,st);for(let x=x0;x<x1;x+=.5){const h=f(x);if(h>s)R(g,x,base-h,.5,Math.min(h-s,2.2+1.6*Math.sin(x*.9)+(h-s)*.3),'#f4f4f8')}}
 /* crag: a face of bare limestone inside the outline p: bedded, cracked, lit from the upper left */
@@ -116,11 +113,11 @@ ART.antioch7={w:320,
   house(g,0,46,102,58,W,r,{side:0,patch:2,cracks:4,beams:0});
   for(let i=0;i<104;i+=5.5){R(g,i,36,5,8.5,(i|0)%11?'#c0603c':'#a84c2c');R(g,i,36,5,.8,'#e08a60');R(g,i+4.5,36,.6,8.5,'#7a3620')}R(g,0,44.5,104,1.6,'#6a3a22');
   R(g,31,53,38,51,'#d8c8a0');doorArt(g,34,56,32,48,'#8a6a40',r);windowArt(g,80,58,10,10,W,{bars:2,wood:'#6a4e2c'});
-  /* the wall of the courtyard, and the gate to the street */
+  /* the wall of the courtyard, and the gate to the street: the colonnade across it, as in Chapter Three, with its back wall closing the view */
   house(g,102,48,178,56,tint(W,-.04),r,{side:0,patch:3,cracks:5,beams:0});
   R(g,280,40,40,64,'#d6c69e');for(let i=280;i<320;i+=5.5){R(g,i,36,5,5,(i|0)%11?'#c0603c':'#a84c2c');R(g,i,36,5,.6,'#e08a60')}poly(g,[280,36,275,39,275,104,280,104],'#a8a0b0');
-  arch(g,284,52,32,52,'#c2b28c');g.save();arch(g,286,54,28,50);g.clip();sky(g,320,80,['#74aade','#cfe2ee']);R(g,286,84,28,20,'#dcd5c3');
-  for(const[hx,hy,hw,hh,c]of[[286,66,10,38,'#d6caa8'],[304,62,10,42,'#e2d6b4']]){R(g,hx,hy,hw,hh,c);R(g,hx,hy-2,hw,2.2,'#b8603c')}poly(g,[292,104,310,104,304,84,298,84],'#e0d6ba');
+  arch(g,284,52,32,52,'#c2b28c');g.save();arch(g,286,54,28,50);g.clip();sky(g,320,80,['#74aade','#cfe2ee']);R(g,286,64,28,34,'#8f8894');R(g,297.6,80,4.8,16,'#2a2430');R(g,286,60,28,4,'#e2dac4');R(g,286,58.4,28,1.6,'#b8603c');
+  for(const cxx of[291,304]){g.fillStyle=lg(g,cxx,0,cxx+5,0,['#d8d0bc','#fbf7ea','#c8c0b0']);g.fillRect(cxx,64,5,34);R(g,cxx-1,96,7,2,'#d8d0bc')}R(g,286,98,28,6,'#cfc8b6');
   ao(g,286,54,28,9,'t',.5,'#2a2440');ao(g,286,54,5,50,'l',.45,'#2a2440');g.restore();
   /* the vine arbor */
   wood(g,126,43,3,63,'#6a4e2c',1);wood(g,226,43,3,63,'#6a4e2c',1);wood(g,126,40,103,3,'#7a5c36');for(let i=0;i<9;i++)wood(g,131+i*11.6,36.6,2.2,3.6,'#5a4226');
@@ -193,9 +190,17 @@ ART.tarsus7={w:480,fp:1.3,
   stroke(g,[384,104,383,86,387,68,381,54],'#6a5a48',4);stroke(g,[385,104,384.4,86,388.4,68,382.4,54],'#a8987e',1.2);stroke(g,[385,74,374,60,366,54],'#6a5a48',2);stroke(g,[386,66,398,54,404,48],'#6a5a48',2);
   foliage(g,376,40,30,13,'#5a8448',r,220);foliage(g,402,32,20,11,'#679252',r,120);foliage(g,354,50,15,8,'#4f7840',r,70);
   for(const x of[336,394]){R(g,x+2,98,36,8,'rgba(40,30,60,.38)');wood(g,x,92,38,4,'#96703e');R(g,x,95.6,38,1,'#5a4226');wood(g,x,96,3,9,'#5a4226',1);wood(g,x+35,96,3,9,'#5a4226',1)}
-  /* the gate to the street */
+  /* the gate to the street. The street runs past it, to the harbor one way and to the north gate the other, so what the arch shows is its far
+     side: a house front in the sun under its eave of tiles, and the pavement between. The foot of that house closes the view: no horizon is
+     seen here that could lie wrong. One roof line runs right across, and the door has no middle seam, so that no upright meets a level line. */
   ashlar(g,438,30,42,74,'#dccfaa',r,{bw:13,bh:6.4,v:.09});R(g,437,28.6,43,2,'#f4e8c8');poly(g,[438,28.6,433,32,433,104,438,104],'#a8a0b0');
-  arch(g,444,54,32,50,'#c2b28c');gateView(g,446,56,28,48);
+  arch(g,444,54,32,50,'#c2b28c');g.save();arch(g,446,56,28,48);g.clip();R(g,446,56,28,48,'#e6e8dc');
+  R(g,446,68,28,28,'#e8dcc0');tex(g,'mott',.4,446,68,28,28,'overlay',1);ao(g,446,88,28,8,'b',.22,'#4a3424');
+  R(g,446,66.4,28,1.8,'#b8603c');R(g,446,66.4,28,.5,'#d88a5c');R(g,446,68.2,28,.8,'rgba(60,40,60,.3)');
+  R(g,450.6,79.4,7.2,16.6,'#c4b796');R(g,451.4,80.2,5.6,15.8,'#6a4a2c');R(g,451.4,80.2,1,15.8,'#3a2616');
+  R(g,465.2,73,4.4,4.6,'#b8ab8a');R(g,465.8,73.6,3.2,3.4,'#1c1410');R(g,464.6,77.6,5.6,.8,'#f0e6cc');
+  R(g,446,96,28,8,'#d2c8ac');R(g,446,96,28,.6,'#efe6cc');for(const y of[98.8,101.6])R(g,446,y,28,.5,'rgba(90,80,70,.3)');
+  ao(g,446,56,28,10,'t',.55,'#2a2440');ao(g,446,56,5,48,'l',.5,'#2a2440');ao(g,470,56,4,48,'r',.35,'#2a2440');g.restore();
   /* paving */
   pave(g,0,103,480,144,'#d8ceb0',r,{vx:240,vy:62,rows:5,step:36,v:.08,joint:'#a59c88'});ao(g,0,103,480,5,'t',.3,'#4a4460');
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(255,244,214,0)','rgba(255,244,214,.9)']);g.fillRect(0,103,480,41)});
@@ -326,8 +331,9 @@ ART.iconium7={w:480,fp:1.3,
   g.fillStyle=lg(g,0,64,0,104,['#b8b48a','#a8a876','#98a068']);g.fillRect(186,64,114,40);tex(g,'mott',.5,186,64,114,40,'overlay',1);
   for(let i=0;i<7;i++){const fx=188+i*15+r()*6,fy=67+r()*8;poly(g,[fx,fy,fx+20,fy-1,fx+26,fy+7,fx+3,fy+8],i%3===0?'rgba(150,120,84,.4)':i%3===1?'rgba(96,130,76,.3)':'rgba(190,170,110,.3)')}
   for(const[x,y]of[[200,80],[228,75],[260,79],[286,84],[244,84]]){oval(g,x+2,y+3.4,5,1,'rgba(50,60,90,.34)');R(g,x-.4,y+1,1.2,2.8,'#5a4630');foliage(g,x,y-.6,4.6,3,'#7a8a5e',r,20)}
-  /* the street that runs back to the synagogue of the Jews */
+  /* the street that runs back to the synagogue of the Jews. A house front stands across its far end, its roof at the level the paving runs to */
   R(g,0,40,60,64,'#cfc4a8');g.save();g.beginPath();g.rect(0,28,60,76);g.clip();sky(g,480,80,['#7ea4d0','#e2e4dc']);
+  R(g,24,64,10,40,'#d6d0c2');R(g,24,62,10,2.4,'#b8603c');R(g,24,72.4,10,1.6,'rgba(60,50,90,.2)');
   for(const[hx,hy,hw,hh,c]of[[0,42,18,62,'#d6caa8'],[42,48,18,56,'#e2d6b4'],[16,56,10,48,'#c8bc9c'],[32,60,9,44,'#d8ccac']]){R(g,hx,hy,hw,hh,c);R(g,hx,hy-2,hw,2.4,'#b8603c');R(g,hx+hw-2.4,hy,2.4,hh,'rgba(60,50,90,.3)')}
   poly(g,[18,104,42,104,33,74,27,74],'#e0d6ba');ao(g,0,28,60,12,'t',.2,'#2a2440');g.restore();
   /* Nathan's saddlery: a plastered house, its whole front open to the street under an awning */
@@ -359,7 +365,7 @@ ART.iconium7={w:480,fp:1.3,
   windowArt(g,318,46,9,9,ST,{bars:2});for(const x of[312,340]){R(g,x-1.6,94.4,3.2,3.2,'#4a443c');R(g,x-.6,95.4,1.2,1.2,ST)}
   /* the south gate, and the road from Lycaonia */
   ashlar(g,438,22,42,82,'#dccfaa',r,{bw:13,bh:6.4,v:.09});for(let i=438;i<480;i+=8){R(g,i,17.6,5,4.4,'#dccfaa');R(g,i,17.6,5,.5,'#f8eccc')}R(g,438,21.6,42,1,'#a8987a');poly(g,[438,17.6,433,21,433,104,438,104],'#a8a0b0');
-  arch(g,444,54,32,50,'#c2b28c');gateView(g,446,56,28,48,['#6a98cc','#b0c8de','#dfe6ea']);for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,460+Math.cos(a)*16-.3,70+Math.sin(a)*16-1,.6,2.6,'#a8987a')}
+  arch(g,444,54,32,50,'#c2b28c');gateView(g,446,56,28,48,{...GATE7,hz:66,sky:[72,['#4a7cbc','#7ea4d0','#b4c8dc','#e2e4dc']],land:'#a8a876',near:['#98a070','#aaae80']});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,460+Math.cos(a)*16-.3,70+Math.sin(a)*16-1,.6,2.6,'#a8987a')}
   /* paving */
   pave(g,0,103,480,144,'#d8ceb4',r,{vx:240,vy:62,rows:5,step:36,v:.08,joint:'#a59c88'});ao(g,0,103,480,5,'t',.3,'#4a4460');
   comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(244,240,226,0)','rgba(244,240,226,.9)']);g.fillRect(0,103,480,41)});

@@ -40,6 +40,8 @@ A scene has depth: whoever stands farther back is drawn behind. A man who walks 
 
 ![Paul behind the mule, and Timothy in front of it](screenshots/depth.png)
 
+A scene has one horizon. The sea, the fields and the paving run back to one level, about as high as the eyes of the people in it, and the country seen through a city gate ends at that level too: the road beyond the gate of Lystra runs back to the line where the valley beside the well ends.
+
 Chapter Ten has the game's first close views: a bolt of cloth and a reading table, each seen from above, in which nobody walks and the parts are set by hand. What moves in them is painted as the rooms are: a scroll is a sheet between two plain rolls, as thick as they are wound, with writing in short strokes that stop short of the margins. What lies open is named under it in small letters, as the names on the map are written, in the player's language.
 
 ![The scroll table of Chapter Ten](screenshots/scrolltable.png)

@@ -27,11 +27,8 @@ const _=null,
 
 /* ============ ART ============ */
 const SH='#8f95c8';
-/* What is seen through a city gate: sky, hills and the road running on. */
-function gateView(g,x,y,w,h){g.save();arch(g,x,y,w,h);g.clip();sky(g,480,y+h-18,['#5a98d8','#a8cdea','#dfeaf0']);
-  ridge(g,x,x+w,y+h-12,q=>9+3*Math.sin(q/5+1),['#a9b4c8','#c2cad4']);ridge(g,x,x+w,y+h-12,q=>3+2*Math.sin(q/3),['#a8a878','#b8b488']);
-  R(g,x,y+h-12,w,12,'#cdc296');poly(g,[x+w*.45,y+h-12,x+w*.6,y+h-12,x+w*.95,y+h,x+w*.15,y+h],'#ead9ae');
-  ao(g,x,y,w,10,'t',.55,'#2a2440');ao(g,x,y,5,h,'l',.5,'#2a2440');ao(g,x+w-4,y,4,h,'r',.35,'#2a2440');g.restore()}
+/* What is seen through the east gate of Antioch: the plateau, blue ranges round it, and the road running on. The gate adds the horizon and the sky of its scene. */
+const GATE5={far:['#a9b4c8','#c2cad4'],near:['#a8a878','#b8b488'],land:'#cdc296',road:'#ead9ae'};
 /* snowy: a far range under f(x), blue with distance, with snow lying on everything above the line s */
 function snowy(g,x0,x1,base,f,st,s){ridge(g,x0,x1,base,f,st);for(let x=x0;x<x1;x+=.5){const h=f(x);if(h>s)R(g,x,base-h,.5,Math.min(h-s,2.2+1.6*Math.sin(x*.9)+(h-s)*.3),'#f4f4f8')}}
 /* crag: a face of bare limestone inside the outline p: bedded, cracked, lit from the upper left */
@@ -67,12 +64,12 @@ ART.perga={w:480,fp:1.3,
   poly(g,[452,104,480,104,480,96,430,84,404,74,394,68,391,68,398,74,420,85,440,96],'#e6d8b0');stroke(g,[452,104,440,96,420,85,398,74,391,68],'rgba(120,100,60,.4)',.5);
   for(const[x,y]of[[136,80],[160,88],[188,78],[216,86],[306,76],[332,84],[358,78],[250,74],[282,88],[380,90]]){oval(g,x+2,y+3.4,5.6,1.1,'rgba(50,60,90,.34)');R(g,x-.4,y+1,1.2,2.8,'#5a4630');foliage(g,x,y-.6,5,3.2,'#6f8a58',r,22)}
   for(const[x,h]of[[232,12],[238,9],[346,11],[468,13],[474,9]])cypress(g,x,90,h);
-  /* the wall of Perga and its north gate, a round tower beside it */
+  /* the wall of Perga and its north gate, a round tower beside it. Through the gate: a colonnade of the city, whose shaded back wall closes the view */
   ashlar(g,0,24,112,80,ST,r,{bw:13,bh:6.4,v:.09,t:.35});for(let i=0;i<86;i+=9){R(g,i,19.6,5.6,4.4,ST);R(g,i,19.6,5.6,.5,'#f4e8c8')}R(g,0,23.6,112,1,'#a8987a');
   g.fillStyle=lg(g,84,0,122,0,['#b8ab8a','#efe2bc','#dccfa8','#a39a84','#8a8478']);g.fillRect(84,12,38,92);inRect(g,84,12,38,92,()=>{for(let j=14;j<104;j+=6.4)R(g,84,j,38,.6,'rgba(70,56,40,.3)');
     for(let j=0;j<15;j++)for(let i=0;i<5;i++)R(g,87+i*8+(j%2)*4,14+j*6.4,.6,6.4,'rgba(70,56,40,.2)');tex(g,'mott',.4,84,12,38,92,'overlay',1)});
   for(let i=84;i<122;i+=8){R(g,i,7.6,5,4.4,'#e2d5b0');R(g,i,7.6,5,.5,'#f8eccc')}R(g,83,11.6,40,1.2,'#a8987a');windowArt(g,99,34,6,9,ST,{dark:'#241a16'});
-  arch(g,26,50,44,54,'#c2b28c');g.save();arch(g,28,52,40,52);g.clip();sky(g,480,84,['#6aa2dc','#cfe2ee']);R(g,28,84,40,20,'#d9d0bc');
+  arch(g,26,50,44,54,'#c2b28c');g.save();arch(g,28,52,40,52);g.clip();sky(g,480,84,['#6aa2dc','#cfe2ee']);R(g,28,60,40,33,'#8f8894');for(const x of[38.8,49.8])R(g,x,77,4,14.4,'#2a2430');R(g,28,93,40,11,'#d9d0bc');R(g,28,93,40,.6,'#efe8d6');
   for(const cxx of[33,44,55]){g.fillStyle=lg(g,cxx,0,cxx+4.6,0,['#d8d0bc','#fbf7ea','#c8c0b0']);g.fillRect(cxx,62,4.6,30);R(g,cxx-1,60,6.6,2,'#efe8d6');R(g,cxx-1,91,6.6,2,'#d8d0bc')}R(g,28,56,40,4,'#e6dec8');R(g,28,54.6,40,1.6,'#b8603c');
   ao(g,28,52,40,11,'t',.55,'#2a2440');ao(g,28,52,6,52,'l',.5,'#2a2440');ao(g,64,52,4,52,'r',.35,'#2a2440');g.restore();
   for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,48+Math.cos(a)*22-.3,72+Math.sin(a)*22-1,.6,2.6,'#a8987a')}
@@ -164,8 +161,9 @@ ART.pisidia={w:480,fp:1.3,
   sky(g,480,70,['#3470c4','#629ad8','#9ec2e6','#d8e6ee']);cloud(g,96,9,54,7,r);cloud(g,262,16,46,6,r);cloud(g,420,8,40,6,r);
   /* the mountains north-east of the city, white half way down */
   snowy(g,0,480,62,sultan,['#93a2c8','#b2bcd0','#ccd0cc'],34);comp(g,'screen',.26,()=>R(g,0,6,480,58,'#d0dcee'));
-  /* the street we came by, running down to the south gate */
+  /* the street we came by, running down to the south gate. A house front stands across its far end, its roof at the level the paving runs to */
   R(g,0,40,58,64,'#cfc4a8');g.save();g.beginPath();g.rect(0,30,58,74);g.clip();sky(g,480,80,['#629ad8','#d8e6ee']);
+  R(g,22,65,10,39,'#d6d0c2');R(g,22,63,10,2.4,'#b8603c');R(g,22,72.4,10,1.6,'rgba(60,50,90,.2)');
   for(const[hx,hy,hw,hh,c]of[[0,44,16,60,'#d6caa8'],[40,50,18,54,'#e2d6b4'],[14,58,10,46,'#c8bc9c'],[30,62,10,42,'#d8ccac']]){R(g,hx,hy,hw,hh,c);R(g,hx,hy-2,hw,2.4,'#b8603c');R(g,hx+hw-2.4,hy,2.4,hh,'rgba(60,50,90,.3)')}
   poly(g,[16,104,40,104,31,74,25,74],'#e0d6ba');ao(g,0,30,58,12,'t',.2,'#2a2440');g.restore();
   /* the wool market: a stoa with a tiled roof, shops in its shade */
@@ -193,7 +191,7 @@ ART.pisidia={w:480,fp:1.3,
   vessel(g,348,106,5.6,17,'#a05a34','pithos');shade(g,[334,104,357,104,351,110,334,110],SH,.4);
   /* the east gate, and the road to Iconium */
   ashlar(g,438,22,42,82,'#dccfaa',r,{bw:13,bh:6.4,v:.09});for(let i=438;i<480;i+=8){R(g,i,17.6,5,4.4,'#dccfaa');R(g,i,17.6,5,.5,'#f8eccc')}R(g,438,21.6,42,1,'#a8987a');poly(g,[438,17.6,433,21,433,104,438,104],'#a8a0b0');
-  arch(g,444,54,32,50,'#c2b28c');gateView(g,446,56,28,48);for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,460+Math.cos(a)*16-.3,70+Math.sin(a)*16-1,.6,2.6,'#a8987a')}
+  arch(g,444,54,32,50,'#c2b28c');gateView(g,446,56,28,48,{...GATE5,seed:5,hz:66,sky:[70,['#3470c4','#629ad8','#9ec2e6','#d8e6ee']]});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,460+Math.cos(a)*16-.3,70+Math.sin(a)*16-1,.6,2.6,'#a8987a')}
   /* paving */
   pave(g,0,103,480,144,'#ddd4bc',r,{vx:240,vy:62,rows:5,step:36,v:.08,joint:'#a59c88'});ao(g,58,103,422,5,'t',.3,'#4a4460');
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(255,244,214,0)','rgba(255,244,214,.9)']);g.fillRect(0,103,480,41)});
