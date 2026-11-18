@@ -85,6 +85,7 @@ river river8
 samothrace deck8
 saves saves
 speak speak
+stride stride
 scrolltable row10
 seamap seamap10
 secondjourney journey7
@@ -112,6 +113,7 @@ travel hubmap4
 troas troas8
 verbs defverb
 voyage voyage
+walk cast cast-walk
 westmap map10
 windward holdline
 withoutpaul tim10

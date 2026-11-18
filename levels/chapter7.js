@@ -1061,8 +1061,8 @@ function antiochScene(g,t){backdrop(g,'antioch7');const s=G.st||{},talk=Math.flo
   if(!s.k)cast(g,[['br1',16,119,1],['br3',84,116,1],['br4',276,119,-1],['br2',170,113,1],['barnabas7',98,124,1],['paul',124,127,1,{ges:talk}],['jud1',216,124,-1,{ges:1-talk}],['jud2',242,127,-1]]);
   else if(s.k===1)cast(g,[['br2',190,114,-1],['br3',208,118,-1],['br1',228,114,-1],['br4',246,118,-1],['ap3',266,115,-1],['tc5',180,123,-1],['tc4',222,125,-1],['tc2',256,126,-1],
     ['barnabas7',58,122,1],['paul',82,125,1],['judas7',110,123,1],['silas',138,126,1,{ges:talk}]]);
-  else{const a=s.away||0,fr=a>0&&a<1?Math.floor(t/130)%4:0,bow=s.bow?1:0,L=[['br1',16,119,1,{bow}],['br3',84,116,1,{bow}],['br2',60,123,1,{bow}],['br4',34,128,1,{bow}],['silas',112,123,1,{bow}],['paul',140,126,1,{bow}]];
-    if(a<1)L.push(['barnabas7',178+a*112,125-a*9,a>0?1:-1,{fr}],['mark7',204+a*100,128-a*10,a>0?1:-1,{fr}]);cast(g,L)}}
+  else{const a=s.away||0,go=(id,d)=>a>0&&a<1?walkFr(LOOK[id],a*d,d/5.2):0,bow=s.bow?1:0,L=[['br1',16,119,1,{bow}],['br3',84,116,1,{bow}],['br2',60,123,1,{bow}],['br4',34,128,1,{bow}],['silas',112,123,1,{bow}],['paul',140,126,1,{bow}]];
+    if(a<1)L.push(['barnabas7',178+a*112,125-a*9,a>0?1:-1,{fr:go('barnabas7',112)}],['mark7',204+a*100,128-a*10,a>0?1:-1,{fr:go('mark7',100)}]);   /* each at his own stride, over the ground he covers in 5.2 seconds */cast(g,L)}}
 /* The meeting in Jerusalem (Acts 15:6-21). who: 0 Peter is speaking; 1 Barnabas and Paul; 2 James. */
 function councilScene(g,t){backdrop(g,'council');const w=(G.st||{}).who||0,talk=Math.floor(t/600)%2;
   cast(g,[['ap1',30,113,1],['ap2',52,117,1],['ap4',76,113,1],['ap5',98,117,1],['ap3',226,113,-1],['ap1',250,117,-1],['ap2',274,113,-1],['ap4',296,117,-1],

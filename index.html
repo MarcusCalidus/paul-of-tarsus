@@ -746,8 +746,41 @@ const HEADS={
 /* MV: how a figure carries its head and body beyond its pose, as a sum of these. dip, lift: the head a pixel down or up; fwd, back: a pixel
    forward or back; brow: the brows raised; glance: the eyes turned back; lean: everything above the belt a pixel forward. */
 const MV={dip:1,lift:2,fwd:4,back:8,brow:16,glance:32,lean:64};
+/* Walking. Everybody covers ground at the same speed (WALK_V room pixels a second, unless a script gives an actor a speed of his own), so that
+   companions stay together; what differs from one person to the next is the step.
+   gaitOf: how a person steps, from his look. S: the length of a step in drawing units (two to a room pixel); T: the least time two steps take,
+   in seconds; arm: how far the arms swing. A long robe shortens the step; a boy and a grey-haired man take shorter, quicker steps, a slim
+   beardless youth longer ones; whoever carries a spear steps short, so that his foot stays clear of the foot of the spear. */
+const WALK_V=66;
+function gaitOf(o){if(o.gt)return o.gt;const grey=c=>{if(!c)return false;const[r,g,b]=hex(c);return Math.max(r,g,b)-Math.min(r,g,b)<28&&(r+g+b)/3>95},
+    old=grey(o.hair)||!o.hair&&grey(o.beard||o.brow),kid=!!o.h,youth=!kid&&!old&&!!o.slim&&!o.beard&&!o.veil&&!o.fem;
+  let S=o.long?11:24,T=.46,arm=o.long?.8:1;if(kid){S*=.8;T*=.85;arm*=1.2}else if(old){S*=.8;T*=.9;arm*=.7}else if(youth){S*=1.05;T*=1.05;arm*=1.2}
+  if(o.spear){S=Math.min(S,14);arm=.7}return o.gt={S,T,arm}}
+/* strideOf: how far two steps carry a person at v room pixels a second, in room pixels. A step of S drawing units leaves its foot where it stands
+   when two steps carry the body S room pixels. A faster walk than that would need more than two steps in T seconds, and would be a scurry: then
+   the stride is stretched instead, and the standing foot slips a little (at 66, about a fifth of a step for a man in a short tunic). */
+const strideOf=(o,v)=>{const q=gaitOf(o);return Math.max(q.S,(v||WALK_V)*q.T)};
+/* walkFr: the frame of a walk (person's fr) after dist room pixels at v room pixels a second, for a scene that moves its figures itself */
+const walkFr=(o,dist,v)=>4+Math.floor((dist/strideOf(o,v)%1+1)%1*16);
+/* gaitPose: the whole figure at one moment of a stride. ph, 0 to 1, is the phase of the near leg: at 0 its heel lands, it carries the body until
+   one half, then it pushes off and swings through; the far leg is half a stride behind. amp: 1 a full step, less a shorter one.
+   legs: for the far leg and the near one, where the ankle (ax) and the knee (kx) are, how high the foot is lifted (ly) and how it is pitched
+   (p: toes up, or the heel up if negative). hip: the hips come together as a man walks, so that his legs open like a pair of compasses and
+   never cross below the hem (CONTRIBUTING section 3). bob: the body is lowest as a heel lands and highest as the legs pass. fa, na: how
+   far the far and the near arm swing; fb, nb: how far each forearm bends forward at the elbow. The arm opposite a leg goes forward with
+   it. In this three-quarter view the near arm would swing forward across the chest as a dark slanting bar, and the far arm back out of
+   sight: so the near arm swings back freely and forward only to the edge of the body, and the far arm the other way round. sk, mt: the
+   hem and the hanging mantle swing a little behind the step. */
+function gaitPose(o,ph,amp){const q=gaitOf(o),long=!!o.long,LIFT=long?1:4,c=Math.cos(2*Math.PI*ph),S=q.S*amp,far=(long?3:4)*amp*q.arm*c,near=-far;
+  const leg=p=>{p=(p%1+1)%1;if(p<.5){const u=p/.5,x=S/2*(1-2*u);return{ax:x,kx:clamp(x*.3,-2,2),ly:0,p:long?0:u<.1?Math.round(2*amp):u>.72?-Math.round(4*amp*(u-.72)/.28):0}}
+    const v=(p-.5)/.5,x=-S/2*Math.cos(Math.PI*v);return{ax:x,kx:clamp(x*.3+3*amp*Math.sin(Math.PI*v),-2,3),ly:Math.round(LIFT*amp*Math.sin(Math.PI*v)),p:long?0:v<.35?-Math.round(3*amp):v>.78?Math.round(2*amp):0}};
+  return{legs:[leg(ph+.5),leg(ph)],hip:amp<1?1:2,bob:Math.round((long?1:2)*amp*(Math.cos(4*Math.PI*ph)+1)/2),fa:Math.round(far>0?far:far*.7),fb:Math.max(0,Math.round(far*.5)),na:near>0?Math.min(2,Math.round(near*.5)):Math.round(near*.8),nb:near>0?Math.min(1,Math.round(near*.3)):0,
+    sk:Math.round((long?2.4:1.5)*amp*Math.cos(2*Math.PI*(ph-.14))),mt:-Math.round(1.8*amp*Math.cos(2*Math.PI*(ph-.2)))}}
 /* person: one figure with its feet at x,y, one drawing unit per canvas pixel, facing right (dir -1 mirrors it).
-   fr 0-3 walk cycle; bow lowers the head; blink closes the eyes; mv is a sum of MV.
+   fr is the walk: 0 stands. From 4 up it is a moment of a stride, as update and walkFr give it: sixteen moments of a full step, then sixteen
+   of a shorter one and sixteen of a half step (a walk begins and ends on these). 1, 2 and 3, the frames of the old walk, are three moments
+   of the same stride: a heel landing, the legs passing, the other heel landing.
+   bow lowers the head; blink closes the eyes; mv is a sum of MV.
    talk is the mouth: 0 shut, 1 parted, 2 open, 3 wide, 4 round; the last two with the chin a pixel down, and a beard goes down with it.
    ges is the far hand: 0 down, 1 raised, 2 half raised and open, 3 laid on the chest. A forearm is always bent and slanting: no arm is
    stretched out, and never are both raised (CONTRIBUTING section 3). A figure that bows keeps its head still, and a statue (stone:1)
@@ -755,7 +788,9 @@ const MV={dip:1,lift:2,fwd:4,back:8,brow:16,glance:32,lean:64};
 function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=o.stone?c.sk:c.le,fem=!!(o.veil||o.fem),HIM=!!(o.himation&&C);g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
   mv=o.stone||bow?0:mv|0;talk=o.stone?0:talk|0;
-  const px=(a,b,col,w,h)=>{g.fillStyle=col;g.fillRect(a,b,w||1,h||1)};
+  const W=fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):fr?gaitPose(o,[0,0,.25,.5][fr]||0,1):null,bob=W?W.bob:0;let SH=null;
+  /* px: a run of pixels. While a foot is painted, SH lets each of its columns sit higher than the next: a heel that is up, or the toes */
+  const px=(a,b,col,w,h)=>{g.fillStyle=col;if(SH)for(let i=0;i<(w||1);i++)g.fillRect(a+i,b+SH(a+i),1,h||1);else g.fillRect(a,b,w||1,h||1)};
   const body=()=>{
   /* cloth: one pixel row of a rounded form lit from the front right. folds: [position 0-1, first row, drift per row, last row];
      each is a dark crease with a light ridge beside it, wandering a little as it falls. hi: rows that catch a highlight.
@@ -765,31 +800,37 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
       if(folds)for(let f=0;f<folds.length;f++){const[u,s0,dr,s1]=folds[f];if(i<s0||(s1&&i>s1))continue;const fx=Math.round(w*u+(dr||0)*i+Math.sin(i*.31+f*2.1)*.7),deep=i-s0>7;
         if(k===fx||(deep&&k===fx-1))v=Math.min(4,v+1+(deep&&k===fx?1:0));else if(k===fx+1)v=Math.max(0,v-1)}
       px(x0+k,yy,(R2&&(x0+k+40)%5<2?R2:R)[v])}};
-  const kid=o.h?1:0,slim=o.slim?1:0,LEG=kid?19:23,SK=kid?13:16,TOR=kid?22:fem?24:26,AL=26,bob=fr%2?-1:0,st=fr===1?1:fr===3?-1:0;
+  const kid=o.h?1:0,slim=o.slim?1:0,LEG=kid?19:23,SK=kid?13:16,TOR=kid?22:fem?24:26,AL=26;
   const yA=-4,yH=yA-LEG+bob,yB=yH-SK,yS=yB-3-TOR,SL=o.longSleeve?AL-2:12;   /* ankle, hem, top of the skirt, shoulder line; AL: rows of an arm down to the wrist */
   /* the sleeves are one garment with the body: PIT rows of shoulder yoke, then the arms part from the trunk */
   const PIT=8,nw=slim+(fem?1:0),aw=fem?4:5,ax=-10+nw-aw,fx=11-nw,fw=5,waist=Math.round(TOR*.6);
   /* cape, behind everything */
   if(o.cape)for(let yy=yS;yy<=yH+13;yy++){const i=yy-yS,e=yy>yH+10?1:0;cloth(yy,-18+e,-10,C,i,[[.45,6,0]]);cloth(yy,10,17-e,C,i,[[.5,8,0]])}
-  /* an arm, from the armpit down. near: the arm on the shadow side; sw: how far the hand swings; stub: the upper arm only */
-  const arm=(near,sw,stub)=>{const x00=near?ax:fx,w=near?aw:fw,tr=c.tr||T,lean=near?1:-1;
-    for(let i=PIT;i<(stub?14:AL);i++){const t=(i-PIT)/(AL-1-PIT),dx=Math.round(sw*t*t)+(i>waist?lean:0),sl=i<=SL,ww=sl?w:i>AL-7?w-2:w-1,x0=near?x00+dx+w-ww:x00+dx,R=sl?(o.longSleeve&&i>SL-3?tr:T):S;
+  /* an arm, from the armpit down. near: the arm on the shadow side; sw: how far the hand swings; stub: the upper arm only; bd: how far the
+     forearm bends forward at the elbow. The upper arm swings from the shoulder and the forearm goes on from it: an arm is never one slanting bar */
+  const arm=(near,sw,stub,bd)=>{bd=bd||0;const x00=near?ax:fx,w=near?aw:fw,tr=c.tr||T,lean=near?1:-1;
+    for(let i=PIT;i<(stub?14:AL);i++){const t=(i-PIT)/(AL-1-PIT),dx=Math.round(t<.5?sw*.8*t:sw*.4+(sw*.6+bd)*(t-.5)*2)+(i>waist?lean:0),sl=i<=SL,ww=sl?w:i>AL-7?w-2:w-1,x0=near?x00+dx+w-ww:x00+dx,R=sl?(o.longSleeve&&i>SL-3?tr:T):S;
       for(let k=0;k<ww;k++){const u=(k+.5)/ww;let v;
         if(near)v=sl?(i===SL?4:u<.5?4:3):i===SL+1?4:u<.34?3:u<.8?2:3;else v=sl?(i===SL?3:k===0?(i>PIT+1?3:2):u<.78?1:2):i===SL+1?3:k===0?3:u<.78?1:2;px(x0+k,yS+i,R[v])}}
-    if(stub)return;const hx=(near?x00+w-5:x00)+Math.round(sw)+lean;[4,5,5,5,4].forEach((n,j)=>{const x0=hx+(j===0||j===4?near?1:0:0);
+    if(stub)return;const hx=(near?x00+w-5:x00)+Math.round(sw+bd)+lean;[4,5,5,5,4].forEach((n,j)=>{const x0=hx+(j===0||j===4?near?1:0:0);
       for(let k=0;k<n;k++)px(x0+k,yS+AL+j,S[Math.min(4,(j===4?3:k===0?3:k===n-1?1:j===3&&k===2?3:2)+(near?1:0))])})};
-  arm(false,st*2,o.spear||o.stub||(ges&&!bow));
+  arm(false,W?W.fa:0,o.spear||o.stub||(ges&&!bow),W?W.fb:0);
   /* legs and sandals, or the feet under a long robe */
   const foot=(fx0,fy,R)=>{px(fx0+1,fy,R[2],5);px(fx0,fy+1,R[2],8);px(fx0,fy+2,R[2],10);px(fx0+8,fy+2,R[1],2);px(fx0,fy+1,R[3]);px(fx0,fy+2,R[3],2);px(fx0-1,fy+3,'#2a1810',13);px(fx0+9,fy+3,'#4a3020',3);
     px(fx0+1,fy,LE[2],5);px(fx0+5,fy+1,LE[2],2);px(fx0+6,fy+2,LE[3],2);px(fx0+2,fy+1,LE[3]);px(fx0+2,fy+2,LE[3]);px(fx0+1,fy,LE[3])};
-  const leg=(kx,sh,lift,dk)=>{const y1=yA-lift,n=y1-yH,R=dk?[S[1],S[2],S[3],S[4],S[4]]:S;
-    for(let i=0;i<n;i++){const t=i/(n-1),cx=Math.round(kx+sh*t*t),w=t<.12?7:t<.5?8:t<.7?7:t<.86?6:5,x0=cx+(t<.12?0:t<.5?-1:t<.7?0:1);
+  /* a foot with its lift and its pitch (see gaitPose) */
+  const footP=(f0,P,R)=>{const hu=P.p<0?-P.p:0,tu=P.p>0?P.p:0;SH=x=>-Math.round(hu*Math.max(0,1-(x-f0+1)/11)+tu*Math.max(0,Math.min(1,(x-f0+1)/11)));foot(f0,yA-P.ly,R);SH=null};
+  /* a leg below the hem, in two parts: the knee (kx) and the ankle (ax) each have their place. dk: the far leg, a tone darker. A shin that
+     slants is drawn a little wider, or it would look thin. */
+  const leg=(k0,P,dk)=>{const R=dk?[S[1],S[2],S[3],S[4],S[4]]:S,hu=P.p<0?-P.p:0,tu=P.p>0?P.p:0,y1=yA-P.ly-Math.round(hu*.7+tu*.3),n=y1-yH,K=3,sl=Math.abs(P.ax-P.kx)/Math.max(1,n-1-K);
+    for(let i=0;i<n;i++){const t=i/(n-1),cx=Math.round(k0+(i<=K?P.kx:P.kx+(P.ax-P.kx)*(i-K)/Math.max(1,n-1-K))),ex=i>K?(sl>.5?2:sl>.25?1:0):0,w=(t<.12?7:t<.5?8:t<.7?7:t<.86?6:5)+ex,x0=cx+(t<.12?0:t<.5?-1:t<.7?0:1)-(ex>1?1:0);
       for(let k=0;k<w;k++){const u=(k+.5)/w;let v=u<.18?4:u<.4?3:u<.76?2:1;if(i<2)v=Math.min(4,v+1);else if(t<.2&&u>.4&&u<.7)v=1;if(k===w-3&&t>.25&&t<.7)v=Math.max(0,v-1);px(x0+k,yH+i,R[v])}}
-    foot(Math.round(kx+sh)+1,y1,R)};
-  if(o.long){foot(3-st*2,yA,[S[1],S[2],S[3],S[4],S[4]]);foot(-8+st*2,yA,S)}else{leg(1,st>0?-2:st<0?4:0,st>0?2:0,1);leg(-9,st>0?3:st<0?-3:0,st<0?2:0,0)}
+    footP(Math.round(k0+P.ax)+1,P,R)};
+  {const REST={ax:0,kx:0,ly:0,p:0},L0=W?W.legs[0]:REST,L1=W?W.legs[1]:REST,hip=W?W.hip:0;
+    if(o.long){footP(Math.round(3+L0.ax),L0,[S[1],S[2],S[3],S[4],S[4]]);footP(Math.round(-8+L1.ax),L1,S)}else{leg(1-hip*2,L0,1);leg(-9+hip,L1,0)}}
   /* skirt of a short tunic, or a robe to the ankles; a woman's robe widens over the hips */
   const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=o.long?yA+1:yH+1,n=y1-yB+1;
-  for(let i=0;i<n;i++){const t=i/(n-1),hw=(fem?8+Math.min(3,Math.round(i*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=Math.round(st*t*(o.long?1.6:1)),x0=-hw+sw,x1=hw+1+sw,yy=yB+i;
+  for(let i=0;i<n;i++){const t=i/(n-1),hw=(fem?8+Math.min(3,Math.round(i*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,x0=-hw+sw,x1=hw+1+sw,yy=yB+i;
     if(i>=n-2){for(let xx=x0;xx<=x1;xx++){const u=(xx-x0+.5)/(x1-x0+1);px(xx,yy,i===n-1?hem[u<.3?4:3]:hem[u<.2?4:u<.6?2:1])}}
     else if(HIM&&i<n-6){const xc=i<=n-14?x1:x1-Math.round((x1-x0+1)*(i-(n-14))/8),F=[[.2,3,.05],[.42,1,.06],[.63,6,.05],[.84,10,.04]];
       cloth(yy,x0,xc,C,i,F,null,[n-20,n-12]);if(xc<x1)cloth(yy,xc+1,x1,T,i,[[.5,9,.02]],SR)}
@@ -811,14 +852,14 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   /* mantle: hanging from the near shoulder, and across the chest to the far hip */
   if(C&&!o.cape){const m1=o.long?yA-6:yH+6,mn=m1-yS+2,ED=o.edge?ramp(o.edge):null;   /* edge: a band of color along the mantle where it crosses the chest */
     for(let yy=yS-1;yy<=m1;yy++){const i=yy-yS+1,t=i/(mn-1),bulge=t>.25&&t<.6?1:0,zig=yy>m1-3?(m1-yy<1?3:m1-yy<2?1:0):0;
-      cloth(yy,-16+(i<3?3-i:0)-bulge+zig,-9+(t>.45?1:0)-(zig>1?1:0),C,i,[[.3,4,.012],[.6,9,-.01],[.82,14,.01]],null,[6,14])}
+      const ms=W?Math.round(W.mt*t*t):0;cloth(yy,-16+(i<3?3-i:0)-bulge+zig+ms,-9+(t>.45?1:0)-(zig>1?1:0)+ms,C,i,[[.3,4,.012],[.6,9,-.01],[.82,14,.01]],null,[6,14])}
     for(let xx=-10+slim;xx<=11-slim;xx++){const k=(xx+10)/21,ya=Math.round(yS-1+k*(TOR-8)),yb=ya+10-Math.round(k*3);
       for(let yy=ya;yy<=yb;yy++){const j=yy-ya;px(xx,yy,(ED&&j>0&&j<3?ED:C)[j===0?(k>.3?0:1):j===yb-ya?4:j===3||j===7?3:j===4?1:k>.72?1:2])}
       if(HIM){for(let yy=yb+1;yy<=yB;yy++){const j=yy-yb,q=(xx+j*.5+40)%7;px(xx,yy,C[j===1?3:xx<-7+slim?4:xx<-4?3:q<1?3:q<2?1:xx>8-slim?1:2])}}
       else{px(xx,yb+1,T[4]);if(xx%3)px(xx,yb+2,T[3])}}}
   if(o.cape){for(let xx=-16;xx<=15;xx++){const e=Math.abs(xx+.5)>14?1:0;px(xx,yS-1+e,C[1]);px(xx,yS+e,C[xx<-8?3:2]);px(xx,yS+1+e,C[xx<-8?4:3]);if(xx<-5||xx>7)px(xx,yS+2+e,C[4])}px(8,yS,'#f4dc8a',2,2);px(9,yS+1,'#b08a3c')}
   /* near arm (hidden when a mantle hangs over it) */
-  if(!C||o.cape)arm(true,-st*2);
+  if(!C||o.cape)arm(true,W?W.na:0,0,W?W.nb:0);
   /* head */
   const hx=-6+(bow?1:0)+(mv&MV.fwd?1:0)-(mv&MV.back?1:0),hy=yS-20+(bow?2:0)+(mv&MV.dip?1:mv&MV.lift?-1:0),jaw=talk>2,H=c.ha,Bd=c.be,Hd=c.hd,Gr=c.gr,brow=fem?mix(o.brow||'#3a2414',o.skin,.3):o.brow||o.hair||o.beard||'#2a1a12';
   px(-1,yS-3,S[3],7,3);px(0,yS-3,S[2],5,2);
@@ -857,7 +898,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   else if(ges&&!bow&&!o.stub){for(let k=0;k<10;k++){const gx=12-nw+Math.round(k*.6),gy=yS+14-k,R=o.longSleeve?T:S;px(gx,gy,R[3]);px(gx+1,gy,R[2],2);px(gx+3,gy,R[1])}
     const q=17-nw;px(q,yS+1,S[2],5,5);px(q,yS+1,S[1],4);px(q,yS+5,S[3],5);px(q+4,yS,S[2],1,3);px(q+1,yS-1,S[1],1,2);px(q+3,yS-1,S[2],1,2);px(q-1,yS+4,S[3])}};
   /* leaning: the figure is painted twice, below the belt as it stands and above it a pixel forward */
-  if(mv&MV.lean){const yb=-7-(o.h?32:39)-(fr%2);for(const up of[0,1]){g.save();g.beginPath();g.rect(-90,up?-220:yb,180,up?220+yb:220);g.clip();if(up)g.translate(1,0);body();g.restore()}}
+  if(mv&MV.lean){const yb=-7-(o.h?32:39)+bob;for(const up of[0,1]){g.save();g.beginPath();g.rect(-90,up?-220:yb,180,up?220+yb:220);g.clip();if(up)g.translate(1,0);body();g.restore()}}
   else body();
   g.restore()}
 /* A pack donkey in the same pixel manner, seen from the side. load: 0 saddle blanket only, 1 pack bags, 2 bags filled, with sacks on top. */
@@ -1178,10 +1219,15 @@ addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;co
 /* --- main loop --- */
 let lastT=0,stepT=0;
 function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
-  for(const a of Object.values(ACT)){const w=a.walk;if(!w){a.fr=0;continue}
-    const dx=w.x-a.x,dy=w.y-a.y,d=Math.hypot(dx,dy*2),sp=(a.speed||G.speedAll||88)*dt;
-    if(d<=sp){a.x=w.x;a.y=w.y;a.walk=null;a.fr=0;w.res(true)}
-    else{a.x+=dx/d*sp;a.y+=dy/d*sp;a.fr=Math.floor(ts/120)%4;if(a.room===G.room&&ts-stepT>250){stepT=ts;SFX.step()}}}
+  /* A walk is driven by the ground: the frame follows the distance covered (a.gait: the phase of the stride, and how far he has come), so that
+     a foot that stands is not carried along. It begins as the legs pass each other, and begins and ends on a shorter step, as does a walk up or
+     down the room, where the side view would stride on the spot. A step is heard as a foot lands. */
+  for(const a of Object.values(ACT)){const w=a.walk;if(!w){a.fr=0;a.gait=null;continue}
+    const dx=w.x-a.x,dy=w.y-a.y,d=Math.hypot(dx,dy*2),v=a.speed||G.speedAll||WALK_V,sp=v*dt;
+    if(d<=sp){a.x=w.x;a.y=w.y;a.walk=null;a.fr=0;a.gait=null;w.res(true)}
+    else{const q=a.gait||(a.gait={ph:.25,gone:0}),p0=q.ph,near=Math.min(q.gone,d-sp);a.x+=dx/d*sp;a.y+=dy/d*sp;q.gone+=sp;q.ph=(p0+sp/strideOf(a.look,v))%1;
+      a.fr=4+Math.floor(q.ph*16)+16*(Math.abs(dx)<Math.abs(dy)*2||near<4?2:near<9?1:0);
+      if(a.room===G.room&&(q.ph<p0||p0<.5&&q.ph>=.5)&&ts-stepT>90){stepT=ts;SFX.step()}}}
   if(G.room&&!G.scene){const t=clamp(PC().x-160,0,ART[G.room].w-320);G.cam+=(t-G.cam)*Math.min(1,dt*5);if(Math.abs(t-G.cam)<.5)G.cam=t}}
 /* --- figures: each pose is drawn once into a cached sprite (dark contour, dither), then lit by the room and laid on the scene --- */
 const[SA,sa]=mk(FIG.W,FIG.H),[SB,sb]=mk(FIG.W,FIG.H),SPR=new Map();sa.imageSmoothingEnabled=false;
@@ -1265,8 +1311,8 @@ function drawActor(g,o,ts,id){const bow=o.bow?1:0,dir=facing(o),ln=cur&&cur.plan
   /* a mate: two who are never apart are one actor (Aquila and Priscilla, in Chapter Twelve). The mate {fig, dx, talk}, fig being the id of her look,
      walks, stands and bows with the actor, a step behind and beside, and has a mouth of her own: when she talks, the line on the screen is hers. */
   const m=o.mate;if(m){const L=LOOK[m.fig],mx=o.x+m.dx*o.dir,[mt,mg,mb,mm]=moves({talk:m.talk,bow:o.bow,fr:o.fr,x:mx},L,m.talk&&ln&&ln.a&&ln.a!==o?ln:null,ts);
-    figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+o.dir+o.fr+mt+bow+mg+mb+'m'+mm,s=>person(s,0,0,L,o.dir,o.fr,mt,bow,mg,mb,mm))}
-  figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+o.fr+talk+bow+ges+bl+'m'+mv,s=>person(s,0,0,o.look,dir,o.fr,talk,bow,ges,bl,mv))}
+    figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+o.dir+'f'+o.fr+'t'+mt+bow+mg+mb+'m'+mm,s=>person(s,0,0,L,o.dir,o.fr,mt,bow,mg,mb,mm))}
+  figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+'f'+o.fr+'t'+talk+bow+ges+bl+'m'+mv,s=>person(s,0,0,o.look,dir,o.fr,talk,bow,ges,bl,mv))}
 function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
   else if(G.room){const id=G.room,a=ART[id],cam=hp(G.cam),f=fg(id);backdrop(cx,id,cam);cx.save();cx.translate(-cam,0);

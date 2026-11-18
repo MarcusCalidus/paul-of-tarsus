@@ -894,9 +894,9 @@ function forumScene(g,t){backdrop(g,'forum9');const k=G.st&&G.st.k||0,talk=Math.
   if(!k){cast(g,[['mag91',116,80,1],['mag92',192,80,-1],['lic91',84,108,1],['lic92',228,108,-1],['master91',112,121,1,{ges:talk}],['master92',88,127,1],['paul',160,119,-1],['silas9',186,123,-1],
       ['cr91',262,114,-1],['cr92',286,121,-1],['cr93',246,129,-1],['cr94',304,131,-1],['cr95',34,118,1],['cr93',56,133,1],['cr92',14,128,1]]);
     rods(g,84-3.4,108-29,-1);rods(g,228+3.4,108-29,1)}
-  else{const s=Math.min(1,(performance.now()-G.st.t0)/9000),x=96+s*70,fr=s<1?Math.floor(t/170)%4:0;
+  else{const s=Math.min(1,(performance.now()-G.st.t0)/9000),x=96+s*70,W=id=>({fr:s<1?walkFr(LOOK[id],s*70,70/9):0});   /* seventy room pixels in nine seconds: a slow walk, every foot where it is set down */
     cast(g,[['cr91',40,112,1],['cr92',64,116,1],['cr95',250,113,-1],['cr93',276,117,-1],['cr94',300,112,-1],['cr92',18,120,1],
-      ['lic91',x+74,126,1,{fr}],['mag91',x+34,123,1,{fr}],['paul9b',x,127,1,{fr}],['silas9b',x-26,123,1,{fr}],['mag92',x-56,128,1,{fr}]]);
+      ['lic91',x+74,126,1,W('lic91')],['mag91',x+34,123,1,W('mag91')],['paul9b',x,127,1,W('paul9b')],['silas9b',x-26,123,1,W('silas9b')],['mag92',x-56,128,1,W('mag92')]]);
     rods(g,x+74-3.4,126-29,-1)}}
 /* The jailer's house. k 0: the word is spoken to all who are in it. k 1: he washes their wounds. k 2: the table. */
 function jailerScene(g,t){backdrop(g,'jailer9');ART.jailer9.draw(g,t);const k=G.st&&G.st.k||0,talk=Math.floor(t/700)%2,L='#eac8a0';

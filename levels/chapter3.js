@@ -218,8 +218,9 @@ ART.road={w:320,paint(g){const r=rng(167);
   pool(g,60,0,300,150,'#fff0c0',.14,'screen')},
  fore(g){const r=rng(168);foliage(g,14,138,22,9,'#3f5a34',r,120);foliage(g,304,140,20,8,'#3a5430',r,100);for(let i=0;i<30;i++){const sx=r()*320;stroke(g,[sx,144,sx+(r()-.5)*4,136-r()*5],'#34502c',.8)}},
  draw(){},front(){}};
-function roadScene(g,t){backdrop(g,'road');const x=-50+420*((G.trek||{}).k||0),f=Math.floor(t/150)%4;
-  man(g,x+46,121,'barnabas',1,f);beast(g,x+8,120,1,f,2);man(g,x-30,122,'paul',1,(f+2)%4);g.drawImage(fg('road'),0,0,320,VH)}
+/* The three cross the picture in seventeen seconds (the tween that moves G.trek): their steps follow the road under them (walkFr), each at his own stride. */
+function roadScene(g,t){backdrop(g,'road');const x=-50+420*((G.trek||{}).k||0),v=420/17,f=Math.floor(t/150)%4;
+  man(g,x+46,121,'barnabas',1,walkFr(LOOK.barnabas,x+50,v));beast(g,x+8,120,1,f,2);man(g,x-30,122,'paul',1,walkFr(LOOK.paul,x+62,v));g.drawImage(fg('road'),0,0,320,VH)}
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
 Object.assign(LOOK,{
   barnabas:{skin:'#b8844f',hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1,tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},

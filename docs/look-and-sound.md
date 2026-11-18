@@ -24,6 +24,14 @@ Where a line plainly says yes or no, its speaker says it with his head as well: 
 
 Where a line is sung, as the psalm is in Chapter Nine, each singer's mouth holds the vowel of every note for as long as the note, and everyone who answers sings along. The small blips of a speaking voice fall on the first syllables of its line. On the options screen, **Movement** can be set from lively to calm, which keeps the mouth and leaves head and hand still; a device that asks for less motion starts in calm.
 
+People walk as the ground passes under them. A stride has sixteen moments, and the painter works each of them out: a heel lands with the toes up, the foot rolls flat, the heel lifts and the toes push off, and the knee bends as the leg swings through. The arm opposite a leg goes forward with it and bends at the elbow; the body is lowest as a heel lands and highest as the legs pass; the hem of a robe and the hanging mantle swing a little behind the step. The frame follows the distance covered and not a clock, so a foot that stands is not carried along, and a step is heard as each foot lands. A walk begins and ends on a shorter step, and so does a walk up or down the room, where a side view would stride on the spot.
+
+Everybody covers ground at the same speed, so that companions stay together, but each has a step of his own: a long robe shortens it, a boy and a grey-haired man take shorter and quicker steps, a youth longer ones, and whoever carries a spear steps short. At the game's walking speed a man in a short tunic still slips by about a fifth of a step; a walk that planted every foot would be a good deal slower.
+
+![Every second moment of a stride, enlarged](screenshots/walk.png)
+
+![Paul in the workshop, as a heel lands](screenshots/stride.png)
+
 A scene has depth: whoever stands farther back is drawn behind. A man who walks behind the carrier's mule is hidden by it up to the waist, and hides it when he stands in front; the same holds for a stool, a low table or a heap of sailcloth that stands out on the floor.
 
 ![Paul behind the mule, and Timothy in front of it](screenshots/depth.png)
