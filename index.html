@@ -860,31 +860,56 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   if(mv&MV.lean){const yb=-7-(o.h?32:39)-(fr%2);for(const up of[0,1]){g.save();g.beginPath();g.rect(-90,up?-220:yb,180,up?220+yb:220);g.clip();if(up)g.translate(1,0);body();g.restore()}}
   else body();
   g.restore()}
-/* A pack donkey in the same pixel manner, seen from the side. load: 0 saddle blanket only, 1 pack bags, 2 bags filled, with sacks on top. */
+/* A pack donkey in the same pixel manner, seen from the side. load: 0 saddle blanket only, 1 pack bags, 2 bags filled, with sacks on top.
+   fr 0 stands. fr 4 to 19 are the sixteen frames of its walk (beastFr below gives the frame for a distance walked); 1, 2 and 3 are three
+   moments of that walk, a quarter of a cycle apart, for a scene that counts frames itself. The walk has four beats: near hind, near
+   fore, far hind, far fore, each a quarter of the cycle after the one before. A hoof stands for ten frames, going back under the body,
+   and swings forward for six, lifted, with the leg bent at the hock or the knee. While the donkey walks, the two legs of a pair leave
+   the body at nearly one place and open like a pair of compasses: set apart as they stand, they would cross as an X under the belly.
+   The body sinks a pixel as each fore hoof lands, the head dips with it and for a frame after it, and the tip of the tail swings a
+   pixel, away from the near hind leg when that leg is back. The load rides with the body. */
 const DONKEY_HEAD=["...e...e................","..eE..eE................","..eE..eE................","..eEe.eE................","..eEe.eEe...............","..eEeeeEe...............","..eeeeeeeh..............",
   ".dhhhhhhhhh.............",".dhHHHHHHhhhh...........","dhhHHkkHHHHhhhh.........","dhhHHkkHHHHHHhhhhm......","dhhhHHHHHHHHHhhhmmmm....",".dhhhhhHHHHHhhhmmmmmm...",".ddhhhhhhhhhhhmmmMMmmm..",
   "..ddhhhhhhhhhhmmmMMmnm..","...dddhhhhhhhhmmmmmmmm..",".....ddddhhhhdmmmmmmm...",".........ddddd.mmmm....."];
+/* The numbers of that walk. A hoof reaches DONKEY_REACH drawing units (two to a room pixel) from the front of its step to the back, and
+   stands on the ground for DONKEY_STANCE of the cycle. So one cycle carries the donkey DONKEY_STRIDE room pixels with its hooves
+   planted: 22 / .625 / 2 = 17.6. A cycle is never quicker than DONKEY_BEAT seconds, or it would be a scurry and not a walk: up to
+   17.6 / .64 = 27.5 room pixels a second the hooves stay where they are set down, and above that they slip (at 66, the speed people
+   walk at, by 58 hundredths of each cycle).
+   beastFr: the frame of the walk for a distance walked (dist, in room pixels) at a speed (v, room pixels a second; 66 if none is given).
+   A scene that moves a donkey draws it with beast(g, x, y, dir, beastFr(dist, v), load), and with frame 0 where it stands. */
+const DONKEY_REACH=22,DONKEY_STANCE=.625,DONKEY_STRIDE=DONKEY_REACH/DONKEY_STANCE/2,DONKEY_BEAT=.64;
+const beastFr=(dist,v)=>{const c=Math.max(DONKEY_STRIDE,Math.abs(v==null?66:v)*DONKEY_BEAT);return 4+Math.floor((dist/c%1+1)%1*16)%16};
 function donkey(g,x,y,dir,fr,load){g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
-  const px=(a,b,col,w,h)=>{g.fillStyle=col;g.fillRect(a,b,w||1,h||1)},D=ramp('#94836e'),pale='#c4b49c',hoof='#2a2018',s=fr===1?4:fr===3?-4:0,o=fr%2?-1:0;
-  const leg=(lx,sh,far)=>{const y0=-31+o,n=-3-y0;for(let i=0;i<n;i++){const t=i/(n-1),cx=lx+Math.round(sh*t*t),w=t<.3?8:t<.6?7:6,x0=cx+(t<.3?0:1),knee=t>.42&&t<.52?1:0;
-      for(let k=0;k<w+knee;k++){const u=(k+.5)/(w+knee);px(x0+k,y0+i,D[Math.min(4,(u<.22?4:u<.5?3:u<.82?2:1)+(far?1:0))])}}
-    px(lx+Math.round(sh)+1,-3,hoof,7,3);px(lx+Math.round(sh)+6,-3,'#4a3a2c',2)};
-  leg(-17,s,1);leg(14,-s,1);
+  const px=(a,b,col,w,h)=>{g.fillStyle=col;g.fillRect(a,b,w||1,h||1)},D=ramp('#94836e'),pale='#c4b49c',hoof='#2a2018';
+  const W=fr>0,k=fr>=4?(fr-4)%16:(fr-1)*4,ph=k/16,o=W&&(k%8===4||k%8===5)?1:0,hd=W&&(k%8===5||k%8===6)?1:0,tl=W?Math.round(Math.cos(6.2832*(ph-.05))):0;
+  /* at: where the hoof of a leg is at this moment, the leg's beat being off of a cycle after the near hind leg's: hx before or behind the
+     leg's root, lift off the ground, and bend, how far the joint is flexed */
+  const at=off=>{if(!W)return{hx:0,lift:0,bend:0};const p=((ph-off)%1+1)%1,T=DONKEY_REACH,B=DONKEY_STANCE;if(p<B)return{hx:T/2-T*p/B,lift:0,bend:0};
+    const v=(p-B)/(1-B),q=Math.sin(Math.PI*v);return{hx:-T/2*Math.cos(Math.PI*v),lift:Math.round(4*q),bend:3*q}};
+  /* leg: from its root at lx down to the hoof, in two parts: the hock of a hind leg bends back, the knee of a fore leg forward. A part
+     that slants is drawn a pixel or two wider, so that it is as thick as one that stands. */
+  const leg=(lx,P,far,hind)=>{const y0=-31+o,n=-3-P.lift-y0,J=Math.round(n*.5),jx=hind?P.hx*.42-P.bend:P.hx*.5+P.bend;
+    for(let i=0;i<n;i++){const t=i/(n-1),sl=Math.abs(i<=J?jx/J:(P.hx-jx)/(n-1-J)),ex=sl>.7?2:sl>.4?1:0,cx=lx+Math.round(i<=J?jx*i/J:jx+(P.hx-jx)*(i-J)/(n-1-J)),
+        w=(t<.3?8:t<.6?7:6)+ex,x0=cx+(t<.3?0:1)-(ex>1?1:0),knee=t>.42&&t<.52?1:0;
+      for(let q=0;q<w+knee;q++){const u=(q+.5)/(w+knee);px(x0+q,y0+i,D[Math.min(4,(u<.22?4:u<.5?3:u<.82?2:1)+(far?1:0))])}}
+    const hx=lx+Math.round(P.hx)+1,hy=-3-P.lift;px(hx,hy,hoof,7,3);px(hx+5,hy,'#4a3a2c',2)};
+  leg(W?-20:-17,at(.5),1,1);leg(W?15:14,at(.75),1,0);
   /* tail: set on at the top of the rump and lying along it, then hanging free to its tuft */
   const rump=yy=>{const dy=(yy+37.5)/13.5;return-Math.round(27*Math.sqrt(Math.max(0,1-dy*dy)))-1};
-  for(let yy=-49;yy<=-23;yy++){const i=yy+49,tuft=i>20;px(tuft?-31:yy<-38?rump(yy)-2:-30,yy+o,tuft?hoof:D[i%5?3:4],tuft?3:2)}
+  for(let yy=-49;yy<=-23;yy++){const i=yy+49,tuft=i>20;px((tuft?-31:yy<-38?rump(yy)-2:-30)+(i>10?Math.round(tl*(i-10)/16):0),yy+o,tuft?hoof:D[i%5?3:4],tuft?3:2)}
   /* barrel of the body: lit along the back, pale under the belly */
   for(let yy=-51;yy<=-24;yy++){const dy=(yy+37.5)/13.5,hw=Math.round(27*Math.sqrt(Math.max(0,1-dy*dy)));
     for(let xx=-hw-1;xx<=hw-1;xx++){let v=dy<-.7?1:dy<-.2?2:dy<.45?3:4;if(xx<-hw+3)v=Math.min(4,v+1);if(xx>hw-6&&dy<.3)v=Math.max(1,v-1);px(xx,yy+o,dy>.72&&xx>-hw+4?pale:D[v])}}
   /* a broken highlight along the line of the back: each dash lies on the top row of the body where it is */
   for(let xx=-20;xx<16;xx+=3)px(xx,Math.ceil(-37.5-13.5*Math.sqrt(1-Math.pow((Math.abs(xx)+3)/27,2)))+o,D[0],2);
-  leg(-25,-s,0);leg(18,s,0);
-  /* a short thick neck with its dark mane, the head carried low and forward */
-  for(let yy=-59;yy<=-41;yy++){const t=(yy+59)/18,x0=Math.round(25-13*t),x1=Math.round(38-9*t);for(let xx=x0;xx<=x1;xx++){const u=(xx-x0+.5)/(x1-x0+1);px(xx,yy+o,xx-x0<2?'#3a2e24':D[u<.3?3:u<.7?2:1])}}
+  leg(W?-22:-25,at(0),0,1);leg(W?17:18,at(.25),0,0);
+  /* a short thick neck with its dark mane, the head carried low and forward. When the head dips (hd), the upper half of the neck goes down with it */
+  for(let yy=-59;yy<=-41;yy++){const t=(yy+59)/18,x0=Math.round(25-13*t),x1=Math.round(38-9*t);for(let xx=x0;xx<=x1;xx++){const u=(xx-x0+.5)/(x1-x0+1);px(xx,yy+o+(t<.5?hd:0),xx-x0<2?'#3a2e24':D[u<.3?3:u<.7?2:1])}}
   /* the breast, rounding the foot of the neck back into the body */
   for(let yy=-40;yy<=-33;yy++){const x1=Math.round(29-(yy+41)*.6);for(let xx=24;xx<=x1;xx++)px(xx,yy+o,D[xx>x1-2?1:2])}
-  stamp(g,DONKEY_HEAD,24,-75+o,{h:D[2],H:D[1],d:D[3],e:D[2],E:'#5a4636',k:'#1a120c',m:pale,M:'#dccdb6',n:hoof});
-  for(let i=0;i<6;i++)px(38,-63+o+i,'#7a4a24');for(let i=0;i<9;i++)px(38-i,-64+o-Math.round(i*.35),'#7a4a24');
+  stamp(g,DONKEY_HEAD,24,-75+o+hd,{h:D[2],H:D[1],d:D[3],e:D[2],E:'#5a4636',k:'#1a120c',m:pale,M:'#dccdb6',n:hoof});
+  for(let i=0;i<6;i++)px(38,-63+o+hd+i,'#7a4a24');for(let i=0;i<9;i++)px(38-i,-64+o+hd-Math.round(i*.35),'#7a4a24');
   /* saddle blanket, held by two girths */
   const K=ramp('#8a4a3a');px(-9,-40+o,'#5a3a20',2,16);px(8,-40+o,'#5a3a20',2,16);px(-8,-40+o,'#3a2616',1,16);px(9,-40+o,'#3a2616',1,16);
   for(let i=0;i<12;i++){const hw=i<2?11:14;for(let xx=-hw;xx<=hw;xx++){const u=(xx+hw+.5)/(2*hw+1);px(xx,-53+o+i,i===8?'#d8c9a0':K[i===0?0:i===11?4:u<.15?4:u<.35?3:u<.75?2:1])}}
