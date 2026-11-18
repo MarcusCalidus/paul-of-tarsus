@@ -205,7 +205,14 @@
   if(stop==='thought'){await loadLevel(3);applyState(decode(codeOf(3,0)));await idle();enterRoom('antioch',...CHAP[3].ent.antioch);clearInterval(sk);
     say(PC(),'She has given more than thread. And now I can sew.',TH);await wait(300);halt('thought')}
   /* a line being spoken, held at the moment its question ends: Eliab's head is lifted and his brows are raised, and Paul is the one he speaks to */
-  if(stop==='speak'){await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();place(P,'workshop',166,122,1);clearInterval(sk);const E=ACT.eliab;
+  if(stop==='speak'){await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();const E=ACT.eliab;
+    /* turning: Eliab faces left; shown something from his right, he turns to Paul for as long as they talk, in the picture only, and stands as before afterwards */
+    {place(P,'workshop',240,122,-1);let seen=null;const say0=say;window.say=function(a){if(a===E&&!seen)seen=[facing(E),E.dir,G.with===E];return say0.apply(this,arguments)};
+      await cut(()=>window.act('give',E.hs,'tablets'));window.say=say0;   /* window.act: the engine's own, not this file's helper of the same name */
+      ok(seen&&seen[0]===1&&seen[1]===-1&&seen[2]&&G.with==null&&facing(E)===-1,'whoever Paul shows something to turns to him while they talk, and stands as the scene had him afterwards; only the picture turned');
+      G.with=E;G.withDir=E.dir;E.noTurn=1;const kept=facing(E);E.noTurn=0;E.dir=1;const script=facing(E);E.dir=-1;G.with=null;
+      ok(kept===-1&&script===1,'an actor marked noTurn keeps his back turned, and a script that turns him is obeyed')}
+    place(P,'workshop',166,122,1);clearInterval(sk);
     say(E,'You came to Damascus to bind us, and the Lord turned you around. How could we not help our brother?');
     const p=cur.plan,last=p.cl[p.cl.length-1],at=last.t1-110;setInterval(()=>{if(cur)cur.t0=performance.now()-at},8);await wait(60);
     const[m,ges,bl,mv]=moves(E,E.look,cur,performance.now());
@@ -263,6 +270,18 @@
     /* who is spoken to shows no yes and no no: never a dip of the head; the brows rise at a question */
     const was=cur,B={talk:false,bow:false,fr:0,x:60};cur={plan:p,t0:1000,to:B,a:A};const hear=[];for(let t=1000;t<1000+dur;t+=12)hear.push(moves(B,L,null,t));const q=moves(B,L,null,1000+last.t1+100);cur=was;
     ok(hear.every(r=>!r[0]&&!r[1]&&!(r[3]&MV.dip))&&(q[3]&MV.brow),'who is spoken to never nods by himself: his brows rise at a question, and that is all');
+    /* the far hand speaks in phrases: open and half raised for a question, raised for an exclamation, with the half-raised pose between
+       every other pose and the hand at rest, so that it never jumps; who exclaims leans in; a singer and a spearman keep the hand down */
+    {const run=(text,lk)=>{const pl=cadence(text,6000),l2={plan:pl,t0:0,a:A},r=[];for(let t=0;t<pl.end+400;t+=10)r.push(moves(A,lk||L,l2,t));return[pl,r]},
+        mid=(pl,r,n)=>r[Math.round((pl.cl[n].t0+pl.cl[n].t1)/20)],TXT=['Is it done, tentmaker, and may I take it with me today?','Look at them: they sit to the door, and stand beyond it!',
+          'Goat hair, woven tight: Cilician. I grew up with it under my hands. I am from Tarsus, and a tentmaker.','We came from Rome with what we could carry. Claudius has ordered every Jew out of the city.',
+          'Then you know how it fights the knife. We have orders for three, and two pairs of hands.','There is the loft, and there is the bench. Stay.'],
+        [qp,qr]=run(TXT[0]),[xp,xr]=run(TXT[1]),qm=mid(qp,qr,qp.cl.length-1),xm=mid(xp,xr,xp.cl.length-1);let jumps=0,seen=new Set();
+      for(const t of TXT){const[,r]=run(t);r.forEach((x,i)=>{seen.add(x[1]);const a=i?r[i-1][1]:0,b=x[1];if(a!==b&&a!==2&&b!==2)jumps++})}
+      ok(qm[1]===2&&xm[1]===1&&(xm[3]&MV.lean)&&!(qm[3]&MV.lean)&&qr[qr.length-1][1]===0,'the far hand: half raised and open for a question, raised for an exclamation, on which the speaker leans in; it is down again when the words are through');
+      ok(!jumps&&[0,1,2,3].every(k=>seen.has(k)),'over six lines the hand takes all its poses, and never jumps: it goes up and comes down through the half-raised one');
+      const spear=TXT.map(t=>run(t,{...L,spear:1})[1]).flat(),song={plan:s,t0:0,a:A},sing=[];for(let t=0;t<2600;t+=10)sing.push(moves(A,L,song,t));
+      ok(spear.every(x=>!x[1]&&!(x[3]&MV.lean))&&sing.every(x=>!x[1]&&!(x[3]&MV.lean))&&new Set(sing.map(x=>x[0])).size>=4,'a spearman and a singer keep the hand down and do not lean; the singer\'s mouth moves')}
     /* the blips of a voice fall on the first syllables of the line, as many as before */
     {clearInterval(sk);const t0=SFX.talk,got=[];SFX.talk=()=>got.push(performance.now());const st=performance.now(),done=say(P,EN,{dur:1500}),want=cur.plan.ev.filter(e=>e.m>1).slice(0,Math.ceil(Math.min(9,txt.length/5)));
       await done;SFX.talk=t0;sk=setInterval(()=>{if(G.skip)G.skip()},30);

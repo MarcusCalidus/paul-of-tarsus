@@ -1089,7 +1089,7 @@ function show(h,item){const w=PC(),s=(w===P?h.show:h.as&&h.as[w.id]&&h.as[w.id].
 async function act(v,h,item){const who=PC(),o=who===P?h:(h.as&&h.as[who.id])||{},
     run=async x=>{if(typeof x==='function')return x(h);for(const s of[].concat(x))await say(who,s)};
   if(v==='exit')return h.exit();
-  if(h.actor&&h.actor!==who&&(v==='talk'||item))G.with=h.actor;   /* the one he talks with, or shows something to, until this is over (see cut) */
+  if(h.actor&&h.actor!==who&&(v==='talk'||item)){G.with=h.actor;G.withDir=h.actor.dir}   /* the one he talks with, or shows something to, until this is over (see cut and facing) */
   if(item){if(v==='give'&&h.actor&&h.actor.party&&h.actor!==who)return handOver(h.actor,item);
     const fn=v==='give'||h.actor&&!o.useWith?o.give:o.useWith;if(fn&&await fn(item)!==false)return;
     if(h.actor)return show(h,item);SFX.nope();return say(who,v==='give'?'I cannot give anything to that.':pick(NOPE))}
@@ -1219,7 +1219,10 @@ const beast=(g,x,y,dir,fr,load,lit)=>figure(g,x,y,lit,'donkey'+dir+fr+load,s=>do
 /* moves: what a figure does at this moment, as [mouth, far hand, eyes shut, a sum of MV]. o: the actor; L: its look; ln: the line it is
    speaking (cur), if it has one on the screen; ts: now.
    Who speaks: the mouth follows the line's cadence. The head dips on a stressed syllable, lifts with raised brows as a question ends,
-   sits a pixel forward for a clause now and then, and the eyes blink as a sentence closes.
+   sits a pixel forward for a clause now and then, and the eyes blink as a sentence closes. The far hand speaks in phrases, one to a
+   clause and not to every clause: half raised and open for a question, raised for an exclamation, and otherwise one of the three poses
+   or none, as the line's own words decide (a hash of them, so a line is always spoken the same way). A hand goes up and comes down
+   through the half-raised pose, so it never jumps. On an exclamation the speaker leans in. Whoever sings, or holds a spear, keeps his hand down.
    Who is spoken to (cur.to) takes it in without a sign of yes or no: the brows rise at a question, and the eyes may blink as a sentence
    ends. A nod is a yes, and the engine never gives one by itself. Everybody else glances aside now and then.
    A mouth that a script sets talking with no line of its own on the screen (talk, while the narrator tells of a cry) babbles.
@@ -1228,20 +1231,26 @@ const BABBLE=[2,1,3,1,0,2,4,1],hash=n=>{n=Math.imul(n^0x9e3779b9,0x85ebca6b);n^=
 function moves(o,L,ln,ts){if(L.stone)return[0,0,0,0];
   let m=0,ges=0,bl=o.bow||blinks(L,ts)?1:0,mv=0;const live=OPTS.mov&&!o.bow&&!o.fr;
   if(ln){const p=ln.plan,t=ts-ln.t0,e=p.ev.find(x=>t>=x.t0&&t<x.t1),c=p.cl.find(c=>t>=c.t0&&t<c.t1+(c.end===','?140:300));if(e)m=e.m;
-    if(live){if(e&&e.beat&&e.m>1)mv|=MV.dip;if(!p.sung&&t<p.end&&Math.floor(ts/560)%3===1)ges=1;
-      if(c){const h=hash(p.h+c.n*7);if(c.end==='?'&&t>c.t1-320)mv=mv&~MV.dip|MV.lift|MV.brow;else if(c.end==='!'&&t>c.t1-300&&t<c.t1+160)mv|=MV.brow;
-        if(h%3===0&&t<c.t1)mv|=MV.fwd;if(t>=c.t1&&t<c.t1+130&&h%2===0)bl=1}}}
+    if(live){if(e&&e.beat&&e.m>1)mv|=MV.dip;
+      if(c){const h=hash(p.h+c.n*7),ask=c.end==='?',cry=c.end==='!';if(ask&&t>c.t1-320)mv=mv&~MV.dip|MV.lift|MV.brow;else if(cry&&t>c.t1-300&&t<c.t1+160)mv|=MV.brow;
+        if(h%3===0&&t<c.t1)mv|=MV.fwd;if(t>=c.t1&&t<c.t1+130&&h%2===0)bl=1;
+        if(!p.sung&&!L.spear&&!L.stub&&t<c.t1+140){const k=ask?2:cry?1:[0,2,1,3,2,0][h%6];
+          if(k&&c.t1-c.t0>420)ges=k===2||t-c.t0<110||c.t1+140-t<110?2:k;if(cry)mv|=MV.lean|MV.fwd}}}}
   else if(o.talk){m=BABBLE[Math.floor(ts/120)%8];if(live&&Math.floor(ts/560)%3===1)ges=1}
   else if(live){const s=cur&&cur.plan&&cur.to===o?cur:null;
     if(s){const u=ts-s.t0,c=s.plan.cl.find(c=>c.end!==','&&u>=c.t1&&u<c.t1+380);if(c&&c.end==='?')mv|=MV.brow;else if(c&&u<c.t1+130&&hash(s.plan.h+c.n)%2)bl=1}
     else{const ph=ts+(L.ph||0)*5+o.x*53;if(ph%5200<650&&hash(Math.floor(ph/5200)*131+(L.ph||0))%3===0)mv|=MV.glance}}
   return[m,ges,bl,mv]}
-function drawActor(g,o,ts,id){const bow=o.bow?1:0,ln=cur&&cur.plan?cur:null,[talk,ges,bl,mv]=moves(o,o.look,ln&&o.talk&&(ln.a===o||ln.choir.includes(o))?ln:null,ts);
+/* Whoever the played character talks with (G.with, see act) turns to face him for as long as they talk, and stands afterwards as the scene had
+   him. Only the picture turns: dir, which the scripts read and set, is left alone, and if a script turns him or walks him meanwhile, that holds.
+   An actor marked noTurn keeps his back turned if the scene wants it so, and two who are one actor (a mate) do not change places. */
+const facing=o=>G.with===o&&o.dir===G.withDir&&!o.noTurn&&!o.mate&&!o.bow&&!o.walk?(PC().x>=o.x?1:-1):o.dir;
+function drawActor(g,o,ts,id){const bow=o.bow?1:0,dir=facing(o),ln=cur&&cur.plan?cur:null,[talk,ges,bl,mv]=moves(o,o.look,ln&&o.talk&&(ln.a===o||ln.choir.includes(o))?ln:null,ts);
   /* a mate: two who are never apart are one actor (Aquila and Priscilla, in Chapter Twelve). The mate {fig, dx, talk}, fig being the id of her look,
      walks, stands and bows with the actor, a step behind and beside, and has a mouth of her own: when she talks, the line on the screen is hers. */
   const m=o.mate;if(m){const L=LOOK[m.fig],mx=o.x+m.dx*o.dir,[mt,mg,mb,mm]=moves({talk:m.talk,bow:o.bow,fr:o.fr,x:mx},L,m.talk&&ln&&ln.a&&ln.a!==o?ln:null,ts);
     figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+o.dir+o.fr+mt+bow+mg+mb+'m'+mm,s=>person(s,0,0,L,o.dir,o.fr,mt,bow,mg,mb,mm))}
-  figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+o.dir+o.fr+talk+bow+ges+bl+'m'+mv,s=>person(s,0,0,o.look,o.dir,o.fr,talk,bow,ges,bl,mv))}
+  figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+o.fr+talk+bow+ges+bl+'m'+mv,s=>person(s,0,0,o.look,dir,o.fr,talk,bow,ges,bl,mv))}
 function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
   else if(G.room){const id=G.room,a=ART[id],cam=hp(G.cam),f=fg(id);backdrop(cx,id,cam);cx.save();cx.translate(-cam,0);

@@ -12,13 +12,15 @@ The people grow older as the years of the account pass. Paul is a young man in D
 
 A figure that speaks moves as it speaks. Its mouth has five shapes, and they are read from the words that stand on the screen: wide for an a and round for an o or a u, with the chin a pixel down and a beard going down with it; half open for the other vowels; the lips parted for consonants and shut for m, b and p. The chin drops only on a stressed syllable and on every other one, or everybody would seem to shout. A comma is a short rest and a full stop a longer one, and when the words are through the mouth is still, even if the line stands a little longer. Because the words are read as they are shown, a German line moves the mouth to its own rhythm, and nobody has to write that rhythm down.
 
-The head moves with the sentence: it dips on a stressed syllable, lifts with raised brows as a question ends, and sits a pixel forward for a clause now and then. Whoever is spoken to raises his brows at a question and may blink as a sentence ends; everybody else glances aside from time to time. Nobody nods by himself, because a nod is a yes. A figure that bows keeps its head still, and a statue never moves.
+The head moves with the sentence: it dips on a stressed syllable, lifts with raised brows as a question ends, and sits a pixel forward for a clause now and then. The far hand speaks in phrases, one to a clause and not to every clause: half raised and open for a question, raised for an exclamation, and otherwise half raised, raised, laid on the chest or left down, as the words of the line decide, so that a line is always spoken the same way. A hand goes up and comes down through the half-raised pose and never jumps, and on an exclamation the speaker leans in by a pixel. Every forearm is bent and slanting; no arm is ever stretched out. Whoever sings or holds a spear keeps his hand down.
+
+Whoever Paul talks with turns to face him for as long as they talk, and afterwards stands as the scene had him. Whoever is spoken to raises his brows at a question and may blink as a sentence ends; everybody else glances aside from time to time. Nobody nods by himself, because a nod is a yes. A figure that bows keeps its head still, and a statue never moves.
 
 ![The frames of a speaking figure, enlarged](screenshots/talk.png)
 
-![Eliab asks, with his head lifted and his brows raised](screenshots/speak.png)
+![Eliab asks, with his head lifted, his brows raised and his hand open](screenshots/speak.png)
 
-Where a line is sung, as the psalm is in Chapter Nine, each singer's mouth holds the vowel of every note for as long as the note, and everyone who answers sings along. The small blips of a speaking voice fall on the first syllables of its line. On the options screen, **Movement** can be set from lively to calm, which keeps the mouth and leaves the head still; a device that asks for less motion starts in calm.
+Where a line is sung, as the psalm is in Chapter Nine, each singer's mouth holds the vowel of every note for as long as the note, and everyone who answers sings along. The small blips of a speaking voice fall on the first syllables of its line. On the options screen, **Movement** can be set from lively to calm, which keeps the mouth and leaves head and hand still; a device that asks for less motion starts in calm.
 
 A scene has depth: whoever stands farther back is drawn behind. A man who walks behind the carrier's mule is hidden by it up to the waist, and hides it when he stands in front; the same holds for a stool, a low table or a heap of sailcloth that stands out on the floor.
 
