@@ -1188,7 +1188,10 @@ function hint8(){const b=PC()!==P,his=['paul8b',['This is for Paul to decide. I 
   if(!F.sat)return b?his:['sit8',['They came out to pray, under the open sky. I am a stranger here, not a ruler of a synagogue.','I should talk to the women, and sit down among them.']];
   return b?his:['speak8',['They know the Scriptures. I can begin where they already are.','I should talk to Lydia.']]}
 /* ============ CHAPTER DEFINITION ============ */
-return{rooms:['fork','ferry','troas','philippi','river'],setup:setup8,start:start8,hint:hint8,music:MUSIC,scenes:{dark,deck:deckScene,house:houseScene},topics:TOPICS,tablets:TABLETS,
+/* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
+   plainly says no. Each is a line of this chapter, in English, as it stands above. */
+const ACTING={shake:['No, Paul. But I thought that we should be preaching, and we have done nothing but walk.']};
+return{acting:ACTING,rooms:['fork','ferry','troas','philippi','river'],setup:setup8,start:start8,hint:hint8,music:MUSIC,scenes:{dark,deck:deckScene,house:houseScene},topics:TOPICS,tablets:TABLETS,
   /* The whole road of the chapter, on a map of its own, as Chapters Four and Seven have theirs: seen through the Aegean window. */
   view:'aegean',labels:LABELS,route:ROAD,
   /* Luke joins at Troas. Until then he stands in no room, and a code must not put him in one. */

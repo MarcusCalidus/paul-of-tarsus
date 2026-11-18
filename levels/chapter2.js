@@ -593,7 +593,12 @@ function hint2(){
   return['fix',['The peg is ready. It belongs where the old pin sheared off.',"I should fit the peg to the handcart's axle."]]}
 /* ============ CHAPTER DEFINITION ============ */
 const BNhs=BN.hs;
-return{rooms:['jerusalem','upper','harbor'],setup:()=>{BN.hs=BNhs;setup2()},start:start2,hint:hint2,music:MUSIC,topics:TOPICS,tablets:TABLETS,
+/* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
+   plainly says no. Each is a line of this chapter, in English, as it stands above. */
+const ACTING={nod:['Yes. I persecuted the congregation of God, and I was wrong.'],
+  shake:['No, no. Keep it, friend.',
+  'No, brother. That is for your journey.']};
+return{acting:ACTING,rooms:['jerusalem','upper','harbor'],setup:()=>{BN.hs=BNhs;setup2()},start:start2,hint:hint2,music:MUSIC,topics:TOPICS,tablets:TABLETS,
   route:[['damascus','jerusalem'],['jerusalem','caesarea','new'],['caesarea','tarsus','new sea']],
   place:room=>{if(F.told)place(BN,'jerusalem',360,114,-1);if(room==='upper'||F.preach)place(BN,'upper',96,124,1);if(room==='upper')F.upper=1;if(F.preach&&room==='jerusalem')disputers()},
     flags:['knocked','metBarn','gotStick','peg','wheelOn','cartFixed','told','metCapt','sailDown','gotPatch','gotTwine','upper','preach'],

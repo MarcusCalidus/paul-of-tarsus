@@ -1061,8 +1061,8 @@ function antiochScene(g,t){backdrop(g,'antioch7');const s=G.st||{},talk=Math.flo
   if(!s.k)cast(g,[['br1',16,119,1],['br3',84,116,1],['br4',276,119,-1],['br2',170,113,1],['barnabas7',98,124,1],['paul',124,127,1,{ges:talk}],['jud1',216,124,-1,{ges:1-talk}],['jud2',242,127,-1]]);
   else if(s.k===1)cast(g,[['br2',190,114,-1],['br3',208,118,-1],['br1',228,114,-1],['br4',246,118,-1],['ap3',266,115,-1],['tc5',180,123,-1],['tc4',222,125,-1],['tc2',256,126,-1],
     ['barnabas7',58,122,1],['paul',82,125,1],['judas7',110,123,1],['silas',138,126,1,{ges:talk}]]);
-  else{const a=s.away||0,fr=a>0&&a<1?Math.floor(t/130)%4:0,bow=s.bow?1:0,L=[['br1',16,119,1,{bow}],['br3',84,116,1,{bow}],['br2',60,123,1,{bow}],['br4',34,128,1,{bow}],['silas',112,123,1,{bow}],['paul',140,126,1,{bow}]];
-    if(a<1)L.push(['barnabas7',178+a*112,125-a*9,a>0?1:-1,{fr}],['mark7',204+a*100,128-a*10,a>0?1:-1,{fr}]);cast(g,L)}}
+  else{const a=s.away||0,go=(id,d)=>a>0&&a<1?walkFr(LOOK[id],a*d,d/5.2):0,bow=s.bow?1:0,L=[['br1',16,119,1,{bow}],['br3',84,116,1,{bow}],['br2',60,123,1,{bow}],['br4',34,128,1,{bow}],['silas',112,123,1,{bow}],['paul',140,126,1,{bow}]];
+    if(a<1)L.push(['barnabas7',178+a*112,125-a*9,a>0?1:-1,{fr:go('barnabas7',112)}],['mark7',204+a*100,128-a*10,a>0?1:-1,{fr:go('mark7',100)}]);   /* each at his own stride, over the ground he covers in 5.2 seconds */cast(g,L)}}
 /* The meeting in Jerusalem (Acts 15:6-21). who: 0 Peter is speaking; 1 Barnabas and Paul; 2 James. */
 function councilScene(g,t){backdrop(g,'council');const w=(G.st||{}).who||0,talk=Math.floor(t/600)%2;
   cast(g,[['ap1',30,113,1],['ap2',52,117,1],['ap4',76,113,1],['ap5',98,117,1],['ap3',226,113,-1],['ap1',250,117,-1],['ap2',274,113,-1],['ap4',296,117,-1],
@@ -1193,7 +1193,10 @@ function hint7(){const b=PC()!==P,craft=['craft7',["That is the tentmaker's craf
   if(!F.tat)return b?his:['tat7',['Tatia has watched him come and go. What does he do, when he is here?','I should talk to Tatia at the fountain.']];
   return['back7',['Two cities, and one account of him. What is left to do is in Lystra.','We can leave by the south gate, and choose Lystra on the map.']]}
 /* ============ CHAPTER DEFINITION ============ */
-return{rooms:['tarsus7','gates','lystra7','iconium7'],setup:setup7,start:start7,hint:hint7,music:MUSIC,scenes:{antioch:antiochScene,council:councilScene},topics:TOPICS,tablets:TABLETS,
+/* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
+   plainly says no. Each is a line of this chapter, in English, as it stands above. */
+const ACTING={shake:['No, Eunice. Barnabas has sailed for Cyprus, with John Mark. He and I did not agree about this journey. Anger flared up between us, sharply, and we parted.']};
+return{acting:ACTING,rooms:['tarsus7','gates','lystra7','iconium7'],setup:setup7,start:start7,hint:hint7,music:MUSIC,scenes:{antioch:antiochScene,council:councilScene},topics:TOPICS,tablets:TABLETS,
   /* painters: the chapter's animal, for the playtest, which checks that every part of it is attached */
   painters:{ox},
   /* Tarsus, the Gates and the cities of Lycaonia lie in the map's northern window. This journey is drawn on its own, as Chapter Four's was:

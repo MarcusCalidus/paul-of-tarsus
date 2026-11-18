@@ -1017,7 +1017,10 @@ function hint10(){
     :['p10',['What was done with him when he was dead? One psalm speaks of bones, and Isaiah of a man pierced.','The Psalms at the unbroken bones, the Prophets at the pierced one, my tablets at the spear.']]}
 
 /* ============ CHAPTER DEFINITION ============ */
-return{rooms:['yard10','bolt10','syn10','table10','night10','ber10','quay10'],setup:setup10,start:start10,hint:hint10,music:MUSIC,scenes:{dark,yard:yardScene},topics:[],tablets:TABLETS,
+/* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
+   plainly says no. Each is a line of this chapter, in English, as it stands above. */
+const ACTING={shake:['No. And so I say it plainly: the Christ of whom all this is written is Jesus.']};
+return{acting:ACTING,rooms:['yard10','bolt10','syn10','table10','night10','ber10','quay10'],setup:setup10,start:start10,hint:hint10,music:MUSIC,scenes:{dark,yard:yardScene},topics:[],tablets:TABLETS,
   /* for the playtest: what is told, the table's places, lines and rows, the bolt's one way, the three maps, and the sounds made here */
   told:TOLD,places:PLACE,ev:EV,rows:ROWS,lists:LISTS,lines:LINES,way:WAY,pieces:PIECES,bolt:{x:BX,y:BY,cell:CELL,trayY:TRAY_Y,tc:TC},musicB:MUSICB,uproar,chord:chord10,
   maps:{road1:[ROAD1,LAB1],road2:[ROAD2,LAB2],road3:[ROAD3,LAB3]},

@@ -1063,7 +1063,10 @@ function hint11(){
   return['gate11',['The city lies through the gate, at the top of this road.','I walk up the road, and go in by the city gate.']]}
 
 /* ============ CHAPTER DEFINITION ============ */
-return{rooms:['road11','street11','syn11','agora11','yard11','stoa11','bases11','hill11'],setup:setup11,start:start11,hint:hint11,music:MUSIC,scenes:{},topics:[],tablets:TABLETS,calls:CALLS,
+/* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
+   plainly says no. Each is a line of this chapter, in English, as it stands above. */
+const ACTING={shake:['No. I said why, and I have not changed my mind.']};
+return{acting:ACTING,rooms:['road11','street11','syn11','agora11','yard11','stoa11','bases11','hill11'],setup:setup11,start:start11,hint:hint11,music:MUSIC,scenes:{},topics:[],tablets:TABLETS,calls:CALLS,
   /* for the playtest: what is told, the passages, the grains and the parts of the speech, the stones and the statues, and the sayings */
   told:TOLD,ps:PS,grain:GRAIN,parts:PARTS,stones:STONES,stat:STAT,says:SAYS,way:WAY,lanes:LANES,voices:VOICES,voice:VOICE,sx,ring:ring11,
   /* The chapter opens on the map, once: Athens, and Beroea far to the north. Nobody travels. */

@@ -988,7 +988,14 @@ function hint6(){const b=PC()!==P,craft=['craft6',["That is the tentmaker's craf
     return['derbe6',['Mended, fed, and alive. Tomorrow: Derbe.','We can leave by the door to the lane, and choose Derbe on the map.']]}
   return['back6',['The short way home lies east. But the disciples lie behind us, and no one has been back to them.','We can take the road, and choose Lystra on the map.']]}
 /* ============ CHAPTER DEFINITION ============ */
-return{rooms:['iconium','lystra','outside','house6','derbe'],setup:setup6,start:start6,hint:hint6,music:MUSIC,topics:TOPICS,tablets:TABLETS,
+/* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
+   plainly says no. Each is a line of this chapter, in English, as it stands above. */
+const ACTING={nod:['Yes, sir. ...But you went back in through the gate.'],
+  shake:['No, sir. There are too few of us. My mother and my grandmother taught me the holy writings at home, from the time I could listen.',
+  'No, sir. There are too few of us. My mother and my grandmother taught me the holy writings at home. Most people here speak Lycaonian, and Greek only to strangers.',
+  'No. Let them lie where they fell.',
+  'No.']};
+return{acting:ACTING,rooms:['iconium','lystra','outside','house6','derbe'],setup:setup6,start:start6,hint:hint6,music:MUSIC,topics:TOPICS,tablets:TABLETS,
   /* painters: the chapter's animal, for the playtest, which checks that every part of it is attached and shows it enlarged */
   painters:{ox},
   /* Iconium, Lystra and Derbe lie north of the map's usual window, so this chapter looks through the northern one */

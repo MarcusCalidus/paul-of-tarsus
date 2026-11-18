@@ -83,7 +83,10 @@ questions myron
 reading reading
 river river8
 samothrace deck8
+road road
 saves saves
+speak speak
+stride stride
 scrolltable row10
 seamap seamap10
 secondjourney journey7
@@ -100,6 +103,7 @@ tablets tablets
 tarsus tarsus
 tentshop pshop12
 thessalonica yard10
+talk cast cast-talk
 thought thought
 thought-de de:thought
 timothy lystra7
@@ -111,6 +115,7 @@ troas troas8
 verb-pointer verbpointer
 verbs defverb
 voyage voyage
+walk cast cast-walk
 westmap map10
 windward holdline
 withoutpaul tim10
