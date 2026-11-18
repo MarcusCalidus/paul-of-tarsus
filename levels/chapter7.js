@@ -113,11 +113,11 @@ ART.antioch7={w:320,
   house(g,0,46,102,58,W,r,{side:0,patch:2,cracks:4,beams:0});
   for(let i=0;i<104;i+=5.5){R(g,i,36,5,8.5,(i|0)%11?'#c0603c':'#a84c2c');R(g,i,36,5,.8,'#e08a60');R(g,i+4.5,36,.6,8.5,'#7a3620')}R(g,0,44.5,104,1.6,'#6a3a22');
   R(g,31,53,38,51,'#d8c8a0');doorArt(g,34,56,32,48,'#8a6a40',r);windowArt(g,80,58,10,10,W,{bars:2,wood:'#6a4e2c'});
-  /* the wall of the courtyard, and the gate to the street */
+  /* the wall of the courtyard, and the gate to the street: the colonnade across it, as in Chapter Three, with its back wall closing the view */
   house(g,102,48,178,56,tint(W,-.04),r,{side:0,patch:3,cracks:5,beams:0});
   R(g,280,40,40,64,'#d6c69e');for(let i=280;i<320;i+=5.5){R(g,i,36,5,5,(i|0)%11?'#c0603c':'#a84c2c');R(g,i,36,5,.6,'#e08a60')}poly(g,[280,36,275,39,275,104,280,104],'#a8a0b0');
-  arch(g,284,52,32,52,'#c2b28c');g.save();arch(g,286,54,28,50);g.clip();sky(g,320,80,['#74aade','#cfe2ee']);R(g,286,84,28,20,'#dcd5c3');
-  for(const[hx,hy,hw,hh,c]of[[286,66,10,38,'#d6caa8'],[304,62,10,42,'#e2d6b4']]){R(g,hx,hy,hw,hh,c);R(g,hx,hy-2,hw,2.2,'#b8603c')}poly(g,[292,104,310,104,304,84,298,84],'#e0d6ba');
+  arch(g,284,52,32,52,'#c2b28c');g.save();arch(g,286,54,28,50);g.clip();sky(g,320,80,['#74aade','#cfe2ee']);R(g,286,64,28,34,'#8f8894');R(g,297.6,80,4.8,16,'#2a2430');R(g,286,60,28,4,'#e2dac4');R(g,286,58.4,28,1.6,'#b8603c');
+  for(const cxx of[291,304]){g.fillStyle=lg(g,cxx,0,cxx+5,0,['#d8d0bc','#fbf7ea','#c8c0b0']);g.fillRect(cxx,64,5,34);R(g,cxx-1,96,7,2,'#d8d0bc')}R(g,286,98,28,6,'#cfc8b6');
   ao(g,286,54,28,9,'t',.5,'#2a2440');ao(g,286,54,5,50,'l',.45,'#2a2440');g.restore();
   /* the vine arbor */
   wood(g,126,43,3,63,'#6a4e2c',1);wood(g,226,43,3,63,'#6a4e2c',1);wood(g,126,40,103,3,'#7a5c36');for(let i=0;i<9;i++)wood(g,131+i*11.6,36.6,2.2,3.6,'#5a4226');
@@ -331,8 +331,9 @@ ART.iconium7={w:480,fp:1.3,
   g.fillStyle=lg(g,0,64,0,104,['#b8b48a','#a8a876','#98a068']);g.fillRect(186,64,114,40);tex(g,'mott',.5,186,64,114,40,'overlay',1);
   for(let i=0;i<7;i++){const fx=188+i*15+r()*6,fy=67+r()*8;poly(g,[fx,fy,fx+20,fy-1,fx+26,fy+7,fx+3,fy+8],i%3===0?'rgba(150,120,84,.4)':i%3===1?'rgba(96,130,76,.3)':'rgba(190,170,110,.3)')}
   for(const[x,y]of[[200,80],[228,75],[260,79],[286,84],[244,84]]){oval(g,x+2,y+3.4,5,1,'rgba(50,60,90,.34)');R(g,x-.4,y+1,1.2,2.8,'#5a4630');foliage(g,x,y-.6,4.6,3,'#7a8a5e',r,20)}
-  /* the street that runs back to the synagogue of the Jews */
+  /* the street that runs back to the synagogue of the Jews. A house front stands across its far end, its roof at the level the paving runs to */
   R(g,0,40,60,64,'#cfc4a8');g.save();g.beginPath();g.rect(0,28,60,76);g.clip();sky(g,480,80,['#7ea4d0','#e2e4dc']);
+  R(g,24,64,10,40,'#d6d0c2');R(g,24,62,10,2.4,'#b8603c');R(g,24,72.4,10,1.6,'rgba(60,50,90,.2)');
   for(const[hx,hy,hw,hh,c]of[[0,42,18,62,'#d6caa8'],[42,48,18,56,'#e2d6b4'],[16,56,10,48,'#c8bc9c'],[32,60,9,44,'#d8ccac']]){R(g,hx,hy,hw,hh,c);R(g,hx,hy-2,hw,2.4,'#b8603c');R(g,hx+hw-2.4,hy,2.4,hh,'rgba(60,50,90,.3)')}
   poly(g,[18,104,42,104,33,74,27,74],'#e0d6ba');ao(g,0,28,60,12,'t',.2,'#2a2440');g.restore();
   /* Nathan's saddlery: a plastered house, its whole front open to the street under an awning */

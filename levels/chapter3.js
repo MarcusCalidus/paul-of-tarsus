@@ -99,9 +99,10 @@ ART.court={w:320,
   for(let i=0;i<104;i+=5.5){R(g,i,38,5,8.5,(i|0)%11?'#c0603c':'#a84c2c');R(g,i,38,5,.8,'#e08a60');R(g,i+4.5,38,.6,8.5,'#7a3620')}R(g,0,46.5,104,1.6,'#6a3a22');wood(g,0,48,104,1.6,'#7a5632');
   for(const x of[10,84]){g.fillStyle=lg(g,x,0,x+8,0,['#cfc6b0','#fbf6e6','#efe6cc','#b8b0a4']);g.fillRect(x,50,8,54);R(g,x-1.5,48.6,11,2.4,'#f8f2e0');R(g,x-1.5,102,11,3,'#d6ccb0');R(g,x-1.5,102,11,.6,'#fbf6e6');for(let j=0;j<3;j++)R(g,x+2+j*2,52,.5,49,'rgba(120,110,100,.25)')}
   vessel(g,75,106,6,19,'#a05a34','pithos');
-  /* the gate to the street */
+  /* the gate to the street. Across the street stands its colonnade, and the back wall of that colonnade closes the view: no ground runs on
+     behind the columns to a horizon of its own, and no level line lies behind them for a column to stand across. */
   R(g,280,40,40,64,'#d6c69e');for(let i=280;i<320;i+=5.5){R(g,i,36,5,5,(i|0)%11?'#c0603c':'#a84c2c');R(g,i,36,5,.6,'#e08a60')}poly(g,[280,36,275,39,275,104,280,104],'#a8a0b0');
-  arch(g,284,52,32,52,'#c2b28c');g.save();arch(g,286,54,28,50);g.clip();sky(g,320,80,['#74aade','#cfe2ee']);R(g,286,84,28,20,'#dcd5c3');R(g,286,60,28,4,'#e2dac4');R(g,286,58.4,28,1.6,'#b8603c');
+  arch(g,284,52,32,52,'#c2b28c');g.save();arch(g,286,54,28,50);g.clip();sky(g,320,80,['#74aade','#cfe2ee']);R(g,286,64,28,34,'#8f8894');R(g,297.6,80,4.8,16,'#2a2430');R(g,286,60,28,4,'#e2dac4');R(g,286,58.4,28,1.6,'#b8603c');
   for(const cxx of[291,304]){g.fillStyle=lg(g,cxx,0,cxx+5,0,['#d8d0bc','#fbf7ea','#c8c0b0']);g.fillRect(cxx,64,5,34);R(g,cxx-1,96,7,2,'#d8d0bc')}R(g,286,98,28,6,'#cfc8b6');
   ao(g,286,54,28,9,'t',.5,'#2a2440');ao(g,286,54,5,50,'l',.45,'#2a2440');g.restore();
   /* peg rail with the old pack bags, a tether ring */

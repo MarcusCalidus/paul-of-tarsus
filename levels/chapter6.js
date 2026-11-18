@@ -104,8 +104,10 @@ ART.iconium={w:480,fp:1.3,
   g.fillStyle=lg(g,0,64,0,104,['#b4bc7c','#a2b468','#8fa858']);g.fillRect(186,64,114,40);tex(g,'mott',.5,186,64,114,40,'overlay',1);
   for(let i=0;i<7;i++){const fx=188+i*15+r()*6,fy=67+r()*8;poly(g,[fx,fy,fx+20,fy-1,fx+26,fy+7,fx+3,fy+8],i%3===0?'rgba(214,196,110,.42)':i%3===1?'rgba(96,140,70,.36)':'rgba(170,130,84,.3)')}
   for(const[x,y]of[[200,80],[228,75],[260,79],[286,84],[244,84]]){oval(g,x+2,y+3.4,5,1,'rgba(50,60,90,.34)');R(g,x-.4,y+1,1.2,2.8,'#5a4630');foliage(g,x,y-.6,4.6,3,'#6f8a58',r,20)}
-  /* the street we came by, running back to the synagogue of the Jews */
+  /* the street we came by, running back to the synagogue of the Jews. A house front stands across its far end, its roof at the level the
+     paving runs to: a street must not end in the sky below that level. */
   R(g,0,40,60,64,'#cfc4a8');g.save();g.beginPath();g.rect(0,28,60,76);g.clip();sky(g,480,80,['#6ea4dc','#e2e8dc']);
+  R(g,24,64,10,40,'#d6d0c2');R(g,24,62,10,2.4,'#b8603c');R(g,24,72.4,10,1.6,'rgba(60,50,90,.2)');
   for(const[hx,hy,hw,hh,c]of[[0,42,18,62,'#d6caa8'],[42,48,18,56,'#e2d6b4'],[16,56,10,48,'#c8bc9c'],[32,60,9,44,'#d8ccac']]){R(g,hx,hy,hw,hh,c);R(g,hx,hy-2,hw,2.4,'#b8603c');R(g,hx+hw-2.4,hy,2.4,hh,'rgba(60,50,90,.3)')}
   poly(g,[18,104,42,104,33,74,27,74],'#e0d6ba');ao(g,0,28,60,12,'t',.2,'#2a2440');g.restore();
   /* Nathan's saddlery: a plastered house, its whole front open to the street under an awning */

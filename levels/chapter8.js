@@ -355,8 +355,10 @@ ART.philippi={w:480,fp:1.3,
   shade(g,[346,106,394,106,402,112,354,112],SH,.5);g.fillStyle=lg(g,362,0,374,0,['#b4aa94','#ece4ce','#a49c8a']);g.fillRect(362,68,12,30);R(g,360.6,66,14.8,2.6,'#f0e8d4');R(g,360.6,68.4,14.8,.6,'#a8a094');R(g,365,82,6,3,'#7a7466');R(g,367,82.6,2,2,'#2e2a26');
   g.fillStyle=lg(g,346,0,392,0,['#aca28c','#e8e0c8','#cec4ac','#8e8674']);g.fillRect(346,96,46,10);R(g,345,94.6,48,2,'#f0e8d4');R(g,345,96.4,48,.6,'#a8a094');R(g,348.6,95,40.8,1.2,'#4f8cb4');
   R(g,338,24,62,42,tint(W2,-.05));plaster(g,338,24,62,42,tint(W2,-.05),r,{patch:2,cracks:3});R(g,338,22.4,62,2,tint(W2,.16));
-  /* the street that runs on into the city, toward the marketplace: house fronts, tiled eaves, and the paving going on */
+  /* the street that runs on into the city, toward the marketplace: house fronts, tiled eaves, and the paving going on to the house that stands
+     across its far end, with its roof at the level the paving runs to */
   R(g,400,34,80,70,'#cfc4a8');g.save();g.beginPath();g.rect(400,26,80,78);g.clip();sky(g,480,82,['#76a8dc','#e2e6dc']);
+  R(g,431,63,17,41,'#d6d0c2');R(g,431,61,17,2.4,'#b8603c');R(g,435,65.6,2.4,3.2,'#3a2c22');R(g,431,70.4,17,1.6,'rgba(60,50,90,.2)');
   for(const[hx,hy,hw,hh,c]of[[400,40,22,64,'#d6caa8'],[458,36,22,68,'#e0d4b2'],[420,52,13,52,'#c8bc9c'],[446,56,13,48,'#d8ccac']]){R(g,hx,hy,hw,hh,c);R(g,hx,hy-2,hw,2.4,'#b8603c');R(g,hx+hw-2.4,hy,2.4,hh,'rgba(60,50,90,.3)');R(g,hx+hw*.3,hy+10,3,4,'#3a2c22')}
   poly(g,[424,104,458,104,447,72,437,72],'#ddd2b6');ao(g,400,26,80,12,'t',.2,'#2a2440');g.restore();poly(g,[400,24,395,27,395,104,400,104],'#9a94a8');
   /* the street itself: the great road from Asia to Rome, paved in slabs the wheels have rutted */
