@@ -715,7 +715,7 @@ async function slung(){playAs(P);F.slung=1;AU.mood='calm';SFX.good();
   await say(LU,'Where are you bound?');
   await say(P,'I do not know, Luke. We were turned away from Asia, and from Bithynia, and this is where the road ran out.');
   await say(LU,'Then sleep on it. A harbor looks different by daylight. I lodge at the inn yonder: there is room.');codeBtn()}
-/* The night, and the vision: told as Acts 16:9 tells it, in paraphrase, on a dark screen. Nothing of it is shown. */
+/* The night, and the vision: told as Acts 16:9 tells it, in paraphrase, in the dark (read from the narrator's scroll). Nothing of it is shown. */
 async function night(){const me=PC();
   if(F.vision)return say(me,me===P?'We have slept. What I saw there in the night, I must now tell.':'We have slept, and Paul has not. Something happened in the night.');
   if(!F.slung)return say(me,me===P?'Not while that man is bleeding on the quay.':'Not while my work is lying half done on a bale.');
@@ -1138,8 +1138,8 @@ function setup8(){SI.hs=SILAS8;TI.hs=TIM8;LU.hs=LUKE8;P.hs=PAUL8;P.called='Paul'
 /* cast: figures posed in a scene, the nearest drawn last. Each is [look id, x, y, dir, {bow, ges, fr}]. */
 function cast(g,list,lit){list.sort((a,b)=>a[2]-b[2]).forEach(([id,x,y,dir,o])=>{o=o||{};const fr=o.fr||0,bow=o.bow?1:0,ges=o.ges?1:0;
   figure(g,x,y,lit,id+dir+'s'+fr+bow+ges,s=>person(s,0,0,LOOK[id],dir,fr,0,bow,ges,bow),7.5)})}
-/* The vision is not shown: a dark screen, and the words of Acts 16:9. */
-function dark(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}
+/* The vision is not shown: the engine's dark scene, and the words of Acts 16:9, read from the narrator's scroll as every line told in the dark is. */
+const dark=DARK;
 /* The deck, at anchor under Samothrace. Timothy is at the rail; the others sit and stand about the lamp. */
 function deckScene(g,t){backdrop(g,'deck8');const talk=Math.floor(t/700)%2;
   cast(g,[['timothy8',118,126,1],['paul',150,130,-1,{ges:talk}],['silas8',196,128,-1],['luke',232,132,-1]],'#9aa2c8');

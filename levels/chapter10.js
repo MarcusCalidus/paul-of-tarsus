@@ -790,7 +790,7 @@ async function finale(){AU.mood='rest';
   await wait(1500);ov.onclick=()=>startChapter(11);await new Promise(()=>{})}
 /* the courtyard at dusk, as the uproar is told: nobody is in it */
 function yardScene(g,t){backdrop(g,'yard10');ART.yard10.draw(g,t)}
-function dark(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}
+const dark=DARK;
 
 /* ============ ITEMS ============ */
 Object.assign(ICON,{

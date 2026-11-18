@@ -36,6 +36,13 @@ body{display:flex;align-items:center;justify-content:center}
 /* where the browser can paint a stroke behind the letters, the edge is that stroke, a room pixel wide outside every letter and even on
    its curves; eight shifted shadows leave steps there. A browser that cannot keeps the shadows above. */
 @supports (paint-order:stroke fill){.line{text-shadow:none;-webkit-text-stroke:calc(var(--s)*2px) #000;paint-order:stroke fill}}
+/* a line of narration told in the dark is read from the narrator's scroll (shared/scroll.js): it stands in ink in the middle of the open
+   part of the roll, in a size that suits its length, and a reference in it is never divided over two lines */
+.line.ink{left:calc(var(--s)*170px);top:50%;transform:translate(-50%,-50%);max-width:calc(var(--s)*164px);text-align:left;text-wrap:balance;
+  color:#2c1a0e;opacity:.94;text-shadow:none;-webkit-text-stroke:0;paint-order:normal;letter-spacing:.01em;animation:ink .35s ease-out}
+.line.ink span{white-space:nowrap}
+@keyframes ink{from{opacity:0}}
+#scroll{position:absolute;z-index:2;inset:0;width:100%;height:100%;opacity:0;pointer-events:none;image-rendering:pixelated;image-rendering:crisp-edges}
 #tags{position:absolute;inset:0;pointer-events:none;z-index:3;display:none}
 #tags.on{display:block}
 .tag{position:absolute;transform:translateX(-50%);font-size:calc(var(--s)*4.4px);line-height:1.25;color:#f0e2c0;white-space:nowrap;
@@ -540,6 +547,8 @@ const SFX={
   creak(){tone({f:140,to:170,d:.3,type:'sawtooth',v:.05});tone({f:175,to:150,t:now()+.3,d:.3,type:'sawtooth',v:.04})},
   splash(){noise({d:.4,v:.16,f:900,q:.6});tone({f:500,to:900,t:now()+.1,d:.2,type:'sine',v:.05})},
   snuff(){noise({d:.25,v:.1,f:5000,q:.5,type:'highpass'})},
+  /* unroll: the narrator's scroll is drawn open (shared/scroll.js): one soft sweep, half a second long and no louder than the lamp being snuffed */
+  unroll(){const t=now()+.02;noise({t,d:.5,v:.028,f:3000,q:.7,a:.14,sus:1});noise({t:t+.05,d:.42,v:.017,f:5200,q:.8,type:'highpass',a:.1})},
   alert(){tone({f:330,d:.12,type:'square',v:.1});tone({f:311,t:now()+.14,d:.25,type:'square',v:.1})},
   /* pray, good and win start on the tonic of the key that is sounding and are tuned into its mode (see tune) */
   pray(){tune([0,7,12]).forEach((m,i)=>tone({f:mtof(m),t:now()+i*.28,d:2.4-i*.3,type:'sine',v:.11,a:.25,sus:1,echo:1}))},
@@ -1069,19 +1078,31 @@ let cur=null;
 /* say: a line stands over whoever speaks it (a: null for the narrator) until its time is up or the player moves on. o.thought: a thought,
    in italics and with the mouth shut; o.dur: how long it stands; o.sung: its notes (see cadence); o.choir: others who sing it with him, or
    without him. While it stands, cur holds its cadence and when it began, and the mouth and head of whoever speaks or sings follow that
-   (see moves). The blips of a speaking voice fall on its first syllables; a sung line has its own voice and no blips. */
-function say(a,text,o={}){const src=text;text=T(text);return new Promise(res=>{
-  const el=document.createElement('div');el.className='line';el.textContent=text;el.style.color=o.color||(a?a.color:'#e6d9ff');
+   (see moves). The blips of a speaking voice fall on its first syllables; a sung line has its own voice and no blips. A line of the
+   narrator's that is told in the dark is read from his scroll (see DARK, below); o.plain keeps such a line a plain one. */
+function say(a,text,o={}){const S=SHARED.scroll,ink=!a&&!o.plain&&inDark();
+  if(ink&&!S)return need('scroll').then(()=>say(a,text,o),()=>say(a,text,Object.assign({},o,{plain:1})));   /* without its file, a plain line */
+  if(ink&&S.state!=='up')return S.up().then(()=>say(a,text,o));
+  if(!ink&&S&&S.state!=='down')return S.down().then(()=>say(a,text,o));
+  const src=text;text=T(text);return new Promise(res=>{
+  const el=document.createElement('div');el.className='line';el.textContent=text;if(ink)el.classList.add('ink');else el.style.color=o.color||(a?a.color:'#e6d9ff');
   if(o.thought)el.style.fontStyle='italic';
   const voiced=a&&!o.thought,choir=o.choir||[],dur=(o.dur||Math.max(2200,1400+text.length*65))*(G.speedAll>200?1:OPTS.spd),plan=voiced||choir.length?cadence(text,dur,o.sung):null;
-  $('#speech').appendChild(el);if(voiced){a.talk=true;const k=o.act||acted(src);if(k)gesture(a,k,0,140)}choir.forEach(x=>x.talk=true);
+  $('#speech').appendChild(el);if(ink)S.fit(el);if(voiced){a.talk=true;const k=o.act||acted(src);if(k)gesture(a,k,0,140)}choir.forEach(x=>x.talk=true);
   const blips=voiced&&!plan.sung?plan.ev.filter(e=>e.m>1).slice(0,Math.ceil(Math.min(9,text.length/5))).map(e=>setTimeout(()=>SFX.talk(a.pitch*2),e.t0)):[];
-  const done=()=>{clearTimeout(tm);blips.forEach(clearTimeout);el.remove();if(a)a.talk=false;choir.forEach(x=>x.talk=false);if(G.skip===done)G.skip=null;cur=null;res()};
+  const done=()=>{clearTimeout(tm);blips.forEach(clearTimeout);el.remove();if(a)a.talk=false;choir.forEach(x=>x.talk=false);if(G.skip===done)G.skip=null;cur=null;if(ink)S.rest();res()};
   const tm=setTimeout(done,dur),me=PC();
   /* to: the one who is spoken to, as far as the engine can know: whoever is played, or the person he is talking with (G.with, see act) */
-  G.skip=done;G.lineT=performance.now();cur={el,a,low:o.low,plan,t0:G.lineT,choir,to:!voiced||o.sung?null:a===me?G.with:me.room===a.room?me:null};posSpeech()})}
+  G.skip=done;G.lineT=performance.now();cur={el,a,ink,low:o.low,plan,t0:G.lineT,choir,to:!voiced||o.sung?null:a===me?G.with:me.room===a.room?me:null};posSpeech()})}
 const narr=(t,o)=>say(null,t,o);
-function posSpeech(){if(!cur)return;const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
+/* The narrator's scroll (shared/scroll.js). A line of narration told in the dark, that is, while the view is faded out or the scene is DARK,
+   is not set on a black screen: it is read from an open roll of papyrus, held in two hands by lamplight. The scroll comes up out of the dark
+   for the first such line and stays while one follows another. Before anything else is said or shown it goes down again: say, fade and
+   the end screen see to that, and a scroll left with no line on it goes down by itself. A chapter writes nothing for it: it fades out and
+   tells, as it always did. DARK is the scene for what is told and not shown (a vision by night, a beating): a chapter sets it as G.scene. */
+function DARK(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}
+const inDark=()=>+$('#dim').style.opacity>=1||G.scene===DARK;
+function posSpeech(){if(!cur||cur.ink)return;const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
   if(a&&a.room===G.room&&!G.scene){el.style.left=clamp((a.x-G.cam)*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-56),40,132)*s+'px';el.style.top=''}
   else if(cur.low){el.style.left='50%';el.style.top='';el.style.bottom=7*s+'px'}   /* low: a line told over a map whose road runs along its upper edge stands at the foot of the view */
   else{el.style.left='50%';el.style.top=10*s+'px';el.style.bottom=''}}
@@ -1092,7 +1113,7 @@ async function cut(fn,force){if(G.busy&&!force)return;G.busy=true;lock(true);sta
 /* viewOf: show the room a character stands in. enterRoom: move the character the player controls into a room, and show it. */
 function viewOf(a){G.room=a.room;G.cam=clamp(a.x-160,0,ART[a.room].w-VW);AU.mood=ROOMS[a.room].mood||'calm';AU.amb=ROOMS[a.room].amb;G.hover=null}
 function enterRoom(room,x,y,dir){G.room=room;place(PC(),room,x,y,dir);G.cam=clamp(x-160,0,ART[room].w-320);AU.mood=ROOMS[room].mood||'calm';AU.amb=ROOMS[room].amb;G.hover=null}
-async function fade(on,ms=260){const d=$('#dim');d.style.transition=`opacity ${ms}ms ease-in-out`;d.style.opacity=on?1:0;await wait(ms+20);d.style.transition=''}
+async function fade(on,ms=260){const S=SHARED.scroll;if(S&&S.state!=='down')await S.down();const d=$('#dim');d.style.transition=`opacity ${ms}ms ease-in-out`;d.style.opacity=on?1:0;await wait(ms+20);d.style.transition=''}
 async function go(room,x,y,dir){SFX.door();tagEl.innerHTML='';tagSig='';const[snap,sg]=mk(VW*HR,VH*HR);sg.drawImage(cv,0,0);enterRoom(room,x,y,dir);
   G.xfade={img:snap,a:1};await tween(320,k=>{G.xfade.a=1-(k*k*(3-2*k))});G.xfade=null;const r=ROOMS[room];if(r.enter)await r.enter()}
 function choose(opts){return new Promise(res=>{const c=$('#choices');c.innerHTML='';c.classList.add('on');
@@ -1364,6 +1385,7 @@ function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmo
     cx.restore();if(f)cx.drawImage(f,-hp(cam*(a.fp||1)),0,f.width/HR,VH);
     cx.save();cx.translate(-cam,0);a.front(cx,ts);cx.restore()}
   if(G.xfade){cx.save();cx.setTransform(1,0,0,1,0,0);cx.globalAlpha=G.xfade.a;cx.drawImage(G.xfade.img,0,0);cx.restore()}
+  {const S=SHARED.scroll;if(S&&S.state!=='down')S.draw(ts)}
   posSpeech();tagsOn();drawTags(ts);requestAnimationFrame(render)}
 /* ============ GAME: items, combinations, prayer hints ============ */
 Object.assign(ITEMS,{
@@ -1500,7 +1522,7 @@ async function startChapter(n){ov.onclick=null;try{await loadLevel(n)}catch(e){r
 /* chsFade: fades the chapter list's top edge while entries are scrolled away above it, and its bottom edge while more wait below */
 function chsFade(l){l.classList.toggle('up',l.scrollTop>1);l.classList.toggle('down',l.scrollTop+l.clientHeight<l.scrollHeight-1)}
 addEventListener('resize',()=>{const l=ov.querySelector('.chs');if(l)chsFade(l)});
-async function title(){lock(true);await setLang(firstLang());try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
+async function title(){lock(true);if(SHARED.scroll)SHARED.scroll.off();await setLang(firstLang());try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
   setChapter(TITLE.level);G.scene=CHAP[TITLE.level].scenes[TITLE.scene];G.end={};AU.mood=TITLE.mood;AU.amb=TITLE.amb;
   /* The name and the subtitle are painted as a logo (shared/logo.js). If its file is missing, or a language's title has a letter the
      logo cannot write, they stand as plain text instead. The canvas keeps the words, for a screen reader and for the playtest. */
@@ -1525,7 +1547,8 @@ async function title(){lock(true);await setLang(firstLang());try{await loadLevel
 async function resumeFar(){audioInit();const f=saves().far;if(f&&await restore(f.code)!==false)return;SFX.nope()}
 /* endScreen: a chapter's closing screen. o: title; text; based (its passages, and that the dialogue is imagined); extra (more lines for
    the score, such as kindness shown); go (what a click does next); code ([line, code] for the next chapter); time (show the time played). */
-function endScreen(o){const s=Math.round((performance.now()-G.started)/1000);SFX.win();autosave(o.code?o.code[1]:null);
+function endScreen(o){const S=SHARED.scroll;if(S&&S.state!=='down'){S.down().then(()=>endScreen(o));return}
+  const s=Math.round((performance.now()-G.started)/1000);SFX.win();autosave(o.code?o.code[1]:null);
   overlay('on end',()=>{ov.innerHTML='<h2>'+T('CHAPTER COMPLETE')+'</h2><h1 style="font-size:calc(var(--s)*12px)">'+esc(T(o.title))+'</h1><p>'+esc(T(o.text))+'</p><p>'+
     [o.time&&T('Time: {m}m {s}s',{m:Math.floor(s/60),s:s%60}),T('Prayers for wisdom: {n}',{n:G.prays}),...(o.extra||[]).map(x=>T(x))].filter(Boolean).map(esc).join(' &middot; ')+'</p>'+
     '<p class="small">'+esc(T(o.based))+'</p><p class="go">'+esc(T(o.go))+'</p>'+(o.code?'<p class="small">'+esc(T(o.code[0],{code:o.code[1]}))+'</p>':'')})}
@@ -1591,7 +1614,7 @@ function applyState(s){const c=CHAP[s.ch],u=s.w!=null?unpackWide(c,s.w):null;if(
   /* gone: Paul has left the story for a while, and another member is played. He leads, and Paul stands in no room. */
   const gone=!!(u&&u.pc!=='paul'&&c.away&&c.away('paul'));if(gone){G.pc=ACT[u.pc];room=u.rooms[u.ps.indexOf(u.pc)];P.room=null}
   if(c.place)c.place(room);dealInv(room,u&&u.own);
-  ov.className='';ov.onclick=null;G.scene=null;G.end={};G.item=null;G.verb='walk';G.hover=null;$('#dim').style.opacity=0;
+  ov.className='';ov.onclick=null;G.scene=null;G.end={};G.item=null;G.verb='walk';G.hover=null;$('#dim').style.opacity=0;if(SHARED.scroll)SHARED.scroll.off();
   enterRoom(room,...c.ent[room]);
   if(u){u.ps.forEach((id,i)=>{const a=ACT[id],r=u.rooms[i],e=c.ent[r];if((i||gone)&&a!==PC()&&a.room!==r&&!(c.away&&c.away(id)))place(a,r,e[0]+(r===room?-26:0),e[1]+2,e[2])});
     const a=ACT[u.pc];if(a!==P&&!gone){G.invs.paul=G.inv;G.pc=a;G.inv=G.invs[a.id];viewOf(a)}}

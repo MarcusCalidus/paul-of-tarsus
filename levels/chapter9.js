@@ -520,7 +520,7 @@ async function expel(){AU.mood='tense';P.dir=1;await wait(500);await tell('v18')
   await fade(1,700);await narr('Two men were dragged up the road to the city. Two were left standing beside the river.',{dur:6500});
   return market()}
 /* ============ THE MARKETPLACE: told, not played ============ */
-/* The charge is told as the account tells it, in paraphrase (Acts 16:20, 21); what follows it stands on a dark screen (16:22-24), and nothing of it is
+/* The charge is told as the account tells it, in paraphrase (Acts 16:20, 21); what follows it is told in the dark (16:22-24), from the narrator's scroll, and nothing of it is
    shown. The account does not say whether the two spoke of being Romans in the uproar, and the game does not decide it. */
 async function market(){G.st={k:0};G.scene=forumScene;AU.mood='tense';AU.amb={crowd:.8};await fade(0,700);await tell('v20');
   await fade(1,600);G.scene=dark;AU.amb={};await fade(0,300);await tell('v22');await tell('v23');await fade(1,500);
@@ -883,8 +883,8 @@ function setup9(){SI.hs=SILAS9;TI.hs=TIM9;LU.hs=LUKE9;P.hs=PAUL9;P.called='Paul'
   G.metRiv=G.metHome=G.sawJ=G.morn=G.lit9=0;G.st=null;place9('lydia9');G.inv=['awl','thread','knife','tablets'];G.invs={paul:G.inv,luke:[]};drawInv()}
 
 /* ============ SCENES ============ */
-/* What is told and not shown stands on a dark screen. */
-function dark(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}
+/* What is told and not shown is told in the dark (the engine's dark scene), and read from the narrator's scroll. */
+const dark=DARK;
 /* The earthquake: nothing is seen but the dark shaking, and dust coming down in it. No light, no figure. */
 function shakeScene(g,t){const s=(t-G.shake)/1000,a=Math.max(0,Math.min(1,s/1.2))*Math.max(0,1-Math.max(0,s-5.5)/2.5),dx=(Math.random()-.5)*5*a,dy=(Math.random()-.5)*3*a;
   dark(g);g.save();g.translate(dx,dy);R(g,196,104.6,40,1.4,'#2a2e44');

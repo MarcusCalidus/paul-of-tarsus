@@ -500,7 +500,7 @@ function letter12(g,t){const r=rng(1223),n=(G.let12||{n:0}).n;R(g,0,0,VW,VH,'#6a
   poly(g,[246,104,250,102,286,34,283,32],'#b8a868');poly(g,[246,104,250,102,251.4,98,248,97],'#2a1c16');
   oval(g,262,116,13,6.4,'#7a4226');oval(g,262,114.6,11,4.6,'#1a1210');oval(g,259,113.6,5,1.6,'rgba(120,110,140,.5)');oval(g,54,104,11,7,'#c9b888');oval(g,51,102,3,2,'#a89868');oval(g,58,106,2.4,1.6,'#a89868');
   comp(g,'multiply',.5,()=>{g.fillStyle=rg(g,160,70,220,['#fff0d0','#7a6a70']);g.fillRect(0,0,VW,VH)})}
-function dark12(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}
+const dark12=DARK;   /* the engine's dark scene: what is told in it is read from the narrator's scroll */
 
 /* ============ CAST ============ */
 /* Aquila and Priscilla are Jews from Rome: he in a tunic and mantle, she in a long tunic with the mantle over her head. Titius Justus,
