@@ -2508,7 +2508,12 @@
   halt('iconium',()=>{place(A('nathan'),'iconium',128,118,1);P.dir=-1;BN.dir=-1;say(A('nathan'),'Paul! Barnabas! Leave the bench and listen. I have it from a man who was in the room.')});
   ok(/^6-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===6&&decode(makeCode()).w!=null,'chapter six code format (wide, nine characters) '+makeCode());
   ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Barnabas')),'a party: the panel offers to switch to Barnabas');fitVerbs();
-  /* the animals: every part of each must be attached. A sprite is one piece: no tail, head, hump or highlight floats free of the body. */
+  /* the animals: every part of each must be attached. A sprite is one piece: no tail, head, hump or highlight floats free of the body.
+     The donkey walks in sixteen frames (donkey's fr 4 to 19), four beats to a cycle: each frame is one piece, facing both ways and with each
+     load; two hooves or more stand on the ground in every one; the body sinks a pixel as each fore hoof lands and never rises; the frames 1, 2
+     and 3 are three moments of the same walk; and beastFr gives a scene the frame for a distance walked. The stop `beasts` hands over
+     beasts-walk.png, every frame three times enlarged, two rows for each load and each way the donkey faces: look there for a leg that has
+     come apart, for legs that cross as an X under the belly, for a leg under the middle of the body, and for a tail across a leg. */
   {const ox=CHAP[6].painters.ox,BEASTS=[['pack donkey',s=>donkey(s,0,0,1,0,0)],['pack donkey, walking',s=>donkey(s,0,0,1,1,0)],['pack donkey with bags',s=>donkey(s,0,0,-1,2,1)],['pack donkey, loaded',s=>donkey(s,0,0,1,3,2)],
       ['bull with its garland',s=>ox(s,0,0,1,0,'#e6dccc',1)],['bull, walking',s=>ox(s,0,0,1,1,'#d8c8b0',1)],['ox',s=>ox(s,0,0,-1,0,'#8a5a3a',0)],['ox, walking',s=>ox(s,0,0,1,3,'#6f4630',0)]],
     pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
@@ -2516,7 +2521,26 @@
         for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n},
     sheet=BEASTS.map(([n,fn],i)=>[n,sprite('beast-test'+i,fn,1)]),bad=sheet.filter(([n,c])=>pieces(c)!==1).map(b=>b[0]);
     ok(!bad.length,'animals: every part is attached, in '+sheet.length+' poses of the donkey and the ox'+(bad.length?'. IN PIECES: '+bad.join(', '):''));
-    halt('beasts',()=>{const c=document.createElement('canvas');c.width=960;c.height=432;c.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;z-index:8';$('#view').appendChild(c);
+    const dk=(fr,d,ld)=>sprite(['donkey-walk',d<0?'-1':'1',fr,ld].join('|'),s=>donkey(s,0,0,d,fr,ld),d),WALK=[];for(const ld of[0,1,2])for(const d of[1,-1])for(let k=0;k<16;k++)WALK.push([ld,d,k,dk(4+k,d,ld)]);
+    {const apart=WALK.filter(w=>pieces(w[3])!==1).map(w=>w.slice(0,3).join('/')),px=c=>c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data,
+        /* hooves: the runs of the lowest row of a sprite; top: the highest pixel of the tail's root, which rides with the body */
+        hooves=c=>{const d=px(c);let r=0,on=false;for(let x=0;x<FIG.W;x++){const v=d[((FIG.OY-1)*FIG.W+x)*4+3]>0;if(v&&!on)r++;on=v}return r},
+        top=c=>{const d=px(c);for(let y=0;y<FIG.H;y++)if(d[(y*FIG.W+FIG.OX-29)*4+3])return y;return-1},t0=top(dk(0,1,0)),
+        sink=WALK.filter(w=>w[0]===0&&w[1]===1).map(w=>top(w[3])-t0),few=WALK.filter(w=>hooves(w[3])<2).map(w=>w.slice(0,3).join('/')),same=(a,b)=>a.toDataURL()===b.toDataURL();
+      ok(!apart.length,'the donkey walks in sixteen frames, and each is one piece, facing both ways and with each load: '+WALK.length+' sprites'+(apart.length?'. IN PIECES (load/way/frame): '+apart.join(', '):''));
+      ok(!few.length&&sink.every((v,k)=>v===(k%8===4||k%8===5?1:0)),'in every frame two hooves or more stand on the ground; the body sinks a pixel as each fore hoof lands (frames 4, 5, 12 and 13) and never rises: '+sink.join(''));
+      ok(same(dk(1,1,0),dk(4,1,0))&&same(dk(2,1,1),dk(8,1,1))&&same(dk(3,-1,2),dk(12,-1,2))&&!same(dk(0,1,0),dk(4,1,0))&&new Set(WALK.filter(w=>w[0]===0&&w[1]===1).map(w=>w[3].toDataURL())).size===16,
+        'the frames 1, 2 and 3 are three moments of the walk, a quarter of a cycle apart, and no two of its sixteen frames are the same picture');
+      const slow=[...Array(16)].map((_,i)=>beastFr(DONKEY_STRIDE*(i+.5)/16,10)),fast=[...Array(16)].map((_,i)=>beastFr(66*DONKEY_BEAT*(i+.5)/16));
+      ok(slow.every((f,i)=>f===4+i)&&fast.every((f,i)=>f===4+i)&&beastFr(0)===4&&beastFr(-3,10)>=4&&beastFr(-3,10)<=19&&Math.abs(DONKEY_STRIDE-17.6)<1e-9,
+        `beastFr: a cycle carries the donkey ${DONKEY_STRIDE} room pixels with its hooves planted, up to ${(DONKEY_STRIDE/DONKEY_BEAT).toFixed(1)} a second; faster than that, a cycle still takes ${DONKEY_BEAT} s`)}
+    halt('beasts',()=>{/* beasts-walk.png: the walk, frame by frame */
+      {const Z=3,cw=90,chh=84,per=8,rows=WALK.length/per,c=document.createElement('canvas');c.width=per*cw*Z;c.height=24+rows*(chh*Z+16);const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);
+        g.fillStyle='#f4f0e6';g.font='bold 15px Menlo,Consolas,monospace';g.fillText("The donkey's walk: sixteen frames, three times enlarged, for each load and each way it faces",8,17);
+        WALK.forEach(([ld,d,k,sp],i)=>{const x=(i%per)*cw*Z,y=24+Math.floor(i/per)*(chh*Z+16);g.fillStyle=(i+Math.floor(i/per))%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw*Z-2,chh*Z+14);g.fillStyle='#6f7a6a';g.fillRect(x+1,y+chh*Z-6,cw*Z-2,6);
+          g.drawImage(sp,FIG.OX-(d>0?39:51),FIG.OY-chh+2,cw,chh,x,y,cw*Z,chh*Z);g.fillStyle='#14100c';g.font='bold 11px Menlo,Consolas,monospace';g.fillText('frame '+k+(k?'':' · load '+ld+(d>0?', facing right':', facing left')),x+5,y+chh*Z+11)});
+        window.SHEETS=Object.assign(window.SHEETS||{},{'beasts-walk':c.toDataURL()})}
+      const c=document.createElement('canvas');c.width=960;c.height=432;c.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;z-index:8';$('#view').appendChild(c);
       const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,960,432);
       sheet.forEach(([n,sp],i)=>{const x=(i%4)*240,y=Math.floor(i/4)*216;g.fillStyle='#a8b0bc';g.fillRect(x+2,y+2,236,212);g.fillStyle='#6f7a6a';g.fillRect(x+2,y+196,236,18);
         g.drawImage(sp,FIG.OX-59,FIG.OY-96,118,105,x+2,y+2,236,210);g.fillStyle='#101418';g.font='bold 12px monospace';g.fillText(n,x+8,y+16)})})}
