@@ -27,7 +27,8 @@ body{display:flex;align-items:center;justify-content:center}
 #top #names::before{content:'';display:inline-block;vertical-align:middle;width:calc(var(--s)*2px);height:calc(var(--s)*2px);border-radius:50%;
   background:var(--gold);box-shadow:0 0 0 var(--px) #000;margin:0 calc(var(--s)*1.5px) calc(var(--s)*.5px) 0}
 #view{position:relative;width:calc(var(--s)*320px);height:calc(var(--s)*144px);overflow:hidden;cursor:default}
-#screen{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+/* the canvas is as tall as the title's picture, 210 room pixels: a room is painted into its upper 144, which is all the view shows in play */
+#screen{width:100%;height:calc(var(--s)*210px);display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 #speech{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3}
 .line{position:absolute;transform:translateX(-50%);text-align:center;width:max-content;
   max-width:calc(var(--s)*200px);font-size:calc(var(--s)*6.2px);line-height:1.25;
@@ -100,6 +101,14 @@ body{display:flex;align-items:center;justify-content:center}
 #status,#panel{transition:transform .45s ease-in-out,opacity .45s ease-in-out}
 #wrap.full #status,#wrap.full #panel{transform:translateY(calc(var(--s)*70px));opacity:0;pointer-events:none}
 #wrap.full #top>span:first-child{visibility:hidden}
+/* title: the title screen alone uses the whole height. The status line and the panel give up their place to the view, which runs down to
+   the foot of the window, and the title's picture is painted that tall (see VT). When the title is left the view is as it always is, and
+   the upper part of the picture has not moved. A menu or the code box opened over the title covers all of it. */
+#wrap.title #view{height:calc(var(--s)*210px)}
+#wrap.title #status,#wrap.title #panel{display:none}
+/* with that height the title holds its twelve chapters without scrolling; the list still scrolls when there are more lines than room */
+#overlay.title{padding-top:calc(var(--s)*5px);padding-bottom:calc(var(--s)*5px)}
+#overlay.title .chs p{margin:calc(var(--s)*2px) auto}
 /* tight: a long chapter name beside a long code and every button leaves no room for the game's name; the chapter's name stays */
 #top.tight #gname,#top.tight #gdot{display:none}
 @keyframes bl{50%{opacity:.25}}
@@ -182,7 +191,7 @@ body{display:flex;align-items:center;justify-content:center}
 <div id="wrap">
   <div id="top"><span><span id="gname">PAUL OF TARSUS</span><span id="gdot"> &middot; </span><span id="chname">ESCAPE FROM DAMASCUS</span></span><span><button id="code" type="button">ENTER CODE</button><button id="names" type="button">NAMES</button><button id="mute" type="button">&#9835; SOUND ON</button><button id="lang" type="button">EN</button><button id="opts" type="button" title="Options" aria-label="Options">&#8801;</button></span></div>
   <div id="view">
-    <canvas id="screen" width="640" height="288"></canvas>
+    <canvas id="screen" width="640" height="420"></canvas>
     <div id="speech"></div>
     <div id="tags"></div>
     <div id="dim"></div>
@@ -204,7 +213,7 @@ body{display:flex;align-items:center;justify-content:center}
    verbs and inventory, safe-point codes and the level loader. Each chapter (its music, artwork, cast, rooms and dialog)
    is a separate file under levels/, loaded on demand. */
 /* ============ CORE ============ */
-const VW=320,VH=144;
+const VW=320,VH=144,VT=210;   /* the view; VT: the height of the title's picture, which is the view, the status line and the panel together */
 const $=s=>document.querySelector(s);
 const cv=$('#screen'),cx=cv.getContext('2d');
 cx.imageSmoothingEnabled=false;
@@ -1054,7 +1063,7 @@ const invOf=a=>a===PC()?G.inv:(G.invs[a.id]||(G.invs[a.id]=[]));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 /* Each room paints a backdrop once (ART[id].paint) and, optionally, a foreground layer (ART[id].fore) that is drawn over the actors. What stands
    inside the walkable strip, where a person can walk behind it, takes its place among the actors by depth: see figure(), depth() and props(). */
-function bake(w,fn,q){const[c,g]=mk(w*HR,VH*HR);g.scale(HR,HR);fn(g);g.setTransform(1,0,0,1,0,0);finish(c,g,q);return c}
+function bake(w,fn,q,h){const[c,g]=mk(w*HR,(h||VH)*HR);g.scale(HR,HR);fn(g);g.setTransform(1,0,0,1,0,0);finish(c,g,q);return c}
 /* A room whose light changes (a lamp put out, shutters opened) names its current variant, and gets one backdrop per variant. */
 function bg(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;return BG[k]||(BG[k]=bake(a.w,g=>a.paint(g,v),a.q))}
 function fg(id){const a=ART[id];if(!a.fore)return null;return FG[id]||(FG[id]=bake(Math.round(VW+(a.w-VW)*(a.fp||1)),g=>a.fore(g),a.q))}
@@ -1483,7 +1492,7 @@ const CHAP={
   10:{name:'IS IT SO?',label:'Chapter Ten',title:'Is It So?',salt:0xA37B,src:'levels/chapter10.js'},
   11:{name:'THE UNKNOWN GOD',label:'Chapter Eleven',title:'The Unknown God',salt:0xB48D,src:'levels/chapter11.js'},
   12:{name:'TENTMAKERS OF CORINTH',label:'Chapter Twelve',title:'Tentmakers of Corinth',salt:0xC59F,src:'levels/chapter12.js'}};
-const TITLE={level:1,scene:'wall',mood:'calm',amb:{crickets:.5,wind:.35,owl:.4}};
+const TITLE={level:1,scene:'title',mood:'calm',amb:{crickets:.5,wind:.35,owl:.4}};
 /* A level file calls LEVEL(n, init). init() registers its art, cast, items and rooms, and returns the chapter definition. */
 function LEVEL(n,init){LOOK.paul=paulLook(n);Object.assign(CHAP[n],init(),{ready:1});LOOK.paul=paulLook(G.ch)}
 /* loadScript: add a script tag (this works from disk, where fetch does not), and check that the file registered what it should. */
@@ -1552,7 +1561,7 @@ async function title(){lock(true);if(SHARED.scroll)SHARED.scroll.off();await set
      logo cannot write, they stand as plain text instead. The canvas keeps the words, for a screen reader and for the playtest. */
   const logo=await need('logo').catch(e=>{console.error(e);return null});
   /* the chapters scroll in their own box below the title (see .chs); Continue stays above it, always in view */
-  overlay('on',()=>{const sv=saved(),fs=saves().far,far=fs&&(!sv||fs.code!==sv.code)?decode(fs.code).ch:0,
+  overlay('on title',()=>{const sv=saved(),fs=saves().far,far=fs&&(!sv||fs.code!==sv.code)?decode(fs.code).ch:0,
       name=T('PAUL OF TARSUS'),sub=T('ON THE ROADS OF ROME'),art=logo&&logo.can(name+sub)?logo.paint(name,sub):null;
     ov.innerHTML=(art?'<h1 class="art"></h1>':'<h1>'+name+'</h1><h2>'+sub+'</h2>')+
     '<p class="small">'+T('A point-and-click adventure based on the book of Acts')+'</p>'+
@@ -1768,7 +1777,7 @@ async function slotDo(k,a){const s=saves(),e=k==='far'?s.far:k==='last'?(saved()
   if(a==='!load'){if(!e)return mn.draw();mn.classList.remove('on');mn.view='opts';
     if(await restore(e.code)===false){SFX.nope();mn.classList.add('on');mn.view='saves';mn.draw()}}}
 $('#opts').onclick=e=>{e.stopPropagation();openMenu()};mn.onclick=e=>e.stopPropagation();
-const syncFull=()=>$('#wrap').classList.toggle('full',ov.classList.contains('on')||cb.classList.contains('on')||mn.classList.contains('on'));
+const syncFull=()=>{const w=$('#wrap').classList;w.toggle('full',ov.classList.contains('on')||cb.classList.contains('on')||mn.classList.contains('on'));w.toggle('title',ov.classList.contains('title'))};
 for(const el of[ov,cb,mn])new MutationObserver(syncFull).observe(el,{attributes:true,attributeFilter:['class']});
 loadOpts();skin();buildVerbs();requestAnimationFrame(render);title();
 /* An installable app that plays offline (shared/pwa.js, sw.js): only where the game is served over http(s), never from disk or in the playtest's pages. */

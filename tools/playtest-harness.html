@@ -101,6 +101,17 @@
   /* the title screen holds its whole list: nothing on it lies above or below the view, with eight chapters or more */
   const inOv=()=>{const r=ov.getBoundingClientRect();return[...ov.children].every(el=>{const q=el.getBoundingClientRect();return q.top>=r.top-1&&q.bottom<=r.bottom+1})};
   ok(inOv()&&ov.querySelectorAll('[data-ch]').length===Object.keys(CHAP).length,'the title screen holds every chapter: '+Object.keys(CHAP).length);
+  /* The title screen alone uses the whole height: the status line and the panel give up their place, the view runs down to the foot of the
+     window, and the title's picture is painted that tall. Its upper part is the wall's backdrop pixel for pixel, so that nothing moves
+     when the title is left. */
+  {const v=vp.getBoundingClientRect(),k=v.width/320,gone=el=>getComputedStyle(el).display==='none',l=ov.querySelector('.chs');
+    ok($('#wrap').classList.contains('title')&&Math.abs(v.height/k-VT)<.5&&VT===210&&gone($('#status'))&&gone($('#panel'))&&cv.height===VT*HR&&Math.abs(ov.getBoundingClientRect().height-v.height)<1,
+      'the title screen uses the whole height: its view is '+Math.round(v.height/k)+' room pixels high, and the status line and the panel give up their place');
+    const[a,ga]=mk(VW*HR,VH*HR),[b,gb]=mk(VW*HR,VT*HR);ga.scale(HR,HR);gb.scale(HR,HR);CHAP[1].scenes.wall(ga,G.t);CHAP[1].scenes.title(gb,G.t);
+    const da=ga.getImageData(0,0,VW*HR,VH*HR).data,db=gb.getImageData(0,0,VW*HR,VH*HR).data,foot=gb.getImageData(0,VH*HR,VW*HR,(VT-VH)*HR).data;let same=true,lit=0;
+    for(let i=0;i<da.length;i++)if(da[i]!==db[i]){same=false;break}for(let i=0;i<foot.length;i+=4)if(foot[i]+foot[i+1]+foot[i+2]>0)lit++;
+    ok(G.scene===CHAP[1].scenes.title&&same&&lit>foot.length/4*.9,'its picture is painted down to the foot of the window, and its upper part is the backdrop of the wall, pixel for pixel');
+    if(!/[?&]keep=1/.test(location.search))ok(l.scrollHeight<=l.clientHeight+1,'with that height all '+l.children.length+' chapters stand on a first visit, without scrolling')}
   /* the title's name is a painting (shared/logo.js): it stands in this language and keeps the words, it is shown at the size of its
      pixels and inside the view, and nothing of it is left unpainted. The stop `logo` shows it enlarged three times, in two halves:
      look there for crosses and for letters that have run together, in every language (`de:logo`). */
@@ -388,15 +399,22 @@
     ok(ms>780&&ms<2600&&w.length>12&&order&&amp(w[0])===2&&amp(w[w.length-1])===2&&w.some(f=>amp(f)===0)&&rest[0]===0&&rest[1]===null,`sixty room pixels are walked in ${Math.round(ms)} ms: the frames follow in order, the walk begins and ends on a half step, and Paul stands when he is there`);
     ok(steps>=3&&steps<=6,'a step is heard as each foot lands: '+steps+' over sixty room pixels and twelve up the room');
     ok(up.filter(f=>f>3).length>3&&up.filter(f=>f>3).every(f=>amp(f)===2),'up and down the room he takes half steps')}
-  /* the chapters scroll in their own box: its far edge fades while more lies beyond it, and a click between entries starts nothing */
-  {const l=ov.querySelector('.chs'),fade=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-    ok(l&&[...l.children].every(p=>p.dataset.ch)&&l.children.length===Object.keys(CHAP).length,'the chapters sit in a list of their own');
-    await fade();const more=l.scrollHeight>l.clientHeight+1;
-    ok(!l.classList.contains('up')&&l.classList.contains('down')===more,'at the top, only the bottom edge fades, and only when there is more below');
-    if(more){l.scrollTop=l.scrollHeight;l.dispatchEvent(new Event('scroll'));
+  /* the chapters stand in a box of their own. On a first visit it holds them all. A returning player's title has two more lines above it,
+     Continue and the farthest point, and then the box scrolls: its far edge fades while more lies beyond it, and a click between entries
+     starts nothing. The stop `titlescroll` shows that title, scrolled to its end. */
+  {const fade=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))),l0=ov.querySelector('.chs');
+    ok(l0&&[...l0.children].every(p=>p.dataset.ch)&&l0.children.length===Object.keys(CHAP).length,'the chapters sit in a list of their own');
+    if(!/[?&]keep=1/.test(location.search)){
+    await fade();ok(!l0.classList.contains('up')&&!l0.classList.contains('down'),'on a first visit neither edge of the list fades: there is nothing beyond it');
+    store('paul.save',codeOf(2,0));keepSaves({far:{code:codeOf(3,0),t:1}});ov.draw();await fade();
+    {const l=ov.querySelector('.chs');
+      ok(ov.querySelector('[data-cont]')&&ov.querySelector('[data-far]')&&l.scrollHeight>l.clientHeight+1&&!l.classList.contains('up')&&l.classList.contains('down')&&inOv(),'with Continue and the farthest point above it the list scrolls: at the top, only its bottom edge fades');
+      l.scrollTop=l.scrollHeight;l.dispatchEvent(new Event('scroll'));
       ok(l.classList.contains('up')&&!l.classList.contains('down'),'scrolled to the end, the top edge fades and the bottom does not');
       l.click();await wait(60);ok(ov.classList.contains('on')&&!G.room,'a click on the list between entries starts no chapter');
-      halt('titlescroll',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});l.scrollTop=0;l.dispatchEvent(new Event('scroll'))}}
+      halt('titlescroll',()=>{ov.querySelectorAll('.go').forEach(g=>g.style.animation='none')})}
+    store('paul.save',null);store('paul.saves',null);ov.draw();await fade();
+    ok(!ov.querySelector('[data-cont]')&&!ov.querySelector('[data-far]')&&store('paul.save')===null,'and the title of a first visit is as it was')}}
   /* the voices, rendered offline on the game's own mixer (audioGraph): every instrument and drum stroke sounds, stays finite and does not clip */
   {const SR=22050,offline=async(fn,dur)=>{const off=new OfflineAudioContext(1,Math.ceil(SR*dur),SR),keep=Object.assign({},AU);AU.ctx=off;audioGraph(off);
       try{fn(off)}finally{for(const k in AU)AU[k]=keep[k]}return(await off.startRendering()).getChannelData(0)},
@@ -1931,6 +1949,8 @@
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(!C3&&!C4&&!C5&&!C6&&!HUB){
   ov.click();await idle();ok(G.room==='workshop'&&!G.busy,'intro ends in workshop');
+  {const v=vp.getBoundingClientRect(),k=v.width/320,shown=el=>getComputedStyle(el).display!=='none';
+    ok(!$('#wrap').classList.contains('title')&&Math.abs(v.height/k-VH)<.5&&shown($('#status'))&&shown($('#panel')),'in play the view is '+Math.round(v.height/k)+' room pixels high, with the status line and the panel under it: only the title is taller')}
   ok(!SHARED.map&&!SHARED.tablets,'the map and the tablets are not loaded until they are needed');
   if(lang==='de'){move(...hs('spool of thread'));ok($('#status').textContent==='Nimm Garnspule','German status line: Nimm Garnspule');
     verb('use');item('pouch');move(...hs('stool'));ok($('#status').textContent==='Benutze Werkzeugbeutel mit Hocker','German status line: Benutze Werkzeugbeutel mit Hocker');

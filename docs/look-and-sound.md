@@ -76,6 +76,6 @@ A chapter opens with a title card: its name in the gold capitals of the title's 
 
 ![The title card of Chapter One](screenshots/card.png)
 
-The title, the safe-point screen, the options and the end of a chapter own the whole screen: the verb panel slides down out of sight and comes back when play goes on, and the top bar keeps only its buttons. Walking from one room into the next cross-fades from the old picture to the new; a fade to black is kept for where the story wants it, such as nightfall or the map.
+The title, the safe-point screen, the options and the end of a chapter own the whole screen: the verb panel slides down out of sight and comes back when play goes on, and the top bar keeps only its buttons. The title alone also uses the room that the panel leaves. Its picture, the wall of Damascus under the moon, is painted on down to the foot of the window: open ground with rocks, tufts of dry grass and thorn bushes. So the twelve chapters stand in its list at once; a returning player's title has two more lines above the list, and then the list scrolls in its box. When a chapter begins the view is as high as it always is, and the upper part of the picture has not moved. Walking from one room into the next cross-fades from the old picture to the new; a fade to black is kept for where the story wants it, such as nightfall or the map.
 
 ![A room change half-way through its cross-fade](screenshots/xfade.png)
