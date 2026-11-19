@@ -24,6 +24,7 @@
 | Show something to someone | **Give** (or **Use**) an item on a person. Everyone has something to say about everything Paul carries, sometimes a clue. Only what someone actually needs changes hands. |
 | Ask about what you have learned | Once Paul learns something (a frayed basket, a torn sail, a famine), it appears as a new question when he talks to people in that chapter |
 | Skip a line of dialogue | Click the scene or press Space |
+| See what is coming | The last line on the title screen, **Chapters Thirteen to Twenty-Five · in preparation**, opens the chapters that are planned and not yet built, each with the part of Acts it will tell. They cannot be played yet; click the line again to close them. |
 | Change the language | Click **English** or **Deutsch** on the title screen, or the **EN**/**DE** button in the top bar at any time |
 | Keyboard | `1`-`6` verbs, `P` pray, `M` mute, `Tab` names, `C` switch character, `Esc` options |
 | Options | Click **≡** in the top right or press `Esc` to set the music and effects volume, the text speed, how much the figures move (**Movement**: lively, or calm, which keeps the mouths and leaves the rest still; a device set to reduce motion starts in calm), **NAMES** and the language, to save and load games (see [Saved games](#saved-games)), or to go back to the title screen. It opens between scenes, not during a cutscene or a conversation. The options are kept in your browser apart from your safe point (`paul.opts`). |
@@ -80,6 +81,8 @@ Chapter Six, Seven, Eight and Nine codes are nine characters too (`6-XXX-XXX-XXX
 ![Safe-point code](screenshots/code.png)
 
 ![Returning: the title screen offers to continue](screenshots/continue.png)
+
+![The chapters in preparation, opened on the title screen](screenshots/plans.png)
 
 ## Saved games
 

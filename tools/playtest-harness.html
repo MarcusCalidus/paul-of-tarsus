@@ -459,7 +459,7 @@
      Continue and the farthest point, and then the box scrolls: its far edge fades while more lies beyond it, and a click between entries
      starts nothing. The stop `titlescroll` shows that title, scrolled to its end. */
   {const fade=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))),l0=ov.querySelector('.chs');
-    ok(l0&&[...l0.children].every(p=>p.dataset.ch||p.dataset.pro)&&l0.children.length===Object.keys(CHAP).length+1,'the prologue and the chapters sit in a list of their own');
+    ok(l0&&[...l0.children].every(p=>p.dataset.ch||p.dataset.pro||p.classList.contains('plans')||p.classList.contains('plan'))&&l0.querySelectorAll('[data-ch],[data-pro]').length===Object.keys(CHAP).length+1,'the prologue and the chapters sit in a list of their own, with the planned ones at its foot');
     if(!/[?&]keep=1/.test(location.search)){
     await fade();ok(!l0.classList.contains('up')&&!l0.classList.contains('down'),'on a first visit neither edge of the list fades: there is nothing beyond it');
     store('paul.save',codeOf(2,0));keepSaves({far:{code:codeOf(3,0),t:1}});ov.draw();await fade();
@@ -470,7 +470,18 @@
       l.click();await wait(60);ok(ov.classList.contains('on')&&!G.room,'a click on the list between entries starts no chapter');
       halt('titlescroll',()=>{ov.querySelectorAll('.go').forEach(g=>g.style.animation='none')})}
     store('paul.save',null);store('paul.saves',null);ov.draw();await fade();
-    ok(!ov.querySelector('[data-cont]')&&!ov.querySelector('[data-far]')&&store('paul.save')===null,'and the title of a first visit is as it was')}}
+    ok(!ov.querySelector('[data-cont]')&&!ov.querySelector('[data-far]')&&store('paul.save')===null,'and the title of a first visit is as it was')}
+    /* The planned chapters (PLANNED, issue #47) wait under one line at the foot of the list, closed. A click opens them in place, each named
+     by its part of Acts; a click on one of them starts nothing, and a second click on the line closes them. The stop `plans` shows them open. */
+  {const l=ov.querySelector('.chs'),pl=l.querySelector('.plans'),items=[...l.querySelectorAll('.plan')],seen=el=>el.getClientRects().length>0;
+    ok(pl&&items.length===PLANNED.length&&!items.some(seen)&&!l.querySelector('.plan[data-ch],.plans[data-ch]')&&pl.textContent.includes(T('in preparation')),'the planned chapters wait under one line: '+(pl&&pl.textContent.trim()));
+    pl.click();await wait(500);
+    ok(l.classList.contains('open')&&items.every(seen)&&items.every((p,i)=>p.textContent===T(PLANNED[i].label)+' \u00b7 '+T(PLANNED[i].ref))&&inOv(),'a click opens them, each by its reference: '+items[0].textContent+' ... '+items.at(-1).textContent);
+    items[0].click();await wait(400);
+    ok(ov.classList.contains('title')&&G.ch===1&&!G.room&&l.classList.contains('open'),'a planned chapter cannot be started');
+    halt('plans',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
+    pl.click();await wait(200);l.scrollTop=0;chsFade(l);ok(!l.classList.contains('open')&&!items.some(seen),'a second click closes them')}
+  }
   /* the voices, rendered offline on the game's own mixer (audioGraph): every instrument and drum stroke sounds, stays finite and does not clip */
   {const SR=22050,offline=async(fn,dur)=>{const off=new OfflineAudioContext(1,Math.ceil(SR*dur),SR),keep=Object.assign({},AU);AU.ctx=off;audioGraph(off);
       try{fn(off)}finally{for(const k in AU)AU[k]=keep[k]}return(await off.startRendering()).getChannelData(0)},
