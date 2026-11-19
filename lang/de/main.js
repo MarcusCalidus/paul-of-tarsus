@@ -244,5 +244,14 @@ TEXTS('de','main',{
   "PAMPHYLIA":"PAMPHYLIEN",
   "ACHAIA":"ACHAIA",
   "THE GREAT SEA":"DAS GROSSE MEER",
-  "Click a place to travel there. Esc to stay.":"Ort anklicken, um zu reisen. Esc: bleiben."
+  "Click a place to travel there. Esc to stay.":"Ort anklicken, um zu reisen. Esc: bleiben.",
+  "Hidden treasures":"Verborgene Schätze",
+  "HIDDEN TREASURES":"VERBORGENE SCHÄTZE",
+  "Hidden treasure found:":"Verborgener Schatz gefunden:",
+  "{n} of {all}":"{n} von {all}",
+  "{n} of {all} found":"{n} von {all} gefunden",
+  "Look for it":"Danach suchen",
+  "Code for the treasures found:":"Code für die gefundenen Schätze:",
+  "Type it under ENTER CODE in another browser to take them with you.":"Gib ihn in einem anderen Browser unter CODE EINGEBEN ein, um sie mitzunehmen.",
+  "Hidden treasures added: {n}.":"Verborgene Schätze hinzugefügt: {n}."
 });

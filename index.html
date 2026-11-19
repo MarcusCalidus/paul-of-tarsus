@@ -60,6 +60,13 @@ body{display:flex;align-items:center;justify-content:center}
   padding:calc(var(--s)*2px) calc(var(--s)*4px);font-size:calc(var(--s)*4.6px);line-height:1.35;color:#f0e2c0;text-align:right;
   background:rgba(10,6,4,.86);border:var(--px) solid var(--dim);box-shadow:0 calc(var(--px)*2) calc(var(--s)*3px) rgba(0,0,0,.7);text-shadow:var(--px) var(--px) 0 #000}
 #hush.on{display:block}
+/* the notice of a hidden treasure found: small, at the top left, and gone by itself (see treasure) */
+#found{position:absolute;z-index:6;top:calc(var(--s)*3px);left:calc(var(--s)*3px);pointer-events:none;max-width:calc(var(--s)*170px);
+  padding:calc(var(--s)*2px) calc(var(--s)*4px);font-size:calc(var(--s)*4.6px);line-height:1.35;color:#f0e2c0;text-align:left;
+  background:rgba(10,6,4,.86);border:var(--px) solid var(--gold);box-shadow:0 calc(var(--px)*2) calc(var(--s)*3px) rgba(0,0,0,.7);text-shadow:var(--px) var(--px) 0 #000;
+  opacity:0;transform:translateY(calc(var(--s)*-2px));transition:opacity .4s,transform .4s;visibility:hidden}
+#found.on{opacity:1;transform:none;visibility:visible}
+#found b{color:var(--hi);font-weight:normal}
 #overlay{position:absolute;z-index:4;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;padding:calc(var(--s)*8px);cursor:pointer}
 #overlay.on{display:flex}
@@ -197,6 +204,18 @@ body{display:flex;align-items:center;justify-content:center}
 #menu .sl{display:grid;grid-template-columns:auto 1fr;column-gap:calc(var(--s)*3px);align-items:baseline;text-align:left;min-width:0}
 #menu .sl b{font-weight:normal;color:#f0e2c0}
 #menu .sl small{font-size:calc(var(--s)*3.9px);color:#8a7ea0}
+#menu .tres{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--s)*1.5px);width:calc(var(--s)*232px)}
+#menu .tre{min-height:calc(var(--s)*15px);padding:calc(var(--s)*1px) calc(var(--s)*2px);background:rgba(27,19,48,.6);border-left:calc(var(--s)*1px) solid var(--dim);
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-start;text-align:left;font-size:calc(var(--s)*4.3px);color:#c8bcd8;line-height:1.2;min-width:0}
+#menu .tre.got{border-left-color:var(--gold)}
+#menu .tre small{font-size:calc(var(--s)*3.7px);color:#8a7ea0}
+#menu .tre b{font-weight:normal;color:#f0e2c0}
+#menu .tre button{font-size:calc(var(--s)*4.2px);padding:calc(var(--s)*.6px) calc(var(--s)*2px)}
+#menu .tre em{font-style:normal;font-size:calc(var(--s)*3.9px);color:#f0e2c0;margin-bottom:calc(var(--s)*.6px)}
+#menu .tre .seg{gap:calc(var(--s)*1px)}
+#menu .tsum{margin:0;font-size:calc(var(--s)*4.8px);color:#c8bcd8}
+#menu .tcode{margin:calc(var(--s)*1px) 0 0;font-size:calc(var(--s)*4.3px);color:#a99cc0;max-width:calc(var(--s)*232px);line-height:1.3}
+#menu .tcode b{font-weight:normal;color:var(--hi);letter-spacing:.08em;-webkit-user-select:text;user-select:text}
 #menu .sl span{grid-column:1/3;font-size:calc(var(--s)*4.3px);color:#c8bcd8;line-height:1.25}
 #menu .sl i{color:#7a6e90}
 #menu .slot .seg{flex:none;align-items:center}
@@ -216,6 +235,7 @@ body{display:flex;align-items:center;justify-content:center}
     <div id="codebox"></div>
     <div id="menu"></div>
     <div id="hush"></div>
+    <div id="found"></div>
   </div>
   <div id="status">&nbsp;</div>
   <div id="panel">
@@ -593,6 +613,8 @@ const SFX={
   alert(){tone({f:330,d:.12,type:'square',v:.1});tone({f:311,t:now()+.14,d:.25,type:'square',v:.1})},
   /* pray, good and win start on the tonic of the key that is sounding and are tuned into its mode (see tune) */
   pray(){tune([0,7,12]).forEach((m,i)=>tone({f:mtof(m),t:now()+i*.28,d:2.4-i*.3,type:'sine',v:.11,a:.25,sus:1,echo:1}))},
+  /* treasure: a hidden treasure found. Lighter than good, high and quick, so that it does not sound like a step of the story */
+  treasure(){tune([7,12,16,19]).forEach((m,i)=>tone({f:mtof(m+12),t:now()+i*.07,d:.22,type:'sine',v:.08,echo:1}))},
   good(){tune([0,4,7,12]).forEach((m,i)=>tone({f:mtof(m),t:now()+i*.09,d:.3,type:'triangle',v:.13,echo:1}))},
   win(){tune([0,4,7,12,16,19]).forEach((m,i)=>tone({f:mtof(m),t:now()+i*.16,d:i===5?1.6:.4,type:'triangle',v:.15,echo:1}))}
 };
@@ -1661,6 +1683,8 @@ async function title(){lock(true);if(SHARED.scroll)SHARED.scroll.off();await set
     /* the planned chapters: one line, and under it, once it is clicked, each of them by its reference. None of them can be started. */
     (PLANNED.length?'<p class="plans" data-plans="1"><span>&#9656;</span> '+T('Chapters {from} to {to}',{from:T(PLANNED[0].short),to:T(PLANNED.at(-1).short)})+' &middot; '+T('in preparation')+'</p>'+
       PLANNED.map(c=>`<p class="plan">${T(c.label)} &middot; ${T(c.ref)}</p>`).join(''):'')+'</div>'+
+    /* the hidden treasures, once one has been found (see TREASURES) */
+    (treasures().size?`<p class="pick tre" data-tre="1">&#9656; ${T('Hidden treasures')} &middot; ${T('{n} of {all}',{n:treasures().size,all:hidden().length})}</p>`:'')+
     '<p class="small">'+T('Click a chapter to begin. Returning? Use ENTER CODE, top right.')+'</p>'+
     (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'')+
     (G.splash?'<p class="begin"><span class="go">'+T('Click to begin')+'</span></p>':'');
@@ -1671,7 +1695,7 @@ async function title(){lock(true);if(SHARED.scroll)SHARED.scroll.off();await set
     if(e.target.closest('.langs'))return;
     const pl=e.target.closest('.plans,.plan');if(pl){if(pl.classList.contains('plans')){SFX.click();const l=ov.querySelector('.chs'),open=l.classList.toggle('open');
       pl.firstChild.textContent=open?'\u25BE':'\u25B8';if(open)l.querySelector('.plan:last-child').scrollIntoView({block:'nearest',behavior:'smooth'});chsFade(l)}return}
-    if(d.cont)return resume();if(d.far)return resumeFar();if(d.pro)return startPrologue();startChapter(+d.ch||1)};
+    if(d.tre)return openMenu('treasures');if(d.cont)return resume();if(d.far)return resumeFar();if(d.pro)return startPrologue();startChapter(+d.ch||1)};
   /* leave: the splash is over. The picture passes into the title's own (at once in a playthrough at speed), and the chapters come in */
   const leave=()=>{if(!G.splash||!ov.classList.contains('splash'))return;G.splash=0;clearTimeout(tm);splashGo=null;sp.leave(own,G.speedAll>200?1:1800);
       AU.amb=TITLE.amb;ov.classList.remove('splash','playing');ov.onclick=pick},
@@ -1767,8 +1791,10 @@ function autosave(code){let r;try{if(code==null)localStorage.removeItem(SAVE);el
 /* saved: the kept point, if it is still a valid code for a chapter we have ({ch, code}), else nothing */
 function saved(){const code=store(SAVE),b=decode(code);return b&&CHAP[b.ch]?{ch:b.ch,code}:null}
 /* restore: load a kept code's chapter and return to its point, as typing the code does. False if it cannot be restored. */
-async function restore(code){const b=decode(code);if(!b||!CHAP[b.ch])return false;try{await loadLevel(b.ch)}catch(e){loadFail(e);return null}
-  if(b.w!=null&&!unpackWide(CHAP[b.ch],b.w))return false;AU.key=CHAP[b.ch].music;if(applyState(b)===false)return false;SFX.good();if(atStart(b))await showCard(b.ch);return true}
+async function restore(code,aside){const b=decode(code);if(!b||!CHAP[b.ch])return false;try{await loadLevel(b.ch)}catch(e){loadFail(e);return null}
+  if(b.w!=null&&!unpackWide(CHAP[b.ch],b.w))return false;AU.key=CHAP[b.ch].music;
+  /* aside: a point that is not the player's own (the way back to a hidden treasure) is restored as a typed code is: it does not move the farthest point */
+  let r;if(aside)G.typing=true;try{r=applyState(b)}finally{if(aside)G.typing=false}if(r===false)return false;SFX.good();if(atStart(b))await showCard(b.ch);return true}
 /* resume: the title screen's Continue. It does what typing the kept code does; one that cannot be restored is dropped. */
 async function resume(){const sv=saved();audioInit();const r=sv&&await restore(sv.code);if(r!==false)return;autosave(null);SFX.nope();ov.draw()}
 /* ============ SAVED GAMES: the farthest point, the last point and four slots of the player's own ============ */
@@ -1792,10 +1818,61 @@ function reached(code){if(G.typing)G.typed=code;const s=saves(),t=Date.now();let
   if(!s.last||s.last.code!==code){s.last={code,t};ch=true}
   if(code!==G.typed&&(!s.far||farther(code,s.far.code))){s.far={code,t};ch=true}
   if(code!==G.typed)G.typed=null;if(ch)keepSaves(s)}
+/* ============ HIDDEN TREASURES: one in each chapter, kept apart from every saved game ============ */
+/* Every chapter hides one small thing that its story does not need (CONTRIBUTING section 2): CHAP[n].treasure gives its name, shown once it
+   is found, and at, a safe-point code a little before it, where the screen of treasures takes a player back to look for it. The chapter calls
+   treasure() when it is found. That changes nothing in the game's state and nothing in any code: it is kept, and a small notice says so.
+   What has been found is kept under paul.treasures, apart from paul.save and paul.saves, and that key holds a code of its own and nothing
+   else, which the player can also write down and type under ENTER CODE in another browser. A treasure code is HT and nine characters:
+   36 bits, one for each chapter, masked and checked with nine bits as a wide code is. A safe-point code of that length (two more than a
+   multiple of three) begins with the chapter's number in two digits, so decode() never takes a treasure code for one, nor the other way
+   round, now or when chapters are added. Typing one adds what it holds to what is kept: a treasure, once found, is never lost. */
+const TREAS='paul.treasures',TSALT=0x7E45,TBITS=36;
+function treasCode(set){let v=0n;for(const n of set)if(n>=1&&n<=TBITS)v|=1n<<BigInt(n-1);const c=wideChk(v,TSALT,9);
+  let x=(v^wideMask(c,TBITS))<<9n|BigInt(c),s='';for(let i=0;i<9;i++){s=A32[Number(x&31n)]+s;x>>=5n}return'HT-'+s.match(/.{3}/g).join('-')}
+function treasDecode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1').replace(/U/g,'V').replace(/[^0-9A-Z]/g,'');
+  if(t.length!==11||!t.startsWith('HT'))return null;let x=0n;for(const q of t.slice(2)){const i=A32.indexOf(q);if(i<0)return null;x=x*32n+BigInt(i)}
+  const c=Number(x&511n),v=x>>9n^wideMask(c,TBITS);if(wideChk(v,TSALT,9)!==c)return null;
+  const s=new Set();for(let n=1;n<=TBITS;n++)if(v>>BigInt(n-1)&1n)s.add(n);return s}
+/* treasures: what has been found, of the chapters that exist; hidden: the chapters, each of which hides one */
+const hidden=()=>Object.keys(CHAP).filter(n=>CHAP[n].treasure).map(Number);
+function treasures(){const s=treasDecode(store(TREAS))||new Set();for(const n of[...s])if(!CHAP[n]||!CHAP[n].treasure)s.delete(n);return s}
+/* keepTreasures: what is kept is only ever added to. A chapter that this copy of the game does not know is kept as well. */
+function keepTreasures(add){const s=treasDecode(store(TREAS))||new Set();let n=0;for(const x of add)if(!s.has(x)){s.add(x);n++}if(n)store(TREAS,treasCode(s));return n}
+let foundT=0;
+function notice(html){const el=$('#found');clearTimeout(foundT);el.innerHTML=html;el.classList.add('on');foundT=setTimeout(()=>el.classList.remove('on'),G.speedAll>200?400:5200)}
+/* treasure: the chapter being played has given up its hidden treasure. Only the first time is it announced. */
+function treasure(){const n=G.ch,t=CHAP[n]&&CHAP[n].treasure;if(!t||treasures().has(n))return false;keepTreasures([n]);SFX.treasure();
+  notice('&#10022; '+esc(T('Hidden treasure found:'))+' <b>'+esc(T(t.name))+'</b><br>'+esc(T('{n} of {all}',{n:treasures().size,all:hidden().length})));return true}
+/* reachedCh: the farthest chapter that this browser has reached in play, from every point it keeps. The screen of treasures leads back only
+   to a chapter that has been reached: it gives away nothing of a chapter not yet played. */
+function reachedCh(){const s=saves(),sv=saved();let m=1;for(const e of[s.far,s.last,...s.slots,sv])if(e){const b=decode(e.code);if(b&&b.ch>m)m=b.ch}
+  for(const n of treasures())if(n>m)m=n;return m}
+/* drawTreasures: the screen of hidden treasures, inside the options menu, and opened from the title. One place for each chapter: what was
+   found is named; what was not shows nothing, and, in a chapter already reached, leads back to look for it. */
+function drawTreasures(){const s=treasures(),all=hidden(),far=reachedCh(),ask=mn.ask||{};
+  const cell=n=>{const t=CHAP[n].treasure;if(s.has(n))return`<div class="tre got"><small>${esc(T(CHAP[n].label))}</small><b>${esc(T(t.name))}</b></div>`;
+    if(n>far)return'<div class="tre"></div>';
+    return'<div class="tre">'+(ask.k===n?`<em>${esc(T('Leave this game?'))}</em><div class="seg"><button type="button" data-t="${n}" data-a="yes">${esc(T('Yes'))}</button><button type="button" data-t="${n}" data-a="no">${esc(T('No'))}</button></div>`
+      :`<button type="button" data-t="${n}" data-a="go">${esc(T('Look for it'))}</button>`)+'</div>'};
+  mn.innerHTML='<h2>'+esc(T('HIDDEN TREASURES'))+'</h2><p class="tsum">'+esc(T('{n} of {all} found',{n:s.size,all:all.length}))+'</p>'+
+    '<div class="tres">'+all.map(cell).join('')+'</div>'+
+    (s.size?'<p class="tcode">'+esc(T('Code for the treasures found:'))+' <b>'+treasCode(s)+'</b><br>'+esc(T('Type it under ENTER CODE in another browser to take them with you.'))+'</p>':'')+
+    '<div class="acts"><button type="button" id="tre-x">'+esc(T('Back'))+'</button></div>';
+  $('#tre-x').onclick=()=>{SFX.click();if(mn.only)return closeMenu();mn.view='opts';mn.ask=null;mn.draw()};
+  mn.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>treasureGo(+b.dataset.t,b.dataset.a))}
+async function treasureGo(n,a){if(a==='no'){SFX.click();mn.ask=null;return mn.draw()}
+  if(a==='go'&&mn.inGame){SFX.click();mn.ask={k:n,a};return mn.draw()}
+  mn.ask=null;const t=CHAP[n].treasure;mn.classList.remove('on');mn.view='opts';
+  if(await restore(t.at,1)===false){SFX.nope();mn.classList.add('on');mn.view='treasures';mn.draw()}}
 function codeBtn(){const on=G.room&&!G.scene,code=on&&makeCode();if(on)autosave(code);$('#code').textContent=on?T('CODE {code}',{code}):T('ENTER CODE')}
 function closeCode(){cb.classList.remove('on');G.busy=cb.was;if(!G.busy)lock(false);status()}
 const BADCODE='That code is not valid. Please check each letter and number.';
-async function tryCode(){const b=decode($('#codein').value);
+async function tryCode(){const ts=treasDecode($('#codein').value);
+  /* a treasure code: what it holds is added to what is kept here, and the box stays open */
+  if(ts){const n=keepTreasures([...ts].filter(x=>CHAP[x]&&CHAP[x].treasure));SFX.good();$('#codemsg').textContent=(n?T('Hidden treasures added: {n}.',{n})+' ':'')+T('{n} of {all} found',{n:treasures().size,all:hidden().length});
+    if(ov.classList.contains('title'))ov.draw();return}
+  const b=decode($('#codein').value);
   if(b==null){SFX.nope();$('#codemsg').textContent=T(BADCODE);return}
   try{await loadLevel(b.ch)}catch(e){SFX.nope();$('#codemsg').textContent=e.message;return}
   if(b.w!=null&&!unpackWide(CHAP[b.ch],b.w)){SFX.nope();$('#codemsg').textContent=T(BADCODE);return}
@@ -1825,13 +1902,13 @@ function loadOpts(){try{const o=JSON.parse(store(OPTS_KEY)||'{}');if(typeof o.mu
 function saveOpts(){store(OPTS_KEY,JSON.stringify(OPTS))}
 function applyOpts(){if(!AU.ctx)return;if(AU.mus)AU.mus.gain.value=.55*OPTS.mus;if(AU.fx)AU.fx.gain.value=.7*OPTS.fx;if(AU.ambG)AU.ambG.gain.value=.5*OPTS.fx}
 function closeMenu(){mn.classList.remove('on');G.busy=mn.was;if(!G.busy)lock(false);status()}
-function openMenu(){audioInit();if(mn.classList.contains('on'))return closeMenu();
+function openMenu(view){audioInit();if(mn.classList.contains('on'))return closeMenu();
   if(cb.classList.contains('on'))closeCode();
   /* in play only between scenes, as Esc: never during a cutscene or a dialogue, which would go on unseen behind it, nor over a title card */
   const inGame=!!(G.room&&!G.scene&&!G.busy&&!ov.classList.contains('on'));
   if(!inGame&&!ov.classList.contains('on')||ov.classList.contains('card')){SFX.nope();return}
-  SFX.click();mn.was=G.busy;G.busy=true;lock(true);status();mn.view='opts';mn.ask=null;mn.inGame=inGame;
-  mn.draw=()=>{if(mn.view==='saves')return drawSaves();const spds=[[1.35,'Slow'],[1,'Normal'],[.7,'Fast']],movs=[[1,'Lively'],[0,'Calm']];
+  SFX.click();mn.was=G.busy;G.busy=true;lock(true);status();mn.view=typeof view==='string'?view:'opts';mn.only=mn.view!=='opts';mn.ask=null;mn.inGame=inGame;
+  mn.draw=()=>{if(mn.view==='saves')return drawSaves();if(mn.view==='treasures')return drawTreasures();const spds=[[1.35,'Slow'],[1,'Normal'],[.7,'Fast']],movs=[[1,'Lively'],[0,'Calm']];
     mn.innerHTML='<h2>'+esc(T('OPTIONS'))+'</h2>'+
       '<div class="row"><label for="opt-mus">'+esc(T('Music'))+'</label><input id="opt-mus" type="range" min="0" max="100" step="10" value="'+Math.round(OPTS.mus*100)+'"></div>'+
       '<div class="row"><label for="opt-fx">'+esc(T('Effects'))+'</label><input id="opt-fx" type="range" min="0" max="100" step="10" value="'+Math.round(OPTS.fx*100)+'"></div>'+
@@ -1840,6 +1917,7 @@ function openMenu(){audioInit();if(mn.classList.contains('on'))return closeMenu(
       '<div class="row"><label>'+esc(T('Names'))+'</label><div class="seg"><button type="button" id="opt-names"'+(G.tagPin?' class="on"':'')+'>'+esc(T(G.tagPin?'On':'Off'))+'</button></div></div>'+
       (Object.keys(LANGS).length>1?'<div class="row"><label>'+esc(T('Language'))+'</label><div class="seg">'+Object.keys(LANGS).map(l=>`<button type="button" data-lang="${l}"${l===G.lang?' class="on"':''}>${esc(LANGS[l].native)}</button>`).join('')+'</div></div>':'')+
       '<div class="row"><label>'+esc(T('Saved games'))+'</label><div class="seg"><button type="button" id="opt-saves">'+esc(T(inGame?'Save / Load':'Load'))+'</button></div></div>'+
+      '<div class="row"><label>'+esc(T('Hidden treasures'))+'</label><div class="seg"><button type="button" id="opt-tre">'+esc(T('{n} of {all}',{n:treasures().size,all:hidden().length}))+'</button></div></div>'+
       '<div class="acts">'+(inGame?'<button type="button" id="opt-title">'+esc(T('Back to title'))+'</button>':'')+
       '<button type="button" id="opt-x">'+esc(inGame?T('Back to the game'):T('Back'))+'</button></div>';
     $('#opt-mus').oninput=e=>{OPTS.mus=+e.target.value/100;applyOpts();saveOpts()};
@@ -1848,6 +1926,7 @@ function openMenu(){audioInit();if(mn.classList.contains('on'))return closeMenu(
     mn.querySelectorAll('[data-mov]').forEach(b=>b.onclick=()=>{SFX.click();OPTS.mov=+b.dataset.mov;saveOpts();mn.draw()});
     $('#opt-names').onclick=()=>{SFX.click();G.tagPin=!G.tagPin;namesBtn();mn.draw()};
     $('#opt-saves').onclick=()=>{SFX.click();mn.view='saves';mn.ask=null;mn.draw()};
+    $('#opt-tre').onclick=()=>{SFX.click();mn.view='treasures';mn.only=false;mn.ask=null;mn.draw()};
     mn.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>{SFX.click();setLang(b.dataset.lang,1)});
     if($('#opt-title'))$('#opt-title').onclick=()=>{SFX.click();mn.classList.remove('on');G.room=null;G.scene=null;G.hover=null;title()};
     $('#opt-x').onclick=()=>{SFX.click();closeMenu()}};

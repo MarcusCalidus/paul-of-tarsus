@@ -70,6 +70,21 @@
  const ok=(c,m)=>{if(prayed!=null){if(snap()!==prayed)prayBad.push(m);prayed=null}L((c?'ok   ':'FAIL ')+m)};
  const halt=(name,fn)=>{if(stop===name){clearInterval(sk);L('STOP '+name+' room='+G.room+' inv='+G.inv.join(','));if(fn)fn();throw 'halt'}};
  addEventListener('error',e=>L('JSERR '+e.message));addEventListener('unhandledrejection',e=>{if(e.reason!=='halt')L('REJ '+(e.reason&&e.reason.message||e.reason))});
+ /* TSTEPS: for each chapter, the steps that find its hidden treasure, from the point that its at leads to (see the stop treasures) */
+ const TSTEPS={
+  1:null, // Chapter One
+  2:null, // Chapter Two
+  3:null, // Chapter Three
+  4:null, // Chapter Four
+  5:null, // Chapter Five
+  6:null, // Chapter Six
+  7:null, // Chapter Seven
+  8:null, // Chapter Eight
+  9:null, // Chapter Nine
+  10:null, // Chapter Ten
+  11:null, // Chapter Eleven
+  12:null, // Chapter Twelve
+ };
  (async()=>{try{
   while(!G.ready)await wait(30);
   /* The game opens on its opening picture (shared/splash.js), on every visit: the name over a tentmaker's bench by lamplight, silent, with
@@ -366,6 +381,36 @@
   if(stop==='xfade'){await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();const r=CHAP[1].rooms[1];
     tween=(ms,fn)=>{fn(.5);return new Promise(()=>{})};go(r,...CHAP[1].ent[r]);await wait(150);halt('xfade')}
   if(stop==='menu'){openMenu();halt('menu')}
+  /* hidden treasures (CONTRIBUTING section 2): every chapter hides one. From the point that the screen of treasures leads back to (its at),
+     the steps in TSTEPS find it. Finding it changes no flag and no item, it is announced once, and the screen names it from then on.
+     Their codes are kept apart from every saved game, and are never taken for a safe-point code. Stops: treasures (the checks, then the screen),
+     and treN (Chapter N's treasure as it is found). */
+  if(stop==='treasures'||/^tre\d+$/.test(stop)){const only=/^tre\d+$/.test(stop)?+stop.slice(3):0,TS=TSTEPS,chs=Object.keys(CHAP).map(Number);
+    ok(chs.every(n=>{const t=CHAP[n].treasure,b=t&&decode(t.at);return t&&t.name&&b&&b.ch===n&&typeof TS[n]==='function'}),
+      'every chapter hides a treasure, with its name, a point to look for it from, and the steps that find it: '+chs.filter(n=>!CHAP[n].treasure||typeof TS[n]!=='function').map(n=>'MISSING '+n).join(', '));
+    {const all=new Set(chs),c=treasCode(all),d=treasDecode(c),some=new Set([2,5,11]),e=treasDecode(treasCode(some).toLowerCase().replace(/-/g,' '));
+      const starts=chs.map(n=>codeOf(n,0));
+      ok(/^HT-\w{3}-\w{3}-\w{3}$/.test(c)&&d&&[...d].sort((a,b)=>a-b).join()===chs.join()&&e&&[...e].join()===[...some].join()&&decode(c)===null&&decode(treasCode(some))===null
+        &&starts.every(x=>treasDecode(x)===null)&&treasDecode(c.replace(/.$/,q=>q==='0'?'1':'0'))===null,'a treasure code holds what was found, is read back however it is typed, and is never taken for a safe-point code, nor one for it: '+c)}
+    store('paul.treasures',null);const far0=codeOf(1,0);keepSaves({far:{code:far0,t:1},last:null,slots:[]});
+    for(const n of chs){if(only&&n!==only)continue;const t=CHAP[n].treasure;
+      const r=await restore(t.at,1);await idle();for(let i=0;i<40&&(G.busy||ov.classList.contains('on'));i++){if(G.skip)G.skip();await wait(50)}await idle();
+      ok(r!==false&&G.ch===n&&G.room&&!G.scene&&saves().far.code===far0,'Chapter '+n+': the way back to its treasure leads into the chapter ('+t.at+', '+G.room+'), and the farthest point stays where it was');
+      const was=JSON.stringify([F,G.invs]),before=treasures().size;await TS[n]();await idle();
+      ok(treasures().has(n)&&treasures().size===before+1&&$('#found').classList.contains('on')&&$('#found').textContent.includes(T(t.name))&&JSON.stringify([F,G.invs])===was,
+        'Chapter '+n+': '+T(t.name)+' is found and announced, and nothing in the story has changed');
+      if(only===n)halt(stop,()=>{clearTimeout(foundT);$('#found').classList.add('on')});
+      ok(treasure()===false&&treasures().size===before+1,'Chapter '+n+': found again, it is not announced again')}
+    /* the screen: a treasure not yet found shows nothing, and leads back from play only after asking */
+    const miss=[3,9,12].filter(n=>CHAP[n]);store('paul.treasures',treasCode(new Set(chs.filter(n=>!miss.includes(n)))));
+    openMenu('treasures');const cells=[...mn.querySelectorAll('.tre')];
+    ok(mn.classList.contains('on')&&cells.length===chs.length&&cells.filter(c=>c.classList.contains('got')).length===chs.length-miss.length
+      &&miss.every(n=>!cells[chs.indexOf(n)].textContent.includes(T(CHAP[n].treasure.name))&&!cells[chs.indexOf(n)].textContent.includes(T(CHAP[n].label))),
+      'the screen of treasures names what was found and shows nothing of what was not');
+    ok(mn.querySelector('.tcode b')&&treasDecode(mn.querySelector('.tcode b').textContent).size===chs.length-miss.length,'it shows the code for what was found');
+    for(const c of cells)fits(c,'treasure');fits(mn.querySelector('.tcode'),'treasure code',1);
+    if(stop==='treasures'){halt('treasures')}
+    }
   /* sound: the first press anywhere starts it; a press wakes sound that iOS interrupted; on iPhone and iPad a note says where Silent Mode is */
   {const hushOn=()=>$('#hush').classList.contains('on'),dev=AU.apple;
     ok(!dev,'desktop Chrome is not taken for an iPhone or iPad');ok(!AU.ctx,'no sound before the first press');
