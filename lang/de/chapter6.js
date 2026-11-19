@@ -784,5 +784,7 @@ TEXTS('de',6,{
   "They threw us outside its boundaries, and the disciples there are full of joy. Our road lies on.":"Man hat uns aus ihrem Gebiet hinausgeworfen, und die Jünger dort sind voller Freude. Unser Weg führt weiter.",
   "Iconium, yes. But Lystra lies first on the way back. One city at a time.":"Ikonion, ja. Aber auf dem Rückweg kommt zuerst Lystra. Eine Stadt nach der anderen.",
   "There are stones waiting for us in Iconium. Not yet.":"In Ikonion warten Steine auf uns. Noch nicht.",
-  "Derbe lies beyond Lystra, and Lystra has not heard either. One city at a time.":"Derbe liegt hinter Lystra, und auch Lystra hat noch nichts gehört. Eine Stadt nach der anderen."
+  "Derbe lies beyond Lystra, and Lystra has not heard either. One city at a time.":"Derbe liegt hinter Lystra, und auch Lystra hat noch nichts gehört. Eine Stadt nach der anderen.",
+  "Out of habit, I run the point of the awl round each corner eyelet. Not one stitch has given.":"Aus Gewohnheit fahre ich mit der Spitze der Ahle um jede Öse an den Ecken. Kein einziger Stich hat nachgegeben.",
+  "Whether or not he ever thinks of who sewed it, it will keep his loads dry.":"Ob er je daran denkt, wer sie genäht hat, oder nicht: Sie hält seine Ladung trocken."
 });

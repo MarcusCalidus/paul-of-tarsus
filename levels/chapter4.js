@@ -111,6 +111,8 @@ ART.salamis={w:480,fp:1.3,
   seaArt(g,0,60,112,104,r);ashlar(g,0,56,62,5,'#c6b592',r,{bw:9,bh:2.6,v:.08,t:.25});R(g,0,60.8,62,1,'#5f6470');
   R(g,91.6,51,1.4,25,'#5a3c22');stroke(g,[92.3,51,74,68.6],'#4a3a2a',.5);stroke(g,[92.3,51,110.6,66.6],'#4a3a2a',.5);poly(g,[80,73,104,72.4,104,75.4,80,76],'#dccfb0');
   poly(g,[72,69,77,68,80,76,105,76,109,67,112,66,112,81,80,81,75,78],'#5e3e24');R(g,77,77.6,35,1,'#a8482c');R(g,72,80.6,40,.8,'rgba(20,40,60,.5)');
+  /* our shelter, still rigged on her foredeck before the mast, and the bare feet of a sailor asleep in its shade (the hidden treasure) */
+  poly(g,[80.6,76,82.6,73,88.6,73,90.4,76],'#2a211c');R(g,82.6,73,6,.6,'#5a4a3a');R(g,80.6,75.6,9.8,.4,'#17110e');R(g,79.4,75,1.4,1,'#c08a5a');R(g,79.4,75,1.4,.4,'#e0b080');
   R(g,0,97,112,7,'#b8a888');R(g,0,97,112,.6,'#efe0bc');R(g,0,103.2,112,.8,'#5a5258');
   /* roofs of the city behind the marketplace */
   for(const[hx,hy,hw,hh]of[[118,12,30,16],[156,6,24,22],[200,14,34,14],[246,9,26,19]]){R(g,hx,hy,hw,hh,'#e6dcc0');R(g,hx,hy,hw,1.4,'#b8603c');R(g,hx+hw-4,hy+1.4,4,hh,'#b9b4b8');R(g,hx+hw*.3,hy+5,3,5,'#7a6c58')}
@@ -537,6 +539,10 @@ async function landed(){if(F.landed)return;F.landed=1;
 const westRoad=()=>F.spoke?travel():say(PC(),PC()===P?'The road west, right across the island. But we did not come to Salamis to walk through it.':'The road to Paphos. I know every bend of it. But first, the synagogues of Salamis.');
 ROOMS.salamis={space:0.8,walk:[16,464,110,138],mood:'hope',amb:{crowd:.55,gulls:.4,waves:.3,hammer:.4,birds:.2},enter:landed,hs:[
   {name:'harbor',x:0,y:44,w:110,h:58,wx:62,look:["The harbor of Salamis, and Kallias's ship riding at anchor with her sail furled.",'A day and a night under a roof of goat-hair cloth. I have slept worse on dry land.']},
+  /* the hidden treasure (index.html, treasure): our roof still on Kallias's foredeck, and a sailor asleep under it */
+  {name:"Kallias's foredeck",x:78,y:68,w:13,h:10,wx:62,dir:-1,look:async()=>{await say(P,"Our roof is still rigged on Kallias's foredeck, and a pair of bare feet stick out from under it.");
+      await say(P,'One of his crew has found the shade. Well: I did cut it wide.');treasure()},
+    as:{barnabas:{look:async()=>{await say(BN,"Saul's roof, still rigged on the foredeck. A sailor is asleep under it, with his feet in the sun.");treasure()}}}},
   {name:'rooftops of Salamis',x:112,y:2,w:186,h:23,wx:210,look:'Salamis. For trade and for learning the first city of Cyprus, though the proconsul sits in Paphos.'},
   {name:'marketplace',x:112,y:26,w:188,h:17,wx:206,look:'The stoa of the marketplace, shop after shop in its shade.'},
   {name:"coppersmith's stall",x:150,y:43,w:86,h:63,wx:194,wy:114,look:['Pots and pans of Cyprus copper, beaten thin and bright.','Barnabas says the metal takes its very name from this island.'],pickup:'That would be stealing.'},

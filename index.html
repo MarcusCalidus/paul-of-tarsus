@@ -1554,18 +1554,18 @@ function tween(ms,fn){return new Promise(res=>{const t0=performance.now();(funct
 /* ============ LEVELS: each chapter is a separate file under levels/, loaded on demand ============ */
 /* The manifest holds only what is needed before a level is loaded: its name, its file, and the salt that validates its codes. */
 const CHAP={
-  1:{name:'ESCAPE FROM DAMASCUS',label:'Chapter One',title:'Escape from Damascus',salt:0x5A17,src:'levels/chapter1.js'},
-  2:{name:'A FRIEND IN JERUSALEM',label:'Chapter Two',title:'A Friend in Jerusalem',salt:0x2B6D,src:'levels/chapter2.js'},
-  3:{name:'CALLED TO ANTIOCH',label:'Chapter Three',title:'Called to Antioch',salt:0x3C91,src:'levels/chapter3.js'},
-  4:{name:'SENT OUT TO CYPRUS',label:'Chapter Four',title:'Sent Out to Cyprus',salt:0x4D2F,src:'levels/chapter4.js'},
-  5:{name:'A LIGHT OF NATIONS',label:'Chapter Five',title:'A Light of Nations',salt:0x5E73,src:'levels/chapter5.js'},
-  6:{name:'THE DOOR TO FAITH',label:'Chapter Six',title:'The Door to Faith',salt:0x6F19,src:'levels/chapter6.js'},
-  7:{name:'TIMOTHY OF LYSTRA',label:'Chapter Seven',title:'Timothy of Lystra',salt:0x7B43,src:'levels/chapter7.js'},
-  8:{name:'THE MAN FROM MACEDONIA',label:'Chapter Eight',title:'The Man from Macedonia',salt:0x8C57,src:'levels/chapter8.js'},
-  9:{name:'MIDNIGHT IN PHILIPPI',label:'Chapter Nine',title:'Midnight in Philippi',salt:0x9D61,src:'levels/chapter9.js'},
-  10:{name:'IS IT SO?',label:'Chapter Ten',title:'Is It So?',salt:0xA37B,src:'levels/chapter10.js'},
-  11:{name:'THE UNKNOWN GOD',label:'Chapter Eleven',title:'The Unknown God',salt:0xB48D,src:'levels/chapter11.js'},
-  12:{name:'TENTMAKERS OF CORINTH',label:'Chapter Twelve',title:'Tentmakers of Corinth',salt:0xC59F,src:'levels/chapter12.js'}};
+  1:{name:'ESCAPE FROM DAMASCUS',label:'Chapter One',title:'Escape from Damascus',salt:0x5A17,src:'levels/chapter1.js',treasure:{name:'A mule in a sheepfold',at:'9SK-FPZ'}},
+  2:{name:'A FRIEND IN JERUSALEM',label:'Chapter Two',title:'A Friend in Jerusalem',salt:0x2B6D,src:'levels/chapter2.js',treasure:{name:'Not another basket',at:'2-B5Q-PSJ'}},
+  3:{name:'CALLED TO ANTIOCH',label:'Chapter Three',title:'Called to Antioch',salt:0x3C91,src:'levels/chapter3.js',treasure:{name:'Barnabas at the bench',at:'3-MKP-96F-266'}},
+  4:{name:'SENT OUT TO CYPRUS',label:'Chapter Four',title:'Sent Out to Cyprus',salt:0x4D2F,src:'levels/chapter4.js',treasure:{name:'A roof cut wide',at:'4-CBS-2XW-MAT'}},
+  5:{name:'A LIGHT OF NATIONS',label:'Chapter Five',title:'A Light of Nations',salt:0x5E73,src:'levels/chapter5.js',treasure:{name:'The echo in the gorge',at:'5-TG6-X5J-5RG'}},
+  6:{name:'THE DOOR TO FAITH',label:'Chapter Six',title:'The Door to Faith',salt:0x6F19,src:'levels/chapter6.js',treasure:{name:'Four good corners',at:'6-JSK-B2Y-Q58'}},
+  7:{name:'TIMOTHY OF LYSTRA',label:'Chapter Seven',title:'Timothy of Lystra',salt:0x7B43,src:'levels/chapter7.js',treasure:{name:'The marks by the door',at:'7-7P9-F36-V9Z'}},
+  8:{name:'THE MAN FROM MACEDONIA',label:'Chapter Eight',title:'The Man from Macedonia',salt:0x8C57,src:'levels/chapter8.js',treasure:{name:"Luke's notes",at:'8-RRB-QCB-1EC'}},
+  9:{name:'MIDNIGHT IN PHILIPPI',label:'Chapter Nine',title:'Midnight in Philippi',salt:0x9D61,src:'levels/chapter9.js',treasure:{name:'The cricket in the wall',at:'9-P6X-82V-AE3'}},
+  10:{name:'IS IT SO?',label:'Chapter Ten',title:'Is It So?',salt:0xA37B,src:'levels/chapter10.js',treasure:{name:'Wound too far',at:'10-E04-FJ9-Y7P'}},
+  11:{name:'THE UNKNOWN GOD',label:'Chapter Eleven',title:'The Unknown God',salt:0xB48D,src:'levels/chapter11.js',treasure:{name:'Back at the fountain',at:'11-8VM-7EW-T68'}},
+  12:{name:'TENTMAKERS OF CORINTH',label:'Chapter Twelve',title:'Tentmakers of Corinth',salt:0xC59F,src:'levels/chapter12.js',treasure:{name:'The cloth of his own country',at:'12-AXS-T1E-4S6-EEE-J5F'}}};
 const TITLE={level:1,scene:'title',mood:'ancient',amb:{crickets:.5,wind:.35,owl:.4}};
 const PRO={name:'THE ROAD TO DAMASCUS',label:'Prologue',title:'The Road to Damascus',src:'levels/prologue.js'};
 /* PLANNED: the chapters that are planned and not built (issue #47). The title lists them, dimmed, under one line that opens them in place.
@@ -1843,7 +1843,7 @@ let foundT=0;
 function notice(html){const el=$('#found');clearTimeout(foundT);el.innerHTML=html;el.classList.add('on');foundT=setTimeout(()=>el.classList.remove('on'),G.speedAll>200?400:5200)}
 /* treasure: the chapter being played has given up its hidden treasure. Only the first time is it announced. */
 function treasure(){const n=G.ch,t=CHAP[n]&&CHAP[n].treasure;if(!t||treasures().has(n))return false;keepTreasures([n]);SFX.treasure();
-  notice('&#10022; '+esc(T('Hidden treasure found:'))+' <b>'+esc(T(t.name))+'</b><br>'+esc(T('{n} of {all}',{n:treasures().size,all:hidden().length})));return true}
+  notice('&#9670; '+esc(T('Hidden treasure found:'))+' <b>'+esc(T(t.name))+'</b><br>'+esc(T('{n} of {all}',{n:treasures().size,all:hidden().length})));return true}
 /* reachedCh: the farthest chapter that this browser has reached in play, from every point it keeps. The screen of treasures leads back only
    to a chapter that has been reached: it gives away nothing of a chapter not yet played. */
 function reachedCh(){const s=saves(),sv=saved();let m=1;for(const e of[s.far,s.last,...s.slots,sv])if(e){const b=decode(e.code);if(b&&b.ch>m)m=b.ch}

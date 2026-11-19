@@ -452,7 +452,15 @@ ROOMS.workshop={space:1.2,walk:[22,300,112,138],mood:'calm',amb:{crickets:.22,fi
   {name:'waterskin',x:272,y:40,w:14,h:20,wx:274,wy:113,vis:()=>!F.gotSkin,look:'My waterskin, hanging where I left it. Empty.',pickup:take('gotSkin','skin','Empty. Still, a traveler should not leave it behind.')},
   {name:'large basket',x:288,y:80,w:30,h:32,wx:284,wy:114,dir:1,vis:()=>!F.gotBasket,look:'A large provision basket, big enough to hold a man. But its carrying loops are frayed.',
     pickup:take('gotBasket','basket','I can carry it. But those worn loops must be made strong before I trust my life to them.'),
-    useWith:async()=>{await say(P,'I had better pick it up and look it over first.')}}]};
+    useWith:async()=>{await say(P,'I had better pick it up and look it over first.')}},
+  /* the hidden treasure (CONTRIBUTING section 2): the basket in its harness, set down for a moment among Eliab's baskets for market,
+     the stack painted in the foreground. It changes nothing; treasure() keeps and announces it. */
+  {name:'stack of baskets',x:0,y:118,w:27,h:26,wx:36,wy:132,dir:-1,look:"Eliab's finished baskets, stacked for market. Not one of them was made to carry a man.",
+    pickup:'They are for market, and Eliab needs every one of them.',
+    useWith:async it=>{if(it==='basket')return say(P,"Beside Eliab's good baskets this one looks sorry. Not for long.");if(it!=='strongbasket')return false;
+      await say(P,'I set it down beside the others for a moment.');
+      await say(P,'Eliab wove them for figs and bread, and this one too, once. Now it wears a harness of leather, and among the others it looks like a mule in a sheepfold.');
+      treasure()}}]};
 E.hs={name:'Eliab',actor:E,look:'Eliab, a basket weaver and a faithful brother. He has risked much to shelter me.',
   show:{pouch:'Your tools are in there, Saul. Untie it, and let us see what a tentmaker can do.',
     awl:'The awl that has stitched half the tents in Cilicia. Do not lose it tonight.',

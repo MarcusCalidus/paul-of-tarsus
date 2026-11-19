@@ -642,5 +642,7 @@ TEXTS('de',11,{
   "The city lies through the gate, at the top of this road.":"Die Stadt liegt hinter dem Tor, am oberen Ende dieser Straße.",
   "I walk up the road, and go in by the city gate.":"Ich gehe die Straße hinauf und trete durch das Stadttor.",
   "altar":"Altar",
-  "statue":"Statue"
+  "statue":"Statue",
+  "Back again? Most strangers find their way on the second try. You, I think, mean to learn the whole city.":"Schon wieder da? Die meisten Fremden finden den Weg beim zweiten Mal. Du willst wohl die ganze Stadt kennenlernen.",
+  "One lane at a time.":"Eine Gasse nach der anderen."
 });

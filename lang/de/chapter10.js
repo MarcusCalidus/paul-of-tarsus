@@ -608,5 +608,7 @@ TEXTS('de',10,{
   "He asked whether a dead man can be the Christ. One psalm speaks of the Grave; and I know who saw him afterwards.":"Er hat gefragt, ob ein Toter der Christus sein kann. Ein Psalm spricht vom Grab; und ich weiß, wer ihn danach gesehen hat.",
   "The Psalms at the Grave, the Prophets rolled shut, my tablets at the third day.":"Die Psalmen beim Grab, die Propheten zugerollt, meine Tafeln beim dritten Tag.",
   "What was done with him when he was dead? One psalm speaks of bones, and Isaiah of a man pierced.":"Was hat man mit ihm gemacht, als er tot war? Ein Psalm spricht von Knochen, und Jesaja von einem Durchstochenen.",
-  "The Psalms at the unbroken bones, the Prophets at the pierced one, my tablets at the spear.":"Die Psalmen bei den unversehrten Knochen, die Propheten beim Durchstochenen, meine Tafeln beim Speer."
+  "The Psalms at the unbroken bones, the Prophets at the pierced one, my tablets at the spear.":"Die Psalmen bei den unversehrten Knochen, die Propheten beim Durchstochenen, meine Tafeln beim Speer.",
+  "Wind on like that, tentmaker, and you will reach the end of it by sunset. Whoever winds a scroll on winds it back again, before it goes into the chest.":"Dreh so weiter, Zeltmacher, und bei Sonnenuntergang bist du am Ende der Rolle. Wer eine Rolle weiterdreht, dreht sie auch wieder zurück, bevor sie in die Truhe kommt.",
+  "Then I know whose hands will do it.":"Dann weiß ich ja, wessen Hände das tun werden."
 });

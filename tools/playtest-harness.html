@@ -72,18 +72,18 @@
  addEventListener('error',e=>L('JSERR '+e.message));addEventListener('unhandledrejection',e=>{if(e.reason!=='halt')L('REJ '+(e.reason&&e.reason.message||e.reason))});
  /* TSTEPS: for each chapter, the steps that find its hidden treasure, from the point that its at leads to (see the stop treasures) */
  const TSTEPS={
-  1:null, // Chapter One
-  2:null, // Chapter Two
-  3:null, // Chapter Three
-  4:null, // Chapter Four
-  5:null, // Chapter Five
-  6:null, // Chapter Six
-  7:null, // Chapter Seven
-  8:null, // Chapter Eight
-  9:null, // Chapter Nine
-  10:null, // Chapter Ten
-  11:null, // Chapter Eleven
-  12:null, // Chapter Twelve
+  1:async()=>{await useOn('strongbasket','stack of baskets')}, // Chapter One
+  2:async()=>{await act('use','baskets of figs')}, // Chapter Two
+  3:async()=>{$('#swap').click();await idle();await act('use','workbench');$('#swap').click();await idle()}, // Chapter Three
+  4:async()=>{await act('look',"Kallias's foredeck")}, // Chapter Four
+  5:async()=>{await act('talk','cliff')}, // Chapter Five
+  6:async()=>{await useOn('awl',"Xanthos's wagon")}, // Chapter Six
+  7:async()=>{await act('look','marks on the wall')}, // Chapter Seven: Lois's house, the marks by the door
+  8:async()=>{verb('use');item('tablets');const L=ACT.luke;view(L.x,L.y-18);await idle()}, // Chapter Eight: at Troas, the tablets shown to Luke
+  9:async()=>{await act('look','chirping')}, // Chapter Nine: the dark cell, once the three men have fallen silent
+  10:async()=>{const r=ROOMS.table10.hs.filter(h=>!h.vis||h.vis())[5];for(let i=0;i<4;i++){await clickView(r.x+r.w/2,r.y+r.h/2,r);await idle()}}, // Chapter Ten: the Prophets wound past their last place
+  11:async()=>{const l=ROOMS.street11.hs.filter(h=>h.name==='lane')[0];for(let i=0;i<3;i++){await clickView(l.x+l.w/2,l.y+l.h/2,l);await idle()}}, // Chapter Eleven: the wrong lane, three times
+  12:async()=>{verb('use');item('awl12');const h=H('rolls of cloth');await clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()}, // Chapter Twelve: as Aquila and Priscilla, the awl with the Cilician cloth
  };
  (async()=>{try{
   while(!G.ready)await wait(30);
@@ -392,7 +392,8 @@
       const starts=chs.map(n=>codeOf(n,0));
       ok(/^HT-\w{3}-\w{3}-\w{3}$/.test(c)&&d&&[...d].sort((a,b)=>a-b).join()===chs.join()&&e&&[...e].join()===[...some].join()&&decode(c)===null&&decode(treasCode(some))===null
         &&starts.every(x=>treasDecode(x)===null)&&treasDecode(c.replace(/.$/,q=>q==='0'?'1':'0'))===null,'a treasure code holds what was found, is read back however it is typed, and is never taken for a safe-point code, nor one for it: '+c)}
-    store('paul.treasures',null);const far0=codeOf(1,0);keepSaves({far:{code:far0,t:1},last:null,slots:[]});
+    /* the farthest point is set in the last chapter: no way back to a treasure, and nothing done there, may move it */
+    store('paul.treasures',null);const far0=CHAP[chs.at(-1)].treasure.at;keepSaves({far:{code:far0,t:1},last:null,slots:[]});
     for(const n of chs){if(only&&n!==only)continue;const t=CHAP[n].treasure;
       const r=await restore(t.at,1);await idle();for(let i=0;i<40&&(G.busy||ov.classList.contains('on'));i++){if(G.skip)G.skip();await wait(50)}await idle();
       ok(r!==false&&G.ch===n&&G.room&&!G.scene&&saves().far.code===far0,'Chapter '+n+': the way back to its treasure leads into the chapter ('+t.at+', '+G.room+'), and the farthest point stays where it was');

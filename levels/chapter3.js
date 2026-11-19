@@ -599,7 +599,9 @@ TN.hs.as={barnabas:{look:'Theron the potter. He talks about the Lord to everyone
 const AS_B={
   tarsus:{'Taurus mountains':{look:'The Taurus. Kleon will cross them by the Cilician Gates. I am glad it is him and not me.'},
     'my workshop':{look:"Saul's stall. Every tool hangs where he can reach it without looking."},'awning':{look:"Goat-hair cloth. Saul's own sewing, I would guess."},
-    'workbench':{look:'Scarred by years of cutting.'},'leather hide':{look:'A thick oxhide. Saul will know what to make of it.'},
+    /* the hidden treasure (CONTRIBUTING section 2): Barnabas, played, sits down at Saul's bench. It changes nothing. */
+    'workbench':{look:'Scarred by years of cutting.',use:async()=>{await say(BN,"I sit down at Saul's bench. Every tool is within reach, and not one of them is any use in my hands.");
+      await say(BN,'I had better get up again before he sees me.');treasure()}},'leather hide':{look:'A thick oxhide. Saul will know what to make of it.'},
     'bolt of goat-hair cloth':{look:'Goat-hair cloth. Cilicium, they call it here.'},
     'tent':{look:()=>say(BN,F.seam?'The seam is closed. I could not find it if I tried.':'One seam still gapes open. Saul says the far edge must be held taut.'),
       use:hold,pickup:hold,useWith:async it=>say(BN,"The stitching is Saul's work. I can hold the cloth, though.")},

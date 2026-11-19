@@ -379,5 +379,11 @@ TEXTS('de',1,{
   "Kindness shown to an opposer":"Einem Gegner Freundlichkeit erwiesen",
   "Based on Acts 9:23-25 and 2 Corinthians 11:32, 33. Supporting characters and dialogue are imaginative; the event is from the Scriptures.":"Nach Apostelgeschichte 9:23-25 und 2. Korinther 11:32, 33. Nebenfiguren und Dialoge sind frei erfunden; das Ereignis stammt aus der Bibel.",
   "Click to continue to Chapter Two":"Klicken, um mit dem zweiten Kapitel weiterzumachen",
-  "Chapter Two code: {code}":"Code für das zweite Kapitel: {code}"
+  "Chapter Two code: {code}":"Code für das zweite Kapitel: {code}",
+  "stack of baskets":"Korbstapel",
+  "Eliab's finished baskets, stacked for market. Not one of them was made to carry a man.":"Eliabs fertige Körbe, für den Markt gestapelt. Keiner davon ist dafür gemacht, einen Mann zu tragen.",
+  "They are for market, and Eliab needs every one of them.":"Die sind für den Markt, und Eliab braucht jeden einzelnen.",
+  "Beside Eliab's good baskets this one looks sorry. Not for long.":"Neben Eliabs guten Körben sieht dieser hier kläglich aus. Nicht mehr lange.",
+  "I set it down beside the others for a moment.":"Ich stelle ihn für einen Augenblick zu den anderen.",
+  "Eliab wove them for figs and bread, and this one too, once. Now it wears a harness of leather, and among the others it looks like a mule in a sheepfold.":"Eliab hat sie für Feigen und Brot geflochten, diesen hier früher auch. Jetzt trägt er ein Geschirr aus Leder und sieht zwischen den anderen aus wie ein Maultier im Schafstall."
 });

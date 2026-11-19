@@ -819,5 +819,7 @@ TEXTS('de',12,{
   "I walk to the workshop that is open to the street.":"Ich gehe zu der Werkstatt, die zur Straße offen ist.",
   "high":"hoch",
   "middle":"mittel",
-  "low":"tief"
+  "low":"tief",
+  "Goat-hair cloth from Cilicia. Paul can tell where it was woven by the feel of it.":"Ziegenhaartuch aus Zilizien. Paulus erkennt schon beim Anfassen, wo es gewebt wurde.",
+  "His awl, and the cloth of his own country. Those two have met before.":"Seine Ahle und das Tuch aus seiner Heimat. Die beiden kennen sich schon."
 });

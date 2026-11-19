@@ -598,8 +598,12 @@ function tabSt(){const c=city(),key=c==='t'?'t'+WANT():bday()===1?'b1':bday()===
   G.tab10.has=!tim();return G.tab10}
 /* wind: a roller is turned, and the scroll moves to its next place, or back to the one before; before the first place it is rolled shut */
 async function wind(i,d){const st=tabSt(),k=st.kinds[i],list=LISTS[st.c][k],at=st.s[i]?list.indexOf(st.s[i])+1:0,to=at+d;
-  if(to<0||to>list.length){SFX.nope();return}
+  if(to<0||to>list.length){SFX.nope();if(to>list.length&&st.c==='t'&&!tim())return endOfScroll();return}
   st.s[i]=to?list[to-1]:null;noise({d:.14,v:.05,f:2200,q:.9});pluck10(to+i*2,.8)}
+/* endOfScroll: the chapter's hidden treasure. A scroll of Thessalonica wound on past the last place that is asked for, and the
+   attendant, who keeps the scrolls, says who will wind it back. Nothing in the story changes. */
+async function endOfScroll(){await say(TD,'Wind on like that, tentmaker, and you will reach the end of it by sunset. Whoever winds a scroll on winds it back again, before it goes into the chest.');
+  await say(P,'Then I know whose hands will do it.');treasure()}
 /* leaf: the tablets are turned to their next line; after the last they are shut */
 async function leaf(){const st=tabSt(),L=LINES[st.c],at=st.t?L.indexOf(st.t)+1:0,to=(at+1)%(L.length+1);st.t=to?L[to-1]:null;SFX.click()}
 const readPlace=i=>{const k=tabSt().s[i];return k?say(PC(),quote(PLACE[k])):say(PC(),'It is rolled shut.',TH)},

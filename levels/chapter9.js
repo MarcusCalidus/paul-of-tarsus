@@ -734,12 +734,16 @@ ROOMS.river9={space:.6,walk:[16,464,116,138],mood:'rest',amb:{fountain:.5,birds:
    Paul cannot take a step. cellNo: what each verb comes to in the dark, where a hotspot says nothing of its own. */
 const cellNo={pickup:'There is nothing here that is mine.',use:'I can reach nothing here but Silas.',open:'There is nothing here that I can open.',talk:'The dark gives no answer.',give:'I have nothing left to give.'};
 ROOMS.cell9={space:1.5,get walk(){return F.quake?[36,296,112,136]:[150,150,131,131]},mood:'cell',heard:()=>!F.quake,
-  amb:()=>F.quake?{drip9:.5}:{drip9:.7,mutter9:F.s1?0:.7,chain9:F.s2?0:.6,cough9:F.s3?0:.6},hs:[
+  amb:()=>F.quake?{drip9:.5}:{drip9:.7,mutter9:F.s1?0:.7,chain9:F.s2?0:.6,cough9:F.s3?0:.6,crickets:F.s3?.3:0},hs:[
   Object.assign({name:'darkness',x:0,y:0,w:320,h:144,wx:150,wy:131,vis:()=>!F.quake,look:'I cannot see my own hands. I can hear: water, iron, a man coughing. And Silas, breathing.'},cellNo,{use:'The stocks hold my feet. I am not going anywhere.'}),
   Object.assign({name:'dripping water',x:8,y:24,w:44,h:30,wx:150,wy:131,vis:()=>!F.quake,look:'Water, dripping somewhere to my left. It has not missed a beat since they shut the door.'},cellNo,{use:'I cannot reach it. My feet are where they were put.'}),
   Object.assign({name:'door',x:196,y:44,w:40,h:62,wx:150,wy:131,vis:()=>!F.quake,look:'A hair of grey under the door. Beyond it sleeps a man who was told to guard us securely.'},cellNo,{open:'It is barred on the far side, and four paces away. It might as well be forty.',use:'I cannot reach it.'}),
   Object.assign({name:'stocks',x:118,y:126,w:92,h:12,wx:150,wy:131,vis:()=>!F.quake,look:'A beam of timber shut over my ankles, with the holes set wide apart. They mean us not to sleep.'},cellNo,
     {use:'Shut with iron. My awl could not open it, and my awl is lying somewhere in the marketplace.',open:'Shut with iron. My awl could not open it, and my awl is lying somewhere in the marketplace.',pickup:'It holds me. I do not hold it.'}),
+  /* the hidden treasure of the chapter (CHAP[9].treasure): once all three men have fallen silent, a cricket can be heard in the wall. It is a
+     sound only, like everything else in here, and finding it changes nothing in the story */
+  Object.assign({name:'chirping',x:250,y:14,w:50,h:20,wx:150,wy:131,vis:()=>!!F.s3&&!F.quake},cellNo,
+    {look:async()=>{await say(P,'A cricket, somewhere in the wall. With every man in here keeping still, I can hear it at last. It has not stopped singing either.');treasure()}}),
   {name:'fallen stocks',x:118,y:122,w:106,h:14,wx:150,wy:136,vis:()=>!!F.quake,look:'The upper beam has slid off the lower. Nobody put a hand to it.',use:'I have had enough of it.',pickup:'Let it lie.'},
   {name:'doorway',x:196,y:44,w:40,h:62,wx:186,wy:116,dir:1,vis:()=>!!F.quake,exit:doorway,look:()=>doorway()},
   {name:'jailer',x:206,y:54,w:20,h:52,wx:186,wy:116,dir:1,def:'talk',vis:()=>!!F.quake,talk:callOut,use:callOut,

@@ -588,7 +588,11 @@ async function lane(k){
   if(!F.way)return say(P,'A lane between two houses. In a city that I do not know, I ask before I turn.');
   if(F.syn)return say(P,k==='c'?'The lane to the synagogue. I shall be there again on the Sabbath.':'I know where that one comes out now: at the fountain.');
   if(k!=='c'){await fade(1,300);await narr('The lane ran round three houses, past two more images at two more corners, and let him out at the fountain again.',{dur:6200});
-    place(P,'street11',96,122,1);G.cam=0;await fade(0,300);return say(P,'Not that one. I should look at these figures properly, one by one, before I turn again.',TH)}
+    place(P,'street11',96,122,1);G.cam=0;await fade(0,300);
+    /* the chapter's hidden treasure: the third time the wrong lane brings him back, the old man by the fountain greets him as one of his own */
+    if((G.wrong11=(G.wrong11||0)+1)===3&&NI.room==='street11'){await say(NI,'Back again? Most strangers find their way on the second try. You, I think, mean to learn the whole city.');
+      await say(P,'One lane at a time.');return treasure()}
+    return say(P,'Not that one. I should look at these figures properly, one by one, before I turn again.',TH)}
   await fade(1,400);await come('syn11');return synIntro()}
 async function toAgora(){if(!F.syn)return say(P,'That way lies the marketplace. First the synagogue: there, at least, they will know the names I use.');return goto('agora11',40,124,1)}
 
@@ -1018,7 +1022,7 @@ function place11(room){for(const a of[NI,CH,AR,XE,SL,PH,AN,DS,DI,DM]){a.room=nul
     if(F.spoke){place(PH,room,452,124,-1);place(AN,room,262,124,1);G.sp11=null}else{place(PH,room,504,122,-1);place(AN,room,214,122,1);G.sp11=null;sp11()}
     if(F.rose)place(DI,room,186,124,-1);if(F.down)place(P,room,150,126,1)}
   swapBtn()}
-function setup11(){P.hs=null;P.called='Paul';G.b11=G.h11=G.sp11=null;G.s11={};G.z11=null;G.caps11=[];place11('road11');G.inv=['tablets'];G.invs={paul:G.inv};drawInv()}
+function setup11(){P.hs=null;P.called='Paul';G.b11=G.h11=G.sp11=null;G.wrong11=0;G.s11={};G.z11=null;G.caps11=[];place11('road11');G.inv=['tablets'];G.invs={paul:G.inv};drawInv()}
 
 /* ============ THE START ============ */
 async function start11(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();

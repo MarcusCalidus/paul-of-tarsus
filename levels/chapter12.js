@@ -956,7 +956,9 @@ ROOMS.shop12={space:1.1,floor:'earth',walk:[20,304,112,137],get mood(){return NI
   {name:'torn awning',x:118,y:80,w:38,h:12,wx:140,wy:113,vis:()=>F.brought&&!F.marc,def:'use',look:'The awning of Marcellus, torn from end to end by the wind.',use:'My hands are free for something else. That is the point.',as:{aq12:{look:'Torn along the old seam. An hour, with two of us.',use:'With the awl.',useWith:mend}}},
   {name:'small bowl',x:205,y:78,w:10,h:7,wx:196,wy:113,vis:()=>F.news&&!F.letter,def:'use',look:()=>say(P,F.ink?'Black, and neither thin nor thick.':'A small bowl of water, for the black.'),use:water,useWith:grind},
   {name:'potsherd',x:217,y:79,w:10,h:6,wx:210,wy:113,vis:()=>F.news&&!F.letter,look:'A potsherd, for trying a pen. A sheet is too dear for that.',useWith:tryInk},
-  {name:'rolls of cloth',x:232,y:74,w:38,h:30,wx:226,wy:114,look:'Goat-hair cloth from Cilicia, dark, stiff and rough. It fights the knife and the awl.',pickup:'It is theirs, and it weighs as much as I do.'},
+  {name:'rolls of cloth',x:232,y:74,w:38,h:30,wx:226,wy:114,look:'Goat-hair cloth from Cilicia, dark, stiff and rough. It fights the knife and the awl.',pickup:'It is theirs, and it weighs as much as I do.',
+    /* the chapter's hidden treasure: Paul's awl, in the hands that keep it, put to the cloth of his own country */
+    as:{aq12:{look:'Goat-hair cloth from Cilicia. Paul can tell where it was woven by the feel of it.',useWith:id=>id==='awl12'?say(AP,'His awl, and the cloth of his own country. Those two have met before.').then(treasure):false}}},
   {name:'coils of cord',x:126,y:38,w:48,h:20,wx:150,wy:113,look:'Cord, each coil on its own peg.',pickup:'Each hangs where a hand expects it.'},
   {name:'reeds',x:94,y:60,w:12,h:44,wx:112,wy:113,dir:-1,look:'Hard reeds, standing in a jar. They stiffen a hem.',
     pickup:()=>F.reed?say(P,'One is enough.'):!F.news?say(P,'I have no use for a reed.'):(F.reed=1,addItem('reed12'),say(P,'A hard one, as long as my forearm.'))},

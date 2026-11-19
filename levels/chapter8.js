@@ -1041,7 +1041,12 @@ const LUKE8={name:'Luke',actor:LU,
   look:()=>say(P,inTro()?(F.vision?'Luke. He has put his bag over his shoulder, as a man does who expects to be asked to come.':F.slung?'Luke. He looks at my seam as I looked at his bandage.':'A physician, kneeling on the quay beside a stranger. He asked nobody who would pay him.')
     :inPhi()?'Luke. In three days he has learned where every sick person in this street lives.':'Luke. He is watching these women as he watches the sick: missing nothing.'),
   show:{linen:'A whole cloth. Strips, Paul: straight along the thread, a hand wide. You cut cloth for your living.',offcut:'Sailcloth? Not on a wound. But keep it: I may want it in another shape.',
-    awl:'An awl. In my trade we should call that a very large needle.',tablets:'You keep notes. So do I.','*':'Keep it, brother. I have my own bag to carry.'},
+    awl:'An awl. In my trade we should call that a very large needle.',
+    /* the hidden treasure of the chapter (CHAP[8].treasure): once the four have concluded that they must cross over, Luke shows what he notes
+       down. It changes nothing in the story */
+    tablets:async()=>{await say(LU,'You keep notes. So do I.');if(!F.concl)return;
+      await say(LU,'Here are mine: the place, the day, and who was with us. Someone ought to keep this.');treasure()},
+    '*':'Keep it, brother. I have my own bag to carry.'},
   ask:{linen:'Any clean linen, cut into strips. And soon, friend: he is losing blood.',sling:'Any sound cloth will do for a sling: it does not touch the wound. It must be broad, and it must not cut into his neck.',
     syn:'I have asked in three streets. Nobody knows of one. But somebody always knows where people go on a certain day.'},
   talk:async()=>{if(inTro()&&F.vision&&!F.concl)return tell();return talkTree([
