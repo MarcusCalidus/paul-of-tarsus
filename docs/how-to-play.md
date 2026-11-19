@@ -27,7 +27,7 @@
 | See what is coming | The last line on the title screen, **Chapters Thirteen to Twenty-Five · in preparation**, opens the chapters that are planned and not yet built, each with the part of Acts it will tell. They cannot be played yet; click the line again to close them. |
 | Change the language | Click **English** or **Deutsch** on the title screen, or the **EN**/**DE** button in the top bar at any time |
 | Keyboard | `1`-`6` verbs, `P` pray, `M` mute, `Tab` names, `C` switch character, `Esc` options |
-| Options | Click **≡** in the top right or press `Esc` to set the music and effects volume, the text speed, how much the figures move (**Movement**: lively, or calm, which keeps the mouths and leaves the rest still; a device set to reduce motion starts in calm), **NAMES** and the language, to save and load games (see [Saved games](#saved-games)), or to go back to the title screen. It opens between scenes, not during a cutscene or a conversation. The options are kept in your browser apart from your safe point (`paul.opts`). |
+| Options | Click **≡** in the top right or press `Esc` to set the music and effects volume, the text speed, how much the figures move (**Movement**: lively, or calm, which keeps the mouths and leaves the rest still; a device set to reduce motion starts in calm), **NAMES** and the language, to save and load games (see [Saved games](#saved-games)), to see the [hidden treasures](#hidden-treasures) you have found, or to go back to the title screen. It opens between scenes, not during a cutscene or a conversation. The options are kept in your browser apart from your safe point (`paul.opts`). |
 | Begin | The game opens on its opening picture and waits, silent: a browser lets a page sound only after a click or a key. Click, or press Space or Enter, and the overture begins. When its melody has been heard the chapters appear; a second click, Space or Enter brings them at once, and the music plays on. |
 | Skip the title card | A chapter opens with its title card for a few seconds. Click or press Space or `Esc` to go on at once. |
 | Skip the prologue | While the prologue plays, click **SKIP** in the top bar to jump straight to Chapter One. |
@@ -95,4 +95,14 @@ Open the options (**≡** or `Esc`) and choose **Saved games** to see what this 
 Saving over a kept game, deleting one, and loading one while a game is in play each ask first, in the row itself. On the title screen the slots and both points can be loaded too, and when the farthest point is not where **Continue** goes, the title screen offers it as well. Like the last point, all of this lives only in this browser; a safe-point code is still what carries your place anywhere else.
 
 ![Saved games](screenshots/saves.png)
+
+## Hidden treasures
+
+Every chapter hides one small thing that the story does not need: a detail, a word or a sound that a curious player may come across, and no prayer hints at it. When you find one, a small notice in the top left corner says so. Finding it changes nothing in your game.
+
+The title screen (once you have found one) and the options (**Hidden treasures**) show what you have found, one place for each chapter. A treasure you have not found shows nothing. In a chapter you have already reached, its place offers **Look for it**, which takes you back to a point in that chapter a little before it; your farthest point stays where it was. The screen also shows a code for the treasures you have found, beginning with `HT-`: type it under **ENTER CODE** in another browser to take them with you. It only ever adds to what that browser has found.
+
+The treasures are kept apart from your saved games (`paul.treasures`), so they never touch a safe point.
+
+![Hidden treasures](screenshots/treasures.png)
 

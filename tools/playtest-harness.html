@@ -409,6 +409,17 @@
       'the screen of treasures names what was found and shows nothing of what was not');
     ok(mn.querySelector('.tcode b')&&treasDecode(mn.querySelector('.tcode b').textContent).size===chs.length-miss.length,'it shows the code for what was found');
     for(const c of cells)fits(c,'treasure');fits(mn.querySelector('.tcode'),'treasure code',1);
+    /* from play, Look for it asks first; yes leads back into that chapter, and the farthest point stays */
+    {const n=miss[0],far=saves().far.code,go=()=>mn.querySelector(`[data-t="${n}"][data-a="go"]`);
+      ok(mn.inGame&&go(),'in a chapter already reached, a treasure not found offers Look for it');go().click();
+      ok(mn.querySelector(`[data-t="${n}"][data-a="yes"]`)&&mn.querySelector(`[data-t="${n}"][data-a="no"]`),'from a game in play it asks first');
+      mn.querySelector(`[data-t="${n}"][data-a="yes"]`).click();await wait(200);await idle();for(let i=0;i<40&&(G.busy||ov.classList.contains('on'));i++){if(G.skip)G.skip();await wait(50)}await idle();
+      ok(!mn.classList.contains('on')&&G.ch===n&&G.room&&saves().far.code===far&&!treasures().has(n),'and leads back to look for it, in Chapter '+n+', without moving the farthest point')}
+    /* a treasure code typed under ENTER CODE adds what it holds, and keeps what this browser has found */
+    {const had=treasures(),c=treasCode(new Set([miss[0]]));openCode();$('#codein').value=c.toLowerCase();await tryCode();
+      ok(cb.classList.contains('on')&&treasures().has(miss[0])&&[...had].every(n=>treasures().has(n))&&$('#codemsg').textContent.includes(T('{n} of {all} found',{n:treasures().size,all:hidden().length})),
+        'a treasure code typed under ENTER CODE adds its treasures and keeps the others');closeCode()}
+    store('paul.treasures',treasCode(new Set(chs.filter(n=>!miss.includes(n)))));openMenu('treasures');
     if(stop==='treasures'){halt('treasures')}
     }
   /* sound: the first press anywhere starts it; a press wakes sound that iOS interrupted; on iPhone and iPad a note says where Silent Mode is */

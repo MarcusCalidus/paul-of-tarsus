@@ -106,6 +106,7 @@ synagogue synagogue
 synagogue10 sab10
 tablets tablets
 tarsus tarsus
+treasures treasures
 tentshop pshop12
 thessalonica yard10
 talk cast cast-talk
