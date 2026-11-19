@@ -1853,8 +1853,8 @@ function reachedCh(){const s=saves(),sv=saved();let m=1;for(const e of[s.far,s.l
 function drawTreasures(){const s=treasures(),all=hidden(),far=reachedCh(),ask=mn.ask||{};
   const cell=n=>{const t=CHAP[n].treasure;if(s.has(n))return`<div class="tre got"><small>${esc(T(CHAP[n].label))}</small><b>${esc(T(t.name))}</b></div>`;
     if(n>far)return'<div class="tre"></div>';
-    return'<div class="tre">'+(ask.k===n?`<em>${esc(T('Leave this game?'))}</em><div class="seg"><button type="button" data-t="${n}" data-a="yes">${esc(T('Yes'))}</button><button type="button" data-t="${n}" data-a="no">${esc(T('No'))}</button></div>`
-      :`<button type="button" data-t="${n}" data-a="go">${esc(T('Look for it'))}</button>`)+'</div>'};
+    const btn=(a,l)=>`<button type="button" data-t="${n}" data-a="${a}">${esc(l)}</button>`;
+    return'<div class="tre">'+(ask.k===n?'<em>'+esc(T('Leave this game?'))+'</em><div class="seg">'+btn('yes',T('Yes'))+btn('no',T('No'))+'</div>':btn('go',T('Look for it')))+'</div>'};
   mn.innerHTML='<h2>'+esc(T('HIDDEN TREASURES'))+'</h2><p class="tsum">'+esc(T('{n} of {all} found',{n:s.size,all:all.length}))+'</p>'+
     '<div class="tres">'+all.map(cell).join('')+'</div>'+
     (s.size?'<p class="tcode">'+esc(T('Code for the treasures found:'))+' <b>'+treasCode(s)+'</b><br>'+esc(T('Type it under ENTER CODE in another browser to take them with you.'))+'</p>':'')+
