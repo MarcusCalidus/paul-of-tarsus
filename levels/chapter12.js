@@ -877,7 +877,7 @@ async function finale(){AU.mood='home';await say(P,'Peace, brothers. I have a gr
   await narr('In Corinth nobody had to let him down a wall. He stayed until he could say goodbye.',{dur:7500});
   endScreen({title:'Tentmakers of Corinth',text:'He came with his tools and no bench. He laid the tools down, stayed a year and six months, and left when he was ready.',
     based:'Based on Acts 18:1-22; 1 Corinthians 1:14-16; 2:3; 9:24, 25; 16:15; 2 Corinthians 11:9 and 1 Thessalonians 1:1; 2:17; 3:6; 5:27. Supporting characters and dialogue are imaginative; the events are from the Scriptures, and are told here in paraphrase. Acts does not say how Paul found Aquila and Priscilla, what they made, or whether the two were disciples already; who wrote the letter down or carried it; how Crispus came to believe; that anybody spoke of leaving; which law the charge meant; what became of Sosthenes, whom a later letter may name as a brother; what the vow was; why Paul would not stay at Ephesus; or which congregation he went up to greet: apparently that in Jerusalem. Acts does not name Stephanas or Gaius.',
-    go:'Click to look back along the road'});
+    go:'Click to look back along the road',code:['Chapter Thirteen code: {code}',codeOf(13,0)]});
   await wait(1500);ov.onclick=()=>{ov.onclick=null;ov.className='';lookBack()};await new Promise(()=>{})}
 /* lookBack: the roads of all twelve chapters, journey by journey, so that no two of them cross on one map; then what Acts says next.
    BACKLAB: where the names stand on the map of the second journey, clear of its roads and of each other. The two towns that were
@@ -898,7 +898,7 @@ async function lookBack(){G.busy=true;lock(true);try{await need('map');for(const
     await tell('v23',9000)}catch(e){console.error(e)}
   await narr('The road went on.',{dur:5000});G.end={};
   overlay('on end',()=>{ov.innerHTML='<h2>'+T('THE ROAD SO FAR')+'</h2><p>'+esc(T('Twelve chapters: from a basket let down the wall of Damascus to a court in Antioch, by way of Cyprus, Galatia, Macedonia and Achaia. (Acts 9:23 to 18:22)'))+
-    '</p><p class="small">'+esc(T('Acts goes on from here, and so did he.'))+'</p><p class="go">'+esc(T('Click to return to the title'))+'</p>'});await wait(1200);ov.onclick=()=>location.reload()}
+    '</p><p class="small">'+esc(T('Acts goes on from here, and so did he.'))+'</p><p class="go">'+esc(T('Click to continue to Chapter Thirteen'))+'</p>'});await wait(1200);ov.onclick=()=>startChapter(13)}
 
 /* ============ ITEMS ============ */
 Object.assign(ICON,{
