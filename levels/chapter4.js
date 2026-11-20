@@ -329,8 +329,8 @@ const inSel=()=>G.room==='seleucia',inPaph=()=>G.room==='paphos',inSal=()=>!inSe
 async function go4(room,x,y,dir){SFX.door();await fade(1);enterRoom(room,x,y,dir);place(PC()===P?BN:P,room,x-dir*26,y+3,dir);await fade(0)}
 /* quizAs: the engine's quiz, answered by whoever is played. ask: the same, but a reply may come from anyone present: r lists lines, or [actor, line] pairs. */
 async function ask(me,who,q,opts){let av=opts.slice();
-  for(;;){await say(who,q);const o=av[await choose(av.map(o=>o.q))];for(const l of o.p||[o.q])await say(me,l);
-    for(const x of o.r)await(Array.isArray(x)?say(x[0],x[1]):say(who,x));if(o.ok)return;av=av.filter(x=>x!==o)}}
+  for(;;){await say(who,q,{to:me});const o=av[await choose(av.map(o=>o.q))];for(const l of o.p||[o.q])await say(me,l,{to:who});
+    for(const x of o.r)await(Array.isArray(x)?say(x[0],x[1],x[2]||{to:me}):say(who,x,{to:me}));if(o.ok)return;av=av.filter(x=>x!==o)}}
 /* Saul, as Barnabas sees him and talks to him */
 const PAUL4={get name(){return F.heard?'Paul':'Saul'},actor:P,as:{barnabas:{
   look:()=>say(BN,inSel()?'Saul. Sent out this morning, and already looking for work for his hands.':inPaph()?'Paul. He looks a proconsul in the eye as he would a fisherman.':'Saul. On my island at last. I have wanted to show it to him for a year.'),
@@ -566,12 +566,12 @@ async function vouch(){
   F.vouched=1;SFX.good();if(P.room===G.room){BN.dir=P.x>BN.x?1:-1;await say(BN,'The platform is yours after the reading, Saul. Go to him when you are ready.')}}
 /* part: one step of the talk. Saul thinks what comes next; a choice that runs ahead of his hearers is answered by them, and set aside. */
 async function part(think,opts){let av=opts.slice();
-  for(;;){await say(P,think,TH);const o=av[await choose(av.map(o=>o.q))];for(const l of o.p)await say(P,l);for(const[a,l]of o.r)await say(a,l);if(o.ok)return;av=av.filter(x=>x!==o)}}
+  for(;;){await say(P,think,TH);const o=av[await choose(av.map(o=>o.q))];for(const l of o.p)await say(P,l,{to:null});for(const[a,l,x]of o.r)await say(a,l,x);if(o.ok)return;av=av.filter(x=>x!==o)}}
 async function speak(){
-  await say(ZA,'Take your seats, all of you. The reading today is from the prophet Isaiah.');
+  await say(ZA,'Take your seats, all of you. The reading today is from the prophet Isaiah.',{to:null});
   await Promise.all([walk(ZA,160,110),walk(P,118,124),walk(BN,54,128)]);ZA.dir=-1;P.dir=1;BN.dir=1;
-  await say(ZA,'Here is my servant, the one I hold up; here is my chosen one, who has my approval. (Isaiah 42:1)');
-  await say(ZA,quote('isa42'));
+  await say(ZA,'Here is my servant, the one I hold up; here is my chosen one, who has my approval. (Isaiah 42:1)',{to:null});
+  await say(ZA,quote('isa42'),{to:null});
   await walk(ZA,214,113);ZA.dir=-1;
   await say(ZA,'Brothers, visitors: if you have something to say that will encourage the people, say it.');
   await walk(P,160,111);P.dir=-1;
@@ -599,7 +599,7 @@ async function speak(){
       p:["God kept that promise: out of David's line he has given Israel a savior, Jesus of Nazareth.",
         'In Jerusalem they had him put to death, and he was laid in a grave. But God brought him back from the dead, and many saw him.',
         'David wrote that God would not let the one who is loyal to him see the pit. David died, and was buried. This one, God raised up. (Psalm 16:10)'],
-      r:[[PH,'Raised from the dead. If that were so, it would change everything.'],[JR,'It is so. I was in Jerusalem. I knew men who saw him.'],[ZA,'Let him finish, Jair.']]},
+      r:[[PH,'Raised from the dead. If that were so, it would change everything.'],[JR,'It is so. I was in Jerusalem. I knew men who saw him.'],[ZA,'Let him finish, Jair.',{to:JR}]]},
     {q:'Take care: the Prophets warn those who will not believe.',p:['Beware, brothers. The Prophets speak of a thing to come in your own days, a thing you will find beyond belief, even when you are told of it. (Habakkuk 1:5)'],
       r:[[PH,'He threatens us before he has told us anything!'],[ZA,'A warning comes last, visitor, if it comes at all.']]}]);
   await part('They have heard who he is. What do I leave with them?',[
@@ -612,7 +612,7 @@ async function speak(){
         'You said you would test it by the scroll, Zadok. Do. Search it, and see whether these things are so.'],
       r:[[ZA,'You have given us a great deal to search, Saul of Tarsus. I will not say yes or no today. I will read.'],
         [PH,'So will I. And I will come and tell you if I find it otherwise.'],
-        [JR,'And any who want to hear more today, come home with me. My house is small, but the door is open.']]}]);
+        [JR,'And any who want to hear more today, come home with me. My house is small, but the door is open.',{to:null}]]}]);
   F.spoke=1;SFX.good();await fade(1,500);place(P,'synagogue',126,122,-1);place(BN,'synagogue',100,126,1);
   await narr('They set about preaching the word of God in the Jewish synagogues: in that one, and in the others of Salamis. (Acts 13:5)',{dur:7500});await fade(0,500);
   await say(BN,'One end of the island has heard, Saul. The other is many days away on foot. The west gate, when you are ready.')}
@@ -653,40 +653,40 @@ ROOMS.synagogue={space:1.5,walk:[16,304,110,136],mood:'calm',amb:{crowd:.12,fire
 async function hearing0(){if(F.heard)return;
   await say(SP,'So you are the two men who have talked their way from one end of my province to the other. Come nearer.');
   await say(SP,'I am told you teach of a God who made heaven and earth, and of a man he raised from the dead. I want to hear it for myself.');
-  await say(EL,'Proconsul, is this wise? You have me to tell you what tomorrow holds.');
+  await say(EL,'Proconsul, is this wise? You have me to tell you what tomorrow holds.',{to:SP});
   await say(SP,'I have you, Elymas. And today I have them as well. Your names?');
-  await say(BN,'Barnabas, sir.');
+  await say(BN,'Barnabas, sir.',{to:SP});
   await say(P,'Saul, of Tarsus. But I was born a Roman, and among the nations I go by my Roman name: Paul.');
   await say(SP,'Paulus? That is my own name. Sergius Paulus.');
   await say(P,'I have had it as long as I can remember, sir.');F.heard=1;P.called='Paul';
   await narr('From this point on, the account calls him Paul. (Acts 13:9)',{dur:4200});
-  await say(EL,'Proconsul, look at them. Two vagrants from Syria, with the dust of the road to their knees.');
+  await say(EL,'Proconsul, look at them. Two vagrants from Syria, with the dust of the road to their knees.',{to:SP});
   await say(EL,'Such men sail in, stir up a city, and are gone before the reckoning.');
-  await say(SP,'It is a fair question. What is Cyprus to you two, that you walk the length of it?')}
-async function sayFee(){await say(EL,'And what will this teaching cost you, Proconsul? No man walks the length of an island for nothing.');
+  await say(SP,'It is a fair question. What is Cyprus to you two, that you walk the length of it?',{to:P})}
+async function sayFee(){await say(EL,'And what will this teaching cost you, Proconsul? No man walks the length of an island for nothing.',{to:SP});
   await say(EL,'Ask them their fee before you hear another word.');
-  await say(SP,'Another fair question. Every teacher who has stood where you stand wanted something of me. What do you two want?')}
+  await say(SP,'Another fair question. Every teacher who has stood where you stand wanted something of me. What do you two want?',{to:PC()})}
 async function hearPaul(){
   if(!F.ob1){await say(P,'Sir, Cyprus is not my island.');
     await say(SP,'Then you are a stranger here, as Elymas says.');
     return say(P,'I am. But Barnabas is not: he was born on this island. This answer is his to give.',TH)}
   if(!F.ob2){await say(P,'We ask nothing of you, sir. Not one coin.');
-    await say(EL,'Words, Proconsul. Every beggar says as much, until the purse is open.');
+    await say(EL,'Words, Proconsul. Every beggar says as much, until the purse is open.',{to:SP});
     return say(P,'He is right about one thing: words cost nothing. What do I carry that shows how I earn my bread?',TH)}
   return daniel()}
 async function hearBarn(){
   if(F.ob2)return say(SP,'It is your friend Elymas has challenged now, Barnabas. Let him answer.');
-  if(F.ob1){await say(BN,'Nothing, sir. I sold my land years ago, and I have never missed it. (Acts 4:37)');
+  if(F.ob1){await say(BN,'Nothing, sir. I sold my land years ago, and I have never missed it. (Acts 4:37)',{to:SP});
     return say(SP,'A generous man. But it is your friend Elymas is looking at.')}
-  await say(BN,'Sir, I am no stranger here. I am Joseph, a Levite, and Cyprus is where I was born. (Acts 4:36)');
+  await say(BN,'Sir, I am no stranger here. I am Joseph, a Levite, and Cyprus is where I was born. (Acts 4:36)',{to:SP});
   await say(BN,'I know the road from Salamis to Paphos as I know my own hand. I have come home, with the best news I ever carried.');
   await say(SP,'A son of the island. That alters things. Elymas, you told me they were foreigners.');
-  await say(EL,'One of them is, Proconsul! One of them is.');F.ob1=1;SFX.good();return sayFee()}
+  await say(EL,'One of them is, Proconsul! One of them is.',{to:SP});F.ob1=1;SFX.good();return sayFee()}
 async function showTools(it){if(!['awl','knife','thread'].includes(it)||!F.ob1||F.ob2)return false;
   await say(P,it==='awl'?'This is my answer, sir. An awl. I am a tentmaker.':it==='knife'?"This is my answer, sir. A tentmaker's knife. That is my trade.":'This is my answer, sir. Waxed thread. I am a tentmaker.');
   await say(P,'Wherever I teach, I work with my own hands for my bread. I ask you for nothing, and I will take nothing.');
   await say(SP,"A craftsman's hands. I noticed them when you came in.");
-  await say(SP,'Elymas, you are paid by this house. This man has walked across my island at his own cost.');F.ob2=1;SFX.good();
+  await say(SP,'Elymas, you are paid by this house. This man has walked across my island at his own cost.',{to:EL});F.ob2=1;SFX.good();
   await say(EL,'Proconsul, I am of their own nation. I know their writings better than any tentmaker does. Let me tell you what is in them.');
   await say(EL,'Their prophet Daniel served the king of Babylon as chief of the priests who practiced magic. He did there what I do here. My art is in their own holy books.');
   return daniel()}
@@ -694,12 +694,12 @@ async function daniel(){
   await ask(P,SP,'Is that written, Paulus? Was your prophet a sorcerer?',ORDER.map(k=>k==='dan2'?{q:label(k),ok:1,
       p:['It is written that the king of Babylon gave Daniel that title. (Daniel 4:9) And it is written what Daniel himself said to that king:',quote(k),
         "Daniel never claimed the sorcerer's art, sir. He said that it could not do what the king asked, and he gave the credit to God."],
-      r:['So the man himself denied the art, to the face of his own king.','Elymas, that part you did not tell me.']}
+      r:['So the man himself denied the art, to the face of his own king.',[SP,'Elymas, that part you did not tell me.',{to:EL}]]}
     :{q:label(k),p:[quote(k)].concat(k==='deut18'?['That is the Law of Moses, sir. It forbids to Israel everything this man lives by.']:[]),r:[{
       ps133:[SP,'Unity among brothers. You two are a fair example of it. But what of Daniel?'],
       isa42:[SP,'A fine saying about islands, and I govern one. But it does not answer him.'],
       sam7:[SP,'That concerns a king of yours. I asked about Daniel.'],
-      ps16:[EL,'He changes the subject, Proconsul! I spoke of Daniel.'],
+      ps16:[EL,'He changes the subject, Proconsul! I spoke of Daniel.',{to:SP}],
       hos14:[EL,'Straight ways! Daniel was chief of the priests who practiced magic. Is that written, or is it not?'],
       deut18:[EL,'And yet your Daniel held the office, Paulus! Did your own prophet break your Law?']}[k]]}));
   return finale4()}
@@ -776,7 +776,7 @@ async function start4(){ov.onclick=null;ov.className='';audioInit();SFX.good();i
     await fade(1,600);G.scene=null;G.send=null;AU.mood=ROOMS.seleucia.mood;AU.amb=ROOMS.seleucia.amb;codeBtn();await fade(0,600);
     await narr('Sent on their way by the holy spirit, the two went down to Seleucia, the harbor of Antioch. John Mark came with them to assist them. (Acts 13:4, 5)',{dur:9000});
     await say(BN,'Seleucia, Saul. And beyond that water lies Cyprus: the island where I was born.');
-    await say(MK,'The bed rolls, the food bag, the water flask and the purse. Everything is here, cousin.');
+    await say(MK,'The bed rolls, the food bag, the water flask and the purse. Everything is here, cousin.',{to:BN});
     await say(P,'Then all we lack is a ship. That one is taking on cargo. Let us ask her master where she is bound.')},true)}
 async function finale4(){playAs(P);await wait(300);
   await say(EL,'Proconsul, enough! Send these men away, and hear no more of this. Nothing good will come to you from their God!');

@@ -588,7 +588,7 @@ async function lane(k){
   if(!F.way)return say(P,'A lane between two houses. In a city that I do not know, I ask before I turn.');
   if(F.syn)return say(P,k==='c'?'The lane to the synagogue. I shall be there again on the Sabbath.':'I know where that one comes out now: at the fountain.');
   if(k!=='c'){await fade(1,300);await narr('The lane ran round three houses, past two more images at two more corners, and let him out at the fountain again.',{dur:6200});
-    place(P,'street11',96,122,1);G.cam=0;await fade(0,300);
+    place(P,'street11',74,122,1);G.cam=0;await fade(0,300);
     /* the chapter's hidden treasure: the third time the wrong lane brings him back, the old man by the fountain greets him as one of his own */
     if((G.wrong11=(G.wrong11||0)+1)===3&&NI.room==='street11'){await say(NI,'Back again? Most strangers find their way on the second try. You, I think, mean to learn the whole city.');
       await say(P,'One lane at a time.');return treasure()}
@@ -621,7 +621,7 @@ async function basin(){if(F.basin)return;
     {q:'Go round, and come in by another street.',no:'There are a dozen ways in, and nobody would ever know. I would know. I did not come to Athens to slip past its questions.'},
     {q:'Tell him what his gods are worth.',no:'It would be true. And it would be the last thing that he ever heard from me.'},
     {q:'Decline, and tell him plainly why.',ok:1}]);
-  await say(P,'I thank you, but no. I worship one God, who made heaven and earth, and he has asked no such washing of me. I mean no insult to you by it.');
+  await say(P,'I thank you, but no. I worship one God, who made heaven and earth, and he has asked no such washing of me. I mean no insult to you by it.',{to:CH});
   await say(CH,'One god. And he does not mind the dust? ...Aristion! Come and hear this. A man who will not wash for the gods.');
   await say(AR,'That I have not heard this month. Sit down on the steps, stranger, and tell us the rest. We have all day: we always have.');
   F.basin=1;SFX.good();await Promise.all([walk(CH,404,114),walk(P,372,118)]);CH.dir=-1;P.dir=1;codeBtn()}
@@ -679,7 +679,7 @@ const SAYS={
   {q:'A god lacks nothing.',say:'So bring them nothing. A god lacks nothing: what could your hands add to him?',ok:1}]};
 function h11(){return G.h11||(G.h11={s:0,e:0,sh:new Set(),eh:new Set(),mid:0})}
 const zone11=()=>P.x<176?'L':P.x>304?'R':'M';
-async function hearNext(w){const st=h11(),i=st[w]%4;st[w]++;st[w+'h'].add(i);return say(w==='s'?PH:AN,SAYS[w][i].say)}
+async function hearNext(w){const st=h11(),i=st[w]%4;st[w]++;st[w+'h'].add(i);return say(w==='s'?PH:AN,SAYS[w][i].say,{to:null})}
 async function overhear(z){if(F.stoic&&F.epic)return;const st=h11();
   if(z==='M'){if(!st.mid){st.mid=1;await say(P,'From here I hear both of them at once, and follow neither. I shall have to stand with the one, and then with the other.',TH)}return}
   return hearNext(z==='L'?'s':'e')}
@@ -694,7 +694,7 @@ async function sift(w){const st=h11(),who=w==='s'?PH:AN,done=w==='s'?F.stoic:F.e
     else{await say(P,'A god lacks nothing. He draws the wrong end from it: that the gods do not care. But the sentence itself is true, and he has granted it before I have opened my mouth.',TH);F.epic=1;SFX.good()}
     codeBtn();if(F.stoic&&F.epic)return picker();return}}
 async function picker(){await say(PH,'You, stranger. You have stood at my end of this colonnade and at his, and each time you scratched one line on your wax and walked away.');
-  await say(AN,'A grain here, a grain there. I know that bird. It hops about the marketplace behind the corn sellers.');await say(PH,'A seed picker.');
+  await say(AN,'A grain here, a grain there. I know that bird. It hops about the marketplace behind the corn sellers.',{to:PH});await say(PH,'A seed picker.');
   await say(P,'Let them call it picking. I know what I am gathering it for.',TH);codeBtn()}
 
 /* ============ LED TO THE AREOPAGUS ============ */
@@ -703,11 +703,11 @@ async function picker(){await say(PH,'You, stranger. You have stood at my end of
    Watchtower, 1985, "A Unique Athenian Rock"): so one question is put to Paul plainly, and he answers it plainly. */
 async function dispute(){place(PH,'agora11',P.x+46,120,-1);place(AN,'agora11',P.x+70,126,-1);AU.mood='market';
   await narr('Two schools taught under one roof and agreed on nothing. They agreed about him.',{dur:6200});await tell('v18a');
-  await say(AN,'Here he is: the seed picker. He has been into every corner of the city with his wax.');
-  await say(PH,'And what has he picked up? Tell us, stranger. What is it that you are trying to say?');
+  await say(AN,'Here he is: the seed picker. He has been into every corner of the city with his wax.',{to:PH});
+  await say(PH,'And what has he picked up? Tell us, stranger. What is it that you are trying to say?',{to:P});
   await say(P,'That God has raised a man from the dead: Jesus. And that through him there is good news for every one of you.');
-  await say(AN,'Raised from the dead! Did you hear him?');await tell('v18b');
-  await say(PH,'New gods are no matter for the steps of a colonnade. Do you bring this city gods that it does not have, stranger? Answer plainly: it is what the court will ask.');
+  await say(AN,'Raised from the dead! Did you hear him?',{to:PH});await tell('v18b');
+  await say(PH,'New gods are no matter for the steps of a colonnade. Do you bring this city gods that it does not have, stranger? Answer plainly: it is what the court will ask.',{to:P});
   await think('He asks whether I bring them new gods. What do I answer?',[
     {q:'Call it what you like. I have nothing to hide.',no:'True, and it answers nothing. He asked me plainly, and he shall have it plainly.'},
     {q:'Ask me that in the synagogue, on the Sabbath.',no:'They would never come. And it was here that I said it.'},
@@ -771,15 +771,15 @@ async function speak(){if(F.spoke)return;const st=sp11(),n=partNo(),p=PARTS[n];
   for(const k of p.told)if(!(n===1&&k==='v22'))await tell(k);
   F['s'+n]=1;if(p.g)delItem(GRAIN[p.g].item);st.ground=null;st.lean=n;if(n<7)ring11(n);SFX.click();
   if(n===1)await say(JU,'Our own altar. Then your God is no stranger to our roads, at least. Go on.');
-  else if(n===2)await say(AN,'Six hundred years, and no roof. He has us there.');
+  else if(n===2)await say(AN,'Six hundred years, and no roof. He has us there.',{to:null});
   else if(n===3)await say(AN,'Lacks nothing. I said as much this very morning. Go on, stranger.');
-  else if(n===4)await say(PH,'He says "us". He counts himself in.');
-  else if(n===5)await say(PH,'That line is one of ours.');
-  else if(n===6)await say(JU,'He says "we should not". And he is looking at the rock up there as he says it.');
+  else if(n===4)await say(PH,'He says "us". He counts himself in.',{to:null});
+  else if(n===5)await say(PH,'That line is one of ours.',{to:null});
+  else if(n===6)await say(JU,'He says "we should not". And he is looking at the rock up there as he says it.',{to:null});
   else return broke();
   codeBtn()}
 /* the hearing breaks off (Acts 17:32). Nothing the player did wins anyone or loses anyone. */
-async function broke(){await say(AN,'Raised from the dead! He kept that for the end.');await tell('v32');F.spoke=1;G.sp11=null;
+async function broke(){await say(AN,'Raised from the dead! He kept that for the end.',{to:null});await tell('v32');F.spoke=1;G.sp11=null;
   await narr('He got as far as the resurrection.',{dur:4600});
   await say(PH,'Not all of us are laughing, stranger. But this wants a longer evening than is left.');
   place(PH,'hill11',452,124,-1);place(AN,'hill11',262,124,1);SFX.good();codeBtn()}
@@ -791,7 +791,7 @@ async function broke(){await say(AN,'Raised from the dead! He kept that for the 
    possibly not a Greek, because women in Athens normally stayed out of public life: she listens from the path, below the seats. */
 async function scoff(){if(F.down)return;await say(AN,'Tell us again about the dead man who is going to judge us, seed picker. It was the best thing I have heard this month.');
   const o=['He is not dead. That is the whole of it.','You asked what it meant. I have told you.','Say no more to them.'],c=await choose(o);
-  if(c===0){await say(P,o[0]);return say(AN,'Not dead! Do you hear him? Not dead!')}
+  if(c===0){await say(P,o[0]);return say(AN,'Not dead! Do you hear him? Not dead!',{to:null})}
   if(c===1){await say(P,o[1]);return say(AN,'And we are grateful. Tell it again, slower, for my friend here.')}
   return say(P,'Every answer I gave them would be true, and each would make them merrier. The answer to this is the path down.',TH)}
 async function later(){if(F.later)return say(PH,'By the steps of the long colonnade. I shall find you.');

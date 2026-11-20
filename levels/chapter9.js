@@ -473,7 +473,7 @@ async function cryAgain(){SFX.alert();GI.talk=true;await narr('And again she cri
 async function nextDay(text){await fade(1,700);await narr(text,{dur:5600});G.metRiv=1;place9('river9');enterRoom('river9',P.x,P.y,P.dir);await fade(0,700);SFX.alert();
   await narr('The girl was on the road again, and her masters behind her.',{dur:5200})}
 async function psalm(){const me=PC();if(me!==P)return say(LU,"The psalm is Paul's to give out. I shall sing the answer with the rest.");
-  const d=day();await walk(P,262,132);P.dir=1;AU.mood='song';
+  const d=day();await walk(P,...spot(P,262,132));P.dir=1;AU.mood='song';
   if(d===1){
     await say(P,'Lydia, Phila, Elpis: this is how it goes. I give a line. Then all of us give the answer, and the answer never changes.');
     await say(EL,'One answer to every line? Then even I can keep it, sir.');
@@ -503,7 +503,7 @@ async function psalm(){const me=PC();if(me!==P)return say(LU,"The psalm is Paul'
     await say(P,'I know how it looks, Lydia. And I know that it is not she who chose the words.');
     F.d2=1;await nextDay('And so it went on, day after day.')}
   else{
-    await say(P,'One line is left, and then you have it whole. Phila: what do we have?');
+    await say(P,'One line is left, and then you have it whole. Phila: what do we have?',{to:PH});
     await say(PH,'The thanks, sir. That he did not forget us. That he saved us, again and again. And the answer to each of them.');
     await pickLine('And the last?','c4',wrongNext('c4'));
     await sung('P','c4',P,PS.c4.full,{cut:1.5});SFX.alert();GI.talk=true;await narr('The girl cried out before the line was sung.',{dur:4400});GI.talk=false;
@@ -516,7 +516,7 @@ async function expel(){AU.mood='tense';P.dir=1;await wait(500);await tell('v18')
   AU.mood='tense';await tell('v19');
   await Promise.all([walk(MA,P.x+26,P.y+1),walk(MB,SI.x+24,SI.y)]);MA.dir=MB.dir=-1;
   await say(MA,'Our girl! What have you done to our girl? She was worth a house in the city to us!');
-  await say(MB,'To the magistrates with them. Both of them!');
+  await say(MB,'To the magistrates with them. Both of them!',{to:MA});
   await fade(1,700);await narr('Two men were dragged up the road to the city. Two were left standing beside the river.',{dur:6500});
   return market()}
 /* ============ THE MARKETPLACE: told, not played ============ */
@@ -526,7 +526,7 @@ async function market(){G.st={k:0};G.scene=forumScene;AU.mood='tense';AU.amb={cr
   await fade(1,600);G.scene=dark;AU.amb={};await fade(0,300);await tell('v22');await tell('v23');await fade(1,500);
   F.jail=1;dealInv('cell9');drawInv();place9('cell9');G.scene=null;enterRoom('cell9',P.x,P.y,P.dir);await fade(0,900);
   await narr('The door shut, and took the light with it.',{dur:5000});
-  await say(P,'Silas?');await say(SI,"Here. An arm's length from you, by the sound.");codeBtn()}
+  await say(P,'Silas?',{to:SI});await say(SI,"Here. An arm's length from you, by the sound.");codeBtn()}
 
 /* ============ THE INNER PRISON: empty hands, and a song by heart ============ */
 /* For eight chapters the player has had tools, tablets, feet and a room to look at. Here the garments were torn off, the feet are in the
@@ -606,7 +606,7 @@ async function lights(){await fade(1,500);G.lit9=1;place(JA,'cell9',228,113,-1);
    house. Here they walk back in themselves, so that the jailer has his prisoners when the constables come. It is one step, and invented. */
 async function backIn(){
   if(F.back)return say(P,'We came up out of there at first light, when he called us. Once is enough.');
-  await say(P,'We go back in, brother.');
+  await say(P,'We go back in, brother.',{to:JA});
   await say(JA,'Back? Into that hole? The door is open, Paul. Every door is open.');
   await say(P,'God opened them. The magistrates did not. You answer to them for two prisoners, and in the morning you shall have two.');
   await say(JA,'I will not shut the stocks on you again.');
@@ -621,7 +621,7 @@ async function backIn(){
    unlawfully, they might be held back from mistreating the brothers who stayed. The offers, and the walk across the marketplace, are invented. */
 async function morning(){if(G.morn)return;G.morn=1;AU.mood='tense';
   await tell('v35');
-  await say(CO,'Jailer! Word from the magistrates, about the two from yesterday.');
+  await say(CO,'Jailer! Word from the magistrates, about the two from yesterday.',{to:JA});
   await tell('v36');
   await say(JA,'You hear it, brothers. It is over. Go now, while the streets are still empty.');codeBtn()}
 async function answer(){if(F.open)return offers();
@@ -630,7 +630,7 @@ async function answer(){if(F.open)return offers();
     {q:'We go, and I take this to Rome.',no:'I did not come to Macedonia to bring its magistrates to judgment. I came with good news, and it is the good news that needs clearing.'},
     {q:'We stay here until they come themselves.',ok:1}]);
   await tell('v37');
-  await say(CO,'Romans... Both of you?');await say(SI,'Both of us.');
+  await say(CO,'Romans... Both of you?');await say(SI,'Both of us.',{to:CO});
   await say(CO,'I shall tell them what you say. Word for word.');
   await fade(1,600);await tell('v38');F.open=1;await come('gaol9',700);
   await say(MG,'There has been a mistake. Nobody regrets it more than we do. It need go no further than this court.');codeBtn()}
@@ -665,9 +665,9 @@ async function home(){if(G.metHome)return;G.metHome=1;
   await say(TI,'I gathered these up from the paving when the crowd had gone, Paul: your cloaks, the pouch, the tablets.');
   strip(false);dealInv('lydia9');drawInv();SFX.pick();
   await say(LK,'Let me see your backs. ...Whoever washed these knew what he was about.');
-  await say(P,'The jailer did, Luke. He is our brother since last night, and so is all his house.');
+  await say(P,'The jailer did, Luke. He is our brother since last night, and so is all his house.',{to:LK});
   await say(LY,'The jailer?');
-  await say(SI,'It is a long story, sister, and we have an hour. The magistrates have asked us to leave the city.');
+  await say(SI,'It is a long story, sister, and we have an hour. The magistrates have asked us to leave the city.',{to:LY});
   await say(P,'Then nothing in Philippi must be left waiting for me to come back.',TH);codeBtn()}
 const CARES=[{id:'k1',who:'luke9',q:'There is a household by the prison, baptized last night. Who goes to them?'},
   {id:'k2',who:'lydia9',q:'Where do the brothers of Philippi meet, when we are gone?'},
@@ -729,7 +729,7 @@ ROOMS.river9={space:.6,walk:[16,464,116,138],mood:'rest',amb:{fountain:.5,birds:
   {name:'flat stones',x:186,y:112,w:138,h:16,wx:254,wy:130,def:'use',look:'The stones where they sit. No roof, no door, no chest for scrolls. Whatever they are to keep, they must carry away in their heads.',use:psalm,
     as:{luke:{look:'The stones of the place of prayer. I have sat here on more mornings than I had expected to stay in this city.',use:psalm}}},
   {name:'plane tree',x:340,y:30,w:66,h:84,wx:372,wy:120,look:'The plane tree. Its shade has room for a congregation, and by now it nearly has one.',as:{luke:{look:'Shade, and running water.'}}},
-  {name:'road to the gate',x:452,y:86,w:28,h:44,wx:440,wy:126,dir:1,look:'The road back up to the west gate. The girl is standing in it, and her masters behind her.',exit:toCity,as:{luke:{look:'The road to the gate, and that girl in the middle of it.'}}}]};
+  {name:'road to the gate',x:452,y:86,w:28,h:44,wx:458,wy:132,dir:1,look:'The road back up to the west gate. The girl is standing in it, and her masters behind her.',exit:toCity,as:{luke:{look:'The road to the gate, and that girl in the middle of it.'}}}]};
 /* The inner prison. Until the earthquake it is heard and not seen: its hotspots are sounds, and their names are all there is on the screen.
    Paul cannot take a step. cellNo: what each verb comes to in the dark, where a hotspot says nothing of its own. */
 const cellNo={pickup:'There is nothing here that is mine.',use:'I can reach nothing here but Silas.',open:'There is nothing here that I can open.',talk:'The dark gives no answer.',give:'I have nothing left to give.'};
@@ -881,7 +881,9 @@ function place9(room){for(const a of[SI,TI,LU,LK,LY,PH,EL,GI,MA,MB,JA,MG,M2,CO,C
     [[40,120,1],[262,121,-1],[92,113,1]].forEach(([x,y,d],i)=>{if(F.quake||!F['s'+(i+1)])place(PR[i],room,x,y,d)})}
   else if(room==='gaol9'){
     if(!F.back){place(P,room,150,124,1);place(SI,room,122,128,1);place(JA,room,236,122,-1)}
-    else{place(P,room,196,122,-1);place(SI,room,224,127,-1);place(JA,room,150,125,-1);place(CO,room,74,120,1);place(C2,room,50,127,1);if(F.open){place(MG,room,104,122,1);place(M2,room,126,129,1)}}}
+    /* when the magistrates have come, the court makes room for them: whoever talks with one of them stands beside him, and nobody behind */
+    else if(!F.open){place(P,room,196,122,-1);place(SI,room,224,127,-1);place(JA,room,150,125,-1);place(CO,room,74,120,1);place(C2,room,50,127,1)}
+    else{place(P,room,196,122,-1);place(SI,room,224,127,-1);place(JA,room,170,125,-1);place(CO,room,62,120,1);place(C2,room,40,127,1);place(MG,room,104,122,1);place(M2,room,84,128,1)}}
   swapBtn()}
 function setup9(){SI.hs=SILAS9;TI.hs=TIM9;LU.hs=LUKE9;P.hs=PAUL9;P.called='Paul';Object.assign(LU,LUK9);LU.speed=0;LU.free=false;for(const id in BY9)(ITEMS[id].by=ITEMS[id].by||{}).luke=BY9[id];
   G.metRiv=G.metHome=G.sawJ=G.morn=G.lit9=0;G.st=null;place9('lydia9');G.inv=['awl','thread','knife','tablets'];G.invs={paul:G.inv,luke:[]};drawInv()}

@@ -67,6 +67,19 @@
      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n};
  const snap=()=>JSON.stringify([F,G.invs,G.inv,G.room,G.ch]),prayBad=[];let prayed=null,prayers=0;
  {const p0=pray;window.pray=function(){prayed=snap();prayers++;return p0.apply(this,arguments)}}
+ /* talk (CONTRIBUTING section 4): at every line spoken in a room that is shown, the speaker and the one he speaks to (cur.to, see say) face each
+    other, and neither stands on the spot of another figure, where one would hide the other. A figure that walks, bows or is marked noTurn is
+    let be: it is on its way, or the scene wants it so. */
+ const talkBad=new Set();let talkN=0;
+ {const s0=say;window.say=function(a,text,o){const r=s0.apply(this,arguments);
+   try{if(a&&cur&&cur.a===a&&!cur.ink&&!cur.white&&a.room===G.room&&!G.scene&&+$('#dim').style.opacity<1){talkN++;
+     const F=Object.values(ACT).filter(x=>x.room===G.room).flatMap(x=>{const f=[{k:x,x:x.x,y:x.y,d:facing(x),still:!!still(x)}];
+         if(x.mate){const mx=x.x+x.mate.dx*x.dir;f.push({k:x.mate.voice||x.mate,x:mx,y:x.y-1,d:mateFacing(x,mx),still:!!still(x)})}return f}),
+       at=k=>F.find(f=>f.k===k),S=at(a),T=cur.to&&at(cur.to),who=k=>k.id||k.name,line=`${G.ch} ${G.room}: ${who(a)}${T?' to '+who(cur.to):''} "${String(text).slice(0,48)}"`;
+     if(S&&T&&Math.abs(T.x-S.x)>=3&&(!S.still&&Math.sign(T.x-S.x)!==S.d||!T.still&&Math.sign(S.x-T.x)!==T.d))talkBad.add('turned away: '+line);
+     for(const W of[S,T])if(W&&!W.still)for(const f of F)if(f!==W&&!f.still&&Math.abs(f.x-W.x)<10&&Math.abs(f.y-W.y)<10)talkBad.add(`hidden by ${who(f.k)}: ${line}`)}}
+   catch(e){talkBad.add('ERR '+e.message)}return r}}
+ const talked=()=>ok(talkN>40&&!talkBad.size,`${talkN} lines spoken in a room: each speaker faces the one he speaks to, who faces him, and neither stands where another hides him`+(talkBad.size?'. BAD: '+[...talkBad].slice(0,8).join(' | '):''));
  const ok=(c,m)=>{if(prayed!=null){if(snap()!==prayed)prayBad.push(m);prayed=null}L((c?'ok   ':'FAIL ')+m)};
  const halt=(name,fn)=>{if(stop===name){clearInterval(sk);L('STOP '+name+' room='+G.room+' inv='+G.inv.join(','));if(fn)fn();throw 'halt'}};
  addEventListener('error',e=>L('JSERR '+e.message));addEventListener('unhandledrejection',e=>{if(e.reason!=='halt')L('REJ '+(e.reason&&e.reason.message||e.reason))});
@@ -999,7 +1012,7 @@
   halt('journey7',()=>{ov.className=''});halt('final7')};
   if(C7){await ch7();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ---------------- Chapter Eight ---------------- */
   /* Chapter Eight stops start Chapter Eight from the title screen. Like Chapter Seven's, its test is a function of its own: the full run
      calls it when Chapter Seven has ended, and a Chapter Eight stop calls it at once. all8 halts nowhere. */
@@ -1209,7 +1222,7 @@
   halt('journey8',()=>{ov.className=''});halt('final8')};
   if(C8){await ch8();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* Chapter Nine stops start Chapter Nine from the title screen. Like the two before it, its test is a function of its own: the full run
      calls it when Chapter Eight has ended, and a Chapter Nine stop calls it at once. all9 halts nowhere. The scenes that are told and
      not played (the marketplace, the dark screen, the earthquake, the jailer's house) each have a stop of their own. */
@@ -1353,7 +1366,7 @@
   halt('map9',()=>{ov.className=''});halt('final9')};
   if(C9){await ch9();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ---------------- Chapter Ten ---------------- */
   /* Chapter Ten stops start Chapter Ten from the title screen. Its test is a function of its own: the full run calls it when Chapter Nine
      has ended, and a Chapter Ten stop calls it at once. all10 halts nowhere. The stops that begin with "p" open one room at once, with the
@@ -1558,7 +1571,7 @@
   halt('final10')};
   if(C10){await ch10();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ---------------- Chapter Eleven ---------------- */
   /* Chapter Eleven stops start Chapter Eleven from the title screen. Its test is a function of its own: the full run calls it when Chapter
      Ten has ended, and a Chapter Eleven stop calls it at once. all11 halts nowhere. The stops that begin with "p" open one room at once, with
@@ -1791,7 +1804,7 @@
   halt('final11')};
   if(C11){await ch11();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ---------------- Chapter Twelve ---------------- */
   /* Chapter Twelve stops start Chapter Twelve from the title screen. Its test is a function of its own: the full run calls it when Chapter
      Eleven has ended, and a Chapter Twelve stop calls it at once. all12 halts nowhere. The stops that begin with "p" open one room at once,
@@ -2076,7 +2089,7 @@
   const C13=/^(map13|shop13|street13|syn13|heard13|table13|mapb13|road13|city13|twelve13|door13|noon13|curt13|dawn13|dial13|hall13|eve13|asia13|apron13|hallb13|eveb13|pair13|asiab13|dawnc13|hallc13|house13|last13|heap13|board13|sum13|fire13|found13|asiac13|deutsch13|final13|all13)$/.test(stop);
   if(/^p[a-z]+13$/.test(stop)){await loadLevel(13);ov.className='';ov.onclick=null;const ALL=CHAP[13].flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
       S={pshop13:[[],'shop13',[120,122]],pshopn13:[upto('aside'),'shop13',[120,122]],pshopm13:[upto('hall'),'shop13',[150,122]],pshopc13:[upto('apr'),'shop13',[150,122]],
-        pstreet13:[[],'street13',[196,120]],pstreetb13:[upto('awl'),'street13',[204,124]],pstreetn13:[upto('out'),'street13',[430,122]],pstreetc13:[upto('m1'),'street13',[430,122]],pstreete13:[upto('e1'),'street13',[480,122]],pstreetd13:[upto('e2'),'street13',[110,122]],pstreetf13:[upto('n3'),'street13',[300,124]],pstreetg13:[upto('sum'),'street13',[300,124]],
+        pstreet13:[[],'street13',[196,120]],pstreetb13:[upto('awl'),'street13',[204,124]],pstreetn13:[upto('out'),'street13',[430,122]],pstreetc13:[upto('m1'),'street13',[430,122]],pstreete13:[upto('e1'),'street13',[480,122]],pfuller13:[upto('e1'),'street13',[480,122]],pstreetd13:[upto('e2'),'street13',[110,122]],pstreetf13:[upto('n3'),'street13',[300,124]],pstreetg13:[upto('sum'),'street13',[300,124]],
         psyn13:[[],'syn13',[250,124]],psynb13:[upto('syn'),'syn13',[118,124]],proad13:[upto('came'),'road13',[226,128]],
         phall13:[upto('m1'),'hall13',[236,116]],phallb13:[upto('m2'),'hall13',[236,116]],phallc13:[upto('m3'),'hall13',[236,116]],
         phouse13:[upto('e3'),'house13'],phouseb13:[upto('e3'),'house13'],pboard13:[upto('n3'),'board13'],pboardb13:[upto('n3'),'board13'],pasia13:[upto('n1'),'shop13'],pasiab13:[upto('sum'),'shop13'],pdial13:[upto('hall'),'street13']}[stop];
@@ -2087,6 +2100,10 @@
     if(stop==='pasia13'||stop==='pasiab13'){G.asia13=stop==='pasiab13'?'all':null;G.scene=CHAP[13].scenes.asia}
     if(stop==='pdial13'){G.dial13={a:0,b:1,k:.5};G.scene=CHAP[13].scenes.dial}
     if(stop==='pstreetg13')G.fire13=performance.now()-4000;
+    /* pfuller13: the first evening at the fuller's door, as Glaukos asks his question: the two stand side by side and face each other */
+    if(stop==='pfuller13'){G.busy=false;lock(false);clearInterval(sk);const h=H("fuller's door"),GL=ACT.glau13;clickView(h.x+h.w/2,h.y+h.h/2,h);
+      for(let i=0;i<500&&!(cur&&cur.a===GL);i++)await wait(30);await wait(1400);
+      ok(cur&&cur.a===GL&&cur.to===P&&Math.abs(GL.x-P.x)>=16&&facing(GL)===Math.sign(P.x-GL.x)&&facing(P)===Math.sign(GL.x-P.x),'at the fuller\'s door Glaukos stands beside Paul, not on his spot, and the two face each other');halt(stop)}
     G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();await wait(1100);halt(stop)}
   const ch13=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[13],told=k=>heard.includes(T(C().told[k])),
     until=async(fn,n)=>{for(let i=0;i<(n||6000)&&!fn();i++)await wait(30);await idle()},
@@ -2111,9 +2128,11 @@
     HN=['hollow marked mu and epsilon','hollow marked epsilon with a stroke','hollow marked phi','hollow marked nu','hollow marked epsilon'],TN=['trough marked mu and alpha','trough marked alpha with a stroke','trough marked rho','trough marked iota','trough marked alpha'],
     layTo=async v=>{const b=C().board(),add=C().digits(v-b.v);for(let i=4;i>=0;i--){if(add[i]>=5)await onH(HN[i]);for(let k=0;k<add[i]%5;k++)await onH(TN[i])}};
   let n13=0;
+  /* in the full run Chapter Twelve ends on a map of its own, which may still be up while Chapter Thirteen loads: wait for the new journey */
+  const was13=SHARED.map&&SHARED.map.state.legs;
   heard.length=0;(C13?document.querySelector('#overlay [data-ch="13"]'):ov).click();
   /* the map: the road out of Antioch, through Galatia and Phrygia. The account names no town on it, and the map names none. */
-  await mapUp();clearInterval(sk);for(let i=0;i<900&&!SHARED.map.state.legs.every(l=>l.k===1);i++)await wait(30);await wait(300);
+  await mapUp();for(let i=0;i<9000&&SHARED.map.state.legs===was13;i++)await wait(30);clearInterval(sk);for(let i=0;i<900&&!SHARED.map.state.legs.every(l=>l.k===1);i++)await wait(30);await wait(300);
   {const M=SHARED.map,names=M.state.boxes.map(b=>b[4]);ok(G.scene===M.draw&&M.state.legs.length===7&&inWin('antioch')&&inWin('antiochp')&&names.includes(T('Antioch'))&&!names.includes(T('Derbe'))&&!names.includes(T('Iconium'))&&!names.includes(T('Tarsus')),'chapter thirteen opens on the map: out of Antioch, through Galatia and Phrygia, and no town on that road is named ['+names.join()+']');
     ok(mapClear()&&tidy(),'no name on the map crosses a coast, an island or a route, runs off the map or lies on another ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):'')+(tidy.bad.length?': '+tidy.bad.join(', '):''))}
   halt('map13');sk=setInterval(()=>{if(G.skip)G.skip()},30);
@@ -2366,10 +2385,10 @@
   };
   if(C13){await ch13();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(C12){await ch12();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(!C3&&!C4&&!C5&&!C6&&!HUB){
   /* Prologue ("The Road to Damascus"): only when stop==='all', test skipping the whole prologue with SKIP, then playing the whole prologue through into Chapter One */
   if(stop==='all'){
@@ -3324,7 +3343,7 @@
   ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
   /* the narrator's scroll: every line of narration told in the dark was read from it, and it is down again at the end */
   ok(inked>=80&&SHARED.scroll&&SHARED.scroll.state==='down'&&!SHARED.scroll.over.length,inked+' lines of narration were told in the dark, and each was read from the scroll');
-  fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
+  talked();fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
   L('DONE');
  }catch(e){if(e!=='halt')L('ERR '+(e&&e.message||e))}})();
 })();

@@ -731,7 +731,7 @@ const AP=actor('aq13','Aquila and Priscilla','#b8d0e8',112),AO=actor('apollos13'
   DI=actor('diod13','Diodotos','#c8e0b0',124),TI=actor('timothy13','Timothy','#b8e0b0',146),WE=actor('well13','man beside Myrtale','#e0d8b8',120),
   D1=actor('dz13a','disciple','#d8c8e8',116),D2=actor('dz13b','old disciple','#e0d8c0',92),D3=actor('dz13c','young disciple','#c8e8d8',140);
 const PR={color:'#f0b8c0',pitch:186,name:'Priscilla',talk:false,get room(){return AP.room},get x(){return AP.x-13*AP.dir},get y(){return AP.y}};
-AP.mate={fig:'prisca13',dx:-13,get talk(){return PR.talk}};AP.called='Aquila';
+AP.mate={fig:'prisca13',dx:-13,voice:PR,get talk(){return PR.talk}};AP.called='Aquila';
 /* voices at the counting board, of people who are heard and not named */
 const V1={color:'#f0d0c0',pitch:176,name:'woman'},V2={color:'#c0d8e8',pitch:104,name:'man from the harbor'},V3={color:'#d8e0b8',pitch:132,name:'two brothers'},V4={color:'#e0d8d0',pitch:86,name:'old man'};
 
@@ -829,7 +829,7 @@ async function synEnter(){
 async function listen(){if(PC()===P)return;const st=ticked();
   if(F.gap)return say(AO,'After sundown, then. I shall find the house: across the street, where the awning is.');
   if(F.apo)return gap();
-  const h=HEARD[st.i];for(const s of h.say)await say(AO,s);
+  const h=HEARD[st.i];for(const s of h.say)await say(AO,s,{to:null});
   let av=HEARD.filter(x=>!st.t.includes(x.k));
   for(;;){await say(PR,'Which of ours was that?',TH);const pick=av[await choose(av.map(x=>x.q).concat(['That is not how we were taught it.']))];
     if(!pick){await say(AP,'Brother, a question, if the house allows it. We were taught this in other words. Is it the same?');
@@ -917,7 +917,7 @@ async function threeMonths(){await say(PH,'Paul of Tarsus! If Jehovah is willing
   await say(P,'And he was willing, Philon. This time I have not come for one Sabbath.');
   await narr('They gave him the reader\'s table. Sabbath after Sabbath the benches were full.',{dur:7000});await tell('v8');
   await fade(1,500);F.syn=1;G.heat13=0;show13('syn13',118,124,1);await fade(0,600);await narr('Three months. Then some of the benches began to answer him, and not from the Scriptures.',{dur:7500});await tell('v9a');
-  await say(SY,'Three months we have let him talk! Look at the faces of our own sons. I say it before all of you: this Way of his is a pit, and he digs it in our own house.');
+  await say(SY,'Three months we have let him talk! Look at the faces of our own sons. I say it before all of you: this Way of his is a pit, and he digs it in our own house.',{to:null});
   await say(P,'He is not speaking to me. He is speaking to the benches, about me.',TH)}
 /* ANSWERS: what he could answer, each of it true: what is chosen, what he says, and what comes back */
 const ANSWERS=[['The Kingdom I speak of is the one that Daniel saw.','The Kingdom I speak of is the one that Daniel saw: set up by the God of heaven, and by no man.','Daniel! He takes Daniel in his mouth, and means his Nazarene. Do you hear it, all of you?'],
@@ -1030,7 +1030,7 @@ async function diodotos(){const a=G.as13||(G.as13={});if(F.two||a.di)return say(
   await say(DI,'Under the vine, where the carriers lodge. Tonight I shall be sitting at the door.');a.di=1;SFX.pick();return bothAsked()}
 async function bothAsked(){const a=G.as13;if(!(a.he&&a.di))return;F.two=1;codeBtn();await say(P,'Hegesias at the wine seller\'s, and gone by morning. Diodotos under the vine. I have noted both.',TH)}
 async function confess(){await narr('When he had finished, a man in a good mantle stood up from the middle of the benches.',{dur:6500});
-  await say(KL,'Kleandros. Most of you know my house, and some of you know why people came to it by night. I have believed what this man says for a year. And for a year I have kept my books.');await tell('v18');
+await say(KL,'Kleandros. Most of you know my house, and some of you know why people came to it by night. I have believed what this man says for a year. And for a year I have kept my books.',{to:null});await tell('v18');
   await say(KL,'I want them out of my house, every one, and I no longer know where they all are. Paul: come this evening, and help me turn the house out.');F.kle=1;codeBtn();
   await say(P,'This evening, Kleandros. The house at the end of the street, with the bench by its door.')}
 /* the evening: a question that was asked in the hall is answered at a door, by lamplight (Acts 20:20) */
@@ -1044,18 +1044,18 @@ async function evening(who){const d=DAY(),pc=PC();
   await goto('house13',160,236,1)}
 /* pass: Paul answers from his tablets. The one who asked says what he makes of each passage. */
 async function pass(who,right,miss){const ks=Object.keys(PS);for(;;){const k=ks[await choose(ks.map(k=>PS[k].ref))];await say(P,quote(k));if(k===right)return;await say(who,miss[k])}}
-async function visit1(){place(GL,'street13',508,116,-1);await say(GL,'You came. Sit on the step: the fuller is asleep, and his vats are not. Now. Whose kingdom, and when?');
+async function visit1(){place(GL,'street13',532,117,-1);await say(GL,'You came. Sit on the step: the fuller is asleep, and his vats are not. Now. Whose kingdom, and when?');
   await pass(GL,'da244',{ps1465:'A God who made the sea and the land. Good. But I asked who is to rule them.',is403:'A road through a desert. And who rules at the end of it?'});
   await say(GL,'Set up by the God of heaven, and handed to no other people. And all these kingdoms, it says. Rome too?');
   await say(P,'I did not write it, Glaukos. I only carry it. It says: all these kingdoms.');
   await narr('He stayed until the fuller\'s lamp had been filled a second time.',{dur:6500});await tell('a2020');F.a1=1;GL.room=null;SFX.good();codeBtn();
   await say(P,'That is enough for one day. The loft, and sleep.',TH)}
-async function visit2(){place(HE,'street13',133,116,1);await say(HE,'In here, out of the lamplight: my cousin does not like the Jews\' God discussed in front of his jars. Now: who brings a ship home?');
+async function visit2(){place(HE,'street13',157,117,-1);await say(HE,'In here, out of the lamplight: my cousin does not like the Jews\' God discussed in front of his jars. Now: who brings a ship home?');
   await pass(HE,'ps1465',{da244:'Kings and kingdoms. I asked about the sea, friend.',is403:'A road in a desert! I am a seaman.'});
   await say(HE,'The one who made the sea, and everything in it. Then the thing we carry has been a passenger all these years, and has never paid its fare.');
   await narr('He stayed until the wine seller put out the lamp, and then they talked on in the dark.',{dur:7000});F.a2=1;HE.room=null;SFX.good();codeBtn();
   if(!F.p2)await say(P,'And Diodotos is still sitting under his vine. That table is not mine tonight.',TH)}
-async function visit2p(){place(DI,'street13',564,116,-1);await say(DI,'I asked the tentmaker a question, and he has sent me... who are you?');
+async function visit2p(){place(DI,'street13',588,117,-1);await say(DI,'I asked the tentmaker a question, and he has sent me... who are you?');
   await say(AP,'Tentmakers too. Aquila, and Priscilla, my wife. You asked when a man who works six days is to learn all this.');
   await think(AP,null,[
     {q:'Paul would explain it to you better than we can.',no:'He left this table to us because we can.'},
@@ -1108,7 +1108,7 @@ async function lastRoll(){if(F.last)return;await say(KL,'It lies in the strongbo
   await say(P,'Seven, out of one house. And he says that there are a great many such houses.',TH)}
 /* the morning of the fire, and the sum */
 async function lastMorning(){G.bd13=null;playAs(P);show13('street13',260,124,1);await fade(0,700);await narr('In the morning they carried them out into the street: his, and many another man\'s.',{dur:7500});
-  await say(KL,'Before we light it, let it be reckoned. Let the city hear what we are burning.');await say(TI,'I shall keep the count on my tablet. Somebody must lay it out on the board.')}
+  await say(KL,'Before we light it, let it be reckoned. Let the city hear what we are burning.',{to:null});await say(TI,'I shall keep the count on my tablet. Somebody must lay it out on the board.')}
 /* OWNERS: who lays down what. cap: what is written under the board; n: the sum that was said. The five add up to fifty thousand. */
 const OWNERS=[
  {who:()=>KL,line:'The roll from my strongbox: twelve thousand pieces of silver. The six others: three thousand, all of them together.',cap:'Kleandros: one roll at twelve thousand, and six more at three thousand together',n:15000},
@@ -1137,7 +1137,7 @@ async function reckon(){const b=board();if(F.sum||b.k>4)return;const want=WANT(b
   if(b.v!==want)return say(TI,b.v<want?'I have more than that on my tablet, with this one added. Count it over.':'I have less than that on my tablet. There are too many pebbles down.');
   b.base=b.v;b.k++;SFX.pick();if(b.k<5){await say(TI,['Fifteen thousand. Next.','Sixteen thousand six hundred. Next.','Twenty-six thousand five hundred. Next.','Thirty-one thousand seven hundred and fifty. One more.'][b.k-1]);return say(OWNERS[b.k].who(),OWNERS[b.k].line)}
   F.sum=1;codeBtn();SFX.good();await say(TI,'One pebble, in the highest place, and the board bare under it. Fifty thousand.');await wait(400);await outBoard();return fire()}
-async function fire(){await say(KL,'Fifty thousand pieces of silver. A man could work his whole life, and his son after him, and not earn it. Light it.');G.fire13=performance.now();AU.amb={fire:.9,crowd:.4};AU.mood='fire';
+async function fire(){await say(KL,'Fifty thousand pieces of silver. A man could work his whole life, and his son after him, and not earn it. Light it.',{to:null});G.fire13=performance.now();AU.amb={fire:.9,crowd:.4};AU.mood='fire';
   await tell('v19a');await tell('v19b');
   await narr('Nobody had ordered it. Nobody was paid for his loss. They stood round it until it had burned down, and went home lighter.',{dur:9500});await tell('v20');
   await fade(1,700);G.asia13='all';G.scene=asia13;AU.amb={wind:.25};await fade(0,700);
@@ -1421,7 +1421,7 @@ async function start13(){ov.onclick=null;ov.className='';audioInit();SFX.good();
     try{await need('map');await SHARED.map.journey(ROAD1,{view:'aegean',labels:LAB13,speed:1400});await tell('v23',null,1)}catch(e){console.error(e)}
     await fade(1,600);G.scene=null;setScore(MUSIC);show13('shop13',...ENT.shop13);drawInv();await fade(0,700);
     await narr('Meanwhile, at Ephesus, the bench that had come over the sea from Corinth stood in a new street.',{dur:8000});await tell('v24');
-    await say(AP,'They say in the street that a man from Alexandria is to speak in the synagogue this Sabbath. Apollos, his name is.');
+    await say(AP,'They say in the street that a man from Alexandria is to speak in the synagogue this Sabbath. Apollos, his name is.',{to:PR});
     await say(PR,'Then on the Sabbath the bench can wait. Bring the tablets.');codeBtn()},true)}
 
 /* ============ PRAYER HINTS ============ */

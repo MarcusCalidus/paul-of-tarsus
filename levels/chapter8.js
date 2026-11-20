@@ -611,7 +611,7 @@ async function ferry(){const me=PC();
   await say(KL,'Step aboard, then, and sit low. She is steady, but she is slow.');
   await walk(P,FERRY[0]+38,113);AU.mood='tense';await fade(1,700);
   await narr('But the spirit of Jesus would not let them. (Acts 16:7)',{dur:8000});
-  place(P,'ferry',300,122,1);place(SI,'ferry',330,125,-1);place(TI,'ferry',356,128,-1);await fade(0,700);
+  place(P,'ferry',300,122,1);place(SI,'ferry',322,127,-1);place(TI,'ferry',276,128,1);await fade(0,700);
   await say(P,'Not Bithynia either. Twice now.',TH);
   await think('A second road is closed to us. What do we do?',[
     {q:'We wait at the ferry until the way is opened.',no:'Twice I have been turned, and both times only after I had set out. I will not sit on a river bank and call that obedience.'},
@@ -658,11 +658,11 @@ KL.hs={name:'Kleitos',actor:KL,
 async function troasIntro(){if(G.metTroas)return;G.metTroas=1;
   await narr('Troas: the principal seaport of that coast, and a colony of Rome. It was probably the spring of the year 50.',{dur:7500});
   noise({d:.18,v:.3,f:900,q:.8});noise({t:now()+.12,d:.3,v:.2,f:2600,q:1});
-  await say(LE,'Mind the sling! ...Too late. Sosias! Let me see that arm.');
+  await say(LE,'Mind the sling! ...Too late. Sosias! Let me see that arm.',{to:SO});
   await say(SO,'It is nothing, master. The jar caught me as it went.');
-  await say(LU,'It is not nothing. Sit down, man, and hold the arm up. Let me through: I am a physician.');
+  await say(LU,'It is not nothing. Sit down, man, and hold the arm up. Let me through: I am a physician.',{to:SO});
   await say(LE,'My best hand, and I sail for Neapolis with the first fair wind! I will not put to sea a man short.');
-  await say(LU,'You there: travelers, by the dust on you. I have oil and wine. What I have not got is clean linen, and I want it now.');
+  await say(LU,'You there: travelers, by the dust on you. I have oil and wine. What I have not got is clean linen, and I want it now.',{to:PC()});
   await say(P,'A harbor, at the end of the only road that was left open. I still do not know why we are here. But that man is bleeding, and that I understand.',TH);swapBtn();codeBtn()}
 /* cutStrips: clean linen, cut into strips along the thread */
 async function cutStrips(){if(F.strips)return say(P,'They are cut.');
@@ -707,7 +707,7 @@ async function treat(it){
 /* slung: the hand is cared for; the four men find that they are brothers, and go to the inn */
 async function slung(){playAs(P);F.slung=1;AU.mood='calm';SFX.good();
   await say(LE,'He can steer with one hand, and by Neapolis he will haul with two. Physician, tentmaker: I am in your debt.');
-  await say(LU,'Luke. A physician, as you saw. That sling was hemmed in the time that it took me to tie a knot.');
+  await say(LU,'Luke. A physician, as you saw. That sling was hemmed in the time that it took me to tie a knot.',{to:P});
   await say(P,'Paul, of Tarsus. I sew tents, not slings: but a seam is a seam. These are Silas and Timothy.');
   await say(LU,'I heard the young man call you "brother". Not many in Troas use that word as he used it. I use it so too.');
   await say(P,'Then there are four of us on this quay tonight.');
@@ -753,7 +753,7 @@ async function tell(){
 async function aboard(){const me=PC();
   if(eve())return say(me,me===P?"She is Leon's ship, and he is loading her. I have no business aboard.":'I have no business aboard. My business is sitting on that bale, holding his arm.');
   if(!F.concl)return say(me,me===P?'Not before the brothers have heard what I saw in the night.':'Paul has something to tell us first. I can see it in his face.');
-  playAs(P);await say(P,'Leon. You are bound for Neapolis. Have you room for four men, who mean to pay their way?');
+  playAs(P);await say(P,'Leon. You are bound for Neapolis. Have you room for four men, who mean to pay their way?',{to:LE});
   await say(LE,'Room, yes. Pay it in hands, not in coin: I am short of two good arms until that one mends. Come aboard. This wind will not wait for any of us.');
   await leg(4,['So we left Troas by ship, and held one course all the way to Samothrace. (Acts 16:11)']);
   G.scene=deckScene;AU.mood='night';AU.amb={waves:.6,creak:.5,wind:.3};await fade(0,700);
@@ -783,7 +783,7 @@ ROOMS.troas={space:.7,walk:[16,464,112,138],get mood(){return F.vision?(F.concl?
   {name:'coil of rope',x:388,y:108,w:20,h:8,wx:398,wy:120,look:'A coil of good line, laid down by somebody who cares for it.',pickup:"It is the ship's."},
   {name:'heap of old sailcloth',x:408,y:101,w:54,h:18,wx:403,wy:122,dir:1,
     look:()=>say(P,F.offcut?'Old sailcloth. I have taken what I needed, and I asked first.':'A heap of old sailcloth: what is left when a sail is past mending. Some of it is still sound.'),
-    pickup:Object.assign(async()=>{if(F.offcut)return say(P,'I have what I needed.');if(!eve())return say(P,'It is rags, and this morning I have no use for rags.');await say(P,'Leon, may I have a piece of this?');await say(LE,'That? It is past saving. Take the heap, if rags are any use to you.');
+    pickup:Object.assign(async()=>{if(F.offcut)return say(P,'I have what I needed.');if(!eve())return say(P,'It is rags, and this morning I have no use for rags.');await say(P,'Leon, may I have a piece of this?',{to:LE});await say(LE,'That? It is past saving. Take the heap, if rags are any use to you.');
       F.offcut=1;toPaul('offcut');await say(P,'One sound piece is enough.')},{take:1})}]};
 LE.hs={name:'Leon',actor:LE,
   look:()=>say(P,F.vision?'Leon, with one eye on his cargo and the other on the wind. It has come round into the south.':F.slung?'Leon. He has stopped shouting, and started counting his jars again.'
@@ -908,7 +908,7 @@ async function riverIntro(){if(F.sat||G.metRiv)return;G.metRiv=1;
   await say(P,quote('ps65'),TH);
   await say(P,'They have not seen us yet.',TH);codeBtn()}
 async function approach(){const me=PC();
-  if(me!==P)return say(LU,'Paul is weighing how we should come to them. Where he sits down, I shall sit.');
+  if(me!==P)return say(LU,'Paul is weighing how we should come to them. Where he sits down, I shall sit.',{to:null});
   await think('They have not seen us yet. How do we come to them?',[
     {q:'Stand before them, and address them as in a synagogue.',no:'There is no platform here, and nobody presiding to send us word. They came out to pray, not to be addressed by four strangers on their feet.'},
     {q:'Keep our distance until they have gone home.',no:'I have asked after them in the city for days. They are here now, and so are we. I did not cross the sea to stand behind a tree.'},
@@ -928,9 +928,9 @@ async function speak(){
   await say(P,'Isaiah wrote that of the Christ. It has happened, in our own days, in Jerusalem. His name is Jesus.');
   await say(P,quote('ps16'));
   await say(P,'God did not abandon him to the Grave. He raised him up, and many saw him alive. I am one of them.');
-  await say(SI,'I am from Jerusalem. I know men who ate with him after he was raised.');
-  await say(TI,'My mother and my grandmother taught me the holy writings, as somebody taught them to you. Everything in them led here.');
-  await say(LU,'I am a physician. I know what one life is worth to those who are losing it. This one was given for all of us.');
+  await say(SI,'I am from Jerusalem. I know men who ate with him after he was raised.',{to:null});
+  await say(TI,'My mother and my grandmother taught me the holy writings, as somebody taught them to you. Everything in them led here.',{to:null});
+  await say(LU,'I am a physician. I know what one life is worth to those who are losing it. This one was given for all of us.',{to:null});
   await narr('One of the listeners was a woman called Lydia, from the city of Thyatira, who sold purple and worshipped God. Jehovah opened her heart fully, so that she paid close attention to what Paul said. (Acts 16:14)',{dur:14000});
   await say(LY,'I came down here this morning to pray, sir, as I do on every Sabbath. I did not know that I was coming to hear this. Tell it to me again: all of it, from the beginning.');
   await say(P,'It was not my words that opened that heart. I have planted nothing here that was not waited for.',TH);

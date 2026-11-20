@@ -529,7 +529,7 @@ async function lysIntro(){if(F.healed)return;
 async function speak6(){if(F.healed)return say(PC(),'It has been said, and seen. Now they must be made to understand it.');
   if(!F.metTim)return say(PC(),PC()===P?'To whom? I do not yet know who lives in this town, or what they have ever heard. That boy with the jar is listening to our Greek.':'Paul should know first who lives here. That boy with the jar is listening to every word of our Greek.');
   playAs(P);await Promise.all([walk(P,262,118),walk(BN,244,124)]);P.dir=1;BN.dir=1;
-  await say(P,'People of Lystra! We are travelers, and we bring good news to this town.');
+  await say(P,'People of Lystra! We are travelers, and we bring good news to this town.',{to:null});
   await narr('A man was sitting there in Lystra whose feet were crippled: lame since he was born, he had never once walked. (Acts 14:8)',{dur:8000});
   await narr('He was listening while Paul spoke. Paul looked hard at him, saw that he had the faith to be healed, and called out loudly: (Acts 14:9, 10)',{dur:9500});
   await say(P,'Get up, and stand on your feet! (Acts 14:10)');
@@ -538,7 +538,7 @@ async function speak6(){if(F.healed)return say(PC(),'It has been said, and seen.
   await walk(LM,300,122);await walk(LM,344,118);LM.dir=-1;
   G.crowd=1;AU.mood='tense';SFX.alert();
   await narr('The crowds saw what Paul had done, and a shout went up in the Lycaonian tongue. (Acts 14:11)',{dur:6500});
-  await say(P,'What are they shouting, Barnabas? That is not Greek.');
+  await say(P,'What are they shouting, Barnabas? That is not Greek.',{to:BN});
   await say(BN,'Not one word of it. But look at their faces, Paul. That is not how men look at two travelers.');
   await say(P,'I cannot answer what I do not understand. Someone in this town must have both tongues.',TH)}
 /* hear: one of the household of Lois, who speak Greek and Lycaonian, tells them what the crowd is saying, and what is coming to the gate. */
@@ -563,19 +563,19 @@ async function stop6(){playAs(P);
     {q:'We are Jews, and our Law forbids this.',no:'True. And the Law of Moses is nothing to them: they have never heard it read.'},
     {q:'Stop! This is an offense against God.',no:'True again. But to them a god offended is a god who wants a bigger sacrifice.'},
     {q:'We are only human, with the same weaknesses as you.',ok:1}]);
-  await say(P,'Men, why do you do this? We are only human, and have the same weaknesses as you. (Acts 14:15)');
-  await say(BN,'Look at us! We tire, we hunger, we fall ill, the same as you!');
+  await say(P,'Men, why do you do this? We are only human, and have the same weaknesses as you. (Acts 14:15)',{to:null});
+  await say(BN,'Look at us! We tire, we hunger, we fall ill, the same as you!',{to:null});
   await think('Now: to whom do I turn them? They know nothing of Abraham, and nothing of Moses.',[
     {q:'As it is written in the Psalms...',no:'Written where? No psalm was ever read aloud in this town. I must say what the psalm says, and leave out its name.'},
     {q:'To the God of Abraham, Isaac and Jacob.',no:'Three names they have never heard. I must begin further back than Abraham.'},
     {q:'To the living God, who made heaven, earth and sea.',ok:1}]);
-  await say(P,'We bring you good news, so that you may leave these empty things and turn to the living God: the one who made heaven, earth and sea, and everything that is in them. (Acts 14:15)');
-  await say(BN,'In the generations before ours he let every nation go its own way. (Acts 14:16)');
+  await say(P,'We bring you good news, so that you may leave these empty things and turn to the living God: the one who made heaven, earth and sea, and everything that is in them. (Acts 14:15)',{to:null});
+  await say(BN,'In the generations before ours he let every nation go its own way. (Acts 14:16)',{to:null});
   await think('They will ask how they were to know him. What witness has he given to farmers in a valley?',[
     {q:'The Law and the Prophets.',no:'His witness to Israel. It was never read in this valley.'},
     {q:'The man from the well, on his feet.',no:'They have seen it. It is what set them shouting for Zeus. A sign needs someone to say whose it is.'},
     {q:'Rain from heaven, and seasons of harvest.',ok:1}]);
-  await say(P,'Even so, there was always something to bear witness to him: the good he did. He gave you rain from heaven and seasons of harvest, food in plenty, and hearts full of gladness. (Acts 14:17)');
+  await say(P,'Even so, there was always something to bear witness to him: the good he did. He gave you rain from heaven and seasons of harvest, food in plenty, and hearts full of gladness. (Acts 14:17)',{to:null});
   PR.dir=-1;await say(PR,'You will not have the bulls? ...Then I do not know what you are.');
   walk(PR,20,118);await wait(900);G.bulls=0;G.crowd=1;AU.mood='tense';PR.room=null;
   await narr('Even with these words they could scarcely keep the crowds from offering sacrifice to them. (Acts 14:18)',{dur:7500});

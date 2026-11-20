@@ -551,7 +551,7 @@ const AQ=actor('aquila12','Aquila and Priscilla','#b8d0e8',112),AP=actor('aq12',
   DE=actor('dec12','Decimus','#d8d8c8',134),PH=actor('philon12','Philon','#e0e0f0',90),AT=actor('att12','attendant','#e0c0b0',110);
 const pairOn=()=>!!F.laid&&!F.eph,PAIR=()=>AP.room?AP:AQ;
 const PR={color:'#f0b8c0',pitch:186,name:'Priscilla',talk:false,get room(){return PAIR().room},get x(){const a=PAIR();return a.x-13*a.dir},get y(){return PAIR().y}};
-const MATE={fig:'prisca12',dx:-13,get talk(){return PR.talk}};AQ.mate=MATE;AP.mate=MATE;AQ.called=AP.called='Aquila';
+const MATE={fig:'prisca12',dx:-13,voice:PR,get talk(){return PR.talk}};AQ.mate=MATE;AP.mate=MATE;AQ.called=AP.called='Aquila';
 
 /* ============ WHAT THE ACCOUNT SAYS ============ */
 /* TOLD: Acts 18:1-22, verse by verse, told by the narrator in paraphrase, each with its reference; and with it what Paul's letters
@@ -614,7 +614,7 @@ const lit12=(x,y)=>lightAt(G.room,x,y);
 async function darkly(fn){await fade(1,500);G.scene=dark12;const m=AU.mood;AU.mood='night';AU.amb={};await fade(0,300);await fn();await fade(1,400);G.scene=null;AU.mood=m}
 
 /* ============ AUTUMN: the same trade ============ */
-async function toShop(){if(F.sab&&!F.came){await fade(1,260);place12('shop12');place(P,'shop12',60,122,1);enterRoom('shop12',60,122,1);codeBtn();await fade(0,260);return arrive()}
+async function toShop(){if(F.sab&&!F.came){await fade(1,260);place12('shop12');place(P,'shop12',124,122,-1);enterRoom('shop12',124,122,-1);codeBtn();await fade(0,260);return arrive()}
   await goto('shop12',60,122,1);if(!F.met)return meet()}
 async function meet(){await say(AQ,'Peace, stranger. You look at that cloth the way a man looks at his own.');
   await say(P,'Goat hair, woven tight: Cilician. I grew up with it under my hands. I am from Tarsus, and a tentmaker.');
@@ -672,7 +672,7 @@ async function sabbaths(){await fade(1,400);place12('street12');place(P,'street1
 async function arrive(){place(SI,'shop12',40,118,1);place(TI,'shop12',64,123,1);await narr('Late in that year two men stood in the opening of the shop, grey with the road.',{dur:6500});await tell('v5a');
   await say(TI,'Paul! We asked for a tentmaker from Tarsus at every bench in this street.');
   await say(SI,'From the brothers in Macedonia, for your needs. They would not let us leave without it.');await tell('k119');
-  await say(P,'Then I owe this bench nothing more than what I have promised on it.');F.came=1;place12('shop12');place(P,'shop12',60,122,1);codeBtn();
+  await say(P,'Then I owe this bench nothing more than what I have promised on it.');F.came=1;place12('shop12');place(P,'shop12',124,122,-1);codeBtn();
   await say(P,'One order of mine is open: the cover for Sabinus, half sewn. I leave no promise lying on a bench.',TH)}
 async function closeSeam(){if(F.seam)return say(P,'Sewn to the corner, and the thread made fast.');SFX.sew();
   await say(P,'I sew on to the corner, and make the thread fast there. From a corner another hand can go on, and nobody will see where mine stopped.');F.seam=1}
@@ -820,7 +820,7 @@ async function decimus(){if(G.room==='agora12'){if(F.dec)return say(DE,'I shall 
 async function after3(){codeBtn();if(keptAll())await say(P,'I have kept what I promised. And Justus sent word this morning: his court is too small.',TH)}
 async function toAgora(){if(!F.stay)return say(P,'The steps to the marketplace. My way lies between the bench and the synagogue.');await goto('agora12',40,124,1)}
 async function sewSecond(id){if(id!=='awl12'&&id!=='thread12')return false;if(!(F.summer&&keptAll())||F.cloth2)return false;SFX.sew();
-  await say(AP,'A second cloth, half as wide as the first. Paul will know where it has to hang.');F.cloth2=1;await say(PR,'Stephanas is at the door for it already.');codeBtn()}
+  await say(AP,'A second cloth, half as wide as the first. Paul will know where it has to hang.',{to:PR});F.cloth2=1;await say(PR,'Stephanas is at the door for it already.');codeBtn()}
 async function year(){await say(SP,'Shade on every bench, and light where you stand. Now nobody has to leave before you have finished.');await tell('c1615');
   await narr('A year had gone by since he came into this street with his tools, and no bench to use them at.',{dur:7500});codeBtn();
   await fade(1,500);F.word=1;place12('shop12');place(P,'shop12',150,124,1);enterRoom('shop12',150,124,1);codeBtn();await fade(0,600);
@@ -1121,7 +1121,7 @@ function place12(room){const pc=PC();for(const a of EVERY){a.room=null;a.bow=fal
     if(F.stay&&v==='w'){if(!F.brought)place(MA,room,278,118,-1);place(TR,room,96,116,1);if(!F.pKal)place(KA,room,222,120,-1)}
     else if(F.stay&&v==='s'){place(TR,room,96,116,1);if(!F.pPra)place(PX,room,332,121,1);place(EU,room,256,116,1);if(!F.pDec)place(DE,room,596,121,-1)}
     else if(F.stay&&v==='u'&&!F.gallio)place(EU,room,280,118,-1)}
-  else if(room==='court12'){place(TJ,room,246,116,-1);if(F.r2)place(CR,room,214,121,-1);if(F.cloth2){place(SP,room,196,126,-1);place(GA,room,78,125,1)}if(F.gallio){place(SI,room,132,126,1);place(TI,room,156,130,1)}}
+  else if(room==='court12'){place(TJ,room,246,116,-1);if(F.r2)place(CR,room,214,121,-1);if(F.cloth2){place(SP,room,196,126,-1);place(GA,room,100,126,1)}if(F.gallio){place(SI,room,132,126,1);place(TI,room,156,130,1)}}
   else if(room==='cen12'){if(!F.summer&&!F.cen&&F.pKal)place(KA,room,200,120,-1);if(F.summer&&!F.cen&&F.pPra)place(PX,room,214,121,-1)}
   else if(room==='agora12'){if(SEAS()==='s'&&F.pDec)place(DE,room,296,121,-1);if(SEAS()==='u'&&!HEARING())place(TR,room,128,117,-1)}
   else if(room==='wait12')place(AT,room,84,120,1);
