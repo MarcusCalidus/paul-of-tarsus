@@ -84,6 +84,7 @@
   10:async()=>{const r=ROOMS.table10.hs.filter(h=>!h.vis||h.vis())[5];for(let i=0;i<4;i++){await clickView(r.x+r.w/2,r.y+r.h/2,r);await idle()}}, // Chapter Ten: the Prophets wound past their last place
   11:async()=>{const l=ROOMS.street11.hs.filter(h=>h.name==='lane')[0];for(let i=0;i<3;i++){await clickView(l.x+l.w/2,l.y+l.h/2,l);await idle()}}, // Chapter Eleven: the wrong lane, three times
   12:async()=>{verb('use');item('awl12');const h=H('rolls of cloth');await clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()}, // Chapter Twelve: as Aquila and Priscilla, the awl with the Cilician cloth
+  13:()=>act('look','something under the bench'), // Chapter Thirteen: in the hall at midday, what a pupil left under the bench
  };
  (async()=>{try{
   while(!G.ready)await wait(30);
@@ -2045,7 +2046,7 @@
   ok(ov.classList.contains('end')&&said('In Corinth nobody had to let him down a wall. He stayed until he could say goodbye.'),'chapter twelve complete screen shown');
   ok(ov.textContent.includes(T('Click to look back along the road'))&&/18:1-22/.test(ov.textContent),'the closing screen says what the account leaves unsaid');
   {const r=ov.getBoundingClientRect(),bad=[...ov.children].filter(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});if(bad.length)tight.add('closing screen: '+bad[0].textContent.slice(0,40))}
-  ok(store('paul.save')===null,'a finished game keeps no save');
+  ok(store('paul.save')===codeOf(13,0)&&ov.textContent.includes(T('Chapter Thirteen code: {code}',{code:codeOf(13,0)}))&&/^13-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(codeOf(13,0))&&decode(codeOf(13,0)).ch===13,'chapter twelve ends with a chapter thirteen code, and the browser keeps it');
   halt('final12');
   /* the look back: the roads of all twelve chapters, journey by journey, and no two of them cross on one map */
   await wait(1600);clearInterval(sk);ov.click();
@@ -2054,7 +2055,7 @@
       if(k===3)halt('back12');if(G.skip)G.skip();await wait(200)}
     ok(!bad.length&&NB===5,'the look back: five maps, the roads of twelve chapters, no two routes crossing, and no name across a line, off the map or on another'+(bad.length?' BAD '+bad.join(' | '):''))}
   sk=setInterval(()=>{if(G.skip)G.skip()},30);for(let i=0;i<600&&!ov.textContent.includes(T('THE ROAD SO FAR'));i++)await wait(50);note();
-  ok(ov.textContent.includes(T('THE ROAD SO FAR'))&&told('v23')&&ov.textContent.includes(T('Click to return to the title')),'and then what Acts says next: after some time he set out again (Acts 18:23)');
+  ok(ov.textContent.includes(T('THE ROAD SO FAR'))&&told('v23')&&ov.textContent.includes(T('Click to continue to Chapter Thirteen')),'and then what Acts says next: after some time he set out again (Acts 18:23)');
   /* what the account says was all told; and the chapter's data is whole */
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length&&Object.keys(C().told).length===37,'every verse of Acts 18:1-23 was told by the narrator, and what his letters say of these months'+(miss.length?' MISSING '+miss:''))}
   {const bad=[];for(const k in C().told)if(!T.peek(C().told[k]))bad.push('untranslated '+k);for(const q of C().prom)if(!T.peek(q.note))bad.push('untranslated '+q.k);for(const o of C().open)if(!T.peek(o))bad.push('untranslated opening');
@@ -2068,6 +2069,304 @@
      peak=x=>{let p=0;for(const v of x){if(!isFinite(v))return NaN;p=Math.max(p,Math.abs(v))}return p},a=peak(await off(()=>C().seat(),7)),b=peak(await off(()=>C().chord(4),2));
    ok(a>.01&&a<.98&&b>.005&&b<.9,`offline: the drum before the seat and the chord of an awning that holds render finite, audible and unclipped (peaks ${a.toFixed(2)}, ${b.toFixed(2)})`)}
   };
+  /* ---------------- Chapter Thirteen ---------------- */
+  /* Chapter Thirteen stops start Chapter Thirteen from the title screen. Its test is a function of its own: the full run calls it when
+     Chapter Twelve has ended, and a Chapter Thirteen stop calls it at once. all13 halts nowhere. The stops that begin with "p" open one
+     room at once, with the story's flags set for it, so that its picture can be looked at without playing up to it. */
+  const C13=/^(map13|shop13|street13|syn13|heard13|table13|mapb13|road13|city13|twelve13|door13|noon13|curt13|dawn13|dial13|hall13|eve13|asia13|apron13|hallb13|eveb13|pair13|asiab13|dawnc13|hallc13|house13|last13|heap13|board13|sum13|fire13|found13|asiac13|deutsch13|final13|all13)$/.test(stop);
+  if(/^p[a-z]+13$/.test(stop)){await loadLevel(13);ov.className='';ov.onclick=null;const ALL=CHAP[13].flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      S={pshop13:[[],'shop13',[120,122]],pshopn13:[upto('aside'),'shop13',[120,122]],pshopm13:[upto('hall'),'shop13',[150,122]],pshopc13:[upto('apr'),'shop13',[150,122]],
+        pstreet13:[[],'street13',[196,120]],pstreetb13:[upto('awl'),'street13',[204,124]],pstreetn13:[upto('out'),'street13',[430,122]],pstreetc13:[upto('m1'),'street13',[430,122]],pstreete13:[upto('e1'),'street13',[480,122]],pstreetd13:[upto('e2'),'street13',[110,122]],pstreetf13:[upto('n3'),'street13',[300,124]],pstreetg13:[upto('sum'),'street13',[300,124]],
+        psyn13:[[],'syn13',[250,124]],psynb13:[upto('syn'),'syn13',[118,124]],proad13:[upto('came'),'road13',[226,128]],
+        phall13:[upto('m1'),'hall13',[236,116]],phallb13:[upto('m2'),'hall13',[236,116]],phallc13:[upto('m3'),'hall13',[236,116]],
+        phouse13:[upto('e3'),'house13'],phouseb13:[upto('e3'),'house13'],pboard13:[upto('n3'),'board13'],pboardb13:[upto('n3'),'board13'],pasia13:[upto('n1'),'shop13'],pasiab13:[upto('sum'),'shop13'],pdial13:[upto('hall'),'street13']}[stop];
+    if(!S)throw new Error('no such stop '+stop);setChapter(13);for(const k of S[0])F[k]=1;
+    const room=S[1];CHAP[13].place(room);dealInv(room);G.scene=null;enterRoom(room,...CHAP[13].ent[room]);
+    if(S[2]){place(PC(),room,S[2][0],S[2][1],1);G.cam=clamp(S[2][0]-160,0,ART[room].w-320)}
+    if(stop==='phouseb13')G.h13=['thr','jar','bed','stone'];if(stop==='pboardb13')G.bd13={v:26500,base:16600,k:2,told:1,car:1};
+    if(stop==='pasia13'||stop==='pasiab13'){G.asia13=stop==='pasiab13'?'all':null;G.scene=CHAP[13].scenes.asia}
+    if(stop==='pdial13'){G.dial13={a:0,b:1,k:.5};G.scene=CHAP[13].scenes.dial}
+    if(stop==='pstreetg13')G.fire13=performance.now()-4000;
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();await wait(1100);halt(stop)}
+  const ch13=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[13],told=k=>heard.includes(T(C().told[k])),
+    until=async(fn,n)=>{for(let i=0;i<(n||6000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(name,v)=>{const h=H(name);if(!h)throw new Error('no hs '+name+' in '+G.room);if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    useH=async(id,name,v)=>{const h=H(name);if(!h)throw new Error('no hs '+name+' in '+G.room);verb(v||'use');item(id);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)},capsFit=n=>G.caps13.length>=n&&G.caps13.every(c=>c.w<=c.max+.5&&c.sz>=3.2),
+    mapUp=async()=>{for(let i=0;i<9000&&!(SHARED.map&&G.scene===SHARED.map.draw);i++)await wait(30)},
+    tidy=()=>{const M=SHARED.map,[ox,oy,w,h]=M.window(),bx=M.state.boxes,bad=[];for(const b of bx)if(b[0]<ox-.5||b[2]>ox+w+.5||b[1]<oy-.5||b[3]>oy+h+.5)bad.push(b[4]+' (off the map)');
+      for(let i=0;i<bx.length;i++)for(let j=i+1;j<bx.length;j++){const a=bx[i],b=bx[j];if(a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3])bad.push(a[4]+' on '+b[4])}tidy.bad=bad;return!bad.length},inWin=id=>{const[x,y]=SHARED.map.where(id);return x>6&&x<314&&y>6&&y<138},
+    cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
+      for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].length;i++)for(let j=1;j<L[y].length;j++)if(inter(L[x][i-1],L[x][i],L[y][j-1],L[y][j]))n++;return n},
+    /* asiaOK: the picture of the province as it is showing: its names lie inside the picture, on no road and on no other name, and no two roads cross */
+    asiaOK=()=>{const M=G.map13,bad=[];if(!M)return['no map'];for(const b of M.boxes){if(b[0]<1||b[2]>319||b[1]<1||b[3]>143)bad.push(b[4]+' off the picture');for(const[x,y]of M.dots)if(x>=b[0]-.7&&x<=b[2]+.7&&y>=b[1]-.7&&y<=b[3]+.7){bad.push(b[4]+' on a road');break}}
+      for(let i=0;i<M.boxes.length;i++)for(let j=i+1;j<M.boxes.length;j++){const a=M.boxes[i],b=M.boxes[j];if(a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3])bad.push(a[4]+' on '+b[4])}
+      const hit=(b,[x0,y0],[x1,y1])=>{for(let k=0;k<=24;k++){const x=x0+(x1-x0)*k/24,y=y0+(y1-y0)*k/24;if(x>=b[0]&&x<=b[2]&&y>=b[1]&&y<=b[3])return true}return false};
+      for(const b of M.boxes)M.lines.forEach((p,j)=>{for(let i=2;i<p.length;i+=2)if(hit(b,[p[i-2],p[i-1]],[p[i],p[i+1]])){bad.push(b[4]+(j?' on an island':' on the coast'));break}});
+      const n=cross(M.roads);if(n)bad.push(n+' crossings');if(!capsFit(1))bad.push('a name does not fit');return bad},
+    asiaUp=async n=>{for(let i=0;i<9000&&!(G.scene===C().scenes.asia&&G.map13&&G.map13.boxes.length===n);i++)await wait(30)},
+    swapTo=async a=>{for(let i=0;i<3&&PC()!==a;i++){key('c');await idle();await wait(250);await idle()}},
+    tabs13=async()=>{item(PC()===P?'tablets':'tab13');for(let i=0;i<150&&!document.querySelector('#tablets.on');i++)await wait(30);return $('#tablets')},
+    /* layTo: pebbles are laid until the board stands at v: for each place, the hollow once for a five, and the trough for each one */
+    HN=['hollow marked mu and epsilon','hollow marked epsilon with a stroke','hollow marked phi','hollow marked nu','hollow marked epsilon'],TN=['trough marked mu and alpha','trough marked alpha with a stroke','trough marked rho','trough marked iota','trough marked alpha'],
+    layTo=async v=>{const b=C().board(),add=C().digits(v-b.v);for(let i=4;i>=0;i--){if(add[i]>=5)await onH(HN[i]);for(let k=0;k<add[i]%5;k++)await onH(TN[i])}};
+  let n13=0;
+  heard.length=0;(C13?document.querySelector('#overlay [data-ch="13"]'):ov).click();
+  /* the map: the road out of Antioch, through Galatia and Phrygia. The account names no town on it, and the map names none. */
+  await mapUp();clearInterval(sk);for(let i=0;i<900&&!SHARED.map.state.legs.every(l=>l.k===1);i++)await wait(30);await wait(300);
+  {const M=SHARED.map,names=M.state.boxes.map(b=>b[4]);ok(G.scene===M.draw&&M.state.legs.length===7&&inWin('antioch')&&inWin('antiochp')&&names.includes(T('Antioch'))&&!names.includes(T('Derbe'))&&!names.includes(T('Iconium'))&&!names.includes(T('Tarsus')),'chapter thirteen opens on the map: out of Antioch, through Galatia and Phrygia, and no town on that road is named ['+names.join()+']');
+    ok(mapClear()&&tidy(),'no name on the map crosses a coast, an island or a route, runs off the map or lies on another ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):'')+(tidy.bad.length?': '+tidy.bad.join(', '):''))}
+  halt('map13');sk=setInterval(()=>{if(G.skip)G.skip()},30);
+  await until(()=>G.ch===13&&G.room==='shop13'&&!G.scene&&!G.busy);note();
+  const AP=A('aq13'),AO=A('apollos13'),PH=A('philon13'),SY=A('symm13'),ME=A('mene13'),KL=A('klea13'),MY=A('myrt13'),GL=A('glau13'),HE=A('hege13'),DI=A('diod13'),TI=A('timothy13'),WE=A('well13'),D1=A('dz13a'),D2=A('dz13b'),D3=A('dz13c');
+  ok(G.ch===13&&G.room==='shop13'&&PC()===AP&&AP.mate&&!P.room&&srt()==='tab13'&&told('v23')&&told('v24')&&said('Then on the Sabbath the bench can wait. Bring the tablets.'),'chapter thirteen starts at the bench in Ephesus: Aquila and Priscilla are played, and Paul is on the road ['+[G.ch,G.room,PC().id,srt(),P.room,told('v23'),told('v24')].join()+']');
+  ok(/^13(-[0-9A-Z]{3}){5}$/.test(makeCode())&&decode(makeCode()).ch===13&&decode(makeCode()).w!=null,'chapter thirteen code format: two digits for the chapter, then fifteen characters '+makeCode());
+  ok($('#verbs').classList.contains('party')&&$('#swap').disabled&&/Paul|Paulus/.test($('#swap').textContent),'the button names Paul, and is grey: he has not come yet');fitVerbs();
+  ok(ART.shop13.variant()==='d'&&ART.street13.variant()==='m'&&C().day()===1&&C().part()==='m','it is day in the workshop and morning in the street');
+  halt('shop13');
+  {const el=await tabs13(),n=leaf(1).filter(x=>x.includes(T('Heard from Apollos too: {p}',{p:''}).trim().slice(0,8))).length;
+    ok(el.textContent.includes(T('THE WAY, AS WE WERE TAUGHT IT'))&&C().heard.every(h=>leaf(1,T(h.t)).length===1)&&n===0&&!leaf(1).some(x=>/[“”„"]/.test(x))&&leaf(0,T('Hear the man from Alexandria, in the synagogue.')).length===1,'their tablets hold the way as they were taught it, in five notes, none of them in quotation marks and none of them heard yet');el.click();await idle()}
+  pray();await idle();ok(hint()[0]==='syn13','the hint points to the synagogue');
+  heard.length=0;await act(null,'steps to the loft');ok(said('Not while there is work on the bench.'),'the loft is for the night');
+  await act(null,'door to the street');ok(G.room==='street13'&&PC()===AP,'the two go out into the street');
+  halt('street13');
+  heard.length=0;await act(null,'sundial');ok(said("The day is Paul's to count. Ours is counted in seams."),'the sundial is not theirs to move');
+  heard.length=0;await act(null,'hall of Tyrannus');ok(G.room==='street13','nor is the hall');
+  await act(null,'door of the synagogue');await until(()=>G.room==='syn13'&&!G.busy);note();
+  ok(G.room==='syn13'&&AO.room==='syn13'&&told('v25')&&told('v26a'),'Apollos speaks boldly in the synagogue, and Priscilla and Aquila hear him (Acts 18:25, 26)');
+  halt('syn13');pray();await idle();ok(hint()[0]==='hear13','the hint: which of our notes is it');
+  /* what is missing: he says nothing that is wrong. Each thing he says is one of their notes, in his own words. */
+  {const HD=C().heard;
+    heard.length=0;actor('talk',AO);await until(()=>nq()>0);ok(nq()===6&&said(HD[0].say[1]),'he speaks of the voice in the wilderness; five notes to choose from, and a doubt');
+    await pickQ(HD[4].q);ok(nq()===6&&said('Of that he has said nothing yet. Listen: what was this about?'),'the note that he has not touched is not this one');
+    await pickQ('That is not how we were taught it.');ok(nq()===6&&said('They agree. The same thing, Aquila, in better words than ours.'),'a doubt is asked as a question, and answered from the scroll: the same thing, in better words');
+    await pickQ(HD[1].q);ok(nq()===6&&said('No. That was not what this was about.'),'nor another one of them');
+    await pickQ(HD[0].q);ok(!F.apo&&G.ap13.t.length===1&&said('That one. I have it.'),'the first note is his too');
+    for(let i=1;i<4;i++){heard.length=0;actor('talk',AO);await until(()=>nq()>0);ok(nq()===6-i&&said(HD[i].say[0]),'he goes on: '+HD[i].k);await pickQ(HD[i].q)}
+    await until(()=>F.apo&&!G.busy);ok(F.apo&&!F.gap&&said('Not one wrong word. I listened for one.')&&said('Nor did I hear one. And yet the tablets are not full. Look at them, Aquila.'),'he has said four of the five, and not a word of it was wrong');
+    halt('heard13');
+    const el=await tabs13(),pre=T('Heard from Apollos too: {p}',{p:'\u0001'}).split('\u0001')[0];
+    ok(leaf(1).filter(x=>x.includes(pre)).length===4&&leaf(1,T(HD[4].t)).length===1&&!leaf(1,T(HD[4].t))[0].includes(pre),'on the tablets four notes are marked as heard from him too, and one is not');el.click();await idle()}
+  pray();await idle();ok(hint()[0]==='gap13','the hint: what stands on our tablets that he did not say');
+  heard.length=0;actor('talk',AO);await until(()=>nq()>0);ok(nq()===5,'what did we not hear from him?');
+  await pickQ(C().heard[0].q);ok(nq()===4&&!F.gap&&said('He said that. I marked it myself.'),'not what he did say');
+  await pickQ(C().heard[4].q);await until(()=>nq()===3);ok(F.gap&&nq()===3&&said('Of that, not a word. He speaks of the baptism of John as if there were no other.'),'what is missing is found: not an error, but a thing that was not said');
+  await pickQ('Stand up, and tell the synagogue what he left out.');ok(nq()===2&&!F.aside&&said('It would be true, every word. And a man who has just spoken well would be put to shame before every bench in this house.'),'before the whole synagogue it would be true, and unkind');
+  await pickQ('Say nothing.');ok(nq()===1&&!F.aside&&said('And let him go on to the next city with a part of it missing? That is not kindness. It only looks like it.'),'and to say nothing is not kindness');
+  pickQ('Ask him to our table.');await until(()=>F.aside&&G.room==='shop13'&&nq()>0);note();
+  ok(F.aside&&G.room==='shop13'&&AO.room==='shop13'&&ART.shop13.variant()==='n'&&nq()===3,'they take him into their company: by sundown the bench is a table');
+  halt('table13');
+  await pickQ('There is something that you did not say today.');ok(nq()===2&&said('Before he has tasted the bread? First of all, what is true and good to hear.'),'the bread first, and what is good to hear');
+  await pickQ('You know only the baptism of John.');ok(nq()===1&&said('True. And thrown at a guest like a stone.'),'a true thing can be thrown like a stone');
+  pickQ('We have not heard the Scriptures opened like that for a year.');await until(()=>nq()===3);
+  await pickQ('You are a learned man of Alexandria, and we sew tents.');await pickQ('Wait for Paul.');ok(nq()===1&&said('Paul is on a road somewhere, and we do not know which. We are here, and we heard it from him.'),'they do not send him on to wait for Paul');
+  /* he is taught, he crosses to Achaia, and Paul comes down by the inland regions: the map again, with one new road */
+  if(stop==='mapb13')clearInterval(sk);
+  pickQ('May we tell you what we were taught');await mapUp();for(let i=0;i<900&&!(SHARED.map.state.legs.every(l=>l.k===1)&&SHARED.map.state.seen.has('ephesus'));i++)await wait(30);await wait(60);note();
+  {const M=SHARED.map,names=M.state.boxes.map(b=>b[4]);ok(G.scene===M.draw&&M.state.legs.length===8&&inWin('ephesus')&&names.includes(T('Ephesus'))&&names.includes(T('Antioch'))&&cross(M.state.legs.map(l=>l.dots))===0,'the map: through the inland regions, and down to Ephesus ['+names.join()+']');
+    ok(mapClear()&&tidy(),'no name on this map crosses a line either'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):'')+(tidy.bad.length?': '+tidy.bad.join(', '):''))}
+  if(stop==='mapb13'){await wait(600);halt('mapb13')}
+  await until(()=>F.came&&G.room==='road13'&&!G.busy);note();
+  ok(F.taught&&F.sent&&told('v26b')&&told('v27a')&&told('v27b')&&told('v28')&&said('Tell me. A man who is afraid to be taught should not stand up to teach.'),'they lay out the way of God for him more accurately; he crosses to Achaia with a letter from the brothers (Acts 18:26-28)');
+  ok(F.came&&PC()===P&&G.room==='road13'&&told('v1')&&told('a166')&&AP.room==='shop13'&&srt()==='knife,tablets'&&!$('#swap').disabled,'Paul comes down to Ephesus by the inland regions (Acts 19:1), by a road that was once closed to him (16:6); now either can be played');
+  halt('road13');
+  heard.length=0;await act(null,'building in the plain');ok(said('Far off in the plain, a house of columns, larger than any I have seen. I have not come all this way to look at that.')&&!heard.some(x=>/Artemis/.test(x)),'the temple is far off, he has no word of praise for it, and nobody names it');
+  pray();await idle();ok(hint()[0]==='down13','the hint: the road down');
+  await act(null,'road down to the city');await until(()=>G.room==='street13'&&!G.busy);ok(G.room==='street13'&&P.x>560,'he comes into the street from the hills');
+  halt('city13');
+  heard.length=0;await act(null,'door of the synagogue');ok(G.room==='street13'&&said('I said that I would come back to this door. First let me find the two whom I left in this street.'),'first the two whom he left here');
+  pray();await idle();ok(hint()[0]==='find13','the hint: a bench that he knows');
+  act(null,'workshop');await until(()=>F.awl&&G.room==='street13'&&!G.busy);
+  ok(F.awl&&srt()==='awl,knife,tablets,thread'&&said('Your awl, and your thread. We kept them oiled, and nobody has sewn a stitch with them.')&&D1.room==='street13'&&D2.room==='street13'&&D3.room==='street13'&&AP.room==='street13','his awl and thread are given back; and about twelve men stand at the door');
+  halt('twelve13');await sweep(AP,D1);
+  /* the right question: he asks before he teaches */
+  pray();await idle();ok(hint()[0]==='ask113','the hint: ask, do not tell');
+  heard.length=0;actor('talk',D1);await until(()=>nq()>0);await pickQ('Brothers, let me tell you what happened at Pentecost.');ok(!F.q1&&said('Gladly, some Sabbath. We are disciples already, friend: we were baptized years ago.'),'to teach first leads nowhere: they are disciples already');
+  await pickQ('How long have you been disciples?');ok(!F.q1&&nq()===1,'nor does a question about years');
+  await pickQ('When you came to believe: was holy spirit given to you?');ok(F.q1&&said('Holy spirit? Nobody has ever told us that there is such a thing.'),'he asks whether they received holy spirit, and they have not heard that there is one (Acts 19:2)');
+  heard.length=0;actor('talk',D2);await until(()=>nq()>0);await pickQ('Then you must be baptized.');ok(!F.q2&&said('We are baptized! Was John wrong, then?'),'to begin at the end is true, and unhelpful');
+  await pickQ('Then what baptism was yours?');ok(F.q2&&said("John's, brother."),"John's baptism (Acts 19:3)");
+  heard.length=0;actor('talk',D3);await until(()=>nq()>0);await pickQ('Come with me to the water.');ok(!F.tw&&said('For what, brother? Tell us first what John did not.'),'not the water before the reason');
+  pickQ('John himself pointed people on to someone who would come after him.');await until(()=>F.tw&&G.room==='street13'&&!G.busy);note();
+  ok(F.tw&&told('v5')&&told('v6')&&told('v7')&&!D1.room,'John pointed to the one coming after him: they are baptized in the name of the Lord Jesus, about twelve men (Acts 19:4-7), and none of it is shown');
+  /* three months, and the door */
+  pray();await idle();ok(hint()[0]==='syn13b','the hint: the synagogue');
+  act(null,'door of the synagogue');await until(()=>F.syn&&G.room==='syn13'&&!G.busy);note();
+  ok(F.syn&&told('v8')&&told('v9a')&&SY.room==='syn13'&&PH.room==='syn13'&&AU.mood==='door'&&said('And he was willing, Philon. This time I have not come for one Sabbath.'),'three months in the synagogue (Acts 19:8); then some speak injuriously about The Way before the crowd (19:9)');
+  halt('door13');await sweep(SY,PH);
+  pray();await idle();ok(hint()[0]==='with13','the hint: no answer will end this');
+  {const AN=C().answers;for(let i=0;i<3;i++){heard.length=0;actor('talk',SY);await until(()=>nq()>0);ok(nq()===3-i,'an answer for Symmachos: '+(3-i)+' left');await choose(0);ok(said(AN[i][1])&&said(AN[i][2])&&G.heat13===i+1,'every true answer feeds the quarrel ('+(i+1)+')')}
+    ok(said('Every true word I say is another stick on his fire. And those who believe are sitting in the smoke of it.'),'he sees it');
+    heard.length=0;await actor('talk',SY);ok(said('There is no answer left that would not feed it. He does not want one: he wants the house to watch.'),'and there is no answer left')}
+  heard.length=0;await act(null,'door to the street');ok(G.room==='syn13'&&!F.out&&said('Not alone, and not like a man who slips out. Whoever believes goes with me, and they have not been told.'),'he does not go alone');
+  await act('talk','disciples');ok(F.withme&&said('I do not know yet. Out by that door first, and without a word over the shoulder.'),'he tells the disciples');
+  pray();await idle();ok(hint()[0]==='door13','the hint: the door');
+  act(null,'door to the street');await until(()=>F.out&&G.room==='street13'&&!G.busy);note();
+  ok(F.out&&told('v9b')&&ART.street13.variant()==='n'&&PH.room==='street13'&&ME.room==='street13'&&said('He gave Symmachos no last word. He turned his back on the quarrel, and those who believed stood up from the benches.'),'he withdraws, and separates the disciples from them (Acts 19:9); it is midday, and Philon has come as far as the door');
+  halt('noon13');await sweep(PH,ME);
+  heard.length=0;await act(null,'door of the synagogue');ok(G.room==='street13'&&said('I have left that house. I took nothing out of it but the disciples.'),'he does not go back in');
+  /* a hall for a curtain */
+  pray();await idle();ok(hint()[0]==='mene13','the hint: this street has a hall');
+  heard.length=0;await act('pickup','torn curtain');ok(!F.curt&&said('A door curtain of goat hair, torn from top to bottom. It is not mine to take down.'),'the curtain is not his to take, yet');
+  await actor('talk',ME);ok(F.men&&said('I am a tentmaker. And I need a room at the hour when nobody else wants one.'),'the hall stands empty in the hot hours, and its keeper will give it for a mended curtain');
+  await act('pickup','torn curtain');ok(F.curt&&has('curt13')&&!H('torn curtain'),'he takes the curtain down');
+  await act(null,'workshop');ok(G.room==='shop13','to the bench');
+  heard.length=0;await use('awl','curt13');ok(said('Not across my knee. It wants laying out flat, along a bench.'),'it is bench work');
+  await actor('talk',AP);ok(said('Rotten, all along the tear. No seam will hold in that. Lay a strip behind it: there are remnants in the basket by the door.'),'Priscilla sees what it wants');
+  await act('pickup','basket of remnants');ok(F.patch&&has('patch13'),'a strip of new goat hair');
+  await useH('curt13','workbench');ok(G.b13.on&&!has('curt13')&&!!H('torn curtain'),'the curtain is laid out along the bench');
+  heard.length=0;await useH('awl','torn curtain');ok(!F.sewn&&said('Sew the two edges to each other, and the first wind opens them again: the old cloth is rotten along the tear. It wants a strip laid behind it.'),'edge to edge it would not hold');
+  await useH('patch13','torn curtain');await useH('awl','torn curtain');ok(F.sewn&&has('curt13m')&&!has('patch13'),'a strip behind the tear, and both edges sewn down on it');
+  halt('curt13');{const c=makeCode();await enter(c);ok(F.sewn&&has('curt13m')&&srt()==='awl,curt13m,knife,tablets,thread'&&G.room==='shop13','a code noted here brings the mended curtain back')}
+  pray();await idle();ok(hint()[0]==='hang13','the hint: it belongs in his door');
+  await act(null,'door to the street');useH('curt13m','hall of Tyrannus');await until(()=>F.hall&&G.room==='shop13'&&!G.busy&&said('The awning for the potter is promised for today, Paul. The long seam is yours.'));note();
+  ok(F.hall&&told('v9c')&&told('a2034')&&!has('curt13m'),'the hall is his in the hot hours: he gives talks every day in the school auditorium of Tyrannus (Acts 19:9), and works with his own hands (20:34)');
+  /* a day in three parts: the bench before sunrise */
+  ok(C().day()===1&&C().part()==='m'&&ART.shop13.variant()==='m'&&P.look===LOOK.paul13b&&LOOK.paul13b.apron&&LOOK.paul13b.sweat&&!LOOK.paul13b.cloak&&!LOOK.paul.apron,'the first day, before sunrise: he is at the bench in an apron, with a cloth round his forehead, and without his mantle');
+  halt('dawn13');
+  heard.length=0;await act(null,'door to the street');ok(G.room==='shop13'&&said(C().open()),'he does not leave the bench with an order open');
+  pray();await idle();ok(hint()[0]==='seam13','the hint: the seam');
+  await useH('awl','awning for the potter');ok(F.b1,'the long seam is sewn before sunrise');
+  await act(null,'door to the street');ok(G.room==='street13'&&ART.street13.variant()==='m'&&P.look===LOOK.paul&&!P.wear,'in the street it is morning, and he wears his mantle');
+  heard.length=0;await act(null,'hall of Tyrannus');ok(G.room==='street13'&&said('The school has it until the sun is high. Then it is mine.'),'in the morning the hall is the school\'s');
+  heard.length=0;await act(null,'fuller\'s door');ok(heard.length>0&&G.room==='street13','by day a door is only a door');
+  pray();await idle();ok(hint()[0]==='dial13','the hint: the sundial');
+  /* the sundial: the shadow is moved on from morning to midday */
+  if(stop==='dial13'){clearInterval(sk);act(null,'sundial');for(let i=0;i<600&&G.scene!==C().scenes.dial;i++)await wait(30);await wait(1500);halt('dial13')}
+  await act(null,'sundial');await until(()=>F.m1&&!G.busy);ok(F.m1&&C().part()==='n'&&ART.street13.variant()==='n'&&G.room==='street13'&&said('The shadow drew in under the pointer. The shutters closed, the street emptied, and Ephesus lay down to sleep through its hottest hours.'),'at the sundial the shadow is moved on to midday');
+  heard.length=0;await act(null,'sundial');ok(!F.e1&&said(C().open()),'it will not move again while they are sitting in the hall');
+  pray();await idle();ok(hint()[0]==='hall13','the hint: the hall');
+  await act(null,'hall of Tyrannus');await until(()=>G.room==='hall13'&&!G.busy);ok(G.room==='hall13'&&GL.room==='hall13'&&AU.mood==='noon','the hall, at midday, on the first day');
+  halt('hall13');await sweep(GL);
+  heard.length=0;await actor('talk',GL);ok(!F.g1&&said('After you have spoken, tentmaker. I came in here to listen, not to chat.'),'first the talk');
+  await act(null,'desk');ok(F.t1&&said('He spoke about the Kingdom of God, as he had in the synagogue. Here nobody stood up to shout him down.'),'he speaks about the Kingdom of God');
+  await actor('talk',GL);ok(F.g1&&said('With a fuller, in this street: you will smell the house before you see it. Come when the lamps are lit, and bring those tablets.'),'a question that the hour cannot hold: Glaukos of Sardis says where he lodges');
+  {const el=await tabs13();ok(el.textContent.includes(T('NOTED IN EPHESUS'))&&leaf(1,T('Glaukos, of Sardis: where the fuller lives, when the lamps are lit.')).length===1&&leaf(1,T(C().ps.da244.gist)).length===1,"Paul's tablets hold what he has promised, and a passage from Daniel");el.click();await idle()}
+  await act(null,'door curtain');await act(null,'sundial');await until(()=>F.e1&&!G.busy);ok(F.e1&&C().part()==='e'&&ART.street13.variant()==='e'&&ART.shop13.variant()==='n','the shadow is moved on to evening, and the lamps are lit');
+  halt('eve13');
+  heard.length=0;await act(null,'sundial');ok(said('The shadow has gone out with the sun. What is left of this day is counted in lamps.'),'the dial has done for the day');
+  heard.length=0;await act(null,'workshop');await act(null,'steps to the loft');ok(!F.n1&&said(C().open()),'he does not go to bed while somebody is expecting him');await act(null,'door to the street');
+  pray();await idle();ok(hint()[0]==='full13','the hint: a fuller is known by his vats');
+  heard.length=0;await act(null,'door under the vine');ok(!F.a1&&heard.length>0,'not the carriers');
+  heard.length=0;act(null,'fuller\'s door');await until(()=>nq()>0);ok(nq()===3&&GL.room==='street13','Glaukos comes to the door: whose kingdom, and when?');
+  await pickQ('Isaiah 40:3');ok(nq()===3&&said('A road through a desert. And who rules at the end of it?'),'a passage that does not answer him');
+  pickQ('Daniel 2:44');await until(()=>F.a1&&!G.busy);note();ok(F.a1&&told('a2020')&&said(T('{text} ({ref})',{text:T(C().ps.da244.gist),ref:T(C().ps.da244.ref)})),'the God of heaven will set up a kingdom (Daniel 2:44): publicly, and from house to house (Acts 20:20)');
+  /* night: the province */
+  await act(null,'workshop');if(stop==='asia13')clearInterval(sk);act(null,'steps to the loft');await asiaUp(2);
+  {const bad=asiaOK();ok(G.scene===C().scenes.asia&&C().shown().join()==='ephesus,sardis'&&G.map13.roads.length===1&&!bad.length,'the province: one road, from Ephesus to Sardis, and the names lie on no line'+(bad.length?' BAD '+bad.join(' | '):''))}
+  if(stop==='asia13'){await wait(900);halt('asia13')}
+  await until(()=>F.n1&&G.room==='shop13'&&!G.busy);ok(C().day()===2&&C().part()==='m'&&MY.room==='shop13'&&has('apron13')&&said('Nobody sent him. He lived there.'),'the second day begins at the bench; a woman is waiting');
+  halt('apron13');await sweep(MY);
+  /* the apron (Acts 19:11, 12) */
+  pray();await idle();ok(hint()[0]==='apron13','the hint: the apron');
+  heard.length=0;await act(null,'door to the street');ok(G.room==='shop13'&&said(C().open()),'he does not leave while she waits');
+  await actor('talk',MY);ok(!F.apr&&said('I do not ask you to leave your bench. Give me the apron that you work in, and I will carry it to him.'),'she asks for his apron, for a sick man of her house');
+  heard.length=0;give('apron13',MY);await until(()=>F.apr&&!G.busy);note();
+  ok(F.apr&&!has('apron13')&&told('v11')&&told('v12')&&P.look===LOOK.paul13c&&!MY.room&&said('It is a working apron, Myrtale: goat hair and wax. There is nothing in the cloth. What is done, God does.'),'he gives it; God does the works of power, and cloths and aprons are carried to the sick (Acts 19:11, 12). The healing is told, and not shown');
+  await act(null,'door to the street');await act(null,'sundial');await until(()=>F.m2&&!G.busy);await act(null,'hall of Tyrannus');await until(()=>G.room==='hall13'&&!G.busy);
+  ok(G.room==='hall13'&&HE.room==='hall13'&&DI.room==='hall13'&&PH.room==='hall13'&&!PH.seat,'the second day in the hall: more hearers, and Philon in the doorway');
+  halt('hallb13');await sweep(HE,DI);
+  await act(null,'desk');ok(F.t2,'he speaks');heard.length=0;await actor('talk',PH);ok(said('He may. There is a bench when you want one, Philon, and nobody will come to fetch you to it.'),'nobody argues Philon in');
+  await actor('talk',HE);ok(!F.two&&said('Under the colonnade, at the wine seller\'s: he is my cousin. But it must be tonight. I sail for Smyrna at first light.'),'Hegesias of Smyrna, a seaman');
+  await actor('talk',DI);ok(F.two&&said('Under the vine, where the carriers lodge. Tonight I shall be sitting at the door.'),'and Diodotos of Thyatira, a carrier: two questions for one evening');
+  await act(null,'door curtain');await act(null,'sundial');await until(()=>F.e2&&!G.busy);ok(F.e2&&DI.room==='street13'&&said('Two tables, and one evening; and one of the two men sails at first light. What Diodotos asked, two others can answer better than I can.'),'evening: two tables are waiting');
+  halt('eveb13');
+  heard.length=0;await act(null,'door under the vine');ok(!F.p2&&said('If I sit down here, Hegesias sails without his answer. And what Diodotos asked, two tentmakers can answer better than I can.'),'he cannot be at two tables');
+  pray();await idle();ok(hint()[0]==='wine13','the hint: the seaman first');
+  heard.length=0;act(null,'wine seller\'s door');await until(()=>nq()>0);await pickQ('Daniel 2:44');ok(said('Kings and kingdoms. I asked about the sea, friend.'),'the passage for Glaukos is not the one for a seaman');
+  pickQ('Psalm 146:5, 6');await until(()=>F.a2&&!G.busy);ok(F.a2&&said('The one who made the sea, and everything in it. Then the thing we carry has been a passenger all these years, and has never paid its fare.'),'the one who made the sea (Psalm 146:5, 6)');
+  pray();await idle();ok(hint()[0]==='swap13','the hint: two tentmakers can answer it better');
+  await act(null,'workshop');heard.length=0;await act(null,'steps to the loft');ok(!F.n2&&said(C().open()),'not to bed while Diodotos waits');
+  /* the other table is theirs */
+  await swapTo(AP);ok(PC()===AP&&G.room==='shop13'&&srt()==='tab13','the two at the bench are played');
+  heard.length=0;pray();await idle();ok(hint()[0]==='vine13'&&heard.some(x=>x.includes(T('Aquila and Priscilla'))),'the two of them pray, and their hint is their own');
+  await act(null,'door to the street');ok(G.room==='street13'&&PC()===AP,'this evening they go out');
+  heard.length=0;await act(null,'wine seller\'s door');ok(said('Hegesias asked about what is written. That is for Paul and his tablets.'),'the seaman is Paul\'s');
+  halt('pair13');
+  {const c=makeCode();await enter(c);ok(PC()===AP&&G.room==='street13'&&F.a2&&!F.p2,'a code noted while they are out brings them back to the street')}
+  heard.length=0;act(null,'door under the vine');await until(()=>nq()>0);await pickQ('Paul would explain it to you better than we can.');ok(said('He left this table to us because we can.'),'they do not hand him on');
+  await pickQ('You must make the time for it.');pickQ('We learned it at the bench, a seam at a time.');await until(()=>F.p2&&!G.busy);ok(F.p2&&!DI.room&&said('One thing a night. That I can carry. Sit down, both of you.'),'they learned it at the bench, a seam at a time: one thing a night');
+  await act(null,'workshop');ok(G.room==='shop13'&&PC()===AP,'home to the bench');await swapTo(P);ok(PC()===P&&G.room==='shop13','and back to Paul');
+  if(stop==='asiab13')clearInterval(sk);act(null,'steps to the loft');await asiaUp(4);
+  {const bad=asiaOK();ok(C().shown().join()==='ephesus,sardis,smyrna,thyatira'&&G.map13.roads.length===3&&!bad.length,'the province: three roads home now, to Sardis, to Smyrna and to Thyatira'+(bad.length?' BAD '+bad.join(' | '):''))}
+  if(stop==='asiab13'){await wait(900);halt('asiab13')}
+  await until(()=>F.n2&&G.room==='shop13'&&!G.busy);note();
+  ok(told('v10')&&told('v13')&&told('v14')&&told('v15')&&told('v16')&&told('v17'),'two years, and all the province hears (Acts 19:10); what happened to the seven sons of Sceva is told, and not shown (19:13-17)');
+  ok(C().day()===3&&P.look===LOOK.paul13b,'the third day; and he has a new apron');
+  halt('dawnc13');
+  await act(null,'door to the street');await act(null,'sundial');await until(()=>F.m3&&!G.busy);await act(null,'hall of Tyrannus');await until(()=>G.room==='hall13'&&!G.busy);
+  ok(TI.room==='hall13'&&KL.room==='hall13'&&MY.room==='hall13'&&WE.room==='hall13'&&PH.room==='hall13'&&PH.seat&&PH.fr<0,'the third day in the hall: Timothy is there, Myrtale has not come alone, and Philon sits on a bench');
+  halt('hallc13');await sweep(TI,KL,MY,WE,PH);
+  heard.length=0;await actor('talk',WE);ok(said('It was God who did it, friend, and not the apron. Sit down. There is room.'),'the man beside Myrtale is simply there');
+  act(null,'desk');await until(()=>F.kle&&!G.busy);note();ok(F.t3&&F.kle&&told('v18')&&said('I want them out of my house, every one, and I no longer know where they all are. Paul: come this evening, and help me turn the house out.'),'a believer confesses openly (Acts 19:18), and asks for help');
+  await act(null,'door curtain');await act(null,'sundial');await until(()=>F.e3&&!G.busy);
+  /* nothing kept back */
+  pray();await idle();ok(hint()[0]==='klea13','the hint: the house of Kleandros');
+  await act(null,'door of the large house');await until(()=>G.room==='house13'&&!G.busy);ok(G.room==='house13'&&capsFit(1),'the house, with one wall taken away');
+  halt('house13');pray();await idle();ok(hint()[0]==='seek13','the hint: where his words point');
+  heard.length=0;await onH('back to the street');ok(G.room==='house13'&&said('He asked me to help him turn the whole house out. We are not at the end of it.'),'he does not leave it half done');
+  heard.length=0;await onH('Kleandros');const HD=C().hide;ok(said('Seven I paid for. I have counted them often enough, on nights when I should have slept. Where I put them is another matter: a man hides such things well, and then he hides them from himself.')&&HD.some(h=>said(h.clue)),'he remembers something of each place, and not the place');
+  heard.length=0;await onH('water jar');await onH('hearth');await onH('lamp');ok(G.h13.length===0&&heard.length>=3,'not everything in a house hides something');
+  heard.length=0;await onH('strongbox','open');ok(said("It is not for me to open another man's money. If there is anything in it, he knows."),'he does not open another man\'s strongbox');
+  heard.length=0;await onH('cloak','look');ok(said(HD[1].look)&&G.h13.length===0,'a look finds nothing; it shows where to look');
+  heard.length=0;await onH('cloak');ok(G.h13.length===0&&said("Sewn in. I am not going to tear a man's cloak: that is a thing for the awl, four stitches of it."),'what is sewn into a hem wants the awl');
+  await useH('awl','cloak');ok(G.h13.join()==='hem'&&said(HD[1].find),'four stitches: one');
+  for(const[k,n]of[['thr','threshold'],['jar','jar of barley'],['bed','bed'],['stone','stone by the hearth']]){heard.length=0;await onH(n);ok(G.h13.includes(k)&&said(HD.find(h=>h.k===k).find),'found: '+n)}
+  halt('found13');heard.length=0;await onH('jar of barley');ok(said('I have been there. It is empty now.'),'a place is emptied once');
+  ok(capsFit(1)&&!F.found,'five of seven, and it is written under the picture');
+  onH('rolled mat');await until(()=>nq()>0);ok(F.found&&nq()===3&&said('Six. And the seventh I do not have to look for.'),'six; the seventh lies in his strongbox');
+  halt('last13');
+  await pickQ('Burn it.');ok(nq()===2&&said('If I tell him, he has only obeyed me. And it is his roll, and his house.'),'Paul does not tell him to burn it');
+  await pickQ('It is yours to decide.');ok(nq()===1&&said('I know that it is mine. I am asking you because I cannot decide it.'),'nor leave him alone with it');
+  pickQ('Who would buy it from you?');await until(()=>F.last&&G.room==='street13'&&!G.busy);
+  ok(F.last&&said('And what would he do with it?')&&said('What I did. ... Then I should not be rid of it at all. I should only have handed it on, and been paid for the harm.'),'two questions; and the answer is his own');
+  await act(null,'workshop');act(null,'steps to the loft');await until(()=>F.n3&&G.room==='street13'&&!G.busy&&said('I shall keep the count on my tablet. Somebody must lay it out on the board.'));
+  /* the morning of the fire, and the sum */
+  ok(F.n3&&ART.street13.variant()==='f'&&KL.room==='street13'&&TI.room==='street13'&&AP.room==='street13'&&!!H('heap of rolls')&&!!H('counting board'),'in the morning the books are carried out into the street, and a counting board stands by the heap');
+  halt('heap13');await sweep(KL,TI);
+  pray();await idle();ok(hint()[0]==='board13','the hint: let it be reckoned');
+  await act(null,'counting board');await until(()=>G.room==='board13'&&!G.busy);
+  {const b=C().board();ok(G.room==='board13'&&b.v===0&&b.k===0&&said(C().owners[0].line)&&capsFit(4)&&G.caps13.length===4&&!G.caps13.some(c=>/thousand|hundred|Tausend|Hundert/.test(c.s)&&c.s!==T(C().owners[0].cap)),'the counting board: five places, bare, marked with Greek number letters and nothing else; Kleandros names his sum first, and it stands written under the board');
+    heard.length=0;await onH(TN[4],'look');await onH(HN[4],'look');ok(said('Alpha: the first letter of the alphabet.')&&said('Epsilon: the fifth letter.')&&b.v===0,'a look names the letter, and gives away no more than its place in the alphabet');
+    halt('board13');pray();await idle();ok(hint()[0]==='sum13','the hint: how the board counts');
+    heard.length=0;await onH('Timothy and his tablet');ok(b.k===0&&said(C().owners[0].line),'with nothing laid down he hears the sum again');
+    await onH(TN[4]);heard.length=0;await onH('Timothy and his tablet');ok(b.k===0&&b.v===1&&said('I have more than that on my tablet, with this one added. Count it over.'),'too little, and Timothy says so');
+    await onH('bowl of pebbles');ok(b.v===0,'the pebbles are taken off again');
+    for(let i=0;i<5;i++)await onH(TN[4]);ok(b.v===5&&C().digits(b.v).join()==='0,0,0,0,5'&&said('Five in a trough are one in the hollow above it; and two in a hollow are one in the next place to the left. I take them up, and set one down.'),'five in a trough are one in the hollow above it');
+    await onH(HN[4]);ok(b.v===10&&C().digits(b.v).join()==='0,0,0,1,0','and two in a hollow are one in the next place');
+    await onH(TN[3],'pickup');ok(b.v===0,'Pick up takes a single pebble off again');heard.length=0;await onH(TN[3],'pickup');ok(b.v===0&&said('There is no pebble in that trough.'),'but not where none lies');
+    await onH(HN[2]);await onH(HN[2],'pickup');ok(b.v===0,'nor is a hollow any different');await onH('bowl of pebbles');
+    await layTo(99999);heard.length=0;await onH(TN[4]);ok(b.v===99999&&said('The board has no place higher than that.'),'the board has five places and no more');await onH('bowl of pebbles');
+    for(let k=0;k<5;k++){const want=C().want(k);await layTo(want);ok(b.v===want,'laid down: '+want);if(k===2)halt('sum13');if(k<4){await onH('Timothy and his tablet');ok(b.k===k+1&&b.base===want&&said(C().owners[k+1].line),'Timothy agrees, and the next names his sum');
+        if(k===0){heard.length=0;await onH(HN[1],'pickup');ok(b.v===want&&said('That one was laid down for a sum that Timothy has already checked. It stays.'),'what has been checked stays on the board')}}}
+    ok(C().want(4)===50000&&C().digits(50000).join()==='5,0,0,0,0','the five sums come to fifty thousand: one pebble in the hollow of the highest place')}
+  if(stop==='fire13'){clearInterval(sk);onH('Timothy and his tablet');for(let i=0;i<900&&!(G.fire13&&G.room==='street13');i++)await wait(30);await wait(3200);halt('fire13')}
+  if(stop==='asiac13')clearInterval(sk);
+  heard.length=0;onH('Timothy and his tablet');await asiaUp(9);note();
+  {const bad=asiaOK();ok(F.sum&&C().shown().length===9&&G.map13.roads.length===8&&!bad.length,'the province, at the end: nine towns and eight roads, none crossing another, and no name on a line'+(bad.length?' BAD '+bad.join(' | '):''))}
+  while(!(ov.classList.contains('end')&&ov.textContent.includes(T('The Hall of Tyrannus')))&&n13++<4000)await wait(50);note();
+  ok(ov.classList.contains('end')&&told('v19a')&&told('v19b')&&told('v20')&&told('c1619')&&told('c169')&&said('Fifty thousand pieces of silver. A man could work his whole life, and his son after him, and not earn it. Light it.'),'they burn their books before everybody: fifty thousand pieces of silver; and the word of Jehovah keeps growing and prevailing (Acts 19:19, 20)');
+  ok(ov.textContent.includes(T('Click to return to the title'))&&/18:23-19:20/.test(ov.textContent),'the closing screen says what the account leaves unsaid');
+  {const r=ov.getBoundingClientRect(),bad=[...ov.children].filter(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});if(bad.length)tight.add('closing screen: '+bad[0].textContent.slice(0,40))}
+  ok(store('paul.save')===null,'a finished game keeps no save');
+  halt('final13');
+  /* what the account says was all told; and the chapter's data is whole */
+  {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length&&Object.keys(C().told).length===33,'every verse of Acts 18:23 to 19:20 that is not spoken in a scene was told by the narrator, and what he said and wrote of these years'+(miss.length?' MISSING '+miss:''))}
+  {const bad=[];for(const k in C().told)if(!T.peek(C().told[k]))bad.push('untranslated '+k);for(const h of C().heard)for(const s of[h.q,h.t].concat(h.say||[]))if(!T.peek(s))bad.push('untranslated note '+h.k);
+   for(const h of C().hide)for(const s of[h.clue,h.look,h.find])if(!T.peek(s))bad.push('untranslated place '+h.k);for(const o of C().owners)for(const s of[o.line,o.cap])if(!T.peek(s))bad.push('untranslated sum');
+   for(const k in C().towns)if(!T.peek(C().towns[k].name))bad.push('untranslated '+k);for(const k in C().ps)if(!T.peek(C().ps[k].gist)||!T.peek(C().ps[k].ref))bad.push('untranslated '+k);
+   ok(!bad.length&&C().heard.length===5&&C().hide.length===6&&C().owners.length===5,'five notes, six hiding places, five sums and nine towns are named in this language'+(bad.length?' BAD '+bad.slice(0,8):''))}
+  /* dress, and the years (issue #29) */
+  ok(LOOK.prisca13.veil&&LOOK.myrt13.fem&&LOOK.myrt13.himation&&LOOK.klea13.himation&&LOOK.apollos13.long&&LOOK.timothy13.shortBeard&&LOOK.paul.fullBeard&&LOOK.paul.thin&&LOOK.aq13.grey,'Priscilla covers her head; a Greek woman wears her hair bound up and the mantle; Timothy has his first beard, Aquila the first grey, and Paul is the Paul of the third journey');
+  /* the note that the tune leaves out, and the sounds of the board, rendered offline on the game's own mixer: heard, finite and unclipped */
+  {const SR=22050,off=async(fn,dur)=>{const o=new OfflineAudioContext(1,Math.ceil(SR*dur),SR),keep=Object.assign({},AU);AU.ctx=o;audioGraph(o);try{fn(o)}finally{for(const k in AU)AU[k]=keep[k]}return(await o.startRendering()).getChannelData(0)},
+     peak=x=>{let p=0;for(const v of x){if(!isFinite(v))return NaN;p=Math.max(p,Math.abs(v))}return p},a=peak(await off(()=>C().given(),4)),sc=C().music,gap=sc.tracks.find(t=>t.moods&&t.moods.includes('gap')&&t.inst==='lyre'),full=sc.tracks.find(t=>t.moods&&t.moods.includes('dawn')&&t.inst==='lyre'),
+     has5=s=>Object.values(s).some(b=>b.includes(5));
+   ok(a>.005&&a<.9&&!has5(gap.seq)&&has5(full.seq)&&sc.steps===9,`the tune leaves out the sixth note of its scale until the evening at the table, and has it from then on; the note itself renders finite, audible and unclipped (peak ${a.toFixed(2)})`)}
+  };
+  if(C13){await ch13();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(C12){await ch12();if(lang!=='en')ok(!MISSING.size,'every line shown had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
@@ -2951,7 +3250,7 @@
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('journey6',()=>{ov.className=''});halt('final6');await wait(1700)}
-  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12()}
+  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13()}
   if(lang!=='en')ok(!MISSING.size,'every line shown in the game had a translation into '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);
