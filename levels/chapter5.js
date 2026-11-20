@@ -648,10 +648,15 @@ const overPass=()=>F.crossed?toAntioch():say(PC(),PC()===P?'Not without the othe
 const river=async it=>{if(it==='roof')return say(P,'A roof will not get us over. But what I sewed into its edge might.');
   if(it==='staff5')return say(P,'The staff is cut to his hand, and he has the longer legs. This part is for Barnabas.');
   if(it==='line')return say(P,F.spliced?'It is joined already.':'Thrown from here it would only go downstream. It must be joined to the rope on the post, and then carried over.');return false};
+/* the hidden treasure (index.html, treasure): Paul calls across the gorge, and the cliff gives the name back three times, each fainter and later */
+function echo5(){if(!AU.ctx)return;const t0=now()+.05;for(let k=1;k<=3;k++)[[0,392],[.17,330],[.34,294]].forEach(([o,f])=>tone({f:f*(1-k*.004),t:t0+k*.62+o,d:.15,type:'triangle',v:.07*Math.pow(.5,k)}))}
+async function call5(){await say(P,'Barnabas!');echo5();await wait(2300);
+  await say(BN,F.lineUp&&!F.crossed?'I can hear you, Paul. So can the mountain: it answered three times.':'I am right here, Paul. So is the mountain, it seems: it answered three times.');
+  await say(PA,'Every man up in those rocks has heard it too, now.');await say(P,'Then I will keep my voice for Antioch.');treasure()}
 ROOMS.ford={space:0.7,get walk(){return PC().x>240?[300,464,112,138]:[16,186,112,138]},mood:'tense',amb:{fountain:.9,waves:.6,wind:.45,birds:.15},enter:fordIntro,hs:[
   {name:'pass',x:404,y:36,w:76,h:40,wx:440,look:'The road climbs on beyond the ford, and over the saddle between those two shoulders of rock.'},
   {name:'rocks above the road',x:330,y:0,w:150,h:34,wx:400,look:['Something moved, up among those rocks. A goat, perhaps.','Perhaps not. Papias has not taken his eyes off them.']},
-  {name:'cliff',x:150,y:10,w:190,h:36,wx:176,look:'The river does not run down to this place. It bursts out at the foot of that cliff, full grown, as if the mountain had been struck.'},
+  {name:'cliff',x:150,y:10,w:190,h:36,wx:176,look:'The river does not run down to this place. It bursts out at the foot of that cliff, full grown, as if the mountain had been struck.',talk:call5},
   {name:'pines',x:0,y:8,w:150,h:80,wx:90,look:'Mountain pines, rooted in cracks a hand could not enter. They hold on. So shall we.'},
   {name:'river',x:200,y:48,w:78,h:96,wx:166,wy:126,dir:1,look:['Cold water, swollen with rain. It is not deep here: a shelf of stones lies just under the surface.','But it runs like a mill race, and below the ford the gorge drops away.'],
     use:()=>F.lineUp&&!F.crossed?crossAll():say(P,F.crossed?'I have crossed it once. That will do.'

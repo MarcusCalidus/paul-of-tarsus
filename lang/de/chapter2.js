@@ -453,5 +453,9 @@ TEXTS('de',2,{
   "Good wood, but the wrong shape. My hands know the right one.":"Gutes Holz, aber die falsche Form. Meine Hände kennen die richtige.",
   "My knife can shape the olive branch into a peg.":"Mit meinem Messer kann ich aus dem Olivenzweig einen Pflock schnitzen.",
   "The peg is ready. It belongs where the old pin sheared off.":"Der Pflock ist fertig. Er gehört dorthin, wo der alte Stift abgebrochen ist.",
-  "I should fit the peg to the handcart's axle.":"Ich sollte den Pflock in die Achse des Handkarrens stecken."
+  "I should fit the peg to the handcart's axle.":"Ich sollte den Pflock in die Achse des Handkarrens stecken.",
+  "baskets of figs":"Feigenkörbe",
+  "Baskets of figs from the market, set down by the gate.":"Körbe mit Feigen vom Markt, am Tor abgestellt.",
+  "They are for sale. I came to Jerusalem for something else.":"Die sind zu verkaufen. Ich bin aus einem anderen Grund nach Jerusalem gekommen.",
+  "No, thank you. The last basket I trusted myself to went down the wall of Damascus by night. I will leave these to the figs.":"Nein danke. In dem letzten Korb, dem ich mich anvertraut habe, ging es nachts die Mauer von Damaskus hinunter. Die hier überlasse ich den Feigen."
 });

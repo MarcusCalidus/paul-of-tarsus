@@ -76,6 +76,7 @@ perga perga
 philippi philippi8
 pisidia week
 plateau closed8
+plans plans
 pointer pointer
 pray pray
 pro-judas pro8b
@@ -105,6 +106,7 @@ synagogue synagogue
 synagogue10 sab10
 tablets tablets
 tarsus tarsus
+treasures treasures
 tentshop pshop12
 thessalonica yard10
 talk cast cast-talk

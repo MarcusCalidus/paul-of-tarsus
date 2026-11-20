@@ -525,5 +525,7 @@ TEXTS('de',9,{
   "4.1i 4.1i 5.2o 4.1o 3.1e 2.2a -.1 3.1e 2.1i 1.1@ 0.1o -2.4o":"4.1e 4.1e 5.2a 4.1u 2.2i -.1 3.1a 3.1i 1.1a 0.2o 0.1@ -2.2a -2.3@",
   "0.1@ 2.2e 2.1a 4.1@ 5.2e -.1 4.1i 5.2e 4.1a 6.1o 6.2a 5.1e 4.1@ 4.3i":"0.1i 2.1@ 2.1u 4.1i 5.2@ -.1 4.1e 5.1@ 5.1@ 4.1e 4.1u 6.1o 6.1u 6.1@ 5.1@ 4.2a 4.3@",
   "4.2a 5.1@ 4.2o 2.1o 3.2e 0.4@":"4.2a 5.1e 4.2o 2.1i 3.2i 0.4@",
-  "4.1i 5.2o 4.1@ 3.2a 2.2a 3.1o 1.2e 0.4@":"4.1a 4.1@ 5.1o 5.2a 4.1@ 3.2i 2.1@ 3.2e 2.1y 1.2i 0.4@"
+  "4.1i 5.2o 4.1@ 3.2a 2.2a 3.1o 1.2e 0.4@":"4.1a 4.1@ 5.1o 5.2a 4.1@ 3.2i 2.1@ 3.2e 2.1y 1.2i 0.4@",
+  "chirping":"Zirpen",
+  "A cricket, somewhere in the wall. With every man in here keeping still, I can hear it at last. It has not stopped singing either.":"Eine Grille, irgendwo in der Mauer. Jetzt, wo jeder Mann hier drin still ist, höre ich sie endlich. Auch sie hat nicht aufgehört zu singen."
 });

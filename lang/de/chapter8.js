@@ -641,6 +641,7 @@ TEXTS('de',8,{
   "Sailcloth? Not on a wound. But keep it: I may want it in another shape.":"Segeltuch? Nicht auf eine Wunde. Aber behalt es: Vielleicht brauche ich es in anderer Form.",
   "An awl. In my trade we should call that a very large needle.":"Eine Ahle. In meinem Beruf würden wir das eine sehr große Nadel nennen.",
   "You keep notes. So do I.":"Du machst dir Notizen. Ich auch.",
+  "Here are mine: the place, the day, and who was with us. Someone ought to keep this.":"Hier sind meine: der Ort, der Tag und wer bei uns war. Irgendjemand sollte das festhalten.",
   "Keep it, brother. I have my own bag to carry.":"Behalt es, Bruder. Ich habe meine eigene Tasche zu tragen.",
   "Any clean linen, cut into strips. And soon, friend: he is losing blood.":"Irgendein sauberes Leinen, in Streifen geschnitten. Und bald, Freund: Er verliert Blut.",
   "Any sound cloth will do for a sling: it does not touch the wound. It must be broad, and it must not cut into his neck.":"Für eine Schlinge genügt jedes feste Tuch: Sie berührt die Wunde nicht. Sie muss breit sein und darf ihm nicht in den Nacken schneiden.",

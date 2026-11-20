@@ -498,6 +498,9 @@ TA.hs={name:'Tatia',actor:TA,
   as:{barnabas:{look:()=>say(BN,F.tatia?'Tatia. She will do well. Better than her husband deserves.':'Tatia, with her jar still empty. She did not come to the fountain for water.'),
     talk:()=>F.tatia?say(TA,'What he sees, not what I say. I have it by heart, Barnabas.'):comfort6(),
     show:{staff6:'You are packed for the road already.','*':'Keep it, Barnabas. You will need all you have.'}}}};
+/* the hidden treasure (index.html, treasure): once the cover is on Xanthos's wagon, the tentmaker tries its corners with his awl, out of habit */
+async function awl6(){await say(P,'Out of habit, I run the point of the awl round each corner eyelet. Not one stitch has given.');
+  await say(P,'Whether or not he ever thinks of who sewed it, it will keep his loads dry.');treasure()}
 ROOMS.iconium={space:0.9,walk:[16,464,110,138],mood:'tense',amb:{crowd:.4,fountain:.7,birds:.3,hammer:.3,leaves:.3},hs:[
   {name:'mountains',x:188,y:26,w:110,h:24,wx:244,look:'Mountains on every side of this plain, and snow on them. Iconium sits in the middle like a well-watered garden.'},
   {name:'street to the synagogue',x:0,y:36,w:60,h:68,wx:42,wy:113,dir:-1,look:['The street to the synagogue of the Jews. We spoke there for weeks, and a great number believed.','By tomorrow that street will be full of men with stones in their hands.'],
@@ -514,7 +517,7 @@ ROOMS.iconium={space:0.9,walk:[16,464,110,138],mood:'tense',amb:{crowd:.4,founta
   {name:'poplars',x:190,y:40,w:24,h:50,wx:204,look:'Poplars. Wherever a channel runs on this plain, a line of them stands over it.'},
   {name:'poplars',x:276,y:38,w:22,h:52,wx:286,look:'Poplars. Wherever a channel runs on this plain, a line of them stands over it.'},
   {name:"Xanthos's wagon",x:308,y:72,w:74,h:38,wx:344,wy:114,look:()=>say(P,F.paid?'The cover is on its hoops, and laced down at all four corners. It will keep the rain off his loads for ten years.':'A good wagon, with four bare hoops and no cover. It is waiting for mine.'),
-    pickup:'Take a wagon?',useWith:async it=>it==='cover'?say(P,'It is his wagon. The cover goes into his hands, and he may hang it himself.'):false},
+    pickup:'Take a wagon?',useWith:async it=>it==='cover'?say(P,'It is his wagon. The cover goes into his hands, and he may hang it himself.'):it==='awl'&&F.paid?awl6():false},
   {name:'gateway of the yard',x:375,y:53,w:52,h:51,wx:400,wy:113,look:'The yard of Xanthos the carrier: bales, jars, and wagons for the coast road.',use:'I have no business in his yard. Only with him.',open:'I have no business in his yard. Only with him.'},
   {name:'south gate',x:444,y:54,w:32,h:50,wx:458,wy:113,dir:1,look:async()=>{await say(P,'The south gate. Beyond it the road runs down into Lycaonia: to Lystra, and to Derbe.');await say(P,quote('prov22'))},exit:leave6}]};
 /* ============ LYSTRA: a man who had never walked, and a crowd that would make gods of two men ============ */

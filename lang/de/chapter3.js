@@ -574,5 +574,7 @@ TEXTS('de',3,{
   "I should hang the pack bags on the donkey in the courtyard.":"Ich sollte die Packtaschen im Hof an den Esel hängen.",
   "A gift carried by my hand must be beyond reproach, in the sight of Jehovah and of men. And I have something of my own to add.":"Eine Gabe, die durch meine Hand geht, muss über jeden Vorwurf erhaben sein, vor Jehova und vor den Menschen. Und ich habe selbst noch etwas beizutragen.",
   "I should give my savings to Lucius, and ask that everything be counted and sealed before the brothers.":"Ich sollte Lucius mein Erspartes geben und darum bitten, dass alles vor den Brüdern gezählt und versiegelt wird.",
-  "Everything is ready. It is time to go.":"Alles ist bereit. Es ist Zeit zu gehen."
+  "Everything is ready. It is time to go.":"Alles ist bereit. Es ist Zeit zu gehen.",
+  "I sit down at Saul's bench. Every tool is within reach, and not one of them is any use in my hands.":"Ich setze mich an die Werkbank von Saulus. Jedes Werkzeug liegt in Reichweite, und keins davon taugt etwas in meinen Händen.",
+  "I had better get up again before he sees me.":"Ich stehe besser wieder auf, bevor er mich sieht."
 });

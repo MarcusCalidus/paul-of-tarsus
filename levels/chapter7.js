@@ -305,6 +305,9 @@ ART.lystra7={w:320,q:12,
   g.fillStyle=lg(g,0,81,0,86,['#9a5a4a','#7a4438','#4a2a24']);g.fillRect(14,81.4,24,4.6);for(let i=0;i<24;i+=3)R(g,14+i,81.4,.5,4.6,'rgba(0,0,0,.2)');
   /* the door to the lane */
   R(g,266,48,34,56,'#c4b48e');doorArt(g,269,51,28,53,'#6a4a2c',r,{left:1});
+  /* the hidden treasure: beside the door, a child's height scratched into the plaster year by year. Each mark is a short level stroke on its
+     own, with plaster between: none touches the door's frame or another mark, so that no two make a cross or a T */
+  for(const y of[87,83,79.5,76.2,73.2,70.4]){R(g,302.6,y,3.6,.7,'#7a6648');R(g,302.6,y+.7,3.6,.4,'#ece2c6')}
   /* a great jar of water by the door, and the two that go to the well */
   vessel(g,250,106,7,20,'#9a5a36','pithos');wellJar(g,235,107,'#a8683c');wellJar(g,226,108,'#96582e');
   /* the floor: beaten earth, and a woven mat where the household eats */
@@ -859,6 +862,11 @@ ROOMS.lystra7={space:1.25,walk:[16,304,110,136],mood:'calm',amb:{fire:.5,birds:.
   {name:'bench',x:6,y:78,w:62,h:26,wx:60,wy:114,dir:-1,look:'The bench, and the blanket folded on it. They have given us the best place in the house a second time.',use:'Not yet. There are things to ask first.'},
   {name:'water jars',x:222,y:84,w:36,h:24,wx:228,wy:114,dir:1,look:'The great jar by the door, and the two that go to the well. All three are full. I do not need to ask who filled them.',pickup:'They are full, and it was not I who filled them.'},
   {name:'table',x:168,y:104,w:44,h:20,wx:160,wy:124,dir:1,look:'A low table, and one bowl. The whole congregation will eat at it tonight, in turns.',pickup:'It is their supper.'},
+  /* the hidden treasure of the chapter (CHAP[7].treasure): found by looking at the marks; it changes nothing in the story */
+  {name:'marks on the wall',x:300,y:66,w:10,h:26,wx:296,wy:113,dir:1,
+    look:async()=>{await say(P,'Scratches in the plaster by the door, one above another. Someone has measured a child here, year after year. The highest is about the height of the boy who watched me sew. Timothy has long outgrown it.');treasure()},
+    pickup:'They are cut into the wall.',
+    as:{silas:{look:async()=>{await say(SI,'Little scratches by the door, one above another. Someone in this house was measured every year. I can guess who.');treasure()}}}},
   {name:'door to the lane',x:269,y:51,w:28,h:53,wx:272,wy:113,dir:1,look:'The door to the lane. Lois said that it would be open, and it was.',exit:door7}]};
 /* ---------- Iconium: the decrees delivered, and two more witnesses ---------- */
 async function icoIntro(){if(F.readI||G.metIco)return;G.metIco=1;

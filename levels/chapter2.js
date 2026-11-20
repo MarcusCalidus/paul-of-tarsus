@@ -350,6 +350,10 @@ ROOMS.jerusalem={space:0.9,walk:[16,466,110,138],mood:'calm',amb:{birds:.5,crowd
   {name:'bench',x:282,y:90,w:26,h:14,look:'A stone bench by the door. I do not think I would be welcome to sit.'},
   {name:'door of the house',def:'open',x:312,y:50,w:40,h:54,wx:330,wy:112,look:'A plain, solid door. Disciples of the Lord meet in the room above.',use:knock,open:knock,talk:knock},
   {name:'latticed window',x:368,y:34,w:30,h:24,wx:380,look:'A latticed window. I think someone is watching from behind it.'},
+  /* the hidden treasure (CONTRIBUTING section 2): the baskets of figs painted in the foreground by the gate. It changes nothing. */
+  {name:'baskets of figs',x:24,y:131,w:52,h:13,wx:86,wy:134,dir:-1,look:'Baskets of figs from the market, set down by the gate.',
+    pickup:'They are for sale. I came to Jerusalem for something else.',
+    use:async()=>{await say(P,'No, thank you. The last basket I trusted myself to went down the wall of Damascus by night. I will leave these to the figs.');treasure()}},
   {name:'street to the markets',x:462,y:60,w:18,h:60,wx:456,wy:120,look:'The street runs on toward the markets and the temple mount.',
     use:()=>say(P,F.preach?'Not before I have answered those two men.':'My business is at that door first.')}]};
 BN.hs={get name(){return F.cartFixed||G.room!=='jerusalem'?'Barnabas':'man with the handcart'},actor:BN,
