@@ -536,7 +536,7 @@ async function sell(){if(F.sold)return;await say(P,'Your tent, Parmenon. It is t
   await say(P,'For the tent, the price. The rest has no price, and it was not mine to sell.');
   await say(PA,'Then I shall be at that synagogue on the Sabbath, to hear what I am getting for nothing.');
   F.sold=1;SFX.good();await walk(PA,24,118);PA.room=null;
-  place(BR,'yard10',28,118,1);await walk(BR,118,126);await tell('p416');
+  place(BR,'yard10',28,118,1);await walk(BR,130,129);await tell('p416');
   await say(BR,'From Philippi again, Paul. Lydia said that you would shake your head, and that I was not to mind it.');
   await say(P,'Twice. Tell them that I know what it cost them. And tell them that it arrived.');
   await walk(BR,24,118);BR.room=null;codeBtn()}
@@ -567,7 +567,7 @@ const again=()=>say(ASKER(),ASK[WANT()]);
 /* the Sabbath is over: back to the courtyard */
 async function sabEnd(n){await fade(1,600);G.sab10=0;await come('yard10',700);
   if(n===1){await narr('By day he sewed and talked. By night he sewed.',{dur:5200});await tell('t29');
-    place(BR,'yard10',28,118,1);await walk(BR,118,126);
+    place(BR,'yard10',28,118,1);await walk(BR,130,129);
     await say(BR,"Paul! From Lydia's house, and from a house beside the prison that you know. They put this together when they heard which road you had taken.");
     await say(P,'From Philippi. They have little enough themselves.');
     await say(BR,'They said that you would say so. I am to tell you that they were not asking.');
@@ -657,7 +657,7 @@ async function nightIntro(){AU.mood='night';
   await narr('Night found Paul and Silas in another house, behind a shut door.',{dur:5600});
   place(JA,'night10',44,118,1);SFX.door();await walk(JA,P.x-30,P.y+2);
   await say(JA,'They came to my house for you: men from the marketplace, and some from the synagogue behind them. They did not find you. So they took me, and two of the brothers with me.');
-  await say(SI,'Before whom?');
+  await say(SI,'Before whom?',{to:JA});
   await say(JA,'The city rulers. We have given them security. Then they let us go.');
   await say(P,'Jason has pledged what is his, and it was for us. What do I do with this night?',TH);codeBtn()}
 async function jasonTalk(){if(F.gone)return;
@@ -737,7 +737,7 @@ async function cyrus(){await say(P,'Read the line to its end, Dorotheos. Aloud.'
    Timothy stayed (17:14). The game stays with them: the button that has always led back to Paul is grey, and the player is Timothy,
    who has known the holy writings from infancy (2 Timothy 3:15). A man who was away asks what the others asked on the first day, and
    the answer is to step back: the Beroeans set all three scrolls themselves. The scene is invented. */
-async function strangers(){AU.mood='tense';place(E1,'ber10',40,118,1);SFX.door();await walk(E1,P.x-30,P.y+2);
+async function strangers(){AU.mood='tense';place(E1,'ber10',40,118,1);SFX.door();await walk(E1,...spot(E1,P.x-30,P.y+2));
   await say(E1,'Paul. There are men from Thessalonica at the gate. They are not asking for the synagogue. They are asking for you, by name, and telling the street what you are.');
   await tell('v13');
   await say(EU,'To the sea, and tonight. Three of us go with you.');
@@ -755,7 +755,7 @@ async function own(){if(F.own)return;
     {q:'Tell him to wait until Paul is back.',no:'Paul is not coming back this month. And it never stood on Paul.'},
     {q:'Ask Eupolemos to show him.',ok:1}]);
   await say(TP,'Eupolemos. You found two of the three places yourself. Will you show him?');
-  await say(EU,'I? ...Yes. Come here, shepherd. Dorotheos, give me Moses.');
+  await say(EU,'I? ...Yes. Come here, shepherd. Dorotheos, give me Moses.',{to:LT});
   await narr('The old man put his hands on the rollers: Moses first, then David, then the prophet.',{dur:6200});chord10();
   await say(EU,'A lamb, of which no bone may be broken. A righteous man, whose bones are all kept. A servant who is pierced. Now, young man: tell him about the afternoon. That part is in no scroll of ours.');
   await say(TP,quote(EV.pierce));

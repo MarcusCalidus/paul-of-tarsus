@@ -327,7 +327,7 @@ const holding=()=>F.held&&BN.room==='tarsus'&&Math.abs(BN.x-146)<4;
 async function sewSeam(){
   if(!holding()){F.held=0;await say(P,'The cloth pulls crooked unless someone holds the far edge taut.');
     if(BN.room==='tarsus')await say(BN,'Then show me where to stand, Saul. I am a Levite, not a tentmaker.');return}
-  await say(P,'Hold it just so, Barnabas.');SFX.sew();await wait(800);SFX.sew();
+  await say(P,'Hold it just so, Barnabas.',{to:BN});SFX.sew();await wait(800);SFX.sew();
   await say(P,'A flat seam, doubled over, so that no wind finds a way in.');F.seam=1;F.held=0;SFX.good();
   await say(BN,'Closed, from top to bottom. I can hardly see where it was.');await walk(BN,112,124);BN.dir=1}
 async function hold(){if(F.seam)return say(BN,'The seam is closed. The rest is between Saul and Kleon.');
@@ -350,15 +350,15 @@ async function leave3(){
   G.meet=1;enterRoom('court',112,126,1);dealInv('court');drawInv();codeBtn();
   place(BN,'court',86,122,1);place(LU,'court',140,118,1);place(XA,'court',62,130,1);place(TN,'court',40,124,1);place(AG,'court',204,118,-1);await fade(0,700);
   await narr('Antioch. The congregation has gathered in the courtyard, as it has all this year.',{dur:4200});
-  await say(AG,'Brothers and sisters. I must tell you what has been made known through the spirit.');
-  await say(AG,'A great famine is coming, and the whole inhabited earth will feel it.');
-  await say(TN,'On the whole earth? Then on Antioch too.');
-  await say(LU,'And on Judea hardest of all. Many of the brothers there had little even before this.');
+  await say(AG,'Brothers and sisters. I must tell you what has been made known through the spirit.',{to:null});
+  await say(AG,'A great famine is coming, and the whole inhabited earth will feel it.',{to:null});
+  await say(TN,'On the whole earth? Then on Antioch too.',{to:AG});
+  await say(LU,'And on Judea hardest of all. Many of the brothers there had little even before this.',{to:TN});
   await say(TN,'Then let us not wait until they are hungry. I will send what I can spare.');
   await say(LU,'So will my household. Let each one decide what he can afford, and let no one be pressed.');
-  await say(BN,'And when it is gathered?');
+  await say(BN,'And when it is gathered?',{to:LU});
   await say(LU,'Jerusalem sent you to us, Barnabas. Who better to carry our answer back? You, and Saul with you.');
-  await say(P,'Gladly.');
+  await say(P,'Gladly.',{to:LU});
   await narr('The disciples decided to send help to the brothers in Judea, every one of them as much as his means allowed. (Acts 11:29)',o);
   await fade(1,600);G.meet=0;place(XA,'antioch',190,116,1);place(TN,'antioch',354,116,-1);place(LU,'court',187,113,-1);place(AG,'court',116,115,1);
   place(BN,'court',92,124,1);place(P,'court',146,128,-1);
@@ -641,7 +641,7 @@ async function finale3(){playAs(P);AU.mood='hope';await wait(400);
   place(XA,'court',300,114,-1);place(TN,'court',304,120,-1);SFX.door();await Promise.all([walk(XA,216,128),walk(TN,244,134)]);
   await say(TN,'We could not let you leave without a farewell. Half the congregation is waiting at the gate.');
   await fade(1,300);F.loaded=1;SFX.creak();await wait(450);await fade(0,300);
-  await say(LU,"Grain and figs in the bags, and the sealed purse in your own keeping, Barnabas. To the elders in Judea, by your hand and Saul's.");
+  await say(LU,"Grain and figs in the bags, and the sealed purse in your own keeping, Barnabas. To the elders in Judea, by your hand and Saul's.",{to:BN});
   await say(XA,'And my thread in every seam of it. I did have something to give.');
   await say(AG,'I brought you hard news, and you answered it with open hands. The brothers in Judea will thank Jehovah for Antioch.');
   await say(P,'Jews and Greeks, potters and spinners: one congregation, and one gift. Before we go, let us pray.');

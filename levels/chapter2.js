@@ -301,7 +301,7 @@ const TOPICS=[
 /* ============ ROOMS, HOTSPOTS, CHARACTERS ============ */
 async function knock(){SFX.knock();await wait(600);
   if(F.preach){SFX.door();return go('upper',56,120,1)}
-  if(F.told){await say(BN,'It is Barnabas! Open, sister, and do not be afraid.');await say(DK,'Barnabas? But the man beside you...');
+  if(F.told){await say(BN,'It is Barnabas! Open, sister, and do not be afraid.');await say(DK,'Barnabas? But the man beside you...',{to:BN});
     await say(BN,'I will answer for him. Let us in, and let the brothers hear him for themselves.');SFX.door();await say(DK,'...If you say so. Come up.');
     return go('upper',56,120,1)}
   if(F.knocked){await say(DK,'Please, go away. No one here will open to you.');
@@ -310,7 +310,7 @@ async function knock(){SFX.knock();await wait(600);
   await say(DK,'Saul of... the one who dragged our brothers off to prison?');await say(DK,'Go away. Please. We know what you are.');
   await say(P,'I cannot blame her. I gave them every reason to fear me.',TH)}
 async function liftWheel(){if(!F.metBarn)return say(P,'It belongs to that man and his cart. I should speak to him before I touch it.');
-  await say(P,'Take the other side, friend. Together, now!');await walk(BN,170,116);SFX.creak();await fade(1,220);F.wheelOn=1;await wait(250);await fade(0,220);
+  await say(P,'Take the other side, friend. Together, now!',{to:BN});await walk(BN,170,116);SFX.creak();await fade(1,220);F.wheelOn=1;await wait(250);await fade(0,220);
   await say(BN,'It is on! But with no pin through the axle, it will roll off again before I reach the corner.');await walk(BN,228,118);BN.dir=-1}
 async function barnStory(){
   await say(BN,'It holds! Friend, you have the hands of a craftsman and the heart of a brother.');
@@ -376,7 +376,7 @@ BN.hs={get name(){return F.cartFixed||G.room!=='jerusalem'?'Barnabas':'man with 
       {q:'Do you know the people in that house?',a:async()=>{await say(BN,'Know them? I am on my way to them. Why do you ask, friend?');await say(P,'I will tell you. When your hands are free.')}},
       {q:'I will see what I can do.',bye:1}])}};
 ROOMS.upper={space:1.25,walk:[24,300,112,138],mood:'calm',amb:{birds:.25,crowd:.12},
-  enter:async()=>{if(F.upper)return;F.upper=1;place(BN,'upper',96,124,1);await say(BN,'Cephas, James: this is Saul of Tarsus. Before you answer, hear me.');
+  enter:async()=>{if(F.upper)return;F.upper=1;place(BN,'upper',96,124,1);await say(BN,'Cephas, James: this is Saul of Tarsus. Before you answer, hear me.',{to:CE});
     await narr('Barnabas gave them the whole account: on the road Saul had seen the Lord, who spoke to him, and in Damascus he had spoken out fearlessly in the name of Jesus. (Acts 9:27)',{dur:8000});
     await say(CE,'Saul. I too know what it is to fail my Lord, and to be shown mercy.');await say(CE,'Stay in my house, brother. We have much to speak about.');
     await say(JA,'If Jehovah has opened this door, we will not be the ones to shut it.');await say(P,'Brothers... thank you. I do not deserve this.')},
@@ -532,7 +532,7 @@ async function dispute(){DS.dir=1;AR.dir=1;
       prov16:'Your own steps took you to Damascus with letters to bind men. Who directed that, Saul?',
       isa49:'The nations can wait. Answer us.',isa53:'We know the prophet. We asked about Stephen.'});
   await say(AR,'Then let him say it in the synagogue once more. It will be the last time he says it anywhere.');
-  await say(DS,'Come, Ariston. We have heard enough.');
+  await say(DS,'Come, Ariston. We have heard enough.',{to:AR});
   await Promise.all([walk(DS,-30,116),walk(AR,-30,122)]);DS.room=AR.room=null;
   return toCaesarea()}
 async function toCaesarea(){const o={dur:8000};

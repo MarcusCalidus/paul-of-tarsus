@@ -464,7 +464,7 @@ async function parting(){F.markTold=1;const b=other();MK.dir=PC().x>MK.x?1:-1;
   await say(MK,'I am not going up into the mountains with you. I am going back to Jerusalem.');
   await say(BN,'Back? John Mark, we have only just landed.');
   await say(MK,'I know, cousin. I have turned it over ever since Paphos. I am going back.');
-  await say(P,'I wish you would stay with the work, John Mark. I will say that once, and plainly.');
+  await say(P,'I wish you would stay with the work, John Mark. I will say that once, and plainly.',{to:MK});
   await say(MK,'You have said it, brother Paul. I am still going.');
   await narr('There John parted from them and went back to Jerusalem. (Acts 13:13)',{dur:5200});
   await narr('The account does not say why.',{dur:3200});
@@ -619,7 +619,7 @@ async function fordIntro(){
   await narr('On the fourth day the road came down to a river.',{dur:3600});
   await say(PA,'Hold the beasts! ...Look at that. The guide rope has parted.');
   await say(PA,'It rained in the mountains, and the river came down in the night. There hangs the near half, on its post. The far half is trailing in the water, over there.');
-  await say(EU,'Then we wait for the river to fall?');
+  await say(EU,'Then we wait for the river to fall?',{to:PA});
   await say(PA,'Two days. Perhaps three. And I do not like these rocks by night: men watch this ford.');
   await say(P,'A parted rope, a river, and two posts. This is a tentmaker\'s trouble before it is anyone else\'s.',TH)}
 /* wade: Barnabas carries the end of the rope across on his staff, and Paul holds the line from the near post. */
@@ -711,11 +711,11 @@ async function sabbath1(){playAs(P);
     {q:'Listen, men of Antioch.',no:'They did not come here as citizens of a city. They came to hear the Law and the Prophets.'},
     {q:'Listen, Israelites, and listen, all the rest of you who fear God.',ok:1}]);
   await say(P,'Listen, Israelites, and listen, all the rest of you who fear God. (Acts 13:16)');
-  await say(EU,'All the rest who fear God. He means us.');
+  await say(EU,'All the rest who fear God. He means us.',{to:null});
   await say(P,'The God of Israel, this people, made our forefathers his choice. With his arm raised high he led them out of Egypt, and he gave them their land to inherit.');
   await say(P,'He gave them judges, and then kings. Of David, the son of Jesse, he testified that in him he had found a man after his own heart. (Acts 13:22)');
   await say(P,"And God has done what he promised: from that man's descendants he has brought Israel a savior, Jesus. (Acts 13:23)");
-  await say(JO,'A savior. From the house of David!');
+  await say(JO,'A savior. From the house of David!',{to:null});
   await say(P,'The people of Jerusalem and their rulers did not see who he was. They pressed Pilate to have him put to death, and he was buried in a tomb.');
   await say(P,'But God raised him from the dead, and over many days he showed himself to the companions of his journey from Galilee up to Jerusalem. (Acts 13:30, 31)');
   await think('Raised up: and so the promise to the forefathers is kept. Where is it written of the Son?',passages(TALK,['ps2']));
@@ -726,7 +726,7 @@ async function sabbath1(){playAs(P);
   await say(P,'David died, and his body did decay. The one God raised up did not decay. (Acts 13:36, 37)');
   await say(P,'So, brothers, you should know this: through him you are being told that sins are forgiven. (Acts 13:38)');
   await say(P,'There were things of which the Law of Moses could not clear you. Of all of them, everyone who believes is cleared through him. (Acts 13:39)');
-  await say(EU,'Everyone who believes...');
+  await say(EU,'Everyone who believes...',{to:null});
   await think('They have heard the good news. And the Prophets warned those who would not believe it.',passages(['hab1','isa56','isa49'],['hab1']));
   await say(P,'So take care that the saying in the Prophets does not come true of you: (Acts 13:40)');
   await say(P,'Scoffers are to look on, to wonder, and to perish; for in their days a work is being done that they will never believe, even when it is told them point by point. (Acts 13:41)');
@@ -937,7 +937,7 @@ async function start5(){ov.onclick=null;ov.className='';audioInit();SFX.good();i
     await narr('Perga in Pamphylia, about 47 C.E.',{dur:3000});
     await say(BN,'The north road, Paul. Beyond the plain it climbs into the Taurus, and beyond the Taurus lies Antioch in Pisidia.');
     await say(P,'Then that is our road. A long one, by the look of those mountains.');
-    await say(MK,'The bed rolls are here, cousin. And the food bag.');
+    await say(MK,'The bed rolls are here, cousin. And the food bag.',{to:BN});
     await say(P,'John Mark has hardly spoken since we landed. And Barnabas is limping.',TH)},true)}
 async function finale5(){playAs(P);await wait(300);
   await say(P,'One thing remains, Barnabas. Our Lord told those he sent out what to do on leaving a city that would not receive them. (Luke 9:5)');

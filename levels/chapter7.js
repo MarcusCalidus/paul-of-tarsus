@@ -533,10 +533,10 @@ async function readTarsus(){const me=PC();
   await fade(0,600);
   await say(P,'Read it to them, Silas. You carried it out of Jerusalem.');
   await say(SI,'To the brothers from the nations in Antioch, Syria and Cilicia: greetings from your brothers, the apostles and the elders. (Acts 15:23)');
-  await say(AG,'Cilicia! They wrote it to us. By name.');
-  await say(SI,'We hear that some who came from us have upset you with their talk and tried to unsettle you. They had no instructions from us... (Acts 15:24)');
-  await say(SI,'It seemed right to the holy spirit, and to us as well, to lay no burden on you beyond the necessary things: have nothing to do with what is sacrificed to idols, with blood, with anything strangled, or with sexual immorality. (Acts 15:28, 29)');
-  await say(SI,'Guard yourselves well against these, and it will go well with you. Stay in good health! (Acts 15:29)');
+  await say(AG,'Cilicia! They wrote it to us. By name.',{to:null});
+  await say(SI,'We hear that some who came from us have upset you with their talk and tried to unsettle you. They had no instructions from us... (Acts 15:24)',{to:null});
+  await say(SI,'It seemed right to the holy spirit, and to us as well, to lay no burden on you beyond the necessary things: have nothing to do with what is sacrificed to idols, with blood, with anything strangled, or with sexual immorality. (Acts 15:28, 29)',{to:null});
+  await say(SI,'Guard yourselves well against these, and it will go well with you. Stay in good health! (Acts 15:29)',{to:null});
   F.read=1;AU.mood='calm';SFX.good();
   await narr('When that letter was read in Antioch, there was joy at the encouragement it gave. (Acts 15:31) It was no different in Tarsus.',{dur:8000});
   await say(AG,'No burden beyond the necessary things. I have carried another for two months, and it is gone.');
@@ -608,7 +608,7 @@ ROOMS.tarsus7={walk:[16,464,114,138],get mood(){return F.read?'calm':'tense'},am
 async function gatesIntro(){if(F.strap||F.mended)return;
   await say(ZE,'This is as far as we go tonight, brothers. Look at that sky. When the wind comes down the Gates like this, there is rain behind it, and plenty.');
   await say(ZE,'My oxen will stand it, and the three of us can sleep under the wagon. Those people yonder are not so well off.');
-  await say(BI,'Hold it, Charis! Hold the... There. It is down again.');
+  await say(BI,'Hold it, Charis! Hold the... There. It is down again.',{to:CH});
   await say(SI,'A family, Paul. Their tent is down, and they have a child with them.');
   await say(P,'A torn tent, a storm an hour away, and a tentmaker standing in the road. I do not think that I need to pray long over this one.',TH)}
 async function strapGive(){if(F.strap)return say(ZE,F.mended?'You had it, and I saw what you made of it.':'You have it in your hand, brother. Cut what you need.');
@@ -639,7 +639,7 @@ async function pitch7(){if(F.up)return say(P,'It stands with its back to the win
   if(!F.mended)return mend7();
   if(!holding()){F.line=0;return say(P,'I get the pole upright, and the wind lays the whole tent flat again. It wants a man on the windward line while I set the pole and drive the pins.')}
   await walk(P,254,118);P.dir=1;P.bow=true;SFX.creak();
-  await say(P,'Hold her there, Silas! The pole under the ridge... Now the pins, each one driven slanting, away from the pull.');
+  await say(P,'Hold her there, Silas! The pole under the ridge... Now the pins, each one driven slanting, away from the pull.',{to:SI});
   for(let i=0;i<3;i++){noise({d:.05,v:.16,f:700,q:2});await wait(260)}
   P.bow=false;await fade(1,500);F.up=1;F.line=0;CH.room=null;ME.room=null;place(BI,'gates',320,122,-1);place(P,'gates',240,124,1);place(SI,'gates',350,121,-1);AU.mood='calm';toPaul('cloth7',1);
   await narr('The first drops fell as the last pin went in. Then the rain came down the gorge like a wall.',{dur:6000});
@@ -1157,8 +1157,8 @@ async function invite7(){playAs(P);AU.mood='calm';await Promise.all([walk(P,178,
   await say(P,'I did not ask what you think of yourself. I asked the brothers, and I asked your mother. And I have eyes of my own.');
   await walk(MY,128,127);MY.dir=1;
   await say(MY,"It is not Paul alone who asks, Timothy. The older men of Lystra say the same. And things were said about you in this room, by God's spirit, which we have not forgotten.");
-  await say(EN,'Do not look at me, my son. Everything I taught you was for this. I only did not know that it would be so soon.');
-  await say(LO,'Go, child. I shall keep this door open for three of you now.');
+  await say(EN,'Do not look at me, my son. Everything I taught you was for this. I only did not know that it would be so soon.',{to:TI});
+  await say(LO,'Go, child. I shall keep this door open for three of you now.',{to:TI});
   await say(TI,'Then, if the brothers are not mistaken in me... I will come.');
   G.hands=1;for(const a of[P,TI,MY,SI,EN,LO])a.bow=true;SFX.pray();await wait(900);
   await narr('There were prophecies about Timothy, and the body of elders laid their hands on him, as Paul did. It may have been at this time. (1 Timothy 1:18; 4:14; 2 Timothy 1:6)',{dur:10500});

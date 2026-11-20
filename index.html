@@ -255,7 +255,7 @@ const $=s=>document.querySelector(s);
 const cv=$('#screen'),cx=cv.getContext('2d');
 cx.imageSmoothingEnabled=false;
 const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,t:0,scene:null,
-  hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false,pc:null,invs:{},lang:'en'};
+  hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false,pc:null,invs:{},lang:'en',turn:new Map(),turnN:0};
 const OPTS_KEY='paul.opts',OPTS={mus:1,fx:1,spd:1,mov:1};   /* mov: 1 lively, 0 calm (see moves) */
 /* ============ LANGUAGES: the game is written in English; every other language is data under lang/ ============ */
 /* Every line is translated as it is shown: by say and narr, choose, the status line, the labels, the overlays, the tablets and the map,
@@ -1149,6 +1149,12 @@ function place(a,room,x,y,dir){a.room=room;a.x=x;a.y=y;a.dir=dir||1;a.walk=null}
 function walk(a,x,y){return new Promise(res=>{const rm=ROOMS[a.room];
   if(a===PC()&&rm&&!a.free){const w=rm.walk;x=clamp(x,w[0],w[1]);y=clamp(y,w[2],w[3])}
   if(a.walk)a.walk.res(false);a.walk={x,y,res};if(Math.abs(x-a.x)>1)a.dir=x>a.x?1:-1})}
+/* spot: where a script may walk someone, at or near x, y: a free place in his room, clear of everybody else (and of a mate) by 14 pixels
+   across or 11 in depth, so that whoever talks there is seen; x itself if it is free, else a step to either side, farther and farther out.
+   A script uses it where a companion the player has moved about may be standing on the spot it wants: walk(P, ...spot(P, 262, 132)). */
+function spot(a,x,y){const w=ROOMS[a.room].walk,others=Object.values(ACT).filter(o=>o!==a&&o.room===a.room).flatMap(o=>(o.mate?[[o.x+o.mate.dx*o.dir,o.y]]:[]).concat([[o.x,o.y]])),
+    free=X=>X>=w[0]&&X<=w[1]&&!others.some(([sx,sy])=>Math.abs(sx-X)<14&&Math.abs(sy-y)<11);
+  for(let k=0;k<6;k++)for(const d of k?[1,-1]:[0]){const X=x+d*14*k;if(free(X))return[X,y]}return[x,y]}
 /* cadence: the words of a line, as they stand on the screen, read into what a mouth does with them. ev: a row of {t0, t1, m, beat}, the
    mouth m (see person) from t0 to t1 in milliseconds, beat on a stressed syllable; cl: the clauses, {t0, t1, end, n}, end being the mark
    that closes it (, . ! ?). A vowel opens the mouth: an a wide and an o or a u round, both with the chin down, but only on a stressed
@@ -1184,9 +1190,22 @@ function gesture(a,kind,ms,after){if(!a||!GEST[kind])return Promise.resolve();a.
 const nod=a=>gesture(a,'nod'),shakeHead=a=>gesture(a,'shake'),handOnChest=(a,ms)=>gesture(a,'heart',ms);
 function acted(line){const c=CHAP[G.ch],m=c&&c.acting;if(!m)return null;if(!c.acts){c.acts={};for(const k in m)for(const l of m[k])c.acts[l]=k}return c.acts[line]||null}
 let cur=null;
+/* The talk of a scene. Whoever speaks turns to the one he speaks to, and that one turns to him; and so the two stay while the scene lasts
+   (G.turn), so that the next line finds them face to face, unless a script turns or walks one of them meanwhile. Only the picture turns
+   (see facing): dir, which the scripts read and set, is left alone, and when the scene is over everyone stands as the scene had him (see cut).
+   The one spoken to is o.to, when a script names him; null names nobody in particular, such as a crowd, or a man who calls out, and
+   the speaker then faces the way the scene has him. Otherwise, for whoever is played, it is the person he talks with (G.with, see act),
+   or else the last one he spoke with in this scene; and for anyone else, the last one he spoke with in this scene, or else whoever is
+   played, if he stands in the same room. So a script names the one spoken to where two others turn to each other, and where the one
+   played is not the one a line is for. The voice of a mate (see drawActor) turns too. */
+const dirOf=a=>a.dir!=null?a.dir:(Object.values(ACT).find(o=>o.mate&&o.mate.voice===a&&o.room===a.room)||{}).dir;
+function partner(a){const t=G.turn.get(a);return t&&t.dir===dirOf(a)&&t.to.room===a.room?t.to:null}
+function spokenTo(a,o,me){const to=o.to!==undefined?o.to:a===me?G.with||partner(a):partner(a)||me;return to&&to!==a&&to.room===a.room?to:null}
+function turnTo(a,b){const n=++G.turnN;G.turn.set(a,{to:b,dir:dirOf(a),n});G.turn.set(b,{to:a,dir:dirOf(b),n})}
 /* say: a line stands over whoever speaks it (a: null for the narrator) until its time is up or the player moves on. o.thought: a thought,
    in italics and with the mouth shut; o.dur: how long it stands; o.sung: its notes (see cadence); o.choir: others who sing it with him, or
-   without him. While it stands, cur holds its cadence and when it began, and the mouth and head of whoever speaks or sings follow that
+   without him; o.to: the one it is spoken to (see above). While it stands, cur holds its cadence and when it began, and the one it is
+   spoken to, and the mouth and head of whoever speaks or sings follow that
    (see moves). The blips of a speaking voice fall on its first syllables; a sung line has its own voice and no blips. A line of the
    narrator's that is told in the dark is read from his scroll (see DARK, below); o.plain keeps such a line a plain one. */
 function say(a,text,o={}){const S=SHARED.scroll,white=!a&&!o.plain&&!!G.white,ink=!a&&!o.plain&&!white&&inDark();
@@ -1200,9 +1219,8 @@ function say(a,text,o={}){const S=SHARED.scroll,white=!a&&!o.plain&&!!G.white,in
   $('#speech').appendChild(el);if(ink)S.fit(el);if(voiced){a.talk=true;const k=o.act||acted(src);if(k)gesture(a,k,0,140)}choir.forEach(x=>x.talk=true);
   const blips=voiced&&!plan.sung?plan.ev.filter(e=>e.m>1).slice(0,Math.ceil(Math.min(9,text.length/5))).map(e=>setTimeout(()=>SFX.talk(a.pitch*2),e.t0)):[];
   const done=()=>{clearTimeout(tm);blips.forEach(clearTimeout);el.remove();if(a)a.talk=false;choir.forEach(x=>x.talk=false);if(G.skip===done)G.skip=null;cur=null;if(ink)S.rest();res()};
-  const tm=setTimeout(done,dur),me=PC();
-  /* to: the one who is spoken to, as far as the engine can know: whoever is played, or the person he is talking with (G.with, see act) */
-  G.skip=done;G.lineT=performance.now();cur={el,a,ink,white,low:o.low,plan,t0:G.lineT,choir,to:!voiced||o.sung?null:a===me?G.with:me.room===a.room?me:null};posSpeech()})}
+  const tm=setTimeout(done,dur),me=PC(),to=voiced&&!o.sung?spokenTo(a,o,me):null;if(to)turnTo(a,to);else if(voiced&&o.to===null)G.turn.delete(a);
+  G.skip=done;G.lineT=performance.now();cur={el,a,ink,white,low:o.low,plan,t0:G.lineT,choir,to};posSpeech()})}
 const narr=(t,o)=>say(null,t,o);
 /* The narrator's scroll (shared/scroll.js). A line of narration told in the dark, that is, while the view is faded out or the scene is DARK,
    is not set on a black screen: it is read from an open roll of papyrus, held in two hands by lamplight. The scroll comes up out of the dark
@@ -1218,10 +1236,10 @@ function posSpeech(){if(!cur||cur.ink||cur.white)return;const{el,a}=cur,vw=$('#v
 function lock(b){$('#panel').classList.toggle('locked',b)}
 async function cut(fn,force){if(G.busy&&!force)return;G.busy=true;lock(true);status();
   try{await fn()}catch(e){console.error(e)}
-  G.with=null;G.busy=false;lock(false);G.verb='walk';G.item=null;syncVerbs();drawInv();status();codeBtn()}
+  G.with=null;G.turn.clear();G.busy=false;lock(false);G.verb='walk';G.item=null;syncVerbs();drawInv();status();codeBtn()}
 /* viewOf: show the room a character stands in. enterRoom: move the character the player controls into a room, and show it. */
 function viewOf(a){G.room=a.room;G.cam=clamp(a.x-160,0,ART[a.room].w-VW);AU.mood=ROOMS[a.room].mood||'calm';AU.amb=ROOMS[a.room].amb;G.hover=null}
-function enterRoom(room,x,y,dir){G.room=room;place(PC(),room,x,y,dir);G.cam=clamp(x-160,0,ART[room].w-320);AU.mood=ROOMS[room].mood||'calm';AU.amb=ROOMS[room].amb;G.hover=null}
+function enterRoom(room,x,y,dir){G.room=room;G.turn.clear();place(PC(),room,x,y,dir);G.cam=clamp(x-160,0,ART[room].w-320);AU.mood=ROOMS[room].mood||'calm';AU.amb=ROOMS[room].amb;G.hover=null}
 async function fade(on,ms=260,white){const S=SHARED.scroll;if(S&&S.state!=='down')await S.down();const d=$('#dim');
   G.white=on&&white?1:0;if(white)d.style.background='#faf8f2';else if(on)d.style.background='#05030c';
   d.style.transition=`opacity ${ms}ms ease-in-out,background-color ${ms}ms ease-in-out`;d.style.opacity=on?1:0;await wait(ms+20);
@@ -1330,8 +1348,13 @@ async function clickView(x,y,at){
   if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(me,x,y);return}
   if(v==='walk'){v=defVerb(h);if(v==='walk')v=h.exit?'exit':'look'}
   const A=h.actor,ty=h.wy!=null?h.wy:A?A.y+1:118;let tx=h.wx!=null?h.wx:A?A.x+(me.x<A.x?-22:22):h.x+h.w/2;
-  /* beside a person, but not on the spot where a companion already stands: then the other side, if it is free */
-  if(A&&h.wx==null){const taken=x=>Object.values(ACT).some(a=>a!==me&&a!==A&&a.room===G.room&&Math.abs(a.x-x)<14&&Math.abs(a.y-ty)<8);if(taken(tx)&&!taken(2*A.x-tx))tx=2*A.x-tx}
+  /* beside a person, but not on the spot where somebody already stands, a mate included, nor just in front of him or behind him: then the
+     other side, if it is free, or a step farther out, so that neither of the two who talk hides the other or is hidden */
+  if(A&&h.wx==null){const w=ROOMS[G.room].walk,spots=Object.values(ACT).filter(a=>a!==me&&a.room===G.room).flatMap(a=>(a.mate?[[a.x+a.mate.dx*a.dir,a.y]]:[]).concat(a===A?[]:[[a.x,a.y]])),
+      taken=x=>spots.some(([sx,sy])=>Math.abs(sx-x)<14&&Math.abs(sy-ty)<11),s=tx<A.x?-1:1;
+    const at=[0,1,2].flatMap(k=>[s,-s].map(d=>A.x+d*(22+14*k))).find(x=>x>=w[0]&&x<=w[1]&&!taken(x));if(at!=null)tx=at}
+  /* at a thing, a door or a spot that the room names: beside whoever stands there already, a companion left there perhaps, and not on him */
+  else tx=spot(me,tx,ty)[0];
   if(!(await walk(me,tx,ty)))return;
   if(G.busy||me!==PC())return;
   me.dir=A?(A.x>me.x?1:-1):h.dir||((h.x+h.w/2)>=me.x?1:-1);
@@ -1478,15 +1501,25 @@ function moves(o,L,ln,ts){if(L.stone)return[0,0,0,0];
     else if(q.kind==='shake')mv=mv&~(MV.fwd|MV.back|MV.dip|MV.lift|MV.brow|MV.glance|MV.lean)|(u<560?Math.floor(u/140)%2?MV.fwd:MV.back|MV.glance:0);
     else if(!L.spear&&!L.stub)ges=u<110||q.ms-u<110?2:3}}
   return[m,ges,bl,mv]}
-/* Whoever the played character talks with (G.with, see act) turns to face him for as long as they talk, and stands afterwards as the scene had
-   him. Only the picture turns: dir, which the scripts read and set, is left alone, and if a script turns him or walks him meanwhile, that holds.
-   An actor marked noTurn keeps his back turned if the scene wants it so, and two who are one actor (a mate) do not change places. */
-const facing=o=>G.with===o&&o.dir===G.withDir&&!o.noTurn&&!o.mate&&!o.bow&&!o.walk?(PC().x>=o.x?1:-1):o.dir;
+/* facing: the way a figure is drawn. Whoever speaks and whoever is spoken to face each other while the scene lasts (G.turn, see say), and
+   whoever the played character talks with (G.with, see act) turns to face him as soon as they begin. Each stands afterwards as the scene
+   had him. Only the picture turns: dir, which the scripts read and set, is left alone, and if a script turns him or walks him meanwhile,
+   that holds. An actor marked noTurn keeps his back turned if the scene wants it so; one who bows or walks does not turn; and two who are
+   one actor (a mate) turn each on the spot and do not change places. */
+function turnOf(k,x,room,dir){const t=G.turn.get(k);if(!t||t.dir!==dir||t.to.room!==room)return 0;const d=t.to.x-x;return Math.abs(d)<2?0:d>0?1:-1}
+const still=o=>o.noTurn||o.bow||o.walk;
+const facing=o=>still(o)?o.dir:turnOf(o,o.x,o.room,o.dir)||(G.with===o&&o.dir===G.withDir?(PC().x>=o.x?1:-1):o.dir);
+/* mateFacing: the mate turns to the one she speaks with, or to the one her actor speaks with, whichever was the later; or with him to the
+   one played, who talks with them both */
+function mateFacing(o,mx){if(still(o))return o.dir;const v=o.mate.voice,a=v&&G.turn.get(v),b=G.turn.get(o),mine=a&&turnOf(v,mx,o.room,o.dir),
+    his=b&&b.to!==v&&turnOf(o,mx,o.room,o.dir);
+  return(mine&&his?(a.n>b.n?mine:his):mine||his)||(G.with===o&&o.dir===G.withDir?(PC().x>=mx?1:-1):o.dir)}
 function drawActor(g,o,ts,id){const bow=o.bow?1:0,dir=facing(o),ln=cur&&cur.plan?cur:null,[talk,ges,bl,mv]=moves(o,o.look,ln&&o.talk&&(ln.a===o||ln.choir.includes(o))?ln:null,ts);
-  /* a mate: two who are never apart are one actor (Aquila and Priscilla, in Chapter Twelve). The mate {fig, dx, talk}, fig being the id of her look,
-     walks, stands and bows with the actor, a step behind and beside, and has a mouth of her own: when she talks, the line on the screen is hers. */
-  const m=o.mate;if(m){const L=LOOK[m.fig],mx=o.x+m.dx*o.dir,[mt,mg,mb,mm]=moves({talk:m.talk,bow:o.bow,fr:o.fr,x:mx},L,m.talk&&ln&&ln.a&&ln.a!==o?ln:null,ts);
-    figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+o.dir+'f'+(o.fr<0?'s':o.fr)+'t'+mt+bow+mg+mb+'m'+mm,s=>person(s,0,0,L,o.dir,o.fr,mt,bow,mg,mb,mm))}
+  /* a mate: two who are never apart are one actor (Aquila and Priscilla, in Chapter Twelve). The mate {fig, dx, talk, voice}, fig being the id of her look,
+     walks, stands and bows with the actor, a step behind and beside, and has a mouth of her own: when she talks, the line on the screen is hers.
+     voice is the one who speaks her lines (say(voice, ...)), with her room, x and y: she turns to whom she speaks with (see mateFacing). */
+  const m=o.mate;if(m){const L=LOOK[m.fig],mx=o.x+m.dx*o.dir,md=mateFacing(o,mx),[mt,mg,mb,mm]=moves({talk:m.talk,bow:o.bow,fr:o.fr,x:mx},L,m.talk&&ln&&ln.a&&ln.a!==o?ln:null,ts);
+    figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+md+'f'+(o.fr<0?'s':o.fr)+'t'+mt+bow+mg+mb+'m'+mm,s=>person(s,0,0,L,md,o.fr,mt,bow,mg,mb,mm))}
   figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+'f'+(o.fr<0?'s':o.fr)+'t'+talk+bow+ges+bl+'m'+mv,s=>person(s,0,0,o.look,dir,o.fr,talk,bow,ges,bl,mv))}
 function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
