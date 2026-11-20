@@ -599,44 +599,44 @@ const V1={color:'#f0d0c0',pitch:176,name:'woman'},V2={color:'#c0d8e8',pitch:104,
    in quotation marks (CONTRIBUTING section 1). What the disciples and Paul say to each other in Acts 19:2-4 is spoken in the scene,
    in the game's own words. */
 const TOLD={
- v23:'After he had spent some time there he set out again, and went from place to place through the country of Galatia and Phrygia, making all the disciples strong. (Acts 18:23)',
- v24:'Now a Jew named Apollos came to Ephesus, an Alexandrian by birth: a man who spoke well, and who was at home in the Scriptures. (Acts 18:24)',
- v25:'He had been taught the way of Jehovah. Aglow with the spirit, he spoke and taught accurately what concerned Jesus; yet the only baptism he knew of was John\'s. (Acts 18:25)',
- v26a:'He began to speak boldly in the synagogue, and Priscilla and Aquila heard him. (Acts 18:26)',
- v26b:'They took him into their company, and laid out the way of God for him more accurately. (Acts 18:26)',
- v27a:'He wished to cross over to Achaia; so the brothers wrote to the disciples there, urging them to give him a kind welcome. (Acts 18:27)',
- v27b:'When he arrived, he was a great help to those who had come to believe through God\'s undeserved kindness; (Acts 18:27)',
- v28:'for in public, and with great force, he proved the Jews thoroughly wrong, showing them from the Scriptures that Jesus is the Christ. (Acts 18:28)',
- v1:'In the course of events, while Apollos was in Corinth, Paul passed through the inland regions and came down to Ephesus. There he found some disciples. (Acts 19:1)',
- v5:'When they heard this, they were baptized in the name of the Lord Jesus. (Acts 19:5)',
- v6:'And when Paul laid his hands on them, the holy spirit came upon them, and they began to speak in foreign languages and to prophesy. (Acts 19:6)',
- v7:'There were about twelve men in all. (Acts 19:7)',
- v8:'He went into the synagogue, and for three months he spoke there with boldness, giving talks and reasoning persuasively about the Kingdom of God. (Acts 19:8)',
- v9a:'But some stubbornly refused to believe, and spoke injuriously about The Way before the crowd. (Acts 19:9)',
- v9b:'So he withdrew from them, and separated the disciples from them; (Acts 19:9)',
- v9c:'and he gave talks every day in the school auditorium of Tyrannus. (Acts 19:9)',
- v10:'This went on for two years, so that all who lived in the province of Asia heard the word of the Lord, Jews and Greeks alike. (Acts 19:10)',
- v11:'And God kept on doing extraordinary works of power through the hands of Paul, (Acts 19:11)',
- v12:'so that even cloths and aprons that had touched his body were carried to the sick; and their diseases left them, and the wicked spirits came out. (Acts 19:12)',
- v13:'But some of the Jews who went about casting out demons also tried to use the name of the Lord Jesus over those who had wicked spirits. They would solemnly charge them by Jesus, whom Paul preached. (Acts 19:13)',
- v14:'Seven sons of a Jewish chief priest named Sceva were doing this. (Acts 19:14)',
- v15:'But the wicked spirit answered them. It knew Jesus, it said, and it was acquainted with Paul; but who were they? (Acts 19:15)',
- v16:'With that the man in whom the wicked spirit was leaped on them, got the better of one after another, and overpowered them, so that they fled out of that house naked and wounded. (Acts 19:16)',
- v17:'This became known to all who lived in Ephesus, Jews and Greeks. Fear fell on them all, and the name of the Lord Jesus went on being magnified. (Acts 19:17)',
- v18:'And many of those who had become believers would come, and confess, and report their practices openly. (Acts 19:18)',
- v19a:'Indeed, a good number of those who had practiced magical arts brought their books together and burned them up before everybody. (Acts 19:19)',
- v19b:'They reckoned up what the books were worth, and found it to be fifty thousand pieces of silver. (Acts 19:19)',
- v20:'So, in a mighty way, the word of Jehovah kept growing and prevailing. (Acts 19:20)',
+ v23:'He stayed there for a while. Then he was on the road again, through the land of Galatia and through Phrygia, one place after another, and gave strength to all the disciples. (Acts 18:23)',
+ v24:'To Ephesus there came a Jew whose name was Apollos. Alexandria was his birthplace; he was a gifted speaker, and he knew his way about the Scriptures. (Acts 18:24)',
+ v25:'The way of Jehovah had been taught to him, and he burned with the spirit. What he said and taught about Jesus was correct; of baptism, though, he knew John\'s and no other. (Acts 18:25)',
+ v26a:'In the synagogue he started to speak, and he spoke without fear. Priscilla and Aquila heard him there. (Acts 18:26)',
+ v26b:'They drew him into their own company, and there the way of God was set out for him more exactly. (Acts 18:26)',
+ v27a:'He had a mind to go over to Achaia. So the brothers sent a letter to the disciples, asking them earnestly to make him welcome. (Acts 18:27)',
+ v27b:'Once there, he did much for those whom God\'s undeserved kindness had brought to believe. (Acts 18:27)',
+ v28:'For he took on the Jews before everybody, and with all his force: he proved them wrong through and through, and showed from the Scriptures that Jesus is the Christ. (Acts 18:28)',
+ v1:'Apollos was at Corinth when Paul reached Ephesus: he had crossed the inland regions and come down from them. There he met with some disciples. (Acts 19:1)',
+ v5:'They heard it, and were baptized: in the name of the Lord Jesus. (Acts 19:5)',
+ v6:'The holy spirit came on them once Paul\'s hands had been laid on them, and they started to speak in foreign languages and to prophesy. (Acts 19:6)',
+ v7:'All told, they were some twelve men. (Acts 19:7)',
+ v8:'For three months the synagogue heard him. He spoke fearlessly there: he gave talks about the Kingdom of God, and reasoned so as to convince. (Acts 19:8)',
+ v9a:'There were some, though, who set themselves stubbornly against believing, and who spoke ill of The Way in front of the crowd. (Acts 19:9)',
+ v9b:'So he drew back from those men, and saw to it that the disciples were apart from them too. (Acts 19:9)',
+ v9c:'From then on his talks were held day by day in the hall of the school of Tyrannus. (Acts 19:9)',
+ v10:'Two years passed in this way. By the end, everyone who lived in the province of Asia, Jew or Greek, had heard the word of the Lord. (Acts 19:10)',
+ v11:'Through Paul\'s hands God went on doing powerful works of no ordinary kind. (Acts 19:11)',
+ v12:'People even took cloths and aprons that had been against his body, and carried them to the sick; the sickness went, and the wicked spirits went out. (Acts 19:12)',
+ v13:'There were Jews who went from place to place driving out demons, and some of these tried the name of the Lord Jesus for themselves. Over people with wicked spirits they would pronounce a solemn charge, by the Jesus whom Paul was preaching. (Acts 19:13)',
+ v14:'Among those who did it were seven sons of one Sceva, a chief priest of the Jews. (Acts 19:14)',
+ v15:'The wicked spirit had an answer for them. Jesus it knew, and of Paul it had knowledge; but who, it asked, were they? (Acts 19:15)',
+ v16:'Then the man who had the wicked spirit sprang at them. One after another he mastered them, and he was too strong for them all: they ran from that house wounded, and with nothing on. (Acts 19:16)',
+ v17:'All Ephesus came to hear of it, Jews and Greeks alike. Fear came over every one of them, and the name of the Lord Jesus was held in ever greater honor. (Acts 19:17)',
+ v18:'Many who had come to believe now came forward. They confessed, and told openly what they had been practicing. (Acts 19:18)',
+ v19a:'Of those who had practiced magical arts, a good many collected their books in one place and burned them there in front of everybody. (Acts 19:19)',
+ v19b:'The price of the books was added up: it came to fifty thousand pieces of silver. (Acts 19:19)',
+ v20:'So the word of Jehovah went from strength to strength: mightily it grew, and it prevailed. (Acts 19:20)',
  /* from elsewhere */
- a166:'Years before, on his second journey, the holy spirit had forbidden them to speak the word in the province of Asia. (Acts 16:6)',
- a2034:'These hands, he told the elders of this city later, had provided for his own needs and for the needs of those with him. (Acts 20:34)',
- a2020:'He had not held back, he told them, from telling them anything that was for their good, nor from teaching them publicly and from house to house. (Acts 20:20)',
- c1619:'The congregations of Asia send their greetings, he wrote from this city; and so, heartily in the Lord, do Aquila and Prisca, with the congregation that is in their house. (1 Corinthians 16:19)',
- c169:'He was staying on in Ephesus until the Festival of Pentecost, he wrote, because a large door that leads to activity had been opened to him; but there were many opposers. (1 Corinthians 16:8, 9)'};
+ a166:'Years before, on his second journey, the holy spirit had not let them speak the word in the province of Asia. (Acts 16:6)',
+ a2034:'Later he reminded the elders of this city of something they knew: his own hands had earned what he needed, and what his companions needed. (Acts 20:34)',
+ a2020:'Nothing useful, he told those elders, had he kept from them; and he had taught them in public and from house to house. (Acts 20:20)',
+ c1619:'From this city he wrote that the congregations of Asia sent greetings; and that Aquila and Prisca, and the congregation meeting in their house, sent theirs warmly in the Lord. (1 Corinthians 16:19)',
+ c169:'He meant to stay in Ephesus until the Festival of Pentecost, he wrote: a wide door to activity stood open before him, and there were many who opposed. (1 Corinthians 16:8, 9)'};
 const tell=(k,ms,low)=>narr(TOLD[k],{dur:ms||Math.max(6500,2200+TOLD[k].length*62),low});
 /* the passages on the tablets: each a note in the writer's own words with its reference, never the wording of a translation. The
    second is a note of Chapter Eleven, word for word. */
-const PS={da244:{ref:'Daniel 2:44',gist:'In the days of those kings the God of heaven will set up a kingdom that is never brought to ruin and never handed to another people. It will crush all those kingdoms and make an end of them, and it alone will stand for all time.'},
+const PS={da244:{ref:'Daniel 2:44',gist:'When those kings are ruling, the God of heaven sets up a kingdom. Nothing will ever destroy it, and no other people will ever inherit it. It breaks every one of those kingdoms and ends them, and it is the one that lasts forever.'},
   ps1465:{ref:'Psalm 146:5, 6',gist:'Happy the man whose help is the God of Jacob, and who rests his hope on Jehovah his God: the one who made heaven and earth, the sea, and everything in them.'},
   is403:{ref:'Isaiah 40:3',gist:'In the wilderness a voice is heard, calling: make the way ready for Jehovah; lay a level road for our God across the desert.'}};
 const quote=k=>T('{text} ({ref})',{text:T(PS[k].gist),ref:T(PS[k].ref)});
@@ -646,14 +646,14 @@ const quote=k=>T('{text} ({ref})',{text:T(PS[k].gist),ref:T(PS[k].ref)});
    in a few words, as it is chosen; t: the note; say: his words for it. */
 const HEARD=[
  {k:'voice',q:'The voice in the wilderness was John.',t:'Isaiah wrote of a voice in the wilderness that would make the way ready for Jehovah. That voice was John. (Isaiah 40:3)',
-  say:['Open Isaiah, brothers. In the wilderness a voice calls: make the way ready for Jehovah! I have not come to tell you what that voice will say one day.','It has spoken. Men stood by the Jordan and heard it with their own ears. The voice was a man, and his name was John.']},
- {k:'repent',q:'John preached a baptism that was a symbol of repentance.',t:'John preached to all the people of Israel a baptism that was a symbol of repentance. (Acts 13:24)',
+  say:['Open Isaiah, brothers. He writes of a voice that calls in the wilderness, and what it calls for is this: that the way be made ready for Jehovah. I have not come to tell you what that voice will say one day.','It has spoken. Men stood by the Jordan and heard it with their own ears. The voice was a man, and his name was John.']},
+ {k:'repent',q:'John preached a baptism that was a symbol of repentance.',t:'Before Jesus came forward, John had preached in public to the whole people of Israel: a baptism that stood as a symbol of repentance. (Acts 13:24)',
   say:['And what did he cry out to them? Nothing soft. Turn round! He said it to all Israel, and Israel came out to him.','He took them down into the river, one after another: not to wash them, as if water could. It was a sign, set before all the people, that this man had turned round.']},
- {k:'after',q:'John said that another was coming after him.',t:'As his course was ending, John said that he was not the one: another was coming after him, whose sandals he was not worthy to untie. (Acts 13:25)',
-  say:['Then he did what a teacher never does. When the crowds were at their greatest, he pointed away from himself.','I am not the one, he said. One is coming after me, and I am not fit to loosen the sandals from his feet.']},
+ {k:'after',q:'John said that another was coming after him.',t:'Near the end of his course John said that he was not the one. Somebody was coming after him, and John did not count himself fit to undo his sandals. (Acts 13:25)',
+  say:['Then he did what a teacher never does. When the crowds were at their greatest, he pointed away from himself.','He said that he was not the one. Another was coming after him, he said, and he himself was not fit so much as to loosen the sandals from that one\'s feet.']},
  {k:'christ',q:'The one who came after him is Jesus, and he is the Christ.',t:'The one who came after John is Jesus; and Jesus is the Christ, as Paul bore witness in Corinth. (Acts 18:5)',
   say:['Brothers, the one he pointed to has come. His name is Jesus.','Search the Law and the Prophets for the Christ, as I have searched them, and see whether you can lay him anywhere else. I cannot. Sabbath by Sabbath I shall set before you what I know of him.']},
- {k:'name',q:'Baptism in the name of Jesus Christ, and the gift of holy spirit.',t:'Repent, Peter said at Pentecost, and be baptized, each one, in the name of Jesus Christ, so that your sins are forgiven; and you will be given the holy spirit as a free gift. (Acts 2:38)'}];
+ {k:'name',q:'Baptism in the name of Jesus Christ, and the gift of holy spirit.',t:'At Pentecost Peter told the crowd what to do: to repent, and every one of them to be baptized in the name of Jesus Christ, so that their sins would be forgiven. Then the holy spirit would be given to them as a free gift. (Acts 2:38)'}];
 const ticked=()=>G.ap13||(G.ap13={i:0,t:F.apo?HEARD.slice(0,4).map(h=>h.k):[]});
 
 /* ============ HELPERS ============ */
@@ -720,7 +720,7 @@ async function atTable(){if(F.taught)return;
     {q:'Wait for Paul. He will set it right.',no:'Paul is on a road somewhere, and we do not know which. We are here, and we heard it from him.'},
     {q:'May we tell you what we were taught about it?',ok:1,say:'There is one thing we were taught that you did not say today. May we tell it to you, and you judge it by the Scriptures?'}]);
   await say(AO,'Tell me. A man who is afraid to be taught should not stand up to teach.');
-  await say(PR,'John told the people to believe in the one coming after him. You said it today, better than we could.');
+  await say(PR,'John sent the people on to the one who would come after him. You said it today, better than we could.');
   await say(AP,'And there is more, brother. At Pentecost, in Jerusalem, Peter told them: repent, and be baptized, each one, in the name of Jesus Christ. And holy spirit was poured out on them.');
   await say(AO,'In his name. Then the baptism of John was the doorstep, and I have been telling men that it was the house.');given13();AU.mood='lamp';
   await say(AO,'Say it again, slowly, from Pentecost on. I want to lay every word of it beside the scrolls.');await tell('v26b');F.taught=1;SFX.good();codeBtn();
@@ -756,15 +756,15 @@ async function twelve(){if(PC()!==P)return say(AP,'We have talked with them for 
   if(!F.q1){await think(P,null,[
       {q:'Brothers, let me tell you what happened at Pentecost.',by:D1,no:'Gladly, some Sabbath. We are disciples already, friend: we were baptized years ago.'},
       {q:'How long have you been disciples?',by:D2,no:'Some of us since we were boys. Longer than you have been in Ephesus, at any rate.'},
-      {q:'Did you receive holy spirit when you became believers?',ok:1,say:'Did you receive holy spirit when you became believers?'}]);
-    await say(D1,'Holy spirit? We have not so much as heard that there is a holy spirit.');F.q1=1;codeBtn();return say(P,'Then it is not with the spirit that I must begin. It is further back.',TH)}
+      {q:'When you came to believe: was holy spirit given to you?',ok:1,say:'When you came to believe: was holy spirit given to you?'}]);
+    await say(D1,'Holy spirit? Nobody has ever told us that there is such a thing.');F.q1=1;codeBtn();return say(P,'Then it is not with the spirit that I must begin. It is further back.',TH)}
   if(!F.q2){await think(P,null,[
       {q:'Then you must be baptized.',by:D3,no:'We are baptized! Was John wrong, then?'},
-      {q:'In what, then, were you baptized?',ok:1,say:'In what, then, were you baptized?'}]);
-    await say(D2,'In John\'s baptism.');F.q2=1;codeBtn();return say(P,'John. Now I know where they are standing. And John himself can tell them where to go from there.',TH)}
+      {q:'Then what baptism was yours?',ok:1,say:'Then what baptism was yours?'}]);
+    await say(D2,'John\'s, brother.');F.q2=1;codeBtn();return say(P,'John. Now I know where they are standing. And John himself can tell them where to go from there.',TH)}
   await think(P,null,[
     {q:'Come with me to the water.',by:D1,no:'For what, brother? Tell us first what John did not.'},
-    {q:'John told the people to believe in the one coming after him.',ok:1,say:'John baptized with a baptism that was a symbol of repentance. And he told the people to believe in the one coming after him: that is, in Jesus.'}]);
+    {q:'John himself pointed people on to someone who would come after him.',ok:1,say:'What John did in the water stood for repentance. And he sent the people on: they were to put their faith in the one who would come after him. That one is Jesus.'}]);
   await say(D1,'In the one after him. We stopped at the man who pointed, and never looked where he was pointing.');await say(D3,'Then baptize us in that name. Today.');
   await darkly(async()=>{await tell('v5');await tell('v6');await tell('v7')});F.tw=1;show13('street13',204,124,1);await fade(0,600);
   await narr('He had not told them what they lacked. He had asked, until they heard it themselves.',{dur:7500});
@@ -1293,9 +1293,9 @@ function hint13(){const d=DAY(),p=PART();
     if(F.n3&&!F.sum)return G.room==='board13'?BOARDH():['board13',['The price is to be reckoned, and there is a counting board in the street.','We use the counting board, or change back to Paul.']];
     return['pair13',['The bench is ours, and the streets are his.','We change back to Paul: the button beside the prayer, or the key C.']]}
   if(!F.awl)return G.room==='road13'?['down13',['The city lies below, and two friends are in it.','I take the road down to the city.']]:['find13',['Somewhere in this street stands a bench that I know.','I walk to the workshop under the striped awning.']];
-  if(!F.q1)return['ask113',['They are disciples already. Telling them what I know will not show me what they lack.','I talk to a disciple, and ask whether they received holy spirit when they became believers.']];
-  if(!F.q2)return['ask213',['They have not heard of holy spirit. Then the question is further back.','I talk to a disciple, and ask in what they were baptized.']];
-  if(!F.tw)return['ask313',['John himself said where his baptism pointed.','I talk to a disciple: John told the people to believe in the one coming after him.']];
+  if(!F.q1)return['ask113',['They are disciples already. Telling them what I know will not show me what they lack.','I talk to a disciple, and ask whether holy spirit was given to them when they came to believe.']];
+  if(!F.q2)return['ask213',['They have not heard of holy spirit. Then the question is further back.','I talk to a disciple, and ask what baptism was theirs.']];
+  if(!F.tw)return['ask313',['John himself said where his baptism pointed.','I talk to a disciple: John himself pointed people on to someone who would come after him.']];
   if(!F.syn)return['syn13b',['I said in that house that I would come back.','I go in at the door of the synagogue.']];
   if(!F.out)return!F.withme?['with13',['No answer will end this. And those who believe are sitting in the middle of it.','I talk to the disciples, and tell them that we are going.']]:['door13',['They are ready. I owe Symmachos no last word.','I go out by the door to the street.']];
   if(!F.men)return['mene13',['A room at the hour when nobody wants one. This street has a hall.','I talk to Menekrates, in front of the hall of Tyrannus.']];

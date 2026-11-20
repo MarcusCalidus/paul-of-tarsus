@@ -2183,11 +2183,11 @@
   pray();await idle();ok(hint()[0]==='ask113','the hint: ask, do not tell');
   heard.length=0;actor('talk',D1);await until(()=>nq()>0);await pickQ('Brothers, let me tell you what happened at Pentecost.');ok(!F.q1&&said('Gladly, some Sabbath. We are disciples already, friend: we were baptized years ago.'),'to teach first leads nowhere: they are disciples already');
   await pickQ('How long have you been disciples?');ok(!F.q1&&nq()===1,'nor does a question about years');
-  await pickQ('Did you receive holy spirit when you became believers?');ok(F.q1&&said('Holy spirit? We have not so much as heard that there is a holy spirit.'),'he asks whether they received holy spirit, and they have not heard that there is one (Acts 19:2)');
+  await pickQ('When you came to believe: was holy spirit given to you?');ok(F.q1&&said('Holy spirit? Nobody has ever told us that there is such a thing.'),'he asks whether they received holy spirit, and they have not heard that there is one (Acts 19:2)');
   heard.length=0;actor('talk',D2);await until(()=>nq()>0);await pickQ('Then you must be baptized.');ok(!F.q2&&said('We are baptized! Was John wrong, then?'),'to begin at the end is true, and unhelpful');
-  await pickQ('In what, then, were you baptized?');ok(F.q2&&said("In John's baptism."),"in John's baptism (Acts 19:3)");
+  await pickQ('Then what baptism was yours?');ok(F.q2&&said("John's, brother."),"John's baptism (Acts 19:3)");
   heard.length=0;actor('talk',D3);await until(()=>nq()>0);await pickQ('Come with me to the water.');ok(!F.tw&&said('For what, brother? Tell us first what John did not.'),'not the water before the reason');
-  pickQ('John told the people to believe in the one coming after him.');await until(()=>F.tw&&G.room==='street13'&&!G.busy);note();
+  pickQ('John himself pointed people on to someone who would come after him.');await until(()=>F.tw&&G.room==='street13'&&!G.busy);note();
   ok(F.tw&&told('v5')&&told('v6')&&told('v7')&&!D1.room,'John pointed to the one coming after him: they are baptized in the name of the Lord Jesus, about twelve men (Acts 19:4-7), and none of it is shown');
   /* three months, and the door */
   pray();await idle();ok(hint()[0]==='syn13b','the hint: the synagogue');
