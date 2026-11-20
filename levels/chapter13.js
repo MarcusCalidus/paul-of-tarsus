@@ -199,7 +199,7 @@ ART.syn13={w:320,q:12,
    commercial squares, and a theater in the slope of a hill that held some 25,000 (Bearing Thorough Witness, chapter 20, box; Insight,
    "Ephesus"); where the synagogue, the hall or anybody's house stood is not known, and this street is invented. Hours were counted
    from sunrise, twelve to the day (Insight, "Hour"); the publications read for this chapter do not describe a sundial, and the one
-   here is the game's own. Its pointer is a wedge that leans out of the hollow of the stone, and nothing stands upright across a line.
+   here is the game's own. Its pointer is a bronze rod that leans out over the hollow of the stone, and nothing stands upright across a line.
    v: m in the morning, n at midday, e in the evening; f is the morning of the fire. */
 const HX0=376,HX1=478;   /* the front of the hall */
 ART.street13={w:640,q:12,variant:()=>STREETV(),
@@ -259,18 +259,32 @@ ART.street13={w:640,q:12,variant:()=>STREETV(),
     for(const[x,y,rx,ry,a]of[[195,100,60,34,.5],[508,96,34,30,.42],[564,96,30,28,.42],[617,96,34,30,.45],[133,96,26,26,.38]])pool(g,x,y,rx,ry,'#ffb868',a,'screen')}},
  light:()=>{const v=STREETV();return v==='e'?{amb:'#a89ac0',lamps:[[195,96,50,'#6a4a20'],[508,96,30,'#5a4018'],[564,96,28,'#5a4018'],[617,96,30,'#5a4018'],[133,96,26,'#4a3414']]}:v==='n'?null:{amb:'#f0e8dc'}},
  draw(g,t){streetDraw(g,t)},front(){}};
-/* dialArt: the sundial on its pillar, its foot at x,y. A block of pale stone with a hollow like a quarter of a bowl cut into its face;
-   three notches on the rim of the hollow (morning, midday, evening), and a pointer that leans out of the top of the hollow. Its shadow
-   is a wedge that lies in the hollow and points at one notch (k: 0, 1 or 2; in between as the shadow moves). No line is upright
-   across another. */
-function dialArt(g,x,y,k,z){z=z||1;const c='#e2dccb',w=11*z,h=9*z,ph=13*z,bx=x-w/2,by=y-ph-h;
-  /* the pier is as wide as the block it carries, on a foot a little wider: one upright stone, and not a block across a post */
-  R(g,bx+.6*z,y-ph,w-1.2*z,ph,tint(c,-.14));R(g,bx+.6*z,y-ph,1.2*z,ph,tint(c,.12));R(g,bx+w-2*z,y-ph,1.4*z,ph,tint(c,-.3));R(g,bx-.8*z,y-1.8*z,w+1.6*z,1.8*z,tint(c,-.22));R(g,bx-.8*z,y-1.8*z,w+1.6*z,.5*z,tint(c,.1));
-  R(g,bx,by,w,h,c);R(g,bx,by,w,.7*z,tint(c,.3));R(g,bx+w-.8*z,by,.8*z,h,tint(c,-.26));R(g,bx,by+h-.8*z,w,.8*z,tint(c,-.3));
-  g.save();g.beginPath();g.rect(bx+1*z,by+1.4*z,w-2*z,h-2.2*z);g.clip();oval(g,x,by+1.4*z,(w-2*z)/2,h-2.6*z,tint(c,-.3));
-  const a=[2.5,1.5708,.64][Math.round(k)]+(k-Math.round(k))*-.9,L=h-3.4*z;poly(g,[x-.9*z,by+1.4*z,x+.9*z,by+1.4*z,x+Math.cos(a)*L,by+1.4*z+Math.sin(a)*L],'rgba(40,34,60,.75)');g.restore();
-  for(const q of[2.5,1.5708,.64])R(g,x+Math.cos(q)*(w/2-1.6*z)-.5*z,by+1.4*z+Math.sin(q)*(h-3*z)-.4*z,1*z,1*z,tint(c,-.5));
-  poly(g,[x-.7*z,by+1.6*z,x+.7*z,by+1.6*z,x+2.6*z,by-1.4*z],'#8a7448')}
+/* dialArt: the sundial on its pillar, in the street, its foot at x,y. A block of pale stone with a hollow like a quarter of a bowl cut into
+   its face; three notches on the rim of the hollow (morning, midday, evening), and a bronze pointer leaded into its top that leans out
+   over the hollow and to the side. Its shadow is a wedge that lies in the hollow and points at one notch (k: 0, 1 or 2), and the rim on
+   the sun's side shades the hollow under it. No line is upright across another. The close view (dial13) paints the same stone. */
+function dialArt(g,x,y,k){const C='#e2dccb',w=11,h=9,ph=13,bx=x-w/2,by=y-ph-h,cy=by+1.6,rx=w/2-1.2,ry=h-2.6,sx=1-k,hi=1-Math.abs(sx);
+  /* its shadow on the wall behind, away from the sun */
+  comp(g,'multiply',.4,()=>{poly(g,[bx-sx*4,by+1.5+3*hi,bx+w-sx*4,by+1.5+3*hi,bx+w-sx*4,y-.6,bx-sx*4,y-.6],'#8a84b4')});
+  /* the pier, as wide as the head, on a foot a little wider, with a groove where the head sits on it */
+  g.fillStyle=lg(g,bx,0,bx+w,0,[tint(C,-.04),tint(C,-.12),tint(C,-.2)]);g.fillRect(bx+.5,y-ph,w-1,ph);R(g,bx+w-1.5,y-ph,1,ph,tint(C,-.34));R(g,bx+.5,y-ph,.5,ph,tint(C,.12));
+  R(g,bx+.5,y-ph,w-1,.6,tint(C,-.42));R(g,bx-.6,y-1.6,w+1.2,1.6,tint(C,-.24));R(g,bx-.6,y-1.6,w+1.2,.5,tint(C,.08));
+  g.fillStyle=lg(g,0,y-5,0,y,['rgba(110,96,76,0)','rgba(110,96,76,.35)']);g.fillRect(bx+.5,y-5,w-1,3.4);
+  /* the head: its front lit, its right side in shade, its top edge catching the light */
+  g.fillStyle=lg(g,bx,by,bx+w,by+h,[tint(C,.08),C,tint(C,-.08)]);g.fillRect(bx,by,w,h);R(g,bx+w-1,by,1,h,tint(C,-.3));R(g,bx,by,w,.6,tint(C,.34));R(g,bx,by+h-.5,w,.5,tint(C,-.3));
+  clipTo(g,()=>{g.beginPath();g.rect(bx,by,w,ph+h)},()=>{tex(g,'mott',.5,bx,by,w,ph+h,'overlay',.5);tex(g,'grain',.2,bx,by,w,ph+h,'overlay',.5)});
+  /* the hollow: dark under its lip, lit where it turns up, with the light caught on its lower rim */
+  g.save();g.beginPath();g.ellipse(x,cy,rx,ry,0,0,Math.PI);g.closePath();g.clip();
+  g.fillStyle=lg(g,0,cy,0,cy+ry,[tint(C,-.5),tint(C,-.26),tint(C,.04)]);g.fillRect(x-rx,cy,rx*2,ry);
+  comp(g,'multiply',.6,()=>{g.beginPath();g.rect(x-rx-1,cy-1,rx*2+2,ry+2);g.ellipse(x-sx*rx*.42,cy+ry*(.1+.12*Math.abs(sx)),rx,ry,0,0,6.2832);g.fillStyle='#857ea6';g.fill('evenodd')});
+  const a=[2.5,1.5708,.64][k],tx=x+Math.cos(a)*rx*.86,ty=cy+Math.sin(a)*ry*.86,nx=-(ty-cy),ny=tx-x,nl=Math.hypot(nx,ny);
+  comp(g,'multiply',.85,()=>poly(g,[x+nx/nl*.9,cy,tx,ty,x-nx/nl*.9,cy],'#5a5286'));g.restore();
+  g.lineWidth=.5;g.strokeStyle=tint(C,.3);g.beginPath();g.ellipse(x,cy,rx+.3,ry+.3,0,.3,Math.PI-.3);g.stroke();R(g,x-rx,cy-.5,rx*2,.5,tint(C,-.5));
+  for(const q of[2.5,1.5708,.64])R(g,x+Math.cos(q)*(rx+.6)-.5,cy+Math.sin(q)*(ry+.6)-.5,1,1,tint(C,-.52));
+  /* lichen, and the green the rain has washed down from the bronze */
+  R(g,x-.2,by+.6,1,1,'rgba(80,150,120,.5)');for(const[px,py,c]of[[bx+1.4,by+h-1.4,'#c0a666'],[bx+w-2.6,y-4,'#a2a688'],[bx+2,y-8.5,'#bca468']])R(g,px,py,.5,.5,c);
+  /* the pointer: bronze, leaded into the top of the stone, leaning out over the hollow and to the side */
+  R(g,x-1,by-.4,2,.6,'#9a98a0');poly(g,[x-.6,by,x+.4,by+.2,x+3.4,by-3.4,x+2.8,by-3.8],'#5e4a2c');stroke(g,[x-.3,by-.2,x+3,by-3.6],'#c8a464',.35);R(g,x+1.2,by-1.8,.6,.6,'rgba(98,164,138,.9)')}
 
 /* ---------- The road above the city ---------- */
 /* He came through the inland regions and down to Ephesus (Acts 19:1). The road comes over a shoulder of the hills, and the whole of
@@ -526,10 +540,138 @@ function asia13(g,t){g.drawImage(asiaBack(),0,0,320,144);const on=SHOWN(),M=G.ma
     const[dx,dy,side]=TOWN[k].lab,s=T(TOWN[k].name);g.font=GFONT(E?5:4.4);const tw=g.measureText(s).width,tx=side==='r'?x+dx-tw:side==='c'?x+dx-tw/2:x+dx;cap13(g,TOWN[k].name,tx,y+dy,90,E?'#ffe9a8':'#f4e4b8',1,E?5:4.4)}
   M.boxes=G.caps13.map(c=>c.box.concat([c.s]));
   const k=(t/900)%1,[ex,ey]=AXY(...TOWN.ephesus.at);g.strokeStyle=`rgba(255,226,150,${.9*(1-k)})`;g.lineWidth=.6;g.beginPath();g.arc(ex,ey,3+k*6,0,6.2832);g.stroke()}
-/* dial13: the sundial, seen close, while its shadow moves from one notch to the next */
-function dial13(g,t){const d=G.dial13||{a:0,b:1,k:1},r=rng(1317);g.fillStyle=lg(g,0,0,0,144,['#cfc5a8','#bdb294']);g.fillRect(0,0,320,144);
-  for(let j=0;j<8;j++)for(let i=-(j%2)*20;i<320;i+=40){R(g,i+.5,j*18+.5,39,17,tint('#c9bfa4',(r()-.5)*.1));R(g,i+.5,j*18+.5,39,.7,'rgba(255,250,232,.4)')}
-  dialArt(g,160,150,d.a+(d.b-d.a)*d.k,7);comp(g,'multiply',.34,()=>{g.fillStyle=rg(g,160,60,220,['#ffffff','#8a8098']);g.fillRect(0,0,320,144)})}
+/* dial13: the sundial, seen close, while its shadow moves from one notch to the next. The head of pale stone stands before the low wall,
+   seen a little from above and from the left, so that its top and its right side show: the hollow in its face, the three notches in its
+   rim, and the bronze pointer leaded into its top, green where the rain sits on it and where the rain has run down from it. What does
+   not move is painted once, in three layers (the wall behind, the stone, the pointer); what moves with the sun is laid between them:
+   the dial's shadow on the wall, the light on its side, the shade inside the hollow under the rim on the sun's side, and the wedge of
+   the pointer's shadow. u runs from 0 (the morning notch) to 2 (the evening notch); the sun stands on the right in the morning and
+   on the left in the evening, high at midday. A frame is put together and dithered only when u has moved. */
+const DV={x0:108,x1:192,yt:38,yb:104,dx:16,dy:8,cx:150,by:45,rx:33,ry:49,NOTCH:[2.5,1.5708,.64],raw:null};
+function dialBack(g){const r=rng(1319),CY=14;
+  /* beyond the wall: the slope of the hill, thick with scrub, and a cypress or two */
+  g.fillStyle=lg(g,0,0,0,CY,['#8a8a5c','#7a7c50','#6a7046']);g.fillRect(0,0,320,CY+2);tex(g,'mott',.5,0,0,320,CY+2,'overlay',.6);
+  for(let i=0;i<10;i++){const px=r()*320,py=2+r()*(CY-2);oval(g,px,py,6+r()*10,1+r()*1.4,'#a89c72')}
+  for(let row=0;row<3;row++)for(let i=0;i<40;i++){const px=r()*330-5,py=row*5+1+r()*4,rx=2.4+r()*3.6,ry=1.4+r()*1.6,c=['#5f7344','#6a7c4a','#56683e','#728250'][Math.floor(r()*4)];
+    oval(g,px+.6,py+ry*.6,rx,ry*.8,'rgba(50,46,40,.35)');foliage(g,px,py,rx,ry,c,r,rx*ry*1.2);R(g,px-rx*.4,py-ry*.7,rx*.6,.5,tint(c,.3))}
+  for(const[x,h]of[[46,20],[262,17]])cypress(g,x,CY+3,h,'#41593a');
+  tex(g,'mott',.3,0,0,320,CY+2,'overlay',1);comp(g,'screen',.16,()=>R(g,0,0,320,CY+2,'#e4e2cc'));
+  /* the coping of the low wall: slabs with a lit top and a shaded lip */
+  R(g,0,CY,320,5,'#b9ae90');let x=-r()*20;while(x<320){const w=34+r()*22,c=tint('#d2c8aa',(r()-.5)*.1);R(g,x+.4,CY,w-.8,3.2,c);R(g,x+.4,CY,w-.8,.8,tint(c,.32));R(g,x+.4,CY+3.2,w-.8,1.8,tint(c,-.34));x+=w}
+  tex(g,'mott',.4,0,CY,320,5,'overlay',.7);
+  /* the wall: coursed blocks, weathered, and a little darker than the dial in front of it */
+  const WY=CY+5,WH=123-WY;ashlar(g,0,WY,320,WH,'#bdb294',r,{bw:44,bh:17,v:.16,t:.35});
+  comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,0,WY,0,123,['rgba(70,60,96,.9)','rgba(255,255,255,0)','rgba(255,255,255,0)','rgba(110,92,74,.9)']);g.fillRect(0,WY,320,WH)});
+  tex(g,'vert',.07,0,WY,320,WH,'multiply',.8);
+  /* rain stains under the coping, and lichen on the blocks */
+  for(let i=0;i<12;i++){const sx=r()*320,sl=8+r()*30,sw=3+r()*7;g.fillStyle=lg(g,0,WY,0,WY+sl,['rgba(90,80,66,.24)','rgba(90,80,66,0)']);poly(g,[sx,WY,sx+sw,WY,sx+sw*.7,WY+sl,sx+sw*.2,WY+sl]);g.fill()}
+  lichen13(g,r,0,WY,320,WH-4,26);
+  /* a caper growing out of a joint low on the left: its stems arch over and hang, with round leaves and two flowers */
+  caper13(g,r,34,104);
+  /* the paving between the wall and the dial: slabs whose joints stop at the edge of their own row */
+  const PY=123;R(g,0,PY,320,21,'#9a8e74');
+  {let y=PY,row=0;for(const h of[5,7,9]){let x=-r()*30-(row%2)*18;while(x<330){const w=40+r()*18,c=tint('#c8ba98',(r()-.5)*.12),k0=(y-PY)*.012,k1=(y+h-PY)*.012;
+      poly(g,[x+.5+(x-150)*k0,y+.4,x+w-.5+(x+w-150)*k0,y+.4,x+w-.5+(x+w-150)*k1,y+h-.3,x+.5+(x-150)*k1,y+h-.3],c);R(g,x+1+(x-150)*k0,y+.4,w-2,.6,tint(c,.2));x+=w}y+=h;row++}}
+  tex(g,'mott',.45,0,PY,320,21,'overlay',.8);tex(g,'grain',.14,0,PY,320,21,'overlay',.5);
+  ao(g,0,PY,320,7,'t',.5,'#3a3050');
+  /* tufts of grass along the foot of the wall */
+  for(let i=0;i<14;i++){const px=r()*320;if(px>98&&px<214)continue;foliage(g,px,PY+.6,2+r()*2.4,1.2+r()*.8,['#7a8a50','#8a924e'][i%2],r,10)}
+}
+function lichen13(g,r,x,y,w,h,n,skip){for(let i=0;i<n;i++){const px=x+r()*w,py=y+r()*h;if(skip&&skip(px,py))continue;const s=.9+r()*2.2,o=r()<.5,c=o?['#b89a58','#c2a462','#a88a4c'][i%3]:['#a2a688','#b0b296','#8e9478'][i%3];
+  for(let k=0;k<3+s*2.5;k++){const a=r()*6.28,d=r()*s;oval(g,px+Math.cos(a)*d*1.3,py+Math.sin(a)*d*.8,.5+r()*.7,.4+r()*.5,tint(c,(r()-.5)*.2))}
+  for(let k=0;k<2;k++)R(g,px+(r()-.5)*s*1.6,py+(r()-.5)*s,.5,.5,tint(c,o?.3:-.35))}}
+function caper13(g,r,x,y){
+  for(const[ex,ey]of[[-12,9],[-5,12],[6,12],[13,8]])stroke(g,[x,y,x+ex*.5,y+1,x+ex,y+ey],'#4e5e34',.5);
+  for(let i=0;i<70;i++){const a=Math.PI*(.05+.9*r()),d=Math.sqrt(r()),px=x+Math.cos(a)*d*14*(r()<.5?-1:1)*.95,py=y-2+Math.sin(a)*d*11+(r()-.5)*2,k=r();
+    oval(g,px,py,1.1+k*.7,.9+k*.4,['#4e683a','#5e7c44','#6e8e4e','#7e9e58'][Math.floor(r()*4)]);if(k>.6)R(g,px-.5,py-.6,.7,.4,'#a8c07a')}}
+
+/* the dial itself: the head with its hollow, and the pier under it */
+function dialStone(g){const r=rng(1321),{x0,x1,yt,yb,dx,dy,cx,by,rx,ry}=DV,C='#e4dccb';
+  /* the pier, as wide as the head, its side receding to the right */
+  const py=yb+4;
+  poly(g,[x1,py,x1+dx,py-dy,x1+dx,150,x1,150],tint(C,-.3));
+  g.fillStyle=lg(g,x0,0,x1,0,[tint(C,-.02),tint(C,-.08),tint(C,-.16)]);g.fillRect(x0,py,x1-x0,50);
+  /* the moulding between head and pier: a fillet and a hollow, hardly proud of the stone */
+  poly(g,[x1,yb,x1+dx,yb-dy,x1+dx,py-dy,x1,py],tint(C,-.42));R(g,x0,yb,x1-x0,1.2,tint(C,-.1));R(g,x0,yb+1.2,x1-x0,2.8,tint(C,-.36));R(g,x0,py-.6,x1-x0,.6,tint(C,-.5));
+  /* the head: its top, its front and its side */
+  poly(g,[x0,yt,x1,yt,x1+dx,yt-dy,x0+dx,yt-dy],tint(C,.16));
+  poly(g,[x1,yt,x1+dx,yt-dy,x1+dx,yb-dy,x1,yb],tint(C,-.26));
+  g.fillStyle=lg(g,x0,yt,x1,yb,[tint(C,.06),C,tint(C,-.1)]);g.fillRect(x0,yt,x1-x0,yb-yt);
+  /* texture over all the stone: mottling, grain, faint veins, rain streaks */
+  clipTo(g,()=>poly(g,[x0,yt,x0+dx,yt-dy,x1+dx,yt-dy,x1+dx,150,x0,150]),()=>{
+    tex(g,'mott',.6,x0,yt-dy,x1-x0+dx,150,'overlay',.7);tex(g,'blotch',.3,x0,yt-dy,x1-x0+dx,150,'soft-light',.5);tex(g,'grain',.22,x0,yt-dy,x1-x0+dx,150,'overlay',.5);
+    comp(g,'multiply',.12,()=>{g.fillStyle=g.createPattern(texture('blotch'),'repeat');g.fillRect(x0,yt-dy,x1-x0+dx,150)});
+    for(let i=0;i<7;i++){let px=x0+r()*(x1-x0+dx),py0=yt-dy+r()*90;const p=[px,py0];for(let k=0;k<9;k++){px+=(r()-.3)*6;p.push(px,py0+=2+r()*5)}stroke(g,p,'rgba(128,128,140,.26)',.5);stroke(g,p.map((v,i)=>v+(i%2?0:.6)),'rgba(255,255,255,.12)',.4)}
+    for(let i=0;i<90;i++){const px=x0+r()*(x1-x0+dx),py=yt-dy+r()*112;R(g,px,py,.5+r()*.6,.5,'rgba(90,78,70,.5)');R(g,px,py+.5,.6,.5,'rgba(255,250,236,.4)')}
+    tex(g,'vert',.1,x0,yt,x1-x0+dx,150,'multiply',.6);
+    g.fillStyle=lg(g,0,yb-24,0,150,['rgba(120,110,90,0)','rgba(120,104,84,.32)']);g.fillRect(x0,yb-24,x1-x0+dx,150)});
+  /* the arrises: worn, lit along the top and dark along the receding corner, with a chip or two out of them */
+  R(g,x0,yt-.2,x1-x0,.8,tint(C,.38));R(g,x1-.4,yt,.8,yb-yt,tint(C,-.1));R(g,x0,yt,.6,yb-yt,tint(C,.12));stroke(g,[x0+dx,yt-dy,x1+dx,yt-dy],tint(C,-.06),.5);
+  for(const[px,py,w,h]of[[x1-1.6,yb-30,1.6,6],[x0,yb-46,1.2,5]])poly(g,[px,py,px+w,py+h*.3,px+w*.6,py+h,px,py+h*.8],tint(C,-.3));
+  poly(g,[cx-.6,yt,cx+2.6,yt,cx+3.4,by,cx-1,by],'rgba(80,150,120,.42)');
+  /* the hollow: a quarter of a bowl cut into the face, dark under its lip and lit where it turns up to the light */
+  g.save();bowlPath(g,0);g.clip();
+  g.fillStyle=lg(g,0,by,0,by+ry,[tint(C,-.48),tint(C,-.3),tint(C,-.08),tint(C,.1)]);g.fillRect(cx-rx,by,rx*2,ry);
+  pool(g,cx,by+ry*.72,rx*.8,ry*.42,'#fff4dc',.35,'screen');
+  tex(g,'mott',.36,cx-rx,by,rx*2,ry,'overlay',.7);tex(g,'grain',.14,cx-rx,by,rx*2,ry,'overlay',.5);
+  /* the lip throws a band of shade along the top, and the inside of the rim catches it all round */
+  g.fillStyle=lg(g,0,by,0,by+7,['rgba(40,32,60,.55)','rgba(40,32,60,0)']);g.fillRect(cx-rx,by,rx*2,7);
+  g.lineWidth=2.2;g.strokeStyle='rgba(60,48,70,.3)';g.beginPath();g.ellipse(cx,by,rx-1,ry-1,0,0,Math.PI);g.stroke();
+  /* a green stain where the rain has washed the bronze of the pointer down over the lip and into the bowl */
+  g.fillStyle=lg(g,0,by,0,by+26,['rgba(80,150,120,.4)','rgba(80,150,120,0)']);poly(g,[cx-1,by,cx+3.4,by,cx+4.6,by+26,cx+.4,by+26]);g.fill();
+  pool(g,cx,by+ry-3,rx*.4,4,'#8a7a5a',.3,'multiply');
+  for(let i=0;i<40;i++){const px=cx+(r()-.5)*rx*2,py=by+r()*ry;R(g,px,py,.5,.5,'rgba(90,78,70,.45)');R(g,px,py+.5,.5,.5,'rgba(255,250,236,.35)')}
+  g.restore();
+  /* the rim of the hollow: lit along its lower edge, where the stone faces up */
+  g.lineWidth=.9;g.strokeStyle=tint(C,.34);g.beginPath();g.ellipse(cx,by,rx+.4,ry+.4,0,.15,Math.PI-.15);g.stroke();
+  R(g,cx-rx,by-.6,rx*2,.8,tint(C,-.5));
+  /* the three notches in the rim: small cuts, each with a lit face and a dark one, the dark one away from the light */
+  for(const q of DV.NOTCH){const ex=cx+Math.cos(q)*rx,ey=by+Math.sin(q)*ry,nx=Math.cos(q),ny=Math.sin(q)*rx/ry,L=Math.hypot(nx,ny),ux=nx/L,uy=ny/L,tx=-uy,ty=ux,
+      a=[ex-ux*1.6,ey-uy*1.6],b=[ex+ux*5.6+tx*3.2,ey+uy*5.6+ty*3.2],c=[ex+ux*5.6-tx*3.2,ey+uy*5.6-ty*3.2],m=[ex+ux*5.6,ey+uy*5.6];
+    poly(g,[...a,...b,...m],tint(C,-.5));poly(g,[...a,...m,...c],tint(C,-.18));stroke(g,[...a,...m],tint(C,-.62),.4);stroke(g,[...a,...b],tint(C,-.3),.3)}
+  /* lichen on the head and the pier, never inside the cut of the hollow */
+  const inBowl=(px,py)=>py>by-1&&((px-cx)/(rx+2))**2+((py-by)/(ry+2))**2<1;
+  const nearNotch=(px,py)=>inBowl(px,py)||DV.NOTCH.some(q=>Math.hypot(px-(cx+Math.cos(q)*rx),py-(by+Math.sin(q)*ry))<9);
+  lichen13(g,r,x0+dx,yt-dy,x1-x0,3,3);lichen13(g,r,x0,yt+8,x1-x0,22,3,nearNotch);lichen13(g,r,x0,yb-30,x1-x0,80,9,nearNotch);
+}
+function bowlPath(g,grow){const{cx,by,rx,ry}=DV;g.beginPath();g.ellipse(cx,by,rx+grow,ry+grow,0,0,Math.PI);g.closePath()}
+/* the pointer: a bronze rod leaded into the top of the stone, leaning out over the hollow and to the side */
+function dialPointer(g){const{cx,yt}=DV,b=[cx,yt-2.4],t=[cx+21,yt-18],at=k=>[b[0]+(t[0]-b[0])*k,b[1]+(t[1]-b[1])*k];
+  oval(g,b[0]+.6,b[1]+.4,3.6,1.5,'#7e7c84');oval(g,b[0]+.2,b[1],2.6,1,'#aeacb4');pool(g,b[0]+3,b[1]+1.4,6,2,'#3a3050',.25,'multiply');
+  poly(g,[b[0]-1.5,b[1],b[0]+1.4,b[1]+.5,t[0]+.8,t[1]+.6,t[0]-.6,t[1]-.4],'#4e3c24');
+  stroke(g,[b[0]-.8,b[1]-.2,t[0]-.2,t[1]],'#8a6a3a',.9);stroke(g,[b[0]-.7,b[1]-.6,t[0]-.4,t[1]-.3],'#d8b470',.35);
+  /* verdigris where the rain sits on the bronze: patches of its own size, not rings */
+  for(const[k,w]of[[.12,.9],[.3,.5],[.55,1.2],[.82,.4]]){const[x,y]=at(k);poly(g,[x-w,y+1,x+w*.6,y+.2,x+w*1.4,y-.7,x,y-.2],'rgba(98,164,138,.85)')}
+  oval(g,t[0],t[1],1.3,1.2,'#5a4628');R(g,t[0]-.7,t[1]-.9,.8,.6,'#e0c080')}
+function dialLayer(fn){const[c,g]=mk(320*HR,144*HR);g.scale(HR,HR);fn(g);return c}
+function dial13(g,t){const d=G.dial13||{a:0,b:1,k:1},u=d.a+(d.b-d.a)*d.k,key=Math.round(u*240);
+  if(!DV.raw)DV.raw={back:dialLayer(dialBack),stone:dialLayer(dialStone),ptr:dialLayer(dialPointer),work:mk(320*HR,144*HR),key:null};
+  const L=DV.raw;if(L.key!==key){L.key=key;const[c,w]=L.work,{x0,x1,yt,yb,dx,dy,cx,by,rx,ry,NOTCH}=DV,sx=1-u,hi=1-Math.abs(sx);
+    w.setTransform(1,0,0,1,0,0);w.globalCompositeOperation='source-over';w.globalAlpha=1;w.drawImage(L.back,0,0);w.setTransform(HR,0,0,HR,0,0);
+    /* the dial's own shadow, thrown back onto the paving and the wall: to the side away from the sun, and shorter as the sun climbs */
+    const ox=-sx*30,oy=10+28*hi;
+    const cast=(e,a)=>comp(w,'multiply',a,()=>{poly(w,[x0+ox-e,yt+oy-e,x0+dx+ox*.9-e,yt-dy+oy-e,x1+dx+ox*.9+e,yt-dy+oy-e,x1+dx+ox+e,150,x0+ox-e,150],'#7c78a8');
+      stroke(w,[cx+ox,yt-2+oy,cx+21+ox*.8,yt-18+oy*.9],'#7c78a8',1.2+e)});cast(1.4,.3);cast(0,.55);
+    w.setTransform(1,0,0,1,0,0);w.drawImage(L.stone,0,0);w.setTransform(HR,0,0,HR,0,0);
+    /* the side of the stone: in the sun in the morning, in shade in the afternoon */
+    const side=()=>{poly(w,[x1,yt,x1+dx,yt-dy,x1+dx,150,x1,150])};
+    if(sx>0)comp(w,'screen',.3*sx,()=>{side();w.fillStyle='#fff0cc';w.fill()});else comp(w,'multiply',.45*-sx,()=>{side();w.fillStyle='#8a84b0';w.fill()});
+    /* inside the hollow, the rim on the sun's side shades the stone below it */
+    w.save();bowlPath(w,0);w.clip();
+    comp(w,'multiply',.75,()=>{w.beginPath();w.rect(cx-rx-2,by-2,rx*2+4,ry+4);w.ellipse(cx-sx*rx*.42,by+ry*(.1+.12*Math.abs(sx)),rx*(1-.08*Math.abs(sx)),ry,0,0,6.2832);w.fillStyle='#857ea6';w.fill('evenodd')});
+    /* the shadow of the pointer: a band from its foot, and the round shadow of its knob at the end, which tells the hour */
+    const a=u<=1?NOTCH[0]+(NOTCH[1]-NOTCH[0])*u:NOTCH[1]+(NOTCH[2]-NOTCH[1])*(u-1),tx=cx+Math.cos(a)*rx*.86,ty=by+Math.sin(a)*ry*.86,nx=-(ty-by),ny=tx-cx,nl=Math.hypot(nx,ny);
+    const px=nx/nl,py=ny/nl;
+    comp(w,'multiply',.4,()=>poly(w,[cx+px*5.4,by,tx+px*1.2+(tx-cx)*.04,ty+(ty-by)*.04,tx-px*1.2+(tx-cx)*.04,ty+(ty-by)*.04,cx-px*5.4,by],'#8a84b0'));
+    comp(w,'multiply',.88,()=>poly(w,[cx+px*3.8,by,tx,ty,cx-px*3.8,by],'#625a8c'));
+    w.restore();
+    w.setTransform(1,0,0,1,0,0);w.drawImage(L.ptr,0,0);w.setTransform(HR,0,0,HR,0,0);
+    /* the light of the hour, and the edges of the picture */
+    const tone=u<=1?mix('#ffcf96','#fff6e4',u):mix('#fff6e4','#ffac78',u-1);
+    comp(w,'soft-light',.5,()=>R(w,0,0,320,144,tone));comp(w,'screen',.08+.1*hi,()=>R(w,0,0,320,144,'#fff8e8'));
+    comp(w,'multiply',.4,()=>{w.fillStyle=rg(w,150,66,230,['#ffffff','#ffffff','#7a7096']);w.fillRect(0,0,320,144)});
+    w.setTransform(1,0,0,1,0,0);finish(c,w,12)}
+  g.drawImage(L.work[0],0,0,320,144)}
 
 /* ============ THE DAY, AND ITS THREE PARTS ============ */
 /* From the day the hall is his, the two years are played as three days: an early one, a middle one and a late one, and after them
