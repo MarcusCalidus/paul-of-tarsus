@@ -898,7 +898,7 @@ ROOMS.yard11={space:.6,walk:[16,304,114,138],get mood(){return F.shut?'walk':'ca
   {name:'gate to the lane',x:16,y:52,w:30,h:52,wx:36,wy:116,dir:-1,exit:()=>goto('agora11',112,116,1),look:'The gate, and the steps back down to the marketplace.'},
   {name:'temple of Hephaestus',x:150,y:8,w:150,h:36,wx:230,wy:116,look:'The temple, straight above this yard. The men who cut gods for a living do it in its shadow.',useWith:qOn('temple')},
   {name:'bench of tools',x:68,y:84,w:66,h:20,wx:100,wy:116,look:'Chisels, a mallet, a rasp. I know a well-kept bench when I see one.',pickup:'They are his, and he needs every one of them.',use:'Stone is not my trade.'},
-  {name:'figures of silver',x:246,y:62,w:62,h:24,wx:262,wy:116,dir:1,look:'Small figures in silver on a shelf, by the dozen, all alike. One mould, and as many gods as there is metal.',pickup:'They are for sale, and I would not have one as a gift.',useWith:qOn('statue')},
+  {name:'figures of silver',x:246,y:62,w:62,h:24,wx:262,wy:116,dir:1,look:'Small figures in silver on a shelf, by the dozen, all alike. One mold, and as many gods as there is metal.',pickup:'They are for sale, and I would not have one as a gift.',useWith:qOn('statue')},
   {name:'blocks of marble',x:212,y:84,w:104,h:20,wx:250,wy:116,look:'Marble, as it comes from the mountain. Nothing has been asked of it yet.',useWith:qOn('*')},
   {name:'block with half a figure',x:164,y:58,w:42,h:52,wx:136,wy:118,dir:1,look:'A block of marble. Above, it is a man to the waist: shoulders, a beard, the beginning of a face. Below, it is still the rock that came down from the mountain.',
     useWith:qOn('block'),pickup:'It took four men and a sledge to bring it here.',use:'I cut cloth, not stone.'}]};
@@ -908,7 +908,7 @@ ROOMS.stoa11={space:1.5,walk:[16,464,112,138],mood:'both',amb:{crowd:.3},hs:[
   {name:'image in the recess',x:226,y:30,w:28,h:74,wx:270,wy:114,dir:-1,look:'One of their gods in a recess, in the shade, with a bench on either side. The two teachers have their backs to it.',useWith:qOn('statue')},
   {name:'bench',x:40,y:86,w:60,h:18,wx:70,wy:113,look:'A stone bench. Nobody sits while a teacher is on his feet.'},
   {name:'bench',x:380,y:86,w:60,h:18,wx:410,wy:113,look:'A stone bench. Nobody sits while a teacher is on his feet.'},
-  {name:'hearers of the Stoic',x:108,y:74,w:38,h:52,wx:160,wy:124,dir:-1,look:'His hearers: one young, one grey. They nod at the same places.',talk:()=>sift('s')},
+  {name:'hearers of the Stoic',x:108,y:74,w:38,h:52,wx:160,wy:124,dir:-1,look:'His hearers: one young, one gray. They nod at the same places.',talk:()=>sift('s')},
   {name:'hearers of the Epicurean',x:338,y:74,w:38,h:52,wx:320,wy:124,dir:1,look:'His hearers. They look as if they had eaten well, and meant to again.',talk:()=>sift('e')}]};
 const stoneHs=STONES.map((s,i)=>({get name(){return readS(s.id)?s.nm:s.k==='altar'?'altar':'base of a statue'},x:sx(i),y:stoneTop(s)-3,w:BW,h:BY-stoneTop(s)+3,wx:160,wy:236,
   look:()=>stoneLook(s),useWith:id=>stoneAsk(s,id),pickup:'It has stood here longer than I have been alive.',use:()=>stoneLook(s)}));

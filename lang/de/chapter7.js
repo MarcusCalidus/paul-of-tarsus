@@ -51,7 +51,7 @@ TEXTS('de',7,{
   "Proverbs 18:17":"Sprüche 18:17",
   "Whoever pleads his case first sounds right, until the other side arrives and questions him closely.":"Wer zuerst seine Sache vorträgt, dem gibt man recht, bis der andere erscheint und alles nachprüft.",
   "Ecclesiastes 4:9, 10":"Prediger 4:9, 10",
-  "Two are better off than one, since their toil brings them a good return; and if either falls, the other can lift his companion up.":"Zu zweit ist man besser dran als allein: Die schwere Arbeit lohnt sich mehr, und stürzt der eine, kann ihm der andere wieder auf die Beine helfen.",
+  "Two do better than one: together their work pays well, and when one falls, the other is there to pull him to his feet.":"Zu zweit ist man besser dran als allein: Die schwere Arbeit lohnt sich mehr, und stürzt der eine, kann ihm der andere wieder auf die Beine helfen.",
   "Isaiah 32:2":"Jesaja 32:2",
   "Every one of them will be like shelter out of the wind and cover from the cloudburst, like running water in dry country, like the shade of a great rock in a thirsty land.":"Jeder von ihnen ist dann wie ein Unterschlupf im Sturm und ein Dach im Wolkenbruch, wie Bäche im dürren Land, wie der Schatten eines mächtigen Felsens, wo alles verdorrt ist.",
   "1 Samuel 16:7":"1. Samuel 16:7",

@@ -652,7 +652,7 @@ const HK=['high','middle','low'];
 async function hook(side,i){const st=awn();if(awnDone())return;if(st[side]===i)return say(P,'The rope is on that hook already.',TH);st[side]=i;SFX.creak()}
 async function slide(which){const st=awn();if(awnDone())return;if(st.n===2)return say(P,'It reaches from wall to wall. There is nowhere for it to slide.',TH);
   if(which==='p')st.p=(st.p+1)%3;else st.q=(st.q+1)%4;noise({d:.16,v:.06,f:2600,q:.8})}
-const WRONG={bench:[()=>TJ,'My bench is in the sun still.'],figs:[()=>TJ,'And my figs? They are in the shade now. They will mould before they dry.'],
+const WRONG={bench:[()=>TJ,'My bench is in the sun still.'],figs:[()=>TJ,'And my figs? They are in the shade now. They will mold before they dry.'],
   wall:[()=>TJ,'It is running down the wall of the synagogue. Not on their side, Paul: I have to live beside them.'],belly:[()=>PR,'It does not run at all. It is filling like a wineskin, and coming through over the middle bench.'],
   slow:[()=>PR,'It runs, but slowly. There is a belly forming above the third bench.'],read:[()=>P,'I cannot see my own tablets where I stand.'],
   end:[()=>SP,'The old man at the end has the sun in his face.'],mid:[()=>GA,'The women in the middle are sitting in a strip of sun.'],door:[()=>CR,'My household, by the door, have the sun on their necks.'],
@@ -669,7 +669,7 @@ async function sabbaths(){await fade(1,400);place12('street12');place(P,'street1
   await say(P,'Six days to the Sabbath. The bench is waiting.',TH)}
 
 /* ============ LATE IN THE YEAR: the awl laid down, and a letter ============ */
-async function arrive(){place(SI,'shop12',40,118,1);place(TI,'shop12',64,123,1);await narr('Late in that year two men stood in the opening of the shop, grey with the road.',{dur:6500});await tell('v5a');
+async function arrive(){place(SI,'shop12',40,118,1);place(TI,'shop12',64,123,1);await narr('Late in that year two men stood in the opening of the shop, gray with the road.',{dur:6500});await tell('v5a');
   await say(TI,'Paul! We asked for a tentmaker from Tarsus at every bench in this street.');
   await say(SI,'From the brothers in Macedonia, for your needs. They would not let us leave without it.');await tell('k119');
   await say(P,'Then I owe this bench nothing more than what I have promised on it.');F.came=1;place12('shop12');place(P,'shop12',124,122,-1);codeBtn();
@@ -701,7 +701,7 @@ async function grind(id){if(id==='black12'){if(ink()>=4)return say(P,'It is past
 async function water(){if(!F.news)return say(P,'A small bowl of water.');if(F.ink)return say(P,'It is right as it is.');if(ink()<=0)return say(P,'It is water still.',TH);G.ink12--;SFX.splash();return say(P,'A few drops more of water.',TH)}
 async function tryInk(id){if(id!=='pen12')return id==='reed12'?say(P,'A reed that has not been cut writes nothing.',TH):false;if(F.ink)return say(P,'Black, and it stays. I need no more strokes.');scratch12();
   const k=ink();if(k===2){F.ink=1;delItem('black12');SFX.good();return say(P,'Black, and it stays where the reed puts it.')}
-  return say(P,['Water. The reed leaves nothing.','Grey, and it runs along the sherd.','','It clogs the slit, and comes off in a blot.','Paste. The reed will not take it up.'][k],TH)}
+  return say(P,['Water. The reed leaves nothing.','Gray, and it runs along the sherd.','','It clogs the slit, and comes off in a blot.','Paste. The reed will not take it up.'][k],TH)}
 async function writeLetter(id){if(id!=='pen12'&&id!=='sheet12')return false;
   if(!(F.pen&&F.ink&&F.sheet))return say(TI,!F.pen?'I have no reed, Paul.':!F.sheet?'On what? Silas had a sheet.':'The reed is cut. But there is no black for it yet.');
   await say(P,'Sit to it, Timothy. I shall say it, and you write.');delItem('pen12');delItem('sheet12');place(TI,'shop12',176,112,1);TI.bow=true;await wait(500);
@@ -991,7 +991,7 @@ ROOMS.syn12={space:1.5,walk:[20,300,112,137],mood:'word',amb:{crowd:.5},hs:[
   {name:'benches',x:14,y:86,w:70,h:18,wx:60,wy:113,look:'The benches. Some who sit on them have begun to listen to me in earnest: Jews, and Greeks.'},
   {name:"reader's table",x:108,y:82,w:66,h:22,wx:140,wy:113,look:'The table from which the Law and the Prophets are read. Everything I have said in this house, I have said from what lies on it.'},
   {name:'chest of the scrolls',x:30,y:56,w:38,h:32,wx:76,wy:113,dir:-1,look:'The chest of the scrolls, under its cloth.',open:'It is not mine to open.'},
-  {name:'windows',x:92,y:22,w:130,h:26,wx:160,wy:113,look:'Three windows, with upright bars. The light in them is the grey of winter.'}]};
+  {name:'windows',x:92,y:22,w:130,h:26,wx:160,wy:113,look:'Three windows, with upright bars. The light in them is the gray of winter.'}]};
 ROOMS.isth12={space:.5,walk:NOW,get mood(){return NIGHT()?'night':MOOD()},amb:{wind:.4,waves:.3},hs:[
   {name:'gulf',x:0,y:0,w:190,h:30,wx:160,wy:236,look:'The gulf, and at the end of it the western sea: Italy, Sicily, Spain.'},
   {name:'Lechaeum',x:96,y:34,w:36,h:22,wx:160,wy:236,def:'use',use:()=>harbor('l'),look:'Lechaeum, the western harbor, joined to the city by two long walls. Ships for Italy lie there.'},

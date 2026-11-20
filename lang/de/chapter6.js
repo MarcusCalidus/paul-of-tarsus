@@ -36,7 +36,7 @@ TEXTS('de',6,{
   "Isaiah 42:8":"Jesaja 42:8",
   "I am Jehovah; that is the name I bear. My glory I share with nobody, and the praise due to me I do not hand to carved images.":"Ich bin Jehova, so lautet mein Name. Meine Herrlichkeit teile ich mit keinem, und den Ruhm, der mir zusteht, überlasse ich keinem Götzenbild.",
   "Psalm 146:5, 6":"Psalm 146:5, 6",
-  "Happy the man whose help is the God of Jacob, and who rests his hope on Jehovah his God: the one who made heaven and earth, the sea, and everything in them.":"Glücklich, wem der Gott Jakobs hilft und wer auf Jehova, seinen Gott, hofft: Er hat Himmel und Erde geschaffen, das Meer und alles, was es dort gibt.",
+  "Happy is the man whose hope is Jehovah his God, who is always faithful, and whose help is the God of Jacob, the Maker of the heavens, the earth and the sea, and all they hold.":"Glücklich ist, wer seine Hoffnung auf Jehova, seinen Gott, setzt, der stets treu bleibt, und wer den Gott Jakobs zum Helfer hat – den Schöpfer von Himmel, Erde und Meer und von allem, was zu ihnen gehört.",
   "Jeremiah 10:10":"Jeremia 10:10",
   "Jehovah, though, is God in truth: the God who lives, and the King for all time.":"Doch wirklich Gott ist Jehova: der Gott, der lebt, und König für alle Zeit.",
   "Psalm 65:9":"Psalm 65:9",

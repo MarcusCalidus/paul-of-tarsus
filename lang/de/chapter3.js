@@ -91,7 +91,7 @@ TEXTS('de',3,{
   "Psalm 15:4":"Psalm 15:4",
   "What he has promised he does, even when it turns out to his own loss.":"Was er versprochen hat, hält er, auch wenn er selbst dabei verliert.",
   "Ecclesiastes 4:9, 10":"Prediger 4:9, 10",
-  "Two are better off than one, since their toil brings them a good return; and if either falls, the other can lift his companion up.":"Zu zweit ist man besser dran als allein: Die schwere Arbeit lohnt sich mehr, und stürzt der eine, kann ihm der andere wieder auf die Beine helfen.",
+  "Two do better than one: together their work pays well, and when one falls, the other is there to pull him to his feet.":"Zu zweit ist man besser dran als allein: Die schwere Arbeit lohnt sich mehr, und stürzt der eine, kann ihm der andere wieder auf die Beine helfen.",
   "Proverbs 3:27":"Sprüche 3:27",
   "When you are able to help, do not keep back any good from those who ought to receive it.":"Kannst du helfen, dann verweigere das Gute keinem, der ein Anrecht darauf hat.",
   "Deuteronomy 15:11":"5. Mose 15:11",

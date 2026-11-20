@@ -528,10 +528,10 @@ const PASS={
   prov16:{ref:'Proverbs 16:9',gist:'In his heart a man maps out the way he means to go, yet his steps are guided by Jehovah.'},
   isa30:{ref:'Isaiah 30:21',gist:'Should you stray to the right or to the left, your own ears will catch a word spoken behind you, telling you which is the way and to walk in it.'},
   prov15:{ref:'Proverbs 15:22',gist:'Without counsel taken together, plans come to nothing; where many advise, they succeed.'},
-  isa42:{ref:'Isaiah 42:4',gist:'He will not burn low or be broken before he has set justice in place on the earth; and the islands are still waiting for his law.'},
+  isa42:{ref:'Isaiah 42:4',gist:'The islands wait for his law, and he will not burn low or be broken until he has set up justice on the earth.'},
   ps65:{ref:'Psalm 65:2',gist:'You are the one who hears prayer; people of every sort will come to you.'},
-  isa53:{ref:'Isaiah 53:5',gist:'Our offense is why he was pierced; our errors are why he was crushed.'},
-  ps16:{ref:'Psalm 16:10',gist:'You will not abandon me to the Grave, nor let the one who is loyal to you see the pit.'},
+  isa53:{ref:'Isaiah 53:5',gist:'Our transgression is why he was pierced, and our errors why he was crushed; his wounds have healed us.'},
+  ps16:{ref:'Psalm 16:10',gist:'David\'s hope: Jehovah would never let his loyal one see the pit, nor abandon him to the Grave.'},
   kings:{ref:'2 Kings 4:8',gist:'Elisha once came to Shunem. A woman of high standing lived there, and she pressed him to stay for a meal; after that he stopped to eat at her house whenever he passed.'}},
   ORDER=['prov16','isa30','prov15','isa42','ps65','isa53','ps16','kings'];
 const quote=k=>T('{text} ({ref})',{text:T(PASS[k].gist),ref:T(PASS[k].ref)});
@@ -586,7 +586,7 @@ ROOMS.fork={space:.5,walk:[16,464,112,138],mood:'hope',amb:{wind:.5,birds:.5,hoo
     use:'I lean on it for a moment. It is the only thing on this plateau that knows exactly where it is.',pickup:'It has stood here longer than I have lived.'},
   {name:'mule',x:128,y:90,w:44,h:34,wx:184,wy:126,dir:-1,look:"The carrier's mule, under more wool than I should have thought one animal could carry. It is looking down the road, and it has no doubts.",pickup:"It is Attalos's, and it would not come."},
   {name:'track to the north',x:232,y:76,w:76,h:32,wx:254,wy:113,dir:1,exit:trackNorth,
-    look:()=>say(P,F.asia?'The track north: bare earth and two ruts, climbing out of sight. It is the road that is still open.':'A track, leaving the paved road for the north. Two ruts and no kerb. The carrier says that it runs toward Bithynia.')},
+    look:()=>say(P,F.asia?'The track north: bare earth and two ruts, climbing out of sight. It is the road that is still open.':'A track, leaving the paved road for the north. Two ruts and no curb. The carrier says that it runs toward Bithynia.')},
   {name:'paved road west',x:0,y:104,w:15,h:34,wx:22,wy:122,dir:-1,exit:roadWest,
     look:async()=>{if(F.asia)return say(P,'The road to Ephesus: paved, straight, and closed to us. I do not know why. I do not need to.');
       await say(P,'The paved road, running west: down off the plateau, and on to Ephesus and the cities of Asia. More people live along it than in all Galatia.');return say(P,quote('isa30'))}},
@@ -976,7 +976,7 @@ async function toCity(){const me=PC();
   await say(me,me===P?'Back to the city. The river is here. What I do not know yet is the day.':'Back to the city, then.');
   await fade(1,500);await come('philippi')}
 const woman=A=>async()=>{const me=PC();if(!F.sat)return approach();if(me===P)return speak();
-  return say(A,A===LY?'You are a physician, sir? Then you have seen more of trouble than I have. Sit: your friend is about to speak.':A===PH?'Is it true that you have come from over the sea, only to sit on a river bank with us?':'I have prayed here since before my hair was grey, sir. I never thought that anybody was listening but God.')};
+  return say(A,A===LY?'You are a physician, sir? Then you have seen more of trouble than I have. Sit: your friend is about to speak.':A===PH?'Is it true that you have come from over the sea, only to sit on a river bank with us?':'I have prayed here since before my hair was gray, sir. I never thought that anybody was listening but God.')};
 ROOMS.river={space:.6,walk:[16,464,116,138],mood:'rest',amb:{fountain:.5,birds:.7,leaves:.6,wind:.15},hs:[
   {name:'mountain',x:0,y:40,w:300,h:22,wx:230,look:'A long blue mountain across the plain. This is Macedonia: I had never seen it before this week, and a man of it asked me to come.'},
   {name:'city',x:376,y:42,w:92,h:22,wx:420,look:'Philippi on its hill, with its wall and its gate. From down here it looks smaller than a Roman colony likes to look.'},
@@ -993,7 +993,7 @@ LY.hs={name:'Lydia',actor:LY,look:()=>say(P,F.sat?'A woman in a shawl of the col
 PH.hs={name:'Phila',actor:PH,look:()=>say(P,F.sat?'Phila. She made room for us on the stones before she had heard one word.':'A younger woman, with her hands open on her knees.'),
   show:{tablets:'Writing! None of us can read, sir, but two. Read it out.','*':'Keep it, sir. We brought nothing here either.'},talk:woman(PH),
   as:{luke:{look:'A young woman. She made room for four strangers without being asked.',talk:woman(PH),show:{'*':'Keep it, sir.'}}}};
-EL.hs={name:'Elpis',actor:EL,look:()=>say(P,F.sat?'Elpis. She is the oldest of them, and she is nodding at every word of the prophets.':'An older woman, grey under her shawl. Her lips are moving.'),
+EL.hs={name:'Elpis',actor:EL,look:()=>say(P,F.sat?'Elpis. She is the oldest of them, and she is nodding at every word of the prophets.':'An older woman, gray under her shawl. Her lips are moving.'),
   show:{tablets:'My eyes are past it, sir. Say it, and I will know whether I have heard it before.','*':'Keep it, sir.'},talk:woman(EL),
   as:{luke:{look:'An old woman, straight in the back. She has prayed on this bank for a long time.',talk:woman(EL),show:{'*':'Keep it, sir.'}}}};
 /* ============ THE COMPANIONS: Silas and Timothy, who walk along; Luke and Paul, as each sees the other ============ */

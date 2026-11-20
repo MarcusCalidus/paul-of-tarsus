@@ -1871,7 +1871,7 @@
     ok(capsFit(2),'what is set is written at the foot of the view, and fits')}
   halt('awn12');pray();await idle();ok(hint()[0]==='awn112','the hint: where the shade falls');
   heard.length=0;await onH('step back and look');ok(!F.r1&&said('My bench is in the sun still.'),'somebody says what he sees: the bench is in the sun');
-  await setAwn({p:1});heard.length=0;await onH('step back and look');ok(!F.r1&&(said('And my figs? They are in the shade now. They will mould before they dry.')||said('My bench is in the sun still.')),'in the middle of the court it does not hold either');
+  await setAwn({p:1});heard.length=0;await onH('step back and look');ok(!F.r1&&(said('And my figs? They are in the shade now. They will mold before they dry.')||said('My bench is in the sun still.')),'in the middle of the court it does not hold either');
   await setAwn(C().solved[1]);heard.length=0;onH('step back and look');await until(()=>F.sab&&!G.busy);note();
   ok(F.r1&&!has('awn12')&&said('Shade where I sit, and sun on the figs. You have hung these before.'),'shade on his bench, and sun on his figs');
   ok(F.sab&&G.room==='street12'&&told('v4'),'every Sabbath in the synagogue (Acts 18:4)');
@@ -1904,7 +1904,7 @@
   await act('pickup','reeds');ok(has('reed12'),'a reed');await use('knife','reed12');ok(F.pen&&has('pen12')&&!has('reed12'),"cut slanting and slit: a tentmaker's knife makes a pen");
   await actor('talk',AP);ok(F.black&&has('black12'),'Priscilla has a cake of black');
   heard.length=0;await useH('pen12','potsherd');ok(!F.ink&&said('Water. The reed leaves nothing.'),'tried on a potsherd: water');
-  await useH('black12','small bowl');heard.length=0;await useH('pen12','potsherd');ok(said('Grey, and it runs along the sherd.'),'too thin');
+  await useH('black12','small bowl');heard.length=0;await useH('pen12','potsherd');ok(said('Gray, and it runs along the sherd.'),'too thin');
   await useH('black12','small bowl');await useH('black12','small bowl');heard.length=0;await useH('pen12','potsherd');ok(!F.ink&&said('It clogs the slit, and comes off in a blot.'),'too thick');
   halt('ink12');
   await onH('small bowl','use');heard.length=0;await useH('pen12','potsherd');ok(F.ink&&!has('black12')&&said('Black, and it stays where the reed puts it.'),'black, and it stays');

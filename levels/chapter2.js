@@ -266,11 +266,11 @@ const disputers=()=>{place(DS,'jerusalem',252,118,1);place(AR,'jerusalem',226,12
    Translation (Study Edition) and never copied from it: see CONTRIBUTING section 1. */
 const PASS={
   deut:{ref:'Deuteronomy 18:15',short:'a prophet like Moses',gist:'Moses told Israel that Jehovah their God would bring forward a prophet like himself for them, one of their own brothers, and that they must listen to him.'},
-  ps16:{ref:'Psalm 16:10',short:'not abandoned to the Grave',gist:'You will not abandon me to the Grave, nor let the one who is loyal to you see the pit.'},
+  ps16:{ref:'Psalm 16:10',short:'not abandoned to the Grave',gist:'David\'s hope: Jehovah would never let his loyal one see the pit, nor abandon him to the Grave.'},
   prov16:{ref:'Proverbs 16:9',short:"Jehovah guides a man's steps",gist:'In his heart a man maps out the way he means to go, yet his steps are guided by Jehovah.'},
   prov28:{ref:'Proverbs 28:13',short:'mercy for the one who confesses',gist:'Nobody prospers by hiding his transgressions; mercy is for the one who admits them and gives them up.'},
-  isa49:{ref:'Isaiah 49:6',short:'a light of nations',gist:'I have made you a light of nations as well, so that salvation from me may reach the farthest parts of the earth.'},
-  isa53:{ref:'Isaiah 53:5',short:'pierced on our account',gist:'Our offense is why he was pierced; our errors are why he was crushed.'}};
+  isa49:{ref:'Isaiah 49:6',short:'a light of nations',gist:'To carry my salvation to the remotest places on earth, I have made you a light of nations.'},
+  isa53:{ref:'Isaiah 53:5',short:'pierced because of our transgression',gist:'Our transgression is why he was pierced, and our errors why he was crushed; his wounds have healed us.'}};
 const ORDER=Object.keys(PASS);
 const TABLETS={
   people:[
@@ -510,14 +510,14 @@ async function dispute(){DS.dir=1;AR.dir=1;
   await say(AR,'So answer us from the Scriptures, Saul, if you can.');
   await say(P,'Ask, and I will answer from the Scriptures.');
   await round(DS,'The Law says that a man who is hung on a stake is under the curse of God. (Deuteronomy 21:22, 23) How can an accursed man be the Christ?','isa53',
-    ['Isaiah wrote of the servant of Jehovah that our offense is why he was pierced, and our errors are why he was crushed. (Isaiah 53:5)','The curse he bore was not his own. He bore it for us. (Galatians 3:13)'],
+    ['Isaiah wrote of the servant of Jehovah that our transgression is why he was pierced, and our errors why he was crushed. (Isaiah 53:5)','The curse he bore was not his own. He bore it for us. (Galatians 3:13)'],
     ['Isaiah...','I have read that passage many times. I never once read it with a stake in mind.'],
     {deut:'A prophet like Moses, yes. Moses was not hung on a stake, Saul.',ps16:'The Grave? I asked you about the stake, not the tomb.',
       prov16:'Jehovah directs our steps, and the Law directs our judgment. The Law calls such a man accursed.',
       prov28:'Confession? We asked about your Jesus. We will come to you soon enough.',
       isa49:"A light of nations? First tell us how a man under the Law's curse can be anyone's light."});
   await round(AR,'And then he died, and was buried. A dead man is no Christ. Where is your Messiah now?','ps16',
-    ['David wrote that God would not abandon him to the Grave, nor let the one who is loyal to him see the pit. (Psalm 16:10)',
+    ['David wrote that Jehovah would never let his loyal one see the pit, nor abandon him to the Grave. (Psalm 16:10)',
       'Yet David is dead and buried, and his tomb stands among us still. He was speaking of the one God has raised from the dead. (Acts 2:29-31; 13:35-37)',
       'And I have seen him myself, alive, on the road to Damascus.'],
     ["David's tomb is here, it is true...",'But you say you saw a dead man alive. Many men say many things, Saul.'],

@@ -351,9 +351,9 @@ const TOPICS=[
 /* ============ SCRIPTURE: the passages on the tablets. short: how a passage is named when it is offered as an answer ============ */
 const PASS={
   ps133:{ref:'Psalm 133:1',short:'brothers at one',gist:'What a good and delightful thing it is when brothers live side by side and are at one!'},
-  isa42:{ref:'Isaiah 42:4',short:'the islands still wait',gist:'He will not burn low or be broken before he has set justice in place on the earth; and the islands are still waiting for his law.'},
+  isa42:{ref:'Isaiah 42:4',short:'the islands still wait',gist:'The islands wait for his law, and he will not burn low or be broken until he has set up justice on the earth.'},
   sam7:{ref:'2 Samuel 7:12',short:'a son promised to David',gist:'When your days are over and you rest with your forefathers, I will bring forward a descendant of yours to follow you, your own son, and I will make his kingdom secure.'},
-  ps16:{ref:'Psalm 16:10',short:'not abandoned to the Grave',gist:'You will not abandon me to the Grave, nor let the one who is loyal to you see the pit.'},
+  ps16:{ref:'Psalm 16:10',short:'not abandoned to the Grave',gist:'David\'s hope: Jehovah would never let his loyal one see the pit, nor abandon him to the Grave.'},
   hos14:{ref:'Hosea 14:9',short:"Jehovah's ways are straight",gist:"Jehovah's ways are straight: the righteous walk along them, but those who transgress lose their footing on them."},
   deut18:{ref:'Deuteronomy 18:10',short:'no one who practices magic',gist:'Among you there must be nobody who sends a son or a daughter through the fire, nobody who divines or practices magic or reads omens, and no sorcerer.'},
   dan2:{ref:'Daniel 2:27, 28',short:'a God who reveals secrets',gist:'The secret the king asks about is more than any wise man, conjurer, priest who practices magic or astrologer can tell him. But in heaven there is a God who brings secrets to light.'}},

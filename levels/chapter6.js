@@ -395,7 +395,7 @@ async function think(q,opts){let av=opts.slice();
 const PASS={
   prov22:{ref:'Proverbs 22:3',gist:'A shrewd man notices danger and gets out of its way; those without experience walk straight on, and pay for it.'},
   isa42:{ref:'Isaiah 42:8',gist:'I am Jehovah; that is the name I bear. My glory I share with nobody, and the praise due to me I do not hand to carved images.'},
-  ps146:{ref:'Psalm 146:5, 6',gist:'Happy the man whose help is the God of Jacob, and who rests his hope on Jehovah his God: the one who made heaven and earth, the sea, and everything in them.'},
+  ps146:{ref:'Psalm 146:5, 6',gist:'Happy is the man whose hope is Jehovah his God, who is always faithful, and whose help is the God of Jacob, the Maker of the heavens, the earth and the sea, and all they hold.'},
   jer10:{ref:'Jeremiah 10:10',gist:'Jehovah, though, is God in truth: the God who lives, and the King for all time.'},
   ps65:{ref:'Psalm 65:9',gist:"You look after the earth; you make it bear in abundance and enrich it greatly. God's stream runs full of water, and you give people their grain, because you made the earth ready for that."},
   ps34:{ref:'Psalm 34:19',gist:'The righteous one meets hardship upon hardship, yet Jehovah brings him safely out of every one.'},

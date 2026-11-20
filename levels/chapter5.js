@@ -409,14 +409,14 @@ const TOPICS=[
    road: a passage for the journey, which is not among the answers when Paul speaks of the Christ. ============ */
 const PASS={
   ps121:{ref:'Psalm 121:1, 2',short:'help from Jehovah',road:1,gist:'I look up toward the mountains and ask where my help will come from. It comes from Jehovah, who made heaven and earth.'},
-  ecc4:{ref:'Ecclesiastes 4:9, 10',short:'two are better than one',road:1,gist:'Two are better off than one, since their toil brings them a good return; and if either falls, the other can lift his companion up.'},
+  ecc4:{ref:'Ecclesiastes 4:9, 10',short:'two are better than one',road:1,gist:'Two do better than one: together their work pays well, and when one falls, the other is there to pull him to his feet.'},
   isa43:{ref:'Isaiah 43:2',short:'through the rivers',road:1,gist:'When your way leads through water, I will be at your side; when you cross rivers, they will not close over you.'},
   ps2:{ref:'Psalm 2:7',short:'you are my son',gist:'I announce what Jehovah has decreed: he told me that I am his son, and that today he has become my father.'},
   isa55:{ref:'Isaiah 55:3',short:'loyal love toward David',gist:'Turn your ear my way and draw near to me; if you listen, you will stay alive. I will gladly bind myself to you by a covenant that lasts forever, in keeping with my acts of loyal love toward David, which can be relied on.'},
-  ps16:{ref:'Psalm 16:10',short:'not abandoned to the Grave',gist:'You will not abandon me to the Grave, nor let the one who is loyal to you see the pit.'},
+  ps16:{ref:'Psalm 16:10',short:'not abandoned to the Grave',gist:'David\'s hope: Jehovah would never let his loyal one see the pit, nor abandon him to the Grave.'},
   hab1:{ref:'Habakkuk 1:5',short:'you will not believe it',gist:'Search among the nations and mark what you see; gaze, and be struck with wonder. In your own days a thing will be done that you will find beyond belief, even when you are told of it.'},
   isa56:{ref:'Isaiah 56:3',short:'a word for the foreigner',gist:'If a foreigner has attached himself to Jehovah, let him not say that Jehovah is sure to set him apart from his people.'},
-  isa49:{ref:'Isaiah 49:6',short:'a light of nations',gist:'To be my servant who lifts up the tribes of Jacob and brings back those of Israel who were kept safe is too little. I have made you a light of nations as well, so that salvation from me may reach the farthest parts of the earth.'}},
+  isa49:{ref:'Isaiah 49:6',short:'a light of nations',gist:'Raising up Jacob\'s tribes and bringing home the ones of Israel who were kept safe is too small a task for you, my servant. To carry my salvation to the remotest places on earth, I have made you a light of nations as well.'}},
   ORDER=['ps121','ecc4','isa43','ps2','isa55','ps16','hab1','isa56','isa49'],TALK=ORDER.filter(k=>!PASS[k].road);
 const label=k=>T('{ref}: {short}',{ref:T(PASS[k].ref),short:T(PASS[k].short)}),quote=k=>T('{text} ({ref})',{text:T(PASS[k].gist),ref:T(PASS[k].ref)});
 /* ============ WAX TABLETS: people met, tasks still open, Scripture (shown by shared/tablets.js) ============ */

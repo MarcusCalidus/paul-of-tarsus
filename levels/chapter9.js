@@ -699,7 +699,7 @@ const ROAD9=[['iconium','antiochp'],['antiochp','westroad'],['westroad','bithyni
 async function finale(){AU.mood='hope';
   await narr('Luke did not leave with them. Some ten years later Paul wrote to the brothers in Philippi of how the good news was being defended and given a firm footing in law, and of the struggle that they had watched him go through. (Philippians 1:7, 30)',{dur:13500});
   try{await need('map');await fade(1,450);await SHARED.map.journey(ROAD9,{instant:1,view:'aegean'});await fade(0,550);SHARED.map.sting();
-    await narr('From Philippi they travelled on through Amphipolis and Apollonia, toward Thessalonica. (Acts 17:1)',{dur:8500})}catch(e){console.error(e)}
+    await narr('From Philippi they traveled on through Amphipolis and Apollonia, toward Thessalonica. (Acts 17:1)',{dur:8500})}catch(e){console.error(e)}
   endScreen({title:'Midnight in Philippi',text:'Paul sang where nobody could see him, stayed where every door stood open, and asked of frightened men only what the brothers needed.',
     based:"Based on Acts 16:16-40; 17:1; Philippians 1:7, 30 and Psalm 136. Supporting characters and dialogue are imaginative; the events are from the Scriptures, and are told here in paraphrase. Acts does not say what became of the girl, whether the two spoke of being Romans before they were beaten, what they sang, how many prisoners there were or why none of them fled, how Paul knew what the jailer was about to do, who belonged to the jailer's house or where they were baptized, how the two came to be in the prison again by morning, who the brothers in Lydia's house were, or who left Philippi with Paul and Silas.",
     go:'Click to continue to Chapter Ten',code:['Chapter Ten code: {code}',codeOf(10,0)]});
@@ -737,7 +737,7 @@ ROOMS.cell9={space:1.5,get walk(){return F.quake?[36,296,112,136]:[150,150,131,1
   amb:()=>F.quake?{drip9:.5}:{drip9:.7,mutter9:F.s1?0:.7,chain9:F.s2?0:.6,cough9:F.s3?0:.6,crickets:F.s3?.3:0},hs:[
   Object.assign({name:'darkness',x:0,y:0,w:320,h:144,wx:150,wy:131,vis:()=>!F.quake,look:'I cannot see my own hands. I can hear: water, iron, a man coughing. And Silas, breathing.'},cellNo,{use:'The stocks hold my feet. I am not going anywhere.'}),
   Object.assign({name:'dripping water',x:8,y:24,w:44,h:30,wx:150,wy:131,vis:()=>!F.quake,look:'Water, dripping somewhere to my left. It has not missed a beat since they shut the door.'},cellNo,{use:'I cannot reach it. My feet are where they were put.'}),
-  Object.assign({name:'door',x:196,y:44,w:40,h:62,wx:150,wy:131,vis:()=>!F.quake,look:'A hair of grey under the door. Beyond it sleeps a man who was told to guard us securely.'},cellNo,{open:'It is barred on the far side, and four paces away. It might as well be forty.',use:'I cannot reach it.'}),
+  Object.assign({name:'door',x:196,y:44,w:40,h:62,wx:150,wy:131,vis:()=>!F.quake,look:'A hair of gray under the door. Beyond it sleeps a man who was told to guard us securely.'},cellNo,{open:'It is barred on the far side, and four paces away. It might as well be forty.',use:'I cannot reach it.'}),
   Object.assign({name:'stocks',x:118,y:126,w:92,h:12,wx:150,wy:131,vis:()=>!F.quake,look:'A beam of timber shut over my ankles, with the holes set wide apart. They mean us not to sleep.'},cellNo,
     {use:'Shut with iron. My awl could not open it, and my awl is lying somewhere in the marketplace.',open:'Shut with iron. My awl could not open it, and my awl is lying somewhere in the marketplace.',pickup:'It holds me. I do not hold it.'}),
   /* the hidden treasure of the chapter (CHAP[9].treasure): once all three men have fallen silent, a cricket can be heard in the wall. It is a
@@ -747,7 +747,7 @@ ROOMS.cell9={space:1.5,get walk(){return F.quake?[36,296,112,136]:[150,150,131,1
   {name:'fallen stocks',x:118,y:122,w:106,h:14,wx:150,wy:136,vis:()=>!!F.quake,look:'The upper beam has slid off the lower. Nobody put a hand to it.',use:'I have had enough of it.',pickup:'Let it lie.'},
   {name:'doorway',x:196,y:44,w:40,h:62,wx:186,wy:116,dir:1,vis:()=>!!F.quake,exit:doorway,look:()=>doorway()},
   {name:'jailer',x:206,y:54,w:20,h:52,wx:186,wy:116,dir:1,def:'talk',vis:()=>!!F.quake,talk:callOut,use:callOut,
-    look:async()=>{await seeJailer();await say(P,'The jailer, against the grey of the outer door. He cannot see into this dark. We can see him.',TH)},pickup:'That would hardly be loving.'}]};
+    look:async()=>{await seeJailer();await say(P,'The jailer, against the gray of the outer door. He cannot see into this dark. We can see him.',TH)},pickup:'That would hardly be loving.'}]};
 PR.forEach((a,i)=>{a.hs=Object.assign({get name(){return F.quake?['man who muttered','man with the chain','man who coughed'][i]:['muttering','chain','cough'][i]},actor:a},cellNo,{
   look:()=>say(P,F.quake?['A shape against the wall, where the muttering was. He has not moved from it.','A shape by the ring in the wall. The chain lies on the floor beside him.','A shape in the far corner, where the cough came from.'][i]
     :['A man muttering, low, in a tongue that I do not know. He has not stopped since they shut the door.','Iron on stone, each time he moves. He is chained to the wall. For us they had the stocks.','A cough from the far wall: an old man, or a sick one.'][i]),
@@ -803,7 +803,7 @@ const PAUL9={name:'Paul',actor:P,as:{luke:{
 /* Luke at the end, in Lydia's house: met, and not played. The account stops saying "we" where the two are seized, and he stays in Philippi. */
 LK.hs={name:'Luke',actor:LK,look:'Luke. He has looked at our backs, and at nothing else, since we came in at the door.',
   show:{awl:'You have it back. Good. A man should leave a city with his tools.',tablets:'You keep notes. So do I: and this night will be in mine.','*':'Keep it, brother.'},talk:()=>care(LK)};
-const atRiver=A=>async()=>{if(PC()!==P)return say(A,A===LY?'Sit with us, Luke. Paul is about to give out the psalm.':A===PH?'Do you sing, sir? The answer is not hard.':'I have prayed on this bank since before my hair was grey, sir.');return psalm()};
+const atRiver=A=>async()=>{if(PC()!==P)return say(A,A===LY?'Sit with us, Luke. Paul is about to give out the psalm.':A===PH?'Do you sing, sir? The answer is not hard.':'I have prayed on this bank since before my hair was gray, sir.');return psalm()};
 LY.hs={name:'Lydia',actor:LY,
   look:()=>say(P,F.free?'Lydia. She heard the rods from her own door yesterday, and her door is open this morning.':inRiv()?'Lydia, on the stones, with her household about her.':'Lydia. A seller of purple, and a sister. She runs this house as she runs her trade: nothing in it is wasted.'),
   show:{tablets:'Is the psalm on them, Paul? Then give it to us before I forget that I asked.','*':'Keep it, Paul. Whatever you need in this house, you have only to say.'},

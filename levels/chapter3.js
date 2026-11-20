@@ -317,7 +317,7 @@ const TABLETS={
     {t:'See the gift counted and sealed before the brothers.',if:()=>ant()&&!F.sealed}],
   scripture:[
     {ref:'Psalm 15:4',gist:'What he has promised he does, even when it turns out to his own loss.'},
-    {ref:'Ecclesiastes 4:9, 10',gist:'Two are better off than one, since their toil brings them a good return; and if either falls, the other can lift his companion up.'},
+    {ref:'Ecclesiastes 4:9, 10',gist:'Two do better than one: together their work pays well, and when one falls, the other is there to pull him to his feet.'},
     {ref:'Proverbs 3:27',gist:'When you are able to help, do not keep back any good from those who ought to receive it.'},
     {ref:'Deuteronomy 15:11',gist:'Be openhanded and generous toward your brother in your land who is poor and in distress.'}]};
 /* ============ ROOMS, HOTSPOTS, CHARACTERS ============ */

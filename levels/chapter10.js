@@ -412,16 +412,16 @@ const tellMap=k=>tell(k,0,1);
    at those places lay beside them. */
 const mk10=(o,i)=>Object.assign(o,{seed:i*37});
 const PLACE={
- ps16:{k:'ps',ref:'Psalm 16:10',gist:'You will not leave me in the Grave. You will not let the one who is loyal to you see the pit.',cap:'not left in the Grave',at:.1},
+ ps16:{k:'ps',ref:'Psalm 16:10',gist:'David\'s hope: Jehovah would never let his loyal one see the pit, nor abandon him to the Grave.',cap:'not abandoned to the Grave',at:.1},
  ps22m:{k:'ps',ref:'Psalm 22:7, 8',gist:'All who see me mock me, and shake their heads: he put his trust in Jehovah, so let Him rescue him.',cap:'mocked for his trust',at:.15},
  ps22l:{k:'ps',ref:'Psalm 22:18',gist:'They share out my garments among them, and for my clothing they cast lots.',cap:'lots for his clothing',at:.16},
  ps34:{k:'ps',ref:'Psalm 34:20',gist:'He guards all his bones. Not one of them has been broken.',cap:'not one bone broken',at:.23},
  ps69:{k:'ps',ref:'Psalm 69:21',gist:'For my thirst they gave me vinegar to drink.',cap:'vinegar for his thirst',at:.46},
- ps118:{k:'ps',ref:'Psalm 118:22',gist:'The stone that the builders threw aside has become the chief cornerstone.',cap:'the stone thrown aside',at:.78},
+ ps118:{k:'ps',ref:'Psalm 118:22',gist:'It is the chief cornerstone now, this stone the builders threw aside.',cap:'the stone thrown aside',at:.78},
  is45:{k:'pr',ref:'Isaiah 45:1',gist:'This is what Jehovah says to his anointed one, to Cyrus, whose right hand he has taken hold of.',cap:'his anointed one',at:.68},
  is50:{k:'pr',ref:'Isaiah 50:6',gist:'I gave my back to those who struck me. I did not hide my face from insult and from spit.',cap:'struck and spat on',at:.76},
  is533:{k:'pr',ref:'Isaiah 53:3',gist:'He was despised, and men kept away from him. We counted him as nothing.',cap:'despised, counted as nothing',at:.8},
- is535:{k:'pr',ref:'Isaiah 53:5',gist:'He was pierced for our transgression. By his wounds we were healed.',cap:'pierced for our transgression',at:.81},
+ is535:{k:'pr',ref:'Isaiah 53:5',gist:'Our transgression is why he was pierced, and our errors why he was crushed; his wounds have healed us.',cap:'pierced because of our transgression',at:.81},
  is537:{k:'pr',ref:'Isaiah 53:7',gist:'Like a sheep led to the slaughter, like a ewe that is silent before her shearers, he did not open his mouth.',cap:'silent as a sheep',at:.82},
  is539:{k:'pr',ref:'Isaiah 53:9',gist:'His burial place was given him with the wicked, and with the rich in his death, though he had done no wrong.',cap:'a grave with the rich',at:.83},
  ex12:{k:'law',ref:'Exodus 12:46',gist:'Of the Passover lamb: you must not break a bone of it.',cap:'no bone of the lamb broken',at:.27}};
@@ -806,7 +806,7 @@ Object.assign(ICON,{
   tent10(g){IH.roll(g,CLOTH,7,10);for(const y of[8.6,11.4,14.2])R(g,20.4,y,1.8,1.2,'#8a6a4a')}});
 Object.assign(ITEMS,{
   panels10:{name:'cut panels',look:'Six panels of goat-hair cloth: a roof, two walls, a door flap and two gussets, and a strip for the loops. Cut, and not yet sewn.'},
-  tent10:{name:'travelling tent',look:'A tent for a man who trades along the great road. The thin strip of the bolt lies inside three seams of it.'}});
+  tent10:{name:'traveling tent',look:'A tent for a man who trades along the great road. The thin strip of the bolt lies inside three seams of it.'}});
 const sewWith=()=>sew();
 Object.assign(COMBO,{'awl+panels10':sewWith,'panels10+thread':sewWith,'knife+panels10':()=>say(P,'They are cut, and cut right. The knife has done its part.'),
   'awl+tent10':()=>say(P,'It is sewn, and it will hold.'),'tent10+thread':()=>say(P,'It is sewn, and it will hold.'),'knife+tent10':()=>say(P,'I do not cut what I have just sewn.')});
@@ -936,7 +936,7 @@ const TABLETS={
     {name:'Silas',note:'A prophet, and a leading man among the brothers in Jerusalem. He was beaten in Philippi as I was.'},
     {name:'Timothy',note:'The son of Eunice, of Lystra. He has known the holy writings since he was a small child.'},
     {name:'Jason',note:'He received us under his roof in Thessalonica.',if:()=>!F.gone},
-    {name:'Parmenon',note:'A trader on the great road. He has ordered a travelling tent.',if:()=>!F.sold&&!F.night},
+    {name:'Parmenon',note:'A trader on the great road. He has ordered a traveling tent.',if:()=>!F.sold&&!F.night},
     {name:'Lysimachos',note:'Of the synagogue of Thessalonica. He asks where it is written, and means to see it.',if:()=>!!F.cutd&&!F.gone},
     {name:'Menandros',note:'A Greek who worships God. He stands nearest the door, and listens hardest.',if:()=>!!F.r1&&!F.gone},
     {name:'Stratonike',note:'One of the leading women of Thessalonica.',if:()=>!!F.r3&&!F.gone},
@@ -1012,7 +1012,7 @@ function hint10(){
       :['bolt10',['A tent is thought out before it is cut. The cloth is pegged out along the wall.','I should use the bolt of goat-hair cloth, and lay out the six panels on it.']]}
   if(inYard()){
     if(F.r2&&!F.sewn)return['sew10',['The panels are cut. The seams are night work.','I should use the awl with the cut panels.']];
-    if(F.r3&&!F.sold)return['sold10',['Parmenon has come for what he ordered.','I should give him the travelling tent.']];
+    if(F.r3&&!F.sold)return['sold10',['Parmenon has come for what he ordered.','I should give him the traveling tent.']];
     return['gate10',['It is the Sabbath, and this city has a synagogue.','I can go out by the gate to the street.']]}
   const w=WANT();
   return w==='V'?['v10',['Everything that is written about him in the Law of Moses, in the Prophets and in the Psalms had to come true. (Luke 24:44) He asked about the sour wine.','At the table: the Psalms wound to the vinegar, the Prophets rolled shut, my tablets at the sour wine. Then I turn to the men on the benches.']]

@@ -485,7 +485,7 @@ async function think(q,opts){let av=opts.slice();
 const PASS={
   deut19:{ref:'Deuteronomy 19:15',gist:'A matter stands when two witnesses, or three, have given their testimony.'},
   prov18:{ref:'Proverbs 18:17',gist:'Whoever pleads his case first sounds right, until the other side arrives and questions him closely.'},
-  ecc4:{ref:'Ecclesiastes 4:9, 10',gist:'Two are better off than one, since their toil brings them a good return; and if either falls, the other can lift his companion up.'},
+  ecc4:{ref:'Ecclesiastes 4:9, 10',gist:'Two do better than one: together their work pays well, and when one falls, the other is there to pull him to his feet.'},
   isa32:{ref:'Isaiah 32:2',gist:'Every one of them will be like shelter out of the wind and cover from the cloudburst, like running water in dry country, like the shade of a great rock in a thirsty land.'},
   sam16:{ref:'1 Samuel 16:7',gist:'God does not look at things as a man does: a man goes by what his eyes show him, but Jehovah looks into the heart.'},
   prov22:{ref:'Proverbs 22:1',gist:'Choose a good name before great riches; to be held in respect is worth more than silver and gold.'},
