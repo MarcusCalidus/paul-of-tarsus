@@ -90,8 +90,8 @@ function inhale(dest,t,w,v){const c=AU.ctx,s=c.createBufferSource(),fl=c.createB
 /* The lines of the psalm as they are sung: each syllable is the degree of the scale, a dot, its length in steps, and its vowel; "-.1" is
    a rest of one step. The vowels and the rhythm are those of the line that stands on the screen, so each language has its own: these are
    the English ones, and a language's file gives its own under the same key (CONTRIBUTING section 8). */
-const SONG={c1:'0.2a 2.1@ 4.2o 3.2a -.1 2.1i 3.1o 1.1i 1.1i 0.4u',c2:'4.1i 4.1i 5.2o 4.1o 3.1e 2.2a -.1 3.1e 2.1i 1.1@ 0.1o -2.4o',
-  c3:'0.1@ 2.2e 2.1a 4.1@ 5.2e -.1 4.1i 5.2e 4.1a 6.1o 6.2a 5.1e 4.1@ 4.3i',c4:'4.2a 5.1@ 4.2o 2.1o 3.2e 0.4@',a:'4.1i 5.2o 4.1@ 3.2a 2.2a 3.1o 1.2e 0.4@'};
+const SONG={c1:'0.1@ 2.2o 3.1a 4.1i 3.2u -.1 2.2i 1.1i 0.4a',c2:'4.1i 4.1i 5.2o 4.1o 3.1e 2.2a -.1 3.1e 2.1i 1.1@ 0.1o -2.4o',
+  c3:'0.1@ 2.2e 2.1a 4.1@ 5.2e -.1 4.1i 5.2e 4.1a 6.1o 6.2a 5.1e 4.1@ 4.3i',c4:'4.2a 5.1@ 4.2o 2.1o 3.2e 0.4@',a:'4.1e 4.1i 5.2o 4.2e 3.1u 2.1i 3.2o 1.1@ 0.4a'};
 /* who sings a line: Paul, Silas, both, a household (Silas among them), one woman who begins it, or everyone in the house */
 const CHOIR={P:['P'],S:['S'],PS:['S','P'],H:['S','W1','W2','M3'],W:['W1'],ALL:['S','P','W1','W2','M3']};
 /* whose mouths sing it: the same people, as far as they stand in the room. A household is everyone of the congregation there but Paul. */
@@ -406,7 +406,7 @@ const TOLD={
  v19:"With the spirit went her masters' hope of making money, and they saw it. They laid hold of Paul and Silas and hauled them into the marketplace, to the rulers. (Acts 16:19)",
  v20:'They brought them before the civil magistrates with this charge: these men, who were Jews, were throwing the city into great disorder, and were advocating customs that Romans like themselves were not allowed to take up or to follow. (Acts 16:20, 21)',
  v22:'The whole crowd turned on the two together. The civil magistrates had the clothes torn from their backs, and ordered them beaten with rods. (Acts 16:22)',
- v23:'When they had been struck many times they were put in prison, and the jailer was charged to keep them safe. With such orders, he shut them in the inner prison and locked their feet in the stocks. (Acts 16:23, 24)',
+ v23:'Many blows had been struck on them before they were put in prison, and the jailer had been ordered to keep them under close guard. So he shut them away in the inner prison, with their feet locked in the stocks. (Acts 16:23, 24)',
  v25:'Toward midnight Paul and Silas were at prayer and were singing praise to God, while the prisoners listened. (Acts 16:25)',
  v26:"All at once the earth quaked, so violently that the jail shook to its foundations. In that instant every door flew open and every prisoner's bonds fell away. (Acts 16:26)",
  v27:'The jailer started out of his sleep and saw the prison doors standing open. Sure that the prisoners had got away, he drew his sword and meant to take his own life. (Acts 16:27)',
@@ -416,7 +416,7 @@ const TOLD={
  v31:'Their answer was that he should put faith in the Lord Jesus; then he would be saved, and his household too. (Acts 16:31)',
  v32:'Then the two made the word of Jehovah known to him, and to everyone under his roof. (Acts 16:32)',
  v33:'Late as the hour was, he took them with him and bathed their wounds; and straightaway he was baptized, he and his whole household. (Acts 16:33)',
- v34:'Then he took them into his own house and gave them a meal at his table. Great was his joy, and that of all his household, now that he believed in God. (Acts 16:34)',
+ v34:'Then he took them into his own house and gave them a meal at his table. Now that he had come to believe in God, he and all his household were full of joy. (Acts 16:34)',
  v35:'At daybreak the civil magistrates sent their constables with the word that those men were to be let go. (Acts 16:35)',
  v36:'The jailer brought the message to Paul: the civil magistrates had sent word that both were to be freed, so they should come out now and go their way in peace. (Acts 16:36)',
  v37:'Paul answered them that he and Silas were Romans, and that without any trial they had been publicly flogged and put in prison. And now they were to be put out on the quiet? By no means: the magistrates were to come in person and lead them out. (Acts 16:37)',
@@ -427,11 +427,11 @@ const TOLD={
 const tell=(k,ms)=>narr(TOLD[k],{dur:ms||Math.max(6500,2200+TOLD[k].length*62)});
 /* PS: the psalm, as Paul has noted it on his tablets: four of its calls, and the answer that follows every one. A note in his own words,
    with its reference, and shown as that (gist: see shared/tablets.js). Acts does not say what the two men sang. */
-const PS={c1:{ref:'Psalm 136:1',gist:'Thank Jehovah, because he is good.',full:'Thank Jehovah, because he is good. (Psalm 136:1)'},
+const PS={c1:{ref:'Psalm 136:1',gist:'Jehovah is good: give him thanks.',full:'Jehovah is good: give him thanks. (Psalm 136:1)'},
   c2:{ref:'Psalm 136:23',gist:'He did not forget us when we were brought low.',full:'He did not forget us when we were brought low. (Psalm 136:23)'},
   c3:{ref:'Psalm 136:24',gist:'Again and again he saved us from our enemies.',full:'Again and again he saved us from our enemies. (Psalm 136:24)'},
   c4:{ref:'Psalm 136:26',gist:'Thank the God of heaven.',full:'Thank the God of heaven. (Psalm 136:26)'},
-  a:{ref:'Psalm 136:1-26',gist:'His loyal love lasts forever.',full:'His loyal love lasts forever. (Psalm 136:1-26)'}},ORDER=['c1','c2','c3','c4'];
+  a:{ref:'Psalm 136:1-26',gist:'There is no end to his loyal love.',full:'There is no end to his loyal love. (Psalm 136:1-26)'}},ORDER=['c1','c2','c3','c4'];
 /* ============ HELPERS ============ */
 const inHouse=()=>G.room==='lydia9',inRiv=()=>G.room==='river9',inCell=()=>G.room==='cell9',inGaol=()=>G.room==='gaol9',
   day=()=>!F.d1?1:!F.d2?2:3,sungN=()=>F.s3?3:F.s2?2:F.s1?1:0,allHere=()=>!!(F.c1&&F.c2&&F.c3),CHO='#f0e2b0';
@@ -539,7 +539,7 @@ async function silasTalk(){
   if(F.quake)return say(SI,allHere()?'They are all here, Paul. And that man out there thinks that none of us is.':'The beam has fallen off my feet, Paul, and the door is open. But listen: who else is in here with us?');
   if(F.voice)return nightSong();
   await say(P,'Silas. How is it with you?');
-  await say(SI,'My back is one wound, and they have set my feet a yard apart. Otherwise I have nothing to complain of. And you?');
+  await say(SI,'My back is one wound, and they have set my feet a full stride apart. Otherwise I have nothing to complain of. And you?');
   await say(P,'The same. I have been reckoning what they have taken.');
   await say(P,'The pouch: awl, knife and thread. Our cloaks. The use of our feet. And the tablets, with every passage that I ever wrote down.');
   await say(SI,'Did they take what was on them?');
@@ -571,7 +571,7 @@ async function seeJailer(){if(G.sawJ)return;G.sawJ=1;await tell('v27')}
 async function count(i){const a=PR[i];if(F['c'+(i+1)])return say(a,['Here. I have not moved.','Still here, singer.','Here. Where I was.'][i]);
   await say(P,['Friend? You who were speaking in the dark. Are you there?','You with the chain. Are you there? Are you hurt?','You by the far wall. Are you there?'][i]);
   await say(a,['Here. The wall moved, and my irons fell off it. I have not stirred.','Here, singer. The ring came out of the wall with the chain still on it. Was that your God?','Here. I heard every word that you sang.'][i]);
-  if(i===1)await say(P,'It was his psalm that you heard. And it was he who made the earth that shook.');
+  if(i===1)await say(P,'It was his psalm that you heard. And the earth that shook is his: he made it.');
   F['c'+(i+1)]=1;SFX.good();if(allHere())await say(P,'Three who listened, and Silas, and I. Nobody has gone. Now I can say it.',TH);codeBtn()}
 async function doorway(){await seeJailer();
   await say(P,allHere()?'I am not going through that door. But before he uses that sword, he must hear that nobody has.':'The door is open, and the outer door beyond it. I am not going through. And before I call to that man that we are all here, I must know that we are.',TH)}
@@ -665,7 +665,7 @@ async function home(){if(G.metHome)return;G.metHome=1;
   await say(TI,'I gathered these up from the paving when the crowd had gone, Paul: your cloaks, the pouch, the tablets.');
   strip(false);dealInv('lydia9');drawInv();SFX.pick();
   await say(LK,'Let me see your backs. ...Whoever washed these knew what he was about.');
-  await say(P,'The jailer did, Luke. He is our brother since last night, and so is all his house.',{to:LK});
+  await say(P,'The jailer did, Luke. Since last night he has been our brother, and so has all his house.',{to:LK});
   await say(LY,'The jailer?');
   await say(SI,'It is a long story, sister, and we have an hour. The magistrates have asked us to leave the city.',{to:LY});
   await say(P,'Then nothing in Philippi must be left waiting for me to come back.',TH);codeBtn()}
@@ -680,9 +680,9 @@ const YES={
   k3:async()=>{await say(PH,'I, sir? I lost my place every single day.');
     await say(P,'And found it again every day, before any of us. That is the one who should begin it.');await say(PH,'Then I shall begin it, sir. And nobody will break it off now.')}};
 const NO={
-  luke9:{k2:'I have a hired room with one stool in it, Paul. Ask the sister at whose table we are standing.',k3:'I shall sing the answer with the rest. The one who begins it should be one of those who learned it beside the river.'},
+  luke9:{k2:'I am a guest under this roof, as you are, Paul. Ask the sister at whose table we are standing.',k3:'I shall sing the answer with the rest. The one who begins it should be one of those who learned it beside the river.'},
   lydia9:{k1:'I shall send them bread today, Paul, and gladly. But they need somebody who can sit with them every day and answer what they ask. I have a shop to keep.',
-    k3:'I can keep the prices of nine dyes in my head, Paul, and not one tune. Ask the one who never lost a line: only her place.'},
+    k3:'I can keep the prices of nine dyes in my head, Paul, and not one tune. Ask the one who lost her place every day, and never once lost the words.'},
   phila9:{k1:'To the prison, sir? I should not know what to say to such a man. He needs somebody who has walked this way longer than I have.',k2:'That is for Lydia to say, sir. It is her house.'}};
 async function care(a){const open=CARES.filter(c=>!F[c.id]);if(!open.length)return say(a,'Go in peace, Paul. We know what we have to do.');
   const i=await choose(open.map(c=>c.q).concat('Nothing more for now.'));if(i===open.length)return;const c=open[i];await say(P,c.q);
@@ -697,11 +697,11 @@ async function done(){await say(P,'Then nobody in this house has to ask for Paul
 /* The chapter closes on the map, with Philippi lit: nobody has travelled in it. The road so far is shown, and none of it draws itself. */
 const ROAD9=[['iconium','antiochp'],['antiochp','westroad'],['westroad','bithynianroad'],['bithynianroad','troas'],['troas','samothrace','sea'],['samothrace','neapolis','sea'],['neapolis','philippi']];
 async function finale(){AU.mood='hope';
-  await narr('Luke did not leave with them. Some ten years later Paul wrote to the brothers in Philippi of how the good news was being defended and given a firm footing in law, and of the struggle that they had watched him go through. (Philippians 1:7, 30)',{dur:13500});
+  await narr('Luke did not leave with them. Some ten years later Paul wrote from prison to the brothers in Philippi: in his chains, and in defending the good news and establishing it in law, they shared with him in undeserved kindness; and his struggle, which they had seen and which went on still, was now theirs too. (Philippians 1:7, 30)',{dur:16500});
   try{await need('map');await fade(1,450);await SHARED.map.journey(ROAD9,{instant:1,view:'aegean'});await fade(0,550);SHARED.map.sting();
     await narr('From Philippi they traveled on through Amphipolis and Apollonia, toward Thessalonica. (Acts 17:1)',{dur:8500})}catch(e){console.error(e)}
   endScreen({title:'Midnight in Philippi',text:'Paul sang where nobody could see him, stayed where every door stood open, and asked of frightened men only what the brothers needed.',
-    based:"Based on Acts 16:16-40; 17:1; Philippians 1:7, 30 and Psalm 136. Supporting characters and dialogue are imaginative; the events are from the Scriptures, and are told here in paraphrase. Acts does not say what became of the girl, whether the two spoke of being Romans before they were beaten, what they sang, how many prisoners there were or why none of them fled, how Paul knew what the jailer was about to do, who belonged to the jailer's house or where they were baptized, how the two came to be in the prison again by morning, who the brothers in Lydia's house were, or who left Philippi with Paul and Silas.",
+    based:"Based on Acts 16:16-40; 17:1; Philippians 1:7, 30 and Psalm 136. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are from the Scriptures and are told here in paraphrase. Acts does not say what became of the girl, whether the two spoke of being Romans before they were beaten, what they sang, how many prisoners there were or why none of them fled, how Paul knew what the jailer was about to do, who belonged to the jailer's house or where they were baptized, how the two came to be in the prison again by morning, who the brothers in Lydia's house were, or who left Philippi with Paul and Silas.",
     go:'Click to continue to Chapter Ten',code:['Chapter Ten code: {code}',codeOf(10,0)]});
   await wait(1500);ov.onclick=()=>startChapter(10);await new Promise(()=>{})}
 /* ============ ROOMS ============ */
@@ -710,7 +710,8 @@ ROOMS.lydia9={space:1.2,walk:[16,304,110,136],get mood(){return F.free?'hope':'c
     look:()=>say(P,F.free?'The door, and the street beyond it. We have been asked to leave by it, and we shall.':'The street, and the morning. The gate is that way, and the river beyond it.'),
     as:{luke:{look:'The street. Somewhere along it there is always somebody who needs a physician.'}}},
   {name:'shelves of purple',x:84,y:32,w:114,h:40,wx:150,wy:112,look:'Purple, crimson and violet, from the dyers of Thyatira. She sells to the first houses of the colony, and shuts her shop every seventh day.',
-    pickup:'One of those bolts is worth more than my bench and everything on it.',as:{luke:{look:'Purple. She could live as the first houses of this colony live. She has four travelers in her upper room instead.'}}},
+    pickup:'One of those bolts is worth more than my bench and everything on it.',
+    useWith:it=>it==='knife'?say(P,'My knife cuts goat hair and leather. I will not let it get a taste for purple.'):false,as:{luke:{look:'Purple. She could live as the first houses of this colony live. She has four travelers in her upper room instead.'}}},
   {name:'table',x:110,y:84,w:96,h:22,wx:158,wy:112,look:()=>say(P,F.free?'Bread, and a place laid for each of us. This morning she did not know whether we should ever sit at it again.':'Her table. It has been laid for four more than her household every day since the river.'),
     use:()=>say(P,F.free?'There is no time to sit. We have an hour.':'We have eaten, and well. She sees to that before any of us is awake.'),pickup:'I am her guest. I take what is set before me, when it is set.',
     as:{luke:{look:'A full table, every day. I have stopped telling her that we could pay for it.'}}},
@@ -857,7 +858,7 @@ const TABLETS={
     {name:'Elpis',note:'The oldest of the women beside the river.'},
     {name:'Servant girl',note:'She follows us on the road and cries out who we are. A spirit is in her, a demon of divination. (Acts 16:16)',if:()=>!!F.went&&!F.jail},
     {name:'Her masters',note:'Two men of the city, who take silver for what the girl tells people.',if:()=>!!F.went&&!F.jail},
-    {name:'Jailer',note:'Yesterday he shut the stocks on us. Since the night he is a brother, and so is all his house.',if:()=>!!F.free}],
+    {name:'Jailer',note:'Yesterday he shut the stocks on us. Since last night he has been a brother, and so has all his house.',if:()=>!!F.free}],
   tasks:[
     {t:'Go out to the river: a psalm is learned with the mouth.',if:()=>inHouse()&&!F.free},
     {t:'Teach the women the psalm: the first two lines, and the answer.',if:()=>inRiv()&&day()===1},
@@ -920,7 +921,7 @@ async function start9(){ov.onclick=null;ov.className='';audioInit();SFX.good();i
 /* ============ PRAYER HINTS ============ */
 function hint9(){const b=PC()!==P;
   if(inHouse()){
-    if(!F.free)return b?['l9a',['Paul means to teach them a psalm, and a psalm wants a river bank.','We can go out by the door to the street.']]
+    if(!F.free)return b?['l9a',['Paul means to teach them a psalm, and a psalm needs a river bank.','We can go out by the door to the street.']]
       :['door9',['They have no scroll. What they can keep is what they can sing: and they pray beside the river.','We can go out by the door to the street.']];
     const c=CARES.find(c=>!F[c.id]);
     if(!c)return['leave9',['Everything here has somebody to carry it.','I can go out by the door to the street.']];
