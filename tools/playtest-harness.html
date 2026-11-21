@@ -864,6 +864,7 @@
   halt('reading',()=>{G.gath=1;place(SI,'tarsus7',268,124,1);place(P,'tarsus7',244,128,1);place(A('eirene'),'tarsus7',220,119,1);place(A('agathon'),'tarsus7',304,119,-1);place(A('reuben'),'tarsus7',328,124,-1);G.cam=108;G.busy=true;lock(true);status();
     say(SI,'To the brothers from the nations in Antioch, Syria and Cilicia: greetings from your brothers, the apostles and the elders. (Acts 15:23)')});
   await give('letter',A('eirene'));ok(F.read&&has('letter')&&!G.busy,'read again after the code, with the letter in Paul\'s hand');
+  heard.length=0;await useOn('knife','loom');ok(said('Near Eirene\'s loom, with that? I have known her too long to try it.')&&has('knife'),"once the letter is read, a blade near Eirene's loom: he has known her too long to try it");
   pray();await idle();ok(hint()[0]==='north7','the hint points north, over the Taurus');
   /* the hub: the gate to the street opens the map */
   act(null,'gate to the street');await mapOpen();
@@ -964,6 +965,7 @@
   pray();await idle();ok(hint()[0]==='readI7','the hint points to Nathan');
   heard.length=0;await actor(null,A('tatia7'));ok(!F.tat&&heard.length===1,'Tatia sends them to Nathan first');
   await sweep(A('nathan7'),A('tatia7'),SI);
+  heard.length=0;verb('pickup');{const h=H("saddler's bench");clickView(h.x+h.w/2,h.y+h.h/2,h)}await idle();ok(said('A pack saddle, half made. I have no mule to put it on, and I am not offering to be one.')&&G.room==='iconium7',"the pack saddle on Nathan's bench: he is not offering to be the mule");
   heard.length=0;await give('letter',A('nathan7'));ok(F.readI&&has('letter')&&!G.busy&&said('So the congregation in Iconium heard the letter too, and received the decrees.'),'the decrees are delivered in Iconium');
   pray();await idle();ok(hint()[0]==='nat7','the hint: how does Iconium come to know him?');
   await actor(null,A('nathan7'));ok(nq()===3,'what does Paul want to know? three questions');
@@ -1260,6 +1262,7 @@
   pray();await idle();ok(hint()[0]==='door9','the hint points to the river');
   key('c');await idle();ok(PC()===LU,'C plays Luke');heard.length=0;await act('look','stair');ok(said('The stair to our room. I have slept worse in dearer places.'),'Luke looks at things in his own words');
   pray();await idle();ok(hint()[0]==='l9a','and he has a hint of his own');key('c');await idle();ok(PC()===P,'C hands back to Paul');
+  heard.length=0;await useOn('knife','shelves of purple');ok(said('My knife cuts goat hair and leather. I will not let it get a taste for purple.')&&has('knife')&&G.room==='lydia9',"the knife near Lydia's purple: it will not get a taste for it");
   /* the river, on three days: the psalm that could not be finished */
   heard.length=0;await act(null,'door to the street');await until(()=>G.room==='river9'&&!G.busy);
   ok(F.went&&told('v16')&&told('v17')&&[GI,MA,LY,PH,EL,SI,TI,LU].every(a=>a.room==='river9')&&said('Every word that she cries is true. And I did not ask for that witness.'),'the girl meets them on the way to the place of prayer: told with its verses');
@@ -1418,6 +1421,7 @@
     halt('deutsch10');el.click();await idle()}
   pray();await idle();ok(hint()[0]==='bolt10','the hint points to the bolt');
   await sweep(SI,TI,JA);
+  heard.length=0;await act('use','lamp niche');ok(said('Not by day. The sun gives its light for nothing, and the oil is Jason\'s.'),'the lamp over the bench is not lit by day: the sun gives its light for nothing');
   /* measured twice: the bolt is laid out before it is cut */
   heard.length=0;await useOn('knife','bolt of goat-hair cloth');ok(!F.cutd&&said('Not before every panel has its place. Cloth that is cut wrong stays cut.'),'the knife waits until the bolt is laid out');
   await act(null,'bolt of goat-hair cloth');await until(()=>G.room==='bolt10'&&!G.busy);
@@ -1675,6 +1679,7 @@
   ok(F.qmade&&has('g11block')&&!has('q11made')&&said('Who made them? He did. I am standing here watching him do it.'),'who made them: he watches it being done (Acts 17:29)');
   halt('block11');await sweep(XE);
   await actor(null,XE);await pickQ('What are you making?');await pickQ('Good work to you.');ok(said('A god. Which one, I shall know when he is sold. One buyer wants a god for the sea, the next a god for his door. Up to the neck they are all the same god.'),'the stonecutter says when a god gets his name');
+  heard.length=0;await act('use','bench of tools');ok(said('Stone is not my trade. In mine, a wrong stitch can be unpicked.')&&G.room==='yard11',"the stonecutter's bench: in Paul's trade a wrong stitch can be unpicked");
   await act(null,'gate to the lane');await until(()=>G.room==='agora11'&&!G.busy);await act(null,'street');await until(()=>G.room==='street11'&&!G.busy);await act(null,'city gate');await until(()=>G.room==='road11'&&!G.busy);
   ok(G.room==='road11'&&SL.room==='road11','back on the road: a slave rests beside it, with a robe and a dish');halt('slave11');
   heard.length=0;await give('q11house',SL);ok(!F.qhouse&&said('He is carrying it to the door of a house. He does not live there himself.'),'where does he live, asked of the slave');
@@ -1942,12 +1947,14 @@
   ok(F.night&&told('v9')&&told('v10')&&said('Cenchreae, and a ship for Asia.')&&ART.shop12.variant()==='w'&&H('bundle'),'he had not said yes; by night he is told to keep on speaking (Acts 18:9, 10); in the morning the bundle is still there');
   pray();await idle();ok(hint()[0]==='stay12','the hint: unpack');
   await act(null,'opening to the street');await until(()=>G.room==='isth12'&&!G.busy);heard.length=0;await onH('Lechaeum');ok(G.room==='isth12'&&said('I was told to keep on speaking, and not to be silent. That was not said to a man on the deck of a ship.'),'the map still opens, and nothing on it is the way on');
+  heard.length=0;await onH('trackway for ships','look');ok(said('A paved way across the neck of land, with grooves for wheels. Small ships are hauled over it from one sea to the other, rather than sailed round the capes. Here even a ship goes by road.')&&G.room==='isth12','the trackway for ships, by day: here even a ship goes by road');
   await onH('Corinth');await until(()=>G.room==='shop12'&&!G.busy);
   heard.length=0;await act(null,'bundle');note();ok(F.stay&&told('v11')&&said('He stayed.')&&!H('bundle'),'he has it unpacked: he stayed a year and six months (Acts 18:11)');
   /* where and when: winter */
   pray();await idle();ok(hint()[0]==='marc12','the hint: a man in the street');
   await act(null,'opening to the street');ok(G.room==='street12'&&ART.street12.variant()==='w'&&MA.room==='street12'&&TR.room==='street12'&&KA.room==='street12','winter in the street: three people he has no errand with');
   halt('winter12');
+  heard.length=0;await give('knife',KA);ok(said('Not near my new cord, tentmaker. I walked across the neck of land for it.')&&has('knife')&&!F.pKal,'the knife shown to Kallistos: he walked across the neck of land for that cord');
   heard.length=0;await actor('talk',MA);await pickQ('I will mend it for you.');ok(!F.brought&&said('With what? I gave the awl away, and I know why.'),'he cannot mend an awning now');
   pickQ('Come with me.');await until(()=>F.brought&&G.room==='shop12'&&!G.busy);ok(F.brought&&MA.room==='shop12'&&!!H('torn awning'),'so he takes the man to the bench');
   heard.length=0;await useH('knife','torn awning');ok(!F.marc,'it is not his to mend');
@@ -1987,7 +1994,9 @@
   heard.length=0;await act(null,'door of Titius Justus');ok(G.room==='street12'&&said('Three people in this city are expecting me. First them.'),'first the three who are expecting him');
   await actor('talk',EU);ok(F.eup,'Euphron, at his own door');
   await act(null,'steps to the marketplace');await until(()=>G.room==='agora12'&&!G.busy);ok(TR.room==='agora12'&&!!H("potter's wares"),'Thrason sits by his pots: the kiln is cold');
-  await actor('talk',TR);ok(F.thr,'Thrason, by his pots');await act(null,'steps to the street');
+  await actor('talk',TR);ok(F.thr,'Thrason, by his pots');
+  heard.length=0;await give('tablets',TR);ok(said('Wax? I write on sherds. I make enough of them.')&&has('tablets'),'the tablets shown to Thrason: he writes on sherds');
+  await act(null,'steps to the street');
   await act(null,'road to the harbors');await until(()=>G.room==='isth12'&&!G.busy);heard.length=0;await onH('Lechaeum');ok(said('Lechaeum: ships for the west. He said that he sails for Asia.'),'the runner sails for Asia: not from the western harbor');
   onH('Cenchreae');await until(()=>G.room==='cen12'&&!G.busy);ok(PX.room==='cen12'&&ART.cen12.variant()==='u'&&!!H('ship for Asia'),'at the eastern harbor, a ship for Asia');
   halt('ship12');
@@ -2224,6 +2233,7 @@
   ok(F.out&&told('v9b')&&ART.street13.variant()==='n'&&PH.room==='street13'&&ME.room==='street13'&&said('He gave Symmachos no last word. He turned his back on the quarrel, and those who believed stood up from the benches.'),'he withdraws, and separates the disciples from them (Acts 19:9); it is midday, and Philon has come as far as the door');
   halt('noon13');await sweep(PH,ME);
   heard.length=0;await act(null,'door of the synagogue');ok(G.room==='street13'&&said('I have left that house. I took nothing out of it but the disciples.'),'he does not go back in');
+  heard.length=0;await act('use','stone bench');ok(said('Sit by the sundial? No shadow ever moved faster for being watched.')&&G.room==='street13'&&!F.m1,'the stone bench by the sundial: no shadow ever moved faster for being watched');
   /* a hall for a curtain */
   pray();await idle();ok(hint()[0]==='mene13','the hint: this street has a hall');
   heard.length=0;await act('pickup','torn curtain');ok(!F.curt&&said('A door curtain of goat hair, torn from top to bottom. It is not mine to take down.'),'the curtain is not his to take, yet');
@@ -2233,6 +2243,10 @@
   heard.length=0;await use('awl','curt13');ok(said('Not across my knee. It has to be laid out flat, along a bench.'),'it is bench work');
   await actor('talk',AP);ok(said('Rotten, all along the tear. No seam will hold in that. Lay a strip behind it: there are remnants in the basket by the door.'),'Priscilla sees what it wants');
   await act('pickup','basket of remnants');ok(F.patch&&has('patch13'),'a strip of new goat hair');
+  heard.length=0;await useH('knife','basket of remnants');ok(said('Cut a remnant, and you only have two smaller ones.')&&has('patch13')&&G.room==='shop13','the knife with the basket of remnants: cut one, and there are two smaller ones');
+  /* the strip can be shown to Menekrates only while it is in Paul's hand, and he stands in the street: out to him, and back to the bench as before */
+  {const f=JSON.stringify(F),inv=srt();await act(null,'door to the street');heard.length=0;await give('patch13',ME);const r=said('A strip. I was hoping for a curtain.');await act(null,'workshop');
+    ok(r&&G.room==='shop13'&&JSON.stringify(F)===f&&srt()===inv,'the strip shown to Menekrates in the street: he was hoping for a curtain; and back at the bench nothing has changed')}
   await useH('curt13','workbench');ok(G.b13.on&&!has('curt13')&&!!H('torn curtain'),'the curtain is laid out along the bench');
   heard.length=0;await useH('awl','torn curtain');ok(!F.sewn&&said('Sew the two edges to each other, and the first wind opens them again: the old cloth is rotten along the tear. It needs a strip laid behind it.'),'edge to edge it would not hold');
   await useH('patch13','torn curtain');await useH('awl','torn curtain');ok(F.sewn&&has('curt13m')&&!has('patch13'),'a strip behind the tear, and both edges sewn down on it');
@@ -2547,6 +2561,7 @@
   heard.length=0;verb('use');item('longrope');view(ACT.eliab.x,ACT.eliab.y-18);await idle();ok(heard.includes(T(ACT.eliab.hs.show.longrope))&&has('longrope'),'using an item on a person shows it');
   ok(!/needed/.test(act.toString()),'the stock "not needed" line is gone');
   await sweep(ACT.eliab);
+  heard.length=0;await act('pickup','shelf');ok(heard.includes(T('I have no use for dye tonight. Goat-hair cloth comes dark enough from the goat.'))&&G.room==='workshop','the dye shelf: goat hair comes dark enough from the goat');
   halt('pray',()=>{pray()});
   pray();await idle();ok(G.prays===1&&!G.busy,'prayer returns control, hint='+hint()[0]);
   await act(null,'door to the street');ok(G.room==='street','in street');
@@ -2651,6 +2666,8 @@
   await actor(null,ACT.fisher);ok(nq()===6&&hasQ('tarred twine'),'fisherman: three questions and three learned topics');halt('topics');heard.length=0;await pickQ('tarred twine');
   ok(heard.includes(T(ACT.fisher.hs.ask.twine[1]))&&!has('twine'),'asking about the twine is a clue, not the twine');await choose(0);await choose(-1);
   await sweep(ACT.captain,ACT.fisher,ACT.mattan);
+  heard.length=0;await act('look','drying nets');ok(heard.includes(T('Fishing nets, hung up to dry and mend. In my trade every hole is a fault; a net is made of little else.')),'the drying nets: in his trade every hole is a fault');
+  await actor(null,ACT.captain);heard.length=0;await pickQ("The captain's sail is torn.");ok(heard.includes(T('It is. I have stared at it all day, and it has not mended itself.'))&&!F.sailMended,'the captain, asked about his sail: it has not mended itself');await choose(-1);
   verb('give');item('provisions');view(ACT.fisher.x,ACT.fisher.y-18);await idle();ok(has('twine')&&!has('provisions'),'bread shared, twine given');
   const chb=makeCode();await enter(chb);ok(G.room==='harbor'&&has('twine')&&has('sailpatch')&&F.sailDown&&!has('provisions'),'harbor code restores');
   halt('sail',()=>{place(P,'harbor',330,126,1);say(ACT.captain,'A patch of sound sailcloth, and tarred twine. Not thread: thread parts in the first gust.')});
@@ -2728,6 +2745,7 @@
   halt('antioch',()=>{place(P,'antioch',150,122,1);say(ACT.xanthe,'The others carry in sacks of grain. I earn two small coins a day. What could I give?')});
   halt('potter',()=>{place(P,'antioch',320,124,1);G.cam=160;say(ACT.theron,'My best jar of oil, sealed with my own mark. But it is a load for two men and a bar, and I cannot leave my stall.')});
   await actor(null,ACT.theron);ok(nq()===6,'theron has 5 questions and the famine');await choose(2);await choose(-1);await sweep(ACT.xanthe,ACT.theron);
+  heard.length=0;verb('pickup');{const h=H('pottery stall');clickView(h.x+h.w/2,h.y+h.h/2,h)}await idle();ok(heard.includes(T('That would be stealing. Besides, I keep to cloth: it does not break when I drop it.'))&&!F.jar,"Theron's pottery stall: cloth does not break when it is dropped");
   await give('wages',ACT.xanthe);ok(has('wages'),'silver is not what Xanthe needs');
   await actor(null,ACT.xanthe);ok(nq()===3,'Xanthe round 1 offers three answers');
   await pickQ('Everyone else is giving');ok(nq()===2&&!F.gotSpool,'pressure is set aside');
@@ -2794,6 +2812,7 @@
   heard.length=0;await pickQ('We need a shelter');ok(heard.includes(T(ACT.kallias.hs.ask.roof[1]))&&!has('cord'),'asking about the shelter is a clue, not the cord');await choose(0);await choose(-1);
   halt('kallias',()=>{place(P,'seleucia',306,120,1);G.cam=160;say(ACT.kallias,'You sleep on the deck, and the spray comes over the bow all night. Bring a shelter, or be wet until Cyprus.')});
   await sweep(ACT.kallias,ACT.mark,BN,ACT.jair);
+  heard.length=0;await act('pickup','cargo');ok(heard.includes(T("It is the shipmaster's, not mine. The cargo rides below deck, and we passengers ride on top of it."))&&G.room==='seleucia','the cargo on the quay: it rides below deck, and the passengers on top of it');
   let t4=await tabs();ok(leaf(0,T('Kallias')).length===1&&leaf(0,T('John Mark')).length===1&&leaf(0,T('Make a shelter for the deck.')).length===1&&leaf(0,T('Find something to lash it down with.')).length===1&&leaf(1).length===7,
     'the tablets at Seleucia: people, open tasks and seven passages');
   ok(leaf(1).every(t=>/\((?:[1-5]\.? )?\p{Lu}\p{Ll}+ \d+:\d+/u.test(t)&&!/[“”„"]/.test(t)),'every passage carries its reference, and none stands in quotation marks');key('Escape');await idle();
@@ -2836,6 +2855,7 @@
   halt('salamis',()=>{say(BN,'Salamis! I ran about this harbor as a boy. For trade and for learning, it is the first city of the island.')});
   heard.length=0;await act(null,'west gate');ok(G.room==='salamis'&&!G.scene&&heard.includes(T('The road west, right across the island. But we did not come to Salamis to walk through it.')),'no leaving Salamis before the word is spoken there');
   await actor(null,ACT.mark);ok(hasQ('How does a stranger get a hearing'),'a new thing to ask about in Salamis');await choose(-1);
+  heard.length=0;await act('pickup',"coppersmith's stall");ok(heard.includes(T('That would be stealing. And his trade is louder than mine.'))&&G.room==='salamis',"the coppersmith's stall: his trade is louder than a tentmaker's");
   await act(null,'door of the synagogue');ok(G.room==='synagogue'&&BN.room==='synagogue'&&!G.busy,'into the synagogue, Barnabas with him');
   halt('synagogue',()=>{say(ACT.zadok,'The platform is another matter. I do not know you, and I answer for what is said from it.')});
   await actor(null,ACT.zadok);ok(F.metZad&&!F.vouched,'a stranger is welcome to a seat, not to the platform');
@@ -2910,6 +2930,8 @@
   heard.length=0;await pickQ("sandal strap has parted");ok(said(ACT.papias.hs.ask.sandal)&&!has('thong'),'asking the drover about the sandal is no thong');await choose(0);await choose(-1);
   await actor(null,ACT.eumenes);ok(F.metEum&&hasQ('Are there Jews in Antioch?'),'met Eumenes of Antioch, who fears God');await choose(1);await choose(-1);
   await sweep(ACT.papias,ACT.eumenes,ACT.mark,BN);
+  heard.length=0;await act('pickup','pack donkeys');ok(said("They are the drover's, and every one of them is loaded. The nearest eyes me as if I meant to add to his load."),'the pack donkeys: the nearest eyes him as if he meant to add to its load');
+  heard.length=0;await give('knife',ACT.papias);ok(said('Keep it sheathed near my beasts. One cut girth, and I am picking salt fish out of the road.')&&has('knife'),'the knife shown to Papias at Perga: one cut girth, and salt fish in the road');
   let t5=await tabs();ok(leaf(0,T('Papias')).length===1&&leaf(0,T('Eumenes')).length===1&&leaf(0,T('Find out what weighs on John Mark.')).length===1&&leaf(0,T("Mend Barnabas's sandal before the climb.")).length===1&&leaf(1).length===9,
     'the tablets at Perga: people, open tasks and nine passages');
   ok(leaf(1).every(t=>/\((?:[1-5]\.? )?\p{Lu}\p{Ll}+ \d+:\d+/u.test(t)&&!/[“”„"]/.test(t)),'every passage carries its reference, and none stands in quotation marks');key('Escape');await idle();
@@ -2985,6 +3007,7 @@
   heard.length=0;await act(null,'east gate');ok(G.room==='pisidia'&&said('We have only just come. Nothing has been said here yet.'),'no leaving Antioch before anything has been said');
   await actor(null,ACT.papias);ok(hasQ('How does a visitor come to speak in the synagogue?'),'a new thing to ask about in Antioch');await choose(-1);
   await sweep(ACT.papias,ACT.eumenes,BN);
+  heard.length=0;verb('pickup');{const h=H('wool stall');clickView(h.x+h.w/2,h.y+h.h/2,h)}await idle();ok(said("It is Eumenes's wool, not mine. And hands used to goat hair would only snag wool as fine as this."),"Eumenes's wool: hands used to goat hair would only snag it");
   pray();await idle();ok(hint()[0]==='syn5','the hint points to the synagogue');
   await act(null,'door of the synagogue');ok(G.room==='synp'&&BN.room==='synp'&&ACT.hanan.room==='synp'&&ACT.eumenes.room==='synp'&&!G.busy,'into the synagogue on the Sabbath, Barnabas with him');
   halt('synp',()=>{say(ACT.hanan,'Peace to you, strangers. I am Hanan: I preside in this house. Visitors are welcome to a seat.')});
@@ -3229,6 +3252,7 @@
   halt('derbe',()=>{say(A('zenon'),'Tomorrow I go east, by the Roman road through the mountains to Tarsus, before the snow shuts the pass. There is room on the load for two.')});
   await sweep(A('zenon'),BN);
   await actor(null,A('zenon'));ok(nq()===4&&hasQ('A road runs east from here to Tarsus, and home.'),'Zenon offers the short road home');await choose(0);await choose(-1);
+  heard.length=0;await act('use','oxen');ok(said('I scratch one of the oxen between the horns. He allows it, and goes on chewing.')&&G.room==='derbe',"Zenon's oxen: one is scratched between the horns, and goes on chewing");
   pray();await idle();ok(hint()[0]==='back6','the hint points back the way they came');
   act(null,'road');await mapOpen();
   ok(G.scene===SHARED.map.draw&&SHARED.map.state.places.join()==='antiochp,iconium,lystra,derbe,tarsus'&&SHARED.map.state.legs.length===3,'the road opens the map: and now Tarsus is on it');
