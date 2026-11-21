@@ -210,20 +210,20 @@ async function play(){
     /* 1. Outside a wall of Jerusalem, by day */
     G.pro={};G.scene=SCENES.stones;AU.mood='stones';AU.amb={wind:.2};codeBtn();
     await pwait(400);
-    await pnarr('Outside Jerusalem, a disciple of Jesus named Stephen was put to death with stones. Those who testified against him laid their outer garments at the feet of a young man called Saul. (Acts 7:58)');
+    await pnarr("Outside Jerusalem, Stephen, a disciple of Jesus, was stoned to death. A young man named Saul was close by, with the witnesses' outer garments laid at his feet. (Acts 7:58, 60)");
     await pnarr('Saul stood by, guarded their garments, and thought the killing right. (Acts 8:1; 22:20)');
     if(G.proSkip)return;
 
     /* 2. The same figure, nearer */
     await pfade(1,350);G.scene=SCENES.zeal;AU.mood='tense';await pfade(0,350);
     await pnarr('Born in Tarsus of Cilicia and a tentmaker by trade, he had been taught in Jerusalem by Gamaliel in the strict keeping of the Law. (Acts 18:3; 22:3)');
-    await pnarr('A Pharisee, zealous for the traditions of his fathers beyond many of his own age, he believed he was serving Jehovah, the God of his forefathers. (Acts 22:3; Galatians 1:14; Philippians 3:5)');
+    await pnarr('As a Pharisee he was zealous for God, and he outdid many men his age in devotion to the traditions of his forefathers. (Acts 22:3; Galatians 1:14; Philippians 3:5)');
     if(G.proSkip)return;
 
     /* 3. A street door in Jerusalem, shut, by evening light */
     await pfade(1,380);G.scene=SCENES.door;AU.amb={wind:.18,crickets:.2};await pfade(0,380);
-    await pnarr('In that zeal he went from house to house in Jerusalem, dragging out men and women and handing them over to prison. (Acts 8:3)');
-    await pnarr('Still threatening the disciples with death, he asked the high priest for letters to the synagogues of Damascus, to bring bound to Jerusalem any he found who belonged to The Way, as the disciples were known. (Acts 9:1, 2)');
+    await pnarr('In that zeal he sent the disciples in Jerusalem to prison, men and women alike, dragging them from their homes one after another. (Acts 8:3)');
+    await pnarr("Still threatening the disciples with death, Saul came away from the high priest with letters to the synagogues of Damascus. With them he could put in chains anyone there who belonged to The Way, as the disciples' faith was called, and bring them to Jerusalem. (Acts 9:1, 2)");
     if(G.proSkip)return;
 
     /* 4. The road near Damascus at midday */
@@ -237,9 +237,9 @@ async function play(){
     /* 5. White: a light from heaven brighter than the sun; everything cuts off at once */
     silenceNow();
     await pfade(1,OPTS.mov?480:900,1);
-    await pnarr('Suddenly a light from heaven, brighter than the sun, flashed all around him. (Acts 9:3; 26:13)');
-    await pnarr('He fell to the ground and heard a voice call him twice by name, asking why he was persecuting him. (Acts 9:4)');
-    await pnarr('When he asked who was speaking, the voice answered that it was Jesus, whom he was persecuting, and told him to get up and go into the city, where he would be told what he must do. (Acts 9:5, 6)');
+    await pnarr('All at once, light from heaven blazed around him and the men with him, brighter than the midday sun. (Acts 9:3; 26:13)');
+    await pnarr('He fell to the ground. A voice called his name twice and asked why he was persecuting the one speaking to him. (Acts 9:4)');
+    await pnarr('Saul asked who was speaking. The answer came: it was Jesus, the very one he was persecuting. Saul was to get up and go on into the city, and there he would learn what he must do. (Acts 9:5, 6)');
     if(G.proSkip)return;
 
     /* 6. Black: no words, two seconds of silence */
@@ -253,24 +253,24 @@ async function play(){
     const uneven=[0,520,1180,1760,2480,3120,3850,4520,5280].map(ms=>setTimeout(()=>{if(!G.proSkip&&G.scene===SCENES.road)SFX.step()},ms));
     tween(G.speedAll>200?160:7200,k=>{if(G.pro&&G.pro.blind){G.pro.x=126+44*k;G.pro.d=44*k}});
     await pnarr('The men traveling with him had seen the light and heard the sound of a voice, but saw no one and did not understand the words. (Acts 9:7; 22:9)');
-    await pnarr('Saul rose from the ground, and though his eyes were open he could see nothing. So they took him by the hand and led him into Damascus. (Acts 9:8; 22:11)');
+    await pnarr('His companions had to lead Saul into Damascus by the hand: his eyes were wide open, but the brilliance of that light had left him blind. (Acts 9:8; 22:11)');
     uneven.forEach(clearTimeout);
     if(G.proSkip)return;
 
     /* 8. A room in Damascus: Saul seated with bowed head, Ananias in the doorway */
     await pfade(1,450);G.pro={ax:38,afr:0,hand:0,sight:0};G.scene=SCENES.judas;AU.mood='harp';AU.amb={wind:.12};await pfade(0,450);
     await pnarr('For three days he saw nothing, and neither ate nor drank, while he prayed in the house of Judas on the street called Straight. (Acts 9:9, 11)');
-    await pnarr("The Lord sent a disciple named Ananias to him. Ananias had heard how much harm Saul had done in Jerusalem, but he was told to go, because this man had been chosen to carry the Lord's name to the nations, to kings, and to the sons of Israel. (Acts 9:10-15)");
+    await pnarr("The Lord had chosen Saul as his vessel, to carry his name to the nations, to kings and to the sons of Israel. So in a vision he sent a disciple named Ananias to him, though Ananias had heard of all the harm Saul had done to the holy ones in Jerusalem. (Acts 9:10-15)");
     if(G.proSkip)return;
     await tween(G.speedAll>200?60:1800,k=>{if(!G.pro)return;G.pro.ax=38+136*k;G.pro.afr=k<1?walkFr(LOOK.ananias,136*k,66):0});
     if(G.pro){G.pro.afr=0;G.pro.hand=1}
     setTimeout(()=>{if(G.pro&&!G.proSkip){G.pro.sight=1;SFX.good()}},G.speedAll>200?20:1400);
-    await pnarr("Ananias came in, laid his hands on him, and called him brother. At once something like scales fell from Saul's eyes; he saw again, rose, and was baptized. (Acts 9:17, 18)");
+    await pnarr("Saul felt hands laid on him and heard Ananias call him brother. The Lord Jesus had sent Ananias so that Saul would see again and be full of holy spirit. At once, as if scales had dropped from his eyes, he could see, and he was baptized. (Acts 9:17, 18)");
     if(G.proSkip)return;
 
     /* 9. The wall of Damascus under the moon: the ensemble climax swells in and runs straight into Chapter One */
     await pfade(1,500);G.pro=null;G.scene=CHAP[1].scenes.wall;G.end={};AU.step=96;AU.mood='ancient';AU.amb=TITLE.amb;await pfade(0,500);
-    await pnarr('Right away he began preaching in the synagogues of Damascus that Jesus is the Son of God, proving that he is the Christ, the one whom God had promised; and all who heard him were astonished. (Acts 9:20-22)');
+    await pnarr('All who heard Saul in the synagogues of Damascus were amazed. Right away he was preaching that Jesus is the Son of God, and his careful proof that Jesus is the Christ left the Jews there baffled. (Acts 9:20-22)');
   },true);
 }
 

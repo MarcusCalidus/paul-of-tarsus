@@ -54,7 +54,7 @@ Nobody in this chapter is in the wrong, and nearly everybody lacks something. Ap
 2. Talk to Apollos. Each time he has spoken, choose the note that he has just said (the tablets hold all five). After the fourth, talk to him again and choose the note that was not heard: baptism in the name of Jesus Christ, and the gift of holy spirit. Then: "Ask him to our table."
 3. At the table: "We have not heard the Scriptures opened like that for a year." Then: "May we tell you what we were taught".
 4. As Paul, on the road: take the road down to the city. In the street, walk to the workshop.
-5. Talk to a disciple: "When you came to believe: was holy spirit given to you?" Again: "Then what baptism was yours?" Again: "John himself pointed people on to someone who would come after him."
+5. Talk to a disciple: "Holy spirit, brothers: was it given to you when you came to believe?" Again: "Then what baptism was yours?" Again: "John himself pointed people on to someone who would come after him."
 6. Go in at the door of the synagogue. Talk to Symmachos as often as you like; then talk to the disciples, and go out by the door to the street.
 7. Talk to Menekrates, in front of the hall. Pick up the torn curtain in its door.
 8. In the workshop, pick up a strip from the basket of remnants. Use the torn curtain with the workbench, the awl with the torn curtain, the strip with the torn curtain, and the awl once more. In the street, use the mended curtain with the hall of Tyrannus.

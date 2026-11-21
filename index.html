@@ -1546,10 +1546,10 @@ const COMBO={'awl+thread':()=>say(P,'Threaded and ready. Now, what needs stitchi
 async function combine(a,b){const c=COMBO[[a,b].sort().join('+')],w=PC();if(w!==P)return say(w,w.noCraft||'I had better leave that to Paul.');
   if(c)return c();SFX.nope();return say(P,pick(NOPE))}
 /* --- "Pray to Jehovah": a pause for calm, then a context-sensitive thought. Never changes the game state. --- */
-const PRAYERS=['{name} bows his head and quietly asks Jehovah for wisdom and a calm heart. (James 1:5)',
+const PRAYERS=['{name} bows his head and quietly asks Jehovah for wisdom. (James 1:5)',
   '{name} pauses, and in prayer leaves his cares with Jehovah. (1 Peter 5:7)','In the stillness, {name} asks Jehovah to help him think clearly.'];
 /* when two are played as one (an actor with a mate), the two of them pray */
-const PRAYERS2=['{name} bow their heads and quietly ask Jehovah for wisdom and a calm heart. (James 1:5)',
+const PRAYERS2=['{name} bow their heads and quietly ask Jehovah for wisdom. (James 1:5)',
   '{name} pause, and in prayer leave their cares with Jehovah. (1 Peter 5:7)','In the stillness, {name} ask Jehovah to help them think clearly.'];
 function hint(){return CHAP[G.ch].hint()}
 function pray(){if(G.busy||G.scene||!G.room)return;audioInit();
@@ -1624,7 +1624,7 @@ function LEVEL(n,init){LOOK.paul=paulLook(n);Object.assign(CHAP[n],init(),{ready
 function PROLOGUE(init){LOOK.paul=paulLook(1);Object.assign(PRO,init(),{ready:1});LOOK.paul=paulLook(G.ch)}
 /* loadScript: add a script tag (this works from disk, where fetch does not), and check that the file registered what it should. */
 function loadScript(src,ok){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=src;
-  el.onload=()=>ok()?res():rej(new Error(T('{file} did not register what it should.',{file:src})));el.onerror=()=>{el.remove();rej(new Error(T('Could not load {file}.',{file:src})))};document.head.appendChild(el)})}
+  el.onload=()=>ok()?res():rej(new Error(T('{file} was loaded, but it is incomplete.',{file:src})));el.onerror=()=>{el.remove();rej(new Error(T('Could not load {file}.',{file:src})))};document.head.appendChild(el)})}
 /* A level brings its text in the player's language with it (see LANGUAGES); if that file is missing, the chapter plays in English. */
 function loadLevel(n){const c=CHAP[n];if(c.ready)return langFile(G.lang,n);
   return c.loading||(c.loading=loadScript(c.src,()=>c.ready).then(()=>langFile(G.lang,n)).catch(e=>{c.loading=null;throw e}))}

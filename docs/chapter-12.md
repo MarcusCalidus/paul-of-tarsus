@@ -26,7 +26,7 @@ The same court comes back twice. In winter the house is open to whoever comes, a
 | ![The street in the rain](screenshots/corinth-winter.png) | ![The street in the spring of the games](screenshots/corinth-games.png) |
 | Winter: people he has no errand with | The spring of the games: booths in the street |
 
-**Black and reed.** Timothy has come from Thessalonica with good news, and offers to carry the answer back by mouth, as a message was carried in Chapter Ten. This time it is too much for a mouth, and it is for all of them. So Paul cuts a reed with his own knife, slanting, and slits its point; grinds a cake of black into water and tries it on a potsherd, where it runs, or clogs, or stays; and gets a sheet of papyrus from Silas. Timothy writes and Paul speaks. What the letter says is told by the narrator with its references (1 Thessalonians 1:1; 2:17; 5:27): the player composes none of it.
+**Ink and reed.** Timothy has come from Thessalonica with good news, and offers to carry the answer back by word of mouth, as a message was carried in Chapter Ten. This time it is too much to carry in memory, and it is for all of them. So Paul cuts a reed with his own knife, slanting, and slits its point; grinds a cake of ink into water and tries it on a potsherd, where it runs, or clogs, or stays; and gets a sheet of papyrus from Silas. Timothy writes and Paul speaks. What the letter says is told by the narrator with its references (1 Thessalonians 1:1; 2:17; 5:27): the player composes none of it.
 
 **The road out.** On the evening after he has left the synagogue, the others do what the brothers have done in every chapter: a bundle is packed, and a ship lies at the eastern harbor. A picture of the neck of land opens, with a harbor on each sea. Whatever the player chooses, Paul has not answered when night falls, and the vision is told in the dark, read from the narrator's scroll. In the morning the bundle still stands by the door, and nothing on the picture is the way on. The way on is to unpack. A year later it comes again: word is brought that he will be taken before the proconsul. This time nothing is said to him in the night, and the player has to remember what was said.
 
@@ -52,7 +52,7 @@ After the end screen the game looks back: five maps, journey by journey, with ev
 2. Use the awl with the length of linen. Go out by the opening to the street, and in at the door of Titius Justus.
 3. In the court, use the rope and hooks. In the view from the side, click the linen cloth until it hangs by the house, and click "step back and look".
 4. Go back to the workshop. Use the awl with the half-sewn cover. Talk to Sabinus: "It will be ready on that day. Aquila will finish it: from today I do not sew." Give the awl to Aquila and Priscilla.
-5. Talk to Timothy. Pick up a reed in the corner, and use the knife with it. Talk to Aquila and Priscilla for the cake of black. Use the cake of black with the small bowl twice, and the reed pen with the potsherd; if it clogs, use the bowl once for a few drops of water, and try again. Talk to Silas for the sheet. Give the reed pen to Timothy.
+5. Talk to Timothy. Pick up a reed in the corner, and use the knife with it. Talk to Aquila and Priscilla for the cake of ink. Use the cake of ink with the small bowl twice, and the reed pen with the potsherd; if it clogs, use the bowl once for a few drops of water, and try again. Talk to Silas for the sheet. Give the reed pen to Timothy.
 6. Go out, and in at the door of the synagogue. Use the mantle with the men who oppose him.
 7. In the court, use the rope and hooks: click the high hook in the wall and the low hook in the house, and step back and look.
 8. In the workshop, by night, go to the opening to the street, and choose a harbor. In the morning, use the bundle.
@@ -63,7 +63,7 @@ After the end screen the game looks back: five maps, journey by journey, with ev
 13. In the workshop, by night, use the bundle.
 14. In the waiting room, use the bench of marble, and choose how to begin. Before the seat, talk to the proconsul.
 15. Go down to the street, and in at the door of Titius Justus. At Cenchreae, go up the plank.
-16. At Ephesus, talk to Philon: "I will come back to you again, if Jehovah is willing." Go up the plank.
+16. At Ephesus, talk to Philon: "I will be back with you, if Jehovah is willing." Go up the plank.
 17. At Antioch, talk to the brothers.
 </details>
 

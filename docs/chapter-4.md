@@ -13,7 +13,7 @@ Four more locations and seven new characters, and the first chapter in which the
 
 A merchant ship of those days gave its passengers drinking water and nothing else, so Paul sews a shelter for the deck, with a rope in its edge to lash it to the rail. On the quay sits an old disciple of Salamis whom Saul's persecution once drove out of Jerusalem (Acts 8:1-3; 11:19). He has nothing to say to Saul of Tarsus. Barnabas has to speak for his friend first, and then Saul has to say it himself, without an excuse.
 
-On his own island Barnabas is the one who is known. He asks the presiding officer of a synagogue in Salamis for a hearing, and Paul builds his word of encouragement in the right order, beginning with what has just been read: the islands are still waiting for his law (Isaiah 42:4). In Paphos, Elymas raises three objections before the proconsul, and each is answered in its own way: one by Barnabas, one by showing Paul's awl, and one from the Scriptures. Then the account takes its course. What happens to Elymas is told as Acts tells it, and it solves no puzzle. From that hearing on the game calls Saul by his Roman name, Paul, as Acts does from chapter 13, verse 9.
+On his own island Barnabas is the one who is known. He asks the presiding officer of a synagogue in Salamis for a hearing, and Paul builds his word of encouragement in the right order, beginning with what has just been read: the islands wait in hope for his law for his law (Isaiah 42:4). In Paphos, Elymas raises three objections before the proconsul, and each is answered in its own way: one by Barnabas, one by showing Paul's awl, and one from the Scriptures. Then the account takes its course. What happens to Elymas is told as Acts tells it, and it solves no puzzle. From that hearing on the game calls Saul by his Roman name, Paul, as Acts does from chapter 13, verse 9.
 
 | | |
 |---|---|
@@ -29,7 +29,7 @@ On his own island Barnabas is the one who is known. He asks the presiding office
 4. As Paul, talk to the old man, Jair, and say plainly what you did.
 5. Walk up the gangplank, and click Salamis on the map.
 6. In Salamis, open the door of the synagogue. Switch to Barnabas and talk to Zadok: let Saul speak after the reading, and test every word by the scroll.
-7. As Paul, talk to Zadok. Build the talk in this order: the islands are still waiting; the promise to David; the savior from David's offspring, raised up; forgiveness of sins.
+7. As Paul, talk to Zadok. Build the talk in this order: the islands wait in hope for his law; the promise to David; the savior from David's offspring, raised up; forgiveness of sins.
 8. Leave by the door and then by the west gate, and click Paphos on the map.
 9. In Paphos, switch to Barnabas and talk to the proconsul. As Paul, give the awl to the proconsul to show it. Then answer with Daniel 2:27, 28.
 </details>

@@ -11,7 +11,7 @@ About 50 C.E. Paul, Silas and Timothy leave Philippi, pass through Amphipolis an
 
 Seven more locations, fourteen new characters, a new man to play, and the game's first two close views: pictures in which nobody walks, and whose parts are set by hand. The study note on Acts 17:3 says that the proving was, literally, a placing of one thing beside another, and the note on 17:11 that what the Beroeans did is named with a word for sifting. So in this chapter things are laid side by side: first by Paul, and then by those who listen to him.
 
-Paul worked night and day in Thessalonica, so as to be a burden to none of them (1 Thessalonians 2:9). Here he takes an order for a travelling tent and has one bolt of goat-hair cloth for it, a little too short, with one cubit woven thin. The bolt lies pegged out on the paving and is seen from above, with the six panels of the tent waiting on a board beside it. A panel is taken in hand, turned if need be, and laid on the cloth. Nothing may hang over the edge; a panel may end on the thin strip, where a seam will fold the cloth double, and must not run across it; and what is left over has to be one length, six cubits, for the loops. There is one way to do it, and its mirror image. Only then does the knife come. The seams are night work, and the brothers of Philippi send something for his needs twice while he is at it (Philippians 4:16).
+Paul worked night and day in Thessalonica, so as to be a burden to none of them (1 Thessalonians 2:9). Here he takes an order for a traveling tent and has one bolt of goat-hair cloth for it, a little too short, with one cubit woven thin. The bolt lies pegged out on the paving and is seen from above, with the six panels of the tent waiting on a board beside it. A panel is taken in hand, turned if need be, and laid on the cloth. Nothing may hang over the edge; a panel may end on the thin strip, where a seam will fold the cloth double, and must not run across it; and what is left over has to be one length, six cubits, for the loops. There is one way to do it, and its mirror image. Only then does the knife come. The seams are night work, and the brothers of Philippi send something for his needs twice while he is at it (Philippians 4:16).
 
 In the synagogue two scrolls lie on the reading table, the Psalms and the Prophets, and in front of them Paul's own tablets with what was handed on to him (1 Corinthians 15:3). A click on a scroll's roller winds it to its next place, or back; a click on the tablets turns them to their next line; and what lies open is named under it. Nothing on the table has a number: chapters and verses were numbered many centuries later, and a place in a scroll is found by winding. Acts 17:3 has three parts, and each Sabbath takes one. A hearer says what he cannot see, and the player sets the table until scroll, scroll and tablets say one thing; then Paul turns to the men before the benches. A setting that does not hold costs nothing. Somebody says what he sees in it, and never which part to change. On the second Sabbath the prophet's scroll stays rolled shut, and beside the psalm lies the last line of the tablets: who saw him afterwards, and last of all the man who is speaking. Who believes, and who grows jealous, is told as the account tells it: no setting of the scrolls wins anyone or loses anyone.
 
@@ -31,11 +31,11 @@ In Beroea three scrolls lie on the table: Moses, the Prophets and the Psalms (Lu
 | ![The synagogue of Beroea](screenshots/beroea.png) | ![Three scrolls and the tablets](screenshots/sifted.png) |
 | Beroea: they come in every morning, before their work | Moses, the Prophets and the Psalms beside one afternoon |
 | ![Timothy in the synagogue of Beroea](screenshots/withoutpaul.png) | ![The quay at Athens](screenshots/athens.png) |
-| Without Paul: the button that led back to him is grey | Athens: a message that has to be carried by mouth |
+| Without Paul: the button that led back to him is grey | Athens: a message that has to be carried by word of mouth |
 
 Then strangers stand at the gate, and the brothers send Paul to the sea. The game stays behind. The button that has always led back to Paul is grey, and the player is Timothy, who has known the holy writings since he was a small child (2 Timothy 3:15). A man who was with his flocks all week asks what the others asked on the first day. Timothy could set the table for him. He asks the old man who found two of the three places to do it, and the last round at the table is solved by taking the hand away from it.
 
-On the quay at Athens the brothers who brought Paul have to sail home, and what he sends with them is carried by mouth. The player puts the message together from its parts. Everything else that could be added is true and kind, and makes it longer and less sure.
+On the quay at Athens the brothers who brought Paul have to sail home, and what he sends with them is carried by word of mouth. The player puts the message together from its parts. Everything else that could be added is true and kind, and makes it longer and less sure.
 
 <details>
 <summary>Walkthrough (spoilers)</summary>
@@ -45,11 +45,11 @@ On the quay at Athens the brothers who brought Paul have to sail home, and what 
 3. In the synagogue, use the reading table. Wind the Psalms to "vinegar for his thirst", leave the Prophets rolled shut, turn the tablets to "sour wine at his mouth", and talk to the men on the benches.
 4. Wind the Psalms to "mocked for his trust" and the Prophets to "despised, counted as nothing", turn the tablets to "mocked by the chief priests", and talk to the men on the benches.
 5. Back in the courtyard, use the awl with the cut panels. Go out by the gate again.
-6. At the table: the Psalms at "not left in the Grave", the Prophets rolled shut, the tablets at "raised, and seen by many".
-7. In the courtyard, give the travelling tent to Parmenon. Go out by the gate.
-8. At the table: the Psalms at "not one bone broken", the Prophets at "pierced for our transgression", the tablets at "legs unbroken, side pierced".
+6. At the table: the Psalms at "not abandoned to the Grave", the Prophets rolled shut, the tablets at "raised, and seen by many".
+7. In the courtyard, give the traveling tent to Parmenon. Go out by the gate.
+8. At the table: the Psalms at "not one bone broken", the Prophets at "pierced because of our transgression", the tablets at "legs unbroken, side pierced".
 9. In the house by night, talk to Jason: "Go tonight, as the brothers ask."
-10. In Beroea, use the reading table. Moses and the Psalms lie open already: wind the Prophets to "pierced for our transgression", turn the tablets to "legs unbroken, side pierced", and talk to the Beroeans at the table.
+10. In Beroea, use the reading table. Moses and the Psalms lie open already: wind the Prophets to "pierced because of our transgression", turn the tablets to "legs unbroken, side pierced", and talk to the Beroeans at the table.
 11. Use the reading table again. For each place that they have found, turn the tablets and talk to the Beroeans: "lots cast by the soldiers", then "no answer to his accusers", then "a rich man's new tomb".
 12. Use the reading table once more. Look at the scroll of the Prophets, turn the tablets until they are closed, and talk to the Beroeans.
 13. As Timothy, talk to the man back from his flocks: "Ask Eupolemos to show him."

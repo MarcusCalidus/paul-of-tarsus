@@ -468,25 +468,25 @@ const JU={color:'#f0e6c8',pitch:88,room:'hill11',x:348,y:98,name:'man of the cou
    and none of it stands in quotation marks: a paraphrase is never presented as a quotation (CONTRIBUTING section 1). The speech
    (17:22-31) is told as what Paul said, part by part, as the player builds it. */
 const TOLD={
- v16:'Paul was waiting for them in Athens, and what he saw there goaded him: the city was full of idols. (Acts 17:16)',
+ v16:'While Paul waited for them in Athens, the idols that filled the city irritated his spirit. (Acts 17:16)',
  v17a:'So he reasoned in the synagogue with the Jews, and with the others there who worshipped God. (Acts 17:17)',
  v17b:'And every day he did the same in the marketplace, with whoever happened to be there. (Acts 17:17)',
  v18a:'Some philosophers took him on, Epicureans and Stoics alike. Some of them asked what this chatterer was trying to say. (Acts 17:18)',
  v18b:'Others thought that he was announcing foreign deities. That was because he was declaring the good news about Jesus, and about the resurrection. (Acts 17:18)',
- v19:'So they took hold of him and led him to the Areopagus, and asked whether they might learn what this new teaching of his was. (Acts 17:19)',
+ v19:'They wanted to hear his new teaching explained, and so they laid hold of Paul and brought him up to the Areopagus. (Acts 17:19)',
  v20:'What he was bringing sounded strange in their ears, they said, and they wanted to know what it meant. (Acts 17:20)',
  v21:'All the Athenians, and the foreigners who were staying there, spent their free time on nothing else: telling something new, or listening to it. (Acts 17:21)',
- v22:'Then Paul stood in the midst of the Areopagus. He could see, he told the men of Athens, that in every way they were more given to the fear of the deities than other people are. (Acts 17:22)',
+ v22:'In every way, Paul told the men of Athens as he stood in the middle of the Areopagus, they seemed to him to fear the deities more than other people did. (Acts 17:22)',
  v23:'Walking about and looking closely at the things they venerated, he had even come upon an altar with the inscription: to an unknown God. What they were worshipping without knowing it, that was what he was making known to them. (Acts 17:23)',
  v24:'The God who made the world and everything in it is Lord of heaven and earth, and he does not live in temples that hands have made. (Acts 17:24)',
  v25:'He is not waited on by human hands, as though there were something he lacked. It is he who gives everyone life, and breath, and everything else. (Acts 17:25)',
  v26:'From one man he made every nation of mankind, to live all over the face of the earth; and he fixed their times, and the bounds of the places where they would live, (Acts 17:26)',
  v27:'so that they would look for God: feel their way toward him, perhaps, and truly find him. And yet he is not far from any one of us. (Acts 17:27)',
- v28:'It is through him that we live, and move, and are at all. Some of their own poets, Paul reminded them, had said as much: that we too are his children. (Acts 17:28)',
+ v28:'Our life, our every movement, our very existence: all of it is through him. Some of their own poets, Paul reminded them, had said as much: that we too are his children. (Acts 17:28)',
  v29:'Being children of God, then, we ought not to suppose that the Divine Being resembles gold or silver or stone: a thing shaped by human skill and human invention. (Acts 17:29)',
- v30:'Over the times of that ignorance God has looked past. But now he is telling all people, wherever they are, to repent, (Acts 17:30)',
+ v30:'God let the times of that ignorance pass. The call that now goes out from him, to all people everywhere, is to repent, (Acts 17:30)',
  v31:'for he has fixed a day on which he intends to judge the inhabited earth in righteousness, through a man of his own appointing. And he has given everyone a guarantee of it: he raised that man from the dead. (Acts 17:31)',
- v32:'When they heard of a resurrection of the dead, some began to scoff. Others said that they would hear him about this again. (Acts 17:32)',
+ v32:'Some said they would hear him on it another time; others, at the mention of the resurrection of the dead, began to mock. (Acts 17:32)',
  v33:'So Paul left them. (Acts 17:33)',
  v34:'Some men attached themselves to him, though, and came to believe: Dionysius among them, a judge of the court of the Areopagus, and a woman whose name was Damaris, and others too. (Acts 17:34)'};
 const tell=(k,ms,low)=>narr(TOLD[k],{dur:ms||Math.max(6500,2200+TOLD[k].length*62),low});
@@ -501,9 +501,9 @@ const PS={
  is42:{ref:'Isaiah 42:5',gist:'The true God, Jehovah, made the heavens and spread out the earth, and to the people on it he gives breath.'},
  de4:{ref:'Deuteronomy 4:29',gist:'Whoever looks for Jehovah with his whole heart and his whole soul will find him.'},
  ps145:{ref:'Psalm 145:18',gist:'Whoever calls on Jehovah, and does it in truth, has him near.'},
- k8:{ref:'1 Kings 8:27',gist:'The builder of the house prayed: will God really live on the earth? Not even the heavens can hold you. How much less this house that I have built!'},
+ k8:{ref:'1 Kings 8:27',gist:'Even the highest heavens are too small to hold God, Solomon said as he prayed. How then could God live on the earth, least of all in the house that Solomon had built?'},
  ps50:{ref:'Psalm 50:12',gist:'God says: if I were ever hungry, you are not the one I would tell. The fruitful earth is mine, with all it holds.'},
- ps36:{ref:'Psalm 36:9',gist:'With God is the spring that life comes from.'},
+ ps36:{ref:'Psalm 36:9',gist:'Life has its source in Jehovah.'},
  is40:{ref:'Isaiah 40:18, 19',gist:'Whom will you set beside God, to compare him with? A workman casts the idol, and a metalworker lays gold over it.'},
  ps96:{ref:'Psalm 96:13',gist:'Jehovah is on his way to judge the earth. He will judge the inhabited earth rightly.'},
  ge1:{ref:'Genesis 1:1',gist:'When all things began, God made the heavens and the earth.'}};
@@ -538,10 +538,10 @@ async function step(room,x,y,dir){await fade(1,220);place11(room);if(x!=null)pla
    (RIGHT); put to anything else, it gets an honest answer and no more. */
 const WRONG={
  q11made:{statue:'Who made it? It does not say. Finished, it looks as if no hand had ever touched it.',altar:'A mason, long ago. The stone has forgotten him.',
-  temple:'Builders, and they are long dead. I want to see the making, not to hear of it.',roof:'Builders, and they are long dead. I want to see the making, not to hear of it.',
+  temple:'Builders, and they are long dead. I want to watch the work being done, not hear of it.',roof:'Builders, and they are long dead. I want to watch the work being done, not hear of it.',
   dish:'A weaver and a cook. But my question is about their gods, not about what is brought to them.','*':'That is not the place to ask who made them.'},
  q11house:{statue:'On a base at a street corner, in the rain. That is not a house.',altar:'An altar is a table. I am asking for the house.',
-  temple:'In there, they would say; and that house was finished long ago. I want one where the hands can still be seen.',block:'Nowhere yet. He is still in the stone.',
+  temple:'In there, they would say; and that house was finished long ago. I want one that still shows the hands that built it.',block:'Nowhere yet. He is still in the stone.',
   dish:'He is carrying it to the door of a house. He does not live there himself.','*':'That is not the place to ask where he lives.'},
  q11need:{statue:'Nothing that I can see. And yet somebody dusts it.',altar:'An altar is where they bring it. I want to see what they bring.',temple:'A roof, and this one has its roof.',
   roof:'A roof. But that is what the builders need. What does the god himself need?',block:'A sculptor. That answers another question.','*':'That is not the place to ask what he needs.'},
@@ -625,9 +625,9 @@ async function basin(){if(F.basin)return;
   await say(CH,'One god. And he does not mind the dust? ...Aristion! Come and hear this. A man who will not wash for the gods.');
   await say(AR,'That I have not heard this month. Sit down on the steps, stranger, and tell us the rest. We have all day: we always have.');
   F.basin=1;SFX.good();await Promise.all([walk(CH,404,114),walk(P,372,118)]);CH.dir=-1;P.dir=1;codeBtn()}
-const TRY=[{k:'is42',q:'Read them Isaiah: the God who gives breath to the people on the earth.',r:[[CH,'Isaiah. Who is Isaiah? A poet? From which city?'],[P,'A prophet of Israel.'],[CH,'Ah. A foreigner. Go on.']]},
-  {k:'de4',q:'Read them Moses: whoever looks for God with his whole heart will find him.',r:[[AR,'Moses. A lawgiver, then. We have one of our own, in marble, at every second corner. Did yours write in verse?']]},
-  {k:'ps145',q:'Read them David: God is near to whoever calls on him.',r:[[CH,'David. A king who made songs. Did they win him a prize?']]}];
+const TRY=[{k:'is42',q:'Read them Isaiah: the breath of everyone on earth comes from Jehovah, the true God.',r:[[CH,'Isaiah. Who is Isaiah? A poet? From which city?'],[P,'A prophet of Israel.'],[CH,'Ah. A foreigner. Go on.']]},
+  {k:'de4',q:'Read them Moses: whoever looks for Jehovah with his whole heart will find him.',r:[[AR,'Moses. A lawgiver, then. We have one of our own, in marble, at every second corner. Did yours write in verse?']]},
+  {k:'ps145',q:'Read them David: Jehovah is near to whoever calls on him.',r:[[CH,'David. A king who made songs. Did they win him a prize?']]}];
 async function steps(){if(F.shut)return false;const done=new Set();
   await say(P,'Men of Athens, hear what is written.');
   while(done.size<3){const av=TRY.filter(t=>!done.has(t.k)),t=av[await choose(av.map(t=>t.q))];done.add(t.k);await say(P,quote(PS[t.k]));for(const[a,l]of t.r)await say(a,l)}
@@ -673,9 +673,9 @@ const SAYS={
   {q:'Feel neither pain nor pleasure.',say:'Pain, pleasure: the wise man gives neither of them a second look.',no:'A man who feels nothing is not wise. He is like their images: he has a mouth, and does not cry out.'},
   {q:'The divine is not anyone.',say:'Everything that is, is a part of the divine; and the divine is not anyone. It is no more a person than fire is.',no:'Not anyone? He is someone. He hears, and he has a name. On that sentence we part.'},
   {q:'We too are his children.',say:'And we come of it. As the poet has it: for we too are his children.',ok:1}],
- e:[{q:'Pleasure is the goal.',say:'Pleasure is where every life is trying to go. Taken in measure, mind you, or it turns on a man.',no:'If pleasure were where life is going, I took the wrong road at Damascus. I do not think that I did.'},
+ e:[{q:'Pleasure is the goal.',say:'Pleasure is where every life is trying to go. Taken in measure, mind you, or it turns on a man.',no:'Since Damascus my life has not been aimed at pleasure, and I would not have it otherwise.'},
   {q:'Death is a broken jar.',say:'Death? A jar breaks, and the water is gone. Nothing is left over to be afraid.',no:'And nothing left over to hope. On that sentence we part.'},
-  {q:'The gods are far away.',say:'The gods exist, and they are happy, and they are very far away. They have never once looked in this direction.',no:'Far away? He is not far from any one of us. No.'},
+  {q:'The gods are far away.',say:'The gods exist, and they are happy, and they are very far away. They have never once looked in this direction.',no:'Far away? He is not far from any one of us. I cannot build on that.'},
   {q:'A god lacks nothing.',say:'So bring them nothing. A god lacks nothing: what could your hands add to him?',ok:1}]};
 function h11(){return G.h11||(G.h11={s:0,e:0,sh:new Set(),eh:new Set(),mid:0})}
 const zone11=()=>P.x<176?'L':P.x>304?'R':'M';
@@ -686,7 +686,7 @@ async function overhear(z){if(F.stoic&&F.epic)return;const st=h11();
 async function sift(w){const st=h11(),who=w==='s'?PH:AN,done=w==='s'?F.stoic:F.epic;
   if(done)return say(who,w==='s'?'You wrote down one line of mine and went away. I do not know whether to be flattered.':'One sentence. You took one sentence of mine, like a sparrow.');
   for(;;){const heard=[...st[w+'h']].sort(),opts=heard.map(i=>SAYS[w][i].q).concat(heard.length<4?['Listen a while longer.']:[],['Leave it for now.']);
-    await say(P,heard.length?'Which of his sayings can I hold with him?':'I have not heard him out yet.',TH);
+    await say(P,heard.length?'Which of his sayings can I agree with?':'I have not heard him out yet.',TH);
     const c=await choose(opts);if(c===opts.length-1)return;if(c>=heard.length){await hearNext(w);continue}
     const sy=SAYS[w][heard[c]];if(!sy.ok){await say(P,sy.no,TH);continue}
     if(w==='s'){await say(P,'We too are his children. He means it of a god who is nobody. But he has said that we come from God, and one of his own poets said it before him. That I can take up.',TH);F.stoic=1;addItem('g11line');SFX.good();
@@ -694,7 +694,7 @@ async function sift(w){const st=h11(),who=w==='s'?PH:AN,done=w==='s'?F.stoic:F.e
     else{await say(P,'A god lacks nothing. He draws the wrong end from it: that the gods do not care. But the sentence itself is true, and he has granted it before I have opened my mouth.',TH);F.epic=1;SFX.good()}
     codeBtn();if(F.stoic&&F.epic)return picker();return}}
 async function picker(){await say(PH,'You, stranger. You have stood at my end of this colonnade and at his, and each time you scratched one line on your wax and walked away.');
-  await say(AN,'A grain here, a grain there. I know that bird. It hops about the marketplace behind the corn sellers.',{to:PH});await say(PH,'A seed picker.');
+  await say(AN,'A grain here, a grain there. I know that bird. It hops about the marketplace behind the grain sellers.',{to:PH});await say(PH,'A seed picker.');
   await say(P,'Let them call it picking. I know what I am gathering it for.',TH);codeBtn()}
 
 /* ============ LED TO THE AREOPAGUS ============ */
@@ -781,7 +781,7 @@ async function speak(){if(F.spoke)return;const st=sp11(),n=partNo(),p=PARTS[n];
 /* the hearing breaks off (Acts 17:32). Nothing the player did wins anyone or loses anyone. */
 async function broke(){await say(AN,'Raised from the dead! He kept that for the end.',{to:null});await tell('v32');F.spoke=1;G.sp11=null;
   await narr('He got as far as the resurrection.',{dur:4600});
-  await say(PH,'Not all of us are laughing, stranger. But this wants a longer evening than is left.');
+  await say(PH,'Not all of us are laughing, stranger. But this needs a longer evening than is left.');
   place(PH,'hill11',452,124,-1);place(AN,'hill11',262,124,1);SFX.good();codeBtn()}
 
 /* ============ SO PAUL LEFT THEM ============ */
@@ -801,7 +801,7 @@ async function later(){if(F.later)return say(PH,'By the steps of the long colonn
 async function down(){if(F.down)return say(P,'They are waiting for me here. I am not going anywhere yet.');
   if(!F.later)return say(P,'Some of them asked to hear more, and I have not told them where to find me.');
   await tell('v33');await walk(P,150,126);F.rose=1;place(DI,'hill11',348,112,-1);await walk(DI,186,124);DI.dir=-1;P.dir=1;await tell('v34');
-  await say(DI,'I have sat in judgment on that rock for twenty years, and tonight it was I who was heard. I am Dionysius. You shall not go down alone.');
+  await say(DI,'I have sat in judgment on that rock for twenty years, and tonight, for once, I was the one being examined. I am Dionysius. You shall not go down alone.');
   await say(DM,'And I am Damaris. Women do not stand among the seats up there, so I listened from the path. I heard every word.');
   await say(DI,'You spoke of the God who made the world. Our poets guess at him. Is there more than guessing? Is any of it written?');
   F.down=1;SFX.good();codeBtn()}
@@ -812,7 +812,7 @@ async function openTablets(){if(!F.down)return false;if(F.open)return;F.open=1;
   await narr('The tablets that nobody in the marketplace had wanted lay open on the rock until the stars came out.',{dur:7600});return finale()}
 async function finale(){AU.mood='rest';
   endScreen({title:'The Unknown God',text:'He had no scroll that they would have known. He began with an altar of theirs, and ended where he always ended.',
-    based:'Based on Acts 17:16-34. Supporting characters and dialogue are imaginative; the events are from the Scriptures, and are told here in paraphrase. Acts does not say how long Paul waited in Athens or where he lodged, what he said in the synagogue, where the altar stood or what else he looked at, what the philosophers argued, whether he was taken to the hill or to a sitting of the council elsewhere, which poets he meant, where Damaris stood, or whether Silas and Timothy reached him there.',
+    based:'Based on Acts 17:16-34. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are from the Scriptures and are told here in paraphrase. Acts does not say how long Paul waited in Athens or where he lodged, what he said in the synagogue, where the altar stood or what else he looked at, what the philosophers argued, whether he was taken to the hill or to a sitting of the council elsewhere, which poets he meant, where Damaris stood, or whether Silas and Timothy reached him there.',
     go:'Click to continue to Chapter Twelve',code:['Chapter Twelve code: {code}',codeOf(12,0)]});
   await wait(1500);ov.onclick=()=>startChapter(12);await new Promise(()=>{})}
 
@@ -835,8 +835,8 @@ Object.assign(ICON,{
   g11line(g){R(g,6.4,7,11.2,10,'#e6dcc0');R(g,6.4,7,11.2,.7,'#fff6dc');for(let j=0;j<4;j++)R(g,8,9+j*2,6+((j*5)%3),.7,j===1?'#2a2018':'rgba(70,56,40,.6)');for(const x of[4.4,17.2]){g.fillStyle=lg(g,x,0,x+2.4,0,['#6a4e2c','#d8c08a','#5a4226']);g.fillRect(x,6,2.4,12)}},
   g11block(g){const M='#ece6d6';g.fillStyle=lg(g,4,0,20,0,[tint(M,-.24),tint(M,.06),M,tint(M,-.3)]);g.fillRect(4,11,16,9.4);R(g,4,11,16,.8,'#ffffff');poly(g,[8,11,9,5.6,13.4,4.6,15.6,7,15,11],tint(M,-.04));poly(g,[9,5.6,13.4,4.6,12.6,7.4,9.6,8],'#ffffff')}});
 Object.assign(ITEMS,{
-  q11made:{name:'question: who has made them?',look:'Who made them? I want to see the making with my own eyes, not to be told of it.'},
-  q11house:{name:'question: where does he live?',look:'Where does he live? They build houses for their gods. I want to see one where the hands can still be seen.'},
+  q11made:{name:'question: who has made them?',look:'Who made them? I want to watch the work being done with my own eyes, not be told of it.'},
+  q11house:{name:'question: where does he live?',look:'Where does he live? They build houses for their gods. I want to see one that still shows the hands that built it.'},
   q11need:{name:'question: what does he need?',look:'What does he need? I want to see what they bring him, and who has to carry it.'},
   q11unk:{name:'question: one they do not know?',look:'Is there one they do not know? Among so many, there may be one for whom they have no name.'},
   g11altar:{name:'seen: altar without a name',look:GRAIN.altar.note},g11roof:{name:'seen: temple without a roof',look:GRAIN.roof.note},
@@ -897,8 +897,8 @@ ROOMS.agora11={space:.6,walk:[16,624,112,138],mood:'market',amb:{crowd:.6,birds:
 ROOMS.yard11={space:.6,walk:[16,304,114,138],get mood(){return F.shut?'walk':'calm'},amb:{chisel:.7,crowd:.15},hs:[
   {name:'gate to the lane',x:16,y:52,w:30,h:52,wx:36,wy:116,dir:-1,exit:()=>goto('agora11',112,116,1),look:'The gate, and the steps back down to the marketplace.'},
   {name:'temple of Hephaestus',x:150,y:8,w:150,h:36,wx:230,wy:116,look:'The temple, straight above this yard. The men who cut gods for a living do it in its shadow.',useWith:qOn('temple')},
-  {name:'bench of tools',x:68,y:84,w:66,h:20,wx:100,wy:116,look:'Chisels, a mallet, a rasp. I know a well-kept bench when I see one.',pickup:'They are his, and he needs every one of them.',use:'Stone is not my trade.'},
-  {name:'figures of silver',x:246,y:62,w:62,h:24,wx:262,wy:116,dir:1,look:'Small figures in silver on a shelf, by the dozen, all alike. One mould, and as many gods as there is metal.',pickup:'They are for sale, and I would not have one as a gift.',useWith:qOn('statue')},
+  {name:'bench of tools',x:68,y:84,w:66,h:20,wx:100,wy:116,look:'Chisels, a mallet, a rasp. I know a well-kept bench when I see one.',pickup:'They are his, and he needs every one of them.',use:'Stone is not my trade. In mine, a wrong stitch can be unpicked.'},
+  {name:'figures of silver',x:246,y:62,w:62,h:24,wx:262,wy:116,dir:1,look:'Small figures in silver on a shelf, by the dozen, all alike. One mold, and as many gods as there is metal.',pickup:'They are for sale, and I would not have one as a gift.',useWith:qOn('statue')},
   {name:'blocks of marble',x:212,y:84,w:104,h:20,wx:250,wy:116,look:'Marble, as it comes from the mountain. Nothing has been asked of it yet.',useWith:qOn('*')},
   {name:'block with half a figure',x:164,y:58,w:42,h:52,wx:136,wy:118,dir:1,look:'A block of marble. Above, it is a man to the waist: shoulders, a beard, the beginning of a face. Below, it is still the rock that came down from the mountain.',
     useWith:qOn('block'),pickup:'It took four men and a sledge to bring it here.',use:'I cut cloth, not stone.'}]};
@@ -908,7 +908,7 @@ ROOMS.stoa11={space:1.5,walk:[16,464,112,138],mood:'both',amb:{crowd:.3},hs:[
   {name:'image in the recess',x:226,y:30,w:28,h:74,wx:270,wy:114,dir:-1,look:'One of their gods in a recess, in the shade, with a bench on either side. The two teachers have their backs to it.',useWith:qOn('statue')},
   {name:'bench',x:40,y:86,w:60,h:18,wx:70,wy:113,look:'A stone bench. Nobody sits while a teacher is on his feet.'},
   {name:'bench',x:380,y:86,w:60,h:18,wx:410,wy:113,look:'A stone bench. Nobody sits while a teacher is on his feet.'},
-  {name:'hearers of the Stoic',x:108,y:74,w:38,h:52,wx:160,wy:124,dir:-1,look:'His hearers: one young, one grey. They nod at the same places.',talk:()=>sift('s')},
+  {name:'hearers of the Stoic',x:108,y:74,w:38,h:52,wx:160,wy:124,dir:-1,look:'His hearers: one young, one gray. They nod at the same places.',talk:()=>sift('s')},
   {name:'hearers of the Epicurean',x:338,y:74,w:38,h:52,wx:320,wy:124,dir:1,look:'His hearers. They look as if they had eaten well, and meant to again.',talk:()=>sift('e')}]};
 const stoneHs=STONES.map((s,i)=>({get name(){return readS(s.id)?s.nm:s.k==='altar'?'altar':'base of a statue'},x:sx(i),y:stoneTop(s)-3,w:BW,h:BY-stoneTop(s)+3,wx:160,wy:236,
   look:()=>stoneLook(s),useWith:id=>stoneAsk(s,id),pickup:'It has stood here longer than I have been alive.',use:()=>stoneLook(s)}));
@@ -948,7 +948,7 @@ CH.hs={name:'Charmides',actor:CH,look:'Charmides. He was at the boundary stone b
   talk:async()=>{if(!F.basin)return basin();if(!F.shut)return steps();return talkTree([
     {q:'What is the temple without a roof, by the road?',once:1,a:()=>say(CH,'The temple of Zeus. It will be the largest in Greece, when it is finished. My grandfather used to say the same.')},
     {q:'Where are the images made?',once:1,a:()=>say(CH,'Up the steps, under the temple of Hephaestus. You will hear them before you see them.')},
-    {q:'Who teaches in this city?',once:1,a:()=>say(CH,'Everybody. But the schools: the Stoics in the painted colonnade, yonder, where the man who began it used to walk up and down; and the Epicureans at the other end of it, because they will not leave the shade to the Stoics.')},
+    {q:'Who teaches in this city?',once:1,a:()=>say(CH,'Everybody. But the schools: the Stoics in the painted colonnade, over there, where the man who began it used to walk up and down; and the Epicureans at the other end of it, because they will not leave the shade to the Stoics.')},
     {q:'I shall be back.',bye:1}])}};
 AR.hs={name:'Aristion',actor:AR,look:'Aristion. Old, bald, and in no hurry. He asks the kind of question that a man answers the next day.',give:id=>!F.basin?basin():id==='tablets'&&!F.shut?steps():false,
   show:{tablets:'Shut, I see. Good. Now your eyes are open instead.','*':'A thought? Then finish thinking it, and bring it to the steps when it is whole.'},
@@ -994,7 +994,7 @@ const TABLETS={
     {t:()=>T('The way to the synagogue: {way}',{way:T(WAY)}),if:()=>!!F.way&&!F.syn},
     {t:'The men on the steps want to hear something new.',if:()=>!!F.basin&&!F.shut},
     {t:'Who made them? Find where it can be seen.',if:()=>!!F.shut&&!F.qmade},
-    {t:'Where does he live? Find a house where the hands can still be seen.',if:()=>!!F.shut&&!F.qhouse},
+    {t:'Where does he live? Find a house that still shows the hands that built it.',if:()=>!!F.shut&&!F.qhouse},
     {t:'What does he need? Find what is brought to him.',if:()=>!!F.shut&&!F.qneed},
     {t:'Is there one they do not know? Read the altars by the road.',if:()=>!!F.shut&&!F.qunk},
     {t:'Two men teach in the painted colonnade. Hear each of them out, and keep what I can hold with him.',if:()=>!!F.shut&&!(F.stoic&&F.epic)},
@@ -1027,7 +1027,7 @@ function setup11(){P.hs=null;P.called='Paul';G.b11=G.h11=G.sp11=null;G.wrong11=0
 /* ============ THE START ============ */
 async function start11(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();
   await cut(async()=>{await fade(1,500);setChapter(11);G.end={};
-    try{await need('map');await SHARED.map.journey(ROAD,{view:'west',labels:LAB});await narr('The brothers from Beroea had sailed home with his message. Nobody walked beside him now.',{dur:7600,low:1})}catch(e){console.error(e)}
+    try{await need('map');await SHARED.map.journey(ROAD,{view:'west',labels:LAB});await narr('The brothers from Beroea had gone home with his message. Nobody walked beside him now.',{dur:7600,low:1})}catch(e){console.error(e)}
     await fade(1,600);G.scene=null;place11('road11');enterRoom('road11',...ENT.road11);codeBtn();await fade(0,700);
     await narr('About 50 C.E. The road from the harbor ran up to Athens between altars and monuments. His tools were in his pack: nobody here had ordered a tent.',{dur:9500});
     await narr('He had seen idols in every city. Here he gave up counting them.',{dur:5600});await tell('v16');

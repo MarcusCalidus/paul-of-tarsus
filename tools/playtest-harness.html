@@ -356,16 +356,16 @@
   if(/^pro(card|1|2|3|4|5|7|8|8b|9)$/.test(stop)){await loadLevel(1);await loadPrologue();ov.className='';ov.onclick=null;setChapter(1);G.inPro=1;$('#chname').textContent=T(PRO.name);$('#skip').style.display='';G.busy=true;lock(true);status();clearInterval(sk);G.speedAll=0;
     if(stop==='procard'){showCard('prologue');await wait(300);halt('procard')}
     const S=PRO.scenes;
-    if(stop==='pro1'){G.scene=S.stones;narr('Outside Jerusalem, a disciple of Jesus named Stephen was put to death with stones. Those who testified against him laid their outer garments at the feet of a young man called Saul. (Acts 7:58)',{dur:9000});await wait(200);halt('pro1')}
-    if(stop==='pro2'){G.scene=S.zeal;narr('A Pharisee, zealous for the traditions of his fathers beyond many of his own age, he believed he was serving Jehovah, the God of his forefathers. (Acts 22:3; Galatians 1:14; Philippians 3:5)',{dur:9000});await wait(200);halt('pro2')}
-    if(stop==='pro3'){G.scene=S.door;narr('Still threatening the disciples with death, he asked the high priest for letters to the synagogues of Damascus, to bring bound to Jerusalem any he found who belonged to The Way, as the disciples were known. (Acts 9:1, 2)',{dur:9000});await wait(200);halt('pro3')}
+    if(stop==='pro1'){G.scene=S.stones;narr('Outside Jerusalem, Stephen, a disciple of Jesus, was stoned to death. A young man named Saul was close by, with the witnesses\' outer garments laid at his feet. (Acts 7:58, 60)',{dur:9000});await wait(200);halt('pro1')}
+    if(stop==='pro2'){G.scene=S.zeal;narr('As a Pharisee he was zealous for God, and he outdid many men his age in devotion to the traditions of his forefathers. (Acts 22:3; Galatians 1:14; Philippians 3:5)',{dur:9000});await wait(200);halt('pro2')}
+    if(stop==='pro3'){G.scene=S.door;narr('Still threatening the disciples with death, Saul came away from the high priest with letters to the synagogues of Damascus. With them he could put in chains anyone there who belonged to The Way, as the disciples\' faith was called, and bring them to Jerusalem. (Acts 9:1, 2)',{dur:9000});await wait(200);halt('pro3')}
     if(stop==='pro4'){G.pro={x:128,d:20,blind:0};G.scene=S.road;narr('After days on the road he drew near to Damascus, about midday. (Acts 9:3; 22:6)',{dur:9000});await wait(200);halt('pro4')}
-    if(stop==='pro5'){G.pro={x:148,d:40,blind:0};G.scene=S.road;await fade(1,60,1);narr('When he asked who was speaking, the voice answered that it was Jesus, whom he was persecuting, and told him to get up and go into the city, where he would be told what he must do. (Acts 9:5, 6)',{dur:9000});await wait(200);
+    if(stop==='pro5'){G.pro={x:148,d:40,blind:0};G.scene=S.road;await fade(1,60,1);narr('Saul asked who was speaking. The answer came: it was Jesus, the very one he was persecuting. Saul was to get up and go on into the city, and there he would learn what he must do. (Acts 9:5, 6)',{dur:9000});await wait(200);
       ok(G.white===1&&$('#speech .line.white')&&(!SHARED.scroll||SHARED.scroll.state==='down'),'on the white screen the words stand in dark ink, and the scroll stays down');halt('pro5')}
-    if(stop==='pro7'){G.pro={x:142,d:16,blind:1};G.scene=S.road;narr('Saul rose from the ground, and though his eyes were open he could see nothing. So they took him by the hand and led him into Damascus. (Acts 9:8; 22:11)',{dur:9000});await wait(200);halt('pro7')}
-    if(stop==='pro8'){G.pro={ax:38,afr:0,hand:0,sight:0};G.scene=S.judas;narr("The Lord sent a disciple named Ananias to him. Ananias had heard how much harm Saul had done in Jerusalem, but he was told to go, because this man had been chosen to carry the Lord's name to the nations, to kings, and to the sons of Israel. (Acts 9:10-15)",{dur:9000});await wait(200);halt('pro8')}
-    if(stop==='pro8b'){G.pro={ax:174,afr:0,hand:1,sight:1};G.scene=S.judas;narr("Ananias came in, laid his hands on him, and called him brother. At once something like scales fell from Saul's eyes; he saw again, rose, and was baptized. (Acts 9:17, 18)",{dur:9000});await wait(200);halt('pro8b')}
-    if(stop==='pro9'){G.scene=CHAP[1].scenes.wall;G.end={};narr('Right away he began preaching in the synagogues of Damascus that Jesus is the Son of God, proving that he is the Christ, the one whom God had promised; and all who heard him were astonished. (Acts 9:20-22)',{dur:9000});await wait(200);halt('pro9')}}
+    if(stop==='pro7'){G.pro={x:142,d:16,blind:1};G.scene=S.road;narr('His companions had to lead Saul into Damascus by the hand: his eyes were wide open, but the brilliance of that light had left him blind. (Acts 9:8; 22:11)',{dur:9000});await wait(200);halt('pro7')}
+    if(stop==='pro8'){G.pro={ax:38,afr:0,hand:0,sight:0};G.scene=S.judas;narr("The Lord had chosen Saul as his vessel, to carry his name to the nations, to kings and to the sons of Israel. So in a vision he sent a disciple named Ananias to him, though Ananias had heard of all the harm Saul had done to the holy ones in Jerusalem. (Acts 9:10-15)",{dur:9000});await wait(200);halt('pro8')}
+    if(stop==='pro8b'){G.pro={ax:174,afr:0,hand:1,sight:1};G.scene=S.judas;narr("Saul felt hands laid on him and heard Ananias call him brother. The Lord Jesus had sent Ananias so that Saul would see again and be full of holy spirit. At once, as if scales had dropped from his eyes, he could see, and he was baptized. (Acts 9:17, 18)",{dur:9000});await wait(200);halt('pro8b')}
+    if(stop==='pro9'){G.scene=CHAP[1].scenes.wall;G.end={};narr('All who heard Saul in the synagogues of Damascus were amazed. Right away he was preaching that Jesus is the Son of God, and his careful proof that Jesus is the Christ left the Jews there baffled. (Acts 9:20-22)',{dur:9000});await wait(200);halt('pro9')}}
   /* one of Paul's thoughts, in italics, over the busy square of Antioch */
   if(stop==='thought'){await loadLevel(3);applyState(decode(codeOf(3,0)));await idle();enterRoom('antioch',...CHAP[3].ent.antioch);clearInterval(sk);
     say(PC(),'She has given more than thread. And now I can sew.',TH);await wait(300);halt('thought')}
@@ -883,17 +883,17 @@
   ok(H('torn tent')&&!H('tent')&&!H('mended tent'),'the tent is down');
   heard.length=0;await act(null,'Cilician Gates');ok(G.room==='gates'&&!G.scene&&said('And leave a child in the open, with that sky coming down the gorge? Not for every congregation in Galatia. They would not thank me for it.'),'no going on while a family stands in the storm');
   heard.length=0;await act(null,'road to Tarsus');ok(G.room==='gates'&&heard.length===1,'and no going back');
-  heard.length=0;await act('use','torn tent');ok(!F.mended&&said('I can close the seam now, and it will open again at the corner in the first gust. The loop first: and a loop wants leather. A carter carries leather.'),'the torn-out loop wants leather');
+  heard.length=0;await act('use','torn tent');ok(!F.mended&&said('I can close the seam now, and it will open again at the corner in the first gust. The loop first: and a loop needs leather. A carter carries leather.'),'the torn-out loop wants leather');
   pray();await idle();ok(hint()[0]==='strap7','the hint points to the carter');
-  await actor(null,A('bion'));ok(nq()===4&&hasQ('corner loop wants a strip of leather'),'Bion: two questions, and a thing learned');await choose(0);await choose(-1);
-  await actor(null,A('zenon7'));ok(nq()===5&&hasQ('corner loop wants a strip of leather'),'Zenon: three questions, and a thing learned');await pickQ('corner loop wants');ok(F.strap&&has('strap')&&nq()===4,'Zenon gives a spare yoke strap');await choose(-1);
+  await actor(null,A('bion'));ok(nq()===4&&hasQ('corner loop needs a strip of leather'),'Bion: two questions, and a thing learned');await choose(0);await choose(-1);
+  await actor(null,A('zenon7'));ok(nq()===5&&hasQ('corner loop needs a strip of leather'),'Zenon: three questions, and a thing learned');await pickQ('corner loop needs');ok(F.strap&&has('strap')&&nq()===4,'Zenon gives a spare yoke strap');await choose(-1);
   await sweep(A('zenon7'),A('bion'),A('charis'),A('melissa'),SI);
   pray();await idle();ok(hint()[0]==='mend7','the hint points to the tent');
   key('c');await idle();pray();await idle();ok(hint()[0]==='craft7'&&PC()===SI,'Silas prays, and leaves the craft to Paul');
   heard.length=0;await act('use','torn tent');ok(!F.line&&!F.mended&&said('Paul will want me on that line once it is sewn. Not before: I should only be holding a rag in a gale.'),'Silas does not sew, and there is no line to hold yet');key('c');await idle();place(SI,'gates',196,128,1);
   const c7b=makeCode();await useOn('strap','torn tent');ok(F.mended&&!has('strap')&&H('mended tent')&&!H('torn tent')&&!G.busy,'the long seam is closed, and a leather loop sewn in where the corner tore out');
   await enter(c7b);ok(G.room==='gates'&&F.strap&&!F.mended&&has('strap')&&H('torn tent')&&A('charis').room==='gates','the Gates code restores, with the strap in Paul\'s hand');await useOn('awl','torn tent');ok(F.mended,'mended again after the code');
-  heard.length=0;await act('use','mended tent');ok(!F.up&&!F.line&&said('I get the pole upright, and the wind lays the whole tent flat again. It wants a man on the windward line while I set the pole and drive the pins.'),'one man cannot raise a tent in this wind');
+  heard.length=0;await act('use','mended tent');ok(!F.up&&!F.line&&said('I get the pole upright, and the wind lays the whole tent flat again. It needs a man on the windward line while I set the pole and drive the pins.'),'one man cannot raise a tent in this wind');
   pray();await idle();ok(hint()[0]==='line7','the hint points to Silas');
   key('c');await idle();pray();await idle();ok(hint()[0]==='line7b','Silas knows where he is wanted');
   await act('use','mended tent');ok(F.line&&PC()===SI&&Math.abs(SI.x-338)<4&&!F.up,'Silas takes the windward line');
@@ -936,7 +936,7 @@
   await choose(0);ok(!G.busy&&!ov.classList.contains('end')&&G.room==='lystra7','a hasty word is set aside, and never spoken');
   heard.length=0;await actor(null,A('myron'));ok(!F.eld&&said('First the letter, brother. Lystra has waited a long time for a word from Jerusalem.'),'first the letter');
   await sweep(A('timothy7'),A('eunice7'),A('lois7'),A('myron'),SI);
-  heard.length=0;await give('letter',A('myron'));ok(F.readL&&has('letter')&&!G.busy&&said('That evening the congregation of Lystra heard the letter read, and the older men received the decrees, to be observed.'),'the decrees are delivered in Lystra');
+  heard.length=0;await give('letter',A('myron'));ok(F.readL&&has('letter')&&!G.busy&&said('That evening the congregation of Lystra heard the letter read, and the brothers received the decrees, to keep them.'),'the decrees are delivered in Lystra');
   heard.length=0;await give('tablets',A('lois7'));ok(F.psalm&&has('tablets')&&quoted(6),'an optional kindness: a psalm read to Lois, as his tablets have it');
   pray();await idle();ok(hint()[0]==='eld7','the hint: ask what he does, not how he looks');
   key('c');await idle();pray();await idle();ok(hint()[0]==='paul7b','Silas leaves the asking to Paul');
@@ -969,7 +969,7 @@
   await actor(null,A('nathan7'));ok(nq()===3,'what does Paul want to know? three questions');
   await pickQ('look like a man');ok(nq()===2&&!F.nat,'a saddler knows what a fine finish is worth');
   heard.length=0;await pickQ('come to know a young man');ok(F.nat&&!G.busy&&said('He has done it every few weeks since. Nobody here is of his own congregation, Paul. He does it all the same.'),'Nathan: he walked a day with a sack on his back, for brothers not of his own congregation');
-  heard.length=0;await act(null,'south gate');ok(G.room==='iconium7'&&!G.scene&&said('Not yet. The older men of Lystra told me to ask in Iconium about Timothy, and I have not finished asking.'),'not before Iconium has been heard out');
+  heard.length=0;await act(null,'south gate');ok(G.room==='iconium7'&&!G.scene&&said('Not yet. The elders of Lystra told me to ask in Iconium about Timothy, and I have not finished asking.'),'not before Iconium has been heard out');
   pray();await idle();ok(hint()[0]==='tat7','the hint points to Tatia');
   await actor(null,A('tatia7'));ok(nq()===3,'Tatia can tell what she has seen: three questions');
   await pickQ('Is he bold');ok(nq()===2&&!F.tat,'Barnabas was never loud either');
@@ -981,7 +981,7 @@
   act(null,'south gate');await mapOpen();ok(SHARED.map.state.legs.length===6&&SHARED.map.state.pulse==='iconium','the south gate opens the map, with the road from Lystra drawn');
   heard.length=0;mapClick('lystra');await idle();
   ok(G.room==='lystra7'&&!G.scene&&!G.busy&&SI.room==='lystra7'&&A('timothy7').room==='lystra7'&&!A('nathan7').room&&said('They walked back the way they had come. In two cities Paul had heard one account of the same young man.'),'back to Lystra, with four witnesses heard');
-  heard.length=0;await act(null,'door to the lane');ok(G.room==='lystra7'&&!G.scene&&!ov.classList.contains('end')&&said('Not yet. There is a question I must put to a young man first, in front of his mother, his grandmother and the older men.'),'not out of the door before Timothy has been asked');
+  heard.length=0;await act(null,'door to the lane');ok(G.room==='lystra7'&&!G.scene&&!ov.classList.contains('end')&&said('Not yet. There is a question I must put to a young man first, in front of his mother, his grandmother and the elders.'),'not out of the door before Timothy has been asked');
   pray();await idle();ok(hint()[0]==='ask7','the hint: it is time to ask him');
   heard.length=0;await actor('look',A('timothy7'));ok(quoted(5),'looking at Timothy, Paul says the proverb about a good name, as his tablets have it');
   key('c');await idle();pray();await idle();ok(hint()[0]==='paul7b','Silas leaves that to Paul too');key('c');await idle();
@@ -997,7 +997,7 @@
   heard.length=0;choose(0);
   n=0;while(!(ov.classList.contains('end')&&ov.textContent.includes(T('Timothy of Lystra')))&&n++<4000)await wait(50);
   ok(ov.classList.contains('end')&&ov.textContent.includes(T('Timothy of Lystra'))&&said('Paul let it be known that he wanted Timothy to travel with him. (Acts 16:3)')&&
-    said('Paul wanted Timothy as his companion. So he took him and circumcised him, on account of the Jews who lived in those parts: every one of them knew that his father was a Greek. (Acts 16:3)')&&
+    said('The Jews of that region all knew that Timothy\'s father was a Greek. Because of them, and because he wanted the young man as his companion, Paul had him circumcised. (Acts 16:3)')&&
     said('In city after city on their way they handed on the decrees that the apostles and the elders in Jerusalem had decided on, to be kept by the brothers there. (Acts 16:4)')&&
     said('And so the congregations kept growing firmer in the faith, and larger in number with every day. (Acts 16:5)'),'chapter seven complete screen shown');
   ok(said('There were prophecies about Timothy, and the body of elders laid their hands on him, as Paul did. It may have been at this time. (1 Timothy 1:18; 4:14; 2 Timothy 1:6)'),'the laying on of hands is told with its hedge: it may have been at this time');
@@ -1086,7 +1086,7 @@
   /* Troas: the fourth man */
   heard.length=0;act(null,'road west');await until(()=>G.room==='troas'&&!G.scene&&!G.busy);
   ok(G.room==='troas'&&LU.room==='troas'&&A('leon').room==='troas'&&A('sosias').room==='troas'&&!$('#swap').disabled&&PC()===P&&said('So they went on past Mysia, down to Troas. (Acts 16:8)')&&
-    said('It was a walk of some 550 kilometers, past city after city. They went through Mysia without stopping to preach there.')&&said('Troas: the principal seaport of that coast, and a colony of Rome. It was probably the spring of the year 50.'),'Troas at dusk: a hurt man, a physician, and the Luke button comes alive');
+    said('It was a walk of some 550 kilometers, past city after city. They went through Mysia without stopping to preach there.')&&said('Troas: the principal seaport of that coast, and a colony of Rome. It was probably the spring of 50 C.E.'),'Troas at dusk: a hurt man, a physician, and the Luke button comes alive');
   ok(mapClear(),'no name on that map crosses a coast or a route'+clear());
   halt('troas8',()=>{say(LU,'It is not nothing. Sit down, man, and hold the arm up. Let me through: I am a physician.')});
   /* depth: the heap of sailcloth is part of the painted backdrop, and it hides a man's legs all the same when he walks behind it */
@@ -1120,7 +1120,7 @@
   pray();await idle();ok(hint()[0]==='give8b','the hint: give it to Luke');
   await give('sling',LU);key('c');await idle();pray();await idle();ok(hint()[0]==='hang8','Luke\'s hint: the sling');
   heard.length=0;await give('sling',A('sosias'));
-  ok(F.slung&&PC()===P&&!G.busy&&said('I heard the young man call you "brother". Not many in Troas use that word as he used it. I use it so too.')&&said('I do not know, Luke. We were turned away from Asia, and from Bithynia, and this is where the road ran out.'),
+  ok(F.slung&&PC()===P&&!G.busy&&said('I heard the young man call you "brother". Not many in Troas use that word the way he used it. I use it that way too.')&&said('I do not know, Luke. We were turned away from Asia, and from Bithynia, and this is where the road ran out.'),
     'the arm is slung; Luke is a brother, and Paul tells him that he does not know where he is bound');
   pray();await idle();ok(hint()[0]==='inn8','the hint: the inn');
   await sweep(A('leon'),A('sosias'),SI,TI,LU);
@@ -1139,7 +1139,7 @@
   await pickQ('I am tired of walking');ok(nq()===4&&!F.concl,'true, and no reason at all');
   await pickQ('Macedonia is a great country');ok(nq()===3&&!F.concl,'nor is that a reason');
   await choose(0);await choose(0);heard.length=0;await choose(0);
-  ok(F.concl&&!G.busy&&quoted(2)&&said('Once Paul had seen the vision, we set about getting to Macedonia without delay, for we concluded that God had called us to bring the good news to its people. (Acts 16:10)')&&
+  ok(F.concl&&!G.busy&&quoted(2)&&said('God had summoned us to Macedonia, to bring its people the good news: that was the conclusion we drew from what Paul had seen, and we set about getting there without delay. (Acts 16:10)')&&
     said('From this verse on the account says "we". Luke, who wrote it, was with them.'),'the conclusion is drawn by all four (Acts 16:10), and the account says "we"');
   pray();await idle();ok(hint()[0]==='ship8','the hint: the ship');
   const c8c=makeCode();
@@ -1203,7 +1203,7 @@
   ok(nq()===4&&quoted(5)&&quoted(6)&&said('One of the listeners was a woman called Lydia, from the city of Thyatira, who sold purple and worshipped God. Jehovah opened her heart fully, so that she paid close attention to what Paul said. (Acts 16:14)')&&
     said('She was baptized, and her household with her. Then she pressed us: (Acts 16:15)')&&said('If in your eyes I am faithful to Jehovah, then come: stay under my roof. (Acts 16:15)')&&said('It is.'),
     'all four speak; Jehovah opens her heart (Acts 16:14); her baptism is told (Acts 16:15); and she urges them');
-  ok(said('It was not my words that opened that heart. I have planted nothing here that was not waited for.')&&!heard.some(h=>/that is why|therefore the spirit/i.test(h)),'Paul takes no credit, and nobody draws a conclusion from Thyatira');
+  ok(said('It was not my words that opened that heart: Jehovah opened it. I only brought her what she had long been waiting for.')&&!heard.some(h=>/that is why|therefore the spirit/i.test(h)),'Paul takes no credit, and nobody draws a conclusion from Thyatira');
   halt('lydia8');
   heard.length=0;await pickQ('I have a trade');ok(nq()===3&&said('If in your eyes I am faithful to Jehovah, then come: stay under my roof.'),'she has one answer');
   heard.length=0;await pickQ('We are four men');ok(nq()===2&&quoted(7),'Paul remembers the woman of Shunem');
@@ -1211,7 +1211,7 @@
   heard.length=0;choose(0);
   n=0;while(!(ov.classList.contains('end')&&ov.textContent.includes(T('The Man from Macedonia')))&&n++<4000)await wait(50);
   ok(ov.classList.contains('end')&&ov.textContent.includes(T('The Man from Macedonia'))&&said('She would take no refusal, and we went. (Acts 16:15)')&&
-    said('Some ten years later Paul wrote to the congregation in Philippi that he thanked his God every time he remembered them, for the share they had had in the good news ever since the very first day. (Philippians 1:3, 5)')&&
+    said('Some ten years later Paul told the congregation in Philippi that every time he remembered them he thanked his God for what they had contributed to spreading the good news. They had done so since its very first day among them, and they were doing it still. (Philippians 1:3, 5)')&&
     said('And of the man who was with them from Troas on, he wrote that Luke was a physician, and beloved. (Colossians 4:14)'),'the puzzle is solved by accepting; chapter eight complete screen shown');
   ok(ov.textContent.includes(T('An awning mended in the street of the purple sellers')),'the kindness is named on the closing screen');
   ok(/Luke|Lukas/.test(ov.textContent)&&ov.textContent.includes(T('Click to continue to Chapter Nine')),'the closing screen says what the account leaves unsaid');
@@ -1426,10 +1426,10 @@
   await putP('roof',1,0);ok(!G.bolt10.at.roof&&said('Not across the thin strip. A panel may end on it, where the seam folds the cloth double. It must not run over it.'),'a panel may not run across the thin strip');
   await putP('roof',9,0);ok(!G.bolt10.at.roof&&said('That would hang over the edge of the bolt.'),'nor hang over the edge');
   await putP('roof',2,0);ok(G.bolt10.at.roof&&G.bolt10.at.roof.x===2&&!heard.length,'it may end on the thin strip');
-  await putP('long',4,2);ok(!G.bolt10.at.long&&said('Not there. Two panels would want the same cloth.'),'two panels cannot share the same cloth');
+  await putP('long',4,2);ok(!G.bolt10.at.long&&said('Not there. Two panels would need the same cloth.'),'two panels cannot share the same cloth');
   halt('bolt10');
   await putP('long',6,0);await putP('end',6,2);await putP('flap',0,0);await putP('g1',0,2);await putP('g2',9,2);
-  ok(!F.laid&&said('Every panel has a place. But what is left over lies in pieces, and the loops want one length of six cubits.'),'every panel placed, but the spare cloth in pieces: not yet');
+  ok(!F.laid&&said('Every panel has a place. But what is left over lies in pieces, and the loops need one length of six cubits.'),'every panel placed, but the spare cloth in pieces: not yet');
   halt('wrong10');
   pray();await idle();ok(hint()[0]==='lay10','the hint: where the thin strip may lie');
   heard.length=0;view(...cell(3,1));await idle();ok(!G.bolt10.at.roof&&G.bolt10.sel==='roof','with empty hands a panel is lifted off the cloth again');
@@ -1518,7 +1518,7 @@
     if(f==='b2a'){await setT('tomb');await lay();ok(!F.b2a&&heard.some(h=>h.includes(T(C().places.ps22l.cap))&&h.includes(T(C().ev.tomb.cap))),'a line of the tablets that does not belong beside it is turned down');pray();await idle();ok(hint()[0]==='b2a10','the hint: who cast the lots')}
     if(f==='b2b')halt('finds10');
     await setT(evk);await lay();await until(()=>F[f]&&!G.busy);ok(F[f]&&read(C().ev[evk])&&said(line)&&capsFit(),'the Beroeans found the place; Paul lays beside it what was done: '+evk)}
-  await until(()=>G.room==='ber10'&&!G.busy);ok(said('Paul! I read on by the lamp, column after column. Here: “his anointed one”. That is he. Is it not?'),'on the third day a young man brings a line of his own finding');
+  await until(()=>G.room==='ber10'&&!G.busy);ok(said('Paul! I read on by the lamp, column after column. Here it speaks of his anointed one. That is he. Is it not?'),'on the third day a young man brings a line of his own finding');
   /* the line that names another man */
   await act(null,'reading table');await until(()=>G.room==='table10'&&!G.busy);ok(G.tab10.s.join()===',is45,','Isaiah lies open at the words "his anointed one"');
   await setT('raised');await lay();ok(!F.b3&&said('No. I have not read that line to its end, and I lay nothing beside a line that I have not read.'),'Paul lays nothing beside a line that he has not read to its end');
@@ -1553,7 +1553,7 @@
   await pickQ('It is for Silas and Timothy.');ok(nq()===5&&hasQ('That is the whole message.'),'the message can be ended once it has begun');
   heard.length=0;await pickQ('That is the whole message.');ok(!F.msg&&said('And what are they to do? Send word? Wait for you? Come?'),'a part is missing, and the brother asks for it');
   await pickQ('They are to come to me');await pickQ('Greet Eupolemos');await pickQ('As quickly as they can.');heard.length=0;await pickQ('That is the whole message.');
-  ok(!F.msg&&said('Too much for one mouth and so many days. Only what must not be lost.')&&nq()===3,'a greeting too many, and the brother loses his thread: only what must not be lost');
+  ok(!F.msg&&said('Too much for one memory and so many days. Only what must not be lost.')&&nq()===3,'a greeting too many, and the brother loses his thread: only what must not be lost');
   heard.length=0;pickQ('That is the whole message.');
   while(!(ov.classList.contains('end')&&ov.textContent.includes(T('Is It So?')))&&n10++<4000)await wait(50);
   ok(ov.classList.contains('end')&&F.msg&&told('v15b')&&said('Silas and Timothy are to come to you in Athens, as quickly as they can. That I can carry.'),'the instruction is carried by mouth (Acts 17:15); chapter ten complete screen shown');
@@ -1666,7 +1666,7 @@
   heard.length=0;await use('q11made','tablets');ok(said('Not into the tablets. They stay shut in this city until somebody asks for them.'),'and nothing goes into the tablets');
   /* a question put to the wrong thing gets an honest answer and no more */
   heard.length=0;await useOn('q11made','image in the colonnade');ok(!F.qmade&&said('Who made it? It does not say. Finished, it looks as if no hand had ever touched it.'),'who made them, asked of a finished image');
-  heard.length=0;await useOn('q11house','temple of Hephaestus');ok(!F.qhouse&&said('In there, they would say; and that house was finished long ago. I want one where the hands can still be seen.'),'where does he live, asked of a finished temple');
+  heard.length=0;await useOn('q11house','temple of Hephaestus');ok(!F.qhouse&&said('In there, they would say; and that house was finished long ago. I want one that still shows the hands that built it.'),'where does he live, asked of a finished temple');
   pray();await idle();ok(hint()[0]==='made11','the hint points to the craftsmen');
   await act(null,'lane to the craftsmen');await until(()=>G.room==='yard11'&&!G.busy);
   ok(G.room==='yard11'&&XE.room==='yard11','the stonecutter\'s yard, under the temple of Hephaestus');halt('yard11');
@@ -1712,7 +1712,7 @@
   heard.length=0;await walkTo(240,126);ok(AU.mood==='both'&&said('From here I hear both of them at once, and follow neither. I shall have to stand with the one, and then with the other.'),'between them he hears both, and follows neither');
   heard.length=0;await walkTo(380,128);ok(AU.mood==='epic'&&said(C().says.e[0].say),'at the other end he hears the Epicurean');
   heard.length=0;await actor(null,AN);ok(hasQ('Pleasure is the goal.')&&hasQ('Listen a while longer.')&&!hasQ('A god lacks nothing.'),'he can keep only what he has heard');
-  await pickQ('Pleasure is the goal.');ok(!F.epic&&said('If pleasure were where life is going, I took the wrong road at Damascus. I do not think that I did.'),'a saying that he cannot hold with him');
+  await pickQ('Pleasure is the goal.');ok(!F.epic&&said('Since Damascus my life has not been aimed at pleasure, and I would not have it otherwise.'),'a saying that he cannot hold with him');
   halt('sift11');
   await pickQ('Listen a while longer.');await pickQ('Listen a while longer.');await pickQ('Listen a while longer.');ok(hasQ('A god lacks nothing.')&&!hasQ('Listen a while longer.'),'heard out, the Epicurean has said four things');
   await pickQ('The gods are far away.');heard.length=0;await pickQ('A god lacks nothing.');
@@ -1871,7 +1871,7 @@
     ok(capsFit(2),'what is set is written at the foot of the view, and fits')}
   halt('awn12');pray();await idle();ok(hint()[0]==='awn112','the hint: where the shade falls');
   heard.length=0;await onH('step back and look');ok(!F.r1&&said('My bench is in the sun still.'),'somebody says what he sees: the bench is in the sun');
-  await setAwn({p:1});heard.length=0;await onH('step back and look');ok(!F.r1&&(said('And my figs? They are in the shade now. They will mould before they dry.')||said('My bench is in the sun still.')),'in the middle of the court it does not hold either');
+  await setAwn({p:1});heard.length=0;await onH('step back and look');ok(!F.r1&&(said('And my figs? They are in the shade now. They will mold before they dry.')||said('My bench is in the sun still.')),'in the middle of the court it does not hold either');
   await setAwn(C().solved[1]);heard.length=0;onH('step back and look');await until(()=>F.sab&&!G.busy);note();
   ok(F.r1&&!has('awn12')&&said('Shade where I sit, and sun on the figs. You have hung these before.'),'shade on his bench, and sun on his figs');
   ok(F.sab&&G.room==='street12'&&told('v4'),'every Sabbath in the synagogue (Acts 18:4)');
@@ -1902,9 +1902,9 @@
   pray();await idle();ok(hint()[0]==='news12','the hint: Timothy has news');
   heard.length=0;await actor('talk',TI);note();ok(F.news&&told('t36')&&said('It is too much for one mouth, Timothy. And it is for all of them, not for those who happen to be in the house. It has to be written.'),'Timothy brings good news from Thessalonica (1 Thessalonians 3:6), and the answer has to be written');
   await act('pickup','reeds');ok(has('reed12'),'a reed');await use('knife','reed12');ok(F.pen&&has('pen12')&&!has('reed12'),"cut slanting and slit: a tentmaker's knife makes a pen");
-  await actor('talk',AP);ok(F.black&&has('black12'),'Priscilla has a cake of black');
+  await actor('talk',AP);ok(F.black&&has('black12'),'Priscilla has a cake of ink');
   heard.length=0;await useH('pen12','potsherd');ok(!F.ink&&said('Water. The reed leaves nothing.'),'tried on a potsherd: water');
-  await useH('black12','small bowl');heard.length=0;await useH('pen12','potsherd');ok(said('Grey, and it runs along the sherd.'),'too thin');
+  await useH('black12','small bowl');heard.length=0;await useH('pen12','potsherd');ok(said('Gray, and it runs along the sherd.'),'too thin');
   await useH('black12','small bowl');await useH('black12','small bowl');heard.length=0;await useH('pen12','potsherd');ok(!F.ink&&said('It clogs the slit, and comes off in a blot.'),'too thick');
   halt('ink12');
   await onH('small bowl','use');heard.length=0;await useH('pen12','potsherd');ok(F.ink&&!has('black12')&&said('Black, and it stays where the reed puts it.'),'black, and it stays');
@@ -2196,16 +2196,16 @@
   heard.length=0;await act(null,'door of the synagogue');ok(G.room==='street13'&&said('I said that I would come back to this door. First let me find the two whom I left in this street.'),'first the two whom he left here');
   pray();await idle();ok(hint()[0]==='find13','the hint: a bench that he knows');
   act(null,'workshop');await until(()=>F.awl&&G.room==='street13'&&!G.busy);
-  ok(F.awl&&srt()==='awl,knife,tablets,thread'&&said('Your awl, and your thread. We kept them oiled, and nobody has sewn a stitch with them.')&&D1.room==='street13'&&D2.room==='street13'&&D3.room==='street13'&&AP.room==='street13','his awl and thread are given back; and about twelve men stand at the door');
+  ok(F.awl&&srt()==='awl,knife,tablets,thread'&&said('Your awl, and your thread. We kept them oiled, and nobody has sewn a stitch with them since Cenchreae.')&&D1.room==='street13'&&D2.room==='street13'&&D3.room==='street13'&&AP.room==='street13','his awl and thread are given back; and about twelve men stand at the door');
   halt('twelve13');await sweep(AP,D1);
   /* the right question: he asks before he teaches */
   pray();await idle();ok(hint()[0]==='ask113','the hint: ask, do not tell');
   heard.length=0;actor('talk',D1);await until(()=>nq()>0);await pickQ('Brothers, let me tell you what happened at Pentecost.');ok(!F.q1&&said('Gladly, some Sabbath. We are disciples already, friend: we were baptized years ago.'),'to teach first leads nowhere: they are disciples already');
   await pickQ('How long have you been disciples?');ok(!F.q1&&nq()===1,'nor does a question about years');
-  await pickQ('When you came to believe: was holy spirit given to you?');ok(F.q1&&said('Holy spirit? Nobody has ever told us that there is such a thing.'),'he asks whether they received holy spirit, and they have not heard that there is one (Acts 19:2)');
+  await pickQ('Holy spirit, brothers: was it given to you when you came to believe?');ok(F.q1&&said('Holy spirit? This is the first time we have heard of such a thing.'),'he asks whether they received holy spirit, and they have not heard that there is one (Acts 19:2)');
   heard.length=0;actor('talk',D2);await until(()=>nq()>0);await pickQ('Then you must be baptized.');ok(!F.q2&&said('We are baptized! Was John wrong, then?'),'to begin at the end is true, and unhelpful');
   await pickQ('Then what baptism was yours?');ok(F.q2&&said("John's, brother."),"John's baptism (Acts 19:3)");
-  heard.length=0;actor('talk',D3);await until(()=>nq()>0);await pickQ('Come with me to the water.');ok(!F.tw&&said('For what, brother? Tell us first what John did not.'),'not the water before the reason');
+  heard.length=0;actor('talk',D3);await until(()=>nq()>0);await pickQ('Come with me to the water.');ok(!F.tw&&said('For what, brother? Tell us first what John did not tell us.'),'not the water before the reason');
   pickQ('John himself pointed people on to someone who would come after him.');await until(()=>F.tw&&G.room==='street13'&&!G.busy);note();
   ok(F.tw&&told('v5')&&told('v6')&&told('v7')&&!D1.room,'John pointed to the one coming after him: they are baptized in the name of the Lord Jesus, about twelve men (Acts 19:4-7), and none of it is shown');
   /* three months, and the door */
@@ -2230,11 +2230,11 @@
   await actor('talk',ME);ok(F.men&&said('I am a tentmaker. And I need a room at the hour when nobody else wants one.'),'the hall stands empty in the hot hours, and its keeper will give it for a mended curtain');
   await act('pickup','torn curtain');ok(F.curt&&has('curt13')&&!H('torn curtain'),'he takes the curtain down');
   await act(null,'workshop');ok(G.room==='shop13','to the bench');
-  heard.length=0;await use('awl','curt13');ok(said('Not across my knee. It wants laying out flat, along a bench.'),'it is bench work');
+  heard.length=0;await use('awl','curt13');ok(said('Not across my knee. It has to be laid out flat, along a bench.'),'it is bench work');
   await actor('talk',AP);ok(said('Rotten, all along the tear. No seam will hold in that. Lay a strip behind it: there are remnants in the basket by the door.'),'Priscilla sees what it wants');
   await act('pickup','basket of remnants');ok(F.patch&&has('patch13'),'a strip of new goat hair');
   await useH('curt13','workbench');ok(G.b13.on&&!has('curt13')&&!!H('torn curtain'),'the curtain is laid out along the bench');
-  heard.length=0;await useH('awl','torn curtain');ok(!F.sewn&&said('Sew the two edges to each other, and the first wind opens them again: the old cloth is rotten along the tear. It wants a strip laid behind it.'),'edge to edge it would not hold');
+  heard.length=0;await useH('awl','torn curtain');ok(!F.sewn&&said('Sew the two edges to each other, and the first wind opens them again: the old cloth is rotten along the tear. It needs a strip laid behind it.'),'edge to edge it would not hold');
   await useH('patch13','torn curtain');await useH('awl','torn curtain');ok(F.sewn&&has('curt13m')&&!has('patch13'),'a strip behind the tear, and both edges sewn down on it');
   halt('curt13');{const c=makeCode();await enter(c);ok(F.sewn&&has('curt13m')&&srt()==='awl,curt13m,knife,tablets,thread'&&G.room==='shop13','a code noted here brings the mended curtain back')}
   pray();await idle();ok(hint()[0]==='hang13','the hint: it belongs in his door');
@@ -2293,7 +2293,7 @@
   heard.length=0;await act(null,'door under the vine');ok(!F.p2&&said('If I sit down here, Hegesias sails without his answer. And what Diodotos asked, two tentmakers can answer better than I can.'),'he cannot be at two tables');
   pray();await idle();ok(hint()[0]==='wine13','the hint: the seaman first');
   heard.length=0;act(null,'wine seller\'s door');await until(()=>nq()>0);await pickQ('Daniel 2:44');ok(said('Kings and kingdoms. I asked about the sea, friend.'),'the passage for Glaukos is not the one for a seaman');
-  pickQ('Psalm 146:5, 6');await until(()=>F.a2&&!G.busy);ok(F.a2&&said('The one who made the sea, and everything in it. Then the thing we carry has been a passenger all these years, and has never paid its fare.'),'the one who made the sea (Psalm 146:5, 6)');
+  pickQ('Psalm 146:5, 6');await until(()=>F.a2&&!G.busy);ok(F.a2&&said('The one who made the sea, and everything in it. Then the carved thing we carry never brought a ship home. I have a great deal to think about on this voyage.'),'the one who made the sea (Psalm 146:5, 6)');
   pray();await idle();ok(hint()[0]==='swap13','the hint: two tentmakers can answer it better');
   await act(null,'workshop');heard.length=0;await act(null,'steps to the loft');ok(!F.n2&&said(C().open()),'not to bed while Diodotos waits');
   /* the other table is theirs */
@@ -2326,7 +2326,7 @@
   heard.length=0;await onH('back to the street');ok(G.room==='house13'&&said('He asked me to help him turn the whole house out. We are not at the end of it.'),'he does not leave it half done');
   heard.length=0;await onH('Kleandros');const HD=C().hide;ok(said('Seven I paid for. I have counted them often enough, on nights when I should have slept. Where I put them is another matter: a man hides such things well, and then he hides them from himself.')&&HD.some(h=>said(h.clue)),'he remembers something of each place, and not the place');
   heard.length=0;await onH('water jar');await onH('hearth');await onH('lamp');ok(G.h13.length===0&&heard.length>=3,'not everything in a house hides something');
-  heard.length=0;await onH('strongbox','open');ok(said("It is not for me to open another man's money. If there is anything in it, he knows."),'he does not open another man\'s strongbox');
+  heard.length=0;await onH('strongbox','open');ok(said("It is not for me to open another man's strongbox. If there is anything in it, he knows."),'he does not open another man\'s strongbox');
   heard.length=0;await onH('cloak','look');ok(said(HD[1].look)&&G.h13.length===0,'a look finds nothing; it shows where to look');
   heard.length=0;await onH('cloak');ok(G.h13.length===0&&said("Sewn in. I am not going to tear a man's cloak: that is a thing for the awl, four stitches of it."),'what is sewn into a hem wants the awl');
   await useH('awl','cloak');ok(G.h13.join()==='hem'&&said(HD[1].find),'four stitches: one');
@@ -2405,7 +2405,7 @@
     $('#skip').click();await idle();
     ok(inPro1&&G.room==='workshop'&&!G.busy&&!G.inPro&&$('#skip').style.display==='none'&&
       heard.includes(T('Saul of Tarsus, later known as the apostle Paul, once came to this city to arrest the disciples of Jesus.'))&&
-      !heard.includes(T('He fell to the ground and heard a voice call him twice by name, asking why he was persecuting him. (Acts 9:4)')),
+      !heard.includes(T('He fell to the ground. A voice called his name twice and asked why he was persecuting the one speaking to him. (Acts 9:4)')),
       'SKIP in the top bar skips the whole prologue and plays Chapter One\'s full opening into the workshop');
     /* 3. Playing the whole Prologue through from the title screen into Chapter One */
     G.room=null;G.scene=null;await title();
@@ -2415,10 +2415,10 @@
     heard.length=0;document.querySelector('#overlay [data-pro="1"]').click();await idle();obs.disconnect();
     ok(G.room==='workshop'&&!G.busy&&!G.inPro&&$('#skip').style.display==='none'&&sawWhite===3&&!scrollOnWhite&&
       ['stones','tense','none','harp','ancient'].every(m=>moods.has(m))&&
-      heard.includes(T('Outside Jerusalem, a disciple of Jesus named Stephen was put to death with stones. Those who testified against him laid their outer garments at the feet of a young man called Saul. (Acts 7:58)'))&&
-      heard.includes(T('When he asked who was speaking, the voice answered that it was Jesus, whom he was persecuting, and told him to get up and go into the city, where he would be told what he must do. (Acts 9:5, 6)'))&&
-      heard.includes(T("Ananias came in, laid his hands on him, and called him brother. At once something like scales fell from Saul's eyes; he saw again, rose, and was baptized. (Acts 9:17, 18)"))&&
-      heard.includes(T('Right away he began preaching in the synagogues of Damascus that Jesus is the Son of God, proving that he is the Christ, the one whom God had promised; and all who heard him were astonished. (Acts 9:20-22)'))&&
+      heard.includes(T('Outside Jerusalem, Stephen, a disciple of Jesus, was stoned to death. A young man named Saul was close by, with the witnesses\' outer garments laid at his feet. (Acts 7:58, 60)'))&&
+      heard.includes(T('Saul asked who was speaking. The answer came: it was Jesus, the very one he was persecuting. Saul was to get up and go on into the city, and there he would learn what he must do. (Acts 9:5, 6)'))&&
+      heard.includes(T("Saul felt hands laid on him and heard Ananias call him brother. The Lord Jesus had sent Ananias so that Saul would see again and be full of holy spirit. At once, as if scales had dropped from his eyes, he could see, and he was baptized. (Acts 9:17, 18)"))&&
+      heard.includes(T('All who heard Saul in the synagogues of Damascus were amazed. Right away he was preaching that Jesus is the Son of God, and his careful proof that Jesus is the Christ left the Jews there baffled. (Acts 9:20-22)'))&&
       heard.includes(T('Damascus, about 36 C.E.'))&&
       !heard.includes(T('Saul of Tarsus, later known as the apostle Paul, once came to this city to arrest the disciples of Jesus.')),
       'Prologue plays through all nine steps (white screen in dark ink without the scroll, all five moods) and runs into Chapter One without repeating its two background lines');
@@ -2586,7 +2586,7 @@
   await useOn('longrope','roof beam');ok(F.ropeTied&&!has('longrope'),'rope tied');
   await actor(null,ACT.naomi);await choose(-1);await sweep(ACT.naomi);
   halt('house',()=>{say(P,'Twice around the beam, and a hitch that tightens under load.')});
-  halt('descent',()=>{G.scene=CHAP[1].scenes.wall;G.end={heads:1,by:92,rider:1};G.busy=true;lock(true);status();narr('One night his disciples took him to an opening in the wall and let him down in a basket. (Acts 9:25)',{dur:9000})});
+  halt('descent',()=>{G.scene=CHAP[1].scenes.wall;G.end={heads:1,by:92,rider:1};G.busy=true;lock(true);status();narr('Under cover of night, Saul\'s disciples lowered him in a basket from an opening in the city wall. (Acts 9:25)',{dur:9000})});
   await useOn('strongbasket','window');
   n=0;while(!ov.classList.contains('end')&&n++<4000)await wait(50);
   ok(ov.classList.contains('end'),'chapter one complete screen shown');
@@ -2757,7 +2757,7 @@
   halt('sealed',()=>{place(P,'court',232,116,1);say(P,'He cannot carry grain on a bare saddle. He needs pack bags.')});
   halt('loaded',()=>{F.bagsOn=1;F.loaded=1;place(ACT.xanthe,'court',216,128,-1);place(ACT.theron,'court',244,134,-1);place(P,'court',150,126,1);dealInv('court');drawInv();
     say(ACT.xanthe,'And my thread in every seam of it. I did have something to give.')});
-  halt('road',()=>{G.scene=CHAP[3].scenes.road;G.trek={k:.52};G.busy=true;lock(true);status();narr('And so the help was sent to the elders in Judea, with Barnabas and Saul to deliver it. (Acts 11:30)',{dur:9000})});
+  halt('road',()=>{G.scene=CHAP[3].scenes.road;G.trek={k:.52};G.busy=true;lock(true);status();narr('So the disciples sent their relief: Barnabas and Saul carried it to the elders in Judea. (Acts 11:30)',{dur:9000})});
   verb('use');item('bags');view(...hs('donkey'));
   n=0;while(!(ov.classList.contains('end')&&ov.textContent.includes(T('Called to Antioch')))&&n++<4000)await wait(50);
   ok(ov.classList.contains('end')&&ov.textContent.includes(T('Called to Antioch')),'chapter three complete screen shown');
@@ -2848,13 +2848,13 @@
   await actor(null,ACT.zadok);ok(nq()===3,'the word of encouragement: three ways to begin');
   await pickQ('Jerusalem did not know him');ok(nq()===2,'an accusation is no beginning');
   halt('speech');
-  await pickQ('the islands are still waiting');ok(nq()===3,'he begins with what was read');
+  await pickQ('the islands wait in hope');ok(nq()===3,'he begins with what was read');
   await pickQ('for the nations as well');ok(nq()===2,'not ahead of his hearers');await pickQ('promised David');
   await pickQ('signs and wonders');ok(nq()===2,'by the scroll, not by wonders');await pickQ("From David's offspring");
   await pickQ('on our way across the island');await pickQ('forgiveness of sins');
   ok(F.spoke&&!G.busy&&G.room==='synagogue','the word of God is proclaimed in the synagogue of Salamis');
   await enter(c4b);ok(G.room==='synagogue'&&F.vouched&&!F.spoke&&PC()===P&&BN.room==='synagogue'&&ACT.jair.room==='synagogue','the synagogue code restores');
-  await actor(null,ACT.zadok);await pickQ('the islands are still waiting');await pickQ('promised David');await pickQ("From David's offspring");await pickQ('forgiveness of sins');ok(F.spoke&&!G.busy,'and the talk is given again');
+  await actor(null,ACT.zadok);await pickQ('the islands wait in hope');await pickQ('promised David');await pickQ("From David's offspring");await pickQ('forgiveness of sins');ok(F.spoke&&!G.busy,'and the talk is given again');
   pray();await idle();ok(hint()[0]==='west4','the hint points west');
   await act(null,'door to the square');ok(G.room==='salamis'&&BN.room==='salamis'&&!G.busy,'out to the square');
   act(null,'west gate');await mapOpen();ok(G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===1&&SHARED.map.state.seen.has('seleucia'),'the west gate opens the map, with the crossing already drawn');
@@ -2916,7 +2916,7 @@
   heard.length=0;await act(null,'road north');ok(G.room==='perga'&&said('John Mark has not stirred from the bundles. Something is on his mind. I will not set out before I know what.'),'no setting out before John Mark has spoken');
   pray();await idle();ok(hint()[0]==='mark5','the hint points to John Mark');
   heard.length=0;await give('awl',BN);ok(!F.shod&&G.invs.barnabas.includes('awl'),'Give hands a tool to Barnabas');key('c');await idle();await give('awl',P);key('c');await idle();ok(has('awl')&&PC()===P,'and he hands it back');
-  heard.length=0;verb('use');item('awl');view(BN.x,BN.y-18);await idle();ok(!F.shod&&said('The strap has parted where it passes under the sole. Thread alone will not hold that: it wants a new thong of leather.'),'a parted strap wants leather, not thread');
+  heard.length=0;verb('use');item('awl');view(BN.x,BN.y-18);await idle();ok(!F.shod&&said('The strap has parted where it passes under the sole. Thread alone will not hold that: it needs a new thong of leather.'),'a parted strap wants leather, not thread');
   /* John Mark leaves them: no reason is given, and nothing the player says changes it */
   {const c=makeCode();key('c');await idle();await actor(null,ACT.mark);
     ok(F.markTold&&PC()===BN&&srt()==='staff5'&&['roof','bread','thong'].every(id=>G.invs.paul.includes(id))&&!G.busy,'if Barnabas is the one who asks, John Mark says the same, and what he hands over goes to Paul');
@@ -3001,11 +3001,11 @@
   await pickQ('all the rest of you who fear God');ok(nq()===6,'he addresses both; then, the passage for the Son: six on the tablets speak of the Christ');
   halt('speech5');
   await pickQ(S5(8));ok(nq()===5,'a light of nations: not yet');await pickQ(S5(3));
-  ok(nq()===5&&said('For us, their children, God has made that promise come wholly true by raising Jesus, as the second psalm says where God calls him his son and declares that he has become his father that day. (Acts 13:33)'),'the second psalm, as Acts brings it in');
+  ok(nq()===5&&said('By raising Jesus, God has kept that promise in full, and kept it for us, their children. The second psalm says it: there God calls him his son, and says that on this day he has become his father. (Acts 13:33)'),'the second psalm, as Acts brings it in');
   await pickQ(S5(6));ok(nq()===4,'a warning comes last');await pickQ(S5(5));ok(nq()===3,'either promise to David carries the point; then the warning');
   await pickQ(S5(6));
   ok(F.spoke1&&G.room==='pisidia'&&!G.busy&&ACT.joel.room==='pisidia'&&P.x>200&&said('Many Jews went with Paul and Barnabas, and so did many proselytes who worshipped God. (Acts 13:43)')&&
-    said('There were things of which the Law of Moses could not clear you. Of all of them, everyone who believes is cleared through him. (Acts 13:39)'),
+    said('The Law of Moses could not clear you of guilt in everything. But through Jesus, God declares everyone who believes guiltless of all of it. (Acts 13:39)'),
     'the word of encouragement is given, and they are asked to speak again');
   ok(said('David died, and his body did decay. The one God raised up did not decay. (Acts 13:36, 37)'),'what is said of David is given with both its verses (Acts 13:36, 37)');
   await enter(c5d);ok(G.room==='synp'&&!F.spoke1&&BN.room==='synp'&&ACT.hanan.room==='synp','the synagogue code restores');
@@ -3039,7 +3039,7 @@
   heard.length=0;await pickQ(S5(8));
   ok(F.out&&G.room==='border'&&!G.busy&&!G.crowd&&BN.room==='border'&&ACT.eumenes.room==='border'&&ACT.joel.room==='border'&&ACT.papias.room==='border'&&ACT.straton.room==='border'&&
     said('For this is what Jehovah has commanded us. He has set us as a light of nations, and through us salvation is to go out to the ends of the earth. (Acts 13:47)')&&
-    said('But you push it away, and by that you judge that everlasting life is not for you. So now we turn to the nations. (Acts 13:46)'),'a light of nations: they turn to the nations, and are thrown outside the boundaries');
+    said('Now we go to the nations instead, since you push the word away and show that you do not count yourselves worthy of everlasting life. (Acts 13:46)'),'a light of nations: they turn to the nations, and are thrown outside the boundaries');
   halt('border',()=>{say(ACT.straton,'That stone is the boundary of Antioch. You will not come back across it. That is the order of the leading men of the city.')});
   await sweep(ACT.straton,ACT.eumenes,ACT.joel,ACT.papias);
   heard.length=0;await act('look','Antioch');ok(said('There are disciples inside that wall now.')&&heard.length===2,'there are disciples in Antioch now: Paul says that, and no more');
@@ -3052,7 +3052,7 @@
   const c5f=makeCode();await enter(c5e);ok(G.room==='pisidia'&&PC()===BN&&F.eum&&F.joel&&F.pap&&!F.out&&ACT.joel.room==='pisidia','the code from the week restores, with Barnabas played');
   await enter(c5f);ok(G.room==='border'&&F.cheered&&PC()===P&&ACT.straton.room==='border','and the code from outside the boundaries');
   pray();await idle();ok(hint()[0]==='dust5','the hint: shake off the dust, and not in anger');
-  halt('dust',()=>{place(P,'border',238,123,-1);place(BN,'border',264,126,-1);P.bow=BN.bow=true;G.dust=1;G.busy=true;lock(true);status();narr('The two shook the dust from their feet against those people, and moved on to Iconium. (Acts 13:51)',{dur:9000})});
+  halt('dust',()=>{place(P,'border',238,123,-1);place(BN,'border',264,126,-1);P.bow=BN.bow=true;G.dust=1;G.busy=true;lock(true);status();narr('Against those who had driven them out, the two shook off the dust of their feet. Then they set out for Iconium. (Acts 13:51)',{dur:9000})});
   heard.length=0;act(null,'road to Iconium');
   n=0;while(!(ov.classList.contains('end')&&ov.textContent.includes(T('A Light of Nations')))&&n++<4000)await wait(50);
   ok(ov.classList.contains('end')&&ov.textContent.includes(T('A Light of Nations'))&&said('As for the disciples, joy and holy spirit went on filling them. (Acts 13:52)'),'chapter five complete screen shown');
@@ -3113,12 +3113,12 @@
   /* Iconium: nothing is left owing, and nothing unsaid */
   heard.length=0;await act(null,'south gate');ok(G.room==='iconium'&&!G.scene&&said('Not while a man in this street has paid me for a cover he does not have. I finish it first.'),'no leaving Iconium with a promise unkept');
   heard.length=0;await act('look','south gate');ok(quoted(0),'looking at the south gate, Paul says the proverb as his tablets have it');
-  heard.length=0;await act('use','unfinished cover');ok(!F.sewn&&said("The corners want leather, and I have none. But this is a saddler's shop."),'the corners want leather');
+  heard.length=0;await act('use','unfinished cover');ok(!F.sewn&&said("The corners need leather, and I have none. But this is a saddler's shop."),'the corners want leather');
   pray();await idle();ok(hint()[0]==='leather6','the hint points to the saddler');
-  await actor(null,A('nathan'));ok(nq()===6&&hasQ('They mean to stone us tomorrow.')&&hasQ('wagon cover wants four leather corners'),'Nathan: three questions, and two things learned');
+  await actor(null,A('nathan'));ok(nq()===6&&hasQ('They mean to stone us tomorrow.')&&hasQ('wagon cover needs four leather corners'),'Nathan: three questions, and two things learned');
   await pickQ('Have you leather to spare');ok(F.leather&&has('corners')&&nq()===5,'the saddler gives four corners of leather, and takes nothing for them');await choose(-1);
   await sweep(A('nathan'),A('xanthos'),A('tatia'),BN);
-  let t6=await tabs();ok(leaf(0,T('Nathan')).length===1&&leaf(0,T('Tatia')).length>=1&&leaf(0,T('Xanthos')).length>=1&&leaf(0,T("Finish the cover I promised Xanthos. Its corners want leather.")).length===1&&leaf(1).length===7,
+  let t6=await tabs();ok(leaf(0,T('Nathan')).length===1&&leaf(0,T('Tatia')).length>=1&&leaf(0,T('Xanthos')).length>=1&&leaf(0,T("Finish the cover I promised Xanthos. Its corners need leather.")).length===1&&leaf(1).length===7,
     'the tablets in Iconium: people, open tasks and seven passages');
   ok(leaf(1).every(t=>/\((?:[1-5]\.? )?\p{Lu}\p{Ll}+ \d+:\d+/u.test(t)&&!/[“”„"]/.test(t)),'every passage carries its reference, and none stands in quotation marks');key('Escape');await idle();
   pray();await idle();ok(hint()[0]==='sew6','the hint points to the cover');
@@ -3159,7 +3159,7 @@
   act(null,'south gate');await mapOpen();heard.length=0;mapClick('lystra');await idle();
   ok(G.room==='lystra'&&!G.scene&&!G.busy&&!has('silver')&&BN.room==='lystra'&&A('timothy').room==='lystra'&&A('eunice').room==='lystra'&&A('lois').room==='lystra'&&!A('lame').room&&!A('nathan').room&&heard.some(h=>h.includes('14:6, 7')),'a click on Lystra: they flee to the cities of Lycaonia');
   /* Lystra */
-  halt('lystra',()=>{say(BN,'A small town, Paul, and I see no synagogue. Where do we begin, with no reading to be asked up after?')});
+  halt('lystra',()=>{say(BN,'A small town, Paul, and I see no synagogue. With no reading, and no one to ask us to speak, where do we begin?')});
   heard.length=0;await act('use','well');ok(!F.healed&&said('To whom? I do not yet know who lives in this town, or what they have ever heard. That boy with the jar is listening to our Greek.'),'first, who lives here?');
   pray();await idle();ok(hint()[0]==='tim6','the hint points to the boy with the jar');
   await actor(null,A('timothy'));ok(F.metTim&&nq()===4&&hasQ('Who is the man sitting by the well?'),'Timothy: his mother is a Jewess, his father a Greek, and there is no synagogue');await choose(1);await choose(-1);
@@ -3169,7 +3169,7 @@
   heard.length=0;await act('talk','man sitting by the well');ok(!F.healed&&heard.length===1,'the man by the well listens');
   pray();await idle();ok(hint()[0]==='well6','the hint points to the well');
   key('c');await idle();pray();await idle();ok(hint()[0]==='well6b','Barnabas leaves the speaking to Paul');
-  halt('lame',()=>{place(P,'lystra',262,118,1);place(BN,'lystra',244,124,1);G.cam=160;narr('A man was sitting there in Lystra whose feet were crippled: lame since he was born, he had never once walked. (Acts 14:8)',{dur:9000})});
+  halt('lame',()=>{place(P,'lystra',262,118,1);place(BN,'lystra',244,124,1);G.cam=160;narr('One man in Lystra had never walked in his life. He had been born with crippled feet, and there he sat. (Acts 14:8)',{dur:9000})});
   place(P,'lystra',330,126,-1);heard.length=0;await act('use','well');
   ok(F.healed&&PC()===P&&A('lame').room==='lystra'&&G.crowd===1&&!G.bulls&&!G.busy&&!H('man sitting by the well')&&said('Get up, and stand on your feet! (Acts 14:10)')&&said('At that the man sprang up and started to walk. (Acts 14:10)')&&
     said('The crowds saw what Paul had done, and a shout went up in the Lycaonian tongue. (Acts 14:11)'),'at the well: the man who had never walked leaps up, and the crowds cry out in Lycaonian');
@@ -3180,7 +3180,7 @@
   await actor(null,BN);ok(hasQ('What are the people shouting?'),'a new thing to ask about');heard.length=0;await pickQ('What are the people shouting?');ok(!F.heard&&said(BN.hs.ask.tongue),'Barnabas does not know the tongue either');await choose(-1);
   heard.length=0;await actor(null,A('timothy'));
   ok(F.heard&&G.bulls===1&&A('priest').room==='lystra'&&!G.busy&&said('The gods, they cried, had taken human form and had come down to them. (Acts 14:11)')&&said('Barnabas they began to call Zeus; and Paul they called Hermes, because he was the one who led in speaking. (Acts 14:12)')&&
-    said('The temple of Zeus stood where one entered the city. Its priest brought bulls and garlands to the gates, and meant to offer sacrifice together with the crowds. (Acts 14:13)')&&quoted(1),'Timothy has both tongues: the gods have come down, they say; and the bulls are at the gates');
+    said('The temple of Zeus stood where one entered the city. Its priest came to the gates with bulls and garlands, meaning to join the crowds in offering sacrifice. (Acts 14:13)')&&quoted(1),'Timothy has both tongues: the gods have come down, they say; and the bulls are at the gates');
   halt('bulls',()=>{place(P,'lystra',150,120,-1);place(BN,'lystra',176,124,-1);G.cam=0;say(A('timothy'),'Bulls, sir, with garlands on them. They mean to sacrifice. To you.')});
   {const c=makeCode();await enter(c);ok(G.room==='lystra'&&F.heard&&G.bulls===1&&G.crowd===2&&A('priest').room==='lystra'&&A('lame').room==='lystra','the code restores the crowd, the priest and the bulls')}
   pray();await idle();ok(hint()[0]==='stop6','the hint points to the gate');
@@ -3197,7 +3197,7 @@
   heard.length=0;await pickQ('Rain from heaven');
   ok(F.stopped&&G.room==='outside'&&!G.busy&&!G.down&&!G.bulls&&!G.crowd&&PC()===P&&P.x>100&&BN.room==='outside'&&A('timothy').room==='outside'&&A('lois').room==='outside'&&!A('priest').room&&
     said('Even so, there was always something to bear witness to him: the good he did. He gave you rain from heaven and seasons of harvest, food in plenty, and hearts full of gladness. (Acts 14:17)')&&
-    said('Even with these words they could scarcely keep the crowds from offering sacrifice to them. (Acts 14:18)')&&
+    said('The crowds would still have sacrificed to them. With all their words, the two only just held them back. (Acts 14:18)')&&
     said('Then Jews came from Antioch and Iconium and won the crowds over. They stoned Paul, and taking him for dead they dragged him out of the city. (Acts 14:19)')&&quoted(5),
     'rain from heaven and seasons of harvest: the crowds are scarcely held back. Then he is stoned, and when the disciples surround him he gets up');
   halt('down',()=>{G.down=1;P.x=-80;G.busy=true;lock(true);status();narr('But the disciples gathered around him, and he rose... (Acts 14:20)',{dur:9000})});
