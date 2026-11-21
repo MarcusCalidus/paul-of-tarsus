@@ -111,7 +111,7 @@ const SHOTS=[
    says:[['paul','Then look up, Timothy. They are the same stars as over Lystra.',{dur:5200}]],
    async setup(){await scene(8,'deck')},
    async play(){await wait(400);await line(this,0)}},
-  /* the strings: the sundial's shadow moves on (Chapter Thirteen) */
+  /* the strings: the sundial's shadow moves on from morning to noon (Chapter Thirteen; turnDial(0, 1) in the game) */
   {id:'dial',bar:8,bars:1,view:'scene',card:'three',
    async setup(){await room(13,'street13',{upto:'hall'});G.scene=CHAP[13].scenes.dial;G.dial13={a:0,b:1,k:0}},
    async play(){await tween(2900,k=>{G.dial13.k=ease(k)})}},
@@ -162,9 +162,11 @@ const SHOTS=[
    async setup(){await room(6,'lystra',{at:[262,126,-1]})}},
   /* a breath */
   {id:'breath',bar:22,bars:1,view:'black',card:'langs'},
-  /* the last turn: the street in the evening, Paul beside the sundial; the bench at dawn (Chapter Thirteen) */
-  {id:'evening',bar:23,bars:1,view:'scene',
-   async setup(){await room(13,'street13',{upto:'e1',at:[374,122,-1]})}},
+  /* the last turn: the sundial again, from noon to evening (turnDial(1, 2)), so that a day has passed between its two shots; then the
+     bench at dawn (Chapter Thirteen) */
+  {id:'dial2',bar:23,bars:1,view:'scene',
+   async setup(){await room(13,'street13',{upto:'m1'});G.scene=CHAP[13].scenes.dial;G.dial13={a:1,b:2,k:0}},
+   async play(){await tween(2900,k=>{G.dial13.k=ease(k)})}},
   {id:'bench',bar:24,bars:1,view:'scene',
    async setup(){await room(13,'shop13',{upto:'hall',at:[150,122,1]})}},
   /* the title: the opening picture, its name over the tentmaker's bench by lamplight, and where to play */
