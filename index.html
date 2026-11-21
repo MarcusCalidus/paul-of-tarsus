@@ -280,6 +280,8 @@ function T(s,vars){if(typeof s!=='string')return s;let r=s;
     if(!MISSING.has(G.ch+': '+s)){MISSING.add(G.ch+': '+s);console.warn(`No ${G.lang} text for: ${s}`)}}}
   if(vars)r=r.replace(/\{(\w+)\}/g,(m,k)=>vars[k]!=null?vars[k]:m);
   MADE.add(r);return r}
+/* words: the words of a key ("door_to_the_street": "door to the street"), for logic that looks at what a thing is called */
+const words=k=>String(k).replace(/_/g,' ');
 /* T.peek: a key's text in the player's language, or null, without noting it as missing (for tests). */
 T.peek=s=>textOf(G.lang,s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
@@ -335,7 +337,7 @@ const PTR_CACHE={};let ptrKey='',ptrScale=3;
 function pointerKind(h){if(G.busy||G.scene||!G.room)return'default';if(G.verb!=='walk'&&PTRS[G.verb])return G.verb+(h?'-hot':'');
   if(!h)return'default';if(!h.exit)return'hot';
   const rw=ART[G.room]?ART[G.room].w:VW;if(h.x<=24)return'left';if(h.x+h.w>=rw-24)return'right';
-  return/\b(down|below|cellar)\b/i.test(h.name)?'down':'up'}
+  return/\b(down|below|cellar)\b/i.test(words(h.name))?'down':'up'}
 function pointer(s,kind='default'){ptrScale=s;const d=window.devicePixelRatio||1,u=clamp(Math.round(s*d/2),1,6),key=kind+'@'+u+'@'+d;if(key===ptrKey)return;ptrKey=key;
   const el=$('#view'),u1=clamp(Math.round(u/d),1,6),art=(k,sz)=>PTR_CACHE[k+'@'+sz]||(PTR_CACHE[k+'@'+sz]=pointerArt(sz,k));
   const a1=art(kind,u1),css=(a,sc,img)=>`${img} ${Math.round(a.hx*sc)} ${Math.round(a.hy*sc)},default`;
@@ -1294,7 +1296,7 @@ async function handOver(to,id){const who=PC(),i=G.inv.indexOf(id);if(i<0)return;
 function syncVerbs(){document.querySelectorAll('#verbs button').forEach(b=>b.classList.toggle('sel',b.dataset.v===G.verb));litVerb()}
 /* defVerb: what a plain click does to a hotspot. A hotspot may name it (def); otherwise a door is opened and any other exit
    walked to, a person is talked to, something that can be taken (see take) is picked up, and anything else is looked at. */
-function defVerb(h){if(h.def)return h.def;if(h.exit)return/\bdoor\b/i.test(h.name)?'open':'walk';if(h.actor)return'talk';
+function defVerb(h){if(h.def)return h.def;if(h.exit)return/\bdoor\b/i.test(words(h.name))?'open':'walk';if(h.actor)return'talk';
   return typeof h.pickup==='function'&&h.pickup.take?'pickup':'look'}
 /* litVerb: while the pointer rests on something and no verb is chosen, the verb a click would use is lit in the panel. */
 const itemVerb=id=>ITEMS[id].def||'look';

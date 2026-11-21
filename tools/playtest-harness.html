@@ -845,9 +845,9 @@
   pray();await idle();ok(hint()[0]==='reu7','the hint points to Reuben');
   heard.length=0;await act('look','benches');ok(quoted(1),'looking at the half-empty benches, Paul says the proverb as his tablets have it');
   await actor(null,A('reuben'));ok(nq()===4,'Reuben asks why Tarsus should take the letter on Paul\'s word: three answers, and a way to stop');
-  await pickQ('I was in the room');ok(nq()===3&&!F.silas,'no man is a witness in his own case');
-  await pickQ("apostles' letter");ok(nq()===2&&!F.silas,'the letter praises the man who carries it');
-  heard.length=0;await pickQ('Peter himself');ok(!F.silas&&!G.busy&&quoted(0)&&said('every_word_i_said_to_him'),'Paul cannot win it by arguing: Reuben asks for two witnesses, as the Law has it');
+  await pickQ('i_was_in_the_room_reuben');ok(nq()===3&&!F.silas,'no man is a witness in his own case');
+  await pickQ('read_it');ok(nq()===2&&!F.silas,'the letter praises the man who carries it');
+  heard.length=0;await pickQ('peter_himself_spoke_as_i_do');ok(!F.silas&&!G.busy&&quoted(0)&&said('every_word_i_said_to_him'),'Paul cannot win it by arguing: Reuben asks for two witnesses, as the Law has it');
   pray();await idle();ok(hint()[0]==='wit7','the hint points to Silas');
   heard.length=0;await give('letter',A('reuben'));ok(!F.read&&has('letter')&&said('i_can_read_paul'),'the letter alone does not answer him');
   heard.length=0;await give('letter',A('eirene'));ok(!F.read&&has('letter')&&heard.length===1,'Eirene cannot gather a congregation that Reuben will not sit down with');
@@ -855,11 +855,11 @@
   let t7=await tabs();ok(leaf(0,T('Silas')).length>=1&&leaf(0,T('Reuben')).length>=1&&leaf(0,T('Eirene')).length>=1&&leaf(0,T('reuben_asks_for_a_second_witness')).length===1&&leaf(1).length===7,
     'the tablets in Tarsus: people, open tasks and seven passages');
   ok(leaf(1).every(t=>/\((?:[1-5]\.? )?\p{Lu}\p{Ll}+ \d+:\d+/u.test(t)&&!/[“”„"]/.test(t)),'every passage carries its reference, and none stands in quotation marks');key('Escape');await idle();
-  await actor(null,SI);ok(nq()===4&&hasQ('reuben_will_not_take_the_letter'),'Silas: two questions, and a thing learned');heard.length=0;await pickQ('Reuben will not take the letter');ok(said(SI.hs.ask.witness[1]),'Silas was not sent all this way to carry a bundle');await choose(-1);
+  await actor(null,SI);ok(nq()===4&&hasQ('reuben_will_not_take_the_letter'),'Silas: two questions, and a thing learned');heard.length=0;await pickQ('reuben_will_not_take_the_letter');ok(said(SI.hs.ask.witness[1]),'Silas was not sent all this way to carry a bundle');await choose(-1);
   key('c');await idle();pray();await idle();ok(hint()[0]==='wit7b'&&PC()===SI,'Silas knows what he was sent for');
   await actor(null,A('reuben'));ok(nq()===3,'what has the man from Jerusalem to say? three answers');
-  await pickQ('Paul has told you the truth');ok(nq()===2&&!F.silas,'that only adds a voice to Paul\'s');
-  heard.length=0;await pickQ('sent from Jerusalem');ok(F.silas&&!G.busy&&said('it_says_that_judas_acts_15_27')&&
+  await pickQ('paul_has_told_you_the_truth');ok(nq()===2&&!F.silas,'that only adds a voice to Paul\'s');
+  heard.length=0;await pickQ('i_was_sent_from_jerusalem');ok(F.silas&&!G.busy&&said('it_says_that_judas_acts_15_27')&&
     said('two_witnesses'),'the second witness: Silas was sent to tell the same things in person');
   key('c');await idle();const c7a=makeCode();
   pray();await idle();ok(hint()[0]==='read7','the hint: the whole congregation, as in Antioch');
@@ -897,8 +897,8 @@
   heard.length=0;await act(null,'road_to_tarsus');ok(G.room==='gates'&&heard.length===1,'and no going back');
   heard.length=0;await act('use','torn_tent');ok(!F.mended&&said('i_can_close_the_seam_now'),'the torn-out loop wants leather');
   pray();await idle();ok(hint()[0]==='strap7','the hint points to the carter');
-  await actor(null,A('bion'));ok(nq()===4&&hasQ('corner loop needs a strip of leather'),'Bion: two questions, and a thing learned');await choose(0);await choose(-1);
-  await actor(null,A('zenon7'));ok(nq()===5&&hasQ('corner loop needs a strip of leather'),'Zenon: three questions, and a thing learned');await pickQ('corner loop needs');ok(F.strap&&has('strap')&&nq()===4,'Zenon gives a spare yoke strap');await choose(-1);
+  await actor(null,A('bion'));ok(nq()===4&&hasQ('tents_corner_loop_needs'),'Bion: two questions, and a thing learned');await choose(0);await choose(-1);
+  await actor(null,A('zenon7'));ok(nq()===5&&hasQ('tents_corner_loop_needs'),'Zenon: three questions, and a thing learned');await pickQ('tents_corner_loop_needs');ok(F.strap&&has('strap')&&nq()===4,'Zenon gives a spare yoke strap');await choose(-1);
   await sweep(A('zenon7'),A('bion'),A('charis'),A('melissa'),SI);
   pray();await idle();ok(hint()[0]==='mend7','the hint points to the tent');
   key('c');await idle();pray();await idle();ok(hint()[0]==='craft7'&&PC()===SI,'Silas prays, and leaves the craft to Paul');
@@ -923,13 +923,13 @@
   await use('awl','cloth7');ok(F.sewn&&has('pcase')&&!has('cloth7'),'a case sewn from the merchant\'s cloth');
   heard.length=0;await use('letter','pcase');ok(!F.cased&&said('not_yet_cloth'),'cloth alone drinks water');
   pray();await idle();ok(hint()[0]==='tallow7','the hint points to the carter again');
-  await actor(null,A('zenon7'));ok(hasQ('copies_of_the_letter_must'),'a new thing to ask about');await pickQ('must be kept dry');ok(F.tallow&&has('tallow'),'Zenon gives tallow from his grease pot');await choose(-1);
+  await actor(null,A('zenon7'));ok(hasQ('copies_of_the_letter_must'),'a new thing to ask about');await pickQ('copies_of_the_letter_must');ok(F.tallow&&has('tallow'),'Zenon gives tallow from his grease pot');await choose(-1);
   pray();await idle();ok(hint()[0]==='proof7','the hint: tallow, and the case');
   const c7d=makeCode();await use('tallow','pcase');ok(F.cased&&!has('tallow')&&!has('pcase')&&has('letter')&&ITEMS.letter.icon==='lcase'&&!G.busy,'tallow in the weave: the letter and its copies are in a case that sheds water');
   halt('case7',()=>{say(SI,'letter_from_jerusalem_in_a_case')});
   await enter(c7d);ok(G.room==='gates'&&F.up&&F.sewn&&F.tallow&&!F.cased&&has('pcase')&&has('tallow')&&!A('charis').room,'the code holds the case and the tallow');await use('pcase','tallow');ok(F.cased,'proofed again after the code');
   await sweep(A('zenon7'),A('bion'),SI);
-  await actor(null,A('bion'));ok(nq()===3,'Bion, dry: two questions');heard.length=0;await pickQ('wondering why');ok(said('i_may_do_that_it'),'Paul says why, and offers to say more');await choose(-1);
+  await actor(null,A('bion'));ok(nq()===3,'Bion, dry: two questions');heard.length=0;await pickQ('you_are_wondering_why_we_did_it');ok(said('i_may_do_that_it'),'Paul says why, and offers to say more');await choose(-1);
   pray();await idle();ok(hint()[0]==='derbe7','the hint points on through the Gates');
   act(null,'cilician_gates');await mapOpen();ok(G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===3&&SHARED.map.state.pulse==='ciliciangates','at first light the road opens the map, with the way from Tarsus drawn');
   ok(mapClear(),'no name on the map at the Gates crosses a coast, a lake or a route'+clear());ok(cross(SHARED.map.state.legs)===0,'no two routes cross');
@@ -944,7 +944,7 @@
   heard.length=0;await act(null,'door_to_the_lane');ok(G.room==='lystra7'&&!G.scene&&said('we_have_only_just_come_in'),'Lystra hears the letter first');
   pray();await idle();ok(hint()[0]==='readL7','the hint points to the older man');
   await actor(null,A('timothy7'));ok(nq()===3,'Timothy would come at a word: three things Paul might say');
-  await pickQ('and come now');ok(nq()===2,'too soon: those who have watched him have not been asked');await pickQ('young for such a road');ok(nq()===1,'that would be judging by what appears to the eyes');
+  await pickQ('come_with_us_timothy_and_come_now');ok(nq()===2,'too soon: those who have watched him have not been asked');await pickQ('you_are_young_for_such');ok(nq()===1,'that would be judging by what appears to the eyes');
   await choose(0);ok(!G.busy&&!ov.classList.contains('end')&&G.room==='lystra7','a hasty word is set aside, and never spoken');
   heard.length=0;await actor(null,A('myron'));ok(!F.eld&&said('first_the_letter_brother'),'first the letter');
   await sweep(A('timothy7'),A('eunice7'),A('lois7'),A('myron'),SI);
@@ -955,12 +955,12 @@
   heard.length=0;await actor(null,A('myron'));ok(!F.eld&&heard.length===1,'the older man has nothing to tell Silas about Timothy');key('c');await idle();
   await actor(null,A('myron'));ok(nq()===3,'what does Paul need to know? three questions');
   halt('myron',()=>{say(A('myron'),'you_have_been_watching')});
-  await pickQ('speak well before');ok(nq()===2&&!F.eld,'a question about his tongue gets a short answer');
-  heard.length=0;await pickQ('What do you give him to do');ok(F.eld&&!G.busy&&said('i_have_never_had_to_ask'),'the older men of Lystra: what he is given, he does, and does not count it');
+  await pickQ('does_he_speak_well_before_the_congregation');ok(nq()===2&&!F.eld,'a question about his tongue gets a short answer');
+  heard.length=0;await pickQ('what_do_you_give_him_to_do');ok(F.eld&&!G.busy&&said('i_have_never_had_to_ask'),'the older men of Lystra: what he is given, he does, and does not count it');
   pray();await idle();ok(hint()[0]==='fam7','the hint points to his own household');
   await actor(null,A('eunice7'));ok(nq()===3,'his mother will speak well of him whatever is asked: three questions');
-  await pickQ('quick pupil');ok(nq()===2&&!F.fam,'many a quick boy has learned the Psalms');
-  heard.length=0;await pickQ('when the brothers are not looking');ok(F.fam&&!G.busy&&said('i_taught_my_daughter_and_she'),'Eunice and Lois: he is the same at home');
+  await pickQ('was_he_a_quick_pupil');ok(nq()===2&&!F.fam,'many a quick boy has learned the Psalms');
+  heard.length=0;await pickQ('what_is_he_at_home_when_the_brothers');ok(F.fam&&!G.busy&&said('i_taught_my_daughter_and_she'),'Eunice and Lois: he is the same at home');
   pray();await idle();ok(hint()[0]==='ico7','the hint points to Iconium');
   t7=await tabs();ok(leaf(0,T('Timothy')).length>=1&&leaf(0,T('Myron')).length>=1&&leaf(0,T('Lois')).length>=1&&leaf(0,T('Reuben')).length===0&&leaf(0,T('carry_the_decrees_to_iconium')).length===1,'the tablets in Lystra');key('Escape');await idle();
   const c7e=makeCode();
@@ -980,14 +980,14 @@
   heard.length=0;await give('letter',A('nathan7'));ok(F.readI&&has('letter')&&!G.busy&&said('congregation_in_iconium'),'the decrees are delivered in Iconium');
   pray();await idle();ok(hint()[0]==='nat7','the hint: how does Iconium come to know him?');
   await actor(null,A('nathan7'));ok(nq()===3,'what does Paul want to know? three questions');
-  await pickQ('look like a man');ok(nq()===2&&!F.nat,'a saddler knows what a fine finish is worth');
-  heard.length=0;await pickQ('come to know a young man');ok(F.nat&&!G.busy&&said('he_has_done_it_every_few'),'Nathan: he walked a day with a sack on his back, for brothers not of his own congregation');
+  await pickQ('does_he_look_like_a_man');ok(nq()===2&&!F.nat,'a saddler knows what a fine finish is worth');
+  heard.length=0;await pickQ('how_does_iconium_come_to_know');ok(F.nat&&!G.busy&&said('he_has_done_it_every_few'),'Nathan: he walked a day with a sack on his back, for brothers not of his own congregation');
   heard.length=0;await act(null,'south_gate');ok(G.room==='iconium7'&&!G.scene&&said('not_yet_the'),'not before Iconium has been heard out');
   pray();await idle();ok(hint()[0]==='tat7','the hint points to Tatia');
   await actor(null,A('tatia7'));ok(nq()===3,'Tatia can tell what she has seen: three questions');
-  await pickQ('Is he bold');ok(nq()===2&&!F.tat,'Barnabas was never loud either');
+  await pickQ('is_he_bold');ok(nq()===2&&!F.tat,'Barnabas was never loud either');
   halt('tatia7',()=>{});
-  heard.length=0;await pickQ('What does he do');ok(F.tat&&!G.busy&&said('he_is_not_pretending_paul'),'Tatia: he genuinely cares, even for the man who shouted at him');
+  heard.length=0;await pickQ('what_does_he_do_when_he');ok(F.tat&&!G.busy&&said('he_is_not_pretending_paul'),'Tatia: he genuinely cares, even for the man who shouted at him');
   pray();await idle();ok(hint()[0]==='back7','the hint points back to Lystra');
   {const c=makeCode();await enter(c7e);ok(G.room==='lystra7'&&F.readL&&F.eld&&F.fam&&F.psalm&&!F.readI&&!F.nat&&PC()===P&&A('myron').room==='lystra7'&&!A('nathan7').room,'the code from Lystra restores');
     await enter(c);ok(G.room==='iconium7'&&F.readI&&F.nat&&F.tat&&A('nathan7').room==='iconium7'&&!A('myron').room,'and the code from Iconium')}
@@ -1002,9 +1002,9 @@
   /* Paul asks, the older men stand with him, and Timothy comes */
   heard.length=0;await actor(null,A('timothy7'));
   ok(nq()===3&&said('the_brothers_in_lystra_acts_16_2'),'the brothers in Lystra and Iconium speak well of him: three ways to put it to him');
-  await pickQ('You must come');ok(nq()===2,'a volunteer is wanted, not a porter');
+  await pickQ('brothers_have_spoken_for_you');ok(nq()===2,'a volunteer is wanted, not a porter');
   halt('invite',()=>{});
-  await pickQ('carry the bundles');ok(nq()===1,'true, and the least part of it');
+  await pickQ('i_need_someone_to_carry_the_bundles');ok(nq()===1,'true, and the least part of it');
   halt('hands',()=>{$('#choices').classList.remove('on');place(A('myron'),'lystra7',128,127,1);for(const a of[P,SI,A('timothy7'),A('myron'),A('eunice7'),A('lois7')])a.bow=true;
     narr('there_were_prophecies_1_timothy_1_18_4_14_2_timothy_1_6',{dur:9000})});
   heard.length=0;choose(0);
@@ -1074,8 +1074,8 @@
   heard.length=0;await act(null,'paved_road_west');
   ok(nq()===3&&!F.asia&&said('province_of_asia_acts_16_6')&&said('how_this_was_made_known'),'the road west: forbidden, as Acts 16:6 tells it; how, the game does not say. Three things Paul could do');
   halt('closed8');
-  await pickQ('We wait here');ok(nq()===2&&!F.asia,'waiting at a fork chooses nothing');
-  await pickQ('We turn back');ok(nq()===1&&!F.asia,'nor were they sent to walk one road twice');
+  await pickQ('we_wait_here_until_we_are');ok(nq()===2&&!F.asia,'waiting at a fork chooses nothing');
+  await pickQ('we_turn_back_to_the_congregations');ok(nq()===1&&!F.asia,'nor were they sent to walk one road twice');
   heard.length=0;await choose(0);ok(F.asia&&!G.busy&&said('i_do_not_know_why_timothy')&&said('nothing_is_wrong_with_your_road_attalos'),
     'Paul goes on by the road that is still open, and says plainly what he does not know');
   pray();await idle();ok(hint()[0]==='north8','the hint points north');
@@ -1091,8 +1091,8 @@
   pray();await idle();ok(hint()[0]==='bith8','the hint points to the ferry');
   heard.length=0;await act(null,'road_west');ok(G.room==='ferry'&&!F.bith&&heard.length===1,'the road to the sea is not yet Paul\'s road');
   heard.length=0;await act(null,'ferry');ok(nq()===3&&!F.bith&&said('spirit_of_jesus_acts_16_7'),'the ferry: not permitted, as Acts 16:7 tells it. Three things Paul could do');
-  await pickQ('We wait at the ferry');ok(nq()===2,'sitting on a river bank is not obedience');
-  await pickQ('We go home');ok(nq()===1,'nobody has told him to go home');
+  await pickQ('we_wait_at_the_ferry_until');ok(nq()===2,'sitting on a river bank is not obedience');
+  await pickQ('two_roads_are_shut');ok(nq()===1,'nobody has told him to go home');
   heard.length=0;await choose(0);ok(F.bith&&!G.busy&&said('it_does_and_we_shall_pass'),'west, through Mysia: and they will pass it by');
   pray();await idle();ok(hint()[0]==='sea8','the hint points west');
   await sweep(A('kleitos'),SI,TI);
@@ -1145,12 +1145,12 @@
   heard.length=0;await act(null,'gangplank');ok(G.room==='troas'&&said('not_before_the_brothers'),'no going aboard on one man\'s word');
   key('c');await idle();pray();await idle();ok(hint()[0]==='paul8b','Luke leaves that to Paul');key('c');await idle();
   await actor(null,SI);ok(nq()===3&&!F.concl,'how to begin: three ways');
-  await pickQ('I have decided');ok(nq()===2,'it is not his to settle alone');
-  await pickQ('It was one night');ok(nq()===1,'nor does he ask for it twice');
+  await pickQ('i_have_decided_we_sail_for_macedonia');ok(nq()===2,'it is not his to settle alone');
+  await pickQ('it_was_one_night');ok(nq()===1,'nor does he ask for it twice');
   heard.length=0;await choose(0);ok(nq()===5&&said('that_is_all_of_it'),'he reports what he saw, and no more; then they weigh it together');
   halt('concl8');
-  await pickQ('I am tired of walking');ok(nq()===4&&!F.concl,'true, and no reason at all');
-  await pickQ('Macedonia is a great country');ok(nq()===3&&!F.concl,'nor is that a reason');
+  await pickQ('i_am_tired_of_walking_and_a_ship');ok(nq()===4&&!F.concl,'true, and no reason at all');
+  await pickQ('macedonia_is_a_great_country');ok(nq()===3&&!F.concl,'nor is that a reason');
   await choose(0);await choose(0);heard.length=0;await choose(0);
   ok(F.concl&&!G.busy&&quoted(2)&&said('god_had_summoned_acts_16_10')&&
     said('from_this_verse_on_the_account'),'the conclusion is drawn by all four (Acts 16:10), and the account says "we"');
@@ -1172,8 +1172,8 @@
   heard.length=0;await act(null,'street_to_the_marketplace');ok(G.room==='philippi'&&heard.length===1,'the marketplace is for another day');
   heard.length=0;await actor(null,A('quintus'));ok(nq()===3&&said('a_synagogue'),'no synagogue in Philippi: three questions for an old soldier');
   halt('gate8');
-  await pickQ('Why is there no synagogue');ok(nq()===2&&!F.gate,'he does not know why, and nobody in the game says');
-  await pickQ('Do you know any who worship');ok(nq()===1&&!F.gate,'nor whom other people pray to');
+  await pickQ('why_is_there_no_synagogue');ok(nq()===2&&!F.gate,'he does not know why, and nobody in the game says');
+  await pickQ('do_you_know_any_who_worship');ok(nq()===1&&!F.gate,'nor whom other people pray to');
   heard.length=0;await choose(0);ok(F.gate&&!F.shop&&!G.busy,'what he has seen: women who go out to the river on some mornings');
   pray();await idle();ok(hint()[0]==='shop8','the hint: the shutters');
   heard.length=0;act(null,'west_gate');await until(()=>G.room==='river'&&!G.busy);ok(G.room==='river'&&!A('lydia').room&&said('river_trees_and_nobody'),'on a weekday there is only the river');
@@ -1181,7 +1181,7 @@
   pray();await idle();ok(hint()[0]==='back8','the hint: back to the city');
   act(null,'road_to_the_gate');await until(()=>G.room==='philippi'&&!G.busy);
   heard.length=0;await actor(null,A('zosime'));ok(nq()===3,'three questions for a seller of purple');
-  await pickQ('Do you know any Jews');await pickQ('Is your neighbor');heard.length=0;await choose(0);
+  await pickQ('do_you_know_any_jews_in_this_city');await pickQ('is_your_neighbor_a_good');heard.length=0;await choose(0);
   ok(F.shop&&!G.busy&&said('gate_a_river_and_a_seventh_day'),'shutters closed every seventh day: Paul thinks, and does not say that he knows');
   halt('shop8',()=>{say(A('zosime'),'every_seventh_day_those_shutters')});
   ok(!heard.some(h=>/military|ten men|ten Jewish/i.test(h)),'nobody gives a reason why Philippi has no synagogue');
@@ -1202,25 +1202,25 @@
   heard.length=0;await act(null,'road_to_the_gate');ok(G.room==='river'&&heard.length===1,'no going back without a word to them');
   key('c');await idle();heard.length=0;await actor(null,A('lydia'));ok(!F.sat&&said('paul_is_weighing_how_we'),'Luke waits for Paul');key('c');await idle();
   await actor(null,A('phila'));ok(nq()===3&&!F.sat,'how to come to them: three ways');
-  await pickQ('Stand before them');ok(nq()===2,'there is no platform here');
-  await pickQ('Keep our distance');ok(nq()===1,'nor did he cross the sea to stand behind a tree');
+  await pickQ('stand_before_them_and_address');ok(nq()===2,'there is no platform here');
+  await pickQ('keep_our_distance_until');ok(nq()===1,'nor did he cross the sea to stand behind a tree');
   heard.length=0;await choose(0);ok(F.sat&&!G.busy&&said('there_we_sat_acts_16_13'),'they sit down among the women (Acts 16:13)');
   halt('sit8',()=>{say(A('phila'),'you_are_not_strangers_on_this_bank')});
   pray();await idle();ok(hint()[0]==='speak8','the hint: speak');
   await sweep(A('lydia'),A('phila'),A('elpis'));
   key('c');await idle();heard.length=0;await actor(null,A('elpis'));ok(heard.length===1&&!G.busy,'Luke speaks with one of the women');key('c');await idle();
   await actor(null,A('lydia'));ok(nq()===3,'where to begin: three ways');
-  await pickQ('With the rain and the seasons');ok(nq()===2,'these women know him already');
-  await pickQ('With the letter');ok(nq()===1,'there is no congregation here yet');
+  await pickQ('with_the_rain_and_the_seasons');ok(nq()===2,'these women know him already');
+  await pickQ('with_the_letter_from_jerusalem');ok(nq()===1,'there is no congregation here yet');
   heard.length=0;choose(0);await until(()=>nq()===4&&$('#choices').classList.contains('on'),3000);
   ok(nq()===4&&quoted(5)&&quoted(6)&&said('one_of_the_listeners_acts_16_14')&&
     said('she_was_baptized_acts_16_15')&&said('if_in_your_eyes_acts_16_15')&&said('it_is_said'),
     'all four speak; Jehovah opens her heart (Acts 16:14); her baptism is told (Acts 16:15); and she urges them');
   ok(said('it_was_not_my_words_that_opened')&&!heard.some(h=>/that is why|therefore the spirit/i.test(h)),'Paul takes no credit, and nobody draws a conclusion from Thyatira');
   halt('lydia8');
-  heard.length=0;await pickQ('I have a trade');ok(nq()===3&&said('if_in_your_eyes_i_am_faithful'),'she has one answer');
-  heard.length=0;await pickQ('We are four men');ok(nq()===2&&quoted(7),'Paul remembers the woman of Shunem');
-  await pickQ('without cost');ok(nq()===1,'the last reason, and the same answer');
+  heard.length=0;await pickQ('i_have_a_trade_lydia');ok(nq()===3&&said('if_in_your_eyes_i_am_faithful'),'she has one answer');
+  heard.length=0;await pickQ('we_are_four_men');ok(nq()===2&&quoted(7),'Paul remembers the woman of Shunem');
+  await pickQ('i_want_to_offer_the_good');ok(nq()===1,'the last reason, and the same answer');
   heard.length=0;choose(0);
   n=0;while(!(ov.classList.contains('end')&&ov.textContent.includes(T('the_man_from_macedonia')))&&n++<4000)await wait(50);
   ok(ov.classList.contains('end')&&ov.textContent.includes(T('the_man_from_macedonia'))&&said('she_would_take_acts_16_15')&&
@@ -1297,7 +1297,7 @@
   await pickL('c1');ok(said('that_one_we_sang_to_its_end'),'it is not taken up at a line that was finished');
   await pickL('c3');ok(said('they_have_not_heard_that_line_yet'),'nor at one they have not heard');
   heard.length=0;await pickL('c2');ok(said('again_she_cried_out_who')&&nq()===3,'taken up where it broke, and broken again');
-  await pickQ('Sing louder');await pickQ('Move down the bank');ok(nq()===1&&!F.d1,'singing louder and moving away are set aside');
+  await pickQ('sing_louder_than_she_cries');await pickQ('move_down_the_bank_out_of_her_hearing');ok(nq()===1&&!F.d1,'singing louder and moving away are set aside');
   heard.length=0;await choose(0);await until(()=>F.d1&&!G.busy);ok(F.d1&&!F.d2&&G.room==='river9'&&said('she_followed_us_that_day'),'the first day ends with two lines learned');
   pray();await idle();ok(hint()[0]==='ps29','the hint: the third line');
   heard.length=0;await stones();await pickL('c4');ok(said('not_yet_one'),'the last line is not the third');
@@ -1320,7 +1320,7 @@
   await wait(250);{const tag=[...document.querySelectorAll('#tags .tag')].find(t=>t.textContent===T('dripping_water'));heard.length=0;if(tag)tag.click();await idle();ok(tag&&said('water_dripping_somewhere_to_my_left'),'a name in the dark can be clicked')}
   pray();await idle();ok(hint()[0]==='voice9','the hint: what is within reach');
   heard.length=0;await actor(null,SI);ok(nq()===3&&said('did_they_take_what_was_on_them'),'Silas asks about the tablets');
-  await pickQ('Nothing at all');await pickQ('Patience');heard.length=0;await choose(0);ok(F.voice&&said('they_did_not_brother'),'what is left: what they know by heart, and two voices');
+  await pickQ('nothing_at_all');await pickQ('Patience');heard.length=0;await choose(0);ok(F.voice&&said('they_did_not_brother'),'what is left: what they know by heart, and two voices');
   heard.length=0;await actor(null,SI);ok(nq()===4,'the psalm, from memory');await pickL('c2');ok(said('no_that'),'the second line is not the first');
   heard.length=0;await pickL('c1');await until(()=>F.s1&&!G.busy);ok(F.s1&&told('v25')&&said('muttering_had_stopped')&&!PR[0].room&&PR[1].room==='cell9','Paul begins, Silas answers, and one sound in the dark falls silent');
   pray();await idle();ok(hint()[0]==='song91','the hint gives the next line');
@@ -1344,32 +1344,32 @@
   halt('court9');
   pray();await idle();ok(hint()[0]==='back9','the hint: where should the morning find them?');
   heard.length=0;await act(null,'outer_door');ok(G.room==='gaol9'&&!F.back&&said('at_daybreak_this_man_would'),'the outer door stands open, and they do not take it');
-  await actor(null,JA);await pickQ('What will you tell');await pickQ('Rest, brother');
+  await actor(null,JA);await pickQ('what_will_you_tell_the_magistrates');await pickQ('rest_brother_said');
   heard.length=0;await act(null,'door_of_the_inner_prison');await until(()=>F.back&&!G.busy);
   ok(F.back&&said('before_it_was_light_the_two')&&told('v35')&&told('v36')&&CO.room==='gaol9','they walk back in; in the morning the constables come');
   halt('morning9');
   /* the morning: what a Roman may ask */
   pray();await idle();ok(hint()[0]==='ans9','the hint: not in secret');
-  heard.length=0;await actor(null,JA);ok(nq()===3,'three things Paul could answer');await pickQ('thank God for it');await pickQ('take this to Rome');heard.length=0;await choose(0);await until(()=>F.open&&!G.busy);
+  heard.length=0;await actor(null,JA);ok(nq()===3,'three things Paul could answer');await pickQ('we_go_and_thank_god_for_it');await pickQ('we_go_and_i_take_this_to_rome');heard.length=0;await choose(0);await until(()=>F.open&&!G.busy);
   ok(told('v37')&&told('v38')&&MG.room==='gaol9'&&said('there_has_been_a_mistake'),"Paul's answer is told; the magistrates come themselves");
   halt('mags9');
   pray();await idle();ok(hint()[0]==='ask9','the hint: what the brothers need');
-  heard.length=0;await actor(null,MG);ok(nq()===4,'four things he could ask of them');await pickQ('Silver');await pickQ('The rods');await pickQ('Their leave to stay');heard.length=0;await choose(0);
+  heard.length=0;await actor(null,MG);ok(nq()===4,'four things he could ask of them');await pickQ('Silver');await pickQ('rods_for_the_men_who_accused_us');await pickQ('their_leave_to_stay_and_to_preach');heard.length=0;await choose(0);
   await until(()=>F.free&&G.room==='lydia9'&&!G.busy,15000);
   ok(told('v39')&&told('v40a')&&srt()==='awl,knife,tablets,thread'&&P.wear===''&&LK.room==='lydia9'&&!LU.room&&$('#swap').disabled&&said('nothing_in_philippi_must'),"led out by daylight; at Lydia's house Timothy gives back what was torn off them");
   halt('home9');
   /* Lydia's house: so that nobody has to ask for Paul */
   {const el=await tabs();ok(leaf(0,T('who_begins_the_psalm_by_the_river')).length===1&&leaf(0,T('where_do_the_brothers_meet')).length===1,'the tablets list what must not wait for Paul');el.click();await idle()}
-  heard.length=0;await actor(null,LY);ok(nq()===4,'three cares, and a way out of the question');await pickQ('household by the prison');
+  heard.length=0;await actor(null,LY);ok(nq()===4,'three cares, and a way out of the question');await pickQ('there_is_a_household_by_the_prison');
   ok(!F.k1&&said('i_shall_send_them_bread'),'Lydia is not the one for the household by the prison');
-  await actor(null,LK);await pickQ('household by the prison');ok(F.k1,'Luke is: he stays in Philippi');
+  await actor(null,LK);await pickQ('there_is_a_household_by_the_prison');ok(F.k1,'Luke is: he stays in Philippi');
   heard.length=0;await act(null,'door_to_the_street');ok(G.room==='lydia9'&&said('not_yet_i'),'Paul does not leave yet');
-  await actor(null,PH);await pickQ('Where do the brothers');ok(!F.k2,"the room is not Phila's to offer");
-  await actor(null,LY);await pickQ('Where do the brothers');ok(F.k2,"it is Lydia's");
+  await actor(null,PH);await pickQ('where_do_the_brothers_of_philippi');ok(!F.k2,"the room is not Phila's to offer");
+  await actor(null,LY);await pickQ('where_do_the_brothers_of_philippi');ok(F.k2,"it is Lydia's");
   {const c=makeCode();F.k2=0;await enter(c);ok(G.room==='lydia9'&&F.free&&F.k1&&F.k2&&!F.k3&&srt()==='awl,knife,tablets,thread'&&P.wear===''&&!LU.room&&LK.room==='lydia9'&&makeCode()===c,'a code from the last scene round-trips: '+c)}
   halt('cares9');
   pray();await idle();ok(hint()[0]==='k39','the hint: who begins the psalm');
-  heard.length=0;await actor(null,PH);await pickQ('Who begins the psalm');
+  heard.length=0;await actor(null,PH);await pickQ('who_begins_the_psalm_by_the_river');
   while(!(ov.classList.contains('end')&&ov.textContent.includes(T('midnight_in_philippi_2')))&&n9++<4000)await wait(50);
   ok(ov.classList.contains('end')&&F.k3&&told('v40b')&&said('it_was_sung_to_its_end')&&said(C().psalm.c4.full),'the psalm is sung to its end; chapter nine complete screen shown');
   ok(ov.textContent.includes(T('click_to_continue_to_chapter_ten'))&&/Psalm 136/.test(ov.textContent),'the closing screen says what the account leaves unsaid');
@@ -1509,8 +1509,8 @@
   halt('night10');
   heard.length=0;await act(null,'door_to_the_lane');ok(G.room==='night10'&&heard.length===1,'the door stays shut until Jason has been heard');
   pray();await idle();ok(hint()[0]==='night10','the hint: Jason');
-  await actor(null,JA);ok(nq()===4,'four things he could do with the night');await pickQ('Stand before the city rulers');ok(nq()===3&&!F.gone,'what was right in Philippi would cost Jason here');
-  await pickQ('Stay in this house');await pickQ('Go back to my bench');ok(nq()===1,'two more, each true and of no use to Jason');
+  await actor(null,JA);ok(nq()===4,'four things he could do with the night');await pickQ('stand_before_the_city_rulers');ok(nq()===3&&!F.gone,'what was right in Philippi would cost Jason here');
+  await pickQ('stay_in_this_house_and_teach');await pickQ('go_back_to_my_bench');ok(nq()===1,'two more, each true and of no use to Jason');
   heard.length=0;choose(0);await mapOK(1,['thessalonica','beroea'],'the road to Beroea is told on the map');
   ok(F.gone&&SHARED.map.state.night===true&&said('you_told_us_that_it_would'),'he goes the same night, and the window of the map is dark');
   halt('nightmap10');
@@ -1551,8 +1551,8 @@
   heard.length=0;await act('look','window');ok(said('the_mountain'),'Timothy looks at things in his own words');
   heard.length=0;await act('pickup','chest_of_the_scrolls');ok(said('it_is_not_mine_to_take_said'),'and has his own answers where nothing was written for him');
   pray();await idle();ok(hint()[0]==='own10'&&heard.some(h=>h.includes(T('Timothy'))),'Timothy prays, and the hint is his');
-  await actor(null,LT);ok(nq()===3,'three things Timothy could do');await pickQ('Set the table for him myself');ok(nq()===2&&!F.own,'he could: and next week he may be sent for too');
-  await pickQ('wait until Paul is back');heard.length=0;choose(0);
+  await actor(null,LT);ok(nq()===3,'three things Timothy could do');await pickQ('set_the_table_for_him_myself');ok(nq()===2&&!F.own,'he could: and next week he may be sent for too');
+  await pickQ('tell_him_to_wait_until');heard.length=0;choose(0);
   await mapOK(3,['beroea','athens'],'the way to the sea, and by sea to Athens, is told on the map');
   ok(F.own&&said('eupolemos')&&read(C().ev.pierce)&&said('outside_strangers_were_shouting_in_the_street'),'the last round at the table is solved by taking the hand away from it: the Beroeans set all three scrolls themselves');
   halt('seamap10');
@@ -1567,7 +1567,7 @@
   await actor(null,E1);ok(nq()===5&&!hasQ('that_is_the_whole_message'),'five things he could send');
   await pickQ('it_is_for_silas_and_timothy');ok(nq()===5&&hasQ('that_is_the_whole_message'),'the message can be ended once it has begun');
   heard.length=0;await pickQ('that_is_the_whole_message');ok(!F.msg&&said('what_are_they_to_do'),'a part is missing, and the brother asks for it');
-  await pickQ('They are to come to me');await pickQ('Greet Eupolemos');await pickQ('as_quickly_as_they_can');heard.length=0;await pickQ('that_is_the_whole_message');
+  await pickQ('they_are_to_come_to_me');await pickQ('greet_eupolemos_dorotheos');await pickQ('as_quickly_as_they_can');heard.length=0;await pickQ('that_is_the_whole_message');
   ok(!F.msg&&said('too_much_for_one_memory')&&nq()===3,'a greeting too many, and the brother loses his thread: only what must not be lost');
   heard.length=0;pickQ('that_is_the_whole_message');
   while(!(ov.classList.contains('end')&&ov.textContent.includes(T('is_it_so_q')))&&n10++<4000)await wait(50);
@@ -1669,9 +1669,9 @@
   pray();await idle();ok(hint()[0]==='steps11','the hint points to the men on the steps');
   /* the tablets fail: three passages, all true, and to these men only names */
   heard.length=0;await actor(null,CH);ok(nq()===3&&said('men_of_athens_hear_what_is_written'),'he opens his tablets, as in every city');
-  await pickQ('Read them Isaiah');ok(heard.includes(Q(C().ps.is42))&&said('isaiah_q')&&nq()===2,'Isaiah is only a name to them');
+  await pickQ('read_them_isaiah_the_breath');ok(heard.includes(Q(C().ps.is42))&&said('isaiah_q')&&nq()===2,'Isaiah is only a name to them');
   halt('isaiah11');
-  await pickQ('Read them Moses');await pickQ('Read them David');
+  await pickQ('read_them_moses_whoever');await pickQ('read_them_david_jehovah');
   ok(F.shut&&heard.includes(Q(C().ps.de4))&&heard.includes(Q(C().ps.ps145))&&said('tablets_stay_shut_i')
     &&srt()==='q11house,q11made,q11need,q11unk,tablets','so the tablets are shut, and he carries four questions instead ['+srt()+']');
   halt('shut11');
@@ -1902,7 +1902,7 @@
   pray();await idle();ok(hint()[0]==='seam12','the hint: the seam');
   await useH('awl','half_sewn_cover');ok(F.seam,'the seam is sewn to its corner');
   heard.length=0;await actor('talk',SB);await pickQ('somebody_will_see_to_it');ok(!F.told&&said('somebody_said'),'"somebody" is not an answer for Sabinus');
-  await pickQ('It will be ready on that day.');ok(F.told&&said('aquila'),'he is told whose hand will finish it');
+  await pickQ('it_will_be_ready_on_that_day');ok(F.told&&said('aquila'),'he is told whose hand will finish it');
   heard.length=0;give('awl',AQ);await until(()=>F.laid&&!G.busy);note();
   ok(F.laid&&srt()==='knife,tablets'&&told('v5b')&&AP.room==='shop12'&&!AQ.room&&!$('#swap').disabled,'the awl is laid down: he is wholly taken up with the word (Acts 18:5), and now the two at the bench can be played');
   halt('laid12');
@@ -1967,7 +1967,7 @@
   halt('winter12');
   heard.length=0;await give('knife',KA);ok(said('not_near_my_new_cord_tentmaker')&&has('knife')&&!F.pKal,'the knife shown to Kallistos: he walked across the neck of land for that cord');
   heard.length=0;await actor('talk',MA);await pickQ('i_will_mend_it_for_you');ok(!F.brought&&said('with_what'),'he cannot mend an awning now');
-  pickQ('Come with me.');await until(()=>F.brought&&G.room==='shop12'&&!G.busy);ok(F.brought&&MA.room==='shop12'&&!!H('torn_awning'),'so he takes the man to the bench');
+  pickQ('come_with_me');await until(()=>F.brought&&G.room==='shop12'&&!G.busy);ok(F.brought&&MA.room==='shop12'&&!!H('torn_awning'),'so he takes the man to the bench');
   heard.length=0;await useH('knife','torn_awning');ok(!F.marc,'it is not his to mend');
   await swapTo(AP);pray();await idle();ok(hint()[0]==='mend12','their hint: the torn awning');
   heard.length=0;await useH('awl12','torn_awning');ok(F.marc&&!MA.room&&said('i_had_the_tentmaker_for_an_hour'),'Aquila and Priscilla mend it, and Paul has had both hands free');
@@ -2065,7 +2065,7 @@
   pray();await idle();ok(hint()[0]==='ask12','the hint: what he can promise');
   heard.length=0;await actor('talk',PH);await pickQ('i_will_come_back');ok(!F.asked&&said('that_is_a_promise_and_i'),'a flat promise is not his to give');
   await pickQ('i_cannot_say_whether_i');ok(!F.asked&&said('that_is_true'),'and a shrug is less than he means');
-  await pickQ('if Jehovah is willing');note();ok(F.asked&&told('v20')&&told('v21'),'he will come back to them, if Jehovah is willing (Acts 18:20, 21)');
+  await pickQ('i_will_be_back_with_you');note();ok(F.asked&&told('v20')&&told('v21'),'he will come back to them, if Jehovah is willing (Acts 18:20, 21)');
   halt('grey12');
   clearInterval(sk);view(...hs('plank'));await mapUp();for(let i=0;i<600&&!SHARED.map.state.legs.every(l=>l.k===1);i++)await wait(30);await wait(400);
   {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===3&&inWin('caesarea')&&inWin('jerusalem')&&inWin('antioch'),'by sea to Caesarea, up to Jerusalem, and down to Antioch');
@@ -2191,17 +2191,17 @@
   await pickQ(C().heard[0].q);ok(nq()===4&&!F.gap&&said('he_said_that_i'),'not what he did say');
   await pickQ(C().heard[4].q);await until(()=>nq()===3);ok(F.gap&&nq()===3&&said('of_that_not_a_word'),'what is missing is found: not an error, but a thing that was not said');
   await pickQ('stand_up_and_tell_the_synagogue');ok(nq()===2&&!F.aside&&said('it_would_be_true_every_word'),'before the whole synagogue it would be true, and unkind');
-  await pickQ('Say nothing.');ok(nq()===1&&!F.aside&&said('let_him_go_on_to_the_next'),'and to say nothing is not kindness');
+  await pickQ('say_nothing');ok(nq()===1&&!F.aside&&said('let_him_go_on_to_the_next'),'and to say nothing is not kindness');
   pickQ('ask_him_to_our_table');await until(()=>F.aside&&G.room==='shop13'&&nq()>0);note();
   ok(F.aside&&G.room==='shop13'&&AO.room==='shop13'&&ART.shop13.variant()==='n'&&nq()===3,'they take him into their company: by sundown the bench is a table');
   halt('table13');
   await pickQ('there_is_something_that_you');ok(nq()===2&&said('before_he_has_tasted_the_bread'),'the bread first, and what is good to hear');
   await pickQ('you_know_only_the_baptism_of_john');ok(nq()===1&&said('true_and'),'a true thing can be thrown like a stone');
   pickQ('we_have_not_heard_the_scriptures');await until(()=>nq()===3);
-  await pickQ('you_are_a_learned_man_of_alexandria');await pickQ('Wait for Paul.');ok(nq()===1&&said('paul_is_on_a_road_somewhere'),'they do not send him on to wait for Paul');
+  await pickQ('you_are_a_learned_man_of_alexandria');await pickQ('wait_for_paul');ok(nq()===1&&said('paul_is_on_a_road_somewhere'),'they do not send him on to wait for Paul');
   /* he is taught, he crosses to Achaia, and Paul comes down by the inland regions: the map again, with one new road */
   if(stop==='mapb13')clearInterval(sk);
-  pickQ('May we tell you what we were taught');await mapUp();for(let i=0;i<900&&!(SHARED.map.state.legs.every(l=>l.k===1)&&SHARED.map.state.seen.has('ephesus'));i++)await wait(30);await wait(60);note();
+  pickQ('may_we_tell_you_what_we');await mapUp();for(let i=0;i<900&&!(SHARED.map.state.legs.every(l=>l.k===1)&&SHARED.map.state.seen.has('ephesus'));i++)await wait(30);await wait(60);note();
   {const M=SHARED.map,names=M.state.boxes.map(b=>b[4]);ok(G.scene===M.draw&&M.state.legs.length===8&&inWin('ephesus')&&names.includes(T('Ephesus'))&&names.includes(T('Antioch'))&&cross(M.state.legs.map(l=>l.dots))===0,'the map: through the inland regions, and down to Ephesus ['+names.join()+']');
     ok(mapClear()&&tidy(),'no name on this map crosses a line either'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):'')+(tidy.bad.length?': '+tidy.bad.join(', '):''))}
   if(stop==='mapb13'){await wait(600);halt('mapb13')}
@@ -2564,8 +2564,8 @@
   ok(store('paul.save')===c1,'the browser keeps the same code: '+c1);
   ok(decode('AAAAAA')===null&&decode('')===null&&decode(c1.slice(0,6)+(c1[6]==='A'?'B':'A'))===null,'bad codes rejected');
   ok(decode(c1.toLowerCase().replace('-',' ')).b===b1,'lower case and spaces accepted');
-  await actor(null,ACT.eliab);ok(nq()===6&&hasQ('basket loops are frayed'),'eliab has 5 questions, and one about the frayed basket');await choose(3);await choose(-1);
-  await actor(null,ACT.eliab);ok(nq()===5,'once-question gone');heard.length=0;await pickQ('basket loops are frayed');
+  await actor(null,ACT.eliab);ok(nq()===6&&hasQ('basket_loops_are_frayed_through'),'eliab has 5 questions, and one about the frayed basket');await choose(3);await choose(-1);
+  await actor(null,ACT.eliab);ok(nq()===5,'once-question gone');heard.length=0;await pickQ('basket_loops_are_frayed_through');
   ok(heard.includes(T(ACT.eliab.hs.ask.basket))&&nq()===4&&!F.strong,'learned topic answered once, and solves nothing');
   halt('choices');await choose(-1);
   heard.length=0;await give('knife',ACT.eliab);ok(heard.includes(T(ACT.eliab.hs.show.knife))&&has('knife'),'knife shown to Eliab: his own reply, item kept');
@@ -2578,10 +2578,10 @@
   await act(null,'door_to_the_street');ok(G.room==='street','in street');
   await act(null,'alley_to_the_wall_quarter');ok(G.room==='street'&&P.x<400,'guard turns Paul back');
   halt('guard',()=>{ACT.guard.dir=1;say(ACT.guard,'halt_said')});
-  await actor(null,ACT.zakkai);ok(F.metZakkai&&nq()===5&&hasQ('soldier in the street is thirsty'),'met merchant; he mentions the thirsty soldier');
-  heard.length=0;await pickQ('soldier in the street is thirsty');ok(heard.includes(T(ACT.zakkai.hs.ask.thirst)),'thirst topic answered');
+  await actor(null,ACT.zakkai);ok(F.metZakkai&&nq()===5&&hasQ('soldier_in_the_street_is_thirsty'),'met merchant; he mentions the thirsty soldier');
+  heard.length=0;await pickQ('soldier_in_the_street_is_thirsty');ok(heard.includes(T(ACT.zakkai.hs.ask.thirst)),'thirst topic answered');
   await choose(0);await choose(1);await choose(-1);
-  await actor(null,ACT.guard);ok(nq()===2&&hasQ("merchant's awning"),'the guard can be asked about the awning');await choose(-1);
+  await actor(null,ACT.guard);ok(nq()===2&&hasQ('merchants_awning_is_torn'),'the guard can be asked about the awning');await choose(-1);
   await sweep(ACT.guard,ACT.zakkai);
   halt('show',()=>{P.dir=1;say(ACT.guard,ACT.guard.hs.show.longrope)});
   await useOn('skin','well');ok(has('skinfull'),'waterskin filled');
@@ -2637,16 +2637,16 @@
   const cj=makeCode();
   verb('use');item('peg');view(...hs('handcart'));await idle();
   ok(nq()===3,'story round 1 offers three answers');
-  await pickQ('I acted in ignorance');ok(nq()===2,'self-defending answer is set aside');
+  await pickQ('i_acted_in_ignorance');ok(nq()===2,'self-defending answer is set aside');
   halt('quiz');
-  await pickQ('Yes. I persecuted');await pickQ('On the road to Damascus');await pickQ('I spoke in the name of Jesus');
+  await pickQ('yes_said');await pickQ('on_the_road_to_damascus');await pickQ('i_spoke_in_the_name_of_jesus');
   ok(F.told&&F.cartFixed&&!G.busy&&ACT.barnabas.x>340,'Barnabas believes him and goes to the door');
   const ct=makeCode();await enter(cj);
   ok(G.ch===2&&has('peg')&&F.wheelOn&&!F.told&&ACT.barnabas.x<260,'chapter two code restores earlier state');
   await enter(ct);ok(F.told&&ACT.barnabas.x>340&&!has('peg'),'chapter two code restores later state');
   await act('use','door_of_the_house');ok(G.room==='upper'&&!G.busy,'Barnabas gets him in');
   halt('upper',()=>{say(ACT.cephas,'stay_in_my_house_brother')});
-  await actor(null,ACT.cephas);ok(nq()===4&&hasQ('Barnabas spoke up'),'Cephas can be asked about Barnabas');await choose(0);await choose(-1);
+  await actor(null,ACT.cephas);ok(nq()===4&&hasQ('barnabas_spoke_up_for_me'),'Cephas can be asked about Barnabas');await choose(0);await choose(-1);
   await actor(null,ACT.james);await choose(0);await choose(-1);await sweep(ACT.cephas,ACT.james,ACT.barnabas);
   pray();await idle();ok(hint()[0]==='upper','upper room hint');
   await act(null,'door_to_the_city');ok(G.room==='jerusalem'&&F.preach&&ACT.dositheus.room==='jerusalem'&&ACT.ariston.room==='jerusalem'&&ACT.barnabas.room==='upper'&&!G.busy,
@@ -2699,7 +2699,7 @@
   await act(null,'east_gate');ok(G.room==='tarsus'&&!F.sold&&!G.busy,'no leaving before the promise is kept');
   await act('pickup','tent');ok(!has('tent')&&!F.gotTent,'unfinished tent stays on its frame');
   await actor(null,ACT.kleon);ok(F.metKleon,'met Kleon');await choose(0);await choose(-1);
-  await actor(null,ACT.barnabas);ok(nq()===5&&hasQ("caravan leaves at noon"),'barnabas has 4 questions in Tarsus, and one about Kleon');await choose(-1);
+  await actor(null,ACT.barnabas);ok(nq()===5&&hasQ('kleons_caravan_leaves_at_noon'),'barnabas has 4 questions in Tarsus, and one about Kleon');await choose(-1);
   await sweep(ACT.barnabas,ACT.kleon);
   /* the party: Barnabas can be played; the seam takes both men */
   const BN=ACT.barnabas;
@@ -2743,7 +2743,7 @@
   await act(null,'east_gate');
   ok(G.room==='court'&&!G.busy&&srt()==='awl,bolt,knife,tablets,wages'&&ACT.barnabas.room==='court'&&ACT.xanthe.room==='antioch','brought to Antioch; a year later, the relief is gathered');
   halt('court',()=>{say(ACT.barnabas,'it_has_weeks_of_road_ahead')});
-  await actor(null,ACT.barnabas);ok(hasQ('great famine'),'famine topic in Antioch');await choose(0);await choose(-1);await actor(null,ACT.agabus);ok(hasQ('no thread'),'thread topic');await choose(0);await choose(-1);
+  await actor(null,ACT.barnabas);ok(hasQ('i_have_no_thread_to_sew'),'famine topic in Antioch');await choose(0);await choose(-1);await actor(null,ACT.agabus);ok(hasQ('i_have_no_thread_to_sew'),'thread topic');await choose(0);await choose(-1);
   await sweep(ACT.barnabas,ACT.agabus,ACT.lucius);
   const tw3=await tabs();ok(leaf(0,'Agabus').length===1&&leaf(0,'Kleon').length===0&&leaf(0,T('make_new_pack_bags_for_the_relief')).length===1&&leaf(0,T('find_strong_thread_to_sew_them_with')).length===1&&leaf(1).length===4,'Antioch tablets');
   key(' ');await idle();ok(!tw3.classList.contains('on'),'Space closes them');
@@ -2759,10 +2759,10 @@
   heard.length=0;verb('pickup');{const h=H('pottery_stall');clickView(h.x+h.w/2,h.y+h.h/2,h)}await idle();ok(heard.includes(T('that_would_be_stealing_said'))&&!F.jar,"Theron's pottery stall: cloth does not break when it is dropped");
   await give('wages',ACT.xanthe);ok(has('wages'),'silver is not what Xanthe needs');
   await actor(null,ACT.xanthe);ok(nq()===3,'Xanthe round 1 offers three answers');
-  await pickQ('Everyone else is giving');ok(nq()===2&&!F.gotSpool,'pressure is set aside');
+  await pickQ('everyone_else_is_giving_something_sister');ok(nq()===2&&!F.gotSpool,'pressure is set aside');
   halt('quiz3');
-  await pickQ('you are excused');ok(nq()===1,'so is dismissal');
-  await pickQ('No one asks for what you do not have');await pickQ('What is in your hands');await pickQ('I could buy it');await pickQ('no bags to travel in');
+  await pickQ('you_are_excused_sister');ok(nq()===1,'so is dismissal');
+  await pickQ('no_one_asks_for_what_you');await pickQ('do_not_look_at_what_you_lack');await pickQ('i_could_buy_it_from_you');await pickQ('gift_has_no_bags_to_travel');
   ok(has('spool')&&F.gotSpool&&!G.busy,'Xanthe gives her thread gladly');
   await actor(null,ACT.theron);ok(nq()===5,'question about Xanthe is gone');await choose(-1);
   await use('spool','panels');ok(has('bags')&&!has('panels')&&!has('spool'),'pack bags sewn');
@@ -2776,8 +2776,8 @@
   await useOn('staff','therons_oil_jar');ok(F.jar&&P.room==='court'&&ACT.barnabas.room==='court'&&G.room==='court'&&!G.busy,'two men and a bar: the jar reaches the courtyard');
   key('c');await idle();ok(PC()===P&&has('wages'),'Paul again');
   heard.length=0;await give('wages',ACT.lucius);ok(nq()===3&&!has('wages'),'Lucius offers the purse uncounted'+(nq()===3?'':' DEBUG '+[G.room,P.x,P.y,PC().id,G.inv,F.jar,heard.slice(-4).join('|')].join(' ')));
-  await pickQ('careful count on the road');ok(nq()===2&&!F.sealed,'a private count is set aside');
-  await pickQ('Count it before the brothers');ok(F.sealed&&!has('wages')&&!G.busy&&has('bags'),'gift counted, recorded and sealed');
+  await pickQ('thank_you_said');ok(nq()===2&&!F.sealed,'a private count is set aside');
+  await pickQ('count_it_before_the_brothers');ok(F.sealed&&!has('wages')&&!G.busy&&has('bags'),'gift counted, recorded and sealed');
   const td=makeCode();await enter(tc);ok(G.room==='antioch'&&has('bags')&&has('wages')&&!F.sealed&&ACT.xanthe.room==='antioch','street code restores');
   await enter(td);ok(G.room==='court'&&F.sealed&&has('bags')&&!has('wages')&&ACT.barnabas.room==='court','courtyard code restores');
   pray();await idle();ok(hint()[0]==='load3','courtyard hint');
@@ -2819,8 +2819,8 @@
   heard.length=0;await act(null,'gangplank');ok(G.room==='seleucia'&&!G.scene&&heard.includes(T('not_so_fast_friend')),'nobody boards before speaking to the shipmaster');
   await useOn('knife','coil_of_cord');ok(!has('cord')&&!F.gotCord,"the ship's cord is not cut unasked");
   await use('awl','haircloth');ok(has('haircloth')&&!F.shelter,'a tent on a deck needs more than a hem');
-  await actor(null,ACT.kallias);ok(F.metKal&&nq()===6&&hasQ('We need a shelter')&&hasQ('An old man of Salamis'),'met the shipmaster: three questions, and two things learned');
-  heard.length=0;await pickQ('We need a shelter');ok(heard.includes(T(ACT.kallias.hs.ask.roof[1]))&&!has('cord'),'asking about the shelter is a clue, not the cord');await choose(0);await choose(-1);
+  await actor(null,ACT.kallias);ok(F.metKal&&nq()===6&&hasQ('we_need_a_shelter_for_the_deck')&&hasQ('old_man_of_salamis_sails_with_us'),'met the shipmaster: three questions, and two things learned');
+  heard.length=0;await pickQ('we_need_a_shelter_for_the_deck');ok(heard.includes(T(ACT.kallias.hs.ask.roof[1]))&&!has('cord'),'asking about the shelter is a clue, not the cord');await choose(0);await choose(-1);
   halt('kallias',()=>{place(P,'seleucia',306,120,1);G.cam=160;say(ACT.kallias,'you_sleep_on_the_deck_and_the_spray')});
   await sweep(ACT.kallias,ACT.mark,BN,ACT.jair);
   heard.length=0;await act('pickup','cargo');ok(heard.includes(T('it_is_the_shipmasters_not_mine'))&&G.room==='seleucia','the cargo on the quay: it rides below deck, and the passengers on top of it');
@@ -2842,17 +2842,17 @@
   await actor(null,ACT.jair);ok(F.metJair&&!F.jairOk&&!F.jairB&&!$('#choices').classList.contains('on'),'the old man has nothing to say to Saul of Tarsus');
   pray();await idle();ok(hint()[0]==='jair4','the hint points to Barnabas');
   key('c');await idle();await actor(null,ACT.jair);ok(nq()===3,'Barnabas is asked why: three answers');
-  await pickQ('It is time to forget it');ok(nq()===2&&!F.jairB,'telling him to forget is set aside');
-  await pickQ('Then I heard him out');ok(F.jairB&&!F.jairOk&&!G.busy,'Barnabas tells what he saw for himself');
+  await pickQ('that_was_many_years_ago_jair');ok(nq()===2&&!F.jairB,'telling him to forget is set aside');
+  await pickQ('i_asked_the_same_question_once');ok(F.jairB&&!F.jairOk&&!G.busy,'Barnabas tells what he saw for himself');
   const c4a=makeCode();ok(decode(c4a).w!=null,'a code with Barnabas played: '+c4a);
   pray();await idle();ok(hint()[0]==='own4b','Barnabas knows the rest is for Saul to say');
   key('c');await idle();await actor(null,ACT.jair);ok(nq()===3,'Saul is asked what he has to say: three answers');
-  await pickQ('That is all behind me now');ok(nq()===2&&!F.jairOk,'moving on is set aside');
+  await pickQ('that_is_all_behind_me_now');ok(nq()===2&&!F.jairOk,'moving on is set aside');
   ok(Math.abs(P.x-BN.x)>20,'the two men do not stand on the same spot beside him');
   halt('jair',()=>{say(ACT.jair,'what_q')});
-  await pickQ('I did it');ok(F.jairOk&&!G.busy,'a plain confession, and peace');
+  await pickQ('i_did_it');ok(F.jairOk&&!G.busy,'a plain confession, and peace');
   await enter(c4a);ok(G.ch===4&&PC()===BN&&F.jairB&&!F.jairOk&&F.shelter&&G.invs.paul.includes('shelter')&&srt()==='bstaff'&&G.room==='seleucia','the code restores the moment, with Barnabas played');
-  key('c');await idle();await actor(null,ACT.jair);await pickQ('I did it');ok(F.jairOk,'said again after the code');
+  key('c');await idle();await actor(null,ACT.jair);await pickQ('i_did_it');ok(F.jairOk,'said again after the code');
   pray();await idle();ok(hint()[0]==='board4','the hint points to the gangplank');
   halt('voyage',()=>{G.sea={k:.45};G.scene=CHAP[4].scenes.voyage;G.busy=true;lock(true);status();narr('they_put_to_sea_bound_for_cyprus_acts_13_4',{dur:9000})});
   /* the hub: the gangplank opens the map; a place that is not open yet says why; a click on Salamis sails there */
@@ -2865,7 +2865,7 @@
   ok(G.room==='salamis'&&!G.scene&&!G.busy&&F.landed&&!has('shelter')&&BN.room==='salamis'&&ACT.mark.room==='salamis'&&ACT.jair.room==='synagogue','a click on Salamis: the crossing, and all three land in Cyprus');
   halt('salamis',()=>{say(BN,'salamis_said')});
   heard.length=0;await act(null,'west_gate');ok(G.room==='salamis'&&!G.scene&&heard.includes(T('road_west_right_across_the_island')),'no leaving Salamis before the word is spoken there');
-  await actor(null,ACT.mark);ok(hasQ('How does a stranger get a hearing'),'a new thing to ask about in Salamis');await choose(-1);
+  await actor(null,ACT.mark);ok(hasQ('how_does_a_stranger_get'),'a new thing to ask about in Salamis');await choose(-1);
   heard.length=0;await act('pickup','coppersmiths_stall');ok(heard.includes(T('that_would_be_stealing_and'))&&G.room==='salamis',"the coppersmith's stall: his trade is louder than a tentmaker's");
   await act(null,'door_of_the_synagogue');ok(G.room==='synagogue'&&BN.room==='synagogue'&&!G.busy,'into the synagogue, Barnabas with him');
   halt('synagogue',()=>{say(ACT.zadok,'platform_is_another_matter')});
@@ -2873,19 +2873,19 @@
   pray();await idle();ok(hint()[0]==='zad4','the hint points to Barnabas, who was born here');
   await sweep(ACT.zadok,ACT.philon,ACT.jair);
   key('c');await idle();await actor(null,ACT.zadok);ok(nq()===3,'Zadok asks why: three answers');
-  await pickQ('at the feet of Gamaliel');ok(nq()===2&&!F.vouched,'learning is not what he asked about');
-  await pickQ('test every word by the scroll');ok(F.vouched&&!G.busy,'tested by the scroll: Zadok cannot refuse');
+  await pickQ('he_was_educated_at_the_feet');ok(nq()===2&&!F.vouched,'learning is not what he asked about');
+  await pickQ('let_him_speak_after_the_reading');ok(F.vouched&&!G.busy,'tested by the scroll: Zadok cannot refuse');
   key('c');await idle();const c4b=makeCode();
   await actor(null,ACT.zadok);ok(nq()===3,'the word of encouragement: three ways to begin');
-  await pickQ('Jerusalem did not know him');ok(nq()===2,'an accusation is no beginning');
+  await pickQ('one_you_wait_for_has_come');ok(nq()===2,'an accusation is no beginning');
   halt('speech');
-  await pickQ('the islands wait in hope');ok(nq()===3,'he begins with what was read');
-  await pickQ('for the nations as well');ok(nq()===2,'not ahead of his hearers');await pickQ('promised David');
-  await pickQ('signs and wonders');ok(nq()===2,'by the scroll, not by wonders');await pickQ("From David's offspring");
-  await pickQ('on our way across the island');await pickQ('forgiveness of sins');
+  await pickQ('you_heard_it_read_the_islands');ok(nq()===3,'he begins with what was read');
+  await pickQ('this_good_news_is_for_the_nations');ok(nq()===2,'not ahead of his hearers');await pickQ('god_promised_david_an_offspring');
+  await pickQ('apostles_have_done_many_signs_and_wonders');ok(nq()===2,'by the scroll, not by wonders');await pickQ('from_davids_offspring_god');
+  await pickQ('that_is_all');await pickQ('through_him_comes_the_forgiveness_of_sins');
   ok(F.spoke&&!G.busy&&G.room==='synagogue','the word of God is proclaimed in the synagogue of Salamis');
   await enter(c4b);ok(G.room==='synagogue'&&F.vouched&&!F.spoke&&PC()===P&&BN.room==='synagogue'&&ACT.jair.room==='synagogue','the synagogue code restores');
-  await actor(null,ACT.zadok);await pickQ('the islands wait in hope');await pickQ('promised David');await pickQ("From David's offspring");await pickQ('forgiveness of sins');ok(F.spoke&&!G.busy,'and the talk is given again');
+  await actor(null,ACT.zadok);await pickQ('you_heard_it_read_the_islands');await pickQ('god_promised_david_an_offspring');await pickQ('from_davids_offspring_god');await pickQ('through_him_comes_the_forgiveness_of_sins');ok(F.spoke&&!G.busy,'and the talk is given again');
   pray();await idle();ok(hint()[0]==='west4','the hint points west');
   await act(null,'door_to_the_square');ok(G.room==='salamis'&&BN.room==='salamis'&&!G.busy,'out to the square');
   act(null,'west_gate');await mapOpen();ok(G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===1&&SHARED.map.state.seen.has('seleucia'),'the west gate opens the map, with the crossing already drawn');
@@ -2942,8 +2942,8 @@
     verb('use');item('knife');move(...hs('watering_trough'));ok($('#status').textContent==='Benutze Zeltmachermesser mit Tränke','German status line: Benutze Zeltmachermesser mit Tränke');verb('use');G.hover=null;status()}
   heard.length=0;await act(null,'road_north');ok(G.room==='perga'&&!G.scene&&said('up_into_those_mountains'),'no setting out before asking about the road');
   heard.length=0;await act('look','mountains');ok(heard.some(h=>h.includes(T(CHAP[5].tablets.scripture[0].gist).slice(0,30))),'looking at the Taurus, Paul says the psalm as his tablets have it');
-  await actor(null,ACT.papias);ok(F.metPap&&nq()===6&&hasQ('no one climbs to the pass alone')&&hasQ("sandal strap has parted"),'met the drover: three questions, and two things learned');
-  heard.length=0;await pickQ("sandal strap has parted");ok(said(ACT.papias.hs.ask.sandal)&&!has('thong'),'asking the drover about the sandal is no thong');await choose(0);await choose(-1);
+  await actor(null,ACT.papias);ok(F.metPap&&nq()===6&&hasQ('they_say_no_one_climbs')&&hasQ('barnabass_sandal_strap_has_parted'),'met the drover: three questions, and two things learned');
+  heard.length=0;await pickQ('barnabass_sandal_strap_has_parted');ok(said(ACT.papias.hs.ask.sandal)&&!has('thong'),'asking the drover about the sandal is no thong');await choose(0);await choose(-1);
   await actor(null,ACT.eumenes);ok(F.metEum&&hasQ('are_there_jews_in_antioch'),'met Eumenes of Antioch, who fears God');await choose(1);await choose(-1);
   await sweep(ACT.papias,ACT.eumenes,ACT.mark,BN);
   heard.length=0;await act('pickup','pack_donkeys');ok(said('they_are_the_drovers_and_every'),'the pack donkeys: the nearest eyes him as if he meant to add to its load');
@@ -3037,7 +3037,7 @@
   heard.length=0;act(null,'bench');for(let i=0;i<400&&!$('#choices').classList.contains('on');i++)await wait(50);
   ok(nq()===3&&said('brothers_if_there_acts_13_15'),'they take a seat, and are asked to speak: three ways to begin');
   await pickQ('listen_israelites');ok(nq()===2,'not to the Israelites alone');
-  await pickQ('all the rest of you who fear God');ok(nq()===6,'he addresses both; then, the passage for the Son: six on the tablets speak of the Christ');
+  await pickQ('listen_israelites_and_listen');ok(nq()===6,'he addresses both; then, the passage for the Son: six on the tablets speak of the Christ');
   halt('speech5');
   await pickQ(S5(8));ok(nq()===5,'a light of nations: not yet');await pickQ(S5(3));
   ok(nq()===5&&said('by_raising_jesus_acts_13_33'),'the second psalm, as Acts brings it in');
@@ -3049,7 +3049,7 @@
   ok(said('david_died_and_his_body_did_decay_acts_13_36_37'),'what is said of David is given with both its verses (Acts 13:36, 37)');
   await enter(c5d);ok(G.room==='synp'&&!F.spoke1&&BN.room==='synp'&&ACT.hanan.room==='synp','the synagogue code restores');
   act(null,'bench');for(let i=0;i<400&&!$('#choices').classList.contains('on');i++)await wait(50);
-  await pickQ('all the rest of you who fear God');await pickQ(S5(3));await pickQ(S5(4));await pickQ(S5(6));ok(F.spoke1&&G.room==='pisidia'&&!G.busy,'and the talk is given again');
+  await pickQ('listen_israelites_and_listen');await pickQ(S5(3));await pickQ(S5(4));await pickQ(S5(6));ok(F.spoke1&&G.room==='pisidia'&&!G.busy,'and the talk is given again');
   halt('week',()=>{say(BN,'three_days_paul_and_you')});
   /* the week between: three hearers, three ways of answering */
   heard.length=0;await act(null,'door_of_the_synagogue');ok(G.room==='pisidia'&&said('it_is_not_the_sabbath_yet'),'the next Sabbath has not come yet');
@@ -3057,18 +3057,18 @@
   pray();await idle();ok(hint()[0]==='eum5','the hint points to Eumenes, and to what is written');
   await actor(null,ACT.eumenes);ok(nq()===3,'Eumenes asks whether it is for a Greek: three answers');
   ok(said('for_eleven_years_i_have'),'he has kept by the door for eleven years, and no one put him there');
-  await pickQ('I said everyone, and I meant it');ok(nq()===2&&!F.eum,'his own word is not enough');
+  await pickQ('you_heard_me_rightly');ok(nq()===2&&!F.eum,'his own word is not enough');
   halt('greek');
-  heard.length=0;await pickQ('what is written about the foreigner');ok(F.eum&&!G.busy&&heard.some(h=>h.includes(T(CHAP[5].tablets.scripture[7].gist))),'Isaiah has a word for the foreigner, given as the tablets have it');
+  heard.length=0;await pickQ('let_me_show_you_what_is');ok(F.eum&&!G.busy&&heard.some(h=>h.includes(T(CHAP[5].tablets.scripture[7].gist))),'Isaiah has a word for the foreigner, given as the tablets have it');
   await actor(null,ACT.joel);ok(!F.joel&&!$('#choices').classList.contains('on'),'Joel will not tell Paul what troubles him');
   await actor(null,ACT.papias);ok(nq()===3,'the drover asks what it is to him: three answers');
-  await pickQ('written in the Prophets');ok(nq()===2&&!F.pap,'the Prophets mean nothing to a man who has never heard them');
-  await pickQ('made the mountains');ok(F.pap&&!G.busy,'he begins with the God who made the mountains');
+  await pickQ('it_is_all_written_in_the_prophets');ok(nq()===2&&!F.pap,'the Prophets mean nothing to a man who has never heard them');
+  await pickQ('god_i_speak_of_made_the_mountains');ok(F.pap&&!G.busy,'he begins with the God who made the mountains');
   pray();await idle();ok(hint()[0]==='joel5','the hint points to Barnabas');
   key('c');await idle();pray();await idle();ok(hint()[0]==='joel5b','Barnabas knows what Joel needs');
   await actor(null,ACT.joel);ok(nq()===3,'Joel asks Barnabas what to do: three answers');
-  await pickQ('sold a piece of land');ok(nq()===2&&!F.joel,'his own story is not what Joel needs: the piece of land he sold (Acts 4:37)');
-  await pickQ('Hold on to it');ok(F.joel&&!G.busy,'Barnabas urges him to hold on to the undeserved kindness of God');
+  await pickQ('i_sold_a_piece_of_land');ok(nq()===2&&!F.joel,'his own story is not what Joel needs: the piece of land he sold (Acts 4:37)');
+  await pickQ('what_you_were_given_is_undeserved_kindness');ok(F.joel&&!G.busy,'Barnabas urges him to hold on to the undeserved kindness of God');
   const c5e=makeCode();pray();await idle();ok(hint()[0]==='sab5','the hint points to the Sabbath');
   /* the next Sabbath */
   heard.length=0;act(null,'door_of_the_synagogue');for(let i=0;i<400&&!$('#choices').classList.contains('on');i++)await wait(50);
@@ -3086,8 +3086,8 @@
   heard.length=0;await act(null,'boundary_stone');ok(!ov.classList.contains('end')&&!G.busy&&said('not_yet_they'),'not before the disciples are strengthened');
   pray();await idle();ok(hint()[0]==='cheer5','the hint points to Eumenes');
   await actor(null,ACT.eumenes);ok(nq()===3,'what becomes of us now? three answers');
-  await pickQ('Come with us to Iconium');ok(nq()===2&&!F.cheered,'the congregation is here, not on the road');
-  await pickQ('It was never our word');ok(F.cheered&&!G.busy,'they did not put their faith in Paul or in Barnabas');
+  await pickQ('come_with_us_to_iconium');ok(nq()===2&&!F.cheered,'the congregation is here, not on the road');
+  await pickQ('it_was_never_our_word_eumenes');ok(F.cheered&&!G.busy,'they did not put their faith in Paul or in Barnabas');
   const c5f=makeCode();await enter(c5e);ok(G.room==='pisidia'&&PC()===BN&&F.eum&&F.joel&&F.pap&&!F.out&&ACT.joel.room==='pisidia','the code from the week restores, with Barnabas played');
   await enter(c5f);ok(G.room==='border'&&F.cheered&&PC()===P&&ACT.straton.room==='border','and the code from outside the boundaries');
   pray();await idle();ok(hint()[0]==='dust5','the hint: shake off the dust, and not in anger');
@@ -3154,8 +3154,8 @@
   heard.length=0;await act('look','south_gate');ok(quoted(0),'looking at the south gate, Paul says the proverb as his tablets have it');
   heard.length=0;await act('use','unfinished_cover');ok(!F.sewn&&said('corners_need_leather_and_i_have_none'),'the corners want leather');
   pray();await idle();ok(hint()[0]==='leather6','the hint points to the saddler');
-  await actor(null,A('nathan'));ok(nq()===6&&hasQ('they_mean_to_stone_us_tomorrow')&&hasQ('wagon cover needs four leather corners'),'Nathan: three questions, and two things learned');
-  await pickQ('Have you leather to spare');ok(F.leather&&has('corners')&&nq()===5,'the saddler gives four corners of leather, and takes nothing for them');await choose(-1);
+  await actor(null,A('nathan'));ok(nq()===6&&hasQ('they_mean_to_stone_us_tomorrow')&&hasQ('xanthoss_wagon_cover_needs_four_leather_corners'),'Nathan: three questions, and two things learned');
+  await pickQ('have_you_leather_to_spare');ok(F.leather&&has('corners')&&nq()===5,'the saddler gives four corners of leather, and takes nothing for them');await choose(-1);
   await sweep(A('nathan'),A('xanthos'),A('tatia'),BN);
   let t6=await tabs();ok(leaf(0,T('Nathan')).length===1&&leaf(0,T('Tatia')).length>=1&&leaf(0,T('Xanthos')).length>=1&&leaf(0,T('finish_the_cover_i_promised_xanthos')).length===1&&leaf(1).length===7,
     'the tablets in Iconium: people, open tasks and seven passages');
@@ -3180,8 +3180,8 @@
   await actor(null,A('tatia'));ok(!F.tatia&&!$('#choices').classList.contains('on'),'it is Barnabas whom Tatia wants to ask');
   key('c');await idle();pray();await idle();ok(hint()[0]==='tatia6b','and Barnabas knows what she needs');
   await actor(null,A('tatia'));ok(nq()===3,'why do you go, and what do I do? three answers');
-  await pickQ('It is no rumor');ok(nq()===2&&!F.tatia,'she does not doubt the stones');
-  heard.length=0;await pickQ('our Lord said: flee');ok(F.tatia&&!G.busy&&heard.some(h=>h.includes('10:23')),'words were answered; from stones, the Lord said to flee: and the word stays');
+  await pickQ('it_is_no_rumor');ok(nq()===2&&!F.tatia,'she does not doubt the stones');
+  heard.length=0;await pickQ('we_answered_their_words');ok(F.tatia&&!G.busy&&heard.some(h=>h.includes('10:23')),'words were answered; from stones, the Lord said to flee: and the word stays');
   key('c');await idle();const c6b=makeCode();
   heard.length=0;await give('silver',A('nathan'));ok(F.debt&&!has('silver')&&said('it_will_go_where_it_is_needed'),'an optional kindness: the silver is left for the brothers of Iconium');
   await enter(c6b);ok(G.room==='iconium'&&F.paid&&F.tatia&&!F.debt&&has('silver')&&PC()===P,'a code holds the silver in Paul\'s hand');await give('silver',A('nathan'));ok(F.debt,'given again after the code');
@@ -3227,13 +3227,13 @@
   /* at the gate: how he begins, to whom he turns them, and what witness he names */
   heard.length=0;act(null,'city_gate');for(let i=0;i<400&&!$('#choices').classList.contains('on');i++)await wait(50);
   ok(nq()===3&&said('when_word_of_this_reached_acts_14_14'),'they rip their garments and leap out into the crowd: three ways to begin');
-  await pickQ('our Law forbids');ok(nq()===2,'the Law of Moses is nothing to people who never heard it');
-  await pickQ('same weaknesses');ok(nq()===3&&said('men_why_do_you_do_this_we_acts_14_15'),'we too are humans; then, to whom to turn them');
-  await pickQ('written in the Psalms');ok(nq()===2,'no psalm was ever read in this town');
+  await pickQ('we_are_jews_and_our_law');ok(nq()===2,'the Law of Moses is nothing to people who never heard it');
+  await pickQ('we_are_only_human_with_the_same');ok(nq()===3&&said('men_why_do_you_do_this_we_acts_14_15'),'we too are humans; then, to whom to turn them');
+  await pickQ('as_it_is_written_in_the_psalms');ok(nq()===2,'no psalm was ever read in this town');
   halt('speech6',()=>{});
-  await pickQ('living God');ok(nq()===3&&said('we_bring_you_acts_14_15'),'to the living God who made heaven, earth and sea; then, his witness');
-  await pickQ('on his feet');ok(nq()===2,'a sign needs someone to say whose it is');
-  heard.length=0;await pickQ('Rain from heaven');
+  await pickQ('to_the_living_god_who_made');ok(nq()===3&&said('we_bring_you_acts_14_15'),'to the living God who made heaven, earth and sea; then, his witness');
+  await pickQ('man_from_the_well_on_his_feet');ok(nq()===2,'a sign needs someone to say whose it is');
+  heard.length=0;await pickQ('rain_from_heaven_and_seasons_of_harvest');
   ok(F.stopped&&G.room==='outside'&&!G.busy&&!G.down&&!G.bulls&&!G.crowd&&PC()===P&&P.x>100&&BN.room==='outside'&&A('timothy').room==='outside'&&A('lois').room==='outside'&&!A('priest').room&&
     said('even_so_there_acts_14_17')&&
     said('crowds_would_still_have_sacrificed_to_them_acts_14_18')&&
@@ -3290,8 +3290,8 @@
   await sweep(A('timothy'),A('eunice'),A('lois'),A('lame'),BN);
   t6=await tabs();ok(leaf(0,T('Timothy')).length>=1&&leaf(0,T('Eunice')).length>=1&&leaf(0,T('Lois')).length>=1&&leaf(0,T('man_from_the_well_2')).length===1&&leaf(0,T('Nathan')).length===0&&leaf(0,T('strengthen_the_disciples_in_lystra')).length===1,'the tablets on the way back');key('Escape');await idle();
   await actor(null,A('eunice'));ok(nq()===3,'will it always be so? three answers');
-  await pickQ('In Derbe no one');ok(nq()===2&&!F.strong,'Derbe is not Lystra');
-  heard.length=0;await pickQ('I will not tell you that it gets easier');
+  await pickQ('in_derbe_no_one_lifted');ok(nq()===2&&!F.strong,'Derbe is not Lystra');
+  heard.length=0;await pickQ('i_will_not_tell_you_that_it');
   ok(F.strong&&!G.busy&&said('it_is_through_acts_14_22')&&said('in_those_cities_acts_14_22'),'he tells her the truth: through many tribulations');
   {const c=makeCode();await enter(c6c);ok(G.room==='house6'&&!F.back&&F.mended&&F.copy&&!F.strong&&PC()===P&&!A('lame').room,'the code from the night in Lystra restores');
     await enter(c);ok(G.room==='house6'&&F.back&&F.strong&&A('lame').room==='house6','and the code from the way back')}

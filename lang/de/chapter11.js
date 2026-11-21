@@ -9,7 +9,8 @@
    from the German edition, not from the English lines, and follow it where it words a verse differently from the English one (Acts 17:16:
    he is upset; 17:17: he speaks and reasons; 17:18, study note: the literal word is "Samenpicker"; 17:22: reverence for deities; 17:27: so that they can feel for him and find him; 17:29: art
    and inventiveness; 17:30: he has it declared; Psalm 36:9: the origin of life; Psalm 96:13: he comes as judge).
-   The Greek outer garment is called "Obergewand", as the German edition names it. */
+   The Greek outer garment of a man or a woman is called „Mantel“, as in the other chapters and in the English ("mantle"); a
+   Bible line keeps the German edition's own word („Obergewand“) where it has one. */
 TEXTS('de',11,{
   "altar_to_pity":["Altar des Mitleids","01242g8"],
   "base_of_the_hero_timandros":["Sockel des Helden Timandros","0v2g0dv"],
