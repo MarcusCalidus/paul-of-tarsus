@@ -14,7 +14,9 @@
    The opening picture is where the page starts, so the title is filmed first, before any other shot changes the game.
 
    What the trailer leaves out on purpose: the light on the road to Damascus (a cut would make it flash; CONTRIBUTING section 3), the
-   hidden treasures, and the answers to the puzzles. Every rule of CONTRIBUTING holds for what it shows, as in the game. */
+   hidden treasures, and the answers to the puzzles: a puzzle is worked a move or two and never to its end. Every rule of CONTRIBUTING
+   holds for what it shows, as in the game. A shot with live:1 (and the gameplay beat) is the player's: the recorder moves the mouse to
+   ptr and clicks there, and the game answers as it answers a player. */
 const TRAILER=(()=>{
 "use strict";
 const FPS=30,BAR=3,T0=.25,TAIL=5;
@@ -50,6 +52,7 @@ const cap=s=>s[0].toUpperCase()+s.slice(1),chapters=()=>Object.keys(CHAP).length
 const CARD={
   from:{en:'From Damascus to Ephesus',de:'Von Damaskus bis Ephesus'},
   three:{en:'His trade. His brothers. Prayer.',de:'Sein Handwerk. Seine Brüder. Gebet.'},
+  puzzles:{en:'Puzzles made from the things of his time',de:'Rätsel aus den Dingen seiner Zeit'},
   /* counted from the game, so that it stays true as chapters are added */
   chapters:{en:()=>cap(NUM.en[chapters()])+' chapters and a prologue',de:()=>cap(NUM.de[chapters()])+' Kapitel und ein Prolog'},
   langs:{en:'In English and German',de:'Auf Englisch und Deutsch'},
@@ -82,6 +85,12 @@ const actorAt=a=>{const r=$('#view').getBoundingClientRect(),s=r.width/VW;return
 const centre=sel=>{const r=$(sel).getBoundingClientRect();return[r.left+r.width/2,r.top+r.height/2]};
 
 /* ---------- the shots ---------- */
+/* a puzzle's parts: the middle of a hotspot of the room, and of a cell of the bolt of cloth, on the screen */
+const hsAt=h=>{const r=$('#view').getBoundingClientRect(),s=r.width/VW;return[r.left+(h.x+h.w/2-G.cam)*s,r.top+(h.y+h.h/2)*s]};
+const roomAt=(x,y)=>{const r=$('#view').getBoundingClientRect(),s=r.width/VW;return[r.left+(x-G.cam)*s,r.top+y*s]};
+const click=async ms=>{ptr.click=1;await wait(ms||0)};
+/* live: the game is the player's during the shot (the pointer works it), as in the gameplay beat */
+function live(x,y){G.busy=false;lock(false);drawInv();status();const r=$('#view').getBoundingClientRect();ptr={x:r.left+r.width*x,y:r.top+r.height*y,click:0}}
 const SHOTS=[
   /* the harp: the sea at sunset, the ship bound for Cyprus (Chapter Four) */
   {id:'voyage',bar:0,bars:2,view:'scene',card:'from',
@@ -107,45 +116,59 @@ const SHOTS=[
    async setup(){await room(13,'street13',{upto:'hall'});G.scene=CHAP[13].scenes.dial;G.dial13={a:0,b:1,k:0}},
    async play(){await tween(2900,k=>{G.dial13.k=ease(k)})}},
   /* the gameplay beat: the pointer finds Jason and lights Talk to; then Paul prays (Chapter Ten, Jason's yard in Thessalonica). Not in
-     Chapter One: there the narration still calls him Saul (CONTRIBUTING section 2), and the prayer's line names him Paul. */
-  {id:'play',bar:9,bars:3,view:'ui',look:[2.4],free:1,
-   async setup(){await room(10,'yard10');G.busy=false;lock(false);drawInv();status();
-     const r=$('#view').getBoundingClientRect();ptr={x:r.left+r.width*.42,y:r.top+r.height*.8,click:0}},
-   async play(){await wait(300);await aim(...actorAt(A('jason10')),900);await wait(1500);await aim(...centre('#pray'),1000);await wait(250);ptr.click=1}},
-  /* the impact, and a step higher: four places, one bar each */
-  {id:'areopagus',bar:12,bars:1,view:'scene',
-   async setup(){await room(11,'hill11',{upto:'led',at:[150,126,1]})},
-   async play(){await walk(P,176,126)}},
-  {id:'harbor',bar:13,bars:1,view:'scene',
-   async setup(){await room(2,'harbor',{at:[120,122,1]})},
-   async play(){await walk(P,170,122)}},
-  {id:'ford',bar:14,bars:1,view:'scene',
-   async setup(){await room(5,'ford')},
-   async play(){await walk(P,300,124)}},
-  {id:'winter',bar:15,bars:1,view:'scene',
-   async setup(){await room(12,'street12',{upto:'stay',at:[200,124,1]})},
-   async play(){await walk(P,250,124)}},
+     Chapter One: there the narration still calls him Saul (CONTRIBUTING section 2), and the prayer's line names him Paul (issue #63). */
+  {id:'play',bar:9,bars:2,view:'ui',look:[1.6],free:1,
+   async setup(){await room(10,'yard10');live(.62,.78)},
+   async play(){await wait(150);await aim(...actorAt(A('jason10')),600);await wait(900);await aim(...centre('#pray'),700);await wait(150);ptr.click=1}},
+  /* the puzzles, worked by the pointer as a player works them, one move or two and never to the end (nothing is given away) */
+  /* the counting board: a pebble laid in the trough of the hundreds, and one in the tens (Chapter Thirteen) */
+  {id:'board',bar:11,bars:1,view:'scene',card:'puzzles',live:1,
+   async setup(){await room(13,'board13',{upto:'n3'});G.bd13={v:26500,base:16600,k:2,told:1,car:1};live(.9,.62)},
+   async play(){const H=ROOMS.board13.hs,n=(H.length-3)/2;
+     await aim(...hsAt(H[n+2]),650);await click(500);await aim(...hsAt(H[n+3]),550);await click(400);await aim(...hsAt(H[n+2]),450);await click()}},
+  /* the bolt of cloth: the roof panel taken from the board and laid on the cloth, where it may lie, but not where it belongs (Chapter Ten) */
+  {id:'bolt',bar:12,bars:1,view:'scene',card:'puzzles',live:1,
+   async setup(){await room(10,'bolt10');live(.86,.88)},
+   async play(){const C=CHAP[10],b=C.bolt,roof=C.pieces.find(q=>q.id==='roof'),hs=ROOMS.bolt10.hs.find(h=>h.name===roof.name);
+     await aim(...hsAt(hs),700);await click(450);await aim(...roomAt(b.x+(4.5)*b.cell,b.y+.5*b.cell),800);await click()}},
+  /* the table of scrolls: two rollers turned back by one place each (never on toward the end: that is the chapter's hidden treasure) */
+  {id:'scrolls',bar:13,bars:1,view:'scene',card:'puzzles',live:1,
+   async setup(){await room(10,'table10',{upto:'r1'});await new Promise(r=>setTimeout(r,120));if(G.tab10){G.tab10.s=['ps22m','is533'];G.tab10.t='mock'}live(.5,.92)},
+   async play(){const H=ROOMS.table10.hs;await aim(...hsAt(H[3]),650);await click(550);await aim(...hsAt(H[0]),700);await click()}},
+  /* the impact, and a step higher */
+  /* the Areopagus: the council under the Acropolis, Paul before it. The camera stays on the hill: Damaris listens from the path below it
+     (CONTRIBUTING section 4), at the left edge of the room, out of this picture. */
+  {id:'areopagus',bar:14,bars:1,view:'scene',
+   async setup(){await room(11,'hill11',{upto:'led',at:[300,126,1]})}},
+  /* Barnabas and Saul on the road to Antioch, with the loaded donkey between them (Chapter Three) */
+  {id:'road',bar:15,bars:1,view:'scene',
+   async setup(){await scene(3,'road');G.trek={k:.27}},
+   async play(){await tween(3000,k=>{G.trek.k=.27+k*3/17})}},
+  /* the ford in the Taurus gorge: Paul at the water, the party with its pack animals behind him (Chapter Five) */
+  {id:'ford',bar:16,bars:1,view:'scene',
+   async setup(){await room(5,'ford')}},
+  /* the place of prayer by the river at Philippi, with Lydia and the women of her household (Chapter Eight) */
+  {id:'river',bar:17,bars:1,view:'scene',
+   async setup(){await room(8,'river',{upto:'awn'})}},
   /* the height: the roads of the second journey draw themselves on the map (Chapter Twelve's look back, whose roads never cross) */
-  {id:'map',bar:16,bars:2,view:'scene',card:'chapters',
+  {id:'map',bar:18,bars:2,view:'scene',card:'chapters',
    async setup(){await chapter(12);await need('map');const[legs,o]=CHAP[12].back[3],M=SHARED.map,S=M.state;
      await M.journey(legs,Object.assign({},o,{instant:1}));for(const L of S.legs)L.k=0;S.seen=new Set(o.seen||[]);S.seen.add(S.legs[0].a);S.pulse=S.legs[0].a},
    async play(){const S=SHARED.map.state,all=S.legs.reduce((n,L)=>n+L.dots.length,0);
      for(const L of S.legs){S.pulse=L.a;await tween(5000*L.dots.length/all,k=>{L.k=k});S.seen.add(L.b)}S.pulse=S.legs.at(-1).b}},
-  {id:'hall',bar:18,bars:1,view:'scene',
+  {id:'hall',bar:20,bars:1,view:'scene',
    async setup(){await room(13,'hall13',{upto:'m2',at:[236,116,1]})}},
-  {id:'lystra',bar:19,bars:1,view:'scene',
-   async setup(){await room(6,'lystra',{at:[262,126,1]})},
-   async play(){await walk(P,230,126)}},
+  {id:'lystra',bar:21,bars:1,view:'scene',
+   async setup(){await room(6,'lystra',{at:[262,126,-1]})}},
   /* a breath */
-  {id:'breath',bar:20,bars:1,view:'black',card:'langs'},
-  /* the last turn: the street in the evening, at the sundial; the bench at dawn (Chapter Thirteen) */
-  {id:'evening',bar:21,bars:1,view:'scene',
-   async setup(){await room(13,'street13',{upto:'e1',at:[440,122,-1]})},
-   async play(){await walk(P,374,122)}},
-  {id:'bench',bar:22,bars:1,view:'scene',
+  {id:'breath',bar:22,bars:1,view:'black',card:'langs'},
+  /* the last turn: the street in the evening, Paul beside the sundial; the bench at dawn (Chapter Thirteen) */
+  {id:'evening',bar:23,bars:1,view:'scene',
+   async setup(){await room(13,'street13',{upto:'e1',at:[374,122,-1]})}},
+  {id:'bench',bar:24,bars:1,view:'scene',
    async setup(){await room(13,'shop13',{upto:'hall',at:[150,122,1]})}},
   /* the title: the opening picture, its name over the tentmaker's bench by lamplight, and where to play */
-  {id:'title',bar:23,bars:3,view:'title',card:'free',first:1}];
+  {id:'title',bar:25,bars:3,view:'title',card:'free',first:1}];
 
 /* During a shot the game says only the shot's own lines: a thought or a call that the game would say on its own, at a moment the cut
    does not show whole, is left unsaid (it ends at once, as if clicked away). A shot with free:1 lets the game say what it says. */
@@ -171,9 +194,10 @@ return{
   start(i){const s=SHOTS[i];__clock.stop();if(s.play)s.play.call(s).catch(e=>console.error('play '+s.id+': '+(e.stack||e)))},
   /* frame: the trailer's layer at time t of the film: the shot's card, faded in and out, the fade from and to black; and where the
      pointer is, if the shot has one, for the recorder to move the mouse there */
-  frame(i,t){const s=SHOTS[i],a=startOf(s),e=endOf(s),k=s.card;
+  frame(i,t){const s=SHOTS[i],k=s.card;let i0=i,i1=i;while(k&&i0>0&&SHOTS[i0-1].card===k)i0--;while(k&&i1<SHOTS.length-1&&SHOTS[i1+1].card===k)i1++;
+    const a=startOf(SHOTS[i0]),e=endOf(SHOTS[i1]);
     /* a scene stays a scene: no script that ends during it hands the game to the player, so nothing that waits for the player is drawn */
-    if(s.view!=='ui'){G.busy=true;G.hover=null}
+    if(s.view!=='ui'&&!s.live){G.busy=true;G.hover=null}
     if(k){card.className=s.view==='black'?'mid':s.view==='title'?'end':'low';card.textContent=cardText(k);
       const u=s.view==='title'?Math.min(t-a-2.5,e-1.8-t):Math.min(t-a-.25,e-.25-t);card.style.opacity=Math.max(0,Math.min(1,u/.45))}
     else card.style.opacity=0;
