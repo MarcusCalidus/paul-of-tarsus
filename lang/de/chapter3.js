@@ -27,7 +27,7 @@ TEXTS('de',3,{
   "waxed_linen_thread_doubled_and_strong":["Gewachster Leinenfaden, doppelt gezwirnt und stark. Xanthe hat die beste Spule gegeben, die sie hatte.","0nwv6lr"],
   "pack_bags":["Packtaschen","1vs55hr"],
   "two_deep_bags_of_goat_hair":["Zwei tiefe Taschen aus Ziegenhaartuch, verbunden durch ein breites Band, das über einem Packsattel liegt.","18fz46u"],
-  "my_savings":["Erspartes","0046pro"],
+  "my_savings":["Spargeld","0046pro"],
   "little_silver_what_my_awl":["Ein wenig Silber: was meine Ahle in diesem Jahr in Antiochia verdient hat, mehr als ich zum Leben brauche.","0z6oll2"],
   "sauls_awl":["Die Ahle von Saulus. In seiner Hand wirkt sie Wunder; in meiner ist sie eine Gefahr.","0rbdkg6"],
   "waxed_linen_thread":["Gewachster Leinenfaden. Saulus könnte dir sagen, wie stark er ist.","0xz4uz4"],
@@ -575,7 +575,7 @@ TEXTS('de',3,{
   "bags_are_finished":["Die Taschen sind fertig. Auf meiner Schulter nützen sie nichts.","100p0bq"],
   "i_should_hang_the_pack":["Ich sollte die Packtaschen im Hof an den Esel hängen.","0l2t9m3"],
   "gift_carried_by_my_hand":["Eine Gabe, die durch meine Hand geht, muss über jeden Vorwurf erhaben sein, vor Jehova und vor den Menschen. Und ich habe selbst noch etwas beizutragen.","0jc5xbr"],
-  "i_should_give_my_savings":["Ich sollte Lucius mein Erspartes geben und darum bitten, dass alles vor den Brüdern gezählt und versiegelt wird.","1pei81p"],
+  "i_should_give_my_savings":["Ich sollte Lucius mein Spargeld geben und darum bitten, dass alles vor den Brüdern gezählt und versiegelt wird.","1pei81p"],
   "everything_is_ready":["Alles ist bereit. Es ist Zeit zu gehen.","0rdxfi0"],
   "i_sit_down_at_sauls_bench":["Ich setze mich an die Werkbank von Saulus. Jedes Werkzeug liegt in Reichweite, und keins davon taugt etwas in meinen Händen.","1jm37vu"],
   "i_had_better_get_up_again":["Ich stehe besser wieder auf, bevor er mich sieht.","0ioga12"]

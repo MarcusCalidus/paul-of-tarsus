@@ -106,6 +106,11 @@ export function checkTexts(){
     ok(!inCode.length,'the code holds keys, not text: every line it shows stands in lang/en',inCode);
     ok(!unused.length,`en: every line is used by its part of the game (${n} lines)`,unused);
     ok(!empty.length,'en: every line is a string with text in it',empty)}
+  /* names that stand in the status line ("Benutze {item} mit {thing}"): a thing's or a person's name, and an item's */
+  const NAMES={};for(const k in parts){NAMES[k]=new Set();for(const src of parts[k])for(const t of literals(src)){const b=t.before,p1=b[b.length-1],p2=b[b.length-2],p3=b[b.length-3],p4=b[b.length-4];
+    if((p1&&p1.v===':'&&p2&&/^(name|called)$/.test(p2.v))||(p1&&p1.v===','&&p2&&p2.k==='s'&&p3&&p3.v==='('&&p4&&p4.v==='actor'))NAMES[k].add(t.v)}}
+  /* in a language with cases a name must read right after every verb: no inflected adjective or possessive in front of it („Seil (kurz)“, not „kurzes Seil“) */
+  const CASED={de:/^(\p{Ll}+(?:er|es|e|en|em)\s+\p{Lu}|(?:mein|meine|dein|deine|sein|seine|ihr|ihre|unser|unsere)\s|Erspartes$)/u};
   for(const lang of fs.readdirSync(path.join(ROOT,'lang')).sort()){if(lang==='en'||!fs.statSync(path.join(ROOT,'lang',lang)).isDirectory())continue;const D=readLang(lang);
     let n=0;const miss=[],orphan=[],unstamped=[],stale=[],slot=[],book=[],marks=[],rule=[];
     for(const k in parts){const d=D[k]||{},m=D.main||{},e=EN[k]||{};
@@ -121,6 +126,8 @@ export function checkTexts(){
     ok(!unstamped.length,`${lang}: every translation carries the fingerprint of its English line ([text, fingerprint])`,unstamped);
     ok(!stale.length,`${lang}: no English line has changed since it was translated (check each, then: node tools/strings.mjs --confirm ${lang} <part> <key>)`,stale);
     ok(!slot.length,`${lang}: no translation adds a {slot} its English line does not have`,slot);
+    if(CASED[lang]){const bad=[];for(const k in parts){const d=D[k]||{},m=D.main||{};for(const key of NAMES[k]){const v=d[key]??m[key];if(v!=null&&CASED[lang].test(textOf(v)))bad.push(where(k)+key+': '+textOf(v))}}
+      ok(!bad.length,`${lang}: every name reads right after every verb of the status line (a bracket form, \u201eSeil (kurz)\u201c, not an inflected adjective in front)`,bad)}
     ok(!book.length,`${lang}: Scripture references use the language's own book names`,book);
     ok(!marks.length,`${lang}: no pronunciation marks copied from the Bible text`,marks);
     ok(!rule.length,`${lang}: punctuation and wording follow the language's rules`,rule)}

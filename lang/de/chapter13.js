@@ -51,7 +51,7 @@ TEXTS('de',13,{
   "woman":["Frau","1srgbf9"],
   "man_from_the_harbor":["Mann vom Hafen","1lp3b3s"],
   "two_brothers":["zwei Brüder","1wnfr8c"],
-  "old_man":["alter Mann","0li4ary"],
+  "old_man":["Mann (alt)","0li4ary"],
   "daniel_2_44":["Daniel 2:44","10r3aii"],
   "psalm_146_5_6":["Psalm 146:5, 6","1fi37bq"],
   "happy_is_the_man_whose":["Glücklich ist, wer auf Jehova, seinen Gott, hofft und den Gott Jakobs zum Helfer hat. Dieser Gott hat Himmel, Erde und Meer geschaffen und alles, was zu ihnen gehört, und er bleibt immer treu.","06iq3ob"],
