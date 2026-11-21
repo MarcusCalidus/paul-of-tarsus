@@ -45,6 +45,11 @@
    return bx.length>0&&!bad.size};
  const fitVerbs=()=>{for(const b of document.querySelectorAll("#verbs button"))if(getComputedStyle(b).display!=="none")fits(b,"verb",1)};
  const heard=[];new MutationObserver(m=>m.forEach(r=>r.addedNodes.forEach(n=>heard.push(n.textContent)))).observe($('#speech'),{childList:true});
+ /* Paul's name in the prayer (issue #63, CONTRIBUTING section 2): the narration calls him Saul until Acts 13:9 and Paul from there on, and the prayer
+    does too. Every line of prayer that Paul says in the playthrough is noted with its chapter, and the end of the run checks them all, in each
+    language. Acts 13:9 falls in Chapter Four's finale, after its last puzzle, so every prayer up to the end of Chapter Four says Saul. */
+ const prayLine=(h,nm)=>PRAYERS.some(l=>h===T(l,{name:T(nm)})),prayName=[],nameNow=()=>G.ch<=4?'Saul':'Paul';
+ new MutationObserver(m=>m.forEach(r=>r.addedNodes.forEach(n=>{if(PC()===P)for(const nm of['Saul','Paul'])if(prayLine(n.textContent,nm))prayName.push([G.ch,nameNow(),nm])}))).observe($('#speech'),{childList:true});
  const choose=async i=>{const b=document.querySelectorAll('#choices button');b[i<0?b.length+i:i].click();await idle()};
  /* Pray to Jehovah is the hint system, and it never changes the game's state (CONTRIBUTING section 2). Every prayer of the playthrough is
     held to that: the flags, what everyone carries and the room are noted as a prayer begins, and compared at the check that follows it. */
@@ -153,7 +158,7 @@
   /* Chapter Three stops start that chapter from the title screen, without replaying the first two; Chapter Four stops start Chapter Four,
      Chapter Five stops Chapter Five, and Chapter Six stops Chapter Six; the hub test stands on its own. */
   const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3|map3)$/.test(stop),HUB=stop==='hubmap',
-    C4=/^(sendoff|seleucia|kallias|shelter|jair|voyage|map4|salamis|synagogue|speech|hubmap4|paphos|tools|daniel|blind|journey4|final4|deutsch4)$/.test(stop),
+    C4=/^(sendoff|seleucia|kallias|shelter|jair|voyage|map4|salamis|synagogue|speech|hubmap4|paphos|tools|daniel|blind|name4|journey4|final4|deutsch4)$/.test(stop),
     C5=/^(voyage5|perga|parting|sandal|hubmap5|ford|splice|wade|line|pisidia|synp|speech5|week|greek|sabbath2|border|dust|journey5|final5)$/.test(stop),
     C6=/^(beasts|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house6|mend|derbe|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
   const lang=(location.search.match(/[?&]lang=(\w+)/)||[])[1]||'en',toLang=async l=>{for(let i=0;i<150&&G.lang!==l;i++)await wait(30);await wait(60)};
@@ -2563,7 +2568,7 @@
   await sweep(ACT.eliab);
   heard.length=0;await act('pickup','shelf');ok(heard.includes(T('I have no use for dye tonight. Goat-hair cloth comes dark enough from the goat.'))&&G.room==='workshop','the dye shelf: goat hair comes dark enough from the goat');
   halt('pray',()=>{pray()});
-  pray();await idle();ok(G.prays===1&&!G.busy,'prayer returns control, hint='+hint()[0]);
+  heard.length=0;pray();await idle();ok(G.prays===1&&!G.busy&&heard.some(h=>prayLine(h,'Saul'))&&!heard.some(h=>prayLine(h,'Paul')),'prayer returns control, and Saul prays as Saul, as the narration calls him; hint='+hint()[0]);
   await act(null,'door to the street');ok(G.room==='street','in street');
   await act(null,'alley to the wall quarter');ok(G.room==='street'&&P.x<400,'guard turns Paul back');
   halt('guard',()=>{ACT.guard.dir=1;say(ACT.guard,'Halt! The wall quarter is closed tonight. Orders of the governor.')});
@@ -2695,7 +2700,7 @@
   ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Barnabas'))&&getComputedStyle($('#swap')).display!=='none','a party: the panel offers to switch to Barnabas');fitVerbs();
   heard.length=0;await useOn('awl','tent');ok(!F.seam&&!F.held&&heard.includes(T('Then show me where to stand, Saul. I am a Levite, not a tentmaker.')),'one man cannot sew the seam straight');
   pray();await idle();ok(hint()[0]==='hold3','the hint points to Barnabas');
-  key('c');await idle();ok(PC()===BN&&srt()==='staff'&&$('#swap').textContent.includes(T('Paul'))&&$('#status').textContent===T('Walk to'),'C switches to Barnabas, with his own inventory');
+  key('c');await idle();ok(PC()===BN&&srt()==='staff'&&$('#swap').textContent.includes(T('Saul'))&&!$('#swap').textContent.includes(T('Paul'))&&$('#status').textContent===T('Walk to'),'C switches to Barnabas, with his own inventory');
   heard.length=0;await act('look','workbench');ok(heard.includes(T('Scarred by years of cutting.')),'Barnabas looks at things in his own words');
   heard.length=0;await act('use','leather hide');ok(heard.includes(T("That is Saul's trade, not mine."))&&!F.gotLoops,'and leaves the crafts to Saul');
   pray();await idle();ok(hint()[0]==='hold3b'&&ACT.barnabas.bow===false,'Barnabas prays, and gets his own hint');
@@ -2882,22 +2887,25 @@
   halt('map4');
   heard.length=0;mapClick('seleucia');await idle();ok(G.room==='salamis'&&!G.scene&&heard.includes(T(CHAP[4].places.seleucia.no)),'the road does not lead back');
   act(null,'west gate');await mapOpen();mapClick('paphos');await idle();
-  ok(G.room==='paphos'&&!G.scene&&!G.busy&&F.heard&&P.called==='Paul'&&BN.room==='paphos'&&ACT.mark.room==='paphos','through the whole island as far as Paphos: the proconsul calls for them');
-  ok(T(P.hs.name)===T('Paul'),'from here on he is called Paul');
+  ok(G.room==='paphos'&&!G.scene&&!G.busy&&F.heard&&P.called==='Saul'&&BN.room==='paphos'&&ACT.mark.room==='paphos','through the whole island as far as Paphos: the proconsul calls for them');
+  ok(T(P.hs.name)===T('Saul')&&heard.includes(T('Saul, of Tarsus. But I was born a Roman citizen, and among the nations I go by my Roman name: Paul.')),
+    'he gives the proconsul both his names, and the account goes on calling him Saul until Acts 13:9');
   halt('paphos',()=>{place(P,'paphos',286,122,1);place(BN,'paphos',258,126,1);G.cam=80;say(ACT.sergius,'It is a fair question. What is Cyprus to you two, that you walk the length of it?')});
   await sweep(ACT.sergius,ACT.elymas,ACT.mark);
   await actor(null,ACT.sergius);ok(!F.ob1&&!G.busy,'Paul is a stranger on Cyprus, and says so');
-  pray();await idle();ok(hint()[0]==='isle4','the hint points to Barnabas');
+  heard.length=0;pray();await idle();ok(hint()[0]==='isle4'&&heard.some(h=>prayLine(h,'Saul'))&&!heard.some(h=>prayLine(h,'Paul')),'the hint points to Barnabas, and in the hearing Saul still prays as Saul');
   await give('awl',ACT.sergius);ok(!F.ob2&&has('awl'),'the awl is no answer to the first question');
   key('c');await idle();await actor(null,ACT.sergius);ok(F.ob1&&!F.ob2&&!G.busy,'Barnabas answers: he was born on the island');
   const c4c=makeCode();
-  await actor(null,ACT.sergius);ok(!F.ob2,'it is Paul whom Elymas has challenged');
+  await actor(null,ACT.sergius);ok(!F.ob2,'it is Saul whom Elymas has challenged');
   key('c');await idle();await actor(null,ACT.sergius);ok(!F.ob2&&!$('#choices').classList.contains('on'),'words alone do not answer the charge');
   pray();await idle();ok(hint()[0]==='fee4','the hint points to the awl');
-  await enter(c4c);ok(G.room==='paphos'&&PC()===BN&&F.ob1&&!F.ob2&&P.called==='Paul'&&T(P.hs.name)===T('Paul'),'the Paphos code restores, and his name with it');key('c');await idle();
+  await enter(c4c);ok(G.room==='paphos'&&PC()===BN&&F.ob1&&!F.ob2&&P.called==='Saul'&&T(P.hs.name)===T('Saul')&&$('#swap').textContent.includes(T('Saul')),'the Paphos code restores, and his name with it, on the swap button too');key('c');await idle();
   halt('tools',()=>{place(P,'paphos',308,114,1);place(BN,'paphos',280,124,1);G.cam=80;say(P,'This is my answer, sir. An awl. I am a tentmaker.')});
   halt('blind',()=>{F.ob1=F.ob2=1;ACT.elymas.bow=true;place(ACT.elymas,'paphos',352,128,-1);place(P,'paphos',300,120,1);place(BN,'paphos',272,126,1);G.cam=80;G.busy=true;lock(true);status();
     narr('At once a dense mist and darkness closed over his eyes, and he groped about for somebody who would take his hand and guide him. (Acts 13:11)',{dur:9000})});
+  halt('name4',()=>{F.ob1=F.ob2=1;P.called='Paul';swapBtn();place(ACT.elymas,'paphos',352,128,-1);place(P,'paphos',300,120,1);place(BN,'paphos',272,126,1);G.cam=80;G.busy=true;lock(true);status();
+    narr('Here the account first calls Saul by his other name, Paul. The holy spirit filled him, and he fixed his eyes on Elymas. (Acts 13:9)',{dur:8000})});
   await give('awl',ACT.sergius);ok(F.ob2&&has('awl')&&nq()===7,'the awl is the answer: he works for his bread. Then Elymas turns to the Scriptures');
   heard.length=0;await pickQ(T(CHAP[4].tablets.scripture[5].ref));ok(nq()===6&&heard.some(h=>h.includes(T(CHAP[4].tablets.scripture[5].gist))),'the Law is given as the tablets have it, and Elymas has a retort');
   halt('daniel');
@@ -2907,6 +2915,8 @@
   ok(store('paul.save')===codeOf(5,0),'and the browser keeps the first code of Chapter Five');
   ok(ov.textContent.includes(T('Chapter Five code: {code}',{code:codeOf(5,0)})),'chapter four ends with a chapter five code');
   ok(!ACT.elymas.room,'Elymas has been led out');
+  ok(P.called==='Paul'&&heard.includes(T('Here the account first calls Saul by his other name, Paul. The holy spirit filled him, and he fixed his eyes on Elymas. (Acts 13:9)')),
+    'at Acts 13:9, as he faces Elymas, the account first calls him Paul, and the game does from there on');
   {const M=SHARED.map,L=M.state.legs;ok(G.scene===M.draw&&L.length===3&&L.every(l=>l.k===1)&&M.state.seen.has('paphos'),'chapter four ends on the map: Antioch, Seleucia, Salamis, Paphos');
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
@@ -3365,6 +3375,8 @@
   {const real=Object.values(CHAP).filter(c=>c.src);/* the chapters that are level files: not the hub test's own */
     ok(real.length>=9&&real.every(c=>c.ready)&&!taken.length,'ids: all '+real.length+' chapters are loaded, and none took a room, a backdrop or an item from another'+(taken.length?'. TAKEN: '+taken.join(' | '):''))}
   ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+  {const wrong=prayName.filter(([,w,nm])=>w!==nm);
+   ok(prayName.length>0&&!wrong.length,prayName.length+' prayers of Paul name him as the narration does: Saul before Acts 13:9, Paul from there on'+(wrong.length?'. WRONG: '+wrong.slice(0,6).map(([c,w,nm])=>'chapter '+c+' says '+nm+', wanted '+w).join(' | '):''))}
   /* the narrator's scroll: every line of narration told in the dark was read from it, and it is down again at the end */
   ok(inked>=80&&SHARED.scroll&&SHARED.scroll.state==='down'&&!SHARED.scroll.over.length,inked+' lines of narration were told in the dark, and each was read from the scroll');
   talked();fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));

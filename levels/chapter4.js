@@ -314,7 +314,7 @@ Object.assign(COMBO,{
 const ENT={seleucia:[150,124,1],salamis:[150,122,1],synagogue:[60,120,1],paphos:[150,124,1]},
   MARK={seleucia:[96,122,1],salamis:[292,124,-1],synagogue:[292,124,-1],paphos:[58,124,1]};
 /* place4: put everyone where the story has them, for the room the party is in. Barnabas, Saul and John Mark travel together. */
-function place4(room){P.called=F.heard?'Paul':'Saul';const e=ENT[room],o=PC()===P?BN:P;place(o,room,e[0]-26,e[1]+2,e[2]);
+function place4(room){const e=ENT[room],o=PC()===P?BN:P;place(o,room,e[0]-26,e[1]+2,e[2]);
   const m=MARK[room];place(MK,room==='synagogue'?'salamis':room,...m);place(JR,room==='seleucia'?'seleucia':'synagogue',room==='seleucia'?176:88,room==='seleucia'?118:116,1)}
 function setup4(){BN.hs=BN4;P.hs=PAUL4;P.called='Saul';Object.assign(BN,BARN4);for(const id in BY4)(ITEMS[id].by=ITEMS[id].by||{}).barnabas=BY4[id];
   place(BN,'seleucia',124,126,1);place(MK,'seleucia',96,122,1);place(KA,'seleucia',334,116,-1);place(JR,'seleucia',176,118,1);
@@ -332,7 +332,7 @@ async function ask(me,who,q,opts){let av=opts.slice();
   for(;;){await say(who,q,{to:me});const o=av[await choose(av.map(o=>o.q))];for(const l of o.p||[o.q])await say(me,l,{to:who});
     for(const x of o.r)await(Array.isArray(x)?say(x[0],x[1],x[2]||{to:me}):say(who,x,{to:me}));if(o.ok)return;av=av.filter(x=>x!==o)}}
 /* Saul, as Barnabas sees him and talks to him */
-const PAUL4={get name(){return F.heard?'Paul':'Saul'},actor:P,as:{barnabas:{
+const PAUL4={get name(){return P.called||'Saul'},actor:P,as:{barnabas:{
   look:()=>say(BN,inSel()?'Saul. Sent out this morning, and already looking for work for his hands.':inPaph()?'Paul. He looks a proconsul in the eye as he would a fisherman.':'Saul. On my island at last. I have wanted to show it to him for a year.'),
   talk:()=>talkTree([
     {q:'What can I do to help?',a:()=>say(P,inSel()?(!F.metKal?'Come with me to the shipmaster. You know how Cyprus men bargain.':!F.shelter?'Keep John Mark company. The roof is my part.'
@@ -656,10 +656,9 @@ async function hearing0(){if(F.heard)return;
   await say(EL,'Proconsul, is this wise? You have me to tell you what tomorrow holds.',{to:SP});
   await say(SP,'I have you, Elymas. And today I have them as well. Your names?');
   await say(BN,'Barnabas, sir.',{to:SP});
-  await say(P,'Saul, of Tarsus. But I was born a Roman, and among the nations I go by my Roman name: Paul.');
+  await say(P,'Saul, of Tarsus. But I was born a Roman citizen, and among the nations I go by my Roman name: Paul.');
   await say(SP,'Paulus? That is my own name. Sergius Paulus.');
-  await say(P,'I have had it as long as I can remember, sir.');F.heard=1;P.called='Paul';
-  await narr('From this point on, the account calls him Paul. (Acts 13:9)',{dur:4200});
+  await say(P,'I have had it as long as I can remember, sir.');F.heard=1;
   await say(EL,'Proconsul, look at them. Two vagrants from Syria, with the dust of the road to their knees.',{to:SP});
   await say(EL,'Such men sail in, stir up a city, and are gone before the reckoning.');
   await say(SP,'It is a fair question. What is Cyprus to you two, that you walk the length of it?',{to:P})}
@@ -782,7 +781,8 @@ async function finale4(){playAs(P);await wait(300);
   await say(EL,'Proconsul, enough! Send these men away, and hear no more of this. Nothing good will come to you from their God!');
   await narr('Elymas the sorcerer set himself against them, and did what he could to keep the proconsul from the faith. (Acts 13:8)',{dur:7000});
   await walk(P,300,120);P.dir=1;
-  await narr('At that Saul, who is also called Paul, was filled with holy spirit. He looked the man hard in the eye. (Acts 13:9)',{dur:6500});
+  /* the account first calls him Paul here, as he faces Elymas, and so does the game from this line on (CONTRIBUTING section 2) */
+  P.called='Paul';swapBtn();await narr('Here the account first calls Saul by his other name, Paul. The holy spirit filled him, and he fixed his eyes on Elymas. (Acts 13:9)',{dur:8000});
   await say(P,'Son of the Devil! There is nothing in you but lies and malice, and you set yourself against everything that is righteous.');
   await say(P,'Jehovah\'s ways are right, and you will not stop twisting them! (Acts 13:10)');
   await say(P,"Now Jehovah's hand comes down on you: you will go blind, and for a time you will not see the light of the sun. (Acts 13:11)");
@@ -818,9 +818,9 @@ function hint4(){const b=PC()!==P,craft=['craft4',["That is the tentmaker's craf
     return['west4',['Salamis has heard. The island is long, and the word is for all of it.','We can leave by the west gate, and choose Paphos on the map.']]}
   if(!F.ob1)return b?['isle4b',['He calls us strangers. I was born on this island.','I should talk to the proconsul myself.']]
     :['isle4',['He asks what Cyprus is to us. To me it is new. But Barnabas was born here.','Barnabas should answer the proconsul. I can let him.']];
-  if(!F.ob2)return b?['fee4b',['It is Paul whom Elymas doubts, not me. And Paul can show how he lives.','Paul should show the proconsul the tools of his trade.']]
+  if(!F.ob2)return b?['fee4b',['It is Saul whom Elymas doubts, not me. And Saul can show how he lives.','Saul should show the proconsul the tools of his trade.']]
     :['fee4',['He says we want money. To say no is only words. What do I carry that shows how I earn my bread?','I should show the proconsul my awl.']];
-  return b?['dan4b',['Elymas twists the Scriptures before a man who cannot check them. Paul has them on his tablets.','Paul should answer the proconsul.']]
+  return b?['dan4b',['Elymas twists the Scriptures before a man who cannot check them. Saul has them on his tablets.','Saul should answer the proconsul.']]
     :['dan4',['He twists the Scriptures before a man who cannot check them. Daniel answered this himself, to the face of a king.','I should talk to the proconsul, and answer with Daniel 2:27, 28.']]}
 /* ============ CHAPTER DEFINITION ============ */
 return{rooms:['seleucia','salamis','synagogue','paphos'],setup:setup4,start:start4,hint:hint4,music:MUSIC,scenes:{sendoff:sendoffScene,voyage:voyageScene},topics:TOPICS,tablets:TABLETS,

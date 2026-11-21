@@ -622,7 +622,7 @@ N.hs={name:'Naomi',actor:N,look:'Naomi, our sister. A widow who has opened her h
     {q:'Where are the brothers?',a:()=>say(N,'Eliab and young Jesse are coming by the rooftops. They will be here when the basket is ready.')},
     {q:'Thank you for opening your home.',once:1,a:async()=>{await say(N,'You once came to this city to take us away in bonds. Now you are my brother.');await say(N,'Jehovah does such things.')}},
     {q:'I will make ready.',bye:1}])};
-function setup(){place(E,'workshop',196,118,-1);place(GD,'street',270,118,1);place(Z,'street',328,116,-1);place(N,'house',172,120,-1);
+function setup(){P.called='Saul';place(E,'workshop',196,118,-1);place(GD,'street',270,118,1);place(Z,'street',328,116,-1);place(N,'house',172,120,-1);
   G.inv=['pouch','tablets'];drawInv()}
 /* ============ SCENES: intro, finale, chapter complete ============ */
 const twinkle=(g,t)=>{for(let i=0;i<6;i++)if((Math.floor(t/500)+i)%4===0)R(g,160+i*27,12+(i*17)%40,1,1,'#0a0f2e')};

@@ -4,6 +4,7 @@
    copied: they are checked against the Neue-Welt-Übersetzung der Heiligen Schrift (Studienausgabe), and names and places follow its
    spelling, without the marks that show stress (CONTRIBUTING sections 1 and 8). */
 TEXTS('de',2,{
+  "Saul":"Saulus",
   "Barnabas":"Barnabas",
   "Cephas":"Kephas",
   "James":"Jakobus",
