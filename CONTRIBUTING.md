@@ -24,6 +24,7 @@ Paul of Tarsus is a Bible-based adventure meant to be suitable for Jehovah's Wit
 ### Understanding and wording
 
 - Follow the scriptural understanding of Jehovah's Witnesses. Use "Jehovah", "C.E." and "B.C.E.", "the congregation" and "the brothers".
+- Fellow believers call one another brother and sister the way the Scriptures do: a name followed by the word, as when Ananias greets Saul (Acts 9:17), the word by itself (Acts 21:20), or our brother, our sister beside a name (1 Corinthians 1:1; Romans 16:1). Brother or Sister never stands before a name as a title, as in "Brother Paul" or „Bruder Paulus“: the first Christians did not use it so, in either language.
 - Watch for details that are easy to get wrong. Acts 11:26 says the disciples were called Christians "by divine providence", so the name must not be presented as a nickname coined by outsiders.
 - Use jw.org and wol.jw.org to check facts only. Do not copy their artwork, photographs, maps or publication text into the game.
 
