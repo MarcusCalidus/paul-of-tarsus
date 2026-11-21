@@ -505,7 +505,7 @@ TEXTS('de',3,{
   "saul_sewed_them_so_let":["Saulus hat sie genäht, also soll Saulus sie aufhängen. Ich halte den Kopf des Esels.","0fj734e"],
   "he_has_no_use_for_that":["Damit kann er nichts anfangen.","1rgwhh8"],
   "the_mountain_above_the_city":["Der Berg über der Stadt, und die Mauer, die über ihn klettert.","0xr33ng"],
-  "when_i_first_acts_11_23":["Als ich zum ersten Mal durch diese Straße ging, sah ich überall die unverdiente Güte Gottes am Werk. (Apostelgeschichte 11:23)","0huq1mc"],
+  "when_i_first_acts_11_23":["Als ich zum ersten Mal durch diese Straße ging, habe ich überall die unverdiente Güte Gottes am Werk gesehen. (Apostelgeschichte 11:23)","0huq1mc"],
   "xanthes_stall":["Xanthes Stand. Der beste Faden in Antiochia, sagt Theron.","0x0v5lr"],
   "water_from_the_springs_above_the_city":["Wasser aus den Quellen oberhalb der Stadt.","1cmyou8"],
   "therons_stall":["Therons Stand. Schlichte, solide Arbeit.","0vdwwwn"],

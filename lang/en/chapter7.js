@@ -815,7 +815,7 @@ TEXTS('en',7,{
   "go_child":"Go, child. I'll keep this door open for three of you now.",
   "if_the_brothers_are_not":"Then, if the brothers aren't mistaken about me... I will come.",
   "there_were_prophecies_1_timothy_1_18_4_14_2_timothy_1_6":"There were prophecies about Timothy, and the body of elders laid their hands on him, as Paul did. It may have been at this time. (1 Timothy 1:18; 4:14; 2 Timothy 1:6)",
-  "jews_of_that_region_acts_16_3":"The Jews of that region all knew that Timothy's father was a Greek. Because of them, and because he wanted the young man as his companion, Paul had him circumcised. (Acts 16:3)",
+  "jews_of_that_region_acts_16_3":"Paul wanted the young man as his companion. The Jews of that region all knew that Timothy's father was a Greek, and because of them Paul circumcised him. (Acts 16:3)",
   "paul_knew_very_well_that_no":"Paul knew very well that no Christian had to be circumcised: the letter in his bag laid no such burden on anyone. But everyone knew that Timothy's father was a Greek, and to the Jews in the cities ahead of them that would have been an obstacle.",
   "that_nothing_about_him_1_corinthians_9_20":"So that nothing about him would stand in the way of the good news, Timothy submitted to it. Paul would later write that for the Jews he made himself like a Jew, so as to win Jews. (1 Corinthians 9:20)",
   "in_city_after_acts_16_4":"In city after city on their way they handed on the decrees that the apostles and the elders in Jerusalem had decided on, to be kept by the brothers there. (Acts 16:4)",

@@ -7,7 +7,7 @@ TEXTS('en','prologue',{
   "saul_stood_by_guarded_acts_8_1_22_20":"Saul stood by, guarded their garments, and thought the killing right. (Acts 8:1; 22:20)",
   "born_in_tarsus_acts_18_3_22_3":"Born in Tarsus of Cilicia and a tentmaker by trade, he had been strictly trained in the Law by Gamaliel in Jerusalem. (Acts 18:3; 22:3)",
   "as_a_pharisee_acts_22_3_galatians_1_14_philippians_3_5":"As a Pharisee he was zealous for God, and he outdid many men his age in devotion to the traditions of his forefathers. (Acts 22:3; Galatians 1:14; Philippians 3:5)",
-  "in_that_zeal_acts_8_3":"In that zeal he sent the disciples in Jerusalem to prison, men and women alike, dragging them from their homes one after another. (Acts 8:3)",
+  "in_that_zeal_acts_8_3":"In that zeal Saul began to wreak havoc on the congregation. He raided one home after another, dragged out men and women alike, and handed them over to be jailed. (Acts 8:3)",
   "still_threatening_the_disciples_acts_9_1_2":"Still threatening the disciples with death, Saul came away from the high priest with letters to the synagogues of Damascus. With them he could put in chains anyone there who belonged to The Way, as the disciples' faith was called, and bring them to Jerusalem. (Acts 9:1, 2)",
   "after_days_on_the_road_acts_9_3_22_6":"After days on the road he was nearing Damascus, about midday. (Acts 9:3; 22:6)",
   "all_at_once_light_acts_9_3_26_13":"All at once, light from heaven blazed around him and the men with him, brighter than the midday sun. (Acts 9:3; 26:13)",

@@ -393,7 +393,7 @@ TEXTS('en',2,{
   "you_have_said_what_you":"You've said what you came to say. Now listen to the brothers.",
   "james_told_me_i_would_hear":"James told me I would hear those words. I didn't think it would be so soon.",
   "while_he_prayed_acts_22_17_21":"While he prayed in the temple, the Lord told him to get out of Jerusalem without delay: he was to be sent to distant nations. (Acts 22:17-21)",
-  "once_the_brothers_acts_9_30":"Once the brothers had learned of the plot, they took him down to Caesarea, meaning to send him on to Tarsus. (Acts 9:30)",
+  "once_the_brothers_acts_9_30":"Word of the plot reached the brothers. They brought Saul down to Caesarea, and from there they sent him on to Tarsus. (Acts 9:30)",
   "caesarea_the_great_harbor_on_the_coast":"Caesarea, the great harbor on the coast.",
   "there_she_is_saul_the_only":"There she is, Saul: the only ship in harbor bound for Cilicia.",
   "look_at_her_sail":"But look at her sail. She's going nowhere like that.",

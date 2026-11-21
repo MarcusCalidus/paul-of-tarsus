@@ -620,7 +620,7 @@ TEXTS('de',6,{
   "road_runs_east_from_here":["Von hier führt eine Straße nach Osten, nach Tarsus und nach Hause.","0frn0w6"],
   "son_of_comfort":["Der Sohn des Trostes. In einer gespaltenen Stadt bringen ihm die Leute, was sie mir nicht sagen können.","0tyfw8n"],
   "he_would_like_to_go_home":["Er würde gern nach Hause gehen. Er wird es nicht sagen, bevor ich es sage.","1tto0i5"],
-  "they_called_him_zeus_and_he":["Sie nannten ihn Zeus, und er zerriss seinen Mantel vom Hals bis zum Gürtel.","0yum5f9"],
+  "they_called_him_zeus_and_he":["Sie haben ihn Zeus genannt, und er hat seinen Mantel vom Hals bis zum Gürtel zerrissen.","0yum5f9"],
   "saddler_of_iconium_a_jew_who_believes":["Ein Sattler aus Ikonion, ein Jude, der glaubt. Er hat uns von den Steinen berichtet.","07dkzmq"],
   "he_has_his_cover_to_the_last":["Er hat seine Plane, bis zur letzten Öse. Er hält immer noch zu den Vorstehern und ist sich etwas weniger sicher, ob das stimmt, was sie ihm gesagt haben.","0g9hvq7"],
   "carrier_of_iconium":["Ein Fuhrmann aus Ikonion. Er hat mir den halben Preis einer Wagenplane bezahlt, und er hält mich für einen Betrüger.","191we6c"],

@@ -7,10 +7,10 @@
    sections 1 and 8). */
 TEXTS('de','prologue',{
   "outside_jerusalem_stephen_acts_7_58_60":["Vor Jerusalem wurde Stephanus, ein Jünger von Jesus, zu Tode gesteinigt. Ein junger Mann namens Saulus war ganz in der Nähe; man hatte ihm die Obergewänder der Zeugen zu Füßen gelegt. (Apostelgeschichte 7:58, 60)","0t80xjo"],
-  "saul_stood_by_guarded_acts_8_1_22_20":["Saulus stand dabei, gab auf ihre Gewänder acht und hielt die Tötung für richtig. (Apostelgeschichte 8:1; 22:20)","0uzieyi"],
+  "saul_stood_by_guarded_acts_8_1_22_20":["Saulus stand dabei, passte auf ihre Obergewänder auf und hielt die Tötung für richtig. (Apostelgeschichte 8:1; 22:20)","0uzieyi"],
   "born_in_tarsus_acts_18_3_22_3":["Er stammte aus Tarsus in Zilizien und war Zeltmacher von Beruf. In Jerusalem hatte Gamaliel ihn streng im Gesetz ausgebildet. (Apostelgeschichte 18:3; 22:3)","0mwtpan"],
   "as_a_pharisee_acts_22_3_galatians_1_14_philippians_3_5":["Als Pharisäer war er voller Eifer für Gott, und in seiner Hingabe an die Traditionen seiner Vorfahren übertraf er viele Gleichaltrige. (Apostelgeschichte 22:3; Galater 1:14; Philipper 3:5)","15ko2vc"],
-  "in_that_zeal_acts_8_3":["In diesem Eifer brachte er die Jünger in Jerusalem ins Gefängnis, Männer wie Frauen. Er zerrte sie aus ihren Häusern, einen nach dem anderen. (Apostelgeschichte 8:3)","16jnxb4"],
+  "in_that_zeal_acts_8_3":["In diesem Eifer fing Saulus an, voller Wut gegen die Versammlung vorzugehen. Er drang der Reihe nach in ihre Häuser ein, zerrte Männer wie Frauen weg und ließ sie ins Gefängnis stecken. (Apostelgeschichte 8:3)","1fmeeqf"],
   "still_threatening_the_disciples_acts_9_1_2":["Noch immer drohte Saulus den Jüngern mit dem Tod, und beim Hohen Priester holte er sich Briefe für die Synagogen von Damaskus. Damit konnte er dort jeden in Ketten legen und nach Jerusalem bringen, der zum Weg gehörte. So nannte man den Glauben der Jünger. (Apostelgeschichte 9:1, 2)","0183l4n"],
   "after_days_on_the_road_acts_9_3_22_6":["Nach mehreren Tagen auf der Straße kam er gegen Mittag in die Nähe von Damaskus. (Apostelgeschichte 9:3; 22:6)","17chuf3"],
   "all_at_once_light_acts_9_3_26_13":["Mit einem Mal strahlte Licht vom Himmel um ihn und seine Begleiter auf, heller als die Mittagssonne. (Apostelgeschichte 9:3; 26:13)","0t4kkb8"],
