@@ -51,7 +51,8 @@ export function isText(t,inGetName){const s=t.v,b=t.before,p1=b[b.length-1],p2=b
   const slot=p1&&p1.v===':'&&p2&&p2.k==='w'&&/^(name|called|q|t|ref|short|note|look|pickup|use|open|talk|give|text|noCraft)$/.test(p2.v);
   /* actor(id, 'Name', ...): the second argument */
   const actorName=p1&&p1.v===','&&p2&&p2.k==='s'&&p3&&p3.v==='('&&b[b.length-4]&&b[b.length-4].v==='actor';
-  if(slot||actorName||inGetName)return !/^[a-z]+[A-Z]\w*$/.test(s)&&!looksCode(s);
+  /* in a place for text, a short "Word: value." that ends as a sentence does is text, not a style rule ("Tomorrow: Derbe.") */
+  if(slot||actorName||inGetName)return !/^[a-z]+[A-Z]\w*$/.test(s)&&(!looksCode(s)||/^\p{Lu}.*[.!?]$/u.test(s));
   /* a line of one word: "Gladly.", "Isaiah..." */
   if(/^\p{Lu}\p{Ll}+(?:\.\.\.|[.!?])$/u.test(s))return true;
   return / /.test(s.trim())&&!looksCode(s)}

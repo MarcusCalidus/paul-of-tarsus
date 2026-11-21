@@ -813,7 +813,7 @@ const BN6={name:'Barnabas',actor:BN,
     :inOut()?say(BN,'i_thought_i_had_lost_you_paul')
     :night()?talkTree([
       {q:'how_do_i_look_to_you',once:1,a:async()=>{await say(BN,'like_a_man_who_was_stoned');await say(BN,'i_do_not_know_which_of_the_two')}},
-      {q:'Tomorrow: Derbe.',a:()=>say(BN,F.mended?'tomorrow_derbe':'tomorrow_derbe_said')},
+      {q:'tomorrow_derbe_ask',a:()=>say(BN,F.mended?'tomorrow_derbe':'tomorrow_derbe_said')},
       {q:'rest_brother',bye:1}])
     :inDer()?talkTree([
       {q:'what_do_you_say_barnabas',a:()=>say(BN,BN6.ask.east)},
