@@ -210,36 +210,36 @@ async function play(){
     /* 1. Outside a wall of Jerusalem, by day */
     G.pro={};G.scene=SCENES.stones;AU.mood='stones';AU.amb={wind:.2};codeBtn();
     await pwait(400);
-    await pnarr("Outside Jerusalem, Stephen, a disciple of Jesus, was stoned to death. A young man named Saul was close by, with the witnesses' outer garments laid at his feet. (Acts 7:58, 60)");
-    await pnarr('Saul stood by, guarded their garments, and thought the killing right. (Acts 8:1; 22:20)');
+    await pnarr('outside_jerusalem_stephen_acts_7_58_60');
+    await pnarr('saul_stood_by_guarded_acts_8_1_22_20');
     if(G.proSkip)return;
 
     /* 2. The same figure, nearer */
     await pfade(1,350);G.scene=SCENES.zeal;AU.mood='tense';await pfade(0,350);
-    await pnarr('Born in Tarsus of Cilicia and a tentmaker by trade, he had been taught in Jerusalem by Gamaliel in the strict keeping of the Law. (Acts 18:3; 22:3)');
-    await pnarr('As a Pharisee he was zealous for God, and he outdid many men his age in devotion to the traditions of his forefathers. (Acts 22:3; Galatians 1:14; Philippians 3:5)');
+    await pnarr('born_in_tarsus_acts_18_3_22_3');
+    await pnarr('as_a_pharisee_acts_22_3_galatians_1_14_philippians_3_5');
     if(G.proSkip)return;
 
     /* 3. A street door in Jerusalem, shut, by evening light */
     await pfade(1,380);G.scene=SCENES.door;AU.amb={wind:.18,crickets:.2};await pfade(0,380);
-    await pnarr('In that zeal he sent the disciples in Jerusalem to prison, men and women alike, dragging them from their homes one after another. (Acts 8:3)');
-    await pnarr("Still threatening the disciples with death, Saul came away from the high priest with letters to the synagogues of Damascus. With them he could put in chains anyone there who belonged to The Way, as the disciples' faith was called, and bring them to Jerusalem. (Acts 9:1, 2)");
+    await pnarr('in_that_zeal_acts_8_3');
+    await pnarr('still_threatening_the_disciples_acts_9_1_2');
     if(G.proSkip)return;
 
     /* 4. The road near Damascus at midday */
     await pfade(1,400);G.pro={x:108,d:0,blind:0};G.scene=SCENES.road;AU.mood='none';AU.amb={wind:.35,cicadas:.55};await pfade(0,400);
     let stepIv=setInterval(()=>{if(!G.proSkip&&!G.white)SFX.step()},420);
     tween(G.speedAll>200?120:4200,k=>{if(G.pro&&!G.pro.blind){G.pro.x=108+42*k;G.pro.d=42*k}});
-    await pnarr('After days on the road he drew near to Damascus, about midday. (Acts 9:3; 22:6)');
+    await pnarr('after_days_on_the_road_acts_9_3_22_6');
     clearInterval(stepIv);
     if(G.proSkip)return;
 
     /* 5. White: a light from heaven brighter than the sun; everything cuts off at once */
     silenceNow();
     await pfade(1,OPTS.mov?480:900,1);
-    await pnarr('All at once, light from heaven blazed around him and the men with him, brighter than the midday sun. (Acts 9:3; 26:13)');
-    await pnarr('He fell to the ground. A voice called his name twice and asked why he was persecuting the one speaking to him. (Acts 9:4)');
-    await pnarr('Saul asked who was speaking. The answer came: it was Jesus, the very one he was persecuting. Saul was to get up and go on into the city, and there he would learn what he must do. (Acts 9:5, 6)');
+    await pnarr('all_at_once_light_acts_9_3_26_13');
+    await pnarr('he_fell_to_the_ground_acts_9_4');
+    await pnarr('saul_asked_who_was_speaking_acts_9_5_6');
     if(G.proSkip)return;
 
     /* 6. Black: no words, two seconds of silence */
@@ -252,25 +252,25 @@ async function play(){
     await pfade(0,550);
     const uneven=[0,520,1180,1760,2480,3120,3850,4520,5280].map(ms=>setTimeout(()=>{if(!G.proSkip&&G.scene===SCENES.road)SFX.step()},ms));
     tween(G.speedAll>200?160:7200,k=>{if(G.pro&&G.pro.blind){G.pro.x=126+44*k;G.pro.d=44*k}});
-    await pnarr('The men traveling with him had seen the light and heard the sound of a voice, but saw no one and did not understand the words. (Acts 9:7; 22:9)');
-    await pnarr('His companions had to lead Saul into Damascus by the hand: his eyes were wide open, but the brilliance of that light had left him blind. (Acts 9:8; 22:11)');
+    await pnarr('men_traveling_with_him_acts_9_7_22_9');
+    await pnarr('his_companions_had_acts_9_8_22_11');
     uneven.forEach(clearTimeout);
     if(G.proSkip)return;
 
     /* 8. A room in Damascus: Saul seated with bowed head, Ananias in the doorway */
     await pfade(1,450);G.pro={ax:38,afr:0,hand:0,sight:0};G.scene=SCENES.judas;AU.mood='harp';AU.amb={wind:.12};await pfade(0,450);
-    await pnarr('For three days he saw nothing, and neither ate nor drank, while he prayed in the house of Judas on the street called Straight. (Acts 9:9, 11)');
-    await pnarr("The Lord had chosen Saul as his vessel, to carry his name to the nations, to kings and to the sons of Israel. So in a vision he sent a disciple named Ananias to him, though Ananias had heard of all the harm Saul had done to the holy ones in Jerusalem. (Acts 9:10-15)");
+    await pnarr('for_three_days_acts_9_9_11');
+    await pnarr('lord_had_chosen_acts_9_10_15');
     if(G.proSkip)return;
     await tween(G.speedAll>200?60:1800,k=>{if(!G.pro)return;G.pro.ax=38+136*k;G.pro.afr=k<1?walkFr(LOOK.ananias,136*k,66):0});
     if(G.pro){G.pro.afr=0;G.pro.hand=1}
     setTimeout(()=>{if(G.pro&&!G.proSkip){G.pro.sight=1;SFX.good()}},G.speedAll>200?20:1400);
-    await pnarr("Saul felt hands laid on him and heard Ananias call him brother. The Lord Jesus had sent Ananias so that Saul would see again and be full of holy spirit. At once, as if scales had dropped from his eyes, he could see, and he was baptized. (Acts 9:17, 18)");
+    await pnarr('saul_felt_hands_acts_9_17_18');
     if(G.proSkip)return;
 
     /* 9. The wall of Damascus under the moon: the ensemble climax swells in and runs straight into Chapter One */
     await pfade(1,500);G.pro=null;G.scene=CHAP[1].scenes.wall;G.end={};AU.step=96;AU.mood='ancient';AU.amb=TITLE.amb;await pfade(0,500);
-    await pnarr('All who heard Saul in the synagogues of Damascus were amazed. Right away he was preaching that Jesus is the Son of God, and his careful proof that Jesus is the Christ left the Jews there baffled. (Acts 9:20-22)');
+    await pnarr('all_who_heard_acts_9_20_22');
   },true);
 }
 

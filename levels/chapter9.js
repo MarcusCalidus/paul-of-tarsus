@@ -90,8 +90,8 @@ function inhale(dest,t,w,v){const c=AU.ctx,s=c.createBufferSource(),fl=c.createB
 /* The lines of the psalm as they are sung: each syllable is the degree of the scale, a dot, its length in steps, and its vowel; "-.1" is
    a rest of one step. The vowels and the rhythm are those of the line that stands on the screen, so each language has its own: these are
    the English ones, and a language's file gives its own under the same key (CONTRIBUTING section 8). */
-const SONG={c1:'0.1@ 2.2o 3.1a 4.1i 3.2u -.1 2.2i 1.1i 0.4a',c2:'4.1i 4.1i 5.2o 4.1o 3.1e 2.2a -.1 3.1e 2.1i 1.1@ 0.1o -2.4o',
-  c3:'0.1@ 2.2e 2.1a 4.1@ 5.2e -.1 4.1i 5.2e 4.1a 6.1o 6.2a 5.1e 4.1@ 4.3i',c4:'4.2a 5.1@ 4.2o 2.1o 3.2e 0.4@',a:'4.1e 4.1i 5.2o 4.2e 3.1u 2.1i 3.2o 1.1@ 0.4a'};
+const SONG={c1:'sung_c9_1',c2:'sung_c9_2',
+  c3:'sung_c9_3',c4:'sung_c9_4',a:'sung_c9_5'};
 /* who sings a line: Paul, Silas, both, a household (Silas among them), one woman who begins it, or everyone in the house */
 const CHOIR={P:['P'],S:['S'],PS:['S','P'],H:['S','W1','W2','M3'],W:['W1'],ALL:['S','P','W1','W2','M3']};
 /* whose mouths sing it: the same people, as far as they stand in the room. A household is everyone of the congregation there but Paul. */
@@ -390,48 +390,48 @@ Object.assign(LOOK,{
 const HOUSEHOLD=[['hh91',312,119,-1],['hh92',328,125,-1]];
 const SI=actor('silas9','Silas','#9fd8c8',118),TI=actor('timothy9','Timothy','#b8e0b0',150),LU=actor('luke','Luke','#c8e8c0',126),LK=actor('luke9','Luke','#c8e8c0',126),
   LY=actor('lydia9','Lydia','#e0b0e8',190),PH=actor('phila9','Phila','#a8d0e0',198),EL=actor('elpis9','Elpis','#f0d8a0',176),
-  GI=actor('girl9','servant girl','#e8c8a0',230),MA=actor('master91','master of the girl','#f0a890',104),MB=actor('master92','older master','#d8c890',92),
-  JA=actor('jailer9','jailer','#f0c090',106),MG=actor('mag91','magistrate','#e8d8f0',98),M2=actor('mag92','younger magistrate','#d8d0e8',110),
-  CO=actor('lic91','constable','#f0a898',116),C2=actor('lic92','bearded constable','#e8b0a0',104),
-  PR=[actor('pr91','man who muttered','#c8c0b0',90),actor('pr92','man with the chain','#d0c8a8',124),actor('pr93','man who coughed','#c0c8d0',84)];
+  GI=actor('girl9','servant_girl','#e8c8a0',230),MA=actor('master91','master_of_the_girl','#f0a890',104),MB=actor('master92','older_master','#d8c890',92),
+  JA=actor('jailer9','jailer','#f0c090',106),MG=actor('mag91','magistrate','#e8d8f0',98),M2=actor('mag92','younger_magistrate','#d8d0e8',110),
+  CO=actor('lic91','constable','#f0a898',116),C2=actor('lic92','bearded_constable','#e8b0a0',104),
+  PR=[actor('pr91','man_who_muttered','#c8c0b0',90),actor('pr92','man_with_the_chain','#d0c8a8',124),actor('pr93','man_who_coughed','#c0c8d0',84)];
 
 /* ============ WHAT THE ACCOUNT SAYS ============ */
 /* TOLD: Acts 16:16-40, verse by verse, told by the narrator in paraphrase, each with its reference. None of it is put into a mouth, and
    none of it stands in quotation marks: a paraphrase is never presented as a quotation (CONTRIBUTING section 1). It says "we" and "us"
    in the first two, as Acts does, and "they" from the verse in which Paul and Silas are seized. */
 const TOLD={
- v16:'On our way to the place of prayer a servant girl met us. A spirit was in her, a demon of divination, and her fortune-telling made her masters a great deal of money. (Acts 16:16)',
- v17:'She came along behind Paul and the rest of us, and kept shouting that these men were slaves of the Most High God and were announcing the way of salvation. (Acts 16:17)',
- v18:'This went on for many days, until Paul had had enough. He turned round and, in the name of Jesus Christ, commanded the spirit to leave her; and in that same hour it was gone. (Acts 16:18)',
- v19:"With the spirit went her masters' hope of making money, and they saw it. They laid hold of Paul and Silas and hauled them into the marketplace, to the rulers. (Acts 16:19)",
- v20:'They brought them before the civil magistrates with this charge: these men, who were Jews, were throwing the city into great disorder, and were advocating customs that Romans like themselves were not allowed to take up or to follow. (Acts 16:20, 21)',
- v22:'The whole crowd turned on the two together. The civil magistrates had the clothes torn from their backs, and ordered them beaten with rods. (Acts 16:22)',
- v23:'Many blows had been struck on them before they were put in prison, and the jailer had been ordered to keep them under close guard. So he shut them away in the inner prison, with their feet locked in the stocks. (Acts 16:23, 24)',
- v25:'Toward midnight Paul and Silas were at prayer and were singing praise to God, while the prisoners listened. (Acts 16:25)',
- v26:"All at once the earth quaked, so violently that the jail shook to its foundations. In that instant every door flew open and every prisoner's bonds fell away. (Acts 16:26)",
- v27:'The jailer started out of his sleep and saw the prison doors standing open. Sure that the prisoners had got away, he drew his sword and meant to take his own life. (Acts 16:27)',
- v28:'But Paul shouted to him not to harm himself: they were all still there. (Acts 16:28)',
- v29:'The jailer called for lights and ran inside, and there he dropped to the ground in front of Paul and Silas, shaking. (Acts 16:29)',
- v30:'He led them out, addressed them with respect, and asked what he had to do to be saved. (Acts 16:30)',
- v31:'Their answer was that he should put faith in the Lord Jesus; then he would be saved, and his household too. (Acts 16:31)',
- v32:'Then the two made the word of Jehovah known to him, and to everyone under his roof. (Acts 16:32)',
- v33:'Late as the hour was, he took them with him and bathed their wounds; and straightaway he was baptized, he and his whole household. (Acts 16:33)',
- v34:'Then he took them into his own house and gave them a meal at his table. Now that he had come to believe in God, he and all his household were full of joy. (Acts 16:34)',
- v35:'At daybreak the civil magistrates sent their constables with the word that those men were to be let go. (Acts 16:35)',
- v36:'The jailer brought the message to Paul: the civil magistrates had sent word that both were to be freed, so they should come out now and go their way in peace. (Acts 16:36)',
- v37:'Paul answered them that he and Silas were Romans, and that without any trial they had been publicly flogged and put in prison. And now they were to be put out on the quiet? By no means: the magistrates were to come in person and lead them out. (Acts 16:37)',
- v38:'The constables carried his answer back. When the civil magistrates heard that the men were Romans, fear took hold of them. (Acts 16:38)',
- v39:'They came themselves and entreated the two; then they led them out, with the request that they leave the city. (Acts 16:39)',
- v40a:"Leaving the prison, the two made their way to Lydia's house. (Acts 16:40)",
- v40b:'There they saw the brothers and gave them encouragement; and after that they left. (Acts 16:40)'};
+ v16:'on_our_way_to_the_place_acts_16_16',
+ v17:'she_came_along_acts_16_17',
+ v18:'this_went_on_for_many_acts_16_18',
+ v19:'with_the_spirit_acts_16_19',
+ v20:'they_brought_them_acts_16_20_21',
+ v22:'whole_crowd_turned_on_the_two_together_acts_16_22',
+ v23:'many_blows_had_acts_16_23_24',
+ v25:'toward_midnight_paul_acts_16_25',
+ v26:'all_at_once_the_earth_acts_16_26',
+ v27:'jailer_started_out_of_his_sleep_acts_16_27',
+ v28:'paul_shouted_to_him_acts_16_28',
+ v29:'jailer_called_for_lights_acts_16_29',
+ v30:'he_led_them_out_addressed_acts_16_30',
+ v31:'their_answer_was_acts_16_31',
+ v32:'two_made_the_word_acts_16_32',
+ v33:'late_as_the_hour_acts_16_33',
+ v34:'he_took_them_acts_16_34',
+ v35:'at_daybreak_the_civil_acts_16_35',
+ v36:'jailer_brought_the_message_acts_16_36',
+ v37:'paul_answered_them_acts_16_37',
+ v38:'constables_carried_his_answer_back_acts_16_38',
+ v39:'they_came_themselves_acts_16_39',
+ v40a:'leaving_the_prison_acts_16_40',
+ v40b:'there_they_saw_acts_16_40'};
 const tell=(k,ms)=>narr(TOLD[k],{dur:ms||Math.max(6500,2200+TOLD[k].length*62)});
 /* PS: the psalm, as Paul has noted it on his tablets: four of its calls, and the answer that follows every one. A note in his own words,
    with its reference, and shown as that (gist: see shared/tablets.js). Acts does not say what the two men sang. */
-const PS={c1:{ref:'Psalm 136:1',gist:'Jehovah is good: give him thanks.',full:'Jehovah is good: give him thanks. (Psalm 136:1)'},
-  c2:{ref:'Psalm 136:23',gist:'He did not forget us when we were brought low.',full:'He did not forget us when we were brought low. (Psalm 136:23)'},
-  c3:{ref:'Psalm 136:24',gist:'Again and again he saved us from our enemies.',full:'Again and again he saved us from our enemies. (Psalm 136:24)'},
-  c4:{ref:'Psalm 136:26',gist:'Thank the God of heaven.',full:'Thank the God of heaven. (Psalm 136:26)'},
-  a:{ref:'Psalm 136:1-26',gist:'There is no end to his loyal love.',full:'There is no end to his loyal love. (Psalm 136:1-26)'}},ORDER=['c1','c2','c3','c4'];
+const PS={c1:{ref:'psalm_136_1',gist:'jehovah_is_good_give_him_thanks',full:'jehovah_is_good_give_him_thanks_psalm_136_1'},
+  c2:{ref:'psalm_136_23',gist:'he_did_not_forget_us_when_we',full:'he_did_not_forget_psalm_136_23'},
+  c3:{ref:'psalm_136_24',gist:'again_and_again_he_saved',full:'again_and_again_psalm_136_24'},
+  c4:{ref:'psalm_136_26',gist:'thank_the_god_of_heaven',full:'thank_the_god_of_heaven_psalm_136_26'},
+  a:{ref:'psalm_136_1_26',gist:'there_is_no_end_to_his_loyal',full:'there_is_no_end_psalm_136_1_26'}},ORDER=['c1','c2','c3','c4'];
 /* ============ HELPERS ============ */
 const inHouse=()=>G.room==='lydia9',inRiv=()=>G.room==='river9',inCell=()=>G.room==='cell9',inGaol=()=>G.room==='gaol9',
   day=()=>!F.d1?1:!F.d2?2:3,sungN=()=>F.s3?3:F.s2?2:F.s1?1:0,allHere=()=>!!(F.c1&&F.c2&&F.c3),CHO='#f0e2b0';
@@ -450,74 +450,74 @@ async function come(room,ms){place9(room);const a=PC();enterRoom(room,a.x,a.y,a.
    Scriptures is what it can sing: so Paul teaches a psalm that is written as a call and an answer. Insight ("Music") says that much group
    singing in Israel appears to have been of that kind, and names Psalm 136. The lesson is invented. */
 async function toRiver(){const me=PC();if(F.free)return leave();
-  await say(me,me===P?'To the river, then. A psalm is learned with the mouth, and under the open sky.':'To the river, then. I want to hear how a tentmaker teaches a psalm.');
+  await say(me,me===P?'to_the_river_then_said':'to_the_river_then_i');
   await fade(1,500);playAs(P);F.went=1;await come('river9');return riverIntro()}
 async function riverIntro(){if(G.metRiv||F.jail)return;G.metRiv=1;
   if(day()===1){await tell('v16');GI.talk=true;SFX.alert();await tell('v17');GI.talk=false;
-    await say(TI,'Who is she, Paul? She has been behind us since the gate.');
-    await say(LU,'A servant girl. Those two men are her masters: I have seen them in the marketplace, taking silver for what she tells people.');
-    await say(P,'Every word that she cries is true. And I did not ask for that witness.',TH);
-    await say(SI,'The women are waiting on the stones, Paul. Let her cry. We came to teach them a psalm.')}
+    await say(TI,'who_is_she_paul');
+    await say(LU,'a_servant_girl');
+    await say(P,'every_word_that_she_cries_is_true',TH);
+    await say(SI,'women_are_waiting_on_the_stones_paul')}
   codeBtn()}
 /* ============ THE RIVER, ON THREE DAYS: the psalm that could not be finished ============ */
 /* The girl followed Paul and the others (Acts 16:17), and went on doing so for many days (16:18). The player leads the psalm, and the cry breaks it off:
    then it has to be taken up again at the line that was broken. It is never sung to its end here. Nothing the player does ends the
    crying; the account does, in verse 18, and that is told. Paul speaks to the spirit, not to the girl. Nothing is shown when it leaves. */
 const before=(k,want)=>ORDER.indexOf(k)<ORDER.indexOf(want);
-const wrongNext=want=>k=>before(k,want)?say(PH,'We have sung that one, sir.'):say(P,'Not yet. One line comes before that one.',TH);
-const wrongAgain=want=>k=>before(k,want)?say(EL,'That one we sang to its end, sir. It was the next that she broke.'):say(P,'They have not heard that line yet. I take it up where it broke.',TH);
+const wrongNext=want=>k=>before(k,want)?say(PH,'we_have_sung_that_one_sir'):say(P,'not_yet_one',TH);
+const wrongAgain=want=>k=>before(k,want)?say(EL,'that_one_we_sang_to_its_end'):say(P,'they_have_not_heard_that_line_yet',TH);
 async function answerAll(o){await sung('H','a',null,PS.a.full,Object.assign({color:CHO},o))}
 /* broken: the answer begins, and the cry cuts across it */
-async function broken(){await answerAll({cut:1.7});SFX.alert();GI.talk=true;await narr('The girl cried out again, over the singing. One after another the women stopped.',{dur:5400});GI.talk=false}
-async function cryAgain(){SFX.alert();GI.talk=true;await narr('And again she cried out who these men were. The psalm was over for that day.',{dur:5600});GI.talk=false}
+async function broken(){await answerAll({cut:1.7});SFX.alert();GI.talk=true;await narr('girl_cried_out_again_over_the_singing',{dur:5400});GI.talk=false}
+async function cryAgain(){SFX.alert();GI.talk=true;await narr('again_she_cried_out_who',{dur:5600});GI.talk=false}
 async function nextDay(text){await fade(1,700);await narr(text,{dur:5600});G.metRiv=1;place9('river9');enterRoom('river9',P.x,P.y,P.dir);await fade(0,700);SFX.alert();
-  await narr('The girl was on the road again, and her masters behind her.',{dur:5200})}
-async function psalm(){const me=PC();if(me!==P)return say(LU,"The psalm is Paul's to give out. I shall sing the answer with the rest.");
+  await narr('girl_was_on_the_road_again',{dur:5200})}
+async function psalm(){const me=PC();if(me!==P)return say(LU,'psalm_is_pauls_to_give_out_i');
   const d=day();await walk(P,...spot(P,262,132));P.dir=1;AU.mood='song';
   if(d===1){
-    await say(P,'Lydia, Phila, Elpis: this is how it goes. I give a line. Then all of us give the answer, and the answer never changes.');
-    await say(EL,'One answer to every line? Then even I can keep it, sir.');
-    await pickLine('The lines are on my tablets, in their order. Which is the first?','c1',k=>say(P,k==='c4'?'No: that is how it ends. It begins with thanks too, but to Jehovah by his name.':'That comes later. A psalm of thanks begins with the thanks.',TH));
+    await say(P,'lydia_phila_elpis_this_is');
+    await say(EL,'one_answer_to_every_line');
+    await pickLine('lines_are_on_my_tablets','c1',k=>say(P,k==='c4'?'no_that_is_how_it_ends':'that_comes_later',TH));
     await sung('P','c1',P,PS.c1.full);await answerAll();
-    await say(PH,'Again, sir! Give us the next.');
-    await pickLine('And the next line?','c2',wrongNext('c2'));
+    await say(PH,'again_sir');
+    await pickLine('next_line','c2',wrongNext('c2'));
     await sung('P','c2',P,PS.c2.full);await broken();
-    await say(PH,'I have lost it, sir. Where were we?');
-    await pickLine('Where do I take it up again?','c2',wrongAgain('c2'));
+    await say(PH,'i_have_lost_it_sir');
+    await pickLine('where_do_i_take_it_up_again','c2',wrongAgain('c2'));
     await sung('P','c2',P,PS.c2.full);await answerAll();await cryAgain();
-    await think('She will not stop while we are here. What do we do?',[
-      {q:'Sing louder than she cries.',no:'Then there are two parties shouting beside this river, and nobody on the road can tell which of them serves God.'},
-      {q:'Move down the bank, out of her hearing.',no:'She has followed us from the gate to the river. She would follow us down it.'},
-      {q:'Come back tomorrow, and go on from where we stopped.',ok:1}]);
-    await say(P,'Two lines, and the answer. Tomorrow we go on from there.');
-    F.d1=1;await nextDay('She followed us that day, and the next.')}
+    await think('she_will_not_stop_while',[
+      {q:'sing_louder_than_she_cries',no:'there_are_two_parties_shouting'},
+      {q:'move_down_the_bank_out_of_her_hearing',no:'she_has_followed_us_from_the_gate'},
+      {q:'come_back_tomorrow_and_go',ok:1}]);
+    await say(P,'two_lines_and_the_answer');
+    F.d1=1;await nextDay('she_followed_us_that_day')}
   else if(d===2){
-    await say(P,'From where we stopped. Who remembers how far we came?');
-    await say(PH,'Two lines, sir, and the answer. I sang them at the loom all evening.');
-    await pickLine('Then the third. Which is it?','c3',wrongNext('c3'));
+    await say(P,'from_where_we_stopped');
+    await say(PH,'two_lines_sir_and_the_answer');
+    await pickLine('third_which','c3',wrongNext('c3'));
     await sung('P','c3',P,PS.c3.full);await broken();
-    await say(EL,'Every day, sir. Is she to walk behind you for the rest of your life?');
-    await pickLine('Where do I take it up again?','c3',wrongAgain('c3'));
+    await say(EL,'every_day_sir');
+    await pickLine('where_do_i_take_it_up_again','c3',wrongAgain('c3'));
     await sung('P','c3',P,PS.c3.full);await answerAll();await cryAgain();
-    await say(LY,'People ask me in the street whether you and she are of one house, Paul. She tells fortunes for silver, and she tells everyone that you come from God.');
-    await say(P,'I know how it looks, Lydia. And I know that it is not she who chose the words.');
-    F.d2=1;await nextDay('And so it went on, day after day.')}
+    await say(LY,'people_ask_me_in_the_street');
+    await say(P,'i_know_how_it_looks_lydia');
+    F.d2=1;await nextDay('it_went_on_day_after_day')}
   else{
-    await say(P,'One line is left, and then you have it whole. Phila: what do we have?',{to:PH});
-    await say(PH,'The thanks, sir. That he did not forget us. That he saved us, again and again. And the answer to each of them.');
-    await pickLine('And the last?','c4',wrongNext('c4'));
-    await sung('P','c4',P,PS.c4.full,{cut:1.5});SFX.alert();GI.talk=true;await narr('The girl cried out before the line was sung.',{dur:4400});GI.talk=false;
+    await say(P,'one_line_is_left_and_then',{to:PH});
+    await say(PH,'thanks_sir');
+    await pickLine('last_q','c4',wrongNext('c4'));
+    await sung('P','c4',P,PS.c4.full,{cut:1.5});SFX.alert();GI.talk=true;await narr('girl_cried_out_before_the_line',{dur:4400});GI.talk=false;
     return expel()}
   AU.mood=ROOMS.river9.mood;codeBtn()}
 async function expel(){AU.mood='tense';P.dir=1;await wait(500);await tell('v18');GI.bow=true;AU.mood='song';
-  await narr('It was quiet beside the river.',{dur:4200});
-  await say(PH,'She has stopped.');
-  await say(EL,'Listen. I can hear the water.');
+  await narr('it_was_quiet_beside_the_river',{dur:4200});
+  await say(PH,'she_has_stopped');
+  await say(EL,'listen_said');
   AU.mood='tense';await tell('v19');
   await Promise.all([walk(MA,P.x+26,P.y+1),walk(MB,SI.x+24,SI.y)]);MA.dir=MB.dir=-1;
-  await say(MA,'Our girl! What have you done to our girl? She was worth a house in the city to us!');
-  await say(MB,'To the magistrates with them. Both of them!',{to:MA});
-  await fade(1,700);await narr('Two men were dragged up the road to the city. Two were left standing beside the river.',{dur:6500});
+  await say(MA,'our_girl');
+  await say(MB,'to_the_magistrates_with_them',{to:MA});
+  await fade(1,700);await narr('two_men_were_dragged_up_the_road',{dur:6500});
   return market()}
 /* ============ THE MARKETPLACE: told, not played ============ */
 /* The charge is told as the account tells it, in paraphrase (Acts 16:20, 21); what follows it is told in the dark (16:22-24), from the narrator's scroll, and nothing of it is
@@ -525,8 +525,8 @@ async function expel(){AU.mood='tense';P.dir=1;await wait(500);await tell('v18')
 async function market(){G.st={k:0};G.scene=forumScene;AU.mood='tense';AU.amb={crowd:.8};await fade(0,700);await tell('v20');
   await fade(1,600);G.scene=dark;AU.amb={};await fade(0,300);await tell('v22');await tell('v23');await fade(1,500);
   F.jail=1;dealInv('cell9');drawInv();place9('cell9');G.scene=null;enterRoom('cell9',P.x,P.y,P.dir);await fade(0,900);
-  await narr('The door shut, and took the light with it.',{dur:5000});
-  await say(P,'Silas?',{to:SI});await say(SI,"Here. An arm's length from you, by the sound.");codeBtn()}
+  await narr('door_shut_and_took_the_light',{dur:5000});
+  await say(P,'silas_q',{to:SI});await say(SI,'here_said');codeBtn()}
 
 /* ============ THE INNER PRISON: empty hands, and a song by heart ============ */
 /* For eight chapters the player has had tools, tablets, feet and a room to look at. Here the garments were torn off, the feet are in the
@@ -536,47 +536,47 @@ async function market(){G.st={k:0};G.scene=forumScene;AU.mood='tense';AU.amb={cr
    sound in the dark falls silent, because the prisoners are listening (Acts 16:25). The song opens nothing: after the last answer the
    account takes its course, and the earthquake is told. Pray to Jehovah stays the hint, and changes nothing. */
 async function silasTalk(){
-  if(F.quake)return say(SI,allHere()?'They are all here, Paul. And that man out there thinks that none of us is.':'The beam has fallen off my feet, Paul, and the door is open. But listen: who else is in here with us?');
+  if(F.quake)return say(SI,allHere()?'they_are_all_here_paul':'beam_has_fallen_off_my_feet');
   if(F.voice)return nightSong();
-  await say(P,'Silas. How is it with you?');
-  await say(SI,'My back is one wound, and they have set my feet a full stride apart. Otherwise I have nothing to complain of. And you?');
-  await say(P,'The same. I have been reckoning what they have taken.');
-  await say(P,'The pouch: awl, knife and thread. Our cloaks. The use of our feet. And the tablets, with every passage that I ever wrote down.');
-  await say(SI,'Did they take what was on them?');
-  await think('What have they left us?',[
-    {q:'Nothing at all.',no:'That is what the magistrates meant to leave us. It is not so. Silas is here, and I am, and so is the One who sent us.'},
-    {q:'Patience, until the morning.',no:'We shall need it. But patience is silent, and Silas asked me about the tablets.'},
-    {q:'What we know by heart, and two voices.',ok:1}]);
-  await say(P,'They did not, brother. It is all still there. And they have left us our voices.');
-  await say(SI,'Then begin. I know which psalm you gave them by the river: I sang the answer often enough.');
+  await say(P,'silas_how');
+  await say(SI,'my_back_is_one_wound_and_they');
+  await say(P,'same_said');
+  await say(P,'pouch_awl_knife_and_thread');
+  await say(SI,'did_they_take_what_was_on_them');
+  await think('what_have_they_left_us',[
+    {q:'nothing_at_all',no:'that_is_what_the_magistrates'},
+    {q:'patience_until_the_morning',no:'we_shall_need_it'},
+    {q:'what_we_know_by_heart_and_two',ok:1}]);
+  await say(P,'they_did_not_brother');
+  await say(SI,'begin_said');
   F.voice=1;SFX.good();codeBtn()}
 async function nightSong(){const k=sungN()+1,want=ORDER[k-1];
-  await pickLine(k===1?'From the beginning. I have no tablets to open. How does it begin?':'And then? There is nothing to look it up in.',want,
-    x=>ORDER.indexOf(x)<k-1?say(SI,'We have sung that one, brother.'):say(P,k===1?'No. That comes later: it begins with thanks to Jehovah by his name.':'Not yet. One line comes before that one.',TH),['c2','c4','c1','c3']);
+  await pickLine(k===1?'from_the_beginning':'there_is',want,
+    x=>ORDER.indexOf(x)<k-1?say(SI,'we_have_sung_that_one_brother'):say(P,k===1?'no_that':'not_yet_one',TH),['c2','c4','c1','c3']);
   await sung('P',want,P,PS[want].full,{rough:[.9,.45,.25,.1][k-1],v:[.75,.95,1,1][k-1]});
   if(k===1){await sung('S','a',SI,PS.a.full,{rough:.35,v:.9});await tell('v25')}
   else await sung('PS','a',SI,PS.a.full,{fourths:k===4});
-  if(k<4){F['s'+k]=1;place9('cell9');await narr(['The muttering had stopped.','The chain was still.','Nobody coughed.'][k-1],{dur:3600});codeBtn();return}
+  if(k<4){F['s'+k]=1;place9('cell9');await narr(['muttering_had_stopped','chain_was_still','nobody_coughed'][k-1],{dur:3600});codeBtn();return}
   await wait(1400);return quake()}
 async function quake(){G.shake=performance.now();G.scene=shakeScene;AU.amb={};rumble();await tell('v26',9000);
   F.quake=1;place9('cell9');G.scene=null;enterRoom('cell9',P.x,P.y,P.dir);
-  await say(SI,'The beam, Paul! It has fallen open. My feet are my own.');
-  await say(P,'And the door. Every door.',TH);codeBtn()}
+  await say(SI,'beam_paul');
+  await say(P,'door_every',TH);codeBtn()}
 /* ============ AFTER THE EARTHQUAKE: all of us, counted ============ */
 /* The door is open, and the jailer has drawn his sword (Acts 16:27). Paul wants to call out that all of them are there. He says nothing
    that he does not know to be true, so before he calls, the player listens for the men who listened to the psalm. There is no clock:
    the scene waits. Acts does not say how many prisoners there were, why none of them fled, or how Paul knew what the jailer was about
    to do; nobody here says why he has stayed. The staging is ours: the jailer stands in what light there is and looks into the dark. */
 async function seeJailer(){if(G.sawJ)return;G.sawJ=1;await tell('v27')}
-async function count(i){const a=PR[i];if(F['c'+(i+1)])return say(a,['Here. I have not moved.','Still here, singer.','Here. Where I was.'][i]);
-  await say(P,['Friend? You who were speaking in the dark. Are you there?','You with the chain. Are you there? Are you hurt?','You by the far wall. Are you there?'][i]);
-  await say(a,['Here. The wall moved, and my irons fell off it. I have not stirred.','Here, singer. The ring came out of the wall with the chain still on it. Was that your God?','Here. I heard every word that you sang.'][i]);
-  if(i===1)await say(P,'It was his psalm that you heard. And the earth that shook is his: he made it.');
-  F['c'+(i+1)]=1;SFX.good();if(allHere())await say(P,'Three who listened, and Silas, and I. Nobody has gone. Now I can say it.',TH);codeBtn()}
+async function count(i){const a=PR[i];if(F['c'+(i+1)])return say(a,['here_i','still_here_singer','here_where'][i]);
+  await say(P,['friend_q','you_with_the_chain','you_by_the_far_wall'][i]);
+  await say(a,['here_the','here_singer','here_i_heard'][i]);
+  if(i===1)await say(P,'it_was_his_psalm_that_you_heard');
+  F['c'+(i+1)]=1;SFX.good();if(allHere())await say(P,'three_who_listened_and_silas_and_i',TH);codeBtn()}
 async function doorway(){await seeJailer();
-  await say(P,allHere()?'I am not going through that door. But before he uses that sword, he must hear that nobody has.':'The door is open, and the outer door beyond it. I am not going through. And before I call to that man that we are all here, I must know that we are.',TH)}
+  await say(P,allHere()?'i_am_not_going_through_that_door':'door_is_open_and_the_outer',TH)}
 async function callOut(){await seeJailer();
-  if(!allHere())return say(P,'All? I have not counted. There were three men in this dark besides the two of us, and I will not call out what I do not know.',TH);
+  if(!allHere())return say(P,'all_said',TH);
   P.dir=1;await tell('v28');SFX.good();return lights()}
 /* ============ THE JAILER: lights, a question, and a night in his house (told, with a few lines) ============ */
 /* No choice of the player's wins him, as none won Lydia. His question and the answer are told as the account tells them, in paraphrase (Acts 16:30, 31).
@@ -585,33 +585,33 @@ async function callOut(){await seeJailer();
    seen, and nobody says who they are. */
 async function lights(){await fade(1,500);G.lit9=1;place(JA,'cell9',228,113,-1);enterRoom('cell9',P.x,P.y,P.dir);AU.amb={drip9:.4};await fade(0,700);
   await walk(JA,P.x-28,P.y+3);JA.dir=1;await tell('v29');JA.bow=true;await wait(900);
-  await say(JA,'All here. Every man of them.');
+  await say(JA,'all_here');
   await fade(1,700);JA.bow=false;G.lit9=0;place9('gaol9');place(JA,'gaol9',196,124,-1);enterRoom('gaol9',P.x,P.y,P.dir);AU.mood='night';await fade(0,700);
   await tell('v30');await tell('v31');
-  await say(JA,'Then say it in my house. Everyone under my roof shall hear it. Come.');
+  await say(JA,'say_it_in_my_house');
   await fade(1,600);G.st={k:0};G.scene=jailerScene;AU.amb={fire:.25};await fade(0,700);
   await tell('v32');
-  await say(JA,'I have kept that door for eleven years. In all that time nobody told me that there is a God who made the earth, and who can shake it.');
-  await say(P,'Then hear it now, from the beginning: who he is, whom he sent, and why two men sang in your prison.');
-  await narr('They spoke for a long time. Nobody in that house asked what hour it was.',{dur:6200});
+  await say(JA,'i_have_kept_that_door_for_eleven');
+  await say(P,'hear_it_now_from_the_beginning');
+  await narr('they_spoke_for_a_long_time',{dur:6200});
   G.st.k=1;await tell('v33');
-  await say(JA,'I shut the stocks on these feet with my own hands. Let the same hands do this.');
+  await say(JA,'i_shut_the_stocks_on_these_feet');
   G.st.k=2;await tell('v34');
   await fade(1,700);F.saved=1;G.scene=null;await come('gaol9',700);
-  await narr('It was the last hour of the night.',{dur:4400});
-  await say(JA,'Stay in my house until it is day, brothers. Nobody will ask for you before then.');
-  await say(P,'He was ordered to guard us securely. When the constables come, where should they find his prisoners?',TH);codeBtn()}
+  await narr('it_was_the_last_hour_of_the_night',{dur:4400});
+  await say(JA,'stay_in_my_house_until');
+  await say(P,'he_was_ordered_to_guard_us_securely',TH);codeBtn()}
 /* ============ BEFORE DAY: back in ============ */
 /* Acts 16:36 and 16:40 have the two in the prison in the morning, and do not say how they came there after the night in the jailer's
    house. Here they walk back in themselves, so that the jailer has his prisoners when the constables come. It is one step, and invented. */
 async function backIn(){
-  if(F.back)return say(P,'We came up out of there at first light, when he called us. Once is enough.');
-  await say(P,'We go back in, brother.',{to:JA});
-  await say(JA,'Back? Into that hole? The door is open, Paul. Every door is open.');
-  await say(P,'God opened them. The magistrates did not. You answer to them for two prisoners, and in the morning you shall have two.');
-  await say(JA,'I will not shut the stocks on you again.');
-  await say(SI,'Nobody has asked you to, brother. Leave us a lamp, if you like.');
-  await fade(1,800);await narr('Before it was light, the two prisoners were in the prison again.',{dur:6200});
+  if(F.back)return say(P,'we_came_up_out_of_there');
+  await say(P,'we_go_back_in_brother',{to:JA});
+  await say(JA,'back_into');
+  await say(P,'god_opened_them');
+  await say(JA,'i_will_not_shut_the_stocks');
+  await say(SI,'nobody_has_asked_you_to_brother');
+  await fade(1,800);await narr('before_it_was_light_the_two',{dur:6200});
   F.back=1;await come('gaol9',800);return morning()}
 /* ============ THE MORNING: what a Roman may ask ============ */
 /* Paul's answer is in the account (Acts 16:37), and it is told. The player's part is before it and after it. Before: a brother wishes
@@ -621,37 +621,37 @@ async function backIn(){
    unlawfully, they might be held back from mistreating the brothers who stayed. The offers, and the walk across the marketplace, are invented. */
 async function morning(){if(G.morn)return;G.morn=1;AU.mood='tense';
   await tell('v35');
-  await say(CO,'Jailer! Word from the magistrates, about the two from yesterday.',{to:JA});
+  await say(CO,'jailer_said',{to:JA});
   await tell('v36');
-  await say(JA,'You hear it, brothers. It is over. Go now, while the streets are still empty.');codeBtn()}
+  await say(JA,'you_hear_it_brothers');codeBtn()}
 async function answer(){if(F.open)return offers();
-  await think('The door is open, and a brother wishes us peace. What do I answer?',[
-    {q:'We go, and thank God for it.',no:"Yesterday the whole marketplace watched us beaten as criminals. If we slip out at dawn, that is what Philippi remembers: and Lydia's house is the house where the criminals lodged."},
-    {q:'We go, and I take this to Rome.',no:'I did not come to Macedonia to bring its magistrates to judgment. I came with good news, and it is the good news that needs clearing.'},
-    {q:'We stay here until they come themselves.',ok:1}]);
+  await think('door_is_open_and_a_brother',[
+    {q:'we_go_and_thank_god_for_it',no:'yesterday_the_whole_marketplace'},
+    {q:'we_go_and_i_take_this_to_rome',no:'i_did_not_come_to_macedonia'},
+    {q:'we_stay_here_until_they_come_themselves',ok:1}]);
   await tell('v37');
-  await say(CO,'Romans... Both of you?');await say(SI,'Both of us.',{to:CO});
-  await say(CO,'I shall tell them what you say. Word for word.');
+  await say(CO,'romans');await say(SI,'both_of_us',{to:CO});
+  await say(CO,'i_shall_tell_them_what_you_say');
   await fade(1,600);await tell('v38');F.open=1;await come('gaol9',700);
-  await say(MG,'There has been a mistake. Nobody regrets it more than we do. It need go no further than this court.');codeBtn()}
+  await say(MG,'there_has_been_a_mistake');codeBtn()}
 async function offers(){
-  await think('They are afraid, and they will give whatever makes this go away. What do I ask of them?',[
-    {q:'Silver, for the garments and for the stripes.',no:'They would pay gladly, and say afterwards that the strangers went away content with a purse. I have never taken silver for the good news. I will not take it for my back.'},
-    {q:'The rods, for the men who accused us.',no:'Those two lost their trade yesterday. I will not ask for their skin today. That is not what I was sent to Philippi for.'},
-    {q:'Their leave to stay, and to preach under their hand.',no:'They would promise it this morning and regret it by evening. The good news does not need the favor of magistrates: only that they do it no wrong.'},
-    {q:'That they lead us out themselves, in daylight.',ok:1}]);
-  await say(P,'You had us beaten before the whole city, uncondemned. Then lead us out before the whole city: yourselves, by this door, and across the marketplace.');
-  await say(MG,'That is all that you ask?');
-  await say(P,'That is all. What we taught in Philippi was no crime, and you know it now. Let the city see that you know it.');
-  await say(M2,'It shall be done. And then, we beg you: leave Philippi.');
-  await say(P,'We shall go. But first there are brothers whom we must see.');
+  await think('they_are_afraid_and_they',[
+    {q:'silver_for_the_garments',no:'they_would_pay_gladly_and_say'},
+    {q:'rods_for_the_men_who_accused_us',no:'those_two_lost_their_trade_yesterday'},
+    {q:'their_leave_to_stay_and_to_preach',no:'they_would_promise_it_this_morning'},
+    {q:'that_they_lead_us_out_themselves',ok:1}]);
+  await say(P,'you_had_us_beaten_before');
+  await say(MG,'that_is_all_that_you_ask');
+  await say(P,'that_is_all_said');
+  await say(M2,'it_shall_be_done');
+  await say(P,'we_shall_go');
   await fade(1,700);G.st={k:1,t0:performance.now()};G.scene=forumScene;AU.mood='hope';AU.amb={crowd:.5,birds:.3};await fade(0,700);
   await tell('v39');
-  await narr('They crossed the marketplace by daylight, past the platform, with the magistrates walking beside them.',{dur:7000});
+  await narr('they_crossed_the_marketplace',{dur:7000});
   await fade(1,700);F.free=1;dealInv('lydia9');G.scene=null;place9('lydia9');strip(true);G.inv.length=0;drawInv();enterRoom('lydia9',P.x,P.y,P.dir);codeBtn();await fade(0,700);return home()}
 async function outer(){const me=P;
-  if(!F.back){await say(me,'The street, and nobody in it. We could be at Lydia\'s door before the first cock crows.',TH);
-    return say(me,'And at daybreak this man would stand before the magistrates with an empty prison.',TH)}
+  if(!F.back){await say(me,'street_and_nobody_in_it',TH);
+    return say(me,'at_daybreak_this_man_would',TH)}
   return answer()}
 /* ============ LYDIA'S HOUSE: so that nobody has to ask for Paul ============ */
 /* The two saw the brothers, encouraged them, and left (Acts 16:40). Luke stays: the study note on 16:33 says he was perhaps
@@ -661,213 +661,213 @@ async function outer(){const me=P;
    and not shown. That Timothy gathered up what was torn off them is invented. */
 async function home(){if(G.metHome)return;G.metHome=1;
   await tell('v40a');
-  await say(LY,'Paul! Silas! We heard the rods from the end of the street. And at midnight the house shook, and nobody here slept after it.');
-  await say(TI,'I gathered these up from the paving when the crowd had gone, Paul: your cloaks, the pouch, the tablets.');
+  await say(LY,'paul_silas');
+  await say(TI,'i_gathered_these_up_from_the_paving');
   strip(false);dealInv('lydia9');drawInv();SFX.pick();
-  await say(LK,'Let me see your backs. ...Whoever washed these knew what he was about.');
-  await say(P,'The jailer did, Luke. Since last night he has been our brother, and so has all his house.',{to:LK});
-  await say(LY,'The jailer?');
-  await say(SI,'It is a long story, sister, and we have an hour. The magistrates have asked us to leave the city.',{to:LY});
-  await say(P,'Then nothing in Philippi must be left waiting for me to come back.',TH);codeBtn()}
-const CARES=[{id:'k1',who:'luke9',q:'There is a household by the prison, baptized last night. Who goes to them?'},
-  {id:'k2',who:'lydia9',q:'Where do the brothers of Philippi meet, when we are gone?'},
-  {id:'k3',who:'phila9',q:'Who begins the psalm by the river?'}];
+  await say(LK,'let_me_see_your_backs');
+  await say(P,'jailer_did_luke',{to:LK});
+  await say(LY,'the_jailer');
+  await say(SI,'it_is_a_long_story_sister',{to:LY});
+  await say(P,'nothing_in_philippi_must',TH);codeBtn()}
+const CARES=[{id:'k1',who:'luke9',q:'there_is_a_household_by_the_prison'},
+  {id:'k2',who:'lydia9',q:'where_do_the_brothers_of_philippi'},
+  {id:'k3',who:'phila9',q:'who_begins_the_psalm_by_the_river'}];
 const YES={
-  k1:async()=>{await say(LK,'I shall go to them today, and tomorrow, and for as long as they have questions. I am not leaving Philippi with you, Paul. Somebody should stay.');
-    await say(P,'I had hoped that you would say so before I asked.')},
-  k2:async()=>{await say(LY,'Here. Where else? I said it on the first evening: when there are brothers in this city, let them meet in this room. There are brothers now.');
-    await say(P,'There are. And in a house by the prison there are more of them, who have never seen this room.');await say(LY,'Then they shall see it.')},
-  k3:async()=>{await say(PH,'I, sir? I lost my place every single day.');
-    await say(P,'And found it again every day, before any of us. That is the one who should begin it.');await say(PH,'Then I shall begin it, sir. And nobody will break it off now.')}};
+  k1:async()=>{await say(LK,'i_shall_go_to_them_today');
+    await say(P,'i_had_hoped_that_you_would')},
+  k2:async()=>{await say(LY,'here_where_else');
+    await say(P,'there_are');await say(LY,'they_shall_see_it')},
+  k3:async()=>{await say(PH,'i_sir');
+    await say(P,'found_it_again_every_day');await say(PH,'i_shall_begin_it_sir')}};
 const NO={
-  luke9:{k2:'I am a guest under this roof, as you are, Paul. Ask the sister at whose table we are standing.',k3:'I shall sing the answer with the rest. The one who begins it should be one of those who learned it beside the river.'},
-  lydia9:{k1:'I shall send them bread today, Paul, and gladly. But they need somebody who can sit with them every day and answer what they ask. I have a shop to keep.',
-    k3:'I can keep the prices of nine dyes in my head, Paul, and not one tune. Ask the one who lost her place every day, and never once lost the words.'},
-  phila9:{k1:'To the prison, sir? I should not know what to say to such a man. He needs somebody who has walked this way longer than I have.',k2:'That is for Lydia to say, sir. It is her house.'}};
-async function care(a){const open=CARES.filter(c=>!F[c.id]);if(!open.length)return say(a,'Go in peace, Paul. We know what we have to do.');
-  const i=await choose(open.map(c=>c.q).concat('Nothing more for now.'));if(i===open.length)return;const c=open[i];await say(P,c.q);
+  luke9:{k2:'i_am_a_guest_under_this_roof',k3:'i_shall_sing_the_answer'},
+  lydia9:{k1:'i_shall_send_them_bread',
+    k3:'i_can_keep_the_prices_of_nine'},
+  phila9:{k1:'to_the_prison_sir',k2:'that_is_for_lydia_to_say_sir'}};
+async function care(a){const open=CARES.filter(c=>!F[c.id]);if(!open.length)return say(a,'go_in_peace_paul');
+  const i=await choose(open.map(c=>c.q).concat('nothing_more_for_now'));if(i===open.length)return;const c=open[i];await say(P,c.q);
   if(c.who!==a.id)return say(a,NO[a.id][c.id]);
   await YES[c.id]();F[c.id]=1;SFX.good();if(CARES.every(c=>F[c.id]))return done();codeBtn()}
-async function leave(){const me=P;if(!CARES.every(c=>F[c.id]))return say(me,'Not yet. I will not go out by that door while something in this city still waits for me to come back.');return done()}
-async function done(){await say(P,'Then nobody in this house has to ask for Paul tomorrow. That is as it should be.',TH);
-  await say(P,'Phila. One line was never sung beside the river. Begin it, and let us hear the whole.');
+async function leave(){const me=P;if(!CARES.every(c=>F[c.id]))return say(me,'not_yet_i');return done()}
+async function done(){await say(P,'nobody_in_this_house_has',TH);
+  await say(P,'phila_one');
   AU.mood='song';for(const k of['c1','c4']){await sung('W',k,PH,PS[k].full);await sung('ALL','a',null,PS.a.full,{color:CHO,fourths:k==='c4'})}
-  await narr('It was sung to its end, for the first time, by people who would go on singing it.',{dur:6600});
+  await narr('it_was_sung_to_its_end',{dur:6600});
   await tell('v40b');return finale()}
 /* The chapter closes on the map, with Philippi lit: nobody has travelled in it. The road so far is shown, and none of it draws itself. */
 const ROAD9=[['iconium','antiochp'],['antiochp','westroad'],['westroad','bithynianroad'],['bithynianroad','troas'],['troas','samothrace','sea'],['samothrace','neapolis','sea'],['neapolis','philippi']];
 async function finale(){AU.mood='hope';
-  await narr('Luke did not leave with them. Some ten years later Paul wrote from prison to the brothers in Philippi: in his chains, and in defending the good news and establishing it in law, they shared with him in undeserved kindness; and his struggle, which they had seen and which went on still, was now theirs too. (Philippians 1:7, 30)',{dur:16500});
+  await narr('luke_did_not_leave_with_them_philippians_1_7_30',{dur:16500});
   try{await need('map');await fade(1,450);await SHARED.map.journey(ROAD9,{instant:1,view:'aegean'});await fade(0,550);SHARED.map.sting();
-    await narr('From Philippi they traveled on through Amphipolis and Apollonia, toward Thessalonica. (Acts 17:1)',{dur:8500})}catch(e){console.error(e)}
-  endScreen({title:'Midnight in Philippi',text:'Paul sang where nobody could see him, stayed where every door stood open, and asked of frightened men only what the brothers needed.',
-    based:"Based on Acts 16:16-40; 17:1; Philippians 1:7, 30 and Psalm 136. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are from the Scriptures and are told here in paraphrase. Acts does not say what became of the girl, whether the two spoke of being Romans before they were beaten, what they sang, how many prisoners there were or why none of them fled, how Paul knew what the jailer was about to do, who belonged to the jailer's house or where they were baptized, how the two came to be in the prison again by morning, who the brothers in Lydia's house were, or who left Philippi with Paul and Silas.",
-    go:'Click to continue to Chapter Ten',code:['Chapter Ten code: {code}',codeOf(10,0)]});
+    await narr('from_philippi_they_acts_17_1',{dur:8500})}catch(e){console.error(e)}
+  endScreen({title:'midnight_in_philippi_2',text:'paul_sang_where_nobody',
+    based:'based_on_acts_16_16_40',
+    go:'click_to_continue_to_chapter_ten',code:['chapter_ten_code_code',codeOf(10,0)]});
   await wait(1500);ov.onclick=()=>startChapter(10);await new Promise(()=>{})}
 /* ============ ROOMS ============ */
 ROOMS.lydia9={space:1.2,walk:[16,304,110,136],get mood(){return F.free?'hope':'calm'},amb:{crowd:.15,birds:.3},hs:[
-  {name:'door to the street',x:17,y:47,w:28,h:57,wx:44,wy:114,dir:-1,exit:toRiver,
-    look:()=>say(P,F.free?'The door, and the street beyond it. We have been asked to leave by it, and we shall.':'The street, and the morning. The gate is that way, and the river beyond it.'),
-    as:{luke:{look:'The street. Somewhere along it there is always somebody who needs a physician.'}}},
-  {name:'shelves of purple',x:84,y:32,w:114,h:40,wx:150,wy:112,look:'Purple, crimson and violet, from the dyers of Thyatira. She sells to the first houses of the colony, and shuts her shop every seventh day.',
-    pickup:'One of those bolts is worth more than my bench and everything on it.',
-    useWith:it=>it==='knife'?say(P,'My knife cuts goat hair and leather. I will not let it get a taste for purple.'):false,as:{luke:{look:'Purple. She could live as the first houses of this colony live. She has four travelers in her upper room instead.'}}},
-  {name:'table',x:110,y:84,w:96,h:22,wx:158,wy:112,look:()=>say(P,F.free?'Bread, and a place laid for each of us. This morning she did not know whether we should ever sit at it again.':'Her table. It has been laid for four more than her household every day since the river.'),
-    use:()=>say(P,F.free?'There is no time to sit. We have an hour.':'We have eaten, and well. She sees to that before any of us is awake.'),pickup:'I am her guest. I take what is set before me, when it is set.',
-    as:{luke:{look:'A full table, every day. I have stopped telling her that we could pay for it.'}}},
-  {name:'stair',x:262,y:40,w:58,h:64,wx:270,wy:114,dir:1,look:'The stair to the upper room. She gave it to the four of us, and would not hear of anything else.',
-    use:()=>say(P,F.free?'Not today. We are leaving within the hour.':'Not now. The day is only beginning.'),as:{luke:{look:'The stair to our room. I have slept worse in dearer places.',use:'Not now. Paul is on his way out.'}}},
-  {name:'water jar',x:52,y:88,w:16,h:19,wx:76,wy:113,dir:-1,look:'A great jar of water, drawn fresh every morning.',use:'I drink. It is cold, and it is good.',pickup:'It would take two men, and it stands where it should.',
-    as:{luke:{look:'Fresh water, drawn every morning. A house that does that has fewer sick in it.',use:'I drink, and I wash my hands.'}}},
-  {name:'lamp niche',x:220,y:38,w:18,h:20,wx:228,wy:112,look:'A lamp in its niche, not lit by day. In the evenings I have read to them from my tablets by it.',pickup:'It belongs to its niche.',
-    as:{luke:{look:'A lamp, for the evenings. Paul reads by it, and I write.'}}}]};
-const toCity=async()=>{const me=PC();await say(me,me===P?'Not while they are sitting on the stones and waiting for a psalm.':'Paul is not leaving, and neither am I.')};
+  {name:'door_to_the_street',x:17,y:47,w:28,h:57,wx:44,wy:114,dir:-1,exit:toRiver,
+    look:()=>say(P,F.free?'door_and_the_street_beyond_it':'street_and_the_morning'),
+    as:{luke:{look:'the_street'}}},
+  {name:'shelves_of_purple',x:84,y:32,w:114,h:40,wx:150,wy:112,look:'purple_crimson_and_violet_said',
+    pickup:'one_of_those_bolts_is_worth',
+    useWith:it=>it==='knife'?say(P,'my_knife_cuts_goat_hair_and_leather'):false,as:{luke:{look:'purple_she'}}},
+  {name:'table',x:110,y:84,w:96,h:22,wx:158,wy:112,look:()=>say(P,F.free?'bread_and_a_place_laid':'her_table'),
+    use:()=>say(P,F.free?'there_is_no_time_to_sit':'we_have_eaten_and_well'),pickup:'i_am_her_guest',
+    as:{luke:{look:'full_table_every_day'}}},
+  {name:'stair',x:262,y:40,w:58,h:64,wx:270,wy:114,dir:1,look:'stair_to_the_upper_room',
+    use:()=>say(P,F.free?'not_today_we':'not_now_said'),as:{luke:{look:'stair_to_our_room',use:'not_now_paul_is'}}},
+  {name:'water_jar',x:52,y:88,w:16,h:19,wx:76,wy:113,dir:-1,look:'great_jar_of_water_drawn',use:'i_drink_it_is_cold',pickup:'it_would_take_two_men_and_it',
+    as:{luke:{look:'fresh_water_drawn_every_morning',use:'i_drink_and_i_wash_my_hands_said'}}},
+  {name:'lamp_niche',x:220,y:38,w:18,h:20,wx:228,wy:112,look:'lamp_in_its_niche_not_lit',pickup:'it_belongs_to_its_niche',
+    as:{luke:{look:'lamp_for_the_evenings'}}}]};
+const toCity=async()=>{const me=PC();await say(me,me===P?'not_while_they_are_sitting':'paul_is_not_leaving_and_neither')};
 ROOMS.river9={space:.6,walk:[16,464,116,138],mood:'rest',amb:{fountain:.5,birds:.7,leaves:.6,wind:.15},hs:[
-  {name:'mountain',x:0,y:40,w:300,h:22,wx:230,look:'The long blue mountain across the plain. I have looked at it every morning for weeks, and I still do not know its name.',as:{luke:{look:'The mountains of Macedonia.'}}},
-  {name:'city',x:376,y:42,w:92,h:22,wx:420,look:'Philippi on its hill. From down here one cannot hear its marketplace.',as:{luke:{look:'Philippi. I know its sick by name now, and its magistrates by sight.'}}},
-  {name:'river',x:150,y:88,w:180,h:20,wx:226,wy:118,look:'Clear water, quick over its stones. It is not many weeks since Lydia and her household were baptized.',
-    use:'I wash my hands and my face. It is cold, and it is clean.',pickup:'A river belongs to its banks.',as:{luke:{look:'Clear water, and quick.',use:'I wash my hands in it.'}}},
-  {name:'flat stones',x:186,y:112,w:138,h:16,wx:254,wy:130,def:'use',look:'The stones where they sit. No roof, no door, no chest for scrolls. Whatever they are to keep, they must carry away in their heads.',use:psalm,
-    as:{luke:{look:'The stones of the place of prayer. I have sat here on more mornings than I had expected to stay in this city.',use:psalm}}},
-  {name:'plane tree',x:340,y:30,w:66,h:84,wx:372,wy:120,look:'The plane tree. Its shade has room for a congregation, and by now it nearly has one.',as:{luke:{look:'Shade, and running water.'}}},
-  {name:'road to the gate',x:452,y:86,w:28,h:44,wx:458,wy:132,dir:1,look:'The road back up to the west gate. The girl is standing in it, and her masters behind her.',exit:toCity,as:{luke:{look:'The road to the gate, and that girl in the middle of it.'}}}]};
+  {name:'mountain',x:0,y:40,w:300,h:22,wx:230,look:'the_long_blue_mountain_across_the_plain',as:{luke:{look:'mountains_of_macedonia'}}},
+  {name:'city',x:376,y:42,w:92,h:22,wx:420,look:'philippi_on_its_hill_said',as:{luke:{look:'philippi_said'}}},
+  {name:'river',x:150,y:88,w:180,h:20,wx:226,wy:118,look:'clear_water_quick_over_its_stones',
+    use:'i_wash_my_hands_and_my_face',pickup:'river_belongs_to_its_banks',as:{luke:{look:'clear_water_and_quick_said',use:'i_wash_my_hands_in_it'}}},
+  {name:'flat_stones',x:186,y:112,w:138,h:16,wx:254,wy:130,def:'use',look:'the_stones_where_they_sit',use:psalm,
+    as:{luke:{look:'stones_of_the_place_of_prayer',use:psalm}}},
+  {name:'plane_tree',x:340,y:30,w:66,h:84,wx:372,wy:120,look:'the_plane_tree',as:{luke:{look:'shade_and_running_water_said'}}},
+  {name:'road_to_the_gate',x:452,y:86,w:28,h:44,wx:458,wy:132,dir:1,look:'road_back_up_to_the_west_gate',exit:toCity,as:{luke:{look:'road_to_the_gate_and_that_girl'}}}]};
 /* The inner prison. Until the earthquake it is heard and not seen: its hotspots are sounds, and their names are all there is on the screen.
    Paul cannot take a step. cellNo: what each verb comes to in the dark, where a hotspot says nothing of its own. */
-const cellNo={pickup:'There is nothing here that is mine.',use:'I can reach nothing here but Silas.',open:'There is nothing here that I can open.',talk:'The dark gives no answer.',give:'I have nothing left to give.'};
+const cellNo={pickup:'there_is_nothing_here_that_is_mine',use:'i_can_reach_nothing_here_but_silas',open:'there_is_nothing_here_that_i',talk:'dark_gives_no_answer',give:'i_have_nothing_left_to_give'};
 ROOMS.cell9={space:1.5,get walk(){return F.quake?[36,296,112,136]:[150,150,131,131]},mood:'cell',heard:()=>!F.quake,
   amb:()=>F.quake?{drip9:.5}:{drip9:.7,mutter9:F.s1?0:.7,chain9:F.s2?0:.6,cough9:F.s3?0:.6,crickets:F.s3?.3:0},hs:[
-  Object.assign({name:'darkness',x:0,y:0,w:320,h:144,wx:150,wy:131,vis:()=>!F.quake,look:'I cannot see my own hands. I can hear: water, iron, a man coughing. And Silas, breathing.'},cellNo,{use:'The stocks hold my feet. I am not going anywhere.'}),
-  Object.assign({name:'dripping water',x:8,y:24,w:44,h:30,wx:150,wy:131,vis:()=>!F.quake,look:'Water, dripping somewhere to my left. It has not missed a beat since they shut the door.'},cellNo,{use:'I cannot reach it. My feet are where they were put.'}),
-  Object.assign({name:'door',x:196,y:44,w:40,h:62,wx:150,wy:131,vis:()=>!F.quake,look:'A hair of gray under the door. Beyond it sleeps a man who was told to guard us securely.'},cellNo,{open:'It is barred on the far side, and four paces away. It might as well be forty.',use:'I cannot reach it.'}),
-  Object.assign({name:'stocks',x:118,y:126,w:92,h:12,wx:150,wy:131,vis:()=>!F.quake,look:'A beam of timber shut over my ankles, with the holes set wide apart. They mean us not to sleep.'},cellNo,
-    {use:'Shut with iron. My awl could not open it, and my awl is lying somewhere in the marketplace.',open:'Shut with iron. My awl could not open it, and my awl is lying somewhere in the marketplace.',pickup:'It holds me. I do not hold it.'}),
+  Object.assign({name:'darkness',x:0,y:0,w:320,h:144,wx:150,wy:131,vis:()=>!F.quake,look:'i_cannot_see_my_own_hands'},cellNo,{use:'stocks_hold_my_feet'}),
+  Object.assign({name:'dripping_water',x:8,y:24,w:44,h:30,wx:150,wy:131,vis:()=>!F.quake,look:'water_dripping_somewhere_to_my_left'},cellNo,{use:'i_cannot_reach_it'}),
+  Object.assign({name:'door',x:196,y:44,w:40,h:62,wx:150,wy:131,vis:()=>!F.quake,look:'hair_of_gray_under_the_door'},cellNo,{open:'it_is_barred_on_the_far',use:'i_cannot_reach_it_said'}),
+  Object.assign({name:'stocks',x:118,y:126,w:92,h:12,wx:150,wy:131,vis:()=>!F.quake,look:'beam_of_timber_shut_over_my_ankles'},cellNo,
+    {use:'shut_with_iron',open:'shut_with_iron',pickup:'it_holds_me'}),
   /* the hidden treasure of the chapter (CHAP[9].treasure): once all three men have fallen silent, a cricket can be heard in the wall. It is a
      sound only, like everything else in here, and finding it changes nothing in the story */
   Object.assign({name:'chirping',x:250,y:14,w:50,h:20,wx:150,wy:131,vis:()=>!!F.s3&&!F.quake},cellNo,
-    {look:async()=>{await say(P,'A cricket, somewhere in the wall. With every man in here keeping still, I can hear it at last. It has not stopped singing either.');treasure()}}),
-  {name:'fallen stocks',x:118,y:122,w:106,h:14,wx:150,wy:136,vis:()=>!!F.quake,look:'The upper beam has slid off the lower. Nobody put a hand to it.',use:'I have had enough of it.',pickup:'Let it lie.'},
+    {look:async()=>{await say(P,'cricket_somewhere_in_the_wall');treasure()}}),
+  {name:'fallen_stocks',x:118,y:122,w:106,h:14,wx:150,wy:136,vis:()=>!!F.quake,look:'upper_beam_has_slid_off_the_lower',use:'i_have_had_enough_of_it',pickup:'let_it_lie'},
   {name:'doorway',x:196,y:44,w:40,h:62,wx:186,wy:116,dir:1,vis:()=>!!F.quake,exit:doorway,look:()=>doorway()},
   {name:'jailer',x:206,y:54,w:20,h:52,wx:186,wy:116,dir:1,def:'talk',vis:()=>!!F.quake,talk:callOut,use:callOut,
-    look:async()=>{await seeJailer();await say(P,'The jailer, against the gray of the outer door. He cannot see into this dark. We can see him.',TH)},pickup:'That would hardly be loving.'}]};
-PR.forEach((a,i)=>{a.hs=Object.assign({get name(){return F.quake?['man who muttered','man with the chain','man who coughed'][i]:['muttering','chain','cough'][i]},actor:a},cellNo,{
-  look:()=>say(P,F.quake?['A shape against the wall, where the muttering was. He has not moved from it.','A shape by the ring in the wall. The chain lies on the floor beside him.','A shape in the far corner, where the cough came from.'][i]
-    :['A man muttering, low, in a tongue that I do not know. He has not stopped since they shut the door.','Iron on stone, each time he moves. He is chained to the wall. For us they had the stocks.','A cough from the far wall: an old man, or a sick one.'][i]),
-  talk:async()=>{if(F.quake)return count(i);await say(P,['Friend? Who is there?','Peace to you, friend.','Friend: is there water near you?'][i]);
-    await narr(['The muttering stopped for a breath. Then it went on.','The chain was still for a moment. Nobody answered.','The cough came again. Nobody answered.'][i],{dur:4200})}})});
+    look:async()=>{await seeJailer();await say(P,'jailer_against_the_gray',TH)},pickup:'that_would_hardly_be_loving'}]};
+PR.forEach((a,i)=>{a.hs=Object.assign({get name(){return F.quake?['man_who_muttered','man_with_the_chain','man_who_coughed'][i]:['muttering','chain','cough'][i]},actor:a},cellNo,{
+  look:()=>say(P,F.quake?['shape_against_the_wall','shape_by_the_ring_in_the_wall','shape_in_the_far_corner'][i]
+    :['man_muttering_low_in_a_tongue','iron_on_stone_each_time_he_moves','cough_from_the_far_wall'][i]),
+  talk:async()=>{if(F.quake)return count(i);await say(P,['friend_who','peace_to_you_friend','friend_is_there_water_near_you'][i]);
+    await narr(['muttering_stopped_for_a_breath','chain_was_still_for_a_moment','cough_came_again'][i],{dur:4200})}})});
 ROOMS.gaol9={space:1.1,walk:[16,304,112,136],get mood(){return F.back?'tense':'night'},amb:()=>F.back?{birds:.5,crowd:.15}:{crickets:.4,fire:.15},hs:[
-  {name:'outer door',x:18,y:48,w:40,h:58,wx:66,wy:116,dir:-1,exit:outer,
-    look:()=>say(P,F.back?'The outer door, open to the morning, and the constables in it.':'The outer door. It stood open after the earthquake, and it stands open now.')},
-  {name:'cells',x:68,y:58,w:70,h:48,wx:104,wy:113,look:()=>say(P,F.back?'The cells round the court. They have light and air. Ours had neither.':'The cells round the court. The men in them heard us sing, and they are all still there.'),open:'They are not mine to open.'},
-  {name:'water trough',x:143,y:93,w:40,h:14,wx:162,wy:113,look:'A trough of stone, and good water in it.',use:'I drink, and it is cold. I had forgotten that I was thirsty.',pickup:'It is stone, and it is his.'},
-  {name:'door of the inner prison',x:190,y:58,w:48,h:48,wx:214,wy:113,exit:backIn,
-    look:()=>say(P,F.back?'The way down to the inner prison. We came up out of it when he called us, with the day.':'Three steps down, and black. We sang in there a few hours ago.')},
-  {name:"jailer's house",x:246,y:30,w:74,h:76,wx:286,wy:113,dir:1,look:()=>say(P,F.back?'His house. There are brothers in it this morning, and there were none yesterday.':'His house. There is bread on the table still, and people in it who were not our brothers yesterday.'),
-    use:()=>say(P,F.back?'Not now. The constables are waiting for an answer.':'We have sat at his table. Now there is something else to do, before the day comes.'),
-    open:()=>say(P,F.back?'Not now. The constables are waiting for an answer.':'We have sat at his table. Now there is something else to do, before the day comes.')}]};
+  {name:'outer_door',x:18,y:48,w:40,h:58,wx:66,wy:116,dir:-1,exit:outer,
+    look:()=>say(P,F.back?'outer_door_open_to_the_morning':'the_outer_door')},
+  {name:'cells',x:68,y:58,w:70,h:48,wx:104,wy:113,look:()=>say(P,F.back?'cells_round_the_court':'the_cells_round_the_court'),open:'they_are_not_mine_to_open'},
+  {name:'water_trough',x:143,y:93,w:40,h:14,wx:162,wy:113,look:'trough_of_stone_and_good',use:'i_drink_and_it_is_cold',pickup:'it_is_stone_and_it_is_his'},
+  {name:'door_of_the_inner_prison',x:190,y:58,w:48,h:48,wx:214,wy:113,exit:backIn,
+    look:()=>say(P,F.back?'way_down_to_the_inner_prison':'three_steps_down_and_black')},
+  {name:'jailers_house',x:246,y:30,w:74,h:76,wx:286,wy:113,dir:1,look:()=>say(P,F.back?'his_house':'his_house_said'),
+    use:()=>say(P,F.back?'not_now_the':'we_have_sat_at_his_table'),
+    open:()=>say(P,F.back?'not_now_the':'we_have_sat_at_his_table')}]};
 
 /* ============ PEOPLE ============ */
-const todo=()=>inHouse()?(F.free?'We have an hour, Paul. Whom do you still want to speak to?':'The women will be at the river by now, Paul.')
-  :inRiv()?'They are waiting for the psalm, Paul. Let her cry.'
-  :!F.back?'He answers for us with his life, Paul. I would not have him answer for an empty prison.'
-  :F.open?'They are afraid of us, Paul. I never thought to see that. What will you ask of them?':'He means it kindly. But think who stays behind in this city when we have gone.';
+const todo=()=>inHouse()?(F.free?'we_have_an_hour_paul':'women_will_be_at_the_river')
+  :inRiv()?'they_are_waiting_for_the_psalm_paul'
+  :!F.back?'he_answers_for_us_with_his_life'
+  :F.open?'they_are_afraid_of_us_paul':'he_means_it_kindly';
 const SILAS9={name:'Silas',actor:SI,
-  look:()=>say(P,inCell()?(F.quake?'Silas, on his feet. I can see the shape of him against the door.':'Silas. I cannot see him. He is breathing like a man who is counting his breaths.')
-    :inGaol()?'Silas. He was beaten as I was, and he has not said one word about it.':inRiv()?'Silas. He sings the answer as if he had a synagogue round him.':'Silas. He walked from Jerusalem with a letter, and he has not turned back since.'),
-  show:{awl:'Your awl. It has opened more doors for us than my tongue has.',tablets:'Read me one tonight. You choose them better than I do.','*':'Keep it, brother. You will find a use for it.'},
+  look:()=>say(P,inCell()?(F.quake?'silas_on_his_feet':'silas_i')
+    :inGaol()?'silas_he_was':inRiv()?'silas_he_sings':'silas_he_walked_from'),
+  show:{awl:'your_awl_it',tablets:'read_me_one_tonight','*':'keep_it_brother_said'},
   talk:async()=>{if(inCell())return silasTalk();if(inGaol()||F.free)return say(SI,todo());return talkTree([
-    {q:'What is still to do here?',a:()=>say(SI,todo())},
-    {q:'What do you make of the girl, Silas?',if:()=>inRiv(),once:1,a:()=>say(SI,'That she says nothing false, and that I wish she would stop. I have never before wanted a true thing to go unsaid.')},
-    {q:'Stay close, brother.',bye:1}])},
-  as:{luke:{look:'Silas, of Jerusalem. He says little, and misses nothing.',talk:()=>say(SI,'You watch everything, Luke, as if you meant to write it down. Somebody should.'),show:{'*':'Keep it, brother.'}}}};
+    {q:'what_is_still_to_do_here',a:()=>say(SI,todo())},
+    {q:'what_do_you_make_of_the_girl',if:()=>inRiv(),once:1,a:()=>say(SI,'that_she_says_nothing_false')},
+    {q:'stay_close_brother',bye:1}])},
+  as:{luke:{look:'silas_of_jerusalem',talk:()=>say(SI,'you_watch_everything_luke'),show:{'*':'keep_it_brother_2'}}}};
 const TIM9={name:'Timothy',actor:TI,
-  look:()=>say(P,F.free?'Timothy. He went back into that marketplace alone, for two cloaks and a pouch of tools.':inRiv()?'Timothy. He knew this psalm before he could walk, and he sings it as if it were new.':'Timothy. Some months from his mother\'s door, and he has stopped counting the milestones.'),
-  show:{tablets:'Are there new ones, Paul? I have the old ones by heart.',awl:'The awl. I watched it by lamplight when I was a boy.','*':'Shall I carry that for you, Paul?'},
-  talk:async()=>{if(F.free)return say(TI,'Luke went to the prison door twice yesterday with his bag, Paul. They would not let him in. He has not stopped thinking about that house.');
-    return talkTree([{q:'What is still to do here?',a:()=>say(TI,todo())},
-      {q:'Your grandmother sang you this psalm?',once:1,a:()=>say(TI,'Every evening, Paul. I gave the answer before I knew what the words meant. I know now.')},
-      {q:'Stay close, Timothy.',bye:1}])},
-  as:{luke:{look:'Timothy: young, and quick. He eats better in this house than he did on the road.',talk:()=>say(TI,'Do you know the psalm, brother? The answer is easy: it is the same every time.'),show:{'*':'Shall I carry that for you, brother?'}}}};
+  look:()=>say(P,F.free?'timothy_he_went':inRiv()?'timothy_he_knew':'timothy_some_months'),
+  show:{tablets:'are_there_new_ones_paul',awl:'awl_i','*':'shall_i_carry_that_for_you_paul'},
+  talk:async()=>{if(F.free)return say(TI,'luke_went_to_the_prison');
+    return talkTree([{q:'what_is_still_to_do_here',a:()=>say(TI,todo())},
+      {q:'your_grandmother_sang_you_this_psalm',once:1,a:()=>say(TI,'every_evening_paul')},
+      {q:'stay_close_timothy',bye:1}])},
+  as:{luke:{look:'timothy_young_and_quick_said',talk:()=>say(TI,'do_you_know_the_psalm_brother'),show:{'*':'shall_i_carry_that_for_you_brother'}}}};
 /* Luke when he is the one being played: his answers where the level wrote nothing for him */
-const LUK9={noCraft:"That is the tentmaker's craft, not mine.",
-  def:{look:'I see nothing there that needs a physician.',pickup:h=>h.actor?'I would not dream of it.':'It is not mine to take.',
-    use:"That is not for me to do. It is Paul's.",open:'It does not open.',talk:'I would get no answer.',give:'First I should choose something to give.'}};
+const LUK9={noCraft:'that_is_the_tentmakers_craft_not_mine_2',
+  def:{look:'i_see_nothing_there_that_needs',pickup:h=>h.actor?'i_would_not_dream_of_it':'it_is_not_mine_to_take_said',
+    use:'that_is_not_for_me_to_do',open:'it_does_not_open',talk:'i_would_get_no_answer',give:'first_i_should_choose_something_to_give'}};
 const LUKE9={name:'Luke',actor:LU,
-  look:()=>say(P,inRiv()?'Luke. He has not taken his eyes off that girl since she came down the road.':'Luke. In a few weeks he has learned where every sick person in this street lives.'),
-  show:{awl:'An awl. In my trade we should call that a very large needle.',tablets:'You keep notes. So do I.','*':'Keep it, brother.'},
-  talk:()=>talkTree([{q:'What is still to do here?',a:()=>say(LU,todo())},
-    {q:'What do you see in the girl, Luke?',if:()=>inRiv(),once:1,a:()=>say(LU,'A child who is not her own mistress, Paul: neither of her body nor of her tongue. I have no flask for that.')},
-    {q:'Stay close, Luke.',bye:1}])};
+  look:()=>say(P,inRiv()?'luke_he_has':'luke_in_a'),
+  show:{awl:'awl_in',tablets:'you_keep_notes','*':'keep_it_brother_2'},
+  talk:()=>talkTree([{q:'what_is_still_to_do_here',a:()=>say(LU,todo())},
+    {q:'what_do_you_see_in_the_girl',if:()=>inRiv(),once:1,a:()=>say(LU,'child_who_is_not_her_own')},
+    {q:'stay_close_luke',bye:1}])};
 /* Paul, as Luke sees him and talks to him */
 const PAUL9={name:'Paul',actor:P,as:{luke:{
-  look:()=>say(LU,inRiv()?'Paul. He gives out the psalm as if nobody were crying on the road. I can see what it costs him.':'Paul. He has a psalm in his head this morning, and he means to leave it in theirs.'),
-  talk:()=>say(P,inRiv()?'Sing the answer with them, Luke. They follow a strong voice.':'Come down to the river with us, Luke.'),show:{'*':'Keep it by you, Luke.'}}}};
+  look:()=>say(LU,inRiv()?'paul_he_gives':'paul_he_has_a'),
+  talk:()=>say(P,inRiv()?'sing_the_answer_with_them_luke':'come_down_to_the_river'),show:{'*':'keep_it_by_you_luke'}}}};
 /* Luke at the end, in Lydia's house: met, and not played. The account stops saying "we" where the two are seized, and he stays in Philippi. */
-LK.hs={name:'Luke',actor:LK,look:'Luke. He has looked at our backs, and at nothing else, since we came in at the door.',
-  show:{awl:'You have it back. Good. A man should leave a city with his tools.',tablets:'You keep notes. So do I: and this night will be in mine.','*':'Keep it, brother.'},talk:()=>care(LK)};
-const atRiver=A=>async()=>{if(PC()!==P)return say(A,A===LY?'Sit with us, Luke. Paul is about to give out the psalm.':A===PH?'Do you sing, sir? The answer is not hard.':'I have prayed on this bank since before my hair was gray, sir.');return psalm()};
+LK.hs={name:'Luke',actor:LK,look:'luke_he_has_looked',
+  show:{awl:'you_have_it_back',tablets:'you_keep_notes_said','*':'keep_it_brother_2'},talk:()=>care(LK)};
+const atRiver=A=>async()=>{if(PC()!==P)return say(A,A===LY?'sit_with_us_luke':A===PH?'do_you_sing_sir':'i_have_prayed_on_this_bank');return psalm()};
 LY.hs={name:'Lydia',actor:LY,
-  look:()=>say(P,F.free?'Lydia. She heard the rods from her own door yesterday, and her door is open this morning.':inRiv()?'Lydia, on the stones, with her household about her.':'Lydia. A seller of purple, and a sister. She runs this house as she runs her trade: nothing in it is wasted.'),
-  show:{tablets:'Is the psalm on them, Paul? Then give it to us before I forget that I asked.','*':'Keep it, Paul. Whatever you need in this house, you have only to say.'},
+  look:()=>say(P,F.free?'lydia_said':inRiv()?'lydia_on_the_stones_with_her_household':'lydia_a'),
+  show:{tablets:'is_the_psalm_on_them_paul','*':'keep_it_paul'},
   talk:async()=>{if(F.free)return care(LY);if(inRiv())return atRiver(LY)();return talkTree([
-    {q:'What do they still lack, Lydia?',once:1,a:()=>say(LY,'Everything that is written, Paul. I can keep a ledger in my head, and the prices of nine dyes. Give us something that can be kept in the same way.')},
-    {q:'Who is the girl on the road?',if:()=>!!F.went,once:1,a:()=>say(LY,'Everybody in Philippi knows her. Her masters set her down in the marketplace, and people pay to be told what will happen to them.')},
-    {q:'We are going out to the river.',bye:1}])},
-  as:{luke:{look:'Lydia. She works harder than anybody in her house, and thinks that nobody has noticed.',talk:atRiver(LY),show:{'*':'Keep it, Luke.'}}}};
-PH.hs={name:'Phila',actor:PH,look:()=>say(P,F.free?'Phila. She has the whole psalm but its last line.':'Phila. She loses her place, and she is always the first to find it again.'),
-  show:{tablets:'Writing! None of us can read, sir, but two. Say it, and we will keep it.','*':'Keep it, sir.'},talk:async()=>{if(F.free)return care(PH);return atRiver(PH)()},
-  as:{luke:{look:'Phila. She sings before she is sure of the line, and is right more often than not.',talk:atRiver(PH),show:{'*':'Keep it, sir.'}}}};
-EL.hs={name:'Elpis',actor:EL,look:()=>say(P,F.free?'Elpis. She came through the streets this morning to see whether we were alive.':'Elpis, the oldest of them. She gives the answer a little after the others, and means it more.'),
-  show:{tablets:'My eyes are past it, sir. Say it, and I shall know whether I have heard it before.','*':'Keep it, sir.'},
-  talk:async()=>{if(F.free)return say(EL,'Phila sang your psalm at the loom every evening, sir. She has all of it but the end.');return atRiver(EL)()},
-  as:{luke:{look:'An old woman, straight in the back.',talk:atRiver(EL),show:{'*':'Keep it, sir.'}}}};
+    {q:'what_do_they_still_lack_lydia',once:1,a:()=>say(LY,'everything_that_is_written_paul')},
+    {q:'who_is_the_girl_on_the_road',if:()=>!!F.went,once:1,a:()=>say(LY,'everybody_in_philippi_knows_her_her_masters')},
+    {q:'we_are_going_out_to_the_river',bye:1}])},
+  as:{luke:{look:'lydia_she',talk:atRiver(LY),show:{'*':'keep_it_luke'}}}};
+PH.hs={name:'Phila',actor:PH,look:()=>say(P,F.free?'phila_she':'phila_she_loses'),
+  show:{tablets:'writing_none_of','*':'keep_it_sir_said'},talk:async()=>{if(F.free)return care(PH);return atRiver(PH)()},
+  as:{luke:{look:'phila_she_sings',talk:atRiver(PH),show:{'*':'keep_it_sir_said'}}}};
+EL.hs={name:'Elpis',actor:EL,look:()=>say(P,F.free?'elpis_she':'elpis_the_oldest_of_them'),
+  show:{tablets:'my_eyes_are_past_it_sir_said','*':'keep_it_sir_said'},
+  talk:async()=>{if(F.free)return say(EL,'phila_sang_your_psalm_at_the_loom');return atRiver(EL)()},
+  as:{luke:{look:'an_old_woman_straight_in_the_back',talk:atRiver(EL),show:{'*':'keep_it_sir_said'}}}};
 /* the servant girl and her masters. She is a servant girl like any other: nothing marks the spirit, and nothing is seen when it leaves. */
-GI.hs={name:'servant girl',actor:GI,look:'A servant girl, hardly more than a child. She cries the same thing over and over, and looks at none of us while she cries it.',
-  talk:()=>say(P,'It is not the girl who chose those words. And it is not the girl whom I should answer.',TH),use:()=>say(P,'She is not a thing to be moved out of the road.',TH),
-  show:{'*':()=>say(P,'She would not see it. She sees none of us.',TH)},
-  as:{luke:{look:'A girl of twelve or thirteen, thin, and hoarse with crying. I have no flask for what ails her.',talk:()=>say(LU,'She does not hear me. Whatever answers in her is not the child.'),show:{'*':()=>say(LU,'She does not see it.')}}}};
-const masters=async()=>{await say(MA,'A word with the girl, stranger? One denarius. She says that you come from the Most High, so to you it should be worth two.');
-  await say(PC(),PC()===P?'They sell what she says. And today she is saying it about us.':'They take silver for her. And the people who pay it will think that Paul is one of them.',PC()===P?TH:{})};
-MA.hs={name:'master of the girl',actor:MA,look:'One of her masters. He carries the purse, and it is not empty.',talk:masters,show:{'*':'Keep it. I sell answers. I do not buy trinkets.'},
-  as:{luke:{look:'One of her masters. He has not once looked to see whether the child is well.',talk:masters,show:{'*':'Keep it, physician.'}}}};
-MB.hs={name:'older master',actor:MB,look:'The other of her masters. He watches the road, and counts who stops to listen.',talk:masters,show:{'*':'Keep it.'},
-  as:{luke:{look:'Her other master. He counts heads as a shepherd counts sheep.',talk:masters,show:{'*':'Keep it.'}}}};
+GI.hs={name:'servant_girl',actor:GI,look:'servant_girl_hardly_more_than_a_child',
+  talk:()=>say(P,'it_is_not_the_girl_who',TH),use:()=>say(P,'she_is_not_a_thing_to_be',TH),
+  show:{'*':()=>say(P,'she_would_not_see_it',TH)},
+  as:{luke:{look:'girl_of_twelve_or_thirteen',talk:()=>say(LU,'she_does_not_hear_me'),show:{'*':()=>say(LU,'she_does_not_see_it')}}}};
+const masters=async()=>{await say(MA,'word_with_the_girl_stranger');
+  await say(PC(),PC()===P?'they_sell_what_she_says':'they_take_silver_for_her_and_the_people',PC()===P?TH:{})};
+MA.hs={name:'master_of_the_girl',actor:MA,look:'one_of_her_masters',talk:masters,show:{'*':'keep_it_i_sell'},
+  as:{luke:{look:'one_of_her_masters_said',talk:masters,show:{'*':'keep_it_physician'}}}};
+MB.hs={name:'older_master',actor:MB,look:'other_of_her_masters',talk:masters,show:{'*':'keep_it_2'},
+  as:{luke:{look:'her_other_master',talk:masters,show:{'*':'keep_it_2'}}}};
 /* the jailer, the constables and the magistrates */
-JA.hs={name:'jailer',actor:JA,look:()=>say(P,F.back?'The jailer. He is glad for us, and he cannot see why we do not go.':'The jailer. Yesterday he shut the stocks on us. Tonight he has washed our backs, and he is our brother.'),
-  show:{'*':'You have nothing to give me, brother. It is I who owe.'},
+JA.hs={name:'jailer',actor:JA,look:()=>say(P,F.back?'jailer_he':'jailer_yesterday'),
+  show:{'*':'you_have_nothing_to_give_me_brother'},
   talk:async()=>{if(F.back)return answer();return talkTree([
-    {q:'What will you tell the magistrates?',once:1,a:()=>say(JA,'What happened: that the earth shook, that every door stood open, and that I have not lost one man. They may not believe it.')},
-    {q:'Rest, brother. It will soon be day.',bye:1}])}};
-const carry=()=>F.open?say(CO,'They are here themselves, as you asked. Speak to them, not to me.'):answer();
-CO.hs={name:'constable',actor:CO,look:'A constable of the magistrates, with the rods of his office on his shoulder. I know those rods.',talk:carry,show:{'*':'I carry what I am given to carry.'}};
-C2.hs={name:'bearded constable',actor:C2,look:'The other constable. He does not look at our backs.',talk:carry,show:{'*':'I carry what I am given to carry.'}};
-MG.hs={name:'magistrate',actor:MG,look:'One of the civil magistrates of Philippi. Yesterday he looked down at us from the platform. Today he has come on foot.',talk:offers,show:{'*':'Whatever that is, it shall be made good.'}};
-M2.hs={name:'younger magistrate',actor:M2,look:'The other magistrate. He keeps glancing at the outer door, to see who is passing.',talk:offers,show:{'*':'Whatever that is, it shall be made good.'}};
+    {q:'what_will_you_tell_the_magistrates',once:1,a:()=>say(JA,'what_happened_that_the_earth')},
+    {q:'rest_brother_said',bye:1}])}};
+const carry=()=>F.open?say(CO,'they_are_here_themselves_as_you_asked'):answer();
+CO.hs={name:'constable',actor:CO,look:'constable_of_the_magistrates',talk:carry,show:{'*':'i_carry_what_i_am_given'}};
+C2.hs={name:'bearded_constable',actor:C2,look:'other_constable',talk:carry,show:{'*':'i_carry_what_i_am_given'}};
+MG.hs={name:'magistrate',actor:MG,look:'one_of_the_civil_magistrates_of_philippi',talk:offers,show:{'*':'whatever_that_is_it_shall'}};
+M2.hs={name:'younger_magistrate',actor:M2,look:'other_magistrate',talk:offers,show:{'*':'whatever_that_is_it_shall'}};
 /* how Luke describes the tools of the tentmaker's trade (set again whenever this chapter begins: see setup9) */
-const BY9={awl:"The tentmaker's awl. It is to him what the probe is to me.",thread:'Waxed thread. I use a finer one, and I use it on people.',
-  knife:'A knife for cloth and leather, shaped like the new moon. I leave it in the hand that knows it.',tablets:'His wax tablets: names, tasks and Scripture, written small. I keep notes of my own.'};
+const BY9={awl:'tentmakers_awl_it_is',thread:'waxed_thread_i',
+  knife:'knife_for_cloth_and_leather_said',tablets:'his_wax_tablets_names_tasks'};
 
 /* ============ WAX TABLETS: people met, tasks still open, and the psalm (shown by shared/tablets.js) ============ */
 const cared=()=>CARES.every(c=>F[c.id]);
 const TABLETS={
   people:[
-    {name:'Silas',note:'A prophet, and a leading man among the brothers in Jerusalem. He sings the answer louder than any of us.'},
-    {name:'Timothy',note:'The son of Eunice, of Lystra. His grandmother sang him this psalm before he could walk.'},
-    {name:'Luke',note:()=>F.free?'A physician, and a brother. He is staying in Philippi.':'A physician, and a brother. In a few weeks he has learned where every sick person in this street lives.'},
-    {name:'Lydia',note:'A seller of purple from Thyatira. Her house is ours while we are in Philippi.'},
-    {name:'Phila',note:'One of the women who pray beside the river. She loses her place in the psalm, and is the first to find it again.'},
-    {name:'Elpis',note:'The oldest of the women beside the river.'},
-    {name:'Servant girl',note:'She follows us on the road and cries out who we are. A spirit is in her, a demon of divination. (Acts 16:16)',if:()=>!!F.went&&!F.jail},
-    {name:'Her masters',note:'Two men of the city, who take silver for what the girl tells people.',if:()=>!!F.went&&!F.jail},
-    {name:'Jailer',note:'Yesterday he shut the stocks on us. Since last night he has been a brother, and so has all his house.',if:()=>!!F.free}],
+    {name:'Silas',note:'a_prophet_and_a_leading_man'},
+    {name:'Timothy',note:'the_son_of_eunice_of_lystra'},
+    {name:'Luke',note:()=>F.free?'a_physician_and_a_brother':'physician_and_a_brother_said'},
+    {name:'Lydia',note:'a_seller_of_purple_from_thyatira'},
+    {name:'Phila',note:'one_of_the_women_who_pray'},
+    {name:'Elpis',note:'oldest_of_the_women_beside_the_river'},
+    {name:'servant_girl_2',note:'she_follows_us_acts_16_16',if:()=>!!F.went&&!F.jail},
+    {name:'her_masters',note:'two_men_of_the_city_who',if:()=>!!F.went&&!F.jail},
+    {name:'Jailer',note:'yesterday_he_shut_the_stocks_on_us',if:()=>!!F.free}],
   tasks:[
-    {t:'Go out to the river: a psalm is learned with the mouth.',if:()=>inHouse()&&!F.free},
-    {t:'Teach the women the psalm: the first two lines, and the answer.',if:()=>inRiv()&&day()===1},
-    {t:'Go on with the psalm: the third line.',if:()=>inRiv()&&day()===2},
-    {t:'Give them the last line of the psalm.',if:()=>inRiv()&&day()===3},
-    {t:'A household by the prison, baptized last night: who goes to them?',if:()=>!!F.free&&!F.k1},
-    {t:'Where do the brothers meet, when we are gone?',if:()=>!!F.free&&!F.k2},
-    {t:'Who begins the psalm by the river?',if:()=>!!F.free&&!F.k3},
-    {t:'Leave the city, as we were asked.',if:()=>!!F.free&&cared()}],
+    {t:'go_out_to_the_river_a_psalm',if:()=>inHouse()&&!F.free},
+    {t:'teach_the_women_the_psalm',if:()=>inRiv()&&day()===1},
+    {t:'go_on_with_the_psalm_the_third',if:()=>inRiv()&&day()===2},
+    {t:'give_them_the_last_line',if:()=>inRiv()&&day()===3},
+    {t:'household_by_the_prison',if:()=>!!F.free&&!F.k1},
+    {t:'where_do_the_brothers_meet',if:()=>!!F.free&&!F.k2},
+    {t:'who_begins_the_psalm_by_the_river',if:()=>!!F.free&&!F.k3},
+    {t:'leave_the_city_as_we_were_asked',if:()=>!!F.free&&cared()}],
   scripture:ORDER.concat('a').map(k=>({ref:PS[k].ref,gist:PS[k].gist}))};
 
 /* ============ PLACING THE CAST, SETUP ============ */
@@ -913,33 +913,33 @@ function jailerScene(g,t){backdrop(g,'jailer9');ART.jailer9.draw(g,t);const k=G.
   else cast(g,[['jw9',112,118,1],['jy9',88,126,1],['paul9b',146,128,1],['silas9b',196,129,-1],['jailer9',228,123,-1,{ges:talk}],['jo9',258,128,-1]],L)}
 async function start9(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();
   await cut(async()=>{await fade(1,500);setChapter(9);G.end={};G.scene=null;enterRoom('lydia9',...ENT.lydia9);codeBtn();await fade(0,600);
-    await narr("About 50 C.E. We stayed at Lydia's house in Philippi, and each day we went out by the gate to the place of prayer beside the river.",{dur:9500});
-    await say(LY,'Paul, Phila asked me last night to say the prophets again as you say them. I could not. We have no scroll in this house, and Philippi has no synagogue to keep one.');
-    await say(P,'Then you shall have something that needs no scroll, Lydia. There is a psalm made to be sung by many: one gives the line, and all give the answer.');
-    await say(TI,'The one that my grandmother sings! The answer is the same every time.');
-    await say(P,'That one. Its lines are on my tablets. But a psalm is learned with the mouth: beside the river, then, where they pray.');codeBtn()},true)}
+    await narr('about_50_c_e',{dur:9500});
+    await say(LY,'paul_phila_asked_me_last');
+    await say(P,'you_shall_have_something');
+    await say(TI,'one_that_my_grandmother_sings');
+    await say(P,'that_one');codeBtn()},true)}
 /* ============ PRAYER HINTS ============ */
 function hint9(){const b=PC()!==P;
   if(inHouse()){
-    if(!F.free)return b?['l9a',['Paul means to teach them a psalm, and a psalm needs a river bank.','We can go out by the door to the street.']]
-      :['door9',['They have no scroll. What they can keep is what they can sing: and they pray beside the river.','We can go out by the door to the street.']];
+    if(!F.free)return b?['l9a',['paul_means_to_teach_them','we_can_go_out_by_the_door']]
+      :['door9',['they_have_no_scroll','we_can_go_out_by_the_door']];
     const c=CARES.find(c=>!F[c.id]);
-    if(!c)return['leave9',['Everything here has somebody to carry it.','I can go out by the door to the street.']];
-    return c.id==='k1'?['k19',['A household that learned in one night what others learn in a year. Who is staying in Philippi, and has a physician\'s patience?','I should talk to Luke, and ask who goes to the household by the prison.']]
-      :c.id==='k2'?['k29',['The brothers need a room. One was offered on our first evening in this house.','I should talk to Lydia, and ask where the brothers meet.']]
-      :['k39',['Who kept the psalm best? Not the one who never faltered: the one who always found her place again.','I should talk to Phila, and ask who begins the psalm.']]}
-  if(inRiv())return b?['l9b',["The psalm is Paul's to give out. I sing the answer.",'Paul should use the flat stones.']]
-    :day()===1?['ps19',['A psalm is taught line by line, and my tablets hold the lines in their order.','I should use the flat stones, and give them the first line: the thanks to Jehovah.']]
-    :day()===2?['ps29',['They have two lines. The third tells what he did again and again.','I should use the flat stones, and give them the third line.']]
-    :['ps39',['One line is left: the thanks at the end.','I should use the flat stones, and give them the last line.']];
+    if(!c)return['leave9',['everything_here_has_somebody_to_carry_it','i_can_go_out_by_the_door']];
+    return c.id==='k1'?['k19',['household_that_learned','i_should_talk_to_luke_and_ask']]
+      :c.id==='k2'?['k29',['brothers_need_a_room','i_should_talk_to_lydia_said']]
+      :['k39',['who_kept_the_psalm_best','i_should_talk_to_phila']]}
+  if(inRiv())return b?['l9b',['the_psalm_is_pauls_to_give_out_i','paul_should_use_the_flat_stones']]
+    :day()===1?['ps19',['psalm_is_taught_line_by_line','i_should_use_the_flat_stones']]
+    :day()===2?['ps29',['they_have_two_lines','i_should_use_the_flat_stones_said']]
+    :['ps39',['one_line_is_left_the_thanks','i_should_use_the_flat_stones_and']];
   if(inCell()){
-    if(!F.voice)return['voice9',['They have taken my tools, my tablets, the light, and the use of my feet. Is anything left within my reach?','I should talk to Silas.']];
-    if(!F.quake){const n=sungN();return['song9'+n,[['It begins with thanks to Jehovah, because he is good.','Next: that he did not forget us when we were low.','Next: that he saved us, again and again.','It ends with thanks to the God of heaven.'][n],'I should talk to Silas, and sing the next line of the psalm.']]}
-    if(!allHere())return['count9',['If I call out that we are all here, it must be so. Three men listened in this dark.','I should talk to each of the three prisoners first.']];
-    return['call9',['Nobody has gone. And a man out there believes that all of us have.','I should talk to the jailer.']]}
-  if(!F.back)return['back9',['He was ordered to guard two prisoners securely. Where should the morning find them?','We can go back in by the door of the inner prison.']];
-  if(!F.open)return['ans9',['They beat us before the whole city. Is it enough if nobody sees us leave?','I should talk to the jailer, and stay until the magistrates come themselves.']];
-  return['ask9',['They would give a great deal. What do the brothers who stay in this city need from them?','I should talk to the magistrate, and ask only to be led out by daylight.']]}
+    if(!F.voice)return['voice9',['they_have_taken_my_tools','i_should_talk_to_silas_said']];
+    if(!F.quake){const n=sungN();return['song9'+n,[['it_begins_with_thanks_to_jehovah','next_that_he_did_not_forget','next_that_he_saved_us_again','it_ends_with_thanks_to_the_god'][n],'i_should_talk_to_silas_and']]}
+    if(!allHere())return['count9',['if_i_call_out_that_we_are','i_should_talk_to_each_of_the_three']];
+    return['call9',['nobody_has_gone','i_should_talk_to_the_jailer']]}
+  if(!F.back)return['back9',['he_was_ordered_to_guard','we_can_go_back_in_by_the_door']];
+  if(!F.open)return['ans9',['they_beat_us_before_the_whole_city','i_should_talk_to_the_jailer_said']];
+  return['ask9',['they_would_give_a_great_deal','i_should_talk_to_the_magistrate']]}
 /* ============ CHAPTER DEFINITION ============ */
 return{rooms:['lydia9','river9','cell9','gaol9'],setup:setup9,start:start9,hint:hint9,music:MUSIC,calls:CALLS9,scenes:{dark,forum:forumScene,jailer:jailerScene,shake:shakeScene},topics:[],tablets:TABLETS,
   /* for the playtest: what is told, the psalm, and the sung lines with the function that puts them on the mixer */

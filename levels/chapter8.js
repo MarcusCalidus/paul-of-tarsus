@@ -496,26 +496,26 @@ Object.assign(ICON,{
   /* a physician's bag of leather */
   lbag(g){IH.bag(g,'#7a4e2a',12,14.6,7.6,6)}});
 Object.assign(ITEMS,{
-  linen:{name:'linen cloth',look:"A clean linen cloth out of Timothy's bundle. His mother packed it for the day he would need it. He says that this is the day.",
-    by:{luke:'Clean linen, and a good piece. Cut into strips, it is exactly what I want.'}},
-  bandage:{name:'linen strips',look:"Strips of clean linen, a hand's breadth wide, cut along the thread. They are for the physician's hands, not for mine.",
-    by:{luke:'Strips of clean linen, cut straight along the thread. Whoever cut these has handled cloth all his life.'}},
-  offcut:{name:'old sailcloth',look:'An offcut of old sailcloth: soft with use, and sound in the middle. Enough for something small.',
-    by:{luke:'A rag of sailcloth. I could not tell you what to make of it. I suspect that Paul could.'}},
-  sling:{name:'arm sling',look:'A sling of sailcloth: a broad band, hemmed, with a tie to go round the neck. It is the first that I ever made.',
-    by:{luke:'A sling, hemmed and tied. It will carry the weight of the arm where the weight should be.'}},
-  lbag:{name:"physician's bag",look:"Luke's bag. It is his, and so is the knowledge of what to do with it.",
-    by:{luke:'My bag: a flask of oil, a flask of wine, and a sponge. No linen. I used the last of it this morning.'}}});
+  linen:{name:'linen_cloth',look:'clean_linen_cloth_out_of_timothys_bundle',
+    by:{luke:'clean_linen_and_a_good_piece'}},
+  bandage:{name:'linen_strips',look:'strips_of_clean_linen_a_hands',
+    by:{luke:'strips_of_clean_linen_cut'}},
+  offcut:{name:'old_sailcloth',look:'offcut_of_old_sailcloth',
+    by:{luke:'rag_of_sailcloth'}},
+  sling:{name:'arm_sling',look:'sling_of_sailcloth_a_broad',
+    by:{luke:'sling_hemmed_and_tied'}},
+  lbag:{name:'physicians_bag',look:'lukes_bag',
+    by:{luke:'my_bag_a_flask_of_oil_a_flask'}}});
 /* how Luke describes the tools of the tentmaker's trade (set again whenever this chapter begins: see setup8) */
-const BY8={awl:"The tentmaker's awl. It is to him what the probe is to me.",thread:'Waxed thread. I use a finer one, and I use it on people.',
-  knife:'A knife for cloth and leather, shaped like the new moon. I leave it in the hand that knows it.',tablets:'His wax tablets: names, tasks and Scripture, written small. I keep notes of my own.'};
+const BY8={awl:'tentmakers_awl_it_is',thread:'waxed_thread_i',
+  knife:'knife_for_cloth_and_leather_said',tablets:'his_wax_tablets_names_tasks'};
 const inFork=()=>G.room==='fork',inBor=()=>G.room==='ferry',inTro=()=>G.room==='troas',inPhi=()=>G.room==='philippi',inRiv=()=>G.room==='river',
   eve=()=>inTro()&&!F.vision,clues=()=>!!(F.gate&&F.shop);
 /* toPaul, toLuke: something put into a man's hand, whoever is being played at the moment */
 function toPaul(id,quiet){const inv=invOf(P);if(!inv.includes(id)){inv.push(id);drawInv();if(!quiet)SFX.pick()}}
 function drop(id){for(const a of party()){const inv=invOf(a),i=inv.indexOf(id);if(i>=0)inv.splice(i,1)}if(G.item===id)G.item=null;drawInv()}
 /* bring: something Paul needs for his work, which Luke happens to be carrying, comes back to him */
-async function bring(id){const his=invOf(LU),i=his.indexOf(id);if(PC()===P&&i>=0){his.splice(i,1);toPaul(id,1);await say(LU,'You will want this back, Paul. Cloth is your craft.')}return invOf(P).includes(id)}
+async function bring(id){const his=invOf(LU),i=his.indexOf(id);if(PC()===P&&i>=0){his.splice(i,1);toPaul(id,1);await say(LU,'you_will_want_this_back_paul_cloth')}return invOf(P).includes(id)}
 /* ask: a question put to whoever is played, with three answers. A reply may come from anyone present: r lists lines, or [actor, line, how] sets. */
 async function ask(me,who,q,opts){let av=opts.slice();
   for(;;){await say(who,q);const o=av[await choose(av.map(o=>o.q))];for(const l of o.p||[o.q])await say(me,l);
@@ -525,16 +525,16 @@ async function think(q,opts){let av=opts.slice();
   for(;;){await say(P,q,TH);const o=av[await choose(av.map(o=>o.q))];if(o.ok)return;await say(P,o.no,TH);av=av.filter(x=>x!==o)}}
 /* ============ SCRIPTURE: the passages on the tablets ============ */
 const PASS={
-  prov16:{ref:'Proverbs 16:9',gist:'In his heart a man maps out the way he means to go, yet his steps are guided by Jehovah.'},
-  isa30:{ref:'Isaiah 30:21',gist:'Should you stray to the right or to the left, your own ears will catch a word spoken behind you, telling you which is the way and to walk in it.'},
-  prov15:{ref:'Proverbs 15:22',gist:'Without counsel taken together, plans come to nothing; where many advise, they succeed.'},
-  isa42:{ref:'Isaiah 42:4',gist:'The islands wait for his law, and he will not burn low or be broken until he has set up justice on the earth.'},
-  ps65:{ref:'Psalm 65:2',gist:'You are the one who hears prayer; people of every sort will come to you.'},
-  isa53:{ref:'Isaiah 53:5',gist:'Our transgression is why he was pierced, and our errors why he was crushed; his wounds have healed us.'},
-  ps16:{ref:'Psalm 16:10',gist:'David\'s hope: Jehovah would never let his loyal one see the pit, nor abandon him to the Grave.'},
-  kings:{ref:'2 Kings 4:8',gist:'Elisha once came to Shunem. A woman of high standing lived there, and she pressed him to stay for a meal; after that he stopped to eat at her house whenever he passed.'}},
+  prov16:{ref:'proverbs_16_9',gist:'in_his_heart_a_man_maps'},
+  isa30:{ref:'isaiah_30_21',gist:'should_you_stray_to_the_right'},
+  prov15:{ref:'proverbs_15_22',gist:'without_counsel_taken_together'},
+  isa42:{ref:'isaiah_42_4',gist:'islands_wait_for_his_law'},
+  ps65:{ref:'psalm_65_2',gist:'you_are_the_one_who_hears'},
+  isa53:{ref:'isaiah_53_5',gist:'our_transgression_is_why'},
+  ps16:{ref:'psalm_16_10',gist:'davids_hope_jehovah_would'},
+  kings:{ref:'n2_kings_4_8',gist:'elisha_once_came_to_shunem'}},
   ORDER=['prov16','isa30','prov15','isa42','ps65','isa53','ps16','kings'];
-const quote=k=>T('{text} ({ref})',{text:T(PASS[k].gist),ref:T(PASS[k].ref)});
+const quote=k=>T('text_ref',{text:T(PASS[k].gist),ref:T(PASS[k].ref)});
 /* ============ THE MAP: the road of this chapter, leg by leg ============ */
 /* ROAD: from Iconium by Antioch in Pisidia to where a paved road ran west; north until Bithynia was near; west through Mysia to Troas;
    by sea to Samothrace and to Neapolis; and up to Philippi. Acts 16:6-8 names the regions and not the roads: the line shows what is likely.
@@ -549,577 +549,577 @@ async function come(room,mood){place8(room);const a=PC();enterRoom(room,a.x,a.y,
 /* The holy spirit forbade them to speak the word in the province of Asia (Acts 16:6). How, the account does not say, and
    nothing here shows it. What the player decides is what Paul does next: he was turned only after he had set out. */
 async function roadWest(){const me=PC();
-  if(F.asia)return say(me,'That road is closed to us. It was no man who closed it.');
-  await say(P,'West, brothers: to Ephesus. Attalos, we will walk beside your mule for as far as the road goes.');
-  await say(AT,'Then step out, friends. It is downhill for a week.');
+  if(F.asia)return say(me,'that_road_is_closed_to_us');
+  await say(P,'west_brothers_to_ephesus');
+  await say(AT,'step_out_friends');
   await Promise.all([walk(P,104,126),walk(SI,136,129),walk(TI,164,131)]);AU.mood='tense';await fade(1,700);
-  await narr('But the province of Asia was closed to their preaching of the word: the holy spirit forbade it. (Acts 16:6)',{dur:9500});
-  await narr('How this was made known to them, the account does not say.',{dur:6000});
+  await narr('province_of_asia_acts_16_6',{dur:9500});
+  await narr('how_this_was_made_known',{dur:6000});
   place(P,'fork',222,124,-1);place(SI,'fork',336,127,-1);place(TI,'fork',362,129,-1);await fade(0,700);
-  await say(P,'Not Asia. Not now. And not one word of where instead.',TH);
-  await think('The road to Ephesus is closed to us. What do we do?',[
-    {q:'We wait here until we are told where to go.',no:'Wait for what? I was turned only after I had set out. A man who sits down at a fork has chosen nothing, and learns nothing.'},
-    {q:'We turn back to the congregations we know.',no:'They have the decrees, and elders of their own. We were not sent out to walk one road twice and call it enough.'},
-    {q:'We go on by the road that is still open.',ok:1}]);
+  await say(P,'not_asia',TH);
+  await think('road_to_ephesus_is_closed_to_us',[
+    {q:'we_wait_here_until_we_are',no:'wait_for_what'},
+    {q:'we_turn_back_to_the_congregations',no:'they_have_the_decrees_and_elders'},
+    {q:'we_go_on_by_the_road_that_is',ok:1}]);
   F.asia=1;AU.mood='hope';SFX.good();
-  await say(P,'Brothers, we are not going to Ephesus. We have been forbidden to speak the word in Asia.');
-  await say(TI,'Forbidden? But why, Paul? There are so many people down that road.');
-  await say(P,'I do not know why, Timothy. I know who it is that forbids. That is enough to turn my feet.');
-  await say(SI,'Then which way? There is the track to the north. The carrier says that it runs toward Bithynia.');
-  await say(P,'Bithynia has cities too. We go on, and we see whether that door is open.');
-  await say(AT,'Not coming? You had not gone twenty paces. Is something wrong with my road?');
-  await say(P,'Nothing is wrong with your road, Attalos. The one who sent us has closed it to us. I cannot tell you more, because I do not know more.');
-  await say(AT,'A man who admits what he does not know. That is rarer on this road than a mule that does not kick. Go well, then.');codeBtn()}
+  await say(P,'brothers_we_are_not_going_to_ephesus');
+  await say(TI,'forbidden_said');
+  await say(P,'i_do_not_know_why_timothy');
+  await say(SI,'which_way');
+  await say(P,'bithynia_has_cities_too');
+  await say(AT,'not_coming');
+  await say(P,'nothing_is_wrong_with_your_road_attalos');
+  await say(AT,'man_who_admits_what_he');codeBtn()}
 async function trackNorth(){const me=PC();
-  if(!F.asia)return say(me,'North? That track runs toward Bithynia. Our road is the paved one: west, to Ephesus and the cities of Asia.');
-  await say(P,'North, then, until we are told otherwise.');
-  await leg(2,['From the paved road they turned north. They may have walked for days on unpaved tracks, through the thinly peopled country where Phrygia and Galatia meet.',
-    'On reaching Mysia they tried to go on into Bithynia. (Acts 16:7)']);
+  if(!F.asia)return say(me,'north_said');
+  await say(P,'north_then_until_we_are_told_otherwise');
+  await leg(2,['from_the_paved_road_they_turned_north',
+    'on_reaching_mysia_acts_16_7']);
   await come('ferry');
-  await say(KL,'Bithynia, is it? You are looking at it: everything beyond the water. Two coppers a man, and I do not turn back for hats.');
-  await say(SI,'Towns, Paul, and good roads between them: so they told us in the last village.');
-  await say(TI,'And people who have never heard. As in Asia.');codeBtn()}
+  await say(KL,'bithynia_is_it');
+  await say(SI,'towns_paul_and_good_roads');
+  await say(TI,'people_who_have_never_heard');codeBtn()}
 ROOMS.fork={space:.5,walk:[16,464,112,138],mood:'hope',amb:{wind:.5,birds:.5,hooves:.15},hs:[
-  {name:'mountains',x:0,y:36,w:480,h:22,wx:240,look:'Mountains to the north, with the snow still on them. It is spring on the plateau, and the roads are open again.'},
-  {name:'sheepfold',x:332,y:62,w:92,h:24,wx:380,look:'A sheepfold of field stone, a few sheep, and a wild pear in blossom. Somebody lives out here, a long way from any city.'},
-  {name:'milestone',x:207,y:86,w:12,h:23,wx:226,wy:114,dir:-1,look:async()=>{await say(P,'A milestone of the Romans. It counts the miles to cities that I have never seen.');return say(P,quote('prov16'))},
-    use:'I lean on it for a moment. It is the only thing on this plateau that knows exactly where it is.',pickup:'It has stood here longer than I have lived.'},
-  {name:'mule',x:128,y:90,w:44,h:34,wx:184,wy:126,dir:-1,look:"The carrier's mule, under more wool than I should have thought one animal could carry. It is looking down the road, and it has no doubts.",pickup:"It is Attalos's, and it would not come."},
-  {name:'track to the north',x:232,y:76,w:76,h:32,wx:254,wy:113,dir:1,exit:trackNorth,
-    look:()=>say(P,F.asia?'The track north: bare earth and two ruts, climbing out of sight. It is the road that is still open.':'A track, leaving the paved road for the north. Two ruts and no curb. The carrier says that it runs toward Bithynia.')},
-  {name:'paved road west',x:0,y:104,w:15,h:34,wx:22,wy:122,dir:-1,exit:roadWest,
-    look:async()=>{if(F.asia)return say(P,'The road to Ephesus: paved, straight, and closed to us. I do not know why. I do not need to.');
-      await say(P,'The paved road, running west: down off the plateau, and on to Ephesus and the cities of Asia. More people live along it than in all Galatia.');return say(P,quote('isa30'))}},
-  {name:'road east',x:466,y:104,w:14,h:34,wx:458,wy:122,dir:1,look:'The way we came: back to the cities of Galatia.',exit:()=>say(PC(),'The cities behind us have the decrees, and they are growing day by day. Our road does not lead back.')}]};
+  {name:'mountains',x:0,y:36,w:480,h:22,wx:240,look:'mountains_to_the_north'},
+  {name:'sheepfold',x:332,y:62,w:92,h:24,wx:380,look:'sheepfold_of_field_stone'},
+  {name:'milestone',x:207,y:86,w:12,h:23,wx:226,wy:114,dir:-1,look:async()=>{await say(P,'milestone_of_the_romans');return say(P,quote('prov16'))},
+    use:'i_lean_on_it_for_a_moment',pickup:'it_has_stood_here_longer'},
+  {name:'mule',x:128,y:90,w:44,h:34,wx:184,wy:126,dir:-1,look:'carriers_mule_under_more',pickup:'it_is_attaloss_and_it_would'},
+  {name:'track_to_the_north',x:232,y:76,w:76,h:32,wx:254,wy:113,dir:1,exit:trackNorth,
+    look:()=>say(P,F.asia?'track_north_bare_earth':'track_leaving_the_paved')},
+  {name:'paved_road_west',x:0,y:104,w:15,h:34,wx:22,wy:122,dir:-1,exit:roadWest,
+    look:async()=>{if(F.asia)return say(P,'road_to_ephesus_paved_straight');
+      await say(P,'paved_road_running_west');return say(P,quote('isa30'))}},
+  {name:'road_east',x:466,y:104,w:14,h:34,wx:458,wy:122,dir:1,look:'way_we_came_back_to_the_cities',exit:()=>say(PC(),'cities_behind_us_have_the_decrees')}]};
 AT.hs={name:'Attalos',actor:AT,
-  look:()=>say(P,F.asia?'Attalos. He is tightening a girth that does not need it, and wondering about us.':'Attalos, a carrier of wool. Four times a year he takes the paved road down to Ephesus, and he has offered us his company.'),
-  show:{awl:'An awl! Then you can mend a pack saddle. You should have said so three villages ago.',knife:'A good knife. I use one like it on fleeces.',thread:'Waxed. That will outlast the wool.',
-    tablets:'Writing. I count on my fingers, friend, and I have never been cheated yet.','*':'Keep it for the road. It is a long one, whichever you take.'},
+  look:()=>say(P,F.asia?'attalos_said':'attalos_a_carrier_of_wool'),
+  show:{awl:'awl_said',knife:'good_knife',thread:'waxed_said',
+    tablets:'writing_i','*':'keep_it_for_the_road'},
   talk:()=>talkTree([
-    {q:'Where does the paved road lead?',a:async()=>{await say(AT,'West, friend. Down off the plateau, and on to Ephesus by the great cities of Asia. Paved all the way: the Romans see to that.');
-      await say(AT,'There are more people along that road than my mule has hairs.')}},
-    {q:'And the track to the north?',a:()=>say(AT,'Toward Bithynia, in the end. A poor track, with few villages on it. I should not take my mule that way without a reason.')},
-    {q:'We are forbidden to speak in Asia.',if:()=>!!F.asia,once:1,a:async()=>{await say(AT,'Forbidden to speak? I do not understand it, friends. But you could still walk down to Ephesus with me, and keep silent on the way.');
-      await say(P,'I was not sent to keep my mouth shut, Attalos. If I may not speak there, I will find where I may.')}},
-    {q:'A safe road to you, Attalos.',bye:1}])};
+    {q:'where_does_the_paved_road_lead',a:async()=>{await say(AT,'west_friend');
+      await say(AT,'there_are_more_people_along')}},
+    {q:'track_to_the_north_q',a:()=>say(AT,'toward_bithynia_in_the_end')},
+    {q:'we_are_forbidden_to_speak_in_asia',if:()=>!!F.asia,once:1,a:async()=>{await say(AT,'forbidden_to_speak');
+      await say(P,'i_was_not_sent_to_keep')}},
+    {q:'safe_road_to_you_attalos',bye:1}])};
 /* ============ THE EDGE OF BITHYNIA: a second road that is closed ============ */
 /* They tried to go into Bithynia, and the spirit of Jesus would not let them (Acts 16:7). Mysia belonged to the province of
    Asia, so what was forbidden in Asia was forbidden there: they went through it without stopping to preach (study note on Acts 16:8). */
 async function ferry(){const me=PC();
-  if(F.bith)return say(me,'That bank is not for us. Not now.');
-  await say(P,'Three men to cross, Kleitos. Here are your coppers.');
-  await say(KL,'Step aboard, then, and sit low. She is steady, but she is slow.');
+  if(F.bith)return say(me,'that_bank_is_not_for_us');
+  await say(P,'three_men_to_cross_kleitos');
+  await say(KL,'step_aboard_then_and_sit_low');
   await walk(P,FERRY[0]+38,113);AU.mood='tense';await fade(1,700);
-  await narr('But the spirit of Jesus would not let them. (Acts 16:7)',{dur:8000});
+  await narr('spirit_of_jesus_acts_16_7',{dur:8000});
   place(P,'ferry',300,122,1);place(SI,'ferry',322,127,-1);place(TI,'ferry',276,128,1);await fade(0,700);
-  await say(P,'Not Bithynia either. Twice now.',TH);
-  await think('A second road is closed to us. What do we do?',[
-    {q:'We wait at the ferry until the way is opened.',no:'Twice I have been turned, and both times only after I had set out. I will not sit on a river bank and call that obedience.'},
-    {q:'Two roads are shut. We go home to Antioch.',no:'Nobody has told me to go home. I have been told where I may not speak. That is all that I have been told.'},
-    {q:'West. It is the one road left.',ok:1}]);
+  await say(P,'not_bithynia_either',TH);
+  await think('second_road_is_closed_to_us',[
+    {q:'we_wait_at_the_ferry_until',no:'twice_i_have_been_turned'},
+    {q:'two_roads_are_shut',no:'nobody_has_told_me_to_go_home'},
+    {q:'west_said',ok:1}]);
   F.bith=1;AU.mood='hope';SFX.good();
-  await say(P,'Keep your coppers and your pole dry, Kleitos. We are not crossing.');
-  await say(KL,'Not crossing? You came up this bank like men with an errand.');
-  await say(P,'We have one. It is not on your side of the water, it seems.');
-  await say(TI,'Then where, Paul? Asia is behind us, and Bithynia is in front of us, and both are shut.');
-  await say(P,'West, Timothy: through Mysia, to the sea. I cannot tell you what is at the end of it. I know only that it is the one road that has not been closed.');
-  await say(SI,'That is a long road, and it goes past a great many towns.');
-  await say(P,'It does, and we shall pass them by. Mysia is part of Asia: what was forbidden to us there is forbidden here. I do not like it, Silas. I do not have to like it.');codeBtn()}
+  await say(P,'keep_your_coppers_and_your_pole');
+  await say(KL,'not_crossing');
+  await say(P,'we_have_one');
+  await say(TI,'where_paul');
+  await say(P,'west_timothy_through_mysia_to_the_sea');
+  await say(SI,'that_is_a_long_road_and_it');
+  await say(P,'it_does_and_we_shall_pass');codeBtn()}
 async function roadSea(){const me=PC();
-  if(!F.bith)return say(me,'West, along the bank? That road leads to the sea, and to nothing that I have planned for. Bithynia is in front of us.');
-  await say(P,'West, brothers. Two doors have been shut to us, and the one who shut them is still leading us.');
-  await leg(3,['So they went on past Mysia, down to Troas. (Acts 16:8)',
-    'It was a walk of some 550 kilometers, past city after city. They went through Mysia without stopping to preach there.']);
+  if(!F.bith)return say(me,'west_along_the_bank');
+  await say(P,'west_brothers');
+  await leg(3,['they_went_on_past_acts_16_8',
+    'it_was_a_walk_of_some_550']);
   await come('troas','tense');await troasIntro()}
 ROOMS.ferry={space:.6,walk:[16,464,112,138],mood:'hope',amb:{fountain:.35,leaves:.6,birds:.6,wind:.2},hs:[
-  {name:'mountain',x:150,y:30,w:170,h:26,wx:240,look:'One great mountain beyond the river, with snow on it. Everything between here and there is Bithynia.'},
-  {name:'far bank',x:0,y:60,w:480,h:26,wx:270,look:()=>say(P,F.bith?'Bithynia. Wooded hills, and somewhere behind them towns that will hear the good news from someone. Not from us, and not now.'
-    :'The far bank: Bithynia. Woods, and a path climbing into them from where the ferry lands. Beyond the hills there are towns.')},
-  {name:'river',x:0,y:87,w:234,h:18,wx:150,wy:113,look:'A wide river, slow and green, with the hills lying upside down in it.',use:'I wash the dust of Phrygia from my face. It is the first water in a week that I did not have to draw.',pickup:'A river belongs to its banks.'},
-  {name:'plane tree',x:30,y:42,w:70,h:66,wx:84,wy:116,dir:-1,look:'A plane tree, older than the ferry. Travelers wait under it for the boat.',use:'I am not tired enough to sit down. Not yet.'},
-  {name:"ferryman's hut",x:394,y:68,w:74,h:42,wx:428,wy:114,look:'A hut of wattle and daub under a roof of reeds. He lives where his living is.',use:'It is his house, and he has not asked me in.',open:'It is his house, and he has not asked me in.'},
+  {name:'mountain',x:150,y:30,w:170,h:26,wx:240,look:'one_great_mountain_beyond'},
+  {name:'far_bank',x:0,y:60,w:480,h:26,wx:270,look:()=>say(P,F.bith?'bithynia'
+    :'far_bank_bithynia')},
+  {name:'river',x:0,y:87,w:234,h:18,wx:150,wy:113,look:'wide_river_slow_and_green',use:'i_wash_the_dust_of_phrygia',pickup:'river_belongs_to_its_banks'},
+  {name:'plane_tree',x:30,y:42,w:70,h:66,wx:84,wy:116,dir:-1,look:'plane_tree_older_than_the_ferry',use:'i_am_not_tired_enough_to_sit'},
+  {name:'ferrymans_hut',x:394,y:68,w:74,h:42,wx:428,wy:114,look:'hut_of_wattle_and_daub',use:'it_is_his_house_and_he',open:'it_is_his_house_and_he'},
   {name:'ferry',x:236,y:94,w:82,h:16,wx:266,wy:114,def:'use',exit:ferry,
-    look:()=>say(P,F.bith?'The ferry. It will carry others over to Bithynia today. It will not carry us.':'The ferry: a broad flat boat, and a pole to push it with. It is all that lies between us and Bithynia.')},
-  {name:'road west',x:0,y:110,w:15,h:28,wx:22,wy:122,dir:-1,exit:roadSea,
-    look:()=>say(P,F.bith?'The road west along the bank: through Mysia, to the sea. It is the one that is left.':'A road along the bank, going west. The ferryman says that it comes to the sea in the end, and that nobody takes it who is not going to a ship.')},
-  {name:'road east',x:466,y:110,w:14,h:28,wx:458,wy:122,dir:1,look:'The way we came, from the plateau.',exit:()=>say(PC(),'We did not walk all those days in order to walk them again.')}]};
+    look:()=>say(P,F.bith?'the_ferry':'ferry_a_broad_flat_boat')},
+  {name:'road_west',x:0,y:110,w:15,h:28,wx:22,wy:122,dir:-1,exit:roadSea,
+    look:()=>say(P,F.bith?'road_west_along_the_bank':'road_along_the_bank_going_west')},
+  {name:'road_east',x:466,y:110,w:14,h:28,wx:458,wy:122,dir:1,look:'way_we_came_from_the_plateau',exit:()=>say(PC(),'we_did_not_walk_all_those_days')}]};
 KL.hs={name:'Kleitos',actor:KL,
-  look:()=>say(P,F.bith?'Kleitos. He has pushed off with two shepherds and a goat, and he is still looking back at us.':'Kleitos, the ferryman. He has crossed this river more often than I have crossed a threshold.'),
-  show:{awl:'I caulk with pitch and moss, friend, not with that.',knife:'Sharp. Keep it away from my painter.',tablets:'Wax? In the sun, on the water, that would run. I keep my accounts in my head.','*':'Keep it dry. Everything that crosses with me gets a little wet.'},
+  look:()=>say(P,F.bith?'kleitos_said':'kleitos_the_ferryman'),
+  show:{awl:'i_caulk_with_pitch_and_moss',knife:'sharp_keep',tablets:'wax_said','*':'keep_it_dry'},
   talk:()=>talkTree([
-    {q:'What lies over the river?',a:()=>say(KL,'Bithynia. Good land, towns, and a road to the sea in the north. I carry people over who mean to stay, and I carry the same people back.')},
-    {q:'Where does the road along the bank lead?',a:()=>say(KL,'West? To the sea, in the end, at Troas where the ships are. Weeks of walking, and all of it through Mysia. Nobody takes that road who is not going to a ship.')},
-    {q:'We were not permitted to cross.',if:()=>!!F.bith,once:1,a:async()=>{await say(KL,'Not permitted? I saw no soldier, and I heard no one call.');await say(P,'You did not see the one who sent us either. We must obey him all the same.')}},
-    {q:'A quiet river to you, Kleitos.',bye:1}])};
+    {q:'what_lies_over_the_river',a:()=>say(KL,'bithynia_said')},
+    {q:'where_does_the_road_along',a:()=>say(KL,'west_to')},
+    {q:'we_were_not_permitted_to_cross',if:()=>!!F.bith,once:1,a:async()=>{await say(KL,'not_permitted');await say(P,'you_did_not_see_the_one')}},
+    {q:'quiet_river_to_you_kleitos',bye:1}])};
 /* ============ TROAS: the fourth man ============ */
 /* Luke is with them from Troas on: the account says "we" from Acts 16:10. It does not say how he came to be with them, where he was from
    or when he became a disciple, and nothing here says so either. He is a physician (Colossians 4:14): the oil, the wine and the bandage
    are the treatment he himself later recorded (Luke 10:34), which the Study Edition calls consistent with the methods of the day. */
 async function troasIntro(){if(G.metTroas)return;G.metTroas=1;
-  await narr('Troas: the principal seaport of that coast, and a colony of Rome. It was probably the spring of 50 C.E.',{dur:7500});
+  await narr('troas_the_principal_seaport',{dur:7500});
   noise({d:.18,v:.3,f:900,q:.8});noise({t:now()+.12,d:.3,v:.2,f:2600,q:1});
-  await say(LE,'Mind the sling! ...Too late. Sosias! Let me see that arm.',{to:SO});
-  await say(SO,'It is nothing, master. The jar caught me as it went.');
-  await say(LU,'It is not nothing. Sit down, man, and hold the arm up. Let me through: I am a physician.',{to:SO});
-  await say(LE,'My best hand, and I sail for Neapolis with the first fair wind! I will not put to sea a man short.');
-  await say(LU,'You there: travelers, by the dust on you. I have oil and wine. What I have not got is clean linen, and I want it now.',{to:PC()});
-  await say(P,'A harbor, at the end of the only road that was left open. I still do not know why we are here. But that man is bleeding, and that I understand.',TH);swapBtn();codeBtn()}
+  await say(LE,'mind_the_sling',{to:SO});
+  await say(SO,'it_is_nothing_master');
+  await say(LU,'it_is_not_nothing',{to:SO});
+  await say(LE,'my_best_hand_and_i_sail');
+  await say(LU,'you_there_travelers_by_the_dust',{to:PC()});
+  await say(P,'harbor_at_the_end_of_the_only',TH);swapBtn();codeBtn()}
 /* cutStrips: clean linen, cut into strips along the thread */
-async function cutStrips(){if(F.strips)return say(P,'They are cut.');
-  if(!(await bring('linen')))return say(P,'I have no linen to cut.');
-  SFX.cut();await say(P,"A hand's breadth wide, and cut along the thread, so that the edges do not fray into the wound...");
+async function cutStrips(){if(F.strips)return say(P,'they_are_cut');
+  if(!(await bring('linen')))return say(P,'i_have_no_linen_to_cut');
+  SFX.cut();await say(P,'hands_breadth_wide_and_cut');
   delItem('linen');F.strips=1;addItem('bandage',1);SFX.good();
-  await say(P,'Strips of clean linen. Binding a wound is not my craft: they belong in the hand of the physician.')}
+  await say(P,'strips_of_clean_linen')}
 /* sewSling: a sling for the arm, out of an offcut of old sailcloth */
-async function sewSling(){if(F.sling)return say(P,'It is sewn already.');
-  if(!F.bound)return say(P,'I could sew a dozen things out of it, and I do not yet know which of them is wanted. First let the physician say what the arm needs.');
-  if(!(await bring('offcut')))return say(P,'A sling needs cloth, and I have none.');
-  SFX.cut();await say(P,'A broad band, long enough to carry a forearm, and hemmed so that it does not cut into the neck...');SFX.sew();await wait(600);
+async function sewSling(){if(F.sling)return say(P,'it_is_sewn_already');
+  if(!F.bound)return say(P,'i_could_sew_a_dozen_things');
+  if(!(await bring('offcut')))return say(P,'sling_needs_cloth_and_i_have_none');
+  SFX.cut();await say(P,'broad_band_long_enough');SFX.sew();await wait(600);
   delItem('offcut');F.sling=1;addItem('sling',1);SFX.good();
-  await say(P,'An arm sling. I have sewn for camels, for wagons and for ships. Never before for an arm.')}
+  await say(P,'an_arm_sling')}
 Object.assign(COMBO,{
-  'knife+linen':cutStrips,'awl+linen':()=>say(P,'Linen does not need sewing now. It needs cutting.'),'linen+thread':()=>say(P,'Linen does not need sewing now. It needs cutting.'),
+  'knife+linen':cutStrips,'awl+linen':()=>say(P,'linen_does_not_need_sewing_now'),'linen+thread':()=>say(P,'linen_does_not_need_sewing_now'),
   'awl+offcut':sewSling,'offcut+thread':sewSling,'knife+offcut':sewSling,
-  'awl+bandage':()=>say(P,'A bandage is wound, not sewn. And it is not I who should wind it.'),'linen+offcut':()=>say(P,'The linen is for the wound, and the sailcloth is not clean enough to go near it.'),
-  'bandage+offcut':()=>say(P,'The linen is for the wound, and the sailcloth is not clean enough to go near it.'),'awl+sling':()=>say(P,'It is sewn, and it will hold.'),'sling+thread':()=>say(P,'It is sewn, and it will hold.')});
+  'awl+bandage':()=>say(P,'bandage_is_wound_not_sewn'),'linen+offcut':()=>say(P,'linen_is_for_the_wound'),
+  'bandage+offcut':()=>say(P,'linen_is_for_the_wound'),'awl+sling':()=>say(P,'it_is_sewn_and_it_will_hold'),'sling+thread':()=>say(P,'it_is_sewn_and_it_will_hold')});
 /* treat: the physician's part, played as Luke. Wine and oil first, then the bandage, then the sling. */
 async function treat(it){
-  if(F.slung)return say(LU,'It is cleaned, bound and slung. Now it needs only to be left alone.');
-  if(it==='lbag'){if(F.clean)return say(LU,'It is clean. Now it needs binding.');
+  if(F.slung)return say(LU,'it_is_cleaned_bound_and_slung');
+  if(it==='lbag'){if(F.clean)return say(LU,'it_is_clean');
     await walk(LU,SO.x-20,SO.y+1);LU.dir=1;LU.bow=true;
-    await say(LU,'Wine first. It will sting, and it will clean.');noise({d:.25,v:.08,f:3200,q:1});await wait(500);
-    await say(SO,'Ah! You said that it would sting. You did not say how much.');
-    await say(LU,'Now oil, to soften it. ...There. The cut is long, but it is not deep, and it is clean.');LU.bow=false;F.clean=1;SFX.good();
-    return say(LU,invOf(LU).includes('bandage')?'And now the linen.':'And now linen: strips of it, clean, to bind this up.')}
-  if(it==='bandage'){if(F.bound)return say(LU,'It is bound.');
-    if(!F.clean)return say(LU,'Not on a wound as it is. First the wine and the oil: they are in my bag.');
+    await say(LU,'wine_first');noise({d:.25,v:.08,f:3200,q:1});await wait(500);
+    await say(SO,'you_said_that');
+    await say(LU,'now_oil_to_soften_it');LU.bow=false;F.clean=1;SFX.good();
+    return say(LU,invOf(LU).includes('bandage')?'now_the_linen':'now_linen_strips_of_it')}
+  if(it==='bandage'){if(F.bound)return say(LU,'it_is_bound');
+    if(!F.clean)return say(LU,'not_on_a_wound_as_it_is');
     await walk(LU,SO.x-20,SO.y+1);LU.dir=1;LU.bow=true;
-    await say(LU,'Round, and round again. Firm, but not tight: the hand must stay warm.');await wait(500);LU.bow=false;drop('bandage');F.bound=1;SFX.good();
-    await say(SO,'It throbs less already.');
-    await say(LU,'It will throb again if it hangs at your side. It must be carried high for some days: in a sling. And I have used every scrap of my linen.');
-    return say(P,'A sling. That is cloth, and a hem. That is my craft.',TH)}
-  if(it==='sling'){if(!F.bound)return say(LU,'A sling for an arm that is still bleeding? First things first.');
+    await say(LU,'round_and_round_again');await wait(500);LU.bow=false;drop('bandage');F.bound=1;SFX.good();
+    await say(SO,'it_throbs_less_already');
+    await say(LU,'it_will_throb_again_if_it');
+    return say(P,'a_sling',TH)}
+  if(it==='sling'){if(!F.bound)return say(LU,'sling_for_an_arm_that_is');
     await walk(LU,SO.x-20,SO.y+1);LU.dir=1;
-    await say(LU,'Over the head, and the arm laid in it. ...So. The weight is on the shoulder now, where it can do no harm.');drop('sling');return slung()}
-  if(it==='linen')return say(LU,'A whole cloth is no use to me. It needs cutting into strips, straight along the thread, and I know a man who cuts cloth for his living.');
-  if(it==='offcut')return say(LU,'Sailcloth on an open wound? No. But I may want it later, in another shape.');
+    await say(LU,'over_the_head_and_the_arm');drop('sling');return slung()}
+  if(it==='linen')return say(LU,'whole_cloth_is_no_use_to_me');
+  if(it==='offcut')return say(LU,'sailcloth_on_an_open_wound');
   return false}
 /* slung: the hand is cared for; the four men find that they are brothers, and go to the inn */
 async function slung(){playAs(P);F.slung=1;AU.mood='calm';SFX.good();
-  await say(LE,'He can steer with one hand, and by Neapolis he will haul with two. Physician, tentmaker: I am in your debt.');
-  await say(LU,'Luke. A physician, as you saw. That sling was hemmed in the time that it took me to tie a knot.',{to:P});
-  await say(P,'Paul, of Tarsus. I sew tents, not slings: but a seam is a seam. These are Silas and Timothy.');
-  await say(LU,'I heard the young man call you "brother". Not many in Troas use that word the way he used it. I use it that way too.');
-  await say(P,'Then there are four of us on this quay tonight.');
-  await say(LU,'Where are you bound?');
-  await say(P,'I do not know, Luke. We were turned away from Asia, and from Bithynia, and this is where the road ran out.');
-  await say(LU,'Then sleep on it. A harbor looks different by daylight. I lodge at the inn over there: there is room.');codeBtn()}
+  await say(LE,'he_can_steer_with_one_hand');
+  await say(LU,'luke_said',{to:P});
+  await say(P,'paul_of_tarsus_said');
+  await say(LU,'i_heard_the_young_man_call');
+  await say(P,'there_are_four_of_us_on_this_quay');
+  await say(LU,'where_are_you_bound');
+  await say(P,'i_do_not_know_luke');
+  await say(LU,'sleep_on_it');codeBtn()}
 /* The night, and the vision: told as Acts 16:9 tells it, in paraphrase, in the dark (read from the narrator's scroll). Nothing of it is shown. */
 async function night(){const me=PC();
-  if(F.vision)return say(me,me===P?'We have slept. What I saw there in the night, I must now tell.':'We have slept, and Paul has not. Something happened in the night.');
-  if(!F.slung)return say(me,me===P?'Not while that man is bleeding on the quay.':'Not while my work is lying half done on a bale.');
-  playAs(P);await say(P,'To the inn, then. We have walked for weeks to stand on this quay, and tonight I cannot tell you why.');
+  if(F.vision)return say(me,me===P?'we_have_slept':'we_have_slept_and_paul_has_not');
+  if(!F.slung)return say(me,me===P?'not_while_that_man_is_bleeding':'not_while_my_work_is_lying');
+  playAs(P);await say(P,'to_the_inn_then');
   await fade(1,900);G.scene=dark;AU.mood='night';AU.amb={waves:.4,wind:.2};await fade(0,600);await wait(1500);
-  await narr('That night Paul had a vision. He saw a man of Macedonia standing there, who begged him to cross over into Macedonia and help them. (Acts 16:9)',{dur:14000});
+  await narr('that_night_paul_had_a_vision_acts_16_9',{dur:14000});
   await wait(800);await fade(1,600);F.vision=1;G.scene=null;AU.amb=ROOMS.troas.amb;await come('troas','calm');
-  await say(TI,'Paul? You are up before the gulls. Have you slept at all?');
-  await say(P,'I must tell them. But what do I tell them, and how?',TH)}
+  await say(TI,'paul_q');
+  await say(P,'i_must_tell_them',TH)}
 /* Drawing the conclusion (Acts 16:10): Paul reports what he saw, and no more; and the four men weigh it together. */
 async function tell(){
   if(F.concl)return false;
-  await think('I saw something in the night. How do I begin?',[
-    {q:'I have decided: we sail for Macedonia.',no:'Have I? I saw a man, and I heard his words. What they mean for four of us is not mine to settle alone, before the others have even heard them.'},
-    {q:'It was one night. Let us wait and see whether it comes again.',no:'Two roads were closed to me without a second telling. If this is a door opening, I will not ask for it to be opened twice.'},
-    {q:'Tell them exactly what I saw, and no more.',ok:1}]);
+  await think('i_saw_something_in_the_night',[
+    {q:'i_have_decided_we_sail_for_macedonia',no:'have_i'},
+    {q:'it_was_one_night',no:'two_roads_were_closed_to_me'},
+    {q:'tell_them_exactly_what',ok:1}]);
   await Promise.all([walk(SI,P.x+30,P.y+2),walk(TI,P.x-28,P.y+3),walk(LU,P.x+56,P.y-2)]);SI.dir=-1;LU.dir=-1;TI.dir=1;
-  await say(P,'Brothers. In the night I saw a vision. A man stood before me, a Macedonian. He begged me to cross over into Macedonia and help them.');
-  await say(P,'That is all of it. I have added nothing, and I will not guess at more than I saw.');
-  await say(SI,'Then let us weigh it together. What else do we know, besides what you saw?');
-  let av=[{q:'In Asia we were forbidden to speak.',ok:1,r:[SI,'So the road west was not ours. That is one.']},
-    {q:'Into Bithynia we were not permitted to go.',ok:1,r:[TI,'And the road north was not ours either. That is two.']},
-    {q:'The one road left open ended here, at a harbor.',ok:1,r:[LU,'And from this harbor ships cross to Macedonia. Leon is loading for Neapolis now: the port of Philippi.']},
-    {q:'I am tired of walking, and a ship would be easier.',r:[SI,'True of every one of us, brother, and no reason at all.']},
-    {q:'Macedonia is a great country, with famous cities.',r:[SI,'So is Asia, and we were turned away from it. That a country is great tells us nothing.']}],n=0;
+  await say(P,'brothers_in');
+  await say(P,'that_is_all_of_it');
+  await say(SI,'let_us_weigh_it_together');
+  let av=[{q:'in_asia_we_were_forbidden_to_speak',ok:1,r:[SI,'road_west_was_not_ours_that_is']},
+    {q:'into_bithynia_we_were_not',ok:1,r:[TI,'road_north_was_not_ours_either_that_is']},
+    {q:'one_road_left_open_ended',ok:1,r:[LU,'from_this_harbor_ships_cross_to_macedonia']},
+    {q:'i_am_tired_of_walking_and_a_ship',r:[SI,'true_of_every_one_of_us']},
+    {q:'macedonia_is_a_great_country',r:[SI,'is_asia_and_we_were_turned']}],n=0;
   while(n<3){const o=av[await choose(av.map(o=>o.q))];await say(P,o.q);await say(o.r[0],o.r[1]);av=av.filter(x=>x!==o);if(o.ok)n++}
-  await say(LU,'One thing more. The wind went round into the south during the night. Leon means to sail today.');
-  await say(SI,'Two doors shut, one road left, a harbor at the end of it, and now a man of Macedonia asking for help. I do not see what else it can mean.');
-  await say(TI,'Then God has summoned us to Macedonia, to declare the good news there.');
-  await say(P,'That is my conclusion too. And I am glad that it is not mine alone.');
+  await say(LU,'one_thing_more');
+  await say(SI,'two_doors_shut_one_road');
+  await say(TI,'god_has_summoned_us_to_macedonia');
+  await say(P,'that_is_my_conclusion_too');
   await say(P,quote('prov15'));
   F.concl=1;AU.mood='hope';SFX.good();
-  await narr('God had summoned us to Macedonia, to bring its people the good news: that was the conclusion we drew from what Paul had seen, and we set about getting there without delay. (Acts 16:10)',{dur:12000});
-  await narr('From this verse on the account says "we". Luke, who wrote it, was with them.',{dur:7000});codeBtn();return true}
+  await narr('god_had_summoned_acts_16_10',{dur:12000});
+  await narr('from_this_verse_on_the_account',{dur:7000});codeBtn();return true}
 /* aboard: the crossing. One course to Samothrace, a night at anchor, and on the following day Neapolis (Acts 16:11). */
 async function aboard(){const me=PC();
-  if(eve())return say(me,me===P?"She is Leon's ship, and he is loading her. I have no business aboard.":'I have no business aboard. My business is sitting on that bale, holding his arm.');
-  if(!F.concl)return say(me,me===P?'Not before the brothers have heard what I saw in the night.':'Paul has something to tell us first. I can see it in his face.');
-  playAs(P);await say(P,'Leon. You are bound for Neapolis. Have you room for four men, who mean to pay their way?',{to:LE});
-  await say(LE,'Room, yes. Pay it in hands, not in coin: I am short of two good arms until that one mends. Come aboard. This wind will not wait for any of us.');
-  await leg(4,['So we left Troas by ship, and held one course all the way to Samothrace. (Acts 16:11)']);
+  if(eve())return say(me,me===P?'she_is_leons_ship_and_he':'i_have_no_business_aboard');
+  if(!F.concl)return say(me,me===P?'not_before_the_brothers':'paul_has_something_to_tell_us_first');
+  playAs(P);await say(P,'leon_q',{to:LE});
+  await say(LE,'room_yes');
+  await leg(4,['we_left_troas_acts_16_11']);
   G.scene=deckScene;AU.mood='night';AU.amb={waves:.6,creak:.5,wind:.3};await fade(0,700);
-  await narr('Samothrace has no good harbor. That night we lay at anchor under its mountain, and nobody went ashore.',{dur:8000});
-  await say(TI,'I had never seen the sea before Troas. Now there is nothing else, and I cannot see the bottom of it.');
-  await say(P,'Then look up, Timothy. They are the same stars as over Lystra.');
+  await narr('samothrace_has_no_good_harbor',{dur:8000});
+  await say(TI,'i_had_never_seen_the_sea');
+  await say(P,'look_up_timothy');
   await say(SI,quote('isa42'));
-  await say(SI,'Isaiah wrote it of the servant of Jehovah. Tonight we are lying under one of those islands.');
-  await say(LU,'If this wind holds, we shall be in Neapolis tomorrow. Leon says that the same crossing can take far longer.');
-  await say(TI,'What shall we find there, Paul?');
-  await say(P,'People who need help. That is all that I was told. It is enough to sail on.');
-  await leg(6,['The next day brought us to Neapolis, and from there we went on to Philippi: a colony, and the foremost city of that district of Macedonia. (Acts 16:11, 12)',
-    'From the harbor the great road to the west climbed over a pass and came down into the plain: some fifteen kilometers, three or four hours on foot.'],1);
+  await say(SI,'isaiah_wrote_it_of_the_servant');
+  await say(LU,'if_this_wind_holds_we_shall');
+  await say(TI,'what_shall_we_find_there_paul');
+  await say(P,'people_who_need_help');
+  await leg(6,['next_day_brought_acts_16_11_12',
+    'from_the_harbor_the_great'],1);
   await come('philippi');await philIntro()}
 ROOMS.troas={space:.7,walk:[16,464,112,138],get mood(){return F.vision?(F.concl?'hope':'calm'):F.slung?'calm':'tense'},amb:()=>F.vision?{waves:.6,gulls:.6,creak:.3,wind:.3}:{waves:.5,gulls:.3,creak:.4,crowd:.15},hs:[
-  {name:'sea',x:204,y:40,w:276,h:22,wx:330,look:()=>say(P,F.concl?'The sea, and beyond it Macedonia. Yesterday it was the end of the road. Today it is the road.'
-    :F.vision?'The sea, and the wind coming up it from the south. Beyond that water lies Macedonia.':'The sea, with the sun going down into it, and an island lying low on the edge. The road has run out. There is only water in front of us.')},
-  {name:'door of the inn',x:40,y:59,w:24,h:45,wx:52,wy:114,exit:night,
-    look:()=>say(P,F.vision?'The inn. I lay down in it last night as a man who did not know where he was going.':'An inn by the warehouses, with a lamp over its door. The physician lodges there.')},
-  {name:'warehouse',x:100,y:58,w:90,h:46,wx:146,wy:114,look:'A warehouse, its doors open and its sacks waiting. Everything that leaves this coast for Macedonia goes over this quay.',use:'I have nothing to store, and nothing to fetch.',open:'It is open already, and it is not mine.'},
-  {name:'jars of oil',x:152,y:92,w:32,h:22,wx:186,wy:117,dir:-1,look:()=>say(P,eve()?'Jars of oil, waiting to be slung aboard. One of them will not be going.':'Jars of oil. Leon has had them counted twice since yesterday.'),pickup:"They are Leon's cargo."},
-  {name:'bales',x:202,y:96,w:56,h:18,wx:230,wy:118,look:'Bales of dyed wool: purple, crimson and violet. They have come out of Asia, from the cities of the dyers, and they are going over the sea to somebody who sells such things.',pickup:'They are worth more than everything that I have ever sewn.'},
-  {name:'broken jar',x:260,y:108,w:36,h:16,wx:252,wy:121,dir:1,look:'The jar that slipped from the sling: shards, and good oil running between the stones.',pickup:'Shards cut. One arm on this quay is enough.',vis:()=>eve()},
+  {name:'sea',x:204,y:40,w:276,h:22,wx:330,look:()=>say(P,F.concl?'sea_and_beyond_it_macedonia'
+    :F.vision?'sea_and_the_wind_coming':'sea_with_the_sun_going')},
+  {name:'door_of_the_inn',x:40,y:59,w:24,h:45,wx:52,wy:114,exit:night,
+    look:()=>say(P,F.vision?'the_inn':'inn_by_the_warehouses_with_a_lamp')},
+  {name:'warehouse',x:100,y:58,w:90,h:46,wx:146,wy:114,look:'warehouse_its_doors_open',use:'i_have_nothing_to_store',open:'it_is_open_already_and_it'},
+  {name:'jars_of_oil',x:152,y:92,w:32,h:22,wx:186,wy:117,dir:-1,look:()=>say(P,eve()?'jars_of_oil_waiting_to_be':'jars_of_oil_said'),pickup:'they_are_leons_cargo'},
+  {name:'bales',x:202,y:96,w:56,h:18,wx:230,wy:118,look:'bales_of_dyed_wool_purple',pickup:'they_are_worth_more_than_everything'},
+  {name:'broken_jar',x:260,y:108,w:36,h:16,wx:252,wy:121,dir:1,look:'jar_that_slipped_from_the_sling',pickup:'shards_cut',vis:()=>eve()},
   {name:'gangplank',x:294,y:82,w:34,h:25,wx:300,wy:113,dir:1,def:'use',exit:aboard,
-    look:()=>say(P,F.concl?"The gangplank of Leon's ship. She is bound for Neapolis, and so are we.":"The gangplank of a coaster. Her master is loading for Neapolis, in Macedonia.")},
-  {name:'ship',x:226,y:12,w:220,h:70,wx:340,wy:113,look:()=>say(P,"A coaster, with her yard on deck and her sail furled on it. She has carried many cargoes. I should like to know who sewed her sail."),use:aboard},
-  {name:'coil of rope',x:388,y:108,w:20,h:8,wx:398,wy:120,look:'A coil of good line, laid down by somebody who cares for it.',pickup:"It is the ship's."},
-  {name:'heap of old sailcloth',x:408,y:101,w:54,h:18,wx:403,wy:122,dir:1,
-    look:()=>say(P,F.offcut?'Old sailcloth. I have taken what I needed, and I asked first.':'A heap of old sailcloth: what is left when a sail is past mending. Some of it is still sound.'),
-    pickup:Object.assign(async()=>{if(F.offcut)return say(P,'I have what I needed.');if(!eve())return say(P,'It is rags, and this morning I have no use for rags.');await say(P,'Leon, may I have a piece of this?',{to:LE});await say(LE,'That? It is past saving. Take the heap, if rags are any use to you.');
-      F.offcut=1;toPaul('offcut');await say(P,'One sound piece is enough.')},{take:1})}]};
+    look:()=>say(P,F.concl?'gangplank_of_leons_ship':'gangplank_of_a_coaster')},
+  {name:'ship',x:226,y:12,w:220,h:70,wx:340,wy:113,look:()=>say(P,'coaster_with_her_yard_on_deck'),use:aboard},
+  {name:'coil_of_rope',x:388,y:108,w:20,h:8,wx:398,wy:120,look:'coil_of_good_line_laid',pickup:'it_is_the_ships'},
+  {name:'heap_of_old_sailcloth',x:408,y:101,w:54,h:18,wx:403,wy:122,dir:1,
+    look:()=>say(P,F.offcut?'old_sailcloth_said':'heap_of_old_sailcloth_what'),
+    pickup:Object.assign(async()=>{if(F.offcut)return say(P,'i_have_what_i_needed');if(!eve())return say(P,'it_is_rags_and_this_morning');await say(P,'leon_may_i_have_a_piece',{to:LE});await say(LE,'that_it');
+      F.offcut=1;toPaul('offcut');await say(P,'one_sound_piece_is_enough')},{take:1})}]};
 LE.hs={name:'Leon',actor:LE,
-  look:()=>say(P,F.vision?'Leon, with one eye on his cargo and the other on the wind. It has come round into the south.':F.slung?'Leon. He has stopped shouting, and started counting his jars again.'
-    :'Leon, master of the coaster. He is bound for Neapolis, and the only man aboard who can steer is bleeding on the quay.'),
-  show:{awl:'Near enough to a sailmaker\'s tool. If my sail goes on this crossing, I shall know whom to wake.',sling:'For his arm? Then put it into the hand of the physician, friend, not into mine.',bandage:'That is for the physician, not for me.',
-    linen:'Clean linen is wasted on my hands. Look at them.',offcut:'I told you: take it. It is rags.',knife:'Keep that well clear of my rigging.',tablets:'I keep my reckoning in knots on a cord. It has never yet been wrong.','*':'Stow it, friend. A quay is no place to lay things down.'},
-  ask:{linen:'Linen? I carry wool and oil, friend. Sailcloth I have, and not a clean thread of it.',sling:'Cloth for a sling? There is a heap of old sail by the stern line. Take what you like of it.'},
+  look:()=>say(P,F.vision?'leon_with_one_eye_on_his_cargo':F.slung?'leon_said'
+    :'leon_master_of_the_coaster'),
+  show:{awl:'near_enough_to_a_sailmakers_tool',sling:'for_his_arm',bandage:'that_is_for_the_physician',
+    linen:'clean_linen_is_wasted_on_my_hands',offcut:'i_told_you_take_it',knife:'keep_that_well_clear_of_my_rigging',tablets:'i_keep_my_reckoning_in_knots','*':'stow_it_friend'},
+  ask:{linen:'linen_i',sling:'cloth_for_a_sling'},
   talk:()=>talkTree([
-    {q:'Where are you bound, shipmaster?',a:()=>say(LE,'Neapolis, in Macedonia: the port of Philippi. With this cargo, and as soon as the wind comes round.')},
-    {q:'How long is the crossing?',a:()=>say(LE,'With the wind behind her, two days: one to Samothrace, and one more. With the wind against her, ask me when we get there.')},
-    {q:'What happened here?',if:()=>eve()&&!F.slung,a:()=>say(LE,'The sling slipped, a jar came down, and Sosias put his arm in the way of it. He is the best hand I have, and the only one who can steer.')},
-    {q:'Fair winds, Leon.',bye:1}]),
-  as:{luke:{look:()=>say(LU,F.slung?'The shipmaster. He looks at that sling as if it were a new sail.':'The shipmaster. He is more frightened for his hand than he will say.'),
-    talk:()=>say(LE,F.vision?'Physician! If you sail with us, I shall sleep the better for it. Bring your bag.':F.slung?'You have given me back my steersman, physician. Ask me for a passage whenever you want one.':'Can you mend him, physician? I sail with the first fair wind, and I cannot sail without him.'),
-    show:{lbag:'Whatever is in that bag, use it, and quickly.','*':'Stow it, friend.'}}}};
+    {q:'where_are_you_bound_shipmaster',a:()=>say(LE,'neapolis_in_macedonia_the_port_of_philippi')},
+    {q:'how_long_is_the_crossing',a:()=>say(LE,'with_the_wind_behind_her_two')},
+    {q:'what_happened_here',if:()=>eve()&&!F.slung,a:()=>say(LE,'sling_slipped_a_jar_came')},
+    {q:'fair_winds_leon',bye:1}]),
+  as:{luke:{look:()=>say(LU,F.slung?'the_shipmaster':'shipmaster_said'),
+    talk:()=>say(LE,F.vision?'physician_said':F.slung?'you_have_given_me_back':'can_you_mend_him_physician'),
+    show:{lbag:'whatever_is_in_that_bag','*':'stow_it_friend_said'}}}};
 SO.hs={name:'Sosias',actor:SO,
-  look:()=>say(P,F.slung?'Sosias, with his arm in a sling of old sailcloth, telling everybody who will listen how the jar came down.':F.bound?'Sosias. The arm is bound, and the color is coming back into his face. But he is holding it up with his other hand.'
-    :'Sosias, the hand who was hurt. A forearm laid open from the wrist almost to the elbow, and he says that it is nothing.'),
-  give:async it=>{if(it==='bandage'||it==='linen'||it==='sling'||it==='offcut')return say(P,"Binding a wound is the physician's craft, not mine. This belongs in his hand, not on that arm by way of mine.");return false},
-  show:{awl:'Not near my arm with that!',knife:'Keep it away from me. I have been cut enough for one day.','*':'I cannot take it, friend. I have only the one hand today.'},
-  talk:()=>say(SO,F.slung?'It hardly throbs. I shall steer her out tomorrow with one hand, and tell the story with the other.':F.bound?'It is better. But it is heavy, as if it were another man\'s arm.':'It is nothing. ...It is a little more than nothing.'),
-  as:{luke:{look:()=>say(LU,F.slung?'Cleaned, bound and carried high. In ten days he will have forgotten which arm it was.':F.bound?'Bound. Now it must be kept up, and he will not keep it up by himself.':F.clean?'The wound is clean. It needs binding, before the dust of the quay gets into it.'
-      :'A long cut, and dirty: oil from the jar, and whatever was on the stones. It must be washed before anything else.'),
-    give:treat,use:()=>say(LU,F.slung?'It needs only to be left alone.':'Not with my bare hands. The wine and the oil are in my bag.'),
-    talk:()=>say(SO,F.slung?'I shall not forget this, physician.':'Will I keep the arm, physician?'),show:{'*':'I cannot take it, physician. I have only the one hand today.'}}}};
+  look:()=>say(P,F.slung?'sosias_with_his_arm_in_a_sling':F.bound?'sosias_said'
+    :'sosias_the_hand_who_was_hurt'),
+  give:async it=>{if(it==='bandage'||it==='linen'||it==='sling'||it==='offcut')return say(P,'binding_a_wound_is_the_physicians');return false},
+  show:{awl:'not_near_my_arm_with_that',knife:'keep_it_away_from_me','*':'i_cannot_take_it_friend'},
+  talk:()=>say(SO,F.slung?'it_hardly_throbs':F.bound?'it_is_better':'it_is_nothing'),
+  as:{luke:{look:()=>say(LU,F.slung?'cleaned_bound_and_carried_high':F.bound?'bound_said':F.clean?'wound_is_clean'
+      :'long_cut_and_dirty_oil'),
+    give:treat,use:()=>say(LU,F.slung?'it_needs_only_to_be_left_alone':'not_with_my_bare_hands'),
+    talk:()=>say(SO,F.slung?'i_shall_not_forget_this_physician':'will_i_keep_the_arm_physician'),show:{'*':'i_cannot_take_it_physician'}}}};
 /* ============ PHILIPPI: a city without a synagogue ============ */
 /* "We stayed in this city for some days. On the Sabbath day we went outside the gate beside a river, where we thought there was a place of
    prayer" (Acts 16:12, 13). The Study Edition offers two possible reasons why Philippi had no synagogue, and decides for neither; so nobody
    here knows why. What Paul learns, he learns by asking people what they have seen: a gate, a river, and shutters closed every seventh day. */
 async function philIntro(){if(G.metPhil)return;G.metPhil=1;
-  await narr('Philippi was like a little Italy. Many of its people were old soldiers of Rome, and proud to be Romans.',{dur:8000});
-  await say(LU,'I have asked in three streets, Paul. Nobody knows of a synagogue in Philippi.');
-  await say(P,'No synagogue? Then where do those who worship the God of Israel meet? Or is there nobody?');
-  await say(SI,'Somebody will know. A city keeps few secrets from the men at its gates, or from the women in its shops.');
-  await say(P,'Then we ask, and we look. And until we know, I work: the awning maker has let me a corner of his bench.');codeBtn()}
+  await narr('philippi_was_like_a_little_italy',{dur:8000});
+  await say(LU,'i_have_asked_in_three_streets_paul');
+  await say(P,'no_synagogue');
+  await say(SI,'somebody_will_know');
+  await say(P,'we_ask_and_we_look');codeBtn()}
 async function known(){if(!clues()||G.knew)return;G.knew=1;
-  await say(P,'A gate, a river, and a seventh day. I think that there is a place of prayer outside this city. And I think that I know on which morning it will be full.',TH);
-  await say(P,'Until the Sabbath, then, there is my bench.',TH)}
+  await say(P,'gate_a_river_and_a_seventh_day',TH);
+  await say(P,'until_the_sabbath_then',TH)}
 async function askQuintus(){
-  if(F.gate)return say(QU,clues()?'Still asking? The gate is open, stranger, and the river has not moved.':'I have told you what I see from this bench. On which mornings, I never counted.');
-  if(!G.metQu){G.metQu=1;await say(P,'Peace to you. We are strangers here. Is there a synagogue of the Jews in Philippi?');
-    await say(QU,'A synagogue? This is a colony, stranger. We are Romans here. There is no such house inside these walls.')}
-  await ask(P,QU,'Well? Ask what you want to ask. I have sat by this gate every day since my discharge, and I have nothing but time.',[
-    {q:'Why is there no synagogue?',r:['Ask the magistrates, not an old soldier. I kept a gate for twenty years, and who might go through it was never mine to decide.',
-      [P,'He does not know why, and I should not make him guess. I should ask him what he has seen.',TH]]},
-    {q:'Do you know any who worship the God of Israel?',r:['I know what is left of my century, and the price of wine. Whom other people pray to is their own affair.']},
-    {q:'Who goes out by this gate that is not going to work?',ok:1,
-      r:['Now that is a question for a man who sits at a gate. Carters go out, and washerwomen. And some mornings a handful of women, well dressed, who are not washerwomen at all.',
-        'They go down to the river and sit there, under the trees. No garlands, no smoke, no noise. On which mornings? I never counted the days between.']}]);
+  if(F.gate)return say(QU,clues()?'still_asking':'i_have_told_you_what_i');
+  if(!G.metQu){G.metQu=1;await say(P,'peace_to_you_we_are_strangers');
+    await say(QU,'a_synagogue')}
+  await ask(P,QU,'well_ask',[
+    {q:'why_is_there_no_synagogue',r:['ask_the_magistrates_not_an_old_soldier',
+      [P,'he_does_not_know_why_and_i',TH]]},
+    {q:'do_you_know_any_who_worship',r:['i_know_what_is_left_of_my_century']},
+    {q:'who_goes_out_by_this_gate',ok:1,
+      r:['now_that_is_a_question',
+        'they_go_down_to_the_river']}]);
   F.gate=1;SFX.good();
-  await say(P,'Outside the gate, beside a river: women who bring nothing to burn. But on which mornings?',TH);await known();codeBtn()}
+  await say(P,'outside_the_gate_beside',TH);await known();codeBtn()}
 async function askZosime(){
-  if(F.shop)return say(ZO,F.awn?'My awning has not sagged once since you touched it. If Lydia does not thank you for asking after her, I will.':'I have told you all that I know of her seventh day. Ask her yourself: she will be back before it.');
-  await ask(P,ZO,'Purple, sir? Crimson? Or are you only looking, like most men?',[
-    {q:'Do you know any Jews in this city?',r:['I know cloth, sir, and who pays for it. I do not ask my customers whom they pray to.']},
-    {q:'Is your neighbor a good seller of purple?',r:['The best in the row, and she knows it. Why? Would you sooner buy from her?',[P,'That was idle. I am not here to weigh her trade. I should ask about what I can see: her shutters.',TH]]},
-    {q:'Why is the shop beside yours shut?',ok:1,
-      r:["Lydia's? Today she is down at Neapolis, seeing to a cargo out of Asia. But ask me on her seventh day, and you will get another answer.",
-        "Every seventh day those shutters stay closed, market or no market. She is from Thyatira, and she worships the God of the Jews. She loses one day's trade in seven, and she says that she loses nothing by it.",
-        'Where she goes on that day, with her household, I never asked.']}]);
+  if(F.shop)return say(ZO,F.awn?'my_awning_has_not_sagged':'i_have_told_you_all_that_i');
+  await ask(P,ZO,'purple_sir',[
+    {q:'do_you_know_any_jews_in_this_city',r:['i_know_cloth_sir_and_who']},
+    {q:'is_your_neighbor_a_good',r:['best_in_the_row_and_she',[P,'that_was_idle',TH]]},
+    {q:'why_is_the_shop_beside_yours_shut',ok:1,
+      r:['lydias',
+        'every_seventh_day_those_shutters',
+        'where_she_goes_on_that_day']}]);
   F.shop=1;SFX.good();
-  await say(P,'A seller of purple who shuts her shop every seventh day. A worshipper of God, in a city without a synagogue.',TH);await known();codeBtn()}
+  await say(P,'seller_of_purple_who_shuts',TH);await known();codeBtn()}
 /* An optional kindness: the seam of Zosime's awning, closed without being asked. */
-async function mendAwn(){if(F.awn)return say(P,'It is closed, and it will stay closed.');
-  await walk(P,236,113);P.dir=1;SFX.sew();await say(P,'One seam, parted for the length of my forearm. Laid over, and stitched twice...');await wait(600);F.awn=1;SFX.good();
-  await say(ZO,'My awning! It has hung like a broken wing since the winter. What do I owe you, sir?');
-  await say(P,'Nothing. It was in my way every time I looked up from my bench.');
-  await say(ZO,'A tentmaker who will not be paid. You should meet my neighbor: she is as strange about money as you are.');codeBtn()}
+async function mendAwn(){if(F.awn)return say(P,'it_is_closed_and_it_will');
+  await walk(P,236,113);P.dir=1;SFX.sew();await say(P,'one_seam_parted_for_the_length');await wait(600);F.awn=1;SFX.good();
+  await say(ZO,'my_awning');
+  await say(P,'nothing_it');
+  await say(ZO,'tentmaker_who_will_not_be_paid');codeBtn()}
 /* The days pass at the bench, until the Sabbath. */
 async function bench(){
-  if(F.sab)return say(P,'Not today. It is the Sabbath, and there is a river outside the gate.');
-  if(!clues())return say(P,'There is work on this bench for some days. But first I want to know where the worshippers of God meet in this city. That is what I crossed the sea for, and it was not the hemming of awnings.');
-  await say(P,'Then until the Sabbath I sew, and the others find what work there is for them.');
+  if(F.sab)return say(P,'not_today_it');
+  if(!clues())return say(P,'there_is_work_on_this_bench');
+  await say(P,'until_the_sabbath_i_sew');
   await walk(P,122,113);P.dir=-1;P.bow=true;SFX.sew();await wait(700);await fade(1,700);P.bow=false;
-  await narr('We spent several days in that city. (Acts 16:12)',{dur:6500});
-  await narr('Paul worked at his trade, and we lodged where we could pay for it. Then the seventh day came.',{dur:7500});
+  await narr('we_spent_several_days_in_that_city_acts_16_12',{dur:6500});
+  await narr('paul_worked_at_his_trade',{dur:7500});
   F.sab=1;place8('philippi');enterRoom('philippi',P.x,P.y,P.dir);await fade(0,700);SFX.good();
-  await say(P,'The Sabbath. Come, brothers: out by the gate, and down to the river. I think that there is a place of prayer there.');codeBtn()}
+  await say(P,'the_sabbath');codeBtn()}
 async function gate(){const me=PC();
-  if(!F.gate)return say(me,me===P?'We came in by that gate an hour ago. First I want to know where the worshippers of God meet in this city, if they meet at all.':'Out again? Paul has not finished asking.');
-  if(clues()&&!F.sab)return say(me,me===P?'I have seen the river. It is the day that matters now: and until the Sabbath there is my bench.':'Paul means to wait for the Sabbath. Until then he sews, and I look in on the sick of this street.');
-  await say(me,F.sab?(me===P?'Out by the gate, brothers, and down to the river.':'To the river, then. I am glad that it is all four of us.'):(me===P?'Let us look at this river of his.':'To the river? Lead on.'));
+  if(!F.gate)return say(me,me===P?'we_came_in_by_that_gate':'out_again');
+  if(clues()&&!F.sab)return say(me,me===P?'i_have_seen_the_river':'paul_means_to_wait_for_the_sabbath');
+  await say(me,F.sab?(me===P?'out_by_the_gate_brothers':'to_the_river_then'):(me===P?'let_us_look_at_this_river':'to_the_river'));
   await fade(1,500);await come('river');
   if(F.sab)return riverIntro();
-  if(!G.sawRiver){G.sawRiver=1;await say(P,'A river, trees, and nobody. The old soldier did not say on which mornings they come.',TH)}}
+  if(!G.sawRiver){G.sawRiver=1;await say(P,'river_trees_and_nobody',TH)}}
 ROOMS.philippi={space:.9,walk:[16,464,110,138],get mood(){return F.sab?'rest':'calm'},amb:{crowd:.4,fountain:.5,hammer:.2,birds:.2},hs:[
-  {name:'citadel',x:300,y:8,w:110,h:24,wx:356,look:'The rock above the city, with a wall along its top. Philippi was a fortress before it was a colony, and it has not forgotten.'},
-  {name:'west gate',x:12,y:54,w:32,h:50,wx:40,wy:113,dir:-1,exit:gate,
-    look:()=>say(P,F.sab?'The west gate. Beyond it a road goes down to a river, and it is the Sabbath.':F.gate?'The west gate. Beyond it a road goes down to a river, where women sit under the trees on some mornings.':'The west gate. We came in by it from Neapolis, along the great road.')},
-  {name:"awning maker's shop",x:74,y:58,w:68,h:28,wx:108,wy:113,look:'Rolls of goat-hair cloth and of hide. The man who owns them was glad of another pair of hands, and asked me no questions.',pickup:'They are his stock, and I am his guest.'},
+  {name:'citadel',x:300,y:8,w:110,h:24,wx:356,look:'rock_above_the_city_with_a_wall'},
+  {name:'west_gate',x:12,y:54,w:32,h:50,wx:40,wy:113,dir:-1,exit:gate,
+    look:()=>say(P,F.sab?'west_gate_said':F.gate?'west_gate_beyond':'west_gate_we')},
+  {name:'awning_makers_shop',x:74,y:58,w:68,h:28,wx:108,wy:113,look:'rolls_of_goat_hair_cloth',pickup:'they_are_his_stock_and_i'},
   {name:'bench',x:86,y:84,w:48,h:21,wx:122,wy:113,dir:-1,def:'use',use:bench,
-    look:()=>say(P,F.sab?'My corner of the bench. The awning on it can wait until tomorrow.':'My corner of the bench, and an awning half hemmed on it. Whatever city I am in, my hands know what to do there.'),
+    look:()=>say(P,F.sab?'my_corner_of_the_bench':'my_corner_of_the_bench_said'),
     useWith:async it=>{if(it==='awl'||it==='thread'||it==='knife')return bench();return false}},
-  {name:"Zosime's shop",x:162,y:58,w:74,h:46,wx:200,wy:113,look:'Purple, crimson and violet, hung out where the light can get at them. A city of old soldiers must have money to spend.',pickup:'One of those lengths costs more than I earn in a year.'},
-  {get name(){return F.awn?'mended awning':'torn awning'},x:226,y:38,w:20,h:16,wx:236,wy:113,dir:1,
-    look:()=>say(P,F.awn?'Her awning, with its seam closed. It keeps the sun off her purple again.':'One seam of her awning has parted, and the corner hangs down and lifts in the wind. It would take a tentmaker as long as it takes to say so.'),
-    use:mendAwn,useWith:async it=>{if(it==='awl'||it==='thread')return mendAwn();if(it==='knife')return say(P,'It needs closing, not cutting.');return false}},
-  {name:'shuttered shop',x:256,y:56,w:72,h:49,wx:292,wy:113,
-    look:()=>say(P,F.shop?"Lydia's shop: a seller of purple from Thyatira, and a worshipper of God. Closed today, and closed every seventh day.":'A shop in the row of the sellers of purple, with its shutters closed in the middle of the day. Everybody else in this street is selling.'),
-    use:'I knock. Nobody comes. Whoever keeps this shop is not at home.',open:'It is shuttered and barred, and it is not mine to open.'},
-  {name:'fountain',x:345,y:66,w:48,h:42,wx:370,wy:113,look:'A fountain at the corner, and good water. The Romans build these wherever they mean to stay.',use:'I drink. It is cold, and it tastes of the mountain.',pickup:'A fountain stays where it is.'},
-  {name:'street to the marketplace',x:400,y:36,w:80,h:68,wx:440,wy:113,dir:1,look:'The street runs on into the city, toward the marketplace. The great road from Asia to Rome goes straight through it.',
-    exit:()=>say(PC(),PC()===P?'The marketplace of a Roman colony. I have no errand there. Not today.':'The marketplace. Paul is not looking that way, and neither shall I.')}]};
+  {name:'zosimes_shop',x:162,y:58,w:74,h:46,wx:200,wy:113,look:'purple_crimson_and_violet',pickup:'one_of_those_lengths_costs'},
+  {get name(){return F.awn?'mended_awning':'torn_awning'},x:226,y:38,w:20,h:16,wx:236,wy:113,dir:1,
+    look:()=>say(P,F.awn?'her_awning_with_its_seam_closed':'one_seam_of_her_awning'),
+    use:mendAwn,useWith:async it=>{if(it==='awl'||it==='thread')return mendAwn();if(it==='knife')return say(P,'it_needs_closing_not_cutting');return false}},
+  {name:'shuttered_shop',x:256,y:56,w:72,h:49,wx:292,wy:113,
+    look:()=>say(P,F.shop?'lydias_shop_a_seller_of_purple':'shop_in_the_row_of_the_sellers'),
+    use:'i_knock',open:'it_is_shuttered_and_barred'},
+  {name:'fountain',x:345,y:66,w:48,h:42,wx:370,wy:113,look:'fountain_at_the_corner_and_good_water',use:'i_drink_it_is',pickup:'fountain_stays_where_it_is'},
+  {name:'street_to_the_marketplace',x:400,y:36,w:80,h:68,wx:440,wy:113,dir:1,look:'street_runs_on_into_the_city',
+    exit:()=>say(PC(),PC()===P?'marketplace_of_a_roman_colony':'marketplace_said')}]};
 QU.hs={name:'Quintus',actor:QU,
-  look:()=>say(P,F.gate?'Quintus. He sees everything that goes through that gate, and thinks about none of it.':'An old soldier on a bench by the gate, with a scar down one arm and nothing to do. He watches everybody who goes in or out.'),
-  show:{awl:'An awl. The men who mended our tents carried those. You would have been welcome in my century.',knife:'Sheathe it, stranger. This is a peaceful street, and I mean to keep it so.',tablets:'Wax tablets. I never learned more letters than those of my own name.','*':'Keep it. I have carried enough in my time.'},
+  look:()=>say(P,F.gate?'quintus_said':'old_soldier_on_a_bench'),
+  show:{awl:'awl_the',knife:'sheathe_it_stranger',tablets:'wax_tablets_i','*':'keep_it_i_have_carried'},
   ask:{syn:askQuintus},talk:askQuintus,
-  as:{luke:{look:'An old soldier, retired to his bench. He favors his left knee when he shifts.',talk:()=>say(QU,'A physician? Then tell me why this knee knows a day beforehand that it is going to rain.'),show:{lbag:'Army surgeons have had their hands on me for twenty years, and here I sit.','*':'Keep it, physician.'}}}};
+  as:{luke:{look:'old_soldier_retired_to_his_bench',talk:()=>say(QU,'a_physician'),show:{lbag:'army_surgeons_have_had','*':'keep_it_physician'}}}};
 ZO.hs={name:'Zosime',actor:ZO,
-  look:()=>say(P,F.shop?'Zosime. She told me more about her neighbor than she knew that she was telling.':'Zosime, a seller of purple. She talks to every customer as if he had already bought.'),
-  show:{awl:()=>F.awn?say(ZO,'I know what that can do, sir. I am sitting under it.'):say(ZO,'An awl? Then you could close the seam of my awning, if you were minded to. It has hung like that since the winter.'),
-    knife:'Not near my purple with that, sir!',thread:'Waxed linen. Good for tents. Mine is finer, for hems that are seen.',tablets:'Accounts? No. I see that it is not accounts.','*':'I sell, sir. I do not buy.'},
+  look:()=>say(P,F.shop?'zosime_said':'zosime_a_seller_of_purple'),
+  show:{awl:()=>F.awn?say(ZO,'i_know_what_that_can_do_sir'):say(ZO,'awl_then'),
+    knife:'not_near_my_purple_with_that_sir',thread:'waxed_linen_said',tablets:'accounts_no','*':'i_sell_sir'},
   ask:{syn:askZosime},talk:askZosime,
-  as:{luke:{look:'A seller of purple, and a talker. I should think that she knows the business of everybody in this row.',talk:()=>say(ZO,'A physician! Then you will want a cloak that tells people so. Violet is very well thought of.'),show:{'*':'I sell, sir. I do not buy.'}}}};
+  as:{luke:{look:'seller_of_purple_and_a_talker',talk:()=>say(ZO,'physician_then'),show:{'*':'i_sell_sir'}}}};
 /* ============ THE RIVER: a place of prayer, and a sister who asks to give ============ */
 /* They sit down and speak with the women who have come together (Acts 16:13). Whatever Paul chooses to say, the scene comes to the same
    point: Jehovah opened her heart (Acts 16:14). Nothing the player does wins her. Her baptism is told as Acts tells it, in paraphrase,
    16:15 over the river, and not drawn. Then she urges them, and Paul has reasons to decline that are all true; she has one answer. */
 async function riverIntro(){if(F.sat||G.metRiv)return;G.metRiv=1;
-  await narr('On the Sabbath we walked out through the gate to the riverside, where we supposed there would be a place of prayer. (Acts 16:13)',{dur:9500});
-  await say(TI,'Women, Paul. Only women. And they are praying.');
+  await narr('on_the_sabbath_acts_16_13',{dur:9500});
+  await say(TI,'women_paul');
   await say(P,quote('ps65'),TH);
-  await say(P,'They have not seen us yet.',TH);codeBtn()}
+  await say(P,'they_have_not_seen_us_yet',TH);codeBtn()}
 async function approach(){const me=PC();
-  if(me!==P)return say(LU,'Paul is weighing how we should come to them. Where he sits down, I shall sit.',{to:null});
-  await think('They have not seen us yet. How do we come to them?',[
-    {q:'Stand before them, and address them as in a synagogue.',no:'There is no platform here, and nobody presiding to send us word. They came out to pray, not to be addressed by four strangers on their feet.'},
-    {q:'Keep our distance until they have gone home.',no:'I have asked after them in the city for days. They are here now, and so are we. I did not cross the sea to stand behind a tree.'},
-    {q:'Go down, greet them, and sit among them.',ok:1}]);
+  if(me!==P)return say(LU,'paul_is_weighing_how_we',{to:null});
+  await think('they_have_not_seen_us_yet_q',[
+    {q:'stand_before_them_and_address',no:'there_is_no_platform_here'},
+    {q:'keep_our_distance_until',no:'i_have_asked_after_them'},
+    {q:'go_down_greet_them_and_sit',ok:1}]);
   await Promise.all([walk(P,230,131),walk(SI,296,134),walk(TI,186,132),walk(LU,350,132)]);for(const a of[LY,PH,EL])a.bow=false;P.dir=1;SI.dir=-1;TI.dir=1;LU.dir=-1;
-  await say(P,'Peace to you. We are strangers in Philippi, and we worship the God to whom you are praying. May we sit with you?');
-  await say(PH,'Then you are not strangers on this bank. Sit, sirs. We have no synagogue to offer you: only the river, and each other.');
+  await say(P,'peace_to_you_we_are_strangers_in');
+  await say(PH,'you_are_not_strangers_on_this_bank');
   F.sat=1;SFX.good();
-  await narr('...and there we sat down, and talked with the women who had come together. (Acts 16:13)',{dur:8500});codeBtn()}
+  await narr('there_we_sat_acts_16_13',{dur:8500});codeBtn()}
 async function speak(){
-  await think('These women pray to the God of Israel already. Where do I begin?',[
-    {q:'With the rain and the seasons of harvest, as at Lystra.',no:'At Lystra they had never heard his name. These women were praying to him when we came down the bank. I need not show them that he lives.'},
-    {q:'With the letter from Jerusalem.',no:'The decrees are for congregations. There is no congregation on this bank yet: only women who are waiting, and do not know that what they are waiting for has come.'},
-    {q:'With the Scriptures they know, and the one they promise.',ok:1}]);
-  await say(P,'You pray to Jehovah, who hears prayer, and you know what the prophets wrote of the one whom he would send.');
+  await think('these_women_pray_to_the_god',[
+    {q:'with_the_rain_and_the_seasons',no:'at_lystra_they_had_never'},
+    {q:'with_the_letter_from_jerusalem',no:'decrees_are_for_congregations'},
+    {q:'with_the_scriptures_they',ok:1}]);
+  await say(P,'you_pray_to_jehovah_who');
   await say(P,quote('isa53'));
-  await say(P,'Isaiah wrote that of the Christ. It has happened, in our own days, in Jerusalem. His name is Jesus.');
+  await say(P,'isaiah_wrote_that_of_the_christ');
   await say(P,quote('ps16'));
-  await say(P,'God did not abandon him to the Grave. He raised him up, and many saw him alive. I am one of them.');
-  await say(SI,'I am from Jerusalem. I know men who ate with him after he was raised.',{to:null});
-  await say(TI,'My mother and my grandmother taught me the holy writings, as somebody taught them to you. Everything in them led here.',{to:null});
-  await say(LU,'I am a physician. I know what one life is worth to those who are losing it. This one was given for all of us.',{to:null});
-  await narr('One of the listeners was a woman called Lydia, from the city of Thyatira, who sold purple and worshipped God. Jehovah opened her heart fully, so that she paid close attention to what Paul said. (Acts 16:14)',{dur:14000});
-  await say(LY,'I came down here this morning to pray, sir, as I do on every Sabbath. I did not know that I was coming to hear this. Tell it to me again: all of it, from the beginning.');
-  await say(P,'It was not my words that opened that heart: Jehovah opened it. I only brought her what she had long been waiting for.',TH);
-  await say(LY,'I am Lydia. I sell purple in this city. My home is Thyatira.');
-  await say(TI,'Thyatira... That is in Asia, Paul.');
-  await say(P,'It is.');
+  await say(P,'god_did_not_abandon_him');
+  await say(SI,'i_am_from_jerusalem',{to:null});
+  await say(TI,'my_mother_and_my_grandmother',{to:null});
+  await say(LU,'i_am_a_physician',{to:null});
+  await narr('one_of_the_listeners_acts_16_14',{dur:14000});
+  await say(LY,'i_came_down_here_this_morning');
+  await say(P,'it_was_not_my_words_that_opened',TH);
+  await say(LY,'i_am_lydia');
+  await say(TI,'thyatira_said');
+  await say(P,'it_is_said');
   await fade(1,800);place(LY,'river',260,127,-1);place(P,'river',230,131,1);await fade(0,800);
-  await narr('She was baptized, and her household with her. Then she pressed us: (Acts 16:15)',{dur:8500});
+  await narr('she_was_baptized_acts_16_15',{dur:8500});
   return invite()}
 /* She urged them, and would take no refusal (Acts 16:15). That she had to insist implies that they held back, and Paul's reasons were good ones
    (1 Corinthians 9:18; 2 Corinthians 12:14). But she is not asking about lodgings. */
 async function invite(){
-  await say(LY,'If in your eyes I am faithful to Jehovah, then come: stay under my roof. (Acts 16:15)');
-  await say(P,'You are kind, Lydia. But we have lodgings in the city, and we pay for them.');
-  await say(LY,'I did not ask whether you have a roof.');await say(LY,'If in your eyes I am faithful to Jehovah, then come: stay under my roof.');
-  let av=[{q:'I have a trade, Lydia. I work, so that I need be a burden to nobody.',r:'I know what work is, sir: I have a trade too. I did not ask whether you can pay.'},
-    {q:'We are four men. That is a heavy load for any house.',r:'My house has held more than four, and so has my table. That is not what I asked you.'},
-    {q:'I want to offer the good news without cost.',r:'And so you have. It cost me nothing, and it is worth more than everything in my store. Now it is I who am offering.'}],n=0;
-  for(;;){const i=await choose(av.map(o=>o.q).concat('Then we will come, Lydia, and gladly.'));if(i===av.length)break;
-    const o=av[i];await say(P,o.q);await say(LY,o.r);await say(LY,'If in your eyes I am faithful to Jehovah, then come: stay under my roof.');av=av.filter(x=>x!==o);n++;
-    if(n===1)await say(P,'The same sentence again. She is not asking about lodgings, or about silver.',TH);
-    if(n===2){await say(P,quote('kings'),TH);await say(P,'Elisha did not tell the woman of Shunem that he had lodgings.',TH)}}
-  await say(P,'Forgive me, Lydia. I have been answering a question that you did not ask. You asked whether we consider you faithful to Jehovah. We do. We will come, and gladly.');
-  await say(LY,'Then come now. My household is waiting, and so is the bread.');
-  await narr('She would take no refusal, and we went. (Acts 16:15)',{dur:6500});
+  await say(LY,'if_in_your_eyes_acts_16_15');
+  await say(P,'you_are_kind_lydia');
+  await say(LY,'i_did_not_ask_whether_you');await say(LY,'if_in_your_eyes_i_am_faithful');
+  let av=[{q:'i_have_a_trade_lydia',r:'i_know_what_work_is_sir'},
+    {q:'we_are_four_men',r:'my_house_has_held_more'},
+    {q:'i_want_to_offer_the_good',r:'you_have_it'}],n=0;
+  for(;;){const i=await choose(av.map(o=>o.q).concat('we_will_come_lydia_and_gladly'));if(i===av.length)break;
+    const o=av[i];await say(P,o.q);await say(LY,o.r);await say(LY,'if_in_your_eyes_i_am_faithful');av=av.filter(x=>x!==o);n++;
+    if(n===1)await say(P,'same_sentence_again',TH);
+    if(n===2){await say(P,quote('kings'),TH);await say(P,'elisha_did_not_tell_the_woman',TH)}}
+  await say(P,'forgive_me_lydia');
+  await say(LY,'come_now');
+  await narr('she_would_take_acts_16_15',{dur:6500});
   return finale()}
 async function finale(){await fade(1,800);G.scene=houseScene;AU.mood='rest';AU.amb={fire:.3,crowd:.15};await fade(0,800);
-  await narr("Lydia's house was large enough for four guests. That evening it held her whole household besides.",{dur:8000});
-  await say(LY,'This room is yours for as long as you stay in Philippi. And when there are brothers in this city, let them meet in it.');
-  await say(TI,'At the ferry we did not know where we were going.');
-  await say(P,'We know now where we were sent, Timothy. What we were sent into, we shall see. But tonight we have a table, and a sister.');
-  await narr('Some ten years later Paul told the congregation in Philippi that every time he remembered them he thanked his God for what they had contributed to spreading the good news. They had done so since its very first day among them, and they were doing it still. (Philippians 1:3, 5)',{dur:15000});
-  await narr('And of the man who was with them from Troas on, he wrote that Luke was a physician, and beloved. (Colossians 4:14)',{dur:8500});
+  await narr('lydias_house_was_large',{dur:8000});
+  await say(LY,'this_room_is_yours_for_as_long');
+  await say(TI,'at_the_ferry_we_did_not');
+  await say(P,'we_know_now_where_we_were');
+  await narr('some_ten_years_philippians_1_3_5',{dur:15000});
+  await narr('of_the_man_who_colossians_4_14',{dur:8500});
   await journey();
-  endScreen({title:'The Man from Macedonia',text:'Paul set out and was turned, set out again and was turned again, and kept walking until a door opened. He told three brothers exactly what he had seen, and no more. And when a new sister asked to give, he let her.',
-    extra:[F.awn&&'An awning mended in the street of the purple sellers'].filter(Boolean),
-    based:"Based on Acts 16:4-15; Philippians 1:3-5 and Colossians 4:14. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are from the Scriptures and are told here in paraphrase. Acts does not say how the spirit forbade them, what road they took, how Luke came to be with them, which river it was, why Philippi had no synagogue, what was said beside the river, or who belonged to Lydia's household.",
-    go:'Click to continue to Chapter Nine',code:['Chapter Nine code: {code}',codeOf(9,0)]});
+  endScreen({title:'the_man_from_macedonia',text:'paul_set_out_and_was_turned',
+    extra:[F.awn&&'awning_mended_in_the_street'].filter(Boolean),
+    based:'based_on_acts_16_4_15_philippians',
+    go:'click_to_continue_to_chapter_nine',code:['chapter_nine_code_code',codeOf(9,0)]});
   await wait(1500);ov.onclick=()=>startChapter(9);await new Promise(()=>{})}
 async function toCity(){const me=PC();
-  if(F.sat)return say(me,me===P?'Not now. We have sat down among them, and I have not yet said what I crossed the sea to say.':'Paul has not spoken yet. I would not miss it.');
-  if(F.sab)return say(me,me===P?'They are here, and they are praying. I am not going back through that gate without a word to them.':'With those women on the bank? Paul will not go, and neither will I.');
-  await say(me,me===P?'Back to the city. The river is here. What I do not know yet is the day.':'Back to the city, then.');
+  if(F.sat)return say(me,me===P?'not_now':'paul_has_not_spoken_yet');
+  if(F.sab)return say(me,me===P?'they_are_here_and_they_are_praying':'with_those_women_on_the_bank');
+  await say(me,me===P?'back_to_the_city':'back_to_the_city_then');
   await fade(1,500);await come('philippi')}
 const woman=A=>async()=>{const me=PC();if(!F.sat)return approach();if(me===P)return speak();
-  return say(A,A===LY?'You are a physician, sir? Then you have seen more of trouble than I have. Sit: your friend is about to speak.':A===PH?'Is it true that you have come from over the sea, only to sit on a river bank with us?':'I have prayed here since before my hair was gray, sir. I never thought that anybody was listening but God.')};
+  return say(A,A===LY?'you_are_a_physician_sir':A===PH?'is_it_true_that_you_have':'i_have_prayed_here_since')};
 ROOMS.river={space:.6,walk:[16,464,116,138],mood:'rest',amb:{fountain:.5,birds:.7,leaves:.6,wind:.15},hs:[
-  {name:'mountain',x:0,y:40,w:300,h:22,wx:230,look:'A long blue mountain across the plain. This is Macedonia: I had never seen it before this week, and a man from this land asked me to come.'},
-  {name:'city',x:376,y:42,w:92,h:22,wx:420,look:'Philippi on its hill, with its wall and its gate. From down here it looks smaller than a Roman colony likes to look.'},
-  {name:'river',x:150,y:88,w:180,h:20,wx:226,wy:118,look:()=>say(P,F.sab?'Clear water, running quickly over its stones, and women praying beside it. I have spoken in synagogues with less reverence in them.':'A clear river, quick over its stones. A place to wash, to draw water: or to pray, where there is no house to pray in.'),
-    use:'I wash my hands and my face. It is cold, and it is clean.',pickup:'A river belongs to its banks.'},
-  {name:'flat stones',x:186,y:112,w:138,h:16,wx:254,wy:130,def:'use',
-    look:()=>say(P,F.sab?'The stones where they sit. No roof, no door, no chest for the scrolls. It is a place of prayer all the same.':'Flat stones, set in a half circle and worn smooth, and the grass trodden between them. People sit here, and often.'),
-    use:()=>F.sab?(F.sat?speak():approach()):say(P,'I sit down for a moment. Whoever comes here has chosen the place well: water, shade, and a long way from the street.')},
-  {name:'plane tree',x:340,y:30,w:66,h:84,wx:372,wy:120,look:'A plane tree, broad enough to shade a small congregation.',use:'I will not sit in its shade. Not until I know whose place this is.'},
-  {name:'road to the gate',x:452,y:86,w:28,h:44,wx:458,wy:124,dir:1,look:'The road back up to the west gate of Philippi.',exit:toCity}]};
-LY.hs={name:'Lydia',actor:LY,look:()=>say(P,F.sat?'A woman in a shawl of the color she sells. She has not taken her eyes off whoever is speaking.':'A woman in a purple shawl, praying with her eyes shut. The others take their place from hers.'),
-  show:{tablets:'Is that the Law and the Prophets, sir, in your own hand? Read to us from it.','*':'Put it by, sir. Nobody trades on this bank.'},talk:woman(LY),
-  as:{luke:{look:'A woman of some means, by her shawl. She listens as some people eat: as if she had been hungry for a long time.',talk:woman(LY),show:{'*':'Put it by, sir. Nobody trades on this bank.'}}}};
-PH.hs={name:'Phila',actor:PH,look:()=>say(P,F.sat?'Phila. She made room for us on the stones before she had heard one word.':'A younger woman, with her hands open on her knees.'),
-  show:{tablets:'Writing! None of us can read, sir, but two. Read it out.','*':'Keep it, sir. We brought nothing here either.'},talk:woman(PH),
-  as:{luke:{look:'A young woman. She made room for four strangers without being asked.',talk:woman(PH),show:{'*':'Keep it, sir.'}}}};
-EL.hs={name:'Elpis',actor:EL,look:()=>say(P,F.sat?'Elpis. She is the oldest of them, and she is nodding at every word of the prophets.':'An older woman, gray under her shawl. Her lips are moving.'),
-  show:{tablets:'My eyes are past it, sir. Say it, and I will know whether I have heard it before.','*':'Keep it, sir.'},talk:woman(EL),
-  as:{luke:{look:'An old woman, straight in the back. She has prayed on this bank for a long time.',talk:woman(EL),show:{'*':'Keep it, sir.'}}}};
+  {name:'mountain',x:0,y:40,w:300,h:22,wx:230,look:'long_blue_mountain_across_the_plain'},
+  {name:'city',x:376,y:42,w:92,h:22,wx:420,look:'philippi_on_its_hill_with_its_wall'},
+  {name:'river',x:150,y:88,w:180,h:20,wx:226,wy:118,look:()=>say(P,F.sab?'clear_water_running_quickly':'clear_river_quick_over_its_stones'),
+    use:'i_wash_my_hands_and_my_face',pickup:'river_belongs_to_its_banks'},
+  {name:'flat_stones',x:186,y:112,w:138,h:16,wx:254,wy:130,def:'use',
+    look:()=>say(P,F.sab?'stones_where_they_sit':'flat_stones_set_in_a_half'),
+    use:()=>F.sab?(F.sat?speak():approach()):say(P,'i_sit_down_for_a_moment')},
+  {name:'plane_tree',x:340,y:30,w:66,h:84,wx:372,wy:120,look:'plane_tree_broad_enough',use:'i_will_not_sit_in_its_shade'},
+  {name:'road_to_the_gate',x:452,y:86,w:28,h:44,wx:458,wy:124,dir:1,look:'road_back_up_to_the_west',exit:toCity}]};
+LY.hs={name:'Lydia',actor:LY,look:()=>say(P,F.sat?'woman_in_a_shawl_of_the_color':'woman_in_a_purple_shawl'),
+  show:{tablets:'is_that_the_law_and_the_prophets','*':'put_it_by_sir'},talk:woman(LY),
+  as:{luke:{look:'woman_of_some_means_by_her_shawl',talk:woman(LY),show:{'*':'put_it_by_sir'}}}};
+PH.hs={name:'Phila',actor:PH,look:()=>say(P,F.sat?'phila_said':'younger_woman_with_her_hands'),
+  show:{tablets:'writing_none','*':'keep_it_sir'},talk:woman(PH),
+  as:{luke:{look:'young_woman',talk:woman(PH),show:{'*':'keep_it_sir_said'}}}};
+EL.hs={name:'Elpis',actor:EL,look:()=>say(P,F.sat?'elpis_said':'older_woman_gray_under_her_shawl'),
+  show:{tablets:'my_eyes_are_past_it_sir','*':'keep_it_sir_said'},talk:woman(EL),
+  as:{luke:{look:'old_woman_straight_in_the_back',talk:woman(EL),show:{'*':'keep_it_sir_said'}}}};
 /* ============ THE COMPANIONS: Silas and Timothy, who walk along; Luke and Paul, as each sees the other ============ */
 /* what there is still to do, as a companion would put it to Paul */
-const todo=()=>inFork()?(F.asia?'The track north is open, Paul. Let us see where it goes.':'The road to Ephesus lies in front of us. What are we waiting for?')
-  :inBor()?(F.bith?'West, you said. It is a long road. We had better begin it.':'The ferry is on this bank, and the ferryman is waiting.')
-  :inTro()?(!F.vision?(F.slung?'Nothing more tonight. The physician has asked us to his inn.':F.bound?'The arm needs a sling, the physician says. That is cloth, Paul: your trade.':F.clean||F.strips?'The physician is waiting for the linen.':'That man is bleeding, and the physician wants clean linen.')
-    :F.concl?'The ship, Paul. Leon will not wait for the wind to change its mind.':'You have something to tell us. I can see it.')
-  :inPhi()?(F.sab?'It is the Sabbath, and you know which gate.':clues()?'We wait for the Sabbath. You have your bench, and I shall find mine.':'Ask those who see the whole city go by: the men at its gates, and the women in its shops.')
-  :F.sab?(F.sat?'They are listening, Paul. Speak to them.':'They are praying. You must choose how we come to them.'):'Nobody is here. We have the place, and not the day.';
+const todo=()=>inFork()?(F.asia?'track_north_is_open_paul':'road_to_ephesus_lies_in_front')
+  :inBor()?(F.bith?'west_you_said':'ferry_is_on_this_bank_and_the_ferryman')
+  :inTro()?(!F.vision?(F.slung?'nothing_more_tonight':F.bound?'arm_needs_a_sling_the_physician_says':F.clean||F.strips?'physician_is_waiting_for_the_linen':'that_man_is_bleeding_and_the_physician')
+    :F.concl?'ship_paul':'you_have_something_to_tell_us')
+  :inPhi()?(F.sab?'it_is_the_sabbath_and_you':clues()?'we_wait_for_the_sabbath':'ask_those_who_see_the_whole')
+  :F.sab?(F.sat?'they_are_listening_paul':'they_are_praying'):'nobody_is_here';
 const SILAS8={name:'Silas',actor:SI,
-  look:()=>say(P,inFork()?'Silas. He walked from Jerusalem to Antioch to carry a letter, and he has not turned back since.':inBor()?'Silas. Twice a road has been closed in his face, and he has not once asked me whether I am sure.'
-    :inTro()?(F.vision?'Silas. He is a prophet, and this time the vision came to me. He is waiting to hear it.':'Silas, with the dust of Mysia on him to the knees.'):inPhi()?'Silas. He has learned the names of half this street already.':'Silas. He looks at this river bank as if it were a synagogue.'),
-  show:{linen:'Clean linen! Give it to the physician, Paul, or cut it first: you know cloth.',bandage:'Those are for the physician.',offcut:'Old sailcloth. You see something in it. I see a rag.',sling:'You sewed that for a stranger, on a quay, in a city that you have never seen before. Give it to the physician.',
-    awl:'Your awl. It has opened more doors for us than my tongue has.',tablets:'Read me one tonight. You choose them better than I do.','*':'Keep it, brother. You will find a use for it.'},
-  ask:{linen:'My mantle has the dust of three countries in it. Ask Timothy: his mother packed his bundle.',sling:'There is old sailcloth lying by the stern of that ship. Would that serve?',
-    syn:'A city keeps few secrets from the men at its gates, or from the women in its shops. Ask them what they have seen.'},
+  look:()=>say(P,inFork()?'silas_he_walked':inBor()?'silas_twice'
+    :inTro()?(F.vision?'silas_he_is_a':'silas_with_the_dust_of_mysia'):inPhi()?'silas_he_has_learned_the':'silas_he_looks'),
+  show:{linen:'clean_linen',bandage:'those_are_for_the_physician',offcut:'old_sailcloth_you',sling:'you_sewed_that_for_a_stranger',
+    awl:'your_awl_it',tablets:'read_me_one_tonight','*':'keep_it_brother_said'},
+  ask:{linen:'my_mantle_has_the_dust',sling:'there_is_old_sailcloth_q',
+    syn:'city_keeps_few_secrets'},
   talk:async()=>{if(inTro()&&F.vision&&!F.concl)return tell();return talkTree([
-    {q:'What is still to do here?',a:()=>say(SI,todo())},
-    {q:'What do you make of it, Silas: two roads closed?',if:()=>!!F.asia&&!F.concl,once:1,a:()=>say(SI,'That we were told where not to go, and not yet where to go. I have known the spirit to speak more plainly. I have never known it to speak without a purpose.')},
-    {q:'Stay close, brother.',bye:1}])},
-  as:{luke:{look:'Silas, of Jerusalem. He says little, and misses nothing.',
-    talk:()=>say(SI,inTro()&&!F.vision?'You have steady hands, physician. That man was more frightened than he was hurt.':'You watch everything, Luke, as if you meant to write it down. Somebody should.'),show:{lbag:'Keep it by you. On our road, somebody always needs it.','*':'Keep it, brother.'}}}};
+    {q:'what_is_still_to_do_here',a:()=>say(SI,todo())},
+    {q:'what_do_you_make_of_it',if:()=>!!F.asia&&!F.concl,once:1,a:()=>say(SI,'that_we_were_told_where')},
+    {q:'stay_close_brother',bye:1}])},
+  as:{luke:{look:'silas_of_jerusalem',
+    talk:()=>say(SI,inTro()&&!F.vision?'you_have_steady_hands_physician':'you_watch_everything_luke'),show:{lbag:'keep_it_by_you_on','*':'keep_it_brother_2'}}}};
 const TIM8={name:'Timothy',actor:TI,
-  look:()=>say(P,inFork()?'Timothy. Some weeks from his mother\'s door, and he still looks at every milestone.':inBor()?'Timothy. He left Lystra at my word, and so far I have shown him two closed doors.'
-    :inTro()?'Timothy. He has never seen the sea before, and he cannot take his eyes off it.':inPhi()?'Timothy. He is counting the Latin words on the walls, and understanding none of them.':'Timothy. He is as quiet as he was in his grandmother\'s house, when the psalms were read.'),
-  show:{linen:'My mother packed it. Use it, Paul: I think that this is the day she meant.',bandage:'Cut so straight! Take them to the physician.',sling:'A sling, out of a rag. Shall I carry it to the physician for you?',tablets:'Are there new ones, Paul? I have the old ones by heart.',
-    awl:'The awl. I watched it by lamplight when I was a boy.','*':'Shall I carry that for you, Paul?'},
-  ask:{linen:async()=>{if(F.linen)return say(TI,'You have it, Paul. Cut it as he wants it.');
-      await say(TI,'Clean linen? My mother packed a cloth in my bundle. "For the day you need it," she said. I think that this is the day.');F.linen=1;toPaul('linen');
-      await say(P,'A whole cloth, and clean. The physician wants strips: and cutting cloth is my part of this.')},
-    sling:'My linen went into the bandage, Paul. But there is a heap of old sail over by the stern.',syn:'I have looked in every street for a house where the Law is read, Paul. I have not found one.'},
+  look:()=>say(P,inFork()?'timothy_some':inBor()?'timothy_he_left'
+    :inTro()?'timothy_he_has_never':inPhi()?'timothy_he_is':'timothy_he_is_as'),
+  show:{linen:'my_mother_packed_it',bandage:'cut_so_straight',sling:'sling_out_of_a_rag',tablets:'are_there_new_ones_paul',
+    awl:'awl_i','*':'shall_i_carry_that_for_you_paul'},
+  ask:{linen:async()=>{if(F.linen)return say(TI,'you_have_it_paul');
+      await say(TI,'clean_linen_said');F.linen=1;toPaul('linen');
+      await say(P,'whole_cloth_and_clean')},
+    sling:'my_linen_went_into_the_bandage_paul',syn:'i_have_looked_in_every'},
   talk:async()=>{if(inTro()&&F.vision&&!F.concl)return tell();return talkTree([
-    {q:'What is still to do here?',a:()=>say(TI,todo())},
-    {q:'Are you sorry that you came, Timothy?',if:()=>!!F.asia&&!F.vision,once:1,a:async()=>{await say(TI,'No, Paul. But I thought that we should be preaching, and we have done nothing but walk.');
-      await say(P,'So did I. I cannot tell you why, and I will not pretend that I can. I can tell you who is leading us: and he has never yet led me wrong.')}},
-    {q:'Stay close, Timothy.',bye:1}])},
-  as:{luke:{look:'Timothy: young, and quick, and worn thin by a long road. He should eat more.',
-    talk:()=>say(TI,inTro()&&!F.vision?'Is it true that wine cleans a wound, sir? My grandmother uses oil for everything.':'Paul says that you are coming with us, brother. I am glad of it.'),show:{lbag:'May I see what is in it, when there is time?','*':'Shall I carry that for you, brother?'}}}};
+    {q:'what_is_still_to_do_here',a:()=>say(TI,todo())},
+    {q:'are_you_sorry_that_you_came_timothy',if:()=>!!F.asia&&!F.vision,once:1,a:async()=>{await say(TI,'no_paul');
+      await say(P,'did_i')}},
+    {q:'stay_close_timothy',bye:1}])},
+  as:{luke:{look:'timothy_young_and_quick',
+    talk:()=>say(TI,inTro()&&!F.vision?'is_it_true_that_wine_cleans':'paul_says_that_you_are'),show:{lbag:'may_i_see_what_is_in_it','*':'shall_i_carry_that_for_you_brother'}}}};
 /* Luke when he is the one being played: his answers where the level wrote nothing for him, and the crafts he leaves to the tentmaker */
-const LUK8={noCraft:"That is the tentmaker's craft, not mine. I should only spoil good cloth.",
-  def:{look:'I see nothing there that needs a physician.',pickup:h=>h.actor?'I would not dream of it.':'It is not mine to take.',
-    use:"That is not my craft. Paul's hands know it better.",open:'It does not open.',talk:'I would get no answer.',give:'First I should choose something to give.'}};
+const LUK8={noCraft:'that_is_the_tentmakers_craft_not_mine_said',
+  def:{look:'i_see_nothing_there_that_needs',pickup:h=>h.actor?'i_would_not_dream_of_it':'it_is_not_mine_to_take_said',
+    use:'that_is_not_my_craft',open:'it_does_not_open',talk:'i_would_get_no_answer',give:'first_i_should_choose_something_to_give'}};
 const LUKE8={name:'Luke',actor:LU,
-  look:()=>say(P,inTro()?(F.vision?'Luke. He has put his bag over his shoulder, as a man does who expects to be asked to come.':F.slung?'Luke. He looks at my seam as I looked at his bandage.':'A physician, kneeling on the quay beside a stranger. He asked nobody who would pay him.')
-    :inPhi()?'Luke. In three days he has learned where every sick person in this street lives.':'Luke. He is watching these women as he watches the sick: missing nothing.'),
-  show:{linen:'A whole cloth. Strips, Paul: straight along the thread, a hand wide. You cut cloth for your living.',offcut:'Sailcloth? Not on a wound. But keep it: I may want it in another shape.',
-    awl:'An awl. In my trade we should call that a very large needle.',
+  look:()=>say(P,inTro()?(F.vision?'luke_he':F.slung?'luke_he_looks':'physician_kneeling_on_the_quay')
+    :inPhi()?'luke_in':'luke_he_is'),
+  show:{linen:'whole_cloth',offcut:'sailcloth_not',
+    awl:'awl_in',
     /* the hidden treasure of the chapter (CHAP[8].treasure): once the four have concluded that they must cross over, Luke shows what he notes
        down. It changes nothing in the story */
-    tablets:async()=>{await say(LU,'You keep notes. So do I.');if(!F.concl)return;
-      await say(LU,'Here are mine: the place, the day, and who was with us. Someone ought to keep this.');treasure()},
-    '*':'Keep it, brother. I have my own bag to carry.'},
-  ask:{linen:'Any clean linen, cut into strips. And soon, friend: he is losing blood.',sling:'Any sound cloth will do for a sling: it does not touch the wound. It must be broad, and it must not cut into his neck.',
-    syn:'I have asked in three streets. Nobody knows of one. But somebody always knows where people go on a certain day.'},
+    tablets:async()=>{await say(LU,'you_keep_notes');if(!F.concl)return;
+      await say(LU,'here_are_mine_the_place');treasure()},
+    '*':'keep_it_brother_i_have'},
+  ask:{linen:'any_clean_linen_cut_into_strips',sling:'any_sound_cloth_will_do',
+    syn:'i_have_asked_in_three_streets'},
   talk:async()=>{if(inTro()&&F.vision&&!F.concl)return tell();return talkTree([
-    {q:'What do you need, Luke?',if:()=>eve()&&!F.slung,a:()=>say(LU,!F.strips?'Linen, Paul. Clean, and in strips. The wine and the oil I have.':!F.bound?'Put the strips into my hand, and let me work.':'A sling, to carry the arm high. Any sound cloth will do: it does not touch the wound.')},
-    {q:'What is still to do here?',if:()=>!eve()||!!F.slung,a:()=>say(LU,todo())},
-    {q:'Why did you stop for him?',if:()=>!!F.slung,once:1,a:()=>say(LU,'He was bleeding, and I was there. I have never needed a better reason than that. You stopped too.')},
-    {q:'Stay close, Luke.',bye:1}])}};
+    {q:'what_do_you_need_luke',if:()=>eve()&&!F.slung,a:()=>say(LU,!F.strips?'linen_paul':!F.bound?'put_the_strips_into_my_hand':'sling_to_carry_the_arm_high')},
+    {q:'what_is_still_to_do_here',if:()=>!eve()||!!F.slung,a:()=>say(LU,todo())},
+    {q:'why_did_you_stop_for_him',if:()=>!!F.slung,once:1,a:()=>say(LU,'he_was_bleeding_and_i_was_there')},
+    {q:'stay_close_luke',bye:1}])}};
 /* Paul, as Luke sees him and talks to him */
 const PAUL8={name:'Paul',actor:P,as:{luke:{
-  look:()=>say(LU,inTro()?(F.vision?(F.concl?'Paul. He told us what he saw, and then he asked us what it meant. I had not expected the second part.':'Paul. He has been awake since before the light, and there is something that he has not said.')
-      :F.slung?'A tentmaker of Tarsus. He has walked for weeks without knowing why, and he says so to a stranger.':'A traveler, with the dust of a long road on him, and a workman\'s hands.')
-    :inPhi()?'Paul. He asks an old soldier about a gate, and a shopkeeper about a shutter. He is not asking idly.':'Paul. He crossed the sea for this river bank, and he knows it.'),
+  look:()=>say(LU,inTro()?(F.vision?(F.concl?'paul_he_told':'paul_he_has_been')
+      :F.slung?'tentmaker_of_tarsus':'traveler_with_the_dust')
+    :inPhi()?'paul_he_asks':'paul_he_crossed'),
   talk:()=>talkTree([
-    {q:'What can I do, Paul?',a:()=>say(P,inTro()?(!F.vision?(F.slung?'Nothing more tonight, brother. Show us this inn of yours.':F.bound?'Wait a little. A sling is cloth, and cloth is my part.':'Your own craft, Luke. I will see that the linen comes to your hand.')
-        :F.concl?'Come aboard with us. I think that you had decided that already.':'Hear what I have to tell: you and the others together.')
-      :inPhi()?(F.sab?'Come down to the river with us.':'Keep asking, as I do. Somebody in this city has seen where they go.'):F.sat?'Sit with us, and speak when I have spoken.':'Wait with me. I am thinking how we should come to them.')},
-    {q:'I will leave you to it.',bye:1}]),
-  show:{lbag:'Your craft, Luke, not mine. I should not know which flask to open.',bandage:'Those are for your hands, brother.',sling:'I sewed it. You are the one who knows how it should sit.','*':'Keep it by you, Luke.'}}}};
+    {q:'what_can_i_do_paul',a:()=>say(P,inTro()?(!F.vision?(F.slung?'nothing_more_tonight_brother':F.bound?'wait_a_little':'your_own_craft_luke')
+        :F.concl?'come_aboard_with_us':'hear_what_i_have_to_tell')
+      :inPhi()?(F.sab?'come_down_to_the_river_with_us':'keep_asking_as_i_do'):F.sat?'sit_with_us_and_speak_when_i':'wait_with_me')},
+    {q:'i_will_leave_you_to_it',bye:1}]),
+  show:{lbag:'your_craft_luke_not_mine',bandage:'those_are_for_your_hands_brother',sling:'i_sewed_it','*':'keep_it_by_you_luke'}}}};
 /* ---------- Luke's side of things, when he is the one being played ---------- */
 const AS_L={
-  troas:{'sea':{look:()=>say(LU,F.vision?'The sea, and a fair wind over it. Two days ago I had not thought that I should be crossing it.':'The sun going down into the sea. From this quay the next land is Macedonia.')},
-    'door of the inn':{look:'The inn where I lodge. The beds are hard, and the keeper is honest.'},'warehouse':{look:'A warehouse. Where loads are lifted, a physician is never idle for long.'},
-    'jars of oil':{look:'Jars of oil. One of them is the reason that I have a patient.'},'bales':{look:'Dyed wool, from the cities of Asia. Somebody over the sea is waiting for it.'},
-    'broken jar':{look:'Shards, and spilt oil. That is what opened his arm.',pickup:'I have one cut to care for already.'},
-    'gangplank':{look:()=>say(LU,F.concl?"The gangplank. I am going up it with three men whom I did not know two days ago.":'The gangplank of the coaster.')},
-    'ship':{look:'A sound ship, and a careful master. A passenger can ask for no more.'},'coil of rope':{look:'Line, neatly coiled. Sailors are tidier than physicians.'},
-    'heap of old sailcloth':{look:'Old sailcloth. Not clean enough for a wound. Sound enough, perhaps, for something else.',pickup:"Cloth is Paul's craft. He will see what is in it."}},
-  philippi:{'citadel':{look:'A fortress on a rock. The whole city stands to attention under it.'},'west gate':{look:'The gate we came in by, and an old soldier beside it who has not moved since.'},
-    "awning maker's shop":{look:'Paul found work here within an hour of coming through the gate.'},'bench':{look:"Paul's corner of the bench. He sews as I bind: without looking at his hands.",use:"That is the tentmaker's craft, not mine."},
-    "Zosime's shop":{look:'Purple. There is a great deal of money in this street.'},'torn awning':{look:'A torn awning. Paul has been glancing up at it all morning.',use:"That is the tentmaker's craft, not mine."},
-    'mended awning':{look:'An awning with a new seam in it. Nobody asked him to.'},'shuttered shop':{look:'Closed shutters, in the middle of the day.',use:'I knock. Nobody is at home.',open:'It is barred.'},
-    'fountain':{look:'Clean water, running. If every street had this, I should have less to do.',use:'I drink, and I wash my hands. A physician cannot do that too often.'},
-    'street to the marketplace':{look:'The street to the marketplace, where the magistrates sit.'}},
-  river:{'mountain':{look:'The mountains of Macedonia.'},'city':{look:'Philippi, on its hill. From here one would not think that it had no place for these women to pray.'},
-    'river':{look:'Clear water, and quick. Good to drink, and good for more than that.',use:'I wash my hands in it.'},
-    'flat stones':{look:'Stones worn smooth by people sitting. This place has been used for a long time.'},
-    'plane tree':{look:'Shade, and running water. Whoever chose this place knew what the sick need, and the well too.'},'road to the gate':{look:'The road back to the gate.'}}};
-for(const r in AS_L)for(const h of ROOMS[r].hs){const n=Object.getOwnPropertyDescriptor(h,'name');const names=n&&n.get?['torn awning','mended awning']:[h.name];for(const k of names)if(AS_L[r][k]){h.as=h.as||{luke:{}};Object.assign(h.as.luke,AS_L[r][k])}}
-{const aw=ROOMS.philippi.hs.find(h=>h.use===mendAwn);aw.as={luke:{look:()=>say(LU,F.awn?'An awning with a new seam in it. Nobody asked him to.':'A torn awning. Paul has been glancing up at it all morning.'),use:"That is the tentmaker's craft, not mine."}}}
+  troas:{'sea':{look:()=>say(LU,F.vision?'sea_and_a_fair_wind_over_it':'sun_going_down_into_the_sea')},
+    'door_of_the_inn':{look:'inn_where_i_lodge'},'warehouse':{look:'a_warehouse'},
+    'jars_of_oil':{look:'jars_of_oil_one'},'bales':{look:'dyed_wool_from_the_cities_of_asia'},
+    'broken_jar':{look:'shards_and_spilt_oil',pickup:'i_have_one_cut_to_care'},
+    'gangplank':{look:()=>say(LU,F.concl?'gangplank_said':'gangplank_of_the_coaster')},
+    'ship':{look:'sound_ship_and_a_careful_master'},'coil_of_rope':{look:'line_neatly_coiled'},
+    'heap_of_old_sailcloth':{look:'old_sailcloth_not',pickup:'cloth_is_pauls_craft'}},
+  philippi:{'citadel':{look:'fortress_on_a_rock'},'west_gate':{look:'gate_we_came_in_by_and_an_old'},
+    'awning_makers_shop':{look:'paul_found_work_here_within'},'bench':{look:'pauls_corner_of_the_bench',use:'that_is_the_tentmakers_craft_not_mine_2'},
+    'zosimes_shop':{look:'purple_said'},'torn_awning':{look:'a_torn_awning',use:'that_is_the_tentmakers_craft_not_mine_2'},
+    'mended_awning':{look:'awning_with_a_new_seam_in_it'},'shuttered_shop':{look:'closed_shutters_in_the_middle',use:'i_knock_said',open:'it_is_barred'},
+    'fountain':{look:'clean_water_running',use:'i_drink_and_i_wash_my_hands'},
+    'street_to_the_marketplace':{look:'the_street_to_the_marketplace'}},
+  river:{'mountain':{look:'mountains_of_macedonia'},'city':{look:'philippi_on_its_hill'},
+    'river':{look:'clear_water_and_quick',use:'i_wash_my_hands_in_it'},
+    'flat_stones':{look:'stones_worn_smooth_by_people_sitting'},
+    'plane_tree':{look:'shade_and_running_water'},'road_to_the_gate':{look:'road_back_to_the_gate'}}};
+for(const r in AS_L)for(const h of ROOMS[r].hs){const n=Object.getOwnPropertyDescriptor(h,'name');const names=n&&n.get?['torn_awning','mended_awning']:[h.name];for(const k of names)if(AS_L[r][k]){h.as=h.as||{luke:{}};Object.assign(h.as.luke,AS_L[r][k])}}
+{const aw=ROOMS.philippi.hs.find(h=>h.use===mendAwn);aw.as={luke:{look:()=>say(LU,F.awn?'awning_with_a_new_seam_in_it':'a_torn_awning'),use:'that_is_the_tentmakers_craft_not_mine_2'}}}
 /* the flat stones and the women, in Luke's hands: he waits for Paul */
-ROOMS.river.hs.find(h=>h.name==='flat stones').as.luke.use=()=>F.sab&&!F.sat?approach():say(LU,F.sat?'I am sitting. Paul is the one who should speak first.':'I sit down for a moment. It is a good place.');
+ROOMS.river.hs.find(h=>h.name==='flat_stones').as.luke.use=()=>F.sab&&!F.sat?approach():say(LU,F.sat?'i_am_sitting':'i_sit_down_for_a_moment_said');
 /* ============ TOPICS: what Paul has learned, which he can raise with anyone (see each person's ask table) ============ */
 const TOPICS=[
-  {id:'linen',q:'The physician needs clean linen.',if:()=>eve()&&!F.linen&&!F.strips},
-  {id:'sling',q:'The arm needs a sling, and I have no cloth for one.',if:()=>eve()&&F.bound&&!F.offcut&&!F.sling},
-  {id:'syn',q:'Where do worshippers of God meet in this city?',if:()=>inPhi()&&!clues()}];
+  {id:'linen',q:'physician_needs_clean_linen',if:()=>eve()&&!F.linen&&!F.strips},
+  {id:'sling',q:'arm_needs_a_sling_and_i',if:()=>eve()&&F.bound&&!F.offcut&&!F.sling},
+  {id:'syn',q:'where_do_worshippers_of_god',if:()=>inPhi()&&!clues()}];
 /* ============ WAX TABLETS: people met, tasks still open, Scripture (shown by shared/tablets.js) ============ */
 const TABLETS={
   people:[
-    {name:'Silas',note:'A prophet, and a leading man among the brothers in Jerusalem. He has walked every step of this road beside me.'},
-    {name:'Timothy',note:"The son of Eunice, of Lystra. He left his home at my word, and he has not complained of the road once."},
-    {name:'Attalos',note:'A carrier of wool, who takes the paved road down to Ephesus four times a year.',if:inFork},
-    {name:'Kleitos',note:'The ferryman at the edge of Bithynia.',if:inBor},
-    {name:'Luke',note:()=>F.concl?'A physician, and a brother. He was with us when the conclusion was drawn, and he is with us now.':'A physician. He knelt down beside a bleeding stranger, and asked nobody who would pay him.',if:()=>inTro()||inPhi()||inRiv()},
-    {name:'Leon',note:'A shipmaster of Troas, bound for Neapolis in Macedonia.',if:inTro},
-    {name:'Sosias',note:"Leon's steersman. A jar slipped from its sling and laid his forearm open.",if:eve},
-    {name:'Quintus',note:'An old soldier, who sits by the west gate of Philippi and sees everybody who goes through it.',if:()=>inPhi()||inRiv()},
-    {name:'Zosime',note:'A seller of purple in Philippi. The shop beside hers is closed every seventh day.',if:()=>inPhi()||inRiv()},
-    {name:'Lydia',note:()=>F.sat?'She comes from the city of Thyatira, sells purple, and worships God. (Acts 16:14)':'A seller of purple from Thyatira, who closes her shop every seventh day.',if:()=>!!F.shop}],
+    {name:'Silas',note:'prophet_and_a_leading_man'},
+    {name:'Timothy',note:'son_of_eunice_of_lystra'},
+    {name:'Attalos',note:'carrier_of_wool_who_takes',if:inFork},
+    {name:'Kleitos',note:'ferryman_at_the_edge_of_bithynia',if:inBor},
+    {name:'Luke',note:()=>F.concl?'physician_and_a_brother':'physician_he',if:()=>inTro()||inPhi()||inRiv()},
+    {name:'Leon',note:'shipmaster_of_troas_bound',if:inTro},
+    {name:'Sosias',note:'leons_steersman',if:eve},
+    {name:'Quintus',note:'old_soldier_who_sits_by_the_west',if:()=>inPhi()||inRiv()},
+    {name:'Zosime',note:'seller_of_purple_in_philippi',if:()=>inPhi()||inRiv()},
+    {name:'Lydia',note:()=>F.sat?'she_comes_from_the_city_acts_16_14':'seller_of_purple_from_thyatira',if:()=>!!F.shop}],
   tasks:[
-    {t:'Take the paved road west, to Ephesus and the cities of Asia.',if:()=>inFork()&&!F.asia},
-    {t:'Asia is closed to us. Go on by the road that is still open.',if:()=>inFork()&&F.asia},
-    {t:'Cross the river into Bithynia.',if:()=>inBor()&&!F.bith},
-    {t:'Bithynia is closed to us. Take the road west, through Mysia to the sea.',if:()=>inBor()&&F.bith},
-    {t:'The physician needs clean linen, cut into strips.',if:()=>eve()&&!F.bound},
-    {t:'The arm needs a sling.',if:()=>eve()&&F.bound&&!F.slung},
-    {t:'Go to the inn for the night.',if:()=>eve()&&F.slung},
-    {t:'Tell the brothers what I saw in the night.',if:()=>inTro()&&F.vision&&!F.concl},
-    {t:'Go aboard: the ship is bound for Macedonia.',if:()=>inTro()&&F.concl},
-    {t:'Find out where the worshippers of God meet in Philippi.',if:()=>inPhi()&&!clues()},
-    {t:'Work at the bench until the Sabbath.',if:()=>inPhi()&&clues()&&!F.sab},
-    {t:'On the Sabbath: outside the gate, beside the river.',if:()=>(inPhi()||inRiv())&&F.sab&&!F.sat},
-    {t:'Speak to the women who have assembled.',if:()=>inRiv()&&F.sat}],
+    {t:'take_the_paved_road_west',if:()=>inFork()&&!F.asia},
+    {t:'asia_is_closed_to_us',if:()=>inFork()&&F.asia},
+    {t:'cross_the_river_into_bithynia',if:()=>inBor()&&!F.bith},
+    {t:'bithynia_is_closed_to_us',if:()=>inBor()&&F.bith},
+    {t:'physician_needs_clean_linen_cut_into_strips',if:()=>eve()&&!F.bound},
+    {t:'arm_needs_a_sling',if:()=>eve()&&F.bound&&!F.slung},
+    {t:'go_to_the_inn_for_the_night',if:()=>eve()&&F.slung},
+    {t:'tell_the_brothers_what',if:()=>inTro()&&F.vision&&!F.concl},
+    {t:'go_aboard_the_ship_is_bound',if:()=>inTro()&&F.concl},
+    {t:'find_out_where_the_worshippers',if:()=>inPhi()&&!clues()},
+    {t:'work_at_the_bench_until_the_sabbath',if:()=>inPhi()&&clues()&&!F.sab},
+    {t:'on_the_sabbath_outside',if:()=>(inPhi()||inRiv())&&F.sab&&!F.sat},
+    {t:'speak_to_the_women_who_have_assembled',if:()=>inRiv()&&F.sat}],
   scripture:ORDER.map(k=>PASS[k])};
 /* ============ PLACING THE CAST, SETUP ============ */
 /* ENT: where Paul stands when a room is entered. The others stand near him: Silas, then Timothy, then Luke once he is with them. */
@@ -1155,46 +1155,46 @@ const OPENING=[['iconium','antiochp','new'],['antiochp','westroad','new']];
 async function start8(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();
   await cut(async()=>{await fade(1,500);setChapter(8);G.end={};enterRoom('fork',...ENT.fork);codeBtn();
     try{await need('map');await SHARED.map.journey(OPENING,{labels:LABELS,view:'aegean',text:[
-      'About 50 C.E. Paul, Silas and Timothy had delivered the decrees in the cities, and the congregations kept growing firmer in the faith, and larger in number with every day. (Acts 16:4, 5)',
-      'Acts does not name those cities, or the road beyond them. Some days further on, a paved road ran west: down to Ephesus, and the most populated part of the province of Asia.']})}catch(e){console.error(e)}
+      'about_50_c_e_acts_16_4_5',
+      'acts_does_not_name_those_cities']})}catch(e){console.error(e)}
     await fade(1,500);G.scene=null;setScore(MUSIC);AU.mood=ROOMS.fork.mood;AU.amb=ROOMS.fork.amb;codeBtn();await fade(0,600);G.metFork=1;
-    await say(P,'There it is, brothers: the road to Ephesus. City after city, and thousands of people in them who have never heard the name of Jesus.');
-    await say(TI,'All the way down to the sea, Paul?');
-    await say(SI,'It is a good road, and it leads to where the people are. I see nothing against it.');
-    await say(AT,'To Ephesus? Then walk with me, friends. I take wool down that road four times a year, and a road is shorter in company.');
-    await say(P,'We know what to preach, and how. And there lies the where, paved and waiting.',TH)},true)}
-function hint8(){const b=PC()!==P,his=['paul8b',['This is for Paul to decide. I have known him two days, and I already know that he will not be hurried.','Paul should do this. I can leave it to him.']],
-    craft=['craft8',["That is the tentmaker's craft, not mine. A physician knows when to stand back.",'Paul should do this part. I can leave it to him.']],has2=id=>invOf(LU).includes(id);
-  if(inFork())return!F.asia?['west8',['I know what to preach, and how. The paved road leads to where the most people are.','I should take the paved road west.']]
-    :['north8',['One road is closed. That does not close them all. A man can be turned only while he is walking.','We can take the track to the north.']];
-  if(inBor())return!F.bith?['bith8',['Bithynia has cities too, and it lies just over this water.','I should use the ferry.']]
-    :['sea8',['Asia is closed, and Bithynia is closed. One road is left: and I was never told to stop walking.','We can take the road west, along the bank.']];
+    await say(P,'there_it_is_brothers_the_road');
+    await say(TI,'all_the_way_down_to_the_sea');
+    await say(SI,'it_is_a_good_road_and_it');
+    await say(AT,'to_ephesus');
+    await say(P,'we_know_what_to_preach_and_how',TH)},true)}
+function hint8(){const b=PC()!==P,his=['paul8b',['this_is_for_paul_to_decide','paul_should_do_this_i']],
+    craft=['craft8',['that_is_the_tentmakers_craft_not_mine_a','paul_should_do_this_part_said']],has2=id=>invOf(LU).includes(id);
+  if(inFork())return!F.asia?['west8',['i_know_what_to_preach_and_how','i_should_take_the_paved_road_west']]
+    :['north8',['one_road_is_closed','we_can_take_the_track_to_the_north']];
+  if(inBor())return!F.bith?['bith8',['bithynia_has_cities_too_said','i_should_use_the_ferry']]
+    :['sea8',['asia_is_closed_and_bithynia_is_closed','we_can_take_the_road_west']];
   if(inTro()){
     if(!F.vision){
-      if(F.slung)return['inn8',['The man is cared for, and it is nearly dark. Luke has asked us to his inn.','We can go in at the door of the inn.']];
-      if(b)return!F.clean?['clean8',['A dirty wound, and I have wine and oil in my bag. That much I can do before any linen comes.','I should use my bag on Sosias.']]
-        :!F.bound?(has2('bandage')?['bind8',['The wound is clean, and I have strips of linen in my hand.','I should use the linen strips on Sosias.']]:['wait8',['The wound is clean. It needs binding, and I have no linen. The tentmaker is seeing to that.','Paul should bring me linen strips.']])
-        :has2('sling')?['hang8',['Bound. Now it must be carried high.','I should use the sling on Sosias.']]:['wait8b',['It needs a sling. Cloth and a hem: that is not my craft.','Paul should sew a sling, and bring it to me.']];
-      if(!F.strips)return!F.linen?['linen8',['Clean linen. I carry none. But I am not the only one of us with a bundle: and one of us had a mother to pack his.','I should ask Timothy about the linen.']]
-        :['cut8',['A whole cloth, and a physician who wants strips. Cutting cloth is something that I know.','I should use my knife on the linen cloth.']];
-      if(!F.bound)return['give8',["The strips are cut. Binding a wound is the physician's craft, not mine.",'I should give the linen strips to Luke. He does the rest.']];
-      if(!F.sling)return!F.offcut?['off8',['A sling is a band of cloth with a hem. There is old sailcloth lying on this quay.','I should pick up the old sailcloth by the stern of the ship.']]
-        :['sew8',['Sound cloth, an awl and thread. A sling is the simplest thing I shall ever sew.','I should use my awl on the old sailcloth.']];
-      return['give8b',["The sling is sewn. How it should sit is the physician's business.",'I should give the arm sling to Luke.']]}
-    if(!F.concl)return b?his:['tell8',['I saw what I saw. It is not for me alone to say what it means.','I should talk to Silas, Timothy or Luke, and tell them exactly what I saw.']];
-    return['ship8',['God has summoned us to Macedonia, and a ship for Macedonia is lying at the quay.','We can go up the gangplank.']]}
+      if(F.slung)return['inn8',['man_is_cared_for_and_it','we_can_go_in_at_the_door_said']];
+      if(b)return!F.clean?['clean8',['dirty_wound_and_i_have','i_should_use_my_bag_on_sosias']]
+        :!F.bound?(has2('bandage')?['bind8',['wound_is_clean_and_i_have','i_should_use_the_linen']]:['wait8',['the_wound_is_clean','paul_should_bring_me_linen_strips']])
+        :has2('sling')?['hang8',['bound_now','i_should_use_the_sling_on_sosias']]:['wait8b',['it_needs_a_sling','paul_should_sew_a_sling']];
+      if(!F.strips)return!F.linen?['linen8',['clean_linen_i','i_should_ask_timothy_about_the_linen']]
+        :['cut8',['whole_cloth_and_a_physician','i_should_use_my_knife_on_the_linen']];
+      if(!F.bound)return['give8',['strips_are_cut','i_should_give_the_linen']];
+      if(!F.sling)return!F.offcut?['off8',['sling_is_a_band_of_cloth','i_should_pick_up_the_old']]
+        :['sew8',['sound_cloth_an_awl_and_thread','i_should_use_my_awl_on_the_old']];
+      return['give8b',['sling_is_sewn','i_should_give_the_arm_sling']]}
+    if(!F.concl)return b?his:['tell8',['i_saw_what_i_saw','i_should_talk_to_silas']];
+    return['ship8',['god_has_summoned_us_to_macedonia_said','we_can_go_up_the_gangplank_said']]}
   if(inPhi()){
-    if(F.sab)return['riv8',['It is the Sabbath. I think that there is a place of prayer by the river.','We can go out by the west gate.']];
-    if(clues())return b?craft:['work8',['I know the place, and I know the day. Until it comes, there is honest work.','I should use my bench.']];
-    return b?his:!F.gate?['gate8',['Who sees everybody who leaves a city? I should not ask him what he thinks. I should ask him what he has seen.','I should talk to the old soldier at the gate, and ask who goes out that is not going to work.']]
-      :['shop8',['A row of shops, all open but one. Shutters are something that a neighbor sees.','I should talk to Zosime, and ask why the shop beside hers is shut.']]}
-  if(!F.sab)return['back8',['The place I have found. The day I have not.','We can go back up the road to the gate.']];
-  if(!F.sat)return b?his:['sit8',['They came out to pray, under the open sky. I am a stranger here, not a presiding officer of a synagogue.','I should talk to the women, and sit down among them.']];
-  return b?his:['speak8',['They know the Scriptures. I can begin where they already are.','I should talk to Lydia.']]}
+    if(F.sab)return['riv8',['it_is_the_sabbath','we_can_go_out_by_the_west']];
+    if(clues())return b?craft:['work8',['i_know_the_place_and_i','i_should_use_my_bench']];
+    return b?his:!F.gate?['gate8',['who_sees_everybody_who_leaves_a_city','i_should_talk_to_the_old_said']]
+      :['shop8',['row_of_shops_all_open_but_one','i_should_talk_to_zosime']]}
+  if(!F.sab)return['back8',['place_i_have_found','we_can_go_back_up_the_road']];
+  if(!F.sat)return b?his:['sit8',['they_came_out_to_pray_under_the_open','i_should_talk_to_the_women']];
+  return b?his:['speak8',['they_know_the_scriptures','i_should_talk_to_lydia']]}
 /* ============ CHAPTER DEFINITION ============ */
 /* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
    plainly says no. Each is a line of this chapter, in English, as it stands above. */
-const ACTING={shake:['No, Paul. But I thought that we should be preaching, and we have done nothing but walk.']};
+const ACTING={shake:['no_paul']};
 return{acting:ACTING,rooms:['fork','ferry','troas','philippi','river'],setup:setup8,start:start8,hint:hint8,music:MUSIC,scenes:{dark,deck:deckScene,house:houseScene},topics:TOPICS,tablets:TABLETS,
   /* The whole road of the chapter, on a map of its own, as Chapters Four and Seven have theirs: seen through the Aegean window. */
   view:'aegean',labels:LABELS,route:ROAD,

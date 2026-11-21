@@ -244,452 +244,452 @@ Object.assign(ICON,{
 ICON.staff=g=>{stroke(g,[4.6,20.6,19,3.6],'#3e2a16',2.6);stroke(g,[4.2,20.2,18.6,3.2],'#a8804e',1);stroke(g,[5.4,20.8,19.6,4],'#5a3c20',.6);
   R(g,17.4,3,2.6,2.6,'#6a4a2a');R(g,3.4,19.8,2.2,2.2,'#2a1c10')};
 Object.assign(ITEMS,{
-  staff:{name:"Barnabas's staff",look:"Barnabas's walking staff, stout olive wood. It carried him all the way from Antioch to find me.",
-    by:{barnabas:'My walking staff. It brought me all the way from Antioch to Tarsus, and back.'}},
-  loops:{name:'leather loops',look:'Loops of thick oxhide. Sewn to the hem, they will hold a tent peg against any mountain wind.'},
-  tent:{name:'finished tent',look:"Kleon's tent, rolled and tied. Every seam doubled, and leather at every peg."},
-  bolt:{name:'goat-hair cloth',icon:'cloth',look:'The last of the goat-hair cloth I carried from Tarsus. It swells in the rain and sheds it.'},
-  panels:{name:'cloth panels',look:'Goat-hair cloth, cut into panels for a pair of pack bags.'},
-  spool:{name:"Xanthe's thread",look:'Waxed linen thread, doubled and strong. Xanthe gave the best spool she had.'},
-  bags:{name:'pack bags',look:'Two deep bags of goat-hair cloth, joined by a broad band to lie across a pack saddle.'},
-  wages:{name:'my savings',look:'A little silver: what my awl has earned this year in Antioch, beyond my needs.'}});
+  staff:{name:'barnabass_staff',look:'barnabass_walking_staff_stout_olive_wood',
+    by:{barnabas:'my_walking_staff'}},
+  loops:{name:'leather_loops',look:'loops_of_thick_oxhide'},
+  tent:{name:'finished_tent',look:'kleons_tent_rolled_and_tied'},
+  bolt:{name:'goat_hair_cloth',icon:'cloth',look:'last_of_the_goat_hair_cloth'},
+  panels:{name:'cloth_panels',look:'goat_hair_cloth_cut_into_panels'},
+  spool:{name:'xanthes_thread',look:'waxed_linen_thread_doubled_and_strong'},
+  bags:{name:'pack_bags',look:'two_deep_bags_of_goat_hair'},
+  wages:{name:'my_savings',look:'little_silver_what_my_awl'}});
 /* how Barnabas describes what he carries: everything but his staff belongs to Saul's trade or Saul's purse */
-const BY3={awl:"Saul's awl. In his hand it is a wonder; in mine, a danger.",thread:'Waxed linen thread. Saul could tell you how strong it is.',
-  knife:"Saul's knife. I would only spoil good cloth with it.",tablets:"Saul's wax tablets: people, work and Scripture, in his small hand.",
-  loops:'Leather loops, for the pegs of the tent.',tent:"Kleon's tent, finished. It is Kleon who should have it, from Saul's own hand.",
-  bolt:'Goat-hair cloth from Cilicia. Saul knows what to make of it.',panels:'Cloth panels, cut for bags. They only need Saul and an awl.',
-  spool:"Xanthe's thread. Strong, and given gladly.",bags:'The new pack bags. They belong on the donkey.',
-  wages:"Saul's savings. That is his to give, not mine."},
+const BY3={awl:'sauls_awl',thread:'waxed_linen_thread',
+  knife:'sauls_knife',tablets:'sauls_wax_tablets_people',
+  loops:'leather_loops_for_the_pegs',tent:'kleons_tent_finished',
+  bolt:'goat_hair_cloth_from_cilicia',panels:'cloth_panels_cut_for_bags',
+  spool:'xanthes_thread_said',bags:'new_pack_bags',
+  wages:'sauls_savings'},
   /* the tools are shared with other chapters, which word them in their own way: so these are set again whenever this chapter begins */
   by3=()=>{for(const id in BY3)(ITEMS[id].by=ITEMS[id].by||{}).barnabas=BY3[id]};
-async function sewBags(){if(!has('spool'))return say(P,'I have the cloth and the awl, but my own spool is bare. I need strong thread, and a good deal of it.');
-  SFX.sew();await say(P,'Two deep pockets, and a broad band between them to lie across the pack saddle...');SFX.sew();await wait(800);
+async function sewBags(){if(!has('spool'))return say(P,'i_have_the_cloth_and_the_awl');
+  SFX.sew();await say(P,'two_deep_pockets_and_a_broad');SFX.sew();await wait(800);
   delItem('panels');delItem('spool');addItem('bags',1);F.bags=1;SFX.good();
-  await say(P,'Goat-hair cloth swells in the rain and sheds it. Whatever the road brings, the grain will arrive dry.')}
+  await say(P,'goat_hair_cloth_swells')}
 Object.assign(COMBO,{
-  'bolt+knife':async()=>{SFX.cut();await say(P,'Two broad panels, two narrow, and one long band. Following the weave.');delItem('bolt');addItem('panels');F.cutBolt=1},
+  'bolt+knife':async()=>{SFX.cut();await say(P,'two_broad_panels_two_narrow');delItem('bolt');addItem('panels');F.cutBolt=1},
   'awl+panels':sewBags,'panels+spool':sewBags,
-  'awl+bolt':()=>say(P,'The cloth must be cut to shape before any stitching.'),'bolt+spool':()=>say(P,'The cloth must be cut to shape before any stitching.'),
-  'awl+spool':()=>say(P,'Threaded and ready. Now, what needs stitching?'),
-  'knife+panels':()=>say(P,'They are cut true already.'),'knife+spool':()=>say(P,'I will cut the thread as I sew, and not before.'),
-  'awl+bags':()=>say(P,'Every seam is doubled. They are finished.'),'bags+knife':()=>say(P,'After all that work? No.'),
-  'awl+loops':()=>say(P,"The loops belong on the hem of Kleon's tent."),'loops+thread':()=>say(P,"The loops belong on the hem of Kleon's tent."),
-  'knife+loops':()=>say(P,'They are the right length already.'),'knife+tent':()=>say(P,'After a week of sewing? No.'),
-  'awl+tent':()=>say(P,'It needs an owner now, not another stitch.'),'tent+thread':()=>say(P,'It needs an owner now, not another stitch.')});
+  'awl+bolt':()=>say(P,'cloth_must_be_cut_to_shape'),'bolt+spool':()=>say(P,'cloth_must_be_cut_to_shape'),
+  'awl+spool':()=>say(P,'threaded_and_ready'),
+  'knife+panels':()=>say(P,'they_are_cut_true_already'),'knife+spool':()=>say(P,'i_will_cut_the_thread_as_i'),
+  'awl+bags':()=>say(P,'every_seam_is_doubled'),'bags+knife':()=>say(P,'after_all_that_work'),
+  'awl+loops':()=>say(P,'loops_belong_on_the_hem'),'loops+thread':()=>say(P,'loops_belong_on_the_hem'),
+  'knife+loops':()=>say(P,'they_are_the_right_length_already'),'knife+tent':()=>say(P,'after_a_week_of_sewing'),
+  'awl+tent':()=>say(P,'it_needs_an_owner_now_not'),'tent+thread':()=>say(P,'it_needs_an_owner_now_not')});
 function setup3(){BN.hs=BN3;P.hs=PAUL3;P.called='Saul';Object.assign(BN,BARN3);by3();place(BN,'tarsus',112,124,1);place(KL,'tarsus',224,119,-1);place(AG,'court',116,115,1);place(LU,'court',187,113,-1);
   place(XA,'antioch',190,116,1);place(TN,'antioch',354,116,-1);G.meet=0;G.trek=null;G.inv=['awl','thread','knife','tablets'];G.invs={paul:G.inv,barnabas:['staff']};drawInv()}
 /* Barnabas when he is the one being played: his answers where the level wrote nothing for him, and the crafts he leaves to Saul */
-const BARN3={noCraft:"That is Saul's trade, not mine. I would only spoil it.",
-  def:{look:'Saul would know more about that than I do.',pickup:h=>h.actor?'I would not dream of it.':'It is not mine to take.',
-    use:"That is Saul's trade, not mine.",open:'It does not open.',talk:'I would get no answer.',give:'First I should choose something to give.'}};
+const BARN3={noCraft:'that_is_sauls_trade_not_mine',
+  def:{look:'saul_would_know_more_about_that_than_i',pickup:h=>h.actor?'i_would_not_dream_of_it':'it_is_not_mine_to_take_said',
+    use:'that_is_sauls_trade_not_mine_said',open:'it_does_not_open',talk:'i_would_get_no_answer',give:'first_i_should_choose_something_to_give'}};
 /* Saul, as Barnabas sees him and talks to him */
 const PAUL3={name:'Saul',actor:P,as:{barnabas:{
-  look:()=>say(BN,G.room==='tarsus'?'Saul. Give him cloth and an awl, and he forgets that anyone is waiting for him.':'Saul. A whole year at my side, and he still works harder than any two of us.'),
+  look:()=>say(BN,G.room==='tarsus'?'saul_give':'saul_a'),
   talk:()=>talkTree([
-    {q:'What can I do to help?',a:()=>say(P,G.room==='tarsus'?(!F.seam?'Take the far edge of the tent, brother, and hold it taut while I sew.':F.sold?'Walk with me to Antioch.':'Keep Kleon patient. I am nearly done.')
-      :!F.jar?"Come to Theron's stall with me. His jar needs a man at each end of a bar, and you have a staff.":'Pray for the road, brother. And keep me company.')},
-    {q:'You work too hard, Saul.',once:1,a:()=>say(P,'So do you, Barnabas. We both work for a living. (1 Corinthians 9:6)')},
-    {q:'I will leave you to it.',bye:1}])}}};
+    {q:'what_can_i_do_to_help',a:()=>say(P,G.room==='tarsus'?(!F.seam?'take_the_far_edge_of_the_tent':F.sold?'walk_with_me_to_antioch':'keep_kleon_patient')
+      :!F.jar?'come_to_therons_stall_with_me':'pray_for_the_road_brother')},
+    {q:'you_work_too_hard_saul',once:1,a:()=>say(P,'do_you_barnabas_1_corinthians_9_6')},
+    {q:'i_will_leave_you_to_it',bye:1}])}}};
 /* ============ TOPICS: what Paul has learned, which he can raise with anyone (see each person's ask table) ============ */
 const TOPICS=[
-  {id:'kleon',q:"Kleon's caravan leaves at noon.",if:()=>F.metKleon&&!F.sold},
-  {id:'famine',q:'Agabus foretold a great famine.',if:()=>G.room!=='tarsus'},
-  {id:'thread',q:'I have no thread to sew the new bags.',if:()=>G.room!=='tarsus'&&!F.gotSpool}];
+  {id:'kleon',q:'kleons_caravan_leaves_at_noon',if:()=>F.metKleon&&!F.sold},
+  {id:'famine',q:'agabus_foretold_a_great_famine',if:()=>G.room!=='tarsus'},
+  {id:'thread',q:'i_have_no_thread_to_sew',if:()=>G.room!=='tarsus'&&!F.gotSpool}];
 /* ============ WAX TABLETS: people met, tasks still open, Scripture (shown by shared/tablets.js) ============ */
 const ant=()=>G.room!=='tarsus';
 const TABLETS={
   people:[
-    {name:'Barnabas',note:()=>ant()?'A good man, filled with faith and with holy spirit. A whole year we have taught side by side.':'He came all the way to Tarsus, searching every row of stalls for me.'},
-    {name:'Kleon',note:'A caravan master, bound over the mountains. His tent is promised for noon.',if:()=>F.metKleon&&!ant()},
-    {name:'Agabus',note:'A prophet from Jerusalem. He foretold a great famine.',if:ant},
-    {name:'Lucius',note:'Lucius of Cyrene, a teacher here. He keeps the tally of the gifts.',if:ant},
-    {name:'Theron',note:'A potter in the colonnaded street. He came to believe in that very street.',if:ant},
-    {name:'Xanthe',note:'A widow who spins thread for her living. She came to believe this year.',if:ant}],
+    {name:'Barnabas',note:()=>ant()?'good_man_filled_with_faith':'he_came_all_the_way_to_tarsus'},
+    {name:'Kleon',note:'caravan_master_bound_over_the_mountains',if:()=>F.metKleon&&!ant()},
+    {name:'Agabus',note:'prophet_from_jerusalem',if:ant},
+    {name:'Lucius',note:'lucius_of_cyrene_a_teacher_here',if:ant},
+    {name:'Theron',note:'potter_in_the_colonnaded_street',if:ant},
+    {name:'Xanthe',note:'widow_who_spins_thread_for_her_living',if:ant}],
   tasks:[
-    {t:"Close the last seam of Kleon's tent.",if:()=>!ant()&&!F.seam},
-    {t:'Give the hem something a peg will not tear through.',if:()=>!ant()&&!F.loopsOn},
-    {t:'Hand Kleon his tent, as I promised.',if:()=>!ant()&&!F.sold},
-    {t:'Go with Barnabas to Antioch.',if:()=>!ant()&&F.sold},
-    {t:'Make new pack bags for the relief.',if:()=>ant()&&!F.bags},
-    {t:'Find strong thread to sew them with.',if:()=>ant()&&!F.gotSpool&&!F.bags},
-    {t:'Put the bags on the donkey.',if:()=>ant()&&!F.bagsOn},
-    {t:"Bring Theron's oil from his stall. It is a load for two.",if:()=>ant()&&!F.jar},
-    {t:'See the gift counted and sealed before the brothers.',if:()=>ant()&&!F.sealed}],
+    {t:'close_the_last_seam_of_kleons_tent',if:()=>!ant()&&!F.seam},
+    {t:'give_the_hem_something',if:()=>!ant()&&!F.loopsOn},
+    {t:'hand_kleon_his_tent_as_i_promised',if:()=>!ant()&&!F.sold},
+    {t:'go_with_barnabas_to_antioch',if:()=>!ant()&&F.sold},
+    {t:'make_new_pack_bags_for_the_relief',if:()=>ant()&&!F.bags},
+    {t:'find_strong_thread_to_sew_them_with',if:()=>ant()&&!F.gotSpool&&!F.bags},
+    {t:'put_the_bags_on_the_donkey',if:()=>ant()&&!F.bagsOn},
+    {t:'bring_therons_oil_from_his_stall',if:()=>ant()&&!F.jar},
+    {t:'see_the_gift_counted_and_sealed',if:()=>ant()&&!F.sealed}],
   scripture:[
-    {ref:'Psalm 15:4',gist:'What he has promised he does, even when it turns out to his own loss.'},
-    {ref:'Ecclesiastes 4:9, 10',gist:'Two do better than one: together their work pays well, and when one falls, the other is there to pull him to his feet.'},
-    {ref:'Proverbs 3:27',gist:'When you are able to help, do not keep back any good from those who ought to receive it.'},
-    {ref:'Deuteronomy 15:11',gist:'Be openhanded and generous toward your brother in your land who is poor and in distress.'}]};
+    {ref:'psalm_15_4',gist:'what_he_has_promised_he'},
+    {ref:'ecclesiastes_4_9_10',gist:'two_do_better_than_one'},
+    {ref:'proverbs_3_27',gist:'when_you_are_able_to_help'},
+    {ref:'deuteronomy_15_11',gist:'be_openhanded_and_generous'}]};
 /* ============ ROOMS, HOTSPOTS, CHARACTERS ============ */
-const tentNeeds=()=>!F.seam?'The last seam still gapes open. It needs closing, with awl and thread.':!F.loopsOn?'The seam is closed. The hem still needs loops for the pegs, of something tougher than cloth.':'';
+const tentNeeds=()=>!F.seam?'last_seam_still_gapes_open':!F.loopsOn?'seam_is_closed':'';
 /* The seam takes two men: Barnabas holds the far edge taut (played as Barnabas: use the tent), then Saul sews it. */
 const holding=()=>F.held&&BN.room==='tarsus'&&Math.abs(BN.x-146)<4;
 async function sewSeam(){
-  if(!holding()){F.held=0;await say(P,'The cloth pulls crooked unless someone holds the far edge taut.');
-    if(BN.room==='tarsus')await say(BN,'Then show me where to stand, Saul. I am a Levite, not a tentmaker.');return}
-  await say(P,'Hold it just so, Barnabas.',{to:BN});SFX.sew();await wait(800);SFX.sew();
-  await say(P,'A flat seam, doubled over, so that no wind finds a way in.');F.seam=1;F.held=0;SFX.good();
-  await say(BN,'Closed, from top to bottom. I can hardly see where it was.');await walk(BN,112,124);BN.dir=1}
-async function hold(){if(F.seam)return say(BN,'The seam is closed. The rest is between Saul and Kleon.');
-  if(holding())return say(BN,'I have it. Saul can sew whenever he likes.');
-  await walk(BN,146,113);BN.dir=1;F.held=1;await say(BN,'Like this? I have the far edge, and I am holding it taut.');
-  if(P.room==='tarsus')await say(P,'Just so. Now do not let go.')}
-async function sewLoops(){SFX.sew();await say(P,'One loop at every peg, and each stitched through twice...');SFX.sew();await wait(700);
-  delItem('loops');F.loopsOn=1;SFX.good();await say(P,'Leather will hold where cloth tore. Now it is a tent I can put my name to.')}
+  if(!holding()){F.held=0;await say(P,'cloth_pulls_crooked_unless');
+    if(BN.room==='tarsus')await say(BN,'show_me_where_to_stand_saul');return}
+  await say(P,'hold_it_just_so_barnabas',{to:BN});SFX.sew();await wait(800);SFX.sew();
+  await say(P,'flat_seam_doubled_over_so_that_no');F.seam=1;F.held=0;SFX.good();
+  await say(BN,'closed_from_top_to_bottom');await walk(BN,112,124);BN.dir=1}
+async function hold(){if(F.seam)return say(BN,'the_seam_is_closed');
+  if(holding())return say(BN,'i_have_it');
+  await walk(BN,146,113);BN.dir=1;F.held=1;await say(BN,'like_this_i');
+  if(P.room==='tarsus')await say(P,'just_so_now')}
+async function sewLoops(){SFX.sew();await say(P,'one_loop_at_every_peg_and_each');SFX.sew();await wait(700);
+  delItem('loops');F.loopsOn=1;SFX.good();await say(P,'leather_will_hold_where_cloth_tore')}
 async function leave3(){
-  if(PC()!==P){if(!F.sold)return say(BN,'Not without Saul. And Saul will not leave a promise unfinished.');playAs(P)}
-  if(!F.sold){await say(P,'The road to Antioch. And I will take it.');return say(P,"But not with a promise left unfinished behind me. First, Kleon's tent.",TH)}
-  await say(BN,'Your word is kept, Saul. Now will you come?');
-  await say(P,'I will. My tools, and my last bolt of goat-hair cloth: a tentmaker does not travel empty-handed.');
-  await say(P,'Tarsus is not a city anyone overlooks. (Acts 21:39) But my road does not end here.');
+  if(PC()!==P){if(!F.sold)return say(BN,'not_without_saul');playAs(P)}
+  if(!F.sold){await say(P,'road_to_antioch');return say(P,'not_with_a_promise_left',TH)}
+  await say(BN,'your_word_is_kept_saul');
+  await say(P,'i_will');
+  await say(P,'tarsus_is_not_a_city_anyone_overlooks');
   walk(BN,276,116);await walk(P,292,112);await fade(1,700);const o={dur:7500};
-  await narr('Barnabas found him, and took him along to Antioch in Syria. (Acts 11:25, 26)',o);
-  await narr('A sizable crowd was taught by the two of them, who met with the congregation there for a whole year. (Acts 11:26)',o);
-  await narr('And Antioch was the first place where the disciples, by divine providence, came to be called Christians. (Acts 11:26)',o);
-  await narr('About that time some prophets arrived in Antioch from Jerusalem, among them a man called Agabus. (Acts 11:27, 28)',o);
+  await narr('barnabas_found_him_acts_11_25_26',o);
+  await narr('sizable_crowd_was_acts_11_26',o);
+  await narr('antioch_was_the_first_acts_11_26',o);
+  await narr('about_that_time_acts_11_27_28',o);
   G.meet=1;enterRoom('court',112,126,1);dealInv('court');drawInv();codeBtn();
   place(BN,'court',86,122,1);place(LU,'court',140,118,1);place(XA,'court',62,130,1);place(TN,'court',40,124,1);place(AG,'court',204,118,-1);await fade(0,700);
-  await narr('Antioch. The congregation has gathered in the courtyard, as it has all this year.',{dur:4200});
-  await say(AG,'Brothers and sisters. I must tell you what has been made known through the spirit.',{to:null});
-  await say(AG,'A great famine is coming, and the whole inhabited earth will feel it.',{to:null});
-  await say(TN,'On the whole earth? Then on Antioch too.',{to:AG});
-  await say(LU,'And on Judea hardest of all. Many of the brothers there had little even before this.',{to:TN});
-  await say(TN,'Then let us not wait until they are hungry. I will send what I can spare.');
-  await say(LU,'So will my household. Let each one decide what he can afford, and let no one be pressed.');
-  await say(BN,'And when it is gathered?',{to:LU});
-  await say(LU,'Jerusalem sent you to us, Barnabas. Who better to carry our answer back? You, and Saul with you.');
-  await say(P,'Gladly.',{to:LU});
-  await narr('The disciples resolved that relief should go to the brothers in Judea, each of them giving as his means allowed. (Acts 11:29)',o);
+  await narr('antioch_said',{dur:4200});
+  await say(AG,'brothers_and_sisters',{to:null});
+  await say(AG,'great_famine_is_coming',{to:null});
+  await say(TN,'on_the_whole_earth',{to:AG});
+  await say(LU,'on_judea_hardest_of_all',{to:TN});
+  await say(TN,'let_us_not_wait_until_they');
+  await say(LU,'will_my_household');
+  await say(BN,'when_it_is_gathered',{to:LU});
+  await say(LU,'jerusalem_sent_you_to_us_barnabas');
+  await say(P,'gladly_said',{to:LU});
+  await narr('disciples_resolved_that_relief_acts_11_29',o);
   await fade(1,600);G.meet=0;place(XA,'antioch',190,116,1);place(TN,'antioch',354,116,-1);place(LU,'court',187,113,-1);place(AG,'court',116,115,1);
   place(BN,'court',92,124,1);place(P,'court',146,128,-1);
-  await narr('In the days that followed, the gifts came in.',{dur:3200});await fade(0,600);
-  await say(BN,'Look at it, Saul. Grain, figs, oil, silver: from Jews and Greeks alike.');
-  await say(BN,'But it has weeks of road ahead of it, and our old pack bags are rotten through.');
-  await say(LU,'And nothing leaves this courtyard uncounted. I am keeping the tally here at the table.');
-  await say(P,'Then there is work here for a tentmaker. I have goat-hair cloth, a knife and an awl...');
-  await say(P,"...and not an arm's length of thread. My spool ran out days ago.",TH)}
+  await narr('in_the_days_that_followed',{dur:3200});await fade(0,600);
+  await say(BN,'look_at_it_saul');
+  await say(BN,'it_has_weeks_of_road_ahead');
+  await say(LU,'nothing_leaves_this_courtyard_uncounted');
+  await say(P,'there_is_work_here_for_a_tentmaker');
+  await say(P,'not_an_arms_length_of_thread',TH)}
 ROOMS.tarsus={space:0.8,walk:[16,304,110,138],mood:'calm',amb:{birds:.5,crowd:.25,wind:.2,hammer:.35},hs:[
-  {name:'Taurus mountains',x:118,y:22,w:150,h:26,wx:190,look:['The Taurus mountains, with snow on them even now.','The road through the Cilician Gates climbs straight into them. Kleon will need a sound tent up there.']},
-  {name:'my workshop',x:12,y:52,w:94,h:34,wx:58,wy:113,look:'My stall and workshop. Many a tent has gone out from under this awning over the years.'},
-  {name:'awning',x:4,y:40,w:112,h:11,wx:58,wy:113,look:'Goat-hair cloth of my own sewing. It has kept sun and rain off this bench for years.',pickup:'It can stay. Whoever takes this stall after me will be glad of it.'},
-  {name:'workbench',x:14,y:86,w:80,h:19,wx:58,wy:113,look:'My workbench. The marks of every tent I have cut are on it.'},
-  {name:'leather hide',x:20,y:84,w:28,h:14,wx:36,wy:113,vis:()=>!F.gotLoops,look:'A piece of oxhide, thick and well tanned. Tougher than any cloth.',
-    pickup:'I do not need the whole hide. A few strips of it, perhaps, cut to length.',use:'It would take a blade to make anything of it.',
-    useWith:async it=>{if(it==='awl'||it==='thread')return say(P,'It must be cut before anything can be sewn.');if(it!=='knife')return false;
-      SFX.cut();F.gotLoops=1;addItem('loops');await say(P,'Seven strips, each doubled into a loop. One for every peg.')}},
-  {name:'bolt of goat-hair cloth',x:50,y:80,w:36,h:9,wx:68,wy:113,look:'My last bolt of goat-hair cloth. Cilicium, they call it, after this province.',pickup:"It comes with me when I go. But first, Kleon's tent.",
-    useWith:async it=>it==='knife'?say(P,'I will not cut it without a purpose. The tent needs leather now, not more cloth.'):false},
+  {name:'taurus_mountains',x:118,y:22,w:150,h:26,wx:190,look:['taurus_mountains_with_snow','road_through_the_cilician']},
+  {name:'my_workshop',x:12,y:52,w:94,h:34,wx:58,wy:113,look:'my_stall_and_workshop'},
+  {name:'awning',x:4,y:40,w:112,h:11,wx:58,wy:113,look:'goat_hair_cloth_of_my_own_sewing',pickup:'it_can_stay'},
+  {name:'workbench',x:14,y:86,w:80,h:19,wx:58,wy:113,look:'my_workbench'},
+  {name:'leather_hide',x:20,y:84,w:28,h:14,wx:36,wy:113,vis:()=>!F.gotLoops,look:'piece_of_oxhide_thick_and_well_tanned',
+    pickup:'i_do_not_need_the_whole_hide',use:'it_would_take_a_blade_to_make',
+    useWith:async it=>{if(it==='awl'||it==='thread')return say(P,'it_must_be_cut_before_anything');if(it!=='knife')return false;
+      SFX.cut();F.gotLoops=1;addItem('loops');await say(P,'seven_strips_each_doubled_into_a_loop')}},
+  {name:'bolt_of_goat_hair_cloth',x:50,y:80,w:36,h:9,wx:68,wy:113,look:'my_last_bolt_of_goat_hair_cloth',pickup:'it_comes_with_me_when_i_go',
+    useWith:async it=>it==='knife'?say(P,'i_will_not_cut_it_without'):false},
   {name:'tent',x:139,y:56,w:55,h:50,wx:182,wy:113,dir:-1,vis:()=>!F.gotTent,get def(){return F.seam&&F.loopsOn?'pickup':'look'},
-    look:()=>say(P,tentNeeds()||'Finished. Every seam doubled, and leather at every peg. Kleon will not be let down by it.'),
-    use:()=>say(P,tentNeeds()||'It is finished. It only needs rolling up and handing over.'),
-    pickup:async()=>{const n=tentNeeds();if(n){await say(P,'I promised Kleon a finished tent, not most of one.');return say(P,n)}
-      await fade(1,200);F.gotTent=1;addItem('tent');await fade(0,200);await say(P,'Rolled tight and tied. A week of work, and it sits on one shoulder.')},
-    useWith:async it=>{if(it==='loops')return sewLoops();if(it==='knife')return say(P,'Cut it? I have spent a week sewing it.');
+    look:()=>say(P,tentNeeds()||'finished_said'),
+    use:()=>say(P,tentNeeds()||'it_is_finished'),
+    pickup:async()=>{const n=tentNeeds();if(n){await say(P,'i_promised_kleon_a_finished');return say(P,n)}
+      await fade(1,200);F.gotTent=1;addItem('tent');await fade(0,200);await say(P,'rolled_tight_and_tied')},
+    useWith:async it=>{if(it==='loops')return sewLoops();if(it==='knife')return say(P,'cut_it_said');
       if(it!=='awl'&&it!=='thread')return false;
       if(!F.seam)return sewSeam();if(has('loops'))return sewLoops();
-      return say(P,F.loopsOn?'It is finished. Not one more stitch.':'The seam is closed. Now the hem needs loops for the pegs, of something tougher than cloth.')}},
-  {name:'tent frame',x:139,y:52,w:55,h:54,wx:182,wy:113,dir:-1,vis:()=>F.gotTent,look:'The frame stands empty. A strange sight, after all these years.'},
-  {name:'pack mule',x:227,y:68,w:42,h:42,wx:240,wy:122,look:"Kleon's lead mule, loaded for the mountain road and impatient to be gone.",pickup:'It is not mine. And I think it bites.',
-    talk:async()=>{SFX.bray();await say(P,'It has nothing to say that Kleon has not said already.')}},
-  {name:'east gate',x:274,y:50,w:42,h:54,wx:292,wy:112,dir:1,look:'The east gate. Beyond it the road runs on to Antioch in Syria.',exit:()=>leave3()}]};
-KL.hs={name:'Kleon',actor:KL,look:()=>say(P,F.sold?'Kleon, well pleased with his tent, and making ready to leave.':'Kleon, a caravan master. His mules are loaded, and he keeps looking at the sun.'),
-  show:{awl:'An awl is not a tent, tentmaker.',thread:()=>say(KL,F.seam?'Thread? The seam is closed. Now see to the pegs!':'Thread. Good. Is that seam closed yet? I can see daylight through it.'),
-    knife:'Cut me nothing, tentmaker. Finish me something.',loops:'Leather! A peg will not tear through that. Sew them on, and quickly.',
-    tablets:'Write this down: one tent, due at noon.',
-    '*':'Keep your tools, tentmaker. It is my tent I am waiting for.'},
+      return say(P,F.loopsOn?'it_is_finished_said':'seam_is_closed_said')}},
+  {name:'tent_frame',x:139,y:52,w:55,h:54,wx:182,wy:113,dir:-1,vis:()=>F.gotTent,look:'frame_stands_empty'},
+  {name:'pack_mule',x:227,y:68,w:42,h:42,wx:240,wy:122,look:'kleons_lead_mule_loaded',pickup:'it_is_not_mine',
+    talk:async()=>{SFX.bray();await say(P,'it_has_nothing_to_say_that_kleon')}},
+  {name:'east_gate',x:274,y:50,w:42,h:54,wx:292,wy:112,dir:1,look:'the_east_gate',exit:()=>leave3()}]};
+KL.hs={name:'Kleon',actor:KL,look:()=>say(P,F.sold?'kleon_well_pleased_with_his_tent':'kleon_a_caravan_master'),
+  show:{awl:'awl_is_not_a_tent_tentmaker',thread:()=>say(KL,F.seam?'thread_ex':'thread_good'),
+    knife:'cut_me_nothing_tentmaker',loops:'leather_a',
+    tablets:'write_this_down_one_tent',
+    '*':'keep_your_tools_tentmaker'},
   give:async it=>{if(it!=='tent')return false;
-    await say(P,'Your tent, Kleon. Finished, as I said it would be.');
-    await say(KL,'Let me see... Leather at every peg. And a seam I cannot find with my thumbnail.');
+    await say(P,'your_tent_kleon');
+    await say(KL,'let_me_see');
     delItem('tent');F.sold=1;SFX.good();
-    await say(KL,'A man came to fetch you away, and still you would not hurry it. Here is your price, in full.');
-    await say(P,'And there is your tent, in full. Peace to you on the mountain road.');
-    await say(P,'My word is kept. Now I am free to give another.',TH)},
-  talk:async()=>{if(F.sold)return say(KL,'May your road be as sound as your seams, tentmaker.');
-    if(!F.metKleon){F.metKleon=1;await say(P,'Peace to you, Kleon. Your tent is nearly ready.');
-      await say(KL,'Nearly is no shelter in the Cilician Gates, tentmaker. My caravan leaves at noon.');
-      await say(KL,'The last tent I bought tore loose at the pegs in the first mountain wind. Make this one hold.');
-      await say(P,'It will. You have my word.')}
+    await say(KL,'man_came_to_fetch_you_away');
+    await say(P,'there_is_your_tent_in_full');
+    await say(P,'my_word_is_kept',TH)},
+  talk:async()=>{if(F.sold)return say(KL,'may_your_road_be_as_sound');
+    if(!F.metKleon){F.metKleon=1;await say(P,'peace_to_you_kleon');
+      await say(KL,'nearly_is_no_shelter_in_the_cilician');
+      await say(KL,'last_tent_i_bought_tore');
+      await say(P,'it_will')}
     await talkTree([
-      {q:'What does the tent still lack?',a:()=>say(KL,!F.seam?'You tell me! I can see daylight through the front of it.':!F.loopsOn?'Something at the hem that a peg will not tear through. Cloth loops are no good to me.':'Nothing that I can see. Roll it up and hand it over!')},
-      {q:'Where is your caravan bound?',a:async()=>{await say(KL,'Up through the Gates to Iconium, and on from there. Cold roads.');await say(KL,'Up there a man lives or freezes by his tent.')}},
-      {q:'A friend has come to take me to Antioch.',once:1,a:async()=>{await say(KL,'Then Tarsus loses a good needle. But you finish mine first!');await say(P,'I will. I said so.')}},
-      {q:'I will get back to work.',bye:1}])}};
+      {q:'what_does_the_tent_still_lack',a:()=>say(KL,!F.seam?'you_tell_me':!F.loopsOn?'something_at_the_hem_that_a_peg':'nothing_that_i_can_see')},
+      {q:'where_is_your_caravan_bound',a:async()=>{await say(KL,'up_through_the_gates_to_iconium');await say(KL,'up_there_a_man_lives_or_freezes')}},
+      {q:'friend_has_come_to_take',once:1,a:async()=>{await say(KL,'tarsus_loses_a_good_needle');await say(P,'i_will_said')}},
+      {q:'i_will_get_back_to_work',bye:1}])}};
 const BN3={name:'Barnabas',actor:BN,
-  look:()=>say(P,G.room==='tarsus'?'Barnabas. He walked the length of Tarsus to find one tentmaker.':'Barnabas. A year of work side by side, and he still gives everyone else the credit.'),
-  show:{awl:()=>say(BN,G.room==='tarsus'?(F.seam?'Put it to work, brother. Kleon is watching the sun.':'Your awl, and that open seam. Tell me where to hold.')
-      :F.gotSpool?'A good awl and good thread. The rest is your trade, brother.':'Your awl, and no thread on it. Xanthe the spinner keeps a stall out in the street.'),
-    thread:'Thread for the tent? Then let us finish it before noon.',
-    knife:()=>say(BN,G.room==='tarsus'?"What will you cut? Kleon's last tent tore loose at the pegs, he says.":'Cloth to cut, and bags to make. I will leave that to the tentmaker.'),
-    loops:'Leather loops! A peg will not tear through those.',tent:'It is Kleon who is waiting for that, not I.',
-    bolt:'Your last goat-hair cloth from Tarsus. Bags of that would shed the rain all the way to Judea.',
-    panels:'Bags already, nearly. They only need sewing.',spool:"Xanthe's thread! So she did have something to give.",
-    bags:'Fine work! Hang them on the donkey, and let us see them filled.',wages:'Lucius keeps the tally, brother. Give it to him.',
-    tablets:()=>say(BN,G.room==='tarsus'?'Still scratching notes into the wax, Saul? Write this down: Barnabas is waiting.':'Put the relief on your list, brother. It is the most important thing on it.'),
-    '*':'Keep it, brother. You will find a use for it.'},
-  ask:{kleon:'Then we had better work faster than we talk. Show me where to hold.',
-    famine:['And Antioch answered before anyone in Judea went hungry.','I have seen many congregations, Saul. I have not often seen that.']},
-  talk:()=>G.room==='tarsus'?(F.sold?say(BN,'Your word is kept, Saul. The east gate, and then the road.'):talkTree([
-      {q:'Why come all this way for me?',a:async()=>{await say(BN,'A great number in Antioch have believed, Saul. Greek-speaking people, many of them, who never sat in a synagogue.');
-        await say(BN,'They need someone who knows the Scriptures and can reason with Greeks. I thought of one man.')}},
-      {q:'How did you find me?',a:async()=>{await say(BN,'Not quickly! I asked at the synagogue, at the river harbor, and along every row of tentmakers in Tarsus.');await say(BN,'You were at the last stall of the last row.')}},
-      {q:'First I must finish this tent.',a:()=>say(BN,!F.seam?'Of course. I would think less of you if you did not. Start on that open seam, and tell me where to hold.':
-        !F.loopsOn?'Kleon says his last tent tore loose at the pegs. What do you have that is stronger than cloth?':'It looks finished to me. Kleon is waiting for it.')},
-      {q:'Give me a little time, brother.',bye:1}])):talkTree([
-    {q:'What does the relief still need?',a:async()=>{const n=[];if(!F.bagsOn)n.push(F.bags?'the new bags hung on the donkey':'new pack bags to carry it');
-      if(!F.jar)n.push("Theron's oil, which will take the two of us to carry");if(!F.sealed)n.push('the tally closed and the purse sealed');
-      await say(BN,n.length?T('It still needs {list}.',{list:n.map(x=>T(x)).join(T(', and '))}):'Nothing more. We are ready.');
-      if(!F.gotSpool)await say(BN,'For thread, try Xanthe the spinner, out in the street. Though she has not come near the courtyard since the gifts began.')}},
-    {q:'Why send it by the two of us?',a:async()=>{await say(BN,'Jerusalem knows me, and Antioch knows us both. A gift should travel with men whom both ends can trust.');await say(BN,'And two can vouch for each other. I would not want to carry it alone.')}},
-    {q:'I am glad you came looking for me.',once:1,a:()=>say(BN,'So am I. Not one day this year have I regretted that walk.')},
-    {q:'Back to work.',bye:1}])};
+  look:()=>say(P,G.room==='tarsus'?'barnabas_he_walked':'barnabas_a'),
+  show:{awl:()=>say(BN,G.room==='tarsus'?(F.seam?'put_it_to_work_brother':'your_awl_and_that_open_seam')
+      :F.gotSpool?'good_awl_and_good_thread':'your_awl_and_no_thread_on_it'),
+    thread:'thread_for_the_tent',
+    knife:()=>say(BN,G.room==='tarsus'?'what_will_you_cut':'cloth_to_cut_and_bags_to_make'),
+    loops:'leather_loops_said',tent:'it_is_kleon_who_is_waiting',
+    bolt:'your_last_goat_hair_cloth_from_tarsus',
+    panels:'bags_already_nearly',spool:'xanthes_thread_so',
+    bags:'fine_work',wages:'lucius_keeps_the_tally_brother',
+    tablets:()=>say(BN,G.room==='tarsus'?'still_scratching_notes_into_the_wax_saul':'put_the_relief_on_your_list_brother'),
+    '*':'keep_it_brother_said'},
+  ask:{kleon:'we_had_better_work_faster',
+    famine:['antioch_answered_before','i_have_seen_many_congregations_saul']},
+  talk:()=>G.room==='tarsus'?(F.sold?say(BN,'your_word_is_kept_saul_said'):talkTree([
+      {q:'why_come_all_this_way_for_me',a:async()=>{await say(BN,'great_number_in_antioch_have_believed_saul');
+        await say(BN,'they_need_someone_who_knows')}},
+      {q:'how_did_you_find_me',a:async()=>{await say(BN,'not_quickly');await say(BN,'you_were_at_the_last_stall')}},
+      {q:'first_i_must_finish_this_tent',a:()=>say(BN,!F.seam?'of_course':
+        !F.loopsOn?'kleon_says_his_last_tent':'it_looks_finished_to_me')},
+      {q:'give_me_a_little_time_brother',bye:1}])):talkTree([
+    {q:'what_does_the_relief_still_need',a:async()=>{const n=[];if(!F.bagsOn)n.push(F.bags?'new_bags_hung_on_the_donkey':'new_pack_bags_to_carry_it');
+      if(!F.jar)n.push('therons_oil_which_will');if(!F.sealed)n.push('tally_closed_and_the_purse_sealed');
+      await say(BN,n.length?T('it_still_needs_list',{list:n.map(x=>T(x)).join(T('and_2'))}):'nothing_more');
+      if(!F.gotSpool)await say(BN,'for_thread_try_xanthe_the_spinner')}},
+    {q:'why_send_it_by_the_two',a:async()=>{await say(BN,'jerusalem_knows_me_and_antioch');await say(BN,'two_can_vouch_for_each_other')}},
+    {q:'i_am_glad_you_came_looking',once:1,a:()=>say(BN,'am_i')},
+    {q:'back_to_work',bye:1}])};
 /* ---------- The courtyard ---------- */
 async function seal(){
-  if(!F.jar)return say(LU,"Not yet, brother. Theron's oil has not come in from the street, and I will not close the tally while a gift is still on its way.");
-  await say(P,'Lucius, add this to the gift. It is what my awl has earned this year, beyond my needs.');
-  await say(LU,'You are already carrying it all to Judea, Saul. Is that not gift enough?');
-  await say(P,'Carrying it is my assignment. This is my gift. Each gives as he is able.');delItem('wages');SFX.pick();
-  await say(LU,'Then that is every gift. Take the purse as it is, brother. You are trusted here.');
-  await quiz(LU,'Shall I simply hand it over to you?',[
-    {q:'Thank you. Barnabas and I will keep a careful count on the road.',r:['I am sure you would. But what could you show a man in Judea who asked how much left Antioch?']},
-    {q:'Count it before the brothers, write the sum twice, and seal the purse.',ok:1,
-      p:['Not as it is. Count it here, before the brothers, and write the sum twice: one list to stay in Antioch, one to travel with the purse. Then seal it.',
-        'Before Jehovah and before men alike, we want every part of it handled honestly. (2 Corinthians 8:21)'],r:['Well said. Then let us do exactly that.']},
-    {q:'As you think best. Among brothers, trust is seal enough.',r:['Here, yes. But this gift will pass through many hands before it is bread on a table.']}]);
-  await fade(1,300);F.sealed=1;await narr('The silver is counted aloud before the brothers. The sum is written on two tablets, and the purse is tied and sealed.',{dur:6500});await fade(0,300);SFX.good();
-  await say(LU,'One tablet stays here, and one goes with you. No one will be able to find fault with this gift, or with the men who carry it.');return checkFinal3()}
-async function loadBags(it){if(it==='bolt'||it==='panels')return say(P,'Loose cloth carries nothing. It must be sewn into bags first.');if(it!=='bags')return false;
-  SFX.creak();delItem('bags');F.bagsOn=1;await say(P,'Easy, friend. Across the saddle, and the girth drawn snug.');
-  await say(BN,'They hang as if they had grown there. And room in them for every sack.');return checkFinal3()}
+  if(!F.jar)return say(LU,'not_yet_brother');
+  await say(P,'lucius_add_this_to_the_gift');
+  await say(LU,'you_are_already_carrying');
+  await say(P,'carrying_it_is_my_assignment');delItem('wages');SFX.pick();
+  await say(LU,'that_is_every_gift');
+  await quiz(LU,'shall_i_simply_hand_it',[
+    {q:'thank_you_said',r:['i_am_sure_you_would']},
+    {q:'count_it_before_the_brothers',ok:1,
+      p:['not_as_it_is',
+        'before_jehovah_and_before_2_corinthians_8_21'],r:['well_said']},
+    {q:'as_you_think_best',r:['here_yes']}]);
+  await fade(1,300);F.sealed=1;await narr('silver_is_counted_aloud_before_the_brothers',{dur:6500});await fade(0,300);SFX.good();
+  await say(LU,'one_tablet_stays_here_and_one');return checkFinal3()}
+async function loadBags(it){if(it==='bolt'||it==='panels')return say(P,'loose_cloth_carries_nothing');if(it!=='bags')return false;
+  SFX.creak();delItem('bags');F.bagsOn=1;await say(P,'easy_friend');
+  await say(BN,'they_hang_as_if_they_had');return checkFinal3()}
 async function checkFinal3(){if(F.bagsOn&&F.sealed)return finale3();
-  return say(BN,F.bagsOn?'Now only the tally is still open. Lucius is waiting at the table.':'Counted and sealed. Now it only needs something to travel in.')}
+  return say(BN,F.bagsOn?'now_only_the_tally_is_still_open':'counted_and_sealed')}
 ROOMS.court={walk:[16,304,112,138],mood:'calm',amb:{birds:.6,leaves:.5,crowd:.12},hs:[
-  {name:'door of the house',x:34,y:56,w:32,h:48,wx:52,wy:113,look:'The door of the house. Its owner opened this courtyard to the congregation, and it has been full ever since.',
-    use:'We meet out here, where there is room for everyone.',open:'We meet out here, where there is room for everyone.'},
-  {name:'water jar',x:68,y:86,w:14,h:20,wx:66,wy:113,look:'A great jar of water by the door, for washing the dust off. Everyone is welcomed the same way here.',pickup:'It would take two men to lift.'},
-  {name:'vine arbor',x:100,y:30,w:88,h:22,wx:140,wy:114,look:'A vine trained over the arbor. For a whole year we have taught in its shade.',pickup:'The grapes are not ripe. And they are not mine.'},
-  {name:'bench',x:112,y:94,w:28,h:12,wx:126,wy:113,look:'A bench worn smooth. Jews and Greeks have sat on it side by side to hear the word.'},
-  {name:'table',x:144,y:82,w:36,h:25,wx:162,wy:114,look:()=>say(P,F.sealed?'Two wax tablets with the same sum on each, and the purse, tied and sealed.':"Lucius's wax tablets, and a purse of silver. Nothing has been closed or sealed yet."),
-    pickup:'Not until it has been counted before the brothers.',useWith:async it=>it==='wages'?seal():false},
-  {name:'gifts of the congregation',x:194,y:80,w:44,h:30,wx:214,wy:115,vis:()=>!F.loaded,look:['Sacks of grain, a basket of dried figs, jars of oil.','Some households brought a sackful and some a handful. Each gave what it could.'],
-    pickup:'Not by the armful. It needs bags, and a donkey to bear them.',useWith:async it=>it==='bags'?say(P,'The bags go on the donkey first. Then they can be filled.'):false},
-  {name:'old pack bags',x:236,y:42,w:24,h:30,wx:232,wy:113,dir:1,look:"The congregation's old pack bags. The cloth has rotted along every fold.",pickup:'They would not survive being lifted off the peg.',
-    useWith:async it=>['awl','spool','knife'].includes(it)?say(P,'There is no sound cloth left in them to hold a stitch. The gift needs new bags.'):false},
+  {name:'door_of_the_house',x:34,y:56,w:32,h:48,wx:52,wy:113,look:'the_door_of_the_house',
+    use:'we_meet_out_here_where',open:'we_meet_out_here_where'},
+  {name:'water_jar',x:68,y:86,w:14,h:20,wx:66,wy:113,look:'great_jar_of_water_by_the_door',pickup:'it_would_take_two_men_to_lift'},
+  {name:'vine_arbor',x:100,y:30,w:88,h:22,wx:140,wy:114,look:'vine_trained_over_the_arbor',pickup:'grapes_are_not_ripe'},
+  {name:'bench',x:112,y:94,w:28,h:12,wx:126,wy:113,look:'bench_worn_smooth'},
+  {name:'table',x:144,y:82,w:36,h:25,wx:162,wy:114,look:()=>say(P,F.sealed?'two_wax_tablets_with_the_same':'luciuss_wax_tablets_and_a_purse'),
+    pickup:'not_until_it_has_been_counted',useWith:async it=>it==='wages'?seal():false},
+  {name:'gifts_of_the_congregation',x:194,y:80,w:44,h:30,wx:214,wy:115,vis:()=>!F.loaded,look:['sacks_of_grain_a_basket','some_households_brought'],
+    pickup:'not_by_the_armful',useWith:async it=>it==='bags'?say(P,'bags_go_on_the_donkey_first'):false},
+  {name:'old_pack_bags',x:236,y:42,w:24,h:30,wx:232,wy:113,dir:1,look:'congregations_old_pack_bags',pickup:'they_would_not_survive',
+    useWith:async it=>['awl','spool','knife'].includes(it)?say(P,'there_is_no_sound_cloth'):false},
   {name:'donkey',x:238,y:72,w:42,h:40,wx:232,wy:116,dir:1,
-    look:()=>say(P,F.bagsOn?'New bags across his saddle, and he bears them without complaint.':'A sturdy pack donkey with a bare saddle. He has walked the road to Judea before.'),
-    talk:async()=>{SFX.bray();await say(P,'He listens well, and says little. A fine traveling companion.')},pickup:'He weighs a good deal more than I do.',
-    use:()=>say(P,F.bagsOn?'He is ready. He is only waiting for us.':'He cannot carry grain on a bare saddle. He needs pack bags.'),useWith:loadBags},
-  {name:'gate to the street',x:284,y:44,w:32,h:60,wx:298,wy:113,dir:1,look:'The gate to the great colonnaded street.',exit:()=>go('antioch',44,116,1)}]};
-LU.hs={name:'Lucius',actor:LU,look:'Lucius of Cyrene, one of the teachers in the congregation. He is keeping the tally of the gifts.',
-  show:{awl:'I count; you sew. Let each of us keep to his trade.',knife:'Put that away before I write it on the list.',
-    bolt:'For the bags? Good. The old ones would not survive the gate.',panels:'Well cut. I would not know where to begin.',
-    spool:'Thread from Xanthe? Then her gift will be in every seam. No list could hold it better.',
-    bags:'Bags fit for the road. Hang them on the donkey, and let us fill them.',
-    tablets:'Wax tablets! A man after my own heart. Every gift goes on mine.',
-    '*':'That is yours, brother. Keep it, unless you mean to add it to the gift.'},
-  ask:{famine:'It will fall hardest on Judea. That is why I count so carefully.',thread:'I count, brother, I do not spin. But the street is full of stalls.'},
+    look:()=>say(P,F.bagsOn?'new_bags_across_his_saddle':'sturdy_pack_donkey_with_a_bare_saddle'),
+    talk:async()=>{SFX.bray();await say(P,'he_listens_well_and_says_little')},pickup:'he_weighs_a_good_deal_more',
+    use:()=>say(P,F.bagsOn?'he_is_ready':'he_cannot_carry_grain_on_a_bare'),useWith:loadBags},
+  {name:'gate_to_the_street',x:284,y:44,w:32,h:60,wx:298,wy:113,dir:1,look:'gate_to_the_great_colonnaded_street',exit:()=>go('antioch',44,116,1)}]};
+LU.hs={name:'Lucius',actor:LU,look:'lucius_of_cyrene_one_of_the_teachers',
+  show:{awl:'i_count_you_sew',knife:'put_that_away_before_i',
+    bolt:'for_the_bags',panels:'well_cut',
+    spool:'thread_from_xanthe',
+    bags:'bags_fit_for_the_road',
+    tablets:'wax_tablets_a',
+    '*':'that_is_yours_brother'},
+  ask:{famine:'it_will_fall_hardest_on_judea',thread:'i_count_brother_i_do_not_spin'},
   give:async it=>it==='wages'?seal():false,
   talk:()=>talkTree([
-    {q:'What is in the tally?',a:()=>say(LU,F.sealed?'Everything: counted before the brothers, written twice, and sealed. No one can find fault with it.':
-      'Every sack, every jar and every coin. What was given, but not who gave it. Some brought much and some little, and the list does not say which.')},
-    {q:'You are from Cyrene.',a:async()=>{await say(LU,'I am. Men of Cyprus and Cyrene were the first to speak to the Greek-speaking people of this city.');await say(LU,'They had the hand of Jehovah with them. Look around this courtyard.')}},
-    {q:'Is every gift in?',if:()=>!F.sealed,a:()=>say(LU,F.jar?'Nearly. If you mean to add anything of your own, brother, now is the time. Then I can close the tally.':
-      "All but Theron's oil. He has it ready at his stall, but it is a load for two.")},
-    {q:'I will get to work.',bye:1}])};
-AG.hs={name:'Agabus',actor:AG,look:'Agabus, one of the prophets who came down from Jerusalem. He speaks plainly and wastes no words.',
-  show:{awl:'A good tool for good work. Use it.',knife:'Keep it for your cloth, brother.',bolt:'Cloth that sheds the rain. The road to Judea will test it.',
-    panels:'Sew them, and the grain will travel dry.',spool:'Thread from a sister in the street? Then her gift will travel the whole road to Judea.',
-    bags:'Strong work. They will carry the grain to Judea.',wages:'That is for Lucius and the tally, not for me.',
-    tablets:'Write down what was foretold, brother. And then write down what Antioch did about it.',
-    '*':'I need nothing, brother. Let it go to Judea.'},
-  ask:{thread:'Then ask, brother. This congregation is not short of willing hands.'},
+    {q:'what_is_in_the_tally',a:()=>say(LU,F.sealed?'everything_counted_before':
+      'every_sack_every_jar_and_every_coin')},
+    {q:'you_are_from_cyrene',a:async()=>{await say(LU,'i_am');await say(LU,'they_had_the_hand_of_jehovah')}},
+    {q:'is_every_gift_in',if:()=>!F.sealed,a:()=>say(LU,F.jar?'nearly_said':
+      'all_but_therons_oil')},
+    {q:'i_will_get_to_work',bye:1}])};
+AG.hs={name:'Agabus',actor:AG,look:'agabus_one_of_the_prophets',
+  show:{awl:'good_tool_for_good_work',knife:'keep_it_for_your_cloth_brother',bolt:'cloth_that_sheds_the_rain',
+    panels:'sew_them_and_the_grain',spool:'thread_from_a_sister_in_the_street',
+    bags:'strong_work',wages:'that_is_for_lucius_and_the_tally',
+    tablets:'write_down_what_was_foretold_brother',
+    '*':'i_need_nothing_brother'},
+  ask:{thread:'ask_brother'},
   talk:()=>talkTree([
-    {q:'When will the famine come?',a:async()=>{await say(AG,'I was not told the day, brother. I said what was made known to me, and no more than that.');await say(AG,'But your congregation did not wait to be told the day. That was wise.')}},
-    {q:'How are the brothers in Judea?',a:async()=>{await say(AG,'Many have little. Some lost homes and livelihoods in the persecution, years ago, and never recovered them.');await say(AG,'A lean year will fall hardest on those.')}},
-    {q:'You came a long way to tell us.',once:1,a:()=>say(AG,'And I will go back with something to tell Jerusalem: that Antioch answered with open hands.')},
-    {q:'Peace to you, Agabus.',bye:1}])};
+    {q:'when_will_the_famine_come',a:async()=>{await say(AG,'i_was_not_told_the_day_brother');await say(AG,'your_congregation_did_not')}},
+    {q:'how_are_the_brothers_in_judea',a:async()=>{await say(AG,'many_have_little');await say(AG,'lean_year_will_fall_hardest_on_those')}},
+    {q:'you_came_a_long_way_to_tell',once:1,a:()=>say(AG,'i_will_go_back_with_something')},
+    {q:'peace_to_you_agabus',bye:1}])};
 /* ---------- The street ---------- */
 /* Theron's jar: both men at the stall, Barnabas's staff through the handles, one at each end (as in Numbers 13:23). */
 async function carryJar(it){if(it!=='staff')return false;const me=PC(),other=me===P?BN:P;
-  if(other.room!=='antioch')return say(me,me===P?'It needs a man at each end of the bar. Barnabas must take the other end.':'It needs a man at each end of the bar. I must fetch Saul.');
+  if(other.room!=='antioch')return say(me,me===P?'it_needs_a_man_at_each':'it_needs_a_man_at_each_said');
   await Promise.all([walk(me,410,118),walk(other,444,120)]);me.dir=1;other.dir=-1;
-  await say(BN,'My staff through both handles, and a man at each end.');
-  await say(P,'Like the two men who carried the grapes from the Valley of Eshcol on a bar. (Numbers 13:23)');
-  await say(TN,'Gently, brothers! That is the best oil I ever sealed.');
+  await say(BN,'my_staff_through_both_handles');
+  await say(P,'like_the_two_numbers_13_23');
+  await say(TN,'gently_brothers');
   await fade(1,400);F.jar=1;SFX.creak();place(P,'court',176,126,-1);place(BN,'court',150,122,1);viewOf(PC());await wait(300);await fade(0,400);
-  await say(LU,"Theron's oil! Set it down by the rest, brothers. That is one more line for the tally.")}
+  await say(LU,'therons_oil')}
 async function xanthe(){
-  await say(P,'Peace to you, sister Xanthe.');
-  await say(XA,'Peace, brother. You have come about the gift for Judea. I know: I have brought nothing.');
-  await quiz(XA,'The others carry in sacks of grain. I earn two small coins a day. What could I give?',[
-    {q:'Then you are excused, sister. Let those who have more give more.',r:['Excused. Yes... that is the very word I was afraid of.']},
-    {q:'Everyone else is giving something, sister.',r:['Everyone else. I know, brother: I can see the sacks from my stall. That only tells me what I do not have.']},
-    {q:'No one asks for what you do not have. Each gives what he can afford.',ok:1,
-      p:['No one asks for what you do not have, Xanthe. Each gives as he is able: that is what the congregation decided.',
-        'A gift is especially acceptable when the readiness comes first: it is weighed by what a person has, not by what he lacks. (2 Corinthians 8:12)'],
-      r:['As I am able... Then even a little would truly be mine to give.']}]);
-  await quiz(XA,'But what do I have that hungry people need?',[
-    {q:'Jehovah sees your heart. Let that be enough for you.',r:['I know that he does. But I wanted my hands to have a share in it, and not only my heart.']},
-    {q:'Do not look at what you lack. What is in your hands?',ok:1,p:['Do not look at what you lack, sister. What is in your hands? Show me what you make.'],
-      r:['Thread. Linen thread, waxed and doubled, the strongest in this street.','But no one can eat thread, brother.']},
-    {q:'Little enough, it is true. But it is the thought that counts.',r:['A thought fills no bowl in Judea.']}]);
-  await quiz(XA,'What use is thread in a famine?',[
-    {q:'Not much, perhaps. But bring it anyway. No gift is turned away.',r:['Then it would lie in a corner of the courtyard: a gift that nobody needed.']},
-    {q:'I could buy it from you. Then you would have coins to give.',r:['That would be your silver passing through my hand, brother. It is kind. But it would not be my gift.']},
-    {q:'The gift has no bags to travel in, and I have no thread to sew them.',ok:1,
-      p:['The gift cannot reach Judea without pack bags, and the old ones are rotten through.',
-        "I have the cloth and the awl, and not an arm's length of thread. Yours would hold every sack of it together, all the way to Jerusalem."],
-      r:['My thread, holding the whole gift together?','Then take the best spool I have, and take it gladly! Tell the brothers in Judea that a spinner in Antioch thought of them.']}]);
-  F.gotSpool=1;addItem('spool');await say(P,'I will tell them. Thank you, sister.');await say(P,'She has given more than thread. And now I can sew.',TH)}
+  await say(P,'peace_to_you_sister_xanthe');
+  await say(XA,'peace_brother');
+  await quiz(XA,'others_carry_in_sacks_of_grain',[
+    {q:'you_are_excused_sister',r:['excused_said']},
+    {q:'everyone_else_is_giving_something_sister',r:['everyone_else']},
+    {q:'no_one_asks_for_what_you',ok:1,
+      p:['no_one_asks_for_what_you_said',
+        'gift_is_especially_2_corinthians_8_12'],
+      r:['as_i_am_able']}]);
+  await quiz(XA,'what_do_i_have_that_hungry',[
+    {q:'jehovah_sees_your_heart',r:['i_know_that_he_does']},
+    {q:'do_not_look_at_what_you_lack',ok:1,p:['do_not_look_at_what_you'],
+      r:['thread_linen','no_one_can_eat_thread_brother']},
+    {q:'little_enough_it_is_true',r:['thought_fills_no_bowl_in_judea']}]);
+  await quiz(XA,'what_use_is_thread_in_a_famine',[
+    {q:'not_much_perhaps',r:['it_would_lie_in_a_corner']},
+    {q:'i_could_buy_it_from_you',r:['that_would_be_your_silver']},
+    {q:'gift_has_no_bags_to_travel',ok:1,
+      p:['gift_cannot_reach_judea',
+        'i_have_the_cloth_and_the_awl_said'],
+      r:['my_thread_holding_the_whole_gift_together','take_the_best_spool_i_have']}]);
+  F.gotSpool=1;addItem('spool');await say(P,'i_will_tell_them');await say(P,'she_has_given_more_than_thread',TH)}
 ROOMS.antioch={space:0.9,walk:[16,466,110,138],mood:'hope',amb:{crowd:.6,fountain:.7,birds:.3,hooves:.3},hs:[
-  {name:'mountain',x:230,y:4,w:200,h:24,wx:300,look:'The mountain above the city, with the city wall climbing over its shoulder.'},
-  {name:'colonnade',x:112,y:30,w:318,h:28,wx:270,look:['The great street of Antioch, paved and colonnaded from end to end.','In its shade, people from every nation pass each other all day long. Many of them have stopped to listen.']},
-  {name:'gate to the courtyard',x:16,y:44,w:44,h:60,wx:38,wy:112,dir:-1,look:'The gate of the house where the congregation meets.',exit:()=>go('court',296,116,-1)},
-  {name:'thread stall',x:150,y:44,w:80,h:60,wx:176,wy:114,look:"Xanthe's stall: skeins of yarn in every color, and spools of waxed linen thread.",pickup:'That would be stealing.'},
-  {name:'fountain',x:250,y:60,w:34,h:45,wx:266,wy:114,look:'Water from the springs above the city, running day and night.',use:'Cool and sweet. A year here, and I still marvel at it.',
-    pickup:'I have nothing to carry water in. And the road is not today.'},
-  {name:'pottery stall',x:310,y:43,w:100,h:62,wx:340,wy:114,look:"Theron's jars, bowls and lamps. Plain, sound work, like the man.",pickup:'That would be stealing. Besides, I keep to cloth: it does not break when I drop it.'},
-  {name:"Theron's oil jar",x:418,y:92,w:16,h:24,wx:410,wy:118,dir:1,vis:()=>!F.jar,
-    look:["A great jar of oil, with Theron's seal on the stopper and a handle at each shoulder.",'It is a load for two men and a bar between them.'],
-    pickup:'Not alone. It is a load for two men and a bar.',use:'It needs a bar through both handles, and a man at each end.',useWith:carryJar},
-  {name:'south gate',x:436,y:20,w:44,h:84,wx:452,wy:112,dir:1,look:'The road south: down the coast, and at the end of it, Judea.',
-    use:'Not yet. The gift is not ready for the road.',open:'It stands open. It is the gift that is not ready.'}]};
-XA.hs={name:'Xanthe',actor:XA,look:()=>say(P,F.gotSpool?'Xanthe, spinning again, and singing under her breath.':'Xanthe, a widow who spins thread for her living. She came to believe this year. Today she looks troubled.'),
-  give:async it=>{if(it==='wages')return say(P,'It is not my silver she needs. That would only tell her that her own gift does not count.');
-    if(it==='spool')return say(XA,'No, brother! It is given. Use it.');return false},
-  show:{awl:()=>say(XA,F.gotSpool?'Threaded with my thread now, I hope!':'An awl with no thread on it. Is that what troubles you, brother?'),
-    knife:'A sharp blade. Mine is only a little one, for cutting thread.',bolt:'Goat-hair cloth from Cilicia. That will need strong thread.',
-    panels:()=>say(XA,F.gotSpool?'My thread is waiting for those.':'Cut for sewing... And what will you sew them with, brother?'),
-    bags:'My thread in every seam! I can hardly believe it.',tablets:'You can read and write, brother? I only know thread.','*':'No, brother. Keep it.'},
-  ask:{famine:'I heard. And now a little of my thread will go to meet it.'},
-  talk:async()=>{if(!F.gotSpool)return xanthe();await say(XA,F.bags?'My thread, on the road to Judea. Who would have thought it?':'Sew well, brother. I waxed that thread myself.');
-    return talkTree([{q:'Peace to you, sister.',bye:1}],{quiet:1})}};
-TN.hs={name:'Theron',actor:TN,look:'Theron, a potter. He first heard the good news in this very street, and he has not stopped talking about it since.',
-  show:{awl:'I work with clay, you with cloth. But we serve the same Lord.',knife:'I cut my clay with a wire. Yours is sharper.',
-    bolt:'Cloth for the relief? You will need good thread for that. Xanthe spins the best in the street.',
-    panels:'Sew them strong. My oil jars will be riding in them!',spool:"Xanthe's! So she gave after all. I knew she would, once she saw a reason.",
-    bags:'Those will carry my jars to Judea, and not one will crack.',wages:'Give it to Lucius, brother. He will count it twice.',
-    staff:'That would do for a bar! Through both handles, and a man at each end.',
-    tablets:'Write down that a potter in Antioch is a Christian, and glad of the name.',
-    '*':'Keep it, brother. I deal in clay.'},
-  ask:{famine:'Then Judea will need oil as well as grain. My best jar is sealed and set aside for it.'},
+  {name:'mountain',x:230,y:4,w:200,h:24,wx:300,look:'mountain_above_the_city'},
+  {name:'colonnade',x:112,y:30,w:318,h:28,wx:270,look:['great_street_of_antioch','in_its_shade_people_from_every']},
+  {name:'gate_to_the_courtyard',x:16,y:44,w:44,h:60,wx:38,wy:112,dir:-1,look:'gate_of_the_house_where',exit:()=>go('court',296,116,-1)},
+  {name:'thread_stall',x:150,y:44,w:80,h:60,wx:176,wy:114,look:'xanthes_stall_skeins_of_yarn',pickup:'that_would_be_stealing'},
+  {name:'fountain',x:250,y:60,w:34,h:45,wx:266,wy:114,look:'water_from_the_springs',use:'cool_and_sweet',
+    pickup:'i_have_nothing_to_carry_water_in_and_the'},
+  {name:'pottery_stall',x:310,y:43,w:100,h:62,wx:340,wy:114,look:'therons_jars_bowls_and_lamps',pickup:'that_would_be_stealing_said'},
+  {name:'therons_oil_jar',x:418,y:92,w:16,h:24,wx:410,wy:118,dir:1,vis:()=>!F.jar,
+    look:['great_jar_of_oil_with_therons','it_is_a_load_for_two_men'],
+    pickup:'not_alone',use:'it_needs_a_bar_through',useWith:carryJar},
+  {name:'south_gate',x:436,y:20,w:44,h:84,wx:452,wy:112,dir:1,look:'road_south_down_the_coast',
+    use:'not_yet',open:'it_stands_open'}]};
+XA.hs={name:'Xanthe',actor:XA,look:()=>say(P,F.gotSpool?'xanthe_spinning_again_and_singing':'xanthe_a_widow_who_spins'),
+  give:async it=>{if(it==='wages')return say(P,'it_is_not_my_silver_she_needs');
+    if(it==='spool')return say(XA,'no_brother_it');return false},
+  show:{awl:()=>say(XA,F.gotSpool?'threaded_with_my_thread_now_i_hope':'awl_with_no_thread_on_it'),
+    knife:'sharp_blade',bolt:'goat_hair_cloth_from_cilicia_said',
+    panels:()=>say(XA,F.gotSpool?'my_thread_is_waiting_for_those':'cut_for_sewing'),
+    bags:'my_thread_in_every_seam',tablets:'you_can_read_and_write_brother','*':'no_brother_keep'},
+  ask:{famine:'i_heard'},
+  talk:async()=>{if(!F.gotSpool)return xanthe();await say(XA,F.bags?'my_thread_on_the_road_to_judea':'sew_well_brother');
+    return talkTree([{q:'peace_to_you_sister',bye:1}],{quiet:1})}};
+TN.hs={name:'Theron',actor:TN,look:'theron_a_potter',
+  show:{awl:'i_work_with_clay_you_with_cloth',knife:'i_cut_my_clay_with_a_wire',
+    bolt:'cloth_for_the_relief',
+    panels:'sew_them_strong',spool:'xanthes',
+    bags:'those_will_carry_my_jars',wages:'give_it_to_lucius_brother',
+    staff:'that_would_do_for_a_bar',
+    tablets:'write_down_that_a_potter',
+    '*':'keep_it_brother_i'},
+  ask:{famine:'judea_will_need_oil_as_well'},
   talk:()=>talkTree([
-    {q:'How did you come to believe?',a:async()=>{await say(TN,'Men from Cyprus and Cyrene came to Antioch. They did not speak only to the Jews: they spoke to us Greeks about the Lord Jesus.');
-      await say(TN,'A great number of us believed. Then Barnabas came, and then he went and fetched you.')}},
-    {q:'What do you tell your customers?',a:async()=>{await say(TN,'That I am a Christian! It is the name we are known by here, and I say it gladly.');await say(P,'It is a name worth living up to.')}},
-    {q:'Has Xanthe been to the courtyard?',if:()=>!F.gotSpool,a:async()=>{await say(TN,'Not since the gifts began to come in. She sits at her stall and will not look up.');await say(TN,'I offered to carry her gift over with mine. She said she had none to carry.')}},
-    {q:'Is your own gift ready?',a:()=>say(TN,F.jar?'It went to the courtyard on two good pairs of shoulders. A potter cannot send much, but he can send it well sealed.':
-      'My best jar of oil, sealed with my own mark. But it is a load for two men and a bar, and I cannot leave my stall.')},
-    {q:'Peace to you, Theron.',bye:1}])};
+    {q:'how_did_you_come_to_believe',a:async()=>{await say(TN,'men_from_cyprus_and_cyrene');
+      await say(TN,'great_number_of_us_believed')}},
+    {q:'what_do_you_tell_your_customers',a:async()=>{await say(TN,'that_i_am_a_christian');await say(P,'it_is_a_name_worth_living')}},
+    {q:'has_xanthe_been_to_the_courtyard',if:()=>!F.gotSpool,a:async()=>{await say(TN,'not_since_the_gifts_began');await say(TN,'i_offered_to_carry_her_gift')}},
+    {q:'is_your_own_gift_ready',a:()=>say(TN,F.jar?'it_went_to_the_courtyard':
+      'my_best_jar_of_oil_sealed')},
+    {q:'peace_to_you_theron',bye:1}])};
 /* ---------- Barnabas's side of things, when he is the one being played ---------- */
-KL.hs.as={barnabas:{look:'Kleon the caravan master. He has been looking at the sun since I arrived.',
-  talk:()=>say(KL,F.sold?'Take your tentmaker, then. He kept his word to the stitch.':'You are the one who came to take my tentmaker away. Not before noon, friend.'),
-  show:{tent:'Let the tentmaker hand it over himself, friend. It was his word, not yours.','*':"Keep it, friend. It is the tentmaker's work I am waiting for."}}};
-AG.hs.as={barnabas:{look:'Agabus. He brought hard news from Jerusalem, and brought it plainly.',
-  talk:()=>say(AG,'Barnabas. Jerusalem will be glad of you both, and of what you carry.'),show:{'*':'Keep it, Barnabas. Let it go to Judea.'}}};
-LU.hs.as={barnabas:{look:'Lucius of Cyrene, with his tally. Nothing leaves this courtyard uncounted.',
-  talk:()=>say(LU,F.sealed?'Counted and sealed, Barnabas. You can carry it with a clear conscience.':!F.jar?"Theron's oil has not come in yet. I will not close the tally while a gift is on its way.":'Saul says he has something to add. Then I can close the tally.'),
-  show:{wages:"That is Saul's own, Barnabas. Let him bring it himself.",'*':'If it is for the relief, Barnabas, it will be counted with the rest.'}}};
-XA.hs.as={barnabas:{look:()=>say(BN,F.gotSpool?'Xanthe, singing over her spinning again.':'Xanthe the spinner. She has not come near the courtyard since the gifts began.'),
-  talk:async()=>{if(F.gotSpool)return say(XA,'Barnabas! Tell our brother Saul to sew well.');
-    await say(XA,'Barnabas, brother. Have you come to ask what I am giving?');await say(BN,'Only to greet you, sister. Saul is the one with a question for you.')},
-  show:{'*':'No, brother. Keep it.'}}};
-TN.hs.as={barnabas:{look:'Theron the potter. He talks about the Lord to everyone who buys a lamp.',
-  talk:()=>say(TN,F.jar?'My jar is in good hands, Barnabas.':'Barnabas! My jar is ready for the relief, but it needs two men and a bar between them. You are only one.'),
-  show:{staff:'Your staff! Through both handles, and a man at each end. Now fetch Saul.','*':'Keep it, Barnabas. I deal in clay.'}}};
+KL.hs.as={barnabas:{look:'kleon_the_caravan_master',
+  talk:()=>say(KL,F.sold?'take_your_tentmaker_then':'you_are_the_one_who_came'),
+  show:{tent:'let_the_tentmaker_hand','*':'keep_it_friend_it'}}};
+AG.hs.as={barnabas:{look:'agabus_said',
+  talk:()=>say(AG,'barnabas_jerusalem'),show:{'*':'keep_it_barnabas'}}};
+LU.hs.as={barnabas:{look:'lucius_of_cyrene_with_his_tally',
+  talk:()=>say(LU,F.sealed?'counted_and_sealed_barnabas':!F.jar?'therons_oil_has_not_come_in_yet':'saul_says_he_has_something_to_add'),
+  show:{wages:'that_is_sauls_own_barnabas','*':'if_it_is_for_the_relief'}}};
+XA.hs.as={barnabas:{look:()=>say(BN,F.gotSpool?'xanthe_singing_over_her_spinning_again':'xanthe_the_spinner'),
+  talk:async()=>{if(F.gotSpool)return say(XA,'barnabas_tell');
+    await say(XA,'barnabas_brother');await say(BN,'only_to_greet_you_sister')},
+  show:{'*':'no_brother_keep'}}};
+TN.hs.as={barnabas:{look:'theron_the_potter',
+  talk:()=>say(TN,F.jar?'my_jar_is_in_good_hands_barnabas':'barnabas_my'),
+  show:{staff:'your_staff','*':'keep_it_barnabas_said'}}};
 const AS_B={
-  tarsus:{'Taurus mountains':{look:'The Taurus. Kleon will cross them by the Cilician Gates. I am glad it is him and not me.'},
-    'my workshop':{look:"Saul's stall. Every tool hangs where he can reach it without looking."},'awning':{look:"Goat-hair cloth. Saul's own sewing, I would guess."},
+  tarsus:{'taurus_mountains':{look:'the_taurus'},
+    'my_workshop':{look:'sauls_stall'},'awning':{look:'goat_hair_cloth_sauls'},
     /* the hidden treasure (CONTRIBUTING section 2): Barnabas, played, sits down at Saul's bench. It changes nothing. */
-    'workbench':{look:'Scarred by years of cutting.',use:async()=>{await say(BN,"I sit down at Saul's bench. Every tool is within reach, and not one of them is any use in my hands.");
-      await say(BN,'I had better get up again before he sees me.');treasure()}},'leather hide':{look:'A thick oxhide. Saul will know what to make of it.'},
-    'bolt of goat-hair cloth':{look:'Goat-hair cloth. Cilicium, they call it here.'},
-    'tent':{look:()=>say(BN,F.seam?'The seam is closed. I could not find it if I tried.':'One seam still gapes open. Saul says the far edge must be held taut.'),
-      use:hold,pickup:hold,useWith:async it=>say(BN,"The stitching is Saul's work. I can hold the cloth, though.")},
-    'tent frame':{look:'Empty now. Kleon has his tent.'},
-    'pack mule':{look:"Kleon's mule. It looks at me as if I owed it money.",talk:async()=>{SFX.bray();await say(BN,'It has nothing to say to a Levite either.')}}},
-  court:{'door of the house':{look:'The house of a brother who opened his courtyard to all of us.'},
-    'water jar':{look:'Water for washing off the dust. Antioch welcomes everyone the same way.'},'vine arbor':{look:'A whole year we have taught in its shade.'},
-    'bench':{look:'Jews and Greeks, side by side. I never tire of the sight.'},
-    'table':{look:()=>say(BN,F.sealed?'Counted, written twice, and sealed.':"Lucius's tally, and the purse."),useWith:async it=>say(BN,it==='wages'?"That is Saul's to give, not mine.":'Lucius would only count it.')},
-    'gifts of the congregation':{look:'Grain, figs and oil, from Jews and Greeks alike.'},
-    'old pack bags':{look:'Rotten through. They would not survive the gate.'},
-    'donkey':{look:'He has walked the road to Judea before. He knows it better than I do.',talk:async()=>{SFX.bray();await say(BN,'A fine traveling companion. He never argues.')},
-      useWith:async it=>say(BN,it==='bags'?"Saul sewed them, so let Saul hang them. I will hold the donkey's head.":'He has no use for that.')}},
-  antioch:{'mountain':{look:'The mountain above the city, and the wall climbing over it.'},
-    'colonnade':{look:'When I first walked this street, I saw the undeserved kindness of God at work everywhere. (Acts 11:23)'},
-    'thread stall':{look:"Xanthe's stall. The best thread in Antioch, Theron says."},'fountain':{look:'Water from the springs above the city.'},
-    'pottery stall':{look:"Theron's stall. Plain, sound work."},'south gate':{look:'The road to Judea. Not yet.'},
-    "Theron's oil jar":{look:"Theron's jar, sealed for the relief. A handle at each shoulder: two men and a bar would carry it.",
-      pickup:'Not alone, and not without a bar through the handles.',use:'It needs a bar through the handles, and Saul at the other end.',useWith:carryJar}}};
+    'workbench':{look:'scarred_by_years_of_cutting',use:async()=>{await say(BN,'i_sit_down_at_sauls_bench');
+      await say(BN,'i_had_better_get_up_again');treasure()}},'leather_hide':{look:'thick_oxhide'},
+    'bolt_of_goat_hair_cloth':{look:'goat_hair_cloth_cilicium'},
+    'tent':{look:()=>say(BN,F.seam?'seam_is_closed_i':'one_seam_still_gapes_open'),
+      use:hold,pickup:hold,useWith:async it=>say(BN,'stitching_is_sauls_work')},
+    'tent_frame':{look:'empty_now'},
+    'pack_mule':{look:'kleons_mule',talk:async()=>{SFX.bray();await say(BN,'it_has_nothing_to_say_to_a_levite')}}},
+  court:{'door_of_the_house':{look:'house_of_a_brother_who'},
+    'water_jar':{look:'water_for_washing_off_the_dust'},'vine_arbor':{look:'whole_year_we_have_taught'},
+    'bench':{look:'jews_and_greeks_side_by_side'},
+    'table':{look:()=>say(BN,F.sealed?'counted_written_twice_and_sealed':'luciuss_tally_and_the_purse'),useWith:async it=>say(BN,it==='wages'?'that_is_sauls_to_give_not_mine':'lucius_would_only_count_it')},
+    'gifts_of_the_congregation':{look:'grain_figs_and_oil_from_jews'},
+    'old_pack_bags':{look:'rotten_through'},
+    'donkey':{look:'he_has_walked_the_road',talk:async()=>{SFX.bray();await say(BN,'fine_traveling_companion')},
+      useWith:async it=>say(BN,it==='bags'?'saul_sewed_them_so_let':'he_has_no_use_for_that')}},
+  antioch:{'mountain':{look:'the_mountain_above_the_city'},
+    'colonnade':{look:'when_i_first_acts_11_23'},
+    'thread_stall':{look:'xanthes_stall'},'fountain':{look:'water_from_the_springs_above_the_city'},
+    'pottery_stall':{look:'therons_stall'},'south_gate':{look:'road_to_judea'},
+    'therons_oil_jar':{look:'therons_jar_sealed_for_the_relief',
+      pickup:'not_alone_and_not_without',use:'it_needs_a_bar_through_said',useWith:carryJar}}};
 for(const r in AS_B)for(const h of ROOMS[r].hs)if(AS_B[r][h.name])h.as={barnabas:AS_B[r][h.name]};
 /* ============ SCENES: intro, ending; PRAYER HINTS ============ */
 async function start3(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();
   await cut(async()=>{await fade(1,500);setChapter(3);G.scene=null;G.end={};enterRoom('tarsus',150,122,-1);place(BN,'tarsus',-14,124,1);codeBtn();await fade(0,600);
-    await narr('Tarsus in Cilicia, about 45 C.E.',{dur:2800});
-    await narr('For years Saul has been preaching the good news in Syria and Cilicia. (Galatians 1:21-23)');
-    await narr('Meanwhile, in Antioch of Syria, very many who speak Greek have come to believe, and Jerusalem has sent Barnabas to them. (Acts 11:20-22)');
-    await narr('Barnabas knows who could help. He sets out for Tarsus, and means to search until he has found Saul. (Acts 11:25)');
-    await say(BN,'Saul! Saul of Tarsus!');await walk(BN,112,124);
-    await say(BN,'I have asked for you along every row of tentmakers in this city. And here you are, at the very last stall.');
-    await say(P,'Barnabas! Peace to you, my brother. What brings you all the way to Tarsus?');
-    await say(BN,'Antioch. A great number there have believed, Saul, and there is more teaching to do than one man can manage. Come back with me.');
-    await say(P,'I will come.');
-    await say(P,'But I promised Kleon the caravan master his tent by noon, and it is not finished. When I say yes, it must mean yes.');
-    await say(BN,'Then show me where to hold. Four hands are quicker than two.')},true)}
+    await narr('tarsus_in_cilicia_about_45_c_e',{dur:2800});
+    await narr('for_years_saul_galatians_1_21_23');
+    await narr('meanwhile_in_antioch_acts_11_20_22');
+    await narr('barnabas_knows_who_could_help_acts_11_25');
+    await say(BN,'saul_ex');await walk(BN,112,124);
+    await say(BN,'i_have_asked_for_you_along');
+    await say(P,'barnabas_q');
+    await say(BN,'antioch_a');
+    await say(P,'i_will_come');
+    await say(P,'i_promised_kleon_the_caravan');
+    await say(BN,'show_me_where_to_hold')},true)}
 async function finale3(){playAs(P);AU.mood='hope';await wait(400);
-  await say(BN,'The bags are on, and the gift is counted and sealed. Saul, we are ready for the road.');
+  await say(BN,'bags_are_on_and_the_gift');
   place(XA,'court',300,114,-1);place(TN,'court',304,120,-1);SFX.door();await Promise.all([walk(XA,216,128),walk(TN,244,134)]);
-  await say(TN,'We could not let you leave without a farewell. Half the congregation is waiting at the gate.');
+  await say(TN,'we_could_not_let_you_leave');
   await fade(1,300);F.loaded=1;SFX.creak();await wait(450);await fade(0,300);
-  await say(LU,"Grain and figs in the bags, and the sealed purse in your own keeping, Barnabas. To the elders in Judea, by your hand and Saul's.",{to:BN});
-  await say(XA,'And my thread in every seam of it. I did have something to give.');
-  await say(AG,'I brought you hard news, and you answered it with open hands. The brothers in Judea will thank Jehovah for Antioch.');
-  await say(P,'Jews and Greeks, potters and spinners: one congregation, and one gift. Before we go, let us pray.');
+  await say(LU,'grain_and_figs_in_the_bags',{to:BN});
+  await say(XA,'my_thread_in_every_seam_of_it');
+  await say(AG,'i_brought_you_hard_news');
+  await say(P,'jews_and_greeks_potters');
   const d=$('#dim'),all=[P,BN,LU,AG,XA,TN];d.style.opacity=.5;all.forEach(a=>a.bow=true);SFX.pray();await wait(900);
-  await narr('Together they ask Jehovah to bless the gift, and to guard those who carry it.',{dur:4200,color:'#cfe2ff'});
+  await narr('together_they_ask_jehovah',{dur:4200,color:'#cfe2ff'});
   all.forEach(a=>a.bow=false);d.style.opacity=0;await wait(500);
-  await say(BN,'Come, brother. Judea is a long walk.');
+  await say(BN,'come_brother');
   walk(BN,280,118);await walk(P,296,114);await fade(1,600);
   G.scene=roadScene;G.trek={k:0};codeBtn();AU.amb={birds:.7,wind:.4,leaves:.4};await fade(0,600);
   const trek=tween(17000,k=>{G.trek.k=k});
-  await narr('So the disciples sent their relief: Barnabas and Saul carried it to the elders in Judea. (Acts 11:30)',{dur:6500});
-  await narr('The great famine came, as foretold, in the time of Claudius. The brothers in Judea did not face it alone. (Acts 11:28)',{dur:8000});
+  await narr('disciples_sent_their_relief_acts_11_30',{dur:6500});
+  await narr('great_famine_came_acts_11_28',{dur:8000});
   await trek;
-  await narr('John Mark went back with Barnabas and Saul, who had completed their relief work in Jerusalem. (Acts 12:25)',{dur:9000});
-  await journey();await narr('And in Antioch, a far longer road was about to open. (Acts 13:1-3)',{dur:5500});
-  endScreen({title:'Called to Antioch',text:'Saul kept his word, worked with his hands, and helped a sister find what she had to give. The gift was carried honestly, in the sight of Jehovah and of men.',
-    based:'Based on Acts 11:19-30; 12:25 and 2 Corinthians 8:12, 20, 21. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are from the Scriptures and are told here in paraphrase.',
-    go:'Click to continue to Chapter Four',code:['Chapter Four code: {code}',codeOf(4,0)]});
+  await narr('john_mark_went_acts_12_25',{dur:9000});
+  await journey();await narr('in_antioch_a_far_acts_13_1_3',{dur:5500});
+  endScreen({title:'called_to_antioch_2',text:'saul_kept_his_word_worked',
+    based:'based_on_acts_11_19_30',
+    go:'click_to_continue_to_chapter_four',code:['chapter_four_code_code',codeOf(4,0)]});
   await wait(1500);ov.onclick=()=>startChapter(4);await new Promise(()=>{})}
-function hint3(){const b=PC()!==P,saul=['saul3',["That is Saul's craft, not mine. A good partner knows when to step back.","Saul should do this part. I can leave it to him; he is never far away."]];
-  if(G.room==='tarsus'&&!F.seam)return b?(holding()?['seam3b',["I have the far edge. The sewing is Saul's part.",'Saul can sew the seam now, while I hold it.']]
-      :['hold3b',['Saul says a seam sews straight only when its far edge is held taut.','I should use the tent, and hold its far edge for him.']])
-    :holding()?['seam3',['Barnabas has the far edge. Now, the work itself.','I can close the seam with my awl now.']]
-    :['hold3',['A seam sews straight only when its far edge is held taut. And Barnabas did say that four hands are quicker than two.','Barnabas could hold the far edge of the tent while I sew. I should let him take a hand in it.']];
-  if(b){if(G.room==='tarsus')return F.sold?['go3b',['Saul has kept his word. Now, Antioch.','Saul and I can leave by the east gate.']]:saul;
-    return F.jar?saul:['jar3b',["Theron's jar needs two men and a bar. I have my staff, and I have a partner.",'Saul and I must both be at Theron\'s stall. Then my staff goes through the handles.']]}
+function hint3(){const b=PC()!==P,saul=['saul3',['that_is_sauls_craft_not_mine','saul_should_do_this_part']];
+  if(G.room==='tarsus'&&!F.seam)return b?(holding()?['seam3b',['i_have_the_far_edge','saul_can_sew_the_seam_now']]
+      :['hold3b',['saul_says_a_seam_sews_straight','i_should_use_the_tent_and_hold']])
+    :holding()?['seam3',['barnabas_has_the_far_edge','i_can_close_the_seam_with_my_awl']]
+    :['hold3',['seam_sews_straight_only','barnabas_could_hold_the_far']];
+  if(b){if(G.room==='tarsus')return F.sold?['go3b',['saul_has_kept_his_word','saul_and_i_can_leave_by_the_east']]:saul;
+    return F.jar?saul:['jar3b',['therons_jar_needs_two_men','saul_and_i_must_both_be']]}
   if(G.room==='tarsus'){
-    if(!F.gotLoops)return['hide3',["A tent is only as sure as its hold on the ground. Kleon's last one tore at the pegs. What on my bench is tougher than cloth?",'My knife can cut peg loops from the leather hide on the workbench.']];
-    if(!F.loopsOn)return['loops3',['The loops are cut. But they do no good in my hand.','I should sew the leather loops onto the tent.']];
-    if(!F.gotTent)return['take3',['The work is done. What remains is to hand it over.','I should pick up the finished tent from its frame.']];
-    if(!F.sold)return['sell3',["A promise is kept when the thing promised is in the other man's hands.",'I should give the finished tent to Kleon.']];
-    return['go3',['My word here is kept. A brother is waiting, and so is a congregation.','Barnabas and I can leave by the east gate, toward Antioch.']]}
+    if(!F.gotLoops)return['hide3',['tent_is_only_as_sure_as_its_hold','my_knife_can_cut_peg_loops']];
+    if(!F.loopsOn)return['loops3',['loops_are_cut','i_should_sew_the_leather']];
+    if(!F.gotTent)return['take3',['work_is_done','i_should_pick_up_the_finished']];
+    if(!F.sold)return['sell3',['promise_is_kept_when_the_thing','i_should_give_the_finished']];
+    return['go3',['my_word_here_is_kept','barnabas_and_i_can_leave']]}
   if(!F.bags){
-    if(!F.cutBolt)return['cut3',['The gift cannot travel in rotten bags. What does a tentmaker do first with a bolt of cloth?','My knife can cut the goat-hair cloth into panels for new pack bags.']];
-    if(!F.gotSpool)return['xan3',['Cloth and an awl, and nothing to join them. And one sister stays away from the courtyard, sure that she has nothing to give.',
-      'Xanthe the spinner keeps a stall in the street. She needs neither pressing nor pity, only to see that her thread is needed.']];
-    return['sew3',['Cloth, awl and thread: everything is at hand. Now, the work itself.',"I can sew the cloth panels into pack bags with my awl and Xanthe's thread."]]}
-  if(!F.jar)return['jar3',["Theron's oil is a load for two men and a bar. I cannot carry it alone, and I am not alone.","Barnabas and I must both be at Theron's stall. His walking staff would serve as the bar."]];
-  if(!F.bagsOn)return['load3',['The bags are finished. They are no use on my shoulder.','I should hang the pack bags on the donkey in the courtyard.']];
-  if(!F.sealed)return['seal3',['A gift carried by my hand must be beyond reproach, in the sight of Jehovah and of men. And I have something of my own to add.',
-    'I should give my savings to Lucius, and ask that everything be counted and sealed before the brothers.']];
-  return['end3',['Everything is ready. It is time to go.']]}
+    if(!F.cutBolt)return['cut3',['gift_cannot_travel_in_rotten_bags','my_knife_can_cut_the_goat_said']];
+    if(!F.gotSpool)return['xan3',['cloth_and_an_awl_and_nothing',
+      'xanthe_the_spinner_keeps']];
+    return['sew3',['cloth_awl_and_thread_everything','i_can_sew_the_cloth_panels']]}
+  if(!F.jar)return['jar3',['therons_oil_is_a_load_for_two','barnabas_and_i_must_both']];
+  if(!F.bagsOn)return['load3',['bags_are_finished','i_should_hang_the_pack']];
+  if(!F.sealed)return['seal3',['gift_carried_by_my_hand',
+    'i_should_give_my_savings']];
+  return['end3',['everything_is_ready']]}
 /* ============ CHAPTER DEFINITION ============ */
 /* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
    plainly says no. Each is a line of this chapter, in English, as it stands above. */
-const ACTING={shake:['No, brother! It is given. Use it.',
-  'No, brother. Keep it.',
-  'No, brother. Keep it.']};
+const ACTING={shake:['no_brother_it',
+  'no_brother_keep',
+  'no_brother_keep']};
 return{acting:ACTING,rooms:['tarsus','court','antioch'],setup:setup3,start:start3,hint:hint3,music:MUSIC,scenes:{road:roadScene},topics:TOPICS,tablets:TABLETS,
   route:[['damascus','jerusalem'],['jerusalem','caesarea'],['caesarea','tarsus','sea'],['tarsus','antioch','new']],
   flags:['metKleon','seam','gotLoops','loopsOn','gotTent','sold','cutBolt','gotSpool','bags','bagsOn','sealed','held','jar'],

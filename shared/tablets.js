@@ -41,11 +41,11 @@ let closer=null,shown=null;
 addEventListener('keydown',e=>{if(closer&&[' ','Escape','Enter','.'].includes(e.key)){e.preventDefault();e.stopImmediatePropagation();closer()}},true);
 /* draw: the entries as they stand now, in the player's language. A passage is Paul's own note, so it stands without quotation marks. */
 function draw(d){const ppl=(d.people||[]).filter(on),todo=(d.tasks||[]).filter(on),scr=(d.scripture||[]).filter(on);
-  el.innerHTML='<div class="leaf"><h3>'+T('PEOPLE')+'</h3>'+list(ppl,p=>`<p><b>${txt(p.name)}</b>: ${txt(p.note)}</p>`,T('No one yet.'))+
-    '<h3>'+T('STILL TO DO')+'</h3>'+list(todo,t=>`<p>&bull; ${txt(t.t)}</p>`,T('Nothing left undone.'))+'</div>'+
-    '<div class="leaf"><h3>'+T('SCRIPTURES')+'</h3>'+list(scr,s=>`<p>${txt(s.gist)} <span class="ref">(${txt(s.ref)})</span></p>`,T('Nothing written yet.'))+
-    (d.notes?'<h3>'+txt(d.notes.title)+'</h3>'+list((d.notes.list||[]).filter(on),t=>`<p>&bull; ${txt(t.t)}</p>`,txt(d.notes.none||'Nothing written yet.')):'')+'</div>'+
-    '<i class="tie" style="top:28%"></i><i class="tie" style="top:66%"></i><div class="foot">'+T('Click or press Space to close')+'</div>'}
+  el.innerHTML='<div class="leaf"><h3>'+T('PEOPLE')+'</h3>'+list(ppl,p=>`<p><b>${txt(p.name)}</b>: ${txt(p.note)}</p>`,T('no_one_yet'))+
+    '<h3>'+T('still_to_do')+'</h3>'+list(todo,t=>`<p>&bull; ${txt(t.t)}</p>`,T('nothing_left_undone'))+'</div>'+
+    '<div class="leaf"><h3>'+T('SCRIPTURES')+'</h3>'+list(scr,s=>`<p>${txt(s.gist)} <span class="ref">(${txt(s.ref)})</span></p>`,T('nothing_written_yet'))+
+    (d.notes?'<h3>'+txt(d.notes.title)+'</h3>'+list((d.notes.list||[]).filter(on),t=>`<p>&bull; ${txt(t.t)}</p>`,txt(d.notes.none||'nothing_written_yet')):'')+'</div>'+
+    '<i class="tie" style="top:28%"></i><i class="tie" style="top:66%"></i><div class="foot">'+T('click_or_press_space_to_close')+'</div>'}
 /* open: show the tablets with the chapter's entries as they stand now, and resolve when the player closes them. */
 function open(d){shown=d;draw(d);
   noise({d:.09,v:.2,f:380,q:1.4,type:'lowpass'});tone({f:150,to:110,d:.08,type:'triangle',v:.05});
