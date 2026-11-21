@@ -135,9 +135,7 @@ ART.workshop={w:320,
     R(g,278,44.5,3,3,k('#4a2f1a'));R(g,278,44.5,3,.5,k('#c9a14a'))}
   if(!F.gotKnife){const k=L(219,80);oval(g,220,80.6,8,1.4,'rgba(0,0,0,.35)');g.fillStyle=k('#d0d0dc');g.beginPath();g.ellipse(219.5,79.2,5.5,2.6,0,0,3.1416);g.fill();
     R(g,214,79.2,11,.5,k('#f4f4ff'));R(g,218,76,3.2,3.4,k('#7a4a24'));R(g,217.4,75,4.4,1.4,k('#9a6a38'))}
-  if(!F.gotCloth){const k=L(252,78);oval(g,254,82.4,17,1.6,'rgba(0,0,0,.4)');g.fillStyle=lg(g,0,74.5,0,82.5,[k('#4a3c32'),k('#2a221c'),k('#120d0b')]);g.fillRect(238,74.5,30,8);
-    for(let i=0;i<30;i+=2.5)R(g,238+i,74.5,.5,8,'rgba(0,0,0,.28)');oval(g,238,78.5,2.4,4,k('#2e251f'));oval(g,268,78.5,2.4,4,k('#18120e'));
-    g.strokeStyle=k('#5a4a3c');g.lineWidth=.5;for(const rr of[1,2.4,3.6]){g.beginPath();g.ellipse(238,78.5,rr*.6,rr,0,0,6.2832);g.stroke()}}
+  if(!F.gotCloth){const k=L(252,78);clothRoll(g,238,82.5,30,8,k('#2a221c'),{shadow:1,k:.27})}
   if(!F.gotThread){const k=L(162,40);R(g,159,38,7,6,k('#e2d4aa'));for(let i=0;i<6;i++)R(g,159,38.5+i,7,.5,k(i%2?'#b5a67c':'#efe2bc'));R(g,158,37,9,1.2,k('#8a5a2c'));R(g,158,43.4,9,1.2,k('#6a4020'));R(g,165,38,1,6,'rgba(0,0,0,.25)')}
   if(!F.gotBasket)basketArt(g,290,110,false,L(304,100));
   flame(g,157,66,t);pool(g,157,63,22+Math.sin(t/190)*1.5,17,'#ff9838',.16+.03*Math.sin(t/83))},
