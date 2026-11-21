@@ -31,11 +31,11 @@ In Beroea three scrolls lie on the table: Moses, the Prophets and the Psalms (Lu
 | ![The synagogue of Beroea](screenshots/beroea.png) | ![Three scrolls and the tablets](screenshots/sifted.png) |
 | Beroea: they come in every morning, before their work | Moses, the Prophets and the Psalms beside one afternoon |
 | ![Timothy in the synagogue of Beroea](screenshots/withoutpaul.png) | ![The quay at Athens](screenshots/athens.png) |
-| Without Paul: the button that led back to him is grey | Athens: a message that has to be carried by mouth |
+| Without Paul: the button that led back to him is grey | Athens: a message that has to be carried by word of mouth |
 
 Then strangers stand at the gate, and the brothers send Paul to the sea. The game stays behind. The button that has always led back to Paul is grey, and the player is Timothy, who has known the holy writings since he was a small child (2 Timothy 3:15). A man who was with his flocks all week asks what the others asked on the first day. Timothy could set the table for him. He asks the old man who found two of the three places to do it, and the last round at the table is solved by taking the hand away from it.
 
-On the quay at Athens the brothers who brought Paul have to sail home, and what he sends with them is carried by mouth. The player puts the message together from its parts. Everything else that could be added is true and kind, and makes it longer and less sure.
+On the quay at Athens the brothers who brought Paul have to sail home, and what he sends with them is carried by word of mouth. The player puts the message together from its parts. Everything else that could be added is true and kind, and makes it longer and less sure.
 
 <details>
 <summary>Walkthrough (spoilers)</summary>

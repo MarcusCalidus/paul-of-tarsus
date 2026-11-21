@@ -382,22 +382,22 @@ const TOLD={
  v2:'Paul went in to them, as he always did, and on three Sabbaths he reasoned with them out of the Scriptures. (Acts 17:2)',
  v3:'He explained, and showed from what is written, that the Christ had to suffer and had to rise from the dead; and he told them that this Jesus, whom he was announcing to them, is the Christ. (Acts 17:3)',
  v4:'Some of them came to believe, and joined Paul and Silas. So did a great many of the Greeks who worshipped God, and not a few of the leading women. (Acts 17:4)',
- v5:'But the Jews grew jealous. They got hold of some bad men who idled about the marketplace, made a mob of them and set the city in an uproar. They stormed the house of Jason, and wanted Paul and Silas brought out to the mob. (Acts 17:5)',
- v6:'They did not find them. So they dragged Jason and some of the brothers before the city rulers, shouting that the men who had turned the whole inhabited earth upside down were now here as well, (Acts 17:6)',
+ v5:'Jealous, the Jews attacked the house of Jason, meaning to hand Paul and Silas over to the crowd. For this they had rounded up some wicked loafers from the marketplace, made a mob of them, and set the city in turmoil. (Acts 17:5)',
+ v6:'It was Jason, with some of the brothers, who ended up before the city rulers: the mob had dragged them there when Paul and Silas could not be found, crying that these men had turned the inhabited earth upside down and were now here too, (Acts 17:6)',
  v7:'and that Jason had taken them into his house; that all of them were acting against the decrees of Caesar, for they said that another was king: Jesus. (Acts 17:7)',
  v8:'The crowd and the city rulers heard this, and it alarmed them. (Acts 17:8)',
  v9:'Only when Jason and the others had given security enough did the rulers let them go. (Acts 17:9)',
  v10a:'That same night the brothers sent Paul and Silas away, to Beroea. (Acts 17:10)',
  v10b:'When they arrived there, they went into the synagogue of the Jews. (Acts 17:10)',
- v11:'The Jews of Beroea were of a nobler mind than those in Thessalonica. They took in the word with the greatest eagerness, and every day they searched the Scriptures with care, to see whether these things were so. (Acts 17:11)',
- v12:'So many of them came to believe, and with them a good number of the respected Greek women, and of the men. (Acts 17:12)',
+ v11:'In Beroea the Jews showed themselves more noble-minded than those of Thessalonica: every day they went carefully through the Scriptures to check what they had heard, and they had taken in the word as eagerly as anyone could. (Acts 17:11)',
+ v12:'Many of them now believed, and with them came some men and a good number of reputable Greek women. (Acts 17:12)',
  v13:'But the Jews of Thessalonica learned that Paul was announcing the word of God in Beroea too, and they came there to rouse the crowds and unsettle them. (Acts 17:13)',
  v14:'At once the brothers sent Paul off, to the sea. Silas and Timothy both stayed behind. (Acts 17:14)',
- v15a:'Those who went with Paul brought him as far as Athens. (Acts 17:15)',
+ v15a:'His companions did not leave Paul until they had brought him to Athens. (Acts 17:15)',
  v15b:'They left again with instructions for Silas and Timothy: the two were to come to him as quickly as they could. (Acts 17:15)',
  /* from his letters */
- t22:'Paul wrote to them afterwards that he and Silas had first suffered and been insulted in Philippi, as they knew; and that it was with the help of their God that the two found the boldness to tell them the good news. (1 Thessalonians 2:2)',
- t29:'He reminded them of the labor and the toil: how the three had worked night and day while they preached the good news of God to them, so as to be a costly burden to none of them. (1 Thessalonians 2:9)',
+ t22:'Paul wrote to them afterwards that it was with their God\'s help that he and Silas had found the boldness to bring them God\'s good news, against strong opposition, though they had come from suffering and insolent treatment in Philippi, as the Thessalonians knew. (1 Thessalonians 2:2)',
+ t29:'He reminded them of the labor and the toil: so as not to be a costly burden to any of them, he and his companions had worked night and day while they preached God\'s good news to them. (1 Thessalonians 2:9)',
  p416:'While he was in Thessalonica, the brothers in Philippi sent him something for what he needed: not once only, but twice. (Philippians 4:16)',
  t217:'Some months later he wrote to them that he had been torn from them for a short while: out of their sight, and not out of his heart. (1 Thessalonians 2:17)'};
 const tell=(k,ms,low)=>narr(TOLD[k],{dur:ms||Math.max(6500,2200+TOLD[k].length*62),low});
@@ -413,30 +413,30 @@ const tellMap=k=>tell(k,0,1);
 const mk10=(o,i)=>Object.assign(o,{seed:i*37});
 const PLACE={
  ps16:{k:'ps',ref:'Psalm 16:10',gist:'David\'s hope: Jehovah would never let his loyal one see the pit, nor abandon him to the Grave.',cap:'not abandoned to the Grave',at:.1},
- ps22m:{k:'ps',ref:'Psalm 22:7, 8',gist:'All who see me mock me, and shake their heads: he put his trust in Jehovah, so let Him rescue him.',cap:'mocked for his trust',at:.15},
+ ps22m:{k:'ps',ref:'Psalm 22:7, 8',gist:'Everyone who sees me jeers and sneers, and they shake their heads in scorn: He relied on Jehovah; then let Him rescue him, since He holds him so dear.',cap:'mocked for his trust',at:.15},
  ps22l:{k:'ps',ref:'Psalm 22:18',gist:'They share out my garments among them, and for my clothing they cast lots.',cap:'lots for his clothing',at:.16},
- ps34:{k:'ps',ref:'Psalm 34:20',gist:'He guards all his bones. Not one of them has been broken.',cap:'not one bone broken',at:.23},
- ps69:{k:'ps',ref:'Psalm 69:21',gist:'For my thirst they gave me vinegar to drink.',cap:'vinegar for his thirst',at:.46},
+ ps34:{k:'ps',ref:'Psalm 34:20',gist:'Every bone of the righteous one is in Jehovah\'s keeping; none of them has been broken.',cap:'not one bone broken',at:.23},
+ ps69:{k:'ps',ref:'Psalm 69:21',gist:'When I was thirsty, they handed me vinegar.',cap:'vinegar for his thirst',at:.46},
  ps118:{k:'ps',ref:'Psalm 118:22',gist:'It is the chief cornerstone now, this stone the builders threw aside.',cap:'the stone thrown aside',at:.78},
- is45:{k:'pr',ref:'Isaiah 45:1',gist:'This is what Jehovah says to his anointed one, to Cyrus, whose right hand he has taken hold of.',cap:'his anointed one',at:.68},
- is50:{k:'pr',ref:'Isaiah 50:6',gist:'I gave my back to those who struck me. I did not hide my face from insult and from spit.',cap:'struck and spat on',at:.76},
+ is45:{k:'pr',ref:'Isaiah 45:1',gist:'Jehovah speaks to his anointed one, the man whose right hand he has grasped: Cyrus.',cap:'his anointed one',at:.68},
+ is50:{k:'pr',ref:'Isaiah 50:6',gist:'He let those who beat him have his back; and when they insulted him and spat on him, he did not hide his face.',cap:'struck and spat on',at:.76},
  is533:{k:'pr',ref:'Isaiah 53:3',gist:'He was despised, and men kept away from him. We counted him as nothing.',cap:'despised, counted as nothing',at:.8},
  is535:{k:'pr',ref:'Isaiah 53:5',gist:'Our transgression is why he was pierced, and our errors why he was crushed; his wounds have healed us.',cap:'pierced because of our transgression',at:.81},
- is537:{k:'pr',ref:'Isaiah 53:7',gist:'Like a sheep led to the slaughter, like a ewe that is silent before her shearers, he did not open his mouth.',cap:'silent as a sheep',at:.82},
- is539:{k:'pr',ref:'Isaiah 53:9',gist:'His burial place was given him with the wicked, and with the rich in his death, though he had done no wrong.',cap:'a grave with the rich',at:.83},
+ is537:{k:'pr',ref:'Isaiah 53:7',gist:'He never opened his mouth: silent as a ewe under the shearers, he was led off like a sheep to be slaughtered.',cap:'silent as a sheep',at:.82},
+ is539:{k:'pr',ref:'Isaiah 53:9',gist:'Though he had done nothing wrong, his grave was set among the wicked, and in death he lay with the rich.',cap:'a grave with the rich',at:.83},
  ex12:{k:'law',ref:'Exodus 12:46',gist:'Of the Passover lamb: you must not break a bone of it.',cap:'no bone of the lamb broken',at:.27}};
 Object.keys(PLACE).forEach((k,i)=>mk10(PLACE[k],i+1));
 /* EV: what was handed on to Paul (1 Corinthians 15:3), as his tablets hold it: what was done to Jesus, and who saw him afterwards. Each
    is a note in his own words. The references are for the player: nothing on the table has a number. */
 const EV={
  wine:{row:'V',ref:'John 19:28, 29',gist:'He said that he was thirsty, and they held a sponge full of sour wine up to his mouth.',cap:'sour wine at his mouth'},
- mock:{row:'M',ref:'Matthew 27:41-43',gist:'The chief priests mocked him as he hung there: he trusted in God, so let God rescue him now.',cap:'mocked by the chief priests'},
- struck:{row:'S',ref:'Matthew 26:67',gist:'They spat in his face, and struck him with their fists.',cap:'spat on and struck'},
+ mock:{row:'M',ref:'Matthew 27:41-43',gist:'As he hung there the chief priests mocked him, and the scribes and elders with them. One of their taunts: he had trusted in God and called himself God\'s Son, so let God rescue him now, if He wanted him.',cap:'mocked by the chief priests'},
+ struck:{row:'S',ref:'Matthew 26:67',gist:'He was spat on in the face, beaten with fists, and slapped.',cap:'spat on and struck'},
  stone:{row:'R',ref:'Acts 4:10, 11',gist:'The rulers of the people, the builders, treated him as worth nothing; and God raised him up.',cap:'refused by the rulers'},
  pierce:{row:'P',ref:'John 19:33, 34',gist:'The soldiers found him already dead and did not break his legs; and one of them put a spear into his side.',cap:'legs unbroken, side pierced'},
  raised:{row:'G',ref:'1 Corinthians 15:4-8',gist:'He was buried, and raised up on the third day. Cephas saw him, then the Twelve, then more than five hundred brothers at one time, then James, then all the apostles; and last of all, I did.',cap:'raised, and seen by many'},
  lots:{row:'L',ref:'John 19:23, 24',gist:'The soldiers shared out his outer garments among the four of them, and for the one without a seam they cast lots.',cap:'lots cast by the soldiers'},
- silent:{row:'Q',ref:'Matthew 27:12-14',gist:'Accused by the chief priests and the elders, he answered nothing: not a word, so that the governor wondered at it.',cap:'no answer to his accusers'},
+ silent:{row:'Q',ref:'Matthew 27:12-14',gist:'Charge after charge came from the chief priests and the elders, and he answered none of them. Even when Pilate asked him, he said nothing at all, and the governor was greatly surprised.',cap:'no answer to his accusers'},
  tomb:{row:'T',ref:'Matthew 27:57-60',gist:'A rich man, Joseph of Arimathea, asked for his body and laid it in his own new tomb.',cap:"a rich man's new tomb"}};
 Object.keys(EV).forEach((k,i)=>mk10(EV[k],i+20));
 const SHUT={cap:'rolled shut'},CLOSED={cap:'tablets closed'};
@@ -481,7 +481,7 @@ function cannot(p,x,y,w,h){if(!(x>=0&&y>=0&&x+w<=COLS&&y+h<=ROWS_B))return'edge'
   return THIN>x&&THIN<x+w-1?'thin':null}
 /* spare: what is left over is one length */
 function spare(){const c=[];cover().forEach((v,i)=>{if(!v)c.push(i)});const ys=new Set(c.map(i=>Math.floor(i/COLS))),xs=c.map(i=>i%COLS).sort((a,b)=>a-b);return c.length>0&&ys.size===1&&xs[xs.length-1]-xs[0]===xs.length-1}
-const LAID='It is laid out: every panel has its place, and six cubits are left in one length. Now it wants the knife.';
+const LAID='It is laid out: every panel has its place, and six cubits are left in one length. Now it needs the knife.';
 /* a panel on the board: taken in hand; taken again, it is turned; one that lies on the cloth is lifted off it */
 async function board(p){const st=boltSt();if(F.laid)return say(P,LAID,TH);
   if(st.at[p.id]){delete st.at[p.id];st.sel=p.id;SFX.click();return}
@@ -493,11 +493,11 @@ async function onBolt(){const st=boltSt();if(F.laid)return say(P,LAID,TH);
   if(!st.sel){if(under){delete st.at[under];st.sel=under;SFX.click();return}
     return say(P,'First a panel from the board. Then its place on the cloth.',TH)}
   const p=PIECES.find(q=>q.id===st.sel),[w,h]=dims(p),why=ok?cannot(p,cx0,cy0,w,h):'edge';
-  if(why){SFX.nope();return say(P,why==='edge'?'That would hang over the edge of the bolt.':why==='over'?'Not there. Two panels would want the same cloth.'
+  if(why){SFX.nope();return say(P,why==='edge'?'That would hang over the edge of the bolt.':why==='over'?'Not there. Two panels would need the same cloth.'
     :'Not across the thin strip. A panel may end on it, where the seam folds the cloth double. It must not run over it.',TH)}
   st.at[p.id]={x:cx0,y:cy0,w,h};st.sel=null;noise({d:.12,v:.08,f:2600,q:1.2});
   if(!PIECES.every(q=>st.at[q.id]))return;
-  if(!spare())return say(P,'Every panel has a place. But what is left over lies in pieces, and the loops want one length of six cubits.',TH);
+  if(!spare())return say(P,'Every panel has a place. But what is left over lies in pieces, and the loops need one length of six cubits.',TH);
   F.laid=1;SFX.good();await say(P,'Measured twice. Roof, walls, flap and gussets, and six cubits in one length for the loops. Now the knife may come.');codeBtn()}
 async function cutBolt(){if(F.cutd)return;if(!F.laid)return say(P,'Not before every panel has its place. Cloth that is cut wrong stays cut.',TH);
   SFX.cut();await narr('The knife followed the cord, panel after panel.',{dur:3800});F.cutd=1;addItem('panels10');SFX.good();
@@ -620,8 +620,8 @@ async function lay(){if(tim())return say(TP,'Their hands know the way to these p
   const A=ASKER(),want=WANT();
   if(j.closed)return say(P,'My tablets are shut. What is written has to lie beside what was done, or I have shown them nothing.',TH);
   if(j.none)return say(P,'Both scrolls are rolled shut. I have laid nothing beside what I say.',TH);
-  if(j.bad)return say(A,T(j.bad==='ps'?'The psalm lies open at “{a}”, tentmaker, and your tablets at “{b}”. I do not see how the one proves the other.'
-    :'The prophet lies open at “{a}”, and your tablets at “{b}”. What has the one to do with the other?',{a:T(j.a),b:T(j.b)}));
+  if(j.bad)return say(A,T(j.bad==='ps'?'The psalm lies open at one place, tentmaker: {a}. Your tablets lie at another: {b}. I do not see how the one proves the other.'
+    :'The prophet lies open at one place: {a}. Your tablets lie at another: {b}. What has the one to do with the other?',{a:T(j.a),b:T(j.b)}));
   if(j.part)return say(A,j.part==='pr'?'One witness, and that one David. Does any prophet say the same?':'One witness, and that one the prophet. Does David say the same?');
   if(j.row!==want){await say(A,F[DONE[j.row]]?'You showed us that, and it holds. It is not what I asked today.':'That holds, tentmaker, and I grant it. It is not what I asked.');return say(P,NUDGE[want],TH)}
   chord10();return HOLDS[want]()}
@@ -662,7 +662,7 @@ async function nightIntro(){AU.mood='night';
   await say(P,'Jason has pledged what is his, and it was for us. What do I do with this night?',TH);codeBtn()}
 async function jasonTalk(){if(F.gone)return;
   await think('Jason has given security for us. What do I do?',[
-    {q:'Stand before the city rulers in the morning, and answer the charge.',no:'In Philippi I waited for the magistrates, and it was my own back that had paid for it. Here Jason has given security. If I stand in the marketplace tomorrow, they take it out of him.'},
+    {q:'Stand before the city rulers in the morning, and answer the charge.',no:'In Philippi my own back paid, so I could wait for the magistrates. Here Jason pays, with his security. If I stand in the marketplace tomorrow, it is he who loses it.'},
     {q:'Stay in this house, and teach behind a shut door.',no:"Whoever came to this door would be seen coming. I should be teaching at their cost, and at Jason's."},
     {q:'Go back to my bench. I have done no wrong.',no:'True, and of no use to Jason. They did not ask what I had done. They asked whose roof I was under.'},
     {q:'Go tonight, as the brothers ask.',ok:1}]);
@@ -688,25 +688,25 @@ const POSE={b2a:[KL,'My brother read to me last night, from the psalm that you o
   b2b:[DO,'Here, Paul, a little further on from the pierced one: he does not open his mouth. Before whom was he silent?'],
   b2c:[EU,"One line further still: a grave with the rich. You told us that he died as a criminal dies. Who gives such a man a rich man's grave?"]},
   ASKB1='Yesterday you said that not a bone of him was broken. In the night I found two places. Moses says it of the Passover lamb, and David says it of a righteous man. Of whom do you say it?',
-  ASKB3='Paul! I read on by the lamp, column after column. Here: “his anointed one”. That is he. Is it not?';
+  ASKB3='Paul! I read on by the lamp, column after column. Here it speaks of his anointed one. That is he. Is it not?';
 const asker=()=>bday()===1?EU:bday()===2?POSE[find().f][0]:DO,askB=()=>bday()===1?ASKB1:bday()===2?POSE[find().f][1]:ASKB3;
 async function berIntro(){await tell('v10b');
   await say(P,'Men of Beroea: the Christ had to suffer, and to rise. And I can tell you his name.');
   await say(EU,'You say that all this is written. Then it lies in that chest, and the chest will stand open tomorrow, and the day after. We shall look.');
-  await narr('Nobody here asked him to prove it. They asked him where it stood.',{dur:5600});
+  await narr('Nobody here asked him to prove it. They asked him where it was written.',{dur:5600});
   await fade(1,600);await narr('The next morning the scrolls were on the table before he came in.',{dur:5200});await come('ber10',700);
   await say(EU,ASKB1);codeBtn()}
 const againB=()=>say(asker(),askB());
 async function layB(st,j){const d=bday(),cy=st.s.includes('is45'),A=asker();
   if(cy){if(st.t)return say(P,'No. I have not read that line to its end, and I lay nothing beside a line that I have not read.',TH);
     if(d===3)return cyrus();return say(P,'That line names its own man. I have nothing to lay beside it.',TH)}
-  if(d===3)return say(DO,'You have wound it away, Paul. It was here: “his anointed one”. Is it he, or is it not?');
+  if(d===3)return say(DO,'You have wound it away, Paul. It was here, where it speaks of his anointed one. Is it he, or is it not?');
   const want=d===1?'P':find().row;
   if(j.closed)return say(P,'My tablets are shut. They have found the place. It is for me to lay beside it what was done.',TH);
   if(j.none)return say(P,'Every scroll is rolled shut. There is nothing on the table to look at.',TH);
-  if(j.bad)return say(A,T(j.bad==='law'?'Moses lies open at “{a}”, Paul, and your tablets at “{b}”. Are those one thing? I do not think so.'
-    :j.bad==='pr'?'The prophet lies open at “{a}”, Paul, and your tablets at “{b}”. Are those one thing? I do not think so.'
-    :'The psalm lies open at “{a}”, Paul, and your tablets at “{b}”. Are those one thing? I do not think so.',{a:T(j.a),b:T(j.b)}));
+  if(j.bad)return say(A,T(j.bad==='law'?'Moses lies open at one place, Paul: {a}. Your tablets lie at another: {b}. Are those one thing? I do not think so.'
+    :j.bad==='pr'?'The prophet lies open at one place, Paul: {a}. Your tablets lie at another: {b}. Are those one thing? I do not think so.'
+    :'The psalm lies open at one place, Paul: {a}. Your tablets lie at another: {b}. Are those one thing? I do not think so.',{a:T(j.a),b:T(j.b)}));
   if(j.part)return say(A,j.part==='law'?'Moses is rolled shut. He has a place in this too: I found it.':j.part==='pr'?'The prophet is rolled shut. You said that a prophet speaks of this as well.':'The psalm is rolled shut. David has a place in this too.');
   if(j.row!==want)return say(A,'That holds: we have looked at it. It is not the place that lies before us today.');
   chord10();
@@ -725,7 +725,7 @@ async function layB(st,j){const d=bday(),cy=st.s.includes('is45'),A=asker();
   await step('ber10');await fade(1,600);await narr('And on the day after that, Dorotheos was at the table before anyone else.',{dur:5600});await come('ber10',700);await say(DO,ASKB3);codeBtn()}
 /* the line that names another man */
 async function cyrus(){await say(P,'Read the line to its end, Dorotheos. Aloud.');await say(DO,quote(PLACE.is45));await say(DO,'Cyrus. The Persian.');
-  await say(P,'Jehovah gave that name to a king of Persia, for a task of his own. The word is the same. The man is another.');
+  await say(P,'Jehovah gave that title to a king of Persia, for a task of his own. The word is the same; the man is not.');
   await say(P,'I have nothing to lay beside that line, and I will lay nothing beside it.');
   await say(DO,'Then I was wrong.');
   await say(P,'You read on to the end of the line. That is not being wrong. That is how it is done.');
@@ -751,8 +751,8 @@ async function strangers(){AU.mood='tense';place(E1,'ber10',40,118,1);SFX.door()
   await say(LT,'You, young man: you came with him. They tell me that not a bone of him was broken. Where is that written?');codeBtn()}
 async function own(){if(F.own)return;
   await think('He is asking me. What do I do?',[
-    {q:'Set the table for him myself.',no:'I could. I have heard Paul lay it out, and I knew these writings before I could walk. And next week I may be sent for too.'},
-    {q:'Tell him to wait until Paul is back.',no:'Paul is not coming back this month. And it never stood on Paul.'},
+    {q:'Set the table for him myself.',no:'I could. I have heard Paul lay it out, and I knew these writings before I could walk. But next week I may be sent for too, and then who will set the table for them?'},
+    {q:'Tell him to wait until Paul is back.',no:'Paul is not coming back this month. And it never depended on Paul.'},
     {q:'Ask Eupolemos to show him.',ok:1}]);
   await say(TP,'Eupolemos. You found two of the three places yourself. Will you show him?');
   await say(EU,'I? ...Yes. Come here, shepherd. Dorotheos, give me Moses.',{to:LT});
@@ -775,13 +775,13 @@ async function own(){if(F.own)return;
 const MSG=[{k:'who',q:'It is for Silas and Timothy.',need:1},{k:'what',q:'They are to come to me, here in Athens.',need:1},{k:'soon',q:'As quickly as they can.',need:1},
   {k:'greet',q:'Greet Eupolemos, Dorotheos and Kleonike, each by name.'},{k:'tell',q:'Tell the brothers in Thessalonica that I think of them night and day.'}];
 async function message(){if(F.msg)return;const got=new Set();
-  await say(P,"It has to cross the sea in a man's mouth, and then walk for two days. What do I send?",TH);
+  await say(P,"It has to cross the sea in a man's memory, and then go two days on foot. What do I send?",TH);
   for(;;){const av=MSG.filter(m=>!got.has(m.k)),i=await choose(av.map(m=>m.q).concat(got.size?['That is the whole message.']:[]));
     if(i<av.length){got.add(av[i].k);await say(P,av[i].q);continue}
     const miss=MSG.find(m=>m.need&&!got.has(m.k));
     if(miss){await say(E1,miss.k==='who'?'For whom is it, Paul? There are a good many brothers in Beroea by now.':miss.k==='what'?'And what are they to do? Send word? Wait for you? Come?':'And when? When the brothers there can spare them? Before the winter?');continue}
     if(got.size>3){await say(E2,'Silas and Timothy are to come... to Thessalonica? No. To greet... Let me begin again.');
-      await say(P,'Too much for one mouth and so many days. Only what must not be lost.',TH);got.delete('greet');got.delete('tell');continue}
+      await say(P,'Too much for one memory and so many days. Only what must not be lost.',TH);got.delete('greet');got.delete('tell');continue}
     break}
   await say(E1,'Silas and Timothy are to come to you in Athens, as quickly as they can. That I can carry.');
   await say(P,'That is all of it. May Jehovah be with you on the road, brothers.');
@@ -789,7 +789,7 @@ async function message(){if(F.msg)return;const got=new Set();
 async function finale(){AU.mood='rest';
   await narr('The ship turned round the same day. Paul stood on the quay of a city in which he knew nobody.',{dur:7600});
   endScreen({title:'Is It So?',text:'In one city he laid the Scriptures beside what had happened. In the next they did it themselves, every day, and went on when he was gone.',
-    based:'Based on Acts 17:1-15; 1 Thessalonians 2:2, 9, 17; Philippians 4:16; Luke 24:44 and 1 Corinthians 15:3-8. Supporting characters and dialogue are imaginative; the events are from the Scriptures, and are told here in paraphrase. Acts does not say how long they were in Thessalonica, what Paul worked at there, which passages he used, whether Timothy was with them there, where Paul and Silas were when the house was stormed, what the security was, what the Beroeans examined, or from which harbor Paul sailed.',
+    based:'Based on Acts 17:1-15; 1 Thessalonians 2:2, 9, 17; Philippians 4:16; Luke 24:44 and 1 Corinthians 15:3-8. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are from the Scriptures and are told here in paraphrase. Acts does not say how long they were in Thessalonica, what Paul worked at there, which passages he used, whether Timothy was with them there, where Paul and Silas were when the house was stormed, what the security was, what the Beroeans examined, or from which harbor Paul sailed.',
     go:'Click to continue to Chapter Eleven',code:['Chapter Eleven code: {code}',codeOf(11,0)]});
   await wait(1500);ov.onclick=()=>startChapter(11);await new Promise(()=>{})}
 /* the courtyard at dusk, as the uproar is told: nobody is in it */
@@ -819,19 +819,19 @@ ROOMS.yard10={space:.9,walk:[16,304,114,138],get mood(){return yardV()==='n'?'ni
   {name:'water jar',x:55,y:88,w:18,h:20,wx:82,wy:116,dir:-1,look:'A great jar of water, in the shade of the wall.',use:'I drink. A man who sews by a lamp needs it.',pickup:"It is Jason's, and it stands where it should."},
   {name:'shuttered window',x:102,y:38,w:20,h:18,wx:112,wy:115,look:'A window of the house, shuttered against the heat of the day.',open:"It is Jason's window, and he likes it shut."},
   {name:'bolt of goat-hair cloth',x:74,y:104,w:132,h:9,wx:140,wy:116,def:'use',vis:()=>!F.cutd,use:toBolt,useWith:boltWith,
-    look:()=>say(P,F.laid?'Laid out, panel by panel. It wants only the knife now.':'One bolt, twelve cubits by four, pegged out along the wall. It is a hand shorter than I should have liked, and one cubit of it is woven thin.'),
+    look:()=>say(P,F.laid?'Laid out, panel by panel. It needs only the knife now.':'One bolt, twelve cubits by four, pegged out along the wall. It is a hand shorter than I should have liked, and one cubit of it is woven thin.'),
     pickup:'It is pegged out, and it stays so until it is laid out and cut.'},
   {name:'workbench',x:176,y:78,w:70,h:26,wx:210,wy:115,def:'use',look:()=>say(P,F.sold?'The bench is bare. In this city I have sewn one tent on it, and talked across it to more people than I can count.':F.sewn?'The bench, and Parmenon\'s tent on it, rolled.':'A bench against the wall, with a lamp over it. Jason cleared it for me on the first evening.'),
     use:sew,useWith:id=>id==='panels10'||id==='awl'||id==='thread'?sew():false,pickup:'A bench is not carried about.'},
   {name:'lamp niche',x:202,y:42,w:18,h:20,wx:190,wy:115,dir:1,look:()=>say(P,yardV()==='n'?'The lamp over the bench. It has more oil in it than I had hoped: Jason fills it when I am not looking.':'A lamp in its niche, over the bench. By day it rests. By night it is the only one in the street still burning.'),
-    pickup:'It belongs over the bench.',use:()=>say(P,yardV()==='n'?'It burns. I need it until the seam is closed.':'Not by day.')},
+    pickup:'It belongs over the bench.',use:()=>say(P,yardV()==='n'?'It burns. I need it until the seam is closed.':'Not by day. The sun gives its light for nothing, and the oil is Jason\'s.')},
   {name:'door of the house',x:266,y:46,w:32,h:58,wx:282,wy:115,dir:1,look:"The door of Jason's house. He received us under his roof on the day we came, and would hear of nothing else.",
     open:()=>say(P,yardV()==='n'?'The house is asleep. I have a seam to close.':'Not now. The day is for the bench, and for whoever stops at the gate.'),
     use:()=>say(P,yardV()==='n'?'The house is asleep. I have a seam to close.':'Not now. The day is for the bench, and for whoever stops at the gate.')}]};
 ROOMS.bolt10={space:.8,walk:NOW,mood:'calm',amb:{birds:.4,crowd:.15},hs:[
   {name:'bolt of goat-hair cloth',x:BX,y:BY,w:COLS*CELL,h:ROWS_B*CELL,wx:160,wy:236,def:'use',use:onBolt,useWith:boltWith,
     look:()=>say(P,F.laid?LAID:'Twelve cubits by four. The third cubit from the left is woven thin: a panel may end on it, and must not run across it. And what is left over I want in one length.'),pickup:'It is pegged out, and it stays so.'},
-  {name:'measuring cord',x:BX,y:BY-10,w:COLS*CELL,h:8,wx:160,wy:236,look:'My cord, knotted to the cubit. Twelve knots along the bolt, and four across it.',pickup:'It lies where I need it.',use:'It has measured. Now the panels want their places.'},
+  {name:'measuring cord',x:BX,y:BY-10,w:COLS*CELL,h:8,wx:160,wy:236,look:'My cord, knotted to the cubit. Twelve knots along the bolt, and four across it.',pickup:'It lies where I need it.',use:'It has measured. Now the panels need their places.'},
   ...PIECES.map(p=>({name:p.name,x:p.tx-2,y:TRAY_Y-3,w:Math.max(p.w,p.h)*TC+4,h:28,wx:160,wy:236,def:'use',use:()=>board(p),
     look:()=>say(P,{roof:'The roof: four cubits by four.',long:'The long wall: six cubits by two.',end:'The end wall: three cubits by two. It can be turned.',flap:'The door flap: two cubits by two.',
       g1:'A gusset: two cubits by one. It can be turned.',g2:'The other gusset: two cubits by one. It can be turned too.'}[p.id]),pickup:()=>board(p)})),
@@ -871,7 +871,7 @@ ROOMS.ber10={space:1.3,walk:[16,304,112,137],get mood(){return F.b3?'tense':'cal
   {name:'reading table',x:120,y:82,w:80,h:24,wx:160,wy:113,def:'use',use:toTable,look:'The table, under the window. Three scrolls lie open on it: Moses, the Prophets and the Psalms.',pickup:'It is not going anywhere, and neither are they.',
     as:{tim10:{look:'Three scrolls, open. They found most of these places themselves.',use:toTable}}}]};
 ROOMS.quay10={space:.6,walk:[16,304,114,138],mood:'rest',amb:{waves:.8,gulls:.6,creak:.3},hs:[
-  {name:'road to the city',x:0,y:62,w:22,h:44,wx:22,wy:120,dir:-1,exit:()=>say(P,'Not yet. These brothers sail home today, and they must not sail with empty mouths.'),look:'The road up to the city. I have never walked it.'},
+  {name:'road to the city',x:0,y:62,w:22,h:44,wx:22,wy:120,dir:-1,exit:()=>say(P,'Not yet. These brothers sail home today, and they must not sail without a word from me.'),look:'The road up to the city. I have never walked it.'},
   {name:'jars',x:28,y:96,w:44,h:20,wx:74,wy:118,dir:-1,look:'Oil for some other harbor. Every one of them is spoken for.',pickup:'They are not mine.'},
   {name:'sea',x:0,y:66,w:176,h:34,wx:120,wy:116,look:'Open water. Beroea lies many days behind it, and Thessalonica behind Beroea.',use:'I have had enough sea for one week.'},
   {name:'ship',x:178,y:54,w:142,h:50,wx:230,wy:116,look:'She brought us down the coast, and she goes back with the next wind.',use:'I am not sailing. Not this time.'},
@@ -927,7 +927,7 @@ E1.hs={name:'brother from Beroea',actor:E1,look:'One of the brothers who brought
 E2.hs={name:'younger brother',actor:E2,look:'The younger of the two. He was seasick the whole way, and said that he was not.',show:{'*':'Keep it, Paul.'},talk:()=>F.msg?say(E2,'He has it. I shall remind him.'):message()};
 /* Timothy when he is the one being played: his answers where the level wrote nothing for him */
 const TIM10={noCraft:"That is Paul's craft, not mine.",
-  def:{look:'I see nothing there that wants my hands.',pickup:h=>h.actor?'I would not dream of it.':'It is not mine to take.',use:'That is not for me to do.',open:'It does not open.',talk:'I would get no answer.',give:'I carry nothing that I could give.'}};
+  def:{look:'I see nothing there that needs my hands.',pickup:h=>h.actor?'I would not dream of it.':'It is not mine to take.',use:'That is not for me to do.',open:'It does not open.',talk:'I would get no answer.',give:'I carry nothing that I could give.'}};
 
 /* ============ WAX TABLETS: people met, tasks still open, and the places in the scrolls (shown by shared/tablets.js) ============ */
 const ps=k=>({ref:PLACE[k].ref,gist:PLACE[k].gist});
@@ -958,7 +958,7 @@ const TABLETS={
     {t:'Kleonike: the lots cast for his clothing.',if:()=>!!F.b1&&!F.b2a},
     {t:'Dorotheos: before whom was he silent?',if:()=>!!F.b2a&&!F.b2b},
     {t:'Eupolemos: a grave with the rich.',if:()=>!!F.b2b&&!F.b2c},
-    {t:'Dorotheos: “his anointed one”. Read the line to its end.',if:()=>!!F.b2c&&!F.b3},
+    {t:'Dorotheos: his anointed one. Read the line to its end.',if:()=>!!F.b2c&&!F.b3},
     {t:'Send word to Silas and Timothy.',if:()=>!!F.ath&&!F.msg}],
   scripture:[...['ps69','ps22m','is533','is50','ps118','ps16','ps34','is535'].map(ps),...['ex12','ps22l','is537','is539'].map(k=>Object.assign(ps(k),{if:()=>!!F.gone})),Object.assign(ps('is45'),{if:()=>!!F.b3})]};
 
@@ -998,7 +998,7 @@ async function start10(){ov.onclick=null;ov.className='';audioInit();SFX.good();
 /* ============ PRAYER HINTS ============ */
 function hint10(){
   if(tim())return['own10',['He asked me. But who found these places?','I should talk to the man back from his flocks, and ask Eupolemos to show him.']];
-  if(F.ath)return['msg10',['Whatever is carried by mouth has to be short enough to arrive whole.','I talk to the brother from Beroea. It is for Silas and Timothy; they are to come to me in Athens; as quickly as they can. Nothing more.']];
+  if(F.ath)return['msg10',['Whatever is carried by word of mouth has to be short enough to arrive whole.','I talk to the brother from Beroea. It is for Silas and Timothy; they are to come to me in Athens; as quickly as they can. Nothing more.']];
   if(F.gone){const d=bday();
     if(d===1)return['b110',['Everything that is written about him in the Law of Moses, in the Prophets and in the Psalms had to come true. (Luke 24:44) Moses and David lie open at the unbroken bones.','The Prophets at the pierced one, and my tablets at the spear. Then I turn to the Beroeans.']];
     if(d===2){const f=find().f;return f==='b2a'?['b2a10',['She found the lots. I know who cast them.','My tablets at the soldiers who cast lots. The scrolls stay as she left them.']]
@@ -1007,7 +1007,7 @@ function hint10(){
     return['b310',['Before I lay anything beside a line, I should have read it to its end.','I look at the scroll of the Prophets. Then I shut my tablets, and turn to the Beroeans.']]}
   if(F.night)return['night10',['Jason gave security, and it was for us. At whose cost would I stay?','I should talk to Jason, and go tonight, as the brothers ask.']];
   if(G.room==='bolt10'||!F.cutd){
-    if(F.laid)return['cut10',['It is laid out. Now it wants cutting.','I should use my knife with the bolt of cloth.']];
+    if(F.laid)return['cut10',['It is laid out. Now it needs cutting.','I should use my knife with the bolt of cloth.']];
     return G.room==='bolt10'?['lay10',['The thin strip may lie at the edge of a panel, under a seam: never in the middle of one. And the spare cloth must be one length.','The end wall, turned upright, lies left of the thin strip. The long wall begins on the strip, with the two gussets under it. The roof goes to the far end.']]
       :['bolt10',['A tent is thought out before it is cut. The cloth is pegged out along the wall.','I should use the bolt of goat-hair cloth, and lay out the six panels on it.']]}
   if(inYard()){
