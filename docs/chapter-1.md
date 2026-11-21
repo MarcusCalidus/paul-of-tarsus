@@ -2,7 +2,7 @@
 
 ## Prologue: The Road to Damascus
 
-Before Chapter One begins, an optional narrated prologue (`levels/prologue.js`) tells who Saul of Tarsus was and how he came to be in Damascus as one of the disciples: standing by the outer garments at the stoning of Stephen outside Jerusalem (Acts 7:58; 22:20), ravaging the congregation from house to house (Acts 8:3; 9:1, 2), traveling toward Damascus when a light from heaven flashed around him at midday (Acts 9:3-8; 22:6-11; 26:13), sitting three days without sight in the house of Judas on the street called Straight until Ananias laid hands on him and he was baptized (Acts 9:9-18), and preaching in the synagogues that Jesus is the Christ and the Son of God (Acts 9:19-22). Click **SKIP** in the top bar at any time to go straight to Chapter One.
+Before Chapter One begins, an optional narrated prologue (`levels/prologue.js`) tells who Saul of Tarsus was and how he came to be in Damascus as one of the disciples: standing by the outer garments at the stoning of Stephen outside Jerusalem (Acts 7:58; 22:20), ravaging the congregation one home after another (Acts 8:3; 9:1, 2), traveling toward Damascus when a light from heaven flashed around him at midday (Acts 9:3-8; 22:6-11; 26:13), sitting three days without sight in the house of Judas on the street called Straight until Ananias laid hands on him and he was baptized (Acts 9:9-18), and preaching in the synagogues that Jesus is the Christ and the Son of God (Acts 9:19-22). Click **SKIP** in the top bar at any time to go straight to Chapter One.
 
 | | |
 |---|---|
