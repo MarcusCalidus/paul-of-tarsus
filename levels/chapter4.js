@@ -658,7 +658,7 @@ async function hearing0(){if(F.heard)return;
   await say(BN,'Barnabas, sir.',{to:SP});
   await say(P,'Saul, of Tarsus. But I was born a Roman, and among the nations I go by my Roman name: Paul.');
   await say(SP,'Paulus? That is my own name. Sergius Paulus.');
-  await say(P,'I have had it as long as I can remember, sir.');F.heard=1;P.called='Paul';
+  await say(P,'I have had it as long as I can remember, sir.');F.heard=1;P.called='Paul';swapBtn();
   await narr('From this point on, the account calls him Paul. (Acts 13:9)',{dur:4200});
   await say(EL,'Proconsul, look at them. Two vagrants from Syria, with the dust of the road to their knees.',{to:SP});
   await say(EL,'Such men sail in, stir up a city, and are gone before the reckoning.');

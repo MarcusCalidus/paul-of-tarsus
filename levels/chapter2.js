@@ -257,7 +257,7 @@ Object.assign(COMBO,{
   'sailpatch+thread':()=>say(P,'My thread is for tent seams. A sail under wind would snap it.'),
   'knife+sailpatch':()=>say(P,'It is large enough to cover the tear. I will leave it whole.'),
   'knife+provisions':()=>say(P,'I will break the bread when it is time to eat it.')});
-function setup2(){place(BN,'jerusalem',228,118,-1);place(CE,'upper',168,120,-1);place(JA,'upper',212,123,-1);
+function setup2(){P.called='Saul';place(BN,'jerusalem',228,118,-1);place(CE,'upper',168,120,-1);place(JA,'upper',212,123,-1);
   place(CP,'harbor',262,122,-1);place(FI,'harbor',186,116,-1);place(MT,'harbor',214,130,1);G.inv=['awl','thread','knife','tablets'];drawInv()}
 /* in Jerusalem, while Saul speaks in the synagogues, the two who dispute with him wait in the street */
 const disputers=()=>{place(DS,'jerusalem',252,118,1);place(AR,'jerusalem',226,123,1)};

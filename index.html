@@ -1132,8 +1132,13 @@ function actor(id,name,color,pitch){return ACT[id]||(ACT[id]={id,name,look:LOOK[
 const P=actor('paul','Paul','#f5e6b8',150);  /* a person's name is shown with T(a.name) */
 /* P is always Paul: the level scripts speak and move him by name. PC() is whoever the player controls. A chapter can declare a party
    of playable characters (party:['paul','barnabas']); each member then has his own inventory (G.invs, of which G.inv is the active
-   one's), stands in his own room, and can be handed things by the others. */
+   one's), stands in his own room, and can be handed things by the others. P.called is the name the story gives him: Saul until
+   Acts 13:9, Paul from there on (CONTRIBUTING section 2). A chapter sets it in its setup, setChapter clears it, and the prayer, the swap
+   button and the hand-over use called before name (a pair played as one keeps its own name: storyName). */
 const PC=()=>G.pc||P;
+/* storyName: the name the story gives a person, which is what the prayer and the swap button show. A pair played as one keeps the name of the pair
+   (Aquila and Priscilla: their called is for the hand-over only). */
+const storyName=a=>a.mate?a.name:a.called||a.name;
 const party=()=>(CHAP[G.ch]&&CHAP[G.ch].party||['paul']).map(id=>ACT[id]);
 const invOf=a=>a===PC()?G.inv:(G.invs[a.id]||(G.invs[a.id]=[]));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
@@ -1269,7 +1274,7 @@ function buildVerbs(){const v=$('#verbs');v.innerHTML='';
   const w=document.createElement('button');w.type='button';w.id='swap';w.onclick=()=>swap();v.appendChild(w);syncVerbs()}
 /* swapBtn: in a chapter with a party, the prayer bar gives up a third of its width to a button naming the character to switch to. */
 function swapBtn(){const b=$('#swap'),ps=party(),on=ps.length>1;$('#verbs').classList.toggle('party',on);if(!on)return;
-  const n=ps[(ps.indexOf(PC())+1)%ps.length];b.textContent='\u21c4 '+T(n.name);b.title=T('Play as {name} (C)',{name:T(n.name)});b.disabled=!n.room}
+  const n=ps[(ps.indexOf(PC())+1)%ps.length];b.textContent='\u21c4 '+T(storyName(n));b.title=T('Play as {name} (C)',{name:T(storyName(n))});b.disabled=!n.room}
 /* swap: hand control to the next member of the party. If he stands in another room, the view goes there. */
 function swap(to){if(G.busy||G.scene||!G.room)return;const ps=party();if(ps.length<2)return;
   const a=to||ps[(ps.indexOf(PC())+1)%ps.length];if(!a||!a.room||a===PC())return;audioInit();
@@ -1556,7 +1561,7 @@ function pray(){if(G.busy||G.scene||!G.room)return;audioInit();
   cut(async()=>{G.prays++;const me=PC(),d=$('#dim'),m=AU.mus,ab=AU.ambG;d.style.opacity=.55;me.bow=true;SFX.pray();
     if(m){m.gain.setTargetAtTime(.12*OPTS.mus,now(),.3);ab.gain.setTargetAtTime(.15*OPTS.fx,now(),.3)}
     await wait(900);
-    {const PR=me.mate?PRAYERS2:PRAYERS;await say(null,T(G.prays===1?PR[0]:pick(PR),{name:T(me.name)}),{dur:4200,color:'#cfe2ff'})}
+    {const PR=me.mate?PRAYERS2:PRAYERS;await say(null,T(G.prays===1?PR[0]:pick(PR),{name:T(storyName(me))}),{dur:4200,color:'#cfe2ff'})}
     await wait(500);me.bow=false;d.style.opacity=0;if(m){m.gain.setTargetAtTime(.55*OPTS.mus,now(),.8);ab.gain.setTargetAtTime(.5*OPTS.fx,now(),.8)}
     await wait(600);
     const[k,ls]=hint(),n=G.hintAt[k]=(G.hintAt[k]||0)+1;
@@ -1799,7 +1804,7 @@ function decode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1'
     const c=Number(x&511n),v=x>>9n^wideMask(c,t.length*5-9);return wideChk(v,CHAP[ch].salt,t.length)===c?{ch,w:v}:null}
   if(t.length!==6)return null;let v=0;for(const x of t){const i=A32.indexOf(x);if(i<0)return null;v=v*32+i}
   const c=v%512,b=Math.floor(v/512)^msk(c);return chk(b,CHAP[ch].salt)!==c||(b>>19&3)>2||b>>21?null:{ch,b}}
-function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];G.pc=P;G.invs={};P.hs=null;
+function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];G.pc=P;G.invs={};P.hs=null;P.called=null;
   LOOK.paul=paulLook(ch);if(LOOK.barnabas)LOOK.barnabas=Object.assign({skin:'#b8844f',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},ch>2?{hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1}:{hair:'#3a2a1a',beard:'#3a2a1a'});
   SPR.clear();Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;a.seat=0;a.wear='';a.look=LOOK[a.id]});
   (CHAP[ch].party||[]).forEach(id=>ACT[id].party=1);
