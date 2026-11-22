@@ -1145,8 +1145,8 @@ async function fire(){await say(KL,'fifty_thousand_pieces_of_silver',{to:null});
   await narr('he_had_not_left_the_city',{dur:7500,low:1});await tell('c1619',null,1);await tell('c169',null,1);
   endScreen({title:'the_hall_of_tyrannus',text:'learned_man_let_two_tentmakers_teach_him',
     based:'based_on_acts_18_23_19',
-    go:'click_to_return_to_the_title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+    go:'click_to_continue_to_chapter_fourteen',code:['chapter_fourteen_code_code',codeOf(14,0)]});
+  await wait(1500);ov.onclick=()=>{ov.onclick=null;startChapter(14)};await new Promise(()=>{})}
 
 /* ============ ITEMS ============ */
 Object.assign(ICON,{

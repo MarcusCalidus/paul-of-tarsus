@@ -111,6 +111,7 @@
   11:async()=>{const l=ROOMS.street11.hs.filter(h=>h.name==='lane')[0];for(let i=0;i<3;i++){await clickView(l.x+l.w/2,l.y+l.h/2,l);await idle()}}, // Chapter Eleven: the wrong lane, three times
   12:async()=>{verb('use');item('awl12');const h=H('rolls_of_cloth');await clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()}, // Chapter Twelve: as Aquila and Priscilla, the awl with the Cilician cloth
   13:()=>act('look','something_under_the_bench'), // Chapter Thirteen: in the hall at midday, what a pupil left under the bench
+  14:async()=>{const M=CHAP[14].map,h=ROOMS.lanes14.hs.filter(h=>h.name==='shutter'&&h.vis&&h.vis())[0];M.seeAll=1;verb('look');await clickView(h.x+h.w/2,h.y+h.h/2,h);await idle();M.seeAll=0}, // Chapter Fourteen: after the uproar, the shutter ajar in the blind alley
  };
  (async()=>{try{
   while(!G.ready)await wait(30);
@@ -472,48 +473,48 @@
   if(stop==='xfade'){await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();const r=CHAP[1].rooms[1];
     tween=(ms,fn)=>{fn(.5);return new Promise(()=>{})};go(r,...CHAP[1].ent[r]);await wait(150);halt('xfade')}
   if(stop==='menu'){openMenu();halt('menu')}
-  /* the lane map (shared/lanes.js): a city seen from above, which the view follows up and down as well as across. It is played here in its
-     demo (tools/lanes-demo.js), a draft of Ephesus for Chapter Fourteen. Stops: lanes (the checks; the runner in the back lane by the square,
-     with the crowd streaming to the theater), lanes2 (the quiet pass: Paul at the harbor road), lanesfolk (lanes-folk.png: every pose of the
+  /* the lane map (shared/lanes.js): a city seen from above, which the view follows up and down as well as across. It is played here on
+     Chapter Fourteen's map of Ephesus, in its two passes. Stops: lanes (the checks; the runner in the back lane below the house, with the
+     crowd streaming to the theater), lanes2 (the quiet pass: Paul at the harbor road), lanesfolk (lanes-folk.png: every pose of the
      figures of the map, five times enlarged, for the cross-shape check), lanesmap (lanes-map.png: the whole map in both passes, and
-     lanes-map-routes.png with the ways the test walks drawn on it), lanesall (every check, to the end of the demo; part of the full run).
+     lanes-map-routes.png with the ways the test walks drawn on it), lanesall (every check, through both passes; part of the full run).
      The city lies X room pixels to the right of its own plan, with the harbor west of it (C.ox). */
-  if(/^lanes(2|folk|all|map)?$/.test(stop)){await loadScript('tools/lanes-demo.js',()=>true);for(let i=0;i<400&&!(CHAP[14]&&CHAP[14].ready);i++)await wait(30);await langFile(G.lang,14);
-    const C=CHAP[14],M=C.map,LN=SHARED.lanes,R=ACT.runner14,D=M.def,sp0=G.speedAll,X=C.ox||0,A=C.at;
+  if(/^lanes(2|folk|all|map)?$/.test(stop)){await loadLevel(14);
+    const C=CHAP[14],M=C.map,LN=SHARED.lanes,R=ACT.eudoros14,D=M.def,sp0=G.speedAll,X=C.ox||0,A=C.at;
     ok(LN&&M&&ROOMS.lanes14.plan===M&&ART.lanes14.h>VH*3&&ART.lanes14.w>VW*3,'the lane map is loaded before its chapter (needs) and makes a room of its own, taller than the view');
     {const c=LN.crossings(D),f=LN.fourWays(D);if(D.grid)ok(c.length>10,'the streets cross at right angles, as the grid of Ephesus did ('+c.length+' crossings): the exception for Ephesus in CONTRIBUTING section 3');
       else ok(!c.length&&!f.length,'no lane crosses another and no four ways meet at one place, which seen from above would be a plus sign'+(c.length||f.length?'. AT: '+JSON.stringify(c.concat(f)).slice(0,300):''));
       const k=LN.corners(M);ok(!k.length,'no four roofs meet at one corner'+(k.length?'. AT: '+JSON.stringify(k.slice(0,12)):''));
       /* every lane hangs together with every other: the walkable ground is one piece, but for a cell or two in a notch of a wall */
-      for(const v of['surge','quiet']){const Q=M.G[v]||(F.two=v==='quiet'?1:0,M.walkable(0,0),M.G[v]),n={};for(let i=0;i<Q.comp.length;i++)if(Q.cell[i])n[Q.comp[i]]=(n[Q.comp[i]]||0)+1;
-        const big=Object.values(n).filter(c=>c>=12);ok(big.length===1,'in the '+v+' every lane can be reached from every other: '+big.length+' piece'+(big.length>1?'s: '+JSON.stringify(n):''))}delete F.two
+      for(const v of['surge','quiet']){const Q=M.G[v]||(F.plea=v==='quiet'?1:0,M.walkable(0,0),M.G[v]),n={};for(let i=0;i<Q.comp.length;i++)if(Q.cell[i])n[Q.comp[i]]=(n[Q.comp[i]]||0)+1;
+        const big=Object.values(n).filter(c=>c>=12);ok(big.length===1,'in the '+v+' every lane can be reached from every other: '+big.length+' piece'+(big.length>1?'s: '+JSON.stringify(n):''))}delete F.plea
       /* every lane can be walked along its middle, from end to end (but for what a pass shuts, and the jams of the uproar) */
-      {F.two=0;M.walkable(0,0);const Q=M.G.surge,bad=[];D.lanes.forEach((l,k)=>{const p=l.pts;for(let i=2;i<p.length;i+=2){const ax=p[i-2],ay=p[i-1],dx=p[i]-ax,dy=p[i+1]-ay,n=Math.ceil(Math.hypot(dx,dy));
+      {F.plea=0;M.walkable(0,0);const Q=M.G.surge,bad=[];D.lanes.forEach((l,k)=>{const p=l.pts;for(let i=2;i<p.length;i+=2){const ax=p[i-2],ay=p[i-1],dx=p[i]-ax,dy=p[i+1]-ay,n=Math.ceil(Math.hypot(dx,dy));
           for(let j=0;j<=n;j++){const x=ax+dx*j/n,y=ay+dy*j/n;if(x<4||y<4||x>D.w-4||y>D.h-4||(D.jams&&D.jams.surge||[]).some(J=>x>=J.x-4&&x<=J.x+J.w+4&&y>=J.y-4&&y<=J.y+J.h+4)||D.keep.some(q=>{const P=q.poly;let c=false;for(let a=0,m=P.length/2,b=m-1;a<m;b=a++){const xi=P[2*a],yi=P[2*a+1],xj=P[2*b],yj=P[2*b+1];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c}))continue;
             if(!Q.cell[(clamp(Math.floor(y/2),0,Q.GH-1))*Q.GW+clamp(Math.floor(x/2),0,Q.GW-1)]&&!M.walkable(x+1,y)&&!M.walkable(x-1,y)&&!M.walkable(x,y+1)&&!M.walkable(x,y-1))bad.push([k,Math.round(x-X),Math.round(y)])}}});
-        delete F.two;const one=[];for(const b of bad)if(!one.some(o=>o[0]===b[0]&&Math.hypot(o[1]-b[1],o[2]-b[2])<8))one.push(b);
+        delete F.plea;const one=[];for(const b of bad)if(!one.some(o=>o[0]===b[0]&&Math.hypot(o[1]-b[1],o[2]-b[2])<8))one.push(b);
         ok(!bad.length,'every lane can be walked along its middle'+(bad.length?'. NOT AT (lane, x in the city, y): '+JSON.stringify(one.slice(0,16)):''))}}
-    {const looks=[LOOK.runner14,LOOK.paul,...LN.FOLK],bad=[];let n=0;
+    {const looks=[LOOK.eudoros14,LOOK.paul,...LN.FOLK],bad=[];let n=0;
       for(const o of looks)for(const Dd of['S','N','E','W'])for(const f of['stand','s1','s2','w1','p1','w2','p2','r1','f1','r2','f2'])for(const t of[0,1]){const run=f[0]==='r'||f[0]==='f',
         arms=run?(Dd==='E'||Dd==='W'?(f==='r1'||f==='f1'?'run':'run2'):'run'):Dd==='E'||Dd==='W'?(f==='w1'?'f':f==='w2'?'k':'stand'):'stand';n++;if(parts(LN.folk(o,Dd,f,arms,t))!==1)bad.push(LN.kinds&&(o.veil?'v':o.cloak?'m':'t')+Dd+f+arms+t)}
       ok(!bad.length,'every pose of the figures of the map is one piece: '+n+' poses'+(bad.length?'. IN PIECES: '+[...new Set(bad)].slice(0,12).join(', '):''))}
-    if(stop==='lanesfolk'){setChapter(14);const z=5,sh=[LOOK.runner14,LOOK.paul,...LN.FOLK].map(o=>LN.sheet(o,z)),[c,g]=mk(sh[0].width,sh.reduce((a,x)=>a+x.height,0));let y=0;for(const x of sh){g.drawImage(x,0,y);y+=x.height}
+    if(stop==='lanesfolk'){setChapter(14);const z=5,sh=[LOOK.eudoros14,LOOK.paul,...LN.FOLK].map(o=>LN.sheet(o,z)),[c,g]=mk(sh[0].width,sh.reduce((a,x)=>a+x.height,0));let y=0;for(const x of sh){g.drawImage(x,0,y);y+=x.height}
       window.SHEETS={'lanes-folk':c.toDataURL()};halt('lanesfolk')}
-    if(stop==='lanesmap'){setChapter(14);const two=F.two,pics=[0,1].map(t=>{F.two=t;return bg('lanes14')}),[c,g]=mk(pics[0].width,pics[0].height*2+8);
+    if(stop==='lanesmap'){setChapter(14);const two=F.plea,pics=[0,1].map(t=>{F.plea=t;return bg('lanes14')}),[c,g]=mk(pics[0].width,pics[0].height*2+8);
       g.fillStyle='#000';g.fillRect(0,0,c.width,c.height);g.drawImage(pics[0],0,0);g.drawImage(pics[1],0,pics[0].height+8);
       /* the ways the test walks: the runner's from where he starts to the door, and Paul's from the door to the harbor gate, with the lanes shut
          and without; drawn on the picture of each pass */
-      const[c2,g2]=mk(c.width,c.height);g2.drawImage(c,0,0);const k=pics[0].width/ART.lanes14.w,way=(a,b,col,dy)=>{F.two=a.two;const r=M.route({x:a.x,y:a.y},b[0],b[1]);if(!r)return;
+      const[c2,g2]=mk(c.width,c.height);g2.drawImage(c,0,0);const k=pics[0].width/ART.lanes14.w,way=(a,b,col,dy)=>{F.plea=a.two;const r=M.route({x:a.x,y:a.y},b[0],b[1]);if(!r)return;
         g2.strokeStyle=col;g2.lineWidth=2;g2.beginPath();g2.moveTo(a.x*k,a.y*k+dy);for(const[x,y]of r)g2.lineTo(x*k,y*k+dy);g2.stroke()};
-      const st=C.ent.lanes14,hs=D.targets.house,gt=D.targets.gate,H2=pics[0].height+8;
+      F.plea=0;const st=C.ent.lanes14,hs=D.targets.house,gt=D.targets.gate,H2=pics[0].height+8;
       way({x:st[0],y:st[1],two:0},hs,'#ffe040',0);way({x:hs[0],y:hs[1],two:1},gt,'#40e0ff',H2);
-      const blk=D.block.quiet;D.block.quiet=[];M.G={};way({x:hs[0],y:hs[1],two:1},gt,'#ff60a0',H2);D.block.quiet=blk;M.G={};F.two=two;
+      const blk=D.block.quiet;D.block.quiet=[];M.G={};way({x:hs[0],y:hs[1],two:1},gt,'#ff60a0',H2);D.block.quiet=blk;M.G={};F.plea=two;
       /* the walk grid of each pass: every part that does not hang together with the rest is red */
-      for(const t of[0,1]){F.two=t;M.walkable(0,0);const Q=M.G[t?'quiet':'surge'],n={};for(let i=0;i<Q.comp.length;i++)if(Q.cell[i])n[Q.comp[i]]=(n[Q.comp[i]]||0)+1;
-        const main=+Object.keys(n).sort((a,b)=>n[b]-n[a])[0];for(let i=0;i<Q.comp.length;i++)if(Q.cell[i]&&Q.comp[i]!==main){g2.fillStyle='#ff0000';g2.fillRect((i%Q.GW)*2*k-1,((i/Q.GW)|0)*2*k-1+(t?H2:0),2*k+2,2*k+2)}}F.two=two;
+      for(const t of[0,1]){F.plea=t;M.walkable(0,0);const Q=M.G[t?'quiet':'surge'],n={};for(let i=0;i<Q.comp.length;i++)if(Q.cell[i])n[Q.comp[i]]=(n[Q.comp[i]]||0)+1;
+        const main=+Object.keys(n).sort((a,b)=>n[b]-n[a])[0];for(let i=0;i<Q.comp.length;i++)if(Q.cell[i]&&Q.comp[i]!==main){g2.fillStyle='#ff0000';g2.fillRect((i%Q.GW)*2*k-1,((i/Q.GW)|0)*2*k-1+(t?H2:0),2*k+2,2*k+2)}}F.plea=two;
       window.SHEETS={'lanes-map':c.toDataURL(),'lanes-map-routes':c2.toDataURL()};halt('lanesmap')}
-    C.demo(1);await wait(60);for(let i=0;i<60&&G.busy;i++)await wait(30);G.speedAll=0;M.seeAll=1;
-    ok(G.room==='lanes14'&&PC()===R&&Math.hypot(R.x-C.ent.lanes14[0],R.y-C.ent.lanes14[1])<14&&M.walkable(R.x,R.y)&&G.camY>0&&!G.busy,'the demo begins on the map with the runner in a back lane, and the view stands lower than the top of the map');
+    C.lanes(1);await wait(60);for(let i=0;i<60&&G.busy;i++)await wait(30);G.speedAll=0;M.seeAll=1;
+    ok(G.room==='lanes14'&&PC()===R&&Math.hypot(R.x-C.ent.lanes14[0],R.y-C.ent.lanes14[1])<14&&M.walkable(R.x,R.y)&&G.camY>0&&!G.busy,'the runner comes out on the map by the square before the theater, and the view stands lower than the top of the map');
     /* the crowd: it streams to the theater in waves, and nobody of it stands where nobody can walk */
     await wait(1500);{const n=M.crowd.length,off=M.crowd.filter(a=>!M.walkable(a.x,a.y)).length,east=M.crowd.filter(a=>Math.hypot(a.mx||0,a.my||0)>.5&&a.mx>0).length;
       ok(n>60&&off<=n*.03&&east>n*.4,'a crowd of '+n+' streams to the theater, most of it eastward ('+east+'), and '+off+' of them off the lanes for a moment')}
@@ -531,9 +532,9 @@
     /* the ways: from the runner's lane to the door of the house, and to every thing that can be clicked */
     {const unreached=[];for(const h of ROOMS.lanes14.hs){if(h.vis&&!h.vis())continue;const r=M.route(R,h.wx,h.wy),e=r&&r[r.length-1];if(!e||Math.hypot(e[0]-h.wx,e[1]-h.wy)>8)unreached.push(h.name)}
       ok(!unreached.length,'a way leads from the runner to every thing on the map that can be clicked'+(unreached.length?'. NOT: '+unreached.join(', '):''))}
-    {const[rx,ry]=A(440,86),r=M.route(R,rx,ry),e=r&&r[r.length-1];ok(r&&M.walkable(...e)&&Math.hypot(e[0]-rx,e[1]-ry)<26&&!M.walkable(rx,ry),'a click on a roof walks to the lane nearest to it')}
+    {const[rx,ry]=A(440,84),r=M.route(R,rx,ry),e=r&&r[r.length-1];ok(r&&M.walkable(...e)&&Math.hypot(e[0]-rx,e[1]-ry)<26&&!M.walkable(rx,ry),'a click on a roof walks to the lane nearest to it')}
     /* a line spoken on the map stands over the speaker, inside the view */
-    clearInterval(sk);say(R,'demo_pressed');await wait(80);{const el=$('#speech .line'),v=vp.getBoundingClientRect(),b=el&&el.getBoundingClientRect(),sc=v.width/320,sx=v.left+(R.x-G.cam)*sc,sy=v.top+(R.y-G.camY)*sc;
+    clearInterval(sk);say(R,'i_cant_get_through_against_them');await wait(80);{const el=$('#speech .line'),v=vp.getBoundingClientRect(),b=el&&el.getBoundingClientRect(),sc=v.width/320,sx=v.left+(R.x-G.cam)*sc,sy=v.top+(R.y-G.camY)*sc;
       ok(b&&b.bottom<=sy-6*sc&&b.top>=v.top-1&&b.left<=sx&&b.right>=sx,'a line on the map stands over whoever speaks it')}
     if(G.skip)G.skip();sk=setInterval(()=>{if(G.skip)G.skip()},30);await idle();
     /* Tab names what can be clicked, where it is seen */
@@ -546,11 +547,13 @@
       ok(pressed>0,'walking against the packed harbor road, the runner is pressed back');M.def.press=p0;await wait(700);if(G.skip)G.skip();await idle()}
     /* the quiet court is not the house: the first time the runner walks into it he says that its shutters are bolted and nothing stirs */
     {const s0=window.say,heard=[];window.say=(a,t,o)=>{heard.push(t);return s0(a,t,o)};const ct=C.city.courts.A,cr=D.crowd;D.crowd={};
-      for(const k of[0,1]){place(R,'lanes14',...A(380,76),-1);M.pushT=0;R.pushed=0;walk(R,...A((ct[0]+ct[2])/2,(ct[1]+ct[5])/2));for(let i=0;i<160&&R.walk;i++)await wait(25);await idle()}
+      for(const k of[0,1]){place(R,'lanes14',...A(470,118),-1);M.pushT=0;R.pushed=0;walk(R,...A((ct[0]+ct[2])/2,(ct[1]+ct[5])/2));for(let i=0;i<160&&R.walk;i++)await wait(25);await idle()}
       window.say=s0;D.crowd=cr;const n=heard.filter(t=>t==='shutters_bolted_nothing_stirs').length;
       ok(n===1,'walking through the passage into a quiet court, the runner says once that its shutters are bolted and nothing stirs ('+n+')')}
     /* the houses stand up: each is its own sprite, among the people by the row of its front; one the runner walks behind fades, and comes back */
-    {const S=LN.sprites(M,'surge');let spot=null;for(const sp of S){if(sp.bridge)continue;for(const st of sp.strips){const x=(st.x0+st.x1)/2,y=st.front-4;if(st.x1-st.x0>=6&&y>st.top+2&&M.walkable(x,y)){spot=[sp,x,y];break}}if(spot)break}
+    {const S=LN.sprites(M,'surge'),H0=A(C.city.courts.H[0],C.city.courts.H[1]),H1=A(C.city.courts.H[2],C.city.courts.H[5]),inH=(x,y)=>x>=H0[0]-3&&x<=H1[0]+3&&y>=H0[1]-3&&y<=H1[1]+3;let spot=null;
+      /* (a spot in the court of the house where Paul is staying would end the runner's pass, so it is not used) */
+      for(const sp of S){if(sp.bridge)continue;for(const st of sp.strips){const x=(st.x0+st.x1)/2,y=st.front-4;if(st.x1-st.x0>=6&&y>st.top+2&&M.walkable(x,y)&&!inH(x,y)){spot=[sp,x,y];break}}if(spot)break}
       ok(S.length>200&&spot,'the houses stand up, '+S.length+' of them, each hiding the ground behind it'+(spot?'':'. NO LANE BEHIND A HOUSE'));
       if(spot){const[sp,x,y]=spot,cr=D.crowd;D.crowd={};place(R,'lanes14',x,y,1);viewOf(R);await wait(600);const a1=sp.alpha;place(R,'lanes14',...C.ent.lanes14);viewOf(R);await wait(600);
         ok(a1<.5&&sp.alpha>.95,'a house fades while the runner is behind it ('+a1.toFixed(2)+'), and comes back when he is out from behind it ('+sp.alpha.toFixed(2)+')');D.crowd=cr}}
@@ -564,30 +567,30 @@
     /* what blocks the way says what it is: a click on a jam stops the runner before it, and he says why nobody gets through */
     const heardAt=async(a,from,to)=>{const s0=window.say,heard=[];window.say=(b,t,o)=>{heard.push(t);return s0(b,t,o)};const cr=D.crowd;D.crowd={};M.said=null;
       place(a,'lanes14',...from,-1);viewOf(a);await wait(120);walk(a,...to);for(let i=0;i<160&&a.walk;i++)await wait(25);await wait(150);await idle();window.say=s0;D.crowd=cr;return heard};
-    {const h=await heardAt(R,A(420,118),A(391,118));ok(h.includes('packed_so_tight_nobody_gets_through'),'walking up to a jam, the runner says that nobody gets through ('+h.join(', ')+')')}
+    {const h=await heardAt(R,A(442,118),A(413,118));ok(h.includes('packed_so_tight_nobody_gets_through'),'walking up to a jam, the runner says that nobody gets through ('+h.join(', ')+')')}
     /* the house is reached only through its covered passage: the way to it runs under the house built over the lane */
     {const b=D.bridges[0],r=M.route(R,...D.targets.house,true);let under=false,x=R.x,y=R.y;for(const[a,c]of r){for(let t=0;t<=1;t+=.05){const px=x+(a-x)*t,py=y+(c-y)*t;if(px>=b.x&&px<b.x+b.w&&py>=b.y&&py<b.y+b.d)under=true}x=a;y=c}
       ok(D.bridges.length===3&&under,'the house is reached through a covered passage, and two quiet courts the same way')}
     /* zoom: the view zooms between three quarters and twice its size, and a click still walks to where it was made */
     {G.zoomTo=2;await wait(500);const z=G.zoom,[tx,ty]=[R.x+8,R.y];const ok1=M.walkable(tx,ty);if(ok1){view(tx,ty);for(let i=0;i<80&&R.walk;i++)await wait(25)}
       ok(Math.abs(z-2)<.05&&(!ok1||Math.hypot(R.x-tx,R.y-ty)<2.5),'the view zooms to twice its size ('+z.toFixed(2)+'), and a click there walks to where it was made');G.zoomTo=1;await wait(400)}
-    if(stop==='lanes'){place(R,'lanes14',...A(330,118),-1);R.pushed=0;M.pushT=0;M.seeAll=0;viewOf(R);await wait(2400);walk(R,...A(290,96));await wait(60);paintPointer(...A(290,96));halt('lanes')}
+    if(stop==='lanes'){place(R,'lanes14',...A(320,118),-1);R.pushed=0;M.pushT=0;M.seeAll=0;viewOf(R);await wait(2400);walk(R,...A(290,96));await wait(60);paintPointer(...A(290,96));halt('lanes')}
     /* to the house and through the door, by the back lanes: then the quiet pass, Paul at the door */
     G.speedAll=sp0;place(R,'lanes14',...C.ent.lanes14);M.pushT=0;R.pushed=0;viewOf(R);
     /* the test walks at many times the pace, through anyone in the way: for that walk the crowd stays away */
-    {const cr=D.crowd;D.crowd={};await act(null,'door_of_the_house_demo');for(let i=0;i<300&&!F.two;i++)await wait(30);await idle();D.crowd=cr}
-    ok(F.two&&PC()===P&&P.room==='lanes14'&&!R.room&&M.crowd.length===0,'at the door of the house the runner is done, and Paul walks the emptied lanes');
+    {const cr=D.crowd;D.crowd={};const[hx,hy]=D.targets.house;walk(R,hx,hy+2);for(let i=0;i<4000&&!F.court;i++)await wait(30);await idle();D.crowd=cr}
+    ok(F.court&&G.room==='door14'&&!R.room,'in the court of the house the runner is done, and the view goes in at the door');
+    C.lanes(2);await wait(60);for(let i=0;i<60&&G.busy;i++)await wait(30);await idle();
+    ok(PC()===P&&P.room==='lanes14'&&!R.room&&M.crowd.length===0&&ART.lanes14.variant()==='quiet','after the uproar Paul walks the emptied lanes');
     /* after the uproar three lanes are shut and stalls lie across the harbor road: the way to the harbor gate is several times the direct one */
     {const way=()=>{const r=M.route(P,...D.targets.gate);if(!r)return 0;let len=0,x=P.x,y=P.y;for(const[a,b]of r){len+=Math.hypot(a-x,b-y);x=a;y=b}return len};
       const len=way(),blk=D.block.quiet;D.block.quiet=[];M.G={};const direct=way();D.block.quiet=blk;M.G={};
       ok(len>direct*2,'with streets shut and the harbor street blocked, the way to the harbor gate is '+Math.round(len)+' pixels, where it would be '+Math.round(direct))}
     {const h1=await heardAt(P,A(110,196),A(72,196)),h2=await heardAt(P,A(50,140),A(50,169));
-      ok(h1.includes('overturned_stall_in_the_way')&&h2.includes('gate_shut_look_demo'),'after the uproar Paul says what blocks his way: an overturned stall ('+h1.join(', ')+'), a barred gate ('+h2.join(', ')+')')}
+      ok(h1.includes('overturned_stall_in_the_way')&&h2.includes('somebody_has_shut_the_gate_and_barred_it'),'after the uproar Paul says what blocks his way: an overturned stall ('+h1.join(', ')+'), a barred gate ('+h2.join(', ')+')')}
     if(stop==='lanes2'){G.speedAll=0;place(P,'lanes14',...A(30,200),-1);viewOf(P);await wait(300);paintPointer(...A(3,190));halt('lanes2')}
     const code=makeCode();ok(decode(code)&&decode(code).ch===14,'the safe-point code holds the quiet pass: '+code);
-    {const h=ROOMS.lanes14.hs.filter(h=>h.name==='shutter_demo'&&h.vis&&h.vis())[0];view(h.x+h.w/2,h.y+h.h/2);await idle()}ok(treasures().has(14),'the shutter at the end of the little lane is the hidden treasure of the demo');
-    await act(null,'harbor_gate_demo');for(let i=0;i<300&&F.two;i++)await wait(30);await idle();
-    ok(!F.two&&PC()===R&&G.room==='lanes14','at the harbor gate the demo begins again');
+    {const h=ROOMS.lanes14.hs.filter(h=>h.name==='shutter'&&h.vis&&h.vis())[0];verb('look');view(h.x+h.w/2,h.y+h.h/2);await idle()}ok(treasures().has(14),'the shutter ajar at the end of the blind alley is the chapter\'s hidden treasure');
     ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,8).join(' | '):'')+(RAWKEY.size?'. KEY: '+[...RAWKEY].slice(0,8).join(' | '):''));
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* hidden treasures (CONTRIBUTING section 2): every chapter hides one. From the point that the screen of treasures leads back to (its at),
@@ -2576,9 +2579,9 @@
   {const bad=asiaOK();ok(F.sum&&C().shown().length===9&&G.map13.roads.length===8&&!bad.length,'the province, at the end: nine towns and eight roads, none crossing another, and no name on a line'+(bad.length?' BAD '+bad.join(' | '):''))}
   while(!(ov.classList.contains('end')&&ov.textContent.includes(T('the_hall_of_tyrannus')))&&n13++<4000)await wait(50);note();
   ok(ov.classList.contains('end')&&told('v19a')&&told('v19b')&&told('v20')&&told('c1619')&&told('c169')&&said('fifty_thousand_pieces_of_silver'),'they burn their books before everybody: fifty thousand pieces of silver; and the word of Jehovah keeps growing and prevailing (Acts 19:19, 20)');
-  ok(ov.textContent.includes(T('click_to_return_to_the_title'))&&/18:23-19:20/.test(ov.textContent),'the closing screen says what the account leaves unsaid');
+  ok(ov.textContent.includes(T('click_to_continue_to_chapter_fourteen'))&&ov.textContent.includes(T('chapter_fourteen_code_code',{code:codeOf(14,0)}))&&/18:23-19:20/.test(ov.textContent),'the closing screen says what the account leaves unsaid, and gives the code for Chapter Fourteen');
   {const r=ov.getBoundingClientRect(),bad=[...ov.children].filter(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});if(bad.length)tight.add('closing screen: '+bad[0].textContent.slice(0,40))}
-  ok(store('paul.save')===null,'a finished game keeps no save');
+  ok(store('paul.save')===codeOf(14,0),'and the browser keeps the first code of Chapter Fourteen');
   halt('final13');
   /* what the account says was all told; and the chapter's data is whole */
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length&&Object.keys(C().told).length===33,'every verse of Acts 18:23 to 19:20 that is not spoken in a scene was told by the narrator, and what he said and wrote of these years'+(miss.length?' MISSING '+miss:''))}
@@ -2638,7 +2641,7 @@
   for(let q=0;q<3;q++){for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);await choose(1);for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);await choose(0)}
   await until(()=>G.room==='seal14',6000);
   ok(F.r1&&F.r2&&F.r3&&(said('proconsul_i_would_have_heard')||said('harbor_then_why_silversmiths')),'a claim only one person makes is turned back, and the one that two agree on is taken');
-  ok(told('v29b')&&said('close_it_and_tie_it')&&has('cord14')&&has('clay14')&&G.room==='seal14','then the narrator tells who was dragged in, the commissioners write, and the close view opens with a cord and clay');
+  note();ok(told('v29b')&&said('close_it_and_tie_it')&&has('cord14')&&has('clay14')&&G.room==='seal14','then the narrator tells who was dragged in, the commissioners write, and the close view opens with a cord and clay');
   halt('seal14');
   heard.length=0;await onH('philokrates_leaf','use');ok(said('the_holes_do_not_meet')&&!F.closed,'laid as it lies, the second leaf\'s holes do not meet the first\'s');
   await useH('cord14','aristokles_leaf');ok(said('tied_open_anyone_could_read_it')&&!F.tied,'tied open, anyone could read it');
@@ -2655,7 +2658,7 @@
   ok(G.room==='lanes14'&&PC()===RUN&&ART.lanes14.variant()==='surge','out on the lane map, in the surge');halt('lanes14');
   {const M=C().map,[hx,hy]=M.def.targets.house;await mapWalk(RUN,hx,hy+2);}
   await until(()=>G.room==='door14'&&!G.busy,20000);
-  ok(F.court&&PC()===DA&&P.room==='door14'&&told('v30')&&said('then_i_am_going_in'),'at the court the view goes into the house: Damon and Theano are played, and Paul is set on going (19:30)');
+  note();ok(F.court&&PC()===DA&&P.room==='door14'&&told('v30')&&said('then_i_am_going_in'),'at the court the view goes into the house: Damon and Theano are played, and Paul is set on going (19:30)');
   halt('door14');
   /* puzzle 4: what concerns his own life only makes him more set on going; what concerns others holds him, a step at a time */
   heard.length=0;await talkTo(P);for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);await choose(0);ok(said('crowds_have_wanted_my_blood')&&!F.h1,'a warning about his own life does not hold him');
@@ -2670,7 +2673,7 @@
   heard.length=0;await onH('passage_under_the_house','walk');ok(said('not_without_saying_goodbye')&&G.room==='court14','he will not go without saying goodbye');
   for(const a of[DA,PH,KL,A('dz14a')])await talkTo(a);ok(F.b1&&F.b2&&F.b3&&F.b4,'he says goodbye to each');
   await onH('passage_under_the_house','walk');await until(()=>G.room==='lanes14'&&!G.busy,6000);
-  ok(ART.lanes14.variant()==='quiet'&&PC()===P,'the lanes after the uproar, as Paul');halt('quiet14');
+  ok(ART.lanes14.variant()==='quiet'&&PC()===P,'the lanes after the uproar, as Paul');L('CODE '+makeCode());halt('quiet14');
   /* the hidden treasure: the shutter ajar in the blind alley off the harbor road */
   {const h=ROOMS.lanes14.hs.find(h=>h.name==='shutter'&&h.vis&&h.vis()&&h.look===h.open&&typeof h.look==='function');await mapWalk(P,h.wx,h.wy);heard.length=0;verb('look');clickView(h.x+h.w/2,h.y+h.h/2,h);await idle();
     ok(said('shutter_look')&&treasures().has(14),'the shutter ajar in the blind alley: somebody hums while kneading, and the chapter\'s hidden treasure is found')}
@@ -2679,7 +2682,13 @@
   await onH('way_back_to_the_lanes','walk');await until(()=>G.room==='lanes14'&&!G.busy,6000);
   {const h=ROOMS.lanes14.hs.find(h=>h.name==='harbor_gate');await mapWalk(P,h.wx+4,h.wy);G.verb='walk';G.item=null;clickView(h.x+h.w/2,h.y+h.h/2,h);
     for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30)}
-  note();ok(ov.classList.contains('end')&&seenTold.has('w1b'),'at the harbor gate he sets out for Macedonia (20:1), and the end screen follows');halt('gate14');
+  note();ok(ov.classList.contains('end')&&seenTold.has('w1b'),'at the harbor gate he sets out for Macedonia (20:1), and the end screen follows');
+  ok(ov.textContent.includes(T('click_to_return_to_the_title'))&&/19:21-20:1/.test(ov.textContent)&&store('paul.save')===null,'the closing screen says what the account leaves unsaid, and a finished game keeps no save');halt('gate14');
+  {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length&&Object.keys(C().told).length===24,'every verse of Acts 19:21 to 20:1 was told by the narrator'+(miss.length?' MISSING '+miss:''))}
+  /* the crowd's cry (Acts 19:28, 34) is heard and never shown: its vowels and rhythm are the language's own, and it renders finite and audible */
+  {const L=C().parseCry('cry14'),en=textOf('en','cry14'),SR=22050,o=new OfflineAudioContext(1,SR*4,SR),keep=Object.assign({},AU);AU.ctx=o;audioGraph(o);let len=0;try{len=C().cry(AU.out||AU.master,.05,6,0)}finally{for(const k in AU)AU[k]=keep[k]}
+    const d=(await o.startRendering()).getChannelData(0);let p=0;for(const v of d){if(!isFinite(v)){p=NaN;break}p=Math.max(p,Math.abs(v))}
+    ok(L.filter(n=>n[0]!=null).length===10&&(lang==='en'||T('cry14')!==en)&&len>2&&p>.005&&p<.95&&!heard.some(h=>/Great is Artemis|Groß ist die Artemis/i.test(h)),'the crowd\'s cry is heard as ten shouted vowels of the '+LANGS[lang].native+' words, never written on the screen (peak '+(p||0).toFixed(2)+')')}
   };
   if(C14){await ch14();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
@@ -3596,7 +3605,7 @@
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('journey6',()=>{ov.className=''});halt('final6');await wait(1700)}
-  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13()}
+  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13();await wait(1700);await ch14()}
   ok(!MISSING.size&&!RAWKEY.size,'every line shown in the game had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);

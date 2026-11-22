@@ -663,7 +663,7 @@ const TABLETS={
     list:WHO.flatMap(w=>w.notes.map(n=>({t:n,if:ru(()=>!!F[w.f])})))}};
 
 /* ============ PLACING THE CAST, SETUP ============ */
-const ENT={court14:[150,124,1],market14:[40,124,1],colon14:[120,124,1],seal14:[160,236,1],get lanes14(){return F.plea?[X(HOUSE[0]),Y(78),1]:[X(START[0]),Y(START[1]),START[2]]},door14:[160,124,1]};
+const ENT={court14:[186,126,1],market14:[40,124,1],colon14:[120,124,1],seal14:[160,236,1],get lanes14(){return F.plea?[X(HOUSE[0]),Y(78),1]:[X(START[0]),Y(START[1]),START[2]]},door14:[160,124,1]};
 const EVERY=[AR,PK,PH,KL,TI,ER,DE,BR,AP,PO,WA,OL,DY,D1,D2,D3,...SMITHS.map(s=>ACT[s[0]])];
 function place14(room){for(const a of EVERY){a.room=null;a.talk=false;a.seat=0}THV.talk=false;if(setScore&&AU.score!==MUSIC)setScore(MUSIC);
   /* who is played: Eudoros until the court is found, Damon and Theano in the house until the plea is read, then Paul */
@@ -694,11 +694,18 @@ function hint14(){const pc=PC();
   if(!F.left)return allBye()?['go14',['road_to_macedonia_starts_at_the_harbor','i_go_out_by_the_passage_to_the_gate']]:['bye14',['they_came_to_say_goodbye','i_talk_to_each_of_them_before_i_go']];
   return['gate14',['harbor_gate_far_end_of_the_road','i_walk_to_the_gate_and_go_round']]}
 
+/* lanes: for the playtest, one pass of the lane map at once: 1 the runner in the surge, as he comes out by the square; 2 Paul after the
+   uproar, as he comes out of the passage. Every flag of the story up to that point is set. */
+const FLAGS=['a1','a2','a3','a4','a5','a6','r1','r2','r3','turned','closed','tied','clayed','sealed','run','court','h1','h2','h3','knock','plea','b1','b2','b3','b4','left'];
+function lanesPass(pass){setChapter(14);const upto=pass===1?'run':'left';for(const k of FLAGS.slice(0,FLAGS.indexOf(upto)+1))F[k]=1;M.reset();for(const k in courtSaid)delete courtSaid[k];
+  ov.className='';ov.onclick=null;ov.innerHTML='';G.scene=null;place14('lanes14');dealInv('lanes14');enterRoom('lanes14',...ENT.lanes14);
+  G.busy=false;lock(false);G.verb='walk';G.item=null;syncVerbs();drawInv();status();swapBtn();codeBtn()}
+
 /* ============ CHAPTER DEFINITION ============ */
 return{rooms:['colon14','seal14','lanes14','door14','court14','market14'],setup:setup14,start:start14,hint:hint14,music:MUSIC,topics:[],tablets:TABLETS,beds:BEDS,calls:CALLS,
   /* for the playtest: what is told, the people at the theater and the report, the lane map and its plan */
   told:TOLD,who:WHO,report:REPORT,others:OTHERS,self:SELF,bye:BYE,cry,parseCry,map:M,ox:OX,at:(x,y)=>[X(x),Y(y)],len:q,city:{house:HOUSE,courts:COURT,gates:GATES,alley:ALLEY,start:START},
-  flags:['a1','a2','a3','a4','a5','a6','r1','r2','r3','turned','closed','tied','clayed','sealed','run','court','h1','h2','h3','knock','plea','b1','b2','b3','b4','left'],
+  flags:FLAGS,lanes:lanesPass,
   /* six rooms and twenty-six flags today; the code keeps room for sixteen and for forty. Three can be played, one at a time: Eudoros, Damon
      and Theano, and Paul. */
   codeBits:{flags:40,rooms:4},party:['paul','eudoros14','damon14'],swap:false,ent:ENT,home:{tab14:'eudoros14',cord14:'eudoros14',clay14:'eudoros14',plea14:'eudoros14',plead14:'damon14'},

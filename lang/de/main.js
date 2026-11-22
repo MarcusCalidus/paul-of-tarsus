@@ -152,7 +152,7 @@ TEXTS('de','main',{
   "on_the_roads_of_rome":["AUF ROMS STRASSEN","1g9d20e"],
   "point_and_click_adventure":["Ein Point-and-Click-Abenteuer nach dem Bibelbuch Apostelgeschichte","06g4dmx"],
   "click_to_begin":["Zum Beginnen klicken","0yl8umx"],
-  "click_a_chapter_to_begin":["Klicke auf ein Kapitel, um zu beginnen. Schon einmal gespielt? Dann klicke oben rechts auf CODE EINGEBEN.","0rj4ctd"],
+  "click_a_chapter_to_begin":["Klicke ein Kapitel an, um zu beginnen. Schon gespielt? CODE EINGEBEN, oben rechts.","0rj4ctd"],
   "Continue":["Weiterspielen","1bipuuc"],
   "chapter_complete":["KAPITEL ABGESCHLOSSEN","11ibh0t"],
   "time_m_m_s_s":["Zeit: {m} Min. {s} Sek.","0pb9j3e"],
