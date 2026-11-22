@@ -392,12 +392,12 @@
         items.forEach(([nm,o,dir,fr],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-24,34*Z,3);
           cut(g,spr(o,'sw'+r+'_'+i,dir||1,fr||0),-24,-124,48,125,x+Math.floor((cw-48*Z)/2),y+chh-24-124*Z,Z);text(g,nm,x+6,y+chh-7,11)})});
       SHEETS['cast-shipwreck']=c.toDataURL();
-      /* 6x close-ups of wet hair, torn tunic hems & barefoot/wet boots */
-      const DET=[['Paul wet & torn',S.paul_wet],['Luke wet & torn',S.luke_wet],['Julius wet cloak/armor',S.julius_wet],['Sailor ragged hem',S.sailor_wet]],
-        ZD=6,dw=228,dh=344,[cd,gd]=sheet(DET.length*dw,36+dh*2);
+      /* 6x close-ups of wet hair, torn tunic hems & barefoot/wet boots (including walking stride) */
+      const DET=[['Paul wet & torn',S.paul_wet,0],['Luke wet & torn',S.luke_wet,0],['Julius wet cloak/armor',S.julius_wet,0],['Sailor standing',S.sailor_wet,0],['Sailor walking (fr 12)',S.sailor_wet,12]],
+        ZD=6,dw=264,dh=344,[cd,gd]=sheet(DET.length*dw,36+dh*2);
       text(gd,'Shipwreck Details (6x): wet hair & upper cloth (top), torn hems & feet (bottom)',12,24,14,'#f4f0e6');
-      DET.forEach(([nm,o],i)=>{const x=i*dw;field(gd,i,x,36,dw,dh);cut(gd,spr(o,'swd1_'+i,1),-19,-96,38,52,x,36+4,ZD);text(gd,nm,x+6,36+dh-8,12);
-        field(gd,i+1,x,36+dh,dw,dh);cut(gd,spr(o,'swd2_'+i,1),-19,-48,38,50,x,36+dh+4,ZD);text(gd,'hem & feet',x+6,36+dh*2-8,12)});
+      DET.forEach(([nm,o,fr],i)=>{const x=i*dw;field(gd,i,x,36,dw,dh);cut(gd,spr(o,'swd1_'+i,1,fr),-22,-96,44,52,x,36+4,ZD);text(gd,nm,x+6,36+dh-8,12);
+        field(gd,i+1,x,36+dh,dw,dh);cut(gd,spr(o,'swd2_'+i,1,fr),-22,-48,44,50,x,36+dh+4,ZD);text(gd,'hem & feet',x+6,36+dh*2-8,12)});
       SHEETS['cast-shipwreck-detail']=cd.toDataURL();
       window.SHEETS=SHEETS;halt('shipwreck')}
     if(stop==='romans'){const R=C.ROMAN;checkSet(R,'romans');
