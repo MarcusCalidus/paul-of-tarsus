@@ -1,31 +1,46 @@
 /* Paul of Tarsus: the lane map, a city seen from above, loaded on demand (a chapter names it in its line of the manifest: needs:['lanes']).
-   A room of its own kind: taller and wider than the view, which follows whoever is played across and up and down (G.camY). It is seen at a
-   slant from above, so that every house shows its roof and, where a lane runs in front of it, its front wall; people are small figures of
-   their own (FOLK), drawn by hand pixel by pixel like the room figures, and lit by the sun or the shade of the house beside them.
-   Everything the room can do still works on it: Look and the other verbs, Pray, the names under Tab, the safe-point code; the engine
-   hands it the walking (route), the moving (tick) and the drawing of the people in it (drawActor), through ROOMS[id].plan.
+   A room of its own kind: taller and wider than the view, which follows whoever is played across and up and down (G.camY), and which the
+   player may zoom (G.zoom: two fingers, the mouse wheel, + and -). It is seen at a slant from above, as the city maps of the early-1990s
+   adventures were: every house stands up from its ground, its front wall of one or two storeys towards us, with its door and windows, and
+   its roof above, so that it hides the lane behind it; while whoever is played walks behind a house, the house fades, so that he is never
+   lost from sight. People are figures of their own (FOLK), drawn by hand pixel by pixel like the room figures, about fourteen room pixels
+   tall, and lit by the sun or the shade of the house beside them. A click walks him along the lanes by the shortest way he knows, and the
+   way is shown as a row of dots up to a small diamond where it ends: he knows the lanes he has seen, on the screen where no house hides
+   them, and those round every corner he has come by. Everything the room can do still works on it: Look and the other verbs, Pray, the
+   names under Tab, the safe-point code; the engine hands it the walking (route), the moving (tick) and the drawing of the people in it
+   (drawActor), through ROOMS[id].plan.
 
      make(id, def)   registers ART[id] and ROOMS[id] and returns the map, M. def:
-       w, h          the size of the city in room pixels; seed, which makes its houses; lot: about how far apart the houses stand
+       w, h          the size of the city in room pixels; seed, which makes its houses; lot: about how far apart the houses stand;
+                     grid: its streets cross at right angles, as those of Ephesus did (the exception in CONTRIBUTING section 3);
+                     height(house): the height of a house's front, where the chapter wants it otherwise (in room pixels)
        lanes         [{pts:[x,y, x,y, ...], w, kind:'earth'|'paved', rough}]: the ways that can be walked, as lines with a width. No lane
                      crosses another, and no two end on the same point of a third from opposite sides: a crossing seen from above is a
                      plus sign (CONTRIBUTING section 3). The playtest checks it (crossings).
        open          [{poly:[x,y, ...], kind:'square'|'earth'}]: squares and yards that can be walked
        keep          [{poly}]: ground that is neither house nor lane, such as a theater or the sea: the chapter paints it (paint)
+       bridges       [{x, y, w, d, H, gap:[x0, x1]}]: covered passages, houses built over a lane, with an archway where it runs through
+       marks         [{x, y, paint(g, v, [top, foot])}]: what the chapter paints on the front of the house that stands at x, y (a door,
+                     shutters); top and foot are the rows of that front at x
        solid         [[x,y,w,h], ...]: things on a lane that nobody walks through (a stall, a fountain); block: {variant: [[x,y,w,h], ...]}:
                      the same, in one variant of the map only (a gate that is shut, a stall overturned)
        variant()     which picture and which ways hold now, such as 'surge' or 'quiet'
-       paint(g, v, M), props: what the chapter paints over the city in variant v, and what of it stands up among the people
+       paint(g, v, M), props: what the chapter paints on the ground in variant v, and what of it stands up among the people
                      (as a room's props: {y, shape(g, v)}); draw(g, ts, M), front(g, ts, M): what moves (a cat on a wall)
        cue(house, v)  how the windows of a house stand in variant v: 'open', 'shut' or 'head' (a face looks out)
        crowd:        {variant: {sinks:{name:[[x,y], ...]}, sources:[{x, y, rate, on, off, ph, to}], pace, max}}: where people make for, and
-                     where they come from, in waves: rate a second while a wave lasts (on seconds), then a pause (off seconds)
+                     where they come from, in waves: rate a second while a wave lasts (on seconds), then a pause (off seconds). Nobody
+                     appears out of the open ground: a source with x, y lies where a street comes in from beyond the map, or in a gate; a
+                     source with doors:[x, y] and r sends them out of the doors of the houses within r of that place, never out of a house
+                     whose shutters are bolted (cue), and the door stands open behind each for a moment
+       zones         [{x, y, w, h, enter()}]: places the chapter is told of when whoever is played walks into them (a court, say)
        targets       {name:[x, y]}: places whose distance along the lanes the chapter asks for (dist), as the sound does
        pace(a)       'run' or 'walk', for whoever is played; press(): someone was pressed back by the crowd (the chapter may say so)
        room          the room's own fields: hs, mood, amb, enter, space ...
      M.dist(name, x, y)    how far a place lies from x, y along the lanes, in room pixels (Infinity if no way leads there)
      M.near(x, y, r)       how many people of the crowd stand within r
-     M.walkable(x, y), M.route(a, x, y), M.reset(): the crowd starts again
+     M.walkable(x, y), M.route(a, x, y, all): the way (all: by every lane, not only those he knows), M.reset(): the crowd starts again,
+     M.doors: the doors of the houses, [{x, y, h, house}], M.seeAll: he knows every lane (for a test)
    The figures: FOLK draws the people of the map from their room look (LOOK): a man in a tunic and mantle, a man in a belted tunic, a woman
    with her mantle over her head. Every frame is a small pixel map, set down by hand: the head, the body and the legs each have their own,
    for three ways of facing (towards us, away, to the side; the other side is its mirror), standing, four moments of a walk and four of a run.
@@ -35,7 +50,7 @@ SHARED.lanes=(()=>{
 const CS=2;                                   /* a cell of the walk grid, in room pixels */
 const BUILT=0,EARTH=1,PAVED=2,SQUARE=3,KEEP=4,COURT=5;
 const OPEN=k=>k===EARTH||k===PAVED||k===SQUARE;
-const PACE={run:38,walk:20},STRIDE={run:22,walk:16};   /* room pixels a second; room pixels for two steps */
+const PACE={run:49,walk:26},STRIDE={run:29,walk:21};   /* room pixels a second; room pixels for two steps */
 
 /* --- noise: a lattice of values smoothly read, and a hash for one value per spot --- */
 function lattice(seed,n){const r=rng(seed),a=new Float32Array(n*n);for(let i=0;i<a.length;i++)a[i]=r();a.n=n;return a}
@@ -95,91 +110,149 @@ function houses(def,K){const W=def.w,H=def.h,S=def.lot||15,r=rng((def.seed||1)*3
       for(const q of[i,i+1,i+W,i+W+1])if(hid[q]===d&&K[q]===BUILT){hid[q]=c;px[c].push(q);const L=px[d],k=L.indexOf(q);if(k>=0)L.splice(k,1)}n++}
     if(!n)break}
   for(let id=1;id<HS.length;id++){const L=px[id];if(!L||!L.length){HS[id]=null;continue}let x0=W,y0=H,x1=0,y1=0;for(const q of L){const x=q%W,y=(q/W)|0;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
-    const h=HS[id],bw=x1-x0+1,bh=y1-y0+1,flat=r()<.1;Object.assign(h,{x0,y0,x1,y1,n:L.length,ew:bw>=bh*.85,hw:r()<.45?2.5+Math.round(r()*2)/2:4.5+Math.round(r()*2)/2,flat,
+    /* hw: how tall the house's front wall stands, in room pixels: one storey or two, as in the city maps of those games */
+    const h=HS[id],bw=x1-x0+1,bh=y1-y0+1,flat=r()<.1,hw0=r()<.4?8+Math.round(r()*4)/2:11.5+Math.round(r()*5)/2;Object.assign(h,{x0,y0,x1,y1,n:L.length,ew:bw>=bh*.85,hw:hw0,flat,
       roof:flat?FLAT[(r()*FLAT.length)|0]:ROOFS[(r()*ROOFS.length)|0],wall:WALLS[(r()*WALLS.length)|0],seed:(r()*1e6)|0});
     /* now and then a walled yard with a tree in it instead of a house */
-    if(L.length>=90&&L.length<=420&&r()<.06){h.yard=true;h.flat=false;h.hw=1}
-    /* a large house is built round a court open to the sky */
-    else if(bw>=22&&bh>=19&&L.length>=bw*bh*.85&&r()<.38){const cx0=x0+Math.round(bw*.33),cx1=x1-Math.round(bw*.33),cy0=y0+Math.round(bh*.3),cy1=y1-Math.round(bh*.4);
+    if(L.length>=90&&L.length<=420&&r()<.06){h.yard=true;h.flat=false;h.hw=2.5}
+    /* a large house is built round a court open to the sky, where the chapter wants it (def.courts): where the houses stand tall, the
+       court's floor is hidden behind its own south wing, and only its inner wall shows, so the demo has none */
+    else if(def.courts&&bw>=22&&bh>=19&&L.length>=bw*bh*.85&&r()<.38){const cx0=x0+Math.round(bw*.33),cx1=x1-Math.round(bw*.33),cy0=y0+Math.round(bh*.3),cy1=y1-Math.round(bh*.4);
       if(cx1-cx0>=4&&cy1-cy0>=3){let all=true;for(let y=cy0-1;y<=cy1+1&&all;y++)for(let x=cx0-1;x<=cx1+1;x++)if(hid[y*W+x]!==id){all=false;break}
         if(all){h.court=[cx0,cy0,cx1,cy1];h.flat=false;h.roof=ROOFS[(r()*ROOFS.length)|0];for(let y=cy0;y<=cy1;y++)for(let x=cx0;x<=cx1;x++)K[y*W+x]=COURT}}}}
+  if(def.height)for(const h of HS)if(h&&!h.yard){const v=def.height(h);if(v!=null)h.hw=v}
   return{hid,HS}}
 
 /* ============ PAINTING ============ */
 const SHADE=[.66,.62,.7];   /* the sun's shadow, multiplied in: a little cool */
-function paintCity(M,g,v){const def=M.def,W=def.w,H=def.h,K=M.K,{hid,HS}=M.H,cue=def.cue||(()=>'shut'),W2=W*2,H2=H*2,
-  im=g.createImageData(W2,H2),d=im.data,nzA=lattice((def.seed||1)*13+1,32),nzB=lattice((def.seed||1)*17+5,64);
-  const isH=i=>K[i]===BUILT&&hid[i]>0,hAt=(x,y)=>x<0||y<0||x>=W||y>=H?0:K[y*W+x]===BUILT?hid[y*W+x]:0;
-  /* runs: for each house pixel, how many pixels of the same roof lie below it (dn), above it (up), to the left (lf) and to the right (rt),
-     and what ends the run below: open ground (1) or another house (2) */
+/* fronts: for each house pixel, how many pixels of the same roof lie below it (dn), above it (up), to the left (lf) and to the right (rt),
+   and what ends the run below: open ground (1) or another house (2). Then each house's front, where its run ends on open ground, is given
+   its door and its windows (feat): windows two columns wide on the ground floor, and on a house of two storeys windows above, set between
+   those below and never over them, so that four of them never stand two by two. The doors are listed (doors): the crowd steps out of them.
+   Worked out once, when the map is made. */
+const DOORH=7;   /* how tall a door is, in room pixels: about half a figure, as in the city maps of those games */
+function fronts(M){const def=M.def,W=def.w,H=def.h,K=M.K,{hid,HS}=M.H,isH=i=>K[i]===BUILT&&hid[i]>0;
   const dn=new Int16Array(W*H),up=new Int16Array(W*H),lf=new Int16Array(W*H),rt=new Int16Array(W*H),end=new Uint8Array(W*H),below=new Int32Array(W*H);
   for(let x=0;x<W;x++){for(let y=H-1;y>=0;y--){const i=y*W+x;if(!isH(i))continue;const b=y<H-1?i+W:-1;if(b>=0&&isH(b)&&hid[b]===hid[i]){dn[i]=dn[b]+1;end[i]=end[b];below[i]=below[b]}else{dn[i]=0;end[i]=b<0?2:isH(b)?2:K[b]===KEEP?2:1;below[i]=b>=0&&isH(b)?hid[b]:0}}
     for(let y=0;y<H;y++){const i=y*W+x;if(!isH(i))continue;const a=i-W;up[i]=y>0&&isH(a)&&hid[a]===hid[i]?up[a]+1:0}}
   for(let y=0;y<H;y++){for(let x=0;x<W;x++){const i=y*W+x;if(!isH(i))continue;lf[i]=x>0&&isH(i-1)&&hid[i-1]===hid[i]?lf[i-1]+1:0}
     for(let x=W-1;x>=0;x--){const i=y*W+x;if(!isH(i))continue;rt[i]=x<W-1&&isH(i+1)&&hid[i+1]===hid[i]?rt[i+1]+1:0}}
-  /* a house's front: the wall band shows where its run ends on open ground; doors and windows are set along it */
-  const feat=new Uint8Array(W*H);   /* 1 door, 2 window */
-  for(let id=1;id<HS.length;id++){const h=HS[id];if(!h)continue;const r=rng(h.seed),cols=[];
+  const feat=new Uint8Array(W*H),doors=[];   /* feat: 1 door, 2 window above, 3 window below */
+  for(let id=1;id<HS.length;id++){const h=HS[id];if(!h||h.yard)continue;const r=rng(h.seed),cols=[];
     for(let x=h.x0;x<=h.x1;x++){let best=-1;for(let y=h.y1;y>=h.y0;y--){const i=y*W+x;if(hid[i]===id&&K[i]===BUILT&&dn[i]===0&&end[i]===1){best=i;break}}cols.push(best)}
-    let run=[];const flush=()=>{if(run.length>=5){const L=run.length,door=L>=6&&r()<.8?1+((r()*(L-3))|0):-9;
-        for(let k=0;k<L;k++){const i=run[k];if(k===door||k===door+1)feat[i]=1;else if(h.hw>=3.5&&(k+h.seed)%4===1&&k>0&&k<L-1&&Math.abs(k-door)>1&&Math.abs(k-door-1)>1)feat[i]=2}}run=[]};
+    let run=[];const flush=()=>{if(run.length>=5){const L=run.length,door=L>=6&&r()<.85?1+((r()*(L-3))|0):-9,free=k=>k>0&&k<L-1&&Math.abs(k-door)>1&&Math.abs(k-door-1)>1;
+        for(let k=0;k<L;k++){const i=run[k],m=(k+h.seed)%5;if(k===door||k===door+1)feat[i]=1;
+          else if(h.hw>=11&&(m===1||m===2)&&free(k))feat[i]=2;else if(h.hw>=6&&(m===3||m===4)&&free(k))feat[i]=3}
+        if(door>=0){const i=run[door],x=i%W,y=(i/W)|0;if(run[door+1]===i+1)doors.push({x,y,h:Math.min(h.hw-2,DOORH),house:h})}}run=[]};
     for(const i of cols){if(i>=0&&(!run.length||i===run[run.length-1]+1))run.push(i);else{flush();if(i>=0)run.push(i)}}flush()}
-  /* distance from the built ground, for the shade that gathers at the foot of a wall */
+  return{dn,up,lf,rt,end,below,feat,doors}}
+/* the ground: the lanes paved with small stones, the streets with slabs, the squares with great ones, darker at the foot of a wall and in
+   the shadow the houses throw to the east, away from the sun in the west-south-west. Under a house the ground is never seen. The courses of
+   the paving run one way; the stones of a course differ in tone, and no joint is drawn across a course. */
+function paintGround(M,g,v){const def=M.def,W=def.w,H=def.h,K=M.K,{hid,HS}=M.H,W2=W*2,H2=H*2,im=g.createImageData(W2,H2),d=im.data,
+  nzA=lattice((def.seed||1)*13+1,32),nzB=lattice((def.seed||1)*17+5,64),hAt=(x,y)=>x<0||y<0||x>=W||y>=H?0:K[y*W+x]===BUILT?hid[y*W+x]:0;
   const far=new Float32Array(W*H);for(let i=0;i<W*H;i++)far[i]=K[i]===BUILT||K[i]===KEEP?0:99;
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=y*W+x;if(!far[i])continue;let m=far[i];if(x>0)m=Math.min(m,far[i-1]+1);if(y>0)m=Math.min(m,far[i-W]+1);if(x>0&&y>0)m=Math.min(m,far[i-W-1]+1.4);if(x<W-1&&y>0)m=Math.min(m,far[i-W+1]+1.4);far[i]=m}
   for(let y=H-1;y>=0;y--)for(let x=W-1;x>=0;x--){const i=y*W+x;if(!far[i])continue;let m=far[i];if(x<W-1)m=Math.min(m,far[i+1]+1);if(y<H-1)m=Math.min(m,far[i+W]+1);if(x<W-1&&y<H-1)m=Math.min(m,far[i+W+1]+1.4);if(x>0&&y<H-1)m=Math.min(m,far[i+W-1]+1.4);far[i]=m}
-  /* the sun stands in the west-south-west: a house throws its shadow to the right and a little up, as far as it is tall */
   const sun=new Uint8Array(W*H);
-  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=y*W+x;if(K[i]===BUILT)continue;for(let k=1;k<=6;k++){const id=hAt(x-k,y+Math.round(k*.42));if(id&&HS[id]&&k<=HS[id].hw+1.5){sun[i]=1;break}}}
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=y*W+x;if(K[i]===BUILT)continue;for(let k=1;k<=12;k++){const id=hAt(x-k,y+Math.round(k*.42));if(id&&HS[id]&&k<=HS[id].hw*.8+1){sun[i]=1;break}}}
   M.sun=sun;
-  const put=(X,Y,c,k)=>{const o=(Y*W2+X)*4;d[o]=c[0]*k;d[o+1]=c[1]*k;d[o+2]=c[2]*k;d[o+3]=255};
-  const RGB={};const rgb=c=>RGB[c]||(RGB[c]=hex(c));
-  const EARTHC=hex(def.earth||'#a37b54'),PAVEDC=hex(def.paved||'#cdc2a8'),SQC=hex(def.square||'#c7b89a'),COURTC=hex('#b9a888');
-  for(let Y=0;Y<H2;Y++)for(let X=0;X<W2;X++){const x=X>>1,y=Y>>1,i=y*W+x,k=K[i],sx=X&1,sy=Y&1;
-    if(k===KEEP){continue}
-    if(k===BUILT&&HS[hid[i]]&&HS[hid[i]].yard){const h=HS[hid[i]],eL=lf[i]+sx*.5<.6,eR=rt[i]+(1-sx)*.5<.6,eU=up[i]+sy*.5<.6,eD=dn[i]+(1-sy)*.5<.6;
-      let kk=1+(vn(nzA,x*.25,y*.25)-.5)*.22+(hash2(X,Y,h.seed)-.5)*.1;const c=eL||eU?[214,202,176]:eR||eD?[150,138,116]:vn(nzB,x*.4,y*.4)>.55?[118,122,74]:[150,132,90];
-      if(!(eL||eU||eR||eD)&&(lf[i]<1.5||up[i]<1.5))kk*=.8;put(X,Y,c,kk);continue}
-    if(k===BUILT){const id=hid[i],h=HS[id];if(!h)continue;const nb=below[i]&&HS[below[i]],band=end[i]===1?h.hw:nb&&h.hw-nb.hw>=1?h.hw-nb.hw:0;
-      /* the gable end of a roof whose ridge runs north and south shows above its front wall */
-      let gab=0;if(!h.ew&&!h.court&&band){const half=(lf[i]+rt[i]+1)/2,off=Math.abs(lf[i]+sx*.5+.25-half);gab=Math.max(0,(half-off)*.55-.3)}
-      const wallRow=dn[i]+(1-sy)*.5;   /* rows above the foot of the wall, at this canvas pixel */
-      if(band&&wallRow<band+gab){const W0=rgb(h.wall),top=band+gab-wallRow;let kk=.97+(vn(nzB,x*.5,y*.5)-.5)*.08;
-        if(top<.6)kk*=.66;else if(wallRow<.6)kk*=.84;
-        let c=W0;
-        /* doors and windows: the feature is noted on the wall's lowest row, so look it up there */
-        const fi=feat[(y+dn[i])*W+x];
-        if(fi===1&&wallRow<band-.8){c=[70,46,30];kk=sx?.92:.7;if(cue(h,v)==='open')c=[34,24,20]}
-        else if(fi===2&&wallRow>=band-2.1&&wallRow<band-1.1){const s=cue(h,v);c=s==='shut'?[108,74,44]:[38,28,24];kk=1;if(s==='head'&&sy)c=hex('#b07a52');if(s==='shut'&&sx)kk=.82}
-        put(X,Y,c,kk);continue}
-      /* the roof: a ridge along the longer side, and two slopes lit as the sun finds them; a house round a court slopes to the court as well.
-         The cover tiles run down each slope, so their stripes run one way only. */
-      const dDn=dn[i]-band+(1-sy)*.5,dUp=up[i]+sy*.5,dL=lf[i]+sx*.5,dR=rt[i]+(1-sx)*.5;let face,ridge=false,edge=false;
-      if(h.court){const m=Math.min(dUp*1.25,dDn,dL,dR);face=m===dUp*1.25?'N':m===dDn?'S':m===dL?'W':'E';ridge=false}
-      else if(h.ew){const L=dUp+dDn,rp=L*.42;face=dUp<rp?'N':'S';ridge=Math.abs(dUp-rp)<.5}
-      else{const L=dL+dR,rp=L*.5;face=dL<rp?'W':'E';ridge=Math.abs(dL-rp)<.5}
-      if(band&&dDn<.6)edge=true;
-      const R0=rgb(h.roof);let kk;
-      if(h.flat){/* a flat roof of beaten earth over plaster, with a low parapet: lit on its west and north edges, shaded on the east and south */
-        kk=1+(vn(nzA,x*.2,y*.2)-.5)*.1+(hash2(X,Y,h.seed)-.5)*.05;if(dL<.6||dUp<.6)kk*=1.07;if(dR<.6)kk*=.84;if(edge)kk*=.66;
-        if(dL>=.6&&dL<1.1||dUp>=.6&&dUp<1.1)kk*=.9}
-      else{kk=face==='S'?1:face==='W'?1.04:face==='N'?.8:.74;
-        if(face==='N'||face==='S'){if(X%3===0)kk*=.93}else if(Y%3===0)kk*=.93;
-        if(ridge)kk*=1.12;if(edge)kk*=.62;if(dUp<.6)kk*=.9;
-        kk*=1+(vn(nzA,x*.12,y*.12)-.5)*.18+(hash2(X,Y,h.seed)-.5)*.05}
-      /* a seam where two roofs meet, on the shadow side */
-      if(sx&&x<W-1&&isH(i+1)&&hid[i+1]!==id)kk*=.55;if(sy&&y<H-1&&isH(i+W)&&hid[i+W]!==id)kk*=.6;
-      for(let q=1;q<=4;q++){const A=hAt(x-q,y+Math.round(q*.42));if(A&&A!==id&&HS[A]&&HS[A].hw-h.hw>=q*.8){kk*=.72;break}}
-      put(X,Y,R0,kk);continue}
-    /* open ground: earth, paving or a court, darker at the foot of a wall and in the shadow of the houses */
-    let c,kk=1;const n1=vn(nzA,x*.07,y*.07)-.5,n2=vn(nzB,x*.3,y*.3)-.5,gr=hash2(X,Y,7)-.5;
-    if(k===PAVED||k===SQUARE||k===COURT){const big=k!==PAVED,row=big?Math.floor(Y/6):Math.floor(Y/4),off=hash2(row,0,big?3:2)*8,sl=big?8:6,col=Math.floor((X+off)/sl);
-      c=k===COURT?COURTC:big?SQC:PAVEDC;kk=1+(hash2(col,row,big?11:5)-.5)*.1+n1*.08+gr*.04;if(Y%(big?6:4)===0)kk*=1.05}
-    else{c=EARTHC;kk=1+n1*.16+n2*.1+gr*.07}
-    const f=far[i];kk*=f<1.2?.78:f<2.2?.88:f<3.2?.95:1;
-    const o=(Y*W2+X)*4;if(sun[i]){d[o]=c[0]*kk*SHADE[0];d[o+1]=c[1]*kk*SHADE[1];d[o+2]=c[2]*kk*SHADE[2]}else{d[o]=c[0]*kk;d[o+1]=c[1]*kk;d[o+2]=c[2]*kk}d[o+3]=255}
-  g.save();g.setTransform(1,0,0,1,0,0);const[c2,g2]=mk(W2,H2);g2.putImageData(im,0,0);g.drawImage(c2,0,0);g.restore();
-  for(const h of HS)if(h&&h.yard){const w=h.x1-h.x0,d=h.y1-h.y0;if(w>=8&&d>=8)crown(g,(h.x0+h.x1+1)/2,(h.y0+h.y1+1)/2,Math.min(w,d)*.22+1)}}
+  const LANE=hex(def.earth||'#d2c6aa'),PAVEDC=hex(def.paved||'#dcd2ba'),SQC=hex(def.square||'#d6cbb0'),COURTC=hex('#cabd9e'),UNDER=[92,78,66];
+  for(let Y=0;Y<H2;Y++)for(let X=0;X<W2;X++){const x=X>>1,y=Y>>1,i=y*W+x,k=K[i],o=(Y*W2+X)*4;
+    if(k===KEEP)continue;
+    if(k===BUILT){d[o]=UNDER[0];d[o+1]=UNDER[1];d[o+2]=UNDER[2];d[o+3]=255;continue}
+    let c,kk;const n1=vn(nzA,x*.07,y*.07)-.5,gr=hash2(X,Y,7)-.5;
+    /* courses: small stones in the lanes, slabs in the streets, great ones in the squares and courts */
+    const big=k===SQUARE||k===COURT,rh=k===EARTH?3:big?6:4,sl=k===EARTH?4:big?8:6,row=Math.floor(Y/rh),off=hash2(row,0,rh)*sl,col=Math.floor((X+off)/sl);
+    c=k===COURT?COURTC:k===SQUARE?SQC:k===PAVED?PAVEDC:LANE;kk=1+(hash2(col,row,rh*7+1)-.5)*(k===EARTH?.16:.1)+n1*.07+gr*.04;
+    if(Y%rh===0)kk*=1.06;else if(Y%rh===rh-1)kk*=.94;
+    const f=far[i];kk*=f<1.2?.74:f<2.2?.86:f<3.2?.94:1;
+    if(sun[i]){d[o]=c[0]*kk*SHADE[0];d[o+1]=c[1]*kk*SHADE[1];d[o+2]=c[2]*kk*SHADE[2]}else{d[o]=c[0]*kk;d[o+1]=c[1]*kk;d[o+2]=c[2]*kk}d[o+3]=255}
+  g.save();g.setTransform(1,0,0,1,0,0);const[c2,g2]=mk(W2,H2);g2.putImageData(im,0,0);g.drawImage(c2,0,0);g.restore()}
+
+/* ============ THE HOUSES STAND UP ============
+   A house is seen at a slant from above, as in the city maps of those games: its roof lies as high above its ground as its front wall is
+   tall (hw), so that it covers the ground behind it, and whoever walks there is hidden by it. Each house is painted once for each variant
+   into a sprite of its own: its front wall, plaster over a course of dark stone, under the eaves of its roof, with its door and windows, and
+   its roof of tiles that run down each slope. The sprite is cut into strips of columns whose front stands on the same row, and each strip
+   takes its place among the people by that row, as a room's props do. While whoever is played walks behind a house, it fades (FADE), so
+   that he is never lost from sight. A covered passage (def.bridges) is the same: a house built over a lane, with an archway in its front. */
+const FADE=.35;
+function sprite(M,h,v){const def=M.def,W=def.w,K=M.K,{hid,HS}=M.H,{dn,up,lf,rt,feat}=M.F,cue=def.cue||(()=>'shut'),s=cue(h,v),
+  Hh=h.hw,X0=h.x0,X1=h.x1,T=Math.floor(h.y0-Hh),B=h.y1,cw=(X1-X0+1)*2,ch=(B-T+1)*2,[c,g]=mk(cw,ch),im=g.createImageData(cw,ch),d=im.data,
+  nzA=M.nzA,nzB=M.nzB,R0=hex(h.roof),W0=hex(h.wall),isH=i=>K[i]===BUILT&&hid[i]>0,hAt=(x,y)=>x<0||y<0||x>=W||y>=def.h?0:K[y*W+x]===BUILT?hid[y*W+x]:0,
+  strips=[],wall={};let cur=null;
+  const put=(X,Y,col,k)=>{if(X<0||Y<0||X>=cw||Y>=ch)return;const o=(Y*cw+X)*4;d[o]=Math.min(255,col[0]*k);d[o+1]=Math.min(255,col[1]*k);d[o+2]=Math.min(255,col[2]*k);d[o+3]=255};
+  /* the roof, at one canvas pixel: the footprint pixel i that it lies over, sx, sy its quarter */
+  const roof=(X,Y,i,x,y,sx,sy)=>{const WX=x*2+sx,WY=T*2+Y;
+    if(h.yard){const eL=lf[i]+sx*.5<.6,eR=rt[i]+(1-sx)*.5<.6,eU=up[i]+sy*.5<.6,eD=dn[i]+(1-sy)*.5<.6;
+      let kk=1+(vn(nzA,x*.25,y*.25)-.5)*.22+(hash2(WX,WY,h.seed)-.5)*.1;const col=eL||eU?[214,202,176]:eR||eD?[150,138,116]:vn(nzB,x*.4,y*.4)>.55?[118,122,74]:[150,132,90];
+      if(!(eL||eU||eR||eD)&&(lf[i]<1.5||up[i]<1.5))kk*=.8;put(X,Y,col,kk);return}
+    const dDn=dn[i]+(1-sy)*.5,dUp=up[i]+sy*.5,dL=lf[i]+sx*.5,dR=rt[i]+(1-sx)*.5;let face,ridge=false;
+    if(h.court){const m=Math.min(dUp*1.25,dDn,dL,dR);face=m===dUp*1.25?'N':m===dDn?'S':m===dL?'W':'E'}
+    else if(h.ew){const L=dUp+dDn,rp=L*.42;face=dUp<rp?'N':'S';ridge=Math.abs(dUp-rp)<.5}
+    else{const L=dL+dR,rp=L*.5;face=dL<rp?'W':'E';ridge=Math.abs(dL-rp)<.5}
+    const edge=dDn<.6;let kk;
+    if(h.flat){kk=1+(vn(nzA,x*.2,y*.2)-.5)*.1+(hash2(WX,WY,h.seed)-.5)*.05;if(dL<.6||dUp<.6)kk*=1.07;if(dR<.6)kk*=.84;if(edge)kk*=.7;if(dL>=.6&&dL<1.1||dUp>=.6&&dUp<1.1)kk*=.9}
+    else{kk=face==='S'?1:face==='W'?1.04:face==='N'?.8:.74;
+      /* the cover tiles run down each slope and stop short of the ridge, so that no stripe crosses it */
+      if(ridge)kk*=1.12;else if(face==='N'||face==='S'){if(WX%3===0)kk*=.92}else if(WY%3===0)kk*=.92;
+      if(edge)kk*=.66;if(dUp<.6)kk*=.9;kk*=1+(vn(nzA,x*.12,y*.12)-.5)*.18+(hash2(WX,WY,h.seed)-.5)*.05}
+    /* a seam where two roofs meet, on the shadow side; the shade of a taller house to the west */
+    if(sx&&x<W-1&&isH(i+1)&&hid[i+1]!==h.id)kk*=.6;if(sy&&isH(i+W)&&hid[i+W]!==h.id)kk*=.65;
+    for(let q=1;q<=6;q++){const A=hAt(x-q,y+Math.round(q*.42));if(A&&A!==h.id&&HS[A]&&HS[A].hw-h.hw>=q*.8){kk*=.74;break}}
+    put(X,Y,R0,kk)};
+  /* the front wall, at one canvas pixel: u its height above the ground, ib the house's lowest pixel in this column */
+  const win=(X,Y,sx,top)=>{if(s==='shut')put(X,Y,[110,76,46],sx?.82:1);else if(s==='head'&&top)put(X,Y,hex('#b07a52'),1);else put(X,Y,[36,28,26],1)};
+  const front=(X,Y,u,ib,x,sx)=>{let kk=.98+(vn(nzB,x*.5,(T*2+Y)*.25)-.5)*.07+(hash2(x*2+sx,T*2+Y,h.seed)-.5)*.04;const east=rt[ib]+(1-sx)*.5<1.1,west=lf[ib]+sx*.5<.6;
+    if(u>Hh-.5)kk*=1.08;else if(u>Hh-1.5)kk*=.72;else if(u<1)kk*=.78;else if(u<1.5)kk*=.9;
+    if(east)kk*=.8;else if(west)kk*=1.05;
+    const fi=feat[ib];
+    if(fi===1&&u<Math.min(Hh-2.5,DOORH)){if(s==='open'&&u<Math.min(Hh-2.5,DOORH)-.5)put(X,Y,[32,24,20],1);else put(X,Y,[100,68,42],sx?.92:.74);return}
+    if(fi===2&&u>Hh-6&&u<Hh-3.5){win(X,Y,sx,u>Hh-4.8);return}
+    if(fi===3&&u>2.5&&u<5){win(X,Y,sx,false);return}
+    put(X,Y,W0,kk)};
+  for(let x=X0;x<=X1;x++){const runs=[];let a=-1;
+    for(let y=h.y0;y<=B+1;y++){const on=y<=B&&hid[y*W+x]===h.id&&K[y*W+x]===BUILT;if(on&&a<0)a=y;else if(!on&&a>=0){runs.push([a,y-1]);a=-1}}
+    if(!runs.length){cur=null;continue}
+    const fr=runs[runs.length-1][1],top=runs[0][0]-Hh;wall[x]=[fr+1-Hh,fr];
+    if(cur&&cur.front===fr&&cur.x1===x-1){cur.x1=x;cur.top=Math.min(cur.top,top)}else strips.push(cur={x0:x,x1:x,front:fr,top});
+    for(const[a,b]of runs){const Y0=Math.round((a-Hh-T)*2),Y1=Math.round((b+1-Hh-T)*2),Y2=(b+1-T)*2;
+      for(let sx=0;sx<2;sx++){const X=(x-X0)*2+sx;
+        for(let Y=Math.max(0,Y0);Y<Y1;Y++){const yf=clamp(Math.floor(T+Hh+Y/2),a,b);roof(X,Y,yf*W+x,x,yf,sx,Y&1)}
+        for(let Y=Math.max(0,Y1);Y<Y2;Y++)front(X,Y,(b+1)-(T+(Y+.5)/2),b*W+x,x,sx)}}}
+  g.putImageData(im,0,0);
+  return{c,g,X0,X1,T,B,strips,wall,alpha:1,h}}
+/* bridge: a house built over a lane, a covered passage: its front has an archway where the lane runs through it, dark inside */
+function bridge(M,b,v){const Hh=b.H,X0=b.x,X1=b.x+b.w-1,T=Math.floor(b.y-Hh),B=b.y+b.d-1,cw=b.w*2,ch=(B-T+1)*2,[c,g]=mk(cw,ch),im=g.createImageData(cw,ch),d=im.data,
+  R0=hex(b.roof||'#a2604a'),W0=hex(b.wall||'#e2d4b6'),A=b.arch||Math.min(Hh-3,DOORH+1),g0=b.gap[0],g1=b.gap[1],mid=(g0+g1)/2,half=(g1-g0)/2,wall={};
+  const put=(X,Y,col,k)=>{const o=(Y*cw+X)*4;d[o]=Math.min(255,col[0]*k);d[o+1]=Math.min(255,col[1]*k);d[o+2]=Math.min(255,col[2]*k);d[o+3]=255};
+  for(let X=0;X<cw;X++){const x=X0+X/2,sx=X&1;wall[Math.floor(x)]=[B+1-Hh,B];
+    for(let Y=0;Y<ch;Y++){const y=T+(Y+.5)/2,u=B+1-y;
+      if(u>Hh){/* the roof: its ridge along it, the north slope in shade, the tiles running down each slope */
+        const r=(y-(b.y-Hh))/b.d;let kk=r<.42?.82:1;if(Math.abs(r-.42)<.5/b.d)kk=1.12;else if(X%3===0)kk*=.92;if(r>1-.6/b.d)kk*=.66;if(X<1)kk*=1.06;put(X,Y,R0,kk*(1+(hash2(X+X0*2,Y,7)-.5)*.06));continue}
+      /* the front: the archway, round at its top, dark within; plaster round it, its edge lit on the west side */
+      const dx=Math.abs(x+.25-mid)/Math.max(1,half),inArch=x>=g0&&x<g1+1&&u<A-Math.max(0,(dx-.55))*2.4;
+      if(inArch){put(X,Y,[34,26,24],1-Math.max(0,(A-u))*.02);continue}
+      let kk=.98+(hash2(X+X0*2,Y,11)-.5)*.05;if(u>Hh-.5)kk*=1.08;else if(u>Hh-1.5)kk*=.72;else if(u<1)kk*=.78;if(X>=cw-2)kk*=.8;
+      const nearArch=x>=g0-.5&&x<g1+1.5&&u<A+.6&&!inArch;if(nearArch)kk*=x<mid?1.08:.86;put(X,Y,W0,kk)}}
+  g.putImageData(im,0,0);
+  return{c,g,X0,X1,T,B,strips:[{x0:X0,x1:X1,front:B,top:T}],wall,alpha:1,bridge:b}}
+/* sprites: every house and every covered passage of a variant, painted, marked (def.marks: a chapter's own doors and shutters, painted
+   on the wall they lie on) and finished as the backdrops are */
+function sprites(M,v){if(M.S[v])return M.S[v];const out=[];
+  for(const h of M.H.HS)if(h)out.push(sprite(M,h,v));
+  for(const b of M.def.bridges||[])out.push(bridge(M,b,v));
+  for(const m of M.def.marks||[]){const s=out.find(s=>s.wall[m.x]&&m.y>=s.wall[m.x][0]-.5&&m.y<=s.wall[m.x][1]+.5);if(!s)continue;
+    const g=s.g;g.save();g.globalCompositeOperation='source-atop';g.scale(2,2);g.translate(-s.X0,-s.T);m.paint(g,v,s.wall[m.x],s);g.restore()}
+  for(const s of out){finish(s.c,s.g,M.def.q||12);delete s.g}
+  return M.S[v]=out}
+/* cover: the ground that a house or a passage hides from view, which the runner does not see from afar (see route) */
+function cover(M){const def=M.def,W=def.w,H=def.h,K=M.K,{hid,HS}=M.H,cov=new Uint8Array(W*H);
+  for(let x=0;x<W;x++){let a=-1,id=0;for(let y=0;y<=H;y++){const j=y<H&&K[y*W+x]===BUILT?hid[y*W+x]:0;
+      if(j!==id){if(id&&HS[id]){const Hh=HS[id].hw;for(let yy=Math.max(0,Math.floor(a-Hh));yy<y;yy++)cov[yy*W+x]=1}id=j;a=y}}}
+  for(const b of def.bridges||[])for(let x=b.x;x<b.x+b.w;x++)for(let y=Math.max(0,Math.floor(b.y-b.H));y<b.y+b.d;y++)cov[y*W+x]=1;
+  return cov}
 
 /* ============ THINGS PAINTED ON THE CITY: helpers a chapter uses in its paint ============ */
 /* stall: a market stall from above, its awning in stripes that run one way, the front of its counter below it, and its wares on a board in
@@ -247,20 +320,29 @@ function nearest(g,x,y,c){const cx=clamp(Math.floor(x/CS),0,g.GW-1),cy=clamp(Mat
 function heap(){const a=[],f=[];return{get size(){return a.length},push(i,v){a.push(i);f.push(v);let k=a.length-1;while(k){const p=(k-1)>>1;if(f[p]<=f[k])break;[a[p],a[k]]=[a[k],a[p]];[f[p],f[k]]=[f[k],f[p]];k=p}},
   pop(){const top=a[0],li=a.pop(),lv=f.pop();if(a.length){a[0]=li;f[0]=lv;let k=0;for(;;){const l=2*k+1,r=l+1;let m=k;if(l<a.length&&f[l]<f[m])m=l;if(r<a.length&&f[r]<f[m])m=r;if(m===k)break;[a[m],a[k]]=[a[k],a[m]];[f[m],f[k]]=[f[k],f[m]];k=m}}return top}}}
 const NB=[[1,0,1],[-1,0,1],[0,1,1],[0,-1,1],[1,1,1.414],[1,-1,1.414],[-1,1,1.414],[-1,-1,1.414]];
+/* The costs of the searches below are kept in 64 bits: kept in 32, a cost rounded up would be found better again and again, for ever. */
 /* astar: the cells of the shortest way from s to t; a step close to a wall costs a little more, so that a way keeps to the middle of a lane */
-function astar(g,s,t){const{GW,GH,cell,wall}=g,cost=new Float32Array(GW*GH).fill(Infinity),from=new Int32Array(GW*GH).fill(-1),h=heap(),tx=t%GW,ty=(t/GW)|0;
+function astar(g,s,t,known){const{GW,GH,cell,wall}=g,cost=new Float64Array(GW*GH).fill(Infinity),from=new Int32Array(GW*GH).fill(-1),h=heap(),tx=t%GW,ty=(t/GW)|0;
   const est=q=>{const dx=Math.abs(q%GW-tx),dy=Math.abs(((q/GW)|0)-ty);return(dx+dy+(1.414-2)*Math.min(dx,dy))};
   cost[s]=0;h.push(s,est(s));
   while(h.size){const q=h.pop();if(q===t)break;const x=q%GW,y=(q/GW)|0;
-    for(const[dx,dy,c]of NB){const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=GW||Y>=GH)continue;const n=Y*GW+X;if(!cell[n])continue;if(dx&&dy&&(!cell[y*GW+X]||!cell[Y*GW+x]))continue;
+    for(const[dx,dy,c]of NB){const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=GW||Y>=GH)continue;const n=Y*GW+X;if(!cell[n]||known&&!known[n]&&n!==t)continue;if(dx&&dy&&(!cell[y*GW+X]||!cell[Y*GW+x]))continue;
       const nc=cost[q]+c*(wall[n]<3?1.5:wall[n]<4.5?1.15:1);if(nc<cost[n]){cost[n]=nc;from[n]=q;h.push(n,nc+est(n))}}}
   if(s!==t&&from[t]<0)return null;const p=[t];let q=t;while(q!==s){q=from[q];p.push(q)}return p.reverse()}
+/* steps: how many cells each known cell lies from s along the known cells (a long way round to a place counts against it) */
+function steps(g,s,known){const{GW,GH,cell}=g,d=new Int32Array(GW*GH).fill(1e6),st=[s];d[s]=0;
+  for(let k=0;k<st.length;k++){const q=st[k],x=q%GW,y=(q/GW)|0;for(const[dx,dy]of NB){const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=GW||Y>=GH)continue;const n=Y*GW+X;
+    if(d[n]<1e6||!cell[n]||!known[n])continue;if(dx&&dy&&(!cell[y*GW+X]||!cell[Y*GW+x]))continue;d[n]=d[q]+1;st.push(n)}}return d}
+/* reach: the cells he can reach from s by the cells he knows */
+function reach(g,s,known){const{GW,GH,cell}=g,r=new Uint8Array(GW*GH),st=[s];r[s]=1;
+  while(st.length){const q=st.pop(),x=q%GW,y=(q/GW)|0;for(const[dx,dy]of NB){const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=GW||Y>=GH)continue;const n=Y*GW+X;
+    if(r[n]||!cell[n]||!known[n])continue;if(dx&&dy&&(!cell[y*GW+X]||!cell[Y*GW+x]))continue;r[n]=1;st.push(n)}}return r}
 /* clear: a straight line from one point to another that keeps on walkable cells (which already lie a figure's half width from every wall);
    its first two pixels are not looked at, since whoever is played may stand a hair off them after the crowd has pressed him */
 function clear(g,ax,ay,bx,by){const L=Math.hypot(bx-ax,by-ay),n=Math.ceil(L/(CS*.4));
   for(let k=0;k<=n;k++){const t=k/Math.max(1,n);if(t*L<2&&L>2)continue;if(!g.cell[cOf(g,ax+(bx-ax)*t,ay+(by-ay)*t)])return false}return true}
 /* field: how far every cell lies from the nearest of some places, along the lanes (Dijkstra). wide:1 makes a crowd keep to the middle of a street. */
-function field(g,pts,wide){const{GW,GH,cell,wall}=g,f=new Float32Array(GW*GH).fill(Infinity),h=heap();
+function field(g,pts,wide){const{GW,GH,cell,wall}=g,f=new Float64Array(GW*GH).fill(Infinity),h=heap();
   for(const[x,y]of pts){const c=nearest(g,x,y);if(c>=0){f[c]=0;h.push(c,0)}}
   while(h.size){const q=h.pop(),x=q%GW,y=(q/GW)|0;for(const[dx,dy,c]of NB){const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=GW||Y>=GH)continue;const n=Y*GW+X;if(!cell[n])continue;if(dx&&dy&&(!cell[y*GW+X]||!cell[Y*GW+x]))continue;
     const nc=f[q]+c*CS*(wide?1+1.6/Math.max(.8,wall[n]-1):1);if(nc<f[n]){f[n]=nc;h.push(n,nc)}}}
@@ -268,75 +350,75 @@ function field(g,pts,wide){const{GW,GH,cell,wall}=g,f=new Float32Array(GW*GH).fi
 
 /* ============ THE FIGURES OF THE MAP ============ */
 /* Each part is a small pixel map, one character to a canvas pixel (half a room pixel). The letters name tones:
-   h H d: hair (base, light, shadow); s S z: skin; e: an eye; c: chin, which is beard where there is one; t T u: tunic; m M n: mantle;
-   v V w: a mantle drawn over the head; b: belt; f: sandal; l: a leg in shade. Rows are given from the top; a part's columns from x = 0 of a
-   ten-column figure. Legs are drawn from the ground up, the body sits on top of them, and the head on the body, so that a leg map one row
-   taller lifts the whole figure: the walk's bob. */
+   h H d: hair (base, light, shadow); s S z: skin; e: an eye; c: chin, which is beard where there is one; t T u U: tunic; m M n: mantle;
+   v V w: a mantle drawn over the head; b: belt; f: sandal. Rows are given from the top; a part's columns from x = 0 of a twelve-column
+   figure. Legs are drawn from the ground up, the body sits on top of them, and the head on the body, so that a leg map one row taller lifts
+   the whole figure: the walk's bob. A figure stands about fourteen room pixels tall, as the people of the oblique prototype did: a head
+   large enough to tell which way he faces, and no face to read. */
 const FOLKMAP={
   head:{
-    S:["..hhhh....",".hHHHhh...",".hsSSshd..",".zeSsezd..","..zsccz..."],
-    N:["..hhhh....",".hHHHhh...",".hHhhhhd..",".zhhhhdz..","..zhhhz..."],
-    E:["..hhhh....",".hhHHHh...",".hhhsSs...",".hhzsesz..","..hzscc..."]},
+    S:["....hhhh....","...hHHHHh...","...hHhhhhd..","...zSSSssd..","...zeSSesz..","...zsSSssz..","....zccz...."],
+    N:["....hhhh....","...hHHHHh...","...hHhhhhd..","...hHhhhhd..","...zhhhhhd..","...zhhhhhz..","....zhhz...."],
+    E:["....hhhh....","...hhHHHh...","...hhhhhss..","...hhhhSSs..","...hhhzSes..","...hhzsSss..","....hzccs..."]},
   veil:{
-    S:["..vvvv....",".vVVVvv...",".vsSSsvw..",".veSsevw..",".vzsszvw.."],
-    N:["..vvvv....",".vVVVvv...",".vVvvvvw..",".vvvvvww..",".vvvvvww.."],
-    E:["..vvvv....",".vvVVVv...",".vvvsSs...",".vvvzses..",".vvvwzsc.."]},
+    S:["....vvvv....","...vVVVVvv..","...vVsSSsw..","...vVeSesw..","...vVsSSsw..","..vVvzssvvw.","..vVvvvvvvw."],
+    N:["....vvvv....","...vVVVVvv..","...vVvvvvw..","...vVvvvvw..","...vVvvvvw..","..vVvvvvvvw.","..vVvvvvvvw."],
+    E:["....vvvv....","...vvVVVv...","...vvvvsSs..","...vvvvSes..","...vvvvsSs..","..vvvvvzs...","..vvvvvvw..."]},
   /* bodies: m a man in tunic and mantle, t a man in a belted tunic, v a woman, her mantle over head and shoulders. stand, and run:
-     the forearms bent and the hands before the chest, within the body. Side bodies have the near arm forward (f) or back (k) as he walks. */
-  m:{S:{stand:[".nmttmn...","nMMttmmn..","nMmttmmn..","nMmtTmmn..","nMmttmmn..","smmttmms..","nmmttmmn..",".mmttmn...",".ttttuu...","..tttu...."],
-        run:[".nmttmn...","nMMttmmn..","nMmssmmn..","nMmttmmn..","nMmttmmn..","nmmttmmn..","nmmttmmn..",".mmttmn...",".ttttuu...","..tttu...."]},
-     N:{stand:[".nmmmmn...","nMMmmmmn..","nMmmmmmn..","nMmmmmmn..","nMmmmmmn..","smmmmmms..","nmmmmmmn..",".mmmmmn...",".ttttuu...","..tttu...."],
-        run:[".nmmmmn...","nMMmmmmn..","nMmmmmmn..","nMmmmmmn..","sMmmmmms..","nmmmmmmn..","nmmmmmmn..",".mmmmmn...",".ttttuu...","..tttu...."]},
-     E:{stand:["..tmmn....",".MMmmnn...",".MMmmnn...",".MmmMnn...",".Mmmmnn...",".mmmsnn...",".mmmmnn...","..mmmn....","..ttuu....","..ttu....."],
-        f:["..tmmn....",".MMmmnn...",".MMmmnn...",".MmmmMn...",".Mmmmmns..",".mmmmnn...",".mmmmnn...","..mmmn....","..ttuu....","..ttu....."],
-        k:["..tmmn....",".MMmmnn...",".MMmmnn...",".MmMmnn...",".Mmsmnn...",".mmmmnn...",".mmmmnn...","..mmmn....","..ttuu....","..ttu....."],
-        run:["..tmmn....",".MMmmnn...",".MMmmnn...",".Mmmmmss..",".MmmmMn...",".mmmmnn...",".mmmmnn...","..mmmn....","..ttuu....","..ttu....."],
-        run2:["..tmmn....",".MMmmnn...",".MMmmnn...",".MmMmnn...",".sMmmnn...",".mmmmnn...",".mmmmnn...","..mmmn....","..ttuu....","..ttu....."]}},
-  t:{S:{stand:["..tTTt....",".tTTTttu..",".tTTttuu..",".sTttttus.",".sTttttus.","..bbbbb...","..tTttu...","..tTttu...","..tttuu..."],
-        run:["..tTTt....",".tTTTttu..",".tTssttu..",".tTttttu..",".tTttttu..","..bbbbb...","..tTttu...","..tTttu...","..tttuu..."]},
-     N:{stand:["..tttt....",".tTTtttu..",".tTttttu..",".sTttttus.",".sTttttus.","..bbbbb...","..tTttu...","..tTttu...","..tttuu..."],
-        run:["..tttt....",".tTTtttu..",".tTttttu..",".tTttttu..",".sTttttus.","..bbbbb...","..tTttu...","..tTttu...","..tttuu..."]},
-     E:{stand:["..tttu....",".TTttu....",".TTtsu....",".Tttsu....",".Tttsu....","..bbbb....","..Tttu....","..Tttu....","..ttuu...."],
-        f:["..tttu....",".TTttu....",".TTttu....",".Ttttus...",".Ttttu....","..bbbb....","..Tttu....","..Tttu....","..ttuu...."],
-        k:["..tttu....",".TTttu....",".TTttu....",".sTttu....",".Ttttu....","..bbbb....","..Tttu....","..Tttu....","..ttuu...."],
-        run:["..tttu....",".TTttu....",".TTttss...",".Ttttu....",".Ttttu....","..bbbb....","..Tttu....","..Tttu....","..ttuu...."],
-        run2:["..tttu....",".TTttu....",".sTttu....",".sTttu....",".Ttttu....","..bbbb....","..Tttu....","..Tttu....","..ttuu...."]}},
-  v:{S:{stand:["vVvttvvw..","vVvttvvw..","vVvttvvw..","vVsttsvw..","vVvttvvw..","vVvttvvw..",".vvttvw...",".TtttuU...",".Ttttuu...",".tttttu..."],
-        run:["vVvttvvw..","vVvssvvw..","vVvttvvw..","vVvttvvw..","vVvttvvw..","vVvttvvw..",".vvttvw...",".TtttuU...",".Ttttuu...",".tttttu..."]},
-     N:{stand:["vVvvvvvw..","vVvvvvvw..","vVvvvvvw..","sVvvvvvs..","vVvvvvvw..","vVvvvvvw..",".vvvvvw...",".Ttttuu...",".Ttttuu...",".tttttu..."],
-        run:["vVvvvvvw..","vVvvvvvw..","sVvvvvvs..","vVvvvvvw..","vVvvvvvw..","vVvvvvvw..",".vvvvvw...",".Ttttuu...",".Ttttuu...",".tttttu..."]},
-     E:{stand:["vvVvvw....","vVVvvw....","vVvvsw....","vVvvsw....","vVvvvw....","vVvvvw....",".vvvw.....",".Tttuu....",".Tttuu....",".ttttu...."],
-        f:["vvVvvw....","vVVvvw....","vVvvvw....","vVvvvws...","vVvvvw....","vVvvvw....",".vvvw.....",".Tttuu....",".Tttuu....",".ttttu...."],
-        k:["vvVvvw....","vVVvvw....","vVvvvw....","sVvvvw....","vVvvvw....","vVvvvw....",".vvvw.....",".Tttuu....",".Tttuu....",".ttttu...."],
-        run:["vvVvvw....","vVVvvw....","vVvvvss...","vVvvvw....","vVvvvw....","vVvvvw....",".vvvw.....",".Tttuu....",".Tttuu....",".ttttu...."],
-        run2:["vvVvvw....","vVVvvw....","sVvvvw....","sVvvvw....","vVvvvw....","vVvvvw....",".vvvw.....",".Tttuu....",".Tttuu....",".ttttu...."]}},
+     the forearms bent and the hands before the chest, within the body. Seen from the front, a mantle is closed: the man's tunic shows only
+     at his shoulder, where the mantle leaves it free, and nothing runs down the middle of it, which a hand before it would cross. Side bodies have the near arm forward (f) or back (k) as he walks,
+     never beyond the edge of the body; in a run the forearm is bent before the chest (run) or the elbow drawn back (run2). */
+  m:{S:{stand:["...nmmttn...","..nMMmmttn..","..nMMmmmtn..","..nMmmmmmn..","..nMmmmmmn..","..nMmmmmmn..","..sMmmmmms..","..nmmmmmmn..","...mmmmmn...","...tttttu...","...tTtttu...","...ttttuu..."],
+        run:["...nmmttn...","..nMMmmttn..","..nMMmmmtn..","..nMmssmmn..","..nMmmmmmn..","..nMmmmmmn..","..nMmmmmmn..","..nmmmmmmn..","...mmmmmn...","...tttttu...","...tTtttu...","...ttttuu..."]},
+     N:{stand:["...nmmmmn...","..nMMmmmmn..","..nMmmmmmn..","..nMmmmmmn..","..nMmmmmmn..","..nMmmmmmn..","..sMmmmmms..","..nmmmmmmn..","...mmmmmn...","...tttttu...","...tTtttu...","...ttttuu..."],
+        run:["...nmmmmn...","..nMMmmmmn..","..nMmmmmmn..","..nMmmmmmn..","..sMmmmmms..","..nMmmmmmn..","..nMmmmmmn..","..nmmmmmmn..","...mmmmmn...","...tttttu...","...tTtttu...","...ttttuu..."]},
+     E:{stand:["....tmmn....","...MMmmnn...","...MMmmnn...","...MmmMnn...","...Mmmmnn...","...Mmmmnn...","...Mmmsnn...","...mmmmnn...","....mmmn....","....tttu....","....tTtu....","....ttuu...."],
+        f:["....tmmn....","...MMmmnn...","...MMmmnn...","...MmmMnn...","...Mmmmnn...","...Mmmmns...","...mmmmnn...","...mmmmnn...","....mmmn....","....tttu....","....tTtu....","....ttuu...."],
+        k:["....tmmn....","...MMmmnn...","...MMmmnn...","...MmmMnn...","...Mmmmnn...","...smmmnn...","...mmmmnn...","...mmmmnn...","....mmmn....","....tttu....","....tTtu....","....ttuu...."],
+        run:["....tmmn....","...MMmmnn...","...MMmmnn...","...Mmmmmss..","...MmmMnn...","...Mmmmnn...","...mmmmnn...","...mmmmnn...","....mmmn....","....tttu....","....tTtu....","....ttuu...."],
+        run2:["....tmmn....","...MMmmnn...","...MMmmnn...","...sMmMnn...","...sMmmnn...","...Mmmmnn...","...mmmmnn...","...mmmmnn...","....mmmn....","....tttu....","....tTtu....","....ttuu...."]}},
+  t:{S:{stand:["...tTTttt...","..tTTTtttu..",".stTTttttus.",".stTTttttus.",".sTTtttttus.",".zTTtttttuz.","..bbbbbbbb..","..tTTttttu..","..tTTttttu..","..tTtttttu..","..tTttttuu..","..ttttttuu.."],
+        run:["...tTTttt...","..tTTTtttu..",".stTTttttus.",".stTTttttus.","..tTssssttu.","..tTTttttu..","..bbbbbbbb..","..tTTttttu..","..tTTttttu..","..tTtttttu..","..tTttttuu..","..ttttttuu.."]},
+     N:{stand:["...tttttt...","..tTTttttu..",".stTTttttus.",".stTTttttus.",".sTTtttttus.",".zTTtttttuz.","..bbbbbbbb..","..tTTttttu..","..tTTttttu..","..tTtttttu..","..tTttttuu..","..ttttttuu.."],
+        run:["...tttttt...","..tTTttttu..",".stTTttttus.",".stTTttttus.","..tTTttttu..","..tTTttttu..","..bbbbbbbb..","..tTTttttu..","..tTTttttu..","..tTtttttu..","..tTttttuu..","..ttttttuu.."]},
+     E:{stand:["....tttu....","...TTtttu...","...TTtstu...","...TTtstu...","...TTtstu...","...TTtztu...","...bbbbbb...","...TTtttu...","...TTtttu...","...Tttttu...","...Ttttuu...","...tttuuu..."],
+        f:["....tttu....","...TTtttu...","...TTtstu...","...TTttsu...","...TTtttz...","...TTtttu...","...bbbbbb...","...TTtttu...","...TTtttu...","...Tttttu...","...Ttttuu...","...tttuuu..."],
+        k:["....tttu....","...TTtttu...","...TTtstu...","...TTsttu...","...Tztttu...","...TTtttu...","...bbbbbb...","...TTtttu...","...TTtttu...","...Tttttu...","...Ttttuu...","...tttuuu..."],
+        run:["....tttu....","...TTtttu...","...TTtstu...","...TTtssss..","...TTtttu...","...TTtttu...","...bbbbbb...","...TTtttu...","...TTtttu...","...Tttttu...","...Ttttuu...","...tttuuu..."],
+        run2:["....tttu....","...TTtttu...","...TTtstu...","...sTtttu...","...sTtttu...","...TTtttu...","...bbbbbb...","...TTtttu...","...TTtttu...","...Tttttu...","...Ttttuu...","...tttuuu..."]}},
+  v:{S:{stand:["..vVvvvvvw..","..vVvvvvvw..","..vVvvvvvw..","..vVvvvvvw..","..vVvssvvw..","..vVvvvvvw..","..vVvvvvvw..","...vvvvvw...","...TtttuU...","...Tttttu...","...Tttttu...","...Tttttu...","..Ttttttuu..","..tttttttu.."],
+        run:["..vVvvvvvw..","..vVvvvvvw..","..vVvssvvw..","..vVvvvvvw..","..vVvvvvvw..","..vVvvvvvw..","..vVvvvvvw..","...vvvvvw...","...TtttuU...","...Tttttu...","...Tttttu...","...Tttttu...","..Ttttttuu..","..tttttttu.."]},
+     N:{stand:["..vVvvvvvw..","..vVvvvvvw..","..vVvvvvvw..","..sVvvvvvs..","..vVvvvvvw..","..vVvvvvvw..","..vVvvvvvw..","...vvvvvw...","...Tttttu...","...Tttttu...","...Tttttu...","...Tttttu...","..Ttttttuu..","..tttttttu.."],
+        run:["..vVvvvvvw..","..vVvvvvvw..","..sVvvvvvs..","..vVvvvvvw..","..vVvvvvvw..","..vVvvvvvw..","..vVvvvvvw..","...vvvvvw...","...Tttttu...","...Tttttu...","...Tttttu...","...Tttttu...","..Ttttttuu..","..tttttttu.."]},
+     E:{stand:["..vvVvvw....","..vVVvvw....","..vVvvsw....","..vVvvsw....","..vVvvvw....","..vVvvvw....","..vVvvvw....","...vvvw.....","...Tttuu....","...Tttuu....","...Tttuu....","...Tttuu....","...Ttttu....","...ttttu...."],
+        f:["..vvVvvw....","..vVVvvw....","..vVvvvw....","..vVvvvs....","..vVvvvw....","..vVvvvw....","..vVvvvw....","...vvvw.....","...Tttuu....","...Tttuu....","...Tttuu....","...Tttuu....","...Ttttu....","...ttttu...."],
+        k:["..vvVvvw....","..vVVvvw....","..vVvvvw....","..sVvvvw....","..vVvvvw....","..vVvvvw....","..vVvvvw....","...vvvw.....","...Tttuu....","...Tttuu....","...Tttuu....","...Tttuu....","...Ttttu....","...ttttu...."],
+        run:["..vvVvvw....","..vVVvvw....","..vVvvvss...","..vVvvvw....","..vVvvvw....","..vVvvvw....","..vVvvvw....","...vvvw.....","...Tttuu....","...Tttuu....","...Tttuu....","...Tttuu....","...Ttttu....","...ttttu...."],
+        run2:["..vvVvvw....","..vVVvvw....","..sVvvvw....","..sVvvvw....","..vVvvvw....","..vVvvvw....","..vVvvvw....","...vvvw.....","...Tttuu....","...Tttuu....","...Tttuu....","...Tttuu....","...Ttttu....","...ttttu...."]}},
   /* legs, from the hem down to the ground: k the shins under a tunic to the knee, L the feet under a robe to the ground. In the side view the
      legs open from one hip like a pair of compasses and never cross; a step begins and ends short (s1, s2). */
   legs:{
-    k:{S:{stand:["..z..z....","..z..z....","..f..f...."],w1:["..z..z....","..z..f....","..f......."],p1:["..z..z....","..z..z....","..z..z....","..f..f...."],
-          w2:["..z..z....","..f..z....",".....f...."],p2:["..z..z....","..z..z....","..z..z....","..f..f...."],
-          r1:["..zz.z....","..f..z....",".....z....",".....f...."],f1:["..z..z....","..z..z....","..f..z....",".....f...."],
-          r2:["..z.zz....","..z..f....","..z.......","..f......."],f2:["..z..z....","..z..z....","..z..f....","..f......."],
-          s1:["..z..z....","..z..z....","..f..f...."],s2:["..z..z....","..z..z....","..f..f...."]},
-       N:{stand:["..z..z....","..z..z....","..f..f...."],w1:["..z..z....","..z..f....","..f......."],p1:["..z..z....","..z..z....","..z..z....","..f..f...."],
-          w2:["..z..z....","..f..z....",".....f...."],p2:["..z..z....","..z..z....","..z..z....","..f..f...."],
-          r1:["..zz.z....","..f..z....",".....z....",".....f...."],f1:["..z..z....","..z..z....","..f..z....",".....f...."],
-          r2:["..z.zz....","..z..f....","..z.......","..f......."],f2:["..z..z....","..z..z....","..z..f....","..f......."],
-          s1:["..z..z....","..z..z....","..f..f...."],s2:["..z..z....","..z..z....","..f..f...."]},
-       E:{stand:["...zz.....","...zz.....","...fff...."],w1:["..z..z....",".z....z...",".f....ff.."],p1:["...zz.....","...zz.....","...zz.....","...fff...."],
-          w2:["..z..z....",".z....z...",".f....ff.."],p2:["...zz.....","...zz.....","...z.z....","...f.ff..."],
-          r1:["..z.z.....",".z...z....","f.....z...","......ff.."],f1:["..z.zz....",".z....z...","f.....ff.."],
-          r2:["..z.z.....",".z...z....","f.....z...","......ff.."],f2:["..z.zz....",".z....z...","f.....ff.."],
-          s1:["...z.z....","..z...z...","..f...ff.."],s2:["...z.z....","..z...z...","..f...ff.."]}},
-    L:{S:{stand:["..f..f...."],w1:["..t..f....","..f......."],p1:["..t..t....","..f..f...."],w2:["..f..t....",".....f...."],p2:["..t..t....","..f..f...."],
-          r1:["..t..f....","..f......."],f1:["..t..t....","..f..f...."],r2:["..f..t....",".....f...."],f2:["..t..t....","..f..f...."],s1:["..f..f...."],s2:["..f..f...."]},
-       N:{stand:["..f..f...."],w1:["..t..f....","..f......."],p1:["..t..t....","..f..f...."],w2:["..f..t....",".....f...."],p2:["..t..t....","..f..f...."],
-          r1:["..t..f....","..f......."],f1:["..t..t....","..f..f...."],r2:["..f..t....",".....f...."],f2:["..t..t....","..f..f...."],s1:["..f..f...."],s2:["..f..f...."]},
-       E:{stand:["..fff....."],w1:[".f...ff..."],p1:["..ttt.....","..fff....."],w2:[".f...ff..."],p2:["..ttt.....","..fff....."],
-          r1:["f.....ff.."],f1:["..ttt.....",".f...ff..."],r2:["f.....ff.."],f2:["..ttt.....",".f...ff..."],s1:["..f.ff...."],s2:["..f.ff...."]}}}};
+    k:{S:{stand:["....zz.zz...","....zz.zz...","....zz.zz...","....zz.zz...","....ff.ff..."],
+          w1:["....zz.zz...","....zz.zz...","....zz.ff...","....zz......","....ff......"],p1:["....zz.zz...","....zz.zz...","....zz.zz...","....zz.zz...","....zz.zz...","....ff.ff..."],
+          w2:["....zz.zz...","....zz.zz...","....ff.zz...",".......zz...",".......ff..."],p2:["....zz.zz...","....zz.zz...","....zz.zz...","....zz.zz...","....zz.zz...","....ff.ff..."],
+          r1:["....zz.zz...","....zz.zz...","....ff.zz...",".......zz...",".......zz...",".......ff..."],f1:["....zz.zz...","....zz.zz...","....zz.zz...","....ff.zz...",".......ff..."],
+          r2:["....zz.zz...","....zz.zz...","....zz.ff...","....zz......","....zz......","....ff......"],f2:["....zz.zz...","....zz.zz...","....zz.zz...","....zz.ff...","....ff......"],
+          s1:["....zz.zz...","....zz.zz...","....zz.zz...","....zz.zz...","....ff.ff..."],s2:["....zz.zz...","....zz.zz...","....zz.zz...","....zz.zz...","....ff.ff..."]},
+       E:{stand:[".....zz.....",".....zz.....",".....zz.....",".....zz.....",".....fff...."],
+          w1:[".....zz.....","....zzzz....","....z..z....","...zz..zz...","...f....ff.."],p1:[".....zz.....",".....zz.....",".....zz.....",".....zz.....",".....zz.....",".....fff...."],
+          w2:[".....zz.....","....zzzz....","....z..z....","...zz..zz...","...f....ff.."],p2:[".....zz.....",".....zz.....",".....zz.....",".....zzz....",".....z.z....",".....f.ff..."],
+          r1:[".....zz.....","....zzzz....","...zz..zz...","..zz....zz..","..z......z..",".ff......ff."],f1:[".....zz.....","....zzzz....","...zz..zz...","...z....zz..","...ff....ff."],
+          r2:[".....zz.....","....zzzz....","...zz..zz...","..zz....zz..","..z......z..",".ff......ff."],f2:[".....zz.....","....zzzz....","...zz..zz...","...z....zz..","...ff....ff."],
+          s1:[".....zz.....",".....zz.....","....zzzz....","....z..z....","....f..ff..."],s2:[".....zz.....",".....zz.....","....zzzz....","....z..z....","....f..ff..."]}},
+    L:{S:{stand:["....ff.ff..."],w1:["....tt.ff...","....ff......"],p1:["....tt.tt...","....ff.ff..."],w2:["....ff.tt...",".......ff..."],p2:["....tt.tt...","....ff.ff..."],
+          r1:["....tt.ff...","....ff......"],f1:["....tt.tt...","....ff.ff..."],r2:["....ff.tt...",".......ff..."],f2:["....tt.tt...","....ff.ff..."],s1:["....ff.ff..."],s2:["....ff.ff..."]},
+       E:{stand:["....fff....."],w1:["...f...ff..."],p1:["....ttt.....","....fff....."],w2:["...f...ff..."],p2:["....ttt.....","....fff....."],
+          r1:["...ff..ff..."],f1:["....ttt.....","...f...ff..."],r2:["...ff..ff..."],f2:["....ttt.....","...f...ff..."],s1:["...ff.ff...."],s2:["...ff.ff...."]}}}};
+/* the back view is drawn as the front view for the legs */
+for(const len of['k','L'])FOLKMAP.legs[len].N=FOLKMAP.legs[len].S;
 /* how a figure of the map is dressed, from its room look */
 const kindOf=o=>o.veil||o.fem?'v':o.cloak||o.himation?'m':'t';
-const FW=10,FH=21;   /* a figure's box in canvas pixels; its feet stand on the lowest row, at x = 4.5 */
+const FW=12,FH=28;   /* a figure's box in canvas pixels; its feet stand on the lowest row, at x = 5.5 */
 const SPRM=new Map();let KN=0;
 /* folk: one pose of a look as a small canvas, built once: legs, body and head set down by hand, then the edge on the side away from the sun
    darkened, as the room figures are */
@@ -364,7 +446,7 @@ function frameOf(run,gone,left,cycle){if(gone==null)return'stand';const ph=Math.
 /* armsOf: the arms for a pose: in a run the forearms are bent, in a walk seen from the side the near arm swings forward or back */
 const armsOf=(run,fr,D)=>run&&fr!=='stand'?(D==='E'||D==='W'?(fr==='r1'||fr==='f1'?'run':'run2'):'run'):D==='E'||D==='W'?(fr==='w1'?'f':fr==='w2'?'k':'stand'):'stand';
 /* a shadow on the ground under a figure: a low lozenge of rows, never a thin ellipse */
-function foot(g,x,y){g.fillStyle='rgba(20,16,30,.28)';g.fillRect(hp(x-2),hp(y-.5),2.5,.5);g.fillRect(hp(x-2.5),hp(y),3.5,.5);g.fillRect(hp(x-2),hp(y+.5),2.5,.5)}
+function foot(g,x,y){g.fillStyle='rgba(20,16,30,.28)';g.fillRect(hp(x-2.5),hp(y-.5),4,.5);g.fillRect(hp(x-3.5),hp(y),6,.5);g.fillRect(hp(x-2.5),hp(y+.5),4,.5)}
 
 /* ============ THE KEYS: the arrow keys and W A S D steer on the map that is shown (see steer) ============ */
 const KEYS={arrowleft:'left',a:'left',arrowright:'right',d:'right',arrowup:'up',w:'up',arrowdown:'down',s:'down'};
@@ -376,27 +458,38 @@ addEventListener('blur',()=>{for(const p of plans())p.keys.clear()});
 
 /* ============ THE MAP ============ */
 function make(id,def){
-  const M={id,def,G:{},crowd:[],dust:[],hits:[],t:0,warm:null,pressT:-99,pushT:0,keys:new Set()};
-  M.K=ground(def);M.H=houses(def,M.K);
+  const M={id,def,G:{},S:{},SEEN:{},crowd:[],dust:[],hits:[],t:0,warm:null,pressT:-99,pushT:0,lookT:0,keys:new Set()};
+  M.K=ground(def);M.H=houses(def,M.K);M.F=fronts(M);M.doors=M.F.doors;M.cov=cover(M);
+  M.nzA=lattice((def.seed||1)*13+1,32);M.nzB=lattice((def.seed||1)*17+5,64);
   const vNow=()=>def.variant?def.variant():'';
   const g=()=>grid(M,vNow());
   M.walkable=(x,y)=>{const G=g();return!!G.cell[cOf(G,x,y)]};
-  /* route: the points to pass on the way to x, y; the way ends where x, y is, or on the walkable place nearest to it that can be reached */
-  M.route=(a,x,y)=>{const G=g();let s=cOf(G,a.x,a.y);if(!G.cell[s])s=nearest(G,a.x,a.y);if(s<0)return null;const cp=G.comp[s];
-    let t=cOf(G,x,y),exact=G.cell[t]&&G.comp[t]===cp;if(!exact){t=nearest(G,x,y,cp);if(t<0)return null}
-    const end=exact?[x,y]:cXY(G,t);if(s===t)return Math.hypot(end[0]-a.x,end[1]-a.y)<.5?[]:[end];
-    const p=astar(G,s,t);if(!p)return null;const pts=p.map(c=>cXY(G,c));pts[pts.length-1]=end;
+  /* known: the cells whoever is played knows in this variant: the lanes he has seen on the screen where no house hides them, and those round
+     every corner he has come by (see look) */
+  const known=Q=>{const v=vNow();return M.SEEN[v]||(M.SEEN[v]=new Uint8Array(Q.GW*Q.GH))};
+  /* route: the points to pass on the way to x, y; the way ends where x, y is, or on the walkable place nearest to it that can be reached.
+     Whoever is played, when the player clicks, goes only by the lanes he knows: where none of them leads to x, y, he goes as near to it as
+     they take him, and the way is partial (the engine then does not act on what was clicked). A script, or all, takes every lane. */
+  M.route=(a,x,y,all)=>{const Q=g();let s=cOf(Q,a.x,a.y);if(!Q.cell[s])s=nearest(Q,a.x,a.y);if(s<0)return null;const cp=Q.comp[s];
+    let t=cOf(Q,x,y),exact=Q.cell[t]&&Q.comp[t]===cp;if(!exact){t=nearest(Q,x,y,cp);if(t<0)return null}
+    let kn=null,partial=false;
+    if(!all&&!M.seeAll&&a===PC()&&!G.busy){kn=known(Q);kn[s]=1;const r=reach(Q,s,kn);
+      if(!r[t]){const far=steps(Q,s,kn);let best=-1,bd=1e9;for(let i=0;i<r.length;i++)if(r[i]){const[px,py]=cXY(Q,i),dd=Math.hypot(px-x,py-y)+far[i]*CS*.4;if(dd<bd){bd=dd;best=i}}
+        if(best<0)return null;t=best;exact=false;partial=true}}
+    const end=exact?[x,y]:cXY(Q,t);
+    if(s===t){const r=Math.hypot(end[0]-a.x,end[1]-a.y)<.5?[]:[end];r.partial=partial;return r}
+    const p=astar(Q,s,t,kn);if(!p)return null;const pts=p.map(c=>cXY(Q,c));pts[pts.length-1]=end;
     /* string-pulling: from where he is, go straight to the farthest point that a straight line reaches */
-    const out=[];let cx=a.x,cy=a.y,i=0;while(i<pts.length-1){let j=Math.min(pts.length-1,i+90);while(j>i+1&&!clear(G,cx,cy,pts[j][0],pts[j][1]))j--;out.push(pts[j]);[cx,cy]=pts[j];i=j}
-    if(!out.length)out.push(end);return out};
+    const out=[];let cx=a.x,cy=a.y,i=0;while(i<pts.length-1){let j=Math.min(pts.length-1,i+90);while(j>i+1&&!clear(Q,cx,cy,pts[j][0],pts[j][1]))j--;out.push(pts[j]);[cx,cy]=pts[j];i=j}
+    if(!out.length)out.push(end);out.partial=partial;return out};
   M.dist=(name,x,y)=>{const G=g(),f=G.F['t:'+name]||(G.F['t:'+name]=field(G,[def.targets[name]],0)),c=cOf(G,x,y);return G.cell[c]?f[c]:f[nearest(G,x,y)]};
   M.near=(x,y,r)=>{let n=0;for(const a of M.crowd)if(Math.abs(a.x-x)<r&&Math.abs(a.y-y)<r&&Math.hypot(a.x-x,a.y-y)<r)n++;return n};
-  M.reset=()=>{M.crowd.length=0;M.dust.length=0;M.warm=null};
+  M.reset=()=>{M.crowd.length=0;M.dust.length=0;M.warm=null;M.SEEN={}};
   /* how fast whoever is played goes on the map, and how far two steps carry him */
   M.runs=a=>(def.pace?def.pace(a):'walk')==='run';
   M.pace=a=>PACE[M.runs(a)?'run':'walk'];
   M.stride=(a,v)=>STRIDE[M.runs(a)?'run':'walk'];
-  M.fig=[3,10];
+  M.fig=[3.5,14];
   /* face: after walking up to a thing, he turns to it, also up or down the map */
   M.face=(a,x,y)=>{const dx=x-a.x,dy=y-a.y;a.pface=Math.abs(dy)>Math.abs(dx)*.9&&Math.abs(dy)>3?(dy<0?'N':'S'):null;a.pfaceAt=[a.x,a.y]};
 
@@ -404,11 +497,20 @@ function make(id,def){
   const crowdDef=()=>(def.crowd||{})[vNow()]||null;
   const sinkField=(G,name,pts)=>G.F['s:'+name]||(G.F['s:'+name]=field(G,pts,1));
   let src=[];
-  function spawn(G,cd,dt){if(M.crowd.length>=(cd.max||160))return;
+  /* doorsOf: the doors a source sends people out of: within r of its place, of houses whose shutters are not bolted, onto a lane that
+     reaches where they make for */
+  const doorsOf=(G,s,v)=>{const k='d:'+v;if(s[k])return s[k];const cue=def.cue||(()=>'open'),f=sinkField(G,s.to,crowdDef().sinks[s.to]);
+    return s[k]=M.doors.filter(d=>{if(Math.hypot(d.x+1-s.doors[0],d.y-s.doors[1])>s.r||cue(d.house,v)==='shut')return false;const c=cOf(G,d.x+1,d.y+2.5);return G.cell[c]&&isFinite(f[c])})};
+  function spawn(G,cd,dt){if(M.crowd.length>=(cd.max||160))return;const v=vNow();
     cd.sources.forEach((s,k)=>{const per=(s.on||10)+(s.off||0),ph=((M.t+(s.ph||0))%per+per)%per;if(ph>(s.on||10))return;
-      src[k]=(src[k]||0)+s.rate*dt;while(src[k]>=1){src[k]--;const r=s.r||3,x=s.x+(Math.random()-.5)*2*r,y=s.y+(Math.random()-.5)*2*r;
+      src[k]=(src[k]||0)+s.rate*dt;while(src[k]>=1){src[k]--;let x,y,door=null;
+        /* out of a door: he steps out at the foot of the wall, and the door stands open behind him for a moment */
+        if(s.doors){const L=doorsOf(G,s,v);if(!L.length)continue;door=L[(Math.random()*L.length)|0];x=door.x+1;y=door.y+2.5}
+        /* or in along a street from beyond the map, or through a gate */
+        else{const r=s.r||3;x=s.x+(Math.random()-.5)*2*r;y=s.y+(Math.random()-.5)*2*r}
         if(!G.cell[cOf(G,x,y)]||M.crowd.some(a=>Math.abs(a.x-x)<4&&Math.abs(a.y-y)<4))continue;
-        const looks=def.folk||FOLK;M.crowd.push({x,y,dx:0,dy:0,lo:Math.random()*2-1,gone:Math.random()*40,look:looks[(Math.random()*looks.length)|0],to:s.to,stuck:0,side:Math.random()<.5?-1:1,t0:M.t})}})}
+        const looks=def.folk||FOLK;M.crowd.push({x,y,dx:0,dy:door?1:0,lo:Math.random()*2-1,gone:Math.random()*40,look:looks[(Math.random()*looks.length)|0],to:s.to,stuck:0,side:Math.random()<.5?-1:1,t0:M.t,
+          from:door?'door':'edge',door})}})}
   function step(dt){const cd=crowdDef();if(!cd){M.crowd.length=0;return}const G=g(),pc=PC(),pcIn=pc.room===id,v=PACE[cd.pace||'run'];
     spawn(G,cd,dt);
     const hash=new Map(),key=(x,y)=>(Math.floor(x/6)<<12)^Math.floor(y/6);
@@ -457,21 +559,49 @@ function make(id,def){
     const Q=g(),ok=(dx,dy)=>clear(Q,pc.x,pc.y,pc.x+dx*6,pc.y+dy*6);let dx=x,dy=y;
     if(!ok(dx,dy)){if(x&&ok(Math.sign(x),0)){dx=Math.sign(x);dy=0}else if(y&&ok(0,Math.sign(y))){dx=0;dy=Math.sign(y)}else return}
     const w=pc.walk;if(w&&!w.key)w.res(false);pc.walk={x:pc.x+dx*6,y:pc.y+dy*6,path:[],rest:0,key:1,res:w&&w.key?w.res:()=>{}};G.hover=null}
-  M.tick=(dt,ts)=>{const v=vNow();if(M.warm!==v){M.reset();M.warm=v;M.dustOn=!!(crowdDef()&&crowdDef().dust);if(crowdDef()){for(let i=0;i<300;i++){M.t+=.1;step(.1)}}}
-    M.t+=dt;step(dt);press(dt);steer()};
+  /* zones: places the chapter wants to know about when whoever is played walks into them (def.zones: [{x, y, w, h, enter()}]) */
+  function zones(){const pc=PC();for(const z of def.zones||[]){const inz=pc.room===id&&pc.x>=z.x&&pc.x<z.x+z.w&&pc.y>=z.y&&pc.y<z.y+z.h;
+    if(inz&&!z.inside&&z.enter)z.enter(pc);z.inside=inz}}
+  /* look: what whoever is played comes to know: the lanes within eighteen cells of him along the lanes, round every corner, and on the
+     screen the open ground that no house hides */
+  function look(dt){const pc=PC();if(pc.room!==id||G.room!==id)return;M.lookT-=dt;if(M.lookT>0)return;M.lookT=.2;
+    const Q=g(),S=known(Q),{GW,GH,cell}=Q,s0=cOf(Q,pc.x,pc.y),dist=new Map([[s0,0]]),st=[s0];S[s0]=1;
+    for(let k=0;k<st.length;k++){const q=st[k],dq=dist.get(q);if(dq>=18)continue;const x=q%GW,y=(q/GW)|0;
+      for(const[dx,dy]of NB){const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=GW||Y>=GH)continue;const n=Y*GW+X;if(!cell[n]||dist.has(n))continue;dist.set(n,dq+1);S[n]=1;st.push(n)}}
+    const z=G.zoom||1,x0=Math.max(0,Math.floor(G.cam/CS)),x1=Math.min(GW-1,Math.ceil((G.cam+VW/z)/CS)),y0=Math.max(0,Math.floor(G.camY/CS)),y1=Math.min(GH-1,Math.ceil((G.camY+VH/z)/CS));
+    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const i=y*GW+x;if(cell[i]&&!S[i]&&!M.cov[Math.min(def.h-1,y*CS+1)*def.w+Math.min(def.w-1,x*CS+1)])S[i]=1}}
+  /* fades: a house fades while whoever is played walks behind it, and comes back when he is out from behind it */
+  function fades(dt){const pc=PC(),S=M.S[vNow()];if(!S)return;const k=Math.min(1,dt*10),inn=pc.room===id&&G.room===id;
+    for(const s of S){let to=1;if(inn&&pc.x+3>s.X0&&pc.x-3<s.X1+1&&pc.y>s.T&&pc.y<s.B+1)for(const st of s.strips)if(pc.y<st.front+.5&&pc.y>st.top&&pc.x+3>st.x0&&pc.x-3<st.x1+1){to=FADE;break}
+      s.alpha+=(to-s.alpha)*k;if(Math.abs(to-s.alpha)<.01)s.alpha=to}}
+  M.tick=(dt,ts)=>{const v=vNow();if(M.warm!==v){M.reset();M.warm=v;sprites(M,v);M.dustOn=!!(crowdDef()&&crowdDef().dust);if(crowdDef()){for(let i=0;i<300;i++){M.t+=.1;step(.1)}}}
+    M.t+=dt;step(dt);press(dt);steer();zones();look(dt);fades(dt)};
 
   /* --- drawing --- */
   const facingOf=o=>{if(o.walk&&!o.pushed&&o.mvx!=null){const x=o.mvx,y=o.mvy;return Math.abs(y)>Math.abs(x)*1.15?(y<0?'N':'S'):x<0?'W':'E'}
     if(o.pushed&&o.mvx!=null){const x=-o.mvx,y=-o.mvy;return Math.abs(y)>Math.abs(x)*1.15?(y<0?'N':'S'):x<0?'W':'E'}
     if(o.pface&&o.pfaceAt&&Math.abs(o.pfaceAt[0]-o.x)<1&&Math.abs(o.pfaceAt[1]-o.y)<1)return o.pface;return facing(o)<0?'W':'E'};
   function drawFolk(gx,o,x,y,D,fr,run,talk){const c=folk(o,D,fr,armsOf(run,fr,D),talk),i=Math.floor(clamp(y,0,def.h-1))*def.w+Math.floor(clamp(x,0,def.w-1)),dark=M.sun&&M.sun[i];
-    foot(gx,x,y);gx.drawImage(dark?shaded(c):c,hp(x)-2,hp(y)-FH/2+.5,FW/2,FH/2)}
+    foot(gx,x,y);gx.drawImage(dark?shaded(c):c,hp(x)-3,hp(y)-FH/2+.5,FW/2,FH/2)}
   M.drawActor=(gx,o,ts)=>{const run=M.runs(o)&&!o.pushed,D=facingOf(o),w=o.walk,gone=o.gait?o.gait.gone:null,left=w?Math.hypot(w.x-o.x,w.y-o.y)+(w.rest||0):null,
       fr=w&&!o.pushed?frameOf(run,gone,w.key?null:left,STRIDE[run?'run':'walk']):o.pushed?'p1':'stand';
     drawFolk(gx,o.look,o.x,o.y,D,fr,run,o.talk&&Math.floor(ts/150)%2)};
-  M.draw=(gx,ts)=>{const cam=G.cam,cy=G.camY,cd=crowdDef(),run=cd&&(cd.pace||'run')==='run';
+  M.draw=(gx,ts)=>{const z=G.zoom||1,cam=G.cam,cy=G.camY,vw=VW/z,vh=VH/z,cd=crowdDef(),run=cd&&(cd.pace||'run')==='run',v=vNow();
     for(const p of M.dust){const a=.32*(1-p.t/1.4);gx.fillStyle=`rgba(196,170,128,${a})`;gx.fillRect(hp(p.x),hp(p.y-1-p.t*2),1,1)}
-    for(const a of M.crowd){if(a.x<cam-8||a.x>cam+VW+8||a.y<cy-4||a.y>cy+VH+14)continue;
+    /* the way whoever is played walks after a click: a row of dots on the ground, and a small diamond where it ends, never a cross */
+    const pc=PC(),w=pc.room===id&&pc.walk;
+    if(w&&!w.key&&!pc.pushed&&!G.busy){const pts=[[pc.x,pc.y],[w.x,w.y],...(w.path||[])];let carry=2.5;
+      for(let i=1;i<pts.length;i++){const[ax,ay]=pts[i-1],[bx,by]=pts[i],L=Math.hypot(bx-ax,by-ay);let t=carry;
+        for(;t<L;t+=5){const x=ax+(bx-ax)*t/L,y=ay+(by-ay)*t/L;R(gx,x-.5,y,1.5,1,'rgba(22,14,8,.5)');R(gx,x-.5,y-.5,1,1,'#f0c858')}carry=t-L}
+      const[ex,ey]=pts[pts.length-1],rr=Math.floor(ts/220)%2?4:3;
+      for(let dx=-rr;dx<=rr;dx++){const dy=rr-Math.abs(dx);for(const sy of dy?[-1,1]:[1]){R(gx,ex+dx*.5,ey+sy*Math.round(dy*.7)*.5+.5,.5,.5,'rgba(22,14,8,.5)');R(gx,ex+dx*.5,ey+sy*Math.round(dy*.7)*.5,.5,.5,'#fff0a8')}}}
+    /* the houses, strip by strip, each among the people by the row its front stands on; faded while he is behind one */
+    for(const s of sprites(M,v)){if(s.X1<cam-2||s.X0>cam+vw+2||s.B<cy-2||s.T>cy+vh+16)continue;
+      for(const st of s.strips)depth(st.front+.5,()=>{const a=s.alpha;if(a<.999)gx.globalAlpha=a;
+        gx.drawImage(s.c,(st.x0-s.X0)*2,0,(st.x1-st.x0+1)*2,(st.front+1-s.T)*2,st.x0,s.T,st.x1-st.x0+1,st.front+1-s.T);if(a<.999)gx.globalAlpha=1})}
+    /* a door that someone has just stepped out of stands open */
+    for(const a of M.crowd)if(a.door&&M.t-a.t0<.9){const d=a.door;depth(d.y+.6,()=>R(gx,d.x,d.y+1-d.h,2,d.h,'#241a14'))}
+    for(const a of M.crowd){if(a.x<cam-8||a.x>cam+vw+8||a.y<cy-4||a.y>cy+vh+14)continue;
       const o=a.look;
       const L=Math.hypot(a.mx||0,a.my||0)>.5?[a.mx,a.my]:[a.dx,a.dy],D=Math.abs(L[1])>Math.abs(L[0])*1.15?(L[1]<0?'N':'S'):L[0]<0?'W':'E',fr=a.still>.25?'stand':frameOf(run,a.gone+50,null,STRIDE[run?'run':'walk']);
       depth(a.y,()=>drawFolk(gx,o,a.x,a.y,D,fr,run,0))}
@@ -480,7 +610,7 @@ function make(id,def){
 
   /* --- the room --- */
   ART[id]={w:def.w,h:def.h,q:def.q||12,variant:def.variant,
-    paint:(gx,v)=>{paintCity(M,gx,v);if(def.paint)def.paint(gx,v,M)},
+    paint:(gx,v)=>{paintGround(M,gx,v);if(def.paint)def.paint(gx,v,M)},
     draw:(gx,ts)=>M.draw(gx,ts),front:(gx,ts)=>M.front(gx,ts),props:def.props};
   ROOMS[id]=Object.assign({walk:[0,def.w,0,def.h],hs:[],space:.55,mood:'calm'},def.room||{},{plan:M});
   return M}
@@ -501,7 +631,7 @@ const FOLK=[
   {skin:'#b48058',tunic:'#a4503a',hair:'#2a1a12',belt:'#3a2414'},
   {skin:'#bc8860',tunic:'#ddd2bc',cloak:'#a06a3a',hair:'#3a2a1c',beard:'#3a2a1c'}];
 
-return{make,stall,colonnade,tree,hill,crown,FOLK,FOLKMAP,folk,kinds:{BUILT,EARTH,PAVED,SQUARE,KEEP,COURT},
+return{make,stall,colonnade,tree,hill,crown,FOLK,FOLKMAP,folk,FADE,sprites,kinds:{BUILT,EARTH,PAVED,SQUARE,KEEP,COURT},
   /* for the playtest: the poses of a look as a sheet, and the lanes of a map that cross */
   sheet(o,z){const dirs=['S','N','E','W'],frs=['stand','s1','w1','p1','w2','p2','r1','f1','r2','f2'],[c,g]=mk(frs.length*(FW+2)*z,dirs.length*(FH+2)*z);g.imageSmoothingEnabled=false;
     g.fillStyle='#a37b54';g.fillRect(0,0,c.width,c.height);

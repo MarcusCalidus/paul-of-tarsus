@@ -6,18 +6,18 @@
  G.speedAll=500;
  const idle=async()=>{await wait(120);let n=0;while((G.busy||P.walk||PC().walk)&&n++<4000){if($('#choices').classList.contains('on')||ov.classList.contains('end'))break;await wait(50)}};
  const verb=v=>document.querySelector(`#verbs button[data-v=${v}]`).click();
- const view=(x,y)=>{const r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+(y-G.camY)/144*r.height,bubbles:true}))};
+ const view=(x,y)=>{const r=vp.getBoundingClientRect(),z=zoomNow();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+(x-G.cam)*z/320*r.width,clientY:r.top+(y-G.camY)*z/144*r.height,bubbles:true}))};
  const item=id=>{const i=G.inv.indexOf(id);if(i<0)throw new Error('no item '+id);document.querySelectorAll('#inv .slot')[i].click()};
  const hs=name=>{const h=ROOMS[G.room].hs.find(h=>h.name===name&&(!h.vis||h.vis()));if(!h)throw new Error('no hs '+name+' in '+G.room);return[h.x+h.w/2,h.y+h.h/2]};
  const act=async(v,name)=>{if(v)verb(v);view(...hs(name));await idle()};
  const use=async(a,b)=>{verb('use');item(a);item(b);await idle()};
  const useOn=async(a,name,v)=>{verb(v||'use');item(a);view(...hs(name));await idle()};
  const actor=async(v,a)=>{if(v)verb(v);view(a.x,a.y-18);await idle()};
- const at=(type,x,y)=>{const r=vp.getBoundingClientRect(),e=new MouseEvent(type,{clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+(y-G.camY)/144*r.height,bubbles:true,cancelable:true});vp.dispatchEvent(e);return e.defaultPrevented};
+ const at=(type,x,y)=>{const r=vp.getBoundingClientRect(),z=zoomNow(),e=new MouseEvent(type,{clientX:r.left+(x-G.cam)*z/320*r.width,clientY:r.top+(y-G.camY)*z/144*r.height,bubbles:true,cancelable:true});vp.dispatchEvent(e);return e.defaultPrevented};
  const move=(x,y)=>at('mousemove',x,y),rclick=(x,y)=>at('contextmenu',x,y),dbl=(x,y)=>at('dblclick',x,y);
  /* a screenshot does not show the mouse pointer: paintPointer points at a place in the room and paints the game's own pointer there */
  const paintPointer=(x,y)=>{move(x,y);const sc=vp.getBoundingClientRect().width/320,d=devicePixelRatio||1,u=clamp(Math.round(sc*d/2),1,6),p=pointerArt(u,pointerKind(G.hover));
-   p.style.cssText=`position:absolute;z-index:8;pointer-events:none;left:${(x-G.cam)*sc-p.hx*u/d}px;top:${(y-G.camY)*sc-p.hy*u/d}px;width:${p.width/d}px;height:${p.height/d}px`;vp.appendChild(p)};
+   p.style.cssText=`position:absolute;z-index:8;pointer-events:none;left:${(x-G.cam)*zoomNow()*sc-p.hx*u/d}px;top:${(y-G.camY)*zoomNow()*sc-p.hy*u/d}px;width:${p.width/d}px;height:${p.height/d}px`;vp.appendChild(p)};
  const rclickEl=el=>{const e=new MouseEvent('contextmenu',{bubbles:true,cancelable:true});el.dispatchEvent(e);return e.defaultPrevented};
  const key=(k,type)=>dispatchEvent(new KeyboardEvent(type||'keydown',{key:k,bubbles:true,cancelable:true}));
  const lit=()=>[...document.querySelectorAll('#verbs button.def')].map(b=>b.dataset.v).join();
@@ -475,52 +475,107 @@
   /* the lane map (shared/lanes.js): a city seen from above, which the view follows up and down as well as across. It is played here in its
      demo (tools/lanes-demo.js), a draft of Ephesus for Chapter Fourteen. Stops: lanes (the checks; the runner in the back lane by the square,
      with the crowd streaming to the theater), lanes2 (the quiet pass: Paul at the harbor road), lanesfolk (lanes-folk.png: every pose of the
-     figures of the map, five times enlarged, for the cross-shape check), lanesall (every check, to the end of the demo; part of the full run). */
-  if(/^lanes(2|folk|all)?$/.test(stop)){await loadScript('tools/lanes-demo.js',()=>true);for(let i=0;i<400&&!(CHAP[14]&&CHAP[14].ready);i++)await wait(30);await langFile(G.lang,14);
-    const C=CHAP[14],M=C.map,LN=SHARED.lanes,R=ACT.runner14,D=M.def,sp0=G.speedAll;
-    ok(LN&&M&&ROOMS.lanes14.plan===M&&ART.lanes14.h===432,'the lane map is loaded before its chapter (needs) and makes a room of its own, taller than the view');
-    {const c=LN.crossings(D),f=LN.fourWays(D);ok(!c.length&&!f.length,'no lane crosses another and no four ways meet at one place, which seen from above would be a plus sign'+(c.length||f.length?'. AT: '+JSON.stringify(c.concat(f)).slice(0,300):''));
+     figures of the map, five times enlarged, for the cross-shape check), lanesmap (lanes-map.png: the whole map in both passes, and
+     lanes-map-routes.png with the ways the test walks drawn on it), lanesall (every check, to the end of the demo; part of the full run).
+     The city lies X room pixels to the right of its own plan, with the harbor west of it (C.ox). */
+  if(/^lanes(2|folk|all|map)?$/.test(stop)){await loadScript('tools/lanes-demo.js',()=>true);for(let i=0;i<400&&!(CHAP[14]&&CHAP[14].ready);i++)await wait(30);await langFile(G.lang,14);
+    const C=CHAP[14],M=C.map,LN=SHARED.lanes,R=ACT.runner14,D=M.def,sp0=G.speedAll,X=C.ox||0,A=C.at;
+    ok(LN&&M&&ROOMS.lanes14.plan===M&&ART.lanes14.h>VH*3&&ART.lanes14.w>VW*3,'the lane map is loaded before its chapter (needs) and makes a room of its own, taller than the view');
+    {const c=LN.crossings(D),f=LN.fourWays(D);if(D.grid)ok(c.length>10,'the streets cross at right angles, as the grid of Ephesus did ('+c.length+' crossings): the exception for Ephesus in CONTRIBUTING section 3');
+      else ok(!c.length&&!f.length,'no lane crosses another and no four ways meet at one place, which seen from above would be a plus sign'+(c.length||f.length?'. AT: '+JSON.stringify(c.concat(f)).slice(0,300):''));
       const k=LN.corners(M);ok(!k.length,'no four roofs meet at one corner'+(k.length?'. AT: '+JSON.stringify(k.slice(0,12)):''));
       /* every lane hangs together with every other: the walkable ground is one piece, but for a cell or two in a notch of a wall */
       for(const v of['surge','quiet']){const Q=M.G[v]||(F.two=v==='quiet'?1:0,M.walkable(0,0),M.G[v]),n={};for(let i=0;i<Q.comp.length;i++)if(Q.cell[i])n[Q.comp[i]]=(n[Q.comp[i]]||0)+1;
-        const big=Object.values(n).filter(c=>c>=12);ok(big.length===1,'in the '+v+' every lane can be reached from every other: '+big.length+' piece'+(big.length>1?'s: '+JSON.stringify(n):''))}delete F.two}
+        const big=Object.values(n).filter(c=>c>=12);ok(big.length===1,'in the '+v+' every lane can be reached from every other: '+big.length+' piece'+(big.length>1?'s: '+JSON.stringify(n):''))}delete F.two
+      /* every lane can be walked along its middle, from end to end (but for what a pass shuts) */
+      {F.two=0;M.walkable(0,0);const Q=M.G.surge,bad=[];D.lanes.forEach((l,k)=>{const p=l.pts;for(let i=2;i<p.length;i+=2){const ax=p[i-2],ay=p[i-1],dx=p[i]-ax,dy=p[i+1]-ay,n=Math.ceil(Math.hypot(dx,dy));
+          for(let j=0;j<=n;j++){const x=ax+dx*j/n,y=ay+dy*j/n;if(x<4||y<4||x>D.w-4||y>D.h-4||D.keep.some(q=>{const P=q.poly;let c=false;for(let a=0,m=P.length/2,b=m-1;a<m;b=a++){const xi=P[2*a],yi=P[2*a+1],xj=P[2*b],yj=P[2*b+1];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c}))continue;
+            if(!Q.cell[(clamp(Math.floor(y/2),0,Q.GH-1))*Q.GW+clamp(Math.floor(x/2),0,Q.GW-1)]&&!M.walkable(x+1,y)&&!M.walkable(x-1,y)&&!M.walkable(x,y+1)&&!M.walkable(x,y-1))bad.push([k,Math.round(x-X),Math.round(y)])}}});
+        delete F.two;const one=[];for(const b of bad)if(!one.some(o=>o[0]===b[0]&&Math.hypot(o[1]-b[1],o[2]-b[2])<8))one.push(b);
+        ok(!bad.length,'every lane can be walked along its middle'+(bad.length?'. NOT AT (lane, x in the city, y): '+JSON.stringify(one.slice(0,16)):''))}}
     {const looks=[LOOK.runner14,LOOK.paul,...LN.FOLK],bad=[];let n=0;
       for(const o of looks)for(const Dd of['S','N','E','W'])for(const f of['stand','s1','s2','w1','p1','w2','p2','r1','f1','r2','f2'])for(const t of[0,1]){const run=f[0]==='r'||f[0]==='f',
         arms=run?(Dd==='E'||Dd==='W'?(f==='r1'||f==='f1'?'run':'run2'):'run'):Dd==='E'||Dd==='W'?(f==='w1'?'f':f==='w2'?'k':'stand'):'stand';n++;if(parts(LN.folk(o,Dd,f,arms,t))!==1)bad.push(LN.kinds&&(o.veil?'v':o.cloak?'m':'t')+Dd+f+arms+t)}
       ok(!bad.length,'every pose of the figures of the map is one piece: '+n+' poses'+(bad.length?'. IN PIECES: '+[...new Set(bad)].slice(0,12).join(', '):''))}
     if(stop==='lanesfolk'){setChapter(14);const z=5,sh=[LOOK.runner14,LOOK.paul,...LN.FOLK].map(o=>LN.sheet(o,z)),[c,g]=mk(sh[0].width,sh.reduce((a,x)=>a+x.height,0));let y=0;for(const x of sh){g.drawImage(x,0,y);y+=x.height}
       window.SHEETS={'lanes-folk':c.toDataURL()};halt('lanesfolk')}
-    C.demo(1);await wait(60);G.speedAll=0;
-    ok(G.room==='lanes14'&&PC()===R&&R.x===574&&M.walkable(R.x,R.y)&&G.camY>0&&!G.busy,'the demo begins on the map with the runner in a back lane, and the view stands lower than the top of the map');
+    if(stop==='lanesmap'){setChapter(14);const two=F.two,pics=[0,1].map(t=>{F.two=t;return bg('lanes14')}),[c,g]=mk(pics[0].width,pics[0].height*2+8);
+      g.fillStyle='#000';g.fillRect(0,0,c.width,c.height);g.drawImage(pics[0],0,0);g.drawImage(pics[1],0,pics[0].height+8);
+      /* the ways the test walks: the runner's from where he starts to the door, and Paul's from the door to the harbor gate, with the lanes shut
+         and without; drawn on the picture of each pass */
+      const[c2,g2]=mk(c.width,c.height);g2.drawImage(c,0,0);const k=pics[0].width/ART.lanes14.w,way=(a,b,col,dy)=>{F.two=a.two;const r=M.route({x:a.x,y:a.y},b[0],b[1]);if(!r)return;
+        g2.strokeStyle=col;g2.lineWidth=2;g2.beginPath();g2.moveTo(a.x*k,a.y*k+dy);for(const[x,y]of r)g2.lineTo(x*k,y*k+dy);g2.stroke()};
+      const st=C.ent.lanes14,hs=D.targets.house,gt=D.targets.gate,H2=pics[0].height+8;
+      way({x:st[0],y:st[1],two:0},hs,'#ffe040',0);way({x:hs[0],y:hs[1],two:1},gt,'#40e0ff',H2);
+      const blk=D.block.quiet;D.block.quiet=[];M.G={};way({x:hs[0],y:hs[1],two:1},gt,'#ff60a0',H2);D.block.quiet=blk;M.G={};F.two=two;
+      /* the walk grid of each pass: every part that does not hang together with the rest is red */
+      for(const t of[0,1]){F.two=t;M.walkable(0,0);const Q=M.G[t?'quiet':'surge'],n={};for(let i=0;i<Q.comp.length;i++)if(Q.cell[i])n[Q.comp[i]]=(n[Q.comp[i]]||0)+1;
+        const main=+Object.keys(n).sort((a,b)=>n[b]-n[a])[0];for(let i=0;i<Q.comp.length;i++)if(Q.cell[i]&&Q.comp[i]!==main){g2.fillStyle='#ff0000';g2.fillRect((i%Q.GW)*2*k-1,((i/Q.GW)|0)*2*k-1+(t?H2:0),2*k+2,2*k+2)}}F.two=two;
+      window.SHEETS={'lanes-map':c.toDataURL(),'lanes-map-routes':c2.toDataURL()};halt('lanesmap')}
+    C.demo(1);await wait(60);for(let i=0;i<60&&G.busy;i++)await wait(30);G.speedAll=0;M.seeAll=1;
+    ok(G.room==='lanes14'&&PC()===R&&Math.hypot(R.x-C.ent.lanes14[0],R.y-C.ent.lanes14[1])<14&&M.walkable(R.x,R.y)&&G.camY>0&&!G.busy,'the demo begins on the map with the runner in a back lane, and the view stands lower than the top of the map');
     /* the crowd: it streams to the theater in waves, and nobody of it stands where nobody can walk */
     await wait(1500);{const n=M.crowd.length,off=M.crowd.filter(a=>!M.walkable(a.x,a.y)).length,east=M.crowd.filter(a=>Math.hypot(a.mx||0,a.my||0)>.5&&a.mx>0).length;
       ok(n>60&&off<=n*.03&&east>n*.4,'a crowd of '+n+' streams to the theater, most of it eastward ('+east+'), and '+off+' of them off the lanes for a moment')}
+    /* nobody appears out of the open ground: the crowd comes in by the gate and along the streets from beyond the map, or steps out of a
+       door of a house whose shutters are not bolted */
+    {const cd=D.crowd.surge,edge=s=>s.x<X+16||s.y<8||s.y>D.h-8||s.x>D.w-8,badSrc=cd.sources.filter(s=>!s.doors&&!edge(s)),
+        from=M.crowd.filter(a=>a.from!=='door'&&a.from!=='edge').length,doors=M.crowd.filter(a=>a.from==='door'),shut=doors.filter(a=>D.cue(a.door.house,'surge')==='shut').length;
+      ok(M.doors.length>60&&!badSrc.length&&!from&&doors.length>5&&!shut,'the crowd comes in by the gate and the streets from beyond the map, or steps out of the doors of the houses ('+doors.length+' of '+M.crowd.length+' now; '+M.doors.length+' doors on the map), never out of a house whose shutters are bolted'+(badSrc.length?'. A SOURCE IN THE OPEN: '+JSON.stringify(badSrc[0]):''))}
+    /* a maze: the way to the house along the lanes is much longer than the straight line, and there are dead ends to go wrong in */
+    {const r=M.route(R,...D.targets.house);let len=0,x=R.x,y=R.y;for(const[a,b]of r){len+=Math.hypot(a-x,b-y);x=a;y=b}const st=Math.hypot(D.targets.house[0]-R.x,D.targets.house[1]-R.y);
+      const inP=(p,x,y)=>{let c=false;for(let i=0,n=p.length/2,j=n-1;i<n;j=i++){const xi=p[2*i],yi=p[2*i+1],xj=p[2*j],yj=p[2*j+1];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c},
+        onLane=(x,y,self)=>D.lanes.some(m=>{if(m===self)return false;const q=m.pts;for(let i=2;i<q.length;i+=2){const ax=q[i-2],ay=q[i-1],dx=q[i]-ax,dy=q[i+1]-ay,t=clamp(((x-ax)*dx+(y-ay)*dy)/(dx*dx+dy*dy),0,1);if(Math.hypot(ax+dx*t-x,ay+dy*t-y)<m.w/2+1)return true}return false}),
+        ends=D.lanes.flatMap(l=>[[l.pts[0],l.pts[1],l],[l.pts[l.pts.length-2],l.pts[l.pts.length-1],l]]).filter(([x,y,l])=>x>X+8&&y>8&&y<D.h-8&&x<D.w-8&&!onLane(x,y,l)&&!D.open.some(o=>inP(o.poly,x,y))&&!D.keep.some(k=>inP(k.poly,x,y)));
+      ok(r&&len>st*1.1&&ends.length>=1,'the way to the house runs round the blocks: '+Math.round(len)+' pixels along the streets for '+Math.round(st)+' in a straight line, and '+ends.length+' lane'+(ends.length>1?'s end':' ends')+' blind')}
     /* the ways: from the runner's lane to the door of the house, and to every thing that can be clicked */
     {const unreached=[];for(const h of ROOMS.lanes14.hs){if(h.vis&&!h.vis())continue;const r=M.route(R,h.wx,h.wy),e=r&&r[r.length-1];if(!e||Math.hypot(e[0]-h.wx,e[1]-h.wy)>8)unreached.push(h.name)}
       ok(!unreached.length,'a way leads from the runner to every thing on the map that can be clicked'+(unreached.length?'. NOT: '+unreached.join(', '):''))}
-    {const r=M.route(R,318,60),e=r&&r[r.length-1];ok(r&&M.walkable(...e)&&Math.hypot(e[0]-318,e[1]-60)<14,'a click on a roof walks to the lane nearest to it')}
+    {const[rx,ry]=A(440,86),r=M.route(R,rx,ry),e=r&&r[r.length-1];ok(r&&M.walkable(...e)&&Math.hypot(e[0]-rx,e[1]-ry)<26&&!M.walkable(rx,ry),'a click on a roof walks to the lane nearest to it')}
     /* a line spoken on the map stands over the speaker, inside the view */
     clearInterval(sk);say(R,'demo_pressed');await wait(80);{const el=$('#speech .line'),v=vp.getBoundingClientRect(),b=el&&el.getBoundingClientRect(),sc=v.width/320,sx=v.left+(R.x-G.cam)*sc,sy=v.top+(R.y-G.camY)*sc;
       ok(b&&b.bottom<=sy-6*sc&&b.top>=v.top-1&&b.left<=sx&&b.right>=sx,'a line on the map stands over whoever speaks it')}
     if(G.skip)G.skip();sk=setInterval(()=>{if(G.skip)G.skip()},30);await idle();
     /* Tab names what can be clicked, where it is seen */
+    {const cr=D.crowd;D.crowd={};place(R,'lanes14',...A(610,180),-1);viewOf(R);await wait(150);D.crowd=cr}
     tagsOn(true);await wait(200);{const t=[...$('#tags').children],v=vp.getBoundingClientRect();ok(t.length>0&&t.every(e=>{const b=e.getBoundingClientRect();return b.top>=v.top-1&&b.bottom<=v.bottom+1}),'Tab names '+t.length+' things on the map, each inside the view')}tagsOn(false);
     /* the keys steer: up the lane and back */
-    {const x0=R.x;key('ArrowLeft');await wait(500);key('ArrowLeft','keyup');await wait(300);ok(R.x<x0-6&&!R.walk,'the arrow keys steer the runner along the lane, and he stops when the key is let go ('+Math.round(x0-R.x)+' pixels)')}
+    {const cr=D.crowd;D.crowd={};M.pushT=0;R.pushed=0;place(R,'lanes14',...C.ent.lanes14);await wait(150);const x0=R.x;key('ArrowLeft');await wait(500);key('ArrowLeft','keyup');await wait(300);D.crowd=cr;ok(R.x<x0-6&&!R.walk,'the arrow keys steer the runner along the lane, and he stops when the key is let go ('+Math.round(x0-R.x)+' pixels)')}
     /* against a packed street the crowd presses him back */
-    {let pressed=0;const p0=M.def.press;M.def.press=()=>{pressed++};for(let k=0;k<6&&!pressed;k++){place(R,'lanes14',150,196,-1);M.pushT=0;R.pushed=0;walk(R,20,196);for(let i=0;i<160&&!pressed;i++)await wait(25)}
+    {let pressed=0;const p0=M.def.press;M.def.press=()=>{pressed++};for(let k=0;k<6&&!pressed;k++){place(R,'lanes14',...A(150,196),-1);M.pushT=0;R.pushed=0;walk(R,...A(20,196));for(let i=0;i<160&&!pressed;i++)await wait(25)}
       ok(pressed>0,'walking against the packed harbor road, the runner is pressed back');M.def.press=p0;await wait(700);if(G.skip)G.skip();await idle()}
-    if(stop==='lanes'){place(R,'lanes14',560,150,-1);R.pushed=0;M.pushT=0;viewOf(R);G.cam=440;G.camY=82;await wait(2600);paintPointer(492,160);halt('lanes')}
+    /* the quiet court is not the house: the first time the runner walks into it he says that its shutters are bolted and nothing stirs */
+    {const s0=window.say,heard=[];window.say=(a,t,o)=>{heard.push(t);return s0(a,t,o)};const ct=C.city.courts.A,cr=D.crowd;D.crowd={};
+      for(const k of[0,1]){place(R,'lanes14',...A(380,76),-1);M.pushT=0;R.pushed=0;walk(R,...A((ct[0]+ct[2])/2,(ct[1]+ct[5])/2));for(let i=0;i<160&&R.walk;i++)await wait(25);await idle()}
+      window.say=s0;D.crowd=cr;const n=heard.filter(t=>t==='shutters_bolted_nothing_stirs').length;
+      ok(n===1,'walking through the passage into a quiet court, the runner says once that its shutters are bolted and nothing stirs ('+n+')')}
+    /* the houses stand up: each is its own sprite, among the people by the row of its front; one the runner walks behind fades, and comes back */
+    {const S=LN.sprites(M,'surge');let spot=null;for(const sp of S){if(sp.bridge)continue;for(const st of sp.strips){const x=(st.x0+st.x1)/2,y=st.front-4;if(st.x1-st.x0>=6&&y>st.top+2&&M.walkable(x,y)){spot=[sp,x,y];break}}if(spot)break}
+      ok(S.length>200&&spot,'the houses stand up, '+S.length+' of them, each hiding the ground behind it'+(spot?'':'. NO LANE BEHIND A HOUSE'));
+      if(spot){const[sp,x,y]=spot,cr=D.crowd;D.crowd={};place(R,'lanes14',x,y,1);viewOf(R);await wait(600);const a1=sp.alpha;place(R,'lanes14',...C.ent.lanes14);viewOf(R);await wait(600);
+        ok(a1<.5&&sp.alpha>.95,'a house fades while the runner is behind it ('+a1.toFixed(2)+'), and comes back when he is out from behind it ('+sp.alpha.toFixed(2)+')');D.crowd=cr}}
+    /* he goes only by the lanes he knows: from where he starts, a click on the house leads him only as near as the lanes he has seen go */
+    {M.seeAll=0;M.SEEN={};place(R,'lanes14',...C.ent.lanes14);viewOf(R);await wait(500);const r=M.route(R,...D.targets.house),e=r&&r[r.length-1],full=M.route(R,...D.targets.house,true);M.seeAll=1;
+      ok(r&&r.partial&&Math.hypot(e[0]-D.targets.house[0],e[1]-D.targets.house[1])>60&&full&&!full.partial,'a click goes only by the lanes the runner knows: from the start, a click on the house takes him only as near as those go')}
+    /* the house is reached only through its covered passage: the way to it runs under the house built over the lane */
+    {const b=D.bridges[0],r=M.route(R,...D.targets.house,true);let under=false,x=R.x,y=R.y;for(const[a,c]of r){for(let t=0;t<=1;t+=.05){const px=x+(a-x)*t,py=y+(c-y)*t;if(px>=b.x&&px<b.x+b.w&&py>=b.y&&py<b.y+b.d)under=true}x=a;y=c}
+      ok(D.bridges.length===3&&under,'the house is reached through a covered passage, and two quiet courts the same way')}
+    /* zoom: the view zooms between three quarters and twice its size, and a click still walks to where it was made */
+    {G.zoomTo=2;await wait(500);const z=G.zoom,[tx,ty]=[R.x+8,R.y];const ok1=M.walkable(tx,ty);if(ok1){view(tx,ty);for(let i=0;i<80&&R.walk;i++)await wait(25)}
+      ok(Math.abs(z-2)<.05&&(!ok1||Math.hypot(R.x-tx,R.y-ty)<2.5),'the view zooms to twice its size ('+z.toFixed(2)+'), and a click there walks to where it was made');G.zoomTo=1;await wait(400)}
+    if(stop==='lanes'){place(R,'lanes14',...A(330,118),-1);R.pushed=0;M.pushT=0;M.seeAll=0;viewOf(R);await wait(2400);walk(R,...A(290,96));await wait(60);paintPointer(...A(290,96));halt('lanes')}
     /* to the house and through the door, by the back lanes: then the quiet pass, Paul at the door */
     G.speedAll=sp0;place(R,'lanes14',...C.ent.lanes14);M.pushT=0;R.pushed=0;viewOf(R);
     /* the test walks at many times the pace, through anyone in the way: for that walk the crowd stays away */
     {const cr=D.crowd;D.crowd={};await act(null,'door_of_the_house_demo');for(let i=0;i<300&&!F.two;i++)await wait(30);await idle();D.crowd=cr}
     ok(F.two&&PC()===P&&P.room==='lanes14'&&!R.room&&M.crowd.length===0,'at the door of the house the runner is done, and Paul walks the emptied lanes');
-    {const r1=M.route(P,...M.def.targets.gate);let len=0,x=P.x,y=P.y;for(const[a,b]of r1){len+=Math.hypot(a-x,b-y);x=a;y=b}
-      ok(r1&&len>230,'with the gate in the lane shut, the way to the harbor gate goes round by the harbor road ('+Math.round(len)+' pixels)')}
-    if(stop==='lanes2'){G.speedAll=0;place(P,'lanes14',118,206,1);viewOf(P);await wait(300);paintPointer(120,240);halt('lanes2')}
+    /* after the uproar three lanes are shut and stalls lie across the harbor road: the way to the harbor gate is several times the direct one */
+    {const way=()=>{const r=M.route(P,...D.targets.gate);if(!r)return 0;let len=0,x=P.x,y=P.y;for(const[a,b]of r){len+=Math.hypot(a-x,b-y);x=a;y=b}return len};
+      const len=way(),blk=D.block.quiet;D.block.quiet=[];M.G={};const direct=way();D.block.quiet=blk;M.G={};
+      ok(len>direct*2,'with streets shut and the harbor street blocked, the way to the harbor gate is '+Math.round(len)+' pixels, where it would be '+Math.round(direct))}
+    if(stop==='lanes2'){G.speedAll=0;place(P,'lanes14',...A(30,200),-1);viewOf(P);await wait(300);paintPointer(...A(3,190));halt('lanes2')}
     const code=makeCode();ok(decode(code)&&decode(code).ch===14,'the safe-point code holds the quiet pass: '+code);
-    await act(null,'shutter_demo');ok(treasures().has(14),'the shutter at the end of the little lane is the hidden treasure of the demo');
+    {const h=ROOMS.lanes14.hs.filter(h=>h.name==='shutter_demo'&&h.vis&&h.vis())[0];view(h.x+h.w/2,h.y+h.h/2);await idle()}ok(treasures().has(14),'the shutter at the end of the little lane is the hidden treasure of the demo');
     await act(null,'harbor_gate_demo');for(let i=0;i<300&&F.two;i++)await wait(30);await idle();
     ok(!F.two&&PC()===R&&G.room==='lanes14','at the harbor gate the demo begins again');
     ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,8).join(' | '):'')+(RAWKEY.size?'. KEY: '+[...RAWKEY].slice(0,8).join(' | '):''));
@@ -3519,6 +3574,6 @@
   ok(inked>=80&&SHARED.scroll&&SHARED.scroll.state==='down'&&!SHARED.scroll.over.length,inked+' lines of narration were told in the dark, and each was read from the scroll');
   ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
   L('DONE');
- }catch(e){if(e!=='halt')L('ERR '+(e&&e.message||e))}})();
+ }catch(e){if(e!=='halt')L('ERR '+(e&&e.message||e)+(e&&e.stack?' | '+e.stack.split('\n').slice(1,5).join(' < '):''))}})();
 })();
 </script>

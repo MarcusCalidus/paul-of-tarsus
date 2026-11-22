@@ -27,6 +27,7 @@ body{display:flex;align-items:center;justify-content:center}
 #top #names::before{content:'';display:inline-block;vertical-align:middle;width:calc(var(--s)*2px);height:calc(var(--s)*2px);border-radius:50%;
   background:var(--gold);box-shadow:0 0 0 var(--px) #000;margin:0 calc(var(--s)*1.5px) calc(var(--s)*.5px) 0}
 #view{position:relative;width:calc(var(--s)*320px);height:calc(var(--s)*144px);overflow:hidden;cursor:default}
+#view.plan{touch-action:none}   /* on a lane map two fingers zoom the view, not the page */
 /* the canvas is as tall as the title's picture, 210 room pixels: a room is painted into its upper 144, which is all the view shows in play */
 #screen{width:100%;height:calc(var(--s)*210px);display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 #speech{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3}
@@ -254,7 +255,7 @@ const VW=320,VH=144,VT=210;   /* the view; VT: the height of the title's picture
 const $=s=>document.querySelector(s);
 const cv=$('#screen'),cx=cv.getContext('2d');
 cx.imageSmoothingEnabled=false;
-const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,camY:0,t:0,scene:null,
+const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,camY:0,zoom:1,zoomTo:1,t:0,scene:null,
   hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false,pc:null,invs:{},lang:'en',turn:new Map(),turnN:0};
 const OPTS_KEY='paul.opts',OPTS={mus:1,fx:1,spd:1,mov:1};   /* mov: 1 lively, 0 calm (see moves) */
 /* ============ LANGUAGES: every language is data under lang/, English as well ============ */
@@ -357,7 +358,7 @@ const F=G.flags;
 const has=id=>G.inv.includes(id);
 function flyItem(id,idx){if(G.speedAll>200||!G.room||G.scene)return;const slot=$('#inv').children[idx];if(!slot)return;
   const vr=$('#view').getBoundingClientRect(),sr=slot.getBoundingClientRect(),src=iconArt(ITEMS[id].icon||id),[c,g]=mk(48,48);g.drawImage(src,0,0);
-  const p=G.actPos||[PC().x-G.cam,PC().y-G.camY-24],sx=vr.left+clamp(p[0],12,VW-12)/VW*vr.width,sy=vr.top+clamp(p[1],12,VH-12)/VH*vr.height;
+  const z=zoomNow(),p=G.actPos||[(PC().x-G.cam)*z,(PC().y-G.camY-24)*z],sx=vr.left+clamp(p[0],12,VW-12)/VW*vr.width,sy=vr.top+clamp(p[1],12,VH-12)/VH*vr.height;
   const tx=sr.left+sr.width/2,ty=sr.top+sr.height/2,sz=sr.height*.8;
   c.className='flyitem';c.style.width=sz+'px';c.style.height=sz+'px';document.body.appendChild(c);
   tween(320,k=>{const e=1-(1-k)*(1-k),x=sx+(tx-sx)*e,y=sy+(ty-sy)*e-Math.sin(k*Math.PI)*24*ptrScale;
@@ -1296,8 +1297,11 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
    view then follows whoever is played up and down as well as across (G.camY). */
 function bake(w,fn,q,h){const[c,g]=mk(w*HR,(h||VH)*HR);g.scale(HR,HR);fn(g);g.setTransform(1,0,0,1,0,0);finish(c,g,q);return c}
 const roomH=id=>ART[id].h||VH;
+/* zoomOf: how far the view is zoomed in a room: a room seen from above may be zoomed by the player (G.zoom: two fingers, the mouse wheel,
+   + and -), every other room is seen at its own size. zoomNow: the zoom of what is shown now. */
+const zoomOf=id=>planOf(id)?G.zoom:1,zoomNow=()=>G.room&&!G.scene?zoomOf(G.room):1;
 /* camAt: where the view stands in a room when it follows someone at x, y: [across, down] */
-const camAt=(id,x,y)=>[clamp(x-160,0,ART[id].w-VW),clamp(y-VH/2-4,0,roomH(id)-VH)];
+const camAt=(id,x,y)=>{const z=zoomOf(id),w=VW/z,h=VH/z;return[clamp(x-w/2,0,Math.max(0,ART[id].w-w)),clamp(y-h/2-4/z,0,Math.max(0,roomH(id)-h))]};
 /* A room whose light changes (a lamp put out, shutters opened) names its current variant, and gets one backdrop per variant. */
 function bg(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;return BG[k]||(BG[k]=bake(a.w,g=>a.paint(g,v),a.q,a.h))}
 function fg(id){const a=ART[id];if(!a.fore)return null;return FG[id]||(FG[id]=bake(Math.round(VW+(a.w-VW)*(a.fp||1)),g=>a.fore(g),a.q))}
@@ -1310,9 +1314,10 @@ function place(a,room,x,y,dir){a.room=room;a.x=x;a.y=y;a.dir=dir||1;a.walk=null}
 /* --- script primitives --- */
 function walk(a,x,y){return new Promise(res=>{const rm=ROOMS[a.room],pl=planOf(a.room);
   /* on a plan the way runs along the lanes: route gives the points to pass, the last of them where he stops (or null: there is no way) */
-  if(pl&&!a.free){const r=pl.route(a,x,y);if(a.walk)a.walk.res(false);a.walk=null;if(!r){res(false);return}if(!r.length){res(true);return}
+  if(pl&&!a.free){const r=pl.route(a,x,y);if(a.walk)a.walk.res(false);a.walk=null;if(!r){res(false);return}if(!r.length){res(!r.partial);return}
     let rest=0;for(let i=1;i<r.length;i++)rest+=Math.hypot(r[i][0]-r[i-1][0],r[i][1]-r[i-1][1]);
-    a.walk={x:r[0][0],y:r[0][1],path:r.slice(1),rest,res};return}
+    /* partial: the way he knows does not reach the place: he goes as near as it takes him, and what was clicked is not acted on */
+    a.walk={x:r[0][0],y:r[0][1],path:r.slice(1),rest,res,partial:!!r.partial};return}
   if(a===PC()&&rm&&!a.free){const w=rm.walk;x=clamp(x,w[0],w[1]);y=clamp(y,w[2],w[3])}
   if(a.walk)a.walk.res(false);a.walk={x,y,res};if(Math.abs(x-a.x)>1)a.dir=x>a.x?1:-1})}
 /* spot: where a script may walk someone, at or near x, y: a free place in his room, clear of everybody else (and of a mate) by 14 pixels
@@ -1396,7 +1401,7 @@ const narr=(t,o)=>say(null,t,o);
 function DARK(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}
 const inDark=()=>!G.white&&(+$('#dim').style.opacity>=1||G.scene===DARK);
 function posSpeech(){if(!cur||cur.ink||cur.white)return;const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
-  if(a&&a.room===G.room&&!G.scene){el.style.left=clamp((a.x-G.cam)*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-G.camY-figBox(a.room)[1]-7),40,132)*s+'px';el.style.top=''}
+  if(a&&a.room===G.room&&!G.scene){const z=zoomNow();el.style.left=clamp((a.x-G.cam)*z*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-G.camY-figBox(a.room)[1])*z+7,40,132)*s+'px';el.style.top=''}
   else if(cur.low){el.style.left='50%';el.style.top='';el.style.bottom=7*s+'px'}   /* low: a line told over a map whose road runs along its upper edge stands at the foot of the view */
   else{el.style.left='50%';el.style.top=10*s+'px';el.style.bottom=''}}
 function lock(b){$('#panel').classList.toggle('locked',b)}
@@ -1518,7 +1523,7 @@ async function act(v,h,item){const who=PC(),o=who===P?h:(h.as&&h.as[who.id])||{}
 async function clickView(x,y,at){
   if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
   if(G.busy||G.scene||!G.room)return;audioInit();
-  const h=at||hsAt(x,y),item=G.item;let v=G.verb;G.actPos=[x-G.cam,y-G.camY];
+  const h=at||hsAt(x,y),item=G.item;let v=G.verb;G.actPos=[(x-G.cam)*zoomNow(),(y-G.camY)*zoomNow()];
   const me=PC(),pl=planOf(G.room);
   if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(me,x,y);return}
   if(v==='walk'){v=defVerb(h);if(v==='walk')v=h.exit?'exit':'look'}
@@ -1536,7 +1541,7 @@ async function clickView(x,y,at){
   me.dir=A?(A.x>me.x?1:-1):h.dir||((h.x+h.w/2)>=me.x?1:-1);if(pl)pl.face(me,A?A.x:h.x+h.w/2,A?A.y:h.y+h.h/2);
   await cut(()=>act(v,h,item))}
 const vp=$('#view');
-function evPos(e){const r=vp.getBoundingClientRect();return[(e.clientX-r.left)/r.width*VW+G.cam,(e.clientY-r.top)/r.height*VH+G.camY]}
+function evPos(e){const r=vp.getBoundingClientRect(),z=zoomNow();return[(e.clientX-r.left)/r.width*VW/z+G.cam,(e.clientY-r.top)/r.height*VH/z+G.camY]}
 /* hsOf: what a pointer event is about: the thing a pinned label names if the pointer is on a label, else whatever lies under it.
    Labels are moved apart and do not always sit on what they name, so pointing, a tap, a right-click and a double-click all ask here. */
 const hsOf=e=>{const t=e.target.closest('.tag');return t&&t.hs||hsAt(...evPos(e))};
@@ -1544,7 +1549,17 @@ vp.addEventListener('mousemove',e=>{if(G.busy||G.scene||!G.room)return;const h=h
 vp.addEventListener('mouseleave',()=>{G.hover=null;status()});
 /* A finger has no hover: as it touches the scene, the status line names what is under it and its verb lights up, as the mouse would show. */
 vp.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||G.busy||G.scene||!G.room)return;const h=hsOf(e);if(h!==G.hover){G.hover=h;status()}});
-vp.addEventListener('click',e=>{const[x,y]=evPos(e);clickView(x,y)});
+vp.addEventListener('click',e=>{if(performance.now()-pinchT<350)return;const[x,y]=evPos(e);clickView(x,y)});
+/* zoom: on a room seen from above the player zooms the view between three quarters and twice its size, with the mouse wheel, + and -, or
+   two fingers; the view keeps the one who is played in it */
+function zoomBy(f){G.zoomTo=clamp(Math.round(G.zoomTo*f*100)/100,.75,2)}
+vp.addEventListener('wheel',e=>{if(!planOf(G.room)||G.scene)return;e.preventDefault();zoomBy(e.deltaY>0?1/1.12:1.12)},{passive:false});
+const fingers=new Map();let pinch=null,pinchT=0;
+vp.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch')return;fingers.set(e.pointerId,[e.clientX,e.clientY]);
+  if(fingers.size===2&&planOf(G.room)&&!G.scene){const[a,b]=[...fingers.values()];pinch={d:Math.hypot(a[0]-b[0],a[1]-b[1])||1,z:G.zoomTo}}});
+vp.addEventListener('pointermove',e=>{if(!fingers.has(e.pointerId))return;fingers.set(e.pointerId,[e.clientX,e.clientY]);
+  if(pinch&&fingers.size===2){const[a,b]=[...fingers.values()];G.zoomTo=clamp(pinch.z*Math.hypot(a[0]-b[0],a[1]-b[1])/pinch.d,.75,2);pinchT=performance.now()}});
+for(const t of['pointerup','pointercancel'])vp.addEventListener(t,e=>{fingers.delete(e.pointerId);if(pinch&&fingers.size<2){pinch=null;pinchT=performance.now()}});
 /* Right-click looks at whatever is under the pointer, from where Paul stands; on empty ground it puts the chosen verb down. */
 vp.addEventListener('contextmenu',e=>{e.preventDefault();if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
   if(G.busy||G.scene||!G.room)return;audioInit();const h=hsOf(e);G.verb='walk';G.item=null;syncVerbs();drawInv();status();if(!h)return;
@@ -1568,19 +1583,19 @@ function tagsOn(on){if(on!=null)G.tagKey=!!on;on=!!(G.tagKey||G.tagPin||heardRoo
 function namesBtn(){const b=$('#names');b.textContent=T('NAMES');b.classList.toggle('on',!!G.tagPin);tagsOn()}
 $('#names').onclick=e=>{e.stopPropagation();audioInit();SFX.click();G.tagPin=!G.tagPin;namesBtn();tagsOn(G.tagPin)};
 function drawTags(ts){if(!G.tags)return;const act=G.room&&!G.scene&&!G.busy&&!G.skip;if(act&&ts-tagT<90)return;tagT=ts;
-  const s=vp.clientWidth/VW,cam=G.cam,cy=G.camY,list=[],put=[],fh=figBox(G.room)[1];
+  const s=vp.clientWidth/VW,cam=G.cam,cy=G.camY,list=[],put=[],fh=figBox(G.room)[1],z=zoomNow(),vw=VW/z,vh=VH/z;
   /* each label: its name, where it stands in the room, its kind, its hotspot, and where it is clicked (y in the room: a lane map is taller than the view) */
   if(act){
-    for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+VW&&a.y>cy&&a.y<cy+VH+fh)list.push([T(a.hs.name),a.x,a.y-fh-3-cy,'who',a.hs,a.y-fh/2]);
-    for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const tall=roomH(G.room)>VH,x0=Math.max(h.x,cam+4),x1=Math.min(h.x+h.w,cam+VW-4),y0=tall?Math.max(h.y,cy+2):h.y,y1=tall?Math.min(h.y+h.h,cy+VH-2):h.y+h.h;
-      if(x1>x0&&y1>y0)list.push([T(h.name),(x0+x1)/2,(y0+y1)/2-cy,h.exit?'exit':'',h,(y0+y1)/2])}}
+    for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+vw&&a.y>cy&&a.y<cy+vh+fh)list.push([T(a.hs.name),a.x,(a.y-fh-3-cy)*z,'who',a.hs,a.y-fh/2]);
+    for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const tall=roomH(G.room)>VH,x0=Math.max(h.x,cam+4/z),x1=Math.min(h.x+h.w,cam+vw-4/z),y0=tall?Math.max(h.y,cy+2/z):h.y,y1=tall?Math.min(h.y+h.h,cy+vh-2/z):h.y+h.h;
+      if(x1>x0&&y1>y0)list.push([T(h.name),(x0+x1)/2,((y0+y1)/2-cy)*z,h.exit?'exit':'',h,(y0+y1)/2])}}
   /* rebuilt only when something changed, so that a label is not replaced under the finger tapping it. What changed may be the thing
      itself and nothing that shows (a place that comes back in a later chapter keeps its names), so the hotspots are compared as well. */
-  const sig=s+'|'+cam+'|'+cy+'|'+list.map(l=>l.slice(0,4).join(',')).join('|');if(sig===tagSig&&list.every((l,i)=>l[4]===tagHs[i]))return;tagSig=sig;tagHs=list.map(l=>l[4]);tagEl.innerHTML='';
+  const sig=s+'|'+cam+'|'+cy+'|'+z+'|'+list.map(l=>l.slice(0,4).join(',')).join('|');if(sig===tagSig&&list.every((l,i)=>l[4]===tagHs[i]))return;tagSig=sig;tagHs=list.map(l=>l[4]);tagEl.innerHTML='';
   list.sort((a,b)=>a[2]-b[2]);
   for(const[name,x,y,k,h,ry]of list){const el=document.createElement('div');el.className='tag '+k;el.textContent=name;el.hs=h;tagEl.appendChild(el);
     el.onclick=e=>{e.stopPropagation();if(tagTap())clickView(x,ry,h)};
-    const w=el.offsetWidth/s,hh=el.offsetHeight/s+3,lx=clamp(x-cam,w/2+1,VW-w/2-1);let ty=clamp(y,4,VH-hh);
+    const w=el.offsetWidth/s,hh=el.offsetHeight/s+3,lx=clamp((x-cam)*z,w/2+1,VW-w/2-1);let ty=clamp(y,4,VH-hh);
     for(let n=0;n<10;n++){const hit=put.find(p=>Math.abs(p.x-lx)<(p.w+w)/2+1&&Math.abs(p.y-ty)<hh);if(!hit)break;ty=hit.y+hh}
     if(ty>VH-hh)ty=VH-hh;put.push({x:lx,y:ty,w});el.style.left=lx*s+'px';el.style.top=ty*s+'px'}}
 addEventListener('keyup',e=>{if(e.key==='Tab')tagsOn(false)});addEventListener('blur',()=>tagsOn(false));
@@ -1590,6 +1605,7 @@ addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;co
   else if(k===' '||k==='escape'||k==='.'){if(G.skip){e.preventDefault();G.skip()}
     else if(k==='escape'){if(cb.classList.contains('on'))closeCode();else if($('#menu').classList.contains('on'))closeMenu();
       else if(!$('#tablets.on')&&!G.busy&&(!G.scene||ov.classList.contains('on')))openMenu()}}
+  else if((k==='+'||k==='='||k==='-')&&planOf(G.room)&&!G.scene){e.preventDefault();zoomBy(k==='-'?1/1.25:1.25)}
   else if(k==='m')$('#mute').click();else if(k==='p')pray();else if(k==='c')swap();
   else if(k>='1'&&k<='6'){const b=document.querySelectorAll('#verbs button')[+k-1];if(b)b.click()}});
 /* --- main loop --- */
@@ -1606,11 +1622,12 @@ function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
   for(const a of Object.values(ACT)){const w=a.walk;if(!w){a.fr=a.seat?-1:0;a.gait=null;continue}
     const pl=planOf(a.room),dx=w.x-a.x,dy=w.y-a.y,d=Math.hypot(dx,dy*(pl?1:2)),v=a.speed||G.speedAll||(pl?pl.pace(a):WALK_V),sp=v*dt;
     if(d<=sp&&w.path&&w.path.length){a.x=w.x;a.y=w.y;const n=w.path.shift();w.rest-=Math.hypot(n[0]-w.x,n[1]-w.y);w.x=n[0];w.y=n[1];continue}
-    if(d<=sp){a.x=w.x;a.y=w.y;a.walk=null;a.fr=0;a.gait=null;w.res(true)}
+    if(d<=sp){a.x=w.x;a.y=w.y;a.walk=null;a.fr=0;a.gait=null;w.res(!w.partial)}
     else{const q=a.gait||(a.gait={ph:.25,gone:0}),p0=q.ph,near=Math.min(q.gone,d+(w.rest||0)-sp);a.x+=dx/d*sp;a.y+=dy/d*sp;q.gone+=sp;q.ph=(p0+sp/(pl?pl.stride(a,v):strideOf(a.look,v)))%1;
       if(pl){a.mvx=dx/d;a.mvy=dy/d}
       a.fr=4+Math.floor(q.ph*16)+16*(!pl&&Math.abs(dx)<Math.abs(dy)*2||near<4?2:near<9?1:0);
       if(a.room===G.room&&(q.ph<p0||p0<.5&&q.ph>=.5)&&ts-stepT>90){stepT=ts;SFX.step()}}}
+  if(G.zoom!==G.zoomTo){G.zoom+=(G.zoomTo-G.zoom)*Math.min(1,dt*12);if(Math.abs(G.zoomTo-G.zoom)<.004)G.zoom=G.zoomTo}
   if(G.room&&!G.scene){const[t,u]=camAt(G.room,PC().x,PC().y),k=Math.min(1,dt*5);G.cam+=(t-G.cam)*k;if(Math.abs(t-G.cam)<.5)G.cam=t;
     G.camY+=(u-G.camY)*k;if(Math.abs(u-G.camY)<.5)G.camY=u}}
 /* --- figures: each pose is drawn once into a cached sprite (dark contour, dither), then lit by the room and laid on the scene --- */
@@ -1709,15 +1726,16 @@ function drawActor(g,o,ts,id){const pl=planOf(id);if(pl)return pl.drawActor(g,o,
   figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+'f'+(o.fr<0?'s':o.fr)+'t'+talk+bow+ges+bl+'m'+mv,s=>person(s,0,0,o.look,dir,o.fr,talk,bow,ges,bl,mv))}
 function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
-  else if(G.room){const id=G.room,a=ART[id],cam=hp(G.cam),cy=hp(G.camY),f=fg(id);backdrop(cx,id,cam,cy);cx.save();cx.translate(-cam,-cy);
+  else if(G.room){const id=G.room,a=ART[id],z=zoomOf(id),cam=hp(G.cam),cy=hp(G.camY),f=fg(id);if(z!==1)cx.setTransform(HR*z,0,0,HR*z,0,0);backdrop(cx,id,cam,cy);cx.save();cx.translate(-cam,-cy);
     const q=DQ=[];a.draw(cx,ts);DQ=null;
     for(const p of props(id))q.push([p.y,()=>cx.drawImage(p.c,p.x,p.t,p.w,p.h)]);
     for(const o of Object.values(ACT))if(o.room===id)q.push([o.y,()=>drawActor(cx,o,ts,id)]);
     q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());
     cx.restore();if(f)cx.drawImage(f,-hp(cam*(a.fp||1)),0,f.width/HR,VH);
-    cx.save();cx.translate(-cam,-cy);a.front(cx,ts);cx.restore()}
+    cx.save();cx.translate(-cam,-cy);a.front(cx,ts);cx.restore();if(z!==1)cx.setTransform(HR,0,0,HR,0,0)}
   if(G.xfade){cx.save();cx.setTransform(1,0,0,1,0,0);cx.globalAlpha=G.xfade.a;cx.drawImage(G.xfade.img,0,0);cx.restore()}
   {const S=SHARED.scroll;if(S&&S.state!=='down')S.draw(ts)}
+  {const pl=!!(G.room&&!G.scene&&planOf(G.room));if(vp.plan!==pl){vp.plan=pl;vp.classList.toggle('plan',pl)}}
   posSpeech();tagsOn();drawTags(ts);requestAnimationFrame(render)}
 /* ============ GAME: items, combinations, prayer hints ============ */
 Object.assign(ITEMS,{
