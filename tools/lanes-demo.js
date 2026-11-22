@@ -33,6 +33,8 @@ TEXTS('en',14,{
   cat_look:'A cat washes itself on a wall above the crowd. It has the best seat in the city.',
   shutter_look:'From behind a shutter someone hums while kneading. The city is already going back to its day.',
   shutters_bolted_nothing_stirs:'Every shutter here is bolted, and nothing stirs behind them.',
+  packed_so_tight_nobody_gets_through:"They're packed in so tight that nobody gets through here.",
+  overturned_stall_in_the_way:"There's an overturned stall in the way.",
   kneading_behind_a_shutter_demo:'Kneading behind a shutter',
   hint_listen_demo:'Listen to the crowd. Where it grows quiet, the house is near.',
   hint_lanes_demo:'The back lanes north of the harbor road lead west, away from the crowd.',
@@ -53,6 +55,8 @@ TEXTS('de',14,{
   cat_look:'Eine Katze putzt sich auf der Mauer über der Menge. Sie hat den besten Platz der ganzen Stadt.',
   shutter_look:'Hinter einem Laden summt jemand beim Kneten. Die Stadt geht schon wieder ihrem Alltag nach.',
   shutters_bolted_nothing_stirs:'Hier sind alle Läden verriegelt, aber dahinter rührt sich nichts.',
+  packed_so_tight_nobody_gets_through:'Die stehen so dicht, dass hier keiner durchkommt.',
+  overturned_stall_in_the_way:'Da liegt ein umgestürzter Marktstand im Weg.',
   kneading_behind_a_shutter_demo:'Kneten hinter einem Laden',
   hint_listen_demo:'Hör auf die Menge. Wo es still wird, ist das Haus nah.',
   hint_lanes_demo:'Die Gassen nördlich der Hafenstraße führen nach Westen, weg von der Menge.',
@@ -120,14 +124,17 @@ const lanes=CITY.map(l=>Object.assign({},l,{pts:pts(l.pts),w:Math.round(l.w*SC)}
 const keep=KEEP.map(k=>({poly:pts(k.poly)})).concat([{poly:[0,0,OX,0,OX,H,0,H]}]);   /* and the harbor, west of the wall */
 /* the covered passages: a house over the lane, its front with an archway towards the lane it leaves */
 const bridges=Object.values(ARCH).map(([x,y0,y1])=>({x:X(x)-7,y:Y(y0),w:15,d:Math.round(Y(y1)-Y(y0)),H:13,gap:[X(x)-4,X(x)+4]}));
-/* the houses as large against the people as the oblique prototype's were: few flat roofs, most ridges running east and west.
-   PREVIEW (to be removed once the maintainer has chosen): ?houses=small on the demo page builds them as before, for comparison */
-const SMALL=typeof location!=='undefined'&&/[?&]houses=small/.test(location.search);
+/* blocker: a rectangle of the plan on the map, with the line that says what it is */
+const blocker=(b,say)=>{const[x,y,w,h]=box(b);return{x,y,w,h,say}};
 /* in the uproar, narrow streets packed with people who cannot get through themselves: on the runner's straight way west, on the street
    below the house, and on the street from the north quarter down to the harbor street; he has to go round */
-const JAMS=[[378,112,26,12,'E'],[178,68,26,12,'E'],[222,82,16,26,'S']].map(([x,y,w,h,face])=>({x:X(x),y:Y(y),w:q(w),h:q(h),face}));
-const M=L.make('lanes14',{w:W,h:H,seed:1414,lot:SMALL?25:38,door:SMALL?2:3,win:SMALL?2:3,winH:SMALL?2.5:3,doorH:SMALL?7:8,flat:SMALL?.1:.05,ew:SMALL?.85:.6,grid:true,
+const JAMS=[[378,112,26,12,'E'],[178,68,26,12,'E'],[222,82,16,26,'S']].map(([x,y,w,h,face])=>({x:X(x),y:Y(y),w:q(w),h:q(h),face,say:'packed_so_tight_nobody_gets_through'}));
+/* the houses as large against the people as the oblique prototype's were, with wider doors and windows; few flat roofs, most ridges
+   running east and west (the maintainer's choice of 2026-11-22) */
+const M=L.make('lanes14',{w:W,h:H,seed:1414,lot:38,door:3,win:3,winH:3,doorH:8,flat:.05,ew:.6,grid:true,
   jams:{surge:JAMS},lanes,open,keep,bridges,
+  /* after the uproar, what blocks a way says what it is when Paul comes up against it: a barred gate, an overturned stall */
+  obstacles:{quiet:GATES.map(b=>blocker(b,'gate_shut_look_demo')).concat([blocker(DOWN.reduce((a,b)=>[Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[0]+a[2],b[0]+b[2])-Math.min(a[0],b[0]),Math.max(a[1]+a[3],b[1]+b[3])-Math.min(a[1],b[1])]),'overturned_stall_in_the_way')])},
   solid:STALLS.slice(0,11).map(box),block:{surge:STALLS.slice(11).map(box),quiet:GATES.concat(DOWN).map(box)},
   variant:V,targets:{house:[X(HOUSE[0]),Y(HOUSE[1])],gate:[X(GATE[0]),Y(GATE[1])]},
   pace:a=>a===RUN?'run':'walk',

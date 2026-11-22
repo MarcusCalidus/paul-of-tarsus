@@ -561,6 +561,10 @@
     {const way=()=>{const r=M.route(R,...D.targets.house,true);if(!r)return 0;let len=0,x=R.x,y=R.y;for(const[a,b]of r){len+=Math.hypot(a-x,b-y);x=a;y=b}return len},js=D.jams.surge;
       place(R,'lanes14',...C.ent.lanes14);const with_=way(),jp=M.J.surge.length,blocked=js.every(j=>!M.walkable(j.x+j.w/2,j.y+j.h/2));D.jams.surge=[];M.G={};const without=way();D.jams.surge=js;M.G={};
       ok(jp>30&&blocked&&with_>without+20&&!(D.jams.quiet||[]).length,'in the uproar '+js.length+' narrow streets are jammed by '+jp+' people who cannot get through: the way to the house is '+Math.round(with_)+' pixels, where it would be '+Math.round(without)+'; after it, none')}
+    /* what blocks the way says what it is: a click on a jam stops the runner before it, and he says why nobody gets through */
+    const heardAt=async(a,from,to)=>{const s0=window.say,heard=[];window.say=(b,t,o)=>{heard.push(t);return s0(b,t,o)};const cr=D.crowd;D.crowd={};M.said=null;
+      place(a,'lanes14',...from,-1);viewOf(a);await wait(120);walk(a,...to);for(let i=0;i<160&&a.walk;i++)await wait(25);await wait(150);await idle();window.say=s0;D.crowd=cr;return heard};
+    {const h=await heardAt(R,A(420,118),A(391,118));ok(h.includes('packed_so_tight_nobody_gets_through'),'walking up to a jam, the runner says that nobody gets through ('+h.join(', ')+')')}
     /* the house is reached only through its covered passage: the way to it runs under the house built over the lane */
     {const b=D.bridges[0],r=M.route(R,...D.targets.house,true);let under=false,x=R.x,y=R.y;for(const[a,c]of r){for(let t=0;t<=1;t+=.05){const px=x+(a-x)*t,py=y+(c-y)*t;if(px>=b.x&&px<b.x+b.w&&py>=b.y&&py<b.y+b.d)under=true}x=a;y=c}
       ok(D.bridges.length===3&&under,'the house is reached through a covered passage, and two quiet courts the same way')}
@@ -577,6 +581,8 @@
     {const way=()=>{const r=M.route(P,...D.targets.gate);if(!r)return 0;let len=0,x=P.x,y=P.y;for(const[a,b]of r){len+=Math.hypot(a-x,b-y);x=a;y=b}return len};
       const len=way(),blk=D.block.quiet;D.block.quiet=[];M.G={};const direct=way();D.block.quiet=blk;M.G={};
       ok(len>direct*2,'with streets shut and the harbor street blocked, the way to the harbor gate is '+Math.round(len)+' pixels, where it would be '+Math.round(direct))}
+    {const h1=await heardAt(P,A(110,196),A(72,196)),h2=await heardAt(P,A(50,140),A(50,169));
+      ok(h1.includes('overturned_stall_in_the_way')&&h2.includes('gate_shut_look_demo'),'after the uproar Paul says what blocks his way: an overturned stall ('+h1.join(', ')+'), a barred gate ('+h2.join(', ')+')')}
     if(stop==='lanes2'){G.speedAll=0;place(P,'lanes14',...A(30,200),-1);viewOf(P);await wait(300);paintPointer(...A(3,190));halt('lanes2')}
     const code=makeCode();ok(decode(code)&&decode(code).ch===14,'the safe-point code holds the quiet pass: '+code);
     {const h=ROOMS.lanes14.hs.filter(h=>h.name==='shutter_demo'&&h.vis&&h.vis())[0];view(h.x+h.w/2,h.y+h.h/2);await idle()}ok(treasures().has(14),'the shutter at the end of the little lane is the hidden treasure of the demo');

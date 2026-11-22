@@ -34,8 +34,10 @@
                      source with doors:[x, y] and r sends them out of the doors of the houses within r of that place, never out of a house
                      whose shutters are bolted (cue), and the door stands open behind each for a moment
        zones         [{x, y, w, h, enter()}]: places the chapter is told of when whoever is played walks into them (a court, say)
-       jams          {variant: [{x, y, w, h, face}]}: narrow streets packed with people who cannot get through themselves; nobody passes
-                     them, and whoever is played stops before one (press is called, as when the crowd presses him back)
+       jams          {variant: [{x, y, w, h, face, say}]}: narrow streets packed with people who cannot get through themselves; nobody
+                     passes them
+       obstacles     {variant: [{x, y, w, h, say}]}: what blocks a way in a variant (a gate, an overturned stall), with the line that says
+                     what it is; whoever is played says it when he stops before it, as he does before a jam
        flat, ew      how often a roof is flat (0.1), and how wide a house must be against its depth for its ridge to run east and west (0.85)
        targets       {name:[x, y]}: places whose distance along the lanes the chapter asks for (dist), as the sound does
        pace(a)       'run' or 'walk', for whoever is played; press(): someone was pressed back by the crowd (the chapter may say so)
@@ -484,13 +486,13 @@ function make(id,def){
   /* route: the points to pass on the way to x, y; the way ends where x, y is, or on the walkable place nearest to it that can be reached.
      Whoever is played, when the player clicks, goes only by the lanes he knows: where none of them leads to x, y, he goes as near to it as
      they take him, and the way is partial (the engine then does not act on what was clicked). A script, or all, takes every lane. */
-  M.route=(a,x,y,all)=>{const Q=g();if(!all&&a===PC()&&!G.busy)M.toJam=jamsOf(def,vNow()).some(j=>x>=j.x-2&&x<=j.x+j.w+2&&y>=j.y-2&&y<=j.y+j.h+2);let s=cOf(Q,a.x,a.y);if(!Q.cell[s])s=nearest(Q,a.x,a.y);if(s<0)return null;const cp=Q.comp[s];
+  M.route=(a,x,y,all)=>{const Q=g(),mine=!all&&a===PC()&&!G.busy;if(mine)M.want=null;let s=cOf(Q,a.x,a.y);if(!Q.cell[s])s=nearest(Q,a.x,a.y);if(s<0)return null;const cp=Q.comp[s];
     let t=cOf(Q,x,y),exact=Q.cell[t]&&Q.comp[t]===cp;if(!exact){t=nearest(Q,x,y,cp);if(t<0)return null}
     let kn=null,partial=false;
     if(!all&&!M.seeAll&&a===PC()&&!G.busy){kn=known(Q);kn[s]=1;const r=reach(Q,s,kn);
       if(!r[t]){const far=steps(Q,s,kn);let best=-1,bd=1e9;for(let i=0;i<r.length;i++)if(r[i]){const[px,py]=cXY(Q,i),dd=Math.hypot(px-x,py-y)+far[i]*CS*.4;if(dd<bd){bd=dd;best=i}}
         if(best<0)return null;t=best;exact=false;partial=true}}
-    const end=exact?[x,y]:cXY(Q,t);
+    const end=exact?[x,y]:cXY(Q,t);if(mine)M.want={x,y,short:!exact||partial};
     if(s===t){const r=Math.hypot(end[0]-a.x,end[1]-a.y)<.5?[]:[end];r.partial=partial;return r}
     const p=astar(Q,s,t,kn);if(!p)return null;const pts=p.map(c=>cXY(Q,c));pts[pts.length-1]=end;
     /* string-pulling: from where he is, go straight to the farthest point that a straight line reaches */
@@ -568,14 +570,19 @@ function make(id,def){
     if(w){w.res(false)}pc.walk={x:px,y:py,path:[],rest:0,res:()=>{}};pc.pushed=1;M.pushT=.5;
     if(def.press&&M.t-M.pressT>7){M.pressT=M.t;def.press()}}
   /* keys: the arrow keys or W A S D steer whoever is played on the map, a few steps at a time, sliding along a wall */
-  /* jammed: he walked up to a jam, or steers into one, and has stopped before it */
-  function jammed(){const pc=PC();if(pc.room!==id)return;const was=M.wasWalking;M.wasWalking=!!pc.walk;
-    const near=jamsOf(def,vNow()).some(j=>pc.x>=j.x-5&&pc.x<=j.x+j.w+5&&pc.y>=j.y-5&&pc.y<=j.y+j.h+5);
-    if(near&&def.press&&M.t-M.pressT>7&&(was&&!pc.walk&&M.toJam||M.keys.size&&!pc.walk)){M.toJam=false;M.pressT=M.t;def.press()}}
+  /* stopped: whoever is played has stopped before something that blocks his way (def.obstacles of the variant, and its jams), because a
+     click could not take him where it was meant to, or because he steers into it: he says what it is (its say), once each time he comes
+     up to it. A click past it that a way round reaches needs no word: the way is not blocked. */
+  const obstaclesOf=v=>((def.obstacles&&def.obstacles[v])||[]).concat(jamsOf(def,v)).filter(o=>o.say);
+  function stopped(){const pc=PC();if(pc.room!==id)return;const was=M.wasWalking;M.wasWalking=!!pc.walk;if(G.busy||G.scene)return;
+    const short=was&&!pc.walk&&M.want&&M.want.short,steer=M.keys.size&&!pc.walk&&M.steerFail;
+    const near=obstaclesOf(vNow()).find(o=>pc.x>=o.x-9&&pc.x<=o.x+o.w+9&&pc.y>=o.y-9&&pc.y<=o.y+o.h+9);
+    if(M.said&&(!near||near!==M.said)&&Math.hypot(pc.x-M.saidAt[0],pc.y-M.saidAt[1])>24)M.said=null;
+    if(!near||!(short||steer)||M.said===near)return;M.want=null;M.said=near;M.saidAt=[pc.x,pc.y];cut(()=>say(pc,near.say))}
   function steer(){const pc=PC();if(pc.room!==id||!M.keys.size||G.busy||G.scene||M.pushT>0)return;
     const k=M.keys;let x=(k.has('right')?1:0)-(k.has('left')?1:0),y=(k.has('down')?1:0)-(k.has('up')?1:0);if(!x&&!y)return;const L=Math.hypot(x,y);x/=L;y/=L;
     const Q=g(),ok=(dx,dy)=>clear(Q,pc.x,pc.y,pc.x+dx*6,pc.y+dy*6);let dx=x,dy=y;
-    if(!ok(dx,dy)){if(x&&ok(Math.sign(x),0)){dx=Math.sign(x);dy=0}else if(y&&ok(0,Math.sign(y))){dx=0;dy=Math.sign(y)}else return}
+    M.steerFail=false;if(!ok(dx,dy)){if(x&&ok(Math.sign(x),0)){dx=Math.sign(x);dy=0}else if(y&&ok(0,Math.sign(y))){dx=0;dy=Math.sign(y)}else{M.steerFail=true;return}}
     const w=pc.walk;if(w&&!w.key)w.res(false);pc.walk={x:pc.x+dx*6,y:pc.y+dy*6,path:[],rest:0,key:1,res:w&&w.key?w.res:()=>{}};G.hover=null}
   /* zones: places the chapter wants to know about when whoever is played walks into them (def.zones: [{x, y, w, h, enter()}]) */
   function zones(){const pc=PC();for(const z of def.zones||[]){const inz=pc.room===id&&pc.x>=z.x&&pc.x<z.x+z.w&&pc.y>=z.y&&pc.y<z.y+z.h;
@@ -593,7 +600,7 @@ function make(id,def){
     for(const s of S){let to=1;if(inn&&pc.x+3>s.X0&&pc.x-3<s.X1+1&&pc.y>s.T&&pc.y<s.B+1)for(const st of s.strips)if(pc.y<st.front+.5&&pc.y>st.top&&pc.x+3>st.x0&&pc.x-3<st.x1+1){to=FADE;break}
       s.alpha+=(to-s.alpha)*k;if(Math.abs(to-s.alpha)<.01)s.alpha=to}}
   M.tick=(dt,ts)=>{const v=vNow();if(M.warm!==v){M.reset();M.warm=v;sprites(M,v);M.dustOn=!!(crowdDef()&&crowdDef().dust);if(crowdDef()){for(let i=0;i<300;i++){M.t+=.1;step(.1)}}}
-    M.t+=dt;step(dt);press(dt);steer();jammed();zones();look(dt);fades(dt)};
+    M.t+=dt;step(dt);press(dt);steer();stopped();zones();look(dt);fades(dt)};
 
   /* --- drawing --- */
   const facingOf=o=>{if(o.walk&&!o.pushed&&o.mvx!=null){const x=o.mvx,y=o.mvy;return Math.abs(y)>Math.abs(x)*1.15?(y<0?'N':'S'):x<0?'W':'E'}
