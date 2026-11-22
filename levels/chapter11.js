@@ -687,7 +687,7 @@ async function sift(w){const st=h11(),who=w==='s'?PH:AN,done=w==='s'?F.stoic:F.e
   if(done)return say(who,w==='s'?'you_wrote_down_one_line':'one_sentence');
   for(;;){const heard=[...st[w+'h']].sort(),opts=heard.map(i=>SAYS[w][i].q).concat(heard.length<4?['listen_a_while_longer']:[],['leave_it_for_now']);
     await say(P,heard.length?'which_of_his_sayings_can':'i_have_not_heard_him_out_yet',TH);
-    const c=await choose(opts);if(c===opts.length-1)return;if(c>=heard.length){await hearNext(w);continue}
+    const c=await choose(opts,{keep:opts.length-heard.length});if(c===opts.length-1)return;if(c>=heard.length){await hearNext(w);continue}
     const sy=SAYS[w][heard[c]];if(!sy.ok){await say(P,sy.no,TH);continue}
     if(w==='s'){await say(P,'we_too_are_his_children_said',TH);F.stoic=1;addItem('g11line');SFX.good();
       if(all5())await say(P,'altar_a_temple_a_dish_a_block',TH)}

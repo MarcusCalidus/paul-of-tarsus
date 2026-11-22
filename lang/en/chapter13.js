@@ -80,6 +80,7 @@ TEXTS('en',13,{
   "that_he":"And that. He's left nothing of it out.",
   "of_that_he_has_said_nothing_yet":"He hasn't said anything about that yet. Listen: what was this about?",
   "no_that_was":"No. That wasn't what this was about.",
+  "we_have_that_one_already":"We've got that one already. This was something else.",
   "not_one_wrong_word":"Not one wrong word. I listened for one.",
   "nor_did_i_hear_one":"Nor did I hear one. And yet the tablets aren't full. Look at them, Aquila.",
   "peace_friends":"Peace, friends. You listened closely: I saw the two of you with your tablets.",

@@ -55,7 +55,10 @@
     language. Acts 13:9 falls in Chapter Four's finale, after its last puzzle, so every prayer up to the end of Chapter Four says Saul. */
  const prayLine=(h,nm)=>PRAYERS.some(l=>h===T(l,{name:T(nm)})),prayName=[],nameNow=()=>G.ch<=4?'Saul':'Paul';
  new MutationObserver(m=>m.forEach(r=>r.addedNodes.forEach(n=>{if(PC()===P)for(const nm of['Saul','Paul'])if(prayLine(n.textContent,nm))prayName.push([G.ch,nameNow(),nm])}))).observe($('#speech'),{childList:true});
- const choose=async i=>{const b=document.querySelectorAll('#choices button');b[i<0?b.length+i:i].click();await idle()};
+ /* choose: the line that stands at place i of the choice as the level gives it (from the end if i<0), wherever it is shown */
+ const choose=async i=>{const b=[...document.querySelectorAll('#choices button')],j=i<0?b.length+i:i;b.find(x=>+x.dataset.i===j).click();await idle()};
+ /* a choice is mixed by its keys, never by a line put together in the player's language: that would mix it differently in each language */
+ const unkeyed=new Set();{const c0=window.choose;window.choose=function(opts,o){if(!(o&&o.order))for(const k of(o&&o.by)||opts)if(MADE.has(k)&&textOf('en',k)==null)unkeyed.add(G.ch+': '+k);return c0.apply(this,arguments)}}
  /* Pray to Jehovah is the hint system, and it never changes the game's state (CONTRIBUTING section 2). Every prayer of the playthrough is
     held to that: the flags, what everyone carries and the room are noted as a prayer begins, and compared at the check that follows it. */
  /* depth (CONTRIBUTING section 4): seen() stands Paul at a place in the room and returns a number for the picture inside a small box [x,y,w,h]; the
@@ -1026,7 +1029,7 @@
   halt('journey7',()=>{ov.className=''});halt('final7')};
   if(C7){await ch7();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ---------------- Chapter Eight ---------------- */
   /* Chapter Eight stops start Chapter Eight from the title screen. Like Chapter Seven's, its test is a function of its own: the full run
      calls it when Chapter Seven has ended, and a Chapter Eight stop calls it at once. all8 halts nowhere. */
@@ -1236,7 +1239,7 @@
   halt('journey8',()=>{ov.className=''});halt('final8')};
   if(C8){await ch8();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* Chapter Nine stops start Chapter Nine from the title screen. Like the two before it, its test is a function of its own: the full run
      calls it when Chapter Eight has ended, and a Chapter Nine stop calls it at once. all9 halts nowhere. The scenes that are told and
      not played (the marketplace, the dark screen, the earthquake, the jailer's house) each have a stop of their own. */
@@ -1381,7 +1384,7 @@
   halt('map9',()=>{ov.className=''});halt('final9')};
   if(C9){await ch9();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ---------------- Chapter Ten ---------------- */
   /* Chapter Ten stops start Chapter Ten from the title screen. Its test is a function of its own: the full run calls it when Chapter Nine
      has ended, and a Chapter Ten stop calls it at once. all10 halts nowhere. The stops that begin with "p" open one room at once, with the
@@ -1587,7 +1590,7 @@
   halt('final10')};
   if(C10){await ch10();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ---------------- Chapter Eleven ---------------- */
   /* Chapter Eleven stops start Chapter Eleven from the title screen. Its test is a function of its own: the full run calls it when Chapter
      Ten has ended, and a Chapter Eleven stop calls it at once. all11 halts nowhere. The stops that begin with "p" open one room at once, with
@@ -1821,7 +1824,7 @@
   halt('final11')};
   if(C11){await ch11();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ---------------- Chapter Twelve ---------------- */
   /* Chapter Twelve stops start Chapter Twelve from the title screen. Its test is a function of its own: the full run calls it when Chapter
      Eleven has ended, and a Chapter Twelve stop calls it at once. all12 halts nowhere. The stops that begin with "p" open one room at once,
@@ -2182,7 +2185,9 @@
     await pickQ('that_is_not_how_we_were');ok(nq()===6&&said('they_agree'),'a doubt is asked as a question, and answered from the scroll: the same thing, in better words');
     await pickQ(HD[1].q);ok(nq()===6&&said('no_that_was'),'nor another one of them');
     await pickQ(HD[0].q);ok(!F.apo&&G.ap13.t.length===1&&said('that_one_said'),'the first note is his too');
-    for(let i=1;i<4;i++){heard.length=0;actor('talk',AO);await until(()=>nq()>0);ok(nq()===6-i&&said(HD[i].say[0]),'he goes on: '+HD[i].k);await pickQ(HD[i].q)}
+    for(let i=1;i<4;i++){heard.length=0;actor('talk',AO);await until(()=>nq()>0);ok(nq()===6&&said(HD[i].say[0]),'he goes on: '+HD[i].k+', and all five notes are still there to choose from');
+      if(i===1){await pickQ(HD[0].q);ok(nq()===6&&G.ap13.t.length===1&&said('we_have_that_one_already'),'a note that is marked already is not this one either')}
+      await pickQ(HD[i].q)}
     await until(()=>F.apo&&!G.busy);ok(F.apo&&!F.gap&&said('not_one_wrong_word')&&said('nor_did_i_hear_one'),'he has said four of the five, and not a word of it was wrong');
     halt('heard13');
     const el=await tabs13(),pre=T('heard_from_apollos_too_p',{p:'\u0001'}).split('\u0001')[0];
@@ -2411,10 +2416,10 @@
   };
   if(C13){await ch13();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(C12){await ch12();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(!C3&&!C4&&!C5&&!C6&&!HUB){
   /* Prologue ("The Road to Damascus"): only when stop==='all', test skipping the whole prologue with SKIP, then playing the whole prologue through into Chapter One */
   if(stop==='all'){
@@ -2535,6 +2540,17 @@
     /* names are shown only while the player can act: not during a menu of questions, behind the safe-point box, or on a dark screen */
     {const p=cut(()=>window.choose(['i_must_get_to_work']));await wait(250);ok($('#choices').classList.contains('on')&&$('#tags').classList.contains('on')&&!count(),'the names step aside for a menu of questions');
       document.querySelector('#choices button').click();await p;await wait(250);ok(count()===all,'and come back after it')}
+    /* where a line stands never tells which is right (CONTRIBUTING section 2): the lines of a choice are shown in the order of their keys' rank,
+       the others keep their order when one drops out, a line kept at the end stays there, a menu of questions is shown as given, and what
+       comes back is the line's place as the level gives it */
+    {const ks=['tell_me_the_plan_once_more','why_do_you_risk_so_much','what_of_the_soldiers','what_will_we_need'],want=ks.slice().sort((a,b)=>mixRank(a)-mixRank(b)),
+       shown=()=>[...document.querySelectorAll('#choices button')].map(b=>b.dataset.src),press=i=>document.querySelectorAll('#choices button')[i].click();
+     let p=window.choose(ks);const a=shown();press(2);const r=await p;
+     p=window.choose(ks.filter(k=>k!==a[0]));const b=shown();press(0);await p;
+     p=window.choose(ks.slice(1).concat(ks[0]),{keep:1});const c=shown();press(0);await p;
+     p=window.choose(ks,{order:1});const d=shown();press(0);await p;
+     ok(a.join()===want.join()&&a.join()!==ks.join()&&r===ks.indexOf(a[2])&&b.join()===a.slice(1).join()&&c[3]===ks[0]&&d.join()===ks.join(),
+       'the lines of a choice are mixed by their keys, keep their order when one drops out, and a kept line and a menu of questions stay as given')}
     $('#code').click();await wait(250);ok(cb.classList.contains('on')&&!count(),'the names step aside for the safe-point box');closeCode();await wait(250);ok(count()===all,'and come back after it');
     /* through the door by its name: a double-click on it skips the walk, the screen goes dark without names, and the street has its own */
     {const e0=enterRoom;let dark=-1;window.enterRoom=function(){dark=count();return e0.apply(this,arguments)};
@@ -3386,7 +3402,7 @@
    ok(prayName.length>0&&!wrong.length,prayName.length+' prayers of Paul name him as the narration does: Saul before Acts 13:9, Paul from there on'+(wrong.length?'. WRONG: '+wrong.slice(0,6).map(([c,w,nm])=>'chapter '+c+' says '+nm+', wanted '+w).join(' | '):''))}
   /* the narrator's scroll: every line of narration told in the dark was read from it, and it is down again at the end */
   ok(inked>=80&&SHARED.scroll&&SHARED.scroll.state==='down'&&!SHARED.scroll.over.length,inked+' lines of narration were told in the dark, and each was read from the scroll');
-  talked();fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
+  ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
   L('DONE');
  }catch(e){if(e!=='halt')L('ERR '+(e&&e.message||e))}})();
 })();

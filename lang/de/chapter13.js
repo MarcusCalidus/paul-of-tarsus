@@ -91,6 +91,7 @@ TEXTS('de',13,{
   "that_he":["Und der. Er hat nichts davon ausgelassen.","0azq1fg"],
   "of_that_he_has_said_nothing_yet":["Davon hat er noch nichts gesagt. Hör hin: Worum ging es eben?","0p7cn7w"],
   "no_that_was":["Nein. Darum ging es eben nicht.","1e4051z"],
+  "we_have_that_one_already":["Den haben wir schon angezeichnet. Das eben war etwas anderes.","1q2stmw"],
   "not_one_wrong_word":["Nicht ein falsches Wort. Ich habe auf eines gewartet.","1su6ujz"],
   "nor_did_i_hear_one":["Ich habe auch keines gehört. Und doch sind die Tafeln nicht voll. Sieh sie dir an, Aquila.","11vapug"],
   "peace_friends":["Friede, Freunde. Ihr habt genau zugehört: Ich habe euch beide mit euren Tafeln gesehen.","1lyt99b"],

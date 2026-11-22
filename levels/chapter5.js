@@ -370,8 +370,9 @@ const BARN5={noCraft:'that_is_the_tentmakers_trade_not_mine',
 /* go5: through a door. The two men keep together, so the other follows. */
 async function go5(room,x,y,dir){SFX.door();await fade(1);enterRoom(room,x,y,dir);place5(room);place(other(),room,x-dir*26,y+3,dir);await fade(0)}
 /* ask: a question put to whoever is played, with three answers. A reply may come from anyone present: r lists lines, or [actor, line] pairs. */
+/* ask: someone asks, and the player answers from opts; k: the key to mix an answer by when its line is put together from parts (choose) */
 async function ask(me,who,q,opts){let av=opts.slice();
-  for(;;){await say(who,q);const o=av[await choose(av.map(o=>o.q))];for(const l of o.p||[o.q])await say(me,l);
+  for(;;){await say(who,q);const o=av[await choose(av.map(o=>o.q),{by:av.map(o=>o.k||o.q)})];for(const l of o.p||[o.q])await say(me,l);
     for(const x of o.r)await(Array.isArray(x)?say(x[0],x[1]):say(who,x));if(o.ok)return;av=av.filter(x=>x!==o)}}
 /* mendSandal: Barnabas's strap, parted on the roads of Cyprus, gets a new thong before the climb. */
 async function mendSandal(it){if(!inPerga()||F.shod||!['thong','awl','thread'].includes(it))return false;
@@ -691,9 +692,9 @@ async function synDoor(){const me=PC();
   return sabbath2()}
 /* think: Paul weighs what to say next. A choice that would not serve his hearers is set aside in thought, and never spoken. */
 async function think(q,opts){let av=opts.slice();
-  for(;;){await say(P,q,TH);const o=av[await choose(av.map(o=>o.q))];if(o.ok)return;await say(P,o.no,TH);av=av.filter(x=>x!==o)}}
+  for(;;){await say(P,q,TH);const o=av[await choose(av.map(o=>o.q),{by:av.map(o=>o.k||o.q)})];if(o.ok)return;await say(P,o.no,TH);av=av.filter(x=>x!==o)}}
 /* passages: the choices for one point of the talk, from the passages named; ok lists those that carry the point */
-const passages=(ks,ok)=>ks.map(k=>ok.includes(k)?{q:label(k),ok:1}:{q:label(k),no:NOT[k]});
+const passages=(ks,ok)=>ks.map(k=>ok.includes(k)?{q:label(k),k,ok:1}:{q:label(k),k,no:NOT[k]});
 const NOT={isa55:'loyal_love_promised_to_david',ps16:'not_abandoned_to_the_grave_said',
   hab1:'warning_comes_last_if_it',isa56:'that_is_for_a_man_who_thinks',isa49:'light_of_nations_not'};
 /* The first Sabbath (Acts 13:14-43). They take a seat and wait to be asked; then Paul chooses whom he addresses, and the passages he quotes. */
@@ -849,9 +850,9 @@ async function sabbath2(){playAs(P);await fade(1,500);G.crowd=1;AU.mood='tense';
   await say(HA,'greeks_on_the_steps_of_the_house');
   await say(HA,'he_fetches_them_here_in_a_week');
   await narr('sight_of_the_crowds_acts_13_45',{dur:9000});
-  await ask(P,HA,'promises_were_given_to_israel',TALK.map(k=>k==='isa49'?{q:label(k),ok:1,
+  await ask(P,HA,'promises_were_given_to_israel',TALK.map(k=>k==='isa49'?{q:label(k),k,ok:1,
       p:['it_is_written_in_isaiah'],r:['light_of_you']}
-    :{q:label(k),p:[quote(k)],r:[WRONG[k]]}));
+    :{q:label(k),k,p:[quote(k)],r:[WRONG[k]]}));
   await narr('paul_and_barnabas_answered_them_boldly_acts_13_46',{dur:5000});
   await say(P,'word_of_god_had_acts_13_46');
   await say(BN,'now_we_go_to_the_nations_acts_13_46');

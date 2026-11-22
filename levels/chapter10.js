@@ -776,7 +776,7 @@ const MSG=[{k:'who',q:'it_is_for_silas_and_timothy',need:1},{k:'what',q:'they_ar
   {k:'greet',q:'greet_eupolemos_dorotheos'},{k:'tell',q:'tell_the_brothers_in_thessalonica'}];
 async function message(){if(F.msg)return;const got=new Set();
   await say(P,'it_has_to_cross_the_sea',TH);
-  for(;;){const av=MSG.filter(m=>!got.has(m.k)),i=await choose(av.map(m=>m.q).concat(got.size?['that_is_the_whole_message']:[]));
+  for(;;){const av=MSG.filter(m=>!got.has(m.k)),i=await choose(av.map(m=>m.q).concat(got.size?['that_is_the_whole_message']:[]),{keep:got.size?1:0});
     if(i<av.length){got.add(av[i].k);await say(P,av[i].q);continue}
     const miss=MSG.find(m=>m.need&&!got.has(m.k));
     if(miss){await say(E1,miss.k==='who'?'for_whom_is_it_paul':miss.k==='what'?'what_are_they_to_do':'when_when_the_brothers');continue}

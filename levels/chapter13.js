@@ -825,17 +825,18 @@ async function toSyn(){const pc=PC();
 async function synEnter(){
   if(PC()!==P){if(!G.s13){G.s13=1;await tell('v25');await tell('v26a');await say(AP,'he_holds_the_whole_house',TH);await say(PR,'have_the_tablets_ready')}return}
   if(!F.syn)return threeMonths()}
-/* listen: Apollos says the next part of what he has to say, and the two decide which of their notes it was */
+/* listen: Apollos says the next part of what he has to say, and the two decide which of their notes it was. Every note stays on
+   offer, those already ticked as well, so that the last of them is still a choice among five. */
 async function listen(){if(PC()===P)return;const st=ticked();
   if(F.gap)return say(AO,'after_sundown_then');
   if(F.apo)return gap();
   const h=HEARD[st.i];for(const s of h.say)await say(AO,s,{to:null});
-  let av=HEARD.filter(x=>!st.t.includes(x.k));
-  for(;;){await say(PR,'which_of_ours_was_that',TH);const pick=av[await choose(av.map(x=>x.q).concat(['that_is_not_how_we_were']))];
+  const av=HEARD;
+  for(;;){await say(PR,'which_of_ours_was_that',TH);const pick=av[await choose(av.map(x=>x.q).concat(['that_is_not_how_we_were']),{keep:1})];
     if(!pick){await say(AP,'brother_a_question_if_the_house');
       await say(AO,'ask_whenever_you_like_that_is');await say(PR,'they_agree');continue}
     if(pick.k===h.k){st.t.push(h.k);st.i++;SFX.pick();await say(PR,['that_one_said','yes_word_for_word_what','that_one_too','that_he'][st.i-1]);break}
-    await say(PR,pick.k==='name'?'of_that_he_has_said_nothing_yet':'no_that_was')}
+    await say(PR,st.t.includes(pick.k)?'we_have_that_one_already':pick.k==='name'?'of_that_he_has_said_nothing_yet':'no_that_was')}
   if(st.i<4)return;F.apo=1;codeBtn();await say(AP,'not_one_wrong_word');
   await say(PR,'nor_did_i_hear_one')}
 /* gap: what is missing is found: not an error, but a thing that was not said */
