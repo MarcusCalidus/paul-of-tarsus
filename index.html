@@ -813,6 +813,48 @@ function clothRoll(g,x,y,w,h,c,o){o=o||{};const near=o.near||-1,rx=h*(o.k||.28),
   if(rx*.58>=1.3){g.strokeStyle=tint(c,-.3);g.lineWidth=.5;g.beginPath();g.ellipse(xn,cy,rx*.58,ry*.58,0,.6,6);g.stroke()}
   R(g,xn-.5,cy-.5,1,1,tint(c,-.45))}
 function cypress(g,x,y,h,c){c=c||'#3f5a3a';R(g,x-.5,y-3,1.2,3,'#3a2a1c');oval(g,x,y-h/2-1,h*.17+1.2,h/2,tint(c,-.25));oval(g,x-.7,y-h/2-2,h*.12+.8,h/2-2,c);oval(g,x-1.2,y-h*.62,h*.06+.5,h*.25,tint(c,.2))}
+/* pine: a pine of the mountains, its foot at x,y, h tall, as such pines grow out of rock: a trunk that leans and bends, a few boughs
+   that climb from it, never level and never two at one height, and the needles in clumps at their ends, the widest on top, lit
+   from the upper left. Where it stands decides its shape, so no two are alike. c: the green of its needles; o.lean (-1..1) sets the lean,
+   o.shade:false leaves out its shadow on the rock behind. */
+function pine(g,x,y,h,c,o){o=o||{};c=c||'#3c5a44';if(h<12)return farPine(g,x,y,h,c);const r=rng(Math.round(x*131+y*71+h*17)+7),
+  lean=o.lean!=null?o.lean:(r()-.5)*.7,tw=Math.max(.9,h*.07),
+  tx=x+lean*h*.4,ty=y-h*.84,mx=x-lean*h*.22+(r()-.5)*h*.14,my=y-h*.36,
+  at=t=>{const u=1-t;return[u*u*x+2*u*t*mx+t*t*tx,u*u*y+2*u*t*my+t*t*ty]},
+  bark='#3a2e2a',barkL='#6c5242',dk=tint(c,-.36),k=h/20;
+  /* the boughs, and a clump of needles at the end of each */
+  const n=Math.max(2,Math.min(4,Math.round(h/8))),pads=[],boughs=[];let side=r()<.5?-1:1;
+  for(let i=0;i<n;i++){const t=.3+i*(.5/n)+r()*.04,[bx,by]=at(t),L=h*(.15+.12*r())*(1-t*.3),ex=bx+side*L,ey=Math.min(by-L*.55,(pads.length?pads[pads.length-1].y:y)-h*.13),rx=L*.7+h*.07;
+    boughs.push([bx,by,(bx+ex)/2,(by+ey)/2-L*.12,ex,ey]);pads.push({x:ex+side*L*.12,y:ey,rx,ry:rx*(.5+.14*r())});side=-side}
+  const trx=h*(.21+.07*r());pads.push({x:tx+(r()-.5)*trx*.5,y:ty+h*.03,rx:trx,ry:trx*(.52+.12*r())});
+  if(h>14)pads.push({x:tx-Math.sign(lean||1)*trx*.62,y:ty+h*.11,rx:trx*.62,ry:trx*.34});
+  pads.sort((a,b)=>b.y-a.y);
+  /* each clump is a few lobes side by side, rounded on top and flatter below */
+  for(const p of pads){const m=2+Math.floor(r()*2.4);p.lobes=[];for(let j=0;j<m;j++){const f=m<2?0:j/(m-1)-.5;p.lobes.push([p.x+f*p.rx*1.1+(r()-.5)*p.rx*.2,p.y+(r()-.5)*p.ry*.5,p.rx*(.5+.22*r()),p.ry*(.75+.3*r())])}}
+  const shape=(p,dx,dy)=>{g.beginPath();for(const[lx,ly,lw,lh]of p.lobes){g.moveTo(lx+lw+dx,ly+dy);g.ellipse(lx+dx,ly+dy,lw,lh,0,0,Math.PI,true);g.ellipse(lx+dx,ly+dy,lw,lh*.55,0,Math.PI,0,true)}};
+  for(const p of pads){p.tufts=[];for(const[lx,ly,lw,lh]of p.lobes)for(let i=0;i<lw*1.6+2;i++){const a=Math.PI*(.92+r()*1.16),q=.92+r()*.16;p.tufts.push([lx+Math.cos(a)*lw*q,ly+Math.sin(a)*lh*q*(Math.sin(a)>0?.55:1),.5+r()*.6,.4+r()*.45])}}
+  /* its shadow on the rock behind, down and to the right */
+  if(o.shade!==false&&h>=12){g.fillStyle='rgba(34,28,56,.2)';for(const p of pads){shape(p,1.4*k,2*k);g.fill()}}
+  /* the trunk: it leans and bends, thick at the foot, lit on the left */
+  const edge=s=>{const q=[];for(let i=0;i<=10;i++){const t=i/10,[px,py]=at(t);q.push(px+s*tw*(1-t*.7)/2,py)}return q},
+    back=q=>{const b=[];for(let i=q.length-2;i>=0;i-=2)b.push(q[i],q[i+1]);return b},left=edge(-1);
+  poly(g,left.concat(back(edge(1))),bark);poly(g,left.concat(back(edge(-.15))),barkL);
+  const cs=lean<0?1:-1;poly(g,[x-cs*tw*.9,y-tw*.9,x+cs*tw*.6,y-tw*.2,x+cs*tw*2.2,y+tw*1.4,x+cs*tw*.4,y+tw*.5],'#2a2030');stroke(g,[x+cs*tw*2,y+tw*1.2,x+cs*tw*3.2,y+tw*3],'rgba(42,32,48,.55)',.5);
+  for(const b of boughs){stroke(g,b,bark,Math.max(.6,tw*.45));stroke(g,b.map((v,i)=>i%2?v-.3:v),rgba(barkL,.7),Math.max(.3,tw*.16))}
+  /* the needles: a dark mass, ragged at its rim, lighter on top and to the left */
+  for(const p of pads){shape(p,0,0);g.fillStyle=dk;g.fill();for(const[tx2,ty2,a2,b2]of p.tufts)oval(g,tx2,ty2,a2,b2,r()<.6?dk:tint(c,-.2));const m=Math.round(p.rx*p.ry*2+8);
+    for(const[lx,ly,lw,lh]of p.lobes)for(let i=0;i<m/p.lobes.length*1.5;i++){const a=r()*6.2832,d=Math.sqrt(r()),px=lx+Math.cos(a)*d*lw*.92,py=ly+Math.sin(a)*d*lh*(Math.sin(a)>0?.45:.92),
+      l=(-(px-p.x)/p.rx*.45-(py-ly)/lh)*.14+(r()-.5)*.12;oval(g,px,py,.55+r()*1,.45+r()*.5,l<0?tint(c,l*1.6-.06):tint(c,l))}
+    for(const[lx,ly,lw,lh]of p.lobes)for(let i=0;i<lw*1.2;i++){const a=Math.PI*(1.08+r()*.6),px=lx+Math.cos(a)*lw*(.3+.5*r()),py=ly+Math.sin(a)*lh*(.55+.3*r());oval(g,px,py,.55+r()*.7,.45+r()*.3,tint(c,.13+r()*.07))}
+    for(const[lx,ly,lw,lh]of p.lobes){g.beginPath();g.ellipse(lx,ly+lh*.12,lw*.9,lh*.4,0,0,Math.PI);g.fillStyle=rgba(tint(c,-.55),.5);g.fill()}}}
+/* farPine: a pine seen from far off, under 12 high: no trunk to be seen, only its crown, an uneven mass that narrows to a rounded top,
+   lit from the upper left and no darker than the haze lets it be. Stood close together they make a wood. */
+function farPine(g,x,y,h,c){const r=rng(Math.round(x*131+y*71+h*17)+11),dk=tint(c,-.2),w=h*(.25+.1*r()),lean=(r()-.5)*.25,
+    at=t=>[x+lean*h*t+(r()-.5)*w*.25,y-h*.1-t*h*.84],wd=t=>w*Math.pow(1-t*.78,.6)*(.8+.4*r());
+  R(g,x-.4,y-h*.14,.8,h*.14,'#3a2e2a');
+  for(let i=0;i<9;i++){const t=i/8,[cx,cy]=at(t),ww=wd(t);oval(g,cx,cy,ww,Math.max(.6,h*.1),dk)}
+  for(let i=0;i<h*2.4;i++){const t=r(),[cx,cy]=at(t),ww=wd(t),px=cx+(r()-.5)*2*ww*.85,py=cy+(r()-.5)*h*.1,l=(-(px-cx)/(ww+.01)*.5-.4*(t-.5))*.2+(r()-.5)*.14;
+    oval(g,px,py,.5+r()*.6,.45+r()*.3,l<0?tint(c,l*1.2-.04):tint(c,l))}}
 /* awning: a striped cloth roof slung from a bar at y, its lower edge scalloped. */
 function awning(g,x,y,w,h,c1,c2,sw){sw=sw||7;for(let i=0;i<w;i+=sw){const c=(i/sw)%2?c2:c1,ww=Math.min(sw,w-i);g.fillStyle=lg(g,0,y,0,y+h,[tint(c,.1),c,tint(c,-.25)]);g.fillRect(x+i,y,ww,h);
     poly(g,[x+i,y+h,x+i+ww,y+h,x+i+ww/2,y+h+2.5],tint(c,-.25));R(g,x+i,y,.5,h,'rgba(0,0,0,.18)')}

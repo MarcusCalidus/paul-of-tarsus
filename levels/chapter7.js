@@ -45,9 +45,6 @@ function crag(g,p,c,r,o){o=o||{};let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(let i=0;i
 /* rock: a stone sitting on the ground at x,y */
 function rock(g,x,y,w,h,c){oval(g,x+w*.1,y,w*.62,Math.max(.8,h*.16),'rgba(30,26,50,.34)');const p=[x-w/2,y,x-w*.42,y-h*.6,x-w*.14,y-h,x+w*.22,y-h*.9,x+w/2,y-h*.42,x+w*.46,y];
   poly(g,p,c);clipTo(g,()=>poly(g,p),()=>{poly(g,[x-w*.42,y-h*.6,x-w*.14,y-h,x+w*.22,y-h*.9,x,y-h*.5],tint(c,.22));poly(g,[x+w*.22,y-h*.9,x+w/2,y-h*.42,x+w*.46,y,x+w*.1,y],tint(c,-.26));tex(g,'mott',.5,x-w/2,y-h,w,h,'overlay',1)})}
-/* pine: a mountain pine in three tiers of needles, darker below */
-function pine(g,x,y,h,c){c=c||'#3c5a44';R(g,x-.6,y-h*.3,1.4,h*.3,'#4a3626');for(let i=0;i<3;i++){const yy=y-h*(.24+i*.24),w=h*(.3-i*.07);
-    poly(g,[x-w,yy,x,yy-h*.34,x+w,yy],tint(c,-.12+i*.1));poly(g,[x-w,yy,x,yy-h*.34,x-w*.1,yy],tint(c,.1+i*.1))}}
 /* poplar: a tall narrow tree, such as line every water channel of the plateau; bare: in winter, a broom of twigs */
 function poplar(g,x,y,h,c,r,bare){R(g,x-.6,y-h*.24,1.3,h*.24,'#5a4630');if(!bare)return foliage(g,x,y-h*.6,h*.11+1.6,h*.42,c||'#5f8a4a',r,h*2.4);
   stroke(g,[x,y-h*.24,x+.4,y-h*.96],'#6a5a48',1);for(let i=0;i<h*.9;i++){const k=.26+r()*.66,yy=y-h*k,w=(h*.1+1.4)*Math.sin((k-.2)*3.6)*(.4+r()*.6),s=r()<.5?-1:1;stroke(g,[x,yy,x+s*w,yy-2-r()*5],r()<.5?'#7a6a54':'#9a8a6c',.5)}}

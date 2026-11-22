@@ -40,9 +40,6 @@ function crag(g,p,c,r,o){o=o||{};let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(let i=0;i
 /* rock: a boulder sitting on the ground at x,y */
 function rock(g,x,y,w,h,c){oval(g,x+w*.1,y,w*.62,Math.max(1,h*.16),'rgba(30,26,50,.34)');const p=[x-w/2,y,x-w*.42,y-h*.6,x-w*.14,y-h,x+w*.22,y-h*.9,x+w/2,y-h*.42,x+w*.46,y];
   poly(g,p,c);clipTo(g,()=>poly(g,p),()=>{poly(g,[x-w*.42,y-h*.6,x-w*.14,y-h,x+w*.22,y-h*.9,x,y-h*.5],tint(c,.22));poly(g,[x+w*.22,y-h*.9,x+w/2,y-h*.42,x+w*.46,y,x+w*.1,y],tint(c,-.26));tex(g,'mott',.5,x-w/2,y-h,w,h,'overlay',1)})}
-/* pine: a mountain pine in three tiers of needles, darker below */
-function pine(g,x,y,h,c){c=c||'#3c5a44';R(g,x-.6,y-h*.3,1.4,h*.3,'#4a3626');for(let i=0;i<3;i++){const yy=y-h*(.24+i*.24),w=h*(.3-i*.07);
-    poly(g,[x-w,yy,x,yy-h*.34,x+w,yy],tint(c,-.12+i*.1));poly(g,[x-w,yy,x,yy-h*.34,x-w*.1,yy],tint(c,.1+i*.1))}}
 /* bundles: what the two men carry between them: two bed rolls and a bag */
 function bundles(g,x,y){for(const[dx,dy,w,hh,c]of[[0,-5,17,5,'#8a5a4a'],[4,-9.6,15,4.6,'#6f7a5a']]){oval(g,x+dx+w/2+2,y+dy+hh+.4,w/2+3,1.4,'rgba(40,30,60,.35)');g.fillStyle=lg(g,0,y+dy,0,y+dy+hh,[tint(c,.3),c,tint(c,-.5)]);g.fillRect(x+dx,y+dy,w,hh);
     for(let i=0;i<w;i+=2.5)R(g,x+dx+i,y+dy,.5,hh,'rgba(0,0,0,.22)');oval(g,x+dx,y+dy+hh/2,hh*.32,hh/2,tint(c,.12));oval(g,x+dx+w,y+dy+hh/2,hh*.32,hh/2,tint(c,-.35))}
