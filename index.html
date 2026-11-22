@@ -254,7 +254,7 @@ const VW=320,VH=144,VT=210;   /* the view; VT: the height of the title's picture
 const $=s=>document.querySelector(s);
 const cv=$('#screen'),cx=cv.getContext('2d');
 cx.imageSmoothingEnabled=false;
-const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,t:0,scene:null,
+const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,camY:0,t:0,scene:null,
   hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false,pc:null,invs:{},lang:'en',turn:new Map(),turnN:0};
 const OPTS_KEY='paul.opts',OPTS={mus:1,fx:1,spd:1,mov:1};   /* mov: 1 lively, 0 calm (see moves) */
 /* ============ LANGUAGES: every language is data under lang/, English as well ============ */
@@ -357,7 +357,7 @@ const F=G.flags;
 const has=id=>G.inv.includes(id);
 function flyItem(id,idx){if(G.speedAll>200||!G.room||G.scene)return;const slot=$('#inv').children[idx];if(!slot)return;
   const vr=$('#view').getBoundingClientRect(),sr=slot.getBoundingClientRect(),src=iconArt(ITEMS[id].icon||id),[c,g]=mk(48,48);g.drawImage(src,0,0);
-  const p=G.actPos||[PC().x-G.cam,PC().y-24],sx=vr.left+clamp(p[0],12,VW-12)/VW*vr.width,sy=vr.top+clamp(p[1],12,VH-12)/VH*vr.height;
+  const p=G.actPos||[PC().x-G.cam,PC().y-G.camY-24],sx=vr.left+clamp(p[0],12,VW-12)/VW*vr.width,sy=vr.top+clamp(p[1],12,VH-12)/VH*vr.height;
   const tx=sr.left+sr.width/2,ty=sr.top+sr.height/2,sz=sr.height*.8;
   c.className='flyitem';c.style.width=sz+'px';c.style.height=sz+'px';document.body.appendChild(c);
   tween(320,k=>{const e=1-(1-k)*(1-k),x=sx+(tx-sx)*e,y=sy+(ty-sy)*e-Math.sin(k*Math.PI)*24*ptrScale;
@@ -1291,15 +1291,28 @@ const party=()=>(CHAP[G.ch]&&CHAP[G.ch].party||['paul']).map(id=>ACT[id]);
 const invOf=a=>a===PC()?G.inv:(G.invs[a.id]||(G.invs[a.id]=[]));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 /* Each room paints a backdrop once (ART[id].paint) and, optionally, a foreground layer (ART[id].fore) that is drawn over the actors. What stands
-   inside the walkable strip, where a person can walk behind it, takes its place among the actors by depth: see figure(), depth() and props(). */
+   inside the walkable strip, where a person can walk behind it, takes its place among the actors by depth: see figure(), depth() and props().
+   A room is as tall as the view, unless its art says otherwise (ART[id].h): a lane map seen from above (shared/lanes.js) is taller, and the
+   view then follows whoever is played up and down as well as across (G.camY). */
 function bake(w,fn,q,h){const[c,g]=mk(w*HR,(h||VH)*HR);g.scale(HR,HR);fn(g);g.setTransform(1,0,0,1,0,0);finish(c,g,q);return c}
+const roomH=id=>ART[id].h||VH;
+/* camAt: where the view stands in a room when it follows someone at x, y: [across, down] */
+const camAt=(id,x,y)=>[clamp(x-160,0,ART[id].w-VW),clamp(y-VH/2-4,0,roomH(id)-VH)];
 /* A room whose light changes (a lamp put out, shutters opened) names its current variant, and gets one backdrop per variant. */
-function bg(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;return BG[k]||(BG[k]=bake(a.w,g=>a.paint(g,v),a.q))}
+function bg(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;return BG[k]||(BG[k]=bake(a.w,g=>a.paint(g,v),a.q,a.h))}
 function fg(id){const a=ART[id];if(!a.fore)return null;return FG[id]||(FG[id]=bake(Math.round(VW+(a.w-VW)*(a.fp||1)),g=>a.fore(g),a.q))}
-const backdrop=(g,id,cam)=>g.drawImage(bg(id),-(cam||0),0,ART[id].w,VH);
+const backdrop=(g,id,cam,camY)=>g.drawImage(bg(id),-(cam||0),-(camY||0),ART[id].w,roomH(id));
+/* planOf: a room seen from above (a lane map, shared/lanes.js) has a plan, which walks, draws and moves the people in it: see walk, update,
+   drawActor and clickView. Its fig is the size of a figure on it, [half its width, its height]; a room's own figures are [10, 49]. */
+const planOf=id=>id&&ROOMS[id]&&ROOMS[id].plan||null;
+const figBox=id=>{const p=planOf(id);return p?p.fig:[10,49]};
 function place(a,room,x,y,dir){a.room=room;a.x=x;a.y=y;a.dir=dir||1;a.walk=null}
 /* --- script primitives --- */
-function walk(a,x,y){return new Promise(res=>{const rm=ROOMS[a.room];
+function walk(a,x,y){return new Promise(res=>{const rm=ROOMS[a.room],pl=planOf(a.room);
+  /* on a plan the way runs along the lanes: route gives the points to pass, the last of them where he stops (or null: there is no way) */
+  if(pl&&!a.free){const r=pl.route(a,x,y);if(a.walk)a.walk.res(false);a.walk=null;if(!r){res(false);return}if(!r.length){res(true);return}
+    let rest=0;for(let i=1;i<r.length;i++)rest+=Math.hypot(r[i][0]-r[i-1][0],r[i][1]-r[i-1][1]);
+    a.walk={x:r[0][0],y:r[0][1],path:r.slice(1),rest,res};return}
   if(a===PC()&&rm&&!a.free){const w=rm.walk;x=clamp(x,w[0],w[1]);y=clamp(y,w[2],w[3])}
   if(a.walk)a.walk.res(false);a.walk={x,y,res};if(Math.abs(x-a.x)>1)a.dir=x>a.x?1:-1})}
 /* spot: where a script may walk someone, at or near x, y: a free place in his room, clear of everybody else (and of a mate) by 14 pixels
@@ -1383,7 +1396,7 @@ const narr=(t,o)=>say(null,t,o);
 function DARK(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}
 const inDark=()=>!G.white&&(+$('#dim').style.opacity>=1||G.scene===DARK);
 function posSpeech(){if(!cur||cur.ink||cur.white)return;const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
-  if(a&&a.room===G.room&&!G.scene){el.style.left=clamp((a.x-G.cam)*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-56),40,132)*s+'px';el.style.top=''}
+  if(a&&a.room===G.room&&!G.scene){el.style.left=clamp((a.x-G.cam)*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-G.camY-figBox(a.room)[1]-7),40,132)*s+'px';el.style.top=''}
   else if(cur.low){el.style.left='50%';el.style.top='';el.style.bottom=7*s+'px'}   /* low: a line told over a map whose road runs along its upper edge stands at the foot of the view */
   else{el.style.left='50%';el.style.top=10*s+'px';el.style.bottom=''}}
 function lock(b){$('#panel').classList.toggle('locked',b)}
@@ -1391,8 +1404,8 @@ async function cut(fn,force){if(G.busy&&!force)return;G.busy=true;lock(true);sta
   try{await fn()}catch(e){console.error(e)}
   G.with=null;G.turn.clear();G.busy=false;lock(false);G.verb='walk';G.item=null;syncVerbs();drawInv();status();codeBtn()}
 /* viewOf: show the room a character stands in. enterRoom: move the character the player controls into a room, and show it. */
-function viewOf(a){G.room=a.room;G.cam=clamp(a.x-160,0,ART[a.room].w-VW);AU.mood=ROOMS[a.room].mood||'calm';AU.amb=ROOMS[a.room].amb;G.hover=null}
-function enterRoom(room,x,y,dir){G.room=room;G.turn.clear();place(PC(),room,x,y,dir);G.cam=clamp(x-160,0,ART[room].w-320);AU.mood=ROOMS[room].mood||'calm';AU.amb=ROOMS[room].amb;G.hover=null}
+function viewOf(a){G.room=a.room;[G.cam,G.camY]=camAt(a.room,a.x,a.y);AU.mood=ROOMS[a.room].mood||'calm';AU.amb=ROOMS[a.room].amb;G.hover=null}
+function enterRoom(room,x,y,dir){G.room=room;G.turn.clear();place(PC(),room,x,y,dir);[G.cam,G.camY]=camAt(room,x,y);AU.mood=ROOMS[room].mood||'calm';AU.amb=ROOMS[room].amb;G.hover=null}
 async function fade(on,ms=260,white){const S=SHARED.scroll;if(S&&S.state!=='down')await S.down();const d=$('#dim');
   G.white=on&&white?1:0;if(white)d.style.background='#faf8f2';else if(on)d.style.background='#05030c';
   d.style.transition=`opacity ${ms}ms ease-in-out,background-color ${ms}ms ease-in-out`;d.style.opacity=on?1:0;await wait(ms+20);
@@ -1482,7 +1495,8 @@ function clickItem(id){if(G.busy)return;audioInit();const it=ITEMS[id],a=G.item;
   cut(()=>say(PC(),G.verb==='pickup'?'i_am_already_carrying_it':G.verb==='open'?'that_does_not_open':T('it_is_only_item',{item:T(it.name)})))}
 /* itemLook: an item described in the voice of whoever holds it (ITEMS[id].by[character id]); look is Paul's. */
 const itemLook=id=>{const it=ITEMS[id],w=PC();return w!==P&&it.by&&it.by[w.id]||it.look};
-function hsAt(x,y){for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&(Math.abs(x-a.x)<=10||a.mate&&Math.abs(x-a.x-a.mate.dx*a.dir)<=10)&&y>=a.y-49&&y<=a.y+1)return a.hs;
+function hsAt(x,y){const[fw,fh]=figBox(G.room);
+  for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&(Math.abs(x-a.x)<=fw||a.mate&&Math.abs(x-a.x-a.mate.dx*a.dir)<=fw)&&y>=a.y-fh&&y<=a.y+1)return a.hs;
   const hs=ROOMS[G.room].hs;for(let i=hs.length-1;i>=0;i--){const h=hs[i];if((!h.vis||h.vis())&&x>=h.x&&x<h.x+h.w&&y>=h.y&&y<h.y+h.h)return h}return null}
 /* show: an item given or shown to a person with no particular use for it. He answers in his own voice: from his show table
    (keyed by item id), else with his fallback, show['*']. Using an item on a person is the same as giving it. */
@@ -1504,24 +1518,25 @@ async function act(v,h,item){const who=PC(),o=who===P?h:(h.as&&h.as[who.id])||{}
 async function clickView(x,y,at){
   if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
   if(G.busy||G.scene||!G.room)return;audioInit();
-  const h=at||hsAt(x,y),item=G.item;let v=G.verb;G.actPos=[x-G.cam,y];
-  const me=PC();
+  const h=at||hsAt(x,y),item=G.item;let v=G.verb;G.actPos=[x-G.cam,y-G.camY];
+  const me=PC(),pl=planOf(G.room);
   if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(me,x,y);return}
   if(v==='walk'){v=defVerb(h);if(v==='walk')v=h.exit?'exit':'look'}
-  const A=h.actor,ty=h.wy!=null?h.wy:A?A.y+1:118;let tx=h.wx!=null?h.wx:A?A.x+(me.x<A.x?-22:22):h.x+h.w/2;
+  const A=h.actor,ty=h.wy!=null?h.wy:A?A.y+1:pl?h.y+h.h:118;let tx=h.wx!=null?h.wx:A?A.x+(me.x<A.x?-1:1)*(pl?pl.fig[0]*2:22):h.x+h.w/2;
   /* beside a person, but not on the spot where somebody already stands, a mate included, nor just in front of him or behind him: then the
      other side, if it is free, or a step farther out, so that neither of the two who talk hides the other or is hidden */
-  if(A&&h.wx==null){const w=ROOMS[G.room].walk,spots=Object.values(ACT).filter(a=>a!==me&&a.room===G.room).flatMap(a=>(a.mate?[[a.x+a.mate.dx*a.dir,a.y]]:[]).concat(a===A?[]:[[a.x,a.y]])),
+  if(!pl&&A&&h.wx==null){const w=ROOMS[G.room].walk,spots=Object.values(ACT).filter(a=>a!==me&&a.room===G.room).flatMap(a=>(a.mate?[[a.x+a.mate.dx*a.dir,a.y]]:[]).concat(a===A?[]:[[a.x,a.y]])),
       taken=x=>spots.some(([sx,sy])=>Math.abs(sx-x)<14&&Math.abs(sy-ty)<11),s=tx<A.x?-1:1;
     const at=[0,1,2].flatMap(k=>[s,-s].map(d=>A.x+d*(22+14*k))).find(x=>x>=w[0]&&x<=w[1]&&!taken(x));if(at!=null)tx=at}
-  /* at a thing, a door or a spot that the room names: beside whoever stands there already, a companion left there perhaps, and not on him */
-  else tx=spot(me,tx,ty)[0];
+  /* at a thing, a door or a spot that the room names: beside whoever stands there already, a companion left there perhaps, and not on him.
+     On a plan, the way to a person or a thing ends on the lane nearest to it (see route). */
+  else if(!pl)tx=spot(me,tx,ty)[0];
   if(!(await walk(me,tx,ty)))return;
   if(G.busy||me!==PC())return;
-  me.dir=A?(A.x>me.x?1:-1):h.dir||((h.x+h.w/2)>=me.x?1:-1);
+  me.dir=A?(A.x>me.x?1:-1):h.dir||((h.x+h.w/2)>=me.x?1:-1);if(pl)pl.face(me,A?A.x:h.x+h.w/2,A?A.y:h.y+h.h/2);
   await cut(()=>act(v,h,item))}
 const vp=$('#view');
-function evPos(e){const r=vp.getBoundingClientRect();return[(e.clientX-r.left)/r.width*VW+G.cam,(e.clientY-r.top)/r.height*VH]}
+function evPos(e){const r=vp.getBoundingClientRect();return[(e.clientX-r.left)/r.width*VW+G.cam,(e.clientY-r.top)/r.height*VH+G.camY]}
 /* hsOf: what a pointer event is about: the thing a pinned label names if the pointer is on a label, else whatever lies under it.
    Labels are moved apart and do not always sit on what they name, so pointing, a tap, a right-click and a double-click all ask here. */
 const hsOf=e=>{const t=e.target.closest('.tag');return t&&t.hs||hsAt(...evPos(e))};
@@ -1537,7 +1552,7 @@ vp.addEventListener('contextmenu',e=>{e.preventDefault();if(G.skip){if(performan
 $('#wrap').addEventListener('contextmenu',e=>{if(!e.target.closest('#codebox'))e.preventDefault()});
 /* Double-clicking an exit skips the walk to it: Paul is simply there, and goes through. */
 vp.addEventListener('dblclick',e=>{const me=PC();if(G.busy||G.scene||!G.room||!me.walk)return;const h=hsOf(e);
-  if(h&&h.exit){me.x=me.walk.x;me.y=me.walk.y;G.cam=clamp(me.x-160,0,ART[G.room].w-VW)}});
+  if(h&&h.exit){const w=me.walk,p=w.path&&w.path.length?w.path[w.path.length-1]:[w.x,w.y];w.path=null;w.rest=0;me.x=w.x=p[0];me.y=w.y=p[1];[G.cam,G.camY]=camAt(G.room,me.x,me.y)}});
 /* Holding Tab labels everything in the room that can be clicked: a small round dot and a name, never a marker or a cross.
    The NAMES button in the top bar pins the labels on, for touch screens that have no Tab key and no hover; pinned labels
    can be tapped, and a tap on one acts on its hotspot as a tap on the hotspot would. Labels are shown only while the player can
@@ -1553,16 +1568,18 @@ function tagsOn(on){if(on!=null)G.tagKey=!!on;on=!!(G.tagKey||G.tagPin||heardRoo
 function namesBtn(){const b=$('#names');b.textContent=T('NAMES');b.classList.toggle('on',!!G.tagPin);tagsOn()}
 $('#names').onclick=e=>{e.stopPropagation();audioInit();SFX.click();G.tagPin=!G.tagPin;namesBtn();tagsOn(G.tagPin)};
 function drawTags(ts){if(!G.tags)return;const act=G.room&&!G.scene&&!G.busy&&!G.skip;if(act&&ts-tagT<90)return;tagT=ts;
-  const s=vp.clientWidth/VW,cam=G.cam,list=[],put=[];
+  const s=vp.clientWidth/VW,cam=G.cam,cy=G.camY,list=[],put=[],fh=figBox(G.room)[1];
+  /* each label: its name, where it stands in the room, its kind, its hotspot, and where it is clicked (y in the room: a lane map is taller than the view) */
   if(act){
-    for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+VW)list.push([T(a.hs.name),a.x,a.y-52,'who',a.hs]);
-    for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const x0=Math.max(h.x,cam+4),x1=Math.min(h.x+h.w,cam+VW-4);if(x1>x0)list.push([T(h.name),(x0+x1)/2,h.y+h.h/2,h.exit?'exit':'',h])}}
+    for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+VW&&a.y>cy&&a.y<cy+VH+fh)list.push([T(a.hs.name),a.x,a.y-fh-3-cy,'who',a.hs,a.y-fh/2]);
+    for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const tall=roomH(G.room)>VH,x0=Math.max(h.x,cam+4),x1=Math.min(h.x+h.w,cam+VW-4),y0=tall?Math.max(h.y,cy+2):h.y,y1=tall?Math.min(h.y+h.h,cy+VH-2):h.y+h.h;
+      if(x1>x0&&y1>y0)list.push([T(h.name),(x0+x1)/2,(y0+y1)/2-cy,h.exit?'exit':'',h,(y0+y1)/2])}}
   /* rebuilt only when something changed, so that a label is not replaced under the finger tapping it. What changed may be the thing
      itself and nothing that shows (a place that comes back in a later chapter keeps its names), so the hotspots are compared as well. */
-  const sig=s+'|'+cam+'|'+list.map(l=>l.slice(0,4).join(',')).join('|');if(sig===tagSig&&list.every((l,i)=>l[4]===tagHs[i]))return;tagSig=sig;tagHs=list.map(l=>l[4]);tagEl.innerHTML='';
+  const sig=s+'|'+cam+'|'+cy+'|'+list.map(l=>l.slice(0,4).join(',')).join('|');if(sig===tagSig&&list.every((l,i)=>l[4]===tagHs[i]))return;tagSig=sig;tagHs=list.map(l=>l[4]);tagEl.innerHTML='';
   list.sort((a,b)=>a[2]-b[2]);
-  for(const[name,x,y,k,h]of list){const el=document.createElement('div');el.className='tag '+k;el.textContent=name;el.hs=h;tagEl.appendChild(el);
-    el.onclick=e=>{e.stopPropagation();if(tagTap())clickView(x,y,h)};
+  for(const[name,x,y,k,h,ry]of list){const el=document.createElement('div');el.className='tag '+k;el.textContent=name;el.hs=h;tagEl.appendChild(el);
+    el.onclick=e=>{e.stopPropagation();if(tagTap())clickView(x,ry,h)};
     const w=el.offsetWidth/s,hh=el.offsetHeight/s+3,lx=clamp(x-cam,w/2+1,VW-w/2-1);let ty=clamp(y,4,VH-hh);
     for(let n=0;n<10;n++){const hit=put.find(p=>Math.abs(p.x-lx)<(p.w+w)/2+1&&Math.abs(p.y-ty)<hh);if(!hit)break;ty=hit.y+hh}
     if(ty>VH-hh)ty=VH-hh;put.push({x:lx,y:ty,w});el.style.left=lx*s+'px';el.style.top=ty*s+'px'}}
@@ -1581,13 +1598,21 @@ function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
   /* A walk is driven by the ground: the frame follows the distance covered (a.gait: the phase of the stride, and how far he has come), so that
      a foot that stands is not carried along. It begins as the legs pass each other, and begins and ends on a shorter step, as does a walk up or
      down the room, where the side view would stride on the spot. A step is heard as a foot lands. */
+  /* A room seen from above (a lane map, shared/lanes.js) moves its own crowd first, and steers whoever is played by the keys. On it a way
+     has several points (walk.path, and walk.rest, how far they run beyond the next one): the walk goes on from one to the next and slows
+     only at the last. Its plan says how fast people go on it, and how far a stride carries them; distances there are the same both ways,
+     where in a room a step into its depth counts double. */
+  const pr=G.room&&!G.scene&&planOf(G.room);if(pr)pr.tick(dt,ts);
   for(const a of Object.values(ACT)){const w=a.walk;if(!w){a.fr=a.seat?-1:0;a.gait=null;continue}
-    const dx=w.x-a.x,dy=w.y-a.y,d=Math.hypot(dx,dy*2),v=a.speed||G.speedAll||WALK_V,sp=v*dt;
+    const pl=planOf(a.room),dx=w.x-a.x,dy=w.y-a.y,d=Math.hypot(dx,dy*(pl?1:2)),v=a.speed||G.speedAll||(pl?pl.pace(a):WALK_V),sp=v*dt;
+    if(d<=sp&&w.path&&w.path.length){a.x=w.x;a.y=w.y;const n=w.path.shift();w.rest-=Math.hypot(n[0]-w.x,n[1]-w.y);w.x=n[0];w.y=n[1];continue}
     if(d<=sp){a.x=w.x;a.y=w.y;a.walk=null;a.fr=0;a.gait=null;w.res(true)}
-    else{const q=a.gait||(a.gait={ph:.25,gone:0}),p0=q.ph,near=Math.min(q.gone,d-sp);a.x+=dx/d*sp;a.y+=dy/d*sp;q.gone+=sp;q.ph=(p0+sp/strideOf(a.look,v))%1;
-      a.fr=4+Math.floor(q.ph*16)+16*(Math.abs(dx)<Math.abs(dy)*2||near<4?2:near<9?1:0);
+    else{const q=a.gait||(a.gait={ph:.25,gone:0}),p0=q.ph,near=Math.min(q.gone,d+(w.rest||0)-sp);a.x+=dx/d*sp;a.y+=dy/d*sp;q.gone+=sp;q.ph=(p0+sp/(pl?pl.stride(a,v):strideOf(a.look,v)))%1;
+      if(pl){a.mvx=dx/d;a.mvy=dy/d}
+      a.fr=4+Math.floor(q.ph*16)+16*(!pl&&Math.abs(dx)<Math.abs(dy)*2||near<4?2:near<9?1:0);
       if(a.room===G.room&&(q.ph<p0||p0<.5&&q.ph>=.5)&&ts-stepT>90){stepT=ts;SFX.step()}}}
-  if(G.room&&!G.scene){const t=clamp(PC().x-160,0,ART[G.room].w-320);G.cam+=(t-G.cam)*Math.min(1,dt*5);if(Math.abs(t-G.cam)<.5)G.cam=t}}
+  if(G.room&&!G.scene){const[t,u]=camAt(G.room,PC().x,PC().y),k=Math.min(1,dt*5);G.cam+=(t-G.cam)*k;if(Math.abs(t-G.cam)<.5)G.cam=t;
+    G.camY+=(u-G.camY)*k;if(Math.abs(u-G.camY)<.5)G.camY=u}}
 /* --- figures: each pose is drawn once into a cached sprite (dark contour, dither), then lit by the room and laid on the scene --- */
 const[SA,sa]=mk(FIG.W,FIG.H),[SB,sb]=mk(FIG.W,FIG.H),SPR=new Map();sa.imageSmoothingEnabled=false;
 /* sprite: draw a pose once and keep it. Edge pixels are darkened, more so on the side away from the light (dir tells which).
@@ -1615,7 +1640,7 @@ function depth(y,fn){if(DQ)DQ.push([y,fn]);else fn()}
    engine cuts that outline out of the finished backdrop, so the piece is the painting itself, and lays it over whoever stands behind it. */
 const CUT={};
 function props(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;if(!a.props)return[];return CUT[k]||(CUT[k]=a.props.map(p=>{
-  const W=a.w*HR,Hh=VH*HR,[c,g]=mk(W,Hh);g.scale(HR,HR);p.shape(g,v);g.setTransform(1,0,0,1,0,0);
+  const W=a.w*HR,Hh=roomH(id)*HR,[c,g]=mk(W,Hh);g.scale(HR,HR);p.shape(g,v);g.setTransform(1,0,0,1,0,0);
   const im=g.getImageData(0,0,W,Hh),d=im.data;let x0=W,y0=Hh,x1=-1,y1=-1;
   for(let y=0,i=3;y<Hh;y++)for(let x=0;x<W;x++,i+=4){if(d[i]<128){d[i]=0;continue}d[i]=255;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
   if(x1<0)return null;g.putImageData(im,0,0);g.globalCompositeOperation='source-in';g.drawImage(bg(id),0,0);
@@ -1675,7 +1700,7 @@ const facing=o=>still(o)?o.dir:turnOf(o,o.x,o.room,o.dir)||(G.with===o&&o.dir===
 function mateFacing(o,mx){if(still(o))return o.dir;const v=o.mate.voice,a=v&&G.turn.get(v),b=G.turn.get(o),mine=a&&turnOf(v,mx,o.room,o.dir),
     his=b&&b.to!==v&&turnOf(o,mx,o.room,o.dir);
   return(mine&&his?(a.n>b.n?mine:his):mine||his)||(G.with===o&&o.dir===G.withDir?(PC().x>=mx?1:-1):o.dir)}
-function drawActor(g,o,ts,id){const bow=o.bow?1:0,dir=facing(o),ln=cur&&cur.plan?cur:null,[talk,ges,bl,mv]=moves(o,o.look,ln&&o.talk&&(ln.a===o||ln.choir.includes(o))?ln:null,ts);
+function drawActor(g,o,ts,id){const pl=planOf(id);if(pl)return pl.drawActor(g,o,ts);const bow=o.bow?1:0,dir=facing(o),ln=cur&&cur.plan?cur:null,[talk,ges,bl,mv]=moves(o,o.look,ln&&o.talk&&(ln.a===o||ln.choir.includes(o))?ln:null,ts);
   /* a mate: two who are never apart are one actor (Aquila and Priscilla, in Chapter Twelve). The mate {fig, dx, talk, voice}, fig being the id of her look,
      walks, stands and bows with the actor, a step behind and beside, and has a mouth of her own: when she talks, the line on the screen is hers.
      voice is the one who speaks her lines (say(voice, ...)), with her room, x and y: she turns to whom she speaks with (see mateFacing). */
@@ -1684,13 +1709,13 @@ function drawActor(g,o,ts,id){const bow=o.bow?1:0,dir=facing(o),ln=cur&&cur.plan
   figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+'f'+(o.fr<0?'s':o.fr)+'t'+talk+bow+ges+bl+'m'+mv,s=>person(s,0,0,o.look,dir,o.fr,talk,bow,ges,bl,mv))}
 function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
-  else if(G.room){const id=G.room,a=ART[id],cam=hp(G.cam),f=fg(id);backdrop(cx,id,cam);cx.save();cx.translate(-cam,0);
+  else if(G.room){const id=G.room,a=ART[id],cam=hp(G.cam),cy=hp(G.camY),f=fg(id);backdrop(cx,id,cam,cy);cx.save();cx.translate(-cam,-cy);
     const q=DQ=[];a.draw(cx,ts);DQ=null;
     for(const p of props(id))q.push([p.y,()=>cx.drawImage(p.c,p.x,p.t,p.w,p.h)]);
     for(const o of Object.values(ACT))if(o.room===id)q.push([o.y,()=>drawActor(cx,o,ts,id)]);
     q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());
     cx.restore();if(f)cx.drawImage(f,-hp(cam*(a.fp||1)),0,f.width/HR,VH);
-    cx.save();cx.translate(-cam,0);a.front(cx,ts);cx.restore()}
+    cx.save();cx.translate(-cam,-cy);a.front(cx,ts);cx.restore()}
   if(G.xfade){cx.save();cx.setTransform(1,0,0,1,0,0);cx.globalAlpha=G.xfade.a;cx.drawImage(G.xfade.img,0,0);cx.restore()}
   {const S=SHARED.scroll;if(S&&S.state!=='down')S.draw(ts)}
   posSpeech();tagsOn();drawTags(ts);requestAnimationFrame(render)}
@@ -1787,8 +1812,9 @@ function PROLOGUE(init){LOOK.paul=paulLook(1);Object.assign(PRO,init(),{ready:1}
 function loadScript(src,ok){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=src;
   el.onload=()=>ok()?res():rej(new Error(T('file_was_loaded_but_it_is_incomplete',{file:src})));el.onerror=()=>{el.remove();rej(new Error(T('could_not_load_file',{file:src})))};document.head.appendChild(el)})}
 /* A level brings its text with it, in English and in the player's language (see LANGUAGES); if the player's file is missing, the chapter plays in English. */
+/* A chapter that is built on a shared file (needs: ['lanes'], in its line of the manifest) has that file loaded before its own. */
 function loadLevel(n){const c=CHAP[n];if(c.ready)return langFile(G.lang,n);
-  return c.loading||(c.loading=loadScript(c.src,()=>c.ready).then(()=>langFile(G.lang,n)).catch(e=>{c.loading=null;throw e}))}
+  return c.loading||(c.loading=Promise.all((c.needs||[]).map(need)).then(()=>loadScript(c.src,()=>c.ready)).then(()=>langFile(G.lang,n)).catch(e=>{c.loading=null;throw e}))}
 function loadPrologue(){if(PRO.ready)return langFile(G.lang,'prologue');
   return PRO.loading||(PRO.loading=loadScript(PRO.src,()=>PRO.ready).then(()=>langFile(G.lang,'prologue')).catch(e=>{PRO.loading=null;throw e}))}
 /* Anything shared between chapters lives in its own file under shared/, which registers itself in SHARED and is loaded the first time it is needed. */

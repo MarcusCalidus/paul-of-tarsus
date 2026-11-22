@@ -64,6 +64,10 @@ The Athenians are dressed as the publications describe: the men of standing in t
 
 ![The Areopagus](screenshots/areopagus.png)
 
+A lane map shows a city from above, at a slant, the way the city maps of those games did: roofs of tile and a few flat ones, the front walls of the houses along each lane with their doors and windows, courts open to the sky, walled yards with a tree, colonnades along the paved streets, and the sun in the west-south-west throwing every house's shadow to the right and up. The people on it are small figures, about ten room pixels tall, in the colors of the period's dyes and undyed wool; a crowd streams along the streets in waves, fills them from side to side, and shuffles as it packs before a narrow way in. Its sound can lead the player: in the demo the roar of the crowd dies down as the house where Paul is staying comes near, measured along the lanes, so that a dead end beside the house still sounds loud. Lanes meet as forks and bends and never as a crossing, which from above would be a plus sign.
+
+![The lane map: the runner in a back lane, the crowd streaming along the harbor road to the theater](screenshots/lane-map.png)
+
 Each chapter ends on a travel map of the eastern Mediterranean, painted the same way: coasts, shallows and mountain ranges, cities as dots, and no grid lines. The road travelled so far is shown, and the chapter's own leg draws itself as a dotted line from city to city, to a short sting on frame drum, harp and ney in the chapter's own key: Damascus to Jerusalem; Jerusalem to Caesarea and by sea to Tarsus; Tarsus to Antioch, where Paul's missionary journeys would begin. The routes never cross. Where the Scriptures do not say which way he went, the line takes a plausible one: by sea east of Cyprus, by road round the Gulf of Issus, and through the south of Cyprus.
 
 ![The travel map at the end of Chapter Three](screenshots/map.png)

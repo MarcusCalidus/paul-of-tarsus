@@ -6,18 +6,18 @@
  G.speedAll=500;
  const idle=async()=>{await wait(120);let n=0;while((G.busy||P.walk||PC().walk)&&n++<4000){if($('#choices').classList.contains('on')||ov.classList.contains('end'))break;await wait(50)}};
  const verb=v=>document.querySelector(`#verbs button[data-v=${v}]`).click();
- const view=(x,y)=>{const r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+y/144*r.height,bubbles:true}))};
+ const view=(x,y)=>{const r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+(y-G.camY)/144*r.height,bubbles:true}))};
  const item=id=>{const i=G.inv.indexOf(id);if(i<0)throw new Error('no item '+id);document.querySelectorAll('#inv .slot')[i].click()};
  const hs=name=>{const h=ROOMS[G.room].hs.find(h=>h.name===name&&(!h.vis||h.vis()));if(!h)throw new Error('no hs '+name+' in '+G.room);return[h.x+h.w/2,h.y+h.h/2]};
  const act=async(v,name)=>{if(v)verb(v);view(...hs(name));await idle()};
  const use=async(a,b)=>{verb('use');item(a);item(b);await idle()};
  const useOn=async(a,name,v)=>{verb(v||'use');item(a);view(...hs(name));await idle()};
  const actor=async(v,a)=>{if(v)verb(v);view(a.x,a.y-18);await idle()};
- const at=(type,x,y)=>{const r=vp.getBoundingClientRect(),e=new MouseEvent(type,{clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+y/144*r.height,bubbles:true,cancelable:true});vp.dispatchEvent(e);return e.defaultPrevented};
+ const at=(type,x,y)=>{const r=vp.getBoundingClientRect(),e=new MouseEvent(type,{clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+(y-G.camY)/144*r.height,bubbles:true,cancelable:true});vp.dispatchEvent(e);return e.defaultPrevented};
  const move=(x,y)=>at('mousemove',x,y),rclick=(x,y)=>at('contextmenu',x,y),dbl=(x,y)=>at('dblclick',x,y);
  /* a screenshot does not show the mouse pointer: paintPointer points at a place in the room and paints the game's own pointer there */
  const paintPointer=(x,y)=>{move(x,y);const sc=vp.getBoundingClientRect().width/320,d=devicePixelRatio||1,u=clamp(Math.round(sc*d/2),1,6),p=pointerArt(u,pointerKind(G.hover));
-   p.style.cssText=`position:absolute;z-index:8;pointer-events:none;left:${(x-G.cam)*sc-p.hx*u/d}px;top:${y*sc-p.hy*u/d}px;width:${p.width/d}px;height:${p.height/d}px`;vp.appendChild(p)};
+   p.style.cssText=`position:absolute;z-index:8;pointer-events:none;left:${(x-G.cam)*sc-p.hx*u/d}px;top:${(y-G.camY)*sc-p.hy*u/d}px;width:${p.width/d}px;height:${p.height/d}px`;vp.appendChild(p)};
  const rclickEl=el=>{const e=new MouseEvent('contextmenu',{bubbles:true,cancelable:true});el.dispatchEvent(e);return e.defaultPrevented};
  const key=(k,type)=>dispatchEvent(new KeyboardEvent(type||'keydown',{key:k,bubbles:true,cancelable:true}));
  const lit=()=>[...document.querySelectorAll('#verbs button.def')].map(b=>b.dataset.v).join();
@@ -472,6 +472,59 @@
   if(stop==='xfade'){await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();const r=CHAP[1].rooms[1];
     tween=(ms,fn)=>{fn(.5);return new Promise(()=>{})};go(r,...CHAP[1].ent[r]);await wait(150);halt('xfade')}
   if(stop==='menu'){openMenu();halt('menu')}
+  /* the lane map (shared/lanes.js): a city seen from above, which the view follows up and down as well as across. It is played here in its
+     demo (tools/lanes-demo.js), a draft of Ephesus for Chapter Fourteen. Stops: lanes (the checks; the runner in the back lane by the square,
+     with the crowd streaming to the theater), lanes2 (the quiet pass: Paul at the harbor road), lanesfolk (lanes-folk.png: every pose of the
+     figures of the map, five times enlarged, for the cross-shape check), lanesall (every check, to the end of the demo; part of the full run). */
+  if(/^lanes(2|folk|all)?$/.test(stop)){await loadScript('tools/lanes-demo.js',()=>true);for(let i=0;i<400&&!(CHAP[14]&&CHAP[14].ready);i++)await wait(30);await langFile(G.lang,14);
+    const C=CHAP[14],M=C.map,LN=SHARED.lanes,R=ACT.runner14,D=M.def,sp0=G.speedAll;
+    ok(LN&&M&&ROOMS.lanes14.plan===M&&ART.lanes14.h===432,'the lane map is loaded before its chapter (needs) and makes a room of its own, taller than the view');
+    {const c=LN.crossings(D),f=LN.fourWays(D);ok(!c.length&&!f.length,'no lane crosses another and no four ways meet at one place, which seen from above would be a plus sign'+(c.length||f.length?'. AT: '+JSON.stringify(c.concat(f)).slice(0,300):''));
+      const k=LN.corners(M);ok(!k.length,'no four roofs meet at one corner'+(k.length?'. AT: '+JSON.stringify(k.slice(0,12)):''));
+      /* every lane hangs together with every other: the walkable ground is one piece, but for a cell or two in a notch of a wall */
+      for(const v of['surge','quiet']){const Q=M.G[v]||(F.two=v==='quiet'?1:0,M.walkable(0,0),M.G[v]),n={};for(let i=0;i<Q.comp.length;i++)if(Q.cell[i])n[Q.comp[i]]=(n[Q.comp[i]]||0)+1;
+        const big=Object.values(n).filter(c=>c>=12);ok(big.length===1,'in the '+v+' every lane can be reached from every other: '+big.length+' piece'+(big.length>1?'s: '+JSON.stringify(n):''))}delete F.two}
+    {const looks=[LOOK.runner14,LOOK.paul,...LN.FOLK],bad=[];let n=0;
+      for(const o of looks)for(const Dd of['S','N','E','W'])for(const f of['stand','s1','s2','w1','p1','w2','p2','r1','f1','r2','f2'])for(const t of[0,1]){const run=f[0]==='r'||f[0]==='f',
+        arms=run?(Dd==='E'||Dd==='W'?(f==='r1'||f==='f1'?'run':'run2'):'run'):Dd==='E'||Dd==='W'?(f==='w1'?'f':f==='w2'?'k':'stand'):'stand';n++;if(parts(LN.folk(o,Dd,f,arms,t))!==1)bad.push(LN.kinds&&(o.veil?'v':o.cloak?'m':'t')+Dd+f+arms+t)}
+      ok(!bad.length,'every pose of the figures of the map is one piece: '+n+' poses'+(bad.length?'. IN PIECES: '+[...new Set(bad)].slice(0,12).join(', '):''))}
+    if(stop==='lanesfolk'){setChapter(14);const z=5,sh=[LOOK.runner14,LOOK.paul,...LN.FOLK].map(o=>LN.sheet(o,z)),[c,g]=mk(sh[0].width,sh.reduce((a,x)=>a+x.height,0));let y=0;for(const x of sh){g.drawImage(x,0,y);y+=x.height}
+      window.SHEETS={'lanes-folk':c.toDataURL()};halt('lanesfolk')}
+    C.demo(1);await wait(60);G.speedAll=0;
+    ok(G.room==='lanes14'&&PC()===R&&R.x===574&&M.walkable(R.x,R.y)&&G.camY>0&&!G.busy,'the demo begins on the map with the runner in a back lane, and the view stands lower than the top of the map');
+    /* the crowd: it streams to the theater in waves, and nobody of it stands where nobody can walk */
+    await wait(1500);{const n=M.crowd.length,off=M.crowd.filter(a=>!M.walkable(a.x,a.y)).length,east=M.crowd.filter(a=>Math.hypot(a.mx||0,a.my||0)>.5&&a.mx>0).length;
+      ok(n>60&&off<=n*.03&&east>n*.4,'a crowd of '+n+' streams to the theater, most of it eastward ('+east+'), and '+off+' of them off the lanes for a moment')}
+    /* the ways: from the runner's lane to the door of the house, and to every thing that can be clicked */
+    {const unreached=[];for(const h of ROOMS.lanes14.hs){if(h.vis&&!h.vis())continue;const r=M.route(R,h.wx,h.wy),e=r&&r[r.length-1];if(!e||Math.hypot(e[0]-h.wx,e[1]-h.wy)>8)unreached.push(h.name)}
+      ok(!unreached.length,'a way leads from the runner to every thing on the map that can be clicked'+(unreached.length?'. NOT: '+unreached.join(', '):''))}
+    {const r=M.route(R,318,60),e=r&&r[r.length-1];ok(r&&M.walkable(...e)&&Math.hypot(e[0]-318,e[1]-60)<14,'a click on a roof walks to the lane nearest to it')}
+    /* a line spoken on the map stands over the speaker, inside the view */
+    clearInterval(sk);say(R,'demo_pressed');await wait(80);{const el=$('#speech .line'),v=vp.getBoundingClientRect(),b=el&&el.getBoundingClientRect(),sc=v.width/320,sx=v.left+(R.x-G.cam)*sc,sy=v.top+(R.y-G.camY)*sc;
+      ok(b&&b.bottom<=sy-6*sc&&b.top>=v.top-1&&b.left<=sx&&b.right>=sx,'a line on the map stands over whoever speaks it')}
+    if(G.skip)G.skip();sk=setInterval(()=>{if(G.skip)G.skip()},30);await idle();
+    /* Tab names what can be clicked, where it is seen */
+    tagsOn(true);await wait(200);{const t=[...$('#tags').children],v=vp.getBoundingClientRect();ok(t.length>0&&t.every(e=>{const b=e.getBoundingClientRect();return b.top>=v.top-1&&b.bottom<=v.bottom+1}),'Tab names '+t.length+' things on the map, each inside the view')}tagsOn(false);
+    /* the keys steer: up the lane and back */
+    {const x0=R.x;key('ArrowLeft');await wait(500);key('ArrowLeft','keyup');await wait(300);ok(R.x<x0-6&&!R.walk,'the arrow keys steer the runner along the lane, and he stops when the key is let go ('+Math.round(x0-R.x)+' pixels)')}
+    /* against a packed street the crowd presses him back */
+    {let pressed=0;const p0=M.def.press;M.def.press=()=>{pressed++};for(let k=0;k<6&&!pressed;k++){place(R,'lanes14',150,196,-1);M.pushT=0;R.pushed=0;walk(R,20,196);for(let i=0;i<160&&!pressed;i++)await wait(25)}
+      ok(pressed>0,'walking against the packed harbor road, the runner is pressed back');M.def.press=p0;await wait(700);if(G.skip)G.skip();await idle()}
+    if(stop==='lanes'){place(R,'lanes14',560,150,-1);R.pushed=0;M.pushT=0;viewOf(R);G.cam=440;G.camY=82;await wait(2600);paintPointer(492,160);halt('lanes')}
+    /* to the house and through the door, by the back lanes: then the quiet pass, Paul at the door */
+    G.speedAll=sp0;place(R,'lanes14',...C.ent.lanes14);M.pushT=0;R.pushed=0;viewOf(R);
+    /* the test walks at many times the pace, through anyone in the way: for that walk the crowd stays away */
+    {const cr=D.crowd;D.crowd={};await act(null,'door_of_the_house_demo');for(let i=0;i<300&&!F.two;i++)await wait(30);await idle();D.crowd=cr}
+    ok(F.two&&PC()===P&&P.room==='lanes14'&&!R.room&&M.crowd.length===0,'at the door of the house the runner is done, and Paul walks the emptied lanes');
+    {const r1=M.route(P,...M.def.targets.gate);let len=0,x=P.x,y=P.y;for(const[a,b]of r1){len+=Math.hypot(a-x,b-y);x=a;y=b}
+      ok(r1&&len>230,'with the gate in the lane shut, the way to the harbor gate goes round by the harbor road ('+Math.round(len)+' pixels)')}
+    if(stop==='lanes2'){G.speedAll=0;place(P,'lanes14',118,206,1);viewOf(P);await wait(300);paintPointer(120,240);halt('lanes2')}
+    const code=makeCode();ok(decode(code)&&decode(code).ch===14,'the safe-point code holds the quiet pass: '+code);
+    await act(null,'shutter_demo');ok(treasures().has(14),'the shutter at the end of the little lane is the hidden treasure of the demo');
+    await act(null,'harbor_gate_demo');for(let i=0;i<300&&F.two;i++)await wait(30);await idle();
+    ok(!F.two&&PC()===R&&G.room==='lanes14','at the harbor gate the demo begins again');
+    ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,8).join(' | '):'')+(RAWKEY.size?'. KEY: '+[...RAWKEY].slice(0,8).join(' | '):''));
+    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* hidden treasures (CONTRIBUTING section 2): every chapter hides one. From the point that the screen of treasures leads back to (its at),
      the steps in TSTEPS find it. Finding it changes no flag and no item, it is announced once, and the screen names it from then on.
      Their codes are kept apart from every saved game, and are never taken for a safe-point code. Stops: treasures (the checks, then the screen),
