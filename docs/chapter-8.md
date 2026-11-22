@@ -30,7 +30,7 @@ Beside the river the player chooses how the four men come to the women, and wher
 <summary>Walkthrough (spoilers)</summary>
 
 1. On the plateau, take the paved road west. Choose "We go on by the road that is still open." Then take the track to the north.
-2. At the river, use the ferry. Choose "West. It is the one road left." Then take the road west.
+2. At the river, use the ferry. Choose "West. It's the one road left." Then take the road west.
 3. At Troas, talk to Timothy and tell him that the physician needs clean linen. Use the knife with the linen cloth, and give the linen strips to Luke.
 4. Switch to Luke (the **⇄ Luke** button, or `C`). Use his bag on Sosias, and then the linen strips.
 5. As Paul, pick up the old sailcloth by the stern of the ship, use the awl with it, and give the arm sling to Luke. As Luke, use the sling on Sosias.
@@ -40,7 +40,7 @@ Beside the river the player chooses how the four men come to the women, and wher
 9. In Philippi, talk to Quintus at the gate: "Who goes out by this gate that is not going to work?" Talk to Zosime: "Why is the shop beside yours shut?"
 10. Use the bench, and then go out by the west gate.
 11. At the river, talk to one of the women: "Go down, greet them, and sit among them." Then talk to Lydia: "With the Scriptures they know, and the one they promise."
-12. Answer Lydia: "Then we will come, Lydia, and gladly."
+12. Answer Lydia: "Then we'll come, Lydia, and gladly."
 
 Optional: use the awl on Zosime's torn awning.
 </details>
