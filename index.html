@@ -1733,13 +1733,13 @@ async function title(){lock(true);if(SHARED.scroll)SHARED.scroll.off();await set
     '<p class="small lede">'+T('point_and_click_adventure')+'</p>'+
     (sv?'<p class="go" data-cont="1">&#9656; '+T('Continue')+' &middot; '+T(CHAP[sv.ch].label)+' &middot; '+T(CHAP[sv.ch].title)+'</p>':'')+
     /* the farthest point, when it is not where Continue goes: someone who went back to try an earlier chapter finds the way forward again */
-    (far?`<p class="${sv?'pick':'go'}" data-far="1">&#9656; ${T('Farthest point')} &middot; ${T(CHAP[far].label)} &middot; ${T(CHAP[far].title)}</p>`:'')+
+    (far?`<p class="${sv?'pick':'go'}" data-far="1">&#9656; ${T('farthest_point')} &middot; ${T(CHAP[far].label)} &middot; ${T(CHAP[far].title)}</p>`:'')+
     '<div class="chs">'+`<p class="${sv||far?'pick':'go'}" data-pro="1">&#9656; ${T('Prologue')} &middot; ${T(PRO.title)}</p>`+Object.keys(CHAP).map(n=>`<p class="pick" data-ch="${n}">&#9656; ${T(CHAP[n].label)} &middot; ${T(CHAP[n].title)}</p>`).join('')+
     /* the planned chapters: one line, and under it, once it is clicked, each of them by its reference. None of them can be started. */
     (PLANNED.length?'<p class="plans" data-plans="1"><span>&#9656;</span> '+T('chapters_from_to_to',{from:T(PLANNED[0].short),to:T(PLANNED.at(-1).short)})+' &middot; '+T('in_preparation')+'</p>'+
       PLANNED.map(c=>`<p class="plan">${T(c.label)} &middot; ${T(c.ref)}</p>`).join(''):'')+'</div>'+
     /* the hidden treasures, once one has been found (see TREASURES) */
-    (treasures().size?`<p class="pick tre" data-tre="1">&#9656; ${T('Hidden treasures')} &middot; ${T('{n} of {all}',{n:treasures().size,all:hidden().length})}</p>`:'')+
+    (treasures().size?`<p class="pick tre" data-tre="1">&#9656; ${T('hidden_treasures')} &middot; ${T('{n} of {all}',{n:treasures().size,all:hidden().length})}</p>`:'')+
     '<p class="small">'+T('click_a_chapter_to_begin')+'</p>'+
     (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'')+
     (G.splash?'<p class="begin"><span class="go">'+T('click_to_begin')+'</span></p>':'');

@@ -202,7 +202,7 @@ TEXTS('en',1,{
   "the_city_gate":"The city gate. Torches burn there, and men keep watch day and night.",
   "i_will_not_be_leaving_damascus":"I will not be leaving Damascus by that road.",
   "well":"well",
-  "neighborhood_well":"The neighborhood well. The water is cold and sweet.",
+  "neighborhood_well":"The neighborhood well. The water is cold and fresh.",
   "i_would_need_something":"I'd need something to carry the water in.",
   "well_stays_where_it_is_dug":"A well stays where it is dug.",
   "i_lower_the_bucket_and_fill":"I lower the bucket and fill my waterskin.",

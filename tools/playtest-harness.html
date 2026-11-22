@@ -1277,7 +1277,7 @@
   /* the river, on three days: the psalm that could not be finished */
   heard.length=0;await act(null,'door_to_the_street');await until(()=>G.room==='river9'&&!G.busy);
   ok(F.went&&told('v16')&&told('v17')&&[GI,MA,LY,PH,EL,SI,TI,LU].every(a=>a.room==='river9')&&said('every_word_that_she_cries_is_true'),'the girl meets them on the way to the place of prayer: told with its verses');
-  ok(/\bus\b/.test(C().told.v16)&&/\bus\b/.test(C().told.v17)&&!/\b(we|us|our)\b/i.test(Object.keys(C().told).filter(k=>!/^v1[67]$/.test(k)).map(k=>C().told[k]).join(' ')),'the narration says "us" at Acts 16:16, 17, and "they" from there on');
+  ok(/\bus\b/.test(EN(C().told.v16))&&/\bus\b/.test(EN(C().told.v17))&&!/\b(we|us|our)\b/i.test(Object.keys(C().told).filter(k=>!/^v1[67]$/.test(k)).map(k=>EN(C().told[k])).join(' ')),'the narration says "us" at Acts 16:16, 17, and "they" from there on');
   halt('river9',()=>{say(SI,'women_are_waiting_on_the_stones_paul')});
   pray();await idle();ok(hint()[0]==='ps19','the hint: the first line');
   heard.length=0;await actor(null,GI);ok(said('it_is_not_the_girl_who')&&!F.d1,'Paul does not answer the girl');
@@ -1462,7 +1462,7 @@
   ok(G.room==='syn10'&&told('v2')&&[LM,ME,ST,JA,SI,TI].every(a=>a.room==='syn10')&&said(C().told.v2)&&said('it_is_and'),'the synagogue of Thessalonica: he is asked to speak, and a hearer asks whether the sour wine is written (Acts 17:2)');
   halt('sab10');
   heard.length=0;await act(null,'door_to_the_street');ok(G.room==='syn10'&&said('not_while_a_man_is_waiting'),'nobody leaves a question standing');
-  pray();await idle();ok(hint()[0]==='v10'&&hint()[1][0].includes('Luke 24:44'),'the hint recalls the Law, the Prophets and the Psalms (Luke 24:44)');
+  pray();await idle();ok(hint()[0]==='v10'&&EN(hint()[1][0]).includes('Luke 24:44'),'the hint recalls the Law, the Prophets and the Psalms (Luke 24:44)');
   await act(null,'reading_table');await until(()=>G.room==='table10'&&!G.busy);
   ok(G.room==='table10'&&nS()===2&&G.tab10.s.every(x=>!x)&&!G.tab10.t&&TH10().length===9&&capsFit(),'the scroll table: two scrolls rolled shut, the tablets closed, and a name under each that fits its place');
   await lay();ok(said('my_tablets_are_shut_said'),'nothing can be shown with the tablets shut');
@@ -1767,7 +1767,7 @@
   await setG('dish');await spk();note();ok(F.s3&&told('v25'),'the robe and the dish (Acts 17:25)');
   await setG('block');await spk();ok(!F.s4&&said('he_is_right_nothing'),'nothing of theirs says that all nations come from one man');
   await setG(null);await spk();ok(!F.s4&&said('said_like_that_i_stand'),'said as "you", he stands outside');
-  ok(/us$/.test(C().parts[4].claim)&&/^we /.test(C().parts[6].claim)&&C().parts[7].claim.includes('all people everywhere')&&[1,2,3].every(n=>!/\b(we|us)\b|all people/.test(C().parts[n].claim)),'what is to be said next has the account\'s own word for whom it is said of: "us" (17:27), "we" (17:29), all people everywhere (17:30)');
+  ok(/us$/.test(EN(C().parts[4].claim))&&/^we /.test(EN(C().parts[6].claim))&&EN(C().parts[7].claim).includes('all people everywhere')&&[1,2,3].every(n=>!/\b(we|us)\b|all people/.test(EN(C().parts[n].claim))),'what is to be said next has the account\'s own word for whom it is said of: "us" (17:27), "we" (17:29), all people everywhere (17:30)');
   await setV('all');await spk();ok(!F.s4&&said('all_people_everywhere')&&said('not_yet_said_like')&&capsFit(3)&&G.caps11.some(c=>c.s===T('i_say_it_voice',{voice:T(C().voice.all)})),'said to all people everywhere, it goes over their heads: not yet');
   await setV('we');await spk();note();ok(F.s4&&told('v26')&&told('v27'),'with empty hands, and as one of them (Acts 17:26, 27)');
   halt('speech11');
@@ -2743,7 +2743,7 @@
   await act(null,'east_gate');
   ok(G.room==='court'&&!G.busy&&srt()==='awl,bolt,knife,tablets,wages'&&ACT.barnabas.room==='court'&&ACT.xanthe.room==='antioch','brought to Antioch; a year later, the relief is gathered');
   halt('court',()=>{say(ACT.barnabas,'it_has_weeks_of_road_ahead')});
-  await actor(null,ACT.barnabas);ok(hasQ('i_have_no_thread_to_sew'),'famine topic in Antioch');await choose(0);await choose(-1);await actor(null,ACT.agabus);ok(hasQ('i_have_no_thread_to_sew'),'thread topic');await choose(0);await choose(-1);
+  await actor(null,ACT.barnabas);ok(hasQ('agabus_foretold_a_great_famine'),'famine topic in Antioch');await choose(0);await choose(-1);await actor(null,ACT.agabus);ok(hasQ('i_have_no_thread_to_sew'),'thread topic');await choose(0);await choose(-1);
   await sweep(ACT.barnabas,ACT.agabus,ACT.lucius);
   const tw3=await tabs();ok(leaf(0,'Agabus').length===1&&leaf(0,'Kleon').length===0&&leaf(0,T('make_new_pack_bags_for_the_relief')).length===1&&leaf(0,T('find_strong_thread_to_sew_them_with')).length===1&&leaf(1).length===4,'Antioch tablets');
   key(' ');await idle();ok(!tw3.classList.contains('on'),'Space closes them');

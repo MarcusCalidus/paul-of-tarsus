@@ -102,7 +102,8 @@ export function checkTexts(){
   const EN=readLang('en');{const inCode=[],unused=[],empty=[];let n=0;
     const known=(k,key)=>(EN[k]&&EN[k][key]!=null)||(EN.prologue&&EN.prologue[key]!=null)||(EN.main&&EN.main[key]!=null)||(k==='main'&&Object.values(EN).some(d=>d[key]!=null));
     for(const k in parts){for(const s of parts[k])for(const x of scan(s,{engine:k==='main'&&s===parts.main[0]}))if(!known(k,x.s))inCode.push(where(k)+x.s);
-      for(const key in EN[k]||{}){n++;if(!lit[k].has(key))unused.push(where(k)+key);if(typeof EN[k][key]!=='string'||!EN[k][key])empty.push(where(k)+key)}}
+      /* the engine's text also holds what every chapter shows through it, such as the names Saul and Paul */
+      for(const key in EN[k]||{}){n++;if(!lit[k].has(key)&&!(k==='main'&&Object.values(lit).some(l=>l.has(key))))unused.push(where(k)+key);if(typeof EN[k][key]!=='string'||!EN[k][key])empty.push(where(k)+key)}}
     ok(!inCode.length,'the code holds keys, not text: every line it shows stands in lang/en',inCode);
     ok(!unused.length,`en: every line is used by its part of the game (${n} lines)`,unused);
     ok(!empty.length,'en: every line is a string with text in it',empty)}

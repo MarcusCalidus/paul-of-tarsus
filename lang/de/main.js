@@ -19,6 +19,7 @@ TEXTS('de','main',{
   "no_music_said":["Keine Musik? Vielleicht ist dieses iPad im Stummmodus.","077uwjb"],
   "game_stays_quiet_until":["Das Spiel bleibt still, bis der Stummmodus aus ist.","1rdu8s1"],
   "Paul":["Paulus","1kzue9f"],
+  "Saul":["Saulus","0a112xk"],
   "pray_to_jehovah":["Zu Jehova beten","05egjqx"],
   "play_as_name_c":["Als {name} spielen (C)","0ynroom"],
   "take_this_name":["Nimm das, {name}.","0362dh3"],

@@ -128,7 +128,7 @@ TEXTS('en',3,{
   "when_it_is_gathered":"And when it's gathered?",
   "jerusalem_sent_you_to_us_barnabas":"Jerusalem sent you to us, Barnabas. Who better to carry our answer back? You, and Saul with you.",
   "gladly_said":"Gladly.",
-  "disciples_resolved_that_relief_acts_11_29":"The disciples resolved that relief should go to the brothers in Judea, each of them giving as his means allowed. (Acts 11:29)",
+  "disciples_resolved_that_relief_acts_11_29":"The disciples decided that relief should go to the brothers in Judea, each of them giving as his means allowed. (Acts 11:29)",
   "in_the_days_that_followed":"In the days that followed, the gifts came in.",
   "look_at_it_saul":"Look at it, Saul. Grain, figs, oil, silver: from Jews and Greeks alike.",
   "it_has_weeks_of_road_ahead":"But it has weeks of road ahead of it, and our old pack bags are rotten through.",

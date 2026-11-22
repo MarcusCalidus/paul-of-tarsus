@@ -16,6 +16,7 @@ TEXTS('en','main',{
   "no_music_said":"No music? This iPad may be in Silent Mode.",
   "game_stays_quiet_until":"The game stays quiet until Silent Mode is off.",
   "Paul":"Paul",
+  "Saul":"Saul",
   "pray_to_jehovah":"Pray to Jehovah",
   "play_as_name_c":"Play as {name} (C)",
   "take_this_name":"Take this, {name}.",

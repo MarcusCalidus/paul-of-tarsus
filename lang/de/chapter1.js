@@ -205,7 +205,7 @@ TEXTS('de',1,{
   "the_city_gate":["Das Stadttor. Dort brennen Fackeln, und Männer halten Tag und Nacht Wache.","08zu865"],
   "i_will_not_be_leaving_damascus":["Auf dieser Straße werde ich Damaskus nicht verlassen.","0ftfn7f"],
   "well":["Brunnen","1vwbv2h"],
-  "neighborhood_well":["Der Brunnen des Viertels. Das Wasser ist kalt und frisch.","01vpeth"],
+  "neighborhood_well":["Der Brunnen des Viertels. Das Wasser ist kalt und frisch.","0hb5m89"],
   "i_would_need_something":["Ich bräuchte etwas, um das Wasser darin zu tragen.","1lkugbi"],
   "well_stays_where_it_is_dug":["Ein Brunnen bleibt, wo er gegraben wurde.","1xv3sd0"],
   "i_lower_the_bucket_and_fill":["Ich lasse den Eimer hinunter und fülle meinen Wasserschlauch.","0q5nwjo"],

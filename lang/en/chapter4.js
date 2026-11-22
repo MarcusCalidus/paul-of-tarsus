@@ -411,7 +411,7 @@ TEXTS('en',4,{
   "it_is_so_i":"It is so. I was in Jerusalem. I knew men who saw him.",
   "let_him_finish_jair":"Let him finish, Jair.",
   "take_care_the_prophets":"Take care: the Prophets warn those who will not believe.",
-  "beware_brothers_habakkuk_1_5":"Beware, brothers. The Prophets speak of a thing to come in your own days, a thing you will find beyond belief, even when you are told of it. (Habakkuk 1:5)",
+  "beware_brothers_habakkuk_1_5":"Beware, brothers. The Prophets speak of a thing to come in your own days, a thing you will find beyond belief, even if you are told about it. (Habakkuk 1:5)",
   "he_threatens_us_before":"He threatens us before he has told us anything!",
   "warning_comes_last_visitor":"A warning comes last, visitor, if it comes at all.",
   "they_have_heard_who_he_is":"They have heard who he is. What do I leave with them?",
