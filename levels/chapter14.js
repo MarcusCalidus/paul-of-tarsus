@@ -109,8 +109,9 @@ ART.door14={w:320,q:12,
  paint(g){paintDoor(g)},light:{amb:'#c8bcb0',lamps:[[250,96,60,'#5a4a30']]},draw(g,t){doorDraw(g,t)},front(){}};
 /* ---------- The close view: sealing the tablet ---------- */
 /* On the base of a column in the shade: the two leaves of a tablet, each with the writing inside, in the wax, and two holes along one
-   edge; a cord of flax and a lump of clay; Aristokles's hand with his signet ring comes in from the right. The cord goes through the
-   holes along the edge and is knotted there, and the clay sits on the knot: nothing is tied across the face of the tablet. */
+   edge; Aristokles's hand with his signet ring comes in from the right. The cord and the clay are in the runner's hands (the inventory).
+   The cord goes through the holes and is knotted at the edge, and the clay sits on the knot: nothing is tied across the face of the
+   tablet. */
 ART.seal14={w:320,q:12,paint(g){paintSealBack(g)},light:{amb:'#e8e0d0'},draw(g,t){sealDraw(g,t)},front(){}};
 
 /* placeholders for the backdrops; each paints its room plainly, and is replaced by the painted backdrop */
@@ -153,31 +154,198 @@ function paintDoor(g){const r=rng(1407),W='#d2c09a';
   windowArt(g,70,40,22,26,W,{shut:1});for(let i=0;i<6;i++)R(g,72,43+i*4,18,.8,'rgba(255,240,200,.6)');
   g.fillStyle=lg(g,0,103,0,144,['#a8946c','#bcaa80']);g.fillRect(0,103,320,41);tex(g,'mott',.5,0,103,320,41,'overlay',1);ao(g,0,103,320,6,'t',.4,'#2a2030')}
 function bench14(g,x,y,w,c){R(g,x,y,w,2.4,tint(c,.16));R(g,x,y,w,.7,tint(c,.4));R(g,x,y+2.4,w,5.6,tint(c,-.2));R(g,x+2,y+8,3,6,tint(c,-.3));R(g,x+w-5,y+8,3,6,tint(c,-.3))}
-function paintSealBack(g){const r=rng(1409);g.fillStyle=lg(g,0,0,0,144,['#8a8070','#6a6254']);g.fillRect(0,0,320,144);
-  /* the base of the column: a block of pale stone, its top lit */
-  R(g,20,44,280,100,'#d8d0bc');R(g,20,44,280,2,'#f0e8d8');tex(g,'mott',.35,20,44,280,100,'overlay',1);ao(g,20,44,280,10,'t',.25)}
+/* The close view of the sealing: the top of a column's base, seen from above and in front, in the shade of the colonnade. The light
+   comes from the open side, from the square on the left and in front: warm where the sunlit paving throws it back, cool under the roof.
+   The base is a block of pale marble, wider than the picture. At the back on the left the foot of its column stands on it: a lower and
+   an upper moulding round it like cushions, a hollow between them, and the smooth shaft going up out of the picture. The veins of the
+   marble run one way, and each stops where it comes to another. At the bottom the front of the block shows under its worn edge.
+   paintSealBack is the stone in its light; sealDraw lays the tablet and the hand on the stone (stoneSeal) before the light. */
+function paintSealBack(g){stoneSeal(g);lightSeal(g)}
+function stoneSeal(g){const r=rng(1409),FY=SEAL.FY;
+  /* the top of the block: cool at the back, warmer towards the front and the left */
+  g.fillStyle=lg(g,0,0,0,FY,[[0,'#958f9c'],[.35,'#b4aca6'],[.7,'#cdc3b2'],[1,'#dcd1be']]);g.fillRect(0,0,320,FY);
+  comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,0,320,0,['#ffd49a','#eadccb','#a4a6c4']);g.fillRect(0,0,320,FY)});
+  /* broad soft patches where the stone is a shade warmer or greyer; a dull sheen where it has been worn smooth */
+  for(let i=0;i<16;i++){const warm=r()<.5;pool(g,r()*340-10,8+r()*(FY-16),24+r()*50,8+r()*16,warm?'#f4e2c0':'#8a88a4',warm?.22:.14,warm?'soft-light':'multiply')}
+  pool(g,118,98,130,26,'#fff6e6',.12,'screen');
+  tex(g,'blotch',.08,0,0,320,FY,'soft-light',.9);tex(g,'mott',.14,0,0,320,FY,'overlay',.45);tex(g,'grain',.1,0,0,320,FY,'overlay',.5);
+  veinsSeal(g,r,FY);
+  /* pits, and the glint of the crystals of the marble */
+  for(let i=0;i<170;i++){const x=r()*320,y=r()*(FY-1);R(g,x,y,.5,.5,'rgba(96,88,90,.42)');if(r()<.6)R(g,x,y+.5,.5,.5,'rgba(255,250,236,.35)')}
+  for(let i=0;i<70;i++)R(g,r()*320,r()*(FY-1),.5,.5,'rgba(255,252,244,.55)');
+  /* the shade the column throws to the right and back, and its foot */
+  comp(g,'multiply',.55,()=>{g.fillStyle=rg(g,10,0,150,['#8a88a8','#b4b2c8','#ffffff']);g.fillRect(0,0,220,130)});
+  columnSeal(g);
+  /* the front of the block: its edge worn round and lit along the top, a moulding under it, and the face in deeper shade */
+  g.fillStyle=lg(g,0,FY-3,0,FY,['rgba(255,246,226,0)','rgba(255,246,226,.4)']);g.fillRect(0,FY-3,320,3);
+  R(g,0,FY,320,1,'#e6dccb');g.fillStyle=lg(g,0,FY+1,0,FY+6,['#cfc6b8','#a8a0a0','#86808c']);g.fillRect(0,FY+1,320,5);
+  R(g,0,FY+6,320,.5,'#5c5866');g.fillStyle=lg(g,0,FY+6.5,0,144,['#a49c9a','#8a8490']);g.fillRect(0,FY+6.5,320,144-FY-6.5);
+  comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,0,320,0,['#ffcf90','#e0d8cc','#9aa0c8']);g.fillRect(0,FY,320,144-FY)});
+  tex(g,'mott',.4,0,FY,320,144-FY,'overlay',1);tex(g,'grain',.12,0,FY,320,144-FY,'overlay',.5);
+  /* the edge is worn: its light comes and goes along it */
+  for(let x=0;x<320;){const w=4+r()*18;R(g,x,FY,w,.5,`rgba(${r()<.5?'120,112,118':'255,250,238'},${.12+r()*.22})`);x+=w}}
+/* veinsSeal: the grey veins of the marble, all running from lower left to upper right; a vein ends where it would meet another */
+function veinsSeal(g,r,FY){const pts=[];
+  for(let k=0;k<8;k++){let x=r()*380-40,y=20+r()*(FY-10),a=-.45+(r()-.5)*.4;const p=[x,y],w=r();
+    for(let s=0;s<70;s++){a=clamp(a+(r()-.5)*.4,-.9,-.08);x+=Math.cos(a)*2;y+=Math.sin(a)*2;if(y<0||x>330)break;
+      if(pts.some(q=>Math.abs(q[0]-x)<3.5&&Math.abs(q[1]-y)<3.5))break;p.push(x,y)}
+    for(let i=0;i<p.length;i+=2)pts.push([p[i],p[i+1]]);
+    if(p.length>8){stroke(g,p,'rgba(140,136,150,.08)',3);stroke(g,p,'rgba(140,136,150,.08)',1.4);for(let i=0;i+5<p.length;i+=4)stroke(g,p.slice(i,i+6),`rgba(124,118,128,${.08+w*.1+r()*.12})`,.5)}}}
+/* columnSeal: the foot of the column, turned round its centre (SEAL.col: x and y where its axis meets the top of the base, the radius
+   of the shaft). Seen from above and in front, every round course is an oval, flattened by the slant of the view (K), and stands higher
+   in the picture the higher it lies (Z). The courses, from the base up: the lower cushion, the hollow, the upper cushion, a narrow band,
+   and the shaft, which flares a little at its foot. A course is shaded by the way it faces: up and out towards the open side is light,
+   the underside of a cushion and the hollow are dark. The shaft is lit from the front and the left, and its far side is in shade. */
+function columnSeal(g){const[cx,cy,rs]=SEAL.col,K=.55,Z=.83,C='#d6cec0',D='#666176';
+  const course=(rr,z,c)=>oval(g,cx,cy-z*Z,rr,rr*K,c),tone=(nr,nz)=>mix(D,C,clamp(.22+.68*(nr*.55+nz*.8),0,.9));
+  for(let i=6;i>0;i--)comp(g,'multiply',.09,()=>course(rs+16+i*1.6,-.5,'#56546c'));
+  /* the lower cushion */
+  const t=6,c1=rs+10;for(let i=0;i<=20;i++){const f=Math.PI*i/20;course(c1+t*Math.sin(f),t-t*Math.cos(f),tone(Math.sin(f),-Math.cos(f)))}
+  /* the hollow */
+  for(let i=0;i<=10;i++){const f=i/10;course(c1-1-3.2*Math.sin(f*Math.PI)-f*.6,2*t+f*5,mix('#5a5664','#958e98',.12+.6*f*f))}
+  /* the upper cushion */
+  const t2=4,c2=rs+5,z2=2*t+5+t2;for(let i=0;i<=16;i++){const f=Math.PI*i/16;course(c2+t2*Math.sin(f),z2-t2*Math.cos(f),tone(Math.sin(f),-Math.cos(f)))}
+  /* the band, and the flare of the shaft above it */
+  course(rs+3,z2+t2+.6,tone(.2,.9));for(let i=0;i<=6;i++){const f=i/6;course(rs+2.4*(1-f)*(1-f),z2+t2+1.2+f*5,tone(1-f*.8,.6))}
+  /* the shaft */
+  const fy=cy-(z2+t2+6.2)*Z,shaft=()=>{g.beginPath();g.ellipse(cx,fy,rs,rs*K,0,0,Math.PI);g.lineTo(cx-rs,-20);g.lineTo(cx+rs,-20);g.closePath()};
+  clipTo(g,shaft,()=>{const st=[];for(let i=0;i<=10;i++){const q=-Math.PI/2+Math.PI*i/10;st.push([i/10,mix(D,C,clamp(.3+.75*(-.5*Math.sin(q)+.86*Math.cos(q)),0,1))])}
+    g.fillStyle=lg(g,cx-rs,0,cx+rs,0,st);g.fillRect(cx-rs,-20,rs*2,fy+rs*K+22);
+    tex(g,'mott',.2,cx-rs,-20,rs*2,fy+rs*K+22,'overlay',.6);tex(g,'vert',.1,cx-rs,-20,rs*2,fy+rs*K+22,'multiply',.8);
+    R(g,cx+rs-1.6,-20,1.2,fy+20,'rgba(200,190,200,.25)')});
+  /* the marble of the mouldings, mottled like the rest */
+  clipTo(g,()=>course(c1+t+.5,t,null),()=>{tex(g,'mott',.3,0,0,200,140,'overlay',1);tex(g,'grain',.12,0,0,200,140,'overlay',.5)});
+  /* the light from the open side: stronger on the left of the foot, falling off round to the right */
+  comp(g,'soft-light',.35,()=>{clipTo(g,()=>{course(c1+t+.5,t,null);g.rect(cx-rs,-20,rs*2,fy+20)},()=>{g.fillStyle=lg(g,cx-rs,0,cx+c1+t,0,['#fff0d8','#fff0d8','#9898bc']);g.fillRect(-60,-20,200,140)})});
+  comp(g,'multiply',.5,()=>{clipTo(g,()=>{course(c1+t+.5,t,null)},()=>{g.fillStyle=lg(g,cx+10,0,cx+c1+t,0,['#ffffff','#b0aac4']);g.fillRect(-60,-20,200,140)})})}
 
 /* ---- the moving parts ---- */
 function marketDraw(g,t){}
 function colonDraw(g,t){}
 function doorDraw(g,t){/* the patch of light from the hatch, moving across the floor while they wait */
   const k=G.dl14||0;pool(g,250-k*120,124+k*4,22,6,'#fff0c8',.35,'screen')}
-/* the tablet in the close view: two leaves, each a frame of wood round dark wax with writing that cannot be read; Philokrates's leaf
-   lies turned or not; when it is laid on the other, one closed tablet; the cord through the holes and knotted at the edge; the clay
-   on the knot; and the seals pressed into it. Holes and seals are small squares. */
-const SEAL={A:[60,62,84,56],B:[176,62,84,56]};
-function leaf(g,x,y,w,h,holesLeft,writing){wood(g,x,y,w,h,'#8a6a40');R(g,x+4,y+4,w-8,h-8,'#2c2117');R(g,x+4,y+4,w-8,1,'#120c08');
-  if(writing)for(let j=0;j<5;j++){const r=rng(x*7+j);let xx=x+8;while(xx<x+w-12){const l=2+r()*6;R(g,xx,y+9+j*8,l,.8,'rgba(216,198,154,.55)');xx+=l+2}}
-  const hx=holesLeft?x+1.4:x+w-3.4;for(const hy of[y+h*.3,y+h*.7])R(g,hx,hy,2,2,'#1a120a')}
-function sealDraw(g,t){const s=G.s14||{};
-  if(!F.closed){leaf(g,...SEAL.A,0,1);leaf(g,...SEAL.B,!F.turned,1)}
-  else{const[x,y,w,h]=[118,62,84,56];R(g,x+2,y+h,w,2,'rgba(30,20,10,.35)');leaf(g,x,y,w,h,0,0);R(g,x-1,y-1.4,w+2,1.4,'#6a4a2c');
-    if(F.tied){stroke(g,[x+w-2.4,y+h*.3+1,x+w+5,y+h*.5,x+w-2.4,y+h*.7+1],'#c8b890',1);R(g,x+w+3,y+h*.5-2,4,4,'#c8b890')}
-    if(F.clayed){oval(g,x+w+5,y+h*.5,5,4.4,'#a8643a');oval(g,x+w+4,y+h*.5-1,3,2,'#c8845a');if(F.sealed){R(g,x+w+3,y+h*.5-1.5,3,3,'#7a4424');R(g,x+w+9,y+h*.5-1,3,3,'#7a4424')}}}
-  /* the cord and the clay, while they lie on the stone */
-  if(!F.tied&&!has('cord14')){}
-  /* Aristokles's hand with the ring, from the right, waiting */
-  if(!F.sealed){const hx=286,hy=90;poly(g,[320,hy-6,hx+6,hy-7,hx,hy-3,hx+1,hy+3,hx+8,hy+5,320,hy+6],'#c69870');R(g,hx+4,hy-4,4,3,'#c8a14a');R(g,hx+5,hy-3.4,2,1.6,'#6a5a3a')}}
+/* the tablet in the close view, in its states. A: Aristokles's leaf, B: Philokrates's, each a frame of boxwood round dark wax with the
+   writing in the wax; C: the closed tablet, where Philokrates's leaf has been laid on Aristokles's. The two holes of a leaf are in its
+   frame along one long edge: Aristokles's along the near edge; Philokrates's along the far edge until his leaf is turned round, and then
+   along the near edge too, with his writing upside down. Laid one on the other, writing to writing, the holes meet. The cord comes up
+   out of the two holes and runs to the middle of the near edge, where it goes round the edge and is knotted; the clay sits on the knot,
+   and the two seals are pressed into the clay. Nothing is tied across the face of the tablet. Holes and seals are small squares.
+   FY: where the top of the base ends and its front begins. col: where the column's axis meets the top of the base, and the radius of
+   its shaft. Each state is put together over the stone once and dithered like a backdrop (fr), so that the tablet has the same grain
+   of colour as the stone. */
+const SEAL={A:[60,62,84,56],B:[176,62,84,56],C:[118,62,84,56],FY:129,col:[6,34,44],raw:null,fr:{}};
+function sealDraw(g,t){const k=['turned','closed','tied','clayed','sealed'].map(f=>F[f]?1:0).join('');let c=SEAL.fr[k];
+  if(!c){if(!SEAL.raw){const[rc,rg2]=mk(320*HR,144*HR);rg2.scale(HR,HR);stoneSeal(rg2);SEAL.raw=rc}
+    c=SEAL.fr[k]=bake(320,b=>{b.drawImage(SEAL.raw,0,0,320,144);tabletSeal(b);lightSeal(b)},12)}
+  g.drawImage(c,0,0,320,144)}
+/* lightSeal: the light over the whole view: from the open side, warm, falling off to the right and to the back, where the roof keeps it off */
+function lightSeal(g){comp(g,'multiply',.46,()=>{g.fillStyle=rg(g,130,112,250,['#ffffff','#f4eee8','#9e98b8']);g.fillRect(0,0,320,144)});
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,144,300,0,['#ffd49c','rgba(255,212,156,0)']);g.fillRect(0,0,320,144)})}
+/* tabletSeal: the leaves or the tablet as the story stands, and Aristokles's hand while it waits for the clay */
+function tabletSeal(g){
+  if(!F.closed){leaf(g,...SEAL.A,1401,0,0);leaf(g,...SEAL.B,1402,F.turned,!F.turned)}
+  else{closedSeal(g);const[x,y,w,h]=SEAL.C,kx=x+w/2,ky=y+h;
+    if(F.tied)cordSeal(g,x,y,w,h,kx,ky);
+    if(F.clayed)claySeal(g,kx,ky,F.sealed)}
+  if(!F.sealed)handSeal(g)}
+/* dropSeal: the soft shade under a thing that lies on the stone, falling a little to the right and back, away from the light */
+function dropSeal(g,x,y,w,h){for(const[d,a]of[[3,.1],[2,.14],[1,.2]])comp(g,'multiply',1,()=>R(g,x+d*.7,y-d*.25,w+d*.3,h+d*.5,rgba('#5e5a78',a)))}
+/* grainSeal: boxwood, its grain running the long way: fine lines a little lighter or darker than the wood, which all wave alike and so
+   never cross, and here and there a pore */
+function grainSeal(g,x,y,w,h,c,seed){const r=rng(seed),f=.045+r()*.03,p=r()*6,A=.5+r()*.5;
+  inRect(g,hp(x),hp(y),hp(w),hp(h),()=>{R(g,x,y,w,h,c);
+    for(let yy=y-2;yy<y+h+2;yy+=.5+r()*1.2){const col=r()<.55?rgba(tint(c,-.32),.14+r()*.2):rgba(tint(c,.24),.1+r()*.18),pts=[];
+      for(let xx=x-1;xx<=x+w+2;xx+=1.5)pts.push(xx,yy+A*Math.sin(xx*f+p)+.35*Math.sin(xx*f*2.6+p*1.7));stroke(g,pts,col,.5)}
+    for(let i=0;i<w*h/50;i++)R(g,x+r()*w,y+r()*h,1+r()*1.5,.5,rgba(tint(c,-.42),.3))})}
+/* leaf: one leaf lying open with its wax up: the board's near edge shows under it; the frame round the wax is a little higher than the
+   wax, so the frame's far inner side shows and the frame on the left throws a thin shade onto the wax. The writing (seed) is upside
+   down when the leaf has been turned round (rot); the holes are along the far edge (far) or the near one. */
+function leaf(g,x,y,w,h,seed,rot,far){const W='#a8875c',b=4.5,px=x+b,py=y+b,pw=w-2*b,ph=h-2*b;
+  dropSeal(g,x,y,w,h+2.5);
+  grainSeal(g,x,y+h,w,2.5,tint(W,-.4),seed+7);R(g,x,y+h+2,w,.5,tint(W,-.58));
+  grainSeal(g,x,y,w,h,W,seed);R(g,x,y,w,.5,tint(W,.3));R(g,x,y,.5,h,tint(W,.18));R(g,x+w-.5,y,.5,h,tint(W,-.22));R(g,x,y+h-.5,w,.5,tint(W,.14));
+  R(g,px,py,pw,1,tint(W,-.14));
+  g.fillStyle=lg(g,px,py,px+pw,py+ph,['#2c1e12','#38281a','#4a3422']);g.fillRect(px,py+1,pw,ph-1);
+  tex(g,'mott',.22,px,py+1,pw,ph-1,'overlay',1);
+  R(g,px,py+1,.5,ph-1,'#120c08');R(g,px,py+1,pw,.5,'#170f09');R(g,px+pw-.5,py+1,.5,ph-1,'#4a3a2a');
+  pool(g,px+pw*.34,py+ph*.36,pw*.5,ph*.3,'#f0e0c8',.1,'screen');
+  writeSeal(g,px,py+1,pw,ph-1,seed,rot);
+  for(const k of[.3,.7])holeSeal(g,x+w*k,far?y+2.25:y+h-2.25,W)}
+/* holeSeal: a hole through the frame, a small square, its far inner side catching a little light */
+function holeSeal(g,x,y,W){R(g,x-.75,y-.75,1.5,1.5,'#130c07');R(g,x-.75,y-.75,1.5,.5,tint(W,-.5))}
+/* writeSeal: lines of writing scratched into the wax, too small and too quick to be read; where the stylus has gone the wax is pale,
+   with the shade of the groove under it on the side away from the light, whichever way the leaf lies. Each word is one stroke that runs
+   on from left to right and never back over itself; the lines stop short of the frame at both ends, unevenly, and are not ruled. The
+   last line, apart and to the right, is the name. */
+function writeSeal(g,x,y,w,h,seed,rot){const r=rng(seed);g.save();if(rot){g.translate(x+w,y+h);g.rotate(Math.PI)}else g.translate(x,y);
+  for(const[by,kind]of[[7,0],[14,0],[21,0],[28,1],[37.5,2]]){let xx=kind===2?w*.5+r()*4:2.5+r()*2;const end=kind===2?w-4-r()*3:kind?w*(.42+r()*.2):w-3-r()*10;
+    while(xx<end-3){const len=Math.min(end-xx,(kind===2?8:3)+r()*9),p=[xx,by-r()*.8];let up=1,X=xx;
+      while(X<xx+len){X+=.5+r()*1.1;const q=r();p.push(X,up?by-(q<.12?3.4:q<.3?.8:1.2+r()*1.1):by+(q<.07?1.6:r()*.3));up=q<.3?up:!up}
+      stroke(g,p.map((v,i)=>i%2?v+(rot?-.5:.5):v),'rgba(12,7,4,.45)',.5);stroke(g,p,'rgba(206,180,132,.42)',.5);xx=X+1.8+r()*2}}
+  g.restore()}
+/* closedSeal: the closed tablet: the back of Philokrates's leaf, plain wood, is up, with his two holes along the near edge; under it the
+   near edges of both leaves show, one over the other */
+function closedSeal(g){const[x,y,w,h]=SEAL.C,W='#a8875c';
+  dropSeal(g,x,y,w,h+5);
+  grainSeal(g,x,y+h+2.5,w,2.5,tint(W,-.46),1408);R(g,x,y+h+4.5,w,.5,tint(W,-.62));
+  grainSeal(g,x,y+h,w,2.5,tint(W,-.36),1409);R(g,x,y+h+2,w,.5,tint(W,-.56));
+  grainSeal(g,x,y,w,h,tint(W,.03),1410);R(g,x,y,w,.5,tint(W,.3));R(g,x,y,.5,h,tint(W,.18));R(g,x+w-.5,y,.5,h,tint(W,-.22));R(g,x,y+h-.5,w,.5,tint(W,.14));
+  pool(g,x+w*.5,y+h*.5,w*.42,h*.36,'#6a4a2a',.14,'multiply');pool(g,x+w*.3,y+h*.32,w*.3,h*.22,'#fff2d8',.1,'screen');
+  for(const k of[.3,.7])holeSeal(g,x+w*k,y+h-2.25,W)}
+/* cordSeal: the cord of flax: up out of each hole, along to the middle of the near edge, round the edge, and knotted there: a lump
+   of twisted cord, its turns all slanting one way. The two ends lie along the edge to the right. */
+function cordSeal(g,x,y,w,h,kx,ky){const C='#d2c6a0',S='#7e7258',hy=y+h-2.25,cord=(p,wd)=>{stroke(g,p.map((v,i)=>i%2?v+.45:v),S,wd+.2);stroke(g,p,C,wd)};
+  cord([x+w*.3,hy,kx-6,ky-1.3,kx-2,ky-.4],.8);cord([x+w*.7,hy,kx+6,ky-1.3,kx+2,ky-.4],.8);
+  cord([kx+1.5,ky+1.4,kx+5,ky+2.1,kx+9,ky+3.2],.7);cord([kx+1.5,ky+2.2,kx+4.5,ky+3.2,kx+7.6,ky+4.3],.7);
+  oval(g,kx+.4,ky+1.5,3.1,2.3,S);oval(g,kx,ky+1,2.8,2,C);
+  clipTo(g,()=>oval(g,kx,ky+1,2.8,2),()=>{for(const d of[-1.6,0,1.6])stroke(g,[kx+d-1,ky+2.8,kx+d+1,ky-.8],rgba(S,.8),.5);R(g,kx-2,ky-.6,2,.5,'#f2e8cc')})}
+/* claySeal: the lump of clay pressed down over the knot, in front of the edge; sealed, it is flattened, and the two seals are side by
+   side in it, each a small square sunk into the clay with its far side lit and its left side in shade, and a mark of its own */
+function claySeal(g,kx,ky,sealed){const C='#94654e',r=rng(1411),blob=(cx,cy,rx,ry)=>{const p=[];for(let i=0;i<14;i++){const a=i/14*6.2832,k=.88+r()*.2;p.push(cx+Math.cos(a)*rx*k,cy+Math.sin(a)*ry*k)}return p};
+  const rx=sealed?8.4:6.8,ry=sealed?4.2:4.8,cy=ky+(sealed?.9:.4),out=blob(kx,cy,rx,ry);
+  comp(g,'multiply',1,()=>{poly(g,out.map((v,i)=>i%2?v+1.2:v+1),'rgba(70,52,60,.4)')});
+  poly(g,out,tint(C,-.32));
+  clipTo(g,()=>poly(g,out),()=>{g.fillStyle=lg(g,kx-rx,cy-ry,kx+rx*.6,cy+ry,[tint(C,.3),C,C,tint(C,-.3)]);g.fillRect(kx-rx-1,cy-ry-1,rx*2+2,ry*2+2);
+    R(g,kx-rx,cy+ry-1,rx*2,1,rgba(tint(C,-.4),.6));tex(g,'mott',.3,kx-rx-1,cy-ry-1,rx*2+2,ry*2+2,'overlay',.5)});
+  if(!sealed){oval(g,kx-2,cy-1.6,2.4,1.1,tint(C,.4));R(g,kx-3,cy-2.2,1,.5,tint(C,.6));return}
+  for(const[sx,sy,m]of[[kx-5.6,cy-2.2,0],[kx+1,cy-1.8,1]]){R(g,sx,sy+3.5,4,.5,tint(C,.24));R(g,sx,sy,4,3.5,tint(C,-.1));R(g,sx,sy,4,.5,tint(C,.3));R(g,sx,sy+.5,.5,3,tint(C,-.42));
+    if(m)R(g,sx+1.5,sy+1.5,1,1,tint(C,-.36));else stroke(g,[sx+1.2,sy+2.8,sx+2.8,sy+1.2],tint(C,-.4),.5)}}
+/* handSeal: Aristokles's left hand, the back of it up, coming in from the right out of the fold of his mantle, which is wrapped round
+   his left arm, and waiting over the stone: the thumb along the far side, the fingers relaxed and lying together, their tips turned
+   down a little with the nails on top, and on the fourth finger his signet ring, a gold bezel as wide as the finger with its stone, a
+   small square. The light comes from the front and the left: the near side of each finger is lit, its far side shaded where it meets
+   the next. No line is drawn across a finger. The hand is drawn in units of its own and enlarged by half, to the scale of the tablet. */
+function handSeal(g){const S='#c69870',Lt=tint(S,.2),Hi=tint(S,.34),Dk=tint(S,-.24),M='#7a2a3a';g.save();g.translate(266,92);g.scale(1.5,1.5);g.translate(-278.6,-92);
+  /* the soft shade of the hand on the stone, below it */
+  for(const[d,a]of[[3,.1],[1.8,.14],[.9,.14]])comp(g,'multiply',1,()=>poly(g,[330,91+d,300,89+d,282,90+d*1.3,277,95+d*1.3,280,102+d,296,105+d,330,110+d],rgba('#56526e',a)));
+  /* finger: from its knuckle (bx, by) along the direction (ux, uy), of length l and width w, tapering, with a rounded tip */
+  const finger=(bx,by,ux,uy,l,w,nail)=>{const nx=-uy,ny=ux,tx=bx+ux*l,ty=by+uy*l,e=w*.42,at=(k,s)=>[bx+ux*l*k+nx*s,by+uy*l*k+ny*s];
+    const path=()=>{g.beginPath();g.moveTo(bx-nx*w/2,by-ny*w/2);g.lineTo(tx-nx*e-ux*e,ty-ny*e-uy*e);g.quadraticCurveTo(tx-nx*e+ux*e*.6,ty-ny*e+uy*e*.6,tx+ux*e*.7,ty+uy*e*.7);
+      g.quadraticCurveTo(tx+nx*e+ux*e*.6,ty+ny*e+uy*e*.6,tx+nx*e-ux*e,ty+ny*e-uy*e);g.lineTo(bx+nx*w/2,by+ny*w/2);g.closePath()};
+    path();g.fillStyle=Dk;g.fill();
+    clipTo(g,path,()=>{poly(g,[...at(-.1,-w*.3),...at(1.1,-e*.55),...at(1.1,e+.4),...at(-.1,w/2+.4)],S);
+      poly(g,[...at(.02,w*.02),...at(.8,0),...at(.8,e*.72),...at(.02,w*.42)],Lt);
+      g.fillStyle=lg(g,...at(.74,0),...at(1.05,0),[rgba(Dk,0),rgba(Dk,.5)]);poly(g,[...at(.74,-w),...at(1.1,-w),...at(1.1,w),...at(.74,w)]);g.fill();
+      if(nail){const[nx2,ny2]=at(.87,w*.06);oval(g,nx2,ny2,1.2,e*.6,'#d8ae94');R(g,nx2-.6,ny2-.4,.5,.5,'#f0d8c6')}})};
+  /* the thumb, along the far side, a little under the hand */
+  finger(300.6,84.6,-.95,-.3,9.6,3.5,1);
+  /* the back of the hand, from the wrist to the knuckles, with its tendons */
+  const back=()=>{g.beginPath();g.moveTo(308,84.4);g.quadraticCurveTo(300,82.4,293,83.2);g.quadraticCurveTo(290.6,91,293.6,99.8);g.quadraticCurveTo(301,101.6,308,99.6);g.closePath()};
+  back();g.fillStyle=S;g.fill();
+  clipTo(g,back,()=>{g.fillStyle=lg(g,0,83,0,101,[Dk,Lt,Lt,S]);g.fillRect(288,82,22,20);
+    for(const[y0,y1]of[[85.6,86.6],[89.6,89],[93.6,92],[97.4,95]])stroke(g,[293.6,y0,300,(y0+y1)/2,307,y1],rgba(Hi,.45),.6)});
+  /* the fingers: little, ring, middle and index, each from its knuckle */
+  finger(294,97.4,-.996,-.07,9.6,3.5,1);finger(292.6,93.6,-1,-.03,12,3.9,1);finger(291.9,89.6,-1,0,13,4.1,1);finger(292.4,85.6,-.999,.04,11.6,4,1);
+  /* the knuckles */
+  for(const[x,y]of[[292.4,85.8],[291.9,89.8],[292.6,93.8],[294,97.6]])oval(g,x+1.8,y,1.5,1.3,rgba(Hi,.6));
+  /* the signet ring on the fourth finger: a gold bezel as wide as the finger, its stone a small square */
+  oval(g,287.3,93.8,1.9,2.5,'#6e4e1c');oval(g,287,93.5,1.7,2.2,'#c9a24a');R(g,286,92,1.5,.5,'#f2d888');R(g,286.3,92.8,1.5,1.5,'#6a2016');R(g,286.3,92.8,.5,.5,'#c46448');
+  /* the mantle, wrapped round the forearm: its hem round the wrist, and the folds running back along the arm and hanging below it */
+  const hem=[304.6,73,307.2,80,305.2,84.2,304.6,92,305.4,99.8,303.6,106,306,113];
+  poly(g,[...hem,320,113,320,73],M);
+  clipTo(g,()=>poly(g,[...hem,320,113,320,73]),()=>{g.fillStyle=lg(g,0,73,0,113,[tint(M,-.2),tint(M,.16),tint(M,.22),M,tint(M,-.36)]);g.fillRect(300,72,22,42);
+    for(const[p,c]of[[[308.4,79.2,313,80.4,320,79.6],tint(M,-.38)],[[308,90.2,313,89.2,320,90.4],tint(M,.34)],[[307.4,96.6,311.6,98,320,97.4],tint(M,-.3)],[[307,104.6,311,107.4,320,108.2],tint(M,-.42)],[[308,84.4,314,84.6,320,83.6],tint(M,.12)]])stroke(g,p,rgba(c,.6),1.4)});
+  stroke(g,hem,tint(M,.42),.6);g.restore()}
 
 /* ---------- the lane map ---------- */
 /* The city is laid out in its own units, from the city wall (x 0) to the theater's hill (x 768), with the harbor west of the wall
@@ -601,11 +769,11 @@ ROOMS.colon14={space:.6,walk:[16,464,112,138],mood:'uproar',amb:{roar14:.55,crow
   {name:'theater_arches',x:176,y:52,w:270,h:52,wx:300,wy:116,look:'theater_arches_look'},
   {name:'crowd',x:176,y:80,w:270,h:30,wx:300,wy:116,look:'crowd_at_the_arches_look',talk:'nobody_stops_to_listen'}]};
 ROOMS.seal14={space:.6,walk:NOW,mood:'uproar',amb:{roar14:.45,crowd:.4,cry14:.5},hs:[
-  {name:'aristokles_leaf',x:60,y:62,w:84,h:56,wx:160,wy:236,vis:()=>!F.closed,look:'aristokles_leaf_look',use:layLeaf,useWith:withTablet},
-  {name:'philokrates_leaf',x:176,y:62,w:84,h:56,wx:160,wy:236,vis:()=>!F.closed,def:'use',look:()=>say(RUN,F.turned?'philokrates_leaf_now_its_holes':'philokrates_leaf_holes_at_the_other_edge'),use:layLeaf,pickup:turnLeaf,open:turnLeaf,useWith:withTablet},
-  {name:'tablet',x:118,y:62,w:96,h:56,wx:160,wy:236,vis:()=>!!F.closed,look:()=>say(RUN,F.sealed?'two_leaves_tied_through_two_seals':F.clayed?'over_the_knot_so_nobody':F.tied?'through_both_holes_and_knotted':'writing_to_writing_holes_together'),useWith:withTablet},
-  {name:'ring',x:282,y:80,w:38,h:22,wx:160,wy:236,vis:()=>!F.sealed,def:'use',look:'aristokles_ring_look',use:ring,talk:ring,useWith:id=>id==='clay14'?say(RUN,'over_the_knot_so_nobody'):false},
-  {name:'base_of_a_column',x:20,y:118,w:180,h:26,wx:160,wy:236,look:'base_of_a_column_look'},
+  {name:'aristokles_leaf',x:60,y:62,w:84,h:59,wx:160,wy:236,vis:()=>!F.closed,look:'aristokles_leaf_look',use:layLeaf,useWith:withTablet},
+  {name:'philokrates_leaf',x:176,y:62,w:84,h:59,wx:160,wy:236,vis:()=>!F.closed,def:'use',look:()=>say(RUN,F.turned?'philokrates_leaf_now_its_holes':'philokrates_leaf_holes_at_the_other_edge'),use:layLeaf,pickup:turnLeaf,open:turnLeaf,useWith:withTablet},
+  {name:'tablet',x:116,y:60,w:88,h:66,wx:160,wy:236,vis:()=>!!F.closed,look:()=>say(RUN,F.sealed?'two_leaves_tied_through_two_seals':F.clayed?'over_the_knot_so_nobody':F.tied?'through_both_holes_and_knotted':'writing_to_writing_holes_together'),useWith:withTablet},
+  {name:'ring',x:264,y:76,w:56,h:32,wx:160,wy:236,vis:()=>!F.sealed,def:'use',look:'aristokles_ring_look',use:ring,talk:ring,useWith:id=>id==='clay14'?say(RUN,'over_the_knot_so_nobody'):false},
+  {name:'base_of_a_column',x:0,y:127,w:218,h:17,wx:160,wy:236,look:'base_of_a_column_look'},
   {name:'back_to_the_colonnade',x:220,y:124,w:100,h:20,wx:160,wy:236,exit:outSeal,look:'not_till_it_is_sealed'}]};
 ROOMS.door14={space:1.1,floor:'earth',walk:[40,300,112,138],get mood(){return F.plea?'house':'house'},get amb(){return F.plea?{}:{roarfar14:.6,cryfar14:.6}},hs:[
   {name:'door',x:232,y:40,w:44,h:64,wx:228,wy:118,dir:1,look:'door_of_damon_and_theanos_house',use:()=>say(DA,'the_bolt_stays_where_it_is'),open:()=>say(DA,'the_bolt_stays_where_it_is')},
