@@ -487,9 +487,9 @@
       /* every lane hangs together with every other: the walkable ground is one piece, but for a cell or two in a notch of a wall */
       for(const v of['surge','quiet']){const Q=M.G[v]||(F.two=v==='quiet'?1:0,M.walkable(0,0),M.G[v]),n={};for(let i=0;i<Q.comp.length;i++)if(Q.cell[i])n[Q.comp[i]]=(n[Q.comp[i]]||0)+1;
         const big=Object.values(n).filter(c=>c>=12);ok(big.length===1,'in the '+v+' every lane can be reached from every other: '+big.length+' piece'+(big.length>1?'s: '+JSON.stringify(n):''))}delete F.two
-      /* every lane can be walked along its middle, from end to end (but for what a pass shuts) */
+      /* every lane can be walked along its middle, from end to end (but for what a pass shuts, and the jams of the uproar) */
       {F.two=0;M.walkable(0,0);const Q=M.G.surge,bad=[];D.lanes.forEach((l,k)=>{const p=l.pts;for(let i=2;i<p.length;i+=2){const ax=p[i-2],ay=p[i-1],dx=p[i]-ax,dy=p[i+1]-ay,n=Math.ceil(Math.hypot(dx,dy));
-          for(let j=0;j<=n;j++){const x=ax+dx*j/n,y=ay+dy*j/n;if(x<4||y<4||x>D.w-4||y>D.h-4||D.keep.some(q=>{const P=q.poly;let c=false;for(let a=0,m=P.length/2,b=m-1;a<m;b=a++){const xi=P[2*a],yi=P[2*a+1],xj=P[2*b],yj=P[2*b+1];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c}))continue;
+          for(let j=0;j<=n;j++){const x=ax+dx*j/n,y=ay+dy*j/n;if(x<4||y<4||x>D.w-4||y>D.h-4||(D.jams&&D.jams.surge||[]).some(J=>x>=J.x-4&&x<=J.x+J.w+4&&y>=J.y-4&&y<=J.y+J.h+4)||D.keep.some(q=>{const P=q.poly;let c=false;for(let a=0,m=P.length/2,b=m-1;a<m;b=a++){const xi=P[2*a],yi=P[2*a+1],xj=P[2*b],yj=P[2*b+1];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c}))continue;
             if(!Q.cell[(clamp(Math.floor(y/2),0,Q.GH-1))*Q.GW+clamp(Math.floor(x/2),0,Q.GW-1)]&&!M.walkable(x+1,y)&&!M.walkable(x-1,y)&&!M.walkable(x,y+1)&&!M.walkable(x,y-1))bad.push([k,Math.round(x-X),Math.round(y)])}}});
         delete F.two;const one=[];for(const b of bad)if(!one.some(o=>o[0]===b[0]&&Math.hypot(o[1]-b[1],o[2]-b[2])<8))one.push(b);
         ok(!bad.length,'every lane can be walked along its middle'+(bad.length?'. NOT AT (lane, x in the city, y): '+JSON.stringify(one.slice(0,16)):''))}}
@@ -557,6 +557,10 @@
     /* he goes only by the lanes he knows: from where he starts, a click on the house leads him only as near as the lanes he has seen go */
     {M.seeAll=0;M.SEEN={};place(R,'lanes14',...C.ent.lanes14);viewOf(R);await wait(500);const r=M.route(R,...D.targets.house),e=r&&r[r.length-1],full=M.route(R,...D.targets.house,true);M.seeAll=1;
       ok(r&&r.partial&&Math.hypot(e[0]-D.targets.house[0],e[1]-D.targets.house[1])>60&&full&&!full.partial,'a click goes only by the lanes the runner knows: from the start, a click on the house takes him only as near as those go')}
+    /* in the uproar narrow streets are jammed by people who cannot get through themselves: nobody passes them, so the way to the house goes round */
+    {const way=()=>{const r=M.route(R,...D.targets.house,true);if(!r)return 0;let len=0,x=R.x,y=R.y;for(const[a,b]of r){len+=Math.hypot(a-x,b-y);x=a;y=b}return len},js=D.jams.surge;
+      place(R,'lanes14',...C.ent.lanes14);const with_=way(),jp=M.J.surge.length,blocked=js.every(j=>!M.walkable(j.x+j.w/2,j.y+j.h/2));D.jams.surge=[];M.G={};const without=way();D.jams.surge=js;M.G={};
+      ok(jp>30&&blocked&&with_>without+20&&!(D.jams.quiet||[]).length,'in the uproar '+js.length+' narrow streets are jammed by '+jp+' people who cannot get through: the way to the house is '+Math.round(with_)+' pixels, where it would be '+Math.round(without)+'; after it, none')}
     /* the house is reached only through its covered passage: the way to it runs under the house built over the lane */
     {const b=D.bridges[0],r=M.route(R,...D.targets.house,true);let under=false,x=R.x,y=R.y;for(const[a,c]of r){for(let t=0;t<=1;t+=.05){const px=x+(a-x)*t,py=y+(c-y)*t;if(px>=b.x&&px<b.x+b.w&&py>=b.y&&py<b.y+b.d)under=true}x=a;y=c}
       ok(D.bridges.length===3&&under,'the house is reached through a covered passage, and two quiet courts the same way')}

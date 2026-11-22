@@ -120,7 +120,14 @@ const lanes=CITY.map(l=>Object.assign({},l,{pts:pts(l.pts),w:Math.round(l.w*SC)}
 const keep=KEEP.map(k=>({poly:pts(k.poly)})).concat([{poly:[0,0,OX,0,OX,H,0,H]}]);   /* and the harbor, west of the wall */
 /* the covered passages: a house over the lane, its front with an archway towards the lane it leaves */
 const bridges=Object.values(ARCH).map(([x,y0,y1])=>({x:X(x)-7,y:Y(y0),w:15,d:Math.round(Y(y1)-Y(y0)),H:13,gap:[X(x)-4,X(x)+4]}));
-const M=L.make('lanes14',{w:W,h:H,seed:1414,lot:25,grid:true,lanes,open,keep,bridges,
+/* the houses as large against the people as the oblique prototype's were: few flat roofs, most ridges running east and west.
+   PREVIEW (to be removed once the maintainer has chosen): ?houses=small on the demo page builds them as before, for comparison */
+const SMALL=typeof location!=='undefined'&&/[?&]houses=small/.test(location.search);
+/* in the uproar, narrow streets packed with people who cannot get through themselves: on the runner's straight way west, on the street
+   below the house, and on the street from the north quarter down to the harbor street; he has to go round */
+const JAMS=[[378,112,26,12,'E'],[178,68,26,12,'E'],[222,82,16,26,'S']].map(([x,y,w,h,face])=>({x:X(x),y:Y(y),w:q(w),h:q(h),face}));
+const M=L.make('lanes14',{w:W,h:H,seed:1414,lot:SMALL?25:38,door:SMALL?2:3,win:SMALL?2:3,winH:SMALL?2.5:3,doorH:SMALL?7:8,flat:SMALL?.1:.05,ew:SMALL?.85:.6,grid:true,
+  jams:{surge:JAMS},lanes,open,keep,bridges,
   solid:STALLS.slice(0,11).map(box),block:{surge:STALLS.slice(11).map(box),quiet:GATES.concat(DOWN).map(box)},
   variant:V,targets:{house:[X(HOUSE[0]),Y(HOUSE[1])],gate:[X(GATE[0]),Y(GATE[1])]},
   pace:a=>a===RUN?'run':'walk',

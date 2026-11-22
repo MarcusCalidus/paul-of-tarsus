@@ -34,6 +34,9 @@
                      source with doors:[x, y] and r sends them out of the doors of the houses within r of that place, never out of a house
                      whose shutters are bolted (cue), and the door stands open behind each for a moment
        zones         [{x, y, w, h, enter()}]: places the chapter is told of when whoever is played walks into them (a court, say)
+       jams          {variant: [{x, y, w, h, face}]}: narrow streets packed with people who cannot get through themselves; nobody passes
+                     them, and whoever is played stops before one (press is called, as when the crowd presses him back)
+       flat, ew      how often a roof is flat (0.1), and how wide a house must be against its depth for its ridge to run east and west (0.85)
        targets       {name:[x, y]}: places whose distance along the lanes the chapter asks for (dist), as the sound does
        pace(a)       'run' or 'walk', for whoever is played; press(): someone was pressed back by the crowd (the chapter may say so)
        room          the room's own fields: hs, mood, amb, enter, space ...
@@ -111,7 +114,7 @@ function houses(def,K){const W=def.w,H=def.h,S=def.lot||15,r=rng((def.seed||1)*3
     if(!n)break}
   for(let id=1;id<HS.length;id++){const L=px[id];if(!L||!L.length){HS[id]=null;continue}let x0=W,y0=H,x1=0,y1=0;for(const q of L){const x=q%W,y=(q/W)|0;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
     /* hw: how tall the house's front wall stands, in room pixels: one storey or two, as in the city maps of those games */
-    const h=HS[id],bw=x1-x0+1,bh=y1-y0+1,flat=r()<.1,hw0=r()<.4?8+Math.round(r()*4)/2:11.5+Math.round(r()*5)/2;Object.assign(h,{x0,y0,x1,y1,n:L.length,ew:bw>=bh*.85,hw:hw0,flat,
+    const h=HS[id],bw=x1-x0+1,bh=y1-y0+1,flat=r()<(def.flat==null?.1:def.flat),hw0=r()<.4?8+Math.round(r()*4)/2:11.5+Math.round(r()*5)/2;Object.assign(h,{x0,y0,x1,y1,n:L.length,ew:bw>=bh*(def.ew||.85),hw:hw0,flat,
       roof:flat?FLAT[(r()*FLAT.length)|0]:ROOFS[(r()*ROOFS.length)|0],wall:WALLS[(r()*WALLS.length)|0],seed:(r()*1e6)|0});
     /* now and then a walled yard with a tree in it instead of a house */
     if(L.length>=90&&L.length<=420&&r()<.06){h.yard=true;h.flat=false;h.hw=2.5}
@@ -130,20 +133,21 @@ const SHADE=[.66,.62,.7];   /* the sun's shadow, multiplied in: a little cool */
    its door and its windows (feat): windows two columns wide on the ground floor, and on a house of two storeys windows above, set between
    those below and never over them, so that four of them never stand two by two. The doors are listed (doors): the crowd steps out of them.
    Worked out once, when the map is made. */
-const DOORH=7;   /* how tall a door is, in room pixels: about half a figure, as in the city maps of those games */
+const DOORH=7;   /* how tall a door is, in room pixels: about half a figure, as in the city maps of those games (def.doorH; def.door and def.win:
+                    how many room pixels wide a door and a window are, 2 by default; def.winH: how tall a window is, 2.5) */
 function fronts(M){const def=M.def,W=def.w,H=def.h,K=M.K,{hid,HS}=M.H,isH=i=>K[i]===BUILT&&hid[i]>0;
   const dn=new Int16Array(W*H),up=new Int16Array(W*H),lf=new Int16Array(W*H),rt=new Int16Array(W*H),end=new Uint8Array(W*H),below=new Int32Array(W*H);
   for(let x=0;x<W;x++){for(let y=H-1;y>=0;y--){const i=y*W+x;if(!isH(i))continue;const b=y<H-1?i+W:-1;if(b>=0&&isH(b)&&hid[b]===hid[i]){dn[i]=dn[b]+1;end[i]=end[b];below[i]=below[b]}else{dn[i]=0;end[i]=b<0?2:isH(b)?2:K[b]===KEEP?2:1;below[i]=b>=0&&isH(b)?hid[b]:0}}
     for(let y=0;y<H;y++){const i=y*W+x;if(!isH(i))continue;const a=i-W;up[i]=y>0&&isH(a)&&hid[a]===hid[i]?up[a]+1:0}}
   for(let y=0;y<H;y++){for(let x=0;x<W;x++){const i=y*W+x;if(!isH(i))continue;lf[i]=x>0&&isH(i-1)&&hid[i-1]===hid[i]?lf[i-1]+1:0}
     for(let x=W-1;x>=0;x--){const i=y*W+x;if(!isH(i))continue;rt[i]=x<W-1&&isH(i+1)&&hid[i+1]===hid[i]?rt[i+1]+1:0}}
-  const feat=new Uint8Array(W*H),doors=[];   /* feat: 1 door, 2 window above, 3 window below */
+  const feat=new Uint8Array(W*H),doors=[],DW=def.door||2,WW=def.win||2,PER=2*WW+1,DH=def.doorH||DOORH;   /* feat: 1 door, 2 window above, 3 window below */
   for(let id=1;id<HS.length;id++){const h=HS[id];if(!h||h.yard)continue;const r=rng(h.seed),cols=[];
     for(let x=h.x0;x<=h.x1;x++){let best=-1;for(let y=h.y1;y>=h.y0;y--){const i=y*W+x;if(hid[i]===id&&K[i]===BUILT&&dn[i]===0&&end[i]===1){best=i;break}}cols.push(best)}
-    let run=[];const flush=()=>{if(run.length>=5){const L=run.length,door=L>=6&&r()<.85?1+((r()*(L-3))|0):-9,free=k=>k>0&&k<L-1&&Math.abs(k-door)>1&&Math.abs(k-door-1)>1;
-        for(let k=0;k<L;k++){const i=run[k],m=(k+h.seed)%5;if(k===door||k===door+1)feat[i]=1;
-          else if(h.hw>=11&&(m===1||m===2)&&free(k))feat[i]=2;else if(h.hw>=6&&(m===3||m===4)&&free(k))feat[i]=3}
-        if(door>=0){const i=run[door],x=i%W,y=(i/W)|0;if(run[door+1]===i+1)doors.push({x,y,h:Math.min(h.hw-2,DOORH),house:h})}}run=[]};
+    let run=[];const flush=()=>{if(run.length>=DW+3){const L=run.length,door=L>=DW+4&&r()<.85?1+((r()*(L-DW-2))|0):-99,free=k=>k>0&&k<L-1&&(k<door-1||k>door+DW);
+        for(let k=0;k<L;k++){const i=run[k],m=(k+h.seed)%PER;if(k>=door&&k<door+DW)feat[i]=1;
+          else if(h.hw>=11&&m>=1&&m<=WW&&free(k))feat[i]=2;else if(h.hw>=6&&m>WW&&m<=2*WW&&free(k))feat[i]=3}
+        if(door>=0){const i=run[door],x=i%W,y=(i/W)|0;if(run[door+DW-1]===i+DW-1)doors.push({x,y,w:DW,h:Math.min(h.hw-2,DH),house:h})}}run=[]};
     for(const i of cols){if(i>=0&&(!run.length||i===run[run.length-1]+1))run.push(i);else{flush();if(i>=0)run.push(i)}}flush()}
   return{dn,up,lf,rt,end,below,feat,doors}}
 /* the ground: the lanes paved with small stones, the streets with slabs, the squares with great ones, darker at the foot of a wall and in
@@ -194,23 +198,26 @@ function sprite(M,h,v){const def=M.def,W=def.w,K=M.K,{hid,HS}=M.H,{dn,up,lf,rt,f
     else{const L=dL+dR,rp=L*.5;face=dL<rp?'W':'E';ridge=Math.abs(dL-rp)<.5}
     const edge=dDn<.6;let kk;
     if(h.flat){kk=1+(vn(nzA,x*.2,y*.2)-.5)*.1+(hash2(WX,WY,h.seed)-.5)*.05;if(dL<.6||dUp<.6)kk*=1.07;if(dR<.6)kk*=.84;if(edge)kk*=.7;if(dL>=.6&&dL<1.1||dUp>=.6&&dUp<1.1)kk*=.9}
-    else{kk=face==='S'?1:face==='W'?1.04:face==='N'?.8:.74;
+    else{/* the slopes as the sun in the west-south-west finds them, clearly apart, as in the city maps of those games: the south and west
+         slopes lit, the north and east ones in shade; a bright ridge, the back edge of the roof catching the light, a dark line at the eaves */
+      kk=face==='S'?1.06:face==='W'?1.1:face==='N'?.68:.64;
       /* the cover tiles run down each slope and stop short of the ridge, so that no stripe crosses it */
-      if(ridge)kk*=1.12;else if(face==='N'||face==='S'){if(WX%3===0)kk*=.92}else if(WY%3===0)kk*=.92;
-      if(edge)kk*=.66;if(dUp<.6)kk*=.9;kk*=1+(vn(nzA,x*.12,y*.12)-.5)*.18+(hash2(WX,WY,h.seed)-.5)*.05}
+      if(ridge)kk*=1.22;else if(face==='N'||face==='S'){if(WX%3===0)kk*=.88}else if(WY%3===0)kk*=.88;
+      if(edge)kk*=.55;else if(dUp<.6)kk*=1.12;kk*=1+(vn(nzA,x*.12,y*.12)-.5)*.14+(hash2(WX,WY,h.seed)-.5)*.05}
     /* a seam where two roofs meet, on the shadow side; the shade of a taller house to the west */
     if(sx&&x<W-1&&isH(i+1)&&hid[i+1]!==h.id)kk*=.6;if(sy&&isH(i+W)&&hid[i+W]!==h.id)kk*=.65;
     for(let q=1;q<=6;q++){const A=hAt(x-q,y+Math.round(q*.42));if(A&&A!==h.id&&HS[A]&&HS[A].hw-h.hw>=q*.8){kk*=.74;break}}
     put(X,Y,R0,kk)};
   /* the front wall, at one canvas pixel: u its height above the ground, ib the house's lowest pixel in this column */
+  const DH=def.doorH||DOORH,WH=def.winH||2.5;
   const win=(X,Y,sx,top)=>{if(s==='shut')put(X,Y,[110,76,46],sx?.82:1);else if(s==='head'&&top)put(X,Y,hex('#b07a52'),1);else put(X,Y,[36,28,26],1)};
   const front=(X,Y,u,ib,x,sx)=>{let kk=.98+(vn(nzB,x*.5,(T*2+Y)*.25)-.5)*.07+(hash2(x*2+sx,T*2+Y,h.seed)-.5)*.04;const east=rt[ib]+(1-sx)*.5<1.1,west=lf[ib]+sx*.5<.6;
     if(u>Hh-.5)kk*=1.08;else if(u>Hh-1.5)kk*=.72;else if(u<1)kk*=.78;else if(u<1.5)kk*=.9;
     if(east)kk*=.8;else if(west)kk*=1.05;
     const fi=feat[ib];
-    if(fi===1&&u<Math.min(Hh-2.5,DOORH)){if(s==='open'&&u<Math.min(Hh-2.5,DOORH)-.5)put(X,Y,[32,24,20],1);else put(X,Y,[100,68,42],sx?.92:.74);return}
-    if(fi===2&&u>Hh-6&&u<Hh-3.5){win(X,Y,sx,u>Hh-4.8);return}
-    if(fi===3&&u>2.5&&u<5){win(X,Y,sx,false);return}
+    if(fi===1&&u<Math.min(Hh-2.5,DH)){if(s==='open'&&u<Math.min(Hh-2.5,DH)-.5)put(X,Y,[32,24,20],1);else put(X,Y,[100,68,42],sx?.92:.74);return}
+    if(fi===2&&u>Hh-3.5-WH&&u<Hh-3.5){win(X,Y,sx,u>Hh-3.5-WH/2);return}
+    if(fi===3&&u>2.5&&u<2.5+WH){win(X,Y,sx,false);return}
     put(X,Y,W0,kk)};
   for(let x=X0;x<=X1;x++){const runs=[];let a=-1;
     for(let y=h.y0;y<=B+1;y++){const on=y<=B&&hid[y*W+x]===h.id&&K[y*W+x]===BUILT;if(on&&a<0)a=y;else if(!on&&a>=0){runs.push([a,y-1]);a=-1}}
@@ -296,9 +303,12 @@ function crown(g,x,y,s,c){c=c||'#4a6038';const r=rng(Math.round(x*31+y*17));for(
   for(let i=0;i<5;i++)R(g,x-s*.5+r()*s*.5,y-s*.5+r()*s*.5,.5,.5,tint(c,.28))}
 
 /* ============ THE WALK GRID: cells of two room pixels, and the ways through them ============ */
+/* jams: in a variant, narrow streets packed with people who cannot get through themselves (def.jams: {variant: [{x, y, w, h, face}]}).
+   Nobody passes them, whoever is played included: he has to find another way. */
+const jamsOf=(def,v)=>(def.jams&&def.jams[v])||[];
 function grid(M,v){if(M.G[v])return M.G[v];const def=M.def,W=def.w,H=def.h,GW=Math.ceil(W/CS),GH=Math.ceil(H/CS),K=M.K;
   const ok=new Uint8Array(W*H);for(let i=0;i<W*H;i++)ok[i]=OPEN(K[i])?1:0;
-  for(const b of(def.solid||[]).concat((def.block&&def.block[v])||[]))for(let y=Math.max(0,Math.floor(b[1]));y<Math.min(H,Math.ceil(b[1]+b[3]));y++)for(let x=Math.max(0,Math.floor(b[0]));x<Math.min(W,Math.ceil(b[0]+b[2]));x++)ok[y*W+x]=0;
+  for(const b of(def.solid||[]).concat((def.block&&def.block[v])||[],jamsOf(def,v).map(j=>[j.x,j.y,j.w,j.h])))for(let y=Math.max(0,Math.floor(b[1]));y<Math.min(H,Math.ceil(b[1]+b[3]));y++)for(let x=Math.max(0,Math.floor(b[0]));x<Math.min(W,Math.ceil(b[0]+b[2]));x++)ok[y*W+x]=0;
   /* how far each pixel lies from anything that cannot be walked: a figure keeps a pixel and a half from every wall */
   const dist=new Float32Array(W*H);for(let i=0;i<W*H;i++)dist[i]=ok[i]?99:0;
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=y*W+x;if(!dist[i])continue;let m=dist[i];if(x>0)m=Math.min(m,dist[i-1]+1);if(y>0)m=Math.min(m,dist[i-W]+1);if(x>0&&y>0)m=Math.min(m,dist[i-W-1]+1.41);if(x<W-1&&y>0)m=Math.min(m,dist[i-W+1]+1.41);if(!x||!y||x===W-1)m=Math.min(m,1);dist[i]=m}
@@ -460,6 +470,10 @@ addEventListener('blur',()=>{for(const p of plans())p.keys.clear()});
 function make(id,def){
   const M={id,def,G:{},S:{},SEEN:{},crowd:[],dust:[],hits:[],t:0,warm:null,pressT:-99,pushT:0,lookT:0,keys:new Set()};
   M.K=ground(def);M.H=houses(def,M.K);M.F=fronts(M);M.doors=M.F.doors;M.cov=cover(M);
+  /* the people of each jam, packed shoulder to shoulder: most face the way they want to go, a few look back or about them */
+  M.J={};for(const v in def.jams||{}){const r=rng((def.seed||1)*7+v.length),out=M.J[v]=[];
+    for(const j of def.jams[v])for(let y=j.y+3;y<=j.y+j.h-.5;y+=3)for(let x=j.x+2+(y%6<3?0:2);x<=j.x+j.w-2;x+=4.2){const q=r(),back={E:'W',W:'E',N:'S',S:'N'}[j.face||'E'];
+      out.push({x:x+(r()-.5)*1.4,y:y+(r()-.5)*1,look:(def.folk||FOLK)[(r()*(def.folk||FOLK).length)|0],D:q<.72?j.face||'E':q<.86?back:q<.93?'S':'N',ph:r()*9,jam:j})}}
   M.nzA=lattice((def.seed||1)*13+1,32);M.nzB=lattice((def.seed||1)*17+5,64);
   const vNow=()=>def.variant?def.variant():'';
   const g=()=>grid(M,vNow());
@@ -470,7 +484,7 @@ function make(id,def){
   /* route: the points to pass on the way to x, y; the way ends where x, y is, or on the walkable place nearest to it that can be reached.
      Whoever is played, when the player clicks, goes only by the lanes he knows: where none of them leads to x, y, he goes as near to it as
      they take him, and the way is partial (the engine then does not act on what was clicked). A script, or all, takes every lane. */
-  M.route=(a,x,y,all)=>{const Q=g();let s=cOf(Q,a.x,a.y);if(!Q.cell[s])s=nearest(Q,a.x,a.y);if(s<0)return null;const cp=Q.comp[s];
+  M.route=(a,x,y,all)=>{const Q=g();if(!all&&a===PC()&&!G.busy)M.toJam=jamsOf(def,vNow()).some(j=>x>=j.x-2&&x<=j.x+j.w+2&&y>=j.y-2&&y<=j.y+j.h+2);let s=cOf(Q,a.x,a.y);if(!Q.cell[s])s=nearest(Q,a.x,a.y);if(s<0)return null;const cp=Q.comp[s];
     let t=cOf(Q,x,y),exact=Q.cell[t]&&Q.comp[t]===cp;if(!exact){t=nearest(Q,x,y,cp);if(t<0)return null}
     let kn=null,partial=false;
     if(!all&&!M.seeAll&&a===PC()&&!G.busy){kn=known(Q);kn[s]=1;const r=reach(Q,s,kn);
@@ -500,12 +514,12 @@ function make(id,def){
   /* doorsOf: the doors a source sends people out of: within r of its place, of houses whose shutters are not bolted, onto a lane that
      reaches where they make for */
   const doorsOf=(G,s,v)=>{const k='d:'+v;if(s[k])return s[k];const cue=def.cue||(()=>'open'),f=sinkField(G,s.to,crowdDef().sinks[s.to]);
-    return s[k]=M.doors.filter(d=>{if(Math.hypot(d.x+1-s.doors[0],d.y-s.doors[1])>s.r||cue(d.house,v)==='shut')return false;const c=cOf(G,d.x+1,d.y+2.5);return G.cell[c]&&isFinite(f[c])})};
+    return s[k]=M.doors.filter(d=>{if(Math.hypot(d.x+d.w/2-s.doors[0],d.y-s.doors[1])>s.r||cue(d.house,v)==='shut')return false;const c=cOf(G,d.x+d.w/2,d.y+2.5);return G.cell[c]&&isFinite(f[c])})};
   function spawn(G,cd,dt){if(M.crowd.length>=(cd.max||160))return;const v=vNow();
     cd.sources.forEach((s,k)=>{const per=(s.on||10)+(s.off||0),ph=((M.t+(s.ph||0))%per+per)%per;if(ph>(s.on||10))return;
       src[k]=(src[k]||0)+s.rate*dt;while(src[k]>=1){src[k]--;let x,y,door=null;
         /* out of a door: he steps out at the foot of the wall, and the door stands open behind him for a moment */
-        if(s.doors){const L=doorsOf(G,s,v);if(!L.length)continue;door=L[(Math.random()*L.length)|0];x=door.x+1;y=door.y+2.5}
+        if(s.doors){const L=doorsOf(G,s,v);if(!L.length)continue;door=L[(Math.random()*L.length)|0];x=door.x+door.w/2;y=door.y+2.5}
         /* or in along a street from beyond the map, or through a gate */
         else{const r=s.r||3;x=s.x+(Math.random()-.5)*2*r;y=s.y+(Math.random()-.5)*2*r}
         if(!G.cell[cOf(G,x,y)]||M.crowd.some(a=>Math.abs(a.x-x)<4&&Math.abs(a.y-y)<4))continue;
@@ -554,6 +568,10 @@ function make(id,def){
     if(w){w.res(false)}pc.walk={x:px,y:py,path:[],rest:0,res:()=>{}};pc.pushed=1;M.pushT=.5;
     if(def.press&&M.t-M.pressT>7){M.pressT=M.t;def.press()}}
   /* keys: the arrow keys or W A S D steer whoever is played on the map, a few steps at a time, sliding along a wall */
+  /* jammed: he walked up to a jam, or steers into one, and has stopped before it */
+  function jammed(){const pc=PC();if(pc.room!==id)return;const was=M.wasWalking;M.wasWalking=!!pc.walk;
+    const near=jamsOf(def,vNow()).some(j=>pc.x>=j.x-5&&pc.x<=j.x+j.w+5&&pc.y>=j.y-5&&pc.y<=j.y+j.h+5);
+    if(near&&def.press&&M.t-M.pressT>7&&(was&&!pc.walk&&M.toJam||M.keys.size&&!pc.walk)){M.toJam=false;M.pressT=M.t;def.press()}}
   function steer(){const pc=PC();if(pc.room!==id||!M.keys.size||G.busy||G.scene||M.pushT>0)return;
     const k=M.keys;let x=(k.has('right')?1:0)-(k.has('left')?1:0),y=(k.has('down')?1:0)-(k.has('up')?1:0);if(!x&&!y)return;const L=Math.hypot(x,y);x/=L;y/=L;
     const Q=g(),ok=(dx,dy)=>clear(Q,pc.x,pc.y,pc.x+dx*6,pc.y+dy*6);let dx=x,dy=y;
@@ -575,7 +593,7 @@ function make(id,def){
     for(const s of S){let to=1;if(inn&&pc.x+3>s.X0&&pc.x-3<s.X1+1&&pc.y>s.T&&pc.y<s.B+1)for(const st of s.strips)if(pc.y<st.front+.5&&pc.y>st.top&&pc.x+3>st.x0&&pc.x-3<st.x1+1){to=FADE;break}
       s.alpha+=(to-s.alpha)*k;if(Math.abs(to-s.alpha)<.01)s.alpha=to}}
   M.tick=(dt,ts)=>{const v=vNow();if(M.warm!==v){M.reset();M.warm=v;sprites(M,v);M.dustOn=!!(crowdDef()&&crowdDef().dust);if(crowdDef()){for(let i=0;i<300;i++){M.t+=.1;step(.1)}}}
-    M.t+=dt;step(dt);press(dt);steer();zones();look(dt);fades(dt)};
+    M.t+=dt;step(dt);press(dt);steer();jammed();zones();look(dt);fades(dt)};
 
   /* --- drawing --- */
   const facingOf=o=>{if(o.walk&&!o.pushed&&o.mvx!=null){const x=o.mvx,y=o.mvy;return Math.abs(y)>Math.abs(x)*1.15?(y<0?'N':'S'):x<0?'W':'E'}
@@ -599,8 +617,11 @@ function make(id,def){
     for(const s of sprites(M,v)){if(s.X1<cam-2||s.X0>cam+vw+2||s.B<cy-2||s.T>cy+vh+16)continue;
       for(const st of s.strips)depth(st.front+.5,()=>{const a=s.alpha;if(a<.999)gx.globalAlpha=a;
         gx.drawImage(s.c,(st.x0-s.X0)*2,0,(st.x1-st.x0+1)*2,(st.front+1-s.T)*2,st.x0,s.T,st.x1-st.x0+1,st.front+1-s.T);if(a<.999)gx.globalAlpha=1})}
+    /* the people of the jams: they stand, step from foot to foot now and then, and turn their heads */
+    for(const a of M.J[v]||[]){if(a.x<cam-8||a.x>cam+vw+8||a.y<cy-4||a.y>cy+vh+16)continue;const k=Math.floor(M.t*.7+a.ph),turn=k%7===3,shift=(k%5===1);
+      depth(a.y,()=>drawFolk(gx,a.look,a.x,a.y,turn?{E:'S',W:'S',N:'E',S:'W'}[a.D]:a.D,shift?'p1':'stand',false,0))}
     /* a door that someone has just stepped out of stands open */
-    for(const a of M.crowd)if(a.door&&M.t-a.t0<.9){const d=a.door;depth(d.y+.6,()=>R(gx,d.x,d.y+1-d.h,2,d.h,'#241a14'))}
+    for(const a of M.crowd)if(a.door&&M.t-a.t0<.9){const d=a.door;depth(d.y+.6,()=>R(gx,d.x,d.y+1-d.h,d.w,d.h,'#241a14'))}
     for(const a of M.crowd){if(a.x<cam-8||a.x>cam+vw+8||a.y<cy-4||a.y>cy+vh+14)continue;
       const o=a.look;
       const L=Math.hypot(a.mx||0,a.my||0)>.5?[a.mx,a.my]:[a.dx,a.dy],D=Math.abs(L[1])>Math.abs(L[0])*1.15?(L[1]<0?'N':'S'):L[0]<0?'W':'E',fr=a.still>.25?'stand':frameOf(run,a.gone+50,null,STRIDE[run?'run':'walk']);
