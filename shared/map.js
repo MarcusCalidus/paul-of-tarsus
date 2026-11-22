@@ -40,11 +40,11 @@ const PLACES={
   antioch:{name:'Antioch',at:[36.16,36.20],lab:'r'},seleucia:{name:'Seleucia',at:[35.93,36.12],lab:'r',dy:4.6},
   tyre:{name:'Tyre',at:[35.20,33.27],lab:'r',minor:1},salamis:{name:'Salamis',at:[33.90,35.18],lab:'l',minor:1},
   paphos:{name:'Paphos',at:[32.42,34.76],lab:'l',minor:1},alexandria:{name:'Alexandria',at:[29.92,31.20],lab:'r',minor:1},
-  perga:{name:'Perga',at:[30.85,36.96],lab:'l',dy:-3},antiochp:{name:'Antioch in Pisidia',at:[31.19,38.30],lab:'l'},
+  perga:{name:'Perga',at:[30.85,36.96],lab:'l',dy:-3},antiochp:{name:'antioch_in_pisidia',at:[31.19,38.30],lab:'l'},
   iconium:{name:'Iconium',at:[32.49,37.87],lab:'r'},lystra:{name:'Lystra',at:[32.35,37.58],lab:'l'},derbe:{name:'Derbe',at:[33.39,37.35],lab:'r'},
   attalia:{name:'Attalia',at:[30.66,36.86],lab:'l',dy:3.6},
   /* two passes on the trade road from Syria: through the Amanus north of Antioch, and through the Taurus north of Tarsus */
-  syriangates:{name:'Syrian Gates',at:[36.28,36.48],lab:'r'},ciliciangates:{name:'Cilician Gates',at:[34.78,37.28],lab:'r'},
+  syriangates:{name:'syrian_gates',at:[36.28,36.48],lab:'r'},ciliciangates:{name:'cilician_gates',at:[34.78,37.28],lab:'r'},
   /* round the Aegean. Philippi lay some 15 km inland of its port, less than two dots apart on this map: it stands a little further
      north-west than it lay, so that the two can be told apart. The name of Samothrace is set small, between Thasos and Athos. */
   troas:{name:'Troas',at:[26.15,39.75],lab:'l',dy:3},samothrace:{name:'Samothrace',at:[25.56,40.5],lab:'l',dy:1.2,sz:4},
@@ -207,7 +207,7 @@ function label(g,s,x,y,side,col,sz){sz=sz||4.6;g.font=`bold ${sz}px "Lucida Cons
   edge(g,s,tx,ty);g.fillStyle=col;g.fillText(s,tx,ty)}
 function dot(g,x,y,lit){oval(g,x,y,1.9,1.9,'#1a0e08');oval(g,x,y,1.15,1.15,lit?'#f4dc8a':'#c8b48a')}
 /* draw: the baked map, then everything that moves: the routes, the city dots and their names */
-function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];if(ST.night){g.fillStyle='rgba(6,10,38,.6)';g.fillRect(0,0,W,H)}const sea=T('THE GREAT SEA').split('').join(' ');
+function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];if(ST.night){g.fillStyle='rgba(6,10,38,.6)';g.fillRect(0,0,W,H)}const sea=T('great_sea').split('').join(' ');
   g.save();g.translate(-OX,-OY);
   g.font='italic bold 5px "Lucida Console",Monaco,monospace';g.textBaseline='middle';g.fillStyle='rgba(190,224,236,.55)';{const[sx,sy]=SEA[OX+','+OY]||SEA['0,0'];g.fillText(sea,sx,sy);box(g,sea,sx,sy,5)}
   for(const{name,at:[lon,lat],sea,close,north,west}of REGIONS){if(north&&OY>=0||west&&OX>=0)continue;const[x,y]=xy(lon,lat),s=T(name),hw=s.length*(close?1.66:2.3);if(!inView(x-hw,y,-2)||!inView(x+hw,y,-2))continue;
@@ -221,7 +221,7 @@ function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];if(ST.night){g.fillSty
   if(ST.pulse){const[x,y]=at(ST.pulse),k=(t/900)%1;g.strokeStyle=`rgba(255,226,150,${.9*(1-k)})`;g.lineWidth=.6;g.beginPath();g.arc(x,y,2.4+k*6,0,6.2832);g.stroke()}
   g.restore();
   if(ST.places){g.font='bold 4.4px "Lucida Console",Monaco,monospace';g.textBaseline='middle';g.fillStyle='rgba(244,228,184,.9)';/* the hint stands in open sea, clear of the coast of Egypt */
-    const s=T('Click a place to travel there. Esc to stay.');g.fillText(s,8,H-14);box(g,s,8+OX,H-14+OY,4.4)}}
+    const s=T('click_a_place_to_travel_there');g.fillText(s,8,H-14);box(g,s,8+OX,H-14+OY,4.4)}}
 /* the map's music, in the key of the chapter: each part is semitones above the tonic, and oct says which octave of the tonic, counting
    from the one nearest D4; the engine's tune() places and snaps it. The sting: two low drum strokes, a drone on the tonic, a harp rising
    through the third and fifth to the octave, and a ney phrase. The chime as a leg arrives: the fifth rising to the tonic. */

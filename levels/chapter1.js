@@ -330,7 +330,7 @@ Object.assign(LOOK,{
   guard:{skin:'#a87850',helm:'#b08a3c',beard:'#1a100a',tunic:'#7a2a2a',cloak:'#3a3550',cape:1,belt:'#b08a3c',spear:1,armor:'#5a3a22',trim:'#c9a14a',brow:'#1a100a',ph:3300},
   zakkai:{skin:'#b07a4c',wrap:'#d2c296',beard:'#4a3a2a',tunic:'#4a5a8a',long:1,belt:'#c9a14a',trim:'#c9a14a',longSleeve:1,brow:'#3a2a1a',ph:2100}});
 actor('eliab','Eliab','#a8d8a0',118);actor('naomi','Naomi','#f0a8c0',250);actor('jesse','Jesse','#f0c878',215);
-actor('guard','the guard','#f08070',96);actor('zakkai','the merchant','#90b8f0',132);
+actor('guard','the_guard','#f08070',96);actor('zakkai','the_merchant','#90b8f0',132);
 Object.assign(ICON,{
   pouch(g){IH.bag(g,'#8a5830',12,15,7.6,6.4);R(g,11,3.4,2,3,'#c9a14a');stroke(g,[8,8.8,5,11],'#c9a14a',.7);stroke(g,[16,8.8,19,11.4],'#c9a14a',.7)},
   patch(g){IH.square(g,'#2a211c',6,6.6,12,11.4,'#8a806a');for(let i=6.6;i<18;i+=1.6){R(g,i,5.6,.6,1.2,'#3a3028');R(g,i,17.8,.6,1.2,'#3a3028')}},
@@ -347,281 +347,281 @@ Object.assign(ICON,{
   skinfull(g){g.beginPath();g.ellipse(12,14,7,7.4,.1,0,6.2832);g.fillStyle=lg(g,4,0,20,0,['#a4764a','#7a5230','#3e2814']);g.fill();R(g,10.2,3.6,3.6,3.6,'#4a2f1a');R(g,10.8,2.4,2.4,1.4,'#c9a14a');
     stroke(g,[13.8,5,19.4,8.6,20.6,14],'#3a2414',.9);stroke(g,[7.2,10.6,6.8,16.6],'#c09460',.8);poly(g,[16.4,15,17.8,18.2,16.4,19.6,15,18.2],'#7ec0f0');R(g,16,17.6,.7,.9,'#e0f4ff')}});
 Object.assign(ITEMS,{
-  pouch:{name:'tool pouch',look:'My leather tool pouch, tied shut. A tentmaker is never far from his tools.',
-    open:async()=>{await say(P,'I untie the pouch. My awl, just where it belongs.');delItem('pouch');addItem('awl');F.gotAwl=1}},
-  cloth:{name:'goat-hair cloth',look:'The dark goat-hair cloth of Cilicia, my home province. Tough enough for any tent.'},
-  patch:{name:'cloth patch',look:'A square of goat-hair cloth, cut to cover a tear.'},
-  strips:{name:'cloth strips',look:'Long strips of goat-hair cloth. Braided, they would be as strong as rope.'},
-  rope:{name:'short rope',look:'Good rope, but far too short to reach from a window in the wall to the ground.'},
-  longrope:{name:'long rope',look:'Rope spliced to a braided goat-hair cord. Long enough now, and every knot is sound.'},
-  basket:{name:'large basket',look:'A big provision basket of plaited wicker. The carrying loops are worn nearly through.'},
-  strongbasket:{name:'reinforced basket',look:"Leather straps cradle the basket from rim to rim. It will bear a man's weight."},
-  straps:{name:'leather straps',look:'Old harness straps. Worn, but the leather is thick and sound.'},
-  skin:{name:'waterskin',look:'My waterskin. Empty.'},
-  skinfull:{name:'full waterskin',look:'My waterskin, heavy with cool well water.'}});
+  pouch:{name:'tool_pouch',look:'my_leather_tool_pouch_tied_shut',
+    open:async()=>{await say(P,'i_untie_the_pouch');delItem('pouch');addItem('awl');F.gotAwl=1}},
+  cloth:{name:'goat_hair_cloth',look:'dark_goat_hair_cloth_of_cilicia'},
+  patch:{name:'cloth_patch',look:'square_of_goat_hair_cloth'},
+  strips:{name:'cloth_strips',look:'long_strips_of_goat_hair_cloth'},
+  rope:{name:'short_rope',look:'good_rope_but_far_too_short'},
+  longrope:{name:'long_rope',look:'rope_spliced_to_a_braided'},
+  basket:{name:'large_basket',look:'big_provision_basket_of_plaited_wicker'},
+  strongbasket:{name:'reinforced_basket',look:'leather_straps_cradle_the_basket'},
+  straps:{name:'leather_straps',look:'old_harness_straps'},
+  skin:{name:'waterskin',look:'my_waterskin'},
+  skinfull:{name:'full_waterskin',look:'my_waterskin_heavy_with_cool_well_water'}});
 async function reinforce(){
-  if(!has('straps'))return say(P,'Thread alone will not hold a man. The basket needs strong bands beneath it. Leather, perhaps.');
-  if(!has('awl'))return say(P,'I need my awl to pierce the leather.');
-  if(!has('thread'))return say(P,'I have nothing to stitch with.');
-  SFX.sew();await say(P,'Two straps under the base, crossed, and stitched up each side to the rim...');SFX.sew();await wait(700);
+  if(!has('straps'))return say(P,'thread_alone_will_not_hold_a_man');
+  if(!has('awl'))return say(P,'i_need_my_awl_to_pierce');
+  if(!has('thread'))return say(P,'i_have_nothing_to_stitch_with');
+  SFX.sew();await say(P,'two_straps_under_the_base');SFX.sew();await wait(700);
   delItem('basket');delItem('straps');addItem('strongbasket',1);F.strong=1;SFX.good();
-  await say(P,'There. It would carry a full load of grain. Or one tentmaker.')}
+  await say(P,'there_said')}
 Object.assign(COMBO,{
-  'cloth+knife':async()=>{SFX.cut();await say(P,'Following the weave... one square patch, and the rest in long strips.');
+  'cloth+knife':async()=>{SFX.cut();await say(P,'following_the_weave');
     delItem('cloth');addItem('patch',1);addItem('strips');F.cutCloth=1},
-  'rope+strips':async()=>{SFX.sew();await say(P,'I braid the strips three-fold into a cord, then splice it to the rope.');
+  'rope+strips':async()=>{SFX.sew();await say(P,'i_braid_the_strips_three');
     delItem('rope');delItem('strips');addItem('longrope',1);F.longRope=1;SFX.good();
-    await say(P,'A cord of three strands is not soon torn. (Ecclesiastes 4:12) Now it will reach the ground.')},
+    await say(P,'cord_of_three_strands_is')},
   'awl+basket':reinforce,'basket+straps':reinforce,'basket+thread':reinforce,
-  'awl+straps':()=>say(P,'The straps must be sewn onto something that needs their strength.'),
-  'straps+thread':()=>say(P,'The straps must be sewn onto something that needs their strength.'),
-  'knife+rope':()=>say(P,'Cut it? It is too short already.'),
-  'awl+patch':()=>say(P,'A patch needs a tear to cover.'),'patch+thread':()=>say(P,'A patch needs a tear to cover.'),
-  'awl+cloth':()=>say(P,'The cloth must be cut to shape before any stitching.'),
-  'cloth+thread':()=>say(P,'The cloth must be cut to shape before any stitching.'),
-  'cloth+rope':()=>say(P,'The cloth is too broad to join to a rope. It would need to be cut into strips.'),
-  'knife+strips':()=>say(P,'They are narrow enough.'),'knife+patch':()=>say(P,'It is the right size already.'),
-  'basket+rope':()=>say(P,'Neither the rope nor the basket is ready for that yet.'),
-  'basket+longrope':()=>say(P,'The rope is ready. The basket is not: its loops would tear away.'),
-  'longrope+strongbasket':()=>say(P,'I will join them at the window, once the rope is anchored.'),
-  'rope+strongbasket':()=>say(P,'The rope is still far too short.'),
-  'knife+longrope':()=>say(P,'After all that work? No.')});
+  'awl+straps':()=>say(P,'straps_must_be_sewn_onto_something'),
+  'straps+thread':()=>say(P,'straps_must_be_sewn_onto_something'),
+  'knife+rope':()=>say(P,'cut_it'),
+  'awl+patch':()=>say(P,'patch_needs_a_tear_to_cover'),'patch+thread':()=>say(P,'patch_needs_a_tear_to_cover'),
+  'awl+cloth':()=>say(P,'cloth_must_be_cut_to_shape'),
+  'cloth+thread':()=>say(P,'cloth_must_be_cut_to_shape'),
+  'cloth+rope':()=>say(P,'cloth_is_too_broad_to_join'),
+  'knife+strips':()=>say(P,'they_are_narrow_enough'),'knife+patch':()=>say(P,'it_is_the_right_size_already'),
+  'basket+rope':()=>say(P,'neither_the_rope_nor_the_basket'),
+  'basket+longrope':()=>say(P,'rope_is_ready'),
+  'longrope+strongbasket':()=>say(P,'i_will_join_them_at_the_window'),
+  'rope+strongbasket':()=>say(P,'rope_is_still_far_too_short'),
+  'knife+longrope':()=>say(P,'after_all_that_work')});
 /* ============ PRAYER HINTS ============ */
 function hint(){
-  if(!F.gotAwl)return['pouch',['A craftsman should know what he carries. My own tools are close at hand.','My tool pouch is tied shut. I should open it.']];
-  const m=[];if(!F.gotKnife||!F.gotCloth)m.push('the workbench');if(!F.gotThread)m.push('the shelf');if(!F.gotRope)m.push('the pegs on the wall');if(!F.gotBasket)m.push('the corner by the bench');
-  if(m.length)return['gather',["Eliab said to take what I need. A tentmaker's eye should miss nothing in a workshop: blade, cloth, thread, rope, basket.",
-    T('Something useful still waits in the workshop. I should look over {places}.',{places:m.map(x=>T(x)).join(T(', and '))})]];
-  if(!F.cutCloth)return['cut',['Whole cloth serves no one. What does a tentmaker do first with a bolt of cloth?','My knife can cut the goat-hair cloth into useful pieces.']];
-  if(!F.longRope)return['braid',['The rope is too short, yet I hold the makings of more. Strands woven together are stronger than one.','I can braid the cloth strips and splice them onto the short rope.']];
-  if(!F.awning)return F.metZakkai?['mend',["The merchant's trouble is one my own hands know how to mend. Kindness can open a way where force cannot.",'His torn awning needs a patch, thread, and my awl.']]
-    :['street',['The way to the wall is watched. Yet not everyone in the street is an opposer. A neighbor in need may be close by.','I should go out and speak with the merchant at his stall.']];
-  if(!F.strong)return['straps',['The basket must not fail. What I was given in thanks is strong, and my tools can join strong things together.','I can stitch the leather straps onto the basket with awl and thread.']];
-  if(!F.inHouse)return['alley',['The soldier guards the alley, but he cannot watch what he cannot see. I need not confront him.','The hung awning shadows the alley mouth. I can slip behind it toward the wall quarter.']];
-  if(!F.lampOut)return['lamp',['A window toward freedom can also be a beacon to watchmen. What here would betray us in the dark?','The lamp should be put out before the shutters are opened.']];
-  if(!F.shutters)return['shut',['The way out is before me. It is only closed.','Now that the room is dark, I can open the shutters.']];
-  if(!F.ropeTied)return['beam',['A rope is only as sure as what holds it. Something in this room has borne weight for generations.','I should tie the long rope to the roof beam above the window.']];
-  if(!F.basketOn)return['hang',['All is nearly ready. The basket and the rope must become one.','I should fasten the reinforced basket to the rope at the window.']];
-  return['end',['Jehovah has provided helpers and a way out. It is time to trust, and go.']]}
+  if(!F.gotAwl)return['pouch',['craftsman_should_know_what_he_carries','my_tool_pouch_is_tied_shut']];
+  const m=[];if(!F.gotKnife||!F.gotCloth)m.push('the_workbench');if(!F.gotThread)m.push('the_shelf');if(!F.gotRope)m.push('pegs_on_the_wall');if(!F.gotBasket)m.push('corner_by_the_bench');
+  if(m.length)return['gather',['eliab_said_to_take_what_i_need',
+    T('something_useful_still_waits_in_the_workshop',{places:m.map(x=>T(x)).join(T('and_2'))})]];
+  if(!F.cutCloth)return['cut',['whole_cloth_serves_no_one','my_knife_can_cut_the_goat']];
+  if(!F.longRope)return['braid',['rope_is_too_short_yet_i','i_can_braid_the_cloth_strips']];
+  if(!F.awning)return F.metZakkai?['mend',['merchants_trouble_is_one','his_torn_awning_needs_a_patch']]
+    :['street',['way_to_the_wall_is_watched','i_should_go_out_and_speak']];
+  if(!F.strong)return['straps',['basket_must_not_fail','i_can_stitch_the_leather']];
+  if(!F.inHouse)return['alley',['soldier_guards_the_alley','hung_awning_shadows_the_alley_mouth']];
+  if(!F.lampOut)return['lamp',['window_toward_freedom_can','lamp_should_be_put_out_before']];
+  if(!F.shutters)return['shut',['way_out_is_before_me','now_that_the_room_is_dark']];
+  if(!F.ropeTied)return['beam',['rope_is_only_as_sure_as_what','i_should_tie_the_long_rope']];
+  if(!F.basketOn)return['hang',['all_is_nearly_ready','i_should_fasten_the_reinforced']];
+  return['end',['jehovah_has_provided_helpers']]}
 /* ============ TOPICS: what Paul has learned, which he can raise with anyone (see each person's ask table) ============ */
 const TOPICS=[
-  {id:'basket',q:'The basket loops are frayed through.',if:()=>F.gotBasket&&!F.strong},
-  {id:'rope',q:'My rope is far too short.',if:()=>F.gotRope&&!F.longRope},
-  {id:'awning',q:"The merchant's awning is torn.",if:()=>F.metZakkai&&!F.awning},
-  {id:'thirst',q:'The soldier in the street is thirsty.',if:()=>F.metZakkai&&!F.kind}];
+  {id:'basket',q:'basket_loops_are_frayed_through',if:()=>F.gotBasket&&!F.strong},
+  {id:'rope',q:'my_rope_is_far_too_short',if:()=>F.gotRope&&!F.longRope},
+  {id:'awning',q:'merchants_awning_is_torn',if:()=>F.metZakkai&&!F.awning},
+  {id:'thirst',q:'soldier_in_the_street_is_thirsty',if:()=>F.metZakkai&&!F.kind}];
 /* ============ WAX TABLETS: people met, tasks still open, Scripture (shown by shared/tablets.js) ============ */
 const TABLETS={
   people:[
-    {name:'Eliab',note:'A basket weaver, and a faithful brother. He is hiding me in his workshop.'},
-    {name:'The soldier',note:"One of the governor's men. He watches the alley to the wall quarter.",if:()=>F.metZakkai||F.kind||F.inHouse},
-    {name:'The merchant',note:()=>F.awning?'A wool merchant. His awning is mended, and it shades the alley.':'A wool merchant. The wind split his awning from pole to hem.',if:()=>F.metZakkai},
-    {name:'Naomi',note:'A widow. Her upper room is built on the city wall itself.',if:()=>F.inHouse}],
+    {name:'Eliab',note:'basket_weaver_and_a_faithful_brother'},
+    {name:'the_soldier',note:'one_of_the_governors_men',if:()=>F.metZakkai||F.kind||F.inHouse},
+    {name:'merchant_2',note:()=>F.awning?'wool_merchant':'a_wool_merchant',if:()=>F.metZakkai},
+    {name:'Naomi',note:'a_widow',if:()=>F.inHouse}],
   tasks:[
-    {t:'Untie my tool pouch.',if:()=>!F.gotAwl},
-    {t:'Gather what a tentmaker needs from the workshop.',if:()=>!(F.gotKnife&&F.gotCloth&&F.gotThread&&F.gotRope&&F.gotBasket)},
-    {t:'Make a rope long enough to reach the ground.',if:()=>!F.longRope},
-    {t:'Make the basket strong enough to carry a man.',if:()=>!F.strong},
-    {t:"Help the merchant with his awning.",if:()=>F.metZakkai&&!F.awning},
-    {t:"Reach Naomi's house in the wall quarter, without a quarrel.",if:()=>!F.inHouse},
-    {t:'Let no light show from the window.',if:()=>F.inHouse&&!F.lampOut},
-    {t:'Make the rope fast to something that will hold.',if:()=>F.inHouse&&!F.ropeTied},
-    {t:'Fasten the basket to the rope, and open the way out.',if:()=>F.inHouse&&!(F.basketOn&&F.shutters)}],
+    {t:'untie_my_tool_pouch',if:()=>!F.gotAwl},
+    {t:'gather_what_a_tentmaker',if:()=>!(F.gotKnife&&F.gotCloth&&F.gotThread&&F.gotRope&&F.gotBasket)},
+    {t:'make_a_rope_long_enough',if:()=>!F.longRope},
+    {t:'make_the_basket_strong',if:()=>!F.strong},
+    {t:'help_the_merchant_with_his_awning',if:()=>F.metZakkai&&!F.awning},
+    {t:'reach_naomis_house_in_the_wall',if:()=>!F.inHouse},
+    {t:'let_no_light_show_from_the_window',if:()=>F.inHouse&&!F.lampOut},
+    {t:'make_the_rope_fast_to_something',if:()=>F.inHouse&&!F.ropeTied},
+    {t:'fasten_the_basket_to_the_rope',if:()=>F.inHouse&&!(F.basketOn&&F.shutters)}],
   scripture:[
-    {ref:'Proverbs 3:5, 6',gist:'Jehovah makes the way straight for anyone who trusts him with all his heart rather than his own understanding, and who takes notice of him in all he does.'},
-    {ref:'Proverbs 15:1',gist:'Answer gently, and rage cools; speak harshly, and anger flares up.'},
-    {ref:'Proverbs 25:21',gist:'Is your enemy hungry? Feed him bread. Is he thirsty? Give him water.'},
-    {ref:'Ecclesiastes 4:12',gist:'A cord of three strands is not soon torn.'}]};
+    {ref:'proverbs_3_5_6',gist:'jehovah_makes_the_way_straight'},
+    {ref:'proverbs_15_1',gist:'answer_gently_and_rage'},
+    {ref:'proverbs_25_21',gist:'is_your_enemy_hungry'},
+    {ref:'ecclesiastes_4_12',gist:'a_cord_of_three_strands_is'}]};
 /* ============ ROOMS, HOTSPOTS, CHARACTERS ============ */
 const E=ACT.eliab,Z=ACT.zakkai,GD=ACT.guard,N=ACT.naomi,J=ACT.jesse;
 /* ---------- Workshop ---------- */
 ROOMS.workshop={space:1.2,walk:[22,300,112,138],mood:'calm',amb:{crickets:.22,fire:.22},hs:[
-  {name:'door to the street',x:10,y:36,w:34,h:70,wx:30,wy:113,dir:-1,look:'The door to the street. Beyond it, the city is being watched.',exit:()=>go('street',46,114,1)},
-  {name:'tent panel on the frame',x:54,y:48,w:63,h:58,look:'A tent panel stretched for seaming. Eliab lets me work here to earn my bread.',pickup:'That panel is promised to a customer. There is a spare bolt on the bench.'},
-  {name:'high window',x:70,y:24,w:22,h:18,look:'Night has fallen over Damascus. Somewhere out there, men are watching the gates for me.'},
-  {name:'shelf',x:128,y:30,w:60,h:18,wx:150,look:'Jars of dye and beeswax.',pickup:'I have no use for dye tonight. Goat-hair cloth comes dark enough from the goat.'},
-  {name:'spool of thread',x:156,y:35,w:12,h:10,wx:160,vis:()=>!F.gotThread,look:'A spool of waxed linen thread.',pickup:take('gotThread','thread','Waxed thread. Good and strong.')},
-  {name:'oil lamp',x:143,y:58,w:16,h:48,wx:134,dir:1,look:'A small clay lamp. Its light is enough to work by.',pickup:'Eliab needs its light, and I do not.',use:'It burns well enough.'},
-  {name:'stool',x:118,y:106,w:18,h:14,look:'A work stool. I have spent many hours on it, needle in hand.'},
-  {name:'workbench',x:204,y:80,w:82,h:27,wy:113,look:'A scarred old workbench. Honest work has been done here.'},
-  {name:"tentmaker's knife",x:211,y:73,w:16,h:10,wx:220,wy:113,vis:()=>!F.gotKnife,look:'A half-moon knife for cutting cloth and leather.',pickup:take('gotKnife','knife','Sharp. A good tool, for good work.')},
-  {name:'bolt of goat-hair cloth',x:234,y:70,w:38,h:13,wx:252,wy:113,vis:()=>!F.gotCloth,look:'Dark goat-hair cloth, the kind woven in Cilicia, my home province. Tents are made of it.',pickup:take('gotCloth','cloth','Heavy and tough. This I know how to work.')},
-  {name:'coil of rope',x:215,y:38,w:16,h:20,wx:224,wy:113,vis:()=>!F.gotRope,look:'A coil of rope on a peg. Not a long one.',pickup:take('gotRope','rope','Sound rope. But much too short to reach the foot of the city wall.')},
-  {name:'mallet',x:245,y:38,w:13,h:20,wx:252,wy:113,look:'A mallet for driving tent pegs. I will not need it tonight.',pickup:'Too heavy to carry without a reason.'},
-  {name:'waterskin',x:272,y:40,w:14,h:20,wx:274,wy:113,vis:()=>!F.gotSkin,look:'My waterskin, hanging where I left it. Empty.',pickup:take('gotSkin','skin','Empty. Still, a traveler should not leave it behind.')},
-  {name:'large basket',x:288,y:80,w:30,h:32,wx:284,wy:114,dir:1,vis:()=>!F.gotBasket,look:'A large provision basket, big enough to hold a man. But its carrying loops are frayed.',
-    pickup:take('gotBasket','basket','I can carry it. But those worn loops must be made strong before I trust my life to them.'),
-    useWith:async()=>{await say(P,'I had better pick it up and look it over first.')}},
+  {name:'door_to_the_street',x:10,y:36,w:34,h:70,wx:30,wy:113,dir:-1,look:'the_door_to_the_street',exit:()=>go('street',46,114,1)},
+  {name:'tent_panel_on_the_frame',x:54,y:48,w:63,h:58,look:'tent_panel_stretched_for_seaming',pickup:'that_panel_is_promised_to_a_customer'},
+  {name:'high_window',x:70,y:24,w:22,h:18,look:'night_has_fallen_over_damascus'},
+  {name:'shelf',x:128,y:30,w:60,h:18,wx:150,look:'jars_of_dye_and_beeswax',pickup:'i_have_no_use_for_dye_tonight'},
+  {name:'spool_of_thread',x:156,y:35,w:12,h:10,wx:160,vis:()=>!F.gotThread,look:'spool_of_waxed_linen_thread',pickup:take('gotThread','thread','waxed_thread_said')},
+  {name:'oil_lamp',x:143,y:58,w:16,h:48,wx:134,dir:1,look:'small_clay_lamp',pickup:'eliab_needs_its_light_and_i',use:'it_burns_well_enough'},
+  {name:'stool',x:118,y:106,w:18,h:14,look:'work_stool'},
+  {name:'workbench',x:204,y:80,w:82,h:27,wy:113,look:'scarred_old_workbench'},
+  {name:'tentmakers_knife',x:211,y:73,w:16,h:10,wx:220,wy:113,vis:()=>!F.gotKnife,look:'half_moon_knife_for_cutting',pickup:take('gotKnife','knife','sharp_said')},
+  {name:'bolt_of_goat_hair_cloth',x:234,y:70,w:38,h:13,wx:252,wy:113,vis:()=>!F.gotCloth,look:'dark_goat_hair_cloth_the_kind',pickup:take('gotCloth','cloth','heavy_and_tough')},
+  {name:'coil_of_rope',x:215,y:38,w:16,h:20,wx:224,wy:113,vis:()=>!F.gotRope,look:'coil_of_rope_on_a_peg',pickup:take('gotRope','rope','sound_rope')},
+  {name:'mallet',x:245,y:38,w:13,h:20,wx:252,wy:113,look:'mallet_for_driving_tent_pegs',pickup:'too_heavy_to_carry_without_a_reason'},
+  {name:'waterskin',x:272,y:40,w:14,h:20,wx:274,wy:113,vis:()=>!F.gotSkin,look:'my_waterskin_hanging_where_i_left_it',pickup:take('gotSkin','skin','empty_said')},
+  {name:'large_basket',x:288,y:80,w:30,h:32,wx:284,wy:114,dir:1,vis:()=>!F.gotBasket,look:'large_provision_basket',
+    pickup:take('gotBasket','basket','i_can_carry_it'),
+    useWith:async()=>{await say(P,'i_had_better_pick_it_up_and_look')}},
   /* the hidden treasure (CONTRIBUTING section 2): the basket in its harness, set down for a moment among Eliab's baskets for market,
      the stack painted in the foreground. It changes nothing; treasure() keeps and announces it. */
-  {name:'stack of baskets',x:0,y:118,w:27,h:26,wx:36,wy:132,dir:-1,look:"Eliab's finished baskets, stacked for market. Not one of them was made to carry a man.",
-    pickup:'They are for market, and Eliab needs every one of them.',
-    useWith:async it=>{if(it==='basket')return say(P,"Beside Eliab's good baskets this one looks sorry. Not for long.");if(it!=='strongbasket')return false;
-      await say(P,'I set it down beside the others for a moment.');
-      await say(P,'Eliab wove them for figs and bread, and this one too, once. Now it wears a harness of leather, and among the others it looks like a mule in a sheepfold.');
+  {name:'stack_of_baskets',x:0,y:118,w:27,h:26,wx:36,wy:132,dir:-1,look:'eliabs_finished_baskets_stacked_for_market',
+    pickup:'they_are_for_market_and_eliab',
+    useWith:async it=>{if(it==='basket')return say(P,'beside_eliabs_good_baskets');if(it!=='strongbasket')return false;
+      await say(P,'i_set_it_down_beside_the_others');
+      await say(P,'eliab_wove_them_for_figs');
       treasure()}}]};
-E.hs={name:'Eliab',actor:E,look:'Eliab, a basket weaver and a faithful brother. He has risked much to shelter me.',
-  show:{pouch:'Your tools are in there, Saul. Untie it, and let us see what a tentmaker can do.',
-    awl:'The awl that has stitched half the tents in Cilicia. Do not lose it tonight.',
-    thread:'Waxed linen. Good for a seam. For the weight of a man you will want more than thread alone.',
-    knife:'Mind that edge. Cut the cloth, not your fingers.',
-    cloth:'Good Cilician cloth. But a whole bolt is no use to anyone. Cut it to the job.',
-    patch:'A neat square. Something somewhere is torn, and you mean to mend it.',
-    strips:'Twist those together and you have cord. You know that better than I do.',
-    rope:'It was long enough for my baskets. Not for a city wall.',
-    longrope:'Now that will reach the ground. I would trust my own neck to those knots.',
-    basket:['My best basket, and I have worn its loops through.','Wicker alone will not carry a man. It needs something stronger underneath.'],
-    strongbasket:'Leather, sewn from rim to rim. I wove that basket, and now I hardly know it.',
-    straps:'Harness leather! Thick enough to carry a man, if it is sewn on well.',
-    skin:'Empty? The well is just across the street. A traveler should not set out dry.',
-    skinfull:'Fresh from the well. Keep it for the road, unless someone needs it more than you.',
-    tablets:'Your tablets. Write down the brothers who helped you tonight, and thank Jehovah for every one of them.',
-    '*':'Keep it, brother. You will need it more than I.'},
-  ask:{basket:'I know. I wove it, and then I wore it out. Wicker alone will not bear a man; it needs leather beneath it.',
-    rope:'Then make it longer. You have cloth, and a tentmaker knows how cloth becomes cord.',
-    thirst:['Is he? He stands there to catch you, Saul.','And yet it is written that an enemy who is thirsty is to be given water. (Proverbs 25:21)']},
+E.hs={name:'Eliab',actor:E,look:'eliab_a_basket_weaver_and_a_faithful',
+  show:{pouch:'your_tools_are_in_there_saul',
+    awl:'awl_that_has_stitched_half',
+    thread:'waxed_linen',
+    knife:'mind_that_edge',
+    cloth:'good_cilician_cloth',
+    patch:'neat_square',
+    strips:'twist_those_together_and_you_have_cord',
+    rope:'it_was_long_enough_for_my_baskets',
+    longrope:'now_that_will_reach_the_ground',
+    basket:['my_best_basket_and_i_have','wicker_alone_will_not_carry_a_man'],
+    strongbasket:'leather_sewn_from_rim_to_rim',
+    straps:'harness_leather',
+    skin:'empty_the',
+    skinfull:'fresh_from_the_well',
+    tablets:'your_tablets',
+    '*':'keep_it_brother'},
+  ask:{basket:'i_know',
+    rope:'make_it_longer',
+    thirst:['is_he','yet_it_is_written_proverbs_25_21']},
   talk:()=>talkTree([
-    {q:'Tell me the plan once more.',a:async()=>{await say(E,"Our sister Naomi's house is built on the city wall. Her upper window looks out over open country.");
-      await say(E,'We lower you from it in a basket, by night. The gates will never see you.')}},
-    {q:'What will we need?',a:async()=>{await say(E,'A basket that will not fail, and a rope long enough to reach the ground. Mine are neither. Not yet.');
-      await say(E,'But you are a tentmaker, Saul. Take anything here that helps.')}},
-    {q:'What of the soldiers?',a:async()=>{await say(E,'The governor under King Aretas has men at every gate. One stands in our own street, by the alley to the wall quarter.');
-      await say(E,'Do not quarrel with him. A mild answer will serve better than a bold one.')}},
-    {q:'Why do you risk so much for me?',once:1,a:async()=>{await say(E,'You came to Damascus to bind us, and the Lord turned you around. How could we not help our brother?');
-      await say(P,'I do not deserve such kindness.');await say(E,'None of us do. That is why it is called undeserved kindness.')}},
-    {q:'I must get to work.',bye:1,a:async()=>{await say(E,"Jehovah be with you. I will gather the brothers and meet you at Naomi's.")}}])};
+    {q:'tell_me_the_plan_once_more',a:async()=>{await say(E,'our_sister_naomis_house');
+      await say(E,'we_lower_you_from_it_in_a_basket')}},
+    {q:'what_will_we_need',a:async()=>{await say(E,'basket_that_will_not_fail');
+      await say(E,'you_are_a_tentmaker_saul')}},
+    {q:'what_of_the_soldiers',a:async()=>{await say(E,'governor_under_king_aretas');
+      await say(E,'do_not_quarrel_with_him')}},
+    {q:'why_do_you_risk_so_much',once:1,a:async()=>{await say(E,'you_came_to_damascus_to_bind');
+      await say(P,'i_do_not_deserve_such_kindness');await say(E,'none_of_us_do')}},
+    {q:'i_must_get_to_work',bye:1,a:async()=>{await say(E,'jehovah_be_with_you')}}])};
 /* ---------- Street ---------- */
 const MEND=['awl','thread','patch'];
 async function mend(it){if(!MEND.includes(it))return false;
-  if(!has('patch'))return say(P,has('cloth')?'The tear needs a patch. I must cut one from my goat-hair cloth first.':'The tear is too wide to draw closed. It needs a patch of strong cloth.');
-  if(!has('awl'))return say(P,'I cannot pierce this heavy cloth without my awl.');
-  if(!has('thread'))return say(P,'I have an awl, but nothing to stitch with.');
-  await say(P,'Hold the edge taut for me, friend.');SFX.sew();await wait(900);SFX.sew();
-  await say(P,'A patch beneath, a flat seam over... as I learned it in Tarsus.');
-  delItem('patch');SFX.good();await say(Z,'Stronger than new! Help me hang it across to the wall.');
+  if(!has('patch'))return say(P,has('cloth')?'tear_needs_a_patch':'tear_is_too_wide_to_draw_closed');
+  if(!has('awl'))return say(P,'i_cannot_pierce_this_heavy');
+  if(!has('thread'))return say(P,'i_have_an_awl_but_nothing');
+  await say(P,'hold_the_edge_taut_for_me_friend');SFX.sew();await wait(900);SFX.sew();
+  await say(P,'patch_beneath_a_flat_seam_over_as_i');
+  delItem('patch');SFX.good();await say(Z,'stronger_than_new');
   await fade(1,220);F.awning=1;await wait(300);await fade(0,220);
-  await say(Z,'I have no coin tonight. But take these old harness straps. Good thick leather.');addItem('straps');
-  await say(P,'Thank you. They may be exactly what I need.');
-  await say(P,'The awning throws the alley mouth into shadow. From his brazier, the soldier cannot see it.',{thought:1,color:'#cfe2ff'})}
+  await say(Z,'i_have_no_coin_tonight');addItem('straps');
+  await say(P,'thank_you');
+  await say(P,'awning_throws_the_alley_mouth_into_shadow',{thought:1,color:'#cfe2ff'})}
 ROOMS.street={space:0.9,walk:[16,466,112,138],mood:'tense',amb:{crickets:.7,wind:.3,fire:.5,owl:.5},hs:[
-  {name:"Eliab's door",x:28,y:42,w:32,h:60,wx:44,wy:113,look:"The door of Eliab's workshop.",exit:()=>go('workshop',34,116,1)},
-  {name:'lit window',x:82,y:52,w:20,h:18,look:"Lamplight from Eliab's workshop. A small, brave light."},
-  {name:'city gate',x:178,y:28,w:62,h:50,wx:208,wy:113,look:['The city gate. Torches burn there, and men keep watch day and night.','I will not be leaving Damascus by that road.']},
-  {name:'well',x:170,y:66,w:38,h:44,wx:188,wy:114,look:'The neighborhood well. The water is cold and sweet.',use:'I would need something to carry the water in.',pickup:'A well stays where it is dug.',
-    useWith:async it=>{if(it==='skin'){SFX.splash();F.water=1;delItem('skin');addItem('skinfull',1);await say(P,'I lower the bucket and fill my waterskin.')}
-      else if(it==='skinfull')await say(P,'It is already full.');else return false}},
-  {name:'brazier',x:239,y:92,w:17,h:20,wx:226,dir:1,look:"The soldier's brazier. A small comfort on a long, cold watch.",pickup:'It is hot. And it is not mine.',use:'I am warm enough from walking.'},
-  {name:"merchant's stall",x:346,y:78,w:56,h:30,wx:372,wy:113,look:'Bundles of dyed wool in purple, blue and saffron. The night dew would ruin them.',pickup:'That would be stealing.'},
-  {name:'torn awning',x:344,y:50,w:60,h:26,wx:366,wy:113,vis:()=>!F.awning,look:'The awning is split from pole to hem. It hangs in tatters from the frame.',
-    pickup:'It is not mine to take. But perhaps it is mine to mend.',use:'It needs mending: a patch of cloth, thread, and an awl to drive the stitches.',useWith:mend},
-  {name:'mended awning',x:404,y:50,w:56,h:64,wx:392,wy:114,vis:()=>F.awning,look:'My patch holds well. The awning hangs like a dark wall between the stall and the alley.',pickup:'The merchant needs it. And tonight, so do I.'},
-  {name:'alley to the wall quarter',x:425,y:40,w:30,h:72,get wx(){return F.awning?440:398},wy:112,dir:1,look:"A narrow alley running toward the city wall. Naomi's house lies that way.",
-    exit:async()=>{if(F.awning){await say(P,'Behind the awning the alley lies in shadow. Quietly, now...',{thought:1,color:'#cfe2ff'});await walk(P,440,112);return go('house',52,118,1)}
-      SFX.alert();GD.dir=1;await say(GD,'Halt! The wall quarter is closed tonight. Orders of the governor.');
-      await say(P,'As you say. Peace to you.');await walk(P,372,122);P.dir=1;
-      await say(P,'He watches that alley closely. I must pass unseen, and without a quarrel.',{thought:1,color:'#cfe2ff'})}}]};
-GD.hs={name:'the guard',actor:GD,look:'A soldier of the governor, posted to watch the alley. He looks cold, tired and thirsty.',
-  talk:async()=>{if(F.kind)return say(GD,'Move along, tentmaker. ...And thank you for the water.');
-    await say(P,'Peace to you. A cold night for a long watch.');
-    await say(GD,'Cold, and dry. My waterskin was empty by the second watch, and I may not leave my post.');
-    await say(GD,'Now move along. No one enters the wall quarter tonight.');return talkTree([{q:'Peace to you.',bye:1}],{quiet:1})},
-  show:{pouch:'Tools? Keep them. I am not buying.',awl:'Put that away. It has been a long night.',thread:'I am a soldier, not a seamstress.',
-    knife:'Put that blade away, tentmaker. Slowly.',cloth:'Cloth. Do I look as if I need cloth? I need a drink.',patch:'A rag. Keep it.',
-    strips:'Rags. You are a strange one.',rope:'What would I want with rope?',longrope:'That is a lot of rope for one man. Move along.',
-    basket:'Fill it at the market in the morning. Not here.',strongbasket:'A basket in a harness. Sell it in the morning.',
-    straps:'Harness straps. Have you got a mule hidden somewhere?',skin:'Empty. Like mine. A fine pair we make.',
-    tablets:'Writing? Write down that the night is cold and the guard is thirsty.',
-    '*':'Move along, tentmaker. I am not trading.'},
-  ask:{awning:'So I have heard, all evening. Let him mend it, and let me have some quiet.'},
-  give:async it=>{if(it==='skin')return say(P,'An empty waterskin would be a poor gift.');if(it!=='skinfull')return false;
-    await say(P,'You are thirsty. Here. It is fresh from the well.');SFX.splash();await wait(700);
-    await say(GD,'...Most in this city curse us as they pass. Why would you do this?');
-    await say(P,'If a man is thirsty, I give him something to drink. That is all.');
-    await say(GD,'Hm. Then you have my thanks, stranger. I still cannot let you into the alley.');
+  {name:'eliabs_door',x:28,y:42,w:32,h:60,wx:44,wy:113,look:'door_of_eliabs_workshop',exit:()=>go('workshop',34,116,1)},
+  {name:'lit_window',x:82,y:52,w:20,h:18,look:'lamplight_from_eliabs_workshop'},
+  {name:'city_gate',x:178,y:28,w:62,h:50,wx:208,wy:113,look:['the_city_gate','i_will_not_be_leaving_damascus']},
+  {name:'well',x:170,y:66,w:38,h:44,wx:188,wy:114,look:'neighborhood_well',use:'i_would_need_something',pickup:'well_stays_where_it_is_dug',
+    useWith:async it=>{if(it==='skin'){SFX.splash();F.water=1;delItem('skin');addItem('skinfull',1);await say(P,'i_lower_the_bucket_and_fill')}
+      else if(it==='skinfull')await say(P,'it_is_already_full');else return false}},
+  {name:'brazier',x:239,y:92,w:17,h:20,wx:226,dir:1,look:'soldiers_brazier',pickup:'it_is_hot',use:'i_am_warm_enough_from_walking'},
+  {name:'merchants_stall',x:346,y:78,w:56,h:30,wx:372,wy:113,look:'bundles_of_dyed_wool_in_purple',pickup:'that_would_be_stealing'},
+  {name:'torn_awning',x:344,y:50,w:60,h:26,wx:366,wy:113,vis:()=>!F.awning,look:'awning_is_split_from_pole_to_hem',
+    pickup:'it_is_not_mine_to_take',use:'it_needs_mending_a_patch',useWith:mend},
+  {name:'mended_awning',x:404,y:50,w:56,h:64,wx:392,wy:114,vis:()=>F.awning,look:'my_patch_holds_well',pickup:'merchant_needs_it'},
+  {name:'alley_to_the_wall_quarter',x:425,y:40,w:30,h:72,get wx(){return F.awning?440:398},wy:112,dir:1,look:'narrow_alley_running_toward_the_city_wall',
+    exit:async()=>{if(F.awning){await say(P,'behind_the_awning_the_alley',{thought:1,color:'#cfe2ff'});await walk(P,440,112);return go('house',52,118,1)}
+      SFX.alert();GD.dir=1;await say(GD,'halt_said');
+      await say(P,'as_you_say');await walk(P,372,122);P.dir=1;
+      await say(P,'he_watches_that_alley_closely',{thought:1,color:'#cfe2ff'})}}]};
+GD.hs={name:'the_guard',actor:GD,look:'soldier_of_the_governor',
+  talk:async()=>{if(F.kind)return say(GD,'move_along_tentmaker');
+    await say(P,'peace_to_you');
+    await say(GD,'cold_and_dry');
+    await say(GD,'now_move_along');return talkTree([{q:'peace_to_you_said',bye:1}],{quiet:1})},
+  show:{pouch:'tools_said',awl:'put_that_away',thread:'i_am_a_soldier_not_a_seamstress',
+    knife:'put_that_blade_away_tentmaker',cloth:'cloth_said',patch:'a_rag',
+    strips:'rags_said',rope:'what_would_i_want_with_rope',longrope:'that_is_a_lot_of_rope_for_one',
+    basket:'fill_it_at_the_market_in_the_morning',strongbasket:'basket_in_a_harness',
+    straps:'harness_straps',skin:'empty_like',
+    tablets:'writing_said',
+    '*':'move_along_tentmaker_said'},
+  ask:{awning:'i_have_heard_all_evening'},
+  give:async it=>{if(it==='skin')return say(P,'empty_waterskin_would_be_a_poor_gift');if(it!=='skinfull')return false;
+    await say(P,'you_are_thirsty');SFX.splash();await wait(700);
+    await say(GD,'most_in_this_city_curse');
+    await say(P,'if_a_man_is_thirsty_i_give');
+    await say(GD,'hm');
     F.kind=1;F.water=0;delItem('skinfull');addItem('skin',1)}};
-Z.hs={name:'the merchant',actor:Z,look:'A wool merchant, fretting over his stall.',
-  give:async it=>{if(!MEND.includes(it)||F.awning)return false;await say(P,'He does not need my tools. His awning needs my hands.')},
-  show:{pouch:"A tentmaker's pouch. I hope there is an awl in it.",awl:'The awl that saved my wool! Keep it sharp, friend.',thread:'Not one stitch has given. Good thread, that.',
-    knife:'A fine blade. The wind cut my awning cleaner than that.',
-    cloth:'Goat-hair cloth! A square of that would cover my tear twice over.',
-    strips:'Ribbons? My awning needs a patch, friend, not ribbons.',
-    rope:'Too short to hang anything from. I have tried.',
-    longrope:'Now that is a rope. You could hang an awning across the whole street with it.',
-    basket:'Those loops will not last the week. You want leather under a basket like that.',
-    strongbasket:'My old straps, doing honest work again. I am glad of it.',
-    straps:'They served my mule for ten years. May they serve you as well.',
-    skin:'Empty? The well is just there.',
-    skinfull:'Water. That soldier has been grumbling for a drink since the second watch.',
-    tablets:()=>say(Z,F.awning?'Write it down, tentmaker: Zakkai owes you a debt.':'Write this down, then: one awning, torn from pole to hem.'),
-    '*':'Not tonight, friend. My mind is on my wool.'},
-  ask:{basket:'Leather is what you want for weight, not more wicker.',rope:'Every rope in this street is holding something up tonight. Mine included.',
-    thirst:'So he keeps telling me. I sell wool, not water.'},
-  talk:async()=>{if(F.awning){await say(Z,'A stitch like that will outlast the cloth! Go in peace, tentmaker.');return talkTree([{q:'Peace to you.',bye:1}],{quiet:1})}
-    if(!F.metZakkai){F.metZakkai=1;await say(P,'Peace to you. You are at your stall late.');
-      await say(Z,'Peace? The wind split my awning from pole to hem today!');
-      await say(Z,'If I cannot hang it across to that wall, the night dew will ruin my dyed wool.');
-      await say(P,'I am a tentmaker by trade. Perhaps I can be of use.');
-      await say(Z,'Truly? I have no coin tonight... but mend it, and I will find some way to repay you.');
-      await say(Z,'And mind that soldier. He has grumbled at my stall all night that his waterskin is empty.')}
+Z.hs={name:'the_merchant',actor:Z,look:'wool_merchant_fretting_over_his_stall',
+  give:async it=>{if(!MEND.includes(it)||F.awning)return false;await say(P,'he_does_not_need_my_tools')},
+  show:{pouch:'tentmakers_pouch',awl:'awl_that_saved_my_wool',thread:'not_one_stitch_has_given',
+    knife:'fine_blade',
+    cloth:'goat_hair_cloth_said',
+    strips:'ribbons_said',
+    rope:'too_short_to_hang_anything_from_i',
+    longrope:'now_that_is_a_rope',
+    basket:'those_loops_will_not_last_the_week',
+    strongbasket:'my_old_straps_doing_honest_work_again',
+    straps:'they_served_my_mule_for_ten_years',
+    skin:'empty_the_well',
+    skinfull:'water_said',
+    tablets:()=>say(Z,F.awning?'write_it_down_tentmaker':'write_this_down_then_one'),
+    '*':'not_tonight_friend'},
+  ask:{basket:'leather_is_what_you_want',rope:'every_rope_in_this_street',
+    thirst:'he_keeps_telling_me'},
+  talk:async()=>{if(F.awning){await say(Z,'stitch_like_that_will_outlast_the_cloth');return talkTree([{q:'peace_to_you_said',bye:1}],{quiet:1})}
+    if(!F.metZakkai){F.metZakkai=1;await say(P,'peace_to_you_you');
+      await say(Z,'peace_ex');
+      await say(Z,'if_i_cannot_hang_it_across');
+      await say(P,'i_am_a_tentmaker_by_trade');
+      await say(Z,'truly_said');
+      await say(Z,'mind_that_soldier')}
     await talkTree([
-      {q:'What does the awning need?',a:()=>say(Z,'A patch of strong cloth over the tear, and someone who sews straighter than I do.')},
-      {q:'What do you know of the soldier?',a:async()=>{await say(Z,'Posted since sundown to watch the alley. He stops everyone who goes near it.');
-        await say(Z,'He grumbles that his waterskin is empty. I keep my distance.')}},
-      {q:'Peace to you.',bye:1}])}};
+      {q:'what_does_the_awning_need',a:()=>say(Z,'patch_of_strong_cloth_over_the_tear')},
+      {q:'what_do_you_know_of_the_soldier',a:async()=>{await say(Z,'posted_since_sundown_to_watch_the_alley');
+        await say(Z,'he_grumbles_that_his_waterskin_is_empty')}},
+      {q:'peace_to_you_said',bye:1}])}};
 /* ---------- Naomi's upper room ---------- */
 async function hangBasket(it){
-  if(it==='basket')return say(P,'With those frayed loops? It would drop me at the foot of the wall. It must be reinforced first.');
-  if(!F.ropeTied)return say(P,'First the rope must be anchored to something that will not give way.');
-  SFX.creak();delItem('strongbasket');F.basketOn=1;await say(P,'The rope through both straps, and a double knot.');return checkFinal()}
-async function shutters(){if(F.shutters)return say(P,'They are already open.');
-  if(!F.lampOut){SFX.alert();await say(N,'Wait, brother! Not with the lamp burning.');
-    return say(N,'A lit window high on the wall? The watchmen would see it at once.')}
-  SFX.creak();F.shutters=1;await say(P,'Slowly... quietly. The night air is cold.');return checkFinal()}
+  if(it==='basket')return say(P,'with_those_frayed_loops');
+  if(!F.ropeTied)return say(P,'first_the_rope_must_be');
+  SFX.creak();delItem('strongbasket');F.basketOn=1;await say(P,'rope_through_both_straps');return checkFinal()}
+async function shutters(){if(F.shutters)return say(P,'they_are_already_open');
+  if(!F.lampOut){SFX.alert();await say(N,'wait_brother');
+    return say(N,'lit_window_high_on_the_wall')}
+  SFX.creak();F.shutters=1;await say(P,'slowly_said');return checkFinal()}
 async function checkFinal(){if(F.ropeTied&&F.basketOn&&F.shutters&&F.lampOut)return finale()}
 ROOMS.house={space:1.2,walk:[24,300,112,138],mood:'calm',floor:'wood',amb:()=>F.shutters?{crickets:.6,wind:.5,owl:.3}:{crickets:.18,wind:.15,fire:F.lampOut?0:.2},
-  enter:async()=>{if(F.inHouse)return;F.inHouse=1;await say(N,'Saul! Come in, brother, quickly. Jesse told me to expect you.');
-    await say(N,'There is the window. Everything beyond it is outside the city.');
-    await say(N,'The rope must be made fast and the basket ready before the others come.')},
+  enter:async()=>{if(F.inHouse)return;F.inHouse=1;await say(N,'saul_said');
+    await say(N,'there_is_the_window');
+    await say(N,'rope_must_be_made_fast')},
   hs:[
-  {name:'stairs to the alley',x:12,y:38,w:32,h:68,wx:32,wy:113,dir:-1,look:'Steps leading down to the alley.',exit:()=>go('street',440,114,-1)},
-  {name:'sleeping mat',x:54,y:98,w:30,h:12,look:'A rolled sleeping mat. I will not be sleeping tonight.'},
-  {name:'oil lamp',x:88,y:46,w:22,h:24,wx:100,wy:113,look:()=>say(P,F.lampOut?'The lamp is out. Moonlight will have to do.':'A lamp burning in a wall niche. Its light fills the room, and would shine from any open window.'),
-    pickup:'Naomi will need it after I am gone.',
-    use:async()=>{if(F.lampOut)return say(P,'Better to leave it dark.');SFX.snuff();F.lampOut=1;await say(P,'I pinch out the wick. Darkness. But our eyes will soon adjust.')}},
-  {name:'table',x:116,y:86,w:48,h:24,look:'Bread and a cup, set out for a guest. Naomi has thought of everything.',pickup:'I have no appetite now. On the road I may regret that.'},
+  {name:'stairs_to_the_alley',x:12,y:38,w:32,h:68,wx:32,wy:113,dir:-1,look:'steps_leading_down_to_the_alley',exit:()=>go('street',440,114,-1)},
+  {name:'sleeping_mat',x:54,y:98,w:30,h:12,look:'rolled_sleeping_mat'},
+  {name:'oil_lamp',x:88,y:46,w:22,h:24,wx:100,wy:113,look:()=>say(P,F.lampOut?'lamp_is_out_moonlight':'lamp_burning_in_a_wall_niche'),
+    pickup:'naomi_will_need_it_after',
+    use:async()=>{if(F.lampOut)return say(P,'better_to_leave_it_dark');SFX.snuff();F.lampOut=1;await say(P,'i_pinch_out_the_wick')}},
+  {name:'table',x:116,y:86,w:48,h:24,look:'bread_and_a_cup_set_out_for_a_guest',pickup:'i_have_no_appetite_now'},
   {get name(){return F.shutters?'window':'shutters'},get def(){return F.shutters?'look':'open'},x:187,y:32,w:58,h:56,wx:216,wy:113,
-    look:()=>say(P,F.shutters?'Open country, silver under the moon. And a long way down.':'Stout wooden shutters, barred from inside. Beyond them is the outer face of the city wall.'),
+    look:()=>say(P,F.shutters?'open_country_silver_under_the_moon':'stout_wooden_shutters_barred_from_inside'),
     open:shutters,use:shutters,
     useWith:async it=>{if(it==='basket'||it==='strongbasket')return hangBasket(it);
-      if(it==='rope'||it==='longrope')return say(P,'The window frame is only wood and plaster. The rope needs a stronger anchor.');return false}},
-  {name:'rope',x:210,y:28,w:12,h:58,wx:216,wy:113,vis:()=>F.ropeTied&&!F.basketOn,look:'Anchored to the beam. Now it needs something to carry me.',
+      if(it==='rope'||it==='longrope')return say(P,'window_frame_is_only_wood_and_plaster');return false}},
+  {name:'rope',x:210,y:28,w:12,h:58,wx:216,wy:113,vis:()=>F.ropeTied&&!F.basketOn,look:'anchored_to_the_beam',
     useWith:async it=>(it==='basket'||it==='strongbasket')?hangBasket(it):false},
-  {name:'roof beam',x:176,y:16,w:80,h:14,wx:216,wy:113,look:'A thick cedar beam set deep into the stone. It has held this roof up for generations.',use:'I have no reason to hang from it myself.',
-    useWith:async it=>{if(it==='rope')return say(P,'This rope would leave me dangling halfway down the wall. It must be much longer.');
+  {name:'roof_beam',x:176,y:16,w:80,h:14,wx:216,wy:113,look:'thick_cedar_beam_set_deep',use:'i_have_no_reason_to_hang',
+    useWith:async it=>{if(it==='rope')return say(P,'this_rope_would_leave_me');
       if(it!=='longrope')return false;
-      SFX.creak();delItem('longrope');F.ropeTied=1;await say(P,'Twice around the beam, and a hitch that tightens under load.');await say(P,'It will hold.');return checkFinal()}},
-  {name:'storage jars',x:276,y:92,w:36,h:20,look:'Oil, grain and lentils. A modest household, generously shared.'}]};
-N.hs={name:'Naomi',actor:N,look:'Naomi, our sister. A widow who has opened her home, and risked it, for the congregation.',
-  show:{pouch:'Your tools, brother? Then there is still work to do.',awl:'Keep it close. You may need it before the night is out.',
-    thread:'Good thread. Is anything still to be sewn?',knife:'Put it away, brother, unless something here truly needs cutting.',
-    cloth:'Goat-hair cloth. It will not reach the ground as it is, brother.',patch:'A patch? Our trouble tonight is not a tear.',
-    strips:'Strips of cloth... braided, they make a cord. My mother made them so.',
-    rope:'That will not reach the ground. It will not reach halfway.',
-    longrope:'That will reach. Tie it to something stronger than my window frame.',
-    basket:'Those loops are worn through. I will not lower a brother in that.',
-    strongbasket:'Now that is a basket I would trust with a brother.',
-    straps:'Leather. Sewn under the basket, that would hold.',
-    skin:'Empty, brother? The road to Jerusalem is long and dry.',skinfull:'Good. You will need it on the road.',
-    tablets:'Keep them out of the sun on the road, brother. Wax remembers what men forget.',
-    '*':'No, brother. Keep what you have for the road.'},
-  ask:{basket:'Then it must be made strong before it carries anyone out of my window.',rope:'Then it is no use to us. It is a long way down, brother.',
-    thirst:'Then someone should give him a drink. Even a soldier is somebody\'s son.'},
+      SFX.creak();delItem('longrope');F.ropeTied=1;await say(P,'twice_around_the_beam_and_a_hitch');await say(P,'it_will_hold');return checkFinal()}},
+  {name:'storage_jars',x:276,y:92,w:36,h:20,look:'oil_grain_and_lentils'}]};
+N.hs={name:'Naomi',actor:N,look:'naomi_our_sister',
+  show:{pouch:'your_tools_brother',awl:'keep_it_close',
+    thread:'good_thread',knife:'put_it_away_brother_unless',
+    cloth:'goat_hair_cloth_it',patch:'a_patch',
+    strips:'strips_of_cloth',
+    rope:'that_will_not_reach_the_ground',
+    longrope:'that_will_reach',
+    basket:'those_loops_are_worn_through',
+    strongbasket:'now_that_is_a_basket_i',
+    straps:'leather_said',
+    skin:'empty_brother',skinfull:'good_said',
+    tablets:'keep_them_out_of_the_sun',
+    '*':'no_brother'},
+  ask:{basket:'it_must_be_made_strong',rope:'it_is_no_use_to_us',
+    thirst:'someone_should_give_him_a_drink'},
   talk:()=>talkTree([
-    {q:'Is it safe here?',a:async()=>{await say(N,'As safe as anywhere in Damascus tonight. The watchmen walk the wall above, but they look outward, toward the roads.');
-      await say(N,'Only a light would draw their eyes down here.')}},
-    {q:'How far is it to the ground?',a:()=>say(N,'Far enough that I do not like to look. A short rope will not do, brother.')},
-    {q:'Where are the brothers?',a:()=>say(N,'Eliab and young Jesse are coming by the rooftops. They will be here when the basket is ready.')},
-    {q:'Thank you for opening your home.',once:1,a:async()=>{await say(N,'You once came to this city to take us away in bonds. Now you are my brother.');await say(N,'Jehovah does such things.')}},
-    {q:'I will make ready.',bye:1}])};
+    {q:'is_it_safe_here',a:async()=>{await say(N,'as_safe_as_anywhere_in_damascus_tonight');
+      await say(N,'only_a_light_would_draw')}},
+    {q:'how_far_is_it_to_the_ground',a:()=>say(N,'far_enough_that_i_do_not')},
+    {q:'where_are_the_brothers',a:()=>say(N,'eliab_and_young_jesse_are')},
+    {q:'thank_you_for_opening_your_home',once:1,a:async()=>{await say(N,'you_once_came_to_this_city');await say(N,'jehovah_does_such_things')}},
+    {q:'i_will_make_ready',bye:1}])};
 function setup(){P.called='Saul';place(E,'workshop',196,118,-1);place(GD,'street',270,118,1);place(Z,'street',328,116,-1);place(N,'house',172,120,-1);
   G.inv=['pouch','tablets'];drawInv()}
 /* ============ SCENES: intro, finale, chapter complete ============ */
@@ -654,52 +654,52 @@ function tallWall(){return TALL||(TALL=bake(320,g=>{const r=rng(77),H=VT-144;
 function titleScene(g,t){g.drawImage(tallWall(),0,0,320,VT);twinkle(g,t)}
 async function start(fromPro){ov.onclick=null;ov.className='';audioInit();if(!fromPro){SFX.good();G.started=performance.now();setChapter(1)}
   await cut(async()=>{if(!fromPro)await wait(500);
-    await narr('Damascus, about 36 C.E.',{dur:2800});
+    await narr('damascus_about_36_c_e',{dur:2800});
     if(!fromPro){
-      await narr('Saul of Tarsus, later known as the apostle Paul, once came to this city to arrest the disciples of Jesus.');
-      await narr('Now he himself preaches in the synagogues that Jesus is the Son of God.');
+      await narr('saul_of_tarsus_later_known');
+      await narr('now_he_himself_preaches');
     }
-    await narr('Opposers have agreed among themselves to kill him. The governor under King Aretas has the city guarded, and the gates are watched by day and by night.');
-    await narr('But tonight, the brothers have a plan.',{dur:2800});
+    await narr('opposers_have_agreed_among');
+    await narr('tonight_the_brothers_have_a_plan',{dur:2800});
     await fade(1,500);G.scene=null;enterRoom('workshop',58,118,1);await fade(0,500);
-    await say(E,'Saul! Come away from the door, brother.');await walk(P,152,122);
-    await say(E,"The gates are watched. But the house of our sister Naomi stands on the city wall itself.");
-    await say(E,'Tonight we lower you from her window. We need a basket that will hold, and a rope that will reach.');
-    await say(E,'Mine will do neither as they are. But you are the tentmaker. Take whatever you need.');
-    await say(P,'Then let us not be anxious. Jehovah gives wisdom, and he has given me a trade.')},true)}
+    await say(E,'saul_come');await walk(P,152,122);
+    await say(E,'gates_are_watched');
+    await say(E,'tonight_we_lower_you_from_her_window');
+    await say(E,'mine_will_do_neither_as_they_are');
+    await say(P,'let_us_not_be_anxious')},true)}
 async function finale(){AU.mood='calm';await wait(500);
   place(E,'house',30,116,1);place(J,'house',26,120,1);SFX.door();
   await Promise.all([walk(E,84,122),walk(J,58,126)]);P.dir=-1;N.dir=-1;
-  await say(E,'The rooftops are clear. It is time, brother.');
-  await say(J,'The watch on the wall has just passed. We have until they come around again.');
-  N.dir=1;await say(N,'Take this bread for the road. Jerusalem is many days away.');N.dir=-1;
-  await say(P,'Brothers, sister: you have risked everything for me. Before I go, let us pray.');
+  await say(E,'rooftops_are_clear');
+  await say(J,'watch_on_the_wall_has_just_passed');
+  N.dir=1;await say(N,'take_this_bread_for_the_road');N.dir=-1;
+  await say(P,'brothers_sister_you_have');
   const d=$('#dim');d.style.opacity=.5;[P,E,J,N].forEach(a=>a.bow=true);SFX.pray();await wait(900);
-  await narr('Together they thank Jehovah, and ask him to guide the steps ahead.',{dur:4200,color:'#cfe2ff'});
+  await narr('together_they_thank_jehovah',{dur:4200,color:'#cfe2ff'});
   [P,E,J,N].forEach(a=>a.bow=false);d.style.opacity=0;await wait(500);
-  await say(P,'I came to this city with letters and proud plans, and was led through its gate by the hand. I leave it through a window, in a basket.');
-  await say(E,'And with more brothers than you came with. Hold tight, Saul. We will not let go.');
+  await say(P,'i_came_to_this_city_with_letters');
+  await say(E,'with_more_brothers_than_you_came_with_hold');
   await walk(P,216,113);await fade(1,600);
   G.scene=wallScene;G.end={heads:1,by:46,rider:1};codeBtn();AU.mood='hope';AU.amb={crickets:.8,wind:.5};await fade(0,600);
   const creak=setInterval(()=>SFX.creak(),1300);
   const down=tween(11000,k=>{G.end.by=46+74*(k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2)});
-  await narr("Under cover of night, Saul's disciples lowered him in a basket from an opening in the city wall. (Acts 9:25)",{dur:7500});
+  await narr('under_cover_of_night_acts_9_25',{dur:7500});
   await down;clearInterval(creak);await wait(600);
   G.end.rider=0;G.end.px=112;G.end.py=124;SFX.step();await wait(700);
   const off=tween(9000,k=>{G.end.px=112+150*k;G.end.py=124+6*Math.sin(k*3)-k*8});
-  await narr("So Saul escaped the governor's grasp (2 Corinthians 11:32, 33): not by force, and not by a miracle, but by the courage of his brothers and his trust in Jehovah.",{dur:8000});
+  await narr('saul_escaped_the_governors',{dur:8000});
   await off;G.end.px=null;G.end.heads=0;
-  await journey();await narr('The road to Jerusalem lay ahead, and beyond it, many more.',{dur:3800});
-  endScreen({title:'Escape from Damascus',time:1,text:'Saul used the skill of his hands, accepted the help of his brothers, and relied on Jehovah.',
-    extra:F.kind?['Kindness shown to an opposer']:[],
-    based:'Based on Acts 9:23-25 and 2 Corinthians 11:32, 33. Supporting characters, dialogue and puzzles are invented for this dramatization; the event of the account is from the Scriptures and is told here in paraphrase.',
-    go:'Click to continue to Chapter Two',code:['Chapter Two code: {code}',codeOf(2,0)]});
+  await journey();await narr('road_to_jerusalem_lay_ahead',{dur:3800});
+  endScreen({title:'escape_from_damascus_2',time:1,text:'saul_used_the_skill_of_his_hands',
+    extra:F.kind?['kindness_shown_to_an_opposer']:[],
+    based:'based_on_acts_9_23_25_and_2',
+    go:'click_to_continue_to_chapter_two',code:['chapter_two_code_code',codeOf(2,0)]});
   await wait(1500);ov.onclick=()=>startChapter(2);
   await new Promise(()=>{})}
 /* ============ CHAPTER DEFINITION ============ */
 /* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
    plainly says no. Each is a line of this chapter, in English, as it stands above. */
-const ACTING={shake:['No, brother. Keep what you have for the road.']};
+const ACTING={shake:['no_brother']};
 const CALLS1={cicadas:[.8,2.2,(t,d)=>{noise({t,d:.55+Math.random()*.4,v:.045,f:5200+Math.random()*400,q:3.5,a:.15,sus:1,dest:d})}]};
 return{acting:ACTING,calls:CALLS1,rooms:['workshop','street','house'],setup,start,hint,music:MUSIC,scenes:{wall:wallScene,title:titleScene},topics:TOPICS,tablets:TABLETS,
     /* the way out of this chapter, drawn on the travel map at its end (place ids from shared/map.js) */

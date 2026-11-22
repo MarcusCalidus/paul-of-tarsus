@@ -26,7 +26,7 @@ What follows is told as Acts 14:19 tells it, in the dark, read from the narrator
 <summary>Walkthrough (spoilers)</summary>
 
 1. In Iconium, talk to Nathan and ask for leather for four corners. Use the leather corners (or the awl) on the unfinished cover, and give the wagon cover to Xanthos.
-2. Switch to Barnabas and talk to Tatia: "We answered their words. From stones, our Lord said: flee." Leave by the south gate, and click Lystra on the map.
+2. Switch to Barnabas and talk to Tatia: "We answered their words. Our Lord says to flee from stones." Leave by the south gate, and click Lystra on the map.
 3. In Lystra, talk to Timothy, then use the well. Talk to Timothy again to learn what the crowd is shouting.
 4. Go to the city gate. Choose the three answers that say that they are only humans too, that the living God made heaven, earth and sea, and that he gave rain and seasons of harvest (Acts 14:15-17).
 5. Outside the city, go in at the city gate. In the house, use the thread (or the awl) on Barnabas. Leave by the door to the lane, and click Derbe on the map.

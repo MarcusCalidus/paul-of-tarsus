@@ -685,9 +685,9 @@ const DAY=()=>F.n3?4:F.n2?3:F.n1?2:1,
   STREETV=()=>F.n3?'f':PART();
 /* what is still open in this part of the day, as Paul would say it; or nothing */
 function OPEN13(){const d=DAY(),p=PART();if(!F.hall||d>3)return null;
-  if(p==='m')return d===1&&!F.b1?'An awning is promised for today, and it lies on the bench with its long seam open.':d===2&&!F.apr?'Myrtale is waiting at the bench. I do not let the morning go while she waits.':null;
-  if(p==='n')return!F['t'+d]?'They will be sitting in the hall by now. I have not spoken yet.':d===1&&!F.g1?'A man in the hall had a question on his face. I have not heard it yet.':d===2&&!F.two?'Two men in the hall wanted a word with me, and midday is not over.':d===3&&!F.kle?'Somebody in the hall has more to say than he has said.':null;
-  return d===1&&!F.a1?'Glaukos is expecting me this evening, where the fuller lives.':d===2&&!F.a2?'Hegesias sails at first light, and I have not been to his door.':d===2&&!F.p2?'Diodotos is still waiting under his vine. That table is Aquila and Priscilla\'s to sit at.':d===3&&!F.last?'Kleandros asked me to his house this evening.':null}
+  if(p==='m')return d===1&&!F.b1?'awning_is_promised_for_today':d===2&&!F.apr?'myrtale_is_waiting_at_the_bench':null;
+  if(p==='n')return!F['t'+d]?'they_will_be_sitting_in_the_hall':d===1&&!F.g1?'man_in_the_hall_had_a_question':d===2&&!F.two?'two_men_in_the_hall_wanted':d===3&&!F.kle?'somebody_in_the_hall_has':null;
+  return d===1&&!F.a1?'glaukos_is_expecting_me':d===2&&!F.a2?'hegesias_sails_at_first':d===2&&!F.p2?'diodotos_is_still_waiting_under_his_vine':d===3&&!F.last?'kleandros_asked_me_to_his_house':null}
 
 /* ============ CAST ============ */
 /* Aquila and Priscilla look as they did in Corinth, with two more years in his hair. Apollos is a Jew of Alexandria, a learned man
@@ -725,15 +725,15 @@ Object.assign(LOOK,{
   op13a:{skin:'#c69870',hair:'#8a8a8a',beard:'#8a8a8a',receding:1,longBeard:1,tunic:'#d8d0b8',long:1,belt:'#4a3a24',ph:0},op13b:{skin:'#b88a62',hair:'#3a2a1a',beard:'#3a2a1a',tunic:'#9a8a6a',long:1,belt:'#2e2016',stripe:'#5a3a3a',ph:0}});
 /* Aquila and Priscilla are one actor with a mate (see drawActor in index.html), and can be played from the first scene: aq13. PR is
    Priscilla's voice and place. */
-const AP=actor('aq13','Aquila and Priscilla','#b8d0e8',112),AO=actor('apollos13','Apollos','#f0d0a0',128),PH=actor('philon13','Philon','#e0e0f0',90),
+const AP=actor('aq13','aquila_and_priscilla','#b8d0e8',112),AO=actor('apollos13','Apollos','#f0d0a0',128),PH=actor('philon13','Philon','#e0e0f0',90),
   SY=actor('symm13','Symmachos','#e8b0a0',104),ME=actor('mene13','Menekrates','#d8d0b0',118),KL=actor('klea13','Kleandros','#c8d8f0',100),
   MY=actor('myrt13','Myrtale','#f0c0d0',190),GL=actor('glau13','Glaukos','#e0c8a0',96),HE=actor('hege13','Hegesias','#a8c8e8',110),
-  DI=actor('diod13','Diodotos','#c8e0b0',124),TI=actor('timothy13','Timothy','#b8e0b0',146),WE=actor('well13','man beside Myrtale','#e0d8b8',120),
-  D1=actor('dz13a','disciple','#d8c8e8',116),D2=actor('dz13b','old disciple','#e0d8c0',92),D3=actor('dz13c','young disciple','#c8e8d8',140);
+  DI=actor('diod13','Diodotos','#c8e0b0',124),TI=actor('timothy13','Timothy','#b8e0b0',146),WE=actor('well13','man_beside_myrtale','#e0d8b8',120),
+  D1=actor('dz13a','disciple','#d8c8e8',116),D2=actor('dz13b','old_disciple','#e0d8c0',92),D3=actor('dz13c','young_disciple','#c8e8d8',140);
 const PR={color:'#f0b8c0',pitch:186,name:'Priscilla',talk:false,get room(){return AP.room},get x(){return AP.x-13*AP.dir},get y(){return AP.y}};
 AP.mate={fig:'prisca13',dx:-13,voice:PR,get talk(){return PR.talk}};AP.called='Aquila';
 /* voices at the counting board, of people who are heard and not named */
-const V1={color:'#f0d0c0',pitch:176,name:'woman'},V2={color:'#c0d8e8',pitch:104,name:'man from the harbor'},V3={color:'#d8e0b8',pitch:132,name:'two brothers'},V4={color:'#e0d8d0',pitch:86,name:'old man'};
+const V1={color:'#f0d0c0',pitch:176,name:'woman'},V2={color:'#c0d8e8',pitch:104,name:'man_from_the_harbor'},V3={color:'#d8e0b8',pitch:132,name:'two_brothers'},V4={color:'#e0d8d0',pitch:86,name:'old_man'};
 
 /* ============ WHAT THE ACCOUNT SAYS ============ */
 /* TOLD: Acts 18:23 to 19:20, told by the narrator in paraphrase, each line with its reference; and with it what Paul said of these
@@ -741,61 +741,61 @@ const V1={color:'#f0d0c0',pitch:176,name:'woman'},V2={color:'#c0d8e8',pitch:104,
    in quotation marks (CONTRIBUTING section 1). What the disciples and Paul say to each other in Acts 19:2-4 is spoken in the scene,
    in the game's own words. */
 const TOLD={
- v23:'He stayed there for a while. Then he was on the road again, through the land of Galatia and through Phrygia, one place after another, and gave strength to all the disciples. (Acts 18:23)',
- v24:'To Ephesus there came a Jew whose name was Apollos. Alexandria was his birthplace; he was a gifted speaker, and he knew his way about the Scriptures. (Acts 18:24)',
- v25:'The way of Jehovah had been taught to him, and he burned with the spirit. What he said and taught about Jesus was correct; of baptism, though, he knew John\'s and no other. (Acts 18:25)',
- v26a:'In the synagogue he started to speak, and he spoke without fear. Priscilla and Aquila heard him there. (Acts 18:26)',
- v26b:'They drew him into their own company, and there the way of God was set out for him more exactly. (Acts 18:26)',
- v27a:'He had a mind to go over to Achaia. So the brothers sent a letter to the disciples, asking them earnestly to make him welcome. (Acts 18:27)',
- v27b:'Once there, he did much for those whom God\'s undeserved kindness had brought to believe. (Acts 18:27)',
- v28:'For with the Scriptures he showed that Jesus is the Christ, and he did it in public, with all his force, until the Jews were proved wrong through and through. (Acts 18:28)',
- v1:'Paul came down to Ephesus by way of the inland regions; Apollos by then was at Corinth. In Ephesus Paul met with some disciples. (Acts 19:1)',
- v5:'They heard it, and were baptized: in the name of the Lord Jesus. (Acts 19:5)',
- v6:'The holy spirit came on them once Paul\'s hands had been laid on them, and they started to speak in foreign languages and to prophesy. (Acts 19:6)',
- v7:'All told, they were some twelve men. (Acts 19:7)',
- v8:'For three months the synagogue heard him. He spoke fearlessly there: he gave talks about the Kingdom of God, and reasoned so as to convince. (Acts 19:8)',
- v9a:'There were some, though, who set themselves stubbornly against believing, and who spoke ill of The Way in front of the crowd. (Acts 19:9)',
- v9b:'So he drew back from those men, and saw to it that the disciples were apart from them too. (Acts 19:9)',
- v9c:'From then on his talks were held day by day in the hall of the school of Tyrannus. (Acts 19:9)',
- v10:'Two years passed in this way. By the end, everyone who lived in the province of Asia, Jew or Greek, had heard the word of the Lord. (Acts 19:10)',
- v11:'Through Paul\'s hands God went on doing powerful works of no ordinary kind. (Acts 19:11)',
- v12:'People even took cloths and aprons that had been against his body, and carried them to the sick; the sickness went, and the wicked spirits went out. (Acts 19:12)',
- v13:'There were Jews who went from place to place driving out demons, and some of these tried the name of the Lord Jesus for themselves. Over people with wicked spirits they would pronounce a solemn charge, by the Jesus whom Paul was preaching. (Acts 19:13)',
- v14:'Among those who did it were seven sons of one Sceva, a chief priest of the Jews. (Acts 19:14)',
- v15:'The wicked spirit had an answer for them. It knew Jesus, it said, and Paul was no stranger to it either; but who were they? (Acts 19:15)',
- v16:'Then the man who had the wicked spirit sprang at them. One after another he mastered them, and he was too strong for them all: they ran from that house wounded, and with nothing on. (Acts 19:16)',
- v17:'All Ephesus came to hear of it, Jews and Greeks alike. Fear came over every one of them, and the name of the Lord Jesus was held in ever greater honor. (Acts 19:17)',
- v18:'Many who had come to believe now came forward. They confessed, and told openly what they had been practicing. (Acts 19:18)',
- v19a:'Of those who had practiced magical arts, a good many collected their books in one place and burned them there in front of everybody. (Acts 19:19)',
- v19b:'The price of the books was added up: it came to fifty thousand pieces of silver. (Acts 19:19)',
- v20:'So the word of Jehovah went from strength to strength: mightily it grew, and it prevailed. (Acts 19:20)',
+ v23:'he_stayed_there_for_a_while_acts_18_23',
+ v24:'to_ephesus_there_acts_18_24',
+ v25:'way_of_jehovah_acts_18_25',
+ v26a:'in_the_synagogue_acts_18_26',
+ v26b:'they_drew_him_acts_18_26',
+ v27a:'he_had_a_mind_acts_18_27',
+ v27b:'once_there_he_acts_18_27',
+ v28:'for_with_the_scriptures_acts_18_28',
+ v1:'paul_came_down_acts_19_1',
+ v5:'they_heard_it_acts_19_5',
+ v6:'holy_spirit_came_acts_19_6',
+ v7:'all_told_they_were_some_twelve_men_acts_19_7',
+ v8:'for_three_months_the_synagogue_heard_him_acts_19_8',
+ v9a:'there_were_some_acts_19_9',
+ v9b:'he_drew_back_acts_19_9',
+ v9c:'from_then_on_his_talks_acts_19_9',
+ v10:'two_years_passed_in_this_way_acts_19_10',
+ v11:'through_pauls_hands_acts_19_11',
+ v12:'people_even_took_acts_19_12',
+ v13:'there_were_jews_acts_19_13',
+ v14:'among_those_who_acts_19_14',
+ v15:'wicked_spirit_had_an_answer_for_them_acts_19_15',
+ v16:'man_who_had_the_wicked_acts_19_16',
+ v17:'all_ephesus_came_acts_19_17',
+ v18:'many_who_had_acts_19_18',
+ v19a:'of_those_who_acts_19_19',
+ v19b:'price_of_the_books_acts_19_19',
+ v20:'word_of_jehovah_acts_19_20',
  /* from elsewhere */
- a166:'Years before, on his second journey, the holy spirit had forbidden it: they were not to speak the word anywhere in the province of Asia. (Acts 16:6)',
- a2034:'Later he reminded the elders of this city of something they knew: his own hands had earned what he needed, and what his companions needed. (Acts 20:34)',
- a2020:'He had held back nothing that could profit them, he told those elders, and he had taught them in public and from house to house. (Acts 20:20)',
- c1619:'From this city he wrote that the congregations of Asia sent greetings; and that Aquila and Prisca, and the congregation meeting in their house, sent theirs warmly in the Lord. (1 Corinthians 16:19)',
- c169:'He meant to stay in Ephesus until the Festival of Pentecost, he wrote: a wide door to activity stood open before him, and there were many who opposed. (1 Corinthians 16:8, 9)'};
+ a166:'years_before_on_his_second_acts_16_6',
+ a2034:'later_he_reminded_acts_20_34',
+ a2020:'he_had_held_back_acts_20_20',
+ c1619:'from_this_city_1_corinthians_16_19',
+ c169:'he_meant_to_stay_1_corinthians_16_8_9'};
 const tell=(k,ms,low)=>narr(TOLD[k],{dur:ms||Math.max(6500,2200+TOLD[k].length*62),low});
 /* the passages on the tablets: each a note in the writer's own words with its reference, never the wording of a translation. The
    second is a note of Chapter Eleven, word for word. */
-const PS={da244:{ref:'Daniel 2:44',gist:'The God of heaven has a kingdom to set up while those kings still reign. Nothing will ever destroy it, and it will never pass into the hands of another people. When it has crushed all these kingdoms and made an end of them, it alone will still be standing, forever.'},
-  ps1465:{ref:'Psalm 146:5, 6',gist:'Happy is the man whose hope is Jehovah his God, who is always faithful, and whose help is the God of Jacob, the Maker of the heavens, the earth and the sea, and all they hold.'},
-  is403:{ref:'Isaiah 40:3',gist:'In the wilderness a voice is heard, calling: make the way ready for Jehovah; lay a level road for our God across the desert.'}};
-const quote=k=>T('{text} ({ref})',{text:T(PS[k].gist),ref:T(PS[k].ref)});
+const PS={da244:{ref:'daniel_2_44',gist:'god_of_heaven_has_a_kingdom'},
+  ps1465:{ref:'psalm_146_5_6',gist:'happy_is_the_man_whose'},
+  is403:{ref:'isaiah_40_3',gist:'in_the_wilderness_a_voice'}};
+const quote=k=>T('text_ref',{text:T(PS[k].gist),ref:T(PS[k].ref)});
 /* HEARD: the way, as Aquila and Priscilla were taught it, point by point; and what Apollos says in the synagogue, which is each of
    those points but the last. The notes are theirs, in their own words, each with its reference. What Apollos says is invented: the
    account says only that he taught accurately what concerned Jesus, and knew of no baptism but John's. k: the point; q: the point
    in a few words, as it is chosen; t: the note; say: his words for it. */
 const HEARD=[
- {k:'voice',q:'The voice in the wilderness was John.',t:'Isaiah wrote of a voice in the wilderness that called for the way to be made ready for Jehovah. That voice was John. (Isaiah 40:3)',
-  say:['Open Isaiah, brothers. He writes of a voice that calls in the wilderness, and what it calls for is this: that the way be made ready for Jehovah. I have not come to tell you what that voice will say one day.','It has spoken. Men stood by the Jordan and heard it with their own ears. The voice was a man, and his name was John.']},
- {k:'repent',q:'John preached a baptism that was a symbol of repentance.',t:'Before Jesus came forward, John had preached in public to the whole people of Israel: a baptism that stood as a symbol of repentance. (Acts 13:24)',
-  say:['And what did he cry out to them? Nothing soft. Repent! He said it to all Israel, and Israel came out to him.','He took them down into the river, one after another. It was not a bath: it was a sign, set before all the people, that each of them had repented.']},
- {k:'after',q:'John said that another was coming after him.',t:'Near the end of his course John said that he was not the one. Somebody was coming after him, and John did not count himself fit to undo his sandals. (Acts 13:25)',
-  say:['Then he did what a teacher never does. When the crowds were at their greatest, he pointed away from himself.','He said that he was not the one. Another was coming after him, he said, and he himself was not fit so much as to loosen the sandals from that one\'s feet.']},
- {k:'christ',q:'The one who came after him is Jesus, and he is the Christ.',t:'The one who came after John is Jesus; and Jesus is the Christ, as Paul bore witness in Corinth. (Acts 18:5)',
-  say:['Brothers, the one he pointed to has come. His name is Jesus.','Search the Law and the Prophets for the Christ, as I have searched them, and see whether what they say of him fits anyone else. I have found no one. Sabbath by Sabbath I shall set before you what I know of him.']},
- {k:'name',q:'Baptism in the name of Jesus Christ, and the gift of holy spirit.',t:'At Pentecost Peter told the crowd what to do: to repent, and every one of them to be baptized in the name of Jesus Christ, so that their sins would be forgiven. Then the holy spirit would be given to them as a free gift. (Acts 2:38)'}];
+ {k:'voice',q:'voice_in_the_wilderness_was_john',t:'isaiah_wrote_of_a_voice_isaiah_40_3',
+  say:['open_isaiah_brothers','it_has_spoken']},
+ {k:'repent',q:'john_preached_a_baptism',t:'before_jesus_came_acts_13_24',
+  say:['what_did_he_cry_out_to_them','he_took_them_down_into_the_river']},
+ {k:'after',q:'john_said_that_another',t:'near_the_end_acts_13_25',
+  say:['he_did_what_a_teacher_never_does','he_said_that_he_was_not']},
+ {k:'christ',q:'one_who_came_after_him',t:'one_who_came_acts_18_5',
+  say:['brothers_the_one_he_pointed','search_the_law_and_the_prophets']},
+ {k:'name',q:'baptism_in_the_name_of_jesus',t:'at_pentecost_peter_acts_2_38'}];
 const ticked=()=>G.ap13||(G.ap13={i:0,t:F.apo?HEARD.slice(0,4).map(h=>h.k):[]});
 
 /* ============ HELPERS ============ */
@@ -809,7 +809,7 @@ async function goto(room,x,y,dir){await fade(1,260);place13(room);const a=PC();i
 /* show: a room is shown anew where whoever is played stands, with everyone in his place */
 function show13(room,x,y,dir){place13(room);const a=PC();if(x!=null)place(a,room,x,y,dir);enterRoom(room,a.x,a.y,a.dir);codeBtn()}
 /* mine: an exit or a thing that is Paul's; ours: one that belongs to the two at the bench */
-const mine=(fn,line)=>(...a)=>PC()!==P?say(AP,line||'That is Paul\'s to do. Our place is at the bench.'):fn(...a);
+const mine=(fn,line)=>(...a)=>PC()!==P?say(AP,line||'that_is_pauls_to_do'):fn(...a);
 /* the dark of what is told and not shown: read from the narrator's scroll */
 async function darkly(fn){await fade(1,500);G.scene=DARK;const m=AU.mood,am=AU.amb;AU.mood='night';AU.amb={};await fade(0,300);await fn();await fade(1,400);G.scene=null;AU.mood=m;AU.amb=am}
 /* the pair may walk the street on their own errand: before Paul has come, and on the evening when two tables are waiting */
@@ -817,59 +817,59 @@ const pairOut=()=>!F.sent||(!!F.e2&&!F.n2);
 
 /* ============ ACT ONE: before he came (Acts 18:24-28) ============ */
 async function toSyn(){const pc=PC();
-  if(pc!==P){if(F.sent)return say(AP,'Paul is in there, or will be. Our errand is another door.');if(F.gap)return say(AP,'The Sabbath is over, and our guest is on his way to our table.');return goto('syn13',64,122,1)}
-  if(F.out)return say(P,'I have left that house. I took nothing out of it but the disciples.');
-  if(!F.awl)return say(P,'I said that I would come back to this door. First let me find the two whom I left in this street.');
-  if(!F.tw)return say(P,'These men first. They have been waiting longer than the synagogue has.');
+  if(pc!==P){if(F.sent)return say(AP,'paul_is_in_there_or_will_be');if(F.gap)return say(AP,'sabbath_is_over_and_our_guest');return goto('syn13',64,122,1)}
+  if(F.out)return say(P,'i_have_left_that_house');
+  if(!F.awl)return say(P,'i_said_that_i_would_come');
+  if(!F.tw)return say(P,'these_men_first');
   await goto('syn13',64,122,1)}
 async function synEnter(){
-  if(PC()!==P){if(!G.s13){G.s13=1;await tell('v25');await tell('v26a');await say(AP,'He holds the whole house, and he has not raised his voice once.',TH);await say(PR,'Have the tablets ready. I want to lay what he says beside what we were taught.')}return}
+  if(PC()!==P){if(!G.s13){G.s13=1;await tell('v25');await tell('v26a');await say(AP,'he_holds_the_whole_house',TH);await say(PR,'have_the_tablets_ready')}return}
   if(!F.syn)return threeMonths()}
 /* listen: Apollos says the next part of what he has to say, and the two decide which of their notes it was */
 async function listen(){if(PC()===P)return;const st=ticked();
-  if(F.gap)return say(AO,'After sundown, then. I shall find the house: across the street, where the awning is.');
+  if(F.gap)return say(AO,'after_sundown_then');
   if(F.apo)return gap();
   const h=HEARD[st.i];for(const s of h.say)await say(AO,s,{to:null});
   let av=HEARD.filter(x=>!st.t.includes(x.k));
-  for(;;){await say(PR,'Which of ours was that?',TH);const pick=av[await choose(av.map(x=>x.q).concat(['That is not how we were taught it.']))];
-    if(!pick){await say(AP,'Brother, a question, if the house allows it. We were taught this in other words. Is it the same?');
-      await say(AO,'Ask whenever you like: that is what a synagogue is for. Lay your words beside the scroll, friend, and mine beside it, and see whether the three agree.');await say(PR,'They agree. The same thing, Aquila, in better words than ours.');continue}
-    if(pick.k===h.k){st.t.push(h.k);st.i++;SFX.pick();await say(PR,['That one. I have it.','Yes: word for word what Paul said, and better turned.','That one too.','And that. He has left nothing of it out.'][st.i-1]);break}
-    await say(PR,pick.k==='name'?'Of that he has said nothing yet. Listen: what was this about?':'No. That was not what this was about.')}
-  if(st.i<4)return;F.apo=1;codeBtn();await say(AP,'Not one wrong word. I listened for one.');
-  await say(PR,'Nor did I hear one. And yet the tablets are not full. Look at them, Aquila.')}
+  for(;;){await say(PR,'which_of_ours_was_that',TH);const pick=av[await choose(av.map(x=>x.q).concat(['that_is_not_how_we_were']))];
+    if(!pick){await say(AP,'brother_a_question_if_the_house');
+      await say(AO,'ask_whenever_you_like_that_is');await say(PR,'they_agree');continue}
+    if(pick.k===h.k){st.t.push(h.k);st.i++;SFX.pick();await say(PR,['that_one_said','yes_word_for_word_what','that_one_too','that_he'][st.i-1]);break}
+    await say(PR,pick.k==='name'?'of_that_he_has_said_nothing_yet':'no_that_was')}
+  if(st.i<4)return;F.apo=1;codeBtn();await say(AP,'not_one_wrong_word');
+  await say(PR,'nor_did_i_hear_one')}
 /* gap: what is missing is found: not an error, but a thing that was not said */
-async function gap(){await say(AO,'Peace, friends. You listened closely: I saw the two of you with your tablets.');let av=HEARD.slice();
-  for(;;){await say(AP,'What did we not hear from him?',TH);const h=av[await choose(av.map(x=>x.q))];
-    if(h.k==='name')break;await say(PR,'He said that. I marked it myself.',TH);av=av.filter(x=>x!==h)}
-  await say(AP,'Of that, not a word. He speaks of the baptism of John as if there were no other.',TH);await say(PR,'Because he knows of no other. Nobody has told him.',TH);F.gap=1;SFX.good();codeBtn();
-  await think(AP,'He ought to hear it. Where, and from whom?',[
-    {q:'Stand up, and tell the synagogue what he left out.',no:'It would be true, every word. And a man who has just spoken well would be put to shame before every bench in this house.'},
-    {q:'Say nothing. He means well, and he said nothing wrong.',no:'And let him go on to the next city with a part of it missing? That is not kindness. It only looks like it.'},
-    {q:'Ask him to our table.',ok:1,say:'Apollos: we are Aquila and Priscilla, tentmakers. Our house is across the street, and by sundown the bench is cleared. Will you eat with us?'}]);
-  await say(AO,'Gladly. A man who travels eats alone too often.');F.aside=1;
+async function gap(){await say(AO,'peace_friends');let av=HEARD.slice();
+  for(;;){await say(AP,'what_did_we_not_hear_from_him',TH);const h=av[await choose(av.map(x=>x.q))];
+    if(h.k==='name')break;await say(PR,'he_said_that_i',TH);av=av.filter(x=>x!==h)}
+  await say(AP,'of_that_not_a_word',TH);await say(PR,'because_he_knows_of_no_other',TH);F.gap=1;SFX.good();codeBtn();
+  await think(AP,'he_ought_to_hear_it',[
+    {q:'stand_up_and_tell_the_synagogue',no:'it_would_be_true_every_word'},
+    {q:'say_nothing',no:'let_him_go_on_to_the_next'},
+    {q:'ask_him_to_our_table',ok:1,say:'apollos_we_are_aquila_and_priscilla_tentmakers'}]);
+  await say(AO,'gladly_a');F.aside=1;
   await fade(1,500);AO.room=null;show13('shop13',120,122,1);place(AO,'shop13',178,120,-1);await fade(0,600);
-  await narr('By sundown the bench was a table. The hands that had sewn at it all day broke bread at it in the evening.',{dur:8000});await atTable()}
+  await narr('by_sundown_the_bench_was_a_table',{dur:8000});await atTable()}
 /* atTable: how to say it. The order matters: what is true and good to hear comes first, and leave is asked before anything is added. */
 async function atTable(){if(F.taught)return;
-  await think(AP,'He is our guest. How do we begin?',[
-    {q:'There is something that you did not say today.',no:'Before he has tasted the bread? First of all, what is true and good to hear.'},
-    {q:'You know only the baptism of John.',no:'True. And thrown at a guest like a stone.'},
-    {q:'We have not heard the Scriptures opened like that for a year.',ok:1,say:'We have not heard the Scriptures opened like that since Paul sat at this bench.'}]);
-  await say(AO,'Paul, of Tarsus? I have heard the name in three harbors. Then you have been taught by a man I should like to hear.');
-  await think(AP,'And now the thing itself.',[
-    {q:'You are a learned man of Alexandria, and we sew tents.',no:'True, both halves of it. And no reason at all to send him on with a part missing.'},
-    {q:'Wait for Paul. He will set it right.',no:'Paul is on a road somewhere, and we do not know which. We are here, and we heard it from him.'},
-    {q:'May we tell you what we were taught about it?',ok:1,say:'There is one thing we were taught that you did not say today. May we tell it to you, and you judge it by the Scriptures?'}]);
-  await say(AO,'Tell me. A man who is afraid to be taught should not stand up to teach.');
-  await say(PR,'John sent the people on to the one who would come after him. You said it today, better than we could.');
-  await say(AP,'And there is more, brother. At Pentecost, in Jerusalem, Peter promised the crowd that their sins would be forgiven, and that they would receive the holy spirit as a free gift. What they had to do was repent, and be baptized, every one of them, in the name of Jesus Christ.');
-  await say(AO,'In his name. Then the baptism of John was the doorstep, and I have been telling men that it was the house.');given13();AU.mood='lamp';
-  await say(AO,'Say it again, slowly, from Pentecost on. I want to lay every word of it beside the scrolls.');await tell('v26b');F.taught=1;SFX.good();codeBtn();
-  await narr('It took more than one evening. He was a learned man of a great city; now he sat at a tentmakers\' bench, asked, and listened.',{dur:9000});await sendOff()}
-async function sendOff(){await say(AO,'I mean to cross over to Achaia. You have told me so much about Corinth that I must see it.');
-  await say(AP,'Then you will not go as a stranger. The brothers here will write to the disciples there.');await tell('v27a');
-  await say(AO,'I shall carry their letter, and not my own name.');F.sent=1;AO.room=null;
+  await think(AP,'he_is_our_guest',[
+    {q:'there_is_something_that_you',no:'before_he_has_tasted_the_bread'},
+    {q:'you_know_only_the_baptism_of_john',no:'true_and'},
+    {q:'we_have_not_heard_the_scriptures',ok:1,say:'we_have_not_heard_the_scriptures_said'}]);
+  await say(AO,'paul_of_tarsus_i_have');
+  await think(AP,'now_the_thing_itself',[
+    {q:'you_are_a_learned_man_of_alexandria',no:'true_both_halves_of_it'},
+    {q:'wait_for_paul',no:'paul_is_on_a_road_somewhere'},
+    {q:'may_we_tell_you_what_we',ok:1,say:'there_is_one_thing_we_were'}]);
+  await say(AO,'tell_me');
+  await say(PR,'john_sent_the_people_on_to_the_one');
+  await say(AP,'there_is_more_brother');
+  await say(AO,'in_his_name');given13();AU.mood='lamp';
+  await say(AO,'say_it_again_slowly_from_pentecost_on_i');await tell('v26b');F.taught=1;SFX.good();codeBtn();
+  await narr('it_took_more_than_one_evening',{dur:9000});await sendOff()}
+async function sendOff(){await say(AO,'i_mean_to_cross_over_to_achaia');
+  await say(AP,'you_will_not_go_as_a_stranger');await tell('v27a');
+  await say(AO,'i_shall_carry_their_letter');F.sent=1;AO.room=null;
   await darkly(async()=>{await tell('v27b');await tell('v28')});await comeDown()}
 
 /* ============ ACT TWO: the road down, and about twelve men (Acts 19:1-7) ============ */
@@ -879,198 +879,198 @@ const ROAD1=[['antioch','syriangates','new'],['syriangates','tarsus','new'],['ta
 async function comeDown(){
   try{await need('map');await SHARED.map.journey(ROAD2,{view:'aegean',labels:LAB13,speed:1700});await tell('v1',null,1)}catch(e){console.error(e)}
   await fade(1,500);G.scene=null;setScore(MUSIC);F.came=1;place(P,'road13',40,124,1);playAs(P);show13('road13',40,124,1);await fade(0,700);
-  await narr('It was a road that he had once been turned away from.',{dur:6000});await tell('a166');
-  await say(P,'Ephesus. Then the road to it was shut. Today it runs downhill, the whole way.',TH)}
+  await narr('it_was_a_road_that_he_had',{dur:6000});await tell('a166');
+  await say(P,'ephesus_then',TH)}
 async function intoCity(){await fade(1,400);show13('street13',612,124,-1);await fade(0,500);
-  await narr('He had seen one street of this city, and one house in it. In that street a bench was standing now that he knew.',{dur:8000})}
+  await narr('he_had_seen_one_street',{dur:8000})}
 async function toShop(){const pc=PC();
-  if(pc===P&&F.out&&!F.hall&&has('curt13m'))return say(P,'It is mended. It belongs in the door of the hall, not on a bench.');
+  if(pc===P&&F.out&&!F.hall&&has('curt13m'))return say(P,'it_is_mended_said');
   await goto('shop13',252,122,-1);if(pc===P&&F.came&&!F.awl)return reunion()}
-async function reunion(){await say(AP,'Paul!');await say(PR,'You said: if Jehovah is willing. We have looked down this street every evening since.');
-  await say(P,'He was willing. I came by land, the long way, through Galatia and Phrygia. There were disciples on that road who wanted strengthening more than I wanted a ship.');
-  await say(PR,'Your awl, and your thread. We kept them oiled, and nobody has sewn a stitch with them since Cenchreae.');addItem('awl');addItem('thread');F.awl=1;SFX.pick();
-  await say(AP,'There was a man here before you: Apollos, from Alexandria. We told him what you told us, and he has gone over to Corinth with it.');
-  await say(PR,'And there are others: disciples, a dozen of them, who came to the synagogue after he had sailed. Good men, and in earnest. And yet something is missing when they talk about what they believe, Paul, and we cannot say what. They are at the door.');
+async function reunion(){await say(AP,'paul_2');await say(PR,'you_said_if_jehovah_is_willing');
+  await say(P,'he_was_willing');
+  await say(PR,'your_awl_and_your_thread');addItem('awl');addItem('thread');F.awl=1;SFX.pick();
+  await say(AP,'there_was_a_man_here_before');
+  await say(PR,'there_are_others_disciples');
   await fade(1,400);show13('street13',204,124,1);await fade(0,500);
-  await say(P,'They look like men who are waiting for something, and have been told to wait. I had better not begin by talking.',TH)}
+  await say(P,'they_look_like_men_who',TH)}
 /* the twelve: Paul asks before he teaches. Each right question opens the next; a wrong beginning is true, and leads nowhere. */
-async function twelve(){if(PC()!==P)return say(AP,'We have talked with them for weeks, and we could not find it. Let Paul ask.');if(F.tw)return say(D1,'We speak of little else, brother.');
+async function twelve(){if(PC()!==P)return say(AP,'we_have_talked_with_them');if(F.tw)return say(D1,'we_speak_of_little_else_brother');
   if(!F.q1){await think(P,null,[
-      {q:'Brothers, let me tell you what happened at Pentecost.',by:D1,no:'Gladly, some Sabbath. We are disciples already, friend: we were baptized years ago.'},
-      {q:'How long have you been disciples?',by:D2,no:'Some of us since we were boys. Longer than you have been in Ephesus, at any rate.'},
-      {q:'Holy spirit, brothers: was it given to you when you came to believe?',ok:1,say:'Holy spirit, brothers: was it given to you when you came to believe?'}]);
-    await say(D1,'Holy spirit? This is the first time we have heard of such a thing.');F.q1=1;codeBtn();return say(P,'Then it is not with the spirit that I must begin. It is further back.',TH)}
+      {q:'brothers_let_me_tell_you',by:D1,no:'gladly_some_sabbath'},
+      {q:'how_long_have_you_been_disciples',by:D2,no:'some_of_us_since_we_were_boys'},
+      {q:'holy_spirit_brothers_was',ok:1,say:'holy_spirit_brothers_was'}]);
+    await say(D1,'holy_spirit');F.q1=1;codeBtn();return say(P,'it_is_not_with_the_spirit',TH)}
   if(!F.q2){await think(P,null,[
-      {q:'Then you must be baptized.',by:D3,no:'We are baptized! Was John wrong, then?'},
-      {q:'Then what baptism was yours?',ok:1,say:'Then what baptism was yours?'}]);
-    await say(D2,'John\'s, brother.');F.q2=1;codeBtn();return say(P,'John. Now I know where they are standing. And John himself can tell them where to go from there.',TH)}
+      {q:'you_must_be_baptized',by:D3,no:'we_are_baptized'},
+      {q:'what_baptism_was_yours',ok:1,say:'what_baptism_was_yours'}]);
+    await say(D2,'johns_brother');F.q2=1;codeBtn();return say(P,'john',TH)}
   await think(P,null,[
-    {q:'Come with me to the water.',by:D1,no:'For what, brother? Tell us first what John did not tell us.'},
-    {q:'John himself pointed people on to someone who would come after him.',ok:1,say:'What John did in the water stood for repentance. And he sent the people on: they were to put their faith in the one who would come after him. That one is Jesus.'}]);
-  await say(D1,'In the one after him. We stopped at the man who pointed, and never looked where he was pointing.');await say(D3,'Then baptize us in that name. Today.');
+    {q:'come_with_me_to_the_water',by:D1,no:'for_what_brother'},
+    {q:'john_himself_pointed_people',ok:1,say:'what_john_did_in_the_water'}]);
+  await say(D1,'in_the_one_after_him');await say(D3,'baptize_us_in_that_name');
   await darkly(async()=>{await tell('v5');await tell('v6');await tell('v7')});F.tw=1;show13('street13',204,124,1);await fade(0,600);
-  await narr('He had not told them what they lacked. He had asked, until they heard it themselves.',{dur:7500});
-  await say(P,'And now the synagogue. I told them in there that I would come back.',TH)}
+  await narr('he_had_not_told_them_what',{dur:7500});
+  await say(P,'now_the_synagogue_said',TH)}
 
 /* ============ ACT THREE: three months, and the door (Acts 19:8, 9) ============ */
-async function threeMonths(){await say(PH,'Paul of Tarsus! If Jehovah is willing, you said. We have held you to the first half of that for a year.');
-  await say(P,'And he was willing, Philon. This time I have not come for one Sabbath.');
-  await narr('They gave him the reader\'s table. Sabbath after Sabbath the benches were full.',{dur:7000});await tell('v8');
-  await fade(1,500);F.syn=1;G.heat13=0;show13('syn13',118,124,1);await fade(0,600);await narr('Three months. Then some of those on the benches began to answer him back, and not from the Scriptures.',{dur:7500});await tell('v9a');
-  await say(SY,'Three months we have let him talk! Look at the faces of our own sons. I say it before all of you: this Way of his is a pit, and he digs it in our own house.',{to:null});
-  await say(P,'He is not speaking to me. He is speaking to the benches, about me.',TH)}
+async function threeMonths(){await say(PH,'paul_of_tarsus_if');
+  await say(P,'he_was_willing_philon');
+  await narr('they_gave_him_the_readers_table',{dur:7000});await tell('v8');
+  await fade(1,500);F.syn=1;G.heat13=0;show13('syn13',118,124,1);await fade(0,600);await narr('three_months',{dur:7500});await tell('v9a');
+  await say(SY,'three_months_we_have_let_him_talk',{to:null});
+  await say(P,'he_is_not_speaking_to_me',TH)}
 /* ANSWERS: what he could answer, each of it true: what is chosen, what he says, and what comes back */
-const ANSWERS=[['The Kingdom I speak of is the one that Daniel saw.','The Kingdom I speak of is the one that Daniel saw: set up by the God of heaven, and by no man.','Daniel! He takes Daniel in his mouth, and means his Nazarene. Do you hear it, all of you?'],
-  ['Show me the passage that I have twisted.','For three months I have reasoned with you from the Scriptures. Show me the passage that I have twisted.','The whole of it is twisted! Shall I go through three months of it, word for word, to please him?'],
-  ['You have not yet said what is false in The Way.','You speak against The Way before them all. You have not yet said what is false in it.','False? It empties our benches. Is that not enough for the men of this house?']];
-async function quarrel(){if(PC()!==P)return say(AP,'If we answer him too, there are three voices feeding it.');const st=G.q13||(G.q13=[0,1,2]);
-  if(!st.length)return say(P,'There is no answer left that would not feed it. He does not want one: he wants the house to watch.',TH);
+const ANSWERS=[['kingdom_i_speak_of_is_the_one','the_kingdom_i_speak_of_is_the_one','daniel_q'],
+  ['show_me_the_passage_that_i','for_three_months_i_have','whole_of_it_is_twisted'],
+  ['you_have_not_yet_said_what','you_speak_against_the_way','false_q']];
+async function quarrel(){if(PC()!==P)return say(AP,'if_we_answer_him_too_there');const st=G.q13||(G.q13=[0,1,2]);
+  if(!st.length)return say(P,'there_is_no_answer_left',TH);
   const i=st[await choose(st.map(k=>ANSWERS[k][0]))];await say(P,ANSWERS[i][1]);await say(SY,ANSWERS[i][2]);G.q13=st.filter(k=>k!==i);G.heat13=(G.heat13||0)+1;
-  await narr(['Half the house was on its feet. The other half looked at the floor.','Every bench had taken a side by now, and the loudest were not on his.','Nobody was listening to the Scriptures any more. They were listening to the quarrel.'][Math.min(2,G.heat13-1)],{dur:6500});
-  if(G.heat13>=2)await say(P,'Every true word I say is another stick on his fire. And those who believe are sitting in the smoke of it.',TH)}
-async function withMe(){if(PC()!==P)return say(AP,'We go when he goes.');if(F.withme)return say(D1,'We are ready. Say the word, and we follow you out.');
-  await say(P,'Brothers: we are going. Not away from the Scriptures. Away from this.');await say(D1,'Where to, Paul?');
-  await say(P,'I do not know yet. Out by that door first, and without a word over the shoulder.');F.withme=1;codeBtn()}
-async function leaveSyn(){if(PC()!==P)return say(AP,'Not before Paul. We go when he goes.');
+  await narr(['half_the_house_was_on_its_feet','every_bench_had_taken_a_side','nobody_was_listening_to_the_scriptures'][Math.min(2,G.heat13-1)],{dur:6500});
+  if(G.heat13>=2)await say(P,'every_true_word_i_say_is',TH)}
+async function withMe(){if(PC()!==P)return say(AP,'we_go_when_he_goes');if(F.withme)return say(D1,'we_are_ready');
+  await say(P,'brothers_we_are_going');await say(D1,'where_to_paul');
+  await say(P,'i_do_not_know_yet');F.withme=1;codeBtn()}
+async function leaveSyn(){if(PC()!==P)return say(AP,'not_before_paul');
   if(!F.syn||F.out)return goto('street13',280,120,1);
-  if(!F.withme)return say(P,'Not alone, and not like a man who slips out. Whoever believes goes with me, and they have not been told.',TH);
-  await narr('He gave Symmachos no last word. He turned his back on the quarrel, and those who believed stood up from the benches.',{dur:8000});await tell('v9b');
+  if(!F.withme)return say(P,'not_alone_and_not_like',TH);
+  await narr('he_gave_symmachos_no_last_word',{dur:8000});await tell('v9b');
   await fade(1,500);F.out=1;show13('street13',300,124,1);await fade(0,600);
-  await narr('Philon came as far as the door. There he stopped, with one hand on the frame.',{dur:7000});
-  await say(P,'A dozen households, and more every week, and no roof. The bench of Aquila will not hold them. But this street has a hall in it.',TH)}
+  await narr('philon_came_as_far_as_the_door',{dur:7000});
+  await say(P,'dozen_households_and_more',TH)}
 /* the hall, for a curtain */
-async function mene(){if(PC()!==P)return say(ME,'Good day to you both. The school takes no new pupils till the new moon.');
-  if(F.hall)return say(ME,PART()==='n'?'In with you. They are sitting already.':PART()==='m'?'The school has it till the sun is high. Then it is yours.':'Shut for the night, tentmaker. Go home.');
-  if(F.men)return say(ME,has('curt13m')?'Is that it? Then hang it, and let us feel whether it holds the heat out.':'Mend the curtain, and the hall is yours for the hot hours.');
-  await say(ME,'The school of Tyrannus. Shut, friend: lessons are from first light, and when the sun stands high the pupils go home. So would I, if I had sense.');
-  await say(P,'Then the hall stands empty for the rest of the day?');
-  await say(ME,'Empty? It stands like an oven. The sea wind tore the door curtain from top to bottom at the last new moon, and since then the heat walks in as it pleases. Nobody will sit in there before evening.');
-  await say(P,'And if the curtain were whole?');await say(ME,'Then it would be the coolest room in the street, with nobody in it. Why do you ask?');
-  await say(P,'I am a tentmaker. And I need a room at the hour when nobody else wants one.');
-  await say(ME,'Mend that curtain, and you may have the hall for the hot hours of every day, for all I care. The school will say that I have found a way to keep it aired, and for once the school will be right.');F.men=1;codeBtn()}
-async function takeCurtain(){if(PC()!==P)return say(AP,'A curtain in two halves. Paul has seen it too.');if(F.hall)return say(P,'It hangs, and it holds.');if(F.curt)return say(P,F.sewn?'The mended one belongs here.':'The bare rod. The curtain is with me.');
-  if(!F.men)return say(P,'A door curtain of goat hair, torn from top to bottom. It is not mine to take down.');
-  F.curt=1;addItem('curt13');return say(P,'Down it comes. Goat hair, sewn for a door: this is bench work.')}
-async function hang(id){if(id!=='curt13m')return id==='curt13'?say(P,'Torn as it is? I took it down to mend it.'):false;delItem('curt13m');SFX.creak();
-  await say(ME,'Whole. And doubled where it tore. Feel that: it is cooler in the doorway already.');await say(ME,'The hall is yours, tentmaker, when the sun stands high. What you say in it is your own affair.');
+async function mene(){if(PC()!==P)return say(ME,'good_day_to_you_both');
+  if(F.hall)return say(ME,PART()==='n'?'in_with_you':PART()==='m'?'school_has_it_till_the_sun':'shut_for_the_night_tentmaker');
+  if(F.men)return say(ME,has('curt13m')?'is_that_it':'mend_the_curtain_and_the_hall');
+  await say(ME,'school_of_tyrannus');
+  await say(P,'hall_stands_empty_for_the_rest');
+  await say(ME,'empty_it');
+  await say(P,'if_the_curtain_were_whole');await say(ME,'it_would_be_the_coolest');
+  await say(P,'i_am_a_tentmaker_said');
+  await say(ME,'mend_that_curtain_and_you');F.men=1;codeBtn()}
+async function takeCurtain(){if(PC()!==P)return say(AP,'curtain_in_two_halves');if(F.hall)return say(P,'it_hangs_and_it_holds');if(F.curt)return say(P,F.sewn?'mended_one_belongs_here':'bare_rod');
+  if(!F.men)return say(P,'door_curtain_of_goat_hair');
+  F.curt=1;addItem('curt13');return say(P,'down_it_comes')}
+async function hang(id){if(id!=='curt13m')return id==='curt13'?say(P,'torn_as_it_is'):false;delItem('curt13m');SFX.creak();
+  await say(ME,'whole_said');await say(ME,'hall_is_yours_tentmaker');
   F.hall=1;codeBtn();await tell('v9c');
-  await narr('Nobody knows what Tyrannus taught in that hall. From then on it heard something else in the hours when the city slept.',{dur:9000});await dawn(1)}
+  await narr('nobody_knows_what_tyrannus',{dur:9000});await dawn(1)}
 async function benchUse(id){const b=G.b13||(G.b13={on:0,pt:0});
   if(PC()!==P)return false;
-  if(id==='curt13'){b.on=1;delItem('curt13');return say(P,'I lay it out along the bench. Torn with the weave, top to bottom, and the edges frayed.')}
-  if(id==='curt13m')return say(P,'It is mended. Now it needs to be hung.');return false}
+  if(id==='curt13'){b.on=1;delItem('curt13');return say(P,'i_lay_it_out_along_the_bench')}
+  if(id==='curt13m')return say(P,'it_is_mended_now');return false}
 async function curtainUse(id){const b=G.b13||(G.b13={on:0,pt:0});
-  if(PC()!==P)return say(AP,'Paul has it in hand. It is his bargain.');
-  if(id==='patch13'){b.pt=1;delItem('patch13');return say(P,'A strip of new goat hair, laid behind the tear from top to bottom.')}
-  if(id==='awl'||id==='thread'){if(!b.pt)return say(P,'Sew the two edges to each other, and the first wind opens them again: the old cloth is rotten along the tear. It needs a strip laid behind it.');
-    SFX.sew();F.sewn=1;G.b13=null;addItem('curt13m');codeBtn();return say(P,'Both edges sewn down onto the strip, and the seam doubled. The sea wind can try that.')}
+  if(PC()!==P)return say(AP,'paul_has_it_in_hand');
+  if(id==='patch13'){b.pt=1;delItem('patch13');return say(P,'strip_of_new_goat_hair')}
+  if(id==='awl'||id==='thread'){if(!b.pt)return say(P,'sew_the_two_edges_to_each');
+    SFX.sew();F.sewn=1;G.b13=null;addItem('curt13m');codeBtn();return say(P,'both_edges_sewn_down_onto_the_strip')}
   return false}
 
 /* ============ A DAY IN THREE PARTS ============ */
 /* dawn: a day begins at the bench, before the sun is over the roofs */
 async function dawn(d){await fade(1,600);playAs(P);show13('shop13',150,122,1);await fade(0,700);
-  if(d===1){await narr('Before the sun was over the roofs he was at the bench, in an apron, with a cloth round his forehead against the sweat.',{dur:8500});await tell('a2034');
-    await say(PR,'The awning for the potter is promised for today, Paul. The long seam is yours.')}
-  else if(d===2){if(!has('apron13'))addItem('apron13',1);await narr('Months went by like that: the bench, the hall, the houses.',{dur:6500});
-    await say(MY,'Is this the tentmaker\'s? The one who speaks in the hall of Tyrannus when the sun is high?')}
-  else{await narr('For days the whole city spoke of nothing else.',{dur:6000});await say(AP,'They were asking for you at the door before it was light, Paul. Not for a tent.');
-    await say(P,'It is not my name that they are afraid of. I must say that to them at midday, and plainly.')}}
-async function seam(id){if(id!=='awl'&&id!=='thread')return false;if(PC()!==P)return say(AP,'That seam is Paul\'s. Ours are the short ones.');if(F.b1)return say(P,'Sewn, and the thread made fast.');
-  SFX.sew();F.b1=1;codeBtn();await say(P,'The long seam, end to end, before the street is awake.');return say(AP,'Done before sunrise. Go, brother: the day has two more parts.')}
+  if(d===1){await narr('before_the_sun_was_over_the_roofs',{dur:8500});await tell('a2034');
+    await say(PR,'awning_for_the_potter_is')}
+  else if(d===2){if(!has('apron13'))addItem('apron13',1);await narr('months_went_by_like_that_the_bench',{dur:6500});
+    await say(MY,'is_this_the_tentmakers')}
+  else{await narr('for_days_the_whole_city',{dur:6000});await say(AP,'they_were_asking_for_you');
+    await say(P,'it_is_not_my_name_that_they')}}
+async function seam(id){if(id!=='awl'&&id!=='thread')return false;if(PC()!==P)return say(AP,'that_seam_is_pauls');if(F.b1)return say(P,'sewn_and_the_thread_made_fast');
+  SFX.sew();F.b1=1;codeBtn();await say(P,'long_seam_end_to_end_before');return say(AP,'done_before_sunrise')}
 /* Myrtale, and the apron (Acts 19:11, 12): she asks, he gives it, and the rest is told */
-async function myrtale(){if(F.apr)return;if(PC()!==P)return say(MY,'It is the tentmaker I have come to, mistress.');
-  if(G.my13)return say(MY,'The apron that you work in, tentmaker. I ask for nothing more.');G.my13=1;
-  await say(MY,'They say in our street that the God of whom you speak does through you what no physician in Ephesus can do. My husband\'s brother has not left his bed since the grapes were cut.');
-  await say(MY,'I do not ask you to leave your bench. Give me the apron that you work in, and I will carry it to him.')}
+async function myrtale(){if(F.apr)return;if(PC()!==P)return say(MY,'it_is_the_tentmaker_i_have');
+  if(G.my13)return say(MY,'apron_that_you_work_in_tentmaker');G.my13=1;
+  await say(MY,'they_say_in_our_street');
+  await say(MY,'i_do_not_ask_you_to_leave')}
 async function giveApron(id){if(id!=='apron13')return false;if(!G.my13)await myrtale();
-  await say(P,'It is a working apron, Myrtale: goat hair and wax. There is nothing in the cloth. What is done, God does.');await say(MY,'Then it is enough for me that it was yours.');
+  await say(P,'it_is_a_working_apron_myrtale');await say(MY,'it_is_enough_for_me_that_it');
   delItem('apron13');P.look=LOOK.paul13c;P.wear='c';SFX.pick();await wait(300);MY.room=null;
   await darkly(async()=>{await tell('v11');await tell('v12')});F.apr=1;show13('shop13',150,122,1);await fade(0,600);
-  await say(PR,'That is the third this month. I shall cut you another before the lamp is out.');await say(P,'Cut it plain. It is the hands that God uses, and not even those are mine to boast of.')}
+  await say(PR,'that_is_the_third_this_month');await say(P,'cut_it_plain')}
 /* dial: the shadow is moved on. turnDial shows it move. */
 async function turnDial(a,b){await fade(1,300);G.dial13={a,b,k:0};G.scene=dial13;await fade(0,300);await wait(350);await tween(G.speedAll>200?200:2400,k=>{G.dial13.k=k*k*(3-2*k)});await wait(G.speedAll>200?60:700);await fade(1,300);G.scene=null}
-async function dial(){if(PC()!==P)return say(AP,'The day is Paul\'s to count. Ours is counted in seams.');
-  if(!F.hall)return say(P,'A sundial, with three notches cut in its rim. I have no hours to keep in this street yet.',TH);
-  const d=DAY(),p=PART(),open=OPEN13();if(d>3)return say(P,'This morning nobody is looking at the dial.',TH);
-  if(p==='e')return say(P,'The shadow has gone out with the sun. What is left of this day is counted in lamps.',TH);if(open)return say(P,open,TH);
+async function dial(){if(PC()!==P)return say(AP,'day_is_pauls_to_count');
+  if(!F.hall)return say(P,'sundial_with_three_notches',TH);
+  const d=DAY(),p=PART(),open=OPEN13();if(d>3)return say(P,'this_morning_nobody_is',TH);
+  if(p==='e')return say(P,'shadow_has_gone_out_with_the_sun',TH);if(open)return say(P,open,TH);
   if(p==='m'){await turnDial(0,1);F['m'+d]=1;show13('street13',336,122,1);await fade(0,400);
-    return narr(d===1?'The shadow drew in under the pointer. The shutters closed, the street emptied, and Ephesus lay down to sleep through its hottest hours.':'The shadow drew in under the pointer, and the street emptied.',{dur:d===1?9000:5600})}
+    return narr(d===1?'shadow_drew_in_under_the_pointer':'the_shadow_drew_in_under_the_pointer',{dur:d===1?9000:5600})}
   await turnDial(1,2);F['e'+d]=1;show13('street13',336,122,1);await fade(0,400);
-  await narr(d===1?'The shadow crept out again, and grew long. Lamps were lit in the doorways.':'The shadow grew long, and the lamps were lit.',{dur:d===1?7000:5200});
-  if(d===2)await say(P,'Two tables, and one evening; and one of the two men sails at first light. What Diodotos asked, two others can answer better than I can.',TH)}
+  await narr(d===1?'shadow_crept_out_again_and_grew_long':'shadow_grew_long_and_the_lamps',{dur:d===1?7000:5200});
+  if(d===2)await say(P,'two_tables_and_one_evening',TH)}
 /* the hall at midday */
-async function toHall(){const pc=PC();if(pc!==P)return say(AP,'Paul speaks in there when the sun is high. We hear him when the bench lets us.');
-  if(!F.out)return say(P,'A hall behind a porch of columns. Boys\' voices, reciting.');if(!F.hall)return mene();
-  if(DAY()>3)return say(P,'Not today. Today the street is the hall.');
-  if(PART()==='m')return say(P,'The school has it until the sun is high. Then it is mine.');if(PART()==='e')return say(P,'Shut for the night. The houses are open now.');
+async function toHall(){const pc=PC();if(pc!==P)return say(AP,'paul_speaks_in_there_when_the_sun');
+  if(!F.out)return say(P,'hall_behind_a_porch_of_columns');if(!F.hall)return mene();
+  if(DAY()>3)return say(P,'not_today_today');
+  if(PART()==='m')return say(P,'school_has_it_until_the_sun');if(PART()==='e')return say(P,'shut_for_the_night');
   await goto('hall13',70,124,1)}
 async function hallEnter(){const d=DAY();if(G.he13===d)return;G.he13=d;
-  if(d===1)await narr('The first day there were more benches than hearers.',{dur:6000});
-  else if(d===2){await narr('By now men stood along the wall, and the names of their home towns were a list of the province.',{dur:8000});await say(P,'Philon. In the doorway: neither in nor out.',TH)}
-  else{await narr('That day the hall could not hold them all.',{dur:5600});await say(P,'Timothy, by the desk. And Philon has found himself a bench.',TH)}}
-async function speakHall(){if(PC()!==P)return;const d=DAY();if(F['t'+d])return say(P,'I have spoken. Now I want to hear what they heard.');
-  await narr(d===3?'He told them plainly whose name it was that the city had learned to fear, and that it was no word to conjure with.':'He spoke about the Kingdom of God, as he had in the synagogue. Here nobody stood up to shout him down.',{dur:8000});F['t'+d]=1;codeBtn();
-  if(d===1)await say(P,'They listened to the end. One of them is still sitting there with a question on his face.',TH);
-  else if(d===2)await say(P,'Two of them have not moved from their places. They want more than the talk.',TH);
+  if(d===1)await narr('first_day_there_were_more',{dur:6000});
+  else if(d===2){await narr('by_now_men_stood_along',{dur:8000});await say(P,'philon_in',TH)}
+  else{await narr('that_day_the_hall_could',{dur:5600});await say(P,'timothy_by_the_desk',TH)}}
+async function speakHall(){if(PC()!==P)return;const d=DAY();if(F['t'+d])return say(P,'i_have_spoken');
+  await narr(d===3?'he_told_them_plainly_whose':'he_spoke_about_the_kingdom',{dur:8000});F['t'+d]=1;codeBtn();
+  if(d===1)await say(P,'they_listened_to_the_end',TH);
+  else if(d===2)await say(P,'two_of_them_have_not_moved',TH);
   else await confess()}
-async function glaukos(){if(F.g1)return say(GL,'Where the fuller lives. You will smell the house before you see it. When the lamps are lit.');
-  if(!F.t1)return say(GL,'After you have spoken, tentmaker. I came in here to listen, not to chat.');
-  await say(GL,'Glaukos, of Sardis. I sell wool, and I am here until my bales are sold. You say: a kingdom. I have lived under a proconsul of Rome all my life. Whose kingdom, and when?');
-  await say(P,'That is not answered between a doorway and a midday sleep, Glaukos. Where do you lodge?');
-  await say(GL,'With a fuller, in this street: you will smell the house before you see it. Come when the lamps are lit, and bring those tablets.');F.g1=1;SFX.pick();codeBtn()}
-async function hegesias(){const a=G.as13||(G.as13={});if(F.two||a.he)return say(HE,'Under the colonnade, at the wine seller\'s. He is my cousin. I sail for Smyrna at first light.');
-  if(!F.t2)return say(HE,'Speak first, friend. I can ask afterwards.');
-  await say(HE,'Hegesias, of Smyrna. Every ship I have sailed in carries a carved god to bring her home. You say that what hands have made is no god. Then who brings a ship home?');
-  await say(P,'I want to answer that from what is written, and not in a doorway. Where do I find you?');
-  await say(HE,'Under the colonnade, at the wine seller\'s: he is my cousin. But it must be tonight. I sail for Smyrna at first light.');a.he=1;SFX.pick();return bothAsked()}
-async function diodotos(){const a=G.as13||(G.as13={});if(F.two||a.di)return say(DI,'Under the vine, where the carriers lodge. I shall be sitting at the door.');
-  if(!F.t2)return say(DI,'Afterwards. I walked a long way to hear this.');
-  await say(DI,'Diodotos, of Thyatira. I carry dyed cloth for other men, six days out of seven. You speak here every day at midday. When is a man like me to learn all this? It is for people who have halls and afternoons.');
-  await say(P,'It is not. But that is a longer answer than this hour holds. Where do you lodge?');
-  await say(DI,'Under the vine, where the carriers lodge. Tonight I shall be sitting at the door.');a.di=1;SFX.pick();return bothAsked()}
-async function bothAsked(){const a=G.as13;if(!(a.he&&a.di))return;F.two=1;codeBtn();await say(P,'Hegesias at the wine seller\'s, and gone by morning. Diodotos under the vine. I have noted both.',TH)}
-async function confess(){await narr('When he had finished, a man in a good mantle stood up from the middle of the benches.',{dur:6500});
-await say(KL,'Kleandros. Most of you know my house, and some of you know why people came to it by night. I have believed what this man says for a year. And for a year I have kept my books.',{to:null});await tell('v18');
-  await say(KL,'I want them out of my house, every one, and I no longer know where they all are. Paul: come this evening, and help me turn the house out.');F.kle=1;codeBtn();
-  await say(P,'This evening, Kleandros. The house at the end of the street, with the bench by its door.')}
+async function glaukos(){if(F.g1)return say(GL,'where_the_fuller_lives');
+  if(!F.t1)return say(GL,'after_you_have_spoken_tentmaker');
+  await say(GL,'glaukos_of_sardis');
+  await say(P,'that_is_not_answered_between');
+  await say(GL,'with_a_fuller_in_this_street');F.g1=1;SFX.pick();codeBtn()}
+async function hegesias(){const a=G.as13||(G.as13={});if(F.two||a.he)return say(HE,'under_the_colonnade_at_the_wine_sellers');
+  if(!F.t2)return say(HE,'speak_first_friend');
+  await say(HE,'hegesias_of_smyrna');
+  await say(P,'i_want_to_answer_that_from_what');
+  await say(HE,'under_the_colonnade_at_the_wine');a.he=1;SFX.pick();return bothAsked()}
+async function diodotos(){const a=G.as13||(G.as13={});if(F.two||a.di)return say(DI,'under_the_vine_where_the_carriers_lodge');
+  if(!F.t2)return say(DI,'afterwards_said');
+  await say(DI,'diodotos_of_thyatira');
+  await say(P,'it_is_not_q');
+  await say(DI,'under_the_vine_where_the_carriers_lodge_said');a.di=1;SFX.pick();return bothAsked()}
+async function bothAsked(){const a=G.as13;if(!(a.he&&a.di))return;F.two=1;codeBtn();await say(P,'hegesias_at_the_wine_sellers',TH)}
+async function confess(){await narr('when_he_had_finished_a_man',{dur:6500});
+await say(KL,'kleandros_said',{to:null});await tell('v18');
+  await say(KL,'i_want_them_out_of_my_house');F.kle=1;codeBtn();
+  await say(P,'this_evening_kleandros')}
 /* the evening: a question that was asked in the hall is answered at a door, by lamplight (Acts 20:20) */
 async function evening(who){const d=DAY(),pc=PC();
-  if(PART()!=='e'||d>3)return say(pc,who==='kl'?'A large house, with a door in a frame of dressed stone.':who==='gl'?'A fuller\'s house. The vats by his door can be smelled from the synagogue.':who==='he'?'The wine seller\'s door, at the end of the colonnade.':'A lodging for carriers, with a vine over its door.');
-  if(who==='gl'){if(pc!==P)return say(AP,'The fuller\'s. Nobody is expecting us there.');if(d!==1)return say(P,'The fuller\'s. Glaukos lodged here until his wool was sold.');return F.a1?say(P,'He has his answer, and a great deal to turn over.'):visit1()}
-  if(who==='he'){if(d!==2)return say(pc,'The wine seller has shut up for the night.');if(pc!==P)return say(AP,'Hegesias asked about what is written. That is for Paul and his tablets.');return F.a2?say(P,'He has his answer. By sunrise it will be at sea.'):visit2()}
-  if(who==='di'){if(d!==2)return say(pc,'The carriers are asleep. They load before it is light.');
-    if(pc===P)return say(P,F.p2?'Aquila and Priscilla have been there. He is in good hands.':'If I sit down here, Hegesias sails without his answer. And what Diodotos asked, two tentmakers can answer better than I can.',TH);return F.p2?say(AP,'He asked us to come again.'):visit2p()}
-  if(pc!==P)return say(AP,'Kleandros asked Paul.');if(d!==3)return say(P,'A large house. Its shutters are closed.');if(F.last)return say(P,'He is carrying them out himself, tomorrow, before everybody.');
+  if(PART()!=='e'||d>3)return say(pc,who==='kl'?'large_house_with_a_door':who==='gl'?'fullers_house':who==='he'?'wine_sellers_door_at_the_end':'lodging_for_carriers_with_a_vine');
+  if(who==='gl'){if(pc!==P)return say(AP,'the_fullers');if(d!==1)return say(P,'fullers_said');return F.a1?say(P,'he_has_his_answer_and_a_great'):visit1()}
+  if(who==='he'){if(d!==2)return say(pc,'wine_seller_has_shut_up_for_the_night');if(pc!==P)return say(AP,'hegesias_asked_about_what_is_written');return F.a2?say(P,'he_has_his_answer'):visit2()}
+  if(who==='di'){if(d!==2)return say(pc,'carriers_are_asleep');
+    if(pc===P)return say(P,F.p2?'aquila_and_priscilla_have_been_there':'if_i_sit_down_here_hegesias',TH);return F.p2?say(AP,'he_asked_us_to_come_again'):visit2p()}
+  if(pc!==P)return say(AP,'kleandros_asked_paul');if(d!==3)return say(P,'large_house');if(F.last)return say(P,'he_is_carrying_them_out_himself');
   await goto('house13',160,236,1)}
 /* pass: Paul answers from his tablets. The one who asked says what he makes of each passage. */
 async function pass(who,right,miss){const ks=Object.keys(PS);for(;;){const k=ks[await choose(ks.map(k=>PS[k].ref))];await say(P,quote(k));if(k===right)return;await say(who,miss[k])}}
-async function visit1(){place(GL,'street13',532,117,-1);await say(GL,'You came. Sit on the step: the fuller is asleep, but his vats are wide awake: you can smell them. Now. Whose kingdom, and when?');
-  await pass(GL,'da244',{ps1465:'A God who made the sea and the land. Good. But I asked who is to rule them.',is403:'A road through a desert. And who rules at the end of it?'});
-  await say(GL,'Set up by the God of heaven, and handed to no other people. And all these kingdoms, it says. Rome too?');
-  await say(P,'I did not write it, Glaukos. I only carry it. It says: all these kingdoms.');
-  await narr('He stayed until the fuller\'s lamp had been filled a second time.',{dur:6500});await tell('a2020');F.a1=1;GL.room=null;SFX.good();codeBtn();
-  await say(P,'That is enough for one day. The loft, and sleep.',TH)}
-async function visit2(){place(HE,'street13',157,117,-1);await say(HE,'In here, out of the lamplight: my cousin does not like the Jews\' God discussed in front of his jars. Now: who brings a ship home?');
-  await pass(HE,'ps1465',{da244:'Kings and kingdoms. I asked about the sea, friend.',is403:'A road in a desert! I am a seaman.'});
-  await say(HE,'The one who made the sea, and everything in it. Then the carved thing we carry never brought a ship home. I have a great deal to think about on this voyage.');
-  await narr('He stayed until the wine seller put out the lamp, and then they talked on in the dark.',{dur:7000});F.a2=1;HE.room=null;SFX.good();codeBtn();
-  if(!F.p2)await say(P,'And Diodotos is still sitting under his vine. That table is not mine tonight.',TH)}
-async function visit2p(){place(DI,'street13',588,117,-1);await say(DI,'I asked the tentmaker a question, and he has sent me... who are you?');
-  await say(AP,'Tentmakers too. Aquila, and Priscilla, my wife. You asked when a man who works six days is to learn all this.');
+async function visit1(){place(GL,'street13',532,117,-1);await say(GL,'you_came_q');
+  await pass(GL,'da244',{ps1465:'god_who_made_the_sea_and_the_land',is403:'road_through_a_desert'});
+  await say(GL,'set_up_by_the_god_of_heaven');
+  await say(P,'i_did_not_write_it_glaukos');
+  await narr('he_stayed_until_the_fullers',{dur:6500});await tell('a2020');F.a1=1;GL.room=null;SFX.good();codeBtn();
+  await say(P,'that_is_enough_for_one_day',TH)}
+async function visit2(){place(HE,'street13',157,117,-1);await say(HE,'in_here_out_of_the_lamplight');
+  await pass(HE,'ps1465',{da244:'kings_and_kingdoms',is403:'road_in_a_desert'});
+  await say(HE,'one_who_made_the_sea_and_everything');
+  await narr('he_stayed_until_the_wine',{dur:7000});F.a2=1;HE.room=null;SFX.good();codeBtn();
+  if(!F.p2)await say(P,'diodotos_is_still_sitting_under_his_vine',TH)}
+async function visit2p(){place(DI,'street13',588,117,-1);await say(DI,'i_asked_the_tentmaker_a_question');
+  await say(AP,'tentmakers_too');
   await think(AP,null,[
-    {q:'Paul would explain it to you better than we can.',no:'He left this table to us because we can.'},
-    {q:'You must make the time for it.',by:DI,no:'Out of what? I have told you what my days are.'},
-    {q:'We learned it at the bench, a seam at a time.',ok:1,say:'We sew from first light, Diodotos. We learned it at the bench, a seam at a time, from a man who was sewing beside us. Ask us one thing tonight, and another when you are next in Ephesus.'}]);
-  await say(DI,'One thing a night. That I can carry. Sit down, both of you.');
-  await narr('It was the second time that the two of them had sat down with a stranger and told him what they had been taught.',{dur:8000});F.p2=1;DI.room=null;SFX.good();codeBtn()}
+    {q:'paul_would_explain_it_to_you',no:'he_left_this_table_to_us'},
+    {q:'you_must_make_the_time_for_it',by:DI,no:'out_of_what'},
+    {q:'we_learned_it_at_the_bench',ok:1,say:'we_sew_from_first_light_diodotos'}]);
+  await say(DI,'one_thing_a_night');
+  await narr('it_was_the_second_time',{dur:8000});F.p2=1;DI.room=null;SFX.good();codeBtn()}
 /* night: up to the loft, when nothing is open; and what the night tells */
-async function sleep(){const pc=PC();if(pc!==P)return say(AP,F.aside&&!F.sent?'Not while our guest is at the table.':'Not while there is work on the bench.');
-  if(!F.hall||DAY()>3)return say(P,'The steps to the loft. They sleep at one end of it and I at the other, as we did in Corinth.');
-  if(PART()!=='e')return say(P,'Not while there is light to work or to talk by.');const open=OPEN13();if(open)return say(P,open,TH);return night(DAY())}
+async function sleep(){const pc=PC();if(pc!==P)return say(AP,F.aside&&!F.sent?'not_while_our_guest_is':'not_while_there_is_work');
+  if(!F.hall||DAY()>3)return say(P,'steps_to_the_loft_said');
+  if(PART()!=='e')return say(P,'not_while_there_is_light_said');const open=OPEN13();if(open)return say(P,open,TH);return night(DAY())}
 async function night(d){await fade(1,600);F['n'+d]=1;G.asia13=null;G.scene=asia13;AU.mood='road';AU.amb={wind:.25};await fade(0,600);
-  if(d===1){await narr('Glaukos sold his wool and went home to Sardis, three days inland. He took something with him that he had not come for.',{dur:9000,low:1});await narr('Nobody sent him. He lived there.',{dur:5000,low:1})}
-  else if(d===2){await narr('Hegesias sailed for Smyrna with the land wind. Diodotos loaded his mules for Thyatira.',{dur:8000,low:1});await tell('v10',null,1);
-    await say(P,'Thyatira. I know a seller of purple from that city, far away in Philippi.',TH)}
+  if(d===1){await narr('glaukos_sold_his_wool_and_went',{dur:9000,low:1});await narr('nobody_sent_him',{dur:5000,low:1})}
+  else if(d===2){await narr('hegesias_sailed_for_smyrna',{dur:8000,low:1});await tell('v10',null,1);
+    await say(P,'thyatira_i',TH)}
   if(d===2){await fade(1,500);G.scene=DARK;AU.mood='night';AU.amb={};await fade(0,300);for(const k of['v13','v14','v15','v16','v17'])await tell(k)}
   await fade(1,500);G.scene=null;if(d===3)return lastMorning();await dawn(d+1)}
 
@@ -1078,73 +1078,73 @@ async function night(d){await fade(1,600);F['n'+d]=1;G.asia13=null;G.scene=asia1
 /* HIDE: where Kleandros kept what he kept. k: the place; clue: what he remembers of it; look: what Paul sees; find: what he says as
    he finds it. The seventh lies in the strongbox, and is not looked for. */
 const HIDE=[
- {k:'thr',clue:'One of them every guest of mine has stepped over.',look:'The threshold: one slab of pale stone. It rocks a little under the foot.',find:'We lift the slab together. In a hollow under it: a small pouch, drawn shut.'},
- {k:'hem',clue:'One I wore, and never saw.',look:'A good cloak on its peg. One corner of the hem is thicker than a hem should be.',find:'Four stitches, no more. A roll as long as a finger. And I close the hem again: it is still his cloak.'},
- {k:'jar',clue:'One sleeps where the damp cannot reach it.',look:'A jar of barley, full to the brim, with a lid.',find:'My arm goes in to the elbow. Barley, barley, and a roll, wrapped in a skin.'},
- {k:'bed',clue:'One I slept on, as a man sleeps on his money.',look:'The bed: a low frame, a mattress of straw, a blanket.',find:'Between the frame and the straw: a roll, pressed flat by a year of nights.'},
- {k:'stone',clue:'One is kept warm.',look:'One stone beside the hearth sits a little higher than its neighbors.',find:'It lifts out. Behind it, warm and dry: two rolls, tied together. I count them as one place.'},
- {k:'roof',clue:'One has seen the stars every night since I bought it.',look:'A mat on the roof, rolled up against the dew.',find:'Rolled into the mat: a pouch. The dew has not hurt it.'}];
+ {k:'thr',clue:'one_of_them_every_guest',look:'threshold_one_slab_of_pale_stone',find:'we_lift_the_slab_together'},
+ {k:'hem',clue:'one_i_wore_and_never_saw',look:'good_cloak_on_its_peg',find:'four_stitches_no_more'},
+ {k:'jar',clue:'one_sleeps_where_the_damp',look:'jar_of_barley_full_to_the_brim',find:'my_arm_goes_in_to_the_elbow'},
+ {k:'bed',clue:'one_i_slept_on_as_a_man',look:'bed_a_low_frame_a_mattress',find:'between_the_frame_and_the_straw'},
+ {k:'stone',clue:'one_is_kept_warm',look:'one_stone_beside_the_hearth',find:'it_lifts_out_behind'},
+ {k:'roof',clue:'one_has_seen_the_stars',look:'mat_on_the_roof_rolled',find:'rolled_into_the_mat_a_pouch'}];
 const found13=()=>G.h13||(G.h13=F.found?HIDE.map(h=>h.k):[]);
-async function search(k,how){const f=found13(),h=HIDE.find(x=>x.k===k);if(f.includes(k))return say(P,'I have been there. It is empty now.');
+async function search(k,how){const f=found13(),h=HIDE.find(x=>x.k===k);if(f.includes(k))return say(P,'i_have_been_there');
   if(how==='look')return say(P,h.look);
-  if(k==='hem'&&how!=='awl'&&how!=='knife')return say(P,'Sewn in. I am not going to tear a man\'s cloak: that is a thing for the awl, four stitches of it.');
+  if(k==='hem'&&how!=='awl'&&how!=='knife')return say(P,'sewn_in_i');
   if(k==='hem')SFX.sew();else SFX.pick();f.push(k);await say(P,h.find);
-  if(f.length<HIDE.length)return say(KL,['One. I had forgotten that it was there. That is the worst of it.','Two.','Three. I knew of that one. I had hoped that you would not look there.','Four.','Five.'][f.length-1]);
-  F.found=1;codeBtn();await say(KL,'Six. And the seventh I do not have to look for.');return lastRoll()}
-async function kleandros(){const f=found13();if(F.last)return say(KL,'Tomorrow, in the open street. I shall carry them myself.');if(F.found)return lastRoll();
-  if(!G.kl13){G.kl13=1;await say(KL,'Seven I paid for. I have counted them often enough, on nights when I should have slept. Where I put them is another matter: a man hides such things well, and then he hides them from himself.')}
+  if(f.length<HIDE.length)return say(KL,['one_said','two_said','three_said','four_said','five_said'][f.length-1]);
+  F.found=1;codeBtn();await say(KL,'six_said');return lastRoll()}
+async function kleandros(){const f=found13();if(F.last)return say(KL,'tomorrow_in_the_open_street');if(F.found)return lastRoll();
+  if(!G.kl13){G.kl13=1;await say(KL,'seven_i_paid_for_i')}
   const left=HIDE.filter(h=>!f.includes(h.k)),h=left[(G.kc13=(G.kc13||0)+1)%left.length];return say(KL,h.clue)}
 /* the seventh: it is his to give up, and Paul only asks */
-async function lastRoll(){if(F.last)return;await say(KL,'It lies in the strongbox, with my money, and it cost more than all the money that lies beside it. More than this house.');
-  await say(KL,'Paul. I could sell it. There are men in this city who would give me twelve thousand for it tomorrow, and I could lay every piece of that at the feet of the poor. Why should silver go up in smoke?');
+async function lastRoll(){if(F.last)return;await say(KL,'it_lies_in_the_strongbox');
+  await say(KL,'paul_i_could');
   await think(P,null,[
-    {q:'Burn it.',no:'If I tell him, he has only obeyed me. And it is his roll, and his house.'},
-    {q:'It is yours to decide.',by:KL,no:'I know that it is mine. I am asking you because I cannot decide it.'},
-    {q:'Who would buy it from you?',ok:1,say:'Who would buy it from you?'}]);
-  await say(KL,'Who? A man like the one I was a year ago.');await say(P,'And what would he do with it?');
-  await say(KL,'What I did. ... Then I should not be rid of it at all. I should only have handed it on, and been paid for the harm.');
-  await say(KL,'It goes with the others. Tomorrow, in the open street, where everybody who ever came to this door by night can see it burn.');F.last=1;SFX.good();codeBtn();
-  await narr('He had asked two questions. The answer was the man\'s own.',{dur:6500});await fade(1,400);show13('street13',600,124,-1);await fade(0,500);
-  await say(P,'Seven, out of one house. And he says that there are a great many such houses.',TH)}
+    {q:'burn_it',no:'if_i_tell_him_he_has_only'},
+    {q:'it_is_yours_to_decide',by:KL,no:'i_know_that_it_is_mine'},
+    {q:'who_would_buy_it_from_you',ok:1,say:'who_would_buy_it_from_you'}]);
+  await say(KL,'who_said');await say(P,'what_would_he_do_with_it');
+  await say(KL,'what_i_did');
+  await say(KL,'it_goes_with_the_others');F.last=1;SFX.good();codeBtn();
+  await narr('he_had_asked_two_questions',{dur:6500});await fade(1,400);show13('street13',600,124,-1);await fade(0,500);
+  await say(P,'seven_out_of_one_house',TH)}
 /* the morning of the fire, and the sum */
-async function lastMorning(){G.bd13=null;playAs(P);show13('street13',260,124,1);await fade(0,700);await narr('In the morning they carried them out into the street: his, and many another man\'s.',{dur:7500});
-  await say(KL,'Before we light it, let it be reckoned. Let the city hear what we are burning.',{to:null});await say(TI,'I shall keep the count on my tablet. Somebody must lay it out on the board.')}
+async function lastMorning(){G.bd13=null;playAs(P);show13('street13',260,124,1);await fade(0,700);await narr('in_the_morning_they_carried',{dur:7500});
+  await say(KL,'before_we_light_it_let',{to:null});await say(TI,'i_shall_keep_the_count')}
 /* OWNERS: who lays down what. cap: what is written under the board; n: the sum that was said. The five add up to fifty thousand. */
 const OWNERS=[
- {who:()=>KL,line:'The roll from my strongbox: twelve thousand pieces of silver. The six others: three thousand, all of them together.',cap:'Kleandros: one roll at twelve thousand, and six more at three thousand together',n:15000},
- {who:()=>V1,line:'Two rolls, at four hundred each. And a third that cost me as much as those two together.',cap:'A woman: two rolls at four hundred each, and a third at the price of both',n:1600},
- {who:()=>V2,line:'Nine thousand and nine hundred. I counted it out in this very street.',cap:'A man from the harbor: nine thousand nine hundred',n:9900},
- {who:()=>V3,line:'Seven rolls, bought one at a time from the same man. Seven hundred and fifty each.',cap:'Two brothers: seven rolls at seven hundred and fifty each',n:5250},
- {who:()=>V4,line:'Eighteen thousand two hundred and fifty. It was my father\'s, and his father\'s before him. Lay it down.',cap:'An old man: eighteen thousand two hundred and fifty',n:18250}];
+ {who:()=>KL,line:'roll_from_my_strongbox',cap:'kleandros_one_roll_at_twelve',n:15000},
+ {who:()=>V1,line:'two_rolls_at_four_hundred_each',cap:'woman_two_rolls_at_four',n:1600},
+ {who:()=>V2,line:'nine_thousand_and_nine_hundred',cap:'man_from_the_harbor_nine',n:9900},
+ {who:()=>V3,line:'seven_rolls_bought_one',cap:'two_brothers_seven_rolls',n:5250},
+ {who:()=>V4,line:'eighteen_thousand_two_hundred_and_fifty',cap:'old_man_eighteen_thousand',n:18250}];
 const WANT=k=>OWNERS.slice(0,k+1).reduce((s,o)=>s+o.n,0);
 const board=()=>G.bd13||(G.bd13={v:F.sum?50000:0,base:F.sum?50000:0,k:F.sum?5:0});
 const digits=v=>[4,3,2,1,0].map(e=>Math.floor(v/Math.pow(10,e))%10);
-async function toBoard(){if(F.sum)return say(PC(),'One pebble, in the highest place. Nobody has touched the board since.');
+async function toBoard(){if(F.sum)return say(PC(),'one_pebble_in_the_highest_place');
   await fade(1,220);board();show13('board13',160,236,1);await fade(0,260);const b=board();
-  if(!b.told){b.told=1;await say(PC(),'A counting board, cut the Greek way: the letters on it are numbers. A pebble in a trough counts what the letter beside that trough says, and a pebble in a hollow what the letter beside the hollow says.',TH);
-    await say(PC(),'A pebble that lies wrong can be picked up again; and the bowl takes back everything that was laid down for this sum.',TH);await say(OWNERS[b.k].who(),OWNERS[b.k].line)}}
+  if(!b.told){b.told=1;await say(PC(),'counting_board_cut_the_greek',TH);
+    await say(PC(),'pebble_that_lies_wrong',TH);await say(OWNERS[b.k].who(),OWNERS[b.k].line)}}
 async function outBoard(){await fade(1,220);show13('street13',300,124,1);await fade(0,260)}
 async function lay(i,five){const b=board();if(F.sum||b.k>4)return;const add=(five?5:1)*Math.pow(10,4-i),v=b.v+add;
-  if(v>99999)return say(PC(),'The board has no place higher than that.',TH);const was=digits(b.v);b.v=v;const now=digits(v),carried=now.some((d,j)=>d%5<was[j]%5||d<was[j]);
-  if(carried){carry13();if(!b.car){b.car=1;await say(PC(),'Five in a trough are one in the hollow above it; and two in a hollow are one in the next place to the left. I take them up, and set one down.',TH)}}else pebble13()}
+  if(v>99999)return say(PC(),'board_has_no_place_higher_than_that',TH);const was=digits(b.v);b.v=v;const now=digits(v),carried=now.some((d,j)=>d%5<was[j]%5||d<was[j]);
+  if(carried){carry13();if(!b.car){b.car=1;await say(PC(),'five_in_a_trough_are_one',TH)}}else pebble13()}
 /* takeOff: one pebble is picked up again: from a trough, or from a hollow. What Timothy has already checked stays on the board. */
 async function takeOff(i,five){const b=board();if(F.sum||b.k>4)return;const D=digits(b.v),val=(five?5:1)*Math.pow(10,4-i);
-  if(!(five?D[i]>=5:D[i]%5>0))return say(PC(),five?'There is no pebble in that hollow.':'There is no pebble in that trough.',TH);
-  if(b.v-val<b.base)return say(PC(),'That one was laid down for a sum that Timothy has already checked. It stays.',TH);b.v-=val;pebble13(.7)}
-async function sweep(){const b=board();if(F.sum)return;if(b.v===b.base)return say(PC(),'A bowl of river pebbles.');b.v=b.base;carry13();return say(PC(),'I take those off again. The board stands as it stood before this sum.',TH)}
+  if(!(five?D[i]>=5:D[i]%5>0))return say(PC(),five?'there_is_no_pebble_in_that_hollow':'there_is_no_pebble_in_that_trough',TH);
+  if(b.v-val<b.base)return say(PC(),'that_one_was_laid_down',TH);b.v-=val;pebble13(.7)}
+async function sweep(){const b=board();if(F.sum)return;if(b.v===b.base)return say(PC(),'bowl_of_river_pebbles');b.v=b.base;carry13();return say(PC(),'i_take_those_off_again',TH)}
 async function reckon(){const b=board();if(F.sum||b.k>4)return;const want=WANT(b.k);
   if(b.v===b.base)return say(OWNERS[b.k].who(),OWNERS[b.k].line);
-  if(b.v!==want)return say(TI,b.v<want?'I have more than that on my tablet, with this one added. Count it over.':'I have less than that on my tablet. There are too many pebbles down.');
-  b.base=b.v;b.k++;SFX.pick();if(b.k<5){await say(TI,['Fifteen thousand. Next.','Sixteen thousand six hundred. Next.','Twenty-six thousand five hundred. Next.','Thirty-one thousand seven hundred and fifty. One more.'][b.k-1]);return say(OWNERS[b.k].who(),OWNERS[b.k].line)}
-  F.sum=1;codeBtn();SFX.good();await say(TI,'One pebble, in the highest place, and the board bare under it. Fifty thousand.');await wait(400);await outBoard();return fire()}
-async function fire(){await say(KL,'Fifty thousand pieces of silver. A man could work his whole life, and his son after him, and not earn it. Light it.',{to:null});G.fire13=performance.now();AU.amb={fire:.9,crowd:.4};AU.mood='fire';
+  if(b.v!==want)return say(TI,b.v<want?'i_have_more_than_that_on_my_tablet':'i_have_less_than_that_on_my_tablet');
+  b.base=b.v;b.k++;SFX.pick();if(b.k<5){await say(TI,['fifteen_thousand','sixteen_thousand_six_hundred','twenty_six_thousand_five_hundred','thirty_one_thousand_seven_hundred_and_fifty'][b.k-1]);return say(OWNERS[b.k].who(),OWNERS[b.k].line)}
+  F.sum=1;codeBtn();SFX.good();await say(TI,'one_pebble_in_the_highest');await wait(400);await outBoard();return fire()}
+async function fire(){await say(KL,'fifty_thousand_pieces_of_silver',{to:null});G.fire13=performance.now();AU.amb={fire:.9,crowd:.4};AU.mood='fire';
   await tell('v19a');await tell('v19b');
-  await narr('Nobody had ordered it. Nobody was paid for his loss. They stood round it until it had burned down, and went home lighter.',{dur:9500});await tell('v20');
+  await narr('nobody_had_ordered_it',{dur:9500});await tell('v20');
   await fade(1,700);G.asia13='all';G.scene=asia13;AU.amb={wind:.25};await fade(0,700);
-  await narr('He had not left the city. The province had come through it, and gone home.',{dur:7500,low:1});await tell('c1619',null,1);await tell('c169',null,1);
-  endScreen({title:'The Hall of Tyrannus',text:'A learned man let two tentmakers teach him. Twelve men were asked the right question. And many who had practiced magic burned what they could not sell without doing harm.',
-    based:'Based on Acts 18:23-19:20; 2:38; 13:24, 25; 16:6; 20:20, 34 and 1 Corinthians 16:8, 9, 19. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are from the Scriptures and are told here in paraphrase. Acts does not say what Apollos said in the synagogue, or where and how often Priscilla and Aquila taught him; where Paul found the twelve men; who Tyrannus was, how Paul came by his hall, or at what hours he spoke in it (a few manuscripts add hours, but these are not thought to belong to the original text); when Timothy came to Ephesus; who asked for an apron, or who was made well; how the word reached any other town of the province; who burned books, where they had been kept, why they were not sold, or how the sum was reckoned.',
-    go:'Click to return to the title'});
+  await narr('he_had_not_left_the_city',{dur:7500,low:1});await tell('c1619',null,1);await tell('c169',null,1);
+  endScreen({title:'the_hall_of_tyrannus',text:'learned_man_let_two_tentmakers_teach_him',
+    based:'based_on_acts_18_23_19',
+    go:'click_to_return_to_the_title'});
   await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
 
 /* ============ ITEMS ============ */
@@ -1154,13 +1154,13 @@ Object.assign(ICON,{
   curt13m(g){IH.square(g,GOAT,4,4,16,17);R(g,10.6,4,2.8,17,tint(GOAT,.22));for(let j=5;j<20;j+=2.4){R(g,10,j,1,.8,'#c8b890');R(g,13,j+1.2,1,.8,'#c8b890')}},
   apron13(g){poly(g,[7,6,17,6,19,20,5,20],'#8a6a4a');poly(g,[7,6,17,6,17.4,8.4,6.6,8.4],'#6a4e34');stroke(g,[7,7,3.4,9.4],'#6a4e34',1.2);stroke(g,[17,7,20.6,9.4],'#6a4e34',1.2);for(const x of[10,14])stroke(g,[x,9,x-.6,19.4],'rgba(30,20,12,.3)',.6)}});
 Object.assign(ITEMS,{
-  curt13:{name:'torn curtain',look:'A door curtain of goat hair, torn from top to bottom, with the weave. The edges of the tear are rotten.'},
-  patch13:{name:'strip of goat hair',look:'A strip of new goat-hair cloth, a hand wide and as long as a door is high.'},
-  curt13m:{name:'mended curtain',look:'The curtain, whole again: both edges sewn down onto a strip of new cloth, and the seam doubled.'},
-  apron13:{name:'apron',look:'My working apron: goat hair, stiff with wax, tied at the waist. It has kept a good many tunics whole.'},
-  tab13:{name:'wax tablets',icon:'tablets',def:'open',look:'Our tablets: what we were taught, point by point, and what is still to be done.',by:{aq13:'Our tablets: what we were taught, point by point, and what is still to be done.'},open:ITEMS.tablets.open}});
-COMBO['curt13+patch13']=()=>say(P,'A strip to lay behind the tear. But not in my hands, standing in the street: this is bench work.');
-COMBO['awl+curt13']=()=>say(P,'Not across my knee. It has to be laid out flat, along a bench.');
+  curt13:{name:'torn_curtain',look:'a_door_curtain_of_goat_hair'},
+  patch13:{name:'strip_of_goat_hair',look:'a_strip_of_new_goat_hair'},
+  curt13m:{name:'mended_curtain',look:'curtain_whole_again_both'},
+  apron13:{name:'apron',look:'my_working_apron_goat_hair'},
+  tab13:{name:'wax_tablets',icon:'tablets',def:'open',look:'our_tablets_what_we_were',by:{aq13:'our_tablets_what_we_were'},open:ITEMS.tablets.open}});
+COMBO['curt13+patch13']=()=>say(P,'strip_to_lay_behind_the_tear');
+COMBO['awl+curt13']=()=>say(P,'not_across_my_knee');
 /* what lies on the bench of the workshop, as the story stands */
 function benchTop13(g){const cl=(x,w,c,d)=>{poly(g,[x,84,x+w,84,x+w+2,91+(d||0),x+w*.6,89,x+w*.3,92+(d||0),x-2,90]);g.fillStyle=lg(g,0,82,0,92,[tint(c,.14),c,tint(c,-.3)]);g.fill();R(g,x,83.4,w,1.2,tint(c,.2));for(let i=3;i<w;i+=5)stroke(g,[x+i,84.6,x+i-.6,89],'rgba(30,20,20,.16)',.5)};
   const b=G.b13;
@@ -1199,100 +1199,100 @@ function hallCast(g){const d=DAY(),L=lightAt('hall13',160,120),sit={fr:-1,sw:0},
   cast(g,d===1?A:d===2?A.concat(B):A.concat(B,C),L)}
 /* the house: its owner, and what has been found so far, heaped by the door */
 function houseDraw(g,t){const f=found13();cast(g,[['klea13',166,HFL+1,-1,{sw:0}]],'#f0d0a8');if(f.length){const r=rng(1321);heapOf(g,74,HFL+1,Math.min(7,f.length+(F.last?1:0)),r)}}
-function houseFront(g){G.caps13=[];const n=found13().length+(F.last?1:0);cap13(g,T('found: {n} of seven',{n}),160,137,220)}
+function houseFront(g){G.caps13=[];const n=found13().length+(F.last?1:0);cap13(g,T('found_n_of_seven',{n}),160,137,220)}
 /* the board: the pebbles as they lie, and under it what is being laid down */
 function boardDraw(g){const b=board(),D=digits(b.v),C=['#d8d2c4','#8a8a94','#c4b8a0','#e2dccc','#9a9488'];
   D.forEach((d,i)=>{const cx=BX[i]+BW[i]/2;if(d>=5)pebble(g,cx,BY+14,C[(i*2)%5]);for(let k=0;k<d%5;k++)pebble(g,cx+(k%2?.8:-.8),BY+34+k*10.6,C[(i+k)%5])})}
 function boardFront(g){G.caps13=[];const b=board();
-  cap13(g,b.k>4?'fifty thousand pieces of silver':OWNERS[b.k].cap,160,121,304);cap13(g,T('a click lays a pebble; {pick} takes one off; the bowl takes this sum off',{pick:T('Pick up')}),160,129,308,'rgba(244,228,184,.8)');
-  cap13(g,'Timothy checks the sum',104,137.4,150,'#f4e4b8');cap13(g,'back to the street',262,137.4,100,'#f4e4b8')}
+  cap13(g,b.k>4?'fifty_thousand_pieces_of_silver_2':OWNERS[b.k].cap,160,121,304);cap13(g,T('click_lays_a_pebble_pick',{pick:T('pick_up')}),160,129,308,'rgba(244,228,184,.8)');
+  cap13(g,'timothy_checks_the_sum',104,137.4,150,'#f4e4b8');cap13(g,'back_to_the_street',262,137.4,100,'#f4e4b8')}
 
 /* ============ ROOMS ============ */
 const NOW=[160,160,236,236];   /* a close view: whoever is played stands below the picture, and takes no step */
 const MOOD=()=>!F.taught?'gap':!F.came?'lamp':!F.awl?'road':F.syn&&!F.out?'door':F.n3?'dawn':!F.hall?'lamp':PART()==='m'?'dawn':PART()==='n'?'noon':'lamp';
 const SAMB=()=>{const v=STREETV();return v==='n'?{cicada:.8,wind:.2}:v==='e'?{crickets:.5,wind:.2}:v==='f'?{crowd:.5,birds:.2}:{crowd:.4,birds:.3,hammer:.15}};
 const toStreet=()=>{const pc=PC();
-  if(pc!==P){if(F.aside&&!F.sent)return say(AP,'Not with a guest at our table.');if(!pairOut())return say(AP,'Our place is at the bench. The streets are Paul\'s.');return goto('street13',196,120,1)}
+  if(pc!==P){if(F.aside&&!F.sent)return say(AP,'not_with_a_guest_at_our_table');if(!pairOut())return say(AP,'our_place_is_at_the_bench_said');return goto('street13',196,120,1)}
   if(F.hall&&PART()==='m'&&OPEN13())return say(P,OPEN13(),TH);return goto('street13',196,120,1)};
 ROOMS.shop13={space:1.1,floor:'earth',walk:[20,304,112,137],get mood(){return MOOD()},get amb(){return SHOPV()==='n'?{crickets:.4}:SHOPV()==='m'?{birds:.2}:{crowd:.2,hammer:.1}},hs:[
-  {name:'door to the street',x:230,y:34,w:68,h:70,wx:262,wy:114,dir:1,exit:toStreet,look:'The street, and the colonnade across the way. Before noon a steady stream of people goes past this door.',as:{aq13:{look:'The street. A year ago we knew nobody in it.'}}},
-  {name:'workbench',x:66,y:78,w:126,h:26,wx:130,wy:113,look:()=>say(P,F.hall?'The bench. Before sunrise it is mine too.':'The bench of Aquila and Priscilla. It has stood in Rome and in Corinth, and now it stands here.'),use:'There is nothing of mine on it now.',useWith:benchUse,
-    as:{aq13:{look:()=>say(AP,F.aside&&!F.sent?'Tonight it is a table.':'Our bench. It came over the sea with us, and Paul\'s tools with it.'),use:'Nothing is waiting on it.'}}},
-  {name:'torn curtain',x:82,y:79,w:72,h:13,wx:118,wy:113,vis:()=>!!(G.b13&&G.b13.on&&!F.sewn),def:'use',look:()=>say(P,G.b13.pt?'The strip lies behind the tear. It needs to be sewn down.':'Torn with the weave, and rotten along the tear.'),use:()=>say(P,'With the awl. And with something to lay behind it.'),useWith:curtainUse,as:{aq13:{look:'The curtain from the hall of the school. Paul has made a bargain for it.'}}},
-  {name:'awning for the potter',x:86,y:79,w:64,h:13,wx:118,wy:113,vis:()=>!!(F.hall&&DAY()===1&&PART()==='m'),def:'use',look:()=>say(P,F.b1?'Sewn, and the thread made fast.':'An awning for the potter under the colonnade, promised for today. The long seam is open.'),use:()=>say(P,F.b1?'It is done.':'With the awl.'),useWith:seam,as:{aq13:{look:'The potter\'s awning. The long seam is Paul\'s.'}}},
-  {name:'table',x:84,y:76,w:96,h:10,wx:130,wy:113,vis:()=>!!(F.aside&&!F.sent),look:'Bread, a bowl, and four cups.',as:{aq13:{look:'Bread, a bowl, and a cup for the guest. It is what we have.',use:'After he has eaten.'}}},
-  {name:'rolls of cloth',x:196,y:74,w:28,h:30,wx:190,wy:114,look:'Goat-hair cloth and linen. The same rolls as in Corinth, or their grandchildren.',pickup:'It is theirs, and it weighs as much as I do.',as:{aq13:{look:'Goat hair, and linen. Enough for the winter.'}}},
-  {name:'basket of remnants',x:302,y:88,w:18,h:16,wx:296,wy:114,dir:1,look:'A basket of remnants: every strip that was too good to throw away.',
-    pickup:()=>PC()!==P?say(AP,'Remnants. Every one of them will be needed some day.'):F.patch?say(P,'One strip is enough.'):!F.curt?say(P,'Remnants. I have nothing to patch.'):(F.patch=1,addItem('patch13'),say(P,'A strip of new goat hair, a hand wide. Just what a tear needs behind it.')),
-    useWith:id=>id==='knife'?say(P,'Cut a remnant, and you only have two smaller ones.'):false},
-  {name:'coils of cord',x:76,y:38,w:48,h:20,wx:100,wy:113,look:'Cord, each coil on its own peg, exactly as in Corinth.',pickup:'Each hangs where a hand expects it.'},
-  {name:'water jar',x:54,y:90,w:12,h:15,wx:72,wy:113,dir:-1,look:'The water jar.',pickup:'It stays where it is.'},
-  {name:'lamp',x:141,y:45,w:13,h:8,wx:148,wy:113,look:()=>say(PC(),SHOPV()==='d'?'A lamp on its shelf, for the hours before sunrise and after sundown.':'One lamp. It is enough for a bench, and for a table.')},
-  {name:'steps to the loft',x:0,y:40,w:50,h:64,wx:48,wy:116,dir:-1,def:'use',look:'The steps to the loft.',use:sleep,as:{aq13:{look:'The loft. We made up a bed at the far end of it, in case he came.',use:sleep}}}]};
+  {name:'door_to_the_street',x:230,y:34,w:68,h:70,wx:262,wy:114,dir:1,exit:toStreet,look:'the_street_and_the_colonnade_across_the_way',as:{aq13:{look:'street_a'}}},
+  {name:'workbench',x:66,y:78,w:126,h:26,wx:130,wy:113,look:()=>say(P,F.hall?'the_bench':'bench_of_aquila_and_priscilla'),use:'there_is_nothing_of_mine',useWith:benchUse,
+    as:{aq13:{look:()=>say(AP,F.aside&&!F.sent?'tonight_it_is_a_table':'our_bench_said'),use:'nothing_is_waiting_on_it'}}},
+  {name:'torn_curtain',x:82,y:79,w:72,h:13,wx:118,wy:113,vis:()=>!!(G.b13&&G.b13.on&&!F.sewn),def:'use',look:()=>say(P,G.b13.pt?'strip_lies_behind_the_tear':'torn_with_the_weave_and_rotten'),use:()=>say(P,'with_the_awl_said'),useWith:curtainUse,as:{aq13:{look:'curtain_from_the_hall_of_the_school'}}},
+  {name:'awning_for_the_potter',x:86,y:79,w:64,h:13,wx:118,wy:113,vis:()=>!!(F.hall&&DAY()===1&&PART()==='m'),def:'use',look:()=>say(P,F.b1?'sewn_and_the_thread_made_fast':'awning_for_the_potter_under_the_colonnade'),use:()=>say(P,F.b1?'it_is_done':'with_the_awl'),useWith:seam,as:{aq13:{look:'potters_awning'}}},
+  {name:'table',x:84,y:76,w:96,h:10,wx:130,wy:113,vis:()=>!!(F.aside&&!F.sent),look:'bread_a_bowl_and_four_cups',as:{aq13:{look:'bread_a_bowl_and_a_cup',use:'after_he_has_eaten'}}},
+  {name:'rolls_of_cloth',x:196,y:74,w:28,h:30,wx:190,wy:114,look:'goat_hair_cloth_and_linen',pickup:'it_is_theirs_and_it_weighs',as:{aq13:{look:'goat_hair_and_linen'}}},
+  {name:'basket_of_remnants',x:302,y:88,w:18,h:16,wx:296,wy:114,dir:1,look:'basket_of_remnants_every',
+    pickup:()=>PC()!==P?say(AP,'remnants_said'):F.patch?say(P,'one_strip_is_enough'):!F.curt?say(P,'remnants_i'):(F.patch=1,addItem('patch13'),say(P,'strip_of_new_goat_hair_said')),
+    useWith:id=>id==='knife'?say(P,'cut_a_remnant_and_you_only'):false},
+  {name:'coils_of_cord',x:76,y:38,w:48,h:20,wx:100,wy:113,look:'cord_each_coil_on_its_own',pickup:'each_hangs_where_a_hand_expects_it'},
+  {name:'water_jar',x:54,y:90,w:12,h:15,wx:72,wy:113,dir:-1,look:'water_jar_said',pickup:'it_stays_where_it_is'},
+  {name:'lamp',x:141,y:45,w:13,h:8,wx:148,wy:113,look:()=>say(PC(),SHOPV()==='d'?'lamp_on_its_shelf_for_the_hours':'one_lamp_it')},
+  {name:'steps_to_the_loft',x:0,y:40,w:50,h:64,wx:48,wy:116,dir:-1,def:'use',look:'steps_to_the_loft_2',use:sleep,as:{aq13:{look:'the_loft',use:sleep}}}]};
 ROOMS.street13={space:.7,walk:[16,624,112,138],get mood(){return MOOD()},get amb(){return SAMB()},hs:[
-  {name:'way down to the harbor',x:0,y:48,w:54,h:56,wx:30,wy:122,dir:-1,look:()=>say(PC(),PC()===P?'The way down to the harbor: a basin that they dredge to keep it open, and the river out to the sea.':'The harbor. We came up from it with a bench on a cart.')},
-  {name:'colonnade of shops',x:56,y:46,w:62,h:58,wx:88,wy:114,look:'Shops under a colonnade: pots, and bronze. The potter there has an awning of ours.',as:{aq13:{look:'The colonnade. Our customers have not far to walk.'}}},
-  {name:'wine seller\'s door',x:122,y:62,w:22,h:42,wx:133,wy:114,def:'open',open:()=>evening('he'),use:()=>evening('he'),look:()=>evening('he'),as:{aq13:{open:()=>evening('he'),use:()=>evening('he'),look:()=>evening('he')}}},
-  {name:'workshop',x:166,y:52,w:58,h:52,wx:196,wy:114,exit:toShop,look:()=>say(PC(),PC()!==P?'Our bench, under our awning.':F.awl?'The workshop of Aquila and Priscilla. My bed is in its loft again.':'A workshop open to the street, under a striped awning, and rolls of goat-hair cloth in it.')},
-  {name:'door of the synagogue',x:268,y:62,w:24,h:42,wx:280,wy:114,exit:toSyn,look:()=>say(PC(),PC()!==P?'The synagogue. We have sat in it every Sabbath since we came.':F.out?'The door of the synagogue. I left by it, with the disciples.':'The door of the synagogue. I went in at it once, for one Sabbath.')},
-  {name:'theater',x:322,y:26,w:54,h:40,wx:350,wy:116,look:()=>say(PC(),'A theater, in the hollow of the hill. They say that the whole city can sit in it.')},
-  {name:'stone bench',x:352,y:94,w:20,h:10,wx:362,wy:113,look:'A stone bench against the wall.',use:'Sit by the sundial? No shadow ever moved faster for being watched.'},
-  {name:'sundial',x:328,y:80,w:17,h:24,wx:352,wy:114,dir:-1,def:'use',use:dial,look:()=>say(PC(),T('A sundial on a pillar: a hollow cut in the stone, a pointer, and three notches on the rim. {now}',{now:T(PC()!==P?'The day is Paul\'s to count.':!F.hall?'I have no hours to keep in this street yet.':DAY()>3?'Nobody is looking at it this morning.':PART()==='m'?'The shadow lies on the first notch: it is morning.':PART()==='n'?'The shadow lies on the middle notch: midday.':'The shadow has gone out with the sun.')}))},
-  {name:'hall of Tyrannus',x:410,y:48,w:36,h:50,wx:428,wy:114,exit:toHall,useWith:mine(hang),look:()=>say(PC(),!F.out?'A hall behind a porch of four columns. A school, by the sound of it: boys\' voices, reciting.':F.hall?'The school auditorium of Tyrannus. In the hot hours it is ours.':'The hall of the school. Its door stands open to the heat.')},
-  {name:'torn curtain',x:412,y:54,w:32,h:44,wx:428,wy:114,vis:()=>!!F.out&&!F.curt,def:'pickup',pickup:takeCurtain,look:'A door curtain of goat hair, torn from top to bottom. The two halves hang apart, and the heat walks in between them.',useWith:id=>id==='awl'||id==='thread'?say(P,'Hanging in a doorway? It has to come down, and be laid on a bench.'):false},
-  {name:'fuller\'s vats',x:480,y:94,w:16,h:10,wx:490,wy:114,look:'A fuller\'s vats. A man smells this house before he sees it.',pickup:'No.'},
-  {name:'fuller\'s door',x:498,y:62,w:20,h:42,wx:508,wy:114,def:'open',open:()=>evening('gl'),use:()=>evening('gl'),look:()=>evening('gl'),as:{aq13:{open:()=>evening('gl'),use:()=>evening('gl'),look:()=>evening('gl')}}},
-  {name:'door under the vine',x:554,y:62,w:20,h:42,wx:564,wy:114,def:'open',open:()=>evening('di'),use:()=>evening('di'),look:()=>evening('di'),as:{aq13:{open:()=>evening('di'),use:()=>evening('di'),look:()=>evening('di')}}},
-  {name:'door of the large house',x:606,y:58,w:22,h:46,wx:617,wy:114,def:'open',open:()=>evening('kl'),use:()=>evening('kl'),look:()=>evening('kl'),as:{aq13:{open:()=>evening('kl'),use:()=>evening('kl'),look:()=>evening('kl')}}},
-  {name:'road to the hills',x:628,y:98,w:12,h:46,wx:618,wy:126,dir:1,look:()=>say(PC(),PC()===P?'The road I came down by. I shall not be going back up it for a long time.':'The road inland. Paul came down it.')},
-  {name:'heap of rolls',x:322,y:108,w:50,h:18,wx:306,wy:126,dir:1,vis:()=>!!F.n3,look:()=>say(PC(),G.fire13?'It burns low and steady. Nobody is in a hurry to leave.':'Rolls, from a great many houses: carried out by the people who paid for them. Nothing is written on the outside of any.'),pickup:'Nobody is taking anything away from that heap.'},
-  {name:'counting board',x:280,y:98,w:28,h:16,wx:270,wy:124,dir:1,vis:()=>!!F.n3,def:'use',use:toBoard,look:'A counting board on a table, and a bowl of pebbles.',as:{aq13:{use:toBoard,look:'A counting board. Priscilla keeps the accounts of the bench on one like it.'}}}]};
+  {name:'way_down_to_the_harbor',x:0,y:48,w:54,h:56,wx:30,wy:122,dir:-1,look:()=>say(PC(),PC()===P?'the_way_down_to_the_harbor':'the_harbor')},
+  {name:'colonnade_of_shops',x:56,y:46,w:62,h:58,wx:88,wy:114,look:'shops_under_a_colonnade_pots_and_bronze',as:{aq13:{look:'the_colonnade'}}},
+  {name:'wine_sellers_door',x:122,y:62,w:22,h:42,wx:133,wy:114,def:'open',open:()=>evening('he'),use:()=>evening('he'),look:()=>evening('he'),as:{aq13:{open:()=>evening('he'),use:()=>evening('he'),look:()=>evening('he')}}},
+  {name:'workshop',x:166,y:52,w:58,h:52,wx:196,wy:114,exit:toShop,look:()=>say(PC(),PC()!==P?'our_bench_under_our_awning':F.awl?'the_workshop_of_aquila_and_priscilla':'workshop_open_to_the_street')},
+  {name:'door_of_the_synagogue',x:268,y:62,w:24,h:42,wx:280,wy:114,exit:toSyn,look:()=>say(PC(),PC()!==P?'synagogue_we':F.out?'door_of_the_synagogue_i_left':'door_of_the_synagogue_i_went')},
+  {name:'theater',x:322,y:26,w:54,h:40,wx:350,wy:116,look:()=>say(PC(),'theater_in_the_hollow_of_the_hill')},
+  {name:'stone_bench_2',x:352,y:94,w:20,h:10,wx:362,wy:113,look:'stone_bench_against_the_wall',use:'sit_by_the_sundial'},
+  {name:'sundial',x:328,y:80,w:17,h:24,wx:352,wy:114,dir:-1,def:'use',use:dial,look:()=>say(PC(),T('sundial_on_a_pillar_a_hollow',{now:T(PC()!==P?'the_day_is_pauls_to_count':!F.hall?'i_have_no_hours_to_keep':DAY()>3?'nobody_is_looking_at_it_this_morning':PART()==='m'?'shadow_lies_on_the_first':PART()==='n'?'shadow_lies_on_the_middle_notch_midday':'the_shadow_has_gone_out_with_the_sun')}))},
+  {name:'hall_of_tyrannus_2',x:410,y:48,w:36,h:50,wx:428,wy:114,exit:toHall,useWith:mine(hang),look:()=>say(PC(),!F.out?'hall_behind_a_porch_of_four_columns':F.hall?'school_auditorium_of_tyrannus':'hall_of_the_school')},
+  {name:'torn_curtain',x:412,y:54,w:32,h:44,wx:428,wy:114,vis:()=>!!F.out&&!F.curt,def:'pickup',pickup:takeCurtain,look:'door_curtain_of_goat_hair_said',useWith:id=>id==='awl'||id==='thread'?say(P,'hanging_in_a_doorway'):false},
+  {name:'fullers_vats',x:480,y:94,w:16,h:10,wx:490,wy:114,look:'a_fullers_vats',pickup:'no_2'},
+  {name:'fullers_door',x:498,y:62,w:20,h:42,wx:508,wy:114,def:'open',open:()=>evening('gl'),use:()=>evening('gl'),look:()=>evening('gl'),as:{aq13:{open:()=>evening('gl'),use:()=>evening('gl'),look:()=>evening('gl')}}},
+  {name:'door_under_the_vine',x:554,y:62,w:20,h:42,wx:564,wy:114,def:'open',open:()=>evening('di'),use:()=>evening('di'),look:()=>evening('di'),as:{aq13:{open:()=>evening('di'),use:()=>evening('di'),look:()=>evening('di')}}},
+  {name:'door_of_the_large_house',x:606,y:58,w:22,h:46,wx:617,wy:114,def:'open',open:()=>evening('kl'),use:()=>evening('kl'),look:()=>evening('kl'),as:{aq13:{open:()=>evening('kl'),use:()=>evening('kl'),look:()=>evening('kl')}}},
+  {name:'road_to_the_hills',x:628,y:98,w:12,h:46,wx:618,wy:126,dir:1,look:()=>say(PC(),PC()===P?'road_i_came_down_by_i':'road_inland')},
+  {name:'heap_of_rolls',x:322,y:108,w:50,h:18,wx:306,wy:126,dir:1,vis:()=>!!F.n3,look:()=>say(PC(),G.fire13?'it_burns_low_and_steady':'rolls_from_a_great_many'),pickup:'nobody_is_taking_anything'},
+  {name:'counting_board',x:280,y:98,w:28,h:16,wx:270,wy:124,dir:1,vis:()=>!!F.n3,def:'use',use:toBoard,look:'counting_board_on_a_table',as:{aq13:{use:toBoard,look:'a_counting_board'}}}]};
 ROOMS.syn13={space:1.5,walk:[20,300,112,137],get mood(){return MOOD()},amb:{crowd:.5},enter:synEnter,hs:[
-  {name:'door to the street',x:13,y:47,w:30,h:57,wx:52,wy:116,dir:-1,exit:()=>PC()!==P?(F.syn?leaveSyn():goto('street13',280,120,1)):leaveSyn(),look:'The door to the street.',as:{aq13:{look:'The door to the street.'}}},
-  {name:'chest of the scrolls',x:140,y:50,w:40,h:40,wx:120,wy:113,look:'The chest of the scrolls, under its cloth.',open:'It is not mine to open.',as:{aq13:{look:'The chest of the scrolls. He has had three of them out this morning, and knew his way in each.'}}},
-  {name:'reader\'s table',x:130,y:80,w:60,h:22,wx:118,wy:113,look:()=>say(P,F.syn?'For three months I have reasoned from what lies on that table.':'The table from which the Law and the Prophets are read.'),as:{aq13:{look:'The reader\'s table, and a scroll open on it. He hardly looks down.'}}},
-  {name:'benches',x:198,y:86,w:108,h:18,wx:240,wy:113,look:()=>say(PC(),F.syn&&PC()===P?'Half of them are on their feet.':'Benches of stone along the walls. On a Sabbath there is not a seat free.')},
-  {name:'windows',x:82,y:20,w:156,h:26,wx:160,wy:113,look:'Two windows, high in the wall, with upright bars.'},
-  {name:'disciples',x:30,y:76,w:80,h:54,wx:120,wy:124,dir:-1,vis:()=>!!F.syn&&!F.out,def:'talk',talk:withMe,look:'Those who believe: the twelve men, and others since. They are sitting very still.',as:{aq13:{look:'Our brothers. They are looking at Paul.',talk:withMe}}}]};
+  {name:'door_to_the_street',x:13,y:47,w:30,h:57,wx:52,wy:116,dir:-1,exit:()=>PC()!==P?(F.syn?leaveSyn():goto('street13',280,120,1)):leaveSyn(),look:'door_to_the_street_2',as:{aq13:{look:'door_to_the_street_2'}}},
+  {name:'chest_of_the_scrolls',x:140,y:50,w:40,h:40,wx:120,wy:113,look:'chest_of_the_scrolls_under_its_cloth',open:'it_is_not_mine_to_open_2',as:{aq13:{look:'chest_of_the_scrolls_said'}}},
+  {name:'readers_table',x:130,y:80,w:60,h:22,wx:118,wy:113,look:()=>say(P,F.syn?'for_three_months_i_have_said':'table_from_which_the_law_said'),as:{aq13:{look:'readers_table_and_a_scroll'}}},
+  {name:'benches',x:198,y:86,w:108,h:18,wx:240,wy:113,look:()=>say(PC(),F.syn&&PC()===P?'half_of_them_are_on_their_feet':'benches_of_stone_along_the_walls')},
+  {name:'windows',x:82,y:20,w:156,h:26,wx:160,wy:113,look:'two_windows_high_in_the_wall'},
+  {name:'disciples',x:30,y:76,w:80,h:54,wx:120,wy:124,dir:-1,vis:()=>!!F.syn&&!F.out,def:'talk',talk:withMe,look:'those_who_believe_the_twelve',as:{aq13:{look:'our_brothers',talk:withMe}}}]};
 ROOMS.road13={space:.5,walk:[20,304,112,138],mood:'road',amb:{wind:.5,birds:.3,leaves:.3},hs:[
-  {name:'sea',x:0,y:56,w:100,h:22,wx:60,wy:114,look:'The sea. I have crossed it to this city once already, with a bench and two friends, and left all three here.'},
-  {name:'harbor',x:30,y:78,w:80,h:12,wx:80,wy:114,look:'The harbor: a basin, and the river that joins it to the sea. They dredge it, or it would be a marsh in ten years.'},
-  {name:'city',x:102,y:82,w:60,h:20,wx:130,wy:114,look:'Ephesus. The greatest city I have yet walked into, and the first one I was ever turned away from.'},
-  {name:'theater',x:140,y:62,w:50,h:24,wx:164,wy:114,look:'A theater cut into the hill. From here it looks like a shell left on a beach.'},
-  {name:'building in the plain',x:244,y:48,w:44,h:22,wx:250,wy:114,look:'Far off in the plain, a house of columns, larger than any I have seen. I have not come all this way to look at that.'},
-  {name:'pine',x:4,y:30,w:36,h:74,wx:44,wy:114,dir:-1,look:'A pine, bent by the wind off the sea.'},
-  {name:'road down to the city',x:296,y:96,w:24,h:48,wx:302,wy:126,dir:1,exit:intoCity,look:'The road goes on down, into the city.'}]};
+  {name:'sea',x:0,y:56,w:100,h:22,wx:60,wy:114,look:'the_sea'},
+  {name:'harbor',x:30,y:78,w:80,h:12,wx:80,wy:114,look:'harbor_a_basin_and_the_river'},
+  {name:'city',x:102,y:82,w:60,h:20,wx:130,wy:114,look:'ephesus_the'},
+  {name:'theater',x:140,y:62,w:50,h:24,wx:164,wy:114,look:'theater_cut_into_the_hill'},
+  {name:'building_in_the_plain',x:244,y:48,w:44,h:22,wx:250,wy:114,look:'far_off_in_the_plain_a_house'},
+  {name:'pine',x:4,y:30,w:36,h:74,wx:44,wy:114,dir:-1,look:'pine_bent_by_the_wind_off'},
+  {name:'road_down_to_the_city',x:296,y:96,w:24,h:48,wx:302,wy:126,dir:1,exit:intoCity,look:'road_goes_on_down_into_the_city'}]};
 ROOMS.hall13={space:1.3,walk:[58,238,112,137],mood:'noon',amb:{cicada:.5,flap:.35},enter:hallEnter,hs:[
-  {name:'door curtain',x:13,y:39,w:34,h:65,wx:62,wy:118,dir:-1,exit:()=>goto('street13',428,120,1),look:'The curtain, and behind it a street that is white with heat. In here a man can think.'},
-  {name:'windows',x:90,y:20,w:136,h:22,wx:160,wy:113,look:'Three windows, their shutters half closed. Enough light to read by, and no more sun than that.'},
-  {name:'benches',x:58,y:86,w:176,h:18,wx:150,wy:113,def:'talk',talk:speakHall,look:()=>say(P,DAY()===1?'Benches of stone, and more of them empty than full. It is the first day.':DAY()===2?'The benches are full. Some stand.':'Not a hand\'s breadth free on any bench.')},
-  {name:'desk',x:248,y:79,w:24,h:22,wx:236,wy:116,dir:1,def:'use',use:speakHall,look:'A desk for a roll: a block of wood with a sloping top.'},
-  {name:'teacher\'s chair',x:284,y:60,w:26,h:40,wx:238,wy:116,dir:1,look:'The chair of the school\'s teacher, with a high back. I speak standing.',use:'It is not my chair.'},
-  {name:'box of rolls',x:210,y:92,w:26,h:12,wx:222,wy:113,look:'A round box of rolls, and its lid: the school\'s.',open:'They are the school\'s books. I have brought my own.'},
-  {name:'water jar',x:50,y:92,w:8,h:12,wx:70,wy:113,dir:-1,look:'Water, for whoever has walked here through the heat.',use:'I drink. It is still cool.'},
+  {name:'door_curtain',x:13,y:39,w:34,h:65,wx:62,wy:118,dir:-1,exit:()=>goto('street13',428,120,1),look:'curtain_and_behind_it_a_street'},
+  {name:'windows',x:90,y:20,w:136,h:22,wx:160,wy:113,look:'three_windows_their_shutters_half_closed'},
+  {name:'benches',x:58,y:86,w:176,h:18,wx:150,wy:113,def:'talk',talk:speakHall,look:()=>say(P,DAY()===1?'benches_of_stone_and_more':DAY()===2?'benches_are_full':'not_a_hands_breadth_free')},
+  {name:'desk',x:248,y:79,w:24,h:22,wx:236,wy:116,dir:1,def:'use',use:speakHall,look:'desk_for_a_roll_a_block'},
+  {name:'teachers_chair',x:284,y:60,w:26,h:40,wx:238,wy:116,dir:1,look:'chair_of_the_schools_teacher',use:'it_is_not_my_chair'},
+  {name:'box_of_rolls',x:210,y:92,w:26,h:12,wx:222,wy:113,look:'round_box_of_rolls_and_its_lid',open:'they_are_the_schools_books'},
+  {name:'water_jar',x:50,y:92,w:8,h:12,wx:70,wy:113,dir:-1,look:'water_for_whoever_has_walked',use:'i_drink_it_is_still'},
   /* the chapter's hidden treasure: what a pupil left under the bench */
-  {name:'something under the bench',x:62,y:100,w:10,h:6,wx:84,wy:114,dir:-1,look:()=>say(P,'A pupil\'s tablet, left under the bench: a row of letters, in a child\'s hand. Alpha, beta, gamma... epsilon. He has left out the delta.').then(()=>say(P,'Somebody will tell him. Kindly, I hope: it is only one letter, and he has all the rest.')).then(treasure),pickup:'It is the boy\'s. He will look for it in the morning.'}]};
+  {name:'something_under_the_bench',x:62,y:100,w:10,h:6,wx:84,wy:114,dir:-1,look:()=>say(P,'pupils_tablet_left_under_the_bench').then(()=>say(P,'somebody_will_tell_him')).then(treasure),pickup:'it_is_the_boys'}]};
 const hideHs=(k,name,x,y,w,h)=>({name,x,y,w,h,wx:160,wy:236,def:'use',look:()=>search(k,'look'),use:()=>search(k,'use'),open:()=>search(k,'use'),pickup:()=>search(k,'use'),useWith:id=>id==='awl'||id==='knife'?search(k,id):false});
 ROOMS.house13={space:1.2,walk:NOW,mood:'lamp',amb:{crickets:.4},hs:[
-  {name:'door',x:57,y:61,w:22,h:50,wx:160,wy:236,look:'The door, bolted for the night.',open:'Not yet. We are not finished in here.'},
+  {name:'door',x:57,y:61,w:22,h:50,wx:160,wy:236,look:'door_bolted_for_the_night',open:'not_yet_we'},
   hideHs('thr','threshold',54,111,28,7),
-  {name:'water jar',x:85,y:99,w:10,h:13,wx:160,wy:236,look:'Water. Nothing but water: I can see the bottom.'},
-  {name:'hearth',x:99,y:98,w:24,h:14,wx:160,wy:236,look:'A hearth, a pot, and a few embers under it.',use:'Lentils. They are his supper.'},
-  hideHs('stone','stone by the hearth',124,104,9,9),
-  {name:'lamp',x:131,y:59,w:15,h:13,wx:160,wy:236,look:'One lamp, in its niche. It is all the light there is to search by.',pickup:'Then neither of us would see anything.'},
-  hideHs('jar','jar of barley',142,90,17,23),
+  {name:'water_jar',x:85,y:99,w:10,h:13,wx:160,wy:236,look:'water_nothing'},
+  {name:'hearth',x:99,y:98,w:24,h:14,wx:160,wy:236,look:'hearth_a_pot_and_a_few',use:'lentils_said'},
+  hideHs('stone','stone_by_the_hearth',124,104,9,9),
+  {name:'lamp',x:131,y:59,w:15,h:13,wx:160,wy:236,look:'one_lamp_in_its_niche',pickup:'neither_of_us_would_see_anything'},
+  hideHs('jar','jar_of_barley',142,90,17,23),
   hideHs('hem','cloak',183,56,24,38),
-  {name:'strongbox',x:208,y:93,w:28,h:20,wx:160,wy:236,look:()=>say(P,F.found?'The strongbox. What lies in it he has to bring out himself.':'A strongbox, with a hasp. Another man\'s strongbox is not mine to open.'),open:()=>F.found?lastRoll():say(P,'It is not for me to open another man\'s strongbox. If there is anything in it, he knows.')},
+  {name:'strongbox',x:208,y:93,w:28,h:20,wx:160,wy:236,look:()=>say(P,F.found?'the_strongbox':'strongbox_with_a_hasp'),open:()=>F.found?lastRoll():say(P,'it_is_not_for_me_to_open')},
   hideHs('bed','bed',239,93,33,20),
-  hideHs('roof','rolled mat',194,20,32,10),
-  {name:'jar on the roof',x:86,y:17,w:12,h:12,wx:160,wy:236,look:'An empty jar, upside down on the roof, drying.'},
-  {name:'steps to the roof',x:280,y:30,w:38,h:82,wx:160,wy:236,look:'Steps of stone up the outside of the house, to the roof.'},
-  {name:'heap by the door',x:58,y:100,w:34,h:12,wx:160,wy:236,vis:()=>found13().length>0,look:'What we have found so far. Small things, most of them. A man could carry the lot in one hand.',pickup:'They stay together, where he can see them.'},
-  {name:'back to the street',x:232,y:124,w:88,h:20,wx:160,wy:236,exit:()=>F.found&&!F.last?lastRoll():F.last?goto('street13',600,124,-1):say(P,'He asked me to help him turn the whole house out. We are not at the end of it.'),look:'The street, and the night.'}]};
-const HOLLOW=['hollow marked mu and epsilon','hollow marked epsilon with a stroke','hollow marked phi','hollow marked nu','hollow marked epsilon'],
-  TROUGH=['trough marked mu and alpha','trough marked alpha with a stroke','trough marked rho','trough marked iota','trough marked alpha'],
-  HLOOK=['Mu, for a myriad, with a small epsilon over it.','Epsilon again, with a stroke at its foot.','Phi.','Nu.','Epsilon: the fifth letter.'],
-  TLOOK=['Mu, for a myriad, with a small alpha over it.','Alpha again, with a stroke at its foot.','Rho.','Iota.','Alpha: the first letter of the alphabet.'];
+  hideHs('roof','rolled_mat',194,20,32,10),
+  {name:'jar_on_the_roof',x:86,y:17,w:12,h:12,wx:160,wy:236,look:'empty_jar_upside_down_on_the_roof'},
+  {name:'steps_to_the_roof',x:280,y:30,w:38,h:82,wx:160,wy:236,look:'steps_of_stone_up_the_outside'},
+  {name:'heap_by_the_door',x:58,y:100,w:34,h:12,wx:160,wy:236,vis:()=>found13().length>0,look:'what_we_have_found_so_far',pickup:'they_stay_together_where'},
+  {name:'back_to_the_street',x:232,y:124,w:88,h:20,wx:160,wy:236,exit:()=>F.found&&!F.last?lastRoll():F.last?goto('street13',600,124,-1):say(P,'he_asked_me_to_help_him'),look:'street_and_the_night'}]};
+const HOLLOW=['hollow_marked_mu_and_epsilon','hollow_marked_epsilon_with_a_stroke','hollow_marked_phi','hollow_marked_nu','hollow_marked_epsilon'],
+  TROUGH=['trough_marked_mu_and_alpha','trough_marked_alpha_with_a_stroke','trough_marked_rho','trough_marked_iota','trough_marked_alpha'],
+  HLOOK=['mu_for_a_myriad_with_a_small','epsilon_again_with_a_stroke','phi_said','nu_said','epsilon_the_fifth_letter'],
+  TLOOK=['mu_for_a_myriad_with_a_small_said','alpha_again_with_a_stroke','rho_said','iota_said','alpha_the_first_letter_of_the_alphabet'];
 /* The two at the bench walk these rooms as Paul does. Where a hotspot says nothing of its own for them, they do what he would do, if
    the handler asks who is played, and say what he would say, if the line is not in the first person. */
 for(const id of['shop13','street13','syn13'])for(const h of ROOMS[id].hs){const a=(h.as=h.as||{}).aq13=(h.as&&h.as.aq13)||{};
@@ -1300,48 +1300,48 @@ for(const id of['shop13','street13','syn13'])for(const h of ROOMS[id].hs){const 
 ROOMS.board13={space:.6,walk:NOW,get mood(){return MOOD()},amb:{crowd:.5,birds:.2},hs:[
   ...BW.map((w,i)=>({name:HOLLOW[i],x:BX[i]+w/2-10,y:BY+5,w:20,h:18,wx:160,wy:236,def:'use',use:()=>lay(i,1),pickup:()=>takeOff(i,1),look:()=>say(PC(),HLOOK[i]),as:{aq13:{use:()=>lay(i,1),pickup:()=>takeOff(i,1),look:()=>say(AP,HLOOK[i])}}})),
   ...BW.map((w,i)=>({name:TROUGH[i],x:BX[i]+w/2-10,y:BY+26,w:20,h:52,wx:160,wy:236,def:'use',use:()=>lay(i,0),pickup:()=>takeOff(i,0),look:()=>say(PC(),TLOOK[i]),as:{aq13:{use:()=>lay(i,0),pickup:()=>takeOff(i,0),look:()=>say(AP,TLOOK[i])}}})),
-  {name:'bowl of pebbles',x:280,y:58,w:34,h:28,wx:160,wy:236,def:'use',use:sweep,pickup:sweep,look:'A bowl of river pebbles. It takes back whatever was laid down for the sum that is being reckoned.',as:{aq13:{use:sweep,pickup:sweep,look:'A bowl of river pebbles. It takes back whatever was laid down for the sum that is being reckoned.'}}},
-  {name:'Timothy and his tablet',x:28,y:132,w:152,h:12,wx:160,wy:236,def:'talk',talk:reckon,use:reckon,look:()=>say(PC(),'Timothy keeps the count on his tablet, and says whether the board agrees.'),as:{aq13:{talk:reckon,use:reckon,look:()=>say(AP,'Timothy keeps the count on his tablet.')}}},
-  {name:'back to the street',x:212,y:132,w:100,h:12,wx:160,wy:236,exit:outBoard,look:'The street, and the heap.',as:{aq13:{look:'The street, and the heap.'}}}]};
-ROOMS.house13.hs.splice(7,0,{name:'Kleandros',x:156,y:64,w:20,h:48,wx:160,wy:236,def:'talk',talk:kleandros,look:'Kleandros. He is looking at his own house as if somebody else had furnished it.'});
+  {name:'bowl_of_pebbles',x:280,y:58,w:34,h:28,wx:160,wy:236,def:'use',use:sweep,pickup:sweep,look:'a_bowl_of_river_pebbles',as:{aq13:{use:sweep,pickup:sweep,look:'a_bowl_of_river_pebbles'}}},
+  {name:'timothy_and_his_tablet',x:28,y:132,w:152,h:12,wx:160,wy:236,def:'talk',talk:reckon,use:reckon,look:()=>say(PC(),'timothy_keeps_the_count'),as:{aq13:{talk:reckon,use:reckon,look:()=>say(AP,'timothy_keeps_the_count_on_his_tablet')}}},
+  {name:'back_to_the_street',x:212,y:132,w:100,h:12,wx:160,wy:236,exit:outBoard,look:'street_and_the_heap',as:{aq13:{look:'street_and_the_heap'}}}]};
+ROOMS.house13.hs.splice(7,0,{name:'Kleandros',x:156,y:64,w:20,h:48,wx:160,wy:236,def:'talk',talk:kleandros,look:'kleandros_he'});
 
 /* ============ PEOPLE ============ */
-const pairTalk=async()=>{if(!F.awl)return reunion();if(!F.tw)return say(PR,'They are waiting, Paul. They have waited a long time, and they do not know for what.');
-  if(!F.syn)return say(AP,'The synagogue has been asking after you since the day you sailed.');if(!F.out)return say(AP,'We go when you go.');
-  if(!F.hall){if(F.curt&&!F.patch){await say(P,'A door curtain of goat hair, torn with the weave. Look at the edges.');return say(PR,'Rotten, all along the tear. No seam will hold in that. Lay a strip behind it: there are remnants in the basket by the door.')}
-    return say(AP,F.sewn?'That will hold. Go and hang it.':'A dozen households, and more coming. Our bench is a good bench, but it is not a hall.')}
-  const d=DAY(),p=PART();if(d>3)return say(PR,'I never thought to see the day. Go: they want you by the heap.');
-  if(p==='m')return d===1&&!F.b1?say(PR,'The long seam of the potter\'s awning, Paul. Then the day is yours.'):d===2&&!F.apr?say(PR,'She has been standing there since before it was light.'):say(AP,'Go, brother. The sundial does not wait for tentmakers.');
-  if(p==='n')return say(AP,'At midday? We are coming over as soon as this seam is closed.');
-  return d===2&&!F.p2?say(PR,'Diodotos, under the vine? Leave him to us. Go to your seaman.'):say(AP,'The lamp is trimmed, and your bed is made up in the loft.')};
-AP.hs={name:'Aquila and Priscilla',actor:AP,look:'Aquila and Priscilla. I left them here with a bench, and I find them with a congregation in their house.',talk:pairTalk,
-  give:id=>id==='curt13'?say(PR,'On the bench with it, Paul: you made the bargain, and you have your awl again.'):false,
-  show:{tablets:'You read, and we listen, when the lamp is lit.',curt13m:'That will hold. Take it back to the school.',patch13:'New goat hair. Lay it behind the tear, and sew both edges down on it.',apron13:'I cut that one myself.',awl:'It has not been used since Cenchreae.','*':'Keep it by you, brother.'}};
-const PAULHS={name:'Paul',actor:P,as:{aq13:{look:'Paul. He came by land, the long way round, and he has not sat still since.',talk:()=>say(P,F.hall?'The bench before sunrise, the hall at midday, and the houses at night. I have never had a day so full.':'I left you a bench and a promise. You have done more with both than I knew how to ask.'),show:{'*':'Keep it. It is in the right hands.'}}}};
-AO.hs={name:'Apollos',actor:AO,as:{aq13:{look:()=>say(AP,F.aside?'Apollos, at our table. He eats like a man who has been traveling.':'Apollos, a Jew of Alexandria. He speaks the way other men sing: without looking for the next word.'),
-  talk:()=>F.taught?sendOff():F.aside?atTable():listen(),show:{tab13:()=>say(AO,F.aside?'May I? ... You have it point by point. I envy you your teacher.':'After I have spoken, friends.'),'*':'Later, friend.'}}}};
-PH.hs={name:'Philon',actor:PH,look:()=>say(P,G.room==='hall13'?(DAY()===3?'Philon, on a bench of the hall. He looks as if he had always sat there.':'Philon, in the doorway: neither in nor out.'):F.out?'Philon. He asked me to stay, a year ago. Now he does not know which side of a door he belongs on.':'Philon, of the synagogue of Ephesus. He has more questions than one Sabbath can hold.'),
-  talk:()=>G.room==='hall13'?(DAY()===3?say(PH,'I sat down, Paul. Do not make a speech of it.'):say(PH,'I am only standing here. A man may stand in a doorway.').then(()=>say(P,'He may. There is a bench when you want one, Philon, and nobody will come to fetch you to it.'))):
-    F.n3?say(PH,'I never owned such a book. But I owned a good many certainties, and some of those are in that heap as well.'):F.out?say(PH,'I have sat on that bench for forty years, Paul. Give an old man time.'):say(PH,'I asked you to stay with us. I did not think that it would come to this, in my own house.'),
-  show:{tablets:'I know what is on them. That is my trouble.','*':'Not now, Paul.'},as:{aq13:{look:'Philon. He was the first in the synagogue to greet us when we came.',talk:()=>say(PH,'Peace, both of you. You sit closer to the door than you used to.')}}};
-SY.hs={name:'Symmachos',actor:SY,look:'Symmachos. For three months he listened with his arms folded. Now he is on his feet.',talk:quarrel,show:{tablets:'Tablets! He would prove it to us from his own wax.','*':'Put that away.'},as:{aq13:{look:'Symmachos. He has stopped arguing with Paul and begun performing for the benches.',talk:quarrel}}};
-ME.hs={name:'Menekrates',actor:ME,look:'Menekrates, who keeps the hall of the school: a man who would be asleep at this hour if he could.',talk:mene,give:id=>id==='curt13m'||id==='curt13'?hang(id):false,
-  show:{curt13m:'Do not show it to me. Hang it.',curt13:'I know what it looks like, friend. I have looked at it every day since the new moon.',awl:'An awl. Then you are what you say you are.',patch13:'A strip. I was hoping for a curtain.','*':'I keep a hall, tentmaker. I do not buy.'},as:{aq13:{look:'Menekrates, of the school. He nods to us now.',talk:mene}}};
-KL.hs={name:'Kleandros',actor:KL,look:()=>say(PC(),'Kleandros: a man in a good mantle, who has made up his mind.'),talk:()=>say(KL,F.n3?(F.sum?'It is done. I feel as if I had put down a load that I had carried so long I took it for my own back.':'Let it be reckoned first. Let the city hear what we are burning.'):'This evening. The house at the end of the street.'),
-  show:{tablets:'Yours I am not afraid of.','*':'Keep it, Paul.'},as:{aq13:{look:'Kleandros. A year ago people crossed the street when they saw him.',talk:()=>say(KL,'Your bench has done my house more good than all my books did.')}}};
-MY.hs={name:'Myrtale',actor:MY,look:()=>say(PC(),G.room==='hall13'?'Myrtale. She has not come alone.':'A woman of the city, in her mantle, with her hair bound up. She has been waiting.'),
-  talk:()=>G.room==='hall13'?say(MY,'This is my husband\'s brother, Paul. He walked here.'):myrtale(),give:giveApron,show:{tablets:'I cannot read, tentmaker. I can carry.','*':'It was the apron I came for.'},
-  as:{aq13:{look:'She has come for Paul.',talk:myrtale}}};
-WE.hs={name:'man beside Myrtale',actor:WE,look:'A man I have not met. He sits like somebody who has not sat among people for a long time.',talk:()=>say(WE,'I came to listen. They tell me that it was your apron.').then(()=>say(P,'It was God who did it, friend, and not the apron. Sit down. There is room.')),show:{'*':'Later. I came to listen.'}};
-GL.hs={name:'Glaukos',actor:GL,look:'A wool merchant, by the dust on his mantle, and not from this city.',talk:glaukos,show:{tablets:'Bring them this evening.','*':'Is it wool? Then I do not know its price.'}};
-HE.hs={name:'Hegesias',actor:HE,look:'A seaman: his cloth is wound round his head the way they wear it on deck.',talk:hegesias,show:{tablets:'I cannot read them in here. Tonight, by a lamp.','*':'Would it float?'}};
-DI.hs={name:'Diodotos',actor:DI,look:()=>say(PC(),'A carrier, with the road still in his sandals.'),talk:()=>G.room==='street13'?evening('di'):diodotos(),show:{'*':'I carry enough for other people.'},as:{aq13:{look:'A carrier, sitting at the door under the vine.',talk:()=>evening('di')}}};
-TI.hs={name:'Timothy',actor:TI,look:'Timothy. He has a beard now, and he came as soon as he could be spared.',talk:()=>say(TI,F.n3?'The tablet is ready. Lay it out, and I shall tell you whether we agree.':'I came as soon as I could be spared, Paul. Tell me where I am wanted.'),
-  show:{tablets:'I have my own with me, Paul.','*':'I would rather carry it than keep it.'},as:{aq13:{look:'Timothy, grown. He slept in our loft in Corinth.',talk:()=>say(TI,'Your loft here is tidier than the one in Corinth.')}}};
-const dzHs=(a,look)=>({name:a.name,actor:a,look,talk:()=>G.room==='syn13'?withMe():twelve(),show:{tablets:'We have the Scriptures by heart, friend, as far as we were given them.','*':'Keep it, brother.'},as:{aq13:{look:'One of the twelve men. They came to the synagogue after Apollos had sailed.',talk:()=>G.room==='syn13'?withMe():twelve()}}});
-D1.hs=dzHs(D1,'A disciple, and by the way the others look at him, the one who speaks for them.');D2.hs=dzHs(D2,'An old disciple. He has waited longer than the rest.');D3.hs=dzHs(D3,'A young disciple, who cannot stand still.');
-AP.def={look:'Nothing there needs our hands.',pickup:'It is not ours.',use:'That is not for us to do.',open:'That is not ours to open.',talk:'Later.',give:'What should we give?'};
-AP.noCraft='Not those two together.';
+const pairTalk=async()=>{if(!F.awl)return reunion();if(!F.tw)return say(PR,'they_are_waiting_paul');
+  if(!F.syn)return say(AP,'synagogue_has_been_asking');if(!F.out)return say(AP,'we_go_when_you_go');
+  if(!F.hall){if(F.curt&&!F.patch){await say(P,'door_curtain_of_goat_hair_torn');return say(PR,'rotten_all_along_the_tear')}
+    return say(AP,F.sewn?'that_will_hold':'dozen_households_and_more_coming')}
+  const d=DAY(),p=PART();if(d>3)return say(PR,'i_never_thought_to_see_the_day');
+  if(p==='m')return d===1&&!F.b1?say(PR,'long_seam_of_the_potters_awning_paul'):d===2&&!F.apr?say(PR,'she_has_been_standing_there'):say(AP,'go_brother');
+  if(p==='n')return say(AP,'at_midday');
+  return d===2&&!F.p2?say(PR,'diodotos_under_the_vine'):say(AP,'lamp_is_trimmed_and_your_bed')};
+AP.hs={name:'aquila_and_priscilla',actor:AP,look:'aquila_and_priscilla_i',talk:pairTalk,
+  give:id=>id==='curt13'?say(PR,'on_the_bench_with_it_paul'):false,
+  show:{tablets:'you_read_and_we_listen_said',curt13m:'that_will_hold_said',patch13:'new_goat_hair',apron13:'i_cut_that_one_myself',awl:'it_has_not_been_used_since_cenchreae','*':'keep_it_by_you_brother_said'}};
+const PAULHS={name:'Paul',actor:P,as:{aq13:{look:'paul_he_came_by',talk:()=>say(P,F.hall?'bench_before_sunrise_the_hall':'i_left_you_a_bench_and_a_promise'),show:{'*':'keep_it_it'}}}};
+AO.hs={name:'Apollos',actor:AO,as:{aq13:{look:()=>say(AP,F.aside?'apollos_at_our_table':'apollos_a_jew_of_alexandria'),
+  talk:()=>F.taught?sendOff():F.aside?atTable():listen(),show:{tab13:()=>say(AO,F.aside?'may_i_you':'after_i_have_spoken_friends'),'*':'later_friend'}}}};
+PH.hs={name:'Philon',actor:PH,look:()=>say(P,G.room==='hall13'?(DAY()===3?'philon_on_a_bench_of_the_hall':'philon_in_the_doorway_neither'):F.out?'philon_he':'philon_of_the_synagogue_of_ephesus'),
+  talk:()=>G.room==='hall13'?(DAY()===3?say(PH,'i_sat_down_paul'):say(PH,'i_am_only_standing_here').then(()=>say(P,'he_may_said'))):
+    F.n3?say(PH,'i_never_owned_such_a_book'):F.out?say(PH,'i_have_sat_on_that_bench'):say(PH,'i_asked_you_to_stay_with_us'),
+  show:{tablets:'i_know_what_is_on_them_said','*':'not_now_paul_said'},as:{aq13:{look:'philon_he_was',talk:()=>say(PH,'peace_both_of_you')}}};
+SY.hs={name:'Symmachos',actor:SY,look:'symmachos',talk:quarrel,show:{tablets:'tablets_said','*':'put_that_away_2'},as:{aq13:{look:'symmachos_said',talk:quarrel}}};
+ME.hs={name:'Menekrates',actor:ME,look:'menekrates_who_keeps_the_hall',talk:mene,give:id=>id==='curt13m'||id==='curt13'?hang(id):false,
+  show:{curt13m:'do_not_show_it_to_me',curt13:'i_know_what_it_looks_like_friend',awl:'awl_then_you',patch13:'a_strip','*':'i_keep_a_hall_tentmaker'},as:{aq13:{look:'menekrates_of_the_school',talk:mene}}};
+KL.hs={name:'Kleandros',actor:KL,look:()=>say(PC(),'kleandros_a_man_in_a_good'),talk:()=>say(KL,F.n3?(F.sum?'it_is_done_said':'let_it_be_reckoned_first'):'this_evening'),
+  show:{tablets:'yours_i_am_not_afraid_of','*':'keep_it_paul_2'},as:{aq13:{look:'kleandros_a',talk:()=>say(KL,'your_bench_has_done_my_house')}}};
+MY.hs={name:'Myrtale',actor:MY,look:()=>say(PC(),G.room==='hall13'?'myrtale_said':'woman_of_the_city_in_her_mantle'),
+  talk:()=>G.room==='hall13'?say(MY,'this_is_my_husbands_brother_paul'):myrtale(),give:giveApron,show:{tablets:'i_cannot_read_tentmaker_said','*':'it_was_the_apron_i_came_for'},
+  as:{aq13:{look:'she_has_come_for_paul',talk:myrtale}}};
+WE.hs={name:'man_beside_myrtale',actor:WE,look:'man_i_have_not_met',talk:()=>say(WE,'i_came_to_listen').then(()=>say(P,'it_was_god_who_did_it_friend')),show:{'*':'later_i'}};
+GL.hs={name:'Glaukos',actor:GL,look:'wool_merchant_by_the_dust',talk:glaukos,show:{tablets:'bring_them_this_evening','*':'is_it_wool'}};
+HE.hs={name:'Hegesias',actor:HE,look:'seaman_his_cloth_is_wound',talk:hegesias,show:{tablets:'i_cannot_read_them_in_here','*':'would_it_float'}};
+DI.hs={name:'Diodotos',actor:DI,look:()=>say(PC(),'carrier_with_the_road_still'),talk:()=>G.room==='street13'?evening('di'):diodotos(),show:{'*':'i_carry_enough_for_other_people'},as:{aq13:{look:'carrier_sitting_at_the_door',talk:()=>evening('di')}}};
+TI.hs={name:'Timothy',actor:TI,look:'timothy_he_has_a',talk:()=>say(TI,F.n3?'tablet_is_ready':'i_came_as_soon_as_i_could'),
+  show:{tablets:'i_have_my_own_with_me_paul','*':'i_would_rather_carry_it'},as:{aq13:{look:'timothy_grown',talk:()=>say(TI,'your_loft_here_is_tidier')}}};
+const dzHs=(a,look)=>({name:a.name,actor:a,look,talk:()=>G.room==='syn13'?withMe():twelve(),show:{tablets:'we_have_the_scriptures','*':'keep_it_brother_2'},as:{aq13:{look:'one_of_the_twelve_men',talk:()=>G.room==='syn13'?withMe():twelve()}}});
+D1.hs=dzHs(D1,'disciple_and_by_the_way');D2.hs=dzHs(D2,'an_old_disciple');D3.hs=dzHs(D3,'young_disciple_who_cannot_stand_still');
+AP.def={look:'nothing_there_needs_our_hands',pickup:'it_is_not_ours',use:'that_is_not_for_us_to_do',open:'that_is_not_ours_to_open',talk:'later_2',give:'what_should_we_give'};
+AP.noCraft='not_those_two_together';
 
 /* ============ WAX TABLETS ============ */
 /* Two pairs of tablets, in one table: Aquila and Priscilla's hold the way as they were taught it (HEARD), and Paul's what he has
@@ -1349,41 +1349,41 @@ AP.noCraft='Not those two together.';
 const mineT=f=>()=>PC()===P&&f(),oursT=f=>()=>PC()!==P&&f();
 const TABLETS={
   people:[
-    {name:'Apollos',note:()=>F.sent?'A Jew of Alexandria. He has crossed to Achaia, with a letter from the brothers.':F.aside?'A Jew of Alexandria, at home in the Scriptures. He knows only the baptism of John.':'A Jew of Alexandria, who is to speak in the synagogue.'},
-    {name:'Aquila and Priscilla',note:'Tentmakers. The congregation meets in their house.',if:()=>!!F.awl},
-    {name:'The disciples at the door',note:()=>F.tw?'About twelve men, baptized in the name of the Lord Jesus.':'About twelve men. Something is missing with them.',if:()=>!!F.awl},
-    {name:'Philon',note:()=>F.n2?'He has found himself a bench in the hall.':F.n1?'He stands in the doorway of the hall.':F.out?'He stopped at the door of the synagogue.':'Of the synagogue of Ephesus. He held me to my promise.',if:()=>!!F.syn},
-    {name:'Symmachos',note:'He speaks against The Way before the whole synagogue.',if:()=>!!F.syn&&!F.hall},
-    {name:'Menekrates',note:'He keeps the hall of the school of Tyrannus.',if:()=>!!F.men},
-    {name:'Glaukos',note:'Of Sardis. He sells wool.',if:()=>!!F.g1},{name:'Myrtale',note:'She asked for my apron, for a sick man of her house.',if:()=>!!F.apr},
-    {name:'Hegesias',note:'Of Smyrna, a seaman.',if:()=>!!F.two},{name:'Diodotos',note:'Of Thyatira. He carries dyed cloth.',if:()=>!!F.two},
-    {name:'Timothy',note:'He has come to Ephesus.',if:()=>!!F.m3},{name:'Kleandros',note:'He wants every book of his old arts out of his house.',if:()=>!!F.kle}],
+    {name:'Apollos',note:()=>F.sent?'jew_of_alexandria':F.aside?'jew_of_alexandria_at_home':'jew_of_alexandria_who_is'},
+    {name:'aquila_and_priscilla',note:'tentmakers_said',if:()=>!!F.awl},
+    {name:'disciples_at_the_door',note:()=>F.tw?'about_twelve_men_baptized':'about_twelve_men',if:()=>!!F.awl},
+    {name:'Philon',note:()=>F.n2?'he_has_found_himself_a_bench':F.n1?'he_stands_in_the_doorway':F.out?'he_stopped_at_the_door':'of_the_synagogue_of_ephesus_said',if:()=>!!F.syn},
+    {name:'Symmachos',note:'he_speaks_against_the_way',if:()=>!!F.syn&&!F.hall},
+    {name:'Menekrates',note:'he_keeps_the_hall_of_the_school',if:()=>!!F.men},
+    {name:'Glaukos',note:'of_sardis',if:()=>!!F.g1},{name:'Myrtale',note:'she_asked_for_my_apron',if:()=>!!F.apr},
+    {name:'Hegesias',note:'of_smyrna_a_seaman',if:()=>!!F.two},{name:'Diodotos',note:'of_thyatira',if:()=>!!F.two},
+    {name:'Timothy',note:'he_has_come_to_ephesus',if:()=>!!F.m3},{name:'Kleandros',note:'he_wants_every_book_of_his_old',if:()=>!!F.kle}],
   tasks:[
-    {t:'Hear the man from Alexandria, in the synagogue.',if:oursT(()=>!F.apo)},
-    {t:'He said nothing wrong. What did he not say?',if:oursT(()=>!!F.apo&&!F.gap)},
-    {t:'Our guest: first what is true and good to hear.',if:oursT(()=>!!F.aside&&!F.taught)},
-    {t:'Apollos means to cross to Achaia.',if:oursT(()=>!!F.taught&&!F.sent)},
-    {t:'The bench.',if:oursT(()=>!!F.sent&&!(F.e2&&!F.p2)&&!(F.n3&&!F.sum))},
-    {t:'Diodotos is waiting, under the vine.',if:oursT(()=>!!F.e2&&!F.p2)},
-    {t:'Find the two whom I left in this city.',if:mineT(()=>!F.awl)},
-    {t:'About twelve disciples. Ask before I teach.',if:mineT(()=>!!F.awl&&!F.tw)},
-    {t:'The synagogue: I said that I would come back.',if:mineT(()=>!!F.tw&&!F.syn)},
-    {t:'Every answer feeds the quarrel.',if:mineT(()=>!!F.syn&&!F.out)},
-    {t:'A roof for the disciples.',if:mineT(()=>!!F.out&&!F.men)},
-    {t:'Mend the door curtain of the hall.',if:mineT(()=>!!F.men&&!F.hall)},
+    {t:'hear_the_man_from_alexandria',if:oursT(()=>!F.apo)},
+    {t:'he_said_nothing_wrong',if:oursT(()=>!!F.apo&&!F.gap)},
+    {t:'our_guest_first_what_is',if:oursT(()=>!!F.aside&&!F.taught)},
+    {t:'apollos_means_to_cross_to_achaia',if:oursT(()=>!!F.taught&&!F.sent)},
+    {t:'bench_said',if:oursT(()=>!!F.sent&&!(F.e2&&!F.p2)&&!(F.n3&&!F.sum))},
+    {t:'diodotos_is_waiting_under_the_vine',if:oursT(()=>!!F.e2&&!F.p2)},
+    {t:'find_the_two_whom_i_left',if:mineT(()=>!F.awl)},
+    {t:'about_twelve_disciples',if:mineT(()=>!!F.awl&&!F.tw)},
+    {t:'synagogue_i_said_that_i',if:mineT(()=>!!F.tw&&!F.syn)},
+    {t:'every_answer_feeds_the_quarrel',if:mineT(()=>!!F.syn&&!F.out)},
+    {t:'roof_for_the_disciples',if:mineT(()=>!!F.out&&!F.men)},
+    {t:'mend_the_door_curtain_of_the_hall',if:mineT(()=>!!F.men&&!F.hall)},
     {t:()=>OPEN13(),if:mineT(()=>!!OPEN13())},
-    {t:'Move the shadow on, at the sundial.',if:mineT(()=>!!F.hall&&DAY()<4&&PART()!=='e'&&!OPEN13())},
-    {t:'The day is done. The loft.',if:mineT(()=>!!F.hall&&DAY()<4&&PART()==='e'&&!OPEN13())},
-    {t:'Let the price be reckoned, before everybody.',if:()=>!!F.n3&&!F.sum}],
+    {t:'move_the_shadow_on_at_the_sundial',if:mineT(()=>!!F.hall&&DAY()<4&&PART()!=='e'&&!OPEN13())},
+    {t:'day_is_done',if:mineT(()=>!!F.hall&&DAY()<4&&PART()==='e'&&!OPEN13())},
+    {t:'let_the_price_be_reckoned_before_everybody',if:()=>!!F.n3&&!F.sum}],
   scripture:[Object.assign({if:()=>!!F.came},PS.da244),Object.assign({if:()=>!!F.came},PS.ps1465),PS.is403],
-  notes:{title:()=>PC()===P?'NOTED IN EPHESUS':'THE WAY, AS WE WERE TAUGHT IT',none:'Nothing yet.',list:[
-    ...HEARD.map(h=>({t:()=>ticked().t.includes(h.k)?T('Heard from Apollos too: {p}',{p:T(h.t)}):h.t,if:()=>PC()!==P})),
-    {t:'Glaukos, of Sardis: where the fuller lives, when the lamps are lit.',if:mineT(()=>!!F.g1&&!F.a1)},
-    {t:'Hegesias, of Smyrna: at the wine seller\'s, under the colonnade. He sails at first light.',if:mineT(()=>!!F.two&&!F.a2)},
-    {t:'Diodotos, of Thyatira: under the vine, where the carriers lodge.',if:mineT(()=>!!F.two&&!F.p2)},
-    {t:'Kleandros: the large house at the end of the street, this evening.',if:mineT(()=>!!F.kle&&!F.last)},
-    {t:()=>T('In the house of Kleandros: {n} of seven.',{n:found13().length+(F.last?1:0)}),if:mineT(()=>!!F.e3&&!F.n3)},
-    {t:()=>T('Gone home from the hall: {list}.',{list:T(F.n2?'to Sardis, to Smyrna, to Thyatira':'to Sardis')}),if:mineT(()=>!!F.n1)}]}};
+  notes:{title:()=>PC()===P?'noted_in_ephesus':'way_as_we_were_taught_it',none:'nothing_yet_said',list:[
+    ...HEARD.map(h=>({t:()=>ticked().t.includes(h.k)?T('heard_from_apollos_too_p',{p:T(h.t)}):h.t,if:()=>PC()!==P})),
+    {t:'glaukos_of_sardis_where',if:mineT(()=>!!F.g1&&!F.a1)},
+    {t:'hegesias_of_smyrna_at_the_wine',if:mineT(()=>!!F.two&&!F.a2)},
+    {t:'diodotos_of_thyatira_under_the_vine',if:mineT(()=>!!F.two&&!F.p2)},
+    {t:'kleandros_the_large_house',if:mineT(()=>!!F.kle&&!F.last)},
+    {t:()=>T('in_the_house_of_kleandros',{n:found13().length+(F.last?1:0)}),if:mineT(()=>!!F.e3&&!F.n3)},
+    {t:()=>T('gone_home_from_the_hall_list',{list:T(F.n2?'to_sardis_to_smyrna_to_thyatira':'to_sardis')}),if:mineT(()=>!!F.n1)}]}};
 
 /* ============ PLACING THE CAST, SETUP ============ */
 const ENT={shop13:[150,122,1],street13:[196,120,1],syn13:[64,122,1],road13:[40,124,1],hall13:[70,124,1],house13:[160,236,1],board13:[160,236,1]};
@@ -1421,49 +1421,49 @@ async function start13(){ov.onclick=null;ov.className='';audioInit();SFX.good();
   await cut(async()=>{await fade(1,500);setChapter(13);G.end={};
     try{await need('map');await SHARED.map.journey(ROAD1,{view:'aegean',labels:LAB13,speed:1400});await tell('v23',null,1)}catch(e){console.error(e)}
     await fade(1,600);G.scene=null;setScore(MUSIC);show13('shop13',...ENT.shop13);drawInv();await fade(0,700);
-    await narr('Meanwhile, at Ephesus, the bench that had come over the sea from Corinth stood in a new street.',{dur:8000});await tell('v24');
-    await say(AP,'They say in the street that a man from Alexandria is to speak in the synagogue this Sabbath. Apollos, his name is.',{to:PR});
-    await say(PR,'Then on the Sabbath the bench can wait. Bring the tablets.');codeBtn()},true)}
+    await narr('meanwhile_at_ephesus_the_bench',{dur:8000});await tell('v24');
+    await say(AP,'they_say_in_the_street',{to:PR});
+    await say(PR,'on_the_sabbath_the_bench_can_wait');codeBtn()},true)}
 
 /* ============ PRAYER HINTS ============ */
 function hint13(){const d=DAY(),p=PART();
   if(PC()!==P){
-    if(!F.apo)return G.room==='syn13'?['hear13',['He is saying what we were taught, in words of his own. Which of our notes is it, each time?','We talk to Apollos, and choose the note that he has just said. Our tablets hold them all.']]:['syn13',['A man from Alexandria speaks in the synagogue today.','We go out by the door, and in at the door of the synagogue.']];
-    if(!F.gap)return['gap13',['He said nothing wrong. Then what stands on our tablets that he did not say?','We talk to Apollos again. What we did not hear: baptism in the name of Jesus Christ, and the gift of holy spirit.']];
-    if(!F.taught)return['table13',['He is our guest. First what is true and good to hear; and before we add anything, we ask whether we may.','We talk to Apollos. First: we have not heard the Scriptures opened like that. Then: may we tell you what we were taught?']];
-    if(!F.sent)return['send13',['He wants to cross to Achaia.','We talk to Apollos.']];
-    if(F.e2&&!F.n2&&!F.p2)return['vine13',['Diodotos is sitting under his vine, and Paul cannot be at two tables.','We go out to the street and open the door under the vine. We tell him that we learned it at the bench, a seam at a time.']];
-    if(F.n3&&!F.sum)return G.room==='board13'?BOARDH():['board13',['The price is to be reckoned, and there is a counting board in the street.','We use the counting board, or change back to Paul.']];
-    return['pair13',['The bench is ours, and the streets are his.','We change back to Paul: the button beside the prayer, or the key C.']]}
-  if(!F.awl)return G.room==='road13'?['down13',['The city lies below, and two friends are in it.','I take the road down to the city.']]:['find13',['Somewhere in this street stands a bench that I know.','I walk to the workshop under the striped awning.']];
-  if(!F.q1)return['ask113',['They are disciples already. Telling them what I know will not show me what they lack.','I talk to a disciple, and ask whether holy spirit was given to them when they came to believe.']];
-  if(!F.q2)return['ask213',['They have not heard of holy spirit. Then the question is further back.','I talk to a disciple, and ask what baptism was theirs.']];
-  if(!F.tw)return['ask313',['John himself said where his baptism pointed.','I talk to a disciple: John himself pointed people on to someone who would come after him.']];
-  if(!F.syn)return['syn13b',['I said in that house that I would come back.','I go in at the door of the synagogue.']];
-  if(!F.out)return!F.withme?['with13',['No answer will end this. And those who believe are sitting in the middle of it.','I talk to the disciples, and tell them that we are going.']]:['door13',['They are ready. I owe Symmachos no last word.','I go out by the door to the street.']];
-  if(!F.men)return['mene13',['A room at the hour when nobody wants one. This street has a hall.','I talk to Menekrates, in front of the hall of Tyrannus.']];
-  if(!F.curt)return['curt13',['He will give the hall for a mended curtain.','I pick up the torn curtain in the door of the hall.']];
-  if(!F.sewn)return!F.patch?['patch13',['The cloth is rotten along the tear. It needs something laid behind it.','In the workshop I pick up a strip from the basket of remnants, by the door.']]:['sew13',['It has to be laid out flat, with the strip behind the tear, and both edges sewn down.','In the workshop I use the torn curtain with the workbench, then the strip of goat hair with the curtain, then the awl.']];
-  if(!F.hall)return['hang13',['It is whole. It belongs in his door.','I use the mended curtain with the hall of Tyrannus.']];
-  if(d>3)return F.sum?['end13',['It is reckoned.','I look at the heap.']]:G.room==='board13'?BOARDH():['board13',['Let the city hear what is being burned.','I use the counting board, on the table in the street.']];
+    if(!F.apo)return G.room==='syn13'?['hear13',['he_is_saying_what_we_were','we_talk_to_apollos_and_choose']]:['syn13',['man_from_alexandria_speaks','we_go_out_by_the_door_and_in_at']];
+    if(!F.gap)return['gap13',['he_said_nothing_wrong_q','we_talk_to_apollos_again']];
+    if(!F.taught)return['table13',['he_is_our_guest_said','we_talk_to_apollos']];
+    if(!F.sent)return['send13',['he_wants_to_cross_to_achaia','we_talk_to_apollos_said']];
+    if(F.e2&&!F.n2&&!F.p2)return['vine13',['diodotos_is_sitting_under_his_vine','we_go_out_to_the_street']];
+    if(F.n3&&!F.sum)return G.room==='board13'?BOARDH():['board13',['price_is_to_be_reckoned','we_use_the_counting_board']];
+    return['pair13',['bench_is_ours_and_the_streets','we_change_back_to_paul']]}
+  if(!F.awl)return G.room==='road13'?['down13',['city_lies_below_and_two','i_take_the_road_down_to_the_city']]:['find13',['somewhere_in_this_street','i_walk_to_the_workshop_said']];
+  if(!F.q1)return['ask113',['they_are_disciples_already','i_talk_to_a_disciple_and_ask']];
+  if(!F.q2)return['ask213',['they_have_not_heard_of_holy_spirit','i_talk_to_a_disciple_and_ask_said']];
+  if(!F.tw)return['ask313',['john_himself_said_where_his_baptism_pointed','i_talk_to_a_disciple_john']];
+  if(!F.syn)return['syn13b',['i_said_in_that_house_that_i','i_go_in_at_the_door_of_the_synagogue']];
+  if(!F.out)return!F.withme?['with13',['no_answer_will_end_this_and_those_who','i_talk_to_the_disciples']]:['door13',['they_are_ready','i_go_out_by_the_door_to_the_street']];
+  if(!F.men)return['mene13',['room_at_the_hour_when_nobody','i_talk_to_menekrates_in_front']];
+  if(!F.curt)return['curt13',['he_will_give_the_hall_for_a_mended','i_pick_up_the_torn_curtain']];
+  if(!F.sewn)return!F.patch?['patch13',['cloth_is_rotten_along_the_tear','in_the_workshop_i_pick']]:['sew13',['it_has_to_be_laid_out_flat','in_the_workshop_i_use_the_torn']];
+  if(!F.hall)return['hang13',['it_is_whole','i_use_the_mended_curtain']];
+  if(d>3)return F.sum?['end13',['it_is_reckoned','i_look_at_the_heap']]:G.room==='board13'?BOARDH():['board13',['let_the_city_hear_what','i_use_the_counting_board']];
   const open=OPEN13();
-  if(p==='m'){if(d===1&&!F.b1)return['seam13',['An awning is promised for today.','In the workshop I use the awl with the awning for the potter.']];
-    if(d===2&&!F.apr)return['apron13',['She asks for nothing but the apron. What is done with it is not mine to do.','I give the apron to Myrtale.']];
-    return['dial13',['The morning\'s work is done.','In the street I use the sundial.']]}
-  if(p==='n'){if(G.room!=='hall13')return['hall13',['The sun is high. They are sitting in the hall.','I go in at the hall of Tyrannus.']];
-    if(!F['t'+d])return['talk13',['They have come through the heat to hear it.','I use the desk.']];
-    if(d===1&&!F.g1)return['glau13',['One of them is still sitting there with a question.','I talk to Glaukos.']];
-    if(d===2&&!F.two)return['two13',['Two of them want more than the talk.','I talk to Hegesias, and to Diodotos.']];
-    return['dial13b',['Midday is over.','I go out, and use the sundial.']]}
-  if(d===1&&!F.a1)return G.room==='street13'?['full13',['He lodges with a fuller. A fuller\'s house is known by its vats.','I open the fuller\'s door, beyond the hall, and answer him from Daniel.']]:['ev13',['Glaukos is expecting me.','I go out to the street.']];
-  if(d===2&&!F.a2)return['wine13',['Hegesias sails at first light: his table is mine. He asked who brings a ship home.','I open the wine seller\'s door, at the end of the colonnade, and answer him from the psalm.']];
-  if(d===2&&!F.p2)return['swap13',['I cannot be at two tables. And what Diodotos asked, two tentmakers can answer better than I.','I change to Aquila and Priscilla: the button beside the prayer, or the key C. They go to the door under the vine.']];
-  if(d===3&&!F.found)return G.room==='house13'?['seek13',['A man hides such things well. He remembers something about each place.','I talk to Kleandros, and look where his words point: the threshold, the hearth, the jar, the bed, the cloak, the roof.']]:['klea13',['Kleandros asked me to his house.','I open the door of the large house, at the end of the street.']];
-  if(d===3&&!F.last)return['last13',['It is his roll, and his house. If I tell him what to do, he has only obeyed me.','I ask him who would buy it.']];
-  return['loft13',['The day is done.','In the workshop I use the steps to the loft.']]}
-const SUMS=['fifteen thousand','sixteen thousand six hundred','twenty-six thousand five hundred','thirty-one thousand seven hundred and fifty','fifty thousand'];
-const BOARDH=()=>['sum13',['The Greeks write their numbers with letters. Alpha is the first letter, and one; epsilon is the fifth, and five. How the other places follow, the board itself shows: five pebbles in a trough become one in the hollow above it, and two in a hollow become one in the next trough.',
-  T('From the right: alpha one and epsilon five; iota ten and nu fifty; rho a hundred and phi five hundred; with a stroke, a thousand and five thousand; under the mu, ten thousand and fifty thousand. With this sum the board should stand at {n}; then Timothy is asked.',{n:T(SUMS[Math.min(4,board().k)])})]];
+  if(p==='m'){if(d===1&&!F.b1)return['seam13',['an_awning_is_promised_for_today','in_the_workshop_i_use_the_awl']];
+    if(d===2&&!F.apr)return['apron13',['she_asks_for_nothing_but_the_apron','i_give_the_apron_to_myrtale']];
+    return['dial13',['mornings_work_is_done','in_the_street_i_use_the_sundial']]}
+  if(p==='n'){if(G.room!=='hall13')return['hall13',['sun_is_high','i_go_in_at_the_hall_of_tyrannus']];
+    if(!F['t'+d])return['talk13',['they_have_come_through','i_use_the_desk']];
+    if(d===1&&!F.g1)return['glau13',['one_of_them_is_still_sitting','i_talk_to_glaukos']];
+    if(d===2&&!F.two)return['two13',['two_of_them_want_more_than_the_talk','i_talk_to_hegesias_and_to_diodotos']];
+    return['dial13b',['midday_is_over','i_go_out_and_use_the_sundial']]}
+  if(d===1&&!F.a1)return G.room==='street13'?['full13',['he_lodges_with_a_fuller','i_open_the_fullers_door']]:['ev13',['glaukos_is_expecting_me_said','i_go_out_to_the_street']];
+  if(d===2&&!F.a2)return['wine13',['hegesias_sails_at_first_said','i_open_the_wine_sellers']];
+  if(d===2&&!F.p2)return['swap13',['i_cannot_be_at_two_tables','i_change_to_aquila_and_priscilla_the']];
+  if(d===3&&!F.found)return G.room==='house13'?['seek13',['man_hides_such_things_well','i_talk_to_kleandros_and_look']]:['klea13',['kleandros_asked_me_to_his_house_said','i_open_the_door_of_the_large']];
+  if(d===3&&!F.last)return['last13',['it_is_his_roll_and_his_house','i_ask_him_who_would_buy_it']];
+  return['loft13',['the_day_is_done','in_the_workshop_i_use_the_steps']]}
+const SUMS=['fifteen_thousand_2','sixteen_thousand_six_hundred_2','twenty_six_thousand_five_hundred_2','thirty_one_thousand_seven_hundred_and_fifty_2','fifty_thousand'];
+const BOARDH=()=>['sum13',['greeks_write_their_numbers_with_letters',
+  T('from_the_right_alpha_one',{n:T(SUMS[Math.min(4,board().k)])})]];
 
 /* ============ CHAPTER DEFINITION ============ */
 return{rooms:['shop13','street13','syn13','road13','hall13','house13','board13'],setup:setup13,start:start13,hint:hint13,music:MUSIC,scenes:{asia:asia13,dial:dial13},topics:[],tablets:TABLETS,beds:BEDS,calls:CALLS,

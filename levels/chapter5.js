@@ -299,7 +299,7 @@ Object.assign(LOOK,{
   town5:{skin:'#c08c5c',hair:'#6a5a4a',tunic:'#e2dccb',cloak:'#7a3434',long:1,belt:'#4a3a24',ph:0},town6:{skin:'#c49268',veil:'#5a7a5a',tunic:'#4f7480',long:1,belt:'#c9a14a',slim:1,longSleeve:1,ph:0}});
 /* CROWD: the people who fill the square on the second Sabbath: a look for each, and where he or she stands */
 const CROWD=[];for(let i=0;i<20;i++)CROWD.push(['town'+(i*5%6+1),142+i*10.6+(i%3)*1.6,i%2?107.6:111.4,1]);
-const BN=actor('barnabas','Barnabas','#f0b070',128),MK=actor('mark','John Mark','#b8e0b0',176),PA=actor('papias','Papias','#f0b088',112),EU=actor('eumenes','Eumenes','#a8e0d8',140),
+const BN=actor('barnabas','Barnabas','#f0b070',128),MK=actor('mark','john_mark','#b8e0b0',176),PA=actor('papias','Papias','#f0b088',112),EU=actor('eumenes','Eumenes','#a8e0d8',140),
   JO=actor('joel','Joel','#e8d890',120),HA=actor('hanan','Hanan','#e8c0c8',98),AM=actor('ammia','Ammia','#e0c8f0',196),SN=actor('straton','Straton','#f0d0b0',104);
 Object.assign(ICON,{
   thong(g){stroke(g,[4,7,8,5,13,7.4,18,5.6,20.4,8,17,12,11,11,6,13.6,4.4,17,8,19.6,14,18,19.6,19.4],'#3a2414',3);stroke(g,[4,7,8,5,13,7.4,18,5.6,20.4,8,17,12,11,11,6,13.6,4.4,17,8,19.6,14,18,19.6,19.4],'#a8703c',1.6);
@@ -312,19 +312,19 @@ Object.assign(ICON,{
 ICON.staff=g=>{stroke(g,[4.6,20.6,19,3.6],'#3e2a16',2.6);stroke(g,[4.2,20.2,18.6,3.2],'#a8804e',1);stroke(g,[5.4,20.8,19.6,4],'#5a3c20',.6);
   R(g,17.4,3,2.6,2.6,'#6a4a2a');R(g,3.4,19.8,2.2,2.2,'#2a1c10')};
 Object.assign(ITEMS,{
-  staff5:{name:"Barnabas's staff",icon:'staff',look:"Barnabas's walking staff, stout olive wood. It walked the length of Cyprus, and it is not tired yet.",
-    by:{barnabas:'My walking staff. On a mountain road it is a third leg.'}},
-  bread:{name:'bread and figs',look:'The food bag: flat loaves and dried figs. John Mark packed it, and packed it well.',
-    by:{barnabas:'Bread and figs. My cousin packed them.'}},
-  thong:{name:'leather thong',look:'A long thong of ox-hide, supple and new. John Mark bought it in Paphos, against the day a sandal gave way.',
-    by:{barnabas:'A strip of ox-hide. In my hands it is only that.'}},
-  roof:{name:'tent roof',look:"The roof I sewed for a ship's deck at Seleucia: goat-hair cloth, with a tarred rope in its edge. It has kept the dew off us ever since.",
-    by:{barnabas:'The roof Paul sewed at Seleucia. I have slept dry under it from one end of Cyprus to the other.'}},
-  line:{name:'tarred rope',look:'The rope out of the edge of our roof: tarred against the sea, and long enough to go right round a tent.',
-    by:{barnabas:'The rope out of our roof. I hope Paul knows what he is doing.'}}});
+  staff5:{name:'barnabass_staff',icon:'staff',look:'barnabass_walking_staff_stout_olive_wood_it',
+    by:{barnabas:'my_walking_staff_on'}},
+  bread:{name:'bread_and_figs',look:'food_bag_flat_loaves_and_dried_figs',
+    by:{barnabas:'bread_and_figs_said'}},
+  thong:{name:'leather_thong',look:'long_thong_of_ox_hide_supple',
+    by:{barnabas:'strip_of_ox_hide'}},
+  roof:{name:'tent_roof',look:'roof_i_sewed_for_a_ships',
+    by:{barnabas:'roof_paul_sewed_at_seleucia'}},
+  line:{name:'tarred_rope',look:'rope_out_of_the_edge_of_our_roof',
+    by:{barnabas:'rope_out_of_our_roof'}}});
 /* how Barnabas describes the tools of the trade (set again whenever this chapter begins: see setup5) */
-const BY5={awl:"The tentmaker's awl. I have seen it open a seam, a sandal and a rope.",thread:'Waxed linen thread, and strong.',
-  knife:'A knife for cloth and leather. I would only spoil good cloth with it.',tablets:'His wax tablets: people, work and Scripture, in a small hand.'};
+const BY5={awl:'tentmakers_awl_said',thread:'waxed_linen_thread_and_strong',
+  knife:'knife_for_cloth_and_leather',tablets:'his_wax_tablets_people'};
 const inPerga=()=>G.room==='perga',inFord=()=>G.room==='ford',inAnt=()=>G.room==='pisidia'||G.room==='synp',inOut=()=>G.room==='border',
   week=()=>!!F.spoke1&&!F.out,allThree=()=>!!(F.eum&&F.joel&&F.pap),other=()=>PC()===P?BN:P;
 /* toPaul: something handed to Paul, whoever is being played at the moment */
@@ -332,24 +332,24 @@ function toPaul(id,quiet){const inv=invOf(P);if(!inv.includes(id)){inv.push(id);
 function dropAll(id){for(const a of party()){const inv=invOf(a),i=inv.indexOf(id);if(i>=0)inv.splice(i,1)}if(G.item===id)G.item=null;drawInv()}
 /* The rope sewn into the edge of the roof at Seleucia comes out again, stitch by stitch, at the ford. */
 async function unpick(){
-  if(!inFord())return say(P,'Take our roof to pieces? We will want it every night on that mountain.');
-  SFX.cut();await say(P,'Stitch by stitch, the way it went in. I sewed this rope into the edge to hold a roof on a deck...');SFX.cut();await wait(700);
+  if(!inFord())return say(P,'take_our_roof_to_pieces');
+  SFX.cut();await say(P,'stitch_by_stitch_the_way');SFX.cut();await wait(700);
   delItem('roof');addItem('line',1);F.gotLine=1;SFX.good();
-  await say(P,'...and out it comes: tarred, sound, and long enough. The cloth will still make a blanket. The rope has better work to do.')}
+  await say(P,'out_it_comes_tarred_sound')}
 /* The parted guide rope is made whole with a long splice, the awl opening the strands. */
 async function splice(){
-  SFX.sew();await say(P,'The awl to open the strands, each one laid into its neighbor, and every end tucked under three times...');SFX.sew();await wait(800);
+  SFX.sew();await say(P,'awl_to_open_the_strands');SFX.sew();await wait(800);
   delItem('line');F.spliced=1;SFX.good();
-  await say(P,'A long splice. It will run through a hand without catching, and it is as strong as the rope on either side of it.');
-  await say(P,'Long enough to reach the far post now. But a rope does not cross a river by itself.',TH)}
-const needRope=()=>say(P,'The rope needs joining to the half that is left on the post. That is where it will do some good.');
+  await say(P,'long_splice');
+  await say(P,'long_enough_to_reach_the_far',TH)}
+const needRope=()=>say(P,'rope_needs_joining_to_the_half');
 Object.assign(COMBO,{
-  'knife+roof':unpick,'awl+roof':unpick,'roof+thread':()=>say(P,'It needs no mending. I sewed it to last.'),
-  'awl+line':needRope,'line+thread':needRope,'knife+line':()=>say(P,'Cut it? I shall need every span of it.'),
-  'awl+thong':()=>say(P,'The thong needs a sandal to go into. And the sandal is on a foot.'),'thong+thread':()=>say(P,'The thong needs a sandal to go into. And the sandal is on a foot.'),
-  'knife+thong':()=>say(P,'It is the right length for a strap as it is. I will not shorten it.'),
-  'bread+knife':()=>say(P,'I will break the bread when it is time to eat it.'),'line+roof':()=>say(P,'I have only just parted them.'),
-  'line+thong':()=>say(P,'Leather to rope? No. Each has its own work.'),'roof+thong':()=>say(P,'The roof has loops enough. The thong is for a sandal.')});
+  'knife+roof':unpick,'awl+roof':unpick,'roof+thread':()=>say(P,'it_needs_no_mending'),
+  'awl+line':needRope,'line+thread':needRope,'knife+line':()=>say(P,'cut_it_i'),
+  'awl+thong':()=>say(P,'thong_needs_a_sandal_to_go_into_and_the'),'thong+thread':()=>say(P,'thong_needs_a_sandal_to_go_into_and_the'),
+  'knife+thong':()=>say(P,'it_is_the_right_length'),
+  'bread+knife':()=>say(P,'i_will_break_the_bread'),'line+roof':()=>say(P,'i_have_only_just_parted_them'),
+  'line+thong':()=>say(P,'leather_to_rope'),'roof+thong':()=>say(P,'roof_has_loops_enough')});
 /* ENT: where Paul stands when a room is entered by a code. At the ford that depends on the bank he has reached; in Antioch, on the week. */
 const ENT={perga:[176,124,1],get ford(){return F.crossed?[344,124,1]:[150,124,1]},get pisidia(){return week()?[268,113,-1]:[120,124,1]},synp:[264,122,-1],border:[236,124,-1]};
 /* place5: put everyone where the story has them, for the room the two men are in. They travel together, except across the river. */
@@ -364,9 +364,9 @@ function place5(room){const o=other(),e=ENT[room];for(const a of[MK,PA,EU,JO,HA,
 function setup5(){BN.hs=BN5;P.hs=PAUL5;P.called='Paul';Object.assign(BN,BARN5);BN.speed=0;BN.free=false;for(const id in BY5)(ITEMS[id].by=ITEMS[id].by||{}).barnabas=BY5[id];
   G.wade=null;G.crowd=0;G.dust=0;place5('perga');G.inv=['awl','thread','knife','tablets'];G.invs={paul:G.inv,barnabas:['staff5']};drawInv()}
 /* Barnabas when he is the one being played: his answers where the level wrote nothing for him, and the crafts he leaves to the tentmaker */
-const BARN5={noCraft:"That is the tentmaker's trade, not mine. I would only spoil it.",
-  def:{look:'I see nothing there that needs me.',pickup:h=>h.actor?'I would not dream of it.':'It is not mine to take.',
-    use:"That is the tentmaker's trade, not mine.",open:'It does not open.',talk:'I would get no answer.',give:'First I should choose something to give.'}};
+const BARN5={noCraft:'that_is_the_tentmakers_trade_not_mine',
+  def:{look:'i_see_nothing_there_that_needs_me',pickup:h=>h.actor?'i_would_not_dream_of_it':'it_is_not_mine_to_take_said',
+    use:'that_is_the_tentmakers_trade_not_mine_said',open:'it_does_not_open',talk:'i_would_get_no_answer',give:'first_i_should_choose_something_to_give'}};
 /* go5: through a door. The two men keep together, so the other follows. */
 async function go5(room,x,y,dir){SFX.door();await fade(1);enterRoom(room,x,y,dir);place5(room);place(other(),room,x-dir*26,y+3,dir);await fade(0)}
 /* ask: a question put to whoever is played, with three answers. A reply may come from anyone present: r lists lines, or [actor, line] pairs. */
@@ -375,621 +375,621 @@ async function ask(me,who,q,opts){let av=opts.slice();
     for(const x of o.r)await(Array.isArray(x)?say(x[0],x[1]):say(who,x));if(o.ok)return;av=av.filter(x=>x!==o)}}
 /* mendSandal: Barnabas's strap, parted on the roads of Cyprus, gets a new thong before the climb. */
 async function mendSandal(it){if(!inPerga()||F.shod||!['thong','awl','thread'].includes(it))return false;
-  const his=invOf(BN),i=his.indexOf('thong');if(i>=0){his.splice(i,1);toPaul('thong',1);await say(BN,'You will want this back, Paul. In my hands it is only a strip of ox-hide.')}
-  if(!has('thong'))return say(P,'The strap has parted where it passes under the sole. Thread alone will not hold that: it needs a new thong of leather.');
-  await say(P,'Sit on the edge of the trough, Barnabas, and give me that foot.');
+  const his=invOf(BN),i=his.indexOf('thong');if(i>=0){his.splice(i,1);toPaul('thong',1);await say(BN,'you_will_want_this_back_paul')}
+  if(!has('thong'))return say(P,'strap_has_parted_where');
+  await say(P,'sit_on_the_edge_of_the_trough');
   await Promise.all([walk(BN,236,112),walk(P,214,116)]);BN.dir=-1;P.dir=1;BN.bow=true;
-  SFX.sew();await say(P,'The old strap out, the new thong through the sole, and a stitch to lock it at either side...');SFX.sew();await wait(700);
+  SFX.sew();await say(P,'old_strap_out_the_new_thong');SFX.sew();await wait(700);
   BN.bow=false;delItem('thong');F.shod=1;SFX.good();
-  await say(BN,'It grips like a new one. You should have been a sandal maker, Paul.');
-  await say(P,'A tentmaker works in leather as well as in cloth. Now you will keep up with any donkey on that road.')}
+  await say(BN,'it_grips_like_a_new_one');
+  await say(P,'tentmaker_works_in_leather')}
 /* Paul, as Barnabas sees him and talks to him */
 const PAUL5={name:'Paul',actor:P,as:{barnabas:{
-  look:()=>say(BN,inPerga()?'Paul. He has not taken his eyes off those mountains since we came out of the gate.':inFord()?'Paul. Give him a broken thing and he grows calm. I have seen it before.'
-    :inOut()?'Paul. Put out of the city like a thief, and already looking down the road to the next one.':'Paul. The climb has left its mark on him, and he will not hear of resting.'),
-  give:async it=>{if(it!=='thong')return false;const inv=invOf(BN),i=inv.indexOf('thong');if(i>=0)inv.splice(i,1);toPaul('thong');return say(BN,'Take this, Paul. In your hands it is a sandal strap; in mine it is a strip of ox-hide.')},
+  look:()=>say(BN,inPerga()?'paul_he':inFord()?'paul_give'
+    :inOut()?'paul_put':'paul_the'),
+  give:async it=>{if(it!=='thong')return false;const inv=invOf(BN),i=inv.indexOf('thong');if(i>=0)inv.splice(i,1);toPaul('thong');return say(BN,'take_this_paul')},
   talk:()=>talkTree([
-    {q:'What can I do to help?',a:()=>say(P,inPerga()?(!F.metPap?'Ask the drover about the road. You have a way with strangers that I lack.':!F.markTold?'Speak to your cousin. He will say to you what he will not say to me.'
-        :!F.shod?'Sit down, and let me see to that sandal.':'Nothing more. The road is waiting.')
-      :inFord()?(!F.spliced?'Keep the others calm while I see to this rope.':!F.lineUp?'Carry the end across for me. You have a staff, and I have none.':!F.crossed?'Stay where you are and watch the far post. I will send them over to you.':'Lead the way up to the pass.')
-      :inOut()?(!F.cheered?'Stand with me while I speak to them. They are your disciples as much as mine.':'Nothing more. There is dust to shake off our feet, and a road to walk.')
-      :(!F.spoke1?'Sit beside me, and wait with me to be asked.':!F.joel?'Talk to Joel. Something weighs on him, and it is you he trusts with it.':!allThree()?'Pray for me, brother. There are more questions in this square than I have answers ready.':'Stand beside me on the Sabbath.'))},
-    {q:'They listen to you now, Paul, more than to me.',once:1,a:async()=>{await say(P,'Does that trouble you, Barnabas? You were named first when we were sent out.');await say(BN,'Trouble me? I have waited to see it ever since I fetched you from Tarsus. Speak, and I will stand beside you.')}},
-    {q:'I will leave you to it.',bye:1}]),
-  show:{staff5:()=>say(P,inFord()&&F.spliced&&!F.lineUp?'Your staff! A third leg against that current. You are the man to carry the rope over, Barnabas.':'Keep your staff by you, Barnabas. That road will ask a good deal of it.'),'*':'Keep it by you, Barnabas.'}}}};
+    {q:'what_can_i_do_to_help',a:()=>say(P,inPerga()?(!F.metPap?'ask_the_drover_about_the_road':!F.markTold?'speak_to_your_cousin'
+        :!F.shod?'sit_down_and_let_me_see':'nothing_more_the')
+      :inFord()?(!F.spliced?'keep_the_others_calm_while':!F.lineUp?'carry_the_end_across_for_me':!F.crossed?'stay_where_you_are_and_watch':'lead_the_way_up_to_the_pass')
+      :inOut()?(!F.cheered?'stand_with_me_while_i_speak':'nothing_more_there')
+      :(!F.spoke1?'sit_beside_me_and_wait':!F.joel?'talk_to_joel':!allThree()?'pray_for_me_brother':'stand_beside_me_on_the_sabbath'))},
+    {q:'they_listen_to_you_now',once:1,a:async()=>{await say(P,'does_that_trouble_you_barnabas');await say(BN,'trouble_me')}},
+    {q:'i_will_leave_you_to_it',bye:1}]),
+  show:{staff5:()=>say(P,inFord()&&F.spliced&&!F.lineUp?'your_staff_said':'keep_your_staff_by_you_barnabas_that'),'*':'keep_it_by_you_barnabas'}}}};
 /* ============ TOPICS: what Paul has learned, which he can raise with anyone (see each person's ask table) ============ */
 const TOPICS=[
-  {id:'road',q:'They say no one climbs to the pass alone.',if:()=>inPerga()&&F.metPap},
-  {id:'sandal',q:"Barnabas's sandal strap has parted.",if:()=>inPerga()&&!F.shod},
-  {id:'mark',q:'John Mark has gone back to Jerusalem.',if:()=>F.markTold&&!inPerga()&&!inOut()},
-  {id:'rope',q:'The guide rope at the ford has parted.',if:()=>inFord()&&!F.lineUp},
-  {id:'sabbath',q:'How does a visitor come to speak in the synagogue?',if:()=>inAnt()&&!F.spoke1},
-  {id:'again',q:'They have asked us to speak again next Sabbath.',if:()=>week()}];
+  {id:'road',q:'they_say_no_one_climbs',if:()=>inPerga()&&F.metPap},
+  {id:'sandal',q:'barnabass_sandal_strap_has_parted',if:()=>inPerga()&&!F.shod},
+  {id:'mark',q:'john_mark_has_gone_back_to_jerusalem',if:()=>F.markTold&&!inPerga()&&!inOut()},
+  {id:'rope',q:'guide_rope_at_the_ford_has_parted',if:()=>inFord()&&!F.lineUp},
+  {id:'sabbath',q:'how_does_a_visitor_come',if:()=>inAnt()&&!F.spoke1},
+  {id:'again',q:'they_have_asked_us_to_speak',if:()=>week()}];
 /* ============ SCRIPTURE: the passages on the tablets. short: how a passage is named when it is offered as an answer.
    road: a passage for the journey, which is not among the answers when Paul speaks of the Christ. ============ */
 const PASS={
-  ps121:{ref:'Psalm 121:1, 2',short:'help from Jehovah',road:1,gist:'I look up toward the mountains and ask where my help will come from. It comes from Jehovah, who made heaven and earth.'},
-  ecc4:{ref:'Ecclesiastes 4:9, 10',short:'two are better than one',road:1,gist:'Two do better than one: together their work pays well, and when one falls, the other is there to pull him to his feet.'},
-  isa43:{ref:'Isaiah 43:2',short:'through the rivers',road:1,gist:'When your way leads through water, I will be at your side; when you cross rivers, they will not close over you. Walk through fire, and not even its flame will singe you.'},
-  ps2:{ref:'Psalm 2:7',short:'you are my son',gist:'I announce what Jehovah has decreed: he told me that I am his son, and that today he has become my father.'},
-  isa55:{ref:'Isaiah 55:3',short:'loyal love toward David',gist:'Turn your ear my way and draw near to me; if you listen, you will stay alive. I will gladly bind myself to you by a covenant that lasts forever, in keeping with my acts of loyal love toward David, which can be relied on.'},
-  ps16:{ref:'Psalm 16:10',short:'not abandoned to the Grave',gist:'David\'s hope: Jehovah would never let his loyal one see the pit, nor abandon him to the Grave.'},
-  hab1:{ref:'Habakkuk 1:5',short:'you will not believe it',gist:'Search among the nations and mark what you see; gaze, and be struck with wonder. In your own days a thing will be done that you will find beyond belief, even when you are told of it.'},
-  isa56:{ref:'Isaiah 56:3',short:'a word for the foreigner',gist:'If a foreigner has attached himself to Jehovah, let him not say that Jehovah is sure to set him apart from his people.'},
-  isa49:{ref:'Isaiah 49:6',short:'a light of nations',gist:'Raising up Jacob\'s tribes and bringing home the ones of Israel who were kept safe is too small a task for you, my servant. To carry my salvation to the remotest places on earth, I have made you a light of nations as well.'}},
+  ps121:{ref:'psalm_121_1_2',short:'help_from_jehovah',road:1,gist:'i_look_up_toward_the_mountains'},
+  ecc4:{ref:'ecclesiastes_4_9_10',short:'two_are_better_than_one',road:1,gist:'two_do_better_than_one'},
+  isa43:{ref:'isaiah_43_2',short:'through_the_rivers',road:1,gist:'when_your_way_leads_through'},
+  ps2:{ref:'psalm_2_7',short:'you_are_my_son',gist:'i_announce_what_jehovah'},
+  isa55:{ref:'isaiah_55_3',short:'loyal_love_toward_david',gist:'turn_your_ear_my_way_and_draw'},
+  ps16:{ref:'psalm_16_10',short:'not_abandoned_to_the_grave',gist:'davids_hope_jehovah_would'},
+  hab1:{ref:'habakkuk_1_5',short:'you_will_not_believe_it',gist:'search_among_the_nations'},
+  isa56:{ref:'isaiah_56_3',short:'word_for_the_foreigner',gist:'if_a_foreigner_has_attached'},
+  isa49:{ref:'isaiah_49_6',short:'light_of_nations_2',gist:'raising_up_jacobs_tribes'}},
   ORDER=['ps121','ecc4','isa43','ps2','isa55','ps16','hab1','isa56','isa49'],TALK=ORDER.filter(k=>!PASS[k].road);
-const label=k=>T('{ref}: {short}',{ref:T(PASS[k].ref),short:T(PASS[k].short)}),quote=k=>T('{text} ({ref})',{text:T(PASS[k].gist),ref:T(PASS[k].ref)});
+const label=k=>T('ref_short',{ref:T(PASS[k].ref),short:T(PASS[k].short)}),quote=k=>T('text_ref',{text:T(PASS[k].gist),ref:T(PASS[k].ref)});
 /* ============ WAX TABLETS: people met, tasks still open, Scripture (shown by shared/tablets.js) ============ */
 const TABLETS={
   people:[
-    {name:'Barnabas',note:()=>inAnt()||inOut()?'Named first when we were sent out. He lets me take the lead, and has never once made me feel it.':'A Levite of Cyprus, the Son of Comfort. On a mountain road he is worth two men.'},
-    {name:'John Mark',note:()=>F.markTold?'He has left us, and returned to Jerusalem. He gave no reason, and he forgot nothing.':'The cousin of Barnabas, our attendant. He has been very quiet since we landed.',if:()=>inPerga()||inFord()},
-    {name:'Papias',note:()=>F.pap?'A drover. He had never set foot in a synagogue. Now he carries the word along every road he walks.':'A drover of the mountain road, with salt fish for Antioch. No one climbs to the pass alone, he says.',if:()=>F.metPap},
-    {name:'Eumenes',note:()=>F.eum?'No longer by the door. He brings the whole wool market with him.':'A wool merchant of Antioch, a Greek who fears God. In the synagogue he keeps to the place by the door.',if:()=>F.metEum},
-    {name:'Joel',note:()=>F.joel?'He has opened his house to us, and will not shut it again whatever it costs him.':'A Jew of Antioch. We lodge under his roof, and I work at his door.',if:()=>F.spoke1},
-    {name:'Hanan',note:()=>F.out?'He asked us to speak. A week later he could not bear to see who had come to listen.':'A presiding officer of the synagogue in Antioch. He asked us to speak.',if:()=>F.spoke1},
-    {name:'Ammia',note:'A woman of high standing in Antioch, who fears God. Her husband is one of the leading men of the city.',if:()=>F.spoke1}],
+    {name:'Barnabas',note:()=>inAnt()||inOut()?'named_first_when_we_were_sent_out_he':'levite_of_cyprus_the_son_of_comfort'},
+    {name:'john_mark',note:()=>F.markTold?'he_has_left_us_and_returned':'cousin_of_barnabas_our_attendant',if:()=>inPerga()||inFord()},
+    {name:'Papias',note:()=>F.pap?'a_drover':'drover_of_the_mountain',if:()=>F.metPap},
+    {name:'Eumenes',note:()=>F.eum?'no_longer_by_the_door':'wool_merchant_of_antioch',if:()=>F.metEum},
+    {name:'Joel',note:()=>F.joel?'he_has_opened_his_house':'jew_of_antioch',if:()=>F.spoke1},
+    {name:'Hanan',note:()=>F.out?'he_asked_us_to_speak':'presiding_officer_of_the_synagogue_in_antioch',if:()=>F.spoke1},
+    {name:'Ammia',note:'woman_of_high_standing',if:()=>F.spoke1}],
   tasks:[
-    {t:'Find out what the road to Antioch is like, and who is taking it.',if:()=>inPerga()&&!F.metPap},
-    {t:'Find out what weighs on John Mark.',if:()=>inPerga()&&!F.markTold},
-    {t:"Mend Barnabas's sandal before the climb.",if:()=>inPerga()&&!F.shod},
-    {t:'Take the road north, with the pack train.',if:()=>inPerga()&&F.metPap&&F.markTold&&F.shod},
-    {t:'Find rope enough to mend the guide rope.',if:()=>inFord()&&!F.gotLine},
-    {t:'Join it to the half that is left on the post.',if:()=>inFord()&&F.gotLine&&!F.spliced},
-    {t:'Get the end of the rope across the river.',if:()=>inFord()&&F.spliced&&!F.lineUp},
-    {t:'Bring the pack train over.',if:()=>inFord()&&F.lineUp&&!F.crossed},
-    {t:'Go on, over the pass.',if:()=>inFord()&&F.crossed},
-    {t:'Go into the synagogue on the Sabbath, and take a seat.',if:()=>inAnt()&&!F.spoke1},
-    {t:'Answer Eumenes: is this for a Greek?',if:()=>week()&&!F.eum},
-    {t:'Joel is troubled. Barnabas is the one he trusts.',if:()=>week()&&!F.joel},
-    {t:'Answer Papias: what is it to a drover?',if:()=>week()&&!F.pap},
-    {t:'Speak again on the next Sabbath.',if:()=>week()&&allThree()},
-    {t:'Strengthen the disciples before we go.',if:()=>inOut()&&!F.cheered},
-    {t:'Shake the dust from our feet, and take the road to Iconium.',if:()=>inOut()&&F.cheered}],
+    {t:'find_out_what_the_road',if:()=>inPerga()&&!F.metPap},
+    {t:'find_out_what_weighs_on_john_mark',if:()=>inPerga()&&!F.markTold},
+    {t:'mend_barnabass_sandal_before_the_climb',if:()=>inPerga()&&!F.shod},
+    {t:'take_the_road_north_with_the_pack',if:()=>inPerga()&&F.metPap&&F.markTold&&F.shod},
+    {t:'find_rope_enough_to_mend',if:()=>inFord()&&!F.gotLine},
+    {t:'join_it_to_the_half_that_is',if:()=>inFord()&&F.gotLine&&!F.spliced},
+    {t:'get_the_end_of_the_rope',if:()=>inFord()&&F.spliced&&!F.lineUp},
+    {t:'bring_the_pack_train_over',if:()=>inFord()&&F.lineUp&&!F.crossed},
+    {t:'go_on_over_the_pass',if:()=>inFord()&&F.crossed},
+    {t:'go_into_the_synagogue_on_the_sabbath',if:()=>inAnt()&&!F.spoke1},
+    {t:'answer_eumenes_is_this_for_a_greek',if:()=>week()&&!F.eum},
+    {t:'joel_is_troubled',if:()=>week()&&!F.joel},
+    {t:'answer_papias_what_is_it',if:()=>week()&&!F.pap},
+    {t:'speak_again_on_the_next_sabbath',if:()=>week()&&allThree()},
+    {t:'strengthen_the_disciples_before_we_go',if:()=>inOut()&&!F.cheered},
+    {t:'shake_the_dust_from_our_feet',if:()=>inOut()&&F.cheered}],
   scripture:ORDER.map(k=>PASS[k])};
 /* ============ ROOMS, HOTSPOTS, CHARACTERS ============ */
 /* ---------- Perga ---------- */
 async function meetPap(me){F.metPap=1;
-  await say(me,'Peace to you. Are those your animals? We are looking for the road to Antioch in Pisidia.');
-  await say(PA,'You are looking at it. North across the plain, up through the mountains, and no short way round.');
-  await say(PA,'Papias. I carry salt fish and oil up to Antioch, and wool down again. I leave when the heat breaks.');
-  await say(PA,'And hear this, strangers. Nobody climbs to that pass alone. The hills are full of men who live by what other men carry.');
-  await say(PA,'Walk with my train if you like. Company is the only wall that road has.');
-  await say(PA,'But I take no one who cannot keep up. And every beast I have is loaded: what you bring, you carry.');
-  await say(me,me===P?'Company for the road, then. Now: can we keep up with it?':'Company for the road. And what we bring, we carry.',TH)}
+  await say(me,'peace_to_you_are');
+  await say(PA,'you_are_looking_at_it');
+  await say(PA,'papias_said');
+  await say(PA,'hear_this_strangers');
+  await say(PA,'walk_with_my_train_if_you_like');
+  await say(PA,'i_take_no_one_who_cannot');
+  await say(me,me===P?'company_for_the_road_then':'company_for_the_road',TH)}
 /* John Mark leaves them. The account gives no reason (Acts 13:13), so none is given here. */
 async function parting(){F.markTold=1;const b=other();MK.dir=PC().x>MK.x?1:-1;
-  await say(MK,'Paul, brother. Cousin. I have something to say, and I would rather say it here than on the road.');
+  await say(MK,'paul_brother');
   if(b.room===G.room)await walk(b,MK.x+(PC().x>MK.x?46:-46),MK.y+3);b.dir=MK.x>b.x?1:-1;
-  await say(MK,'I am not going up into the mountains with you. I am going back to Jerusalem.');
-  await say(BN,'Back? John Mark, we have only just landed.');
-  await say(MK,'I know, cousin. I have turned it over ever since Paphos. I am going back.');
-  await say(P,'I wish you would stay with the work, John Mark. I will say that once, and plainly.',{to:MK});
-  await say(MK,'You have said it, brother. I am still going.');
-  await narr('There John parted from them and went back to Jerusalem. (Acts 13:13)',{dur:5200});
-  await narr('The account does not say why.',{dur:3200});
-  await say(MK,'Everything is counted. The bed rolls are in the bundles. Here is the roof, and the food bag: bread and figs.');
+  await say(MK,'i_am_not_going_up_into_the_mountains');
+  await say(BN,'back_said');
+  await say(MK,'i_know_cousin');
+  await say(P,'i_wish_you_would_stay_with_the_work',{to:MK});
+  await say(MK,'you_have_said_it_brother');
+  await narr('there_john_parted_acts_13_13',{dur:5200});
+  await narr('account_does_not_say_why',{dur:3200});
+  await say(MK,'everything_is_counted');
   toPaul('roof');toPaul('bread',1);
-  await say(MK,'And this. A thong of ox-hide. I bought it in Paphos, for the day a sandal gave way. That road will find the weak place in every strap.');
+  await say(MK,'this_a_thong');
   toPaul('thong');
-  await say(BN,'Go safely, cousin. Greet your mother for me, and the brothers who meet in her house.');
-  await say(MK,'I will see you onto the road first. It is the last thing I can do for you.');
+  await say(BN,'go_safely_cousin');
+  await say(MK,'i_will_see_you_onto_the_road');
   await walk(MK,84,121);MK.dir=1;
-  await say(P,'He gave no reason. And even now he has forgotten nothing.',TH)}
+  await say(P,'he_gave_no_reason',TH)}
 async function breadForMark(it){if(it!=='bread'||!F.markTold)return false;
-  if(F.bread)return say(MK,'You have given me my share already, brother. More than my share.');
-  await say(P,'You packed this bread for three, John Mark. A third of it is yours. It is a long way to Jerusalem.');
+  if(F.bread)return say(MK,'you_have_given_me_my_share');
+  await say(P,'you_packed_this_bread_for_three');
   F.bread=1;SFX.good();
-  await say(MK,'I did not think you would... Thank you, brother.');
-  await say(P,'I have not changed my mind about the work. But no brother of mine starts a journey hungry.',TH)}
-MK.hs={name:'John Mark',actor:MK,
-  look:()=>say(P,F.markTold?'John Mark. He is going back to Jerusalem, and he is waiting to see us onto the road first.':'John Mark, the cousin of Barnabas. He stands by the bundles and looks at the ground.'),
+  await say(MK,'i_did_not_think_you_would');
+  await say(P,'i_have_not_changed_my_mind',TH)}
+MK.hs={name:'john_mark',actor:MK,
+  look:()=>say(P,F.markTold?'john_mark_said':'john_mark_the_cousin_of_barnabas'),
   give:breadForMark,
-  show:{thong:'Ox-hide, from the sandal makers of Paphos. Keep it. It was always meant for you two.',roof:'I rolled it dry this morning. Fold it the same way, or the rope edge will chafe the cloth.',
-    bread:()=>say(MK,F.markTold?'It is yours now, brother. I counted the loaves for the road north, not for mine.':'It is all in the food bag. I counted it this morning.'),
-    tablets:'I used to think I would fill a set like that with everything I saw on this journey.',awl:'I will carry anything you like. But not that: it is yours.','*':'Shall I pack it with the rest? ...No. That is not mine to do any longer.'},
-  ask:{road:'I heard him. You will be safer with his train than alone, both of you.',sandal:()=>say(MK,F.markTold?'That is what the thong is for. It will go through the sole where the old strap went.':'I saw it this morning. I have something for it, in the bundles.')},
+  show:{thong:'ox_hide_from_the_sandal',roof:'i_rolled_it_dry_this_morning',
+    bread:()=>say(MK,F.markTold?'it_is_yours_now_brother':'it_is_all_in_the_food_bag'),
+    tablets:'i_used_to_think_i_would',awl:'i_will_carry_anything_you_like','*':'shall_i_pack_it_with_the_rest_said'},
+  ask:{road:'i_heard_him',sandal:()=>say(MK,F.markTold?'that_is_what_the_thong_is_for_it':'i_saw_it_this_morning')},
   talk:()=>F.markTold?talkTree([
-      {q:'How will you travel?',a:()=>say(MK,'Down to the coast, and by ship to Caesarea. I have my fare. I took nothing from the common purse.')},
-      {q:'Is the baggage in order?',a:()=>say(MK,'Two bed rolls, the bundle, the roof, the food bag, the water flask. Count them each night. I always did.')},
-      {q:'Go in peace, John Mark.',bye:1}])
+      {q:'how_will_you_travel',a:()=>say(MK,'down_to_the_coast_and_by_ship')},
+      {q:'is_the_baggage_in_order',a:()=>say(MK,'two_bed_rolls_the_bundle')},
+      {q:'go_in_peace_john_mark',bye:1}])
     :parting(),
-  as:{barnabas:{look:()=>say(BN,F.markTold?'My cousin. I have known him since he was a child in his mother\'s house. I will not stop hoping for him.':'My cousin. Something is on his mind, and it has been there since Paphos.'),
-    talk:()=>F.markTold?say(MK,'Do not be angry with me, cousin. And do not let him be.'):parting(),
-    show:{staff5:'You will need it up there, cousin. More than you did on Cyprus.','*':'It is not mine to pack any longer, cousin.'}}}};
+  as:{barnabas:{look:()=>say(BN,F.markTold?'my_cousin':'my_cousin_said'),
+    talk:()=>F.markTold?say(MK,'do_not_be_angry_with_me_cousin'):parting(),
+    show:{staff5:'you_will_need_it_up_there_cousin','*':'it_is_not_mine_to_pack'}}}};
 async function leave5(){const me=PC();
-  if(!F.metPap)return say(me,me===P?'Up into those mountains, the three of us? First I should learn what that road is like, and who else is taking it.':'I would not start up that road before I had asked a man who knows it.');
-  if(!F.markTold)return say(me,me===P?'John Mark has not stirred from the bundles. Something is on his mind. I will not set out before I know what.':'My cousin has something to say: I can see it in him. Not before I have heard it.');
-  if(!F.shod){await say(BN,me===P?'Go on like this, Paul, and by nightfall I shall be a day behind you. This sandal strap has parted.':'Not one more mile on this sandal. The strap has parted, and Paul has the hands to mend it.');
-    return say(PA,'I told you. I take no one who cannot keep up.')}
-  await say(PA,'The heat is breaking. Fall in behind the last beast, you two, and keep close!');return travel()}
+  if(!F.metPap)return say(me,me===P?'up_into_those_mountains':'i_would_not_start_up_that_road');
+  if(!F.markTold)return say(me,me===P?'john_mark_has_not_stirred':'my_cousin_has_something');
+  if(!F.shod){await say(BN,me===P?'go_on_like_this_paul_and_by_nightfall':'not_one_more_mile_on_this_sandal');
+    return say(PA,'i_told_you')}
+  await say(PA,'heat_is_breaking');return travel()}
 PA.hs={name:'Papias',actor:PA,
-  look:()=>say(P,inPerga()?'A drover, burnt as brown as his own harness. He checks every girth twice.':inFord()?'Papias. He looks at the river, and then at the rocks above the road, and then at the river again.'
-    :inOut()?'Papias. He has left his panniers in the market to walk out here with us.':'Papias, among his panniers of salt fish. He sells as he walks: without a wasted word.'),
-  show:{thong:'Good ox-hide. Your young man knew what he was buying.',roof:()=>say(PA,inFord()?'Goat-hair cloth, with a rope in the hem. A rope! How long is it?':'Goat-hair cloth. It sheds rain, and you will meet rain up there.'),
-    line:'Tarred, and sound right through. Where did a tentmaker come by ship\'s rope?',bread:'Keep it for the pass. There is nothing to buy between here and the plateau.',
-    awl:'I mend my own harness with a tool like that. Not half so well, I dare say.',knife:()=>say(PA,inPerga()?'Keep it sheathed near my beasts. One cut girth, and I am picking salt fish out of the road.':'Keep it sheathed around my beasts.'),tablets:'Scratches. I keep my accounts in my head, where no one can rob them.','*':'It is your load, friend, not mine.'},
-  ask:{road:['Alone, you are a purse on two legs. Twenty men and thirty beasts are another matter: they let us pass.','I have never lost a traveler who kept up. I cannot speak for the ones who fell behind.'],
-    sandal:'Then he will not see the second milestone. Mend it or leave him. I do not wait on the road.',
-    rope:'It parts every few years. Then we sit here until the water falls, or until someone braver than I am takes a new line across.',
-    mark:'The boy with the bundles? A pity. He packed a load better than most drovers do.',
-    sabbath:'In the Jews\' house of prayer? Do not ask a drover. Ask the wool merchant: he goes there every week.',
-    again:()=>say(PA,F.pap?'I know. I will be there, and I will not be alone.':'So they say in the market. They talk of little else.')},
+  look:()=>say(P,inPerga()?'drover_burnt_as_brown_as_his_own':inFord()?'papias_he'
+    :inOut()?'papias_he_has':'papias_among_his_panniers_of_salt_fish'),
+  show:{thong:'good_ox_hide',roof:()=>say(PA,inFord()?'goat_hair_cloth_with_a_rope':'goat_hair_cloth_it_sheds_rain'),
+    line:'tarred_and_sound_right_through',bread:'keep_it_for_the_pass',
+    awl:'i_mend_my_own_harness_with_a_tool',knife:()=>say(PA,inPerga()?'keep_it_sheathed_near_my_beasts':'keep_it_sheathed_around_my_beasts'),tablets:'scratches_said','*':'it_is_your_load_friend_not_mine'},
+  ask:{road:['alone_you_are_a_purse_on_two','i_have_never_lost_a_traveler'],
+    sandal:'he_will_not_see_the_second_milestone',
+    rope:'it_parts_every_few_years',
+    mark:'boy_with_the_bundles',
+    sabbath:'in_the_jews_house_of_prayer',
+    again:()=>say(PA,F.pap?'i_know_said':'they_say_in_the_market')},
   talk:async()=>{
     if(inPerga()){if(!F.metPap)await meetPap(P);return talkTree([
-      {q:'What do you carry up to Antioch?',a:async()=>{await say(PA,'Salt fish, oil, whatever the ships bring to the coast. Up on the plateau they want all of it.');await say(PA,'Antioch lies on the road between Ephesus and Cilicia. Half the trade of the country walks through its gates.')}},
-      {q:'What is the road like?',a:async()=>{await say(PA,'Steep, and narrow wherever a river has cut it. And cold at the top: you will want every cloak you own.');await say(PA,'The town lies higher than any you have seen from the deck of a ship.')}},
-      {q:'Who lives in Antioch?',a:()=>say(PA,'Greeks, Phrygians, and a good many Jews. They have their own house of prayer there. Everybody speaks Greek, and buys salt fish.')},
-      {q:'We will be ready.',bye:1}])}
-    if(inFord()){if(F.crossed)return say(PA,'On your feet, all of you! The pass by nightfall, if these beasts are willing.');
+      {q:'what_do_you_carry_up_to_antioch',a:async()=>{await say(PA,'salt_fish_oil_whatever');await say(PA,'antioch_lies_on_the_road')}},
+      {q:'what_is_the_road_like',a:async()=>{await say(PA,'steep_and_narrow_wherever');await say(PA,'town_lies_higher_than_any')}},
+      {q:'who_lives_in_antioch',a:()=>say(PA,'greeks_phrygians_and_a_good_many_jews')},
+      {q:'we_will_be_ready',bye:1}])}
+    if(inFord()){if(F.crossed)return say(PA,'on_your_feet_all_of_you');
       if(F.lineUp)return crossAll();
       return talkTree([
-        {q:'Is there no other crossing?',a:()=>say(PA,'Two days upstream, by a goat track no loaded beast can climb. This is the ford, tentmaker. There is no other.')},
-        {q:'What is up in those rocks?',a:async()=>{await say(PA,'Eyes. A train that sits still for a night at this ford is a train that has been counted.');await say(PA,'They will not come down on thirty beasts and their drovers. Not by daylight.')}},
-        {q:'I will see what can be done.',bye:1}])}
-    if(inOut())return say(PA,F.cheered?'Go well, tentmaker. I shall have something better than salt fish to carry down to Perga.':'They cannot put a drover out of the city: I leave of my own accord every month. But you two!');
-    if(week())return F.pap?say(PA,'The drovers\' yard has heard it all twice over. On the Sabbath you will see for yourself.'):drover();
+        {q:'is_there_no_other_crossing',a:()=>say(PA,'two_days_upstream_by_a_goat')},
+        {q:'what_is_up_in_those_rocks',a:async()=>{await say(PA,'eyes_said');await say(PA,'they_will_not_come_down')}},
+        {q:'i_will_see_what_can_be_done',bye:1}])}
+    if(inOut())return say(PA,F.cheered?'go_well_tentmaker':'they_cannot_put_a_drover');
+    if(week())return F.pap?say(PA,'drovers_yard_has_heard'):drover();
     return talkTree([
-      {q:'Where can two travelers sleep tonight?',a:()=>say(PA,'The drovers\' yard, behind the market. It has a wall and a well, and it costs nothing. Say that Papias sent you.')},
-      {q:'How is trade?',a:()=>say(PA,'They were waiting for me at the gate. Salt fish does not climb mountains by itself.')},
-      {q:'Peace to you, Papias.',bye:1}])},
-  as:{barnabas:{look:'The drover. He has the eyes of a man who counts his beasts in his sleep.',
+      {q:'where_can_two_travelers_sleep_tonight',a:()=>say(PA,'drovers_yard_behind_the_market')},
+      {q:'how_is_trade',a:()=>say(PA,'they_were_waiting_for_me')},
+      {q:'peace_to_you_papias',bye:1}])},
+  as:{barnabas:{look:'the_drover',
     talk:async()=>{if(inPerga()&&!F.metPap)return meetPap(BN);
-      await say(PA,inPerga()?'When the heat breaks, I said. Be ready, and be shod.':inFord()?(F.lineUp&&!F.crossed?'You carried it over, friend! Now let your tentmaker send us across to you.':'A man who can stand in that water is worth three who can talk about it.')
-        :inOut()?'You look glad, friend. Thrown out, and glad! I shall have to think about that.':week()&&!F.pap?'It is the tentmaker I want to ask. He talks, and I have a question for a talker.':'Good day to you, friend. No lame feet today?')},
-    show:{staff5:'Olive wood. It will see you over the pass.','*':'It is your load, friend, not mine.'}}}};
+      await say(PA,inPerga()?'when_the_heat_breaks_i_said':inFord()?(F.lineUp&&!F.crossed?'you_carried_it_over_friend':'man_who_can_stand_in_that_water')
+        :inOut()?'you_look_glad_friend':week()&&!F.pap?'it_is_the_tentmaker_i_want':'good_day_to_you_friend')},
+    show:{staff5:'olive_wood_said','*':'it_is_your_load_friend_not_mine'}}}};
 EU.hs={name:'Eumenes',actor:EU,
-  look:()=>say(P,inPerga()?'A traveler of some means, in a Greek mantle. He is going up with the pack train as we are.':inFord()?'Eumenes. He has not said a word since he saw the river.'
-    :G.room==='synp'?'Eumenes, in the place nearest the door. He stands there like a man who has had it for years.':inOut()?'Eumenes. He walked out here beside us, in front of the whole city.'
-    :F.eum?'Eumenes, at his stall. He has sold very little wool this week, and talked a great deal.':'Eumenes, the wool merchant, at home among his bales and fleeces.'),
-  show:{tablets:()=>say(EU,'The Prophets of Israel, in wax? In the synagogue I hear them read, and I have never once held a line of them in my hand.'),
-    roof:'Goat-hair. We sell sheep\'s wool in Antioch, but I know good cloth when I see it.',line:'You cut that out of your own roof? For people you met four days ago?',
-    bread:'Keep it. I have my own, and the pass is long.',awl:'A craftsman\'s tool. I buy and sell what other men make. I envy you that.','*':'I deal in wool, friend. That is beyond my judging.'},
-  ask:{road:'He is right. I never make this journey except with a train. I have a wife who expects me home.',
-    rope:'I cannot swim, Paul. I may as well tell you so now.',
-    mark:'The young man with the bundles? I wondered. He counted them twice before he let them go.',
-    sabbath:['A visitor takes a seat, like anyone else. After the reading, the presiding officers may send word and ask him to speak.','They often do, when the visitor is a Jew from abroad. They would never ask me.'],
-    again:()=>say(EU,F.eum?'I have told half the wool market. The other half heard it from them.':'I heard them ask. I asked for the same thing myself, at the door.')},
+  look:()=>say(P,inPerga()?'traveler_of_some_means':inFord()?'eumenes_said'
+    :G.room==='synp'?'eumenes_in_the_place_nearest_the_door':inOut()?'eumenes_he'
+    :F.eum?'eumenes_at_his_stall':'eumenes_the_wool_merchant'),
+  show:{tablets:()=>say(EU,'prophets_of_israel_in_wax'),
+    roof:'goat_hair',line:'you_cut_that_out_of_your_own',
+    bread:'keep_it_i_have',awl:'craftsmans_tool','*':'i_deal_in_wool_friend'},
+  ask:{road:'he_is_right',
+    rope:'i_cannot_swim_paul',
+    mark:'young_man_with_the_bundles',
+    sabbath:['visitor_takes_a_seat_like_anyone_else','they_often_do_when_the_visitor'],
+    again:()=>say(EU,F.eum?'i_have_told_half_the_wool_market':'i_heard_them_ask')},
   talk:async()=>{
-    if(inPerga()){if(!F.metEum){F.metEum=1;await say(EU,'Eumenes, of Antioch in Pisidia. I deal in wool, and I am going home. You are for the mountains too?');
-        await say(P,'Paul, of Tarsus, a tentmaker. And this is Barnabas. We are bound for your city.')}
+    if(inPerga()){if(!F.metEum){F.metEum=1;await say(EU,'eumenes_of_antioch_in_pisidia');
+        await say(P,'paul_of_tarsus_a_tentmaker')}
       return talkTree([
-        {q:'What is Antioch like?',a:async()=>{await say(EU,'High, and cold at night. The air is like well water after this coast.');await say(EU,'We belong to the province of Galatia, and we stand where Phrygia ends and Pisidia begins. Neither will own us, and both trade with us.')}},
-        {q:'Are there Jews in Antioch?',a:async()=>{await say(EU,'Many. They have a synagogue, and I go to it every Sabbath. Not as a Jew: I am a Greek.');await say(EU,'They call people like me those who fear God. I listen to the Law and the Prophets, from the place nearest the door.')}},
-        {q:'Until the road, then.',bye:1}])}
-    if(inFord())return F.crossed?say(EU,'I crossed that river on my own feet. I shall be telling it to my grandchildren.')
-      :say(EU,F.lineUp?'A line, from post to post. I can hold a line. Tell me when.':'I have crossed here a dozen times, always with a rope under my hand. Without one I would not put a foot in it.');
-    if(G.room==='synp')return say(EU,'This is my place, by the door. No one sent me to it: I chose it myself, years ago. Go further in and sit down, Paul.');
-    if(inOut())return F.cheered?say(EU,'Go in peace. We have everything you brought.'):comfort();
-    if(week())return F.eum?say(EU,'The fullers are coming, and the dyers, and my own brother. I have never looked forward to a Sabbath so much.'):greek();
+        {q:'what_is_antioch_like',a:async()=>{await say(EU,'high_and_cold_at_night');await say(EU,'we_belong_to_the_province')}},
+        {q:'are_there_jews_in_antioch',a:async()=>{await say(EU,'many_said');await say(EU,'they_call_people_like_me')}},
+        {q:'until_the_road_then',bye:1}])}
+    if(inFord())return F.crossed?say(EU,'i_crossed_that_river_on_my_own')
+      :say(EU,F.lineUp?'line_from_post_to_post':'i_have_crossed_here_a_dozen');
+    if(G.room==='synp')return say(EU,'this_is_my_place_by_the_door');
+    if(inOut())return F.cheered?say(EU,'go_in_peace'):comfort();
+    if(week())return F.eum?say(EU,'fullers_are_coming_and_the_dyers'):greek();
     return talkTree([
-      {q:'Is this your stall?',a:()=>say(EU,'And my father\'s before me. Fleeces from the plateau, bales for the coast, and a little dyed cloth for those who can pay.')},
-      {q:'Where is the synagogue?',a:()=>say(EU,'The house of dressed stone, with the two steps. Tomorrow is the Sabbath. You will find me by the door.')},
-      {q:'Peace to you, Eumenes.',bye:1}])},
-  as:{barnabas:{look:()=>say(BN,'Eumenes. A man who has listened for years, and has not yet been told that it was meant for him.'),
-    talk:()=>say(EU,inOut()?(F.cheered?'Go in peace, Barnabas.':'Barnabas. What becomes of us now? ...No. Let Paul answer me. It was his word that I heard first.')
-      :week()&&!F.eum?'It is Paul I must ask, Barnabas. It was something he said on the Sabbath.':'Peace to you, Barnabas. You carried that rope across like a man half your age.'),
-    show:{staff5:'The staff that crossed the river. I shall remember it.','*':'I deal in wool, friend. That is beyond my judging.'}}}};
+      {q:'is_this_your_stall',a:()=>say(EU,'my_fathers_before_me')},
+      {q:'where_is_the_synagogue',a:()=>say(EU,'house_of_dressed_stone')},
+      {q:'peace_to_you_eumenes',bye:1}])},
+  as:{barnabas:{look:()=>say(BN,'eumenes_a'),
+    talk:()=>say(EU,inOut()?(F.cheered?'go_in_peace_barnabas':'barnabas_what')
+      :week()&&!F.eum?'it_is_paul_i_must_ask_barnabas':'peace_to_you_barnabas'),
+    show:{staff5:'staff_that_crossed_the_river','*':'i_deal_in_wool_friend'}}}};
 const BN5={name:'Barnabas',actor:BN,
-  look:()=>say(P,inPerga()?(F.shod?'Barnabas, shod again, and ready for the mountain.':'Barnabas. He is favoring his left foot: the strap of that sandal has parted.')
-    :inFord()?(F.lineUp&&!F.crossed?'Barnabas, on the far bank, wringing the river out of his robe. He is laughing.':'Barnabas. He is measuring that river with his eyes, and his staff with his hand.')
-    :inOut()?'Barnabas. Thrown out of a city, and he looks like a man coming home from a feast.':'Barnabas. He has walked every step of this road beside me, and never once asked to walk in front.'),
+  look:()=>say(P,inPerga()?(F.shod?'barnabas_shod_again_and_ready':'barnabas_he_is')
+    :inFord()?(F.lineUp&&!F.crossed?'barnabas_on_the_far_bank':'barnabas_he_is_measuring')
+    :inOut()?'barnabas_thrown':'barnabas_he_has'),
   give:mendSandal,
-  show:{thong:'Ox-hide. My cousin thinks of everything. He always did.',roof:'Our roof. I have grown fond of it.',line:'The rope out of our roof? Then you mean to hang it somewhere else.',
-    bread:()=>say(BN,F.bread?'You gave him his share. I saw you, Paul. Thank you.':'Bread and figs for three. For two, now.'),awl:'Your awl. I have never known you a day without it.',thread:'Good thread. It has held a great deal together, since Antioch.',
-    knife:'Put it to work, brother. I will hold whatever needs holding.',tablets:'Read me something from them when we stop for the night.','*':'Keep it, brother. You will find a use for it.'},
-  ask:{road:'He is right, Paul. I have heard the same in every harbor: the Taurus is no road for two men alone.',
-    sandal:'It parted on the last mile into Perga. Cyprus is a long island. Have you anything to mend it with?',
-    mark:'He is my cousin, Paul. I will not stop hoping for him. Let us leave it there, you and I.',
-    rope:'I am no hand with a rope. But I have a staff, and long legs, if those are any use to you.',
-    sabbath:'As in any synagogue. We take a seat, and wait to be asked. They will see that we are strangers.',
-    again:'They asked, and they meant it. The people of the nations too. Did you see their faces at the door?'},
+  show:{thong:'ox_hide',roof:'our_roof',line:'the_rope_out_of_our_roof',
+    bread:()=>say(BN,F.bread?'you_gave_him_his_share':'bread_and_figs_for_three'),awl:'your_awl',thread:'good_thread_it',
+    knife:'put_it_to_work_brother_said',tablets:'read_me_something_from_them_said','*':'keep_it_brother_said'},
+  ask:{road:'he_is_right_paul',
+    sandal:'it_parted_on_the_last_mile',
+    mark:'he_is_my_cousin_paul',
+    rope:'i_am_no_hand_with_a_rope',
+    sabbath:'as_in_any_synagogue',
+    again:'they_asked_and_they_meant_it'},
   talk:()=>inPerga()?talkTree([
-      {q:'What do you know of this road?',a:async()=>{await say(BN,'Only what every sailor says of it: that the mountains are full of robbers, and the rivers come down like walls.');await say(BN,'And that beyond them lies a high country full of cities.')}},
-      {q:'What do we still need?',a:()=>say(BN,!F.metPap?'A word with someone who knows the road. That drover, by his beasts.':!F.markTold?'A word with John Mark. He has not been himself since Paphos.':!F.shod?'A sandal that will stay on my foot.':'Nothing. I am ready when you are.')},
-      {q:'How is your foot?',once:1,a:()=>say(BN,F.shod?'Better shod than it has been since Salamis.':'The foot is sound. It is the sandal that has had enough of me.')},
-      {q:'Let us get on.',bye:1}])
+      {q:'what_do_you_know_of_this_road',a:async()=>{await say(BN,'only_what_every_sailor');await say(BN,'that_beyond_them_lies_a_high')}},
+      {q:'what_do_we_still_need',a:()=>say(BN,!F.metPap?'word_with_someone_who_knows_the_road':!F.markTold?'word_with_john_mark':!F.shod?'sandal_that_will_stay_on_my_foot':'nothing_i')},
+      {q:'how_is_your_foot',once:1,a:()=>say(BN,F.shod?'better_shod_than_it_has':'foot_is_sound')},
+      {q:'let_us_get_on',bye:1}])
     :inFord()?talkTree([
-      {q:'What do you make of the river?',a:()=>say(BN,'It is cold, it is fast, and it is not as deep as it looks. A man with a third leg might stand in it.')},
-      {q:'And of those rocks?',a:()=>say(BN,'I make of them that we should be over this ford before dark.')},
-      {q:'Stand ready, brother.',bye:1}])
+      {q:'what_do_you_make_of_the_river',a:()=>say(BN,'it_is_cold_it_is_fast_and_it')},
+      {q:'of_those_rocks',a:()=>say(BN,'i_make_of_them_that_we')},
+      {q:'stand_ready_brother',bye:1}])
     :inOut()?talkTree([
-      {q:'Are you sorry we came?',a:()=>say(BN,'Sorry? Look at them, Paul. When we came over that pass, not one of them knew our Lord.')},
-      {q:'Then let us finish here.',bye:1}])
+      {q:'are_you_sorry_we_came',a:()=>say(BN,'sorry_said')},
+      {q:'let_us_finish_here',bye:1}])
     :talkTree([
-      {q:'What do you make of this city?',a:()=>say(BN,F.spoke1?'It listens. I have not seen a city listen like this since Antioch in Syria.':'It is full of people who have never heard. That is all I need to know of a city.')},
-      {q:'How do I look to you?',once:1,a:async()=>{await say(BN,'Like a man who waded a river and then climbed a mountain in a wet cloak. You should rest, Paul.');await say(P,'I will rest. On the Sabbath, on a bench, until I am asked to stand.')}},
-      {q:'Stay close, brother.',bye:1}])};
+      {q:'what_do_you_make_of_this_city',a:()=>say(BN,F.spoke1?'it_listens':'it_is_full_of_people_who')},
+      {q:'how_do_i_look_to_you',once:1,a:async()=>{await say(BN,'like_a_man_who_waded_a_river');await say(P,'i_will_rest')}},
+      {q:'stay_close_brother',bye:1}])};
 ROOMS.perga={space:0.6,walk:[16,464,110,138],mood:'hope',amb:{crickets:.5,birds:.4,wind:.2,hooves:.5},hs:[
-  {name:'mountains',x:120,y:6,w:330,h:40,wx:300,look:['The Taurus. From here it stands like a wall across the whole of the north.','I look up toward the mountains and ask where my help will come from. (Psalm 121:1)']},
-  {name:'city wall',x:0,y:18,w:122,h:30,wx:76,look:'The wall of Perga, a prominent city of Pamphylia. We did not stay to see more of it than this.'},
-  {name:'north gate of Perga',x:26,y:50,w:44,h:54,wx:48,wy:112,look:'The north gate of Perga. Behind it lie the city, and the way back down to the coast.',
-    use:'Our road lies the other way: north, and up.',open:'Our road lies the other way: north, and up.'},
-  {name:'plain',x:124,y:66,w:136,h:24,wx:190,look:'Orchards and fields, and the heat lying on them like a lid. This coast is a hot country.'},
-  {name:'watering trough',x:194,y:70,w:60,h:36,wx:224,wy:113,look:'A stone trough, fed from a spring. Every beast bound for the mountains drinks here first.',
-    use:'I drink, and wash the dust of the coast from my face. The water is cold. It has come down from up there.',pickup:'It is a trough. It stays where it is.'},
-  {name:'pack donkeys',x:280,y:74,w:128,h:30,wx:330,wy:114,look:['Papias\'s train, tethered along the wall: salt fish in the panniers, oil in the skins.','They have climbed that road more often than any man here.'],pickup:'They are the drover\'s, and every one of them is loaded. The nearest eyes me as if I meant to add to his load.'},
-  {name:'milestone',x:419,y:89,w:11,h:18,wx:410,wy:113,look:'A milestone. From here the road is counted northward, mile after mile, into the mountains.'},
-  {name:'plane tree',x:426,y:24,w:54,h:44,wx:440,wy:116,look:'A plane tree: the last deep shade before the climb.'},
-  {name:'our baggage',x:124,y:96,w:48,h:13,wx:150,wy:114,look:()=>say(P,F.markTold?'Two bed rolls and a bundle. From now on Barnabas and I carry them between us, and count them ourselves.':'The bed rolls, the bundle and the food bag. John Mark has carried more than his share of them, all across Cyprus.'),
-    pickup:()=>say(P,F.markTold?'When we set out. One roll for Barnabas, one for me, and the bundle by turns.':'John Mark has it in hand.')},
-  {name:'road north',x:440,y:70,w:40,h:36,wx:462,wy:118,dir:1,look:'The road north: across the plain, and up into the Taurus.',exit:leave5}]};
+  {name:'mountains',x:120,y:6,w:330,h:40,wx:300,look:['taurus_said','i_look_up_toward_psalm_121_1']},
+  {name:'city_wall',x:0,y:18,w:122,h:30,wx:76,look:'wall_of_perga_a_prominent'},
+  {name:'north_gate_of_perga',x:26,y:50,w:44,h:54,wx:48,wy:112,look:'the_north_gate_of_perga',
+    use:'our_road_lies_the_other',open:'our_road_lies_the_other'},
+  {name:'plain',x:124,y:66,w:136,h:24,wx:190,look:'orchards_and_fields_and_the_heat'},
+  {name:'watering_trough',x:194,y:70,w:60,h:36,wx:224,wy:113,look:'stone_trough_fed_from_a_spring',
+    use:'i_drink_and_wash_the_dust',pickup:'it_is_a_trough'},
+  {name:'pack_donkeys',x:280,y:74,w:128,h:30,wx:330,wy:114,look:['papiass_train_tethered','they_have_climbed_that_road'],pickup:'they_are_the_drovers_and_every'},
+  {name:'milestone',x:419,y:89,w:11,h:18,wx:410,wy:113,look:'a_milestone'},
+  {name:'plane_tree',x:426,y:24,w:54,h:44,wx:440,wy:116,look:'plane_tree_the_last_deep'},
+  {name:'our_baggage',x:124,y:96,w:48,h:13,wx:150,wy:114,look:()=>say(P,F.markTold?'two_bed_rolls_and_a_bundle':'bed_rolls_the_bundle_and_the_food'),
+    pickup:()=>say(P,F.markTold?'when_we_set_out_one':'john_mark_has_it_in_hand_said')},
+  {name:'road_north',x:440,y:70,w:40,h:36,wx:462,wy:118,dir:1,look:'road_north_across_the_plain',exit:leave5}]};
 /* ---------- The ford ---------- */
 async function fordIntro(){
-  await narr('On the fourth day the road came down to a river.',{dur:3600});
-  await say(PA,'Hold the beasts! ...Look at that. The guide rope has parted.');
-  await say(PA,'It rained in the mountains, and the river came down in the night. There hangs the near half, on its post. The far half is trailing in the water, over there.');
-  await say(EU,'Then we wait for the river to fall?',{to:PA});
-  await say(PA,'Two days. Perhaps three. And I do not like these rocks by night: men watch this ford.');
-  await say(P,'A parted rope, a river, and two posts. This is a tentmaker\'s trouble before it is anyone else\'s.',TH)}
+  await narr('on_the_fourth_day_the_road',{dur:3600});
+  await say(PA,'hold_the_beasts');
+  await say(PA,'it_rained_in_the_mountains');
+  await say(EU,'we_wait_for_the_river_to_fall',{to:PA});
+  await say(PA,'two_days');
+  await say(P,'parted_rope_a_river_and_two_posts',TH)}
 /* wade: Barnabas carries the end of the rope across on his staff, and Paul holds the line from the near post. */
 async function wade(){
-  if(F.lineUp)return say(BN,'The line is up, and I am on the right side of it.');
-  if(!F.spliced)return say(BN,'With my staff I might stand in that water. But stand to do what? There is no rope long enough to carry over.');
-  if(!invOf(BN).includes('staff5'))return say(BN,'My staff first, Paul. Without a third leg I would not stand a moment in that water.');
-  await say(BN,'My staff for a third leg, the rope round my waist, and you on this bank to hold me if I go down. Pay it out slowly, Paul.');
+  if(F.lineUp)return say(BN,'line_is_up_and_i_am_on_the_right');
+  if(!F.spliced)return say(BN,'with_my_staff_i_might_stand');
+  if(!invOf(BN).includes('staff5'))return say(BN,'my_staff_first_paul');
+  await say(BN,'my_staff_for_a_third_leg');
   await Promise.all([walk(P,172,120),walk(BN,186,125)]);P.dir=1;BN.free=true;BN.speed=22;const W=G.wade={x:BN.x,y:BN.y},tick=setInterval(()=>{W.x=BN.x;W.y=BN.y},40);
   SFX.splash();await walk(BN,236,125);SFX.splash();
-  await say(BN,'It pulls like an ox!');
-  await say(P,'I have you. Lean on the staff, and take the next step.');await say(P,quote('isa43'));
+  await say(BN,'it_pulls_like_an_ox');
+  await say(P,'i_have_you');await say(P,quote('isa43'));
   SFX.splash();await walk(BN,288,124);clearInterval(tick);BN.speed=0;BN.free=false;await walk(BN,300,122);BN.dir=-1;
   G.wade=null;F.lineUp=1;SFX.good();
-  await say(BN,'Twice round the post, and hauled tight. It is fast, Paul!');
-  await say(P,'If either falls, the other can lift his companion up. (Ecclesiastes 4:10)');
-  await say(P,'Now the train can cross, a hand on the line. I should tell the drover.',TH)}
+  await say(BN,'twice_round_the_post_and_hauled_tight');
+  await say(P,'if_either_falls_ecclesiastes_4_10');
+  await say(P,'now_the_train_can_cross',TH)}
 async function crossAll(){playAs(P);
-  await say(PA,'A line! I thought I would be counting my losses by nightfall. One beast at a time, and every man a hand on the rope!');
+  await say(PA,'a_line');
   await fade(1,500);F.crossed=1;place5('ford');place(P,'ford',344,124,1);G.cam=clamp(P.x-160,0,ART.ford.w-VW);SFX.splash();
-  await narr('One by one they crossed: the donkeys, the drover, the wool merchant, and last of all the tentmaker.',{dur:6500});await fade(0,500);
-  await say(EU,'You took your own roof to pieces for a rope. For people you met four days ago.');
-  await say(P,'A roof can be sewn again. And you held the line as well as any of us, Eumenes.');
-  await say(PA,'Leave it on the posts. The next train through will bless whoever hung it. Now: the pass, before the light goes!')}
-const overPass=()=>F.crossed?toAntioch():say(PC(),PC()===P?'Not without the others. There are thirty beasts and two men on the wrong side of that river.':'Not without Paul, and not without the train. I will wait by the post.');
-const river=async it=>{if(it==='roof')return say(P,'A roof will not get us over. But what I sewed into its edge might.');
-  if(it==='staff5')return say(P,'The staff is cut to his hand, and he has the longer legs. This part is for Barnabas.');
-  if(it==='line')return say(P,F.spliced?'It is joined already.':'Thrown from here it would only go downstream. It must be joined to the rope on the post, and then carried over.');return false};
+  await narr('one_by_one_they_crossed',{dur:6500});await fade(0,500);
+  await say(EU,'you_took_your_own_roof');
+  await say(P,'roof_can_be_sewn_again');
+  await say(PA,'leave_it_on_the_posts')}
+const overPass=()=>F.crossed?toAntioch():say(PC(),PC()===P?'not_without_the_others':'not_without_paul_and_not');
+const river=async it=>{if(it==='roof')return say(P,'roof_will_not_get_us_over_but_what');
+  if(it==='staff5')return say(P,'staff_is_cut_to_his_hand');
+  if(it==='line')return say(P,F.spliced?'it_is_joined_already':'thrown_from_here_it_would');return false};
 /* the hidden treasure (index.html, treasure): Paul calls across the gorge, and the cliff gives the name back three times, each fainter and later */
 function echo5(){if(!AU.ctx)return;const t0=now()+.05;for(let k=1;k<=3;k++)[[0,392],[.17,330],[.34,294]].forEach(([o,f])=>tone({f:f*(1-k*.004),t:t0+k*.62+o,d:.15,type:'triangle',v:.07*Math.pow(.5,k)}))}
-async function call5(){await say(P,'Barnabas!');echo5();await wait(2300);
-  await say(BN,F.lineUp&&!F.crossed?'I can hear you, Paul. So can the mountain: it answered three times.':'I am right here, Paul. So is the mountain, it seems: it answered three times.');
-  await say(PA,'Every man up in those rocks has heard it too, now.');await say(P,'Then I will keep my voice for Antioch.');treasure()}
+async function call5(){await say(P,'barnabas_ex');echo5();await wait(2300);
+  await say(BN,F.lineUp&&!F.crossed?'i_can_hear_you_paul':'i_am_right_here_paul');
+  await say(PA,'every_man_up_in_those_rocks');await say(P,'i_will_keep_my_voice_for_antioch');treasure()}
 ROOMS.ford={space:0.7,get walk(){return PC().x>240?[300,464,112,138]:[16,186,112,138]},mood:'tense',amb:{fountain:.9,waves:.6,wind:.45,birds:.15},enter:fordIntro,hs:[
-  {name:'pass',x:404,y:36,w:76,h:40,wx:440,look:'The road climbs on beyond the ford, and over the saddle between those two shoulders of rock.'},
-  {name:'rocks above the road',x:330,y:0,w:150,h:34,wx:400,look:['Something moved, up among those rocks. A goat, perhaps.','Perhaps not. Papias has not taken his eyes off them.']},
-  {name:'cliff',x:150,y:10,w:190,h:36,wx:176,look:'The river does not run down to this place. It bursts out at the foot of that cliff, full grown, as if the mountain had been struck.',talk:call5},
-  {name:'pines',x:0,y:8,w:150,h:80,wx:90,look:'Mountain pines, rooted in cracks a hand could not enter. They hold on. So shall we.'},
-  {name:'river',x:200,y:48,w:78,h:96,wx:166,wy:126,dir:1,look:['Cold water, swollen with rain. It is not deep here: a shelf of stones lies just under the surface.','But it runs like a mill race, and below the ford the gorge drops away.'],
-    use:()=>F.lineUp&&!F.crossed?crossAll():say(P,F.crossed?'I have crossed it once. That will do.'
-      :F.spliced?'I have a rope that will reach now. But the man who carries it over needs a third leg against that current, and I have none.':'Alone, and with no line? It would have my feet from under me in three steps.'),
-    useWith:river,pickup:'I could sooner pick up the road.'},
-  {name:'near post',x:186,y:94,w:14,h:18,wx:172,wy:120,dir:1,look:()=>say(P,F.lineUp?'The line is fast at this end, and Barnabas has it fast at the other.':F.spliced?'The rope is whole again, and coiled at the foot of the post. It only needs carrying over.'
-      :'An oak post set in the rock, with half a rope on it. The end is frayed like an old brush: it wore through on a stone.'),
-    pickup:'It is made fast here, and here it should stay.',use:()=>say(P,F.spliced?'It is spliced. Now it must cross the river.':'Half a rope. It will not reach, whatever I do with my hands alone.'),
-    useWith:async it=>{if(F.spliced)return say(P,'The splice is made. I will not touch it again.');
-      if(it==='line')return splice();if(it==='roof')return say(P,'Not the cloth: the rope in its edge. I must have it out first.');
-      if(it==='awl'||it==='thread')return say(P,'The awl will open the strands for a splice. But I have nothing to splice in: the rope is short by half a river.');
-      if(it==='knife')return say(P,'Trim the frayed end, yes. And then it is shorter still.');return false}},
-  {name:'far post',x:274,y:94,w:14,h:18,wx:166,wy:126,dir:1,look:()=>say(P,F.lineUp?'Barnabas made it fast: twice round the post, and hauled tight.':'The other post, and the other half of the rope, trailing in the water. It is out of reach by the width of a river.')},
-  {name:'pack donkeys',x:30,y:76,w:112,h:32,wx:110,wy:116,vis:()=>!F.crossed,look:'Loaded to the ears with salt fish and oil. One slip in that water, and beast and load go down the gorge together.',pickup:'They are the drover\'s.'},
-  {name:'pack donkeys',x:358,y:76,w:112,h:32,wx:380,wy:116,vis:()=>!!F.crossed,look:'Every beast is over, and every load is dry. Papias has counted them three times.',pickup:'They are the drover\'s.'},
-  {name:'road to the pass',x:452,y:84,w:28,h:28,wx:462,wy:118,dir:1,look:'The road on, up to the pass.',exit:overPass}]};
+  {name:'pass',x:404,y:36,w:76,h:40,wx:440,look:'road_climbs_on_beyond_the_ford'},
+  {name:'rocks_above_the_road',x:330,y:0,w:150,h:34,wx:400,look:['something_moved_up_among_those_rocks','perhaps_not']},
+  {name:'cliff',x:150,y:10,w:190,h:36,wx:176,look:'river_does_not_run_down',talk:call5},
+  {name:'pines',x:0,y:8,w:150,h:80,wx:90,look:'mountain_pines_rooted_in_cracks'},
+  {name:'river',x:200,y:48,w:78,h:96,wx:166,wy:126,dir:1,look:['cold_water_swollen_with_rain','it_runs_like_a_mill_race'],
+    use:()=>F.lineUp&&!F.crossed?crossAll():say(P,F.crossed?'i_have_crossed_it_once'
+      :F.spliced?'i_have_a_rope_that_will':'alone_and_with_no_line'),
+    useWith:river,pickup:'i_could_sooner_pick_up_the_road'},
+  {name:'near_post',x:186,y:94,w:14,h:18,wx:172,wy:120,dir:1,look:()=>say(P,F.lineUp?'line_is_fast_at_this_end':F.spliced?'rope_is_whole_again_and_coiled'
+      :'oak_post_set_in_the_rock'),
+    pickup:'it_is_made_fast_here_and_here',use:()=>say(P,F.spliced?'it_is_spliced':'half_a_rope'),
+    useWith:async it=>{if(F.spliced)return say(P,'splice_is_made');
+      if(it==='line')return splice();if(it==='roof')return say(P,'not_the_cloth_the_rope');
+      if(it==='awl'||it==='thread')return say(P,'awl_will_open_the_strands');
+      if(it==='knife')return say(P,'trim_the_frayed_end_yes');return false}},
+  {name:'far_post',x:274,y:94,w:14,h:18,wx:166,wy:126,dir:1,look:()=>say(P,F.lineUp?'barnabas_made_it_fast_twice':'other_post_and_the_other')},
+  {name:'pack_donkeys',x:30,y:76,w:112,h:32,wx:110,wy:116,vis:()=>!F.crossed,look:'loaded_to_the_ears_with_salt',pickup:'they_are_the_drovers'},
+  {name:'pack_donkeys',x:358,y:76,w:112,h:32,wx:380,wy:116,vis:()=>!!F.crossed,look:'every_beast_is_over_and_every',pickup:'they_are_the_drovers'},
+  {name:'road_to_the_pass',x:452,y:84,w:28,h:28,wx:462,wy:118,dir:1,look:'road_on_up_to_the_pass',exit:overPass}]};
 /* ---------- Antioch in Pisidia ---------- */
 async function toAntioch(){playAs(P);await fade(1,600);AU.mood='hope';
-  await narr('Beyond the pass the road came down onto a high plain, some 1,100 meters above the sea.',{dur:6500});
-  await narr('The two of them traveled on from Perga and reached Antioch in Pisidia. (Acts 13:14)',{dur:6000});
+  await narr('beyond_the_pass_the_road',{dur:6500});
+  await narr('two_of_them_traveled_acts_13_14',{dur:6000});
   for(const id of['bread','roof','line'])dropAll(id);enterRoom('pisidia',...ENT.pisidia);place5('pisidia');codeBtn();await fade(0,600);
-  await narr('Antioch in Pisidia, a city of the province of Galatia.',{dur:4200});
-  await say(EU,'Antioch! My own city. Greeks, Phrygians and Jews in one street, and every one of them speaking Greek.');
-  await say(PA,'And every one of them buying salt fish. Go well, tentmaker. You will find me here in the market.');
-  await say(BN,'Paul, you are shivering.');
-  await say(P,'The river went through me, and the cold of the pass came after it. It will mend.');
-  await say(EU,'Tomorrow is the Sabbath. The synagogue of the Jews is the stone house with the two steps, across the square.');
-  await say(P,'Then tomorrow we go in and take a seat, Barnabas. And wait to be asked.')}
+  await narr('antioch_in_pisidia_a_city',{dur:4200});
+  await say(EU,'antioch_my');
+  await say(PA,'every_one_of_them_buying_salt_fish');
+  await say(BN,'paul_you_are_shivering');
+  await say(P,'river_went_through_me_and_the_cold');
+  await say(EU,'tomorrow_is_the_sabbath');
+  await say(P,'tomorrow_we_go_in_and_take')}
 async function synDoor(){const me=PC();
   if(!F.spoke1)return go5('synp',264,122,-1);
-  if(!allThree())return say(me,me===P?'It is not the Sabbath yet. And there are people in this square whose questions I have not answered.':'Not until the Sabbath. And there are people in this square who are still waiting for an answer.');
+  if(!allThree())return say(me,me===P?'it_is_not_the_sabbath_yet':'not_until_the_sabbath');
   return sabbath2()}
 /* think: Paul weighs what to say next. A choice that would not serve his hearers is set aside in thought, and never spoken. */
 async function think(q,opts){let av=opts.slice();
   for(;;){await say(P,q,TH);const o=av[await choose(av.map(o=>o.q))];if(o.ok)return;await say(P,o.no,TH);av=av.filter(x=>x!==o)}}
 /* passages: the choices for one point of the talk, from the passages named; ok lists those that carry the point */
 const passages=(ks,ok)=>ks.map(k=>ok.includes(k)?{q:label(k),ok:1}:{q:label(k),no:NOT[k]});
-const NOT={isa55:'The loyal love promised to David. Yes: but that comes next. First, who he is.',ps16:'Not abandoned to the Grave. Yes: but that comes next. First, who he is.',
-  hab1:'A warning comes last, if it comes at all.',isa56:'That is for a man who thinks he has no part in this. It is not for the whole house.',isa49:'A light of nations. Not yet: first they must hear what was promised to Israel.'};
+const NOT={isa55:'loyal_love_promised_to_david',ps16:'not_abandoned_to_the_grave_said',
+  hab1:'warning_comes_last_if_it',isa56:'that_is_for_a_man_who_thinks',isa49:'light_of_nations_not'};
 /* The first Sabbath (Acts 13:14-43). They take a seat and wait to be asked; then Paul chooses whom he addresses, and the passages he quotes. */
 async function sabbath1(){playAs(P);
   await Promise.all([walk(P,258,126),walk(BN,282,128)]);P.dir=-1;BN.dir=-1;
-  await narr('When the Sabbath came they went to the synagogue, and there they sat down. (Acts 13:14)',{dur:6000});
+  await narr('when_the_sabbath_acts_13_14',{dur:6000});
   await walk(HA,166,110);HA.dir=1;
-  await narr('The Law and the Prophets were read aloud. Then the presiding officers of the synagogue had a message brought to them. (Acts 13:15)',{dur:7500});
+  await narr('law_and_the_prophets_were_read_aloud_acts_13_15',{dur:7500});
   await walk(HA,92,114);HA.dir=1;
-  await say(HA,'Brothers: if there is a word of encouragement in you for the people, let us hear it. (Acts 13:15)');
+  await say(HA,'brothers_if_there_acts_13_15');
   await walk(P,166,111);P.dir=1;
-  await narr('Paul rose, and with a movement of his hand he began: (Acts 13:16)',{dur:4500});
-  await think('Israelites, and among them Greeks who fear God. One of them has not come a step further in than the door. To whom do I speak?',[
-    {q:'Listen, Israelites.',no:'And leave those who fear God to overhear? They came to listen too.'},
-    {q:'Listen, men of Antioch.',no:'They did not come here as citizens of a city. They came to hear the Law and the Prophets.'},
-    {q:'Listen, Israelites, and listen, all the rest of you who fear God.',ok:1}]);
-  await say(P,'Listen, Israelites, and listen, all the rest of you who fear God. (Acts 13:16)');
-  await say(EU,'All the rest who fear God. He means us.',{to:null});
-  await say(P,'The God of Israel, this people, made our forefathers his choice. With his arm raised high he led them out of Egypt, and he gave them their land to inherit. (Acts 13:17-19)');
-  await say(P,'He gave them judges, and then kings. God found in David a man agreeable to his heart, one who would do all that God wanted, and after Saul he made this son of Jesse king. (Acts 13:20-22)');
-  await say(P,"And God has done what he promised: from that man's descendants he has brought Israel a savior, Jesus. (Acts 13:23)");
-  await say(JO,'A savior. From the house of David!',{to:null});
-  await say(P,'Jerusalem and its rulers did not see who he was. They found no ground for his death, yet they pressed Pilate to have him executed, and so fulfilled the Prophets. (Acts 13:27, 28)');
-  await say(P,'He was taken from the stake and buried in a tomb once all that was written of him had been done. (Acts 13:29)');
-  await say(P,'But God raised him from the dead, and the men who came with him from Galilee to Jerusalem are now his witnesses before the people: for many days they saw him alive. (Acts 13:30, 31)');
-  await think('Raised up: and so the promise to the forefathers is kept. Where is it written of the Son?',passages(TALK,['ps2']));
-  await say(P,'By raising Jesus, God has kept that promise in full, and kept it for us, their children. The second psalm says it: there God calls him his son, and says that on this day he has become his father. (Acts 13:33)');
-  await think('Raised, and never to go back to decay. Which promise says that it will hold?',passages(TALK.filter(k=>k!=='ps2'),['isa55','ps16']));
-  await say(P,'God promised you the loyal love pledged to David, a love you can rely on. In that promise he was already saying that the one he raised would never go back to decay. (Acts 13:34)');
-  await say(P,'Another psalm says the same: God will not let the one who is loyal to him see decay. (Acts 13:35)');
-  await say(P,'David died, and his body did decay. The one God raised up did not decay. (Acts 13:36, 37)');
-  await say(P,'Know this, brothers: the forgiveness of sins that is now proclaimed to you comes through Jesus. (Acts 13:38)');
-  await say(P,'The Law of Moses could not clear you of guilt in everything. But through Jesus, God declares everyone who believes guiltless of all of it. (Acts 13:39)');
-  await say(EU,'Everyone who believes...',{to:null});
-  await think('They have heard the good news. And the Prophets warned those who would not believe it.',passages(['hab1','isa56','isa49'],['hab1']));
-  await say(P,'So take care that the saying in the Prophets does not come true of you: (Acts 13:40)');
-  await say(P,'You scorners! I am at work in your own days, and you will not believe what I do, even when it is told you point by point. So look on, be amazed, and perish. (Acts 13:41)');
+  await narr('paul_rose_and_with_a_movement_acts_13_16',{dur:4500});
+  await think('israelites_and_among_them',[
+    {q:'listen_israelites',no:'leave_those_who_fear_god_to_overhear'},
+    {q:'listen_men_of_antioch',no:'they_did_not_come_here'},
+    {q:'listen_israelites_and_listen',ok:1}]);
+  await say(P,'listen_israelites_and_listen_acts_13_16');
+  await say(EU,'all_the_rest_who_fear_god',{to:null});
+  await say(P,'god_of_israel_acts_13_17_19');
+  await say(P,'he_gave_them_judges_and_then_kings_acts_13_20_22');
+  await say(P,'god_has_done_acts_13_23');
+  await say(JO,'a_savior',{to:null});
+  await say(P,'jerusalem_and_its_rulers_acts_13_27_28');
+  await say(P,'he_was_taken_acts_13_29');
+  await say(P,'god_raised_him_acts_13_30_31');
+  await think('raised_up_and_so_the_promise',passages(TALK,['ps2']));
+  await say(P,'by_raising_jesus_acts_13_33');
+  await think('raised_and_never_to_go',passages(TALK.filter(k=>k!=='ps2'),['isa55','ps16']));
+  await say(P,'god_promised_you_acts_13_34');
+  await say(P,'another_psalm_says_acts_13_35');
+  await say(P,'david_died_and_his_body_did_decay_acts_13_36_37');
+  await say(P,'know_this_brothers_acts_13_38');
+  await say(P,'law_of_moses_acts_13_39');
+  await say(EU,'everyone_who_believes',{to:null});
+  await think('they_have_heard_the_good_news',passages(['hab1','isa56','isa49'],['hab1']));
+  await say(P,'take_care_that_the_saying_acts_13_40');
+  await say(P,'you_scorners_acts_13_41');
   await walk(P,258,126);P.dir=-1;
-  await narr('As the two went out, the people begged them to speak about all this on the Sabbath after. (Acts 13:42)',{dur:8000});
-  await say(HA,'You have given this house a great deal to weigh, Paul of Tarsus. Come again on the next Sabbath, and we will hear the rest.');
-  await say(JO,'And until then you lodge with me, both of you. My house is on the square, and there is room at my door for a tentmaker\'s bench.');
-  await say(EU,'Paul. May a man who keeps by the door ask you something? ...Not here. I will come to you in the week.');
-  await narr('Many Jews went with Paul and Barnabas, and so did many proselytes who worshipped God. (Acts 13:43)',{dur:7000});
+  await narr('as_the_two_went_acts_13_42',{dur:8000});
+  await say(HA,'you_have_given_this_house');
+  await say(JO,'until_then_you_lodge_with_me');
+  await say(EU,'paul_may');
+  await narr('many_jews_went_acts_13_43',{dur:7000});
   F.spoke1=1;SFX.good();await fade(1,600);enterRoom('pisidia',...ENT.pisidia);place5('pisidia');codeBtn();await fade(0,600);
-  await narr('All that week Paul worked at his trade by Joel\'s door, and the questions came to him there.',{dur:6500});
-  await say(BN,'Three days, Paul, and you have not sewn one seam without somebody standing over you with a question.');
-  await say(P,'Eumenes at his stall, Papias among his panniers, and Joel at his own door with a troubled face. Each of them is waiting for something.',TH)}
-const weekDone=async()=>{if(allThree()){await say(BN,'It is the day before the Sabbath, Paul. I do not think there is a house in Antioch that has not heard.');await say(P,'Then tomorrow: the synagogue again.',TH)}};
+  await narr('all_that_week_paul_worked',{dur:6500});
+  await say(BN,'three_days_paul_and_you');
+  await say(P,'eumenes_at_his_stall_papias',TH)}
+const weekDone=async()=>{if(allThree()){await say(BN,'it_is_the_day_before_the_sabbath');await say(P,'tomorrow_the_synagogue_again',TH)}};
 /* The week between the Sabbaths: three hearers, and each is answered in the way he can follow. */
 async function greek(){
-  await say(EU,'Paul. On the Sabbath you said: everyone who believes. I have said it over to myself ever since, so as not to lose it.');
-  await say(EU,'For eleven years I have kept to the place by that door. No one put me there, Paul. I put myself there.');
-  await say(EU,'I keep the Sabbath, and I give to the poor of the synagogue. And still I am a Greek, and every Sabbath I tell myself that this people is not mine.');
-  await quiz(EU,'So tell me plainly. Is this good news for a Greek?',[
-    {q:'You heard me rightly. I said everyone, and I meant it.',r:['A word in a talk, Paul. I have heard "everyone" before, and gone back to my place by the door.']},
-    {q:'It was promised to Israel, and it had to come to Israel first.',r:['So I have always been told. First to them. I am asking what comes after "first".']},
-    {q:'Let me show you what is written about the foreigner.',ok:1,
-      p:['Do not take my word for it, Eumenes. Take what is written. Isaiah has a word for a man in your place:',quote('isa56'),
-        'And what I said on the Sabbath stands: through him, God declares everyone who believes guiltless. (Acts 13:39)'],
-      r:['Let him not say it... And I have said exactly that, Paul. Every Sabbath, for eleven years.',
-        'My brother must hear this. And the fullers, and every man in the dyers\' street. On the Sabbath I shall not come alone.']}]);
+  await say(EU,'paul_on');
+  await say(EU,'for_eleven_years_i_have');
+  await say(EU,'i_keep_the_sabbath_and_i');
+  await quiz(EU,'tell_me_plainly',[
+    {q:'you_heard_me_rightly',r:['word_in_a_talk_paul']},
+    {q:'it_was_promised_to_israel',r:['i_have_always_been_told']},
+    {q:'let_me_show_you_what_is',ok:1,
+      p:['do_not_take_my_word_for_it',quote('isa56'),
+        'what_i_said_on_the_sabbath_acts_13_39'],
+      r:['let_him_not_say_it',
+        'my_brother_must_hear_this_and_the_fullers']}]);
   F.eum=1;SFX.good();return weekDone()}
 async function drover(){
-  await say(PA,'Tentmaker! Between the stalls they talk of nothing but you. A savior, they say, and a man raised from the dead.');
-  await say(PA,'I am no Jew, and no God-fearer either. I have never set foot in that house.');
-  await quiz(PA,'So what is it to a man who walks behind donkeys?',[
-    {q:'Come to the synagogue on the Sabbath, and hear.',r:['Into the Jews\' house of prayer? I would not know where to put my feet. Give me a reason first.']},
-    {q:'It is all written in the Prophets of Israel.',r:['I cannot read, tentmaker. Not Greek, and not whatever your Prophets wrote in. Tell me something I have seen.']},
-    {q:'The God I speak of made the mountains you cross.',ok:1,
-      p:['The God I speak of made the mountains you cross, Papias, and the rivers you ford, and the rain that fills them.',
-        'He has done you good all your life, though you did not know whom to thank. Now he has sent you word of himself.'],
-      r:['The one who made the mountains. On a good crossing I have often wondered whom to thank.',
-        'I will hear the rest of it. And the drovers\' yard shall hear it from me before the Sabbath.']}]);
+  await say(PA,'tentmaker_said');
+  await say(PA,'i_am_no_jew_and_no_god');
+  await quiz(PA,'what_is_it_to_a_man_who',[
+    {q:'come_to_the_synagogue_on_the_sabbath',r:['into_the_jews_house_of_prayer']},
+    {q:'it_is_all_written_in_the_prophets',r:['i_cannot_read_tentmaker']},
+    {q:'god_i_speak_of_made_the_mountains',ok:1,
+      p:['the_god_i_speak_of_made_the_mountains',
+        'he_has_done_you_good_all'],
+      r:['one_who_made_the_mountains',
+        'i_will_hear_the_rest_of_it']}]);
   F.pap=1;SFX.good();return weekDone()}
 async function troubled(){
-  await say(JO,'Barnabas. A word with you, and not with your friend: he has the whole square on his hands.');
-  await say(JO,'Hanan came to my dye shop this morning. He says the house of prayer has talked of nothing but Paul all week, and that it is unseemly.');
-  await say(JO,'He did not say that I must choose. He did not need to. I have sat on that bench since I was a boy.');
-  await ask(BN,JO,'If this goes on, it may cost me my place among my own people. What do I do, Barnabas?',[
-    {q:'Hanan asked us to speak. He may yet be glad of the rest.',r:['He may. And if he is not?']},
-    {q:'I sold a piece of land once for this, and I have never missed it.',r:['A piece of land. I am speaking of my seat among my own people, Barnabas. That is not sold and bought again.']},
-    {q:'What you were given is undeserved kindness. Hold on to it.',ok:1,
-      p:['What you heard on the Sabbath was not Paul\'s gift to you, Joel, and it is not mine. It is the undeserved kindness of God.','Whatever it costs you, it is worth more than a seat. Hold on to God\'s undeserved kindness, Joel. (Acts 13:43)'],
-      r:['Hold on to it. Yes. That I can do: one day, and then the next.','Then my door stays open. My household will be there on the Sabbath, and my neighbors with them.']}]);
+  await say(JO,'barnabas_a_word');
+  await say(JO,'hanan_came_to_my_dye_shop');
+  await say(JO,'he_did_not_say_that_i_must');
+  await ask(BN,JO,'if_this_goes_on_it_may',[
+    {q:'hanan_asked_us_to_speak',r:['he_may']},
+    {q:'i_sold_a_piece_of_land',r:['piece_of_land']},
+    {q:'what_you_were_given_is_undeserved_kindness',ok:1,
+      p:['what_you_heard_on_the_sabbath','whatever_it_costs_acts_13_43'],
+      r:['hold_on_to_it','my_door_stays_open']}]);
   F.joel=1;SFX.good();return weekDone()}
 JO.hs={name:'Joel',actor:JO,
-  look:()=>say(P,G.room==='synp'?'A man of my own people, with dye under his fingernails. He has made room beside him on the bench.':inOut()?'Joel. He has walked out past the boundary of his own city to stand with us.'
-    :F.joel?'Joel, at his open door. Whatever troubled him, he has put it down.':'Joel, our host. Something has been weighing on him since yesterday, and he has not told me what.'),
-  show:{tablets:'May I? ...Isaiah, in your own hand. I should like to copy some of these before you go.',awl:'An honest tool. I have a dyer\'s paddle for mine.','*':'Put it by, brother. My house is yours: you need show me nothing.'},
-  ask:{sabbath:'A visitor takes a seat. If the presiding officers think he has a word for us, they send for him. Sit, and you will see.',
-    mark:'A young man who turned back? Then pray for him. The road has not finished with him yet.',
-    again:()=>say(JO,F.joel?'And I shall be there to hear you, whatever is said of it afterward.':'Yes. The whole house asked it. Hanan asked it himself.')},
-  talk:async()=>{if(G.room==='synp'){await say(JO,'Peace to you, visitors. Joel. I dye wool for half the stalls in the market.');return say(JO,'From the coast, by the dust on you. Sit down: the reading is about to begin.')}
-    if(inOut())return say(JO,F.cheered?'We will go on meeting in my house. There is room, and the door is open.':'I have no words, Paul. Speak to Eumenes: he is taking it harder than any of us.');
-    return F.joel?say(JO,'My door is open, Paul, and it stays open.'):say(JO,'It is good to have you under my roof, Paul. ...It is nothing. Ask Barnabas to come and sit with me a while, when he can.')},
-  as:{barnabas:{look:()=>say(BN,F.joel||!week()?'Joel. A good man, and a glad one.':'Joel. He has the face of a man doing sums that will not come out.'),
-    talk:()=>G.room==='synp'?say(JO,'A Levite! Then you will know every word of the reading. Sit, sit.'):inOut()?say(JO,F.cheered?'Hold on to it, you told me. I am holding on.':'You told me it would cost something, Barnabas. Here is the cost. I do not regret it.')
-      :F.joel?say(JO,'Hold on to it. I have said it to myself all day, Barnabas.'):troubled(),
-    show:{staff5:'The staff that carried a rope across the river? Eumenes has told the whole street.','*':'Put it by, brother. My house is yours.'}}}};
-HA.hs={name:'Hanan',actor:HA,look:()=>say(P,G.room==='synp'?'A presiding officer of the synagogue, with a beard like fleece. He watches his house as a shepherd watches a fold.':'Hanan. He asked us to speak. Now he cannot bear to see who has come to listen.'),
-  show:{tablets:'The Prophets, in wax. Keep them closed until you are asked to open your mouth.','*':'This is a house of reading and prayer, stranger. Put it away.'},
-  ask:{sabbath:'A visitor takes his seat and hears the reading. If he has a word for the people, the presiding officers will send for him.'},
-  talk:async()=>{if(G.room!=='synp')return say(HA,'I have said what I have to say.');
-    await say(HA,'Peace to you, strangers. I am Hanan: I preside in this house. Visitors are welcome to a seat.');
-    await say(P,'Peace to you. We are Jews from abroad: Paul, of Tarsus, and Barnabas, a Levite of Cyprus.');
-    await say(HA,'From abroad. Then perhaps we shall hear something new today. Sit: the reading is about to begin.')},
-  as:{barnabas:{look:'The presiding officer. A careful man. I hope he is also a glad one.',talk:()=>say(HA,'A Levite, they tell me. You do this house honor. Sit by your friend.'),show:{'*':'Put it away, Levite. This is a house of prayer.'}}}};
-AM.hs={name:'Ammia',actor:AM,look:'A woman of standing, by her dress, and no daughter of Israel. Yet she knows when to rise and when to sit.',
-  show:{'*':'A workman\'s things. They have no place in this house.'},
-  ask:{sabbath:'I could not tell you. I come to listen, not to be heard.'},
-  talk:async()=>{await say(AM,'Ammia. My husband sits among the leading men of this city.');await say(AM,'I come here for the reading, and for the quiet. There is little enough of either in Antioch.')},
-  as:{barnabas:{look:'A woman of high standing, and one who fears God. She likes this house as it is.',talk:()=>say(AM,'You are strangers here. I trust you will respect the order of this house.'),show:{'*':'They have no place in this house.'}}}};
+  look:()=>say(P,G.room==='synp'?'man_of_my_own_people_with_dye':inOut()?'joel_said'
+    :F.joel?'joel_at_his_open_door':'joel_our_host'),
+  show:{tablets:'may_i',awl:'honest_tool','*':'put_it_by_brother'},
+  ask:{sabbath:'visitor_takes_a_seat',
+    mark:'young_man_who_turned_back',
+    again:()=>say(JO,F.joel?'i_shall_be_there_to_hear':'yes_the')},
+  talk:async()=>{if(G.room==='synp'){await say(JO,'peace_to_you_visitors');return say(JO,'from_the_coast_by_the_dust')}
+    if(inOut())return say(JO,F.cheered?'we_will_go_on_meeting_in_my_house':'i_have_no_words_paul');
+    return F.joel?say(JO,'my_door_is_open_paul_and_it'):say(JO,'it_is_good_to_have_you')},
+  as:{barnabas:{look:()=>say(BN,F.joel||!week()?'joel_a':'joel_he'),
+    talk:()=>G.room==='synp'?say(JO,'levite'):inOut()?say(JO,F.cheered?'hold_on_to_it_you_told_me':'you_told_me_it_would_cost')
+      :F.joel?say(JO,'hold_on_to_it_said'):troubled(),
+    show:{staff5:'staff_that_carried_a_rope','*':'put_it_by_brother_said'}}}};
+HA.hs={name:'Hanan',actor:HA,look:()=>say(P,G.room==='synp'?'presiding_officer_of_the_synagogue':'hanan_said'),
+  show:{tablets:'prophets_in_wax','*':'this_is_a_house_of_reading'},
+  ask:{sabbath:'visitor_takes_his_seat'},
+  talk:async()=>{if(G.room!=='synp')return say(HA,'i_have_said_what_i_have');
+    await say(HA,'peace_to_you_strangers');
+    await say(P,'peace_to_you_we_are');
+    await say(HA,'from_abroad')},
+  as:{barnabas:{look:'presiding_officer',talk:()=>say(HA,'levite_they_tell_me'),show:{'*':'put_it_away_levite'}}}};
+AM.hs={name:'Ammia',actor:AM,look:'woman_of_standing_by_her_dress',
+  show:{'*':'workmans_things'},
+  ask:{sabbath:'i_could_not_tell_you'},
+  talk:async()=>{await say(AM,'ammia_said');await say(AM,'i_come_here_for_the_reading')},
+  as:{barnabas:{look:'a_woman_of_high_standing',talk:()=>say(AM,'you_are_strangers_here'),show:{'*':'they_have_no_place_in_this_house'}}}};
 ROOMS.pisidia={space:0.8,walk:[16,464,110,138],mood:'hope',amb:{crowd:.5,birds:.3,wind:.3,hammer:.2,hooves:.3},hs:[
-  {name:'mountains',x:60,y:2,w:370,h:20,wx:240,look:'Snow on them, halfway down. And the plain we stand on is already higher than most mountains I have climbed.'},
-  {name:'street to the south gate',x:0,y:36,w:58,h:68,wx:40,wy:113,dir:-1,look:'The street we came in by, from the south gate and the road down to Perga.',
-    use:'Back down to the coast? We have only just climbed up from it.',open:'Back down to the coast? We have only just climbed up from it.'},
-  {name:'wool market',x:58,y:24,w:188,h:18,wx:150,look:'A stoa full of wool: fleeces, bales and dyed cloth. The flocks of the whole plateau are sold under that roof.'},
-  {name:'wool stall',x:96,y:43,w:90,h:63,wx:150,wy:114,look:['Fleeces on the bar, bales against the wall, and lengths of dyed cloth laid out by color.','Sheep\'s wool, not goat hair. It is finer stuff than a tentmaker works in.'],pickup:'It is Eumenes\'s wool, not mine. And hands used to goat hair would only snag wool as fine as this.'},
-  {name:'panniers of salt fish',x:196,y:96,w:32,h:13,wx:210,wy:114,look:'Salt fish from the coast of Pamphylia. I know every mile it has traveled.',pickup:'They are Papias\'s living.'},
-  {name:"tentmaker's bench",x:252,y:86,w:34,h:22,wx:266,wy:113,dir:-1,vis:week,look:['A bench at Joel\'s door, and a length of goat-hair cloth on it. Here I earn our bread, and ask no one in Antioch for anything.','A man can sew and answer questions at the same time. I have had the practice.'],
-    use:'A few more spans of seam. Then back to the questions.',pickup:'It is half a tent, and it is promised.'},
-  {name:"door of Joel's house",x:286,y:61,w:28,h:43,wx:300,wy:113,look:()=>say(P,week()?'Joel\'s door. We sleep under his roof now, and his door stands open all day.':'A house with a blue door, and a vine growing over it.'),
-    use:()=>say(P,week()?'Not while there is light to work by, and people in the square with questions.':'It is not my house, and I have not been asked in.'),
-    open:()=>say(P,week()?'It is open already. It has been open all week.':'It is not my house, and I have not been asked in.')},
-  {name:'synagogue',x:334,y:22,w:104,h:28,wx:386,look:'The synagogue of Antioch: dressed stone, two steps, and a door that stands open on the Sabbath.'},
-  {name:'water jar',x:341,y:87,w:14,h:20,wx:352,wy:113,look:'A great jar of water beside the door, for washing.',pickup:'It would take two men to lift.'},
-  {name:'door of the synagogue',x:371,y:60,w:30,h:44,wx:386,wy:112,look:()=>say(P,F.spoke1?'The door of the synagogue. Next Sabbath it will not be wide enough.':'The door of the synagogue. Tomorrow it will stand open.'),exit:synDoor},
-  {name:'east gate',x:444,y:50,w:32,h:54,wx:458,wy:113,dir:1,look:'The east gate. Beyond it the road runs on across the plain, to Iconium.',
-    exit:()=>say(PC(),PC()===P?(week()?'Not while a whole city is asking questions.':'We have only just come. Nothing has been said here yet.'):'Not yet. There is work in this city first.')}]};
+  {name:'mountains',x:60,y:2,w:370,h:20,wx:240,look:'snow_on_them_halfway_down'},
+  {name:'street_to_the_south_gate',x:0,y:36,w:58,h:68,wx:40,wy:113,dir:-1,look:'street_we_came_in_by_from_the_south',
+    use:'back_down_to_the_coast',open:'back_down_to_the_coast'},
+  {name:'wool_market',x:58,y:24,w:188,h:18,wx:150,look:'stoa_full_of_wool_fleeces'},
+  {name:'wool_stall',x:96,y:43,w:90,h:63,wx:150,wy:114,look:['fleeces_on_the_bar_bales','sheeps_wool_not_goat_hair'],pickup:'it_is_eumeness_wool_not_mine'},
+  {name:'panniers_of_salt_fish',x:196,y:96,w:32,h:13,wx:210,wy:114,look:'salt_fish_from_the_coast_of_pamphylia',pickup:'they_are_papiass_living'},
+  {name:'tentmakers_bench',x:252,y:86,w:34,h:22,wx:266,wy:113,dir:-1,vis:week,look:['bench_at_joels_door_and_a_length','man_can_sew_and_answer'],
+    use:'few_more_spans_of_seam',pickup:'it_is_half_a_tent_and_it'},
+  {name:'door_of_joels_house',x:286,y:61,w:28,h:43,wx:300,wy:113,look:()=>say(P,week()?'joels_door':'house_with_a_blue_door'),
+    use:()=>say(P,week()?'not_while_there_is_light':'it_is_not_my_house_and_i'),
+    open:()=>say(P,week()?'it_is_open_already':'it_is_not_my_house_and_i')},
+  {name:'synagogue',x:334,y:22,w:104,h:28,wx:386,look:'synagogue_of_antioch_dressed'},
+  {name:'water_jar',x:341,y:87,w:14,h:20,wx:352,wy:113,look:'great_jar_of_water_beside',pickup:'it_would_take_two_men_to_lift'},
+  {name:'door_of_the_synagogue',x:371,y:60,w:30,h:44,wx:386,wy:112,look:()=>say(P,F.spoke1?'door_of_the_synagogue_said':'door_of_the_synagogue_tomorrow'),exit:synDoor},
+  {name:'east_gate',x:444,y:50,w:32,h:54,wx:458,wy:113,dir:1,look:'east_gate_said',
+    exit:()=>say(PC(),PC()===P?(week()?'not_while_a_whole_city':'we_have_only_just_come'):'not_yet_said')}]};
 ROOMS.synp={space:1.5,walk:[16,304,110,136],mood:'calm',amb:{crowd:.14,fire:.15},hs:[
-  {name:'door to the square',x:286,y:53,w:24,h:51,wx:288,wy:113,dir:1,look:'The door to the square.',exit:()=>go5('pisidia',386,116,-1)},
-  {name:'window',x:54,y:16,w:22,h:24,wx:70,look:'A high window. The light falls on the reading desk.'},
-  {name:'window',x:149,y:16,w:22,h:24,wx:160,look:'A high window. The light falls on the reading desk.'},
-  {name:'window',x:244,y:16,w:22,h:24,wx:250,look:'A high window. The light falls on the reading desk.'},
-  {name:'lamp',x:90,y:48,w:16,h:14,wx:112,look:'A lamp on a bracket, burning even by day.',pickup:'It gives light to the whole house where it is.'},
-  {name:'lamp',x:214,y:48,w:16,h:14,wx:206,look:'A lamp on a bracket, burning even by day.',pickup:'It gives light to the whole house where it is.'},
-  {name:'chest of the scrolls',x:29,y:61,w:36,h:43,wx:60,wy:113,look:['The chest of the scrolls, carried in and set in its place for the Sabbath.','The Law, the Prophets and the Psalms. Everything I have to say in this city is in there already.'],
-    open:'It is not mine to open. The scrolls are in the keeping of the synagogue.',use:'It is not mine to open. The scrolls are in the keeping of the synagogue.',pickup:'It is not mine to open. The scrolls are in the keeping of the synagogue.'},
-  {name:'seats of the presiding officers',x:70,y:70,w:44,h:34,wx:124,wy:114,dir:-1,look:'The seats of the presiding officers, beside the chest and facing the people.'},
-  {name:'reading platform',x:118,y:80,w:96,h:28,wx:166,wy:113,look:['The platform and the reading desk, with benches on three sides of it.','Any son of Israel may be asked to read here, or to speak. But he must be asked.'],
-    use:'Unasked? No. A visitor takes a seat, and waits.',pickup:'The scroll belongs to the synagogue, and so does every word in it.'},
-  {name:'bench',x:250,y:78,w:32,h:26,wx:258,wy:126,dir:-1,def:'use',look:'Benches of stone in two steps, worn smooth. There is room on the lower one.',use:sabbath1}]};
+  {name:'door_to_the_square',x:286,y:53,w:24,h:51,wx:288,wy:113,dir:1,look:'the_door_to_the_square',exit:()=>go5('pisidia',386,116,-1)},
+  {name:'window',x:54,y:16,w:22,h:24,wx:70,look:'high_window_said'},
+  {name:'window',x:149,y:16,w:22,h:24,wx:160,look:'high_window_said'},
+  {name:'window',x:244,y:16,w:22,h:24,wx:250,look:'high_window_said'},
+  {name:'lamp',x:90,y:48,w:16,h:14,wx:112,look:'lamp_on_a_bracket_burning',pickup:'it_gives_light_to_the_whole'},
+  {name:'lamp',x:214,y:48,w:16,h:14,wx:206,look:'lamp_on_a_bracket_burning',pickup:'it_gives_light_to_the_whole'},
+  {name:'chest_of_the_scrolls',x:29,y:61,w:36,h:43,wx:60,wy:113,look:['chest_of_the_scrolls_carried','law_the_prophets_and_the_psalms'],
+    open:'it_is_not_mine_to_open',use:'it_is_not_mine_to_open',pickup:'it_is_not_mine_to_open'},
+  {name:'seats_of_the_presiding_officers',x:70,y:70,w:44,h:34,wx:124,wy:114,dir:-1,look:'seats_of_the_presiding'},
+  {name:'reading_platform',x:118,y:80,w:96,h:28,wx:166,wy:113,look:['platform_and_the_reading','any_son_of_israel_may_be'],
+    use:'unasked_said',pickup:'scroll_belongs_to_the_synagogue'},
+  {name:'bench',x:250,y:78,w:32,h:26,wx:258,wy:126,dir:-1,def:'use',look:'benches_of_stone_in_two',use:sabbath1}]};
 /* ---------- The next Sabbath, and what came of it (Acts 13:44-50) ---------- */
-const WRONG={ps2:'A psalm for the king of Israel! You prove my case for me.',isa55:'Promised to David. To David! Was David a Greek?',ps16:'You said all that last Sabbath. I asked what these people are doing on my steps.',
-  hab1:'You warn us? At the door of our own house of prayer?',isa56:'The foreigner who has attached himself: who is circumcised, and keeps the whole Law. These people have attached themselves to nothing.'};
+const WRONG={ps2:'psalm_for_the_king_of_israel',isa55:'promised_to_david',ps16:'you_said_all_that_last_sabbath',
+  hab1:'you_warn_us',isa56:'foreigner_who_has_attached'};
 async function sabbath2(){playAs(P);await fade(1,500);G.crowd=1;AU.mood='tense';
   place(P,'pisidia',386,116,-1);place(BN,'pisidia',410,119,-1);place(HA,'pisidia',442,118,-1);place(AM,'pisidia',462,122,-1);place(EU,'pisidia',330,121,1);place(PA,'pisidia',304,125,1);place(JO,'pisidia',350,127,1);
   G.cam=160;await fade(0,500);
-  await narr('A week later, on the Sabbath, almost the whole city came together to hear the word of Jehovah. (Acts 13:44)',{dur:7000});
-  await say(EU,'The fullers are here, Paul, and the dyers, and my brother with all his household!');
-  await say(PA,'And every drover from the yard. I told you I would not come alone.');
+  await narr('week_later_on_the_sabbath_acts_13_44',{dur:7000});
+  await say(EU,'fullers_are_here_paul_and_the_dyers');
+  await say(PA,'every_drover_from_the_yard');
   P.dir=1;BN.dir=1;
-  await say(HA,'Greeks on the steps of the house of prayer. Greeks in the doorway, Greeks in the street. In thirty years I have not seen so many at this door.');
-  await say(HA,'And he fetches them here in a week.');
-  await narr('The sight of the crowds filled the Jews with jealousy. They began to contradict what Paul said, and to speak blasphemously. (Acts 13:45)',{dur:9000});
-  await ask(P,HA,'The promises were given to Israel! What have these people of the nations to do with them?',TALK.map(k=>k==='isa49'?{q:label(k),ok:1,
-      p:['It is written in Isaiah, of the servant of Jehovah. And what is written there is a command to us.'],r:['A light of... You would hand the inheritance of Israel to the whole market!']}
+  await say(HA,'greeks_on_the_steps_of_the_house');
+  await say(HA,'he_fetches_them_here_in_a_week');
+  await narr('sight_of_the_crowds_acts_13_45',{dur:9000});
+  await ask(P,HA,'promises_were_given_to_israel',TALK.map(k=>k==='isa49'?{q:label(k),ok:1,
+      p:['it_is_written_in_isaiah'],r:['light_of_you']}
     :{q:label(k),p:[quote(k)],r:[WRONG[k]]}));
-  await narr('Paul and Barnabas answered them boldly. (Acts 13:46)',{dur:5000});
-  await say(P,'The word of God had to be spoken to you before anyone else. (Acts 13:46)');
-  await say(BN,'Now we go to the nations instead, since you push the word away and show that you do not count yourselves worthy of everlasting life. (Acts 13:46)');
+  await narr('paul_and_barnabas_answered_them_boldly_acts_13_46',{dur:5000});
+  await say(P,'word_of_god_had_acts_13_46');
+  await say(BN,'now_we_go_to_the_nations_acts_13_46');
   P.dir=-1;
-  await say(P,'For this is what Jehovah has commanded us. He has set us as a light of nations, and through us salvation is to go out to the ends of the earth. (Acts 13:47)');
+  await say(P,'for_this_is_what_acts_13_47');
   SFX.good();AU.mood='hope';
-  await narr('The people of the nations heard this with joy and gave glory to the word of Jehovah, and everyone who had the right disposition for everlasting life came to believe. (Acts 13:48)',{dur:10000});
-  await say(EU,'A light of nations. Of nations, Papias! Did you hear it?');
-  await say(PA,'I heard it. I am one.');
-  await narr('From one end of that country to the other, the word of Jehovah went on spreading. (Acts 13:49)',{dur:6500});
-  await say(HA,'Lady Ammia. Is this the quiet you came to our house for?');
-  await say(AM,'It is not. My husband shall hear of this before the day is out.');
+  await narr('people_of_the_nations_acts_13_48',{dur:10000});
+  await say(EU,'light_of_nations_q');
+  await say(PA,'i_heard_it');
+  await narr('from_one_end_acts_13_49',{dur:6500});
+  await say(HA,'lady_ammia');
+  await say(AM,'it_is_not');
   await fade(1,700);G.crowd=0;AU.mood='tense';
-  await narr('But the Jews worked on the God-fearing women of high standing and on the leading men of the city. They got a persecution going against Paul and Barnabas, and had the two driven out beyond their borders. (Acts 13:50)',{dur:11000});
+  await narr('jews_worked_on_the_god_acts_13_50',{dur:11000});
   F.out=1;enterRoom('border',...ENT.border);place5('border');codeBtn();await fade(0,700);
-  await say(SN,'That stone is the boundary of Antioch. You will not come back across it. That is the order of the leading men of the city.');
-  await say(SN,'You have unsettled a quiet town. Go and unsettle another.');
-  await say(JO,'They would not let us walk beside you through the gate. So we came round by the fields.');
-  await say(P,'Put out like thieves. And three of them have walked out here to stand with us, in front of the whole city.',TH)}
+  await say(SN,'that_stone_is_the_boundary_of_antioch');
+  await say(SN,'you_have_unsettled_a_quiet_town');
+  await say(JO,'they_would_not_let_us_walk');
+  await say(P,'put_out_like_thieves',TH)}
 /* ---------- Outside the boundaries ---------- */
 async function comfort(){
-  await say(EU,'They have put you out like thieves, Paul! And we are left here, a handful, with Hanan and the leading men against us.');
-  await quiz(EU,'What becomes of us now?',[
-    {q:'We did nothing to deserve this.',r:['I know it. That is what frightens me. If they do this to you, what will they do to a wool merchant?']},
-    {q:'Come with us to Iconium.',r:['And leave Joel, and the fullers, and Papias\'s drovers? Who would tell them the rest?']},
-    {q:'It was never our word, Eumenes. You did not put faith in us.',ok:1,
-      p:['It was never our word, Eumenes. You did not put your faith in Paul, or in Barnabas.',
-        'They can put two men out past the boundary stone. They cannot put the word of Jehovah out with them. It is in you now, and in Joel, and in a drovers\' yard.'],
-      r:['Not in you. No. In the one whom God raised up.','Then we are not left with nothing. We are left with everything you brought.']}]);
+  await say(EU,'they_have_put_you_out_like');
+  await quiz(EU,'what_becomes_of_us_now',[
+    {q:'we_did_nothing_to_deserve_this',r:['i_know_it']},
+    {q:'come_with_us_to_iconium',r:['leave_joel_and_the_fullers']},
+    {q:'it_was_never_our_word_eumenes',ok:1,
+      p:['it_was_never_our_word_eumenes_said',
+        'they_can_put_two_men_out_past'],
+      r:['not_in_you','we_are_not_left_with_nothing']}]);
   F.cheered=1;SFX.good();
-  await say(JO,'We will meet in my house. My door was open to you, and it will be open to them.');
-  await say(PA,'And I carry more than salt fish now, on every road I walk.')}
-const dust=()=>F.cheered?finale5():say(PC(),PC()===P?'Not yet. They came all this way out to stand with us. I will not turn my back on them without a word.':'Not yet. Paul has something to say to them first, and so have they to him.');
-SN.hs={name:'Straton',actor:SN,look:'Straton, one of the leading men of the city, and the husband of Ammia. He means to stand at that stone until we are out of sight.',
-  show:{'*':'I want nothing of yours. I want your backs.'},talk:()=>say(SN,'I have nothing more to say to you. The order stands.'),
-  as:{barnabas:{look:'One of the leading men. He has done what he was asked to do, and he does not look proud of it.',talk:()=>say(SN,'The order stands, for both of you.'),show:{'*':'I want nothing of yours.'}}}};
+  await say(JO,'we_will_meet_in_my_house');
+  await say(PA,'i_carry_more_than_salt')}
+const dust=()=>F.cheered?finale5():say(PC(),PC()===P?'not_yet_they':'not_yet_paul');
+SN.hs={name:'Straton',actor:SN,look:'straton_one_of_the_leading',
+  show:{'*':'i_want_nothing_of_yours'},talk:()=>say(SN,'i_have_nothing_more_to_say'),
+  as:{barnabas:{look:'one_of_the_leading_men',talk:()=>say(SN,'order_stands_for_both_of_you'),show:{'*':'i_want_nothing_of_yours_said'}}}};
 ROOMS.border={space:0.5,walk:[16,304,112,138],mood:'tense',amb:{wind:.6,birds:.4,crickets:.2},hs:[
-  {name:'mountains',x:0,y:30,w:320,h:22,wx:200,look:'The same mountains that stood over the square. From out here they look no further away.'},
-  {name:'Antioch',x:2,y:48,w:118,h:30,wx:120,look:['Antioch, on its rise. We came to it as two strangers with the dust of the pass on us.','There are disciples inside that wall now.']},
-  {name:'poplars',x:198,y:72,w:92,h:22,wx:240,look:'Poplars along a stream. The plain is wide and bare, and the wind crosses it without stopping.'},
-  {name:'our baggage',x:260,y:100,w:48,h:13,wx:250,wy:116,dir:1,look:'Two bed rolls and a bundle. They let us fetch them, at least.',pickup:'In a moment. One thing remains to be done here.'},
-  {name:'boundary stone',x:94,y:86,w:18,h:24,wx:128,wy:116,dir:-1,def:'use',look:'The boundary stone of Antioch. On this side of it we are no longer the city\'s concern.',use:dust,pickup:'It marks their boundary. Let it stand.'},
-  {name:'road to Iconium',x:296,y:84,w:24,h:44,wx:300,wy:122,dir:1,look:'The road southeast, to Iconium: several days across the high plain.',exit:dust}]};
+  {name:'mountains',x:0,y:30,w:320,h:22,wx:200,look:'same_mountains_that_stood_over_the_square'},
+  {name:'Antioch',x:2,y:48,w:118,h:30,wx:120,look:['antioch_on_its_rise','there_are_disciples_inside_that_wall_now']},
+  {name:'poplars',x:198,y:72,w:92,h:22,wx:240,look:'poplars_along_a_stream'},
+  {name:'our_baggage',x:260,y:100,w:48,h:13,wx:250,wy:116,dir:1,look:'two_bed_rolls_and_a_bundle_said',pickup:'in_a_moment'},
+  {name:'boundary_stone',x:94,y:86,w:18,h:24,wx:128,wy:116,dir:-1,def:'use',look:'boundary_stone_of_antioch',use:dust,pickup:'it_marks_their_boundary'},
+  {name:'road_to_iconium',x:296,y:84,w:24,h:44,wx:300,wy:122,dir:1,look:'road_southeast_to_iconium',exit:dust}]};
 /* ---------- Barnabas's side of things, when he is the one being played ---------- */
 const AS_B={
-  perga:{'mountains':{look:'The Taurus. I have seen it from the sea all my life, and never once thought to climb it.'},'city wall':{look:'Perga. We came, and we are going. Something tells me we shall be back.'},
-    'north gate of Perga':{look:'The gate back into Perga, and to the coast.',use:'Not that way. Not while Paul is looking at those mountains.',open:'Not that way. Not while Paul is looking at those mountains.'},
-    'plain':{look:'Good land, and hot already, and it is only spring. Up there the snow has not gone yet.'},'watering trough':{look:'A good trough, and cold water.',use:'I drink my fill. It will be a long while to the next such water.'},
-    'pack donkeys':{look:'Thirty beasts, and every one loaded. The drover will not carry so much as a bed roll for us.'},'milestone':{look:'A milestone. I shall count every one of them, with this foot.'},
-    'plane tree':{look:'Shade. I could stand in it all day, if Paul would let me.'},
-    'our baggage':{look:()=>say(BN,F.markTold?'The bundles. My cousin tied every knot on them.':'John Mark has it all in order, as always.'),pickup:'When we go, I take my share.'},'road north':{look:'The road north. It does not look steep from here. It never does.'}},
-  ford:{'pass':{look:'The pass. A day beyond this water, the drover says.'},'rocks above the road':{look:'Someone is up there. I have felt it since we came down to the river.'},
-    'cliff':{look:'The river comes straight out of the rock. I have never seen the like.'},'pines':{look:'Pines, growing out of bare stone.'},
-    'river':{look:'Cold, fast, and not as deep as it looks. With a third leg under him, a man might stand in it.',use:wade,useWith:async it=>it==='staff5'?wade():false},
-    'near post':{look:()=>say(BN,F.lineUp?'Fast at both ends.':F.spliced?'Paul has made the rope whole. It only needs carrying over.':'Half a rope. The other half is in the river.'),use:wade,useWith:async it=>it==='staff5'?wade():false},
-    'far post':{look:()=>say(BN,F.lineUp?'I tied it myself: twice round, and hauled tight.':'The far post. That is where the rope has to go.'),use:wade,useWith:async it=>it==='staff5'?wade():false},
-    'pack donkeys':{look:'They do not like the sound of that water any better than I do.'},'road to the pass':{look:'The road on, up to the pass.'}},
-  pisidia:{'mountains':{look:'Snow, in sight of a market. Cyprus has nothing like this.'},'street to the south gate':{look:'The street from the south gate. We came up it with the dust of the pass still on us.',use:'We are not going back that way.',open:'We are not going back that way.'},
-    'wool market':{look:'Wool, wool and more wool. Every sheep on this plain must come here in the end.'},'wool stall':{look:'Eumenes keeps a tidy stall. His father kept it before him, he says.'},
-    'panniers of salt fish':{look:'The salt fish that crossed the river with us. It smells no better here.'},
-    "tentmaker's bench":{look:'Paul\'s bench. He will not eat a crust in this city that he has not earned.',use:BARN5.noCraft},
-    "door of Joel's house":{look:()=>say(BN,week()?'Joel\'s door. A man who opens his house so quickly has a large heart.':'A house with a blue door.'),use:'I will go in when our host does.',open:'I will go in when our host does.'},
-    'synagogue':{look:'A synagogue of dressed stone. It could be the one in Salamis, but for the cold.'},'water jar':{look:'Water for washing, by the door.'},
-    'door of the synagogue':{look:'The door of the synagogue.'},'east gate':{look:'The east gate, and the road to Iconium.'}},
-  synp:{'door to the square':{look:'The door to the square.'},'window':{look:'The light falls just where the reader stands.'},'lamp':{look:'A lamp, kept burning. Someone tends it as I used to tend ours.'},
-    'chest of the scrolls':{look:'The chest of the scrolls. Everything we have come to say is in there already.',open:'It is in the keeping of the synagogue.',use:'It is in the keeping of the synagogue.'},
-    'seats of the presiding officers':{look:'The seats of the presiding officers. Hanan fills his.'},
-    'reading platform':{look:'The platform. I think it will be Paul who is asked up to it, and I am glad of it.',use:'It is Paul who should stand there today, not I.'},
-    'bench':{look:'Room for two on the lower bench.',use:sabbath1}},
-  border:{'mountains':{look:'The mountains have not moved. Neither has what we left behind that wall.'},'Antioch':{look:'Antioch. I am not sorry we came, and I am not sorry to be put out of it like this.'},
-    'poplars':{look:'Poplars, bending to the wind.'},'our baggage':{look:'They threw our bundles out after us. I will say this: nothing is missing.'},
-    'boundary stone':{look:'Their boundary. We are on the right side of it now, by their own order.',use:dust},'road to Iconium':{look:'The road to Iconium. Another city that has not heard.'}}};
+  perga:{'mountains':{look:'taurus_i'},'city_wall':{look:'perga_said'},
+    'north_gate_of_perga':{look:'gate_back_into_perga_and_to_the_coast',use:'not_that_way_said',open:'not_that_way_said'},
+    'plain':{look:'good_land_and_hot_already'},'watering_trough':{look:'good_trough_and_cold_water',use:'i_drink_my_fill'},
+    'pack_donkeys':{look:'thirty_beasts_and_every_one_loaded'},'milestone':{look:'milestone_said'},
+    'plane_tree':{look:'shade_said'},
+    'our_baggage':{look:()=>say(BN,F.markTold?'the_bundles':'john_mark_has_it_all_in_order'),pickup:'when_we_go_i_take_my_share'},'road_north':{look:'the_road_north'}},
+  ford:{'pass':{look:'the_pass'},'rocks_above_the_road':{look:'someone_is_up_there'},
+    'cliff':{look:'river_comes_straight_out_of_the_rock'},'pines':{look:'pines_growing_out_of_bare_stone'},
+    'river':{look:'cold_fast_and_not_as_deep',use:wade,useWith:async it=>it==='staff5'?wade():false},
+    'near_post':{look:()=>say(BN,F.lineUp?'fast_at_both_ends':F.spliced?'paul_has_made_the_rope_whole':'half_a_rope_said'),use:wade,useWith:async it=>it==='staff5'?wade():false},
+    'far_post':{look:()=>say(BN,F.lineUp?'i_tied_it_myself_twice':'the_far_post'),use:wade,useWith:async it=>it==='staff5'?wade():false},
+    'pack_donkeys':{look:'they_do_not_like_the_sound'},'road_to_the_pass':{look:'road_on_up_to_the_pass'}},
+  pisidia:{'mountains':{look:'snow_in_sight_of_a_market'},'street_to_the_south_gate':{look:'street_from_the_south_gate',use:'we_are_not_going_back_that_way',open:'we_are_not_going_back_that_way'},
+    'wool_market':{look:'wool_wool_and_more_wool'},'wool_stall':{look:'eumenes_keeps_a_tidy_stall'},
+    'panniers_of_salt_fish':{look:'salt_fish_that_crossed'},
+    'tentmakers_bench':{look:'pauls_bench',use:BARN5.noCraft},
+    'door_of_joels_house':{look:()=>say(BN,week()?'joels_door_said':'a_house_with_a_blue_door'),use:'i_will_go_in_when_our_host',open:'i_will_go_in_when_our_host'},
+    'synagogue':{look:'synagogue_of_dressed_stone'},'water_jar':{look:'water_for_washing_by_the_door'},
+    'door_of_the_synagogue':{look:'door_of_the_synagogue_2'},'east_gate':{look:'east_gate_and_the_road_to_iconium'}},
+  synp:{'door_to_the_square':{look:'the_door_to_the_square'},'window':{look:'light_falls_just_where_the_reader_stands'},'lamp':{look:'lamp_kept_burning'},
+    'chest_of_the_scrolls':{look:'the_chest_of_the_scrolls',open:'it_is_in_the_keeping_of_the_synagogue',use:'it_is_in_the_keeping_of_the_synagogue'},
+    'seats_of_the_presiding_officers':{look:'seats_of_the_presiding_officers_said'},
+    'reading_platform':{look:'the_platform',use:'it_is_paul_who_should_stand'},
+    'bench':{look:'room_for_two_on_the_lower_bench',use:sabbath1}},
+  border:{'mountains':{look:'mountains_have_not_moved'},'Antioch':{look:'antioch_i'},
+    'poplars':{look:'poplars_bending_to_the_wind'},'our_baggage':{look:'they_threw_our_bundles_out_after_us'},
+    'boundary_stone':{look:'their_boundary',use:dust},'road_to_iconium':{look:'the_road_to_iconium'}}};
 for(const r in AS_B)for(const h of ROOMS[r].hs)if(AS_B[r][h.name])h.as={barnabas:AS_B[r][h.name]};
 /* ============ SCENES: intro, the road, ending; PRAYER HINTS ============ */
 const LABELS={salamis:{lab:'r',dy:4.2},paphos:{lab:'l',dy:2.6}},VOYAGE=[['antioch','seleucia'],['seleucia','salamis','sea'],['salamis','paphos'],['paphos','perga','new sea']];
 /* arrive5: after the map has drawn the way up from Perga. The road does not reach Antioch at once: it comes down to a river first. */
 async function arrive5(to){if(to!=='antiochp')return;MK.room=null;enterRoom('ford',...ENT.ford);place5('ford');
-  await narr('From Perga the road climbed north into the Taurus: about 180 kilometers, over a mountain pass.',{dur:7000});
-  await narr('Those mountains were known for their robbers, and for rivers that burst out at the foot of the cliffs and tore down through narrow ravines.',{dur:8500});
-  await narr('Years later Paul would write of the dangers he had met from rivers and from robbers. (2 Corinthians 11:26)',{dur:7000})}
+  await narr('from_perga_the_road_climbed',{dur:7000});
+  await narr('those_mountains_were_known',{dur:8500});
+  await narr('years_later_paul_2_corinthians_11_26',{dur:7000})}
 async function start5(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();
   await cut(async()=>{await fade(1,500);setChapter(5);G.end={};enterRoom('perga',...ENT.perga);codeBtn();
-    try{await need('map');await SHARED.map.journey(VOYAGE,{labels:LABELS,view:'north',text:['Paul and those with him sailed from Paphos and came to Perga in Pamphylia. (Acts 13:13)']})}catch(e){console.error(e)}
+    try{await need('map');await SHARED.map.journey(VOYAGE,{labels:LABELS,view:'north',text:['paul_and_those_with_him_acts_13_13']})}catch(e){console.error(e)}
     await fade(1,500);G.scene=null;setScore(MUSIC);AU.mood=ROOMS.perga.mood;AU.amb=ROOMS.perga.amb;codeBtn();await fade(0,600);
-    await narr('Perga in Pamphylia, about 47 C.E.',{dur:3000});
-    await say(BN,'The north road, Paul. Beyond the plain it climbs into the Taurus, and beyond the Taurus lies Antioch in Pisidia.');
-    await say(P,'Then that is our road. A long one, by the look of those mountains.');
-    await say(MK,'The bed rolls are here, cousin. And the food bag.',{to:BN});
-    await say(P,'John Mark has hardly spoken since we landed. And Barnabas is limping.',TH)},true)}
+    await narr('perga_in_pamphylia_about_47_c_e',{dur:3000});
+    await say(BN,'north_road_paul');
+    await say(P,'that_is_our_road');
+    await say(MK,'bed_rolls_are_here_cousin',{to:BN});
+    await say(P,'john_mark_has_hardly_spoken',TH)},true)}
 async function finale5(){playAs(P);await wait(300);
-  await say(P,'One thing remains, Barnabas. Our Lord told those he sent out what to do on leaving a city that would not receive them. (Luke 9:5)');
+  await say(P,'one_thing_remains_barnabas_luke_9_5');
   await Promise.all([walk(P,238,123),walk(BN,264,126)]);P.dir=-1;BN.dir=-1;P.bow=BN.bow=true;G.dust=1;SFX.step();await wait(500);SFX.step();await wait(1300);
-  await narr('Against those who had driven them out, the two shook off the dust of their feet. Then they set out for Iconium. (Acts 13:51)',{dur:6500});
+  await narr('against_those_who_acts_13_51',{dur:6500});
   P.bow=BN.bow=false;G.dust=0;
-  await say(BN,'Not in anger, Paul.');
-  await say(P,'No. They have heard, and what they do with it is theirs to answer for. We are free of it.');
-  await say(JO,'Go in peace. You leave more behind you than you found.');
+  await say(BN,'not_in_anger_paul');
+  await say(P,'no_they');
+  await say(JO,'go_in_peace_said');
   P.dir=1;BN.dir=1;walk(BN,318,125);await walk(P,300,122);await fade(1,600);AU.mood='hope';
-  await narr('As for the disciples, joy and holy spirit went on filling them. (Acts 13:52)',{dur:6500});
-  await journey();await narr('Iconium lay about 140 kilometers to the southeast. And in time they would see Antioch again. (Acts 14:21)',{dur:7000});
-  endScreen({title:'A Light of Nations',text:'Paul took his own roof to pieces for a rope, waited to be asked before he spoke, and answered each hearer in the way that hearer could follow. Put out of the city, he left no anger behind him: only disciples.',
-    extra:F.bread?['Bread shared with John Mark for his road']:[],
-    based:'Based on Acts 13:13-52; 14:21 and 2 Corinthians 11:26. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are from the Scriptures and are told here in paraphrase.',
-    go:'Click to continue to Chapter Six',code:['Chapter Six code: {code}',codeOf(6,0)]});
+  await narr('as_for_the_disciples_acts_13_52',{dur:6500});
+  await journey();await narr('iconium_lay_about_140_acts_14_21',{dur:7000});
+  endScreen({title:'a_light_of_nations',text:'paul_took_his_own_roof',
+    extra:F.bread?['bread_shared_with_john']:[],
+    based:'based_on_acts_13_13_52',
+    go:'click_to_continue_to_chapter_six',code:['chapter_six_code_code',codeOf(6,0)]});
   await wait(1500);ov.onclick=()=>startChapter(6);await new Promise(()=>{})}
-function hint5(){const b=PC()!==P,craft=['craft5',["That is the tentmaker's craft, not mine. A good partner knows when to step back.",'Paul should do this part. I can leave it to him; he is never far away.']];
+function hint5(){const b=PC()!==P,craft=['craft5',['that_is_the_tentmakers_craft_not_mine','paul_should_do_this_part']];
   if(inPerga()){
-    if(!F.metPap)return['road5',['Two men do not walk into those mountains without asking what the road is like. Someone here climbs it for a living.','I should talk to the drover, by his donkeys.']];
-    if(!F.markTold)return b?['mark5b',['My cousin has not been himself since Paphos. Whatever it is, he must be allowed to say it.','I should talk to John Mark.']]
-      :['mark5',['John Mark stands by the bundles and says nothing. I should hear what is on his mind, whatever it is.','I should talk to John Mark.']];
-    if(!F.shod)return b?['shoe5b',['The strap is beyond me. But Paul has mended harder things than a sandal.','Paul should use the leather thong on me. If I am carrying it, I can give it to him.']]
-      :['shoe5',['Barnabas cannot climb on a parted strap. And John Mark has put a thong of ox-hide into my hand.','I should use the leather thong on Barnabas, and mend his sandal.']];
-    return['go5',['The drover is ready, and so are we.','We can take the road north, and choose Antioch in Pisidia on the map.']]}
+    if(!F.metPap)return['road5',['two_men_do_not_walk_into_those_mountains','i_should_talk_to_the_drover']];
+    if(!F.markTold)return b?['mark5b',['my_cousin_has_not_been','i_should_talk_to_john_mark']]
+      :['mark5',['john_mark_stands_by_the_bundles','i_should_talk_to_john_mark']];
+    if(!F.shod)return b?['shoe5b',['strap_is_beyond_me','paul_should_use_the_leather']]
+      :['shoe5',['barnabas_cannot_climb_on_a_parted_strap','i_should_use_the_leather']];
+    return['go5',['drover_is_ready_and_so_are_we','we_can_take_the_road_north']]}
   if(inFord()){
-    if(!F.gotLine)return b?craft:['rope5',['The guide rope is short by half a river. What do we carry that has a rope in it?','I can take the rope out of the edge of our tent roof with my knife.']];
-    if(!F.spliced)return b?craft:['splice5',['I have rope enough now. It needs joining to the half that is left on the near post.','I should use the tarred rope with the near post.']];
-    if(!F.lineUp)return b?['wade5b',['Paul has made the rope whole. I have a staff, and long legs.','I should use my staff with the river, and carry the end across.']]
-      :['wade5',['The rope will reach, but it must be carried over. Two can do what one cannot, and one of us has a staff.','Barnabas should carry it across. I can let him.']];
-    if(!F.crossed)return b?['cross5b',['I am over, and the line is fast. The rest is for Paul to send across.','Paul should talk to the drover now.']]
-      :['cross5',['The line is up, from post to post. The train is waiting for the word.','I should talk to Papias, and bring them all over.']];
-    return['pass5',['Everyone is over, and the light is going.','We can take the road up to the pass.']]}
+    if(!F.gotLine)return b?craft:['rope5',['guide_rope_is_short_by_half','i_can_take_the_rope_out_of_the_edge']];
+    if(!F.spliced)return b?craft:['splice5',['i_have_rope_enough_now','i_should_use_the_tarred']];
+    if(!F.lineUp)return b?['wade5b',['paul_has_made_the_rope_whole_said','i_should_use_my_staff_with_the_river']]
+      :['wade5',['rope_will_reach_but_it','barnabas_should_carry_it_across']];
+    if(!F.crossed)return b?['cross5b',['i_am_over_and_the_line','paul_should_talk_to_the_drover_now']]
+      :['cross5',['line_is_up_from_post_to_post','i_should_talk_to_papias']];
+    return['pass5',['everyone_is_over_and_the_light','we_can_take_the_road_up_to_the_pass']]}
   if(inOut()){
-    if(!F.cheered)return b?['cheer5b',['It is Paul whom Eumenes is asking. It was his word that he heard first.','Paul should talk to Eumenes.']]
-      :['cheer5',['They are afraid of being left with nothing. But it was never our word that they believed.','I should talk to Eumenes, and remind him in whom he put his faith.']];
-    return['dust5',['One thing is left to do, as our Lord told those he sent out. And not in anger.','I should use the boundary stone, and shake the dust from my feet.']]}
-  if(!F.spoke1)return G.room==='synp'?['seat5',['A visitor does not ask for the platform. He takes a seat, and waits to be asked.',b?'Paul and I should take a seat. I can use the bench.':'I should use the bench, and wait.']]
-    :['syn5',['Tomorrow is the Sabbath, and there is a synagogue across the square.','We can go in at the door of the synagogue.']];
-  if(b){if(!F.joel)return['joel5b',['Joel has tasted something good, and he is afraid of what it will cost him. He does not need my story. He needs to keep hold of what he was given.','I should talk to Joel, and urge him to hold on to the undeserved kindness of God.']];
-    return allThree()?['sab5',['The week is over, and the city is waiting.','We can go to the door of the synagogue.']]:['paul5b',['The others are asking for Paul. It was his word that they heard.','Paul should talk to Eumenes and to Papias.']]}
-  if(!F.eum)return['eum5',['Eumenes wants more than my word for it. And something is written for a foreigner who keeps himself by the door.','I should talk to Eumenes, and show him what is written about the foreigner.']];
-  if(!F.pap)return['pap5',['Papias has never heard the Prophets read. But he has crossed mountains all his life.','I should talk to Papias, and begin with the God who made the mountains.']];
-  if(!F.joel)return['joel5',['Joel will not tell me what weighs on him. It is Barnabas he trusts with it.','Barnabas should talk to Joel. I can let him.']];
-  return['sab5',['The week is over, and the city is waiting.','We can go to the door of the synagogue.']]}
+    if(!F.cheered)return b?['cheer5b',['it_is_paul_whom_eumenes_is_asking','paul_should_talk_to_eumenes']]
+      :['cheer5',['they_are_afraid_of_being','i_should_talk_to_eumenes']];
+    return['dust5',['one_thing_is_left_to_do','i_should_use_the_boundary']]}
+  if(!F.spoke1)return G.room==='synp'?['seat5',['visitor_does_not_ask_for_the_platform',b?'paul_and_i_should_take_a_seat':'i_should_use_the_bench_and_wait']]
+    :['syn5',['tomorrow_is_the_sabbath_said','we_can_go_in_at_the_door']];
+  if(b){if(!F.joel)return['joel5b',['joel_has_tasted_something','i_should_talk_to_joel_and_urge']];
+    return allThree()?['sab5',['week_is_over_and_the_city','we_can_go_to_the_door_of_the_synagogue']]:['paul5b',['others_are_asking_for_paul','paul_should_talk_to_eumenes_said']]}
+  if(!F.eum)return['eum5',['eumenes_wants_more_than_my_word','i_should_talk_to_eumenes_said']];
+  if(!F.pap)return['pap5',['papias_has_never_heard_the_prophets_read','i_should_talk_to_papias_said']];
+  if(!F.joel)return['joel5',['joel_will_not_tell_me_what','barnabas_should_talk_to_joel']];
+  return['sab5',['week_is_over_and_the_city','we_can_go_to_the_door_of_the_synagogue']]}
 /* ============ CHAPTER DEFINITION ============ */
 /* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
    plainly says no. Each is a line of this chapter, in English, as it stands above. */
-const ACTING={nod:['Yes. The whole house asked it. Hanan asked it himself.'],
-  shake:['No. They have heard, and what they do with it is theirs to answer for. We are free of it.']};
+const ACTING={nod:['yes_the'],
+  shake:['no_they']};
 return{acting:ACTING,rooms:['perga','ford','pisidia','synp','border'],setup:setup5,start:start5,hint:hint5,music:MUSIC,topics:TOPICS,tablets:TABLETS,
   /* Antioch in Pisidia and Iconium lie north of the map's usual window, so this chapter looks through the northern one. The whole of the
      first journey so far is on it; the chapter's own road draws itself at the end */
@@ -997,10 +997,10 @@ return{acting:ACTING,rooms:['perga','ford','pisidia','synp','border'],setup:setu
   /* names that would lie across this chapter's routes on their usual side */
   labels:LABELS,
   places:{
-    paphos:{room:'-',if:()=>false,no:'We put out to sea from Paphos, and the work lies ahead of us, not behind.'},
+    paphos:{room:'-',if:()=>false,no:'we_put_out_to_sea_from_paphos'},
     perga:{room:'perga',x:176,y:124,dir:1},
     antiochp:{room:'pisidia',x:120,y:124,dir:1,if:inPerga},
-    iconium:{room:'border',x:236,y:124,dir:-1,if:()=>false,no:'Iconium lies far beyond Antioch, and Antioch has not heard yet. One city at a time.'}},
+    iconium:{room:'border',x:236,y:124,dir:-1,if:()=>false,no:'iconium_lies_far_beyond'}},
   way:()=>VOYAGE.map(l=>l.slice(0,2)),arrive:arrive5,
   flags:['metPap','metEum','markTold','bread','shod','gotLine','spliced','lineUp','crossed','spoke1','eum','joel','pap','out','cheered'],
   codeBits:{flags:20,rooms:3,share:9},party:['paul','barnabas'],home:{staff5:'barnabas'},share:['awl','thread','knife','tablets','bread','thong','roof','line','staff5'],ent:ENT,

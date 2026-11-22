@@ -53,7 +53,7 @@ On the quay at Athens the brothers who brought Paul have to sail home, and what 
 11. Use the reading table again. For each place that they have found, turn the tablets and talk to the Beroeans: "lots cast by the soldiers", then "no answer to his accusers", then "a rich man's new tomb".
 12. Use the reading table once more. Look at the scroll of the Prophets, turn the tablets until they are closed, and talk to the Beroeans.
 13. As Timothy, talk to the man back from his flocks: "Ask Eupolemos to show him."
-14. On the quay, talk to the brother from Beroea. Choose "It is for Silas and Timothy.", "They are to come to me, here in Athens." and "As quickly as they can.", and then "That is the whole message."
+14. On the quay, talk to the brother from Beroea. Choose "It's for Silas and Timothy.", "They are to come to me, here in Athens." and "As quickly as they can.", and then "That's the whole message."
 </details>
 
 ## Music and sound

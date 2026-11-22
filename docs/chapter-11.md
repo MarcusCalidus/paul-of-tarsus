@@ -44,7 +44,7 @@ Three kinds of men are left on the rock. The scoffers are answered by the path d
 9. Go back to the marketplace and into the painted colonnade. At the left end, talk to Philokles: choose "Listen a while longer." until he has said four things, and then "We too are his children." At the right end, talk to Antigenes in the same way, and choose "A god lacks nothing."
 10. Go back to the marketplace. Choose "I bring no new god: I announce the One who made you."
 11. On the Areopagus, click "what I begin from" and "how I say it" to set them, and talk to the men on the seats after each setting: their altar, "you"; the temple without a roof, "you"; the robe and the dish, "you"; empty hands, "we"; a line of their poets, "we"; the block of marble, "we". Choose "Say all of it, now." Then: empty hands, "all people everywhere".
-12. Talk to the men who would hear more. Take the path down, at the left. Give the wax tablets to Dionysius or to Damaris.
+12. Talk to the men who want to hear more. Take the path down, at the left. Give the wax tablets to Dionysius or to Damaris.
 </details>
 
 ## Music and sound

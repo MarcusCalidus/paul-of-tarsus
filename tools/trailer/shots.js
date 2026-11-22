@@ -98,17 +98,17 @@ const SHOTS=[
    async play(){await tween(6200,k=>{G.sea.k=.04+.2*k})}},
   /* the basket down the wall of Damascus by night (Chapter One), with the narration that tells it */
   {id:'wall',bar:2,bars:2,view:'scene',
-   says:[[null,"Under cover of night, Saul's disciples lowered him in a basket from an opening in the city wall. (Acts 9:25)",{dur:5600}]],
+   says:[[null,'under_cover_of_night_acts_9_25',{dur:5600}]],
    async setup(){await scene(1,'wall');G.end={heads:1,by:46,rider:1}},
    async play(){const down=tween(6000,k=>{G.end.by=46+40*ease(k)});await wait(250);await line(this,0);await down}},
   /* the ney: Barnabas finds Saul at the last stall in Tarsus (Chapter Three) */
   {id:'tarsus',bar:4,bars:2,view:'scene',
-   says:[['barnabas','I have asked for you along every row of tentmakers in this city. And here you are, at the very last stall.',{dur:5400}]],
+   says:[['barnabas','i_have_asked_for_you_along',{dur:5400}]],
    async setup(){await room(3,'tarsus');place(A('barnabas'),'tarsus',84,124,1)},
    async play(){await walk(A('barnabas'),118,124);await line(this,0)}},
   /* at anchor off Samothrace by night (Chapter Eight) */
   {id:'deck',bar:6,bars:2,view:'scene',
-   says:[['paul','Then look up, Timothy. They are the same stars as over Lystra.',{dur:5200}]],
+   says:[['paul','look_up_timothy',{dur:5200}]],
    async setup(){await scene(8,'deck')},
    async play(){await wait(400);await line(this,0)}},
   /* the strings: the sundial's shadow moves on from morning to noon (Chapter Thirteen; turnDial(0, 1) in the game) */

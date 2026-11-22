@@ -257,28 +257,36 @@ cx.imageSmoothingEnabled=false;
 const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,t:0,scene:null,
   hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false,pc:null,invs:{},lang:'en',turn:new Map(),turnN:0};
 const OPTS_KEY='paul.opts',OPTS={mus:1,fx:1,spd:1,mov:1};   /* mov: 1 lively, 0 calm (see moves) */
-/* ============ LANGUAGES: the game is written in English; every other language is data under lang/ ============ */
-/* Every line is translated as it is shown: by say and narr, choose, the status line, the labels, the overlays, the tablets and the map,
-   with the English text as the key. So the story's logic (its flags, and the names it compares) never sees a translation, and a
-   safe-point code is the same in every language. A language is a folder lang/xx/ of files that call TEXTS(xx, part, {english: text}):
-   main.js for the engine and the files under shared/, and chapterN.js for each chapter, loaded with that chapter. To add a language,
-   add its line to LANGS and write its folder. A line with no translation is shown in English and noted in MISSING (the playtest
-   checks that it stays empty). A translation may leave out a {slot} of its English line, but may not add one. */
-const LANGS={en:{native:'English'},de:{native:'Deutsch',dir:'lang/de/'}};   /* native: the language's name in itself */
+/* ============ LANGUAGES: every language is data under lang/, English as well ============ */
+/* The code never holds a line of text: it holds a key, and every line is looked up as it is shown, by say and narr, choose, the status
+   line, the labels, the overlays, the tablets and the map. So the story's logic (its flags, and the names it compares) never sees a
+   translation, and a safe-point code is the same in every language. A language is a folder lang/xx/ of files that call
+   TEXTS(xx, part, {key: text}): main.js for the engine and the files under shared/, prologue.js, and chapterN.js for each chapter, loaded
+   with that chapter. English (lang/en/) is the language the others are translated from, and is always loaded beside the player's. In
+   another language an entry is [text, fingerprint]: the fingerprint of the English line it was made from, which tools/strings.mjs
+   compares with the English as it stands now. To add a language, add its line to LANGS and write its folder. A key with no text in the
+   player's language is shown in English, and one with none at all is shown as it is; either is noted in MISSING (the playtest checks
+   that it stays empty). A translation may leave out a {slot} of its English line, but may not add one. */
+const LANGS={en:{native:'English',dir:'lang/en/'},de:{native:'Deutsch',dir:'lang/de/'}};   /* native: the language's name in itself */
 const DICT={},MISSING=new Set(),MADE=new Set();
-function TEXTS(lang,part,d){const L=DICT[lang]||(DICT[lang]={});Object.assign(L[part]||(L[part]={}),d)}
-/* T: a line in the player's language, looked up in the current chapter's text, then the engine's; vars fill its {slots}.
+function TEXTS(lang,part,d){const L=DICT[lang]||(DICT[lang]={}),P=L[part]||(L[part]={});for(const k in d){const v=d[k];P[k]=Array.isArray(v)?v[0]:v}}
+/* textOf: a key's text in one language, from the current chapter's text, then the prologue's, then the engine's; null if it has none */
+function textOf(lang,s){const L=DICT[lang];if(!L)return null;const c=L[G.ch]&&L[G.ch][s];if(c!=null)return c;
+  const p=L.prologue&&L.prologue[s];if(p!=null)return p;const m=L.main&&L.main[s];return m!=null?m:null}
+/* T: a line in the player's language, else in English; vars fill its {slots}.
    What T returns is noted in MADE, so that a line put together from translated parts is not translated twice. */
 function T(s,vars){if(typeof s!=='string')return s;let r=s;
-  if(G.lang!=='en'&&!MADE.has(s)){const L=DICT[G.lang]||{},c=L[G.ch]&&L[G.ch][s],p=L.prologue&&L.prologue[s],m=L.main&&L.main[s];
-    if(c!=null)r=c;else if(p!=null)r=p;else if(m!=null)r=m;else if(!MISSING.has(G.ch+': '+s)){MISSING.add(G.ch+': '+s);console.warn(`No ${G.lang} text for: ${s}`)}}
+  if(!MADE.has(s)){const t=textOf(G.lang,s);if(t!=null)r=t;else{const e=G.lang==='en'?null:textOf('en',s);if(e!=null)r=e;
+    if(!MISSING.has(G.ch+': '+s)){MISSING.add(G.ch+': '+s);console.warn(`No ${G.lang} text for: ${s}`)}}}
   if(vars)r=r.replace(/\{(\w+)\}/g,(m,k)=>vars[k]!=null?vars[k]:m);
   MADE.add(r);return r}
-/* T.peek: the translation of a line, or null, without noting it as missing (for tests). */
-T.peek=s=>{const L=DICT[G.lang]||{};return G.lang==='en'?s:L[G.ch]&&L[G.ch][s]!=null?L[G.ch][s]:L.prologue&&L.prologue[s]!=null?L.prologue[s]:L.main&&L.main[s]!=null?L.main[s]:null};
+/* words: the words of a key ("door_to_the_street": "door to the street"), for logic that looks at what a thing is called */
+const words=k=>String(k).replace(/_/g,' ');
+/* T.peek: a key's text in the player's language, or null, without noting it as missing (for tests). */
+T.peek=s=>textOf(G.lang,s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
-const VERBS=[['look','Look at'],['pickup','Pick up'],['use','Use'],['open','Open'],['talk','Talk to'],['give','Give']];
-const VNAME={walk:'Walk to',look:'Look at',pickup:'Pick up',use:'Use',open:'Open',talk:'Talk to',give:'Give'};
+const VERBS=[['look','look_at'],['pickup','pick_up'],['use','Use'],['open','Open'],['talk','talk_to'],['give','Give']];
+const VNAME={walk:'walk_to',look:'look_at',pickup:'pick_up',use:'Use',open:'Open',talk:'talk_to',give:'Give'};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
@@ -329,7 +337,7 @@ const PTR_CACHE={};let ptrKey='',ptrScale=3;
 function pointerKind(h){if(G.busy||G.scene||!G.room)return'default';if(G.verb!=='walk'&&PTRS[G.verb])return G.verb+(h?'-hot':'');
   if(!h)return'default';if(!h.exit)return'hot';
   const rw=ART[G.room]?ART[G.room].w:VW;if(h.x<=24)return'left';if(h.x+h.w>=rw-24)return'right';
-  return/\b(down|below|cellar)\b/i.test(h.name)?'down':'up'}
+  return/\b(down|below|cellar)\b/i.test(words(h.name))?'down':'up'}
 function pointer(s,kind='default'){ptrScale=s;const d=window.devicePixelRatio||1,u=clamp(Math.round(s*d/2),1,6),key=kind+'@'+u+'@'+d;if(key===ptrKey)return;ptrKey=key;
   const el=$('#view'),u1=clamp(Math.round(u/d),1,6),art=(k,sz)=>PTR_CACHE[k+'@'+sz]||(PTR_CACHE[k+'@'+sz]=pointerArt(sz,k));
   const a1=art(kind,u1),css=(a,sc,img)=>`${img} ${Math.round(a.hx*sc)} ${Math.round(a.hy*sc)},default`;
@@ -406,8 +414,8 @@ AU.apple=/iPhone|iPod/.test(navigator.userAgent)?'iPhone':/iPad/.test(navigator.
 let hushT=0;
 function hush(on){const el=$('#hush');clearTimeout(hushT);
   if(!on||!AU.apple){el.classList.remove('on');return}
-  const l1=AU.apple==='iPhone'?'No music? This iPhone may be in Silent Mode.':'No music? This iPad may be in Silent Mode.';
-  el.innerHTML='&#9835; '+esc(T(l1))+'<br>'+esc(T('The game stays quiet until Silent Mode is off.'));
+  const l1=AU.apple==='iPhone'?'no_music':'no_music_said';
+  el.innerHTML='&#9835; '+esc(T(l1))+'<br>'+esc(T('game_stays_quiet_until'));
   el.classList.add('on');el.dataset.t=performance.now();hushT=setTimeout(()=>hush(0),8000)}
 for(const t of['pointerdown','keydown'])addEventListener(t,()=>{const el=$('#hush');if(el.classList.contains('on')&&performance.now()-el.dataset.t>400)hush(0)},true);
 const now=()=>AU.ctx?AU.ctx.currentTime:0;
@@ -619,7 +627,7 @@ const SFX={
   win(){tune([0,4,7,12,16,19]).forEach((m,i)=>tone({f:mtof(m),t:now()+i*.16,d:i===5?1.6:.4,type:'triangle',v:.15,echo:1}))}
 };
 function setMute(m){AU.muted=m;if(AU.master)AU.master.gain.value=m?0:1;
-  $('#mute').textContent='♫ '+T(m?'SOUND OFF':'SOUND ON');$('#mute').style.opacity=m?.6:1}
+  $('#mute').textContent='♫ '+T(m?'sound_off':'sound_on');$('#mute').style.opacity=m?.6:1}
 $('#mute').onclick=e=>{e.stopPropagation();audioInit();setMute(!AU.muted);hush(!AU.muted);SFX.click()};
 /* ============ PAINT: a small painterly toolkit ============ */
 /* Rooms are painted once, with gradients, textures, light and shadow, at twice the room resolution.
@@ -1270,11 +1278,11 @@ async function talkTree(topics,o){const A=G.talking,T=CHAP[G.ch].topics||[];
 function buildVerbs(){const v=$('#verbs');v.innerHTML='';
   VERBS.forEach(([id,label])=>{const b=document.createElement('button');b.type='button';b.textContent=T(label);b.dataset.v=id;
     b.onclick=()=>{if(G.busy)return;audioInit();SFX.click();G.verb=G.verb===id?'walk':id;G.item=null;syncVerbs();drawInv();status()};v.appendChild(b)});
-  const p=document.createElement('button');p.type='button';p.id='pray';p.textContent=T('Pray to Jehovah');p.onclick=pray;v.appendChild(p);
+  const p=document.createElement('button');p.type='button';p.id='pray';p.textContent=T('pray_to_jehovah');p.onclick=pray;v.appendChild(p);
   const w=document.createElement('button');w.type='button';w.id='swap';w.onclick=()=>swap();v.appendChild(w);syncVerbs()}
 /* swapBtn: in a chapter with a party, the prayer bar gives up a third of its width to a button naming the character to switch to. */
 function swapBtn(){const b=$('#swap'),ps=party(),on=ps.length>1;$('#verbs').classList.toggle('party',on);if(!on)return;
-  const n=ps[(ps.indexOf(PC())+1)%ps.length];b.textContent='\u21c4 '+T(storyName(n));b.title=T('Play as {name} (C)',{name:T(storyName(n))});b.disabled=!n.room}
+  const n=ps[(ps.indexOf(PC())+1)%ps.length];b.textContent='\u21c4 '+T(storyName(n));b.title=T('play_as_name_c',{name:T(storyName(n))});b.disabled=!n.room}
 /* swap: hand control to the next member of the party. If he stands in another room, the view goes there. */
 function swap(to){if(G.busy||G.scene||!G.room)return;const ps=party();if(ps.length<2)return;
   const a=to||ps[(ps.indexOf(PC())+1)%ps.length];if(!a||!a.room||a===PC())return;audioInit();
@@ -1284,11 +1292,11 @@ function playAs(a){const was=PC();if(a===was)return;if(was.walk){was.walk.res(fa
   if(a.room&&a.room!==G.room)viewOf(a);G.item=null;drawInv();swapBtn()}
 /* handOver: Give to another member of the party moves the item from one inventory to the other. */
 async function handOver(to,id){const who=PC(),i=G.inv.indexOf(id);if(i<0)return;G.inv.splice(i,1);invOf(to).push(id);G.item=null;drawInv();SFX.pick();
-  await say(who,T('Take this, {name}.',{name:T(to.called||to.name)}))}
+  await say(who,T('take_this_name',{name:T(to.called||to.name)}))}
 function syncVerbs(){document.querySelectorAll('#verbs button').forEach(b=>b.classList.toggle('sel',b.dataset.v===G.verb));litVerb()}
 /* defVerb: what a plain click does to a hotspot. A hotspot may name it (def); otherwise a door is opened and any other exit
    walked to, a person is talked to, something that can be taken (see take) is picked up, and anything else is looked at. */
-function defVerb(h){if(h.def)return h.def;if(h.exit)return/\bdoor\b/i.test(h.name)?'open':'walk';if(h.actor)return'talk';
+function defVerb(h){if(h.def)return h.def;if(h.exit)return/\bdoor\b/i.test(words(h.name))?'open':'walk';if(h.actor)return'talk';
   return typeof h.pickup==='function'&&h.pickup.take?'pickup':'look'}
 /* litVerb: while the pointer rests on something and no verb is chosen, the verb a click would use is lit in the panel. */
 const itemVerb=id=>ITEMS[id].def||'look';
@@ -1312,18 +1320,18 @@ function drawInv(){const el=$('#inv');el.innerHTML='';for(let i=0;i<10;i++){cons
 function status(){const el=$('#status');litVerb();pointer(ptrScale,pointerKind(G.hover));if(G.busy){el.textContent='\u00a0';return}
   const h=G.hover,hn=h?T(h.item?ITEMS[h.item].name:h.name):'',v=VNAME[G.verb==='walk'&&h&&!G.item?(h.item?itemVerb(h.item):defVerb(h)):G.verb];
   if(G.item){const on=hn&&!(h&&h.item===G.item),item=T(ITEMS[G.item].name);
-    el.textContent=G.verb==='give'?(on?T('Give {item} to {thing}',{item,thing:hn}):T('Give {item} to',{item})):(on?T('Use {item} with {thing}',{item,thing:hn}):T('Use {item} with',{item}))}
-  else el.textContent=hn?T('{verb} {thing}',{verb:T(v),thing:hn}):T(v)}
-const DEF={look:h=>'Nothing more to see there.',pickup:h=>h.actor?'That would hardly be loving.':'I have no need of that.',
-  use:h=>h.actor?'People are not tools.':'I see no use in that right now.',open:h=>'That does not open.',
-  talk:h=>'I would get no answer.',give:h=>'First I should choose something to give.'};
-const NOPE=['That will not work.','Those do not go together.','No. I should think it through calmly.'];
+    el.textContent=G.verb==='give'?(on?T('give_item_to_thing',{item,thing:hn}):T('give_item_to',{item})):(on?T('use_item_with_thing',{item,thing:hn}):T('use_item_with',{item}))}
+  else el.textContent=hn?T('verb_thing',{verb:T(v),thing:hn}):T(v)}
+const DEF={look:h=>'nothing_more_to_see_there',pickup:h=>h.actor?'that_would_hardly_be_loving':'i_have_no_need_of_that',
+  use:h=>h.actor?'people_are_not_tools':'i_see_no_use_in_that_right',open:h=>'that_does_not_open',
+  talk:h=>'i_would_get_no_answer',give:h=>'first_i_should_choose_something_to_give'};
+const NOPE=['that_will_not_work','those_do_not_go_together','no_said'];
 function clickItem(id){if(G.busy)return;audioInit();const it=ITEMS[id],a=G.item;
   if(a&&a!==id)return cut(()=>combine(a,id));
   if(G.verb==='use'||G.verb==='give'){G.item=a===id?null:id;SFX.click();drawInv();status();return}
   if((G.verb==='open'||G.verb==='walk'&&it.def==='open')&&it.open)return cut(it.open);
   if(G.verb==='walk'||G.verb==='look')return cut(()=>say(PC(),itemLook(id)));
-  cut(()=>say(PC(),G.verb==='pickup'?'I am already carrying it.':G.verb==='open'?'That does not open.':T('It is only {item}.',{item:T(it.name)})))}
+  cut(()=>say(PC(),G.verb==='pickup'?'i_am_already_carrying_it':G.verb==='open'?'that_does_not_open':T('it_is_only_item',{item:T(it.name)})))}
 /* itemLook: an item described in the voice of whoever holds it (ITEMS[id].by[character id]); look is Paul's. */
 const itemLook=id=>{const it=ITEMS[id],w=PC();return w!==P&&it.by&&it.by[w.id]||it.look};
 function hsAt(x,y){for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&(Math.abs(x-a.x)<=10||a.mate&&Math.abs(x-a.x-a.mate.dx*a.dir)<=10)&&y>=a.y-49&&y<=a.y+1)return a.hs;
@@ -1331,7 +1339,7 @@ function hsAt(x,y){for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.roo
 /* show: an item given or shown to a person with no particular use for it. He answers in his own voice: from his show table
    (keyed by item id), else with his fallback, show['*']. Using an item on a person is the same as giving it. */
 function show(h,item){const w=PC(),s=(w===P?h.show:h.as&&h.as[w.id]&&h.as[w.id].show)||{},r=s[item]!=null?s[item]:s['*'];
-  return r!=null?lines(h.actor,r,item):say(h.actor,'Keep it, friend.')}
+  return r!=null?lines(h.actor,r,item):say(h.actor,'keep_it_friend')}
 /* act: what a verb does to a hotspot. Paul uses the hotspot's own handlers. Another member of the party uses only what the level
    wrote for him (h.as[his id]: look, use, give, talk, show...); for anything else he answers in his own voice (his def table). */
 async function act(v,h,item){const who=PC(),o=who===P?h:(h.as&&h.as[who.id])||{},
@@ -1340,7 +1348,7 @@ async function act(v,h,item){const who=PC(),o=who===P?h:(h.as&&h.as[who.id])||{}
   if(h.actor&&h.actor!==who&&(v==='talk'||item)){G.with=h.actor;G.withDir=h.actor.dir}   /* the one he talks with, or shows something to, until this is over (see cut and facing) */
   if(item){if(v==='give'&&h.actor&&h.actor.party&&h.actor!==who)return handOver(h.actor,item);
     const fn=v==='give'||h.actor&&!o.useWith?o.give:o.useWith;if(fn&&await fn(item)!==false)return;
-    if(h.actor)return show(h,item);SFX.nope();return say(who,v==='give'?'I cannot give anything to that.':pick(NOPE))}
+    if(h.actor)return show(h,item);SFX.nope();return say(who,v==='give'?'i_cannot_give_anything_to_that':pick(NOPE))}
   if(v==='talk'&&h.actor)G.talking=h.actor;
   if((v==='use'||v==='open')&&o[v]==null&&h.exit)return h.exit();
   if(o[v]!=null)return run(o[v]);
@@ -1540,22 +1548,22 @@ function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmo
   posSpeech();tagsOn();drawTags(ts);requestAnimationFrame(render)}
 /* ============ GAME: items, combinations, prayer hints ============ */
 Object.assign(ITEMS,{
-  awl:{name:'awl',look:'A stout awl for piercing goat-hair cloth and leather. It has stitched more tents than I can count.'},
-  thread:{name:'waxed thread',look:'Strong linen thread, waxed against the weather.'},
-  knife:{name:"tentmaker's knife",look:'A half-moon blade for cutting cloth and leather. A tool for making, not for harming.'},
+  awl:{name:'awl',look:'stout_awl_for_piercing'},
+  thread:{name:'waxed_thread',look:'strong_linen_thread_waxed_against_the_weather'},
+  knife:{name:'tentmakers_knife',look:'half_moon_blade_for_cutting'},
   /* Paul's notebook in every chapter. The overlay lives in shared/tablets.js; each level supplies the entries (tablets in its definition). */
-  tablets:{name:'wax tablets',def:'open',look:'My wax tablets. Whom I have met, what is still to be done, and the Scriptures I want to keep before me.',
+  tablets:{name:'wax_tablets',def:'open',look:'my_wax_tablets',
     open:async()=>{try{await need('tablets')}catch(e){return narr(e.message)}return SHARED.tablets.open(CHAP[G.ch].tablets||{})}}});
-const COMBO={'awl+thread':()=>say(P,'Threaded and ready. Now, what needs stitching?')};
+const COMBO={'awl+thread':()=>say(P,'threaded_and_ready')};
 /* combine: two items used together. The crafts are Paul's; another character leaves them to him (noCraft). */
-async function combine(a,b){const c=COMBO[[a,b].sort().join('+')],w=PC();if(w!==P)return say(w,w.noCraft||'I had better leave that to Paul.');
+async function combine(a,b){const c=COMBO[[a,b].sort().join('+')],w=PC();if(w!==P)return say(w,w.noCraft||'i_had_better_leave_that_to_paul');
   if(c)return c();SFX.nope();return say(P,pick(NOPE))}
 /* --- "Pray to Jehovah": a pause for calm, then a context-sensitive thought. Never changes the game state. --- */
-const PRAYERS=['{name} bows his head and quietly asks Jehovah for wisdom. (James 1:5)',
-  '{name} pauses, and in prayer leaves his cares with Jehovah. (1 Peter 5:7)','In the stillness, {name} asks Jehovah to help him think clearly.'];
+const PRAYERS=['name_bows_his_head_james_1_5',
+  'name_pauses_and_in_prayer_1_peter_5_7','in_the_stillness_name_asks'];
 /* when two are played as one (an actor with a mate), the two of them pray */
-const PRAYERS2=['{name} bow their heads and quietly ask Jehovah for wisdom. (James 1:5)',
-  '{name} pause, and in prayer leave their cares with Jehovah. (1 Peter 5:7)','In the stillness, {name} ask Jehovah to help them think clearly.'];
+const PRAYERS2=['name_bow_their_heads_james_1_5',
+  'name_pause_and_in_prayer_1_peter_5_7','in_the_stillness_name_ask'];
 function hint(){return CHAP[G.ch].hint()}
 function pray(){if(G.busy||G.scene||!G.room)return;audioInit();
   cut(async()=>{G.prays++;const me=PC(),d=$('#dim'),m=AU.mus,ab=AU.ambG;d.style.opacity=.55;me.bow=true;SFX.pray();
@@ -1598,39 +1606,39 @@ function tween(ms,fn){return new Promise(res=>{const t0=performance.now();(funct
 /* ============ LEVELS: each chapter is a separate file under levels/, loaded on demand ============ */
 /* The manifest holds only what is needed before a level is loaded: its name, its file, and the salt that validates its codes. */
 const CHAP={
-  1:{name:'ESCAPE FROM DAMASCUS',label:'Chapter One',title:'Escape from Damascus',salt:0x5A17,src:'levels/chapter1.js',treasure:{name:'A mule in a sheepfold',at:'9SK-FPZ'}},
-  2:{name:'A FRIEND IN JERUSALEM',label:'Chapter Two',title:'A Friend in Jerusalem',salt:0x2B6D,src:'levels/chapter2.js',treasure:{name:'Not another basket',at:'2-B5Q-PSJ'}},
-  3:{name:'CALLED TO ANTIOCH',label:'Chapter Three',title:'Called to Antioch',salt:0x3C91,src:'levels/chapter3.js',treasure:{name:'Barnabas at the bench',at:'3-MKP-96F-266'}},
-  4:{name:'SENT OUT TO CYPRUS',label:'Chapter Four',title:'Sent Out to Cyprus',salt:0x4D2F,src:'levels/chapter4.js',treasure:{name:'A roof cut wide',at:'4-CBS-2XW-MAT'}},
-  5:{name:'A LIGHT OF NATIONS',label:'Chapter Five',title:'A Light of Nations',salt:0x5E73,src:'levels/chapter5.js',treasure:{name:'The echo in the gorge',at:'5-TG6-X5J-5RG'}},
-  6:{name:'THE DOOR TO FAITH',label:'Chapter Six',title:'The Door to Faith',salt:0x6F19,src:'levels/chapter6.js',treasure:{name:'Four good corners',at:'6-JSK-B2Y-Q58'}},
-  7:{name:'TIMOTHY OF LYSTRA',label:'Chapter Seven',title:'Timothy of Lystra',salt:0x7B43,src:'levels/chapter7.js',treasure:{name:'The marks by the door',at:'7-7P9-F36-V9Z'}},
-  8:{name:'THE MAN FROM MACEDONIA',label:'Chapter Eight',title:'The Man from Macedonia',salt:0x8C57,src:'levels/chapter8.js',treasure:{name:"Luke's notes",at:'8-RRB-QCB-1EC'}},
-  9:{name:'MIDNIGHT IN PHILIPPI',label:'Chapter Nine',title:'Midnight in Philippi',salt:0x9D61,src:'levels/chapter9.js',treasure:{name:'The cricket in the wall',at:'9-P6X-82V-AE3'}},
-  10:{name:'IS IT SO?',label:'Chapter Ten',title:'Is It So?',salt:0xA37B,src:'levels/chapter10.js',treasure:{name:'Wound too far',at:'10-E04-FJ9-Y7P'}},
-  11:{name:'THE UNKNOWN GOD',label:'Chapter Eleven',title:'The Unknown God',salt:0xB48D,src:'levels/chapter11.js',treasure:{name:'Back at the fountain',at:'11-8VM-7EW-T68'}},
-  12:{name:'TENTMAKERS OF CORINTH',label:'Chapter Twelve',title:'Tentmakers of Corinth',salt:0xC59F,src:'levels/chapter12.js',treasure:{name:'The cloth of his own country',at:'12-AXS-T1E-4S6-EEE-J5F'}},
-  13:{name:'THE HALL OF TYRANNUS',label:'Chapter Thirteen',title:'The Hall of Tyrannus',salt:0xD6B3,src:'levels/chapter13.js',treasure:{name:"A pupil's tablet",at:'13-KQC-4NT-ZTX-2SR-Z2V'}}};
+  1:{name:'escape_from_damascus',label:'chapter_one',title:'escape_from_damascus_2',salt:0x5A17,src:'levels/chapter1.js',treasure:{name:'mule_in_a_sheepfold',at:'9SK-FPZ'}},
+  2:{name:'friend_in_jerusalem',label:'chapter_two',title:'a_friend_in_jerusalem',salt:0x2B6D,src:'levels/chapter2.js',treasure:{name:'not_another_basket',at:'2-B5Q-PSJ'}},
+  3:{name:'called_to_antioch',label:'chapter_three',title:'called_to_antioch_2',salt:0x3C91,src:'levels/chapter3.js',treasure:{name:'barnabas_at_the_bench',at:'3-MKP-96F-266'}},
+  4:{name:'sent_out_to_cyprus',label:'chapter_four',title:'sent_out_to_cyprus_2',salt:0x4D2F,src:'levels/chapter4.js',treasure:{name:'roof_cut_wide',at:'4-CBS-2XW-MAT'}},
+  5:{name:'light_of_nations',label:'chapter_five',title:'a_light_of_nations',salt:0x5E73,src:'levels/chapter5.js',treasure:{name:'echo_in_the_gorge',at:'5-TG6-X5J-5RG'}},
+  6:{name:'door_to_faith',label:'chapter_six',title:'the_door_to_faith',salt:0x6F19,src:'levels/chapter6.js',treasure:{name:'four_good_corners',at:'6-JSK-B2Y-Q58'}},
+  7:{name:'timothy_of_lystra',label:'chapter_seven',title:'timothy_of_lystra_2',salt:0x7B43,src:'levels/chapter7.js',treasure:{name:'marks_by_the_door',at:'7-7P9-F36-V9Z'}},
+  8:{name:'man_from_macedonia',label:'chapter_eight',title:'the_man_from_macedonia',salt:0x8C57,src:'levels/chapter8.js',treasure:{name:'lukes_notes',at:'8-RRB-QCB-1EC'}},
+  9:{name:'midnight_in_philippi',label:'chapter_nine',title:'midnight_in_philippi_2',salt:0x9D61,src:'levels/chapter9.js',treasure:{name:'cricket_in_the_wall',at:'9-P6X-82V-AE3'}},
+  10:{name:'is_it_so',label:'chapter_ten',title:'is_it_so_q',salt:0xA37B,src:'levels/chapter10.js',treasure:{name:'wound_too_far',at:'10-E04-FJ9-Y7P'}},
+  11:{name:'unknown_god',label:'chapter_eleven',title:'the_unknown_god',salt:0xB48D,src:'levels/chapter11.js',treasure:{name:'back_at_the_fountain',at:'11-8VM-7EW-T68'}},
+  12:{name:'tentmakers_of_corinth',label:'chapter_twelve',title:'tentmakers_of_corinth_2',salt:0xC59F,src:'levels/chapter12.js',treasure:{name:'cloth_of_his_own_country',at:'12-AXS-T1E-4S6-EEE-J5F'}},
+  13:{name:'hall_of_tyrannus',label:'chapter_thirteen',title:'the_hall_of_tyrannus',salt:0xD6B3,src:'levels/chapter13.js',treasure:{name:'pupils_tablet',at:'13-KQC-4NT-ZTX-2SR-Z2V'}}};
 const TITLE={level:1,scene:'title',mood:'ancient',amb:{crickets:.5,wind:.35,owl:.4}};
-const PRO={name:'THE ROAD TO DAMASCUS',label:'Prologue',title:'The Road to Damascus',src:'levels/prologue.js'};
+const PRO={name:'road_to_damascus',label:'Prologue',title:'the_road_to_damascus',src:'levels/prologue.js'};
 /* PLANNED: the chapters that are planned and not built (issue #47). The title lists them, dimmed, under one line that opens them in place.
    Each is named by the part of Acts it will tell, not by a working title, which may still change; the title it is given replaces that
    reference when the chapter is built and moves into CHAP. Nothing else reads this list: these chapters have no file, no salt and no codes. */
 const PLANNED=[
-  {label:'Chapter Fourteen',short:'Fourteen',ref:'Acts 19:21–20:1'},
-  {label:'Chapter Fifteen',short:'Fifteen',ref:'Acts 20:1-12'},{label:'Chapter Sixteen',short:'Sixteen',ref:'Acts 20:13-38'},
-  {label:'Chapter Seventeen',short:'Seventeen',ref:'Acts 21:1-16'},{label:'Chapter Eighteen',short:'Eighteen',ref:'Acts 21:17–22:29'},
-  {label:'Chapter Nineteen',short:'Nineteen',ref:'Acts 22:30–23:35'},{label:'Chapter Twenty',short:'Twenty',ref:'Acts 24:1-27'},
-  {label:'Chapter Twenty-One',short:'Twenty-One',ref:'Acts 25:1–26:32'},{label:'Chapter Twenty-Two',short:'Twenty-Two',ref:'Acts 27:1-26'},
-  {label:'Chapter Twenty-Three',short:'Twenty-Three',ref:'Acts 27:27–28:10'},{label:'Chapter Twenty-Four',short:'Twenty-Four',ref:'Acts 28:11-16'},
-  {label:'Chapter Twenty-Five',short:'Twenty-Five',ref:'Acts 28:16-31'}];
+  {label:'chapter_fourteen',short:'Fourteen',ref:'acts_19_21_20_1'},
+  {label:'chapter_fifteen',short:'Fifteen',ref:'acts_20_1_12'},{label:'chapter_sixteen',short:'Sixteen',ref:'acts_20_13_38'},
+  {label:'chapter_seventeen',short:'Seventeen',ref:'acts_21_1_16'},{label:'chapter_eighteen',short:'Eighteen',ref:'acts_21_17_22_29'},
+  {label:'chapter_nineteen',short:'Nineteen',ref:'acts_22_30_23_35'},{label:'chapter_twenty',short:'Twenty',ref:'acts_24_1_27'},
+  {label:'chapter_twenty_one',short:'twenty_one',ref:'acts_25_1_26_32'},{label:'chapter_twenty_two',short:'twenty_two',ref:'acts_27_1_26'},
+  {label:'chapter_twenty_three',short:'twenty_three',ref:'acts_27_27_28_10'},{label:'chapter_twenty_four',short:'twenty_four',ref:'acts_28_11_16'},
+  {label:'chapter_twenty_five',short:'twenty_five',ref:'acts_28_16_31'}];
 /* A level file calls LEVEL(n, init). init() registers its art, cast, items and rooms, and returns the chapter definition. */
 function LEVEL(n,init){LOOK.paul=paulLook(n);Object.assign(CHAP[n],init(),{ready:1});LOOK.paul=paulLook(G.ch)}
 function PROLOGUE(init){LOOK.paul=paulLook(1);Object.assign(PRO,init(),{ready:1});LOOK.paul=paulLook(G.ch)}
 /* loadScript: add a script tag (this works from disk, where fetch does not), and check that the file registered what it should. */
 function loadScript(src,ok){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=src;
-  el.onload=()=>ok()?res():rej(new Error(T('{file} was loaded, but it is incomplete.',{file:src})));el.onerror=()=>{el.remove();rej(new Error(T('Could not load {file}.',{file:src})))};document.head.appendChild(el)})}
-/* A level brings its text in the player's language with it (see LANGUAGES); if that file is missing, the chapter plays in English. */
+  el.onload=()=>ok()?res():rej(new Error(T('file_was_loaded_but_it_is_incomplete',{file:src})));el.onerror=()=>{el.remove();rej(new Error(T('could_not_load_file',{file:src})))};document.head.appendChild(el)})}
+/* A level brings its text with it, in English and in the player's language (see LANGUAGES); if the player's file is missing, the chapter plays in English. */
 function loadLevel(n){const c=CHAP[n];if(c.ready)return langFile(G.lang,n);
   return c.loading||(c.loading=loadScript(c.src,()=>c.ready).then(()=>langFile(G.lang,n)).catch(e=>{c.loading=null;throw e}))}
 function loadPrologue(){if(PRO.ready)return langFile(G.lang,'prologue');
@@ -1641,7 +1649,9 @@ function need(name){if(SHARED[name])return Promise.resolve(SHARED[name]);
   return NEEDING[name]||(NEEDING[name]=loadScript('shared/'+name+'.js',()=>SHARED[name]).then(()=>SHARED[name],e=>{NEEDING[name]=null;throw e}))}
 /* --- languages: loading a language's files, choosing one, and redrawing what is on screen --- */
 const LANGLOAD={};
-function langFile(lang,part){const d=LANGS[lang]&&LANGS[lang].dir,k=lang+'/'+part;if(!d)return Promise.resolve();
+/* langFile: a part's text in a language, and in English, from which it falls back */
+function langFile(lang,part){return Promise.all((lang==='en'?['en']:['en',lang]).map(l=>oneLang(l,part)))}
+function oneLang(lang,part){const d=LANGS[lang]&&LANGS[lang].dir,k=lang+'/'+part;if(!d)return Promise.resolve();
   return LANGLOAD[k]||(LANGLOAD[k]=loadScript(d+(part==='main'||part==='prologue'?part:'chapter'+part)+'.js',()=>DICT[lang]&&DICT[lang][part]).catch(e=>{console.error(e);LANGLOAD[k]=null}))}
 const store=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}};
 /* the language to start in: ?lang=xx in the address, else the player's last choice, else the browser's language, else English */
@@ -1652,8 +1662,8 @@ async function setLang(l,keep){if(!LANGS[l])return;
   await Promise.all(['main',...(PRO.ready?['prologue']:[]),...Object.keys(CHAP).filter(n=>CHAP[n].ready)].map(p=>langFile(l,p)));
   G.lang=l;MADE.clear();if(keep)store('paul.lang',l);relang()}
 /* relang: redraw every fixed piece of text in the new language: the panel, the top bar, an open overlay, choices, the tablets */
-function relang(){document.documentElement.lang=G.lang;document.title=T('Paul of Tarsus: On the Roads of Rome');
-  $('#gname').textContent=T('PAUL OF TARSUS');$('#chname').textContent=T(G.inPro?PRO.name:CHAP[G.ch].name);$('#skip').textContent=T('SKIP');fitTop();
+function relang(){document.documentElement.lang=G.lang;document.title=T('paul_of_tarsus_on_the_roads');
+  $('#gname').textContent=T('paul_of_tarsus');$('#chname').textContent=T(G.inPro?PRO.name:CHAP[G.ch].name);$('#skip').textContent=T('SKIP');fitTop();
   const ks=Object.keys(LANGS),nx=ks[(ks.indexOf(G.lang)+1)%ks.length];$('#lang').textContent=G.lang.toUpperCase();
   $('#lang').title=LANGS[nx].native;$('#lang').style.display=ks.length>1?'':'none';
   buildVerbs();swapBtn();setMute(AU.muted);namesBtn();codeBtn();drawInv();status();
@@ -1667,8 +1677,8 @@ $('#skip').onclick=e=>{e.stopPropagation();if(G.onSkip){audioInit();SFX.click();
 /* overlay: show a screen on the overlay. draw paints it, and paints it again when the language changes. */
 function overlay(cls,draw){ov.className=cls;ov.draw=draw;draw()}
 function loadFail(e){console.error(e);ov.onclick=()=>location.reload();
-  overlay('on end',()=>{ov.innerHTML='<h2>'+T('LEVEL NOT FOUND')+'</h2><p>'+esc(e.message)+'</p><p class="small">'+T('The chapter files live in the levels folder next to index.html.')+
-    '</p><p class="go">'+T('Click to reload')+'</p>'})}
+  overlay('on end',()=>{ov.innerHTML='<h2>'+T('level_not_found')+'</h2><p>'+esc(e.message)+'</p><p class="small">'+T('chapter_files_live_in_the_levels')+
+    '</p><p class="go">'+T('click_to_reload')+'</p>'})}
 /* showCard: a chapter's title card, for about three seconds or until a click, Space or Esc. The name is painted in the letters of the
    title's logo (shared/logo.js), with "Chapter One" beneath it; a language whose name needs a letter the logo lacks gets plain text.
    A short sting in the key of the chapter's own score: a drone on the tonic under a harp rising through the fifth to the octave. */
@@ -1718,22 +1728,22 @@ async function title(){lock(true);if(SHARED.scroll)SHARED.scroll.off();await set
   const logo=await need('logo').catch(e=>{console.error(e);return null});
   /* the chapters scroll in their own box below the title (see .chs); Continue stays above it, always in view */
   overlay('on title'+(sp?' splash':''),()=>{const sv=saved(),fs=saves().far,far=fs&&(!sv||fs.code!==sv.code)?decode(fs.code).ch:0,
-      name=T('PAUL OF TARSUS'),sub=T('ON THE ROADS OF ROME'),art=logo&&logo.can(name+sub)?logo.paint(name,sub):null;
+      name=T('paul_of_tarsus'),sub=T('on_the_roads_of_rome'),art=logo&&logo.can(name+sub)?logo.paint(name,sub):null;
     ov.innerHTML=(art?'<h1 class="art"></h1>':'<h1>'+name+'</h1><h2>'+sub+'</h2>')+
-    '<p class="small lede">'+T('A point-and-click adventure based on the book of Acts')+'</p>'+
+    '<p class="small lede">'+T('point_and_click_adventure')+'</p>'+
     (sv?'<p class="go" data-cont="1">&#9656; '+T('Continue')+' &middot; '+T(CHAP[sv.ch].label)+' &middot; '+T(CHAP[sv.ch].title)+'</p>':'')+
     /* the farthest point, when it is not where Continue goes: someone who went back to try an earlier chapter finds the way forward again */
-    (far?`<p class="${sv?'pick':'go'}" data-far="1">&#9656; ${T('Farthest point')} &middot; ${T(CHAP[far].label)} &middot; ${T(CHAP[far].title)}</p>`:'')+
+    (far?`<p class="${sv?'pick':'go'}" data-far="1">&#9656; ${T('farthest_point')} &middot; ${T(CHAP[far].label)} &middot; ${T(CHAP[far].title)}</p>`:'')+
     '<div class="chs">'+`<p class="${sv||far?'pick':'go'}" data-pro="1">&#9656; ${T('Prologue')} &middot; ${T(PRO.title)}</p>`+Object.keys(CHAP).map(n=>`<p class="pick" data-ch="${n}">&#9656; ${T(CHAP[n].label)} &middot; ${T(CHAP[n].title)}</p>`).join('')+
     /* the planned chapters: one line, and under it, once it is clicked, each of them by its reference. None of them can be started. */
-    (PLANNED.length?'<p class="plans" data-plans="1"><span>&#9656;</span> '+T('Chapters {from} to {to}',{from:T(PLANNED[0].short),to:T(PLANNED.at(-1).short)})+' &middot; '+T('in preparation')+'</p>'+
+    (PLANNED.length?'<p class="plans" data-plans="1"><span>&#9656;</span> '+T('chapters_from_to_to',{from:T(PLANNED[0].short),to:T(PLANNED.at(-1).short)})+' &middot; '+T('in_preparation')+'</p>'+
       PLANNED.map(c=>`<p class="plan">${T(c.label)} &middot; ${T(c.ref)}</p>`).join(''):'')+'</div>'+
     /* the hidden treasures, once one has been found (see TREASURES) */
-    (treasures().size?`<p class="pick tre" data-tre="1">&#9656; ${T('Hidden treasures')} &middot; ${T('{n} of {all}',{n:treasures().size,all:hidden().length})}</p>`:'')+
-    '<p class="small">'+T('Click a chapter to begin. Returning? Use ENTER CODE, top right.')+'</p>'+
+    (treasures().size?`<p class="pick tre" data-tre="1">&#9656; ${T('hidden_treasures')} &middot; ${T('{n} of {all}',{n:treasures().size,all:hidden().length})}</p>`:'')+
+    '<p class="small">'+T('click_a_chapter_to_begin')+'</p>'+
     (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'')+
-    (G.splash?'<p class="begin"><span class="go">'+T('Click to begin')+'</span></p>':'');
-    if(art){art.textContent=name+' '+sub;art.setAttribute('role','img');art.setAttribute('aria-label',T('Paul of Tarsus: On the Roads of Rome'));
+    (G.splash?'<p class="begin"><span class="go">'+T('click_to_begin')+'</span></p>':'');
+    if(art){art.textContent=name+' '+sub;art.setAttribute('role','img');art.setAttribute('aria-label',T('paul_of_tarsus_on_the_roads'));
       art.style.width='calc(var(--s)*'+art.width/HR+'px)';art.style.height='calc(var(--s)*'+art.height/HR+'px)';ov.querySelector('h1').appendChild(art)}
     const l=ov.querySelector('.chs');l.onscroll=()=>chsFade(l);requestAnimationFrame(()=>chsFade(l))});
   const pick=e=>{const d=e.target.dataset||{};if(d.lang){SFX.click();return setLang(d.lang,1)}if(e.target.classList.contains('chs'))return;
@@ -1755,8 +1765,8 @@ async function resumeFar(){audioInit();const f=saves().far;if(f&&await restore(f
    the score, such as kindness shown); go (what a click does next); code ([line, code] for the next chapter); time (show the time played). */
 function endScreen(o){const S=SHARED.scroll;if(S&&S.state!=='down'){S.down().then(()=>endScreen(o));return}
   const s=Math.round((performance.now()-G.started)/1000);SFX.win();autosave(o.code?o.code[1]:null);
-  overlay('on end',()=>{ov.innerHTML='<h2>'+T('CHAPTER COMPLETE')+'</h2><h1 style="font-size:calc(var(--s)*12px)">'+esc(T(o.title))+'</h1><p>'+esc(T(o.text))+'</p><p>'+
-    [o.time&&T('Time: {m}m {s}s',{m:Math.floor(s/60),s:s%60}),T('Prayers for wisdom: {n}',{n:G.prays}),...(o.extra||[]).map(x=>T(x))].filter(Boolean).map(esc).join(' &middot; ')+'</p>'+
+  overlay('on end',()=>{ov.innerHTML='<h2>'+T('chapter_complete')+'</h2><h1 style="font-size:calc(var(--s)*12px)">'+esc(T(o.title))+'</h1><p>'+esc(T(o.text))+'</p><p>'+
+    [o.time&&T('time_m_m_s_s',{m:Math.floor(s/60),s:s%60}),T('prayers_for_wisdom_n',{n:G.prays}),...(o.extra||[]).map(x=>T(x))].filter(Boolean).map(esc).join(' &middot; ')+'</p>'+
     '<p class="small">'+esc(T(o.based))+'</p><p class="go">'+esc(T(o.go))+'</p>'+(o.code?'<p class="small">'+esc(T(o.code[0],{code:o.code[1]}))+'</p>':'')})}
 /* ============ SAFE-POINT CODES: chapter and game state packed into letters and numbers ============ */
 const A32='0123456789ABCDEFGHJKMNPQRSTVWXYZ',cb=$('#codebox');
@@ -1888,7 +1898,7 @@ let foundT=0;
 function notice(html){const el=$('#found');clearTimeout(foundT);el.innerHTML=html;el.classList.add('on');foundT=setTimeout(()=>el.classList.remove('on'),G.speedAll>200?400:5200)}
 /* treasure: the chapter being played has given up its hidden treasure. Only the first time is it announced. */
 function treasure(){const n=G.ch,t=CHAP[n]&&CHAP[n].treasure;if(!t||treasures().has(n))return false;keepTreasures([n]);SFX.treasure();
-  notice('&#9670; '+esc(T('Hidden treasure found:'))+' <b>'+esc(T(t.name))+'</b><br>'+esc(T('{n} of {all}',{n:treasures().size,all:hidden().length})));return true}
+  notice('&#9670; '+esc(T('hidden_treasure_found'))+' <b>'+esc(T(t.name))+'</b><br>'+esc(T('n_of_all',{n:treasures().size,all:hidden().length})));return true}
 /* reachedCh: the farthest chapter that this browser has reached in play, from every point it keeps. The screen of treasures leads back only
    to a chapter that has been reached: it gives away nothing of a chapter not yet played. */
 function reachedCh(){const s=saves(),sv=saved();let m=1;for(const e of[s.far,s.last,...s.slots,sv])if(e){const b=decode(e.code);if(b&&b.ch>m)m=b.ch}
@@ -1899,10 +1909,10 @@ function drawTreasures(){const s=treasures(),all=hidden(),far=reachedCh(),ask=mn
   const cell=n=>{const t=CHAP[n].treasure;if(s.has(n))return`<div class="tre got"><small>${esc(T(CHAP[n].label))}</small><b>${esc(T(t.name))}</b></div>`;
     if(n>far)return'<div class="tre"></div>';
     const btn=(a,l)=>`<button type="button" data-t="${n}" data-a="${a}">${esc(l)}</button>`;
-    return'<div class="tre">'+(ask.k===n?'<em>'+esc(T('Leave this game?'))+'</em><div class="seg">'+btn('yes',T('Yes'))+btn('no',T('No'))+'</div>':btn('go',T('Look for it')))+'</div>'};
-  mn.innerHTML='<h2>'+esc(T('HIDDEN TREASURES'))+'</h2><p class="tsum">'+esc(T('{n} of {all} found',{n:s.size,all:all.length}))+'</p>'+
+    return'<div class="tre">'+(ask.k===n?'<em>'+esc(T('leave_this_game'))+'</em><div class="seg">'+btn('yes',T('Yes'))+btn('no',T('No'))+'</div>':btn('go',T('look_for_it')))+'</div>'};
+  mn.innerHTML='<h2>'+esc(T('hidden_treasures_caps'))+'</h2><p class="tsum">'+esc(T('n_of_all_found',{n:s.size,all:all.length}))+'</p>'+
     '<div class="tres">'+all.map(cell).join('')+'</div>'+
-    (s.size?'<p class="tcode">'+esc(T('Code for the treasures found:'))+' <b>'+treasCode(s)+'</b><br>'+esc(T('Type it under ENTER CODE in another browser to take them with you.'))+'</p>':'')+
+    (s.size?'<p class="tcode">'+esc(T('code_for_the_treasures_found'))+' <b>'+treasCode(s)+'</b><br>'+esc(T('type_it_under_enter_code'))+'</p>':'')+
     '<div class="acts"><button type="button" id="tre-x">'+esc(T('Back'))+'</button></div>';
   $('#tre-x').onclick=()=>{SFX.click();if(mn.only)return closeMenu();mn.view='opts';mn.ask=null;mn.draw()};
   mn.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>treasureGo(+b.dataset.t,b.dataset.a))}
@@ -1910,12 +1920,12 @@ async function treasureGo(n,a){if(a==='no'){SFX.click();mn.ask=null;return mn.dr
   if(a==='go'&&mn.inGame){SFX.click();mn.ask={k:n,a};return mn.draw()}
   mn.ask=null;const t=CHAP[n].treasure;mn.classList.remove('on');mn.view='opts';
   if(await restore(t.at,1)===false){SFX.nope();mn.classList.add('on');mn.view='treasures';mn.draw()}}
-function codeBtn(){const on=G.room&&!G.scene,code=on&&makeCode();if(on)autosave(code);$('#code').textContent=on?T('CODE {code}',{code}):T('ENTER CODE')}
+function codeBtn(){const on=G.room&&!G.scene,code=on&&makeCode();if(on)autosave(code);$('#code').textContent=on?T('code_code',{code}):T('enter_code')}
 function closeCode(){cb.classList.remove('on');G.busy=cb.was;if(!G.busy)lock(false);status()}
-const BADCODE='That code is not valid. Please check each letter and number.';
+const BADCODE='that_code_is_not_valid';
 async function tryCode(){const ts=treasDecode($('#codein').value);
   /* a treasure code: what it holds is added to what is kept here, and the box stays open */
-  if(ts){const n=keepTreasures([...ts].filter(x=>CHAP[x]&&CHAP[x].treasure));SFX.good();$('#codemsg').textContent=(n?T('Hidden treasures added: {n}.',{n})+' ':'')+T('{n} of {all} found',{n:treasures().size,all:hidden().length});
+  if(ts){const n=keepTreasures([...ts].filter(x=>CHAP[x]&&CHAP[x].treasure));SFX.good();$('#codemsg').textContent=(n?T('hidden_treasures_added_n',{n})+' ':'')+T('n_of_all_found',{n:treasures().size,all:hidden().length});
     if(ov.classList.contains('title'))ov.draw();return}
   const b=decode($('#codein').value);
   if(b==null){SFX.nope();$('#codemsg').textContent=T(BADCODE);return}
@@ -1927,13 +1937,13 @@ function openCode(){audioInit();if(cb.classList.contains('on'))return closeCode(
   SFX.click();cb.was=G.busy;G.busy=true;lock(true);status();
   /* drawn again, with what has been typed so far, when the language changes */
   cb.draw=()=>{const typed=$('#codein')?$('#codein').value:'';
-    cb.innerHTML=(can?'<h2>'+T('SAFE POINT')+'</h2><p>'+T('Your code for this exact point in the story:')+'</p><div class="big">'+makeCode()+
-        '</div><p>'+T('Write it down. Enter it here, or from the title screen, to return to this point.')+'</p>'+
-        (G.saved?'<p class="kept">'+T('This point is also saved in this browser.')+'</p>':'')
-      :'<h2>'+T('ENTER CODE')+'</h2><p>'+T('Type a code from an earlier game to continue from that point.')+'</p>')+
+    cb.innerHTML=(can?'<h2>'+T('safe_point')+'</h2><p>'+T('your_code_for_this_exact')+'</p><div class="big">'+makeCode()+
+        '</div><p>'+T('write_it_down')+'</p>'+
+        (G.saved?'<p class="kept">'+T('this_point_is_also_saved')+'</p>':'')
+      :'<h2>'+T('enter_code')+'</h2><p>'+T('type_a_code_from_an_earlier')+'</p>')+
       '<div class="row"><input id="codein" maxlength="24" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXX-XXX">'+
       '<button id="codego" type="button">'+T('GO')+'</button></div><p id="codemsg" class="small">&nbsp;</p>'+
-      '<button id="codex" type="button">'+(can?T('Back to the game'):T('Back'))+'</button>';
+      '<button id="codex" type="button">'+(can?T('back_to_the_game'):T('Back'))+'</button>';
     $('#codein').value=typed;$('#codego').onclick=tryCode;$('#codex').onclick=closeCode;
     $('#codein').onkeydown=e=>{if(e.key==='Enter')tryCode();else if(e.key==='Escape')closeCode()}};
   cb.innerHTML='';cb.draw();cb.classList.add('on');if(!can)$('#codein').focus()}
@@ -1957,14 +1967,14 @@ function openMenu(view){audioInit();if(mn.classList.contains('on'))return closeM
     mn.innerHTML='<h2>'+esc(T('OPTIONS'))+'</h2>'+
       '<div class="row"><label for="opt-mus">'+esc(T('Music'))+'</label><input id="opt-mus" type="range" min="0" max="100" step="10" value="'+Math.round(OPTS.mus*100)+'"></div>'+
       '<div class="row"><label for="opt-fx">'+esc(T('Effects'))+'</label><input id="opt-fx" type="range" min="0" max="100" step="10" value="'+Math.round(OPTS.fx*100)+'"></div>'+
-      '<div class="row"><label>'+esc(T('Text speed'))+'</label><div class="seg">'+spds.map(([v,l])=>`<button type="button" data-spd="${v}"${OPTS.spd===v?' class="on"':''}>${esc(T(l))}</button>`).join('')+'</div></div>'+
+      '<div class="row"><label>'+esc(T('text_speed'))+'</label><div class="seg">'+spds.map(([v,l])=>`<button type="button" data-spd="${v}"${OPTS.spd===v?' class="on"':''}>${esc(T(l))}</button>`).join('')+'</div></div>'+
       '<div class="row"><label>'+esc(T('Movement'))+'</label><div class="seg">'+movs.map(([v,l])=>`<button type="button" data-mov="${v}"${OPTS.mov===v?' class="on"':''}>${esc(T(l))}</button>`).join('')+'</div></div>'+
       '<div class="row"><label>'+esc(T('Names'))+'</label><div class="seg"><button type="button" id="opt-names"'+(G.tagPin?' class="on"':'')+'>'+esc(T(G.tagPin?'On':'Off'))+'</button></div></div>'+
       (Object.keys(LANGS).length>1?'<div class="row"><label>'+esc(T('Language'))+'</label><div class="seg">'+Object.keys(LANGS).map(l=>`<button type="button" data-lang="${l}"${l===G.lang?' class="on"':''}>${esc(LANGS[l].native)}</button>`).join('')+'</div></div>':'')+
-      '<div class="row"><label>'+esc(T('Saved games'))+'</label><div class="seg"><button type="button" id="opt-saves">'+esc(T(inGame?'Save / Load':'Load'))+'</button></div></div>'+
-      '<div class="row"><label>'+esc(T('Hidden treasures'))+'</label><div class="seg"><button type="button" id="opt-tre">'+esc(T('{n} of {all}',{n:treasures().size,all:hidden().length}))+'</button></div></div>'+
-      '<div class="acts">'+(inGame?'<button type="button" id="opt-title">'+esc(T('Back to title'))+'</button>':'')+
-      '<button type="button" id="opt-x">'+esc(inGame?T('Back to the game'):T('Back'))+'</button></div>';
+      '<div class="row"><label>'+esc(T('saved_games'))+'</label><div class="seg"><button type="button" id="opt-saves">'+esc(T(inGame?'save_load':'Load'))+'</button></div></div>'+
+      '<div class="row"><label>'+esc(T('hidden_treasures'))+'</label><div class="seg"><button type="button" id="opt-tre">'+esc(T('n_of_all',{n:treasures().size,all:hidden().length}))+'</button></div></div>'+
+      '<div class="acts">'+(inGame?'<button type="button" id="opt-title">'+esc(T('back_to_title'))+'</button>':'')+
+      '<button type="button" id="opt-x">'+esc(inGame?T('back_to_the_game'):T('Back'))+'</button></div>';
     $('#opt-mus').oninput=e=>{OPTS.mus=+e.target.value/100;applyOpts();saveOpts()};
     $('#opt-fx').oninput=e=>{OPTS.fx=+e.target.value/100;applyOpts();saveOpts()};
     mn.querySelectorAll('[data-spd]').forEach(b=>b.onclick=()=>{SFX.click();OPTS.spd=+b.dataset.spd;saveOpts();mn.draw()});
@@ -1981,7 +1991,7 @@ function openMenu(view){audioInit();if(mn.classList.contains('on'))return closeM
    Overwriting, deleting, and loading over a game in play each ask first, in the row itself (mn.ask), never with a browser dialog. */
 function drawSaves(){const s=saves(),inGame=mn.inGame,ask=mn.ask||{},
     when=t=>{try{return t?new Date(t).toLocaleString(G.lang,{dateStyle:'medium',timeStyle:'short'}):''}catch(e){return''}},
-    E=T('Empty'),L={save:T('Save'),load:T('Load'),del:T('Delete'),yes:T('Yes'),no:T('No')},Q={save:T('Overwrite?'),del:T('Delete?'),load:T('Leave this game?')},
+    E=T('Empty'),L={save:T('Save'),load:T('Load'),del:T('Delete'),yes:T('Yes'),no:T('No')},Q={save:T('overwrite'),del:T('delete_q'),load:T('leave_this_game')},
     btn=(k,a)=>`<button type="button" data-k="${k}" data-a="${a}">${esc(L[a])}</button>`,
     row=(k,name,e,acts)=>{const b=e&&decode(e.code),q=ask.k===k&&ask.a;
       return`<div class="row slot" data-slot="${k}"><div class="sl"><b>${esc(name)}</b>${e?'<small>'+esc(when(e.t))+'</small>':''}`+
@@ -1989,8 +1999,8 @@ function drawSaves(){const s=saves(),inGame=mn.inGame,ask=mn.ask||{},
         (q?`<em>${esc(Q[q])}</em>`+btn(k,'yes')+btn(k,'no')
           :acts.filter(a=>a!=='save'||inGame).filter(a=>a==='save'||e).map(a=>btn(k,a)).join(''))+'</div></div>'};
   const last=saved(),lastE=last?{code:last.code,t:s.last&&s.last.code===last.code?s.last.t:0}:null;
-  mn.innerHTML='<h2>'+esc(T('SAVED GAMES'))+'</h2>'+row('far',T('Farthest point'),s.far,['load','del'])+row('last',T('Last point'),lastE,['load'])+
-    s.slots.map((e,i)=>row(i,T('Slot {n}',{n:i+1}),e,['save','load','del'])).join('')+
+  mn.innerHTML='<h2>'+esc(T('saved_games_caps'))+'</h2>'+row('far',T('farthest_point'),s.far,['load','del'])+row('last',T('last_point'),lastE,['load'])+
+    s.slots.map((e,i)=>row(i,T('slot_n',{n:i+1}),e,['save','load','del'])).join('')+
     '<div class="acts"><button type="button" id="sav-x">'+esc(T('Back'))+'</button></div>';
   $('#sav-x').onclick=()=>{SFX.click();mn.view='opts';mn.ask=null;mn.draw()};
   mn.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const k=b.dataset.k,a=b.dataset.a;slotDo(k==='far'||k==='last'?k:+k,a)})}
@@ -2007,7 +2017,8 @@ async function slotDo(k,a){const s=saves(),e=k==='far'?s.far:k==='last'?(saved()
 $('#opts').onclick=e=>{e.stopPropagation();openMenu()};mn.onclick=e=>e.stopPropagation();
 const syncFull=()=>{const w=$('#wrap').classList;w.toggle('full',ov.classList.contains('on')||cb.classList.contains('on')||mn.classList.contains('on'));w.toggle('title',ov.classList.contains('title'))};
 for(const el of[ov,cb,mn])new MutationObserver(syncFull).observe(el,{attributes:true,attributeFilter:['class']});
-loadOpts();skin();buildVerbs();requestAnimationFrame(render);title();
+/* the engine's English comes first: nothing is shown before it is there */
+oneLang('en','main').then(()=>{loadOpts();skin();buildVerbs();requestAnimationFrame(render);title()});
 /* An installable app that plays offline (shared/pwa.js, sw.js): only where the game is served over http(s), never from disk or in the playtest's pages. */
 if(/^https?:$/.test(location.protocol)&&'serviceWorker' in navigator)need('logo').then(()=>need('pwa')).then(p=>p.install({CHAP,LANGS})).catch(e=>console.error(e));
 </script>

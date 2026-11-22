@@ -1,11 +1,16 @@
-// Finds the player-visible English text in the game's source files, and checks every language under lang/ against it.
-//   node tools/strings.mjs levels/chapter1.js     prints the text found in a file, one line each
-//   node tools/strings.mjs --check                 the translation check (tools/playtest.mjs runs it too)
+// The game's text is data: the code holds keys, lang/en/ holds the English, and every other language under lang/ holds its own text for
+// the same keys, each with the fingerprint of the English line it was made from. This file checks all of it.
+//   node tools/strings.mjs --check                     the text check (tools/playtest.mjs runs it too)
+//   node tools/strings.mjs --show de 9 [--stale]       a part's lines side by side: key, English, German, and whether the German is stale
+//   node tools/strings.mjs --confirm de 9 <key>...     after checking a stale German line (or rewriting it), record that it fits the
+//                                                      English as it stands now; --stale instead of keys confirms every stale line of the part
+//   node tools/strings.mjs levels/chapter1.js          the text-like strings found in a file, one line each
 // A string literal counts as text when it reads like a sentence or a phrase (letters and a space), when it is a one-word line
 // such as "Gladly.", when it sits where a name or a line goes (name:, called:, look:, q:..., a person's name in actor(...), the
 // branches of a get name() getter), or when it is passed to T(...). Code strings that happen to read like text are in NOT_TEXT.
 // A short string of the form "word: value" is taken for a style rule; a sentence that opens that way ("Beware: the road is long.") is text.
-// What the scan misses, the playtest still catches: it plays the whole game in each language and fails on any line shown untranslated.
+// In the code every such string must be a key of lang/en. What the scan misses, the playtest still catches: it plays the whole game in
+// each language and fails on any key shown without its text.
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -46,7 +51,8 @@ export function isText(t,inGetName){const s=t.v,b=t.before,p1=b[b.length-1],p2=b
   const slot=p1&&p1.v===':'&&p2&&p2.k==='w'&&/^(name|called|q|t|ref|short|note|look|pickup|use|open|talk|give|text|noCraft)$/.test(p2.v);
   /* actor(id, 'Name', ...): the second argument */
   const actorName=p1&&p1.v===','&&p2&&p2.k==='s'&&p3&&p3.v==='('&&b[b.length-4]&&b[b.length-4].v==='actor';
-  if(slot||actorName||inGetName)return !/^[a-z]+[A-Z]\w*$/.test(s)&&!looksCode(s);
+  /* in a place for text, a short "Word: value." that ends as a sentence does is text, not a style rule ("Tomorrow: Derbe.") */
+  if(slot||actorName||inGetName)return !/^[a-z]+[A-Z]\w*$/.test(s)&&(!looksCode(s)||/^\p{Lu}.*[.!?]$/u.test(s));
   /* a line of one word: "Gladly.", "Isaiah..." */
   if(/^\p{Lu}\p{Ll}+(?:\.\.\.|[.!?])$/u.test(s))return true;
   return / /.test(s.trim())&&!looksCode(s)}
@@ -61,42 +67,85 @@ export function scan(src,{engine}={}){const lits=literals(src),out=[];
     if(engine?T:isText(t,g))out.push({s:t.v,line:src.slice(0,t.at).split('\n').length,tpl:!!t.tpl})}
   return out}
 
-if(process.argv[1]&&fileURLToPath(import.meta.url)===path.resolve(process.argv[1])&&process.argv[2]!=='--check'){
+if(process.argv[1]&&fileURLToPath(import.meta.url)===path.resolve(process.argv[1])&&process.argv[2]&&!process.argv[2].startsWith('--')){
   for(const f of process.argv.slice(2)){const src=fs.readFileSync(f,'utf8');for(const x of scan(src,{engine:/index\.html$/.test(f)}))console.log(x.line+'\t'+x.s)}}
 
-/* ---------- the translation check (run by tools/playtest.mjs, or: node tools/strings.mjs --check) ---------- */
+/* ---------- the text check (run by tools/playtest.mjs, or: node tools/strings.mjs --check) ---------- */
 const ROOT=path.join(path.dirname(fileURLToPath(import.meta.url)),'..');
-const engineSource=()=>{const h=fs.readFileSync(path.join(ROOT,'index.html'),'utf8');return h.slice(h.indexOf('<script>')+8,h.lastIndexOf('</script>'))};
+/* the engine's code: what stands between <script> and </script> in index.html */
+const engineSource=()=>[...fs.readFileSync(path.join(ROOT,'index.html'),'utf8').matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n;\n');
+/* the fingerprint of an English line: FNV-1a over its UTF-16 code units, in base 36 */
+export const fingerprint=s=>{let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36).padStart(7,'0')};
+const PARTS=()=>{const p=['main'];if(fs.existsSync(path.join(ROOT,'levels','prologue.js')))p.push('prologue');
+  for(const f of fs.readdirSync(path.join(ROOT,'levels')).sort((a,b)=>a.localeCompare(b,'en',{numeric:true}))){const m=f.match(/^chapter(\d+)\.js$/);if(m)p.push(m[1])}return p};
+const langFile=(lang,part)=>path.join(ROOT,'lang',lang,(part==='main'||part==='prologue'?part:'chapter'+part)+'.js');
+/* a language's entries, part by part, as they stand in its files: a string (English) or [text, fingerprint] (any other language) */
+export function readLang(lang){const D={},sb={TEXTS:(l,p,d)=>{if(l===lang)Object.assign(D[p]||(D[p]={}),d)}};
+  const dir=path.join(ROOT,'lang',lang);if(fs.existsSync(dir))for(const f of fs.readdirSync(dir))if(f.endsWith('.js'))vm.runInNewContext(fs.readFileSync(path.join(dir,f),'utf8'),sb,{filename:f});
+  return D}
+const textOf=v=>Array.isArray(v)?v[0]:v;
 /* English book names, as they must not appear (with a chapter and verse) in another language's text */
 const BOOKS='Genesis|Exodus|Leviticus|Numbers|Deuteronomy|Joshua|Judges|Kings|Chronicles|Ezra|Nehemiah|Job|Proverbs|Ecclesiastes|Song of Solomon|Isaiah|Jeremiah|Lamentations|Ezekiel|Obadiah|Jonah|Micah|Habakkuk|Zephaniah|Haggai|Zechariah|Malachi|Matthew|Mark|Luke|John|Acts|Romans|Corinthians|Galatians|Ephesians|Philippians|Colossians|Thessalonians|Timothy|Hebrews|James|Peter|Jude|Revelation';
 /* what each language's text must not contain */
 const RULES={de:[[/"/,'a straight quotation mark (German uses „ and “)'],[/\bC\.E\.|B\.C\.E\./,'C.E. or B.C.E. (German uses u. Z. and v. u. Z.)']]};
 export function checkTexts(){
   const parts={main:[engineSource(),...['tablets','map'].map(n=>fs.readFileSync(path.join(ROOT,'shared',n+'.js'),'utf8'))]};
-  if(fs.existsSync(path.join(ROOT,'levels','prologue.js')))parts.prologue=[fs.readFileSync(path.join(ROOT,'levels','prologue.js'),'utf8')];
-  for(const f of fs.readdirSync(path.join(ROOT,'levels')).sort()){const m=f.match(/^chapter(\d+)\.js$/);if(m)parts[m[1]]=[fs.readFileSync(path.join(ROOT,'levels',f),'utf8')]}
-  const text={},lit={};for(const k in parts){text[k]=new Set();lit[k]=new Set();for(const s of parts[k]){for(const x of scan(s))text[k].add(x.s);for(const t of literals(s))lit[k].add(t.v)}}
+  for(const k of PARTS())if(k!=='main')parts[k]=[fs.readFileSync(path.join(ROOT,'levels',k==='prologue'?'prologue.js':'chapter'+k+'.js'),'utf8')];
+  const lit={};for(const k in parts){lit[k]=new Set();for(const s of parts[k])for(const t of literals(s))lit[k].add(t.v)}
   const out=[];let failed=false;const ok=(c,m,list)=>{if(!c)failed=true;out.push((c?'ok   ':'FAIL ')+m+(c?'':'\n       '+list.slice(0,12).map(s=>JSON.stringify(s)).join('\n       ')+(list.length>12?`\n       ... ${list.length-12} more`:'')))};
+  const where=k=>k==='main'?'':k==='prologue'?'prologue: ':'chapter '+k+': ';
   /* a line that is spoken with a gesture (a chapter's ACTING table) is a line of that chapter: it stands in the file once more, where it is spoken */
   {const orphan=[];let n=0;for(const k in parts){if(k==='main')continue;const src=parts[k][0],m=/\nconst ACTING=\{([\s\S]*?)\};\n/.exec(src);if(!m)continue;
       const count=s=>literals(src).filter(t=>t.v===s).length;for(const t of literals(m[1])){n++;if(count(t.v)<2)orphan.push('chapter '+k+': '+t.v)}}
     ok(!orphan.length&&n>0,`every line that is given a gesture is a line of its chapter (${n} lines)`,orphan)}
-  const langDir=path.join(ROOT,'lang');
-  for(const lang of fs.existsSync(langDir)?fs.readdirSync(langDir).sort():[]){const D={},sb={TEXTS:(l,p,d)=>{if(l===lang)Object.assign(D[p]||(D[p]={}),d)}};
-    for(const f of fs.readdirSync(path.join(langDir,lang)))if(f.endsWith('.js'))vm.runInNewContext(fs.readFileSync(path.join(langDir,lang,f),'utf8'),sb,{filename:f});
-    let n=0;const miss=[],stale=[],slot=[],book=[],marks=[],rule=[];
-    for(const k in parts){const d=D[k]||{},m=D.main||{};
-      for(const s of text[k]){n++;if(d[s]==null&&m[s]==null)miss.push((k==='main'?'':'chapter '+k+': ')+s)}
-      for(const s in d){if(!lit[k].has(s))stale.push((k==='main'?'':'chapter '+k+': ')+s);const v=d[s];
-        for(const x of v.match(/\{\w+\}/g)||[])if(!s.includes(x))slot.push(s+' -> '+v);
-        if(new RegExp(`\\b(${BOOKS}) \\d+:\\d+`).test(v))book.push(v);
-        if(/[̀-ͯʹ·]/.test(v.normalize('NFD').replace(/[̈́̀]/g,'')))marks.push(v);
-        for(const[re,what]of RULES[lang]||[])if(re.test(v))rule.push(what+': '+v)}}
+  /* English: every key the code shows has its line, every line is used, and no line is written in the code itself */
+  const EN=readLang('en');{const inCode=[],unused=[],empty=[];let n=0;
+    const known=(k,key)=>(EN[k]&&EN[k][key]!=null)||(EN.prologue&&EN.prologue[key]!=null)||(EN.main&&EN.main[key]!=null)||(k==='main'&&Object.values(EN).some(d=>d[key]!=null));
+    for(const k in parts){for(const s of parts[k])for(const x of scan(s,{engine:k==='main'&&s===parts.main[0]}))if(!known(k,x.s))inCode.push(where(k)+x.s);
+      /* the engine's text also holds what every chapter shows through it, such as the names Saul and Paul */
+      for(const key in EN[k]||{}){n++;if(!lit[k].has(key)&&!(k==='main'&&Object.values(lit).some(l=>l.has(key))))unused.push(where(k)+key);if(typeof EN[k][key]!=='string'||!EN[k][key])empty.push(where(k)+key)}}
+    ok(!inCode.length,'the code holds keys, not text: every line it shows stands in lang/en',inCode);
+    ok(!unused.length,`en: every line is used by its part of the game (${n} lines)`,unused);
+    ok(!empty.length,'en: every line is a string with text in it',empty)}
+  /* names that stand in the status line ("Benutze {item} mit {thing}"): a thing's or a person's name, and an item's */
+  const NAMES={};for(const k in parts){NAMES[k]=new Set();for(const src of parts[k])for(const t of literals(src)){const b=t.before,p1=b[b.length-1],p2=b[b.length-2],p3=b[b.length-3],p4=b[b.length-4];
+    if((p1&&p1.v===':'&&p2&&/^(name|called)$/.test(p2.v))||(p1&&p1.v===','&&p2&&p2.k==='s'&&p3&&p3.v==='('&&p4&&p4.v==='actor'))NAMES[k].add(t.v)}}
+  /* in a language with cases a name must read right after every verb: no inflected adjective or possessive in front of it („Seil (kurz)“, not „kurzes Seil“) */
+  const CASED={de:/^(\p{Ll}+(?:er|es|e|en|em)\s+\p{Lu}|(?:mein|meine|dein|deine|sein|seine|ihr|ihre|unser|unsere)\s|Erspartes$)/u};
+  for(const lang of fs.readdirSync(path.join(ROOT,'lang')).sort()){if(lang==='en'||!fs.statSync(path.join(ROOT,'lang',lang)).isDirectory())continue;const D=readLang(lang);
+    let n=0;const miss=[],orphan=[],unstamped=[],stale=[],slot=[],book=[],marks=[],rule=[];
+    for(const k in parts){const d=D[k]||{},m=D.main||{},e=EN[k]||{};
+      for(const key in e){n++;if(d[key]==null&&m[key]==null)miss.push(where(k)+key+': '+e[key])}
+      for(const key in d){const en=e[key];if(en==null){orphan.push(where(k)+key);continue}const v=d[key],t=textOf(v);
+        if(!Array.isArray(v)||typeof v[1]!=='string')unstamped.push(where(k)+key);else if(v[1]!==fingerprint(en))stale.push(where(k)+key+': '+en);
+        for(const x of t.match(/\{\w+\}/g)||[])if(!en.includes(x))slot.push(en+' -> '+t);
+        if(new RegExp(`\\b(${BOOKS}) \\d+:\\d+`).test(t))book.push(t);
+        if(/[\u0300-\u036f\u02b9\u00b7]/.test(t.normalize('NFD').replace(/[\u0308\u0301\u0300]/g,'')))marks.push(t);
+        for(const[re,what]of RULES[lang]||[])if(re.test(t))rule.push(what+': '+t)}}
     ok(!miss.length,`${lang}: every English line has a translation (${n} lines)`,miss);
-    ok(!stale.length,`${lang}: every translation belongs to a line that is still in the game`,stale);
+    ok(!orphan.length,`${lang}: every translation belongs to a line that is still in lang/en`,orphan);
+    ok(!unstamped.length,`${lang}: every translation carries the fingerprint of its English line ([text, fingerprint])`,unstamped);
+    ok(!stale.length,`${lang}: no English line has changed since it was translated (check each, then: node tools/strings.mjs --confirm ${lang} <part> <key>)`,stale);
     ok(!slot.length,`${lang}: no translation adds a {slot} its English line does not have`,slot);
+    if(CASED[lang]){const bad=[];for(const k in parts){const d=D[k]||{},m=D.main||{};for(const key of NAMES[k]){const v=d[key]??m[key];if(v!=null&&CASED[lang].test(textOf(v)))bad.push(where(k)+key+': '+textOf(v))}}
+      ok(!bad.length,`${lang}: every name reads right after every verb of the status line (a bracket form, \u201eSeil (kurz)\u201c, not an inflected adjective in front)`,bad)}
     ok(!book.length,`${lang}: Scripture references use the language's own book names`,book);
     ok(!marks.length,`${lang}: no pronunciation marks copied from the Bible text`,marks);
     ok(!rule.length,`${lang}: punctuation and wording follow the language's rules`,rule)}
   return{out,failed}}
-if(process.argv[1]&&fileURLToPath(import.meta.url)===path.resolve(process.argv[1])&&process.argv[2]==='--check'){const r=checkTexts();console.log(r.out.join('\n'));process.exit(r.failed?1:0)}
+const main=process.argv[1]&&fileURLToPath(import.meta.url)===path.resolve(process.argv[1]);
+if(main&&process.argv[2]==='--check'){const r=checkTexts();console.log(r.out.join('\n'));process.exit(r.failed?1:0)}
+/* --show and --confirm: one part of one language, against the English */
+if(main&&(process.argv[2]==='--show'||process.argv[2]==='--confirm')){
+  const[,, cmd,lang,part,...rest]=process.argv;if(!lang||lang==='en'||!part){console.error('usage: node tools/strings.mjs --show|--confirm <lang> <part> [keys... | --stale]');process.exit(2)}
+  const EN=readLang('en')[part]||{},D=readLang(lang)[part]||{};
+  const state=key=>{const v=D[key];if(v==null)return'missing';if(!Array.isArray(v))return'unstamped';return v[1]===fingerprint(EN[key])?'ok':'stale'};
+  if(cmd==='--show'){const only=rest.includes('--stale');for(const key in EN){const st=state(key);if(only&&st==='ok')continue;
+      console.log(`${key}  [${st}]\n  en: ${EN[key]}\n  ${lang}: ${D[key]==null?'':textOf(D[key])}`)}process.exit(0)}
+  const keys=rest.includes('--stale')?Object.keys(EN).filter(k=>state(k)==='stale'||state(k)==='unstamped'):rest;
+  const file=langFile(lang,part);const lines=fs.readFileSync(file,'utf8').split('\n');let done=0;const notFound=[];
+  for(const key of keys){if(EN[key]==null||D[key]==null){notFound.push(key);continue}
+    const kq=JSON.stringify(key),i=lines.findIndex(l=>l.startsWith('  '+kq+':'));if(i<0){notFound.push(key);continue}
+    const comma=lines[i].endsWith(',')?',':'';lines[i]=`  ${kq}:${JSON.stringify([textOf(D[key]),fingerprint(EN[key])])}${comma}`;done++}
+  fs.writeFileSync(file,lines.join('\n'));console.log(`${done} line(s) of ${path.relative(ROOT,file)} now carry the fingerprint of their English`+(notFound.length?`; not found: ${notFound.join(', ')}`:''));
+  process.exit(notFound.length?1:0)}

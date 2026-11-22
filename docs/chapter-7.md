@@ -32,7 +32,7 @@ In Lystra the door that Lois said would be open is open, and Timothy is a man's 
 3. At the Gates, talk to Zenon and ask for leather. Use the yoke strap (or the awl) on the torn tent.
 4. Switch to Silas and use the mended tent: he takes its windward line. Switch back to Paul and use the tent.
 5. Use the awl with the goat-hair cloth. Ask Zenon how to keep the letter dry, and use the axle tallow with the letter case. Walk on to the Cilician Gates, and click Derbe on the map.
-6. In Lystra, give the letter to Myron. Talk to Myron: "What do you give him to do, and how does he do it?" Talk to Eunice: "What is he at home, when the brothers are not looking?" Leave by the door to the lane, and click Iconium on the map.
+6. In Lystra, give the letter to Myron. Talk to Myron: "What do you give him to do, and how does he do it?" Talk to Eunice: "What is he at home, when the brothers aren't looking?" Leave by the door to the lane, and click Iconium on the map.
 7. In Iconium, give the letter to Nathan. Talk to Nathan: "How does Iconium come to know a young man from Lystra?" Talk to Tatia: "What does he do, when he comes to Iconium?" Leave by the south gate, and click Lystra on the map.
 8. Talk to Timothy: "I want you with us. It will cost you your home."
 

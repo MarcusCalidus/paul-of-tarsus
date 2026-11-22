@@ -450,30 +450,30 @@ Object.assign(ICON,{
 ICON.staff=g=>{stroke(g,[4.6,20.6,19,3.6],'#3e2a16',2.6);stroke(g,[4.2,20.2,18.6,3.2],'#a8804e',1);stroke(g,[5.4,20.8,19.6,4],'#5a3c20',.6);
   R(g,17.4,3,2.6,2.6,'#6a4a2a');R(g,3.4,19.8,2.2,2.2,'#2a1c10')};
 Object.assign(ITEMS,{
-  sstaff:{name:"Silas's staff",icon:'staff',look:"Silas's walking staff. It came down from Jerusalem beside the letter, and it has not complained once.",
-    by:{silas:'My walking staff. It has learned the road from Jerusalem to Antioch, and now it is learning Cilicia.'}},
-  letter:{name:'letter from Jerusalem',get icon(){return F.cased?'lcase':'letter'},
-    get look(){return F.cased?'The letter of the apostles and the elders, and our copies of it, in a case of goat-hair cloth rubbed with tallow. A river may try it now.'
-      :'The letter of the apostles and the elders in Jerusalem, and the copies we have made of it: one for every congregation on our road.'},
-    by:{get silas(){return F.cased?'The letter, safe in the case Paul sewed for it. I watched him do it, and I could not tell you how.':'The letter I was sent out with, and our copies of it. I know it by heart, and I still read it from the page.'}}},
-  strap:{name:'yoke strap',look:"A spare yoke strap from Zenon's harness box: ox-hide, as thick as a thumb. A hand's length of it will make a corner loop that no wind tears out.",
-    by:{silas:'A strap of ox-hide. To me it is a strap. To Paul it is the corner of a tent.'}},
-  cloth7:{name:'goat-hair cloth',icon:'cloth',look:"A length of goat-hair cloth off Bion's best bale. Cilicium: half the tents on the plateau are cut from it.",
-    by:{silas:'Black goat-hair cloth. The merchant pressed it on Paul, and would not hear no.'}},
-  pcase:{name:'letter case',look:'A sleeve of goat-hair cloth, sewn down both sides, with a flap to fold over its mouth. It will keep out dust. It will not yet keep out a river.',
-    by:{silas:'A case for the letter. Paul made it while I was still wringing out my mantle.'}},
-  tallow:{name:'axle tallow',look:"Tallow from Zenon's grease pot. It keeps water out of an axle. Worked into cloth with the thumb, it will keep water out of that too.",
-    by:{silas:'A lump of tallow. It smells of oxen, and of every mile between Derbe and Tarsus.'}}});
+  sstaff:{name:'silass_staff',icon:'staff',look:'silass_walking_staff',
+    by:{silas:'my_walking_staff_it_has'}},
+  letter:{name:'letter_from_jerusalem',get icon(){return F.cased?'lcase':'letter'},
+    get look(){return F.cased?'letter_of_the_apostles'
+      :'the_letter_of_the_apostles'},
+    by:{get silas(){return F.cased?'letter_safe_in_the_case':'letter_i_was_sent_out_with_and_our_copies'}}},
+  strap:{name:'yoke_strap',look:'spare_yoke_strap_from_zenons',
+    by:{silas:'strap_of_ox_hide'}},
+  cloth7:{name:'goat_hair_cloth',icon:'cloth',look:'length_of_goat_hair_cloth',
+    by:{silas:'black_goat_hair_cloth'}},
+  pcase:{name:'letter_case',look:'sleeve_of_goat_hair_cloth',
+    by:{silas:'case_for_the_letter'}},
+  tallow:{name:'axle_tallow',look:'tallow_from_zenons_grease_pot',
+    by:{silas:'lump_of_tallow'}}});
 /* how Silas describes the tools of the trade (set again whenever this chapter begins: see setup7) */
-const BY7={awl:"The tentmaker's awl. I have watched it work, and I would not know which end to hold.",thread:'Waxed linen thread, and strong.',
-  knife:'A knife for cloth and leather. I had better leave it in its owner\'s hand.',tablets:'His wax tablets: people, work and Scripture, in a small hand.'};
+const BY7={awl:'tentmakers_awl_i',thread:'waxed_linen_thread_and_strong',
+  knife:'a_knife_for_cloth_and_leather',tablets:'his_wax_tablets_people'};
 const inTar=()=>G.room==='tarsus7',inGates=()=>G.room==='gates',inLys=()=>G.room==='lystra7',inIco=()=>G.room==='iconium7',other=()=>PC()===P?SI:P,
   heard=()=>!!(F.eld&&F.fam&&F.nat&&F.tat);
 /* toPaul: something handed to Paul, whoever is being played at the moment */
 function toPaul(id,quiet){const inv=invOf(P);if(!inv.includes(id)){inv.push(id);drawInv();if(!quiet)SFX.pick()}}
 function dropAll(id){for(const a of party()){const inv=invOf(a),i=inv.indexOf(id);if(i>=0)inv.splice(i,1)}if(G.item===id)G.item=null;drawInv()}
 /* bring: something Paul needs for his work, which Silas happens to be carrying, comes back to him */
-async function bring(id){const his=invOf(SI),i=his.indexOf(id);if(PC()===P&&i>=0){his.splice(i,1);toPaul(id,1);await say(SI,'You will want this back, Paul. In my hands it is only baggage.')}return invOf(P).includes(id)}
+async function bring(id){const his=invOf(SI),i=his.indexOf(id);if(PC()===P&&i>=0){his.splice(i,1);toPaul(id,1);await say(SI,'you_will_want_this_back_paul_said')}return invOf(P).includes(id)}
 /* ask: a question put to whoever is played, with three answers. A reply may come from anyone present: r lists lines, or [actor, line, how] sets. */
 async function ask(me,who,q,opts){let av=opts.slice();
   for(;;){await say(who,q);const o=av[await choose(av.map(o=>o.q))];for(const l of o.p||[o.q])await say(me,l);
@@ -483,577 +483,577 @@ async function think(q,opts){let av=opts.slice();
   for(;;){await say(P,q,TH);const o=av[await choose(av.map(o=>o.q))];if(o.ok)return;await say(P,o.no,TH);av=av.filter(x=>x!==o)}}
 /* ============ SCRIPTURE: the passages on the tablets ============ */
 const PASS={
-  deut19:{ref:'Deuteronomy 19:15',gist:'No one is to be found guilty of any wrong or sin on the word of one witness alone. It takes two witnesses, or three, to settle a matter.'},
-  prov18:{ref:'Proverbs 18:17',gist:'Whoever pleads his case first sounds right, until the other side arrives and questions him closely.'},
-  ecc4:{ref:'Ecclesiastes 4:9, 10',gist:'Two do better than one: together their work pays well, and when one falls, the other is there to pull him to his feet.'},
-  isa32:{ref:'Isaiah 32:2',gist:'Every one of them will be like shelter out of the wind and cover from the cloudburst, like running water in dry country, like the shade of a great rock in a thirsty land.'},
-  sam16:{ref:'1 Samuel 16:7',gist:'God does not look at things as a man does: a man goes by what his eyes show him, but Jehovah looks into the heart.'},
-  prov22:{ref:'Proverbs 22:1',gist:'Choose a good name before great riches; to be held in respect is worth more than silver and gold.'},
-  ps71:{ref:'Psalm 71:17, 18',gist:'Since I was young, O God, you have been my teacher, and to this day I go on telling of your wonderful works. Do not leave me, O God, when I am old and my hair is gray. Let me tell the generation after mine of your power, and all who are still to come of your might.'}},
+  deut19:{ref:'deuteronomy_19_15',gist:'no_one_is_to_be_found_guilty'},
+  prov18:{ref:'proverbs_18_17',gist:'whoever_pleads_his_case'},
+  ecc4:{ref:'ecclesiastes_4_9_10',gist:'two_do_better_than_one'},
+  isa32:{ref:'isaiah_32_2',gist:'every_one_of_them_will'},
+  sam16:{ref:'n1_samuel_16_7',gist:'god_does_not_look_at_things'},
+  prov22:{ref:'proverbs_22_1',gist:'choose_a_good_name_before'},
+  ps71:{ref:'psalm_71_17_18',gist:'since_i_was_young_o_god'}},
   ORDER=['deut19','prov18','ecc4','isa32','sam16','prov22','ps71'];
-const quote=k=>T('{text} ({ref})',{text:T(PASS[k].gist),ref:T(PASS[k].ref)});
+const quote=k=>T('text_ref',{text:T(PASS[k].gist),ref:T(PASS[k].ref)});
 /* ============ TARSUS: the letter, and the second witness ============ */
 /* A man who was a party to a dispute cannot be the only witness to how it ended. Paul argues, every word of it true, and gets nowhere. */
 async function argue(){
-  if(F.read)return say(RE,'It is settled, Paul, and I am glad of it. I only wish that I had asked sooner, and grumbled less.');
-  if(F.silas)return say(RE,'I have heard your second witness, Paul, and I will hear your letter. Where it is read, and to whom, is for you to say.');
+  if(F.read)return say(RE,'it_is_settled_paul_and_i');
+  if(F.silas)return say(RE,'i_have_heard_your_second');
   let av=[
-    {q:'I was in the room, Reuben. I heard it decided.',r:'You were in the room as one side of the dispute. I do not say that you lie, Paul. I say that no man is a witness in his own case.'},
-    {q:"Read it. It is the apostles' letter, not mine.",r:'It speaks of Barnabas and Paul as men dear to those who wrote it. Of course it reads well in your hand. What I cannot read in it is what was said in that room.'},
-    {q:'Peter himself spoke as I do.',r:'So you tell me. The men from Judea came from Jerusalem too, and they spoke as if Jerusalem had sent them.'}];
-  await say(RE,'Well, Paul? Why should Tarsus take this letter on your word?');
-  for(;;){const i=await choose(av.map(o=>o.q).concat('I will not argue it with you, Reuben.'));
-    if(i===av.length){await say(P,'I will not argue it with you, Reuben.');break}
-    const o=av[i];await say(P,o.q);await say(RE,o.r);av=av.filter(x=>x!==o);G.tried=1;if(!av.length)break;await say(RE,'Have you anything more?')}
-  if(G.tried){await say(RE,quote('deut19'));await say(RE,'That is not my rule, Paul. It is the Law\'s.');
-    await say(P,'Every word I said to him is true, and none of it is of any use. He is asking for a second witness. And he is right to ask.',TH)}}
+    {q:'i_was_in_the_room_reuben',r:'you_were_in_the_room_as_one'},
+    {q:'read_it',r:'it_speaks_of_barnabas_and_paul'},
+    {q:'peter_himself_spoke_as_i_do',r:'you_tell_me_said'}];
+  await say(RE,'well_paul');
+  for(;;){const i=await choose(av.map(o=>o.q).concat('i_will_not_argue_it_with_you'));
+    if(i===av.length){await say(P,'i_will_not_argue_it_with_you');break}
+    const o=av[i];await say(P,o.q);await say(RE,o.r);av=av.filter(x=>x!==o);G.tried=1;if(!av.length)break;await say(RE,'have_you_anything_more')}
+  if(G.tried){await say(RE,quote('deut19'));await say(RE,'that_is_not_my_rule_paul');
+    await say(P,'every_word_i_said_to_him',TH)}}
 /* The men from Judea were heard first in Tarsus, and seemed right (Proverbs 18:17): Paul's look at the benches says so. */
 /* Silas was no party to the dispute. He was sent, with Judas, to tell the same things in person (Acts 15:27). */
 async function vouch(){
-  if(F.read)return say(RE,'You read it well, brother. Stay a week in Tarsus, and tell us the rest.');
-  if(F.silas)return say(RE,'I have heard you, Silas. Now I would hear the letter.');
-  await ask(SI,RE,'You are the man from Jerusalem. What have you to say that Paul has not said already?',[
-    {q:'Paul has told you the truth.',r:['I never said that he lied. But you walk the same road he does: of course you say so. Tell me something that is yours to tell.']},
-    {q:'It is settled, brother. Let it rest.',r:['Settled in Jerusalem, perhaps. Not yet in me. I would rather be persuaded than hushed.']},
-    {q:'I was sent from Jerusalem to report it by word of mouth.',ok:1,
-      p:['I am not here as Paul\'s friend, Reuben, though I am that. I am one of the two men whom the apostles and the elders sent out with this letter.',
-        'It says that Judas and Silas are sent so that you may hear the same things from their own lips. (Acts 15:27)','I was there when it was written. Ask me what you like.'],
-      r:['Then tell me this. The men who taught us: did Jerusalem send them?',[SI,'The letter answers that itself: they had no instructions from us. (Acts 15:24)'],
-        'And the decision? Was it Paul\'s party against the rest?',[SI,'The letter says that we decided it with one mind. (Acts 15:25) Peter spoke, and James. When they had done, no one spoke against it.'],
-        'Two witnesses. One who was a party to the matter, and one who was sent. That is enough for the Law, and it is enough for me.','I will hear your letter.']}]);
+  if(F.read)return say(RE,'you_read_it_well_brother');
+  if(F.silas)return say(RE,'i_have_heard_you_silas');
+  await ask(SI,RE,'you_are_the_man_from_jerusalem',[
+    {q:'paul_has_told_you_the_truth',r:['i_never_said_that_he_lied']},
+    {q:'it_is_settled_brother',r:['settled_in_jerusalem_perhaps']},
+    {q:'i_was_sent_from_jerusalem',ok:1,
+      p:['i_am_not_here_as_pauls',
+        'it_says_that_judas_acts_15_27','i_was_there_when_it_was_written'],
+      r:['tell_me_this_the_men',[SI,'letter_answers_that_itself_acts_15_24'],
+        'decision_was',[SI,'letter_says_that_we_decided'],
+        'two_witnesses','i_will_hear_your_letter']}]);
   F.silas=1;SFX.good();
-  await say(P,'He did not raise his voice once. A man sent to settle a quarrel, who sounds like it.',TH)}
+  await say(P,'he_did_not_raise_his_voice_once',TH)}
 /* The letter is for the whole congregation, as it was in Antioch (Acts 15:30, 31): read to one man beside a loom, it would settle one man. */
 async function readTarsus(){const me=PC();
-  await say(me,me===P?'Eirene, will you call the congregation together? All of it. This letter was not written to three people beside a loom.':'Sister, will you call the whole congregation together? The letter is addressed to all of them.');
-  await say(EI,'I have been waiting two months for someone to ask me that.');
+  await say(me,me===P?'eirene_will_you_call_the_congregation_together':'sister_will_you_call_the_whole');
+  await say(EI,'i_have_been_waiting_two');
   playAs(P);await fade(1,500);G.gath=1;
   place(SI,'tarsus7',268,124,1);place(P,'tarsus7',244,128,1);place(EI,'tarsus7',220,119,1);place(AG,'tarsus7',304,119,-1);place(RE,'tarsus7',328,124,-1);G.cam=108;
-  await narr('In Antioch everyone had been assembled before the letter was handed over. (Acts 15:30) Now the same was done in Tarsus.',{dur:8000});
+  await narr('in_antioch_everyone_had',{dur:8000});
   await fade(0,600);
-  await say(P,'Read it to them, Silas. You carried it out of Jerusalem.');
-  await say(SI,'To the brothers from the nations in Antioch, Syria and Cilicia: greetings from your brothers, the apostles and the elders. (Acts 15:23)');
-  await say(AG,'Cilicia! They wrote it to us. By name.',{to:null});
-  await say(SI,'We hear that some who came from us have upset you with their talk and tried to unsettle you. They had no instructions from us... (Acts 15:24)',{to:null});
-  await say(SI,'It seemed right to the holy spirit, and to us as well, to lay no burden on you beyond the necessary things: have nothing to do with what is sacrificed to idols, with blood, with anything strangled, or with sexual immorality. (Acts 15:28, 29)',{to:null});
-  await say(SI,'Guard yourselves well against these, and it will go well with you. Stay in good health! (Acts 15:29)',{to:null});
+  await say(P,'read_it_to_them_silas');
+  await say(SI,'to_the_brothers_acts_15_23');
+  await say(AG,'cilicia',{to:null});
+  await say(SI,'we_hear_that_some_acts_15_24',{to:null});
+  await say(SI,'it_seemed_right_acts_15_28_29',{to:null});
+  await say(SI,'guard_yourselves_well_acts_15_29',{to:null});
   F.read=1;AU.mood='calm';SFX.good();
-  await narr('When that letter was read in Antioch, there was joy at the encouragement it gave. (Acts 15:31) It was no different in Tarsus.',{dur:8000});
-  await say(AG,'No burden beyond the necessary things. I have carried another for two months, and it is gone.');
-  await say(RE,'I asked for a second witness, and I was given the word of the apostles and the elders themselves. Forgive an old man his caution, Paul.');
-  await say(P,'There is nothing to forgive, Reuben. You asked what the Law asks, and you listened when it was answered.');
-  await narr('Silas spoke on until the lamps were lit. He was a prophet, and in Antioch he and Judas had given many a talk that encouraged the brothers and made them strong. (Acts 15:32)',{dur:9500});
+  await narr('when_that_letter_was_read',{dur:8000});
+  await say(AG,'no_burden_beyond_the_necessary_things');
+  await say(RE,'i_asked_for_a_second_witness');
+  await say(P,'there_is_nothing_to_forgive_reuben');
+  await narr('silas_spoke_on_until_acts_15_32',{dur:9500});
   codeBtn()}
 /* letterTo: the letter, offered to one of the three by whoever carries it */
 const letterTo=A=>async it=>{if(it!=='letter')return false;const me=PC();
-  if(F.read)return say(A,A===EI?'It has been read in my courtyard, and I shall not forget the evening. Take it on to the next congregation.':A===RE?'I have heard it, and I have it by heart already. Take it on to the next city.':'I heard my own country named in it. I shall not forget that.');
-  if(A===EI)return F.silas?readTarsus():say(EI,'I could have every brother in Tarsus in this courtyard before the lamps are lit. But Reuben says that he will not sit and hear a man read out his own victory; and where Reuben will not sit, a good many others will not sit either.');
-  if(A===AG)return say(AG,'For me to read, by myself? I would sooner hear it with the brothers around me. If it is good news, they need it as much as I do.');
-  if(!F.silas)return say(RE,me===P?'I can read, Paul. What I cannot read in it is what was said in that room.':'I can read, brother. First tell me by what right you carry it.');
-  return say(me,me===P?'To Reuben alone, here beside the loom? Then three men know it, and the rest of Tarsus hears it at second hand. This trouble was sown in the whole congregation.'
-    :'To him alone? In Antioch we called everyone together, and it was everyone who rejoiced.',TH)};
+  if(F.read)return say(A,A===EI?'it_has_been_read_in_my_courtyard':A===RE?'i_have_heard_it_and_i_have':'i_heard_my_own_country');
+  if(A===EI)return F.silas?readTarsus():say(EI,'i_could_have_every_brother');
+  if(A===AG)return say(AG,'for_me_to_read_by_myself');
+  if(!F.silas)return say(RE,me===P?'i_can_read_paul':'i_can_read_brother');
+  return say(me,me===P?'to_reuben_alone_here_beside_the_loom'
+    :'to_him_alone',TH)};
 async function leaveTar(){const me=PC();
-  if(!F.read)return say(me,me===P?(F.silas?'Reuben is ready to hear the letter, and so is all Tarsus. I am not leaving before it has been read.':'Not while this congregation is of two minds. That is what we came through Cilicia for.')
-    :'We were sent to strengthen the congregations, not to walk past them.');
-  await say(me,me===P?'North, Silas: over the Taurus. There are congregations beyond those mountains that have never seen this letter.':'North, then, and over the mountains. Lead on, Paul.');return travel()}
+  if(!F.read)return say(me,me===P?(F.silas?'reuben_is_ready_to_hear':'not_while_this_congregation')
+    :'we_were_sent_to_strengthen');
+  await say(me,me===P?'north_silas_over_the_taurus':'north_then_and_over_the_mountains');return travel()}
 RE.hs={name:'Reuben',actor:RE,
-  look:()=>say(P,F.read?'Reuben. He is going from bench to bench, telling everyone what he asked and what he was answered.':F.silas?'Reuben. He has stopped frowning at the letter, and started waiting for it.'
-    :'Reuben, a son of Israel and one of the first in Tarsus to believe. A careful man. Half this congregation looks to him before it makes up its mind.'),
+  look:()=>say(P,F.read?'reuben_said':F.silas?'reuben_he'
+    :'reuben_a_son_of_israel'),
   give:letterTo(RE),
-  show:{tablets:'You always carried those. I am glad that some things have not changed.',awl:'The tentmaker\'s awl. I remember when you had no other errand in Tarsus than that.',
-    knife:'Put it away, Paul. Nobody here is cutting anything today: we are trying to mend.',thread:'Good thread. A congregation should be so well sewn.','*':'That is not what stands between us, Paul.'},
-  ask:{witness:()=>say(RE,'I have said what I ask, Paul. Not more words from you. Another voice.')},
+  show:{tablets:'you_always_carried_those_i',awl:'tentmakers_awl_i_remember',
+    knife:'put_it_away_paul_said',thread:'good_thread_a','*':'that_is_not_what_stands'},
+  ask:{witness:()=>say(RE,'i_have_said_what_i_ask_paul')},
   talk:argue,
-  as:{silas:{look:()=>say(SI,F.read?'Reuben. He asked a hard question honestly, and he took the answer the same way.':'An older brother, and a troubled one. He is not against Paul. He is afraid of being misled a second time.'),
-    give:letterTo(RE),talk:vouch,show:{sstaff:'A staff from Jerusalem. So you did walk here from there.','*':'Keep it, brother. It is not a thing I need: it is a word.'}}}};
+  as:{silas:{look:()=>say(SI,F.read?'reuben_he_asked':'older_brother_and_a_troubled_one'),
+    give:letterTo(RE),talk:vouch,show:{sstaff:'staff_from_jerusalem','*':'keep_it_brother_it'}}}};
 AG.hs={name:'Agathon',actor:AG,
-  look:()=>say(P,F.read?'Agathon. He looks like a man who has put down a load.':'Agathon, a brother of the nations, with a wife and three sons. For two months he has not known whether his faith was enough.'),
+  look:()=>say(P,F.read?'agathon_said':'agathon_a_brother_of_the_nations'),
   give:letterTo(AG),
-  show:{tablets:'You read to us from those when I first believed. I should like to hear them again, when this is over.',awl:'My wife still has the awning you sewed for her stall.','*':'Not now, Paul. I cannot think of anything but that letter.'},
-  ask:{witness:['Reuben is not a hard man, Paul. He was told one thing by men from Jerusalem, and now he is told another by you.','He says that he will believe it when he hears it from someone who has nothing to win by it.']},
-  talk:()=>F.read?say(AG,'I can look my sons in the face again, and tell them plainly what is asked of us, and what is not.'):talkTree([
-    {q:'What did the men from Judea tell you?',a:async()=>{await say(AG,'That unless we were circumcised, as the custom of Moses has it, we could not be saved. (Acts 15:1)');await say(AG,'It was said in this courtyard too, Paul. And they looked at me while they said it.')}},
-    {q:'What does Reuben say to it?',a:()=>say(AG,'That he no longer knows. And if Reuben does not know, who am I to be sure?')},
-    {q:'You will have your answer today, Agathon.',bye:1}]),
-  as:{silas:{look:'A brother of the nations. He has the look of a man who was told that the door he came in by was the wrong one.',give:letterTo(AG),
-    talk:()=>say(AG,F.read?'I heard you read it: to the brothers from the nations in Antioch, Syria and Cilicia. Cilicia! That is my country, and they wrote to it.':'You are from Jerusalem? Then you know whether it is true, what they told us. ...No. Do not tell me alone. Tell us all.'),
-    show:{'*':'Not now, brother. I cannot think of anything but that letter.'}}}};
+  show:{tablets:'you_read_to_us_from_those_when_i',awl:'my_wife_still_has_the_awning','*':'not_now_paul'},
+  ask:{witness:['reuben_is_not_a_hard_man_paul','he_says_that_he_will_believe']},
+  talk:()=>F.read?say(AG,'i_can_look_my_sons_in_the_face'):talkTree([
+    {q:'what_did_the_men_from_judea',a:async()=>{await say(AG,'that_unless_we_acts_15_1');await say(AG,'it_was_said_in_this_courtyard')}},
+    {q:'what_does_reuben_say_to_it',a:()=>say(AG,'that_he_no_longer_knows')},
+    {q:'you_will_have_your_answer_today_agathon',bye:1}]),
+  as:{silas:{look:'brother_of_the_nations',give:letterTo(AG),
+    talk:()=>say(AG,F.read?'i_heard_you_read_it_to_the_brothers':'you_are_from_jerusalem'),
+    show:{'*':'not_now_brother'}}}};
 EI.hs={name:'Eirene',actor:EI,
-  look:()=>say(P,F.read?'Eirene. Her courtyard is full, and she is counting heads to see how far the bread will go.':'Eirene, a weaver of linen. The congregation of Tarsus meets in her courtyard, and lately it has met there in two halves.'),
+  look:()=>say(P,F.read?'eirene_said':'eirene_a_weaver_of_linen'),
   give:letterTo(EI),
-  show:{tablets:'Your tablets. You never could walk past a verse without writing it down.',awl:'I weave it, and you pierce it. We never did agree about cloth.',thread:'Linen thread, and waxed. Not mine: mine is finer.',
-    knife:'Not near my loom with that, Paul.','*':'Keep it by you. You have a long road in front of you.'},
-  ask:{witness:['Reuben is the most careful man in Tarsus, and one of the best. He will not be talked round. He will be shown, or he will stay as he is.','Your friend from Jerusalem has not opened his mouth yet. Why did the apostles send him, if not to speak?']},
-  talk:()=>F.read?say(EI,'They are still talking under the fig tree. Let them. It is the first glad talk this courtyard has heard in two months.'):talkTree([
-    {q:'How has it been here, Eirene?',a:async()=>{await say(EI,'Quiet, and not the good kind. The brothers of the nations sit on one bench and the brothers of Israel on another, and each is afraid of wounding the other.');
-      await say(EI,'Nobody has left. But nobody sings as he used to.')}},
-    {q:'Could the whole congregation be called together?',a:()=>say(EI,F.silas?'Today? Reuben will come now, and where Reuben comes the others follow. Give me the letter they are to hear, and I will have them here before the lamps are lit.'
-      :'I could send my boys through the streets within the hour. But Reuben says that he will not sit and hear a man read out his own victory; and where Reuben will not sit, a good many others will not sit either.')},
-    {q:'Peace to this house.',bye:1}]),
-  as:{silas:{look:'Eirene. She keeps a divided congregation under one roof, and feeds both halves.',give:letterTo(EI),
-    talk:()=>say(EI,F.read?'You read as one who was there, brother. That was what they needed.':F.silas?'Reuben is ready. Bring me the letter, and I will bring you the congregation.':'Peace to you, brother. You were sent with that letter, were you not? Then I wonder that Paul is doing all the talking.'),
-    show:{sstaff:'Lean it by the door. Nobody will touch it.','*':'Keep it by you, brother.'}}}};
+  show:{tablets:'your_tablets_you',awl:'i_weave_it_and_you_pierce_it',thread:'linen_thread_and_waxed',
+    knife:'not_near_my_loom_with_that_paul','*':'keep_it_by_you'},
+  ask:{witness:['reuben_is_the_most_careful','your_friend_from_jerusalem']},
+  talk:()=>F.read?say(EI,'they_are_still_talking'):talkTree([
+    {q:'how_has_it_been_here_eirene',a:async()=>{await say(EI,'quiet_and_not_the_good_kind');
+      await say(EI,'nobody_has_left')}},
+    {q:'could_the_whole_congregation_be_called_together',a:()=>say(EI,F.silas?'today_reuben'
+      :'i_could_send_my_boys_through')},
+    {q:'peace_to_this_house',bye:1}]),
+  as:{silas:{look:'eirene_she',give:letterTo(EI),
+    talk:()=>say(EI,F.read?'you_read_as_one_who_was':F.silas?'reuben_is_ready':'peace_to_you_brother'),
+    show:{sstaff:'lean_it_by_the_door_said','*':'keep_it_by_you_brother_said'}}}};
 ROOMS.tarsus7={walk:[16,464,114,138],get mood(){return F.read?'calm':'tense'},amb:()=>F.read?{crowd:.5,birds:.4,leaves:.4}:{birds:.5,leaves:.4,crowd:.12},hs:[
-  {name:'mountains',x:104,y:18,w:330,h:22,wx:260,look:'The Taurus, with the first snow of the year on it. Beyond it lie Derbe, Lystra and Iconium.'},
-  {name:'door of the house',x:36,y:59,w:24,h:45,wx:50,wy:115,look:"Eirene's door. The congregation of Tarsus has gone in and out of it for years.",use:'The congregation meets in the courtyard. I have no business indoors.',open:'The congregation meets in the courtyard. I have no business indoors.'},
-  {name:'loom',x:142,y:54,w:42,h:50,wx:164,wy:115,look:'Linen on the loom, as fine as any in Cilicia. Tarsus lives by its flax, and by the goat-hair cloth that tentmakers cut.',use:'Weaving is not sewing. I should only tangle her warp.',pickup:"It is Eirene's living.",
+  {name:'mountains',x:104,y:18,w:330,h:22,wx:260,look:'taurus_with_the_first_snow'},
+  {name:'door_of_the_house',x:36,y:59,w:24,h:45,wx:50,wy:115,look:'eirenes_door',use:'congregation_meets_in_the_courtyard',open:'congregation_meets_in_the_courtyard'},
+  {name:'loom',x:142,y:54,w:42,h:50,wx:164,wy:115,look:'linen_on_the_loom_as_fine',use:'weaving_is_not_sewing',pickup:'it_is_eirenes_living',
     /* once the letter has been read and the courtyard is at peace: a blade near a weaver's warp */
-    useWith:it=>(it==='knife'||it==='awl')&&F.read?say(P,'Near Eirene\'s loom, with that? I have known her too long to try it.'):false},
-  {name:'bolts of linen',x:196,y:54,w:46,h:50,wx:220,wy:115,look:'Bolts of linen, bleached and folded. This city has a harbor, and its cloth goes out by it.',pickup:'They are hers, and I dare say they are sold already.'},
-  {name:'linen on the wall',x:272,y:36,w:42,h:32,wx:292,wy:115,look:'Linen, bleaching on the wall in the sun.',pickup:'It is not dry, and it is not mine.'},
-  {name:'stone basin',x:264,y:90,w:64,h:17,wx:296,wy:115,look:'A basin for washing the flax. The water is from the Cydnus, the river of Tarsus.',use:'I wash the dust of the Syrian road from my hands. It is cold: it comes down from the snow.'},
-  {name:'fig tree',x:350,y:27,w:74,h:36,wx:386,wy:116,look:'A fig tree, old enough to shade a whole congregation.'},
-  {name:'benches',x:336,y:88,w:96,h:17,wx:384,wy:116,look:async()=>{if(F.read)return say(P,'The benches under the fig tree. There is not room on them this evening.');await say(P,'Benches under a fig tree, and most of them empty. A congregation that is of two minds does not sit down together gladly.');
-      await say(P,'The men from Judea sat here before I did, and stated their case first.');return say(P,quote('prov18'))},use:'I did not come back to Tarsus to sit down.'},
-  {name:'gate to the street',x:444,y:54,w:32,h:50,wx:458,wy:115,dir:1,look:'The gate to the street. One way it runs down to the harbor. The other way it runs to the north gate, and the road to the mountains.',exit:leaveTar}]};
+    useWith:it=>(it==='knife'||it==='awl')&&F.read?say(P,'near_eirenes_loom_with_that_i'):false},
+  {name:'bolts_of_linen',x:196,y:54,w:46,h:50,wx:220,wy:115,look:'bolts_of_linen_bleached_and_folded',pickup:'they_are_hers_and_i_dare'},
+  {name:'linen_on_the_wall',x:272,y:36,w:42,h:32,wx:292,wy:115,look:'linen_bleaching_on_the_wall',pickup:'it_is_not_dry_and_it_is'},
+  {name:'stone_basin',x:264,y:90,w:64,h:17,wx:296,wy:115,look:'basin_for_washing_the_flax',use:'i_wash_the_dust_of_the_syrian'},
+  {name:'fig_tree',x:350,y:27,w:74,h:36,wx:386,wy:116,look:'fig_tree_old_enough_to_shade'},
+  {name:'benches',x:336,y:88,w:96,h:17,wx:384,wy:116,look:async()=>{if(F.read)return say(P,'benches_under_the_fig_tree');await say(P,'benches_under_a_fig_tree');
+      await say(P,'men_from_judea_sat_here');return say(P,quote('prov18'))},use:'i_did_not_come_back_to_tarsus'},
+  {name:'gate_to_the_street',x:444,y:54,w:32,h:50,wx:458,wy:115,dir:1,look:'the_gate_to_the_street',exit:leaveTar}]};
 /* ============ THE CILICIAN GATES: a torn tent, and a storm an hour away ============ */
 async function gatesIntro(){if(F.strap||F.mended)return;
-  await say(ZE,'This is as far as we go tonight, brothers. Look at that sky. When the wind comes down the Gates like this, there is rain behind it, and plenty.');
-  await say(ZE,'My oxen will stand it, and the three of us can sleep under the wagon. Those people yonder are not so well off.');
-  await say(BI,'Hold it, Charis! Hold the... There. It is down again.',{to:CH});
-  await say(SI,'A family, Paul. Their tent is down, and they have a child with them.');
-  await say(P,'A torn tent, a storm an hour away, and a tentmaker standing in the road. I do not need to ask what I am here for.',TH)}
-async function strapGive(){if(F.strap)return say(ZE,F.mended?'You had it, and I saw what you made of it.':'You have it in your hand, brother. Cut what you need.');
-  await say(ZE,'Leather? I never leave Derbe without a spare yoke strap. Ox-hide, as thick as my thumb.');
+  await say(ZE,'this_is_as_far_as_we_go');
+  await say(ZE,'my_oxen_will_stand_it_and_the_three');
+  await say(BI,'hold_it_charis',{to:CH});
+  await say(SI,'family_paul');
+  await say(P,'torn_tent_a_storm_an_hour',TH)}
+async function strapGive(){if(F.strap)return say(ZE,F.mended?'you_had_it_and_i_saw_what':'you_have_it_in_your_hand_brother');
+  await say(ZE,'leather_i_never');
   F.strap=1;toPaul('strap');
-  await say(ZE,'I have often said that if my harness gave out in this pass, I should want a tentmaker beside me. I did not think that the tentmaker would be the one short of leather!');
-  await say(P,'A hand\'s length of it is all I need, Zenon. The rest goes back into your harness box.')}
-async function tallowGive(){if(F.cased)return say(ZE,'It is in the weave now, where it belongs.');if(F.tallow)return say(ZE,'You have it, brother. Warm it in your hand first.');
-  await say(ZE,'Keep the rain out? There is one thing on this wagon that rain has never got into: my axles. I grease them with tallow.');
+  await say(ZE,'i_have_often_said_that_if_my_harness');
+  await say(P,'hands_length_of_it_is_all')}
+async function tallowGive(){if(F.cased)return say(ZE,'it_is_in_the_weave_now');if(F.tallow)return say(ZE,'you_have_it_brother');
+  await say(ZE,'keep_the_rain_out_there');
   F.tallow=1;toPaul('tallow');
-  await say(ZE,'Take a lump. Warm it in your hand, and rub it into the cloth. It will not smell like a letter from Jerusalem. But it will be dry.')}
+  await say(ZE,'take_a_lump')}
 /* mend7: a loop of ox-hide where the corner tore out, and the long seam closed */
-async function mend7(){if(F.mended)return say(P,F.up?'It is mended, and it is standing. I will not pick at it.':'It is mended. What it needs now is to be put up.');
-  if(!(await bring('strap')))return say(P,'I can close the seam now, and it will open again at the corner in the first gust. The loop first: and a loop needs leather. A carter carries leather.');
+async function mend7(){if(F.mended)return say(P,F.up?'it_is_mended_and_it_is_standing':'it_is_mended');
+  if(!(await bring('strap')))return say(P,'i_can_close_the_seam_now');
   await walk(P,254,118);P.dir=1;P.bow=true;SFX.cut();
-  await say(P,'A hand\'s length of the strap, cut and doubled, and sewn through a patch where the corner tore out...');SFX.sew();await wait(600);
-  await say(P,'And the long seam: one edge laid over the other and stitched twice along its length, so that the wind has nothing to get its fingers into.');SFX.sew();await wait(600);
+  await say(P,'hands_length_of_the_strap');SFX.sew();await wait(600);
+  await say(P,'long_seam_one_edge_laid');SFX.sew();await wait(600);
   P.bow=false;delItem('strap');F.mended=1;SFX.good();
-  await say(BI,'Sewn? Already? Then up with it, friend, before the rain!');
-  await say(P,'Up, yes. But in this wind that is work for two: one man on the windward line, and one to set the pole and drive the pins.')}
+  await say(BI,'sewn_ex');
+  await say(P,'up_yes')}
 /* The tent goes up only with a man on its windward line (played as Silas: use the tent), while Paul sets the pole and drives the pins. */
-async function hold7(){if(F.up)return say(SI,'It stands, and I can let go at last. My hands will remember that line for a week.');
-  if(!F.mended)return say(SI,'Paul will want me on that line once it is sewn. Not before: I should only be holding a rag in a gale.');
-  if(holding())return say(SI,'I have it, Paul! Do not ask me how much longer.');
+async function hold7(){if(F.up)return say(SI,'it_stands_and_i_can_let');
+  if(!F.mended)return say(SI,'paul_will_want_me_on_that_line');
+  if(holding())return say(SI,'i_have_it_paul');
   await walk(SI,LINE[0],LINE[1]);SI.dir=-1;F.line=1;SFX.creak();
-  await say(SI,'I have the windward line, and both heels dug in. Set your pole, Paul!')}
-async function pitch7(){if(F.up)return say(P,'It stands with its back to the wind, as a tent should. I will not touch it again.');
+  await say(SI,'i_have_the_windward_line')}
+async function pitch7(){if(F.up)return say(P,'it_stands_with_its_back');
   if(!F.mended)return mend7();
-  if(!holding()){F.line=0;return say(P,'I get the pole upright, and the wind lays the whole tent flat again. It needs a man on the windward line while I set the pole and drive the pins.')}
+  if(!holding()){F.line=0;return say(P,'i_get_the_pole_upright')}
   await walk(P,254,118);P.dir=1;P.bow=true;SFX.creak();
-  await say(P,'Hold her there, Silas! The pole under the ridge... Now the pins, each one driven slanting, away from the pull.',{to:SI});
+  await say(P,'hold_her_there_silas',{to:SI});
   for(let i=0;i<3;i++){noise({d:.05,v:.16,f:700,q:2});await wait(260)}
   P.bow=false;await fade(1,500);F.up=1;F.line=0;CH.room=null;ME.room=null;place(BI,'gates',320,122,-1);place(P,'gates',240,124,1);place(SI,'gates',350,121,-1);AU.mood='calm';toPaul('cloth7',1);
-  await narr('The first drops fell as the last pin went in. Then the rain came down the gorge like a wall.',{dur:6000});
+  await narr('first_drops_fell_as_the_last',{dur:6000});
   await fade(0,600);SFX.good();
-  await say(BI,'Dry! All three of us, and the lamp alight. I have slept worse in inns.');
-  await say(BI,'You named no price, tentmaker, so I shall name one. A length off my best bale. Make of it whatever a tentmaker makes.');
-  await say(P,'I did not do it for a price, Bion. But I will not refuse good cloth from the man who knows it best.');
+  await say(BI,'dry_said');
+  await say(BI,'you_named_no_price_tentmaker');
+  await say(P,'i_did_not_do_it_for_a_price');
   await say(SI,quote('ecc4'));
-  await say(SI,'Paul. The rain has found our bundle. The wrapping of the letter is wet through.');
-  await say(P,'The copies! They are for every congregation on this road, and there are rivers ahead of us. Papyrus and water do not keep company. They need a case.',TH);codeBtn()}
+  await say(SI,'paul_the_rain');
+  await say(P,'the_copies',TH);codeBtn()}
 /* The copies of the decrees are for every congregation on the road (Acts 16:4): a case of goat-hair cloth, and tallow to turn the rain. */
-async function sewCase(){if(F.sewn)return say(P,'The case is sewn. What it lacks now is something to turn the water.');
-  if(!(await bring('cloth7')))return say(P,'A case needs cloth, and I have none to spare.');
-  SFX.cut();await say(P,'A strip cut to the length of the roll, folded, and sewn down both sides; and a flap to fold over its mouth...');SFX.sew();await wait(600);
+async function sewCase(){if(F.sewn)return say(P,'case_is_sewn');
+  if(!(await bring('cloth7')))return say(P,'case_needs_cloth_and_i');
+  SFX.cut();await say(P,'strip_cut_to_the_length');SFX.sew();await wait(600);
   delItem('cloth7');F.sewn=1;addItem('pcase',1);SFX.good();
-  await say(P,'A case. It will keep out dust. But cloth drinks water: to turn a river, it needs something worked into the weave.')}
+  await say(P,'a_case')}
 async function proof(){
-  await say(P,'Tallow, worked into the weave with the thumb until the cloth is dark with it. Water will stand on that in beads.');
+  await say(P,'tallow_worked_into_the_weave');
   delItem('tallow');delItem('pcase');F.cased=1;drawInv();SFX.good();
-  await say(P,'And the letter inside it, with every copy. Now let the rivers come.');
-  await say(SI,'A letter from Jerusalem, in a case that smells of oxen. I do not think that the apostles will mind.')}
-const noCloth=()=>say(P,'It needs a tent to go on. And the tent is over there, flat on the ground.'),isSewn=()=>say(P,'It is sewn already, and sewn twice.');
+  await say(P,'letter_inside_it_with_every_copy_now');
+  await say(SI,'letter_from_jerusalem_in_a_case')}
+const noCloth=()=>say(P,'it_needs_a_tent_to_go_on_and_the'),isSewn=()=>say(P,'it_is_sewn_already_and_sewn_twice');
 Object.assign(COMBO,{
   'awl+cloth7':sewCase,'cloth7+thread':sewCase,'cloth7+knife':sewCase,'pcase+tallow':proof,
-  'letter+pcase':()=>say(P,'Not yet. Cloth alone drinks water, and the letter would drink it after. First something to turn the rain.'),
-  'letter+tallow':()=>say(P,'Tallow on papyrus? Nobody would ever read a word of it again.'),'cloth7+letter':()=>say(P,'Wrapped loosely in cloth, it would be as wet as it is now. It needs a sewn case.'),
-  'cloth7+tallow':()=>say(P,'First the sewing. A greased cloth would never take a stitch.'),
-  'awl+strap':noCloth,'strap+thread':noCloth,'knife+strap':()=>say(P,'I will cut it when I know the length. And the length is on the tent.'),'awl+pcase':isSewn,'pcase+thread':isSewn});
+  'letter+pcase':()=>say(P,'not_yet_cloth'),
+  'letter+tallow':()=>say(P,'tallow_on_papyrus'),'cloth7+letter':()=>say(P,'wrapped_loosely_in_cloth'),
+  'cloth7+tallow':()=>say(P,'first_the_sewing'),
+  'awl+strap':noCloth,'strap+thread':noCloth,'knife+strap':()=>say(P,'i_will_cut_it_when_i_know'),'awl+pcase':isSewn,'pcase+thread':isSewn});
 async function leaveGates(){const me=PC();
-  if(!F.up)return say(me,me===P?'And leave a child in the open, with that sky coming down the gorge? Not for every congregation in Galatia. They would not thank me for it.':'With a family standing in the road, and the rain an hour away? Paul would not go, and neither will I.');
-  if(!F.cased)return say(me,me===P?'By morning that stream will be over the road, and the letter is wrapped in a wet rag. First a case for it: one that sheds water.':'The letter is wet, and there are rivers ahead of us. Paul wants a case for it before we go one step further.');
-  await fade(1,600);await narr('By first light the rain had gone over. The stream was loud, and the road stood clear of it.',{dur:6000});
-  await say(BI,'Go well, tentmaker. If you come to Iconium, ask for Bion in the cloth market. I shall be the man with the dry family.');await fade(0,300);return travel()}
+  if(!F.up)return say(me,me===P?'leave_a_child_in_the_open':'with_a_family_standing');
+  if(!F.cased)return say(me,me===P?'by_morning_that_stream':'letter_is_wet_and_there');
+  await fade(1,600);await narr('by_first_light_the_rain',{dur:6000});
+  await say(BI,'go_well_tentmaker_said');await fade(0,300);return travel()}
 ZE.hs={name:'Zenon',actor:ZE,
-  look:()=>say(P,F.up?'Zenon, under his wagon with his cloak over his head, as content as a man at his own hearth.':'Zenon of Derbe, the carter. Two winters ago he offered us this road as the short way home. Today he is carrying us up it the other way.'),
-  show:{letter:()=>say(ZE,F.cased?'In its case, with my tallow on it. I shall tell them in Derbe that I had a hand in that letter.':'A letter from the apostles? I cannot read, brother. Read it to us in Derbe, on my threshing floor.'),
-    strap:'That is the one. Cut what you need.',cloth7:"The merchant's cloth? Good stuff. It would make a fine cover for a wagon, if a man knew a tentmaker.",pcase:'A case for the letter? Dry cloth is thirsty cloth, brother.',
-    tallow:'Warm it in your hand first.',awl:'There it is. I knew that I should see that awl at work on this road one day.',tablets:'Say one to me while I see to the oxen.',
-    thread:'Strong stuff. I have traces on these oxen that are weaker.',knife:'Mind the ox. He is still nervous of blades.','*':'Stow it on the load, brother. It will ride dry there.'},
+  look:()=>say(P,F.up?'zenon_under_his_wagon_with_his_cloak':'zenon_of_derbe_the_carter'),
+  show:{letter:()=>say(ZE,F.cased?'in_its_case_with_my_tallow':'letter_from_the_apostles'),
+    strap:'that_is_the_one',cloth7:'merchants_cloth',pcase:'a_case_for_the_letter',
+    tallow:'warm_it_in_your_hand_first',awl:'there_it_is',tablets:'say_one_to_me_while_i_see',
+    thread:'strong_stuff',knife:'mind_the_ox_said','*':'stow_it_on_the_load_brother'},
   ask:{loop:strapGive,dry:tallowGive},
   talk:()=>talkTree([
-    {q:'How far is it to Derbe?',a:async()=>{await say(ZE,'Through the Gates tomorrow, if the stream stays in its bed. After that the road runs out onto the plateau, and it is level going to Derbe.');
-      await say(ZE,'The brothers there meet on my threshing floor still. There are more of them than when you left.')}},
-    {q:'You offered us this road once.',once:1,a:async()=>{await say(ZE,'And you would not take it. You went back to Lystra instead, to the people who had stoned you. I have told that story on every threshing floor between Derbe and Tarsus.');
-      await say(P,'It runs both ways, Zenon. Today I am glad of it.')}},
-    {q:'What do you know of these Gates?',once:1,a:()=>say(ZE,"That there is no better way through for wheels. A narrow gorge, and the road cut out of the rock: in places a wagon has a hand's breadth to spare. I have driven it more times than I have fingers and toes.")},
-    {q:'See to your oxen, brother.',bye:1}]),
-  as:{silas:{look:'Zenon, a carter and a disciple. He has not stopped telling me about Paul since Tarsus.',
-    talk:()=>say(ZE,F.up?'You held that line like a man who has pulled oxen out of a ditch, brother. Are you sure that you come from a city?':'So you are the brother from Jerusalem. I have never seen Jerusalem. I have seen what came out of it, on my own threshing floor.'),
-    show:{sstaff:'A good stick. You will want it in the Gates tomorrow.',letter:'Read it to us in Derbe, brother. On my threshing floor.','*':'Stow it on the load. It will ride dry there.'}}}};
+    {q:'how_far_is_it_to_derbe',a:async()=>{await say(ZE,'through_the_gates_tomorrow');
+      await say(ZE,'brothers_there_meet_on_my_threshing')}},
+    {q:'you_offered_us_this_road_once',once:1,a:async()=>{await say(ZE,'you_would_not_take_it');
+      await say(P,'it_runs_both_ways_zenon')}},
+    {q:'what_do_you_know_of_these_gates',once:1,a:()=>say(ZE,'that_there_is_no_better')},
+    {q:'see_to_your_oxen_brother',bye:1}]),
+  as:{silas:{look:'zenon_a_carter_and_a_disciple',
+    talk:()=>say(ZE,F.up?'you_held_that_line_like':'you_are_the_brother_from_jerusalem'),
+    show:{sstaff:'a_good_stick',letter:'read_it_to_us_in_derbe_brother','*':'stow_it_on_the_load'}}}};
 BI.hs={name:'Bion',actor:BI,
-  look:()=>say(P,F.up?'Bion, at the mouth of his tent, looking at the rain as if he had beaten it in a bargain.':'Bion, a cloth merchant of Tarsus, on his way to the cities of the plateau. He sells the cloth that tents are made of, and he cannot keep his own tent standing.'),
-  show:{letter:'A letter? I carry forty of my own, friend, and every one of them is a bill.',cloth7:'It is yours, and I do not want it back.',pcase:'You made that out of my cloth, in the time it takes me to count a bale? I am in the wrong trade.',
-    awl:'So that is how it is done. I have sold this cloth for twenty years, and never once watched it sewn.',strap:'Ox-hide. That will hold where the cloth did not.',
-    tablets:'Accounts? No: I see that it is not accounts.','*':'Keep it out of the wet, friend.'},
-  ask:{loop:'Leather? I deal in cloth, friend. Ask the carter: his oxen are wearing half a tannery.',dry:'Keep papyrus dry on this road? I wrap my accounts in oiled cloth, and I have none left. Grease of some kind is what you need.'},
+  look:()=>say(P,F.up?'bion_at_the_mouth_of_his_tent':'bion_a_cloth_merchant_of_tarsus'),
+  show:{letter:'a_letter',cloth7:'it_is_yours_and_i_do_not',pcase:'you_made_that_out_of_my_cloth',
+    awl:'that_is_how_it_is_done',strap:'ox_hide_said',
+    tablets:'accounts_said','*':'keep_it_out_of_the_wet_friend'},
+  ask:{loop:'leather_i_deal',dry:'keep_papyrus_dry_on_this_road'},
   talk:async()=>{if(F.up)return talkTree([
-      {q:'Is the child warm?',a:()=>say(BI,"Asleep, with her mother's cloak over her. She says that the rain on the tent sounds like a drum.")},
-      {q:'You are wondering why we did it.',once:1,a:async()=>{await say(BI,'I am. You owed me nothing, and you asked for nothing. In my trade, that is a man with something to sell.');
-        await say(P,'Nothing to sell, Bion. I serve a God who has shown me undeserved kindness. And I have a letter in my bag, written to people of the nations who have come to know him. Ask me about it when the rain stops.');
-        await say(BI,'I may do that. It is a long night, and I am not sleepy.')}},
-      {q:'Sleep dry, Bion.',bye:1}]);
+      {q:'is_the_child_warm',a:()=>say(BI,'asleep_with_her_mothers_cloak_over_her_she')},
+      {q:'you_are_wondering_why_we_did_it',once:1,a:async()=>{await say(BI,'i_am_you');
+        await say(P,'nothing_to_sell_bion');
+        await say(BI,'i_may_do_that_it')}},
+      {q:'sleep_dry_bion',bye:1}]);
     if(!G.metBion){G.metBion=1;
-      await say(BI,'You are with the carter? Then you have a wagon to crawl under. I have a wife, a daughter, forty bales of the best goat-hair cloth in Cilicia, and a tent with a hole in it.');
-      await say(BI,'The seam went in the first gust, and the corner loop tore out after it. I sell the cloth, friend. I never learned to sew it.');
-      await say(P,'I did. Paul, of Tarsus: a tentmaker. Let me see what can be done.');
-      await say(BI,'A tentmaker! Here, of all places? Then name your price, and name it quickly.');
-      await say(P,'We can talk of prices when your daughter is under a roof.')}
+      await say(BI,'you_are_with_the_carter');
+      await say(BI,'seam_went_in_the_first');
+      await say(P,'i_did');
+      await say(BI,'tentmaker_here');
+      await say(P,'we_can_talk_of_prices_when_your_daughter')}
     return talkTree([
-      {q:'Where are you bound?',a:()=>say(BI,'Iconium, and the cities beyond it. Every caravan on the plateau sleeps under black cloth, and a good deal of that cloth goes up this road in my bales.')},
-      {q:'How did it come down?',a:()=>say(BI,'I pitched it broadside to the wind, like a fool. And it is an old tent: I keep the new cloth for my customers.')},
-      {q:'Keep your family close to the bales.',bye:1}])},
-  as:{silas:{look:()=>say(SI,F.up?'The merchant. An hour ago he was shouting at the wind. Now he is thanking a tentmaker.':'A merchant, shouting at the wind. The wind is not listening.'),
-    talk:()=>say(BI,F.up?'You held that line, friend, and I saw what it cost you. I shall not forget either of you.':'And you, friend? Are you a tentmaker too? No? Then stand by the one who is: he will want you.'),
-    show:{sstaff:'A walking staff will not hold up my tent, friend. I wish that it would.','*':'Keep it out of the wet, friend.'}}}};
+      {q:'where_are_you_bound',a:()=>say(BI,'iconium_and_the_cities_beyond_it')},
+      {q:'how_did_it_come_down',a:()=>say(BI,'i_pitched_it_broadside')},
+      {q:'keep_your_family_close_to_the_bales',bye:1}])},
+  as:{silas:{look:()=>say(SI,F.up?'merchant_said':'merchant_shouting_at_the_wind'),
+    talk:()=>say(BI,F.up?'you_held_that_line_friend':'you_friend'),
+    show:{sstaff:'walking_staff_will_not','*':'keep_it_out_of_the_wet_friend'}}}};
 CH.hs={name:'Charis',actor:CH,
-  look:"Charis, the merchant's wife. She has her back to the wind, and half of her cloak round the child.",
-  show:{awl:'Is that for the tent? Then use it, sir, and do not show it to me.','*':'Not now, sir. I have my hands full.'},
-  talk:()=>say(CH,F.mended?'It is sewn! Now, if only it will stand.':'I told him that it was an old tent. Can it truly be mended here, in the road, with the night coming?'),
-  as:{silas:{look:'The merchant\'s wife. She has not once complained, and she has the most to complain of.',talk:()=>say(CH,'Is your friend truly a tentmaker? I had begun to think that nothing would go right today.'),show:{'*':'Not now, sir. I have my hands full.'}}}};
+  look:'charis_the_merchants_wife',
+  show:{awl:'is_that_for_the_tent','*':'not_now_sir'},
+  talk:()=>say(CH,F.mended?'it_is_sewn':'i_told_him_that_it_was'),
+  as:{silas:{look:'merchants_wife',talk:()=>say(CH,'is_your_friend_truly_a_tentmaker'),show:{'*':'not_now_sir'}}}};
 ME.hs={name:'Melissa',actor:ME,
-  look:"A little girl, wrapped in half of her mother's cloak. She is watching the oxen, not the storm.",
-  show:{awl:'Is it sharp?',tablets:'Are there pictures in it?','*':'Is that for our tent?'},
-  talk:async()=>{await say(ME,'Does the big ox bite?');await say(P,'Not that I have seen, and I have been two days on the road with him.')},
-  as:{silas:{look:'The merchant\'s daughter. She is the only one here who is enjoying the wind.',talk:async()=>{await say(ME,'Are you cold too?');await say(SI,'A little. Not for much longer, I think.')},show:{'*':'Is that for our tent?'}}}};
+  look:'little_girl_wrapped_in_half',
+  show:{awl:'is_it_sharp',tablets:'are_there_pictures_in_it','*':'is_that_for_our_tent'},
+  talk:async()=>{await say(ME,'does_the_big_ox_bite');await say(P,'not_that_i_have_seen_and_i')},
+  as:{silas:{look:'merchants_daughter',talk:async()=>{await say(ME,'are_you_cold_too');await say(SI,'a_little')},show:{'*':'is_that_for_our_tent'}}}};
 ROOMS.gates={space:0.8,walk:[16,388,112,138],get mood(){return F.up?'calm':'storm'},amb:()=>F.up?{fountain:.9,leaves:.9,wind:.5}:{wind:1,leaves:.5,fountain:.25,creak:.3},enter:gatesIntro,hs:[
-  {name:'rock wall',x:0,y:0,w:338,h:82,wx:180,look:'Limestone, as high as I can see. The marks of the picks are still on it where the road was cut.'},
-  {name:'Cilician Gates',x:342,y:8,w:54,h:58,wx:360,wy:113,dir:1,exit:leaveGates,look:['The Cilician Gates. The gorge is so narrow here that the stream and the road could not both have room: so the road was cut out of the rock.','Every wagon between Tarsus and the plateau goes through that gap. So does every wind. Beyond it the road comes out onto the plateau, and runs to Derbe.']},
-  {name:'stream',x:398,y:100,w:82,h:44,wx:384,wy:127,dir:1,look:'Snow water, coming down fast. If this rain lasts, it will be over the road by morning.',use:'I fill my hands and drink. It is cold enough to hurt the teeth.',pickup:'A stream stays in its bed. I hope.'},
-  {name:'wagon',x:18,y:84,w:76,h:28,wx:58,wy:120,dir:-1,look:"Zenon's wagon, loaded for Derbe with what Tarsus sells. There is room under it for three men, if none of them turns over.",pickup:"It is Zenon's, and it is loaded.",use:'Not while that family is standing in the wind.'},
-  {name:'oxen',x:96,y:79,w:52,h:35,wx:130,wy:123,dir:-1,look:"Zenon's brown oxen. They have put their heads down to the wind and shut their eyes. They have seen weather before.",pickup:"They are Zenon's."},
-  {name:'bales',x:344,y:92,w:40,h:21,wx:352,wy:119,dir:1,look:'Bales of goat-hair cloth: cilicium, the black cloth of my own country. I have cut more of it than I could ever count.',pickup:"They are the merchant's whole fortune."},
-  {get name(){return F.up?'tent':F.mended?'mended tent':'torn tent'},x:262,y:84,w:64,h:29,wx:254,wy:118,dir:1,def:'use',
-    look:async()=>{if(F.up){await say(P,'A low black tent with its back to the wind, a lamp alight inside it, and the rain running off it. I have made finer ones. I have seldom been so glad of one.');
-        await say(P,quote('isa32'));return say(P,'Isaiah wrote that of men who take the lead, not of goat-hair cloth. Tonight I see the picture more clearly.')}
-      return say(P,F.mended?'Mended, and laid out ready, with its pole and its pins beside it. Now it must go up: and the wind has other ideas.'
-      :'A good tent once: goat-hair cloth, such as I cut my first seams on. The long seam has opened for an arm\'s length, and one corner loop has torn clean out of the cloth.')},
-    pickup:"It is Bion's house, such as it is.",use:pitch7,
-    useWith:async it=>{if(it==='strap'||it==='awl'||it==='thread')return F.mended?pitch7():mend7();if(it==='knife')return say(P,'The cloth is sound. It was the seam that failed, and the loop.');
-      if(it==='cloth7')return say(P,'His tent needs no new cloth. It needed a seam, and it has one.');return false}},
-  {name:'road to Tarsus',x:0,y:114,w:14,h:24,wx:20,wy:128,dir:-1,look:'The road back down to Tarsus, two days behind us.',exit:()=>say(PC(),PC()===P?'We did not climb for two days in order to walk down again.':'Back down? Our road goes up, and through.')}]};
+  {name:'rock_wall',x:0,y:0,w:338,h:82,wx:180,look:'limestone_as_high_as_i_can_see'},
+  {name:'cilician_gates',x:342,y:8,w:54,h:58,wx:360,wy:113,dir:1,exit:leaveGates,look:['the_cilician_gates','every_wagon_between_tarsus']},
+  {name:'stream',x:398,y:100,w:82,h:44,wx:384,wy:127,dir:1,look:'snow_water_coming_down_fast',use:'i_fill_my_hands_and_drink',pickup:'stream_stays_in_its_bed'},
+  {name:'wagon',x:18,y:84,w:76,h:28,wx:58,wy:120,dir:-1,look:'zenons_wagon_loaded_for_derbe',pickup:'it_is_zenons_and_it_is_loaded',use:'not_while_that_family_is'},
+  {name:'oxen',x:96,y:79,w:52,h:35,wx:130,wy:123,dir:-1,look:'zenons_brown_oxen',pickup:'they_are_zenons'},
+  {name:'bales',x:344,y:92,w:40,h:21,wx:352,wy:119,dir:1,look:'bales_of_goat_hair_cloth',pickup:'they_are_the_merchants_whole_fortune'},
+  {get name(){return F.up?'tent':F.mended?'mended_tent':'torn_tent'},x:262,y:84,w:64,h:29,wx:254,wy:118,dir:1,def:'use',
+    look:async()=>{if(F.up){await say(P,'low_black_tent_with_its_back');
+        await say(P,quote('isa32'));return say(P,'isaiah_wrote_that_of_men')}
+      return say(P,F.mended?'mended_and_laid_out_ready'
+      :'good_tent_once_goat_hair')},
+    pickup:'it_is_bions_house_such',use:pitch7,
+    useWith:async it=>{if(it==='strap'||it==='awl'||it==='thread')return F.mended?pitch7():mend7();if(it==='knife')return say(P,'cloth_is_sound');
+      if(it==='cloth7')return say(P,'his_tent_needs_no_new_cloth');return false}},
+  {name:'road_to_tarsus',x:0,y:114,w:14,h:24,wx:20,wy:128,dir:-1,look:'road_back_down_to_tarsus',exit:()=>say(PC(),PC()===P?'we_did_not_climb_for_two':'back_down')}]};
 /* ============ LYSTRA AND ICONIUM: what the brothers say of Timothy ============ */
 /* The brothers in Lystra and Iconium spoke well of Timothy (Acts 16:2). Before Paul asks Timothy to come, he hears it for himself:
    from the elders, from the household that raised him, and from the brothers a day's walk away. What he asks each of them matters.
    A question about what appears to the eyes gets a short answer; a question about what Timothy does gets a true one (1 Samuel 16:7). */
 async function lysIntro(){if(F.readL||G.metLys)return;G.metLys=1;
-  await say(LO,'I said that this door would be open. Come in, Paul. And you, brother: a friend of his has a place at this hearth.');
-  await say(TI,'Paul! You came again. I have counted the new moons since you left.');
-  await say(P,'Timothy? When I left, you were a boy with a water jar. Now I must look you in the eye.');
-  await say(EN,'And Barnabas? Is he behind you on the road?');
-  await say(P,'No, Eunice. Barnabas has sailed for Cyprus, with John Mark. He and I did not agree about this journey. Anger flared up between us, sharply, and we parted.');
-  await say(P,'I will not dress it up for you. He is my brother still, and he is about the same work.');
-  await say(P,'This is Silas, of Jerusalem. We carry a letter from the apostles and the elders, for every congregation on this road.');
-  await say(MY,'Then Lystra shall hear it this evening. Peace to you both. I am Myron: one of the elders whom you and Barnabas appointed in this room, with prayer and fasting.')}
+  await say(LO,'i_said_that_this_door_would');
+  await say(TI,'paul_you');
+  await say(P,'timothy_when');
+  await say(EN,'barnabas_is');
+  await say(P,'no_eunice');
+  await say(P,'i_will_not_dress_it_up_for_you');
+  await say(P,'this_is_silas_of_jerusalem');
+  await say(MY,'lystra_shall_hear_it_this_evening')}
 /* The decrees are delivered to each congregation (Acts 16:4). */
 async function deliverL(it){if(it!=='letter')return false;const me=PC();
-  if(F.readL)return say(MY,'It has been read and copied, and the copy is in my keeping. Take the letter on, brother: Iconium is waiting for it.');
-  await say(me,me===P?'The letter, Myron: the decision of the apostles and the elders in Jerusalem. It is for Lystra to hear, and to keep.':'The letter, brother. I was sent out from Jerusalem with it, and it is addressed to brothers like these.');
+  if(F.readL)return say(MY,'it_has_been_read_and_copied');
+  await say(me,me===P?'letter_myron_the_decision':'letter_brother');
   playAs(P);await fade(1,500);
-  await narr('That evening the congregation of Lystra heard the letter read, and the brothers received the decrees, to keep them.',{dur:7500});
+  await narr('that_evening_the_congregation',{dur:7500});
   F.readL=1;await fade(0,500);SFX.good();
-  await say(MY,'No burden but the necessary things. There are brothers in this town who will sleep better tonight for that.');
-  await say(MY,'Timothy will copy it before the lamp burns down: he writes a clear hand, and his mother saw to that. At first light he will carry the copy up to the brothers in the hill villages.');
-  await say(MY,'Nobody will have asked him to. He will simply be gone when we wake.');
-  await say(P,'Two years ago he asked me whether I would come again. I did not think then that I should be the one with the questions.',TH)}
+  await say(MY,'no_burden_but_the_necessary_things');
+  await say(MY,'timothy_will_copy_it_before');
+  await say(MY,'nobody_will_have_asked_him_to_he');
+  await say(P,'two_years_ago_he_asked',TH)}
 async function askMyron(){
-  if(!F.readL)return say(MY,'First the letter, brother. Lystra has waited a long time for a word from Jerusalem.');
-  if(F.eld)return say(MY,heard()?'You have asked in two cities, Paul. If you mean to ask the young man himself, the elders of Lystra will stand with you.':'I have told you what I see. Ask in Iconium too: he is as well known there as here.');
-  await say(P,'Myron. Tell me about Timothy.');
-  await ask(P,MY,'You have been watching him, and I have been watching you do it. Ask, then. What is it that you need to know?',[
-    {q:'Does he speak well before the congregation?',r:['Well enough. He goes red, he says what is written, and he sits down. If it is an orator you want, there are better in Iconium.',[P,'A fair answer to a poor question. I asked about his tongue. I should have asked about his hands.',TH]]},
-    {q:'Is he strong enough for the road?',r:['He is no ox, Paul. Neither are you, and you have been over the Taurus and back.',[P,'True. I am judging by what my eyes show me, and I know who does not judge so.',TH]]},
-    {q:'What do you give him to do, and how does he do it?',ok:1,
-      r:['Everything that needs feet, or a clear hand, or patience. He reads to the brothers who cannot read. He carries what we can spare to the widows in the hill villages, and he goes again the next week without being sent.',
-        'I have never had to ask him for a thing twice. And I have never once heard him say how much he had done.',
-        'But do not take it from Lystra alone. Ask in Iconium: he is as well known there as here.']}]);
+  if(!F.readL)return say(MY,'first_the_letter_brother');
+  if(F.eld)return say(MY,heard()?'you_have_asked_in_two_cities_paul':'i_have_told_you_what_i_see');
+  await say(P,'myron_said');
+  await ask(P,MY,'you_have_been_watching',[
+    {q:'does_he_speak_well_before_the_congregation',r:['well_enough',[P,'fair_answer_to_a_poor_question',TH]]},
+    {q:'is_he_strong_enough_for_the_road',r:['he_is_no_ox_paul',[P,'true_i',TH]]},
+    {q:'what_do_you_give_him_to_do',ok:1,
+      r:['everything_that_needs_feet',
+        'i_have_never_had_to_ask',
+        'do_not_take_it_from_lystra_alone']}]);
   F.eld=1;SFX.good();
-  await say(P,'What he is given, he does, and he does not count it. That is one witness.',TH)}
+  await say(P,'what_he_is_given_he_does',TH)}
 async function askFamily(){
-  if(F.fam)return say(EN,heard()?'You have asked everyone but him, Paul. I think that I know what comes next. Ask him. I shall not stand in the way.':'I have said what I know. A mother should not be the only witness: ask the brothers.');
-  await say(P,'Eunice. The elders see Timothy in the congregation. You and Lois see the rest.');
-  await ask(P,EN,'I am his mother, Paul: I shall speak well of him whatever you ask. So ask me something that I cannot dress up.',[
-    {q:'Was he a quick pupil?',r:['He had the Psalms by heart before he could carry a jar. Many a quick boy has learned them, and kept none of them. That is not what you want to know.']},
-    {q:'Could he bear to leave this house?',r:['Do not ask me that yet. Ask me first whether he is fit to.']},
-    {q:'What is he at home, when the brothers are not looking?',ok:1,
-      r:['The same. That is the whole of it, Paul.','His father does not believe. Timothy honors him, and works beside him, and has never once hidden from him what he is. He has not one face for this room and another for the pasture.',
-        [LO,'I taught my daughter, and she taught him. But the faith in that boy is his own now. Nobody is holding it up for him.']]}]);
+  if(F.fam)return say(EN,heard()?'you_have_asked_everyone_but_him_paul':'i_have_said_what_i_know');
+  await say(P,'eunice_the');
+  await ask(P,EN,'i_am_his_mother_paul_i',[
+    {q:'was_he_a_quick_pupil',r:['he_had_the_psalms_by_heart']},
+    {q:'could_he_bear_to_leave_this_house',r:['do_not_ask_me_that_yet']},
+    {q:'what_is_he_at_home_when_the_brothers',ok:1,
+      r:['the_same','his_father_does_not_believe',
+        [LO,'i_taught_my_daughter_and_she']]}]);
   F.fam=1;SFX.good();
-  await say(P,'A faith without hypocrisy: in the grandmother, in the mother, and now in him. That is a second witness.',TH)}
+  await say(P,'faith_without_hypocrisy',TH)}
 /* A hasty choice is unwise, not untrue: Paul wants him at once, and sets the wish aside until the brothers have been heard. */
 async function talkTim(){
   if(heard()&&F.readL)return invite7();
   if(!G.asked){G.asked=1;
-    await say(TI,'Is there something I can fetch for you, Paul? Water? The elders say that I am to see that you have all you need.');
-    await think('He would come if I asked him. I can see it in his face. Do I ask him now?',[
-      {q:'Come with us, Timothy, and come now.',no:'It is what I want, and it is too soon. I have been in Lystra two days. Those who have watched him for two years have not been asked.'},
-      {q:'You are young for such a road, Timothy.',no:'Is he? I have not asked one person who knows him. That would be judging by what the eyes show.'},
-      {q:'Say nothing yet. First hear what the brothers say of him.',ok:1}]);
-    await say(P,'Nothing, Timothy. But before I leave Lystra I shall want a word with you. Not yet.');
-    return say(TI,'Whenever you say. I shall be wherever the water jars are.')}
+    await say(TI,'is_there_something_i_can');
+    await think('he_would_come_if_i_asked_him',[
+      {q:'come_with_us_timothy_and_come_now',no:'it_is_what_i_want_and_it'},
+      {q:'you_are_young_for_such',no:'is_he_said'},
+      {q:'say_nothing_yet',ok:1}]);
+    await say(P,'nothing_timothy');
+    return say(TI,'whenever_you_say')}
   return talkTree([
-    {q:'What have you been doing, these two years?',a:()=>say(TI,'Whatever the elders give me, Paul. It is not much. I carry things, mostly.')},
-    {q:'Do you remember the night of the stones?',once:1,a:async()=>{await say(TI,'You sat by that lamp with blood in your hair, and mended two garments. I have thought of it every time I did not want to get up in the morning.');
-      await say(P,'Then it was a better night\'s work than I knew.')}},
-    {q:'Later, Timothy.',bye:1}])}
+    {q:'what_have_you_been_doing',a:()=>say(TI,'whatever_the_elders_give_me_paul')},
+    {q:'do_you_remember_the_night',once:1,a:async()=>{await say(TI,'you_sat_by_that_lamp_with_blood');
+      await say(P,'it_was_a_better_nights')}},
+    {q:'later_timothy',bye:1}])}
 /* An optional kindness: a psalm read to Lois, whose eyes are past reading. */
-async function psalm(it){if(it!=='tablets')return false;if(F.psalm)return say(LO,'I have it still, word for word. Read it to the boy on the road some evening.');
-  await say(LO,'My eyes are past reading, child. Say one to me, and I will tell you whether you have it right.');
+async function psalm(it){if(it!=='tablets')return false;if(F.psalm)return say(LO,'i_have_it_still_word_for_word');
+  await say(LO,'my_eyes_are_past_reading_child_said');
   await say(P,quote('ps71'));F.psalm=1;SFX.good();
-  await say(LO,'You have it right. And the next generation is standing over there by the water jars, Paul. I have told him everything I know.')}
+  await say(LO,'you_have_it_right')}
 async function door7(){const me=PC();
-  if(!F.readL)return say(me,me===P?'We have only just come in, and the letter is still in my bag. Lystra hears it first.':'Not before Lystra has heard the letter. That is what we were sent with.');
-  if(heard())return say(me,me===P?'Not yet. There is a question I must put to a young man first, in front of his mother, his grandmother and the elders.':'Paul has something to ask in this house before we go. I can see it in his face.');
-  if(F.nat&&F.tat)return say(me,me===P?'Iconium has had its letter, and I have had its answer. What is left to hear is in this house.':'We have been to Iconium. Whatever Paul still wants to know, he will find it in this room.');
+  if(!F.readL)return say(me,me===P?'we_have_only_just_come_in':'not_before_lystra_has_heard_the_letter');
+  if(heard())return say(me,me===P?'not_yet_there_is':'paul_has_something_to_ask');
+  if(F.nat&&F.tat)return say(me,me===P?'iconium_has_had_its_letter':'we_have_been_to_iconium');
   return travel()}
 TI.hs={name:'Timothy',actor:TI,
-  look:async()=>{if(heard()){await say(P,'Timothy. Four witnesses in two cities, and he has no idea that anyone has been asked.');return say(P,quote('prov22'))}
-    return say(P,F.readL?'Timothy. He has not sat down since we came: wood, water, the lamp, the copy. Nobody tells him. He sees it, and it is done.'
-    :'Timothy, the son of Eunice. A man\'s height now, and still listening with his whole face.')},
-  show:{tablets:'I can say every passage that was on them two years ago, Paul. Are there new ones?',letter:()=>say(TI,F.readL?'I have copied it, word for word, and checked the copy twice against the letter.':'From Jerusalem? From the apostles themselves? May I hear it with the others?'),
-    awl:'The awl! You mended two garments with it by that lamp. I watched every stitch.',thread:'My grandmother still spins. She says that hers was never so even.',knife:'Shaped like the new moon. I remember.','*':'Shall I carry that for you, Paul?'},
-  ask:{tim:()=>say(TI,'Of me? ...I could not tell you, Paul. Ask them. I should only get it wrong.')},
+  look:async()=>{if(heard()){await say(P,'timothy_four');return say(P,quote('prov22'))}
+    return say(P,F.readL?'timothy_he_has'
+    :'timothy_the_son_of_eunice_said')},
+  show:{tablets:'i_can_say_every_passage_q',letter:()=>say(TI,F.readL?'i_have_copied_it_word_for_word':'from_jerusalem'),
+    awl:'the_awl',thread:'my_grandmother_still_spins',knife:'shaped_like_the_new_moon','*':'shall_i_carry_that_for_you_paul'},
+  ask:{tim:()=>say(TI,'of_me')},
   talk:talkTim,
-  as:{silas:{look:'So this is Timothy. Paul spoke of a boy. I see a young man who has not sat down once since we came in.',
-    talk:()=>say(TI,heard()?'Paul keeps looking at me, brother, and then he looks away. Have I done something wrong?':'Is it true that you were in the room, brother, when the apostles and the elders decided it? What was it like?'),
-    show:{sstaff:'Shall I set it by the door for you, brother?',letter:'I copied it last night. I hope that my hand is fit for it.','*':'Shall I carry that for you, brother?'}}}};
+  as:{silas:{look:'this_is_timothy',
+    talk:()=>say(TI,heard()?'paul_keeps_looking_at_me':'is_it_true_that_you_were'),
+    show:{sstaff:'shall_i_set_it_by_the_door',letter:'i_copied_it_last_night','*':'shall_i_carry_that_for_you_brother'}}}};
 EN.hs={name:'Eunice',actor:EN,
-  look:()=>say(P,F.fam?'Eunice. She answered me without one word too many. Her faith is what it was by lamplight, two years ago.':'Eunice. These two years have cost her something, and she has remained.'),
-  show:{tablets:'Written out. I still carry mine in my head, and now my son carries them in his.',letter:()=>say(EN,F.readL?'I heard it read. No burden but the necessary things. I should like my husband to have heard it.':'A letter from Jerusalem? Give it to Myron, Paul: it is for the congregation.'),
-    thread:'You had thread in your hand the last time you stood in this room. And blood in your hair.','*':'Put it by, Paul. You are at home here.'},
-  ask:{tim:()=>F.readL?askFamily():say(EN,'Ask me when the letter has been read, Paul. Tonight belongs to that.')},
+  look:()=>say(P,F.fam?'eunice_she_answered':'eunice_these_two'),
+  show:{tablets:'written_out_i_said',letter:()=>say(EN,F.readL?'i_heard_it_read':'a_letter_from_jerusalem'),
+    thread:'you_had_thread_in_your_hand','*':'put_it_by_paul_said'},
+  ask:{tim:()=>F.readL?askFamily():say(EN,'ask_me_when_the_letter')},
   talk:async()=>{if(!F.readL)return talkTree([
-      {q:'How has it been for you, these two years?',a:async()=>{await say(EN,'As you said that it would be. Not easier. But we have elders of our own now, and we have not been alone in it.');await say(EN,'Through many tribulations. I have not forgotten who said it, or where he had been that day.')}},
-      {q:'And your husband?',once:1,a:()=>say(EN,'He is with the flocks. He does not believe, Paul, and he does not hinder us. He shakes his head a little less than he did.')},
-      {q:'Peace to this house, Eunice.',bye:1}]);
+      {q:'how_has_it_been_for_you',a:async()=>{await say(EN,'as_you_said_that_it_would_be');await say(EN,'through_many_tribulations_said')}},
+      {q:'your_husband',once:1,a:()=>say(EN,'he_is_with_the_flocks')},
+      {q:'peace_to_this_house_eunice',bye:1}]);
     return askFamily()},
-  as:{silas:{look:'Eunice, the mother. Paul told me on the road that her faith was without hypocrisy. He does not use that word lightly.',
-    talk:()=>say(EN,'Peace to you, brother. So you are the one who was sent out with the letter. Sit by the fire: you have come a long way to bring it.'),show:{'*':'Put it by, brother. You are a guest here.'}}}};
+  as:{silas:{look:'eunice_the_mother',
+    talk:()=>say(EN,'peace_to_you_brother_said'),show:{'*':'put_it_by_brother_you'}}}};
 LO.hs={name:'Lois',actor:LO,
-  look:()=>say(P,F.psalm?'Lois. She is saying the psalm over to herself, with her eyes shut.':'Lois. Older by two winters, and her eyes are dimmer. Nothing else about her has given way.'),
+  look:()=>say(P,F.psalm?'lois_she_is':'lois_older'),
   give:psalm,
-  show:{letter:'Read it to the congregation, child, not to an old woman by the fire. I shall hear it with the rest.',thread:'I spun for this household for fifty years. That is good thread.','*':'Keep your things about you. And sit down: you make the room look small.'},
-  ask:{tim:()=>F.readL?askFamily():say(LO,'Ask my daughter, when the letter has been read. She carries the most of what there is to tell.')},
-  talk:()=>F.fam?say(LO,'I taught my daughter the holy writings, and she taught her son. Now I see what it was all for.'):F.readL?askFamily():say(LO,'I said that this door would be open, and it has been. Now give Myron that letter of yours, and let an old woman hear what Jerusalem has to say.'),
-  as:{silas:{look:'Lois, the grandmother. What that young man knows of the Scriptures began with her.',give:async()=>false,
-    talk:()=>say(LO,'Sit down, child. You are from Jerusalem? I was born a long way from it, and I have never seen it. Tell me how the brothers are there.'),show:{'*':'Keep your things about you.'}}}};
+  show:{letter:'read_it_to_the_congregation',thread:'i_spun_for_this_household','*':'keep_your_things_about_you_and'},
+  ask:{tim:()=>F.readL?askFamily():say(LO,'ask_my_daughter_when_the_letter')},
+  talk:()=>F.fam?say(LO,'i_taught_my_daughter_the_holy'):F.readL?askFamily():say(LO,'i_said_that_this_door_would_said'),
+  as:{silas:{look:'lois_the_grandmother',give:async()=>false,
+    talk:()=>say(LO,'sit_down_child'),show:{'*':'keep_your_things_about_you_said'}}}};
 MY.hs={name:'Myron',actor:MY,
-  look:()=>say(P,F.eld?'Myron. He speaks of Timothy as a craftsman speaks of a tool that has never once failed him.':'Myron, one of the elders of Lystra. We appointed him in this room, with prayer and fasting. (Acts 14:23)'),
+  look:()=>say(P,F.eld?'myron_he':'myron_one_of_the_elders_of_lystra_acts_14_23'),
   give:deliverL,
-  show:{tablets:'I cannot read them, Paul. Timothy reads to me, and I remember.',awl:'A plain tool. The best ones are.','*':'Keep it by you, brother.'},
+  show:{tablets:'i_cannot_read_them_paul',awl:'plain_tool','*':'keep_it_by_you_brother_said'},
   ask:{tim:askMyron},
   talk:askMyron,
-  as:{silas:{look:'Myron, one of the elders of this congregation. He has helped to keep the flock together for two years, with stones not far behind him.',give:deliverL,
-    talk:()=>say(MY,F.readL?'A good letter, brother, and well carried. Lystra thanks Jerusalem for it.':'Peace, brother. You carry something for us, I think. I am one of the elders here: put it into my hand.'),show:{'*':'Keep it by you, brother.'}}}};
+  as:{silas:{look:'myron_one_of_the_elders',give:deliverL,
+    talk:()=>say(MY,F.readL?'good_letter_brother_and_well_carried':'peace_brother_said'),show:{'*':'keep_it_by_you_brother_said'}}}};
 ROOMS.lystra7={space:1.25,walk:[16,304,110,136],mood:'calm',amb:{fire:.5,birds:.25,wind:.2},enter:lysIntro,hs:[
-  {name:'window',x:48,y:24,w:24,h:26,wx:64,look:'The lane, in winter daylight. Two years ago I was dragged down it by the heels. Today a child waved at me from a doorway.'},
-  {name:'lamp',x:140,y:42,w:20,h:24,wx:150,look:'The lamp in its niche. I mended two garments by it once, and a boy watched every stitch.',pickup:'It gives light to the whole house where it stands.'},
-  {name:'shelf',x:172,y:48,w:60,h:18,wx:200,look:'Oil, meal and olives. It is a careful household still, and still not a rich one.',pickup:'It is their winter store.'},
-  {name:'hearth',x:76,y:88,w:34,h:18,wx:112,wy:114,dir:-1,look:'A fire of thorn wood. Timothy laid it before anyone else was awake.',use:'I warm my hands. After the Gates, I shall never again take a dry fire for granted.'},
-  {name:'bench',x:6,y:78,w:62,h:26,wx:60,wy:114,dir:-1,look:'The bench, and the blanket folded on it. They have given us the best place in the house a second time.',use:'Not yet. There are things to ask first.'},
-  {name:'water jars',x:222,y:84,w:36,h:24,wx:228,wy:114,dir:1,look:'The great jar by the door, and the two that go to the well. All three are full. I do not need to ask who filled them.',pickup:'They are full, and it was not I who filled them.'},
-  {name:'table',x:168,y:104,w:44,h:20,wx:160,wy:124,dir:1,look:'A low table, and one bowl. The whole congregation will eat at it tonight, in turns.',pickup:'It is their supper.'},
+  {name:'window',x:48,y:24,w:24,h:26,wx:64,look:'lane_in_winter_daylight'},
+  {name:'lamp',x:140,y:42,w:20,h:24,wx:150,look:'the_lamp_in_its_niche',pickup:'it_gives_light_to_the_whole_said'},
+  {name:'shelf',x:172,y:48,w:60,h:18,wx:200,look:'oil_meal_and_olives',pickup:'it_is_their_winter_store'},
+  {name:'hearth',x:76,y:88,w:34,h:18,wx:112,wy:114,dir:-1,look:'a_fire_of_thorn_wood',use:'i_warm_my_hands_after'},
+  {name:'bench',x:6,y:78,w:62,h:26,wx:60,wy:114,dir:-1,look:'bench_and_the_blanket_folded_on_it',use:'not_yet_there_are'},
+  {name:'water_jars',x:222,y:84,w:36,h:24,wx:228,wy:114,dir:1,look:'great_jar_by_the_door_and_the_two',pickup:'they_are_full_and_it_was'},
+  {name:'table',x:168,y:104,w:44,h:20,wx:160,wy:124,dir:1,look:'low_table_and_one_bowl',pickup:'it_is_their_supper'},
   /* the hidden treasure of the chapter (CHAP[7].treasure): found by looking at the marks; it changes nothing in the story */
-  {name:'marks on the wall',x:300,y:66,w:10,h:26,wx:296,wy:113,dir:1,
-    look:async()=>{await say(P,'Scratches in the plaster by the door, one above another. Someone has measured a child here, year after year. The highest is about the height of the boy who watched me sew. Timothy has long outgrown it.');treasure()},
-    pickup:'They are cut into the wall.',
-    as:{silas:{look:async()=>{await say(SI,'Little scratches by the door, one above another. Someone in this house was measured every year. I can guess who.');treasure()}}}},
-  {name:'door to the lane',x:269,y:51,w:28,h:53,wx:272,wy:113,dir:1,look:'The door to the lane. Lois said that it would be open, and it was.',exit:door7}]};
+  {name:'marks_on_the_wall',x:300,y:66,w:10,h:26,wx:296,wy:113,dir:1,
+    look:async()=>{await say(P,'scratches_in_the_plaster');treasure()},
+    pickup:'they_are_cut_into_the_wall',
+    as:{silas:{look:async()=>{await say(SI,'little_scratches_by_the_door');treasure()}}}},
+  {name:'door_to_the_lane',x:269,y:51,w:28,h:53,wx:272,wy:113,dir:1,look:'door_to_the_lane_said',exit:door7}]};
 /* ---------- Iconium: the decrees delivered, and two more witnesses ---------- */
 async function icoIntro(){if(F.readI||G.metIco)return;G.metIco=1;
-  await say(NA,'Paul! Alive, and in my street again! Come under the awning, both of you.');
-  await say(P,'Peace, Nathan. This is Silas, of Jerusalem. We bring the decision of the apostles and the elders, for Iconium as for every city.');
-  await say(NA,'From Jerusalem? Then the brothers must hear it. But first sit down. You have walked from Lystra, and it shows.')}
+  await say(NA,'paul_alive');
+  await say(P,'peace_nathan');
+  await say(NA,'from_jerusalem_said')}
 async function deliverI(it){if(it!=='letter')return false;const me=PC();
-  if(F.readI)return say(NA,'It is read, and it is copied. Carry it on, brother: there are cities beyond us.');
-  await say(me,me===P?'The letter, Nathan. It is written to the brothers of the nations, and those of Israel should hear every word of it.':'The letter from Jerusalem, brother. I was sent out with it.');
+  if(F.readI)return say(NA,'it_is_read_and_it_is_copied');
+  await say(me,me===P?'letter_nathan':'letter_from_jerusalem_brother');
   playAs(P);await fade(1,500);
-  await narr('So the congregation in Iconium heard the letter too, and received the decrees.',{dur:6000});
+  await narr('congregation_in_iconium',{dur:6000});
   F.readI=1;await fade(0,500);SFX.good();
-  await say(NA,'When this city took sides, there were some who told our Greek brothers that they were only half inside the door. That is finished with tonight.');
-  await say(P,'That is the letter delivered. Now for the other thing that I walked here to learn.',TH)}
+  await say(NA,'when_this_city_took_sides');
+  await say(P,'that_is_the_letter_delivered',TH)}
 async function askNathan(){
-  if(!F.readI)return say(NA,'First tell me what you carry, Paul. A man does not walk here from Lystra in winter with empty hands.');
-  if(F.nat)return say(NA,'Take him with you, Paul. That is what you are thinking, and it is what I should do. But the elders of Lystra must say it too: he is theirs to give.');
-  await say(P,'Nathan. In Lystra they tell me that Iconium knows Timothy, the son of Eunice.');
-  await ask(P,NA,'Timothy of Lystra? Half of Iconium could tell you about him. What do you want to know?',[
-    {q:'Does he look like a man the synagogues will hear?',r:['He looks like what he is: a young man with a Greek for a father. Looks! I make saddles, Paul. I know what a fine finish is worth on poor leather.']},
-    {q:'Has he a good head for the Scriptures?',r:['A very good one. So had some of the men who came looking for you with stones. A head is not what you are asking about.']},
-    {q:'How does Iconium come to know a young man from Lystra?',ok:1,
-      r:['Because he walked here. When this city took sides, some of our brothers lost their work for it. Lystra is poorer than we are, and Lystra sent what it had: meal, oil, a little money.',
-        "It was Timothy who carried it: a day's walk, with a sack on his back. And when the sack was empty he stayed two days, and cut wood for the widows, before he walked home.",
-        'He has done it every few weeks since. Nobody here is of his own congregation, Paul. He does it all the same.']}]);
+  if(!F.readI)return say(NA,'first_tell_me_what_you_carry_paul');
+  if(F.nat)return say(NA,'take_him_with_you_paul');
+  await say(P,'nathan_said');
+  await ask(P,NA,'timothy_of_lystra_q',[
+    {q:'does_he_look_like_a_man',r:['he_looks_like_what_he_is']},
+    {q:'has_he_a_good_head_for_the_scriptures',r:['very_good_one']},
+    {q:'how_does_iconium_come_to_know',ok:1,
+      r:['because_he_walked_here',
+        'it_was_timothy_who_carried',
+        'he_has_done_it_every_few']}]);
   F.nat=1;SFX.good();
-  await say(P,'He spends himself for brothers who are not even of his own congregation. That is a third witness.',TH)}
+  await say(P,'he_spends_himself_for_brothers',TH)}
 async function askTatia(){
-  if(F.tat)return say(TA,'If you take him with you, Paul, this fountain will miss him. And I shall be glad all the same.');
-  await say(TA,'Paul! They said at the fountain that you were in the saddlers\' street, and I did not believe them.');
-  await say(P,'Peace, Tatia. I am asking in Iconium about Timothy, the son of Eunice. You have seen him come and go.');
-  await ask(P,TA,'The young man from Lystra? I can tell you what I have seen. Ask.',[
-    {q:'Is he bold?',r:['Bold? No. He goes red when the elders ask him to read. Your friend Barnabas was never loud either, and I have not forgotten one word that he said to me.']},
-    {q:'Does he come of a good family?',r:['His father is a Greek who keeps sheep, and does not believe. If family were the measure, Paul, where should I be, with my husband?']},
-    {q:'What does he do, when he comes to Iconium?',ok:1,
-      r:['He asks after people. By name: after me, after my sons, even after my husband.',
-        'Xanthos shouted at him across the yard once, to keep away from his wife and his wagons. The next month Timothy greeted him as if nothing had been said, and asked how the wagon cover had stood the winter.',
-        'He is not pretending, Paul. I have watched for it. He truly cares what becomes of us.']}]);
+  if(F.tat)return say(TA,'if_you_take_him_with_you');
+  await say(TA,'paul_they_said');
+  await say(P,'peace_tatia');
+  await ask(P,TA,'young_man_from_lystra',[
+    {q:'is_he_bold',r:['bold_said']},
+    {q:'does_he_come_of_a_good_family',r:['his_father_is_a_greek_who']},
+    {q:'what_does_he_do_when_he',ok:1,
+      r:['he_asks_after_people',
+        'xanthos_shouted_at_him',
+        'he_is_not_pretending_paul']}]);
   F.tat=1;SFX.good();
-  await say(P,'He genuinely cares for them: even for the one who shouted at him. That is a fourth witness, and the Law asks for two.',TH)}
+  await say(P,'he_genuinely_cares_for_them',TH)}
 async function leaveIco(){const me=PC();
-  if(!F.readI)return say(me,me===P?'We walked a day to bring Iconium a letter, and it is still in my bag.':'Not before Iconium has its letter.');
-  if(!(F.nat&&F.tat))return say(me,me===P?'Not yet. The elders of Lystra told me to ask in Iconium about Timothy, and I have not finished asking.':'Paul is still asking about the young man. I have learned to wait while he does that.');
-  await say(me,me===P?'Back to Lystra, Silas. I have heard what I came to hear, and what is left to say must be said there.':'Back to Lystra, then. I think that I know what you are going to ask him, Paul.');return travel()}
+  if(!F.readI)return say(me,me===P?'we_walked_a_day_to_bring':'not_before_iconium_has_its_letter');
+  if(!(F.nat&&F.tat))return say(me,me===P?'not_yet_the':'paul_is_still_asking_about_the_young');
+  await say(me,me===P?'back_to_lystra_silas':'back_to_lystra_then');return travel()}
 NA.hs={name:'Nathan',actor:NA,
-  look:()=>say(P,F.nat?'Nathan. He told it plainly, as he tells everything, and then went back to his stitching.':'Nathan the saddler. He brought us word of the stones once, and risked his own skin to do it. He is one of the elders of Iconium now.'),
+  look:()=>say(P,F.nat?'nathan_he':'nathan_the_saddler_said'),
   give:deliverI,
-  show:{tablets:'You read to me from those the first Sabbath. I have them by heart now, and a good deal more.',awl:'That awl again! There is a wagon cover across the street that it sewed. It has not let in one drop.',
-    knife:'A half-moon knife. We are still nearly of one trade, you and I.',thread:'Good thread. Mine is still thicker: I still sew for mules.','*':'Keep it by you, brother.'},
+  show:{tablets:'you_read_to_me_from_those_the_first_said',awl:'that_awl_again',
+    knife:'a_half_moon_knife',thread:'good_thread_mine_is','*':'keep_it_by_you_brother_said'},
   ask:{tim:askNathan},
   talk:askNathan,
-  as:{silas:{look:'A saddler, and an elder of this congregation. Paul says that he would trust him with his life, and has.',give:deliverI,
-    talk:()=>say(NA,F.readI?'I have heard a great many letters read in the synagogue, brother. None that I was so glad to hear.':'Peace, brother. From Jerusalem? Then you have walked further than any saddle I ever made.'),show:{sstaff:'Olive wood? If you ever want a strap on it, come to me.','*':'Keep it by you, brother.'}}}};
+  as:{silas:{look:'saddler_and_an_elder_of_this_congregation',give:deliverI,
+    talk:()=>say(NA,F.readI?'i_have_heard_a_great_many':'peace_brother_from'),show:{sstaff:'olive_wood_if_you','*':'keep_it_by_you_brother_said'}}}};
 TA.hs={name:'Tatia',actor:TA,
-  look:()=>say(P,F.tat?'Tatia. She has watched that young man as closely as she once watched Barnabas, and for the same reason: to see whether it was real.':'Tatia, the wife of Xanthos, at the fountain with her jar. For two years she has kept the faith in a house where the name of Jesus is forbidden.'),
-  show:{tablets:'I still cannot read your letters, Paul. I still remember every word.',letter:()=>say(TA,F.readI?'Written to us of the nations, by name. I shall say it over to myself all the way home.':'A letter? Then give it to Nathan, and let all of us hear it.'),'*':'Put it away, Paul. People still watch the two of us.'},
+  look:()=>say(P,F.tat?'tatia_she_has':'tatia_the_wife_of_xanthos_said'),
+  show:{tablets:'i_still_cannot_read_your_letters_paul',letter:()=>say(TA,F.readI?'written_to_us_of_the_nations':'letter_said'),'*':'put_it_away_paul_people'},
   ask:{tim:askTatia},
-  talk:()=>F.readI?askTatia():say(TA,'Paul! In Iconium again, and in daylight! Go to Nathan first: he has been saying for a month that you would come.'),
-  as:{silas:{look:'A sister at the fountain, with a jar she is in no hurry to fill.',
-    talk:()=>say(TA,'You are the brother from Jerusalem? Then tell them there that the door is open in Iconium too. Even in the house of a carrier.'),show:{'*':'Keep it, brother.'}}}};
+  talk:()=>F.readI?askTatia():say(TA,'paul_in'),
+  as:{silas:{look:'sister_at_the_fountain',
+    talk:()=>say(TA,'you_are_the_brother_from_jerusalem_said'),show:{'*':'keep_it_brother_2'}}}};
 ROOMS.iconium7={space:0.9,walk:[16,464,110,138],mood:'hope',amb:{fountain:.7,birds:.2,hammer:.3,wind:.3,crowd:.2},enter:icoIntro,hs:[
-  {name:'mountains',x:188,y:26,w:110,h:24,wx:244,look:'The mountains round the plain, white almost to their feet. Winter comes early up here.'},
-  {name:'street to the synagogue',x:0,y:36,w:60,h:68,wx:42,wy:113,dir:-1,look:'The street to the synagogue of the Jews. I have not walked up it since the day we fled.',use:'Not today. I have a letter for the congregation, and a question for the brothers.',open:'Not today. I have a letter for the congregation, and a question for the brothers.'},
-  {name:'saddlery',x:84,y:56,w:84,h:30,wx:126,wy:113,look:"Nathan's shop: pack saddles, collars, girths and bridles. The congregation of Iconium meets behind it.",pickup:"They are Nathan's living."},
-  {name:"saddler's bench",x:102,y:82,w:52,h:23,wx:128,wy:113,look:"Nathan's bench, with a pack saddle half made on it. I sat at this corner of it for a month.",use:'It is his work, and he is in the middle of it.',
-    pickup:'A pack saddle, half made. I have no mule to put it on, and I am not offering to be one.'},
-  {name:'fountain',x:220,y:64,w:50,h:44,wx:246,wy:114,look:'The fountain at the crossroads. Barnabas answered a hard question here once, and answered it well.',use:'I drink. As cold, and as sweet, as I remembered.',pickup:'A fountain stays where it is.'},
-  {name:'poplars',x:190,y:40,w:24,h:50,wx:204,look:'The poplars are bare. When we fled this city they were in full leaf.'},
-  {name:'poplars',x:276,y:38,w:22,h:52,wx:286,look:'The poplars are bare. When we fled this city they were in full leaf.'},
-  {name:"Xanthos's wagon",x:308,y:72,w:74,h:38,wx:344,wy:114,look:'The wagon of Xanthos the carrier, under its cover: goat-hair cloth, and a leather eyelet at each corner. Two winters, and every seam of it is sound.',pickup:'Take a wagon?',use:'The cover is his, and so is the wagon.'},
-  {name:'gateway of the yard',x:375,y:53,w:52,h:51,wx:400,wy:113,look:"The yard of Xanthos the carrier. He is still for the rulers, I hear. But his wagon is still wearing my cover.",use:'I have no business in his yard.',open:'I have no business in his yard.'},
-  {name:'south gate',x:444,y:54,w:32,h:50,wx:458,wy:113,dir:1,look:'The south gate, and the road back to Lystra: a day on foot.',exit:leaveIco}]};
+  {name:'mountains',x:188,y:26,w:110,h:24,wx:244,look:'mountains_round_the_plain'},
+  {name:'street_to_the_synagogue',x:0,y:36,w:60,h:68,wx:42,wy:113,dir:-1,look:'the_street_to_the_synagogue_of_the_jews',use:'not_today_said',open:'not_today_said'},
+  {name:'saddlery',x:84,y:56,w:84,h:30,wx:126,wy:113,look:'nathans_shop_pack_saddles_said',pickup:'they_are_nathans_living'},
+  {name:'saddlers_bench',x:102,y:82,w:52,h:23,wx:128,wy:113,look:'nathans_bench_with_a_pack',use:'it_is_his_work_and_he_is',
+    pickup:'pack_saddle_half_made'},
+  {name:'fountain',x:220,y:64,w:50,h:44,wx:246,wy:114,look:'the_fountain_at_the_crossroads',use:'i_drink_as',pickup:'fountain_stays_where_it_is'},
+  {name:'poplars',x:190,y:40,w:24,h:50,wx:204,look:'poplars_are_bare'},
+  {name:'poplars',x:276,y:38,w:22,h:52,wx:286,look:'poplars_are_bare'},
+  {name:'xanthoss_wagon',x:308,y:72,w:74,h:38,wx:344,wy:114,look:'wagon_of_xanthos_the_carrier',pickup:'take_a_wagon',use:'cover_is_his_and_so_is'},
+  {name:'gateway_of_the_yard',x:375,y:53,w:52,h:51,wx:400,wy:113,look:'the_yard_of_xanthos_the_carrier',use:'i_have_no_business_in_his_yard_said',open:'i_have_no_business_in_his_yard_said'},
+  {name:'south_gate',x:444,y:54,w:32,h:50,wx:458,wy:113,dir:1,look:'south_gate_and_the_road',exit:leaveIco}]};
 /* ============ SILAS AND PAUL, AS EACH SEES THE OTHER ============ */
 /* Silas when he is the one being played: his answers where the level wrote nothing for him, and the crafts he leaves to the tentmaker */
-const SIL7={noCraft:"That is the tentmaker's trade, not mine. I should only spoil it.",
-  def:{look:'I see nothing there that needs me.',pickup:h=>h.actor?'I would not dream of it.':'It is not mine to take.',
-    use:"That is the tentmaker's trade, not mine.",open:'It does not open.',talk:'I would get no answer.',give:'First I should choose something to give.'}};
+const SIL7={noCraft:'that_is_the_tentmakers_trade_not_mine_i',
+  def:{look:'i_see_nothing_there_that_needs_me',pickup:h=>h.actor?'i_would_not_dream_of_it':'it_is_not_mine_to_take_said',
+    use:'that_is_the_tentmakers_trade_not_mine_said',open:'it_does_not_open',talk:'i_would_get_no_answer',give:'first_i_should_choose_something_to_give'}};
 const SILAS7={name:'Silas',actor:SI,
-  look:()=>say(P,inTar()?(F.read?'Silas. He read that letter as if every word of it had been written to the man in front of him.':F.silas?'Silas. He has said what he was sent to say, and now he waits, without fidgeting.':'Silas. He has not said one word since Reuben began. He was sent out with this letter: and he lets me carry it.')
-    :inGates()?(F.up?'Silas, wet to the skin, and laughing at it.':'Silas. He is no tentmaker. But he has two hands, and he has seen where they are wanted.')
-    :inLys()?'Silas. He watches Timothy fetch and carry. Then he looks at me, and says nothing.':'Silas. He has learned more names in Iconium in an hour than I did in a week.'),
-  show:{letter:()=>say(SI,inTar()&&!F.read?'I know it by heart, Paul. It is not I who needs to hear it.':'Keep it by you. Or give it to me to carry: it came out of Jerusalem in my bag.'),
-    awl:'Your awl. I have stopped being surprised by what it is asked to do.',thread:'Thread. I can at least hold the end of it.',knife:'Put it to work, brother. I will hold whatever needs holding.',
-    tablets:'Read me one when we stop for the night. You choose them better than I do.',strap:'Leather, for the corner? Then the tent is as good as mended. Tell me where you want me.',
-    cloth7:"The merchant's thanks. What will you make of it?",pcase:'A case for the letter. It looks thirsty, Paul.',tallow:"The carter's tallow. Not on the papyrus, I hope.",'*':'Keep it, brother. You will find a use for it.'},
-  ask:{witness:['He asks for a second witness, Paul. He is right: you were one side of that dispute.','And you have one standing beside you. I was not sent all this way to carry your bundle.'],
-    loop:'Leather? I have my sandals, and I need them. Ask the carter.',dry:'Not with anything that I carry. Ask a man who lives on this road, and drives it in every weather.',
-    tim:'I have known him for a day, Paul, and I have not once seen him sit down. But a day is not what you are asking about.'},
+  look:()=>say(P,inTar()?(F.read?'silas_said':F.silas?'silas_he':'silas_he_has')
+    :inGates()?(F.up?'silas_wet_to_the_skin_and_laughing':'silas_he_is')
+    :inLys()?'silas_he_watches':'silas_he_has_learned'),
+  show:{letter:()=>say(SI,inTar()&&!F.read?'i_know_it_by_heart_paul':'keep_it_by_you_said'),
+    awl:'your_awl_said',thread:'thread_i',knife:'put_it_to_work_brother_said',
+    tablets:'read_me_one_when_we_stop',strap:'leather_for_the_corner',
+    cloth7:'merchants_thanks',pcase:'case_for_the_letter_said',tallow:'carters_tallow','*':'keep_it_brother_said'},
+  ask:{witness:['he_asks_for_a_second_witness_paul','you_have_one_standing_beside_you'],
+    loop:'leather_i_have',dry:'not_with_anything_that_i_carry',
+    tim:'i_have_known_him_for_a_day'},
   talk:()=>inTar()?talkTree([
-      {q:'What do you make of Reuben?',a:()=>say(SI,F.silas?'An honest man, who asked an honest question. I wish that all doubts were so easily answered.':'That he is not your enemy. He was misled once, by men who sounded sure. Now he wants more than one man who sounds sure.')},
-      {q:'What is still to do here?',a:()=>say(SI,F.read?'Nothing. Tarsus is of one mind again.':F.silas?'The letter, Paul. To all of them: it was to all of them that the trouble came.':'I was sent to report by word of mouth. So far I have not been asked to open my mouth.')},
-      {q:'Be ready, brother.',bye:1}])
+      {q:'what_do_you_make_of_reuben',a:()=>say(SI,F.silas?'honest_man_who_asked_an_honest_question':'that_he_is_not_your_enemy')},
+      {q:'what_is_still_to_do_here',a:()=>say(SI,F.read?'nothing_tarsus':F.silas?'letter_paul':'i_was_sent_to_report_by_word')},
+      {q:'be_ready_brother',bye:1}])
     :inGates()?talkTree([
-      {q:'Have you ever pitched a tent, Silas?',once:1,a:async()=>{await say(SI,'Never in my life. But I can hold a rope, and I can do as I am told. Is that enough?');await say(P,'It is exactly enough.')}},
-      {q:'What is still to do here?',a:()=>say(SI,!F.mended?'The tent, Paul. You sew, and I shall keep out of your light.':!F.up?'It must go up. Put me on the windward line, and tell me when to pull.':!F.cased?'The letter. One more night like this one, and Derbe gets a lump of wet papyrus.':'Nothing but to sleep, if the rain will let us.')},
-      {q:'Stay close.',bye:1}])
+      {q:'have_you_ever_pitched_a_tent_silas',once:1,a:async()=>{await say(SI,'never_in_my_life');await say(P,'it_is_exactly_enough')}},
+      {q:'what_is_still_to_do_here',a:()=>say(SI,!F.mended?'tent_paul':!F.up?'it_must_go_up_put':!F.cased?'the_letter':'nothing_but_to_sleep_if_the_rain')},
+      {q:'stay_close',bye:1}])
     :inLys()?talkTree([
-      {q:'What do you see in this house?',a:()=>say(SI,'A grandmother, a mother and a son, and one faith in the three of them. I have seen larger congregations with less.')},
-      {q:'What is still to do here?',a:()=>say(SI,!F.readL?'The letter. Put it into the hand of the elder.':heard()?'You know very well. Ask him, Paul.':'You are weighing that young man. Weigh him well: ask those who know him.')},
-      {q:'Sit by the fire, brother.',bye:1}])
+      {q:'what_do_you_see_in_this_house',a:()=>say(SI,'grandmother_a_mother_and_a_son')},
+      {q:'what_is_still_to_do_here',a:()=>say(SI,!F.readL?'letter_put':heard()?'you_know_very_well':'you_are_weighing_that_young_man')},
+      {q:'sit_by_the_fire_brother',bye:1}])
     :talkTree([
-      {q:'What do you make of Iconium?',a:()=>say(SI,'That it gathered stones for you once, and that there is a congregation in it all the same. I shall remember that when a city looks hopeless.')},
-      {q:'Let us see to our errand.',bye:1}])};
+      {q:'what_do_you_make_of_iconium',a:()=>say(SI,'that_it_gathered_stones')},
+      {q:'let_us_see_to_our_errand',bye:1}])};
 /* Paul, as Silas sees him and talks to him */
 const PAUL7={name:'Paul',actor:P,as:{silas:{
-  look:()=>say(SI,inTar()?(F.read?'Paul. He let another man read his letter, and I think that he is the gladder for it.':'Paul. Everything that he has said to that man is true. It is not the truth that is wanting: it is a second voice.')
-    :inGates()?(F.up?'Paul. Rain is running out of his beard, and he is looking at a bundle of wet papyrus as if it were a sick child.':'Paul. He looked at that torn tent the way I should look at a scroll.')
-    :inLys()?'Paul. He has not taken his eyes off that young man since we came in.':'Paul. In this city they gathered stones for him. He walks through it asking after someone else.'),
+  look:()=>say(SI,inTar()?(F.read?'paul_he_let':'paul_everything')
+    :inGates()?(F.up?'paul_rain':'paul_he_looked')
+    :inLys()?'paul_he_has_not':'paul_in_this'),
   talk:()=>talkTree([
-    {q:'What can I do to help?',a:()=>say(P,inTar()?(F.read?'Nothing more here. Take up your staff.':F.silas?'Stand ready to read. I mean the whole congregation to hear it.':'Speak to Reuben. He will not take it from me: I was a party to the dispute. You were sent.')
-      :inGates()?(!F.mended?'Leave the sewing to me. But stay near: I shall want you.':!F.up?'Take the windward line of that tent, and hold it while I set the pole.':F.cased?'Sleep, if you can. So shall I.':'Keep the letter under your mantle until its case is ready.')
-      :inLys()?(!F.readL?'See that Lystra hears the letter as Tarsus heard it.':heard()?'Stand by me. I am going to ask him.':'Watch that young man with me. You see people more quickly than I do.')
-      :'Greet the brothers. They have not had a visitor from Jerusalem before.')},
-    {q:'Why were two of us sent with one letter?',if:()=>inTar()&&!F.read,once:1,a:()=>say(P,"So that it should not rest on one man's word. It says of you and Judas that you are to tell the same things with your own lips. (Acts 15:27) I had nearly forgotten it.")},
-    {q:'I will leave you to it.',bye:1}]),
-  show:{sstaff:'Keep your staff by you, Silas. There is a great deal of road yet.',letter:()=>say(P,inTar()&&!F.read?'Keep it for a moment, Silas. When the whole congregation is here, it is you who should read it.':'You carry it as well as I do. Better: nobody can say that it is yours.'),'*':'Keep it by you, Silas.'}}}};
+    {q:'what_can_i_do_to_help',a:()=>say(P,inTar()?(F.read?'nothing_more_here':F.silas?'stand_ready_to_read':'speak_to_reuben')
+      :inGates()?(!F.mended?'leave_the_sewing_to_me':!F.up?'take_the_windward_line':F.cased?'sleep_if_you_can':'keep_the_letter_under_your_mantle')
+      :inLys()?(!F.readL?'see_that_lystra_hears_the_letter':heard()?'stand_by_me':'watch_that_young_man_with_me')
+      :'greet_the_brothers')},
+    {q:'why_were_two_of_us_sent',if:()=>inTar()&&!F.read,once:1,a:()=>say(P,'that_it_should_not_rest')},
+    {q:'i_will_leave_you_to_it',bye:1}]),
+  show:{sstaff:'keep_your_staff_by_you_silas',letter:()=>say(P,inTar()&&!F.read?'keep_it_for_a_moment_silas':'you_carry_it_as_well_as_i'),'*':'keep_it_by_you_silas'}}}};
 /* ============ TOPICS: what Paul has learned, which he can raise with anyone (see each person's ask table) ============ */
 const TOPICS=[
-  {id:'witness',q:'Reuben will not take the letter on my word.',if:()=>inTar()&&!F.silas},
-  {id:'loop',q:"The tent's corner loop needs a strip of leather.",if:()=>inGates()&&!F.strap&&!F.mended},
-  {id:'dry',q:'The copies of the letter must be kept dry.',if:()=>inGates()&&F.up&&!F.tallow&&!F.cased},
-  {id:'tim',q:'What do the brothers say of Timothy?',if:()=>(inLys()||inIco())&&!heard()}];
+  {id:'witness',q:'reuben_will_not_take_the_letter',if:()=>inTar()&&!F.silas},
+  {id:'loop',q:'tents_corner_loop_needs',if:()=>inGates()&&!F.strap&&!F.mended},
+  {id:'dry',q:'copies_of_the_letter_must',if:()=>inGates()&&F.up&&!F.tallow&&!F.cased},
+  {id:'tim',q:'what_do_the_brothers_say_of_timothy',if:()=>(inLys()||inIco())&&!heard()}];
 /* ============ WAX TABLETS: people met, tasks still open, Scripture (shown by shared/tablets.js) ============ */
 const TABLETS={
   people:[
-    {name:'Silas',note:()=>inTar()?'A leading man among the brothers in Jerusalem, and a prophet. He was sent out with the letter, to tell the same things with his own lips. (Acts 15:27, 32)'
-      :inGates()?'He has never pitched a tent in his life. He has two hands, and he offers them.':'A stranger in these cities, and already the brothers bring him their questions.'},
-    {name:'Reuben',note:()=>F.read?'He asked for a second witness, and listened when he was given one.':'A brother of Israel in Tarsus, careful and well thought of. He will not take the letter on the word of a man who was a party to the dispute.',if:inTar},
-    {name:'Agathon',note:'A brother of the nations in Tarsus. He was told that without circumcision he could not be saved.',if:inTar},
-    {name:'Eirene',note:'A weaver of linen. The congregation of Tarsus meets in her courtyard.',if:inTar},
-    {name:'Zenon',note:'The carter of Derbe, and a disciple. He drives the road over the Taurus, and he carries spare harness.',if:inGates},
-    {name:'Bion',note:()=>F.up?'He is dry, with his wife and his daughter. He asked why we did it.':'A cloth merchant of Tarsus, with his wife Charis and their daughter Melissa. His tent is torn, and a storm is coming.',if:inGates},
-    {name:'Timothy',note:()=>heard()?'The brothers in Lystra and Iconium speak well of him. (Acts 16:2)':'The son of Eunice; his father is a Greek. A man\'s height now. He does what he is given, and does not count it.',if:()=>inLys()||inIco()},
-    {name:'Eunice',note:'The mother of Timothy. Her faith is the same by lamplight and by daylight.',if:inLys},
-    {name:'Lois',note:'The mother of Eunice. What Timothy knows of the holy writings began with her.',if:inLys},
-    {name:'Myron',note:'One of the elders appointed in Lystra. (Acts 14:23)',if:inLys},
-    {name:'Nathan',note:'The saddler, and now one of the elders of Iconium.',if:inIco},
-    {name:'Tatia',note:'The wife of Xanthos the carrier. She has kept the faith in a divided house.',if:inIco}],
+    {name:'Silas',note:()=>inTar()?'leading_man_among_acts_15_27_32'
+      :inGates()?'he_has_never_pitched_a_tent':'stranger_in_these_cities'},
+    {name:'Reuben',note:()=>F.read?'he_asked_for_a_second_witness':'brother_of_israel_in_tarsus',if:inTar},
+    {name:'Agathon',note:'brother_of_the_nations_in_tarsus',if:inTar},
+    {name:'Eirene',note:'weaver_of_linen',if:inTar},
+    {name:'Zenon',note:'the_carter_of_derbe_and_a_disciple',if:inGates},
+    {name:'Bion',note:()=>F.up?'he_is_dry_with_his_wife':'cloth_merchant_of_tarsus',if:inGates},
+    {name:'Timothy',note:()=>heard()?'brothers_in_lystra_acts_16_2':'son_of_eunice_his_father',if:()=>inLys()||inIco()},
+    {name:'Eunice',note:'mother_of_timothy',if:inLys},
+    {name:'Lois',note:'the_mother_of_eunice',if:inLys},
+    {name:'Myron',note:'one_of_the_elders_appointed_in_lystra_acts_14_23',if:inLys},
+    {name:'Nathan',note:'saddler_and_now_one_of_the_elders',if:inIco},
+    {name:'Tatia',note:'wife_of_xanthos_the_carrier',if:inIco}],
   tasks:[
-    {t:'Reuben asks for a second witness. I was a party to the dispute, and I cannot be it.',if:()=>inTar()&&!F.silas},
-    {t:'Have the letter read to the whole congregation, as it was in Antioch.',if:()=>inTar()&&F.silas&&!F.read},
-    {t:'Take the road north, over the Taurus.',if:()=>inTar()&&F.read},
-    {t:"Mend the merchant's tent: the long seam, and a leather loop for its corner.",if:()=>inGates()&&!F.mended},
-    {t:'Raise the tent. It needs a man on the windward line.',if:()=>inGates()&&F.mended&&!F.up},
-    {t:'Make a case that will keep the copies of the letter dry.',if:()=>inGates()&&F.up&&!F.cased},
-    {t:'Go on through the Gates, to Derbe.',if:()=>inGates()&&F.cased},
-    {t:'Deliver the decrees to the congregation in Lystra.',if:()=>inLys()&&!F.readL},
-    {t:'Hear what the elders of Lystra say of Timothy.',if:()=>inLys()&&F.readL&&!F.eld},
-    {t:"Hear what Timothy's own household says of him.",if:()=>inLys()&&F.readL&&!F.fam},
-    {t:'Carry the decrees to Iconium, and ask about Timothy there.',if:()=>inLys()&&F.readL&&!(F.nat&&F.tat)},
-    {t:'Ask Timothy.',if:()=>inLys()&&heard()},
-    {t:'Deliver the decrees to the congregation in Iconium.',if:()=>inIco()&&!F.readI},
-    {t:'Hear what the brothers in Iconium say of Timothy.',if:()=>inIco()&&F.readI&&!(F.nat&&F.tat)},
-    {t:'Go back to Lystra.',if:()=>inIco()&&F.nat&&F.tat}],
+    {t:'reuben_asks_for_a_second_witness',if:()=>inTar()&&!F.silas},
+    {t:'have_the_letter_read_to_the_whole',if:()=>inTar()&&F.silas&&!F.read},
+    {t:'take_the_road_north_over_the_taurus',if:()=>inTar()&&F.read},
+    {t:'mend_the_merchants_tent',if:()=>inGates()&&!F.mended},
+    {t:'raise_the_tent',if:()=>inGates()&&F.mended&&!F.up},
+    {t:'make_a_case_that_will_keep',if:()=>inGates()&&F.up&&!F.cased},
+    {t:'go_on_through_the_gates_to_derbe',if:()=>inGates()&&F.cased},
+    {t:'deliver_the_decrees_to_the_congregation',if:()=>inLys()&&!F.readL},
+    {t:'hear_what_the_elders_of_lystra',if:()=>inLys()&&F.readL&&!F.eld},
+    {t:'hear_what_timothys_own',if:()=>inLys()&&F.readL&&!F.fam},
+    {t:'carry_the_decrees_to_iconium',if:()=>inLys()&&F.readL&&!(F.nat&&F.tat)},
+    {t:'ask_timothy',if:()=>inLys()&&heard()},
+    {t:'deliver_the_decrees_to_the_congregation_said',if:()=>inIco()&&!F.readI},
+    {t:'hear_what_the_brothers',if:()=>inIco()&&F.readI&&!(F.nat&&F.tat)},
+    {t:'go_back_to_lystra',if:()=>inIco()&&F.nat&&F.tat}],
   scripture:ORDER.map(k=>PASS[k])};
 /* ---------- Silas's side of things, when he is the one being played ---------- */
 const AS_S={
-  tarsus7:{'mountains':{look:'So those are the mountains that we must cross. Nobody in Jerusalem told me how high they were.'},
-    'door of the house':{look:'The door of a house that has given its courtyard to the congregation.',use:'I am a guest here. I wait to be asked in.',open:'I am a guest here. I wait to be asked in.'},
-    'loom':{look:'A loom, and it is standing idle. This whole house is waiting on a letter.',use:'I should only tangle it.'},'bolts of linen':{look:'Fine linen. Whoever wove it does nothing by halves.'},
-    'linen on the wall':{look:'Clean linen in the sun. A peaceful sight, in a courtyard that has had little peace.'},'stone basin':{look:'Cold water, and clear. It has come a long way down to be here.',use:'I wash my face. It is like putting it into snow.'},
-    'fig tree':{look:'A fig tree, with benches under it. A good place for a congregation to sit.'},
-    'benches':{look:()=>say(SI,F.read?'Full benches, and nobody looking over his shoulder at the next one.':'Two benches, and the brothers sit on them like two households.')},
-    'gate to the street':{look:'The gate to the street. We shall go out by it when this is mended, and not before.'}},
-  gates:{'rock wall':{look:'Rock on both sides, and a strip of sky between. One feels very small in here.'},'Cilician Gates':{look:'So that is the gate of Cilicia. I have seen city gates that were wider. Tomorrow we go through it.'},
-    'stream':{look:'The stream is rising already. I should not like to wade it carrying anything that I valued.',use:'I drink. My teeth ache with it.'},
-    'wagon':{look:"The carter's wagon. There is room under it for three, he says. He has not measured us."},'oxen':{look:'Patient beasts. They brought our bundles up from Tarsus without one complaint, which is more than my feet can say.'},
-    'bales':{look:'Black cloth, in bales. So this is what a tent is, before it is a tent.'},
-    'road to Tarsus':{look:'The way we came.'}},
-  lystra7:{'window':{look:'A lane in a small town. Paul was dragged along it once. He looked out at it just now as a man looks at a field that he has sown.'},'lamp':{look:'A small lamp in a niche. Paul glanced at it when we came in, and smiled.'},
-    'shelf':{look:'Their winter store. They will share it with us, and go short without a word.'},'hearth':{look:'A good fire. Somebody was up before the sun to lay it.',use:'I warm my hands. I have been cold since the Gates.'},
-    'bench':{look:'The best place in the house, and it is ours.',use:'Not while Paul is still on his feet.'},'water jars':{look:'Three jars, and every one of them full to the brim.'},
-    'table':{look:'A low table. Whatever is on it tonight, we shall be given the first of it.'},'door to the lane':{look:'The door to the lane.'}},
-  iconium7:{'mountains':{look:'Snow almost down to the plain. I am glad that we crossed when we did.'},
-    'street to the synagogue':{look:'The street to the synagogue. Paul has told me what was gathered for him in it.',use:'Not today.',open:'Not today.'},
-    'saddlery':{look:'A saddlery. It smells of leather and wax, like a certain tentmaker.'},"saddler's bench":{look:'A saddle, half made. Its maker put it down the moment he saw Paul.'},
-    'fountain':{look:'Good water, and a good deal of talk round it.',use:'I drink. It is cold enough to wake a tired man.'},'poplars':{look:'Bare trees in a row, like the masts of ships in a harbor.'},
-    "Xanthos's wagon":{look:'A wagon under a goat-hair cover. Paul looked at every seam of it as we passed.'},
-    'gateway of the yard':{look:"A carrier's yard. A sister lives behind it, in a house that is divided.",use:'I have no business in there.',open:'I have no business in there.'},
-    'south gate':{look:'The gate we came in by.'}}};
+  tarsus7:{'mountains':{look:'those_are_the_mountains'},
+    'door_of_the_house':{look:'door_of_a_house_that_has',use:'i_am_a_guest_here',open:'i_am_a_guest_here'},
+    'loom':{look:'loom_and_it_is_standing_idle',use:'i_should_only_tangle_it'},'bolts_of_linen':{look:'fine_linen'},
+    'linen_on_the_wall':{look:'clean_linen_in_the_sun'},'stone_basin':{look:'cold_water_and_clear',use:'i_wash_my_face'},
+    'fig_tree':{look:'fig_tree_with_benches_under_it'},
+    'benches':{look:()=>say(SI,F.read?'full_benches_and_nobody':'two_benches_and_the_brothers')},
+    'gate_to_the_street':{look:'gate_to_the_street_said'}},
+  gates:{'rock_wall':{look:'rock_on_both_sides_and_a_strip'},'cilician_gates':{look:'that_is_the_gate_of_cilicia'},
+    'stream':{look:'stream_is_rising_already',use:'i_drink_my'},
+    'wagon':{look:'carters_wagon'},'oxen':{look:'patient_beasts_said'},
+    'bales':{look:'black_cloth_in_bales'},
+    'road_to_tarsus':{look:'way_we_came'}},
+  lystra7:{'window':{look:'lane_in_a_small_town'},'lamp':{look:'small_lamp_in_a_niche'},
+    'shelf':{look:'their_winter_store_said'},'hearth':{look:'a_good_fire',use:'i_warm_my_hands_i'},
+    'bench':{look:'best_place_in_the_house',use:'not_while_paul_is_still'},'water_jars':{look:'three_jars_and_every_one'},
+    'table':{look:'a_low_table'},'door_to_the_lane':{look:'the_door_to_the_lane'}},
+  iconium7:{'mountains':{look:'snow_almost_down_to_the_plain'},
+    'street_to_the_synagogue':{look:'street_to_the_synagogue_said',use:'not_today_2',open:'not_today_2'},
+    'saddlery':{look:'a_saddlery'},'saddlers_bench':{look:'saddle_half_made'},
+    'fountain':{look:'good_water_and_a_good_deal',use:'i_drink_it'},'poplars':{look:'bare_trees_in_a_row_like'},
+    'xanthoss_wagon':{look:'wagon_under_a_goat_hair_cover'},
+    'gateway_of_the_yard':{look:'a_carriers_yard',use:'i_have_no_business_in_there',open:'i_have_no_business_in_there'},
+    'south_gate':{look:'gate_we_came_in_by'}}};
 for(const r in AS_S)for(const h of ROOMS[r].hs)if(AS_S[r][h.name])h.as={silas:AS_S[r][h.name]};
 /* the tent, in Silas's hands: he does not sew it, he holds its windward line */
 ROOMS.gates.hs.find(h=>h.use===pitch7).as={silas:{
-  look:()=>say(SI,F.up?'It stands. I held one rope, and I am as proud of it as if I had woven the cloth.':F.mended?'Mended, and lying there. In this wind it will not go up for one man alone.':'A tent, flat on the ground, with a rent in it as long as my arm. I should not know where to begin.'),
-  use:hold7,pickup:hold7,useWith:async it=>say(SI,it==='sstaff'?'A staff will not hold it. Two hands on the windward line will.':SIL7.noCraft)}};
+  look:()=>say(SI,F.up?'it_stands':F.mended?'mended_and_lying_there':'tent_flat_on_the_ground'),
+  use:hold7,pickup:hold7,useWith:async it=>say(SI,it==='sstaff'?'staff_will_not_hold_it':SIL7.noCraft)}};
 /* ============ PLACING THE CAST, SETUP ============ */
 /* ENT: where Paul stands when a room is entered by a code. */
 const ENT={tarsus7:[150,124,1],gates:[226,127,1],lystra7:[236,124,-1],iconium7:[420,124,-1]};
@@ -1091,127 +1091,127 @@ const OPENING=[['antioch','syriangates','new'],['syriangates','tarsus','new']],L
 /* arrive7: after the map has drawn a leg, and before the room is shown: who is there, and what is known of the road. */
 async function arrive7(to,from){
   if(to==='ciliciangates'){place7('gates');
-    await narr('At the north gate of Tarsus a wagon was loading for Derbe, and its carter was a brother: Zenon, who had once offered Paul this very road.',{dur:9000});
-    await narr('From Tarsus the road climbed into the Taurus for some fifty kilometers, to the Cilician Gates: a cleft so narrow that a way for wagons had to be cut into its rock.',{dur:9500});
-    await narr('Acts does not describe the road. But this was the trade route to the cities beyond the mountains, and the natural way for Paul to take.',{dur:8500})}
+    await narr('at_the_north_gate_of_tarsus',{dur:9000});
+    await narr('from_tarsus_the_road_climbed',{dur:9500});
+    await narr('acts_does_not_describe_the_road',{dur:8500})}
   else if(to==='derbe'){place7('lystra7');
-    await narr('In this way he reached Derbe, and Lystra after it. (Acts 16:1)',{dur:5500});
-    await narr("At Derbe the oxen were unyoked on Zenon's own threshing floor, and there the congregation heard the letter read.",{dur:8000});
+    await narr('in_this_way_he_acts_16_1',{dur:5500});
+    await narr('at_derbe_the_oxen_were',{dur:8000});
     try{const M=SHARED.map;G.scene=M.draw;await fade(0,350);await M.go('derbe','lystra');await fade(1,400)}catch(e){console.error(e)}
     G.scene=null;setScore(MUSIC);AU.mood=ROOMS.lystra7.mood;AU.amb=ROOMS.lystra7.amb;
-    await narr('It was late in 49 C.E., or early in 50. Two or three years had passed since the stones.',{dur:7000});
-    await narr('There lived a disciple whose name was Timothy. His mother was a Jewish woman and a believer; his father was a Greek. (Acts 16:1)',{dur:8000})}
+    await narr('it_was_late_in_49_c_e_or_early',{dur:7000});
+    await narr('there_lived_a_disciple_acts_16_1',{dur:8000})}
   else if(to==='iconium'){place7('iconium7');
-    await narr('Iconium lay about 30 kilometers away: a day on foot, across the winter fields.',{dur:6500})}
+    await narr('iconium_lay_about_30_kilometers',{dur:6500})}
   else if(to==='lystra'){place7('lystra7');
-    await narr('They walked back the way they had come. In two cities Paul had heard one account of the same young man.',{dur:7500})}}
+    await narr('they_walked_back_the_way',{dur:7500})}}
 async function start7(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();
   await cut(async()=>{await fade(1,500);setChapter(7);G.end={};enterRoom('tarsus7',...ENT.tarsus7);G.st={k:0};G.scene=antiochScene;AU.mood='tense';AU.amb={birds:.4,leaves:.4,crowd:.3};codeBtn();await fade(0,600);
-    await narr('Antioch in Syria, about 49 C.E.',{dur:3000});
-    await narr('Some men arrived from Judea and started teaching the brothers that nobody could be saved without being circumcised as the custom of Moses requires. (Acts 15:1)',{dur:9500});
-    await narr('Paul and Barnabas disagreed and argued with them at length. In the end it was settled that Paul, Barnabas and some others should take the question up to the apostles and elders in Jerusalem. (Acts 15:2)',{dur:11500});
+    await narr('antioch_in_syria_about_49_c_e',{dur:3000});
+    await narr('some_men_arrived_acts_15_1',{dur:9500});
+    await narr('paul_and_barnabas_acts_15_2',{dur:11500});
     await fade(1,500);G.st={who:0};G.scene=councilScene;AU.mood='calm';AU.amb={birds:.2,crowd:.15};await fade(0,600);
-    await narr('In Jerusalem the apostles and the elders met to examine the question. (Acts 15:6)',{dur:6500});
-    await say(PE,'Why, then, do you put God to the test? You would lay on the necks of the disciples a yoke that was too heavy for our forefathers, and too heavy for us. (Acts 15:10)');
-    await say(PE,'No: we trust that the undeserved kindness of the Lord Jesus saves us, and it saves them in just the same way. (Acts 15:11)');
+    await narr('in_jerusalem_the_apostles_acts_15_6',{dur:6500});
+    await say(PE,'why_then_do_you_acts_15_10');
+    await say(PE,'no_we_trust_that_the_undeserved_acts_15_11');
     G.st.who=1;
-    await narr('The whole gathering fell quiet. Then they listened as Barnabas and Paul told of the many signs and wonders God had worked through them among the nations. (Acts 15:12)',{dur:10500});
+    await narr('whole_gathering_fell_quiet_acts_15_12',{dur:10500});
     G.st.who=2;
-    await narr('Then James spoke. It appears that he presided over the discussion.',{dur:5000});
-    await say(JA,'My decision, then, is that we should not make difficulties for people of the nations who turn to God. (Acts 15:19)');
-    await narr('The apostles and the elders, and the whole congregation with them, then resolved to choose men of their own and send them to Antioch with Paul and Barnabas. Their choice fell on Judas, called Barsabbas, and Silas, both of whom took the lead among the brothers. (Acts 15:22)',{dur:12500});
-    await narr('With them went a letter, addressed to the brothers from the nations in Antioch, Syria and Cilicia. (Acts 15:23)',{dur:8000});
+    await narr('james_spoke',{dur:5000});
+    await say(JA,'my_decision_then_acts_15_19');
+    await narr('apostles_and_the_elders_acts_15_22',{dur:12500});
+    await narr('with_them_went_acts_15_23',{dur:8000});
     await fade(1,500);G.st={k:1};G.scene=antiochScene;AU.amb={birds:.4,leaves:.4,crowd:.5};await fade(0,600);
-    await narr('The men were sent on their way and went down to Antioch. There they assembled everyone and delivered the letter; and when it had been read, there was joy at the encouragement it gave. (Acts 15:30, 31)',{dur:11500});
-    await narr('Judas and Silas were prophets themselves, and in many a talk they encouraged the brothers and made them strong. (Acts 15:32)',{dur:8000});
+    await narr('men_were_sent_acts_15_30_31',{dur:11500});
+    await narr('judas_and_silas_acts_15_32',{dur:8000});
     await fade(1,500);G.st={k:2,away:0};AU.mood='tense';AU.amb={birds:.4,leaves:.4};await fade(0,600);
-    await narr('Some days later Paul put a plan to Barnabas:',{dur:3200});
-    await say(P,'Come, let us go back to all the cities where we made the word of Jehovah known, and call on the brothers, and see how they fare. (Acts 15:36)');
-    await narr('Barnabas had made up his mind that John, the one called Mark, should come too. Paul was against it: Mark had left them in Pamphylia, and had not gone on with them into the work. (Acts 15:37, 38)',{dur:12500});
+    await narr('some_days_later_paul_put',{dur:3200});
+    await say(P,'come_let_us_go_acts_15_36');
+    await narr('barnabas_had_made_acts_15_37_38',{dur:12500});
     const st=G.st;tween(5200,k=>{st.away=k});
-    await narr('Anger flared up over this, so sharply that the two parted. Barnabas took Mark and sailed for Cyprus. (Acts 15:39)',{dur:9500});
+    await narr('anger_flared_up_over_this_so_sharply_acts_15_39',{dur:9500});
     st.away=1;st.bow=1;SFX.pray();
-    await narr('Paul chose Silas. The brothers commended him to the undeserved kindness of Jehovah, and he set out. (Acts 15:40)',{dur:8500});
-    try{await need('map');await SHARED.map.journey(OPENING,{labels:LABELS,view:'north',text:['His way led through Syria and Cilicia, and wherever he came he made the congregations stronger. (Acts 15:41)',
-      'Acts does not name the congregations of Cilicia. The trade road ran north through the Syrian Gates, and across the plain to Tarsus: its chief city, where Paul was born.']})}catch(e){console.error(e)}
+    await narr('paul_chose_silas_acts_15_40',{dur:8500});
+    try{await need('map');await SHARED.map.journey(OPENING,{labels:LABELS,view:'north',text:['his_way_led_through_acts_15_41',
+      'acts_does_not_name_the_congregations']})}catch(e){console.error(e)}
     await fade(1,500);G.scene=null;G.st=null;setScore(MUSIC);AU.mood=ROOMS.tarsus7.mood;AU.amb=ROOMS.tarsus7.amb;codeBtn();await fade(0,600);
-    await narr('Tarsus, in Cilicia. In this story the congregation there meets in the courtyard of a weaver of linen.',{dur:6500});
-    await say(EI,'Paul of Tarsus, home again! Peace to you, and to the brother with you. This courtyard has been waiting for you since the news came from Antioch.');
-    await say(P,'Peace to this house, Eirene. This is Silas, of the congregation in Jerusalem.');
-    await say(EI,'Then you both come at the right hour. Since those men from Judea passed through, this congregation has not slept well.');
+    await narr('tarsus_in_cilicia',{dur:6500});
+    await say(EI,'paul_of_tarsus_home_again');
+    await say(P,'peace_to_this_house_eirene');
+    await say(EI,'you_both_come_at_the_right_hour');
     await walk(RE,300,120);RE.dir=-1;P.dir=1;SI.dir=1;
-    await say(RE,'I will say it to your face, Paul, as I have said it behind your back. Those men taught that the brothers of the nations must be circumcised, or they cannot be saved. You stood against them in Antioch. Now you come with a letter which says that you were right.');
-    await say(RE,'A man who carries home the verdict in his own dispute should not wonder if he is asked for more than his own word.');
+    await say(RE,'i_will_say_it_to_your_face');
+    await say(RE,'man_who_carries_home_the_verdict');
     await walk(RE,352,118);RE.dir=-1;
-    await say(P,'He is not an enemy. He is a careful man, and half this congregation looks to him.',TH)},true)}
+    await say(P,'he_is_not_an_enemy',TH)},true)}
 /* Paul asks, the elders stand with him, and Timothy comes (Acts 16:3). His circumcision is told as Acts tells it, with the reason it gives, and is not shown. */
 async function invite7(){playAs(P);AU.mood='calm';await Promise.all([walk(P,178,126),walk(SI,234,130)]);P.dir=-1;SI.dir=-1;TI.dir=1;
-  await say(P,'Timothy. I have been asking about you in two cities, and you did not know it.');
-  await say(TI,'About me? What did they say, Paul?');
-  await say(P,"That what you are given, you do, and do not count it. That you are the same man at the hearth as at the well. That you walked a day's road with a sack on your back for brothers you hardly knew, and went again to see how they did.");
-  await narr('The brothers in Lystra and in Iconium spoke well of him. (Acts 16:2)',{dur:6500});
-  await think('He is looking at the floor. How do I put it to him?',[
-    {q:'The brothers have spoken for you. You must come.',no:"Must? Then it would be the elders' errand that he ran, and not his own. I want a volunteer, not a porter."},
-    {q:'I need someone to carry the bundles.',no:'True, and the least part of it. He would say yes at once, and never know what he had been offered.'},
-    {q:'I want you with us. It will cost you your home.',ok:1}]);
-  await say(P,'I want you to come with us, Timothy: with Silas and me, to the congregations, and beyond them to cities that have never heard. It will cost you this house. And you have seen for yourself what that road can be like, outside the gate of this town.');
-  await narr('Paul let it be known that he wanted Timothy to travel with him. (Acts 16:3)',{dur:5500});
-  await say(TI,'I am young, Paul. I go red when I read before twenty people.');
-  await say(P,'I did not ask what you think of yourself. I asked the brothers, and I asked your mother. And I have eyes of my own.');
+  await say(P,'timothy_i');
+  await say(TI,'about_me');
+  await say(P,'that_what_you_are_given');
+  await narr('the_brothers_in_lystra_acts_16_2',{dur:6500});
+  await think('he_is_looking_at_the_floor',[
+    {q:'brothers_have_spoken_for_you',no:'must_said'},
+    {q:'i_need_someone_to_carry_the_bundles',no:'true_and_the_least_part_of_it'},
+    {q:'i_want_you_with_us',ok:1}]);
+  await say(P,'i_want_you_to_come_with_us');
+  await narr('paul_let_it_be_acts_16_3',{dur:5500});
+  await say(TI,'i_am_young_paul');
+  await say(P,'i_did_not_ask_what_you');
   await walk(MY,128,127);MY.dir=1;
-  await say(MY,"It is not Paul alone who asks, Timothy. The elders of Lystra say the same. And things were said about you in this room, by God's spirit, which we have not forgotten.");
-  await say(EN,'Do not look at me, my son. Everything I taught you was for this. I only did not know that it would be so soon.',{to:TI});
-  await say(LO,'Go, child. I shall keep this door open for three of you now.',{to:TI});
-  await say(TI,'Then, if the brothers are not mistaken in me... I will come.');
+  await say(MY,'it_is_not_paul_alone_who');
+  await say(EN,'do_not_look_at_me_my_son',{to:TI});
+  await say(LO,'go_child',{to:TI});
+  await say(TI,'if_the_brothers_are_not');
   G.hands=1;for(const a of[P,TI,MY,SI,EN,LO])a.bow=true;SFX.pray();await wait(900);
-  await narr('There were prophecies about Timothy, and the body of elders laid their hands on him, as Paul did. It may have been at this time. (1 Timothy 1:18; 4:14; 2 Timothy 1:6)',{dur:10500});
+  await narr('there_were_prophecies_1_timothy_1_18_4_14_2_timothy_1_6',{dur:10500});
   for(const a of[P,TI,MY,SI,EN,LO])a.bow=false;G.hands=0;
   await fade(1,700);AU.mood='hope';
-  await narr('The Jews of that region all knew that Timothy\'s father was a Greek. Because of them, and because he wanted the young man as his companion, Paul had him circumcised. (Acts 16:3)',{dur:11000});
-  await narr("Paul knew very well that no Christian had to be circumcised: the letter in his bag laid no such burden on anyone. But everyone knew that Timothy's father was a Greek, and to the Jews in the cities ahead of them that would have been an obstacle.",{dur:11500});
-  await narr('So that nothing about him would stand in the way of the good news, Timothy submitted to it. Paul would later write that for the Jews he made himself like a Jew, so as to win Jews. (1 Corinthians 9:20)',{dur:10500});
+  await narr('jews_of_that_region_acts_16_3',{dur:11000});
+  await narr('paul_knew_very_well_that_no',{dur:11500});
+  await narr('that_nothing_about_him_1_corinthians_9_20',{dur:10500});
   await journey();
-  await narr('In city after city on their way they handed on the decrees that the apostles and the elders in Jerusalem had decided on, to be kept by the brothers there. (Acts 16:4)',{dur:10500});
-  await narr('And so the congregations kept growing firmer in the faith, and larger in number with every day. (Acts 16:5)',{dur:8000});
-  await narr("Some eleven years later Paul wrote to a congregation that he had no one else with Timothy's disposition, no one who would care so sincerely about how they fared. (Philippians 2:20)",{dur:9500});
-  endScreen({title:'Timothy of Lystra',text:'Paul could not be his own witness, so he let another man speak. He sewed a stranger\'s tent in a storm, with a brother on the windward line. And before he asked a young man to leave his home, he asked those who knew him.',
-    extra:[F.psalm&&'A psalm read to Lois'].filter(Boolean),
-    based:'Based on Acts 15:1-16:5; Philippians 2:20-22; 1 Timothy 1:18; 4:14 and 2 Timothy 1:5, 6. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are from the Scriptures and are told here in paraphrase. Acts names no city in Cilicia and describes no road: Tarsus and the Cilician Gates are likely, not stated. Lystra was apparently Timothy\'s home; Acts 16 does not name his mother, or mention Lois. How Paul heard what the brothers in Iconium said, and when hands were laid on Timothy, is not told.',
-    go:'Click to continue to Chapter Eight',code:['Chapter Eight code: {code}',codeOf(8,0)]});
+  await narr('in_city_after_acts_16_4',{dur:10500});
+  await narr('congregations_kept_growing_acts_16_5',{dur:8000});
+  await narr('some_eleven_years_philippians_2_20',{dur:9500});
+  endScreen({title:'timothy_of_lystra_2',text:'paul_could_not_be_his_own',
+    extra:[F.psalm&&'psalm_read_to_lois'].filter(Boolean),
+    based:'based_on_acts_15_1_16_5',
+    go:'click_to_continue_to_chapter_eight',code:['chapter_eight_code_code',codeOf(8,0)]});
   await wait(1500);ov.onclick=()=>startChapter(8);await new Promise(()=>{})}
-function hint7(){const b=PC()!==P,craft=['craft7',["That is the tentmaker's craft, not mine. A good partner knows when to step back.",'Paul should do this part. I can leave it to him; he is never far away.']],
-    his=['paul7b',['This is for Paul to ask. He knew the boy, and he will answer for the man.','Paul should do this. I can leave it to him.']],carry=id=>invOf(SI).includes(id);
+function hint7(){const b=PC()!==P,craft=['craft7',['that_is_the_tentmakers_craft_not_mine','paul_should_do_this_part']],
+    his=['paul7b',['this_is_for_paul_to_ask','paul_should_do_this_i']],carry=id=>invOf(SI).includes(id);
   if(inTar()){
-    if(!F.silas)return b?['wit7b',['I was no party to that dispute. I was sent out with the letter, to tell the same things with my own lips.','I should talk to Reuben, and tell him who sent me.']]
-      :G.tried?['wit7',['He asks for a second witness. And the letter itself names two men who were sent to say the same things in person.','Silas should talk to Reuben. I can let him.']]
-      :['reu7',['Reuben is a careful man, not an enemy. I should hear exactly what it is that he asks for.','I should talk to Reuben.']];
-    if(!F.read)return['read7',['In Antioch the whole group was gathered, and then the letter was handed over. Read to one man in a corner, it would settle one man.',
-      (b?carry('letter'):!carry('letter'))?'I should give the letter to Eirene, and ask her to call the congregation together.':b?'Paul carries the letter. He should give it to Eirene, who can call the congregation together.':'Silas has the letter. He can give it to Eirene, who can call the congregation together.']];
-    return['north7',['Tarsus is of one mind again. Beyond the Taurus there are congregations that have never seen this letter.','We can leave by the gate to the street, and choose the Cilician Gates on the map.']]}
+    if(!F.silas)return b?['wit7b',['i_was_no_party_to_that_dispute','i_should_talk_to_reuben']]
+      :G.tried?['wit7',['he_asks_for_a_second_witness','silas_should_talk_to_reuben']]
+      :['reu7',['reuben_is_a_careful_man','i_should_talk_to_reuben_said']];
+    if(!F.read)return['read7',['in_antioch_the_whole_group',
+      (b?carry('letter'):!carry('letter'))?'i_should_give_the_letter':b?'paul_carries_the_letter':'silas_has_the_letter']];
+    return['north7',['tarsus_is_of_one_mind_again','we_can_leave_by_the_gate']]}
   if(inGates()){
-    if(!F.mended)return b?craft:!F.strap?['strap7',['The seam I can close. The torn loop needs leather: and here stands a carter who never travels without spare harness.','I should talk to Zenon, and ask him for leather.']]
-      :['mend7',['Leather, an awl and thread. A loop and a seam: an hour\'s work, with the wind to hurry me.','I should use the yoke strap on the torn tent.']];
-    if(!F.up)return b?(holding()?['pitch7b',["I have the line. The rest is the tentmaker's part.",'Paul can use the tent now, while I hold.']]:['line7b',['Paul cannot hold a tent against this wind and set its pole at the same time.','I should use the tent, and take its windward line.']])
-      :holding()?['pitch7',['Silas has the windward line. Now the pole, and the pins.','I can use the tent now, and raise it while he holds.']]
-      :['line7',['A tent goes up in a wind only with a man on its windward line. Two can do it where one cannot.','Silas should use the tent, and take the line. Then I can raise it.']];
-    if(!F.cased)return b?craft:!F.sewn?['case7',['Papyrus and rain. The copies are for every congregation on this road, and Bion has paid me in cloth.','I should use my awl on the goat-hair cloth, and sew a case for the letter.']]
-      :!F.tallow?['tallow7',['A cloth case keeps out dust. To turn water it needs something worked into the weave. A carter keeps his axles greased.','I should talk to Zenon, and ask how to keep the letter dry.']]
-      :['proof7',['A case that drinks water, and a lump of tallow.','I should use the tallow with the letter case.']];
-    return['derbe7',['The family is dry, and so is the letter. Beyond the Gates the road runs to Derbe.','We can go on through the Cilician Gates, and choose Derbe on the map.']]}
+    if(!F.mended)return b?craft:!F.strap?['strap7',['seam_i_can_close','i_should_talk_to_zenon']]
+      :['mend7',['leather_an_awl_and_thread','i_should_use_the_yoke_strap']];
+    if(!F.up)return b?(holding()?['pitch7b',['i_have_the_line','paul_can_use_the_tent_now']]:['line7b',['paul_cannot_hold_a_tent','i_should_use_the_tent_and_take']])
+      :holding()?['pitch7',['silas_has_the_windward_line','i_can_use_the_tent_now']]
+      :['line7',['tent_goes_up_in_a_wind','silas_should_use_the_tent']];
+    if(!F.cased)return b?craft:!F.sewn?['case7',['papyrus_and_rain','i_should_use_my_awl_on_the_goat']]
+      :!F.tallow?['tallow7',['cloth_case_keeps_out_dust','i_should_talk_to_zenon_said']]
+      :['proof7',['case_that_drinks_water','i_should_use_the_tallow']];
+    return['derbe7',['family_is_dry_and_so_is','we_can_go_on_through_the_cilician']]}
   if(inLys()){
-    if(!F.readL)return['readL7',['The decrees are for every congregation on this road, and Lystra has elders of its own now.',(b?carry('letter'):!carry('letter'))?'I should give the letter to Myron.':b?'Paul should give the letter to Myron.':'Silas has the letter. He can give it to Myron.']];
-    if(heard())return b?his:['ask7',['Four witnesses in two cities, and my own eyes besides. It is time to ask him: and to tell him what it will cost.','I should talk to Timothy.']];
-    if(!F.eld)return b?his:['eld7',['A man goes by what his eyes show him. I should not ask whether he speaks well, or looks strong. I should ask what he does.','I should talk to Myron, and ask what Timothy is given to do.']];
-    if(!F.fam)return b?his:['fam7',['The elders see him in the congregation. His mother and his grandmother see him when nobody from the congregation is looking.','I should talk to Eunice, and ask what he is at home.']];
-    return['ico7',['Lystra has spoken. Myron says that he is known in Iconium too: and Iconium must have its letter.','We can leave by the door to the lane, and choose Iconium on the map.']]}
-  if(!F.readI)return['readI7',['Iconium must have the decrees, like every other city.',(b?carry('letter'):!carry('letter'))?'I should give the letter to Nathan.':b?'Paul should give the letter to Nathan.':'Silas has the letter. He can give it to Nathan.']];
-  if(!F.nat)return b?his:['nat7',["Why should a congregation a day's walk away know a young man from Lystra at all?",'I should talk to Nathan, and ask how Iconium comes to know him.']];
-  if(!F.tat)return b?his:['tat7',['Tatia has watched him come and go. What does he do, when he is here?','I should talk to Tatia at the fountain.']];
-  return['back7',['Two cities, and one account of him. What is left to do is in Lystra.','We can leave by the south gate, and choose Lystra on the map.']]}
+    if(!F.readL)return['readL7',['decrees_are_for_every_congregation',(b?carry('letter'):!carry('letter'))?'i_should_give_the_letter_to_myron':b?'paul_should_give_the_letter_to_myron':'silas_has_the_letter_said']];
+    if(heard())return b?his:['ask7',['four_witnesses_in_two_cities','i_should_talk_to_timothy_said']];
+    if(!F.eld)return b?his:['eld7',['man_goes_by_what_his_eyes','i_should_talk_to_myron']];
+    if(!F.fam)return b?his:['fam7',['elders_see_him_in_the_congregation','i_should_talk_to_eunice_said']];
+    return['ico7',['lystra_has_spoken','we_can_leave_by_the_door_to']]}
+  if(!F.readI)return['readI7',['iconium_must_have_the_decrees',(b?carry('letter'):!carry('letter'))?'i_should_give_the_letter_to_nathan':b?'paul_should_give_the_letter_to_nathan':'silas_has_the_letter_he']];
+  if(!F.nat)return b?his:['nat7',['why_should_a_congregation','i_should_talk_to_nathan_said']];
+  if(!F.tat)return b?his:['tat7',['tatia_has_watched_him_come_and_go','i_should_talk_to_tatia_said']];
+  return['back7',['two_cities_and_one_account_of_him','we_can_leave_by_the_south']]}
 /* ============ CHAPTER DEFINITION ============ */
 /* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
    plainly says no. Each is a line of this chapter, in English, as it stands above. */
-const ACTING={shake:['No, Eunice. Barnabas has sailed for Cyprus, with John Mark. He and I did not agree about this journey. Anger flared up between us, sharply, and we parted.']};
+const ACTING={shake:['no_eunice']};
 return{acting:ACTING,rooms:['tarsus7','gates','lystra7','iconium7'],setup:setup7,start:start7,hint:hint7,music:MUSIC,scenes:{antioch:antiochScene,council:councilScene},topics:TOPICS,tablets:TABLETS,
   /* painters: the chapter's animal, for the playtest, which checks that every part of it is attached */
   painters:{ox},
@@ -1220,14 +1220,14 @@ return{acting:ACTING,rooms:['tarsus7','gates','lystra7','iconium7'],setup:setup7
   view:'north',labels:LABELS,
   route:[['antioch','syriangates'],['syriangates','tarsus'],['tarsus','ciliciangates'],['ciliciangates','derbe'],['derbe','lystra'],['lystra','iconium','new']],
   places:{
-    antioch:{room:'-',if:()=>false,no:'Antioch commended us to the undeserved kindness of Jehovah for this road. It leads on, not back.'},
-    syriangates:{room:'-',if:()=>false,no:'The Syrian Gates lie behind us, and the congregations of Syria with them. Our road leads on.'},
-    tarsus:{room:'tarsus7',x:150,y:124,dir:1,if:()=>false,no:()=>say(PC(),inGates()?'Back down to Tarsus? We did not spend that night in the gorge in order to walk down again. And Tarsus has its letter.':'Tarsus has its letter, and its peace. Our road leads on.')},
-    ciliciangates:{room:'gates',x:226,y:127,dir:1,if:inTar,no:'The Gates are behind us, and I am not sorry. One night in that gorge was enough.'},
+    antioch:{room:'-',if:()=>false,no:'antioch_commended_us_to_the_undeserved'},
+    syriangates:{room:'-',if:()=>false,no:'syrian_gates_lie_behind'},
+    tarsus:{room:'tarsus7',x:150,y:124,dir:1,if:()=>false,no:()=>say(PC(),inGates()?'back_down_to_tarsus':'tarsus_has_its_letter_and_its_peace')},
+    ciliciangates:{room:'gates',x:226,y:127,dir:1,if:inTar,no:'gates_are_behind_us_and_i'},
     /* Derbe is passed on the way: the road from the Gates comes to it first, and runs on to Lystra, where the story stops (see arrive7) */
-    derbe:{get room(){return inGates()?'lystra7':'-'},x:236,y:124,dir:-1,if:inGates,no:()=>say(PC(),inTar()?'Derbe lies beyond the Taurus, and the road to it goes through the Cilician Gates. One stage at a time.':'Derbe has its letter, and Zenon is at home there. Our road does not lead back.')},
-    lystra:{room:'lystra7',x:236,y:124,dir:-1,if:inIco,no:'Lystra lies beyond Derbe, and beyond the mountains. One stage at a time.'},
-    iconium:{room:'iconium7',x:420,y:124,dir:-1,if:()=>inLys()&&!(F.nat&&F.tat),no:()=>say(PC(),inLys()?'Iconium has had its letter, and I have had its answer. What is left to do is in this house.':'Iconium lies beyond Lystra. One stage at a time.')}},
+    derbe:{get room(){return inGates()?'lystra7':'-'},x:236,y:124,dir:-1,if:inGates,no:()=>say(PC(),inTar()?'derbe_lies_beyond_the_taurus':'derbe_has_its_letter_and_zenon')},
+    lystra:{room:'lystra7',x:236,y:124,dir:-1,if:inIco,no:'lystra_lies_beyond_derbe'},
+    iconium:{room:'iconium7',x:420,y:124,dir:-1,if:()=>inLys()&&!(F.nat&&F.tat),no:()=>say(PC(),inLys()?'iconium_has_had_its_letter_said':'iconium_lies_beyond_lystra')}},
   way:()=>[['antioch','syriangates'],['syriangates','tarsus']].concat(inTar()?[]:[['tarsus','ciliciangates']],inLys()||inIco()?[['ciliciangates','derbe'],['derbe','lystra']]:[],inIco()||(inLys()&&(F.readI||F.nat||F.tat))?[['lystra','iconium']]:[]),arrive:arrive7,
   flags:['silas','read','strap','mended','line','up','sewn','tallow','cased','readL','eld','fam','readI','nat','tat','psalm'],
   /* nine characters: 19 flags, two bits for each man's room, one for who is played, and twelve for who carries what */
