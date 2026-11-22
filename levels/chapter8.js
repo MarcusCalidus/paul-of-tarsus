@@ -46,9 +46,6 @@ function snowy(g,x0,x1,base,f,st,s){ridge(g,x0,x1,base,f,st);for(let x=x0;x<x1;x
 /* rock: a stone sitting on the ground at x,y */
 function rock(g,x,y,w,h,c){oval(g,x+w*.1,y,w*.62,Math.max(.8,h*.16),'rgba(30,26,50,.34)');const p=[x-w/2,y,x-w*.42,y-h*.6,x-w*.14,y-h,x+w*.22,y-h*.9,x+w/2,y-h*.42,x+w*.46,y];
   poly(g,p,c);clipTo(g,()=>poly(g,p),()=>{poly(g,[x-w*.42,y-h*.6,x-w*.14,y-h,x+w*.22,y-h*.9,x,y-h*.5],tint(c,.22));poly(g,[x+w*.22,y-h*.9,x+w/2,y-h*.42,x+w*.46,y,x+w*.1,y],tint(c,-.26));tex(g,'mott',.5,x-w/2,y-h,w,h,'overlay',1)})}
-/* pine: a mountain pine in three tiers of needles, darker below */
-function pine(g,x,y,h,c){c=c||'#3c5a44';R(g,x-.6,y-h*.3,1.4,h*.3,'#4a3626');for(let i=0;i<3;i++){const yy=y-h*(.24+i*.24),w=h*(.3-i*.07);
-    poly(g,[x-w,yy,x,yy-h*.34,x+w,yy],tint(c,-.12+i*.1));poly(g,[x-w,yy,x,yy-h*.34,x-w*.1,yy],tint(c,.1+i*.1))}}
 /* earth: trodden ground between y0 and y1, with small stones in it */
 function earth(g,x,y0,w,y1,c,r,n){g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.12),c,tint(c,.1)]);g.fillRect(x,y0,w,y1-y0);tex(g,'mott',.55,x,y0,w,y1-y0,'overlay',1);tex(g,'grain',.14,x,y0,w,y1-y0,'overlay',.5);
   for(let i=0;i<(n||w*.4);i++){const k=r(),sy=y0+1+k*(y1-y0-2),sx=x+r()*w,s=.5+k*1.3;oval(g,sx,sy,s*1.5,s*.6,r()<.5?tint(c,.2):tint(c,-.24));if(r()<.3)oval(g,sx+s*.5,sy+s*.4,s*1.3,s*.3,'rgba(40,36,70,.22)')}}
@@ -117,7 +114,10 @@ ART.ferry={w:480,fp:1.25,
   snowy(g,96,376,60,x=>25*Math.exp(-Math.pow((x-232)/58,2))+4+2*Math.sin(x/9),['#8a9ac0','#aab6cc','#c8ccd2'],13);
   comp(g,'screen',.3,()=>{g.fillStyle=lg(g,0,34,0,60,['rgba(220,226,236,0)','rgba(220,226,236,1)']);g.fillRect(96,34,280,26)});
   ridge(g,0,480,74,bith8,['#5d7c5c','#6e8c66']);
-  for(let i=0;i<40;i++){const x=4+i*12+r()*7;pine(g,x,74-bith8(x)*(.2+r()*.6),7+r()*5,r()<.5?'#3f6048':'#4a6c50')}
+  /* the wood on them: the pines higher up the slope stand farther off, and those below them in front */
+  const rw=rng(825),wood=[];for(let i=0;i<110;i++){const x=2+i*4.4+rw()*4;wood.push([x,74-bith8(x)*(.15+rw()*.7),7+rw()*4,rw()<.5?'#3f6048':'#4a6c50'])}
+  for(const[x,y,h,c]of wood.sort((a,b)=>a[1]-b[1]))pine(g,x,y,h,c);
+  for(let i=0;i<160;i++)r();/* the wood has numbers of its own: r goes on as it did before there was one, so that nothing below it moves */
   R(g,0,73,480,13,'#5f8052');ridge(g,0,480,86,x=>9+4*Math.sin(x/57+2)+2*Math.sin(x/17),['#547a4a','#6a8c58']);
   for(let i=0;i<30;i++){const x=8+i*16+r()*9;foliage(g,x,80-3*Math.sin(x/57+2)-r()*3,4+r()*3,3+r()*2,r()<.5?'#5a8448':'#4c743e',r,18)}
   /* the far bank: reeds, a strip of gravel where the ferry lands, and a path climbing into the trees */
