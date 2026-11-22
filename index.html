@@ -1450,10 +1450,10 @@ function buildVerbs(){const v=$('#verbs');v.innerHTML='';
   const p=document.createElement('button');p.type='button';p.id='pray';p.textContent=T('pray_to_jehovah');p.onclick=pray;v.appendChild(p);
   const w=document.createElement('button');w.type='button';w.id='swap';w.onclick=()=>swap();v.appendChild(w);syncVerbs()}
 /* swapBtn: in a chapter with a party, the prayer bar gives up a third of its width to a button naming the character to switch to. */
-function swapBtn(){const b=$('#swap'),ps=party(),on=ps.length>1;$('#verbs').classList.toggle('party',on);if(!on)return;
+function swapBtn(){const b=$('#swap'),ps=party(),on=ps.length>1&&CHAP[G.ch].swap!==false;$('#verbs').classList.toggle('party',on);if(!on)return;
   const n=ps[(ps.indexOf(PC())+1)%ps.length];b.textContent='\u21c4 '+T(storyName(n));b.title=T('play_as_name_c',{name:T(storyName(n))});b.disabled=!n.room}
 /* swap: hand control to the next member of the party. If he stands in another room, the view goes there. */
-function swap(to){if(G.busy||G.scene||!G.room)return;const ps=party();if(ps.length<2)return;
+function swap(to){if(G.busy||G.scene||!G.room)return;const ps=party();if(ps.length<2||CHAP[G.ch].swap===false)return;
   const a=to||ps[(ps.indexOf(PC())+1)%ps.length];if(!a||!a.room||a===PC())return;audioInit();
   cut(async()=>{SFX.click();if(a.room!==G.room){await fade(1,200);playAs(a);await fade(0,200)}else playAs(a)})}
 /* playAs: give control to a character at once (cutscenes use playAs(P) before Paul takes the lead). */
@@ -1812,14 +1812,14 @@ const CHAP={
   10:{name:'is_it_so',label:'chapter_ten',title:'is_it_so_q',salt:0xA37B,src:'levels/chapter10.js',treasure:{name:'wound_too_far',at:'10-E04-FJ9-Y7P'}},
   11:{name:'unknown_god',label:'chapter_eleven',title:'the_unknown_god',salt:0xB48D,src:'levels/chapter11.js',treasure:{name:'back_at_the_fountain',at:'11-8VM-7EW-T68'}},
   12:{name:'tentmakers_of_corinth',label:'chapter_twelve',title:'tentmakers_of_corinth_2',salt:0xC59F,src:'levels/chapter12.js',treasure:{name:'cloth_of_his_own_country',at:'12-AXS-T1E-4S6-EEE-J5F'}},
-  13:{name:'hall_of_tyrannus',label:'chapter_thirteen',title:'the_hall_of_tyrannus',salt:0xD6B3,src:'levels/chapter13.js',treasure:{name:'pupils_tablet',at:'13-KQC-4NT-ZTX-2SR-Z2V'}}};
+  13:{name:'hall_of_tyrannus',label:'chapter_thirteen',title:'the_hall_of_tyrannus',salt:0xD6B3,src:'levels/chapter13.js',treasure:{name:'pupils_tablet',at:'13-KQC-4NT-ZTX-2SR-Z2V'}},
+  14:{name:'two_hours_in_the_theater',label:'chapter_fourteen',title:'two_hours_in_the_theater_2',salt:0xE7C5,src:'levels/chapter14.js',needs:['lanes'],treasure:{name:'kneading_behind_a_shutter',at:''}}};
 const TITLE={level:1,scene:'title',mood:'ancient',amb:{crickets:.5,wind:.35,owl:.4}};
 const PRO={name:'road_to_damascus',label:'Prologue',title:'the_road_to_damascus',src:'levels/prologue.js'};
 /* PLANNED: the chapters that are planned and not built (issue #47). The title lists them, dimmed, under one line that opens them in place.
    Each is named by the part of Acts it will tell, not by a working title, which may still change; the title it is given replaces that
    reference when the chapter is built and moves into CHAP. Nothing else reads this list: these chapters have no file, no salt and no codes. */
 const PLANNED=[
-  {label:'chapter_fourteen',short:'Fourteen',ref:'acts_19_21_20_1'},
   {label:'chapter_fifteen',short:'Fifteen',ref:'acts_20_1_12'},{label:'chapter_sixteen',short:'Sixteen',ref:'acts_20_13_38'},
   {label:'chapter_seventeen',short:'Seventeen',ref:'acts_21_1_16'},{label:'chapter_eighteen',short:'Eighteen',ref:'acts_21_17_22_29'},
   {label:'chapter_nineteen',short:'Nineteen',ref:'acts_22_30_23_35'},{label:'chapter_twenty',short:'Twenty',ref:'acts_24_1_27'},

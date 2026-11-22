@@ -2594,6 +2594,96 @@
      has5=s=>Object.values(s).some(b=>b.includes(5));
    ok(a>.005&&a<.9&&!has5(gap.seq)&&has5(full.seq)&&sc.steps===9,`the tune leaves out the sixth note of its scale until the evening at the table, and has it from then on; the note itself renders finite, audible and unclipped (peak ${a.toFixed(2)})`)}
   };
+  /* Chapter Fourteen stops start Chapter Fourteen from the title screen, and its test is a function of its own: the full run calls it when
+     Chapter Thirteen has ended, and a Chapter Fourteen stop calls it at once. all14 halts nowhere. The stops that begin with "p" open one
+     room at once, with the story's flags set for it, so that its picture can be looked at without playing up to it. */
+  const C14=/^(dbg14|open14|market14|colon14|asked14|seal14|sealed14|lanes14|door14|held14|wait14|court14|quiet14|marketq14|gate14|deutsch14|final14|all14)$/.test(stop);
+  if(/^p[a-z]+14$/.test(stop)){await loadLevel(14);ov.className='';ov.onclick=null;const ALL=CHAP[14].flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      S={pcourt14:[[],'court14',[150,124]],pmarket14:[[],'market14',[240,124]],pcolon14:[[],'colon14',[120,124]],pseal14:[upto('r3'),'seal14'],psealb14:[upto('tied'),'seal14'],psealc14:[upto('sealed'),'seal14'],
+        plane14:[upto('run'),'lanes14'],pdoor14:[upto('court'),'door14',[160,124]],pdoorb14:[upto('h3'),'door14',[160,124]],pfarewell14:[upto('plea'),'court14',[150,124]],
+        pquiet14:[upto('left'),'lanes14'],pmarketq14:[upto('left'),'market14',[240,124]]}[stop];
+    if(!S)throw new Error('no such stop '+stop);setChapter(14);for(const k of S[0])F[k]=1;
+    const room=S[1];CHAP[14].place(room);dealInv(room);G.scene=null;enterRoom(room,...CHAP[14].ent[room]);
+    if(stop==='pcourt14'){G.stage14='open';CHAP[14].place(room);enterRoom(room,150,124,-1);place(ACT.timothy14,room,118,122,1);place(ACT.erastus14,room,96,126,1);place(ACT.damon14,room,214,120,-1);G.stage14=null}
+    if(stop==='pmarket14'){ACT.demet14.room='market14';P.room=null}
+    if(S[2]&&PC().room===room){place(PC(),room,S[2][0],S[2][1],1);G.cam=clamp(S[2][0]-160,0,ART[room].w-320)}
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();await wait(1100);halt(stop)}
+  const ch14=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[14],told=k=>heard.includes(T(C().told[k])),
+    until=async(fn,n)=>{for(let i=0;i<(n||6000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(name,v)=>{const h=H(name);if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    useH=async(id,name,v)=>{const h=H(name);if(!h)throw new Error('no hs '+name+' in '+G.room);verb(v||'use');item(id);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    talkTo=async(a,v)=>{verb(v||'talk');clickView(a.x,a.y-10,a.hs);await idle()},
+    giveTo=async(id,a)=>{verb('give');item(id);clickView(a.x,a.y-10,a.hs);await idle()},
+    pray14=async()=>{const k=JSON.stringify(hint()),h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
+    /* a walk on the map by a script: every lane may be taken (see route), and the walk ends where the lanes come nearest */
+    mapWalk=async(a,x,y)=>{const M=C().map,D=M.def,cr=D.crowd;D.crowd={};M.crowd.length=0;M.pushT=0;a.pushed=0;M.seeAll=1;const r=walk(a,x,y);for(let i=0;i<4000&&a.walk;i++)await wait(30);await r;M.seeAll=0;D.crowd=cr;await idle()},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+  heard.length=0;(C14?document.querySelector('#overlay [data-ch="14"]'):ov).click();
+  await until(()=>G.ch===14&&G.room==='court14'&&!!A('timothy14').room,9000);halt('open14');
+  await until(()=>G.ch===14&&G.room==='market14',9000);halt('market14');
+  await until(()=>G.ch===14&&G.room==='colon14'&&!G.busy,12000);note();
+  const RUN=A('eudoros14'),DA=A('damon14'),AR=A('arist14'),PK=A('philo14'),PH=A('philon14'),KL=A('klea14');
+  ok(G.room==='colon14'&&PC()===RUN&&!P.room&&srt()==='tab14'&&['v21','v22','v23','v24','v25','v26','v27','v28','v29a','v32'].every(k=>seenTold.has(k))&&said('i_will_ask_around'),
+    'chapter fourteen opens in the court (Acts 19:21, 22), shows the marketplace while the narrator tells Demetrius (19:23-29), and gives the runner to the player at the colonnade of the theater ['+[G.room,PC().id,srt(),[...seenTold].join(' ')].join()+']');
+  ok(!document.querySelector('#verbs').classList.contains('party'),'nobody else can be played from here: the chapter has no swap button');
+  halt('colon14');
+  /* puzzle 1: Aristokles will not be told before all six have been asked */
+  heard.length=0;await talkTo(AR);ok(said('ask_them_all_first'),'Aristokles wants all six asked first');
+  ok(await pray14()&&said('everyone_at_the_arches_is_shouting'),'the first prayer at the arches points at the people there');
+  for(const w of C().who){heard.length=0;await talkTo(w.a);ok(w.lines.every(said)&&F[w.f],`${w.a.id} says what he says, and Eudoros notes it`)}
+  heard.length=0;await talkTo(A('appr14'));ok(said('go_and_see_for_yourself'),'asked again, the apprentice only sends him to look');
+  {const t=CHAP[14].tablets.notes.list.filter(n=>n.if());ok(t.length===13,'his tablets hold every claim he has heard, each with who made it ('+t.length+')')}
+  halt('asked14');
+  heard.length=0;await talkTo(AR);
+  for(let q=0;q<3;q++){for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);await choose(1);for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);await choose(0)}
+  await until(()=>G.room==='seal14',6000);
+  ok(F.r1&&F.r2&&F.r3&&(said('proconsul_i_would_have_heard')||said('harbor_then_why_silversmiths')),'a claim only one person makes is turned back, and the one that two agree on is taken');
+  ok(told('v29b')&&said('close_it_and_tie_it')&&has('cord14')&&has('clay14')&&G.room==='seal14','then the narrator tells who was dragged in, the commissioners write, and the close view opens with a cord and clay');
+  halt('seal14');
+  heard.length=0;await onH('philokrates_leaf','use');ok(said('the_holes_do_not_meet')&&!F.closed,'laid as it lies, the second leaf\'s holes do not meet the first\'s');
+  await useH('cord14','aristokles_leaf');ok(said('tied_open_anyone_could_read_it')&&!F.tied,'tied open, anyone could read it');
+  await onH('philokrates_leaf','pickup');ok(F.turned,'the second leaf is turned round');
+  await onH('philokrates_leaf','use');ok(F.closed,'writing to writing, the holes together');
+  await useH('clay14','tablet');ok(said('clay_on_bare_wood_seals_nothing')&&!F.clayed,'clay before the cord seals nothing');
+  await onH('ring','use');ok(said('tie_it_first_then_my_ring')&&!F.sealed,'the ring waits for the clay');
+  await useH('cord14','tablet');await useH('clay14','tablet');ok(F.tied&&F.clayed,'the cord through the holes, the clay over the knot');
+  ok(await pray14()&&said('clay_is_waiting_for_a_ring'),'a prayer then points at the ring');
+  await onH('ring','use');await until(()=>G.room==='colon14'&&!G.busy,6000);
+  ok(F.sealed&&has('plea14')&&said('he_is_staying_with_disciples'),'Aristokles seals it, and tells where Paul is staying');
+  halt('sealed14');
+  await onH('square_before_the_theater','walk');await until(()=>G.room==='lanes14'&&!G.busy,6000);
+  ok(G.room==='lanes14'&&PC()===RUN&&ART.lanes14.variant()==='surge','out on the lane map, in the surge');halt('lanes14');
+  {const M=C().map,[hx,hy]=M.def.targets.house;await mapWalk(RUN,hx,hy+2);}
+  await until(()=>G.room==='door14'&&!G.busy,20000);
+  ok(F.court&&PC()===DA&&P.room==='door14'&&told('v30')&&said('then_i_am_going_in'),'at the court the view goes into the house: Damon and Theano are played, and Paul is set on going (19:30)');
+  halt('door14');
+  /* puzzle 4: what concerns his own life only makes him more set on going; what concerns others holds him, a step at a time */
+  heard.length=0;await talkTo(P);for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);await choose(0);ok(said('crowds_have_wanted_my_blood')&&!F.h1,'a warning about his own life does not hold him');
+  for(let n=0;n<3;n++){await talkTo(P);for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);await choose(4)}
+  ok(F.h1&&F.h2&&F.h3&&P.seat&&said('he_has_sat_down_on_the_bench')&&said('somebody_is_knocking'),'three arguments about others hold him: the bolt, the mantle, the bench; and then a knock');
+  halt('held14');
+  await onH('hatch','open');ok(F.knock&&has('plead14')&&said('message_for_paul_sealed'),'the hatch: the runner, and the sealed tablet with both seals whole');
+  await giveTo('plead14',P);
+  await until(()=>G.room==='court14'&&PC()===P&&!G.busy,20000);note();
+  ok(F.plea&&['v31','v33','v34','v35','v36','v37','v38','v39','v40','v41','w1a'].every(k=>seenTold.has(k)),'the plea is the last word (19:31); then the theater is told while they wait (19:33-41), and the farewell begins (20:1)');
+  halt('court14');
+  heard.length=0;await onH('passage_under_the_house','walk');ok(said('not_without_saying_goodbye')&&G.room==='court14','he will not go without saying goodbye');
+  for(const a of[DA,PH,KL,A('dz14a')])await talkTo(a);ok(F.b1&&F.b2&&F.b3&&F.b4,'he says goodbye to each');
+  await onH('passage_under_the_house','walk');await until(()=>G.room==='lanes14'&&!G.busy,6000);
+  ok(ART.lanes14.variant()==='quiet'&&PC()===P,'the lanes after the uproar, as Paul');halt('quiet14');
+  /* the hidden treasure: the shutter ajar in the blind alley off the harbor road */
+  {const h=ROOMS.lanes14.hs.find(h=>h.name==='shutter'&&h.vis&&h.vis()&&h.look===h.open&&typeof h.look==='function');await mapWalk(P,h.wx,h.wy);heard.length=0;verb('look');clickView(h.x+h.w/2,h.y+h.h/2,h);await idle();
+    ok(said('shutter_look')&&treasures().has(14),'the shutter ajar in the blind alley: somebody hums while kneading, and the chapter\'s hidden treasure is found')}
+  {const h=ROOMS.lanes14.hs.find(h=>h.name==='market');await mapWalk(P,h.wx,h.wy);G.verb='walk';G.item=null;clickView(h.x+h.w/2,h.y+h.h/2,h);await until(()=>G.room==='market14'&&!G.busy,6000)}
+  heard.length=0;await onH('donkey','look');ok(said('donkey_heard_a_thousand_hammer_strokes'),'the marketplace again, quiet, and the donkey');halt('marketq14');
+  await onH('way_back_to_the_lanes','walk');await until(()=>G.room==='lanes14'&&!G.busy,6000);
+  {const h=ROOMS.lanes14.hs.find(h=>h.name==='harbor_gate');await mapWalk(P,h.wx+4,h.wy);G.verb='walk';G.item=null;clickView(h.x+h.w/2,h.y+h.h/2,h);
+    for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30)}
+  note();ok(ov.classList.contains('end')&&seenTold.has('w1b'),'at the harbor gate he sets out for Macedonia (20:1), and the end screen follows');halt('gate14');
+  };
+  if(C14){await ch14();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(C13){await ch13();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
