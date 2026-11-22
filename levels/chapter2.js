@@ -504,7 +504,7 @@ async function leaveUpper(){if(F.preach)return go('jerusalem',330,116,1);
    Three objections. Every answer Paul can give is a passage from his tablets, said as his tablets have it, in his own words; a passage that
    does not meet the objection gets a reply, never a failure. The last objection is about Paul himself, and the answer is a confession. */
 const label=k=>T('ref_short',{ref:T(PASS[k].ref),short:T(PASS[k].short)}),quote=k=>T('text_ref',{text:T(PASS[k].gist),ref:T(PASS[k].ref)});
-function round(who,q,right,p,r,wrong){return quiz(who,q,ORDER.map(k=>k===right?{q:label(k),ok:1,p,r}:{q:label(k),p:[quote(k)],r:[wrong[k]]}))}
+function round(who,q,right,p,r,wrong){return quiz(who,q,ORDER.map(k=>k===right?{q:label(k),k,ok:1,p,r}:{q:label(k),k,p:[quote(k)],r:[wrong[k]]}))}
 async function dispute(){DS.dir=1;AR.dir=1;
   await say(DS,'we_heard_you_in_the_synagogue');
   await say(AR,'answer_us_from_the_scriptures');

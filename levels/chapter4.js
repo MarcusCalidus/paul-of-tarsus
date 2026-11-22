@@ -328,8 +328,9 @@ const inSel=()=>G.room==='seleucia',inPaph=()=>G.room==='paphos',inSal=()=>!inSe
 /* go4: through a door. The two men keep together, so the other follows. */
 async function go4(room,x,y,dir){SFX.door();await fade(1);enterRoom(room,x,y,dir);place(PC()===P?BN:P,room,x-dir*26,y+3,dir);await fade(0)}
 /* quizAs: the engine's quiz, answered by whoever is played. ask: the same, but a reply may come from anyone present: r lists lines, or [actor, line] pairs. */
+/* ask: someone asks, and the player answers from opts; k: the key to mix an answer by when its line is put together from parts (choose) */
 async function ask(me,who,q,opts){let av=opts.slice();
-  for(;;){await say(who,q,{to:me});const o=av[await choose(av.map(o=>o.q))];for(const l of o.p||[o.q])await say(me,l,{to:who});
+  for(;;){await say(who,q,{to:me});const o=av[await choose(av.map(o=>o.q),{by:av.map(o=>o.k||o.q)})];for(const l of o.p||[o.q])await say(me,l,{to:who});
     for(const x of o.r)await(Array.isArray(x)?say(x[0],x[1],x[2]||{to:me}):say(who,x,{to:me}));if(o.ok)return;av=av.filter(x=>x!==o)}}
 /* Saul, as Barnabas sees him and talks to him */
 const PAUL4={get name(){return P.called||'Saul'},actor:P,as:{barnabas:{
@@ -690,11 +691,11 @@ async function showTools(it){if(!['awl','knife','thread'].includes(it)||!F.ob1||
   await say(EL,'their_prophet_daniel_served');
   return daniel()}
 async function daniel(){
-  await ask(P,SP,'is_that_written_paulus',ORDER.map(k=>k==='dan2'?{q:label(k),ok:1,
+  await ask(P,SP,'is_that_written_paulus',ORDER.map(k=>k==='dan2'?{q:label(k),k,ok:1,
       p:['it_is_written_that_the_king',quote(k),
         'daniel_never_claimed_the_sorcerers_art_sir'],
       r:['man_himself_denied_the_art',[SP,'elymas_that_part_you_did',{to:EL}]]}
-    :{q:label(k),p:[quote(k)].concat(k==='deut18'?['that_is_the_law_of_moses_sir']:[]),r:[{
+    :{q:label(k),k,p:[quote(k)].concat(k==='deut18'?['that_is_the_law_of_moses_sir']:[]),r:[{
       ps133:[SP,'unity_among_brothers'],
       isa42:[SP,'fine_saying_about_islands'],
       sam7:[SP,'that_concerns_a_king_of_yours'],

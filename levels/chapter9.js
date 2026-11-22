@@ -438,8 +438,9 @@ const inHouse=()=>G.room==='lydia9',inRiv=()=>G.room==='river9',inCell=()=>G.roo
 /* think: Paul weighs what to do next. A choice that would not serve is set aside in thought, and never spoken. */
 async function think(q,opts){let av=opts.slice();
   for(;;){await say(P,q,TH);const o=av[await choose(av.map(o=>o.q))];if(o.ok)return;await say(P,o.no,TH);av=av.filter(x=>x!==o)}}
-/* pickLine: the player names a line of the psalm. want: the one that is right here; wrong(k): what is said to any other; order: how they are offered */
-async function pickLine(q,want,wrong,order){const ks=order||ORDER;for(;;){await say(P,q,TH);const k=ks[await choose(ks.map(k=>PS[k].full))];if(k===want)return;await wrong(k)}}
+/* pickLine: the player names a line of the psalm. want: the one that is right here; wrong(k): what is said to any other. All four are
+   offered every time, mixed as every choice is (choose), so that the next line is found by knowing the psalm, not by its place. */
+async function pickLine(q,want,wrong){const ks=ORDER;for(;;){await say(P,q,TH);const k=ks[await choose(ks.map(k=>PS[k].full))];if(k===want)return;await wrong(k)}}
 /* strip: Paul and Silas without their cloaks, from the marketplace until Timothy brings them back */
 function strip(on){P.look=on?LOOK.paul9b:LOOK.paul;P.wear=on?'b':'';SI.look=on?LOOK.silas9b:LOOK.silas9;SI.wear=on?'b':''}
 /* come: a room is shown, with everyone in his place */
@@ -552,7 +553,7 @@ async function silasTalk(){
   F.voice=1;SFX.good();codeBtn()}
 async function nightSong(){const k=sungN()+1,want=ORDER[k-1];
   await pickLine(k===1?'from_the_beginning':'there_is',want,
-    x=>ORDER.indexOf(x)<k-1?say(SI,'we_have_sung_that_one_brother'):say(P,k===1?'no_that':'not_yet_one',TH),['c2','c4','c1','c3']);
+    x=>ORDER.indexOf(x)<k-1?say(SI,'we_have_sung_that_one_brother'):say(P,k===1?'no_that':'not_yet_one',TH));
   await sung('P',want,P,PS[want].full,{rough:[.9,.45,.25,.1][k-1],v:[.75,.95,1,1][k-1]});
   if(k===1){await sung('S','a',SI,PS.a.full,{rough:.35,v:.9});await tell('v25')}
   else await sung('PS','a',SI,PS.a.full,{fourths:k===4});
@@ -685,7 +686,7 @@ const NO={
     k3:'i_can_keep_the_prices_of_nine'},
   phila9:{k1:'to_the_prison_sir',k2:'that_is_for_lydia_to_say_sir'}};
 async function care(a){const open=CARES.filter(c=>!F[c.id]);if(!open.length)return say(a,'go_in_peace_paul');
-  const i=await choose(open.map(c=>c.q).concat('nothing_more_for_now'));if(i===open.length)return;const c=open[i];await say(P,c.q);
+  const i=await choose(open.map(c=>c.q).concat('nothing_more_for_now'),{keep:1});if(i===open.length)return;const c=open[i];await say(P,c.q);
   if(c.who!==a.id)return say(a,NO[a.id][c.id]);
   await YES[c.id]();F[c.id]=1;SFX.good();if(CARES.every(c=>F[c.id]))return done();codeBtn()}
 async function leave(){const me=P;if(!CARES.every(c=>F[c.id]))return say(me,'not_yet_i');return done()}

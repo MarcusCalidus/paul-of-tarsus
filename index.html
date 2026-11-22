@@ -1259,8 +1259,16 @@ async function fade(on,ms=260,white){const S=SHARED.scroll;if(S&&S.state!=='down
   d.style.transition='';if(!on)d.style.background='#05030c'}
 async function go(room,x,y,dir){SFX.door();tagEl.innerHTML='';tagSig='';const[snap,sg]=mk(VW*HR,VH*HR);sg.drawImage(cv,0,0);enterRoom(room,x,y,dir);
   G.xfade={img:snap,a:1};await tween(320,k=>{G.xfade.a=1-(k*k*(3-2*k))});G.xfade=null;const r=ROOMS[room];if(r.enter)await r.enter()}
-function choose(opts){return new Promise(res=>{const c=$('#choices');c.innerHTML='';c.classList.add('on');
-  opts.forEach((o,i)=>{const b=document.createElement('button');b.textContent='› '+T(o);b.dataset.src=o;
+/* choose: the player picks one of the lines in opts, and the result is its place in opts. Where a line stands must never tell which
+   one is right (CONTRIBUTING section 2), so the lines are shown in a mixed order: each is ranked by a hash of its key, the same every
+   time and in every language, and when a line drops out of a choice the others keep their order. o.by: the keys to rank by, where
+   opts are lines put together from parts; o.order: show them as given (a menu of questions); o.keep: so many lines at the end stay
+   there (one that only leaves, or only asks to hear more, and is never the answer). */
+const MIX=0xb37f464d,mixRank=k=>{k=String(k);let h=MIX;for(let i=0;i<k.length;i++)h=Math.imul(h^k.charCodeAt(i),16777619);return h>>>0};
+function choose(opts,o={}){return new Promise(res=>{const c=$('#choices');c.innerHTML='';c.classList.add('on');
+  const by=o.by||opts,n=opts.length-(o.keep||0),ix=opts.map((s,i)=>i),
+    show=o.order?ix:ix.slice(0,n).sort((a,b)=>mixRank(by[a])-mixRank(by[b])||a-b).concat(ix.slice(n));
+  show.forEach(i=>{const b=document.createElement('button');b.textContent='› '+T(opts[i]);b.dataset.src=opts[i];b.dataset.i=i;
     b.onclick=()=>{SFX.click();c.classList.remove('on');res(i)};c.appendChild(b)})})}
 /* lines: what a person says in reply. A reply is one line, a list of lines, or a script. */
 async function lines(a,x,arg){if(typeof x==='function')return x(arg);for(const s of[].concat(x))await say(a,s)}
@@ -1273,7 +1281,7 @@ async function talkTree(topics,o){const A=G.talking,T=CHAP[G.ch].topics||[];
       .map(t=>({q:t.q,key:A.id+':'+t.id,a:()=>lines(A,A.hs.ask[t.id])})):[];
     const own=topics.filter(t=>(!t.if||t.if())&&!(t.once&&ASKED.has(t.q))),av=own.filter(t=>!t.bye).concat(known,own.filter(t=>t.bye));
     if(o&&o.quiet&&av.every(t=>t.bye))return;
-    const t=av[await choose(av.map(t=>t.q))];ASKED.add(t.key||t.q);await say(PC(),t.q);if(t.a)await t.a();if(t.bye)return}}
+    const t=av[await choose(av.map(t=>t.q),{order:1})];ASKED.add(t.key||t.q);await say(PC(),t.q);if(t.a)await t.a();if(t.bye)return}}
 /* --- UI: verbs, inventory, status line --- */
 function buildVerbs(){const v=$('#verbs');v.innerHTML='';
   VERBS.forEach(([id,label])=>{const b=document.createElement('button');b.type='button';b.textContent=T(label);b.dataset.v=id;
@@ -1598,7 +1606,7 @@ async function travel(){const c=CHAP[G.ch],all=c.places||{},ids=Object.keys(all)
   if(open){enterRoom(p.room,p.x,p.y,p.dir);if(c.arrive)await c.arrive(to,here)}else viewOf(PC());codeBtn();await fade(0,400);
   if(open){const r=ROOMS[G.room];if(r.enter)await r.enter()}else if(p&&p.no!=null)await lines(PC(),p.no)}
 async function quiz(who,q,opts){await say(who,q);let av=opts.slice();
-  for(;;){const o=av[await choose(av.map(o=>o.q))];for(const l of o.p||[o.q])await say(P,l);for(const l of o.r)await say(who,l);
+  for(;;){const o=av[await choose(av.map(o=>o.q),{by:av.map(o=>o.k||o.q)})];for(const l of o.p||[o.q])await say(P,l);for(const l of o.r)await say(who,l);
     if(o.ok)return;av=av.filter(x=>x!==o);await say(who,q)}}
 /* ============ SCENES: title, intro, finale, chapter complete ============ */
 const ov=$('#overlay');
