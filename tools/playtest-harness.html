@@ -2603,7 +2603,7 @@
   const C14=/^(dbg14|open14|market14|colon14|asked14|seal14|sealed14|lanes14|door14|held14|wait14|court14|quiet14|marketq14|gate14|deutsch14|final14|all14)$/.test(stop);
   if(/^p[a-z]+14$/.test(stop)){await loadLevel(14);ov.className='';ov.onclick=null;const ALL=CHAP[14].flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
       S={pcourt14:[[],'court14',[150,124]],pmarket14:[[],'market14',[240,124]],pcolon14:[[],'colon14',[120,124]],pseal14:[upto('r3'),'seal14'],psealb14:[upto('tied'),'seal14'],psealc14:[upto('sealed'),'seal14'],
-        plane14:[upto('run'),'lanes14'],pdoor14:[upto('court'),'door14',[160,124]],pdoorb14:[upto('h3'),'door14',[160,124]],pfarewell14:[upto('plea'),'court14',[150,124]],
+        plane14:[upto('run'),'lanes14'],pdoor14:[upto('court'),'door14',[160,124]],pdoorb14:[upto('h3'),'door14',[160,124]],pfarewell14:[upto('plea'),'court14',[186,126]],
         pquiet14:[upto('left'),'lanes14'],pmarketq14:[upto('left'),'market14',[240,124]]}[stop];
     if(!S)throw new Error('no such stop '+stop);setChapter(14);for(const k of S[0])F[k]=1;
     const room=S[1];CHAP[14].place(room);dealInv(room);G.scene=null;enterRoom(room,...CHAP[14].ent[room]);
@@ -2673,7 +2673,7 @@
   heard.length=0;await onH('passage_under_the_house','walk');ok(said('not_without_saying_goodbye')&&G.room==='court14','he will not go without saying goodbye');
   for(const a of[DA,PH,KL,A('dz14a')])await talkTo(a);ok(F.b1&&F.b2&&F.b3&&F.b4,'he says goodbye to each');
   await onH('passage_under_the_house','walk');await until(()=>G.room==='lanes14'&&!G.busy,6000);
-  ok(ART.lanes14.variant()==='quiet'&&PC()===P,'the lanes after the uproar, as Paul');L('CODE '+makeCode());halt('quiet14');
+  ok(ART.lanes14.variant()==='quiet'&&PC()===P,'the lanes after the uproar, as Paul');halt('quiet14');
   /* the hidden treasure: the shutter ajar in the blind alley off the harbor road */
   {const h=ROOMS.lanes14.hs.find(h=>h.name==='shutter'&&h.vis&&h.vis()&&h.look===h.open&&typeof h.look==='function');await mapWalk(P,h.wx,h.wy);heard.length=0;verb('look');clickView(h.x+h.w/2,h.y+h.h/2,h);await idle();
     ok(said('shutter_look')&&treasures().has(14),'the shutter ajar in the blind alley: somebody hums while kneading, and the chapter\'s hidden treasure is found')}

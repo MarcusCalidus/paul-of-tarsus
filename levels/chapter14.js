@@ -78,14 +78,11 @@ const CALLS={cry14:[3.5,7,(t,d)=>cry(d,t,9,0)],cryfar14:[5,9,(t,d)=>cry(d,t,7,1)
   hammer14:[.5,1.6,(t,d)=>{const n=2+(Math.random()*4|0);for(let i=0;i<n;i++){tone({f:2400+Math.random()*500,to:1900,t:t+i*.21,d:.06,type:'triangle',v:.035,dest:d});noise({t:t+i*.21,d:.02,v:.04,f:5200,q:4,dest:d})}}]};
 
 /* ============ ART ============ */
-const ST='#d9cfb4',RO='#b9744e',MBL='#e8e3d6';
-/* cast: figures posed in a scene, the nearest drawn last. Each is [look id, x, y, dir, {bow, ges, fr}]. A figure with fr -1 sits. */
-function cast(g,list,lit){list.slice().sort((a,b)=>a[2]-b[2]).forEach(([id,x,y,dir,o])=>{o=o||{};man(g,x,y,id,dir,o.fr||0,lit,o.ges||0,o.sw==null?1:o.sw,o.bow?1:0,0)})}
-function col14(g,x,y,h,w,c){R(g,x-w/2,y-h,w,h,c);R(g,x-w/2,y-h,w*.3,h,tint(c,.22));R(g,x+w*.2,y-h,w*.3,h,tint(c,-.18));R(g,x-w/2-.6,y-h,w+1.2,1.6,tint(c,.1));R(g,x-w/2-.8,y-1.6,w+1.6,1.6,tint(c,-.1))}
+const RO='#b9744e',MBL='#e8e3d6';
 const SKY={day:['#5f8cc4','#a6c2dc','#e8dcc4','#f2dcb0'],eve:['#4a5a90','#8a7aa8','#d8a07a','#f0c088']};
 
 /* ---------- The court of the house where Paul is staying ---------- */
-/* A small court inside a block of houses, reached only by a passage under the house on its south side (the way out, at the left). The
+/* A small court inside a block of houses, reached only by a passage under the house at its left side (the way out). The
    house of Damon and Theano stands at the back, with its door, a hatch in the door, a shuttered window; a fig tree, a water trough.
    Everything in it is invented. v: m in the morning (Timothy and Erastus leave), e in the late afternoon (the farewell). */
 ART.court14={w:320,q:12,variant:()=>F.plea?'e':'m',
@@ -114,27 +111,383 @@ ART.door14={w:320,q:12,
    tablet. */
 ART.seal14={w:320,q:12,paint(g){paintSealBack(g)},light:{amb:'#e8e0d0'},draw(g,t){sealDraw(g,t)},front(){}};
 
-/* placeholders for the backdrops; each paints its room plainly, and is replaced by the painted backdrop */
-function floorStone(g,x,y,w,h,c,r){pave(g,x,y,x+w,y+h,c,r,{vx:x+w/2,vy:y-44,rows:4,step:44,v:.07});ao(g,x,y,w,6,'t',.35,'#3a3050')}
-function paintCourt(g,v){const r=rng(1401),W='#d8c8a4';sky(g,320,60,v==='e'?SKY.eve:SKY.day);
-  house(g,60,24,220,80,W,r,{patch:2,cracks:4,beams:13});R(g,59,19.6,222,2,RO);
-  /* the door with its hatch */
-  R(g,116,52,34,52,tint(W,-.16));doorArt(g,119,55,28,49,'#5f4428',r,{bands:[]});R(g,128,68,10,8,'#3a2a1c');R(g,128.5,68.5,9,7,'#6a4a2c');
-  windowArt(g,196,48,12,14,W,{shut:1});windowArt(g,236,48,12,14,W,{shut:1});
-  /* the passage: a dark arch in the wall of the house on the left, under its upper floor */
-  R(g,0,24,60,80,tint(W,-.1));R(g,8,48,40,56,'#2a2420');arch(g,8,48,40,56,'#1e1a18');ao(g,8,48,40,16,'t',.5);
-  /* the trough and the fig tree */
-  R(g,168,94,30,10,'#a8a08a');R(g,168,94,30,1,'#d8d0bc');R(g,170,95.4,26,2,'#4a5a64');
-  stroke(g,[276,104,274,80,266,64],'#5a4430',2.4);stroke(g,[274,82,286,66],'#5a4430',1.6);foliage(g,272,56,26,16,'#4e6a3c',r,180);
-  g.fillStyle=lg(g,0,103,0,144,['#a8946c','#bcaa80']);g.fillRect(0,103,320,41);tex(g,'mott',.5,0,103,320,41,'overlay',1);ao(g,0,103,320,6,'t',.4,'#2a2030');
-  if(v==='e')comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,190,120,.8)','rgba(120,110,170,.7)']);g.fillRect(0,0,320,144)})}
-function paintMarket(g,v){const r=rng(1403);sky(g,480,60,SKY.day);
-  R(g,0,30,480,74,'#cdbf9c');for(let x=10;x<480;x+=40)col14(g,x,64,34,5,ST);R(g,0,24,480,8,ST);R(g,0,30,480,1,tint(ST,-.3));
-  for(let i=0;i<6;i++){const x=20+i*76;R(g,x,64,64,40,'#6a5a4c');awning(g,x-2,58,68,8,i%2?'#8a3a2a':'#3f6f8a','#e0d2a8',6);
-    wood(g,x,84,64,4,'#8a683a');if(v==='b')for(let k=0;k<5;k++)R(g,x+6+k*11,78,6,6,k%2?'#c8b890':'#9a9a9e');else R(g,x+2,76,60,8,'#b8a888')}
-  /* the kiln at the right */
-  R(g,400,60,40,44,'#8a6a52');R(g,410,74,20,14,v==='b'?'#e07a2a':'#3a2a22');
-  floorStone(g,0,103,480,41,'#cdc09e',r)}
+/* The court. The house of Damon and Theano stands at the back, the house over the passage at the left, a fig tree in the corner at the
+   right. The houses face the sun, which comes in over the roofs behind the onlooker: from the right in the morning and from the left in
+   the late afternoon. The shadow of those roofs lies across the upper walls in a slanting line, and the court below it lies in shade.
+   v: m in the morning, cool and clear; e in the late afternoon, warm, the shadow line falling the other way. */
+function paintCourt(g,v){const r=rng(1401),eve=v==='e',W='#dcc8a2',WL='#d4b98e';
+  sky(g,320,34,eve?['#56609a','#9a7c9e','#e0a27a','#f4c48c']:['#4a82c6','#82acda','#c4d8e8','#e4eae4']);
+  /* the house at the back: two storeys of plaster under an eave of tiles, and the ends of the joists where the upper floor lies */
+  plaster(g,58,16,262,88,W,r,{patch:0,cracks:5,t:.5});for(const p of[[104,32,8,4.5],[200,96,8,4],[290,96,7,4]])patchDoor(g,...p,'#a8845a',r);eaveCourt(g,56,266,10);
+  for(let x=67;x<316;x+=13.5){R(g,x,43,2.6,2.4,'#6a4a2c');R(g,x,43,2.6,.5,'#a07a4a');poly(g,[x+.4,45.4,x+2.8,45.4,x+3.8,48.4,x+1.4,48.4],'rgba(60,44,70,.2)')}
+  shutDoor(g,80,24,12,12,W);shutDoor(g,174,24,12,12,W);shutDoor(g,232,24,12,12,W);
+  /* above the door the upper window stands open, one shutter swung back against the wall */
+  windowArt(g,127,24,12,12,W,{dark:'#241a16'});poly(g,[139,23,143.4,24.4,143.4,35.4,139,36],'#6a4c30');R(g,139,23,.6,13,'#8a6a44');ao(g,127,24,12,12,'t',.5);
+  /* the window below, which lights the room inside the door */
+  shutDoor(g,178,58,12,12,W);
+  doorCourt(g,r);troughCourt(g,168,92,30,12);
+  /* a broom against the wall, by the corner */
+  stroke(g,[64.4,103,69.4,72],'#7a5a36',1);stroke(g,[64.2,102.6,69.2,71.6],'#a88050',.4);
+  poly(g,[61.6,104,67.4,104,66.4,96.4,64,96],'#a89060');for(let i=0;i<4;i++)stroke(g,[62.6+i*1.3,103.6,64.4+i*.6,97],'rgba(70,52,30,.5)',.4);
+  /* a storage jar with its lid on, and two pots of herbs by the door */
+  vessel(g,79,104,6,15,'#a4643c','pithos');oval(g,79,89.4,4.6,1.4,'#6a4a2c');R(g,75,88.4,8,.6,'#9a7448');R(g,78.4,87.4,1.2,1.2,'#5a3c22');
+  for(const[x,h]of[[156.6,5],[162.4,4.4]]){poly(g,[x-2.4,104-h,x+2.4,104-h,x+1.7,104,x-1.7,104],'#b0663c');R(g,x-2.6,103.4-h,5.2,1,'#c87a4a');R(g,x+1,104-h,1,h,'rgba(60,30,20,.3)');
+    foliage(g,x,100.6-h,3.2,2.2,'#5a7a3c',rng(x*13),14)}
+  /* tufts of grass where the ground meets the wall */
+  for(const x of[52,206,232,300,312]){for(let i=0;i<5;i++){const a=-1.1-i*.22;stroke(g,[x+i*.6,104.4,x+i*.6+Math.cos(a)*2.6,104.4+Math.sin(a)*2.6],i%2?'#6a8040':'#4e6634',.5)}}
+  ao(g,58,96,262,8,'b',.28,'#3a2c28');
+  /* the house over the passage, at the left: taller, its corner standing out a little, and the arch of the passage in it */
+  plaster(g,0,0,58,104,WL,r,{patch:0,cracks:3,t:.5});patchDoor(g,44,30,7,4,'#a07850',r);eaveCourt(g,-2,62,2);
+  g.fillStyle=lg(g,58,0,61,0,[tint(WL,-.32),tint(WL,-.42)]);g.fillRect(58,6,3,98);
+  shutDoor(g,21,20,11,11,WL);archCourt(g,r);
+  floorCourt(g,r);figCourt(g,eve);
+  /* the light: the sun on the upper walls, the shade below; the sky is not shaded */
+  const amb=eve?'#b49ca8':'#9eaed0',sun=eve?'#ffdcaa':'#fff6e8';
+  lightmap(g,320,amb,l=>{
+    const edge=eve?x=>15+x*.25+(x>150?2.6:0):x=>12+(312-x)*.27+(x<176?2.4:0),top=[];
+    for(let x=320;x>=0;x-=2)top.push(x,edge(x)+Math.abs(Math.sin(x*.9))*.8);
+    poly(l,[0,0,320,0].concat(top),sun);
+    /* a soft edge to the shadow */
+    for(let i=0;i<3;i++){const p=[];for(let x=0;x<=320;x+=2)p.push(x,edge(x)+1+i*.8);stroke(l,p,rgba(amb,.25),.8)}
+    /* the fig's shadow on the sunlit wall: to the left of it in the morning, to the right in the afternoon */
+    const rr=rng(1402);
+    clipTo(l,()=>{l.beginPath();l.moveTo(0,0);l.lineTo(320,0);for(let x=320;x>=0;x-=2)l.lineTo(x,edge(x));l.closePath()},()=>{
+      for(const[cx,cy,rx,ry]of FIGCourt){const ox=eve?26:-28,oy=eve?9:11;for(let i=0;i<rx*ry*.7;i++){const a=rr()*6.2832,d=Math.sqrt(rr()),px=cx+ox+Math.cos(a)*d*rx,py=cy+oy+Math.sin(a)*d*ry;
+        oval(l,px,py,1.2+rr()*1.6,.9+rr()*1.1,rgba(amb,.8))}}});
+    R(l,58,0,262,9,'#ffffff');R(l,0,0,58,1.6,'#ffffff');
+    /* the crown itself takes the light of the hour, but none of its own shadow on the wall */
+    clipTo(l,()=>{l.beginPath();for(const[cx,cy,rx,ry]of FIGCourt){l.moveTo(cx+rx+3,cy);l.ellipse(cx,cy,rx+3,ry+3,0,0,6.2832)}},()=>{
+      R(l,200,0,120,70,amb);l.beginPath();l.moveTo(0,0);l.lineTo(320,0);for(let x=320;x>=0;x-=2)l.lineTo(x,edge(x)-(eve?0:6));l.closePath();l.fillStyle=sun;l.fill()});
+    /* the floor: more of the sky's light toward the front, and less under the walls */
+    l.fillStyle=lg(l,0,104,0,144,[tint(amb,-.08),tint(amb,.18)]);l.fillRect(0,104,320,40)});
+  passageCourt(g,eve);
+  if(eve)comp(g,'soft-light',.55,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,196,130,.9)','rgba(150,120,170,.6)']);g.fillRect(0,0,320,144)});
+  else comp(g,'soft-light',.35,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(150,170,210,.7)','rgba(255,236,200,.7)']);g.fillRect(0,0,320,144)})}
+/* eaveCourt: an eave of tiles seen from below: the rounded ends of the cover tiles against the sky, the edge of the tiles, and under it the
+   rafters' ends in the shade of the eave. Its foot (the wall's top) is at y+6. */
+function eaveCourt(g,x,w,y){R(g,x,y+2.6,w,3.6,'#3e302a');for(let i=x+3;i<x+w-2;i+=7.5){R(g,i,y+3.2,2.4,2.2,'#6a4a2e');R(g,i,y+3.2,2.4,.5,'#8e6a44')}
+  R(g,x,y,w,2.8,RO);R(g,x,y,w,.6,tint(RO,.32));R(g,x,y+2.2,w,.6,tint(RO,-.38));
+  for(let i=x+2;i<x+w-1;i+=4.4){g.beginPath();g.ellipse(i,y+.2,1.9,1.5,0,Math.PI,0);g.fillStyle=tint(RO,-.06);g.fill();R(g,i-1.4,y-1,1.6,.5,tint(RO,.34))}
+  ao(g,x,y+6,w,5,'t',.42,'#2a2030')}
+/* archCourt: the arch of the passage: a ring of wedge-shaped stones on jambs of long and short blocks. Every joint stops at the edges of its
+   own stone. The opening itself is painted after the light (passageCourt). */
+const ARCHCourt={x:8,y:48,w:40,h:56};
+function archCourt(g,r){const{x,y,w,h}=ARCHCourt,cx=x+w/2,cy=y+w/2,S='#cbbf9e';
+  /* the jambs: blocks that reach into the wall by turns, so that their outer edge steps */
+  for(let j=0,yy=cy;yy<y+h-.1;j++){const bh=Math.min(6,y+h-yy),long=j%2===0;
+    for(const side of[-1,1]){const bw=long?6:3.6,bx=side<0?x-bw:x+w,c=tint(S,(r()-.5)*.14);R(g,bx,yy,bw,bh-.5,c);R(g,bx,yy,bw,.5,tint(c,.2));R(g,bx,yy+bh-1,bw,.5,tint(c,-.2))}
+    yy+=bh}
+  /* the ring */
+  const n=9,R0=w/2,R1=w/2+5;for(let i=0;i<n;i++){const a0=Math.PI+i*Math.PI/n,a1=a0+Math.PI/n,c=tint(S,(r()-.5)*.14+(i===4?.06:0)),
+    p=[cx+Math.cos(a0)*R0,cy+Math.sin(a0)*R0,cx+Math.cos(a0)*R1,cy+Math.sin(a0)*R1];
+    for(let k=1;k<=6;k++){const a=a0+(a1-a0)*k/6;p.push(cx+Math.cos(a)*R1,cy+Math.sin(a)*R1)}for(let k=6;k>=0;k--){const a=a0+(a1-a0)*k/6;p.push(cx+Math.cos(a)*R0,cy+Math.sin(a)*R0)}
+    poly(g,p,c);stroke(g,[cx+Math.cos(a0)*R0,cy+Math.sin(a0)*R0,cx+Math.cos(a0)*R1,cy+Math.sin(a0)*R1],tint(S,-.4),.5)}
+  g.strokeStyle=tint(S,.25);g.lineWidth=.5;g.beginPath();g.arc(cx,cy,R1-.3,Math.PI*1.05,Math.PI*1.6);g.stroke();
+  clipTo(g,()=>{g.beginPath();g.rect(x-7,y-6,w+14,h+6)},()=>tex(g,'mott',.35,x-7,y-6,w+14,h+6,'overlay',1))}
+/* passageCourt: the passage under the house: a vault that runs back a little to the left, its left wall and its floor catching the day
+   from the far end, and through the far arch the lane outside, closed by the front of the house across it. */
+function passageCourt(g,eve){const{x,y,w,h}=ARCHCourt,s=.6,fx=37,fw=w*s,fb=94.4,fy=fb-h*s,fl=fx-fw/2;
+  clipTo(g,()=>arch(g,x,y,w,h),()=>{
+    g.fillStyle=lg(g,0,y,0,y+h,['#1a1416','#262022','#2e2826']);g.fillRect(x,y,w,h);
+    /* the vault overhead, lighter toward the far end */
+    g.fillStyle=lg(g,0,y,0,fy+6,['rgba(0,0,0,0)','rgba(120,104,92,.28)']);g.fillRect(x,y,w,fy-y+6);
+    /* the left wall, and the floor */
+    poly(g,[x,y+w/2,fl,fy+fw/2,fl,fb,x,y+h],null);g.fillStyle=lg(g,x,0,fl,0,['#262020','#4a4038','#6a5c4c']);g.fill();
+    poly(g,[x,y+h,x+w,y+h,fl+fw+2,fb,fl,fb],null);g.fillStyle=lg(g,0,fb,0,y+h,[eve?'#8a7466':'#7a7872','#4a4440','#2c2624']);g.fill();
+    /* the far arch: the lane, and the house across it */
+    clipTo(g,()=>arch(g,fl,fy,fw,h*s),()=>{const hw=eve?'#d8b48c':'#a8aab0';
+      g.fillStyle=lg(g,0,fy,0,fb,[tint(hw,.14),hw,tint(hw,-.1)]);g.fillRect(fl,fy,fw,fb-fy);tex(g,'mott',.4,fl,fy,fw,fb-fy,'overlay',1);
+      if(!eve)R(g,fl,fy,fw,7,'#e6dcc6');
+      R(g,fl+9,fy+10,7,fb-3-(fy+10),'#3a2e28');R(g,fl+9,fy+10,7,.6,'#1e1814');
+      R(g,fl,fb-3,fw,3,eve?'#b09474':'#a8a49a');R(g,fl,fb-3,fw,.5,tint(hw,-.3));
+      if(eve)comp(g,'soft-light',.6,()=>R(g,fl,fy,fw,fb-fy,'#ffb070'))});
+    pool(g,fl+fw*.4,fb+1,18,6,eve?'#ffcc90':'#b8c4d4',.26);pool(g,fl+2,fb-8,10,14,eve?'#ffcc90':'#b8c4d4',.12);
+    ao(g,x,y,w,10,'t',.5,'#100c0e')})}
+/* doorCourt: the door, in a frame of dressed stone under a lintel: three wide planks, and in the middle one a hatch of two boards. It
+   opens at the right, where the bolt is on the inside. No band of iron lies across the planks. */
+function doorCourt(g,r){const S='#cec4a6',D='#6a4a2c';
+  R(g,112,47,42,5.6,S);R(g,112,47,42,.6,tint(S,.36));R(g,112,52,42,.6,tint(S,-.4));tex(g,'mott',.3,112,47,42,5.6,'overlay',1);
+  for(const x of[116,146]){R(g,x,52.6,4,51.4,tint(S,-.04));R(g,x,52.6,.5,51.4,tint(S,.24));R(g,x+3.5,52.6,.5,51.4,tint(S,-.34))}
+  R(g,120,52.6,26,51.4,'#140e0a');
+  const P=[[120.4,127.6],[127.6,138.4],[138.4,145.6]];for(const[a,b]of P)boardsDoor(g,a,53.4,b-a,50.6,b-a,D,r);
+  ao(g,120,52.6,26,6,'t',.6);ao(g,120,52.6,3,51.4,'l',.45);
+  /* the hatch */
+  R(g,128.6,67.8,9,8.2,'#3a2818');boardsDoor(g,129.2,68.4,7.8,7,3.9,'#7a5634',r);R(g,129.2,68.4,7.8,.5,'#9a7448');R(g,128.6,75.6,9,.5,'#2a1c12');
+  /* a pull of bronze, near the edge that opens */
+  R(g,142.6,77,.9,4,'#8a6a3a');R(g,142.6,77,.4,4,'#c8a060');
+  /* the threshold */
+  R(g,113,103,40,2.6,tint(S,.06));R(g,113,103,40,.6,tint(S,.36))}
+/* troughCourt: a trough cut from one stone, against the wall, with water in it; the ground before it dark with what has been spilled */
+function troughCourt(g,x,y,w,h){const S='#b8b0a0';
+  oval(g,x+w/2,y+h+2.6,w*.6,2.4,'rgba(60,48,40,.28)');
+  g.fillStyle=lg(g,0,y+3,0,y+h,[tint(S,.1),S,tint(S,-.26)]);g.fillRect(x,y+2.6,w,h-2.6);
+  R(g,x,y,w,2.8,tint(S,.22));R(g,x+1.6,y+.5,w-3.2,1.5,'#4a6270');R(g,x+2.4,y+.7,w-9,.5,'#9cbccc');R(g,x,y+2.6,w,.5,tint(S,.42));
+  R(g,x+w-.8,y,.8,h,tint(S,-.3));
+  clipTo(g,()=>{g.beginPath();g.rect(x,y+2.6,w,h-2.6)},()=>{tex(g,'mott',.5,x,y,w,h,'overlay',1);
+    for(let i=0;i<9;i++)R(g,x+2+i*3.1,y+4+(i%3)*1.6,1.2,.5,tint(S,-.16));
+    g.fillStyle=lg(g,0,y+h-3,0,y+h,['rgba(90,110,70,0)','rgba(90,110,70,.5)']);g.fillRect(x,y+h-3,w,3)})}
+/* floorCourt: trodden earth, with a few old flagstones sunk in it before the door; the joints between them never meet four at a point */
+function floorCourt(g,r){g.fillStyle=lg(g,0,104,0,144,['#a8946e','#b6a27c','#c0ac86']);g.fillRect(0,104,320,40);tex(g,'mott',.5,0,104,320,40,'overlay',1);
+  /* the way trodden from the passage to the door and the trough, a little paler */
+  pool(g,90,112,70,7,'#e0d0ac',.22,'source-over');pool(g,170,110,50,5,'#e0d0ac',.16,'source-over');
+  for(const[x,y,w,h]of[[100,104.6,20,4.4],[121,104.4,17,4.6],[139,104.8,19,4.2],[160,104.6,12,4],[108,109.6,22,5.4],[131,109.8,18,5],[150,110.2,14,4.6],[118,115.8,16,5.2]]){
+    const c=tint('#bcb29a',(r()-.5)*.16),k=.8;poly(g,[x+k,y,x+w-k,y,x+w,y+k,x+w-.4,y+h-.6,x+w-k,y+h,x+k,y+h,x,y+h-.6,x+.3,y+k],c);
+    R(g,x+k,y,w-2*k,.5,tint(c,.3));R(g,x+k,y+h-.5,w-2*k,.5,tint(c,-.3));if(r()<.5)stroke(g,[x+w*.3,y+h*.4,x+w*.3+3,y+h*.5],tint(c,-.25),.5)}
+  for(let i=0;i<150;i++){const k=r(),y=104.5+k*39;R(g,r()*320,y,.5+k*1.6,.5+k*.4,r()<.5?'rgba(80,62,40,.28)':'rgba(255,240,206,.22)')}
+  pool(g,183,107,22,4,'#4a4034',.22,'source-over');
+  ao(g,0,104,320,5,'t',.4,'#2a2030')}
+/* the fig tree: a smooth grey trunk that forks above the heads of whoever stands under it, and a broad crown of big leaves. FIGCourt: its
+   clumps of leaves [x, y, rx, ry]; the lowest hang no lower than about y 57. */
+const FIGCourt=[[228,34,11,8],[250,24,17,11],[278,20,18,11],[305,27,15,12],[244,47,12,7],[268,44,15,8],[294,46,14,8],[314,49,8,7],[218,25,9,6],[262,8,20,9],[294,8,20,9],[236,12,14,8],[316,12,10,10]];
+function figCourt(g,eve){const r=rng(1404),bark='#8a8680',barkL=eve?'#b8b6ae':'#a09e98',barkD='#55524e';
+  /* limbs: [x0,y0, cx,cy, x1,y1, width at the foot, at the end] */
+  const LB=[[248,106,240,86,250,62,9,5.4],[246.4,74,240,62,231,47,4,2],[250,63,262,55,278,45,4.6,2.6],[250,63,252,49,256,32,3.6,1.8],
+    [278,45,292,39,306,32,2.4,1.2],[278,45,282,33,286,20,2.2,1.1],[231,47,225,41,217,35,1.8,.9],[256,32,258,22,262,12,1.6,.8]];
+  const at=(b,t)=>{const u=1-t;return[u*u*b[0]+2*u*t*b[2]+t*t*b[4],u*u*b[1]+2*u*t*b[3]+t*t*b[5]]},side=eve?-1:1;
+  /* its shadow at its foot, and the roots spreading into the ground */
+  oval(g,249,106.4,11,1.8,'rgba(40,32,50,.32)');
+  poly(g,[239.6,106.8,242,105,243.6,100,248,99,253,99.6,254.4,104,258.6,106.8,252,106.2,248,107,244,106.2],bark);
+  for(const b of LB){const L=[],Rr=[],Lt=[];for(let i=0;i<=12;i++){const t=i/12,[px,py]=at(b,t),[qx,qy]=at(b,Math.min(1,t+.02)),[sx,sy]=at(b,Math.max(0,t-.02)),
+      dx=qx-sx,dy=qy-sy,dl=Math.hypot(dx,dy)||1,nx=-dy/dl,ny=dx/dl,hw=(b[6]+(b[7]-b[6])*t)/2;L.push(px+nx*hw,py+ny*hw);Rr.unshift(px-nx*hw,py-ny*hw);Lt.push(px+nx*hw*side*.4,py+ny*hw*side*.4)}
+    poly(g,L.concat(Rr),bark);const back=q=>{const o=[];for(let i=q.length-2;i>=0;i-=2)o.push(q[i],q[i+1]);return o},Rf=back(Rr);
+    /* the side toward the sun lit, the other edge dark, and the smooth bark blotched */
+    poly(g,(side>0?L:Rf).concat(back(Lt)),barkL);stroke(g,side>0?Rf:L,barkD,.7);
+    if(b[6]>3)clipTo(g,()=>poly(g,L.concat(Rr)),()=>{tex(g,'blotch',.5,b[4]-12,b[5]-4,26,b[1]-b[5]+8,'overlay',1);
+      for(let i=0;i<b[6]*2;i++){const[px,py]=at(b,r());R(g,px-2+r()*4,py,.5+r()*1.2,.5+r()*1.4,r()<.5?rgba(barkD,.4):rgba(barkL,.4))}})}
+  /* the leaves: each clump a dark mass first, then leaf by leaf from the back to the front, lit from the side of the sun. The light and
+     the shade of the hour are laid over it with the rest (see paintCourt). */
+  const S3=eve?[-.7,-.55,.45]:[.45,-.6,.65],RAMP=eve?['#2c3a26','#425632','#5e7c3a','#86a046','#aab45a','#c8c46e']:['#263a2c','#38503a','#506e42','#70904a','#9cb85c','#c4d87c'];
+  const leaf=(x,y,s,a,c,d)=>{const p=[];for(let i=0;i<10;i++){const t=a+i/10*6.2832,k=[1,.6,.92,.56,.84,.66,.84,.56,.92,.6][i];p.push(x+Math.cos(t)*s*k,y+Math.sin(t)*s*k*.8)}poly(g,p,c);
+    if(d)stroke(g,[x,y+s*.5,x+Math.cos(a)*s*.2,y-s*.3],d,.5)};
+  const all=[];for(const[cx,cy,rx,ry]of FIGCourt){oval(g,cx,cy,rx*.8,ry*.7,RAMP[0]);
+    for(let i=0;i<rx*ry*.55;i++){const a=r()*6.2832,d=Math.pow(r(),.35),ux=Math.cos(a)*d,uy=Math.sin(a)*d,uz=Math.sqrt(Math.max(0,1-ux*ux-uy*uy)),px=cx+ux*rx,py=cy+uy*ry;
+      all.push([uz+(uy>0?.1:0),px,py,ux*S3[0]+uy*S3[1]+uz*S3[2]+(r()-.5)*.4,d>.85?2.6+r()*.6:2.1+r()*.7])}}
+  all.sort((a,b)=>a[0]-b[0]);
+  for(const[,px,py,l,s]of all){const k=clamp(Math.round((l+.7)*3.2),0,5);leaf(px,py,s,r()*6.28,RAMP[k],k>=3?RAMP[k-2]:null)}}
+/* The marketplace is seen from the square: at the back the stoa of the agora, a row of columns under a deep beam and a tiled roof,
+   with the doors of its shops in the shade behind them and the slope of the hill above its roof; in front of it the stalls, each a
+   booth of posts and a striped awning over a counter hung with cloth to the ground. From the left: the lane back into the city, at the
+   end of the stoa; a stall of silver vessels, where the donkey stands; a stall of wrapped shrines and boxes; Demetrius's stall, the
+   largest, in the middle, and beside it, under the same cloth, his workshop: a workbench, the kiln with its bellows, and the anvil
+   where one of the smiths works; further on another stall, and crates. The paving runs back to the level of the eyes of those who
+   stand on it (HZ_Market), and so do the sides of the stalls. The wares follow the Ephesus exception at its most restrained: a few
+   small silvery figures without face, arms or anything held, shrines only wrapped in cloth or shut in boxes, and small vessels; none
+   of them is seen near. Everything in it is invented. v: b busy, in the morning, with the sun from the left, the wares out and the
+   kiln glowing; q quiet, late in the afternoon after the uproar, with the sun low behind the stoa: shutters closed, wares under
+   cloths, the kiln cold, one awning torn down and the workbench thrown over. */
+const HZ_Market=77,FOOT_Market=110,ANVIL_Market=[369.5,116];
+function paintMarket(g,v){const r=rng(1403),q4=v==='q',sun=q4?1:-1;
+  sky(g,480,46,q4?['#56709e','#9aa8c4','#e2c4a4','#f0c294']:SKY.day);
+  if(q4){cloud(g,110,10,70,4,r,'#ffe0c0','#a890a8');cloud(g,330,6,56,3,r,'#ffe0c0','#a890a8')}else{cloud(g,96,11,60,5,r);cloud(g,286,7,48,4,r)}
+  /* far off at the left, the other hill of the city in the haze; its foot lies behind the houses and the roof */
+  ridge(g,0,230,46,x=>Math.max(0,34*Math.exp(-Math.pow((x-70)/80,2))+1.6*Math.sin(x/11)),q4?['#b4a4b4','#a8989e']:['#aab6c6','#9eaab8']);
+  /* the slope of the hill beyond the roof, rising to the right, with scrub and pines on it */
+  const hill=x=>Math.max(0,(x-170)*.07+3*Math.sin(x/23)+2*Math.sin(x/9));
+  ridge(g,150,480,32,hill,q4?['#b0a27a','#8a8262']:['#9aa688','#86967a']);
+  ridge(g,300,480,32,x=>Math.max(0,(x-300)*.1+2*Math.sin(x/13+1)),q4?['#a09270','#7a7458']:['#8e9a7a','#7a8a6a']);
+  for(let i=0;i<40;i++){const x=180+r()*300,top=32-Math.max(hill(x),(x-300)*.1)+1.2+r()*5;if(top<29.5)R(g,x,top,1+r()*1.6,1,q4?'#6e6c4c':'#627250')}
+  /* pines in small stands, as they grow on a hillside, never one alone */
+  for(const[x,h]of[[331,6],[335,8],[339,6.5],[406,7],[410,9],[414,7.5],[448,8],[452,10],[456,7],[468,6.5],[472,8]]){const y=32-Math.max(hill(x),(x-300)*.1)+2.4;if(y<31)farPine(g,x,y,h,q4?'#465a3e':'#4f6648')}
+  laneMarket(g,r,q4);
+  stoaMarket(g,r,q4,sun);
+  /* the paving of the square, its joints running back to the level of the eyes */
+  pave(g,0,100,480,144,'#d6cbae',r,{vx:240,vy:HZ_Market,rows:5,step:48,v:.07});ao(g,0,100,480,5,'t',.3,'#3a3050');
+  for(let i=0;i<60;i++){const x=r()*480,y=104+r()*38,k=(y-100)/44;R(g,x,y,1+k*3,.5+k*.5,r()<.5?'rgba(110,90,70,.18)':'rgba(255,248,226,.2)')}
+  /* the stalls; each fills its counter with what it sells */
+  const silver=(x,k)=>cupMarket(g,x,89,k);
+  boothMarket(g,26,48,{r,q4,c1:'#3f6f8a',c2:'#e4d6ae',cloth:'#7a3a2e',back:'#6a5a4c',shut:q4,
+    wares:()=>{for(const[x,k]of[[32,'jug'],[37,'cup'],[42,'bowl'],[48,'jug'],[54,'cup'],[59,'bowl'],[68,'jug']])silver(x,k);figMarket(g,63.5,89,6)}});
+  boothMarket(g,106,72,{r,q4,c1:'#8a3a2a',c2:'#e4d6ae',cloth:'#3f5a7a',back:'#5a5a5c',torn:q4,covered:q4,
+    wares:()=>{shrineMarket(g,116,89,6.4,9,'#d8ccae');boxMarket(g,125,89,9,5,'#8a6a40');shrineMarket(g,140,89,6.4,9,'#8a5a4a');boxMarket(g,149,89,8,6,'#7a5a34');figMarket(g,162,89,6);shrineMarket(g,171,89,6,8,'#c8b890')}});
+  boothMarket(g,194,94,{r,q4,c1:'#6a4a7a',c2:'#e8dcb8',cloth:'#8a3a2a',back:'#5a4a4c',shut:q4,big:1,
+    wares:()=>{boxMarket(g,201,89,10,6,'#7a5232');shrineMarket(g,217,89,7,10,'#e0d4b4');figMarket(g,227,89,6.5);figMarket(g,248,89,6);shrineMarket(g,258,89,7,10,'#9a6a4a');boxMarket(g,267,89,10,5,'#6a4a2c');silver(281,'cup')}});
+  /* Demetrius's workshop beside his stall, under an awning of the same cloth: the workbench, and beyond it the kiln and the anvil */
+  boothMarket(g,292,38,{r,q4,c1:'#6a4a7a',c2:'#e8dcb8',back:'#5a5248',bench:1,thrown:q4,
+    wares:()=>{R(g,296,88.2,8,.8,'#e8ecf0');R(g,296,88.2,8,.3,'#ffffff');poly(g,[305.4,89,308.6,89,309.2,86.4,304.8,86.4],'#8a5236');R(g,304.8,86.4,4.4,.6,'#2a1a12');
+      silver(312,'bowl');for(const ix of[322.5,326])R(g,ix,87.8,2.6,1.2,'#c8ced6')}});
+  kilnMarket(g,r,q4,sun);
+  boothMarket(g,392,56,{r,q4,c1:'#8a3a2a',c2:'#e4d6ae',cloth:'#4a6a4a',back:'#5a5248',covered:q4,
+    wares:()=>{for(const[x,k]of[[398,'cup'],[404,'jug'],[410,'bowl'],[417,'cup'],[423,'jug'],[430,'bowl'],[437,'cup']])silver(x,k)}});
+  cratesMarket(g,r,q4);
+  if(q4){/* what was dropped when everybody ran: a cloth trodden flat on the paving, and straw */
+    poly(g,[150,126,163,124,168,128,158,131,147,130],'#c8b890');poly(g,[152,127,160,126,163,128,156,129],'#b0a078');
+    for(let i=0;i<30;i++){const x=196+r()*90,y=114+r()*20;R(g,x,y,1+r()*2,.5,'rgba(190,160,90,.7)')}}
+  lightMarket(g,q4)}
+/* laneMarket: the way back into the city, at the left, past the end of the stoa: the lane runs a little way back and turns, and the front
+   of a house closes the view at its end, so that its paving runs back to the same level as the square's. At the left edge, the corner
+   of the nearest house, in its own shade. */
+function laneMarket(g,r,q4){const W1='#dccaa4',W2='#cfbc96',yb=90;
+  house(g,-2,38,24,14,W2,r,{patch:0,cracks:0,beams:0});
+  house(g,-2,50,26,yb-50,W1,r,{patch:1,cracks:0,beams:8});
+  /* its door, of planks in a frame of stone, and two shuttered windows */
+  R(g,8.4,74,7.6,16,'#a89a80');R(g,9.2,75.2,6,14.8,'#3a2a1c');for(let i=1;i<3;i++)R(g,9.2+i*2,75.2,.5,14.8,'#241810');R(g,9.2,75.2,6,.6,'#1a120c');R(g,8,73.4,8.4,1.2,'#c8b898');
+  windowArt(g,3,60,3.4,4,W1,{shut:1});windowArt(g,17,60,3.4,4,W1,{shut:1});
+  comp(g,'multiply',.3,()=>R(g,-2,34,26,yb-34,'#8a86b0'));ao(g,-2,yb-10,26,10,'b',.25,'#3a3050');
+  /* the lane's paving, and the corner of the nearest house at the left edge, in its own shade */
+  poly(g,[0,100,22,100,22,yb,0,yb],'#c8bc9c');for(let i=0;i<4;i++)R(g,0,yb+1.6+i*2.4,22,.5,'rgba(90,70,60,.25)');ao(g,0,yb,22,3,'t',.35,'#3a3050');
+  plaster(g,0,22,3.4,78,'#c8b48e',r,{patch:0,cracks:0});comp(g,'multiply',.5,()=>R(g,0,22,3.4,78,'#7a76a0'));R(g,3,22,.5,78,'#5a5068');R(g,0,20.6,4.4,1.6,'#d8c8a8')}
+/* colMarket: one column of the stoa, its foot at x,y: a fluted shaft that narrows a little toward the top, a capital hardly wider than
+   the top of the shaft, and a plain base. sun -1: lit from the left, its shadow falling to the right on the wall behind; 1 from the right. */
+function colMarket(g,x,y,h,w,c,sun){const cw=w*.84,s=-sun;
+  comp(g,'multiply',.4,()=>poly(g,[x+s*w*.4,y-3,x+s*(w*.4+6),y-3,x+s*(w*.4+6),y-h+3,x+s*w*.4,y-h],'#6a6494'));
+  poly(g,[x-w/2,y-1.5,x+w/2,y-1.5,x+cw/2,y-h+2,x-cw/2,y-h+2]);const st=[tint(c,-.22),tint(c,.22),tint(c,.04),tint(c,-.38)];if(sun>0)st.reverse();g.fillStyle=lg(g,x-w/2,0,x+w/2,0,st);g.fill();
+  for(let i=1;i<4;i++)R(g,x-w/2+w*i/4-.25,y-h+3.5,.5,h-6,'rgba(70,60,80,.16)');
+  if(sun>0)poly(g,[x+w/2-.6,y-1.5,x+w/2,y-1.5,x+cw/2,y-h+2,x+cw/2-.6,y-h+2],'rgba(255,214,160,.75)');
+  R(g,x-cw/2-.3,y-h+.8,cw+.6,1.2,tint(c,-.06));R(g,x-cw/2-.6,y-h-.4,cw+1.2,1.2,tint(c,.14));R(g,x-cw/2-.6,y-h-.4,cw+1.2,.5,tint(c,.32));
+  R(g,x-w/2-.5,y-1.5,w+1,1.5,tint(c,-.1));R(g,x-w/2-.5,y-1.5,w+1,.5,tint(c,.2))}
+/* stoaMarket: the stoa at the back of the square, from its end at the lane (x 20) on. The back wall lies in the shade of the roof, with the
+   door and the small window of a shop between each two columns; the columns stand on two steps under a deep beam, a cornice and the
+   tiles of the roof. No line of the wall runs behind a column. */
+function stoaMarket(g,r,q4,sun){const x0=22,foot=97,bt=31,bb=39,C='#e4dccb',cols=[];for(let x=56;x<490;x+=32)cols.push(x);
+  g.fillStyle=lg(g,0,bt,0,foot,['#4a4048','#6e625e','#968676']);g.fillRect(x0,bt,480-x0,foot-bt);
+  tex(g,'mott',.35,x0,bt,480-x0,foot-bt,'overlay',1);tex(g,'grain',.12,x0,bt,480-x0,foot-bt,'overlay',.5);
+  /* the shops: some stand open, dark inside, one with a curtain half drawn; some are shut with their door of planks. After the uproar all are shut. */
+  [24].concat(cols).forEach((c,k)=>{const m=c+16,kind=q4?1:[0,2,1,0,2,0,1,2,0,1,0,2,0,1,0][k%15];if(m>476)return;
+    /* behind the kiln the wall is blank, so that its smoke collar does not run into a door */
+    if(m!==360){R(g,m-6,70,12,27,'#8e8278');R(g,m-6,70,12,.6,'#ac9e92');R(g,m-6,70,.6,27,'#a4968a');R(g,m-4.5,71.5,9,25.5,'#2a2226');
+    if(kind===1){boards(g,m-4.5,71.5,9,25.5,3,'#5a4030',r);R(g,m-.2,71.5,.5,25.5,'#2a1c14')}
+    else if(kind===2){g.fillStyle=lg(g,0,71.5,0,86,['#7a4a3c','#8a5a48']);poly(g,[m-4.5,71.5,m+2,71.5,m+1,80,m-1.4,86,m-4.5,86]);g.fill();stroke(g,[m-2.6,72,m-2.8,85],'rgba(40,20,16,.4)',.5);stroke(g,[m-.4,72,m-.8,82],'rgba(40,20,16,.35)',.5)}
+    ao(g,m-4.5,71.5,9,7,'t',.55);ao(g,m-4.5,71.5,2,25.5,'l',.4)}
+    R(g,m-2.4,51,4.8,5.6,'#2a2226');R(g,m-3.2,56.6,6.4,.8,'#9e9086');R(g,m-3.2,57.4,6.4,.5,'#4a3e40')});
+  /* the floor of the stoa meets the wall in a soft shade and no line, so that nothing runs across the columns */
+  g.fillStyle=lg(g,0,92,0,95.6,['rgba(160,142,128,0)','#a08e80']);g.fillRect(x0,92,480-x0,5);
+  /* the end of the stoa at the lane: a pier as tall as the columns, plain */
+  R(g,20,bb,7,foot-bb,C);R(g,20,bb,2,foot-bb,tint(C,sun<0?.16:-.34));R(g,25,bb,2,foot-bb,tint(C,sun<0?-.3:.12));
+  for(const c of cols)colMarket(g,c,foot,foot-bb-1,5,C,sun);
+  /* the beam: architrave and frieze, deep, under a cornice; then the roof */
+  R(g,x0-2,bt,482-x0,bb-bt,tint(C,-.04));R(g,x0-2,bt+3.6,482-x0,.6,tint(C,-.26));R(g,x0-2,bt+4.2,482-x0,.5,tint(C,.2));R(g,x0-2,bb-.6,482-x0,.6,tint(C,-.4));
+  tex(g,'mott',.3,x0-2,bt,482-x0,bb-bt,'overlay',1);
+  R(g,x0-3.5,bt-2,484-x0,2,tint(C,.18));R(g,x0-3.5,bt-2,484-x0,.5,tint(C,.4));R(g,x0-3.5,bt-.5,484-x0,.5,tint(C,-.36));
+  poly(g,[x0-3,bt-2,480,bt-2,480,21,x0+2,21],RO);for(let i=x0;i<480;i+=3.2)stroke(g,[i,bt-2,i+.4,21.2],'rgba(80,36,24,.32)',.5);
+  for(let i=x0+1.6;i<480;i+=3.2)stroke(g,[i,bt-2.2,i+.4,21.4],'rgba(255,200,160,.18)',.5);R(g,x0+2,21,478-x0,.6,'#d88a5c');
+  ao(g,x0,bb,480-x0,12,'t',.5,'#1a1428');
+  /* the two steps the columns stand on */
+  R(g,x0-2,foot,482-x0,1.6,tint(C,.08));R(g,x0-2,foot,482-x0,.5,tint(C,.32));R(g,x0-3,foot+1.6,483-x0,1.4,tint(C,-.18));R(g,x0-3,foot+1.6,483-x0,.5,tint(C,.16))}
+/* boothMarket: a stall of x..x+w with its counter at the front: two posts at its ends, the awning over it, in its shade a cloth at the
+   back, and the counter hung with cloth to the ground, so that no leg stands under it. The side of the stall that faces the middle of
+   the picture shows, running back toward the level of the eyes. o.wares fills the counter (from y 89). o.shut closes the opening above
+   the counter with shutters of upright boards; o.covered lays a cloth over the wares; o.torn: the awning hangs from one post, its other
+   end torn down, and that post leans. o.bench: a workshop, with a workbench on two legs at its ends in place of the counter, and the
+   cloth at the back coming down to the ground behind it, so that no column of the stoa shows between its legs; o.thrown: the bench has
+   been thrown over, and lies on its side before the stall. */
+function boothMarket(g,x,w,o){const yF=FOOT_Market,yC=89,yA=o.big?57:60,vh=o.big?9:8,r=o.r,yI=yA+vh,
+    xe=x+w/2<240?x+w:x,sw=clamp((240-xe)*.026,-4.5,4.5),k=Math.abs(sw)/Math.max(1,Math.abs(240-xe));let after=null;
+  /* its shadow on the paving: thrown to the right and toward us by the morning sun, to the left by the evening */
+  if(o.q4)shade(g,[x+2,yF,x+w-2,yF,x+w-16,yF+4,x-14,yF+4],'#8a86b0',.5);else shade(g,[x+2,yF,x+w,yF,x+w+9,yF+3.6,x+9,yF+3.6],'#8f95c4',.42);
+  /* the side, a cloth on its frame, running back */
+  if(Math.abs(sw)>.6){const yt=yA+2,y2=v=>v+(HZ_Market-v)*k;
+    poly(g,[xe,yt,xe+sw,y2(yt),xe+sw,y2(yF),xe,yF],mix(tint(o.back,-.2),'#6a70a8',o.q4===(sw<0)?.1:.35));
+    for(let i=1;i<3;i++){const fx=xe+sw*i/3;stroke(g,[fx,y2(yt)+1,fx,y2(yF)-1],'rgba(30,24,40,.2)',.5)}}
+  g.fillStyle=lg(g,0,yI,0,yC,[tint(o.back,-.62),tint(o.back,-.4)]);g.fillRect(x+1,yI-2,w-2,yC-yI+2);
+  for(let i=x+4;i<x+w-6;i+=5+r()*3){const fx=i;comp(g,'soft-light',.45,()=>{g.fillStyle=lg(g,fx,0,fx+5,0,['rgba(255,255,255,0)','rgba(255,255,255,.55)','rgba(0,0,0,.35)']);g.fillRect(fx,yI,5,yC-yI)})}
+  if(o.bench){g.fillStyle=lg(g,0,yC,0,yF,[tint(o.back,-.42),tint(o.back,-.52)]);g.fillRect(x+1,yC,w-2,yF-yC);
+    for(let i=x+4;i<x+w-6;i+=5+r()*3){const fx=i;comp(g,'soft-light',.35,()=>{g.fillStyle=lg(g,fx,0,fx+5,0,['rgba(255,255,255,0)','rgba(255,255,255,.4)','rgba(0,0,0,.3)']);g.fillRect(fx,yC,5,yF-yC)})}
+    ao(g,x+1,yI,w-2,8,'t',.5,'#1a1428');ao(g,x+1,yF-6,w-2,6,'b',.3,'#1a1428');
+    if(!o.thrown){/* the bench, its top lit, on two legs set at its ends; a basket of charcoal under it; on it what is being worked */
+      wood(g,x+2,yC,w-4,2.6,'#8a683a');R(g,x+2,yC,w-4,.5,'#c8a06a');R(g,x+2,yC+2.6,w-4,.6,'#3a2a18');
+      for(const lx of[x+3,x+w-5.6])wood(g,lx,yC+3.2,2.6,yF-yC-3.2,'#6a4e2c',1);
+      const bx=x+w/2;poly(g,[bx-6,yF,bx+6,yF,bx+7,yF-4.6,bx-7,yF-4.6],'#8a6a40');R(g,bx-7,yF-4.6,14,.6,'#b08a58');
+      for(let i=0;i<9;i++)R(g,bx-6+r()*11,yF-6+r()*1.6,1.4,1.2,r()<.5?'#2a2420':'#3e3632');
+      if(o.wares)o.wares()}
+    else{/* thrown over: the bench lies on its side before the stall, its top on edge toward us and its legs pointing to the back;
+        its charcoal is spilled on the paving. It lies in front of the posts, and is painted after them. */
+      after=()=>{shade(g,[x-4,yF+1.8,x+w-6,yF+1.8,x+w-12,yF+2.6,x-8,yF+2.6],'#6a6494',.5);
+        wood(g,x-3,yF-4.6,w-4,4.2,'#8a683a');R(g,x-3,yF-4.6,w-4,.5,'#c8a06a');R(g,x-3,yF-.9,w-4,.9,'#3a2a18');
+        for(const lx of[x-1,x+w-11])poly(g,[lx,yF-4.6,lx+2.6,yF-4.6,lx+4.6,yF-7.4,lx+2,yF-7.4],'#6a4e2c');
+        for(let i=0;i<16;i++)R(g,x+4+r()*(w-6),yF-1.6+r()*3.2,1.2,1,r()<.5?'#2a2420':'#3e3632');
+        poly(g,[x+w-10,yF,x+w-2,yF,x+w-1,yF-3.6,x+w-8,yF-5],'#8a6a40')}}}
+  else{R(g,x+2,yC,w-4,1.6,'#a8885a');R(g,x+2,yC,w-4,.5,'#d0b080');R(g,x+2,yC+1.6,w-4,.6,'#5a4026');
+    if(o.shut){boards(g,x+2.5,yI,w-5,yC-yI,3.4,'#7a5a34',r);ao(g,x+2.5,yI,w-5,4,'t',.45);R(g,x+2.5,yC-1,w-5,1,'#4a3420')}
+    else{if(o.covered)coverMarket(g,x+4,yC,w-8,r);else if(o.wares)o.wares();ao(g,x+2,yI,w-4,8,'t',.5,'#1a1428')}
+    /* the counter's cloth, in soft folds, with a darker hem */
+    const cl=o.cloth;g.fillStyle=lg(g,0,yC+2,0,yF,[tint(cl,.08),cl,tint(cl,-.25)]);g.fillRect(x+2,yC+2.2,w-4,yF-yC-2.2);
+    for(let i=x+3;i<x+w-4;i+=4+r()*2.5){const fx=i;comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,fx,0,fx+4,0,['rgba(255,255,255,0)','rgba(255,255,255,.5)','rgba(0,0,0,.4)']);g.fillRect(fx,yC+2.2,4,yF-yC-2.2)})}
+    tex(g,'mott',.3,x+2,yC+2,w-4,yF-yC-2,'overlay',1);ao(g,x+2,yC+2.2,w-4,4,'t',.35);R(g,x+2,yF-1.4,w-4,1.4,tint(cl,-.4))}
+  /* the posts at its ends, and the awning */
+  wood(g,x,yI-1,2.6,yF-yI+1,'#6a4e2c',1);
+  if(o.torn){const a=.2,L=w*.58,ex=x-2+L*Math.cos(a),ey=yA+L*Math.sin(a);
+    poly(g,[x+w-2.6,yF,x+w,yF,x+w+2.6,yI+4,x+w,yI+4],'#5a4226');
+    g.save();g.translate(x-2,yA);g.rotate(a);awning(g,0,0,L,vh,o.c1,o.c2,6);g.restore();
+    /* the torn end hangs down in a tongue of cloth */
+    poly(g,[ex,ey,ex-.6*Math.sin(a)*vh+0,ey+vh,ex-3,ey+vh+6,ex-6,ey+vh+2.4],tint(o.c2,-.18));poly(g,[ex-1.4,ey+vh,ex-3,ey+vh+6,ex-4.6,ey+vh+2.6],tint(o.c2,-.4))}
+  else{wood(g,x+w-2.6,yI-1,2.6,yF-yI+1,'#5a4226',1);awning(g,x-2,yA,w+4,vh,o.c1,o.c2,6);if(o.q4)R(g,x+w-.7,yI,.7,yF-yI,'rgba(255,200,140,.45)')}
+  if(o.q4)R(g,x-2,yA,.6,vh,'rgba(30,20,40,.3)');
+  ao(g,x,yF-3,w,3,'b',.35,'#1a1428');if(after)after()}
+/* coverMarket: wares under a cloth on a counter: a low heap of linen with the shapes of what lies under it, and soft folds */
+function coverMarket(g,x,y,w,r){const p=[x-1,y+.4];for(let i=0;i<=w;i+=2){p.push(x+i,y-3-2.2*Math.sin(i/w*Math.PI)-r()*1.6)}p.push(x+w+1,y+.4);
+  poly(g,p,'#d6ccb0');comp(g,'multiply',.5,()=>{g.fillStyle=lg(g,x,0,x+w,0,['#ffffff','#d0c8d8','#a098b8']);poly(g,p);g.fill()});
+  for(let i=3;i<w-2;i+=5+r()*3)stroke(g,[x+i,y-3.4,x+i+1.4,y],'rgba(90,70,60,.3)',.5);R(g,x-1,y-.4,w+2,.6,'#e8e0c8')}
+/* figMarket: a small silvery figure, h tall, standing at x,y: a plain draped shape with a round head, sloping shoulders and a garment
+   that widens all the way to its foot, on a little base; no face, no arms and nothing held. Nothing stands out from its sides wider
+   than what is below it, so it never makes a cross. */
+function figMarket(g,x,y,h){const yb=y-1,t=yb-h;
+  poly(g,[x,t,x-.8,t+.3,x-1,t+1.2,x-.7,t+2,x-1.1,t+2.6,x-1.3,t+h*.5,x-1.8,yb,x+1.8,yb,x+1.3,t+h*.5,x+1.1,t+2.6,x+.7,t+2,x+1,t+1.2,x+.8,t+.3]);
+  g.fillStyle=lg(g,x-1.8,0,x+1.8,0,['#c8ccd4','#f6f8fa','#aab2bc','#565c68']);g.fill();
+  stroke(g,[x+.5,t+3,x+1,yb-.4],'rgba(60,64,80,.5)',.5);stroke(g,[x-.6,t+3.4,x-.9,yb-.6],'rgba(255,255,255,.5)',.5);
+  R(g,x-2.1,yb,4.2,1,'#8a8e96');R(g,x-2.1,yb,4.2,.5,'#c8ccd2')}
+/* shrineMarket: a shrine wrapped in cloth: an upright shape with a low peak on top under the cloth, the folds falling from the peak and
+   gathering at the foot, a darker hem. Nothing of what is under it is seen. */
+function shrineMarket(g,x,y,w,h,c){const p=[x-w/2-.4,y,x-w/2,y-h*.72,x-w*.2,y-h+.6,x,y-h,x+w*.2,y-h+.6,x+w/2,y-h*.72,x+w/2+.4,y];
+  poly(g,p);g.fillStyle=lg(g,x-w/2,0,x+w/2,0,[tint(c,.12),tint(c,.26),c,tint(c,-.4)]);g.fill();
+
+  stroke(g,[x-.6,y-h+1,x-w*.32,y-.4],rgba(tint(c,-.5),.5),.5);stroke(g,[x+.4,y-h+1,x+w*.1,y-.4],rgba(tint(c,-.5),.4),.5);stroke(g,[x+1,y-h+1.2,x+w*.36,y-.4],rgba(tint(c,-.5),.45),.5);
+  R(g,x-w/2-.4,y-.8,w+.8,.8,tint(c,-.3))}
+/* boxMarket: a closed box of wood with its lid on */
+function boxMarket(g,x,y,w,h,c){wood(g,x,y-h,w,h,c);R(g,x-.4,y-h-.8,w+.8,1.2,tint(c,.18));R(g,x-.4,y-h-.8,w+.8,.5,tint(c,.4));R(g,x,y-h+.4,w,.5,tint(c,-.45));R(g,x+w-.8,y-h,.8,h,tint(c,-.3))}
+/* cupMarket: a small vessel of silver: a jug, a cup on a foot, or a shallow bowl. Every rim is a flat line, never a small ring. */
+function cupMarket(g,x,y,k){const S=['#6a707c','#c8ced6','#f2f4f6','#9aa2ae','#4e5462'],fill=p=>{poly(g,p);g.fillStyle=lg(g,x-2,0,x+2,0,S);g.fill()};
+  if(k==='jug'){fill([x-1.6,y,x+1.6,y,x+2,y-2.6,x+1.2,y-4.2,x+.8,y-5.2,x+1.2,y-5.8,x-1.2,y-5.8,x-.8,y-5.2,x-1.2,y-4.2,x-2,y-2.6]);R(g,x-1.2,y-6,2.4,.6,'#e8ecf0')}
+  else if(k==='cup'){fill([x-.8,y,x+.8,y,x+.5,y-1,x+1.8,y-2.2,x+2,y-4,x-2,y-4,x-1.8,y-2.2,x-.5,y-1]);R(g,x-2,y-4.2,4,.6,'#f0f2f4');R(g,x-1.2,y-.5,2.4,.5,'#8a909a')}
+  else{fill([x-1.2,y,x+1.2,y,x+2.4,y-1.2,x+2.8,y-2,x-2.8,y-2,x-2.4,y-1.2]);R(g,x-2.8,y-2.2,5.6,.6,'#f0f2f4')}}
+/* kilnMarket: the kiln, where silver is worked: a dome of clay on a base of brick, its mouth wide and low and black with soot above it,
+   a short collar of clay at its top for the smoke, and at its left the bellows, a bag of goatskin between two boards with a reed tube
+   tipped with clay that runs into the base (Insight, "Bellows"). v b: charcoal glowing in its mouth; q: cold, grey ash. */
+function kilnMarket(g,r,q4,sun){const cx=358,yb=100,rx=18,ry=25,F0=108;
+  if(q4)shade(g,[cx-rx-2,F0,cx+rx+2,F0,cx+rx-12,F0+3.4,cx-rx-16,F0+3.4],'#8a86b0',.5);else shade(g,[cx-rx-2,F0,cx+rx+2,F0,cx+rx+12,F0+3,cx-rx+6,F0+3],'#8f95c4',.45);
+  ashlar(g,cx-rx-1,yb,rx*2+2,F0-yb,'#9a6a4a',r,{bw:5,bh:2.6,v:.16,t:.3});R(g,cx-rx-1.5,yb-.6,rx*2+3,1.2,'#b08a6a');
+  const st=['#8a5e40','#b8845a','#a8744c','#6a4430'];if(sun>0)st.reverse();
+  g.beginPath();g.ellipse(cx,yb,rx,ry,0,Math.PI,0);g.closePath();g.fillStyle=lg(g,cx-rx,0,cx+rx,0,st);g.fill();
+  clipTo(g,()=>{g.beginPath();g.ellipse(cx,yb,rx,ry,0,Math.PI,0);g.closePath()},()=>{tex(g,'mott',.5,cx-rx,yb-ry,rx*2,ry,'overlay',1);
+    g.fillStyle=lg(g,0,yb-ry,0,yb,['rgba(255,230,200,.25)','rgba(255,230,200,0)']);g.fillRect(cx-rx,yb-ry,rx*2,ry);
+    /* soot over the mouth, and a few cracks in the clay */
+    pool(g,cx,yb-9,10,9,'#1a1210',.55,'source-over');
+    stroke(g,[cx-11,yb-14,cx-9,yb-10,cx-10,yb-6],'rgba(60,30,20,.4)',.5);stroke(g,[cx+9,yb-18,cx+12,yb-13],'rgba(60,30,20,.35)',.5)});
+  /* the mouth: wide and low */
+  poly(g,[cx-8,yb,cx-8,yb-5,cx-5,yb-7,cx+5,yb-7,cx+8,yb-5,cx+8,yb],'#1a0e0a');
+  if(!q4){g.fillStyle=lg(g,0,yb-6,0,yb,['#5a1a0a','#c8461a','#ffb040']);poly(g,[cx-7,yb,cx-7,yb-2.6,cx-4,yb-3.6,cx,yb-3,cx+4,yb-3.8,cx+7,yb-2.4,cx+7,yb]);g.fill();
+    for(let i=0;i<9;i++)R(g,cx-6+r()*12,yb-2.4+r()*2,1,.8,r()<.5?'#ffe080':'#e86020')}
+  else{poly(g,[cx-7,yb,cx-7,yb-1.6,cx,yb-2.4,cx+7,yb-1.4,cx+7,yb],'#6a6460');for(let i=0;i<6;i++)R(g,cx-6+r()*12,yb-1.8+r()*1.4,1,.6,'#8a8480')}
+  R(g,cx-9,yb-.4,18,1,'#7a4a30');
+  /* the collar for the smoke on top */
+  poly(g,[cx-3.4,yb-ry+.6,cx+3.4,yb-ry+.6,cx+2.8,yb-ry-3.4,cx-2.8,yb-ry-3.4],'#9a6a48');R(g,cx-2.8,yb-ry-3.4,5.6,.8,'#2a1a12');R(g,cx+(sun<0?-3.4:2),yb-ry-3.4,1.4,4,'#b8845a');
+  /* the bellows at its left, lying on the ground: the bag between its boards, a handle on the upper one, the tube to the kiln */
+  const bx=335.5,by=F0+3.2;oval(g,bx,by-.2,7,1.4,'rgba(30,26,50,.3)');
+  wood(g,bx-6,by-1.2,10,1.2,'#6a4e2c');
+  poly(g,[bx-5.6,by-1.2,bx+3,by-1.2,bx+4.6,by-2.8,bx+3,by-5,bx-1.6,by-6.2,bx-5.6,by-5.4],'#7a5434');
+  poly(g,[bx-5,by-4.8,bx-1.4,by-5.8,bx+2.4,by-4.6,bx-2,by-3.8],'#a07650');stroke(g,[bx-3,by-5.6,bx-2.6,by-1.6],'rgba(40,24,12,.45)',.5);stroke(g,[bx+.4,by-5.4,bx+1.4,by-1.8],'rgba(40,24,12,.4)',.5);
+  poly(g,[bx-6.4,by-5.4,bx+2.4,by-6.8,bx+3,by-6,bx-6.4,by-4.4],'#8a683a');
+  stroke(g,[bx+4.4,by-2.8,cx-rx+1.6,by-3.4],'#b09868',1);R(g,cx-rx,by-4.4,2.4,2,'#a86844')}
+/* cratesMarket: at the far right, crates of wood and a big jar of water against the stoa; late in the day the straw they were packed
+   with lies spilled beside them. The crates show no joints between their boards: a joint under the edge of the crate on top would make
+   a cross with it. */
+function cratesMarket(g,r,q4){const yF=FOOT_Market;
+  if(q4)shade(g,[452,yF,480,yF,470,yF+3.4,440,yF+3.4],'#8a86b0',.45);else shade(g,[450,yF,480,yF,480,yF+3,456,yF+3],'#8f95c4',.4);
+  for(const[x,y,w,h,c]of[[452,yF,14,10,'#7a5a34'],[466,yF,12,9,'#6a4e2c'],[454,yF-10,8,8,'#8a683a']]){wood(g,x,y-h,w,h,c,1,.3);R(g,x,y-h,w,1,tint(c,.22));R(g,x,y-1,w,1,tint(c,-.4));R(g,x+w-1,y-h,1,h,tint(c,-.3))}
+  vessel(g,474,yF,4.4,13,'#a8643a','pithos');
+  if(q4){poly(g,[438,yF+.6,452,yF+.6,451,yF-1.6,446,yF-3,441,yF-2.4],'#c8a860');for(let i=0;i<14;i++){const sx=438+r()*13,sy=yF-2.4+r()*2.8;stroke(g,[sx,sy,sx+1.6+r()*1.6,sy-.4+r()*.8],r()<.5?'#e0c878':'#9a7a40',.5)}}}
+/* lightMarket: the light of the hour over the whole: the morning sun from the left; or the low sun of the late afternoon from the right,
+   golden on the roof and the hill, with the stalls throwing long shadows. */
+function lightMarket(g,q4){
+  if(!q4){comp(g,'soft-light',.45,()=>{g.fillStyle=lg(g,0,0,480,0,['rgba(255,226,170,.9)','rgba(255,240,210,.5)','rgba(170,180,220,.6)']);g.fillRect(0,0,480,144)});
+    pool(g,200,126,260,26,'#fff4d8',.18,'screen');pool(g,120,40,220,60,'#fff0d0',.12,'screen')}
+  else{/* the sun is low behind the stoa: the stoa and the stalls lie in their own shadow, which reaches out over the back of the square;
+      only the front of the square, the roof, the hill and the sky keep the sun */
+    comp(g,'multiply',.72,()=>{g.fillStyle='#8078aa';poly(g,[0,31,480,31,480,113,300,114.6,0,119])});
+    comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,0,113,0,123,['#8078aa','rgba(128,120,170,0)']);poly(g,[0,119,300,114.6,480,113,480,121,0,125])});
+    comp(g,'soft-light',.6,()=>{g.fillStyle=lg(g,0,0,480,0,['rgba(130,120,190,.7)','rgba(255,190,130,.6)','rgba(255,160,90,.9)']);g.fillRect(0,0,480,144)});
+    comp(g,'soft-light',.6,()=>{g.fillStyle=lg(g,0,116,0,144,['rgba(255,180,110,.9)','rgba(255,200,140,.6)']);g.fillRect(0,116,480,28)});
+    comp(g,'screen',.26,()=>{g.fillStyle=lg(g,0,0,0,32,['rgba(255,190,120,1)','rgba(255,190,120,.35)']);g.fillRect(0,0,480,32)});
+    pool(g,440,24,220,40,'#ffc080',.18,'screen')}}
 /* The outer colonnade of the theater, late in the morning of the uproar. From the left: the view out across the square to the harbor road,
    full of people, running down between its colonnades to the gate and the water; the colonnade along the street, a row of columns under a
    deep beam and a roof, with shops behind them, shut in a hurry; and the stage building of the theater, its wall of dressed stone in two
@@ -373,16 +726,119 @@ function colonDraw(g,t){if(!FRColon){FRColon=ROWSColon.map(([a,b])=>bake(480,g2=
     const f=rem/seg[j],x=p[j][0]+(p[j+1][0]-p[j][0])*f,y=p[j][1]+(p[j+1][1]-p[j][1])*f;
     depth(y,()=>runnerColon(g,x,y,S(y),LKColon[i],-side,ph%1,j===2?f*.96:0,walking?.3:.5))});
   ROWSColon.forEach(([a,b],i)=>depth(Math.min(b,FT+6)-.01,()=>g.drawImage(FRColon[i],0,0,480,144)))}
+/* Inside the door: the entrance room, its back wall the front of the house, which looks out on the court. At the right the door, its bolt
+   at the edge where it opens, a hatch in it; at the left a shuttered window, and a doorway into the house behind a curtain. It is day, but
+   the shutters are closed, and the room has only what comes in through their slits, through the hatch and under the door. */
+const LEAFDoor={x:236,y:42.6,w:36,h:61.4},HATCHDoor={x:248.6,y:58.2,w:10.8,h:8.6},WINDoor={x:70,y:40,w:22,h:26};
+/* the slits of light: in the hatch between its boards, in the window between the boards of its two shutters, widest where the two
+   meet: [x, top, bottom, how much light] */
+const SLITSDoor={hatch:[[252.2,59,66,.8],[255.8,59,66,.8]],win:[[75.5,40.6,65.4,.45],[81,40.4,65.6,1],[86.5,40.6,65.4,.45]]};
 function paintDoor(g){const r=rng(1407),W='#d2c09a';
-  plaster(g,0,0,320,104,W,r,{patch:2,cracks:4,brick:'#a8845a',t:.5});wood(g,0,9,320,2.6,'#6a4e2c');ao(g,0,11.6,320,12,'t',.44,'#2a2030');
-  /* the door to the court, at the right, with its bolt and its hatch */
-  R(g,232,40,44,64,tint(W,-.2));doorArt(g,235,43,38,61,'#5f4428',r,{bands:[]});R(g,248,58,12,9,'#3a2a1c');R(g,248.5,58.5,11,8,'#6a4a2c');
-  R(g,236,76,10,2.4,'#5a4a3a');R(g,236,76,10,.6,'#8a7a6a');
-  /* the bench beside it, the lamp in its niche, the shutters */
-  bench14(g,178,96,48,ST);R(g,150,40,14,12,tint(W,-.3));R(g,154,46,6,3,'#b8733c');
-  windowArt(g,70,40,22,26,W,{shut:1});for(let i=0;i<6;i++)R(g,72,43+i*4,18,.8,'rgba(255,240,200,.6)');
-  g.fillStyle=lg(g,0,103,0,144,['#a8946c','#bcaa80']);g.fillRect(0,103,320,41);tex(g,'mott',.5,0,103,320,41,'overlay',1);ao(g,0,103,320,6,'t',.4,'#2a2030')}
-function bench14(g,x,y,w,c){R(g,x,y,w,2.4,tint(c,.16));R(g,x,y,w,.7,tint(c,.4));R(g,x,y+2.4,w,5.6,tint(c,-.2));R(g,x+2,y+8,3,6,tint(c,-.3));R(g,x+w-5,y+8,3,6,tint(c,-.3))}
+  /* the ceiling: two beams along the room, and the reeds laid over them */
+  R(g,0,0,320,15,'#3e3026');tex(g,'wood',.5,0,0,320,15,'overlay',.5);
+  for(const[y,h]of[[0,4.6],[7.6,3]]){wood(g,0,y,320,h,'#7a5a3a');R(g,0,y+h-.7,320,.7,'#a8845a');ao(g,0,y+h,320,2.4,'t',.5,'#1a1410')}
+  /* the back wall, plastered, with its cracks and the brick showing high up or low down, where no head comes; the beam it carries */
+  plaster(g,0,14.6,320,89.4,W,r,{patch:0,cracks:0,t:.5});for(const p of[[40,30,8,5],[196,26,9,5],[120,98,8,4]])patchDoor(g,...p,'#a8845a',r);
+  for(const[x,y,n]of[[24,16,6],[136,16,5],[222,15,4],[316,56,4],[54,18,5]])crackDoor(g,x,y,n,r);wood(g,0,12.2,320,2.6,'#5e4428');ao(g,0,14.8,320,12,'t',.44,'#2a2030');
+  /* the doorway into the house, at the left, with its curtain drawn to one side */
+  R(g,4,42,32,62,tint(W,-.18));R(g,7,45,26,59,'#241c1a');g.fillStyle=lg(g,7,0,33,0,['rgba(90,70,56,0)','rgba(120,96,72,.35)']);g.fillRect(7,45,26,59);
+  ao(g,7,45,26,8,'t',.6);wood(g,4,41,32,3.4,'#5e4428');
+  {const c='#7a4a36';poly(g,[7,44.4,16.6,44.4,15.4,60,17.4,80,16,104,7,104],c);
+    for(const[x,w]of[[8.6,1.6],[11.6,1.4],[14.2,1.2]])stroke(g,[x,45,x-.4+w,72,x+.4,103.6],tint(c,-.3),w*.6);
+    for(const x of[10,13])stroke(g,[x,45,x+.6,72,x+1,103.6],tint(c,.18),.5);ao(g,7,44.4,10,6,'t',.4)}
+  /* the window, shut, in the thickness of the wall; daylight comes through the slits between the boards of its shutters */
+  shutDoor(g,WINDoor.x,WINDoor.y,WINDoor.w,WINDoor.h,W,4,'#4e3826');
+  /* a shelf on two brackets at its ends, with a jug, two bowls turned over one on the other, and a pot with a cloth over its mouth */
+  shelfDoor(g,104,52,34);
+  /* the lamp in its niche, cold, and the soot of many evenings above it */
+  pool(g,157,34,7,12,'#2a2020',.4,'multiply');
+  clipTo(g,()=>arch(g,150,40,14,12),()=>{g.fillStyle=lg(g,0,40,0,52,['#6a6056','#8a7c6a','#a08e78']);g.fillRect(150,40,14,12);ao(g,150,40,5,12,'l',.5);ao(g,150,40,14,5,'t',.5)});
+  R(g,149,51.4,16,1.4,tint(W,.12));R(g,149,51.4,16,.5,tint(W,.36));
+  /* the lamp: a closed bowl of clay with a nozzle at the front, the hole in its top, and a handle at the back */
+  poly(g,[151.8,51.4,151.6,49.6,153.4,48.4,157.4,48,160.6,48.6,162.6,48.4,163.2,49.4,161.4,51.4],'#8a7458');R(g,153,48.2,6,.6,'#b8a07c');
+  R(g,156.4,48.4,1.2,.6,'#3a2c20');R(g,162,48.6,1,.8,'#2a2018');R(g,152,50.8,9.4,.6,'#5a4a38');
+  /* the door to the court */
+  doorInDoor(g,r);
+  /* a peg by the door with a cloak on it. The cloak hangs by its neck: two shoulders where it is gathered, then its folds down to an uneven hem */
+  {const c='#6a5a44';poly(g,[286.6,51.6,290.6,51.6,294,54,296.4,58,297,70,298,84,295,86.4,291,85.6,287,87,283,85.8,280.4,86.6,281,70,282.2,57.6,284,53.6],c);
+    R(g,287.4,49.6,2.4,2.4,'#4a3420');R(g,287.4,49.6,2.4,.6,'#7a5a3a');
+    for(const[x0,x1,x2]of[[285,284,284.4],[288.6,288.4,288],[292.2,293,293.6]])poly(g,[x0-.4,56,x0+.4,56,x1+.5,70,x2+.5,85.6,x2-.5,85.6,x1-.5,70],tint(c,-.3));
+    for(const[x0,x1]of[[286.6,286],[290.4,290.8],[294.6,295.6]])poly(g,[x0-.3,57,x0+.3,57,x1+.3,84,x1-.3,84],tint(c,.16))}
+  /* the floor: beaten earth, worn paler from the curtain to the door */
+  g.fillStyle=lg(g,0,104,0,144,['#9a8462','#ad9874','#b8a47e']);g.fillRect(0,104,320,40);tex(g,'mott',.5,0,104,320,40,'overlay',1);
+  pool(g,150,114,120,8,'#d8c8a4',.2,'source-over');
+  for(let i=0;i<120;i++){const k=r(),y=104.5+k*39;R(g,r()*320,y,.5+k*1.6,.5+k*.4,r()<.5?'rgba(70,52,36,.28)':'rgba(255,236,200,.18)')}
+  ao(g,0,104,320,6,'t',.45,'#2a2030');ao(g,0,96,320,8,'b',.3,'#3a2c28');
+  /* the bench beside the door, and a jar with its lid on in the corner, both standing out on the floor */
+  benchDoor(g,178,96,48);vessel(g,312,107,5.6,15,'#9a5a36','pithos');oval(g,312,92.4,4.2,1.3,'#5e4428');R(g,308,91.4,8,.5,'#8a6a44');
+  /* the light of the room: dim, brighter by the window and by the door, darker toward the ceiling and the corners */
+  lightmap(g,320,'#665c62',l=>{pool(l,170,92,210,70,'#aa9e9a',.7);pool(l,81,58,34,30,'#e0d2b8',.55);pool(l,80,116,44,12,'#dccbaa',.55);
+    pool(l,254,106,50,16,'#e8d6b4',.7);pool(l,254,80,30,34,'#c8b8a0',.4);pool(l,160,128,150,20,'#b0a498',.4);
+    l.fillStyle=lg(l,0,0,0,30,['rgba(20,16,24,.3)','rgba(20,16,24,0)']);l.fillRect(0,0,320,30);
+    l.fillStyle=lg(l,0,124,0,144,['rgba(20,16,24,0)','rgba(20,16,24,.35)']);l.fillRect(0,124,320,20)});
+  /* what comes in from the day, brighter than anything in the room: the slits, and the line under the door */
+  for(const k of['hatch','win'])for(const[x,y0,y1,a]of SLITSDoor[k]){comp(g,'screen',.95*a,()=>R(g,x-.35,y0,.7,y1-y0,'#ffecc0'));pool(g,x,(y0+y1)/2,2.4,(y1-y0)/2+2,'#ffdca0',.2*a)}
+  comp(g,'screen',.9,()=>R(g,LEAFDoor.x+.6,103.4,LEAFDoor.w-1.2,.6,'#ffe8b8'));pool(g,254,104.6,20,2.4,'#ffdca0',.3)}
+/* shutDoor: a small window in its frame, shut with shutters of upright boards; n boards. Every board stays inside the frame. */
+function shutDoor(g,x,y,w,h,c,n,wd){windowArt(g,x,y,w,h,c,{});const pw=w/(n||Math.max(2,Math.round(w/3)));
+  clipTo(g,()=>{g.beginPath();g.rect(x,y,w,h)},()=>{boards(g,x,y,w,h,pw,wd||'#7a5632',rng(x*7+y));ao(g,x,y,w,Math.min(4,h*.4),'t',.55);ao(g,x,y,Math.min(3,w*.3),h,'l',.4)})}
+/* shelfDoor: a plank on the wall at y, held by a bracket under each end, and what stands on it. The jug's handle is solid, with no hole
+   in it, and no rim is seen from above. */
+function shelfDoor(g,x,y,w){const c='#7a5a38';
+  for(const bx of[x+1,x+w-5])poly(g,[bx,y+2,bx+4,y+2,bx+(bx>x+w/2?4:0),y+7],tint(c,-.25));
+  R(g,x,y+2.2,w,2.6,'rgba(40,30,40,.25)');wood(g,x,y,w,2.2,c);R(g,x,y,w,.5,tint(c,.3));
+  /* the jug */
+  poly(g,[x+5,y,x+4.2,y-2.6,x+4.6,y-5,x+5.8,y-6.6,x+5.6,y-8.4,x+7.8,y-8.4,x+7.6,y-6.6,x+8.8,y-5,x+9.2,y-2.6,x+8.4,y],'#9a6a44');
+  poly(g,[x+8.8,y-7.6,x+10.4,y-7,x+10.6,y-4.4,x+9.2,y-3.6,x+9.6,y-5.2,x+9.4,y-6.6],'#8a5a38');R(g,x+5,y-5,1,4,'#c08a5e');R(g,x+5.6,y-8.6,2.2,.5,'#c08a5e');
+  /* the bowls, one turned over the other */
+  for(const[k,bw,bh]of[[0,6,2.2],[1,5,2]]){const bx=x+15+k*.5,by=y-k*2.2;poly(g,[bx,by,bx+.6,by-bh*.7,bx+bw/2,by-bh,bx+bw-.6,by-bh*.7,bx+bw,by],k?'#b08260':'#a07454');R(g,bx+.8,by-bh*.8,1.6,.5,'#d0a27c')}
+  /* the pot, with its cloth */
+  poly(g,[x+25,y,x+24,y-3,x+24.6,y-5.4,x+30.4,y-5.4,x+31,y-3,x+30,y],'#8a4e30');poly(g,[x+24,y-5.2,x+25,y-7.4,x+30,y-7.4,x+31,y-5.2,x+30.6,y-4.2,x+24.4,y-4.2],'#c8b894');R(g,x+24.6,y-4.8,6.2,.5,'#9a8a6a')}
+/* boardsDoor: upright boards (see boards), cut off at their own edges */
+function boardsDoor(g,x,y,w,h,pw,c,r){clipTo(g,()=>{g.beginPath();g.rect(x,y,w,h)},()=>boards(g,x,y,w,h,pw,c,r))}
+/* patchDoor: a place where the plaster has fallen and the mud brick shows, as plaster() paints them, but set where no head comes to
+   stand before it: high on the wall, or low behind the legs */
+function patchDoor(g,px,py,pw,ph,b,r){const pts=[];for(let a=0;a<9;a++){const t=a/9*6.2832,q=.6+r()*.4;pts.push(px+Math.cos(t)*pw*q,py+Math.sin(t)*ph*q)}
+  clipTo(g,()=>poly(g,pts),()=>{R(g,px-pw,py-ph,pw*2,ph*2,tint(b,-.35));
+    for(let j=0,row=0;j<ph*2;j+=2.5,row++)for(let i=-(row%2)*3;i<pw*2;i+=6)R(g,px-pw+i,py-ph+j,5.5,2,tint(b,(r()-.5)*.25))});
+  stroke(g,pts.concat(pts.slice(0,2)),rgba('#000000',.25),.5)}
+/* crackDoor: a hairline crack in the plaster, running down from x,y in n short steps, as plaster() draws them, but set where it runs
+   to no head */
+function crackDoor(g,x,y,n,r){const p=[x,y];for(let s=0;s<n;s++){x+=(r()-.5)*5;y+=1.5+r()*4;p.push(x,y)}
+  stroke(g,p,rgba('#000000',.3),.5);stroke(g,p.map((v,i)=>i%2?v:v+.5),rgba('#ffffff',.12),.5)}
+/* doorInDoor: the door seen from inside. A frame of wood; three wide planks; in the middle plank a hatch of three boards with a knob, and
+   daylight in the slits between them. The bolt is short: a bar that lies on the left plank only and slides into a block on the jamb, its
+   handle turned down at its end. No band, strap or joint runs across a plank, and the bar crosses none of the joints between them. */
+function doorInDoor(g,r){const{x,y,w,h}=LEAFDoor,F='#7a5a3a',D='#5a3e26';
+  /* the frame: jambs and a lintel, their faces lit from the room's side */
+  wood(g,x-6,y-4.6,w+12,4.6,F);R(g,x-6,y-.6,w+12,.6,tint(F,-.4));
+  for(const jx of[x-6,x+w]){wood(g,jx,y,6,h,F,1);R(g,jx,y,6,.5,tint(F,-.3))}R(g,x-1.4,y,1.4,h,tint(F,-.18));R(g,x+w,y,1.2,h,tint(F,.12));
+  /* the leaf */
+  const P=[[x,x+11],[x+11,x+25],[x+25,x+w]];for(const[a,b]of P)boardsDoor(g,a,y,b-a,h,b-a,D,r);
+  ao(g,x,y,w,5,'t',.5);ao(g,x+w-5,y,5,h,'r',.3);
+  /* the hatch */
+  {const{x:hx,y:hy,w:hw,h:hh}=HATCHDoor;R(g,hx-.6,hy-.6,hw+1.2,hh+1.2,'#2e2014');boardsDoor(g,hx,hy,hw,hh,hw/3,'#6e5034',r);R(g,hx,hy,hw,.5,'#8e6c48');
+    R(g,hx+hw/2-.7,hy+hh*.42,1.4,1.4,'#3a2818');R(g,hx+hw/2-.7,hy+hh*.42,1.4,.5,'#9a7a54')}
+  /* the bolt: its block on the jamb, the bar, the handle turned down, and the bar's shadow on the plank */
+  const by=83.4;R(g,x-5.4,by-1.6,6,5.2,'#5e4428');R(g,x-5.4,by-1.6,6,.6,'#8a6a46');R(g,x-.6,by-1,.8,3.6,'#2a1c12');
+  R(g,x+.2,by+2,8.4,.8,'rgba(20,12,8,.45)');wood(g,x,by,8.6,2,'#9a7650');R(g,x+7.2,by+2,1.4,3,'#8a6644');R(g,x+7.2,by+4.6,1.4,.5,'#5a4028');R(g,x+7.6,by+2,.5,3,'#b08a5e')}
+/* benchDoor: a bench of wood, its seat a thick plank on two slab legs set in from its ends; its shadow on the wall and the floor */
+function benchDoor(g,x,y,w){const c='#8a6a44';
+  R(g,x+2,y+4,w-2,6,'rgba(40,30,40,.28)');oval(g,x+w/2,y+14.4,w/2+2,2,'rgba(30,22,30,.35)');
+  for(const lx of[x+3,x+w-7]){wood(g,lx,y+4.4,4,9.6,tint(c,-.2),1);R(g,lx,y+4.4,4,.6,tint(c,-.45))}
+  wood(g,x,y,w,1.8,tint(c,.14));R(g,x,y,w,.5,tint(c,.4));wood(g,x,y+1.8,w,2.6,tint(c,-.14));R(g,x,y+4,w,.4,tint(c,-.5))}
+/* doorDraw: the light of the day on the floor, through the slits of the hatch and of the shutters. It falls a little in front of them at
+   first; while they wait (G.dl14 from 0 to 1) the sun goes lower and round, and the light lengthens and moves across the floor to the
+   left. It is drawn on the floor before anybody, so it is never behind a head. */
+function doorDraw(g){const k=G.dl14||0,ax=-.1-1.9*k,az=.22+.36*k,F=104,at=(x,y)=>[x+(F-y)*ax,F+(F-y)*az];
+  for(const[S,o]of[[SLITSDoor.hatch,HATCHDoor],[SLITSDoor.win,WINDoor]]){
+    /* the whole opening, faintly, where the light lands: what the edges of the boards let by, and the air */
+    const q=[...at(o.x,o.y+o.h),...at(o.x+o.w,o.y+o.h),...at(o.x+o.w,o.y),...at(o.x,o.y)];if(Math.max(q[0],q[2],q[4],q[6])<-2)continue;
+    comp(g,'screen',.24,()=>poly(g,q,'#ffd498'));
+    /* and a blade of sunlight for each slit, soft at its edges */
+    for(const[x,y0,y1,a]of S){const[x0,y0f]=at(x,y1),[x1,y1f]=at(x,y0),w=.6+(F-y0)*.012;
+      comp(g,'screen',.4*a,()=>poly(g,[x0-1.6,y0f,x0+1.6,y0f,x1+w+1.4,y1f,x1-w-1.4,y1f],'#ffdca0'));
+      comp(g,'screen',.95*a,()=>poly(g,[x0-.6,y0f,x0+.6,y0f,x1+w,y1f,x1-w,y1f],'#fff2d0'))}}}
 /* The close view of the sealing: the top of a column's base, seen from above and in front, in the shade of the colonnade. The light
    comes from the open side, from the square on the left and in front: warm where the sunlit paving throws it back, cool under the roof.
    The base is a block of pale marble, wider than the picture. At the back on the left the foot of its column stands on it: a lower and
@@ -449,9 +905,33 @@ function columnSeal(g){const[cx,cy,rs]=SEAL.col,K=.55,Z=.83,C='#d6cec0',D='#6661
   comp(g,'multiply',.5,()=>{clipTo(g,()=>{course(c1+t+.5,t,null)},()=>{g.fillStyle=lg(g,cx+10,0,cx+c1+t,0,['#ffffff','#b0aac4']);g.fillRect(-60,-20,200,140)})})}
 
 /* ---- the moving parts ---- */
-function marketDraw(g,t){}
-function doorDraw(g,t){/* the patch of light from the hatch, moving across the floor while they wait */
-  const k=G.dl14||0;pool(g,250-k*120,124+k*4,22,6,'#fff0c8',.35,'screen')}
+/* marketDraw: the donkey at the stall at the left, standing still; the glow of the kiln, which breathes; the anvil before the kiln, a
+   block of iron on a short log, where the smith at the kiln works; and in the morning his hammer, held in the hand that hangs over the
+   anvil: it rises and falls on the silver in quick strokes with pauses between them, as the sound of it (hammer14) does, though not in
+   step with it. The hammer is drawn only while that smith stands at the anvil, facing it. */
+function marketDraw(g,t){const busy=!F.plea,[ax,ay]=ANVIL_Market,s=ACT.smith14c;
+  beast(g,99,114,1,0,0,lightAt('market14',99,114));
+  if(busy){const k=.5+.5*Math.sin(t/230)*Math.sin(t/570);pool(g,358,97,10,5,'#ff9040',.16+.14*k)}
+  depth(ay-.2,()=>anvilMarket(g,ax,ay,busy));
+  if(busy&&s&&s.room==='market14'&&Math.abs(s.x-380)<1&&Math.abs(s.y-ay)<1&&!s.walk&&facing(s)===-1)depth(ay+.05,()=>hammerMarket(g,s.x,s.y,t))}
+/* anvilMarket: the anvil at x,y (its foot): a short log on end and on it a block of iron, its face lit, with a small piece of silver on it
+   in the morning; in the late afternoon the hammer lies on it. */
+function anvilMarket(g,x,y,busy){oval(g,x,y-.4,5.4,1.4,'rgba(30,26,50,.3)');
+  wood(g,x-3.6,y-13.6,7.2,13.6,'#6a4e2c',1);R(g,x-3.6,y-13.6,7.2,1,'#a8845a');R(g,x+2.4,y-13.6,1.2,13.6,'#4a3420');R(g,x-3.6,y-1,7.2,1,'#3a2a18');
+  R(g,x-3,y-17,6,3.4,'#3a3a40');R(g,x-3,y-17,6,.7,'#a4a4ae');R(g,x-3,y-17,1.2,3.4,'#5e5e68');R(g,x+2,y-16.3,1,2.7,'#26262c');
+  if(busy){R(g,x-1.8,y-17.6,3.6,.6,'#e8ecf0');R(g,x-1.2,y-18,2.6,.4,'#b8c0c8')}
+  else{R(g,x-2.8,y-18.6,2.8,1.6,'#44444c');R(g,x-2.8,y-18.6,2.8,.5,'#8a8a96');wood(g,x,y-17.9,5.4,.9,'#7a5a34')}}
+/* hammerMarket: the smith's hammer, in the hand at his side that hangs over the anvil (he stands at x,y, facing left). The handle comes
+   out of the front of his fist toward the anvil, and the head sits at its end with its face toward the anvil and nothing of the handle
+   beyond it: an L, never a cross. Each stroke: down on the silver, up in two steps, down again; a few strokes, then a pause. */
+const HAND_Market=[-6.3,-21.4];
+function hammerMarket(g,x,y,t){const P=1900,c=Math.floor(t/P),n=2+hash(c*7+3)%4,u=t%P,i=Math.floor(u/210),w=u%210;
+  const a=i<n?(w<50?-.45:w<85?0:w<165?.55:0):(u-n*210<140?0:-.45);
+  const hx=x+HAND_Market[0],hy=y+HAND_Market[1],L=5.6,ux=-Math.cos(a),uy=-Math.sin(a),ex=hx+ux*L,ey=hy+uy*L,nx=uy,ny=-ux,f=1.8,b=.6,hw=.85;
+  stroke(g,[hx+ux*.3,hy+uy*.3,ex,ey],'#6a4a2c',1);stroke(g,[hx+ux*.3-nx*.3,hy+uy*.3-ny*.3,ex-nx*.3,ey-ny*.3],'#a8845a',.4);
+  poly(g,[ex+ux*hw-nx*b,ey+uy*hw-ny*b,ex+ux*hw+nx*f,ey+uy*hw+ny*f,ex-ux*hw+nx*f,ey-uy*hw+ny*f,ex-ux*hw-nx*b,ey-uy*hw-ny*b],'#44444c');
+  poly(g,[ex+ux*hw-nx*b,ey+uy*hw-ny*b,ex+ux*hw+nx*f,ey+uy*hw+ny*f,ex+ux*.2+nx*f,ey+uy*.2+ny*f,ex+ux*.2-nx*b,ey+uy*.2-ny*b],'#8a8a96');
+  if(i<n&&w<50)R(g,ex+nx*f-.8,ey+ny*f-.2,1.6,.6,'#ffffff')}
 /* the tablet in the close view, in its states. A: Aristokles's leaf, B: Philokrates's, each a frame of boxwood round dark wax with the
    writing in the wax; C: the closed tablet, where Philokrates's leaf has been laid on Aristokles's. The two holes of a leaf are in its
    frame along one long edge: Aristokles's along the near edge; Philokrates's along the far edge until his leaf is turned round, and then
@@ -983,15 +1463,15 @@ async function atGate(){if(V()==='surge')return say(PC(),'harbor_gate_people_str
 const NOW=[160,160,236,236];   /* a close view: whoever is played stands below the picture, and takes no step */
 ROOMS.court14={space:.8,floor:'earth',walk:[16,304,112,138],get mood(){return F.plea?'still':'work'},get amb(){return F.plea?{birds:.35,wind:.2}:{birds:.3,crowd:.12}},hs:[
   {name:'passage_under_the_house',x:8,y:48,w:40,h:56,wx:40,wy:122,dir:-1,exit:leaveCourt,look:'passage_under_the_house_look'},
-  {name:'fig_tree',x:246,y:40,w:54,h:64,wx:250,wy:118,look:'fig_tree_and_its_shade'},
+  {name:'fig_tree',x:222,y:6,w:98,h:98,wx:250,wy:118,look:'fig_tree_and_its_shade'},
   {name:'trough',x:168,y:92,w:30,h:12,wx:182,wy:114,look:'trough_of_water_for_the_house'},
   {name:'door',x:116,y:52,w:34,h:52,wx:133,wy:114,look:'door_of_damon_and_theanos_house',open:'i_have_said_my_goodbyes'},
   {name:'disciples',x:230,y:96,w:60,h:40,wx:240,wy:128,vis:()=>!!F.plea,look:'disciples_from_all_over_the_city',talk:()=>bye(BYE[3])}]};
 ROOMS.market14={space:.7,walk:[16,464,112,138],get mood(){return F.plea?'harbor':'work'},get amb(){return F.plea?{birds:.3,wind:.2}:{crowd:.35,hammer14:.7}},hs:[
   {name:'way_back_to_the_lanes',x:0,y:60,w:24,h:84,wx:24,wy:124,dir:-1,exit:outMarket,look:'back_to_the_lanes'},
-  {name:'demetrius_stall',x:196,y:58,w:84,h:46,wx:238,wy:116,look:'demetrius_stall_shut_kiln_cold'},
-  {name:'wares',x:20,y:64,w:160,h:40,wx:100,wy:116,look:'wares_under_cloths_now'},
-  {name:'donkey',x:84,y:84,w:36,h:30,wx:126,wy:122,look:'donkey_heard_a_thousand_hammer_strokes'}]};
+  {name:'demetrius_stall',x:192,y:57,w:186,h:53,wx:238,wy:116,look:'demetrius_stall_shut_kiln_cold'},
+  {name:'wares',x:22,y:58,w:158,h:52,wx:58,wy:118,look:'wares_under_cloths_now'},
+  {name:'donkey',x:84,y:76,w:38,h:38,wx:130,wy:120,dir:-1,look:'donkey_heard_a_thousand_hammer_strokes'}]};
 ROOMS.colon14={space:.6,walk:[16,464,112,138],mood:'uproar',amb:{roar14:.55,crowd:.6,cry14:.7},hs:[
   {name:'square_before_the_theater',x:0,y:56,w:30,h:88,wx:24,wy:124,dir:-1,def:'walk',exit:()=>toLanes(),look:'square_before_the_theater_look'},
   {name:'theater_arches',x:184,y:41,w:282,h:52,wx:300,wy:116,look:'theater_arches_look'},
@@ -1073,7 +1553,7 @@ function place14(room){for(const a of EVERY){a.room=null;a.talk=false;a.seat=0}T
   if(room==='court14'&&F.plea){place(PH,room,96,124,1);place(KL,room,150,128,-1);place(DA,room,220,120,-1);place(D1,room,282,124,-1);place(D2,room,262,112,-1);place(D3,room,300,114,-1)}
   if(room==='market14'&&!F.plea)placeMarket();
   P.party=DA.party=RUN.party=0;swapBtn()}
-function setup14(){P.hs=PAULHS;P.called='Paul';RUN.called='Eudoros';G.sv14=0;G.dl14=0;G.hu14=null;G.s14=null;for(const k in courtSaid)delete courtSaid[k];
+function setup14(){P.hs=PAULHS;P.called='Paul';RUN.called='Eudoros';G.sv14=0;G.dl14=0;G.hu14=null;for(const k in courtSaid)delete courtSaid[k];
   G.invs={paul:['tablets','bundle14'],eudoros14:['tab14'],damon14:[]};G.inv=G.invs.paul;drawInv()}
 
 /* ============ PRAYER HINTS ============ */
