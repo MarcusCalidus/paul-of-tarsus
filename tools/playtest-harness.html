@@ -224,7 +224,8 @@
      on the longest line that is told in the dark (Chapter Seven). Look at both in every language (`de:scroll`), for cross shapes too. */
   if(stop==='scroll'||stop==='scrolllong'){clearInterval(sk);sk=0;let rustles=0;{const u0=SFX.unroll;SFX.unroll=function(){rustles++;return u0.apply(this,arguments)}}
    await loadLevel(5);await loadLevel(7);ov.className='';ov.onclick=null;setChapter(5);G.busy=true;lock(true);status();
-    const A='beyond_the_pass_the_road',B='two_of_them_traveled_acts_13_14',
+    /* AT: the text of A, taken while Chapter Five (whose line it is) is loaded; the probes below run in Chapter Seven */
+    const AT=T('beyond_the_pass_the_road'),A='beyond_the_pass_the_road',B='two_of_them_traveled_acts_13_14',
       LONG='paul_knew_very_well_that_no',
       line=()=>$('#speech .line'),S=()=>SHARED.scroll,op=el=>+getComputedStyle(el).opacity,till=async(fn,n)=>{for(let i=0;i<(n||400)&&!fn();i++)await wait(10);return!!fn()},
       /* inside the open part of the roll: between the two rolled-up ends, and clear of its upper and lower edge */
@@ -246,7 +247,7 @@
     /* the longest line that is told in the dark fits on the roll; a line is written smaller as it grows longer; and one that is too long for
        the roll even in the smallest writing is noted, so that a playthrough fails on it */
     {await fade(1,60);setChapter(7);const p=narr(LONG,{dur:200});await till(()=>line());const fits=onRoll(line())&&!S().over.length;await p;
-      const probe=n=>{const el=document.createElement('div');el.className='line';el.classList.add('ink');el.textContent=(T(A)+' ').repeat(n).trim();$('#speech').appendChild(el);S().fit(el);
+      const probe=n=>{const el=document.createElement('div');el.className='line';el.classList.add('ink');el.textContent=(AT+' ').repeat(n).trim();$('#speech').appendChild(el);S().fit(el);
           const r=[parseFloat(getComputedStyle(el).fontSize),onRoll(el),S().over.length];el.remove();S().over.length=0;return r},x=probe(1),y=probe(4),z=probe(30);
       ok(fits&&x[0]>y[0]&&x[1]&&y[1]&&!x[2]&&!y[2]&&z[2]===1,'the longest line told in the dark fits on the roll; a longer line is written smaller ('+x[0].toFixed(1)+' and '+y[0].toFixed(1)+' pixels), and one too long for the roll is noted')}
     /* somebody speaks in the dark: the scroll goes down first */
