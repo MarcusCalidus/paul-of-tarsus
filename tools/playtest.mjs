@@ -7,7 +7,7 @@
 //   node tools/playtest.mjs logo de:logo     the title's logo enlarged, in each language: look for crosses and for letters run together
 //   node tools/playtest.mjs pwa              the installable app: service worker, manifest, offline play (served over http; icon saved as pwa-icon.png)
 //   node tools/playtest.mjs continue         the title screen of a returning player (the game is reloaded; its autosave must bring them back)
-//   node tools/playtest.mjs lanesall         the lane map (shared/lanes.js) in its demo (tools/lanes-demo.js); lanes, lanes2 and lanesfolk are its pictures
+//   node tools/playtest.mjs lanesall         the lane map (shared/lanes.js) on Chapter Fourteen's Ephesus; lanes, lanes2, lanesfolk and lanesmap are its pictures
 // It first checks the translations against the English text (tools/strings.mjs), and that every picture in docs/screenshots is listed
 // with its stop in tools/screenshots.txt (tools/retake.mjs takes the pictures again from that list).
 // Screenshots go to tools/out/ (or $SHOTS). Set $CHROME to use another Chromium-based browser.

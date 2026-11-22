@@ -24,6 +24,8 @@ boundary border
 brothers home9
 burning pstreetg13
 card card
+cast cast cast-main
+cast-closeup cast cast-closeup
 cenchreae pcenf12
 code code
 colonnade sift11
@@ -46,14 +48,15 @@ dusk10 dusk10
 ephesus peph12
 ephesus-evening pstreete13
 ephesus-road proad13
-fuller-door pfuller13
 ford wade
+fuller-door pfuller13
 garlands bulls
 gates gates
 guard guard
 hall-tyrannus phallb13
 harbor harbor
 heard cell9
+held-back pdoorb14
 homeward journey6
 hotspots tags
 house house
@@ -88,42 +91,47 @@ paphos paphos
 perga perga
 philippi philippi8
 pisidia week
-plateau closed8
 plans plans
+plateau closed8
 pointer pointer
 pray pray
 pro-judas pro8b
 pro-wall pro1
 psalm psalm9
+pwa-icon pwa pwa-icon
 questions myron
 reading reading
 river river8
-samothrace deck8
 road road
+romans romans cast-romans
+samothrace deck8
 saves saves
 scroll scroll
-speak speak
-splash splash
-stride stride
 scrolltable row10
+sealed-plea psealc14
 seamap seamap10
 secondjourney journey7
 seleucia kallias
+shipwreck shipwreck cast-shipwreck
 shortway hubmap6b
 show show
 sifted tableb10
 silent silent
+silversmiths pmarket14
+speak speak
 speech speech
+splash splash
 stonecutter block11
+stride stride
 sundial pdial13
 synagogue synagogue
 synagogue10 sab10
 tablets tablets
-tarsus tarsus
-treasures treasures
-tentshop pshop12
-thessalonica yard10
 talk cast cast-talk
+tarsus tarsus
+tentshop pshop12
+theater-colonnade pcolon14
+thessalonica yard10
 thought thought
 thought-de de:thought
 timothy lystra7
@@ -131,6 +139,7 @@ title title
 titlescroll titlescroll
 topics topics
 travel hubmap4
+treasures treasures
 troas troas8
 twelve pstreetb13
 verb-pointer verbpointer
@@ -143,8 +152,3 @@ withoutpaul tim10
 witness witness
 workshop workshop
 xfade xfade
-cast cast cast-main
-cast-closeup cast cast-closeup
-pwa-icon pwa pwa-icon
-romans romans cast-romans
-shipwreck shipwreck cast-shipwreck

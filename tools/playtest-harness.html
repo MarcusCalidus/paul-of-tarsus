@@ -565,8 +565,8 @@
       place(R,'lanes14',...C.ent.lanes14);const with_=way(),jp=M.J.surge.length,blocked=js.every(j=>!M.walkable(j.x+j.w/2,j.y+j.h/2));D.jams.surge=[];M.G={};const without=way();D.jams.surge=js;M.G={};
       ok(jp>30&&blocked&&with_>without+20&&!(D.jams.quiet||[]).length,'in the uproar '+js.length+' narrow streets are jammed by '+jp+' people who cannot get through: the way to the house is '+Math.round(with_)+' pixels, where it would be '+Math.round(without)+'; after it, none')}
     /* what blocks the way says what it is: a click on a jam stops the runner before it, and he says why nobody gets through */
-    const heardAt=async(a,from,to)=>{const s0=window.say,heard=[];window.say=(b,t,o)=>{heard.push(t);return s0(b,t,o)};const cr=D.crowd;D.crowd={};M.said=null;
-      place(a,'lanes14',...from,-1);viewOf(a);await wait(120);walk(a,...to);for(let i=0;i<160&&a.walk;i++)await wait(25);await wait(150);await idle();window.say=s0;D.crowd=cr;return heard};
+    const heardAt=async(a,from,to)=>{const s0=window.say,heard=[];window.say=(b,t,o)=>{heard.push(t);return s0(b,t,o)};const cr=D.crowd;D.crowd={};M.crowd.length=0;M.pushT=0;a.pushed=0;M.said=null;
+      place(a,'lanes14',...from,-1);viewOf(a);await wait(120);walk(a,...to);for(let i=0;i<240&&a.walk;i++)await wait(25);await wait(150);await idle();window.say=s0;D.crowd=cr;return heard};
     {const h=await heardAt(R,A(442,118),A(413,118));ok(h.includes('packed_so_tight_nobody_gets_through'),'walking up to a jam, the runner says that nobody gets through ('+h.join(', ')+')')}
     /* the house is reached only through its covered passage: the way to it runs under the house built over the lane */
     {const b=D.bridges[0],r=M.route(R,...D.targets.house,true);let under=false,x=R.x,y=R.y;for(const[a,c]of r){for(let t=0;t<=1;t+=.05){const px=x+(a-x)*t,py=y+(c-y)*t;if(px>=b.x&&px<b.x+b.w&&py>=b.y&&py<b.y+b.d)under=true}x=a;y=c}
@@ -574,7 +574,7 @@
     /* zoom: the view zooms between three quarters and twice its size, and a click still walks to where it was made */
     {G.zoomTo=2;await wait(500);const z=G.zoom,[tx,ty]=[R.x+8,R.y];const ok1=M.walkable(tx,ty);if(ok1){view(tx,ty);for(let i=0;i<80&&R.walk;i++)await wait(25)}
       ok(Math.abs(z-2)<.05&&(!ok1||Math.hypot(R.x-tx,R.y-ty)<2.5),'the view zooms to twice its size ('+z.toFixed(2)+'), and a click there walks to where it was made');G.zoomTo=1;await wait(400)}
-    if(stop==='lanes'){place(R,'lanes14',...A(320,118),-1);R.pushed=0;M.pushT=0;M.seeAll=0;viewOf(R);await wait(2400);walk(R,...A(290,96));await wait(60);paintPointer(...A(290,96));halt('lanes')}
+    if(stop==='lanes'){place(R,'lanes14',...A(256,118),-1);R.pushed=0;M.pushT=0;M.seeAll=0;viewOf(R);await wait(2400);walk(R,...A(230,96));await wait(60);paintPointer(...A(230,96));halt('lanes')}
     /* to the house and through the door, by the back lanes: then the quiet pass, Paul at the door */
     G.speedAll=sp0;place(R,'lanes14',...C.ent.lanes14);M.pushT=0;R.pushed=0;viewOf(R);
     /* the test walks at many times the pace, through anyone in the way: for that walk the crowd stays away */
@@ -2608,7 +2608,7 @@
     if(!S)throw new Error('no such stop '+stop);setChapter(14);for(const k of S[0])F[k]=1;
     const room=S[1];CHAP[14].place(room);dealInv(room);G.scene=null;enterRoom(room,...CHAP[14].ent[room]);
     if(stop==='pcourt14'){G.stage14='open';CHAP[14].place(room);enterRoom(room,150,124,-1);place(ACT.timothy14,room,118,122,1);place(ACT.erastus14,room,96,126,1);place(ACT.damon14,room,214,120,-1);G.stage14=null}
-    if(stop==='pmarket14'){ACT.demet14.room='market14';P.room=null}
+    if(stop==='pmarket14'){ACT.demet14.room='market14';P.room=null;ACT.eudoros14.room=null;ACT.eudoros14.x=270;G.cam=110}
     if(S[2]&&PC().room===room){place(PC(),room,S[2][0],S[2][1],1);G.cam=clamp(S[2][0]-160,0,ART[room].w-320)}
     G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();await wait(1100);halt(stop)}
   const ch14=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[14],told=k=>heard.includes(T(C().told[k])),
