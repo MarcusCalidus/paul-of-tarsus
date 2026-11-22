@@ -135,15 +135,244 @@ function paintMarket(g,v){const r=rng(1403);sky(g,480,60,SKY.day);
   /* the kiln at the right */
   R(g,400,60,40,44,'#8a6a52');R(g,410,74,20,14,v==='b'?'#e07a2a':'#3a2a22');
   floorStone(g,0,103,480,41,'#cdc09e',r)}
-function paintColon(g){const r=rng(1405);sky(g,480,50,SKY.day);
-  /* the stage building of the theater, its arches, and the hill behind it */
-  ridge(g,0,480,50,x=>18+8*Math.sin(x/70),['#9aa68a','#8a9a78']);
-  R(g,150,24,330,80,'#d6caa8');for(let i=0;i<5;i++){const x=176+i*60;R(g,x,52,30,52,'#2a2420');arch(g,x,52,30,52,'#2a2420')}
-  R(g,150,24,330,6,ST);R(g,150,30,330,1,tint(ST,-.3));
-  /* the colonnade along it: a row of columns under a deep beam and a roof */
-  R(g,0,22,150,6,ST);for(let x=10;x<150;x+=28)col14(g,x,104,76,6,ST);
-  R(g,0,60,40,44,'#b8c6d0');
-  floorStone(g,0,103,480,41,'#d0c4a2',r)}
+/* The outer colonnade of the theater, late in the morning of the uproar. From the left: the view out across the square to the harbor road,
+   full of people, running down between its colonnades to the gate and the water; the colonnade along the street, a row of columns under a
+   deep beam and a roof, with shops behind them, shut in a hurry; and the stage building of the theater, its wall of dressed stone in two
+   storeys, with five arched ways in, where the crowd pushes in. Above and behind it the seats rise in a curve against Mount Pion, and
+   they are filling. The sun stands high on the left. The shops, the houses on the slope and the scrub of the hill are the game's own.
+   HZColon is the horizon, where the water of the harbor ends and the paving runs to; FTColon the foot of the stage building; ARCColon the
+   middles of its arches, AWColon their width and ATColon the top of their heads. */
+const HZColon=60,FTColon=96,ARCColon=[201,263,325,387,449],AWColon=30,ATColon=44;
+function paintColon(g){const r=rng(1405);
+  /* the sky of a late morning, a few clouds over the harbor */
+  sky(g,480,HZColon+2,['#3c78c4','#6898d4','#a4c2e0','#dce4e4']);cloud(g,30,22,40,4,r);cloud(g,96,12,36,3,r);cloud(g,300,5,50,3,r);
+  hillColon(g,r);caveaColon(g,r);
+  /* the square and the street: one floor of marble slabs that runs back to the horizon */
+  pave(g,0,61,480,144,'#e2dac8',r,{vx:240,vy:59.4,rows:10,step:34,p:1.75,v:.06,t:.3});veinsColon(g,r);
+  vistaColon(g,r);stageColon(g,r);colonnadeColon(g,r);
+  /* the crowd at the arches: the shadows of all of them, and those deep in the arches; colonDraw lays the others over whoever hurries in
+     behind them, in three rows from the back to the front */
+  throngColon(g,0,200,1);throngColon(g,0,ROWSColon[0][0]);
+  /* soft shade at the foot of the walls, and the warm light of the late morning */
+  ao(g,0,96,480,8,'t',.2,'#3a3050');comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,480,0,['rgba(255,232,180,.9)','rgba(255,244,220,.4)','rgba(214,210,236,.5)']);g.fillRect(0,0,480,144)})}
+/* blobColon: a small round thing (a bush, a head, a shadow): an oval, or a small square where an oval would be under about a pixel
+   across and come out as a plus sign */
+function blobColon(g,x,y,rx,ry,c){if(Math.min(rx,ry)<1.1&&Math.max(rx,ry)<2.4)R(g,x-rx,y-ry,rx*2,ry*2,c);else oval(g,x,y,rx,ry,c)}
+/* hillColon: the hills across the harbor, far off and blue; and Mount Pion, which falls towards the harbor on the left, with the houses of
+   the city climbing its lower slope, and scrub, rock and a few pines above them. Nothing on it stands upright across a level line. */
+function hillColon(g,r){const HZ=HZColon,yP=x=>x<14?HZ:9+49*Math.exp(-(x-14)/44)+1.8*Math.sin(x/31+1)+.9*Math.sin(x/9.3)+(x>300?.012*(x-300):0);
+  ridge(g,0,90,HZ,x=>6+2*Math.sin(x/11+1)+1.4*Math.sin(x/4.3),['#94a8be','#acbac4']);
+  ridge(g,0,90,HZ,x=>2.6+.8*Math.sin(x/6+2),['#a2b2be','#b6c0c4']);
+  ridge(g,12,480,HZ,x=>HZ-yP(x),['#9aa478','#86905e','#8a8a5c']);tex(g,'mott',.45,12,0,468,HZ,'overlay',1);
+  /* patches of dry grass and bare rock between the scrub */
+  clipTo(g,()=>{g.beginPath();g.moveTo(12,HZ);for(let x=12;x<=480;x+=2)g.lineTo(x,yP(x));g.lineTo(480,HZ);g.closePath()},()=>{for(let i=0;i<46;i++){const x=14+r()*466,y=yP(x)+1+r()*22;oval(g,x,y,2.4+r()*6,.8+r()*1.8,r()<.6?'rgba(184,164,106,.4)':'rgba(170,168,156,.42)')}});
+  /* scrub in clumps and grey rock, lit from the left; the higher, the hazier */
+  for(let i=0;i<520;i++){const x=12+r()*468,y0=yP(x);if(y0>HZ-2)continue;const y=y0+.6+Math.pow(r(),1.4)*Math.min(30,HZ-y0-2),hz=clamp((y-4)/30,0,1);
+    if(r()<.2){const w=1+r()*2.6;R(g,x,y,w,.6+r()*.6,mix('#c2b898','#b4b8b8',1-hz));R(g,x,y+.6,w,.5,mix('#6e6a56','#8a90a0',1-hz))}
+    else{const c=mix(r()<.5?'#56683e':'#687848','#8c9a8a',(1-hz)*.5);blobColon(g,x,y,1.4+r()*1.4,1.1+r()*.5,tint(c,-.15));blobColon(g,x-.5,y-.4,.6+r()*.5,.5+r()*.2,tint(c,.12))}}
+  for(const[x,h]of[[214,8],[221,6],[262,9],[410,8],[418,10],[456,7]])pine(g,x,yP(x)+h*.7,h,'#4e6448');
+  /* the houses on the lower slope, each a block with its roof, set apart so that no four corners meet */
+  for(let i=0;i<26;i++){const x=14+r()*82,y=yP(x)+2.4+r()*16,w=3.6+r()*4,h=2.2+r()*2.2;if(y+h>HZ-1||y<yP(x)+1.6)continue;
+    R(g,x,y,w,h,r()<.5?'#e6dac0':'#d8caa8');R(g,x+w-1,y,1,h,'#aa9e8a');R(g,x-.3,y-.9,w+.6,1,'#ba6a4c');R(g,x-.3,y-.9,w+.6,.4,'#d88a64');if(w>5)R(g,x+1.2,y+h*.45,.8,h*.55,'#5a4a40')}}
+/* caveaColon: the seats of the theater, seen from below: each tier is a level curve that dips towards the middle of the bowl and rises
+   towards its ends, and only the upper tiers show over the stage building. Each end of the bowl stands on a retaining wall whose top
+   follows the slope of the seats; the right one is out of the picture. People are taking their places, thick in the lower rows and fewer
+   higher up. No stair is drawn across the tiers. */
+function caveaColon(g,r){const cx=330,HW=f=>134+32*f,ye=f=>21.5-19.5*Math.pow(f,.9),S=16,yt=(x,f)=>{const u=(x-cx)/HW(f);return ye(f)+S*(1-u*u)},xl=f=>cx-HW(f),XR=482;
+  const rim=[];for(let x=xl(1);x<=XR;x+=1)rim.push(x,yt(x,1));
+  const bowl=()=>{g.beginPath();g.moveTo(xl(0),ye(0));g.lineTo(xl(1),ye(1));for(let i=0;i<rim.length;i+=2)g.lineTo(rim[i],rim[i+1]);g.lineTo(XR,30);g.lineTo(xl(0),30);g.closePath()};
+  /* the back of the bowl's end, where it curves away into the hill, in shade */
+  poly(g,[xl(1),ye(1),xl(1)-4,ye(1)+2.4,xl(1)-7,ye(1)+9,xl(1)-8,30,xl(1)+2,30],'#a29686');ao(g,xl(1)-8,ye(1),8,30,'l',.25,'#3a3050');
+  /* the retaining wall at the left end: its face lit, its top a coping that follows the slope of the seats */
+  const wall=[xl(1)-1.2,ye(1)+.8,xl(0)+1.2,ye(0)+.8,xl(0)+1.2,30,xl(1)-1.2,30];
+  clipTo(g,()=>poly(g,wall),()=>{ashlar(g,xl(1)-2,0,xl(0)-xl(1)+4,30,'#d8ccae',r,{bw:9,bh:3.2,v:.07,t:.3});ao(g,xl(1)-2,0,xl(0)-xl(1)+4,30,'r',.16,'#3a3050')});
+  clipTo(g,bowl,()=>{g.fillStyle=lg(g,xl(1),0,XR,0,['#b4ae9e','#cec4aa','#dcd2b8','#d4caae']);g.fillRect(0,0,XR,30);
+    /* the tiers: the front of each seat, and the shadow under its lip; each one a level curve */
+    const K=26,F=k=>1-k/K;
+    for(let k=0;k<K;k++){const p=[];for(let x=xl(F(k))-2;x<=XR;x+=1.5)p.push(x,yt(x,F(k))+.9);stroke(g,p,'rgba(64,56,80,.55)',.6);stroke(g,p.map((v,i)=>i%2?v-.6:v),'rgba(255,250,232,.35)',.5)}
+    /* the walkway between the upper seats and the lower, a little wider than a tier */
+    {const f=F(9)-.012,p=[];for(let x=xl(f)-2;x<=XR;x+=1.5)p.push(x,yt(x,f));stroke(g,p,'#ebe2c8',1.3);stroke(g,p.map((v,i)=>i%2?v+.9:v),'rgba(64,56,80,.55)',.5)}
+    /* the people, sitting or standing on the tiers: a head over a body; thick low down, thinner higher up, a few gaps still */
+    const C=['#8a3a2a','#cdbb96','#5a5a72','#7a5a40','#d8ccb0','#4e5a6e','#a4503a','#6e5a3a','#b98258','#ece2cc','#5a6a4a','#c8a070'];
+    for(let k=0;k<K;k++){if(k===9)continue;const f=F(k),dens=.25+.65*k/K;let x=xl(f)+.6+r()*1.2;
+      while(x<XR){if(r()<dens){const y=yt(x,f)+.4,tall=r()<.3?.5:0;R(g,x,y-1.5-tall,.5,1+tall,C[(r()*C.length)|0]);R(g,x,y-2-tall,.5,.5,r()<.7?'#3e3028':r()<.5?'#8a7a6a':'#b08060')}x+=.5+(r()<.6?.5:r()*2)}}
+    /* the left wing is turned away from the sun */
+    comp(g,'multiply',.32,()=>{g.fillStyle=lg(g,xl(1),0,cx+30,0,['#7a78a8','rgba(255,255,255,0)']);g.fillRect(0,0,XR,30)})});
+  /* the coping of the retaining wall, and the low wall along the top of the bowl */
+  stroke(g,[xl(1)-1.2,ye(1)+.3,xl(0)+1.2,ye(0)+.3],'#f2e8d0',1);stroke(g,[xl(1)-1.2,ye(1)+1.1,xl(0)+1.2,ye(0)+1.1],'#8a8070',.5);
+  stroke(g,rim,'#8a8070',1.4);stroke(g,rim.map((v,i)=>i%2?v-.8:v),'#eee4cc',.6)}
+/* veinsColon: grey veins in the marble of the paving, each within its slab */
+function veinsColon(g,r){for(let i=0;i<70;i++){const y=98+Math.pow(r(),.7)*44,s=(y-HZColon)/84,x=r()*480,l=(3+r()*8)*s,p=[x,y];let px=x,py=y;
+  for(let k=0;k<3;k++){px+=l/3;py+=(r()-.5)*1.4*s;p.push(px,py)}stroke(g,p,'rgba(120,116,124,.22)',.5)}}
+/* vistaColon: past the end of the colonnade, the far side of the square, and the mouth of the harbor road: between its two colonnades it
+   runs down to the harbor gate, and through the gate the water lies at the level of the horizon. Road and square are full of people. The
+   lines of the road end at the corners of the gate and never meet in one point, and no upright stands across the water. */
+function vistaColon(g,r){const HZ=HZColon,gx=18,G0=HZ-.3,y0=66,top=52,
+  /* along an edge of the road, from its near end (x at y) to the gate (x2 at y2): f 0 near, 1 at the gate */
+  ln=(x,y,x2,y2,f)=>[x+(x2-x)*f,y+(y2-y)*f];
+  clipTo(g,()=>{g.beginPath();g.rect(0,0,42,97)},()=>{
+    /* the roofs of the lower city, falling towards the harbor, over the colonnades of the road and beside the gate */
+    for(let i=0;i<14;i++){const x=-3+r()*46,w=3+r()*4,h=9,y=top-1.4-r()*3;if(x+w>gx-5&&x<gx+5)continue;R(g,x,y,w,h,r()<.5?'#d8cebc':'#cac0aa');R(g,x-.3,y-.8,w+.6,.9,'#b07058');R(g,x+w-.8,y,.8,h,'#a09888')}
+    /* through the gate: the water of the harbor */
+    R(g,gx-3,HZ-2.4,6,2.4,'#a2bccc');R(g,gx-3,HZ-2.4,6,.5,'#d4e4ea');
+    /* the two colonnades of the road: the roof and the shade of each run from its end on the square down to the gate */
+    for(const s of[-1,1]){const xn=s<0?3:33,xg=gx+s*2.2;
+      poly(g,[xn,top+1.6,xg,G0-4.4,xg,G0,xn,y0],'#6e6676');
+      poly(g,[xn,top,xg,G0-5,xg,G0-4.4,xn,top+1.6],'#b46c4c');
+      /* the fronts of the far columns catch the light along the road, short strokes that stop under the beam and above the floor */
+      for(let k=1;k<4;k++){const f=k/4.6,[px,py]=ln(xn,top+2.4,xg,G0-4,f),[,qy]=ln(xn,y0-.6,xg,G0-.4,f);R(g,px-(s<0?0:.5),py,.5,qy-py,'rgba(236,228,208,.4)')}}
+    /* the ends of the two colonnades on the square: a pier of stone under the end of the beam and the roof */
+    for(const[x,w]of[[-9,12],[33,12]]){R(g,x,top+1.6,w,y0-top-1.6,'#d6caae');R(g,x,top+1.6,w,.5,'#efe6d0');R(g,x,top,w,1.6,'#b46c4c');R(g,x,top+4,w,.5,'#b0a48c');ao(g,x,y0-6,w,6,'b',.2,'#4a3a30')}
+    /* the road itself, pale, and the harbor gate over its end */
+    poly(g,[3,y0,33,y0,gx+2.2,G0,gx-2.2,G0],'#d8ceb6');
+    R(g,gx-3,G0-6,6,6,'#ddd3b8');R(g,gx-3.4,G0-6.6,6.8,.8,'#c6ba9e');R(g,gx-3,G0-6,6,.5,'#f2ead4');R(g,gx+2.2,G0-6,.8,6,'#aca08c');
+    arch(g,gx-1.2,G0-4.4,2.4,4.4,'#a8c0ce');R(g,gx-1.2,G0-1.6,2.4,1.6,'#b8ccd6');
+    /* people: dots far down the road, small figures on the square */
+    const C=['#8a3a2a','#cdbb96','#5a5a72','#7a5a40','#e4d8bc','#4e5a6e','#a4503a','#6e5a3a'];
+    for(let i=0;i<140;i++){const f=Math.pow(r(),.8),y=G0+(y0-G0)*f,a=gx-2+(3-gx+2)*f,b=gx+2+(33-gx-2)*f,x=a+.6+r()*(b-a-1.2);
+      R(g,x,y-.6-2.2*f,.5,.5,'#4a3a30');R(g,x,y-.2-1.8*f,.5+.5*f,.4+1.8*f,C[(r()*C.length)|0])}
+    const L=[];for(let i=0;i<14;i++)L.push([r()*42,y0+3+Math.pow(r(),.7)*24,r()<.6]);L.sort((a,b)=>a[1]-b[1]);
+    for(const[x,y,side]of L){const h=49*(y-HZ)/64*.82;if(side)runnerColon(g,x,y,h,lookColon(r),1,.12+r()*.12,0);else backColon(g,x,y,h,lookColon(r),0)}})}
+/* stageColon: the stage building of the theater, seen from outside: a long wall of dressed stone in two storeys under a cornice, small
+   windows above, and below them five arched ways in. Its corner stands at the left, against the colonnade. No statue stands in it. */
+function stageColon(g,r){const x0=150,top=24,FT=FTColon,C='#dacdb0',sc=40;
+  ashlar(g,x0,top,480-x0,FT-top,C,r,{bw:17,bh:5.4,v:.07,t:.3});
+  /* rain has left darker streaks down the wall from the cornice */
+  for(let i=0;i<26;i++){const x=x0+4+r()*322,h=6+r()*20;g.fillStyle=lg(g,0,top+3,0,top+3+h,['rgba(110,96,80,.22)','rgba(110,96,80,0)']);g.fillRect(x,top+3,1+r()*2.4,h)}
+  /* the cornice and the edge of the roof over it */
+  R(g,x0-1,top-3,482-x0,3,'#b8664a');R(g,x0-1,top-3,482-x0,.6,'#d8906a');for(let i=x0;i<480;i+=3)R(g,i,top-2.6,.5,2.4,'rgba(90,40,24,.3)');
+  R(g,x0-1.5,top,483-x0,2.6,tint(C,.12));R(g,x0-1.5,top,483-x0,.6,tint(C,.4));R(g,x0-1.5,top+2.6,483-x0,.8,tint(C,-.42));ao(g,x0,top+3.4,480-x0,4,'t',.3,'#3a3050');
+  /* the string course between the storeys */
+  R(g,x0,sc,480-x0,2,tint(C,.1));R(g,x0,sc,480-x0,.6,tint(C,.38));R(g,x0,sc+2,480-x0,.6,tint(C,-.4));ao(g,x0,sc+2.6,480-x0,3,'t',.22,'#3a3050');
+  /* the windows of the upper storey, a larger one over each arch and a smaller one over each pier */
+  for(let i=0;i<10;i++){const big=i%2===0,w=big?5:4,h=big?8:6,x=ARCColon[0]+i*31-w/2,y=sc-2-h;if(x>476)break;
+    R(g,x-1,y-1.4,w+2,1.4,tint(C,.16));R(g,x,y,w,h,big?'#2a2228':'#4a4044');ao(g,x,y,w,2.4,'t',.5);R(g,x-1,y+h,w+2,1,tint(C,.2));R(g,x-1,y+h+1,w+2,.5,tint(C,-.36))}
+  /* the arches */
+  for(const ax of ARCColon)archColon(g,ax);
+  /* the corner of the building at the left, in larger blocks */
+  for(let y=top+2.6,k=0;y<FT;y+=5.4,k++){const w=k%2?7:11;R(g,x0,y,w,5,tint(C,(k%3)*.03+.04));R(g,x0,y,w,.5,tint(C,.3));R(g,x0+w-.5,y,.5,5,tint(C,-.2))}
+  /* the base course along the foot of the wall, broken by the arches */
+  R(g,x0,FT-4,480-x0,4,tint(C,-.06));R(g,x0,FT-4,480-x0,.6,tint(C,.3));for(const ax of ARCColon)R(g,ax-AWColon/2,FT-4.2,AWColon,4.2,'#3a2e28');
+  /* grime at its foot, and the warmth of the light on the upper wall */
+  ao(g,x0,FT-16,480-x0,16,'b',.2,'#5a4434');comp(g,'soft-light',.3,()=>R(g,x0,top,480-x0,30,'#fff0c8'))}
+/* archColon: one arched way into the theater: a dark vault, the light of the day on its right-hand reveal and on its floor, and a ring of
+   wedge-shaped stones round its head whose joints stop at the ring's edges */
+function archColon(g,ax){const w=AWColon,x=ax-w/2,y=ATColon,FT=FTColon,rr=w/2,cy=y+rr;
+  g.beginPath();g.arc(ax,cy,rr+3,Math.PI,0);g.lineTo(ax+rr,cy);g.arc(ax,cy,rr,0,Math.PI,true);g.closePath();g.fillStyle='#e2d6ba';g.fill();
+  for(let k=1;k<9;k++){const a=Math.PI+k*Math.PI/9,c=Math.cos(a),s=Math.sin(a);stroke(g,[ax+c*(rr+.3),cy+s*(rr+.3),ax+c*(rr+2.7),cy+s*(rr+2.7)],'rgba(90,76,60,.5)',.5)}
+  g.beginPath();g.arc(ax,cy,rr+3,Math.PI,0);g.strokeStyle='#a89a80';g.lineWidth=.5;g.stroke();
+  arch(g,x,y,w,FT-y);g.fillStyle=lg(g,0,y,0,FT,['#141012','#211a1a','#342a26']);g.fill();
+  clipTo(g,()=>arch(g,x,y,w,FT-y),()=>{poly(g,[x,FT,x+w,FT,ax+7,FT-9,ax-7,FT-9],'#3e322a');
+    poly(g,[x+w-3,y+rr,x+w,y+rr,x+w,FT,x+w-3.6,FT-3],'#5e5042');ao(g,x,y,w,10,'t',.5)})}
+/* colonnadeColon: the colonnade along the street, between the open square and the corner of the stage building: four columns under a deep
+   beam and a tiled roof, and the shops behind them in its shade, shut in a hurry, all but one. Each column stands clear of the heads of the
+   two who wait in front of it, and nothing runs behind the columns from one to the next. */
+function colonnadeColon(g,r){const x0=40,x1=150,FT=FTColon,bt=36,bh=8,cols=[44,71,98,125],W='#b4a896';
+  /* the back wall and the shops, in the shade of the roof */
+  plaster(g,x0+1,bt,x1-x0-1,FT-bt,W,r,{patch:1,cracks:2,top:-.06,bot:-.22,brick:'#8a6a4a'});
+  for(const[bx,k]of[[57.5,0],[84.5,1],[111.5,0],[137.5,0]]){const w=13,x=bx-w/2,y=68;R(g,x-1.2,y-1.2,w+2.4,FT-y+1.2,tint(W,-.3));R(g,x-1.2,y-1.2,w+2.4,.5,tint(W,.2));
+    if(k){R(g,x,y,w,FT-y,'#2a2224');ao(g,x,y,w,6,'t',.5);for(const[jx,c,h]of[[x+3,'#8a5a3a',6],[x+7.4,'#9a6a40',5],[x+10.4,'#7a4a30',4.4]])jarColon(g,jx,FT,h,c)}
+    else boards(g,x,y,w,FT-y,w/4,'#6a5038',r)}
+  /* the shade under the roof, deepest at the top */
+  comp(g,'multiply',.5,()=>R(g,x0,bt,x1-x0,FT-bt,'#8a88b4'));ao(g,x0,bt+bh,x1-x0,16,'t',.5,'#2a2440');
+  /* the roof and the deep beam */
+  poly(g,[x0-2,bt,x1+2,bt,x1,bt-7,x0,bt-7],'#b46a4a');for(let i=x0;i<x1;i+=3)stroke(g,[i,bt,i+.4,bt-7],'rgba(80,36,24,.3)',.5);R(g,x0-2,bt-.6,x1-x0+4,.8,'#d88a5c');
+  R(g,x0-1.5,bt,x1-x0+1.5,bh,MBL);R(g,x0-1.5,bt,x1-x0+1.5,.6,tint(MBL,.3));R(g,x0-1.5,bt+3,x1-x0+1.5,.5,tint(MBL,-.2));R(g,x0-1.5,bt+bh-.6,x1-x0+1.5,.6,tint(MBL,-.34));
+  /* the step the columns stand on */
+  R(g,x0-1.5,FT,x1-x0+1.5,2.4,tint(MBL,-.04));R(g,x0-1.5,FT,x1-x0+1.5,.6,tint(MBL,.3));R(g,x0-1.5,FT+2.4,x1-x0+1.5,1.2,tint(MBL,-.4));
+  for(const x of cols)columnColon(g,x,FT,FT-bt-bh,6.4,MBL)}
+/* jarColon: a jar left in the open shop, its foot at x,y: a body that swells and narrows to a short neck, lit from the left; its mouth is
+   a flat line, since a round one this small would come out as a plus sign */
+function jarColon(g,x,y,h,c){const w=h*.36;poly(g,[x-w*.5,y,x+w*.5,y,x+w,y-h*.45,x+w*.7,y-h*.8,x+w*.32,y-h*.86,x+w*.32,y-h,x-w*.32,y-h,x-w*.32,y-h*.86,x-w*.7,y-h*.8,x-w,y-h*.45]);
+  g.fillStyle=lg(g,x-w,0,x+w,0,[tint(c,.2),c,tint(c,-.45)]);g.fill();R(g,x-w*.32,y-h,w*.64,.5,tint(c,-.55))}
+/* columnColon: one column of marble, its shaft narrowing a little towards the top, lit from the left, with a capital hardly wider than the
+   shaft and a base hardly wider than its foot */
+function columnColon(g,x,y,h,w,c){poly(g,[x-w/2,y,x+w/2,y,x+w*.42,y-h,x-w*.42,y-h]);g.fillStyle=lg(g,x-w/2,0,x+w/2,0,[tint(c,-.1),tint(c,.3),tint(c,.05),tint(c,-.4)]);g.fill();
+  for(let i=1;i<4;i++)R(g,x-w/2+w*i/4,y-h+2,.5,h-3,'rgba(60,50,70,.14)');
+  const ch=2.4;R(g,x-w*.42-.6,y-h,w*.84+1.2,ch,tint(c,-.02));R(g,x-w*.42-.6,y-h,w*.84+1.2,.5,tint(c,.3));R(g,x-w*.42-.6,y-h+ch-.5,w*.84+1.2,.5,tint(c,-.3));
+  R(g,x-w/2-.5,y-1.6,w+1,1.6,tint(c,-.12));R(g,x-w/2-.5,y-1.6,w+1,.5,tint(c,.2))}
+/* the people of the crowd: their clothes, hair and skin. lookColon picks one: a man in a tunic, some with a mantle over it, or a woman
+   with her mantle drawn over her head. */
+const GARColon=['#8a3a2a','#cdbb96','#5a5a72','#7a5a40','#d8ccb0','#4e5a6e','#a4503a','#6e5a3a','#b98258','#8a8a6a','#6a4a5a','#c4b08a'],
+  HAIRColon=['#2a201a','#3a2a1e','#1e1a18','#4a3626','#8a8478','#d0c6b0','#2a201a'],SKINColon=['#c08a62','#a8724e','#b47e58','#946a4a'];
+function lookColon(r){const any=()=>GARColon[(r()*GARColon.length)|0],fem=r()<.16,g=any();
+  return{g,hair:fem?tint(any(),-.08):HAIRColon[(r()*HAIRColon.length)|0],skin:SKINColon[(r()*SKINColon.length)|0],fem,mantle:!fem&&r()<.4?any():null,long:fem||r()<.25,belt:r()<.6}}
+/* backColon: one of the crowd seen from behind, its feet at x,y, h tall, about five heads; lit from the left. Shoulders, the arms down at
+   the sides, a belt at the waist, the hem; a mantle over the left shoulder, or a woman's mantle drawn over her head and shoulders.
+   d (0 to 1): how deep it stands in the shade of an arch. The legs stand side by side and never cross. */
+function backColon(g,x,y,h,o,d){const u=h/5,sh=c=>d?mix(c,'#1c1618',d):c,hem=y-(o.long?u*.4:u*1.25),sy=y-h+u*1.08,hw=u*.98,wy=y-u*2.45;
+  /* legs and feet */
+  if(hem<y-.4){R(g,x-u*.42,hem,u*.32,y-hem,sh(tint(o.skin,-.18)));R(g,x+u*.1,hem,u*.32,y-hem,sh(tint(o.skin,-.38)));R(g,x-u*.46,y-.6,u*.38,.6,sh('#3a2a1c'));R(g,x+u*.08,y-.6,u*.38,.6,sh('#2a1e16'))}
+  /* the body: shoulders, waist and skirt; the arms hang at the sides, a shade apart from it */
+  const body=[x-hw*.72,sy,x+hw*.72,sy,x+hw,sy+u*.32,x+hw*.86,wy,x+hw*.96,hem,x-hw*.96,hem,x-hw*.86,wy,x-hw,sy+u*.32];
+  poly(g,body);g.fillStyle=lg(g,x-hw,0,x+hw,0,[sh(tint(o.g,.24)),sh(tint(o.g,.04)),sh(tint(o.g,-.3))]);g.fill();
+  if(!o.mantle&&!o.fem){R(g,x-hw*.62,sy+u*.4,.5,wy-sy-u*.1,sh(tint(o.g,-.25)));R(g,x+hw*.58,sy+u*.4,.5,wy-sy-u*.1,sh(tint(o.g,-.48)));
+    R(g,x-hw*.86,wy+u*.3,u*.28,u*.32,sh(tint(o.skin,-.04)));R(g,x+hw*.6,wy+u*.42,u*.26,u*.3,sh(tint(o.skin,-.34)))}
+  if(o.belt&&!o.fem)R(g,x-hw*.86,wy,hw*1.72,.6,sh(tint(o.g,-.45)));
+  if(o.mantle){poly(g,[x-hw*.72,sy,x-hw*.05,sy,x+hw*.96,hem-u*.5,x+hw*.96,hem,x-hw*.5,hem,x-hw*.96,wy+u*.2,x-hw,sy+u*.32],sh(o.mantle));
+    poly(g,[x-hw*.72,sy,x-hw*.3,sy,x-hw*.95,sy+u*1.2,x-hw,sy+u*.32],sh(tint(o.mantle,.22)));stroke(g,[x-hw*.05,sy+.3,x+hw*.9,hem-u*.6],sh(tint(o.mantle,-.35)),.5)}
+  /* the head, and the neck under it; or the mantle over head and shoulders */
+  const hy=y-h+u*.55;
+  if(o.fem){const my=y-u*1.7;poly(g,[x-u*.5,y-h+u*.3,x+u*.5,y-h+u*.3,x+hw*.94,sy+u*.5,x+hw*1.02,my,x-hw*1.02,my+.6,x-hw*.94,sy+u*.5]);g.fillStyle=lg(g,x-hw,0,x+hw,0,[sh(tint(o.hair,.2)),sh(o.hair),sh(tint(o.hair,-.3))]);g.fill();
+    stroke(g,[x-hw*.2,sy+u*.6,x-hw*.3,my],sh(tint(o.hair,-.25)),.5);blobColon(g,x,hy,u*.5,u*.56,sh(o.hair));R(g,x-u*.46,hy-u*.25,u*.26,u*.7,sh(tint(o.hair,.22)));R(g,x+u*.26,hy-u*.1,u*.24,u*1.1,sh(tint(o.hair,-.3)))}
+  else{R(g,x-u*.16,sy-u*.24,u*.32,u*.34,sh(tint(o.skin,-.22)));blobColon(g,x,hy,u*.44,u*.52,sh(o.hair));R(g,x-u*.4,hy-u*.2,u*.18,u*.32,sh(tint(o.hair,.25)));R(g,x+u*.36,hy,u*.12,u*.22,sh(tint(o.skin,-.15)))}}
+/* crowdColon: the crowd at the foot of the stage building, pressing into the arches, as a list of [x, y, d, look] from the back to the
+   front: deep in each arch the backs of those already in, dark (d: how deep they stand in the shade of the arch); at its mouth those
+   pushing in; along the wall between, those making for the nearest arch; and a front row at the mouths. They stand about half the height
+   of whoever stands in the street, as far back as they are (SColon). */
+let CRColon=null;
+const SColon=y=>49*(y-HZColon)/64*.84;
+function crowdColon(){if(CRColon)return CRColon;const FT=FTColon,r=rng(1406),q=rng(1407),L=[],F=[],by=(a,b)=>a[1]-b[1];
+  for(const ax of ARCColon){for(let i=0;i<6;i++)L.push([ax-11+r()*22,FT-7+r()*4,.6+r()*.25]);for(let i=0;i<6;i++)L.push([ax-13+r()*26,FT-2+r()*3.4,.3+r()*.2])}
+  for(let k=0;k<ARCColon.length-1;k++){const a=ARCColon[k],b=ARCColon[k+1];for(let i=0;i<6;i++)L.push([a+15+r()*(b-a-30),FT+r()*3.4,0])}
+  for(let i=0;i<5;i++)L.push([158+r()*26,FT+r()*3.4,0]);for(let i=0;i<3;i++)L.push([464+r()*18,FT+r()*3.4,0]);
+  L.sort(by);for(const p of L)p.push(lookColon(r));
+  for(const ax of ARCColon)for(let i=0;i<3;i++)F.push([ax-13+q()*26,FT+3.6+q()*1.4,0]);F.sort(by);for(const p of F)p.push(lookColon(q));
+  return CRColon=L.concat(F).sort(by)}
+/* throngColon: those of the crowd who stand between y0 and y1; or, with shadows, only their shadows on the paving */
+function throngColon(g,y0,y1,shadows){for(const[x,y,d,o]of crowdColon())if(y>=y0&&y<y1){const h=SColon(y);
+  if(!shadows)backColon(g,x,y,h,o,d);else if(d<.35)oval(g,x+h*.06,y-.2,h*.2,.8,'rgba(50,40,64,'+(.24*(1-d*2.5))+')')}}
+/* runnerColon: one of those who hurry to the theater, seen from the side, its feet at x,y, h tall, facing dir. Its legs open and close from
+   one point at the hip, as a pair of compasses does, and never cross; the near arm is bent, its hand no farther forward than the front of
+   the body. ph: where it is in its stride (0 to 1, two steps); d: how far it has gone into the dark of an arch; amp: how far the legs
+   open, .5 for a run (the default), less for a walk. */
+function runnerColon(g,x,y,h,o,dir,ph,d,amp){amp=amp||.5;const u=h/5,sh=c=>d?mix(c,'#1c1618',d):c,s=Math.sin(ph*6.2832),open=Math.abs(s),lift=u*.44*amp*open,yy=y-lift,
+  hipY=yy-u*2.1,lean=u*.64*amp,L=u*2.1/Math.cos(amp*open),th=amp*s,hem=yy-(o.long?u*.7:u*1.3),sy=yy-h+u*1.08,X=v=>x+dir*v;
+  blobColon(g,x,y-.3,u*.9,.6,'rgba(40,30,40,'+(.25*(1-(d||0)))+')');
+  /* the legs: the far one darker; each foot points the way it runs */
+  for(const[a,c]of[[-th,tint(o.skin,-.42)],[th,tint(o.skin,-.16)]]){const fx=X(Math.sin(a)*L),fy=hipY+Math.cos(a)*L;
+    poly(g,[X(-u*.16),hipY,X(u*.16),hipY,fx+dir*u*.14,fy,fx-dir*u*.14,fy],sh(c));R(g,Math.min(fx-dir*u*.14,fx+dir*u*.5),fy-.6,u*.64,.6,sh('#2a1e16'))}
+  /* the body, leaning forward, and the skirt of the tunic over the hips */
+  const bw=u*.62,body=[X(-bw*.55+lean),sy,X(bw*.6+lean),sy,X(bw*.98+lean*.8),sy+u*.45,X(bw*.86+lean*.4),hipY-u*.5,X(bw*1.12),hem,X(-bw*1.22),hem+u*.1,X(-bw*.86),hipY-u*.5,X(-bw*.96+lean*.8),sy+u*.45];
+  poly(g,body,sh(o.g));poly(g,[X(-bw*.55+lean),sy,X(-bw*.1+lean),sy,X(-bw*.3+lean*.5),sy+u*1.4,X(-bw*.45),hem,X(-bw*1.22),hem+u*.1,X(-bw*.86),hipY-u*.5,X(-bw*.96+lean*.8),sy+u*.45],sh(tint(o.g,dir>0?-.2:.14)));
+  if(o.belt&&!o.fem&&!o.mantle)R(g,Math.min(X(-bw*.95+lean*.3),X(bw*1.02+lean*.3)),hipY-u*.62,bw*1.97,.6,sh(tint(o.g,-.45)));
+  if(o.mantle)poly(g,[X(-bw+lean),sy,X(bw*.2+lean),sy,X(bw*1.05),hem-u*.2,X(-bw*1.15),hem],sh(o.mantle));
+  /* the near arm, bent at the elbow, the hand at the front of the body */
+  const sw=s*u*.16,ex=X(lean*.4+sw),ey=hipY-u*.72,hx=X(bw*.72+lean*.55),hy=hipY-u*.95;
+  if(!o.fem){stroke(g,[X(lean*.8),sy+u*.3,ex,ey,hx,hy],sh(o.mantle?tint(o.mantle,-.15):tint(o.g,-.15)),u*.34);R(g,hx-u*.15,hy-u*.15,u*.3,u*.3,sh(o.skin))}
+  /* the head: hair behind, the face in front; a woman's mantle over it */
+  const hx2=X(lean*1.1+u*.05),hy2=yy-h+u*.55;
+  if(o.fem){blobColon(g,hx2,hy2,u*.5,u*.56,sh(o.hair));poly(g,[X(lean-u*.55),hy2,X(lean+u*.3),hy2+u*.3,X(-bw*1.05),hem+u*.3,X(-bw*1.2),hem-u*.5],sh(o.hair));R(g,Math.min(X(lean*1.1+u*.08),X(lean*1.1+u*.38)),hy2-u*.2,u*.3,u*.5,sh(o.skin))}
+  else{R(g,Math.min(X(lean*.9-u*.12),X(lean*.9+u*.12)),hy2+u*.3,u*.24,u*.4,sh(tint(o.skin,-.2)));blobColon(g,hx2,hy2,u*.44,u*.52,sh(o.skin));
+    poly(g,[X(lean*1.1-u*.46),hy2+u*.18,X(lean*1.1-u*.42),hy2-u*.3,X(lean*1.1-u*.05),hy2-u*.54,X(lean*1.1+u*.34),hy2-u*.34,X(lean*1.1+u*.1),hy2-u*.16,X(lean*1.1-u*.1),hy2+u*.24],sh(o.hair));
+    R(g,Math.min(X(lean*1.1-u*.06),X(lean*1.1+u*.1)),hy2-u*.02,u*.16,u*.2,sh(tint(o.skin,-.25)));R(g,Math.min(X(lean*1.1+u*.42),X(lean*1.1+u*.58)),hy2,u*.16,u*.14,sh(tint(o.skin,-.1)))}}
+/* the moving parts: people hurry to the arches from the square and from the far end of the street, running all at one pace; where they
+   reach the press at an arch they can run no more, and walk in behind those already pushing at it, into the dark of the arch, with the
+   front row of the crowd laid over them. Each comes back round after a while out of sight. Their step follows the ground they cover. */
+const RUNColon=[[-1,0,0],[-1,1,3.1],[-1,2,6.6],[-1,0,9.4],[-1,3,12.2],[1,4,1.6],[1,3,5.2],[1,4,8.8],[-1,1,15],[1,4,13.6]],
+  ROWSColon=[[95.5,98],[98,100.5],[100.5,200]];
+let FRColon=null,LKColon=null;
+function colonDraw(g,t){if(!FRColon){FRColon=ROWSColon.map(([a,b])=>bake(480,g2=>throngColon(g2,a,b),12));const r=rng(1408);LKColon=RUNColon.map(()=>lookColon(r))}
+  const RV=54,WV=20,FT=FTColon,S=SColon,CYC=16.5;
+  RUNColon.forEach(([side,k,off],i)=>{const ax=ARCColon[k],x0=side<0?-12:492,y0=FT+8+(i%3),bx=ax+side*48,h0=S(y0),
+      p=[[x0,y0],[bx,y0],[ax,FT-1],[ax+side*4,FT-9]],seg=[];for(let j=1;j<p.length;j++)seg.push(Math.hypot(p[j][0]-p[j-1][0],p[j][1]-p[j-1][1]));
+    /* running up to the press, then walking into the arch */
+    const run=seg[0]+seg[1],tt=(t/1000+off)%CYC,dist=tt<run/RV?tt*RV:run+(tt-run/RV)*WV;if(dist>run+seg[2])return;
+    const walking=dist>run,ph=walking?run/(h0*1.5)+(dist-run)/(h0*.9):dist/(h0*1.5);
+    let j=0,rem=dist;while(j<seg.length-1&&rem>seg[j]){rem-=seg[j];j++}
+    const f=rem/seg[j],x=p[j][0]+(p[j+1][0]-p[j][0])*f,y=p[j][1]+(p[j+1][1]-p[j][1])*f;
+    depth(y,()=>runnerColon(g,x,y,S(y),LKColon[i],-side,ph%1,j===2?f*.96:0,walking?.3:.5))});
+  ROWSColon.forEach(([a,b],i)=>depth(Math.min(b,FT+6)-.01,()=>g.drawImage(FRColon[i],0,0,480,144)))}
 function paintDoor(g){const r=rng(1407),W='#d2c09a';
   plaster(g,0,0,320,104,W,r,{patch:2,cracks:4,brick:'#a8845a',t:.5});wood(g,0,9,320,2.6,'#6a4e2c');ao(g,0,11.6,320,12,'t',.44,'#2a2030');
   /* the door to the court, at the right, with its bolt and its hatch */
@@ -221,7 +450,6 @@ function columnSeal(g){const[cx,cy,rs]=SEAL.col,K=.55,Z=.83,C='#d6cec0',D='#6661
 
 /* ---- the moving parts ---- */
 function marketDraw(g,t){}
-function colonDraw(g,t){}
 function doorDraw(g,t){/* the patch of light from the hatch, moving across the floor while they wait */
   const k=G.dl14||0;pool(g,250-k*120,124+k*4,22,6,'#fff0c8',.35,'screen')}
 /* the tablet in the close view, in its states. A: Aristokles's leaf, B: Philokrates's, each a frame of boxwood round dark wax with the
@@ -766,8 +994,8 @@ ROOMS.market14={space:.7,walk:[16,464,112,138],get mood(){return F.plea?'harbor'
   {name:'donkey',x:84,y:84,w:36,h:30,wx:126,wy:122,look:'donkey_heard_a_thousand_hammer_strokes'}]};
 ROOMS.colon14={space:.6,walk:[16,464,112,138],mood:'uproar',amb:{roar14:.55,crowd:.6,cry14:.7},hs:[
   {name:'square_before_the_theater',x:0,y:56,w:30,h:88,wx:24,wy:124,dir:-1,def:'walk',exit:()=>toLanes(),look:'square_before_the_theater_look'},
-  {name:'theater_arches',x:176,y:52,w:270,h:52,wx:300,wy:116,look:'theater_arches_look'},
-  {name:'crowd',x:176,y:80,w:270,h:30,wx:300,wy:116,look:'crowd_at_the_arches_look',talk:'nobody_stops_to_listen'}]};
+  {name:'theater_arches',x:184,y:41,w:282,h:52,wx:300,wy:116,look:'theater_arches_look'},
+  {name:'crowd',x:158,y:72,w:322,h:32,wx:300,wy:116,look:'crowd_at_the_arches_look',talk:'nobody_stops_to_listen'}]};
 ROOMS.seal14={space:.6,walk:NOW,mood:'uproar',amb:{roar14:.45,crowd:.4,cry14:.5},hs:[
   {name:'aristokles_leaf',x:60,y:62,w:84,h:59,wx:160,wy:236,vis:()=>!F.closed,look:'aristokles_leaf_look',use:layLeaf,useWith:withTablet},
   {name:'philokrates_leaf',x:176,y:62,w:84,h:59,wx:160,wy:236,vis:()=>!F.closed,def:'use',look:()=>say(RUN,F.turned?'philokrates_leaf_now_its_holes':'philokrates_leaf_holes_at_the_other_edge'),use:layLeaf,pickup:turnLeaf,open:turnLeaf,useWith:withTablet},
