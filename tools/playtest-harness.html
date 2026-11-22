@@ -365,6 +365,68 @@
       HEAD.forEach((o,i)=>{const x=(i%4)*cw,y=Math.floor(i/4)*chh,f=o.veil||o.fem,top=4+(o.h?19:23)+(o.h?13:16)+3+(o.h?22:f?24:26)+20;field(g,i+Math.floor(i/4),x,y,cw,chh);cut(g,spr(o,'close'+i,1),-13,-top-6,26,39,x,y-6,Z)});
       SHEETS['cast-closeup']=c.toDataURL()}
     window.SHEETS=SHEETS;halt('cast')}
+  /* Shipwreck survivor clothing & reusable Roman military cast (shared/cast.js): standing, facing left, mid-stride, and enlarged close-ups.
+     Both stops also verify that every look stays one connected piece across standing, talking, seated and all walking frames. */
+  if(stop==='shipwreck'||stop==='romans'){await need('cast');const SHEETS={},C=SHARED.cast,
+      sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,w,h);return[c,g]},
+      text=(g,t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},
+      cut=(g,sp,x0,y0,w,h,dx,dy,z)=>g.drawImage(sp,FIG.OX+x0,FIG.OY+y0,w,h,dx,dy,w*z,h*z),
+      field=(g,i,x,y,w,h)=>{g.fillStyle=i%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,w-2,h-2)},
+      spr=(o,key,dir,fr,talk,bow,ges)=>sprite([stop,key,dir,fr||0,talk||0,bow||0,ges||0].join('|'),q=>person(q,0,0,o,dir,fr||0,talk||0,bow||0,ges||0,0),dir);
+    const checkSet=(map,label)=>{const POSES=[[1,0,0],[2,0,0],[3,0,0],[4,0,0],[0,0,MV.dip],[0,0,MV.lift|MV.brow],[2,1,MV.fwd],[2,2,0],[0,3,0],[2,1,MV.lean|MV.fwd]],
+        bad=[],wbad=[],sbad=[];let pn=0,wn=0;
+      for(const[id,o]of Object.entries(map)){const r0=parts(spr(o,id,1));if(r0!==1)bad.push(id+' rest('+r0+')');
+        for(const[t,ge,m]of POSES){pn++;const c=sprite([stop,'p',id,t,ge,m].join('|'),q=>person(q,0,0,o,1,0,t,0,ge,0,m),1);if(parts(c)!==1)bad.push(id+' '+[t,ge,m])}
+        for(const bw of[0,1]){const sc=sprite([stop,'s',id,bw].join('|'),q=>person(q,0,0,o,1,-1,0,bw,0,bw,0),1);if(parts(sc)!==1)sbad.push(id+' seat'+bw)}
+        for(let a=0;a<3;a++)for(let k=0;k<16;k+=a?2:1){wn++;if(parts(spr(o,id,1,4+k+16*a))!==1)wbad.push(id+' f'+(4+k+16*a))}}
+      ok(!bad.length&&!sbad.length,`${label}: ${Object.keys(map).length} looks, ${pn} speaking/gesture + seated poses all one piece`+(bad.length?'. BAD: '+bad.slice(0,8).join(', '):'')+(sbad.length?'. SEAT: '+sbad.join(', '):''));
+      ok(!wbad.length,`${label}: ${wn} walking frames all one piece`+(wbad.length?'. BAD: '+wbad.slice(0,8).join(', '):''))};
+    if(stop==='shipwreck'){const S=C.SHIPWRECK;checkSet(S,'shipwreck');
+      const ROWS=[
+        ['Dry vs. Wet & Torn (Paul, Luke, Centurion Julius)',[['Paul (dry)',S.paul_dry],['Paul (wet & torn)',S.paul_wet],['Luke (dry)',S.luke_dry],['Luke (wet & torn)',S.luke_wet],['Julius (dry)',S.julius_dry],['Julius (wet & torn)',S.julius_wet]]],
+        ['Shipwreck Survivors on Malta (standing & mid-stride)',[['Aristarchus (wet)',S.aristarchus_wet],['Escort soldier (wet)',S.soldier_wet],['Alexandrian sailor',S.sailor_wet],['Fellow prisoner',S.prisoner_wet],['Paul walking (wet)',S.paul_wet,1,8],['Sailor walking (wet)',S.sailor_wet,1,12]]]
+      ];
+      const Z=3,cw=156,chh=404,cols=6,hdr=30,[c,g]=sheet(cols*cw,36+ROWS.length*(hdr+chh));
+      text(g,'Shipwreck Clothing Contact Sheet (Acts 27-28, three times enlarged)',12,24,18,'#f4f0e6');
+      ROWS.forEach(([title,items],r)=>{const ry=36+r*(hdr+chh);g.fillStyle='#4a5464';g.fillRect(0,ry,cols*cw,hdr);text(g,title,12,ry+20,14,'#f4f0e6');
+        items.forEach(([nm,o,dir,fr],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-24,34*Z,3);
+          cut(g,spr(o,'sw'+r+'_'+i,dir||1,fr||0),-24,-124,48,125,x+Math.floor((cw-48*Z)/2),y+chh-24-124*Z,Z);text(g,nm,x+6,y+chh-7,11)})});
+      SHEETS['cast-shipwreck']=c.toDataURL();
+      /* 6x close-ups of wet hair, torn tunic hems & barefoot/wet boots */
+      const DET=[['Paul wet & torn',S.paul_wet],['Luke wet & torn',S.luke_wet],['Julius wet cloak/armor',S.julius_wet],['Sailor ragged hem',S.sailor_wet]],
+        ZD=6,dw=228,dh=344,[cd,gd]=sheet(DET.length*dw,36+dh*2);
+      text(gd,'Shipwreck Details (6x): wet hair & upper cloth (top), torn hems & feet (bottom)',12,24,14,'#f4f0e6');
+      DET.forEach(([nm,o],i)=>{const x=i*dw;field(gd,i,x,36,dw,dh);cut(gd,spr(o,'swd1_'+i,1),-19,-96,38,52,x,36+4,ZD);text(gd,nm,x+6,36+dh-8,12);
+        field(gd,i+1,x,36+dh,dw,dh);cut(gd,spr(o,'swd2_'+i,1),-19,-48,38,50,x,36+dh+4,ZD);text(gd,'hem & feet',x+6,36+dh*2-8,12)});
+      SHEETS['cast-shipwreck-detail']=cd.toDataURL();
+      window.SHEETS=SHEETS;halt('shipwreck')}
+    if(stop==='romans'){const R=C.ROMAN;checkSet(R,'romans');
+      const ROWS=[
+        ['Roman Foot Soldiers (lorica segmentata, lorica hamata, galea, pilum, caligae)',[
+          ['Legionary (pilum)',R.legionary_pilum],['Legionary (guard)',R.legionary_guard],['Legionary (barehead)',R.legionary_bare],
+          ['Auxiliary (mail)',R.auxiliary_mail],['Escort (cloak)',R.escort_cloak],['Legionary walking',R.legionary_pilum,1,8]]],
+        ['Centurions & Army Officers (molded cuirass, transverse crest, officer cloak, left gladius)',[
+          ['Centurion (crested)',R.centurion_crested],['Centurion (facing L)',R.centurion_crested,-1,0],['Centurion Julius',R.centurion_julius],
+          ['Veteran Centurion',R.centurion_veteran],['Julius walking',R.centurion_julius,1,8],['Crested walking',R.centurion_crested,1,12]]],
+        ['Praetorian Guard in Rome (watch tunic + mil. belt/caligae, formal toga, full armored)',[
+          ['Watch (standard)',R.praetorian_watch],['Watch (young)',R.praetorian_watch_young],['Watch (older)',R.praetorian_watch_old],
+          ['Formal city (toga)',R.praetorian_toga],['Armored (plumed)',R.praetorian_armored],['Armored walking',R.praetorian_armored,1,8]]]
+      ];
+      const Z=3,cw=156,chh=408,cols=6,hdr=30,[c,g]=sheet(cols*cw,36+ROWS.length*(hdr+chh));
+      text(g,'Roman Military Contact Sheet — Foot Soldiers, Centurions, Praetorian Guard (3x)',12,24,16,'#f4f0e6');
+      ROWS.forEach(([title,items],r)=>{const ry=36+r*(hdr+chh);g.fillStyle='#4a5464';g.fillRect(0,ry,cols*cw,hdr);text(g,title,12,ry+20,13,'#f4f0e6');
+        items.forEach(([nm,o,dir,fr],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);
+          cut(g,spr(o,'rm'+r+'_'+i,dir||1,fr||0),-24,-126,48,127,x+Math.floor((cw-48*Z)/2),y+chh-22-126*Z,Z);text(g,nm,x+6,y+chh-6,11)})});
+      SHEETS['cast-romans']=c.toDataURL();
+      /* 6x close-ups of helmets/crests/plumes and armor/belts/gladii to verify zero cross shapes */
+      const DET=[['Galea + segmentata',R.legionary_guard],['Auxiliary mail',R.auxiliary_mail],['Centurion crest + cuirass',R.centurion_crested],
+        ['Julius bare + cloak',R.centurion_julius],['Praetorian watch',R.praetorian_watch],['Praetorian toga',R.praetorian_toga],['Praetorian plume',R.praetorian_armored]],
+        ZD=6,dw=228,dh=364,[cd,gd]=sheet(DET.length*dw,36+dh*2);
+      text(gd,'Roman Military Details (6x): helmets, crests & armor (top); belts, gladii & caligae (bottom)',12,24,15,'#f4f0e6');
+      DET.forEach(([nm,o],i)=>{const x=i*dw;field(gd,i,x,36,dw,dh);cut(gd,spr(o,'rmd1_'+i,1),-19,-104,38,56,x,36+2,ZD);text(gd,nm,x+6,36+dh-8,11);
+        field(gd,i+1,x,36+dh,dw,dh);cut(gd,spr(o,'rmd2_'+i,1),-19,-54,38,55,x,36+dh+4,ZD);text(gd,'waist, gladius & boots',x+6,36+dh*2-8,11)});
+      SHEETS['cast-romans-detail']=cd.toDataURL();
+      window.SHEETS=SHEETS;halt('romans')}}
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
   /* the title card at full length, the prologue stops, and a room change caught half-way through its cross-fade */
   if(stop==='card'){await loadLevel(1);AU.key=CHAP[1].music;G.speedAll=0;clearInterval(sk);showCard(1);await wait(300);halt('card')}

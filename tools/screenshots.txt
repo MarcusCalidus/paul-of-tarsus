@@ -144,3 +144,5 @@ xfade xfade
 cast cast cast-main
 cast-closeup cast cast-closeup
 pwa-icon pwa pwa-icon
+romans romans cast-romans
+shipwreck shipwreck cast-shipwreck
