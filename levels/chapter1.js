@@ -3,6 +3,7 @@
    its music and ambience, its artwork (painted in code), its cast, items, rooms, hotspots, dialog, cutscenes and hints. */
 LEVEL(1,()=>{
 "use strict";
+const{plank:plank1,board:board1,crack:crack1,skipCracks:skipCracks1,shadow:shadow1,earth:earth1,joistAO:joistAO1}=SHARED.materials;
 
 /* ============ MUSIC AND AMBIENCE (plain data, played by the engine's sequencer) ============ */
 /* Damascus by night, in D Hijaz: an oud over a drone, a frame drum, and a ney that enters in the second half.
@@ -64,29 +65,7 @@ function basketArt(g,x,y,strong,L){L=L||(c=>c);const m=x+14,hw=t=>9.5+4.5*Math.s
 function coilArt(g,x,y,n,L,c){c=c||'#b89a5a';L=L||(k=>k);R(g,x-.5,y-5,1.5,5,L(tint(c,-.2)));
   for(let i=0;i<n;i++){const yy=y+i*2,cc=L(i%2?tint(c,-.22):c);g.strokeStyle=L(tint(c,-.5));g.lineWidth=2.6;g.beginPath();g.ellipse(x+.5,yy+1.2,4.6,1.9,0,0,6.2832);g.stroke();
     g.strokeStyle=cc;g.lineWidth=1.6;g.stroke();for(let a=0;a<8;a++){const q=a/8*6.2832;R(g,x+.5+Math.cos(q)*4.6-.25,yy+1.2+Math.sin(q)*1.9-.25,.5,.5,L(tint(c,.3)))}}}
-/* ---------- materials and light shared by the rooms of this chapter (the standard of Chapter Fifteen's room of Gaius) ---------- */
-/* plank1: a board with a quiet grain: a soft fall of tone across it, a light overlay, and a few long streaks, lighter and darker, none of
-   them strong. vert: the grain runs up and down. board1 adds the lit and the shaded edge that a board or a beam shows. */
-function plank1(g,x,y,w,h,c,r,vert){inRect(g,x,y,w,h,()=>{g.fillStyle=vert?lg(g,x,0,x+w,0,[tint(c,.08),c,tint(c,-.12)]):lg(g,0,y,0,y+h,[tint(c,.08),c,tint(c,-.12)]);g.fillRect(x,y,w,h);
-  tex(g,vert?'vert':'wood',.2,x,y,w,h,'overlay',.5);
-  for(let i=0;i<(vert?w:h)*.9;i++){const a=r(),L=vert?h:w,l=L*(.2+r()*.5),o=r()*(L-l),k=r()<.5?tint(c,-.16):tint(c,.1);
-    if(vert)R(g,x+a*w,y+o,.5,l,k);else R(g,x+o,y+a*h,l,.5,k)}})}
-function board1(g,x,y,w,h,c,r,vert){plank1(g,x,y,w,h,c,r,vert);
-  if(vert){R(g,x,y,.5,h,tint(c,.2));R(g,x+w-.5,y,.5,h,tint(c,-.3))}else{R(g,x,y,w,.5,tint(c,.2));R(g,x,y+h-.5,w,.5,tint(c,-.3))}}
-/* crack1: a hairline crack cut into plaster or stone, in two tones: the dark of the cut and a faint lit lip beside it. The cracks are set
-   by hand, high on a wall, where they run to no head. */
-function crack1(g,x,y,n,r,a){const p=[x,y];for(let s=0;s<n;s++){x+=(r()-.5)*5;y+=1.5+r()*4;p.push(x,y)}a=a||1;
-  stroke(g,p,rgba('#000000',.3*a),.5);stroke(g,p.map((v,i)=>i%2?v:v+.5),rgba('#ffffff',.12*a),.5)}
-/* skipCracks1: draw from r what plaster() would have drawn for n random cracks, so that a wall whose cracks are now set by hand keeps
-   every other thing of its room where it was */
-function skipCracks1(r,n){for(let k=0;k<n;k++){r();r();for(let s=0;s<5+r()*4;s++){r();r()}}}
-/* shadow1: the soft shadow of a thing that stands on the floor, laid in three passes of alpha: a wide faint one, the body, a darker core */
-function shadow1(g,x,y,rx,ry,a,c){c=c||'#181220';oval(g,x,y,rx*1.3,ry*1.35,rgba(c,a*.3));oval(g,x,y,rx,ry,rgba(c,a*.4));oval(g,x,y,rx*.62,Math.max(1,ry*.6),rgba(c,a*.45))}
-/* earth1: a color drawn a little toward its own grey, so that dyes and painted blues sit among the mineral and earth colors of the rest */
-function earth1(c,k){const[r,gg,b]=hex(c),m=r*.3+gg*.59+b*.11;return mix(c,toHex(m,m,m),k==null?.18:k)}
-/* the soft shade of the boards beside each joist of a ceiling seen from below, in two steps: a joist from a at the wall plate (y = U)
-   to x0 at the top of the picture */
-function joistAO1(g,a,x0,w,U,c){for(const[d,al]of[[3.4,.14],[1.6,.2]]){poly(g,[a-d,U,a,U,x0,0,x0-d*1.17,0],rgba(c,al));poly(g,[a+w,U,a+w+d,U,x0+w*1.17+d*1.17,0,x0+w*1.17,0],rgba(c,al*.6))}}
+/* ---------- materials and light (shared/materials.js, the standard of Chapter Fifteen's room of Gaius) ---------- */
 /* floorGrain1: the grain of the floorboards in the upper room, in the perspective of its pave (vx 160, vy 70, two rows, step 15): each
    streak runs along its board toward the eye's point and stops inside its own row, so that no line crosses a joint */
 function floorGrain1(g,r,c){const vx=160,vy=70,y0=105,y1=144,st=15,ys=[y0,y0+(y1-y0)*Math.pow(.5,1.2),y1],X=(i,y)=>vx+i*st*(y-vy)/(y1-vy);
