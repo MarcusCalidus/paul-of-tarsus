@@ -124,6 +124,7 @@ const haze=(g,w,y0,v)=>{comp(g,'soft-light',v==='w'?.22:.4,()=>{g.fillStyle=lg(g
    Aquila and Priscilla stood, nobody knows (Awake!, as above): the game puts it on this street. The synagogue and the house of Titius
    Justus share a wall (Acts 18:7). A marble lintel naming a synagogue of the Hebrews was found near this road; most date it later than
    Paul's day (study note on Acts 18:1), and the chapter's page says so. In winter it rains; in the spring of the games there are booths. */
+const PUD_ST=SHARED.weather.puddles(640,111,139,16,1202),PUD_CT=SHARED.weather.puddles(320,111,138,8,1206),PUD_CN=SHARED.weather.puddles(320,112,139,6,1214);
 const SEAS=()=>F.cen?'f':F.summer?'u':F.spring?'s':F.shook?'w':'a';
 ART.street12={w:640,q:12,variant:SEAS,
  paint(g,v){const r=rng(1201),W1='#dfd0aa',W2='#d6c59c',ST='#d9cfb4',out=v!=='w';
@@ -164,9 +165,8 @@ ART.street12={w:640,q:12,variant:SEAS,
   if(v==='s')for(const[x,c1,c2]of[[232,'#3f6f8a','#e6dcc0'],[538,'#a8642e','#e6dcc0']]){R(g,x+2,104,40,1.6,'rgba(40,30,60,.3)');wood(g,x,84,1.6,20,'#6a4e2c',1);wood(g,x+40,84,1.6,20,'#6a4e2c',1);
     awning(g,x-2,78,45.6,7,c1,c2,5.7);wood(g,x+2,96,37,2,'#8a683a');for(let i=0;i<4;i++)vessel(g,x+7+i*9,96,2.2,4+i%2,i%2?'#9a5a36':'#b8863c','jug',{noShadow:1})}
   pave(g,0,103,640,144,'#cdc09e',r,{vx:320,vy:58,rows:4,step:44,v:.07});ao(g,0,103,640,6,'t',.35,'#3a3050');
-  if(v==='w'){/* wet stone: the sky lies in it, and water stands in the hollows */
-    comp(g,'screen',.3,()=>{g.fillStyle=lg(g,0,104,0,144,['rgba(200,210,222,.9)','rgba(200,210,222,.2)']);g.fillRect(0,104,640,40)});
-    for(let i=0;i<16;i++){const x=20+r()*600,y=112+r()*28;oval(g,x,y,7+r()*9,1.2+r()*1.2,'rgba(86,98,116,.5)');oval(g,x-1,y-.3,4+r()*5,.6,'rgba(214,222,232,.5)')}}
+  if(v==='w'){/* wet stone: sky sheen, capillary damp along wall bases, and layered puddles */
+    SHARED.weather.wetGround(g,0,104,640,40,{puddles:PUD_ST,dampX:36,dampW:536,dampH:7})}
   else shade(g,[36,104,640,104,640,v==='u'?113:110,36,v==='u'?116:112],SH,v==='u'?.44:.32);
   haze(g,640,103,v);if(v!=='w')pool(g,300,0,340,150,WARM[v],.1,'screen')},
  light:()=>SEAS()==='w'?{amb:'#c9cdd8'}:null,
@@ -174,9 +174,9 @@ ART.street12={w:640,q:12,variant:SEAS,
  draw(g,t){for(let i=0;i<3;i++){const k=((t/700+i*.33)%1);R(g,341.7,84+k*10,1.3,1.4,`rgba(230,246,250,${.7*(1-k)})`)}
   const v=SEAS();if(v==='s')cast(g,[['hx12c',70,116,1],['hx12d',86,119,-1],['hx12e',586,118,-1],['hx12f',352,114,1]]);
   else if(v==='u')cast(g,[['hx12c',78,116,1],['hx12f',600,117,-1]]);else if(v==='a')cast(g,[['hx12d',66,117,1]])},
- front(g,t){if(SEAS()==='w')rain(g,t,640)}};
-/* rain: short slanting strokes that fall and are gone. None of them is long enough to cross anything. */
-function rain(g,t,w,y1){const r=rng(1277),n=Math.round(w*.34);for(let i=0;i<n;i++){const x=r()*w,ph=r(),sp=.9+r()*.5,k=((t/520*sp+ph)%1),y=-6+k*((y1||144)+6);R(g,x-k*5,y,.5,3.4,'rgba(214,224,236,.42)')}}
+ front(g,t){if(SEAS()==='w')SHARED.weather.rain(g,t,640,{puddles:PUD_ST,splashY:[108,140]})}};
+/* rain: delegates to shared/weather.js (short wind-slanted strokes, puddle ripples, damp surfaces) */
+const rain=(g,t,w,y1,o)=>SHARED.weather.rain(g,t,w,Object.assign({y1:y1||144},o||{}));
 
 /* ---------- The workshop of Aquila and Priscilla ---------- */
 /* A room open to the street: a long bench, rolls of goat-hair cloth from Cilicia and of linen, coils of cord on their pegs, steps to
@@ -235,7 +235,7 @@ ART.court12={w:320,q:12,variant:CV,
   if(v==='u'||v==='f')for(const x of[98,140])stool(g,x+4,99.4,34,'#7a5a34');
   for(const[x,c]of[[46,'#9a5a36'],[124,'#8a4a2a']])vessel(g,x,105,3.6,11,c,'jar');foliage(g,272,62,5,13,'#5f7a44',r,50);stroke(g,[274,90,273,74,271,62],'#5a4a36',1);
   pave(g,0,103,320,144,'#cbbf9e',r,{vx:160,vy:60,rows:4,step:42,v:.07});ao(g,0,103,320,6,'t',.35,'#3a3050');
-  if(wet){comp(g,'screen',.3,()=>{g.fillStyle=lg(g,0,104,0,144,['rgba(200,210,222,.9)','rgba(200,210,222,.2)']);g.fillRect(0,104,320,40)});for(let i=0;i<8;i++){const x=20+r()*280,y=112+r()*28;oval(g,x,y,7+r()*8,1.2+r(),'rgba(86,98,116,.5)')}}
+  if(wet)SHARED.weather.wetGround(g,0,104,320,40,{puddles:PUD_CT,dampX:36,dampW:248,dampH:6});
   else shade(g,[0,132,36,104,96,104,60,144,0,144],SH,.42);
   haze(g,320,103,v);if(!wet)pool(g,200,0,220,150,WARM[v],.1,'screen')},
  light:()=>CV()==='w'?{amb:'#c9cdd8'}:null,
@@ -248,7 +248,7 @@ ART.court12={w:320,q:12,variant:CV,
    /* its shade on the floor, as one field under the cloth */
    if(awnDone()){const b0=B.indexOf(1),b1=B.lastIndexOf(1);if(b0>=0)comp(g,'multiply',.34,()=>poly(g,[40+b0*62,105,102+b1*62,105,112+b1*62,138,34+b0*62,138],SH))}});
   if(CV()==='u'&&F.r3)cast(g,[['hx12a',104,111,1],['hx12b',124,112,1],['hx12g',150,111,-1],['hx12h',170,112,1]])},
- front(g,t){if(CV()==='w'&&!(G.room==='court12'&&F.r2))rain(g,t,320)}};
+ front(g,t){if(CV()==='w'&&!(G.room==='court12'&&F.r2))rain(g,t,320,144,{puddles:PUD_CT,splashY:[108,140]})}};
 
 /* ---------- The awning, seen from the side ---------- */
 /* A close view, the game's fourth: the court cut through from the wall of the synagogue (left) to the front of the house (right). A
@@ -415,7 +415,7 @@ ART.cen12={w:320,q:12,variant:()=>F.cen?'f':F.summer?'u':'w',
     hullStrakes(g,H,152,264,70,102,x=>81-5*Math.pow((x-206)/58,2)-(x>236?(x-236)*.22:0),{seed:1214,n:4,wale:'#8c422c'});
     stroke(g,[160,84,176,80,236,80,254,76,264,70],'#c29862',.8);
     for(const x of[170,200,232])poly(g,[x,102,x+3,102,x+8,108,x+5,108],'#5a4226');
-    comp(g,'screen',.3,()=>{g.fillStyle=lg(g,0,104,0,144,['rgba(200,210,222,.9)','rgba(200,210,222,.2)']);g.fillRect(0,104,320,40)})}
+    SHARED.weather.wetGround(g,0,104,320,40,{puddles:PUD_CN,dampX:0,dampW:136,dampH:6})}
   else{/* a ship for Asia at the quay: her stern, and the plank to her; her mast stands beyond the picture's edge */
     const H=[236,84,244,74,258,70,320,68,320,100,262,100,244,96];
     hullStrakes(g,H,236,320,68,100,x=>70+Math.max(0,(262-x)*.42)-(x>280?(x-280)*.05:0),{seed:1215,n:5,wale:'#a2482c'});
@@ -423,7 +423,7 @@ ART.cen12={w:320,q:12,variant:()=>F.cen?'f':F.summer?'u':'w',
     poly(g,[250,100,262,100,246,108,232,108],'#9a7448');stroke(g,[250,100,232,108],'#5a4226',.6);
     shade(g,[136,104,320,104,320,112,136,110],SH,.32)}
   haze(g,320,103,v);if(!wet)pool(g,180,0,240,150,WARM[v],.1,'screen')},
- light:()=>F.summer||F.cen?null:{amb:'#c9cdd8'},draw(){},front(g,t){if(!F.summer&&!F.cen)rain(g,t,320)}};
+ light:()=>F.summer||F.cen?null:{amb:'#c9cdd8'},draw(){},front(g,t){if(!F.summer&&!F.cen)rain(g,t,320,144,{puddles:PUD_CN,splashY:[108,140]})}};
 
 /* ---------- The marketplace, and the judgment seat ---------- */
 /* The marketplace, lined with colonnades and rows of shops (Insight, "Corinth"), seen toward the south, with the rock over it. Near its
