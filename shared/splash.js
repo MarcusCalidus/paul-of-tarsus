@@ -401,14 +401,36 @@ function cloth(g){const r=rng(5150),A=[336,136],SEAM=[258,192],
   sline(g,thr.map((v,i)=>i%2?v+.75:v+.4),'rgba(14,8,4,.48)',.75);
   sline(g,thr,'#e2d2a8',.68)}
 
+/* ---------- grounded + directional shadow cast by the clay oil lamp onto the bench ---------- */
+function lampShadow(g){
+  /* Because the flame sits on the right nozzle (LAMP), the opaque clay bowl, handle and overhanging spout
+     block raking light downward and leftward across the bench: a soft fading penumbra, a rich directional
+     umbra sweeping past the handle toward the inkpot, and a velvety contact shadow under foot and spout. */
+  comp(g,'multiply',1,()=>{
+    /* 1. Wide soft penumbra fanning leftward from the clay bowl away from the elevated flame */
+    const pen=[96,135,108,127.8,132,126.8,156,129.6,175,134.2,179.5,137.2,174,140.4,158,146.4,136,149.2,111,148.2,97,142.8];
+    g.fillStyle=lg(g,96,138,164,138,['rgba(16,7,2,0)','rgba(16,7,2,.34)','rgba(16,7,2,.44)','rgba(16,7,2,.24)']);
+    blob(g,pen);g.fill();
+    /* 2. Mid directional umbra behind/left of the bowl, handle and under the flared spout */
+    const umb=[106,135.2,117,129.6,135,129,158,132,176,135,178,137.2,172,139.6,157.5,144.6,140,147,121,145.6,109,140.8];
+    g.fillStyle=lg(g,106,138,176,138,['rgba(14,6,2,.08)','rgba(12,5,2,.52)','rgba(12,5,2,.48)','rgba(14,6,2,.28)']);
+    blob(g,umb);g.fill();
+    /* 3. Feathered contact shadow under the lamp's base ring, lug handle and underside of the nozzle (no hard oval rim) */
+    pool(g,143.5,143.8,22,5.8,'#0a0401',.76,'multiply');
+    pool(g,143.5,143.8,14,3.4,'#080301',.62,'multiply');
+    pool(g,123.4,136.4,7.4,3.6,'#0c0502',.62,'multiply');
+    pool(g,165,139,13.5,3.2,'#0c0502',.54,'multiply')})}
+
 /* ---------- assemble all still-life objects in depth order ---------- */
 function things(g){
   /* pyramid of three stacked papyrus scrolls on the left: two touching on the bench, one nestled in the saddle above */
   cast(g,34,168,4.8,l=>{roll(l,-8,158,72,7.7,-.022,11,'#d0b47c');roll(l,-10,174.5,76,8.3,.018,23,'#c6a66c')});
   cast(g,36,162,3.4,l=>roll(l,-6,163.5,64,7.4,.01,37,'#e4cc98'));
+  /* oil lamp's cast shadow on the bench (drawn before the inkpot so the pot stands cleanly above the bench shadow) */
+  lampShadow(g);
   /* terracotta inkpot, hero oil lamp, reed pen (kalamos), and open scroll */
   cast(g,93,144,5.4,inkpot,.52);
-  cast(g,148,136,3.4,oilLamp,.54);
+  oilLamp(g);
   cast(g,133,150,2.2,reedPen,.46);
   cast(g,136,174,2.8,openScroll,.48);
   /* ball of linen twine and dark goat-hair cloth on the right */
@@ -424,8 +446,8 @@ function light(g){const[lx,ly]=LAMP,[c,l]=mk(VW*HR,VT*HR);l.scale(HR,HR);
   l.fillStyle='#261c30';l.fillRect(0,0,VW,VT);
   /* layered warm amber-terracotta candlelight pools centered on the wick (keeps R > G so stone glows warm gold, never olive) */
   pool(l,lx,ly-8,228,150,'#ff9e58',.96);
-  pool(l,lx-4,ly+2,130,84,'#ffbe7a',.68);
-  pool(l,lx,ly+4,52,32,'#ffd89c',.48);
+  pool(l,lx-2,ly+2,132,84,'#ffc27e',.74);
+  pool(l,lx+4,ly+4,58,34,'#ffe0a2',.6);
   pool(l,lx-14,ly+24,96,48,'#ffb26e',.26);
   /* deep nocturnal falloff behind the title logo and subtle cozy vignette at the sides and foot */
   comp(l,'multiply',1,()=>{
