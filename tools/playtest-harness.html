@@ -713,16 +713,16 @@
   /* walking: everybody covers ground at one speed, each with a step of his own (gaitOf); the frame follows the ground (update, walkFr); a walk begins
      and ends on a short step, and is short-stepped up and down the room; a step is heard as a foot lands */
   {const man=()=>paulLook(1),G1=o=>gaitOf(Object.assign(man(),o)),m=G1({}),old=G1({hair:'#969088',beard:'#a49e96'}),boy=G1({h:1}),robe=G1({long:1}),spear=G1({spear:1}),youth=gaitOf({skin:'#c08a5c',tunic:'#c4b08a',hair:'#3a2616',slim:1}),
-      M=man(),full=strideOf(M),slip=1-m.S/full;
-    ok(WALK_V===66&&m.S===24&&Math.abs(full-66*m.T)<.01&&slip<.22&&strideOf(M,52)===24,`people walk at ${WALK_V} room pixels a second; a man's standing foot slips ${Math.round(slip*100)} % of a step at that speed, and not at all at 52`);
-    ok(old.S<m.S&&old.T<m.T&&boy.S<m.S&&boy.T<m.T&&youth.S>m.S&&youth.T>m.T&&robe.S===11&&spear.S<=14,'each has a step of his own: shorter and quicker for an old man and a boy, longer for a youth, short in a long robe and beside a spear');
+      M=man(),full=strideOf(M),planted=m.S/(2*m.stance),slip=1-planted/full;
+    ok(WALK_V===48&&m.S===30&&Math.abs(full-48*m.T)<.01&&slip<.05&&Math.abs(strideOf(M,44)-planted)<.01,`people walk at ${WALK_V} room pixels a second; a man's standing foot slips ${Math.round(slip*100)} % of a step at that speed, and not at all at 44`);
+    ok(old.S<m.S&&old.T<m.T&&boy.S<m.S&&boy.T<m.T&&youth.S>m.S&&youth.T>m.T&&robe.S===22&&spear.S<=16,'each has a step of his own: shorter and quicker for an old man and a boy, longer for a youth, short in a long robe and beside a spear');
     {let okFr=walkFr(M,0)===4&&walkFr(M,full/2)===12&&walkFr(M,full)===4,was=4;for(let d=0;d<200;d+=.5){const f=walkFr(M,d);if(f<4||f>19||((f-was+16)&15)>1)okFr=false;was=f}
       ok(okFr,'a scene that moves its own figures gets their frames from the ground covered: sixteen to a stride, in order')}
     const sa=G.speedAll,st0=SFX.step,x0=P.x,y0=P.y,frs=[],up=[];let steps=0,on=1;SFX.step=()=>{steps++};G.speedAll=0;(function f(){if(!on)return;(on===1?frs:up).push(P.fr);requestAnimationFrame(f)})();
     const t0=performance.now();await walk(P,x0+60,y0);const ms=performance.now()-t0,rest=[P.fr,P.gait];on=2;await walk(P,x0+60,y0+12);on=0;place(P,P.room,x0,y0,P.dir);G.speedAll=sa;SFX.step=st0;
     const w=frs.filter(f=>f>3),amp=f=>f-4>>4,order=w.every((f,i)=>!i||((f-w[i-1]+16)&15)<=3);
-    ok(ms>780&&ms<2600&&w.length>12&&order&&amp(w[0])===2&&amp(w[w.length-1])===2&&w.some(f=>amp(f)===0)&&rest[0]===0&&rest[1]===null,`sixty room pixels are walked in ${Math.round(ms)} ms: the frames follow in order, the walk begins and ends on a half step, and Paul stands when he is there`);
-    ok(steps>=3&&steps<=6,'a step is heard as each foot lands: '+steps+' over sixty room pixels and twelve up the room');
+    ok(ms>1000&&ms<3200&&w.length>12&&order&&amp(w[0])===2&&amp(w[w.length-1])===2&&w.some(f=>amp(f)===0)&&rest[0]===0&&rest[1]===null,`sixty room pixels are walked in ${Math.round(ms)} ms: the frames follow in order, the walk begins and ends on a half step, and Paul stands when he is there`);
+    ok(steps>=4&&steps<=7,'a step is heard as each foot lands: '+steps+' over sixty room pixels and twelve up the room');
     ok(up.filter(f=>f>3).length>3&&up.filter(f=>f>3).every(f=>amp(f)===2),'up and down the room he takes half steps')}
   /* the chapters stand in a box of their own. On a first visit it holds them all. A returning player's title has two more lines above it,
      Continue and the farthest point, and then the box scrolls: its far edge fades while more lies beyond it, and a click between entries
