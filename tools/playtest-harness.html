@@ -2703,7 +2703,7 @@
      safe-point code of its point (CODE). pscaleb15: the second bag, with the weights that make the beam stand level. psandb15: the plan
      laid. pupperx15: midnight, the window empty; puppera15: after it. pstreetn15: the street by night, where nobody is an actor. */
   const C15=/^(open15|gaius15|store15|scale15|cen15|sand15|plan15|map15|quay15|upper15|lamps15|midnight15|below15|after15|dawn15|deutsch15|final15|all15)$/.test(stop);
-  if(/^p[a-z]+15$/.test(stop)){await loadLevel(15);ov.className='';ov.onclick=null;const C=CHAP[15],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+  if(!C15&&/^p[a-z]+15$/.test(stop)){await loadLevel(15);ov.className='';ov.onclick=null;const C=CHAP[15],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
       S={pgaius15:[[],'gaius15'],pscale15:[upto('ph3'),'scale15'],pscaleb15:[upto('s1'),'scale15'],pcen15:[upto('s3'),'cen15'],psand15:[upto('warned'),'sand15'],psandb15:[upto('awl'),'sand15'],
         pquay15:[upto('troas'),'quay15'],pupper15:[upto('oil'),'upper15'],pupperx15:[upto('t4'),'upper15'],puppera15:[upto('t4'),'upper15'],pstreetn15:[upto('t4'),'street15'],pstreetd15:[upto('mid'),'street15']}[stop];
     if(!S)throw new Error('no such stop '+stop);setChapter(15);for(const k of S[0])F[k]=1;
