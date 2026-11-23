@@ -187,9 +187,28 @@ ART.harbor={w:480,fp:1.3,
   const cast=(x,w,len)=>shade(g,[x,104,x+w,104,x+w+(x+w-150)*len/46,104+len,x+(x-150)*len/46,104+len],SH,.55);
   for(const x of[236,300,420]){cast(x-1,8,16);oval(g,x+3,104,4.6,1.2,'rgba(40,30,60,.5)');g.fillStyle=lg(g,x-1,0,x+7,0,['#8a7a66','#5a4c40','#3a302c']);g.fillRect(x,96,6,8);R(g,x-1,94.6,8,2,'#6a5a4a');R(g,x-1,94.6,8,.6,'#e8c898')}
   cast(115,3,26);cast(165,3,26);cast(430,46,12);shade(g,[0,104,112,104,96,112,0,112],SH,.5);
-  /* heap of old sailcloth */
-  oval(g,46,107,30,3,'rgba(40,30,60,.4)');for(const[hx,hy,hw,hh,c]of[[44,104,25,8,'#c4b694'],[34,99,15,6.5,'#d8caa8'],[55,100,13,5.5,'#b4a684'],[46,95,10,4.4,'#e2d6b6']]){g.fillStyle=lg(g,hx-hw,0,hx+hw,0,[tint(c,.2),c,tint(c,-.32)]);g.beginPath();g.ellipse(hx,hy,hw,hh,0,Math.PI,0);g.fill()}
-  for(const p of[[24,103,40,96,60,100],[30,99,44,95,52,97],[40,104,52,99,66,103],[22,104,30,100]])stroke(g,p,'#8a7c5c',.5);
+  /* heap of old sailcloth: stiff worn canvas heaped by the warehouse, resting flat on the quay */
+  {const LIT='#f6f0de',C='#e0d9c2',MID='#b4ac96',SHD='#80796a',DEEP='#565048',SEAM='rgba(100,88,66,.6)',
+       OUT=[25.4,106.7,27.9,105.1,29.9,103.4,32,102.2,33.9,101.7,35.7,99.9,37.4,98.2,39,96.9,40.5,96.2,42,96.1,43.5,96.8,45,98.2,47.3,99.4,50.1,99.9,52.6,99.4,54.5,98.4,56.1,97.8,57.8,98.1,59.1,99.1,60.4,100.8,62.1,102.7,63.9,104.7,65.1,106.4,62.1,107.4,58.8,106.6,55.8,107.6,52.3,106.6,49.3,107.7,46.3,106.7,43.2,107.9,39.7,106.7,36.5,107.7,33.2,106.7,29.9,107.7,27.1,107],
+       F=[[19.9,107.9,26.6,102.1,33.2,97.8],[32.4,102.2,30.9,105,29.9,107.7],[34,101.7,33.4,104.7,33.2,106.7],[40.3,96.5,38.5,101.1,37,104.5,36.5,107.7],[40.8,96.6,40,101.7,39.5,104.7,39.7,106.7],
+         [41.3,96.3,42.3,101.8,42.7,105,43.2,107.9],[42,96.8,44.7,101.8,45.8,104.7,46.3,106.7],[42.7,96.8,47,101.7,48.6,104.7,49.3,107.7],[50.3,94.9,50.3,99.9,51.8,103.5,52.3,106.6],
+         [55.6,94.9,55.5,98.2,55.1,102.8,55.8,107.6],[56.5,98.1,57.9,102.5,58.8,106.6],[57.4,98.2,60.6,102.7,62.1,107.4],[59.8,96.3,64.8,102.1,68.1,107.9]],
+       rev=p=>{const o=[];for(let i=p.length-2;i>=0;i-=2)o.push(p[i],p[i+1]);return o},mid=p=>p[(p.length>>2)*2],
+       blob=(p,c)=>{const n=p.length/2,m=i=>{const a=(i%n)*2,b=((i+1)%n)*2;return[(p[a]+p[b])/2,(p[a+1]+p[b+1])/2]};
+         g.beginPath();g.moveTo(...m(n-1));for(let i=0;i<n;i++)g.quadraticCurveTo(p[i*2],p[i*2+1],...m(i));g.closePath();if(c){g.fillStyle=c;g.fill()}};
+   /* the corner that lies out flat, with its seam */
+   poly(g,[22.8,107.9,27.9,105.4,32.1,106.9,27.8,108.7]);g.fillStyle=lg(g,23,105,31,108,[LIT,C]);g.fill();stroke(g,[24.7,107.6,29.4,106.8],SEAM,.4);
+   blob(OUT,MID);
+   clipTo(g,()=>blob(OUT),()=>{
+     for(let i=0;i+1<F.length;i++){const lit=!(i%2),x0=mid(F[i]),x1=mid(F[i+1]);poly(g,F[i].concat(rev(F[i+1])));
+       g.fillStyle=lg(g,x0,0,x1,0,lit?[i?MID:C,i<7?LIT:C]:[i<7?C:MID,i===7?DEEP:SHD]);g.fill()}
+     /* seam and patch */
+     stroke(g,[33.8,103.5,34.3,106.1],SHD,.4);stroke(g,[43.7,99.3,46,102.8,47.1,106.9],SEAM,.4);
+     tex(g,'mott',.25,20,95,50,15,'overlay',.5);
+     ao(g,20,105,50,4,'b',.25,'#3a3450')});
+   /* contact occlusion along the grounded hem where folds meet paving */
+   stroke(g,[23,107.8,29,107.7,33,107.2,37,107.8,43,107.9,49,107.7,56,107.6,62,107.4,66,106.4],'rgba(40,30,50,.35)',.6);
+  }
   /* nets hung to dry */
   wood(g,115.4,62,2.6,43,'#6a4e34',1);wood(g,165.4,62,2.6,43,'#6a4e34',1);wood(g,113,61,57,2.4,'#7a5a3c');
   inRect(g,118,63.4,47.4,38,()=>{for(let i=-40;i<50;i+=3.4){stroke(g,[118+i,63.4,118+i+38,101.4],'rgba(40,70,74,.75)',.5);stroke(g,[118+i+38,63.4,118+i,101.4],'rgba(40,70,74,.75)',.5)}
@@ -420,7 +439,7 @@ async function lowerSail(){if(!F.metCapt)return say(P,'i_should_not_touch_a_ship
   await say(CP,'gently_done');await say(P,'tent_ropes_mostly')}
 ROOMS.harbor={space:0.6,walk:[16,466,110,138],mood:'hope',amb:{waves:.8,gulls:.6,wind:.3,creak:.5},hs:[
   {name:'warehouse',x:0,y:24,w:112,h:66,wx:60,look:'grain_warehouses'},
-  {name:'heap_of_old_sailcloth',x:18,y:90,w:52,h:18,wx:48,wy:114,look:'worn_out_sails_heaped_for_rag',
+  {name:'heap_of_old_sailcloth',x:16,y:90,w:56,h:20,wx:48,wy:116,look:'worn_out_sails_heaped_for_rag',
     pickup:()=>say(P,F.gotPatch?'i_have_all_i_need_from_it':'whole_sail_is_far_too_heavy'),
     use:()=>say(P,F.gotPatch?'i_have_all_i_need_from_it':'i_would_need_a_blade_to_take'),
     useWith:async it=>{if(it!=='knife')return false;if(F.gotPatch)return say(P,'one_patch_is_enough');
