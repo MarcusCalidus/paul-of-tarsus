@@ -520,12 +520,25 @@ ART.ant12={w:320,q:12,
 /* ---------- The letter, seen close ---------- */
 /* A sheet of papyrus on the bench: its fibers run one way, the lines of writing are short strokes of uneven length that stop short of
    the edge, and the reed lies beside the sheet, not across it. G.let12 says how many lines stand on it. */
-function letter12(g,t){const r=rng(1223),n=(G.let12||{n:0}).n;R(g,0,0,VW,VH,'#6a4e2c');for(let i=0;i<34;i++)R(g,0,i*4.4+r()*2,VW,.6,r()<.5?'rgba(40,26,14,.35)':'rgba(190,150,100,.18)');
-  R(g,96,14,132,116,'rgba(20,12,8,.4)');R(g,92,10,132,116,'#e2d4a8');for(let i=0;i<50;i++)R(g,92,11+i*2.3+r(),132,.5,r()<.5?'rgba(150,120,70,.3)':'rgba(255,246,214,.3)');R(g,92,10,132,.8,'#f4e8c0');
+function letter12(g,t){const r=rng(1223),n=(G.let12||{n:0}).n;
+  /* three broad oak planks with natural tone shifts, bevel seams, and fine wood grain */
+  const planks=[[0,46,'#6e502d','#5e4223'],[46,50,'#664a28','#563c20'],[96,48,'#5e4324','#4e361c']];
+  for(const[py,ph,c0,c1]of planks){g.fillStyle=lg(g,0,py,0,py+ph,[c0,c1]);g.fillRect(0,py,VW,ph);
+    for(let i=0;i<11;i++)R(g,0,py+2+i*(ph/11)+r()*1.6,VW,.55,r()<.5?'rgba(32,18,8,.2)':'rgba(210,168,112,.1)');
+    if(py>0){R(g,0,py,VW,.9,'rgba(22,12,6,.55)');R(g,0,py+.9,VW,.6,'rgba(210,170,116,.16)')}}
+  tex(g,'wood',.16,0,0,VW,VH,'overlay',.55);tex(g,'mott',.22,0,0,VW,VH,'overlay',.9);
+  /* papyrus sheet with natural horizontal fiber strips, gentle edge aging, and contact shadow */
+  R(g,95,13,134,117,'rgba(16,9,5,.45)');g.fillStyle=lg(g,92,10,92,126,['#ebddb4','#e2d2a2','#d6c28e']);g.fillRect(92,10,132,116);
+  for(let y=11;y<125;){const hh=1+r()*2.2;R(g,92,y,132,hh,r()<.5?'rgba(146,112,56,.08)':'rgba(255,248,220,.12)');y+=hh}
+  tex(g,'mott',.16,92,10,132,116,'overlay',.8);ao(g,92,10,132,7,'t',.14,'#6e4c1e');ao(g,92,118,132,8,'b',.18,'#6e4c1e');
+  R(g,92,10,132,.8,'#f8eed0');R(g,92,10,.7,116,'#f4e8c4');R(g,223.3,10,.7,116,'rgba(90,64,34,.35)');
   for(let j=0;j<Math.min(n,17);j++){let x=102+(j%5===0?8:0);const y=20+j*5.9,end=j===Math.min(n,17)-1?150+r()*30:206+r()*8;while(x<end){const l=2.6+r()*5.4;R(g,x,y,Math.min(l,end-x),1.1,'rgba(36,26,22,.86)');x+=l+1.6}}
-  poly(g,[246,104,250,102,286,34,283,32],'#b8a868');poly(g,[246,104,250,102,251.4,98,248,97],'#2a1c16');
-  oval(g,262,116,13,6.4,'#7a4226');oval(g,262,114.6,11,4.6,'#1a1210');oval(g,259,113.6,5,1.6,'rgba(120,110,140,.5)');oval(g,54,104,11,7,'#c9b888');oval(g,51,102,3,2,'#a89868');oval(g,58,106,2.4,1.6,'#a89868');
-  comp(g,'multiply',.5,()=>{g.fillStyle=rg(g,160,70,220,['#fff0d0','#7a6a70']);g.fillRect(0,0,VW,VH)})}
+  /* reed pen with shadow and highlighted shaft, inkwell with wet gleam, and shaded pumice stone */
+  poly(g,[248,105.5,252,103.5,288,36,285,34],'rgba(16,9,5,.36)');
+  poly(g,[246,104,250,102,286,34,283,32],'#baa868');stroke(g,[247.5,102.5,283.6,33],'#e0d090',.7);poly(g,[246,104,250,102,251.4,98,248,97],'#261812');
+  oval(g,264,118,14,6.6,'rgba(16,9,5,.42)');oval(g,262,116,13.4,6.6,'#7a4226');oval(g,262,115.2,12.2,5.6,'#9a5a36');oval(g,262,114.6,10.6,4.4,'#181010');oval(g,258.6,113.4,4.6,1.4,'rgba(148,142,172,.55)');
+  oval(g,56,106,12,7.2,'rgba(16,9,5,.38)');oval(g,54,104,11.4,7.2,'#b8a678');oval(g,52.8,102.8,9.4,5.6,'#d2c294');oval(g,50.8,101.8,2.8,1.8,'#9c8c60');oval(g,58,106,2.2,1.5,'#8e7e54');
+  comp(g,'multiply',.46,()=>{g.fillStyle=rg(g,160,66,225,['#fff2d6','#76666e']);g.fillRect(0,0,VW,VH)})}
 const dark12=DARK;   /* the engine's dark scene: what is told in it is read from the narrator's scroll */
 
 /* ============ CAST ============ */

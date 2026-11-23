@@ -339,9 +339,19 @@ ART.bases11={w:320,q:12,
   sky(g,320,22,['#9cc0e0','#d6e4e8']);g.fillStyle=lg(g,0,16,0,124,['#bbb07e','#a99c68','#948750']);g.fillRect(0,16,320,108);tex(g,'mott',.5,0,16,320,108,'overlay',1.2);
   for(let i=0;i<60;i++)foliage(g,r()*320,22+r()*96,4+r()*6,1.4+r()*2,r()<.5?'#8f8f56':'#a59c62',r,10);
   STONES.forEach((s,i)=>{const x=sx(i),alt=s.k==='altar',top=stoneTop(s);
-    if(!alt){/* the hem of a long robe, and two feet under it */
+    if(!alt){/* the hem of a long robe, and sculpted tapered ankles and sandaled feet under it */
       const F=s.fig,x0=x+5,x1=x+BW-5,hem=[x0+3,0,x1-3,0,x1,62,x1-5,64.5,x0+12,62.5,x0+5,64.5,x0,62];
-      for(const fx of[x0+3,x0+15]){g.fillStyle=lg(g,fx,0,fx+11,0,[tint(F,-.34),tint(F,.14),tint(F,-.4)]);g.fillRect(fx,62,10,top-62);R(g,fx-1,top-4.6,13,4.6,tint(F,-.06));R(g,fx-1,top-4.6,13,.8,tint(F,.3));R(g,fx+9,top-4.6,3,4.6,tint(F,-.36))}
+      [[x0+3.5,0],[x0+15.5,1]].forEach(([fx,rt])=>{const dx=rt?.8:-.4,ank=[fx+.5,62,fx+8.5,62,fx+7.4+dx*.3,top-5.2,fx+8.8+dx,top-1.8,fx-1+dx*.4,top-1.8,fx+1.3+dx*.3,top-5.2];
+        /* tapered ankle & arched instep */
+        poly(g,ank);g.fillStyle=lg(g,fx,0,fx+9.5,0,[tint(F,-.36),tint(F,.18),F,tint(F,-.42)]);g.fill();
+        clipTo(g,()=>poly(g,ank),()=>{ao(g,fx,61,10,5,'t',.48);stroke(g,[fx+2.6,63,fx+2.2,top-5],'rgba(255,255,255,.16)',.7);
+          /* diagonal sandal strap across the instep (no cross) */
+          stroke(g,[fx+1+dx*.3,top-4.4,fx+7.8+dx*.8,top-2.4],tint(F,-.36),1);stroke(g,[fx+1+dx*.3,top-4.9,fx+7.8+dx*.8,top-2.9],tint(F,.24),.4)});
+        /* sculpted forefoot, toes, and sandal sole resting on the base */
+        const ft=[fx-1.2+dx*.4,top-1.4,fx+.2+dx*.4,top-3.6,fx+7.8+dx,top-3.6,fx+9.6+dx,top-1.4];
+        poly(g,ft);g.fillStyle=lg(g,fx-1,top-4,fx+10,top,[tint(F,.22),F,tint(F,-.34)]);g.fill();
+        for(let t=0;t<3;t++)R(g,fx+1.4+dx*.5+t*2.1,top-2.9,.55,1.5,tint(F,-.38));
+        R(g,fx-1.5+dx*.4,top-1.5,11.6,1.5,tint(F,-.32));R(g,fx-1.5+dx*.4,top-1.5,11.6,.5,tint(F,.14))});
       poly(g,hem);g.fillStyle=lg(g,x0,0,x1,0,[tint(F,-.4),tint(F,.18),F,tint(F,-.48)]);g.fill();
       clipTo(g,()=>poly(g,hem),()=>{for(let k=0;k<5;k++){const fx=x0+3.5+k*5.6;stroke(g,[fx,0,fx+1.6,32,fx-.6,64],'rgba(20,16,30,.3)',1.1);stroke(g,[fx+1.3,0,fx+2.9,32,fx+.7,64],'rgba(255,255,255,.22)',.6)}ao(g,x0,50,x1-x0,15,'b',.42)})}
     base(g,x,BY,BW,BY-top,s.c);if(alt){R(g,x-2.4,top-3.2,BW+4.8,3.8,tint(s.c,.05));R(g,x-2.4,top-3.2,BW+4.8,.7,tint(s.c,.38));R(g,x-2.4,top+.2,BW+4.8,.5,tint(s.c,-.3))}

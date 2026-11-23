@@ -469,9 +469,17 @@ const NUM13=[[{l:'\u039c',sup:'\u03b1'},{l:'\u039c',sup:'\u03b5'}],[{l:'\u0391',
 const BW=[44,40,36,32,28],BX=(()=>{const a=[];let x=52;for(const w of BW){a.push(x);x+=w+9}return a})(),BY=26,BH=82;
 ART.board13={w:320,q:12,
  paint(g){const r=rng(1313);
-  wood(g,0,0,320,144,'#6a4e2c');for(let i=0;i<30;i++)R(g,0,i*5+r()*2,320,.6,r()<.5?'rgba(40,26,14,.3)':'rgba(190,150,100,.14)');
-  /* the board: one plank of pale wood, its grain running the long way */
-  R(g,45,BY+3,236,BH,'rgba(20,12,8,.42)');wood(g,42,BY,236,BH,'#c8a878');R(g,42,BY,236,1,'#e8cc9c');R(g,42,BY+BH-1,236,1,'#8a6a40');R(g,277,BY,1,BH,'#8a6a40');
+  /* warm fine-grained table boards so bottom captions read cleanly */
+  g.fillStyle=lg(g,0,0,0,144,['#5e4427','#523a20','#442e18']);g.fillRect(0,0,320,144);
+  for(const y of[46,98]){R(g,0,y,320,.8,'rgba(24,14,6,.45)');R(g,0,y+.8,320,.6,'rgba(190,150,100,.14)')}
+  tex(g,'wood',.16,0,0,320,144,'overlay',.55);tex(g,'mott',.16,0,0,320,144,'overlay',.8);
+  for(let i=0;i<36;i++)R(g,0,i*4.1+r()*1.8,320,.5,r()<.5?'rgba(32,20,10,.16)':'rgba(210,170,118,.08)');
+  /* the board: one plank of pale boxwood with soft fine grain so incised Greek numerals stand out clearly */
+  R(g,45,BY+3,236,BH,'rgba(18,10,6,.46)');
+  g.fillStyle=lg(g,42,BY,42,BY+BH,['#dac092','#ceaf7c','#bfa06d']);g.fillRect(42,BY,236,BH);
+  inRect(g,42,BY,236,BH,()=>{tex(g,'wood',.15,42,BY,236,BH,'overlay',.5);tex(g,'mott',.14,42,BY,236,BH,'overlay',.7);
+    for(let i=0;i<24;i++)R(g,42,BY+2+i*3.4+r(),236,.5,r()<.5?'rgba(98,70,36,.12)':'rgba(255,244,214,.14)')});
+  R(g,42,BY,236,1,'#f0d8aa');R(g,42,BY,1,BH,'#e4c898');R(g,42,BY+BH-1,236,1,'#84643a');R(g,277,BY,1,BH,'#84643a');
   BW.forEach((w,i)=>{const x=BX[i],cx=x+w/2;
     /* the hollow for the pebble that counts as five */
     oval(g,cx,BY+14,8.4,7.4,'#9a7a4c');oval(g,cx+.6,BY+14.8,7.2,6.2,'#b4925e');g.strokeStyle='#6a4a28';g.lineWidth=.8;g.beginPath();g.ellipse(cx,BY+14,8.4,7.4,0,2.6,5.4);g.stroke();

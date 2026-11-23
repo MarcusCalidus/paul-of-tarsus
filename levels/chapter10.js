@@ -152,15 +152,21 @@ ART.bolt10={w:320,q:12,
   R(g,BX+4,BY-6.4,COLS*CELL-8,.6,'#d8c9a0');for(let i=1;i<COLS;i++)R(g,BX+i*CELL-.8,BY-7.2,1.6,2,'#f0e2bc');
   R(g,BX-6.6,BY+5,.6,ROWS_B*CELL-10,'#d8c9a0');for(let j=1;j<ROWS_B;j++)R(g,BX-7.3,BY+j*CELL-.8,2,1.6,'#f0e2bc');
   /* the board on which the panels are reckoned, and the stool he rose from, with his pouch */
-  R(g,18,TRAY_Y-3.4,184,31,'rgba(20,16,30,.36)');wood(g,16,TRAY_Y-5,184,31,'#7a5c36');R(g,16,TRAY_Y-5,184,.8,'#b08a5a');
+  R(g,18,TRAY_Y-3.4,184,31,'rgba(20,16,30,.36)');g.fillStyle=lg(g,0,TRAY_Y-5,0,TRAY_Y+26,['#8a6a40','#785a34','#684c2a']);g.fillRect(16,TRAY_Y-5,184,31);
+  inRect(g,16,TRAY_Y-5,184,31,()=>{tex(g,'wood',.18,16,TRAY_Y-5,184,31,'overlay',.55);tex(g,'mott',.14,16,TRAY_Y-5,184,31,'overlay',.7);for(let i=0;i<10;i++)R(g,16,TRAY_Y-3+i*3,184,.5,'rgba(40,26,12,.14)')});
+  R(g,16,TRAY_Y-5,184,.8,'#bfa06c');R(g,16,TRAY_Y+25,184,1,'#4a341c');
   oval(g,268,128,24,10,'rgba(20,16,30,.36)');oval(g,266,125,22,9,'#6a4e2c');oval(g,266,124,20,8,'#96703e');g.strokeStyle='#b89058';g.lineWidth=.6;g.beginPath();g.ellipse(266,124,14,5.4,0,0,6.2832);g.stroke();
   poly(g,[230,116,244,113,248,124,236,128],'#6e4a2e');poly(g,[230,116,244,113,245,116,231,119],'#8a6a4a');
   pool(g,200,40,220,130,'#fff4d6',.1,'screen')},
  light:{amb:'#ffffff'},
  draw(g,t){const st=G.bolt10;if(!st)return;
-  /* panels laid out on the cloth: paler patches, each with a hem of shadow below and to the right */
+  /* panels laid out on the cloth: tinted woven patches with soft horizontal weave sheen and inset chalk stitch marks stopping clear of corners */
   for(const p of PIECES){const q=st.at[p.id];if(!q)continue;const x=BX+q.x*CELL,y=BY+q.y*CELL,w=q.w*CELL,h=q.h*CELL;
-    g.fillStyle=rgba(p.c,.5);g.fillRect(x,y,w,h);R(g,x,y,w,.6,rgba('#fff6dc',.5));R(g,x,y,.6,h,rgba('#fff6dc',.4));R(g,x,y+h-1,w,1,'rgba(10,8,14,.5)');R(g,x+w-1,y,1,h,'rgba(10,8,14,.5)')}
+    g.fillStyle=rgba(p.c,.44);g.fillRect(x,y,w,h);
+    for(let j=2.5;j<h-2;j+=3)R(g,x+2,y+j,w-4,.5,rgba('#fff6dc',.1));
+    R(g,x,y,w,.7,rgba('#fff6dc',.55));R(g,x,y,.7,h,rgba('#fff6dc',.42));R(g,x,y+h-1.1,w,1.1,'rgba(12,9,16,.55)');R(g,x+w-1.1,y,1.1,h,'rgba(12,9,16,.55)');
+    for(let i=4;i<w-5;i+=5){R(g,x+i,y+1.8,2.2,.55,rgba('#fff6dc',.5));R(g,x+i,y+h-2.4,2.2,.55,rgba('#fff6dc',.38))}
+    for(let j=4;j<h-5;j+=5){R(g,x+1.8,y+j,.55,2.2,rgba('#fff6dc',.45));R(g,x+w-2.4,y+j,.55,2.2,rgba('#fff6dc',.35))}}
   /* the panel in hand, shown where it would lie: under the pointer */
   const sel=PIECES.find(p=>p.id===st.sel);
   if(sel&&st.mx!=null&&!G.busy){const cx0=Math.floor((st.mx-BX)/CELL),cy0=Math.floor((st.my-BY)/CELL),[w,h]=st.turn[sel.id]?[sel.h,sel.w]:[sel.w,sel.h];
@@ -168,7 +174,9 @@ ART.bolt10={w:320,q:12,
   /* the board: each panel small, as it is turned; one that lies on the cloth leaves only its place */
   for(const p of PIECES){const[w,h]=st.turn[p.id]?[p.h,p.w]:[p.w,p.h],x=p.tx,y=TRAY_Y;
     if(st.at[p.id]){R(g,x,y,w*TC,h*TC,'rgba(30,20,10,.3)');continue}
-    R(g,x+1,y+1,w*TC,h*TC,'rgba(20,14,8,.5)');R(g,x,y,w*TC,h*TC,mix(CLOTH,p.c,.55));R(g,x,y,w*TC,.6,rgba('#fff6dc',.5));
+    R(g,x+1,y+1,w*TC,h*TC,'rgba(20,14,8,.5)');R(g,x,y,w*TC,h*TC,mix(CLOTH,p.c,.58));
+    for(let j=1.5;j<h*TC-1;j+=2)R(g,x+1,y+j,w*TC-2,.4,rgba('#fff6dc',.12));
+    R(g,x,y,w*TC,.6,rgba('#fff6dc',.55));R(g,x,y,.6,h*TC,rgba('#fff6dc',.4));R(g,x,y+h*TC-.7,w*TC,.7,'rgba(12,9,16,.45)');
     if(st.sel===p.id){g.fillStyle=rgba('#ffe9a8',.3+.16*Math.sin(t/200));g.fillRect(x,y,w*TC,h*TC)}}},
  front(){}};
 
@@ -211,40 +219,57 @@ const tabV=()=>F.gone?'b':'';
 /* where the scrolls lie: [left edge, width] for two, and for three */
 const SLOT={2:[[26,122],[172,122]],3:[[10,94],[113,94],[216,94]]},SY=23,SHH=52,ROLLW=11;
 ART.table10={w:320,q:12,variant:tabV,
- paint(g,v){const r=rng(1019),b=v==='b',WD=b?'#8a6a3e':'#7a5a34',rim=15;
-  R(g,0,0,320,144,WD);tex(g,'wood',.32,0,0,320,144,'overlay',1.6);tex(g,'grain',.1,0,0,320,144,'overlay',.5);
-  /* those who listen, across the table: seen from above, their shoulders in tunic and mantle and the crowns of their heads over the table's edge */
+ paint(g,v){const r=rng(1019),b=v==='b',WD=b?'#7c5e36':'#6e502c',rim=15;
+  /* fine-grained planked table surface so captions below the scrolls read cleanly */
+  g.fillStyle=lg(g,0,rim,0,144,[tint(WD,.08),WD,tint(WD,-.16)]);g.fillRect(0,0,320,144);
+  for(const py of[54,96]){R(g,0,py,320,.7,'rgba(28,16,8,.38)');R(g,0,py+.7,320,.5,'rgba(220,180,126,.12)')}
+  tex(g,'wood',.14,0,0,320,144,'overlay',.65);tex(g,'mott',.16,0,0,320,144,'overlay',.8);
+  for(let i=0;i<30;i++)R(g,0,rim+2+i*4.3+r()*1.5,320,.5,r()<.5?'rgba(32,20,10,.14)':'rgba(220,180,126,.08)');
+  /* those who listen, across the table: seen from above, draped shoulders and sculpted crowns over the table's edge */
   R(g,0,0,320,rim,'#231b15');R(g,0,rim,320,1.1,'#b08a58');R(g,0,rim+1.1,320,.9,'#5a4226');ao(g,0,rim+2,320,6,'t',.38);
-  const men=b?[[57,96,11.4,8.8,'#9a8664','#b8a47c','#b88a62','#d0d0d0',1,'#d0d0d0'],[160,92,11,8.5,'#6e8c82','#4f6f7c','#c89868','#2a1a12',0,null],[263,96,11.4,8.8,'#8e7a56','#b09a6c','#b47e52','#4a3220',0,'#4a3220']]
-    :[[57,96,11.4,8.8,'#7a6880','#b8a680','#a8703f','#8a8a8a',0,'#8a8a8a'],[160,92,11,8.5,'#b8b09c','#587482','#c69870','#5a4026',0,null],[263,96,11.4,8.8,'#9a705a','#7a8a5a','#c08c5c','#3a2a1c',0,'#3a2a1c']];
-  men.forEach(([cx,w,hrx,hry,tu,cl,sk,ha,bald,bd],i)=>{const mr=rng(4001+i*77+(b?0:300)),hw=w/2,shY=rim-10,hy=rim-5.2;
-    oval(g,cx+1.5,shY+3.5,hw+2,11.2,'rgba(14,10,8,.55)');
-    oval(g,cx,shY,hw,11.4,tint(tu,-.2));oval(g,cx-1.2,shY-.5,hw-2,10.6,tu);oval(g,cx-4,shY-1.5,hw*.72,8.5,tint(tu,.14));
-    poly(g,[cx+hw*.42,0,cx+hw*.52,0,cx+hw*.25,rim-2,cx+hw*.17,rim-1.6],tint(tu,-.24));
-    poly(g,[cx-hrx-3,0,cx+hrx+3,0,cx+4,hy+2,cx-4,hy+2],tint(tu,-.38));poly(g,[cx-hrx-1,0,cx+hrx+1,0,cx+3,hy+1,cx-3,hy+1],tint(sk,-.22));
-    poly(g,[cx-hw+1,0,cx-2,0,cx-5,rim-.5,cx-hw+3,rim-2.5],cl);poly(g,[cx-hw+2,0,cx-6,0,cx-9,rim-.9,cx-hw+5,rim-3.5],tint(cl,.16));
-    poly(g,[cx-hw*.58,0,cx-hw*.46,0,cx-hw*.68,rim-2.2,cx-hw*.78,rim-2.8],tint(cl,-.22));poly(g,[cx-5,0,cx-2,0,cx-5,rim-.5,cx-8,rim-.7],tint(cl,-.28));
-    oval(g,cx+1,hy+2.2,hrx+.8,hry+1,'rgba(18,12,8,.55)');
-    if(bd){oval(g,cx,hy+hry*.62,hrx*.82,hry*.68,tint(bd,-.22));oval(g,cx-.6,hy+hry*.56,hrx*.72,hry*.6,bd);oval(g,cx-1.5,hy+hry*.52,hrx*.45,hry*.42,tint(bd,.14))}
-    oval(g,cx,hy+hry*.32,hrx*.84,hry*.58,tint(sk,-.1));oval(g,cx-.6,hy+hry*.28,hrx*.72,hry*.48,sk);
-    oval(g,cx,hy+hry*.88,2.2,1.8,tint(sk,-.05));R(g,cx-1.2,hy+hry*.78,2,1.4,tint(sk,.18));
-    oval(g,cx-hrx-.4,hy+.4,1.8,2.6,tint(sk,.05));oval(g,cx+hrx+.4,hy+.4,1.8,2.6,tint(sk,-.18));
-    oval(g,cx,hy-1.2,hrx,hry*.85,tint(ha,-.22));oval(g,cx-.8,hy-1.6,hrx*.88,hry*.76,ha);
-    for(let j=0;j<18;j++){const a=mr()*6.2832,d=Math.sqrt(mr())*.78,lx=cx+Math.cos(a)*d*hrx,ly=(hy-1.4)+Math.sin(a)*d*hry*.75,
-      sh=(-(lx-cx)/hrx-(ly-hy)/hry)*.22+(mr()-.5)*.14;oval(g,lx,ly,2.2+mr()*1.8,1.6+mr()*1.2,tint(ha,sh))}
-    if(bald){oval(g,cx,hy+.4,hrx*.68,hry*.82,tint(sk,-.04));oval(g,cx-1.2,hy-.6,hrx*.48,hry*.58,tint(sk,.18))}});
+  const men=b?[[57,96,11.2,8.8,'#9a8664','#b8a47c','#b88a62','#d0d0d0',1,'#d0d0d0'],[160,92,10.8,8.5,'#6e8c82','#4f6f7c','#c89868','#2a1a12',0,null],[263,96,11.2,8.8,'#8e7a56','#b09a6c','#b47e52','#4a3220',0,'#4a3220']]
+    :[[57,96,11.2,8.8,'#7a6880','#b8a680','#a8703f','#8a8a8a',0,'#8a8a8a'],[160,92,10.8,8.5,'#b8b09c','#587482','#c69870','#5a4026',0,null],[263,96,11.2,8.8,'#9a705a','#7a8a5a','#c08c5c','#3a2a1c',0,'#3a2a1c']];
+  men.forEach(([cx,w,hrx,hry,tu,cl,sk,ha,bald,bd],i)=>{const mr=rng(4001+i*77+(b?0:300)),hw=w/2,shY=rim-10,hy=rim-5.4;
+    oval(g,cx+1.4,shY+3.4,hw+2,11,'rgba(14,10,8,.5)');
+    /* contoured shoulders with draped tunic and mantle folds */
+    const sh=[cx-hw,0,cx+hw,0,cx+hw*.92,rim-2.6,cx+hw*.46,rim-.8,cx-hw*.46,rim-.8,cx-hw*.92,rim-2.6];
+    poly(g,sh);g.fillStyle=lg(g,cx-hw,0,cx+hw,0,[tint(tu,.14),tu,tint(tu,-.24)]);g.fill();
+    clipTo(g,()=>poly(g,sh),()=>{
+      for(let f=-2;f<=2;f++){const fx=cx+f*hw*.28;stroke(g,[fx-3,0,fx+2,rim-1.2],tint(tu,-.26),1.6);stroke(g,[fx-1.6,0,fx+3.4,rim-1.2],tint(tu,.16),.8)}
+      poly(g,[cx-hw,0,cx-4,0,cx-7,rim-.4,cx-hw+2,rim-2.2]);g.fillStyle=lg(g,cx-hw,0,cx-4,0,[tint(cl,.16),cl,tint(cl,-.24)]);g.fill();
+      for(let f=0;f<3;f++)stroke(g,[cx-hw*.78+f*11,0,cx-hw*.62+f*11,rim-1],tint(cl,-.26),1.3);
+      ao(g,cx-hw,rim-5,w,5,'b',.3)});
+    /* collar and neck */
+    oval(g,cx,hy+1.8,hrx*.8,4.2,tint(tu,-.36));oval(g,cx,hy+1.2,hrx*.64,3.2,tint(sk,-.2));
+    oval(g,cx+1,hy+2,hrx+.6,hry+.8,'rgba(18,12,8,.52)');
+    if(bd){oval(g,cx,hy+hry*.62,hrx*.78,hry*.64,tint(bd,-.22));oval(g,cx-.5,hy+hry*.56,hrx*.68,hry*.56,bd);oval(g,cx-1.4,hy+hry*.52,hrx*.42,hry*.38,tint(bd,.14))}
+    oval(g,cx,hy+hry*.32,hrx*.8,hry*.54,tint(sk,-.1));oval(g,cx-.6,hy+hry*.28,hrx*.68,hry*.44,sk);
+    oval(g,cx,hy+hry*.84,1.9,1.4,tint(sk,-.06));R(g,cx-.9,hy+hry*.74,1.6,1.1,tint(sk,.16));
+    /* tucked, naturally contoured ears */
+    oval(g,cx-hrx+.2,hy+.5,1.1,2,tint(sk,-.04));oval(g,cx+hrx-.2,hy+.5,1.1,2,tint(sk,-.24));
+    /* sculpted crown of the head with layered hair locks */
+    g.fillStyle=rg(g,cx-2.4,hy-3.4,hrx*1.2,[tint(ha,.22),ha,tint(ha,-.3)]);g.beginPath();g.ellipse(cx,hy-1.1,hrx*.98,hry*.86,0,0,6.2832);g.fill();
+    for(let j=0;j<14;j++){const a=(j/14)*6.2832+(mr()-.5)*.2,r0=.28+mr()*.45,lx=cx+Math.cos(a)*r0*hrx,ly=(hy-1.2)+Math.sin(a)*r0*hry*.72;
+      stroke(g,[lx,ly,lx+Math.cos(a)*3.2,ly+Math.sin(a)*2.4],tint(ha,(-(lx-cx)/hrx-(ly-hy)/hry)*.22+(mr()-.5)*.12),1.3)}
+    if(bald){oval(g,cx,hy+.3,hrx*.66,hry*.8,tint(sk,-.04));oval(g,cx-1.3,hy-.7,hrx*.46,hry*.56,tint(sk,.18))}});
   /* the steps down from the platform, at the near corner */
   poly(g,[250,144,320,104,320,144],'#4a3620');poly(g,[262,144,320,112,320,116,270,144],'#6a4e2c');poly(g,[284,144,320,124,320,128,292,144],'#6a4e2c');
   lightmap(g,320,b?'#c8c0b8':'#b8aeb0',l=>{pool(l,b?200:120,60,230,110,'#fff0d0',.8);pool(l,160,118,150,40,'#ffe8c0',.4)})},
  light:{amb:'#ffffff'},
  draw(g,t){const st=G.tab10;if(!st)return;const n=st.n,slots=SLOT[n];
   st.s.forEach((k,i)=>{const[x,w]=slots[i],shut=!k,cx0=x+w/2,seed=rng(1031+i*97+(PLACE[k]?PLACE[k].seed:0)),
-    roll=(rx,rw)=>{g.fillStyle=lg(g,rx,0,rx+rw,0,['#6a4e2c','#d8c08a','#b89c62','#5a4226']);g.fillRect(rx,SY-2,rw,SHH+4);R(g,rx,SY-2,rw,.8,'#ead9a8');R(g,rx,SY+SHH+1.2,rw,.8,'#3a2a18')};
+    roll=(rx,rw)=>{const rr=rng(Math.round(rx)*19+i*7);g.fillStyle=lg(g,rx,0,rx+rw,0,['#785c36','#c8ae76','#f0e2b8','#d2ba84','#8a6c40','#5a4226']);g.fillRect(rx,SY-2,rw,SHH+4);
+      for(let y=SY-1;y<SY+SHH+1;y+=2.2)R(g,rx,y,rw,1.1,rr()<.5?'rgba(110,82,38,.1)':'rgba(255,248,220,.1)');
+      ao(g,rx,SY-2,rw,5,'t',.24,'#5a3c16');ao(g,rx,SY+SHH-3,rw,5,'b',.28,'#4a3012');
+      R(g,rx,SY-2,rw,.8,'#f2e4b8');R(g,rx,SY+SHH+1.2,rw,.8,'#3a2a18')};
     R(g,x+2,SY+SHH+2,w-2,3,'rgba(20,12,6,.4)');
     if(shut){const m=ROLLW+5;roll(cx0-m,m);roll(cx0,m);return}
-    /* the sheet, and its columns: how far each roll is wound follows the place */
+    /* the sheet, with subtle horizontal papyrus fiber strips and inner roll shade */
     const P0=PLACE[k],f=P0.at,lw=ROLLW+Math.round(8*f),rw=ROLLW+Math.round(8*(1-f)),sx=x+lw,sw=w-lw-rw;
-    g.fillStyle=lg(g,0,SY,0,SY+SHH,['#efe4c6','#e6d9b6','#d8c9a0']);g.fillRect(sx,SY,sw,SHH);R(g,sx,SY,sw,.7,'#fff6dc');R(g,sx,SY+SHH-.8,sw,.8,'#a89468');
+    g.fillStyle=lg(g,0,SY,0,SY+SHH,['#f0e4c4','#e6d8b0','#d8c698']);g.fillRect(sx,SY,sw,SHH);
+    for(let y=SY+1;y<SY+SHH-1;){const hh=1+seed()*2;R(g,sx,y,sw,hh,seed()<.5?'rgba(138,104,48,.07)':'rgba(255,248,222,.1)');y+=hh}
+    ao(g,sx,SY,6,SHH,'l',.26,'#6e4c1e');ao(g,sx+sw-6,SY,6,SHH,'r',.26,'#6e4c1e');
+    R(g,sx,SY,sw,.7,'#fff6dc');R(g,sx,SY+SHH-.8,sw,.8,'#a89468');
     const cols=sw>70?3:2,cw=(sw-6-(cols-1)*5)/cols;for(let c=0;c<cols;c++){const x0=sx+3+c*(cw+5),mid=c===(cols>2?1:0);
       for(let j=0;j<13;j++){const y=SY+4+j*3.5,len=cw*(.72+seed()*.28);R(g,x0,y,len,.9,mid&&j>3&&j<8?'#2a2018':'rgba(70,56,40,.62)')}
       if(mid)comp(g,'multiply',.16,()=>R(g,x0-1.5,SY+4+4*3.5-1.4,cw+3,4*3.5+1,'#e0a040'))}

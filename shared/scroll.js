@@ -89,45 +89,46 @@ function tones(c,g,pal){const w=c.width,h=c.height,im=g.getImageData(0,0,w,h),d=
    at() shifts it to its roll, and mirrors it for the right hand, which is then lit from its own side, by its own lamp. */
 const HAND=[30,106,33,101,36.4,96.5,40.5,90.6,44.6,82.4,47.2,74.8,49.6,66.5,52.5,60.6,56.5,56,61,52.2,65.5,49.2,70,46.3,74,44,78,42.6,80.5,45,80.5,60,80.5,100,77,104,73,108.5,68,114,61.5,119,54,123.5,44,125,34,117],
   THUMB=[66.2,65,69,61.6,72.6,58.2,75.6,55,78,52,80.6,48.8,83.8,46.6,87.6,46.2,90.9,48.2,92.5,52,92.1,56.4,90.5,60.2,88.3,63.8,85.3,67.4,81.9,71.2,78.4,75.2,75.6,79.2,72,81.4,67,80,63.5,74.5,63.6,68.5],
-  HX=ROLLS[0]-76,at=(g,fn,flip)=>{g.save();if(flip){g.translate(340,4);g.scale(-1,1)}g.translate(HX,0);fn(g);g.restore()},both=(g,fn)=>{at(g,fn);at(g,fn,1)};
-function hand(g){
-  blob(g,HAND,GV(.57));
+  HX=ROLLS[0]-76,at=(g,fn,flip)=>{g.save();if(flip){g.translate(340,6);g.scale(-1,1)}g.translate(HX,0);fn(g,flip?1:0);g.restore()},both=(g,fn)=>{at(g,fn);at(g,fn,1)};
+function hand(g,flip){
+  blob(g,HAND,GV(flip?.6:.56));
   clipTo(g,()=>blob(g,HAND),()=>{
-    /* the light comes from the hand's own side, above: the tone falls across the hand */
-    g.fillStyle=lg(g,42,62,78,112,[[0,W_(.3)],[.45,W_(0)],[.55,K_(0)],[1,K_(.42)]]);g.fillRect(20,36,70,96);
-    pool(g,53.5,85,12,17,'#ffffff',.3,'source-over');pool(g,49,74,7,9,'#ffffff',.2,'source-over');pool(g,43.5,99,5,7,'#ffffff',.26,'source-over');   /* the flat of the back of the hand; a sinew at the wrist */
-    ao(g,64,56,17,56,'r',.38);pool(g,68,114,18,13,'#000000',.46,'source-over');pool(g,57,70.5,5,3.6,'#000000',.26,'source-over');   /* turning away toward the roll; the heel; a hollow */
+    /* asymmetric lighting: the left lamp sits recessed in its niche; the right lamp stands open and higher on the shelf */
+    g.fillStyle=lg(g,flip?44:40,flip?56:64,flip?80:76,112,[[0,W_(flip?.36:.27)],[.45,W_(0)],[.56,K_(0)],[1,K_(flip?.38:.44)]]);g.fillRect(20,36,70,96);
+    pool(g,flip?52:54.5,flip?82:86,12,17,'#ffffff',flip?.34:.26,'source-over');pool(g,49,flip?72:75,7,9,'#ffffff',flip?.24:.18,'source-over');pool(g,43.5,99,5,7,'#ffffff',flip?.22:.28,'source-over');
+    ao(g,64,56,17,56,'r',flip?.34:.4);pool(g,68,114,18,13,'#000000',flip?.42:.48,'source-over');pool(g,57,70.5,5,3.6,'#000000',.22,'source-over');
     /* the forefinger: round, lit along its upper side, dark along the side toward the thumb */
-    sline(g,[56.5,59,61.5,54.6,66.5,51,71,48,76,45.2],W_(.42),2.8);sline(g,[61,63.5,65,60,69,56.6,73,53.4,77,50.6],K_(.36),2.8);pool(g,55.5,63.5,5,4.4,'#ffffff',.3,'source-over');
-    /* the folds of its joints, the folds at the root of the thumb, the lines of the wrist, two sinews */
-    for(const p of[[64.4,52.6,66.6,55,69.4,57.6],[66.6,51.2,68.8,53.4,71.2,55.8],[58.4,58.2,61.6,61,65.2,63.8],[56.8,60.6,59.6,63.4,62.8,65.8]]){sline(g,p,GV(.24),.7);sline(g,p.map((v,i)=>i%2?v+.8:v-.3),W_(.16),.6)}
-    for(const p of[[62,80.4,66.6,81.4,71.6,81],[63.6,83.6,67.8,84.4,72,83.8],[61,77,65,78,69,77.2]])sline(g,p,GV(.3),.6);
-    for(const p of[[48,106.5,53.5,112,60,116],[51,104.5,57,110,63.5,113.5]])sline(g,p,GV(.3),.7);
-    sline(g,[47,98,51,88,56,78,60,70],K_(.12),1.4);sline(g,[52,102,57,92,62,84],K_(.1),1.2);sline(g,[45.6,97.6,49.6,87.6,54.6,77.6,58.6,69.6],W_(.12),.8);
-    tex(g,'mott',.2,20,36,70,96,'overlay',.5);
+    sline(g,[56.5,59,61.5,54.6,66.5,51,71,48,76,45.2],W_(flip?.46:.38),2.8);sline(g,[61,63.5,65,60,69,56.6,73,53.4,77,50.6],K_(.32),2.8);pool(g,55.5,63.5,5,4.4,'#ffffff',flip?.32:.26,'source-over');
+    /* softer knuckle creases, thumb-root folds, wrist lines, and subtle asymmetric sinews */
+    for(const p of[[64.4,52.6,66.6,55,69.4,57.6],[66.6,51.2,68.8,53.4,71.2,55.8],[58.4,58.2,61.6,61,65.2,63.8],[56.8,60.6,59.6,63.4,62.8,65.8]]){sline(g,p,GV(.38),.55);sline(g,p.map((v,i)=>i%2?v+.7:v-.3),W_(.14),.55)}
+    for(const p of[[62,80.4,66.6,81.4,71.6,81],[63.6,83.6,67.8,84.4,72,83.8],[61,77,65,78,69,77.2]])sline(g,p,GV(.42),.5);
+    for(const p of[[48,106.5,53.5,112,60,116],[51,104.5,57,110,63.5,113.5]])sline(g,p,GV(.42),.55);
+    sline(g,[47,98,51+(flip?.8:0),88,56,78,60,70],K_(.1),1.3);sline(g,[52,102,57,92-(flip?1:0),62,84],K_(.08),1.1);sline(g,[45.6,97.6,49.6+(flip?.8:0),87.6,54.6,77.6,58.6,69.6],W_(.13),.8);
+    tex(g,'mott',.18,20,36,70,96,'overlay',.5);
     /* where it comes out of the sleeve it lies in the sleeve's shade */
-    sline(g,[31,99,37,104,42.6,110.4,48,116.4,53,121.6,58,125],K_(.34),5)});
+    sline(g,[31,99,37,104,42.6,110.4,48,116.4,53,121.6,58,125],K_(.32),5)});
   /* the dark between forefinger and thumb, where the roll goes in */
-  blob(g,[76.5,52,72.5,55.2,68.8,59.2,66,63.4,66.4,65.2,69.6,62.6,73,59.4,76.5,56.6],GV(.06))}
-function sleeve(g){const S=[-12,132,3,122.4,8.8,116.5,18,105.6,27.2,101,33,101.4,38,106,43.5,112,49,118,53.8,123.2,57.2,134.8,58.6,150,-12,150];
-  blob(g,S,GV(.5));
-  clipTo(g,()=>blob(g,S),()=>{g.fillStyle=lg(g,14,100,44,150,[[0,W_(.4)],[.35,W_(0)],[.5,K_(0)],[1,K_(.5)]]);g.fillRect(-14,96,80,56);
-    /* folds running down from the hem, the hem itself lit, and the shade just under it */
-    blob(g,[20,112,27,108,33,112,35,124,33,150,22,150,21,128],K_(.32));blob(g,[41,116,46,119,49,130,50,150,43,150,42,132],K_(.34));blob(g,[-12,134,2,128,10,132,12,150,-12,150],K_(.36));blob(g,[8,118,14,111,19,110,16,122,12,134,6,132],W_(.16));
-    sline(g,[27.6,102,33,102.6,37.6,107,43,113,48.4,119,53,124],W_(.5),1.6);sline(g,[26,104.8,31.6,105.6,36,109.6,41.4,115.6,46.6,121.4,51,126.2],K_(.4),.9);
+  blob(g,[76.5,52,72.5,55.2,68.8,59.2,66,63.4,66.4,65.2,69.6,62.6,73,59.4,76.5,56.6],GV(.08))}
+function sleeve(g,flip){const S=[-12,132,3,122.4,8.8,116.5,18,105.6,27.2,101,33,101.4,38,106,43.5,112,49,118,53.8,123.2,57.2,134.8,58.6,150,-12,150];
+  blob(g,S,GV(flip?.52:.49));
+  clipTo(g,()=>blob(g,S),()=>{g.fillStyle=lg(g,14,100,44,150,[[0,W_(flip?.44:.36)],[.35,W_(0)],[.5,K_(0)],[1,K_(.5)]]);g.fillRect(-14,96,80,56);
+    /* folds running down from the hem, shifted slightly between left and right sleeves */
+    const dx=flip?2.2:0;
+    blob(g,[20+dx,112,27+dx,108,33+dx,112,35+dx,124,33+dx,150,22+dx,150,21+dx,128],K_(.3));blob(g,[41-dx*.5,116,46-dx*.5,119,49-dx*.5,130,50-dx*.5,150,43-dx*.5,150,42-dx*.5,132],K_(.34));blob(g,[-12,134,2,128,10,132,12,150,-12,150],K_(.36));blob(g,[8+dx,118,14+dx,111,19+dx,110,16+dx,122,12+dx,134,6+dx,132],W_(.16));
+    sline(g,[27.6,102,33,102.6,37.6,107,43,113,48.4,119,53,124],W_(.48),1.6);sline(g,[26,104.8,31.6,105.6,36,109.6,41.4,115.6,46.6,121.4,51,126.2],K_(.38),.9);
     sline(g,[4,123.4,9.6,117.4,18.6,106.6,26,102.6],W_(.2),1.2);tex(g,'mott',.4,-14,96,80,56,'overlay',.5);tex(g,'grain',.1,-14,96,80,56,'overlay',.5)})}
-function thumb(g){
-  blob(g,THUMB,GV(.6));
+function thumb(g,flip){
+  blob(g,THUMB,GV(flip?.62:.59));
   clipTo(g,()=>blob(g,THUMB),()=>{
-    /* round across: lit on the side toward the light, dark on the other */
-    g.fillStyle=lg(g,72,55,84,64.4,[[0,W_(.36)],[.42,W_(0)],[.58,K_(0)],[1,K_(.5)]]);g.fillRect(56,40,44,48);
-    sline(g,[71,66,75,61,79,56.4,82.4,52.4],W_(.26),1.8);pool(g,69,73.5,5,4.5,'#ffffff',.14,'source-over');
-    /* the nail, and the folds of the joint */
+    /* round across: lit on the side toward each hand's lamp, dark on the other */
+    g.fillStyle=lg(g,flip?73:71,flip?53:56,84,64.4,[[0,W_(flip?.4:.32)],[.42,W_(0)],[.58,K_(0)],[1,K_(flip?.46:.52)]]);g.fillRect(56,40,44,48);
+    sline(g,[71,66,75,61,79,56.4,82.4,52.4],W_(flip?.3:.24),1.8);pool(g,69,73.5,5,4.5,'#ffffff',.14,'source-over');
+    /* the nail, and softer folds of the joint */
     blob(g,[85.2,47.6,88.2,48.2,90.3,51.2,88.6,54.6,86,56.8,83.2,55.6,81.2,53,82.8,49.6],GV(.88));blob(g,[85,49,87.6,49.6,88.6,51.6,86,52.4,84,51.2],GV(1));
-    sline(g,[81.2,53.2,83.3,55.7,86,56.9,88.5,54.8],GV(.34),.7);sline(g,[81.1,53,82.7,49.5,85.2,47.5],GV(.46),.5);
-    for(const p of[[75.2,58.4,79,59.4,83,61.2],[74,61,78,62.2,81.6,64],[73.2,63.8,76.6,65,79.6,66.6]]){sline(g,p,GV(.26),.7);sline(g,p.map((v,i)=>i%2?v+.8:v),W_(.16),.6)}
-    tex(g,'mott',.18,56,40,44,48,'overlay',.5)})}
-const thumbShadow=g=>comp(g,'multiply',.6,()=>{g.save();g.translate(2.8,2.4);blob(g,THUMB,'#8a6a44');g.restore()});
+    sline(g,[81.2,53.2,83.3,55.7,86,56.9,88.5,54.8],GV(.42),.6);sline(g,[81.1,53,82.7,49.5,85.2,47.5],GV(.52),.45);
+    for(const p of[[75.2,58.4,79,59.4,83,61.2],[74,61,78,62.2,81.6,64],[73.2,63.8,76.6,65,79.6,66.6]]){sline(g,p,GV(.38),.55);sline(g,p.map((v,i)=>i%2?v+.7:v),W_(.14),.55)}
+    tex(g,'mott',.16,56,40,44,48,'overlay',.5)})}
+const thumbShadow=(g,flip)=>comp(g,'multiply',flip?.54:.62,()=>{g.save();g.translate(flip?2.2:3,flip?2.8:2.4);blob(g,THUMB,'#8a6a44');g.restore()});
 
 /* ---------- the picture: put together once from layers, each set in its own tones ---------- */
 let BG=null;
