@@ -3112,6 +3112,10 @@
   ok(G.ch===4&&G.scene===CHAP[4].scenes.sendoff,'chapter four opens in Antioch, with the laying on of hands');
   BN=ACT.barnabas;
   await idle();ok(G.ch===4&&G.room==='seleucia'&&!G.scene&&!G.busy&&srt()==='awl,haircloth,knife,tablets,thread'&&BN.room==='seleucia'&&ACT.mark.room==='seleucia','chapter four starts on the quay at Seleucia');
+  {const snap=t=>{const c=document.createElement('canvas');c.width=480;c.height=144;const x=c.getContext('2d');ART.seleucia.paint(x);ART.seleucia.draw(x,t);return x.getImageData(0,0,480,144).data},
+    a=snap(1414),b=snap(4241),diff=(x0,x1,y0,y1)=>{let n=0;for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){const i=(y*480+x)*4;if(a[i]!==b[i]||a[i+1]!==b[i+1]||a[i+2]!==b[i+2])n++}return n};
+   ok(diff(320,440,70,99)>0&&diff(453,472,70,99)>0&&diff(320,476,100,112)===0&&diff(444,450,95,104)===0,
+     'at Seleucia the ship and her steering oars rise and fall behind the quay edge and the mooring post, never in front of them')}
   halt('seleucia',()=>{say(BN,'seleucia_saul')});
   ok(/^4-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===4&&decode(makeCode()).w!=null,'chapter four code format (wide, nine characters) '+makeCode());
   ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Barnabas')),'a party again: the panel offers to switch to Barnabas');fitVerbs();

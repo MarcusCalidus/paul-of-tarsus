@@ -41,7 +41,8 @@ function baggage(g,x,y){roll(g,x,y-5,17,5,'#8a5a4a');roll(g,x+3,y-9.6,15,4.6,'#6
    In harbor the yard is lowered to the rail with the sail furled on it, and the mast stands bare between its stays. Under sail (o.sail)
    the mast stops at the yard, so that the two never make a cross. o.plank: the gangplank to the quay; o.tent: our shelter on the
    foredeck; o.figs: a painter for the people on deck, who stand behind the rail. */
-function ship(g,X,Y,t,o){o=o||{};const y=Y+Math.round(Math.sin(t/900)*2)/2,PL=(p,c)=>poly(g,p.map((v,i)=>i%2?v+y:v+X),c),SK=(p,c,w)=>stroke(g,p.map((v,i)=>i%2?v+y:v+X),c,w),H=(a,b,w,h,c)=>R(g,X+a,b+y,w,h,c);
+function ship(g,X,Y,t,o){o=o||{};const y=Y+Math.round(Math.sin(t/900)*2)/2,PL=(p,c)=>poly(g,p.map((v,i)=>i%2?v+y:v+X),c),SK=(p,c,w)=>stroke(g,p.map((v,i)=>i%2?v+y:v+X),c,w),H=(a,b,w,h,c)=>R(g,X+a,b+y,w,h,c),
+  body=()=>{
   /* stays and mast */
   SK([97.5,13.4,6,60],'#4a3a2a',.6);SK([97.5,13.4,203,54],'#4a3a2a',.6);H(96,13.4,3.2,64,'#5a3c22');H(96,13.4,1,64,'#9a7040');
   if(o.sail){PL([50,15.4,146,11,146,13.6,50,18],'#5a3c22');SK([50,15.6,146,11.2],'#9a7040',.5);const sp=[53,17];for(let j=0;j<=10;j++)sp.push(51-Math.sin(j/10*3.1416)*6,17+j*4.4);for(let i=0;i<=10;i++)sp.push(51+i*9.2,61+Math.sin(i/10*3.1416)*3.5);for(let j=10;j>=0;j--)sp.push(143-Math.sin(j/10*3.1416)*4,13+j*4.8);
@@ -56,17 +57,25 @@ function ship(g,X,Y,t,o){o=o||{};const y=Y+Math.round(Math.sin(t/900)*2)/2,PL=(p
     SK([22,77,34,62.6,72,62.6,84,77],'#8a7a5a',.7);for(const q of[26,40,66,80])SK([q,74.6,q+1,77.4],'#8a7a5a',.6)}
   if(o.figs)o.figs(X,y);
   /* hull */
-  const hull=[0,60,7,58,13,76,196,76,204,57,212,52,211,66,203,93,190,101,22,101,9,94,2,78];
-  g.fillStyle=lg(g,0,56+y,0,101+y,['#7a5230','#5e3e24','#33200f']);g.beginPath();hull.forEach((v,i)=>{if(i%2)return;i?g.lineTo(X+v,hull[i+1]+y):g.moveTo(X+v,hull[i+1]+y)});g.closePath();g.fill();
-  SK([1.5,62,13.5,77.6,197,77.6,206,58],'#2e1c0e',1.4);SK([4,82,205,82],'#a8482c',2);SK([4,83.6,205,83.6],'#6a2a18',.6);SK([5,80.4,205,80.4],'#e2d2a8',.6);
-  /* strakes, their butt joints staggered from one to the next like courses of brick */
-  for(let j=0;j<4;j++){SK([7+j*1.4,87+j*3.6,204-j*1.8,87+j*3.6],'#2e1c0e',.5);for(let i=0;i<7;i++)H(26+i*26+(j%2)*13,84.4+j*3.6-(j?1:0),.6,j?3.6:2.6,'rgba(24,12,6,.4)')}
+  const hb=o.plank?102:101,hull=[0,60,7,58,13,76,196,76,204,57,212,52,211,66,203,93,190,hb,22,hb,9,94,2,78],
+    hp=()=>{g.beginPath();hull.forEach((v,i)=>{if(i%2)return;i?g.lineTo(X+v,hull[i+1]+y):g.moveTo(X+v,hull[i+1]+y)});g.closePath()};
+  g.fillStyle=lg(g,0,56+y,0,101+y,['#7a5230','#5e3e24','#33200f']);hp();g.fill();
+  clipTo(g,hp,()=>{
+    SK([4,82,205,82],'#a8482c',2);SK([4,83.6,205,83.6],'#6a2a18',.6);SK([5,80.4,205,80.4],'#e2d2a8',.6);
+    /* strakes, their butt joints staggered from one to the next like courses of brick */
+    for(let j=0;j<4;j++){SK([7+j*1.4,87+j*3.6,204-j*1.8,87+j*3.6],'#2e1c0e',.5);for(let i=0;i<7;i++)H(26+i*26+(j%2)*13,84.4+j*3.6-(j?1:0),.6,j?3.6:2.6,'rgba(24,12,6,.4)')}});
+  SK([1.5,62,13.5,77.6,197,77.6,206,58],'#2e1c0e',1.4);
   SK([0,60,7,58],'#b88a52',.8);SK([204.6,57,212,52.4],'#b88a52',.8);
   /* the two steering oars, one to each side of the stern */
-  PL([186,70,188.4,70,196,98,198,107,193,107,192,98],'#553720');PL([194,66,197,66,207,98,210,108,204,108,202,98],'#6e4a2a');
-  if(o.plank){PL([40,77,49,77,31,104.5,21,104.5],'#8a6238');for(let i=0;i<6;i++)SK([40-i*3,80.6+i*3.6,48-i*3,80.6+i*3.6],'#5a3e22',.6);SK([49,77,31,104.5],'#b88a52',.5)}
+  PL([186,70,188.4,70,196,98,198,107,193,107,192,98],'#553720');PL([194,66,197,66,207,98,210,108,204,108,202,98],'#6e4a2a')};
+  if(o.plank){inRect(g,0,0,480,100,body);
+    poly(g,[X+40,77+y,X+49,77+y,X+31,104.5,X+21,104.5],'#8a6238');
+    for(let i=0;i<6;i++){const y0=77+y+(27.5-y)*(i+1)*3.6/27.5;stroke(g,[X+40-i*3,y0,X+48-i*3,y0],'#5a3e22',.6)}
+    stroke(g,[X+49,77+y,X+31,104.5],'#b88a52',.5)}
+  else body();
   if(o.wake)for(let i=0;i<8;i++)R(g,X+214+i*9+(t/60%9),97.6+(i%2)+y,7-i*.6,.6,'#e6f2f4')}
 /* ---------- Seleucia: the harbor of Antioch, in the morning ---------- */
+function post4(g,x){g.fillStyle=lg(g,x-1,0,x+7,0,['#8a7a66','#5a4c40','#3a302c']);g.fillRect(x,96,6,8);R(g,x-1,94.6,8,2,'#6a5a4a');R(g,x-1,94.6,8,.6,'#e8d8b8')}
 ART.seleucia={w:480,fp:1.3,
  paint(g){const r=rng(211),ST='#d9cba6';
   sky(g,480,64,['#3f7cc6','#6ea4dc','#a6c8e6','#dfe9ec']);cloud(g,330,12,64,9,r);cloud(g,190,22,40,6,r);cloud(g,440,26,34,5,r);
@@ -89,7 +98,7 @@ ART.seleucia={w:480,fp:1.3,
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(255,240,200,0)','rgba(255,240,200,.9)']);g.fillRect(0,103,480,41)});
   shade(g,[0,104,112,104,128,112,0,114],SH,.6);
   /* mooring posts */
-  for(const x of[236,444]){oval(g,x+3,104.4,4.6,1.2,'rgba(40,30,60,.5)');shade(g,[x+6,104,x+9,104,x+17,108.6,x+12,108.6],SH,.6);g.fillStyle=lg(g,x-1,0,x+7,0,['#8a7a66','#5a4c40','#3a302c']);g.fillRect(x,96,6,8);R(g,x-1,94.6,8,2,'#6a5a4a');R(g,x-1,94.6,8,.6,'#e8d8b8')}
+  for(const x of[236,444]){oval(g,x+3,104.4,4.6,1.2,'rgba(40,30,60,.5)');shade(g,[x+6,104,x+9,104,x+17,108.6,x+12,108.6],SH,.6);post4(g,x)}
   /* cargo for Cyprus: wine jars, sacks of grain */
   shade(g,[128,106,200,106,210,112,138,112],SH,.5);for(let i=0;i<4;i++)vessel(g,134+i*9.5,106,4.2,15-(i%2),['#a05a34','#8a4a2a','#b0683c','#96502e'][i],'amph');
   sack(g,177,106,7,11,'#cdbb8c');sack(g,190,107,8,13,'#d8c698');sack(g,184,97.4,6,8.6,'#c4b282');
@@ -100,8 +109,7 @@ ART.seleucia={w:480,fp:1.3,
  fore(g){vessel(g,18,152,12,34,'#6a3420','amph',{noShadow:1});sack(g,42,148,10,15,'#a89870');
   for(let i=0;i<4;i++){g.strokeStyle=i%2?'#3a3028':'#52463a';g.lineWidth=3;g.beginPath();g.ellipse(500,139-i*2.6,16-i,4.2,0,0,6.2832);g.stroke()}
   comp(g,'source-atop',.4,()=>R(g,0,0,530,150,'#34305a'))},
- draw(g,t){R(g,258,100.6,214,1,'rgba(20,40,60,.5)');for(let i=0;i<9;i++)R(g,262+i*24+Math.sin(t/500+i)*2,101.6,9,.6,'rgba(220,240,244,.6)');
-  ship(g,262,0,t,{plank:1})},
+ draw(g,t){ship(g,262,0,t,{plank:1});post4(g,444)},
  front(){}};
 /* ---------- Salamis: the square between the harbor and the synagogue ---------- */
 ART.salamis={w:480,fp:1.3,
