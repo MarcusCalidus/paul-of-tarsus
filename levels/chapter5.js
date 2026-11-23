@@ -291,11 +291,26 @@ Object.assign(LOOK,{
   /* an attendant of the principal men: he carries no weapon */
   guard5:{skin:'#b0784a',hair:'#2a1a12',tunic:'#8a8a7a',belt:'#3a2414',trim:'#5a5a4a',brow:'#1a1210',ph:0},
   /* the people of the city, seen on the second Sabbath */
-  town1:{skin:'#c49064',hair:'#3a2616',beard:'#3a2616',tunic:'#c07a3a',belt:'#3a2414',ph:0},town2:{skin:'#b8845a',hair:'#2a1a12',tunic:'#7a8a9a',cloak:'#c8b890',long:1,belt:'#4a3a24',ph:0},
-  town3:{skin:'#c89a70',veil:'#a8503a',tunic:'#d8c9a0',long:1,belt:'#8a6a2a',slim:1,longSleeve:1,ph:0},town4:{skin:'#a8703f',wrap:'#3f6a8a',beard:'#5a5a5a',tunic:'#8a7a5a',belt:'#2e2016',ph:0},
-  town5:{skin:'#c08c5c',hair:'#6a5a4a',tunic:'#e2dccb',cloak:'#7a3434',long:1,belt:'#4a3a24',ph:0},town6:{skin:'#c49268',veil:'#5a7a5a',tunic:'#4f7480',long:1,belt:'#c9a14a',slim:1,longSleeve:1,ph:0}});
-/* CROWD: the people who fill the square on the second Sabbath: a look for each, and where he or she stands */
-const CROWD=[];for(let i=0;i<20;i++)CROWD.push(['town'+(i*5%6+1),142+i*10.6+(i%3)*1.6,i%2?107.6:111.4,1]);
+  town1:{skin:'#c49064',hair:'#3a2616',beard:'#3a2616',tunic:'#c07a3a',belt:'#3a2414',ph:0},
+  town2:{skin:'#b8845a',hair:'#2a1a12',tunic:'#7a8a9a',cloak:'#c8b890',long:1,belt:'#4a3a24',ph:0},
+  town3:{skin:'#c89a70',veil:'#a8503a',tunic:'#d8c9a0',long:1,belt:'#8a6a2a',slim:1,longSleeve:1,ph:0},
+  town4:{skin:'#a8703f',wrap:'#3f6a8a',beard:'#5a5a5a',tunic:'#8a7a5a',belt:'#2e2016',ph:0},
+  town5:{skin:'#c08c5c',hair:'#6a5a4a',tunic:'#e2dccb',cloak:'#7a3434',long:1,belt:'#4a3a24',ph:0},
+  town6:{skin:'#c49268',veil:'#5a7a5a',tunic:'#4f7480',long:1,belt:'#c9a14a',slim:1,longSleeve:1,ph:0},
+  town7:{skin:'#b47e54',hair:'#8e8a84',beard:'#9c9890',tunic:'#9a8c72',cloak:'#5a6448',long:1,belt:'#4a3a24',ph:0},
+  town8:{skin:'#cc9e74',veil:'#c8a862',tunic:'#7c5048',long:1,belt:'#5a3a24',slim:1,longSleeve:1,ph:0},
+  town9:{skin:'#b88052',hair:'#261810',tunic:'#6c7a56',belt:'#3a2414',slim:1,ph:0},
+  town10:{skin:'#c29064',wrap:'#b8986c',beard:'#3a2818',tunic:'#c8b48a',cloak:'#485c74',long:1,belt:'#4a3a24',ph:0},
+  town11:{skin:'#ca9a72',veil:'#6a5478',tunic:'#e4dac2',long:1,belt:'#8a6a2a',slim:1,longSleeve:1,ph:0},
+  town12:{skin:'#aa7448',hair:'#4a3828',beard:'#4a3828',tunic:'#a46040',cloak:'#c8bc9e',long:1,belt:'#3a2414',ph:0}});
+/* CROWD: the people who fill the square on the second Sabbath: varied looks, organic clustering, sorted back-to-front by y */
+const CROWD=[
+  ['town4',144,107.2,1],['town11',157,111.0,1],['town7',168,106.8,1],['town9',178,112.2,1],
+  ['town3',190,108.0,1],['town12',202,111.6,1],['town6',213,106.6,1],['town1',223,112.4,1],
+  ['town10',236,107.6,1],['town8',248,111.8,1],['town2',259,106.8,1],['town5',271,111.2,1],
+  ['town4',282,107.8,1],['town11',293,112.0,1],['town9',306,106.8,1],['town7',318,110.4,1],
+  ['town3',329,107.2,1],['town12',340,111.4,1],['town6',351,106.8,1],['town10',362,110.2,1]
+].sort((a,b)=>a[2]-b[2]);
 const BN=actor('barnabas','Barnabas','#f0b070',128),MK=actor('mark','john_mark','#b8e0b0',176),PA=actor('papias','Papias','#f0b088',112),EU=actor('eumenes','Eumenes','#a8e0d8',140),
   JO=actor('joel','Joel','#e8d890',120),HA=actor('hanan','Hanan','#e8c0c8',98),AM=actor('ammia','Ammia','#e0c8f0',196),SN=actor('straton','Straton','#f0d0b0',104);
 Object.assign(ICON,{

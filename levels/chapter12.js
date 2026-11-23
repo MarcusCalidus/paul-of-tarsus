@@ -372,12 +372,34 @@ ART.isth12={w:320,q:10,variant:()=>SEAS()==='w'?'w':'d',
  light:{amb:'#ffffff'},draw(){},front(){}};
 
 /* ---------- Cenchreae ---------- */
+/* curved plank strakes on a wooden ship hull: each strake follows the sheer curve, with staggered butt joints stopping inside their course */
+function hullStrakes(g,H,x0,x1,y0,y1,sheer,o){o=o||{};const r=rng(o.seed||1213),n=o.n||5,step=(y1-y0)/(n+1);
+  poly(g,H);g.fillStyle=lg(g,0,y0,0,y1,['#7e5834','#624226','#3a2414']);g.fill();
+  clipTo(g,()=>poly(g,H),()=>{
+    /* subtle horizontal wale/trim band following the sheer */
+    const band=[];for(let i=0;i<=12;i++){const x=x0+(x1-x0)*i/12;band.push(x,sheer(x)+4.6)}
+    for(let i=12;i>=0;i--){const x=x0+(x1-x0)*i/12;band.push(x,sheer(x)+7.2)}
+    poly(g,band,o.wale||'#9a482c');
+    const hi=[];for(let i=0;i<=12;i++){const x=x0+(x1-x0)*i/12;hi.push(x,sheer(x)+4.4)}
+    stroke(g,hi,'rgba(232,212,172,.55)',.7);
+    const lo=[];for(let i=0;i<=12;i++){const x=x0+(x1-x0)*i/12;lo.push(x,sheer(x)+7.4)}
+    stroke(g,lo,'rgba(36,18,10,.55)',.7);
+    /* individual curved plank courses and staggered butt joints */
+    for(let j=0;j<n;j++){const dy=9.4+j*step,pts=[],hiPts=[];
+      for(let i=0;i<=12;i++){const x=x0+(x1-x0)*i/12,curve=sheer(x)*(1-j*.12)+y0*j*.12;pts.push(x,curve+dy);hiPts.push(x,curve+dy+.7)}
+      stroke(g,pts,'rgba(28,16,8,.52)',.6);stroke(g,hiPts,'rgba(210,170,118,.18)',.5);
+      for(let k=0;k<5;k++){const bx=x0+10+k*20+((j*11)%15)+r()*3;if(bx>x0+4&&bx<x1-4){
+        const yt=sheer(bx)*(1-Math.max(0,j-1)*.12)+y0*Math.max(0,j-1)*.12+(j?9.4+(j-1)*step:7.4),yb=sheer(bx)*(1-j*.12)+y0*j*.12+dy;
+        stroke(g,[bx,yt+.5,bx,yb-.4],'rgba(28,16,8,.38)',.55)}}}
+    tex(g,'mott',.22,x0,y0,x1-x0,y1-y0,'overlay',.5);
+    ao(g,x0,y1-10,x1-x0,10,'b',.42,'#140c08')})}
+
 /* The eastern harbor: two piers that reached into the sea like a horseshoe, and room for ships 40 meters long (The Watchtower,
    March 1, 2009). In winter a ship is hauled out, and her mast is down. The far side of the gulf closes the view: no upright
    stands across the line of the sea. The sanctuaries of the harbor are not shown. */
 ART.cen12={w:320,q:12,variant:()=>F.cen?'f':F.summer?'u':'w',
  paint(g,v){const r=rng(1213),ST='#cfc5a8',wet=v==='w';
-  sky(g,320,52,SKY[v]);if(wet)for(let i=0;i<4;i++)cloud(g,30+i*90,8+(i%2)*8,90,9,r,'#c9ccd0','#878d98');else{cloud(g,70,12,50,4,r);cloud(g,240,8,56,4,r)}
+  sky(g,320,62,SKY[v]);if(wet)for(let i=0;i<4;i++)cloud(g,30+i*90,8+(i%2)*8,90,9,r,'#c9ccd0','#878d98');else{cloud(g,70,12,50,4,r);cloud(g,240,8,56,4,r)}
   ridge(g,0,320,62,x=>10+5*Math.sin(x/47+2)+3*Math.sin(x/15)+4*Math.exp(-Math.pow((x-250)/60,2)),wet?['#7f8894','#8d9498']:['#8fa0b4','#a2aeae']);
   g.fillStyle=lg(g,0,60,0,104,wet?['#5a6f84','#4a6078','#52687c']:['#5d94bc','#3f78a8','#4a84ae']);g.fillRect(0,60,320,44);for(let i=0;i<90;i++){const y=61+r()*42;R(g,r()*320,y,2+r()*6*(y-58)/40,.5,wet?'rgba(214,224,236,.3)':'rgba(214,236,244,.4)')}
   /* the far pier, curving in from the right; and the near one, on which the sheds stand */
@@ -389,13 +411,15 @@ ART.cen12={w:320,q:12,variant:()=>F.cen?'f':F.summer?'u':'w',
   pave(g,0,103,320,144,'#c9bd9c',r,{vx:160,vy:58,rows:4,step:44,v:.07});ao(g,0,103,320,5,'t',.3,'#3a3050');R(g,136,100,184,4,tint(ST,-.12));R(g,136,100,184,.8,tint(ST,.24));
   for(const x of[150,214,290]){R(g,x,96,5,5,'#5a5248');R(g,x,96,5,1,'#8a8278')}
   if(wet){/* a ship hauled out for the winter: the hull on its side timbers, the mast taken down and laid along the quay */
-    R(g,150,104,112,2,'rgba(30,30,50,.3)');const H=[152,92,160,84,176,80,236,80,254,76,264,70,262,84,252,96,236,102,176,102,160,99];poly(g,H);g.fillStyle=lg(g,0,70,0,102,['#8a6238','#6a4a2a','#4a3220']);g.fill();
-    clipTo(g,()=>poly(g,H),()=>{for(let i=0;i<4;i++)stroke(g,[152,86+i*4.4,264,84+i*4.2],'rgba(30,20,12,.4)',.5);tex(g,'wood',.5,150,70,116,34,'overlay',.6)});stroke(g,[160,84,176,80,236,80,254,76,264,70],'#b8905a',.7);
+    R(g,150,104,112,2,'rgba(30,30,50,.3)');const H=[152,92,160,84,176,80,236,80,254,76,264,70,262,84,252,96,236,102,176,102,160,99];
+    hullStrakes(g,H,152,264,70,102,x=>81-5*Math.pow((x-206)/58,2)-(x>236?(x-236)*.22:0),{seed:1214,n:4,wale:'#8c422c'});
+    stroke(g,[160,84,176,80,236,80,254,76,264,70],'#c29862',.8);
     for(const x of[170,200,232])poly(g,[x,102,x+3,102,x+8,108,x+5,108],'#5a4226');
     comp(g,'screen',.3,()=>{g.fillStyle=lg(g,0,104,0,144,['rgba(200,210,222,.9)','rgba(200,210,222,.2)']);g.fillRect(0,104,320,40)})}
   else{/* a ship for Asia at the quay: her stern, and the plank to her; her mast stands beyond the picture's edge */
-    const H=[236,84,244,74,258,70,320,68,320,100,262,100,244,96];poly(g,H);g.fillStyle=lg(g,0,68,0,100,['#8a6238','#6a4a2a','#4a3220']);g.fill();
-    clipTo(g,()=>poly(g,H),()=>{for(let i=0;i<4;i++)stroke(g,[236,78+i*5,320,76+i*5],'rgba(30,20,12,.4)',.5);tex(g,'wood',.5,236,66,84,36,'overlay',.6)});stroke(g,[236,84,244,74,258,70,320,68],'#b8905a',.7);
+    const H=[236,84,244,74,258,70,320,68,320,100,262,100,244,96];
+    hullStrakes(g,H,236,320,68,100,x=>70+Math.max(0,(262-x)*.42)-(x>280?(x-280)*.05:0),{seed:1215,n:5,wale:'#a2482c'});
+    stroke(g,[236,84,244,74,258,70,320,68],'#c49a62',.8);
     poly(g,[250,100,262,100,246,108,232,108],'#9a7448');stroke(g,[250,100,232,108],'#5a4226',.6);
     shade(g,[136,104,320,104,320,112,136,110],SH,.32)}
   haze(g,320,103,v);if(!wet)pool(g,180,0,240,150,WARM[v],.1,'screen')},
@@ -462,8 +486,11 @@ ART.eph12={w:320,q:12,
   g.fillStyle=lg(g,0,62,0,104,['#5d94bc','#3f78a8','#4a84ae']);g.fillRect(0,62,96,42);for(let i=0;i<40;i++){const y=63+r()*40;R(g,r()*96,y,2+r()*5,.5,'rgba(214,236,244,.4)')}
   R(g,96,62,34,42,'#a8a070');foliage(g,112,84,12,6,'#7c8a52',r,40);R(g,96,100,34,4,'#bcb298');
   /* the stern of the ship that brought them */
-  {const H=[0,70,54,72,66,76,76,86,70,98,56,102,0,102];poly(g,H);g.fillStyle=lg(g,0,70,0,102,['#8a6238','#6a4a2a','#4a3220']);g.fill();clipTo(g,()=>poly(g,H),()=>{for(let i=0;i<4;i++)stroke(g,[0,78+i*5,78,80+i*5],'rgba(30,20,12,.4)',.5);tex(g,'wood',.5,0,68,80,36,'overlay',.6)});
-   stroke(g,[0,70,54,72,66,76,76,86],'#b8905a',.7);poly(g,[74,88,80,72,85,64,88,65,84,74,80,89],'#6a4a2a');poly(g,[58,102,70,102,88,108,74,108],'#9a7448')}
+  {const H=[0,70,54,72,66,76,76,86,70,98,56,102,0,102];
+   hullStrakes(g,H,0,76,70,102,x=>70.4+Math.pow(x/56,2)*5.4,{seed:1219,n:5,wale:'#a2482c'});
+   stroke(g,[0,70,54,72,66,76,76,86],'#c49a62',.8);
+   poly(g,[74,88,80,72,85,64,88,65,84,74,80,89],'#6a4a2a');stroke(g,[75,87,80.6,72,85.4,64.4],'#b88e58',.6);
+   poly(g,[58,102,70,102,88,108,74,108],'#9a7448');stroke(g,[58,102,74,108],'#5a4226',.6)}
   /* houses up the street; the door of the synagogue, with a porch of two posts at its ends */
   house(g,128,48,70,56,W,r,{patch:2,cracks:3,beams:13});R(g,127,43.6,72,2,'#b8603c');windowArt(g,142,62,10,9,W,{shut:1});doorArt(g,170,66,18,38,'#6a4a2c',r,{bands:[]});
   house(g,198,36,122,68,'#e6dabb',r,{patch:1,cracks:3,beams:0});R(g,197,31.6,124,2,'#b8603c');for(const x of[210,292]){R(g,x-1.6,50,12.2,14,tint('#e6dabb',-.2));R(g,x,51.6,9,11,'#2a2420');for(let i=1;i<3;i++)R(g,x+i*3-.4,51.6,.8,11,'#6a5a44')}

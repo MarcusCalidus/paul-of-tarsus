@@ -317,7 +317,19 @@ ART.wall={w:320,paint(g){const r=rng(51);
   pool(g,262,24,300,170,'#7080c8',.1)},
  draw(){},front(){}};
 function miniBasket(g,x,y,rider){stroke(g,[x-6,y-11,x,y-22],'#b89a5a',.8);stroke(g,[x+6,y-11,x,y-22],'#b89a5a',.8);
-  if(rider){R(g,x-3,y-18,6,7,'#b8845a');R(g,x-3.5,y-19,7,2.6,'#2a1a12');R(g,x-1,y-13.5,4,3,'#2a1a12');R(g,x-5,y-12.5,10,3,'#6a4a30');R(g,x+1,y-16,1,1,'#1a100a')}
+  if(rider){
+    /* Saul crouched inside the basket, moonlit from upper-right, matching his sprite palette */
+    R(g,x-5,y-13.6,10,2.6,'#9c9484');R(g,x-5,y-13.6,4.5,2.6,'#624632');R(g,x-5,y-13.6,1.6,2.6,'#443022');R(g,x+1,y-13.6,3.5,1.2,'#c8c0ae');
+    /* neck and rounded head silhouette with moonlit highlight on right cheek */
+    R(g,x-1.2,y-14.4,2.4,1.2,'#885e40');
+    R(g,x-2.6,y-18.8,5.2,4.8,'#a47450');R(g,x-2.6,y-18.8,1.8,4.8,'#7c5438');R(g,x+.8,y-18.4,1.8,3.2,'#c6966c');
+    /* dark hair curving around crown and temple */
+    R(g,x-2.4,y-19.8,4.8,1.2,'#261812');R(g,x-3.1,y-18.8,6.2,1.2,'#261812');R(g,x-3.1,y-17.8,1.3,2.2,'#261812');R(g,x+2,y-18.2,1,1.4,'#3c281e');R(g,x-.4,y-19.6,2,.6,'#4a3428');
+    /* eyes, brow, and short full beard matching Saul's sprite */
+    R(g,x-.8,y-17.2,1,.8,'#1a100a');R(g,x+1.1,y-17.2,1,.8,'#1a100a');
+    R(g,x-2.6,y-15.4,5.2,1.4,'#281812');R(g,x-1.8,y-14.2,3.8,1.2,'#22140e');R(g,x+.2,y-15.2,1.4,.6,'#3c261c');
+    /* hands gripping the basket rim */
+    R(g,x-5.4,y-12.8,1.8,1.2,'#a47450');R(g,x+3.6,y-12.8,1.8,1.2,'#c29268')}
   const p=[];for(let j=0;j<=10;j++)p.push(x-8.5+j*.25*(j<5?1:0)-(j>=5?-1.25-(j-5)*.5:0),y-11+j);for(let j=10;j>=0;j--)p.push(x+8.5-(j<5?j*.25:1.25+(j-5)*.5),y-11+j);
   clipTo(g,()=>poly(g,p),()=>{R(g,x-9,y-11,18,11,'#7a5c2c');for(let j=0;j<22;j++)for(let i=(j>>1)%2*2;i<18;i+=4)R(g,x-9+i,y-11+j*.5,2,.5,j%2?'#b08c48':'#96763a');
     g.fillStyle=lg(g,x-9,0,x+9,0,['rgba(0,0,0,.3)','rgba(255,230,170,.15)','rgba(0,0,0,.5)']);g.fillRect(x-9,y-11,18,11)});
@@ -627,7 +639,14 @@ function setup(){P.called='Saul';place(E,'workshop',196,118,-1);place(GD,'street
 /* ============ SCENES: intro, finale, chapter complete ============ */
 const twinkle=(g,t)=>{for(let i=0;i<6;i++)if((Math.floor(t/500)+i)%4===0)R(g,160+i*27,12+(i*17)%40,1,1,'#0a0f2e')};
 function wallScene(g,t){backdrop(g,'wall');twinkle(g,t);const S=G.end||{};
-  if(S.heads){R(g,99,35.5,3,4,'#8a6a58');R(g,99,34.5,3,1.2,'#8a8a94');R(g,108,36.5,3,3.5,'#927058');R(g,108,35.5,3,1.2,'#2a1c18')}
+  if(S.heads){
+    /* Eliab (left, grey hair & beard) and Jesse (right, dark hair) leaning out the window paying out the rope */
+    R(g,97.4,37.4,5.4,2.8,'#384438');R(g,98.6,34,3.2,3.4,'#8a664c');R(g,100.4,34.4,1.4,2.2,'#ac8264');
+    R(g,98.2,33.4,3.8,1.1,'#989aa6');R(g,98.8,36.6,2.8,1.5,'#aeb0bc');
+    R(g,107.6,37.6,5,2.6,'#62523a');R(g,108.4,34.6,3,3,'#926d52');R(g,110,35,1.4,2,'#b48a6a');
+    R(g,108.1,33.8,3.6,1.3,'#241812');R(g,108.2,34.8,.8,1.2,'#241812');
+    /* hands beside the rope at the sill */
+    R(g,103.2,39.2,1.6,1.2,'#a0785a');R(g,106.4,39.2,1.6,1.2,'#aa8264')}
   if(S.by!=null){stroke(g,[105.5,41,105.5,S.by-22],'#b89a5a',.8);miniBasket(g,105.5,S.by,S.rider)}
   if(S.px!=null){const x=hp(S.px),y=hp(S.py),f=Math.floor(t/160)%2;oval(g,x+1.5,y,4,1,'rgba(0,0,0,.4)');
     R(g,x,y-9,3,3,'#8f6a50');R(g,x-.5,y-10,4,1.4,'#1e1410');R(g,x+2,y-7.5,1,1.2,'#1e1410');R(g,x-1,y-6,5,4,'#4e3c36');R(g,x-1,y-6,1.5,4,'#3a2c2a');R(g,x+(f?0:1),y-2,1,2,'#7a5a46');R(g,x+(f?2:1),y-2,1,2,'#7a5a46')}}
