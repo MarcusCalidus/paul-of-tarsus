@@ -2970,9 +2970,10 @@
       else if(l.some(x=>x<1))stuck.push(k);else{sits++;q.push([l.map(x=>x-1),n<3?3:0,n+1])}}
     ok(!stuck.length&&ends===1&&seenS.has('00000/04')&&seenS.size>20&&refused>0&&[0,1,2,3].every(n=>C().canLast(C().after[n].slice(),n?3:0,n))&&!C().canLast([2,0,0,1,0],2,3),
       `the whole night walked: ${seenS.size} states by ${pours} allowed pours and ${sits} sittings (${refused} pours refused); in none of them is Luke stuck, and every path ends at midnight with every lamp at its last`+(stuck.length?'. STUCK: '+stuck.slice(0,6).join(' '):''))}
-  /* midnight: told, and nobody is played. From the fourth sitting to the street nothing sounds but the score dying away: every tone and every
-     noise that does not come from the sequencer or the room's ambience is counted, and there is none. */
-  const sounds=[],W0={tone:window.tone,noise:window.noise,playStep:window.playStep,ambience:window.ambience};let inSeq=0;
+  /* midnight: told, and nobody is played. From the fourth sitting to the street, no music and no room ambience play, and no fall sound
+     (tone/noise) fires; only a woman's distant startled cry breaks the quiet once as the window stands empty. */
+  const sounds=[],W0={tone:window.tone,noise:window.noise,playStep:window.playStep,ambience:window.ambience},cry0=C().cry;let inSeq=0,cried=0,criedWhen='';
+  C().cry=function(){cried++;criedWhen=G.room+'/'+C().stage()+'/'+told('v9b');return cry0.apply(this,arguments)};
   heard.length=0;onH('stool','use');await when(()=>F.t4);
   for(const k of['playStep','ambience'])window[k]=function(){inSeq++;try{return W0[k].apply(this,arguments)}finally{inSeq--}};
   for(const k of['tone','noise'])window[k]=function(){if(!inSeq)sounds.push(k);return W0[k].apply(this,arguments)};
@@ -2981,9 +2982,15 @@
   ok(seenTold.has('v7b')&&seenTold.has('v9a')&&stillThere&&!EU.room&&!told('v9b')&&AU.mood==='none'&&amb()===''&&levels()==='0,0,0,0,0','midnight (Acts 20:7, 9): his sleep is told while he still sits there; then the window is empty, and there is no music and no sound of the room ['+[...seenTold].slice(-3).join(' ')+']');
   keep('t4');halt('midnight15');
   await when(()=>told('v9b'));ok(G.room==='upper15'&&C().stage()==='x'&&!EU.room&&!Object.values(ACT).some(a=>a.walk),'the fall is told over the empty window (Acts 20:9): nobody is seen to fall, and nobody moves');
-  await when(()=>G.room==='street15'&&!F.mid&&+$('#dim').style.opacity===0);note();Object.assign(window,W0);
+  await when(()=>G.room==='street15'&&!F.mid&&+$('#dim').style.opacity===0);note();Object.assign(window,W0);C().cry=cry0;
   ok(seenTold.has('v9b')&&!F.mid&&!Object.values(ACT).some(a=>a.room==='street15')&&same(makeCode(),kept.t4),'then the street by night, where nobody is an actor, and the code still holds Luke in the upper room at midnight');
-  ok(!sounds.length&&AU.mood==='none'&&amb()==='','nothing sounds at the fall: from the fourth sitting to the street, not a tone and not a noise, no music and nothing of the room or the street'+(sounds.length?'. HEARD: '+sounds.join(' '):''));halt('below15');
+  ok(!sounds.length&&AU.mood==='none'&&amb()===''&&cried===1&&criedWhen==='upper15/x/false','at midnight: no music, no room sound and no sound of a fall — only the woman\'s distant cry once as the window stands empty'+(sounds.length?'. HEARD: '+sounds.join(' '):'')+(cried!==1||criedWhen!=='upper15/x/false'?` [cry ${cried} at ${criedWhen}]`:''));
+  {const SR=44100,sv={ctx:AU.ctx,master:AU.master,mus:AU.mus,fx:AU.fx,ambG:AU.ambG,out:AU.out,body:AU.body,send:AU.send,wet:AU.wet,toRoom:AU.toRoom,nbuf:AU.nbuf,space:AU.space};
+    const off=new OfflineAudioContext(2,SR*2,SR);AU.ctx=off;audioGraph(off);AU.wet.gain.value=ROOM*1.2;C().cry(.05);
+    const buf=await off.startRendering();Object.assign(AU,sv);
+    let pk=0,bad=0;for(let ch=0;ch<2;ch++)for(const v of buf.getChannelData(ch)){if(!Number.isFinite(v))bad++;const a=Math.abs(v);if(a>pk)pk=a}
+    ok(!bad&&pk>.05&&pk<.9,'offline: the woman\'s distant cry renders finite, audible and unclipped (peak '+pk.toFixed(3)+')')}
+  halt('below15');
   await when(()=>G.room==='upper15'&&C().stage()==='a'&&+$('#dim').style.opacity===0);note();
   ok(seenTold.has('v10')&&!EU.room&&P.room==='upper15'&&Math.abs(P.x-187)<1&&!P.talk&&levels()==='2,2,3,3,4','Paul goes down (Acts 20:10), and up again to the table, where the lamps are full again');
   {const T4=H('lamp_on_the_table'),TB=H('table');ok(P.x+8<=T4.x&&P.x+8<=TB.x+12&&Math.abs(LK.x-P.x)>60&&snd('still','lamps15,wick15'),'he stands at the table\'s end, before neither its lamp nor the bread; one low note is left, and the lamps hiss again ['+AU.mood+' '+amb()+']')}

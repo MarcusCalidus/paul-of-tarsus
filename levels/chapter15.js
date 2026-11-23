@@ -18,8 +18,9 @@
    What the account says is told by the narrator, in paraphrase with its reference (TOLD below), and never put into a mouth as a
    quotation. What Paul says that night is told, never composed. The narration says "he" and "they" until the journey to Troas, and
    "we" from Acts 20:5 on, where Luke is with them again; from the quay of Troas to the end Luke is played.
-   The fall is never drawn and makes no sound: the window is shown empty while it is told, then the street below by night, with Paul
-   bent over the young man among the people, small and half hidden. Nothing the player does changes what happens to Eutychus.
+   The fall is never drawn and makes no sound of its own: as the window is shown empty a woman's distant startled cry breaks the midnight
+   quiet, then the fall is told, and then the street below is shown by night, with Paul bent over the young man among the people, small
+   and half hidden. Nothing the player does changes what happens to Eutychus.
    Four things are played: what Tertius writes about Phoebe (three questions, only true things on offer); the gift weighed in the sight
    of all on a balance, each bag against the weight its letter gives, with four weights that may lie in either pan (a close view); the
    other road, laid out in wet sand with a reed, a shell and an awl (a close view); and a night measured in lamp oil, sitting by
@@ -33,7 +34,8 @@
    stands in the window. Eutychus sits in that window, on its sill, as the account says (Acts 20:9): in the opening, his head under
    its top, turned to the speaker. No flame and no round pool of light comes behind a head; the balance hangs from two cords and has
    no upright; the lamp's stand ends in a cup, and the hanging lamp hangs from cords that part (CONTRIBUTING section 3).
-   One tune runs through the chapter and changes with the hours (MUSIC); at midnight nothing plays and nothing is heard. */
+   One tune runs through the chapter and changes with the hours (MUSIC); at midnight the music and the room fall silent, broken once by a
+   woman's distant startled cry as the window stands empty. */
 LEVEL(15,()=>{
 "use strict";
 
@@ -123,6 +125,53 @@ const CALLS={
 const AMB={gaius15:{wind:.1,brazier15:.5},scale15:{wind:.05},cen15:{waves:.4,gulls:.45,wind:.18,creak:.2},sand15:{waves:.5,gulls:.3,wind:.12},
   quay15:{waves:.38,gulls:.3,crowd:.14,creak:.25},upper15:{lamps15:.6,wick15:.5,crickets:.1,wind:.05},after15:{lamps15:.45,wick15:.3},
   street15:{dawnbird15:.6,wind:.12,waves:.1}};
+/* cry15: a woman's distant startled cry across the upper room when the window stands empty at midnight (Acts 20:9). Synthesized on the
+   engine's mixer and room reverb: a brief intake of breath, then a glottal pulse with vocal-fold roughness, breath aspiration and soft
+   saturation passed through four moving female vocal-tract formants, rolled off and placed back in the room. */
+const GLOT15=new WeakMap(),SAT15=(()=>{const s=new Float32Array(1024);for(let i=0;i<1024;i++){const x=i/511.5-1;s[i]=Math.tanh(x*1.9+.12*x*x)/Math.tanh(1.9)}return s})();
+function wave15(c){let w=GLOT15.get(c);if(!w){const N=48,re=new Float32Array(N),im=new Float32Array(N);for(let n=1;n<N;n++)im[n]=Math.pow(n,-1.12);w=c.createPeriodicWave(re,im);GLOT15.set(c,w)}return w}
+function cry15(at){const c=AU.ctx;if(!c)return 0;const t0=at!=null?at:c.currentTime+.05,ny=c.sampleRate*.45,ps=1.12,wmul=.7/.55;
+  /* brief intake of breath, heard through the room */
+  {const d=.13,s=c.createBufferSource(),b1=c.createBiquadFilter(),b2=c.createBiquadFilter(),g1=c.createGain(),g2=c.createGain(),e=c.createGain(),w=c.createGain();
+    s.buffer=AU.nbuf;s.loop=true;b1.type='bandpass';b1.Q.value=3.2;b1.frequency.setValueAtTime(1100*1.22,t0);b1.frequency.exponentialRampToValueAtTime(2400*1.22,t0+d*.85);
+    b2.type='bandpass';b2.Q.value=5.5;b2.frequency.setValueAtTime(2100*1.22,t0);b2.frequency.exponentialRampToValueAtTime(3100*1.22,t0+d);
+    g1.gain.value=1;g2.gain.value=.45;e.gain.setValueAtTime(.0001,t0);e.gain.exponentialRampToValueAtTime(.04,t0+d*.65);e.gain.exponentialRampToValueAtTime(.0001,t0+d);
+    w.gain.value=.45*wmul;s.connect(b1);b1.connect(g1);g1.connect(e);s.connect(b2);b2.connect(g2);g2.connect(e);e.connect(w);w.connect(AU.send);
+    s.start(t0,Math.random()*.5);s.stop(t0+d+.05)}
+  /* startled female cry, placed across the room */
+  const t=t0+.15,d=.58,end=t+d,pts=[[0,660],[.14,830],[.42,800],[.76,680],[1,530]],peakF0=830*ps;
+  const osc=c.createOscillator();osc.setPeriodicWave(wave15(c));osc.frequency.setValueAtTime(pts[0][1]*ps,t);
+  for(let i=1;i<pts.length;i++)osc.frequency.exponentialRampToValueAtTime(pts[i][1]*ps,t+d*pts[i][0]);
+  const wob=(hz,cents,fr,pk)=>{const l=c.createOscillator(),g=c.createGain();l.frequency.value=hz;g.gain.setValueAtTime(0,t);
+    if(fr>0)g.gain.setValueAtTime(0,t+fr);g.gain.linearRampToValueAtTime(cents,t+pk);l.connect(g);g.connect(osc.detune);l.start(t);l.stop(end+.1)};
+  wob(6.4+Math.random()*1.4,26,.04,.16);wob(14.5+Math.random()*4,20,0,.05);wob(34+Math.random()*12,14,.02,.12);
+  /* vocal-fold roughness (50 Hz downward) and glottal breath */
+  const rs=c.createGain(),rl=c.createOscillator(),rg=c.createGain();rs.gain.value=1;osc.connect(rs);
+  rl.type='triangle';rl.frequency.setValueAtTime(50,t);rl.frequency.linearRampToValueAtTime(36,end);
+  rg.gain.setValueAtTime(0,t);rg.gain.linearRampToValueAtTime(.18,t+d*.15);rg.gain.linearRampToValueAtTime(.063,end);
+  rl.connect(rg);rg.connect(rs.gain);rl.start(t);rl.stop(end+.06);
+  const src=c.createGain();rs.connect(src);
+  const nz=c.createBufferSource(),nh=c.createBiquadFilter(),ng=c.createGain();nz.buffer=AU.nbuf;nz.loop=true;nh.type='bandpass';nh.frequency.value=2400;nh.Q.value=.75;
+  ng.gain.setValueAtTime(.44,t);ng.gain.exponentialRampToValueAtTime(.2,t+.09);ng.gain.setValueAtTime(.2,t+d*.65);ng.gain.linearRampToValueAtTime(.38,end);
+  nz.connect(nh);nh.connect(ng);ng.connect(src);
+  /* soft asymmetric vocal saturation */
+  const ws=c.createWaveShaper(),pre=c.createGain(),post=c.createGain();ws.curve=SAT15;ws.oversample='2x';pre.gain.value=1.3;post.gain.value=1/1.3;
+  src.connect(pre);pre.connect(ws);ws.connect(post);
+  /* four moving female vocal-tract formants (cascaded), then distance roll-off */
+  const fr=[800,1980,2950,4100],md=[1010,1660,2860,4000],to=[740,1380,2700,3850],bw=[95,115,160,230],
+    tr=(i,v)=>Math.min(ny,i?v:Math.max(v,Math.min(1250,peakF0*1.06)));
+  let x=post;
+  for(let i=0;i<4;i++){const lp=c.createBiquadFilter(),fm=tr(i,md[i]);lp.type='lowpass';
+    lp.frequency.setValueAtTime(tr(i,fr[i]),t);lp.frequency.exponentialRampToValueAtTime(fm,t+d*.22);lp.frequency.exponentialRampToValueAtTime(tr(i,to[i]),end);
+    lp.Q.value=20*Math.log10(Math.max(1.2,fm/bw[i]));x.connect(lp);x=lp}
+  const hp=c.createBiquadFilter(),lpO=c.createBiquadFilter(),env=c.createGain();
+  hp.type='highpass';hp.frequency.value=280;lpO.type='lowpass';lpO.frequency.value=3600;lpO.Q.value=.6;
+  env.gain.setValueAtTime(.0001,t);env.gain.linearRampToValueAtTime(.024,t+.032);env.gain.linearRampToValueAtTime(.024*.85,t+d*.5);env.gain.exponentialRampToValueAtTime(.0001,end);
+  x.connect(hp);hp.connect(lpO);lpO.connect(env);
+  let dry=env;if(c.createStereoPanner){const p=c.createStereoPanner();p.pan.value=.36;env.connect(p);dry=p}
+  const dG=c.createGain(),wG=c.createGain();dG.gain.value=.45;wG.gain.value=1.45*wmul;
+  dry.connect(dG);dG.connect(AU.fx);env.connect(wG);wG.connect(AU.send);
+  osc.start(t);osc.stop(end+.06);nz.start(t,Math.random()*.5);nz.stop(end+.06);return 1.15}
 /* ==== MUSIC: end ==== */
 
 /* ============ ART ============ */
@@ -2345,15 +2394,17 @@ async function eutychus(){if(G.eu15)return say(EUV,'eutychus_talk_again',{to:LK}
   await say(LK,'you_have_the_best_seat',{to:EU});await say(EUV,'eutychus_i_came_straight_from_work',{to:LK});await say(LK,'what_is_your_name',{to:EU});await say(EUV,'eutychus_my_name',{to:LK})}
 
 /* ---- midnight (Acts 20:9-12): told, and nobody is played ---- */
-/* The young man is still in the window while his sleep is told. Then the picture is the same room with the window empty, and the fall is
-   told: it is never drawn, and it makes no sound. The music is silent from midnight until Paul has gone up again, and so is the room:
-   the hiss of the lamps ends with the music, and comes back with the one low note. At daybreak the tune begins at its beginning.
+/* The young man is still in the window while his sleep is told. Then the picture is the same room with the window empty: the fall itself
+   is never drawn and makes no sound, and only a woman's distant startled cry breaks the midnight quiet as the empty window appears. The
+   music is silent from midnight until Paul has gone up again, and so is the room: the hiss of the lamps ends with the music, and comes back
+   with the one low note. At daybreak the tune begins at its beginning.
    While the street is shown by night Luke stays where he was, in the upper room, and is not seen: so a code made at any moment of this
    (t4 without mid, and the upper room) restores the room at midnight, every lamp burning its last, and the stool leads on from there
    (see sit). */
 async function midnight(){AU.mood='none';AU.amb={};
   await tell('v9a');
-  await fade(1,500);G.x15='x';show15('upper15',96,124,-1);await fade(0,700);
+  await fade(1,500);G.x15='x';show15('upper15',96,124,-1);CHAP[15].cry();await fade(0,700);
+  if(!fast())await wait(350);
   await tell('v9b');
   await fade(1,700);G.x15=null;show15('street15');LK.room='upper15';await fade(0,800);
   await tell('v10');
@@ -2504,8 +2555,8 @@ function hint15(){const r=G.room;
 
 /* ============ CHAPTER DEFINITION ============ */
 return{rooms:['gaius15','scale15','cen15','sand15','quay15','upper15','street15'],setup:setup15,start:start15,hint:hint15,music:MUSIC,beds:BEDS,calls:CALLS,topics:[],tablets:TABLETS,
-  /* for the playtest: what is told; the questions about Phoebe; the weights and the bags; the lamps and the search; the roads on the map */
-  told:TOLD,phoebe:PHOEBE,weights:WT,rounds:ROUND,sc:sc15,tilt:tiltScale15,lamps:LAMPS,oil:lamps15,after:AFTER,canLast,sat,stage:stage15,pebbles:PEB15,roads:[ROAD_A,ROAD_B],
+  /* for the playtest: what is told; the questions about Phoebe; the weights and the bags; the lamps and the search; the roads on the map; the cry at midnight */
+  told:TOLD,phoebe:PHOEBE,weights:WT,rounds:ROUND,sc:sc15,tilt:tiltScale15,lamps:LAMPS,oil:lamps15,after:AFTER,canLast,sat,stage:stage15,pebbles:PEB15,roads:[ROAD_A,ROAD_B],cry:cry15,
   flags:FLAGS,
   /* seven rooms and seventeen flags today; the code keeps room for sixteen and for forty. Two are played, one after the other: Paul in
      Greece, and Luke from the quay of Troas to the end. */
