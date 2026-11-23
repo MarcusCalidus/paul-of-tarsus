@@ -242,8 +242,19 @@ ART.river9={w:480,fp:1.3,
 ART.forum9={w:320,
  paint(g){const r=rng(917),ST='#d6ccb0',W='#e4d6b6';
   sky(g,320,58,['#3d7cc6','#76a8dc','#bcd4e6','#e8e8dc']);cloud(g,60,10,44,5,r);cloud(g,236,16,50,5,r);
-  /* over the roofs: the rock the city climbs, with a wall along its top and a tower at the wall's end (not in its middle: that would be an upright on a level band) */
-  ridge(g,150,320,50,x=>8+24*Math.exp(-Math.pow((x-250)/60,2))+2*Math.sin(x/9),['#b8ae98','#a09880','#8e8872']);R(g,222,17,60,2.4,'#d2c8ae');R(g,222,17,60,.5,'#f0e8d0');R(g,222,10.6,9,8.8,'#c8bea4');R(g,222,10.6,9,.6,'#eee6ce');R(g,229.6,10.6,1.4,8.8,'rgba(60,50,90,.3)');
+  /* over the roofs: the rocky acropolis hill with its citadel wall grounded into the slope and tower at the wall's end */
+  const ac=x=>8+24*Math.exp(-Math.pow((x-250)/60,2))+2*Math.sin(x/9);
+  ridge(g,150,320,50,ac,['#bfb49c','#a69c82','#8c846e']);
+  clipTo(g,()=>{g.beginPath();g.moveTo(150,50);for(let x=150;x<=320;x+=2)g.lineTo(x,50-ac(x));g.lineTo(320,50);g.closePath()},()=>{
+    poly(g,[190,46,248,18,242,46],'rgba(244,236,210,.2)');poly(g,[252,18,314,44,254,48],'rgba(58,50,74,.2)');
+    tex(g,'mott',.4,150,14,170,36,'overlay',.7);
+    for(let i=0;i<14;i++)foliage(g,166+i*10+r()*6,30+r()*14,4+r()*3,1.8+r(),'#7a8658',r,8)});
+  /* citadel curtain wall seated down onto the ridge slope, with small battlements and an end tower at x=222 */
+  const cw=[222,16.5,282,17.8,282,25.5,264,23,222,22];
+  poly(g,cw,'#cfc4a8');clipTo(g,()=>poly(g,cw),()=>{for(let y=18.5;y<25;y+=2.4)R(g,222,y,60,.45,'rgba(76,64,48,.28)');tex(g,'mott',.3,222,16,60,10,'overlay',.6)});
+  stroke(g,[222,16.5,282,17.8],'#efe6ce',.6);for(let x=232;x<280;x+=4.5)R(g,x,15.3+(x-222)*.022,2.4,1.6,'#d8ceb4');
+  ashlar(g,220,9.5,11,13,'#c8bea2',r,{bw:5.5,bh:3.2,v:.08,t:.25});R(g,219.5,8.2,12,1.6,'#dfd6bc');R(g,219.5,8.2,12,.5,'#f4ecd8');
+  for(let x=219.5;x<231;x+=3.6)R(g,x,6.8,2,1.5,'#dfd6bc');R(g,229,9.5,2,13,'rgba(54,46,78,.32)');R(g,224.4,12.5,1.2,2.6,'#3a322c');
   for(const[x,h]of[[176,10],[304,12]])cypress(g,x,52,h);
   /* the hall of shops along the far side of the square */
   plaster(g,0,40,320,64,W,r,{patch:3,cracks:5});R(g,0,35,320,6,'#b8603c');for(let i=0;i<320;i+=4)R(g,i,35,.5,6,'rgba(90,40,24,.35)');R(g,0,35,320,.7,'#d88a5c');R(g,0,41,320,1,'rgba(60,40,60,.4)');

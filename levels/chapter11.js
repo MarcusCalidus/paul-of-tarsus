@@ -297,10 +297,23 @@ ART.yard11={w:320,q:12,
 ART.stoa11={w:480,q:12,fp:1.2,
  paint(g){const r=rng(1111),W='#d6c8a4',ST='#d4cab0';
   plaster(g,0,0,480,104,W,r,{patch:1,cracks:5,t:.5});for(let i=10;i<480;i+=34)wood(g,i,0,7,7,'#5a4226',1);wood(g,0,7,480,2.6,'#6a4e2c');ao(g,0,9.6,480,14,'t',.5,'#2a2030');
-  /* the panels: color that has faded and flaked, with nothing to be made out in it */
-  for(const[x,w]of[[24,96],[136,82],[262,82],[360,98]]){R(g,x-1.6,19.4,w+3.2,55.2,'#5a4226');const cs=['#8a4a3a','#4a6a8a','#8a7a3a','#5a7a5a','#7a5a7a','#b0a080'];
-    inRect(g,x,21,w,52,()=>{R(g,x,21,w,52,'#a89878');for(let i=0;i<34;i++){const c=cs[Math.floor(r()*cs.length)];pool(g,x+r()*w,21+r()*52,6+r()*14,5+r()*10,c,.5,'source-over')}
-      tex(g,'blotch',.6,x,21,w,52,'overlay',1.4);tex(g,'mott',.5,x,21,w,52,'overlay',.7);for(let i=0;i<26;i++)R(g,x+r()*w,21+r()*52,1+r()*4,.6+r()*2,'rgba(214,200,164,.75)');ao(g,x,21,w,8,'t',.3)})}
+  /* the panels: weathered ancient frescoes faded into quiet banded fields of color with crisp plaster wear */
+  const pals=[['#929ca6','#b2a282','#8a5844'],['#8e9aa2','#9c9a7a','#7c5e4c'],['#9a9e9e','#b49e7c','#845242'],['#8c98a4','#a89c7c','#786050']];
+  [[24,96],[136,82],[262,82],[360,98]].forEach(([x,w],pi)=>{const[cTop,cMid,cBot]=pals[pi%pals.length];
+    R(g,x-2,19,w+4,56,'#4e3820');R(g,x-1.2,19.8,w+2.4,54.4,'#7a5a34');R(g,x-1.2,19.8,w+2.4,.7,'#a88454');
+    inRect(g,x,21,w,52,()=>{
+      /* banded aged pigment wash (sky wash, warm ochre middle, earthy umber base) */
+      g.fillStyle=lg(g,0,21,0,73,[[0,cTop],[.38,mix(cTop,cMid,.5)],[.52,cMid],[.76,cBot],[1,tint(cBot,-.18)]]);g.fillRect(x,21,w,52);
+      /* gentle weathered horizontal fresco border band and subtle distant color masses (no figures) */
+      R(g,x,21,w,2.6,'rgba(118,58,42,.36)');R(g,x,70.4,w,2.6,'rgba(92,50,38,.42)');
+      for(let k=0;k<5;k++){const mx=x+6+k*(w/5)+r()*6,my=44+r()*14,mw=12+r()*16,mh=5+r()*8;
+        poly(g,[mx-mw/2,my+mh/2,mx-mw*.28,my-mh/2,mx+mw*.2,my-mh*.42,mx+mw/2,my+mh/2],rgba(k%2?cBot:tint(cMid,-.18),.28))}
+      tex(g,'mott',.38,x,21,w,52,'overlay',.6);tex(g,'grain',.14,x,21,w,52,'overlay',.5);
+      /* crisp irregular plaster flakes and fine hairline cracks matching the VGA room art */
+      for(let i=0;i<11;i++){const fx=x+4+r()*(w-8),fy=24+r()*46,fw=1.5+r()*3.5,fh=1+r()*2;
+        poly(g,[fx,fy,fx+fw,fy-.4,fx+fw*.8,fy+fh,fx-.3,fy+fh*.8],'rgba(214,200,164,.55)')}
+      for(let i=0;i<4;i++){let cx=x+8+r()*(w-16),cy=23+r()*30;const q=[cx,cy];for(let s=0;s<4;s++){cx+=(r()-.5)*4;cy+=3+r()*5;q.push(cx,cy)}stroke(g,q,'rgba(68,54,42,.32)',.45)}
+      ao(g,x,21,w,7,'t',.35);ao(g,x,21,4,52,'l',.2)})});
   R(g,0,80,480,24,tint(W,-.2));tex(g,'mott',.4,0,80,480,24,'overlay',1);R(g,0,79,480,1.2,tint(W,.12));
   /* the recess, and the image in it */
   R(g,224,26,32,78,tint(W,-.34));arch(g,227,30,26,74,'#3a3244');base(g,233,104,14,13,'#a8a08c');man(g,240,91.5,'st11seat',1,0,'#7c7a98',0,0);comp(g,'multiply',.4,()=>arch(g,227,30,26,74,'#8a86b0'));

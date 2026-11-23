@@ -354,9 +354,21 @@ ART.isth12={w:320,q:10,variant:()=>SEAS()==='w'?'w':'d',
   /* hills: small peaks, lit from the north-west */
   for(const[x0,y0,x1,y1]of[[20,92,96,116],[240,8,304,18],[178,128,206,138]]){const n=Math.round(Math.hypot(x1-x0,y1-y0)/5);for(let k=0;k<n;k++){const u=k/n,x=x0+(x1-x0)*u+(r()-.5)*4,y=y0+(y1-y0)*u+(r()-.5)*3,w=2.4+r()*1.6,h=3+r()*2;
     poly(g,[x-w,y,x,y-h,x+w,y],'#7a5c38');poly(g,[x-w,y,x,y-h,x+w*.15,y],'#d6be88')}}
-  /* the rock, and the city at its foot */
-  {const P=[128,112,124,98,134,88,150,86,164,92,168,106,156,116,138,118];poly(g,P);g.fillStyle=lg(g,124,0,168,0,['#d6c49a','#a8926a','#7a6444']);g.fill();clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.5,120,84,52,36,'overlay',.6);ao(g,120,104,52,14,'b',.35,'#3a3024')});
-   R(g,144,96,6,4,'#e6dcc4');R(g,144,95,6,1.2,'#f4ecd6')}
+  /* Acrocorinth: craggy multi-faceted rock massif lit from the north-west, with summit curtain wall and temple roof */
+  {const P=[127,112,123,101,130,90,141,85,154,85,165,91,170,103,164,113,152,118,136,118];
+   poly(g,P.map((v,i)=>i%2?v+2.2:v+3),'rgba(42,34,24,.34)');
+   poly(g,P,'#9a845e');
+   clipTo(g,()=>poly(g,P),()=>{
+     /* sunlit NW escarpment, high limestone ridge, and shadowed SE cliff facets */
+     poly(g,[123,101,130,90,141,85,154,85,148,96,136,104,127,112],'#d8c69a');
+     poly(g,[130,90,141,85,152,86,146,93,136,96],'#e8dab2');
+     poly(g,[154,85,165,91,170,103,164,113,152,118,146,102,150,94],'#786242');
+     poly(g,[136,104,146,102,152,118,136,118,127,112],'#8c7450');
+     for(const q of[[128,104,136,95,145,92],[134,112,144,104,154,101],[154,93,161,100,165,108],[148,106,156,113]])stroke(g,q,'rgba(52,38,24,.35)',.7);
+     tex(g,'mott',.45,122,84,50,36,'overlay',.7);ao(g,122,106,50,14,'b',.3,'#32281e')});
+   /* summit fortification rim and tiny gabled temple roof */
+   stroke(g,[137,96,142,91.5,152,91.5,157,96,154,101,140,101,137,96],'#d8ccb0',.8);
+   R(g,143.5,95.4,7,3.4,'#e8dec6');poly(g,[143,95.4,151,95.4,147,93.2],'#c46c44');R(g,149.2,95.4,1.3,3.4,'#a89e86')}
   for(const[x,y,w,h]of[[140,66,8,5],[150,64,9,6],[160,68,7,5],[146,73,8,5],[156,75,9,5],[136,74,7,4]]){R(g,x,y,w,h,'#e2d6b6');R(g,x,y,w,1.4,'#b8603c');R(g,x+w-1,y+1.4,1,h-1.4,'#a89c80')}
   /* the two long walls down to the western harbor; the road to the eastern one; the trackway for ships across the neck */
   poly(g,[140,64,146,63,122,48,117,50],'rgba(232,222,196,.9)');stroke(g,[140,64,117,50],'#8a7a5a',.6);stroke(g,[146,63,122,48],'#8a7a5a',.6);

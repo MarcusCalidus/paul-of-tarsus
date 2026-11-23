@@ -316,11 +316,21 @@ ART.ber10={w:320,q:12,
  paint(g){const r=rng(1023),W='#e4d8b6',ST='#cabfa2';
   plaster(g,0,0,320,104,W,r,{patch:2,cracks:3,brick:'#b08a5a',t:.4});
   for(let i=18;i<320;i+=42)wood(g,i,0,6,8,'#5a4226',1);wood(g,0,8,320,2.4,'#6a4e2c');ao(g,0,10.4,320,12,'t',.4,'#2a2030');
-  /* the window: the mountain, green to its shoulder, and the morning over it */
+  /* the window: Mount Bermion layered in morning haze, olive-dotted slopes, and whitewashed foothills */
   R(g,116,20,88,54,tint(W,-.2));g.save();g.beginPath();g.rect(120,24,80,46);g.clip();
-  sky(g,320,70,['#5a94d2','#9cc2e2','#e4ecde']);cloud(g,150,32,22,3,r);
-  ridge(g,120,200,70,x=>14+20*Math.exp(-Math.pow((x-172)/30,2))+3*Math.sin(x/7),['#8fa07a','#7c9a62','#6a8c52']);
-  ridge(g,120,200,70,x=>6+5*Math.sin(x/11+1),['#7a9a58','#6a8c4c']);for(let i=0;i<14;i++)R(g,122+r()*76,62+r()*7,1.6,1,'#e6dcc0');g.restore();
+  sky(g,320,70,['#528ecd','#96bce0','#e4ecde']);cloud(g,148,30,24,3.2,r);cloud(g,186,34,16,2.2,r);
+  ridge(g,120,200,70,x=>20+18*Math.exp(-Math.pow((x-144)/30,2))+12*Math.exp(-Math.pow((x-188)/24,2))+2*Math.sin(x/9),['#8ea4be','#a6b8c4']);
+  const mt=x=>13+21*Math.exp(-Math.pow((x-172)/28,2))+3.2*Math.sin(x/6.5)+1.5*Math.sin(x/3.2);
+  ridge(g,120,200,70,mt,['#8ca072','#74925a','#5e7e48']);
+  /* sunlit limestone shoulders and olive-grove texture across the mountain flank */
+  clipTo(g,()=>{g.beginPath();g.moveTo(120,70);for(let x=120;x<=200;x+=2)g.lineTo(x,70-mt(x));g.lineTo(200,70);g.closePath()},()=>{
+    poly(g,[152,42,172,36,166,54,142,58],'rgba(232,226,188,.22)');poly(g,[174,36,196,46,200,66,172,58],'rgba(40,54,48,.22)');
+    for(let i=0;i<28;i++){const gx=122+r()*76,gy=70-r()*mt(gx)*.82;foliage(g,gx,gy,2.6+r()*2.4,1.3+r()*.9,r()<.5?'#587842':'#7e9a5e',r,8)}});
+  ridge(g,120,200,70,x=>7+5*Math.sin(x/12+1.2)+2*Math.sin(x/5),['#7a9658','#628046']);
+  for(const[hx,hy,hw,hh]of[[128,63,5,3.5],[140,65,6,3.5],[156,64,5.5,3.5],[174,62,6,4],[189,65,5,3.2]]){
+    R(g,hx,hy,hw,hh,'#ebe2c8');R(g,hx,hy-1,hw,1.2,'#b8603c');R(g,hx+hw-1.2,hy,1.2,hh,'#b8b09c')}
+  for(const[cx,cy,ch]of[[135,66,6],[164,65,7],[182,66,6]])foliage(g,cx,cy-ch*.5,1.4,ch*.48,'#426036',r,7);
+  comp(g,'screen',.16,()=>R(g,120,56,80,14,'#e4ecdc'));g.restore();
   ao(g,120,24,80,5,'t',.4);ao(g,120,24,4,46,'l',.3);R(g,114,74,92,2,tint(W,.2));R(g,114,76,92,.8,tint(W,-.4));
   /* the door, the benches, a lamp, and the chest of the scrolls: open, and nearly empty */
   R(g,14,44,36,60,tint(W,-.16));doorArt(g,17,47,30,57,'#6a4a2c',r,{bands:[]});

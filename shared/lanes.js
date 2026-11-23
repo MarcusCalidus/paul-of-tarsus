@@ -212,12 +212,12 @@ function sprite(M,h,v){const def=M.def,W=def.w,K=M.K,{hid,HS}=M.H,{dn,up,lf,rt,f
     put(X,Y,R0,kk)};
   /* the front wall, at one canvas pixel: u its height above the ground, ib the house's lowest pixel in this column */
   const DH=def.doorH||DOORH,WH=def.winH||2.5;
-  const win=(X,Y,sx,top)=>{if(s==='shut')put(X,Y,[110,76,46],sx?.82:1);else if(s==='head'&&top)put(X,Y,hex('#b07a52'),1);else put(X,Y,[36,28,26],1)};
+  const win=(X,Y,sx,top)=>{if(s==='shut')put(X,Y,[112,78,48],sx?.84:1);else if(s==='head'&&top)put(X,Y,hex('#b07a52'),1);else put(X,Y,top?[58,48,44]:[78,66,58],sx?.86:1.04)};
   const front=(X,Y,u,ib,x,sx)=>{let kk=.98+(vn(nzB,x*.5,(T*2+Y)*.25)-.5)*.07+(hash2(x*2+sx,T*2+Y,h.seed)-.5)*.04;const east=rt[ib]+(1-sx)*.5<1.1,west=lf[ib]+sx*.5<.6;
     if(u>Hh-.5)kk*=1.08;else if(u>Hh-1.5)kk*=.72;else if(u<1)kk*=.78;else if(u<1.5)kk*=.9;
     if(east)kk*=.8;else if(west)kk*=1.05;
     const fi=feat[ib];
-    if(fi===1&&u<Math.min(Hh-2.5,DH)){if(s==='open'&&u<Math.min(Hh-2.5,DH)-.5)put(X,Y,[32,24,20],1);else put(X,Y,[100,68,42],sx?.92:.74);return}
+    if(fi===1&&u<Math.min(Hh-2.5,DH)){if(s==='open'&&u<Math.min(Hh-2.5,DH)-.5)put(X,Y,[48,38,34],sx?.9:1.05);else put(X,Y,[102,70,44],sx?.92:.74);return}
     if(fi===2&&u>Hh-3.5-WH&&u<Hh-3.5){win(X,Y,sx,u>Hh-3.5-WH/2);return}
     if(fi===3&&u>2.5&&u<2.5+WH){win(X,Y,sx,false);return}
     put(X,Y,W0,kk)};

@@ -1348,16 +1348,38 @@ function harbor(g){const Q=OX-28;
 /* the ship, from above: a merchant ship moored along the quay, its bow to the north. The yard is lowered and lies along the ship with the
    sail furled on it, so that nothing lies across the hull; the mast's foot is a small square beside it, and a deckhouse stands at the stern. */
 function ship(g,x0,x1,y0,y1,Q){const cx=(x0+x1)/2,hull=[cx,y0,x1,y0+26,x1,y1-18,cx+6,y1,cx-6,y1,x0,y1-18,x0,y0+26];
-  poly(g,hull.map((v,i)=>i%2?v-1:v+2),'rgba(14,24,34,.35)');poly(g,hull,'#5a3a24');
+  /* water shadow and subtle harbor ripples lapping along the hull */
+  poly(g,hull.map((v,i)=>i%2?v-1:v+2.5),'rgba(12,22,32,.38)');
+  stroke(g,[cx,y0-1.5,x0-1.5,y0+26,x0-1.5,y1-18,cx-6.5,y1+1],'rgba(196,222,228,.28)',.7);
+  poly(g,hull,'#5a3a24');
   const deck=[cx,y0+5,x1-2.5,y0+27,x1-2.5,y1-19,cx+5,y1-2.5,cx-5,y1-2.5,x0+2.5,y1-19,x0+2.5,y0+27];
-  g.save();poly(g,deck);g.clip();g.fillStyle=lg(g,x0,0,x1,0,['#b88c5c','#a87c50','#94683e']);g.fillRect(x0,y0,x1-x0,y1-y0);g.restore();
-  poly(g,[cx,y0,x0,y0+26,x0,y1-18,x0+2.5,y1-19,x0+2.5,y0+27,cx,y0+5],'#7a5434');
-  R(g,cx-2,y0+20,4,80,'#d8ccb0');R(g,cx-2,y0+20,.5,80,'#f0e8d8');R(g,cx+1.5,y0+20,.5,80,'#a89c84');R(g,cx-2,y0+100,4,.5,'#8a7e66');
-  R(g,cx+2.5,y0+48,2.5,2.5,'#4a301c');R(g,cx+2.5,y0+48,2.5,.5,'#6a4a2c');
-  R(g,cx-6.5,y0+64,5,7,'#6a4a2c');R(g,cx-6.5,y0+64,5,.5,'#8a6a44');
-  R(g,cx-6,y1-31,12,13,'#8a6440');R(g,cx-6,y1-31,12,.5,'#a8805a');R(g,cx-6,y1-31,.5,13,'#a8805a');R(g,cx-6,y1-18.5,12,.5,'#4a301c');
-  g.strokeStyle='#3a2a1c';g.lineWidth=.5;g.beginPath();g.moveTo(x1-1,y0+30);g.lineTo(Q+.5,y0+18);g.moveTo(x1-1,y1-22);g.lineTo(Q+.5,y1-10);g.stroke();
-  for(const yy of[y0+17,y1-11])R(g,Q,yy,1.5,1.5,'#4a3a2a')}
+  g.save();poly(g,deck);g.clip();
+  g.fillStyle=lg(g,x0,0,x1,0,['#c29664','#ae8254','#92683e']);g.fillRect(x0,y0,x1-x0,y1-y0);
+  /* longitudinal deck planking seams (one direction only: bow to stern) and inner bulwark shadow */
+  for(let px=x0+4.5;px<x1-3;px+=2.6)R(g,px,y0+4,.5,y1-y0-6,'rgba(52,32,16,.24)');
+  tex(g,'mott',.22,x0,y0,x1-x0,y1-y0,'overlay',.5);
+  ao(g,x0+2.5,y0,3.5,y1-y0,'l',.35,'#2a180c');ao(g,x1-6,y0,3.5,y1-y0,'r',.22,'#2a180c');g.restore();
+  /* sculpted sunlit port gunwale, shaded starboard gunwale, and stemhead */
+  poly(g,[cx,y0,x0,y0+26,x0,y1-18,x0+2.5,y1-19,x0+2.5,y0+27,cx,y0+5],'#845c38');
+  stroke(g,[cx,y0+.5,x0+.5,y0+26,x0+.5,y1-18],'#b68c5e',.6);
+  poly(g,[cx,y0,x1,y0+26,x1,y1-18,x1-2.5,y1-19,x1-2.5,y0+27,cx,y0+5],'#4a301c');
+  R(g,cx-1,y0,2,5,'#9c7448');
+  /* lowered yard with furled linen sail lying lengthwise along the deck (never across the hull) */
+  R(g,cx-1,y0+21,5,80,'rgba(24,14,8,.28)');
+  g.fillStyle=lg(g,cx-2.4,0,cx+2.4,0,['#f2ead8','#ddd2b8','#b4a68c']);g.fillRect(cx-2.2,y0+20,4.4,80);
+  R(g,cx-.6,y0+20,.6,80,'rgba(255,252,240,.5)');R(g,cx+1.6,y0+20,.6,80,'rgba(90,78,60,.45)');
+  R(g,cx-2.2,y0+100,4.4,.6,'#8a7e66');R(g,cx-.6,y0+17,1.2,3,'#6a482a');R(g,cx-.6,y0+100,1.2,3.5,'#6a482a');
+  /* mast step, cargo hatch coaming, and coiled mooring rope on the foredeck */
+  R(g,cx+3,y0+48.5,2.8,2.8,'rgba(20,12,6,.32)');R(g,cx+2.5,y0+48,2.6,2.6,'#4a301c');R(g,cx+2.5,y0+48,2.6,.5,'#7a5a38');
+  R(g,cx-7,y0+64.5,5.8,7.8,'rgba(20,12,6,.3)');R(g,cx-7.2,y0+63.5,5.8,7.6,'#5c3e24');R(g,cx-6.4,y0+64.3,4.2,6,'#9c8868');R(g,cx-7.2,y0+63.5,5.8,.5,'#9a7448');
+  g.strokeStyle='#b89e6e';g.lineWidth=.7;g.beginPath();g.ellipse(cx+5,y0+35,2,2,0,0,6.2832);g.stroke();
+  /* aft deckhouse with sloped planked roof, sunlit west pitch, and east shadow */
+  R(g,cx-5,y1-30,13.5,13.5,'rgba(20,12,6,.34)');
+  R(g,cx-6.2,y1-31.5,6.2,13.5,'#9c744c');R(g,cx,y1-31.5,6.2,13.5,'#7a5836');R(g,cx-.4,y1-31.5,.8,13.5,'#c29868');
+  R(g,cx-6.2,y1-31.5,12.4,.5,'#b88e60');R(g,cx-6.2,y1-18.5,12.4,.6,'#422a16');
+  /* mooring lines to quay bollards */
+  g.strokeStyle='#3a2a1c';g.lineWidth=.55;g.beginPath();g.moveTo(x1-1,y0+30);g.lineTo(Q+.5,y0+18);g.moveTo(x1-1,y1-22);g.lineTo(Q+.5,y1-10);g.stroke();
+  for(const yy of[y0+17,y1-11]){R(g,Q-.2,yy,1.8,1.8,'#4a3a2a');R(g,Q-.2,yy,1.8,.5,'#8a7860')}}
 /* the cat on top of a house front above the harbor road: it sits, and now and then washes a paw */
 const CATMAP=[["..k...k.","..kkkkk.",".kKkKkk.",".kkkkkk.","kkkkkkk.","kk.kk.k."],["........","..k...k.","..kkkkk.",".kKkkkk.","kkkkkkk.","kk.kk.k."]];
 function cat(g,ts){const f=Math.floor(ts/700)%5===0?1:0,m=CATMAP[f],c={k:'#6a5a4a',K:'#a08a6a'};

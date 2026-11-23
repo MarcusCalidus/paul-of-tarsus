@@ -98,7 +98,7 @@ ART.perga={w:480,fp:1.3,
  front(){}};
 /* ---------- The ford: a river in the Taurus, where the road crosses it ---------- */
 /* The river comes out at the foot of the cliff and runs toward us (RIV: its bed). NEAR and FAR: the tops of the two posts of the guide rope. */
-const RIV=[230,60,248,60,256,78,270,104,284,144,194,144,204,104,222,78],NEAR=[193,99],FAR=[281,99];
+const RIV=[230,60,248,60,254,69,257,78,263,91,269,104,274,116,279,129,285,144,193,144,198,131,201,117,205,104,213,91,221,78,226,69],NEAR=[193,99],FAR=[281,99];
 ART.ford={w:480,fp:1.25,
  light:()=>({amb:'#e2e4f0'}),
  paint(g){const r=rng(347),LS='#b9b0a4',GR='#b4aa96';
@@ -123,10 +123,13 @@ ART.ford={w:480,fp:1.25,
   clipTo(g,()=>poly(g,RIV),()=>{for(let i=0;i<150;i++){const k=r()*r(),sy=62+k*82,hw=10+k*36;R(g,239-hw+r()*hw*2,sy,2+k*7,.5+k*.4,r()<.6?'rgba(236,248,250,.6)':'rgba(20,56,80,.35)')}
     /* the ford itself: a shelf of shallow water, its stones just under the surface */
     comp(g,'screen',.3,()=>R(g,190,110,100,28,'#bfe6e6'));for(let i=0;i<22;i++)oval(g,202+r()*74,112+r()*24,2+r()*3,.8+r(),'rgba(96,120,120,.5)')});
-  stroke(g,[222,78,204,104,194,144],'rgba(240,250,250,.7)',.8);stroke(g,[256,78,270,104,284,144],'rgba(240,250,250,.7)',.8);
-  /* the banks: rock and gravel */
-  clipTo(g,()=>{g.beginPath();g.moveTo(0,104);g.lineTo(204,104);g.lineTo(194,144);g.lineTo(0,144);g.closePath()},()=>stoneGround(g,0,104,206,144,GR,r,150));
-  clipTo(g,()=>{g.beginPath();g.moveTo(270,104);g.lineTo(480,104);g.lineTo(480,144);g.lineTo(284,144);g.closePath()},()=>stoneGround(g,268,104,212,144,GR,r,150));
+  stroke(g,[226,69,221,78,213,91,205,104,201,117,198,131,193,144],'rgba(240,250,250,.7)',.8);stroke(g,[254,69,257,78,263,91,269,104,274,116,279,129,285,144],'rgba(240,250,250,.7)',.8);
+  /* the banks: rock and gravel following the organic curve of the water's edge */
+  clipTo(g,()=>{g.beginPath();g.moveTo(0,104);g.lineTo(205,104);g.lineTo(201,117);g.lineTo(198,131);g.lineTo(193,144);g.lineTo(0,144);g.closePath()},()=>stoneGround(g,0,104,207,144,GR,r,150));
+  clipTo(g,()=>{g.beginPath();g.moveTo(269,104);g.lineTo(480,104);g.lineTo(480,144);g.lineTo(285,144);g.lineTo(279,129);g.lineTo(274,116);g.closePath()},()=>stoneGround(g,268,104,212,144,GR,r,150));
+  /* water-smoothed cobbles and low bank scrub softening the shore */
+  for(const[bx,by,bw,bh]of[[203,108,5,2.6],[198,121,6,3],[196,136,5.5,2.8],[271,109,5.5,2.8],[277,122,6,3],[283,137,5,2.6]])rock(g,bx,by,bw,bh,'#9a9284');
+  for(const[tx,ty]of[[200,113],[194,129],[273,115],[281,132]])for(let i=0;i<4;i++)stroke(g,[tx+i*1.2,ty,tx+i*1.2+(r()-.5)*1.5,ty-2.5-r()*2],'#5a6e42',.55);
   poly(g,[0,112,150,110,196,116,192,132,0,136],'rgba(226,212,176,.4)');poly(g,[280,116,330,110,480,112,480,134,286,132],'rgba(226,212,176,.4)');
   ao(g,0,104,480,6,'t',.3,'#3a3460');shade(g,[0,104,170,104,186,116,0,122],SH,.5);
   /* the two posts of the guide rope, set in the rock */
@@ -257,7 +260,18 @@ ART.border={w:320,
   /* the high plain in spring: fields and fallow, a line of poplars along a stream */
   g.fillStyle=lg(g,0,76,0,108,['#c8c08c','#cdbf7e','#c4b470']);g.fillRect(0,76,320,32);tex(g,'mott',.5,0,76,320,32,'overlay',1);
   for(let i=0;i<9;i++){const fx=r()*300,fy=79+r()*20;poly(g,[fx,fy,fx+34,fy-1.6,fx+42,fy+7,fx+4,fy+9],i%3===0?'rgba(150,120,70,.32)':i%3===1?'rgba(226,206,120,.4)':'rgba(120,150,84,.3)')}
-  for(let i=0;i<9;i++)cypress(g,206+i*9+r()*3,92-i*.5,12+r()*5,'#5a7a4a');stroke(g,[198,94,242,91,292,89],'rgba(120,170,200,.6)',1);
+  /* a meandering stream emerging from the valley foot toward the right edge, lined with clustered organic poplars and scrub */
+  poly(g,[162,92,198,91.4,240,92.8,284,90.4,320,89.4,320,91.8,284,92.4,240,94.4,198,92.6,162,92.6],'rgba(116,168,198,.62)');
+  stroke(g,[172,92,208,91.8,246,93.2,290,91,320,90.2],'rgba(214,238,246,.42)',.5);
+  const poplars=[[198,92,14,'#537444',-.3],[207,91.5,19,'#4b6c3e',.2],[214,92.2,11,'#62824d',-.1],
+    [232,93,17,'#567846',.3],[241,92.5,21,'#49683c',-.2],[249,93.2,13,'#648650',.15],
+    [268,91.2,16,'#527242',-.25],[277,90.6,19,'#5d7e4a',.2],[288,90.2,12,'#4b6a3e',-.1],[302,89.8,15,'#5a7a48',.15]];
+  for(const[tx,ty,th,tc,ln]of poplars){
+    oval(g,tx+2.4,ty+.5,3.2+th*.08,.9,'rgba(52,58,74,.28)');
+    stroke(g,[tx,ty,tx+ln*2.2,ty-th*.32],'#4a3a28',.9);
+    for(let k=0;k<4;k++){const f=k/3,rx=Math.max(1.4,(3.6-f*2.1)*(th/16)),ry=th*.22;
+      foliage(g,tx+ln*f*2.5+(r()-.5)*.8,ty-th*(.26+f*.58),rx,ry,tint(tc,(f-.4)*.14),r,12)}}
+  for(const[bx,by,bw]of[[186,93,6],[222,93.2,7],[259,92.4,8],[295,91,7]])foliage(g,bx,by-1,bw,2.4,'#66844e',r,14);
   poly(g,[85,76,89,76,120,92,200,106,150,106,96,90],'#e4d6ae');
   /* the road, and the verge nearest us */
   g.fillStyle=lg(g,0,106,0,128,['#d6c69c','#e8dab2','#dccca2']);g.fillRect(0,106,320,22);tex(g,'mott',.45,0,106,320,22,'overlay',1);R(g,0,106,320,.8,'#a89a74');
