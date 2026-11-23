@@ -2671,7 +2671,10 @@
   ok(F.plea&&['v31','v33','v34','v35','v36','v37','v38','v39','v40','v41','w1a'].every(k=>seenTold.has(k)),'the plea is the last word (19:31); then the theater is told while they wait (19:33-41), and the farewell begins (20:1)');
   halt('court14');
   heard.length=0;await onH('passage_under_the_house','walk');ok(said('not_without_saying_goodbye')&&G.room==='court14','he will not go without saying goodbye');
-  for(const a of[DA,PH,KL,A('dz14a')])await talkTo(a);ok(F.b1&&F.b2&&F.b3&&F.b4,'he says goodbye to each');
+  {const s0=window.say,who=[];window.say=(a,t,o)=>{who.push([a,t,o&&o.to]);return s0(a,t,o)};
+  for(const a of[DA,PH,KL,A('dz14c')])await talkTo(a);window.say=s0;ok(F.b1&&F.b2&&F.b3&&F.b4,'he says goodbye to each');
+  ok(who.some(([a,t])=>a===A('dz14c')&&t==='go_in_peace_paul_we_will_pray')&&who.some(([a,t,to])=>a===P&&t==='and_i_for_you'&&to===A('dz14c')),
+    'the disciple at the back whom Paul talks to is the one who answers, and Paul answers him')}
   await onH('passage_under_the_house','walk');await until(()=>G.room==='lanes14'&&!G.busy,6000);
   ok(ART.lanes14.variant()==='quiet'&&PC()===P,'the lanes after the uproar, as Paul');halt('quiet14');
   /* the hidden treasure: the shutter ajar in the blind alley off the harbor road */
