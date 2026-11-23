@@ -969,7 +969,8 @@ function gaitPose(o,ph,amp){const q=gaitOf(o),long=!!o.long,LIFT=long?1:4,c=Math
    of the same stride: a heel landing, the legs passing, the other heel landing.
    bow lowers the head; blink closes the eyes; mv is a sum of MV.
    talk is the mouth: 0 shut, 1 parted, 2 open, 3 wide, 4 round; the last two with the chin a pixel down, and a beard goes down with it.
-   ges is the far hand: 0 down, 1 raised, 2 half raised and open, 3 laid on the chest. A forearm is always bent and slanting: no arm is
+   ges is the far hand: 0 down, 1 raised, 2 half raised and open, 3 laid on the chest; 4 and 5 lead and are led by the hand; 6, 7 and 8
+   swing a hammer (down, midway and raised). A forearm is always bent and slanting: no arm is
    stretched out, and never are both raised (CONTRIBUTING section 3). A figure that bows keeps its head still, and a statue (stone:1)
    never moves: its mouth stays shut and its head where it is. */
 function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
@@ -1188,6 +1189,16 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   else if(ges===5&&!bow&&!o.stub){const R=o.longSleeve?T:S,q=18-nw;   /* held out to be led: the forearm slants forward and down from the elbow */
     for(let k=0;k<7;k++){const gx=12-nw+k,gy=yS+12+Math.round(k*.5);px(gx,gy,R[1]);px(gx,gy+1,R[2],1,2);px(gx,gy+3,R[3])}
     px(q,yS+15,S[1],5);px(q,yS+16,S[2],6);px(q+1,yS+17,S[3],5)}
+  else if(ges===6&&!bow&&!o.stub){const R=o.longSleeve?T:S,q=15-nw;   /* hammering, down: the forearm slants forward and down to a closed fist */
+    for(let k=0;k<10;k++){const gx=12-nw+Math.round(k*.4),gy=yS+14+k;px(gx,gy,R[3]);px(gx+1,gy,R[2],2);px(gx+3,gy,R[1])}
+    px(q,yS+24,S[2],5,4);px(q+1,yS+24,S[1],4);px(q,yS+27,S[3],5);px(q,yS+25,S[3],1,2)}
+  else if(ges===7&&!bow&&!o.stub){const R=o.longSleeve?T:S,q=18-nw;   /* hammering, midway: the forearm slants forward from the elbow to a fist */
+    for(let k=0;k<6;k++){const gx=12-nw+k,gy=yS+13+(k>>1);px(gx,gy,k<2?R[2]:R[1]);px(gx,gy+1,R[2],1,2);px(gx,gy+3,R[3])}
+    px(q,yS+15,S[2],5,4);px(q,yS+15,S[1],5);px(q,yS+18,S[3],5);px(q+4,yS+16,S[1],1,2)}
+  else if(ges===8&&!bow&&!o.stub){const R=o.longSleeve?T:S,q=18-nw;   /* hammering, raised: the forearm slants forward and up from the elbow to a fist */
+    for(const[k,y0,n,top]of[[0,13,3,R[3]],[1,13,3,R[3]],[2,13,3,R[2]],[3,12,3,R[2]],[4,9,5,R[1]],[5,9,4,R[1]]]){
+      const gx=12-nw+k,gy=yS+y0;px(gx,gy,top);px(gx,gy+1,R[2],1,n-2);px(gx,gy+n-1,R[3])}
+    px(q,yS+8,S[2],5,4);px(q,yS+8,S[1],5);px(q,yS+11,S[3],5);px(q+4,yS+9,S[1],1,2)}
   else if(ges&&ges!==4&&!bow&&!o.stub){for(let k=0;k<10;k++){const gx=12-nw+Math.round(k*.6),gy=yS+14-k,R=o.longSleeve?T:S;px(gx,gy,R[3]);px(gx+1,gy,R[2],2);px(gx+3,gy,R[1])}
     const q=17-nw;px(q,yS+1,S[2],5,5);px(q,yS+1,S[1],4);px(q,yS+5,S[3],5);px(q+4,yS,S[2],1,3);px(q+1,yS-1,S[1],1,2);px(q+3,yS-1,S[2],1,2);px(q-1,yS+4,S[3])}};
   /* leaning: the figure is painted twice, below the belt as it stands and above it a pixel forward */
@@ -1696,7 +1707,7 @@ const beast=(g,x,y,dir,fr,load,lit)=>figure(g,x,y,lit,'donkey'+dir+fr+load,s=>do
    keeps its head still, and a statue never moves. */
 const BABBLE=[2,1,3,1,0,2,4,1],hash=n=>{n=Math.imul(n^0x9e3779b9,0x85ebca6b);n^=n>>>13;n=Math.imul(n,0xc2b2ae35);return(n^n>>>16)>>>0};
 function moves(o,L,ln,ts){if(L.stone)return[0,0,0,0];
-  let m=0,ges=0,bl=o.bow||blinks(L,ts)?1:0,mv=0;const live=OPTS.mov&&!o.bow&&!o.fr;
+  let m=0,ges=!o.bow&&!o.fr&&o.ges||0,bl=o.bow||blinks(L,ts)?1:0,mv=0;const live=OPTS.mov&&!o.bow&&!o.fr;
   if(ln){const p=ln.plan,t=ts-ln.t0,e=p.ev.find(x=>t>=x.t0&&t<x.t1),c=p.cl.find(c=>t>=c.t0&&t<c.t1+(c.end===','?140:300));if(e)m=e.m;
     if(live){if(e&&e.beat&&e.m>1)mv|=MV.dip;
       if(c){const h=hash(p.h+c.n*7),ask=c.end==='?',cry=c.end==='!';if(ask&&t>c.t1-320)mv=mv&~MV.dip|MV.lift|MV.brow;else if(cry&&t>c.t1-300&&t<c.t1+160)mv|=MV.brow;

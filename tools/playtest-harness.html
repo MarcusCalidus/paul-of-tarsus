@@ -306,7 +306,7 @@
        every look of every chapter. Each pose is as many pieces as the figure at rest, which is one; and a statue is the same picture whatever it
        is asked to do. cast-talk.png shows the frames: the heads six times enlarged, the figures three times. Look there, in every row, for a chin or
        a beard that has come apart from its face, for a hand that floats, and for crosses (CONTRIBUTING section 3). */
-    {const POSES=[[1,0,0],[2,0,0],[3,0,0],[4,0,0],[0,0,MV.dip],[0,0,MV.lift|MV.brow],[0,0,MV.fwd],[0,0,MV.back|MV.glance],[3,0,MV.dip],[4,0,MV.lift|MV.brow],[3,0,MV.back],[2,1,MV.fwd],[2,2,0],[0,3,0],[3,3,MV.dip],[2,1,MV.lean|MV.fwd],[4,2,MV.lean],[0,4,0],[0,5,0]],
+    {const POSES=[[1,0,0],[2,0,0],[3,0,0],[4,0,0],[0,0,MV.dip],[0,0,MV.lift|MV.brow],[0,0,MV.fwd],[0,0,MV.back|MV.glance],[3,0,MV.dip],[4,0,MV.lift|MV.brow],[3,0,MV.back],[2,1,MV.fwd],[2,2,0],[0,3,0],[3,3,MV.dip],[2,1,MV.lean|MV.fwd],[4,2,MV.lean],[0,4,0],[0,5,0],[0,6,0],[0,7,0],[0,8,0]],
         ids=Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'),bad=[],apart=[],stone=[],seatBad=[];let n=0;
       for(const id of ids){const o=LOOK[id],at=(t,g,m,d)=>sprite(['pose',id,d<0?'-1':'1',t,g,m].join('|'),q=>person(q,0,0,o,d,0,t,0,g,0,m),d),rest=at(0,0,0,1),r0=parts(rest);if(r0!==1)apart.push(id+' ('+r0+')');
         for(const[t,g,m]of POSES)for(const d of m&MV.lean?[1,-1]:[1]){n++;const c=at(t,g,m,d);if(parts(c)!==r0)bad.push(id+' '+[t,g,m,d]);if(o.stone&&!g&&d>0&&c.toDataURL()!==rest.toDataURL())stone.push(id)}
@@ -2622,9 +2622,11 @@
     mapWalk=async(a,x,y)=>{const M=C().map,D=M.def,cr=D.crowd;D.crowd={};M.crowd.length=0;M.pushT=0;a.pushed=0;M.seeAll=1;const r=walk(a,x,y);for(let i=0;i<4000&&a.walk;i++)await wait(30);await r;M.seeAll=0;D.crowd=cr;await idle()},
     seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
   heard.length=0;(C14?document.querySelector('#overlay [data-ch="14"]'):ov).click();
-  await until(()=>G.ch===14&&G.room==='court14'&&!!A('timothy14').room,9000);halt('open14');
-  await until(()=>G.ch===14&&G.room==='market14',9000);halt('market14');
+  if(stop==='open14'){await until(()=>G.ch===14&&G.room==='court14'&&!!A('timothy14').room,9000);halt('open14')}
+  if(stop==='market14'){for(let i=0;i<6000&&!(G.ch===14&&G.room==='market14');i++)await wait(30);halt('market14')}
   await until(()=>G.ch===14&&G.room==='colon14'&&!G.busy,12000);note();
+  {const s=A('smith14c');s.room='market14';const gs=new Set([0,55,110].map(t=>{ART.market14.draw(cx,t);return s.ges}));s.room=null;s.ges=0;
+    ok(gs.has(6)&&gs.has(7)&&gs.has(8),'the silversmith at the anvil moves his arm through all three hammering poses (6, 7 and 8)')}
   const RUN=A('eudoros14'),DA=A('damon14'),AR=A('arist14'),PK=A('philo14'),PH=A('philon14'),KL=A('klea14');
   ok(G.room==='colon14'&&PC()===RUN&&!P.room&&srt()==='tab14'&&['v21','v22','v23','v24','v25','v26','v27','v28','v29a','v32'].every(k=>seenTold.has(k))&&said('i_will_ask_around'),
     'chapter fourteen opens in the court (Acts 19:21, 22), shows the marketplace while the narrator tells Demetrius (19:23-29), and gives the runner to the player at the colonnade of the theater ['+[G.room,PC().id,srt(),[...seenTold].join(' ')].join()+']');
