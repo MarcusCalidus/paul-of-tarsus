@@ -322,7 +322,7 @@ ART.gaol9={w:320,q:12,variant:()=>F.back?'d':'',
   /* the court: paved */
   pave(g,0,105,320,144,'#c4baa0',r,{vx:160,vy:62,rows:5,step:38,v:.08,joint:'#8e8670'});ao(g,0,105,320,5,'t',.35,'#3a3450');
   if(day){shade(g,[16,106,56,106,74,116,34,116],SH,.4);comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,105,0,144,['rgba(250,244,222,0)','rgba(250,244,222,.9)']);g.fillRect(0,105,320,39)});pool(g,36,90,90,60,'#fff0cc',.2,'screen')}
-  else lightmap(g,320,'#3c4064',l=>{pool(l,258,72,34,30,'#ffc070',.9);pool(l,262,112,80,40,'#ffb060',.5);pool(l,120,116,150,40,'#8a94c8',.35)})},
+  else lightmap(g,320,'#3c4064',l=>{nicheLight(l,258,74,34,28,'#ffc070',.92);pool(l,262,112,80,40,'#ffb060',.5);pool(l,120,116,150,40,'#8a94c8',.35)})},
  light(){return F.back?null:{amb:'#6c6e96',lamps:[[258,90,84,'#7a5220']]}},
  draw(g,t){if(!F.back)flame(g,258.2,74.6,t);
   /* what the constables carry, drawn with them */
@@ -345,7 +345,7 @@ ART.jailer9={w:320,q:12,
   /* the table, set in the night: bread, a bowl of olives, a jug */
   R(g,128,100,84,7,'rgba(40,30,60,.36)');wood(g,126,90,84,4,'#8a683a');R(g,126,93.6,84,1,'#5a4226');wood(g,126,94,3,12,'#5a4226',1);wood(g,207,94,3,12,'#5a4226',1);
   for(const x of[136,160])R(g,x,88,9,2,'#d8b070');for(const x of[136,160])R(g,x+1,87.2,7,.9,'#f0d090');vessel(g,182,90,3.4,3,'#b06a3a','bowl',{noShadow:1});vessel(g,198,90,3.2,8,'#8a4a2a','jug',{noShadow:1});
-  lightmap(g,320,'#6e6078',l=>{pool(l,65,48,34,30,'#ffc070',.9);pool(l,229,48,34,30,'#ffc070',.9);pool(l,65,100,80,46,'#ffb060',.45);pool(l,229,100,80,46,'#ffb060',.45);pool(l,160,116,170,44,'#ffe0b0',.45)})},
+  lightmap(g,320,'#6e6078',l=>{nicheLight(l,65,51,34,28,'#ffc070',.9);nicheLight(l,229,51,34,28,'#ffc070',.9);pool(l,65,100,80,46,'#ffb060',.45);pool(l,229,100,80,46,'#ffb060',.45);pool(l,160,116,170,44,'#ffe0b0',.45)})},
  draw(g,t){for(const x of[58,222])flame(g,x+10.6,51.6,t+x*7)},front(){}};
 
 /* ============ CAST ============ */

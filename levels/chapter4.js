@@ -177,7 +177,7 @@ ART.synagogue={w:320,
   R(g,153.4,83.2,13.2,2.2,'#ecdcb0');R(g,152.2,82.8,1.8,3,'#8a5a2c');R(g,166,82.8,1.8,3,'#8a5a2c');
   /* daylight from the windows, lamplight from the niches */
   lightmap(g,320,'#a09488',l=>{for(const x of[77,243]){pool(l,x,33,24,26,'#fff4d8',1);l.fillStyle=lg(l,0,42,0,140,['rgba(255,240,200,.45)','rgba(255,240,200,0)']);poly(l,[x-7,42,x+7,42,x+(x<160?44:-30),140,x+(x<160?-10:-84),140]);l.fill()}
-    for(const x of[118,202])pool(l,x,60,36,32,'#ffc070',.8);pool(l,160,120,150,44,'#fff0d8',.4)})},
+    for(const x of[118,202])nicheLight(l,x,60,36,30,'#ffc070',.8);pool(l,160,120,150,44,'#fff0d8',.4)})},
  fore(g){/* the backs of the nearest bench */
   R(g,0,138,104,6,'#3a3028');R(g,0,138,104,.8,'#7a6a58');R(g,216,138,104,6,'#3a3028');R(g,216,138,104,.8,'#7a6a58')},
  draw(g,t){for(const x of[112,196]){flame(g,x+8.6,60.6,t+x*7);pool(g,x+9,58,8+Math.sin(t/190+x),6,'#ffb050',.14)}},
@@ -236,7 +236,7 @@ ART.sendoff={w:320,paint(g){const r=rng(291),W='#e6d6ac';
   for(const[sx,c]of[[158,'#ecdcb0'],[168,'#e2d0a0']]){R(g,sx,85.6,7,3.4,c);R(g,sx-.6,85.2,1.2,4.2,'#8a5a2c');R(g,sx+6.4,85.2,1.2,4.2,'#8a5a2c')}
   pave(g,0,103,320,144,'#cdbb94',r,{vx:160,vy:64,rows:5,step:34,v:.08});ao(g,0,103,320,6,'t',.35,'#3a3050');
   poly(g,[70,112,250,112,268,136,52,136],'#8a4a3a');poly(g,[74,114,246,114,262,134,58,134],'#a25a44');for(let i=0;i<9;i++)stroke(g,[78+i*20,114,64+i*23.6,134],'rgba(60,20,16,.3)',.6);
-  lightmap(g,320,'#b4a698',l=>{pool(l,246,35,30,30,'#fff4d8',1);l.fillStyle=lg(l,0,46,0,140,['rgba(255,240,200,.5)','rgba(255,240,200,0)']);poly(l,[236,46,256,46,216,140,130,140]);l.fill();pool(l,126,58,36,30,'#ffc070',.7);pool(l,160,120,150,44,'#fff0d8',.4)})},
+  lightmap(g,320,'#b4a698',l=>{pool(l,246,35,30,30,'#fff4d8',1);l.fillStyle=lg(l,0,46,0,140,['rgba(255,240,200,.5)','rgba(255,240,200,0)']);poly(l,[236,46,256,46,216,140,130,140]);l.fill();nicheLight(l,126,58,36,28,'#ffc070',.72);pool(l,160,120,150,44,'#fff0d8',.4)})},
  draw(){},front(){}};
 /* ---------- The crossing: evening on the sea, Cyprus ahead (voyage scene) ---------- */
 ART.voyage={w:320,q:10,paint(g){const r=rng(307);

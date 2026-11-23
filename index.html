@@ -680,6 +680,12 @@ function shade(g,p,c,a){comp(g,'multiply',a==null?1:a,()=>poly(g,p,c||'#8f95c4')
 /* lightmap: paint a map of light (ambient color plus lamps and shadows) and multiply the scene by it. Used for night and interiors. */
 function lightmap(g,w,amb,fn){const[c,l]=mk(w*HR,VH*HR);l.scale(HR,HR);l.fillStyle=amb;l.fillRect(0,0,w,VH);fn(l);
   g.save();g.setTransform(1,0,0,1,0,0);g.globalCompositeOperation='multiply';g.drawImage(c,0,0);g.restore()}
+/* nicheLight: directional lamplight from a recessed wall niche at (x, y). The stone arch above occludes upward spill,
+   keeping the wall above the arch in ambient shade while casting a warm fan outward and downward below the sill. */
+function nicheLight(l,x,y,rx,ry,col,a){col=col||'#ffc070';a=a==null?.9:a;
+  pool(l,x,y-2,11,10,'#ffe09c',a*.95);
+  pool(l,x,y+ry*.4,rx*1.02,ry*.8,col,a*.82);
+  pool(l,x,y+ry*.7,rx*1.24,ry*.68,col,a*.42)}
 /* litLayer: paint a layer in full daylight colors (paint), build its light map (lights), and lay the lit result over what is already there.
    Unlike lightmap, this leaves everything behind the layer (a night sky, a far horizon) untouched. */
 function litLayer(g,w,amb,paint,lights){const[c,l]=mk(w*HR,VH*HR),[m,ml]=mk(w*HR,VH*HR);l.scale(HR,HR);paint(l);

@@ -1188,11 +1188,24 @@ function curtainArt(g){if(F.curt&&!F.hall)return;const whole=!!F.hall,x=414,y=54
   const dr=Q=>{poly(g,Q);g.fillStyle=lg(g,0,y,0,y+44,[tint(GOAT,.16),GOAT,tint(GOAT,-.3)]);g.fill();clipTo(g,()=>poly(g,Q),()=>{for(let i=2;i<28;i+=4.6)stroke(g,[x+i,y+1,x+i-.8,y+44],'rgba(0,0,0,.28)',.5)})};
   dr(P);if(!whole)dr([x+17,y,x+28,y,x+28,y+44,x+19,y+44,x+21,y+24]);else if(PART()==='n')R(g,x+12,y+1,3,43,tint(GOAT,.18))}
 /* the heap of rolls in the street, and the fire in it: a few low tongues that rise and sink by turns, and smoke. Nothing in it flashes. */
-function heapArt(g,t){const r=rng(1319);oval(g,347,124.6,30,3,'rgba(30,24,40,.3)');heapOf(g,346,124,17,r,1.5);
-  if(G.fire13){const k=Math.min(1,(performance.now()-G.fire13)/2600);comp(g,'multiply',.5*k,()=>heapOf(g,346,124,17,rng(1319),1.5));
-    for(let i=0;i<6;i++){const x=326+i*8.2,ph=Math.sin(t/260+i*1.7),h=(9+3*ph+(i%2)*4)*k;poly(g,[x-2.4,124-i%3*2.6,x+2.4,124-i%3*2.6,x+1.4+ph,124-h*.5-i%3*2.6,x+.3*ph,124-h-i%3*2.6,x-1.2,124-h*.45-i%3*2.6],'#e8581c');
-      poly(g,[x-1.2,124-i%3*2.6,x+1.2,124-i%3*2.6,x+.5*ph,124-h*.62-i%3*2.6],'#ffb030')}
-    for(let i=0;i<5;i++){const q=((t/2600+i/5)%1);oval(g,346+Math.sin(i*2.4+q*3)*7,106-q*46,4+q*9,2.6+q*5,`rgba(90,84,96,${.3*k*(1-q)})`)}pool(g,346,118,40,20,'#ffb060',.2*k,'screen')}}
+function heapArt(g,t){const r=rng(1319);oval(g,347,124.6,30,3,'rgba(30,24,40,.3)');
+  if(G.fire13){const k=Math.min(1,(performance.now()-G.fire13)/2600);
+    /* scorch ring, ash scatter, and warm ember glow grounding the fire on the paving */
+    oval(g,346,125.4,35,4.6,rgba('#201918',.38*k));oval(g,346,124.8,29,3.2,rgba('#362c28',.34*k));
+    for(let i=0;i<14;i++){const ax=320+((i*17+5)%54),ay=123.6+((i*7)%5)*.6;R(g,ax,ay,1.6+(i%2),.7,rgba(i%3?'#7a746c':'#3a322c',.55*k))}}
+  heapOf(g,346,124,17,r,1.5);
+  if(G.fire13){const k=Math.min(1,(performance.now()-G.fire13)/2600);comp(g,'multiply',.55*k,()=>heapOf(g,346,124,17,rng(1319),1.5));
+    /* glowing ember bed tucked into the foot of the charred scrolls */
+    for(let i=0;i<8;i++){const ex=324+i*6.4,ey=123.2-(i%3)*1.8,pulse=.65+.35*Math.sin(t/220+i*1.9);
+      oval(g,ex,ey,3.2,1.3,rgba('#b83412',.55*k*pulse));R(g,ex-1,ey-.4,2,.8,rgba('#ff9c30',.75*k*pulse))}
+    /* steady, layered daylight flames with rounded bases rising out of the heap */
+    for(let i=0;i<7;i++){const x=324+i*7.2,by=123.8-(i%3)*2.2,ph=Math.sin(t/250+i*1.7),h=(8.5+2.6*ph+((i+1)%3)*2.8)*k,w=2.4+(i%2)*.5;
+      poly(g,[x-w,by,x-w*.7,by-h*.38,x-.2+ph*.35,by-h,x+w*.65+ph*.5,by-h*.44,x+w,by,x+w*.5,by+1.1,x-w*.5,by+1.1],'#cc3e14');
+      poly(g,[x-w*.7,by+.2,x-w*.45,by-h*.32,x+.2*ph,by-h*.8,x+w*.5+ph*.3,by-h*.34,x+w*.7,by+.2],'#f07420');
+      poly(g,[x-w*.42,by+.3,x+.3*ph,by-h*.56,x+w*.42,by+.3],'#ffc23a');
+      oval(g,x,by-.4,w*.32,.9,rgba('#fff0a8',.85*k))}
+    for(let i=0;i<5;i++){const q=((t/2600+i/5)%1);oval(g,346+Math.sin(i*2.4+q*3)*7,106-q*46,4+q*9,2.6+q*5,`rgba(90,84,96,${.28*k*(1-q)})`)}
+    pool(g,346,122,42,16,'#ffb060',.22*k,'screen')}}
 function streetDraw(g,t){depth(104.5,()=>curtainArt(g));const v=STREETV(),L=lightAt('street13',300,120);
   if(F.awl&&!F.tw)cast(g,[['dz13d',262,117,-1],['dz13e',300,116,-1],['dz13f',314,121,-1],['dz13g',288,126,-1],['dz13h',330,117,-1],['dz13i',346,123,-1],['dz13j',362,117,-1],['dz13k',376,125,-1],['dz13l',392,119,-1]],L);
   else if(v==='f'){depth(124,()=>heapArt(g,t));
