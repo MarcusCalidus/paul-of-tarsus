@@ -6,18 +6,18 @@
  G.speedAll=500;
  const idle=async()=>{await wait(120);let n=0;while((G.busy||P.walk||PC().walk)&&n++<4000){if($('#choices').classList.contains('on')||ov.classList.contains('end'))break;await wait(50)}};
  const verb=v=>document.querySelector(`#verbs button[data-v=${v}]`).click();
- const view=(x,y)=>{const r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+y/144*r.height,bubbles:true}))};
+ const view=(x,y)=>{const r=vp.getBoundingClientRect(),z=zoomNow();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+(x-G.cam)*z/320*r.width,clientY:r.top+(y-G.camY)*z/144*r.height,bubbles:true}))};
  const item=id=>{const i=G.inv.indexOf(id);if(i<0)throw new Error('no item '+id);document.querySelectorAll('#inv .slot')[i].click()};
  const hs=name=>{const h=ROOMS[G.room].hs.find(h=>h.name===name&&(!h.vis||h.vis()));if(!h)throw new Error('no hs '+name+' in '+G.room);return[h.x+h.w/2,h.y+h.h/2]};
  const act=async(v,name)=>{if(v)verb(v);view(...hs(name));await idle()};
  const use=async(a,b)=>{verb('use');item(a);item(b);await idle()};
  const useOn=async(a,name,v)=>{verb(v||'use');item(a);view(...hs(name));await idle()};
  const actor=async(v,a)=>{if(v)verb(v);view(a.x,a.y-18);await idle()};
- const at=(type,x,y)=>{const r=vp.getBoundingClientRect(),e=new MouseEvent(type,{clientX:r.left+(x-G.cam)/320*r.width,clientY:r.top+y/144*r.height,bubbles:true,cancelable:true});vp.dispatchEvent(e);return e.defaultPrevented};
+ const at=(type,x,y)=>{const r=vp.getBoundingClientRect(),z=zoomNow(),e=new MouseEvent(type,{clientX:r.left+(x-G.cam)*z/320*r.width,clientY:r.top+(y-G.camY)*z/144*r.height,bubbles:true,cancelable:true});vp.dispatchEvent(e);return e.defaultPrevented};
  const move=(x,y)=>at('mousemove',x,y),rclick=(x,y)=>at('contextmenu',x,y),dbl=(x,y)=>at('dblclick',x,y);
  /* a screenshot does not show the mouse pointer: paintPointer points at a place in the room and paints the game's own pointer there */
  const paintPointer=(x,y)=>{move(x,y);const sc=vp.getBoundingClientRect().width/320,d=devicePixelRatio||1,u=clamp(Math.round(sc*d/2),1,6),p=pointerArt(u,pointerKind(G.hover));
-   p.style.cssText=`position:absolute;z-index:8;pointer-events:none;left:${(x-G.cam)*sc-p.hx*u/d}px;top:${y*sc-p.hy*u/d}px;width:${p.width/d}px;height:${p.height/d}px`;vp.appendChild(p)};
+   p.style.cssText=`position:absolute;z-index:8;pointer-events:none;left:${(x-G.cam)*zoomNow()*sc-p.hx*u/d}px;top:${(y-G.camY)*zoomNow()*sc-p.hy*u/d}px;width:${p.width/d}px;height:${p.height/d}px`;vp.appendChild(p)};
  const rclickEl=el=>{const e=new MouseEvent('contextmenu',{bubbles:true,cancelable:true});el.dispatchEvent(e);return e.defaultPrevented};
  const key=(k,type)=>dispatchEvent(new KeyboardEvent(type||'keydown',{key:k,bubbles:true,cancelable:true}));
  const lit=()=>[...document.querySelectorAll('#verbs button.def')].map(b=>b.dataset.v).join();
@@ -111,6 +111,7 @@
   11:async()=>{const l=ROOMS.street11.hs.filter(h=>h.name==='lane')[0];for(let i=0;i<3;i++){await clickView(l.x+l.w/2,l.y+l.h/2,l);await idle()}}, // Chapter Eleven: the wrong lane, three times
   12:async()=>{verb('use');item('awl12');const h=H('rolls_of_cloth');await clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()}, // Chapter Twelve: as Aquila and Priscilla, the awl with the Cilician cloth
   13:()=>act('look','something_under_the_bench'), // Chapter Thirteen: in the hall at midday, what a pupil left under the bench
+  14:async()=>{const M=CHAP[14].map,h=ROOMS.lanes14.hs.filter(h=>h.name==='shutter'&&h.vis&&h.vis())[0];M.seeAll=1;verb('look');await clickView(h.x+h.w/2,h.y+h.h/2,h);await idle();M.seeAll=0}, // Chapter Fourteen: after the uproar, the shutter ajar in the blind alley
  };
  (async()=>{try{
   while(!G.ready)await wait(30);
@@ -365,6 +366,68 @@
       HEAD.forEach((o,i)=>{const x=(i%4)*cw,y=Math.floor(i/4)*chh,f=o.veil||o.fem,top=4+(o.h?19:23)+(o.h?13:16)+3+(o.h?22:f?24:26)+20;field(g,i+Math.floor(i/4),x,y,cw,chh);cut(g,spr(o,'close'+i,1),-13,-top-6,26,39,x,y-6,Z)});
       SHEETS['cast-closeup']=c.toDataURL()}
     window.SHEETS=SHEETS;halt('cast')}
+  /* Shipwreck survivor clothing & reusable Roman military cast (shared/cast.js): standing, facing left, mid-stride, and enlarged close-ups.
+     Both stops also verify that every look stays one connected piece across standing, talking, seated and all walking frames. */
+  if(stop==='shipwreck'||stop==='romans'){await need('cast');const SHEETS={},C=SHARED.cast,
+      sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,w,h);return[c,g]},
+      text=(g,t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},
+      cut=(g,sp,x0,y0,w,h,dx,dy,z)=>g.drawImage(sp,FIG.OX+x0,FIG.OY+y0,w,h,dx,dy,w*z,h*z),
+      field=(g,i,x,y,w,h)=>{g.fillStyle=i%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,w-2,h-2)},
+      spr=(o,key,dir,fr,talk,bow,ges)=>sprite([stop,key,dir,fr||0,talk||0,bow||0,ges||0].join('|'),q=>person(q,0,0,o,dir,fr||0,talk||0,bow||0,ges||0,0),dir);
+    const checkSet=(map,label)=>{const POSES=[[1,0,0],[2,0,0],[3,0,0],[4,0,0],[0,0,MV.dip],[0,0,MV.lift|MV.brow],[2,1,MV.fwd],[2,2,0],[0,3,0],[2,1,MV.lean|MV.fwd]],
+        bad=[],wbad=[],sbad=[];let pn=0,wn=0;
+      for(const[id,o]of Object.entries(map)){const r0=parts(spr(o,id,1));if(r0!==1)bad.push(id+' rest('+r0+')');
+        for(const[t,ge,m]of POSES){pn++;const c=sprite([stop,'p',id,t,ge,m].join('|'),q=>person(q,0,0,o,1,0,t,0,ge,0,m),1);if(parts(c)!==1)bad.push(id+' '+[t,ge,m])}
+        for(const bw of[0,1]){const sc=sprite([stop,'s',id,bw].join('|'),q=>person(q,0,0,o,1,-1,0,bw,0,bw,0),1);if(parts(sc)!==1)sbad.push(id+' seat'+bw)}
+        for(let a=0;a<3;a++)for(let k=0;k<16;k+=a?2:1){wn++;if(parts(spr(o,id,1,4+k+16*a))!==1)wbad.push(id+' f'+(4+k+16*a))}}
+      ok(!bad.length&&!sbad.length,`${label}: ${Object.keys(map).length} looks, ${pn} speaking/gesture + seated poses all one piece`+(bad.length?'. BAD: '+bad.slice(0,8).join(', '):'')+(sbad.length?'. SEAT: '+sbad.join(', '):''));
+      ok(!wbad.length,`${label}: ${wn} walking frames all one piece`+(wbad.length?'. BAD: '+wbad.slice(0,8).join(', '):''))};
+    if(stop==='shipwreck'){const S=C.SHIPWRECK;checkSet(S,'shipwreck');
+      const ROWS=[
+        ['Dry vs. Wet & Torn (Paul, Luke, Centurion Julius)',[['Paul (dry)',S.paul_dry],['Paul (wet & torn)',S.paul_wet],['Luke (dry)',S.luke_dry],['Luke (wet & torn)',S.luke_wet],['Julius (dry)',S.julius_dry],['Julius (wet & torn)',S.julius_wet]]],
+        ['Shipwreck Survivors on Malta (standing & mid-stride)',[['Aristarchus (wet)',S.aristarchus_wet],['Escort soldier (wet)',S.soldier_wet],['Alexandrian sailor',S.sailor_wet],['Fellow prisoner',S.prisoner_wet],['Paul walking (wet)',S.paul_wet,1,8],['Sailor walking (wet)',S.sailor_wet,1,12]]]
+      ];
+      const Z=3,cw=156,chh=404,cols=6,hdr=30,[c,g]=sheet(cols*cw,36+ROWS.length*(hdr+chh));
+      text(g,'Shipwreck Clothing Contact Sheet (Acts 27-28, three times enlarged)',12,24,18,'#f4f0e6');
+      ROWS.forEach(([title,items],r)=>{const ry=36+r*(hdr+chh);g.fillStyle='#4a5464';g.fillRect(0,ry,cols*cw,hdr);text(g,title,12,ry+20,14,'#f4f0e6');
+        items.forEach(([nm,o,dir,fr],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-24,34*Z,3);
+          cut(g,spr(o,'sw'+r+'_'+i,dir||1,fr||0),-24,-124,48,125,x+Math.floor((cw-48*Z)/2),y+chh-24-124*Z,Z);text(g,nm,x+6,y+chh-7,11)})});
+      SHEETS['cast-shipwreck']=c.toDataURL();
+      /* 6x close-ups of wet hair, torn tunic hems & barefoot/wet boots (including walking stride) */
+      const DET=[['Paul wet & torn',S.paul_wet,0],['Luke wet & torn',S.luke_wet,0],['Julius wet cloak/armor',S.julius_wet,0],['Sailor standing',S.sailor_wet,0],['Sailor walking (fr 12)',S.sailor_wet,12]],
+        ZD=6,dw=264,dh=344,[cd,gd]=sheet(DET.length*dw,36+dh*2);
+      text(gd,'Shipwreck Details (6x): wet hair & upper cloth (top), torn hems & feet (bottom)',12,24,14,'#f4f0e6');
+      DET.forEach(([nm,o,fr],i)=>{const x=i*dw;field(gd,i,x,36,dw,dh);cut(gd,spr(o,'swd1_'+i,1,fr),-22,-96,44,52,x,36+4,ZD);text(gd,nm,x+6,36+dh-8,12);
+        field(gd,i+1,x,36+dh,dw,dh);cut(gd,spr(o,'swd2_'+i,1,fr),-22,-48,44,50,x,36+dh+4,ZD);text(gd,'hem & feet',x+6,36+dh*2-8,12)});
+      SHEETS['cast-shipwreck-detail']=cd.toDataURL();
+      window.SHEETS=SHEETS;halt('shipwreck')}
+    if(stop==='romans'){const R=C.ROMAN;checkSet(R,'romans');
+      const ROWS=[
+        ['Roman Foot Soldiers (lorica segmentata, lorica hamata, galea, pilum, caligae)',[
+          ['Legionary (pilum)',R.legionary_pilum],['Legionary (guard)',R.legionary_guard],['Legionary (barehead)',R.legionary_bare],
+          ['Auxiliary (mail)',R.auxiliary_mail],['Escort (cloak)',R.escort_cloak],['Legionary walking',R.legionary_pilum,1,8]]],
+        ['Centurions & Army Officers (molded cuirass, transverse crest, officer cloak, left gladius)',[
+          ['Centurion (crested)',R.centurion_crested],['Centurion (facing L)',R.centurion_crested,-1,0],['Centurion Julius',R.centurion_julius],
+          ['Veteran Centurion',R.centurion_veteran],['Julius walking',R.centurion_julius,1,8],['Crested walking',R.centurion_crested,1,12]]],
+        ['Praetorian Guard in Rome (watch tunic + mil. belt/caligae, formal toga, full armored)',[
+          ['Watch (standard)',R.praetorian_watch],['Watch (young)',R.praetorian_watch_young],['Watch (older)',R.praetorian_watch_old],
+          ['Formal city (toga)',R.praetorian_toga],['Armored (plumed)',R.praetorian_armored],['Armored walking',R.praetorian_armored,1,8]]]
+      ];
+      const Z=3,cw=156,chh=408,cols=6,hdr=30,[c,g]=sheet(cols*cw,36+ROWS.length*(hdr+chh));
+      text(g,'Roman Military Contact Sheet — Foot Soldiers, Centurions, Praetorian Guard (3x)',12,24,16,'#f4f0e6');
+      ROWS.forEach(([title,items],r)=>{const ry=36+r*(hdr+chh);g.fillStyle='#4a5464';g.fillRect(0,ry,cols*cw,hdr);text(g,title,12,ry+20,13,'#f4f0e6');
+        items.forEach(([nm,o,dir,fr],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);
+          cut(g,spr(o,'rm'+r+'_'+i,dir||1,fr||0),-24,-126,48,127,x+Math.floor((cw-48*Z)/2),y+chh-22-126*Z,Z);text(g,nm,x+6,y+chh-6,11)})});
+      SHEETS['cast-romans']=c.toDataURL();
+      /* 6x close-ups of helmets/crests/plumes and armor/belts/gladii to verify zero cross shapes */
+      const DET=[['Galea + segmentata',R.legionary_guard],['Auxiliary mail',R.auxiliary_mail],['Centurion crest + cuirass',R.centurion_crested],
+        ['Julius bare + cloak',R.centurion_julius],['Praetorian watch',R.praetorian_watch],['Praetorian toga',R.praetorian_toga],['Praetorian plume',R.praetorian_armored]],
+        ZD=6,dw=228,dh=364,[cd,gd]=sheet(DET.length*dw,36+dh*2);
+      text(gd,'Roman Military Details (6x): helmets, crests & armor (top); belts, gladii & caligae (bottom)',12,24,15,'#f4f0e6');
+      DET.forEach(([nm,o],i)=>{const x=i*dw;field(gd,i,x,36,dw,dh);cut(gd,spr(o,'rmd1_'+i,1),-19,-104,38,56,x,36+2,ZD);text(gd,nm,x+6,36+dh-8,11);
+        field(gd,i+1,x,36+dh,dw,dh);cut(gd,spr(o,'rmd2_'+i,1),-19,-54,38,55,x,36+dh+4,ZD);text(gd,'waist, gladius & boots',x+6,36+dh*2-8,11)});
+      SHEETS['cast-romans-detail']=cd.toDataURL();
+      window.SHEETS=SHEETS;halt('romans')}}
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
   /* the title card at full length, the prologue stops, and a room change caught half-way through its cross-fade */
   if(stop==='card'){await loadLevel(1);AU.key=CHAP[1].music;G.speedAll=0;clearInterval(sk);showCard(1);await wait(300);halt('card')}
@@ -410,6 +473,126 @@
   if(stop==='xfade'){await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();const r=CHAP[1].rooms[1];
     tween=(ms,fn)=>{fn(.5);return new Promise(()=>{})};go(r,...CHAP[1].ent[r]);await wait(150);halt('xfade')}
   if(stop==='menu'){openMenu();halt('menu')}
+  /* the lane map (shared/lanes.js): a city seen from above, which the view follows up and down as well as across. It is played here on
+     Chapter Fourteen's map of Ephesus, in its two passes. Stops: lanes (the checks; the runner in the back lane below the house, with the
+     crowd streaming to the theater), lanes2 (the quiet pass: Paul at the harbor road), lanesfolk (lanes-folk.png: every pose of the
+     figures of the map, five times enlarged, for the cross-shape check), lanesmap (lanes-map.png: the whole map in both passes, and
+     lanes-map-routes.png with the ways the test walks drawn on it), lanesall (every check, through both passes; part of the full run).
+     The city lies X room pixels to the right of its own plan, with the harbor west of it (C.ox). */
+  if(/^lanes(2|folk|all|map)?$/.test(stop)){await loadLevel(14);
+    const C=CHAP[14],M=C.map,LN=SHARED.lanes,R=ACT.eudoros14,D=M.def,sp0=G.speedAll,X=C.ox||0,A=C.at;
+    ok(LN&&M&&ROOMS.lanes14.plan===M&&ART.lanes14.h>VH*3&&ART.lanes14.w>VW*3,'the lane map is loaded before its chapter (needs) and makes a room of its own, taller than the view');
+    {const c=LN.crossings(D),f=LN.fourWays(D);if(D.grid)ok(c.length>10,'the streets cross at right angles, as the grid of Ephesus did ('+c.length+' crossings): the exception for Ephesus in CONTRIBUTING section 3');
+      else ok(!c.length&&!f.length,'no lane crosses another and no four ways meet at one place, which seen from above would be a plus sign'+(c.length||f.length?'. AT: '+JSON.stringify(c.concat(f)).slice(0,300):''));
+      const k=LN.corners(M);ok(!k.length,'no four roofs meet at one corner'+(k.length?'. AT: '+JSON.stringify(k.slice(0,12)):''));
+      /* every lane hangs together with every other: the walkable ground is one piece, but for a cell or two in a notch of a wall */
+      for(const v of['surge','quiet']){const Q=M.G[v]||(F.plea=v==='quiet'?1:0,M.walkable(0,0),M.G[v]),n={};for(let i=0;i<Q.comp.length;i++)if(Q.cell[i])n[Q.comp[i]]=(n[Q.comp[i]]||0)+1;
+        const big=Object.values(n).filter(c=>c>=12);ok(big.length===1,'in the '+v+' every lane can be reached from every other: '+big.length+' piece'+(big.length>1?'s: '+JSON.stringify(n):''))}delete F.plea
+      /* every lane can be walked along its middle, from end to end (but for what a pass shuts, and the jams of the uproar) */
+      {F.plea=0;M.walkable(0,0);const Q=M.G.surge,bad=[];D.lanes.forEach((l,k)=>{const p=l.pts;for(let i=2;i<p.length;i+=2){const ax=p[i-2],ay=p[i-1],dx=p[i]-ax,dy=p[i+1]-ay,n=Math.ceil(Math.hypot(dx,dy));
+          for(let j=0;j<=n;j++){const x=ax+dx*j/n,y=ay+dy*j/n;if(x<4||y<4||x>D.w-4||y>D.h-4||(D.jams&&D.jams.surge||[]).some(J=>x>=J.x-4&&x<=J.x+J.w+4&&y>=J.y-4&&y<=J.y+J.h+4)||D.keep.some(q=>{const P=q.poly;let c=false;for(let a=0,m=P.length/2,b=m-1;a<m;b=a++){const xi=P[2*a],yi=P[2*a+1],xj=P[2*b],yj=P[2*b+1];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c}))continue;
+            if(!Q.cell[(clamp(Math.floor(y/2),0,Q.GH-1))*Q.GW+clamp(Math.floor(x/2),0,Q.GW-1)]&&!M.walkable(x+1,y)&&!M.walkable(x-1,y)&&!M.walkable(x,y+1)&&!M.walkable(x,y-1))bad.push([k,Math.round(x-X),Math.round(y)])}}});
+        delete F.plea;const one=[];for(const b of bad)if(!one.some(o=>o[0]===b[0]&&Math.hypot(o[1]-b[1],o[2]-b[2])<8))one.push(b);
+        ok(!bad.length,'every lane can be walked along its middle'+(bad.length?'. NOT AT (lane, x in the city, y): '+JSON.stringify(one.slice(0,16)):''))}}
+    {const looks=[LOOK.eudoros14,LOOK.paul,...LN.FOLK],bad=[];let n=0;
+      for(const o of looks)for(const Dd of['S','N','E','W'])for(const f of['stand','s1','s2','w1','p1','w2','p2','r1','f1','r2','f2'])for(const t of[0,1]){const run=f[0]==='r'||f[0]==='f',
+        arms=run?(Dd==='E'||Dd==='W'?(f==='r1'||f==='f1'?'run':'run2'):'run'):Dd==='E'||Dd==='W'?(f==='w1'?'f':f==='w2'?'k':'stand'):'stand';n++;if(parts(LN.folk(o,Dd,f,arms,t))!==1)bad.push(LN.kinds&&(o.veil?'v':o.cloak?'m':'t')+Dd+f+arms+t)}
+      ok(!bad.length,'every pose of the figures of the map is one piece: '+n+' poses'+(bad.length?'. IN PIECES: '+[...new Set(bad)].slice(0,12).join(', '):''))}
+    if(stop==='lanesfolk'){setChapter(14);const z=5,sh=[LOOK.eudoros14,LOOK.paul,...LN.FOLK].map(o=>LN.sheet(o,z)),[c,g]=mk(sh[0].width,sh.reduce((a,x)=>a+x.height,0));let y=0;for(const x of sh){g.drawImage(x,0,y);y+=x.height}
+      window.SHEETS={'lanes-folk':c.toDataURL()};halt('lanesfolk')}
+    if(stop==='lanesmap'){setChapter(14);const two=F.plea,pics=[0,1].map(t=>{F.plea=t;return bg('lanes14')}),[c,g]=mk(pics[0].width,pics[0].height*2+8);
+      g.fillStyle='#000';g.fillRect(0,0,c.width,c.height);g.drawImage(pics[0],0,0);g.drawImage(pics[1],0,pics[0].height+8);
+      /* the ways the test walks: the runner's from where he starts to the door, and Paul's from the door to the harbor gate, with the lanes shut
+         and without; drawn on the picture of each pass */
+      const[c2,g2]=mk(c.width,c.height);g2.drawImage(c,0,0);const k=pics[0].width/ART.lanes14.w,way=(a,b,col,dy)=>{F.plea=a.two;const r=M.route({x:a.x,y:a.y},b[0],b[1]);if(!r)return;
+        g2.strokeStyle=col;g2.lineWidth=2;g2.beginPath();g2.moveTo(a.x*k,a.y*k+dy);for(const[x,y]of r)g2.lineTo(x*k,y*k+dy);g2.stroke()};
+      F.plea=0;const st=C.ent.lanes14,hs=D.targets.house,gt=D.targets.gate,H2=pics[0].height+8;
+      way({x:st[0],y:st[1],two:0},hs,'#ffe040',0);way({x:hs[0],y:hs[1],two:1},gt,'#40e0ff',H2);
+      const blk=D.block.quiet;D.block.quiet=[];M.G={};way({x:hs[0],y:hs[1],two:1},gt,'#ff60a0',H2);D.block.quiet=blk;M.G={};F.plea=two;
+      /* the walk grid of each pass: every part that does not hang together with the rest is red */
+      for(const t of[0,1]){F.plea=t;M.walkable(0,0);const Q=M.G[t?'quiet':'surge'],n={};for(let i=0;i<Q.comp.length;i++)if(Q.cell[i])n[Q.comp[i]]=(n[Q.comp[i]]||0)+1;
+        const main=+Object.keys(n).sort((a,b)=>n[b]-n[a])[0];for(let i=0;i<Q.comp.length;i++)if(Q.cell[i]&&Q.comp[i]!==main){g2.fillStyle='#ff0000';g2.fillRect((i%Q.GW)*2*k-1,((i/Q.GW)|0)*2*k-1+(t?H2:0),2*k+2,2*k+2)}}F.plea=two;
+      window.SHEETS={'lanes-map':c.toDataURL(),'lanes-map-routes':c2.toDataURL()};halt('lanesmap')}
+    C.lanes(1);await wait(60);for(let i=0;i<60&&G.busy;i++)await wait(30);G.speedAll=0;M.seeAll=1;
+    ok(G.room==='lanes14'&&PC()===R&&Math.hypot(R.x-C.ent.lanes14[0],R.y-C.ent.lanes14[1])<14&&M.walkable(R.x,R.y)&&G.camY>0&&!G.busy,'the runner comes out on the map by the square before the theater, and the view stands lower than the top of the map');
+    /* the crowd: it streams to the theater in waves, and nobody of it stands where nobody can walk */
+    await wait(1500);{const n=M.crowd.length,off=M.crowd.filter(a=>!M.walkable(a.x,a.y)).length,east=M.crowd.filter(a=>Math.hypot(a.mx||0,a.my||0)>.5&&a.mx>0).length;
+      ok(n>60&&off<=n*.03&&east>n*.4,'a crowd of '+n+' streams to the theater, most of it eastward ('+east+'), and '+off+' of them off the lanes for a moment')}
+    /* nobody appears out of the open ground: the crowd comes in by the gate and along the streets from beyond the map, or steps out of a
+       door of a house whose shutters are not bolted */
+    {const cd=D.crowd.surge,edge=s=>s.x<X+16||s.y<8||s.y>D.h-8||s.x>D.w-8,badSrc=cd.sources.filter(s=>!s.doors&&!edge(s)),
+        from=M.crowd.filter(a=>a.from!=='door'&&a.from!=='edge').length,doors=M.crowd.filter(a=>a.from==='door'),shut=doors.filter(a=>D.cue(a.door.house,'surge')==='shut').length;
+      ok(M.doors.length>60&&!badSrc.length&&!from&&doors.length>5&&!shut,'the crowd comes in by the gate and the streets from beyond the map, or steps out of the doors of the houses ('+doors.length+' of '+M.crowd.length+' now; '+M.doors.length+' doors on the map), never out of a house whose shutters are bolted'+(badSrc.length?'. A SOURCE IN THE OPEN: '+JSON.stringify(badSrc[0]):''))}
+    /* a maze: the way to the house along the lanes is much longer than the straight line, and there are dead ends to go wrong in */
+    {const r=M.route(R,...D.targets.house);let len=0,x=R.x,y=R.y;for(const[a,b]of r){len+=Math.hypot(a-x,b-y);x=a;y=b}const st=Math.hypot(D.targets.house[0]-R.x,D.targets.house[1]-R.y);
+      const inP=(p,x,y)=>{let c=false;for(let i=0,n=p.length/2,j=n-1;i<n;j=i++){const xi=p[2*i],yi=p[2*i+1],xj=p[2*j],yj=p[2*j+1];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c},
+        onLane=(x,y,self)=>D.lanes.some(m=>{if(m===self)return false;const q=m.pts;for(let i=2;i<q.length;i+=2){const ax=q[i-2],ay=q[i-1],dx=q[i]-ax,dy=q[i+1]-ay,t=clamp(((x-ax)*dx+(y-ay)*dy)/(dx*dx+dy*dy),0,1);if(Math.hypot(ax+dx*t-x,ay+dy*t-y)<m.w/2+1)return true}return false}),
+        ends=D.lanes.flatMap(l=>[[l.pts[0],l.pts[1],l],[l.pts[l.pts.length-2],l.pts[l.pts.length-1],l]]).filter(([x,y,l])=>x>X+8&&y>8&&y<D.h-8&&x<D.w-8&&!onLane(x,y,l)&&!D.open.some(o=>inP(o.poly,x,y))&&!D.keep.some(k=>inP(k.poly,x,y)));
+      ok(r&&len>st*1.1&&ends.length>=1,'the way to the house runs round the blocks: '+Math.round(len)+' pixels along the streets for '+Math.round(st)+' in a straight line, and '+ends.length+' lane'+(ends.length>1?'s end':' ends')+' blind')}
+    /* the ways: from the runner's lane to the door of the house, and to every thing that can be clicked */
+    {const unreached=[];for(const h of ROOMS.lanes14.hs){if(h.vis&&!h.vis())continue;const r=M.route(R,h.wx,h.wy),e=r&&r[r.length-1];if(!e||Math.hypot(e[0]-h.wx,e[1]-h.wy)>8)unreached.push(h.name)}
+      ok(!unreached.length,'a way leads from the runner to every thing on the map that can be clicked'+(unreached.length?'. NOT: '+unreached.join(', '):''))}
+    {const[rx,ry]=A(440,84),r=M.route(R,rx,ry),e=r&&r[r.length-1];ok(r&&M.walkable(...e)&&Math.hypot(e[0]-rx,e[1]-ry)<26&&!M.walkable(rx,ry),'a click on a roof walks to the lane nearest to it')}
+    /* a line spoken on the map stands over the speaker, inside the view */
+    clearInterval(sk);say(R,'i_cant_get_through_against_them');await wait(80);{const el=$('#speech .line'),v=vp.getBoundingClientRect(),b=el&&el.getBoundingClientRect(),sc=v.width/320,sx=v.left+(R.x-G.cam)*sc,sy=v.top+(R.y-G.camY)*sc;
+      ok(b&&b.bottom<=sy-6*sc&&b.top>=v.top-1&&b.left<=sx&&b.right>=sx,'a line on the map stands over whoever speaks it')}
+    if(G.skip)G.skip();sk=setInterval(()=>{if(G.skip)G.skip()},30);await idle();
+    /* Tab names what can be clicked, where it is seen */
+    {const cr=D.crowd;D.crowd={};place(R,'lanes14',...A(610,180),-1);viewOf(R);await wait(150);D.crowd=cr}
+    tagsOn(true);await wait(200);{const t=[...$('#tags').children],v=vp.getBoundingClientRect();ok(t.length>0&&t.every(e=>{const b=e.getBoundingClientRect();return b.top>=v.top-1&&b.bottom<=v.bottom+1}),'Tab names '+t.length+' things on the map, each inside the view')}tagsOn(false);
+    /* the keys steer: up the lane and back */
+    {const cr=D.crowd;D.crowd={};M.pushT=0;R.pushed=0;place(R,'lanes14',...C.ent.lanes14);await wait(150);const x0=R.x;key('ArrowLeft');await wait(500);key('ArrowLeft','keyup');await wait(300);D.crowd=cr;ok(R.x<x0-6&&!R.walk,'the arrow keys steer the runner along the lane, and he stops when the key is let go ('+Math.round(x0-R.x)+' pixels)')}
+    /* against a packed street the crowd presses him back */
+    {let pressed=0;const p0=M.def.press;M.def.press=()=>{pressed++};for(let k=0;k<6&&!pressed;k++){place(R,'lanes14',...A(150,196),-1);M.pushT=0;R.pushed=0;walk(R,...A(20,196));for(let i=0;i<160&&!pressed;i++)await wait(25)}
+      ok(pressed>0,'walking against the packed harbor road, the runner is pressed back');M.def.press=p0;await wait(700);if(G.skip)G.skip();await idle()}
+    /* the quiet court is not the house: the first time the runner walks into it he says that its shutters are bolted and nothing stirs */
+    {const s0=window.say,heard=[];window.say=(a,t,o)=>{heard.push(t);return s0(a,t,o)};const ct=C.city.courts.A,cr=D.crowd;D.crowd={};
+      for(const k of[0,1]){place(R,'lanes14',...A(470,118),-1);M.pushT=0;R.pushed=0;walk(R,...A((ct[0]+ct[2])/2,(ct[1]+ct[5])/2));for(let i=0;i<160&&R.walk;i++)await wait(25);await idle()}
+      window.say=s0;D.crowd=cr;const n=heard.filter(t=>t==='shutters_bolted_nothing_stirs').length;
+      ok(n===1,'walking through the passage into a quiet court, the runner says once that its shutters are bolted and nothing stirs ('+n+')')}
+    /* the houses stand up: each is its own sprite, among the people by the row of its front; one the runner walks behind fades, and comes back */
+    {const S=LN.sprites(M,'surge'),H0=A(C.city.courts.H[0],C.city.courts.H[1]),H1=A(C.city.courts.H[2],C.city.courts.H[5]),inH=(x,y)=>x>=H0[0]-3&&x<=H1[0]+3&&y>=H0[1]-3&&y<=H1[1]+3;let spot=null;
+      /* (a spot in the court of the house where Paul is staying would end the runner's pass, so it is not used) */
+      for(const sp of S){if(sp.bridge)continue;for(const st of sp.strips){const x=(st.x0+st.x1)/2,y=st.front-4;if(st.x1-st.x0>=6&&y>st.top+2&&M.walkable(x,y)&&!inH(x,y)){spot=[sp,x,y];break}}if(spot)break}
+      ok(S.length>200&&spot,'the houses stand up, '+S.length+' of them, each hiding the ground behind it'+(spot?'':'. NO LANE BEHIND A HOUSE'));
+      if(spot){const[sp,x,y]=spot,cr=D.crowd;D.crowd={};place(R,'lanes14',x,y,1);viewOf(R);await wait(600);const a1=sp.alpha;place(R,'lanes14',...C.ent.lanes14);viewOf(R);await wait(600);
+        ok(a1<.5&&sp.alpha>.95,'a house fades while the runner is behind it ('+a1.toFixed(2)+'), and comes back when he is out from behind it ('+sp.alpha.toFixed(2)+')');D.crowd=cr}}
+    /* he goes only by the lanes he knows: from where he starts, a click on the house leads him only as near as the lanes he has seen go */
+    {M.seeAll=0;M.SEEN={};place(R,'lanes14',...C.ent.lanes14);viewOf(R);await wait(500);const r=M.route(R,...D.targets.house),e=r&&r[r.length-1],full=M.route(R,...D.targets.house,true);M.seeAll=1;
+      ok(r&&r.partial&&Math.hypot(e[0]-D.targets.house[0],e[1]-D.targets.house[1])>60&&full&&!full.partial,'a click goes only by the lanes the runner knows: from the start, a click on the house takes him only as near as those go')}
+    /* in the uproar narrow streets are jammed by people who cannot get through themselves: nobody passes them, so the way to the house goes round */
+    {const way=()=>{const r=M.route(R,...D.targets.house,true);if(!r)return 0;let len=0,x=R.x,y=R.y;for(const[a,b]of r){len+=Math.hypot(a-x,b-y);x=a;y=b}return len},js=D.jams.surge;
+      place(R,'lanes14',...C.ent.lanes14);const with_=way(),jp=M.J.surge.length,blocked=js.every(j=>!M.walkable(j.x+j.w/2,j.y+j.h/2));D.jams.surge=[];M.G={};const without=way();D.jams.surge=js;M.G={};
+      ok(jp>30&&blocked&&with_>without+20&&!(D.jams.quiet||[]).length,'in the uproar '+js.length+' narrow streets are jammed by '+jp+' people who cannot get through: the way to the house is '+Math.round(with_)+' pixels, where it would be '+Math.round(without)+'; after it, none')}
+    /* what blocks the way says what it is: a click on a jam stops the runner before it, and he says why nobody gets through */
+    const heardAt=async(a,from,to)=>{const s0=window.say,heard=[];window.say=(b,t,o)=>{heard.push(t);return s0(b,t,o)};const cr=D.crowd;D.crowd={};M.crowd.length=0;M.pushT=0;a.pushed=0;M.said=null;
+      place(a,'lanes14',...from,-1);viewOf(a);await wait(120);walk(a,...to);for(let i=0;i<240&&a.walk;i++)await wait(25);await wait(150);await idle();window.say=s0;D.crowd=cr;return heard};
+    {const h=await heardAt(R,A(442,118),A(413,118));ok(h.includes('packed_so_tight_nobody_gets_through'),'walking up to a jam, the runner says that nobody gets through ('+h.join(', ')+')')}
+    /* the house is reached only through its covered passage: the way to it runs under the house built over the lane */
+    {const b=D.bridges[0],r=M.route(R,...D.targets.house,true);let under=false,x=R.x,y=R.y;for(const[a,c]of r){for(let t=0;t<=1;t+=.05){const px=x+(a-x)*t,py=y+(c-y)*t;if(px>=b.x&&px<b.x+b.w&&py>=b.y&&py<b.y+b.d)under=true}x=a;y=c}
+      ok(D.bridges.length===3&&under,'the house is reached through a covered passage, and two quiet courts the same way')}
+    /* zoom: the view zooms between three quarters and twice its size, and a click still walks to where it was made */
+    {G.zoomTo=2;await wait(500);const z=G.zoom,[tx,ty]=[R.x+8,R.y];const ok1=M.walkable(tx,ty);if(ok1){view(tx,ty);for(let i=0;i<80&&R.walk;i++)await wait(25)}
+      ok(Math.abs(z-2)<.05&&(!ok1||Math.hypot(R.x-tx,R.y-ty)<2.5),'the view zooms to twice its size ('+z.toFixed(2)+'), and a click there walks to where it was made');G.zoomTo=1;await wait(400)}
+    if(stop==='lanes'){place(R,'lanes14',...A(256,118),-1);R.pushed=0;M.pushT=0;M.seeAll=0;viewOf(R);await wait(2400);walk(R,...A(230,96));await wait(60);paintPointer(...A(230,96));halt('lanes')}
+    /* to the house and through the door, by the back lanes: then the quiet pass, Paul at the door */
+    G.speedAll=sp0;place(R,'lanes14',...C.ent.lanes14);M.pushT=0;R.pushed=0;viewOf(R);
+    /* the test walks at many times the pace, through anyone in the way: for that walk the crowd stays away */
+    {const cr=D.crowd;D.crowd={};const[hx,hy]=D.targets.house;walk(R,hx,hy+2);for(let i=0;i<4000&&!F.court;i++)await wait(30);await idle();D.crowd=cr}
+    ok(F.court&&G.room==='door14'&&!R.room,'in the court of the house the runner is done, and the view goes in at the door');
+    C.lanes(2);await wait(60);for(let i=0;i<60&&G.busy;i++)await wait(30);await idle();
+    ok(PC()===P&&P.room==='lanes14'&&!R.room&&M.crowd.length===0&&ART.lanes14.variant()==='quiet','after the uproar Paul walks the emptied lanes');
+    /* after the uproar three lanes are shut and stalls lie across the harbor road: the way to the harbor gate is several times the direct one */
+    {const way=()=>{const r=M.route(P,...D.targets.gate);if(!r)return 0;let len=0,x=P.x,y=P.y;for(const[a,b]of r){len+=Math.hypot(a-x,b-y);x=a;y=b}return len};
+      const len=way(),blk=D.block.quiet;D.block.quiet=[];M.G={};const direct=way();D.block.quiet=blk;M.G={};
+      ok(len>direct*2,'with streets shut and the harbor street blocked, the way to the harbor gate is '+Math.round(len)+' pixels, where it would be '+Math.round(direct))}
+    {const h1=await heardAt(P,A(110,196),A(72,196)),h2=await heardAt(P,A(50,140),A(50,169));
+      ok(h1.includes('overturned_stall_in_the_way')&&h2.includes('somebody_has_shut_the_gate_and_barred_it'),'after the uproar Paul says what blocks his way: an overturned stall ('+h1.join(', ')+'), a barred gate ('+h2.join(', ')+')')}
+    if(stop==='lanes2'){G.speedAll=0;place(P,'lanes14',...A(30,200),-1);viewOf(P);await wait(300);paintPointer(...A(3,190));halt('lanes2')}
+    const code=makeCode();ok(decode(code)&&decode(code).ch===14,'the safe-point code holds the quiet pass: '+code);
+    {const h=ROOMS.lanes14.hs.filter(h=>h.name==='shutter'&&h.vis&&h.vis())[0];verb('look');view(h.x+h.w/2,h.y+h.h/2);await idle()}ok(treasures().has(14),'the shutter ajar at the end of the blind alley is the chapter\'s hidden treasure');
+    ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,8).join(' | '):'')+(RAWKEY.size?'. KEY: '+[...RAWKEY].slice(0,8).join(' | '):''));
+    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* hidden treasures (CONTRIBUTING section 2): every chapter hides one. From the point that the screen of treasures leads back to (its at),
      the steps in TSTEPS find it. Finding it changes no flag and no item, it is announced once, and the screen names it from then on.
      Their codes are kept apart from every saved game, and are never taken for a safe-point code. Stops: treasures (the checks, then the screen),
@@ -2396,9 +2579,9 @@
   {const bad=asiaOK();ok(F.sum&&C().shown().length===9&&G.map13.roads.length===8&&!bad.length,'the province, at the end: nine towns and eight roads, none crossing another, and no name on a line'+(bad.length?' BAD '+bad.join(' | '):''))}
   while(!(ov.classList.contains('end')&&ov.textContent.includes(T('the_hall_of_tyrannus')))&&n13++<4000)await wait(50);note();
   ok(ov.classList.contains('end')&&told('v19a')&&told('v19b')&&told('v20')&&told('c1619')&&told('c169')&&said('fifty_thousand_pieces_of_silver'),'they burn their books before everybody: fifty thousand pieces of silver; and the word of Jehovah keeps growing and prevailing (Acts 19:19, 20)');
-  ok(ov.textContent.includes(T('click_to_return_to_the_title'))&&/18:23-19:20/.test(ov.textContent),'the closing screen says what the account leaves unsaid');
+  ok(ov.textContent.includes(T('click_to_continue_to_chapter_fourteen'))&&ov.textContent.includes(T('chapter_fourteen_code_code',{code:codeOf(14,0)}))&&/18:23-19:20/.test(ov.textContent),'the closing screen says what the account leaves unsaid, and gives the code for Chapter Fourteen');
   {const r=ov.getBoundingClientRect(),bad=[...ov.children].filter(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});if(bad.length)tight.add('closing screen: '+bad[0].textContent.slice(0,40))}
-  ok(store('paul.save')===null,'a finished game keeps no save');
+  ok(store('paul.save')===codeOf(14,0),'and the browser keeps the first code of Chapter Fourteen');
   halt('final13');
   /* what the account says was all told; and the chapter's data is whole */
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length&&Object.keys(C().told).length===33,'every verse of Acts 18:23 to 19:20 that is not spoken in a scene was told by the narrator, and what he said and wrote of these years'+(miss.length?' MISSING '+miss:''))}
@@ -2414,6 +2597,105 @@
      has5=s=>Object.values(s).some(b=>b.includes(5));
    ok(a>.005&&a<.9&&!has5(gap.seq)&&has5(full.seq)&&sc.steps===9,`the tune leaves out the sixth note of its scale until the evening at the table, and has it from then on; the note itself renders finite, audible and unclipped (peak ${a.toFixed(2)})`)}
   };
+  /* Chapter Fourteen stops start Chapter Fourteen from the title screen, and its test is a function of its own: the full run calls it when
+     Chapter Thirteen has ended, and a Chapter Fourteen stop calls it at once. all14 halts nowhere. The stops that begin with "p" open one
+     room at once, with the story's flags set for it, so that its picture can be looked at without playing up to it. */
+  const C14=/^(dbg14|open14|market14|colon14|asked14|seal14|sealed14|lanes14|door14|held14|wait14|court14|quiet14|marketq14|gate14|deutsch14|final14|all14)$/.test(stop);
+  if(/^p[a-z]+14$/.test(stop)){await loadLevel(14);ov.className='';ov.onclick=null;const ALL=CHAP[14].flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      S={pcourt14:[[],'court14',[150,124]],pmarket14:[[],'market14',[240,124]],pcolon14:[[],'colon14',[120,124]],pseal14:[upto('r3'),'seal14'],psealb14:[upto('tied'),'seal14'],psealc14:[upto('sealed'),'seal14'],
+        plane14:[upto('run'),'lanes14'],pdoor14:[upto('court'),'door14',[160,124]],pdoorb14:[upto('h3'),'door14',[160,124]],pfarewell14:[upto('plea'),'court14',[186,126]],
+        pquiet14:[upto('left'),'lanes14'],pmarketq14:[upto('left'),'market14',[240,124]]}[stop];
+    if(!S)throw new Error('no such stop '+stop);setChapter(14);for(const k of S[0])F[k]=1;
+    const room=S[1];CHAP[14].place(room);dealInv(room);G.scene=null;enterRoom(room,...CHAP[14].ent[room]);
+    if(stop==='pcourt14'){G.stage14='open';CHAP[14].place(room);enterRoom(room,150,124,-1);place(ACT.timothy14,room,118,122,1);place(ACT.erastus14,room,96,126,1);place(ACT.damon14,room,214,120,-1);G.stage14=null}
+    if(stop==='pmarket14'){ACT.demet14.room='market14';P.room=null;ACT.eudoros14.room=null;ACT.eudoros14.x=270;G.cam=110}
+    if(S[2]&&PC().room===room){place(PC(),room,S[2][0],S[2][1],1);G.cam=clamp(S[2][0]-160,0,ART[room].w-320)}
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();await wait(1100);halt(stop)}
+  const ch14=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[14],told=k=>heard.includes(T(C().told[k])),
+    until=async(fn,n)=>{for(let i=0;i<(n||6000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(name,v)=>{const h=H(name);if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    useH=async(id,name,v)=>{const h=H(name);if(!h)throw new Error('no hs '+name+' in '+G.room);verb(v||'use');item(id);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    talkTo=async(a,v)=>{verb(v||'talk');clickView(a.x,a.y-10,a.hs);await idle()},
+    giveTo=async(id,a)=>{verb('give');item(id);clickView(a.x,a.y-10,a.hs);await idle()},
+    pray14=async()=>{const k=JSON.stringify(hint()),h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
+    /* a walk on the map by a script: every lane may be taken (see route), and the walk ends where the lanes come nearest */
+    mapWalk=async(a,x,y)=>{const M=C().map,D=M.def,cr=D.crowd;D.crowd={};M.crowd.length=0;M.pushT=0;a.pushed=0;M.seeAll=1;const r=walk(a,x,y);for(let i=0;i<4000&&a.walk;i++)await wait(30);await r;M.seeAll=0;D.crowd=cr;await idle()},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+  heard.length=0;(C14?document.querySelector('#overlay [data-ch="14"]'):ov).click();
+  await until(()=>G.ch===14&&G.room==='court14'&&!!A('timothy14').room,9000);halt('open14');
+  await until(()=>G.ch===14&&G.room==='market14',9000);halt('market14');
+  await until(()=>G.ch===14&&G.room==='colon14'&&!G.busy,12000);note();
+  const RUN=A('eudoros14'),DA=A('damon14'),AR=A('arist14'),PK=A('philo14'),PH=A('philon14'),KL=A('klea14');
+  ok(G.room==='colon14'&&PC()===RUN&&!P.room&&srt()==='tab14'&&['v21','v22','v23','v24','v25','v26','v27','v28','v29a','v32'].every(k=>seenTold.has(k))&&said('i_will_ask_around'),
+    'chapter fourteen opens in the court (Acts 19:21, 22), shows the marketplace while the narrator tells Demetrius (19:23-29), and gives the runner to the player at the colonnade of the theater ['+[G.room,PC().id,srt(),[...seenTold].join(' ')].join()+']');
+  ok(!document.querySelector('#verbs').classList.contains('party'),'nobody else can be played from here: the chapter has no swap button');
+  halt('colon14');
+  /* puzzle 1: Aristokles will not be told before all six have been asked */
+  heard.length=0;await talkTo(AR);ok(said('ask_them_all_first'),'Aristokles wants all six asked first');
+  ok(await pray14()&&said('everyone_at_the_arches_is_shouting'),'the first prayer at the arches points at the people there');
+  for(const w of C().who){heard.length=0;await talkTo(w.a);ok(w.lines.every(said)&&F[w.f],`${w.a.id} says what he says, and Eudoros notes it`)}
+  heard.length=0;await talkTo(A('appr14'));ok(said('go_and_see_for_yourself'),'asked again, the apprentice only sends him to look');
+  {const t=CHAP[14].tablets.notes.list.filter(n=>n.if());ok(t.length===13,'his tablets hold every claim he has heard, each with who made it ('+t.length+')')}
+  halt('asked14');
+  heard.length=0;await talkTo(AR);
+  for(let q=0;q<3;q++){for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);await choose(1);for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);await choose(0)}
+  await until(()=>G.room==='seal14',6000);
+  ok(F.r1&&F.r2&&F.r3&&(said('proconsul_i_would_have_heard')||said('harbor_then_why_silversmiths')),'a claim only one person makes is turned back, and the one that two agree on is taken');
+  note();ok(told('v29b')&&said('close_it_and_tie_it')&&has('cord14')&&has('clay14')&&G.room==='seal14','then the narrator tells who was dragged in, the commissioners write, and the close view opens with a cord and clay');
+  halt('seal14');
+  heard.length=0;await onH('philokrates_leaf','use');ok(said('the_holes_do_not_meet')&&!F.closed,'laid as it lies, the second leaf\'s holes do not meet the first\'s');
+  await useH('cord14','aristokles_leaf');ok(said('tied_open_anyone_could_read_it')&&!F.tied,'tied open, anyone could read it');
+  await onH('philokrates_leaf','pickup');ok(F.turned,'the second leaf is turned round');
+  await onH('philokrates_leaf','use');ok(F.closed,'writing to writing, the holes together');
+  await useH('clay14','tablet');ok(said('clay_on_bare_wood_seals_nothing')&&!F.clayed,'clay before the cord seals nothing');
+  await onH('ring','use');ok(said('tie_it_first_then_my_ring')&&!F.sealed,'the ring waits for the clay');
+  await useH('cord14','tablet');await useH('clay14','tablet');ok(F.tied&&F.clayed,'the cord through the holes, the clay over the knot');
+  ok(await pray14()&&said('clay_is_waiting_for_a_ring'),'a prayer then points at the ring');
+  await onH('ring','use');await until(()=>G.room==='colon14'&&!G.busy,6000);
+  ok(F.sealed&&has('plea14')&&said('he_is_staying_with_disciples'),'Aristokles seals it, and tells where Paul is staying');
+  halt('sealed14');
+  await onH('square_before_the_theater','walk');await until(()=>G.room==='lanes14'&&!G.busy,6000);
+  ok(G.room==='lanes14'&&PC()===RUN&&ART.lanes14.variant()==='surge','out on the lane map, in the surge');halt('lanes14');
+  {const M=C().map,[hx,hy]=M.def.targets.house;await mapWalk(RUN,hx,hy+2);}
+  await until(()=>G.room==='door14'&&!G.busy,20000);
+  note();ok(F.court&&PC()===DA&&P.room==='door14'&&told('v30')&&said('then_i_am_going_in'),'at the court the view goes into the house: Damon and Theano are played, and Paul is set on going (19:30)');
+  halt('door14');
+  /* puzzle 4: what concerns his own life only makes him more set on going; what concerns others holds him, a step at a time */
+  heard.length=0;await talkTo(P);for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);await choose(0);ok(said('crowds_have_wanted_my_blood')&&!F.h1,'a warning about his own life does not hold him');
+  for(let n=0;n<3;n++){await talkTo(P);for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);await choose(4)}
+  ok(F.h1&&F.h2&&F.h3&&P.seat&&said('he_has_sat_down_on_the_bench')&&said('somebody_is_knocking'),'three arguments about others hold him: the bolt, the mantle, the bench; and then a knock');
+  halt('held14');
+  await onH('hatch','open');ok(F.knock&&has('plead14')&&said('message_for_paul_sealed'),'the hatch: the runner, and the sealed tablet with both seals whole');
+  await giveTo('plead14',P);
+  await until(()=>G.room==='court14'&&PC()===P&&!G.busy,20000);note();
+  ok(F.plea&&['v31','v33','v34','v35','v36','v37','v38','v39','v40','v41','w1a'].every(k=>seenTold.has(k)),'the plea is the last word (19:31); then the theater is told while they wait (19:33-41), and the farewell begins (20:1)');
+  halt('court14');
+  heard.length=0;await onH('passage_under_the_house','walk');ok(said('not_without_saying_goodbye')&&G.room==='court14','he will not go without saying goodbye');
+  {const s0=window.say,who=[];window.say=(a,t,o)=>{who.push([a,t,o&&o.to]);return s0(a,t,o)};
+  for(const a of[DA,PH,KL,A('dz14c')])await talkTo(a);window.say=s0;ok(F.b1&&F.b2&&F.b3&&F.b4,'he says goodbye to each');
+  ok(who.some(([a,t])=>a===A('dz14c')&&t==='go_in_peace_paul_we_will_pray')&&who.some(([a,t,to])=>a===P&&t==='and_i_for_you'&&to===A('dz14c')),
+    'the disciple at the back whom Paul talks to is the one who answers, and Paul answers him')}
+  await onH('passage_under_the_house','walk');await until(()=>G.room==='lanes14'&&!G.busy,6000);
+  ok(ART.lanes14.variant()==='quiet'&&PC()===P,'the lanes after the uproar, as Paul');halt('quiet14');
+  /* the hidden treasure: the shutter ajar in the blind alley off the harbor road */
+  {const h=ROOMS.lanes14.hs.find(h=>h.name==='shutter'&&h.vis&&h.vis()&&h.look===h.open&&typeof h.look==='function');await mapWalk(P,h.wx,h.wy);heard.length=0;verb('look');clickView(h.x+h.w/2,h.y+h.h/2,h);await idle();
+    ok(said('shutter_look')&&treasures().has(14),'the shutter ajar in the blind alley: somebody hums while kneading, and the chapter\'s hidden treasure is found')}
+  {const h=ROOMS.lanes14.hs.find(h=>h.name==='market');await mapWalk(P,h.wx,h.wy);G.verb='walk';G.item=null;clickView(h.x+h.w/2,h.y+h.h/2,h);await until(()=>G.room==='market14'&&!G.busy,6000)}
+  heard.length=0;await onH('donkey','look');ok(said('donkey_heard_a_thousand_hammer_strokes'),'the marketplace again, quiet, and the donkey');halt('marketq14');
+  await onH('way_back_to_the_lanes','walk');await until(()=>G.room==='lanes14'&&!G.busy,6000);
+  {const h=ROOMS.lanes14.hs.find(h=>h.name==='harbor_gate');await mapWalk(P,h.wx+4,h.wy);G.verb='walk';G.item=null;clickView(h.x+h.w/2,h.y+h.h/2,h);
+    for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30)}
+  note();ok(ov.classList.contains('end')&&seenTold.has('w1b'),'at the harbor gate he sets out for Macedonia (20:1), and the end screen follows');
+  ok(ov.textContent.includes(T('click_to_return_to_the_title'))&&/19:21-20:1/.test(ov.textContent)&&store('paul.save')===null,'the closing screen says what the account leaves unsaid, and a finished game keeps no save');halt('gate14');
+  {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length&&Object.keys(C().told).length===24,'every verse of Acts 19:21 to 20:1 was told by the narrator'+(miss.length?' MISSING '+miss:''))}
+  /* the crowd's cry (Acts 19:28, 34) is heard and never shown: its vowels and rhythm are the language's own, and it renders finite and audible */
+  {const L=C().parseCry('cry14'),en=textOf('en','cry14'),SR=22050,o=new OfflineAudioContext(1,SR*4,SR),keep=Object.assign({},AU);AU.ctx=o;audioGraph(o);let len=0;try{len=C().cry(AU.out||AU.master,.05,6,0)}finally{for(const k in AU)AU[k]=keep[k]}
+    const d=(await o.startRendering()).getChannelData(0);let p=0;for(const v of d){if(!isFinite(v)){p=NaN;break}p=Math.max(p,Math.abs(v))}
+    ok(L.filter(n=>n[0]!=null).length===10&&(lang==='en'||T('cry14')!==en)&&len>2&&p>.005&&p<.95&&!heard.some(h=>/Great is Artemis|Groß ist die Artemis/i.test(h)),'the crowd\'s cry is heard as ten shouted vowels of the '+LANGS[lang].native+' words, never written on the screen (peak '+(p||0).toFixed(2)+')')}
+  };
+  if(C14){await ch14();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(C13){await ch13();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
@@ -3326,7 +3608,7 @@
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('journey6',()=>{ov.className=''});halt('final6');await wait(1700)}
-  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13()}
+  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13();await wait(1700);await ch14()}
   ok(!MISSING.size&&!RAWKEY.size,'every line shown in the game had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);
@@ -3404,6 +3686,6 @@
   ok(inked>=80&&SHARED.scroll&&SHARED.scroll.state==='down'&&!SHARED.scroll.over.length,inked+' lines of narration were told in the dark, and each was read from the scroll');
   ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box: speech, choices, status line, verbs, top bar'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
   L('DONE');
- }catch(e){if(e!=='halt')L('ERR '+(e&&e.message||e))}})();
+ }catch(e){if(e!=='halt')L('ERR '+(e&&e.message||e)+(e&&e.stack?' | '+e.stack.split('\n').slice(1,5).join(' < '):''))}})();
 })();
 </script>

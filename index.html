@@ -27,6 +27,7 @@ body{display:flex;align-items:center;justify-content:center}
 #top #names::before{content:'';display:inline-block;vertical-align:middle;width:calc(var(--s)*2px);height:calc(var(--s)*2px);border-radius:50%;
   background:var(--gold);box-shadow:0 0 0 var(--px) #000;margin:0 calc(var(--s)*1.5px) calc(var(--s)*.5px) 0}
 #view{position:relative;width:calc(var(--s)*320px);height:calc(var(--s)*144px);overflow:hidden;cursor:default}
+#view.plan{touch-action:none}   /* on a lane map two fingers zoom the view, not the page */
 /* the canvas is as tall as the title's picture, 210 room pixels: a room is painted into its upper 144, which is all the view shows in play */
 #screen{width:100%;height:calc(var(--s)*210px);display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 #speech{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3}
@@ -254,7 +255,7 @@ const VW=320,VH=144,VT=210;   /* the view; VT: the height of the title's picture
 const $=s=>document.querySelector(s);
 const cv=$('#screen'),cx=cv.getContext('2d');
 cx.imageSmoothingEnabled=false;
-const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,t:0,scene:null,
+const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,camY:0,zoom:1,zoomTo:1,t:0,scene:null,
   hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false,pc:null,invs:{},lang:'en',turn:new Map(),turnN:0};
 const OPTS_KEY='paul.opts',OPTS={mus:1,fx:1,spd:1,mov:1};   /* mov: 1 lively, 0 calm (see moves) */
 /* ============ LANGUAGES: every language is data under lang/, English as well ============ */
@@ -357,7 +358,7 @@ const F=G.flags;
 const has=id=>G.inv.includes(id);
 function flyItem(id,idx){if(G.speedAll>200||!G.room||G.scene)return;const slot=$('#inv').children[idx];if(!slot)return;
   const vr=$('#view').getBoundingClientRect(),sr=slot.getBoundingClientRect(),src=iconArt(ITEMS[id].icon||id),[c,g]=mk(48,48);g.drawImage(src,0,0);
-  const p=G.actPos||[PC().x-G.cam,PC().y-24],sx=vr.left+clamp(p[0],12,VW-12)/VW*vr.width,sy=vr.top+clamp(p[1],12,VH-12)/VH*vr.height;
+  const z=zoomNow(),p=G.actPos||[(PC().x-G.cam)*z,(PC().y-G.camY-24)*z],sx=vr.left+clamp(p[0],12,VW-12)/VW*vr.width,sy=vr.top+clamp(p[1],12,VH-12)/VH*vr.height;
   const tx=sr.left+sr.width/2,ty=sr.top+sr.height/2,sz=sr.height*.8;
   c.className='flyitem';c.style.width=sz+'px';c.style.height=sz+'px';document.body.appendChild(c);
   tween(320,k=>{const e=1-(1-k)*(1-k),x=sx+(tx-sx)*e,y=sy+(ty-sy)*e-Math.sin(k*Math.PI)*24*ptrScale;
@@ -883,8 +884,12 @@ const LOOK={paul:paulLook(1)};
 
 /* ramp: the five tones a material is painted in: highlight, light, base, shadow, deep shadow. Shadows lean toward violet. */
 const ramp=c=>{const[r,g,b]=hex(c),l=(r*.3+g*.59+b*.11)/255,k=l*l;return[tint(c,.38),tint(c,.17),c,mix(tint(c,-.28+.12*k),'#3a2444',.14),mix(tint(c,-.55+.22*k),'#22122c',.22-.08*k)]};
-function pal(o){return o.p||(o.p={sk:ramp(o.skin),tu:ramp(o.tunic),st:o.stripe?ramp(o.stripe):null,cl:o.cloak?ramp(o.cloak):null,ha:ramp(o.hair||'#2a1a12'),be:o.beard?ramp(o.beard):null,
-  bt:o.belt?ramp(o.belt):null,le:ramp('#7a4e2a'),ar:o.armor?ramp(o.armor):null,hd:ramp(o.veil||o.wrap||o.helm||'#888888'),tr:o.trim?ramp(o.trim):null,gr:o.grey?ramp(o.grey):null})}
+function pal(o){if(o.p)return o.p;const wd=(c,k)=>o.wet?mix(tint(c,-k),'#1b2a3c',.2):c;
+  return o.p={sk:ramp(o.skin),tu:ramp(wd(o.tunic,.14)),tuW:o.wet?ramp(wd(o.tunic,.36)):null,st:o.stripe?ramp(wd(o.stripe,.16)):null,
+  cl:o.cloak?ramp(wd(o.cloak,.16)):null,clW:o.wet&&o.cloak?ramp(wd(o.cloak,.36)):null,ha:ramp(wd(o.hair||'#2a1a12',.22)),be:o.beard?ramp(wd(o.beard,.2)):null,
+  bt:o.belt?ramp(o.belt):null,le:ramp('#7a4e2a'),ar:o.armor?ramp(o.armor):null,hd:ramp(wd(o.veil||o.wrap||o.helm||'#888888',o.helm?0:.18)),
+  tr:o.trim?ramp(wd(o.trim,.16)):null,gr:o.grey?ramp(wd(o.grey,.18)):null,cr:o.crest?ramp(o.crest):null,sa:o.sash?ramp(wd(o.sash,.14)):null,
+  pt:o.pteruges?ramp(wd(o.pteruges,.14)):null}}
 /* stamp: lay down a small pixel map. Each character names a color in the legend L; anything else is left alone. */
 function stamp(g,map,x,y,L){for(let j=0;j<map.length;j++){const r=map[j];for(let i=0;i<r.length;i++){const c=L[r[i]];if(c){g.fillStyle=c;g.fillRect(x+i,y+j,1,1)}}}}
 /* Heads are drawn by hand, pixel by pixel, in three-quarter view, and larger than life: a figure stands about five heads tall, as the
@@ -915,7 +920,10 @@ const HEADS={
  faceF:["...............","......zsssss...","....zzsSSSSSs..","...zssSSSSSSSs.","...zsSSSSSSSSs.","..zzsSSSSSSSSs.","..zssSSSSSSSSs.","..zsbbbsSSbbbs.","..zsssssSSssss.",".zzswpssSSwpss.",".zzsssssSSssss.","..zsccsSSLssss.","..zzssssSnssss.","..zzsssssssss..","...zsssrrrrss..","....zsssssss...","....zzsssss....","......zsss....."],
  veil:["......aaaaaaa....","....aaAAAAAAaaa..","..aaaAAAAaaaaaaa.",".aaAAAaaaaaaaaaaq",".aAAaaaakkkkkkaaq","aaAaaakkkKkkkkkaq","aaaaakkkK...kkkaq","aaaaakk......kkaq","aaaak.........kaq","aaaq..........kq.","aaaq...........q.","aaaq...........q.","aaaq...........q.","aaaaq..........q.","aaaaq.........q..","aaaaq.........q..",".aaaaq.......qq..",".aaaaq......qaq..",".aaaaaq....qaaq..","..aaaaaq..qaaaq.."],
  wrap:["....aaaAAAAaaa...","..aaaAAAAAAaaaaa.",".aaAAAAaaaAAAaaaq","aaAAaaaaAAAaaaaqq","aAAaaaAAAaaaaaaqq","aaaaAAAaaaaaaaqqq","aaaAAaaaaaaaqqqqq","aaaaaaaaaaqqqqqq.",".qqaaaaaaqqqqqq..","aaaq.............","aaaq.............","aaq..............","aaq..............","aq...............",".q..............."],
- helm:["........yy.......","......aAAAAa.....","....aaAAAyAAaa...","..aaaAAAyAAAaaaa.",".aaAAAAyAAaaaaaq.",".aaAAAyAAaaaaaaq.",".aAAAAAaaaaaaaqq.",".aaaaaaaaaaaaqqqq",".aaa.............",".aaa.............",".aaq.............",".aaq.............",".aaq.............","aaq..............","qaq..............","..q.............."]};
+ helm:["........yy.......","......aAAAAa.....","....aaAAAyAAaa...","..aaaAAAyAAAaaaa.",".aaAAAAyAAaaaaaq.",".aaAAAyAAaaaaaaq.",".aAAAAAaaaaaaaqq.",".aaaaaaaaaaaaqqqq",".aaa.............",".aaa.............",".aaq.............",".aaq.............",".aaq.............","aaq..............","qaq..............","..q.............."],
+ galea:["......aAAAAa.....","....aaAAyyAAaa...","...aaAAAyyAAAaa..","..aaAAAAyAAAAaaa.","..aAAAAAyyAAAAaa.",".aaAAAAaaaaAAAAa.",".aAAAAAaaaaAAAAq.",".aaaaaaaaaaaaqqqq",".aaaq............",".aaq.............",".aaq.............",".aaq.............","aaaAq............","aaqaAq...........","qaqaaAq..........","....aaq.........."],
+ crest:["...rRRRRRYYRRRRr...",".rrRRRRRRYYRRRRRRr.",".rRRRRRRRYYRRRRRRD.","..DDrrrrrrrrrrrrDD.","...DDggggggggggDD..",".....gggggggggg...."],
+ plume:[".......rRRRYYr.....",".....rrRRRRYYRr....","....rRRRRRYYRRRD...","...rRRRRRRRRRRRD...","...rRRggggggggDD...","..rRRD.............","..rRD..............",".rRRD..............",".rRD...............",".rRD...............",".rD................"]};
 /* MV: how a figure carries its head and body beyond its pose, as a sum of these. dip, lift: the head a pixel down or up; fwd, back: a pixel
    forward or back; brow: the brows raised; glance: the eyes turned back; lean: everything above the belt a pixel forward. */
 const MV={dip:1,lift:2,fwd:4,back:8,brow:16,glance:32,lean:64};
@@ -928,7 +936,7 @@ const WALK_V=66;
 function gaitOf(o){if(o.gt)return o.gt;const grey=c=>{if(!c)return false;const[r,g,b]=hex(c);return Math.max(r,g,b)-Math.min(r,g,b)<28&&(r+g+b)/3>95},
     old=grey(o.hair)||!o.hair&&grey(o.beard||o.brow),kid=!!o.h,youth=!kid&&!old&&!!o.slim&&!o.beard&&!o.veil&&!o.fem;
   let S=o.long?11:24,T=.46,arm=o.long?.8:1;if(kid){S*=.8;T*=.85;arm*=1.2}else if(old){S*=.8;T*=.9;arm*=.7}else if(youth){S*=1.05;T*=1.05;arm*=1.2}
-  if(o.spear){S=Math.min(S,14);arm=.7}return o.gt={S,T,arm}}
+  if(o.spear||o.pilum){S=Math.min(S,14);arm=.7}return o.gt={S,T,arm}}
 /* strideOf: how far two steps carry a person at v room pixels a second, in room pixels. A step of S drawing units leaves its foot where it stands
    when two steps carry the body S room pixels. A faster walk than that would need more than two steps in T seconds, and would be a scurry: then
    the stride is stretched instead, and the standing foot slips a little (at 66, about a fifth of a step for a man in a short tunic). */
@@ -959,84 +967,167 @@ function gaitPose(o,ph,amp){const q=gaitOf(o),long=!!o.long,LIFT=long?1:4,c=Math
    stretched out, and never are both raised (CONTRIBUTING section 3). A figure that bows keeps its head still, and a statue (stone:1)
    never moves: its mouth stays shut and its head where it is. */
 function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
-  const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=o.stone?c.sk:c.le,fem=!!(o.veil||o.fem),HIM=!!(o.himation&&C);g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+  const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=o.stone?c.sk:c.le,fem=!!(o.veil||o.fem),HIM=!!((o.himation||o.toga)&&C),TOGA=!!(o.toga&&C),WET=!!o.wet,TORN=o.torn|0,ARM=o.spear||o.pilum;g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
   mv=o.stone||bow?0:mv|0;talk=o.stone?0:talk|0;
   const seat=fr<0,W=!seat&&fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):!seat&&fr?gaitPose(o,[0,0,.25,.5][fr]||0,1):null,bob=W?W.bob:0;let SH=null;
   /* px: a run of pixels. While a foot is painted, SH lets each of its columns sit higher than the next: a heel that is up, or the toes */
   const px=(a,b,col,w,h)=>{g.fillStyle=col;if(SH)for(let i=0;i<(w||1);i++)g.fillRect(a+i,b+SH(a+i),1,h||1);else g.fillRect(a,b,w||1,h||1)};
+  /* tearCut: natural 2-3px jagged cloth tongues along a ragged hem (max 2px notch, keeps every column connected to above) */
+  const tearCut=(k,w)=>{if(!TORN)return 0;const p=[0,1,2,2,0,1,2,1,0,2,1,0],g=Math.floor((k+TORN*2)/2),c=p[(g+TORN*3)%p.length];
+    return k<2||k>w-3?Math.min(1,c):c};
   const body=()=>{
   /* cloth: one pixel row of a rounded form lit from the front right. folds: [position 0-1, first row, drift per row, last row];
      each is a dark crease with a light ridge beside it, wandering a little as it falls. hi: rows that catch a highlight.
-     soft: the left edge is only a crease (an arm lies against it), not the turn of the form into shadow. */
-  const cloth=(yy,x0,x1,R,i,folds,R2,hi,soft)=>{const w=x1-x0+1,wob=Math.sin(yy*.47)*.035;for(let k=0;k<w;k++){const t=(k+.5)/w+wob;let v=soft?(k===0?4:k<3?3:t<.64?2:t<.9?1:2):t<.11?4:t<.27?3:t<.64?2:t<.9?1:2;
+     soft: the left edge is only a crease (an arm lies against it), not the turn of the form into shadow. wetU: row fraction where soaked cloth begins. */
+  const cloth=(yy,x0,x1,R,i,folds,R2,hi,soft,RW,wetP)=>{const w=x1-x0+1,wob=Math.sin(yy*.47)*.035;for(let k=0;k<w;k++){const t=(k+.5)/w+wob;let v=soft?(k===0?4:k<3?3:t<.64?2:t<.9?1:2):t<.11?4:t<.27?3:t<.64?2:t<.9?1:2;
       if(hi&&i>=hi[0]&&i<=hi[1]&&t>.68&&t<.84)v=0;
       if(folds)for(let f=0;f<folds.length;f++){const[u,s0,dr,s1]=folds[f];if(i<s0||(s1&&i>s1))continue;const fx=Math.round(w*u+(dr||0)*i+Math.sin(i*.31+f*2.1)*.7),deep=i-s0>7;
         if(k===fx||(deep&&k===fx-1))v=Math.min(4,v+1+(deep&&k===fx?1:0));else if(k===fx+1)v=Math.max(0,v-1)}
-      px(x0+k,yy,(R2&&(x0+k+40)%5<2?R2:R)[v])}};
+      const soaked=RW&&wetP&&(wetP(k,w,i));
+      const P=soaked?RW:(R2&&(x0+k+40)%5<2?R2:R);
+      if(soaked&&t>.74&&t<.86&&(yy+k)%5===0&&v<3)v=0;
+      px(x0+k,yy,P[v])}};
   const kid=o.h?1:0,slim=o.slim?1:0,LEG=kid?19:23,SK=kid?13:16,TOR=kid?22:fem?24:26,AL=26;
   const yA=-4,yH=yA-LEG+bob,yB=yH-SK+(seat?10:0),yS=yB-3-TOR,SL=o.longSleeve?AL-2:12;   /* ankle, hem, top of the skirt, shoulder line; AL: rows of an arm down to the wrist */
   /* the sleeves are one garment with the body: PIT rows of shoulder yoke, then the arms part from the trunk */
   const PIT=8,nw=slim+(fem?1:0),aw=fem?4:5,ax=-10+nw-aw,fx=11-nw,fw=5,waist=Math.round(TOR*.6);
-  /* cape, behind everything */
-  if(o.cape)for(let yy=yS;yy<=yH+13;yy++){const i=yy-yS,e=yy>yH+10?1:0;cloth(yy,-18+e,-10,C,i,[[.45,6,0]]);cloth(yy,10,17-e,C,i,[[.5,8,0]])}
+  /* cape, behind everything (when torn: column-notched bottom so every pixel stays connected) */
+  if(o.cape)for(let yy=yS;yy<=yH+13;yy++){const i=yy-yS,e=yy>yH+10?1:0,wl=WET?((k,w)=>yy>yH+2+(k*3+TORN)%4):null;
+    if(TORN&&yy>yH+9){for(const[x0,x1]of[[-18+e,-10],[10,17-e]]){const w=x1-x0+1;for(let k=0;k<w;k++){const cut=tearCut(k,w);if(yy>yH+13-cut)continue;const edge=yy===yH+13-cut,P=c.clW||C;px(x0+k,yy,edge?P[4]:P[k<2?4:k>w-3?1:2])}}}
+    else{cloth(yy,-18+e,-10,C,i,[[.45,6,0]],null,null,0,c.clW,wl);cloth(yy,10,17-e,C,i,[[.5,8,0]],null,null,0,c.clW,wl)}}
   /* an arm, from the armpit down. near: the arm on the shadow side; sw: how far the hand swings; stub: the upper arm only; bd: how far the
      forearm bends forward at the elbow. The upper arm swings from the shoulder and the forearm goes on from it: an arm is never one slanting bar */
   const arm=(near,sw,stub,bd)=>{bd=bd||0;const x00=near?ax:fx,w=near?aw:fw,tr=c.tr||T,lean=near?1:-1;
-    for(let i=PIT;i<(stub?14:AL);i++){const t=(i-PIT)/(AL-1-PIT),dx=Math.round(t<.5?sw*.8*t:sw*.4+(sw*.6+bd)*(t-.5)*2)+(i>waist?lean:0),sl=i<=SL,ww=sl?w:i>AL-7?w-2:w-1,x0=near?x00+dx+w-ww:x00+dx,R=sl?(o.longSleeve&&i>SL-3?tr:T):S;
-      for(let k=0;k<ww;k++){const u=(k+.5)/ww;let v;
-        if(near)v=sl?(i===SL?4:u<.5?4:3):i===SL+1?4:u<.34?3:u<.8?2:3;else v=sl?(i===SL?3:k===0?(i>PIT+1?3:2):u<.78?1:2):i===SL+1?3:k===0?3:u<.78?1:2;px(x0+k,yS+i,R[v])}}
+    for(let i=PIT;i<(stub?14:AL);i++){const t=(i-PIT)/(AL-1-PIT),dx=Math.round(t<.5?sw*.8*t:sw*.4+(sw*.6+bd)*(t-.5)*2)+(i>waist?lean:0),
+        slEnd=TORN?SL-(near?(TORN%2):((TORN+1)%2)):SL,sl=i<=slEnd,ww=sl?w:i>AL-7?w-2:w-1,x0=near?x00+dx+w-ww:x00+dx,
+        R=sl?(WET&&i>slEnd-4&&c.tuW?c.tuW:o.longSleeve&&!TORN&&i>SL-3?tr:T):S;
+      for(let k=0;k<ww;k++){const u=(k+.5)/ww,rip=TORN&&sl&&i===slEnd&&((k+TORN+(near?1:0))%3===0);let v;
+        const Rk=rip?S:R;
+        if(near)v=sl&&!rip?(i===slEnd?4:u<.5?4:3):i===slEnd+1||rip?4:u<.34?3:u<.8?2:3;else v=sl&&!rip?(i===slEnd?3:k===0?(i>PIT+1?3:2):u<.78?1:2):i===slEnd+1||rip?3:k===0?3:u<.78?1:2;px(x0+k,yS+i,Rk[v])}}
     if(stub)return;const hx=(near?x00+w-5:x00)+Math.round(sw+bd)+lean;[4,5,5,5,4].forEach((n,j)=>{const x0=hx+(j===0||j===4?near?1:0:0);
       for(let k=0;k<n;k++)px(x0+k,yS+AL+j,S[Math.min(4,(j===4?3:k===0?3:k===n-1?1:j===3&&k===2?3:2)+(near?1:0))])})};
-  arm(false,W?W.fa:0,o.spear||o.stub||(ges&&ges!==4&&!bow),W?W.fb:0);
-  /* legs and sandals, or the feet under a long robe */
-  const foot=(fx0,fy,R)=>{px(fx0+1,fy,R[2],5);px(fx0,fy+1,R[2],8);px(fx0,fy+2,R[2],10);px(fx0+8,fy+2,R[1],2);px(fx0,fy+1,R[3]);px(fx0,fy+2,R[3],2);px(fx0-1,fy+3,'#2a1810',13);px(fx0+9,fy+3,'#4a3020',3);
+  arm(false,W?W.fa:0,ARM||o.stub||(ges&&ges!==4&&!bow),W?W.fb:0);
+  /* legs and sandals (or barefoot, or Roman military caligae), or the feet under a long robe */
+  const boot=o.caligae?ramp('#4b2b18'):null;
+  const foot=(fx0,fy,R)=>{if(o.barefoot){px(fx0,fy,R[3]);px(fx0+1,fy,R[2],5);px(fx0,fy+1,R[2],7);px(fx0,fy+2,R[2],9);px(fx0+7,fy+2,R[1],2);px(fx0,fy+1,R[3]);px(fx0,fy+2,R[3],2);px(fx0,fy+3,R[3],9);px(fx0+1,fy+3,R[4],6);return}
+    if(boot){px(fx0+1,fy-1,boot[2],6,2);px(fx0+1,fy-1,boot[3],2,2);px(fx0+5,fy-1,boot[1],2);
+      px(fx0,fy+1,boot[2],9);px(fx0,fy+2,boot[2],11);px(fx0+8,fy+2,boot[1],3);px(fx0,fy+1,boot[4],2);px(fx0,fy+2,boot[4],2);
+      px(fx0+3,fy+1,R[2],2);px(fx0+6,fy+1,boot[1],2);px(fx0-1,fy+3,'#24140c',13);px(fx0+9,fy+3,'#4a3020',3);return}
+    px(fx0+1,fy,R[2],5);px(fx0,fy+1,R[2],8);px(fx0,fy+2,R[2],10);px(fx0+8,fy+2,R[1],2);px(fx0,fy+1,R[3]);px(fx0,fy+2,R[3],2);px(fx0-1,fy+3,'#2a1810',13);px(fx0+9,fy+3,'#4a3020',3);
     px(fx0+1,fy,LE[2],5);px(fx0+5,fy+1,LE[2],2);px(fx0+6,fy+2,LE[3],2);px(fx0+2,fy+1,LE[3]);px(fx0+2,fy+2,LE[3]);px(fx0+1,fy,LE[3])};
   /* a foot with its lift and its pitch (see gaitPose) */
   const footP=(f0,P,R)=>{const hu=P.p<0?-P.p:0,tu=P.p>0?P.p:0;SH=x=>-Math.round(hu*Math.max(0,1-(x-f0+1)/11)+tu*Math.max(0,Math.min(1,(x-f0+1)/11)));foot(f0,yA-P.ly,R);SH=null};
   /* a leg below the hem, in two parts: the knee (kx) and the ankle (ax) each have their place. dk: the far leg, a tone darker. A shin that
      slants is drawn a little wider, or it would look thin. */
   const leg=(k0,P,dk)=>{const R=dk?[S[1],S[2],S[3],S[4],S[4]]:S,hu=P.p<0?-P.p:0,tu=P.p>0?P.p:0,y1=yA-P.ly-Math.round(hu*.7+tu*.3),n=y1-yH,K=3,sl=Math.abs(P.ax-P.kx)/Math.max(1,n-1-K);
-    for(let i=0;i<n;i++){const t=i/(n-1),cx=Math.round(k0+(i<=K?P.kx:P.kx+(P.ax-P.kx)*(i-K)/Math.max(1,n-1-K))),ex=i>K?(sl>.5?2:sl>.25?1:0):0,w=(t<.12?7:t<.5?8:t<.7?7:t<.86?6:5)+ex,x0=cx+(t<.12?0:t<.5?-1:t<.7?0:1)-(ex>1?1:0);
-      for(let k=0;k<w;k++){const u=(k+.5)/w;let v=u<.18?4:u<.4?3:u<.76?2:1;if(i<2)v=Math.min(4,v+1);else if(t<.2&&u>.4&&u<.7)v=1;if(k===w-3&&t>.25&&t<.7)v=Math.max(0,v-1);px(x0+k,yH+i,R[v])}}
+    /* when the tunic hem is torn, extend the shaded upper thigh 1 row above yH so notches never expose an air gap */
+    for(let i=TORN?-1:0;i<n;i++){const t=Math.max(0,i)/(n-1),cx=Math.round(k0+(i<=K?P.kx:P.kx+(P.ax-P.kx)*(i-K)/Math.max(1,n-1-K))),ex=i>K?(sl>.5?2:sl>.25?1:0):0,w=(t<.12?7:t<.5?8:t<.7?7:t<.86?6:5)+ex,x0=cx+(t<.12?0:t<.5?-1:t<.7?0:1)-(ex>1?1:0);
+      const inBoot=boot&&i>=n-5;
+      for(let k=0;k<w;k++){const u=(k+.5)/w;let v=u<.18?4:u<.4?3:u<.76?2:1;if(i<2)v=Math.min(4,v+1);else if(t<.2&&u>.4&&u<.7)v=1;if(k===w-3&&t>.25&&t<.7)v=Math.max(0,v-1);
+        if(inBoot){const br=i===n-5||i===n-3||i===n-1;px(x0+k,yH+i,(br?boot:dk?[boot[2],boot[3],boot[3],boot[4],boot[4]]:boot)[Math.min(4,v+(br?0:1))])}
+        else px(x0+k,yH+i,R[v])}}
     footP(Math.round(k0+P.ax)+1,P,R)};
   {const REST={ax:0,kx:0,ly:0,p:0},L0=W?W.legs[0]:REST,L1=W?W.legs[1]:REST,hip=W?W.hip:0;
+    const ankle=(ax0,P,R)=>{if(!TORN)return;for(let j=1;j<=3;j++)for(let k=0;k<5;k++)px(ax0+1+k,yA-P.ly-j,R[k===0?4:k===1?3:k<4?2:1])};
     if(seat&&o.long){footP(9,REST,[S[1],S[2],S[3],S[4],S[4]]);footP(-2,REST,S)}else if(seat){leg(5,REST,1);leg(-2,REST,0)}
-    else if(o.long){footP(Math.round(3+L0.ax),L0,[S[1],S[2],S[3],S[4],S[4]]);footP(Math.round(-8+L1.ax),L1,S)}else{leg(1-hip*2,L0,1);leg(-9+hip,L1,0)}}
-  /* skirt of a short tunic, or a robe to the ankles; a woman's robe widens over the hips */
-  const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=o.long?yA+1:seat?yH+3:yH+1,n=y1-yB+1,sl=seat&&!!o.long;   /* sl: seated in a long robe: the lap comes forward, and the robe hangs from the knees to the feet */
-  for(let i=0;i<n;i++){const t=i/(n-1),hw=(fem?8+Math.min(3,Math.round(i*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,x0=-hw+sw+(sl?Math.max(0,Math.min(4,i-7)):0),x1=hw+1+sw+(sl?Math.min(6,Math.round(i*.9)):seat?Math.round(t*5):0),yy=yB+i;
-    if(i>=n-2){for(let xx=x0;xx<=x1;xx++){const u=(xx-x0+.5)/(x1-x0+1);px(xx,yy,i===n-1?hem[u<.3?4:3]:hem[u<.2?4:u<.6?2:1])}}
-    else if(HIM&&i<n-6){const xc=i<=n-14?x1:x1-Math.round((x1-x0+1)*(i-(n-14))/8),F=[[.2,3,.05],[.42,1,.06],[.63,6,.05],[.84,10,.04]];
-      cloth(yy,x0,xc,C,i,F,null,[n-20,n-12]);if(xc<x1)cloth(yy,xc+1,x1,T,i,[[.5,9,.02]],SR)}
-    else cloth(yy,x0,x1,T,i,o.long?[[.16,6,.03],[.33,2,-.02,n-9],[.5,9,.02],[.66,3,.03],[.84,12,.02]]:[[.22,4,.03],[.47,1,0],[.72,5,.03]],SR,o.long?[n-16,n-6]:null)}
+    else if(o.long){const r0=[S[1],S[2],S[3],S[4],S[4]];ankle(Math.round(3+L0.ax),L0,r0);footP(Math.round(3+L0.ax),L0,r0);ankle(Math.round(-8+L1.ax),L1,S);footP(Math.round(-8+L1.ax),L1,S)}else{leg(1-hip*2,L0,1);leg(-9+hip,L1,0)}}
+  /* skirt of a short tunic, or a robe to the ankles; a woman's robe widens over the hips. When torn: jagged ragged tongues & fabric rip. */
+  const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=o.long?yA+1:seat?yH+3:TORN?yH+2:yH+1,n=y1-yB+1,sl=seat&&!!o.long;
+  const skWet=WET?((k,w,i)=>i>n*(o.long?.42:.36)+Math.round(Math.sin(k*.7+TORN)*2.5)):null;
+  for(let i=0;i<n;i++){const t=i/(n-1),hw=(fem?8+Math.min(3,Math.round(i*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,x0=-hw+sw+(sl?Math.max(0,Math.min(4,i-7)):0),x1=hw+1+sw+(sl?Math.min(6,Math.round(i*.9)):seat?Math.round(t*5):0),yy=yB+i,w=x1-x0+1;
+    if(TORN&&i>=n-3){for(let k=0;k<w;k++){const cut=tearCut(k,w);if(i>=n-cut)continue;const edge=i===n-cut-1,P=c.tuW||T,u=(k+.5)/w;
+        px(x0+k,yy,edge?P[4]:P[u<.2?4:u<.45?3:u<.85?2:1])}}
+    else if(i>=n-2){for(let xx=x0;xx<=x1;xx++){const u=(xx-x0+.5)/w;px(xx,yy,i===n-1?hem[u<.3?4:3]:hem[u<.2?4:u<.6?2:1])}}
+    else if(HIM&&i<(TOGA?n-5:n-6)){const xc=TOGA?(i<=n-12?x1:x1-Math.round(w*(i-(n-12))/8)):(i<=n-14?x1:x1-Math.round(w*(i-(n-14))/8)),
+        F=TOGA?[[.18,2,.04],[.38,1,.05],[.58,4,.04],[.78,8,.03]]:[[.2,3,.05],[.42,1,.06],[.63,6,.05],[.84,10,.04]];
+      cloth(yy,x0,xc,C,i,F,null,[n-20,n-12],0,c.clW,skWet);if(xc<x1)cloth(yy,xc+1,x1,T,i,[[.5,9,.02]],SR,null,0,c.tuW,skWet)}
+    else cloth(yy,x0,x1,T,i,o.long?[[.16,6,.03],[.33,2,-.02,n-9],[.5,9,.02],[.66,3,.03],[.84,12,.02]]:[[.22,4,.03],[.47,1,0],[.72,5,.03]],SR,o.long?[n-16,n-6]:null,0,c.tuW,skWet);
+    /* a small jagged rip in the lower skirt when torn */
+    if(TORN&&!HIM){const ry=n-8-(TORN%3)*2,rx=x0+Math.round(w*(TORN===2?.34:.68));
+      if(i>=ry&&i<=ry+3){const rw=i===ry||i===ry+3?1:2,dx=i-ry>1?1:0;
+        px(rx+dx-1,yy,T[4],rw+2);px(rx+dx,yy,o.long?T[4]:S[i===ry+1?2:3],rw)}}}
   /* shoulders and trunk */
+  const torWet=WET?((k,w,i)=>i<5+((k+TORN)%3)||i>TOR-6-((k*2+TORN)%3)):null;
   for(let i=0;i<TOR;i++){const yy=yS+i;
-    if(i<PIT)cloth(yy,i===0?-6:i===1?Math.max(ax+5,-10):i===2?ax+2:i===3?ax+1:ax,i===0?8:i===1?Math.min(11,13-nw):i===2?13-nw:i===3?14-nw:15-nw,T,i,null,SR,[2,6]);
-    else cloth(yy,i>waist?-9+nw:-10+nw,i>waist?10-nw:11-nw,T,i,[[.24,TOR-9,.01],[.48,TOR-6,0],[.7,TOR-11,.01]],SR,[PIT,fem?11:12],1)}
+    if(i<PIT)cloth(yy,i===0?-6:i===1?Math.max(ax+5,-10):i===2?ax+2:i===3?ax+1:ax,i===0?8:i===1?Math.min(11,13-nw):i===2?13-nw:i===3?14-nw:15-nw,T,i,null,SR,[2,6],0,c.tuW,torWet);
+    else cloth(yy,i>waist?-9+nw:-10+nw,i>waist?10-nw:11-nw,T,i,[[.24,TOR-9,.01],[.48,TOR-6,0],[.7,TOR-11,.01]],SR,[PIT,fem?11:12],1,c.tuW,torWet)}
   if(fem){for(let xx=-3;xx<=5;xx++)if(xx!==1)px(xx,yS+12,T[3]);px(-1,yS,S[3],6);px(0,yS+1,S[2],4);px(0,yS+1,S[3]);px(1,yS+2,S[3],2);const tr=c.tr||T;px(-2,yS,tr[1]);px(5,yS,tr[1]);px(-1,yS+1,tr[2]);px(4,yS+1,tr[1]);px(0,yS+2,tr[2]);px(3,yS+2,tr[1]);px(1,yS+3,tr[2],2)}
-  else{px(-1,yS,S[3],7);px(0,yS+1,S[2],5);px(0,yS+1,S[3]);px(1,yS+2,S[2],3);px(1,yS+2,S[3]);px(2,yS+3,S[3]);px(-2,yS,T[1]);px(6,yS,T[1])}
-  /* scale armor with a skirt of leather strips */
-  if(c.ar){const A=c.ar;for(let i=1;i<TOR;i++)for(let xx=-9;xx<=10;xx++){const q=(xx+9+(i>>1)%2*2)%4;let v=xx<-7?4:xx<-5?3:xx>8?1:2;if(i%2===0&&q===0)v=Math.max(0,v-2);else if(i%2===1&&q===0)v=Math.min(4,v+1);px(xx,yS+i,A[v])}
-    for(let i=0;i<9;i++)for(let xx=-9;xx<=10;xx++){const q=(xx+9)%3;if(i===8&&q!==1)continue;px(xx,yB+i,A[q===0?1:q===1?2:4])}
-    px(-1,yS,S[3],7);px(0,yS+1,S[2],5)}
-  /* belt or sash, with its hanging end, and a pouch */
-  if(c.bt&&!HIM){const B=c.bt;for(let xx=-9+nw;xx<=10-nw;xx++){const dk=xx<-6?1:0;px(xx,yB-3,B[1+dk]);px(xx,yB-2,B[2+dk]);px(xx,yB-1,B[4])}
+  else{px(-1,yS,S[3],7);px(0,yS+1,S[2],5);px(0,yS+1,S[3]);px(1,yS+2,S[2],3);px(1,yS+2,S[3]);px(2,yS+3,S[3]);px(-2,yS,T[1]);px(6,yS,T[1]);
+    if(TORN===1){px(4,yS+2,T[4],2);px(4,yS+3,S[2],2);px(5,yS+4,T[4])}
+    else if(TORN===2){px(-5,yS+6,T[4],3);px(-4,yS+7,T[4],2);px(-4,yS+7,S[3],1)}}
+  /* body armor: default scale armor (Chapter One), or Roman lorica segmentata ('seg'), mail ('mail'), or molded officer cuirass ('cuirass') */
+  if(c.ar){const A=c.ar,AS=o.armorStyle;
+    if(AS==='seg'){
+      /* lorica segmentata: overlapping horizontal iron strips across torso and curved shoulder plates (no vertical crossing bands) */
+      for(let i=2;i<TOR;i++){const b=(i-2)%4;for(let xx=-9;xx<=10;xx++){let v=xx<-7?4:xx<-4?3:xx>6?1:2;
+        if(b===0)v=Math.max(0,v-1);else if(b===3)v=Math.min(4,v+1+(xx<-3?0:1));else if(b===1&&xx>2&&xx<8)v=0;px(xx,yS+i,A[v])}}
+      /* curved shoulder plates over the shoulder yoke */
+      for(let i=0;i<7;i++){const xL=i<2?-11:-14,xR=i<2?12:14,seam=i===2||i===5;
+        for(let xx=xL;xx<=-5;xx++)px(xx,yS+i,A[seam?4:xx<xL+2?4:xx<-9?3:2]);
+        for(let xx=6;xx<=xR;xx++)px(xx,yS+i,A[seam?3:xx>xR-2?2:xx>9?0:1])}
+      px(-1,yS,T[2],7);px(-1,yS+1,T[3],7);px(0,yS,S[3],5);px(0,yS+1,S[2],5)}
+    else if(AS==='mail'){
+      /* lorica hamata: interlocking chain mail over torso & shoulders, short scalloped hem */
+      for(let i=1;i<TOR;i++)for(let xx=-9;xx<=10;xx++){const q=(xx+i)&1;let v=xx<-7?4:xx<-4?3:xx>6?1:2;if(q)v=Math.min(4,v+1);else if(xx>3&&xx<8&&i%3===0)v=Math.max(0,v-1);px(xx,yS+i,A[v])}
+      for(let i=0;i<6;i++){for(let xx=-12+(i<2?2:0);xx<=-5;xx++)px(xx,yS+i,A[(xx+i)&1?4:3]);for(let xx=6;xx<=13-(i<2?2:0);xx++)px(xx,yS+i,A[(xx+i)&1?2:1])}
+      for(let i=0;i<5;i++)for(let xx=-9;xx<=10;xx++){if(i===4&&(xx&1))continue;px(xx,yB+i,A[((xx+i)&1)?3:xx<-6?4:xx>6?1:2])}
+      px(-1,yS,S[3],7);px(0,yS+1,S[2],5)}
+    else if(AS==='cuirass'){
+      /* molded bronze or iron cuirass worn by centurions and senior officers, with layered pteruges at shoulders and waist */
+      const PT=c.pt||ramp('#dfd4ba');
+      for(let i=1;i<TOR;i++)for(let xx=-9;xx<=10;xx++){let v=xx<-7?4:xx<-4?3:xx>7?1:2;
+        if(i>=3&&i<=9&&xx>=2&&xx<=7)v=i>=4&&i<=7&&xx>=3&&xx<=6?0:1;
+        else if(i>=4&&i<=8&&xx>=-5&&xx<=-1)v=Math.max(1,v-1);
+        else if(i===10&&xx>=-6&&xx<=8)v=Math.min(4,v+1);
+        else if(i>=TOR-2)v=i===TOR-1?4:xx>2?0:1;
+        px(xx,yS+i,A[v])}
+      /* shoulder pteruges */
+      for(let i=4;i<9;i++){for(let xx=-13;xx<=-9;xx++)if(i<8||((xx+13)%2===0))px(xx,yS+i,PT[(xx+13)%2?3:2]);
+        for(let xx=10;xx<=14;xx++)if(i<8||((xx-10)%2===0))px(xx,yS+i,PT[(xx-10)%2?2:1])}
+      /* double-tier waist pteruges */
+      for(let i=0;i<9;i++)for(let xx=-9;xx<=10;xx++){const q=(xx+9)%3;if(i===8&&q!==1)continue;const top=i<4;px(xx,yB+i,PT[q===2?4:top?(q===0?0:1):(q===0?1:2)])}
+      /* optional officer's crimson waist sash */
+      if(c.sa){const SA=c.sa;for(let i=TOR-7;i<TOR-2;i++)for(let xx=-9;xx<=10;xx++){const j=i-(TOR-7);px(xx,yS+i,SA[j===0?1:j===4?4:j===2?3:xx<-5?3:xx>5?1:2])}}
+      px(-1,yS,S[3],7);px(0,yS+1,S[2],5)}
+    else{
+      for(let i=1;i<TOR;i++)for(let xx=-9;xx<=10;xx++){const q=(xx+9+(i>>1)%2*2)%4;let v=xx<-7?4:xx<-5?3:xx>8?1:2;if(i%2===0&&q===0)v=Math.max(0,v-2);else if(i%2===1&&q===0)v=Math.min(4,v+1);px(xx,yS+i,A[v])}
+      for(let i=0;i<9;i++)for(let xx=-9;xx<=10;xx++){const q=(xx+9)%3;if(i===8&&q!==1)continue;px(xx,yB+i,A[q===0?1:q===1?2:4])}
+      px(-1,yS,S[3],7);px(0,yS+1,S[2],5)}}
+  /* Roman military belt (cingulum with plated studs and four evenly spaced leather apron strips), or civilian belt/sash */
+  if(o.milBelt&&!HIM){const B=c.bt||ramp('#4a2c16'),M=o.armorStyle==='cuirass'?(WET?'#b89a50':'#e6c86e'):(WET?'#989ea8':'#c8ccd6'),Md=o.armorStyle==='cuirass'?'#8a6c28':'#7a808c',St=WET?'#8e7642':'#c4a252';
+    for(let xx=-9+nw;xx<=10-nw;xx++){const dk=xx<-6?1:0,pl=(xx+9)%3!==2;px(xx,yB-3,pl?M:B[1+dk]);px(xx,yB-2,pl?(dk?Md:M):B[2+dk]);px(xx,yB-1,B[4])}
+    if(!c.ar||o.armorStyle==='seg'||o.armorStyle==='mail'){[-4,-1,2,5].forEach((sx,si)=>{const len=si===0||si===3?6:7;for(let j=0;j<len;j++){px(sx,yB+j,B[j===len-1?4:2]);px(sx+1,yB+j,j===len-1?St:j===2||j===4?St:B[3])}})}}
+  else if(c.bt&&!HIM){const B=c.bt;for(let xx=-9+nw;xx<=10-nw;xx++){const dk=xx<-6?1:0;px(xx,yB-3,B[1+dk]);px(xx,yB-2,B[2+dk]);px(xx,yB-1,B[4])}
     if(!c.ar){px(2,yB-3,B[0],2,2);px(3,yB,B[2],2,fem?12:8);px(4,yB,B[3],1,fem?12:8);px(3,yB+(fem?12:8),B[3],2);if(fem){px(1,yB,B[2],1,9);px(1,yB+9,B[3])}}}
   if(o.pouch&&!HIM){px(-9,yB-2,LE[2],6,8);px(-9,yB-2,LE[3],6,2);px(-9,yB,LE[4],1,6);px(-5,yB,LE[1],1,4);px(-8,yB+6,LE[4],4);px(-7,yB-1,'#d8b860')}
+  /* sheathed Roman gladius (rounded pommel, flush bronze throat, no protruding crossguard) */
+  if(o.gladius&&!TOGA){const left=o.gladius==='left',gx=left?-10:7;
+    px(gx,yB-6,'#6e4828',3,2);px(gx+1,yB-6,'#b89258',1);px(gx+1,yB-4,'#e4d8b8',2,2);px(gx,yB-2,'#c8a448',3,1);
+    for(let j=0;j<13;j++){const dx=left?-Math.floor(j/6):Math.floor(j/6);px(gx+dx,yB-1+j,j===12?'#c8a448':'#5c2820',3);px(gx+dx+2,yB-1+j,j===12?'#f0d884':'#8a4034',1);if(j===5||j===10)px(gx+dx,yB-1+j,'#c8a448',3)}}
   /* a working apron (apron: its color): a length of stiff cloth tied round the waist, over the front of the skirt, as tradesmen wore it (Acts 19:12) */
   if(o.apron&&!HIM&&!seat){const A=c.ap||(c.ap=ramp(o.apron)),m=o.long?n-6:n-3;for(let i=-3;i<m;i++){const j=Math.max(0,i),t=j/(n-1),hw=(fem?8+Math.min(3,Math.round(j*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,x0=-hw+3+sw,x1=hw-2+sw;
       if(i<0)for(let xx=x0-1;xx<=x1+1;xx++)px(xx,yB+i,A[i===-3?1:i===-2?2:4]);else if(i===m-1)for(let xx=x0;xx<=x1;xx++)px(xx,yB+i,A[xx<x0+3?4:3]);else cloth(yB+i,x0,x1,A,i,[[.34,2,.02],[.68,4,-.01]])}}
-  /* mantle: hanging from the near shoulder, and across the chest to the far hip */
-  if(C&&!o.cape){const m1=o.long?yA-6:yH+6,mn=m1-yS+2,ED=o.edge?ramp(o.edge):null;   /* edge: a band of color along the mantle where it crosses the chest */
+  /* officer's cloak draped over the near/left shoulder, leaving the breastplate visible (column-notched when torn) */
+  if(C&&o.offCloak){const m1=yH+9,mn=m1-yS+2,wl=WET?((k,w,i)=>i>mn*.5+(k+TORN)%3):null;
+    for(let yy=yS-1;yy<=m1;yy++){const i=yy-yS+1,t=i/(mn-1),bulge=t>.2&&t<.65?1:0,zig=yy>m1-3?(m1-yy<1?3:m1-yy<2?1:0):0;
+      const ms=W?Math.round(W.mt*t*t):0,x0=-16+(i<3?3-i:0)-bulge+(TORN?0:zig)+ms,x1=-8+(i<4?2:t>.4?0:1)+ms,w=x1-x0+1;
+      if(TORN&&yy>m1-4){for(let k=0;k<w;k++){const cut=tearCut(k,w);if(yy>m1-cut)continue;const edge=yy===m1-cut,P=c.clW||C;px(x0+k,yy,edge?P[4]:P[k<2?4:k>w-3?1:2])}}
+      else cloth(yy,x0,x1,C,i,[[.35,4,.012],[.7,9,-.01]],null,[4,12],0,c.clW,wl)}
+    for(let xx=-12;xx<=-5;xx++){px(xx,yS-1,C[1]);px(xx,yS,C[2]);px(xx,yS+1,C[3]);px(xx,yS+2,C[4])}
+    px(-7,yS,'#f4dc8a',2,2);px(-6,yS+1,'#b08a3c')}
+  /* mantle (or Roman toga): hanging from the near shoulder, and across the chest to the far hip */
+  else if(C&&!o.cape){const m1=o.long||TOGA?yA-6:yH+6,mn=m1-yS+2,ED=o.edge?ramp(o.edge):null,wl=WET?((k,w,i)=>i>mn*.48+(k+TORN)%3):null;
     for(let yy=yS-1;yy<=m1;yy++){const i=yy-yS+1,t=i/(mn-1),bulge=t>.25&&t<.6?1:0,zig=yy>m1-3?(m1-yy<1?3:m1-yy<2?1:0):0;
-      const ms=W?Math.round(W.mt*t*t):0;cloth(yy,-16+(i<3?3-i:0)-bulge+zig+ms,-9+(t>.45?1:0)-(zig>1?1:0)+ms,C,i,[[.3,4,.012],[.6,9,-.01],[.82,14,.01]],null,[6,14])}
-    for(let xx=-10+slim;xx<=11-slim;xx++){const k=(xx+10)/21,ya=Math.round(yS-1+k*(TOR-8)),yb=ya+10-Math.round(k*3);
-      for(let yy=ya;yy<=yb;yy++){const j=yy-ya;px(xx,yy,(ED&&j>0&&j<3?ED:C)[j===0?(k>.3?0:1):j===yb-ya?4:j===3||j===7?3:j===4?1:k>.72?1:2])}
+      const ms=W?Math.round(W.mt*t*t):0,x0=-16+(i<3?3-i:0)-bulge+(TORN?0:zig)+ms,x1=-9+(t>.45?1:0)-(TORN?0:zig>1?1:0)+ms,w=x1-x0+1;
+      if(TORN&&yy>m1-4){for(let k=0;k<w;k++){const cut=tearCut(k,w);if(yy>m1-cut)continue;const edge=yy===m1-cut,P=c.clW||C;px(x0+k,yy,edge?P[4]:P[k<2?4:k>w-3?1:2])}}
+      else cloth(yy,x0,x1,C,i,[[.3,4,.012],[.6,9,-.01],[.82,14,.01]],null,[6,14],0,c.clW,wl)}
+    for(let xx=-10+slim;xx<=11-slim;xx++){const k=(xx+10)/21,ya=Math.round(yS-1+k*(TOR-(TOGA?6:8))),yb=ya+(TOGA?13:10)-Math.round(k*3);
+      for(let yy=ya;yy<=yb;yy++){const j=yy-ya;px(xx,yy,(ED&&j>0&&j<3?ED:C)[j===0?(k>.3?0:1):j===yb-ya?4:j===3||j===7||(TOGA&&j===10)?3:j===4||(TOGA&&j===8)?1:k>.72?1:2])}
       if(HIM){for(let yy=yb+1;yy<=yB;yy++){const j=yy-yb,q=(xx+j*.5+40)%7;px(xx,yy,C[j===1?3:xx<-7+slim?4:xx<-4?3:q<1?3:q<2?1:xx>8-slim?1:2])}}
       else{px(xx,yb+1,T[4]);if(xx%3)px(xx,yb+2,T[3])}}}
   if(o.cape){for(let xx=-16;xx<=15;xx++){const e=Math.abs(xx+.5)>14?1:0;px(xx,yS-1+e,C[1]);px(xx,yS+e,C[xx<-8?3:2]);px(xx,yS+1+e,C[xx<-8?4:3]);if(xx<-5||xx>7)px(xx,yS+2+e,C[4])}px(8,yS,'#f4dc8a',2,2);px(9,yS+1,'#b08a3c')}
-  /* near arm (hidden when a mantle hangs over it, unless reaching back to lead by the hand) */
-  if(!C||o.cape||ges===4)arm(true,W?W.na:0,ges===4,W?W.nb:0);
+  /* near arm (hidden when a mantle hangs over it, unless officer cloak, cape, or reaching back to lead by the hand) */
+  if(!C||o.cape||o.offCloak||ges===4)arm(true,W?W.na:0,ges===4,W?W.nb:0);
   if(ges===4&&!bow&&!o.stub){const R=o.longSleeve?T:S;
     for(let k=0;k<6;k++){const gx=ax+1-k,gy=yS+12+Math.round(k*.6);px(gx,gy,R[2]);px(gx,gy+1,R[3],1,2);px(gx,gy+3,R[4])}
     px(ax-8,yS+15,S[2],5);px(ax-8,yS+16,S[3],5);px(ax-7,yS+17,S[4],4)}
@@ -1045,6 +1136,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   px(-1,yS-3,S[3],7,3);px(0,yS-3,S[2],5,2);
   const L={s:S[2],S:S[1],L:S[0],z:S[3],Z:S[4],n:S[3],w:fem?'#f6eedc':S[0],p:'#1a1018',b:brow,m:'#6a2a22',r:'#b04a44',c:mix(o.skin,'#d86a58',.4),h:H[2],H:Gr?Gr[2]:H[1],d:H[3],k:'#2a1a12',K:'#4a3020'};
   if(Bd){L.B=Bd[2];L.V=Gr?Gr[2]:Bd[1];L.v=Bd[3]}L.a=Hd[2];L.A=Hd[1];L.y=Hd[0];L.q=Hd[3];
+  if(c.cr){L.r=c.cr[2];L.R=c.cr[1];L.Y=c.cr[0];L.D=c.cr[3];L.g='#c8a448'}
   if(o.stone)Object.assign(L,{w:S[1],p:S[3],b:S[3],m:S[4],r:S[3],c:S[2],k:H[3],K:H[2]});
   /* sh: lay down a map of the head. With the chin down, the rows of a face or a beard (low) below the mouth sink by a pixel, and the row under the mouth is doubled */
   const sh=(map,x0,y0,low)=>{for(let j=0;j<map.length;j++){const r=map[j],yy=y0+j,d=low&&jaw?(yy>hy+15?1:yy===hy+15?2:0):0;
@@ -1056,7 +1148,9 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   if(talk){const D='#3a0e0c',lp=fem?'#b04a44':'#7a2a22';if(talk===1)px(hx+8,hy+14,D,2);else if(talk===2){px(hx+7,hy+14,D,4);px(hx+7,hy+15,lp,3)}
     else if(talk===3){px(hx+7,hy+14,D,4,2);px(hx+7,hy+16,lp,3)}else{px(hx+8,hy+14,D,2,2);px(hx+8,hy+16,lp,2)}}
   if(o.hair&&!o.veil&&!o.wrap&&!o.helm){if(o.fem){L.f=o.band||'#c9a14a';sh(HEADS.hairF,hx-2,hy)}
-    else sh(o.bald?HEADS.bald:o.crop&&o.thin?HEADS.cropThin:o.crop?HEADS.crop:o.thin?HEADS.thin:o.receding?HEADS.receding:HEADS.hair,hx,hy)}
+    else sh(o.bald?HEADS.bald:o.crop&&o.thin?HEADS.cropThin:o.crop?HEADS.crop:o.thin?HEADS.thin:o.receding?HEADS.receding:HEADS.hair,hx,hy);
+    /* wet matted hair: clinging damp strands over brow & glossy wet highlight (only when hair covers the forehead) */
+    if(WET&&!o.bald&&!o.thin&&!o.receding){px(hx+4,hy+5,H[3],2);px(hx+5,hy+6,H[4]);px(hx+9,hy+5,H[3],2);px(hx+7,hy+2,H[0],2)}}
   /* a cloth bound round the forehead against the sweat (sweat: its color; study note on Acts 19:12): two rows under the hairline, and its knot behind */
   if(o.sweat&&!o.veil&&!o.wrap&&!o.helm){const B=c.sw||(c.sw=ramp(o.sweat));px(hx+2,hy+4,B[1],11);px(hx+1,hy+5,B[2],13);px(hx+2,hy+4,B[3],2);px(hx+1,hy+5,B[3],2);px(hx+11,hy+4,B[0],2);px(hx,hy+6,B[3],2);px(hx,hy+7,B[4])}
   /* a bearded mouth is a gap in the beard: the same four shapes, without the lower lip */
@@ -1066,10 +1160,18 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
     /* the shawl runs on from the head over both shoulders, and hangs down the near arm */
     [[-5,-2],[-7,-2],[-9,-3],[-11,-4],[ax-1,-5],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax,-6],[ax,-7],[ax+1,-7],[ax+2,-8]].forEach(([a,b],i)=>cloth(yS-4+i,a,b,Hd,i,[[.45,5,.02]],null,[4,8]));
     [[5,7],[5,9],[6,11],[7,13-nw],[9,14-nw],[9,14-nw],[10,14-nw],[10,14-nw],[11,14-nw],[12,13-nw]].forEach(([a,b],i)=>{for(let xx=a;xx<=b;xx++)px(xx,yS-4+i,Hd[xx===a?3:i<5&&xx>a+1?1:2])})}
-  if(o.wrap)sh(HEADS.wrap,hx-1,hy-4);if(o.helm)sh(HEADS.helm,hx-1,hy-2);
-  /* the far hand: holding a spear, or raised in speech */
-  if(o.spear){const sx=18;px(sx,yS-34,'#8a6238',1,34-yS);px(sx+1,yS-34,'#5a3c20',1,34-yS);
-    [1,1,3,3,5,5,5,5,3,3,1,1].forEach((w,i)=>{const x0=sx-(w>>1);px(x0,yS-47+i,'#c4c4d0',w);px(x0+(w>1?1:0),yS-47+i,'#f4f4fc');if(w>2)px(x0+w-1,yS-47+i,'#8a8a98')});px(sx-1,yS-35,'#b08a3c',4,2);
+  if(o.wrap)sh(HEADS.wrap,hx-1,hy-4);
+  if(o.helm){const HS=o.helmStyle;
+    if(HS==='crest'||HS==='plume'){if(!c.cr){L.r='#a62620';L.R='#cc4036';L.Y='#e86e5a';L.D='#641412';L.g='#c8a448'}
+      sh(HS==='crest'?HEADS.crest:HEADS.plume,HS==='crest'?hx-2:hx-3,HS==='crest'?hy-7:hy-7);sh(HEADS.galea,hx-1,hy-2)}
+    else sh(HS==='galea'?HEADS.galea:HEADS.helm,hx-1,hy-2)}
+  /* the far hand: holding a spear or Roman pilum, or raised in speech */
+  if(o.spear||o.pilum){const sx=18;
+    if(o.pilum){px(sx,yS-8,'#7a5430',1,8-yS);px(sx+1,yS-8,'#4e341c',1,8-yS);px(sx-1,yS-12,'#b08a3c',3,4);px(sx,yS-12,'#e6c86e',1,4);
+      px(sx,yS-38,'#b8bcc6',1,26);px(sx+1,yS-38,'#6a707c',1,26);
+      [1,1,3,3,3,1,1].forEach((w,i)=>{const x0=sx-(w>>1);px(x0,yS-45+i,'#c8ccd6',w);px(x0+(w>1?1:0),yS-45+i,'#f4f6fc')})}
+    else{px(sx,yS-34,'#8a6238',1,34-yS);px(sx+1,yS-34,'#5a3c20',1,34-yS);
+      [1,1,3,3,5,5,5,5,3,3,1,1].forEach((w,i)=>{const x0=sx-(w>>1);px(x0,yS-47+i,'#c4c4d0',w);px(x0+(w>1?1:0),yS-47+i,'#f4f4fc');if(w>2)px(x0+w-1,yS-47+i,'#8a8a98')});px(sx-1,yS-35,'#b08a3c',4,2)}
     for(let i=0;i<5;i++)px(13+i,yS+12+(i>2?-1:0),S[i<1?3:2],1,4);px(16,yS+9,S[2],5,5);px(16,yS+9,S[1],5);px(16,yS+13,S[3],5);px(20,yS+10,S[3],1,3);px(16,yS+11,S[3],4)}
   else if(ges===2&&!bow&&!o.stub){const R=o.longSleeve?T:S,q=19-nw;   /* half raised: the forearm slants forward, and the hand is open with its palm up */
     for(let k=0;k<8;k++){const gx=12-nw+k,gy=yS+13-Math.round(k*.6);px(gx,gy,R[1]);px(gx,gy+1,R[2],1,2);px(gx,gy+3,R[3])}
@@ -1193,15 +1295,32 @@ const party=()=>(CHAP[G.ch]&&CHAP[G.ch].party||['paul']).map(id=>ACT[id]);
 const invOf=a=>a===PC()?G.inv:(G.invs[a.id]||(G.invs[a.id]=[]));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 /* Each room paints a backdrop once (ART[id].paint) and, optionally, a foreground layer (ART[id].fore) that is drawn over the actors. What stands
-   inside the walkable strip, where a person can walk behind it, takes its place among the actors by depth: see figure(), depth() and props(). */
+   inside the walkable strip, where a person can walk behind it, takes its place among the actors by depth: see figure(), depth() and props().
+   A room is as tall as the view, unless its art says otherwise (ART[id].h): a lane map seen from above (shared/lanes.js) is taller, and the
+   view then follows whoever is played up and down as well as across (G.camY). */
 function bake(w,fn,q,h){const[c,g]=mk(w*HR,(h||VH)*HR);g.scale(HR,HR);fn(g);g.setTransform(1,0,0,1,0,0);finish(c,g,q);return c}
+const roomH=id=>ART[id].h||VH;
+/* zoomOf: how far the view is zoomed in a room: a room seen from above may be zoomed by the player (G.zoom: two fingers, the mouse wheel,
+   + and -), every other room is seen at its own size. zoomNow: the zoom of what is shown now. */
+const zoomOf=id=>planOf(id)?G.zoom:1,zoomNow=()=>G.room&&!G.scene?zoomOf(G.room):1;
+/* camAt: where the view stands in a room when it follows someone at x, y: [across, down] */
+const camAt=(id,x,y)=>{const z=zoomOf(id),w=VW/z,h=VH/z;return[clamp(x-w/2,0,Math.max(0,ART[id].w-w)),clamp(y-h/2-4/z,0,Math.max(0,roomH(id)-h))]};
 /* A room whose light changes (a lamp put out, shutters opened) names its current variant, and gets one backdrop per variant. */
-function bg(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;return BG[k]||(BG[k]=bake(a.w,g=>a.paint(g,v),a.q))}
+function bg(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;return BG[k]||(BG[k]=bake(a.w,g=>a.paint(g,v),a.q,a.h))}
 function fg(id){const a=ART[id];if(!a.fore)return null;return FG[id]||(FG[id]=bake(Math.round(VW+(a.w-VW)*(a.fp||1)),g=>a.fore(g),a.q))}
-const backdrop=(g,id,cam)=>g.drawImage(bg(id),-(cam||0),0,ART[id].w,VH);
+const backdrop=(g,id,cam,camY)=>g.drawImage(bg(id),-(cam||0),-(camY||0),ART[id].w,roomH(id));
+/* planOf: a room seen from above (a lane map, shared/lanes.js) has a plan, which walks, draws and moves the people in it: see walk, update,
+   drawActor and clickView. Its fig is the size of a figure on it, [half its width, its height]; a room's own figures are [10, 49]. */
+const planOf=id=>id&&ROOMS[id]&&ROOMS[id].plan||null;
+const figBox=id=>{const p=planOf(id);return p?p.fig:[10,49]};
 function place(a,room,x,y,dir){a.room=room;a.x=x;a.y=y;a.dir=dir||1;a.walk=null}
 /* --- script primitives --- */
-function walk(a,x,y){return new Promise(res=>{const rm=ROOMS[a.room];
+function walk(a,x,y){return new Promise(res=>{const rm=ROOMS[a.room],pl=planOf(a.room);
+  /* on a plan the way runs along the lanes: route gives the points to pass, the last of them where he stops (or null: there is no way) */
+  if(pl&&!a.free){const r=pl.route(a,x,y);if(a.walk)a.walk.res(false);a.walk=null;if(!r){res(false);return}if(!r.length){res(!r.partial);return}
+    let rest=0;for(let i=1;i<r.length;i++)rest+=Math.hypot(r[i][0]-r[i-1][0],r[i][1]-r[i-1][1]);
+    /* partial: the way he knows does not reach the place: he goes as near as it takes him, and what was clicked is not acted on */
+    a.walk={x:r[0][0],y:r[0][1],path:r.slice(1),rest,res,partial:!!r.partial};return}
   if(a===PC()&&rm&&!a.free){const w=rm.walk;x=clamp(x,w[0],w[1]);y=clamp(y,w[2],w[3])}
   if(a.walk)a.walk.res(false);a.walk={x,y,res};if(Math.abs(x-a.x)>1)a.dir=x>a.x?1:-1})}
 /* spot: where a script may walk someone, at or near x, y: a free place in his room, clear of everybody else (and of a mate) by 14 pixels
@@ -1285,7 +1404,7 @@ const narr=(t,o)=>say(null,t,o);
 function DARK(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}
 const inDark=()=>!G.white&&(+$('#dim').style.opacity>=1||G.scene===DARK);
 function posSpeech(){if(!cur||cur.ink||cur.white)return;const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
-  if(a&&a.room===G.room&&!G.scene){el.style.left=clamp((a.x-G.cam)*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-56),40,132)*s+'px';el.style.top=''}
+  if(a&&a.room===G.room&&!G.scene){const z=zoomNow();el.style.left=clamp((a.x-G.cam)*z*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-G.camY-figBox(a.room)[1])*z+7,40,132)*s+'px';el.style.top=''}
   else if(cur.low){el.style.left='50%';el.style.top='';el.style.bottom=7*s+'px'}   /* low: a line told over a map whose road runs along its upper edge stands at the foot of the view */
   else{el.style.left='50%';el.style.top=10*s+'px';el.style.bottom=''}}
 function lock(b){$('#panel').classList.toggle('locked',b)}
@@ -1293,8 +1412,8 @@ async function cut(fn,force){if(G.busy&&!force)return;G.busy=true;lock(true);sta
   try{await fn()}catch(e){console.error(e)}
   G.with=null;G.turn.clear();G.busy=false;lock(false);G.verb='walk';G.item=null;syncVerbs();drawInv();status();codeBtn()}
 /* viewOf: show the room a character stands in. enterRoom: move the character the player controls into a room, and show it. */
-function viewOf(a){G.room=a.room;G.cam=clamp(a.x-160,0,ART[a.room].w-VW);AU.mood=ROOMS[a.room].mood||'calm';AU.amb=ROOMS[a.room].amb;G.hover=null}
-function enterRoom(room,x,y,dir){G.room=room;G.turn.clear();place(PC(),room,x,y,dir);G.cam=clamp(x-160,0,ART[room].w-320);AU.mood=ROOMS[room].mood||'calm';AU.amb=ROOMS[room].amb;G.hover=null}
+function viewOf(a){G.room=a.room;[G.cam,G.camY]=camAt(a.room,a.x,a.y);AU.mood=ROOMS[a.room].mood||'calm';AU.amb=ROOMS[a.room].amb;G.hover=null}
+function enterRoom(room,x,y,dir){G.room=room;G.turn.clear();place(PC(),room,x,y,dir);[G.cam,G.camY]=camAt(room,x,y);AU.mood=ROOMS[room].mood||'calm';AU.amb=ROOMS[room].amb;G.hover=null}
 async function fade(on,ms=260,white){const S=SHARED.scroll;if(S&&S.state!=='down')await S.down();const d=$('#dim');
   G.white=on&&white?1:0;if(white)d.style.background='#faf8f2';else if(on)d.style.background='#05030c';
   d.style.transition=`opacity ${ms}ms ease-in-out,background-color ${ms}ms ease-in-out`;d.style.opacity=on?1:0;await wait(ms+20);
@@ -1331,10 +1450,10 @@ function buildVerbs(){const v=$('#verbs');v.innerHTML='';
   const p=document.createElement('button');p.type='button';p.id='pray';p.textContent=T('pray_to_jehovah');p.onclick=pray;v.appendChild(p);
   const w=document.createElement('button');w.type='button';w.id='swap';w.onclick=()=>swap();v.appendChild(w);syncVerbs()}
 /* swapBtn: in a chapter with a party, the prayer bar gives up a third of its width to a button naming the character to switch to. */
-function swapBtn(){const b=$('#swap'),ps=party(),on=ps.length>1;$('#verbs').classList.toggle('party',on);if(!on)return;
+function swapBtn(){const b=$('#swap'),ps=party(),on=ps.length>1&&CHAP[G.ch].swap!==false;$('#verbs').classList.toggle('party',on);if(!on)return;
   const n=ps[(ps.indexOf(PC())+1)%ps.length];b.textContent='\u21c4 '+T(storyName(n));b.title=T('play_as_name_c',{name:T(storyName(n))});b.disabled=!n.room}
 /* swap: hand control to the next member of the party. If he stands in another room, the view goes there. */
-function swap(to){if(G.busy||G.scene||!G.room)return;const ps=party();if(ps.length<2)return;
+function swap(to){if(G.busy||G.scene||!G.room)return;const ps=party();if(ps.length<2||CHAP[G.ch].swap===false)return;
   const a=to||ps[(ps.indexOf(PC())+1)%ps.length];if(!a||!a.room||a===PC())return;audioInit();
   cut(async()=>{SFX.click();if(a.room!==G.room){await fade(1,200);playAs(a);await fade(0,200)}else playAs(a)})}
 /* playAs: give control to a character at once (cutscenes use playAs(P) before Paul takes the lead). */
@@ -1384,7 +1503,8 @@ function clickItem(id){if(G.busy)return;audioInit();const it=ITEMS[id],a=G.item;
   cut(()=>say(PC(),G.verb==='pickup'?'i_am_already_carrying_it':G.verb==='open'?'that_does_not_open':T('it_is_only_item',{item:T(it.name)})))}
 /* itemLook: an item described in the voice of whoever holds it (ITEMS[id].by[character id]); look is Paul's. */
 const itemLook=id=>{const it=ITEMS[id],w=PC();return w!==P&&it.by&&it.by[w.id]||it.look};
-function hsAt(x,y){for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&(Math.abs(x-a.x)<=10||a.mate&&Math.abs(x-a.x-a.mate.dx*a.dir)<=10)&&y>=a.y-49&&y<=a.y+1)return a.hs;
+function hsAt(x,y){const[fw,fh]=figBox(G.room);
+  for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&(Math.abs(x-a.x)<=fw||a.mate&&Math.abs(x-a.x-a.mate.dx*a.dir)<=fw)&&y>=a.y-fh&&y<=a.y+1)return a.hs;
   const hs=ROOMS[G.room].hs;for(let i=hs.length-1;i>=0;i--){const h=hs[i];if((!h.vis||h.vis())&&x>=h.x&&x<h.x+h.w&&y>=h.y&&y<h.y+h.h)return h}return null}
 /* show: an item given or shown to a person with no particular use for it. He answers in his own voice: from his show table
    (keyed by item id), else with his fallback, show['*']. Using an item on a person is the same as giving it. */
@@ -1406,24 +1526,25 @@ async function act(v,h,item){const who=PC(),o=who===P?h:(h.as&&h.as[who.id])||{}
 async function clickView(x,y,at){
   if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
   if(G.busy||G.scene||!G.room)return;audioInit();
-  const h=at||hsAt(x,y),item=G.item;let v=G.verb;G.actPos=[x-G.cam,y];
-  const me=PC();
+  const h=at||hsAt(x,y),item=G.item;let v=G.verb;G.actPos=[(x-G.cam)*zoomNow(),(y-G.camY)*zoomNow()];
+  const me=PC(),pl=planOf(G.room);
   if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(me,x,y);return}
   if(v==='walk'){v=defVerb(h);if(v==='walk')v=h.exit?'exit':'look'}
-  const A=h.actor,ty=h.wy!=null?h.wy:A?A.y+1:118;let tx=h.wx!=null?h.wx:A?A.x+(me.x<A.x?-22:22):h.x+h.w/2;
+  const A=h.actor,ty=h.wy!=null?h.wy:A?A.y+1:pl?h.y+h.h:118;let tx=h.wx!=null?h.wx:A?A.x+(me.x<A.x?-1:1)*(pl?pl.fig[0]*2:22):h.x+h.w/2;
   /* beside a person, but not on the spot where somebody already stands, a mate included, nor just in front of him or behind him: then the
      other side, if it is free, or a step farther out, so that neither of the two who talk hides the other or is hidden */
-  if(A&&h.wx==null){const w=ROOMS[G.room].walk,spots=Object.values(ACT).filter(a=>a!==me&&a.room===G.room).flatMap(a=>(a.mate?[[a.x+a.mate.dx*a.dir,a.y]]:[]).concat(a===A?[]:[[a.x,a.y]])),
+  if(!pl&&A&&h.wx==null){const w=ROOMS[G.room].walk,spots=Object.values(ACT).filter(a=>a!==me&&a.room===G.room).flatMap(a=>(a.mate?[[a.x+a.mate.dx*a.dir,a.y]]:[]).concat(a===A?[]:[[a.x,a.y]])),
       taken=x=>spots.some(([sx,sy])=>Math.abs(sx-x)<14&&Math.abs(sy-ty)<11),s=tx<A.x?-1:1;
     const at=[0,1,2].flatMap(k=>[s,-s].map(d=>A.x+d*(22+14*k))).find(x=>x>=w[0]&&x<=w[1]&&!taken(x));if(at!=null)tx=at}
-  /* at a thing, a door or a spot that the room names: beside whoever stands there already, a companion left there perhaps, and not on him */
-  else tx=spot(me,tx,ty)[0];
+  /* at a thing, a door or a spot that the room names: beside whoever stands there already, a companion left there perhaps, and not on him.
+     On a plan, the way to a person or a thing ends on the lane nearest to it (see route). */
+  else if(!pl)tx=spot(me,tx,ty)[0];
   if(!(await walk(me,tx,ty)))return;
   if(G.busy||me!==PC())return;
-  me.dir=A?(A.x>me.x?1:-1):h.dir||((h.x+h.w/2)>=me.x?1:-1);
+  me.dir=A?(A.x>me.x?1:-1):h.dir||((h.x+h.w/2)>=me.x?1:-1);if(pl)pl.face(me,A?A.x:h.x+h.w/2,A?A.y:h.y+h.h/2);
   await cut(()=>act(v,h,item))}
 const vp=$('#view');
-function evPos(e){const r=vp.getBoundingClientRect();return[(e.clientX-r.left)/r.width*VW+G.cam,(e.clientY-r.top)/r.height*VH]}
+function evPos(e){const r=vp.getBoundingClientRect(),z=zoomNow();return[(e.clientX-r.left)/r.width*VW/z+G.cam,(e.clientY-r.top)/r.height*VH/z+G.camY]}
 /* hsOf: what a pointer event is about: the thing a pinned label names if the pointer is on a label, else whatever lies under it.
    Labels are moved apart and do not always sit on what they name, so pointing, a tap, a right-click and a double-click all ask here. */
 const hsOf=e=>{const t=e.target.closest('.tag');return t&&t.hs||hsAt(...evPos(e))};
@@ -1431,7 +1552,17 @@ vp.addEventListener('mousemove',e=>{if(G.busy||G.scene||!G.room)return;const h=h
 vp.addEventListener('mouseleave',()=>{G.hover=null;status()});
 /* A finger has no hover: as it touches the scene, the status line names what is under it and its verb lights up, as the mouse would show. */
 vp.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||G.busy||G.scene||!G.room)return;const h=hsOf(e);if(h!==G.hover){G.hover=h;status()}});
-vp.addEventListener('click',e=>{const[x,y]=evPos(e);clickView(x,y)});
+vp.addEventListener('click',e=>{if(performance.now()-pinchT<350)return;const[x,y]=evPos(e);clickView(x,y)});
+/* zoom: on a room seen from above the player zooms the view between three quarters and twice its size, with the mouse wheel, + and -, or
+   two fingers; the view keeps the one who is played in it */
+function zoomBy(f){G.zoomTo=clamp(Math.round(G.zoomTo*f*100)/100,.75,2)}
+vp.addEventListener('wheel',e=>{if(!planOf(G.room)||G.scene)return;e.preventDefault();zoomBy(e.deltaY>0?1/1.12:1.12)},{passive:false});
+const fingers=new Map();let pinch=null,pinchT=0;
+vp.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch')return;fingers.set(e.pointerId,[e.clientX,e.clientY]);
+  if(fingers.size===2&&planOf(G.room)&&!G.scene){const[a,b]=[...fingers.values()];pinch={d:Math.hypot(a[0]-b[0],a[1]-b[1])||1,z:G.zoomTo}}});
+vp.addEventListener('pointermove',e=>{if(!fingers.has(e.pointerId))return;fingers.set(e.pointerId,[e.clientX,e.clientY]);
+  if(pinch&&fingers.size===2){const[a,b]=[...fingers.values()];G.zoomTo=clamp(pinch.z*Math.hypot(a[0]-b[0],a[1]-b[1])/pinch.d,.75,2);pinchT=performance.now()}});
+for(const t of['pointerup','pointercancel'])vp.addEventListener(t,e=>{fingers.delete(e.pointerId);if(pinch&&fingers.size<2){pinch=null;pinchT=performance.now()}});
 /* Right-click looks at whatever is under the pointer, from where Paul stands; on empty ground it puts the chosen verb down. */
 vp.addEventListener('contextmenu',e=>{e.preventDefault();if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
   if(G.busy||G.scene||!G.room)return;audioInit();const h=hsOf(e);G.verb='walk';G.item=null;syncVerbs();drawInv();status();if(!h)return;
@@ -1439,7 +1570,7 @@ vp.addEventListener('contextmenu',e=>{e.preventDefault();if(G.skip){if(performan
 $('#wrap').addEventListener('contextmenu',e=>{if(!e.target.closest('#codebox'))e.preventDefault()});
 /* Double-clicking an exit skips the walk to it: Paul is simply there, and goes through. */
 vp.addEventListener('dblclick',e=>{const me=PC();if(G.busy||G.scene||!G.room||!me.walk)return;const h=hsOf(e);
-  if(h&&h.exit){me.x=me.walk.x;me.y=me.walk.y;G.cam=clamp(me.x-160,0,ART[G.room].w-VW)}});
+  if(h&&h.exit){const w=me.walk,p=w.path&&w.path.length?w.path[w.path.length-1]:[w.x,w.y];w.path=null;w.rest=0;me.x=w.x=p[0];me.y=w.y=p[1];[G.cam,G.camY]=camAt(G.room,me.x,me.y)}});
 /* Holding Tab labels everything in the room that can be clicked: a small round dot and a name, never a marker or a cross.
    The NAMES button in the top bar pins the labels on, for touch screens that have no Tab key and no hover; pinned labels
    can be tapped, and a tap on one acts on its hotspot as a tap on the hotspot would. Labels are shown only while the player can
@@ -1455,17 +1586,19 @@ function tagsOn(on){if(on!=null)G.tagKey=!!on;on=!!(G.tagKey||G.tagPin||heardRoo
 function namesBtn(){const b=$('#names');b.textContent=T('NAMES');b.classList.toggle('on',!!G.tagPin);tagsOn()}
 $('#names').onclick=e=>{e.stopPropagation();audioInit();SFX.click();G.tagPin=!G.tagPin;namesBtn();tagsOn(G.tagPin)};
 function drawTags(ts){if(!G.tags)return;const act=G.room&&!G.scene&&!G.busy&&!G.skip;if(act&&ts-tagT<90)return;tagT=ts;
-  const s=vp.clientWidth/VW,cam=G.cam,list=[],put=[];
+  const s=vp.clientWidth/VW,cam=G.cam,cy=G.camY,list=[],put=[],fh=figBox(G.room)[1],z=zoomNow(),vw=VW/z,vh=VH/z;
+  /* each label: its name, where it stands in the room, its kind, its hotspot, and where it is clicked (y in the room: a lane map is taller than the view) */
   if(act){
-    for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+VW)list.push([T(a.hs.name),a.x,a.y-52,'who',a.hs]);
-    for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const x0=Math.max(h.x,cam+4),x1=Math.min(h.x+h.w,cam+VW-4);if(x1>x0)list.push([T(h.name),(x0+x1)/2,h.y+h.h/2,h.exit?'exit':'',h])}}
+    for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+vw&&a.y>cy&&a.y<cy+vh+fh)list.push([T(a.hs.name),a.x,(a.y-fh-3-cy)*z,'who',a.hs,a.y-fh/2]);
+    for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const tall=roomH(G.room)>VH,x0=Math.max(h.x,cam+4/z),x1=Math.min(h.x+h.w,cam+vw-4/z),y0=tall?Math.max(h.y,cy+2/z):h.y,y1=tall?Math.min(h.y+h.h,cy+vh-2/z):h.y+h.h;
+      if(x1>x0&&y1>y0)list.push([T(h.name),(x0+x1)/2,((y0+y1)/2-cy)*z,h.exit?'exit':'',h,(y0+y1)/2])}}
   /* rebuilt only when something changed, so that a label is not replaced under the finger tapping it. What changed may be the thing
      itself and nothing that shows (a place that comes back in a later chapter keeps its names), so the hotspots are compared as well. */
-  const sig=s+'|'+cam+'|'+list.map(l=>l.slice(0,4).join(',')).join('|');if(sig===tagSig&&list.every((l,i)=>l[4]===tagHs[i]))return;tagSig=sig;tagHs=list.map(l=>l[4]);tagEl.innerHTML='';
+  const sig=s+'|'+cam+'|'+cy+'|'+z+'|'+list.map(l=>l.slice(0,4).join(',')).join('|');if(sig===tagSig&&list.every((l,i)=>l[4]===tagHs[i]))return;tagSig=sig;tagHs=list.map(l=>l[4]);tagEl.innerHTML='';
   list.sort((a,b)=>a[2]-b[2]);
-  for(const[name,x,y,k,h]of list){const el=document.createElement('div');el.className='tag '+k;el.textContent=name;el.hs=h;tagEl.appendChild(el);
-    el.onclick=e=>{e.stopPropagation();if(tagTap())clickView(x,y,h)};
-    const w=el.offsetWidth/s,hh=el.offsetHeight/s+3,lx=clamp(x-cam,w/2+1,VW-w/2-1);let ty=clamp(y,4,VH-hh);
+  for(const[name,x,y,k,h,ry]of list){const el=document.createElement('div');el.className='tag '+k;el.textContent=name;el.hs=h;tagEl.appendChild(el);
+    el.onclick=e=>{e.stopPropagation();if(tagTap())clickView(x,ry,h)};
+    const w=el.offsetWidth/s,hh=el.offsetHeight/s+3,lx=clamp((x-cam)*z,w/2+1,VW-w/2-1);let ty=clamp(y,4,VH-hh);
     for(let n=0;n<10;n++){const hit=put.find(p=>Math.abs(p.x-lx)<(p.w+w)/2+1&&Math.abs(p.y-ty)<hh);if(!hit)break;ty=hit.y+hh}
     if(ty>VH-hh)ty=VH-hh;put.push({x:lx,y:ty,w});el.style.left=lx*s+'px';el.style.top=ty*s+'px'}}
 addEventListener('keyup',e=>{if(e.key==='Tab')tagsOn(false)});addEventListener('blur',()=>tagsOn(false));
@@ -1475,6 +1608,7 @@ addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;co
   else if(k===' '||k==='escape'||k==='.'){if(G.skip){e.preventDefault();G.skip()}
     else if(k==='escape'){if(cb.classList.contains('on'))closeCode();else if($('#menu').classList.contains('on'))closeMenu();
       else if(!$('#tablets.on')&&!G.busy&&(!G.scene||ov.classList.contains('on')))openMenu()}}
+  else if((k==='+'||k==='='||k==='-')&&planOf(G.room)&&!G.scene){e.preventDefault();zoomBy(k==='-'?1/1.25:1.25)}
   else if(k==='m')$('#mute').click();else if(k==='p')pray();else if(k==='c')swap();
   else if(k>='1'&&k<='6'){const b=document.querySelectorAll('#verbs button')[+k-1];if(b)b.click()}});
 /* --- main loop --- */
@@ -1483,13 +1617,22 @@ function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
   /* A walk is driven by the ground: the frame follows the distance covered (a.gait: the phase of the stride, and how far he has come), so that
      a foot that stands is not carried along. It begins as the legs pass each other, and begins and ends on a shorter step, as does a walk up or
      down the room, where the side view would stride on the spot. A step is heard as a foot lands. */
+  /* A room seen from above (a lane map, shared/lanes.js) moves its own crowd first, and steers whoever is played by the keys. On it a way
+     has several points (walk.path, and walk.rest, how far they run beyond the next one): the walk goes on from one to the next and slows
+     only at the last. Its plan says how fast people go on it, and how far a stride carries them; distances there are the same both ways,
+     where in a room a step into its depth counts double. */
+  const pr=G.room&&!G.scene&&planOf(G.room);if(pr)pr.tick(dt,ts);
   for(const a of Object.values(ACT)){const w=a.walk;if(!w){a.fr=a.seat?-1:0;a.gait=null;continue}
-    const dx=w.x-a.x,dy=w.y-a.y,d=Math.hypot(dx,dy*2),v=a.speed||G.speedAll||WALK_V,sp=v*dt;
-    if(d<=sp){a.x=w.x;a.y=w.y;a.walk=null;a.fr=0;a.gait=null;w.res(true)}
-    else{const q=a.gait||(a.gait={ph:.25,gone:0}),p0=q.ph,near=Math.min(q.gone,d-sp);a.x+=dx/d*sp;a.y+=dy/d*sp;q.gone+=sp;q.ph=(p0+sp/strideOf(a.look,v))%1;
-      a.fr=4+Math.floor(q.ph*16)+16*(Math.abs(dx)<Math.abs(dy)*2||near<4?2:near<9?1:0);
+    const pl=planOf(a.room),dx=w.x-a.x,dy=w.y-a.y,d=Math.hypot(dx,dy*(pl?1:2)),v=a.speed||G.speedAll||(pl?pl.pace(a):WALK_V),sp=v*dt;
+    if(d<=sp&&w.path&&w.path.length){a.x=w.x;a.y=w.y;const n=w.path.shift();w.rest-=Math.hypot(n[0]-w.x,n[1]-w.y);w.x=n[0];w.y=n[1];continue}
+    if(d<=sp){a.x=w.x;a.y=w.y;a.walk=null;a.fr=0;a.gait=null;w.res(!w.partial)}
+    else{const q=a.gait||(a.gait={ph:.25,gone:0}),p0=q.ph,near=Math.min(q.gone,d+(w.rest||0)-sp);a.x+=dx/d*sp;a.y+=dy/d*sp;q.gone+=sp;q.ph=(p0+sp/(pl?pl.stride(a,v):strideOf(a.look,v)))%1;
+      if(pl){a.mvx=dx/d;a.mvy=dy/d}
+      a.fr=4+Math.floor(q.ph*16)+16*(!pl&&Math.abs(dx)<Math.abs(dy)*2||near<4?2:near<9?1:0);
       if(a.room===G.room&&(q.ph<p0||p0<.5&&q.ph>=.5)&&ts-stepT>90){stepT=ts;SFX.step()}}}
-  if(G.room&&!G.scene){const t=clamp(PC().x-160,0,ART[G.room].w-320);G.cam+=(t-G.cam)*Math.min(1,dt*5);if(Math.abs(t-G.cam)<.5)G.cam=t}}
+  if(G.zoom!==G.zoomTo){G.zoom+=(G.zoomTo-G.zoom)*Math.min(1,dt*12);if(Math.abs(G.zoomTo-G.zoom)<.004)G.zoom=G.zoomTo}
+  if(G.room&&!G.scene){const[t,u]=camAt(G.room,PC().x,PC().y),k=Math.min(1,dt*5);G.cam+=(t-G.cam)*k;if(Math.abs(t-G.cam)<.5)G.cam=t;
+    G.camY+=(u-G.camY)*k;if(Math.abs(u-G.camY)<.5)G.camY=u}}
 /* --- figures: each pose is drawn once into a cached sprite (dark contour, dither), then lit by the room and laid on the scene --- */
 const[SA,sa]=mk(FIG.W,FIG.H),[SB,sb]=mk(FIG.W,FIG.H),SPR=new Map();sa.imageSmoothingEnabled=false;
 /* sprite: draw a pose once and keep it. Edge pixels are darkened, more so on the side away from the light (dir tells which).
@@ -1517,7 +1660,7 @@ function depth(y,fn){if(DQ)DQ.push([y,fn]);else fn()}
    engine cuts that outline out of the finished backdrop, so the piece is the painting itself, and lays it over whoever stands behind it. */
 const CUT={};
 function props(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;if(!a.props)return[];return CUT[k]||(CUT[k]=a.props.map(p=>{
-  const W=a.w*HR,Hh=VH*HR,[c,g]=mk(W,Hh);g.scale(HR,HR);p.shape(g,v);g.setTransform(1,0,0,1,0,0);
+  const W=a.w*HR,Hh=roomH(id)*HR,[c,g]=mk(W,Hh);g.scale(HR,HR);p.shape(g,v);g.setTransform(1,0,0,1,0,0);
   const im=g.getImageData(0,0,W,Hh),d=im.data;let x0=W,y0=Hh,x1=-1,y1=-1;
   for(let y=0,i=3;y<Hh;y++)for(let x=0;x<W;x++,i+=4){if(d[i]<128){d[i]=0;continue}d[i]=255;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
   if(x1<0)return null;g.putImageData(im,0,0);g.globalCompositeOperation='source-in';g.drawImage(bg(id),0,0);
@@ -1552,7 +1695,7 @@ function moves(o,L,ln,ts){if(L.stone)return[0,0,0,0];
     if(live){if(e&&e.beat&&e.m>1)mv|=MV.dip;
       if(c){const h=hash(p.h+c.n*7),ask=c.end==='?',cry=c.end==='!';if(ask&&t>c.t1-320)mv=mv&~MV.dip|MV.lift|MV.brow;else if(cry&&t>c.t1-300&&t<c.t1+160)mv|=MV.brow;
         if(h%3===0&&t<c.t1)mv|=MV.fwd;if(t>=c.t1&&t<c.t1+130&&h%2===0)bl=1;
-        if(!p.sung&&!L.spear&&!L.stub&&t<c.t1+140){const k=ask?2:cry?1:[0,2,1,3,2,0][h%6];
+        if(!p.sung&&!L.spear&&!L.pilum&&!L.stub&&t<c.t1+140){const k=ask?2:cry?1:[0,2,1,3,2,0][h%6];
           if(k&&c.t1-c.t0>420)ges=k===2||t-c.t0<110||c.t1+140-t<110?2:k;if(cry)mv|=MV.lean|MV.fwd}}}}
   else if(o.talk){m=BABBLE[Math.floor(ts/120)%8];if(live&&Math.floor(ts/560)%3===1)ges=1}
   else if(live){const s=cur&&cur.plan&&cur.to===o?cur:null;
@@ -1562,7 +1705,7 @@ function moves(o,L,ln,ts){if(L.stone)return[0,0,0,0];
   const q=o.gest;if(q){const u=ts-q.t0;if(u>=q.ms||o.bow)o.gest=null;else if(u>=0&&!o.fr){
     if(q.kind==='nod')mv=mv&~(MV.lift|MV.dip|MV.brow)|(u<470&&u%300<170?MV.dip:0);
     else if(q.kind==='shake')mv=mv&~(MV.fwd|MV.back|MV.dip|MV.lift|MV.brow|MV.glance|MV.lean)|(u<560?Math.floor(u/140)%2?MV.fwd:MV.back|MV.glance:0);
-    else if(!L.spear&&!L.stub)ges=u<110||q.ms-u<110?2:3}}
+    else if(!L.spear&&!L.pilum&&!L.stub)ges=u<110||q.ms-u<110?2:3}}
   return[m,ges,bl,mv]}
 /* facing: the way a figure is drawn. Whoever speaks and whoever is spoken to face each other while the scene lasts (G.turn, see say), and
    whoever the played character talks with (G.with, see act) turns to face him as soon as they begin. Each stands afterwards as the scene
@@ -1577,7 +1720,7 @@ const facing=o=>still(o)?o.dir:turnOf(o,o.x,o.room,o.dir)||(G.with===o&&o.dir===
 function mateFacing(o,mx){if(still(o))return o.dir;const v=o.mate.voice,a=v&&G.turn.get(v),b=G.turn.get(o),mine=a&&turnOf(v,mx,o.room,o.dir),
     his=b&&b.to!==v&&turnOf(o,mx,o.room,o.dir);
   return(mine&&his?(a.n>b.n?mine:his):mine||his)||(G.with===o&&o.dir===G.withDir?(PC().x>=mx?1:-1):o.dir)}
-function drawActor(g,o,ts,id){const bow=o.bow?1:0,dir=facing(o),ln=cur&&cur.plan?cur:null,[talk,ges,bl,mv]=moves(o,o.look,ln&&o.talk&&(ln.a===o||ln.choir.includes(o))?ln:null,ts);
+function drawActor(g,o,ts,id){const pl=planOf(id);if(pl)return pl.drawActor(g,o,ts);const bow=o.bow?1:0,dir=facing(o),ln=cur&&cur.plan?cur:null,[talk,ges,bl,mv]=moves(o,o.look,ln&&o.talk&&(ln.a===o||ln.choir.includes(o))?ln:null,ts);
   /* a mate: two who are never apart are one actor (Aquila and Priscilla, in Chapter Twelve). The mate {fig, dx, talk, voice}, fig being the id of her look,
      walks, stands and bows with the actor, a step behind and beside, and has a mouth of her own: when she talks, the line on the screen is hers.
      voice is the one who speaks her lines (say(voice, ...)), with her room, x and y: she turns to whom she speaks with (see mateFacing). */
@@ -1586,15 +1729,16 @@ function drawActor(g,o,ts,id){const bow=o.bow?1:0,dir=facing(o),ln=cur&&cur.plan
   figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+'f'+(o.fr<0?'s':o.fr)+'t'+talk+bow+ges+bl+'m'+mv,s=>person(s,0,0,o.look,dir,o.fr,talk,bow,ges,bl,mv))}
 function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
-  else if(G.room){const id=G.room,a=ART[id],cam=hp(G.cam),f=fg(id);backdrop(cx,id,cam);cx.save();cx.translate(-cam,0);
+  else if(G.room){const id=G.room,a=ART[id],z=zoomOf(id),cam=hp(G.cam),cy=hp(G.camY),f=fg(id);if(z!==1)cx.setTransform(HR*z,0,0,HR*z,0,0);backdrop(cx,id,cam,cy);cx.save();cx.translate(-cam,-cy);
     const q=DQ=[];a.draw(cx,ts);DQ=null;
     for(const p of props(id))q.push([p.y,()=>cx.drawImage(p.c,p.x,p.t,p.w,p.h)]);
     for(const o of Object.values(ACT))if(o.room===id)q.push([o.y,()=>drawActor(cx,o,ts,id)]);
     q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());
     cx.restore();if(f)cx.drawImage(f,-hp(cam*(a.fp||1)),0,f.width/HR,VH);
-    cx.save();cx.translate(-cam,0);a.front(cx,ts);cx.restore()}
+    cx.save();cx.translate(-cam,-cy);a.front(cx,ts);cx.restore();if(z!==1)cx.setTransform(HR,0,0,HR,0,0)}
   if(G.xfade){cx.save();cx.setTransform(1,0,0,1,0,0);cx.globalAlpha=G.xfade.a;cx.drawImage(G.xfade.img,0,0);cx.restore()}
   {const S=SHARED.scroll;if(S&&S.state!=='down')S.draw(ts)}
+  {const pl=!!(G.room&&!G.scene&&planOf(G.room));if(vp.plan!==pl){vp.plan=pl;vp.classList.toggle('plan',pl)}}
   posSpeech();tagsOn();drawTags(ts);requestAnimationFrame(render)}
 /* ============ GAME: items, combinations, prayer hints ============ */
 Object.assign(ITEMS,{
@@ -1668,14 +1812,14 @@ const CHAP={
   10:{name:'is_it_so',label:'chapter_ten',title:'is_it_so_q',salt:0xA37B,src:'levels/chapter10.js',treasure:{name:'wound_too_far',at:'10-E04-FJ9-Y7P'}},
   11:{name:'unknown_god',label:'chapter_eleven',title:'the_unknown_god',salt:0xB48D,src:'levels/chapter11.js',treasure:{name:'back_at_the_fountain',at:'11-8VM-7EW-T68'}},
   12:{name:'tentmakers_of_corinth',label:'chapter_twelve',title:'tentmakers_of_corinth_2',salt:0xC59F,src:'levels/chapter12.js',treasure:{name:'cloth_of_his_own_country',at:'12-AXS-T1E-4S6-EEE-J5F'}},
-  13:{name:'hall_of_tyrannus',label:'chapter_thirteen',title:'the_hall_of_tyrannus',salt:0xD6B3,src:'levels/chapter13.js',treasure:{name:'pupils_tablet',at:'13-KQC-4NT-ZTX-2SR-Z2V'}}};
+  13:{name:'hall_of_tyrannus',label:'chapter_thirteen',title:'the_hall_of_tyrannus',salt:0xD6B3,src:'levels/chapter13.js',treasure:{name:'pupils_tablet',at:'13-KQC-4NT-ZTX-2SR-Z2V'}},
+  14:{name:'two_hours_in_the_theater',label:'chapter_fourteen',title:'two_hours_in_the_theater_2',salt:0xE7C5,src:'levels/chapter14.js',needs:['lanes'],treasure:{name:'kneading_behind_a_shutter',at:'14-JAT-FJH-QJ3-2K1-QBZ'}}};
 const TITLE={level:1,scene:'title',mood:'ancient',amb:{crickets:.5,wind:.35,owl:.4}};
 const PRO={name:'road_to_damascus',label:'Prologue',title:'the_road_to_damascus',src:'levels/prologue.js'};
 /* PLANNED: the chapters that are planned and not built (issue #47). The title lists them, dimmed, under one line that opens them in place.
    Each is named by the part of Acts it will tell, not by a working title, which may still change; the title it is given replaces that
    reference when the chapter is built and moves into CHAP. Nothing else reads this list: these chapters have no file, no salt and no codes. */
 const PLANNED=[
-  {label:'chapter_fourteen',short:'Fourteen',ref:'acts_19_21_20_1'},
   {label:'chapter_fifteen',short:'Fifteen',ref:'acts_20_1_12'},{label:'chapter_sixteen',short:'Sixteen',ref:'acts_20_13_38'},
   {label:'chapter_seventeen',short:'Seventeen',ref:'acts_21_1_16'},{label:'chapter_eighteen',short:'Eighteen',ref:'acts_21_17_22_29'},
   {label:'chapter_nineteen',short:'Nineteen',ref:'acts_22_30_23_35'},{label:'chapter_twenty',short:'Twenty',ref:'acts_24_1_27'},
@@ -1689,8 +1833,9 @@ function PROLOGUE(init){LOOK.paul=paulLook(1);Object.assign(PRO,init(),{ready:1}
 function loadScript(src,ok){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=src;
   el.onload=()=>ok()?res():rej(new Error(T('file_was_loaded_but_it_is_incomplete',{file:src})));el.onerror=()=>{el.remove();rej(new Error(T('could_not_load_file',{file:src})))};document.head.appendChild(el)})}
 /* A level brings its text with it, in English and in the player's language (see LANGUAGES); if the player's file is missing, the chapter plays in English. */
+/* A chapter that is built on a shared file (needs: ['lanes'], in its line of the manifest) has that file loaded before its own. */
 function loadLevel(n){const c=CHAP[n];if(c.ready)return langFile(G.lang,n);
-  return c.loading||(c.loading=loadScript(c.src,()=>c.ready).then(()=>langFile(G.lang,n)).catch(e=>{c.loading=null;throw e}))}
+  return c.loading||(c.loading=Promise.all((c.needs||[]).map(need)).then(()=>loadScript(c.src,()=>c.ready)).then(()=>langFile(G.lang,n)).catch(e=>{c.loading=null;throw e}))}
 function loadPrologue(){if(PRO.ready)return langFile(G.lang,'prologue');
   return PRO.loading||(PRO.loading=loadScript(PRO.src,()=>PRO.ready).then(()=>langFile(G.lang,'prologue')).catch(e=>{PRO.loading=null;throw e}))}
 /* Anything shared between chapters lives in its own file under shared/, which registers itself in SHARED and is loaded the first time it is needed. */
