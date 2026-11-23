@@ -4,6 +4,16 @@
    Every line is the narrator's, in paraphrase with its reference; nobody speaks, and the light on the road is a plain white screen. */
 PROLOGUE(()=>{
 "use strict";
+/* materials and light shared with every chapter (shared/materials.js), to the standard of Chapter Fifteen's room of Gaius */
+const{plank,board,crack,skipCracks,shadow:softShadow,earth,joistAO}=SHARED.materials;
+/* softShade: a cast shadow on the ground, laid in three passes of multiply so that its edge is soft: a faint one a little wider than
+   the shadow (wide), the body (p), and a core along the foot of what casts it (core). Each is a polygon as for shade(). */
+function softShade(g,wide,p,core,c,a){shade(g,wide,c,a*.34);shade(g,p,c,a*.44);shade(g,core,c,a*.3)}
+/* daylight over an open scene: the sky (above hz) stays as it is; the land and the walls lie under a soft fall of light (DAY), brighter
+   where the sun reaches and shaded toward the near ground and where things meet it. fn(l) paints that: walls that stand against the
+   sky are first filled with DAY again, then pools of light and, in a multiply pass, the shade. */
+const DAY='#e8e1d6';
+function dayLight(g,hz,fn){lightmap(g,320,DAY,l=>{R(l,0,0,320,hz,'#ffffff');l.fillStyle=lg(l,0,hz,0,hz+22,['#ffffff',DAY]);l.fillRect(0,hz,320,22);fn(l)})}
 
 /* ============ CAST (young Saul uses LOOK.paul from Chapter One; Ananias and the companions on the road are added here) ============ */
 Object.assign(LOOK,{
@@ -22,106 +32,138 @@ function scaledMan(g,x,y,id,dir,z,lit){const o=LOOK[id],bl=blinks(o,G.t)?1:0,
 
 /* heap of outer garments on the ground outside Jerusalem: soft rounded folds, no straps or right-angle creases (CONTRIBUTING section 3) */
 function garmentsArt(g,x,y){
-  oval(g,x+28,y+10,34,5.5,'rgba(30,24,48,.36)');
-  for(const[dx,dy,w,h,c]of[[0,2,32,10,'#7a5c44'],[20,0,34,11,'#4e6278'],[8,5,36,10,'#c4b086']]){
+  softShadow(g,x+28,y+10,32,4.6,.4,'#1e1830');
+  for(const[dx,dy,w,h,c]of[[0,2,32,10,'#7a5c44'],[20,0,34,11,earth('#4e6278',.2)],[8,5,36,10,'#c4b086']]){
     const X=x+dx,Y=y+dy,p=[X+3,Y+h,X,Y+h*.65,X+4,Y+h*.2,X+w*.45,Y,X+w*.86,Y+h*.18,X+w,Y+h*.62,X+w-2,Y+h];
     poly(g,p,c);clipTo(g,()=>poly(g,p),()=>{
       g.fillStyle=lg(g,X,Y,X,Y+h,[tint(c,.22),c,tint(c,-.34)]);g.fillRect(X,Y,w,h);
       stroke(g,[X+5,Y+h*.55,X+w*.48,Y+h*.36,X+w-6,Y+h*.62],tint(c,-.28),.8);
       stroke(g,[X+6,Y+h*.45,X+w*.48,Y+h*.26,X+w-7,Y+h*.52],tint(c,.24),.6);
-      tex(g,'mott',.35,X,Y,w,h);ao(g,X,Y+h*.6,w,h*.4,'b',.35)})}}
+      tex(g,'mott',.2,X,Y,w,h);ao(g,X,Y+h*.6,w,h*.4,'b',.38,'#1e1830')})}}
 
 /* ---------- Picture 1: Outside a wall of Jerusalem, by day ---------- */
-ART.pro_wall={w:320,
-  paint(g){const r=rng(541),SH='#8f95c4',ST='#d8caa8';
-    sky(g,320,92,['#3a72bc','#669ad4','#9ec2e4','#dce6dc']);
+ART.pro_wall={w:320,q:12,
+  paint(g){const r=rng(541),rb=rng(5411),SH='#8f95c4',ST='#d8caa8';
+    /* the sky's blue and the far hills drawn a little toward grey, so that they sit with the limestone and the dust (earth) */
+    sky(g,320,92,['#3a72bc','#669ad4','#9ec2e4','#dce6dc'].map(c=>earth(c,.16)));
     cloud(g,230,18,54,8,r);cloud(g,140,28,38,6,r);
     /* Judean hills to one horizon at y=92 */
-    ridge(g,120,320,92,x=>18+6*Math.sin(x/37+1)+3*Math.sin(x/13),['#7e92b4','#9eb0c6']);
+    ridge(g,120,320,92,x=>18+6*Math.sin(x/37+1)+3*Math.sin(x/13),['#7e92b4','#9eb0c6'].map(c=>earth(c,.14)));
     ridge(g,120,320,92,x=>9+4*Math.sin(x/21+2)+2*Math.sin(x/8),['#98a68e','#b4be9e']);
     g.fillStyle=lg(g,0,92,0,144,['#d6c8a4','#c8b68e','#b49e76']);g.fillRect(0,92,320,52);
-    tex(g,'mott',.5,0,92,320,52,'overlay',1);tex(g,'grain',.12,0,92,320,52,'overlay',.5);
+    tex(g,'mott',.32,0,92,320,52,'overlay',1);tex(g,'grain',.12,0,92,320,52,'overlay',.5);
     for(const[rx,ry,rw]of[[268,108,5],[294,118,7],[244,122,4.5],[282,134,8],[168,116,5]]){
-      oval(g,rx,ry+.6,rw*1.1,rw*.4,'rgba(40,30,60,.28)');oval(g,rx,ry,rw,rw*.45,'#9e9078');oval(g,rx-.8,ry-.5,rw*.65,rw*.3,'#beb096')}
+      softShadow(g,rx+.6,ry+.8,rw*1.02,rw*.34,.42,'#281e3c');oval(g,rx,ry,rw,rw*.45,'#9e9078');oval(g,rx-.8,ry-.5,rw*.65,rw*.3,'#beb096')}
+    softShadow(g,300,105,10,1.8,.34,'#281e3c');softShadow(g,180,102.6,8,1.5,.34,'#281e3c');
     foliage(g,298,102,10,4.5,'#6e8252',r,30);foliage(g,178,100,8,3.5,'#768a58',r,24);
     /* the wall of Jerusalem on the left, with its corner tower at the left end (never in the middle) */
     const wall=[34,18,154,54,154,98,34,114];
     poly(g,wall,ST);clipTo(g,()=>poly(g,wall),()=>{
-      ashlar(g,34,18,120,96,ST,r,{bw:16,bh:8,v:.1,t:.4});
-      ao(g,34,88,120,26,'b',.35,'#4a3828');ao(g,34,18,18,96,'l',.28,'#3a3050')});
+      ashlar(g,34,18,120,96,ST,r,{bw:16,bh:8,v:.1,t:.3});
+      /* hairline cracks in a few blocks, high on the wall, set by hand */
+      for(const[x,y,n]of[[58,34.8,1],[96,42.8,1],[128,50.8,1]])crack(g,x,y,n,rb,.9);
+      ao(g,34,88,120,26,'b',.35,'#4a3828');ao(g,34,18,18,96,'l',.28,'#3a3050');
+      /* the foot of the wall, where it meets the ground, in a darker step of its own */
+      comp(g,'multiply',.22,()=>poly(g,[34,110,154,95,154,98,34,114],'#5a4838'))});
     /* its battlements stand on the sloping top of the wall: the foot of each follows the slope, so that no sky shows under its far corner */
     for(let i=0;i<7;i++){const x=38+i*16,top=v=>18+36*(v-34)/120;poly(g,[x,top(x)-4,x+8,top(x+8)-4,x+8,top(x+8)+.6,x,top(x)+.6],ST);poly(g,[x,top(x)-4,x+8,top(x+8)-4,x+8,top(x+8)-3.4,x,top(x)-3.4],'#f2e6c8')}
-    ashlar(g,0,6,36,110,'#cdbda0',r,{bw:18,bh:9,v:.1,t:.45});
+    ashlar(g,0,6,36,110,'#cdbda0',r,{bw:18,bh:9,v:.1,t:.32});
+    crack(g,14,24.8,1,rb,.9);
     for(let i=2;i<34;i+=11){R(g,i,1.5,7,5,'#cdbda0');R(g,i,1.5,7,.6,'#efe2c4')}
-    R(g,35,6,1,110,'#8a7c66');ao(g,0,92,36,24,'b',.4,'#3a2c20');
-    shade(g,[0,116,36,114,154,98,210,114,72,144,0,144],SH,.45);
+    /* the corner where the tower meets the wall lies in shade, in two steps */
+    R(g,35,6,1,110,'#8a7c66');ao(g,36,6,5,108,'l',.26,'#3a3050');ao(g,30,6,5,110,'r',.18,'#3a3050');ao(g,0,92,36,24,'b',.4,'#3a2c20');
+    /* the wall's shadow on the ground, its edge soft: a faint margin, the body, a darker core along the wall's foot */
+    softShade(g,[0,115,36,113,154,96,216,114,76,146,0,146],[0,116,36,114,154,98,210,114,72,144,0,144],[0,118,36,116,154,100,184,108,52,138,0,140],SH,.5);
     /* outer garments laid in a heap at Saul's feet */
-    garmentsArt(g,192,124)},
+    garmentsArt(g,192,124);
+    /* the light of the day: the sun on the face of the wall and on the open ground; the near ground and the foot of the wall a little
+       darker. Every pool is long and low, and none lies behind Saul's head. */
+    dayLight(g,92,l=>{const top=v=>18+36*(v-34)/120;poly(l,[34,18,154,54,154,92,34,92],DAY);R(l,0,6,36,86,DAY);for(let i=2;i<34;i+=11)R(l,i,1.5,7,5,DAY);
+      for(let i=0;i<7;i++){const x=38+i*16;poly(l,[x,top(x)-4,x+8,top(x+8)-4,x+8,top(x+8)+.6,x,top(x)+.6],DAY)}
+      pool(l,92,42,90,24,'#fff6e8',.55);pool(l,250,104,110,14,'#fff4e2',.6);pool(l,18,40,30,40,'#fff2e0',.3);
+      comp(l,'multiply',1,()=>ao(l,0,120,320,24,'b',.3,'#4a4060'))})},
   draw(g){scaledMan(g,136,154,'paul',1,1.5,null)},
   front(){}};
 
 /* ---------- Picture 2: The same figure, nearer ---------- */
-ART.pro_near={w:320,
-  paint(g){const r=rng(542),ST='#d8caa8';
-    sky(g,320,92,['#3a72bc','#669ad4','#9ec2e4','#dce6dc']);
+ART.pro_near={w:320,q:12,
+  paint(g){const r=rng(542),rb=rng(5421),ST='#d8caa8';
+    sky(g,320,92,['#3a72bc','#669ad4','#9ec2e4','#dce6dc'].map(c=>earth(c,.16)));
     cloud(g,250,22,56,9,r);
-    ridge(g,180,320,92,x=>20+6*Math.sin(x/31+1),['#7e92b4','#9eb0c6']);
+    ridge(g,180,320,92,x=>20+6*Math.sin(x/31+1),['#7e92b4','#9eb0c6'].map(c=>earth(c,.14)));
     ridge(g,180,320,92,x=>10+4*Math.sin(x/19+2),['#98a68e','#b4be9e']);
     g.fillStyle=lg(g,0,92,0,144,['#d6c8a4','#c2ae86']);g.fillRect(0,92,320,52);
-    tex(g,'mott',.45,0,92,320,52,'overlay',1);
-    /* the dressed stones of the wall behind him, nearer now */
-    ashlar(g,0,0,206,144,ST,r,{bw:28,bh:14,v:.1,t:.42});
-    R(g,205,0,1,144,'#8a7c66');ao(g,0,0,36,144,'l',.25,'#3a3050');ao(g,0,116,206,28,'b',.3,'#3a2c20')},
+    tex(g,'mott',.3,0,92,320,52,'overlay',1);tex(g,'grain',.1,0,92,320,52,'overlay',.5);
+    /* the dressed stones of the wall behind him, nearer now: weathered, a few hairline cracks set by hand, high, where they run to no head */
+    ashlar(g,0,0,206,144,ST,r,{bw:28,bh:14,v:.1,t:.3});
+    for(const[x,y,n]of[[34,16,2],[118,.8,2],[182,14.8,2]])crack(g,x,y,n,rb,.9);
+    /* the end of the wall: its edge, and the shade that gathers along it and at its foot */
+    R(g,205,0,1,144,'#8a7c66');ao(g,196,0,9,144,'r',.16,'#3a3050');ao(g,0,0,36,144,'l',.25,'#3a3050');ao(g,0,116,206,28,'b',.3,'#3a2c20');ao(g,0,136,206,8,'b',.2,'#2a2030');
+    /* the light of the day: the sun along the upper stones, long and low above his head, and on the open ground beyond the wall */
+    dayLight(g,92,l=>{R(l,0,0,206,92,DAY);pool(l,100,26,140,22,'#fff6e8',.6);pool(l,262,104,80,12,'#fff4e2',.5);
+      comp(l,'multiply',1,()=>ao(l,0,118,320,26,'b',.28,'#4a4060'))})},
   draw(g){scaledMan(g,142,202,'paul',1,2.5,null)},
   front(){}};
 
 /* ---------- Picture 3: A street door in Jerusalem, shut, by evening light ---------- */
-ART.pro_door={w:320,
-  paint(g){const r=rng(543),W='#d8c4a0',S='#c8b694';
-    sky(g,320,42,['#283062','#54467c','#986274','#d89266']);
+ART.pro_door={w:320,q:12,
+  paint(g){const r=rng(543),rb=rng(5431),rw=rng(5432),W='#d8c4a0',S='#c8b694';
+    sky(g,320,42,['#283062','#54467c','#986274','#d89266'].map(c=>earth(c,.14)));
     /* house fronts closing the street */
-    ashlar(g,0,18,68,92,'#beae90',r,{bw:16,bh:8,v:.1});R(g,0,14.5,69,4,'#d4c4a6');
-    plaster(g,68,8,184,102,W,r,{patch:5,cracks:6,brick:'#a67c54',t:.5});
+    ashlar(g,0,18,68,92,'#beae90',r,{bw:16,bh:8,v:.1,t:.3});R(g,0,14.5,69,4,'#d4c4a6');
+    plaster(g,68,8,184,102,W,r,{patch:5,cracks:0,brick:'#a67c54',t:.36});skipCracks(r,6);
     R(g,67,4.5,186,4,'#ead8b8');R(g,67,8,186,1,'#8a7658');
     for(let i=76;i<246;i+=14){R(g,i,12,3,3,'#6a4a2c');R(g,i,15,3,2.5,'rgba(0,0,0,.28)')}
-    plaster(g,252,16,68,94,'#cbb896',r,{patch:3,cracks:4,brick:'#9c724c',t:.5});R(g,251,12.5,69,4,'#dfd0b0');
+    plaster(g,252,16,68,94,'#cbb896',r,{patch:3,cracks:0,brick:'#9c724c',t:.36});skipCracks(r,4);R(g,251,12.5,69,4,'#dfd0b0');
+    /* cracks cut by hand, high under the eaves, and the shade under the cornices and where the house fronts meet */
+    for(const[x,y,n]of[[96,18,2],[196,19,3],[240,18,3],[292,23,4]])crack(g,x,y,n,rb);
+    ao(g,68,9,184,6,'t',.3,'#2a2030');ao(g,0,18,68,5,'t',.28,'#2a2030');ao(g,252,16.5,68,5,'t',.28,'#2a2030');
+    ao(g,62,18,6,92,'r',.22,'#2a2030');ao(g,246,16,6,94,'r',.2,'#2a2030');ao(g,252,16,5,94,'l',.16,'#2a2030');
     /* high shuttered windows */
     windowArt(g,22,38,14,16,'#beae90',{shut:1});
     windowArt(g,88,34,16,18,W,{shut:1});
     windowArt(g,212,34,16,18,W,{shut:1});
     windowArt(g,276,40,14,16,'#cbb896',{shut:1});
     /* the shut street door in a deep stone reveal: recessed horizontal panels, no iron bands crossing vertical planks (CONTRIBUTING section 3) */
-    ashlar(g,122,28,68,82,S,r,{bw:14,bh:7,v:.09});
+    ashlar(g,122,28,68,82,S,r,{bw:14,bh:7,v:.09,t:.3});
     R(g,130,36,52,74,'#18100c');
-    wood(g,130,36,4,74,'#4a301c',1);wood(g,178,36,4,74,'#4a301c',1);wood(g,128,33,56,4,'#5a3c24');
-    R(g,134,40,44,68,'#6e4828');inRect(g,134,40,44,68,()=>tex(g,'wood',.55,134,40,44,68,'overlay',.5));
+    /* the frame and the leaf: quiet grain that runs with each piece; the stiles up and down, the rails across between them, the panels
+       sunk between rails and stiles. Nothing lies across a plank (CONTRIBUTING section 3). */
+    board(g,130,36,4,74,'#4a301c',rw,1);board(g,178,36,4,74,'#4a301c',rw,1);board(g,128,33,56,4,'#5a3c24',rw);
+    plank(g,134,40,44,68,'#6e4828',rw,1);
+    for(const[ry,rh]of[[40,3],[61,4],[83,4],[105,3]])plank(g,138,ry,36,rh,'#704a2a',rw,0);
     for(const[py,ph]of[[43,18],[65,18],[87,18]]){
       R(g,138,py,36,ph,'#5a3a20');R(g,138,py,36,.8,'#3a2212');R(g,138,py+ph-.8,36,.8,'#8a6038');
-      R(g,140,py+2,32,ph-4,'#78502e')}
+      plank(g,140,py+2,32,ph-4,'#78502e',rw,0);ao(g,140,py+2,32,2.4,'t',.3,'#1a100a')}
     ao(g,134,40,44,6,'t',.55);ao(g,134,40,4,68,'l',.45);
+    /* the shade in the deep reveal: under its lintel and down its sides */
+    ao(g,122,28,68,5,'t',.3,'#2a2030');ao(g,126,33,4,77,'r',.3,'#2a2030');ao(g,182,33,4,77,'l',.18,'#2a2030');
     /* heavy wooden bar-lock boss on the right stile (a solid square plate, no cross or tiny ring) */
     R(g,169,71,5,6,'#3a2414');R(g,170,72,3,4,'#b89246');R(g,170,72,3,1,'#e2c478');
     /* threshold steps and a water jar beside the door */
-    R(g,120,107,72,4,'#d2c4a6');R(g,120,107,72,.8,'#eee2c6');
-    R(g,116,110,80,4,'#bfb092');R(g,116,110,80,.8,'#dcd0b4');
-    vessel(g,106,112,5.5,15,'#9a5432','amph');
-    /* paved street */
-    pave(g,0,110,320,144,'#b8aa90',r,{vx:160,vy:72,rows:5,step:34,v:.1});ao(g,0,110,320,6,'t',.45);
-    /* evening light: warm low sun from the left, cool violet shadow from the right */
+    R(g,120,107,72,4,'#d2c4a6');R(g,120,107,72,.8,'#eee2c6');ao(g,120,107,72,1.6,'t',.3,'#2a2030');
+    R(g,116,110,80,4,'#bfb092');R(g,116,110,80,.8,'#dcd0b4');ao(g,116,113,80,1,'b',.25,'#2a2030');
+    softShadow(g,109,112,6.6,1.5,.44,'#1e1838');vessel(g,106,112,5.5,15,'#9a5432','amph',{noShadow:1});
+    /* paved street, and the shade along the foot of the house fronts, in two steps */
+    pave(g,0,110,320,144,'#b8aa90',r,{vx:160,vy:72,rows:5,step:34,v:.1,t:.3});ao(g,0,110,320,6,'t',.4,'#2a2030');ao(g,0,110,320,2.4,'t',.3,'#1a1420');
+    ao(g,0,104,120,6,'b',.2,'#2a2030');ao(g,196,104,124,6,'b',.2,'#2a2030');
+    /* evening light: the low sun from the left, on the left house, the face of the wall and the door; its last warmth along the cornice
+       and on the steps; cool violet shade from the right, and toward the near paving */
     lightmap(g,320,'#685e88',l=>{
       pool(l,40,48,180,110,'#ffae68',.85);pool(l,148,76,95,62,'#ffbe78',.6);
-      comp(l,'multiply',1,()=>{ao(l,220,0,100,144,'r',.45,'#1e1838');ao(l,0,124,320,20,'b',.35,'#1e1838')})})},
+      pool(l,120,7,150,5,'#ffc890',.4);pool(l,34,30,44,22,'#ffb878',.3);pool(l,156,111,56,5,'#ffc080',.35);pool(l,108,104,14,10,'#ffb070',.25);
+      comp(l,'multiply',1,()=>{ao(l,220,0,100,144,'r',.45,'#1e1838');ao(l,0,124,320,20,'b',.35,'#1e1838');ao(l,0,0,320,10,'t',.18,'#1e1838')})})},
   draw(){},front(){}};
 
 /* ---------- Pictures 4 & 7: The road near Damascus at midday ---------- */
-ART.pro_road={w:320,
+ART.pro_road={w:320,q:12,
   paint(g){const r=rng(544),SH='#8f95c4';
-    /* bright midday sky and heat haze to one horizon at y=84 */
-    sky(g,320,84,['#4c80c2','#7aa6da','#b2cee8','#e6e4d2']);
+    /* bright midday sky and heat haze to one horizon at y=84; its blue and the far range drawn a little toward grey (earth) */
+    sky(g,320,84,['#4c80c2','#7aa6da','#b2cee8','#e6e4d2'].map(c=>earth(c,.16)));
     cloud(g,74,16,48,7,r);cloud(g,188,12,62,8,r);
     /* Mount Hermon and the Anti-Lebanon range in the distance */
     const mt=x=>22+8*Math.sin(x/43+.4)+4*Math.sin(x/16+1.8)+2*Math.sin(x/7);
-    ridge(g,0,320,84,mt,['#8fa2c4','#aab8d0','#c8d0dc']);
+    ridge(g,0,320,84,mt,['#8fa2c4','#aab8d0','#c8d0dc'].map(c=>earth(c,.12)));
     for(let x=0;x<190;x+=.5){const h=mt(x);if(h>25)R(g,x,84-h,.5,Math.min(5,(h-25)*.8),'#f6f8fc')}
     ridge(g,0,320,84,x=>9+4*Math.sin(x/24+1)+2*Math.sin(x/9),['#a6b092','#bec4a4']);
     /* the oasis and the walled city of Damascus, small in the distance on the right, sitting on the horizon y=84 */
@@ -131,15 +173,22 @@ ART.pro_road={w:320,
     arch(g,268,78,6,6,'#5a4a3a');
     /* the sunlit plain below the horizon */
     g.fillStyle=lg(g,0,84,0,144,['#e2d4ae','#d4c296','#c2ac7e']);g.fillRect(0,84,320,60);
-    tex(g,'mott',.5,0,84,320,60,'overlay',1);tex(g,'grain',.12,0,84,320,60,'overlay',.5);
+    tex(g,'mott',.32,0,84,320,60,'overlay',1);tex(g,'grain',.12,0,84,320,60,'overlay',.5);
     /* the road to Damascus: wide in the foreground, narrowing to stop just short of the gate at y=85 */
     const L=[],Rt=[],cx=k=>26+245*k+14*Math.sin(k*3.1),cy=k=>132-47*k;
     for(let i=0;i<=32;i++){const k=i/32,hw=1.8+16*Math.pow(1-k,1.35);L.push(cx(k)-hw,cy(k));Rt.unshift(cx(k)+hw,cy(k)+1.5*(1-k))}
     poly(g,L.concat(Rt),'#eadbc2');
-    clipTo(g,()=>poly(g,L.concat(Rt)),()=>{tex(g,'mott',.45,0,84,320,60);ao(g,0,84,320,12,'t',.18,'#8a7652')});
+    clipTo(g,()=>poly(g,L.concat(Rt)),()=>{tex(g,'mott',.28,0,84,320,60);ao(g,0,84,320,12,'t',.18,'#8a7652')});
+    /* the softer edge where the road's dust meets the plain, on its far side */
+    stroke(g,L,'rgba(150,126,90,.2)',.6);
+    /* stones and bushes, each on its own soft shadow; the sun is high, so the shadows are short */
     for(const[bx,by,bw]of[[42,102,5],[118,96,4],[210,104,4.5],[278,128,8],[164,136,6.5],[34,138,7]]){
-      oval(g,bx,by+.5,bw*1.05,bw*.38,'rgba(50,40,70,.25)');oval(g,bx,by,bw,bw*.45,'#a89878');oval(g,bx-.6,by-.5,bw*.65,bw*.28,'#cabaa0')}
+      softShadow(g,bx+.5,by+.6,bw*1.02,bw*.32,.4,'#2e2440');oval(g,bx,by,bw,bw*.45,'#a89878');oval(g,bx-.6,by-.5,bw*.65,bw*.28,'#cabaa0')}
+    softShadow(g,87,99.5,7,1.4,.32,'#2e2440');softShadow(g,229,118,9,1.8,.32,'#2e2440');
     foliage(g,86,98,7,3,'#788a56',r,20);foliage(g,228,116,9,3.8,'#6e804e',r,26);
+    /* the light of midday: full on the far plain and the road, a little less toward the near ground */
+    dayLight(g,84,l=>{comp(l,'source-over',.7,()=>poly(l,L.concat(Rt),'#ffffff'));
+      comp(l,'multiply',1,()=>ao(l,0,118,320,26,'b',.26,'#4a4060'))});
     pool(g,160,0,280,120,'#fff8dc',.18,'screen')},
   draw(g){const st=G.pro||{},x=st.x||118,d=st.d||0;
     if(st.blind){
@@ -162,35 +211,50 @@ ART.pro_road={w:320,
   front(){}};
 
 /* ---------- Picture 8: A room in Damascus (the house of Judas on the street called Straight) ---------- */
-ART.pro_judas={w:320,
+ART.pro_judas={w:320,q:12,
   light:()=>({amb:'#7a7288',lamps:[[42,76,120,'#e8cfa0'],[232,48,95,'#d8c4a0']]}),
-  paint(g){const r=rng(548),W='#d4c09e',T='#68482c';
-    plaster(g,0,0,320,105,W,r,{patch:4,cracks:5,brick:'#a67850',t:.5});
-    R(g,0,0,320,9,'#2c1e14');tex(g,'wood',.6,0,0,320,9);
-    for(let i=0;i<9;i++){const a=12+i*40,x0=160+(a-160)*1.16,x1=160+(a+7-160)*1.16;poly(g,[a,9,a+7,9,x1,0,x0,0],T);poly(g,[a+5,9,a+7,9,x1,0,x1-2,0],tint(T,-.4))}
-    wood(g,0,8.5,320,3,'#5a3e26');ao(g,0,11.5,320,8,'t',.45);
+  paint(g){const r=rng(548),rb=rng(5481),rw=rng(5482),W='#d4c09e',T='#68482c';
+    plaster(g,0,0,320,105,W,r,{patch:4,cracks:0,brick:'#a67850',t:.36});skipCracks(r,5);
+    /* cracks cut by hand, high on the wall under the ceiling, where they run to no head */
+    for(const[x,y,n]of[[88,14,3],[150,13,4],[262,15,3],[304,15,2]])crack(g,x,y,n,rb);
+    /* the ceiling seen from below: boards with a quiet grain, the joists running toward us with the boards beside them in their shade,
+       the beam along the top of the wall, and the shade under it */
+    plank(g,0,0,320,9,'#2c1e14',rw,0);ao(g,0,0,320,6,'t',.45,'#0c0808');
+    for(let i=0;i<9;i++){const a=12+i*40,x0=160+(a-160)*1.16,x1=160+(a+7-160)*1.16;joistAO(g,a,x0,7,9,'#0c0808');poly(g,[a,9,a+7,9,x1,0,x0,0],T);
+      clipTo(g,()=>poly(g,[a,9,a+7,9,x1,0,x0,0]),()=>tex(g,'vert',.16,x0-2,0,x1-x0+4,9,'overlay',.5));
+      poly(g,[a+5,9,a+7,9,x1,0,x1-2,0],tint(T,-.4));stroke(g,[a+.25,9,x0+.25,0],tint(T,.22),.5)}
+    ao(g,0,6.5,320,2,'b',.28,'#0c0808');board(g,0,8.5,320,3,'#5a3e26',rw);ao(g,0,11.5,320,8,'t',.45,'#2a2030');
     poly(g,[0,0,7,9,7,105,0,113],'#9e8c70');poly(g,[320,0,313,9,313,105,320,113],'#948266');
-    pave(g,0,105,320,144,'#b09c7e',r,{vx:160,vy:70,rows:5,step:36,v:.09});ao(g,0,105,320,7,'t',.5);
+    /* the shade gathers in the corners where the side walls meet the back wall, and along the foot of the wall */
+    ao(g,0,0,7,113,'l',.22,'#2a2030');ao(g,313,0,7,113,'r',.26,'#2a2030');
+    ao(g,7,11.5,7,94,'l',.26,'#2a2030');ao(g,306,11.5,7,94,'r',.28,'#2a2030');ao(g,7,97,306,8,'b',.24,'#2a2030');
+    pave(g,0,105,320,144,'#b09c7e',r,{vx:160,vy:70,rows:5,step:36,v:.09,t:.3});ao(g,0,105,320,7,'t',.45,'#2a2030');ao(g,0,105,320,2.6,'t',.3,'#1a1420');
     /* open doorway on the left: sunlit courtyard wall of Judas's house closing the view */
     R(g,18,32,40,74,'#8e785c');R(g,22,36,32,70,'#e8d8b4');
-    plaster(g,22,36,32,54,'#eadbc0',r,{patch:0,cracks:2});R(g,22,90,32,16,'#cdbca0');
-    wood(g,16,29,44,3.5,'#5a3e26');ao(g,22,36,32,6,'t',.35);
-    /* high window on the right wall */
-    R(g,220,24,26,22,'#9e8a6c');R(g,223,27,20,16,'#dce6ee');
+    plaster(g,22,36,32,54,'#eadbc0',r,{patch:0,cracks:0,t:.36});skipCracks(r,2);R(g,22,90,32,16,'#cdbca0');
+    ao(g,22,88,32,3,'b',.18,'#5a4838');
+    board(g,16,29,44,3.5,'#5a3e26',rw);ao(g,22,36,32,6,'t',.35);ao(g,18,32,4,74,'r',.2,'#2a2030');ao(g,54,32,4,74,'l',.16,'#2a2030');
+    /* high window on the right wall: the deep reveal, its top in shade, and a sill of wood */
+    R(g,220,24,26,22,'#9e8a6c');R(g,223,27,20,16,'#dce6ee');ao(g,223,27,20,3,'t',.3,'#3a3450');
+    board(g,219,45.5,28,1.8,'#7a5a3a',rw);
     /* low table with untouched bread and a water jug (three days he neither ate nor drank) */
-    R(g,114,103,36,8,'rgba(20,12,8,.45)');wood(g,115,103,3,9,'#5a3c22',1);wood(g,146,103,3,9,'#5a3c22',1);
-    wood(g,111,99,44,4,'#8a6238');oval(g,124,98,5.5,2,'#c89c58');oval(g,123.5,97.5,4.5,1.5,'#e2ba78');
+    softShadow(g,133,111.4,22,2,.42,'#181220');R(g,114,103,36,8,'rgba(20,12,8,.3)');ao(g,114,103,36,4,'t',.3,'#0c0808');
+    board(g,115,103,3,9,'#5a3c22',rw,1);board(g,146,103,3,9,'#5a3c22',rw,1);
+    board(g,111,99,44,4,'#8a6238',rw);oval(g,124,98,5.5,2,'#c89c58');oval(g,123.5,97.5,4.5,1.5,'#e2ba78');
     vessel(g,139,99,2.8,7,'#9a5430','jug',{noShadow:1});
     /* the stool where Saul sits */
-    oval(g,200,121,10,2,'rgba(0,0,0,.38)');
+    softShadow(g,200,121,10,2,.45);
     stroke(g,[195,112,193.5,120],'#3e2a1a',1.6);stroke(g,[205,112,206.5,120],'#3e2a1a',1.6);
-    wood(g,192,109,16,3,'#7a5632');
-    /* daylight streaming through the open doorway and the high window */
+    board(g,192,109,16,3,'#7a5632',rw);
+    /* daylight streaming through the open doorway and the high window: the floor before the door and the table it reaches, the patch
+       where the window's fall lands, the stool in it; the ceiling, the corners and the near floor in the room's own shade. Every pool
+       near a head is wide or long and low, so that none reads as a ring round it. */
     lightmap(g,320,'#585068',l=>{
       pool(l,38,72,110,80,'#ffdfb0',.9);pool(l,64,116,95,28,'#ffe6be',.65);
       pool(l,232,36,75,60,'#e8f0ff',.65);pool(l,196,106,85,54,'#d8c8b0',.55);
+      pool(l,132,101,34,5,'#ffdcb0',.3);pool(l,194,125,26,4,'#e8eeff',.35);pool(l,38,108,28,6,'#fff0d0',.35);
       comp(l,'lighter',.32,()=>poly(l,[223,43,243,43,212,126,174,126],lg(l,0,43,0,126,['rgba(235,242,255,.55)','rgba(235,242,255,.1)'])));
-      comp(l,'multiply',1,()=>{ao(l,268,0,52,144,'r',.45,'#1a142c');ao(l,0,128,320,16,'b',.35,'#1a142c')})})},
+      comp(l,'multiply',1,()=>{ao(l,268,0,52,144,'r',.45,'#1a142c');ao(l,0,128,320,16,'b',.35,'#1a142c');ao(l,0,0,320,20,'t',.16,'#1a142c')})})},
   draw(g){const st=G.pro||{},ax=st.ax||38,hand=st.hand?2:0,bow=st.sight?0:1,bl=st.sight?0:1;
     man(g,ax,118,'ananias',1,st.afr||0,lightAt('pro_judas',ax,118),hand,8.5);
     man(g,200,121,'paul',-1,-1,lightAt('pro_judas',200,121),0,8,bow,bl)},
