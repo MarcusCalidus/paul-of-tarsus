@@ -27,6 +27,7 @@ card card
 cast cast cast-main
 cast-closeup cast cast-closeup
 cenchreae pcenf12
+cenchreae15 cen15
 code code
 colonnade sift11
 conclusion concl8
@@ -38,6 +39,7 @@ corinth-winter pstreetw12
 council council
 counting-board pboardb13
 damaris down11
+daybreak dawn15
 depth depth8
 derbe derbe
 descent descent
@@ -50,6 +52,7 @@ ephesus-evening pstreete13
 ephesus-road proad13
 ford wade
 fuller-door pfuller13
+gaius gaius15
 garlands bulls
 gates gates
 guard guard
@@ -79,6 +82,7 @@ lystra lame
 magistrates mags9
 map map3
 marketplace market9
+midnight midnight15
 names names
 nations sabbath2
 nightbench gift10
@@ -87,6 +91,7 @@ nighthouse night10
 nightmap nightmap10
 northmap hubmap5
 options de:menu
+other-road map15
 paphos paphos
 perga perga
 philippi philippi8
@@ -105,7 +110,9 @@ river river8
 road road
 romans romans cast-romans
 samothrace deck8
+sand-plan plan15
 saves saves
+scale store15
 scroll scroll
 scrolltable row10
 sealed-plea psealc14
@@ -142,6 +149,7 @@ travel hubmap4
 treasures treasures
 troas troas8
 twelve pstreetb13
+upper-room upper15
 verb-pointer verbpointer
 verbs defverb
 voyage voyage

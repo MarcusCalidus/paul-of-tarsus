@@ -223,8 +223,7 @@ function sailHeap(g,cut){const LIT='#f6f0de',C='#e0d9c2',MID='#b4ac96',SHD='#807
     tex(g,'mott',.3,404,98,60,22,'overlay',.5);ao(g,404,113,60,5,'b',.2,'#3a3450')})}
 /* The ship lies alongside the quay with her bow to the left. In harbor her mast stands bare between its two stays, and her yard is on
    deck abaft the mast with the sail furled on it: it begins at the mast and runs aft, so that mast and yard make a corner and not a
-   cross. She has no figurehead: those commonly showed a god. HULL: her side, from the quay up to the rail. */
-const HULL=[226,90,240,83,422,83,434,75,440,65,444,65,443,79,434,93,420,100,250,100,236,96];
+   cross. She has no figurehead: those commonly showed a god. */
 ART.troas={w:480,fp:1.25,q:12,
  variant:()=>F.vision?'m':'e',
  /* what stands or lies out on the quay, where a man can walk behind it: the jar that stands forward of the others, the two halves of the broken one
@@ -252,20 +251,35 @@ ART.troas={w:480,fp:1.25,q:12,
   ashlar(g,92,30,104,74,ST,r,{bw:13,bh:6.4,v:.09,t:.35});R(g,91,28.4,106,2,tint(ST,.16));poly(g,[196,28.4,201,32,201,104,196,104],'#9a94a8');
   for(const x of[102,150]){arch(g,x,58,38,46,tint(ST,-.3));arch(g,x+2,60,34,44,'#241a14');g.save();arch(g,x+2,60,34,44);g.clip();g.fillStyle=lg(g,0,60,0,104,['#1c1410','#4a3a2a']);g.fillRect(x+2,60,34,44);
     for(const[sx,sw,sh,c]of[[x+7,6,10,'#b8a880'],[x+19,6.6,12,'#c4b48c'],[x+30,5.6,9,'#a89870']])sack(g,sx,104,sw,sh,c);ao(g,x+2,60,34,12,'t',.6);g.restore()}
+  /* the ship: moored in the water behind the stone edge of the quay, her hull, painted and structural wales, mast and stays,
+     the furled sail on its lowered yard abaft the mast, and the steering oar at her quarter clipped at the quay edge */
+  inRect(g,190,0,290,100,()=>SHARED.ship.paint(g,{seed:831,dir:-1,view:'full',x0:228,x1:442,yBot:100,yWaist:83,
+    bowRise:8.5,bowSpan:38,bowPow:2.2,sternRise:17.5,sternSpan:44,sternPow:2.2,
+    palette:eve?'shaded':'lit',gradY0:64,gradY1:100,
+    mast:{x:331,y0:12,y1:83.5,w:3.4,sunRight:eve,stays:[[332.7,13,240,81],[332.7,13,436,71]],stayCol:'#6a5a48',stayW:.55},
+    sacks:[[264,3.2,'#b8a67c'],[276,4,'#c6b388'],[288,3.4,'#a8956c'],[302,3.8,'#c2af84']],
+    pitch:{f0:.54,color:'rgba(24,14,8,.44)'},
+    wale:{f0:.13,f1:.23,color:'#7e3828'},waleWear:{count:18,c1:'#8a643a',c2:'#a85842'},
+    lowerWale:{f0:.47,f1:.54,color:'#2e1c10',hi:'#a87e4c'},
+    beams:{f:.33,x0:250,x1:424,step:18,w:1.8,h:1.8,color:'#22140c',hi:'#c89a60'},
+    scuppers:[272,312,368],
+    sunGlow:eve?{comp:'screen',a:.32,x0:340,x1:444,stops:['rgba(255,212,144,0)','rgba(255,212,144,1)'],rx:340,ry:62,rw:106,rh:38}
+      :{comp:'screen',a:.22,x0:226,x1:320,stops:['rgba(255,236,190,1)','rgba(255,236,190,0)'],rx:226,ry:62,rw:96,rh:38},
+    turnShade:eve?{comp:'multiply',a:.34,x0:226,x1:330,stops:['rgba(84,74,126,1)','rgba(84,74,126,0)'],rx:226,ry:62,rw:106,rh:38}
+      :{comp:'multiply',a:.26,x0:350,x1:444,stops:['rgba(84,78,124,0)','rgba(84,78,124,1)'],rx:350,ry:62,rw:96,rh:38},
+    rail:{x0:230,x1:440,h:1.5,color:'#9e7442',hi:'#e6c082'},
+    stem:{thick:2.8,sweep:7,rimCol:'#e6c082',capCol:'#c89a60'},
+    stern:{thick:3,sweep:9,rimCol:'#f0cc90',capCol:'#d4a66a'},
+    furledYard:{x0:335,x1:414,yardX0:334.6,yardX1:420,bays:7,th0:4.6,th1:2.6,belly:.85},
+    rudders:[{loom:[426,76,429,76,439,98,435.5,98],blade:[435,96,439.5,96,442,101,437,101],hi:[428.6,76.4,438.6,98]}]}));
   /* the quay: its edge of great blocks, and the paving */
   ashlar(g,190,100,290,6,'#bdb298',r,{bw:16,bh:6,v:.08,t:.3});R(g,190,99.4,290,1.2,'#e6dcc2');
   pave(g,0,104,480,144,'#cdc2a6',r,{vx:240,vy:62,rows:5,step:36,v:.08,joint:'#958c76'});ao(g,0,104,200,5,'t',.3,'#4a4460');
-  /* the ship: her hull, the wale along it, her mast and stays, the furled sail on its yard, and the steering oar at her quarter */
-  stroke(g,[333,13,242,84],'#6a5a48',.5);stroke(g,[333,13,436,72],'#6a5a48',.5);
-  g.fillStyle=lg(g,331,0,335,0,['#6a4a2a','#a67c4a','#5a3c20']);g.fillRect(331,12,3.4,71);R(g,331,12,3.4,.8,'#c8a06a');
-  g.fillStyle=lg(g,0,75,0,82,['#efe6cc','#cfc4a4','#8a8068']);g.fillRect(336,76.4,80,5.6);for(let i=0;i<9;i++)R(g,341+i*8.6,76.4,1,5.6,'rgba(70,56,36,.5)');R(g,336,75.2,82,1.4,'#7a5632');R(g,336,75.2,82,.5,'#b89058');
-  poly(g,HULL);g.fillStyle=lg(g,0,64,0,100,['#8a5e36','#6a4426','#3a2412']);g.fill();
-  clipTo(g,()=>poly(g,HULL),()=>{for(let j=0;j<5;j++)stroke(g,[226,86.6+j*3.2,300,86.4+j*3.2,420,86.4+j*3,444,70+j*5],'rgba(24,14,8,.45)',.5);R(g,226,89.4,216,1.6,'#2e1c10');tex(g,'wood',.5,226,64,220,38,'overlay',.5);ao(g,226,94,220,7,'b',.4)});
-  stroke(g,[240,83,422,83,434,75,440,65.4],'#c89a5e',.8);
-  stroke(g,[428,78,440,104],'#5a3c20',1.6);poly(g,[437,99,442,98,446,110,441,111],'#6a4a2a');
-  /* her mooring lines to two squat posts of stone on the quay, and the gangplank */
-  for(const[px,sx,sy]of[[214,236,91],[456,436,84]]){stroke(g,[px+2,101,sx,sy],'#b8a880',.6);R(g,px,99,5,6.4,'#8e887a');R(g,px,99,5,.7,'#d2ccbc');R(g,px-.8,104.6,6.6,1.6,'#6e685c')}
-  poly(g,[296,106,308,106,326,84,318,84],'#8a6638');stroke(g,[296,106,318,84],'#c89a5e',.6);for(let i=1;i<6;i++){const k=i/6;stroke(g,[297+k*21.6,105.4-k*21.6,308+k*18,105.4-k*21.6],'rgba(40,26,12,.5)',.5)}
+  /* her mooring lines to two squat posts of stone on the quay, and the gangplank reaching over onto the paving */
+  for(const[px,sx,sy]of[[214,232,83],[456,438,76]]){
+    R(g,px,99,5,6.4,'#8e887a');R(g,px,99,5,.7,'#d2ccbc');R(g,px-.8,104.6,6.6,1.6,'#6e685c');
+    SHARED.ship.hawser(g,sx,sy,px+2.5,100.5,3)}
+  SHARED.ship.gangplank(g,{x0:318,y0:83.5,x1:296,y1:106,w0:8,w1:12,sunSide:eve?'r':'l'});
   /* cargo on the quay: jars of oil, bales of dyed wool out of Asia, and the jar that slipped from its sling */
   for(const[x,h]of[[158,15],[168,16],[178,14]])vessel(g,x,110,4.6,h,'#a8562e','amph');vessel(g,170,113,4.6,15,'#9a4c28','amph');
   dyed(g,204,112,26,7,'#7a2a4a');dyed(g,208,105,22,6.4,'#6a3a7a');dyed(g,232,112,24,7,'#a03a3a');

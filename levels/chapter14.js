@@ -1605,8 +1605,9 @@ async function kneading(){const t=now()+.05;for(let i=0;i<5;i++)noise({t:t+i*.42
   await say(PC(),'shutter_look');treasure()}
 async function atGate(){if(V()==='surge')return say(PC(),'harbor_gate_people_streaming_in');
   return run14(async()=>{await tell('w1b');
-    endScreen({title:'two_hours_in_the_theater_2',text:'city_shouted_for_two_hours_end',based:'based_on_acts_19_21_20_1',go:'click_to_return_to_the_title'});
-    await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})})}
+    endScreen({title:'two_hours_in_the_theater_2',text:'city_shouted_for_two_hours_end',based:'based_on_acts_19_21_20_1',
+      go:'click_to_continue_to_chapter_fifteen',code:['chapter_fifteen_code_code',codeOf(15,0)]});
+    await wait(1500);ov.onclick=()=>{ov.onclick=null;startChapter(15)};await new Promise(()=>{})})}
 
 /* ============ ROOMS ============ */
 const NOW=[160,160,236,236];   /* a close view: whoever is played stands below the picture, and takes no step */

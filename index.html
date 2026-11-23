@@ -122,10 +122,11 @@ body{display:flex;align-items:center;justify-content:center}
    the upper part of the picture has not moved. A menu or the code box opened over the title covers all of it. */
 #wrap.title #view{height:calc(var(--s)*210px)}
 #wrap.title #status,#wrap.title #panel{display:none}
-/* with that height the title holds its prologue, thirteen chapters and the line of the planned ones without scrolling; the list still scrolls
-   when there are more lines than room, as it does when the planned chapters are opened */
+/* with that height the title holds its prologue, fifteen chapters and the line of the planned ones without scrolling (the lines stand
+   half a pixel closer than they did for fourteen); the list still scrolls when there are more lines than room, as it does when the
+   planned chapters are opened */
 #overlay.title{padding-top:calc(var(--s)*5px);padding-bottom:calc(var(--s)*5px)}
-#overlay.title .chs p{margin:calc(var(--s)*1.2px) auto;font-size:calc(var(--s)*5.6px);line-height:1.24}
+#overlay.title .chs p{margin:calc(var(--s)*.7px) auto;font-size:calc(var(--s)*5.6px);line-height:1.24}
 /* splash: the opening picture (shared/splash.js). The title is laid out as it always is, so that its name does not move when the chapters
    appear, but only the name and the line under it are seen; the rest comes in when the splash is left. begin: the one line that asks for a click,
    seen until the overture starts. */
@@ -1848,26 +1849,27 @@ function tween(ms,fn){return new Promise(res=>{const t0=performance.now();(funct
 /* The manifest holds only what is needed before a level is loaded: its name, its file, and the salt that validates its codes. */
 const CHAP={
   1:{name:'escape_from_damascus',label:'chapter_one',title:'escape_from_damascus_2',salt:0x5A17,src:'levels/chapter1.js',treasure:{name:'mule_in_a_sheepfold',at:'9SK-FPZ'}},
-  2:{name:'friend_in_jerusalem',label:'chapter_two',title:'a_friend_in_jerusalem',salt:0x2B6D,src:'levels/chapter2.js',treasure:{name:'not_another_basket',at:'2-B5Q-PSJ'}},
+  2:{name:'friend_in_jerusalem',label:'chapter_two',title:'a_friend_in_jerusalem',salt:0x2B6D,src:'levels/chapter2.js',needs:['ship'],treasure:{name:'not_another_basket',at:'2-B5Q-PSJ'}},
   3:{name:'called_to_antioch',label:'chapter_three',title:'called_to_antioch_2',salt:0x3C91,src:'levels/chapter3.js',treasure:{name:'barnabas_at_the_bench',at:'3-MKP-96F-266'}},
-  4:{name:'sent_out_to_cyprus',label:'chapter_four',title:'sent_out_to_cyprus_2',salt:0x4D2F,src:'levels/chapter4.js',treasure:{name:'roof_cut_wide',at:'4-CBS-2XW-MAT'}},
+  4:{name:'sent_out_to_cyprus',label:'chapter_four',title:'sent_out_to_cyprus_2',salt:0x4D2F,src:'levels/chapter4.js',needs:['ship'],treasure:{name:'roof_cut_wide',at:'4-CBS-2XW-MAT'}},
   5:{name:'light_of_nations',label:'chapter_five',title:'a_light_of_nations',salt:0x5E73,src:'levels/chapter5.js',treasure:{name:'echo_in_the_gorge',at:'5-TG6-X5J-5RG'}},
   6:{name:'door_to_faith',label:'chapter_six',title:'the_door_to_faith',salt:0x6F19,src:'levels/chapter6.js',treasure:{name:'four_good_corners',at:'6-JSK-B2Y-Q58'}},
   7:{name:'timothy_of_lystra',label:'chapter_seven',title:'timothy_of_lystra_2',salt:0x7B43,src:'levels/chapter7.js',treasure:{name:'marks_by_the_door',at:'7-7P9-F36-V9Z'}},
-  8:{name:'man_from_macedonia',label:'chapter_eight',title:'the_man_from_macedonia',salt:0x8C57,src:'levels/chapter8.js',treasure:{name:'lukes_notes',at:'8-RRB-QCB-1EC'}},
+  8:{name:'man_from_macedonia',label:'chapter_eight',title:'the_man_from_macedonia',salt:0x8C57,src:'levels/chapter8.js',needs:['ship'],treasure:{name:'lukes_notes',at:'8-RRB-QCB-1EC'}},
   9:{name:'midnight_in_philippi',label:'chapter_nine',title:'midnight_in_philippi_2',salt:0x9D61,src:'levels/chapter9.js',treasure:{name:'cricket_in_the_wall',at:'9-P6X-82V-AE3'}},
-  10:{name:'is_it_so',label:'chapter_ten',title:'is_it_so_q',salt:0xA37B,src:'levels/chapter10.js',treasure:{name:'wound_too_far',at:'10-E04-FJ9-Y7P'}},
+  10:{name:'is_it_so',label:'chapter_ten',title:'is_it_so_q',salt:0xA37B,src:'levels/chapter10.js',needs:['ship'],treasure:{name:'wound_too_far',at:'10-E04-FJ9-Y7P'}},
   11:{name:'unknown_god',label:'chapter_eleven',title:'the_unknown_god',salt:0xB48D,src:'levels/chapter11.js',treasure:{name:'back_at_the_fountain',at:'11-8VM-7EW-T68'}},
-  12:{name:'tentmakers_of_corinth',label:'chapter_twelve',title:'tentmakers_of_corinth_2',salt:0xC59F,src:'levels/chapter12.js',needs:['weather'],treasure:{name:'cloth_of_his_own_country',at:'12-AXS-T1E-4S6-EEE-J5F'}},
+  12:{name:'tentmakers_of_corinth',label:'chapter_twelve',title:'tentmakers_of_corinth_2',salt:0xC59F,src:'levels/chapter12.js',needs:['weather','ship'],treasure:{name:'cloth_of_his_own_country',at:'12-AXS-T1E-4S6-EEE-J5F'}},
   13:{name:'hall_of_tyrannus',label:'chapter_thirteen',title:'the_hall_of_tyrannus',salt:0xD6B3,src:'levels/chapter13.js',treasure:{name:'pupils_tablet',at:'13-KQC-4NT-ZTX-2SR-Z2V'}},
-  14:{name:'two_hours_in_the_theater',label:'chapter_fourteen',title:'two_hours_in_the_theater_2',salt:0xE7C5,src:'levels/chapter14.js',needs:['lanes'],treasure:{name:'kneading_behind_a_shutter',at:'14-JAT-FJH-QJ3-2K1-QBZ'}}};
+  14:{name:'two_hours_in_the_theater',label:'chapter_fourteen',title:'two_hours_in_the_theater_2',salt:0xE7C5,src:'levels/chapter14.js',needs:['lanes'],treasure:{name:'kneading_behind_a_shutter',at:'14-JAT-FJH-QJ3-2K1-QBZ'}},
+  15:{name:'until_daybreak',label:'chapter_fifteen',title:'until_daybreak_2',salt:0xF8D7,src:'levels/chapter15.js',needs:['ship'],treasure:{name:'tertius_own_line',at:'15-3K9-1WB-KBX-H5R'}}};
 const TITLE={level:1,scene:'title',mood:'ancient',amb:{crickets:.5,wind:.35,owl:.4}};
 const PRO={name:'road_to_damascus',label:'Prologue',title:'the_road_to_damascus',src:'levels/prologue.js'};
 /* PLANNED: the chapters that are planned and not built (issue #47). The title lists them, dimmed, under one line that opens them in place.
    Each is named by the part of Acts it will tell, not by a working title, which may still change; the title it is given replaces that
    reference when the chapter is built and moves into CHAP. Nothing else reads this list: these chapters have no file, no salt and no codes. */
 const PLANNED=[
-  {label:'chapter_fifteen',short:'Fifteen',ref:'acts_20_1_12'},{label:'chapter_sixteen',short:'Sixteen',ref:'acts_20_13_38'},
+  {label:'chapter_sixteen',short:'Sixteen',ref:'acts_20_13_38'},
   {label:'chapter_seventeen',short:'Seventeen',ref:'acts_21_1_16'},{label:'chapter_eighteen',short:'Eighteen',ref:'acts_21_17_22_29'},
   {label:'chapter_nineteen',short:'Nineteen',ref:'acts_22_30_23_35'},{label:'chapter_twenty',short:'Twenty',ref:'acts_24_1_27'},
   {label:'chapter_twenty_one',short:'twenty_one',ref:'acts_25_1_26_32'},{label:'chapter_twenty_two',short:'twenty_two',ref:'acts_27_1_26'},

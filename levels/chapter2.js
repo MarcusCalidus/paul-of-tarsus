@@ -137,28 +137,38 @@ ART.upper={w:320,
  fore(g){vessel(g,9,152,12,34,'#5a2e1c','pithos',{noShadow:1});g.fillStyle=lg(g,0,128,0,144,['#6a3024','#3a1a14']);g.beginPath();g.ellipse(308,142,20,10,0,0,6.2832);g.fill();stroke(g,[292,138,320,136],'#a8603c',.6)},
  draw(g,t){flame(g,189.6,90,t);pool(g,189,88,9+Math.sin(t/190),7,'#ffb050',.14)},front(){}};
 /* ---------- Caesarea: the harbor, late in the day ---------- */
-function shipArt(g,X,t,st,sh){const y=Math.round(Math.sin(t/900)*2)/2,H=(a,b,w,h,c)=>R(g,X+a,b+y,w,h,c),PL=(p,c)=>poly(g,p.map((v,i)=>i%2?v+y:v+X),c),SK=(p,c,w)=>stroke(g,p.map((v,i)=>i%2?v+y:v+X),c,w);
-  /* the mast stops at the yard, and the yard hangs a little askew */
-  SK([350.5,18,254,76],'#4a3a2a',.6);SK([350.5,18,444,70],'#4a3a2a',.6);H(349,18,3.2,62,'#5a3c22');H(349,18,1,62,'#9a7040');
-  if(st===1){PL([306,73.4,396,71.4,396,73.8,306,75.8],'#5a3c22')}
-  else{PL([305,20.6,397,17,397,19.4,305,23],'#5a3c22');SK([305,20.8,397,17.2],'#9a7040',.5)}
-  if(st===0){const f=Math.sin(t/420)*.8;
-    PL([309,23,371,20.6,372,30,368,36+f,371,44,366,50+f,369,58,364,60,311,61],'#dccfb0');PL([378,20.4,394,19.6,393,58,381,57,383,48+f,379,40,382,30],'#d2c5a6');
-    for(let i=0;i<5;i++)SK([315+i*11,22.8-i*.4,316+i*11,61],'#b8ad90',.5);SK([386,20,387,58],'#b8ad90',.5);
-    g.fillStyle=lg(g,X+309,0,X+372,0,['rgba(120,90,60,.3)','rgba(255,240,210,.05)','rgba(120,90,60,.22)']);g.fillRect(X+309,20+y,63,42)}
-  else if(st===2){const sp=[309,22];for(let j=0;j<=10;j++)sp.push(307-Math.sin(j/10*3.1416)*5,22+j*4);for(let i=0;i<=10;i++)sp.push(307+i*8.6,62+Math.sin(i/10*3.1416)*3);for(let j=10;j>=0;j--)sp.push(394+Math.sin(j/10*3.1416)*5,19+j*4.3);
-    PL(sp,'#e6dabc');for(let i=1;i<8;i++)SK([309+i*10.6,22-i*.4,307+i*11,63],'#c2b698',.5);
-    g.fillStyle=lg(g,X+302,0,X+400,0,['rgba(120,90,60,.35)','rgba(255,244,214,.12)','rgba(120,90,60,.28)']);g.beginPath();const q=sp.map((v,i)=>i%2?v+y:v+X);g.moveTo(q[0],q[1]);for(let i=2;i<q.length;i+=2)g.lineTo(q[i],q[i+1]);g.fill();
-    H(346,36,14,10,'#cfc2a2');for(let i=0;i<14;i+=2.5){H(346+i,36,1,.6,'#5a4a36');H(346+i,45.4,1,.6,'#5a4a36')}for(let j=0;j<10;j+=2.5){H(346,36+j,.6,1,'#5a4a36');H(359.4,36+j,.6,1,'#5a4a36')}}
-  if(sh.paul)man(g,X+300,92+y,'paul',-1,0,'#f0d8c0',Math.floor(t/600)%2,0);
-  if(sh.capt)man(g,X+410,92+y,'captain',-1,0,'#f0d8c0',0,0);
-  /* hull */
-  const hull=[238,62,245,62,251,77,439,77,447,60,454,57,453,68,446,95,436,101,258,101,246,95,240,80];
-  g.fillStyle=lg(g,0,60+y,0,101+y,['#8a5c34','#6e4628','#3e2616']);g.beginPath();hull.forEach((v,i)=>{if(i%2)return;i?g.lineTo(X+v,hull[i+1]+y):g.moveTo(X+v,hull[i+1]+y)});g.closePath();g.fill();
-  SK([240,64,247,78.6,441,78.6,449,61],'#3a2414',1.4);SK([243,82,444,82],'#c9a14a',1.8);SK([243,83.4,444,83.4],'#8a6a24',.6);
-  for(let j=0;j<4;j++)SK([245+j,87+j*3.6,445-j*1.6,87+j*3.6],'#3a2414',.5);for(let i=0;i<12;i++)H(262+i*15,84.5,.6,14,'rgba(30,16,8,.35)');
-  SK([239.5,62,246,62],'#b88a52',.8);SK([447.6,60,454,57.4],'#b88a52',.8);PL([246,70,240,96,243,97,249,71],'#5a3c22');PL([240,95,238,103,243,104,244,96],'#6e4628');
-  if(!X){PL([266,83,274,83,292,104.5,282,104.5],'#8a6238');for(let i=0;i<6;i++)SK([268+i*3,86.6+i*3.6,277+i*3,86.6+i*3.6],'#5a3e22',.6);SK([266,83,282,104.5],'#b88a52',.5)}
+const SHIP2_OPTS={seed:209,dir:-1,view:'full',x0:4,x1:212,yBot:101,yWaist:77,bowRise:15,bowSpan:48,bowPow:2.2,sternRise:19,sternSpan:46,sternPow:2.2,
+  palette:'shaded',gradY0:58,gradY1:101,
+  pitch:{f0:.535,color:'rgba(24,14,8,.42)'},
+  wale:{f0:.12,f1:.21,color:'#b88a3e'},waleWear:{count:18,c1:'#7a5632',c2:'#dab062'},
+  lowerWale:{f0:.47,f1:.535,color:'#322014',hi:'#9a7040'},
+  beams:{f:.32,x0:26,x1:192,step:18,w:1.8,h:1.8,color:'#22140c',hi:'#d4a66a'},
+  scuppers:[48,96,144],
+  sunGlow:{comp:'screen',a:.28,x0:2,x1:64,stops:['rgba(255,214,148,1)','rgba(255,214,148,0)'],rx:0,ry:54,rw:68,rh:50},
+  turnShade:{comp:'multiply',a:.32,x0:80,x1:210,stops:['rgba(110,104,156,0)','rgba(110,104,156,1)'],rx:76,ry:54,rw:142,rh:50},
+  rail:{x0:5,x1:211,h:1.6,color:'#9e7442',hi:'#f0cc90'},
+  stem:{thick:3,sweep:10,rimCol:'#f4d8a4',capCol:'#d8ac70'},
+  stern:{thick:3,sweep:11,rimCol:'#d8b078',capCol:'#c89a60'},
+  rudders:[{loom:[196,68,199,68,208,96,205,96],blade:[204,94,209,94,213,104,207,104],hi:[196.4,68.4,205.4,96]}]};
+function bollard2(g,x){g.fillStyle=lg(g,x-1,0,x+7,0,['#8a7a66','#5a4c40','#3a302c']);g.fillRect(x,96,6,8);R(g,x-1,94.6,8,2,'#6a5a4a');R(g,x-1,94.6,8,.6,'#e8c898')}
+function shipArt(g,X,t,st,sh){const y=Math.round(Math.sin(t/900)*2)/2,
+    mast={x:111,y0:18,y1:78,w:3.2,stays:[[112.5,18,16,76],[112.5,18,206,70]],
+      sail:st===1?'lowered':st===2?'full':'torn',flap:Math.sin(t/420)*.8,
+      yardX0:st===1?114.4:67,yardX1:st===1?196:159,yardY0:st===1?73.4:20.6,yardY1:st===1?71.6:17,
+      patch:st===2?{x:108,y:36,w:14,h:10,c:'#cfc2a2'}:null};
+  /* The hull and steering oar sit in the water behind the stone edge of the quay (y=100) and behind the bollards */
+  inRect(g,0,0,480,100,()=>{
+    g.save();g.translate(X+238,y);
+    SHARED.ship.paint(g,{...SHIP2_OPTS,layer:'pre',mast,
+      sacks:[[42,3.4,'#b09c72'],[54,4,'#c4b084'],[66,3.2,'#a69268'],[158,3.6,'#b8a47a'],[170,4.2,'#c6b286']]});
+    g.restore();
+    if(sh.paul)man(g,X+300,92+y,'paul',-1,0,'#f0d8c0',Math.floor(t/600)%2,0);
+    if(sh.capt)man(g,X+410,92+y,'captain',-1,0,'#f0d8c0',0,0);
+    const hc=SHARED.ship.cached('ch2-hull',226,108,cg=>SHARED.ship.paint(cg,{...SHIP2_OPTS,layer:'hull'}));
+    g.drawImage(hc,hp(X+238),hp(y),226,108);
+  });
+  for(const x of[236,300,420])bollard2(g,x);
+  if(!X)SHARED.ship.gangplank(g,{x0:266,y0:82+y,x1:282,y1:104.5,w0:8,w1:10});
   else for(let i=0;i<7;i++)R(g,X+236-i*9-(t/60%9),98.5+(i%2),6-i*.5,.6,'#e6f2f4')}
 ART.harbor={w:480,fp:1.3,
  light:()=>({amb:'#f4dcc4'}),
