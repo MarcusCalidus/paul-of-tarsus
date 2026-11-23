@@ -3,6 +3,8 @@
    its music and ambience, its artwork (painted in code), its cast, items, rooms, hotspots, dialog, cutscenes and hints. */
 LEVEL(2,()=>{
 "use strict";
+/* materials and light shared by the backdrops of every chapter (shared/materials.js, the standard of Chapter Fifteen's room of Gaius) */
+const{plank:plank2,board:board2,crack:crack2,skipCracks:skipCracks2,shadow:shadow2,earth:earth2,joistAO:joistAO2}=SHARED.materials;
 
 /* ============ MUSIC AND AMBIENCE (plain data, played by the engine's sequencer) ============ */
 /* Jerusalem by day, in A Dorian: a lyre, a soft drum with a finger cymbal, and a ney that comes and goes (mood "calm").
@@ -21,22 +23,27 @@ const _=null,
     [[0,6,6],[6,8,2],[8,10,4],[12,13,4]],[[0,11,4],[4,9,4],[8,8,4],[12,6,4]],[[0,7,4],[4,8,4],[8,10,4],[12,12,4]],[[0,13,14]]]}]};
 
 /* ============ ART ============ */
+/* planks2: upright planks side by side (a cart's side, a crate), each a board of its own with the quiet grain of plank2, its lit and its
+   shaded edge; no batten is laid across them */
+function planks2(g,x,y,w,h,pw,c,r){for(let i=0;i<w-.01;i+=pw){const ww=Math.min(pw,w-i),cc=tint(c,(r()-.5)*.16);plank2(g,x+i,y,ww,h,cc,r,1);
+  R(g,x+i,y,.5,h,tint(cc,.16));R(g,x+i+ww-.5,y,.5,h,tint(cc,-.36))}}
 /* A cart wheel with eight spokes. */
 function wheelArt(g,x,y,rr){rr=rr||7;g.lineWidth=2;g.strokeStyle='#4a3320';g.beginPath();g.arc(x+.5,y+.5,rr,0,6.2832);g.stroke();g.lineWidth=1;g.strokeStyle='#8a6638';g.beginPath();g.arc(x+.5,y+.5,rr-.3,3.3,5.6);g.stroke();
   for(let a=0;a<8;a++){const q=a*.7854+.2;stroke(g,[x+.5,y+.5,x+.5+Math.cos(q)*(rr-.8),y+.5+Math.sin(q)*(rr-.8)],a%2?'#6a4a2a':'#7a5632',1)}oval(g,x+.5,y+.5,2,2,'#3a2414');oval(g,x+.2,y+.2,.9,.9,'#8a6638')}
-function cartArt(g){oval(g,178,106,34,2.6,'rgba(40,30,70,.3)');
-  wood(g,198,89.5,19,2.2,'#7a5632');R(g,215,88.5,2.5,4.2,'#5a3e22');
-  if(!F.wheelOn){ashlar(g,151,97,14,9.5,'#b0a58c',rng(9),{bw:7,bh:4.8});R(g,151,97,14,.6,'#d8ceb4');R(g,156,94.8,3,2.4,'#3a2414')}
-  wood(g,153,94.5,44,2.2,'#4e3520');
+function cartArt(g){const rw=rng(19);shadow2(g,178,106,30,2.3,.34,'#28204a');
+  board2(g,198,89.5,19,2.2,'#7a5632',rw);R(g,215,88.5,2.5,4.2,'#5a3e22');
+  if(!F.wheelOn){shadow2(g,158,106.2,8,1.2,.3,'#28204a');ashlar(g,151,97,14,9.5,'#b0a58c',rng(9),{bw:7,bh:4.8,t:.3});R(g,151,97,14,.6,'#d8ceb4');R(g,156,94.8,3,2.4,'#3a2414')}
+  board2(g,153,94.5,44,2.2,'#4e3520',rw);
   /* load: sacks of grain and a jar of oil */
   sack(g,162,84.5,7.5,11,'#cdbb8c');sack(g,177,84.5,8.5,13,'#d8c698');sack(g,169.5,79,6,8,'#c4b282');vessel(g,190,84.5,4.2,11,'#a8562e','jar',{noShadow:1});
-  boards(g,150,84,50,10,5,'#9a6e40',rng(8));R(g,150,84,50,1.2,'#b88a52');R(g,150,92.6,50,1.6,'#5a3e22');R(g,150,84,1.5,10,'#6a4a2c');R(g,198.5,84,1.5,10,'#6a4a2c');
+  planks2(g,150,84,50,10,5,'#9a6e40',rng(8));R(g,150,84,50,1.2,'#b88a52');R(g,150,92.6,50,1.6,'#5a3e22');R(g,150,84,1.5,10,'#6a4a2c');R(g,198.5,84,1.5,10,'#6a4a2c');
   wheelArt(g,190,98);if(F.wheelOn)wheelArt(g,160,98);
   if(F.cartFixed){R(g,159.6,95.6,1.8,5,'#e6cfa0');R(g,159.6,95.6,.6,5,'#fff0c8')}}
 /* ---------- Jerusalem: a street by day, the temple above the roofs ---------- */
-ART.jerusalem={w:480,fp:1.3,
- paint(g){const r=rng(71),ST='#ecdcb4',SH='#8f95c8';
-  sky(g,480,80,['#3f7cc8','#6aa2de','#9cc4ea','#d2e2ee']);cloud(g,96,16,60,10,r);cloud(g,346,22,76,11,r);cloud(g,236,9,36,6,r);
+ART.jerusalem={w:480,fp:1.3,q:12,
+ paint(g){const r=rng(71),ST='#ecdcb4',SH=earth2('#8f95c8',.16),rw=rng(77);
+  /* the sky's blue is drawn a little toward grey (earth2), so that it sits with the limestone and plaster of the street */
+  sky(g,480,80,['#3f7cc8','#6aa2de','#9cc4ea','#d2e2ee'].map(c=>earth2(c,.14)));cloud(g,96,16,60,10,r);cloud(g,346,22,76,11,r);cloud(g,236,9,36,6,r);
   /* the Mount of Olives, hazy in the east */
   ridge(g,0,480,78,x=>18+6*Math.sin(x/70+1)+3*Math.sin(x/19),['#a8b89a','#bcc8a8']);for(let i=0;i<90;i++){const tx=r()*480,ty=66+r()*10;oval(g,tx,ty,1.2+r(),.7,'#8ea27e')}
   /* the temple on its mount */
@@ -57,20 +64,26 @@ ART.jerusalem={w:480,fp:1.3,
   g.fillStyle=lg(g,0,60,0,104,['#30283a','#5a5068']);arch(g,15,50,28,54);g.fill();R(g,15,96,28,8,'#8a8296');poly(g,[13,48,19,54,19,104,13,104],'#4a4254');
   for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,29+Math.cos(a)*18-1,46+18+Math.sin(a)*18-1,.6,3,'#a89870')}
   /* house of the widows' neighbors, where the cart has stopped */
-  house(g,118,42,134,62,'#eadbb4',r,{side:7,patch:4});windowArt(g,140,52,10,12,'#eadbb4',{bars:2});windowArt(g,222,52,10,12,'#eadbb4',{bars:2});
+  house(g,118,42,134,62,'#eadbb4',r,{side:7,patch:4,cracks:0,t:.36});skipCracks2(r,4);windowArt(g,140,52,10,12,'#eadbb4',{bars:2});windowArt(g,222,52,10,12,'#eadbb4',{bars:2});
   for(let i=0;i<34;i++){const vx=119+r()*9,vy=60+r()*42;oval(g,vx,vy,1.6,1.1,r()<.5?'#5a7a44':'#74985a')}stroke(g,[121,104,123,80,121,62],'#5a4630',.6);
   /* the house where the disciples meet */
-  house(g,268,28,152,76,'#f0e2bc',r,{side:8,patch:5,cracks:6});
-  R(g,309,47,46,57,'#d8c8a0');R(g,309,47,46,2.5,'#f8eed2');doorArt(g,314,52,36,52,'#8a6a40',r,{pw:6});R(g,325.5,65.5,13,9,'#3a2a1a');R(g,326.5,66.5,11,7,'#1c140e');for(let i=0;i<4;i++)R(g,328+i*2.6,66.5,.7,7,'#6a4e2c');
+  house(g,268,28,152,76,'#f0e2bc',r,{side:8,patch:5,cracks:0,t:.36});skipCracks2(r,6);
+  /* the door: no iron band is laid across its planks (CONTRIBUTING section 3) */
+  R(g,309,47,46,57,'#d8c8a0');R(g,309,47,46,2.5,'#f8eed2');doorArt(g,314,52,36,52,'#8a6a40',r,{pw:6,bands:[]});R(g,325.5,65.5,13,9,'#3a2a1a');R(g,326.5,66.5,11,7,'#1c140e');for(let i=0;i<4;i++)R(g,328+i*2.6,66.5,.7,7,'#6a4e2c');
   R(g,308,102,48,2.5,'#cfc198');R(g,308,102,48,.5,'#f4ead0');
-  windowArt(g,371,37,24,18,'#f0e2bc',{lattice:1,wood:'#8a6a40'});windowArt(g,286,40,14,16,'#f0e2bc',{shut:1});
-  oval(g,296,104.5,13,1.6,'rgba(50,40,90,.3)');R(g,285.5,97,3,7,'#b8aa88');R(g,302,97,3,7,'#b8aa88');R(g,283.5,94,23,3.2,'#e0d4b2');R(g,283.5,94,23,.6,'#fbf4dc');R(g,283.5,96.8,23,.6,'#8a7e62');
+  /* the upper window is screened with close upright slats: a lattice of crossing laths would read as rows of small crosses */
+  windowArt(g,371,37,24,18,'#f0e2bc',{bars:7,wood:'#8a6a40'});windowArt(g,286,40,14,16,'#f0e2bc',{shut:1});
+  /* cracks cut by hand, high under the parapets, where they run to no head; rb: a seed of their own, so the rest of the street keeps its shape */
+  {const rb=rng(711);for(const[x,y,n]of[[198,49,3],[243,50,3],[277,35,3],[406,35,4],[462,54,2]])crack2(g,x,y,n,rb)}
+  /* a stone bench by the door, with its soft shadow on the paving */
+  shadow2(g,295,104.4,13,1.5,.34,'#322a5a');R(g,285.5,97,3,7,'#b8aa88');R(g,302,97,3,7,'#b8aa88');R(g,285.5,97,3,1.2,'rgba(60,50,90,.3)');R(g,302,97,3,1.2,'rgba(60,50,90,.3)');
+  R(g,283.5,94,23,3.2,'#e0d4b2');inRect(g,283.5,94,23,3.2,()=>tex(g,'mott',.2,283.5,94,23,3.2));R(g,283.5,94,23,.6,'#fbf4dc');R(g,283.5,96.8,23,.6,'#8a7e62');
   vessel(g,360,104,4.5,11,'#a8562e','jar');
-  house(g,432,46,48,58,'#e2d4ac',r,{patch:2});windowArt(g,446,58,10,12,'#e2d4ac',{bars:2});
+  house(g,432,46,48,58,'#e2d4ac',r,{patch:2,cracks:0,t:.36});skipCracks2(r,4);windowArt(g,446,58,10,12,'#e2d4ac',{bars:2});
   /* the lane between the houses lies in shade */
   shade(g,[252,45,268,36,268,104,252,104],SH,.9);shade(g,[420,50,432,46,432,104,420,104],SH,.9);
   /* paving */
-  pave(g,0,103,480,144,'#e0d2ac',r,{vx:240,vy:62,rows:5,step:34,v:.08});ao(g,0,103,480,5,'t',.3,'#5a4a70');
+  pave(g,0,103,480,144,'#e0d2ac',r,{vx:240,vy:62,rows:5,step:34,v:.08,t:.3});ao(g,0,103,480,5,'t',.28,'#5a4a70');ao(g,0,103,480,2,'t',.22,'#3a3058');
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(255,240,200,0)','rgba(255,240,200,.9)']);g.fillRect(0,103,480,41)});
   /* shadows fall to the right of whatever stands in the sun */
   shade(g,[58,104,64,104,96,112,84,114,58,110],SH,.75);shade(g,[252,104,268,104,290,110,262,110],SH,.8);shade(g,[420,104,432,104,452,109,430,109],SH,.8);
@@ -80,59 +93,79 @@ ART.jerusalem={w:480,fp:1.3,
   for(const p of[[84,105,83,92,86,80,84,70],[88,105,90,90,88,78],[86,84,78,74,74,66],[87,80,96,70,100,60],[86,76,88,64]])stroke(g,p,'#4e3c28',p.length>6?3:1.8);
   stroke(g,[84.5,104,83.5,92,86,80],'#7a6444',.7);
   foliage(g,76,62,13,8,'#6f8a5c',r,70);foliage(g,98,55,14,9,'#7a9666',r,80);foliage(g,88,48,12,7,'#86a272',r,60);foliage(g,86,60,10,6,'#62804f',r,40);
+  /* light: the sun stands high on the left. The house fronts and the middle of the street take it full, a little more of it lies on the
+     disciples' door and on the wall behind the cart; the foot of every wall gathers a soft dark, and the near paving falls off toward us */
+  lightmap(g,480,'#e6e0e2',l=>{pool(l,200,66,300,110,'#fffaf2',.75);pool(l,332,74,80,40,'#fff6e6',.3);pool(l,186,78,80,36,'#fff4e2',.25);
+    comp(l,'multiply',1,()=>{ao(l,0,90,480,14,'b',.14,'#5a5078');ao(l,0,124,480,20,'b',.16,'#5a5078');ao(l,0,0,480,10,'t',.1,'#5a5078')})});
   /* sunlight over everything, and a little dust in the air */
   pool(g,60,0,300,160,'#fff0c0',.16,'screen');ao(g,0,0,480,144,'r',.12,'#2a2050')},
  fore(g){const r=rng(72);
   /* baskets of figs and a water jar at the gate; an awning corner and crates on the market side */
   vessel(g,12,150,11,32,'#7a3e22','amph',{noShadow:1});for(const[bx,bw,bh]of[[38,15,12],[62,11,9]]){vessel(g,bx,147,bw,bh,'#8a6a34','bowl',{noShadow:1});
-    for(let i=0;i<14;i++)oval(g,bx-bw+2+r()*(bw*2-4),147-bh-r()*2.5,1.6,1.3,r()<.5?'#5a2a4a':'#7a3e60')}
-  awning(g,470,-2,56,22,'#a8443a','#e8dcc0',8);R(g,468,-2,2,150,'#4e3520');R(g,468,-2,.6,150,'#8a6238');
-  for(const[bx,by,bw,bh]of[[486,146,36,18],[494,129,24,13]]){boards(g,bx,by-bh,bw,bh,6,'#7a5632',r);R(g,bx,by-bh,bw,1,'#b88a52');R(g,bx,by-1.5,bw,1.5,'#4e3520')}
+    for(let i=0;i<14;i++)oval(g,bx-bw+2+r()*(bw*2-4),147-bh-r()*2.5,1.6,1.3,r()<.5?earth2('#5a2a4a',.2):earth2('#7a3e60',.2))}
+  awning(g,470,-2,56,22,earth2('#a8443a',.18),'#e8dcc0',8);R(g,468,-2,2,150,'#4e3520');R(g,468,-2,.6,150,'#8a6238');
+  for(const[bx,by,bw,bh]of[[486,146,36,18],[494,129,24,13]]){planks2(g,bx,by-bh,bw,bh,6,'#7a5632',r);R(g,bx,by-bh,bw,1,'#b88a52');R(g,bx,by-1.5,bw,1.5,'#4e3520')}
   comp(g,'source-atop',.42,()=>R(g,0,0,524,144,'#3a3564'))},
- draw(g){if(!F.gotStick){oval(g,108,108.6,10,1.2,'rgba(50,40,90,.3)');stroke(g,[99,108,107,105.6,116.5,104.4],'#5a3e22',1.6);stroke(g,[99,107.6,107,105.2,116.5,104],'#8a6a3c',.6);
+ draw(g){if(!F.gotStick){shadow2(g,108,108.6,9,1.1,.3,'#322a5a');stroke(g,[99,108,107,105.6,116.5,104.4],'#5a3e22',1.6);stroke(g,[99,107.6,107,105.2,116.5,104],'#8a6a3c',.6);
     stroke(g,[107,105.5,110,102.5],'#6a4a2a',.8);oval(g,110.5,102.3,1.8,1,'#6f8a5c');oval(g,116.5,103.2,1.8,1,'#7a9666');oval(g,113.5,104.6,1.4,.8,'#5f7a4a')}
-  cartArt(g);if(!F.wheelOn){oval(g,136,103,7,1.6,'rgba(50,40,90,.3)');wheelArt(g,134,95)}},front(){}};
+  cartArt(g);if(!F.wheelOn){shadow2(g,136,103,6.4,1.5,.32,'#322a5a');wheelArt(g,134,95)}},front(){}};
 /* ---------- The upper room: morning sun through one window ---------- */
-ART.upper={w:320,
+ART.upper={w:320,q:12,
  light:()=>({amb:'#cbbfb4',lamps:[[250,96,90,'#5a5038']]}),
- paint(g){const r=rng(83),W='#e6d4a8',T='#7a5632';
-  plaster(g,0,0,320,105,W,r,{patch:4,cracks:6,brick:'#c0a070',bot:-.12,t:.45});
-  comp(g,'multiply',.5,()=>R(g,0,86,320,19,'#d6b890'));R(g,0,85.5,320,.5,'rgba(110,70,30,.4)');for(let i=0;i<320;i+=8){R(g,i,83,4,1.6,'#a8503a');R(g,i+4,83,4,1.6,'#3f6a8a')}
-  R(g,0,0,320,10,'#3a2a1c');tex(g,'wood',.6,0,0,320,10);
-  for(let i=-1;i<10;i++){const a=8+i*38,k=1.17,x0=160+(a-160)*k,x1=160+(a+7-160)*k;poly(g,[a,10,a+7,10,x1,0,x0,0],T);poly(g,[a+5,10,a+7,10,x1,0,x1-2.2,0],tint(T,-.4));stroke(g,[a+.25,10,x0+.25,0],tint(T,.25),.5)}
-  wood(g,0,9.5,320,3.5,'#6a4a2c');ao(g,0,13,320,8,'t',.35);
-  poly(g,[0,0,7,10,7,105,0,113],'#c2b088');poly(g,[320,0,313,10,313,105,320,113],'#cdbb92');ao(g,0,0,7,113,'l',.25);
+ paint(g){const r=rng(83),W='#e6d4a8',T='#7a5632',rw=rng(87),RED=earth2('#a8503a',.14),BLUE=earth2('#3f6a8a',.3);
+  plaster(g,0,0,320,105,W,r,{patch:4,cracks:0,brick:'#c0a070',bot:-.12,t:.32});skipCracks2(r,6);
+  /* cracks cut by hand, high on the wall under the ceiling, where they run to no head; rb: a seed of their own */
+  {const rb=rng(831);for(const[x,y,n]of[[30,16,3],[152,15,4],[208,16,3],[296,16,4]])crack2(g,x,y,n,rb)}
+  comp(g,'multiply',.5,()=>R(g,0,86,320,19,'#d6b890'));R(g,0,85.5,320,.5,'rgba(110,70,30,.4)');for(let i=0;i<320;i+=8){R(g,i,83,4,1.6,RED);R(g,i+4,83,4,1.6,BLUE)}
+  /* ceiling: joists run toward the viewer over a wall plate; the boards between them and the corners beside each joist lie in shade */
+  plank2(g,0,0,320,10,'#3a2a1c',rw,0);ao(g,0,0,320,7,'t',.4,'#0c0808');
+  for(let i=-1;i<10;i++){const a=8+i*38,k=1.17,x0=160+(a-160)*k,x1=160+(a+7-160)*k;joistAO2(g,a,x0,7,10,'#0c0808');poly(g,[a,10,a+7,10,x1,0,x0,0],T);
+    clipTo(g,()=>poly(g,[a,10,a+7,10,x1,0,x0,0]),()=>tex(g,'vert',.16,x0-2,0,x1-x0+4,10,'overlay',.5));
+    poly(g,[a+5,10,a+7,10,x1,0,x1-2.2,0],tint(T,-.4));stroke(g,[a+.25,10,x0+.25,0],tint(T,.25),.5)}
+  ao(g,0,7,320,2.5,'b',.28,'#0c0808');board2(g,0,9.5,320,3.5,'#6a4a2c',rw);ao(g,0,13,320,8,'t',.35,'#2a2030');
+  poly(g,[0,0,7,10,7,105,0,113],'#c2b088');poly(g,[320,0,313,10,313,105,320,113],'#cdbb92');ao(g,0,0,7,113,'l',.25);ao(g,313,0,7,113,'r',.16);
+  /* the shade gathers in the corners where the side walls meet the back wall, and along the foot of the wall */
+  ao(g,7,13,6,92,'l',.22,'#2a2030');ao(g,307,13,6,92,'r',.16,'#2a2030');ao(g,7,98,306,7,'b',.2,'#2a2030');
   /* floor: clay tiles, a woven rug */
-  pave(g,0,105,320,144,'#b98a5c',r,{vx:160,vy:74,rows:6,step:24,v:.09,joint:'#7a5636'});ao(g,0,105,320,7,'t',.4);
-  const rug=[62,123,122,123,128,134,56,134];poly(g,rug,'#8a3a30');clipTo(g,()=>poly(g,rug),()=>{for(let j=0;j<11;j++){const c=['#8a3a30','#c9a14a','#2f5a6a','#e0d2b0','#8a3a30'][Math.floor(j/2.2)%5];R(g,50,123+j,84,1,tint(c,(j%2)*-.1))}
-    for(let i=0;i<20;i++){R(g,58+i*3.6,126,1.6,1.6,'#e0d2b0');R(g,59.8+i*3.6,130,1.6,1.6,'#c9a14a')}tex(g,'grain',.25,50,123,84,12)});
+  pave(g,0,105,320,144,'#b98a5c',r,{vx:160,vy:74,rows:6,step:24,v:.09,joint:'#7a5636',t:.3});ao(g,0,105,320,7,'t',.36,'#2a2030');ao(g,0,105,320,2.5,'t',.26,'#1a1420');
+  const rug=[62,123,122,123,128,134,56,134],RC=['#8a3a30','#c9a14a','#2f5a6a','#e0d2b0','#8a3a30'].map((c,i)=>earth2(c,i===2?.3:.14));
+  poly(g,rug,RC[0]);clipTo(g,()=>poly(g,rug),()=>{for(let j=0;j<11;j++){const c=RC[Math.floor(j/2.2)%5];R(g,50,123+j,84,1,tint(c,(j%2)*-.1))}
+    for(let i=0;i<20;i++){R(g,58+i*3.6,126,1.6,1.6,RC[3]);R(g,59.8+i*3.6,130,1.6,1.6,RC[1])}tex(g,'grain',.25,50,123,84,12)});
   for(let i=0;i<24;i++){R(g,56+i*3,134,.6,1.6,'#d8c9a0');R(g,62+i*2.5,121.6,.6,1.4,'#d8c9a0')}
   /* door to the city */
-  R(g,9.5,35,39,71,'#cdbb92');doorArt(g,12,38,34,68,'#96703e',r);R(g,9.5,104,39,2.5,'#a89a80');R(g,9.5,104,39,.5,'#d2c6aa');
-  /* shelf of scrolls: pigeonholes, each scroll with its tag */
-  ao(g,68,50,60,7,'t',.3);R(g,69,34,58,13,'#4a3320');wood(g,68,46,60,3,'#7a5632');wood(g,68,32.5,60,2,'#7a5632');for(let i=0;i<=4;i++)wood(g,68+i*14.5,34,1.6,12,'#6a4a2c',1);
-  for(let i=0;i<4;i++)for(const[ox,oy]of[[4.2,43],[9.6,43],[6.9,39.4]]){const sx=69.6+i*14.5+ox,sy=oy;oval(g,sx,sy,2.4,2.3,'#cfc4a4');oval(g,sx,sy,1.5,1.4,'#f2ead2');oval(g,sx,sy,.5,.5,'#8a6a40');if((i+ox|0)%2)R(g,sx+1,sy+1.6,1.2,2.4,'#a8503a')}
+  /* door to the city: no iron band is laid across its planks (CONTRIBUTING section 3) */
+  R(g,9.5,35,39,71,'#cdbb92');doorArt(g,12,38,34,68,'#96703e',r,{bands:[]});R(g,9.5,104,39,2.5,'#a89a80');R(g,9.5,104,39,.5,'#d2c6aa');ao(g,9.5,35,39,4,'t',.2,'#2a2030');
+  /* shelf of scrolls: pigeonholes, each scroll with its tag; the hollow of each scroll is a small square, never a tiny round */
+  ao(g,68,50,60,7,'t',.3,'#2a2030');R(g,69,34,58,13,'#4a3320');ao(g,69,34,58,4,'t',.4,'#0c0808');board2(g,68,46,60,3,'#7a5632',rw);board2(g,68,32.5,60,2,'#7a5632',rw);for(let i=0;i<=4;i++)board2(g,68+i*14.5,34,1.6,12,'#6a4a2c',rw,1);
+  for(let i=0;i<4;i++)for(const[ox,oy]of[[4.2,43],[9.6,43],[6.9,39.4]]){const sx=69.6+i*14.5+ox,sy=oy;oval(g,sx,sy,2.4,2.3,'#cfc4a4');oval(g,sx,sy,1.5,1.4,'#f2ead2');R(g,sx-.5,sy-.5,1,1,'#8a6a40');if((i+ox|0)%2)R(g,sx+1,sy+1.6,1.2,2.4,RED)}
   poly(g,[71,49,74,49,71,55],'#5a3e24');poly(g,[125,49,122,49,125,55],'#5a3e24');
   /* niche with a water jar, and an oil lamp hung on the wall */
   R(g,180,44,20,28,'#b8a47c');arch(g,182,46,16,26,'#8a7650');ao(g,182,46,16,8,'t',.4);vessel(g,190,72,5,13,'#a8562e','jug',{noShadow:1});R(g,180,72,20,1.6,'#f4e8c8');
   /* window on the temple */
   R(g,223,27,54,46,'#f4e6c0');R(g,226,30,48,40,'#a8946c');
-  inRect(g,230,34,40,32,()=>{sky(g,320,66,['#4a88d0','#8ebce6','#d6e6f0']);R(g,230,58,40,8,'#cfc39a');for(let i=0;i<40;i+=5){R(g,230+i,54+((i*7)%3),4.4,12,i%10?'#dccfa8':'#c8ba92');R(g,230+i,54+((i*7)%3),4.4,.6,'#f4ecd4')}
+  inRect(g,230,34,40,32,()=>{sky(g,320,66,['#4a88d0','#8ebce6','#d6e6f0'].map(c=>earth2(c,.14)));R(g,230,58,40,8,'#cfc39a');for(let i=0;i<40;i+=5){R(g,230+i,54+((i*7)%3),4.4,12,i%10?'#dccfa8':'#c8ba92');R(g,230+i,54+((i*7)%3),4.4,.6,'#f4ecd4')}
     R(g,236,49,28,6,'#e2d6b6');for(let i=0;i<7;i++)R(g,237+i*4,49.6,1.6,5,'#f8f2e0');g.fillStyle=lg(g,242,0,256,0,['#fffaea','#e6dab8']);g.fillRect(242,38,14,12);R(g,240.5,36.6,17,1.8,'#fffcf0');R(g,240.5,36.2,17,.6,'#e0aa3c');R(g,247,43,4,7,'#7a5a2c');
     pool(g,250,40,30,20,'#fff6d8',.35,'screen')});
   ao(g,230,34,40,4,'t',.35);ao(g,230,34,4,32,'l',.3);boards(g,224,31,6,37,3,'#8a6238',r);boards(g,270,31,6,37,3,'#8a6238',r);R(g,221,70,58,3,'#f8eccc');R(g,221,73,58,1,'#8a7850');ao(g,221,74,58,5,'t',.25);
   /* low table: the scroll of Isaiah, a lamp, bread */
-  R(g,132,99,66,10,'rgba(40,24,10,.45)');wood(g,132,98,3.5,11.5,'#6a4a2c',1);wood(g,194.5,98,3.5,11.5,'#6a4a2c',1);wood(g,127,94,76,4.4,'#96703e');R(g,127,97.8,76,1,'#5a3e24');
+  /* the shade under the table: soft at the wall, darker where the top hangs over it, and a contact shadow at the foot of each leg */
+  R(g,132,99,66,10,'rgba(40,24,10,.26)');ao(g,132,98.4,66,5,'t',.3,'#28180a');shadow2(g,165,109.6,34,1.4,.3,'#28180a');
+  board2(g,132,98,3.5,11.5,'#6a4a2c',rw,1);board2(g,194.5,98,3.5,11.5,'#6a4a2c',rw,1);shadow2(g,133.8,109.6,3,.8,.4,'#28180a');shadow2(g,196.2,109.6,3,.8,.4,'#28180a');
+  board2(g,127,94,76,4.4,'#96703e',rw);R(g,127,97.8,76,1,'#5a3e24');
   R(g,147,91.4,22,2.8,'#f2ead2');for(let i=0;i<6;i++)R(g,149.5+i*3.2,92.2,2.2,.5,'#6a5a48');for(let i=0;i<5;i++)R(g,150+i*3.4,93.2,2,.5,'#6a5a48');
-  oval(g,145.6,92.6,1.8,2.4,'#b89a64');oval(g,170.4,92.6,1.8,2.4,'#b89a64');oval(g,145.6,92.6,.7,1,'#6a4a2c');oval(g,170.4,92.6,.7,1,'#6a4a2c');
+  oval(g,145.6,92.6,1.8,2.4,'#b89a64');oval(g,170.4,92.6,1.8,2.4,'#b89a64');R(g,145.1,92.1,1,1,'#6a4a2c');R(g,169.9,92.1,1,1,'#6a4a2c');
   vessel(g,183,94,4.2,3,'#b06a3a','bowl',{noShadow:1});poly(g,[186,91.4,190,91.2,190.4,92.4,186,93.2],'#a05c30');oval(g,136,92.8,4.6,1.6,'#c9a060');oval(g,135.6,92.4,3.8,1.1,'#e0bc7c');
-  for(const[cxx,c]of[[120,'#8a3a30'],[208,'#2f5a6a']]){oval(g,cxx,109.6,9,1.6,'rgba(40,24,10,.4)');g.fillStyle=lg(g,0,104,0,110,[tint(c,.2),c,tint(c,-.4)]);g.beginPath();g.ellipse(cxx,107,8,3,0,0,6.2832);g.fill();stroke(g,[cxx-6,106.4,cxx+6,106.4],'#c9a14a',.5)}
+  for(const[cxx,c]of[[120,earth2('#8a3a30',.14)],[208,earth2('#2f5a6a',.3)]]){shadow2(g,cxx,109.6,8.4,1.4,.4,'#28180a');g.fillStyle=lg(g,0,104,0,110,[tint(c,.2),c,tint(c,-.4)]);g.beginPath();g.ellipse(cxx,107,8,3,0,0,6.2832);g.fill();stroke(g,[cxx-6,106.4,cxx+6,106.4],'#c9a14a',.5)}
   /* bench with a worn cushion */
-  R(g,284,97,30,12,'rgba(40,24,10,.45)');wood(g,284,96,3.4,13,'#6a4a2c',1);wood(g,311,96,3.4,13,'#6a4a2c',1);wood(g,281,92,36,4.4,'#96703e');R(g,281,95.8,36,1,'#5a3e24');
-  g.fillStyle=lg(g,0,87,0,92.4,['#c06a50','#a8503a','#7a3424']);g.beginPath();g.ellipse(297,90,13,3,0,0,6.2832);g.fill();stroke(g,[286,89.4,308,89.4],'#d88a70',.5);
-  /* daylight: bright by the window, a shaft of sun on the floor */
+  R(g,284,97,30,12,'rgba(40,24,10,.26)');ao(g,284,96.4,30,5,'t',.3,'#28180a');shadow2(g,299,109,16,1.2,.3,'#28180a');
+  board2(g,284,96,3.4,13,'#6a4a2c',rw,1);board2(g,311,96,3.4,13,'#6a4a2c',rw,1);shadow2(g,285.7,109,2.8,.8,.4,'#28180a');shadow2(g,312.7,109,2.8,.8,.4,'#28180a');
+  board2(g,281,92,36,4.4,'#96703e',rw);R(g,281,95.8,36,1,'#5a3e24');
+  g.fillStyle=lg(g,0,87,0,92.4,['#c06a50','#a8503a','#7a3424'].map(c=>earth2(c,.14)));g.beginPath();g.ellipse(297,90,13,3,0,0,6.2832);g.fill();stroke(g,[286,89.4,308,89.4],earth2('#d88a70',.14),.5);
+  /* daylight: bright by the window, a shaft of sun on the floor where it lands; the floor throws a little of it back onto the table and
+     the bench, the lamp warms the end of the table, and the door's corner, the ceiling and the near floor lie in the room's own shade */
   lightmap(g,320,'#b9aca0',l=>{pool(l,250,52,150,110,'#fff0c8',.75);comp(l,'lighter',.9,()=>poly(l,[230,66,270,66,292,142,196,142],lg(l,0,66,0,142,['rgba(255,236,180,.15)','rgba(255,236,180,.8)'])));
-    comp(l,'multiply',1,()=>{ao(l,0,0,70,144,'l',.4,'#3a3050');ao(l,0,0,320,22,'t',.35,'#3a3050');ao(l,0,130,320,14,'b',.25,'#3a3050')})});
+    pool(l,244,132,56,12,'#ffe8c0',.3);pool(l,168,100,56,14,'#f0d8b0',.22);pool(l,298,94,30,14,'#f4dcb4',.26);pool(l,189,92,22,12,'#ffc888',.22);pool(l,98,44,46,22,'#e8d8c0',.16);
+    comp(l,'multiply',1,()=>{ao(l,0,0,70,144,'l',.4,'#3a3050');ao(l,0,0,320,22,'t',.35,'#3a3050');ao(l,0,130,320,14,'b',.25,'#3a3050');ao(l,290,0,30,144,'r',.14,'#3a3050')})});
   comp(g,'screen',.2,()=>poly(g,[230,34,270,34,292,142,196,142],lg(g,0,34,0,142,['rgba(255,240,200,.9)','rgba(255,240,200,.1)'])));pool(g,250,50,34,26,'#fff4d0',.25,'screen')},
  fore(g){vessel(g,9,152,12,34,'#5a2e1c','pithos',{noShadow:1});g.fillStyle=lg(g,0,128,0,144,['#6a3024','#3a1a14']);g.beginPath();g.ellipse(308,142,20,10,0,0,6.2832);g.fill();stroke(g,[292,138,320,136],'#a8603c',.6)},
  draw(g,t){flame(g,189.6,90,t);pool(g,189,88,9+Math.sin(t/190),7,'#ffb050',.14)},front(){}};
@@ -170,23 +203,27 @@ function shipArt(g,X,t,st,sh){const y=Math.round(Math.sin(t/900)*2)/2,
   for(const x of[236,300,420])bollard2(g,x);
   if(!X)SHARED.ship.gangplank(g,{x0:266,y0:82+y,x1:282,y1:104.5,w0:8,w1:10});
   else for(let i=0;i<7;i++)R(g,X+236-i*9-(t/60%9),98.5+(i%2),6-i*.5,.6,'#e6f2f4')}
-ART.harbor={w:480,fp:1.3,
+ART.harbor={w:480,fp:1.3,q:12,
  light:()=>({amb:'#f4dcc4'}),
- paint(g){const r=rng(97),SH='#8a86b8';
-  /* sky and sea: the sun is low over the water */
-  sky(g,480,62,['#2f62a8','#5a8cc4','#9ab4d0','#e4c8a4','#fbcf8c']);pool(g,150,47,150,60,'#ffd890',.6,'screen');pool(g,150,47,40,26,'#fff0c0',.7,'screen');oval(g,150,47,8,8,'#fff6d0');
+ paint(g){const r=rng(97),SH=earth2('#8a86b8',.16);
+  /* sky and sea: the sun is low over the water. Their blues are drawn a little toward grey (earth2), so that they sit with the stone of the quay */
+  sky(g,480,62,['#2f62a8','#5a8cc4','#9ab4d0','#e4c8a4','#fbcf8c'].map((c,i)=>i<3?earth2(c,.14):c));pool(g,150,47,150,60,'#ffd890',.6,'screen');pool(g,150,47,40,26,'#fff0c0',.7,'screen');oval(g,150,47,8,8,'#fff6d0');
   for(const[cx0,cy,cw]of[[150,22,70],[330,13,80],[60,34,40],[420,30,50]]){pool(g,cx0,cy+1.5,cw,4,'#c88a70',.5,'source-over');pool(g,cx0,cy,cw*.9,3,'#ffe6c0',.8,'source-over')}
-  g.fillStyle=lg(g,0,60,0,104,['#e0b488','#6f9cb4','#3f7a9c','#2c5f84','#1f4a6c']);g.fillRect(0,60,480,44);
+  g.fillStyle=lg(g,0,60,0,104,['#e0b488','#6f9cb4','#3f7a9c','#2c5f84','#1f4a6c'].map((c,i)=>i?earth2(c,.12):c));g.fillRect(0,60,480,44);
   for(let i=0;i<260;i++){const sy=61+r()*r()*42,k=(sy-60)/44;R(g,r()*480,sy,2+k*6+r()*4,.5,r()<.5?'rgba(190,225,235,.5)':'rgba(20,50,80,.35)')}
   for(let i=0;i<90;i++){const sy=61+r()*40,k=(sy-60)/44,w=6+k*30;R(g,150-w/2+r()*w-2,sy,2+r()*5,.5+k*.5,r()<.6?'#ffe6a8':'#fff8dc')}
   /* the breakwater, its tower and beacon, ships far out */
   for(const[sx,sy]of[[256,57],[388,58],[462,57.4]]){poly(g,[sx-2.5,sy,sx+2.5,sy,sx+2,sy+1.4,sx-2,sy+1.4],'#4a4a5c');poly(g,[sx-1.6,sy-.4,sx-1.2,sy-4.6,sx+1.8,sy-.6],'#e8dcc4')}
-  ashlar(g,170,54,310,6.5,'#c0ae8c',r,{bw:9,bh:3.4,v:.08,t:.25});for(let i=170;i<480;i+=12){R(g,i,51.6,7,2.6,'#c0ae8c');R(g,i,51.6,7,.5,'#f0dcb0')}R(g,170,59.6,310,1.4,'#6a6468');
+  /* the breakwater begins at its tower, so that the tower stands at its end and not out of the middle of a wall (CONTRIBUTING section 3);
+     its stones are still drawn from r over the old length, so that everything after keeps its place */
+  inRect(g,205.5,40,280,24,()=>ashlar(g,170,54,310,6.5,'#c0ae8c',r,{bw:9,bh:3.4,v:.08,t:.25}));for(let i=170;i<480;i+=12){if(i<205)continue;R(g,i,51.6,7,2.6,'#c0ae8c');R(g,i,51.6,7,.5,'#f0dcb0')}R(g,205.5,59.6,274.5,1.4,'#6a6468');
   ashlar(g,205.5,29,13,27,'#d6c4a0',r,{bw:6,bh:3.6,v:.08,t:.25});R(g,203.5,27,17,2.6,'#ecdcb8');R(g,207.5,21,9,6,'#bca888');R(g,205.5,29,2.5,27,'rgba(60,50,90,.35)');R(g,210,36,3,5,'#3a3440');
   R(g,300,44,10,11,'#c8b694');R(g,300,43,10,1.4,'#b85a3a');R(g,420,42,12,13,'#c8b694');R(g,420,41,12,1.4,'#b85a3a');R(g,300,44,2.5,11,'rgba(60,50,90,.3)');R(g,420,42,3,13,'rgba(60,50,90,.3)');
   comp(g,'screen',.25,()=>R(g,0,40,480,24,'#ffd8a0'));
   /* the grain warehouse */
-  house(g,0,28,112,76,'#decca4',r,{side:7,patch:5,cracks:6,beams:0});for(let i=0;i<116;i+=5.5){R(g,i,23,5,5.5,i%11?'#c0603c':'#a84c2c');R(g,i,23,5,.6,'#e08a60');R(g,i+4.5,23,.6,5.5,'#7a3620')}R(g,0,28.4,113,1.2,'rgba(60,30,20,.5)');
+  house(g,0,28,112,76,'#decca4',r,{side:7,patch:5,cracks:0,beams:0,t:.36});skipCracks2(r,6);
+  /* cracks cut by hand, high under the eaves, where they run to no head; rb: a seed of their own */
+  {const rb=rng(971);for(const[x,y,n]of[[6,33,4],[34,32,3],[72,33,3],[100,32,4]])crack2(g,x,y,n,rb)}for(let i=0;i<116;i+=5.5){R(g,i,23,5,5.5,i%11?'#c0603c':'#a84c2c');R(g,i,23,5,.6,'#e08a60');R(g,i+4.5,23,.6,5.5,'#7a3620')}R(g,0,28.4,113,1.2,'rgba(60,30,20,.5)');
   for(let i=0;i<2;i++){const ax=13+i*46;arch(g,ax-1.5,52.5,33,52,'#c2b08a');arch(g,ax,54,30,50,'#2a2028');g.save();arch(g,ax,54,30,50);g.clip();boards(g,ax,54,30,50,5,i?'#7a5632':'#5a4028',r);if(!i){R(g,ax+16,54,14,50,'#1a1418');sack(g,ax+22,104,5,8,'#bfae84')}ao(g,ax,54,30,12,'t',.6);g.restore()}
   windowArt(g,48,36,10,9,'#decca4',{bars:2});
   /* the quay */
@@ -195,7 +232,7 @@ ART.harbor={w:480,fp:1.3,
   comp(g,'soft-light',.9,()=>{g.fillStyle=rg(g,150,104,260,['rgba(255,214,140,.95)','rgba(255,200,120,.3)','rgba(90,70,120,.5)']);g.fillRect(0,100,480,44)});
   /* long shadows reach toward us, away from the sun */
   const cast=(x,w,len)=>shade(g,[x,104,x+w,104,x+w+(x+w-150)*len/46,104+len,x+(x-150)*len/46,104+len],SH,.55);
-  for(const x of[236,300,420]){cast(x-1,8,16);oval(g,x+3,104,4.6,1.2,'rgba(40,30,60,.5)');g.fillStyle=lg(g,x-1,0,x+7,0,['#8a7a66','#5a4c40','#3a302c']);g.fillRect(x,96,6,8);R(g,x-1,94.6,8,2,'#6a5a4a');R(g,x-1,94.6,8,.6,'#e8c898')}
+  for(const x of[236,300,420]){cast(x-1,8,16);shadow2(g,x+3,104,4.4,1.1,.5,'#281e3c');g.fillStyle=lg(g,x-1,0,x+7,0,['#8a7a66','#5a4c40','#3a302c']);g.fillRect(x,96,6,8);R(g,x-1,94.6,8,2,'#6a5a4a');R(g,x-1,94.6,8,.6,'#e8c898')}
   cast(115,3,26);cast(165,3,26);cast(430,46,12);shade(g,[0,104,112,104,96,112,0,112],SH,.5);
   /* heap of old sailcloth: stiff worn canvas heaped by the warehouse, resting flat on the quay */
   {const LIT='#f6f0de',C='#e0d9c2',MID='#b4ac96',SHD='#80796a',DEEP='#565048',SEAM='rgba(100,88,66,.6)',
@@ -219,14 +256,22 @@ ART.harbor={w:480,fp:1.3,
    /* contact occlusion along the grounded hem where folds meet paving */
    stroke(g,[23,107.8,29,107.7,33,107.2,37,107.8,43,107.9,49,107.7,56,107.6,62,107.4,66,106.4],'rgba(40,30,50,.35)',.6);
   }
-  /* nets hung to dry */
-  wood(g,115.4,62,2.6,43,'#6a4e34',1);wood(g,165.4,62,2.6,43,'#6a4e34',1);wood(g,113,61,57,2.4,'#7a5a3c');
-  inRect(g,118,63.4,47.4,38,()=>{for(let i=-40;i<50;i+=3.4){stroke(g,[118+i,63.4,118+i+38,101.4],'rgba(40,70,74,.75)',.5);stroke(g,[118+i+38,63.4,118+i,101.4],'rgba(40,70,74,.75)',.5)}
-    g.fillStyle=lg(g,0,63,0,101,['rgba(255,220,160,.12)','rgba(20,40,50,.18)']);g.fillRect(118,63,48,39)});
+  /* nets hung to dry: the net hangs from its rope in soft folds, its cords drawn running down only, so that no two of them cross: a mesh
+     drawn both ways would read as rows of small crosses (CONTRIBUTING section 3) */
+  {const rw=rng(99);shadow2(g,116.7,105,2.6,.8,.4,'#281e3c');shadow2(g,166.7,105,2.6,.8,.4,'#281e3c');
+   board2(g,115.4,62,2.6,43,'#6a4e34',rw,1);board2(g,165.4,62,2.6,43,'#6a4e34',rw,1);board2(g,113,61,57,2.4,'#7a5a3c',rw)}
+  inRect(g,118,63.4,47.4,38.4,()=>{g.fillStyle=lg(g,0,63,0,102,['rgba(40,66,70,.2)','rgba(28,46,52,.36)']);g.fillRect(118,63,48,39);
+    for(let i=0;i<8;i++){const fx=118+i*6;g.fillStyle=lg(g,fx,0,fx+6,0,['rgba(255,226,176,.12)','rgba(255,226,176,0)','rgba(16,30,36,.2)']);g.fillRect(fx,63,6,39)}
+    for(let i=0;i<24;i++){const x0=118.8+i*2,p=[];for(let y=63.4;y<=102;y+=2.4)p.push(x0+Math.sin(y/6+i*.9)*.45,y);stroke(g,p,i%3?'rgba(40,70,74,.72)':'rgba(70,100,100,.66)',.5)}
+    ao(g,118,63.4,47.4,4,'t',.2,'#1a2830')});
   for(let i=0;i<7;i++)oval(g,121+i*7,101.6+Math.sin(i*1.7),1.5,1.5,i%2?'#b85a3a':'#c8743c');R(g,118,63,47.4,1,'#3f5a5a');
-  /* cargo waiting to be loaded */
+  /* cargo waiting to be loaded: the crate's planks run up and down, with no batten across them */
   for(let i=0;i<3;i++)vessel(g,436+i*10.5,109,4.4,15,['#a05a34','#8a4a2a','#b0683c'][i],'amph');
-  oval(g,470,109,10,1.6,'rgba(40,30,60,.45)');boards(g,462,96,15,13,5,'#8a6a40',r);R(g,462,96,15,1.2,'#c89a5c');R(g,462,107.8,15,1.2,'#4e3520');R(g,462,101.6,15,1,'#5a4226');
+  shadow2(g,470,109,9,1.5,.44,'#281e3c');planks2(g,462,96,15,13,5,'#8a6a40',r);R(g,462,96,15,1.2,'#c89a5c');R(g,462,107.8,15,1.2,'#4e3520');
+  /* light: the low sun lays its warmth on the quay before it and on the warehouse front; the far end of the quay and the arches' depths
+     fall into the evening's cool, and the foot of the warehouse wall gathers a soft dark */
+  lightmap(g,480,'#e2dad8',l=>{pool(l,150,96,240,70,'#fff4e4',.7);pool(l,60,66,90,50,'#fff0dc',.4);pool(l,150,50,110,40,'#fff6e8',.5);
+    comp(l,'multiply',1,()=>{ao(l,0,90,112,14,'b',.18,'#4a4068');ao(l,380,0,100,144,'r',.14,'#4a4068');ao(l,0,126,480,18,'b',.14,'#4a4068')})});
   pool(g,150,47,330,120,'#ffcf88',.14,'screen');ao(g,300,0,180,144,'r',.2,'#1a1840')},
  fore(g){const r=rng(98);
   /* a mooring post and a coil of hawser close by; a fisherman's baskets at the other end */
