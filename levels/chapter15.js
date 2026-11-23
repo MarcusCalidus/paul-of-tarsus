@@ -46,7 +46,8 @@ LEVEL(15,()=>{
    "none"); when Paul has gone up again one low note is left, hardly to be heard ("still"). At daybreak ("dawn") the lyre has the tune
    again as in the house, and a little wider: in its third bar it climbs to the keynote above, which it reached nowhere before, and
    the harp goes with it an octave higher. No drum, and no new ending.
-   The story sets house, harbor, road, night, still, none and dawn; "warned" and "quay" are there for it to set.
+   The story sets them all: "warned" from Mikon's word until the way is drawn in the sand, "road" from then on and over the map of
+   the journey north, "quay" at Troas, and the others with their rooms.
    Nothing is claimed about how music was played then. */
 const _=null,SCALE=[0,2,4,5,7,9],
  /* the tune, a bar to a letter: [step, degree of the scale, length in steps]. W is C as it is at daybreak; a and d are A and D with
@@ -1762,7 +1763,7 @@ async function letterLook(){await say(P,T('letter_look',{m:ROUND[sc15().round].m
 
 /* ---- Cenchreae: the word of a brother (Acts 20:3) ---- */
 async function warn(){if(F.warned)return say(MI,'mikon_talk_after',{to:P});
-  await say(MI,'mikon_paul_a_word',{to:P});await say(MI,'mikon_men_have_been_asking',{to:P});await say(MI,'mikon_i_carry_loads_i_hear_things',{to:P});
+  await say(MI,'mikon_paul_a_word',{to:P});AU.mood='warned';await say(MI,'mikon_men_have_been_asking',{to:P});await say(MI,'mikon_i_carry_loads_i_hear_things',{to:P});
   await say(P,'thank_you_mikon_you_did_right',{to:MI});await say(P,'then_not_this_ship',{to:MI});
   await tell('v3b');
   await say(TI,'timothy_then_which_way',{to:P});await say(P,'let_me_lay_it_out_in_the_sand',{to:TI});
@@ -1776,7 +1777,7 @@ async function toSand(){if(!F.warned)return say(P,'strip_of_sand_look');
    pebble for Troas), and where Paul himself stays over the festival (his awl, on the pebble for Philippi). */
 async function onRoad(item,north){if(item!=='reed15')return false;if(F.way)return say(P,'that_is_settled_already');
   if(!north)return say(P,'not_by_the_ship_they_are_watching');
-  F.way=1;SFX.pick();await say(P,'by_land_through_macedonia',{to:null});await say(AR,'aristarchus_beroea_thessalonica_on_the_road',{to:P});codeBtn()}
+  F.way=1;AU.mood='road';SFX.pick();await say(P,'by_land_through_macedonia',{to:null});await say(AR,'aristarchus_beroea_thessalonica_on_the_road',{to:P});codeBtn()}
 async function onPebble(id,item){
   if(item==='shell15'){if(!F.way)return say(P,'draw_the_way_first');
     if(id==='troas'){F.shell=1;delItem('shell15');SFX.pick();await say(P,'troas_a_harbor_and_brothers',{to:null});await say(TR,'trophimus_tychicus_and_i_know_that_coast',{to:P});codeBtn();return}
@@ -1789,11 +1790,12 @@ async function onPebble(id,item){
     if(id==='beroea'||id==='thessalonica')return say(P,'it_is_on_the_road_but_no_harbor');
     return say(P,'i_am_not_staying_here')}
   return false}
-/* the plan is laid; the journey is told over the map (Acts 20:4-6), and from the quay of Troas on Luke is played.
+/* the plan is laid; the journey is told over the map (Acts 20:4-6), and from the quay of Troas on Luke is played. The shared map
+   silences the score when it opens: here the road's tune is given back to it, so that the journey north is walked to it.
    (A code made while the plan's last words are said holds all three settled in this room: then the way back to the quay, outSand, goes on.) */
 const outSand=()=>F.awl?planDone():say(P,'not_before_the_plan_is_laid');
 async function planDone(){await say(P,'that_is_the_plan',{to:null});await say(AR,'aristarchus_a_long_way_round',{to:P});await say(P,'a_long_way_and_we_arrive',{to:AR});
-  try{await open15(ROAD_B);await go15(3);await tell('v4a',null,1);await tell('v4b',null,1);await tell('v5',null,1);await go15(3);await tell('v6',null,1)}catch(e){console.error(e)}
+  try{await open15(ROAD_B);setScore(MUSIC);AU.mood='road';await go15(3);await tell('v4a',null,1);await tell('v4b',null,1);await tell('v5',null,1);await go15(3);await tell('v6',null,1)}catch(e){console.error(e)}
   await fade(1,500);G.scene=null;setScore(MUSIC);F.troas=1;show15('quay15');drawInv();await fade(0,700);
   await say(LK,'five_days_for_a_crossing_of_two',TH);
   await say(TI,'timothy_luke_tonight_everyone_comes',{to:LK});await say(TI,'timothy_she_asks_for_oil',{to:LK});await say(LK,'gladly_i_know_lamps',{to:TI});codeBtn()}
@@ -1841,7 +1843,8 @@ async function eutychus(){if(G.eu15)return say(EUV,'eutychus_talk_again',{to:LK}
 
 /* ---- midnight (Acts 20:9-12): told, and nobody is played ---- */
 /* The young man is still in the window while his sleep is told. Then the picture is the same room with the window empty, and the fall is
-   told: it is never drawn, and it makes no sound. The music is silent from midnight until Paul has gone up again.
+   told: it is never drawn, and it makes no sound. The music is silent from midnight until Paul has gone up again, and so is the room:
+   the hiss of the lamps ends with the music, and comes back with the one low note. At daybreak the tune begins at its beginning.
    While the street is shown by night Luke stays where he was, in the upper room, and is not seen: so a code made at any moment of this
    (t4 without mid, and the upper room) restores the room at midnight, every lamp burning its last, and the stool leads on from there
    (see sit). */
@@ -1853,7 +1856,7 @@ async function midnight(){AU.mood='none';AU.amb={};
   await tell('v10');
   await fade(1,700);G.x15='a';G.l15=null;show15('upper15',180,126,1);await fade(0,800);
   await tell('v11a');await tell('v11b');
-  await fade(1,800);G.x15=null;F.mid=1;show15('street15');await fade(0,900);
+  await fade(1,800);G.x15=null;F.mid=1;AU.step=0;show15('street15');await fade(0,900);
   await tell('v12');codeBtn()}
 
 /* ---- daybreak ---- */
@@ -1865,13 +1868,13 @@ async function leave(){await say(LK,'a_place_and_a_day',TH);
 /* BOTH: Paul and Luke act on a thing or a person through the same handlers: whoever is played says the line (see act, in index.html) */
 const BOTH=h=>{h.as={luke15:h};return h};
 const NOW=[160,160,236,236];   /* a close view: whoever is played stands below the picture, and takes no step */
-ROOMS.gaius15={space:1.1,walk:[16,304,112,138],mood:'house',amb:{wind:.12},hs:[
+ROOMS.gaius15={space:1.1,walk:[16,304,112,138],mood:'house',amb:AMB.gaius15,hs:[
   {name:'window_to_the_court',x:20,y:34,w:32,h:30,wx:44,wy:116,dir:-1,look:'corinth_winter_light'},
   {name:'letter_to_rome',x:104,y:90,w:30,h:8,wx:150,wy:118,dir:-1,look:letter},
   {name:'reed_pen',x:140,y:90,w:10,h:8,wx:160,wy:117,dir:-1,look:'ink_and_reed_look'},
   {name:'spare_tablet',x:90,y:92,w:12,h:6,wx:96,wy:118,dir:1,look:spare},
   {name:'door_to_the_storeroom',x:268,y:44,w:36,h:60,wx:280,wy:114,dir:1,exit:toScale,look:'door_to_the_storeroom_look'}].map(BOTH)};
-ROOMS.scale15={space:.9,walk:NOW,mood:'house',amb:{},hs:[
+ROOMS.scale15={space:.9,walk:NOW,mood:'house',amb:AMB.scale15,hs:[
   ...WIT15.map(m=>({name:ACT[m.a].name,x:m.x,y:0,w:m.w,h:22,wx:160,wy:236,def:'talk',look:m.look,talk:weigh})),
   {name:'scale',x:60,y:24,w:200,h:60,wx:160,wy:236,def:'use',look:()=>say(P,'scale_look').then(()=>say(P,tiltLine(),TH)),use:weigh,talk:weigh},
   {name:'chest',x:262,y:72,w:58,h:72,wx:160,wy:236,look:'chest_look'},
@@ -1880,23 +1883,23 @@ ROOMS.scale15={space:.9,walk:NOW,mood:'house',amb:{},hs:[
   ...WT.map(w=>({name:w.name,get x(){return weightBoxScale15(w.id)[0]-2},get y(){return weightBoxScale15(w.id)[1]-2},get w(){return weightBoxScale15(w.id)[2]+4},get h(){return weightBoxScale15(w.id)[3]+4},
     wx:160,wy:236,def:'use',use:()=>moveWeight(w.id),pickup:()=>moveWeight(w.id,1),look:()=>say(P,T(WLOOK[sc15().w[w.id]],{m:w.m}))})),
   {name:'back_to_the_room',x:220,y:134,w:100,h:10,wx:160,wy:236,exit:outScale,look:'not_before_all_three_are_weighed'}].map(BOTH)};
-ROOMS.cen15={space:.5,walk:[16,304,112,138],mood:'harbor',amb:{waves:.4,gulls:.5,wind:.2},hs:[
+ROOMS.cen15={space:.5,walk:[16,304,112,138],get mood(){return F.warned?'warned':'harbor'},amb:AMB.cen15,hs:[
   {name:'harbor',x:0,y:44,w:196,h:44,wx:120,wy:114,look:'harbor_of_cenchreae_look'},
   {name:'ship_for_syria',x:196,y:30,w:124,h:76,wx:230,wy:114,dir:1,look:'ship_for_syria_look'},
   {name:'goat',x:52,y:98,w:26,h:20,wx:88,wy:124,dir:-1,look:'she_looks_at_my_tent_cloth',talk:'goat_talk'},
   {name:'chest',x:228,y:106,w:24,h:14,wx:214,wy:124,dir:1,look:'chest_look'},
   {name:'strip_of_sand',x:16,y:126,w:96,h:18,wx:66,wy:130,dir:-1,look:toSand,use:toSand}].map(BOTH)};
-ROOMS.sand15={space:.5,walk:NOW,mood:'road',amb:{waves:.5,gulls:.3},hs:[
+ROOMS.sand15={space:.5,walk:NOW,get mood(){return F.way?'road':'warned'},amb:AMB.sand15,hs:[
   {name:'road_north',x:78,y:60,w:24,h:36,wx:160,wy:236,look:'road_north_look',useWith:id=>onRoad(id,1)},
   {name:'sea_lane_to_syria',x:150,y:112,w:150,h:24,wx:160,wy:236,look:'sea_lane_look',useWith:id=>onRoad(id,0)},
   ...PEB15.map(([id,x,y])=>({name:PEBNAME[id],x:x-7,y:y-6,w:14,h:12,wx:160,wy:236,look:()=>say(P,T('pebble_look',{place:T(PEBNAME[id])})),useWith:item=>onPebble(id,item)})),
   {name:'back_to_the_quay',x:220,y:134,w:100,h:10,wx:160,wy:236,exit:outSand,look:'not_before_the_plan_is_laid'}].map(BOTH)};
-ROOMS.quay15={space:.5,walk:[16,304,112,138],mood:'harbor',amb:{waves:.4,gulls:.4,crowd:.15},hs:[
+ROOMS.quay15={space:.5,walk:[16,304,112,138],mood:'quay',amb:AMB.quay15,hs:[
   {name:'harbor',x:124,y:58,w:100,h:34,wx:170,wy:114,look:'quay_of_troas_look'},
   {name:'ship',x:8,y:34,w:110,h:72,wx:96,wy:114,dir:-1,look:'ship_at_the_quay_look'},
   {name:'jars_of_oil',x:236,y:92,w:44,h:22,wx:232,wy:118,dir:1,look:'jars_of_oil_look'},
   {name:'lane_to_korinnas_house',x:292,y:48,w:28,h:62,wx:298,wy:116,dir:1,exit:toUpper,look:'lane_to_korinnas_house_look'}].map(BOTH)};
-ROOMS.upper15={space:1.2,floor:'wood',walk:[16,304,112,138],get mood(){return F.t4?(stage15()==='a'?'still':'none'):'night'},get amb(){return F.t4?{}:{crickets:.2}},hs:[
+ROOMS.upper15={space:1.2,floor:'wood',walk:[16,304,112,138],get mood(){return F.t4?(stage15()==='a'?'still':'none'):'night'},get amb(){return F.t4?(stage15()==='a'?AMB.after15:{}):AMB.upper15},hs:[
   {name:'brothers_of_troas',x:70,y:76,w:180,h:28,wx:120,wy:116,look:'people_listening_look'},
   {name:'window',x:40,y:30,w:30,h:34,wx:72,wy:114,dir:-1,look:'window_look'},
   {name:'big_jar',x:8,y:92,w:22,h:30,wx:60,wy:126,dir:-1,look:'big_jar_look'},
@@ -1905,7 +1908,7 @@ ROOMS.upper15={space:1.2,floor:'wood',walk:[16,304,112,138],get mood(){return F.
   {name:'stairs_down',x:288,y:66,w:32,h:56,wx:282,wy:124,dir:1,exit:()=>say(LK,'i_am_not_leaving_tonight'),look:'stairs_look'},
   ...LAMPS.map((L,i)=>({name:L.k,x:[262,290,110,166,220][i],y:[50,74,34,70,88][i],w:[14,12,16,12,16][i],h:[12,10,14,10,10][i],wx:[262,280,118,190,226][i],wy:[114,118,114,120,114][i],dir:[1,1,-1,-1,1][i],
     look:()=>lampLook(i),useWith:id=>id==='jug15'?pour(i):false}))].map(BOTH)};
-ROOMS.street15={space:.7,walk:[16,304,112,138],get mood(){return F.mid?'dawn':'none'},get amb(){return F.mid?{birds:.4,wind:.15}:{}},hs:[
+ROOMS.street15={space:.7,walk:[16,304,112,138],get mood(){return F.mid?'dawn':'none'},get amb(){return F.mid?AMB.street15:{}},hs:[
   {name:'street',x:216,y:36,w:76,h:70,wx:240,wy:116,look:'street_at_daybreak_look'},
   {name:'window',x:150,y:6,w:20,h:18,wx:160,wy:122,look:()=>say(LK,'the_window_up_there_look').then(()=>say(LK,'luke_i_was_among_the_first_down',TH))},
   {name:'way_to_the_harbor',x:296,y:50,w:24,h:64,wx:298,wy:122,dir:1,exit:leave,look:'way_to_the_harbor_look'}].map(BOTH)};
@@ -1990,7 +1993,7 @@ function hint15(){const r=G.room;
   return['dawn15',['hint_dawn_1','hint_dawn_2']]}
 
 /* ============ CHAPTER DEFINITION ============ */
-return{rooms:['gaius15','scale15','cen15','sand15','quay15','upper15','street15'],setup:setup15,start:start15,hint:hint15,music:MUSIC,topics:[],tablets:TABLETS,
+return{rooms:['gaius15','scale15','cen15','sand15','quay15','upper15','street15'],setup:setup15,start:start15,hint:hint15,music:MUSIC,beds:BEDS,calls:CALLS,topics:[],tablets:TABLETS,
   /* for the playtest: what is told; the questions about Phoebe; the weights and the bags; the lamps and the search; the roads on the map */
   told:TOLD,phoebe:PHOEBE,weights:WT,rounds:ROUND,sc:sc15,tilt:tiltScale15,lamps:LAMPS,oil:lamps15,after:AFTER,canLast,sat,stage:stage15,pebbles:PEB15,roads:[ROAD_A,ROAD_B],
   flags:FLAGS,

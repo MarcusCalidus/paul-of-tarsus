@@ -53,9 +53,9 @@ Seven places, two close views, two roads told over the map, and two people playe
 
 | Chapter | Music | Around you |
 |---|---|---|
-| Until Daybreak | **[Stub: this paragraph is written when the chapter's score is finished.]** Midnight itself is silent | Wind round the house in Corinth; waves, gulls and wind at Cenchreae; the same harbor sounds and a few voices on the quay of Troas; crickets outside the upper room; nothing at all at midnight, and no sound for the fall; birds and a light wind at daybreak. A weight set down on bronze; oil poured from a jug |
+| Until Daybreak | One tune, and what a night does to it: six notes from C, with a major third and no seventh, in bars of twelve that rock in four threes. In the house of Gaius the lyre has it over a low string; at Cenchreae one pipe has it over a harp, and when the warning has come its keynote is withheld, a rest wherever the tune came home and the fifth held under it; on the road north the same notes are counted in twos, on the oud over a hand drum, and on the quay of Troas lyre and pipe take turns with it. In the upper room the harp plays it at a third of its pace, with long rests; at midnight nothing plays, then one low note; at daybreak the lyre has it again and climbs once to the keynote above, which it reached nowhere before. Nothing is claimed about how music was played then | A brazier's tick in the house in winter; sea, gulls and a creaking hull at the two harbors; in the upper room the faint hiss of the lamps, a wick that sputters, and the quiet of a sleeping city; nothing at all at midnight; the first birds at daybreak, one at a time |
 
-Every step can be solved from the text alone, because the game stays quiet in Silent Mode: the beam is read with **Look at**, each lamp says how much it holds, and nothing has to be heard.
+Every step can be solved from the text alone.
 
 ## The travel map
 
