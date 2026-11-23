@@ -24,8 +24,16 @@
    of all on a balance, each bag against the weight its letter gives, with four weights that may lie in either pan (a close view); the
    other road, laid out in wet sand with a reed, a shell and an awl (a close view); and a night measured in lamp oil, sitting by
    sitting, until midnight.
-   PHASE 1: the art is placeholder art. Each room's painting is a section of its own between "ART <room>: begin" and "ART <room>: end",
-   so that one room can be painted anew without touching another; what the story reads from a section is named at its head. */
+   Seven pictures: a room in the house of Gaius on a winter day; the storeroom table with the balance over it (a close view); the quay
+   of Cenchreae on a clear morning; the plan in the wet sand (a close view); the quay of Troas late in an afternoon; the upper room by
+   night, in three states (the meeting, midnight with the window empty, and afterward, round the table); and the street below it, by
+   night and at daybreak. Each is a section of its own between "ART <room>: begin" and "ART <room>: end", so that one room can be
+   painted anew without touching another; what the story reads from a section, and what it takes from one, is named at its head.
+   The upper room has no light but its five lamps: each throws a pool of its own, which shrinks as its oil burns down, and the night
+   stands in the window. Eutychus sits in that window, on its sill, as the account says (Acts 20:9): in the opening, his head under
+   its top, turned to the speaker. No flame and no round pool of light comes behind a head; the balance hangs from two cords and has
+   no upright; the lamp's stand ends in a cup, and the hanging lamp hangs from cords that part (CONTRIBUTING section 3).
+   One tune runs through the chapter and changes with the hours (MUSIC); at midnight nothing plays and nothing is heard. */
 LEVEL(15,()=>{
 "use strict";
 
@@ -130,9 +138,9 @@ function box15(g,x,y,w,h,c){const t=Math.min(4,h*.3);R(g,x,y+t,w,h-t,c);poly(g,[
 /* ==== ART gaius15: begin ==== */
 /* Corinth, a room in the house of Gaius, on a winter day.
    Called from outside: ART.gaius15 only. Reads nothing of the story: the room has one picture.
-   Hotspots (ROOMS.gaius15): window to the court 20,34,32,30 · on the table 92,96,64,12 the letter 104,90,30,8, ink and reed 140,90,10,8
-   and the spare tablet 90,92,12,6 · door to the storeroom 268,44,36,60. Actors: Tertius sits at 124,116, Gaius stands at 60,122,
-   Paul comes in at 200,124. Walk strip y 112..138.
+   Hotspots (ROOMS.gaius15): window to the court 20,34,32,30 · the table 92,92,64,25 and on it the letter 104,90,30,8, ink and reed
+   140,90,10,8 and the spare tablet 93,92,11,7 · door to the storeroom 268,44,36,60. Actors: Tertius sits at 124,116, Gaius stands at
+   60,122, Paul comes in at 200,124 and stands at the table's ends (x 84 and 164) when he looks at what lies on it. Walk strip y 112..138.
    The room is seen from in front, the eye at the height of a standing man's (VPGaius15): the joists of the ceiling, the joints of the
    paving and the two side walls all run to that one point. The light is the winter day in the window, at the left of the back wall:
    cool, strongest on the left, fading to the right, where the coals of the brazier give a little warmth back. Only the coals move.
@@ -332,8 +340,8 @@ function emberGaius15(g,t){const x=178;
 
 /* ==== ART scale15: begin ==== */
 /* The close view: the storeroom table, seen from in front and a little above, with a balance of bronze hanging over it.
-   Called from outside (keep these names and what they give back): ART.scale15 · tiltScale15() · weightBoxScale15(id), which the
-   weights' hotspots read, so that a weight is clicked where it is painted.
+   Called from outside (keep these names and what they give back): ART.scale15 · tiltScale15() · weightBoxScale15(id) and
+   bagBoxScale15(), which the hotspots of the weights and of the bag read, so that each is clicked where it is painted.
    Reads: sc15() = G.sc15 = {round:0..2, w:{a,g,th,kz: 't' on the board | 'r' in the right pan | 'l' in the left pan, before the bag}},
    F.s3 (all three weighed: the pan is empty, the bags lie in the chest), WT (the weights: id, v its worth, m its number letters),
    ROUND[round] (bag: what the bag weighs, m: the number letters on its letter), WIT15 (the men behind the table: x, w, a: actor id).
@@ -368,6 +376,8 @@ function weightBoxScale15(id,a){const s=sc15(),S=SCALE15,[w,h]=S.size[id],p=s.w[
   const row=WT.filter(q=>s.w[q.id]===p),gap=row.length>3?1:2,tot=row.reduce((n,q)=>n+S.size[q.id][0]+gap,-gap),[cx,cy]=panScale15(p,a==null?tiltScale15()*S.deg*Math.PI/180:a);let x=cx-tot/2;
   for(const q of row){if(q.id===id)break;x+=S.size[q.id][0]+gap}
   const dx=x+w/2-cx;return[x,cy+5+1+3.2*Math.sqrt(Math.max(0,1-dx*dx/900))-h,w,h]}
+/* bagBoxScale15: where the bag stands in the left pan as the beam comes to rest, [x,y,w,h]: it rides up and down with its pan */
+function bagBoxScale15(){const[cx,cy]=panScale15('l',tiltScale15()*SCALE15.deg*Math.PI/180);return[cx-18,cy-14,36,22]}
 /* ---- small tools of this section ---- */
 /* splineScale15: a smooth curve through flat points (closed or open), as the current path */
 function splineScale15(g,p,closed){const n=p.length/2,P=i=>{i=closed?(i%n+n)%n:clamp(i,0,n-1);return[p[2*i],p[2*i+1]]};
@@ -406,8 +416,8 @@ function lightScale15(g){comp(g,'multiply',.62,()=>{g.fillStyle=rg(g,100,88,250,
    legs, or the long folds of his mantle. The table hides their feet, and their hands hang above the picture.
    MENScale15, in the order of WIT15: x where he stands, hem how low his tunic comes, s how near he is (the nearer the larger),
    gap the room between his knees; cloak: 'side' the mantle hangs down his left side, 'open' down both; long: a mantle to the shin. */
-const MENScale15=[{x:22,hem:9.4,s:1,gap:3.2},{x:67,hem:8,s:.92,gap:4.4,cloak:'side'},{x:110,s:1.07,long:1},
-  {x:211,hem:10,s:1.06,gap:3.8,cloak:'side'},{x:252,hem:8.2,s:.93,gap:3,cloak:'open'},{x:298,hem:9.2,s:1,gap:5,turn:1}];
+const MENScale15=[{x:22,hem:9.4,s:1,gap:3.2,cloak:'side'},{x:67,hem:8,s:.92,gap:4.4,cloak:'side'},{x:110,s:1.07,long:1},
+  {x:211,hem:10,s:1.06,gap:3.8,cloak:'side'},{x:252,s:.95,long:1},{x:298,hem:9.2,s:1,gap:5,turn:1,cloak:'side'}];
 function backScale15(g){
   g.fillStyle=lg(g,0,0,320,0,['#6c5a48','#56493e','#453b38']);g.fillRect(0,0,320,24);
   g.fillStyle=lg(g,0,0,0,24,['rgba(24,18,22,.5)','rgba(24,18,22,0)']);g.fillRect(0,0,320,24);
@@ -968,11 +978,14 @@ function awlSand15(g,fx,fy){const[lx,ly]=SUNSand15,ux=.72,uy=-.69,nx=-uy,ny=ux,L
    the coaster's rail is above it all along, so that she hides it as far as her stem (her mast is amidships, out of the picture at
    the left; her yard is lowered and lashed along her rail, the sail furled on it), and the beacon tower stands at the end of the
    mole, whose wall is higher than the eye.
-   Hotspots (ROOMS.quay15): the harbor 124,58,100,34 · the coaster 8,34,110,72 · jars of oil 236,92,44,22 · lane to Korinna's house
-   292,48,28,62 (a stepped lane going up between houses; the tall house of three stories closes it). Actors: the oil seller 262,120 ·
-   Timothy 170,124 · Trophimus 120,120 · Sopater 60,118 and Secundus 78,124 · Gaius of Derbe 208,116 and Tychicus 226,122 (two pairs,
-   never a row of equal gaps) · Luke comes in at 140,128. Heads come at y 68..90: behind them lie water, the hull's strakes, a wall
-   and the dark of the shop, and nothing round. The front row of jars stands inside the walk strip (y 112..138): it is named in props. */
+   Hotspots (ROOMS.quay15): the harbor 124,58,100,34 · the coaster 0,34,118,72 · jars of oil 236,92,44,22 · lane to Korinna's house
+   292,12,28,98 (a stepped lane going up between houses; the tall house of three stories closes it). Actors (place15): Sopater 59,117
+   and Secundus 78,124 before the coaster · Trophimus by himself before her bow, 104,113 · Timothy 172,125, where Luke comes in, at
+   148,131 · Gaius of Derbe 206,113 and Tychicus 224,121 before the house · the oil seller 258,112.6, behind the front row of his
+   jars, in the gap between them (two pairs, one apart, never a row of equal gaps or of one depth; no two in one column of the
+   picture; the gulls on the quay's edge, x 179..195, stay in sight). Heads come at y 67..90: behind them lie water, the hull's
+   strakes, a wall and the dark of the shop, and nothing round. The front row of jars stands inside the walk strip (y 112..138): it
+   is named in props. */
 const HZQuay15=62;
 ART.quay15={w:320,q:12,paint(g){paintQuay15(g)},light:{amb:'#f2dcc2'},draw(g,t){drawQuay15(g,t)},front(){},props:[{y:114,shape(g){jarsQuay15(g,1)}}]};
 function paintQuay15(g){const r=rng(1505);
@@ -1221,48 +1234,83 @@ function drawQuay15(g,t){if(!GLQuay15){const r=rng(1506);GLQuay15=[];
 
 /* ==== ART upper15: begin ==== */
 /* Troas, the upper room on the third story, by night, lit only by its five lamps.
-   Called from outside: ART.upper15 only.
+   Called from outside: ART.upper15, and WINUpper15 and EUTUpper15, from which the story takes the window's hotspot and the place of
+   the one who sits in the window.
    Reads: stage15() (the picture: 'm' the meeting, the listeners look to Paul · 'x' midnight, the window empty, the listeners turned to
    it, some risen · 'a' after, the listeners round the table) and lamps15() = G.l15, the oil in each lamp, 0 to its fill, in the order
    of LAMPS: 0 in the niche (small, 2), 1 at the stairs (small, 2), 2 hanging (middle, 3), 3 by the speaker (middle, 3), 4 on the table
    (large, 4, two spouts). A level is a whole number, but it falls smoothly while Luke sits. At 0 a lamp is a guttering spark.
    How the light is made. The room is painted once in full light (roomUpper15, kept per picture in SCUpper15). The backdrop the engine
    bakes is that room in the dark of the night (paintUpper15). For each lamp there are two pictures of what it alone lights, a near
-   pool and a wide one (maskUpper15: the lit room times the lamp's reach, dithered like the backdrop), and drawUpper15 adds them over
-   the dark room, as much of each as the lamp has oil for (glowUpper15): so every lamp throws its own pool, its reach grows and shrinks
-   with its oil, and the far corners stay dark. The props, which the engine cuts out of the dark backdrop, get the same light laid over
-   them at their own depth. The light on the actors follows the same levels (lightUpper15). Only the flames move.
-   Halo rule: the lamp by the speaker and the lamp at the stairs burn at the height of a head. Neither has a round pool on the wall: the
-   wide pools are long and low, and the lamp on its stand is part of the stand's prop, so that it is in front of whoever walks behind it;
-   behind the lamp at the stairs is the dark of the stair's shaft.
-   Hotspots (ROOMS.upper15): window 40,30,30,34, open to the night, with a wide sill: Eutychus is an ACTOR who sits on it at 55,66 (his
-   lap comes at y 54, where the sill's slab is, and his legs hang down before it) and is never painted · hanging lamp 110,34,16,14, on
-   a small board hung by cords that part upward to two joists · lamp by the speaker 166,70,12,10 on a stand 170,80,4,36 whose top is a
-   cup as wide as the lamp and whose foot is a round slab (it comes forward to y 124, out of the rectangle: see standUpper15) · table
-   196,98,60,12 with the bread, and the lamp on the table 220,88,16,10 · lamp in the niche 262,50,14,12 (a low wide recess) · stairs
-   288,66,32,56: the back wall opens on the dark of the stair's shaft, a low wall closes the opening hip-high, and the lamp at the
-   stairs 290,74,12,10 stands on it · big jar 8,92,22,30 · stool 80,116,14,12 · the listeners 70,76,180,28, painted: on the bench that
-   is built along the back wall and on the floor before it.
-   Actors: Paul 150,118 (at the table, 226,116, after midnight) · Korinna 38,122 · Luke comes in at 96,126 and sits at 87,130.
-   The big jar, the stool and the lamp's stand reach into the walk strip (y 112..138): they are named in props. The stand's prop stands
-   at y 124, the front of its foot. */
+   pool and a wide one (maskUpper15: the lit room times the lamp's reach), and the frame that is shown is the dark room with as much
+   of each added as the lamp has oil for (glowUpper15), dithered once, as a backdrop is (frameUpper15): so every lamp throws its own
+   pool, its reach grows and shrinks with its oil, the far corners stay dark, and the walls have the fine dither of every other room.
+   The props, which the engine cuts out of the dark backdrop, get the same piece of the frame laid over them at their own depth. The
+   light on the actors follows the same levels (lightUpper15). Only the flames move.
+   Halo rule: no flame and no round pool of light comes behind a head. The lamp at the stairs burns at the height of a head, before
+   the dark of the stair's shaft; the lamp by the speaker stands on a stand as tall as a man and burns above every head (see
+   standUpper15); and the pools on the back wall are long and low.
+   Hotspots (ROOMS.upper15): window 38,22,34,42 (WINUpper15), open to the night, with a wide sill: Eutychus is an ACTOR who sits in
+   the opening at 52,69 (EUTUpper15), is hidden from the hip down by the sill, which is a prop, and is never painted · hanging lamp
+   110,34,16,14, on a small board hung by cords that part upward to two joists · lamp by the speaker 166,60,13,13 on a stand
+   170,72,4,46 whose top is a cup as wide as the lamp and whose foot is a round slab · table 196,98,60,12 with the bread, and the
+   lamp on the table 220,88,16,10 · lamp in the niche 262,50,14,12 (a low wide recess) · stairs 288,66,32,56: the back wall opens
+   on the dark of the stair's shaft, a low wall closes the opening hip-high, and the lamp at the stairs 290,74,12,10 stands on it ·
+   big jar 8,92,22,30 · stool 80,116,14,12 · the listeners 66,70,200,41, painted: on the bench that is built along the back wall
+   and on the floor before it.
+   Actors: Paul 150,118 (at the table's end, 187,116, after midnight) · Korinna 38,122 · Luke comes in at 96,126, sits at 87,130,
+   and stands behind his stool, at 96,124, at midnight and after.
+   The big jar, the stool and the lamp's stand reach into the walk strip (y 112..138): they are named in props, the stand at y 120,
+   the middle of its foot. The sill is a prop too, at y 70, behind which only the one in the window comes. */
+/* WINUpper15: the window's opening (x, its top y, its width w), its sill (s, the top of the slab) and where the sill's prop stands (d).
+   EUTUpper15: where the one who sits in the window is placed. He sits in the opening, on the sill, at its left side, turned to the
+   room and to the speaker: the sill is a prop that stands nearer than he does, so that the slab and the wall under it lie over him
+   from the hip down, and what is seen of him is what is seen of anyone who sits in a window above our eyes: his body from the hip
+   up, inside the opening, his hands on the sill, his head under its top, the night behind him and beside him. The stars of the
+   window keep clear of his outline: those behind him are seen when the window is empty. */
+const WINUpper15={x:38,y:22,w:34,s:54,d:70},EUTUpper15=[52,69];
 ART.upper15={w:320,q:12,variant:()=>stage15(),paint(g,v){paintUpper15(g,v)},light:()=>lightUpper15(),draw(g,t){drawUpper15(g,t)},front(){},
-  props:[{y:122,shape(g){jarUpper15(g)}},{y:126,shape(g){stoolUpper15(g)}},{y:124,shape(g){standUpper15(g);clayUpper15(g,176.6,75.4,1,1)}}]};
-const LAMPUpper15=[[273,58.7],[300.5,80.9],[123,41.6],[176.6,75.4],[228,92.6]],   /* where each lamp's wick is: the foot of its flame (the table's lamp has two, 6.5 to either side) */
-  CAPUpper15=[2,2,3,3,4],SKYUpper15=[43.5,32.5,70,32.5,70,54,43.5,54],WUpper15='#cdb992',SCUpper15={};
+  props:[{y:122,shape(g){jarUpper15(g)}},{y:126,shape(g){stoolUpper15(g)}},{y:120,shape(g){standUpper15(g);clayUpper15(g,LAMPUpper15[3][0],LAMPUpper15[3][1],1,1)}},
+    {y:WINUpper15.d,shape(g){sillShapeUpper15(g)}}]};
+const LAMPUpper15=[[273,58.7],[300.5,80.9],[123,41.6],[176.6,67.4],[228,92.6]],   /* where each lamp's wick is: the foot of its flame (the table's lamp has two, 6.5 to either side) */
+  CAPUpper15=[2,2,3,3,4],SKYUpper15=[WINUpper15.x+3.5,WINUpper15.y+2.5,WINUpper15.x+WINUpper15.w,WINUpper15.y+2.5,WINUpper15.x+WINUpper15.w,WINUpper15.s,WINUpper15.x+3.5,WINUpper15.s],
+  WUpper15='#cdb992',SCUpper15={};
 /* the backdrop: the room as the night leaves it without a lamp. The sky in the window is not darkened. */
-function paintUpper15(g,v){const S=sceneUpper15(v);g.save();g.setTransform(1,0,0,1,0,0);g.drawImage(S.B,0,0);g.restore();
-  lightmap(g,320,'#262338',l=>{pool(l,165,86,230,120,'#1c1826',1);pool(l,55,64,23,7,'#000000',.6,'source-over');poly(l,SKYUpper15,'#ffffff');R(l,36,54,38,.6,'#5a6088');R(l,40,32.5,3.5,21.5,'#2c2e4c')})}
-/* sceneUpper15: for one picture, the room in full light (B), what each lamp lights of it, near and wide (L[i][0], L[i][1]), and the
-   same cut to the outline of each prop (P), as the engine cuts the props themselves */
-function sceneUpper15(v){if(SCUpper15[v])return SCUpper15[v];const[B,b]=mk(320*HR,144*HR);b.scale(HR,HR);roomUpper15(b,v);
-  const L=LAMPUpper15.map((_,i)=>[0,1].map(k=>{const[c,l]=mk(320*HR,144*HR);l.scale(HR,HR);R(l,0,0,320,144,'#000000');maskUpper15(l,i,k);poly(l,SKYUpper15,'#000000');pool(l,55,64,23,7,'#000000',.7,'source-over');
-    l.setTransform(1,0,0,1,0,0);l.globalCompositeOperation='multiply';l.drawImage(B,0,0);finish(c,l,12);return c}));
-  const P=ART.upper15.props.map(p=>{const W=320*HR,H=144*HR,[m,q]=mk(W,H);q.scale(HR,HR);p.shape(q,v);q.setTransform(1,0,0,1,0,0);const im=q.getImageData(0,0,W,H),d=im.data;let x0=W,y0=H,x1=-1,y1=-1;
+function paintUpper15(g,v){const S=sceneUpper15(v);g.save();g.setTransform(1,0,0,1,0,0);g.drawImage(S.B,0,0);g.restore();lightmap(g,320,'#262338',nightUpper15)}
+/* nightUpper15: the map of the night's own light: the dark of the room, the shade under the sill, the sky, and what the sky lays on
+   the sill's edge and on the side of the opening */
+function nightUpper15(l){const{x,y,w,s}=WINUpper15;pool(l,165,86,230,120,'#1c1826',1);pool(l,x+w/2,s+10,23,7,'#000000',.6,'source-over');poly(l,SKYUpper15,'#ffffff');
+  R(l,x-4,s,w+8,.6,'#5a6088');R(l,x,y+2.5,3.5,s-y-2.5,'#2c2e4c')}
+/* toneUpper15: the tone a backdrop gets when the engine finishes it (see finish, in index.html), without its dither.
+   ditherUpper15: its dither, without the tone: the same ordered dither, one cell to a room pixel. */
+function toneUpper15(g,w,h){const im=g.getImageData(0,0,w,h),d=im.data;
+  for(let i=0;i<d.length;i+=4){const m=d[i]*.3+d[i+1]*.59+d[i+2]*.11;for(let k=0;k<3;k++)d[i+k]=(m+(d[i+k]-m)*1.14-128)*1.07+128}
+  g.putImageData(im,0,0)}
+function ditherUpper15(c,g){const q=12,w=c.width,h=c.height,im=g.getImageData(0,0,w,h),d=im.data;
+  for(let y=0,i=0;y<h;y++)for(let x=0;x<w;x++,i+=4){const t=((BAYER[((y>>1)&3)*4+((x>>1)&3)]+.5)/16-.5)*q;
+    for(let k=0;k<3;k++)d[i+k]=Math.round((d[i+k]+t)/q)*q}
+  g.putImageData(im,0,0)}
+/* sceneUpper15: for one picture, the room in full light (B), the room as the night leaves it (D), what each lamp lights of it, near
+   and wide (L[i][0], L[i][1]), the outline of each prop (P), and the frame as the lamps stand now (W, with its key). D and L have a
+   backdrop's tone and are smooth: the frame is put together from them and dithered once, as a backdrop is (frameUpper15). Dithering
+   each lamp's light by itself and adding the pictures would add their dither too, and leave a coarse pattern on the walls. */
+function sceneUpper15(v){if(SCUpper15[v])return SCUpper15[v];const W=320*HR,H=144*HR,[B,b]=mk(W,H);b.scale(HR,HR);roomUpper15(b,v);
+  const[D,d]=mk(W,H);d.drawImage(B,0,0);lightmap(d,320,'#262338',nightUpper15);toneUpper15(d,W,H);
+  const L=LAMPUpper15.map((_,i)=>[0,1].map(k=>{const[c,l]=mk(W,H);l.scale(HR,HR);R(l,0,0,320,144,'#000000');maskUpper15(l,i,k);poly(l,SKYUpper15,'#000000');
+    pool(l,WINUpper15.x+WINUpper15.w/2,WINUpper15.s+10,23,7,'#000000',.7,'source-over');
+    l.setTransform(1,0,0,1,0,0);l.globalCompositeOperation='multiply';l.drawImage(B,0,0);toneUpper15(l,W,H);return c}));
+  const P=ART.upper15.props.map(p=>{const[m,q]=mk(W,H);q.scale(HR,HR);p.shape(q,v);q.setTransform(1,0,0,1,0,0);const im=q.getImageData(0,0,W,H),d=im.data;let x0=W,y0=H,x1=-1,y1=-1;
     for(let y=0,i=3;y<H;y++)for(let x=0;x<W;x++,i+=4){if(d[i]<128){d[i]=0;continue}d[i]=255;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
-    q.putImageData(im,0,0);const w=x1-x0+1,h=y1-y0+1;
-    return{y:p.y,x:x0/HR,t:y0/HR,w:w/HR,h:h/HR,L:L.map(a=>a.map(c=>{const[o,og]=mk(w,h);og.drawImage(m,-x0,-y0);og.globalCompositeOperation='source-in';og.drawImage(c,-x0,-y0);return o}))}});
-  return SCUpper15[v]={B,L,P}}
+    q.putImageData(im,0,0);const w=x1-x0+1,h=y1-y0+1,[o,og]=mk(w,h);og.drawImage(m,-x0,-y0);
+    return{y:p.y,x:x0/HR,t:y0/HR,w:w/HR,h:h/HR,x0,y0,m:o,c:mk(w,h)}});
+  return SCUpper15[v]={B,D,L,P,W:mk(W,H),key:null}}
+/* frameUpper15: the room as its lamps stand now (A: how much of each lamp's near and wide light): the dark room and the light of the
+   five added to it, dithered once; and the same picture cut to the outline of each prop, to be laid over whoever stands behind it */
+function frameUpper15(S,A,key){const[c,w]=S.W;w.globalCompositeOperation='source-over';w.globalAlpha=1;w.drawImage(S.D,0,0);
+  w.globalCompositeOperation='lighter';A.forEach((a,i)=>a.forEach((al,k)=>{if(al>.004){w.globalAlpha=al;w.drawImage(S.L[i][k],0,0)}}));
+  w.globalCompositeOperation='source-over';w.globalAlpha=1;ditherUpper15(c,w);
+  for(const p of S.P){const g=p.c[1];g.globalCompositeOperation='copy';g.drawImage(p.m,0,0);g.globalCompositeOperation='source-in';g.drawImage(c,-p.x0,-p.y0)}
+  S.key=key}
 /* maskUpper15: the reach of lamp i, painted as light on black. k 0: the near pool, which burns as long as there is a spark; k 1: the
    wide one, which grows with the oil. No pool on the back wall is round at the height of a head. */
 function maskUpper15(l,i,k){const N='#ffd9a0',F='#f0a45a',D=(x,y,rx,ry,a)=>pool(l,x,y,rx,ry,'#000000',a,'source-over'),
@@ -1274,20 +1322,20 @@ function maskUpper15(l,i,k){const N='#ffd9a0',F='#f0a45a',D=(x,y,rx,ry,a)=>pool(
     R(l,288,85.2,21,16.3,'rgba(0,0,0,.8)')}   /* the face of the low wall lies under its own lamp, in the dark */
   else if(i===2){if(!k){soft(122,41,44,29,N,1);pool(l,122,9,34,9,N,.5)}
     else{pool(l,122,54,108,66,F,.62);pool(l,120,116,88,26,F,.36);pool(l,122,7,76,12,F,.4)}}
-  else if(i===3){if(!k){soft(176,86,60,22,N,.62);soft(174,121,48,13,N,.5);D(172,120,13,6,.5);R(l,168.6,82,7,30,'rgba(0,0,0,.6)')}
-    else{pool(l,176,88,112,50,F,.6);pool(l,174,125,88,24,F,.42);pool(l,176,7,64,10,F,.22)}}
+  else if(i===3){if(!k){soft(176,81,60,22,N,.62);soft(174,121,48,13,N,.5);D(172,120,13,6,.5);R(l,168.6,74,7,38,'rgba(0,0,0,.6)')}
+    else{pool(l,176,84,112,50,F,.6);pool(l,174,125,88,24,F,.42);pool(l,176,7,64,10,F,.22)}}
   else if(!k){soft(228,97,44,8,N,.9);soft(228,91,40,18,N,.52)}
   else{pool(l,228,86,116,56,F,.62);pool(l,228,131,90,20,F,.34);pool(l,228,7,70,10,F,.2);D(226,108,38,8,.6)}}
 /* glowUpper15: how much of lamp i's near and wide pool is seen at oil level v */
 function glowUpper15(i,v){v=Math.max(0,v);return[Math.min(1,.2+.8*v),Math.min(1,v/CAPUpper15[i])]}
-/* drawUpper15: the light of the five lamps over the dark room, and their flames */
-function drawUpper15(g,t){const S=sceneUpper15(stage15()),L=lamps15(),A=L.map((v,i)=>glowUpper15(i,v)),
-    add=(src,x,y,w,h)=>{g.save();g.globalCompositeOperation='lighter';A.forEach((a,i)=>a.forEach((al,k)=>{if(al>.004){g.globalAlpha=al;g.drawImage(src[i][k],x,y,w,h)}}));g.restore()};
-  add(S.L,0,0,320,144);
+/* drawUpper15: the room in the light of its five lamps, and their flames. The frame is put together anew only when a lamp's light has
+   changed (while Luke sits, and when he pours). The props are cut from the dark backdrop by the engine: the same piece of the lit
+   frame is laid over each one, just in front of it, and with the stand's the flame of the lamp that stands on it. */
+function drawUpper15(g,t){const S=sceneUpper15(stage15()),L=lamps15(),A=L.map((v,i)=>glowUpper15(i,v)),key=A.map(a=>Math.round(a[0]*64)+'.'+Math.round(a[1]*64)).join('/');
+  if(S.key!==key)frameUpper15(S,A,key);
+  g.drawImage(S.W[0],0,0,320,144);
   LAMPUpper15.forEach(([x,y],i)=>{if(i!==3)for(const dx of i===4?[-6.5,6.5]:[0])flameUpper15(g,x+dx,y,t+i*370+dx*40,L[i])});
-  /* the props are cut from the dark backdrop: lay the light over each one, just in front of it; and the flame of the lamp on the stand,
-     which is part of the stand's prop */
-  S.P.forEach((p,n)=>depth(p.y+.02,()=>{add(p.L,p.x,p.t,p.w,p.h);if(n===2)flameUpper15(g,LAMPUpper15[3][0],LAMPUpper15[3][1],t+1110,L[3])}))}
+  S.P.forEach((p,n)=>depth(p.y+.02,()=>{g.drawImage(p.c[0],p.x,p.t,p.w,p.h);if(n===2)flameUpper15(g,LAMPUpper15[3][0],LAMPUpper15[3][1],t+1110,L[3])}))}
 function flameUpper15(g,x,y,t,v){const f=Math.floor(t/110)%3;v=Math.max(0,v);
   if(v<.5){R(g,x-.5,y-.5-(f===1?.5:0),1,1,f?'#ff9a3a':'#c85a1c');if(!f)R(g,x-.5,y-1,.5,.5,'#ffd080');return}
   const h=2.4+v*1.15+(f===1?.7:f?.3:0),s=f===2?.4:f?-.3:0;
@@ -1296,7 +1344,7 @@ function flameUpper15(g,x,y,t,v){const f=Math.floor(t/110)%3;v=Math.max(0,v);
   poly(g,[x-.8,y+.3,x-1,y-h*.25,x-.1+s,y-h*.74,x+.9,y-h*.24,x+.8,y+.3],'#ffc040');
   poly(g,[x-.5,y+.2,x-.5,y-h*.26,x+s*.5,y-h*.5,x+.5,y-h*.26,x+.5,y+.2],'#fff4cc')}
 /* lightUpper15: the light on the people in the room: one lamp of the engine's for each of the five, its reach and warmth by its oil */
-function lightUpper15(){const L=lamps15(),C=[[272,92,.8],[298,96,.8],[122,74,1],[176,92,1],[228,96,1.15]];
+function lightUpper15(){const L=lamps15(),C=[[272,92,.8],[298,96,.8],[122,74,1],[176,86,1],[228,96,1.15]];
   return{amb:'#2e2a40',lamps:C.map(([x,y,s],i)=>{const v=Math.max(0,L[i]);return[x,y,(62+v*24)*s,mix('#000000','#c48e46',.12+.48*Math.min(1,v)+.4*Math.min(1,v/CAPUpper15[i]))]})}}
 
 /* roomUpper15: the room in full light */
@@ -1304,7 +1352,7 @@ function roomUpper15(g,v){const r=rng(1507),W=WUpper15;
   R(g,0,0,320,9.6,'#34261a');tex(g,'wood',.5,0,0,320,9.6,'overlay',.5);
   floorUpper15(g,r);wallUpper15(g,r,W);ceilUpper15(g,r);windowUpper15(g,W,v);nicheUpper15(g,W);stairsUpper15(g,W);benchUpper15(g,W,r);
   folkUpper15(g,v,0);tableUpper15(g,v);folkUpper15(g,v,1);
-  hangUpper15(g);oval(g,173.5,121.4,11,4.6,'rgba(0,0,0,.4)');standUpper15(g);clayUpper15(g,176.6,75.4,1,1);clayUpper15(g,273,58.7,.8,1);
+  hangUpper15(g);oval(g,173.5,121.4,11,4.6,'rgba(0,0,0,.4)');standUpper15(g);clayUpper15(g,LAMPUpper15[3][0],LAMPUpper15[3][1],1,1);clayUpper15(g,273,58.7,.8,1);
   oval(g,21,121.8,12.5,2.6,'rgba(0,0,0,.42)');jarUpper15(g);oval(g,88,127.6,8.5,1.8,'rgba(0,0,0,.36)');stoolUpper15(g)}
 /* the joists run from the back wall toward us and fan out as they come; of each we see the underside and the side that is turned
    to the middle of the room. None stands upright under the middle. */
@@ -1336,18 +1384,21 @@ function floorUpper15(g,r){const C='#8c6e4c',Y=[101.5,104,107,110.5,114.5,119,12
   const M='#b49a62';poly(g,[69,103.2,161,103.2,165,110.6,65,110.6],M);
   for(const[y,i]of[[104.5,1.4],[106,2.2],[107.6,3],[109.2,3.8]])stroke(g,[68-i,y,162+i,y],'rgba(84,62,30,.34)',.5);
   R(g,65,110.6,100,.6,'rgba(0,0,0,.3)');clipTo(g,()=>poly(g,[69,103.2,161,103.2,165,110.6,65,110.6]),()=>{tex(g,'grain',.3,64,103,102,8,'overlay',.5);ao(g,64,103.2,102,2.4,'t',.3)})}
-/* the window, open to the night, and its sill: a slab of stone on two brackets, set at its ends. Whoever sits on it has the slab
-   under him and his legs before it. The window is above our eyes: we see into the left of the opening and up under its top.
-   No beam lies over it: the head of whoever sits there comes before the wall above the opening, and a bar there would lie behind it. */
-function windowUpper15(g,W,v){
-  ao(g,35,58,40,15,'t',.7);
-  R(g,40,30,30,24,tint(W,-.5));R(g,40,30,3.5,24,tint(W,-.1));ao(g,40,30,3.5,24,'r',.2);R(g,40,30,30,2.5,tint(W,-.44));R(g,40,30,3.5,2.5,tint(W,-.5));
-  g.fillStyle=lg(g,0,32.5,0,54,['#0a1130','#141f48','#1e2c58']);g.fillRect(43.5,32.5,26.5,21.5);
-  for(const[x,y,b]of[[46.5,36,0],[66,35,1],[64.5,43.5,0],[47,46,1],[67.5,50,0],[57,41.5,0],[54,48.5,0]])R(g,x,y,.5,.5,b?'#f0f2ff':'#9aa6d8');
-  R(g,43.5,32.5,.5,21.5,'rgba(0,0,0,.4)');
-  R(g,39.5,29.5,31,.5,tint(W,-.3));R(g,39.5,30,.5,24,tint(W,-.34));R(g,70,30,.5,24,tint(W,.08));
-  R(g,36,54,38,4,tint(W,-.04));tex(g,'mott',.4,36,54,38,4);R(g,36,54,38,.6,tint(W,.3));R(g,36,57.4,38,.6,tint(W,-.4));
-  poly(g,[37,58,40.8,58,37.8,63.6,37,63.6],tint(W,-.2));poly(g,[69.2,58,73,58,73,63.6,72.2,63.6],tint(W,-.3))}
+/* the window, open to the night, and its sill: a slab of stone on two brackets, set at its ends. The window is above our eyes: we see
+   into the left of the opening and up under its top, and nothing of the sill's upper side. The opening is tall enough for one who
+   sits on the sill: his head comes under its top, with the night above it. No beam lies over it.
+   sillShapeUpper15: the sill's prop, the slab and the wall under it as far down as the one who sits there reaches (see EUTUpper15). */
+function windowUpper15(g,W,v){const{x,y,w,s}=WINUpper15,h=s-y;
+  ao(g,x-5,s+4,w+10,15,'t',.7);
+  R(g,x,y,w,h,tint(W,-.5));R(g,x,y,3.5,h,tint(W,-.1));ao(g,x,y,3.5,h,'r',.2);R(g,x,y,w,2.5,tint(W,-.44));R(g,x,y,3.5,2.5,tint(W,-.5));
+  g.fillStyle=lg(g,0,y+2.5,0,s,['#0a1130','#141f48','#1e2c58']);g.fillRect(x+3.5,y+2.5,w-3.5,h-2.5);
+  for(const[sx,sy,b]of[[6.5,5,0],[30.5,4.5,1],[14,3.5,0],[24.5,8.5,0],[5.5,12,0],[31,15.5,0],[28,23.5,1],[31.5,29,0],[19,19.5,0],[16,26.5,0],[11,24,1],[24,30,0]])
+    R(g,x+sx,y+sy,.5,.5,b?'#f0f2ff':'#9aa6d8');
+  R(g,x+3.5,y+2.5,.5,h-2.5,'rgba(0,0,0,.4)');
+  R(g,x-.5,y-.5,w+1,.5,tint(W,-.3));R(g,x-.5,y,.5,h,tint(W,-.34));R(g,x+w,y,.5,h,tint(W,.08));
+  R(g,x-4,s,w+8,4,tint(W,-.04));tex(g,'mott',.4,x-4,s,w+8,4);R(g,x-4,s,w+8,.6,tint(W,.3));R(g,x-4,s+3.4,w+8,.6,tint(W,-.4));
+  poly(g,[x-3,s+4,x+.8,s+4,x-2.2,s+9.6,x-3,s+9.6],tint(W,-.2));poly(g,[x+w-.8,s+4,x+w+3,s+4,x+w+3,s+9.6,x+w+2.2,s+9.6],tint(W,-.3))}
+function sillShapeUpper15(g){const{x,w,s,d}=WINUpper15,k='#000';R(g,x-4,s,w+8,4,k);R(g,x+6,s+4,w-10,d+2.6-s-4,k)}
 /* the niche: a low wide recess, above our eyes, so that we see up under its top. Soot has gone up the wall from it. */
 function nicheUpper15(g,W){const x=256,y=47,w=28,h=16;
   pool(g,273,45,9,5,'#2a2018',.4,'source-over');pool(g,273.6,40,6,8,'#2a2018',.26,'source-over');pool(g,274,33,4.4,7,'#2a2018',.14,'source-over');
@@ -1409,14 +1460,15 @@ function hangUpper15(g){const K='#a08c60';
   R(g,111,46.2,15.4,1.4,'#6e5234');R(g,111,46.2,15.4,.5,'#8e7048');
   clayUpper15(g,123,41.6,1,1)}
 /* the stand of the lamp by the speaker: its top is a cup that narrows to the shaft, as wide as the lamp that stands in it: no flat
-   top on a thin post. Its foot is a broad round slab, which we look down on. The slab comes forward to y 124, and that is where the
-   prop stands: whoever stands nearer than that has the lamp behind him, clear above his head, and whoever stands farther back
-   has the lamp and its flame before him. So the flame is never seen to sit on a head. */
+   top on a thin post. Its foot is a broad round slab, which we look down on. The stand is as tall as a man, so that the lamp burns
+   above every head in the room (its wick at y 67.4; the head of whoever stands at the back of the walk strip comes to y 67): the
+   flame is never seen to sit on a head, whoever stands before the stand or behind it. The prop stands where the shaft does, in the
+   middle of the foot (y 120). */
 function standUpper15(g){const C='#6e5232';
   oval(g,172,120.6,8,4.4,tint(C,-.5));oval(g,172,119.4,8,4.4,tint(C,-.12));oval(g,171.4,119,6.4,3.2,tint(C,.04));
-  poly(g,[166,80,178,80,177.4,81.2,174.8,85.6,174,88.6,174.3,110,175.4,116.4,176,118.6,168,118.6,168.6,116.4,169.7,110,170,88.6,169.2,85.6,166.6,81.2]);
+  poly(g,[166,72,178,72,177.4,73.2,174.8,77.6,174,80.6,174.3,110,175.4,116.4,176,118.6,168,118.6,168.6,116.4,169.7,110,170,80.6,169.2,77.6,166.6,73.2]);
   g.fillStyle=lg(g,166,0,178,0,[[0,tint(C,-.2)],[.4,tint(C,.22)],[.62,C],[1,tint(C,-.4)]]);g.fill();
-  R(g,166,80,12,.6,tint(C,.4))}
+  R(g,166,72,12,.6,tint(C,.4))}
 /* the big jar for the oil: we look down into its mouth, and the lines cut round its shoulder bend as its outline does */
 function jarUpper15(g){const x=19,y=121.6,h=29,C='#a8643e',pts=[[0,6.2],[.05,5.3],[.12,6],[.46,11],[.8,8],[1,4.2]],L=[],Rt=[],
     hw=t=>{let i=1;while(i<pts.length-1&&pts[i][0]<t)i++;const a=pts[i-1],b=pts[i],q=clamp((t-a[0])/(b[0]-a[0]),0,1),s=q*q*(3-2*q);return a[1]+(b[1]-a[1])*s};
@@ -1445,7 +1497,7 @@ function folkUpper15(g,v,layer){const GC=['#c2b08c','#8f6f52','#6f7f6a','#58688a
      x:[['b',136,104.5,-1,2,2,1,2,{b:1,p:1}],['b',207,104.5,-1,3,-1,0,0,{p:1,short:1}],['b',247,104.5,-1,4,4,2,1,{f:1,p:1}],
        ['r',74,106.4,-1,1,-1,0,1,{short:1,b:1}],['r',116,105.6,-1,0,1,2,4,{f:1}],['r',188,106.6,-1,0,3,3,3,{b:1}],
        ['f',262,110.6,-1,6,2,1,2,{b:1}]],
-     a:[['b',109,104.5,1,1,-1,0,1,{b:1,short:1}],['b',204,104.5,1,2,2,1,2,{b:1}],['b',214.5,104.5,1,0,1,2,4,{f:1}],
+     a:[['b',109,104.5,1,1,-1,0,1,{b:1,short:1}],['b',204,104.5,-1,2,2,1,2,{b:1}],['b',214.5,104.5,-1,0,1,2,4,{f:1}],
        ['b',241.5,104.5,-1,3,-1,0,0,{short:1}],['b',252,104.5,-1,4,4,2,1,{f:1}],
        ['f',124,110.6,1,5,0,2,0,{f:1}],['f',150,110.6,1,6,3,0,2,{b:1}],['f',268,110.6,-1,0,3,3,3,{b:1}]]}[v];
   L.filter(p=>(p[0]==='b')===!layer).sort((a,b)=>a[2]-b[2]).forEach(([t,x,y,d,gi,mi,si,hi,o])=>{
@@ -1850,11 +1902,11 @@ async function eutychus(){if(G.eu15)return say(EUV,'eutychus_talk_again',{to:LK}
    (see sit). */
 async function midnight(){AU.mood='none';AU.amb={};
   await tell('v9a');
-  await fade(1,500);G.x15='x';show15('upper15',92,122,-1);await fade(0,700);
+  await fade(1,500);G.x15='x';show15('upper15',96,124,-1);await fade(0,700);
   await tell('v9b');
   await fade(1,700);G.x15=null;show15('street15');LK.room='upper15';await fade(0,800);
   await tell('v10');
-  await fade(1,700);G.x15='a';G.l15=null;show15('upper15',180,126,1);await fade(0,800);
+  await fade(1,700);G.x15='a';G.l15=null;show15('upper15',96,124,1);await fade(0,800);
   await tell('v11a');await tell('v11b');
   await fade(1,800);G.x15=null;F.mid=1;AU.step=0;show15('street15');await fade(0,900);
   await tell('v12');codeBtn()}
@@ -1865,21 +1917,24 @@ async function leave(){await say(LK,'a_place_and_a_day',TH);
   await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
 
 /* ============ ROOMS ============ */
-/* BOTH: Paul and Luke act on a thing or a person through the same handlers: whoever is played says the line (see act, in index.html) */
+/* A room's hotspots are listed from the back to the front: where two overlap, the later one is meant (the table, then what lies on it).
+   Whoever looks at a small thing stands beside it, so that he does not cover it.
+   BOTH: Paul and Luke act on a thing or a person through the same handlers: whoever is played says the line (see act, in index.html) */
 const BOTH=h=>{h.as={luke15:h};return h};
 const NOW=[160,160,236,236];   /* a close view: whoever is played stands below the picture, and takes no step */
 ROOMS.gaius15={space:1.1,walk:[16,304,112,138],mood:'house',amb:AMB.gaius15,hs:[
   {name:'window_to_the_court',x:20,y:34,w:32,h:30,wx:44,wy:116,dir:-1,look:'corinth_winter_light'},
-  {name:'letter_to_rome',x:104,y:90,w:30,h:8,wx:150,wy:118,dir:-1,look:letter},
-  {name:'reed_pen',x:140,y:90,w:10,h:8,wx:160,wy:117,dir:-1,look:'ink_and_reed_look'},
-  {name:'spare_tablet',x:90,y:92,w:12,h:6,wx:96,wy:118,dir:1,look:spare},
+  {name:'table',x:92,y:92,w:64,h:25,wx:164,wy:118,dir:-1,look:letter},
+  {name:'letter_to_rome',x:104,y:90,w:30,h:8,wx:164,wy:118,dir:-1,look:letter},
+  {name:'reed_pen',x:140,y:90,w:10,h:8,wx:164,wy:118,dir:-1,look:'ink_and_reed_look'},
+  {name:'spare_tablet',x:93,y:92,w:11,h:7,wx:84,wy:118,dir:1,look:spare},
   {name:'door_to_the_storeroom',x:268,y:44,w:36,h:60,wx:280,wy:114,dir:1,exit:toScale,look:'door_to_the_storeroom_look'}].map(BOTH)};
 ROOMS.scale15={space:.9,walk:NOW,mood:'house',amb:AMB.scale15,hs:[
   ...WIT15.map(m=>({name:ACT[m.a].name,x:m.x,y:0,w:m.w,h:22,wx:160,wy:236,def:'talk',look:m.look,talk:weigh})),
   {name:'scale',x:60,y:24,w:200,h:60,wx:160,wy:236,def:'use',look:()=>say(P,'scale_look').then(()=>say(P,tiltLine(),TH)),use:weigh,talk:weigh},
   {name:'chest',x:262,y:72,w:58,h:72,wx:160,wy:236,look:'chest_look'},
   {get name(){return ROUND[sc15().round].letter},x:8,y:100,w:62,h:40,wx:160,wy:236,vis:()=>!F.s3,look:letterLook},
-  {get name(){return ROUND[sc15().round].bagName},x:72,y:78,w:36,h:22,wx:160,wy:236,vis:()=>!F.s3,look:'bag_look',use:'the_bag_is_not_mine_to_move',pickup:'the_bag_is_not_mine_to_move'},
+  {get name(){return ROUND[sc15().round].bagName},get x(){return bagBoxScale15()[0]},get y(){return bagBoxScale15()[1]},w:36,h:22,wx:160,wy:236,vis:()=>!F.s3,look:'bag_look',use:'the_bag_is_not_mine_to_move',pickup:'the_bag_is_not_mine_to_move'},
   ...WT.map(w=>({name:w.name,get x(){return weightBoxScale15(w.id)[0]-2},get y(){return weightBoxScale15(w.id)[1]-2},get w(){return weightBoxScale15(w.id)[2]+4},get h(){return weightBoxScale15(w.id)[3]+4},
     wx:160,wy:236,def:'use',use:()=>moveWeight(w.id),pickup:()=>moveWeight(w.id,1),look:()=>say(P,T(WLOOK[sc15().w[w.id]],{m:w.m}))})),
   {name:'back_to_the_room',x:220,y:134,w:100,h:10,wx:160,wy:236,exit:outScale,look:'not_before_all_three_are_weighed'}].map(BOTH)};
@@ -1895,18 +1950,18 @@ ROOMS.sand15={space:.5,walk:NOW,get mood(){return F.way?'road':'warned'},amb:AMB
   ...PEB15.map(([id,x,y])=>({name:PEBNAME[id],x:x-7,y:y-6,w:14,h:12,wx:160,wy:236,look:()=>say(P,T('pebble_look',{place:T(PEBNAME[id])})),useWith:item=>onPebble(id,item)})),
   {name:'back_to_the_quay',x:220,y:134,w:100,h:10,wx:160,wy:236,exit:outSand,look:'not_before_the_plan_is_laid'}].map(BOTH)};
 ROOMS.quay15={space:.5,walk:[16,304,112,138],mood:'quay',amb:AMB.quay15,hs:[
-  {name:'harbor',x:124,y:58,w:100,h:34,wx:170,wy:114,look:'quay_of_troas_look'},
-  {name:'ship',x:8,y:34,w:110,h:72,wx:96,wy:114,dir:-1,look:'ship_at_the_quay_look'},
-  {name:'jars_of_oil',x:236,y:92,w:44,h:22,wx:232,wy:118,dir:1,look:'jars_of_oil_look'},
-  {name:'lane_to_korinnas_house',x:292,y:48,w:28,h:62,wx:298,wy:116,dir:1,exit:toUpper,look:'lane_to_korinnas_house_look'}].map(BOTH)};
+  {name:'harbor',x:124,y:58,w:100,h:34,wx:150,wy:113,dir:1,look:'quay_of_troas_look'},
+  {name:'ship',x:0,y:34,w:118,h:72,wx:128,wy:114,dir:-1,look:'ship_at_the_quay_look'},
+  {name:'jars_of_oil',x:236,y:92,w:44,h:22,wx:288,wy:118,dir:-1,look:'jars_of_oil_look'},
+  {name:'lane_to_korinnas_house',x:292,y:12,w:28,h:98,wx:298,wy:116,dir:1,exit:toUpper,look:'lane_to_korinnas_house_look'}].map(BOTH)};
 ROOMS.upper15={space:1.2,floor:'wood',walk:[16,304,112,138],get mood(){return F.t4?(stage15()==='a'?'still':'none'):'night'},get amb(){return F.t4?(stage15()==='a'?AMB.after15:{}):AMB.upper15},hs:[
-  {name:'brothers_of_troas',x:70,y:76,w:180,h:28,wx:120,wy:116,look:'people_listening_look'},
-  {name:'window',x:40,y:30,w:30,h:34,wx:72,wy:114,dir:-1,look:'window_look'},
+  {name:'brothers_of_troas',x:66,y:70,w:200,h:41,wx:92,wy:114,dir:1,look:'people_listening_look'},
+  {name:'window',x:WINUpper15.x,y:WINUpper15.y,w:WINUpper15.w,h:WINUpper15.s+10-WINUpper15.y,wx:62,wy:118,dir:-1,look:'window_look'},
   {name:'big_jar',x:8,y:92,w:22,h:30,wx:60,wy:126,dir:-1,look:'big_jar_look'},
   {name:'stool',x:80,y:116,w:14,h:12,wx:87,wy:130,dir:1,def:'use',look:'stool_look',use:sit},
   {name:'table',x:196,y:98,w:60,h:12,wx:226,wy:114,look:'table_with_bread_look'},
   {name:'stairs_down',x:288,y:66,w:32,h:56,wx:282,wy:124,dir:1,exit:()=>say(LK,'i_am_not_leaving_tonight'),look:'stairs_look'},
-  ...LAMPS.map((L,i)=>({name:L.k,x:[262,290,110,166,220][i],y:[50,74,34,70,88][i],w:[14,12,16,12,16][i],h:[12,10,14,10,10][i],wx:[262,280,118,190,226][i],wy:[114,118,114,120,114][i],dir:[1,1,-1,-1,1][i],
+  ...LAMPS.map((L,i)=>({name:L.k,x:[262,290,110,166,220][i],y:[50,74,34,60,88][i],w:[14,12,16,13,16][i],h:[12,10,14,13,10][i],wx:[262,280,118,190,226][i],wy:[114,118,114,120,114][i],dir:[1,1,-1,-1,1][i],
     look:()=>lampLook(i),useWith:id=>id==='jug15'?pour(i):false}))].map(BOTH)};
 ROOMS.street15={space:.7,walk:[16,304,112,138],get mood(){return F.mid?'dawn':'none'},get amb(){return F.mid?AMB.street15:{}},hs:[
   {name:'street',x:216,y:36,w:76,h:70,wx:240,wy:116,look:'street_at_daybreak_look'},
@@ -1925,13 +1980,14 @@ who(AR,{look:'aristarchus_look',talk:'aristarchus_look'});
 who(TR,{look:()=>say(PC(),PC()===LK?'luke_trophimus_look':'trophimus_look'),talk:()=>PC()===LK?trophimus():say(P,'trophimus_look')});
 /* four of the seven say nothing in this chapter: whoever is played looks at them, and Luke, who has just come over from Philippi, sees
    Gaius of Derbe and Tychicus with his own eyes */
-who(TY,{look:()=>say(PC(),PC()===LK?'luke_tychicus_look':'tychicus_look'),talk:()=>say(PC(),PC()===LK?'luke_tychicus_look':'tychicus_look')});
+/* on the quay Luke looks at Tychicus from the open side of the pair he stands in, and speaks to the seller across his jars, from their end */
+who(TY,{get wx(){return G.room==='quay15'?188:null},get wy(){return G.room==='quay15'?128:null},look:()=>say(PC(),PC()===LK?'luke_tychicus_look':'tychicus_look'),talk:()=>say(PC(),PC()===LK?'luke_tychicus_look':'tychicus_look')});
 who(GD,{look:'luke_gaius_of_derbe_look',talk:'luke_gaius_of_derbe_look'});
 who(SO,{look:'sopater_look',talk:'sopater_look'});
 who(SC,{look:'secundus_look',talk:'secundus_look'});
-who(SE,{look:'oil_seller_look',talk:oil});
+who(SE,{wx:288,wy:117,look:'oil_seller_look',talk:oil});
 who(KO,{look:()=>say(LK,F.mid?'korinna_at_dawn_look':'korinna_look'),talk:()=>say(KO,F.mid?'korinna_the_jar_lasted':'korinna_three_measures_at_a_time',{to:LK})});
-who(EU,{get wx(){return G.room==='upper15'?72:null},get wy(){return G.room==='upper15'?114:null},look:()=>say(LK,F.mid?'eutychus_at_dawn_look':'eutychus_look'),talk:()=>F.mid?say(LK,'eutychus_at_dawn_look'):eutychus()});
+who(EU,{get wx(){return G.room==='upper15'?62:null},get wy(){return G.room==='upper15'?118:null},look:()=>say(LK,F.mid?'eutychus_at_dawn_look':'eutychus_look'),talk:()=>F.mid?say(LK,'eutychus_at_dawn_look'):eutychus()});
 for(const a of[KA,KB])who(a,{look:'eutychus_at_dawn_look',talk:'eutychus_at_dawn_look'});
 /* Paul, while he speaks in the upper room: Luke looks, and does not interrupt; and Paul does not turn to him, nor answer (G.with, which
    act sets for a talk, is taken back at once: what Paul says that night is told, never composed) */
@@ -1963,7 +2019,7 @@ const TABLETS={
     list:[{t:'note_the_seven',if:pa(()=>!!F.ph3)},{t:'note_numbers',if:pa(()=>!!(F.s1||G.nm15))},{t:'note_lamps',if:lu(()=>G.room==='upper15'||!!F.mid)}]}};
 
 /* ============ PLACING THE CAST, SETUP ============ */
-const ENT={gaius15:[200,124,-1],scale15:[160,236,1],cen15:[130,128,1],sand15:[160,236,1],quay15:[140,128,1],upper15:[96,126,1],street15:[160,128,1]};
+const ENT={gaius15:[200,124,-1],scale15:[160,236,1],cen15:[130,128,1],sand15:[160,236,1],quay15:[148,131,1],upper15:[96,126,1],street15:[160,128,1]};
 const EVERY=[TE,GA,TI,AR,TR,TY,SO,SC,GD,NK,MI,KO,SE,EU,KA,KB];
 function place15(room){for(const a of EVERY.concat([P,LK])){a.talk=false;a.seat=0}for(const a of EVERY)a.room=null;if(setScore&&AU.score!==MUSIC)setScore(MUSIC);
   /* who is played: Paul in Greece, Luke from the quay of Troas on */
@@ -1972,11 +2028,14 @@ function place15(room){for(const a of EVERY.concat([P,LK])){a.talk=false;a.seat=
   if(room==='gaius15'){place(TE,room,124,116,1);TE.seat=1;place(GA,room,60,122,1)}
   if(room==='scale15')sc15();
   if(room==='cen15'){place(MI,room,150,122,-1);place(TI,room,186,124,-1);place(AR,room,100,118,1);place(TR,room,280,124,-1);place(TY,room,258,120,-1);TY.seat=1}
-  if(room==='quay15'){place(TI,room,170,124,-1);place(TR,room,120,120,1);place(SO,room,60,118,1);place(SC,room,78,124,-1);place(GD,room,208,116,1);place(TY,room,226,122,-1);place(SE,room,262,120,-1)}
+  /* the quay: two pairs, Timothy where Luke comes in, Trophimus by himself before the coaster's bow (clear of her stem, which would
+     stand on his head), and the seller behind his jars. No two of them share a column of the picture, so that none hides another;
+     the gulls on the quay's edge are left in sight. */
+  if(room==='quay15'){place(SO,room,59,117,1);place(SC,room,78,124,-1);place(TR,room,104,113,1);place(TI,room,172,125,-1);place(GD,room,206,113,1);place(TY,room,224,121,-1);place(SE,room,258,112.6,-1)}
   if(room==='upper15'){lamps15();const v=stage15();place(KO,room,38,122,1);
     /* Paul speaks until midnight; after it he stands at the table */
-    if(v==='a')place(P,room,226,116,-1);else place(P,room,150,118,-1);P.talk=v==='m';
-    if(v==='m'){place(EU,room,55,66,1);EU.seat=1}}
+    if(v==='a')place(P,room,187,116,1);else place(P,room,150,118,-1);P.talk=v==='m';
+    if(v==='m'){place(EU,room,...EUTUpper15,1);EU.seat=1}}
   if(room==='street15'&&F.mid){place(EU,room,196,120,-1);place(KA,room,182,124,1);place(KB,room,212,122,-1);place(KO,room,132,118,1);place(TI,room,250,124,-1)}
   P.party=LK.party=0;swapBtn()}
 function setup15(){P.hs=PAULHS;P.called='Paul';LK.called='Luke';G.sc15=G.l15=G.x15=null;G.j15=G.si15=G.sn15=G.up15=G.eu15=G.nm15=G.tr15=0;

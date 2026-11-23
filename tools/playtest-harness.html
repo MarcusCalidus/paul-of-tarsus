@@ -2708,7 +2708,7 @@
     if(stop==='pupperx15')G.x15='x';if(stop==='puppera15')G.x15='a';
     const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...C.ent[room]);
     if(stop==='pscaleb15')Object.assign(C.sc().w,{a:'l',g:'l',kz:'r'});
-    if(stop==='pupperx15')place(PC(),room,92,122,-1);if(stop==='puppera15')place(PC(),room,180,126,1);
+    if(stop==='pupperx15')place(PC(),room,96,124,-1);if(stop==='puppera15')place(PC(),room,96,124,1);
     if(stop==='pstreetn15')PC().room=null;
     G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+makeCode());await wait(1100);halt(stop)}
   const ch15=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[15],told=k=>heard.includes(T(C().told[k])),
@@ -2736,6 +2736,8 @@
     /* two codes hold the same point of the story for whoever is played: the flags, and the room he stands in */
     point=c=>{const u=unpackWide(C(),decode(c).w);return u.flags.join()+'/'+u.pc+'/'+u.rooms[u.ps.indexOf(u.pc)]},same=(a,b)=>point(a)===point(b),
     seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)},levels=()=>C().oil().join(),wt=()=>Object.values(C().sc().w).join(''),
+    /* the score: which mood plays and what is heard around (the beds and calls that are asked for, by name) */
+    amb=()=>Object.keys(AU.amb||{}).filter(k=>AU.amb[k]>0).sort().join(),snd=(mood,a)=>AU.score===C().music&&AU.mood===mood&&amb()===a,
     /* the tablets of whoever is played; and depth: Paul's figure behind a thing changes nothing of it, and before it hides it */
     tab=async()=>{G.verb='walk';G.item=null;syncVerbs();item(PC()===P?'tablets':'tab15');for(let i=0;i<150&&!document.querySelector('#tablets.on');i++)await wait(30);return $('#tablets')},
     shut=async el=>{el.click();await idle()},
@@ -2758,6 +2760,7 @@
     'then the house of Gaius in Corinth: Tertius at the table, and Paul is played ['+[G.room,PC().id,srt(),[...seenTold].join(' ')].join()+']');
   ok(!document.querySelector('#verbs').classList.contains('party'),'nobody else can be played from here: the chapter has no swap button');
   ok(/^15(-[0-9A-Z]{3}){4,5}$/.test(makeCode())&&decode(makeCode()).ch===15&&decode(makeCode()).w!=null,'chapter fifteen code format: two digits for the chapter, then a wide code '+makeCode());
+  ok(snd('house','brazier15,wind')&&C().beds.lamps15&&['brazier15','wick15','dawnbird15'].every(k=>C().calls[k]),'the score of the chapter plays, in the mood of the house; a brazier ticks ['+AU.mood+' '+amb()+']');
   keep('start');halt('gaius15');
   {const el=await tab();ok(leaf(0,T('note_tertius')).length===1&&leaf(0,T('note_gaius_host')).length===1&&leaf(0,T('Mikon')).length===0&&leaf(0,T('task_finish_the_letter')).length===1&&leaf(0,T('task_weigh_the_gift')).length===0
     &&el.textContent.includes(T('noted_in_greece'))&&leaf(1,T('nothing_written_yet')).length===2,'Paul\'s tablets in Corinth: Tertius and Gaius, and the letter to finish');await shut(el)}
@@ -2765,6 +2768,11 @@
   heard.length=0;await onH('door_to_the_storeroom');ok(said('first_the_letter')&&G.room==='gaius15','the storeroom waits until the letter is done');
   await hints('hint_phoebe_1','hint_phoebe_2','in the house of Gaius');
   heard.length=0;await onH('letter_to_rome','look');ok(said('the_letter_look')&&said('i_asked_tertius_whether_my_sentences'),'the letter, and what Tertius says of Paul\'s sentences');
+  {const at=n=>{const h=H(n);return[h.x,h.y,h.w,h.h]},over=(a,b)=>a[0]<b[0]+b[2]&&b[0]<a[0]+a[2]&&a[1]<b[1]+b[3]&&b[1]<a[1]+a[3],fig=x=>[x-8,70,16,48],small=['letter_to_rome','reed_pen','spare_tablet'],spot={letter_to_rome:[107,94],reed_pen:[145,94],spare_tablet:[96,95]};
+    heard.length=0;await onH('table','look');
+    ok(said('the_letter_look')&&small.every(n=>!over(fig(H(n).wx),at(n)))&&small.every(n=>hsAt(...spot[n])===H(n))&&hsAt(124,108)===TE.hs&&hsAt(100,108)===H('table'),
+      'the table is a thing of its own, under what lies on it; and Paul stands beside whatever small thing he looks at, never before it')}
+  await depth('the table of Tertius',[112,99.7,20,3],[280,134],[122,115],[122,124]);await depth('the stool behind it',[116,105,3.5,1.4],[280,134],[118,113],[118,115]);
   heard.length=0;await onH('reed_pen','look');await onH('window_to_the_court','look');await onH('door_to_the_storeroom','look');await talkTo(TE,'look');await talkTo(A('host15'),'look');await talkTo(A('host15'));
   ok(['ink_and_reed_look','corinth_winter_light','door_to_the_storeroom_look','tertius_look','gaius_look','gaius_stay_as_long_as_you_need'].every(said),'the ink, the window, the door, Tertius and Gaius the host, each with its line');
   {const was=JSON.stringify([F,G.invs]),code=makeCode();heard.length=0;await onH('spare_tablet','look');
@@ -2782,8 +2790,9 @@
   await onH('door_to_the_storeroom');await until(()=>G.room==='scale15'&&!G.busy);
   ok(G.room==='scale15'&&said('the_gift_is_for_the_poor_among_the_holy_ones')&&said('i_do_not_touch_the_silver')&&said('timothy_each_bag_has_its_letter')&&said('you_set_the_weights_paul')&&said('timothy_galatia_first')&&C().sc().round===0&&wt()==='tttt'&&C().tilt()===1,
     'the storeroom: the gift is weighed before witnesses, Paul sets the weights only, and the first bag lies in the left pan');
+  ok(snd('house','wind'),'in the storeroom the house\'s tune plays on, and only the wind is heard ['+AU.mood+' '+amb()+']');
   halt('scale15');
-  {const R0=C().rounds,W=C().weights,wl=(k,id)=>heard.includes(T(k,{m:W.find(w=>w.id===id).m}));
+  {const R0=C().rounds,W=C().weights,wl=(k,id)=>heard.includes(T(k,{m:W.find(w=>w.id===id).m})),bagY=()=>H(R0[0].bagName).y,bagDown=bagY();
   heard.length=0;await onH(R0[0].letter,'look');ok(heard.includes(T('letter_look',{m:R0[0].m}))&&said('letters_are_numbers'),'the letter gives the weight in number letters, and Paul says what they are');
   heard.length=0;await onH(R0[0].letter,'look');ok(heard.includes(T('letter_look',{m:R0[0].m}))&&!said('letters_are_numbers'),'and says it once');
   heard.length=0;await onH(R0[0].bagName,'look');await onH(R0[0].bagName,'use');const used=said('the_bag_is_not_mine_to_move');await onH(R0[0].bagName,'pickup');
@@ -2793,6 +2802,7 @@
   heard.length=0;await onH('scale','look');ok(said('scale_look')&&said('left_pan_is_down'),'the scale, looked at: the bag\'s pan is down');
   heard.length=0;await onH('scale','use');ok(said('timothy_not_level_yet')&&said('left_pan_is_down')&&!F.s1,'checked with nothing in the right pan: not level, the bag\'s side is down');
   heard.length=0;await onH('weight_kz','look');await onH('weight_kz','use');await onH('weight_kz','look');ok(wl('weight_look_tray','kz')&&wl('weight_look_right','kz')&&wt()==='tttr'&&C().tilt()===-1,'a weight goes from the board into the right pan, and says where it lies');
+  ok(bagDown-bagY()>12&&bagDown-bagY()<17,'the bag is clicked where it is painted: its hotspot rides up with its pan ('+bagDown.toFixed(1)+' to '+bagY().toFixed(1)+')');
   heard.length=0;await onH('scale','look');await onH('Timothy','talk');ok(said('right_pan_is_down')&&said('timothy_not_level_yet')&&!F.s1,'too much across from the bag: the right pan is down, and Timothy will not have it');
   heard.length=0;await onH('weight_kz','use');await onH('weight_kz','look');await onH('scale','talk');ok(wl('weight_look_left','kz')&&wt()==='tttl'&&C().tilt()===1&&said('left_pan_is_down')&&!F.s1,'from the right pan it goes into the left, beside the bag: that side is down');
   await onH('weight_kz','use');ok(wt()==='tttt','and from there back to the board');
@@ -2814,6 +2824,7 @@
   await onH('weight_kz','use');await onH('weight_th','use');await onH('weight_th','use');await onH('weight_a','use');await onH('weight_a','use');heard.length=0;await onH('scale','use');
   await until(()=>G.room==='cen15'&&!G.busy);
   ok(F.s3&&said(R0[2].seal)&&said('three_bags_three_letters_all_agree')&&said('the_chest_was_closed_and_sealed')&&said('to_cenchreae_then_the_ship_for_syria')&&G.room==='cen15','three bags, three letters, and they agree; the chest is sealed, and they go down to Cenchreae');}
+  ok(snd('harbor','creak,gulls,waves,wind'),'Cenchreae on a clear morning: the harbor\'s tune, the sea, gulls and a creaking hull ['+AU.mood+' '+amb()+']');
   keep('s3');halt('cen15');
   /* Cenchreae: the word of a brother */
   const MI=A('mikon15'),AR=A('arist15'),TR=A('troph15'),TY=A('tych15');
@@ -2827,13 +2838,15 @@
   {const el=await tab();ok(leaf(0,T('task_sail_for_syria')).length===1&&leaf(0,T('task_weigh_the_gift')).length===0,'Paul\'s tablets at Cenchreae: the ship for Syria');await shut(el)}
   heard.length=0;await talkTo(MI);note();
   ok(F.warned&&seenTold.has('v3b')&&['mikon_paul_a_word','mikon_men_have_been_asking','mikon_i_carry_loads_i_hear_things','thank_you_mikon_you_did_right','then_not_this_ship','timothy_then_which_way','let_me_lay_it_out_in_the_sand'].every(said)&&srt()==='awl15,reed15,shell15,tablets',
-    'Mikon brings word, the narrator tells the plot (Acts 20:3), and Paul has a reed, a shell and his awl ['+srt()+']');keep('warned');
+    'Mikon brings word, the narrator tells the plot (Acts 20:3), and Paul has a reed, a shell and his awl ['+srt()+']');
+  ok(snd('warned','creak,gulls,waves,wind')&&ROOMS.cen15.mood==='warned','with the warning the tune loses its keynote, and keeps losing it for whoever comes back to the quay ['+AU.mood+']');keep('warned');
   heard.length=0;await talkTo(MI);await talkTo(TI);ok(said('mikon_talk_after')&&said('timothy_then_which_way'),'Mikon has said what he had to say, and Timothy asks which way');
   heard.length=0;await lookI('reed15');await lookI('shell15');await lookI('awl15');ok(['a_reed_to_draw_in_the_sand','a_shell_from_the_quay','my_awl_it_can_stand_for_me'].every(said),'the reed, the shell and the awl, looked at on the quay');
   await hints('hint_sand_1','hint_sand_2','when the ship is closed to him');
   {const el=await tab();ok(leaf(0,T('note_mikon')).length===1&&leaf(0,T('task_plan_the_other_road')).length===1&&leaf(0,T('task_sail_for_syria')).length===0,'Paul\'s tablets after the warning: Mikon, and another road to plan');await shut(el)}
   await onH('strip_of_sand','look');await until(()=>G.room==='sand15'&&!G.busy);
-  ok(G.room==='sand15'&&said('here_is_greece_here_is_asia')&&said('three_things_to_settle')&&!F.way&&!F.shell&&!F.awl,'the plan in the sand: three things to settle');halt('sand15');
+  ok(G.room==='sand15'&&said('here_is_greece_here_is_asia')&&said('three_things_to_settle')&&!F.way&&!F.shell&&!F.awl,'the plan in the sand: three things to settle');
+  ok(snd('warned','gulls,waves,wind'),'over the sand the keynote is still withheld ['+AU.mood+' '+amb()+']');halt('sand15');
   /* the other road: the way, then where the chest waits, then where Paul stays */
   {const PB=C().pebbles.map(p=>'pebble_'+p[0]),nope=()=>NOPE.some(said);
   heard.length=0;await lookI('shell15');await lookI('awl15');ok(said('shell_for_the_seven_and_the_chest')&&said('awl_for_me'),'over the plan, the shell and the awl say what they stand for');
@@ -2843,7 +2856,8 @@
   heard.length=0;await useH('shell15','pebble_troas');const sh=said('draw_the_way_first');heard.length=0;await useH('awl15','pebble_philippi');ok(sh&&said('draw_the_way_first')&&!F.shell&&!F.awl,'the shell and the awl wait for the way');
   heard.length=0;await useH('reed15','sea_lane_to_syria');ok(said('not_by_the_ship_they_are_watching')&&!F.way,'not by the sea lane that is watched');
   heard.length=0;await useH('reed15','pebble_troas');ok(nope()&&!F.way,'the reed draws a way, and sets no pebble');
-  heard.length=0;await useH('reed15','road_north');ok(F.way&&said('by_land_through_macedonia')&&said('aristarchus_beroea_thessalonica_on_the_road')&&has('reed15')&&!F.shell,'by land, through Macedonia');keep('way');
+  heard.length=0;await useH('reed15','road_north');ok(F.way&&said('by_land_through_macedonia')&&said('aristarchus_beroea_thessalonica_on_the_road')&&has('reed15')&&!F.shell,'by land, through Macedonia');
+  ok(snd('road','gulls,waves,wind')&&ROOMS.sand15.mood==='road','when the way is drawn, the tune walks: the road\'s mood ['+AU.mood+']');keep('way');
   heard.length=0;await useH('reed15','road_north');await useH('reed15','sea_lane_to_syria');ok(heard.filter(h=>h===T('that_is_settled_already')).length===2,'what is settled stays settled, on the road and on the sea lane');
   heard.length=0;await useH('awl15','pebble_philippi');ok(said('the_shell_first')&&!F.awl,'the awl waits for the shell');
   await hints('hint_shell_1','hint_shell_2','over the plan, for the chest');
@@ -2862,12 +2876,14 @@
   heard.length=0;useH('awl15','pebble_philippi');
   await when(()=>F.awl&&SHARED.map&&G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===6&&SHARED.map.state.legs.every(l=>l.k===1),3000);
   ok(F.awl&&said('philippi_then_across')&&said('timothy_luke_is_in_philippi')&&said('that_is_the_plan')&&said('aristarchus_a_long_way_round')&&said('a_long_way_and_we_arrive'),'Paul stays at Philippi over the festival: that is the plan');keep('awl');
+  ok(AU.score===C().music&&AU.mood==='road','the journey north is walked to the road\'s tune: the map does not silence it ['+AU.mood+']');
   road(6,'the other road, by land to Philippi and across to Troas');halt('map15');}
   await until(()=>G.room==='quay15'&&!G.busy,3000);note();
   /* Troas: Luke is played */
   const SE=A('seller15'),KO=A('kor15'),EU=A('eut15'),GD=A('gaiusd15'),SO=A('sop15'),SC=A('sec15');
   ok(F.troas&&PC()===LK&&!P.room&&srt()==='tab15'&&['v4a','v4b','v5','v6'].every(k=>seenTold.has(k))&&said('five_days_for_a_crossing_of_two')&&said('timothy_luke_tonight_everyone_comes')&&said('timothy_she_asks_for_oil')&&said('gladly_i_know_lamps'),
     'the journey is told (Acts 20:4-6), and on the quay of Troas Luke is played ['+[PC().id,srt()].join()+']');
+  ok(snd('quay','creak,crowd,gulls,waves'),'on the quay of Troas lyre and pipe take turns ['+AU.mood+' '+amb()+']');
   keep('troas');halt('quay15');
   {const el=await tab();ok(leaf(0,T('note_paul_by_luke')).length===1&&leaf(0,T('note_tertius')).length===0&&leaf(0,T('note_korinna')).length===0&&leaf(0,T('task_bring_the_oil')).length===1&&el.textContent.includes(T('noted_in_troas'))&&!el.textContent.includes(T('noted_in_greece')),
     'Luke opens tablets of his own: Paul, and the oil to bring');await shut(el)}
@@ -2878,7 +2894,10 @@
   heard.length=0;await talkTo(TR);await talkTo(TR);await talkTo(TI);await talkTo(GD);ok(said('trophimus_luke_we_found_a_roof')&&said('trophimus_seven_days_and_nobody_asked')&&said('timothy_she_asks_for_oil')&&heard.filter(h=>h===T('luke_gaius_of_derbe_look')).length===1,'Trophimus has two things to say, and Timothy reminds him of the oil');
   heard.length=0;await onH('jars_of_oil','pickup');await onH('ship','open');await onH('harbor','use');await onH('jars_of_oil','talk');await onH('ship','give');
   ok(['luke_not_mine_to_take','luke_not_mine_to_open','luke_no_use_for_that','luke_later','luke_what_should_i_give'].every(said),'what Luke will not do, he says in his own words');
-  await depth('the jars of oil',[243,100,6,8],[40,134],[246,112.5],[246,124]);
+  await depth('the jars of oil',[246,105,3.5,5],[40,134],[248,113],[248,124]);
+  {const M=[SO,SC,TR,TI,GD,TY,SE,LK],xs=M.map(a=>a.x).sort((a,b)=>a-b),gaps=xs.slice(1).map((x,i)=>x-xs[i]),ys=new Set(M.map(a=>Math.round(a.y))),J=H('jars_of_oil'),Ln=H('lane_to_korinnas_house');
+    ok(M.every(a=>a.room==='quay15')&&Math.min(...gaps)>=16&&Math.max(...gaps)-Math.min(...gaps)>=14&&ys.size>=6&&M.every(a=>a===SE||a.x+8<J.x||a.x-8>J.x+J.w)&&M.every(a=>a.x+8<Ln.x)&&SE.y<ART.quay15.props[0].y,
+      'the eight on the quay stand in pairs and apart, at '+ys.size+' depths, none in another\'s column (gaps '+gaps.map(g=>Math.round(g)).join(' ')+'), none before the jars or the lane; the seller stands behind his jars')}
   heard.length=0;await onH('lane_to_korinnas_house','walk');ok(said('not_without_the_oil')&&G.room==='quay15','not up the lane without the oil');
   await hints('hint_oil_1','hint_oil_2','on the quay of Troas');
   heard.length=0;await talkTo(SE);ok(F.oil&&has('jug15')&&['oil_for_korinnas_house','seller_the_big_jar_went_up_at_noon','seller_that_many_lamps','nobodys_rich'].every(said),'the oil seller, and the jug that goes with the big jar');keep('oil');
@@ -2900,6 +2919,10 @@
   await onH('lane_to_korinnas_house','walk');await until(()=>G.room==='upper15'&&!G.busy);note();
   ok(G.room==='upper15'&&seenTold.has('v7a')&&seenTold.has('v8')&&said('korinna_keep_them_all_burning')&&said('korinna_three_measures_at_a_time')&&said('five_lamps_one_jug')&&levels()==='2,1,3,2,3'&&!G.j15&&EU.room==='upper15'&&EU.seat&&P.room==='upper15'&&C().stage()==='m',
     'the upper room by night (Acts 20:7, 8): five lamps, an empty jug, Paul speaking, and a young man on the windowsill ['+levels()+']');
+  ok(snd('night','crickets,lamps15,wick15,wind'),'in the upper room the harp has the tune at a third of its pace, and the lamps hiss ['+AU.mood+' '+amb()+']');
+  {const W=H('window'),top=EU.y-40,hip=EU.y-15;
+    ok(EU.x-8>=W.x&&EU.x+8<=W.x+W.w&&top>W.y+3&&hip<=W.y+W.h-10+1&&EU.y<ART.upper15.props[3].y&&EU.dir===1&&P.x>EU.x,
+      'Eutychus sits in the window (Acts 20:9): inside the opening, his head under its top, the sill before him from the hip down, turned toward Paul')}
   keep('upper');halt('upper15');
   /* Eutychus: whatever Luke does, the young man sits where he sits (eu: all there is to his state) */
   const eu=()=>JSON.stringify([EU.room,EU.x,EU.y,EU.seat,EU.dir,!!EU.walk,EU.look===LOOK.eut15]),eu0=eu();
@@ -2914,7 +2937,8 @@
   ok(said('paul_speaking_look')&&heard.filter(h=>h===T('not_while_he_is_speaking')).length===2&&facing(P)===pd&&P.talk&&!heard.includes(T('keep_it_friend')),'Luke does not interrupt Paul, and Paul neither turns to him nor answers: what he says that night is told, never composed');
   heard.length=0;await onH('stairs_down','walk');ok(said('i_am_not_leaving_tonight')&&G.room==='upper15','nor does Luke leave');
   {const was=[LK.x,LK.y,LK.dir];place(LK,'upper15',250,136,-1);await depth('the big jar',[15,104,8,10],[250,136],[19,116],[19,130]);await depth('the stool',[82,117.5,10,2],[250,136],[87,123],[87,134]);
-    await depth('the stand of the lamp',[171,96,2,10],[250,136],[172,113],[172,124]);place(LK,'upper15',...was)}
+    await depth('the stand of the lamp',[171,96,2,10],[250,136],[172,113],[172,124]);await depth('the sill of the window',[54,66,5,3],[250,136],[57,69],[57,112]);place(LK,'upper15',...was)}
+  {const S=H('lamp_by_the_speaker'),head=ROOMS.upper15.walk[2]-45;ok(S.y+S.h<=head+6&&S.y<head,'the lamp by the speaker burns above every head: its flame stands over y '+head+', where the head of whoever stands at the back of the room comes to')}
   {const LM=C().lamps,want=['two_measures','one_measure','three_measures','two_measures','three_measures'];heard.length=0;for(const l of LM)await onH(l.k,'look');
     ok(LM.every((l,i)=>heard.includes(T(l.look,{n:T(want[i])}))),'each lamp says how much it holds and how much is in it')}
   heard.length=0;await useH('jug15','hanging_lamp');ok(said('it_is_full_more_would_run_over')&&levels()==='2,1,3,2,3','a full lamp takes no more');
@@ -2952,16 +2976,18 @@
   for(const k of['tone','noise'])window[k]=function(){if(!inSeq)sounds.push(k);return W0[k].apply(this,arguments)};
   await when(()=>told('v9a'));const stillThere=eu()===eu0&&G.room==='upper15'&&C().stage()==='m';
   await when(()=>F.t4&&C().stage()==='x'&&G.room==='upper15'&&+$('#dim').style.opacity===0);note();
-  ok(seenTold.has('v7b')&&seenTold.has('v9a')&&stillThere&&!EU.room&&!told('v9b')&&AU.mood==='none'&&levels()==='0,0,0,0,0','midnight (Acts 20:7, 9): his sleep is told while he still sits there; then the window is empty, and there is no music ['+[...seenTold].slice(-3).join(' ')+']');
+  ok(seenTold.has('v7b')&&seenTold.has('v9a')&&stillThere&&!EU.room&&!told('v9b')&&AU.mood==='none'&&amb()===''&&levels()==='0,0,0,0,0','midnight (Acts 20:7, 9): his sleep is told while he still sits there; then the window is empty, and there is no music and no sound of the room ['+[...seenTold].slice(-3).join(' ')+']');
   keep('t4');halt('midnight15');
   await when(()=>told('v9b'));ok(G.room==='upper15'&&C().stage()==='x'&&!EU.room&&!Object.values(ACT).some(a=>a.walk),'the fall is told over the empty window (Acts 20:9): nobody is seen to fall, and nobody moves');
   await when(()=>G.room==='street15'&&!F.mid&&+$('#dim').style.opacity===0);note();Object.assign(window,W0);
   ok(seenTold.has('v9b')&&!F.mid&&!Object.values(ACT).some(a=>a.room==='street15')&&same(makeCode(),kept.t4),'then the street by night, where nobody is an actor, and the code still holds Luke in the upper room at midnight');
-  ok(!sounds.length,'nothing sounds at the fall: from the fourth sitting to the street, not a tone and not a noise'+(sounds.length?'. HEARD: '+sounds.join(' '):''));halt('below15');
+  ok(!sounds.length&&AU.mood==='none'&&amb()==='','nothing sounds at the fall: from the fourth sitting to the street, not a tone and not a noise, no music and nothing of the room or the street'+(sounds.length?'. HEARD: '+sounds.join(' '):''));halt('below15');
   await when(()=>G.room==='upper15'&&C().stage()==='a'&&+$('#dim').style.opacity===0);note();
-  ok(seenTold.has('v10')&&!EU.room&&P.room==='upper15'&&Math.abs(P.x-226)<1&&!P.talk&&levels()==='2,2,3,3,4','Paul goes down (Acts 20:10), and up again to the table, where the lamps are full again');halt('after15');
+  ok(seenTold.has('v10')&&!EU.room&&P.room==='upper15'&&Math.abs(P.x-187)<1&&!P.talk&&levels()==='2,2,3,3,4','Paul goes down (Acts 20:10), and up again to the table, where the lamps are full again');
+  {const T4=H('lamp_on_the_table'),TB=H('table');ok(P.x+8<=T4.x&&P.x+8<=TB.x+12&&Math.abs(LK.x-P.x)>60&&snd('still','lamps15,wick15'),'he stands at the table\'s end, before neither its lamp nor the bread; one low note is left, and the lamps hiss again ['+AU.mood+' '+amb()+']')}
+  halt('after15');
   await until(()=>F.mid&&G.room==='street15'&&!G.busy,3000);note();
-  ok(F.mid&&['v11a','v11b','v12'].every(k=>seenTold.has(k))&&PC()===LK&&EU.room==='street15'&&AU.mood==='dawn','he talks on until daybreak (Acts 20:11), and the boy is led away alive (Acts 20:12)');
+  ok(F.mid&&['v11a','v11b','v12'].every(k=>seenTold.has(k))&&PC()===LK&&EU.room==='street15'&&snd('dawn','dawnbird15,waves,wind'),'he talks on until daybreak (Acts 20:11), and the boy is led away alive (Acts 20:12): the tune of the house again, and the first birds ['+AU.mood+' '+amb()+']');
   keep('mid');halt('dawn15');
   /* the account, as the narrator told it on the way here */
   {const TL=C().told,ks=Object.keys(TL),off=ks.filter(k=>toldN[TL[k]]!==1),we=lang==='de'?/(^|[^\p{L}])(wir|uns|unser\p{L}*)(?=$|[^\p{L}])/iu:/\b(we|us|our|ours|ourselves)\b/i,txt=k=>textOf(lang,TL[k])||'';
