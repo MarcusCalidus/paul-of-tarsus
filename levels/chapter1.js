@@ -345,9 +345,9 @@ actor('eliab','Eliab','#a8d8a0',118);actor('naomi','Naomi','#f0a8c0',250);actor(
 actor('guard','the_guard','#f08070',96);actor('zakkai','the_merchant','#90b8f0',132);
 Object.assign(ICON,{
   pouch(g){IH.bag(g,'#8a5830',12,15,7.6,6.4);R(g,11,3.4,2,3,'#c9a14a');stroke(g,[8,8.8,5,11],'#c9a14a',.7);stroke(g,[16,8.8,19,11.4],'#c9a14a',.7)},
-  patch(g){IH.square(g,'#2a211c',6,6.6,12,11.4,'#8a806a');for(let i=6.6;i<18;i+=1.6){R(g,i,5.6,.6,1.2,'#3a3028');R(g,i,17.8,.6,1.2,'#3a3028')}},
-  strips(g){for(let k=0;k<3;k++){const p=[],q=[];for(let j=0;j<=16;j++){const x=6.4+k*5.2+Math.sin(j/2.5+k)*1.5;p.push(x,4+j);q.unshift(x+3,4+j)}poly(g,p.concat(q),k%2?'#2a211c':'#3a2e26');
-      stroke(g,p,'#5a4a3c',.5);for(let j=2;j<16;j+=3)R(g,6.4+k*5.2+Math.sin(j/2.5+k)*1.5+.6,4+j,1.8,.5,'rgba(0,0,0,.4)')}},
+  patch(g){IH.square(g,'#4a3e36',6,6.6,12,11.4,'#b8ac90');R(g,6,6.6,12,.7,'#8a7c6c');R(g,6,6.6,.7,11.4,'#7a6c5e');for(let i=6.6;i<18;i+=1.6){R(g,i,5.6,.6,1.2,'#685a4e');R(g,i,17.8,.6,1.2,'#685a4e')}},
+  strips(g){for(let k=0;k<3;k++){const p=[],q=[];for(let j=0;j<=16;j++){const x=6.4+k*5.2+Math.sin(j/2.5+k)*1.5;p.push(x,4+j);q.unshift(x+3,4+j)}poly(g,p.concat(q),k%2?'#463a32':'#584a40');
+      stroke(g,p,'#887868',.6);for(let j=2;j<16;j+=3)R(g,6.4+k*5.2+Math.sin(j/2.5+k)*1.5+.6,4+j,1.8,.5,'rgba(0,0,0,.35)')}},
   rope(g){IH.coil(g,['#b89a5a','#a08448','#b89a5a','#8f7440'],12,8.6,6.2,2.4,2.8);stroke(g,[17.6,17.4,19.4,21.4],'#b89a5a',1.4)},
   longrope(g){IH.coil(g,['#b89a5a','#a08448','#b89a5a','#4a3c32','#3a2e26','#4a3c32'],12,6,7.6,2.4,2.7);stroke(g,[19,19.6,20.4,22.4],'#3a2e26',1.4)},
   basket(g){IH.basket(g);stroke(g,[6,6,6,3.2,8.4,2.6],'#a08a56',.8);stroke(g,[18,6,18,3.2,15.6,2.6],'#a08a56',.8)},

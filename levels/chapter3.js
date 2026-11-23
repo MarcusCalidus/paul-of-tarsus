@@ -233,16 +233,16 @@ SFX.bray=()=>{tone({f:520,to:300,d:.22,type:'sawtooth',v:.06});tone({f:230,to:15
 Object.assign(ICON,{
   loops(g){for(let k=0;k<3;k++){const x=4.6+k*5.6,y=4.6+k*2;g.lineWidth=2.2;g.strokeStyle='#6a4424';g.beginPath();g.ellipse(x+2.4,y+5.6,2.2,5.2,0,0,6.2832);g.stroke();g.lineWidth=1.2;g.strokeStyle='#b07a48';g.stroke();
       stroke(g,[x+.6,y+2.6,x+.6,y+8.4],'#deb07a',.5);R(g,x+1,y+10.2,2.8,1.4,'#7a4e28')}},
-  tent(g){IH.roll(g,'#2a211c',8.4,8.6);for(const x of[8,15]){R(g,x,7.6,1.8,10.2,'#b89a5a');R(g,x,7.6,.6,10.2,'#dcc080')}stroke(g,[8.8,7.6,7.2,4.6],'#b89a5a',.8);stroke(g,[15.8,7.6,17.6,5],'#b89a5a',.8)},
-  panels(g){IH.square(g,'#221a16',4,4.6,13,9.4);IH.square(g,'#2e2620',8,10.6,13,9.4);R(g,8,10.6,13,.7,'#5a4e42');R(g,4,4.6,13,.7,'#4a4038')},
+  tent(g){IH.roll(g,'#4a3e36',8.4,8.6);for(const x of[8,15]){R(g,x,7.6,1.8,10.2,'#b89a5a');R(g,x,7.6,.6,10.2,'#dcc080')}stroke(g,[8.8,7.6,7.2,4.6],'#b89a5a',.8);stroke(g,[15.8,7.6,17.6,5],'#b89a5a',.8)},
+  panels(g){IH.square(g,'#403630',4,4.6,13,9.4);R(g,4,4.6,13,.8,'#7a6c5e');R(g,4,4.6,.7,9.4,'#6e6054');IH.square(g,'#52463e',8,10.6,13,9.4);R(g,8,10.6,13,.8,'#8c7e6e');R(g,8,10.6,.7,9.4,'#7c6e60')},
   spool(g){g.fillStyle=lg(g,6.6,0,17.4,0,['#c4b894','#f4ecd6','#e6dcc0','#a89c7a']);g.fillRect(6.6,6.2,10.8,12);for(let i=0;i<7;i++)R(g,6.6,7+i*1.7,10.8,.6,'rgba(120,108,76,.45)');
     for(const y of[4,17.8]){g.fillStyle=lg(g,4.6,0,19.4,0,['#6a4020','#b07a44','#8a5a2c','#4a2c14']);g.fillRect(4.6,y,14.8,2.4);R(g,4.6,y,14.8,.6,'#c8945a')}stroke(g,[17.4,12.6,19.6,16,21,21.4],'#efe6cc',.8)},
   bags(g){R(g,3.6,6.4,16.8,4,'#3e332a');R(g,3.6,6.4,16.8,.7,'#5a4e42');for(const x of[2.8,13]){const p=[x,10,x+8.2,10,x+8.6,19.4,x+6.4,21.4,x+1.8,21.4,x-.4,19.4];clipTo(g,()=>poly(g,p),()=>{g.fillStyle=lg(g,x,0,x+9,0,['#3a2e26','#221a16','#120d0b']);g.fillRect(x-1,10,10,12);
         for(let j=0;j<12;j+=1.6)for(let i=(j*2%3);i<10;i+=3)R(g,x-1+i,10+j,1,.5,'#4a3e34')});R(g,x,10,8.2,.7,'#5a4e42')}
     R(g,6,6.4,1.4,5.6,'#9a7448');R(g,16.6,6.4,1.4,5.6,'#9a7448')},
   wages(g){IH.bag(g,'#b08a56',11.6,15,6.2,5.4);R(g,10.6,5.6,2,2.8,'#c9a14a');for(const[x,y,c]of[[19,20.4,'#d8d8e4'],[5,20.8,'#c4c4d2'],[20.4,17.6,'#e4e4f0']]){oval(g,x,y,2.6,1.2,'#7a7a8a');oval(g,x,y-.5,2.6,1.2,c);stroke(g,[x-1.4,y-.7,x+.8,y-1],'#ffffff',.4)}}});
-ICON.staff=g=>{stroke(g,[4.6,20.6,19,3.6],'#3e2a16',2.6);stroke(g,[4.2,20.2,18.6,3.2],'#a8804e',1);stroke(g,[5.4,20.8,19.6,4],'#5a3c20',.6);
-  R(g,17.4,3,2.6,2.6,'#6a4a2a');R(g,3.4,19.8,2.2,2.2,'#2a1c10')};
+ICON.staff=g=>{stroke(g,[4.6,20.6,19,3.6],'#462e16',3);stroke(g,[4.6,20.6,19,3.6],'#8c683c',2);stroke(g,[4.1,20.1,18.5,3.1],'#e2c288',.9);
+  R(g,17.2,2.8,3,3,'#c49a5c');R(g,17.4,2.8,1.8,1.2,'#f2d8a2');R(g,3.3,19.7,2.4,2.4,'#9c968c');R(g,3.5,19.7,1.2,1,'#d4cec4')};
 Object.assign(ITEMS,{
   staff:{name:'barnabass_staff',look:'barnabass_walking_staff_stout_olive_wood',
     by:{barnabas:'my_walking_staff'}},

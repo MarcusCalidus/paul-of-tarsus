@@ -362,11 +362,11 @@ Object.assign(ICON,{
   /* four corners of leather, lying one over another like dealt cards (never two by two: the gaps between them would make a plus sign) */
   corners(g){for(const[x,y]of[[2.6,11.6],[6.6,5.6],[10.4,12.4],[14,4]]){oval(g,x+4.2,y+7.4,4.4,1,'rgba(0,0,0,.35)');g.fillStyle=lg(g,x,y,x+7.4,y+7,['#c8905a','#a06a3a','#6a4222']);g.fillRect(x,y,7.4,7);R(g,x,y,7.4,.7,'#e0aa70');R(g,x,y+6.3,7.4,.7,'#4a2c14');
       oval(g,x+3.7,y+3.5,1.7,1.7,'#2a1a10');for(let i=1;i<7;i+=1.8){R(g,x+i,y+.9,.7,.5,'#e8dcc0');R(g,x+i,y+5.7,.7,.5,'#e8dcc0')}}},
-  wcover(g){IH.roll(g,'#2a211c',7,10);for(const x of[4.4,16.6]){R(g,x,13.4,3.2,3,'#a8703c');R(g,x,13.4,3.2,.6,'#d09a5e');R(g,x+1.1,14.5,1,1,'#1a1008')}},
+  wcover(g){IH.roll(g,'#4a3e36',7,10);for(const x of[4.4,16.6]){R(g,x,13.4,3.2,3,'#a8703c');R(g,x,13.4,3.2,.6,'#d09a5e');R(g,x+1.1,14.5,1,1,'#1a1008')}},
   silver(g){for(const[x,y]of[[8,15],[14.6,13.4],[11,9.6],[16.6,17.6]]){oval(g,x+.5,y+.9,3.5,2.7,'#5a5a66');g.fillStyle=lg(g,x-3,y-2,x+3,y+2,['#f4f4fa','#c4c4d0','#8a8a98']);g.beginPath();g.ellipse(x,y,3.4,2.6,0,0,6.2832);g.fill();
       g.strokeStyle='#9a9aa8';g.lineWidth=.5;g.beginPath();g.ellipse(x,y,2,1.4,0,0,6.2832);g.stroke()}}});
-ICON.staff=g=>{stroke(g,[4.6,20.6,19,3.6],'#3e2a16',2.6);stroke(g,[4.2,20.2,18.6,3.2],'#a8804e',1);stroke(g,[5.4,20.8,19.6,4],'#5a3c20',.6);
-  R(g,17.4,3,2.6,2.6,'#6a4a2a');R(g,3.4,19.8,2.2,2.2,'#2a1c10')};
+ICON.staff=g=>{stroke(g,[4.6,20.6,19,3.6],'#462e16',3);stroke(g,[4.6,20.6,19,3.6],'#8c683c',2);stroke(g,[4.1,20.1,18.5,3.1],'#e2c288',.9);
+  R(g,17.2,2.8,3,3,'#c49a5c');R(g,17.4,2.8,1.8,1.2,'#f2d8a2');R(g,3.3,19.7,2.4,2.4,'#9c968c');R(g,3.5,19.7,1.2,1,'#d4cec4')};
 Object.assign(ITEMS,{
   staff6:{name:'barnabass_staff',icon:'staff',look:'barnabass_walking_staff_stout_olive_wood_it_has',
     by:{barnabas:'my_walking_staff_it'}},

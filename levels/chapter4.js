@@ -277,12 +277,12 @@ Object.assign(LOOK,{
 const BN=actor('barnabas','Barnabas','#f0b070',128),MK=actor('mark','john_mark','#b8e0b0',176),KA=actor('kallias','Kallias','#f0a080',104),JR=actor('jair','Jair','#d8d0f0',96),
   ZA=actor('zadok','Zadok','#e8dca8',110),PH=actor('philon','Philon','#f0b890',132),SP=actor('sergius','sergius_paulus','#f2e6c8',118),EL=actor('elymas','bar_jesus','#e0a8d8',92);
 Object.assign(ICON,{
-  cord(g){IH.coil(g,['#5a4a38','#7a664c','#5a4a38','#84705a'],12,8.4,7.4,2.6,2.7);stroke(g,[18.6,17,21,19,21.6,21.6],'#7a664c',1.4)},
-  shelter(g){IH.square(g,'#221a16',3.6,7,16.8,11);g.strokeStyle='#8a7a5a';g.lineWidth=1;g.strokeRect(3.6,7,16.8,11);
-    for(const[x,y]of[[2.4,5.8],[19.2,5.8],[2.4,16.8],[19.2,16.8]]){g.strokeStyle='#b8a880';g.lineWidth=.9;g.beginPath();g.arc(x+1.2,y+1.2,1.6,0,6.2832);g.stroke()}
-    R(g,3.6,12,16.8,.7,'#3e3229')}});
-ICON.staff=g=>{stroke(g,[4.6,20.6,19,3.6],'#3e2a16',2.6);stroke(g,[4.2,20.2,18.6,3.2],'#a8804e',1);stroke(g,[5.4,20.8,19.6,4],'#5a3c20',.6);
-  R(g,17.4,3,2.6,2.6,'#6a4a2a');R(g,3.4,19.8,2.2,2.2,'#2a1c10')};
+  cord(g){IH.coil(g,['#7a6852','#9c866a','#7a6852','#a89274'],12,8.4,7.4,2.6,2.7);stroke(g,[18.6,17,21,19,21.6,21.6],'#9c866a',1.4)},
+  shelter(g){IH.square(g,'#423832',3.6,7,16.8,11);g.strokeStyle='#b8a682';g.lineWidth=1;g.strokeRect(3.6,7,16.8,11);
+    for(const[x,y]of[[2.4,5.8],[19.2,5.8],[2.4,16.8],[19.2,16.8]]){g.strokeStyle='#dcd0aa';g.lineWidth=.9;g.beginPath();g.arc(x+1.2,y+1.2,1.6,0,6.2832);g.stroke()}
+    R(g,3.6,12,16.8,.8,'#6e5e50')}});
+ICON.staff=g=>{stroke(g,[4.6,20.6,19,3.6],'#462e16',3);stroke(g,[4.6,20.6,19,3.6],'#8c683c',2);stroke(g,[4.1,20.1,18.5,3.1],'#e2c288',.9);
+  R(g,17.2,2.8,3,3,'#c49a5c');R(g,17.4,2.8,1.8,1.2,'#f2d8a2');R(g,3.3,19.7,2.4,2.4,'#9c968c');R(g,3.5,19.7,1.2,1,'#d4cec4')};
 Object.assign(ITEMS,{
   bstaff:{name:'barnabass_staff',icon:'staff',look:'barnabass_walking_staff_stout_olive_wood_said',
     by:{barnabas:'my_walking_staff_said'}},

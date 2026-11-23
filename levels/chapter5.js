@@ -318,11 +318,11 @@ Object.assign(ICON,{
     stroke(g,[4.4,6.6,8,4.6,13,7,18,5.2],'#d09a5e',.5)},
   bread(g){g.fillStyle=lg(g,0,7,0,17,['#e8c078','#c9a060','#8a6630']);g.beginPath();g.ellipse(10.4,12,7.8,4.8,0,0,6.2832);g.fill();for(const x of[7,10.4,13.8])stroke(g,[x-1,10.2,x+1,13.6],'#8a6630',.7);
     for(const[x,y]of[[16,17.4],[19,15.6],[18.6,19.2]]){oval(g,x,y,2,1.7,'#5a3458');oval(g,x-.5,y-.5,.7,.6,'#8a5a86')}},
-  roof(g){IH.square(g,'#221a16',3.6,7,16.8,11);g.strokeStyle='#8a7a5a';g.lineWidth=1;g.strokeRect(3.6,7,16.8,11);
-    for(const[x,y]of[[2.4,5.8],[19.2,5.8],[2.4,16.8],[19.2,16.8]]){g.strokeStyle='#b8a880';g.lineWidth=.9;g.beginPath();g.arc(x+1.2,y+1.2,1.6,0,6.2832);g.stroke()}R(g,3.6,12,16.8,.7,'#3e3229')},
-  line(g){IH.coil(g,['#5a4a38','#7a664c','#5a4a38','#84705a'],12,8.4,7.4,2.6,2.7);stroke(g,[18.6,17,21,19,21.6,21.6],'#7a664c',1.4)}});
-ICON.staff=g=>{stroke(g,[4.6,20.6,19,3.6],'#3e2a16',2.6);stroke(g,[4.2,20.2,18.6,3.2],'#a8804e',1);stroke(g,[5.4,20.8,19.6,4],'#5a3c20',.6);
-  R(g,17.4,3,2.6,2.6,'#6a4a2a');R(g,3.4,19.8,2.2,2.2,'#2a1c10')};
+  roof(g){IH.square(g,'#423832',3.6,7,16.8,11);g.strokeStyle='#b8a682';g.lineWidth=1;g.strokeRect(3.6,7,16.8,11);
+    for(const[x,y]of[[2.4,5.8],[19.2,5.8],[2.4,16.8],[19.2,16.8]]){g.strokeStyle='#dcd0aa';g.lineWidth=.9;g.beginPath();g.arc(x+1.2,y+1.2,1.6,0,6.2832);g.stroke()}R(g,3.6,12,16.8,.8,'#6e5e50')},
+  line(g){IH.coil(g,['#7a6852','#9c866a','#7a6852','#a89274'],12,8.4,7.4,2.6,2.7);stroke(g,[18.6,17,21,19,21.6,21.6],'#9c866a',1.4)}});
+ICON.staff=g=>{stroke(g,[4.6,20.6,19,3.6],'#462e16',3);stroke(g,[4.6,20.6,19,3.6],'#8c683c',2);stroke(g,[4.1,20.1,18.5,3.1],'#e2c288',.9);
+  R(g,17.2,2.8,3,3,'#c49a5c');R(g,17.4,2.8,1.8,1.2,'#f2d8a2');R(g,3.3,19.7,2.4,2.4,'#9c968c');R(g,3.5,19.7,1.2,1,'#d4cec4')};
 Object.assign(ITEMS,{
   staff5:{name:'barnabass_staff',icon:'staff',look:'barnabass_walking_staff_stout_olive_wood_it',
     by:{barnabas:'my_walking_staff_on'}},

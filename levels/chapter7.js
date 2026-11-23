@@ -434,18 +434,18 @@ Object.assign(ICON,{
   letter(g){g.fillStyle=lg(g,6,0,20,0,['#d8c898','#f4e8c0','#e8dab0','#b8a878']);g.fillRect(6.4,6,13.2,12);for(let j=8.6,k=0;j<16.4;j+=1.9,k++)R(g,8,j,7+(k*3)%3.6,.6,'#6a5a3a');
     for(const y of[4,16.8]){g.fillStyle=lg(g,0,y,0,y+3.2,['#f8eccc','#d8c898','#9a8858']);g.fillRect(5,y,14.4,3.2);R(g,4,y+.4,1.2,2.4,'#e8dab0');R(g,19.2,y+.4,1.2,2.4,'#a89868');R(g,5,y+2.8,14.4,.4,'#7a6a48')}},
   /* the same letter in its case: a sleeve of goat-hair cloth, dark with tallow, its flap folded over the mouth */
-  lcase(g){g.save();g.translate(12,12.4);g.rotate(-.62);g.fillStyle=lg(g,0,-3.6,0,3.6,['#5a4c40','#2e2620','#15100d']);g.fillRect(-9.4,-3.6,18.8,7.2);R(g,-9.4,-3.6,18.8,.7,'#8a7a66');R(g,-10.4,-3,1.2,6,'#3a3029');
-    poly(g,[4.6,-3.6,9.4,-3.6,9.4,3.6,6.6,3.6],'#473c33');stroke(g,[4.6,-3.6,6.6,3.6],'#7a6a58',.5);for(let i=-7.6;i<4;i+=2.6)R(g,i,-2.6,.4,5.6,'rgba(255,236,200,.12)');g.restore()},
-  pcase(g){g.save();g.translate(12,12.4);g.rotate(-.62);g.fillStyle=lg(g,0,-3.6,0,3.6,['#6a5c50','#473c33','#2a221d']);g.fillRect(-9.4,-3.6,18.8,7.2);R(g,-9.4,-3.6,18.8,.7,'#9a8a76');R(g,-10.4,-3,1.2,6,'#51453b');
-    poly(g,[4.6,-3.6,9.4,-3.6,9.4,3.6,6.6,3.6],'#5a4c40');stroke(g,[4.6,-3.6,6.6,3.6],'#9a8a76',.5);for(let i=-8;i<4;i+=1.6){R(g,i,-3,.6,.5,'#d8cca8');R(g,i,2.5,.6,.5,'#d8cca8')}g.restore()},
+  lcase(g){g.save();g.translate(12,12.4);g.rotate(-.62);g.fillStyle=lg(g,0,-3.6,0,3.6,['#78685a','#4e4238','#2c241e']);g.fillRect(-9.4,-3.6,18.8,7.2);R(g,-9.4,-3.6,18.8,.8,'#c0b098');R(g,-10.4,-3,1.2,6,'#5c4e42');
+    poly(g,[4.6,-3.6,9.4,-3.6,9.4,3.6,6.6,3.6],'#6a5c4e');stroke(g,[4.6,-3.6,6.6,3.6],'#aa9a84',.6);for(let i=-7.6;i<4;i+=2.6)R(g,i,-2.6,.5,5.6,'rgba(255,240,210,.26)');g.restore()},
+  pcase(g){g.save();g.translate(12,12.4);g.rotate(-.62);g.fillStyle=lg(g,0,-3.6,0,3.6,['#867666','#5c5044','#382f28']);g.fillRect(-9.4,-3.6,18.8,7.2);R(g,-9.4,-3.6,18.8,.8,'#ccbca4');R(g,-10.4,-3,1.2,6,'#685a4c');
+    poly(g,[4.6,-3.6,9.4,-3.6,9.4,3.6,6.6,3.6],'#746658');stroke(g,[4.6,-3.6,6.6,3.6],'#b8a890',.6);for(let i=-8;i<4;i+=1.6){R(g,i,-3,.6,.5,'#e2d6b4');R(g,i,2.5,.6,.5,'#e2d6b4')}g.restore()},
   /* a yoke strap, coiled */
   strap(g){for(const[q,c]of[[7.6,'#6a4424'],[5,'#8a5a30'],[2.5,'#6a4424']]){g.strokeStyle=tint(c,-.45);g.lineWidth=2.8;g.beginPath();g.ellipse(11,13.4,q,q*.74,0,0,6.2832);g.stroke();g.strokeStyle=c;g.lineWidth=1.8;g.stroke()}
     stroke(g,[18.4,12.4,20.6,8,20,4.6],'#3a2414',2.8);stroke(g,[18.4,12.4,20.6,8,20,4.6],'#8a5a30',1.8);R(g,19,3.4,2,1.8,'#c9a14a')},
   /* tallow, in the lid of the carter's grease pot */
   tallow(g){R(g,6,19,13,1.2,'rgba(0,0,0,.3)');g.fillStyle=lg(g,5,0,19,0,['#8a5a34','#b8804c','#7a4c28','#4a2c14']);g.beginPath();g.moveTo(5,12.4);g.lineTo(19,12.4);g.lineTo(16.4,19.4);g.lineTo(7.6,19.4);g.closePath();g.fill();
     R(g,5,11.6,14,1.4,'#5a3a1e');g.fillStyle=lg(g,7,7,17,13,['#fff8e0','#eadfb8','#c8b888']);g.beginPath();g.ellipse(12,11.8,5.4,4.4,0,Math.PI,0);g.fill();R(g,9.6,8.6,2.6,1,'#fffdf0')}});
-ICON.staff=g=>{stroke(g,[4.6,20.6,19,3.6],'#3e2a16',2.6);stroke(g,[4.2,20.2,18.6,3.2],'#a8804e',1);stroke(g,[5.4,20.8,19.6,4],'#5a3c20',.6);
-  R(g,17.4,3,2.6,2.6,'#6a4a2a');R(g,3.4,19.8,2.2,2.2,'#2a1c10')};
+ICON.staff=g=>{stroke(g,[4.6,20.6,19,3.6],'#462e16',3);stroke(g,[4.6,20.6,19,3.6],'#8c683c',2);stroke(g,[4.1,20.1,18.5,3.1],'#e2c288',.9);
+  R(g,17.2,2.8,3,3,'#c49a5c');R(g,17.4,2.8,1.8,1.2,'#f2d8a2');R(g,3.3,19.7,2.4,2.4,'#9c968c');R(g,3.5,19.7,1.2,1,'#d4cec4')};
 Object.assign(ITEMS,{
   sstaff:{name:'silass_staff',icon:'staff',look:'silass_walking_staff',
     by:{silas:'my_walking_staff_it_has'}},
