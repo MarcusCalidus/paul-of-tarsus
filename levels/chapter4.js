@@ -38,40 +38,48 @@ function baggage(g,x,y){roll(g,x,y-5,17,5,'#8a5a4a');roll(g,x+3,y-9.6,15,4.6,'#6
   g.fillStyle=lg(g,x+20,0,x+31,0,['#a8703e','#8a5830','#5a3618']);g.beginPath();g.ellipse(x+25.6,y-4.4,5.6,4.6,0,0,6.2832);g.fill();R(g,x+23,y-10,5.2,2.6,'#7a4e28');R(g,x+22.4,y-8,6.4,1,'#3e2612');
   sack(g,x+36,y,3.6,6.4,'#cdbb8c');vessel(g,x+43,y,2.2,6.6,'#7a5a3a','jug',{noShadow:1})}
 /* The ship for Cyprus: a round-bellied merchantman, bow to the left, with a plain curved sternpost and no figurehead.
-   In harbor the yard is lowered to the rail with the sail furled on it, and the mast stands bare between its stays. Under sail (o.sail)
-   the mast stops at the yard, so that the two never make a cross. o.plank: the gangplank to the quay; o.tent: our shelter on the
-   foredeck; o.figs: a painter for the people on deck, who stand behind the rail. */
-function ship(g,X,Y,t,o){o=o||{};const y=Y+Math.round(Math.sin(t/900)*2)/2,PL=(p,c)=>poly(g,p.map((v,i)=>i%2?v+y:v+X),c),SK=(p,c,w)=>stroke(g,p.map((v,i)=>i%2?v+y:v+X),c,w),H=(a,b,w,h,c)=>R(g,X+a,b+y,w,h,c),
+   In harbor the yard is lowered abaft the mast with the sail furled on it (meeting the mast at a corner and never crossing it), and
+   the mast stands bare between its stays. Under sail (o.sail) the mast stops at the yard, so that the two never make a cross.
+   o.plank: the gangplank to the quay; o.tent: our shelter on the foredeck; o.figs: a painter for the people on deck, who stand
+   behind the rail. */
+function ship4Opts(o){
+  const hb=o.plank?102:101;
+  return{seed:409,dir:-1,view:'full',x0:4,x1:208,yBot:hb,yWaist:76,bowRise:16,bowSpan:44,bowPow:2.2,sternRise:22,sternSpan:46,sternPow:2.2,
+    palette:o.sail?'shaded':'lit',gradY0:54,gradY1:hb,
+    mast:{x:96,y0:13.4,y1:77,w:3.2,stays:[[97.5,13.4,8,60],[97.5,13.4,203,56]],
+      sail:o.sail?'full':'none',yardX0:50,yardX1:146,yardY0:15.4,yardY1:11,sailH:44,sailBow:5.5,sailLeeIn:1,seams:8},
+    cabin:{x:160,y:63.6,w:31,h:13.4,c:'#7a5632',hi:'#b88a52',roof:'#4a3220'},
+    tent:o.tent?{x0:22,x1:84,rx0:34,rx1:72,ry:62.6,by:77}:null,
+    sacks:!o.tent?[[34,3.4,'#b9a67c'],[46,4.2,'#c6b388'],[58,3.6,'#a8956c'],[70,4.4,'#c4b186'],[82,3.2,'#b09c72']]:null,
+    pitch:{f0:.535,color:'rgba(28,16,10,.44)'},
+    wale:{f0:.12,f1:.21,color:'#a8482c'},waleWear:{count:20,c1:'#8c6438',c2:'#c86a48'},
+    lowerWale:{f0:.47,f1:.535,color:'#382416',hi:'#b88a52'},
+    beams:{f:.32,x0:24,x1:190,step:18,w:1.9,h:1.9,color:'#24160e',hi:'#d4a66a'},
+    scuppers:[44,88,136],
+    sunGlow:o.sail?{comp:'screen',a:.3,x0:2,x1:54,stops:['rgba(255,210,140,1)','rgba(255,210,140,0)'],rx:0,ry:52,rw:58,rh:52}
+      :{comp:'screen',a:.22,x0:110,x1:208,stops:['rgba(255,232,180,0)','rgba(255,232,180,1)'],rx:110,ry:52,rw:102,rh:52},
+    turnShade:o.sail?{comp:'multiply',a:.34,x0:70,x1:208,stops:['rgba(90,82,138,0)','rgba(90,82,138,1)'],rx:68,ry:52,rw:144,rh:52}
+      :{comp:'multiply',a:.26,x0:2,x1:90,stops:['rgba(96,92,140,1)','rgba(96,92,140,0)'],rx:0,ry:52,rw:92,rh:52},
+    rail:{x0:6,x1:206,h:1.6,color:'#9e7442',hi:'#f0cc90'},
+    stem:{thick:3,sweep:10,rimCol:'#f0d4a0',capCol:'#d8ac70'},
+    stern:{thick:3.2,sweep:11,rimCol:'#e8c890',capCol:'#c89a60'},
+    furledYard:!o.sail?{x0:99.6,x1:154,yardX0:99.4,yardX1:157.5,bays:5,th0:4.6,th1:2.8,belly:.85}:null,
+    rudders:[
+      {loom:[186,70,188.4,70,196,98,192,98],blade:[192,96,196.4,96,198,107,193,107]},
+      {loom:[194,66,197,66,207,98,202,98],blade:[202,96,207.4,96,210,108,204,108],hi:[194.4,66.4,204.4,98]}]};
+}
+function ship(g,X,Y,t,o){o=o||{};const y=Y+Math.round(Math.sin(t/900)*2)/2,
   body=()=>{
-  /* stays and mast */
-  SK([97.5,13.4,6,60],'#4a3a2a',.6);SK([97.5,13.4,203,54],'#4a3a2a',.6);H(96,13.4,3.2,64,'#5a3c22');H(96,13.4,1,64,'#9a7040');
-  if(o.sail){PL([50,15.4,146,11,146,13.6,50,18],'#5a3c22');SK([50,15.6,146,11.2],'#9a7040',.5);const sp=[53,17];for(let j=0;j<=10;j++)sp.push(51-Math.sin(j/10*3.1416)*6,17+j*4.4);for(let i=0;i<=10;i++)sp.push(51+i*9.2,61+Math.sin(i/10*3.1416)*3.5);for(let j=10;j>=0;j--)sp.push(143-Math.sin(j/10*3.1416)*4,13+j*4.8);
-    PL(sp,'#e2d5b4');for(let i=1;i<8;i++)SK([53+i*11.4,17-i*.5,51+i*11.6,62.5],'#bfb292',.5);
-    const q=sp.map((v,i)=>i%2?v+y:v+X);g.fillStyle=lg(g,X+45,0,X+146,0,['rgba(110,84,60,.34)','rgba(255,244,214,.1)','rgba(110,84,60,.3)']);g.beginPath();g.moveTo(q[0],q[1]);for(let i=2;i<q.length;i+=2)g.lineTo(q[i],q[i+1]);g.fill()}
-  else{SK([28,74.6,156,73.4],'#5a3c22',1.6);for(let i=0;i<9;i++){const x0=34+i*13,yy=71.6-i*.1;PL([x0,yy+1,x0+3,yy,x0+10,yy,x0+13,yy+1,x0+12.4,yy+5.6,x0+.6,yy+5.6],i%2?'#cfc2a2':'#dccfb0');SK([x0+13,yy+.6,x0+12.6,yy+5.6],'#8a7c5c',.5)}}
-  /* the steersman's cabin aft */
-  H(160,63.6,31,13.4,'#7a5632');H(160,63.6,31,1,'#b88a52');H(159,62.4,33,1.6,'#4a3220');H(166,67.6,5,5,'#2a1c14');H(179,67.6,5,5,'#2a1c14');H(160,63.6,1.4,13.4,'rgba(30,16,8,.4)');
-  /* our shelter on the foredeck: goat-hair cloth over a staff, its rope edge lashed down to the rail */
-  if(o.tent){const tp=[22,77,34,62.6,72,62.6,84,77];PL(tp,'#241c18');g.fillStyle=lg(g,X+22,0,X+84,0,['#3e3229','#2a211c','#17110e']);g.beginPath();tp.forEach((v,i)=>{if(i%2)return;i?g.lineTo(X+v,tp[i+1]+y):g.moveTo(X+v,tp[i+1]+y)});g.fill();
-    for(let j=64;j<77;j+=1.6)SK([34-(j-62.6)*.84,j,72+(j-62.6)*.84,j],j%3<1.6?'rgba(0,0,0,.2)':'rgba(255,240,210,.06)',.5);SK([30,62.4,76,62.4],'#a8804e',1);SK([30,63,76,63],'#5a3c20',.5);
-    SK([22,77,34,62.6,72,62.6,84,77],'#8a7a5a',.7);for(const q of[26,40,66,80])SK([q,74.6,q+1,77.4],'#8a7a5a',.6)}
-  if(o.figs)o.figs(X,y);
-  /* hull */
-  const hb=o.plank?102:101,hull=[0,60,7,58,13,76,196,76,204,57,212,52,211,66,203,93,190,hb,22,hb,9,94,2,78],
-    hp=()=>{g.beginPath();hull.forEach((v,i)=>{if(i%2)return;i?g.lineTo(X+v,hull[i+1]+y):g.moveTo(X+v,hull[i+1]+y)});g.closePath()};
-  g.fillStyle=lg(g,0,56+y,0,101+y,['#7a5230','#5e3e24','#33200f']);hp();g.fill();
-  clipTo(g,hp,()=>{
-    SK([4,82,205,82],'#a8482c',2);SK([4,83.6,205,83.6],'#6a2a18',.6);SK([5,80.4,205,80.4],'#e2d2a8',.6);
-    /* strakes, their butt joints staggered from one to the next like courses of brick */
-    for(let j=0;j<4;j++){SK([7+j*1.4,87+j*3.6,204-j*1.8,87+j*3.6],'#2e1c0e',.5);for(let i=0;i<7;i++)H(26+i*26+(j%2)*13,84.4+j*3.6-(j?1:0),.6,j?3.6:2.6,'rgba(24,12,6,.4)')}});
-  SK([1.5,62,13.5,77.6,197,77.6,206,58],'#2e1c0e',1.4);
-  SK([0,60,7,58],'#b88a52',.8);SK([204.6,57,212,52.4],'#b88a52',.8);
-  /* the two steering oars, one to each side of the stern */
-  PL([186,70,188.4,70,196,98,198,107,193,107,192,98],'#553720');PL([194,66,197,66,207,98,210,108,204,108,202,98],'#6e4a2a')};
+    const preKey='ch4-pre-'+(o.sail?1:0)+(o.tent?1:0),
+      pc=SHARED.ship.cached(preKey,224,112,cg=>{cg.translate(4,0);SHARED.ship.paint(cg,{...ship4Opts(o),layer:'pre'})});
+    g.drawImage(pc,hp(X-4),hp(y),224,112);
+    if(o.figs)o.figs(X,y);
+    const hullKey='ch4-hull-'+(o.sail?1:0)+(o.plank?1:0),
+      hc=SHARED.ship.cached(hullKey,224,112,cg=>{cg.translate(4,0);SHARED.ship.paint(cg,{...ship4Opts(o),layer:'hull'})});
+    g.drawImage(hc,hp(X-4),hp(y),224,112);
+  };
   if(o.plank){inRect(g,0,0,480,100,body);
-    poly(g,[X+40,77+y,X+49,77+y,X+31,104.5,X+21,104.5],'#8a6238');
-    for(let i=0;i<6;i++){const y0=77+y+(27.5-y)*(i+1)*3.6/27.5;stroke(g,[X+40-i*3,y0,X+48-i*3,y0],'#5a3e22',.6)}
-    stroke(g,[X+49,77+y,X+31,104.5],'#b88a52',.5)}
+    SHARED.ship.gangplank(g,{x0:X+40,y0:77+y,x1:X+21,y1:104.5,w0:9,w1:10,sunSide:'r'})}
   else body();
   if(o.wake)for(let i=0;i<8;i++)R(g,X+214+i*9+(t/60%9),97.6+(i%2)+y,7-i*.6,.6,'#e6f2f4')}
 /* ---------- Seleucia: the harbor of Antioch, in the morning ---------- */

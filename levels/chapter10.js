@@ -355,19 +355,30 @@ ART.quay10={w:320,
   ridge(g,0,150,66,x=>5+9*Math.exp(-Math.pow((x-40)/50,2))+1.4*Math.sin(x/8),['#a8a888','#9a9c7c']);
   g.fillStyle=lg(g,0,66,0,104,['#6fa6c4','#4f8cb0','#3f7a9e']);g.fillRect(0,66,320,38);
   for(let i=0;i<120;i++){const k=r(),y=67+k*36;R(g,r()*320,y,2+k*8,.5,r()<.6?'rgba(236,248,250,.5)':'rgba(20,56,84,.3)')}
-  /* the ship alongside: her hull, a wale along it, and the stern rising in a curve */
-  g.fillStyle=lg(g,0,70,0,104,['#6a4a2c','#4a3420','#2e2014']);g.beginPath();g.moveTo(178,104);g.lineTo(184,84);g.lineTo(320,80);g.lineTo(320,104);g.closePath();g.fill();
-  stroke(g,[184,84,320,80],'#a8824e',1.2);stroke(g,[182,91,320,88],'#7a5a34',1);stroke(g,[180,97,320,95],'rgba(20,14,8,.5)',.8);
-  stroke(g,[186,84,180,70,184,60,192,56],'#5a4026',3);stroke(g,[186.6,84,180.8,70,184.6,60.4],'#a8824e',.8);
-  /* bales and a folded sail on her after deck, seen over the rail */
-  for(const[x,w,h,c]of[[214,16,5,'#a89468'],[232,12,7,'#8e7a52'],[250,22,4,'#d8cdb0'],[280,14,6,'#9a8660']]){R(g,x,82.6-h-(x-214)*.03,w,h,c);R(g,x,82.6-h-(x-214)*.03,w,.6,tint(c,.3))}
+  /* the ship alongside: her after part, curved plank strakes, painted and structural wales, sternpost staying below the sea horizon,
+     and bales and folded sailcloth on her after deck, clipped behind the stone edge of the quay */
+  inRect(g,0,0,320,99,()=>SHARED.ship.paint(g,{seed:1029,dir:1,view:'stern',x0:182,x1:322,yBot:100,yWaist:80,
+    sternRise:11.2,sternSpan:56,sternPow:2.2,palette:'shaded',gradY0:68,gradY1:100,
+    waterRipples:{x0:176,x1:220,y0:88,yh:11,count:30},
+    bales:[[214,16,5,'#a89468'],[232,12,7,'#8e7a52'],[250,22,4.2,'#d8cdb0'],[280,14,6,'#9a8660'],[298,16,4.8,'#b4a078']],
+    pitch:{f0:.55,color:'rgba(20,12,8,.42)'},
+    wale:{f0:.13,f1:.23,color:'#4c6672'},waleWear:{count:16,c1:'#7c5a38',c2:'#728e9a'},
+    lowerWale:{f0:.48,f1:.55,color:'#2c1e14',hi:'#9a7448'},
+    beams:{f:.33,x0:204,x1:318,step:18,w:1.8,h:1.8,color:'#20140c',hi:'#b89460'},
+    scuppers:[222,262,302],
+    sunGlow:{comp:'screen',a:.25,x0:180,x1:230,stops:['rgba(255,232,184,1)','rgba(255,232,184,0)'],rx:178,ry:66,rw:54,rh:35},
+    turnShade:{comp:'multiply',a:.3,x0:230,x1:320,stops:['rgba(96,96,144,0)','rgba(96,96,144,1)'],rx:228,ry:66,rw:94,rh:35},
+    rail:{x0:183,x1:322,h:1.6,color:'#a37c4a',hi:'#f0d49c'},
+    stern:{thick:3,sweep:7.5,headRise:1.4,rimCol:'#f0d49c',capCol:'#c89a60'},
+    rudders:[{loom:[190,74,193,74,187,96,184,96],blade:[183.5,94,187.5,94,186,100,181.5,100],hi:[190.4,74.4,184.4,96]}]}));
   /* the quay: dressed stone, two mooring stones, a stack of jars, and a coil of rope */
   ashlar(g,0,99,320,7,tint(ST,-.2),r,{bw:16,bh:7,v:.08});pave(g,0,105,320,144,ST,r,{vx:160,vy:60,rows:5,step:38,v:.08,joint:'#9a927c'});ao(g,0,105,320,5,'t',.3,'#4a4460');
   for(const x of[150,236]){oval(g,x+2,112,7,2,'rgba(30,26,50,.34)');g.fillStyle=lg(g,x-4,0,x+4,0,['#9a9484','#e2dccb','#b8b2a2','#7e786c']);g.fillRect(x-4,102,8,9);oval(g,x,102,4,1.4,'#eee8d8')}
+  SHARED.ship.hawser(g,183,79,152,102.5,3.5);
   for(const[x,y,c]of[[36,112,'#9a5a36'],[50,113,'#a8642e'],[43,108,'#8a4a2a'],[64,114,'#9a5a36']])vessel(g,x,y,4,13,c,'amph');
   g.strokeStyle='#8a7a52';g.lineWidth=1.6;for(let i=0;i<3;i++){g.beginPath();g.ellipse(112,116-i*1.4,8-i,2.6-i*.3,0,0,6.2832);g.stroke()}
   /* the gangplank, from the quay up to her side */
-  poly(g,[196,106,212,106,206,86,196,86],'#8a683a');stroke(g,[196,106,196,86],'#5a4226',.8);stroke(g,[212,106,206,86],'#b08a5a',.8);for(let i=0;i<3;i++)stroke(g,[199,101-i*6,208.4-i*1.6,101-i*6],'rgba(50,34,16,.45)',.6);
+  SHARED.ship.gangplank(g,{x0:196,y0:83,x1:196,y1:106,w0:10,w1:16,cleats:4});
   comp(g,'soft-light',.45,()=>{g.fillStyle=lg(g,0,105,0,144,['rgba(250,244,222,0)','rgba(250,244,222,.9)']);g.fillRect(0,105,320,39)});pool(g,120,0,240,150,'#fff4d6',.12,'screen')},
  draw(g,t){for(let i=0;i<10;i++){const k=((t/2400+i*.1)%1),x=(i*53)%170,y=70+k*30;R(g,x+k*8,y,3+k*5,.5,`rgba(244,252,252,${.5*Math.sin(k*3.1416)})`)}},
  front(){}};

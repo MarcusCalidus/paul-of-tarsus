@@ -795,40 +795,25 @@ function moleCen15(g,r){
   poly(g,[164,82.8,166,81.4,170,81.2,171.6,82.8],'#7c6c58')}
 /* The grain ship for Syria, alongside the quay: her bow. Her planking is laid in strakes that follow the line of her rail and flatten
    toward the water, each butt joint inside its own strake; two wales, the upper one painted; the heads of her beams; sacks on her deck. */
-function shipCen15(g,r){const QY=QYCen15,B=QY+.8,sh=x=>x<264?57.4-17*Math.pow((264-x)/60,2.2):57.4,Y=(x,f)=>sh(x)+(B-sh(x))*f,
-    line=(f,x0,x1,dy)=>{const p=[];for(let x=x0;x<=x1;x+=3)p.push(x,Y(x,f)+(dy||0));return p},
-    band=(f0,f1,x0,x1)=>{const p=line(f0,x0,x1),q=line(f1,x0,x1);for(let i=q.length-2;i>=0;i-=2)p.push(q[i],q[i+1]);return p},
+function shipCen15(g,r){const QY=QYCen15,B=QY+.8,sh=x=>x<264?57.4-17*Math.pow((264-x)/60,2.2):57.4,
     STEM=[203.6,34.4,200.6,39.6,198.6,47,197.8,56,198.4,66,200.6,76,204.6,86,210.6,95,217.6,101.6,221.4,B],
-    stemX=y=>{let i=2;while(i<STEM.length-2&&STEM[i+1]<y)i+=2;const k=clamp((y-STEM[i-1])/(STEM[i+1]-STEM[i-1]),0,1);return STEM[i-2]+(STEM[i]-STEM[i-2])*k},
-    hull=()=>{g.beginPath();g.moveTo(206.6,35.4);for(let i=0;i<STEM.length;i+=2)g.lineTo(STEM[i],STEM[i+1]);g.lineTo(322,B);g.lineTo(322,sh(322));for(let x=320;x>=207;x-=3)g.lineTo(x,sh(x));g.lineTo(205.8,41);g.closePath()};
-  /* the water under her bow, dark with her */
-  for(let i=0;i<80;i++){const y=79+r()*25,x=stemX(y)-1-Math.pow(r(),2)*13;R(g,x,y,1.5+r()*4,.5,'rgba(34,30,44,'+(.22+.28*r())+')')}
-  /* her foremast, raking over the bow, with its two stays; and two stays of the mainmast, which stands beyond the picture */
-  stroke(g,[209.4,14,205.6,35],'#4c3c30',.5);stroke(g,[209.8,14.2,237,57],'#4c3c30',.5);stroke(g,[322,13,244,58],'#4c3c30',.5);stroke(g,[322,31,300,58],'#4c3c30',.5);
-  poly(g,[227,55,224.6,55,208.6,13.6,210,13],'#62462c');stroke(g,[224.8,55,208.8,13.8],'#f0d6a2',.5);R(g,208,12.5,2,1.5,'#4a3626');
-  /* the sacks on her deck, seen over the rail */
-  for(const[x,k,c]of[[258,4,'#a8956c'],[282,5.4,'#b09c72'],[306,5,'#a8956c'],[252,3,'#b9a67c'],[265,4.6,'#c6b388'],[275,3.4,'#b29e74'],[289,4.4,'#c9b78c'],[299,3.2,'#bda97e'],[312,4.4,'#c4b186'],[322,3,'#b5a178']]){const y=sh(x)+2.4;
-    g.beginPath();g.ellipse(x,y-k*.4,6.2,k,0,0,6.2832);g.fillStyle=lg(g,x-6,y-k*1.4,x+5,y,[tint(c,.3),c,mix(tint(c,-.36),'#6a6c98',.25)]);g.fill();
-    g.strokeStyle='#fff0c8';g.lineWidth=.5;g.beginPath();g.ellipse(x,y-k*.4,6.2,k,0,3.5,5.1);g.stroke()}
-  hull();g.fillStyle=lg(g,0,40,0,QY,[[0,'#7b5839'],[.45,'#5d4129'],[.75,'#3c2a1e'],[1,'#261a16']]);g.fill();
-  clipTo(g,hull,()=>{
-    poly(g,band(.115,.19,196,322),'#8c4a30');poly(g,band(.47,.535,196,322),'#33241c');
-    for(const f of[.1,.115,.19,.27,.35,.43,.47,.535,.61,.69,.77,.85,.93]){stroke(g,line(f,196,322),'rgba(22,12,8,.5)',.6);stroke(g,line(f,196,322,.7),'rgba(226,186,130,.14)',.5)}
-    for(const[f0,f1]of[[.19,.27],[.27,.35],[.35,.43],[.535,.61],[.61,.69],[.69,.77],[.77,.85]])for(let x=212+r()*28;x<320;x+=27+r()*24)stroke(g,[x,Y(x,f0)+.5,x,Y(x,f1)-.3],'rgba(22,12,8,.4)',.5);
-    for(let x=229;x<320;x+=19){const y=Y(x,.31);R(g,x,y-1,2,2,'#241812');R(g,x,y-1,.5,2,'#b89460')}
-    tex(g,'wood',.3,196,34,126,72,'overlay',.6);tex(g,'mott',.3,196,34,126,72,'overlay',.8);
-    /* her side toward us is in her own shade, darker aft and toward the water; the bow is turned to the sun */
-    comp(g,'multiply',.34,()=>{g.fillStyle=lg(g,206,0,300,0,['rgba(120,120,170,0)','rgba(120,120,170,1)']);g.fillRect(196,30,126,76)});
-    comp(g,'screen',.3,()=>{g.fillStyle=lg(g,197,0,228,0,['rgba(255,212,150,1)','rgba(255,212,150,0)']);g.fillRect(196,30,34,76)});
-    ao(g,196,QY-17,126,18,'b',.42,'#0c0808');stroke(g,line(0,206,322,2.6),'rgba(16,10,8,.3)',1.4)});
-  /* the rail, with the sun along it */
-  {const c=line(0,206,322),d=line(0,206,322,1.7),p=c.slice();for(let i=d.length-2;i>=0;i-=2)p.push(d[i],d[i+1]);poly(g,p,'#a37c4a');stroke(g,c,'#f6e2b4',.6);stroke(g,line(0,206,322,1.9),'rgba(20,12,8,.45)',.5)}
-  /* her stem, a timber of its own, with the light on its forward edge */
-  {const p=STEM.slice();for(let i=STEM.length-2;i>=0;i-=2)p.push(STEM[i]+(i<4?3:2.6),STEM[i+1]+(i<2?1:0));poly(g,p,'#86623e');
-    clipTo(g,()=>poly(g,p),()=>{ao(g,196,70,30,36,'b',.5,'#140c08');tex(g,'wood',.3,196,30,30,76,'overlay',.6)});
-    stroke(g,STEM.slice(0,16),'#f4dcae',.7);poly(g,[203,34.8,204.4,32.8,207.4,33.6,206.8,35.8],'#9a7448');stroke(g,[203,34.8,204.4,32.8,207.4,33.6],'#f6e2b4',.5)}
-  /* her bow line, to a mooring stone on the quay */
-  {const p=[];for(let i=0;i<=12;i++){const t=i/12;p.push(200.4-32*t,77+21.4*t+4.5*Math.sin(Math.PI*t))}stroke(g,p.map((v,i)=>i%2?v+.5:v),'rgba(30,24,34,.5)',.6);stroke(g,p,'#d8c08a',.6)}}
+    IN=[];for(let i=0;i<STEM.length;i+=2)IN.push(STEM[i]+(i<4?3:2.6),STEM[i+1]+(i<2?1:0));
+  SHARED.ship.paint(g,{r,dir:-1,view:'bow',x0:196,x1:322,yBot:B,sheer:sh,palette:'shaded',gradY0:40,gradY1:QY,
+    hullPath:()=>{g.beginPath();g.moveTo(206.6,35.4);for(let i=0;i<STEM.length;i+=2)g.lineTo(STEM[i],STEM[i+1]);g.lineTo(322,B);g.lineTo(322,sh(322));for(let x=320;x>=207;x-=3)g.lineTo(x,sh(x));g.lineTo(205.8,41);g.closePath()},
+    waterRipples:{mode:'cen15',count:80,y0:79,yh:25,xSpan:13},
+    stays:[{pts:[209.4,14,205.6,35]},{pts:[209.8,14.2,237,57]},{pts:[322,13,244,58]},{pts:[322,31,300,58]}],
+    foremast:{poly:[227,55,224.6,55,208.6,13.6,210,13],hi:[224.8,55,208.8,13.8],cap:[208,12.5,2,1.5]},
+    sacks:[[258,4,'#a8956c'],[282,5.4,'#b09c72'],[306,5,'#a8956c'],[252,3,'#b9a67c'],[265,4.6,'#c6b388'],[275,3.4,'#b29e74'],[289,4.4,'#c9b78c'],[299,3.2,'#bda97e'],[312,4.4,'#c4b186'],[322,3,'#b5a178']],
+    wale:{f0:.115,f1:.19,color:'#8c4a30'},lowerWale:{f0:.47,f1:.535,color:'#33241c'},
+    seamHi:'rgba(226,186,130,.14)',buttX0:212,buttX1:320,
+    beams:{f:.31,x0:229,x1:320,step:19,w:2,h:2,color:'#241812',hi:'#b89460'},
+    texRect:{x:196,y:34,w:126,h:72},woodScale:.3,woodAlpha:.6,mottScale:.3,mottAlpha:.8,
+    turnShade:{comp:'multiply',a:.34,x0:206,x1:300,stops:['rgba(120,120,170,0)','rgba(120,120,170,1)'],rx:196,ry:30,rw:126,rh:76},
+    sunGlow:{comp:'screen',a:.3,x0:197,x1:228,stops:['rgba(255,212,150,1)','rgba(255,212,150,0)'],rx:196,ry:30,rw:34,rh:76},
+    aoY:QY-17,aoHeight:18,aoA:.42,aoCol:'#0c0808',
+    rail:{x0:206,x1:322,h:1.7,color:'#a37c4a',hi:'#f6e2b4'},
+    stem:{IN,OUT:STEM,stemFirst:1,color:'#86623e',rabbet:false,ao:{x:196,y:70,w:30,h:36,a:.5,c:'#140c08'},rimPts:STEM,rimLen:16,rimCol:'#f4dcae',rimW:.7,capPoly:[203,34.8,204.4,32.8,207.4,33.6,206.8,35.8],capCol:'#9a7448',capRim:[203,34.8,204.4,32.8,207.4,33.6],capRimCol:'#f6e2b4'},
+    hawsers:[[200.4,77,168.4,98.4,4.5]]})}
 /* The quay: a course of long stones along its edge, and the paving, its joints running back to the horizon. bollardCen15: a mooring
    stone on the edge course, as wide as it is tall. */
 function bollardCen15(g,x){const y=QYCen15+.6;castCen15(g,x+.4,x+5.4,y,6.6,.45);
@@ -1284,48 +1269,26 @@ function moleQuay15(g,r){const x0=176,x1=236,T=x=>58.8-(x-x0)*.12,F=x=>64.4+(x-x
    furled under it: the folds hang in shallow curves from gasket to gasket, and no tie is drawn across the roll. Her forestay runs from
    the stem head up to the mast, across the sky only. */
 const railQuay15=x=>58.5-9*Math.pow(clamp(x/110,0,1),2.4);
-function shipQuay15(g,r){const S=railQuay15,seam=(j,x)=>S(x)*(1-j*.075)+58.5*j*.075+j*4.3,
+function shipQuay15(g,r){const S=railQuay15,
     IN=[110.6,46.4,112.6,51,114.2,59,114.4,70,113.2,82,111.2,93,109.6,102],OUT=[115.2,46,117.2,49.4,118.2,58,118,70,116.8,82,114.6,93,112.6,102],
-    hull=lineQuay15(S,0,110,2).concat(IN,[0,102]),band=(f0,f1,c)=>poly(g,lineQuay15(f0,0,116,2).concat(backQuay15(lineQuay15(f1,0,116,2))),c);
-  /* her shadow on the water, to the right of her bow */
-  comp(g,'multiply',.5,()=>{poly(g,[113,101,118.6,74,150,92,180,101]);g.fillStyle=lg(g,116,0,180,0,['rgba(104,118,168,1)','rgba(104,118,168,.6)','rgba(104,118,168,0)']);g.fill()});
-  for(let i=0;i<150;i++){const x=116+Math.pow(r(),1.5)*70,y=74+r()*27;if(y<74+(x-118.6)*.46)continue;R(g,x,y,2+r()*6,.5,`rgba(34,48,92,${(.5*(1-(x-116)/72)).toFixed(2)})`)}
-  stroke(g,[113,46.6,30,0],'#5a4a3c',.6);stroke(g,[112.6,46.2,29.6,-.4],'rgba(255,236,196,.5)',.3);
-  poly(g,hull);g.fillStyle=lg(g,0,48,0,102,['#cd9c60','#ac7c46','#7c5632','#4c3320']);g.fill();
-  clipTo(g,()=>poly(g,hull),()=>{
-    /* pitch on her lower strakes */
-    band(x=>seam(5,x),()=>103,'rgba(34,20,14,.46)');
-    /* the painted wale, its paint worn through in places */
-    band(x=>seam(1,x)-.2,x=>seam(1,x)+2.7,'#57776b');
-    for(let i=0;i<36;i++){const x=r()*112;R(g,x,seam(1,x)+r()*2,1+r()*3.6,.5+r()*.6,r()<.5?'#96703f':'#84a294')}
-    for(let j=1;j<=10;j++){const p=lineQuay15(x=>seam(j,x)+(j===1?2.7:0),0,116,3);stroke(g,p,'rgba(34,20,10,.5)',.5);stroke(g,p.map((v,i)=>i%2?v+.5:v),'rgba(255,220,170,.2)',.4)}
-    stroke(g,lineQuay15(x=>seam(1,x)-.2,0,116,3),'rgba(30,20,12,.5)',.4);
-    /* the heavy wale, and the heads of the beams */
-    band(x=>seam(5,x)-2.4,x=>seam(5,x),'#4c321e');stroke(g,lineQuay15(x=>seam(5,x)-2.3,0,116,3),'#c0925a',.5);
-    for(const x of[20,46,94]){R(g,x,seam(5,x)-2.1,1.8,1.8,'#26170e');R(g,x,seam(5,x)-2.1,1.8,.4,'#d4a66a')}
-    for(const[j,x]of[[2,24],[2,74],[3,48],[3,96],[5,34],[6,12],[6,66],[7,44],[7,90],[8,24],[8,78],[9,56]])R(g,x,seam(j,x)+(j===1?3.3:.6),.5,seam(j+1,x)-seam(j,x)-(j===4?3.5:1.1),'rgba(30,18,10,.42)');
-    /* two scuppers in the bulwark */
-    for(const x of[32,68]){R(g,x,S(x)+3,2.6,.8,'#2a1a10');R(g,x,S(x)+3.8,2.6,.4,'rgba(255,224,170,.3)')}
-    tex(g,'wood',.2,0,44,120,60,'overlay',.5);tex(g,'mott',.34,0,44,120,60,'overlay',1);
-    /* the light slides along her side; her bow turns away from it, and the quay's own light comes up from below */
-    g.fillStyle=lg(g,0,0,60,0,['rgba(255,220,160,.2)','rgba(255,220,160,0)']);g.fillRect(0,44,60,60);
-    g.fillStyle=lg(g,74,0,116,0,['rgba(52,40,76,0)','rgba(52,40,76,.5)']);g.fillRect(74,44,44,60);ao(g,0,90,118,12,'b',.3)});
-  /* the stem */
-  poly(g,OUT.concat(backQuay15(IN)));g.fillStyle=lg(g,110,0,118.4,0,['#b08250','#74502e','#3e2818']);g.fill();stroke(g,IN,'rgba(28,16,8,.5)',.5);R(g,110.8,45.8,4.4,.8,'#e6bc80');
-  /* the rail, and the yard lashed along it with the furled sail */
-  stroke(g,lineQuay15(S,0,110.4,2),'#f0cc90',1);
-  {const GK=[-6,7,19,30,41,51,60.5,69,77.5],th=x=>6-3.6*clamp(x/90,0,1),u=x=>{let i=0;while(i<GK.length-2&&GK[i+1]<x)i++;return clamp((x-GK[i])/(GK[i+1]-GK[i]),0,1)},
-      yard=x=>S(x)-.6-th(x),botY=x=>S(x)-.3-.9*(1-Math.pow(Math.sin(Math.PI*u(x)),.5)),roll=lineQuay15(x=>yard(x)+.5,0,77.5,2).concat(backQuay15(lineQuay15(botY,0,77.5,.5)));
-    /* the sail, bunched under the yard: it bellies between the gaskets and is drawn in where they hold it */
-    poly(g,roll);g.fillStyle=lg(g,0,47,0,59,['#eedcb0','#ccb888','#8e7a56']);g.fill();
-    clipTo(g,()=>poly(g,roll),()=>{
-      for(let i=0;i+1<GK.length;i++){const a=GK[i],b=GK[i+1],m=(a+b)/2,y0=yard(m)+.8,d=S(m)-.6-y0;g.fillStyle=lg(g,a,0,b,0,['rgba(255,244,214,.34)','rgba(255,244,214,0)','rgba(70,56,60,.34)']);g.fillRect(a,40,b-a,22);
-        /* the folds of each belly hang in shallow curves from gasket to gasket */
-        for(const[k,c]of[[.42,'rgba(255,250,230,.5)'],[.78,'rgba(104,88,60,.6)']]){g.strokeStyle=c;g.lineWidth=.45;g.beginPath();g.moveTo(a+1.2,y0+d*k*.3);g.quadraticCurveTo(m,y0+d*k*1.5,b-1.2,y0+d*k*.3);g.stroke()}}
-      tex(g,'mott',.3,0,44,80,16,'overlay',.5)});
-    /* the yard on top of it, its arm reaching past the sail */
-    poly(g,lineQuay15(x=>yard(x)-.6,0,90,3).concat(backQuay15(lineQuay15(x=>yard(x)+.7-(x>78?(x-78)*.03:0),0,90,3))),'#7e5a34');stroke(g,lineQuay15(x=>yard(x)-.5,0,90,3),'#e2b878',.4)}
-  comp(g,'multiply',.45,()=>poly(g,lineQuay15(x=>S(x)+.6,0,80,2).concat(backQuay15(lineQuay15(x=>S(x)+2,0,80,2))),'#6a5a78'))}
+    hull=lineQuay15(S,0,110,2).concat(IN,[0,102]);
+  SHARED.ship.paint(g,{r,dir:1,view:'bow',x0:0,x1:116,yBot:102,sheer:S,palette:'lit',gradY0:48,gradY1:102,
+    hullPath:()=>poly(g,hull),
+    waterShadow:{a:.5,poly:[113,101,118.6,74,150,92,180,101],x0:116,x1:180},
+    waterRipples:{mode:'quay15',count:150},
+    stays:[{pts:[113,46.6,30,0],c:'#5a4a3c',w:.6,hi:'rgba(255,236,196,.5)',hiPts:[112.6,46.2,29.6,-.4],hiW:.3}],
+    damped:{x0:0,x1:116,damp:.075,yRef:58.5,step:4.3,count:10},
+    pitch:'rgba(34,20,14,.46)',wale:'#57776b',waleWear:{count:36,xSpan:112,c1:'#96703f',c2:'#84a294'},
+    lowerWale:{color:'#4c321e',hi:'#c0925a'},beams:[20,46,94],
+    butts:[[2,24],[2,74],[3,48],[3,96],[5,34],[6,12],[6,66],[7,44],[7,90],[8,24],[8,78],[9,56]],
+    scuppers:[32,68],
+    texRect:{x:0,y:44,w:120,h:60},woodScale:.2,woodAlpha:.5,mottScale:.34,mottAlpha:1,
+    sunGlow:{x0:0,x1:60,stops:['rgba(255,220,160,.2)','rgba(255,220,160,0)'],rx:0,ry:44,rw:60,rh:60},
+    turnShade:{x0:74,x1:116,stops:['rgba(52,40,76,0)','rgba(52,40,76,.5)'],rx:74,ry:44,rw:44,rh:60},
+    aoY:90,aoHeight:12,aoA:.3,postsBeforeRail:1,
+    stem:{IN,OUT,grad:['#b08250','#74502e','#3e2818'],gradX0:110,gradX1:118.4,ao:false,wood:false,rim:false,capRect:[110.8,45.8,4.4,.8],capCol:'#e6bc80'},
+    rail:{strokeOnly:1,x0:0,x1:110.4,step:2,hi:'#f0cc90',w:1},
+    furledYard:{x0:0,x1:77.5,yardX0:0,yardX1:90,gaskets:[-6,7,19,30,41,51,60.5,69,77.5],shadowX0:0,shadowX1:80}})}
 /* the quay: worn paving that runs back to the horizon, and along the water its edge of great blocks. The edge runs level as far as the
    mooring post beyond the bow and then bears away from us, towards the foot of the mole. */
 const edgeQuay15=x=>x<150?99.6:99.6-(x-150)*.1;
