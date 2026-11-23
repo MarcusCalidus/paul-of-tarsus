@@ -219,6 +219,8 @@ TEXTS('en',15,{
   "trophimus_seven_days_and_nobody_asked":"Seven days here, and nobody on this quay has asked which ship Paul sails on.",
   "luke_trophimus_look":"Trophimus the Ephesian. He looks easier on this side of the water.",
   "luke_timothy_look":"Timothy. I last saw him in Philippi, years ago, and he has grown into his work.",
+  "luke_gaius_of_derbe_look":"Gaius of Derbe. He came ahead with the others, and with the chest.",
+  "luke_tychicus_look":"Tychicus, from the province of Asia. This side of the water is his.",
   "quay_of_troas_look":"The quay of Troas. Here I first went aboard with them, on the way to Macedonia.",
   "ship_at_the_quay_look":"A coaster for Assos and the islands. She sails tomorrow.",
   "lane_to_korinnas_house":"lane to Korinna's house",
@@ -345,7 +347,7 @@ TEXTS('en',15,{
   "luke_later":"Later.",
   "luke_what_should_i_give":"What would I give, and to whom?",
   "luke_not_those_two_together":"Those two don't go together.",
-  /* Names the script has no key for (to be approved) */
+  /* Names the script has no key for */
   "letter_to_rome":"letter to Rome",
   /* Names and lines kept from earlier chapters */
   "Timothy":"Timothy",

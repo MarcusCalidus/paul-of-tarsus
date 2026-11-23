@@ -223,6 +223,8 @@ TEXTS('de',15,{
   "trophimus_seven_days_and_nobody_asked":["Sieben Tage hier, und am ganzen Kai hat keiner gefragt, auf welchem Schiff Paulus fährt.","036qy7c"],
   "luke_trophimus_look":["Trophimus, der Epheser. Auf dieser Seite des Wassers wirkt er entspannter.","10l24sz"],
   "luke_timothy_look":["Timotheus. Zuletzt habe ich ihn vor Jahren in Philippi gesehen. Er ist in seine Aufgabe hineingewachsen.","1b3nzxg"],
+  "luke_gaius_of_derbe_look":["Gajus aus Derbe. Er ist mit den anderen vorausgereist, und mit der Truhe.","01gtmio"],
+  "luke_tychicus_look":["Tychikus aus der Provinz Asien. Auf dieser Seite des Wassers ist er zu Hause.","1iqu82f"],
   "quay_of_troas_look":["Der Kai von Troas. Hier bin ich damals zum ersten Mal mit ihnen an Bord gegangen, nach Mazedonien.","108oxxt"],
   "ship_at_the_quay_look":["Ein Küstensegler nach Assos und zu den Inseln. Er fährt morgen.","1t21sxq"],
   "lane_to_korinnas_house":["Gasse zu Korinnas Haus","162fyfk"],
@@ -349,7 +351,7 @@ TEXTS('de',15,{
   "luke_later":["Später.","1h534md"],
   "luke_what_should_i_give":["Was sollte ich wem geben?","1koza48"],
   "luke_not_those_two_together":["Die beiden passen nicht zusammen.","1lf1qvc"],
-  /* Names the script has no key for (to be approved) */
+  /* Names the script has no key for */
   "letter_to_rome":["Brief nach Rom","0i4u4ez"],
   /* Names and lines kept from earlier chapters */
   "Timothy":["Timotheus","05hbuc5"],

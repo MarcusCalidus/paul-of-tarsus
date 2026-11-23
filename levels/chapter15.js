@@ -379,33 +379,67 @@ function drawStreet15(g,t){if(!F.mid)NIGHTStreet15.forEach(([x,y],i)=>flame(g,x-
 /* ==== ART street15: end ==== */
 
 /* ---- the inventory ---- */
+/* Each icon is light enough to stand out of the dark slot, with a lit edge (issue #75). The awl is the engine's, and so are the tablets. */
 Object.assign(ICON,{
-  reed15(g){stroke(g,[4,20,20,5],'#8a7a4a',2.2);stroke(g,[4.6,19.4,19.6,5.2],'#d8c890',.8);stroke(g,[9,15.4,10.6,13.8],'#5a4a2a',.6);stroke(g,[14,10.6,15.6,9],'#5a4a2a',.6)},
-  shell15(g){poly(g,[4,11,7,6.4,12,4.6,17,6.4,20,11,12,20],'#eadfcf');for(const d of[-6,-3,0,3,6])stroke(g,[12,19,12+d,7+Math.abs(d)*.4],'#b89a84',.6);poly(g,[10,18,14,18,12,20.6],'#c8b49c')},
-  jug15(g){vessel(g,11,21,7,15,'#a4643c','jug',{noShadow:1});stroke(g,[15,10,20,7.6],'#a4643c',1.6);stroke(g,[6.4,9.6,4,12,6,15.6],'#8a5030',1.4)}});
+  /* a dry reed, cut slanting at its foot: a pale stalk with three joints, which lie across it and do not stand out beyond it, and one
+     withered blade that leaves it at a joint, as a fork */
+  reed15(g){const C='#d6c282',L='#fbf2c8',D='#6e5a2a';
+    g.beginPath();g.moveTo(12.4,12.4);g.quadraticCurveTo(8.6,9.8,6.6,4.2);g.quadraticCurveTo(10.8,7.2,14,11);g.closePath();g.fillStyle='#a89452';g.fill();
+    stroke(g,[8.4,7.4,12.6,11.4],'#d8c88a',.5);
+    stroke(g,[4.2,20.6,19.8,4.2],D,3.6);stroke(g,[4.2,20.6,19.8,4.2],C,2.5);stroke(g,[3.9,19.9,19.4,3.6],L,.8);stroke(g,[4.9,21,20.3,4.9],'#9a8648',.5);
+    for(const t of[.28,.54,.8]){const x=4.2+15.6*t,y=20.6-16.4*t;stroke(g,[x-.8,y-.76,x+.8,y+.76],D,.7);stroke(g,[x-.4,y-1.2,x+1.2,y+.3],L,.4)}
+    poly(g,[3,20.6,4.6,19.2,5.6,20.2,4,21.8],'#f0e2b0');poly(g,[3.6,20.7,4.5,19.9,5,20.4,4.1,21.2],'#8a7438')},
+  /* a shell from the quay: a ribbed fan, its rim scalloped, its two ears at the hinge */
+  shell15(g){const cx=12,cy=19.4,P=[],N=14,A=a=>Math.PI*(1.1+.8*a);
+    for(let i=0;i<=N;i++){const a=A(i/N),r=i%2?9.4:10.4;P.push(cx+r*Math.cos(a),cy+r*Math.sin(a))}
+    poly(g,[8.2,18.6,15.8,18.6,15.2,21.6,8.8,21.6],'#c6a482');R(g,8.8,20.9,6.4,.7,'#8a6a50');
+    poly(g,P.concat([14.2,20.4,9.8,20.4]));g.fillStyle=rg(g,9,9,15,[[0,'#fffaf0'],[.5,'#f2dcc2'],[1,'#c49e7e']]);g.fill();
+    clipTo(g,()=>poly(g,P.concat([14.2,20.4,9.8,20.4])),()=>{
+      for(let i=1;i<N;i+=2){const a=A(i/N);stroke(g,[cx+2.2*Math.cos(a),cy+2.2*Math.sin(a),cx+10*Math.cos(a),cy+10*Math.sin(a)],'#a67c5c',.6)}
+      for(let i=0;i<=N;i+=2){const a=A(i/N);stroke(g,[cx+3*Math.cos(a),cy+3*Math.sin(a),cx+10*Math.cos(a),cy+10*Math.sin(a)],'rgba(255,252,240,.8)',.5)}
+      g.strokeStyle='rgba(150,110,84,.55)';g.lineWidth=.5;g.beginPath();g.arc(cx,cy,6.6,Math.PI*1.12,Math.PI*1.88);g.stroke();
+      g.fillStyle=lg(g,0,15,0,21,['rgba(120,84,60,0)','rgba(120,84,60,.5)']);g.fillRect(2,15,20,6)})},
+  /* the oil jug: clay, with a loop handle at the back and a narrow spout that rises from its shoulder */
+  jug15(g){const C='#c8844e';
+    g.strokeStyle='#8a5230';g.lineWidth=2.4;g.lineCap='round';g.beginPath();g.moveTo(8.4,8.6);g.quadraticCurveTo(2.4,9.6,6.2,15.4);g.stroke();
+    g.strokeStyle='#e2a472';g.lineWidth=.8;g.beginPath();g.moveTo(8,8.2);g.quadraticCurveTo(2.9,9.4,5.6,14.2);g.stroke();
+    poly(g,[14,12.2,16.2,14,21.4,7.4,20.2,6.2],'#a8683a');poly(g,[14.2,12,15,12.7,20.8,6.7,20.2,6.2],'#eab082');R(g,20,5.8,1.6,1.4,'#2a180e');
+    vessel(g,11,21.4,7.4,14.4,C,'jug',{noShadow:1,dark:'#2a180e',bands:[[.34,'#e8b488',.7],[.4,'#8a5230',.6]]});
+    pool(g,8.4,14.6,2.4,3.6,'#fff0d8',.5,'screen')}});
 
 /* ============ PEOPLE ============ */
-/* Luke is the Luke of Chapter Eight, some six years on: the same dress, a little grey in his hair. Timothy is Chapter Fourteen's. */
-const HIM=(skin,hair,tunic,cloak,o)=>Object.assign({skin,hair,beard:hair,tunic,cloak,long:1,himation:1,brow:tint(hair,-.3),ph:0},o);
+/* Dress follows CONTRIBUTING section 4. The men of standing in a Greek city wear the mantle, a length of cloth wrapped over a tunic to
+   the feet (HIM): Gaius the host, Nikandros of Corinth, and Sopater of Beroea. Men on the road and men at work wear the short tunic,
+   with a mantle over the shoulder or none. A Greek woman wears a tunic to the feet and her mantle drawn over her head (HER).
+   The seven of Acts 20:4 are told apart at a glance: Sopater in the long robe, with the red-brown hair his father's name suggests
+   (Pyrrhus: the account says no more of him than that name); Aristarchus dark and full-bearded in a green tunic (the look he keeps in
+   the chapters to come, shared/cast.js); Secundus grey and thin on top; Gaius of Derbe, a Lycaonian, in a red mantle; Timothy slim, with
+   a young man's short beard and now a traveller's mantle (issue #29); Tychicus with a high forehead, in ochre and olive; Trophimus the
+   Ephesian in blue. Tertius has a Roman name in a Roman colony: his hair is clipped short and he is clean-shaven. Eutychus is a young
+   man, in the account's word (Acts 20:9), slim and beardless. Mikon is a porter, in a short worn tunic with a cloth bound round his head.
+   Luke is the Luke of Chapter Eight six years on, with the first grey in his hair and beard; Paul is the engine's Paul of the third
+   journey (paulLook). None of this is in the account: it says how none of them looked. */
+const HIM=(skin,hair,tunic,cloak,o)=>Object.assign({skin,hair,beard:hair,tunic,cloak,long:1,himation:1,brow:tint(hair,-.3),ph:0},o),
+  HER=(skin,mantle,tunic,o)=>Object.assign({skin,veil:mantle,cloak:mantle,himation:1,tunic,long:1,slim:1,longSleeve:1,belt:'#6a4a2a',brow:'#3a2414',ph:0},o);
 Object.assign(LOOK,{
-  luke15:{skin:'#c4946a',hair:'#443428',beard:'#483a2e',grey:'#7a7068',tunic:'#e4dec8',cloak:'#4f7a6a',belt:'#4a3a24',trim:'#3a5a4a',long:1,brow:'#2e2018',ph:1100},
-  tert15:{skin:'#c08c5c',hair:'#3a2a1a',beard:'#3a2a1a',shortBeard:1,tunic:'#d8ccb0',belt:'#5a3a20',brow:'#2a1a12',slim:1,ph:500},
-  host15:HIM('#b88a62','#7a7068','#ece4d0','#6a4a5a',{receding:1,ph:900}),
-  tim15:{skin:'#c89868',hair:'#3a2616',beard:'#3a2616',shortBeard:1,tunic:'#d8cfb0',belt:'#5a3a20',trim:'#7a8a6a',brow:'#2a1a12',slim:1,ph:1700},
-  arist15:{skin:'#bc8a60',hair:'#3a2a1c',beard:'#3a2a1c',tunic:'#96a488',cloak:'#5a4e3e',belt:'#3a2818',trim:'#6a765c',brow:'#2a1c12',ph:1500},
-  troph15:{skin:'#b47e52',hair:'#2a1a12',beard:'#2a1a12',shortBeard:1,tunic:'#c8b490',cloak:'#3f5f86',belt:'#4a3a24',brow:'#1a1210',ph:300},
-  tych15:{skin:'#c69870',hair:'#5a4026',beard:'#5a4026',tunic:'#b8a070',cloak:'#7a5a40',belt:'#3a2a1a',brow:'#3a2a1a',ph:2100},
-  sop15:{skin:'#b8845a',hair:'#4a3a2c',beard:'#4a3a2c',fullBeard:1,tunic:'#a89c7c',cloak:'#6a5a4a',belt:'#4a3a24',brow:'#2a1a12',ph:700},
-  sec15:{skin:'#c08c5c',hair:'#2a1a12',tunic:'#8a9a8a',belt:'#3a2a1a',slim:1,brow:'#1a1210',ph:2500},
-  gaiusd15:{skin:'#a8703f',hair:'#3a2616',beard:'#3a2616',tunic:'#c4a878',cloak:'#8a3a2a',belt:'#3a2414',brow:'#2a1a12',ph:1300},
+  luke15:{skin:'#c4946a',hair:'#4e3e30',beard:'#58483a',grey:'#8a8078',tunic:'#e4dec8',cloak:'#4f7a6a',belt:'#4a3a24',trim:'#3a5a4a',long:1,brow:'#2e2018',ph:1100},
+  tert15:{skin:'#c69870',hair:'#3a2a1a',crop:1,tunic:'#dcd2b6',long:1,belt:'#5a3a20',trim:'#8a6a4a',brow:'#2a1a12',slim:1,ph:500},
+  host15:HIM('#b88a62','#7a7068','#ece4d0','#6a4a5a',{grey:'#a8a098',receding:1,brow:'#5a5048',ph:900}),
   nik15:HIM('#c69870','#4a3a2c','#e6dec8','#5a6a4a',{shortBeard:1,ph:1900}),
-  mikon15:{skin:'#a8703f',hair:'#2a1a12',beard:'#2a1a12',tunic:'#9a7a5a',belt:'#3a2a1a',wrap:'#b8a078',brow:'#1a1210',ph:400},
-  kor15:{skin:'#c8a078',veil:'#6a5a7a',tunic:'#d8c8a0',long:1,belt:'#6a4a2a',slim:1,longSleeve:1,brow:'#3a2414',ph:1200},
-  seller15:{skin:'#b47e52',hair:'#6a6a6a',beard:'#6a6a6a',receding:1,tunic:'#b8a070',apron:'#5a4a28',belt:'#2e2016',brow:'#4a4a4a',ph:200},
-  eut15:{skin:'#c89868',hair:'#3a2616',tunic:'#9aa8b8',belt:'#4a3a24',slim:1,brow:'#2a1a12',ph:1600},
-  kin15a:{skin:'#b8845a',hair:'#5a4026',beard:'#5a4026',tunic:'#a89070',cloak:'#5a5a6a',belt:'#3a2a1a',brow:'#3a2a1a',ph:800},
-  kin15b:{skin:'#c8a078',veil:'#8a6a4a',tunic:'#c8b090',long:1,belt:'#6a4a2a',slim:1,longSleeve:1,brow:'#3a2414',ph:2200}});
-const LK=actor('luke15','Luke','#c8e8c0',126),TE=actor('tert15','Tertius','#e0d8b0',132),GA=actor('host15','Gaius','#d8c8a8',104),TI=actor('tim15','Timothy','#b8e0b0',146),
+  tim15:{skin:'#c89868',hair:'#3a2616',beard:'#3a2616',shortBeard:1,tunic:'#d8cfb0',cloak:'#5a6a52',belt:'#5a3a20',trim:'#7a8a6a',brow:'#2a1a12',slim:1,ph:1700},
+  arist15:{skin:'#bc8a60',hair:'#3a2a1c',beard:'#3a2a1c',fullBeard:1,tunic:'#96a488',cloak:'#5a4e3e',belt:'#3a2818',trim:'#6a765c',brow:'#2a1c12',ph:1500},
+  sec15:{skin:'#c49a72',hair:'#8a8680',beard:'#96928c',thin:1,shortBeard:1,brow:'#5e5a54',tunic:'#cfc6ac',cloak:'#55586a',belt:'#3a2a1a',ph:2500},
+  sop15:HIM('#b8845a','#6e4028','#e2d8be','#9a7a3e',{fullBeard:1,brow:'#4a2a18',ph:700}),
+  gaiusd15:{skin:'#a8703f',hair:'#2a1a12',beard:'#2a1a12',tunic:'#c4a878',cloak:'#8a3a2a',belt:'#3a2414',brow:'#1a1210',ph:1300},
+  tych15:{skin:'#c69870',hair:'#5a4630',beard:'#5a4630',receding:1,tunic:'#c8a868',cloak:'#6a6a44',belt:'#3a2a1a',trim:'#8a6a3a',brow:'#3a2a1a',ph:2100},
+  troph15:{skin:'#b47e52',hair:'#2a1a12',beard:'#2a1a12',shortBeard:1,tunic:'#c8b490',cloak:'#3f5f86',belt:'#4a3a24',brow:'#1a1210',ph:300},
+  mikon15:{skin:'#a8703f',beard:'#2a1a12',tunic:'#9a7a5a',belt:'#3a2a1a',wrap:'#b8a078',brow:'#1a1210',ph:400},
+  kor15:HER('#c8a078','#6a5a7a','#dccca4',{ph:1200}),
+  seller15:{skin:'#b47e52',hair:'#6a6a6a',beard:'#6a6a6a',receding:1,shortBeard:1,tunic:'#b8a070',apron:'#5a4a28',belt:'#2e2016',brow:'#4a4a4a',ph:200},
+  eut15:{skin:'#c89868',hair:'#3a2616',tunic:'#9aa8b8',belt:'#4a3a24',trim:'#5a6a80',slim:1,brow:'#2a1a12',ph:1600},
+  kin15a:{skin:'#b8845a',hair:'#5a5048',beard:'#665c52',grey:'#8a8078',tunic:'#a89070',cloak:'#5a5a6a',belt:'#3a2a1a',brow:'#3a322a',ph:800},
+  kin15b:HER('#c8a078','#8a6a4a','#c8b090',{brow:'#4a3424',ph:2200})});
+const LK=actor('luke15','Luke','#c8e8c0',126),TE=actor('tert15','Tertius','#e0d8b0',132),GA=actor('host15','Gaius','#d8c8a8',104),TI=actor('tim15','Timothy','#b8e0b0',142),
   AR=actor('arist15','Aristarchus','#d0d8b8',112),TR=actor('troph15','Trophimus','#c8d8e8',124),TY=actor('tych15','Tychicus','#d8c8e0',116),SO=actor('sop15','Sopater','#e0d0b8',108),
   SC=actor('sec15','Secundus','#c8e0d8',120),GD=actor('gaiusd15','gaius_of_derbe','#e8d8c0',114),NK=actor('nik15','Nikandros','#e0c8b0',100),MI=actor('mikon15','Mikon','#d8b890',92),
   KO=actor('kor15','Korinna','#f0c8d8',196),SE=actor('seller15','oil_seller','#e8d0a0',110),EU=actor('eut15','Eutychus','#c8e0f0',168),
@@ -708,9 +742,10 @@ who(TI,{look:()=>say(PC(),PC()===LK?'luke_timothy_look':'timothy_look'),
   talk:()=>G.room==='street15'?say(TI,'timothy_the_ship_for_assos',{to:LK}):G.room==='quay15'?say(TI,F.oil?'timothy_luke_tonight_everyone_comes':'timothy_she_asks_for_oil',{to:LK}):F.warned?say(TI,'timothy_then_which_way',{to:P}):say(P,'timothy_look')});
 who(AR,{look:'aristarchus_look',talk:'aristarchus_look'});
 who(TR,{look:()=>say(PC(),PC()===LK?'luke_trophimus_look':'trophimus_look'),talk:()=>PC()===LK?trophimus():say(P,'trophimus_look')});
-/* Tychicus is looked at beside the chest at Cenchreae. On the quay of Troas he and Gaius of Derbe are seen and are no hotspots: the
-   script has no line of Luke's for either (TYHS, and place15). */
-who(TY,{look:'tychicus_look',talk:'tychicus_look'});const TYHS=TY.hs;
+/* four of the seven say nothing in this chapter: whoever is played looks at them, and Luke, who has just come over from Philippi, sees
+   Gaius of Derbe and Tychicus with his own eyes */
+who(TY,{look:()=>say(PC(),PC()===LK?'luke_tychicus_look':'tychicus_look'),talk:()=>say(PC(),PC()===LK?'luke_tychicus_look':'tychicus_look')});
+who(GD,{look:'luke_gaius_of_derbe_look',talk:'luke_gaius_of_derbe_look'});
 who(SO,{look:'sopater_look',talk:'sopater_look'});
 who(SC,{look:'secundus_look',talk:'secundus_look'});
 who(SE,{look:'oil_seller_look',talk:oil});
@@ -756,7 +791,6 @@ function place15(room){for(const a of EVERY.concat([P,LK])){a.talk=false;a.seat=
   if(room==='gaius15'){place(TE,room,124,116,1);TE.seat=1;place(GA,room,60,122,1)}
   if(room==='scale15')sc15();
   if(room==='cen15'){place(MI,room,150,122,-1);place(TI,room,186,124,-1);place(AR,room,100,118,1);place(TR,room,280,124,-1);place(TY,room,258,120,-1);TY.seat=1}
-  TY.hs=room==='quay15'?null:TYHS;
   if(room==='quay15'){place(TI,room,170,124,-1);place(TR,room,120,120,1);place(SO,room,60,118,1);place(SC,room,78,124,-1);place(GD,room,208,116,1);place(TY,room,226,122,-1);place(SE,room,262,120,-1)}
   if(room==='upper15'){lamps15();const v=stage15();place(KO,room,38,122,1);
     /* Paul speaks until midnight; after it he stands at the table */
@@ -780,7 +814,7 @@ function hint15(){const r=G.room;
 /* ============ CHAPTER DEFINITION ============ */
 return{rooms:['gaius15','scale15','cen15','sand15','quay15','upper15','street15'],setup:setup15,start:start15,hint:hint15,music:MUSIC,topics:[],tablets:TABLETS,
   /* for the playtest: what is told; the questions about Phoebe; the weights and the bags; the lamps and the search; the roads on the map */
-  told:TOLD,phoebe:PHOEBE,weights:WT,rounds:ROUND,sc:sc15,tilt:tiltScale15,lamps:LAMPS,oil:lamps15,after:AFTER,canLast,sat,pebbles:PEB15,roads:[ROAD_A,ROAD_B],
+  told:TOLD,phoebe:PHOEBE,weights:WT,rounds:ROUND,sc:sc15,tilt:tiltScale15,lamps:LAMPS,oil:lamps15,after:AFTER,canLast,sat,stage:stage15,pebbles:PEB15,roads:[ROAD_A,ROAD_B],
   flags:FLAGS,
   /* seven rooms and seventeen flags today; the code keeps room for sixteen and for forty. Two are played, one after the other: Paul in
      Greece, and Luke from the quay of Troas to the end. */
