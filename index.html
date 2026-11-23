@@ -122,10 +122,11 @@ body{display:flex;align-items:center;justify-content:center}
    the upper part of the picture has not moved. A menu or the code box opened over the title covers all of it. */
 #wrap.title #view{height:calc(var(--s)*210px)}
 #wrap.title #status,#wrap.title #panel{display:none}
-/* with that height the title holds its prologue, thirteen chapters and the line of the planned ones without scrolling; the list still scrolls
-   when there are more lines than room, as it does when the planned chapters are opened */
+/* with that height the title holds its prologue, fifteen chapters and the line of the planned ones without scrolling (the lines stand
+   half a pixel closer than they did for fourteen); the list still scrolls when there are more lines than room, as it does when the
+   planned chapters are opened */
 #overlay.title{padding-top:calc(var(--s)*5px);padding-bottom:calc(var(--s)*5px)}
-#overlay.title .chs p{margin:calc(var(--s)*1.2px) auto;font-size:calc(var(--s)*5.6px);line-height:1.24}
+#overlay.title .chs p{margin:calc(var(--s)*.7px) auto;font-size:calc(var(--s)*5.6px);line-height:1.24}
 /* splash: the opening picture (shared/splash.js). The title is laid out as it always is, so that its name does not move when the chapters
    appear, but only the name and the line under it are seen; the rest comes in when the splash is left. begin: the one line that asks for a click,
    seen until the overture starts. */
@@ -1819,14 +1820,15 @@ const CHAP={
   11:{name:'unknown_god',label:'chapter_eleven',title:'the_unknown_god',salt:0xB48D,src:'levels/chapter11.js',treasure:{name:'back_at_the_fountain',at:'11-8VM-7EW-T68'}},
   12:{name:'tentmakers_of_corinth',label:'chapter_twelve',title:'tentmakers_of_corinth_2',salt:0xC59F,src:'levels/chapter12.js',needs:['weather'],treasure:{name:'cloth_of_his_own_country',at:'12-AXS-T1E-4S6-EEE-J5F'}},
   13:{name:'hall_of_tyrannus',label:'chapter_thirteen',title:'the_hall_of_tyrannus',salt:0xD6B3,src:'levels/chapter13.js',treasure:{name:'pupils_tablet',at:'13-KQC-4NT-ZTX-2SR-Z2V'}},
-  14:{name:'two_hours_in_the_theater',label:'chapter_fourteen',title:'two_hours_in_the_theater_2',salt:0xE7C5,src:'levels/chapter14.js',needs:['lanes'],treasure:{name:'kneading_behind_a_shutter',at:'14-JAT-FJH-QJ3-2K1-QBZ'}}};
+  14:{name:'two_hours_in_the_theater',label:'chapter_fourteen',title:'two_hours_in_the_theater_2',salt:0xE7C5,src:'levels/chapter14.js',needs:['lanes'],treasure:{name:'kneading_behind_a_shutter',at:'14-JAT-FJH-QJ3-2K1-QBZ'}},
+  15:{name:'until_daybreak',label:'chapter_fifteen',title:'until_daybreak_2',salt:0xF8D7,src:'levels/chapter15.js',treasure:{name:'tertius_own_line',at:'15-3K9-1WB-KBX-H5R'}}};
 const TITLE={level:1,scene:'title',mood:'ancient',amb:{crickets:.5,wind:.35,owl:.4}};
 const PRO={name:'road_to_damascus',label:'Prologue',title:'the_road_to_damascus',src:'levels/prologue.js'};
 /* PLANNED: the chapters that are planned and not built (issue #47). The title lists them, dimmed, under one line that opens them in place.
    Each is named by the part of Acts it will tell, not by a working title, which may still change; the title it is given replaces that
    reference when the chapter is built and moves into CHAP. Nothing else reads this list: these chapters have no file, no salt and no codes. */
 const PLANNED=[
-  {label:'chapter_fifteen',short:'Fifteen',ref:'acts_20_1_12'},{label:'chapter_sixteen',short:'Sixteen',ref:'acts_20_13_38'},
+  {label:'chapter_sixteen',short:'Sixteen',ref:'acts_20_13_38'},
   {label:'chapter_seventeen',short:'Seventeen',ref:'acts_21_1_16'},{label:'chapter_eighteen',short:'Eighteen',ref:'acts_21_17_22_29'},
   {label:'chapter_nineteen',short:'Nineteen',ref:'acts_22_30_23_35'},{label:'chapter_twenty',short:'Twenty',ref:'acts_24_1_27'},
   {label:'chapter_twenty_one',short:'twenty_one',ref:'acts_25_1_26_32'},{label:'chapter_twenty_two',short:'twenty_two',ref:'acts_27_1_26'},
