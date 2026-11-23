@@ -1018,42 +1018,115 @@ function claySeal(g,kx,ky,sealed){const C='#94654e',r=rng(1411),blob=(cx,cy,rx,r
   if(!sealed){oval(g,kx-2,cy-1.6,2.4,1.1,tint(C,.4));R(g,kx-3,cy-2.2,1,.5,tint(C,.6));return}
   for(const[sx,sy,m]of[[kx-5.6,cy-2.2,0],[kx+1,cy-1.8,1]]){R(g,sx,sy+3.5,4,.5,tint(C,.24));R(g,sx,sy,4,3.5,tint(C,-.1));R(g,sx,sy,4,.5,tint(C,.3));R(g,sx,sy+.5,.5,3,tint(C,-.42));
     if(m)R(g,sx+1.5,sy+1.5,1,1,tint(C,-.36));else stroke(g,[sx+1.2,sy+2.8,sx+2.8,sy+1.2],tint(C,-.4),.5)}}
-/* handSeal: Aristokles's left hand, the back of it up, coming in from the right out of the fold of his mantle, which is wrapped round
-   his left arm, and waiting over the stone: the thumb along the far side, the fingers relaxed and lying together, their tips turned
-   down a little with the nails on top, and on the fourth finger his signet ring, a gold bezel as wide as the finger with its stone, a
-   small square. The light comes from the front and the left: the near side of each finger is lit, its far side shaded where it meets
-   the next. No line is drawn across a finger. The hand is drawn in units of its own and enlarged by half, to the scale of the tablet. */
-function handSeal(g){const S='#c69870',Lt=tint(S,.2),Hi=tint(S,.34),Dk=tint(S,-.24),M='#7a2a3a';g.save();g.translate(266,92);g.scale(1.5,1.5);g.translate(-278.6,-92);
-  /* the soft shade of the hand on the stone, below it */
-  for(const[d,a]of[[3,.1],[1.8,.14],[.9,.14]])comp(g,'multiply',1,()=>poly(g,[330,91+d,300,89+d,282,90+d*1.3,277,95+d*1.3,280,102+d,296,105+d,330,110+d],rgba('#56526e',a)));
-  /* finger: from its knuckle (bx, by) along the direction (ux, uy), of length l and width w, tapering, with a rounded tip */
-  const finger=(bx,by,ux,uy,l,w,nail)=>{const nx=-uy,ny=ux,tx=bx+ux*l,ty=by+uy*l,e=w*.42,at=(k,s)=>[bx+ux*l*k+nx*s,by+uy*l*k+ny*s];
-    const path=()=>{g.beginPath();g.moveTo(bx-nx*w/2,by-ny*w/2);g.lineTo(tx-nx*e-ux*e,ty-ny*e-uy*e);g.quadraticCurveTo(tx-nx*e+ux*e*.6,ty-ny*e+uy*e*.6,tx+ux*e*.7,ty+uy*e*.7);
-      g.quadraticCurveTo(tx+nx*e+ux*e*.6,ty+ny*e+uy*e*.6,tx+nx*e-ux*e,ty+ny*e-uy*e);g.lineTo(bx+nx*w/2,by+ny*w/2);g.closePath()};
-    path();g.fillStyle=Dk;g.fill();
-    clipTo(g,path,()=>{poly(g,[...at(-.1,-w*.3),...at(1.1,-e*.55),...at(1.1,e+.4),...at(-.1,w/2+.4)],S);
-      poly(g,[...at(.02,w*.02),...at(.8,0),...at(.8,e*.72),...at(.02,w*.42)],Lt);
-      g.fillStyle=lg(g,...at(.74,0),...at(1.05,0),[rgba(Dk,0),rgba(Dk,.5)]);poly(g,[...at(.74,-w),...at(1.1,-w),...at(1.1,w),...at(.74,w)]);g.fill();
-      if(nail){const[nx2,ny2]=at(.87,w*.06);oval(g,nx2,ny2,1.2,e*.6,'#d8ae94');R(g,nx2-.6,ny2-.4,.5,.5,'#f0d8c6')}})};
-  /* the thumb, along the far side, a little under the hand */
-  finger(300.6,84.6,-.95,-.3,9.6,3.5,1);
-  /* the back of the hand, from the wrist to the knuckles, with its tendons */
-  const back=()=>{g.beginPath();g.moveTo(308,84.4);g.quadraticCurveTo(300,82.4,293,83.2);g.quadraticCurveTo(290.6,91,293.6,99.8);g.quadraticCurveTo(301,101.6,308,99.6);g.closePath()};
-  back();g.fillStyle=S;g.fill();
-  clipTo(g,back,()=>{g.fillStyle=lg(g,0,83,0,101,[Dk,Lt,Lt,S]);g.fillRect(288,82,22,20);
-    for(const[y0,y1]of[[85.6,86.6],[89.6,89],[93.6,92],[97.4,95]])stroke(g,[293.6,y0,300,(y0+y1)/2,307,y1],rgba(Hi,.45),.6)});
-  /* the fingers: little, ring, middle and index, each from its knuckle */
-  finger(294,97.4,-.996,-.07,9.6,3.5,1);finger(292.6,93.6,-1,-.03,12,3.9,1);finger(291.9,89.6,-1,0,13,4.1,1);finger(292.4,85.6,-.999,.04,11.6,4,1);
-  /* the knuckles */
-  for(const[x,y]of[[292.4,85.8],[291.9,89.8],[292.6,93.8],[294,97.6]])oval(g,x+1.8,y,1.5,1.3,rgba(Hi,.6));
-  /* the signet ring on the fourth finger: a gold bezel as wide as the finger, its stone a small square */
-  oval(g,287.3,93.8,1.9,2.5,'#6e4e1c');oval(g,287,93.5,1.7,2.2,'#c9a24a');R(g,286,92,1.5,.5,'#f2d888');R(g,286.3,92.8,1.5,1.5,'#6a2016');R(g,286.3,92.8,.5,.5,'#c46448');
-  /* the mantle, wrapped round the forearm: its hem round the wrist, and the folds running back along the arm and hanging below it */
-  const hem=[304.6,73,307.2,80,305.2,84.2,304.6,92,305.4,99.8,303.6,106,306,113];
-  poly(g,[...hem,320,113,320,73],M);
-  clipTo(g,()=>poly(g,[...hem,320,113,320,73]),()=>{g.fillStyle=lg(g,0,73,0,113,[tint(M,-.2),tint(M,.16),tint(M,.22),M,tint(M,-.36)]);g.fillRect(300,72,22,42);
-    for(const[p,c]of[[[308.4,79.2,313,80.4,320,79.6],tint(M,-.38)],[[308,90.2,313,89.2,320,90.4],tint(M,.34)],[[307.4,96.6,311.6,98,320,97.4],tint(M,-.3)],[[307,104.6,311,107.4,320,108.2],tint(M,-.42)],[[308,84.4,314,84.6,320,83.6],tint(M,.12)]])stroke(g,p,rgba(c,.6),1.4)});
-  stroke(g,hem,tint(M,.42),.6);g.restore()}
+/* handSeal: Aristokles's left hand, the back of it up, lying over the stone beside the tablet, the size a hand is beside it: it reaches in
+   from the front, out of the fold of his mantle, which is wrapped round his forearm, and the fingers point away from us. The fingers are
+   long and spread a little, the middle the longest, the fourth and the index finger a little shorter and the little finger the shortest,
+   so that their tips make an arc. Each finger is three bones long: it tapers from its knuckle, swells a little at each of its two
+   joints and narrows between them, and ends in a rounded pad. Its nail lies on top of the last bone, longer than it is wide, with a fold
+   of skin at its root, a pale free edge at the tip and the light along its left side. Over the middle joint the skin gathers in a few
+   short, soft wrinkles that bow towards the tip, fewer over the last joint; they stop short of the finger's edges, so that no line is
+   drawn across a finger, and the joints and the tips are a little redder than the rest. On the back of the hand the four knuckles stand
+   up, with a hollow between each two, and the tendons run from the wrist to them as low ridges. The thumb grows from the side of the
+   hand low down, near the wrist, thicker than the fingers, with a deep web between it and the index finger, and points out at an angle;
+   its nail is on top at the tip. On the fourth finger is his signet ring: a gold bezel a little wider than the finger, and set in it his
+   stone, a dark red carnelian about as large as the seal it leaves in the clay, with the slanting mark of that seal cut into it. The
+   hand and its fingers are one shape: nothing marks where a finger begins. The light comes from the left: the left side of each finger
+   is lit and its right side in shade, and the thumb's side of the hand and the wrist, by the mantle, are in shade; the hand throws a
+   soft shadow on the stone to the right. The hand is drawn in units of its own, about seven to a screen pixel, with the fingers
+   pointing up and the thumb to the right, and turned and scaled onto the screen by HANDSeal. */
+/* HANDSeal: where the hand is drawn: the screen point of the middle of its wrist (265, 430 in its units), the angle it is turned by,
+   the size of one of its units, and how much the slant of the view shortens what runs away from us */
+const HANDSeal=[288,118,-.73,.15,.8];
+function handSeal(g){const S='#c8966e',Lt=tint(S,.2),Hi=tint(S,.34),Dk=tint(S,-.24),Rd='#b4604a',Cr='#7c4434',N='#d0a08a',M='#7a2a3a',[px,py,A,Z,K]=HANDSeal;
+  g.save();g.translate(px,py);g.scale(1,K);g.rotate(A);g.scale(Z,Z);g.translate(-265,-430);
+  const nz=(x,y)=>{const l=Math.hypot(x,y);return[x/l,y/l]},turn=(d,a)=>[d[0]*Math.cos(a)-d[1]*Math.sin(a),d[0]*Math.sin(a)+d[1]*Math.cos(a)];
+  const eo=(x,y,rx,ry,rot,c)=>{g.beginPath();g.ellipse(x,y,rx,ry,rot,0,6.2832);g.fillStyle=c;g.fill()},bump=(k,c,s)=>Math.exp(-(((k-c)/s)**2));
+  /* a finger from its knuckle K, len long (a degrees from straight up) and w wide: its first bone runs straight (hid of it under the back
+     of the hand), the two outer ones bent by b at the middle joint kJ; kD is the last joint. at(k,s): the point k of the way along it,
+     s across it (to its right) */
+  const geo=(K,a,len,w,b,hid,tw)=>{tw=tw||.82;const d1=[Math.sin(a*Math.PI/180),-Math.cos(a*Math.PI/180)],d2=turn(d1,b),l1=hid+len*.5,L=l1+len*.5,kJ=l1/L,kD=kJ+(1-kJ)*.55,
+      B=[K[0]-d1[0]*hid,K[1]-d1[1]*hid],J=[B[0]+d1[0]*l1,B[1]+d1[1]*l1],n1=[-d1[1],d1[0]],n2=[-d2[1],d2[0]],
+      wd=k=>w*(1-(1-tw)*Math.min(1,k/.9))*(1+.07*bump(k,kJ,.045)+.05*bump(k,kD,.035)-.03*bump(k,(kJ+kD)/2,.05)+.03*bump(k,.95,.04)),
+      at=(k,s)=>{const t=clamp((k-kJ+.08)/.16,0,1),n=nz(n1[0]+(n2[0]-n1[0])*t,n1[1]+(n2[1]-n1[1])*t),p=k<kJ?[B[0]+d1[0]*k*L,B[1]+d1[1]*k*L]:[J[0]+d2[0]*(k-kJ)*L,J[1]+d2[1]*(k-kJ)*L];
+        return[p[0]+n[0]*s,p[1]+n[1]*s]};
+    return{K,L,kJ,kD,k0:hid/L,w,wd,at,e:wd(1)/2,ang:Math.atan2(d2[1],d2[0]),ang1:Math.atan2(d1[1],d1[0])}};
+  const outline=f=>{const{at,wd,L,e}=f,k1=1-e/L;g.moveTo(...at(0,wd(0)/2));for(let k=.03;k<k1;k+=.03)g.lineTo(...at(k,wd(k)/2));
+    g.lineTo(...at(k1,e));g.quadraticCurveTo(...at(1,e),...at(1,0));g.quadraticCurveTo(...at(1,-e),...at(k1,-e));for(let k=k1;k>0;k-=.03)g.lineTo(...at(k,-wd(k)/2));g.lineTo(...at(0,-wd(0)/2));g.closePath()};
+  /* a band along a finger, from k0 to k1, between the fractions a and b of its width, shaded along its length */
+  const band=(f,k0,k1,a,b,st)=>{const p=[],q=[];for(let k=k0;k<k1+.001;k+=Math.min(.03,k1-k0))p.push(...f.at(k,a*f.wd(k))),q.unshift(...f.at(k,b*f.wd(k)));
+    if(p.length<4)return;for(let i=0;i<q.length;i+=2)p.push(q[i],q[i+1]);poly(g,p);g.fillStyle=lg(g,...f.at(k0,0),...f.at(k1,0),st);g.fill()};
+  /* a rounded box in a frame of its own: centre (x, y), turned by a, l along and h across, its ends rounded by ra (back) and rb (front) */
+  const box=(x,y,a,l,h,ra,rb)=>{g.save();g.translate(x,y);g.rotate(a);const u=l/2,v=h/2;g.beginPath();g.moveTo(-u+ra,-v);g.lineTo(u-rb,-v);g.quadraticCurveTo(u,-v,u,-v+rb);
+    g.lineTo(u,v-rb);g.quadraticCurveTo(u,v,u-rb,v);g.lineTo(-u+ra,v);g.quadraticCurveTo(-u,v,-u,v-ra);g.lineTo(-u,-v+ra);g.quadraticCurveTo(-u,-v,-u+ra,-v);g.closePath();g.restore()};
+  /* the nail on the last bone: the fold of skin at its root, the nail, the shade on its right side, the light on its left, its free edge */
+  const nail=(f,fl,fw)=>{const w=f.wd(f.kD+.02),l=w*(fl||.78),h=w*(fw||.6),kc=1-(f.e*.32+l/2)/f.L,[x,y]=f.at(kc,-w*.03),a=f.ang;
+    const[cx,cy]=f.at(kc-l*.55/f.L,-w*.03);eo(cx,cy,h*.62,l*.16,a+Math.PI/2,rgba(Rd,.3));
+    box(x,y,a,l,h,h*.42,h*.5);g.fillStyle=N;g.fill();
+    clipTo(g,()=>box(x,y,a,l,h,h*.42,h*.5),()=>{g.save();g.translate(x,y);g.rotate(a);
+      R(g,-l/2,h*.16,l,h*.4,rgba(tint(N,-.26),.6));R(g,-l/2,-h/2,l,h*.24,rgba('#ecd6ca',.5));R(g,l*.3,-h/2,l*.3,h,rgba('#e8d0c0',.3));
+      R(g,-l/2,-h/2,l*.18,h,rgba(Rd,.25));g.restore()})};
+  /* the soft wrinkles over a joint: n short arcs bowing towards the tip, span of the finger's width, a little left of its middle */
+  const wrinkles=(f,k,n,span,a)=>{for(let i=0;i<n;i++){const kk=k+(i-(n-1)/2)*7.5/f.L,w=f.wd(kk)*span*(i===(n-1)/2|0?1:.8),p=[];
+    for(let t=-1;t<=1.001;t+=.25)p.push(...f.at(kk+(1-t*t)*3.5/f.L,t*w/2-f.wd(kk)*.05));stroke(g,p,rgba(Cr,a),2.6)}};
+  /* the fingers: little, fourth, middle and index, each from its knuckle; and the thumb */
+  const FG=[geo([291,228],16,182,42,.06,24),geo([350,212],26,222,47,.05,24),geo([408,214],33,238,49,.05,24),geo([460,240],41,214,48,.07,24)],
+    TH=geo([452,396],62,162,60,-.1,40,.74);
+  /* the back of the hand, from the wrist (under the mantle) to the knuckles and the web of the thumb; it runs round the same way as the
+     fingers, so that where they overlap they add up and never cancel */
+  const back=()=>{g.moveTo(330,540);g.lineTo(340,482);g.quadraticCurveTo(420,478,450,432);g.quadraticCurveTo(462,404,463,352);g.quadraticCurveTo(470,300,484,256);
+    g.lineTo(462,228);g.lineTo(410,208);g.lineTo(352,202);g.lineTo(300,214);g.lineTo(268,232);g.quadraticCurveTo(240,320,236,420);g.lineTo(230,520);g.closePath()};
+  /* the webs of skin between neighbouring fingers, which reach about a third of the way up the shorter one: each is drawn the same way
+     round as the fingers, so that it adds to them */
+  const sgn=p=>{let a=0;for(let i=0;i<p.length;i+=2){const j=(i+2)%p.length;a+=p[i]*p[j+1]-p[j]*p[i+1]}return a},ref=sgn((()=>{const f=FG[0],p=[];for(const k of[0,.5,1])p.push(...f.at(k,f.wd(k)/2));for(const k of[1,.5,0])p.push(...f.at(k,-f.wd(k)/2));return p})());
+  const webs=FG.slice(0,3).map((a,i)=>{const b=FG[i+1],ka=(24+Math.min(a.L,b.L)*.26)/a.L,kb=(24+Math.min(a.L,b.L)*.26)/b.L,p1=a.at(ka,a.wd(ka)/2),p2=b.at(kb,-b.wd(kb)/2),
+      m=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2],lo=[(a.K[0]+b.K[0])/2,(a.K[1]+b.K[1])/2],c=[m[0]+(lo[0]-m[0])*.45,m[1]+(lo[1]-m[1])*.45],pts=[...a.at(.02,a.wd(0)/2),...p1];
+    for(let t=.25;t<1;t+=.25){const u=1-t;pts.push(u*u*p1[0]+2*u*t*c[0]+t*t*p2[0],u*u*p1[1]+2*u*t*c[1]+t*t*p2[1])}pts.push(...p2,...b.at(.02,-b.wd(0)/2),...lo);
+    if(Math.sign(sgn(pts))!==Math.sign(ref)){const r=[];for(let j=pts.length-2;j>=0;j-=2)r.push(pts[j],pts[j+1]);return r}return pts});
+  const hand=()=>{g.beginPath();back();outline(TH);for(const f of FG)outline(f);for(const w of webs){g.moveTo(w[0],w[1]);for(let j=2;j<w.length;j+=2)g.lineTo(w[j],w[j+1]);g.closePath()}};
+  /* the shadow of the hand on the stone, falling to the right: close and darker under its edge, softer farther out */
+  for(const[d,a]of[[3.4,.07],[2.2,.12],[1.2,.16]])comp(g,'multiply',1,()=>{const sx=d*.7,sy=d*.25/K;g.save();g.translate((sx*Math.cos(A)+sy*Math.sin(A))/Z,(sy*Math.cos(A)-sx*Math.sin(A))/Z);hand();g.fillStyle=rgba('#56526e',a);g.fill();g.restore()});
+  hand();g.fillStyle=S;g.fill();
+  clipTo(g,hand,()=>{
+    /* the light from the left; the thumb's side and the wrist by the mantle in shade */
+    g.fillStyle=lg(g,200,0,580,0,[rgba(Lt,.6),rgba(Lt,0),rgba(Dk,0),rgba(Dk,.5)]);g.fillRect(150,0,450,560);
+    g.fillStyle=lg(g,0,380,0,480,[rgba(Dk,0),rgba(Dk,.6)]);g.fillRect(150,380,450,160);
+    g.fillStyle=rg(g,330,300,90,[rgba(Lt,.5),rgba(Lt,0)]);g.fillRect(150,150,450,300);
+    /* the skin: a faint mottle, warmer towards the knuckles */
+    tex(g,'mott',.3,150,0,450,560,'overlay',3.3);
+    g.fillStyle=rg(g,380,250,150,[rgba(Rd,.16),rgba(Rd,0)]);g.fillRect(150,100,450,300);
+    /* the tendons, from the wrist to the knuckles: a low ridge, lit on its left, with the groove beside it in shade */
+    for(const f of FG){const[x,y]=f.K,w0=[268+(x-375)*.3,440],m=[(x+w0[0])/2+10,(y+w0[1])/2+6],k=[x+2,y+14];
+      stroke(g,[w0[0]+7,w0[1],m[0]+9,m[1],k[0]+9,k[1]],rgba(Dk,.14),7);stroke(g,[...w0,...m,...k],rgba(Hi,.22),7)}
+    /* the knuckles of the hand, each a little red, with a hollow between each two */
+    for(let i=0;i<3;i++){const a=FG[i].K,b=FG[i+1].K;eo((a[0]+b[0])/2,(a[1]+b[1])/2+16,10,16,0,rgba(Dk,.16))}
+    for(const f of FG){const[x,y]=f.at(f.k0-.02,-f.w*.05);eo(x,y,f.w*.46,f.w*.34,f.ang1,rgba(Rd,.14));eo(x-2,y,f.w*.3,f.w*.22,f.ang1,rgba(Hi,.36))}
+    /* each finger: the shade along its right side, deepening from the knuckle; the light along its left side; the swell of each joint,
+       lit, its wrinkles, and a little red; the tip a little redder and darker; the nail */
+    for(const f of FG){band(f,.1,1.05,.58,.22,[rgba(Dk,0),rgba(Dk,.15),rgba(Dk,.8),rgba(Dk,.85)]);
+      band(f,.12,.92,-.04,-.34,[rgba(Lt,0),rgba(Lt,.3),rgba(Lt,.8),rgba(Lt,.2)]);
+      band(f,.3,1.05,-.4,-.58,[rgba(Dk,0),rgba(Dk,.3)]);
+      for(const[k,s,r,n,sp,al]of[[f.kJ,.32,.38,3,.56,.34],[f.kD,.24,.28,2,.46,.24]]){const[jx,jy]=f.at(k-.02,-.1*f.w);eo(jx,jy,f.w*s,f.w*r,f.ang,rgba(Rd,.16));
+        eo(jx-2,jy,f.w*s*.62,f.w*r*.6,f.ang,rgba(Hi,.3));wrinkles(f,k,n,sp,al)}
+      band(f,.88,1.06,.6,-.6,[rgba(Rd,0),rgba(Rd,.24)]);band(f,.9,1.06,.6,-.6,[rgba(Dk,0),rgba(Dk,.2)]);nail(f)}
+    /* the thumb: lit along its top, in shade on its underside; its joint; its nail on top at the tip */
+    band(TH,.05,1.05,.58,.2,[rgba(Dk,.2),rgba(Dk,.75),rgba(Dk,.75)]);band(TH,.2,.9,-.1,-.36,[rgba(Lt,0),rgba(Lt,.85),rgba(Lt,.85),rgba(Lt,0)]);
+    band(TH,.4,1.05,-.42,-.58,[rgba(Dk,0),rgba(Dk,.35)]);band(TH,.86,1.06,.6,-.6,[rgba(Rd,0),rgba(Rd,.24)]);
+    {const[jx,jy]=TH.at(TH.kJ+.04,-.1*TH.w);eo(jx,jy,TH.w*.3,TH.w*.34,TH.ang,rgba(Rd,.14));wrinkles(TH,TH.kJ+.05,2,.42,.22)}nail(TH,.72,.62)});
+  /* the signet ring on the fourth finger, low on its first bone: its gold bezel a little wider than the finger, lying flat on top, and
+     the carnelian set in it with the slanting mark of Aristokles's seal cut into it */
+  {const f=FG[1],kr=f.k0+.5*(f.kJ-f.k0),[x,y]=f.at(kr,0),a=f.ang1,w=f.wd(kr)*1.16,l=40;
+    comp(g,'multiply',1,()=>{box(x+3,y+3,a,l+2,w+2,10,10);g.fillStyle=rgba(Dk,.6);g.fill()});
+    box(x,y,a,l,w,10,10);g.save();g.translate(x,y);g.rotate(a);g.fillStyle=lg(g,0,-w/2,0,w/2,['#f0d070','#cc9c34','#9a6c1a','#523408']);g.fill();g.restore();
+    g.save();g.translate(x,y);g.rotate(a);const sl=l-20,sh=w-24;
+    R(g,-sl/2-2,-sh/2-2,sl+4,sh+4,'#6a4a18');R(g,-sl/2,-sh/2,sl,sh,'#8a2e1e');R(g,-sl/2,-sh/2,sl,4,'#c4644a');R(g,-sl/2,-sh/2,4,sh,'#b0503a');
+    R(g,-sl/2,sh/2-4,sl,4,'#5a1a12');R(g,sl/2-4,-sh/2,4,sh,'#6a2016');R(g,-sl/2+4,-sh/2+4,6,5,'#eaa48a');
+    stroke(g,[-sl*.24,sh*.26,sl*.24,-sh*.26],'#4e140c',4);stroke(g,[-sl*.24+2,sh*.26+3,sl*.24+2,-sh*.26+3],'#b4553e',2);g.restore()}
+  /* the mantle, wrapped round the forearm: its hem round the wrist, and the folds running back along the arm */
+  const hem=[176,412,204,424,226,430,250,446,276,452,300,468,326,474,352,492,372,500],fw=[-.4,1],sl=[...hem,372-160,500+400,176-160,412+400];
+  poly(g,sl,M);
+  clipTo(g,()=>poly(g,sl),()=>{g.fillStyle=lg(g,176,412,372,500,[tint(M,.2),tint(M,.1),M,tint(M,-.3)]);g.fillRect(0,380,420,560);
+    for(const[t,c]of[[.12,tint(M,-.38)],[.3,tint(M,.3)],[.5,tint(M,-.3)],[.68,tint(M,.14)],[.86,tint(M,-.42)]]){const x=176+196*t+6,y=412+88*t+10;stroke(g,[x,y,x+fw[0]*120+8,y+fw[1]*120,x+fw[0]*300,y+fw[1]*300],rgba(c,.6),9)}});
+  stroke(g,hem,tint(M,.42),4);g.restore()}
 
 /* ---------- the lane map ---------- */
 /* The city is laid out in its own units, from the city wall (x 0) to the theater's hill (x 768), with the harbor west of the wall
@@ -1480,7 +1553,7 @@ ROOMS.seal14={space:.6,walk:NOW,mood:'uproar',amb:{roar14:.45,crowd:.4,cry14:.5}
   {name:'aristokles_leaf',x:60,y:62,w:84,h:59,wx:160,wy:236,vis:()=>!F.closed,look:'aristokles_leaf_look',use:layLeaf,useWith:withTablet},
   {name:'philokrates_leaf',x:176,y:62,w:84,h:59,wx:160,wy:236,vis:()=>!F.closed,def:'use',look:()=>say(RUN,F.turned?'philokrates_leaf_now_its_holes':'philokrates_leaf_holes_at_the_other_edge'),use:layLeaf,pickup:turnLeaf,open:turnLeaf,useWith:withTablet},
   {name:'tablet',x:116,y:60,w:88,h:66,wx:160,wy:236,vis:()=>!!F.closed,look:()=>say(RUN,F.sealed?'two_leaves_tied_through_two_seals':F.clayed?'over_the_knot_so_nobody':F.tied?'through_both_holes_and_knotted':'writing_to_writing_holes_together'),useWith:withTablet},
-  {name:'ring',x:264,y:76,w:56,h:32,wx:160,wy:236,vis:()=>!F.sealed,def:'use',look:'aristokles_ring_look',use:ring,talk:ring,useWith:id=>id==='clay14'?say(RUN,'over_the_knot_so_nobody'):false},
+  {name:'ring',x:262,y:60,w:58,h:63,wx:160,wy:236,vis:()=>!F.sealed,def:'use',look:'aristokles_ring_look',use:ring,talk:ring,useWith:id=>id==='clay14'?say(RUN,'over_the_knot_so_nobody'):false},
   {name:'base_of_a_column',x:0,y:127,w:218,h:17,wx:160,wy:236,look:'base_of_a_column_look'},
   {name:'back_to_the_colonnade',x:220,y:124,w:100,h:20,wx:160,wy:236,exit:outSeal,look:'not_till_it_is_sealed'}]};
 ROOMS.door14={space:1.1,floor:'earth',walk:[40,300,112,138],get mood(){return F.plea?'house':'house'},get amb(){return F.plea?{}:{roarfar14:.6,cryfar14:.6}},hs:[
