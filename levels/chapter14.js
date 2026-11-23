@@ -911,11 +911,13 @@ function columnSeal(g){const[cx,cy,rs]=SEAL.col,K=.55,Z=.83,C='#d6cec0',D='#6661
    block of iron on a short log, where the smith at the kiln works; and in the morning his hammer, held in the hand that hangs over the
    anvil: it rises and falls on the silver in quick strokes with pauses between them, as the sound of it (hammer14) does, though not in
    step with it. The hammer is drawn only while that smith stands at the anvil, facing it. */
-function marketDraw(g,t){const busy=!F.plea,[ax,ay]=ANVIL_Market,s=ACT.smith14c;
+function marketDraw(g,t){const busy=!F.plea,[ax,ay]=ANVIL_Market,s=ACT.smith14c,
+    work=busy&&s&&s.room==='market14'&&Math.abs(s.x-381.5)<1&&Math.abs(s.y-ay)<1&&!s.walk&&facing(s)===-1;
   beast(g,99,114,1,0,0,lightAt('market14',99,114));
   if(busy){const k=.5+.5*Math.sin(t/230)*Math.sin(t/570);pool(g,358,97,10,5,'#ff9040',.16+.14*k)}
   depth(ay-.2,()=>anvilMarket(g,ax,ay,busy));
-  if(busy&&s&&s.room==='market14'&&Math.abs(s.x-380)<1&&Math.abs(s.y-ay)<1&&!s.walk&&facing(s)===-1)depth(ay+.05,()=>hammerMarket(g,s.x,s.y,t))}
+  if(s)s.ges=0;
+  if(work){const[st,hit]=hammerStep(t);s.ges=6+st;depth(ay+.05,()=>hammerMarket(g,s.x,s.y,st,hit))}}
 /* anvilMarket: the anvil at x,y (its foot): a short log on end and on it a block of iron, its face lit, with a small piece of silver on it
    in the morning; in the late afternoon the hammer lies on it. */
 function anvilMarket(g,x,y,busy){oval(g,x,y-.4,5.4,1.4,'rgba(30,26,50,.3)');
@@ -923,17 +925,19 @@ function anvilMarket(g,x,y,busy){oval(g,x,y-.4,5.4,1.4,'rgba(30,26,50,.3)');
   R(g,x-3,y-17,6,3.4,'#3a3a40');R(g,x-3,y-17,6,.7,'#a4a4ae');R(g,x-3,y-17,1.2,3.4,'#5e5e68');R(g,x+2,y-16.3,1,2.7,'#26262c');
   if(busy){R(g,x-1.8,y-17.6,3.6,.6,'#e8ecf0');R(g,x-1.2,y-18,2.6,.4,'#b8c0c8')}
   else{R(g,x-2.8,y-18.6,2.8,1.6,'#44444c');R(g,x-2.8,y-18.6,2.8,.5,'#8a8a96');wood(g,x,y-17.9,5.4,.9,'#7a5a34')}}
-/* hammerMarket: the smith's hammer, in the hand at his side that hangs over the anvil (he stands at x,y, facing left). The handle comes
-   out of the front of his fist toward the anvil, and the head sits at its end with its face toward the anvil and nothing of the handle
-   beyond it: an L, never a cross. Each stroke: down on the silver, up in two steps, down again; a few strokes, then a pause. */
-const HAND_Market=[-6.3,-21.4];
-function hammerMarket(g,x,y,t){const P=1900,c=Math.floor(t/P),n=2+hash(c*7+3)%4,u=t%P,i=Math.floor(u/210),w=u%210;
-  const a=i<n?(w<50?-.45:w<85?0:w<165?.55:0):(u-n*210<140?0:-.45);
-  const hx=x+HAND_Market[0],hy=y+HAND_Market[1],L=5.6,ux=-Math.cos(a),uy=-Math.sin(a),ex=hx+ux*L,ey=hy+uy*L,nx=uy,ny=-ux,f=1.8,b=.6,hw=.85;
+/* hammerStep, hammerMarket: the smith's forearm and hammer over the anvil (he stands at x,y, facing left). His forearm pivots at the elbow
+   through three poses (s.ges 6 down, 7 midway, 8 raised), and the hammer handle comes out of the front of his fist toward the anvil with
+   the head at its end and nothing of the handle beyond it: an L, never a cross. Each stroke: down on the silver, up in two steps, down
+   again; a few strokes, then a pause. */
+const HAMMER_Market=[[-8.6,-22.1,-.64],[-10,-27.7,.18],[-10,-31.2,.62]];
+function hammerStep(t){const P=1900,c=Math.floor(t/P),n=2+hash(c*7+3)%4,u=t%P,i=Math.floor(u/210),w=u%210;
+  return[i<n?(w<50?0:w<85?1:w<165?2:1):(u-n*210<140?1:0),i<n&&w<50]}
+function hammerMarket(g,x,y,st,hit){const[dx,dy,a]=HAMMER_Market[st],
+  hx=x+dx,hy=y+dy,L=5.2,ux=-Math.cos(a),uy=-Math.sin(a),ex=hx+ux*L,ey=hy+uy*L,nx=uy,ny=-ux,f=1.8,b=.6,hw=.85;
   stroke(g,[hx+ux*.3,hy+uy*.3,ex,ey],'#6a4a2c',1);stroke(g,[hx+ux*.3-nx*.3,hy+uy*.3-ny*.3,ex-nx*.3,ey-ny*.3],'#a8845a',.4);
   poly(g,[ex+ux*hw-nx*b,ey+uy*hw-ny*b,ex+ux*hw+nx*f,ey+uy*hw+ny*f,ex-ux*hw+nx*f,ey-uy*hw+ny*f,ex-ux*hw-nx*b,ey-uy*hw-ny*b],'#44444c');
   poly(g,[ex+ux*hw-nx*b,ey+uy*hw-ny*b,ex+ux*hw+nx*f,ey+uy*hw+ny*f,ex+ux*.2+nx*f,ey+uy*.2+ny*f,ex+ux*.2-nx*b,ey+uy*.2-ny*b],'#8a8a96');
-  if(i<n&&w<50)R(g,ex+nx*f-.8,ey+ny*f-.2,1.6,.6,'#ffffff')}
+  if(hit)R(g,ex+nx*f-.8,ey+ny*f-.2,1.6,.6,'#ffffff')}
 /* the tablet in the close view, in its states. A: Aristokles's leaf, B: Philokrates's, each a frame of boxwood round dark wax with the
    writing in the wax; C: the closed tablet, where Philokrates's leaf has been laid on Aristokles's. The two holes of a leaf are in its
    frame along one long edge: Aristokles's along the near edge; Philokrates's along the far edge until his leaf is turned round, and then
@@ -1422,7 +1426,7 @@ const DA=actor('damon14','damon_and_theano','#d8e0b8',110),
   D1=actor('dz14a','disciple','#d8c8e8',116),D2=actor('dz14b','disciple','#f0c8d8',190),D3=actor('dz14c','disciple','#c8e8d8',140);
 const THV={color:'#f0c8e0',pitch:196,name:'Theano',talk:false,get room(){return DA.room},get x(){return DA.x-13*DA.dir},get y(){return DA.y}};
 DA.mate={fig:'theano14',dx:-13,voice:THV,get talk(){return THV.talk}};DA.called='Damon';
-const SMITHS=[['smith14a',150,118,1],['smith14b',318,121,-1],['smith14c',380,116,-1]];
+const SMITHS=[['smith14a',150,118,1],['smith14b',318,121,-1],['smith14c',381.5,116,-1]];
 /* an actor who is drawn in a scene without speaking (the silversmiths): placed like anyone, never a hotspot */
 SMITHS.forEach(([id])=>actor(id,'silversmith','#e0d0b0',110));
 
@@ -1731,7 +1735,7 @@ const TABLETS={
 /* ============ PLACING THE CAST, SETUP ============ */
 const ENT={court14:[186,126,1],market14:[40,124,1],colon14:[120,124,1],seal14:[160,236,1],get lanes14(){return F.plea?[X(HOUSE[0]),Y(78),1]:[X(START[0]),Y(START[1]),START[2]]},door14:[160,124,1]};
 const EVERY=[AR,PK,PH,KL,TI,ER,DE,BR,AP,PO,WA,OL,DY,D1,D2,D3,...SMITHS.map(s=>ACT[s[0]])];
-function place14(room){for(const a of EVERY){a.room=null;a.talk=false;a.seat=0}THV.talk=false;if(setScore&&AU.score!==MUSIC)setScore(MUSIC);
+function place14(room){for(const a of EVERY){a.room=null;a.talk=false;a.seat=0;a.ges=0}THV.talk=false;if(setScore&&AU.score!==MUSIC)setScore(MUSIC);
   /* who is played: Eudoros until the court is found, Damon and Theano in the house until the plea is read, then Paul */
   const want=G.stage14?P:!F.court?RUN:!F.plea?DA:P;
   if(G.pc!==want){if(want===P)G.pc=P;else{G.pc=want;G.inv=G.invs[want.id]||(G.invs[want.id]=[])}}
@@ -1740,7 +1744,7 @@ function place14(room){for(const a of EVERY){a.room=null;a.talk=false;a.seat=0}T
   if(room==='colon14'){const R0=[[BR,206,121,-1],[AP,250,117,-1],[PO,290,124,-1],[WA,334,118,-1],[OL,372,122,-1],[DY,416,119,-1],[AR,60,119,1],[PK,82,123,1]];for(const[a,x,y,d]of R0)place(a,room,x,y,d)}
   if(room==='seal14'){}
   if(room==='door14'){place(PH,room,120,121,1);if(!F.plea){posePaul();if(G.pc===DA&&DA.room!=='door14')place(DA,room,...ENT.door14)}}
-  if(room==='court14'&&F.plea){place(PH,room,96,124,1);place(KL,room,150,128,-1);place(DA,room,220,120,-1);place(D1,room,282,124,-1);place(D2,room,262,112,-1);place(D3,room,300,114,-1)}
+  if(room==='court14'&&F.plea){place(PH,room,96,124,1);place(KL,room,150,128,-1);place(DA,room,220,120,-1);place(D1,room,282,126,-1);place(D2,room,262,112,-1);place(D3,room,300,114,-1)}
   if(room==='market14'&&!F.plea)placeMarket();
   P.party=DA.party=RUN.party=0;swapBtn()}
 function setup14(){P.hs=PAULHS;P.called='Paul';RUN.called='Eudoros';G.sv14=0;G.dl14=0;G.hu14=null;for(const k in courtSaid)delete courtSaid[k];

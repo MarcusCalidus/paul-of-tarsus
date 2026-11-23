@@ -52,7 +52,7 @@ Chapter Eleven is Athens, and Athens is shown as it stood: CONTRIBUTING section 
 
 ![The row of altars in Chapter Eleven](screenshots/altars.png)
 
-Chapter Twelve is Corinth, which the maintainer added to that exception: the old temple stands on its rise over the roofs, with heavy columns each of a single stone, and a second one, small and far off, on the summit of the rock. The chapter has the game's first light that is worked out and not painted: in the view of the court of Titius Justus the sun is not in the picture, and the brightness on the far wall and the floor follows where the rope and the cloth are hung. The same court and the same street are painted in autumn, in winter rain, in the spring of the games and in summer.
+Chapter Twelve is Corinth, which the maintainer added to that exception: the old temple stands on its rise over the roofs, with heavy columns each of a single stone, and a second one, small and far off, on the summit of the rock. The chapter has the game's first light that is worked out and not painted: in the view of the court of Titius Justus the sun is not in the picture, and the brightness on the far wall and the floor follows where the rope and the cloth are hung. The same court and the same street are painted in autumn, in winter rain (via the shared weather helper `shared/weather.js`, with wind-slanted strokes, damp wall bases, and rippling puddles), in the spring of the games and in summer.
 
 ![The awning of Chapter Twelve](screenshots/awning.png)
 
