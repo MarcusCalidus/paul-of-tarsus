@@ -146,8 +146,12 @@ ART.workshop={w:320,q:12,
   /* stool */
   shadow1(g,127.5,119.5,10,2,.45);stoolArt(g);
   /* workbench, with a peg rail above it */
-  board1(g,211,38,82,2.6,'#70502e',rw);ao(g,211,40.6,82,4,'t',.35);for(const px of[222,250,278]){R(g,px,37.5,2.5,4,'#3e2a1a');R(g,px,37.5,2.5,.5,'#8a6842')}
-  stroke(g,[251.3,41,250,44,252.6,44,251.3,41],'#3a2a1a',.6);board1(g,250,43.5,2.6,10,'#a67c4a',rw,1);board1(g,246.3,53,10,5,'#8a6238',rw);R(g,246.3,53,.5,5,'#b08a56');
+  board1(g,211,38,82,2.6,'#70502e',rw);ao(g,211,40.6,82,4,'t',.35);for(const px of[222,238,278]){R(g,px,37.5,2.5,4,'#3e2a1a');R(g,px,37.5,2.5,.5,'#8a6842')}
+  /* the mallet hangs by a cord at the end of its handle from a peg that is not the rail's middle; its round head is turned to us, so that
+     no head lies across the handle: the face, and a little of its side toward the middle of the room */
+  stroke(g,[239.3,41,238,44,240.6,44,239.3,41],'#3a2a1a',.6);board1(g,238,43.5,2.6,9.4,'#a67c4a',rw,1);
+  {const hx=239.3,hy=56.4,c='#8a6238';oval(g,hx-1.4,hy,3.4,3.6,tint(c,-.38));R(g,hx-1.4,hy-3.6,1.4,7.2,tint(c,-.38));oval(g,hx,hy,3.4,3.6,c);
+   g.strokeStyle=tint(c,-.22);g.lineWidth=.5;g.beginPath();g.ellipse(hx,hy,2,2.2,0,.4,5.8);g.stroke();R(g,hx+1,hy-2.8,1.4,.6,tint(c,.3))}
   R(g,206,86,78,21,'rgba(20,10,6,.6)');ao(g,206,86,78,6,'t',.35,'#0c0808');board1(g,212,88,4,17,'#3e2a1a',rw,1);board1(g,273,88,4,17,'#3e2a1a',rw,1);
   board1(g,206.5,86,6,21.5,'#6a4628',rw,1);board1(g,277.5,86,6,21.5,'#6a4628',rw,1);board1(g,212.5,96.5,65,2.6,'#553820',rw);
   shadow1(g,209.5,107.4,5,1.2,.4);shadow1(g,280.5,107.4,5,1.2,.4);
@@ -312,8 +316,8 @@ ART.house={w:320,q:12,
   board1(g,121.5,100,3,9.5,'#5a3c22',rw,1);board1(g,155.5,100,3,9.5,'#5a3c22',rw,1);board1(g,117,96,46,4.2,'#8a6238',rw);R(g,117,99.6,46,1,'#4e3520');
   oval(g,130,95.2,5.5,2,'#b88a48');oval(g,129.4,94.6,4.6,1.5,'#d8ae6a');stroke(g,[127,94.6,132,94.6],'#a07838',.5);vessel(g,146,96,2.4,6,'#9a5230','jug',{noShadow:1});
   /* rolled sleeping mat, storage jars */
-  shadow1(g,69,108.5,15,1.6,.44);g.fillStyle=lg(g,0,101,0,108,['#9a8a5c','#6f6240','#463c26']);g.fillRect(56,101,26,7.5);for(let i=0;i<26;i+=2)R(g,56+i,101,.5,7.5,'rgba(0,0,0,.22)');
-  oval(g,56,104.7,2.2,3.7,'#7a6c46');oval(g,82,104.7,2.2,3.7,'#4e4430');for(const rr of[1,2.2])stroke(g,[56-rr*.5,104.7-rr,56+rr*.5,104.7+rr],'#5a4e32',.4);R(g,62,101,1.2,7.5,'#6a3a2a');R(g,75,101,1.2,7.5,'#6a3a2a');
+  /* the rolled mat lies along the wall: of its two ends we see only the one turned toward the middle of the room (clothRoll) */
+  shadow1(g,69,108.5,15,1.6,.44);clothRoll(g,56,108.5,26,7.5,'#8a7c54',{near:1,k:.3,face:.2});
   vessel(g,284,110,7,16,'#a8562e','pithos');vessel(g,297,110,6,14,'#8a744a','jar');vessel(g,308,108,5.5,15,'#8e4428','amph');
   /* the lamp burns in its niche: its light goes out and down from the opening, and the arch keeps it off the wall above (nicheLight). It
      fills the room from below the niche, reaches the table and the mat, and lies warm on the boards; the stair, the corners, the ceiling
@@ -528,7 +532,7 @@ ROOMS.workshop={space:1.2,walk:[22,300,112,138],mood:'calm',amb:{crickets:.22,fi
   {name:'tentmakers_knife',x:211,y:73,w:16,h:10,wx:220,wy:113,vis:()=>!F.gotKnife,look:'half_moon_knife_for_cutting',pickup:take('gotKnife','knife','sharp_said')},
   {name:'bolt_of_goat_hair_cloth',x:234,y:70,w:38,h:13,wx:252,wy:113,vis:()=>!F.gotCloth,look:'dark_goat_hair_cloth_the_kind',pickup:take('gotCloth','cloth','heavy_and_tough')},
   {name:'coil_of_rope',x:215,y:38,w:16,h:20,wx:224,wy:113,vis:()=>!F.gotRope,look:'coil_of_rope_on_a_peg',pickup:take('gotRope','rope','sound_rope')},
-  {name:'mallet',x:245,y:38,w:13,h:20,wx:252,wy:113,look:'mallet_for_driving_tent_pegs',pickup:'too_heavy_to_carry_without_a_reason'},
+  {name:'mallet',x:233,y:38,w:13,h:22,wx:240,wy:113,look:'mallet_for_driving_tent_pegs',pickup:'too_heavy_to_carry_without_a_reason'},
   {name:'waterskin',x:272,y:40,w:14,h:20,wx:274,wy:113,vis:()=>!F.gotSkin,look:'my_waterskin_hanging_where_i_left_it',pickup:take('gotSkin','skin','empty_said')},
   {name:'large_basket',x:288,y:80,w:30,h:32,wx:284,wy:114,dir:1,vis:()=>!F.gotBasket,look:'large_provision_basket',
     pickup:take('gotBasket','basket','i_can_carry_it'),
