@@ -1027,8 +1027,10 @@ function claySeal(g,kx,ky,sealed){const C='#94654e',r=rng(1411),blob=(cx,cy,rx,r
    short, soft wrinkles that bow towards the tip, fewer over the last joint; they stop short of the finger's edges, so that no line is
    drawn across a finger, and the joints and the tips are a little redder than the rest. On the back of the hand the four knuckles stand
    up, with a hollow between each two, and the tendons run from the wrist to them as low ridges. The thumb grows from the side of the
-   hand low down, near the wrist, thicker than the fingers, with a deep web between it and the index finger, and points out at an angle;
-   its nail is on top at the tip. On the fourth finger is his signet ring: a gold bezel a little wider than the finger, and set in it his
+   hand low down, near the wrist, about half as thick again as a finger, and runs out straight, about thirty degrees farther out than
+   the index finger, with a deep web between them that reaches down to the middle of the back of the hand; its tip comes about as far
+   as the index finger's knuckle. It lies turned on its side, as a thumb does beside a hand laid flat, so that its nail faces outward
+   and is seen at three quarters on its outer side at the tip, never on top as the fingers' nails are. On the fourth finger is his signet ring: a gold bezel a little wider than the finger, and set in it his
    stone, a dark red carnelian about as large as the seal it leaves in the clay, with the slanting mark of that seal cut into it. The
    hand and its fingers are one shape: nothing marks where a finger begins. The light comes from the left: the left side of each finger
    is lit and its right side in shade, and the thumb's side of the hand and the wrist, by the mantle, are in shade; the hand throws a
@@ -1036,7 +1038,7 @@ function claySeal(g,kx,ky,sealed){const C='#94654e',r=rng(1411),blob=(cx,cy,rx,r
    pointing up and the thumb to the right, and turned and scaled onto the screen by HANDSeal. */
 /* HANDSeal: where the hand is drawn: the screen point of the middle of its wrist (265, 430 in its units), the angle it is turned by,
    the size of one of its units, and how much the slant of the view shortens what runs away from us */
-const HANDSeal=[288,118,-.73,.15,.8];
+const HANDSeal=[287,119,-.73,.135,.8];
 function handSeal(g){const S='#c8966e',Lt=tint(S,.2),Hi=tint(S,.34),Dk=tint(S,-.24),Rd='#b4604a',Cr='#7c4434',N='#d0a08a',M='#7a2a3a',[px,py,A,Z,K]=HANDSeal;
   g.save();g.translate(px,py);g.scale(1,K);g.rotate(A);g.scale(Z,Z);g.translate(-265,-430);
   const nz=(x,y)=>{const l=Math.hypot(x,y);return[x/l,y/l]},turn=(d,a)=>[d[0]*Math.cos(a)-d[1]*Math.sin(a),d[0]*Math.sin(a)+d[1]*Math.cos(a)];
@@ -1058,10 +1060,11 @@ function handSeal(g){const S='#c8966e',Lt=tint(S,.2),Hi=tint(S,.34),Dk=tint(S,-.
   /* a rounded box in a frame of its own: centre (x, y), turned by a, l along and h across, its ends rounded by ra (back) and rb (front) */
   const box=(x,y,a,l,h,ra,rb)=>{g.save();g.translate(x,y);g.rotate(a);const u=l/2,v=h/2;g.beginPath();g.moveTo(-u+ra,-v);g.lineTo(u-rb,-v);g.quadraticCurveTo(u,-v,u,-v+rb);
     g.lineTo(u,v-rb);g.quadraticCurveTo(u,v,u-rb,v);g.lineTo(-u+ra,v);g.quadraticCurveTo(-u,v,-u,v-ra);g.lineTo(-u,-v+ra);g.quadraticCurveTo(-u,-v,-u+ra,-v);g.closePath();g.restore()};
-  /* the nail on the last bone: the fold of skin at its root, the nail, the shade on its right side, the light on its left, its free edge */
-  const nail=(f,fl,fw)=>{const w=f.wd(f.kD+.02),l=w*(fl||.78),h=w*(fw||.6),kc=1-(f.e*.32+l/2)/f.L,[x,y]=f.at(kc,-w*.03),a=f.ang;
-    const[cx,cy]=f.at(kc-l*.55/f.L,-w*.03);eo(cx,cy,h*.62,l*.16,a+Math.PI/2,rgba(Rd,.3));
-    box(x,y,a,l,h,h*.42,h*.5);g.fillStyle=N;g.fill();
+  /* the nail on the last bone: the fold of skin at its root, the nail, the shade on its right side, the light on its left, its free edge;
+     off puts it at that fraction of the width to the right, turned away and in the shade of that side, as the thumb's is */
+  const nail=(f,fl,fw,off)=>{const w=f.wd(f.kD+.02),l=w*(fl||.78),h=w*(fw||.6),o=off==null?-.03:off,kc=1-(f.e*(off==null?.32:.45)+l/2)/f.L,[x,y]=f.at(kc,w*o),a=f.ang;
+    const[cx,cy]=f.at(kc-l*.55/f.L,w*o);eo(cx,cy,h*.62,l*.16,a+Math.PI/2,rgba(Rd,.3));
+    box(x,y,a,l,h,h*.42,h*.5);g.fillStyle=off==null?N:mix(N,Dk,.25);g.fill();if(off!=null)return;
     clipTo(g,()=>box(x,y,a,l,h,h*.42,h*.5),()=>{g.save();g.translate(x,y);g.rotate(a);
       R(g,-l/2,h*.16,l,h*.4,rgba(tint(N,-.26),.6));R(g,-l/2,-h/2,l,h*.24,rgba('#ecd6ca',.5));R(g,l*.3,-h/2,l*.3,h,rgba('#e8d0c0',.3));
       R(g,-l/2,-h/2,l*.18,h,rgba(Rd,.25));g.restore()})};
@@ -1069,11 +1072,11 @@ function handSeal(g){const S='#c8966e',Lt=tint(S,.2),Hi=tint(S,.34),Dk=tint(S,-.
   const wrinkles=(f,k,n,span,a)=>{for(let i=0;i<n;i++){const kk=k+(i-(n-1)/2)*7.5/f.L,w=f.wd(kk)*span*(i===(n-1)/2|0?1:.8),p=[];
     for(let t=-1;t<=1.001;t+=.25)p.push(...f.at(kk+(1-t*t)*3.5/f.L,t*w/2-f.wd(kk)*.05));stroke(g,p,rgba(Cr,a),2.6)}};
   /* the fingers: little, fourth, middle and index, each from its knuckle; and the thumb */
-  const FG=[geo([291,228],16,182,42,.06,24),geo([350,212],26,222,47,.05,24),geo([408,214],33,238,49,.05,24),geo([460,240],41,214,48,.07,24)],
-    TH=geo([452,396],62,162,60,-.1,40,.74);
+  const FG=[geo([291,228],16,197,42,.06,24),geo([350,212],26,241,47,.05,24),geo([408,214],33,258,49,.05,24),geo([460,240],41,232,48,.07,24)],
+    TH=geo([447,405],72,158,66,0,44,.82);
   /* the back of the hand, from the wrist (under the mantle) to the knuckles and the web of the thumb; it runs round the same way as the
      fingers, so that where they overlap they add up and never cancel */
-  const back=()=>{g.moveTo(330,540);g.lineTo(340,482);g.quadraticCurveTo(420,478,450,432);g.quadraticCurveTo(462,404,463,352);g.quadraticCurveTo(470,300,484,256);
+  const back=()=>{g.moveTo(330,540);g.lineTo(340,486);g.quadraticCurveTo(400,490,448,444);g.lineTo(440,400);g.lineTo(437,378);g.quadraticCurveTo(452,320,484,256);
     g.lineTo(462,228);g.lineTo(410,208);g.lineTo(352,202);g.lineTo(300,214);g.lineTo(268,232);g.quadraticCurveTo(240,320,236,420);g.lineTo(230,520);g.closePath()};
   /* the webs of skin between neighbouring fingers, which reach about a third of the way up the shorter one: each is drawn the same way
      round as the fingers, so that it adds to them */
@@ -1096,10 +1099,10 @@ function handSeal(g){const S='#c8966e',Lt=tint(S,.2),Hi=tint(S,.34),Dk=tint(S,-.
     g.fillStyle=rg(g,380,250,150,[rgba(Rd,.16),rgba(Rd,0)]);g.fillRect(150,100,450,300);
     /* the tendons, from the wrist to the knuckles: a low ridge, lit on its left, with the groove beside it in shade */
     for(const f of FG){const[x,y]=f.K,w0=[268+(x-375)*.3,440],m=[(x+w0[0])/2+10,(y+w0[1])/2+6],k=[x+2,y+14];
-      stroke(g,[w0[0]+7,w0[1],m[0]+9,m[1],k[0]+9,k[1]],rgba(Dk,.14),7);stroke(g,[...w0,...m,...k],rgba(Hi,.22),7)}
+      stroke(g,[w0[0]+7,w0[1],m[0]+9,m[1],k[0]+9,k[1]],rgba(Dk,.07),8);stroke(g,[...w0,...m,...k],rgba(Hi,.11),8)}
     /* the knuckles of the hand, each a little red, with a hollow between each two */
-    for(let i=0;i<3;i++){const a=FG[i].K,b=FG[i+1].K;eo((a[0]+b[0])/2,(a[1]+b[1])/2+16,10,16,0,rgba(Dk,.16))}
-    for(const f of FG){const[x,y]=f.at(f.k0-.02,-f.w*.05);eo(x,y,f.w*.46,f.w*.34,f.ang1,rgba(Rd,.14));eo(x-2,y,f.w*.3,f.w*.22,f.ang1,rgba(Hi,.36))}
+    for(let i=0;i<3;i++){const a=FG[i].K,b=FG[i+1].K;eo((a[0]+b[0])/2,(a[1]+b[1])/2+16,10,16,0,rgba(Dk,.08))}
+    for(const f of FG){const[x,y]=f.at(f.k0-.02,-f.w*.05);eo(x,y,f.w*.46,f.w*.34,f.ang1,rgba(Rd,.09));eo(x-2,y,f.w*.3,f.w*.22,f.ang1,rgba(Hi,.18))}
     /* each finger: the shade along its right side, deepening from the knuckle; the light along its left side; the swell of each joint,
        lit, its wrinkles, and a little red; the tip a little redder and darker; the nail */
     for(const f of FG){band(f,.1,1.05,.58,.22,[rgba(Dk,0),rgba(Dk,.15),rgba(Dk,.8),rgba(Dk,.85)]);
@@ -1108,10 +1111,11 @@ function handSeal(g){const S='#c8966e',Lt=tint(S,.2),Hi=tint(S,.34),Dk=tint(S,-.
       for(const[k,s,r,n,sp,al]of[[f.kJ,.32,.38,3,.56,.34],[f.kD,.24,.28,2,.46,.24]]){const[jx,jy]=f.at(k-.02,-.1*f.w);eo(jx,jy,f.w*s,f.w*r,f.ang,rgba(Rd,.16));
         eo(jx-2,jy,f.w*s*.62,f.w*r*.6,f.ang,rgba(Hi,.3));wrinkles(f,k,n,sp,al)}
       band(f,.88,1.06,.6,-.6,[rgba(Rd,0),rgba(Rd,.24)]);band(f,.9,1.06,.6,-.6,[rgba(Dk,0),rgba(Dk,.2)]);nail(f)}
-    /* the thumb: lit along its top, in shade on its underside; its joint; its nail on top at the tip */
+    /* the thumb: lit along its top, in shade on its underside; its joint; its nail, turned away from us with the thumb, seen at three
+       quarters on its outer side at the tip */
     band(TH,.05,1.05,.58,.2,[rgba(Dk,.2),rgba(Dk,.75),rgba(Dk,.75)]);band(TH,.2,.9,-.1,-.36,[rgba(Lt,0),rgba(Lt,.85),rgba(Lt,.85),rgba(Lt,0)]);
     band(TH,.4,1.05,-.42,-.58,[rgba(Dk,0),rgba(Dk,.35)]);band(TH,.86,1.06,.6,-.6,[rgba(Rd,0),rgba(Rd,.24)]);
-    {const[jx,jy]=TH.at(TH.kJ+.04,-.1*TH.w);eo(jx,jy,TH.w*.3,TH.w*.34,TH.ang,rgba(Rd,.14));wrinkles(TH,TH.kJ+.05,2,.42,.22)}nail(TH,.72,.62)});
+    {const[jx,jy]=TH.at(TH.kJ+.04,-.1*TH.w);eo(jx,jy,TH.w*.3,TH.w*.34,TH.ang,rgba(Rd,.14));wrinkles(TH,TH.kJ+.05,2,.42,.22)}nail(TH,.72,.42,.2)});
   /* the signet ring on the fourth finger, low on its first bone: its gold bezel a little wider than the finger, lying flat on top, and
      the carnelian set in it with the slanting mark of Aristokles's seal cut into it */
   {const f=FG[1],kr=f.k0+.5*(f.kJ-f.k0),[x,y]=f.at(kr,0),a=f.ang1,w=f.wd(kr)*1.16,l=40;
