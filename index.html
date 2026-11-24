@@ -1488,7 +1488,12 @@ function roomRoute(a,X,Y,click){const id=a.room,R=ROOMS[id],w=R&&R.walk;if(!w)re
     cxy=i=>[x0+(i%GW)*RCS,y0+((i/GW)|0)*RCS],cOf=(x,y)=>clamp(Math.round((y-y0)/RCS),0,GH-1)*GW+clamp(Math.round((x-x0)/RCS),0,GW-1),
     B=new Uint8Array(N);
   for(let i=0;i<N;i++){const[x,y]=cxy(i);B[i]=hit(x,y,1)?1:0}
-  const tx=clamp(X,w[0],w[1]),ty=clamp(Y,w[2],w[3]),s=cOf(a.x,a.y),C=new Float64Array(N).fill(Infinity),from=new Int32Array(N).fill(-1),hp=[],hk=[];
+  /* where he sets out: the cell he stands on; if he stands free but that cell is blocked (the grid's rows lie two pixels apart), the free
+     cell nearest to him; and only the footprints he really stands in may be stepped out of, never another whose margin touches them */
+  const own=all.filter(f=>inBox(f.b,a.x,a.y,1)),O=new Uint8Array(N);if(own.length)for(let i=0;i<N;i++){const[x,y]=cxy(i);O[i]=own.some(f=>inBox(f.b,x,y,1))?1:0}
+  let s=cOf(a.x,a.y);if(B[s]&&!own.length){let bd=Infinity;const sx=s%GW,sy=(s/GW)|0;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const X=sx+dx,Y=sy+dy;if(X<0||Y<0||X>=GW||Y>=GH)continue;
+    const n=Y*GW+X,[x,y]=cxy(n),d=Math.hypot(x-a.x,(y-a.y)*2);if(!B[n]&&d<bd){bd=d;s=n}}}
+  const tx=clamp(X,w[0],w[1]),ty=clamp(Y,w[2],w[3]),C=new Float64Array(N).fill(Infinity),from=new Int32Array(N).fill(-1),hp=[],hk=[];
   /* the shortest way out from where he stands (a heap of cells by cost, kept in 64 bits: a cost rounded to 32 is found stale and the search
      stops short, as on the lane maps); a blocked cell is entered only from a blocked cell, so that he
      steps out of a footprint he stands in, and never into another */
@@ -1496,7 +1501,7 @@ function roomRoute(a,X,Y,click){const id=a.room,R=ROOMS[id],w=R&&R.walk;if(!w)re
     pop=()=>{const top=hp[0],li=hp.pop(),lk=hk.pop(),n=hp.length;if(n){let j=0;for(;;){let c=2*j+1;if(c>=n)break;if(c+1<n&&hk[c+1]<hk[c])c++;if(hk[c]>=lk)break;hp[j]=hp[c];hk[j]=hk[c];j=c}hp[j]=li;hk[j]=lk}return top};
   C[s]=0;push(s,0);
   while(hp.length){const k0=hk[0],c=pop();if(k0>C[c])continue;const cx=c%GW,cy=(c/GW)|0;
-    for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;const nx=cx+dx,ny=cy+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const n=ny*GW+nx;if(B[n]&&!B[c])continue;
+    for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;const nx=cx+dx,ny=cy+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const n=ny*GW+nx;if(B[n]&&!(B[c]&&O[n]))continue;
       const nc=C[c]+Math.hypot(dx,dy*2)*RCS;if(nc<C[n]){C[n]=nc;from[n]=c;push(n,nc)}}}
   /* where the way ends: on x, y if it is free and can be reached, else on the free place nearest to it that can be */
   let t=cOf(tx,ty);const exact=!B[t]&&C[t]<Infinity&&!hit(tx,ty,1);
