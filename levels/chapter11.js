@@ -1318,6 +1318,9 @@ Object.assign(ITEMS,{
 
 /* ============ ROOMS ============ */
 const NOW=[160,160,236,236];   /* a close view: Paul stands below the picture, and takes no step */
+/* standing11: the floor under the feet of the figures a room paints itself (cast, in its draw), which nobody walks through (issue #83):
+   for each [x, y] where one stands, a box as wide as his feet and a little deep */
+const standing11=l=>l.map(([x,y])=>[x-5,y-2.5,10,4]);
 const qOn=kind=>id=>isQ(id)?ask(id,kind):false;
 ROOMS.road11={space:.5,walk:[16,624,112,138],get mood(){return F.shut?'walk':'calm'},amb:{wind:.3,birds:.4},hs:[
   {name:'road_down_to_the_harbor',x:0,y:60,w:16,h:46,wx:20,wy:122,dir:-1,exit:()=>say(P,'not_while_silas_and_timothy'),look:'road_back_down_to_the_sea'},
@@ -1338,7 +1341,7 @@ ROOMS.street11={space:.8,walk:[16,624,112,138],get mood(){return F.shut?'walk':'
     look:async()=>{(G.s11||(G.s11={}))[s.id]=1;if(s.id==='p1'||s.id==='p2')G.s11.p1=G.s11.p2=1;await say(P,s.look)},useWith:qOn('statue'),pickup:'it_is_bronze_and_marble',use:'there_is_nothing_that_i'})),
   ...LANES.map(([x,k])=>({name:'lane',x,y:56,w:30,h:48,wx:x+15,wy:114,exit:()=>lane(k),look:'a_lane_between_two_houses'})),
   {name:'way_to_the_marketplace',x:608,y:40,w:32,h:66,wx:622,wy:124,dir:1,exit:toAgora,look:'street_runs_on_to_the_marketplace'}]};
-ROOMS.syn11={space:1.4,walk:[16,304,112,137],mood:'still',amb:{crowd:.1},hs:[
+ROOMS.syn11={space:1.4,walk:[16,304,112,137],block:standing11([[272,122],[292,128],[300,118]]),mood:'still',amb:{crowd:.1},hs:[
   {name:'door_to_the_lane',x:17,y:47,w:30,h:57,wx:44,wy:116,dir:-1,exit:()=>say(P,'not_before_i_have_said'),look:'door_to_the_lane_beyond'},
   {name:'benches',x:56,y:84,w:62,h:20,wx:90,wy:113,look:'benches_of_stone_along_the_wall_said',use:'i_have_been_asked_to_sit'},
   {name:'windows',x:108,y:22,w:106,h:24,wx:160,wy:113,look:'two_small_windows_with_upright_bars'},
@@ -1347,7 +1350,7 @@ ROOMS.syn11={space:1.4,walk:[16,304,112,137],mood:'still',amb:{crowd:.1},hs:[
   {name:'readers_table',x:130,y:82,w:64,h:22,wx:160,wy:113,look:'table_from_which_the_law',pickup:'it_stands_where_the_whole'},
   {name:'men_and_women_of_the_synagogue',x:254,y:78,w:60,h:50,wx:236,wy:126,dir:1,look:'jews_of_athens_and_with_them',talk:()=>synTalk()}]};
 ART.syn11.draw=g=>cast(g,[['hx111',272,122,-1],['hx112',292,128,-1],['hx113',300,118,-1]],lit11(280,122));
-ROOMS.agora11={space:.6,walk:[16,624,112,138],mood:'market',amb:{crowd:.6,birds:.2,hammer:.12},enter:async()=>{if(all5()&&!F.led)return dispute()},hs:[
+ROOMS.agora11={space:.6,walk:[16,624,112,138],block:standing11([[292,121],[276,124],[584,118]]),mood:'market',amb:{crowd:.6,birds:.2,hammer:.12},enter:async()=>{if(all5()&&!F.led)return dispute()},hs:[
   {name:'street',x:0,y:40,w:16,h:66,wx:20,wy:124,dir:-1,exit:()=>goto('street11',612,124,-1),look:'street_back_toward_the_fountain'},
   {name:'Acropolis',x:372,y:6,w:150,h:30,wx:446,wy:114,look:'acropolis_over_every_roof_in_the_city',useWith:qOn('temple')},
   {name:'temple_of_hephaestus',x:54,y:6,w:100,h:36,wx:110,wy:114,look:'temple_on_the_low_hill',useWith:qOn('temple')},
@@ -1373,7 +1376,7 @@ ROOMS.yard11={space:.6,walk:[16,304,114,138],get mood(){return F.shut?'walk':'ca
   {name:'blocks_of_marble',x:212,y:84,w:104,h:20,wx:250,wy:116,look:'marble_as_it_comes_from_the_mountain',useWith:qOn('*')},
   {name:'block_with_half_a_figure',x:164,y:58,w:42,h:52,wx:136,wy:118,dir:1,look:'a_block_of_marble',
     useWith:qOn('block'),pickup:'it_took_four_men_and_a_sledge',use:'i_cut_cloth_not_stone'}]};
-ROOMS.stoa11={space:1.5,walk:[16,464,112,138],mood:'both',amb:{crowd:.3},hs:[
+ROOMS.stoa11={space:1.5,walk:[16,464,112,138],block:standing11([[118,124],[136,119],[348,124],[364,119]]),mood:'both',amb:{crowd:.3},hs:[
   {name:'steps_down_to_the_marketplace',x:0,y:60,w:18,h:84,wx:20,wy:124,dir:-1,exit:()=>goto('agora11',510,116,-1),look:'way_back_out_to_the_marketplace'},
   {name:'painted_panels',x:24,y:20,w:434,h:54,wx:240,wy:114,look:'great_panels_along_the_wall'},
   {name:'image_in_the_recess',x:226,y:30,w:28,h:74,wx:270,wy:114,dir:-1,look:'one_of_their_gods_in_a_recess',useWith:qOn('statue')},
@@ -1394,7 +1397,9 @@ const NEXT=[null,'they_want_to_know_what','next_the_god_who_made_the_world',
   'next_he_is_not_waited_on_as_though','next_from_one_man_he_made',
   'next_it_is_by_him_that_we','next_then_we_should_not',
   'now_the_rest_he_has_looked'];
-ROOMS.hill11={space:.4,get walk(){return F.spoke?[30,524,116,138]:[366,366,120,120]},mood:'hill',amb:{wind:.6},hs:[
+ROOMS.hill11={space:.4,get walk(){return F.spoke?[30,524,116,138]:[366,366,120,120]},
+  /* once the speech has broken off: the men who are on their feet by the seats, and the two who stand on the rock (see its draw) */
+  block:()=>F.spoke?standing11(HEAR.filter(h=>h[5]).map(([,x,y])=>[x,y+3]).concat([[52,122],[140,118]])):[],mood:'hill',amb:{wind:.6},hs:[
   {name:'Acropolis',x:300,y:10,w:248,h:50,wx:400,wy:120,look:'their_goddess_and_her_house'},
   {name:'city_below',x:0,y:78,w:226,h:24,wx:120,wy:120,look:'roofs_of_athens_and_the_colonnades'},
   {name:'altar_on_the_rock',x:498,y:86,w:20,h:16,wx:480,wy:120,dir:1,look:'altar_up_here_as_well'},
