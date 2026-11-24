@@ -221,7 +221,7 @@ ART.salamis={w:480,fp:1.3,q:12,
  front(){}};
 /* ---------- Salamis: inside the synagogue ---------- */
 ART.synagogue={w:320,q:12,
- light:()=>({amb:'#dccbb8',lamps:[[118,60,44,'#5a3a14'],[202,60,44,'#5a3a14']]}),
+ light:()=>({amb:'#dccbb8',wallY:103,wall:[[0,320,103,44]],lamps:[[118,60,44,'#5a3a14',103,60.6],[202,60,44,'#5a3a14',103,60.6]]}),
  paint(g){const r=rng(251),W='#e2d4b4',ST='#cfc3a6',rw=rng(2511);
   plaster(g,0,0,320,104,W,r,{patch:2,cracks:0,brick:'#b89468',t:.36});skipCracks4(r,5);
   /* hairline cracks set by hand, high on the wall between the windows, where they run to no head */

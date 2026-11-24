@@ -312,7 +312,7 @@ ART.shop12={w:320,q:12,variant:()=>NIGHT()?'n':SEAS()==='w'?'w':'d',
   else lightmap(g,320,v==='w'?'#9a98a4':'#b0a69c',l=>{pool(l,50,74,84,74,v==='w'?'#e8ecf2':'#fff4d8',.95);pool(l,120,122,170,36,v==='w'?'#dfe3ea':'#ffeecc',.6);
     pool(l,160,94,90,16,v==='w'?'#d8dce4':'#f4e6cc',.35);pool(l,96,108,40,8,v==='w'?'#eef0f4':'#fff4dc',.4);
     comp(l,'multiply',1,()=>{ao(l,0,0,320,26,'t',.3,'#3a3048');ao(l,250,0,70,144,'r',.3,'#3a3048');ao(l,0,130,320,14,'b',.25,'#3a3048')})})},
- light:()=>NIGHT()?{amb:'#8a84a8',lamps:[[226,70,90,'#7a5a30']]}:{amb:SEAS()==='w'?'#d4d2da':'#e6dcd4'},
+ light:()=>NIGHT()?{amb:'#8a84a8',wallY:103,wall:[[0,18,103,12],[84,296,103,12],[296,320,103,46]],lamps:[[226,70,90,'#7a5a30',103,47]]}:{amb:SEAS()==='w'?'#d4d2da':'#e6dcd4',wallY:103},
  draw(g,t){benchTop(g);if(NIGHT())flame(g,230,47,t)},front(){}};
 
 /* ---------- The court of Titius Justus ---------- */

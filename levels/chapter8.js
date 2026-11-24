@@ -256,7 +256,7 @@ ART.troas={w:480,fp:1.25,q:12,
  /* what stands or lies out on the quay, where a man can walk behind it: the jar that stands forward of the others, the two halves of the broken one
     (the oil and the shards lie flat, and hide nobody), and the heap of sailcloth */
  props:[{y:113,shape:g=>vessel(g,170,113,4.6,15,'#9a4c28','amph',{noShadow:1})},{y:118.6,shape:(g,v)=>{if(v!=='m')brokenJar(g,1)}},{y:118,shape:g=>sailHeap(g,1)}],
- light:()=>F.vision?null:{amb:'#e6c2a8',lamps:[[52,92,46,'#5a3c10']]},
+ light:()=>F.vision?null:{amb:'#e6c2a8',wallY:104,wall:[[0,92,104,25],[92,104,104,31],[138,152,104,31],[186,196,104,31]],lamps:[[52,92,46,'#5a3c10',104,77]]},
  paint(g,v){const r=rng(829),eve=v!=='m',W=eve?'#d8c4a0':'#e6dcc0',ST='#cfc4a6';
   /* the sky over the sea: the sun going down into it, or the clear light of a morning with the wind in the south */
   if(eve){sky(g,480,64,['#283868','#585a92','#b86a80','#ee9858','#f8d084']);pool(g,372,62,90,38,'#ffe0a0',.7);pool(g,372,62,26,13,'#fff6d8',.9);

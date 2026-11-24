@@ -266,7 +266,7 @@ function tentArt(g,t){const[x0,x1]=TENT,xm=(x0+x1)/2;
     poly(g,[x0+27,112,x0+31,98,x0+41,98,x0+45,112],'#c8873a');poly(g,[x0+29,112,x0+32.4,100,x0+39.6,100,x0+43,112],'#f8cf80');pool(g,x0+36,106,13+Math.sin(t/210),9,'#ffb050',.22)}}
 ART.gates={w:480,fp:1.25,q:12,
  variant:()=>F.up?'n':'d',
- light:()=>F.up?{amb:'#8890b4',lamps:[[298,106,46,'#6a4a1c']]}:{amb:'#c8c4d8'},
+ light:()=>F.up?{amb:'#8890b4',wallY:100,lamps:[[298,106,46,'#6a4a1c',112,104]]}:{amb:'#c8c4d8',wallY:100},
  paint(g,v){const r=rng(733),LS='#a8a29a',GR='#a29c8e',night=v==='n',DK='#1c1830';
   /* the sky: what the walls leave of it, and that full of cloud */
   sky(g,480,72,night?['#1a2036','#2a3250','#454c68']:['#343c5c','#565e7c','#8e8a9a','#c8b69a']);
@@ -335,7 +335,7 @@ function wellJar(g,x,y,c){R(g,x-3,y-.4,8,1,'rgba(30,20,40,.3)');poly(g,[x-1.6,y-
 function lowTable(g){const rw=rng(4611);board7(g,170,112,40,3,'#96703e',rw);board7(g,170,115,2.6,8,'#5a4226',rw,1);board7(g,207.4,115,2.6,8,'#5a4226',rw,1);vessel(g,190,112,4.6,3.6,'#a8844e','bowl',{noShadow:1})}
 ART.lystra7={w:320,q:12,
  props:[{y:123,shape:lowTable}],
- light:()=>({amb:'#f0e8dc',lamps:[[92,96,38,'#4a2410']]}),
+ light:()=>({amb:'#f0e8dc',wallY:103,wall:[[0,52,103,11],[52,68,103,45],[68,320,103,11]],lamps:[[92,96,38,'#4a2410',103,100]]}),
  paint(g){const r=rng(461),W='#d8c8a4';
   plaster(g,0,0,320,104,W,r,{patch:4,cracks:0,brick:'#a8875a',t:.36});skipCracks7(r,6);
   /* cracks cut by hand, high on the wall, where they run to no head; rb: a seed of their own, so the rest of the room keeps its shape */

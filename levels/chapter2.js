@@ -111,7 +111,7 @@ ART.jerusalem={w:480,fp:1.3,q:12,
   cartArt(g);if(!F.wheelOn){shadow2(g,136,103,6.4,1.5,.32,'#322a5a');wheelArt(g,134,95)}},front(){}};
 /* ---------- The upper room: morning sun through one window ---------- */
 ART.upper={w:320,q:12,
- light:()=>({amb:'#cbbfb4',lamps:[[250,96,90,'#5a5038']]}),
+ light:()=>({amb:'#cbbfb4',wallY:105,wall:[[7,230,105,13],[230,270,105,73],[270,313,105,13]],lamps:[[250,96,90,'#5a5038',105,52]]}),
  paint(g){const r=rng(83),W='#e6d4a8',T='#7a5632',rw=rng(87),RED=earth2('#a8503a',.14),BLUE=earth2('#3f6a8a',.3);
   plaster(g,0,0,320,105,W,r,{patch:4,cracks:0,brick:'#c0a070',bot:-.12,t:.32});skipCracks2(r,6);
   /* cracks cut by hand, high on the wall under the ceiling, where they run to no head; rb: a seed of their own */
