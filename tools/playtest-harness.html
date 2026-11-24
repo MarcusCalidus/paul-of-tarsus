@@ -180,7 +180,7 @@
   const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3|map3)$/.test(stop),HUB=stop==='hubmap',
     C4=/^(sendoff|seleucia|kallias|shelter|jair|voyage|map4|salamis|synagogue|speech|hubmap4|paphos|tools|daniel|blind|name4|journey4|final4|deutsch4)$/.test(stop),
     C5=/^(voyage5|perga|parting|sandal|hubmap5|ford|splice|wade|line|pisidia|synp|speech5|week|greek|sabbath2|border|dust|journey5|final5)$/.test(stop),
-    C6=/^(beasts|mules|oxen|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house6|mend|derbe|oxtalk6|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
+    C6=/^(beasts|mules|oxen|sheep|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house6|mend|derbe|oxtalk6|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
   const lang=(location.search.match(/[?&]lang=(\w+)/)||[])[1]||'en',toLang=async l=>{for(let i=0;i<150&&G.lang!==l;i++)await wait(30);await wait(60)};
   ok(G.lang===lang&&document.documentElement.lang===lang,'the game is in '+LANGS[lang].native+', as the address asks');fitVerbs();
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
@@ -237,6 +237,29 @@
   /* The narrator's scroll (shared/scroll.js): a line of narration told in the dark is read from an open roll of papyrus held in two hands, and
      no longer stands on a black screen. The stop `scroll` checks how it comes and goes and stops on a line of Chapter Five; `scrolllong` stops
      on the longest line that is told in the dark (Chapter Seven). Look at both in every language (`de:scroll`), for cross shapes too. */
+  /* The voyage of Acts 20:13-17 on the travel map (shared/map.js), in the window that shows it two and a quarter times as close (ionia):
+     the ship from Troas round Cape Lectum to Assos, Paul's way over the land, the coaster from Assos by Mitylene and the anchorage off Chios
+     to Samos and Miletus, and the messenger's way to Ephesus across the gulf and over the land. On each of these maps, and on all of them
+     at once, no two routes cross, no name crosses a coast, an island or a route, no two names touch, and every place lies inside the window,
+     in each language (`de:map16`). The stop shows the whole voyage, and hands over map16-zoom.png (de-map16-zoom.png): the window four times
+     enlarged, for the cross-shape check. Chapter Sixteen gives journey these legs, with Troas's name set to the upper left (LAB below). */
+  if(stop==='map16'){clearInterval(sk);sk=0;await need('map');ov.className='';ov.onclick=null;G.busy=true;lock(true);status();
+    const M=SHARED.map,cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
+        for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;return n},
+      tidy=()=>{const[ox,oy,w,h]=M.window(),bx=M.state.boxes,bad=[];for(const b of bx)if(b[0]<ox-.5||b[2]>ox+w+.5||b[1]<oy-.5||b[3]>oy+h+.5)bad.push(b[4]+' (off the map)');
+        for(let i=0;i<bx.length;i++)for(let j=i+1;j<bx.length;j++){const a=bx[i],b=bx[j];if(a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3])bad.push(a[4]+' on '+b[4])}return bad},
+      inWin=id=>{const[x,y]=M.where(id);return x>6&&x<314&&y>6&&y<138},
+      SHIP=[['troas','lectum','new sea'],['lectum','assos','new sea']],ROAD=[['troas','assos','new']],
+      SEA=[['assos','mitylene','new sea'],['mitylene','chios','new sea'],['chios','samos','new sea'],['samos','miletus','new sea']],MSG=[['miletus','ephesus','new']],LAB={troas:{lab:'l',dy:-4}},
+      MAPS=[['the ship round Cape Lectum',SHIP],['Paul by land',ROAD],['both ways to Assos',[...SHIP,...ROAD]],['from Assos to Miletus, day by day',[...SHIP.map(l=>l.slice(0,2)),...SEA]],
+        ['the messenger and the elders',[...SHIP.map(l=>l.slice(0,2)),...SEA.map(l=>l.slice(0,2)),...MSG]],['the whole voyage',[...SHIP,...ROAD,...SEA,...MSG]]];
+    for(const[what,R]of MAPS){await M.journey(R,{view:'ionia',labels:LAB,instant:1});await wait(60);const c=cross(M.state.legs),cl=mapClear(),td=tidy(),ids=[...new Set(R.flatMap(l=>l.slice(0,2)))],out=ids.filter(k=>!inWin(k));
+      ok(c===0&&cl&&!td.length&&!out.length&&M.state.legs.length===R.length,`map16, ${what}: ${R.length} legs, none crosses another, no name crosses a coast or a route or touches another, and every place lies in the window`+
+        (c?'. CROSSINGS: '+c:'')+(cl?'':'. CROSSES: '+[...mapClear.bad].join(', '))+(td.length?'. NAMES: '+td.join(', '):'')+(out.length?'. OUT: '+out.join(', '):''))}
+    ok(['assos','mitylene','chios','samos','miletus','lectum'].every(k=>M.places[k]&&!M.places[k].hide)&&M.places.lectum.cape&&M.window()[2]<160,'the new places are on the map, Cape Lectum as a name without a dot, and the window ionia is closer than the usual one');
+    halt('map16',()=>{const c=document.createElement('canvas');c.width=640;c.height=288;const g=c.getContext('2d');g.scale(2,2);M.draw(g,G.t);
+      const z=document.createElement('canvas'),Z=4,[x0,y0,w,h]=[60,0,140,144];z.width=w*2*Z;z.height=h*2*Z;const q=z.getContext('2d');q.imageSmoothingEnabled=false;q.drawImage(c,x0*2,y0*2,w*2,h*2,0,0,z.width,z.height);
+      window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'map16-zoom']:z.toDataURL()})})}
   if(stop==='scroll'||stop==='scrolllong'){clearInterval(sk);sk=0;let rustles=0;{const u0=SFX.unroll;SFX.unroll=function(){rustles++;return u0.apply(this,arguments)}}
    await loadLevel(5);await loadLevel(7);ov.className='';ov.onclick=null;setChapter(5);G.busy=true;lock(true);status();
     /* AT: the text of A, taken while Chapter Five (whose line it is) is loaded; the probes below run in Chapter Seven */
@@ -362,6 +385,29 @@
       WHO.forEach(([nm,o],r)=>[-1,0,2,4,6,8,10,12,14].forEach((k,i)=>{const x=i*cw,y=34+r*chh,fr=k<0?0:4+k;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+10,y+chh-20,cw-20,2);
         cut(g,sprite(['walksheet',r,fr].join('|'),q=>person(q,0,0,o,1,fr,0,0,0,0,0),1),-25,-124,50,125,x,y+chh-20-124*Z,Z);text(g,i?''+k:nm,x+5,y+chh-6,11)}));
       SHEETS['cast-walk']=c.toDataURL()}
+    /* kneeling (person's fr -2 to -5, KNEEL): on both knees or one, the arms down or the hands folded, facing both ways, for every look that
+       is not a statue. Each is one piece; the head is bowed; a kneeling figure is lower than it stands by the length of a shin (between seven
+       and nine tenths of its height). An actor kneels while a.kneel is set (update gives it fr -1 - a.kneel), and does not turn meanwhile.
+       cast-kneel.png shows them three times enlarged: look there for an arm across the body as a bar, folded hands that read as a plus,
+       arms spread or raised, and a foot or a shin that has come apart from the body. */
+    {const ids=Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'&&!LOOK[k].stone),bad=[],tall=[];let n=0;
+      const at=(o,id,fr,d)=>sprite(['kneel',id,fr,d].join('|'),q=>person(q,0,0,o,d,fr,0,0,0,0,0),d),
+        top=c=>{const d=c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data;for(let y=0;y<FIG.H;y++)for(let x=0;x<FIG.W;x++)if(d[(y*FIG.W+x)*4+3])return y;return FIG.OY};
+      for(const id of ids){const o=LOOK[id],h0=FIG.OY-top(at(o,id,0,1));for(const fr of[-2,-3,-4,-5])for(const d of[1,-1]){n++;const c=at(o,id,fr,d);if(parts(c)!==1)bad.push(id+' '+fr+(d<0?' left':''));
+        const r=(FIG.OY-top(c))/h0;if(d>0&&(r<.7||r>.9))tall.push(id+' '+fr+': '+r.toFixed(2))}}
+      ok(!bad.length,`kneeling: ${n} poses of ${ids.length} looks (both knees or one, arms down or hands folded, both ways), and none comes apart`+(bad.length?'. IN PIECES: '+bad.slice(0,12).join('; '):''));
+      ok(!tall.length,'a kneeling figure stands between seven and nine tenths of its height'+(tall.length?'. NOT: '+tall.slice(0,8).join('; '):''));
+      {const a=ACT[Object.keys(ACT)[0]],was=[a.kneel,a.fr];a.kneel=KNEEL.bothFolded;a.walk=null;await wait(80);const f=a.fr,st=!!still(a);a.kneel=0;await wait(80);
+        ok(f===-3&&st&&a.fr===0&&walkSw(a.look,-3)<walkSw(a.look,-4)&&kneelX(a.look,-2)<0,'a.kneel makes an actor kneel (fr '+f+'), he does not turn meanwhile, and he stands again when it is cleared; his contact shadow lies under his knees and feet')}
+      const B={skin:'#c08a5c',tunic:'#c4b08a',belt:'#3a2414'},fm={skin:'#c8a078',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#6a2a5a',brow:'#3a2414'},
+        WHO=[['Paul',paulLook(16)],['a youth, no mantle',{...B,hair:'#3a2616',slim:1}],['a veiled woman',{...fm,veil:'#6a2a5a'}],['hair bound',{...fm,hair:'#3a2616',fem:1,band:'#a8402c',longSleeve:0}],
+          ['an old man in a long robe',{...B,hair:'#969088',beard:'#a49e96',brow:'#78726c',grey:'#c8c2ba',bald:1,longBeard:1,long:1,cloak:'#6a5a7a'}],['a Greek mantle',{...B,hair:'#3a2616',beard:'#3a2616',cloak:'#5a6a8a',himation:1}],
+          ['a boy',{...B,hair:'#34241c',h:1}],['a spearman',LOOK.guard]],COLS=[[0,1,'standing'],[-2,1,'both knees'],[-3,1,'both, folded'],[-4,1,'one knee'],[-5,1,'one, folded'],[-2,-1,'both, left'],[-3,-1,'folded, left'],[-5,-1,'one, folded, left']],
+        Z=3,cw=150,chh=392,[c,g]=sheet(COLS.length*cw,34+WHO.length*chh);
+      text(g,'Kneeling: on both knees or one, the arms down or the hands folded, three times enlarged',10,23,17,'#f4f0e6');
+      WHO.forEach(([nm,o],r)=>COLS.forEach(([fr,d,cap],i)=>{const x=i*cw,y=34+r*chh;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+10,y+chh-20,cw-20,2);
+        cut(g,sprite(['kneelsheet',r,fr,d].join('|'),q=>person(q,0,0,o,d,fr,0,0,0,0,0),d),-25,-124,50,125,x,y+chh-20-124*Z,Z);text(g,i?cap:nm,x+5,y+chh-6,11)}));
+      SHEETS['cast-kneel']=c.toDataURL()}
     /* the two pictures of docs/screenshots: the people who carry the story, with the pack donkey (cast.png), and eight heads (cast-closeup.png) */
     {const WHO=[paulLook(1),'guard','zakkai','barnabas','cephas','james','mark','sergius','timothy','eunice','silas','luke','lydia','jailer9','dama11','dion11','aquila12','prisca12'],
         miss=WHO.filter(w=>typeof w==='string'&&!LOOK[w]),Z=3,cw=128,chh=384,cols=10,[c,g]=sheet(cols*cw,2*chh);g.fillStyle='#cbbda2';g.fillRect(0,0,cols*cw,2*chh);
@@ -441,6 +487,47 @@
       window.SHEETS=SHEETS;halt('romans')}}
   /* Dynamic cast & contact shadows in figure() (issue #81): floor skew, foreground-lamp back-wall bend, prop/actor ordering, pitch-dark
      zero shadow, multi-lamp steadiness across 110ms flame ticks, solid-wall clipping, and enlarged/gallery sheets across all 22 rooms. */
+  /* deck (shared/ship.js, view 'deckAft'): the deck of a coaster seen from aboard, looking aft, in its three lights. It checks the one
+     horizon (the stern post rises from the top of the stern, above it; the steering oars' heads, the tillers and the shelter's ridge stay
+     below it; the lamp hangs above every head the strip can show), that each thing on the deck is cut out in one piece, that the deck
+     can be walked round all of it (behind the chest, behind the shelter, beside the rack and the bales), and that the deck laid again
+     over the moving sea is the backdrop's own. It hands over deck-sheet (the three lights with figures before and behind the chest and
+     the shelter, twice enlarged) and deck-detail (the stern post, the oars, the shelter, the chest and bales, the rack and the coil, six
+     times enlarged), and ends on the deck by day with the figures standing about. */
+  if(stop==='deck'){clearInterval(sk);G.speedAll=0;ov.className='';ov.onclick=null;G.splash=0;G.scene=null;
+    await loadLevel(15);await need('ship');setChapter(15);const S=SHARED.ship,D=S.deck,O={view:'deckAft',chest:1,wind:{a:70,s:.8}},V=['day','eve','night'],
+      geo=D.geo(O),hz=geo.hz,top=Math.min(...geo.OAR.map(o=>geo.P(...o.head)[1]-1.4)),till=Math.min(...geo.OAR.map(o=>geo.P(...o.tiller)[1])),
+      sh=geo.things.shelter,ridge=Math.min(geo.P((sh[0]+sh[1])/2,sh[4],sh[2])[1],geo.P((sh[0]+sh[1])/2,sh[4],sh[3])[1]),heads=D.walk[2]-49;
+    ok(hz===66&&geo.postFoot[1]<hz-3&&geo.pennant[1]<geo.postFoot[1],`deck: one horizon at y ${hz}; the stern post rises from the top of the stern, above it (its foot at y ${geo.postFoot[1].toFixed(1)}), and never stands across it`);
+    ok(top>hz+1.5&&till>hz+1.5&&ridge>hz+2,`deck: the steering oars' heads (y ${top.toFixed(1)}), their tillers and the shelter's ridge (y ${ridge.toFixed(1)}) stay below the horizon`);
+    ok(geo.lamp[1]+1.5<heads,`deck: the lamp hangs by two cords under the curl of the stern post at y ${geo.lamp[1].toFixed(1)}, above every head the strip can show (y ${heads} and lower)`);
+    G.deck0v='day';ART.deck0={w:320,q:12,variant:()=>G.deck0v,paint(g,v){S.paint(g,{...O,variant:v})},draw(g,t){D.draw(g,t,{...O,variant:G.deck0v})},get light(){return D.light({...O,variant:G.deck0v})},front(){},props:D.props(O)};
+    ROOMS.deck0={space:.5,walk:D.walk,block:D.block(O),mood:'quay',amb:{waves:.6,wind:.4,creak:.5},hs:[]};
+    const pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
+      for(let i=0;i<W*Hh;i++){if(d[i*4+3]<128||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
+        for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]>=128){seen[j]=1;st.push(j)}}}}return n};
+    {const pc=props('deck0'),bad=pc.filter(p=>pieces(p.c)!==1);ok(pc.length===5&&!bad.length,`deck: the shelter, the rack of jars, the bales, the chest and the coil are each cut out of the deck in one piece (${pc.length})`)}
+    setChapter(15);enterRoom('deck0',160,138,-1);for(const a of Object.values(ACT))if(a!==PC())a.room=null;
+    {const goal=[[196,119,'behind the chest'],[150,104,'behind the shelter'],[106,118,'before the rack'],[214,119,'before the bales'],[34,138,'by the coil'],[176,104,'behind the shelter, to its right']],
+        miss=goal.filter(([x,y])=>{const r=roomRoute(PC(),x,y,true);return!r||!r.exact});
+      ok(!miss.length,'deck: from the near edge of the deck every place can be walked to round what stands on it: '+goal.map(g=>g[2]).join(', ')+(miss.length?'. NOT REACHED: '+miss.map(g=>g[2]).join(', '):''))}
+    {let diff=0,n=0;for(const v of V){G.deck0v=v;const b=bg('deck0').getContext('2d').getImageData(0,0,320*HR,144*HR).data,o=D.overlay({...O,variant:v}).getContext('2d').getImageData(0,0,320*HR,144*HR).data;
+        for(let i=0;i<o.length;i+=4)if(o[i+3]===255){n++;if(Math.abs(o[i]-b[i])+Math.abs(o[i+1]-b[i+1])+Math.abs(o[i+2]-b[i+2])>24)diff++}}
+      ok(n>0&&diff/n<.02,`deck: the deck laid again over the moving sea is the backdrop's own, pixel for pixel (${(100*diff/n).toFixed(2)} % differ, at the edges)`)}
+    /* the sheets: figures before and behind the chest and the shelter, beside the rack and the bales, in each light */
+    const FIGS=[['paul',150,104],['luke15',196,119],['tim15',190,138],['luke15',106,118],['paul',214,119],['tim15',34,138],['paul',70,104],['tim15',140,126]],
+      shot=v=>{G.deck0v=v;const[c,g]=mk(320*HR,144*HR);g.scale(HR,HR);backdrop(g,'deck0');D.draw(g,1500,{...O,variant:v});DQ=[];SQ=[];
+        for(const[id,x,y]of FIGS)man(g,x,y,id,x<160?1:-1,0,ART.deck0.light.amb);for(const p of props('deck0'))DQ.push([p.y,()=>g.drawImage(p.c,p.x,p.t,p.w,p.h)]);
+        const dq=DQ,sq=SQ;DQ=SQ=null;for(const f of sq)f();dq.sort((a,b)=>a[0]-b[0]);for(const[,f]of dq)f();LID=null;return c},
+      shots=V.map(shot);
+    {const Z=2,c=document.createElement('canvas');c.width=320*Z;c.height=144*Z*3+8;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#14100c';g.fillRect(0,0,c.width,c.height);
+      shots.forEach((s,j)=>g.drawImage(s,0,j*(144*Z+4),320*Z,144*Z));
+      const CR=[[140,8,36,58],[92,58,40,26],[170,58,40,26],[106,66,76,58],[168,76,66,62],[28,92,84,50]],Z2=6,W=CR.reduce((s,r)=>s+r[2]*Z2+6,0),Hh=Math.max(...CR.map(r=>r[3]))*Z2;
+      const d=document.createElement('canvas');d.width=W;d.height=(Hh+6)*3;const dg=d.getContext('2d');dg.imageSmoothingEnabled=false;dg.fillStyle='#14100c';dg.fillRect(0,0,d.width,d.height);
+      shots.forEach((s,j)=>{let x=0;for(const[cx,cy,w,h]of CR){dg.drawImage(s,cx*HR,cy*HR,w*HR,h*HR,x,j*(Hh+6),w*Z2,h*Z2);x+=w*Z2+6}});
+      window.SHEETS=Object.assign(window.SHEETS||{},{'deck-sheet':c.toDataURL(),'deck-detail':d.toDataURL()})}
+    G.deck0v='day';for(const[id,x,y]of[['luke15',196,119],['tim15',190,138],['tert15',106,118],['host15',214,119]])place(ACT[id],'deck0',x,y,x<160?1:-1);place(PC(),'deck0',150,104,1);
+    G.busy=false;lock(false);drawInv();status();await wait(1200);halt('deck')}
   /* birds (shared/birds.js): every shape is one piece, in every frame and facing both ways; a flock on a roof can be looked at, flies up
      when Paul comes under it, and comes back after he has gone; in the winter rain nothing flies and nothing sits on the roofs; the stop
      hands over birds-sheet.png, every bird and every frame ten times enlarged, and ends on the street of Corinth in spring, as the storks
@@ -474,6 +561,75 @@
     ok(!!fl(),`birds: once he has gone, they come back (after ${((performance.now()-t0)/1000).toFixed(0)} s)`);
     /* the picture: the sparrows back on their roof, the doves on theirs, and the storks halfway across */
     {const t1=performance.now();while(((G.t/1000)%70<13||(G.t/1000)%70>17)&&performance.now()-t1<75000)await wait(200)}halt('birds')}
+  /* coast (shared/coast.js, and the wind of shared/weather.js): six scenes at the hours, winds and coasts the chapters ahead need (the
+     quay of Troas in the morning with its town, a cliff coast and the coast road at midday, a harbor under a rocky hill at evening, dawn
+     at sea, night at anchor with the moon on the water, a harbor of warehouses under drifting cloud), each with its sea moving. It hands
+     over coast-sheet.png (each scene at the size the game paints it, its sea and smoke caught in motion), coast-detail.png (parts of them four
+     times enlarged, for crosses, posts across the horizon and halos) and coast-wind.png (the signs of the wind for each strength, and two
+     signs that lie: smoke in the lee of a hill and a pennant swung by the current). It ends on the first scene, its sea and smoke moving */
+  if(stop==='coast'){G.speedAll=0;ov.className='';ov.onclick=null;G.splash=0;G.scene=null;clearInterval(sk);
+    await need('country');await need('weather');await need('coast');const K=SHARED.coast,Wt=SHARED.weather,CO=SHARED.country,SHEETS={},
+      label=(g,t,x,y)=>{g.font='bold 14px Menlo,Consolas,monospace';g.lineWidth=3;g.strokeStyle='#14100c';g.strokeText(t,x,y);g.fillStyle='#f4f0e6';g.fillText(t,x,y)};
+    /* the wind and its signs */
+    const wN=Wt.wind({from:'n',force:2,view:'w'}),calmW=Wt.wind({force:0}),lee=Wt.wind({from:'n',force:2,view:'w',smoke:{lee:1}}),cur=Wt.wind({from:'n',force:2,view:'w',pennant:{from:'s',force:1}});
+    ok(wN.dx<-.99&&Math.abs(wN.dz)<.01&&Wt.wind({from:'n',view:'s'}).dz>.99&&Wt.wind({from:'e',view:'s'}).dx>.99,'coast: a north wind blows to the left of a picture that looks west, into one that looks south; an east wind looking south blows to the right');
+    ok(!calmW.caps&&!calmW.pennant.lift&&calmW.smoke.rise===1&&[0,1,2,3,4].every(f=>f<1||Wt.wind({force:f}).caps>=Wt.wind({force:f-1}).caps&&Wt.wind({force:f}).pennant.lift>Wt.wind({force:f-1}).pennant.lift),
+      'coast: in a calm no whitecaps break, the pennant hangs and smoke rises straight; the harder it blows, the more whitecaps and the higher the pennant flies');
+    ok(lee.smoke.dx>0&&lee.smoke.curl&&lee.pennant.dx===wN.pennant.dx&&cur.pennant.dx>.5&&cur.smoke.dx===wN.smoke.dx&&cur.caps===wN.caps,'coast: a sign can lie by itself: smoke in the lee of a hill lies back against the wind, a pennant swung by the current points another way, and the other signs still show the wind');
+    const SC=[
+      ()=>{const O={w:320,hz:62,hour:'morning',sun:[-40,6],cloud:.2,wind:wN,seed:3},p={};
+        const c=bake(320,g=>{K.sky(g,O);K.isle(g,110,196,4.5,O,{dist:.8,seed:4});p.S=K.sea(g,O);
+          p.T=K.town(g,O,{x0:200,x1:320,base:100,hill:x=>Math.min(99,30+(320-x)*.22+Math.sin(x/9)*2+Math.max(0,236-x)*.9),rows:5,size:15,warehouses:[[236,40,9],[280,40,10]],seed:9});
+          p.Q=K.quay(g,O,{view:'top',y:100,y1:144,bollards:[34,112,190],seed:5});p.S.open=(x,y)=>y<100&&y<p.T.top(x)-1},12);
+        return[c,(g,t)=>{p.S.draw(g,t);for(const[x,y]of p.T.hearths)Wt.smoke(g,t,x,y,O.wind,{h:20})},'Troas quay, morning, fresh north wind']},
+      ()=>{const O={w:320,hz:60,hour:'midday',sun:[250,-30],cloud:.1,wind:Wt.wind({from:'n',force:3,view:'s'}),seed:6},p={};
+        const c=bake(320,g=>{K.sky(g,O);K.isle(g,150,280,7,O,{dist:.78,seed:8});p.S=K.sea(g,O);
+          p.H=K.headland(g,O,{side:'l',top:14,xs:96,ys:44,xf:126,foot:72,base:100,scrub:.8,seed:12});
+          p.B=K.shore(g,O,{kind:'shingle',edge:x=>100+x*.04+Math.sin(x/13)*1.2,x0:0,x1:220,y1:120,seed:3});
+          clipTo(g,()=>poly(g,[0,144,0,120,120,116,200,110,250,94,320,78,320,144]),()=>CO.turf(g,0,76,320,144,'#8a9058',5,{dry:.6,flowers:6}));
+          K.road(g,O,{pts:[318,84,280,94,240,105,190,118,140,132,96,144],w0:4,w1:22,kerb:'l',seed:7});p.S.open=(x,y)=>y<p.H.top(x)-.5&&y<100},12);
+        return[c,(g,t)=>{p.S.draw(g,t);p.H.draw(g,t);p.B.draw(g,t)},'cliff, shingle and coast road, midday, strong wind']},
+      ()=>{const O={w:320,hz:64,hour:'evening',sun:[40,50],cloud:.3,wind:Wt.wind({from:'n',force:1,view:'s'}),seed:9},p={};
+        const c=bake(320,g=>{K.sky(g,O);K.isle(g,0,120,8,O,{kind:'cape',from:'l',dist:.75,seed:2});p.S=K.sea(g,O);
+          p.H=K.headland(g,O,{side:'r',top:4,xs:214,ys:34,xf:188,foot:82,base:100,scrub:.4,seed:14,rock:'#a89a86'});
+          p.M=K.quay(g,O,{view:'face',x0:60,x1:190,y:84,slope:-.012,face:6,bollards:[80,120,160],seed:3});p.S.open=(x,y)=>y<p.H.top(x)-.5&&!(x>58&&x<192&&y>80&&y<92)},12);
+        return[c,(g,t)=>{p.S.draw(g,t);p.H.draw(g,t)},'harbor under a rocky hill, evening, light wind']},
+      ()=>{const O={w:320,hz:66,hour:'dawn',sun:[190,62],cloud:.25,wind:Wt.wind({from:'n',force:1,view:'e'}),seed:12},p={};
+        const c=bake(320,g=>{K.sky(g,O);K.isle(g,0,90,10,O,{kind:'cape',from:'l',dist:.55,seed:21});K.isle(g,250,300,3,O,{dist:.9,seed:22});p.S=K.sea(g,O)},12);
+        return[c,(g,t)=>p.S.draw(g,t),'dawn at sea, a cape and an island']},
+      ()=>{const O={w:320,hz:62,hour:'night',moon:[96,20,.72],cloud:.15,wind:Wt.wind({from:'n',force:1,view:'w'}),seed:15},p={};
+        const c=bake(320,g=>{K.sky(g,O);K.isle(g,180,320,12,O,{kind:'cape',from:'r',dist:.4,seed:31});p.T=K.town(g,O,{x0:250,x1:316,base:62,hill:x=>51+(320-x)*.02,rows:3,size:6,dist:.4,lamps:.3,seed:5});p.S=K.sea(g,O)},12);
+        return[c,(g,t)=>p.S.draw(g,t),'night at anchor, the waning moon']},
+      ()=>{const O={w:320,hz:60,hour:'midday',sun:[120,-60],cloud:.55,wind:Wt.wind({from:'nw',force:3,view:'s'}),seed:18,moving:1},p={};
+        const c=bake(320,g=>{K.sky(g,O);p.S=K.sea(g,O);K.quay(g,O,{view:'face',x0:0,x1:320,y:78,face:5,seed:8,bollards:[30,150,280]});
+          p.T=K.town(g,O,{x0:0,x1:320,base:78,hill:x=>48-Math.sin(x/50)*4,rows:3,size:12,dist:.15,warehouses:[[20,60,11],[96,70,12],[190,64,11]],seed:6});
+          K.quay(g,O,{view:'top',y:112,y1:144,bollards:[60,240],seed:9});p.S.open=(x,y)=>y>84&&y<112},12);
+        O.top=K.skyline(x=>O.hz,p.T.top);const LY=K.skyLayer(O);
+        return[c,(g,t)=>{LY.draw(g,t);p.S.draw(g,t);for(const[x,y]of p.T.hearths)Wt.smoke(g,t,x,y,O.wind,{h:16})},'warehouses across a harbor, drifting cloud',LY,O]}];
+    const shots=[],made=SC.map(f=>f());for(const[c,dr]of made){const[d,dg]=mk(640,288);dg.drawImage(c,0,0);dg.setTransform(HR,0,0,HR,0,0);dr(dg,2400);shots.push(d)}
+    {const[c,g]=mk(1280,288*3);shots.forEach((d,i)=>{g.drawImage(d,(i%2)*640,Math.floor(i/2)*288);label(g,made[i][2],(i%2)*640+8,Math.floor(i/2)*288+18)});SHEETS['coast-sheet']=c.toDataURL()}
+    /* the parts to look at enlarged: the town, the cliff's foot, the moon, the mole with its mooring stones, the quay's edge, the beach and the road */
+    {const Z=[[0,200,30,120,74],[1,60,30,90,76],[2,150,26,170,76],[4,80,10,40,20],[2,50,76,150,20],[0,20,88,110,24],[1,0,94,160,50],[5,0,40,160,50]],[c,g]=mk(1600,640);g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,1600,640);
+      let x=0,y=0,rh=0;for(const[i,a,b,w,h]of Z){const k=Math.min(4,1600/w/2);if(x+w*k>1600){x=0;y+=rh+4;rh=0}g.drawImage(shots[i],a*2,b*2,w*2,h*2,x,y,w*k,h*k);x+=w*k+4;rh=Math.max(rh,h*k)}SHEETS['coast-detail']=c.toDataURL()}
+    /* the signs of the wind: smoke from two hearths at the shore, a pennant, whitecaps, and cloud */
+    {const cells=[['calm',{force:0}],['light north wind',{force:1}],['fresh north wind',{force:2}],['strong north wind',{force:3}],['north wind, a gale',{force:4}],['fresh north, smoke in the lee',{force:2,smoke:{lee:1}}],['fresh north, pennant swung by the current',{force:2,pennant:{from:'s',force:1}}],['fresh north-east wind',{from:'ne',force:2}]],
+        CW=160,CH=96,[c,g]=mk(CW*8,CH*16);g.imageSmoothingEnabled=false;
+      cells.forEach(([name,wo],i)=>{const W=Wt.wind(Object.assign({from:'n',view:'w'},wo)),O={w:CW,hz:52,hour:'morning',sun:[30,8],wind:W,seed:4+i,cloud:.3},p={};
+        const b=bake(CW,q=>{K.sky(q,O);p.S=K.sea(q,Object.assign(O,{y1:CH}));p.H=K.headland(q,O,{side:'r',top:22,xs:110,ys:40,xf:96,foot:60,base:70,scrub:.6,seed:5})},12),[d,dg]=mk(CW*2,CH*2);
+        dg.drawImage(b,0,0);dg.setTransform(2,0,0,2,0,0);p.S.open=(x,y)=>y<p.H.top(x)-.5;p.S.draw(dg,1500);Wt.smoke(dg,2600,104,60,W,{h:28});Wt.smoke(dg,2600,150,63,W,{h:22});Wt.pennant(dg,1500,48,14,W,{len:16});
+        g.drawImage(d,0,0,CW*2,CH*2,(i%2)*CW*4,Math.floor(i/2)*CH*4,CW*4,CH*4);label(g,name+', looking west',(i%2)*CW*4+8,Math.floor(i/2)*CH*4+20)});SHEETS['coast-wind']=c.toDataURL()}
+    window.SHEETS=SHEETS;
+    /* nothing upright across the horizon: a mooring stone that would stand across it is left out */
+    {const O={w:320,hz:62,hour:'morning',seed:2},a=bake(320,g=>K.quay(g,O,{view:'face',x0:20,x1:200,y:63,face:5,seed:4}),12),b=bake(320,g=>K.quay(g,O,{view:'face',x0:20,x1:200,y:63,face:5,seed:4,bollards:[60,120]}),12),
+        A=a.getContext('2d').getImageData(0,0,640,288).data,B=b.getContext('2d').getImageData(0,0,640,288).data;let same=true;for(let i=0;i<A.length;i++)if(A[i]!==B[i]){same=false;break}
+      ok(same,'coast: no mooring stone is set where it would stand across the horizon')}
+    /* the moving sky: the clouds drift, and nothing below the skyline is touched */
+    {const[,,,LY,O]=made[5],f=t=>{const[c,g]=mk(640,288);g.setTransform(HR,0,0,HR,0,0);LY.draw(g,t);return g.getImageData(0,0,640,288).data},a=f(0),b=f(5000);let moved=0,below=0;
+      for(let y=0;y<288;y++)for(let x=0;x<640;x++){const i=(y*640+x)*4;if(a[i]!==b[i])moved++;if(b[i+3]&&y/2>=O.top((x+.5)/2))below++}
+      ok(moved>2000&&!below,`coast: the clouds drift with the wind (${moved} pixels changed in five seconds), and the moving sky leaves everything below the skyline alone`)}
+    {const[c,dr]=made[0],[w,wg]=mk(640,288);wg.setTransform(HR,0,0,HR,0,0);const t0=performance.now();for(let k=0;k<60;k++)dr(wg,k*16);const ms=(performance.now()-t0)/60;
+      ok(ms<4,`coast: the moving sea and its smoke cost ${ms.toFixed(2)} ms a frame`)}
+    const[c0,dr0]=made[0];G.scene=(g,t)=>{g.drawImage(c0,0,0,320,144);dr0(g,t)};await wait(1200);halt('coast')}
   /* routes<N> (routespro for the Prologue): the rooms of a chapter with what stands on their floors. For each room a sheet, routes-<room>, three
      times enlarged: the walk strip, each footprint (solid) with the margin that keeps a figure's feet off it, the place each hotspot and exit is
      walked to (a small diamond, green if it can be reached, red if not), and the ways from every exit to every one of them. It fails if a
@@ -4351,12 +4507,13 @@
      the donkey faces: look there for a leg that has come apart, for legs that cross as an X under the belly, for a leg under the middle of
      the body, for a tail across a leg, for a strap across a stripe, and for ears that read as a cross. */
   {const{donkey}=SHARED.beasts.paint,beastFr=SHARED.beasts.frame.donkey,{DONKEY_STRIDE,DONKEY_BEAT}=SHARED.beasts,ox=SHARED.beasts.paint.ox,BEASTS=[['pack donkey',s=>donkey(s,0,0,1,0,0)],['pack donkey, walking',s=>donkey(s,0,0,1,1,0)],['pack donkey with bags',s=>donkey(s,0,0,-1,2,1)],['pack donkey, loaded',s=>donkey(s,0,0,1,3,2)],
-      ['bull with its garland',s=>ox(s,0,0,1,0,'#e6dccc',1)],['bull, walking',s=>ox(s,0,0,1,1,'#d8c8b0',1)],['ox',s=>ox(s,0,0,-1,0,'#8a5a3a',0)],['ox, walking',s=>ox(s,0,0,1,3,'#6f4630',0)]],
+      ['bull with its garland',s=>ox(s,0,0,1,0,'#e6dccc',1)],['bull, walking',s=>ox(s,0,0,1,1,'#d8c8b0',1)],['ox',s=>ox(s,0,0,-1,0,'#8a5a3a',0)],['ox, walking',s=>ox(s,0,0,1,3,'#6f4630',0)],
+      ['ewe',s=>SHARED.beasts.paint.sheep(s,0,0,1,0,0)],['lamb, grazing',s=>SHARED.beasts.paint.sheep(s,0,0,-1,24,6)]],
     pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
       for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
         for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n},
     sheet=BEASTS.map(([n,fn],i)=>[n,sprite('beast-test'+i,fn,1)]),bad=sheet.filter(([n,c])=>pieces(c)!==1).map(b=>b[0]);
-    ok(!bad.length,'animals: every part is attached, in '+sheet.length+' poses of the donkey and the ox'+(bad.length?'. IN PIECES: '+bad.join(', '):''));
+    ok(!bad.length,'animals: every part is attached, in '+sheet.length+' poses of the donkey, the ox and the sheep'+(bad.length?'. IN PIECES: '+bad.join(', '):''));
     const dk=(fr,d,ld)=>sprite(['donkey-walk',d<0?'-1':'1',fr,ld].join('|'),s=>donkey(s,0,0,d,fr,ld),d),WALK=[],BRAY=[];for(const ld of[0,1,2])for(const d of[1,-1]){for(let k=0;k<16;k++)WALK.push([ld,d,k,dk(4+k,d,ld)]);for(let k=20;k<24;k++)BRAY.push([ld,d,k,dk(k,d,ld)])}
     {const apart=WALK.filter(w=>pieces(w[3])!==1).map(w=>w.slice(0,3).join('/')),px=c=>c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data,
         /* runs: the runs of the lowest row of a sprite, [left, right]; top: the highest pixel of the croup, which rides with the body */
@@ -4387,8 +4544,62 @@
         window.SHEETS=Object.assign(window.SHEETS||{},{'beasts-walk':c.toDataURL()})}
       const c=document.createElement('canvas');c.width=960;c.height=432;c.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;z-index:8';$('#view').appendChild(c);
       const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,960,432);
-      sheet.forEach(([n,sp],i)=>{const x=(i%4)*240,y=Math.floor(i/4)*216;g.fillStyle='#a8b0bc';g.fillRect(x+2,y+2,236,212);g.fillStyle='#6f7a6a';g.fillRect(x+2,y+196,236,18);
-        g.drawImage(sp,FIG.OX-59,FIG.OY-96,118,105,x+2,y+2,236,210);g.fillStyle='#101418';g.font='bold 12px monospace';g.fillText(n,x+8,y+16)})})}
+      sheet.forEach(([n,sp],i)=>{const x=(i%5)*192,y=Math.floor(i/5)*216;g.fillStyle='#a8b0bc';g.fillRect(x+2,y+2,188,212);g.fillStyle='#6f7a6a';g.fillRect(x+2,y+196,188,18);
+        g.drawImage(sp,FIG.OX-59,FIG.OY-96,118,105,x+2,y+30,188,167);g.fillStyle='#101418';g.font='bold 12px monospace';g.fillText(n,x+8,y+16)})})}
+  /* --- the sheep: its checks, and its own stop `sheep` with its sheets (the sheep's section of shared/beasts.js) --- */
+  /* The ewe and the lamb (shared/beasts.js, their own painter: Chapter Sixteen's flock on the pass): every pose is one piece and lies inside
+     the sprite box, for every look of the flock (fleece and face colors, sizes, the two lambs), facing both ways, standing (0), in the sixteen
+     frames of the walk (4 to 19; 1, 2 and 3 are three of them), bleating (20, 21), chewing (22, 23) and grazing (24, 25). Two hooves or more
+     stand on the ground in every frame of the walk; the body sinks a pixel as each fore hoof lands and never rises; frame.sheep carries a ewe
+     and a lamb without a slip at WALK_V. A ewe stands lower than the donkey and a lamb lower than a ewe; a grazing sheep's muzzle is down by
+     the grass. Its voice runs through 20 and 21 and ends on 0. The stop `sheep` hands over sheep-walk.png, every frame three times
+     enlarged, both ways, for a ewe and a lamb, and sheep-flock.png, a flock as a room places it: look there for legs that cross as an X under
+     the belly, a leg under the middle of the body as a T, ears that read as a cross, a tail or an ear that floats, and a head that seems to
+     belong to the body of another sheep. */
+  {const sh=SHARED.beasts.paint.sheep,K=SHARED.beasts.kinds.sheep,shFr=SHARED.beasts.frame.sheep,
+      sp=(fr,d,lk)=>sprite(['sheep-test',d<0?'-1':'1',fr,lk].join('|'),s=>sh(s,0,0,d,fr,lk),d),px=c=>c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data,
+      FR=[0,1,2,3,...[...Array(16)].map((_,i)=>4+i),20,21,22,23,24,25],ALL=[];
+    for(let lk=0;lk<K.LOOKS.length;lk++)for(const d of[1,-1])for(const fr of FR)ALL.push([lk,d,fr,sp(fr,d,lk)]);
+    const hooves=c=>{const d=px(c);let r=0,gap=9;for(let x=0;x<FIG.W;x++){if(d[((FIG.OY-1)*FIG.W+x)*4+3]>0){if(gap>1)r++;gap=0}else gap++}return r},
+      edge=c=>{const d=px(c);for(let y=0;y<FIG.H;y++)for(let x=0;x<FIG.W;x++)if(d[(y*FIG.W+x)*4+3]&&(x<1||x>=FIG.W-1||y<1))return true;return false},
+      topAt=(c,dx)=>{const d=px(c);for(let y=0;y<FIG.H;y++)if(d[(y*FIG.W+FIG.OX+dx)*4+3])return y;return-1},
+      H=c=>{const d=px(c);for(let y=0;y<FIG.H;y++)for(let x=0;x<FIG.W;x++)if(d[(y*FIG.W+x)*4+3])return(FIG.OY-y)/2;return 0},
+      low=c=>{const d=px(c);let m=0;for(let y=0;y<FIG.H;y++)for(let x=FIG.OX+20;x<FIG.W;x++)if(d[(y*FIG.W+x)*4+3])m=Math.max(m,y);return(FIG.OY-m)/2},
+      same=(a,b)=>a.toDataURL()===b.toDataURL();
+    const apart=ALL.filter(a=>parts(a[3])!==1).map(a=>a.slice(0,3).join('/')),out=ALL.filter(a=>edge(a[3])).map(a=>a.slice(0,3).join('/')),
+      few=ALL.filter(a=>a[2]>=4&&a[2]<20&&hooves(a[3])<2).map(a=>a.slice(0,3).join('/'));
+    ok(!apart.length&&!out.length,'the sheep is one piece in every pose and lies inside the sprite box: '+ALL.length+' sprites ('+K.LOOKS.length+' looks of the flock, ewes and lambs; stand, walk, bleat, chew, graze; both ways)'+(apart.length?'. IN PIECES (look/way/frame): '+apart.join(', '):'')+(out.length?'. AT THE EDGE: '+out.join(', '):''));
+    const sink=lk=>[...Array(16)].map((_,k)=>topAt(sp(4+k,1,lk),-4)-topAt(sp(0,1,lk),-4));
+    ok(!few.length&&[0,6].every(lk=>sink(lk).every((v,k)=>v===(k%8===4||k%8===5?1:0))),'the sheep: two hooves or more on the ground in every frame of the walk, and the body sinks a pixel as each fore hoof lands: ewe '+sink(0).join('')+', lamb '+sink(6).join('')+(few.length?'. TOO FEW HOOVES: '+few.join(', '):''));
+    ok([0,6].every(lk=>same(sp(1,1,lk),sp(4,1,lk))&&same(sp(2,-1,lk),sp(8,-1,lk))&&same(sp(3,1,lk),sp(12,1,lk))&&new Set([...Array(16)].map((_,i)=>sp(4+i,1,lk).toDataURL())).size===16&&
+        new Set([0,20,21,22,23,24,25].map(f=>sp(f,1,lk).toDataURL())).size===7),'the sheep: frames 1, 2 and 3 are three moments of its walk, and its sixteen walking frames and its seven of standing, voice, chewing and grazing are each a picture of their own');
+    const slip=lk=>{const L=K.look(lk),st=K.stride(L),c=Math.max(st,WALK_V*K.plan[L.lamb?'lamb':'ewe'].BEAT);return 1-st/c},
+      at=lk=>[...Array(16)].map((_,i)=>shFr(K.stride(K.look(lk))*(i+.5)/16,10,lk));
+    ok([0,6].every(lk=>at(lk).every((f,i)=>f===4+i)&&slip(lk)<=.04)&&shFr(0)===4&&shFr(-3,10,6)>=4&&shFr(-3,10,6)<=19,
+      `frame.sheep: a cycle carries a ewe ${K.stride(K.look(0)).toFixed(1)} and a lamb ${K.stride(K.look(6)).toFixed(1)} room pixels with the hooves planted; at WALK_V they slip by ${Math.round(slip(0)*100)} % and ${Math.round(slip(6)*100)} %`);
+    const dk=SHARED.beasts.paint.donkey,dH=H(sprite('sheep-test|donkey',s=>dk(s,0,0,1,0,0),1)),eH=H(sp(0,1,0)),lH=H(sp(0,1,6)),gz=low(sp(24,1,0));
+    ok(eH<dH&&lH<eH&&eH>=20&&gz<=4,`the sizes: the ewe stands ${eH} room pixels high (the donkey ${dH}), the lamb ${lH}; grazing, the ewe's muzzle comes down to ${gz} above the ground`);
+    const V=K.voice;
+    ok(V[0][0]===0&&V.slice(0,-1).every(v=>v[1]===20||v[1]===21)&&V[V.length-1][1]===0&&V.every((v,i)=>!i||v[0]>V[i-1][0])&&V[V.length-1][0]<=900&&typeof K.sound==='function'&&
+      SHARED.beasts.pose('ewe-test',0)===0,'the sheep bleats: its voice runs '+V.map(v=>v[0]+':'+v[1]).join(' '));
+    halt('sheep',()=>{/* sheep-walk.png: every frame, both ways, a ewe and a lamb; sheep-flock.png: a flock as a room places it */
+      {const Z=3,cw=76,chh=60,per=11,CELLS=[];for(const lk of[0,6])for(const d of[1,-1])for(const f of[0,...[...Array(16)].map((_,i)=>4+i),20,21,22,23,24,25])CELLS.push([lk,d,f]);
+        const rows=Math.ceil(CELLS.length/per),c=document.createElement('canvas');c.width=per*cw*Z;c.height=24+rows*(chh*Z+16);const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);
+        g.fillStyle='#f4f0e6';g.font='bold 15px Menlo,Consolas,monospace';g.fillText("The ewe and the lamb: standing, the walk in sixteen frames, bleating (20, 21), chewing (22, 23) and grazing (24, 25), three times enlarged, both ways",8,17);
+        CELLS.forEach(([lk,d,f],i)=>{const x=(i%per)*cw*Z,y=24+Math.floor(i/per)*(chh*Z+16);g.fillStyle=(i+Math.floor(i/per))%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw*Z-2,chh*Z+14);g.fillStyle='#6f7a6a';g.fillRect(x+1,y+chh*Z-6,cw*Z-2,6);
+          g.drawImage(sp(f,d,lk),FIG.OX-cw/2,FIG.OY-chh+2,cw,chh,x,y,cw*Z,chh*Z);g.fillStyle='#14100c';g.font='bold 11px Menlo,Consolas,monospace';g.fillText((lk?'lamb':'ewe')+' '+f+(d>0?', right':', left'),x+5,y+chh*Z+11)});
+        window.SHEETS=Object.assign(window.SHEETS||{},{'sheep-walk':c.toDataURL()})}
+      {const W=320,Hh=144,Z=3,c=document.createElement('canvas');c.width=W*Z;c.height=Hh*Z;const g=c.getContext('2d');g.scale(Z,Z);g.imageSmoothingEnabled=false;
+        g.fillStyle='#b8c8d8';g.fillRect(0,0,W,52);g.fillStyle='#8f9a62';g.fillRect(0,52,W,Hh-52);g.fillStyle='#a2a86e';g.fillRect(0,52,W,6);
+        const F=SHARED.beasts.flock(12,5),spots=[[34,86],[78,92],[58,108],[112,100],[146,90],[160,112],[196,96],[214,118],[244,102],[270,92],[284,122],[118,126]];
+        F.map((f,i)=>({...f,x:spots[i][0],y:spots[i][1]})).sort((a,b)=>a.y-b.y).forEach(s=>SHARED.beasts.sheepStill(g,s.x,s.y,s.dir,s.fr,s.look));
+        man(g,22,138,'paul',1,0,null);
+        window.SHEETS=Object.assign(window.SHEETS||{},{'sheep-flock':c.toDataURL()})}
+      const c=document.createElement('canvas');c.width=960;c.height=432;c.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;z-index:8';$('#view').appendChild(c);
+      const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,960,432);
+      [[0,1,0],[1,-1,24],[2,1,20],[3,-1,8],[4,1,22],[5,-1,25],[6,1,0],[7,-1,12]].forEach(([lk,d,f],i)=>{const x=(i%4)*240,y=Math.floor(i/4)*216;g.fillStyle='#a8b0bc';g.fillRect(x+2,y+2,236,212);g.fillStyle='#6f7a6a';g.fillRect(x+2,y+196,236,18);
+        g.drawImage(sp(f,d,lk),FIG.OX-40,FIG.OY-60,80,62,x+2,y+30,236,183);g.fillStyle='#101418';g.font='bold 12px monospace';g.fillText('look '+lk+', frame '+f,x+8,y+16)})})}
+  /* --- end of the sheep --- */
   if(lang==='de'){move(...hs('south_gate'));ok($('#status').textContent==='Gehe zu Südtor','German status line: Gehe zu Südtor');
     verb('use');item('knife');move(...hs('unfinished_cover'));ok($('#status').textContent==='Benutze Zeltmachermesser mit Wagenplane (unfertig)','German status line: Benutze Zeltmachermesser mit Wagenplane (unfertig)');verb('use');G.hover=null;status()}
   /* Iconium: nothing is left owing, and nothing unsaid */
