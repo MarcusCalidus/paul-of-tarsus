@@ -6,8 +6,10 @@ ages ages
 agora agora11
 altars altar11
 antioch antioch
+assos passos16
 birds birds
 birds-sheet birds birds-sheet
+coast-road proad16
 coast-sheet coast coast-sheet
 coast-wind coast coast-wind
 antioch12 pant12
@@ -51,9 +53,11 @@ deutsch de:tablets
 dispute dispute
 dusk outside
 dusk10 dusk10
+elders pshore16
 ephesus peph12
 ephesus-evening pstreete13
 ephesus-road proad13
+flock ppass16
 ford wade
 fuller-door pfuller13
 gaius gaius15
@@ -86,14 +90,19 @@ lystra lame
 magistrates mags9
 map map3
 marketplace market9
+messenger-list plist16
 midnight midnight15
+miletus pmiletus16
 names names
 nations sabbath2
+night-watch pwatch16
 nightbench gift10
 nightcourt court9
 nighthouse night10
 nightmap nightmap10
+north-wind pskyb16
 northmap hubmap5
+off-chios peve16
 options de:menu
 other-road map15
 paphos paphos
@@ -154,11 +163,14 @@ topics topics
 travel hubmap4
 treasures treasures
 troas troas8
+troas16 pquay16
 twelve pstreetb13
+under-way psail16
 upper-room upper15
 verb-pointer verbpointer
 verbs defverb
 voyage voyage
+voyage16 map16
 walk cast cast-walk
 westmap map10
 windward holdline

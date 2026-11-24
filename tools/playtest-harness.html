@@ -242,8 +242,9 @@
      to Samos and Miletus, and the messenger's way to Ephesus across the gulf and over the land. On each of these maps, and on all of them
      at once, no two routes cross, no name crosses a coast, an island or a route, no two names touch, and every place lies inside the window,
      in each language (`de:map16`). The stop shows the whole voyage, and hands over map16-zoom.png (de-map16-zoom.png): the window four times
-     enlarged, for the cross-shape check. Chapter Sixteen gives journey these legs, with Troas's name set to the upper left (LAB below). */
-  if(stop==='map16'){clearInterval(sk);sk=0;await need('map');ov.className='';ov.onclick=null;G.busy=true;lock(true);status();
+     enlarged, for the cross-shape check (docs/screenshots/voyage16.png is its picture, so Chapter Sixteen is set first and its name stands in
+     the top bar). Chapter Sixteen gives journey these legs, with Troas's name set to the upper left (LAB below). */
+  if(stop==='map16'){clearInterval(sk);sk=0;await loadLevel(16);setChapter(16);dealInv('miletus16');drawInv();await need('map');ov.className='';ov.onclick=null;G.busy=true;lock(true);status();
     const M=SHARED.map,cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
         for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;return n},
       tidy=()=>{const[ox,oy,w,h]=M.window(),bx=M.state.boxes,bad=[];for(const b of bx)if(b[0]<ox-.5||b[2]>ox+w+.5||b[1]<oy-.5||b[3]>oy+h+.5)bad.push(b[4]+' (off the map)');
