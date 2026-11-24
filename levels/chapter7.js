@@ -810,7 +810,7 @@ ROOMS.gates={space:0.8,walk:[16,388,112,138],get mood(){return F.up?'calm':'stor
   {name:'cilician_gates',x:342,y:8,w:54,h:58,wx:360,wy:113,dir:1,exit:leaveGates,look:['the_cilician_gates','every_wagon_between_tarsus']},
   {name:'stream',x:398,y:100,w:82,h:44,wx:384,wy:127,dir:1,look:'snow_water_coming_down_fast',use:'i_fill_my_hands_and_drink',pickup:'stream_stays_in_its_bed'},
   {name:'wagon',x:18,y:84,w:76,h:28,wx:58,wy:120,dir:-1,look:'zenons_wagon_loaded_for_derbe',pickup:'it_is_zenons_and_it_is_loaded',use:'not_while_that_family_is'},
-  {name:'oxen',x:90,y:66,w:60,h:48,wx:154,wy:122,dir:-1,look:'zenons_brown_oxen',pickup:'they_are_zenons',
+  {name:'oxen',x:90,y:66,w:60,h:48,wx:162,wy:122,dir:-1,look:'zenons_brown_oxen',pickup:'they_are_zenons',
     talk:async()=>{SHARED.beasts.speak('oxen7','ox');await say(P,'he_lows_once_long_and_deep')}},
   {name:'bales',x:344,y:92,w:40,h:21,wx:352,wy:119,dir:1,look:'bales_of_goat_hair_cloth',pickup:'they_are_the_merchants_whole_fortune'},
   {get name(){return F.up?'tent':F.mended?'mended_tent':'torn_tent'},x:262,y:84,w:64,h:29,wx:254,wy:118,dir:1,def:'use',

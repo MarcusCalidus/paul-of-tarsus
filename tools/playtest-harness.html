@@ -171,7 +171,7 @@
   const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3|map3)$/.test(stop),HUB=stop==='hubmap',
     C4=/^(sendoff|seleucia|kallias|shelter|jair|voyage|map4|salamis|synagogue|speech|hubmap4|paphos|tools|daniel|blind|name4|journey4|final4|deutsch4)$/.test(stop),
     C5=/^(voyage5|perga|parting|sandal|hubmap5|ford|splice|wade|line|pisidia|synp|speech5|week|greek|sabbath2|border|dust|journey5|final5)$/.test(stop),
-    C6=/^(beasts|mules|oxen|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house6|mend|derbe|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
+    C6=/^(beasts|mules|oxen|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house6|mend|derbe|oxtalk6|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
   const lang=(location.search.match(/[?&]lang=(\w+)/)||[])[1]||'en',toLang=async l=>{for(let i=0;i<150&&G.lang!==l;i++)await wait(30);await wait(60)};
   ok(G.lang===lang&&document.documentElement.lang===lang,'the game is in '+LANGS[lang].native+', as the address asks');fitVerbs();
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
@@ -1105,7 +1105,7 @@
   /* Chapter Seven stops start Chapter Seven from the title screen. Its test is a function of its own: the full run calls it when Chapter Six
      has ended, and a Chapter Seven stop calls it at once. The stop all7 halts nowhere: it plays the chapter through, and then checks that
      every line was translated and that no text overflowed its box. */
-  const C7=/^(dispute7|council|letter7|parting7|map7|tarsus7|witness|reading|hubmap7|gates|holdline|pitched|case7|lystra7|myron|hubmap7b|iconium7|tatia7|invite|hands|journey7|final7|deutsch7|all7)$/.test(stop);
+  const C7=/^(dispute7|council|letter7|parting7|map7|tarsus7|witness|reading|hubmap7|gates|oxtalk7|holdline|pitched|case7|lystra7|myron|hubmap7b|iconium7|tatia7|invite|hands|journey7|final7|deutsch7|all7)$/.test(stop);
   const ch7=async()=>{let SI;const P7=i=>T(CHAP[7].tablets.scripture[i].gist),said=t=>heard.includes(T(t)),quoted=i=>heard.some(h=>h.includes(P7(i))),A=id=>ACT[id];
   const mapOpen=async()=>{for(let i=0;i<100&&!(SHARED.map&&G.scene===SHARED.map.draw);i++)await wait(50);await wait(450)},
     mapClick=id=>{const[x,y]=SHARED.map.where(id),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+x/320*r.width,clientY:r.top+y/144*r.height,bubbles:true}))},
@@ -1201,6 +1201,7 @@
   halt('gates',()=>{say(A('zenon7'),'this_is_as_far_as_we_go')});
   {const fr=[],iv=setInterval(()=>fr.push(SHARED.beasts.pose('oxen7',0)),15);heard.length=0;await act('talk','oxen');await wait(1700);clearInterval(iv);
     ok(said('he_lows_once_long_and_deep')&&G.room==='gates'&&fr.includes(22)&&fr[fr.length-1]===0,"Zenon's near ox at the Gates, talked to, lows once, long and deep ["+[...new Set(fr)].join()+']')}
+  halt('oxtalk7',()=>{SHARED.beasts.speak('oxen7','ox');say(P,'he_lows_once_long_and_deep')});
   ok(H('torn_tent')&&!H('tent')&&!H('mended_tent'),'the tent is down');
   heard.length=0;await act(null,'cilician_gates');ok(G.room==='gates'&&!G.scene&&said('leave_a_child_in_the_open'),'no going on while a family stands in the storm');
   heard.length=0;await act(null,'road_to_tarsus');ok(G.room==='gates'&&heard.length===1,'and no going back');
@@ -4179,6 +4180,7 @@
   /* talked to, the near ox lows: its head lifts and its mouth opens while the sound lasts. Barnabas gets no answer from him. */
   {const fr=[],iv=setInterval(()=>fr.push(SHARED.beasts.pose('oxen6',0)),15);heard.length=0;await act('talk','oxen');await wait(1700);clearInterval(iv);
     ok(said('i_wish_him_a_good_road')&&G.room==='derbe'&&fr.includes(22)&&fr.includes(20)&&fr[fr.length-1]===0,"Zenon's near ox, talked to, lows once and goes on chewing: his head lifts and his mouth opens with the sound ["+[...new Set(fr)].join()+']')}
+  halt('oxtalk6',()=>{SHARED.beasts.speak('oxen6','ox');say(P,'i_wish_him_a_good_road')});
   key('c');await idle();heard.length=0;await act('talk','oxen');ok(PC()===BN&&heard.length===1&&said('i_would_get_no_answer'),'Barnabas talks to the oxen, and gets no answer');key('c');await idle();
   pray();await idle();ok(hint()[0]==='back6','the hint points back the way they came');
   act(null,'road');await mapOpen();
