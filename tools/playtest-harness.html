@@ -663,21 +663,27 @@
       const cb2=R($('#code'));ok(getComputedStyle($('#ttop')).display!=='none'&&$('#ttop').contains($('#code'))&&$('#code').textContent===T('enter_code')&&cb2.width>0&&cb2.top>=0&&cb2.left>=c.right&&o.left>=c.right&&o.right<=W-PH.ci&&$('#code').scrollWidth<=$('#code').clientWidth+1&&h.top>=0&&h.bottom<=Hh,'on the title ENTER CODE and the menu button stand in its upper right corner, where its last line says, beside the picture and not over it');
       halt('phonetitle',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'})}
     await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();G.speedAll=0;place(P,'workshop',160,128,1);[G.cam,G.camY]=camAt('workshop',160,128);await wait(700);
-    const F=LENS.F,lc=R($('#lcol')),rc=R($('#rcol')),cw=PH.cw;
-    ok(!PH.wide&&$('#lcol').contains($('#verbs'))&&$('#rcol').contains($('#inv'))&&$('#ltop').contains($('#opts'))&&$('#ltop').contains($('#names'))&&Math.abs(lc.left)<1&&Math.abs(rc.right-W)<1&&Math.abs(lc.width-cw)<1&&Math.abs(F.l-cw)<1&&Math.abs(F.w-(W-2*cw))<1,
-      `the verbs stand in a column on the left and the inventory in one on the right, ${Math.round(cw)} pixels wide each, and the field between them is ${Math.round(F.w)} by ${Hh}`);
-    {const vs=[...document.querySelectorAll('#verbs button')].filter(b=>getComputedStyle(b).display!=='none').map(R),ss=[...document.querySelectorAll('#inv .slot')].map(R);
+    const F=LENS.F,cw=PH.cw;let lc=R($('#lcol')),rc=R($('#rcol'));
+    ok(!PH.wide&&$('#lcol').contains($('#verbs'))&&$('#rcol').contains($('#inv'))&&$('#ltop').contains($('#opts'))&&$('#ltop').contains($('#names'))&&lc.right<=PH.ci+1&&rc.left>=W-PH.ci-1&&Math.abs(F.l)<1&&Math.abs(F.w-W)<1,
+      `the columns are retracted to the sides and the field is the whole screen, ${Math.round(F.w)} by ${Hh}`);
+    {const lh=R($('#lh')),rh=R($('#rh'));ok(lh.width>=14&&lh.height>=40&&lh.left>=0&&lh.right<=W/4&&rh.width>=14&&rh.height>=40&&rh.right<=W&&rh.left>=W*.75,'a handle stays at each side to pull a column out: '+Math.round(lh.width)+' by '+Math.round(lh.height)+' pixels')}
+    $('#lh').click();$('#rh').click();await wait(700);lc=R($('#lcol'));rc=R($('#rcol'));
+    ok($('#wrap').classList.contains('ro')&&!$('#wrap').classList.contains('lo')&&Math.abs(rc.right-W)<1&&Math.abs(rc.width-cw)<1&&lc.right<=PH.ci+1,'a handle pulls its column out over the field, and one drawer is open at a time');
+    $('#lh').click();await wait(700);lc=R($('#lcol'));rc=R($('#rcol'));
+    ok(Math.abs(lc.left)<1&&Math.abs(lc.width-cw)<1&&!$('#wrap').classList.contains('ro'),'the left drawer opens and the right one closes');
+    {const vs=[...document.querySelectorAll('#verbs button')].filter(b=>getComputedStyle(b).display!=='none').map(R);$('#rh').click();await wait(700);rc=R($('#rcol'));const ss=[...document.querySelectorAll('#inv .slot')].map(R);
       ok(vs.every(r=>r.left>=lc.left+PH.ci-1&&r.right<=lc.right&&r.height>=40&&r.width>=60)&&ss.length===10&&ss.every(r=>r.right<=W-PH.ci+1&&r.left>=rc.left&&r.height>=40&&r.width>=44),
-        'every verb and inventory slot is large enough for a finger ('+Math.round(Math.min(...vs.map(r=>r.height)))+' and '+Math.round(Math.min(...ss.map(r=>r.height)))+' pixels high) and clear of the screen\'s edge')}
+        'every verb and inventory slot is large enough for a finger ('+Math.round(Math.min(...vs.map(r=>r.height)))+' and '+Math.round(Math.min(...ss.map(r=>r.height)))+' pixels high) and clear of the screen\'s edge');
+      tap(W/2,Hh/2);await wait(700);ok(!$('#wrap').classList.contains('lo')&&!$('#wrap').classList.contains('ro')&&R($('#rcol')).left>=W-PH.ci-1,'a tap on the field puts the drawers away');place(P,'workshop',160,128,1);await wait(500)}
     {const c=R(cv),k=LENS.k;ok(PH.mode==='fill'&&c.left<=F.l+1&&c.left+VW*k>=F.l+F.w-1&&c.top<=1&&c.top+VH*k>=Hh-1,`the room fills the field from top to bottom, cropped at the sides: ${(F.w/k).toFixed(0)} of its ${VW} pixels across are seen`)}
     {const[x,y]=toClient(P.x,P.y-20),[rx,ry]=evPos({clientX:x,clientY:y});ok(Math.abs(rx-P.x)<.01&&Math.abs(ry-(P.y-20))<.01&&x>F.l+F.w*.3&&x<F.l+F.w*.7,'a place on the screen and in the room agree, and the field follows whoever is played')}
     /* a tap walks; one finger drawn across moves the view and walks nobody; two zoom; two quick taps bring it back */
     {const[x,y]=toClient(110,128);tap(x,y);ok(!!P.walk,'a tap on the floor sends Paul walking there');await idle();
       const[px]=toClient(P.x,P.y);ok(Math.abs(P.x-110)<2&&px>F.l&&px<F.l+F.w,'and the field has followed him')}
-    {place(P,'workshop',160,128,1);await wait(500);const x0=F.l+F.w/2,y0=Hh/2,t0=LENS.tx;touch('pointerdown',1,x0,y0);for(let i=1;i<=5;i++){touch('pointermove',1,x0-i*30,y0);await wait(16)}
+    {PH.pz=2;place(P,'workshop',160,128,1);await wait(500);const x0=F.l+F.w/2,y0=Hh/2,t0=LENS.tx;touch('pointerdown',1,x0,y0);for(let i=1;i<=5;i++){touch('pointermove',1,x0-i*30,y0);await wait(16)}
       touch('pointerup',1,x0-150,y0);vp.dispatchEvent(new MouseEvent('click',{clientX:x0-150,clientY:y0,bubbles:true}));await wait(300);
       ok(PH.pan.x>20&&LENS.tx<t0-20&&!P.walk,`a finger drawn across the field moves the view along the room (${PH.pan.x.toFixed(0)} pixels), and walks nobody`);await wait(200);
-      tap(...toClient(150,128));await idle();ok(Math.abs(PH.pan.x)<4,'when Paul walks, the view comes back to him')}
+      tap(...toClient(150,128));await idle();ok(Math.abs(PH.pan.x)<4,'when Paul walks, the view comes back to him');PH.pz=1}
     {const m=[F.l+F.w/2,Hh/2];touch('pointerdown',1,m[0]-30,m[1]);touch('pointerdown',2,m[0]+30,m[1]);for(let i=1;i<=6;i++){touch('pointermove',1,m[0]-30-i*6,m[1]);touch('pointermove',2,m[0]+30+i*6,m[1]);await wait(16)}
       touch('pointerup',1,m[0]-66,m[1]);touch('pointerup',2,m[0]+66,m[1]);await wait(250);const z=PH.pz,k=LENS.k,base=Math.max(F.w/VW,F.h/VH);
       ok(Math.abs(z-2.2)<.05&&Math.abs(k-z*base)<.02,`two fingers zoom the field: ${z.toFixed(2)} times`);
@@ -710,10 +716,10 @@
       halt('phonemenu');
       mn.querySelector('[data-lay="classic"]').click();await wait(100);const cl=!PH.on&&$('#panel').contains($('#verbs'))&&$('#panel').contains($('#inv'))&&$('#top').contains($('#opts'))&&!root.classList.contains('phone');
       mn.querySelector('[data-lay="auto"]').click();await wait(100);ok(cl&&PH.on&&$('#lcol').contains($('#verbs'))&&JSON.parse(store(OPTS_KEY)).lay==='auto','the layout can be chosen in the menu: Classic puts the panel back as it was, and Auto brings the columns again');
-      closeMenu();await wait(700);ok(!PH.wide&&R($('#lcol')).left>=-1,'when the menu is closed the columns are back')}
+      closeMenu();await wait(700);ok(!PH.wide&&R($('#lcol')).right<=PH.ci+1,'when the menu is closed the columns are back in their drawers')}
     /* a close view is fitted into the field whole, with wood above and below it */
     {await loadLevel(10);ov.className='';ov.onclick=null;setChapter(10);CHAP[10].place('bolt10');G.scene=null;enterRoom('bolt10',...CHAP[10].ent.bolt10);G.busy=false;lock(false);await wait(400);
-      const c=R(cv),k=LENS.k;ok(PH.mode==='fit'&&Math.abs(c.left-LENS.F.l)<1&&Math.abs(VW*k-LENS.F.w)<1&&LENS.ty>10,'a close view is fitted into the field whole, with wood above and below it');
+      const c=R(cv),k=LENS.k;ok(PH.mode==='fit'&&c.left>=LENS.F.l-1&&VW*k<=LENS.F.w+1&&VH*k<=LENS.F.h+1&&LENS.ty>=0,'a close view is fitted into the field whole, with no part of it out of sight');
       halt('phoneclose')}
     /* the narrator's scroll takes the whole screen too */
     {await loadLevel(5);setChapter(5);G.busy=true;lock(true);status();await fade(1,60);narr('two_of_them_traveled_acts_13_14',{dur:1e6});

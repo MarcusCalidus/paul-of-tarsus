@@ -257,9 +257,21 @@ html.phone #lcol,html.phone #rcol{display:flex;flex-direction:column;position:ab
   background:#1c130c var(--wood);background-size:calc(var(--s)*128px) calc(var(--s)*32px);image-rendering:pixelated;transition:transform .45s ease-in-out}
 html.phone #lcol{left:0;padding-left:calc(var(--ci) + var(--s)*2.5px);box-shadow:inset calc(var(--px)*-1) 0 0 #000,inset calc(var(--px)*-2) 0 0 #6a4c24}
 html.phone #rcol{right:0;padding-right:calc(var(--ci) + var(--s)*2.5px);box-shadow:inset var(--px) 0 0 #000,inset calc(var(--px)*2) 0 0 #6a4c24}
-html.phone #wrap.wide #lcol{transform:translateX(-100%)}
-html.phone #wrap.wide #rcol{transform:translateX(100%)}
-html.phone #ltop{display:flex;gap:calc(var(--s)*1.5px);flex:0 0 calc(var(--s)*16px)}
+/* the columns are drawers: retracted to the sides they leave only a handle, so that the whole screen is the field (see drawers) */
+html.phone #lcol{transform:translateX(-100%)}
+html.phone #rcol{transform:translateX(100%)}
+html.phone #wrap.lo:not(.wide) #lcol,html.phone #wrap.ro:not(.wide) #rcol{transform:none}
+html.phone #lcol .dh,html.phone #rcol .dh{position:absolute;top:50%;margin-top:calc(var(--cs)*-17px);width:calc(var(--cs)*8px);height:calc(var(--cs)*34px);padding:0;
+  background:#1c130c var(--wood);background-size:calc(var(--cs)*128px) calc(var(--cs)*32px);image-rendering:pixelated;border:var(--px) solid var(--dim);cursor:pointer;touch-action:manipulation;z-index:8}
+html.phone #lcol .dh{left:calc(100% + var(--ci));border-left:0;border-radius:0 calc(var(--cs)*3px) calc(var(--cs)*3px) 0}
+html.phone #rcol .dh{right:calc(100% + var(--ci));border-right:0;border-radius:calc(var(--cs)*3px) 0 0 calc(var(--cs)*3px)}
+html.phone #lcol .dh::before,html.phone #rcol .dh::before{content:'';position:absolute;left:50%;top:50%;width:calc(var(--cs)*3px);height:calc(var(--cs)*6px);margin:calc(var(--cs)*-3px) 0 0 calc(var(--cs)*-1.5px);background:var(--gold)}
+html.phone #lcol .dh::before{clip-path:polygon(0 0,100% 50%,0 100%)}
+html.phone #rcol .dh::before{clip-path:polygon(100% 0,0 50%,100% 100%)}
+html.phone #wrap.lo #lcol .dh::before{clip-path:polygon(100% 0,0 50%,100% 100%)}
+html.phone #wrap.ro #rcol .dh::before{clip-path:polygon(0 0,100% 50%,0 100%)}
+html.phone #wrap.wide .dh{display:none}
+html.phone #ltop{margin-top:calc(var(--s)*3px);display:flex;gap:calc(var(--s)*1.5px);flex:0 0 calc(var(--s)*16px)}
 html.phone #ltop button,html.phone #wrap>#skip,html.phone #ttop button{font:inherit;font-size:calc(var(--s)*5.6px);color:var(--gold);background:rgba(10,6,4,.55);
   border:var(--px) solid var(--dim);text-shadow:var(--px) var(--px) 0 #000;padding:0 calc(var(--s)*2px);cursor:pointer;touch-action:manipulation}
 html.phone #ltop #opts{flex:0 0 calc(var(--s)*19px);font-size:calc(var(--s)*9px);line-height:1}
@@ -328,8 +340,8 @@ html.phone #wrap.title.splash #ttop{display:none}
     <div id="inv"></div>
     <div id="choices"></div>
   </div>
-  <div id="lcol"><div id="ltop"></div></div>
-  <div id="rcol"></div>
+  <div id="lcol"><div id="ltop"></div><button class="dh" id="lh" type="button" aria-label="Verbs"></button></div>
+  <div id="rcol"><button class="dh" id="rh" type="button" aria-label="Inventory"></button></div>
   <div id="ttop"><button id="optsT" type="button" aria-label="Options">&#8801;</button></div>
 </div>
 <div id="rotate"><canvas width="48" height="48"></canvas><p></p></div>
@@ -457,7 +469,7 @@ function dock(on){const els=['#skip','#code','#names','#opts','#verbs','#inv'].m
   if(on){$('#wrap').appendChild($('#skip'));$('#ttop').prepend($('#code'));$('#ltop').append($('#opts'),$('#names'));$('#lcol').appendChild($('#verbs'));$('#rcol').appendChild($('#inv'))}
   else{for(let i=HOMES.length-1;i>=0;i--){const[e,p,n]=HOMES[i];p.insertBefore(e,n&&n.parentNode===p?n:null)}
     cv.style.width=cv.style.height=cv.style.transform='';PH.vars='';const st=document.documentElement.style;
-    for(const v of['--cw','--ci','--cs','--ts','--tb','--fl','--fr','--fw','--fx','--fy','--fk'])st.removeProperty(v);$('#wrap').classList.remove('wide','locked','splash');$('#wrap').style.transform=''}
+    for(const v of['--cw','--ci','--cs','--ts','--tb','--fl','--fr','--fw','--fx','--fy','--fk'])st.removeProperty(v);$('#wrap').classList.remove('wide','locked','splash','lo','ro');$('#wrap').style.transform=''}
   if(on)$('#wrap').classList.toggle('locked',$('#panel').classList.contains('locked'))}
 /* layout scale */
 function fit(){const root=document.documentElement,ph=phoneWanted(),[it,ir,ib,il]=insets();
@@ -1804,7 +1816,7 @@ function lensTick(dt){if(!PH.on)return;vvFit();const W=PH.W,H=PH.H,wc=$('#wrap')
     title=wc.contains('title'),wide=title||wc.contains('full')||!!(S&&S.state!=='down')||!!$('#tablets.on'),e=r=>1-Math.exp(-dt*r);
   if(wide!==PH.wide){PH.wide=wide;wc.toggle('wide',wide)}
   if(wc.contains('splash')!==ov.classList.contains('splash'))wc.toggle('splash');
-  const Fl=wide?0:PH.cw,Fw=W-2*Fl;
+  const Fl=0,Fw=W;   /* the columns are drawers over the field, never beside it */
   if(!PH.k||!dt||Math.abs(Fl-PH.Fl)<.3){PH.Fl=Fl;PH.Fw=Fw}else{PH.Fl+=(Fl-PH.Fl)*e(9);PH.Fw+=(Fw-PH.Fw)*e(9)}
   const F={l:PH.Fl,t:0,w:PH.Fw,h:H},room=G.room&&!G.scene?G.room:null,me=PC(),plan=!!planOf(room),
     close=!!room&&!plan&&(me.room!==room||me.y>roomH(room)+20),map=!!(G.scene&&SHARED.map&&G.scene===SHARED.map.draw),
@@ -1832,6 +1844,12 @@ function lensTick(dt){if(!PH.on)return;vvFit();const W=PH.W,H=PH.H,wc=$('#wrap')
     v=[F.l,W-F.l-F.w,F.w,fx,fy].map(x=>Math.round(x*2)/2).join()+'|'+fk.toFixed(3)+'|'+os.toFixed(3);
   if(v!==PH.vars){PH.vars=v;const st=document.documentElement.style;
     for(const[n,x]of[['--fl',F.l],['--fr',W-F.l-F.w],['--fw',F.w],['--fx',fx],['--fy',fy]])st.setProperty(n,x.toFixed(1)+'px');st.setProperty('--fk',fk.toFixed(4));st.setProperty('--s',os.toFixed(3))}}
+/* drawers: a handle pulls a column out over the field and back; a tap on the field, or on a verb, puts it away again (the tap still acts) */
+function drawers(l,r){const c=$('#wrap').classList;c.toggle('lo',!!l);c.toggle('ro',!!r)}
+$('#lh').onclick=e=>{e.stopPropagation();const c=$('#wrap').classList;drawers(!c.contains('lo'),false)};
+$('#rh').onclick=e=>{e.stopPropagation();const c=$('#wrap').classList;drawers(false,!c.contains('ro'))};
+$('#verbs').addEventListener('click',()=>{if(PH.on)drawers(false,$('#wrap').classList.contains('ro'))});
+vp.addEventListener('pointerdown',()=>{if(PH.on)drawers(false,false)},true);
 /* lensAim: zoom the field to pz and move it so that the point m of the picture lies at vx, vy in the view (the point between two fingers) */
 function lensAim(m,vx,vy,pz){const F=LENS.F,k=(PH.mode==='fit'?Math.min(F.w/VW,F.h/VH):Math.max(F.w/VW,F.h/VH))*Math.min(3,pz*(PH.vz||1)),
     cx=m[0]-(vx-F.l-F.w/2)/k,cy=m[1]-(vy-F.t-F.h/2)/k,c=PH.ctx;
