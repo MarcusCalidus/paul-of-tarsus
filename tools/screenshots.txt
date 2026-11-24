@@ -2,13 +2,17 @@
 # file where it is not the stop's own (a sheet that the stop `cast` hands over, the icon that the stop `pwa` saves). A stop written
 # de:name is taken in German. `node tools/retake.mjs` takes them all again; the playtest fails if a picture is not listed here.
 aegean journey8
+agabus-belt pbound17
 ages ages
 agora agora11
 altars altar11
 antioch antioch
 assos passos16
+beach-prayer pprayer17
 birds birds
 birds-sheet birds birds-sheet
+bound bound17 cast-bound
+caesarea-road pgate17
 coast-road proad16
 coast-sheet coast coast-sheet
 coast-wind coast coast-wind
@@ -57,6 +61,8 @@ elders pshore16
 ephesus peph12
 ephesus-evening pstreete13
 ephesus-road proad13
+even-keel phold17
+every-true-reason pplead17
 flock ppass16
 ford wade
 fuller-door pfuller13
@@ -93,6 +99,7 @@ marketplace market9
 messenger-list plist16
 midnight midnight15
 miletus pmiletus16
+murex-beach pbeach17
 names names
 nations sabbath2
 night-watch pwatch16
@@ -106,7 +113,9 @@ off-chios peve16
 options de:menu
 other-road map15
 paphos paphos
+patara ppatara17
 perga perga
+philip-house pphilip17
 philippi philippi8
 phone phone
 pisidia week
@@ -165,12 +174,16 @@ treasures treasures
 troas troas8
 troas16 pquay16
 twelve pstreetb13
+tyre ptyre17
+tyre-court pcourt17
+tyre-lanes planes17
 under-way psail16
 upper-room upper15
 verb-pointer verbpointer
 verbs defverb
 voyage voyage
 voyage16 map16
+voyage17 map17
 walk cast cast-walk
 westmap map10
 windward holdline

@@ -108,6 +108,14 @@ Chapter Sixteen is mostly coast and sea, painted by the shared coast painter des
 
 ![The deck seen from aboard, under way](screenshots/under-way.png)
 
+Chapter Seventeen goes down the coast from Patara to Caesarea. The harbor of Patara lies under the mountains of Lycia, with four ships painted by the ship painter in curved strakes; their masts stand against the land, and the open sea and its horizon show only in the harbor mouth. The quay of Tyre has the island city's warehouses and the causeway far off, and the bay of Ptolemais is one told picture in the evening, with Mount Carmel closing it to the south. The hold of Akestor's ship is a close view in section, seen from the side: its frames rise from the floor of the hold to the deck and stop there, the deck is parted at the mast, and no beam or hatch lies across a frame; the hull trims on the water as the plan is read, and the marks on bow and stern show how far she may go. Tyre's lanes are a lane map of the island city, which was no grid: its lanes bend and fork, a sea wall runs round its edge with the shallows along it, fishing boats lie off the shore, and the glass furnace in its yard glows and smokes until the glassworker banks it for the evening. The prayer on the beach is a picture of its own, seen from the dune: the whole congregation, about twenty small figures, kneels at the water's edge with its back to us, every arm down or folded, and no bird flies over it. In Caesarea no temple is seen: the court of Philip's house is whitewashed, its gate shows a street down to the harbor and the breakwater, and the road out of the city passes the aqueduct on its arches into the hills.
+
+![The hold of Akestor's ship, in section](screenshots/even-keel.png)
+
+![The prayer on the beach outside Tyre, seen from the dune](screenshots/beach-prayer.png)
+
+![Bound with a belt, as Agabus bound himself: seated, then bound facing both ways, enlarged](screenshots/bound.png)
+
 Each chapter ends on a travel map of the eastern Mediterranean, painted the same way: coasts, shallows and mountain ranges, cities as dots, and no grid lines. The road travelled so far is shown, and the chapter's own leg draws itself as a dotted line from city to city, to a short sting on frame drum, harp and ney in the chapter's own key: Damascus to Jerusalem; Jerusalem to Caesarea and by sea to Tarsus; Tarsus to Antioch, where Paul's missionary journeys would begin. The routes never cross. Where the Scriptures do not say which way he went, the line takes a plausible one: by sea east of Cyprus, by road round the Gulf of Issus, and through the south of Cyprus.
 
 ![The travel map at the end of Chapter Three](screenshots/map.png)
