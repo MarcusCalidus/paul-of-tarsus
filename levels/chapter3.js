@@ -105,7 +105,12 @@ ART.court={w:320,q:12,
   cypress(g,118,32,13);cypress(g,268,32,12);cypress(g,280,32,9);
   /* the courtyard wall, tiles along its top */
   /* the plaster's random cracks give way to cracks set by hand, high on the walls, where they run to no head (skipCracks3 keeps the rest in place) */
-  plaster(g,92,32,228,72,W,r,{patch:5,cracks:0,brick:'#b89468',t:.38});skipCracks3(r,7);for(let i=92;i<320;i+=5.5){R(g,i,27.5,5,5.5,(i|0)%11?TR:TD);R(g,i,27.5,5,.6,TL);R(g,i+4.5,27.5,.6,5.5,TE)}
+  plaster(g,92,32,228,72,W,r,{patch:5,cracks:0,brick:'#b89468',t:.38});skipCracks3(r,7);
+  /* one of its patches fell behind the legs of the table, where each leg crossed its courses of brick. It is painted over with the wall's own
+     plaster, which draws nothing from r, and a small patch is set by hand high on the open wall beyond the arbor instead, above the heads of whoever stands
+     at the back of the court, so that the room keeps its draws */
+  inRect(g,145.5,88,28.5,23,()=>plaster(g,92,32,228,72,W,r,{cracks:0,t:.38}));
+  {const rp=rng(1319),v=[(212-92)/228,((46-32)/72-.15)/.8,(8.5-6)/12,(4.5-4)/7];inRect(g,202.5,40.5,21,11.5,()=>plaster(g,92,32,228,72,W,()=>v.length?v.shift():rp(),{patch:1,cracks:0,brick:'#b89468',t:.38}))}for(let i=92;i<320;i+=5.5){R(g,i,27.5,5,5.5,(i|0)%11?TR:TD);R(g,i,27.5,5,.6,TL);R(g,i+4.5,27.5,.6,5.5,TE)}
   ao(g,92,33,228,5,'t',.25,'#3a3060');ao(g,92,92,228,12,'b',.22,'#4a3424');ao(g,92,100,228,4,'b',.2,'#2a2030');
   {const rb=rng(1311);for(const[x,y,n]of[[204,35,3],[226,36,2],[266,34.6,3]])crack3(g,x,y,n,rb)}
   /* the house: a tiled porch on two columns */
@@ -133,12 +138,12 @@ ART.court={w:320,q:12,
   pave(g,0,104,320,144,'#d6c49a',r,{vx:160,vy:66,rows:5,step:34,v:.08});ao(g,0,104,320,5,'t',.3,'#4a4460');
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,105,0,144,['rgba(255,240,200,0)','rgba(255,240,200,.9)']);g.fillRect(0,105,320,39)});
   shade(g,[0,105,100,105,112,111,0,113],SH,.6);shade(g,[275,105,280,105,292,110,282,110],SH,.6);
-  /* the vine arbor and the dappled shade under it */
+  /* the vine arbor and the dappled shade under it; its two posts stand at the very ends of its beam */
   shade(g,[98,105,190,105,200,119,104,119],SH,.4);comp(g,'screen',.35,()=>{for(let i=0;i<40;i++){const sx=104+r()*88,sy=106.5+r()*11;oval(g,sx,sy,1.5+r()*3,.5+r()*.8,'#fff0c8')}});shade(g,[100,44,188,44,190,104,98,104],SH,.28);
-  shadow3(g,107.5,105.6,4,1.2,.4);shadow3(g,177.5,105.6,4,1.2,.4);board3(g,106,42,3,64,'#6a4e2c',rw,1);board3(g,176,42,3,64,'#6a4e2c',rw,1);board3(g,99,40,88,3,'#7a5c36',rw);ao(g,99,43,88,3,'t',.3,'#1a1420');
+  shadow3(g,100.5,105.6,4,1.2,.4);shadow3(g,185.5,105.6,4,1.2,.4);board3(g,99,42,3,64,'#6a4e2c',rw,1);board3(g,184,42,3,64,'#6a4e2c',rw,1);board3(g,99,40,88,3,'#7a5c36',rw);ao(g,99,43,88,3,'t',.3,'#1a1420');
   for(let i=0;i<8;i++)board3(g,102+i*11.6,36.6,2.2,3.6,'#5a4226',rw,1);
-  stroke(g,[108.5,104,110,84,108.6,66,111,50,118,42],'#5a4630',1.2);stroke(g,[110,70,113,60,122,48],'#5a4630',.8);
-  foliage(g,122,39,22,6.5,'#5f8a4a',r,90);foliage(g,160,38,26,7,'#6a9652',r,110);foliage(g,142,43,16,4,'#527c40',r,50);foliage(g,112,56,4,9,'#5f8a4a',r,20);
+  stroke(g,[101.5,104,103,84,101.6,66,104,50,111,42],'#5a4630',1.2);stroke(g,[103,70,106,60,115,48],'#5a4630',.8);
+  foliage(g,122,39,22,6.5,'#5f8a4a',r,90);foliage(g,160,38,26,7,'#6a9652',r,110);foliage(g,142,43,16,4,'#527c40',r,50);foliage(g,105,56,4,9,'#5f8a4a',r,20);
   for(const[vx,vy]of[[123,47],[150,48],[168,46],[136,49]])for(let k=0;k<7;k++)oval(g,vx+(k%3)-1,vy+Math.floor(k/3)*1.6+(k>5?1.4:0),1,1,k%2?'#6a3e68':'#4f2e52');
   /* bench and table in the shade */
   R(g,114,100,22,7,'rgba(40,30,60,.28)');ao(g,114,99.8,22,3,'t',.3,'#1a1420');shadow3(g,125,107,14,1.4,.4);
