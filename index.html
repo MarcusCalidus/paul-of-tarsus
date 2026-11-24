@@ -727,10 +727,18 @@ function wood(g,x,y,w,h,c,vert,a){R(g,x,y,w,h,c);inRect(g,hp(x),hp(y),hp(w),hp(h
 function boards(g,x,y,w,h,pw,c,r){for(let i=0;i<w-.01;i+=pw){const ww=Math.min(pw,w-i),cc=tint(c,(r()-.5)*.2);R(g,x+i,y,ww,h,cc);
     R(g,x+i,y,.5,h,tint(cc,.18));R(g,x+i+ww-.5,y,.5,h,tint(cc,-.4));if(r()<.5)R(g,x+i+1+r()*(ww-2.5),y+r()*h*.8,.5,3+r()*6,tint(cc,-.22))}
   inRect(g,hp(x),hp(y),hp(w),hp(h),()=>tex(g,'vert',.5,x,y,w,h,'overlay',.5))}
-/* door: a plank door in a recessed frame, with iron bands, studs and a ring. */
+/* door: a plank door in a recessed frame, with a ring. Its planks have the quiet grain of the shared plank (shared/materials.js,
+   plankGaius15 in Chapter Fifteen): a soft fall of tone across each, a light overlay and a few long streaks. They draw from r just as
+   boards() did, so that everything painted after a door stays where it was; the streaks come from the door's own seed. Iron bands
+   across the planks only where a caller asks for them (o.bands: heights as parts of h): a band across upright planks makes a cross. */
 function doorArt(g,x,y,w,h,c,r,o){o=o||{};const f=o.frame||tint(c,-.5);R(g,x,y,w,h,'#0c0806');wood(g,x,y,2.5,h,f,1);wood(g,x+w-2.5,y,2.5,h,f,1);wood(g,x,y,w,3,f);
-  boards(g,x+3,y+3.5,w-6,h-3.5,o.pw||5,c,r);ao(g,x+3,y+3.5,w-6,5,'t',.5);ao(g,x+3,y+3.5,2.5,h-3.5,'l',.4);
-  for(const by of o.bands||[.22,.72]){const Y=y+h*by;R(g,x+3,Y,w-6,2,'#2a2420');R(g,x+3,Y,w-6,.5,'#5a5048');for(let i=x+4.5;i<x+w-4;i+=4)R(g,i,Y+.5,1,1,'#7a6e60')}
+  const bx=x+3,by0=y+3.5,bw=w-6,bh=h-3.5,pw=o.pw||5,lr=rng(Math.round(x*131+y*17+w*7+h));
+  for(let i=0;i<bw-.01;i+=pw){const ww=Math.min(pw,bw-i),cc=tint(c,(r()-.5)*.16),px=bx+i;if(r()<.5){r();r();r()}
+    inRect(g,px,by0,ww,bh,()=>{g.fillStyle=lg(g,px,0,px+ww,0,[tint(cc,.08),cc,tint(cc,-.12)]);g.fillRect(px,by0,ww,bh);tex(g,'vert',.2,px,by0,ww,bh,'overlay',.5);
+      for(let k=0;k<ww*.9;k++){const a=lr(),l=bh*(.2+lr()*.5),oo=lr()*(bh-l);R(g,px+a*ww,by0+oo,.5,l,lr()<.5?tint(cc,-.16):tint(cc,.1))}});
+    R(g,px,by0,.5,bh,tint(cc,.16));R(g,px+ww-.5,by0,.5,bh,tint(cc,-.32))}
+  ao(g,bx,by0,bw,5,'t',.5);ao(g,bx,by0,2.5,bh,'l',.4);
+  for(const by of o.bands||[]){const Y=y+h*by;R(g,x+3,Y,w-6,2,'#2a2420');R(g,x+3,Y,w-6,.5,'#5a5048');for(let i=x+4.5;i<x+w-4;i+=4)R(g,i,Y+.5,1,1,'#7a6e60')}
   const kx=o.left?x+5.5:x+w-7.5,ky=y+h*.52;oval(g,kx+1,ky+1,1.8,1.8,'#1a1410');g.strokeStyle='#b89648';g.lineWidth=.7;g.beginPath();g.arc(kx+1,ky+2,1.5,0,6.2832);g.stroke();R(g,kx+.5,ky,1,1,'#d8b860')}
 /* pot: a lathe-turned vessel. pts are [t,halfWidth] pairs from the rim (t=0) down to the foot (t=1); lit from the upper left. */
 function pot(g,x,y,h,pts,c,o){o=o||{};const hw=t=>{let i=1;while(i<pts.length-1&&pts[i][0]<t)i++;const a=pts[i-1],b=pts[i],k=clamp((t-a[0])/((b[0]-a[0])||1),0,1),s=k*k*(3-2*k);return a[1]+(b[1]-a[1])*s};
