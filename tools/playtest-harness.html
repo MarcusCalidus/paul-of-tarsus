@@ -478,12 +478,17 @@
      walked to (a small diamond, green if it can be reached, red if not), and the ways from every exit to every one of them. It fails if a
      footprint closes off an exit or a hotspot: each must be reached from every exit, or from near enough to act on what was clicked. */
   {const m=stop.match(/^routes(pro|\d+)$/);if(m){clearInterval(sk);G.speedAll=0;ov.className='';ov.onclick=null;G.splash=0;G.scene=null;
-    const n=m[1]==='pro'?0:+m[1];if(!n)await loadLevel(1);const before=new Set(Object.keys(ROOMS));if(n)await loadLevel(n);else await loadPrologue();setChapter(n||1);
+    /* the rooms the chapter brings: those that were not there before it was loaded (Chapter One is loaded with the game, so it has them all) */
+    const n=m[1]==='pro'?0:+m[1];if(!n)await loadLevel(1);const before=new Set(n===1?[]:Object.keys(ROOMS));if(n)await loadLevel(n);else await loadPrologue();setChapter(n||1);
     for(const o of Object.values(ACT))o.room=null;
     const rooms=Object.keys(ROOMS).filter(id=>!before.has(id)&&ROOMS[id].walk&&!planOf(id)&&ART[id]&&ROOMS[id].walk[0]<ROOMS[id].walk[1]&&ROOMS[id].walk[2]<roomH(id));
     window.SHEETS={};let nf=0;
     for(const id of rooms){const R=ROOMS[id],a=ART[id],w=R.walk,W=a.w,Hh=roomH(id),K=3,c=document.createElement('canvas');c.width=W*K;c.height=Hh*K;const g=c.getContext('2d');
-      g.setTransform(K,0,0,K,0,0);g.imageSmoothingEnabled=false;g.drawImage(bg(id),0,0,W,Hh);for(const p of props(id))g.drawImage(p.c,p.x,p.t,p.w,p.h);
+      g.setTransform(K,0,0,K,0,0);g.imageSmoothingEnabled=false;g.drawImage(bg(id),0,0,W,Hh);
+      /* the room as it is drawn with the view at its left end: what its draw paints (beasts, bystanders, stalls), the props, the foreground
+         (fore, front), all at their depths, but nobody of the cast */
+      {const q=DQ=[];SQ=null;try{a.draw(g,1000)}catch(e){}for(const p of props(id))q.push([p.y,()=>g.drawImage(p.c,p.x,p.t,p.w,p.h)]);DQ=null;q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());
+        const f=fg(id);if(f)g.drawImage(f,0,0,f.width/HR,VH);try{a.front(g,1000)}catch(e){}}
       const F=roomFeet(id);nf+=F.length;
       /* for whoever sets the footprints: each prop's outline, and how wide it is along its lowest two rows (where it meets the floor) */
       props(id).forEach((p,i)=>{const d=p.c.getContext('2d').getImageData(0,0,p.c.width,p.c.height).data,cw=p.c.width,ch=p.c.height;let yb=-1;
