@@ -193,63 +193,274 @@ const foot17=(g,x,y,rx,ry)=>oval(g,x,y,rx,ry||1.4,'rgba(30,24,40,.28)');
 /* ==== ART common17: end ==== */
 
 /* ==== ART patara17: begin ==== */
-/* Patara, the harbor, in the morning. We stand on the quay and look south over the harbor; the Lycian mountains close the view behind the
-   far shore, so that the masts stand against the land and nothing crosses the horizon, which is seen only through the harbor mouth at
-   x 100..124, where no ship lies (the mouth of the Xanthus is off to the west, out of the picture at the right). The sun is low at the
-   left; shadows fall to the right. One horizon, y 62 (HZPatara17); the quay's edge runs across at y 100 (EDGEPatara17).
-   The four ships: the white-waled ship anchored far off at the left (x 36..96, waterline 74), deep with wheat, her yard lashed down; the
-   black-hulled ship anchored nearer, in the middle (x 128..212, waterline 84), deep laden, her yard's ties loose, a boat with water jars
-   beside her (x 178..204, y 90); the red-waled ship moored at the quay at the right (x 214..330, waterline 99), riding high, the weedy band
-   of her bottom showing, her gangplank down to the quay at x 252; the coaster moored at the quay at the left (x -6..74, waterline 99),
-   small and open, a goat on her deck at x 40. Called from outside: ART.patara17. Reads nothing.
+/* Patara, the harbor, in the morning. We stand on the quay and look south over the harbor. The Lycian mountains close the view: a high
+   grey range far off, nearer ridges of bare limestone with pine woods on their lower slopes, and green foothills down to the far shore.
+   They part only at the harbor mouth (x 100..124), where the open sea runs back to the horizon, y 62 (HZPatara17), and whitecaps run
+   before the wind; that is the one place where the horizon is seen, and no ship, mast or stay stands in it. The town of Patara climbs its
+   slope at the right; the mouth of the Xanthus is off to the west, out of the picture at the right. The sun is low at the left (east);
+   shadows fall to the right. The quay's edge runs across at y 100 (EDGEPatara17).
+   The four ships, every clue of Whose ship? in the picture (the look lines say what Paul reads from it):
+     the white-waled ship (Sostratos), anchored far off at the left (x 38..94, waterline 74.5), head to the northwest wind like the black
+       ship: deep in the water, a white wale, her yard lowered along her deck with the sail furled on it, and two of her crew sitting on
+       deck behind the rail with a sail spread over the bulwark, mending it; sacks of wheat heaped at the foot of her mast.
+     the black-hulled ship (Akestor), anchored nearer in the middle (x 130..212, waterline 84.5), head to the wind: deep laden, tarred
+       black, her yard lowered abaft the mast with the sail still furled, three of her crew at it, loosing its ties (the loose ends lie on
+       the roll); sacks heaped round the foot of her mast, a row of water jars along her rail forward, her cable running out from the
+       bow; beside her the boat (x 178..204, waterline 92) with water jars and a man at the oars.
+     the red-waled ship (Kleon), moored at the quay at the right (x 214.., waterline 99): big and riding high, the weedy green band of her
+       bottom out of the water, a red wale, jars standing on her deck by the open hatch round the foot of her mast, her gangplank down
+       onto the quay at x 246..258, and the jars that have come out of her standing in rows on the quay behind the walk strip (x 286..318).
+     the coaster (Moschos), moored at the quay at the left (x -8..76, waterline 99): small and open, oil jars bedded in brushwood round her
+       mast, and the goat standing on the brushwood forward at x 50..62, where no head on the quay hides her (her hotspot was moved there
+       from x 32 with her), with a scrap of the lading list in her mouth.
+   Every mast stands on a heap of cargo, never straight on a rail, rises against the mountains or the town and leaves the picture at the
+   top: none crosses the horizon. A lowered yard ends at the side of the heap round its mast. No tie is drawn across a furled sail, no oar
+   or plank across a hull, and the steering oars hang from the stern beyond the planking. Gulls (ROOMS.patara17.birds) should wheel in
+   the open sky x 78..160, between the white ship's mast (x 68) and the black ship's (x 171): gulls [78,4,82,22].
+   Called from outside: ART.patara17. Reads nothing.
    Hotspots (ROOMS.patara17): the mountains 0,0,320,40 · the harbor mouth 100,52,24,14 · the white-waled ship 30,50,70,26 · the black
-   ship 126,58,92,28 · the boat 176,84,30,10 · the red-waled ship 214,48,106,52 · the coaster 0,76,76,24 · the goat 32,74,16,10 · the
+   ship 126,58,92,28 · the boat 176,84,30,10 · the red-waled ship 214,48,106,52 · the coaster 0,76,76,24 · the goat 48,74,16,10 · the
    water jars 206,104,22,12 · the chest 46,120,26,12. Walk strip 16..304, 110..138. Actors (place17): Timothy 20,128 · Aristarchus 34,116 ·
    Trophimus 84,132 · Luke 102,124 · Moschos 120,114 · Sostratos 152,118 (seated on a stone, a prop with foot 144,116,16,4) · Akestor
-   190,128 · the water seller 232,116 · Kleon 272,122; Paul comes in at 140,134. Gulls stand on the edge at x 160..170. */
+   190,128 · the water seller 232,116 · Kleon 272,122; Paul comes in at 140,134. Gulls stand on the edge at x 160..170. Heads along the
+   strip come at y 66..94: behind them lie the hulls, the open water and the quay's paving; nothing round stands there. */
 const HZPatara17=62,EDGEPatara17=100;
 let OPatara17=null,SPatara17=null;
 const oPatara17=()=>OPatara17||(OPatara17={w:320,hz:HZPatara17,hour:'morning',sun:[-40,10],cloud:.2,wind:SHARED.weather.wind({from:'nw',force:2,view:'s'}),seed:1701,y1:EDGEPatara17});
 ART.patara17={w:320,q:12,paint(g){paintPatara17(g)},light:{amb:'#f6ead6',sun:[.6,.2,.4]},draw(g,t){if(SPatara17)SPatara17.draw(g,t)},front(){},
   props:[{y:132,shape(g){chestPatara17(g,1)},foot:[[46,126,26,6]]},{y:119,shape(g){stonePatara17(g,1)},foot:[[144,116,16,4]],seat:1},
     {y:117,shape(g){jarsPatara17(g,1)},foot:[[206,112,22,5]]}]};
-function paintPatara17(g){const K=SHARED.coast,CO=SHARED.country,O=oPatara17(),L=K.light(O),HZ=HZPatara17;
+/* curvePatara17: a ridge through control points [x,y], eased between them, with a little roughness of its own */
+const curvePatara17=(P,a,b,s)=>x=>{let i=0;while(i<P.length-2&&P[i+1][0]<x)i++;const[x0,y0]=P[i],[x1,y1]=P[i+1],k=clamp((x-x0)/((x1-x0)||1),0,1),e=(1-Math.cos(k*Math.PI))/2;
+  return y0+(y1-y0)*e+(a||0)*Math.sin(x/5.3+(s||0))+(b||0)*Math.sin(x/1.9+(s||0)*2)};
+const MTPatara17={
+  farL:curvePatara17([[-12,14],[6,9],[24,6],[42,12],[62,22],[78,34],[90,50],[98,66]],1.2,.5,1),
+  farR:curvePatara17([[136,66],[148,48],[166,30],[192,18],[220,10],[246,6],[270,12],[294,8],[332,14]],1.4,.5,2),
+  midL:curvePatara17([[-12,30],[10,26],[34,32],[56,38],[74,44],[88,51],[98,58],[104,64.2]],1.6,.6,3),
+  midR:curvePatara17([[120,64.2],[128,60],[140,53],[154,45],[170,38],[188,34],[204,39],[220,34],[242,28],[264,34],[300,29],[332,33]],1.8,.6,4),
+  lowL:curvePatara17([[-12,50],[16,47],[40,51],[64,53],[82,56],[94,59.6],[101,63],[103,64.4]],1,.5,5),
+  lowR:curvePatara17([[121,64.4],[125,62.4],[134,59.6],[148,56],[166,53],[186,56],[200,52],[222,46],[250,44],[284,46],[332,44]],1,.5,6)};
+function paintPatara17(g){const K=SHARED.coast,CO=SHARED.country,O=oPatara17(),L=K.light(O),HZ=HZPatara17,M=MTPatara17,r=rng(1704);
   K.sky(g,O);
-  SPatara17=K.sea(g,O);SPatara17.open=(x,y)=>y>HZ+.5&&y<EDGEPatara17-.5&&!(x>30&&x<100&&y<77)&&!(x>124&&x<216&&y<87)&&!(x>176&&x<206&&y>84&&y<93)&&!(x>212&&y<101)&&!(x<78&&y>82);
-  /* the mountains of Lycia behind the far shore, rising to the left and to the right of the harbor mouth */
-  K.land(g,L,.5,q=>{CO.range(q,-10,104,HZ+2,x=>Math.max(0,30-Math.abs(x-30)*.25+5*Math.sin(x/13)),['#8a8a7a','#a29e8a'],{k:.9,light:-1});
-    CO.range(q,120,330,HZ+2,x=>Math.max(0,34-Math.abs(x-240)*.18+6*Math.sin(x/17)+3*Math.sin(x/5)),['#86887a','#9e9a88'],{k:.9,light:-1})});
-  K.land(g,L,.25,q=>{CO.range(q,-10,102,HZ+3,x=>Math.max(0,12-Math.abs(x-50)*.12+2*Math.sin(x/7)),['#7a8466','#8e9474'],{k:.7,light:-1});
-    CO.range(q,122,330,HZ+3,x=>Math.max(0,10+3*Math.sin(x/9)-Math.max(0,140-x)*.3),['#768062','#8a9070'],{k:.7,light:-1})});
-  /* the far shore of the harbor: a strip of land at the water, with the town's houses under the hills at the right */
-  K.town(g,O,{x0:200,x1:322,base:HZ+3,hill:x=>HZ-4-Math.max(0,(x-200)*.08),rows:2,size:5,dist:.4,seed:1702,warehouses:[[214,20,3.4],[250,16,3]]});
-  /* the ships far off and nearer: the white-waled ship, the black-hulled one with her boat */
-  hull17(g,{x0:36,x1:96,wl:74,fb:4.4,dir:-1,c:'#6a5a4a',wale:'#e8e0cc',mast:70,load:[50,84],loadC:'#c8b07a',yard:'lashed',yardX:[44,88]});
-  hull17(g,{x0:128,x1:212,wl:84,fb:5,dir:1,c:'#2e2a2c',wale:'#4a4040',mast:166,load:[140,198],loadC:'#9a7a5a',yard:'loose',yardX:[138,200],oars:1});
-  boatPatara17(g,182,91);
-  /* the red-waled ship at the quay, riding high */
-  hull17(g,{x0:214,x1:332,wl:99,fb:16,dir:-1,c:'#6e5844',wale:'#9a3a2a',high:0,mast:280,load:[236,262],loadC:'#a68a6a'});
-  poly(g,[230,99,322,99,320,95,232,95],'#4a5a3a');poly(g,[232,95,320,95,320,94,232,94],'#6a7a4a');
-  /* the coaster at the quay, low and open, the goat on her deck */
-  hull17(g,{x0:-6,x1:74,wl:99,fb:7,dir:1,c:'#7a6248',wale:'#3a5a7a',mast:24,load:[6,20],loadC:'#a4643c'});
-  goatPatara17(g,40,86);
+  SPatara17=K.sea(g,O);
+  SPatara17.open=(x,y)=>y>HZ+.5&&y<EDGEPatara17-.5&&(y>64.5||x>101&&x<122)&&!(x>36&&x<96&&y<76)&&!(x>126&&x<216&&y<86.5)&&!(x>176&&x<206&&y>84&&y<93.5)&&!(x>212&&y<98.4)&&!(x<78&&y>78);
+  const mass=(f,x0,x1)=>{const p=[x0,64];for(let x=x0;x<=x1;x+=.5)p.push(x,Math.min(64,f(x)));p.push(x1,64);return p};
+  /* the high range far off, in the haze */
+  K.land(g,L,.36,q=>{for(const[f,a,b]of[[M.farL,-12,98],[M.farR,134,332]])CO.crag(q,mass(f,a,b),'#848aa2',1705+a,{light:-1,dip:.12,bed:10,scrub:0,haze:'#a8b0c8'})});
+  /* the nearer ridges: bare limestone above, pine woods on the lower slopes */
+  K.land(g,L,.34,q=>{for(const[f,a,b,s]of[[M.midL,-12,104,1706],[M.midR,121,332,1707]]){const P=mass(f,a,b);CO.crag(q,P,'#b4aa92',s,{light:-1,dip:.18,bed:7,scrub:12});
+      clipTo(q,()=>poly(q,P),()=>woodsPatara17(q,rng(s+9),a,b,f,64))}});
+  /* the foothills down to the far shore: maquis and pines, and the shore itself */
+  K.land(g,L,.16,q=>{for(const[f,a,b,s]of[[M.lowL,-12,101,1708],[M.lowR,123,332,1709]]){const P=mass(f,a,b);poly(q,P);q.fillStyle=lg(q,0,40,0,64,['#7c8a58','#6c7a4a','#5e6a42']);q.fill();
+      clipTo(q,()=>poly(q,P),()=>{tex(q,'mott',.4,a,40,b-a,24,'overlay',.9);woodsPatara17(q,rng(s+3),a,b,f,64,1);
+        for(let i=0;i<(b-a)*.6;i++){const x=a+r()*(b-a),y=f(x)+2+r()*(62-f(x));if(y>63)continue;R(q,x,y,1+r()*2.5,.5,r()<.5?'rgba(196,184,140,.5)':'rgba(150,140,104,.4)')}})}
+    /* the shore under the hills: a strip of pale sand and stones at the water, which the hills come down to */
+    for(const[a,b]of[[-12,101],[123,196]]){let x=a;while(x<b){const w=Math.min(b-x,3+r()*14),t=63.4+r()*.5;if(r()<.75){poly(q,[x,t,x+w,t+(r()-.5)*.3,x+w,64.6,x,64.6],r()<.5?'#c8bc98':'#b4a888');R(q,x+.5,t,w-1,.5,'#ece2c4')}
+        else{poly(q,[x,64.6,x+w*.2,62.8+r(),x+w*.8,63+r(),x+w,64.6],'#7a7466');R(q,x+w*.2,63,w*.3,.5,'#b8b2a0')}x+=w}}});
+  /* the town of Patara on its slope at the right, its warehouses along the water */
+  K.town(g,O,{x0:196,x1:322,base:64,hill:x=>Math.max(M.lowR(x)+3,64-(x-196)*.5),rows:3,size:5.4,dist:.3,seed:1702,gaps:.22,warehouses:[[200,20,3.6],[226,16,3.2]]});
+  K.quay(g,O,{view:'face',x0:196,x1:322,y:63.4,face:1.4,seed:1710,dist:.3});
+  /* the ships: the white-waled ship far off, the black-hulled ship nearer with her boat, then the red-waled ship and the coaster at
+     the quay. Each lies on the water with her reflection under her. */
+  whitePatara17(g);blackPatara17(g);boatPatara17(g);
+  redPatara17(g);coasterPatara17(g);
   /* the quay: we stand on it */
   K.quay(g,O,{view:'top',y:EDGEPatara17,y1:144,bollards:[96,206],bsize:5,seed:1703,c:'#c8b898',rows:6,step:32});
-  /* the gangplank from the red-waled ship down onto the quay */
-  poly(g,[248,96,258,96,262,108,250,108],'#8a6a44');for(let y=98;y<108;y+=2.2)R(g,249+(y-96)*.15,y,10,.5,'#5a4430');
+  /* the coaster's bow line and the red ship's, out to their mooring stones */
+  SHARED.ship.hawser(g,74,86,97.5,96.6,2.4,{w:.55});SHARED.ship.hawser(g,217,74,208.5,96.6,1.6,{w:.55});
+  /* the gangplank from the red-waled ship down over the quay's edge onto the paving */
+  SHARED.ship.gangplank(g,{x0:253,y0:80.4,x1:241,y1:108,w0:7,w1:10,cleats:5,color:'#8a6a44'});
+  unloadedPatara17(g);wearPatara17(g,r);
   chestPatara17(g);stonePatara17(g);jarsPatara17(g);
   /* the morning light, warm from the left */
-  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,214,160,1)','rgba(196,180,200,.6)']);g.fillRect(0,0,320,144)})}
-function boatPatara17(g,x,y){poly(g,[x-12,y-2,x+12,y-2.4,x+10,y+1,x-10,y+1],'#5a4636');for(let i=0;i<5;i++){const cx=x-8+i*4;oval(g,cx,y-3,1.4,1.8,'#b0683c');R(g,cx-.5,y-5,1,1,'#7a4428')}}
-function goatPatara17(g,x,y){poly(g,[x-4,y,x-4.4,y-3,x-2,y-4.2,x+2.4,y-4,x+3.4,y-5.6,x+5,y-5.4,x+5.4,y-3.8,x+4,y-2.6,x+3.6,y,x+2.6,y,x+2.4,y-1.6,x-2.4,y-1.6,x-2.6,y],'#e4dccc');
-  R(g,x+4.4,y-6.4,.6,1,'#8a7a6a');R(g,x+5.4,y-4.4,.5,.5,'#2a2020')}
-function chestPatara17(g,cut){const x=46,y=120,w=26,h=12;if(cut){R(g,x-.6,y-1.4,w+1.2,h+1.4,'#000');return}foot17(g,x+w/2,y+h,15,1.6);
-  R(g,x,y,w,h,'#5e3e24');inRect(g,x,y,w,h,()=>{g.fillStyle=lg(g,x,0,x+w,0,['#7e5632','#6b482a','#4a3020']);g.fillRect(x,y,w,h);tex(g,'wood',.3,x,y,w,h,'overlay',.6)});
-  R(g,x-.6,y-1.4,w+1.2,2.4,'#7a5434');R(g,x-.6,y-1.4,w+1.2,.6,'#d4a26a');for(const cx of[x-.6,x+w-2])R(g,cx,y-1.4,2.6,h+1.4,'#3a3436')}
-function stonePatara17(g,cut){if(cut){poly(g,[144,119,145,113.6,152,112.4,159,113.4,160,119],'#000');return}foot17(g,152,119.4,9,1.4);
-  poly(g,[144,119,145,113.6,152,112.4,159,113.4,160,119]);g.fillStyle=lg(g,144,0,160,0,['#d0c4a8','#b0a488','#8a7e6a']);g.fill()}
-function jarsPatara17(g,cut){for(const[x,y,h]of[[209,117,9],[215,118,10],[221,117,9],[226,118,8]]){if(cut){R(g,x-3,y-h,6,h,'#000');continue}
-  foot17(g,x,y,3.6,1);vessel(g,x,y,3,h,'#a8643c','amph',{noShadow:1})}}
+  comp(g,'soft-light',.38,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,214,160,1)','rgba(214,196,190,.6)','rgba(176,176,206,.7)']);g.fillRect(0,0,320,144)});
+  ao(g,0,124,320,20,'b',.12,'#2a2050')}
+/* woodsPatara17: pines on a slope, far off, as ragged clumps of dark needles, thickest low down and thinning out up the slope; never a
+   stack of triangles. f is the slope's top, base its foot; near: the foothills, where a clump shows a trunk under it here and there */
+function woodsPatara17(q,r,a,b,f,base,near){const n=(b-a)*(near?2.2:1.4);
+  for(let i=0;i<n;i++){const x=a+r()*(b-a),top=f(x),k=Math.pow(r(),near?.8:.55),y=base-k*(base-top)*.9;if(y<top+1.5)continue;
+    const w=(near?1.6:1.1)+r()*(near?1.8:1.2),h=w*(.6+r()*.3),c=['#3e5236','#4a5e3a','#36482e','#56683e'][Math.floor(r()*4)];
+    oval(q,x+.4,y+h*.4,w*.9,h*.6,'rgba(40,40,56,.35)');
+    for(let k2=0;k2<3;k2++)dabPatara17(q,x+(r()-.5)*w,y-r()*h*.8,w*(.5+r()*.4),h*(.45+r()*.3),c);
+    R(q,x-w*.4,y-h*.6,w*.5,.5,tint(c,.35));if(near&&r()<.3)R(q,x,y+h*.3,.5,1,'#4a3c30')}}
+/* dabPatara17: a small mark of paint; under a pixel across it is a square, never a round dab (CONTRIBUTING section 3) */
+function dabPatara17(g,x,y,w,h,c){if(w<1.1&&h<1.1){R(g,x-.25,y-.25,.5+(w>.8?.5:0),.5+(h>.8?.5:0),c);return}oval(g,x,y,w/2,h/2,c)}
+/* manPatara17: a sailor far off, seen from the waist up behind his rail, a few half pixels tall: his head (skin, lit from the left, dark
+   hair), his tunic, and his near arm bent forward and down to his work. pose 'sit': he sits, bent over his mending; 'bend': he
+   stoops over the yard; 'stand': he stands. Nothing stretched out to the side. s: his size (1: about eight pixels from head to waist). */
+function manPatara17(g,x,y,o){const s=o.s||1,c=o.c||'#b8a88a',dir=o.dir||1,hd=o.pose==='bend'?dir*1.2*s:o.pose==='sit'?dir*.6*s:0,
+    top=y-(o.pose==='sit'?5.2:o.pose==='bend'?6:7.4)*s,skin='#b07a56',lit='#d8a478',hair=o.hair||'#2e2420';
+  /* the body: a tunic narrowing to the shoulders, leaning with the pose */
+  poly(g,[x-1.3*s,y,x-1.2*s+hd*.6,top+2.2*s,x+1.1*s+hd*.6,top+2.2*s,x+1.3*s,y],c);
+  poly(g,[x-1.3*s,y,x-1.2*s+hd*.6,top+2.2*s,x-.4*s+hd*.6,top+2.2*s,x-.5*s,y],tint(c,.22));
+  poly(g,[x+.5*s,y,x+.4*s+hd*.6,top+2.2*s,x+1.1*s+hd*.6,top+2.2*s,x+1.3*s,y],tint(c,-.28));
+  /* the head on its neck */
+  R(g,x-.75*s+hd,top,1.5*s,1.7*s,skin);R(g,x-.75*s+hd,top,.6*s,1.7*s,lit);R(g,x-.75*s+hd,top,1.5*s,.6*s,hair);if(dir<0)R(g,x+.25*s+hd,top+.4*s,.5*s,.8*s,hair);else R(g,x-.75*s+hd,top+.4*s,.5*s,.8*s,hair);
+  /* the near arm, bent forward and down: a short slanting forearm in skin */
+  if(o.pose!=='stand'){poly(g,[x+dir*.4*s+hd*.5,top+2.4*s,x+dir*1.2*s+hd*.5,top+2.6*s,x+dir*2.2*s+hd*.4,top+4.6*s,x+dir*1.5*s+hd*.4,top+4.8*s],tint(c,-.12));R(g,x+dir*1.7*s+hd*.4-.4,top+4.6*s,.8,.6,skin)}}
+/* the ships share their manner: planked in strakes that follow the sheer and flatten toward the water, the butts of the planks staggered
+   inside their own strakes (shared/ship.js), lit from the left; each makes its own reflection on the water first */
+function reflPatara17(g,x0,x1,y,h,c,r){comp(g,'multiply',.5,()=>{poly(g,[x0+2,y,x1-2,y,x1-5,y+h,x0+5,y+h]);g.fillStyle=lg(g,0,y,0,y+h,[rgba(c,.9),rgba(c,0)]);g.fill()});
+  for(let i=0;i<(x1-x0)*.5;i++){const yy=y+.5+Math.pow(r(),1.4)*h,xx=x0+4+r()*(x1-x0-8);R(g,xx,yy,1+r()*3,.5,`rgba(220,232,240,${(.25*(1-(yy-y)/h)).toFixed(2)})`)}}
+function whitePatara17(g){const r=rng(1711),x0=38,x1=94,yB=74.5,WL=x=>70.6-3.2*Math.pow(clamp((x-78)/16,0,1),2)-4.4*Math.pow(clamp((50-x)/12,0,1),2.2);
+  reflPatara17(g,x0,x1,yB,5,'#3a3024',r);
+  SHARED.ship.paint(g,{r,dir:1,view:'full',x0,x1,yBot:yB,sheer:WL,gradY0:62,gradY1:yB,hullGrad:['#9a7a58','#7c5e40','#5c4430','#3e2c20'],
+    mast:{x:67.6,y0:-2,y1:68,w:1.2,cols:['#5e5246','#857360','#4e443c'],hiCol:'#b0a08a',cap:false},
+    sacks:[[64.2,1.9,'#c8b07a',3],[69.6,2.3,'#bca46e',3.2],[73.6,1.6,'#cdb684',2.6],[67,1.3,'#d4be8c',2.6]],sackDy:.6,
+    figs(q){manPatara17(q,80,70.4,{pose:'sit',s:.62,c:'#a89a80',dir:1});manPatara17(q,86.6,70.2,{pose:'sit',s:.6,c:'#8a7a66',dir:-1})},
+    pitch:false,wale:{f0:.08,f1:.34,color:'#e6e0cc'},lowerWale:{f0:.62,f1:.74,color:'#3a2a1e'},seams:[.34,.5,.62,.74,.88],seamDark:'rgba(30,18,10,.45)',seamHi:'rgba(230,200,150,.12)',
+    buttCourses:[[.34,.5],[.74,.88]],buttX0:42,buttX1:90,buttStepMin:9,buttStepVar:6,buttStartVar:6,beams:false,underRailShadow:false,
+    texRect:{x:36,y:58,w:62,h:18},woodScale:.18,woodAlpha:.35,mottScale:.2,mottAlpha:.5,aoH:3,aoA:.3,
+    rail:{x0:40,x1:92,h:.6,color:'#8a6a48',hi:'#efdcb4'},
+    stem:{thick:1,sweep:1.6,headRise:1.4,rimCol:'#e8cc98',capCol:'#c8a46e',rimW:.45},
+    stern:{thick:1.1,sweep:3.2,headRise:2,rimCol:'#e8cc98',capCol:'#c8a46e',rimW:.45},
+    furledYard:{x0:44,x1:62.4,yardX0:42,yardX1:62.6,bays:4,th0:1.6,th1:1.1,belly:.35,botOff:.1,dy:.2,shadowAlpha:.3},
+    rudders:[{loom:[36.4,66.8,37.4,66.8,35.6,74,34.6,74],blade:[34.2,72.8,36,72.8,35.6,75,33.8,75],hi:[36.9,67,35.1,74]}]});
+  /* the sail they are mending, spread over the bulwark between them: pale cloth hanging down the side, its hem a little ragged */
+  poly(g,[82.4,70.2,85,70.1,85.2,72.6,84.4,73,83.6,72.5,82.6,72.8],'#ece2c8');R(g,82.4,70.1,2.6,.5,'#fff8e4');R(g,84.6,70.6,.5,2,'rgba(150,130,100,.35)');
+  /* her anchor cable, out from the bow into the water ahead */
+  stroke(g,[94.6,69.8,99.4,74.6],'#4a3c30',.5)}
+function blackPatara17(g){const r=rng(1712),x0=130,x1=212,yB=84.5,WL=x=>77.4-5.6*Math.pow(clamp((x-188)/24,0,1),2)-8.2*Math.pow(clamp((152-x)/22,0,1),2.2);
+  reflPatara17(g,x0,x1,yB,7,'#141218',r);
+  SHARED.ship.paint(g,{r,dir:1,view:'full',x0,x1,yBot:yB,sheer:WL,gradY0:66,gradY1:yB,hullGrad:['#4c4648','#2e2a2e','#1e1a1e','#141014'],
+    mast:{x:171.4,y0:-2,y1:76,w:1.8,cols:['#4c3e32','#7c6650','#3c3028'],hiCol:'#ae967a',cap:false,stays:[[172.6,-2,209.6,69]],stayCol:'#4a3e34',stayW:.5},
+    sacks:[[165.4,1.8,'#b09a74',2.6],[177.8,1.6,'#a08a66',2.4],[168.4,2.4,'#c2aa82',2.8],[175,2.3,'#b8a07a',2.8],[172.2,2.8,'#ccb48a',3]],sackDy:.2,
+    figs(q){manPatara17(q,144,76.6,{pose:'bend',s:1.25,c:'#c8b896',dir:1});manPatara17(q,153.4,76.4,{pose:'bend',s:1.2,c:'#8c6a4a',dir:1,hair:'#3a2a1e'});
+      manPatara17(q,161.6,76.4,{pose:'bend',s:1.25,c:'#a8a090',dir:-1});
+      /* water jars stood along her rail forward, come aboard from the boat */
+      for(let i=0;i<5;i++){const x=184+i*3.2,y=WL(x)+.6;poly(q,[x-1,y,x-1.2,y-2.2,x-.6,y-3.2,x+.6,y-3.2,x+1.2,y-2.2,x+1,y],i%2?'#9a5a36':'#a8643c');R(q,x-.5,y-3.8,1,.6,'#6a3a22');R(q,x-1,y-2.6,.5,1.6,'#d08a5a')}},
+    pitch:{f0:.62,color:'rgba(10,8,10,.5)'},wale:{f0:.1,f1:.24,color:'#3c3438'},waleWear:{count:10,c1:'#5a5054',c2:'#28242a'},lowerWale:{f0:.52,f1:.62,color:'#100c10',hi:'#5a5056'},
+    seams:[.24,.38,.52,.62,.76,.88],seamDark:'rgba(0,0,0,.45)',seamHi:'rgba(190,180,190,.14)',buttCourses:[[.24,.38],[.38,.52],[.62,.76],[.76,.88]],buttX0:136,buttX1:206,buttStepMin:12,buttStepVar:9,buttStartVar:10,
+    beams:{f:.3,x0:142,x1:204,step:12,w:1,h:1,color:'#080608',hi:'#7a7078'},scuppers:[158,190],scupperF:.06,underRailShadow:false,
+    texRect:{x:126,y:62,w:92,h:24},woodScale:.22,woodAlpha:.35,mottScale:.24,mottAlpha:.6,aoH:4,aoA:.35,
+    sunGlow:{comp:'screen',a:.25,x0:128,x1:170,stops:['rgba(255,224,170,1)','rgba(255,224,170,0)'],rx:126,ry:62,rw:46,rh:24},
+    rail:{x0:134,x1:209,h:.9,color:'#5a4a40',hi:'#d8c4a0'},
+    stem:{thick:1.6,sweep:2.4,headRise:2,rimCol:'#c8b494',capCol:'#8a7a6a',rimW:.5},
+    stern:{thick:1.8,sweep:5,headRise:3.4,rimCol:'#d8c4a0',capCol:'#9a8a7a',rimW:.5},
+    furledYard:{x0:140,x1:162.6,yardX0:137,yardX1:163,bays:5,th0:2.4,th1:1.6,belly:.5,botOff:.2,dy:.3,shadowAlpha:.35},
+    rudders:[{loom:[126.8,72.4,128,72.4,125.6,84,124.4,84],blade:[124,82.4,126.2,82.4,125.8,85.4,123.6,85.4],hi:[127.4,72.6,125,84]}]});
+  /* the loose ends of the ties they have untied, lying along the top of the roll */
+  for(const x of[145.4,150.8,156.2])stroke(g,[x,WL(x)-2.8,x+1.4,WL(x+1.4)-2.9,x+2.4,WL(x+2.4)-2.6],'#efe2c0',.45);
+  /* her anchor cable, out from the bow into the water ahead */
+  stroke(g,[212.4,77.6,218.6,84.8],'#3a3028',.55)}
+/* the boat with the water jars, alongside the black ship: a small open boat, her jars standing close, and a man at the oars at her stern;
+   each oar starts at the gunwale and slants down into the water, so that none lies across her */
+function boatPatara17(g){const r=rng(1713),x0=178,x1=205,y=92,G=x=>88.6-1.4*Math.pow(Math.abs((x-191.5)/13.5),2.4);
+  reflPatara17(g,x0,x1,y,3.4,'#2a2420',r);
+  /* the jars, then the rower behind the gunwale */
+  for(let i=0;i<6;i++){const x=186+i*2.9,yy=G(x)+.4;poly(g,[x-1.1,yy,x-1.3,yy-2.4,x-.6,yy-3.4,x+.6,yy-3.4,x+1.3,yy-2.4,x+1.1,yy],i%2?'#9a5634':'#ae6a40');R(g,x-.5,yy-4,1,.6,'#6a3a22');R(g,x-1.1,yy-2.8,.5,1.8,'#d4905e')}
+  manPatara17(g,182,G(182)+.4,{pose:'sit',s:1.1,c:'#b4a284',dir:-1});
+  const P=[x0,G(x0)];for(let x=x0;x<=x1;x+=.5)P.push(x,G(x));P.push(x1-1.4,y,x0+1.6,y);
+  poly(g,P);g.fillStyle=lg(g,0,86,0,y,['#7a5a3c','#5a4230','#3a2a20']);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{stroke(g,ptsBoat17(G,x0,x1,1.5),'rgba(20,12,8,.5)',.4);tex(g,'wood',.2,x0,84,x1-x0,9,'overlay',.4)});
+  stroke(g,ptsBoat17(G,x0+.5,x1-.5,0),'#d8b888',.5);
+  /* his oar over the stern, sculling: from his hands back past her stern into the water, so that it lies across nothing */
+  stroke(g,[179.6,85.6,173.6,93.4],'#7a5a3a',.6);stroke(g,[179.3,85.6,173.3,93.4],'rgba(240,210,160,.4)',.3);poly(g,[174.6,91.4,175.6,92,174,94.6,172.8,94],'#6a4a30')
+  for(let i=0;i<5;i++)R(g,176+r()*6,y+.8+r()*1.6,1+r()*2,.5,'rgba(236,244,248,.5)')}
+const ptsBoat17=(G,x0,x1,dy)=>{const p=[];for(let x=x0;x<=x1;x+=1)p.push(x,G(x)+dy);return p};
+function redPatara17(g){const r=rng(1714),x0=214,x1=338,yB=98.4,WL=x=>79.6-13*Math.pow(clamp((250-x)/36,0,1),2.1);
+  SHARED.ship.paint(g,{r,dir:-1,view:'full',x0,x1,yBot:yB,sheer:WL,gradY0:60,gradY1:yB,hullGrad:['#b08a62','#8e6a48','#6a4e36','#4a3626'],
+    mast:{x:285,y0:-2,y1:80,w:2.8,cols:['#5a4634','#8e7252','#463628'],hiCol:'#c4a47a',cap:false},
+    figs(q){/* jars standing on her deck by the open hatch, round the foot of her mast, waiting to be carried off */
+      for(let i=0;i<9;i++){const x=i<8?274+i*3.2+(i>3?1.4:0):286.4,y=WL(x)+(i<8?.4:1.2),h=5.6+(i%3)*.4;poly(q,[x-1.3,y,x-1.6,y-h*.5,x-1.1,y-h*.82,x-.5,y-h,x+.5,y-h,x+1.1,y-h*.82,x+1.6,y-h*.5,x+1.3,y],i%2?'#b07a4e':'#c0885a');
+        R(q,x-1.6,y-h*.5,.6,h*.4,'#dca474');R(q,x-.5,y-h-.6,1,.7,'#7a4a2c')}},
+    pitch:{f0:.66,color:'rgba(30,20,14,.42)'},wale:{f0:.1,f1:.17,color:'#a83a28'},waleWear:{count:24,c1:'#c05a40',c2:'#8a3020'},
+    lowerWale:{f0:.42,f1:.48,color:'#3a2618',hi:'#b88a58'},
+    seams:[.1,.17,.25,.33,.42,.48,.57,.66,.74,.82],buttCourses:[[.17,.25],[.25,.33],[.33,.42],[.48,.57],[.57,.66]],buttX0:224,buttX1:332,buttStepMin:20,buttStepVar:16,buttStartVar:18,
+    beams:{f:.3,x0:232,x1:330,step:16,w:1.6,h:1.6,color:'#24160e',hi:'#c89a60'},scuppers:[246,274,302],
+    texRect:{x:212,y:56,w:126,h:46},woodScale:.26,woodAlpha:.5,mottScale:.28,mottAlpha:.75,aoH:6,aoA:.3,
+    sunGlow:{comp:'screen',a:.28,x0:214,x1:260,stops:['rgba(255,224,170,1)','rgba(255,224,170,0)'],rx:212,ry:56,rw:50,rh:46},
+    turnShade:{comp:'multiply',a:.22,x0:280,x1:330,stops:['rgba(84,78,124,0)','rgba(84,78,124,1)'],rx:280,ry:56,rw:58,rh:46},
+    rail:{x0:218,x1:336,h:1.4,color:'#a37c4a',hi:'#f6e2b4'},
+    stem:{thick:2.6,sweep:6,headRise:3,rimCol:'#f6e2b4',capCol:'#c89a60'},
+    furledYard:{x0:302,x1:338,yardX0:301,yardX1:342,bays:5,th0:3,th1:3.4,belly:.6,botOff:.3,dy:.4}});
+  /* her bottom out of the water: the weed and the dark slime of a long voyage on the band that is usually under water, and the water's
+     edge lapping at it */
+  const W=x=>x<226?95.2+(226-x)*.4:95.2+.3*Math.sin(x/7);clipTo(g,()=>poly(g,[219,98.4,222,94.6,338,94.6,338,98.4]),()=>{
+    poly(g,[214,98.6,226,W(226),338,95.2,338,98.6]);g.fillStyle=lg(g,0,95,0,98.4,['#4e5632','#343c24','#22281a']);g.fill();
+    for(let i=0;i<110;i++){const x=218+r()*120,y=W(x)+.3+r()*3;R(g,x,y,.5+r()*1.5,.5,r()<.3?'#6e7a42':r()<.6?'#2a2e1e':'#4a4a2a')}
+    stroke(g,ptsLine17(x=>W(x),220,338),'rgba(230,240,190,.35)',.4)});
+}
+const ptsLine17=(f,a,b)=>{const p=[];for(let x=a;x<=b;x+=2)p.push(x,f(x));return p};
+function coasterPatara17(g){const r=rng(1715),x0=-8,x1=76,yB=99.2,WL=x=>89.4-8.4*Math.pow(clamp((x-52)/24,0,1),2)-5*Math.pow(clamp((10-x)/18,0,1),2);
+  SHARED.ship.paint(g,{r,dir:1,view:'full',x0,x1,yBot:yB,sheer:WL,gradY0:76,gradY1:yB,hullGrad:['#b08a5e','#8a6a46','#664c32','#463222'],
+    mast:{x:21.6,y0:-2,y1:86,w:2.2,cols:['#5a4634','#8e7252','#463628'],hiCol:'#c4a47a',cap:false},
+    figs(q){/* oil jars bedded in brushwood round the mast, and forward of them the heap of brushwood the goat stands on, clear of the heads of
+         the people on the quay before her */
+      brushPatara17(q,r,6,36,WL,4.6);
+      for(let i=0;i<7;i++){const x=8+i*3.6+(r()-.5)*.8,y=WL(x)-1.2+(r()-.5)*.6,h=4.2+r()*.9;poly(q,[x-1.4,y,x-1.7,y-h*.55,x-.6,y-h,x+.6,y-h,x+1.7,y-h*.55,x+1.4,y],i%2?'#a65c36':'#b86a40');
+        R(q,x-1.7,y-h*.55,.6,h*.4,'#d89060');R(q,x-.5,y-h-.6,1,.7,'#6a3a22')}
+      brushPatara17(q,r,4,35,WL,2.4);brushPatara17(q,r,47,65,WL,5);goatPatara17(q,50.4,85.8)},
+    pitch:{f0:.6,color:'rgba(30,20,14,.42)'},wale:{f0:.08,f1:.2,color:'#3a5a7a'},waleWear:{count:14,c1:'#5a7a92',c2:'#2a4258'},lowerWale:{f0:.44,f1:.52,color:'#3a2618',hi:'#b88a58'},
+    seams:[.2,.32,.44,.52,.64,.76,.88],buttCourses:[[.2,.32],[.32,.44],[.52,.64],[.64,.76]],buttX0:-4,buttX1:70,buttStepMin:14,buttStepVar:10,buttStartVar:10,
+    beams:{f:.28,x0:2,x1:66,step:13,w:1.4,h:1.4,color:'#24160e',hi:'#c89a60'},
+    texRect:{x:-10,y:72,w:90,h:30},woodScale:.24,woodAlpha:.5,mottScale:.26,mottAlpha:.7,aoH:5,aoA:.3,
+    sunGlow:{comp:'screen',a:.25,x0:-8,x1:30,stops:['rgba(255,224,170,1)','rgba(255,224,170,0)'],rx:-10,ry:72,rw:42,rh:30},
+    rail:{x0:-6,x1:73,h:1.1,color:'#a37c4a',hi:'#f6e2b4'},
+    stem:{thick:2,sweep:3.4,headRise:2.4,rimCol:'#f6e2b4',capCol:'#c89a60'},
+    stern:{thick:2.2,sweep:4,headRise:4,rimCol:'#f6e2b4',capCol:'#c89a60'}})}
+/* brushPatara17: brushwood heaped in an open hull, its twigs all lying one way, lit on top */
+function brushPatara17(q,r,a,b,WL,h){const P=[a,WL(a)+1];for(let x=a;x<=b;x+=1)P.push(x,WL(x)-h*Math.sin(Math.PI*(x-a)/(b-a))*.9-(r()-.5)*.6);P.push(b,WL(b)+1);
+  poly(q,P,'#7a6440');clipTo(q,()=>poly(q,P),()=>{for(let i=0;i<(b-a)*3;i++){const x=a+r()*(b-a),y=WL(x)-r()*h;stroke(q,[x,y,x+1.6+r()*1.6,y-.4-r()*.5],r()<.5?'#a88a5a':'#5a4a30',.4)}
+    q.fillStyle=lg(q,0,WL(a)-h,0,WL(a),['rgba(255,236,190,.25)','rgba(40,30,20,.3)']);q.fillRect(a,WL(a)-h-2,b-a,h+3)})}
+/* the goat on the coaster's deck, facing left: a nanny goat, cream with a brown saddle, her small horns sweeping back, a beard, her
+   tail up at the rump, and a scrap of pale papyrus in her mouth. Placed by hand, one character to a half pixel (GOATPatara17); every
+   part grows out of the one before it, and her legs come down out of her body onto the brushwood. x is her left edge, y her feet. */
+const GOATPatara17=[
+ "......Hh................",
+ ".......Hh...............",
+ "....LLCCHh..............",
+ "...LLCCCCs..............",
+ "..LLCECCCs..............",
+ ".LLCCCCCSs..............",
+ "PLCCCCSCCs...........bb.",
+ "PPNCCs.LCCs.........bB..",
+ ".pPGs..LCCLLLLLLLLLLCB..",
+ "...G...LCCCCBBBBBCCCCSs.",
+ ".......LCCCBBBBBBBCCCCSs",
+ ".......LCCCCCBBBCCCCCSSs",
+ ".......LCCCCCCCCCCCCCSSs",
+ "........CCCCCCCCCCCCSSs.",
+ "........SCCSSSSSSSSCCSs.",
+ "........CS.s.......CS.s.",
+ "........CS.s.......CS.s.",
+ "........CS.s.......CS.s.",
+ "........CS.s.......CS.s.",
+ "........KK.K.......KK.K."],
+ GOATCPatara17={L:"#f4ecd8",C:"#e2d6c0",S:"#b4a68e",s:"#8a7e6c",B:"#8a6448",b:"#5e4432",H:"#6e5e4e",h:"#b0a088",E:"#2a2018",K:"#3a2c24",N:"#6a5448",P:"#f6eed4",p:"#c8bc9c",G:"#c8bca4"};
+function goatPatara17(g,x,y){const M=GOATPatara17,t=y-M.length*.5;for(let j=0;j<M.length;j++)for(let i=0;i<M[j].length;i++){const c=GOATCPatara17[M[j][i]];if(c)R(g,x+i*.5,t+j*.5,.5,.5,c)}}
+/* the jars that have come out of the red-waled ship: tall jars with pointed feet, standing in two rows on the quay behind the walk strip,
+   each leaning a little on its neighbour, lit from the left; the mouths are small squares */
+function unloadedPatara17(g){const r=rng(1716);
+  for(const[y,n,x0,dk]of[[104.6,6,288,.1],[108.8,6,286,0]]){shade(g,[x0-1,y+.2,x0+n*5.2+4,y+.2,x0+n*5.2+8,y+1.6,x0+2,y+1.6],'#8a84b4',.4);
+    for(let i=0;i<n;i++){const x=x0+i*5.2+(r()-.5)*.6,h=9.6+r()*.8,c=tint(i%2?'#c48a5c':'#b87a4e',-dk),lean=(r()-.5)*.8,P=[x-.4,y,x-.7,y-1.4,x-1.8+lean*.3,y-h*.36,x-2.3+lean*.55,y-h*.64,x-1.7+lean*.7,y-h*.8,x-.7+lean,y-h*.84,x-.7+lean,y-h,x+.7+lean,y-h,x+.7+lean,y-h*.84,x+1.7+lean*.7,y-h*.8,x+2.3+lean*.55,y-h*.64,x+1.8+lean*.3,y-h*.36,x+.7,y-1.4,x+.4,y];
+      poly(g,P);g.fillStyle=lg(g,x-2.2,0,x+2.2,0,[tint(c,.28),c,tint(c,-.34)]);g.fill();
+      clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.3,x-3,y-h,6,h,'overlay',.6);ao(g,x-3,y-h*.3,6,h*.3,'b',.25)});
+      R(g,x-.5+lean,y-h-.5,1,.6,tint(c,-.5));R(g,x-1.7+lean*.5,y-h*.66,.5,h*.26,tint(c,.42));R(g,x-1.3+lean*.9,y-h*.95,.5,h*.14,tint(c,-.3));R(g,x+.9+lean*.9,y-h*.95,.5,h*.14,tint(c,-.4))}}}
+/* the quay's wear: paler paths where loads are carried to the ships, stains, a little spilled straw by the coaster, damp round the water
+   seller's jars; all in perspective, larger toward us */
+function wearPatara17(g,r){const S=y=>(y-HZPatara17)/82;
+  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,106,0,140,['rgba(255,244,216,0)','rgba(255,244,216,.8)','rgba(255,244,216,0)']);g.fillRect(0,106,320,34)});
+  for(let i=0;i<130;i++){const y=103+Math.pow(r(),.8)*40,k=S(y),x=r()*320;R(g,x,y,(2+r()*8)*k,.5+k*.5,r()<.55?'rgba(96,78,62,.14)':'rgba(255,246,224,.16)')}
+  for(let i=0;i<80;i++){const y=103+r()*40,x=r()*320;R(g,x,y,.5+r()*(1+S(y)),.5,r()<.35?'rgba(236,228,212,.7)':r()<.5?'rgba(70,58,50,.34)':'rgba(214,186,110,.42)')}
+  for(let i=0;i<40;i++){const x=r()*320;R(g,x,EDGEPatara17+3.2+r()*2.4,1+r()*5,.5,r()<.5?'rgba(84,98,68,.3)':'rgba(70,60,56,.24)')}
+  for(let i=0;i<26;i++)R(g,30+r()*46,102+r()*6,1+r()*2.4,.5,'rgba(214,186,110,.5)');
+  oval(g,218,118.6,14,2.4,'rgba(60,64,90,.22)');oval(g,216,118.2,8,1.4,'rgba(40,44,70,.2)')}
+/* the gift's chest, ready to go aboard: dark wood, a lid of two boards, iron only at its corners, a soft shadow falling to the right.
+   With cut, its outline only. */
+function chestPatara17(g,cut){const x=46,y=120,w=26,h=12;if(cut){R(g,x-.6,y-1.4,w+1.2,h+1.4,'#000');return}
+  poly(g,[x+w-2,y+h,x,y+h,x+8,y+h-3.4,x+w+12,y+h-2.4,x+w+10,y+h],'rgba(44,38,76,.3)');oval(g,x+w/2,y+h-.2,15,1.6,'rgba(30,26,46,.3)');
+  R(g,x,y,w,h,'#5e3e24');inRect(g,x,y,w,h,()=>{g.fillStyle=lg(g,x,0,x+w,0,['#7e5632','#6b482a','#4a3020']);g.fillRect(x,y,w,h);tex(g,'wood',.3,x,y,w,h,'overlay',.6);
+    for(const yy of[y+4.6,y+8.4])R(g,x,yy,w,.5,'rgba(30,18,10,.5)');ao(g,x,y+h-3,w,3,'b',.35,'#1a1008')});
+  R(g,x-.6,y-1.4,w+1.2,2.4,'#7a5434');R(g,x-.6,y-1.4,w+1.2,.6,'#d4a26a');R(g,x-.6,y+.6,w+1.2,.5,'#2e1e12');
+  for(const cx of[x-.6,x+w-2])R(g,cx,y-1.4,2.6,h+1.4,'#3a3436');R(g,x-.6,y-1.4,.5,h+1.4,'#8a8686');R(g,x+w-.1,y-1.4,.5,h+1.4,'#2a2628');
+  R(g,x+w/2-1.6,y+1.2,3.2,3,'#3a3436');R(g,x+w/2-1.6,y+1.2,3.2,.5,'#8a8686');R(g,x+w/2-.4,y+2.4,.8,1,'#141012')}
+/* the stone Sostratos sits on: a weathered block left on the quay, lit from the left */
+function stonePatara17(g,cut){SHARED.country.boulder(g,152,119.2,16,6.6,'#bcb096',1717,cut?{cut:1}:{light:-1})}
+/* the water seller's jars: round-bellied water jars, dark with damp, standing on a wet patch of the paving */
+function jarsPatara17(g,cut){for(const[x,y,h]of[[209,117,8.6],[215,118,9.6],[221,117,8.8],[226,118,8]]){if(cut){R(g,x-3.2,y-h,6.4,h,'#000');continue}
+  oval(g,x+1.4,y,4,1,'rgba(40,36,60,.3)');vessel(g,x,y,3.1,h,'#8a5034','jar',{noShadow:1,dark:'#2a1810'});
+  R(g,x-1.8,y-h*.62,.5,h*.3,'rgba(255,240,220,.35)');comp(g,'multiply',.35,()=>oval(g,x,y-h*.25,2.6,h*.24,'#5a4a5a'))}}
 /* ==== ART patara17: end ==== */
 
 /* ==== ART tyre17: begin ==== */
@@ -398,15 +609,68 @@ function heapBeach17(g,cut){if(cut){poly(g,[16,120,20,112,30,108,40,112,44,120],
 /* ==== ART beach17: end ==== */
 
 /* ==== ART ptolemais17: begin ==== */
-/* One told picture (21:7): the bay of Ptolemais seen from the deck as the ship comes in, Mount Carmel closing the bay to the south at the
-   left, its ridge running out to the sea, the harbor town at the right on its low shore. One horizon, y 66, seen only at the far right of
-   the bay's mouth. No walk; the picture is shown while the narrator tells. */
-const OPtol17={w:320,hz:66,hour:'evening',sun:[300,30],cloud:.25,seed:1751};
+/* One told picture (21:7): the bay of Ptolemais in the evening, seen from the deck as the ship comes in from the north. We look south down
+   the bay. At the left, near, the harbor town on its low peninsula at the north end of the bay: its sea wall, the houses behind it, and
+   a mole running out into the bay with a few boats in its lee; far off behind it the low hills inland. Across the bay Mount Carmel closes
+   it to the south: its long ridge, highest inland at the left, runs down to the right and out into the sea at its cape (x 272). Beyond
+   the cape the open sea runs back to the horizon, y 66 (HZPtol17), which is seen only there, and the sun stands low over it at the
+   right, laying its road of light across the water toward us. The bay gives poor shelter from the sea wind: a swell comes in from the
+   west with whitecaps, and breaks white along the mole and the sea wall. No people, no temple, no mast: nothing upright stands across the
+   horizon. Called from outside: ART.ptolemais17. No walk, no hotspots; the picture is shown while the narrator tells. */
+const HZPtol17=66;
+const OPtol17={w:320,hz:HZPtol17,hour:'evening',sun:[298,40],cloud:.3,wind:SHARED.weather.wind({from:'w',force:4,view:'s'}),seed:1751};
 let SPtol17=null;
-ART.ptolemais17={w:320,q:12,paint(g){const K=SHARED.coast,CO=SHARED.country,O=OPtol17;const L=K.light(O);K.sky(g,O);SPtol17=K.sea(g,O);SPtol17.open=(x,y)=>y>67&&y<140;
-    K.land(g,L,.4,q=>CO.range(q,-10,200,67,x=>Math.max(0,40-x*.2+4*Math.sin(x/15)),['#7a7e6a','#94927c'],{k:.8,light:1}));
-    K.town(g,O,{x0:230,x1:322,base:68,hill:x=>64-Math.max(0,(x-230)*.04),rows:2,size:5,dist:.3,seed:1752,warehouses:[[240,18,3]]})},
-  light:{amb:'#f4dcc0'},draw(g,t){if(SPtol17)SPtol17.draw(g,t)},front(){}};
+ART.ptolemais17={w:320,q:12,paint(g){paintPtol17(g)},light:{amb:'#f4dcc0'},draw(g,t){drawPtol17(g,t)},front(){}};
+/* the ridge of Carmel, from inland at the left out to its cape in the sea; the hills inland behind the town */
+const carmelPtol17=x=>{const P=[[-12,62],[20,59.4],[54,56.2],[86,52.6],[114,49.2],[140,47.4],[162,46.8],[186,48.6],[212,52.4],[236,56.6],[256,61],[268,64.6],[275,66.6]];let i=0;
+  while(i<P.length-2&&P[i+1][0]<x)i++;const[x0,y0]=P[i],[x1,y1]=P[i+1],k=clamp((x-x0)/((x1-x0)||1),0,1),e=(1-Math.cos(k*Math.PI))/2;
+  return y0+(y1-y0)*e+.8*Math.sin(x/4.3)+.4*Math.sin(x/1.7)},
+  hillsPtol17=x=>HZPtol17+.4-(5+2.4*Math.sin(x/19+1)+1.2*Math.sin(x/7))*clamp((140-x)/30,0,1);
+/* the town's waterfront, its sea wall and the mole: SEAPtol17(x) is the line where the wall stands in the water */
+const WALLPtol17=x=>x<132?86+x*.014:86+1.85+(x-132)*.02,MOLEPtol17=[132,196];
+function paintPtol17(g){const K=SHARED.coast,CO=SHARED.country,O=OPtol17,L=K.light(O),HZ=HZPtol17,r=rng(1752);
+  K.sky(g,O);
+  /* Carmel: its ridge, the slopes turned to the low sun at the right lit, the rest in the evening's shade, scrub and woods on its flanks */
+  K.land(g,L,.5,q=>{const P=[-12,HZ+.8];for(let x=-12;x<=276;x+=.5)P.push(x,carmelPtol17(x));P.push(276,HZ+.8);
+    CO.crag(q,P,'#8c8a84',1753,{light:1,dip:-.08,bed:6,scrub:30});
+    clipTo(q,()=>poly(q,P),()=>{for(let i=0;i<300;i++){const x=-10+r()*286,t=carmelPtol17(x),y=t+1+Math.pow(r(),.6)*(HZ-t-1),c=['#5a6044','#66684a','#525840'][i%3],w=1+r()*2.2;
+        for(let k=0;k<3;k++){const dx=(r()-.5)*w,dy=(r()-.5)*.8,ww=w*(.4+r()*.4);if(ww<1.1)R(q,x+dx,y+dy,.5+(ww>.8?.5:0),.5,rgba(c,.75));else oval(q,x+dx,y+dy,ww/2,.4+r()*.3,rgba(c,.75))}
+        if(r()<.4)R(q,x+w*.2,y-.6,.5,.5,rgba(tint(c,.5),.6))}
+      /* the light of the low sun along the western end of the ridge, and the shade gathering on its northern face */
+      q.fillStyle=lg(q,150,0,276,0,['rgba(255,190,120,0)','rgba(255,190,120,.32)']);q.fillRect(-12,40,290,28);
+      q.fillStyle=lg(q,0,46,0,HZ,['rgba(70,58,96,0)','rgba(70,58,96,.3)']);q.fillRect(-12,40,290,28)});
+    /* the far shore of the bay at Carmel's foot: a thin pale line of beach */
+    for(let x=40;x<272;x+=1+r()*3)R(q,x,HZ+.3,1+r()*4,.5,r()<.7?'#d8c0a0':'#a89480')});
+  /* the low hills of the plain behind the town, nearer than Carmel */
+  K.land(g,L,.55,q=>{const P=[-10,HZ+.6];for(let x=-10;x<=142;x+=.5)P.push(x,hillsPtol17(x));P.push(142,HZ+.6);poly(q,P,'#8a7c86')});
+  SPtol17=K.sea(g,O);
+  /* the town on its peninsula: the houses behind the sea wall, a little hill of roofs, and the mole running out into the bay */
+  const T=K.town(g,O,{x0:-10,x1:140,base:WALLPtol17(0)-2.6,hill:x=>WALLPtol17(0)-17-4*Math.sin(x/23)-Math.max(0,(70-Math.abs(x-50))*.1)+Math.max(0,x-112)*.5,rows:3,size:8.4,dist:.14,seed:1754,gaps:.12,
+    warehouses:[[86,26,5.4],[116,20,5]]});
+  wallPtol17(g,r);
+  SPtol17.open=(x,y)=>y>HZ+.5&&!(x<276&&y<HZ+1)&&!(x<MOLEPtol17[1]+1&&y<WALLPtol17(x)+1.4)&&!(x>56&&x<126&&y>WALLPtol17(x)&&y<WALLPtol17(x)+9);
+  /* the evening light over everything: warm from the right, a cool shade in the near water at the left */
+  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(150,130,190,.8)','rgba(255,196,140,.5)','rgba(255,180,110,1)']);g.fillRect(0,0,320,144)});
+  ao(g,0,110,320,34,'b',.16,'#2a2050')}
+/* the sea wall of the town and the mole: courses of stone with staggered joints, wet and dark at the water, the evening light on their
+   tops; the swell breaks white along their feet; small boats lie in the lee of the mole, their masts down */
+function wallPtol17(g,r){const K=SHARED.coast,O=OPtol17;
+  K.quay(g,O,{view:'face',x0:-10,x1:MOLEPtol17[0],y:WALLPtol17(-10)-2.6,slope:.012,face:2.6,seed:1755,dist:.18});
+  K.quay(g,O,{view:'face',x0:MOLEPtol17[0]-1,x1:MOLEPtol17[1],y:WALLPtol17(MOLEPtol17[0])-1.8,slope:.018,face:1.8,seed:1756,dist:.22});
+  /* the end of the mole: its head, squared off, with its own face turned to us */
+  const ex=MOLEPtol17[1],ey=WALLPtol17(ex);poly(g,[ex-.4,ey-1.9,ex+1.4,ey-1.4,ex+1.4,ey+.2,ex-.4,ey],'#7a6e70');
+  /* boats in the lee of the mole and under the wall: low hulls lying to the swell, their masts lowered */
+  for(const[x,y,w,c]of[[96,93.4,16,'#5a4434'],[118,94.6,12,'#6a5040'],[64,92.6,11,'#4e4038']]){reflPtol17(g,x,y,w);
+    const P=[x-w/2,y-2.8,x-w/2+1.6,y-2.1,x+w/2-1.6,y-2.1,x+w/2,y-3,x+w/2-1.4,y,x-w/2+1.2,y];poly(g,P);g.fillStyle=lg(g,0,y-3,0,y,[tint(c,.3),c,tint(c,-.3)]);g.fill();
+    stroke(g,[x-w/2,y-2.8,x-w/2+1.6,y-2.1,x+w/2-1.6,y-2.1,x+w/2,y-3],'#e8b884',.45)}
+  /* the swell breaking along the mole and the wall: lace of foam at their feet, thicker where the sea comes at the mole's end */
+  for(let i=0;i<190;i++){const x=-10+r()*208,w=WALLPtol17(x),k=x>128?1:.45;if(r()>k)continue;R(g,x,w+r()*1.4,1+r()*3,.5,`rgba(255,240,224,${(.35+r()*.5).toFixed(2)})`)}
+  for(let i=0;i<40;i++){const a=r()*3.14,d=r()*4;R(g,MOLEPtol17[1]+1+Math.cos(a)*d*1.4,WALLPtol17(MOLEPtol17[1])-Math.sin(a)*d*.5,.5+r(),.5,`rgba(255,246,236,${(.4+r()*.5).toFixed(2)})`)}}
+function reflPtol17(g,x,y,w){comp(g,'multiply',.4,()=>{poly(g,[x-w/2,y,x+w/2,y,x+w/2-1,y+2.4,x-w/2+1,y+2.4]);g.fillStyle=lg(g,0,y,0,y+2.4,['rgba(40,30,50,1)','rgba(40,30,50,0)']);g.fill()})}
+/* what moves: the sea, and the swell breaking at the mole's end now and again */
+const SURFPtol17=(()=>{const r=rng(1757),a=[];for(let i=0;i<30;i++)a.push([132+r()*66,r()*6.28,700+r()*900,r()]);return a})();
+function drawPtol17(g,t){if(SPtol17)SPtol17.draw(g,t);
+  for(const[x,ph,per,k]of SURFPtol17){const s=Math.sin(t/per+ph);if(s<.5)continue;const y=WALLPtol17(x)-(s-.5)*2*(.6+k),a=((s-.5)*1.6).toFixed(2);R(g,x,y,1+k*2.4,.5,`rgba(255,246,236,${a})`)}}
 /* ==== ART ptolemais17: end ==== */
 
 /* ==== ART philip17: begin ==== */
@@ -826,7 +1090,7 @@ ROOMS.patara17={space:.5,walk:[16,304,110,138],mood:'harbor',amb:AMB.patara17,hs
   {name:'boat_with_water_jars',x:176,y:84,w:30,h:10,wx:190,wy:114,look:()=>{seen17().black=1;return say(P,'boat_with_water_jars_look')}},
   {name:'ship_with_the_red_wale',x:214,y:48,w:106,h:52,wx:262,wy:114,look:()=>lookShip17('red','red_wale_ship_look'),use:()=>say(P,'not_without_asking_her_master'),open:()=>say(P,'not_without_asking_her_master')},
   {name:'coaster',x:0,y:76,w:76,h:24,wx:40,wy:114,look:()=>lookShip17('coaster','coaster_patara_look')},
-  {name:'goat',x:32,y:74,w:16,h:10,wx:40,wy:114,look:'goat_lading_list',talk:'goats_dont_answer'},
+  {name:'goat',x:48,y:74,w:16,h:10,wx:56,wy:114,look:'goat_lading_list',talk:'goats_dont_answer'},
   {name:'water_jars',x:206,y:104,w:22,h:12,wx:206,wy:122,look:'water_jars_look',pickup:'theyre_the_water_sellers'},
   {name:'chest',x:46,y:118,w:26,h:14,wx:80,wy:126,look:'the_gifts_chest_look',pickup:'the_brothers_carry_it'}]};
 ROOMS.tyre17={space:.5,walk:[16,304,110,138],mood:'harbor',amb:AMB.tyre17,hs:[
@@ -980,7 +1244,7 @@ function hint17(){const r=G.room,me=PC();
 /* ============ CHAPTER DEFINITION ============ */
 /* Birds (shared/birds.js): gulls over the harbors of Patara and Tyre, and far off over the bay of Ptolemais; sparrows on the roofs of the
    court; none over the beach while they pray (a gull far off, only after). Scenery: they change nothing in the story. */
-ROOMS.patara17.birds={gulls:[100,4,120,24],stand:[[160,101.2,-1],[169.4,101.4,1]]};
+ROOMS.patara17.birds={gulls:[78,4,82,22],stand:[[160,101.2,-1],[169.4,101.4,1]]};
 ROOMS.tyre17.birds={gulls:[60,4,140,24],stand:[[172,101.2,-1]]};
 ROOMS.beach17.birds=()=>F.beach?{gulls:[180,6,80,18]}:null;
 ROOMS.ptolemais17.birds={gulls:[200,8,100,20]};
