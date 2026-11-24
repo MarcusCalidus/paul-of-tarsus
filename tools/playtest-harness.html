@@ -357,7 +357,7 @@
         miss=WHO.filter(w=>typeof w==='string'&&!LOOK[w]),Z=3,cw=128,chh=384,cols=10,[c,g]=sheet(cols*cw,2*chh);g.fillStyle='#cbbda2';g.fillRect(0,0,cols*cw,2*chh);
       ok(!miss.length,'the people of the cast sheet all have a look'+(miss.length?'. MISSING: '+miss:''));
       WHO.concat('donkey').forEach((w,i)=>{const x=(i%cols)*cw,y=Math.floor(i/cols)*chh,gy=y+chh-18;g.fillStyle='rgba(60,48,40,.22)';
-        if(w==='donkey'){g.fillRect(x+cw-30*Z,gy,60*Z,3);cut(g,sprite('cast|donkey',q=>SHARED.beasts.paint.donkey(q,0,0,1,0,2),1),-40,-80,80,81,x+cw-40*Z,gy-80*Z,Z)}   /* the donkey takes the last two fields */
+        if(w==='donkey'){g.fillRect(x+cw-2*Z-32*Z,gy,64*Z,3);cut(g,sprite('cast|donkey',q=>SHARED.beasts.paint.donkey(q,0,0,1,0,2),1),-36,-80,80,81,x+cw-38*Z,gy-80*Z,Z)}   /* the donkey takes the last two fields */
         else{g.fillRect(x+cw/2-15*Z,gy,30*Z,3);cut(g,spr(typeof w==='string'?LOOK[w]:w,'main'+i,1),-21,-124,42,125,x+cw/2-21*Z,gy-124*Z,Z)}});
       SHEETS['cast-main']=c.toDataURL()}
     {const B={skin:'#c08a5c',tunic:'#c4b08a',belt:'#3a2414'},fm={skin:'#c8a078',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#6a2a5a',brow:'#3a2414'},
