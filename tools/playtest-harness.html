@@ -1383,6 +1383,13 @@
   /* the river */
   heard.length=0;act(null,'west_gate');await until(()=>G.room==='river'&&!G.busy);
   ok(G.room==='river'&&A('lydia').room==='river'&&A('phila').room==='river'&&A('elpis').room==='river'&&quoted(4)&&said('on_the_sabbath_acts_16_13'),'the Sabbath: women at prayer beside the river');
+  /* depth: the five flat stones where the women sit are props. With the others stepped aside for a moment, Paul walks behind each stone (his feet
+     at its middle) and in front of it: behind, the stone hides his feet and his shadow; in front, his legs hide the stone. */
+  {const away=Object.values(ACT).filter(a=>a!==P&&a.room==='river').map(a=>[a,a.room]);for(const[a]of away)a.room=null;
+   const st=props('river'),bad=[];
+   for(const p of st){const sx=p.x+p.w/2,sy=p.t+p.h/2;if(!await hides([sx-4,sy-1.2,8,2.2],[sx-70,136],[sx,sy],[sx,sy+8]))bad.push(Math.round(sx))}
+   for(const[a,r]of away)a.room=r;for(let i=0;i<300&&G.cam!==camAt(G.room,P.x,P.y)[0];i++)await wait(20);
+   ok(st.length===5&&!bad.length,'depth: whoever walks behind one of the '+st.length+' flat stones by the river is hidden by it, and whoever stands before it hides it'+(bad.length?'. WRONG at x '+bad.join(', '):''))}
   halt('river8',()=>{say(TI,'women_paul')});
   await enter(c8d);ok(G.ch===8&&G.room==='philippi'&&F.gate&&F.shop&&F.awn&&!F.sab&&LU.room==='philippi','a code from Philippi restores it');
   await act(null,'bench');act(null,'west_gate');await until(()=>G.room==='river'&&!G.busy);
