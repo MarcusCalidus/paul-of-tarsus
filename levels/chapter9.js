@@ -18,8 +18,9 @@ const{plank:plank9,board:board9,crack:crack9,skipCracks:skipCracks9,shadow:shado
 /* A tune on six notes from E: E, F sharp, G, A, B and D. The scale has no sixth, so it is neither of the modes an earlier chapter used
    with a minor third. The tune is the one the psalm is sung to: a call that climbs and comes home, and an answer that starts high and
    walks down to the keynote. In Lydia's house (mood "calm") a harp and a ney have it; by the river (mood "rest") only the harp is left,
-   and while the psalm is sung (mood "song") nothing plays at all. In the marketplace and before the magistrates (mood "tense") a drone, a
-   slow drum and a few notes of the oud; in the inner prison (mood "cell") no instrument, only the room, and then two voices; in the
+   and while the psalm is sung (mood "song") nothing plays at all. In the marketplace and before the magistrates (mood "tense") nothing is
+   held: a low string plucks the keynote in threes, threes and twos and leans on the note above it, a drum ticks with it and almost
+   stops every fourth bar, and a ney begins the tune and breaks off a note before it comes home; in the inner prison (mood "cell") no instrument, only the room, and then two voices; in the
    jailer's court by night (mood "night") a drone and a harp, far apart; and when the two are led out (mood "hope") a lyre, a low
    string, a hand drum and a pair of pipes. Nothing is claimed about how psalms were sung in Paul's day: it is not known how it sounded. */
 const _=null,
@@ -31,9 +32,10 @@ const _=null,
   {drum:1,moods:['calm'],seq:{A:'d.......t.......'},vol:.35},
   {inst:'ney',moods:['calm'],loop:8,oct:12,lines:TUNE,vol:.9},
   {drum:1,moods:['rest'],prog:'AB',seq:{A:'b...............',B:'................'},vol:.5},
-  {drone:[0,7],every:32,moods:['tense']},
-  {drum:1,moods:['tense'],seq:{A:'d...............'},vol:.7},
-  {inst:'oud',moods:['tense'],prog:'AB',len:5,vol:.6,seq:{A:[0,_,_,_,_,_,_,_,_,_,_,_,1,_,_,_],B:[0,_,_,_,_,_,_,_,-1,_,_,_,_,_,_,_]}},
+  {inst:'bass',moods:['tense'],prog:'AABC',len:2,group:[3,3,2],vol:1.2,seq:{
+    A:[-6,_,_,-6,_,_,-5,_,-6,_,_,-6,_,_,_,_],B:[-6,_,_,-6,_,_,-5,_,-5,_,_,-6,_,_,-8,_],C:[-6,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_]}},
+  {drum:1,moods:['tense'],prog:'AABC',group:[3,3,2],seq:{A:'d..k..k.d..k..k.',B:'d..k..k.d..k.kk.',C:'d...............'},vol:.8},
+  {inst:'ney',moods:['tense'],oct:12,loop:8,vol:1.1,lines:[TUNE[0],TUNE[1].slice(0,-1),[],[],TUNE[4],TUNE[5].slice(0,2),[],[]]},
   {drone:[0],every:32,moods:['night'],vol:.6},
   {inst:'harp',moods:['night'],prog:'ABAC',len:8,oct:12,vol:.7,seq:{A:[0,_,_,_,_,_,_,_,4,_,_,_,_,_,_,_],B:[-1,_,_,_,_,_,_,_,3,_,_,_,_,_,_,_],C:[1,_,_,_,_,_,_,_,4,_,_,_,_,_,_,_]}},
   {inst:'lyre',moods:['hope'],prog:'AABAAACA',len:3,seq:{A:[0,_,4,_,6,_,4,_,2,_,4,_,6,_,4,_],B:[-1,_,3,_,5,_,3,_,1,_,3,_,5,_,3,_],C:[3,_,6,_,8,_,6,_,2,_,4,_,6,_,4,_]}},

@@ -13,7 +13,9 @@ LEVEL(8,()=>{
 /* A walking tune in bars of five: three steps and two, twice in a bar, on the white notes from D. On the roads (mood "hope") a lyre
    keeps the fives over a low string and a hand drum, and a pair of pipes carries a tune that never comes to rest on its own first note:
    its phrases end a step above it, or on the fifth. In the harbor and the street (mood "calm") a harp takes the lyre's place and a ney
-   the pipes'. Where a road is closed (mood "tense") only a drone, a slow drum and a few notes of the oud remain; by night (mood
+   the pipes'. Where a road is closed (mood "tense") nothing is held: the low string plucks the keynote on the threes and twos
+   and leans on the note above it, the drum ticks with it and almost stops every fourth bar, and the ney begins the tune and breaks
+   off a note before its phrase ends; by night (mood
    "night") a drone and a harp, far apart. Beside the river (mood "rest") the same notes settle a step lower, on C, and the ney's tune
    ends there. Nothing is claimed about how music was played in Paul's day: it is not known how it sounded. */
 const _=null,
@@ -27,9 +29,9 @@ const _=null,
   {inst:'bass',moods:['hope','calm'],prog:'AABAABCA',len:5,seq:{A:[-7,_,_,_,_,-3,_,_,_,_],B:[-8,_,_,_,_,-4,_,_,_,_],C:[-6,_,_,_,_,-3,_,_,_,_]}},
   {drum:1,moods:['hope'],prog:'AAAB',seq:{A:'d..t.d..t.',B:'d..t.d..tk'}},
   {drum:1,moods:['calm'],seq:{A:'d....t....'},vol:.4},
-  {drum:1,moods:['tense'],seq:{A:'d.........'},vol:.7},
-  {drone:[0,7],every:20,moods:['tense']},
-  {inst:'oud',moods:['tense'],prog:'AB',len:4,seq:{A:[0,_,_,_,_,_,_,_,1,_],B:[0,_,_,_,_,-1,_,_,_,_]},vol:.6},
+  {inst:'bass',moods:['tense'],prog:'AABC',len:2,vol:.9,seq:{A:[-7,_,_,-7,_,-6,_,_,-7,_],B:[-7,_,_,-7,_,-6,_,_,-10,_],C:[-7,_,_,_,_,_,_,_,_,_]}},
+  {drum:1,moods:['tense'],prog:'AABC',seq:{A:'d..k.k..k.',B:'d..k.k.kk.',C:'d.........'},vol:.6},
+  {inst:'ney',moods:['tense'],oct:12,loop:8,vol:.8,lines:[TUNE[0],TUNE[1].slice(0,-1),[],[],TUNE[4],TUNE[5].slice(0,2),[],[]]},
   {drone:[0],every:20,moods:['night'],vol:.7},
   {inst:'harp',moods:['night'],prog:'ABAC',len:6,oct:12,seq:{A:[0,_,_,_,_,4,_,_,_,_],B:[-1,_,_,_,_,3,_,_,_,_],C:[1,_,_,_,_,4,_,_,_,_]},vol:.7},
   {inst:'harp',moods:['rest'],prog:'AABAACBA',len:4,oct:12,seq:{A:[-1,_,_,1,_,3,_,_,1,_],B:[3,_,_,5,_,6,_,_,5,_],C:[2,_,_,4,_,6,_,_,4,_]}},

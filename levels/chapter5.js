@@ -9,8 +9,9 @@ LEVEL(5,()=>{
 /* ============ MUSIC AND AMBIENCE (plain data, played by the engine's sequencer) ============ */
 /* A walking tune in D Phrygian, the mode named after the country Antioch borders on: a lyre steps in even fours over a bass, a frame drum
    keeps the pace of a pack train, and a reed pipe carries the tune (mood "hope": the road, the square). In the synagogue (mood "calm")
-   the drum drops to a heartbeat and a ney takes the tune in the second half. At the ford and before the opposers (mood "tense") only a
-   drone, a slow drum and a few notes of the oud remain. */
+   the drum drops to a heartbeat and a ney takes the tune in the second half. At the ford and before the opposers (mood "tense") nothing
+   is held: the low string plucks the keynote in threes, threes and twos and leans on the note above it, the drum ticks with it and
+   almost stops every fourth bar, and the ney begins the tune and breaks off a note before it comes home. */
 const _=null,
  TUNE=[[[0,4,4],[4,5,2],[6,4,2],[8,3,4],[12,4,4]],[[0,2,4],[4,1,2],[6,0,2],[8,0,8]],[[0,0,2],[2,2,2],[4,3,4],[8,4,2],[10,5,2],[12,4,4]],[[0,3,4],[4,2,4],[8,1,8]],
   [[0,7,4],[4,6,2],[6,5,2],[8,4,4],[12,5,4]],[[0,4,4],[4,3,2],[6,2,2],[8,3,8]],[[0,2,2],[2,3,2],[4,4,2],[6,2,2],[8,1,4],[12,2,4]],[[0,1,4],[4,0,12]]],
@@ -19,9 +20,10 @@ const _=null,
   {inst:'bass',moods:['hope','calm'],prog:'AABAACBA',len:6,seq:{A:[-7,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],B:[-6,_,_,_,_,_,_,_,-2,_,_,_,_,_,_,_],C:[-4,_,_,_,_,_,_,_,-5,_,_,_,_,_,-6,_]}},
   {drum:1,moods:['hope'],prog:'AAAB',seq:{A:'d.s.t.s.d.s.t.sk',B:'d.s.t.s.d.k.t.tk'}},
   {drum:1,moods:['calm'],seq:{A:'d.......t.......'},vol:.5},
-  {drum:1,moods:['tense'],seq:{A:'d.....d.........'},vol:.8,group:[3,3,2]},
-  {drone:[0,7],every:32,moods:['tense']},
-  {inst:'oud',moods:['tense'],group:[3,3,2,2,2,4],prog:'AB',len:4,seq:{A:[0,_,_,_,_,_,1,_,_,_,_,_,0,_,_,_],B:[0,_,_,_,_,_,-1,_,_,_,1,_,_,_,_,_]},vol:.7},
+  {inst:'bass',moods:['tense'],prog:'AABC',len:2,group:[3,3,2],vol:.9,seq:{
+    A:[-7,_,_,-7,_,_,-6,_,-7,_,_,-7,_,_,_,_],B:[-7,_,_,-7,_,_,-6,_,-6,_,_,-7,_,_,-10,_],C:[-7,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_]}},
+  {drum:1,moods:['tense'],prog:'AABC',group:[3,3,2],seq:{A:'d..k..k.d..k..k.',B:'d..k..k.d..k.kk.',C:'d...............'},vol:.6},
+  {inst:'ney',moods:['tense'],oct:12,loop:8,vol:.8,lines:[TUNE[0],TUNE[1].slice(0,-1),[],[],TUNE[4],TUNE[5].slice(0,2),[],[]]},
   {inst:'aulos',moods:['hope'],loop:8,oct:12,lines:TUNE},
   {inst:'ney',moods:['calm'],from:8,oct:12,lines:TUNE}]};
 

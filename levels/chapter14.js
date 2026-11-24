@@ -31,7 +31,9 @@ const L=SHARED.lanes;
 /* ============ MUSIC AND AMBIENCE (plain data, played by the engine's sequencer) ============ */
 /* One tune, taken over. In the marketplace it is a working tune on the lyre, in bars of eight, on D with a minor third and a major sixth
    ("work"). In the uproar the same tune is played on a reed pipe an octave up, over a fast hand drum and a low string, with the roar of
-   the crowd under it ("uproar"). In the house only a low drone is heard, and the roar outside ("house"). After the city recorder there is
+   the crowd under it ("uproar"). In the house ("house") nothing is held: a low string plucks the keynote and leans on the note above
+   it, a drum ticks with it and almost stops every fourth bar, a ney begins the tune and breaks off before it comes home, and the
+   roar is outside. After the city recorder there is
    silence, then the tune comes back at half its pace on the harp for the farewell ("still"), and far off at the harbor ("harbor").
    Nothing is claimed about how music was played then. */
 const _=null,SCALE=[0,2,3,5,7,9,10],
@@ -43,8 +45,12 @@ const _=null,SCALE=[0,2,3,5,7,9,10],
   {drum:1,moods:['work'],prog:'AAAB',seq:{A:'d..t..d.',B:'d..t.kd.'},vol:.45},
   {inst:'aulos',moods:['uproar'],prog:'ABCD',len:1,oct:12,seq:TUNE,vol:.55},
   {drum:1,moods:['uproar'],prog:'AAAB',seq:{A:'d.tkd.tk',B:'d.tkdktk'},vol:.75},
-  {inst:'bass',moods:['uproar','house'],prog:'ABAB',len:6,seq:{A:[-7,_,_,_,_,_,_,_],B:[-6,_,_,_,_,_,_,_]},vol:.85},
-  {drone:[0],every:16,moods:['house'],vol:.4},
+  {inst:'bass',moods:['uproar'],prog:'ABAB',len:6,seq:{A:[-7,_,_,_,_,_,_,_],B:[-6,_,_,_,_,_,_,_]},vol:.85},
+  {inst:'bass',moods:['house'],prog:'AABC',len:2,vol:.7,seq:{A:[-7,_,_,-7,_,_,-6,_],B:[-7,_,_,-6,_,_,-10,_],C:[-7,_,_,_,_,_,_,_]}},
+  {drum:1,moods:['house'],prog:'AABC',seq:{A:'d..k..k.',B:'d..k.kk.',C:'d.......'},vol:.45},
+  /* TUNE as a line, broken off: A, B without its last note, two bars of rest, C, the first two notes of D, two bars of rest */
+  {inst:'ney',moods:['house'],oct:12,loop:8,vol:.6,lines:[[[0,0,2],[2,2,2],[4,3,2],[6,4,2]],[[0,5,2],[2,4,2],[4,3,2]],[],[],
+    [[0,4,2],[2,5,2],[4,6,2],[6,7,2]],[[0,6,2],[2,4,2]],[],[]]},
   {inst:'harp',moods:['still'],prog:'ABCD',len:5,oct:12,seq:SLOW,vol:.75},
   {drone:[0],every:32,moods:['still','harbor'],vol:.22},
   {inst:'harp',moods:['harbor'],prog:'ABCD',len:5,oct:12,seq:SLOW,vol:.32}]};

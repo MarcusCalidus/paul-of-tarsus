@@ -11,8 +11,10 @@ LEVEL(7,()=>{
 /* ============ MUSIC AND AMBIENCE (plain data, played by the engine's sequencer) ============ */
 /* A road tune on five notes, in E flat: the kind of tune a shepherd's pipe plays. A lyre steps in even fours over a bass, a frame drum
    keeps a walking pace, and a reed pipe carries the tune (mood "hope": the roads and the street). Indoors and in the courtyards (mood
-   "calm") a harp takes the lyre's place and a ney the pipe's. While a congregation is of two minds (mood "tense") only a drone, a slow
-   drum and a few notes of the oud remain; and when the wind comes down the gorge (mood "storm") the drum rolls like thunder far off. */
+   "calm") a harp takes the lyre's place and a ney the pipe's. While a congregation is of two minds (mood "tense") nothing is held: the
+   low string plucks the keynote in threes, threes and twos and leans on the note above it, the drum ticks with it and almost stops
+   every fourth bar, and the ney begins the tune and breaks off a note before it comes home; and when the wind comes down the gorge
+   (mood "storm") the same low string goes on under a drum that rolls like thunder far off. */
 const _=null,
  TUNE=[[[0,2,4],[4,3,2],[6,4,2],[8,5,4],[12,4,4]],[[0,3,4],[4,2,2],[6,1,2],[8,2,8]],[[0,4,2],[2,5,2],[4,6,4],[8,5,2],[10,4,2],[12,3,4]],[[0,2,4],[4,1,4],[8,0,8]],
   [[0,5,4],[4,6,2],[6,7,2],[8,6,4],[12,5,4]],[[0,4,4],[4,3,2],[6,4,2],[8,2,8]],[[0,1,2],[2,2,2],[4,3,2],[6,4,2],[8,3,4],[12,1,4]],[[0,0,4],[4,-1,2],[6,0,10]]],
@@ -22,9 +24,10 @@ const _=null,
   {inst:'bass',moods:['hope','calm'],prog:'AABAACBA',len:6,seq:{A:[-5,_,_,_,_,_,_,_,-2,_,_,_,_,_,_,_],B:[-4,_,_,_,_,_,_,_,-1,_,_,_,_,_,_,_],C:[-6,_,_,_,_,_,_,_,-7,_,_,_,_,_,-4,_]}},
   {drum:1,moods:['hope'],prog:'AAAB',seq:{A:'d...t.k.d.d.t...',B:'d...t.k.d.k.t.tk'}},
   {drum:1,moods:['calm'],seq:{A:'d.......t.......'},vol:.45},
-  {drum:1,moods:['tense'],seq:{A:'d.......d.......'},vol:.7},
-  {drone:[0,7],every:32,moods:['tense','storm']},
-  {inst:'oud',moods:['tense'],prog:'AB',len:4,seq:{A:[0,_,_,_,_,_,_,_,2,_,_,_,1,_,_,_],B:[0,_,_,_,_,_,_,_,-1,_,_,_,0,_,_,_]},vol:.6},
+  {inst:'bass',moods:['tense','storm'],prog:'AABC',len:2,group:[3,3,2],vol:.9,seq:{
+    A:[-5,_,_,-5,_,_,-4,_,-5,_,_,-5,_,_,_,_],B:[-5,_,_,-5,_,_,-4,_,-4,_,_,-5,_,_,-7,_],C:[-5,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_]}},
+  {drum:1,moods:['tense'],prog:'AABC',group:[3,3,2],seq:{A:'d..k..k.d..k..k.',B:'d..k..k.d..k.kk.',C:'d...............'},vol:.6},
+  {inst:'ney',moods:['tense'],oct:12,loop:8,vol:.8,lines:[TUNE[0],TUNE[1].slice(0,-1),[],[],TUNE[4],TUNE[5].slice(0,2),[],[]]},
   {drum:1,moods:['storm'],group:[3,3,2],prog:'AB',seq:{A:'d..d..k.d.......',B:'d..d..k.d..kd.k.'},vol:.9},
   {inst:'oud',moods:['storm'],group:[3,3,2,2,2,4],prog:'AB',len:4,seq:{A:[0,_,_,_,_,_,2,_,_,_,_,_,1,_,_,_],B:[0,_,_,_,-1,_,_,_,_,_,1,_,_,_,_,_]},vol:.7},
   {inst:'aulos',moods:['hope'],loop:8,oct:12,lines:TUNE},

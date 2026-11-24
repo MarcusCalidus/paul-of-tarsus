@@ -9,22 +9,28 @@ const{plank:plank1,board:board1,crack:crack1,skipCracks:skipCracks1,shadow:shado
 /* Damascus by night, in D Hijaz: an oud over a drone, a frame drum, and a ney that enters in the second half.
    On the title screen and at the end of the prologue (mood "ancient") the full Eastern Mediterranean ensemble opens with a two-bar
    fanfare and states the eight-bar melody on ney, aulos with tonic drone pipe, strumming lyre, harp, oud, walking bass and road
-   percussion before cross-fading at bar 11 into "calm". In the prologue's opening (mood "stones") only the drone and the slow drum
-   sound; in the house of Judas (mood "harp") a harp plays alone; in the watched street (mood "tense") only the drone, a heartbeat
-   on the drum and two low notes are left; and when Paul is safely outside the wall (mood "hope") the ney plays an octave higher. */
+   percussion before cross-fading at bar 11 into "calm". In the prologue's opening (mood "stones") nothing is held: a low string
+   plucks the keynote and, late in the bar, the note above it, under the slow drum; in the house of Judas (mood "harp") a harp plays
+   alone; in the watched street (mood "tense") nothing is held either: the low string plucks the keynote in threes, threes and twos
+   and leans on the note above it, the drum ticks with it and almost stops every fourth bar, and the ney begins the tune and breaks
+   off a note before it comes home; and when Paul is safely outside the wall (mood "hope") the ney plays an octave higher. */
 const _=null,
  NEY=[[[0,4,6],[6,5,2],[8,4,4],[12,3,2],[14,2,2]],[[0,3,4],[4,2,2],[6,1,2],[8,0,8]],[[0,2,4],[4,3,2],[6,4,2],[8,5,4],[12,4,4]],[[0,4,12]],
   [[0,7,6],[6,6,2],[8,5,4],[12,4,4]],[[0,5,2],[2,4,2],[4,3,4],[8,2,4],[12,1,4]],[[0,2,3],[3,1,1],[4,0,4],[8,1,2],[10,2,2],[12,1,4]],[[0,0,14]]],
  FANFARE_HARP=[[[0,0,2],[2,2,2],[4,4,4],[8,7,2],[10,8,2],[12,7,4]],[[0,4,2],[2,7,2],[4,9,2],[6,11,2],[8,14,8]]],
  MUSIC={dt:.165,root:50,scale:[0,1,4,5,7,8,10],bars:16,overture:'ancient',tracks:[
-  {drone:[-12],every:32,moods:['ancient','calm','hope','tense','stones']},
+  {drone:[-12],every:32,moods:['ancient','calm','hope']},
   {inst:'bass',moods:['ancient'],prog:'MMAABACABA',len:6,seq:{
     M:[-7,_,_,_,_,_,_,-3,-7,_,_,_,_,_,_,_],A:[-7,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],
     B:[-4,_,_,_,_,_,_,_,-7,_,_,_,_,_,_,_],C:[-6,_,_,_,_,_,_,_,-3,_,_,_,_,_,-5,_]}},
   {inst:'oud',moods:['ancient','calm','hope'],prog:'MMAABACABAABACAB',seq:{
     M:[0,_,4,_,7,_,4,_,0,_,4,_,7,_,11,_],A:[0,_,4,_,7,_,4,_,0,_,4,_,8,_,7,_],
     B:[3,_,5,_,7,_,5,_,3,_,5,_,9,_,7,_],C:[1,_,3,_,5,_,3,_,1,_,4,_,6,_,4,_]}},
-  {inst:'oud',moods:['tense'],seq:{A:[0,_,_,_,_,_,_,_,_,_,1,_,_,_,_,_]},vol:.8},
+  {inst:'bass',moods:['tense'],prog:'AABC',len:2,group:[3,3,2],vol:1.6,seq:{
+    A:[-7,_,_,-7,_,_,-6,_,-7,_,_,-7,_,_,_,_],B:[-7,_,_,-7,_,_,-6,_,-6,_,_,-7,_,_,-10,_],C:[-7,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_]}},
+  {drum:1,moods:['tense'],prog:'AABC',group:[3,3,2],seq:{A:'d..k..k.d..k..k.',B:'d..k..k.d..k.kk.',C:'d...............'},vol:1.1},
+  {inst:'ney',moods:['tense'],oct:12,loop:8,vol:1.45,lines:[NEY[0],NEY[1].slice(0,-1),[],[],NEY[4],NEY[5].slice(0,2),[],[]]},
+  {inst:'bass',moods:['stones'],len:4,vol:.8,seq:{A:[-7,_,_,_,_,_,_,_,_,_,-6,_,_,_,_,_]}},
   {inst:'lyre',moods:['ancient'],prog:'MMAABACABA',len:3,vol:.95,seq:{
     M:[0,_,_,4,_,_,7,_,4,_,_,7,_,11,_,_],A:[0,_,_,4,_,_,7,_,4,_,_,8,_,_,7,_],
     B:[3,_,_,5,_,_,7,_,5,_,_,9,_,_,7,_],C:[1,_,_,3,_,_,5,_,3,_,_,6,_,_,4,_]}},
@@ -41,7 +47,7 @@ const _=null,
   {drum:1,moods:['ancient'],prog:'FFAAABAAAC',seq:{
     F:'b...d.t.d.ktd.tk',A:'d.skt.s.d.skt.sk',B:'b.skt.s.d.skt.tk',C:'b.skt.s.b...d...'}},
   {drum:1,moods:['calm','hope'],seq:{A:'d.t...t.d...t.k.'}},
-  {drum:1,moods:['tense','stones'],seq:{A:'d.......d.......'},vol:1.35},
+  {drum:1,moods:['stones'],seq:{A:'d.......d.......'},vol:1.35},
   {inst:'ney',moods:['calm'],from:8,oct:12,lines:NEY},
   {inst:'ney',moods:['hope'],from:8,oct:24,lines:NEY}]};
 

@@ -23,8 +23,9 @@ LEVEL(10,()=>{
    notes run in even bars (MUSICB). No phrase ends on the seventh note of the scale, so that the tune does not lean forward as a later
    century's would. In Jason's courtyard by day (mood "calm") a lyre, a low string, a hand drum and a ney; by night at the bench (mood
    "night") a low drone and a harp, far apart; in the synagogue (mood "still") a harp alone; at the scroll table (mood "table") nothing
-   at all: only the notes the scrolls give, and the room; when the city is in an uproar (mood "tense") a drone, a slow drum and a few
-   notes of the oud. Nothing is claimed about how music was played in Paul's day: it is not known how it sounded. */
+   at all: only the notes the scrolls give, and the room; when the city is in an uproar (mood "tense") nothing is held: a low string
+   plucks the keynote on the fours and the six and leans on the note above it, a drum ticks with it and almost stops every fourth bar,
+   and a ney begins the tune and breaks off a note before it comes home. Nothing is claimed about how music was played in Paul's day: it is not known how it sounded. */
 const _=null,
  TUNE=[[[0,0,4],[4,2,4],[8,4,2],[10,5,2],[12,4,2]],[[0,2,4],[4,1,4],[8,2,6]],[[0,4,4],[4,5,4],[8,7,2],[10,5,2],[12,4,2]],[[0,2,4],[4,3,2],[6,1,2],[8,0,6]],
   [[0,7,4],[4,5,4],[8,4,4],[12,2,2]],[[0,4,4],[4,2,4],[8,1,6]],[[0,0,2],[2,2,2],[4,4,4],[8,5,2],[10,4,2],[12,2,2]],[[0,1,4],[4,2,4],[8,0,6]]],
@@ -39,20 +40,23 @@ const _=null,
   {drone:[0],every:28,moods:['night'],vol:.5},
   {inst:'harp',moods:['night'],prog:'ABAC',len:8,oct:12,vol:.7,seq:{A:[0,_,_,_,4,_,_,_,2,_,_,_,_,_],B:[1,_,_,_,5,_,_,_,3,_,_,_,_,_],C:[0,_,_,_,2,_,_,_,-3,_,_,_,_,_]}},
   {inst:'harp',moods:['still'],prog:'AB',len:8,oct:12,vol:.55,seq:{A:[0,_,_,_,_,_,_,_,4,_,_,_,_,_],B:[2,_,_,_,_,_,_,_,5,_,_,_,_,_]}},
-  {drone:[0,7],every:28,moods:['tense']},
-  {drum:1,moods:['tense'],seq:{A:'d.............'},vol:.7},
-  {inst:'oud',moods:['tense'],prog:'AB',len:5,vol:.6,seq:{A:[0,_,_,_,_,_,_,_,_,_,1,_,_,_],B:[0,_,_,_,_,_,_,_,-2,_,_,_,_,_]}}]},
+  {inst:'bass',moods:['tense'],prog:'AABC',len:2,vol:1.25,seq:{
+    A:[-7,_,_,_,-7,_,_,-6,-7,_,_,-7,_,_],B:[-7,_,_,_,-7,_,_,-6,-6,_,_,-7,_,-10],C:[-7,_,_,_,_,_,_,_,_,_,_,_,_,_]}},
+  {drum:1,moods:['tense'],prog:'AABC',seq:{A:'d...k..kk..k..',B:'d...k..kk.kk..',C:'d.............'},vol:.85},
+  {inst:'ney',moods:['tense'],oct:12,loop:8,vol:1.1,lines:[TUNE[0],TUNE[1].slice(0,-1),[],[],TUNE[4],TUNE[5].slice(0,2),[],[]]}]},
  /* Beroea, and the quay at Athens: the same key and the same tune, in even bars of sixteen steps. In the synagogue (mood "calm") a harp,
-    a low string and a ney; when the strangers stand at the gate (mood "tense") the drone, the slow drum and the oud; on the quay (mood
+    a low string and a ney; when the strangers stand at the gate (mood "tense") the low string, the ticking drum and the broken-off
+    tune, in threes, threes and twos; on the quay (mood
     "rest") the harp alone. */
  MUSICB={dt:.15,steps:16,root:58,scale:SCALE,bars:16,tracks:[
   {inst:'harp',moods:['calm','rest'],prog:'AABAACAA',len:4,oct:12,vol:.8,seq:{A:[0,_,4,_,2,_,4,_,0,_,2,_,4,_,2,_],B:[3,_,7,_,5,_,7,_,3,_,5,_,7,_,5,_],C:[1,_,5,_,3,_,5,_,1,_,3,_,5,_,3,_]}},
   {inst:'bass',moods:['calm'],prog:'AABAACAA',len:7,seq:{A:[-7,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],B:[-4,_,_,_,_,_,_,_,-7,_,_,_,_,_,_,_],C:[-6,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_]}},
   {drum:1,moods:['calm'],seq:{A:'d.......t.......'},vol:.35},
   {inst:'ney',moods:['calm'],loop:8,oct:12,lines:TUNEB,vol:.9},
-  {drone:[0,7],every:32,moods:['tense']},
-  {drum:1,moods:['tense'],seq:{A:'d...............'},vol:.7},
-  {inst:'oud',moods:['tense'],prog:'AB',len:5,vol:.6,seq:{A:[0,_,_,_,_,_,_,_,_,_,_,_,1,_,_,_],B:[0,_,_,_,_,_,_,_,-2,_,_,_,_,_,_,_]}}]};
+  {inst:'bass',moods:['tense'],prog:'AABC',len:2,group:[3,3,2],vol:1.25,seq:{
+    A:[-7,_,_,-7,_,_,-6,_,-7,_,_,-7,_,_,_,_],B:[-7,_,_,-7,_,_,-6,_,-6,_,_,-7,_,_,-10,_],C:[-7,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_]}},
+  {drum:1,moods:['tense'],prog:'AABC',group:[3,3,2],seq:{A:'d..k..k.d..k..k.',B:'d..k..k.d..k.kk.',C:'d...............'},vol:.85},
+  {inst:'ney',moods:['tense'],oct:12,loop:8,vol:1.1,lines:[TUNEB[0],TUNEB[1].slice(0,-1),[],[],TUNEB[4],TUNEB[5].slice(0,2),[],[]]}]};
 /* The scroll table has no score. A roller that is wound gives one plucked note, a note for each place, and a row that holds sounds as
    a chord. Every step can be solved from the text alone: the game stays quiet in Silent Mode. */
 const pluck10=(deg,v,dt)=>{if(AU.ctx)INST.harp(mtof(note(deg,12,MUSIC)),now()+(dt||0),.5,v||1)};

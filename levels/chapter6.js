@@ -9,7 +9,9 @@ LEVEL(6,()=>{
 /* ============ MUSIC AND AMBIENCE (plain data, played by the engine's sequencer) ============ */
 /* A tune for a high, well-watered plain, in F Lydian: a lyre in even fours over a bass, a frame drum, and a reed pipe carrying the tune
    (mood "hope": the streets and the roads). Indoors (mood "calm") a harp takes the lyre's place and a ney the pipe's. When stones are
-   spoken of (mood "tense") only a drone, a slow drum and a few notes of the oud remain. And when a whole town runs to the gate with
+   spoken of (mood "tense") nothing is held: the low string plucks the keynote in threes, threes and twos and leans on the note above
+   it, the drum ticks with it and almost stops every fourth bar, and the ney begins the tune and breaks off a note before it comes
+   home. And when a whole town runs to the gate with
    garlands (mood "feast") the drum doubles, hands clap, a drone sounds the keynote, and the pipe goes round and round on four notes while its
    second pipe holds the keynote under it (hold:0). */
 const _=null,
@@ -21,9 +23,10 @@ const _=null,
   {inst:'bass',moods:['hope','calm'],prog:'ABACABCA',len:6,seq:{A:[-7,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],B:[-6,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],C:[-9,_,_,_,_,_,_,_,-8,_,_,_,_,_,-6,_]}},
   {drum:1,moods:['hope'],prog:'AAAB',seq:{A:'d..st.s.d.s.t.s.',B:'d..st.s.d.k.t.tk'}},
   {drum:1,moods:['calm'],seq:{A:'d.........t.....'},vol:.45},
-  {drum:1,moods:['tense'],seq:{A:'d.......d..d....'},vol:.8,group:[3,3,2]},
-  {drone:[0,7],every:32,moods:['tense']},
-  {inst:'oud',moods:['tense'],group:[3,3,2,2,2,4],prog:'AB',len:4,seq:{A:[0,_,_,_,_,_,3,_,_,_,_,_,4,_,_,_],B:[0,_,_,_,_,_,-1,_,_,_,3,_,_,_,_,_]},vol:.7},
+  {inst:'bass',moods:['tense'],prog:'AABC',len:2,group:[3,3,2],vol:.9,seq:{
+    A:[-7,_,_,-7,_,_,-6,_,-7,_,_,-7,_,_,_,_],B:[-7,_,_,-7,_,_,-6,_,-6,_,_,-7,_,_,-10,_],C:[-7,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_]}},
+  {drum:1,moods:['tense'],prog:'AABC',group:[3,3,2],seq:{A:'d..k..k.d..k..k.',B:'d..k..k.d..k.kk.',C:'d...............'},vol:.6},
+  {inst:'ney',moods:['tense'],oct:12,loop:8,vol:.8,lines:[TUNE[0],TUNE[1].slice(0,-1),[],[],TUNE[4],TUNE[5].slice(0,2),[],[]]},
   {drum:1,moods:['feast'],prog:'AB',seq:{A:'d.tkd.t.d.tkd.tc',B:'d.tkd.tcd.tkc.tc'},vol:1.1},
   {drum:1,moods:['feast'],seq:{A:'s.s.s.s.s.s.s.s.'},vol:.9},
   {drone:[0],every:16,moods:['feast'],vol:.6},
