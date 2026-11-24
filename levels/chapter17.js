@@ -374,7 +374,7 @@ function paintCourt17(g){const r=rng(1731),W='#dccaa6';
 /* The beach outside Tyre, on the mainland south of the causeway, in the morning they sail. We look west over the sea: the open horizon
    across it, and at the right, far off, the island city of Tyre on the water behind its sea wall, with the broad causeway that joins it
    to the mainland running out to it from the right edge. Our ship lies at anchor off the beach, small, her stern toward us, in front of
-   the city, so that her short mast stands against its walls and nothing of her crosses the open horizon. The ship's boat is drawn up
+   the city; her mast is left out, so that nothing of her crosses the open horizon or the line of the city's sea wall. The ship's boat is drawn up
    at the right where the water comes nearer, her bow on the sand. Far off the way at the left lies a heap of spent murex shells,
    thrown out by the dyers, with the purple they left in the sand round it. The sun is behind us at the left: the sand is lit, the
    water is blue without a road of light, and the shadows fall away from us. One horizon, y 60 (HZBeach17).
@@ -394,9 +394,9 @@ function paintBeach17(g){const K=SHARED.coast,O=OBeach17,HZ=HZBeach17;if(!O.wind
   K.sky(g,O);
   /* the coast running north beyond the city, far off and low */
   K.isle(g,236,322,4.5,O,{kind:'cape',from:'r',dist:.82,seed:1744});
-  SBeach17=K.sea(g,O);SBeach17.open=(x,y)=>y>HZ+.5&&y<edgeBeach17(x)-.5&&!(x>196&&y<HZ+6)&&!(x>262&&x<280&&y<HZ+7);
+  SBeach17=K.sea(g,O);SBeach17.open=(x,y)=>y>HZ+.5&&y<edgeBeach17(x)-.5&&!(x>196&&y<HZ+6)&&!(x>262&&x<280&&y<HZ+9);
   tyreBeach17(g,O,200,318,HZ,1);
-  shipBeach17(g,271,HZ+5.4,1);
+  shipBeach17(g,271,HZ+8.2,1);
   WBeach17=K.shore(g,O,{x0:-2,x1:322,edge:edgeBeach17,y1:144,kind:'sand',seed:1742,wet:6});
   /* the beach toward us: dry sand with a few stones and weed at the tide line, dune grass in tufts along the bottom */
   K.land(g,L,0,q=>{const r=rng(1745);for(let i=0;i<40;i++){const x=r()*320,y=edgeBeach17(x)+6+r()*3;R(q,x,y,1+r()*2.6,.5,rgba(r()<.5?'#5a5a3a':'#8a7a5a',.5))}
@@ -415,10 +415,9 @@ function tyreBeach17(g,O,x0,x1,hz,k){const K=SHARED.coast;
   /* the causeway: a broad low strip of sand and stone from the right edge out to the island, its far end lost behind the wall */
   K.land(g,K.light(O),.4,q=>{const T=[x1-14,hz+.2,322,hz+3.6*k,322,hz+6.4*k,x1-14,hz+.8];poly(q,T,'#d4c29c');
     stroke(q,[x1-14,hz+.25,322,hz+3.7*k],'#f4e6c4',.5);stroke(q,[x1-14,hz+.8,322,hz+6.4*k],'rgba(60,64,90,.45)',.5)})}
-/* the ship at anchor far off, her stern toward us: a rounded hull, the stern post's curl, the two steering oars at its sides, a short
-   mast (her yard is down on deck), all of it against the city's wall and houses behind her, its top under their skyline */
+/* the ship at anchor far off, her stern toward us: a rounded hull, the stern post's curl, the two steering oars at its sides, low
+   against the city behind her; her mast is left out of the picture, so that nothing upright crosses the sea wall's lines */
 function shipBeach17(g,x,y,k){const H='#3e3438';
-  R(g,x-.4*k,y-8*k,.8*k,5*k,'#4a3c34');
   poly(g,[x-4.6*k,y-2.6*k,x-3*k,y-3.4*k,x-1.4*k,y-4*k,x-.6*k,y-5.6*k,x+.2*k,y-6.4*k,x+1.4*k,y-6.6*k,x+1.6*k,y-5.8*k,x+.8*k,y-5.4*k,x+1*k,y-4*k,x+3*k,y-3.4*k,x+4.6*k,y-2.6*k,x+4*k,y-.6*k,x+2*k,y,x-2*k,y,x-4*k,y-.6*k],H);
   poly(g,[x-4.2*k,y-2.6*k,x-2.8*k,y-3.2*k,x-1.2*k,y-3.6*k,x-1*k,y-2.8*k,x-3*k,y-2.2*k],'#7a6e70');
   poly(g,[x-5.2*k,y-3.4*k,x-4.6*k,y-3.4*k,x-4.2*k,y-.4*k,x-4.8*k,y-.2*k],'#3a3238');poly(g,[x+4.6*k,y-3.4*k,x+5.2*k,y-3.4*k,x+4.8*k,y-.2*k,x+4.2*k,y-.4*k],'#3a3238');
@@ -475,9 +474,9 @@ const edgePray17=x=>89+1.4*Math.sin(x/17)+.8*Math.sin(x/6.1)+Math.max(0,x-250)*.
 function paintPray17(g){const K=SHARED.coast,CO=SHARED.country,O=OPray17,HZ=HZPray17;if(!O.wind)O.wind=SHARED.weather.wind({from:'w',force:1,view:'w'});const L=K.light(O);
   K.sky(g,O);
   K.isle(g,240,322,3.4,O,{kind:'cape',from:'r',dist:.84,seed:1792});
-  SPray17=K.sea(g,O);SPray17.open=(x,y)=>y>HZ+.5&&y<edgePray17(x)-.5&&!(x>218&&y<HZ+5)&&!(x>272&&x<288&&y<HZ+6);
+  SPray17=K.sea(g,O);SPray17.open=(x,y)=>y>HZ+.5&&y<edgePray17(x)-.5&&!(x>218&&y<HZ+5)&&!(x>272&&x<288&&y<HZ+8);
   tyreBeach17(g,O,220,320,HZ,.85);
-  shipBeach17(g,280,HZ+4.6,.8);
+  shipBeach17(g,280,HZ+6.8,.8);
   WPray17=K.shore(g,O,{x0:-2,x1:322,edge:edgePray17,y1:144,kind:'sand',seed:1793,wet:4});
   /* the ship's boat beside them at the edge, small */
   {const x=224,y=edgePray17(224)+2.2;poly(g,[x-5,y-1.6,x+6,y-2.2,x+5,y,x-4,y],'#4a3628');R(g,x-4.6,y-1.9,10.4,.5,'#c8a474');R(g,x-4,y+.2,9,.5,'rgba(40,40,70,.35)')}
@@ -838,7 +837,7 @@ Object.assign(LOOK,{
   dau2_17:{skin:'#c49a70',veil:'#4a6a7a',tunic:'#d8ccb0',long:1,belt:'#5a3a20',slim:1,longSleeve:1,brow:'#3a2414',ph:2000},
   dau3_17:{skin:'#c8a07a',veil:'#8a6a3a',tunic:'#ece4d0',long:1,belt:'#6a4a2a',slim:1,longSleeve:1,brow:'#3a2414',ph:2200},
   dau4_17:{skin:'#cca47c',veil:'#7a8a5a',tunic:'#e4dcc4',long:1,belt:'#8a6a2a',slim:1,longSleeve:1,brow:'#3a2414',ph:2300},
-  aulus17:{skin:'#c08c5c',hair:'#3a2a1a',tunic:'#ece4d0',cloak:'#7a5a3a',long:1,belt:'#4a3a24',brow:'#2a1a12',ph:600},
+  aulus17:{skin:'#c08c5c',hair:'#3a2a1a',tunic:'#ece4d0',cloak:'#8a4e3c',long:1,belt:'#4a3a24',brow:'#2a1a12',ph:600},
   benaiah17:{skin:'#b8845a',hair:'#4a3a2c',beard:'#4a3a2c',fullBeard:1,tunic:'#c8b490',cloak:'#5a6a4a',long:1,belt:'#3a2a1a',brow:'#2a1a12',ph:1200},
   agabus17:{skin:'#b08058',hair:'#dcd8d0',beard:'#e6e2da',longBeard:1,thin:1,brow:'#b0aca4',tunic:'#a8b0a0',cloak:'#5a4634',long:1,belt:'#4a3a24',bond:'#8a6a58',ph:2300}});
 const LK=actor('luke17','Luke','#c8e8c0',126),TI=actor('tim17','Timothy','#b8e0b0',142),AR=actor('arist17','Aristarchus','#d0d8b8',112),
