@@ -194,7 +194,7 @@ TEXTS('en',16,{
   "luke_the_master_will_pay":"The master will pay you for the awning. He's said so to everyone.",
   "luke_i_will_write_it_down":"I'll write it down, all of it.",
   "paul_look_by_luke":"Paul. He made good time.",
-  "paul_resting_look":"Paul, resting under the shelter. He walked to Assos yesterday.",
+  "paul_resting_look":"Paul, resting under the shelter. He walked to Assos, and the brothers won't let him lift a thing.",
   "paul_the_brothers_wont_let_me":"The brothers won't let me lift a thing today. So I'm resting.",
   "paul_assos_then":"On to Mitylene now.",
   "keep_it_luke":"Keep it, Luke.",
