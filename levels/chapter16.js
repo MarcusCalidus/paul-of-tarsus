@@ -599,15 +599,19 @@ function show16(room,x,y,dir){place16(room);const e=ENT[room];enterRoom(room,x!=
 async function goto16(room,x,y,dir){await fade(1,300);show16(room,x,y,dir);await fade(0,300)}
 
 /* ---- the travel map ---- */
-/* The places of this chapter (Assos, Mitylene, the anchorage off Chios, Samos, Miletus) come with shared/map.js from branch ch16-misc.
-   TODO(ch16-misc): until they are there, map16 tells the lines on the narrator's scroll instead of over the map. Each day's sail is one leg;
-   the ship's way from Troas goes by sea round Cape Lectum, and the messenger's from Miletus to Ephesus by land and by ferry. */
-const LEGS16={ship:[['troas','assos','new sea']],mit:[['troas','assos','sea'],['assos','mitylene','new sea']],chi:[['assos','mitylene','sea'],['mitylene','chios','new sea']],
-  sam:[['mitylene','chios','sea'],['chios','samos','new sea']],mil:['samos','miletus'],eph:[['miletus','ephesus','new']]};
+/* The places of this chapter (Assos, Cape Lectum, Mitylene, the anchorage off Chios, Samos, Miletus) are in shared/map.js, in its
+   close view of the coast ('ionia'). Each day's sail is one leg; the ship's way from Troas goes by sea round Cape Lectum and Paul's by
+   land, shown together; the messenger's from Miletus to Ephesus goes by land and by ferry. Earlier legs are drawn without 'new' (and
+   without 'sea', as the map16 stop checks them), so that no line lies on another. */
+const SHIP16=[['troas','lectum','new sea'],['lectum','assos','new sea']],OLD16=l=>l.slice(0,2),
+  LEGS16={ship:[...SHIP16,['troas','assos','new']],mit:[...SHIP16.map(OLD16),['assos','mitylene','new sea']],
+    chi:[...SHIP16.map(OLD16),['assos','mitylene'],['mitylene','chios','new sea']],sam:[...SHIP16.map(OLD16),['assos','mitylene'],['mitylene','chios'],['chios','samos','new sea']],
+    mil:['samos','miletus'],eph:[...SHIP16.map(OLD16),['assos','mitylene'],['mitylene','chios'],['chios','samos'],['samos','miletus'],['miletus','ephesus','new']]},
+  LAB16={troas:{lab:'l',dy:-4}};
 async function map16(legs,lines,then){let M=null;try{M=await need('map')}catch(e){}
   const ok=!!(M&&M.places&&legs.every(([a,b])=>M.places[a]&&M.places[b])&&(!then||then.every(([a,b])=>M.places[a]&&M.places[b])));
   await fade(1,450);
-  if(ok){try{await M.journey(legs,{view:'aegean'});for(const k of lines)await tell(k,null,1);
+  if(ok){try{await M.journey(legs,{view:'ionia',labels:LAB16});for(const k of lines)await tell(k,null,1);
       if(then)for(const[a,b,ls]of then){await M.go(a,b);for(const k of ls||[])await tell(k,null,1)}}catch(e){console.error(e)}}
   else{for(const k of lines)await tell(k);if(then)for(const t of then)for(const k of t[2]||[])await tell(k)}
   await fade(1,300);G.scene=null;setScore(MUSIC)}
@@ -754,7 +758,7 @@ async function toShore(){if(!F.sent)return say(P,'not_before_word_has_gone');awa
 /* The speech is told, never composed, over pictures of Paul speaking (his mouth moves while the narrator tells); at 20:33, 34 he holds
    out his hands. Then all kneel, heads bowed and arms down, and he prays (20:36). */
 const ELDERS16=[[PH,64,120],[KL,88,129],[DA,110,114],[EU,40,128],[PO,124,133]];
-/* kneel16: TODO(ch16-misc): the kneeling pose comes with the figure painter on that branch. Until then whoever kneels is drawn bowed;
+/* kneel16: (wired on ch16-art-b): the kneeling pose comes with the figure painter on that branch. Until then whoever kneels is drawn bowed;
    wear 'k' keeps the kneeling sprites apart from the standing ones in the cache, and kneel tells the painter. */
 function kneel16(a,on){a.kneel=on?1:0;a.wear=on?'k':'';a.bow=!!on}
 /* hands16: TODO(ch16-misc): a pose with both hands held out, palms up, forearms bent and low; until then the far hand, half raised and open */
