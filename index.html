@@ -1133,9 +1133,16 @@ function gaitPose(o,ph,amp){const q=gaitOf(o),long=!!o.long,st=q.stance,sw=1-st,
     skFlareL:Math.round(clamp(-minB*.3,0,long?3:2)),skFlareR:Math.round(clamp(maxF*.35,0,long?4:3)),
     foldShift:.07*amp*Math.cos(2*Math.PI*(ph-.1)),
     mt:-Math.round(2.6*amp*Math.cos(2*Math.PI*(ph-.2))),shadowW:8.2+1.4*spread*amp}}
-const walkSw=(o,fr)=>fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1).shadowW:8.5;
+const walkSw=(o,fr)=>fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1).shadowW:fr<=-2&&fr>=-5?(fr>=-3?7.4:9.5):8.5;
+/* Kneeling. An actor kneels while a script sets a.kneel: 1 on both knees with the arms down, 2 on both knees with the hands folded low in
+   front, 3 on one knee with the arms down, 4 on one knee with the hands folded (KNEEL names them). The figure is drawn with fr = -1 - a.kneel,
+   its head bowed and its eyes shut; it does not turn while others speak, and it stands again when the script sets a.kneel=0 or walks it.
+   Never are arms spread or raised (CONTRIBUTING section 3). kneelX: where the middle of its contact shadow lies, in room pixels behind
+   the knees (the shins and feet lie back along the ground). */
+const KNEEL={both:1,bothFolded:2,one:3,oneFolded:4},kneelX=(o,fr)=>fr<=-2&&fr>=-5?(fr>=-3?(o.h?-2.6:-3.2):(o.h?.2:.5)):0;
 /* person: one figure with its feet at x,y, one drawing unit per canvas pixel, facing right (dir -1 mirrors it).
-   fr is the walk: 0 stands; below 0 the figure sits (the upper body lower, over a lap: bare shins under a short tunic, and under a long robe the cloth hanging from the knees to the feet). From 4 up it is a moment of a stride, as update and walkFr give it: sixteen moments of a full step, then sixteen
+   fr is the walk: 0 stands; -1 the figure sits (the upper body lower, over a lap: bare shins under a short tunic, and under a long robe the cloth hanging from the knees to the feet);
+   -2 to -5 it kneels (see KNEEL: on both knees or one, the arms down or the hands folded, the head bowed; the body lower by the length of a shin). From 4 up it is a moment of a stride, as update and walkFr give it: sixteen moments of a full step, then sixteen
    of a shorter one and sixteen of a half step (a walk begins and ends on these). 1, 2 and 3, the frames of the old walk, are three moments
    of the same stride: a heel landing, the legs passing, the other heel landing.
    bow lowers the head; blink closes the eyes; mv is a sum of MV.
@@ -1146,8 +1153,10 @@ const walkSw=(o,fr)=>fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1).shadow
    never moves: its mouth stays shut and its head where it is. */
 function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=o.stone?c.sk:c.le,fem=!!(o.veil||o.fem),HIM=!!((o.himation||o.toga)&&C),TOGA=!!(o.toga&&C),WET=!!o.wet,TORN=o.torn|0,ARM=o.spear||o.pilum;g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+  /* kneeling (fr -2 to -5, see KNEEL): the head is bowed, and the figure moves nothing but its mouth */
+  const kn=fr<=-2&&fr>=-5?-1-fr:0,both=kn&&kn<=2,fold=kn&&kn%2===0;if(kn)bow=1;
   mv=o.stone||bow?0:mv|0;talk=o.stone?0:talk|0;
-  const seat=fr<0,W=!seat&&fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):!seat&&fr?gaitPose(o,[0,0,.25,.5][fr]||0,1):null,bob=W?W.bob:0;let SH=null;
+  const seat=fr===-1,W=!seat&&fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):!seat&&!kn&&fr?gaitPose(o,[0,0,.25,.5][fr]||0,1):null,bob=W?W.bob:0;let SH=null;
   /* px: a run of pixels. While a foot is painted, SH lets each of its columns sit higher than the next: a heel that is up, or the toes */
   const px=(a,b,col,w,h)=>{g.fillStyle=col;if(SH)for(let i=0;i<(w||1);i++)g.fillRect(a+i,b+SH(a+i),1,h||1);else g.fillRect(a,b,w||1,h||1)};
   /* tearCut: natural 2-3px jagged cloth tongues along a ragged hem (max 2px notch, keeps every column connected to above) */
@@ -1166,7 +1175,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
       if(soaked&&t>.74&&t<.86&&(yy+k)%5===0&&v<3)v=0;
       px(x0+k,yy,P[v])}};
   const kid=o.h?1:0,slim=o.slim?1:0,LEG=kid?19:23,SK=kid?13:16,TOR=kid?22:fem?24:26,AL=26;
-  const yA=-4,yH=yA-LEG+bob,yB=yH-SK+(seat?10:0),yS=yB-3-TOR,SL=o.longSleeve?AL-2:12;   /* ankle, hem, top of the skirt, shoulder line; AL: rows of an arm down to the wrist */
+  const KD=kid?15:19,yA=-4,yH=yA-LEG+bob,yB=yH-SK+(seat?10:0)+(kn?KD:0),yS=yB-3-TOR,SL=o.longSleeve?AL-2:12;   /* ankle, hem, top of the skirt, shoulder line; AL: rows of an arm down to the wrist */
   /* the sleeves are one garment with the body: PIT rows of shoulder yoke, then the arms part from the trunk */
   const PIT=8,nw=slim+(fem?1:0),aw=fem?4:5,ax=-10+nw-aw,fx=11-nw,fw=5,waist=Math.round(TOR*.6),tw=W&&!c.ar&&!ARM&&!ges&&!bow?W.twist:0;
   /* cape, behind everything (when torn: column-notched bottom so every pixel stays connected) */
@@ -1184,7 +1193,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
         if(near)v=sl&&!rip?(i===slEnd?4:u<.5?4:3):i===slEnd+1||rip?4:u<.34?3:u<.8?2:3;else v=sl&&!rip?(i===slEnd?3:k===0?(i>PIT+1?3:2):u<.78?1:2):i===slEnd+1||rip?3:k===0?3:u<.78?1:2;px(x0+k,yS+i,Rk[v])}}
     if(stub)return;const hx=(near?x00+w-4:x00)+Math.round(wx);[4,5,5,5,4].forEach((n,j)=>{const x0=hx+(j===0||j===4?near?1:0:0);
       for(let k=0;k<n;k++)px(x0+k,yS+len+j,S[Math.min(4,(j===4?3:k===0?3:k===n-1?1:j===3&&k===2?3:2)+(near?1:0))])})};
-  arm(false,W?W.fa:0,ARM||o.stub||(ges&&ges!==4&&!bow),W?W.fb:0,W?W.armLiftF:0);
+  arm(false,W?W.fa:0,ARM||o.stub||fold||(ges&&ges!==4&&!bow),W?W.fb:0,W?W.armLiftF:0);
   /* legs and sandals (or barefoot, or Roman military caligae), or the feet under a long robe */
   const boot=o.caligae?ramp('#4b2b18'):null;
   const foot=(fx0,fy,R)=>{if(o.barefoot){px(fx0,fy,R[3]);px(fx0+1,fy,R[2],5);px(fx0,fy+1,R[2],7);px(fx0,fy+2,R[2],9);px(fx0+7,fy+2,R[1],2);px(fx0,fy+1,R[3]);px(fx0,fy+2,R[3],2);px(fx0,fy+3,R[3],9);px(fx0+1,fy+3,R[4],6);return}
@@ -1206,18 +1215,39 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
         if(inBoot){const br=i===n-6||i===n-4||i===n-2;px(x0+k,yy,(br?boot:dk?[boot[2],boot[3],boot[3],boot[4],boot[4]]:boot)[Math.min(4,v+(br?0:1))])}
         else px(x0+k,yy,R[v])}}
     footP(Math.round(k0+P.ax)+1,P,R)};
+  /* kneel: the legs of a kneeling figure, facing right. Both knees: each knee on the ground under the hem, its shin lying back along the
+     ground and the foot behind it standing on its toes, the heel up and the sole turned back; the far leg a tone darker, a pixel higher
+     and two further back. One knee: the far leg kneels so, and the near one stands its foot forward, the shin upright under the knee. */
+  const kneel=()=>{const F=[S[1],S[2],S[3],S[4],S[4]],B2=boot||null,
+      /* a shin lying back along the ground, from the knee (xk) to the ankle (xa): four rows at the knee, three at the ankle, and the
+         round of the knee in front; then the foot, standing on its toes with the heel up and the sole turned back */
+      shin=(xk,xa,top,R)=>{for(let x=xa;x<=xk;x++){const h=x<xa+(kid?3:5)?3:4;for(let j=0;j<h;j++)px(x,top+(4-h)+j,R[j===0?1:j===h-1?3:2])}
+        for(let j=-1;j<4;j++)for(let q=0;q<3;q++){if((j<0&&q===2)||(j===3&&q===2))continue;px(xk+1+q,top+j,R[j<1?1:q===2?3:2])}},
+      /* the foot behind a kneeling shin, standing upright on its toes: the heel up, the sole turned back (o), the toes on the ground.
+         Rows from the top of the heel down to the ground; columns from the sole to the ankle (xa); a boy's foot is shorter */
+      FOOT=kid?['.oo..','o122.','o2223','o2231','o233.','o33..','oo3..']:['.oo...','o1222.','o2222.','o2223.','o22231','o2233.','o233..','o33...','oo3...'],
+      back=(xa,top,R,dk)=>{const so=B2?B2[dk?4:3]:o.barefoot?R[4]:LE[dk?4:3],sk=B2?(dk?[B2[2],B2[3],B2[3],B2[4],B2[4]]:B2):R,y0=top+4-FOOT.length,x0=xa-FOOT[0].length+1;
+        FOOT.forEach((r,j)=>{for(let i=0;i<r.length;i++){const ch=r[i];if(ch!=='.')px(x0+i,y0+j,ch==='o'?so:sk[+ch])}})};
+    const kx=kid?4:6,ka=kid?-8:-11;
+    if(both){shin(kx-2,ka-2,-5,F);back(ka-2,-5,F,1);shin(kx,ka,-4,S);back(ka,-4,S,0)}
+    else{shin(kx-3,ka-2,-5,F);back(ka-2,-5,F,1);
+      const kt=kid?-13:-17,x0=(kid?6:9);for(let yy=yB+4;yy<=kt+3;yy++)px(-3,yy,S[3],x0+3);
+      for(let yy=kt;yy<yA;yy++){const t=(yy-kt)/Math.max(1,yA-kt),w=t<.15?6:t<.5?5:4,xx=x0+(t<.15?0:t<.5?1:1);for(let q=0;q<w;q++)px(xx+q,yy,S[q===0?3:q===w-1?1:2])}
+      footP(x0,{ax:0,kx:0,ly:0,p:0},S)}};
   {const REST={ax:0,kx:0,ly:0,p:0},L0=W?W.legs[0]:REST,L1=W?W.legs[1]:REST;
     const ankle=(ax0,P,R)=>{if(!TORN&&!W)return;for(let j=1;j<=4;j++)for(let k=0;k<5;k++)px(ax0+1+k,yA-P.ly-j,R[k===0?4:k===1?3:k<4?2:1])};
-    if(seat&&o.long){footP(9,REST,[S[1],S[2],S[3],S[4],S[4]]);footP(-2,REST,S)}else if(seat){leg(5,REST,1);leg(-2,REST,0)}
+    if(kn)kneel();
+    else if(seat&&o.long){footP(9,REST,[S[1],S[2],S[3],S[4],S[4]]);footP(-2,REST,S)}else if(seat){leg(5,REST,1);leg(-2,REST,0)}
     else if(o.long){const r0=[S[1],S[2],S[3],S[4],S[4]],f0=W?Math.round(-3+L0.ax)+1:3,n0=W?Math.round(-4+L1.ax)+1:-8;
       ankle(f0,L0,r0);footP(f0,L0,r0);ankle(n0,L1,S);footP(n0,L1,S)}
     else if(!W){leg(1,REST,1);leg(-9,REST,0)}else{leg(-4,L0,1);leg(-4,L1,0)}}
   /* skirt of a short tunic, or a robe to the ankles; a woman's robe widens over the hips. When torn: jagged ragged tongues & fabric rip. */
-  const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=o.long?yA+1:seat?yH+3:TORN?yH+2:yH+1,n=y1-yB+1,sl=seat&&!!o.long,fsh=W?W.foldShift:0;
+  const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=o.long?yA+1:kn?yB+SK+(TORN?4:3)-(kid?1:0):seat?yH+3:TORN?yH+2:yH+1,n=y1-yB+1,sl=seat&&!!o.long,fsh=W?W.foldShift:0;
   const skWet=WET?((k,w,i)=>i>n*(o.long?.42:.36)+Math.round(Math.sin(k*.7+TORN)*2.5)):null;
   for(let i=0;i<n;i++){const t=i/(n-1),hw=(fem?8+Math.min(3,Math.round(i*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,
       flL=W?Math.round(W.skFlareL*t*t):0,flR=W?Math.round(W.skFlareR*t*t):0,
-      x0=-hw+sw-flL+(sl?Math.max(0,Math.min(4,i-7)):0),x1=hw+1+sw+flR+(sl?Math.min(6,Math.round(i*.9)):seat?Math.round(t*5):0),yy=yB+i,w=x1-x0+1;
+      x0=-hw+sw-flL+(sl?Math.max(0,Math.min(4,i-7)):0)-(kn&&o.long?Math.max(0,Math.min(kid?5:7,Math.round((i-(n-9))*.9))):0),
+      x1=Math.min(hw+1+sw+flR+(sl?Math.min(6,Math.round(i*.9)):seat?Math.round(t*5):kn&&!both?Math.round(t*(o.long?6:5)):both?Math.max(0,Math.min(3,Math.round((i-(n-7))*.6))):0),kn&&!both&&!o.long&&yB+i>(kid?-12:-15)?(kid?6:9):99),yy=yB+i,w=x1-x0+1;
     if(TORN&&i>=n-3){for(let k=0;k<w;k++){const cut=tearCut(k,w);if(i>=n-cut)continue;const edge=i===n-cut-1,P=c.tuW||T,u=(k+.5)/w;
         px(x0+k,yy,edge?P[4]:P[u<.2?4:u<.45?3:u<.85?2:1])}}
     else if(i>=n-2){for(let xx=x0;xx<=x1;xx++){const u=(xx-x0+.5)/w;px(xx,yy,i===n-1?hem[u<.3?4:3]:hem[u<.2?4:u<.6?2:1])}}
@@ -1288,7 +1318,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
     px(gx,yB-6,'#6e4828',3,2);px(gx+1,yB-6,'#b89258',1);px(gx+1,yB-4,'#e4d8b8',2,2);px(gx,yB-2,'#c8a448',3,1);
     for(let j=0;j<13;j++){const dx=left?-Math.floor(j/6):Math.floor(j/6);px(gx+dx,yB-1+j,j===12?'#c8a448':'#5c2820',3);px(gx+dx+2,yB-1+j,j===12?'#f0d884':'#8a4034',1);if(j===5||j===10)px(gx+dx,yB-1+j,'#c8a448',3)}}
   /* a working apron (apron: its color): a length of stiff cloth tied round the waist, over the front of the skirt, as tradesmen wore it (Acts 19:12) */
-  if(o.apron&&!HIM&&!seat){const A=c.ap||(c.ap=ramp(o.apron)),m=o.long?n-6:n-3;for(let i=-3;i<m;i++){const j=Math.max(0,i),t=j/(n-1),hw=(fem?8+Math.min(3,Math.round(j*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,x0=-hw+3+sw,x1=hw-2+sw;
+  if(o.apron&&!HIM&&!seat&&!kn){const A=c.ap||(c.ap=ramp(o.apron)),m=o.long?n-6:n-3;for(let i=-3;i<m;i++){const j=Math.max(0,i),t=j/(n-1),hw=(fem?8+Math.min(3,Math.round(j*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,x0=-hw+3+sw,x1=hw-2+sw;
       if(i<0)for(let xx=x0-1;xx<=x1+1;xx++)px(xx,yB+i,A[i===-3?1:i===-2?2:4]);else if(i===m-1)for(let xx=x0;xx<=x1;xx++)px(xx,yB+i,A[xx<x0+3?4:3]);else cloth(yB+i,x0,x1,A,i,[[.34,2,.02],[.68,4,-.01]])}}
   /* officer's cloak draped over the near/left shoulder, leaving the breastplate visible (column-notched when torn) */
   if(C&&o.offCloak){const m1=yH+9,mn=m1-yS+2,wl=WET?((k,w,i)=>i>mn*.5+(k+TORN)%3):null;
@@ -1310,7 +1340,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
       else{px(xx+tw,yb+1,T[4]);if(xx%3)px(xx+tw,yb+2,T[3])}}}
   if(o.cape){for(let xx=-16;xx<=15;xx++){const e=Math.abs(xx+.5)>14?1:0;px(xx,yS-1+e,C[1]);px(xx,yS+e,C[xx<-8?3:2]);px(xx,yS+1+e,C[xx<-8?4:3]);if(xx<-5||xx>7)px(xx,yS+2+e,C[4])}px(8,yS,'#f4dc8a',2,2);px(9,yS+1,'#b08a3c')}
   /* near arm (hidden when a mantle hangs over it, unless officer cloak, cape, or reaching back to lead by the hand) */
-  if(!C||o.cape||o.offCloak||ges===4)arm(true,W?W.na:0,ges===4,W?W.nb:0,W?W.armLiftN:0);
+  if(!C||o.cape||o.offCloak||ges===4)arm(true,W?W.na:0,ges===4||fold,W?W.nb:0,W?W.armLiftN:0);
   if(ges===4&&!bow&&!o.stub){const R=o.longSleeve?T:S;
     for(let k=0;k<6;k++){const gx=ax+1-k,gy=yS+12+Math.round(k*.6);px(gx,gy,R[2]);px(gx,gy+1,R[3],1,2);px(gx,gy+3,R[4])}
     px(ax-8,yS+15,S[2],5);px(ax-8,yS+16,S[3],5);px(ax-7,yS+17,S[4],4)}
@@ -1376,6 +1406,11 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
     for(const[k,y0,n,top]of[[0,13,3,R[3]],[1,13,3,R[3]],[2,13,3,R[2]],[3,12,3,R[2]],[4,9,5,R[1]],[5,9,4,R[1]]]){
       const gx=12-nw+k,gy=yS+y0;px(gx,gy,top);px(gx,gy+1,R[2],1,n-2);px(gx,gy+n-1,R[3])}
     px(q,yS+8,S[2],5,4);px(q,yS+8,S[1],5);px(q,yS+11,S[3],5);px(q+4,yS+9,S[1],1,2)}
+  else if(fold&&!o.stub){const open=!C||o.cape||o.offCloak,R=o.longSleeve?T:S,hy0=yS+18,hx0=open?-nw:5-nw;   /* kneeling, the hands folded low in front: both forearms slant down to them, in a V;
+       under a mantle the near arm stays covered and the hands lie nearer the far side, so that no forearm lies across the mantle's edge */
+    for(let k=0;k<(open?7:3);k++){const gx=12-nw-k,gy=yS+12+Math.round(k*(open?.9:1.8));px(gx,gy,R[1]);px(gx,gy+1,R[2],1,2);px(gx,gy+3,R[3])}
+    if(open)for(let k=0;k<11;k++){const gx=ax+3+k,gy=yS+12+Math.round(k*.6);px(gx,gy,R[2]);px(gx,gy+1,R[3],1,2);px(gx,gy+3,R[4])}
+    px(hx0+1,hy0,S[1],5);px(hx0,hy0+1,S[2],7,3);px(hx0+5,hy0+1,S[1],2,2);px(hx0,hy0+1,S[3],1,3);px(hx0+1,hy0+4,S[3],5);px(hx0+3,hy0+2,S[3],1,2)}
   else if(ges&&ges!==4&&!bow&&!o.stub){for(let k=0;k<10;k++){const gx=12-nw+Math.round(k*.6),gy=yS+14-k,R=o.longSleeve?T:S;px(gx,gy,R[3]);px(gx+1,gy,R[2],2);px(gx+3,gy,R[1])}
     const q=17-nw;px(q,yS+1,S[2],5,5);px(q,yS+1,S[1],4);px(q,yS+5,S[3],5);px(q+4,yS,S[2],1,3);px(q+1,yS-1,S[1],1,2);px(q+3,yS-1,S[2],1,2);px(q-1,yS+4,S[3])}};
   /* leaning: the figure is painted twice, below the belt as it stands and above it a pixel forward (also subtle forward lean at full stride) */
@@ -1928,7 +1963,7 @@ function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
   const pr=G.room&&!G.scene&&planOf(G.room);if(pr)pr.tick(dt,ts);
   /* the walks begun since the last frame find their ways round what stands on the floor, all at once (see walk) */
   for(const a of Object.values(ACT))if(a.walk&&a.walk.pend)routeStart(a);
-  for(const a of Object.values(ACT)){const w=a.walk;if(!w){a.fr=a.seat?-1:0;a.gait=null;continue}
+  for(const a of Object.values(ACT)){const w=a.walk;if(!w){a.fr=a.seat?-1:a.kneel?-1-a.kneel:0;a.gait=null;continue}
     const pl=planOf(a.room),v0=a.speed||G.speedAll||(pl?pl.pace(a):WALK_V);let dx=w.x-a.x,dy=w.y-a.y,d=Math.hypot(dx,dy*(pl?1:2));
     const EASE=14,gone0=a.gait?a.gait.gone:0,near0=Math.min(gone0,d+(w.rest||0)),
       v=!pl&&!a.speed&&!G.speedAll&&near0<EASE?v0*(.58+.42*near0/EASE):v0,sp=v*dt;
@@ -2048,7 +2083,7 @@ function figure(g,x,y,lit,key,fn,sw,cxOff,z){x=hp(x);y=hp(y);sw=sw==null?8.5:sw;
   figSprite(g,x,y,lit,c)}
 const blinks=(o,ts)=>((ts+o.ph)%4300)<140;
 /* man: a person by look id, for scenes that pose figures themselves (the ship, the road, the prologue). */
-function man(g,x,y,id,dir,fr,lit,ges,sw,bow,bl){const o=LOOK[id];figure(g,x,y,lit,id+dir+'f'+fr+(ges?'g'+ges:'')+(bow?'b':'')+(bl?'k':''),s=>person(s,0,0,o,dir,fr,0,bow||0,ges||0,bl||0),sw!=null?sw:walkSw(o,fr))}
+function man(g,x,y,id,dir,fr,lit,ges,sw,bow,bl){const o=LOOK[id];figure(g,x,y,lit,id+dir+'f'+fr+(ges?'g'+ges:'')+(bow?'b':'')+(bl?'k':''),s=>person(s,0,0,o,dir,fr,0,bow||0,ges||0,bl||0),sw!=null?sw:walkSw(o,fr),dir*kneelX(o,fr))}
 /* An actor whose dress changes with the story (a cloak torn off him) is given another look and says so in wear, a letter or two that
    names it: the poses of each look are kept apart. A chapter's start gives everyone his own look back (see setChapter). */
 /* moves: what a figure does at this moment, as [mouth, far hand, eyes shut, a sum of MV]. o: the actor; L: its look; ln: the line it is
@@ -2088,7 +2123,7 @@ function moves(o,L,ln,ts){if(L.stone)return[0,0,0,0];
    that holds. An actor marked noTurn keeps his back turned if the scene wants it so; one who bows or walks does not turn; and two who are
    one actor (a mate) turn each on the spot and do not change places. */
 function turnOf(k,x,room,dir){const t=G.turn.get(k);if(!t||t.dir!==dir||t.to.room!==room)return 0;const d=t.to.x-x;return Math.abs(d)<2?0:d>0?1:-1}
-const still=o=>o.noTurn||o.bow||o.walk;
+const still=o=>o.noTurn||o.bow||o.walk||o.kneel;
 const facing=o=>still(o)?o.dir:turnOf(o,o.x,o.room,o.dir)||(G.with===o&&o.dir===G.withDir?(PC().x>=o.x?1:-1):o.dir);
 /* mateFacing: the mate turns to the one she speaks with, or to the one her actor speaks with, whichever was the later; or with him to the
    one played, who talks with them both */
@@ -2100,8 +2135,8 @@ function drawActor(g,o,ts,id){const pl=planOf(id);if(pl)return pl.drawActor(g,o,
      walks, stands and bows with the actor, a step behind and beside, and has a mouth of her own: when she talks, the line on the screen is hers.
      voice is the one who speaks her lines (say(voice, ...)), with her room, x and y: she turns to whom she speaks with (see mateFacing). */
   const m=o.mate;if(m){const L=LOOK[m.fig],mx=o.x+m.dx*o.dir,md=mateFacing(o,mx),[mt,mg,mb,mm]=moves({talk:m.talk,bow:o.bow,fr:o.fr,x:mx},L,m.talk&&ln&&ln.a&&ln.a!==o?ln:null,ts);
-    figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+md+'f'+(o.fr<0?'s':o.fr)+'t'+mt+bow+mg+mb+'m'+mm,s=>person(s,0,0,L,md,o.fr,mt,bow,mg,mb,mm),walkSw(L,o.fr))}
-  figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+'f'+(o.fr<0?'s':o.fr)+'t'+talk+bow+ges+bl+'m'+mv,s=>person(s,0,0,o.look,dir,o.fr,talk,bow,ges,bl,mv),walkSw(o.look,o.fr))}
+    figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+md+'f'+(o.fr===-1?'s':o.fr)+'t'+mt+bow+mg+mb+'m'+mm,s=>person(s,0,0,L,md,o.fr,mt,bow,mg,mb,mm),walkSw(L,o.fr),md*kneelX(L,o.fr))}
+  figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+'f'+(o.fr===-1?'s':o.fr)+'t'+talk+bow+ges+bl+'m'+mv,s=>person(s,0,0,o.look,dir,o.fr,talk,bow,ges,bl,mv),walkSw(o.look,o.fr),dir*kneelX(o.look,o.fr))}
 function render(ts){G.t=ts;update(ts);LID=null;cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
   else if(G.room){const id=G.room,a=ART[id],z=zoomOf(id),cam=hp(G.cam),cy=hp(G.camY),f=fg(id);if(z!==1)cx.setTransform(HR*z,0,0,HR*z,0,0);backdrop(cx,id,cam,cy);cx.save();cx.translate(-cam,-cy);
@@ -2389,7 +2424,7 @@ function decode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1'
   const c=v%512,b=Math.floor(v/512)^msk(c);return chk(b,CHAP[ch].salt)!==c||(b>>19&3)>2||b>>21?null:{ch,b}}
 function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];G.pc=P;G.invs={};P.hs=null;P.called=null;
   LOOK.paul=paulLook(ch);if(LOOK.barnabas)LOOK.barnabas=Object.assign({skin:'#b8844f',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},ch>2?{hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1}:{hair:'#3a2a1a',beard:'#3a2a1a'});
-  SPR.clear();Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;a.seat=0;a.wear='';a.look=LOOK[a.id]});
+  SPR.clear();Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;a.seat=0;a.kneel=0;a.wear='';a.look=LOOK[a.id]});
   (CHAP[ch].party||[]).forEach(id=>ACT[id].party=1);
   $('#chname').textContent=T(CHAP[ch].name);G.ship=null;setScore(CHAP[ch].music);CHAP[ch].setup();swapBtn()}
 /* dealInv: rebuild the inventories from the story's flags (the level's inv). Each item goes to the member who carries it (own,

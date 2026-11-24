@@ -10,18 +10,23 @@
      mule(g, x, y, dir, fr, load, lit, z)     a pack mule, the same way
      ox(g, x, y, dir, fr, coat, gar, lit, z)  an ox or a bull. coat: its color. gar: a garland round its neck (Acts 14:13). z: depth override
                                               when a yoked team sorts together while still queuing its floor/wall shadows in SQ
+     sheep(g, x, y, dir, fr, look, lit, z)    a ewe or a lamb. look: a number, one of the flock's looks (SHEEP.LOOKS; 6 and 7 are lambs), or
+                                              {fl, face, k, lamb}. fr: 0 stands, 4 to 19 walk, 20 and 21 bleat, 22 and 23 chew, 24 and 25 graze
+     sheepStill(g, x, y, dir, fr, look)       a sheep painted into a backdrop, with its contact shadow
+     flock(n, seed)                           n sheep's {look, dir, fr}: their looks, ways and poses, a lamb for every three ewes; the room
+                                              places them, far enough apart that no head lies over another sheep's body
    Walking: everybody covers ground at WALK_V, the animals too, so that a donkey keeps up with whoever leads it.
-     frame.donkey(dist, v), frame.mule(dist, v), frame.ox(dist, v)
+     frame.donkey(dist, v), frame.mule(dist, v), frame.ox(dist, v), frame.sheep(dist, v, look)
                                               the frame of the walk after dist room pixels at v room pixels a second (WALK_V if none)
    Its voice: an animal that is talked to brays or lows, and its head and mouth move with the sound.
-     speak(id, kind)                          plays the voice of kind ('donkey', 'mule', 'ox') and moves the animal that the room draws as
+     speak(id, kind, look)                    plays the voice of kind ('donkey', 'mule', 'ox', 'sheep': a lamb's bleat is higher) and moves the animal that the room draws as
                                               id; resolves when the sound is over
      pose(id, fr)                             the frame to draw the animal id with: fr, or the frame of its voice while it speaks
    Shadows: each kind's span(fr) gives [sw, sx] in room pixels from the four hooves' spread in frame fr (just like walkSw() for people), so
    the contact oval centers under the hooves and breathes with the stride, while figShadow() projects cast and wall-bent shadows from the sprite.
    For the playtest:
-     paint.donkey, paint.mule, paint.ox       the painters themselves, (g, 0, 0, dir, fr, ...) into a sprite
-     kinds.donkey, kinds.mule, kinds.ox       each kind's numbers: its gait, its voice, sw and span(fr) */
+     paint.donkey, paint.mule, paint.ox, paint.sheep   the painters themselves, (g, 0, 0, dir, fr, ...) into a sprite
+     kinds.donkey, kinds.mule, kinds.ox, kinds.sheep   each kind's numbers: its gait, its voice, sw and span(fr) */
 SHARED.beasts=(()=>{
 
 /* ================================================================ the donkey ================================================================ */
@@ -643,14 +648,143 @@ const OX=(()=>{
 /* ================================================================ end of the ox ============================================================== */
 
 
+/* ================================================================= the sheep ================================================================ */
+const SHEEP=(()=>{
+  /* A ewe of the broad-tailed kind kept in the hills of Asia and Syria, and her lamb: a deep cream fleece in lumpy locks, shaded as a
+     rounded mass lit from above, that hangs a little below the belly line so that the legs come out from under it; a fleece-covered
+     neck carried forward and low; a long, narrow, slightly Roman-nosed head in a darker face color, bare of wool, with a paler muzzle,
+     a dark nostril and a dark almond eye; long ears that droop sideways and back from the poll (never pricked, so that ears and head
+     never make a cross); thin shanks, pale above the dark hooves, the far ones a tone darker and, standing, two drawing units higher in
+     three-quarter perspective; and a broad tail set on at the rump that hangs down over the back of the thighs, in the fleece's own
+     tones. The lamb is a look of its own, not a smaller copy: a shorter, rounder body, longer legs for its size, a bigger head and
+     shorter ears.
+     Frames: 0 stands; 4 to 19 walk (1, 2, 3 are three moments of that walk); 20 and 21 bleat, the head up and the mouth open; 22 and 23
+     chew, the head up and the jaw moving; 24 and 25 graze, the head down to the grass (24 the muzzle in it, 25 lifted a little and chewing).
+     A look is {fl, face, k, lamb}: the fleece and face colors, k a size between about 0.9 and 1.1 (its body plan's measures times k, the
+     head and ears drawn at their own size), and lamb:1. A number picks one of the flock's looks (LOOKS). */
+  const FW=FIG.W,FH=FIG.H,X0=FIG.OX,Y0=FIG.OY;
+  const LOOKS=[{fl:'#e4d8bc',face:'#6e4c34',k:1},{fl:'#d8ccb0',face:'#3a2e28',k:.94},{fl:'#ece2ca',face:'#8a6446',k:1.06},{fl:'#cfc2a6',face:'#5a4030',k:.97},
+    {fl:'#e8dcc2',face:'#c8b294',k:1.02},{fl:'#6a5a4c',face:'#2e2420',k:.98},{fl:'#efe6d2',face:'#7a5a40',k:1,lamb:1},{fl:'#e2d6be',face:'#3e322a',k:1,lamb:1}];
+  const look=v=>typeof v==='number'?LOOKS[((v%LOOKS.length)+LOOKS.length)%LOOKS.length]:Object.assign({fl:'#e4d8bc',face:'#6e4c34',k:1},v||{});
+  /* the body plans: hips and shoulders (SH, SF), where the legs go in (LT), the outline of the fleece, the neck, the head (its length and
+     its radius at the poll and the muzzle), the ears, the tail, the leg's radius, and the walk (REACH drawing units a stance, BEAT seconds) */
+  const PLAN={
+    ewe:{SH:-15,SF:13,LT:-23,REACH:20,BEAT:.33,
+      body:[[-24,-35],[-21,-38.6],[-15,-40.4],[-8,-41],[0,-40.8],[7,-40.6],[13,-39],[17.5,-35.5],[19.4,-30.5],[17.6,-25.4],[13,-21.6],[6,-20.2],[-2,-19.8],[-10,-20.4],[-17,-22],[-22.4,-25.6],[-25.2,-30.6]],
+      neck:[[14,-33.5,6.6]],
+      head:{len:10.6,r0:4.3,r1:2.4,ear:9,earR:1.85},
+      poses:{rest:{px:23.6,py:-42.4,al:62,jaw:0,en:152,ef:190},20:{px:24.6,py:-44.4,al:32,jaw:16,en:158,ef:192},21:{px:24.8,py:-45,al:24,jaw:26,en:160,ef:192},22:{px:23.6,py:-42.4,al:62,jaw:7,en:152,ef:190},
+        23:{px:23.8,py:-42,al:65,jaw:0,chew:1,en:150,ef:188},24:{px:21.4,py:-15.2,al:82,jaw:0,low:1,en:112,ef:138},25:{px:21.6,py:-17.4,al:76,jaw:7,low:1,en:118,ef:144}},
+      tail:[[-22.6,-34,3.5],[-25,-23.4,2.8]],legR:[3.4,1.3]},
+    lamb:{SH:-10,SF:8.5,LT:-15.5,REACH:14,BEAT:.24,
+      body:[[-15.6,-24.6],[-13,-27.2],[-8,-28.6],[-1,-28.8],[5,-28.2],[9.6,-26],[12.2,-22.4],[11.4,-18.4],[8,-15.6],[2,-14.6],[-4,-14.6],[-10,-15.6],[-14.4,-18],[-16.2,-21.4]],
+      neck:[[8.5,-23.5,4.8]],
+      head:{len:9,r0:3.9,r1:2.2,ear:6.4,earR:1.55},
+      poses:{rest:{px:15.6,py:-31.6,al:56,jaw:0,en:152,ef:188},20:{px:16.6,py:-33.4,al:26,jaw:18,en:158,ef:192},21:{px:16.8,py:-33.8,al:18,jaw:28,en:160,ef:192},22:{px:15.6,py:-31.6,al:56,jaw:7,en:152,ef:188},
+        23:{px:15.8,py:-31.2,al:59,jaw:0,chew:1,en:150,ef:188},24:{px:14.6,py:-11.6,al:82,jaw:0,low:1,en:112,ef:138},25:{px:14.8,py:-13.2,al:74,jaw:7,low:1,en:118,ef:144}},
+      tail:[[-14.6,-23.6,2.4],[-16,-17.4,1.9]],legR:[2.5,1.15]}};
+  const planOf=v=>v.lamb?PLAN.lamb:PLAN.ewe;
+  const stride=v=>{const P=planOf(v);return P.REACH/.625/2};
+  const frame=(dist,v,lk)=>{const L=look(lk),P=planOf(L),c=Math.max(stride(L),Math.abs(v==null?WALK_V:v)*P.BEAT);return 4+Math.floor((dist/c%1+1)%1*16)%16};
+  const atPose=(W,ph,off,st,R)=>{if(!W)return{hx:st,lift:0,bend:0};const p=((ph-off)%1+1)%1,B=.625;if(p<B)return{hx:R/2-R*p/B,lift:0,bend:0};
+    const v=(p-B)/(1-B),q=Math.sin(Math.PI*v);return{hx:-R/2*Math.cos(Math.PI*v),lift:v?1+Math.round(3.5*q):0,bend:q}};
+  /* where each hoof stands: hind far, fore far, hind near, fore near (their phase and their place at rest) */
+  const HOOVES=[[.5,4.6,1],[.75,2.6,0],[0,-2.4,1],[.25,-.8,0]];
+  const shadowSpan=(fr,lk)=>{const L=look(lk),P=planOf(L),k=L.k||1,W=fr>=1&&fr<20,q=fr>=4?(fr-4)%16:(fr-1)*4,ph=q/16,
+      xs=HOOVES.map(([off,st,hind])=>(hind?P.SH:P.SF)*k+atPose(W,ph,off,st,P.REACH).hx),x0=Math.min(...xs)-2.5,x1=Math.max(...xs)+3;return[(x1-x0)/4+1.3,(x0+x1)/4]};
+  const smooth=(P,n=4)=>{const R=[],N=P.length;for(let i=0;i<N;i++){const p0=P[(i+N-1)%N],p1=P[i],p2=P[(i+1)%N],p3=P[(i+2)%N];
+    for(let j=0;j<n;j++){const t=j/n,t2=t*t,t3=t2*t;R.push([0,1].map(c=>.5*(2*p1[c]+(p2[c]-p0[c])*t+(2*p0[c]-5*p1[c]+4*p2[c]-p3[c])*t2+(3*p1[c]-p0[c]-3*p2[c]+p3[c])*t3)))}}return R};
+
+  function sheep(g,x,y,dir,fr,lk){g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+    const L=look(lk),P=planOf(L),k=L.k||1,lamb=!!L.lamb,FL=ramp(L.fl),FC=ramp(L.face),SK=ramp(mix(L.face,L.fl,.3)),HOOF=['#4a3e38','#3a302c','#2a221f','#1e1816','#141010'],
+      W=fr>=1&&fr<20,q=fr>=4&&fr<20?(fr-4)%16:W?(fr-1)*4:0,ph=q/16,o=W&&(q%8===4||q%8===5)?1:0,hd=W?[0,0,0,0,1,2,1,0][q%8]:0,
+      tl=W?Math.round(1.2*Math.cos(6.2832*(ph-.05))):0,HP=Object.assign({},P.poses[fr>=20?Math.min(25,fr):'rest']);
+    if(!HP.low){HP.py+=o+hd;HP.px+=hd*.4}
+    const Zb=new Float32Array(FW*FH).fill(-1e9),Cb=new Array(FW*FH),Pb=new Uint8Array(FW*FH);
+    const idx=(px,py)=>py>=0||py<-Y0||px<-X0||px>=FW-X0?-1:(py+Y0)*FW+px+X0;
+    const put=(px,py,z,col,part)=>{const i=idx(Math.floor(px),Math.floor(py));if(i>=0&&z>Zb[i]){Zb[i]=z;Cb[i]=col;Pb[i]=part}};
+    const partAt=(px,py)=>{const i=idx(Math.floor(px),Math.floor(py));return i<0?0:Pb[i]};
+    const set=(px,py,col)=>{const i=idx(Math.floor(px),Math.floor(py));if(i>=0&&Pb[i])Cb[i]=col};
+    const tn=(nx,ny,nz,px,py,ex)=>{const s=nx*.42-ny*.8+nz*.46+((px+py)&1?.05:-.05);return Math.max(0,Math.min(4,(s>.86?0:s>.56?1:s>.18?2:s>-.16?3:4)+(ex||0)))};
+    const hh=(a,b)=>{let n=Math.imul(a*73856093^b*19349663,0x85ebca6b);n^=n>>>13;return(n>>>0)%97};
+    /* wool: the form's light, broken into locks: each lock a pixel of light on its upper side and a pixel of shade under it, set in
+       staggered rows with a little jitter, so that no grid and no plus appears */
+    const wool=(ex,R)=>(nx,ny,nz,px,py)=>{const T=R||FL;let b=tn(nx,ny,nz,px,py,ex);const row=Math.floor((py-o+40)/3),sh=(row%2)*2+(hh(row,7)%2),cx=px+40+sh,lx=((cx%4)+4)%4,ly=((py-o+40)%3+3)%3,
+        j=hh(Math.floor(cx/4),row)%5;if(j<4){if((lx===1||lx===2&&j<2)&&ly===0)b=Math.max(0,b-1);else if(lx===2&&ly===2&&b>=2&&b<4)b++}return T[b]};
+    const cap=(x0,y0,r0,x1,y1,r1,cz,mat,part)=>{const dx=x1-x0,dy=y1-y0,L2=dx*dx+dy*dy||1,R=Math.max(r0,r1)+1;
+      for(let py=Math.floor(Math.min(y0,y1)-R);py<=Math.max(y0,y1)+R;py++)for(let px=Math.floor(Math.min(x0,x1)-R);px<=Math.max(x0,x1)+R;px++){
+        const X=px+.5-x0,Y=py+.5-y0;let t=(X*dx+Y*dy)/L2;t=t<0?0:t>1?1:t;const ex=X-dx*t,ey=Y-dy*t,d=Math.hypot(ex,ey),r=r0+(r1-r0)*t;if(d>r)continue;
+        const kk=d/r,w=Math.sqrt(1-kk*kk);put(px,py,cz+r*w,mat(ex/r,ey/r,w,px,py,t),part)}};
+    const mass=(Pt,Lz,R,mat,part)=>{let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(const[a,b]of Pt){x0=Math.min(x0,a);x1=Math.max(x1,a);y0=Math.min(y0,b);y1=Math.max(y1,b)}const N=Pt.length;
+      for(let py=Math.floor(y0);py<=y1;py++)for(let px=Math.floor(x0);px<=x1;px++){const cx=px+.5,cy=py+.5;let inn=false,best=1e9,ex=0,ey=0;
+        for(let i=0,j=N-1;i<N;j=i++){const[ax,ay]=Pt[j],[bx,by]=Pt[i];if((ay>cy)!==(by>cy)&&cx<(bx-ax)*(cy-ay)/(by-ay)+ax)inn=!inn;
+          const dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy||1;let t=((cx-ax)*dx+(cy-ay)*dy)/l2;t=t<0?0:t>1?1:t;const qx=ax+dx*t-cx,qy=ay+dy*t-cy,d2=qx*qx+qy*qy;if(d2<best){best=d2;ex=qx;ey=qy}}
+        if(!inn)continue;const d=Math.sqrt(best),qq=Math.max(0,1-d/R),l=d||1,nz=Math.sqrt(1-qq*qq);put(px,py,Lz+R*nz,mat(ex/l*qq,ey/l*qq,nz,px,py),part)}};
+    const K=p=>[p[0]*k,p[1]*k+o];
+    /* the legs, behind the fleece: a woolly thigh or forearm, then the thin shank to the hoof */
+    const leg=([off,st,hind],near)=>{const A=atPose(W,ph,off,st,P.REACH),ex=near?0:1,cz=near?-10:-60,gy=(!W&&!near)?-2:0,sx=(hind?P.SH:P.SF)*k,
+        tx=sx,ty=P.LT*k+o,hx=sx+A.hx,fy=gy-2.6-A.lift,b=A.bend,dx=hx-tx,dy=fy-ty,Ln=Math.hypot(dx,dy),bx=-dy/Ln,by=dx/Ln,
+        jt=hind?.52:.56,jo=hind?(1.2+1.6*b):-(.3+2.6*b),jx=tx+dx*jt+bx*jo,jy=ty+dy*jt+by*jo,[r0,r1]=P.legR,wx=tx+(jx-tx)*.45,wy=ty+(jy-ty)*.45,
+        sk=(nx,ny,nz,px,py)=>SK[Math.min(4,tn(nx,ny,nz,px,py,ex)+(near&&nx<-.3?1:0))];
+      cap(tx,ty,r0*1.1,wx,wy,r0*.78,cz,wool(ex+(near?0:1)),4);cap(wx,wy,r1*1.45,jx,jy,r1*1.2,cz-.5,sk,4);cap(jx,jy,r1*1.2,hx,fy,r1,cz+.5,sk,4);
+      const hm=(nx,ny,nz,px,py)=>HOOF[Math.min(4,tn(nx,ny,nz,px,py,ex))];
+      if(!A.lift){for(let yy=-3;yy<=-1;yy++)for(let xx=-1;xx<=2;xx++)if(!(yy===-3&&xx===2))put(Math.floor(hx)+xx,gy+yy,cz+2,HOOF[yy===-3?1:xx===2?1:2+ex],5)}
+      else{cap(hx,fy,1.4,hx+.8,fy+2.2,1.3,cz+2,hm,5)}};
+    leg(HOOVES[0],0);leg(HOOVES[1],0);leg(HOOVES[2],1);leg(HOOVES[3],1);
+    /* the tail: set on at the rump, broad, hanging over the back of the thighs */
+    {const[[a0,a1,r0],[b0,b1,r1]]=P.tail,[x0,y0]=K([a0,a1]),[x1,y1]=K([b0+tl*.4,b1]);cap(x0,y0,r0*k,x1,y1,r1*k,6,wool(1),7)}
+    /* the fleece: lumpy at its edge, hanging a little below the belly */
+    {const B=smooth(P.body.map(K)),N=B.length,cx=B.reduce((s,p)=>s+p[0],0)/N,cy=B.reduce((s,p)=>s+p[1],0)/N,
+        F=B.map(([x0,y0],i)=>{const a=Math.atan2(y0-cy,x0-cx),bump=.55*Math.sin(i*2.1)+.35*Math.sin(i*3.7+1);return[x0+Math.cos(a)*bump,y0+Math.sin(a)*bump]});
+      mass(F,10,lamb?7:9.5,wool(0),1)}
+    /* the neck, in the fleece, from the shoulders up to the back of the head */
+    const hx0=HP.px*k,hy0=HP.py*k,a=HP.al*Math.PI/180,ux=Math.cos(a),uy=Math.sin(a),vx=-uy,vy=ux,
+      Hp=(u,v)=>[hx0+u*ux+v*vx,hy0+u*uy+v*vy],lu=(px,py)=>(px+.5-hx0)*ux+(py+.5-hy0)*uy,lv=(px,py)=>(px+.5-hx0)*vx+(py+.5-hy0)*vy,Hd=P.head;
+    {const[[n0,n1,nr0]]=P.neck,[s0,s1]=K([n0,n1]),[e0,e1]=Hp(-1.4,.8),m0=(s0+e0)/2+(HP.low?1.8:-.4),m1=(s1+e1)/2+(HP.low?-1.6:-.9);
+      cap(s0,s1,nr0*k,m0,m1,(nr0*k+Hd.r0)/2+.4,20,wool(0),2);cap(m0,m1,(nr0*k+Hd.r0)/2+.4,e0,e1,Hd.r0+.3,21,wool(0),2)}
+    /* the head: the skull and the upper muzzle, and the lower jaw, which opens on its hinge */
+    const ja=(HP.jaw||0)*Math.PI/180,hu=Hd.len*.42,hv=Hd.r0*.55,rot=(u,v)=>[hu+(u-hu)*Math.cos(ja)-(v-hv)*Math.sin(ja),hv+(u-hu)*Math.sin(ja)+(v-hv)*Math.cos(ja)],
+      face=(ex,R)=>(nx,ny,nz,px,py)=>{const T=R||FC,u=lu(px,py),b=tn(nx,ny,nz,px,py,ex);return u>Hd.len-2.6+((px+py)&1?.4:-.4)?mix(T[Math.max(0,b-1)],L.fl,.28):T[b]};
+    {const[a0,a1]=Hp(0,0),[b0,b1]=Hp(Hd.len,-.4);cap(a0,a1,Hd.r0,b0,b1,Hd.r1,30,face(0),3)}
+    {const[a0,a1]=Hp(hu,hv*.6),[b0,b1]=Hp(...rot(Hd.len-.6,Hd.r1*.55)),jl=HP.chew?.7:0;cap(a0,a1,Hd.r0*.6,b0+jl*ux,b1+jl*uy,Hd.r1*.62,29,face(1),3)}
+    if(HP.jaw){const Q=[Hp(hu+1,hv*.5),Hp(Hd.len-.2,Hd.r1*.25),Hp(...rot(Hd.len-.6,Hd.r1*.2))];let x0=99,x1=-99,y0=99,y1=-99;for(const[p,qq]of Q){x0=Math.min(x0,p);x1=Math.max(x1,p);y0=Math.min(y0,qq);y1=Math.max(y1,qq)}
+      for(let py=Math.floor(y0);py<=y1;py++)for(let px=Math.floor(x0);px<=x1;px++){let c=false;for(let i=0,j=2;i<3;j=i++){const[xi,yi]=Q[i],[xj,yj]=Q[j];if(yi>py+.5!==yj>py+.5&&px+.5<(xj-xi)*(py+.5-yi)/(yj-yi)+xi)c=!c}if(c)put(px,py,31,'#3a1a18',3)}}
+    /* the ears: long, drooping out and back from the poll; the near one in front with its paler inside, the far one behind the head */
+    const ear=(u0,v0,ang,len,r,cz,near)=>{const[b0,b1]=Hp(u0,v0),ea=ang*Math.PI/180,ex=Math.cos(ea),ey=Math.sin(ea),[t0,t1]=[b0+ex*len,b1+ey*len],
+        IN=ramp(mix(L.face,'#d89a84',.35));
+      cap(b0,b1,r,t0,t1,r*.75,cz,(nx,ny,nz,px,py,t)=>t>.86?FC[4]:near&&t>.22&&nz>.5&&ny>-.35?IN[t>.6?2:1]:FC[Math.min(4,tn(nx,ny,nz,px,py,near?1:2))],6)};
+    ear(.6,-Hd.r0*.62,HP.ef,Hd.ear*.86,Hd.earR*.9,27,0);ear(.5,-Hd.r0*.2,HP.en,Hd.ear,Hd.earR,40,1);
+    /* the eye: dark almond with a pale lower lid; the nostril; a line of mouth */
+    {const[e0,e1]=Hp(Hd.len*.3,-Hd.r0*.34),X=Math.floor(e0),Y=Math.floor(e1),es=(x,y,c)=>{if(partAt(x,y)===3)set(x,y,c)};
+      es(X,Y,'#120c0a');es(X+(ux>0?1:-1)*0,Y,'#120c0a');es(X+1,Y,'#2a1e18');es(X,Y+1,FC[1]);es(X+1,Y+1,FC[1])}
+    {const[n0,n1]=Hp(Hd.len-.4,-Hd.r1*.35);if(partAt(n0,n1)===3)set(n0,n1,'#1e1412')}
+    if(!HP.jaw)for(let u=Hd.len-3.2;u<=Hd.len-.4;u+=.5){const[p,qq]=Hp(u,Hd.r1*.55);if(partAt(p,qq)===3)set(p,qq,FC[4])}
+    /* small holes left between parts are closed in the color beside them */
+    {const seen=new Uint8Array(FW*FH);for(let i=0;i<FW*FH;i++){if(Pb[i]||seen[i])continue;const st=[i],comp=[];let edge=false;seen[i]=1;
+      while(st.length){const kq=st.pop(),xx=kq%FW,yy=(kq-xx)/FW;comp.push(kq);if(!xx||!yy||xx===FW-1||yy===FH-1)edge=true;
+        for(const j of[kq-1,kq+1,kq-FW,kq+FW])if(j>=0&&j<FW*FH&&!seen[j]&&!Pb[j]&&Math.abs(j%FW-xx)<=1){seen[j]=1;st.push(j)}}
+      if(!edge&&comp.length<5)for(const kq of comp){const n=[kq-1,kq+1,kq-FW,kq+FW].find(j=>Pb[j]&&Pb[j]!==10);if(n!=null){Cb[kq]=Cb[n];Pb[kq]=10}}}}
+    for(let i=0;i<FW*FH;i++)if(Pb[i]){g.fillStyle=Cb[i];g.fillRect(i%FW-X0,Math.floor(i/FW)-Y0,1,1)}
+    g.restore()}
+  /* the bleat: two or three wavering nasal notes, a ewe's lower than a lamb's */
+  const sound=lk=>{const L=look(lk),f=L.lamb?620:430,t=now();
+    for(const[d,f0,f1,h]of[[0,f,f*.97,.2],[.21,f*1.04,f*.9,.34]])tone({f:f0,to:f1,t:t+d,d:h,type:'sawtooth',v:.03,a:.02,sus:1,vib:9,vibd:.6,lp:[[1800,0],[1100,h]]})};
+  return{paint:sheep,frame,look,LOOKS,plan:PLAN,stride,sw:11,span:shadowSpan,sound,voice:[[0,20],[120,21],[330,20],[420,21],[560,0]]}})();
+/* =============================================================== end of the sheep ============================================================ */
+
+
 /* --- common to all: placing with hoof-centered dynamic contact + cast shadows --- */
-const KINDS={donkey:DONKEY,mule:MULE,ox:OX},VOICE={};
-const speak=(id,kind)=>{const K=KINDS[kind];try{K.sound()}catch(e){}VOICE[id]={K,t0:performance.now()};const end=K.voice[K.voice.length-1][0];
+const KINDS={donkey:DONKEY,mule:MULE,ox:OX,sheep:SHEEP},VOICE={};
+const speak=(id,kind,lk)=>{const K=KINDS[kind];try{K.sound(lk)}catch(e){}VOICE[id]={K,t0:performance.now()};const end=K.voice[K.voice.length-1][0];
   return new Promise(res=>setTimeout(()=>{if(VOICE[id]&&VOICE[id].K===K)delete VOICE[id];res()},end))};
 const pose=(id,fr)=>{const v=VOICE[id];if(!v)return fr;const ms=performance.now()-v.t0,V=v.K.voice;if(ms>=V[V.length-1][0]){delete VOICE[id];return fr}
   let f=fr;for(const[t,q]of V)if(ms>=t)f=q;return f||fr};
 const place=(kind,K)=>(g,x,y,dir,fr,load,lit,z)=>{const[sw,sx]=K.span(fr);figure(g,x,y,lit,kind+dir+'|'+fr+'|'+load,s=>K.paint(s,0,0,dir,fr,load),sw,dir*sx,z)};
 return{donkey:place('donkey',DONKEY),mule:place('mule',MULE),
   ox:(g,x,y,dir,fr,c,gar,lit,z)=>{const[sw,sx]=OX.span(fr);figure(g,x,y,lit,'ox'+dir+'|'+fr+'|'+c+(gar?'g':''),s=>OX.paint(s,0,0,dir,fr,c,gar),sw,dir*sx,z)},
-  frame:{donkey:DONKEY.frame,mule:MULE.frame,ox:OX.frame},paint:{donkey:DONKEY.paint,mule:MULE.paint,ox:OX.paint},kinds:KINDS,speak,pose,
+  /* a sheep that stands in the room's depth queue (an actor, or one of a flock that a room's draw places), and one painted into a backdrop */
+  sheep:(g,x,y,dir,fr,lk,lit,z)=>{const[sw,sx]=SHEEP.span(fr,lk);figure(g,x,y,lit,'sheep'+(dir<0?'-1':'1')+'|'+fr+'|'+(typeof lk==='object'?JSON.stringify(lk):lk|0),s=>SHEEP.paint(s,0,0,dir,fr,lk),sw,dir*sx,z)},
+  sheepStill:(g,x,y,dir,fr,lk)=>{const[sw,sx]=SHEEP.span(fr,lk),cx=x+dir*sx;oval(g,cx,y-.4,sw,2,'rgba(24,18,32,.2)');oval(g,cx,y-.4,sw*.68,1.3,'rgba(24,18,32,.24)');SHEEP.paint(g,x,y,dir,fr,lk)},
+  flock:(n,seed)=>{const r=rng(seed||7),L=SHEEP.LOOKS,out=[];for(let i=0;i<n;i++){const lamb=i%4===3;out.push({look:lamb?6+(i>>2)%2:Math.floor(r()*6),dir:r()<.5?-1:1,fr:[0,24,25,0,22,24][Math.floor(r()*6)],ph:r()})}return out},
+  frame:{donkey:DONKEY.frame,mule:MULE.frame,ox:OX.frame,sheep:SHEEP.frame},paint:{donkey:DONKEY.paint,mule:MULE.paint,ox:OX.paint,sheep:SHEEP.paint},kinds:KINDS,speak,pose,
   DONKEY_STRIDE:DONKEY.stride,DONKEY_BEAT:DONKEY.beat}})();
