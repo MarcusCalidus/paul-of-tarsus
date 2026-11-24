@@ -23,7 +23,9 @@ function burn4(r,x0,step,w,h){const d=mk(4,4)[1];for(let i=x0;i<320;i+=step)boar
 /* ============ MUSIC AND AMBIENCE (plain data, played by the engine's sequencer) ============ */
 /* A sea crossing in E Aeolian: a harp rocks in three, three and two like a hull on a swell, over a slow bass and a frame drum.
    In the synagogue and at sea (mood "calm") a ney takes the tune in the second half; in the harbors (mood "hope") a reed pipe plays it
-   throughout, with a shaker. Before the proconsul (mood "tense") only a drone, a slow drum and a few notes of the lyre remain. */
+   throughout, with a shaker. Before the proconsul (mood "tense") nothing is held: the low string plucks the keynote in the same
+   threes, threes and twos and leans on the note above it, the drum ticks with it and almost stops every fourth bar, and the ney
+   begins the tune and breaks off a note before it comes home. */
 const _=null,
  TUNE=[[[0,4,4],[4,5,2],[6,4,2],[8,2,4],[12,4,4]],[[0,3,4],[4,2,2],[6,1,2],[8,0,8]],[[0,2,4],[4,4,2],[6,5,2],[8,6,4],[12,4,4]],[[0,5,4],[4,4,4],[8,4,8]],
   [[0,7,4],[4,6,2],[6,5,2],[8,4,4],[12,2,4]],[[0,3,4],[4,4,2],[6,5,2],[8,4,8]],[[0,2,2],[2,3,2],[4,4,2],[6,6,2],[8,7,4],[12,6,4]],[[0,4,4],[4,2,4],[8,0,8]]],
@@ -32,9 +34,10 @@ const _=null,
   {inst:'bass',moods:['calm','hope'],prog:'AABAACDA',len:5,seq:{A:[-7,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],B:[-8,_,_,_,_,_,_,_,-4,_,_,_,_,_,_,_],C:[-5,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],D:[-9,_,_,_,_,_,_,_,-5,_,_,_,_,_,-4,_]}},
   {drum:1,moods:['calm'],seq:{A:'d..k..t.d..k..t.'},vol:.6},
   {drum:1,moods:['hope'],prog:'AB',seq:{A:'d.sk.st.d.sk.st.',B:'d.sk.st.d.skbst.'}},
-  {drum:1,moods:['tense'],seq:{A:'d.......d.d.....'},vol:.8},
-  {drone:[0,7],every:32,moods:['tense']},
-  {inst:'lyre',moods:['tense'],prog:'AB',len:4,seq:{A:[0,_,_,_,_,_,_,_,_,_,1,_,_,_,_,_],B:[0,_,_,_,_,_,_,_,_,_,-1,_,2,_,_,_]},vol:.7},
+  {inst:'bass',moods:['tense'],prog:'AABC',len:2,vol:.9,seq:{
+    A:[-7,_,_,-7,_,_,-6,_,-7,_,_,-7,_,_,_,_],B:[-7,_,_,-7,_,_,-6,_,-6,_,_,-7,_,_,-10,_],C:[-7,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_]}},
+  {drum:1,moods:['tense'],prog:'AABC',seq:{A:'d..k..k.d..k..k.',B:'d..k..k.d..k.kk.',C:'d...............'},vol:.6},
+  {inst:'ney',moods:['tense'],oct:12,loop:8,vol:.8,lines:[TUNE[0],TUNE[1].slice(0,-1),[],[],TUNE[4],TUNE[5].slice(0,2),[],[]]},
   {inst:'ney',moods:['calm'],from:8,oct:12,lines:TUNE},
   {inst:'aulos',moods:['hope'],loop:8,oct:12,lines:TUNE}]};
 

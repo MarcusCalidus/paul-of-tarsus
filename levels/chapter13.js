@@ -32,8 +32,9 @@ LEVEL(13,()=>{
    single held note ("noon"); by lamplight it is played on the harp ("lamp"). The tune has a gap: until the evening at the tentmakers'
    table it leaves out the sixth note of its scale and steps over the place where that note belongs (GAP, mood "gap"). At that table
    the note is heard for the first time (given13), and from then on it belongs to the tune (FULL). On the road above the city the tune
-   is far off ("road"); in the synagogue, when the quarrel comes, a low string and a slow drum ("door"); what is told in the dark has no
-   music ("night"); and at the fire all three play it together ("fire"). Nothing is claimed about how music was played then. */
+   is far off ("road"); in the synagogue, when the quarrel comes ("door"), nothing is held: a low string plucks the keynote and
+   leans on the note above it, a drum ticks with it and almost stops every fourth bar, and a ney begins the tune and breaks off a
+   note before it comes home; what is told in the dark has no music ("night"); and at the fire all three play it together ("fire"). Nothing is claimed about how music was played then. */
 const _=null,SCALE=[0,2,3,5,7,9,10],
  GAP={A:[0,_,2,_,4,_,3,_,_],B:[4,_,6,_,4,_,2,_,_],C:[7,_,6,_,4,_,3,_,2],D:[1,_,2,_,0,_,0,_,_]},
  FULL={A:[0,_,2,_,4,_,3,_,_],B:[4,_,5,_,6,_,4,_,2],C:[7,_,6,_,5,_,4,_,2],D:[1,_,2,_,0,_,0,_,_]},
@@ -49,9 +50,12 @@ const _=null,SCALE=[0,2,3,5,7,9,10],
   {inst:'harp',moods:['lamp','fire'],prog:'ABCD',len:4,oct:12,seq:FULL,vol:.75},
   {inst:'bass',moods:['lamp'],prog:'ABAB',len:7,seq:{A:[-7,_,_,_,_,_,_,_,_],B:[-5,_,_,_,_,_,_,_,_]},vol:.6},
   {inst:'harp',moods:['road'],prog:'ABCD',len:5,oct:12,seq:GAP,vol:.4},
-  {drone:[0],every:36,moods:['road','door'],vol:.3},
-  {inst:'bass',moods:['door'],prog:'ABAB',len:6,seq:{A:[-7,_,_,_,_,_,_,_,_],B:[-6,_,_,_,_,_,_,_,_]},vol:.9},
-  {drum:1,moods:['door'],prog:'A',seq:{A:'d.....k..'},vol:.7}]};
+  {drone:[0],every:36,moods:['road'],vol:.3},
+  {inst:'bass',moods:['door'],prog:'AABC',len:2,vol:.9,seq:{A:[-7,_,_,_,-7,_,-6,_,_],B:[-7,_,_,_,-7,_,-6,_,-10],C:[-7,_,_,_,_,_,_,_,_]}},
+  {drum:1,moods:['door'],prog:'AABC',seq:{A:'d.k...k..',B:'d.k...k.k',C:'d........'},vol:.6},
+  /* FULL as a line, broken off: A, B without its last note, two bars of rest, C, the first two notes of D, two bars of rest */
+  {inst:'ney',moods:['door'],oct:12,loop:8,vol:.8,lines:[[[0,0,2],[2,2,2],[4,4,2],[6,3,3]],[[0,4,2],[2,5,2],[4,6,2],[6,4,2]],[],[],
+    [[0,7,2],[2,6,2],[4,5,2],[6,4,2],[8,2,1]],[[0,1,2],[2,2,2]],[],[]]}]};
 /* given13: the note that the tune has left out, heard for the first time: alone, and then in its place between its neighbors */
 const given13=()=>{if(!AU.ctx)return;const t=now()+.05,f=d=>mtof(note(d,1,MUSIC));INST.harp(f(5),t,1.6,.9);[4,5,6].forEach((d,i)=>INST.harp(f(d),t+1.5+i*.3,i===2?1.2:.5,.8))};
 /* pebble13: a pebble set down on wood; carry13: a handful taken up, and one set down in the next place */

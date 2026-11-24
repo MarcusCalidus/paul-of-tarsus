@@ -113,6 +113,7 @@ The [Terms of Use](https://www.jw.org/en/terms-of-use/) of jw.org (which cover i
 - The game opens on its opening picture (`shared/splash.js`): its name over a tentmaker's bench by lamplight, once each time the game is opened and not when the player comes back to the title from a game. It is silent until the player clicks or presses a key, and never tries to sound before that. The click starts the overture; when its melody has been heard, or on a second click, the picture passes into the title's own and the chapters appear. In that picture only the flame moves.
 - There are no image or audio files. Everything is painted in code on a canvas, and all music and sound are synthesized with the Web Audio API.
 - Each chapter has its own score, and each room has a mood and ambience to match.
+- Tension is never a held drone. Where a scene is tense, the music moves, in the chapter's own key, bar and tune: a low string plucks the keynote and leans on the note above it, a drum ticks with it and almost stops every fourth bar, and a ney begins the chapter's tune and breaks off before it comes home. A tense mood is no louder than the chapter's other music. A low held note may lie quietly under a calm or a night scene (decided for issue #80, 2026-11-24).
 - Sound follows the player's device. On iPhone and iPad the game stays quiet in Silent Mode; never work around it (no HTML audio element, no `playback` audio session). The game may say that Silent Mode could be on, but it must not claim to know: Safari does not tell a page.
 
 ## 5. Code

@@ -38,7 +38,7 @@ On his own island Barnabas is the one who is known. He asks the presiding office
 
 | Chapter | Music | Around you |
 |---|---|---|
-| Sent Out to Cyprus | A harp in E Aeolian that rocks in three, three and two like a hull on a swell, with a ney at sea and a reed pipe in the harbors; before the proconsul only a drone, a slow drum and a few notes of the lyre | Waves, gulls and creaking timbers, a coppersmith's hammer in the market of Salamis, lamps in the synagogue, a brazier in the proconsul's hall |
+| Sent Out to Cyprus | A harp in E Aeolian that rocks in three, three and two like a hull on a swell, with a ney at sea and a reed pipe in the harbors; before the proconsul a low string that plucks the keynote and leans on the note above it, a ticking drum that almost stops every fourth bar, and a ney that begins the tune and breaks off before it comes home | Waves, gulls and creaking timbers, a coppersmith's hammer in the market of Salamis, lamps in the synagogue, a brazier in the proconsul's hall |
 
 ## The travel map
 

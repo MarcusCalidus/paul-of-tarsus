@@ -40,7 +40,7 @@ Optional: give the silver coins to Nathan before leaving Iconium, and give the w
 
 | Chapter | Music | Around you |
 |---|---|---|
-| The Door to Faith | A tune for a high, well-watered plain in F Lydian: lyre, bass, frame drum and reed pipe on the roads; harp and ney indoors; a drone, a slow drum and a few notes of the oud when stones are spoken of; and when a whole town runs to the gate with garlands, a doubled drum, hand claps, a drone and a pair of pipes, one going round and round on four notes while the other holds the keynote under it | The fountain and the saddlers' hammers of Iconium, the well and the crowd of Lystra, crickets and an owl at dusk outside the city, a thorn fire in the house of Lois, wind over the stubble at Derbe |
+| The Door to Faith | A tune for a high, well-watered plain in F Lydian: lyre, bass, frame drum and reed pipe on the roads; harp and ney indoors; a low string that plucks the keynote and leans on the note above it, a ticking drum that almost stops every fourth bar, and a ney that begins the tune and breaks off before it comes home when stones are spoken of; and when a whole town runs to the gate with garlands, a doubled drum, hand claps, a drone and a pair of pipes, one going round and round on four notes while the other holds the keynote under it | The fountain and the saddlers' hammers of Iconium, the well and the crowd of Lystra, crickets and an owl at dusk outside the city, a thorn fire in the house of Lois, wind over the stubble at Derbe |
 
 ## The travel map
 
