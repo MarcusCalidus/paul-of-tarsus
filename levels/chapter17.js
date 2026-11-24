@@ -16,7 +16,7 @@
    of Cyprus, an early disciple, whose guests they will be (his house is in Jerusalem: he is named, not shown).
    Acts does not say how the ship was chosen, that the unloading took seven days or that Paul and the others helped with it, how the
    disciples were found, the names and words of Philip's daughters, or whether they went from Ptolemais to Caesarea by land or by sea; the
-   end screen says so. Akestor, Moschos, Kleon and Sostratos (the masters at Patara), the water seller, the butcher, the coppersmith, the
+   end screen says so. Akestor, Moschos, Kallikrates and Sostratos (the masters at Patara), the water seller, the butcher, the coppersmith, the
    two women at the meat stall, and the brothers and sisters of Tyre (Euanthe, Phanias, Myrto, Joezer, the children Melitta and
    Philinos), and Aulus and Benaiah of Caesarea are invented. Everything that is said is invented; the end screen says so.
    What the account says is told by the narrator, in paraphrase with its reference (TOLD below), and never put into a mouth as a
@@ -30,7 +30,7 @@
       in each night; (b) ready to sail: laden and provisioned, not emptying her hold; (c) going with this wind, not against it; and (d)
       watered for days out of sight of land. What each ship shows (Look) and what her master says about his own work (Talk):
         the coaster (Moschos): small and open; oil for the next town along and back by dark; bread for a day. Fails (a) and (d).
-        the ship with the red wale (Kleon): big, but riding high: jars come out of her; she waits for timber from up the valley. Fails (b).
+        the ship with the red wale (Kallikrates): big, but riding high: jars come out of her; she waits for timber from up the valley. Fails (b).
         the ship with the white wale (Sostratos): big, deep with wheat, her yard lashed down hard and her crew idle; four days the wind has
           blown in his face, and he has not gained a mile. She is bound against this wind: fails (c).
         the ship with the black hull (Akestor): big, deep laden, her crew loosing the ties on her yard; a boat takes water jars out to her,
@@ -207,7 +207,7 @@ const foot17=(g,x,y,rx,ry)=>oval(g,x,y,rx,ry||1.4,'rgba(30,24,40,.28)');
        black, her yard lowered abaft the mast with the sail still furled, three of her crew at it, loosing its ties (the loose ends lie on
        the roll); sacks heaped round the foot of her mast, a row of water jars along her rail forward, her cable running out from the
        bow; beside her the boat (x 178..204, waterline 92) with water jars and a man at the oars.
-     the red-waled ship (Kleon), moored at the quay at the right (x 214.., waterline 99): big and riding high, the weedy green band of her
+     the red-waled ship (Kallikrates), moored at the quay at the right (x 214.., waterline 99): big and riding high, the weedy green band of her
        bottom out of the water, a red wale, jars standing on her deck by the open hatch round the foot of her mast, her gangplank down
        onto the quay at x 246..258, and the jars that have come out of her standing in rows on the quay behind the walk strip (x 286..318).
      the coaster (Moschos), moored at the quay at the left (x -8..76, waterline 99): small and open, oil jars bedded in brushwood round her
@@ -222,7 +222,7 @@ const foot17=(g,x,y,rx,ry)=>oval(g,x,y,rx,ry||1.4,'rgba(30,24,40,.28)');
    ship 126,58,92,28 · the boat 176,84,30,10 · the red-waled ship 214,48,106,52 · the coaster 0,76,76,24 · the goat 48,74,16,10 · the
    water jars 206,104,22,12 · the chest 46,120,26,12. Walk strip 16..304, 110..138. Actors (place17): Timothy 20,128 · Aristarchus 34,116 ·
    Trophimus 84,132 · Luke 102,124 · Moschos 120,114 · Sostratos 152,118 (seated on a stone, a prop with foot 144,116,16,4) · Akestor
-   190,128 · the water seller 232,116 · Kleon 272,122; Paul comes in at 140,134. Gulls stand on the edge at x 160..170. Heads along the
+   190,128 · the water seller 232,116 · Kallikrates 272,122; Paul comes in at 140,134. Gulls stand on the edge at x 160..170. Heads along the
    strip come at y 66..94: behind them lie the hulls, the open water and the quay's paving; nothing round stands there. */
 const HZPatara17=62,EDGEPatara17=100;
 let OPatara17=null,SPatara17=null;
@@ -1812,9 +1812,9 @@ async function rest17(){if(!F.philip)return say(P,'first_greet_our_host');if(F.a
 async function belt17(it){if(it!=='belt17')return false;if(F.bound)return say(AG,'agabus_keep_it_now',{to:P});
   await say(P,'let_me_take_my_coins_out_first',{to:AG});if(!F.coins){F.coins=1;addItem('coins17')}
   delItem('belt17');SFX.pick();await say(P,'here_is_my_belt',{to:AG});
-  await walk(AG,173,116);AG.dir=1;AG.bound=1;await wait(fast()?50:1200);
+  await walk(AG,173,116);AG.dir=1;AG.bound=1;P.dir=AG.x<P.x?-1:1;await wait(fast()?50:1200);
   await tell('v11');await wait(fast()?50:700);
-  AG.bound=0;await walk(AG,236,122);AG.dir=-1;await say(AG,'agabus_here_is_your_belt',{to:P});addItem('belt17');F.bound=1;
+  AG.bound=0;await walk(AG,236,122);AG.dir=-1;P.dir=AG.x<P.x?-1:1;await say(AG,'agabus_here_is_your_belt',{to:P});addItem('belt17');F.bound=1;
   await tell('v12');AU.mood='plea';
   for(const a of[TI,AR,TR,D1,D2,D3,D4,AU17,BE])a.bow=true;
   playAs(LK);place17('philip17');viewOf(LK);await say(LK,'luke_and_i_was_one_of_them',TH);codeBtn()}
