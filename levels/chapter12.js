@@ -822,21 +822,74 @@ ART.eph12={w:320,q:12,
 
 /* ---------- Antioch ---------- */
 /* The court in Antioch of Syria where the journey began (Acts 15:35, 40), painted anew, in the light of evening. */
+/* antBeyond12: over the wall of the court in Antioch, the city in the evening: the tiled roofs of the next houses and a flat roof with its
+   parapet, their west faces warm in the low sun and their east sides in shade, and a cypress; all of it stands below the open sky
+   where the birds fly, and above the coping where they sit. From a seed of its own. */
+function antBeyond12(g){const q=rng(1241);
+  for(const[x,w,y]of[[-4,58,19],[196,46,21],[236,40,17]]){const P=[x,28,x+6,y,x+w-6,y,x+w,28];poly(g,P,'#b0623e');
+    clipTo(g,()=>poly(g,P),()=>{for(let i=x;i<x+w;i+=2.2){R(g,i,y,1,10,'#c87a52');R(g,i+1,y,.5,10,'#8a4430')}g.fillStyle=lg(g,x,0,x+w,0,['rgba(255,210,150,.35)','rgba(60,40,70,.35)']);g.fillRect(x,y,w,10)});
+    R(g,x+5,y-.6,w-10,1,'#d88c60')}
+  /* a flat roof with its parapet, and the corner of its upper room */
+  R(g,96,22,30,6,'#d8c49a');R(g,96,22,30,.6,'#f4e0b8');R(g,121,22,5,6,'#a89070');R(g,100,15,14,7,'#e2cca0');R(g,100,15,14,.6,'#fbe8c0');R(g,111,15,3,7,'#b49a76');R(g,104,17,3,3.4,'#3a2a2a');
+  cypress(g,292,29,24,'#3e5838');cypress(g,302,29,18,'#46603e')}
+/* antWall12: the wall of the court made one that has stood in the sun and the rain: the plaster renewed in patches, soft streaks under the
+   coping, a darker foot where the rain splashes back, and the shade of the coping's lip. No line runs along it that the tree or a
+   jamb would cross. From a seed of its own. */
+function antWall12(g,W){const q=rng(1243);
+  inRect(g,0,36,320,68,()=>{comp(g,'soft-light',.45,()=>{for(let i=0;i<10;i++)pool(g,q()*320,44+q()*44,14+q()*24,8+q()*10,q()<.5?'#fff6dc':'#b4a07e',.55,'source-over')});
+    tex(g,'blotch',.14,0,36,320,68,'soft-light',1.4);
+    for(let i=0;i<20;i++){const sx=q()*316,sl=6+q()*12,sw=1.5+q()*2.5;g.fillStyle=lg(g,0,36,0,36+sl,['rgba(110,94,76,.16)','rgba(110,94,76,0)']);g.fillRect(sx,36,sw,sl)}
+    const P=[0,104];for(let i=0;i<=320;i+=4)P.push(i,96-Math.sin(i*.11)*1.2-q()*1.6);P.push(320,104);
+    comp(g,'multiply',.3,()=>{poly(g,P);g.fillStyle=lg(g,0,92,0,104,['rgba(130,112,92,.2)','rgba(110,92,76,.9)']);g.fill()});
+    for(let i=0;i<80;i++)R(g,q()*320,103-q()*7,.5+q(),.5,q()<.6?'rgba(70,56,44,.26)':'rgba(255,246,220,.2)')})}
+/* antGate12: what is seen through the open gate: the street beyond and the house across it, whose front closes the view; its foot lies
+   on the street at the scene's own level, its face warm in the evening. The thickness of the arch on its shaded side, and the stones of
+   the jambs. */
+function antGate12(g,W){g.save();arch(g,134,52,48,52);g.clip();
+  g.fillStyle=lg(g,0,52,0,86,['#f0d0a4','#e2c49a']);g.fillRect(134,52,48,34);
+  /* the house across the street: its plaster, its door and a small window, the shade of its eave */
+  R(g,134,61,48,25,'#dcc49a');tex(g,'mott',.3,134,61,48,25,'overlay',1);R(g,134,59,48,2.4,'#b0623e');R(g,134,59,48,.6,'#d88c60');R(g,134,61.4,48,2.4,'rgba(80,50,50,.3)');
+  R(g,150,67,10,19,'#4a3630');R(g,150,67,10,1.2,'#2a1e1a');R(g,151,68,1.4,18,'#5e463a');R(g,166,64,6,5,'#3a2a28');R(g,165.4,69,7.2,.8,'#e8d4ac');
+  /* the street at its foot: paving in the evening light, its joints running toward us, and the long shade of the gate's own wall */
+  g.fillStyle=lg(g,0,86,0,104,['#c8b48e','#b8a07c']);g.fillRect(134,86,48,18);for(const k of[-3,-1,1,3])stroke(g,[158+k*3,86,158+k*12,104],'rgba(90,70,50,.28)',.5);
+  for(const y of[89,93.4,99])R(g,134,y,48,.5,'rgba(90,70,50,.22)');
+  poly(g,[134,86,148,86,140,104,134,104],'rgba(70,56,80,.35)');ao(g,134,52,48,10,'t',.35,'#3a2a30');g.restore();
+  /* the jambs of dressed stone and the arch's thickness */
+  poly(g,[176,104,182,104,182,78,176,80],tint(W,-.3));ao(g,176,78,6,26,'r',.2,'#3a3050');
+  for(let y=56;y<104;y+=6.4){R(g,128,y,6,6,tint(W,-.16+((y*7)%3)*.03));R(g,128,y,6,.5,tint(W,.04));R(g,182,y+3.2,6,6,tint(W,-.22+((y*5)%3)*.03));R(g,182,y+3.2,6,.5,tint(W,-.02))}}
+/* antOlive12: the olive tree of the court: an old trunk that twists and splits, the bark furrowed, lit from the west; its crown in many
+   clusters of grey-green with the wall showing between them, the leaves silver where the low sun takes them; and its long shade on the
+   paving toward the east. From a seed of its own. */
+function antOliveTrunk12(g){const q=rng(1245);
+  poly(g,[36,104,48,104,46,96,44,88,47,80,50,72,46,70,43,78,40,86,36,80,30,74,28,76,34,86,37,96],'#5a4a36');
+  poly(g,[36,104,40,104,40,96,38,88,34,84,30,76,28,76,34,86,37,96],'#7a6648');
+  for(let i=0;i<12;i++){const x=37+q()*9,y=86+q()*17;stroke(g,[x,y,x+(q()-.5),y-3-q()*4],'rgba(40,30,22,.5)',.5)}
+  stroke(g,[45.4,96,43.4,88,46.4,80],'rgba(255,220,170,.25)',.5);shadow12(g,42,104.6,9,1.3,.4,'#2a1e28')}
+function antOliveCrown12(g){const q=rng(1247);
+  for(const[x,y,rx,ry]of[[24,64,10,6],[36,52,12,7],[54,50,11,6.5],[66,60,9,5.5],[30,76,7,4.4],[60,72,7,4],[46,62,9,5]])foliage(g,x,y,rx,ry,'#6e8258',q,rx*ry*1.4);
+  for(let i=0;i<90;i++){const a=q()*6.283,d=Math.sqrt(q()),x=44+Math.cos(a)*d*24,y=60+Math.sin(a)*d*14;R(g,x,y,1+q()*.8,.6,q()<.5?'rgba(214,224,196,.5)':'rgba(56,70,48,.5)')}
+  /* the side away from the sun: darker dabs over the east of each cluster */
+  for(const[x,y,rx,ry]of[[30,66,5,4],[44,55,6,5],[61,53,6,4.4],[71,62,5,4],[35,78,4,3],[65,74,4,3],[52,64,5,4]])for(let i=0;i<rx*ry;i++){const a=q()*6.283,d=Math.sqrt(q());oval(g,x+Math.cos(a)*d*rx,y+Math.sin(a)*d*ry,.9+q(),.6+q()*.5,'rgba(52,62,58,.35)')}}
 ART.ant12={w:320,q:12,
  paint(g){const r=rng(1221),W='#e2d2aa';
   sky(g,320,50,['#5a7ab4','#a8b0c8','#e8c8a0','#f4d8a8']);cloud(g,90,14,60,5,r,'#ffe8c8','#b89ab0');cloud(g,250,10,50,4,r,'#ffe8c8','#b89ab0');
-  ridge(g,0,320,52,x=>12+8*Math.sin(x/61)+4*Math.sin(x/23+1),['#8f8aa8','#a89a9c']);
-  plaster(g,0,36,320,68,W,r,{patch:3,cracks:0,brick:'#b08a5a',t:.36});skipCracks12(r,5);
+  ridge(g,0,320,52,x=>12+8*Math.sin(x/61)+4*Math.sin(x/23+1),['#8f8aa8','#a89a9c']);antBeyond12(g);
+  plaster(g,0,36,320,68,W,r,{patch:3,cracks:0,brick:'#b08a5a',t:.36});skipCracks12(r,5);antWall12(g,W);
   /* cracks cut by hand, high under the coping, where they run to no head; the shade under the coping */
-  cracks12(g,1304,[[92,39,3],[206,39,3],[300,40,3]]);ao(g,0,36,320,5,'t',.28,'#3a3050');R(g,0,32,320,4.6,tint(W,.12));R(g,0,32,320,.6,tint(W,.36));for(let i=4;i<320;i+=10){R(g,i,28,6,4.4,tint(W,.06));R(g,i,28,6,.6,tint(W,.3))}
+  cracks12(g,1304,[[92,39,3],[206,39,3],[300,40,3]]);ao(g,0,36,320,5,'t',.28,'#3a3050');R(g,0,32,320,4.6,tint(W,.12));R(g,0,32,320,.6,tint(W,.36));for(let i=4;i<320;i+=10){R(g,i,28,6,4.4,tint(W,.06));R(g,i,28,6,.6,tint(W,.3));R(g,i,32.4,6,.6,tint(W,-.3))}
   /* the gate, open: the street beyond it */
-  R(g,128,48,60,56,tint(W,-.2));arch(g,134,52,48,52);g.fillStyle=lg(g,0,52,0,104,['#e8c8a0','#c8b090','#b8a888']);g.fill();g.save();arch(g,134,52,48,52);g.clip();R(g,134,84,48,20,'#c2b594');R(g,140,70,12,14,'#d8caa4');R(g,158,66,14,18,'#c8b890');ao(g,134,52,48,12,'t',.4);g.restore();
+  R(g,128,48,60,56,tint(W,-.2));antGate12(g,W);
   boards(g,122,58,12,46,4,'#6a4a2c',r);boards(g,182,58,12,46,4,'#6a4a2c',r);
+  /* the two leaves of the gate, folded back: the one on the left in the evening sun, the one on the right in shade, each on its soft shade */
+  for(const[x,k]of[[122,.1],[182,-.3]]){comp(g,'soft-light',.5,()=>R(g,x,58,12,46,k>0?'#ffe0b0':'#504060'));R(g,x,58,12,.6,'#2a1c12');ao(g,x,58,12,4,'t',.4,'#1a1010');R(g,x+(k>0?12:-1.4),58,1.4,46,'rgba(40,30,50,.3)')}
   /* an olive tree, benches, jars */
-  stroke(g,[42,104,40,84,46,70],'#5a4a36',3);stroke(g,[41,86,32,72],'#5a4a36',2);foliage(g,44,58,26,15,'#6f8456',r,220);foliage(g,58,64,14,9,'#84966a',r,60);
+  antOliveTrunk12(g);foliage(g,44,58,26,15,'#6f8456',r,220);foliage(g,58,64,14,9,'#84966a',r,60);antOliveCrown12(g);
   ao(g,0,98,320,6,'b',.22,'#3a3050');bench(g,212,89,84,'#cfc5a8');stool(g,70,96,36);for(const[x,c,k]of[[204,'#9a5a36','jar'],[304,'#8a4a2a','pithos']])vessel(g,x,105,k==='pithos'?5:3.6,k==='pithos'?14:10,c,k);
   pave(g,0,103,320,144,'#cdbf9c',r,{vx:160,vy:58,rows:4,step:44,v:.07});ao(g,0,103,320,6,'t',.35,'#3a3050');
   shade(g,[0,104,320,104,320,118,0,122],earth12('#9a8cb8',.3),.4);
+  /* the olive's long shade on the paving, thrown east by the low sun; a basket and a broom by the bench */
+  comp(g,'multiply',.22,()=>{poly(g,[38,105,48,105,120,111,104,113],'#8a7aa8');pool(g,100,110,30,3,'#8a7aa8',.8,'source-over')});
+  shadow12(g,300,105,7,1.2,.4,'#2a1e28');R(g,110,98,9,7,'#8a6a3a');R(g,110,98,9,.6,'#c8a868');for(let j=0;j<3;j++)R(g,110,99.6+j*1.8,9,.5,'#6a4e2a');shadow12(g,114.5,105.2,6,1,.35,'#2a1e28');
   /* the light of evening, low from the west: warm on the wall and the open paving, the gateway and the near paving in shade */
   sun12(g,320,36,'#d8ccca',l=>{pool(l,150,66,190,40,'#fff2e0',.75);pool(l,160,114,200,14,'#ffeedc',.5);pool(l,180,101,150,5,'#ffe8d0',.3)});
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,0,0,144,['rgba(255,214,150,.5)','rgba(255,200,140,.9)']);g.fillRect(0,0,320,144)});pool(g,160,60,200,90,'#ffd8a0',.14,'screen')},
