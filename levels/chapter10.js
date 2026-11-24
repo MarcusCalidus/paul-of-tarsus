@@ -69,6 +69,14 @@ const{plank:plank10,board:board10,crack:crack10,skipCracks:skipCracks10,shadow:s
 /* beams10: the ceiling over a back wall, its joists running toward the viewer from the wall plate in the perspective of the floor
    (shared ceiling(), as in Chapter One's workshop), and the shade the plate throws on the plaster under it */
 function beams10(g,x0,step,r){ceiling10(g,320,{x0,step,r,vx:160,vy:60});ao(g,0,10.4,320,12,'t',.42,'#2a2030');ao(g,0,10.4,320,3,'t',.25,'#1a1420')}
+/* patches10: the brick patches that plaster() lays in a wall (o.patch), drawn from r exactly as it draws them, so that the rest of the
+   room keeps its shape; at[k], where given, is the place [x, y] that patch k is moved to */
+function patches10(g,w,h,c,r,n,b,at){inRect(g,0,0,w,h,()=>{for(let k=0;k<n;k++){let px=r()*w,py=h*(.15+r()*.8);const pw=6+r()*12,ph=4+r()*7,pts=[];
+  if(at&&at[k])[px,py]=at[k];
+  for(let a=0;a<9;a++){const t=a/9*6.2832,q=.6+r()*.4;pts.push(px+Math.cos(t)*pw*q,py+Math.sin(t)*ph*q)}
+  clipTo(g,()=>poly(g,pts),()=>{R(g,px-pw,py-ph,pw*2,ph*2,tint(b,-.35));
+    for(let j=0,row=0;j<ph*2;j+=2.5,row++)for(let i=-(row%2)*3;i<pw*2;i+=6)R(g,px-pw+i,py-ph+j,5.5,2,tint(b,(r()-.5)*.25))});
+  stroke(g,pts.concat(pts.slice(0,2)),rgba('#000000',.25),.5)}})}
 /* crack set by hand, high on a wall, where they run to no head: [x, y, steps] */
 function cracks10(g,seed,list){const r=rng(seed);for(const[x,y,n]of list)crack10(g,x,y,n,r)}
 const SH='#8f95c8',CLOTH='#3d342d';
@@ -360,7 +368,9 @@ ART.night10={w:320,q:12,
    named and nothing is said of it. The table stands at the back, under the window, and the scrolls lie open on it all day. */
 ART.ber10={w:320,q:12,
  paint(g){const r=rng(1023),W='#e4d8b6',ST='#cabfa2';
-  plaster(g,0,0,320,104,W,r,{patch:2,cracks:0,brick:'#b08a5a',t:.32});skipCracks10(r,3);
+  /* the first brick patch is moved from under the reading table, where it looked like a basket hung there, to the open wall right of
+     the window; its draws are taken as before, so that nothing else moves */
+  plaster(g,0,0,320,104,W,r,{patch:0,cracks:0,t:.32});patches10(g,320,104,W,r,2,'#b08a5a',[[240,52]]);skipCracks10(r,3);
   const rw=rng(1028);beams10(g,18,42,rw);cracks10(g,1030,[[34,14,3],[96,14,3],[236,15,4]]);ao(g,0,94,320,10,'b',.2,'#2a2030');
   /* the window: Mount Bermion layered in morning haze, olive-dotted slopes, and whitewashed foothills */
   R(g,116,20,88,54,tint(W,-.2));g.save();g.beginPath();g.rect(120,24,80,46);g.clip();
