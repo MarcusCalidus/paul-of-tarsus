@@ -122,7 +122,7 @@ const VIA={'caesarea-tarsus':[34.42,33.3,34.5,34.7,34.88,35.75],'tarsus-antioch'
      Cnidus, and east to Rhodes; along the coast of Lycia to Patara. From Patara across the open sea, well south of Cyprus, which is left
      on the left (21:3), to Tyre; down the coast to Ptolemais; and round Carmel along the coast to Caesarea. The account names no course,
      and does not say whether the last leg went by land or by sea: the lines keep to the coast. */
-  'miletus-cos':[27.12,37.4,27.1,37.15,27.22,36.98],'cos-rhodes':[27.39,36.765,27.37,36.66,27.75,36.56,28.05,36.49],'rhodes-patara':[28.6,36.48,29.05,36.38],
+  'miletus-cos':[27.12,37.4,27.1,37.15,27.22,36.98],'cos-rhodes':[27.375,36.76,27.37,36.66,27.75,36.56,28.05,36.49],'rhodes-patara':[28.6,36.48,29.05,36.38],
   'patara-tyre':[29.6,35.95,30.5,34.9,31.6,34.35,32.6,34.1,33.6,33.95,34.4,33.6,34.9,33.33],'tyre-ptolemais':[35.13,33.2,35.05,33.02],
   'ptolemais-caesarea':[35.0,32.92,34.9,32.82,34.88,32.66]};
 /* region names sit where no coast, lake or route runs through them. close: a name with its letters set closer together, for a region

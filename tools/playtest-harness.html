@@ -276,7 +276,7 @@
       inWin=id=>{const[x,y]=M.where(id);return x>6&&x<314&&y>6&&y<138},
       COAST=[['miletus','cos','new sea'],['cos','rhodes','new sea'],['rhodes','patara','new sea']],
       ON=[['patara','tyre','new sea'],['tyre','ptolemais','new sea'],['ptolemais','caesarea','new sea'],['caesarea','tojerusalem','new']],
-      LAB17={cos:{lab:'l',dx:-1.5,dy:-3},rhodes:{lab:'l',dx:-9,dy:7}},
+      LAB17={cos:{lab:'l',dx:-1.5,dy:-3},rhodes:{lab:'r',dx:-2,dy:7},patara:{lab:'r',dy:-4}},
       MAPS=[['caria','the coaster from Miletus to Patara',COAST,{}],['levant','the whole voyage',[...COAST.map(l=>l.slice(0,2)),...ON],LAB17],['levant','from Patara to Caesarea and the road inland',ON,LAB17]],pics=[];
     for(const[view,what,R,labels]of MAPS){await M.journey(R,{view,labels,instant:1});await wait(60);const c=cross(M.state.legs),cl=mapClear(),td=tidy(),ids=[...new Set(R.flatMap(l=>l.slice(0,2)))].filter(k=>!M.places[k].hide),out=ids.filter(k=>!inWin(k));
       ok(c===0&&cl&&!td.length&&!out.length&&M.state.legs.length===R.length,`map17, ${what} (${view}): ${R.length} legs, none crosses another, no name crosses a coast or a route or touches another, and every place lies in the window`+
@@ -309,7 +309,7 @@
     WHO.forEach(([nm,o],r)=>{const y=34+r*chh;COLS.forEach(([fr,d,cap],i)=>{const x=i*cw;g.fillStyle=(i+r)%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw-2,chh-2);
         g.drawImage(sprite(['boundsheet',r,fr,d].join('|'),q=>person(q,0,0,o,d,fr,0,0,0,0,0),d),FIG.OX-25,FIG.OY-95,50,96,x,y+8,50*Z,96*Z);text(i?cap:nm,x+5,y+chh-6,11)});
       const sp=sprite(['boundsheet',r,-6,1].join('|'),q=>person(q,0,0,o,1,-6,0,0,0,0,0),1),k=10,top=o.h?48:58;
-      for(const[j,[y0,h]]of[[0,[top,28]],[1,[14,14]]].entries()){const x=W0+j*300;g.fillStyle=(j+r)%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,298,chh-2);g.drawImage(sp,FIG.OX-14,FIG.OY-y0,28,h,x+10,y+6,28*k,h*k)}});
+      for(const[j,[y0,h]]of[[top,28],[14,14]].entries()){const x=W0+j*300;g.fillStyle=(j+r)%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,298,chh-2);g.drawImage(sp,FIG.OX-14,FIG.OY-y0,28,h,x+10,y+6,28*k,h*k)}});
     halt('bound17',()=>{window.SHEETS=Object.assign(window.SHEETS||{},{'cast-bound':c.toDataURL()})})}
   if(stop==='scroll'||stop==='scrolllong'){clearInterval(sk);sk=0;let rustles=0;{const u0=SFX.unroll;SFX.unroll=function(){rustles++;return u0.apply(this,arguments)}}
    await loadLevel(5);await loadLevel(7);ov.className='';ov.onclick=null;setChapter(5);G.busy=true;lock(true);status();
