@@ -358,8 +358,11 @@ ART.wall={w:320,q:12,paint(g){const r=rng(51),E=c=>earth1(c,.16);
   /* hairline cracks in the face of the wall, high, where the basket does not pass */
   {const rb=rng(53);for(const[x,y,n]of[[22,22,4],[60,58,4],[132,66,3]])crack1(g,x,y,n,rb,.8)}
   ao(g,0,84,146,39,'b',.45,'#0a0c24');ao(g,0,10,30,113,'l',.35,'#0a0c24');R(g,145,10,1,113,'#6a70a0');
-  plaster(g,70,0,66,48,E('#5c6090'),r,{patch:3,cracks:4,brick:E('#3a3e66'),t:.3});poly(g,[136,0,141,3,141,45,136,48],E('#33385e'));R(g,69,46.5,68,2.5,E('#2c3058'));
-  for(let i=0;i<5;i++){poly(g,[73+i*14,49,78+i*14,49,78+i*14,52,75+i*14,55,73+i*14,55],'#383c66');R(g,73+i*14,49,5,.5,'#6a70a0')}ao(g,70,55,66,10,'t',.4,'#0a0c24');
+  plaster(g,70,0,66,48,E('#5c6090'),r,{patch:3,cracks:4,brick:E('#3a3e66'),t:.3});poly(g,[136,0,141,3,141,45,136,48],E('#33385e'));
+  /* the house stands out over the wall on one deep beam, which hides the ends of the joists under it: a row of joist ends on a plate
+     would make a row of small T shapes (CONTRIBUTING section 3). Its grain is quiet and comes from its own seed, so the room keeps its draws */
+  board1(g,69,46.5,68,8,E('#383c66'),rng(57));R(g,69,46.5,68,.6,'#6a70a0');R(g,69,53.9,68,.6,E('#1e2244'));poly(g,[137,46.5,141,45,141,52.6,137,54.5],E('#2a2e56'));
+  ao(g,70,54.5,66,10,'t',.4,'#0a0c24');
   R(g,92,16,26,28,'#3a3e66');R(g,94,18,22,24,'#2a2e56');R(g,96,20,18,20,'#05040c');R(g,91,43.5,28,2.2,'#7a80b0');ao(g,96,20,18,4,'t',.6);
   /* bushes at the foot of the wall */
   foliage(g,60,123,15,5,'#141c34',r,50);foliage(g,24,125,11,4,'#101830',r,30);foliage(g,128,124,8,3,'#182040',r,20);
