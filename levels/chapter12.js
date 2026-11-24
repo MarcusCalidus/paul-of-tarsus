@@ -526,32 +526,66 @@ ART.syn12={w:320,q:12,
    sea (Insight, "Corinth", "Cenchreae"; Bearing Thorough Witness, chapter 19, box; The Watchtower, March 1, 2009). No road on it
    crosses another, and each name stands clear of the shore. */
 const W1=[0,0,214,0,204,12,190,26,166,36,130,44,90,50,44,55,0,60],W2=[320,144,320,36,290,30,262,34,236,30,216,38,214,56,224,76,236,98,228,120,236,144];
+/* isthLand12: the land of the neck seen from high above, painted as the light falls on it: a height for every point (the rock, the
+   ridges, low rolling ground, and the plain falling to the shores), lit from the north-west, so that every slope has its lit and its
+   shaded side; the rock rises steep, its cliffs in shade to the south-east. The ground is colored by its height and by what grows on
+   it: fields round the city in patches of their own tone, no line between them, so that no two boundaries cross; scrub and olive on
+   the slopes; bare limestone on the heights. Drawn once into a picture of its own; it draws from no rng(). */
+const NOISE12=(()=>{const h=(i,j,s)=>{let n=Math.imul(i,374761393)+Math.imul(j,668265263)+Math.imul(s,2147483647);n=Math.imul(n^n>>>13,1274126177);return((n^n>>>16)>>>0)/4294967296},
+  sm=t=>t*t*(3-2*t),vn=(x,y,s)=>{const i=Math.floor(x),j=Math.floor(y),fx=sm(x-i),fy=sm(y-j);return(h(i,j,s)*(1-fx)+h(i+1,j,s)*fx)*(1-fy)+(h(i,j+1,s)*(1-fx)+h(i+1,j+1,s)*fx)*fy},
+  fbm=(x,y,s,o)=>{let a=0,w=.5,t=0;for(let k=0;k<(o||4);k++){a+=w*vn(x,y,s+k*17);t+=w;x*=2.03;y*=2.03;w*=.5}return a/t};
+  /* cell: the nearest of the points scattered one to a cell of a coarse grid, and its own random tone */
+  const cell=(x,y,s)=>{const i=Math.floor(x),j=Math.floor(y);let best=9,id=0;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){const px=i+a+h(i+a,j+b,s),py=j+b+h(i+a,j+b,s+5),d=(px-x)**2+(py-y)**2;if(d<best){best=d;id=h(i+a,j+b,s+9)}}return id};
+  return{vn,fbm,cell}})();
+const RIDGES12=[[20,92,96,116,.42,13],[240,8,304,18,.4,12],[178,128,206,138,.3,10],[60,72,96,80,.16,13],[250,40,262,60,.18,12]];
+function isthHeight12(x,y){const N=NOISE12;let h=.18*N.fbm(x/38,y/38,3,4)+.05*N.fbm(x/9,y/9,11,3);
+  for(const[x0,y0,x1,y1,a,w]of RIDGES12){const dx=x1-x0,dy=y1-y0,t=Math.max(0,Math.min(1,((x-x0)*dx+(y-y0)*dy)/(dx*dx+dy*dy))),d=Math.hypot(x-x0-dx*t,y-y0-dy*t);
+    h+=a*Math.exp(-(d*d)/(w*w))*(.75+.5*N.vn(x/7,y/7,21))}
+  /* the rock: a mass longer east to west, its top a shoulder rather than a point, steep on every side */
+  const wx=x+9*(N.vn(x/11,y/11,71)-.5),wy=y+7*(N.vn(x/11,y/11,73)-.5),rx=(wx-147)/23,ry=(wy-101)/16,rd=Math.hypot(rx,ry);
+  if(rd<1.5){const f=Math.max(0,Math.min(1,(1.5-rd)/.6)),e=f*f*(3-2*f);h+=e*(.85+.3*N.fbm(x/6,y/6,31,3))+.3*Math.max(0,1-rd/1.5)*N.fbm(x/10,y/10,35,2)}
+  return h}
+function isthLand12(g,v){const S=2,W=320*S,H=144*S,[c,x]=mk(W,H),im=x.createImageData(W,H),d=im.data,hs=new Float32Array((W+2)*(H+2)),N=NOISE12,wi=v==='w';
+  for(let j=0;j<H+2;j++)for(let i=0;i<W+2;i++)hs[j*(W+2)+i]=isthHeight12((i-1)/S,(j-1)/S);
+  const hex2=c=>[parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)],lerp=(a,b,t)=>a.map((u,k)=>u+(b[k]-u)*t);
+  const PLAIN=hex2(wi?'#a8a070':'#c4aa6e'),FIELD=[hex2('#cdb478'),hex2('#b6a464'),hex2(wi?'#8a9a5a':'#a8a85e'),hex2('#d4bc84'),hex2(wi?'#7c8c50':'#9c9a58')],
+    SCRUB=hex2(wi?'#6a7a4a':'#7c8450'),ROCK=hex2('#c4b494'),CLIFF=hex2('#ae9872');
+  for(let j=0;j<H;j++)for(let i=0;i<W;i++){const k=(j+1)*(W+2)+i+1,h=hs[k],gx=(hs[k+1]-hs[k-1])*S*32,gy=(hs[k+W+2]-hs[k-W-2])*S*32,
+      /* the light from the north-west and a little above: a slope turned to it is lit, one turned away is in shade */
+      nz=1/Math.hypot(gx,gy,1),lit=Math.max(0,(-gx*-.62+-gy*-.62+1*.48)*nz),X=i/S,Y=j/S;
+    let col=PLAIN;
+    const near=Math.hypot((X-150)/70,(Y-70)/34);if(near<1&&h<.45){const f=FIELD[Math.floor(N.cell(X/7,Y/5,41)*5)];col=lerp(col,f,Math.min(.75,(1-near)*2))}
+    const sc=N.fbm(X/14,Y/14,51,3);if(sc>.52)col=lerp(col,SCRUB,Math.min(1,(sc-.52)*4)*.85);
+    if(h>.45)col=lerp(col,ROCK,Math.min(1,(h-.45)*2));
+    const steep=Math.hypot(gx,gy);if(steep>1.3)col=lerp(col,CLIFF,Math.min(.7,(steep-1.3)*.4));
+    const kh=Math.min(1,Math.max(0,h-.2)),sh=.72-.12*kh+(.4+.22*kh)*lit+.06*(N.vn(X*1.3,Y*1.3,61)-.5),o=(j*W+i)*4;
+    d[o]=Math.min(255,col[0]*sh);d[o+1]=Math.min(255,col[1]*sh);d[o+2]=Math.min(255,col[2]*sh*(lit<.3?1.06:1));d[o+3]=255}
+  x.putImageData(im,0,0);g.drawImage(c,0,0,320,144)}
+/* isthSea12: a gulf seen from above: deep in the middle and lighter where it shallows toward the shore, the swell drawn in long soft
+   streaks, a pale edge of surf and sand along the shore, and the glitter of the sun on it. */
+function isthSea12(g,W,q,v){const wi=v==='w';
+  poly(g,W);g.fillStyle=lg(g,0,0,320,144,['#1c4672','#245a88','#2e6a96'].map(c=>earth12(c,.16)));g.fill();
+  clipTo(g,()=>poly(g,W),()=>{tex(g,'mott',.3,0,0,320,144,'overlay',1);tex(g,'wood',.16,0,0,320,144,'soft-light',.9);
+    for(const[w,a]of[[22,.1],[13,.14],[7,.2],[3,.3]]){poly(g,W);g.lineWidth=w;g.lineJoin='round';g.strokeStyle=rgba(wi?'#6a9aa8':'#5ab4bc',a);g.stroke()}
+    for(let i=0;i<70;i++){const x=q()*320,y=q()*144;R(g,x,y,2+q()*4,.5,rgba(q()<.6?'#a8d0e0':'#143456',wi?.2:.32))}});
+  poly(g,W);g.lineWidth=1.4;g.lineJoin='round';g.strokeStyle=rgba('#f0e6c8',.55);g.stroke();
+  poly(g,W);g.lineWidth=.6;g.strokeStyle=rgba('#fbf6e8',.7);g.stroke()}
+/* isthCity12: the roofs of the city under its rock, packed close and each set a little apart from its neighbors, so that no four corners
+   meet: each roof pitched, its north slope lit and its south slope in shade, with its small shadow to the south-east */
+function isthCity12(g){const q=rng(1239);
+  for(let n=0;n<26;n++){const a=q()*6.2832,rr=Math.sqrt(q()),x=153+Math.cos(a)*rr*17,y=71+Math.sin(a)*rr*8,w=3+q()*3.4,h=2.4+q()*1.8;
+    R(g,x+.8,y+.8,w,h,'rgba(40,30,20,.35)');R(g,x,y,w,h/2,'#cc7a50');R(g,x,y+h/2,w,h/2,'#9a4e32');R(g,x,y,w,.5,'#e8a070')}
+  /* the market square: open paving in the middle */
+  R(g,148,70.6,9,4,'#e2d6b6');R(g,148,70.6,9,.5,'#f4ecd6');R(g,148.6,74.6,9,.6,'rgba(40,30,20,.3)')}
 ART.isth12={w:320,q:12,variant:()=>SEAS()==='w'?'w':'d',
- paint(g,v){const r=rng(1211);g.fillStyle=lg(g,0,0,320,144,['#b39a62','#c2a86c','#b8a064']);g.fillRect(0,0,320,144);tex(g,'mott',.4,0,0,320,144,'overlay',1);
-  for(let i=0;i<300;i++)oval(g,r()*320,r()*144,.8+r()*1.6,.5+r()*.8,rgba(r()<.5?'#d8c08a':'#7a6a3c',.28));
-  for(const[x,y,rx,ry]of[[60,110,70,30],[280,12,40,16],[170,120,40,20]])pool(g,x,y,rx,ry,'#7f9050',.5,'source-over');
-  for(const W of[W1,W2]){for(const[w,a]of[[9,.1],[5,.16],[2.4,.3]]){poly(g,W);g.lineWidth=w;g.strokeStyle=rgba('#8cd2d2',a);g.lineJoin='round';g.stroke()}
-    poly(g,W);g.fillStyle=lg(g,0,0,320,144,['#1f4c78','#2a618e','#34729c'].map(c=>earth12(c,.16)));g.fill();clipTo(g,()=>poly(g,W),()=>{tex(g,'mott',.3,0,0,320,144,'overlay',1);for(let i=0;i<160;i++)R(g,r()*320,r()*144,1.5+r()*3,.5,rgba(r()<.5?'#6aa6c8':'#163a60',.35))});
-    poly(g,W);g.lineWidth=.7;g.strokeStyle='#5a4428';g.stroke()}
-  /* hills: small peaks, lit from the north-west */
-  for(const[x0,y0,x1,y1]of[[20,92,96,116],[240,8,304,18],[178,128,206,138]]){const n=Math.round(Math.hypot(x1-x0,y1-y0)/5);for(let k=0;k<n;k++){const u=k/n,x=x0+(x1-x0)*u+(r()-.5)*4,y=y0+(y1-y0)*u+(r()-.5)*3,w=2.4+r()*1.6,h=3+r()*2;
-    poly(g,[x-w,y,x,y-h,x+w,y],'#7a5c38');poly(g,[x-w,y,x,y-h,x+w*.15,y],'#d6be88')}}
-  /* Acrocorinth: craggy multi-faceted rock massif lit from the north-west, with summit curtain wall and temple roof */
-  {const P=[127,112,123,101,130,90,141,85,154,85,165,91,170,103,164,113,152,118,136,118];
-   poly(g,P.map((v,i)=>i%2?v+2.2:v+3),'rgba(42,34,24,.34)');
-   poly(g,P,'#9a845e');
-   clipTo(g,()=>poly(g,P),()=>{
-     /* sunlit NW escarpment, high limestone ridge, and shadowed SE cliff facets */
-     poly(g,[123,101,130,90,141,85,154,85,148,96,136,104,127,112],'#d8c69a');
-     poly(g,[130,90,141,85,152,86,146,93,136,96],'#e8dab2');
-     poly(g,[154,85,165,91,170,103,164,113,152,118,146,102,150,94],'#786242');
-     poly(g,[136,104,146,102,152,118,136,118,127,112],'#8c7450');
-     for(const q of[[128,104,136,95,145,92],[134,112,144,104,154,101],[154,93,161,100,165,108],[148,106,156,113]])stroke(g,q,'rgba(52,38,24,.35)',.7);
-     tex(g,'mott',.45,122,84,50,36,'overlay',.7);ao(g,122,106,50,14,'b',.3,'#32281e')});
-   /* summit fortification rim and tiny gabled temple roof */
-   stroke(g,[137,96,142,91.5,152,91.5,157,96,154,101,140,101,137,96],'#d8ccb0',.8);
+ paint(g,v){const r=rng(1211);isthLand12(g,v);
+  /* the draws of the dabs this land was once painted with, so that the sea's glitter keeps its place */
+  for(let i=0;i<300;i++){r();r();r();r();r()}
+  for(const W of[W1,W2])isthSea12(g,W,r,v);
+  /* the wall round the summit, and the small gabled roof of the temple on it */
+  {stroke(g,[137,96,142,91.5,152,91.5,157,96,154,101,140,101,137,96],'rgba(216,204,176,.75)',.6);
    R(g,143.5,95.4,7,3.4,'#e8dec6');poly(g,[143,95.4,151,95.4,147,93.2],'#c46c44');R(g,149.2,95.4,1.3,3.4,'#a89e86')}
-  for(const[x,y,w,h]of[[140,66,8,5],[150,64,9,6],[160,68,7,5],[146,73,8,5],[156,75,9,5],[136,74,7,4]]){R(g,x,y,w,h,'#e2d6b6');R(g,x,y,w,1.4,'#b8603c');R(g,x+w-1,y+1.4,1,h-1.4,'#a89c80')}
+  isthCity12(g);
   /* the two long walls down to the western harbor; the road to the eastern one; the trackway for ships across the neck */
   poly(g,[140,64,146,63,122,48,117,50],'rgba(232,222,196,.9)');stroke(g,[140,64,117,50],'#8a7a5a',.6);stroke(g,[146,63,122,48],'#8a7a5a',.6);
   for(let i=0;i<=14;i++){const u=i/14,x=168+(214-168)*u,y=72+Math.sin(u*3.1)*-4+(u*2);R(g,x-.6,y-.6,1.4,1.4,'#6a4a2c')}
