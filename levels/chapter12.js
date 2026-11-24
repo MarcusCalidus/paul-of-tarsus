@@ -388,28 +388,76 @@ function judge(st){const n=st.n,k=ROUND_K[n];
   const[w,x0,x1]=SEAT3[3];return!allDark(st,k,x0,x1,100)?w:st.r===2?'hair':''}
 /* lightField: the light that falls into the court, one room pixel at a time, kept until the setting changes */
 function lightField(st){const k=ROUND_K[st.n],key=[st.n,st.l,st.r,st.p,st.q].join();if(G.lf12&&G.lf12.key===key)return G.lf12.c;const w=AX1-AX0,h=AFL-28,[c,x]=mk(w,h),im=x.createImageData(w,h),d=im.data;
-  for(let j=0;j<h;j++)for(let i=0;i<w;i++){if(!dark(st,k,AX0+i+.5,28+j+.5)){const o=(j*w+i)*4;d[o]=255;d[o+1]=240;d[o+2]=196;d[o+3]=((i+j)&1)?150:118}}
+  /* the edge of a shade is soft, and softer the farther it falls from the cloth or the wall that throws it: the light is taken as the
+     share of five rays a little apart in their slope that reach the point. Only the picture is soft; judge() asks dark() alone. */
+  const KS=[-.06,-.03,0,.03,.06].map(e=>k+e);
+  for(let j=0;j<h;j++)for(let i=0;i<w;i++){let n=0;for(const kk of KS)if(!dark(st,kk,AX0+i+.5,28+j+.5))n++;
+    if(n){const o=(j*w+i)*4,f=n/5;d[o]=255;d[o+1]=236+8*f;d[o+2]=188+14*f;d[o+3]=Math.round(140*f)}}
   x.putImageData(im,0,0);G.lf12={key,c};return c}
+/* courtWall12: the far wall of the court made a wall that has stood in the sun and the rain for years: a limewash renewed in patches, the
+   streaks the rain has left under the coping, the darker foot where the water splashes back and the damp rises, and the scuffs of the
+   benches. It draws from a seed of its own. */
+function courtWall12(g,W){const q=rng(1291),x=AX0,y=28,w=AX1-AX0,h=AFL-28;
+  inRect(g,x,y,w,h,()=>{
+    comp(g,'soft-light',.5,()=>{for(let i=0;i<9;i++){const px=x+q()*w,py=y+8+q()*(h-30);pool(g,px,py,14+q()*22,8+q()*10,q()<.5?'#fff6dc':'#b8a888',.55,'source-over')}});
+    tex(g,'blotch',.16,x,y,w,h,'soft-light',1.4);
+    /* the rain's streaks, soft and long, from the coping down */
+    comp(g,'multiply',.22,()=>{g.fillStyle=lg(g,0,y,0,y+26,['rgba(120,104,84,.9)','rgba(120,104,84,0)']);g.fillRect(x,y,w,26)});
+    for(let i=0;i<16;i++){const sx=x+4+q()*(w-8),sl=6+q()*12,sw=1.5+q()*2.5;g.fillStyle=lg(g,0,y,0,y+sl,['rgba(110,94,76,.16)','rgba(110,94,76,0)']);g.fillRect(sx,y,sw,sl)}
+    /* the foot of the wall: a darker band of splash and damp, its top edge uneven */
+    const P=[x,AFL];for(let i=0;i<=w;i+=4)P.push(x+i,AFL-7-Math.sin(i*.13)*1.2-q()*1.4);P.push(x+w,AFL);
+    comp(g,'multiply',.32,()=>{poly(g,P);g.fillStyle=lg(g,0,AFL-10,0,AFL,['rgba(130,112,92,.2)','rgba(110,92,76,.9)']);g.fill()});
+    tex(g,'mott',.3,x,AFL-10,w,10,'overlay',.7);
+    for(let i=0;i<70;i++)R(g,x+q()*w,AFL-1-q()*6,.5+q(),.5,q()<.6?'rgba(70,56,44,.28)':'rgba(255,246,220,.2)')})}
+/* neighbors12: beyond the two walls cut through, the synagogue (left, in its own shade) and the house of Titius Justus (right, in the
+   sun): each a plastered wall under a tiled eave, with one small window, the shade under the eave and the damp at its foot. The tiles
+   run down the roof and stop at the eave. It draws from a seed of its own. */
+function neighbors12(g,v){const q=rng(1293),w=v==='w';
+  for(const[x0,x1,c,lit]of[[0,36,earth12('#8a8296',.45),0],[284,320,'#c4b494',1]]){const left=!lit,ey=x=>left?22+(x-x0)/(x1-x0)*4:26-(x-x0)/(x1-x0)*4;
+    plaster(g,x0,24,x1-x0,94,c,q,{patch:0,cracks:0,top:lit?.04:-.02,bot:-.18,t:.3});
+    /* the window: a deep, small opening with its lintel; the inside dark */
+    const wx=left?14:298,wy=48;R(g,wx-1,wy-2,10,2,tint(c,lit?.12:.06));R(g,wx-1,wy-2,10,.5,tint(c,.3));R(g,wx,wy,8,9,'#1c1820');R(g,wx,wy,lit?2:1.2,9,tint(c,-.4));ao(g,wx,wy,8,3,'t',.5,'#0a080c');R(g,wx-1,wy+9,10,1.2,tint(c,lit?.18:.08));
+    /* the eave: the tiles, each row running down the slope, the shade under it, and the foot */
+    const RP=[x0,ey(x0)-1.4,x1,ey(x1)-1.4,x1,ey(x1)+4.2,x0,ey(x0)+4.2];poly(g,RP,'#b0583a');
+    clipTo(g,()=>poly(g,RP),()=>{for(let i=x0+.6;i<x1;i+=2.2){R(g,i,ey(i)-2,1,7,'#c8724e');R(g,i+1,ey(i)-2,.5,7,'#8a4430')}tex(g,'mott',.3,x0,18,x1-x0,16,'overlay',1)});
+    stroke(g,[x0,ey(x0)+4.2,x1,ey(x1)+4.2],'#5a3024',.6);
+    comp(g,'multiply',.4,()=>{g.fillStyle=lg(g,0,ey((x0+x1)/2)+4,0,ey((x0+x1)/2)+14,['rgba(60,50,80,.9)','rgba(60,50,80,0)']);g.fillRect(x0,ey(x0)+4,x1-x0,16)});
+    if(lit&&!w)comp(g,'multiply',.24,()=>poly(g,[x0,ey(x0)+4,x1,ey(x1)+4,x1,ey(x1)+12,x0,ey(x0)+24],'#7a7ab0'));
+    comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,0,106,0,118,['rgba(90,80,90,0)','rgba(90,80,90,.9)']);g.fillRect(x0,106,x1-x0,12)})}
+  if(w)comp(g,'multiply',.12,()=>R(g,0,30,36,88,'#606a80'))}
+/* courtGround12: the beaten earth in front of the court: the curb's shade on it, worn smooth where feet go, a few stones and cracks,
+   from a seed of its own */
+function courtGround12(g,v){const q=rng(1295),y=AFL+3,h=144-y;
+  inRect(g,0,y,320,h,()=>{tex(g,'blotch',.3,0,y,320,h,'soft-light',1.2);
+    pool(g,160,y+9,120,6,v==='w'?'#9aa0a8':'#e8d4a8',v==='w'?.12:.2,'source-over');
+    for(let i=0;i<14;i++){const sx=q()*320,sy=y+3+q()*(h-5),sw=1.4+q()*1.8;R(g,sx+.5,sy+.8,sw,.8,'rgba(40,30,24,.3)');R(g,sx,sy,sw,1.2,q()<.5?'#86765e':'#7a6c56');R(g,sx,sy,sw,.5,'#9c8a6e')}
+    for(let i=0;i<5;i++){let cx=q()*320,cy=y+4+q()*(h-8);const p=[cx,cy];for(let s=0;s<4;s++){cx+=3+q()*4;cy+=(q()-.5)*2;p.push(cx,cy)}stroke(g,p,'rgba(50,38,28,.3)',.5)}
+    ao(g,0,y,320,4,'t',.42,'#2a2030');ao(g,0,140,320,4,'b',.3,'#2a2030')});
+  /* in the rain: the foot of every wall dark with the wet, a sheen of the grey sky on the ground, and water standing in its hollows */
+  if(v==='w')SHARED.weather.wetGround(g,0,AFL,320,144-AFL,{dampH:9,dampA:.34,sheen:.16,puddles:[[22,126,9,1.4],[290,124,11,1.5],[118,142,8,1.2],[226,142,10,1.3]]})}
 ART.awn12={w:320,q:12,variant:()=>roundNo()===1?'a':roundNo()===2?'w':'u',
  paint(g,v){const r=rng(1207),W='#d9caa2',ST='#c9bfa6';
   sky(g,320,60,SKY[v]);if(v==='w')for(let i=0;i<4;i++)cloud(g,30+i*90,6+(i%2)*8,90,9,r,'#c9ccd0','#878d98');else cloud(g,160,8,60,4,r);
   /* the far wall of the court, with the door of the house and the window over it */
-  plaster(g,AX0,28,AX1-AX0,AFL-28,W,r,{patch:1,cracks:0,brick:'#b08a5a',top:-.02,bot:-.2,t:.36});skipCracks12(r,4);
+  plaster(g,AX0,28,AX1-AX0,AFL-28,W,r,{patch:1,cracks:0,brick:'#b08a5a',top:-.02,bot:-.2,t:.36});skipCracks12(r,4);courtWall12(g,W);
   /* cracks cut by hand, high on the wall, where neither the light nor the cloth has anything to say */
-  cracks12(g,1298,[[70,31,3],[150,30,3],[204,32,3]]);R(g,AX0,26,AX1-AX0,2.4,tint(W,.14));R(g,AX0,26,AX1-AX0,.6,tint(W,.36));
-  comp(g,'multiply',v==='w'?.3:.46,()=>R(g,AX0,28,AX1-AX0,AFL-28,'#8f8cb4'));
+  cracks12(g,1298,[[70,31,3],[150,30,3],[204,32,3]]);
+  /* the coping: flat stones along the top of the wall, each joint within its own course, and the drip of shade under its lip */
+  {const q=rng(1297);R(g,AX0,25.6,AX1-AX0,2.8,tint(W,.1));for(let i=AX0;i<AX1;){const cw=Math.min(9+q()*7,AX1-i),c=tint(W,.1+(q()-.5)*.1);R(g,i,25.6,cw,2.8,c);R(g,i,25.6,cw,.6,tint(c,.3));if(i>AX0)R(g,i,26.2,.5,2,tint(c,-.3));i+=cw}
+    R(g,AX0,28.4,AX1-AX0,.6,tint(W,-.4));ao(g,AX0,29,AX1-AX0,3,'t',.3,'#2a2440')}
+  /* the wall in its own shade: the cool of the sky above, the warmth the sunlit ground throws back up from below */
+  comp(g,'multiply',v==='w'?.3:.46,()=>{g.fillStyle=lg(g,0,28,0,AFL,['#8784b4','#928eb2','#a8969a']);g.fillRect(AX0,28,AX1-AX0,AFL-28)});
   doorArt(g,228,74,24,44,'#6a4a2c',r,{bands:[]});windowArt(g,233,50,13,10,W,{bars:2});
   /* the two walls, cut through: on the left the synagogue's, on the right the house's; a tiled roof on each */
   /* the shade gathers in the angles where the far wall meets the two walls that are cut through */
   ao(g,AX0,28,8,AFL-28,'l',.26,'#2a2440');ao(g,AX1-8,28,8,AFL-28,'r',.22,'#2a2440');ao(g,AX0,AFL-6,AX1-AX0,6,'b',.2,'#2a2440');
   for(const[x,c,out]of[[36,'#b7ab90',0],[264,'#c9bd9e',284]]){ashlar(g,x,ATOP,20,AFL-ATOP,c,r,{bw:10,bh:6,v:.08});ao(g,x,ATOP,20,AFL-ATOP,x<100?'l':'r',.2,'#2a2440');R(g,x-1,ATOP-2,22,2.4,tint(c,.14));R(g,x-1,ATOP-2,22,.6,tint(c,.36))}
   /* beyond the walls: the synagogue in its own shade, the house in the sun; their color drawn toward the stone's (earth12) */
-  R(g,0,30,36,88,earth12('#7f7890',.5));poly(g,[0,22,36,ATOP+6,36,30,0,30],'#b8603c');R(g,0,36,36,82,earth12('#6f6880',.5));tex(g,'mott',.28,0,30,36,88,'overlay',1);ao(g,0,30,36,8,'t',.3,'#2a2440');
-  R(g,284,30,36,88,'#b8ab8c');poly(g,[320,22,284,ATOP+6,284,30,320,30],'#b8603c');tex(g,'mott',.28,284,30,36,88,'overlay',1);ao(g,284,30,36,6,'t',.22,'#2a2440');
+  neighbors12(g,v);
   for(const y of HY)for(const x of[AX0,AX1-3]){R(g,x,y-1,3,2.4,'#2a2420');R(g,x,y-1,3,.6,'#7a7268')}
   /* the floor, and the ground under it */
   R(g,0,AFL,320,3,tint(ST,.06));R(g,0,AFL,320,.7,tint(ST,.3));for(let i=8;i<320;i+=22+((i*7)%9))R(g,i,AFL+.8,.6,2.2,tint(ST,-.34));
-  g.fillStyle=lg(g,0,AFL+3,0,144,['#7a6a50','#6a5a44','#5a4c3a']);g.fillRect(0,AFL+3,320,23);tex(g,'mott',.32,0,AFL+3,320,23,'overlay',1);ao(g,0,AFL+3,320,3,'t',.3,'#2a2030');for(let i=0;i<60;i++)R(g,r()*320,AFL+4+r()*20,1+r()*2,.6+r(),r()<.5?'rgba(40,30,20,.3)':'rgba(220,200,160,.16)');
+  g.fillStyle=lg(g,0,AFL+3,0,144,['#7a6a50','#6a5a44','#5a4c3a']);g.fillRect(0,AFL+3,320,23);tex(g,'mott',.32,0,AFL+3,320,23,'overlay',1);ao(g,0,AFL+3,320,3,'t',.3,'#2a2030');for(let i=0;i<60;i++)R(g,r()*320,AFL+4+r()*20,1+r()*2,.6+r(),r()<.5?'rgba(40,30,20,.3)':'rgba(220,200,160,.16)');courtGround12(g,v);
   /* what stands in the court */
   if(v==='a'){stool(g,BENCH1[0],110,BENCH1[1]-BENCH1[0],'#8a683a');poly(g,[FIGS[0]-2,AFL,FIGS[1]+2,AFL,FIGS[1],AFL-1.6,FIGS[0],AFL-1.6],'#b89a62');for(let i=0;i<22;i++)R(g,FIGS[0]+1+r()*(FIGS[1]-FIGS[0]-3),AFL-3+r()*1.4,1.8,1.4,r()<.5?'#6a3a52':'#7a4a34')}
   else{for(const[,x0,x1]of SEAT3)stool(g,x0,110,x1-x0,'#8a683a');
@@ -427,8 +475,14 @@ ART.awn12={w:320,q:12,variant:()=>roundNo()===1?'a':roundNo()===2?'w':'u',
     cast(g,[['hx12i',240,AFL,-1,{sw:0}],['hx12j',254,AFL,-1,{sw:0}]],'#d8d2cc')});
   /* the rope, hook to hook, and the cloth on it: each bay hangs a little, from ring to ring */
   stroke(g,[AX0+2,HY[st.l],AX1-2,HY[st.r]],'#6a5438',.9);
-  for(let b=0;b<4;b++)if(B[b]){const xa=AX0+b*BAY,xb=xa+BAY,ya=ropeY(st,xa),yb=ropeY(st,xb),c=n===3&&b===st.q&&!(b===st.p||b===st.p+1)?tint(LIN,-.14):c0,P=[xa+1,ya+.4];
-    for(let i=0;i<=6;i++){const u=i/6;P.push(xa+1+(BAY-2)*u,ya+(yb-ya)*u+2.6+Math.sin(u*Math.PI)*2.2)}P.push(xb-1,yb+.4);poly(g,P);g.fillStyle=lg(g,0,Math.min(ya,yb),0,Math.max(ya,yb)+5,[tint(c,.12),c,tint(c,-.32)]);g.fill();
+  for(let b=0;b<4;b++)if(B[b]){const xa=AX0+b*BAY,xb=xa+BAY,ya=ropeY(st,xa),yb=ropeY(st,xb),c=n===3&&b===st.q&&!(b===st.p||b===st.p+1)?tint(LIN,-.14):c0,
+      /* where the next bay is the same cloth, the two bays meet without a gap: one cloth shows no slit under the rope */
+      pair=x=>x===st.p||x===st.p+1,same=(a,e)=>B[a]&&B[e]&&(n===2||(pair(a)&&pair(e))),i0=b>0&&same(b-1,b)?0:1,i1=b<3&&same(b,b+1)?0:1,P=[xa+i0,ya+.4];
+    for(let i=0;i<=6;i++){const u=i/6;P.push(xa+i0+(BAY-i0-i1)*u,ya+(yb-ya)*u+2.6+Math.sin(u*Math.PI)*2.2)}P.push(xb-i1,yb+.4);poly(g,P);g.fillStyle=lg(g,0,Math.min(ya,yb),0,Math.max(ya,yb)+5,[tint(c,.12),c,tint(c,-.32)]);g.fill();
+    /* the cloth is drawn up at each ring and sags between: soft light on the gathers, shade in the hollows, and the hem darker */
+    {const st2=[];for(let i=0;i<=8;i++){const u=i/8;st2.push([u,i%2?(n===2?'rgba(200,196,190,.14)':'rgba(255,248,226,.2)'):'rgba(40,30,40,.18)'])}
+      clipTo(g,()=>poly(g,P),()=>{g.fillStyle=lg(g,xa,0,xb,0,st2);g.fillRect(xa,Math.min(ya,yb)-2,BAY,12);
+        const H=P.slice(2,P.length-2);stroke(g,H,tint(c,-.42),.6)})}
     for(let i=0;i<4;i++){const u=(i+.5)/4,x=xa+BAY*u,y=ya+(yb-ya)*u;R(g,x-1,y-1,2,2,'#8a7a5a')}}
   /* in the rain: the water runs to the low end of the cloth and falls there; a cloth that does not slope fills, and drips through */
   if(n===2){const j=judge(st),lo=st.l>st.r?AX0+3:AX1-4,ph=(t/260)%1;
