@@ -566,7 +566,7 @@ const WILL17='then_may_jehovahs_will_be_done';
 /* run17: a script started from a hotspot already runs inside a cutscene (act, in index.html); started from anywhere else it starts one */
 const run17=fn=>G.busy?fn():cut(fn);
 /* phase17: patara before the fare is paid; tyre until the disciples are found; court until they leave the beach; caesarea; road */
-const phase17=()=>!F.fare?'patara':!F.found?'tyre':!F.beach?'court':!F.out?'caesarea':'road';
+const phase17=()=>!F.fare?'patara':!F.found?'tyre':!F.caes?'court':!F.out?'caesarea':'road';
 /* Luke is played from the pleading of 21:12 until 21:14 is said; Paul stands in Philip's court meanwhile, as one of the cast */
 const lukePlays=()=>!!F.bound&&!F.will;
 function setPC17(a){if(G.pc!==a){G.pc=a;G.inv=G.invs[a.id]||(G.invs[a.id]=[])}}
@@ -640,7 +640,7 @@ const LM17=SHARED.lanes.make('tyrelanes17',{w:LW17,h:LH17,seed:1717,lot:30,door:
       {name:'causeway_gate',x:550,y:278,w:12,h:24,wx:548,wy:290,dir:1,exit:()=>say(P,'not_across_the_causeway'),look:'causeway_gate_look'},
       {name:'meat_stall',x:STALL17[0],y:STALL17[1]-4,w:STALL17[2],h:STALL17[3]+4,wx:236,wy:300,look:()=>say(P,F.m1?'meat_stall_after_look':'meat_stall_look')},
       {name:'furnace',x:FURNACE17[0]-1,y:FURNACE17[1]-6,w:FURNACE17[2]+2,h:FURNACE17[3]+6,wx:332,wy:204,look:()=>say(P,F.m2?'furnace_banked_look':'furnace_look')},
-      {name:'door',x:AT17.houseDoor[0]-4,y:52,w:9,h:10,wx:AT17.houseDoor[0],wy:74,dir:-1,look:()=>say(P,F.m3?'the_door_where_they_said_brother':'a_door_like_any_other'),open:knock17,use:knock17},
+      {name:'door',x:AT17.houseDoor[0]-4,y:52,w:9,h:10,wx:380,wy:78,dir:-1,look:()=>say(P,F.m3?'the_door_where_they_said_brother':'a_door_like_any_other'),open:knock17,use:knock17},
       {name:'door',x:AT17.otherDoor[0]-4,y:62,w:9,h:10,wx:AT17.otherDoor[0],wy:84,dir:-1,look:'a_door_like_any_other',open:()=>say(P,'no_reason_to_knock_here'),use:()=>say(P,'no_reason_to_knock_here')}]
       .map(h=>Object.assign(h,{x:X17(h.x),y:Y17(h.y),w:q17(h.w),h:q17(h.h),wx:X17(h.wx),wy:Y17(h.wy)}))}});
 function zone17(p){return{x:X17(p[0]),y:Y17(p[1]),w:q17(p[2]-p[0]),h:q17(p[5]-p[1])}}
@@ -947,8 +947,8 @@ function place17(room){for(const a of EVERY.concat([P,LK])){a.talk=false;a.seat=
     L(BU,...AT17.butcher);L(SM,...AT17.smith);
     if(!F.m1){L(BL,...AT17.blue);L(MY,...AT17.red)}else L(MY,...AT17.redYard);
     if(!F.m2)L(PN,...AT17.phanias);else if(!F.m3){L(PN,...AT17.phDoor);L(JO,...AT17.joDoor)}}
-  if(ph==='court'){for(const[a,x,y,d]of[[EU,196,118,-1],[PN,228,126,-1],[MY,250,118,-1],[JO,172,130,-1],[ME,276,128,-1],[PL,290,120,-1],[LK,64,126,1],[TI,88,134,1],[AR,40,118,1],[TR,112,120,1]])place(a,'tyrecourt17',x,y,d);
-    if(F.days){for(const[a,x,y,d]of[[EU,204,118,-1],[PN,226,128,-1],[MY,248,118,-1],[JO,270,130,-1],[ME,100,128,1],[PL,120,118,1],[LK,64,126,1],[TI,140,134,1],[AR,40,118,1],[TR,182,132,-1]])place(a,'beach17',x,y,d)}}
+  if(ph==='court'){if(room!=='beach17')for(const[a,x,y,d]of[[EU,196,118,-1],[PN,228,126,-1],[MY,250,118,-1],[JO,172,130,-1],[ME,276,128,-1],[PL,290,120,-1],[LK,64,126,1],[TI,88,134,1],[AR,40,118,1],[TR,112,120,1]])place(a,'tyrecourt17',x,y,d);
+    else{for(const[a,x,y,d]of[[EU,204,118,-1],[PN,226,128,-1],[MY,248,118,-1],[JO,270,130,-1],[ME,100,128,1],[PL,120,118,1],[LK,64,126,1],[TI,140,134,1],[AR,40,118,1],[TR,182,132,-1]])place(a,'beach17',x,y,d)}}
   if(ph==='caesarea'){for(const[a,x,y,d]of[[PH,262,116,-1],[D1,128,118,1],[D2,150,132,1],[D3,98,116,1],[D4,286,132,-1],[AU17,302,114,-1],[BE,300,136,-1],[LK,62,126,1],[TI,40,132,1],[AR,24,118,1],[TR,80,134,1]])place(a,'philip17',x,y,d);
     if(F.agabus)place(AG,'philip17',236,122,-1);
     if(lukePlays()){place(P,'philip17',214,124,1);for(const a of[TI,AR,TR,D1,D2,D3,D4,AU17,BE])a.bow=true}}
