@@ -1245,7 +1245,9 @@ async function toShore(){if(!F.sent)return say(P,'not_before_word_has_gone');awa
 const ELDERS16=[[PH,64,120],[KL,88,129],[DA,110,114],[EU,40,128],[PO,124,133]];
 /* kneel16: the engine's kneeling pose (KNEEL), on both knees with the head bowed: Paul and every second one with the hands folded low in
    front, the others with the arms down; never spread or raised. kneel16(a,0) stands him again, before anyone walks. */
-function kneel16(a,on,i){a.kneel=on?(i%2?KNEEL.both:KNEEL.bothFolded):0}
+/* Philon's tunic has its two stripes (as in Chapters Twelve to Fourteen): folded hands before them would cross them, so he kneels with
+   his arms down. */
+function kneel16(a,on,i){const L=LOOK[a.id]||{};a.kneel=on?(i%2||L.stripe?KNEEL.both:KNEEL.bothFolded):0}
 /* hands16: at 20:33, 34 Paul holds out both hands, low and open, the palms up, the forearms bent (the figure painter's ges 9) */
 function hands16(on){P.ges=on?9:0}
 async function elders(){await fade(1,400);G.e16=1;place16('shore16');for(const[a]of ELDERS16)a.room=null;place(P,'shore16',150,117,-1);viewOf(P);await fade(0,500);
