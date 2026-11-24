@@ -428,9 +428,12 @@ ART.iconium7={w:480,fp:1.3,q:12,
   for(const[hx,hy,hw,hh,c]of[[0,42,18,62,'#d6caa8'],[42,48,18,56,'#e2d6b4'],[16,56,10,48,'#c8bc9c'],[32,60,9,44,'#d8ccac']]){R(g,hx,hy,hw,hh,c);R(g,hx,hy-2,hw,2.4,'#b8603c');R(g,hx+hw-2.4,hy,2.4,hh,'rgba(60,50,90,.3)')}
   poly(g,[18,104,42,104,33,74,27,74],'#e0d6ba');ao(g,0,28,60,12,'t',.2,'#2a2440');g.restore();
   /* Nathan's saddlery: a plastered house, its whole front open to the street under an awning */
-  house(g,60,24,126,80,W,r,{side:0,patch:3,cracks:0,beams:12,t:.36});skipCracks7(r,5);
+  house(g,60,24,126,80,W,r,{side:0,patch:3,cracks:0,beams:0,t:.36});skipCracks7(r,5);
   /* cracks cut by hand, high on the wall, where they run to no head; rb: a seed of their own, so the rest of the room keeps its shape */
-  {const rb=rng(4311);for(const[x,y,n]of[[66,30,3],[124,29,4],[178,48,3]])crack7(g,x,y,n,rb)}windowArt(g,72,34,10,10,W,{bars:2,wood:'#6a4e2c'});windowArt(g,162,34,10,10,W,{bars:2,wood:'#6a4e2c'});
+  {const rb=rng(4311);for(const[x,y,n]of[[66,30,3],[124,29,4],[178,48,3]])crack7(g,x,y,n,rb)}/* the two upper windows sit high under the eaves, their sills clear above the awning; the ends of the roof beams run along the
+     wall between them, as house() would set them, and none where a window is */
+  for(let i=66;i<182;i+=12)if(i!==78&&i!==162){R(g,i,28,2.5,2.5,'#6a4a2c');R(g,i,28,2.5,.5,'#a67c4a');poly(g,[i+.5,30.5,i+3,30.5,i+4.5,34,i+2,34],'rgba(50,40,90,.28)')}
+  windowArt(g,72,28,10,9,W,{bars:2,wood:'#6a4e2c'});windowArt(g,162,28,10,9,W,{bars:2,wood:'#6a4e2c'});
   R(g,84,56,84,48,'#231a15');g.fillStyle=lg(g,0,56,0,104,['#2c211a','#4a382a']);g.fillRect(86,58,80,46);
   /* inside: a shelf of pack saddles, and hides rolled on the floor */
   board7(g,88,70,76,1.6,'#5a4226',rw);for(const[sx,c]of[[94,'#8a5a34'],[110,'#a06a3c'],[126,'#7a4c2c'],[144,'#96643a']]){g.fillStyle=lg(g,sx,0,sx+11,0,[tint(c,.2),c,tint(c,-.4)]);g.beginPath();g.ellipse(sx+5.5,70,5.6,4.6,0,Math.PI,0);g.fill();R(g,sx+1,66.4,9,.6,tint(c,.4))}
