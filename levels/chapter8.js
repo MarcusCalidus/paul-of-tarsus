@@ -680,7 +680,7 @@ ROOMS.fork={space:.5,walk:[16,464,112,138],mood:'hope',amb:{wind:.5,birds:.5,hoo
   {name:'sheepfold',x:332,y:62,w:92,h:24,wx:380,look:'sheepfold_of_field_stone'},
   {name:'milestone',x:207,y:86,w:12,h:23,wx:226,wy:114,dir:-1,look:async()=>{await say(P,'milestone_of_the_romans');return say(P,quote('prov16'))},
     use:'i_lean_on_it_for_a_moment',pickup:'it_has_stood_here_longer'},
-  {name:'mule',x:128,y:90,w:44,h:34,wx:184,wy:126,dir:-1,look:'carriers_mule_under_more',pickup:'it_is_attaloss_and_it_would'},
+  {name:'mule',x:116,y:74,w:56,h:49,wx:104,wy:127,dir:1,look:'carriers_mule_under_more',pickup:'it_is_attaloss_and_it_would'},
   {name:'track_to_the_north',x:232,y:76,w:76,h:32,wx:254,wy:113,dir:1,exit:trackNorth,
     look:()=>say(P,F.asia?'track_north_bare_earth':'track_leaving_the_paved')},
   {name:'paved_road_west',x:0,y:104,w:15,h:34,wx:22,wy:122,dir:-1,exit:roadWest,

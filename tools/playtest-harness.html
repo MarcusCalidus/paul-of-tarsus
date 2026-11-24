@@ -171,7 +171,7 @@
   const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3|map3)$/.test(stop),HUB=stop==='hubmap',
     C4=/^(sendoff|seleucia|kallias|shelter|jair|voyage|map4|salamis|synagogue|speech|hubmap4|paphos|tools|daniel|blind|name4|journey4|final4|deutsch4)$/.test(stop),
     C5=/^(voyage5|perga|parting|sandal|hubmap5|ford|splice|wade|line|pisidia|synp|speech5|week|greek|sabbath2|border|dust|journey5|final5)$/.test(stop),
-    C6=/^(beasts|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house6|mend|derbe|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
+    C6=/^(beasts|mules|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house6|mend|derbe|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
   const lang=(location.search.match(/[?&]lang=(\w+)/)||[])[1]||'en',toLang=async l=>{for(let i=0;i<150&&G.lang!==l;i++)await wait(30);await wait(60)};
   ok(G.lang===lang&&document.documentElement.lang===lang,'the game is in '+LANGS[lang].native+', as the address asks');fitVerbs();
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
@@ -1362,7 +1362,7 @@
   ok(!heard.some(h=>h.includes('16:6')||h.includes('16:7')),'the opening does not tell beforehand that the road will be closed');
   halt('fork8',()=>{say(A('attalos'),'to_ephesus')});
   /* depth: the mule stands out on the road. A man who walks behind it is hidden by it, and a man in front of it hides it */
-  ok(await hides([146,105,8,6],[60,126],[150,117],[150,129]),'depth: the mule hides the man who stands behind it, and is hidden by the man in front of it');
+  ok(await hides([145,95,10,6],[60,126],[150,117],[150,129]),'depth: the mule hides the man who stands behind it, and is hidden by the man in front of it');
   halt('depth8',()=>{place(P,'fork',148,118,-1);place(TI,'fork',166,131,-1)});
   ok(/^8-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===8&&decode(makeCode()).w!=null,'chapter eight code format (wide, nine characters) '+makeCode());
   ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Luke'))&&$('#swap').disabled,'the panel names Luke, and the button waits until he is with them');fitVerbs();
@@ -3905,7 +3905,60 @@
   ok(/^6-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===6&&decode(makeCode()).w!=null,'chapter six code format (wide, nine characters) '+makeCode());
   ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Barnabas')),'a party: the panel offers to switch to Barnabas');fitVerbs();
   /* --- the mule: its checks, and its own stop `mules` with its sheets (the mule's section of shared/beasts.js) --- */
-
+  /* The mule (shared/beasts.js, its own painter): every pose is one piece, facing both ways and with each load (0 a blanket, 1 pack bags,
+     2 the bags stuffed with wool and fleeces piled on top), in its sixteen frames of walk (fr 4 to 19) and its four of voice (20 to 23).
+     Two hooves or more stand on the ground in every walk frame; the body sinks a pixel as each fore hoof lands (frames 4, 5, 12 and 13)
+     and never rises; frames 1, 2 and 3 are three moments of the walk. It is a size bigger than the donkey: its back stands 30 to 33 room
+     pixels high and the tips of its ears 46 to 50, about a man's height. frame.mule: at WALK_V the planted hooves do not slip, and a cycle is
+     never quicker than its beat. Its voice: the list runs forward in time, shows each of the frames 20 to 23, ends on 0 within 1.8 s.
+     The stop `mules` hands over mules-walk.png, every frame of the walk and the voice three times enlarged, two rows for each load and
+     each way it faces: look there for a leg that has come apart, legs that cross as an X under the belly, a leg under the middle of the
+     body as a T, a tail across a leg, a strap across a strap, and ears that read as a cross. */
+  {const mule=SHARED.beasts.paint.mule,K=SHARED.beasts.kinds.mule,muleFr=SHARED.beasts.frame.mule,
+    pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
+      for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
+        for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n},
+    mu=(fr,d,ld)=>sprite(['mule-test',d<0?'-1':'1',fr,ld].join('|'),s=>mule(s,0,0,d,fr,ld),d),px=c=>c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data,
+    FR=[0,1,2,3,...[...Array(16)].map((_,k)=>4+k),20,21,22,23],ALL=[];for(const ld of[0,1,2])for(const d of[1,-1])for(const fr of FR)ALL.push([ld,d,fr,mu(fr,d,ld)]);
+    const apart=ALL.filter(w=>pieces(w[3])!==1).map(w=>w.slice(0,3).join('/'));
+    ok(!apart.length,'the mule is one piece in every pose: standing, sixteen frames of walk and four of voice, facing both ways and with each load: '+ALL.length+' sprites'+(apart.length?'. IN PIECES (load/way/frame): '+apart.join(', '):''));
+    /* hooves: the runs of the lowest row; top: the highest pixel of a column, in drawing units above the feet */
+    const hooves=c=>{const d=px(c);let r=0,on=false;for(let x=0;x<FIG.W;x++){const v=d[((FIG.OY-1)*FIG.W+x)*4+3]>0;if(v&&!on)r++;on=v}return r},
+      top=(c,dx)=>{const d=px(c);for(let y=0;y<FIG.H;y++)if(d[(y*FIG.W+FIG.OX+dx)*4+3])return y;return-1},
+      walk=ALL.filter(w=>w[2]>=4&&w[2]<20),few=walk.filter(w=>hooves(w[3])<2).map(w=>w.slice(0,3).join('/')),t0=top(mu(0,1,0),-28),
+      sink=[...Array(16)].map((_,k)=>top(mu(4+k,1,0),-28)-t0),same=(a,b)=>a.toDataURL()===b.toDataURL();
+    ok(!few.length&&sink.every((v,k)=>v===(k%8===4||k%8===5?1:0)),'the mule: in every frame of its walk two hooves or more stand on the ground; the body sinks a pixel as each fore hoof lands (frames 4, 5, 12 and 13) and never rises: '+sink.join('')+(few.length?'. TOO FEW HOOVES: '+few.join(', '):''));
+    ok(same(mu(1,1,0),mu(4,1,0))&&same(mu(2,1,1),mu(8,1,1))&&same(mu(3,-1,2),mu(12,-1,2))&&!same(mu(0,1,0),mu(4,1,0))&&new Set(walk.filter(w=>w[0]===0&&w[1]===1).map(w=>w[3].toDataURL())).size===16,
+      'the mule: frames 1, 2 and 3 are three moments of its walk, a quarter of a cycle apart, and no two of its sixteen frames are the same picture');
+    const H=c=>{const d=px(c);for(let y=0;y<FIG.H;y++)for(let x=0;x<FIG.W;x++)if(d[(y*FIG.W+x)*4+3])return(FIG.OY-y)/2;return 0},ears=H(mu(0,1,0)),back=(FIG.OY-top(mu(0,1,0),-16))/2,
+      dk=SHARED.beasts.paint.donkey,donkeyH=H(sprite('mule-test|donkey',s=>dk(s,0,0,1,0,0),1));
+    ok(back>=30&&back<=33&&ears>=46&&ears<=50&&ears>donkeyH,`the mule is a size bigger than the donkey: its back ${back}, the tips of its ears ${ears} room pixels high (the donkey ${donkeyH})`);
+    /* the walk: a cycle of c room pixels carries a planted hoof K.stride of them; slip is the share of the cycle that is not carried */
+    const cyc=v=>Math.max(K.stride,v*K.beat),slip=v=>1-K.stride/cyc(v),
+      even=[...Array(16)].map((_,i)=>muleFr(cyc(WALK_V)*(i+.5)/16)),slow=[...Array(16)].map((_,i)=>muleFr(K.stride*(i+.5)/16,10)),fast=[...Array(16)].map((_,i)=>muleFr(90*K.beat*(i+.5)/16,90));
+    ok(even.every((f,i)=>f===4+i)&&slow.every((f,i)=>f===4+i)&&fast.every((f,i)=>f===4+i)&&muleFr(0)===4&&muleFr(-3,10)>=4&&muleFr(-3,10)<=19&&
+      Math.abs(K.stride-K.reach/K.stance/2)<1e-9&&slip(WALK_V)<=.04&&K.stride/WALK_V>=K.beat-1e-9,
+      `frame.mule: a cycle carries the mule ${K.stride} room pixels with its hooves planted (reach ${K.reach}, stance ${K.stance}); at WALK_V (${WALK_V}) a cycle takes ${(cyc(WALK_V)/WALK_V).toFixed(2)} s and the hooves slip by ${Math.round(slip(WALK_V)*100)} %; never quicker than ${K.beat} s`);
+    const V=K.voice,vf=V.map(v=>v[1]);
+    ok(V.every((v,i)=>!i||v[0]>V[i-1][0])&&V[0][0]===0&&vf[vf.length-1]===0&&[20,21,22,23].every(f=>vf.includes(f))&&V[V.length-1][0]<=1800&&typeof K.sound==='function'&&
+      new Set([20,21,22,23].map(f=>mu(f,1,1).toDataURL())).size===4&&!same(mu(0,1,1),mu(20,1,1)),
+      'the mule brays: its voice runs '+V.map(v=>v[0]+':'+v[1]).join(' ')+', four frames of its own, over in '+V[V.length-1][0]+' ms');
+    halt('mules',()=>{/* mules-walk.png: the walk and the voice, frame by frame */
+      {const Z=3,cw=168,chh=104,per=10,list=[];for(const ld of[0,1,2])for(const d of[1,-1])for(let fr=4;fr<24;fr++)list.push([ld,d,fr,mu(fr,d,ld)]);
+        const rows=list.length/per,c=document.createElement('canvas');c.width=per*cw*Z;c.height=24+rows*(chh*Z+16);const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);
+        g.fillStyle='#f4f0e6';g.font='bold 15px Menlo,Consolas,monospace';g.fillText("The mule's walk (frames 4 to 19) and its voice (20 to 23), three times enlarged, for each load and each way it faces",8,17);
+        list.forEach(([ld,d,fr,sp],i)=>{const x=(i%per)*cw*Z,y=24+Math.floor(i/per)*(chh*Z+16);g.fillStyle=(i+Math.floor(i/per))%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw*Z-2,chh*Z+14);g.fillStyle='#6f7a6a';g.fillRect(x+1,y+chh*Z-6,cw*Z-2,6);
+          g.drawImage(sp,FIG.OX-cw/2,FIG.OY-chh+2,cw,chh,x,y,cw*Z,chh*Z);g.fillStyle='#14100c';g.font='bold 11px Menlo,Consolas,monospace';g.fillText('frame '+fr+(fr===4||fr===20?' · load '+ld+(d>0?', facing right':', facing left'):''),x+5,y+chh*Z+11)});
+        window.SHEETS=Object.assign(window.SHEETS||{},{'mules-walk':c.toDataURL()})}
+      /* on the screen: the mule standing with each load, beside the donkey and a man for its size, and its four frames of voice */
+      const c=document.createElement('canvas');c.width=960;c.height=432;c.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;z-index:8';$('#view').appendChild(c);
+      const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,960,432);
+      const man=sprite('mule-test|man',s=>person(s,0,0,LOOK.paul,-1,0,0,0,0,0,0),-1),dn=sprite('mule-test|donkey2',s=>dk(s,0,0,1,0,1),1),
+        cells=[['blanket',mu(0,1,0)],['pack bags',mu(0,1,1)],['wool',mu(0,-1,2)],['beside the donkey and a man',null],['voice 20',mu(20,1,1)],['voice 21',mu(21,1,1)],['voice 22',mu(22,1,2)],['voice 23',mu(23,-1,2)]];
+      cells.forEach(([n,sp],i)=>{const x=(i%4)*240,y=Math.floor(i/4)*216;g.fillStyle='#a8b0bc';g.fillRect(x+2,y+2,236,212);g.fillStyle='#6f7a6a';g.fillRect(x+2,y+196,236,18);
+        if(sp)g.drawImage(sp,FIG.OX-59,FIG.OY-106,118,106,x+2,y+2,236,212);
+        else{g.drawImage(dn,FIG.OX-40,FIG.OY-106,80,106,x+2,y+2,160,212);g.drawImage(man,FIG.OX-20,FIG.OY-106,40,106,x+150,y+2,80,212)}
+        g.fillStyle='#101418';g.font='bold 12px monospace';g.fillText(n,x+8,y+16)})})}
   /* --- end of the mule --- */
 
   /* --- the ox: its checks, and its own stop `oxen` with its sheets (the ox's section of shared/beasts.js) --- */
