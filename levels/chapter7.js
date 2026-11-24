@@ -320,8 +320,8 @@ ART.gates={w:480,fp:1.25,q:12,
  draw(g,t){const lit=lightAt('gates',70,112);
   /* the far ox, the carter's wagon and its pole, the near ox, and the yoke that lies across both their necks: they face the cleft, and the wind.
      The pole ends behind the near ox's tail: if it ran on under the tail, the two would make a T upside down. */
-  depth(113,()=>{cattle(g,115,110.6,1,0,'#6f4630',lit);wagon(g,20,112,-1,1);cattle(g,111,113,1,0,'#8a5a3a',lit);
-    R(g,124,81,5,2.5,'#5a3e22');R(g,124,81,5,.5,'#a8845a');R(g,128.5,79.5,1.5,1.5,'#5a3e22')});
+  depth(113,()=>{cattle(g,121,110.6,1,0,'#6f4630',lit);wagon(g,20,112,-1,1);cattle(g,111,113,1,SHARED.beasts.pose('oxen7',0),'#8a5a3a',lit);
+    R(g,122,75.6,6,2.5,'#5a3e22');R(g,122,75.6,6,.5,'#a8845a')});
   tentArt(g,t)},
  /* the weather: before the tent is up, the wind, and what it carries; after it, the rain */
  front(g,t){if(!F.up){for(let i=0;i<14;i++){const k=((t/900+i*.0714)%1),x=500-k*540,y=18+((i*37)%96)+Math.sin(k*9+i)*3;R(g,x,y,5+(i%3)*2,.5,`rgba(226,220,206,${.34*(1-Math.abs(k-.5)*2)})`)}return}
@@ -810,7 +810,8 @@ ROOMS.gates={space:0.8,walk:[16,388,112,138],get mood(){return F.up?'calm':'stor
   {name:'cilician_gates',x:342,y:8,w:54,h:58,wx:360,wy:113,dir:1,exit:leaveGates,look:['the_cilician_gates','every_wagon_between_tarsus']},
   {name:'stream',x:398,y:100,w:82,h:44,wx:384,wy:127,dir:1,look:'snow_water_coming_down_fast',use:'i_fill_my_hands_and_drink',pickup:'stream_stays_in_its_bed'},
   {name:'wagon',x:18,y:84,w:76,h:28,wx:58,wy:120,dir:-1,look:'zenons_wagon_loaded_for_derbe',pickup:'it_is_zenons_and_it_is_loaded',use:'not_while_that_family_is'},
-  {name:'oxen',x:96,y:79,w:52,h:35,wx:130,wy:123,dir:-1,look:'zenons_brown_oxen',pickup:'they_are_zenons'},
+  {name:'oxen',x:90,y:66,w:60,h:48,wx:162,wy:122,dir:-1,look:'zenons_brown_oxen',pickup:'they_are_zenons',
+    talk:async()=>{SHARED.beasts.speak('oxen7','ox');await say(P,'he_lows_once_long_and_deep')}},
   {name:'bales',x:344,y:92,w:40,h:21,wx:352,wy:119,dir:1,look:'bales_of_goat_hair_cloth',pickup:'they_are_the_merchants_whole_fortune'},
   {get name(){return F.up?'tent':F.mended?'mended_tent':'torn_tent'},x:262,y:84,w:64,h:29,wx:254,wy:118,dir:1,def:'use',
     look:async()=>{if(F.up){await say(P,'low_black_tent_with_its_back');
