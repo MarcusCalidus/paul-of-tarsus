@@ -76,6 +76,18 @@ function wall13(g,x,y,w,h,c,r,o,P,C,seed){plaster(mk(1,1)[1],x,y,w,h,c,r,o);cons
     clipTo(g,()=>poly(g,pts),()=>{R(g,px-pw,py-ph,pw*2,ph*2,tint(b,-.35));for(let j=0,row=0;j<ph*2;j+=2.5,row++)for(let i=-(row%2)*3;i<pw*2;i+=6)R(g,px-pw+i,py-ph+j,5.5,2,tint(b,(q()-.5)*.25))});
     stroke(g,pts.concat(pts.slice(0,2)),rgba('#000000',.25),.5)}
   for(const[cx,cy,n]of C)crack13(g,cx,cy,n,q)}
+/* joists13: the ceiling over a room, seen from below as in Chapter Fifteen's room of Gaius: joists that run from the wall plate (their
+   foot at y = U) toward us and spread as they come, the boards dark between them. Of each joist we see the underside and the side turned
+   to the middle of the room; nothing stands on the plate as a post would. The grain of each underside is drawn from rw exactly as the
+   upright board it replaces drew it (x0, step: the feet of the joists), so that the rest of the room keeps its shape. */
+function joists13(g,x0,step,U,c,rw){const VX=160,VY=72,pu=x=>VX+(x-VX)*VY/(VY-U),pb=x=>VX+(x-VX)*VY/(VY-U+3.4);
+  g.fillStyle=lg(g,0,0,0,U,['#1c140e','#2c2018']);g.fillRect(0,0,320,U);tex(g,'wood',.4,0,0,320,U,'overlay',.5);ao(g,0,0,320,U*.7,'t',.45,'#0c0808');
+  for(let a=x0;a<320;a+=step){const b=a+6,left=a+3<VX,e=left?b:a,P=[a,U,b,U,pu(b),0,pu(a),0];
+    /* the shade the boards gather beside it, the side turned to the middle, and the underside with its grain */
+    for(const[d,al]of[[3.4,.14],[1.6,.2]]){poly(g,[a-d,U,a,U,pu(a),0,pu(a-d),0],rgba('#0c0808',al));poly(g,[b,U,b+d,U,pu(b+d),0,pu(b),0],rgba('#0c0808',al*.6))}
+    poly(g,[e,U,e,U-3.4,pb(e),0,pu(e),0],left?tint(c,-.34):tint(c,.12));poly(g,P,c);
+    const s=(pu(a+3)-(a+3))/U;clipTo(g,()=>poly(g,P),()=>{g.save();g.transform(1,0,-s,1,s*U,0);boardW13(g,a,0,6,U,c,rw,1);g.restore()});
+    stroke(g,[e,U,pu(e),0],left?tint(c,.18):tint(c,.3),.5)}}
 /* cast: figures posed in a scene, the nearest drawn last. Each is [look id, x, y, dir, {bow, ges, fr, lit, sw}]. A figure with fr -1 sits. */
 function cast(g,list,lit){list.slice().sort((a,b)=>a[2]-b[2]).forEach(([id,x,y,dir,o])=>{o=o||{};const fr=o.fr||0,bow=o.bow?1:0,ges=o.ges||0;
   figure(g,x,y,o.lit||lit,id+dir+'s'+(fr<0?'q':fr)+bow+ges,s=>person(s,0,0,LOOK[id],dir,fr,0,bow,ges,bow),o.sw==null?7.5:o.sw)})}
@@ -149,8 +161,8 @@ const SKY={m:['#5b86c0','#9fb9d8','#e6d8c0','#f6dcae'],n:['#3f7fd0','#78aee4','#
 ART.shop13={w:320,q:12,variant:()=>SHOPV(),
  paint(g,v){const r=rng(1301),W='#d2c09a',n=v!=='d';
   wall13(g,0,0,320,104,W,r,{patch:2,cracks:5,brick:'#a8845a',t:.34},[[112,22,9,5],[178,36,7,4]],[[62,16,4],[128,15,3],[206,17,4],[312,16,3]],1331);
-  /* the ends of the joists over the wall plate, each with the shade it gathers on the plaster beside it */
-  const rw=rng(1332);for(let i=14;i<320;i+=38){ao(g,i-3,0,3,9,'r',.2,'#2a2030');ao(g,i+6,0,3.4,9,'l',.28,'#2a2030');boardW13(g,i,0,6,9,'#5a4226',rw,1)}
+  /* the joists of the ceiling, coming toward us from the wall plate (joists13), and the plate */
+  const rw=rng(1332);joists13(g,14,38,9,'#5a4226',rw);
   boardW13(g,0,9,320,2.6,'#6a4e2c',rw);ao(g,0,11.6,320,12,'t',.44,'#2a2030');ao(g,0,11.6,320,3,'t',.3,'#1a1420');
   ao(g,0,12,10,92,'l',.24,'#2a2030');ao(g,310,12,10,92,'r',.24,'#2a2030');ao(g,0,96,320,8,'b',.22,'#2a2030');
   /* the door to the street, at the right: by day the colonnade across the way; before sunrise a paling sky; at night the stars */
@@ -196,7 +208,8 @@ ART.shop13={w:320,q:12,variant:()=>SHOPV(),
 ART.syn13={w:320,q:12,
  paint(g){const r=rng(1303),W='#dccfaa',S='#c6bca2';
   wall13(g,0,0,320,104,W,r,{patch:0,cracks:4,brick:'#b08a5a',t:.3},[],[[32,13,4],[116,12,3],[202,13,3],[292,12,4]],1333);
-  const rw=rng(1334);for(let i=10;i<320;i+=44){ao(g,i-3,0,3,8,'r',.2,'#2a2030');ao(g,i+6,0,3.4,8,'l',.28,'#2a2030');boardW13(g,i,0,6,8,'#5a4226',rw,1)}
+  /* the joists of the ceiling, coming toward us from the wall plate (joists13), and the plate */
+  const rw=rng(1334);joists13(g,10,44,8,'#5a4226',rw);
   boardW13(g,0,8,320,2.4,'#6a4e2c',rw);ao(g,0,10.4,320,12,'t',.42,'#2a2030');ao(g,0,10.4,320,3,'t',.28,'#1a1420');
   ao(g,0,11,10,93,'l',.24,'#2a2030');ao(g,310,11,10,93,'r',.24,'#2a2030');ao(g,0,96,320,8,'b',.2,'#2a2030');
   /* two windows high in the wall, round-headed, with upright bars */
@@ -462,10 +475,11 @@ ART.house13={w:320,q:12,
   /* the back wall of the room */
   wall13(g,HX[0],HTOP,HX[1]-HX[0],HFL-HTOP,W,r,{patch:2,cracks:4,brick:'#a8845a',top:-.04,bot:-.22,t:.34},[[90,46,7,4.2],[254,52,7,4]],[[70,39,3],[118,39,3],[224,39,4],[264,39,3]],1337);
   const rw=rng(1338);
-  /* the two side walls and the roof, cut through: mud brick under plaster, and the roof of clay on reeds on beams, whose ends we see */
+  /* the two side walls and the roof, cut through: mud brick under plaster, and the roof of clay on reeds on beams, whose cut ends we see
+     in the shade under the reeds, a dark line between each end and the reeds so that none hangs from them as a post from a bar */
   for(const x of[HX[0]-8,HX[1]]){R(g,x,HTOP-8,8,HFL-HTOP+12,'#9a7a54');for(let j=0;j<(HFL-HTOP+12)/3;j++)for(let i=-(j%2)*2.6;i<8;i+=5.2)R(g,x+Math.max(0,i)+.3,HTOP-8+j*3+.3,Math.min(4.6,8-Math.max(0,i)-.3),2.4,tint('#a8845a',(r()-.5)*.2));R(g,x,HTOP-8,.8,HFL-HTOP+12,tint(W,-.1));R(g,x+7.2,HTOP-8,.8,HFL-HTOP+12,tint(W,-.3))}
   R(g,HX[0]-8,HTOP-8,HX[1]-HX[0]+16,3.4,'#b8a078');R(g,HX[0]-8,HTOP-8,HX[1]-HX[0]+16,.7,'#d8c8a0');R(g,HX[0]-8,HTOP-4.6,HX[1]-HX[0]+16,2,'#8a7a4a');for(let i=HX[0]-8;i<HX[1]+8;i+=1.4)R(g,i,HTOP-4.6,.6,2,'rgba(50,40,20,.3)');
-  R(g,HX[0],HTOP-2.6,HX[1]-HX[0],2.6,'#3a2c20');for(let i=HX[0]+9;i<HX[1]-6;i+=19){R(g,i,HTOP-2.6,3.4,2.6,'#8a683a');R(g,i,HTOP-2.6,3.4,.6,'#b8905a')}
+  R(g,HX[0],HTOP-2.6,HX[1]-HX[0],2.6,'#3a2c20');for(let i=HX[0]+9;i<HX[1]-6;i+=19){R(g,i,HTOP-1.9,3.4,1.9,'#8a683a');R(g,i,HTOP-.6,3.4,.6,'#5a4228')}
   /* the parapet of the roof, at its two ends; a rolled mat and a jar up there */
   for(const x of[HX[0]-8,HX[1]+2]){R(g,x,HTOP-16,6,8,tint(W,-.2));R(g,x,HTOP-16,6,.8,tint(W,.1))}
   clothRoll(g,196,HTOP-8,28,6,'#b89a5a',{k:.3});vessel(g,92,HTOP-8,3.4,9,'#8a4a2a','jar',{noShadow:1});

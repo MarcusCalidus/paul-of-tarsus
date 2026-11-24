@@ -63,6 +63,18 @@ const{plank:plank12,board:board12,crack:crack12,skipCracks:skipCracks12,shadow:s
 function sun12(g,w,hz,amb,fn){lightmap(g,w,amb,l=>{l.fillStyle=lg(l,0,0,0,hz,[[0,'#ffffff'],[.7,'#ffffff'],[1,'rgba(255,255,255,0)']]);l.fillRect(0,0,w,hz);fn(l)})}
 /* cracks12: cracks cut by hand, [x, y, steps] each, from a seed of their own, so that the rest of the room keeps its shape */
 function cracks12(g,seed,list,a){const rb=rng(seed);for(const[x,y,n]of list)crack12(g,x,y,n,rb,a)}
+/* joists12: the ceiling over a room, seen from below as in Chapter Fifteen's room of Gaius: joists that run from the wall plate (their
+   foot at y = U) toward us and spread as they come, the boards dark between them. Of each joist we see the underside and the side turned
+   to the middle of the room; nothing stands on the plate as a post would. The grain of each underside is drawn from rw exactly as the
+   upright board it replaces drew it (x0, step: the feet of the joists), so that the rest of the room keeps its shape. */
+function joists12(g,x0,step,U,c,rw){const VX=160,VY=72,pu=x=>VX+(x-VX)*VY/(VY-U),pb=x=>VX+(x-VX)*VY/(VY-U+3.4);
+  g.fillStyle=lg(g,0,0,0,U,['#1c140e','#2c2018']);g.fillRect(0,0,320,U);tex(g,'wood',.4,0,0,320,U,'overlay',.5);ao(g,0,0,320,U*.7,'t',.45,'#0c0808');
+  for(let a=x0;a<320;a+=step){const b=a+6,left=a+3<VX,e=left?b:a,P=[a,U,b,U,pu(b),0,pu(a),0];
+    /* the shade the boards gather beside it, the side turned to the middle, and the underside with its grain */
+    for(const[d,al]of[[3.4,.14],[1.6,.2]]){poly(g,[a-d,U,a,U,pu(a),0,pu(a-d),0],rgba('#0c0808',al));poly(g,[b,U,b+d,U,pu(b+d),0,pu(b),0],rgba('#0c0808',al*.6))}
+    poly(g,[e,U,e,U-3.4,pb(e),0,pu(e),0],left?tint(c,-.34):tint(c,.12));poly(g,P,c);
+    const s=(pu(a+3)-(a+3))/U;clipTo(g,()=>poly(g,P),()=>{g.save();g.transform(1,0,-s,1,s*U,0);board12(g,a,0,6,U,c,rw,1);g.restore()});
+    stroke(g,[e,U,pu(e),0],left?tint(c,.18):tint(c,.3),.5)}}
 const SH='#8f95c8',LIN='#e9dfc2',GOAT='#3d332c',MBL='#e8e3d6',BLU=earth12('#7f93b4',.14);
 /* cast: figures posed in a scene, the nearest drawn last. Each is [look id, x, y, dir, {bow, ges, fr, lit}]. */
 function cast(g,list,lit){list.slice().sort((a,b)=>a[2]-b[2]).forEach(([id,x,y,dir,o])=>{o=o||{};const fr=o.fr||0,bow=o.bow?1:0,ges=o.ges?1:0;
@@ -217,10 +229,10 @@ const NIGHT=()=>!!((F.r2&&!F.night)||(F.word&&!F.stay2));
 ART.shop12={w:320,q:12,variant:()=>NIGHT()?'n':SEAS()==='w'?'w':'d',
  paint(g,v){const r=rng(1203),W='#cdbb94',n=v==='n';
   plaster(g,0,0,320,104,W,r,{patch:2,cracks:0,brick:'#a8845a',t:.34});skipCracks12(r,5);const rw=rng(1295);
-  /* the ends of the joists over the wall plate, each with the shade beside it; the plate; the shade gathers under it, in the corner at
+  /* the joists of the ceiling, coming toward us from the wall plate (joists12); the plate; the shade gathers under it, in the corner at
      the right and along the foot of the wall. The cracks are cut by hand, high under the plate, where they run to no head. */
-  cracks12(g,1296,[[104,15,3],[190,14,4],[256,16,3]]);ao(g,0,0,320,9,'t',.3,'#1a1420');
-  for(let i=10;i<320;i+=38){ao(g,i-3,0,3,9,'r',.3,'#1a1420');ao(g,i+6,0,3,9,'l',.22,'#1a1420');board12(g,i,0,6,9,'#5a4226',rw,1)}board12(g,0,9,320,2.6,'#6a4e2c',rw);
+  cracks12(g,1296,[[104,15,3],[190,14,4],[256,16,3]]);
+  joists12(g,10,38,9,'#5a4226',rw);board12(g,0,9,320,2.6,'#6a4e2c',rw);
   ao(g,0,11.6,320,12,'t',.44,'#2a2030');ao(g,0,11.6,320,3,'t',.3,'#1a1420');ao(g,296,11.6,24,92,'r',.22,'#2a2030');ao(g,0,95,320,9,'b',.24,'#2a2030');
   /* the opening onto the street: the paving, and the colonnade across the way */
   R(g,14,32,74,72,'#2a221c');if(n){g.fillStyle=lg(g,0,36,0,70,['#141c38','#26304e']);g.fillRect(18,36,66,34);for(let i=0;i<9;i++){const sx=22+r()*58,sy=40+r()*22;if(sy<52)R(g,sx,sy,.8,.8,'rgba(230,236,255,.8)')}
@@ -390,10 +402,10 @@ const POS2=['by_the_wall','in_the_middle','by_the_house'],POS1=['first_quarter',
 ART.syn12={w:320,q:12,
  paint(g){const r=rng(1209),W='#ddd0ac',ST='#c6bca2';
   plaster(g,0,0,320,104,W,r,{patch:0,cracks:0,brick:'#b08a5a',t:.32});skipCracks12(r,4);const rw=rng(1300);
-  /* the ends of the joists over the wall plate, each with the shade beside it; the shade under the plate, in the corners and along the
+  /* the joists of the ceiling, coming toward us from the wall plate (joists12); the shade under the plate, in the corners and along the
      foot of the wall. The cracks are cut by hand, high under the plate, where they run to no head. */
-  cracks12(g,1301,[[40,13,3],[128,12,3],[250,13,4]]);ao(g,0,0,320,8,'t',.28,'#1a1420');
-  for(let i=16;i<320;i+=40){ao(g,i-3,0,3,8,'r',.3,'#1a1420');ao(g,i+6,0,3,8,'l',.22,'#1a1420');board12(g,i,0,6,8,'#5a4226',rw,1)}board12(g,0,8,320,2.4,'#6a4e2c',rw);
+  cracks12(g,1301,[[40,13,3],[128,12,3],[250,13,4]]);
+  joists12(g,16,40,8,'#5a4226',rw);board12(g,0,8,320,2.4,'#6a4e2c',rw);
   ao(g,0,10.4,320,12,'t',.42,'#2a2030');ao(g,0,10.4,320,3,'t',.3,'#1a1420');ao(g,0,10,10,94,'l',.24,'#2a2030');ao(g,310,10,10,94,'r',.24,'#2a2030');ao(g,0,95,320,9,'b',.24,'#2a2030');
   for(const x of[96,150,204]){R(g,x-2,24,18,22,tint(W,-.2));g.fillStyle=lg(g,0,26,0,44,['#9aa6b4','#cfd4d2']);g.fillRect(x,26,14,18);for(let i=1;i<3;i++)R(g,x+i*4.6-.4,26,.8,18,'#5a4a36');ao(g,x,26,14,4,'t',.4);R(g,x-3,46,20,1.6,tint(W,.2))}
   R(g,268,44,38,60,tint(W,-.16));doorArt(g,271,47,32,57,'#5f4428',r,{bands:[]});
