@@ -3908,15 +3908,17 @@
   ok(/^6-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===6&&decode(makeCode()).w!=null,'chapter six code format (wide, nine characters) '+makeCode());
   ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Barnabas')),'a party: the panel offers to switch to Barnabas');fitVerbs();
   /* --- the mule: its checks, and its own stop `mules` with its sheets (the mule's section of shared/beasts.js) --- */
-  /* The mule (shared/beasts.js, its own painter): every pose is one piece, facing both ways and with each load (0 a blanket, 1 pack bags,
-     2 the bags stuffed with wool and fleeces piled on top), in its sixteen frames of walk (fr 4 to 19) and its four of voice (20 to 23).
+  /* The mule (shared/beasts.js, its own painter, drawn after the maintainer's picture of a mule; it wears no halter): every pose is one
+     piece, facing both ways and with each load the game uses (0 a blanket, 1 pack bags, 2 the bags stuffed with wool and fleeces piled on
+     top; -1, the bare mule, is only for sheets that compare it with the picture), in its sixteen frames of walk (fr 4 to 19) and its four of voice (20 to 23).
      Two hooves or more stand on the ground in every walk frame; the body sinks a pixel as each fore hoof lands (frames 4, 5, 12 and 13)
      and never rises; frames 1, 2 and 3 are three moments of the walk. It is a size bigger than the donkey: its back stands 30 to 33 room
      pixels high and the tips of its ears 46 to 50, about a man's height. frame.mule: at WALK_V the planted hooves do not slip, and a cycle is
      never quicker than its beat. Its voice: the list runs forward in time, shows each of the frames 20 to 23, ends on 0 within 1.8 s.
      The stop `mules` hands over mules-walk.png, every frame of the walk and the voice three times enlarged, two rows for each load and
      each way it faces: look there for a leg that has come apart, legs that cross as an X under the belly, a leg under the middle of the
-     body as a T, a tail across a leg, a strap across a strap, and ears that read as a cross. */
+     body as a T, a tail across a leg, a girth that meets the blanket as a T rather than at its corner, a crease from the withers that
+     crosses the mane, and ears that read as a cross. */
   {const mule=SHARED.beasts.paint.mule,K=SHARED.beasts.kinds.mule,muleFr=SHARED.beasts.frame.mule,
     pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
       for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
