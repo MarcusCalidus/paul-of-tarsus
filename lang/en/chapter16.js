@@ -524,5 +524,6 @@ TEXTS('en',16,{
   "harbor":"harbor",
   "lukes_tablets":"wax tablets",
   "lukes_tablets_look":"My tablets. A place and a day, and what I saw there.",
-  "click_to_return_to_the_title":"Click to return to the title"
+  "click_to_continue_to_chapter_seventeen":"Click to continue to Chapter Seventeen",
+  "chapter_seventeen_code_code":"Chapter Seventeen code: {code}"
 });

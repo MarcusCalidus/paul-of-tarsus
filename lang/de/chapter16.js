@@ -520,6 +520,5 @@ TEXTS('de',16,{
   "Tychicus":["Tychikus","194hz8x"],
   "harbor":["Hafen","0m8pkuj"],
   "lukes_tablets":["Wachstafeln","1742j86"],
-  "lukes_tablets_look":["Meine Tafeln: ein Ort, ein Tag und was ich dort gesehen habe.","0xuypxx"],
-  "click_to_return_to_the_title":["Klicken, um zum Titel zurückzukehren","0qni08u"]
+  "lukes_tablets_look":["Meine Tafeln: ein Ort, ein Tag und was ich dort gesehen habe.","0xuypxx"]
 });

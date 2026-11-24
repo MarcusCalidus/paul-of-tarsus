@@ -69,8 +69,6 @@ TEXTS('de','main',{
   "chapter_fifteen":["Fünfzehntes Kapitel","1rm190n"],
   "chapter_sixteen":["Sechzehntes Kapitel","11g2ivq"],
   "chapter_seventeen":["Siebzehntes Kapitel","0cqu37f"],
-  "Seventeen":["Siebzehn","1w4zkee"],
-  "acts_21_1_16":["Apostelgeschichte 21:1-16","0p0lm2o"],
   "chapter_eighteen":["Achtzehntes Kapitel","0qlivg7"],
   "Eighteen":["Achtzehn","1ova8ts"],
   "acts_21_17_22_29":["Apostelgeschichte 21:17–22:29","13h4ei5"],

@@ -1492,8 +1492,8 @@ async function toTheShip(){if(!F.spoke)return say(P,'not_before_we_have_spoken')
   const all=[P,LK,TI,TR,...ELDERS16.map(e=>e[0])];all.forEach(a=>{a.speed=fast()?400:0;a.free=1});
   const go=all.map((a,i)=>walk(a,clamp(250+(i%5)*10,16,304),118+(i*7)%18));
   await tell('v37');await Promise.all(go);all.forEach(a=>{a.speed=0;a.free=0});
-  endScreen({title:'these_hands_2',text:'these_hands_end',based:'based_on_acts_20_13_38',go:'click_to_return_to_the_title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+  endScreen({title:'these_hands_2',text:'these_hands_end',based:'based_on_acts_20_13_38',go:'click_to_continue_to_chapter_seventeen',code:['chapter_seventeen_code_code',codeOf(17,0)]});
+  await wait(1500);ov.onclick=()=>{ov.onclick=null;startChapter(17)};await new Promise(()=>{})}
 /* the hidden treasure: Milesian wool, at the far end of the quay */
 async function wool(){await say(P,'milesian_wool_softer');treasure()}
 
