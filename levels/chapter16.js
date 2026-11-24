@@ -16,7 +16,7 @@
    and Fourteen. Everything that is said is invented; the end screen says so.
    What the account says is told by the narrator, in paraphrase with its reference (TOLD below), and never put into a mouth as a
    quotation. The narration says "we", as Acts does, all through this chapter. The speech at Miletus (20:18-35) is told, never composed,
-   over pictures of Paul speaking; at 20:33, 34 he holds out his hands. The kneeling of 20:36 is shown, heads bowed and arms down; the
+   over pictures of Paul speaking; at 20:33, 34 he holds out his hands. The kneeling of 20:36 is shown, heads bowed, arms down or hands folded; the
    tears and the embrace of 20:37, 38 are told while they walk him to the ship.
    Played: Paul on the quay of Troas; then two at once, Paul on the coast road and Luke aboard, and the player swaps between them; Luke
    aboard from Assos to Chios; and Paul at Miletus. Six things are played: the master's three concerns (only true lines on offer); the
@@ -111,13 +111,6 @@ function rockC16(g,x0,x1,base,f,c,r){ridge(g,x0,x1,base,f,[tint(c,.16),c,tint(c,
   clipTo(g,()=>{const p=[x0,base];for(let x=x0;x<=x1;x+=1)p.push(x,base-f(x));p.push(x1,base);poly(g,p)},()=>{
     for(let i=0;i<(x1-x0)*1.4;i++){const x=x0+r()*(x1-x0),y=base-r()*90,w=2+r()*6;poly(g,[x,y,x+w,y-w*.4,x+w*.8,y+w*.5],r()<.5?rgba(tint(c,.3),.5):rgba(tint(c,-.35),.45))}
     tex(g,'mott',.5,x0,base-100,x1-x0,100,'overlay',.8)})}
-/* sheepC16: a sheep standing, its feet at x,y, facing d, in the fleece color c. A placeholder for the shared painter that is coming
-   (SHARED.beasts.sheep, branch ch16-misc): a fleece, a head on a short neck, four short legs straight down, nothing crossing. */
-function sheepC16(g,x,y,d,c,k){k=k||1;const F=c||'#e4dcc8',D=tint(F,-.32),H='#3a2e28';
-  oval(g,x,y+.2,7*k,1.4*k,'rgba(30,26,46,.3)');
-  for(const lx of[-4.2,-2.2,2.6,4.4])R(g,x+lx*k*d-.4,y-4*k,.9*k,4*k,H);
-  oval(g,x,y-6.6*k,6.4*k,3.6*k,D);oval(g,x-.4*d,y-7.2*k,5.8*k,3*k,F);oval(g,x-1.6*d,y-8.2*k,3*k,1.4*k,tint(F,.25));
-  poly(g,[x+4.4*k*d,y-8.4*k,x+6.6*k*d,y-9.6*k,x+8.8*k*d,y-8.6*k,x+8.6*k*d,y-6.4*k,x+6*k*d,y-6*k],H);R(g,x+7.6*k*d-.3,y-8.6*k,.6,.6,'#c8b8a0')}
 /* tinyShipC16: a coaster far off, x its middle, y its waterline, l its length: a dark hull and a small sail; nothing above sy */
 function tinyShipC16(g,x,y,l,sail){poly(g,[x-l/2,y-1.2,x+l/2,y-1.6,x+l/2-1,y,x-l/2+1,y],'#4a3a34');if(sail)poly(g,[x-l*.18,y-1.6,x+l*.2,y-1.6,x+l*.16,y-1.6-l*.36,x-l*.14,y-1.6-l*.34],'#e6dcc4')}
 /* cap16: words painted on a close view, translated as they are drawn and made to fit their width (the playtest checks G.caps16) */
@@ -340,27 +333,82 @@ function drawQuay16(g,t){const P=PQuay16,O=OQuay16,dy=Math.round(Math.sin(t/1500
    the hill path · the shore path · back to Troas 0,70,16,70 · the fisherman (actor, seated on a stone at 150,117; his stone is a prop
    with foot 144,114,12,4). Walk strip 16..304, 112..138. */
 const HZRoad16=58;
-ART.road16={w:320,q:12,paint(g){paintRoad16(g)},light:{amb:'#f8e6cc',sun:[.5,.3,.45]},draw(g,t){drawRoad16(g,t)},front(){},
-  props:[{y:117,shape(g){stoneRoad16(g)},foot:[[143,114,14,3]],seat:1}]};
-const capeRoad16=x=>x<190?0:x<230?(x-190)*.42:x<276?16.8+2*Math.sin((x-230)/9):Math.max(0,16-(x-276)*.5);
-function paintRoad16(g){const r=rng(1602),HZ=HZRoad16;
-  sky(g,320,HZ+1,['#6e94c4','#9ab4cc','#d6d8cc','#eee0c4']);pool(g,-20,0,180,80,'#fff2d0',.45,'screen');
-  for(const[cx,cy,w,h]of[[90,14,80,3],[230,8,60,2.4]])cloud(g,cx,cy,w,h,r,'#fff4e0','#a8b0c8');
-  seaC16(g,HZ,106,r,'#c8ccc4','#4a7494',260,200);
-  ridge(g,186,320,HZ+.4,capeRoad16,['#8a8a7e','#a6a08a']);
-  /* the hills at the left and the low ground before the sea */
-  rockC16(g,0,200,104,x=>60-x*.24+4*Math.sin(x/11)+2*Math.sin(x/4.3),'#9a8a68',r);
-  ridge(g,0,320,112,x=>x<190?26-x*.1:Math.max(4,10-(x-190)*.05)+1.4*Math.sin(x/7),['#9aa070','#7a8458']);
-  for(let i=0;i<60;i++){const x=r()*320,y=86+r()*24;if(y<112-(x<190?26-x*.1:8)+2)continue;foliage(g,x,y,2+r()*2,1.5+r(),'#5e7046',r,6)}
-  /* the road: worn earth along the strip; the upper path climbing right, the lower path going down to the shore */
-  g.fillStyle=lg(g,0,110,0,144,['#c8b48c','#a8946c']);g.fillRect(0,110,320,34);tex(g,'mott',.5,0,110,320,34,'overlay',1);
-  rockC16(g,226,320,112,x=>Math.min(46,(x-226)*.7)+2*Math.sin(x/5),'#9a8a68',r);
-  poly(g,[230,112,262,112,292,76,300,72,292,92,262,116],'#c4ae86');poly(g,[250,138,320,124,320,144,240,144],'#b8a07a');
-  for(let i=0;i<50;i++){const x=r()*320,y=112+r()*30;R(g,x,y,1+r()*2,.6,'rgba(90,70,50,.35)')}
+/* The picture is painted with the shared painters (shared/coast.js and shared/country.js) in one light: the morning sun stands behind us,
+   low in the east over the hills, so the slopes that face the sea are lit and every shadow falls away from us and a little to the right.
+   ORoad16 is the one options object for the whole picture; the sea's motion (SRoad16) is kept from paint for draw. */
+const ORoad16={w:320,hz:HZRoad16,hour:'morning',cloud:.24,streak:.3,seed:1621,light:-1,swell:-.2};
+let SRoad16=null,CapeRoad16=null;
+ART.road16={w:320,q:12,paint(g){paintRoad16(g)},light:{amb:'#f8ecd8',sun:[.5,.3,.45]},draw(g,t){drawRoad16(g,t)},front(){},
+  props:[{y:117,shape(g){stoneRoad16(g,1)},foot:[[143,114,14,3]],seat:1}]};
+/* the hill at the left: its brow from the picture's edge down to the low ground by the sea */
+const hillRoad16=x=>x<0?30:x>210?999:30+Math.pow(x/210,1.5)*66+3*Math.sin(x/13)+1.6*Math.sin(x/4.7);
+/* the spur at the right that the upper path climbs: its top, falling to the road */
+const spurRoad16=x=>x<224?999:112-Math.min(48,Math.pow((x-224)/96,.8)*48)+1.4*Math.sin(x/6)+.8*Math.sin(x/2.3);
+function paintRoad16(g){const K=SHARED.coast,CO=SHARED.country,O=ORoad16,HZ=HZRoad16;
+  if(!O.wind)O.wind=SHARED.weather.wind({from:'n',force:2,view:'w'});const L=K.light(O);
+  K.sky(g,O);
+  /* the land of the cape, far off at the right, and a low island on the horizon at the left of it */
+  CapeRoad16=K.isle(g,176,320,15,O,{kind:'cape',from:'r',dist:.56,seed:1622});
+  K.isle(g,118,160,2.4,O,{dist:.86,seed:1623});
+  SRoad16=K.sea(g,Object.assign(O,{y1:104}));SRoad16.open=(x,y)=>y<HZ+28+x*.02&&y<hillRoad16(x)-1&&y<spurRoad16(x)-2;
+  /* the hills behind the hill: a far range, hazy, rising out of the picture at the left */
+  K.land(g,L,.45,q=>CO.range(q,-10,150,HZ+1,x=>Math.max(0,34-x*.24+4*Math.sin(x/17)),['#8c8e7c','#a2a08c'],{k:.8,light:-1}));
+  /* a narrow shingle beach under the slope, where the low ground meets the water */
+  K.shore(g,O,{x0:128,x1:320,edge:x=>HZ+24+x*.02+1.2*Math.sin(x/9),y1:HZ+40,kind:'shingle',seed:1624});
+  /* the low ground between the hill's foot and the beach: turf, dry in places, with scrub and three olives */
+  K.land(g,L,0,q=>{const lowTop=x=>HZ+29+x*.02+1.4*Math.sin(x/11),T=[-2,112];for(let x=-2;x<=322;x+=2)T.push(x,lowTop(x));T.push(322,112);
+    clipTo(q,()=>poly(q,T),()=>CO.turf(q,-2,HZ+26,324,112,'#8e955e',1626,{dry:.45,wind:1,scale:.7,flowers:6}))});
+  /* the hill at the left: a slope of turf and scrub over bedded rock, with outcrops where the rock comes through */
+  K.land(g,L,0,q=>{const P=[-2,114,-2,hillRoad16(0)];for(let x=0;x<=214;x+=2)P.push(x,Math.min(hillRoad16(x),112));P.push(214,114);
+    clipTo(q,()=>poly(q,P),()=>{CO.turf(q,-2,26,218,114,'#8a8c58',1635,{dry:.55,wind:1,scale:.8});
+      /* outcrops: ledges of the bedded rock that break through the turf, ragged above, sunk into the grass below */
+      for(const[x0,w,y0,h,sd]of[[4,40,44,16,1636],[74,30,62,11,1637],[20,26,80,10,1638],[132,24,82,8,1639],[100,16,46,6,1645]]){const rr=rng(sd),o=[];
+        for(let i=0;i<=10;i++){const u=i/10;o.push(x0+u*w,y0+h*(.55-.45*Math.sin(Math.PI*u))-rr()*h*.35)}for(let i=10;i>=0;i--){const u=i/10;o.push(x0+u*w,y0+h*(.75+.25*Math.sin(Math.PI*u))+rr()*h*.15)}
+        CO.crag(q,o,'#b4a486',sd,{light:-1,dip:.1,bed:3.6,scrub:3});
+        for(let i=0;i<w*.8;i++)CO.tuft(q,x0+rr()*w,y0+h*(.7+.3*rr()),1.2+rr()*2,'#8a8c58',rr)}
+      /* the flank that falls toward the sea turns from the sun, and a cloud's shadow drifts over the slope */
+      comp(q,'multiply',.55,()=>{q.fillStyle=lg(q,90,0,214,0,['rgba(255,255,255,0)','#c8c4d8','#a8a4c4']);q.fillRect(90,26,126,88)});
+      pool(q,70,64,44,9,'#7a7aa0',.3,'multiply');pool(q,150,90,30,5,'#8a88a8',.22,'multiply');
+      comp(q,'source-over',1,()=>{q.fillStyle=lg(q,0,26,0,100,[rgba('#b8c6d4',.4),rgba('#b8c6d4',.12),rgba('#b8c6d4',0)]);q.fillRect(-2,26,220,88)});
+      /* the scrub grows in patches, thicker in the folds of the slope: each patch a few bushes of its own size that run together */
+      const r=rng(1643);for(let i=0;i<30;i++){const cx=r()*214,cy=hillRoad16(cx)+4+r()*(108-hillRoad16(cx)),k=(cy-30)/80;if(cy>108)continue;
+        const n=1+Math.floor(r()*4);for(let j=0;j<n;j++){const x=cx+(r()-.5)*(4+k*10),y=cy+(r()-.5)*(2+k*5),sz=.6+r()*.7;CO.bush(q,x,y,(3+k*7)*sz,(1.8+k*3.2)*sz,j%2?'#56683e':'#61714a',1700+i*7+j,{light:-1})}}});
+    stroke(q,P.slice(2,P.length-2),rgba('#fff2d0',.25),.5);
+    for(const[x,y,w,h]of[[132,94,10,4],[176,99,14,5],[206,92,9,3.6],[252,98,12,4.6],[108,106,12,5],[226,104,10,4]])CO.bush(q,x,y,w,h,'#5e7448',x*7+y,{light:-1});
+    CO.tree(q,58,98,30,null,{kind:'olive',seed:1627,light:-1,lean:.4});
+    CO.tree(q,190,101,22,null,{kind:'olive',seed:1628,light:-1,lean:-.3});
+    CO.tree(q,236,95,13,null,{kind:'olive',seed:1629,light:-1})});
+  /* the spur at the right, its rock in the morning light with scrub in its hollows, and the upper path that climbs it in two bends,
+     worn pale, with loose stones along its edges */
+  K.land(g,L,0,q=>{const P=[224,113];for(let x=224;x<=322;x+=2)P.push(x,spurRoad16(x));P.push(322,113);
+    CO.crag(q,P,'#b4a284',1630,{light:-1,dip:-.14,bed:5,scrub:16});
+    for(const[x,y,w,h]of[[262,92,10,4],[306,80,9,3.4],[284,106,12,4.4],[246,104,8,3]])CO.bush(q,x,y,w,h,'#566a42',x*5+y,{light:-1});
+    const mid=[[226,112.5,9],[246,109,7],[264,101,5.6],[276,92,5],[284,84,4.4],[296,78,4],[306,72,3.4],[314,69,3]],Lf=[],Rt=[];
+    for(const[x,y,w]of mid){Lf.push(x-w*.3,y-w*.42);Rt.unshift(x+w*.3,y+w*.42)}
+    const up=Lf.concat(Rt);poly(q,up,'#cdb68c');
+    clipTo(q,()=>poly(q,up),()=>{CO.ground(q,220,64,100,118,'#d0ba90',1631,{n:26,size:.45});ao(q,220,64,100,54,'l',.16,'#2a2440')});
+    stroke(q,Rt.slice(),rgba('#3a3040',.28),.5);stroke(q,Lf.map((v,i)=>i%2?v+.5:v),rgba('#fff4dc',.35),.5);
+    for(let i=0;i<mid.length-1;i++){const[x,y,w]=mid[i];CO.boulder(q,x+w*.55,y+w*.5,1.6+w*.28,1+w*.16,'#a89c86',1642+i,{light:-1});if(i%2)CO.boulder(q,x-w*.5,y-w*.3,1.2+w*.2,.8+w*.12,'#ac9e86',1652+i,{light:-1})}});
+  /* the road along the strip: worn earth with two ruts, loose stones and dry tufts along its edges, and the lower path that leaves it at
+     the right edge for the shore */
+  K.land(g,L,0,q=>{CO.ground(q,0,110,320,144,'#bea880',1632,{n:70,size:.8,tufts:22});
+    pool(q,96,128,60,6,'#8a7a96',.18,'multiply');pool(q,240,118,40,4,'#8a7a96',.14,'multiply');pool(q,30,134,40,4,'#fff2d6',.2,'screen');
+    {const r=rng(1644);for(let i=0;i<46;i++){const x=r()*320,y=125.5+(x-160)*.012+.8*Math.sin(x/37)+r()*2.4;CO.tuft(q,x,y,1+r()*1.8,r()<.5?'#9a9a5e':'#b0a46a',r)}}
+    for(const f of[121,131]){const rp=[];for(let x=-2;x<=322;x+=4)rp.push(x,f+(x-160)*.012+.8*Math.sin(x/37));stroke(q,rp,rgba('#5a4636',.2),1.2);stroke(q,rp.map((v,i)=>i%2?v+.7:v),rgba('#fff2d6',.14),.5)}
+    const dn=[246,138,276,128,300,126,322,124,322,146,240,146];poly(q,dn,rgba('#c8b48e',.8));clipTo(q,()=>poly(q,dn),()=>CO.ground(q,240,122,82,146,'#c4ae88',1633,{n:24,size:1.1}));
+    const vg=[-2,107];for(let x=-2;x<=322;x+=3)vg.push(x,111.5+1.2*Math.sin(x/7)+.8*Math.sin(x/2.9));vg.push(322,107);
+    clipTo(q,()=>poly(q,vg),()=>CO.turf(q,-2,104,324,114,'#8e955e',1640,{dry:.6,wind:1,scale:.6}));
+    const fv=[-2,146];for(let x=-2;x<=246;x+=3)fv.push(x,140.5+1.2*Math.sin(x/6)+.8*Math.sin(x/2.3));fv.push(246,146);
+    clipTo(q,()=>poly(q,fv),()=>CO.turf(q,-2,138,250,146,'#8a8e58',1641,{dry:.6,wind:1,scale:1}));
+    for(let x=4;x<224;x+=5+((x*7)%5))CO.tuft(q,x,112.5+((x*3)%3),1.6+((x*13)%9)/4,'#a89a62',rng(x))});
   stoneRoad16(g)}
-/* the fisherman's stone, low and wide, beside the road */
-function stoneRoad16(g){oval(g,150,117.4,9,1.6,'rgba(30,26,46,.35)');poly(g,[142,117,143,112,148,110.5,154,111,158,113,158,117],'#9a907e');R(g,144,111,10,.6,'#d8cbb0')}
-function drawRoad16(g,t){if(F.w1&&!F.la)tinyShipC16(g,238,HZRoad16-.6+.2*Math.sin(t/900),7,1)}
+/* the fisherman's stone beside the road, low and wide (cut: its outline only, for the prop) */
+function stoneRoad16(g,cut){SHARED.country.boulder(g,150,117,15,6.4,'#a69a84',1634,{light:-1,cut:!!cut})}
+/* the coaster far off, under the ridge of the cape: a dark hull, a small sail and her wake, in the haze of her distance */
+function shipRoad16(g,x,y,t){const H='#3e3640',S2='#f2ead8';poly(g,[x-4.6,y-1.2,x+4.4,y-1.8,x+3.6,y,x-3.8,y],H);R(g,x-4.2,y-1.4,8.4,.5,'#7a6e70');
+  poly(g,[x-1.6,y-1.8,x+2,y-1.8,x+1.7,y-5.6,x-1.3,y-5.3],S2);poly(g,[x+.6,y-1.8,x+2,y-1.8,x+1.7,y-5.6,x+.8,y-5.5],'#c4bcae');
+  const k=.5+.5*Math.sin(t/500);R(g,x-5-k,y-.2,1.4,.5,rgba('#f0f0ea',.5));R(g,x-8,y,1.2,.5,rgba('#f0f0ea',.3))}
+function drawRoad16(g,t){if(SRoad16)SRoad16.draw(g,t);if(F.w1&&!F.la)shipRoad16(g,238,HZRoad16+1.2+.15*Math.sin(t/900),t)}
 /* ==== ART road16: end ==== */
 
 /* ==== ART pass16: begin ==== */
@@ -373,29 +421,82 @@ function drawRoad16(g,t){if(F.w1&&!F.la)tinyShipC16(g,238,HZRoad16-.6+.2*Math.si
    166,104,40,14 · the water skin 206,117,18,8 (before it is mended) · the flock (where it stands) · the ewe · the way down to Assos · the
    way back 0,60,16,80 · the shepherd (actor, 136,119). Walk strip 16..304, 112..138. The trough is a prop (foot 167,112,38,4). */
 const HZPass16=50;
-const FLOCKPass16=()=>F.pass?[[30,104,1],[44,107,-1],[58,103,1],[72,106,1],[86,104,-1],[100,107,1]]:[[270,96,-1],[284,92,-1],[298,98,-1],[282,104,1],[306,90,-1],[262,108,-1],[214,116,-1],[252,117,1]];
-const EWEPass16=()=>F.pass?[114,106,-1]:[236,124,-1];
-ART.pass16={w:320,q:12,variant:()=>F.pass?'p':'',paint(g){paintPass16(g)},light:{amb:'#fae8cc',sun:[.45,.3,.5]},draw(g,t){drawPass16(g,t)},front(){},
-  props:[{y:117,shape(g){troughPass16(g)},foot:[[167,112,38,4]]}]};
-function paintPass16(g){const r=rng(1603),HZ=HZPass16;
-  sky(g,320,HZ+1,['#6890c4','#94b0cc','#d0d6d0','#ecdfc6']);for(const[cx,cy,w,h]of[[60,12,70,2.6],[250,18,90,3]])cloud(g,cx,cy,w,h,r,'#fff6e2','#a8b0c8');
-  seaC16(g,HZ,62,r,'#c6ccc8','#7c98aa',null,90);
-  ridge(g,60,200,HZ+.3,x=>4.2*Math.pow(Math.sin((x-60)/140*Math.PI),.8)+.6*Math.sin(x/5),['#9a98aa','#aaa6b0']);
-  ridge(g,0,320,64,x=>6+3*Math.sin(x/23),['#8a9468','#7a8458']);g.fillStyle=lg(g,0,63,0,112,['#8a8a62','#a8946e']);g.fillRect(0,63,320,49);tex(g,'mott',.5,0,63,320,49,'overlay',1);
-  rockC16(g,0,140,112,x=>58-x*.32+5*Math.sin(x/9)+3*Math.sin(x/3.7),'#a08c6c',r);
-  rockC16(g,180,320,112,x=>18+(x-180)*.34+4*Math.sin(x/8)+2*Math.sin(x/3.1),'#9a8668',r);
-  /* the spring: a dark wet streak down the rock, slanting, with a little green at its foot */
-  poly(g,[204,80,208,79,214,93,210,94],'rgba(40,44,58,.55)');foliage(g,212,95,4,1.6,'#5e7a46',r,10);
-  /* the path down at the right, between the rocks */
-  poly(g,[262,112,290,112,320,82,320,70,300,74],'#c6b08a');tex(g,'mott',.4,260,70,60,42,'overlay',1);
-  g.fillStyle=lg(g,0,108,0,144,['#c4ae88','#a49070']);g.fillRect(0,108,320,36);tex(g,'mott',.55,0,108,320,36,'overlay',1);
-  for(let i=0;i<70;i++){const x=r()*320,y=110+r()*32,w=1+r()*3;poly(g,[x,y,x+w,y-.8,x+w*1.2,y+.4,x+.2,y+.8],r()<.5?'#8a7a60':'#d6c6a4')}
-  troughPass16(g)}
-/* the trough: one long stone hollowed out, low and wide, water in it */
-function troughPass16(g){oval(g,186,117.6,22,1.8,'rgba(30,26,46,.35)');R(g,167,108,38,8.6,'#a89a82');R(g,167,108,38,.8,'#e0d4ba');R(g,169,109,34,2.6,'#5a7a8c');R(g,169,109,34,.5,'#a8c4cc');R(g,167,115.6,38,1,'#6a5e50')}
-function drawPass16(g,t){const ews=EWEPass16();
-  for(const[x,y,d]of FLOCKPass16())depth(y,()=>sheepC16(g,x,y,d,'#e2dac6'));
-  depth(ews[1],()=>sheepC16(g,ews[0],ews[1],ews[2],'#ece4d2',1.05));
+/* Painted with the shared painters in one light: the sun is high in the east, at the left behind the rock, so the faces turned to the
+   left are lit, the right-hand rock stands half in its own shade, and shadows fall to the right. OPass16 is the picture's one options
+   object. The sheep are SHARED.beasts' ewes and lambs (SHARED.beasts.flock gives their looks), drawn in the room's depth: the flock
+   grazes, and the ewe of the joke chews (frames 22 and 23) and looks at whoever comes. */
+const OPass16={w:320,hz:HZPass16,hour:'morning',cloud:.18,streak:.2,seed:1661,light:-1};
+let SPass16=null;
+/* each sheep: where its hooves stand, the way it faces, and what it does (0 stands, 1 grazes, 2 chews). Those that stand behind graze with
+   their heads down, so that no head lies over the body of another */
+const FLOCKPass16=()=>F.pass?[[16,100,1,0],[52,99,-1,2],[94,101,1,1],[34,110,1,1],[72,110,-1,1]]:[[276,90,-1,0],[304,86,1,0],[294,104,1,1],[206,114,-1,1],[266,118,-1,0]];
+const EWEPass16=()=>F.pass?[122,106,-1]:[236,124,-1];
+let LOOKPass16=null;
+ART.pass16={w:320,q:12,variant:()=>F.pass?'p':'',paint(g,v){paintPass16(g,v)},light:{amb:'#fcf0dc',sun:[.45,.3,.5]},draw(g,t){drawPass16(g,t)},front(){},
+  props:[{y:117,shape(g,v){troughPass16(g,v,1)},foot:[[167,112,38,4]]}]};
+/* the rock at the left, high where it leaves the picture; the rock at the right, with the saddle beyond it where the way goes down */
+const leftPass16=x=>x>172?999:12+Math.pow(x/150,1.3)*62+(x>136?Math.pow(x-136,2)*.03:0)+4*Math.sin(x/9)+2*Math.sin(x/3.7);
+const rightPass16=x=>x<168||x>298?999:(x<180?110-(x-168)/12*30:x<250?80-Math.pow((x-176)/74,.7)*40:x<282?40+2*Math.sin((x-250)/5):40+Math.pow((x-282)/16,1.4)*30)+2.4*Math.sin(x/8)+1.4*Math.sin(x/3.1);
+function paintPass16(g,v){const K=SHARED.coast,CO=SHARED.country,O=OPass16,HZ=HZPass16;
+  if(!O.wind)O.wind=SHARED.weather.wind({from:'n',force:1,view:'s'});const L=K.light(O);
+  K.sky(g,O);
+  /* far to the south, beyond the gulf, Lesbos lies long and low on the horizon; the near shore of the gulf comes in from the left */
+  K.isle(g,30,258,7,O,{dist:.74,seed:1663,lean:.8});
+  SPass16=K.sea(g,Object.assign(O,{y1:72}));SPass16.open=(x,y)=>y<HZ+7;
+  /* we stand high: the land falls away from the pass to the gulf, the far slopes below the horizon in the haze of their distance, the
+     shore of the gulf at their foot */
+  K.land(g,L,.62,q=>{CO.range(q,-2,322,HZ+12,x=>Math.max(0,5+3*Math.sin(x/31)+2*Math.sin(x/11)-Math.abs(x-160)*.012),['#7c8a6a','#949c80'],{k:.7,light:-1});
+    const P=[-2,HZ+14];for(let x=-2;x<=322;x+=2)P.push(x,HZ+6.6+.8*Math.sin(x/17));P.push(322,HZ+14);poly(q,P,'#8c9470')});
+  K.land(g,L,.34,q=>{CO.range(q,-2,322,HZ+24,x=>Math.max(0,12+5*Math.sin(x/27+1)+2.4*Math.sin(x/9)-Math.abs(x-170)*.03),['#7a845a','#92966c'],{k:.9,light:-1});
+    q.fillStyle=lg(q,0,HZ+23,0,HZ+34,['#8a9068','#9a9a72']);q.fillRect(-2,HZ+23.6,324,12)});
+  /* the floor of the pass, one stony ground from the lip where the land falls away to the gulf down to our feet: dust and stones that
+     grow toward us, tufts, a little turf where it is damp below the spring, and the haze of distance over its far part */
+  K.land(g,L,0,q=>{const P=[-2,146,-2,76];for(let x=-2;x<=322;x+=2)P.push(x,74+3*Math.sin(x/23)+1.4*Math.sin(x/7)+Math.abs(x-165)*.04);P.push(322,146);
+    clipTo(q,()=>poly(q,P),()=>{CO.ground(q,-2,70,324,146,'#bea884',1665,{n:220,size:.9,tufts:60});
+      pool(q,196,112,30,5,'#6a7a54',.24,'multiply');
+      q.fillStyle=lg(q,0,70,0,104,[rgba('#b8c2c8',.5),rgba('#b8c2c8',0)]);q.fillRect(-2,70,324,34);
+      {const r=rng(1673);for(let i=0;i<40;i++)CO.tuft(q,130+r()*80,80+r()*30,1+r()*2,r()<.5?'#8a8c5a':'#a49a62',r)}
+      for(const[x,y,w,h]of[[142,96,8,4],[190,90,6,3],[160,104,10,4.6]])CO.boulder(q,x,y,w,h,'#aa9a80',x*5+y,{light:-1})})});
+  /* the rock at the left: bedded limestone, lit on its faces to the left, with scrub on its ledges */
+  K.land(g,L,0,q=>{const P=[-2,102,-2,leftPass16(0)];for(let x=0;x<=172;x+=2)P.push(x,Math.min(100+Math.sin(x/7)*1.5,leftPass16(x)));P.push(172,102);
+    CO.crag(q,P,'#b8a68a',1666,{light:-1,dip:.12,bed:6,scrub:14});
+    for(const[x,y,w,h]of[[20,40,10,4],[62,58,12,4],[110,74,10,3.6],[34,88,14,5],[128,94,10,4]])CO.bush(q,x,y,w,h,'#5a6c42',x*3+y,{light:-1})});
+  /* the rock at the right, in its own shade on the side turned from the sun, and the spring: a dark wet streak down its face, with green
+     at its foot where the water soaks into the scree */
+  K.land(g,L,0,q=>{const P=[168,110];for(let x=168;x<=300;x+=2)P.push(x,Math.min(109+1.5*Math.sin(x/6),rightPass16(x)));P.push(300,110);
+    CO.crag(q,P,'#ae9c80',1667,{light:-1,dip:-.1,bed:6,scrub:10,shade:'r'});
+    /* the seep: the rock darkened and wet where the water comes out of a bed, widening as it runs down and fringed with green, and lost
+       in the scree at the foot of the face */
+    const st=[204,81,206,79.6,208.4,80.2,210.6,79.4,212,81.6,213,85,215.4,89,216.2,94,214.6,97.8,211.4,98.4,208,97.4,206.6,93.6,205.6,89,204.4,85.6];poly(q,st,rgba('#3a3e50',.3));
+    poly(q,[207,82,209.6,81.6,211,86,212.6,92,211,96,209,95,208.4,89],rgba('#2a2e40',.22));
+    clipTo(q,()=>poly(q,st),()=>{for(let i=0;i<22;i++){const y=80+i*.85,x=205+Math.sin(i*1.7)*2+i*.2;R(q,x,y,.5,.5,rgba('#d8e4ea',.25+.25*Math.sin(i*2.3)))}});
+    for(const[x,y]of[[203,82],[214,86],[216,93],[205,95]])CO.bush(q,x,y,3,1.4,'#5e7c46',x*11+y,{light:-1});
+    CO.bush(q,212,100,8,3,'#5e7c46',1668,{light:-1});CO.bush(q,203,99.4,6,2.6,'#6a8a4c',1669,{light:-1});
+    for(const[x,y,w,h]of[[244,60,10,4],[270,46,8,3],[222,96,9,3.6],[286,62,7,3]])CO.bush(q,x,y,w,h,'#566842',x*3+y,{light:-1})});
+  /* beyond the right-hand rock, the saddle, and the short way down over it toward Assos: a worn path that climbs to the lip and is gone */
+  K.land(g,L,0,q=>{const P=[262,110,262,104,280,96,292,80,300,72,312,70,322,72,322,111];
+    clipTo(q,()=>poly(q,P),()=>CO.ground(q,256,66,68,116,'#bca886',1670,{n:30,size:.8,tufts:10}));
+    const up=[264,112,276,104,288,92,298,80,306,73,314,71.4,318,73,310,78,300,88,290,102,284,112];poly(q,up,'#d2bc94');
+    clipTo(q,()=>poly(q,up),()=>{CO.ground(q,262,68,60,116,'#d4c098',1671,{n:16,size:.5});ao(q,262,68,60,46,'l',.14,'#2a2440')});
+    stroke(q,[284,112,290,102,300,88,310,78,318,73],rgba('#3a3040',.25),.5)});
+  /* scree at the foot of both rocks, where the faces meet the floor */
+  K.land(g,L,0,q=>{const r=rng(1672);for(let i=0;i<34;i++){const lft=i<18,x=lft?r()*150:178+r()*116,y=lft?100+r()*3:Math.min(112,rightPass16(x)+999*0)-0;
+      const yy=107+r()*3,w=2+r()*5,h=1+r()*2.6;if(!lft&&x>196&&x<224)continue;CO.boulder(q,x,lft?y:yy,w,h,r()<.5?'#a89880':'#b4a48a',1680+i,{light:-1})}});
+  troughPass16(g,v)}
+/* the trough: one long stone hollowed out, low and wide, standing where the floor meets the rock; water in it once the flock has been
+   watered (v 'p'), and its stone dry and pale before (cut: the outline only, for the prop) */
+function troughPass16(g,v,cut){const P=[166.4,116.4,167,108.6,168,107.6,204,107.4,205.2,108.4,205.6,116.4];if(cut){poly(g,P,'#000');return}
+  oval(g,187,117,22,1.8,'rgba(30,26,46,.32)');poly(g,P,'#aa9c84');
+  clipTo(g,()=>poly(g,P),()=>{g.fillStyle=lg(g,0,107,0,117,['#d8ccb2','#aa9c84','#867a68']);g.fillRect(166,107,40,10);tex(g,'mott',.5,166,107,40,10,'overlay',1);
+    R(g,166,107.4,40,.8,'#e8dcc2');R(g,166,115.2,40,1.2,'rgba(40,34,44,.35)')});
+  const W=[169,108.8,203,108.6,202.6,110.8,169.4,111];poly(g,W,v==='p'?'#4c6c7e':'#7a6e5e');
+  if(v==='p'){R(g,170,109,31,.5,'#a8c4cc');R(g,176,110,8,.5,rgba('#e8f0f0',.5))}else{R(g,170,109,31,.5,'#5e5446');R(g,172,110.2,6,.5,'#9a8e78')}
+  R(g,167.6,111.2,37,.5,'#c8bca2')}
+function drawPass16(g,t){if(SPass16)SPass16.draw(g,t);const B=SHARED.beasts;LOOKPass16=LOOKPass16||B.flock(8,1662);const ews=EWEPass16(),lit=lightAt('pass16',200,116);
+  FLOCKPass16().forEach(([x,y,d,p],i)=>{const o=LOOKPass16[i],fr=p===1?24+(Math.floor(t/(900+i*130)+o.ph*7)%2):p===2?22+(Math.floor(t/(300+i*20)+o.ph*5)%2):0;
+    B.sheep(g,x,y,d,fr,o.look,lit)});
+  /* the ewe: she chews and looks at whoever comes up the path */
+  B.sheep(g,ews[0],ews[1],ews[2],22+(Math.floor(t/280)%2),{fl:'#ece2ca',face:'#7a5a40',k:1.06},lit);
   if(!F.pass)depth(121,()=>{poly(g,[207,121,212,117.6,222,118,224,121],'#8a5a34');R(g,210,118,10,.6,'#b88250');stroke(g,[213,118.4,217,120.6],'#3a2416',.5)})}
 /* ==== ART pass16: end ==== */
 
@@ -805,19 +906,61 @@ function tick16(g,x,y){stroke(g,[x-2,y-.5,x-.4,y+1.6,x+2.6,y-2.4],'#9ad08a',.9)}
    facing left, to the elders; Philon 64,120 · Kleandros 88,129 · Damon 110,114 · Euphranor 40,128 · Polemon 124,133 (all facing right);
    Luke 196,119 · Timothy 222,127 · Trophimus 248,116 (facing left). The elders come in from the left. */
 const HZShore16=58;
-ART.shore16={w:320,q:12,paint(g){paintShore16(g)},light:{amb:'#f4e4cc',shade:[[24,160,'#c8c0d4']],sun:[.4,.3,.4]},draw(g,t){},front(){}};
-function paintShore16(g){const r=rng(1610),HZ=HZShore16;
-  sky(g,320,HZ+1,['#6c92c4','#98b4cc','#dcdad0','#efe2c8']);for(const[cx,cy,w,h]of[[230,16,80,2.6]])cloud(g,cx,cy,w,h,r,'#fff4e0','#a8b0c8');
-  ridge(g,240,320,HZ+.4,x=>Math.min(16,(x-240)*.4)+1.6*Math.sin(x/7),['#8e9282','#a2a08a']);tinyShipC16(g,282,HZ-1,9,0);
-  seaC16(g,HZ,96,r,'#c8ccc6','#4a7494',260,220);
-  g.fillStyle=lg(g,0,96,0,144,['#c8b48c','#a8946c']);g.fillRect(0,96,320,48);tex(g,'mott',.5,0,96,320,48,'overlay',1);
-  /* the low wall of rough stones, each stone its own, no joint running across another course */
-  for(let x=0;x<230;x+=6+r()*4){const w=5+r()*4,h=5+r()*3;poly(g,[x,104,x+.6,104-h,x+w-1,104-h-r(),x+w,104],tint('#a89a82',(r()-.5)*.3));R(g,x+1,104-h,w-2,.6,'#d8ccb4')}
-  for(let x=3;x<230;x+=7+r()*4){const w=5+r()*3,h=4+r()*2;poly(g,[x,97,x+.6,97-h,x+w-1,97-h-r()*.6,x+w,97],tint('#b0a28a',(r()-.5)*.3))}
-  /* the tamarisk: a trunk that leans out over the wall, and its fine feathery green above, lit from the right */
-  stroke(g,[92,104,88,80,96,56,104,40],'#5a4636',3.4);stroke(g,[91,103,87,80,95,56],'#8a6a52',.8);stroke(g,[96,60,70,40],'#5a4636',1.6);stroke(g,[100,48,130,34],'#5a4636',1.4);
-  for(const[x,y,rx,ry]of[[70,30,36,14],[110,22,40,16],[140,36,26,10],[50,44,22,9],[94,56,22,10],[78,60,14,6]])foliage(g,x,y,rx,ry,'#7a9468',r);
-  comp(g,'multiply',.4,()=>{g.fillStyle='#6a6a94';poly(g,[20,104,170,104,190,144,0,144]);g.fill()})}
+/* Painted with the shared painters in one light: the sun stands high at the left, out of the picture, so the tamarisk throws its shade
+   to the right over the ground where the elders stand (light.shade), and the rest lies in the open sun. OShore16 is the picture's one
+   options object. Far off at the right the town's land runs out into the sea, and the coaster lies under it at the quays with her stern
+   to us: her mast is short against that land, its top well under the ridge, and nothing of her stands across the open horizon. */
+const OShore16={w:320,hz:HZShore16,hour:'midday',cloud:.2,streak:.25,seed:1691,light:-1,sun:[-60,-40],swell:-.4};
+let SShore16=null;
+ART.shore16={w:320,q:12,paint(g){paintShore16(g)},light:{amb:'#fff4e2',shade:[[24,160,'#c4bcd4']],sun:[.4,.3,.4]},draw(g,t){drawShore16(g,t)},front(){}};
+/* the wall's top, a little uneven, and the land of the town across the water */
+const wallTopShore16=x=>86+1.2*Math.sin(x/9)+.8*Math.sin(x/3.3)+(x>200?(x-200)*.25:0);
+function paintShore16(g){const K=SHARED.coast,CO=SHARED.country,O=OShore16,HZ=HZShore16;
+  if(!O.wind)O.wind=SHARED.weather.wind({from:'nw',force:1,view:'w'});const L=K.light(O);
+  K.sky(g,O);
+  const land=K.isle(g,214,322,20,O,{kind:'cape',from:'r',dist:.5,seed:1692});
+  K.isle(g,40,110,3,O,{dist:.85,seed:1693});
+  SShore16=K.sea(g,Object.assign(O,{y1:100}));SShore16.open=(x,y)=>!(x>246&&y<HZ+5)&&y<94;
+  /* the harbor town under the land: stores and houses by the water, small in the haze */
+  K.town(g,O,{x0:250,x1:322,base:HZ+.6,hill:x=>HZ-6-Math.max(0,(x-250)*.09),rows:2,size:5,dist:.55,seed:1694,warehouses:[[262,18,3.4],[288,14,3]]});
+  shipShore16(g,280,HZ+1.6);
+  /* the shore beyond the wall's end: a beach, and the way down to the ship */
+  K.shore(g,O,{x0:150,x1:322,edge:x=>88+(x-150)*.05+1.2*Math.sin(x/11),y1:112,kind:'sand',seed:1695});
+  /* the ground of the shaded place: beaten earth with grass and flowers in the corners, and the way down at the right */
+  K.land(g,L,0,q=>{CO.ground(q,-2,100,324,146,'#c8b48e',1696,{n:60,size:.8,tufts:26});
+    const tf=[-2,146,-2,138];for(let x=-2;x<=322;x+=3)tf.push(x,139+1.5*Math.sin(x/8)+(x>240?(x-240)*.06:0));tf.push(322,146);
+    clipTo(q,()=>poly(q,tf),()=>CO.turf(q,-2,134,324,146,'#8e985e',1697,{dry:.4,wind:1,flowers:10}));
+    for(const[x,y,w,h,sd]of[[244,104,9,4,1710],[256,107,5,2.4,1711],[300,96,7,3,1712],[236,108,4,2,1713]])CO.boulder(q,x,y,w,h,'#a49884',sd,{light:-1,moss:'#6a7a4c'});
+    const dn=[262,112,284,108,300,104,322,100,322,128,300,126,284,120];poly(q,dn,rgba('#d4c29e',.7));clipTo(q,()=>poly(q,dn),()=>CO.ground(q,260,98,64,130,'#d4c29e',1698,{n:14,size:.6}))});
+  /* the tamarisk: its trunk rises behind the wall and leans out over it, and its fine grey-green crown, in flower, is all above the heads */
+  K.land(g,L,0,q=>{CO.tree(q,90,91,90,'#8a9e86',{kind:'willow',seed:1700,light:-1,lean:1,cast:false});
+    const k=q.getTransform().a,cov=(x,y)=>q.getImageData(Math.round(x*k),Math.round(y*k),1,1).data[3]>200&&q.getImageData(Math.round(x*k)+2,Math.round(y*k)+2,1,1).data[3]>200;
+    const r=rng(1701);for(let i=0;i<260;i++){const x=56+r()*100,y=6+r()*40;if(!cov(x,y)||!cov(x-1,y-1.5))continue;R(q,x,y,1,.5,r()<.5?'#e8a8bc':'#d08aa2');if(r()<.4)R(q,x,y-.5,.5,.5,'#f6d0dc')}});
+  /* the low wall of rough stones, laid dry: each stone a shape of its own, lit on its top and its face to the sun, with dark gaps between
+     and no joint that runs down through two courses */
+  K.land(g,L,0,q=>{const r=rng(1699),base=106,end=236,top=wallTopShore16;
+    /* the wall's body in shadow first, so that the gaps between the stones are dark; then each course laid stone by stone, each course
+       with stones of its own lengths, so that no joint runs on through the course above or below */
+    const B=[-2,base];for(let x=-2;x<=end;x+=2)B.push(x,top(x)+.4);B.push(end,base);poly(q,B,'#4e4656');
+    const C=3;let prev=[];for(let j=0;j<C;j++){let x=-2-r()*6;const cur=[];while(x<end-2){let w=4+r()*6;for(let k=0;k<4&&prev.some(p=>Math.abs(p-(x+w))<2.2);k++)w+=2.4;cur.push(x+w);const xm=Math.min(end,x+w),t0=top((x+xm)/2),hh=(base-t0)/C,y1=base-j*hh,y0=y1-hh,c=tint('#ac9e86',(r()-.5)*.32);
+        if(y0>=base-1)break;const iw=xm-x-.6,P=[x+.3,y1-.3,x,y0+hh*(.3+r()*.2),x+iw*.25,y0+.2+r()*.5,x+iw*.7,y0+.2+r()*.4,x+iw,y0+hh*(.25+r()*.2),x+iw-.2,y1-.4];
+        poly(q,P,c);poly(q,[P[2],P[3],P[4],P[5],P[6],P[7],x+iw*.62,y0+hh*.42,x+iw*.2,y0+hh*.5],rgba('#fff2d8',.32));
+        poly(q,[x+iw*.72,y0+hh*.5,P[8],P[9],P[10],P[11],x+iw*.5,y1-.4],rgba('#4a4460',.28));x=xm}prev=cur}
+    ao(q,-2,100,240,8,'b',.0,'#2a2436');
+    for(let x=0;x<236;x+=2+r()*6)CO.tuft(q,x,106.4+r()*1.4,1.2+r()*2.2,'#8a9058',r);
+    oval(q,116,107.2,124,1.6,'rgba(30,26,46,.22)')});
+  /* its shade on the ground, dappled, falling to the right of the trunk and toward us */
+  {const r=rng(1702);for(const[x,y,rx,ry,k]of[[96,122,80,20,.8],[70,118,40,9,.5],[130,128,46,12,.5],[104,130,60,10,.4]])pool(g,x,y,rx,ry,'#726c8c',Math.min(1,k*1.2),'multiply');
+    for(let i=0;i<60;i++){const a=r()*6.28,d=Math.sqrt(r()),x=98+Math.cos(a)*70*d,y=123+Math.sin(a)*15*d;pool(g,x,y,1.5+r()*3,.6+r()*.8,'#fff6e4',.3,'screen')}}}
+
+/* the coaster far off at the quay, her stern toward us: a rounded hull, the stern post's curl, the two steering oars at its sides, the
+   whole of her low against the land behind her; her mast is left out of the picture, so that nothing of her makes a cross */
+function shipShore16(g,x,y){const H='#4a4048';
+  /* the stern rises in one curve from both quarters to the post and its curl, with no rail drawn across it */
+  poly(g,[x-4.6,y-2.6,x-3,y-3.4,x-1.4,y-4,x-.6,y-5.6,x+.2,y-6.8,x+1.4,y-7,x+1.6,y-6.2,x+.8,y-5.8,x+1,y-4.2,x+3,y-3.4,x+4.6,y-2.6,x+4,y-.6,x+2,y,x-2,y,x-4,y-.6],H);
+  poly(g,[x-4.2,y-2.6,x-2.8,y-3.2,x-1.2,y-3.6,x-1,y-2.8,x-3,y-2.2],'#7a6e70');
+  poly(g,[x-5.2,y-3.4,x-4.6,y-3.4,x-4.2,y-.4,x-4.8,y-.2],'#3a3238');poly(g,[x+4.6,y-3.4,x+5.2,y-3.4,x+4.8,y-.2,x+4.2,y-.4],'#3a3238')}
+function drawShore16(g,t){if(SShore16)SShore16.draw(g,t)}
 /* ==== ART shore16: end ==== */
 
 /* ---- the inventory ---- */
@@ -1098,13 +1241,13 @@ async function toShore(){if(!F.sent)return say(P,'not_before_word_has_gone');awa
 
 /* ---- the elders by the shore (Acts 20:17-38) ---- */
 /* The speech is told, never composed, over pictures of Paul speaking (his mouth moves while the narrator tells); at 20:33, 34 he holds
-   out his hands. Then all kneel, heads bowed and arms down, and he prays (20:36). */
+   out his hands. Then all kneel, heads bowed, the arms down or the hands folded, and he prays (20:36); they stand before they walk. */
 const ELDERS16=[[PH,64,120],[KL,88,129],[DA,110,114],[EU,40,128],[PO,124,133]];
-/* kneel16: (wired on ch16-art-b): the kneeling pose comes with the figure painter on that branch. Until then whoever kneels is drawn bowed;
-   wear 'k' keeps the kneeling sprites apart from the standing ones in the cache, and kneel tells the painter. */
-function kneel16(a,on){a.kneel=on?1:0;a.wear=on?'k':'';a.bow=!!on}
-/* hands16: TODO(ch16-misc): a pose with both hands held out, palms up, forearms bent and low; until then the far hand, half raised and open */
-function hands16(on){P.ges=on?2:0;if(typeof SHARED.handsOut==='function')SHARED.handsOut(P,on)}
+/* kneel16: the engine's kneeling pose (KNEEL), on both knees with the head bowed: Paul and every second one with the hands folded low in
+   front, the others with the arms down; never spread or raised. kneel16(a,0) stands him again, before anyone walks. */
+function kneel16(a,on,i){a.kneel=on?(i%2?KNEEL.both:KNEEL.bothFolded):0}
+/* hands16: at 20:33, 34 Paul holds out both hands, low and open, the palms up, the forearms bent (the figure painter's ges 9) */
+function hands16(on){P.ges=on?9:0}
 async function elders(){await fade(1,400);G.e16=1;place16('shore16');for(const[a]of ELDERS16)a.room=null;place(P,'shore16',150,117,-1);viewOf(P);await fade(0,500);
   await narr('some_days_later_the_elders_came',{dur:5600});
   for(const[a,x,y]of ELDERS16){place(a,'shore16',-10,y,1);a.speed=fast()?400:0;a.free=1}
@@ -1113,7 +1256,7 @@ async function elders(){await fade(1,400);G.e16=1;place16('shore16');for(const[a
   AU.mood='shore';P.dir=-1;P.talk=true;
   for(const k of['v18','v20','v22','v24','v25','v28','v29','v31','v32'])await tell(k);
   hands16(1);await tell('v33');hands16(0);await tell('v35');P.talk=false;
-  for(const a of[P,LK,TI,TR,...ELDERS16.map(e=>e[0])])kneel16(a,1);await wait(fast()?50:900);
+  [P,LK,TI,TR,...ELDERS16.map(e=>e[0])].forEach((a,i)=>kneel16(a,1,i));await wait(fast()?50:900);
   await tell('v36');await wait(fast()?50:600);
   for(const a of[P,LK,TI,TR,...ELDERS16.map(e=>e[0])])kneel16(a,0);AU.mood='parting';F.spoke=1;G.e16=null;codeBtn()}
 async function toTheShip(){if(!F.spoke)return say(P,'not_before_we_have_spoken');
@@ -1144,7 +1287,7 @@ ROOMS.road16={space:.4,walk:[16,304,112,138],mood:'road',amb:AMB.road16,hs:[
   {name:'path_down_to_the_shore',x:286,y:116,w:34,h:28,wx:296,wy:134,dir:1,exit:shorePath,look:'path_down_to_the_shore_look'},
   {name:'road_back_to_troas',x:0,y:70,w:16,h:70,wx:22,wy:126,dir:-1,exit:()=>goto16('quay16',290,124,-1),look:'road_back_to_troas_look'}].map(BOTH)};
 ROOMS.pass16={space:.4,walk:[16,304,112,138],mood:'pass',amb:AMB.pass16,
-  block:()=>F.pass?[]:[[226,121,16,4],[208,113,13,4],[246,114,13,4]],hs:[
+  block:()=>F.pass?[]:[[228,121,17,4],[198,111,17,4],[258,115,17,4]],hs:[
   {name:'gulf_and_lesbos',x:40,y:24,w:220,h:26,wx:120,wy:114,look:'gulf_and_lesbos_look'},
   {name:'spring',x:196,y:78,w:26,h:16,wx:186,wy:122,look:'spring_up_in_the_rocks'},
   {name:'trough',x:166,y:104,w:40,h:14,wx:160,wy:124,look:()=>say(P,F.pass?'the_trough_is_full':'the_trough_is_dry')},
@@ -1269,7 +1412,7 @@ const EVERY=[TI,AR,TR,MA,BOY,KE,FI,SH,LY,PH,KL,DA,EU,PO,SO,SE];
 /* place16: everyone where the story has him, in every room at once: in the two at once both rooms are lived in. Who is played is the
    story's choice in phases A, C and D; in phase B it is the player's, and the two stand where they are (a code puts each at the way into
    his own room). */
-function place16(room){for(const a of EVERY.concat([P,LK])){a.talk=false;a.seat=0;a.ges=0;if(a.wear==='k')kneel16(a,0);a.bow=false}for(const a of EVERY)a.room=null;
+function place16(room){for(const a of EVERY.concat([P,LK])){a.talk=false;a.seat=0;a.ges=0;a.kneel=0;a.bow=false}for(const a of EVERY)a.room=null;
   if(setScore&&AU.score!==MUSIC)setScore(MUSIC);
   const ph=phase16();
   if(ph==='A'){setPC16(P);place(LK,'quay16',66,121,1);place(TI,'quay16',98,129,1);place(AR,'quay16',116,114,1);place(MA,'quay16',176,118,-1);place(BOY,'quay16',198,113,-1);place(TR,'quay16',250,123,-1)}
