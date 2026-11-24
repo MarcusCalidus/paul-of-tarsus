@@ -1381,68 +1381,6 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   if((mv&MV.lean)||(W&&W.lean&&!ARM&&!c.ar&&!o.long&&!ges&&!bow)){const yb=-7-(o.h?32:39)+bob;for(const up of[0,1]){g.save();g.beginPath();g.rect(-90,up?-220:yb,180,up?220+yb:220);g.clip();if(up)g.translate(1,0);body();g.restore()}}
   else body();
   g.restore()}
-/* A pack donkey in the same pixel manner, seen from the side. load: 0 saddle blanket only, 1 pack bags, 2 bags filled, with sacks on top.
-   fr 0 stands. fr 4 to 19 are the sixteen frames of its walk (beastFr below gives the frame for a distance walked); 1, 2 and 3 are three
-   moments of that walk, a quarter of a cycle apart, for a scene that counts frames itself. The walk has four beats: near hind, near
-   fore, far hind, far fore, each a quarter of the cycle after the one before. A hoof stands for ten frames, going back under the body,
-   and swings forward for six, lifted, with the leg bent at the hock or the knee. While the donkey walks, the two legs of a pair leave
-   the body at nearly one place and open like a pair of compasses: set apart as they stand, they would cross as an X under the belly.
-   The body sinks a pixel as each fore hoof lands, the head dips with it and for a frame after it, and the tip of the tail swings a
-   pixel, away from the near hind leg when that leg is back. The load rides with the body. */
-const DONKEY_HEAD=["...e...e................","..eE..eE................","..eE..eE................","..eEe.eE................","..eEe.eEe...............","..eEeeeEe...............","..eeeeeeeh..............",
-  ".dhhhhhhhhh.............",".dhHHHHHHhhhh...........","dhhHHkkHHHHhhhh.........","dhhHHkkHHHHHHhhhhm......","dhhhHHHHHHHHHhhhmmmm....",".dhhhhhHHHHHhhhmmmmmm...",".ddhhhhhhhhhhhmmmMMmmm..",
-  "..ddhhhhhhhhhhmmmMMmnm..","...dddhhhhhhhhmmmmmmmm..",".....ddddhhhhdmmmmmmm...",".........ddddd.mmmm....."];
-/* The numbers of that walk. A hoof reaches DONKEY_REACH drawing units (two to a room pixel) from the front of its step to the back, and
-   stands on the ground for DONKEY_STANCE of the cycle. So one cycle carries the donkey DONKEY_STRIDE room pixels with its hooves
-   planted: 22 / .625 / 2 = 17.6. A cycle is never quicker than DONKEY_BEAT seconds, or it would be a scurry and not a walk: up to
-   17.6 / .64 = 27.5 room pixels a second the hooves stay where they are set down, and above that they slip (at 66, the speed people
-   walk at, by 58 hundredths of each cycle).
-   beastFr: the frame of the walk for a distance walked (dist, in room pixels) at a speed (v, room pixels a second; 66 if none is given).
-   A scene that moves a donkey draws it with beast(g, x, y, dir, beastFr(dist, v), load), and with frame 0 where it stands. */
-const DONKEY_REACH=22,DONKEY_STANCE=.625,DONKEY_STRIDE=DONKEY_REACH/DONKEY_STANCE/2,DONKEY_BEAT=.64;
-const beastFr=(dist,v)=>{const c=Math.max(DONKEY_STRIDE,Math.abs(v==null?WALK_V:v)*DONKEY_BEAT);return 4+Math.floor((dist/c%1+1)%1*16)%16};
-function donkey(g,x,y,dir,fr,load){g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
-  const px=(a,b,col,w,h)=>{g.fillStyle=col;g.fillRect(a,b,w||1,h||1)},D=ramp('#94836e'),pale='#c4b49c',hoof='#2a2018';
-  const W=fr>0,k=fr>=4?(fr-4)%16:(fr-1)*4,ph=k/16,o=W&&(k%8===4||k%8===5)?1:0,hd=W&&(k%8===5||k%8===6)?1:0,tl=W?Math.round(Math.cos(6.2832*(ph-.05))):0;
-  /* at: where the hoof of a leg is at this moment, the leg's beat being off of a cycle after the near hind leg's: hx before or behind the
-     leg's root, lift off the ground, and bend, how far the joint is flexed */
-  const at=off=>{if(!W)return{hx:0,lift:0,bend:0};const p=((ph-off)%1+1)%1,T=DONKEY_REACH,B=DONKEY_STANCE;if(p<B)return{hx:T/2-T*p/B,lift:0,bend:0};
-    const v=(p-B)/(1-B),q=Math.sin(Math.PI*v);return{hx:-T/2*Math.cos(Math.PI*v),lift:Math.round(4*q),bend:3*q}};
-  /* leg: from its root at lx down to the hoof, in two parts: the hock of a hind leg bends back, the knee of a fore leg forward. A part
-     that slants is drawn a pixel or two wider, so that it is as thick as one that stands. */
-  const leg=(lx,P,far,hind)=>{const y0=-31+o,n=-3-P.lift-y0,J=Math.round(n*.5),jx=hind?P.hx*.42-P.bend:P.hx*.5+P.bend;
-    for(let i=0;i<n;i++){const t=i/(n-1),sl=Math.abs(i<=J?jx/J:(P.hx-jx)/(n-1-J)),ex=sl>.7?2:sl>.4?1:0,cx=lx+Math.round(i<=J?jx*i/J:jx+(P.hx-jx)*(i-J)/(n-1-J)),
-        w=(t<.3?8:t<.6?7:6)+ex,x0=cx+(t<.3?0:1)-(ex>1?1:0),knee=t>.42&&t<.52?1:0;
-      for(let q=0;q<w+knee;q++){const u=(q+.5)/(w+knee);px(x0+q,y0+i,D[Math.min(4,(u<.22?4:u<.5?3:u<.82?2:1)+(far?1:0))])}}
-    const hx=lx+Math.round(P.hx)+1,hy=-3-P.lift;px(hx,hy,hoof,7,3);px(hx+5,hy,'#4a3a2c',2)};
-  leg(W?-20:-17,at(.5),1,1);leg(W?15:14,at(.75),1,0);
-  /* tail: set on at the top of the rump and lying along it, then hanging free to its tuft */
-  const rump=yy=>{const dy=(yy+37.5)/13.5;return-Math.round(27*Math.sqrt(Math.max(0,1-dy*dy)))-1};
-  for(let yy=-49;yy<=-23;yy++){const i=yy+49,tuft=i>20;px((tuft?-31:yy<-38?rump(yy)-2:-30)+(i>10?Math.round(tl*(i-10)/16):0),yy+o,tuft?hoof:D[i%5?3:4],tuft?3:2)}
-  /* barrel of the body: lit along the back, pale under the belly */
-  for(let yy=-51;yy<=-24;yy++){const dy=(yy+37.5)/13.5,hw=Math.round(27*Math.sqrt(Math.max(0,1-dy*dy)));
-    for(let xx=-hw-1;xx<=hw-1;xx++){let v=dy<-.7?1:dy<-.2?2:dy<.45?3:4;if(xx<-hw+3)v=Math.min(4,v+1);if(xx>hw-6&&dy<.3)v=Math.max(1,v-1);px(xx,yy+o,dy>.72&&xx>-hw+4?pale:D[v])}}
-  /* a broken highlight along the line of the back: each dash lies on the top row of the body where it is */
-  for(let xx=-20;xx<16;xx+=3)px(xx,Math.ceil(-37.5-13.5*Math.sqrt(1-Math.pow((Math.abs(xx)+3)/27,2)))+o,D[0],2);
-  leg(W?-22:-25,at(0),0,1);leg(W?17:18,at(.25),0,0);
-  /* a short thick neck with its dark mane, the head carried low and forward. When the head dips (hd), the upper half of the neck goes down with it */
-  for(let yy=-59;yy<=-41;yy++){const t=(yy+59)/18,x0=Math.round(25-13*t),x1=Math.round(38-9*t);for(let xx=x0;xx<=x1;xx++){const u=(xx-x0+.5)/(x1-x0+1);px(xx,yy+o+(t<.5?hd:0),xx-x0<2?'#3a2e24':D[u<.3?3:u<.7?2:1])}}
-  /* the breast, rounding the foot of the neck back into the body */
-  for(let yy=-40;yy<=-33;yy++){const x1=Math.round(29-(yy+41)*.6);for(let xx=24;xx<=x1;xx++)px(xx,yy+o,D[xx>x1-2?1:2])}
-  stamp(g,DONKEY_HEAD,24,-75+o+hd,{h:D[2],H:D[1],d:D[3],e:D[2],E:'#5a4636',k:'#1a120c',m:pale,M:'#dccdb6',n:hoof});
-  for(let i=0;i<6;i++)px(38,-63+o+hd+i,'#7a4a24');for(let i=0;i<9;i++)px(38-i,-64+o+hd-Math.round(i*.35),'#7a4a24');
-  /* saddle blanket, held by two girths */
-  const K=ramp('#8a4a3a');px(-9,-40+o,'#5a3a20',2,16);px(8,-40+o,'#5a3a20',2,16);px(-8,-40+o,'#3a2616',1,16);px(9,-40+o,'#3a2616',1,16);
-  for(let i=0;i<12;i++){const hw=i<2?11:14;for(let xx=-hw;xx<=hw;xx++){const u=(xx+hw+.5)/(2*hw+1);px(xx,-53+o+i,i===8?'#d8c9a0':K[i===0?0:i===11?4:u<.15?4:u<.35?3:u<.75?2:1])}}
-  for(let xx=-14;xx<=14;xx+=2)px(xx,-41+o,K[3]);
-  if(load){const B=ramp('#30261f');px(-18,-55+o,'#4a3e34',37,5);px(-18,-55+o,'#6a5a4c',37);
-    for(let i=0;i<26;i++){const ins=i>22?i-22:0;for(let xx=-18+ins;xx<=18-ins;xx++){const u=(xx+18.5)/37;let v=u<.12?4:u<.3?3:u<.7?2:1;if((xx+i*2)%4===0&&i%2)v=Math.max(0,v-1);px(xx,-50+o+i,B[v])}}
-    px(-18,-50+o,'#5a4c40',37);px(-12,-56+o,'#9a7448',2,12);px(10,-56+o,'#9a7448',2,12);px(-11,-56+o,'#6a4e30',1,12);px(11,-56+o,'#6a4e30',1,12);
-    if(load>1){for(const[sx,sy,sw,sh,sc]of[[-9,-56,10,15,'#cdbb8c'],[8,-56,10,17,'#d8c698']]){const Q=ramp(sc);
-        for(let i=0;i<sh;i++){const dy=(i+.5-sh/2)/(sh/2),hw=Math.round(sw*Math.sqrt(Math.max(0,1-dy*dy)));for(let xx=-hw;xx<hw;xx++){const u=(xx+hw+.5)/(2*hw);px(sx+xx,sy-sh+i+o,Q[u<.15?4:u<.35?3:u<.7?2:dy<-.2?0:1])}}
-        px(sx-2,sy-sh-3+o,Q[3],4,3);px(sx-1,sy-sh-3+o,Q[1],2,2);px(sx-3,sy-sh+o,'#7a5a34',6)}
-      px(-18,-62+o,'#8a6a40',37);px(-18,-66+o,'#8a6a40',14);px(4,-67+o,'#8a6a40',14)}}
-  g.restore()}
 /* --- icon helpers: each icon is drawn on a 24-unit grid --- */
 const IH={
   /* a roll of cloth lying on its side */
@@ -1934,7 +1872,7 @@ function lightAt(id,x,y){let L=id&&ART[id].light;if(typeof L==='function')L=L();
   for(const[x0,x1,c]of L.shade||[]){const k=clamp(Math.min(x-x0,x1-x)/8,0,1);if(k>0){const q=hex(c);r*=1-k+k*q[0]/255;g*=1-k+k*q[1]/255;b*=1-k+k*q[2]/255}}
   return r>=254&&g>=254&&b>=254?null:toHex(r,g,b)}
 /* Depth: whatever stands on the ground is drawn from the back of the room to the front, so that the nearer hides the farther. A room's draw() runs
-   first. What it places with figure() (man, beast, a chapter's cattle) is not drawn at once: it waits in a queue at the y of its feet, and depth(y,fn)
+   first. What it places with figure() (man, the animals of shared/beasts.js) is not drawn at once: it waits in a queue at the y of its feet, and depth(y,fn)
    puts any other drawing in that queue. Then the queue, the room's props and its actors are drawn in order of y; where two stand level, the actor is
    in front. Inside fn figures are drawn at once, in the order written: a team of oxen with its wagon and yoke is one thing, at one depth. Outside a
    room's draw() (a cutscene, the front layer) there is no queue, and everything is drawn where it is written. */
@@ -2018,7 +1956,6 @@ function figure(g,x,y,lit,key,fn,sw){x=hp(x);y=hp(y);sw=sw==null?8.5:sw;
 const blinks=(o,ts)=>((ts+o.ph)%4300)<140;
 /* man: a person by look id, for scenes that pose figures themselves (the ship, the road, the prologue). */
 function man(g,x,y,id,dir,fr,lit,ges,sw,bow,bl){const o=LOOK[id];figure(g,x,y,lit,id+dir+'f'+fr+(ges?'g'+ges:'')+(bow?'b':'')+(bl?'k':''),s=>person(s,0,0,o,dir,fr,0,bow||0,ges||0,bl||0),sw!=null?sw:walkSw(o,fr))}
-const beast=(g,x,y,dir,fr,load,lit)=>figure(g,x,y,lit,'donkey'+dir+fr+load,s=>donkey(s,0,0,dir,fr,load),15);
 /* An actor whose dress changes with the story (a cloak torn off him) is given another look and says so in wear, a letter or two that
    names it: the poses of each look are kept apart. A chapter's start gives everyone his own look back (see setChapter). */
 /* moves: what a figure does at this moment, as [mouth, far hand, eyes shut, a sum of MV]. o: the actor; L: its look; ln: the line it is
@@ -2149,18 +2086,18 @@ function tween(ms,fn){return new Promise(res=>{const t0=performance.now();(funct
 const CHAP={
   1:{name:'escape_from_damascus',label:'chapter_one',title:'escape_from_damascus_2',salt:0x5A17,src:'levels/chapter1.js',needs:['materials'],treasure:{name:'mule_in_a_sheepfold',at:'9SK-FPZ'}},
   2:{name:'friend_in_jerusalem',label:'chapter_two',title:'a_friend_in_jerusalem',salt:0x2B6D,src:'levels/chapter2.js',needs:['materials','ship'],treasure:{name:'not_another_basket',at:'2-B5Q-PSJ'}},
-  3:{name:'called_to_antioch',label:'chapter_three',title:'called_to_antioch_2',salt:0x3C91,src:'levels/chapter3.js',needs:['materials'],treasure:{name:'barnabas_at_the_bench',at:'3-MKP-96F-266'}},
+  3:{name:'called_to_antioch',label:'chapter_three',title:'called_to_antioch_2',salt:0x3C91,src:'levels/chapter3.js',needs:['materials','beasts'],treasure:{name:'barnabas_at_the_bench',at:'3-MKP-96F-266'}},
   4:{name:'sent_out_to_cyprus',label:'chapter_four',title:'sent_out_to_cyprus_2',salt:0x4D2F,src:'levels/chapter4.js',needs:['materials','ship'],treasure:{name:'roof_cut_wide',at:'4-CBS-2XW-MAT'}},
-  5:{name:'light_of_nations',label:'chapter_five',title:'a_light_of_nations',salt:0x5E73,src:'levels/chapter5.js',needs:['materials'],treasure:{name:'echo_in_the_gorge',at:'5-TG6-X5J-5RG'}},
-  6:{name:'door_to_faith',label:'chapter_six',title:'the_door_to_faith',salt:0x6F19,src:'levels/chapter6.js',needs:['materials'],treasure:{name:'four_good_corners',at:'6-JSK-B2Y-Q58'}},
-  7:{name:'timothy_of_lystra',label:'chapter_seven',title:'timothy_of_lystra_2',salt:0x7B43,src:'levels/chapter7.js',needs:['materials'],treasure:{name:'marks_by_the_door',at:'7-7P9-F36-V9Z'}},
-  8:{name:'man_from_macedonia',label:'chapter_eight',title:'the_man_from_macedonia',salt:0x8C57,src:'levels/chapter8.js',needs:['materials','ship'],treasure:{name:'lukes_notes',at:'8-RRB-QCB-1EC'}},
+  5:{name:'light_of_nations',label:'chapter_five',title:'a_light_of_nations',salt:0x5E73,src:'levels/chapter5.js',needs:['materials','beasts'],treasure:{name:'echo_in_the_gorge',at:'5-TG6-X5J-5RG'}},
+  6:{name:'door_to_faith',label:'chapter_six',title:'the_door_to_faith',salt:0x6F19,src:'levels/chapter6.js',needs:['materials','beasts'],treasure:{name:'four_good_corners',at:'6-JSK-B2Y-Q58'}},
+  7:{name:'timothy_of_lystra',label:'chapter_seven',title:'timothy_of_lystra_2',salt:0x7B43,src:'levels/chapter7.js',needs:['materials','beasts'],treasure:{name:'marks_by_the_door',at:'7-7P9-F36-V9Z'}},
+  8:{name:'man_from_macedonia',label:'chapter_eight',title:'the_man_from_macedonia',salt:0x8C57,src:'levels/chapter8.js',needs:['materials','ship','beasts'],treasure:{name:'lukes_notes',at:'8-RRB-QCB-1EC'}},
   9:{name:'midnight_in_philippi',label:'chapter_nine',title:'midnight_in_philippi_2',salt:0x9D61,src:'levels/chapter9.js',needs:['materials'],treasure:{name:'cricket_in_the_wall',at:'9-P6X-82V-AE3'}},
   10:{name:'is_it_so',label:'chapter_ten',title:'is_it_so_q',salt:0xA37B,src:'levels/chapter10.js',needs:['materials','ship'],treasure:{name:'wound_too_far',at:'10-E04-FJ9-Y7P'}},
   11:{name:'unknown_god',label:'chapter_eleven',title:'the_unknown_god',salt:0xB48D,src:'levels/chapter11.js',needs:['materials'],treasure:{name:'back_at_the_fountain',at:'11-8VM-7EW-T68'}},
   12:{name:'tentmakers_of_corinth',label:'chapter_twelve',title:'tentmakers_of_corinth_2',salt:0xC59F,src:'levels/chapter12.js',needs:['materials','weather','ship'],treasure:{name:'cloth_of_his_own_country',at:'12-AXS-T1E-4S6-EEE-J5F'}},
   13:{name:'hall_of_tyrannus',label:'chapter_thirteen',title:'the_hall_of_tyrannus',salt:0xD6B3,src:'levels/chapter13.js',needs:['materials'],treasure:{name:'pupils_tablet',at:'13-KQC-4NT-ZTX-2SR-Z2V'}},
-  14:{name:'two_hours_in_the_theater',label:'chapter_fourteen',title:'two_hours_in_the_theater_2',salt:0xE7C5,src:'levels/chapter14.js',needs:['materials','lanes'],treasure:{name:'kneading_behind_a_shutter',at:'14-JAT-FJH-QJ3-2K1-QBZ'}},
+  14:{name:'two_hours_in_the_theater',label:'chapter_fourteen',title:'two_hours_in_the_theater_2',salt:0xE7C5,src:'levels/chapter14.js',needs:['materials','lanes','beasts'],treasure:{name:'kneading_behind_a_shutter',at:'14-JAT-FJH-QJ3-2K1-QBZ'}},
   15:{name:'until_daybreak',label:'chapter_fifteen',title:'until_daybreak_2',salt:0xF8D7,src:'levels/chapter15.js',needs:['ship'],treasure:{name:'tertius_own_line',at:'15-3K9-1WB-KBX-H5R'}}};
 const TITLE={level:1,scene:'title',mood:'ancient',amb:{crickets:.5,wind:.35,owl:.4}};
 const PRO={name:'road_to_damascus',label:'Prologue',title:'the_road_to_damascus',src:'levels/prologue.js',needs:['materials']};

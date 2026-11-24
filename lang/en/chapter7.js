@@ -893,5 +893,6 @@ TEXTS('en',7,{
   "derbe_has_its_letter_and_zenon":"Derbe has its letter, and Zenon is at home there. Our road doesn't lead back.",
   "lystra_lies_beyond_derbe":"Lystra lies beyond Derbe, and beyond the mountains. One stage at a time.",
   "iconium_has_had_its_letter_said":"Iconium has had its letter, and I've had its answer. What is left to do is in this house.",
-  "iconium_lies_beyond_lystra":"Iconium lies beyond Lystra. One stage at a time."
+  "iconium_lies_beyond_lystra":"Iconium lies beyond Lystra. One stage at a time.",
+  "he_lows_once_long_and_deep":"He lows once, long and deep, and turns an ear toward the wagon."
 });

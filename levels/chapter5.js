@@ -129,7 +129,7 @@ ART.perga={w:480,fp:1.3,q:12,
  draw(g,t){/* water running from the spout; the pack train at the wall; the bundles */
   const f=t/90;R(g,204.6,87,1.6,6,'#a8d8ec');for(let i=0;i<3;i++)R(g,204.6,87+((f+i*2.1)%6),1.6,1.2,'#f0fafe');
   for(let i=0;i<3;i++){const k=((t/420+i*.33)%1);g.strokeStyle=`rgba(230,246,252,${.7*(1-k)})`;g.lineWidth=.5;g.beginPath();g.ellipse(205.4,94.4,1.4+k*8,.3+k*.5,0,0,6.2832);g.stroke()}
-  beast(g,300,109,-1,0,2);beast(g,344,108,1,0,2);beast(g,388,109.4,-1,0,2);bundles(g,126,108)},
+  SHARED.beasts.donkey(g,300,109,-1,0,2);SHARED.beasts.donkey(g,344,108,1,0,2);SHARED.beasts.donkey(g,391,109.4,-1,0,2);bundles(g,126,108)},
  front(){}};
 /* ---------- The ford: a river in the Taurus, where the road crosses it ---------- */
 /* The river comes out at the foot of the cliff and runs toward us (RIV: its bed). NEAR and FAR: the tops of the two posts of the guide rope. */
@@ -192,7 +192,7 @@ ART.ford={w:480,fp:1.25,q:12,
     else rope([NEAR[0],NEAR[1]+.6,196,105,200,110.6,207,113]);
     rope([FAR[0],FAR[1]+.6,278,106,274,112.6,270+Math.sin(t/260)*1.2,118,268+Math.sin(t/300)*1.6,124]);R(g,265,123.6,6,.8,'rgba(240,250,252,.8)')}
   /* the pack train: waiting on this bank, or safe on the other */
-  const d=F.crossed?1:-1;beast(g,(F.crossed?372:84),108.6,1,0,2);beast(g,(F.crossed?414:44),109.4,d,0,2);if(!F.crossed)beast(g,124,108,1,0,2);else beast(g,452,108.4,1,0,2);
+  const d=F.crossed?1:-1;SHARED.beasts.donkey(g,(F.crossed?372:84),108.6,1,0,2);SHARED.beasts.donkey(g,(F.crossed?414:44),109.4,d,0,2);if(!F.crossed)SHARED.beasts.donkey(g,128,108,1,0,2);else SHARED.beasts.donkey(g,456,108.4,1,0,2);
   depth(111,()=>bundles(g,F.crossed?332:134,111))},
  front(g,t){/* the river closes over the legs of a man who wades it */
   for(const a of[P,BN])if(a.room==='ford'&&a.x>199&&a.x<277){const d=Math.min(1,Math.min(a.x-199,277-a.x)/12),h=4+d*9;g.fillStyle=lg(g,0,a.y-h,0,a.y+1,['rgba(150,206,214,.7)','rgba(78,146,168,.94)']);g.fillRect(a.x-9,a.y-h,18,h+1.5);
@@ -722,7 +722,7 @@ ROOMS.perga={space:0.6,walk:[16,464,110,138],mood:'hope',amb:{crickets:.5,birds:
   {name:'plain',x:124,y:66,w:136,h:24,wx:190,look:'orchards_and_fields_and_the_heat'},
   {name:'watering_trough',x:194,y:70,w:60,h:36,wx:224,wy:113,look:'stone_trough_fed_from_a_spring',
     use:'i_drink_and_wash_the_dust',pickup:'it_is_a_trough'},
-  {name:'pack_donkeys',x:280,y:74,w:128,h:30,wx:330,wy:114,look:['papiass_train_tethered','they_have_climbed_that_road'],pickup:'they_are_the_drovers_and_every'},
+  {name:'pack_donkeys',x:280,y:72,w:131,h:32,wx:330,wy:114,look:['papiass_train_tethered','they_have_climbed_that_road'],pickup:'they_are_the_drovers_and_every'},
   {name:'milestone',x:419,y:89,w:11,h:18,wx:410,wy:113,look:'a_milestone'},
   {name:'plane_tree',x:426,y:24,w:54,h:44,wx:440,wy:116,look:'plane_tree_the_last_deep'},
   {name:'our_baggage',x:124,y:96,w:48,h:13,wx:150,wy:114,look:()=>say(P,F.markTold?'two_bed_rolls_and_a_bundle':'bed_rolls_the_bundle_and_the_food'),
@@ -784,8 +784,8 @@ ROOMS.ford={space:0.7,get walk(){return PC().x>240?[300,464,112,138]:[16,186,112
       if(it==='awl'||it==='thread')return say(P,'awl_will_open_the_strands');
       if(it==='knife')return say(P,'trim_the_frayed_end_yes');return false}},
   {name:'far_post',x:274,y:94,w:14,h:18,wx:166,wy:126,dir:1,look:()=>say(P,F.lineUp?'barnabas_made_it_fast_twice':'other_post_and_the_other')},
-  {name:'pack_donkeys',x:30,y:76,w:112,h:32,wx:110,wy:116,vis:()=>!F.crossed,look:'loaded_to_the_ears_with_salt',pickup:'they_are_the_drovers'},
-  {name:'pack_donkeys',x:358,y:76,w:112,h:32,wx:380,wy:116,vis:()=>!!F.crossed,look:'every_beast_is_over_and_every',pickup:'they_are_the_drovers'},
+  {name:'pack_donkeys',x:22,y:72,w:132,h:36,wx:110,wy:116,vis:()=>!F.crossed,look:'loaded_to_the_ears_with_salt',pickup:'they_are_the_drovers'},
+  {name:'pack_donkeys',x:352,y:72,w:118,h:36,wx:380,wy:116,vis:()=>!!F.crossed,look:'every_beast_is_over_and_every',pickup:'they_are_the_drovers'},
   {name:'road_to_the_pass',x:452,y:84,w:28,h:28,wx:462,wy:118,dir:1,look:'road_on_up_to_the_pass',exit:overPass}]};
 /* ---------- Antioch in Pisidia ---------- */
 async function toAntioch(){playAs(P);await fade(1,600);AU.mood='hope';
