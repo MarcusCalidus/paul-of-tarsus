@@ -26,8 +26,8 @@ SHARED.beasts=(()=>{
 
 /* ================================================================ the donkey ================================================================ */
 const DONKEY=(()=>{
-  /* A small grey-brown pack donkey, seen from the side with its head turned a little toward us, so that both long ears read: the near
-     one shows its pale inside, the far one its back. Dark rims and tips to the ears, a short erect dark mane, a dark stripe along the
+  /* A small grey-brown pack donkey, seen from the side with its big, boxy head carried high and turned a little toward us, so that both
+     long ears read, set wide apart in a V: the near one shows its pale inside, the far one its back. Dark rims and tips to the ears, a short erect dark mane, a dark stripe along the
      back from the withers to the tail (and no stripe across the shoulders: with the one along the back it would make a cross), a pale
      muzzle, a pale ring round the eye and a pale belly, darker lower legs, small dark hooves, and a thin tail with a dark tuft.
      It is built like the figures of the reference: rounded masses (barrel, haunch, shoulder, breast, a neck of overlapping rounds, the
@@ -54,8 +54,8 @@ const DONKEY=(()=>{
   const COAT=ramp('#8c8376'),PALE=ramp('#d2cabb'),LOW=ramp('#6b6258'),HOOF=ramp('#3c3028'),DARK='#362d27',DARK2='#4a4038',INNER='#5a2622';
   /* the head at rest, and in the frames of its bray: poll (px, py), the angle of the face below the level (al, degrees), how far the
      lower jaw is open (jaw, degrees), and the ears (ear: 0 up, 1 laid back along the neck) */
-  const HEAD={rest:{px:29,py:-64,al:58,jaw:0,ear:0},20:{px:28,py:-65.5,al:24,jaw:0,ear:1},21:{px:27,py:-64.5,al:-2,jaw:22,ear:1},
-    22:{px:27,py:-64.5,al:-7,jaw:40,ear:1},23:{px:29,py:-64.5,al:38,jaw:0,ear:.4}};
+  const HEAD={rest:{px:28.5,py:-61,al:65,jaw:0,ear:0},20:{px:28,py:-63,al:32,jaw:0,ear:1},21:{px:28,py:-64,al:6,jaw:18,ear:1},
+    22:{px:28,py:-64,al:-2,jaw:32,ear:1},23:{px:28.5,py:-62,al:48,jaw:0,ear:.4}};
   const FW=FIG.W,FH=FIG.H,X0=FIG.OX,Y0=FIG.OY;
   function donkey(g,x,y,dir,fr,load){g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
     const W=fr>=1&&fr<20,k=fr>=4?(fr-4)%16:(fr-1)*4,ph=k/16,o=W&&(k%8===4||k%8===5)?1:0,hd=W?[0,0,0,0,1,2,1,0][k%8]:0,
@@ -64,7 +64,7 @@ const DONKEY=(()=>{
     const Zb=new Float32Array(FW*FH).fill(-1e9),Cb=new Array(FW*FH),Pb=new Uint8Array(FW*FH);
     const put=(px,py,z,col,part)=>{px=Math.floor(px);py=Math.floor(py);if(py>=0||py<-Y0||px<-X0||px>=FW-X0)return;const i=(py+Y0)*FW+px+X0;if(z>Zb[i]){Zb[i]=z;Cb[i]=col;Pb[i]=part}};
     const partAt=(px,py)=>{if(py>=0||py<-Y0||px<-X0||px>=FW-X0)return 0;return Pb[(py+Y0)*FW+px+X0]};
-    const set=(px,py,col)=>{px=Math.floor(px);py=Math.floor(py);if(py>=0||py<-Y0||px<-X0||px>=FW-X0)return;const i=(py+Y0)*FW+px+X0;Cb[i]=col;if(!Pb[i]){Pb[i]=9;Zb[i]=99}};
+    const set=(px,py,col)=>set0(px,py,col),set0=(px,py,col)=>{px=Math.floor(px);py=Math.floor(py);if(py>=0||py<-Y0||px<-X0||px>=FW-X0)return;const i=(py+Y0)*FW+px+X0;Cb[i]=col;if(!Pb[i]){Pb[i]=9;Zb[i]=99}};
     /* the light falls from the front and above: s, how much a surface with normal (nx, ny, nz) faces it, gives the tone */
     const tn=(nx,ny,nz,px,py,ex)=>{const s=nx*.5-ny*.7+nz*.5+((px+py)&1?.03:-.03);return Math.min(4,(s>.86?0:s>.62?1:s>.3?2:s>-.05?3:4)+(ex||0))};
     const coat=(ex,R)=>(nx,ny,nz,px,py)=>(R||COAT)[tn(nx,ny,nz,px,py,ex)];
@@ -99,37 +99,53 @@ const DONKEY=(()=>{
     /* the tail: set on at the top of the rump, lying along it, then hanging free to its dark tuft */
     {const T=[[-27,-47.5],[-29.4,-44.5],[-30.8,-40],[-31.2+tl*.3,-35],[-31+tl*.7,-30]];for(let i=0;i<T.length-1;i++)cap(T[i][0],T[i][1]+o,1.3,T[i+1][0],T[i+1][1]+o,1.05,2,coat(1),7);
       ell(-30.8+tl,-26.5+o,2,1.8,3.6,1.5,0,(nx,ny,nz,px,py)=>(px+py)%3?DARK:DARK2,7)}
-    /* the head: cranium, cheek, face and pale muzzle, and the lower jaw on its hinge, which opens for the bray */
-    const a=HP.al*Math.PI/180,ux=Math.cos(a),uy=Math.sin(a),vx=-uy,vy=ux,Wp=(u,v)=>[HP.px+u*ux+v*vx,HP.py+u*uy+v*vy],hm=coat(0);
-    {const[c0,c1]=Wp(2.5,2.2);ell(c0,c1,1,6.5,6,6,a,hm,3)}
-    {const[c0,c1]=Wp(8.5,5.6);ell(c0,c1,1.5,7,5.8,5.5,a,hm,3)}
-    {const[a0,a1]=Wp(3,.6),[b0,b1]=Wp(18,1.6);cap(a0,a1,5.2,b0,b1,4.2,1.5,hm,3)}
-    {const[c0,c1]=Wp(20.5,2.4);ell(c0,c1,1.2,4.6,4.2,4.6,a,pale,3)}
-    const ja=HP.jaw*Math.PI/180,hu=10,hv=6,rot=(u,v)=>[hu+(u-hu)*Math.cos(ja)-(v-hv)*Math.sin(ja),hv+(u-hu)*Math.sin(ja)+(v-hv)*Math.cos(ja)],Wr=(u,v)=>Wp(...rot(u,v));
-    {const[h0,h1]=Wp(hu,hv),[c0,c1]=Wr(19.5,6.2);cap(h0,h1,3.6,c0,c1,2.3,1,hm,3);ell(c0,c1,1.3,3,2.2,3,a+ja,pale,3)}
-    if(HP.jaw){/* the open mouth: dark within, the teeth along both jaws */
-      const Q=[Wp(12,5.6),Wp(24.4,5.4),Wr(22.5,3.6),Wr(12,4.6)];let x0=99,x1=-99,y0=99,y1=-99;for(const[p,q]of Q){x0=Math.min(x0,p);x1=Math.max(x1,p);y0=Math.min(y0,q);y1=Math.max(y1,q)}
+    /* the head: big and boxy, as long as the neck. A broad forehead and cranium, a deep cheek and jaw, a straight face of one width down
+       to a large pale muzzle, which is the lowest and frontmost part of it, and the lower jaw on its hinge, which opens for the bray.
+       Its front, the broad face turned a little toward us, takes the light. u runs down the face from the poll, v back toward the jaw. */
+    const a=HP.al*Math.PI/180,ux=Math.cos(a),uy=Math.sin(a),vx=-uy,vy=ux,Wp=(u,v)=>[HP.px+u*ux+v*vx,HP.py+u*uy+v*vy],hm=coat(0),
+      lv=(px,py)=>(px+.5-HP.px)*vx+(py+.5-HP.py)*vy,
+      hf=(nx,ny,nz,px,py)=>{let b=tn(nx,ny,nz,px,py);if(lv(px,py)<-2.2)b=Math.max(0,b-1);return COAT[b]},
+      pm=(nx,ny,nz,px,py)=>PALE[Math.max(0,Math.min(3,tn(nx,ny,nz,px,py)-1))];
+    /* sell: a rounded block, its sides flatter than an ell's (p > 2) */
+    const sell=(cx,cy,cz,A,B,C,th,p,mat,part)=>{const co=Math.cos(th),si=Math.sin(th),R=Math.max(A,B)*1.2+1;
+      for(let py=Math.floor(cy-R);py<=cy+R;py++)for(let px=Math.floor(cx-R);px<=cx+R;px++){const X=px+.5-cx,Y=py+.5-cy,u=(X*co+Y*si)/A,v=(-X*si+Y*co)/B,
+          au=Math.abs(u),av=Math.abs(v),q=1-Math.pow(au,p)-Math.pow(av,p);if(q<0)continue;const w=Math.pow(q,1/p),
+          lx=Math.sign(u)*Math.pow(au,p-1)/A,ly=Math.sign(v)*Math.pow(av,p-1)/B,lz=Math.pow(w,p-1)/C,nx=lx*co-ly*si,ny=lx*si+ly*co,l=Math.hypot(nx,ny,lz)||1;
+        put(px,py,cz+C*w,mat(nx/l,ny/l,lz/l,px,py),part)}};
+    {const[c0,c1]=Wp(3.2,2.2);sell(c0,c1,1,5.4,5.8,6,a,2.6,hf,3)}
+    {const[c0,c1]=Wp(9,4.4);ell(c0,c1,1.5,6.6,4.6,5.5,a,hm,3)}
+    {const[c0,c1]=Wp(9.5,.6);sell(c0,c1,2,7.5,4.6,5,a,3,hf,3)}
+    {const[c0,c1]=Wp(17.6,1.5);sell(c0,c1,2.2,4.6,4.9,5,a,2.6,pm,3)}
+    const ja=HP.jaw*Math.PI/180,hu=9,hv=7,rot=(u,v)=>[hu+(u-hu)*Math.cos(ja)-(v-hv)*Math.sin(ja),hv+(u-hu)*Math.sin(ja)+(v-hv)*Math.cos(ja)],Wr=(u,v)=>Wp(...rot(u,v));
+    {const[h0,h1]=Wp(hu,hv),[m0,m1]=Wr(15,6.9),[c0,c1]=Wr(18.4,6.7);cap(h0,h1,3.4,m0,m1,2.9,1,hm,3);sell(c0,c1,1.6,3.6,2.7,3.5,a+ja,2.4,pm,3)}
+    if(HP.jaw){/* the open mouth: dark within, the pale teeth along both jaws */
+      const Q=[Wp(11.5,6.4),Wp(22.4,5.6),Wr(21.8,6.6),Wr(12,6.8)];let x0=99,x1=-99,y0=99,y1=-99;for(const[p,q]of Q){x0=Math.min(x0,p);x1=Math.max(x1,p);y0=Math.min(y0,q);y1=Math.max(y1,q)}
       for(let py=Math.floor(y0);py<=y1;py++)for(let px=Math.floor(x0);px<=x1;px++){let c=false;for(let i=0,j=3;i<4;j=i++){const[xi,yi]=Q[i],[xj,yj]=Q[j];if(yi>py+.5!==yj>py+.5&&px+.5<(xj-xi)*(py+.5-yi)/(yj-yi)+xi)c=!c}if(c)put(px,py,-1,INNER,3)}
-      for(let u=15;u<=22.5;u+=.5){const[p,q]=Wp(u,6.3);put(p,q,-.5,'#e2d8c2',3);const[r,s]=Wr(u+.5,3.2);put(r,s,-.5,'#cfc4ac',3)}}
+      for(let u=15;u<=21.5;u+=.5){const[p,q]=Wp(u,6.7);put(p,q,-.5,'#ece4d0',3);const[r,s]=Wr(u+.3,5.5);put(r,s,-.5,'#d8ceb6',3)}}
     /* the neck: overlapping rounds from the shoulders to the head, its crest a little arched; and its short erect mane */
-    const NK=[];{const[ax,ay]=Wp(4.5,4.5),bx=15,by=-45+o,cx=(bx+ax)/2-2,cy=(by+ay)/2-2;
-      for(let i=0;i<=16;i++){const t=i/16,nx=(1-t)*(1-t)*bx+2*t*(1-t)*cx+t*t*ax,ny=(1-t)*(1-t)*by+2*t*(1-t)*cy+t*t*ay,r=9-4*t;NK.push([nx,ny,r]);ell(nx,ny,-2,r,r,r,0,hm,2)}}
-    /* the ears: long and upright, or laid back as it brays; the near one shows its pale inside, the far one its back */
-    const ear=(bx,by,ang,len,near)=>{const ex=Math.cos(ang),ey=Math.sin(ang),R=len+4;
+    const NK=[];{const[ax,ay]=Wp(4.5,5.2),bx=15,by=-45+o,cx=(bx+ax)/2-2.5,cy=(by+ay)/2-2;
+      for(let i=0;i<=16;i++){const t=i/16,nx=(1-t)*(1-t)*bx+2*t*(1-t)*cx+t*t*ax,ny=(1-t)*(1-t)*by+2*t*(1-t)*cy+t*t*ay,r=9-3.2*t;NK.push([nx,ny,r]);ell(nx,ny,-2,r,r,r,0,hm,2)}}
+    /* the ears: very long, set wide apart on the top of the head and opening in a V, or laid back along the neck as it brays; the near
+       one shows its pale inside, the far one its darker back; both have dark rims and tips */
+    const ear=(bx0,by0,ang,len0,near)=>{const ex=Math.cos(ang),ey=Math.sin(ang),bx=bx0-ex*2,by=by0-ey*2,len=len0+2,R=len+4;
       for(let py=Math.floor(by-R);py<=by+R;py++)for(let px=Math.floor(bx-R);px<=bx+R;px++){const X=px+.5-bx,Y=py+.5-by,t=(X*ex+Y*ey)/len,s=-X*ey+Y*ex;if(t<0||t>1)continue;
-        const hw=3.3*Math.sin(Math.PI*(t*.8+.2));if(Math.abs(s)>hw)continue;const l=s/hw;let col;
-        if(t>.8)col=DARK;else if(Math.abs(s)>hw-1)col=near?DARK2:DARK;
-        else if(near&&t>.14&&Math.abs(s)<hw-1.6)col=PALE[l<0?1:2];
-        else col=COAT[tn(-ey*l*.7,ex*l*.7,.7,px,py,near?0:1)];
+        const hw=2.9*Math.sin(Math.PI*(t*.78+.22));if(Math.abs(s)>hw)continue;const l=s/hw;let col;
+        if(t>.8)col=DARK;else if(Math.abs(s)>hw-1)col=DARK2;
+        else if(near&&t>.12&&Math.abs(s)<hw-1.3)col=PALE[l<0?0:1];
+        else col=COAT[tn(-ey*l*.7,ex*l*.7,.7,px,py,1)];
         put(px,py,near?12:-6,col,6)}};
-    {const e=HP.ear,up=-Math.PI/2,bk=Math.PI+.5;ear(HP.px+2.5,HP.py-1.5,up+.2+(bk-up-.05)*e,14,0);ear(HP.px-1.5,HP.py-.5,up-.15+(bk-up+.1)*e,15,1)}
-    for(let i=3;i<NK.length;i++){const[cx,cy,r]=NK[i],[px0,py0]=NK[i-1],dx=cx-px0,dy=cy-py0,L=Math.hypot(dx,dy)||1,nx=dy/L,ny=-dx/L,s=nx*0+ny<0?1:-1,
+    {const e=HP.ear,up=-Math.PI/2,bk=-Math.PI+.42,[f0,f1]=Wp(-1.2,-3.2),[n0,n1]=Wp(-.2,3.4);
+      ear(f0,f1,up+.3+(bk+.1-up-.3)*e,14,0);ear(n0,n1,up-.12+(bk-up+.12)*e,15,1)}
+    for(let i=3;i<NK.length;i++){const[cx,cy,r]=NK[i],[px0,py0]=NK[i-1],dx=cx-px0,dy=cy-py0,L=Math.hypot(dx,dy)||1,nx=dy/L,ny=-dx/L,s=ny<0?1:-1,
         rx=cx+nx*s*(r-1.6),ry=cy+ny*s*(r-1.6),h=i%3?2.4:1.8;cap(rx,ry,1,cx+nx*s*(r+h),cy+ny*s*(r+h),.9,30,()=>i%4===1?DARK2:DARK,8)}
-    /* the eye in its pale ring, the nostril, and the line of the closed mouth */
-    {const[e0,e1]=Wp(6.4,-1.6),X=Math.floor(e0),Y=Math.floor(e1);if(partAt(X,Y)===3){for(const[dx,dy]of[[-1,0],[-1,1],[2,0],[2,1],[0,2],[1,2]])set(X+dx,Y+dy,PALE[2]);
-        for(const dx of[-1,0,1,2])set(X+dx,Y-1,COAT[3]);set(X,Y,'#1a1410');set(X+1,Y,'#1a1410');set(X,Y+1,'#2a201a');set(X+1,Y+1,'#1a1410')}}
-    for(const[u,v,c]of[[22.2,1.3,'#4a4038'],[23,1.9,'#2e2622'],[23.5,2.7,'#2e2622']]){const[n0,n1]=Wp(u,v);set(n0,n1,c)}
-    if(!HP.jaw)for(let u=17;u<=23.6;u+=.5){const[p,q]=Wp(u,4.5);if(partAt(Math.floor(p),Math.floor(q))===3)set(p,q,'#7a7064')}
+    /* the brush runs on over the poll to between the ears: short, and laid back, so that with the ears it makes no cross */
+    for(const[u,v]of[[-.4,1.2],[-.9,-.6],[.4,2.6]]){const[r0,r1]=Wp(u+1.2,v),[t0,t1]=Wp(u-1.4,v+1.6);cap(r0,r1,1,t0,t1,.8,10,()=>DARK,8)}
+    /* the eye, large and dark in its pale ring, high on the side of the head; the nostril on the front of the muzzle; the line of the closed mouth */
+    {const[e0,e1]=Wp(6.2,-1.4),X=Math.floor(e0),Y=Math.floor(e1),set=(x,y,c)=>{if(partAt(Math.floor(x),Math.floor(y))===3)set0(x,y,c)};
+      for(const[dx,dy]of[[-1,-1],[0,-1],[1,-1],[2,-1],[-2,0],[3,0],[-2,1],[3,1],[-1,2],[0,2],[1,2],[2,2]])set(X+dx,Y+dy,PALE[dy<0?2:1]);
+      for(const dx of[-1,0,1,2])set(X+dx,Y,'#14100c');for(const dx of[-1,0,1,2])set(X+dx,Y+1,dx===2?'#3a2e26':'#1e1812');set(X+1,Y,'#5a5048');set(X-2,Y-1,COAT[3]);set(X-1,Y-2,COAT[3]);set(X,Y-2,COAT[3])}
+    for(const[u,v,c]of[[19.6,-1.8,'#4a4038'],[20.4,-1,'#241c18'],[20.6,0,'#241c18'],[20.2,.9,'#4a4038']]){const[n0,n1]=Wp(u,v);if(partAt(Math.floor(n0),Math.floor(n1))===3)set(n0,n1,c)}
+    if(!HP.jaw)for(let u=14.5;u<=21.5;u+=.5){const[p,q]=Wp(u,6.5);if(partAt(Math.floor(p),Math.floor(q))===3)set(p,q,u>20.5?'#8a8274':'#6a6258')}
     /* the stripe along the back, from the mane to the root of the tail */
     for(let X=-27;X<=13;X++){let Y=-Y0;while(Y<0&&![1,2].includes(partAt(X,Y)))Y++;if(Y<0){set(X,Y,DARK);set(X,Y+1,X>-25&&X<11?DARK:DARK2)}}
     /* the loads */
