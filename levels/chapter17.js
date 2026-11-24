@@ -620,34 +620,123 @@ function frontHold17(g){const k=keel17();g.fillStyle=lg(g,0,0,0,13,['rgba(14,10,
 /* ==== ART hold17: end ==== */
 
 /* ==== ART tyrecourt17: begin ==== */
-/* The court of Euanthe's house in Tyre, where the brothers meet (invented), late in the afternoon. A plastered court closed by the house at
-   the back, with a doorway into it, and by walls at the sides; a vine on a trellis of poles along the left wall (its poles stand at the
-   ends, nothing crosses them), a well with a low round curb at the right, standing against the back, and a bench along the back wall.
-   Light from the upper left over the left wall: the right part of the floor is in sun, the left in the wall's shade. No horizon: the walls
-   close the view.
+/* The court of Euanthe's house in Tyre, where the brothers meet (invented), in the evening light of the seven days. A plastered court:
+   the house at the back, two storeys under a flat roof with a low parapet, its doorway in the middle; the side walls run back to it at
+   the left and the right, and in the left wall, near us, the way out to the lanes and the beach. The sun is low over the left wall: the
+   upper part of the back wall and the right part of the floor are in its warm light, and the left wall's shade lies across the floor at
+   the left and climbs the back wall in a slanting line. No horizon: the walls close the view.
+   Against the back wall at the left a vine grows on a pergola: two posts, one at each end of a deep beam, and nothing under its middle;
+   its rafters run back to the wall under the leaves, and its trunk climbs the left post. At the right a well with a low round curb,
+   long and low, its opening a flat dark oval, lower than any head comes (the heads of the people of the court stand at y 74..100, the
+   curb's top at 98); a jar and a bucket stand beside it. A bench of one board along the back wall, its legs at its ends. The floor is
+   beaten earth, worn pale along the way from the gate to the door, with no joint drawn on it. Sparrows sit on the parapet by day
+   (ROOMS.tyrecourt17.birds).
    Called from outside: ART.tyrecourt17. Reads nothing. Hotspots (ROOMS.tyrecourt17): the vine 8,30,70,60 · the well 238,90,40,22 · the
    doorway 140,52,30,52 · the way out to the beach 0,100,14,44. Walk strip 16..304, 110..138. Actors (place17): Euanthe 196,118 · Phanias
    228,126 · Myrto 250,118 · Joezer 172,130 · Melitta 276,128 · Philinos 290,120 · Luke 64,126 · Timothy 88,134 · Aristarchus 40,118 ·
-   Trophimus 112,120; Paul 140,124. The well is blocked (ROOMS.tyrecourt17.block). */
-ART.tyrecourt17={w:320,q:12,paint(g){paintCourt17(g)},light:{amb:'#f2e2c8',sun:[.6,.4,.4],shade:[[0,120,'#b8b0cc']]},draw(){},front(){}};
-function paintCourt17(g){const r=rng(1731),W='#dccaa6';
-  g.fillStyle=lg(g,0,0,0,30,['#8ab0d4','#c8dce4']);g.fillRect(0,0,320,30);
-  /* the house at the back, two storeys, the doorway in the middle */
-  plaster(g,24,22,272,82,W,r,{patch:1,cracks:0,t:.4,top:.06,bot:-.14});R(g,22,19,276,3,tint(W,.14));R(g,22,19,276,.6,'#fff4dc');
-  R(g,140,52,30,52,'#2a2018');R(g,138,50,34,2,tint(W,-.28));for(const x of[60,100,210,250])R(g,x,34,8,7,'#3a2c24');
-  /* the side walls */
-  plaster(g,0,10,26,98,tint(W,-.08),r,{patch:0,cracks:0,t:.4});plaster(g,294,10,26,98,tint(W,-.04),r,{patch:0,cracks:0,t:.4});
-  /* the floor: beaten earth and a few flags */
-  pave(g,0,104,320,144,'#c4b08a',r,{vy:-40,rows:5,step:36});
-  /* the vine on its trellis along the left wall: poles at the ends, the leaves over the top */
-  for(const x of[10,76])R(g,x,36,2,68,'#6a4a2c');const q=rng(1732);for(let i=0;i<180;i++){const x=6+q()*76,y=28+q()*26+(q()<.3?q()*30:0);oval(g,x,y,2+q()*2,1.4+q()*1.4,q()<.5?'#5e7a3e':'#4a6432')}
-  /* the well against the back, a low round curb seen from the front */
-  foot17(g,258,111,22,2);poly(g,[238,96,278,96,279,110,237,110]);g.fillStyle=lg(g,238,0,278,0,['#d8ccb0','#b8ac90','#8a8070']);g.fill();
-  oval(g,258,96,20,3,'#3a3430');R(g,238,95,40,.6,'#efe6d0');
-  /* the bench along the back wall */
-  R(g,180,96,48,4,'#8a6a44');R(g,180,96,48,.6,'#d0aa74');R(g,182,100,3,4,'#5a4430');R(g,223,100,3,4,'#5a4430');
-  /* the shade of the left wall over the floor */
-  shade(g,[0,104,120,104,90,144,0,144],'#a8a0c4',.45)}
+   Trophimus 112,120; Paul 140,124. The well is blocked (ROOMS.tyrecourt17.block: 238,108,40,3), at the curb's foot. */
+ART.tyrecourt17={w:320,q:12,paint(g){paintCourt17(g)},light:{amb:'#f4dcc0',sun:[.6,.4,.4],shade:[[0,120,'#b4aacc']]},draw(){},front(){}};
+const BACKCourt17=104,TOPCourt17=14;
+function paintCourt17(g){const r=rng(1731),M=SHARED.materials,W='#dcc6a0',BK=BACKCourt17,TP=TOPCourt17;
+  /* the evening sky over the roofs */
+  g.fillStyle=lg(g,0,0,0,TP+2,['#7a9ac4','#b4c4d4','#f0d8b4']);g.fillRect(0,0,320,TP+2);
+  for(let i=0;i<10;i++){const x=r()*320,y=2+r()*8;oval(g,x,y,8+r()*16,.8+r()*.8,'rgba(255,226,196,.35)')}
+  /* the house at the back: two storeys of plaster, a string course between them, the parapet along the roof */
+  plaster(g,24,TP,272,BK-TP,W,r,{patch:0,cracks:0,t:.4,top:.08,bot:-.12});
+  R(g,22,TP-2.6,276,2.8,tint(W,.12));R(g,22,TP-2.6,276,.6,'#fff2d8');R(g,22,TP,276,.6,tint(W,-.36));ao(g,24,TP+.2,272,3,'t',.3,'#4a3a48');
+  /* the string course between the storeys: it starts past the pergola, so that no post stands across it */
+  R(g,92,55,204,1.6,tint(W,.08));R(g,92,55,204,.5,'#fff0d4');R(g,92,56.6,204,.5,tint(W,-.3));
+  for(const[x,y,c]of[[52,26,.6],[214,30,.5],[268,64,.5],[98,70,.4]])M.crack(g,x,y,3,r,c);
+  g.fillStyle=lg(g,0,88,0,BK,['rgba(120,96,70,0)','rgba(120,96,70,.28)','rgba(90,70,56,.4)']);g.fillRect(24,88,272,BK-88);
+  for(let i=0;i<50;i++)R(g,24+r()*272,BK-1-r()*6,1+r()*3,.5,'rgba(90,72,56,.25)');
+  /* the windows of the upper storey, small, their shutters folded back or closed; none barred */
+  for(const[x,open]of[[60,1],[100,0],[212,0],[252,1]]){const y=32,w=8,h=10;R(g,x-.8,y-.8,w+1.6,h+1.6,tint(W,-.2));
+    if(open){g.fillStyle=lg(g,0,y,0,y+h,['#1a1210','#2e221a']);g.fillRect(x,y,w,h);R(g,x,y,w,1.2,'#0e0a08');R(g,x-3,y,2.6,h,'#6e4c2e');R(g,x-3,y,.5,h,'#a07a4c')}
+    else{g.fillStyle=lg(g,x,0,x+w,0,['#7a5634','#6a4a2c']);g.fillRect(x,y,w,h);for(let i=x+1.6;i<x+w-.4;i+=1.6)R(g,i,y,.5,h,'rgba(40,26,14,.4)');R(g,x,y,w,.5,'#a8804e')}
+    R(g,x-1,y+h+.6,w+2,.8,tint(W,.2));R(g,x-1,y+h+1.4,w+2,.4,tint(W,-.34))}
+  /* the doorway: a stone sill, plaster reveals, a wooden lintel on them as deep as the wall; inside, the room is dim, the door leaf
+     folded back against the inner wall, a lamp's warm light far in */
+  R(g,138,50.4,34,2.2,'#7a5a3a');R(g,138,50.4,34,.6,'#b08a5a');R(g,138,52.2,34,.5,'#3a2618');
+  g.fillStyle=lg(g,0,52.6,0,104,['#140e0c','#22180f','#2e2218']);g.fillRect(140,52.6,30,51.4);
+  inRect(g,140,52.6,30,51.4,()=>{pool(g,160,88,12,14,'#ffb860',.35,'screen');R(g,164,60,5,44,'#3a2818');R(g,164,60,.5,44,'#6a4a2c');
+    ao(g,140,52.6,30,6,'t',.6);ao(g,140,52.6,4,52,'l',.4)});
+  R(g,140,52.6,.6,51.4,'rgba(255,236,200,.25)');R(g,169.4,52.6,.6,51.4,'rgba(30,22,30,.45)');
+  R(g,137,103,36,1.4,'#c4b08c');R(g,137,103,36,.5,'#eadcbc');
+  /* the side walls, running back to the house: the left in shade but for its top, the right in the sun */
+  const LW=[0,0,24,TP-2.6,24,BK,0,132],RW=[296,TP-2.6,320,0,320,132,296,BK];
+  poly(g,LW);g.fillStyle=lg(g,0,0,24,0,['#a69c9c','#b0a49e']);g.fill();
+  clipTo(g,()=>poly(g,LW),()=>{tex(g,'mott',.45,0,0,24,132,'overlay',.6);ao(g,0,100,24,32,'b',.25,'#3a2c3c')});
+  stroke(g,[0,0,24,TP-2.6],'#f0d6b0',.8);
+  /* the way out, an opening in the left wall near us: the wall's thickness seen at its far jamb, the shade under its lintel, and beyond
+     it the lane in the evening sun, closed by a house front across it */
+  const GATE=[0,66,12,73,12,121,0,134];poly(g,GATE);g.fillStyle=lg(g,0,66,0,134,['#e8c494','#d4b088','#b89a7a']);g.fill();
+  clipTo(g,()=>poly(g,GATE),()=>{R(g,0,66,12,44,'#e4c69a');tex(g,'mott',.35,0,66,12,68,'overlay',.5);R(g,4,86,2.4,3.2,'#5a4232');
+    g.fillStyle=lg(g,0,104,0,134,['#c8a880','#a88c6c']);g.beginPath();g.moveTo(0,112);g.lineTo(12,108);g.lineTo(12,121);g.lineTo(0,134);g.closePath();g.fill();
+    g.fillStyle=lg(g,0,66,0,82,['rgba(50,36,40,.85)','rgba(50,36,40,0)']);g.fillRect(0,66,12,16)});
+  poly(g,[9.6,71.8,12,73,12,121,9.6,122.6],'#cdb698');poly(g,[9.6,71.8,12,73,12,78,9.6,77.6],'rgba(60,46,50,.5)');
+  stroke(g,[0,66,12,73],'#4a3a3a',.8);
+  poly(g,RW);g.fillStyle=lg(g,296,0,320,0,['#e4cca2','#ecd6ae']);g.fill();
+  clipTo(g,()=>poly(g,RW),()=>{tex(g,'mott',.45,296,0,24,132,'overlay',.6);ao(g,296,96,24,36,'b',.2,'#5a4030');
+    /* a niche in it for a lamp, empty by day, its shelf wider than nothing above it */
+    R(g,305,62,6,8,'#5a4434');R(g,305,62,6,1.4,'#3a2a20');R(g,304.4,70,7.2,1,'#f0dcb4')});
+  /* the corner where the walls meet the house */
+  R(g,23.6,TP-2.6,.6,BK-TP+2.6,'rgba(60,46,60,.4)');R(g,295.8,TP-2.6,.8,BK-TP+2.6,'rgba(255,240,210,.35)');
+  /* the floor: beaten earth, worn pale from the gate to the door and round the well, a few stones bedded in it near the door */
+  const FL=[0,132,24,BK,296,BK,320,132,320,144,0,144];poly(g,FL);g.fillStyle=lg(g,0,BK,0,144,['#b8a07c','#c8b08a','#bca480']);g.fill();
+  clipTo(g,()=>poly(g,FL),()=>{tex(g,'mott',.3,0,BK,320,40,'overlay',.22);for(let i=0;i<900;i++){const y=BK+r()*40,x=r()*320;R(g,x,y,.5,.5,r()<.5?'rgba(90,70,50,.18)':'rgba(255,244,220,.2)')}
+    for(let i=0;i<60;i++){const y=BK+2+Math.pow(r(),.9)*38,k=(y-BK)/40,x=r()*320;oval(g,x,y,(4+r()*10)*(.4+k),(.8+r()*1.2)*(.4+k),r()<.55?'rgba(110,88,60,.07)':'rgba(255,240,210,.07)')}
+    for(let i=0;i<200;i++){const y=BK+r()*40,x=r()*320;R(g,x,y,.5+r()*1.2,.5,r()<.4?'rgba(80,62,44,.35)':r()<.6?'rgba(240,226,196,.4)':'rgba(150,120,80,.3)')}
+    g.fillStyle='rgba(255,240,214,.16)';g.beginPath();g.moveTo(0,124);g.quadraticCurveTo(80,116,140,106);g.lineTo(170,106);g.quadraticCurveTo(90,124,30,144);g.lineTo(0,144);g.closePath();g.fill();
+    for(const[x,y,w,h]of[[146,106,7,1.6],[156,107,6,1.5],[150,109.4,8,1.8],[162,105.6,5,1.4]]){oval(g,x,y,w/2,h/2,'#cbb898');R(g,x-w/2+.6,y-h/2,w-1.2,.5,'#e6d8bc');R(g,x-w/2+.6,y+h/2-.5,w-1.2,.5,'rgba(70,56,44,.35)')}
+    ao(g,24,BK,272,3,'t',.25,'#4a3a30')});
+  pergolaCourt17(g,r);benchCourt17(g,r);wellCourt17(g,r);
+  /* a jar and a basket in the back right corner, out of the way */
+  SHARED.materials.shadow(g,287,106,5,1.2,.5);vessel(g,287,106,3.6,10,'#b07048','amph',{noShadow:1});
+  lightCourt17(g)}
+/* the pergola: two posts of rough-hewn timber, one at each end of the beam, the beam deep and resting on their tops; its rafters run back
+   to the wall under the leaves; the vine's trunk twists up the left post, and its leaves lie over the top and hang down in front */
+function pergolaCourt17(g,r){const x0=28,x1=80,bt=34,bb=39.6;
+  /* the shade it throws on the wall behind */
+  comp(g,'multiply',.14,()=>{for(let i=0;i<110;i++){const x=x0+8+r()*(x1-x0+6),y=bb+1+Math.pow(r(),1.5)*30;oval(g,x,y,1.4+r()*2.6,1+r()*1.6,'#9a90b4')}});
+  for(const px of[x0,x1-3.4]){g.fillStyle=lg(g,px,0,px+3.4,0,['#5a4028','#7a5838','#4a3220']);g.fillRect(px,bb,3.4,106-bb);
+    inRect(g,px,bb,3.4,106-bb,()=>{tex(g,'vert',.3,px,bb,3.4,70,'overlay',.6);ao(g,px,bb,3.4,4,'t',.5)});SHARED.materials.shadow(g,px+1.7,106,3.4,.9,.5)}
+  g.fillStyle=lg(g,0,bt,0,bb,['#9a7448','#7a5838','#4a3220']);g.fillRect(x0,bt,x1-x0,bb-bt);inRect(g,x0,bt,x1-x0,bb-bt,()=>tex(g,'wood',.3,x0,bt,x1-x0,6,'overlay',.5));
+  R(g,x0,bt,x1-x0,.5,'#c89a62');R(g,x0,bb-.5,x1-x0,.5,'#2e1e12');
+  /* the trunk, twisting up the left post */
+  const T=[];for(let y=106;y>=bt;y-=2){T.push(x0+1.7+Math.sin(y/5)*2.6+(106-y)*.01,y)}stroke(g,T,'#4a3626',1.8);stroke(g,T.map((v,i)=>i%2?v:v-.6),'#8a6a4a',.5);
+  /* the leaves: clumps over the top and a ragged fringe hanging in front of the beam, each clump dark within, its leaves lit on the side
+     toward the sun at the left; a few bunches of grapes among them */
+  const C=[];for(let i=0;i<34;i++){const top=i<24;C.push([x0-5+r()*(x1-x0+12),top?bt-5+r()*8:bb+1+r()*14,top?7+r()*5:4+r()*4,top?4+r()*3:3+r()*4])}
+  C.sort((a,b)=>a[1]-b[1]);
+  for(const[cx,cy,rx,ry]of C){oval(g,cx+1,cy+1,rx*.8,ry*.7,'rgba(40,52,30,.55)');
+    for(let k=0;k<26;k++){const a=r()*6.283,q=Math.sqrt(r()),x=cx+Math.cos(a)*q*rx,y=cy+Math.sin(a)*q*ry,lit=(x-cx)/rx*-.6+(y-cy)/ry*-.4+(r()-.5)*.8;
+      const c=lit>.45?'#8aa250':lit>.1?'#66843e':lit>-.3?'#4e6a32':'#3a5228';oval(g,x,y,.9+r()*.9,.7+r()*.6,c)}}
+  for(let i=0;i<9;i++){const x=x0+4+r()*(x1-x0-6),y=bb+6+r()*10;poly(g,[x-.4,y,x+2.4,y,x+1.6,y+1.8,x+1,y+3,x+.4,y+1.8],'#4a3a5a');R(g,x,y,1.4,.8,'#5e4a70');R(g,x+.2,y+.2,.5,.5,'#8a7aa0')}}
+/* the bench: one thick board on two blocks at its ends, against the wall */
+function benchCourt17(g,r){const x=180,y=96.4,w=48;SHARED.materials.shadow(g,x+w/2,104,w/2,1.2,.45);
+  for(const bx of[x+2,x+w-6]){R(g,bx,y+3,4,5,'#a08a6a');R(g,bx,y+3,4,.5,'#d4c0a0');R(g,bx+3.4,y+3,.6,5,'rgba(50,40,40,.4)')}
+  M_board17(g,x,y,w,3.2,'#8a6644',r);ao(g,x,y+3.2,w,1.6,'t',.3,'#2a1a10')}
+const M_board17=(g,x,y,w,h,c,r)=>{SHARED.materials.board(g,x,y,w,h,c,r)};
+/* the well: a low round curb of stone, long and low, its top a flat oval with a dark mouth; lit from the left */
+function wellCourt17(g,r){const cx=258,top=98,rx=19,ry=3.4,bot=109.6;
+  SHARED.materials.shadow(g,cx+3,bot,rx+2,2,.55);
+  const F=[cx-rx,top,cx-rx,bot-1.2,cx-rx*.7,bot,cx+rx*.7,bot,cx+rx,bot-1.2,cx+rx,top];
+  poly(g,F);g.fillStyle=lg(g,cx-rx,0,cx+rx,0,['#e4d6ba','#cdbc9c','#a8987e','#857868']);g.fill();
+  clipTo(g,()=>poly(g,F),()=>{tex(g,'mott',.5,cx-rx,top,rx*2,bot-top,'overlay',.7);for(let i=0;i<30;i++)R(g,cx-rx+r()*rx*2,top+1+r()*(bot-top-2),1+r()*3,.5,r()<.5?'rgba(80,66,56,.25)':'rgba(255,246,224,.25)');
+    ao(g,cx-rx,bot-3,rx*2,3,'b',.3,'#3a3040')});
+  oval(g,cx,top,rx,ry,'#d8cab0');oval(g,cx,top+.2,rx-3,ry-1.2,'#2a2420');oval(g,cx,top+.8,rx-4.4,ry-1.8,'#141010');
+  g.strokeStyle='#f4ead6';g.lineWidth=.5;g.beginPath();g.ellipse(cx,top,rx,ry,0,Math.PI*.95,Math.PI*1.75);g.stroke();
+  /* a wooden bucket on the curb and a water jar at its foot */
+  R(g,cx+9,top-4.6,4.4,4.4,'#7a5434');R(g,cx+9,top-4.6,4.4,.6,'#b08a5a');R(g,cx+9,top-2.6,4.4,.5,'#3a2618');R(g,cx+12.8,top-4.6,.6,4.4,'rgba(30,20,10,.4)');
+  SHARED.materials.shadow(g,cx-rx-3,bot,3.4,.9,.5);vessel(g,cx-rx-3.4,bot,3.2,8.6,'#a8683e','jug',{noShadow:1})}
+/* the evening light: warm from the left over the wall, the left wall's shade across the floor and up the back wall in a slanting line,
+   and the cool of the shade deepest in the near left corner */
+function lightCourt17(g){const BK=BACKCourt17;
+  shade(g,[24,TOPCourt17,40,TOPCourt17,118,BK,24,BK],'#a49cc6',.48);
+  shade(g,[0,132,24,BK,112,BK,92,144,0,144],'#a8a0c4',.45);
+  comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(210,190,220,.6)','rgba(255,214,160,.7)','rgba(255,200,140,1)']);g.fillRect(0,0,320,144)});
+  comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,TOPCourt17,0,BK,['rgba(255,190,120,1)','rgba(255,210,150,.5)','rgba(140,120,150,.5)']);g.fillRect(24,TOPCourt17,272,BK-TOPCourt17)});
+  ao(g,0,126,320,18,'b',.12,'#2a2050');ao(g,0,0,40,144,'l',.14,'#2a2050')}
 /* ==== ART tyrecourt17: end ==== */
 
 /* ==== ART beach17: begin ==== */
@@ -1258,10 +1347,12 @@ function hint17(){const r=G.room,me=PC();
   return['road17',['hint_up_the_road_1','hint_up_the_road_2']]}
 
 /* ============ CHAPTER DEFINITION ============ */
-/* Birds (shared/birds.js): gulls over the harbors of Patara and Tyre, and far off over the bay of Ptolemais; sparrows on the roofs of the
-   court; none over the beach while they pray (a gull far off, only after). Scenery: they change nothing in the story. */
+/* Birds (shared/birds.js): gulls over the harbors of Patara and Tyre, and far off over the bay of Ptolemais; sparrows on the parapet of
+   Euanthe's house over the court (it is seen by day and in the evening, never at night); none over the beach while they pray (a gull
+   far off, only after). Scenery: they change nothing in the story. */
 ROOMS.patara17.birds={gulls:[100,4,120,24],stand:[[160,101.2,-1],[169.4,101.4,1]]};
 ROOMS.tyre17.birds={gulls:[60,4,140,24],stand:[[172,101.2,-1]]};
+ROOMS.tyrecourt17.birds={perch:[{k:'sparrow',y:11.4,x:[196,206,218],d:[1,-1,1]}]};
 ROOMS.beach17.birds=()=>F.beach?{gulls:[180,6,80,18]}:null;
 ROOMS.ptolemais17.birds={gulls:[200,8,100,20]};
 ROOMS.gate17.birds={prey:[180,4,120,20]};
