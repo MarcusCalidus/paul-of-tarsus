@@ -608,15 +608,68 @@ function heapBeach17(g,cut){if(cut){poly(g,[16,120,20,112,30,108,40,112,44,120],
 /* ==== ART beach17: end ==== */
 
 /* ==== ART ptolemais17: begin ==== */
-/* One told picture (21:7): the bay of Ptolemais seen from the deck as the ship comes in, Mount Carmel closing the bay to the south at the
-   left, its ridge running out to the sea, the harbor town at the right on its low shore. One horizon, y 66, seen only at the far right of
-   the bay's mouth. No walk; the picture is shown while the narrator tells. */
-const OPtol17={w:320,hz:66,hour:'evening',sun:[300,30],cloud:.25,seed:1751};
+/* One told picture (21:7): the bay of Ptolemais in the evening, seen from the deck as the ship comes in from the north. We look south down
+   the bay. At the left, near, the harbor town on its low peninsula at the north end of the bay: its sea wall, the houses behind it, and
+   a mole running out into the bay with a few boats in its lee; far off behind it the low hills inland. Across the bay Mount Carmel closes
+   it to the south: its long ridge, highest inland at the left, runs down to the right and out into the sea at its cape (x 272). Beyond
+   the cape the open sea runs back to the horizon, y 66 (HZPtol17), which is seen only there, and the sun stands low over it at the
+   right, laying its road of light across the water toward us. The bay gives poor shelter from the sea wind: a swell comes in from the
+   west with whitecaps, and breaks white along the mole and the sea wall. No people, no temple, no mast: nothing upright stands across the
+   horizon. Called from outside: ART.ptolemais17. No walk, no hotspots; the picture is shown while the narrator tells. */
+const HZPtol17=66;
+const OPtol17={w:320,hz:HZPtol17,hour:'evening',sun:[298,40],cloud:.3,wind:SHARED.weather.wind({from:'w',force:4,view:'s'}),seed:1751};
 let SPtol17=null;
-ART.ptolemais17={w:320,q:12,paint(g){const K=SHARED.coast,CO=SHARED.country,O=OPtol17;const L=K.light(O);K.sky(g,O);SPtol17=K.sea(g,O);SPtol17.open=(x,y)=>y>67&&y<140;
-    K.land(g,L,.4,q=>CO.range(q,-10,200,67,x=>Math.max(0,40-x*.2+4*Math.sin(x/15)),['#7a7e6a','#94927c'],{k:.8,light:1}));
-    K.town(g,O,{x0:230,x1:322,base:68,hill:x=>64-Math.max(0,(x-230)*.04),rows:2,size:5,dist:.3,seed:1752,warehouses:[[240,18,3]]})},
-  light:{amb:'#f4dcc0'},draw(g,t){if(SPtol17)SPtol17.draw(g,t)},front(){}};
+ART.ptolemais17={w:320,q:12,paint(g){paintPtol17(g)},light:{amb:'#f4dcc0'},draw(g,t){drawPtol17(g,t)},front(){}};
+/* the ridge of Carmel, from inland at the left out to its cape in the sea; the hills inland behind the town */
+const carmelPtol17=x=>{const P=[[-12,62],[20,59.4],[54,56.2],[86,52.6],[114,49.2],[140,47.4],[162,46.8],[186,48.6],[212,52.4],[236,56.6],[256,61],[268,64.6],[275,66.6]];let i=0;
+  while(i<P.length-2&&P[i+1][0]<x)i++;const[x0,y0]=P[i],[x1,y1]=P[i+1],k=clamp((x-x0)/((x1-x0)||1),0,1),e=(1-Math.cos(k*Math.PI))/2;
+  return y0+(y1-y0)*e+.8*Math.sin(x/4.3)+.4*Math.sin(x/1.7)},
+  hillsPtol17=x=>HZPtol17+.4-(5+2.4*Math.sin(x/19+1)+1.2*Math.sin(x/7))*clamp((140-x)/30,0,1);
+/* the town's waterfront, its sea wall and the mole: SEAPtol17(x) is the line where the wall stands in the water */
+const WALLPtol17=x=>x<132?86+x*.014:86+1.85+(x-132)*.02,MOLEPtol17=[132,196];
+function paintPtol17(g){const K=SHARED.coast,CO=SHARED.country,O=OPtol17,L=K.light(O),HZ=HZPtol17,r=rng(1752);
+  K.sky(g,O);
+  /* Carmel: its ridge, the slopes turned to the low sun at the right lit, the rest in the evening's shade, scrub and woods on its flanks */
+  K.land(g,L,.5,q=>{const P=[-12,HZ+.8];for(let x=-12;x<=276;x+=.5)P.push(x,carmelPtol17(x));P.push(276,HZ+.8);
+    CO.crag(q,P,'#8c8a84',1753,{light:1,dip:-.08,bed:6,scrub:30});
+    clipTo(q,()=>poly(q,P),()=>{for(let i=0;i<300;i++){const x=-10+r()*286,t=carmelPtol17(x),y=t+1+Math.pow(r(),.6)*(HZ-t-1),c=['#5a6044','#66684a','#525840'][i%3],w=1+r()*2.2;
+        for(let k=0;k<3;k++){const dx=(r()-.5)*w,dy=(r()-.5)*.8,ww=w*(.4+r()*.4);if(ww<1.1)R(q,x+dx,y+dy,.5+(ww>.8?.5:0),.5,rgba(c,.75));else oval(q,x+dx,y+dy,ww/2,.4+r()*.3,rgba(c,.75))}
+        if(r()<.4)R(q,x+w*.2,y-.6,.5,.5,rgba(tint(c,.5),.6))}
+      /* the light of the low sun along the western end of the ridge, and the shade gathering on its northern face */
+      q.fillStyle=lg(q,150,0,276,0,['rgba(255,190,120,0)','rgba(255,190,120,.32)']);q.fillRect(-12,40,290,28);
+      q.fillStyle=lg(q,0,46,0,HZ,['rgba(70,58,96,0)','rgba(70,58,96,.3)']);q.fillRect(-12,40,290,28)});
+    /* the far shore of the bay at Carmel's foot: a thin pale line of beach */
+    for(let x=40;x<272;x+=1+r()*3)R(q,x,HZ+.3,1+r()*4,.5,r()<.7?'#d8c0a0':'#a89480')});
+  /* the low hills of the plain behind the town, nearer than Carmel */
+  K.land(g,L,.55,q=>{const P=[-10,HZ+.6];for(let x=-10;x<=142;x+=.5)P.push(x,hillsPtol17(x));P.push(142,HZ+.6);poly(q,P,'#8a7c86')});
+  SPtol17=K.sea(g,O);
+  /* the town on its peninsula: the houses behind the sea wall, a little hill of roofs, and the mole running out into the bay */
+  const T=K.town(g,O,{x0:-10,x1:140,base:WALLPtol17(0)-2.6,hill:x=>WALLPtol17(0)-17-4*Math.sin(x/23)-Math.max(0,(70-Math.abs(x-50))*.1)+Math.max(0,x-112)*.5,rows:3,size:8.4,dist:.14,seed:1754,gaps:.12,
+    warehouses:[[86,26,5.4],[116,20,5]]});
+  wallPtol17(g,r);
+  SPtol17.open=(x,y)=>y>HZ+.5&&!(x<276&&y<HZ+1)&&!(x<MOLEPtol17[1]+1&&y<WALLPtol17(x)+1.4)&&!(x>56&&x<126&&y>WALLPtol17(x)&&y<WALLPtol17(x)+9);
+  /* the evening light over everything: warm from the right, a cool shade in the near water at the left */
+  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(150,130,190,.8)','rgba(255,196,140,.5)','rgba(255,180,110,1)']);g.fillRect(0,0,320,144)});
+  ao(g,0,110,320,34,'b',.16,'#2a2050')}
+/* the sea wall of the town and the mole: courses of stone with staggered joints, wet and dark at the water, the evening light on their
+   tops; the swell breaks white along their feet; small boats lie in the lee of the mole, their masts down */
+function wallPtol17(g,r){const K=SHARED.coast,O=OPtol17;
+  K.quay(g,O,{view:'face',x0:-10,x1:MOLEPtol17[0],y:WALLPtol17(-10)-2.6,slope:.012,face:2.6,seed:1755,dist:.18});
+  K.quay(g,O,{view:'face',x0:MOLEPtol17[0]-1,x1:MOLEPtol17[1],y:WALLPtol17(MOLEPtol17[0])-1.8,slope:.018,face:1.8,seed:1756,dist:.22});
+  /* the end of the mole: its head, squared off, with its own face turned to us */
+  const ex=MOLEPtol17[1],ey=WALLPtol17(ex);poly(g,[ex-.4,ey-1.9,ex+1.4,ey-1.4,ex+1.4,ey+.2,ex-.4,ey],'#7a6e70');
+  /* boats in the lee of the mole and under the wall: low hulls lying to the swell, their masts lowered */
+  for(const[x,y,w,c]of[[96,93.4,16,'#5a4434'],[118,94.6,12,'#6a5040'],[64,92.6,11,'#4e4038']]){reflPtol17(g,x,y,w);
+    const P=[x-w/2,y-2.8,x-w/2+1.6,y-2.1,x+w/2-1.6,y-2.1,x+w/2,y-3,x+w/2-1.4,y,x-w/2+1.2,y];poly(g,P);g.fillStyle=lg(g,0,y-3,0,y,[tint(c,.3),c,tint(c,-.3)]);g.fill();
+    stroke(g,[x-w/2,y-2.8,x-w/2+1.6,y-2.1,x+w/2-1.6,y-2.1,x+w/2,y-3],'#e8b884',.45)}
+  /* the swell breaking along the mole and the wall: lace of foam at their feet, thicker where the sea comes at the mole's end */
+  for(let i=0;i<190;i++){const x=-10+r()*208,w=WALLPtol17(x),k=x>128?1:.45;if(r()>k)continue;R(g,x,w+r()*1.4,1+r()*3,.5,`rgba(255,240,224,${(.35+r()*.5).toFixed(2)})`)}
+  for(let i=0;i<40;i++){const a=r()*3.14,d=r()*4;R(g,MOLEPtol17[1]+1+Math.cos(a)*d*1.4,WALLPtol17(MOLEPtol17[1])-Math.sin(a)*d*.5,.5+r(),.5,`rgba(255,246,236,${(.4+r()*.5).toFixed(2)})`)}}
+function reflPtol17(g,x,y,w){comp(g,'multiply',.4,()=>{poly(g,[x-w/2,y,x+w/2,y,x+w/2-1,y+2.4,x-w/2+1,y+2.4]);g.fillStyle=lg(g,0,y,0,y+2.4,['rgba(40,30,50,1)','rgba(40,30,50,0)']);g.fill()})}
+/* what moves: the sea, and the swell breaking at the mole's end now and again */
+const SURFPtol17=(()=>{const r=rng(1757),a=[];for(let i=0;i<30;i++)a.push([132+r()*66,r()*6.28,700+r()*900,r()]);return a})();
+function drawPtol17(g,t){if(SPtol17)SPtol17.draw(g,t);
+  for(const[x,ph,per,k]of SURFPtol17){const s=Math.sin(t/per+ph);if(s<.5)continue;const y=WALLPtol17(x)-(s-.5)*2*(.6+k),a=((s-.5)*1.6).toFixed(2);R(g,x,y,1+k*2.4,.5,`rgba(255,246,236,${a})`)}}
 /* ==== ART ptolemais17: end ==== */
 
 /* ==== ART philip17: begin ==== */
