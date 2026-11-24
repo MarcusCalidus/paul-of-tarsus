@@ -1670,7 +1670,9 @@ ROOMS.court14={space:.8,floor:'earth',walk:[16,304,112,138],get mood(){return F.
   {name:'trough',x:168,y:92,w:30,h:12,wx:182,wy:114,look:'trough_of_water_for_the_house'},
   {name:'door',x:116,y:52,w:34,h:52,wx:133,wy:114,look:'door_of_damon_and_theanos_house',open:'i_have_said_my_goodbyes'},
   {name:'disciples',x:230,y:96,w:60,h:40,wx:240,wy:128,vis:()=>!!F.plea,look:'disciples_from_all_over_the_city',talk:()=>bye(BYE[3])}]};
-ROOMS.market14={space:.7,walk:[16,464,112,138],get mood(){return F.plea?'harbor':'work'},get amb(){return F.plea?{birds:.3,wind:.2}:{crowd:.35,hammer14:.7}},hs:[
+ROOMS.market14={space:.7,walk:[16,464,112,138],
+  /* what stands on the paving without being a prop: the donkey at the stall at the left, and the anvil before the kiln (marketDraw) */
+  block:[[86,111.5,25,3],[366,114,7,2]],get mood(){return F.plea?'harbor':'work'},get amb(){return F.plea?{birds:.3,wind:.2}:{crowd:.35,hammer14:.7}},hs:[
   {name:'way_back_to_the_lanes',x:0,y:60,w:24,h:84,wx:24,wy:124,dir:-1,exit:outMarket,look:'back_to_the_lanes'},
   {name:'demetrius_stall',x:192,y:57,w:186,h:53,wx:238,wy:116,look:'demetrius_stall_shut_kiln_cold'},
   {name:'wares',x:22,y:58,w:158,h:52,wx:58,wy:118,look:'wares_under_cloths_now'},
