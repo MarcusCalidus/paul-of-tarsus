@@ -1488,8 +1488,9 @@ function roomRoute(a,X,Y,click){const id=a.room,R=ROOMS[id],w=R&&R.walk;if(!w)re
     cxy=i=>[x0+(i%GW)*RCS,y0+((i/GW)|0)*RCS],cOf=(x,y)=>clamp(Math.round((y-y0)/RCS),0,GH-1)*GW+clamp(Math.round((x-x0)/RCS),0,GW-1),
     B=new Uint8Array(N);
   for(let i=0;i<N;i++){const[x,y]=cxy(i);B[i]=hit(x,y,1)?1:0}
-  const tx=clamp(X,w[0],w[1]),ty=clamp(Y,w[2],w[3]),s=cOf(a.x,a.y),C=new Float32Array(N).fill(Infinity),from=new Int32Array(N).fill(-1),hp=[],hk=[];
-  /* the shortest way out from where he stands (a heap of cells by cost); a blocked cell is entered only from a blocked cell, so that he
+  const tx=clamp(X,w[0],w[1]),ty=clamp(Y,w[2],w[3]),s=cOf(a.x,a.y),C=new Float64Array(N).fill(Infinity),from=new Int32Array(N).fill(-1),hp=[],hk=[];
+  /* the shortest way out from where he stands (a heap of cells by cost, kept in 64 bits: a cost rounded to 32 is found stale and the search
+     stops short, as on the lane maps); a blocked cell is entered only from a blocked cell, so that he
      steps out of a footprint he stands in, and never into another */
   const push=(i,k)=>{let j=hp.length;hp.push(i);hk.push(k);while(j){const p=(j-1)>>1;if(hk[p]<=k)break;hp[j]=hp[p];hk[j]=hk[p];j=p}hp[j]=i;hk[j]=k},
     pop=()=>{const top=hp[0],li=hp.pop(),lk=hk.pop(),n=hp.length;if(n){let j=0;for(;;){let c=2*j+1;if(c>=n)break;if(c+1<n&&hk[c+1]<hk[c])c++;if(hk[c]>=lk)break;hp[j]=hp[c];hk[j]=hk[c];j=c}hp[j]=li;hk[j]=lk}return top};
