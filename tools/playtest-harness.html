@@ -261,6 +261,56 @@
     halt('map16',()=>{const c=document.createElement('canvas');c.width=640;c.height=288;const g=c.getContext('2d');g.scale(2,2);M.draw(g,G.t);
       const z=document.createElement('canvas'),Z=4,[x0,y0,w,h]=[60,0,140,144];z.width=w*2*Z;z.height=h*2*Z;const q=z.getContext('2d');q.imageSmoothingEnabled=false;q.drawImage(c,x0*2,y0*2,w*2,h*2,0,0,z.width,z.height);
       window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'map16-zoom']:z.toDataURL()})})}
+  /* The voyage of Acts 21:1-8 on the travel map (shared/map.js), for Chapter Seventeen. In the window three times as close (caria): the
+     coaster from Miletus to Cos, Rhodes and Patara, with LYCIA behind Patara; in the window of the whole voyage at the usual size (levant):
+     the same legs and on from Patara well south of Cyprus, which lies on the left (Acts 21:3), to Tyre, down the coast to Ptolemais, round
+     Carmel to Caesarea, and the start of the road up to Jerusalem; and those last legs alone. On each map no two routes cross, no name
+     crosses a coast, an island or a route, no two names touch, and every place lies inside the window, in each language (`de:map17`).
+     The labels are the ones Chapter Seventeen gives journey (LAB17 below). The stop shows the whole voyage, and hands over map17-zoom.png
+     (de-map17-zoom.png): both windows four times enlarged, for the cross-shape check. */
+  if(stop==='map17'){clearInterval(sk);sk=0;const n17=CHAP[17]?17:16;await loadLevel(n17);setChapter(n17);await need('map');ov.className='';ov.onclick=null;G.busy=true;lock(true);status();
+    const M=SHARED.map,cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
+        for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;return n},
+      tidy=()=>{const[ox,oy,w,h]=M.window(),bx=M.state.boxes,bad=[];for(const b of bx)if(b[0]<ox-.5||b[2]>ox+w+.5||b[1]<oy-.5||b[3]>oy+h+.5)bad.push(b[4]+' (off the map)');
+        for(let i=0;i<bx.length;i++)for(let j=i+1;j<bx.length;j++){const a=bx[i],b=bx[j];if(a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3])bad.push(a[4]+' on '+b[4])}return bad},
+      inWin=id=>{const[x,y]=M.where(id);return x>6&&x<314&&y>6&&y<138},
+      COAST=[['miletus','cos','new sea'],['cos','rhodes','new sea'],['rhodes','patara','new sea']],
+      ON=[['patara','tyre','new sea'],['tyre','ptolemais','new sea'],['ptolemais','caesarea','new sea'],['caesarea','tojerusalem','new']],
+      LAB17={cos:{lab:'l',dx:-1.5,dy:-3},rhodes:{lab:'l',dx:-9,dy:7}},
+      MAPS=[['caria','the coaster from Miletus to Patara',COAST,{}],['levant','the whole voyage',[...COAST.map(l=>l.slice(0,2)),...ON],LAB17],['levant','from Patara to Caesarea and the road inland',ON,LAB17]],pics=[];
+    for(const[view,what,R,labels]of MAPS){await M.journey(R,{view,labels,instant:1});await wait(60);const c=cross(M.state.legs),cl=mapClear(),td=tidy(),ids=[...new Set(R.flatMap(l=>l.slice(0,2)))].filter(k=>!M.places[k].hide),out=ids.filter(k=>!inWin(k));
+      ok(c===0&&cl&&!td.length&&!out.length&&M.state.legs.length===R.length,`map17, ${what} (${view}): ${R.length} legs, none crosses another, no name crosses a coast or a route or touches another, and every place lies in the window`+
+        (c?'. CROSSINGS: '+c:'')+(cl?'':'. CROSSES: '+[...mapClear.bad].join(', '))+(td.length?'. NAMES: '+td.join(', '):'')+(out.length?'. OUT: '+out.join(', '):''));
+      if(view==='caria'){ok(M.state.boxes.some(b=>b[4]===T('LYCIA').split('').join(' ')),'LYCIA stands behind Patara in the close window')}
+      if(R!==COAST){const p=M.state.legs.find(L=>L.a==='patara').dots,cy=M.where('paphos')[1]+M.window()[1];ok(p.some(([x,y])=>y>cy+6),'the way from Patara passes south of Cyprus, which lies on its left')}
+      {const k=document.createElement('canvas');k.width=640;k.height=288;const g=k.getContext('2d');g.scale(2,2);M.draw(g,G.t);pics.push(k)}}
+    ok(['cos','rhodes','patara','ptolemais'].every(k=>M.places[k]&&!M.places[k].hide&&!M.places[k].minor)&&M.places.tojerusalem.hide,'the new places are on the map, and the road inland ends at a point without a dot or a name');
+    halt('map17',()=>{const z=document.createElement('canvas'),Z=4,parts=[[pics[0],[80,40,160,90]],[pics[1],[30,0,90,60]],[pics[1],[180,70,80,70]]];z.width=160*2*Z;z.height=parts.reduce((s,[,r])=>s+r[3]*2*Z*160/r[2],0);
+      const q=z.getContext('2d');q.imageSmoothingEnabled=false;let y=0;for(const[c,[x0,y0,w,h]]of parts){const hh=h*2*Z*160/w;q.drawImage(c,x0*2,y0*2,w*2,h*2,0,y,z.width,hh);y+=hh}
+      window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'map17-zoom']:z.toDataURL()})})}
+  /* A figure bound with a belt (a.bound; person's fr -6): Agabus binds his own feet and hands with Paul's belt (Acts 21:11). For every look
+     of Chapters Three, Sixteen and Seventeen (if it is there) and the usual kinds of dress, facing both ways: each pose is one piece, and
+     a.bound seats an actor bound, keeps him from turning, and lets him go when it is cleared. cast-bound.png shows them three times
+     enlarged and the hands and the feet ten times: look there for a cross shape where the belt goes round the wrists and the ankles, for
+     a loose end that hangs from the middle of anything, and for arms spread or raised (CONTRIBUTING section 3). */
+  if(stop==='bound17'){clearInterval(sk);sk=0;for(const n of[3,16,17])if(CHAP[n])await loadLevel(n);setChapter(CHAP[17]?17:16);
+    const ids=Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'&&!LOOK[k].stone),bad=[];let n=0;
+    for(const id of ids)for(const d of[1,-1]){n++;if(parts(sprite(['bound',id,d].join('|'),q=>person(q,0,0,LOOK[id],d,-6,0,0,0,0,0),d))!==1)bad.push(id+(d<0?' left':''))}
+    ok(!bad.length,`bound: ${n} poses of ${ids.length} looks, facing both ways, and none comes apart`+(bad.length?'. IN PIECES: '+bad.slice(0,12).join('; '):''));
+    {const a=ACT.paul,was=a.room;a.bound=1;a.walk=null;await wait(80);const f=a.fr,st=!!still(a);a.bound=0;await wait(80);
+      ok(f===-6&&st&&a.fr===0,'a.bound seats an actor bound (fr '+f+'), he does not turn meanwhile, and he is free again when it is cleared')}
+    const B={skin:'#c08a5c',tunic:'#c4b08a',belt:'#3a2414'},
+      WHO=[['Agabus, ten years on',LOOK.agabus17||{...LOOK.agabus,hair:'#e8e4dc',beard:'#f0ece4',brow:'#b8b4ac',grey:'#ffffff'}],['Paul',paulLook(17)],['a short tunic',{...B,hair:'#3a2616',beard:'#3a2616'}],
+        ['a long robe, no mantle',{...B,hair:'#969088',beard:'#a49e96',long:1,bald:1}],['a boy',{...B,hair:'#34241c',h:1}]],
+      Z=3,cw=150,chh=320,COLS=[[-1,1,'seated'],[-6,1,'bound'],[-6,-1,'bound, left']],W0=COLS.length*cw,c=document.createElement('canvas');c.width=W0+2*300;c.height=34+WHO.length*chh;
+    const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);
+    const text=(t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)};
+    text('Bound with a belt (Acts 21:11): seated, then bound facing both ways, three times enlarged; the hands and the feet ten times',10,23,17,'#f4f0e6');
+    WHO.forEach(([nm,o],r)=>{const y=34+r*chh;COLS.forEach(([fr,d,cap],i)=>{const x=i*cw;g.fillStyle=(i+r)%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw-2,chh-2);
+        g.drawImage(sprite(['boundsheet',r,fr,d].join('|'),q=>person(q,0,0,o,d,fr,0,0,0,0,0),d),FIG.OX-25,FIG.OY-95,50,96,x,y+8,50*Z,96*Z);text(i?cap:nm,x+5,y+chh-6,11)});
+      const sp=sprite(['boundsheet',r,-6,1].join('|'),q=>person(q,0,0,o,1,-6,0,0,0,0,0),1),k=10,top=o.h?48:58;
+      for(const[j,[y0,h]]of[[0,[top,28]],[1,[14,14]]].entries()){const x=W0+j*300;g.fillStyle=(j+r)%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,298,chh-2);g.drawImage(sp,FIG.OX-14,FIG.OY-y0,28,h,x+10,y+6,28*k,h*k)}});
+    halt('bound17',()=>{window.SHEETS=Object.assign(window.SHEETS||{},{'cast-bound':c.toDataURL()})})}
   if(stop==='scroll'||stop==='scrolllong'){clearInterval(sk);sk=0;let rustles=0;{const u0=SFX.unroll;SFX.unroll=function(){rustles++;return u0.apply(this,arguments)}}
    await loadLevel(5);await loadLevel(7);ov.className='';ov.onclick=null;setChapter(5);G.busy=true;lock(true);status();
     /* AT: the text of A, taken while Chapter Five (whose line it is) is loaded; the probes below run in Chapter Seven */
