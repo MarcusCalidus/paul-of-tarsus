@@ -1,7 +1,14 @@
 <!-- Test driver injected into a temporary copy of index.html by tools/playtest.mjs. It plays the game through the real UI. -->
 <pre id="tlog" style="position:fixed;left:0;top:0;margin:0;font:11px monospace;color:#0f0;background:rgba(0,0,0,.75);max-width:100%;white-space:pre-wrap;z-index:9"></pre>
 <script>
-(()=>{const stop=(location.href.match(/stop=(\w+)/)||[])[1]||'final';const L=m=>{$('#tlog').textContent+=m+'\n'};
+(()=>{const stop=(location.href.match(/stop=(\w+)/)||[])[1]||'final';const L=m=>{if(/^(STOP|DONE)/.test(m))routeCheck();$('#tlog').textContent+=m+'\n'};
+ /* routes in a room (issue #83, CONTRIBUTING section 4): nobody walks through what stands on the floor. Every stop ends with the check: no
+    walk a script begins ends in a footprint that is not a seat, or where it cannot be reached (the engine notes it in ROUTE.bad), and nobody
+    is put down by a script inside one (place, watched while the game plays; a test that stands Paul behind a thing to look at it is let be) */
+ const placeBad=new Set();let probing=0;
+ {const p0=place;window.place=function(a,room,x,y){const r=p0.apply(this,arguments);try{if(G.speedAll>200&&!probing&&a&&ROOMS[room]&&ROOMS[room].walk&&!planOf(room)){
+   const inF=roomFeet(room).filter(f=>inBox(f.b,x,y,0));if(inF.length&&!inF.some(f=>f.seat))placeBad.add(`${G.ch} ${room}: ${a.id} put down at ${x|0},${y|0}`)}}catch(e){}return r}}
+ const routeCheck=()=>{const b=[...ROUTE.bad,...placeBad];$('#tlog').textContent+=(b.length?'FAIL ':'ok   ')+'every walk in a room keeps clear of what stands on the floor, and nobody is put down in it'+(b.length?'. BAD: '+b.slice(0,10).join(' | '):'')+'\n'};
  let sk=setInterval(()=>{if(G.skip)G.skip()},30);
  G.speedAll=500;
  const idle=async()=>{await wait(120);let n=0;while((G.busy||P.walk||PC().walk)&&n++<4000){if($('#choices').classList.contains('on')||ov.classList.contains('end'))break;await wait(50)}};
@@ -65,7 +72,7 @@
  /* depth (CONTRIBUTING section 4): seen() stands Paul at a place in the room and returns a number for the picture inside a small box [x,y,w,h]; the
     number changes when the picture there does. A box that lies inside a thing must look the same with Paul behind that thing as with Paul far
     away, and different with Paul in front of it. */
- const seen=async(px,py,[x,y,w,h])=>{const was=[P.room,P.x,P.y,P.dir],t=clamp(px-160,0,ART[G.room].w-320);place(P,G.room,px,py,1);
+ const seen=async(px,py,[x,y,w,h])=>{const was=[P.room,P.x,P.y,P.dir],t=clamp(px-160,0,ART[G.room].w-320);probing++;place(P,G.room,px,py,1);probing--;
    for(let i=0;i<300&&G.cam!==t;i++)await wait(20);await wait(90);const d=cx.getImageData((x-G.cam)*HR,y*HR,w*HR,h*HR).data;let n=0;for(let i=0;i<d.length;i++)n=(Math.imul(n,31)+d[i])>>>0;
    place(P,...was);return n};
  const hides=async(box,far,behind,front)=>{const a=await seen(...far,box),b=await seen(...behind,box),c=await seen(...front,box),t=clamp(P.x-160,0,ART[G.room].w-320);
@@ -466,6 +473,55 @@
     ok(!!fl(),`birds: once he has gone, they come back (after ${((performance.now()-t0)/1000).toFixed(0)} s)`);
     /* the picture: the sparrows back on their roof, the doves on theirs, and the storks halfway across */
     {const t1=performance.now();while(((G.t/1000)%70<13||(G.t/1000)%70>17)&&performance.now()-t1<75000)await wait(200)}halt('birds')}
+  /* routes<N> (routespro for the Prologue): the rooms of a chapter with what stands on their floors. For each room a sheet, routes-<room>, three
+     times enlarged: the walk strip, each footprint (solid) with the margin that keeps a figure's feet off it, the place each hotspot and exit is
+     walked to (a small diamond, green if it can be reached, red if not), and the ways from every exit to every one of them. It fails if a
+     footprint closes off an exit or a hotspot: each must be reached from every exit, or from near enough to act on what was clicked. */
+  {const m=stop.match(/^routes(pro|\d+)$/);if(m){clearInterval(sk);G.speedAll=0;ov.className='';ov.onclick=null;G.splash=0;G.scene=null;
+    const n=m[1]==='pro'?0:+m[1];if(!n)await loadLevel(1);const before=new Set(Object.keys(ROOMS));if(n)await loadLevel(n);else await loadPrologue();setChapter(n||1);
+    for(const o of Object.values(ACT))o.room=null;
+    const rooms=Object.keys(ROOMS).filter(id=>!before.has(id)&&ROOMS[id].walk&&!planOf(id)&&ART[id]&&ROOMS[id].walk[0]<ROOMS[id].walk[1]&&ROOMS[id].walk[2]<roomH(id));
+    window.SHEETS={};let nf=0;
+    for(const id of rooms){const R=ROOMS[id],a=ART[id],w=R.walk,W=a.w,Hh=roomH(id),K=3,c=document.createElement('canvas');c.width=W*K;c.height=Hh*K;const g=c.getContext('2d');
+      g.setTransform(K,0,0,K,0,0);g.imageSmoothingEnabled=false;g.drawImage(bg(id),0,0,W,Hh);for(const p of props(id))g.drawImage(p.c,p.x,p.t,p.w,p.h);
+      const F=roomFeet(id);nf+=F.length;
+      /* for whoever sets the footprints: each prop's outline, and how wide it is along its lowest two rows (where it meets the floor) */
+      props(id).forEach((p,i)=>{const d=p.c.getContext('2d').getImageData(0,0,p.c.width,p.c.height).data,cw=p.c.width,ch=p.c.height;let yb=-1;
+        for(let y=ch-1;y>=0&&yb<0;y--)for(let x=0;x<cw;x++)if(d[(y*cw+x)*4+3]){yb=y;break}let x0=cw,x1=-1;
+        for(let y=Math.max(0,yb-2*HR);y<=yb;y++)for(let x=0;x<cw;x++)if(d[(y*cw+x)*4+3]){x0=Math.min(x0,x);x1=Math.max(x1,x)}
+        const f=a.props[i].foot;L(`     ${id} prop ${i} (y ${p.y}): ${p.x.toFixed(1)}..${(p.x+p.w).toFixed(1)} across, ${p.t.toFixed(1)}..${(p.t+p.h).toFixed(1)} down; at the floor ${(p.x+x0/HR).toFixed(1)}..${(p.x+(x1+1)/HR).toFixed(1)}`+(f?' foot '+JSON.stringify(typeof f==='function'?f(a.variant?a.variant():''):f):' NO FOOT'))});
+      g.lineWidth=1/K;g.strokeStyle='rgba(255,230,120,.9)';g.strokeRect(w[0],w[2],w[1]-w[0],w[3]-w[2]);
+      for(const f of F){const[x0,y0,x1,y1]=f.b;g.fillStyle=f.seat?'rgba(80,160,255,.38)':'rgba(255,40,40,.38)';g.fillRect(x0,y0,x1-x0,y1-y0);
+        g.strokeStyle='rgba(255,140,190,.9)';g.strokeRect(x0-FOOT_M[0],y0-FOOT_M[1],x1-x0+2*FOOT_M[0],y1-y0+2*FOOT_M[1])}
+      /* where each hotspot is walked to, as clickView finds it (a person's hotspot is left out: he is not standing here now) */
+      const probe={id:'probe',room:id,x:0,y:0},hs=(R.hs||[]).filter(h=>!h.actor),bad=[];
+      const goal=h=>{let tx=h.wx!=null?h.wx:h.x+h.w/2,ty=h.wy!=null?h.wy:118;tx=spot(probe,tx,ty)[0];return[clamp(tx,w[0],w[1]),clamp(ty,w[2],w[3])]};
+      const ex=hs.filter(h=>h.exit).map(goal),starts=ex.length?ex:[[(w[0]+w[1])/2,w[3]-2]];
+      for(const h of hs){let reach=true;const t=goal(h);
+        for(const s0 of starts){probe.x=s0[0];probe.y=s0[1];const r=roomRoute(probe,t[0],t[1],true);if(!r||!r.ok){reach=false;continue}
+          g.strokeStyle='rgba(90,230,255,.85)';g.lineWidth=1/K;g.beginPath();g.moveTo(s0[0],s0[1]);for(const q of r.pts)g.lineTo(q[0],q[1]);g.stroke()}
+        if(!reach)bad.push(T(h.name));
+        g.strokeStyle=reach?'#40ff60':'#ff3030';g.lineWidth=1.5/K;g.beginPath();g.moveTo(t[0],t[1]-2);g.lineTo(t[0]+2,t[1]);g.lineTo(t[0],t[1]+2);g.lineTo(t[0]-2,t[1]);g.closePath();g.stroke()}
+      SHEETS['routes-'+id]=c.toDataURL();
+      ok(!bad.length,`${id}: ${F.length} footprint${F.length===1?'':'s'}; every exit and hotspot (${hs.length}) is reached from every exit`+(bad.length?'. NOT REACHED: '+bad.join(', '):''))}
+    ok(rooms.length>0||!n,`${rooms.length} rooms of ${n?'chapter '+n:'the Prologue'} with a strip to walk on, ${nf} footprints in all (sheets routes-<room>)`);
+    /* and walked: Paul crosses every footprint that has floor on both sides of it, from one side to the other at its middle depth, at a
+       brisk pace; he never steps into it (nor into any other), he gets there, and on the curve he turns at most twice */
+    for(const id of rooms){const w=ROOMS[id].walk,F=roomFeet(id).filter(f=>!f.seat),bad=[];let walks=0;
+      for(const o of Object.values(ACT))o.room=null;enterRoom(id,(w[0]+w[1])/2,w[3]-2,1);
+      for(const f of F){const ym=clamp((f.b[1]+f.b[3])/2,w[2]+1,w[3]-1);let L=f.b[0]-FOOT_M[0]-2,R=f.b[2]+FOOT_M[0]+2;while(L>w[0]&&floorHit(id,L,ym))L-=2;while(R<w[1]&&floorHit(id,R,ym))R+=2;
+        if(L<w[0]||R>w[1]||floorHit(id,L,ym)||floorHit(id,R,ym))continue;walks++;
+        /* the first of them at the pace of the game, filmed: routes-walk, a frame every tenth of a second */
+        const film=!SHEETS['routes-walk'],fr=[];let ft=null;if(film){place(P,id,L,ym,1);for(let i=0;i<40;i++)await wait(20);const cw=Math.min(VW,R-L+60),x0=clamp(L-30-G.cam,0,VW-cw);
+          ft=setInterval(()=>{const c=document.createElement('canvas');c.width=cw*HR;c.height=84*HR;c.getContext('2d').drawImage(cx.canvas,x0*HR,60*HR,cw*HR,84*HR,0,0,cw*HR,84*HR);fr.push(c)},100)}
+        place(P,id,L,ym,1);P.speed=film?0:160;let inside=0,turns=0,d0=P.dir;const tk=setInterval(()=>{if(roomFeet(id).some(g=>inBox(g.b,P.x,P.y,.5)))inside++;if(P.dir!==d0){turns++;d0=P.dir}},8);
+        const r=await walk(P,R,ym);clearInterval(tk);P.speed=0;
+        if(film){clearInterval(ft);const cols=4,W0=fr[0].width,H0=fr[0].height,c=document.createElement('canvas');c.width=W0*cols;c.height=H0*Math.ceil(fr.length/cols);const g=c.getContext('2d');
+          fr.forEach((f,i)=>g.drawImage(f,(i%cols)*W0,((i/cols)|0)*H0));SHEETS['routes-walk']=c.toDataURL()}
+        if(!r||Math.hypot(P.x-R,P.y-ym)>1||inside||turns>2)bad.push(`[${f.b.map(v=>Math.round(v)).join(',')}] ${!r?'not reached':''}${inside?' stepped in '+inside:''}${turns>2?' turned '+turns:''}`)}
+      ok(!bad.length,`${id}: Paul walked round ${walks} footprint${walks===1?'':'s'}, and never into one`+(bad.length?'. BAD: '+bad.join(' | '):''))}
+    {const id=rooms[0];if(id){setChapter(n||1);place(P,id,(ROOMS[id].walk[0]+ROOMS[id].walk[1])/2,ROOMS[id].walk[3]-4,1);enterRoom(id,P.x,P.y,1)}}
+    halt(stop)}}
   if(stop==='shadows'){clearInterval(sk);G.speedAll=0;ov.className='';ov.onclick=null;G.splash=0;G.scene=null;
     await loadPrologue();for(const n of[1,2,4,5,6,7,8,9,10,12,13,14,15])await loadLevel(n);
     const snapRoom=(id,ts,setup)=>{const w=VW*HR,h=VH*HR,[c,g]=mk(w,h);g.setTransform(HR,0,0,HR,0,0);g.imageSmoothingEnabled=false;
