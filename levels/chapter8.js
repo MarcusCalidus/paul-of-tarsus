@@ -126,7 +126,7 @@ const bith8=x=>15+6*Math.sin(x/83+1)+3*Math.sin(x/29)+1.4*Math.sin(x/7);
 const FERRY=[236,318];
 ART.ferry={w:480,fp:1.25,q:12,
  /* the two stones on the near bank lie a little way out on the ground */
- props:[{y:113,shape:g=>rock(g,96,113,12,6,'#948e80',1)},{y:114,shape:g=>rock(g,22,114,14,7,'#9a9486',1)}],
+ props:[{y:113,shape:g=>rock(g,96,113,12,6,'#948e80',1),foot:[90,110.5,12,2.5]},{y:114,shape:g=>rock(g,22,114,14,7,'#9a9486',1),foot:[15,111,14,3]}],
  paint(g){const r=rng(823);
   sky(g,480,70,skyE(['#4a80c0','#84acd6','#c2d4e2','#e8e8da']));cloud(g,70,14,54,6,r);cloud(g,330,9,62,7,r);cloud(g,438,24,36,4,r);
   /* far off beyond the river, one great mountain with snow on it; nearer, the wooded hills of Bithynia. The haze lies along the whole
@@ -257,7 +257,8 @@ ART.troas={w:480,fp:1.25,q:12,
  variant:()=>F.vision?'m':'e',
  /* what stands or lies out on the quay, where a man can walk behind it: the jar that stands forward of the others, the two halves of the broken one
     (the oil and the shards lie flat, and hide nobody), and the heap of sailcloth */
- props:[{y:113,shape:g=>vessel(g,170,113,4.6,15,'#9a4c28','amph',{noShadow:1})},{y:118.6,shape:(g,v)=>{if(v!=='m')brokenJar(g,1)}},{y:118,shape:g=>sailHeap(g,1)}],
+ props:[{y:113,shape:g=>vessel(g,170,113,4.6,15,'#9a4c28','amph',{noShadow:1}),foot:[167,110.5,6,2.5]},
+   {y:118.6,shape:(g,v)=>{if(v!=='m')brokenJar(g,1)},foot:v=>v!=='m'?[264,112,25,6.5]:[]},{y:118,shape:g=>sailHeap(g,1),foot:[411,110,47,8]}],
  light:()=>F.vision?null:{amb:'#e6c2a8',wallY:104,wall:[[0,92,104,25],[92,104,104,31],[138,152,104,31],[186,196,104,31]],lamps:[[52,92,46,'#5a3c10',104,77]]},
  paint(g,v){const r=rng(829),eve=v!=='m',W=eve?'#d8c4a0':'#e6dcc0',ST='#cfc4a6';
   /* the sky over the sea: the sun going down into it, or the clear light of a morning with the wind in the south */
@@ -467,7 +468,7 @@ const WATER=[0,95,120,92.4,240,89.6,318,86,334,82.4,348,78.4,360,75.4,368,73.6,3
 const pang8=x=>12+9*Math.sin(x/97+.3)+4*Math.sin(x/31+1)+2*Math.sin(x/11);
 ART.river={w:480,fp:1.3,q:12,
  /* the flat stones where the women sit stand a little up from the turf: whoever walks behind one is hidden by it */
- props:STONES.map(([x,y])=>({y:y+1,shape:g=>oval(g,x,y,10,2.8,'#000')})),
+ props:STONES.map(([x,y])=>({y:y+1,shape:g=>oval(g,x,y,10,2.8,'#000'),foot:[x-8,y-2,16,4],seat:1})),
  paint(g){const r=rng(859);
   sky(g,480,70,skyE(['#3f80c8','#7aacdc','#c0d6e6','#ecead8']));cloud(g,90,14,54,6,r);cloud(g,236,8,60,6,r);cloud(g,386,22,40,4,r);
   /* far across the plain: a long mountain, blue with the morning */
@@ -677,7 +678,8 @@ async function trackNorth(){const me=PC();
   await say(KL,'bithynia_is_it');
   await say(SI,'towns_paul_and_good_roads');
   await say(TI,'people_who_have_never_heard');codeBtn()}
-ROOMS.fork={space:.5,walk:[16,464,112,138],mood:'hope',amb:{wind:.5,birds:.5,hooves:.15},hs:[
+/* block: the carrier's mule, standing on the road */
+ROOMS.fork={space:.5,walk:[16,464,112,138],block:[[137,119.5,30,3.5]],mood:'hope',amb:{wind:.5,birds:.5,hooves:.15},hs:[
   {name:'mountains',x:0,y:36,w:480,h:22,wx:240,look:'mountains_to_the_north'},
   {name:'sheepfold',x:332,y:62,w:92,h:24,wx:380,look:'sheepfold_of_field_stone'},
   {name:'milestone',x:207,y:86,w:12,h:23,wx:226,wy:114,dir:-1,look:async()=>{await say(P,'milestone_of_the_romans');return say(P,quote('prov16'))},
@@ -729,7 +731,8 @@ async function roadSea(){const me=PC();
   await leg(3,['they_went_on_past_acts_16_8',
     'it_was_a_walk_of_some_550']);
   await come('troas','tense');await troasIntro()}
-ROOMS.ferry={space:.6,walk:[16,464,112,138],mood:'hope',amb:{fountain:.35,leaves:.6,birds:.6,wind:.2},hs:[
+/* block: the foot of the plane tree */
+ROOMS.ferry={space:.6,walk:[16,464,112,138],block:[[58,110,8,2]],mood:'hope',amb:{fountain:.35,leaves:.6,birds:.6,wind:.2},hs:[
   {name:'mountain',x:150,y:30,w:170,h:26,wx:240,look:'one_great_mountain_beyond'},
   {name:'far_bank',x:0,y:60,w:480,h:26,wx:270,look:()=>say(P,F.bith?'bithynia'
     :'far_bank_bithynia')},
@@ -866,7 +869,8 @@ async function aboard(){const me=PC();
   await leg(6,['next_day_brought_acts_16_11_12',
     'from_the_harbor_the_great'],1);
   await come('philippi');await philIntro()}
-ROOMS.troas={space:.7,walk:[16,464,112,138],get mood(){return F.vision?(F.concl?'hope':'calm'):F.slung?'calm':'tense'},amb:()=>F.vision?{waves:.6,gulls:.6,creak:.3,wind:.3}:{waves:.5,gulls:.3,creak:.4,crowd:.15},hs:[
+/* block: the bales of dyed wool on the quay */
+ROOMS.troas={space:.7,walk:[16,464,112,138],block:[[204,109.5,52,2.5]],get mood(){return F.vision?(F.concl?'hope':'calm'):F.slung?'calm':'tense'},amb:()=>F.vision?{waves:.6,gulls:.6,creak:.3,wind:.3}:{waves:.5,gulls:.3,creak:.4,crowd:.15},hs:[
   {name:'sea',x:204,y:40,w:276,h:22,wx:330,look:()=>say(P,F.concl?'sea_and_beyond_it_macedonia'
     :F.vision?'sea_and_the_wind_coming':'sea_with_the_sun_going')},
   {name:'door_of_the_inn',x:40,y:59,w:24,h:45,wx:52,wy:114,exit:night,
@@ -967,7 +971,8 @@ async function gate(){const me=PC();
   await fade(1,500);await come('river');
   if(F.sab)return riverIntro();
   if(!G.sawRiver){G.sawRiver=1;await say(P,'river_trees_and_nobody',TH)}}
-ROOMS.philippi={space:.9,walk:[16,464,110,138],get mood(){return F.sab?'rest':'calm'},amb:{crowd:.4,fountain:.5,hammer:.2,birds:.2},hs:[
+/* block: the one of the townsfolk up the street who stands at the foot of the strip (TOWN) */
+ROOMS.philippi={space:.9,walk:[16,464,110,138],block:[[442,107.5,8,3]],get mood(){return F.sab?'rest':'calm'},amb:{crowd:.4,fountain:.5,hammer:.2,birds:.2},hs:[
   {name:'citadel',x:300,y:8,w:110,h:24,wx:356,look:'rock_above_the_city_with_a_wall'},
   {name:'west_gate',x:12,y:54,w:32,h:50,wx:40,wy:113,dir:-1,exit:gate,
     look:()=>say(P,F.sab?'west_gate_said':F.gate?'west_gate_beyond':'west_gate_we')},
@@ -1075,7 +1080,8 @@ async function toCity(){const me=PC();
   await fade(1,500);await come('philippi')}
 const woman=A=>async()=>{const me=PC();if(!F.sat)return approach();if(me===P)return speak();
   return say(A,A===LY?'you_are_a_physician_sir':A===PH?'is_it_true_that_you_have':'i_have_prayed_here_since')};
-ROOMS.river={space:.6,walk:[16,464,116,138],mood:'rest',amb:{fountain:.5,birds:.7,leaves:.6,wind:.15},hs:[
+/* block: the stone at the foot of the plane tree, and the women of Lydia's household on the Sabbath (HOUSEHOLD) */
+ROOMS.river={space:.6,walk:[16,464,116,138],block:()=>[[392,113,12,3],...F.sab?HOUSEHOLD.map(([,x,y])=>[x-4,y-1.5,8,3]):[]],mood:'rest',amb:{fountain:.5,birds:.7,leaves:.6,wind:.15},hs:[
   {name:'mountain',x:0,y:40,w:300,h:22,wx:230,look:'long_blue_mountain_across_the_plain'},
   {name:'city',x:376,y:42,w:92,h:22,wx:420,look:'philippi_on_its_hill_with_its_wall'},
   {name:'river',x:150,y:88,w:180,h:20,wx:226,wy:118,look:()=>say(P,F.sab?'clear_water_running_quickly':'clear_river_quick_over_its_stones'),
