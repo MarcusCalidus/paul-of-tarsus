@@ -3718,6 +3718,15 @@
      The stops that begin with "p" open one room at once, with the story's flags set for it, and say the safe-point code of their point
      (CODE): ppatara17 · ptyre17 · phold17 · planes17 (the market ahead) · plyard17 (after the meat stall) · plfork17 (after the psalm) ·
      pcourt17 · pdays17 · pbeach17 (after the prayer: the treasure's point) · pphilip17 · pagabus17 · pplead17 (Luke) · pgate17. */
+  /* rooms17: every picture of Chapter Seventeen at twice its size on one sheet (rooms17.png), with the lane map of Tyre whole beside it
+     (rooms17-lanes.png), and the hold in each trim the plan can give it: for the art agents, and the cross-shape check. */
+  if(stop==='rooms17'){clearInterval(sk);sk=0;await loadLevel(17);setChapter(17);ov.className='';ov.onclick=null;const C=CHAP[17],ids=[...C.rooms.filter(r=>r!=='tyrelanes17'),'ptolemais17'],K=2;
+    const[c,g]=mk(320*K*2+8,(ids.length/2|0)*(144*K+8)+144*K+8);g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    ids.forEach((id,i)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const q=cv.getContext('2d');q.drawImage(bg(id),0,0,W,144);
+      const DQ0=DQ;try{DQ=[];ART[id].draw(q,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(q,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
+      g.drawImage(cv,(i%2)*(320*K+8),(i/2|0)*(144*K+8),W*K,144*K)});
+    const lb=bg('tyrelanes17'),[c2,g2]=mk(ART.tyrelanes17.w,roomH('tyrelanes17'));g2.drawImage(lb,0,0,ART.tyrelanes17.w,roomH('tyrelanes17'));
+    window.SHEETS={rooms17:c.toDataURL(),'rooms17-lanes':c2.toDataURL()};halt('rooms17')}
   const C17=/^(patara17|tyre17|hold17|lanes17|court17|beach17|philip17|plead17|gate17|final17|all17)$/.test(stop);
   if(!C17&&/^p[a-z]+17$/.test(stop)){await loadLevel(17);ov.className='';ov.onclick=null;const C=CHAP[17],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
       S={ppatara17:[[],'patara17'],ptyre17:[upto('fare'),'tyre17'],phold17:[upto('offered'),'hold17'],planes17:[upto('keel'),'tyrelanes17'],
@@ -3728,7 +3737,7 @@
     G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+makeCode());await wait(1100);halt(stop)}
   const ch17=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[17],told=k=>heard.includes(T(C().told[k])),
     until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
-    onH=async(name,v,i)=>{const h=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis()))[i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
     clickHs=async(h,v)=>{verb(v||'use');clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
     talkTo=async(a,v)=>{verb(v||'talk');clickView(a.x,a.y-10,a.hs);await idle()},
     useA=async(id,a,v)=>{verb(v||'use');item(id);clickView(a.x,a.y-10,a.hs);await idle()},
@@ -3764,7 +3773,7 @@
   {const cd=makeCode();await enter(cd);ok(G.room==='tyre17'&&F.fare&&AK.room==='tyre17'&&LK.room==='tyre17','a code on the quay of Tyre: '+cd)}
   halt('tyre17');
   /* an even keel */
-  heard.length=0;await onH('purple_cloth','look');await onH('gull','look');ok(said('purple_kings_pay')&&said('gull_watched_the_unloading'),'the purple, and the gull');
+  heard.length=0;await onH('purple_cloth','look');await onH('gull','look',-1);ok(said('purple_kings_pay')&&said('gull_watched_the_unloading'),'the purple, and the gull');
   heard.length=0;await onH('way_into_the_city','walk');ok(said('akestor_first')&&G.room==='tyre17','first Akestor\'s trouble');
   await hints('hint_offer_1','hint_offer_2','on the quay of Tyre');
   heard.length=0;talkTo(AK);await until(()=>G.room==='hold17'&&!G.busy,3000);

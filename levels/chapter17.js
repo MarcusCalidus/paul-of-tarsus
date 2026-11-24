@@ -153,7 +153,7 @@ const AMB={patara17:{waves:.4,gulls:.5,wind:.3,creak:.25,crowd:.12},tyre17:{wave
 function hull17(g,o){const{x0,x1,wl,fb}=o,dir=o.dir||1,L=x1-x0,mid=(x0+x1)/2,rise=o.rise==null?fb*.6:o.rise,
     sheer=x=>{const t=Math.abs((x-mid)/(L/2));return wl-fb-rise*t*t*(dir*(x-mid)>0?1:1.4)},C=o.c||'#5a4436',
     bowX=dir>0?x1:x0,sternX=dir>0?x0:x1,P=[];
-  for(let x=x0;x<=x1;x+=1)P.push(x,sheer(x));P.push(bowX-dir*L*.04,wl,sternX+dir*L*.06,wl);
+  for(let x=x0;x<=x1;x+=1)P.push(x,sheer(x));P.push(x1-L*(dir>0?.04:.06),wl,x0+L*(dir>0?.06:.04),wl);
   if(o.high){poly(g,[x0+L*.08,wl,x1-L*.08,wl,x1-L*.1,wl+o.high,x0+L*.1,wl+o.high],'#3a3a30')}
   /* the cargo on her deck and the mast behind it */
   if(o.mast!=null){const my=sheer(o.mast);stroke(g,[o.mast,my,o.mast+(o.lean||0),-2],'#5a4232',1.6);stroke(g,[o.mast-.5,my,o.mast-.5+(o.lean||0),-2],'#9a7a52',.5)}
@@ -319,7 +319,7 @@ function hullHold17(g){const out=[18,40,30,70,42,104,70,124,160,130,250,124,280,
   poly(g,inn.concat([292,44,30,44]));g.fillStyle=lg(g,0,44,0,123,['#2a1e16','#3a2a1e','#2a1e14']);g.fill();
   /* the frames: curved ribs that rise from the keel and stop at the deck line */
   for(const fx of[64,100,136,184,220,256]){const k=(fx-160)/140,q=[];for(let t=0;t<=1;t+=.1){const y=123-Math.abs(k)*20-t*(79-Math.abs(k)*20);q.push(fx+k*14*t*t,y)}stroke(g,q,'#6a4c30',2.2);stroke(g,q.map((v,i)=>i%2?v:v-.8),'#9a7448',.5)}
-  /* the keelson along the floor, the mast's step and the stump of the mast up through the deck opening */
+  /* the mast's step on the floor of the hold, and the mast up through the deck opening (no keelson is drawn across the frames) */
   stroke(g,[60,121,260,121],'#5a3c24',2);R(g,156,108,8,13,'#6a4a2c');R(g,157,40,6,68,'#7a5634');R(g,157,40,1,68,'#b08a5a');
   /* the deck line, with the hatch as a gap over the hold, and the rail */
   R(g,22,36,128,4,'#8a6a44');R(g,172,36,132,4,'#8a6a44');R(g,22,36,128,.6,'#d8b884');R(g,172,36,132,.6,'#d8b884');
@@ -720,8 +720,8 @@ function market17(){if(F.m1||G.busy||PC()!==P)return;stop17();cut(async()=>{
     w2=walk(MY,X17(AT17.redYard[0]),Y17(AT17.redYard[1])).then(()=>{MY.speed=0;MY.dir=1});
   await say(P,'both_asked_about_the_blood',TH);codeBtn();
   if(fast())await Promise.all([w1,w2])})}
-function jewHome17(){if(G.busy||PC()!==P)return;if(F.m1&&!G.j17){G.j17=1;stop17();cut(()=>say(P,'a_jewish_home_keeping_the_law',TH))}}
-function glassYard17(){if(G.busy||PC()!==P||G.g17)return;G.g17=1;stop17();cut(()=>say(P,F.m1?'singing_in_this_yard_and_she_went_in':'singing_in_this_yard',TH))}
+function jewHome17(){if(G.busy||PC()!==P)return;if(F.m1&&!F.m2&&!G.j17){G.j17=1;stop17();cut(()=>say(P,'a_jewish_home_keeping_the_law',TH))}}
+function glassYard17(){if(G.busy||PC()!==P||G.g17||F.m2)return;G.g17=1;stop17();cut(()=>say(P,F.m1?'singing_in_this_yard_and_she_went_in':'singing_in_this_yard',TH))}
 /* the psalm: Look or Talk at the glassworker */
 async function psalm17(){if(F.m2)return say(P,'the_glassworker_has_gone');
   await say(P,'glassworker_sings_psalm_96',TH);F.m2=1;
@@ -897,6 +897,9 @@ who(D4,{look:'philips_daughter_look',talk:()=>say(D4,'youngest_father_loves_gues
 who(AU17,{look:'aulus_look',talk:()=>say(AU17,F.out?'aulus_mnason_expects_you':'aulus_caesarea_welcomes_you',{to:PC()})});
 who(BE,{look:'benaiah_look',talk:()=>say(BE,F.out?'benaiah_the_road_climbs':'benaiah_soldiers_and_sailors',{to:PC()})});
 who(AG,{look:()=>say(PC(),F.bound?'agabus_after_look':'agabus_look'),talk:()=>say(AG,F.bound?'agabus_keep_it_now':'agabus_paul_your_belt',{to:PC()}),give:belt17});
+/* on the lane map whoever is played stands a step off from the people of the signs, so that neither hides the other while they speak */
+for(const[a,f]of[[PN,()=>[318,206]],[SM,()=>[330,218]],[BU,()=>[210,292]],[BL,()=>[210,306]],[MY,()=>F.m1?[300,204]:[264,306]],[JO,()=>[380,78]]])
+  Object.defineProperties(a.hs,{wx:{get(){return G.room==='tyrelanes17'?X17(f()[0]):undefined},configurable:true},wy:{get(){return G.room==='tyrelanes17'?Y17(f()[1]):undefined},configurable:true}});
 /* Paul, when Luke is played: he is pleaded with */
 const PAULHS={name:'Paul',actor:P,as:{luke17:{look:'paul_by_luke_look',talk:plead17,give:()=>say(P,'keep_it_luke',{to:LK})}}};
 LK.def={look:'luke_nothing_to_look_at',pickup:'luke_not_mine_to_take',use:'luke_no_use_for_that',open:'luke_not_mine_to_open',talk:'luke_later',give:'luke_what_should_i_give'};
@@ -948,7 +951,7 @@ function place17(room){for(const a of EVERY.concat([P,LK])){a.talk=false;a.seat=
     if(!F.m1){L(BL,...AT17.blue);L(MY,...AT17.red)}else L(MY,...AT17.redYard);
     if(!F.m2)L(PN,...AT17.phanias);else if(!F.m3){L(PN,...AT17.phDoor);L(JO,...AT17.joDoor)}}
   if(ph==='court'){if(room!=='beach17')for(const[a,x,y,d]of[[EU,196,118,-1],[PN,228,126,-1],[MY,250,118,-1],[JO,172,130,-1],[ME,276,128,-1],[PL,290,120,-1],[LK,64,126,1],[TI,88,134,1],[AR,40,118,1],[TR,112,120,1]])place(a,'tyrecourt17',x,y,d);
-    else{for(const[a,x,y,d]of[[EU,204,118,-1],[PN,226,128,-1],[MY,248,118,-1],[JO,270,130,-1],[ME,100,128,1],[PL,120,118,1],[LK,64,126,1],[TI,140,134,1],[AR,40,118,1],[TR,182,132,-1]])place(a,'beach17',x,y,d)}}
+    else{for(const[a,x,y,d]of[[EU,204,118,-1],[PN,226,128,-1],[MY,248,118,-1],[JO,270,130,-1],[ME,100,128,1],[PL,120,118,1],[LK,76,128,1],[TI,140,134,1],[AR,56,116,1],[TR,182,132,-1]])place(a,'beach17',x,y,d)}}
   if(ph==='caesarea'){for(const[a,x,y,d]of[[PH,262,116,-1],[D1,128,118,1],[D2,150,132,1],[D3,98,116,1],[D4,286,132,-1],[AU17,302,114,-1],[BE,300,136,-1],[LK,62,126,1],[TI,40,132,1],[AR,24,118,1],[TR,80,134,1]])place(a,'philip17',x,y,d);
     if(F.agabus)place(AG,'philip17',236,122,-1);
     if(lukePlays()){place(P,'philip17',214,124,1);for(const a of[TI,AR,TR,D1,D2,D3,D4,AU17,BE])a.bow=true}}
