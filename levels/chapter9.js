@@ -12,7 +12,7 @@
 LEVEL(9,()=>{
 "use strict";
 /* wood, cracks, contact shadows and earth colors as every chapter paints them (shared/materials.js) */
-const{plank:plank9,board:board9,crack:crack9,skipCracks:skipCracks9,shadow:shadow9,earth:earth9}=SHARED.materials;
+const{plank:plank9,board:board9,crack:crack9,skipCracks:skipCracks9,shadow:shadow9,earth:earth9,ceiling:ceiling9}=SHARED.materials;
 
 /* ============ MUSIC AND AMBIENCE (plain data, played by the engine's sequencer) ============ */
 /* A tune on six notes from E: E, F sharp, G, A, B and D. The scale has no sixth, so it is neither of the modes an earlier chapter used
@@ -168,10 +168,8 @@ ART.lydia9={w:320,q:12,
   /* cracks cut by hand, high on the wall, where they run to no head; a seed of their own, so the rest of the room keeps its shape */
   {const rb=rng(9112);for(const[x,y,n]of[[34,14,3],[124,13,2],[250,15,3]])crack9(g,x,y,n,rb,.9)}
   const RD=earth9('#9a4a3a',.22);R(g,0,70,320,34,RD);tex(g,'mott',.26,0,70,320,34,'overlay',1);R(g,0,69,320,1.6,'#e8dcc0');R(g,0,70.6,320,.6,tint(RD,-.4));
-  /* the ends of the ceiling joists over their wall plate, each with the shade it throws on the plaster beside it */
-  ao(g,0,0,320,9,'t',.34,A);
-  for(let i=10;i<320;i+=36){ao(g,i+6,0,3.4,8,'l',.3,A);ao(g,i-2.4,0,2.4,8,'r',.14,A);board9(g,i,0,6,8,'#5a4226',rw,1)}
-  board9(g,0,8,320,2.4,'#6a4e2c',rw);ao(g,0,10.4,320,12,'t',.42,A);
+  /* the ceiling: its joists run toward the viewer from the wall plate, in the perspective of the floor (shared ceiling()) */
+  ceiling9(g,320,{x0:10,step:36,r:rw,vx:160,vy:60});ao(g,0,10.4,320,12,'t',.42,A);
   /* the corners of the room, and the foot of the wall */
   ao(g,0,10,12,94,'l',.22,A);ao(g,0,96,320,8,'b',.2,A);
   /* the door to the street stands open to the morning: the house across the way, and the paving of the street */
@@ -397,10 +395,9 @@ ART.jailer9={w:320,q:12,
   /* cracks cut by hand, high on the wall, where they run to no head */
   {const rb=rng(9292);for(const[x,y,n]of[[30,14,3],[194,13,2],[296,15,3]])crack9(g,x,y,n,rb,.9)}
   R(g,0,78,320,26,tint(W,-.24));tex(g,'mott',.28,0,78,320,26,'overlay',1);R(g,0,77,320,1.4,tint(W,.12));
-  /* the ends of the ceiling joists over their wall plate, each with its shade on the plaster beside it; the corners and the wall's foot */
-  ao(g,0,0,320,9,'t',.34,A);
-  for(let i=14;i<320;i+=40){ao(g,i+6,0,3.4,8,'l',.3,A);ao(g,i-2.4,0,2.4,8,'r',.14,A);board9(g,i,0,6,8,'#5a4226',rw,1)}
-  board9(g,0,8,320,2.4,'#6a4e2c',rw);ao(g,0,10.4,320,12,'t',.42,A);
+  /* the ceiling: its joists run toward the viewer from the wall plate, in the perspective of the floor (shared ceiling()); the corners
+     and the wall's foot */
+  ceiling9(g,320,{x0:14,step:40,r:rw,vx:160,vy:60});ao(g,0,10.4,320,12,'t',.42,A);
   ao(g,0,10,14,94,'l',.24,A);ao(g,306,10,14,94,'r',.24,A);ao(g,0,96,320,8,'b',.22,A);
   /* the door to the court */
   R(g,266,44,36,60,tint(W,-.16));doorArt(g,269,47,30,57,'#6a4a2c',r,{bands:[],left:1});

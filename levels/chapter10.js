@@ -65,11 +65,10 @@ function uproar(){if(!AU.ctx)return;const t=now()+.05;noise({t,d:7,v:.34,a:2.4,s
 /* ============ ART ============ */
 /* materials and light shared by every chapter (shared/materials.js, to the standard of Chapter Fifteen's room of Gaius): quiet grain
    on wood, two-tone cracks set by hand, contact shadows in three passes of alpha, dyes drawn toward earth colors, shade beside joists */
-const{plank:plank10,board:board10,crack:crack10,skipCracks:skipCracks10,shadow:shadow10,earth:earth10}=SHARED.materials;
-/* beams10: the ends of the ceiling joists over a back wall, and the wall plate under them, in quiet grain, with the shade they throw
-   on the plaster beside them and under the plate */
-function beams10(g,x0,step,r){for(let i=x0;i<320;i+=step){ao(g,i-3,0,3,8,'r',.22,'#2a2030');ao(g,i+6,0,2.4,8,'l',.14,'#2a2030');board10(g,i,0,6,8,'#5a4226',r,1)}
-  board10(g,0,8,320,2.4,'#6a4e2c',r);ao(g,0,10.4,320,12,'t',.42,'#2a2030');ao(g,0,10.4,320,3,'t',.25,'#1a1420')}
+const{plank:plank10,board:board10,crack:crack10,skipCracks:skipCracks10,shadow:shadow10,earth:earth10,ceiling:ceiling10}=SHARED.materials;
+/* beams10: the ceiling over a back wall, its joists running toward the viewer from the wall plate in the perspective of the floor
+   (shared ceiling(), as in Chapter One's workshop), and the shade the plate throws on the plaster under it */
+function beams10(g,x0,step,r){ceiling10(g,320,{x0,step,r,vx:160,vy:60});ao(g,0,10.4,320,12,'t',.42,'#2a2030');ao(g,0,10.4,320,3,'t',.25,'#1a1420')}
 /* crack set by hand, high on a wall, where they run to no head: [x, y, steps] */
 function cracks10(g,seed,list){const r=rng(seed);for(const[x,y,n]of list)crack10(g,x,y,n,r)}
 const SH='#8f95c8',CLOTH='#3d342d';
