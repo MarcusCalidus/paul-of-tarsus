@@ -29,11 +29,14 @@ const xy=(lon,lat)=>[(lon-LON0)*KX,(LAT0-lat)*KY];
    view (the usual window's pixels); only the window moves. ionia: the coast of Asia from the Troad to Miletus, two and a quarter times as close (a third
    number is how many view pixels a pixel of the map takes), from about 22.9 to 30.6 degrees east and 37.1 to 40.0 north, for the
    voyage of Acts 20:13-17, where Assos, Mitylene, Chios, Samos and Miletus lie a few pixels apart. In a closer view the coasts, the
-   lines and the routes keep their places on the map, and the names, the dots and the strokes keep their size on the screen. */
-const VIEWS={north:[26,-41],aegean:[-40,-101],west:[-62,-101],ionia:[-6,-57,2.25]};
-let OX=0,OY=0,ZM=1;
+   lines and the routes keep their places on the map, and the names, the dots and the strokes keep their size on the screen.
+   caria: the coast from Miletus by Cos and Rhodes to Patara, three times as close, from about 25.4 to 31.2 degrees east and 35.8 to 38.0
+   north, for the first days of Acts 21:1, where those places lie a few pixels apart. levant: the whole voyage of Acts 21:1-8, from Miletus
+   by Patara, south of Cyprus, to Tyre, Ptolemais and Caesarea, at the usual size, from about 24.3 to 41.6 degrees east and 31.4 to 37.9 north. */
+const VIEWS={north:[26,-41],aegean:[-40,-101],west:[-62,-101],ionia:[-6,-57,2.25],caria:[41,-11,3],levant:[20,-10]};
+let OX=0,OY=0,ZM=1,VN='';
 /* where the name of the sea stands: in open water, clear of the routes and of the hint under it, in each view */
-const SEA={'0,0':[92,84],'26,-41':[60,65],'-40,-101':[95.7,35.4],'-62,-101':[95.7,35.4],'-6,-57':[8.6,-37.7]};
+const SEA={'0,0':[92,84],'26,-41':[60,65],'-40,-101':[95.7,35.4],'-62,-101':[95.7,35.4],'-6,-57':[8.6,-37.7],'41,-11':[46,30],'20,-10':[100,100]};
 const inView=(x,y,m)=>{m/=ZM;return x>=OX-m&&x<=OX+W/ZM+m&&y>=OY-m&&y<=OY+H/ZM+m};
 /* Rz: a small square of the route, snapped to the canvas pixels of the view however close it is (R, at the usual size) */
 const Rz=(g,x,y,w,h,c)=>{const k=HR*ZM,s=v=>Math.round(v*k)/k;g.fillStyle=c;g.fillRect(s(x),s(y),s(w),s(h))};
@@ -76,7 +79,13 @@ const PLACES={
      the gulf that the elders of Ephesus crossed. Cape Lectum is a name and no dot (cape:1): the ship's way runs round it. */
   assos:{name:'Assos',at:[26.34,39.49],lab:'r',dy:-7},lectum:{name:'cape_lectum',at:[25.97,39.45],lab:'l',cape:1,dy:2,sz:4},
   mitylene:{name:'Mitylene',at:[26.6,39.11],lab:'r',dx:11},chios:{name:'Chios',at:[26.27,38.46],lab:'l',dx:-16},
-  samos:{name:'Samos',at:[26.95,37.67],lab:'t',dy:-4},miletus:{name:'Miletus',at:[27.27,37.5],lab:'r',dy:2.5}};
+  samos:{name:'Samos',at:[26.95,37.67],lab:'t',dy:-4},miletus:{name:'Miletus',at:[27.27,37.5],lab:'r',dy:2.5},
+  /* from Miletus to Caesarea (Acts 21:1-8). Cos, the town at the north-eastern end of the island; Rhodes, the city at the northern tip of
+     its island; Patara, the seaport of Lycia, some 10 km east of the mouth of the Xanthus, on this map a point of the coast; Ptolemais,
+     the old Acco, at the northern end of the bay that Mount Carmel closes (Tyre and Caesarea are above). The road up to Jerusalem from
+     Caesarea (Acts 21:15) is drawn only as far as a point inland, where the chapter ends. */
+  cos:{name:'Cos',at:[27.29,36.89],lab:'r'},rhodes:{name:'Rhodes',at:[28.22,36.406],lab:'r',dy:6},patara:{name:'Patara',at:[29.35,36.26],lab:'l',dy:5},
+  ptolemais:{name:'Ptolemais',at:[35.07,32.92],lab:'r',dy:-2.4},tojerusalem:{name:'',at:[35.02,32.22],hide:1}};
 /* waypoints for legs that do not run straight: by sea up the coast and east of Cyprus; by road round the Gulf of Issus; through
    the south of Cyprus, the way tradition has them go from Salamis to Paphos; by sea clear of the western cape of Cyprus; up the valley
    through the Taurus; along the foot of the mountains to Iconium; and home from Attalia by sea, between Cyprus and the coast of Cilicia */
@@ -108,7 +117,14 @@ const VIA={'caesarea-tarsus':[34.42,33.3,34.5,34.7,34.88,35.75],'tarsus-antioch'
   'troas-lectum':[26.02,39.64,25.97,39.54],'lectum-assos':[26.06,39.415,26.2,39.43],'troas-assos':[26.25,39.64,26.32,39.56],
   'assos-mitylene':[26.5,39.45,26.66,39.33,26.69,39.2],'mitylene-chios':[26.66,39.0,26.5,38.82,26.3,38.68],
   'chios-samos':[26.2,38.3,26.22,38.12,26.3,37.95,26.47,37.74,26.62,37.6,26.84,37.6],'samos-miletus':[27.08,37.59,27.18,37.535],
-  'miletus-ephesus':[27.3,37.62,27.4,37.72,27.38,37.84]};
+  'miletus-ephesus':[27.3,37.62,27.4,37.72,27.38,37.84],
+  /* Acts 21:1-8. Out of the gulf of Miletus and south, west of the long peninsula, to Cos; round the eastern end of Cos and the point of
+     Cnidus, and east to Rhodes; along the coast of Lycia to Patara. From Patara across the open sea, well south of Cyprus, which is left
+     on the left (21:3), to Tyre; down the coast to Ptolemais; and round Carmel along the coast to Caesarea. The account names no course,
+     and does not say whether the last leg went by land or by sea: the lines keep to the coast. */
+  'miletus-cos':[27.12,37.4,27.1,37.15,27.22,36.98],'cos-rhodes':[27.375,36.76,27.37,36.66,27.75,36.56,28.05,36.49],'rhodes-patara':[28.6,36.48,29.05,36.38],
+  'patara-tyre':[29.6,35.95,30.5,34.9,31.6,34.35,32.6,34.1,33.6,33.95,34.4,33.6,34.9,33.33],'tyre-ptolemais':[35.13,33.2,35.05,33.02],
+  'ptolemais-caesarea':[35.0,32.92,34.9,32.82,34.88,32.66]};
 /* region names sit where no coast, lake or route runs through them. close: a name with its letters set closer together, for a region
    too small to hold a widely spaced one; north: a name shown only in the northern window and the Aegean one, where the mountains make
    room for it; west: a name shown only in the Aegean window */
@@ -116,7 +132,10 @@ const REGIONS=[{name:'CILICIA',at:[32.7,36.72]},{name:'SYRIA',at:[37.6,35.2]},{n
   {name:'PISIDIA',at:[29.62,37.68]},{name:'GALATIA',at:[33.6,38.75]},
   {name:'PAMPHYLIA',at:[32.015,37.02],close:1,north:1},
   {name:'PHRYGIA',at:[29.6,38.9],west:1},{name:'ASIA',at:[27.75,38.8],west:1},{name:'MYSIA',at:[27.9,39.6],west:1},
-  {name:'BITHYNIA',at:[31.3,40.72],west:1},{name:'MACEDONIA',at:[22.75,41.5],west:1},{name:'ACHAIA',at:[22.2,38.62],west:1}];
+  {name:'BITHYNIA',at:[31.3,40.72],west:1},{name:'MACEDONIA',at:[22.75,41.5],west:1},{name:'ACHAIA',at:[22.2,38.62],west:1},
+  /* Lycia, behind Patara, only in the close window of Chapter Seventeen (in: the views a name is shown in): in the wider ones the
+     strip of land between the Taurus and the sea holds Pamphylia and Cilicia already */
+  {name:'LYCIA',at:[29.9,36.75],in:['caria']}];
 /* the coast of the mainland of Asia: along the Black Sea to the Bosporus, the Propontis and the Hellespont, round the Troad and down
    the Aegean shore, round Asia Minor, down the Syrian and Phoenician coast, and west along Egypt. The first three lines lie above the
    usual window: the Black Sea shore; the Propontis, with the gulfs on its Asian side, and the Troad; then the gulfs of Smyrna and
@@ -207,7 +226,7 @@ function paint(g){const r=rng(1913),lands=[LAND,...ISLES];
   ao(g,0,0,W,18,'t',.35,'#0a1428');ao(g,0,H-16,W,16,'b',.3,'#0a1428');ao(g,0,0,22,H,'l',.4,'#0a1428');ao(g,W-14,0,14,H,'r',.25,'#0a1428')}
 const baked={},art=()=>{const k=OX+','+OY+','+ZM;return baked[k]||(baked[k]=bake(W,paint,10))};
 /* setView: the window a chapter looks through; a name that is not a view gives the usual one */
-function setView(v){[OX,OY,ZM=1]=VIEWS[v]||[0,0]}
+function setView(v){[OX,OY,ZM=1]=VIEWS[v]||[0,0];VN=VIEWS[v]?v:''}
 /* a leg as a path of points, through its waypoints, then sampled every couple of pixels for the dotted line */
 const at=id=>xy(...PLACES[id].at);
 function path(a,b){const v=VIA[a+'-'+b]||VIA[b+'-'+a],raw=[at(a)];if(v){const q=pts(v);if(VIA[a+'-'+b])for(let i=0;i<q.length;i+=2)raw.push([q[i],q[i+1]]);
@@ -233,7 +252,7 @@ function dot(g,x,y,lit){oval(g,x,y,1.9/ZM,1.9/ZM,'#1a0e08');oval(g,x,y,1.15/ZM,1
 function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];if(ST.night){g.fillStyle='rgba(6,10,38,.6)';g.fillRect(0,0,W,H)}const sea=T('great_sea').split('').join(' ');
   g.save();g.scale(ZM,ZM);g.translate(-OX,-OY);const Z=ZM;
   g.font=`italic bold ${5/Z}px "Lucida Console",Monaco,monospace`;g.textBaseline='middle';g.fillStyle='rgba(190,224,236,.55)';{const[sx,sy]=SEA[OX+','+OY]||SEA['0,0'];g.fillText(sea,sx,sy);box(g,sea,sx,sy,5/Z)}
-  for(const{name,at:[lon,lat],sea,close,north,west}of REGIONS){if(north&&OY>=0||west&&OX>=0)continue;const[x,y]=xy(lon,lat),s=T(name),hw=s.length*(close?1.66:2.3)/Z;if(!inView(x-hw,y,-2)||!inView(x+hw,y,-2))continue;
+  for(const{name,at:[lon,lat],sea,close,north,west,in:vs}of REGIONS){if(north&&OY>=0||west&&OX>=0||vs&&!vs.includes(VN))continue;const[x,y]=xy(lon,lat),s=T(name),hw=s.length*(close?1.66:2.3)/Z;if(!inView(x-hw,y,-2)||!inView(x+hw,y,-2))continue;
     g.font=`bold ${4.2/Z}px "Lucida Console",Monaco,monospace`;g.fillStyle=sea?'rgba(190,224,236,.55)':'rgba(70,46,20,.6)';
     if(close){/* letter by letter, a third of a letter apart */for(let i=0;i<s.length;i++)g.fillText(s[i],x-hw+i*3.32/Z,y);ST.boxes.push([x-hw,y-1.9/Z,x+hw,y+1.9/Z,s])}
     else{const sp=s.split('').join(' ');g.fillText(sp,x-hw,y);box(g,sp,x-hw,y,4.2/Z)}}
