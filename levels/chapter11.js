@@ -117,8 +117,39 @@ function base(g,x,y,w,h,c){shadow11(g,x+w/2+2,y+.3,w/2+1.5,Math.max(1,w*.06),.42
   inRect(g,x,y-h,w,h,()=>{tex(g,'mott',.26,x,y-h,w,h,'overlay',.6);ao(g,x,y-h+2.1,w,Math.min(4,h*.2),'t',.16,'#3a3050');ao(g,x,y-1.6-Math.min(5,h*.25),w,Math.min(5,h*.25),'b',.14,'#3a3050')})}
 /* feet11: the contact shadows of stones whose foot the ground was painted over: [x, y, w] each, as base() takes them */
 function feet11(g,list){for(const[x,y,w]of list){shadow11(g,x+w/2+2,y+.3,w/2+1.5,Math.max(1,w*.06),.42,'#282040');ao(g,x-1,y-2.6,w+2,2.6,'b',.14,'#2a2440')}}
-/* statue: a draped figure in marble or bronze on its base, painted as the people are (the look says stone:1). No arm is stretched out. */
-function statue(g,x,y,bh,id,dir,o){o=o||{};base(g,x-8,y,16,bh,o.base||'#cfc3a6');man(g,x,y-bh+.5,id,dir,0,o.lit,o.ges,0)}
+/* layer11: paint something into a layer of its own (the box x, y, w, h it stays inside), so that it can take a grain, a light and a
+   shadow of its own before it is laid on the picture. fx(l) may paint anything over the layer: what falls outside the thing is cut away
+   again. sh: [dx, dy, strength, color] of the shadow it throws on the wall behind it, its own outline laid there in soft passes. */
+function layer11(g,x,y,w,h,paint,fx,sh,before){const[c,l]=mk(w*HR,h*HR);l.scale(HR,HR);l.translate(-x,-y);paint(l);
+  if(fx){const[m,ml]=mk(w*HR,h*HR);ml.drawImage(c,0,0);fx(l);l.save();l.setTransform(1,0,0,1,0,0);l.globalCompositeOperation='destination-in';l.drawImage(m,0,0);l.restore()}
+  if(sh){const[s,sl]=mk(w*HR,h*HR);sl.drawImage(c,0,0);sl.globalCompositeOperation='source-in';sl.fillStyle=sh[3]||'#5a5478';sl.fillRect(0,0,w*HR,h*HR);
+    comp(g,'multiply',1,()=>{for(const[ox,oy,a]of[[0,0,.5],[.5,0,.22],[-.5,0,.22],[0,.5,.22],[1,.5,.12],[-1,-.5,.12]]){g.globalAlpha=sh[2]*a;g.drawImage(s,x+sh[0]+ox,y+sh[1]+oy,w,h)}})}
+  if(before)before();g.drawImage(c,x,y,w,h)}
+/* stoneFx11: the grain and the light of a figure in stone or bronze. The sun stands high on the left: the left of the figure and its
+   shoulders take it, the right side and the folds low down turn away. Marble keeps a faint warmth and a grey of weather low down;
+   bronze has gone green with age, darker in its hollows, with the lighter streaks that rain leaves running down from the shoulders.
+   x, y: the feet; it draws nothing from the room's rng(). */
+function stoneFx11(l,x,y,bronze,seed){const r=rng(seed),t=y-46;
+  tex(l,'mott',bronze?.4:.32,x-14,t-12,28,58,'overlay',.8);tex(l,'grain',.12,x-14,t-12,28,58,'overlay',.5);
+  comp(l,'soft-light',.75,()=>{l.fillStyle=lg(l,x-7,0,x+7,0,['rgba(255,248,230,1)','rgba(255,248,230,.2)','rgba(30,28,60,.6)','rgba(30,28,60,.9)']);l.fillRect(x-14,t-12,28,58)});
+  comp(l,'soft-light',.6,()=>{l.fillStyle=lg(l,0,t,0,y,['rgba(255,250,236,.9)','rgba(255,250,236,0)','rgba(40,34,50,.7)']);l.fillRect(x-14,t-12,28,58)});
+  if(bronze){for(let i=0;i<14;i++){const sx=x-5+r()*10,sy=t+10+r()*14,L=3+r()*8;R(l,sx,sy,.5,L,r()<.6?'rgba(132,196,164,.34)':'rgba(20,34,28,.3)')}
+    comp(l,'multiply',.35,()=>{l.fillStyle=lg(l,0,y-12,0,y,['rgba(40,60,50,0)','rgba(40,60,50,1)']);l.fillRect(x-10,y-12,20,12)})}
+  else{comp(l,'multiply',.4,()=>{l.fillStyle=lg(l,0,y-14,0,y,['rgba(150,140,120,0)','rgba(150,140,120,1)']);l.fillRect(x-10,y-14,20,14)});
+    for(let i=0;i<6;i++){const sx=x-5+r()*10,sy=t+12+r()*16;R(l,sx,sy,.5,2+r()*5,'rgba(110,100,84,.18)')}}}
+/* weather11: the weather on a block of dressed stone that has stood in the open for a long time: grey streaks running down from its
+   top, a few chipped edges, the green-grey of lichen low down, and the darker damp of its foot. Its own rng(). */
+function weather11(g,x,y,w,h,seed){const r=rng(seed);inRect(g,x,y-h,w,h,()=>{tex(g,'vert',.2,x,y-h,w,h,'overlay',.7);
+  for(let i=0;i<w*.4;i++){const sx=x+r()*w;R(g,sx,y-h+1.6,.5,2+r()*h*.4,'rgba(96,88,76,.16)')}
+  for(let i=0;i<w*.25;i++){const lx=x+r()*w,ly=y-1.6-r()*Math.min(5,h*.4);R(g,lx,ly,.8+r()*1.4,.5+r()*.5,r()<.5?'rgba(120,132,96,.4)':'rgba(176,170,120,.36)')}
+  comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,0,y-4,0,y,['rgba(110,100,90,0)','rgba(110,100,90,1)']);g.fillRect(x,y-4,w,4)})});
+  for(let i=0;i<3;i++){const cx=x+r()*w,top=r()<.5;R(g,cx,top?y-h:y-1.6,1+r()*1.6,.5,tint('#7a7060',.1))}}
+/* statue: a draped figure in marble or bronze on its base, painted as the people are (the look says stone:1). No arm is stretched out.
+   It takes the grain and the light of its stone (stoneFx11), and throws its shadow on the wall behind it, to the right (o.sh). */
+function statue(g,x,y,bh,id,dir,o){o=o||{};const sh=o.sh===0?null:o.sh||[5,1.5,.5],b=LOOK[id].skin===BRZ;
+  if(sh)comp(g,'multiply',1,()=>{for(const[k,a]of[[1,.5],[.5,.25]])poly(g,[x-8+sh[0]-k,y-bh+sh[1]-k,x+8+sh[0]+k,y-bh+sh[1]-k,x+8+sh[0]+k,y,x-8+sh[0]-k,y],rgba('#5a5478',sh[2]*a))});
+  layer11(g,x-14,y-bh-60,28,62,l=>man(l,x,y-bh+.5,id,dir,0,o.lit,o.ges,0),l=>stoneFx11(l,x,y-bh,b,Math.round(x*13+y*3)),sh,
+    ()=>{base(g,x-8,y,16,bh,o.base||'#cfc3a6');weather11(g,x-8,y,16,bh,Math.round(x*7+y))})}
 const olive=(g,x,y,s,r)=>{stroke(g,[x,y,x-.6*s,y-5*s,x+1*s,y-9*s],'#5a4a36',1.6*s);stroke(g,[x-.4*s,y-5*s,x-3*s,y-9*s],'#5a4a36',1*s);foliage(g,x,y-12*s,8*s,5*s,'#7a8e62',r,60*s);foliage(g,x+3*s,y-10*s,5*s,3.4*s,'#8a9c70',r,24*s)};
 /* earth: a road of trodden earth and small stones, lighter where it is most walked */
 function earth(g,x0,y0,x1,y1,c,r){g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.1),c,tint(c,.08)]);g.fillRect(x0,y0,x1-x0,y1-y0);
@@ -177,6 +208,78 @@ ART.road11={w:640,q:12,
    (Acts 17:16). Between the houses four lanes lead off. The figures are statues of men, of the kind The Watchtower of July 15, 1998,
    calls monuments to heroes; each is only "a statue" until it is looked at. Over the roofs stands the Acropolis. */
 const LANES=[[160,'a'],[250,'b'],[340,'d'],[430,'c']];
+/* sideWall11: a plastered side wall seen at a slant (P its outline, from its near top corner round), in its own grain. lit: how much
+   of the sun it takes high up, above the line where the house across the lane throws its shadow (cut: [y at the near edge, y at the
+   far edge]). Toward its far end it darkens, and at its foot is the damp of the ground. */
+function sideWall11(g,P,c,rl,lit,cut){const xs=P.filter((v,i)=>!(i%2)),x0=Math.min(...xs),x1=Math.max(...xs),near=P[0],far=P[2];
+  clipTo(g,()=>poly(g,P),()=>{plaster(g,x0,20,x1-x0,86,c,rl,{patch:0,cracks:0,t:.5,top:.02,bot:-.1});
+    comp(g,'multiply',1,()=>{g.fillStyle=lg(g,near,0,far,0,['rgba(196,192,214,1)','rgba(150,146,178,1)']);g.fillRect(x0,20,x1-x0,86)});
+    if(lit){poly(g,[near,20,far,20,far,cut[1],near,cut[0]]);g.fillStyle=lg(g,0,20,0,cut[0],['rgba(255,240,210,.5)','rgba(255,232,200,.34)']);comp(g,'lighter',lit,()=>g.fill());
+      for(const[d,a]of[[1.2,.18],[.5,.22]])shade(g,[near,cut[0]-d,far,cut[1]-d*.5,far,cut[1]+d*.5,near,cut[0]+d],'#8a86a8',a)}
+    comp(g,'multiply',.5,()=>{g.fillStyle=lg(g,0,84,0,106,['rgba(120,108,100,0)','rgba(120,108,100,1)']);g.fillRect(x0,84,x1-x0,22)});
+    for(let i=0;i<8;i++){const y=34+rl()*60,x=x0+rl()*(x1-x0);R(g,x,y,.5,3+rl()*6,'rgba(70,60,70,.12)')}})}
+/* lane11: one of the lanes that lead off the street, seen down its length (x: its mouth, 30 wide): the house at its far end with its
+   door and a small window, the sun on its upper half; the trodden ground running back to it, in shade; the side wall on the left in the
+   shade of its own house, and the one on the right lit high up, below the line where the left-hand house throws its shadow on it.
+   c: the far house's plaster. k: which lane, for what stands in it. Its own rng(). */
+function lane11(g,x,c,k,rl){const L=[x,26,x+8,56,x+8,90,x,104],RW=[x+30,26,x+22,56,x+22,90,x+30,104],FL=[x,104,x+30,104,x+22,90,x+8,90];
+  /* the house at the far end */
+  plaster(g,x+7,55,16,36,c,rl,{patch:0,cracks:0,t:.45});R(g,x+6,53.4,18,2,'#b0603c');R(g,x+6,53.4,18,.5,'#d88a5c');for(let i=x+6;i<x+24;i+=3)R(g,i,53.9,.5,1.5,'rgba(90,40,24,.4)');
+  ao(g,x+7,55.4,16,3,'t',.3,'#3a3060');
+  const dx=k==='b'||k==='c'?x+9.5:x+13.5;R(g,dx-.6,75.4,7.2,15.2,tint(c,-.22));plank11(g,dx,76,6,14,k==='d'?'#5a4a3a':'#6a4a2c',rl,1);R(g,dx+2.9,76,.5,14,'rgba(30,20,14,.5)');ao(g,dx,76,6,2.4,'t',.45);
+  R(g,dx-1,90,8,.8,tint(c,.12));
+  const wx=dx>x+12?x+9.6:x+17;R(g,wx-.6,63.4,4.2,4.2,tint(c,-.2));R(g,wx,64,3,3,'#2a1e18');R(g,wx,64,3,.6,'#14100c');
+  /* the sun on the far house above the shadow of the lane's left wall, and that shadow across its lower part */
+  comp(g,'lighter',.2,()=>poly(g,[x+7,55,x+23,55,x+23,66,x+7,74],'#ffe8c0'));shade(g,[x+7,74,x+23,66,x+23,91,x+7,91],'#a4a0c0',.6);
+  /* the ground: trodden earth, darker toward the far house, with stones worked into it and a gutter of wear down its middle */
+  clipTo(g,()=>poly(g,FL),()=>{g.fillStyle=lg(g,0,90,0,104,['#a49880','#bcae8e','#c8ba98']);g.fillRect(x,90,30,14);
+    tex(g,'mott',.4,x,90,30,14,'overlay',.6);tex(g,'grain',.18,x,90,30,14,'overlay',.4);
+    for(let i=0;i<16;i++){const t=rl(),yy=90+t*14,xx=x+8-8*t+rl()*(14+16*t);R(g,xx,yy,.6+t*1.2,.5,rl()<.5?'rgba(80,66,50,.4)':'rgba(255,246,220,.36)')}
+    comp(g,'multiply',.55,()=>poly(g,[x,104,x+30,104,x+22,90,x+8,90],'#b4b0c8'))});
+  /* the walls of the lane */
+  sideWall11(g,L,tint(c,-.04),rl,0);sideWall11(g,RW,tint(c,.02),rl,.45,[50,64]);
+  ao(g,x,100,30,4,'b',.2,'#2a2440');
+  /* what stands in the lane: a jar by a door, a bundle of brushwood, a step */
+  if(k==='a'){vessel(g,x+18.6,92,1.6,4.4,'#8a5a36','jar',{noShadow:1});shadow11(g,x+19,92.2,2,.5,.4)}
+  if(k==='c'){for(let i=0;i<5;i++)stroke(g,[x+16+i*.7,91.6,x+17.4+i*.9,86.6],i%2?'#8a7048':'#6a5434',.6);shadow11(g,x+18,91.8,3,.5,.4)}
+  if(k==='d'){R(g,x+12,89.6,8,1.2,tint(c,-.1));R(g,x+12,89.6,8,.4,tint(c,.2))}}
+/* wallSun11: the sun of a clear day on a plastered house front: the shadow the eaves throw a little way down the wall, faint grey
+   streaks where rain has run off the parapet, the wall a touch warmer toward the corner that takes the sun and cooler toward the other,
+   and patches where the limewash is fresher or older. x, y, w, h: the wall under the parapet. Its own rng(). */
+function wallSun11(g,x,y,w,h,seed){const r=rng(seed);inRect(g,x,y,w,h,()=>{
+  for(const[d,a]of[[4.4,.12],[2.6,.16],[1.4,.2]])shade(g,[x,y,x+w,y,x+w,y+d,x,y+d*.8],'#8c88b0',a);
+  comp(g,'overlay',.22,()=>{const p=g.createPattern(texture('vert'),'repeat');g.save();g.translate(x,y);g.scale(.5,1.2);g.fillStyle=p;g.fillRect(0,0,w*2,22);g.restore()});
+  comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,0,y,0,y+24,['rgba(150,140,130,1)','rgba(150,140,130,0)']);g.fillRect(x,y,w,24)});
+  comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,x,0,x+w,0,['rgba(255,236,200,.8)','rgba(255,236,200,0)','rgba(90,90,140,.5)']);g.fillRect(x,y,w,h)});
+  for(let i=0;i<w/14;i++){const px=x+r()*w,py=y+10+r()*(h-30);pool(g,px,py,6+r()*10,3+r()*4,r()<.5?'#fff6e0':'#a89a80',.12,'source-over')}})}
+/* paveWear11: what years of feet and weather leave on the slabs of a street: blotches of a darker and a paler tone, a polish where most
+   people walk, grit and the odd stone, and dust gathered at the foot of the walls. Its own rng(). */
+function paveWear11(g,x0,y0,x1,y1,r){inRect(g,x0,y0,x1-x0,y1-y0,()=>{tex(g,'blotch',.3,x0,y0,x1-x0,y1-y0,'overlay',1.6);
+  comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,y0,0,y1,['rgba(255,250,236,0)','rgba(255,250,236,.7)','rgba(255,250,236,.2)']);g.fillRect(x0,y0+12,x1-x0,y1-y0-12)});
+  for(let i=0;i<(x1-x0)*.6;i++){const k=r(),y=y0+2+k*(y1-y0-2),x=x0+r()*(x1-x0);R(g,x,y,.5+k*1.2,.5,r()<.6?'rgba(90,76,60,.3)':'rgba(255,250,236,.4)')}
+  comp(g,'multiply',.4,()=>{g.fillStyle=lg(g,0,y0,0,y0+7,['rgba(170,150,120,1)','rgba(170,150,120,0)']);g.fillRect(x0,y0,x1-x0,7)})})}
+/* street fountain: a basin of dressed stone before a stone surround let into the house wall, a bronze spout, and its water */
+function fountain11(g,rf){const S='#cfc4a8';
+  ashlar(g,42,76,34,28,S,rf,{bw:8,bh:4.6,v:.07,t:.3});R(g,41,74.4,36,2,tint(S,.12));R(g,41,74.4,36,.5,tint(S,.4));R(g,41,76.4,36,.6,tint(S,-.36));
+  /* the recess behind the spout: dark and wet, green where the water runs */
+  R(g,47,80.4,24,15.6,'#463e38');g.fillStyle=lg(g,0,80,0,96,['#2e2824','#4a443c','#5a5648']);g.fillRect(47.6,81,22.8,15);
+  tex(g,'mott',.4,47.6,81,22.8,15,'overlay',.7);ao(g,47.6,81,22.8,4,'t',.5);R(g,57,88.6,3.4,7.4,'rgba(80,110,84,.5)');R(g,57.6,88.6,2,7.4,'rgba(150,190,170,.25)');
+  R(g,46.4,80.4,.6,15.6,tint(S,.2));R(g,71,80.4,.6,15.6,tint(S,-.36));
+  /* the spout: a bronze pipe out of the wall; the water falls from its end */
+  R(g,53.6,86,6,2.6,'#6a5a3a');R(g,53.6,86,6,.6,'#c0a060');R(g,53.6,88,6,.6,'#3a3020');R(g,59,85.8,.8,3,'#8a7448');
+  R(g,58.2,88.6,1.4,9.4,'rgba(200,230,240,.8)');R(g,58.4,88.6,.4,9.4,'rgba(255,255,255,.5)');
+  /* the basin */
+  shadow11(g,59,105.2,19,1.6,.42,'#282040');
+  g.fillStyle=lg(g,42,0,76,0,['#9a9484','#dcd4c0','#c8c0aa','#8a8474']);g.fillRect(42,96,34,9);
+  inRect(g,42,96,34,9,()=>{tex(g,'mott',.34,42,96,34,9,'overlay',.7);ao(g,42,96,34,3,'t',.12,'#3a3050');ao(g,42,101,34,4,'b',.22,'#3a3050');
+});
+  R(g,41.4,95.4,35.2,1.6,'#e6e0cc');R(g,41.4,95.4,35.2,.5,'#fbf6e6');R(g,41.4,97,35.2,.5,'#8a8474');
+  /* the water: a strip of its surface seen over the rim, darker under the wall, with the light on it and a ring where the stream falls */
+  R(g,43.4,95.6,31.2,1.4,'#5a8aa0');R(g,43.4,95.6,31.2,.5,'#3a6478');R(g,46,96.4,9,.5,'rgba(230,246,250,.6)');R(g,62,96.4,8,.5,'rgba(230,246,250,.5)');
+  R(g,56.4,96.2,5,.5,'rgba(255,255,255,.7)');
+  /* moss at the water's edge, the stain of the overflow down the basin's front */
+  for(let i=0;i<9;i++)R(g,43+rf()*31,97+rf()*.6,.8+rf()*1.2,.5,'rgba(96,120,70,.5)');
+  R(g,57,97.5,4,7.5,'rgba(70,80,86,.22)');R(g,58,97.5,1.6,7.5,'rgba(70,80,86,.18)')}
 ART.street11={w:640,q:12,
  paint(g){const r=rng(1103),rc=rng(1123);
   sky(g,640,60,SKY11(['#4a86c8','#86b2dc','#d2e2ea']));cloud(g,120,10,50,4,r);cloud(g,520,14,44,4,r);
@@ -184,11 +287,11 @@ ART.street11={w:640,q:12,
   /* house fronts, with a lane between each two */
   const H=[[0,160,'#e2d4b0',30],[190,60,'#d8c8a2',26],[280,60,'#e6dabb',32],[370,60,'#dccca6',28],[460,150,'#e0d2ae',30]];
   /* the plaster's random cracks are set by hand now, high on the walls where they run to no head; their draws are still taken */
-  for(const[x,w,c,top]of H){house(g,x,top,w,104-top,c,r,{patch:2,cracks:0,beams:14});skipCracks11(r,3);R(g,x,top-3.5,w,1.6,'#b8603c');for(let i=x;i<x+w;i+=4)R(g,i,top-3.5,.5,1.6,'rgba(90,40,24,.35)')}
+  for(const[x,w,c,top]of H){house(g,x,top,w,104-top,c,r,{patch:2,cracks:0,beams:14});skipCracks11(r,3);R(g,x,top-3.5,w,1.6,'#b8603c');for(let i=x;i<x+w;i+=4)R(g,i,top-3.5,.5,1.6,'rgba(90,40,24,.35)');
+    wallSun11(g,x,top,w,104-top,x*5+top)}
   /* each lane: a house at its far end, the ground running back to it, and the walls on either side in shade */
-  for(const[x]of LANES){const c=tint('#d8caa6',(r()-.5)*.12);R(g,x,56,30,48,c);R(g,x,56,30,1.2,'#b8603c');R(g,x+18,66,5,5,'#3a2c22');R(g,x+7,76,8,14,'#4a3624');R(g,x+7,76,8,.6,'#7a5c36');
-    poly(g,[x,104,x+30,104,x+22,90,x+8,90],'#c2b594');poly(g,[x,26,x+8,56,x+8,90,x,104],'#8f8aa0');poly(g,[x+30,26,x+22,56,x+22,90,x+30,104],'#a09aa6');
-    ao(g,x,56,30,12,'t',.3,'#2a2440');comp(g,'multiply',.5,()=>R(g,x,56,30,48,'#a8a4c4'))}
+  /* the lanes between the houses (lane11, with its own rng(); the room's rng() still gives each its color) */
+  const rl=rng(1153);for(const[x,k]of LANES)lane11(g,x,tint('#d8caa6',(r()-.5)*.12),k,rl);
   for(const[x,y,n]of[[66,33,3],[150,34,3],[244,30,3],[336,36,2],[424,32,3],[488,34,3],[592,35,3]])crack11(g,x,y,n,rc,.9);
   windowArt(g,26,48,12,10,'#e2d4b0',{shut:1});windowArt(g,104,46,12,10,'#e2d4b0',{bars:2});windowArt(g,208,50,10,9,'#d8c8a2',{shut:1});windowArt(g,300,52,10,9,'#e6dabb',{bars:2});windowArt(g,388,50,10,9,'#dccca6',{shut:1});
   windowArt(g,468,50,12,10,'#e0d2ae',{shut:1});doorArt(g,554,62,24,42,'#6a4a2c',r,{bands:[]});
@@ -199,14 +302,20 @@ ART.street11={w:640,q:12,
    poly(g,[620,72,640,72,640,77,620,78],'#b8563a');R(g,620,72,20,.8,'#d8826a');for(let i=620;i<640;i+=4)poly(g,[i,77.6,i+4,77.4,i+2,79.4],'#a04a32');
    ao(g,621,79,19,3,'t',.4,'#2a2040');R(g,623,79.6,5,2.6,'#c89a4c');R(g,623,79.6,5,.6,'#e8c070');R(g,630,79.4,5,2.8,'#8a6a3a');R(g,630,79.4,5,.6,'#b8945a');R(g,636,80,4,2.2,'#a8642e');
    comp(g,'screen',.3,()=>R(g,620,58,20,34,'#dfe8ee'));
-   poly(g,[610,104,640,104,640,92,620,92],'#ddd0aa');poly(g,[610,26,620,58,620,92,610,104],'#8f8aa0');R(g,610,26,1,78,tint('#e0d2ae',-.08))}
+   clipTo(g,()=>poly(g,[610,104,640,104,640,92,620,92]),()=>{pave(g,610,92,640,104,'#ddd0aa',rl,{vx:640,vy:70,rows:2,step:16,v:.06,t:.3});comp(g,'multiply',.4,()=>poly(g,[610,104,626,104,620,92],'#b4b0c8'))});
+   sideWall11(g,[610,26,620,58,620,92,610,104],tint('#e0d2ae',-.04),rl,0);R(g,610,26,1,78,tint('#e0d2ae',-.08))}
   /* the fountain: a basin of stone under a spout in the wall */
-  R(g,44,78,30,26,tint('#e2d4b0',-.16));R(g,48,82,22,12,'#5a5248');R(g,53.6,86,6,2.6,'#8a7a5a');R(g,58.2,88.6,1.4,9.4,'rgba(200,230,240,.8)');
-  R(g,42,104,36,2,'rgba(40,30,60,.3)');g.fillStyle=lg(g,42,0,76,0,['#9a9484','#dcd4c0','#bcb4a0','#7e786c']);g.fillRect(42,96,34,9);R(g,42,96,34,1,'#eee8d8');R(g,44,97,30,1.6,'#6a9ab0');
+  /* a footing of dressed stone along each house front, where the plaster ends and the splash of the street begins */
+  const rs=rng(1163);for(const[x,w,c]of H){const segs=x===460?[[x,554-x],[578,x+w-578]]:[[x,w]];
+    for(const[sx,sw]of segs){ashlar(g,sx,97.4,sw,6.6,mix(tint(c,-.12),'#b8b0a0',.5),rs,{bw:11,bh:3.3,v:.08,t:.3});R(g,sx,96.8,sw,.8,tint(c,.1));R(g,sx,97.6,sw,.5,tint(c,-.3));weather11(g,sx,104,sw,6.6,sx*3+11)}
+    comp(g,'multiply',.4,()=>{g.fillStyle=lg(g,0,86,0,97,['rgba(150,130,110,0)','rgba(150,130,110,1)']);g.fillRect(x,86,w,11)})}
+  fountain11(g,rng(1173));
   /* the figures, each on its base against a wall */
   statue(g,138,104,11,'st11gen',1);statue(g,226,104,11,'st11scr',1,{ges:1});poly(g,[235.2,62.4,238,59.4,239.2,60.4,236.4,63.4],MAR);stroke(g,[235.2,62.4,238,59.4],tint(MAR,.3),.5);
   statue(g,316,104,11,'st11old',-1);statue(g,406,104,11,'st11maim',-1);statue(g,502,104,11,'st11brz',1);statue(g,534,104,11,'st11brz',-1);
-  pave(g,0,103,640,144,'#cdc09e',r,{vx:320,vy:60,rows:4,step:44,v:.07,t:.28});ao(g,0,103,640,6,'t',.35,'#3a3050');
+  pave(g,0,103,640,144,'#cdc09e',r,{vx:320,vy:60,rows:4,step:44,v:.07,t:.28});ao(g,0,103,640,6,'t',.35,'#3a3050');paveWear11(g,0,103,640,144,rng(1183));
+  /* the splash of the fountain: the paving before the basin is dark with wet */
+  comp(g,'multiply',.5,()=>{pool(g,59,107,22,3.4,'#8a8c8e',1,'source-over')});
   /* the shade at the foot of the houses, in soft steps; the stones and the basin stand on the paving; the jars stand on it too, so they
      are painted after it (the paving used to cover their feet) */
   ao(g,0,94,640,10,'b',.12,'#3a3050');footShade11(g,0,640,104,8,.34);
