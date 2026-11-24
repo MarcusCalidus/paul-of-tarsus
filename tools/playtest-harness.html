@@ -340,7 +340,7 @@
        every look of every chapter. Each pose is as many pieces as the figure at rest, which is one; and a statue is the same picture whatever it
        is asked to do. cast-talk.png shows the frames: the heads six times enlarged, the figures three times. Look there, in every row, for a chin or
        a beard that has come apart from its face, for a hand that floats, and for crosses (CONTRIBUTING section 3). */
-    {const POSES=[[1,0,0],[2,0,0],[3,0,0],[4,0,0],[0,0,MV.dip],[0,0,MV.lift|MV.brow],[0,0,MV.fwd],[0,0,MV.back|MV.glance],[3,0,MV.dip],[4,0,MV.lift|MV.brow],[3,0,MV.back],[2,1,MV.fwd],[2,2,0],[0,3,0],[3,3,MV.dip],[2,1,MV.lean|MV.fwd],[4,2,MV.lean],[0,4,0],[0,5,0],[0,6,0],[0,7,0],[0,8,0]],
+    {const POSES=[[1,0,0],[2,0,0],[3,0,0],[4,0,0],[0,0,MV.dip],[0,0,MV.lift|MV.brow],[0,0,MV.fwd],[0,0,MV.back|MV.glance],[3,0,MV.dip],[4,0,MV.lift|MV.brow],[3,0,MV.back],[2,1,MV.fwd],[2,2,0],[0,3,0],[3,3,MV.dip],[2,1,MV.lean|MV.fwd],[4,2,MV.lean],[0,4,0],[0,5,0],[0,6,0],[0,7,0],[0,8,0],[0,9,0],[2,9,0]],
         ids=Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'),bad=[],apart=[],stone=[],seatBad=[];let n=0;
       for(const id of ids){const o=LOOK[id],at=(t,g,m,d)=>sprite(['pose',id,d<0?'-1':'1',t,g,m].join('|'),q=>person(q,0,0,o,d,0,t,0,g,0,m),d),rest=at(0,0,0,1),r0=parts(rest);if(r0!==1)apart.push(id+' ('+r0+')');
         for(const[t,g,m]of POSES)for(const d of m&MV.lean?[1,-1]:[1]){n++;const c=at(t,g,m,d);if(parts(c)!==r0)bad.push(id+' '+[t,g,m,d]);if(o.stone&&!g&&d>0&&c.toDataURL()!==rest.toDataURL())stone.push(id)}
@@ -354,19 +354,19 @@
       const B={skin:'#c08a5c',tunic:'#c4b08a',belt:'#3a2414'},fm={skin:'#c8a078',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#6a2a5a',brow:'#3a2414'},
         WHO=[['a bearded man',paulLook(7)],['a long beard',{...B,hair:'#969088',beard:'#a49e96',brow:'#78726c',grey:'#c8c2ba',bald:1,longBeard:1,long:1,cloak:'#6a5a7a'}],['a veiled woman',{...fm,veil:'#6a2a5a'}],['hair bound',{...fm,hair:'#3a2616',fem:1,band:'#a8402c',longSleeve:0}],['a boy',{...B,hair:'#34241c',h:1}]],
         HD=[['shut',0,0],['parted',1,0],['open',2,0],['wide, chin down',3,0],['round, chin down',4,0],['head dipped',2,MV.dip],['lifted, brows up',2,MV.lift|MV.brow],['forward',0,MV.fwd],['back, a glance',0,MV.back|MV.glance]],
-        BD=[['at rest',0,0,0],['half raised',2,2,0],['raised',2,1,0],['on the chest',0,3,0],['leaning in',3,1,MV.lean|MV.fwd]],Z=6,cw=160,chh=226,bw=150,bh=392,[c,g]=sheet(HD.length*cw,34+WHO.length*chh+bh);
+        BD=[['at rest',0,0,0],['half raised',2,2,0],['raised',2,1,0],['on the chest',0,3,0],['leaning in',3,1,MV.lean|MV.fwd],['both hands out',2,9,0]],Z=6,cw=160,chh=226,bw=144,bh=392,[c,g]=sheet(HD.length*cw,34+WHO.length*chh+bh);
       text(g,'Speaking: the mouth, the chin and the head, six times enlarged; below, the far hand, seated and led, three times',10,23,17,'#f4f0e6');
       WHO.forEach(([nm,o],r)=>{const f=o.veil||o.fem,top=4+(o.h?19:23)+(o.h?13:16)+3+(o.h?22:f?24:26)+20;HD.forEach(([cap,t,m],i)=>{const x=i*cw,y=34+r*chh;field(g,i+r,x,y,cw,chh);
         cut(g,sprite(['talk',r,t,m].join('|'),q=>person(q,0,0,o,1,0,t,0,0,0,m),1),-13,-top-7,26,34,x+2,y+4,Z);text(g,i?cap:cap+': '+nm,x+5,y+chh-7,11)})});
-      [WHO[0],WHO[2]].forEach(([nm,o],r)=>BD.forEach(([cap,t,ge,m],i)=>{const k=r*BD.length+i;if(k>=7)return;const x=k*bw,y=34+WHO.length*chh;field(g,k,x,y,bw,bh);
-        cut(g,sprite(['talkb',r,t,ge,m].join('|'),q=>person(q,0,0,o,1,0,t,0,ge,0,m),1),-25,-124,50,125,x,y,3);text(g,cap,x+5,y+bh-7,11)}));
-      /* the two new prologue poses in columns 7 and 8: a man seated with bowed head, and a man led by the hand */
+      [WHO[0],WHO[2]].forEach(([nm,o],r)=>BD.forEach(([cap,t,ge,m],i)=>{const k=r*BD.length+i;if(k>=8)return;const x=k*bw,y=34+WHO.length*chh;field(g,k,x,y,bw,bh);
+        cut(g,sprite(['talkb',r,t,ge,m].join('|'),q=>person(q,0,0,o,1,0,t,0,ge,0,m),1),-25,-124,50,125,x-3,y,3);text(g,cap,x+5,y+bh-7,11)}));
+      /* the two prologue poses in columns 9 and 10: a man seated with bowed head, and a man led by the hand */
       {const y=34+WHO.length*chh;
-        field(g,7,7*bw,y,bw,bh);cut(g,sprite('talkb|seat',q=>person(q,0,0,paulLook(1),1,-1,0,1,0,1,0),1),-25,-124,50,125,7*bw,y,3);text(g,'seated, bowed',7*bw+5,y+bh-7,11);
-        field(g,8,8*bw,y,bw,bh);
-        cut(g,sprite('talkb|led1',q=>person(q,0,0,paulLook(1),1,0,0,0,5,0,0),1),-25,-124,50,125,8*bw-24,y,3);
-        cut(g,sprite('talkb|led2',q=>person(q,0,0,LOOK.pro_m1,1,0,0,0,4,0,0),1),-25,-124,50,125,8*bw+33,y,3);
-        text(g,'led by the hand',8*bw+5,y+bh-7,11)}
+        field(g,8,8*bw,y,bw,bh);cut(g,sprite('talkb|seat',q=>person(q,0,0,paulLook(1),1,-1,0,1,0,1,0),1),-25,-124,50,125,8*bw-3,y,3);text(g,'seated, bowed',8*bw+5,y+bh-7,11);
+        field(g,9,9*bw,y,bw,bh);
+        cut(g,sprite('talkb|led1',q=>person(q,0,0,paulLook(1),1,0,0,0,5,0,0),1),-25,-124,50,125,9*bw-27,y,3);
+        cut(g,sprite('talkb|led2',q=>person(q,0,0,LOOK.pro_m1,1,0,0,0,4,0,0),1),-25,-124,50,125,9*bw+30,y,3);
+        text(g,'led by the hand',9*bw+5,y+bh-7,11)}
       SHEETS['cast-talk']=c.toDataURL()}
     /* walking (person's fr from 4 up): the sixteen moments of a stride at a full step, and every second one at a shorter step and at a half step, for
        every look that is not a statue. Each is one piece. The three frames of the old walk are three of them. cast-walk.png shows every second
