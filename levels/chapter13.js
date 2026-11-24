@@ -778,7 +778,9 @@ function OPEN13(){const d=DAY(),p=PART();if(!F.hall||d>3)return null;
    in a long striped tunic. Philon is the man of the synagogue of Ephesus whom Chapter Twelve invented. The Greeks of the city wear
    the mantle of Chapters Eleven and Twelve (himation:1); craftsmen, carriers and seamen the short tunic. Paul is the Paul of the
    third journey (paulLook in index.html); at the bench before sunrise he works without his mantle, in an apron and with a cloth
-   round his forehead (study note on Acts 19:12). Timothy has his first beard. */
+   round his forehead (study note on Acts 19:12). Timothy has his first beard. The dyes are drawn toward the earth colors of the
+   backdrops: Kleandros, a man of means, shows it in a fine white tunic and a full mantle of a dark murex brown, not in a bright dye,
+   and the hearers' purples are madder and murex browns. */
 const HIM=(skin,hair,tunic,cloak,o)=>Object.assign({skin,hair,beard:hair,tunic,cloak,long:1,himation:1,brow:tint(hair,-.3),ph:0},o);
 const JEW=(skin,hair,tunic,stripe,o)=>Object.assign({skin,hair,beard:hair,tunic,stripe,long:1,belt:'#4a3a24',brow:tint(hair,-.3),ph:0},o);
 const AQL={skin:'#b8845a',hair:'#4a3a2c',beard:'#4a3a2c',grey:'#8a7e72',tunic:'#b9a888',cloak:'#56687a',belt:'#3a2a1a',brow:'#2a1a12',ph:400};
@@ -789,7 +791,7 @@ Object.assign(LOOK,{
   philon13:{skin:'#b88a62',hair:'#d0d0d0',beard:'#d0d0d0',thin:1,longBeard:1,brow:'#9a9a9a',tunic:'#ece4d0',long:1,stripe:'#3f5f86',belt:'#4a3a24',cloak:'#8a7a5a',ph:500},
   symm13:{skin:'#b47e52',hair:'#3a2a1a',beard:'#3a2a1a',fullBeard:1,tunic:'#8a6a4a',long:1,belt:'#2e2016',cloak:'#4a4a5a',brow:'#1a1210',ph:200},
   mene13:{skin:'#b8845a',hair:'#8a8a8a',beard:'#8a8a8a',receding:1,shortBeard:1,tunic:'#a89c7c',belt:'#5a4a30',brow:'#5a5a5a',ph:1500},
-  klea13:HIM('#c08c5c','#3a2a1a','#ece4d0','#5f4470',{ph:700}),
+  klea13:HIM('#c08c5c','#3a2a1a','#ece4d0','#5a3e44',{ph:700}),
   myrt13:{skin:'#c8a078',hair:'#3a2616',fem:1,band:'#c9a14a',tunic:'#d8c8a0',cloak:'#7a8a6a',himation:1,long:1,slim:1,longSleeve:1,brow:'#3a2414',ph:1900},
   glau13:HIM('#c69870','#6a6a6a','#e6dec8','#8a5a3a',{receding:1,ph:300}),
   hege13:{skin:'#a8703f',hair:'#2a1a12',beard:'#2a1a12',tunic:'#7a8a9a',belt:'#3a2a1a',wrap:'#b8a078',brow:'#1a1210',ph:1100},
@@ -797,13 +799,13 @@ Object.assign(LOOK,{
   timothy13:{skin:'#c89868',hair:'#3a2616',beard:'#3a2616',shortBeard:1,tunic:'#d8cfb0',belt:'#5a3a20',trim:'#7a8a6a',brow:'#2a1a12',slim:1,ph:1700},
   well13:{skin:'#c69870',hair:'#4a3a2c',beard:'#4a3a2c',tunic:'#c8b490',belt:'#4a3a24',brow:'#2a1a12',ph:2500},
   /* the twelve: seen, and not named */
-  dz13a:JEW('#b47e52','#2a1a12','#d8d0b8','#5a3a6a',{ph:100}),dz13b:JEW('#c69870','#8a8a8a','#e2dac6','#3f5f86',{receding:1,longBeard:1,ph:1300}),dz13c:JEW('#b88a62','#3a2a1a','#c8b890',null,{ph:2300,slim:1}),
+  dz13a:JEW('#b47e52','#2a1a12','#d8d0b8','#5e4048',{ph:100}),dz13b:JEW('#c69870','#8a8a8a','#e2dac6','#3f5f86',{receding:1,longBeard:1,ph:1300}),dz13c:JEW('#b88a62','#3a2a1a','#c8b890',null,{ph:2300,slim:1}),
   dz13d:JEW('#a8703f','#2a1a12','#b8a684','#5a3a3a',{fullBeard:1}),dz13e:JEW('#c08c5c','#5a4026','#e6dec8','#7a2a4a',{}),dz13f:JEW('#b47e52','#c8c8c8','#9a8a6a',null,{bald:1,longBeard:1,cloak:'#5a5a6a'}),
   dz13g:JEW('#c89a70','#3a2616','#d8cfb0','#6a5a3a',{slim:1,beard:null}),dz13h:JEW('#b8845a','#4a3a2c','#a89c7c',null,{thin:1}),dz13i:JEW('#b98658','#2a1c14','#ece4d0','#3f6f5a',{shortBeard:1}),
-  dz13j:JEW('#c69870','#6a6a6a','#c4b08a',null,{receding:1,fullBeard:1,cloak:'#7a5a3a'}),dz13k:JEW('#a8703f','#3a2a1a','#d8d0b8','#4a4a7a',{}),dz13l:JEW('#b47e52','#5a4026','#d2c8a8',null,{slim:1,shortBeard:1}),
+  dz13j:JEW('#c69870','#6a6a6a','#c4b08a',null,{receding:1,fullBeard:1,cloak:'#7a5a3a'}),dz13k:JEW('#a8703f','#3a2a1a','#d8d0b8','#4a5268',{}),dz13l:JEW('#b47e52','#5a4026','#d2c8a8',null,{slim:1,shortBeard:1}),
   /* hearers and passers-by: Jews and Greeks, men and women */
   hx13a:HIM('#c69870','#5a4026','#e0d8c0','#8a6a5a',{beard:null}),hx13b:{skin:'#c89a70',veil:'#c8a25a',tunic:'#7a8a9a',long:1,belt:'#5a3a20',slim:1,longSleeve:1,ph:0},
-  hx13c:{skin:'#b8845a',hair:'#2a1a12',beard:'#2a1a12',tunic:'#a8946a',belt:'#4a3a24',brow:'#1a1210',ph:0},hx13d:{skin:'#c8a078',hair:'#5a4026',fem:1,band:'#8a3a4a',tunic:'#e2d6b4',cloak:'#8a5a6a',himation:1,long:1,slim:1,longSleeve:1,ph:0},
+  hx13c:{skin:'#b8845a',hair:'#2a1a12',beard:'#2a1a12',tunic:'#a8946a',belt:'#4a3a24',brow:'#1a1210',ph:0},hx13d:{skin:'#c8a078',hair:'#5a4026',fem:1,band:'#8a4a40',tunic:'#e2d6b4',cloak:'#7e5a52',himation:1,long:1,slim:1,longSleeve:1,ph:0},
   hx13e:{skin:'#a8703f',hair:'#2a1a12',tunic:'#8a9a8a',belt:'#3a2a1a',slim:1,brow:'#1a1210',ph:0},hx13f:HIM('#b8845a','#8a8a8a','#e6dec8','#6a7a8a',{thin:1}),
   hx13g:{skin:'#c8a078',veil:'#5f7f6a',tunic:'#d8c8a0',long:1,belt:'#6a4a2a',slim:1,longSleeve:1,ph:0},hx13h:{skin:'#b47e52',hair:'#c8c8c8',beard:'#c8c8c8',longBeard:1,bald:1,tunic:'#9a8a6a',long:1,belt:'#2e2016',brow:'#8a8a8a',ph:0},
   op13a:{skin:'#c69870',hair:'#8a8a8a',beard:'#8a8a8a',receding:1,longBeard:1,tunic:'#d8d0b8',long:1,belt:'#4a3a24',ph:0},op13b:{skin:'#b88a62',hair:'#3a2a1a',beard:'#3a2a1a',tunic:'#9a8a6a',long:1,belt:'#2e2016',stripe:'#5a3a3a',ph:0}});
