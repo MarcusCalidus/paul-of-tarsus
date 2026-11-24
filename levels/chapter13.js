@@ -1570,6 +1570,12 @@ const BOARDH=()=>['sum13',['greeks_write_their_numbers_with_letters',
   T('from_the_right_alpha_one',{n:T(SUMS[Math.min(4,board().k)])})]];
 
 /* ============ CHAPTER DEFINITION ============ */
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+/* not in the evening, when the lamps are lit */
+ROOMS.street13.birds=()=>STREETV()==='e'?null:{perch:[{k:'sparrow',y:34.5,x:[80,90,102]},{k:'dove',y:21.5,x:[262,280],d:[1,-1]}]};
+ROOMS.road13.birds={prey:[120,6,170,24],lark:[220,92,28]};
+
 return{rooms:['shop13','street13','syn13','road13','hall13','house13','board13'],setup:setup13,start:start13,hint:hint13,music:MUSIC,scenes:{asia:asia13,dial:dial13},topics:[],tablets:TABLETS,beds:BEDS,calls:CALLS,
   /* for the playtest: what is told, the notes, the hiding places, the board, the province, the day */
   told:TOLD,ps:PS,heard:HEARD,hide:HIDE,owners:OWNERS,want:WANT,board,digits,towns:TOWN,roads:ROADS,shown:SHOWN,axy:AXY,dots:roadDots,day:DAY,part:PART,open:OPEN13,answers:ANSWERS,road1:ROAD1,road2:ROAD2,given:given13,

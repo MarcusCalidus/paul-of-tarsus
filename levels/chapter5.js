@@ -1104,6 +1104,12 @@ function hint5(){const b=PC()!==P,craft=['craft5',['that_is_the_tentmakers_craft
    plainly says no. Each is a line of this chapter, in English, as it stands above. */
 const ACTING={nod:['yes_the'],
   shake:['no_they']};
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+ROOMS.ford.birds={prey:[175,6,130,16],swallows:[205,75,60,25]};
+ROOMS.border.birds={prey:[120,8,150,22],lark:[140,86,28]};
+ROOMS.pisidia.birds={perch:[{k:'sparrow',y:25,x:[150,160,172]},{k:'dove',y:22,x:[370,388],d:[1,-1]}]};
+
 return{acting:ACTING,rooms:['perga','ford','pisidia','synp','border'],setup:setup5,start:start5,hint:hint5,music:MUSIC,topics:TOPICS,tablets:TABLETS,
   /* Antioch in Pisidia and Iconium lie north of the map's usual window, so this chapter looks through the northern one. The whole of the
      first journey so far is on it; the chapter's own road draws itself at the end */

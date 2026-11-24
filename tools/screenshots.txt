@@ -6,6 +6,8 @@ ages ages
 agora agora11
 altars altar11
 antioch antioch
+birds birds
+birds-sheet birds birds-sheet
 antioch12 pant12
 apollos psyn13
 areopagus speech11

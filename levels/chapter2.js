@@ -678,6 +678,11 @@ const BNhs=BN.hs;
 const ACTING={nod:['yes_i'],
   shake:['no_no',
   'no_brother_said']};
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+ROOMS.harbor.birds={gulls:[228,6,240,32],stand:[[256,103,-1],[268,103.5,1]]};
+ROOMS.jerusalem.birds={perch:[{k:'sparrow',y:25.5,x:[296,306,318]},{k:'dove',y:17,x:[14,52],d:[1,-1]}]};
+
 return{acting:ACTING,rooms:['jerusalem','upper','harbor'],setup:()=>{BN.hs=BNhs;setup2()},start:start2,hint:hint2,music:MUSIC,topics:TOPICS,tablets:TABLETS,
   route:[['damascus','jerusalem'],['jerusalem','caesarea','new'],['caesarea','tarsus','new sea']],
   place:room=>{if(F.told)place(BN,'jerusalem',360,114,-1);if(room==='upper'||F.preach)place(BN,'upper',96,124,1);if(room==='upper')F.upper=1;if(F.preach&&room==='jerusalem')disputers()},

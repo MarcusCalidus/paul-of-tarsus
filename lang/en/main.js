@@ -1,4 +1,4 @@
-/* Paul of Tarsus: the English text for the engine (index.html) and the shared files (shared/tablets.js, shared/map.js).
+/* Paul of Tarsus: the English text for the engine (index.html) and the shared files (shared/tablets.js, shared/map.js, shared/birds.js).
    Loaded by index.html before anything is shown (see LANGUAGES there). Each entry is a key, as the code uses it, and the English line.
    English is the language every other one is translated from: a change here makes the translations of that line stale until they are
    checked (node tools/strings.mjs --show de main). Bible verses are told in the game's own words, never copied (CONTRIBUTING section 1) */
@@ -273,5 +273,22 @@ TEXTS('en','main',{
   "layout_auto":"Auto",
   "layout_phone":"Phone",
   "layout_classic":"Classic",
-  "turn_phone_sideways":"Turn your phone sideways to play."
+  "turn_phone_sideways":"Turn your phone sideways to play.",
+  "gulls":"Gulls",
+  "gull":"Gull",
+  "bird_of_prey":"Bird of prey",
+  "swallows":"Swallows",
+  "lark":"Lark",
+  "storks":"Storks",
+  "sparrows":"Sparrows",
+  "doves":"Doves",
+  "gulls_over_the_harbor":"Gulls. Wherever there are boats, they're never far away.",
+  "gull_on_the_quay_edge":"A gull on the edge of the quay, watching the boats.",
+  "gulls_hunched_in_the_rain":"Gulls hunched against the rain, waiting it out.",
+  "bird_of_prey_circling":"A big bird of prey, circling high up. An eagle or a vulture? From down here I can't tell.",
+  "swallows_over_the_water":"Swallows, skimming low over the water for insects.",
+  "lark_climbing_and_singing":"A lark, singing as it climbs. It's so small I can hardly see it.",
+  "storks_flying_north":"Storks, flying north in a long line. Spring is here.",
+  "sparrows_on_the_roof":"Sparrows on the roof, chattering away.",
+  "doves_on_the_wall":"Doves on the wall, cooing in the sun."
 });

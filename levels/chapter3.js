@@ -278,7 +278,7 @@ ART.road={w:320,q:12,paint(g){const r=rng(167);
  fore(g){const r=rng(168);foliage(g,14,138,22,9,'#3f5a34',r,120);foliage(g,304,140,20,8,'#3a5430',r,100);for(let i=0;i<30;i++){const sx=r()*320;stroke(g,[sx,144,sx+(r()-.5)*4,136-r()*5],'#34502c',.8)}},
  draw(){},front(){}};
 /* The three cross the picture in seventeen seconds (the tween that moves G.trek): their steps follow the road under them (walkFr, and beastFr for the donkey), each at his own stride. */
-function roadScene(g,t){backdrop(g,'road');const x=-50+420*((G.trek||{}).k||0),v=420/17;
+function roadScene(g,t){backdrop(g,'road');SHARED.birds.draw(g,t,'road',BIRDS_ROAD);const x=-50+420*((G.trek||{}).k||0),v=420/17;
   man(g,x+46,121,'barnabas',1,walkFr(LOOK.barnabas,x+50,v));beast(g,x+8,120,1,beastFr(x+50,v),2);man(g,x-30,122,'paul',1,walkFr(LOOK.paul,x+62,v));g.drawImage(fg('road'),0,0,320,VH)}
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
 Object.assign(LOOK,{
@@ -751,6 +751,13 @@ function hint3(){const b=PC()!==P,saul=['saul3',['that_is_sauls_craft_not_mine',
 const ACTING={shake:['no_brother_it',
   'no_brother_keep',
   'no_brother_keep']};
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+ROOMS.tarsus.birds={perch:[{k:'sparrow',y:20,x:[30,40,52]},{k:'dove',y:59,x:[150.5,168.5],d:[1,-1]}]};
+ROOMS.court.birds={perch:[{k:'sparrow',y:28,x:[190,200,212]},{k:'dove',y:33,x:[290,306],d:[-1,1]}]};
+ROOMS.antioch.birds={perch:[{k:'sparrow',y:16,x:[40,50,62]},{k:'dove',y:30,x:[250,266],d:[1,-1]}]};
+const BIRDS_ROAD={prey:[150,36,150,14],lark:[230,88,28]};
+
 return{acting:ACTING,rooms:['tarsus','court','antioch'],setup:setup3,start:start3,hint:hint3,music:MUSIC,scenes:{road:roadScene},topics:TOPICS,tablets:TABLETS,
   route:[['damascus','jerusalem'],['jerusalem','caesarea'],['caesarea','tarsus','sea'],['tarsus','antioch','new']],
   flags:['metKleon','seam','gotLoops','loopsOn','gotTent','sold','cutBolt','gotSpool','bags','bagsOn','sealed','held','jar'],

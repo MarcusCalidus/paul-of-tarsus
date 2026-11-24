@@ -1397,6 +1397,16 @@ function hint12(){
   return G.room==='shop12'?['meet12',['a_man_and_a_woman_at_one','i_talk_to_them']]:['shop12',['goat_hair_cloth_i_know','i_walk_to_the_workshop']]}
 
 /* ============ CHAPTER DEFINITION ============ */
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+/* in the winter rain no bird is in the air, and none sits on a roof; two gulls sit it out on the quay at Cenchreae. Storks pass in spring. */
+ROOMS.street12.birds=()=>{const v=ART.street12.variant();return v==='w'?null:Object.assign({perch:[{k:'sparrow',y:26.5,x:[158,166,176]},{k:'dove',y:37,x:[316,334],d:[1,-1]}]},v==='s'?{storks:[3,.8]}:{})};
+ROOMS.cen12.birds=()=>ART.cen12.variant()==='w'?{stand:[[274,103,1],[307,103.5,-1]],huddle:true}:{gulls:[20,5,290,30],stand:[[175,101.5,1],[186,101.8,-1]]};
+ROOMS.eph12.birds={gulls:[10,5,180,25]};
+ROOMS.court12.birds=()=>ART.court12.variant()==='w'?null:{perch:[{k:'sparrow',y:23,x:[160,170,182]},{k:'dove',y:23,x:[240,256],d:[1,-1]}]};
+ROOMS.agora12.birds=()=>SEAS()==='w'?null:{perch:[{k:'sparrow',y:37,x:[70,80,92]},{k:'dove',y:37,x:[380,398],d:[1,-1]}]};
+ROOMS.ant12.birds={perch:[{k:'sparrow',y:28.5,x:[200,210,222]},{k:'dove',y:28.5,x:[60,78],d:[1,-1]}]};
+
 return{rooms:['street12','shop12','court12','awn12','syn12','isth12','cen12','agora12','wait12','eph12','ant12'],setup:setup12,start:start12,hint:hint12,music:MUSIC,scenes:{dark:dark12,letter:letter12},topics:[],tablets:TABLETS,beds:BEDS,calls:CALLS,
   /* for the playtest: what is told, the promises, the awning and its light, the openings, the roads */
   told:TOLD,ps:PS,prom:PROM,open:OPEN,awn,judge,dark,bays,solved:SOLVED,roundK:ROUND_K,seat:seat12,chord:chord12,back:BACK,sea1:SEA1,sea2:SEA2,season:SEASON,pos2:POS2,pos1:POS1,hk:HK,

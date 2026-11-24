@@ -1015,6 +1015,10 @@ function hint9(){const b=PC()!==P;
   if(!F.open)return['ans9',['they_beat_us_before_the_whole_city','i_should_talk_to_the_jailer_said']];
   return['ask9',['they_would_give_a_great_deal','i_should_talk_to_the_magistrate']]}
 /* ============ CHAPTER DEFINITION ============ */
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+ROOMS.river9.birds={swallows:[50,86,230,14],prey:[240,6,140,24]};
+
 return{rooms:['lydia9','river9','cell9','gaol9'],setup:setup9,start:start9,hint:hint9,music:MUSIC,calls:CALLS9,scenes:{dark,forum:forumScene,jailer:jailerScene,shake:shakeScene},topics:[],tablets:TABLETS,
   /* for the playtest: what is told, the psalm, and the sung lines with the function that puts them on the mixer */
   told:TOLD,psalm:PS,song:SONG,voices,rumble,

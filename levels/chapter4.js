@@ -931,6 +931,12 @@ function hint4(){const b=PC()!==P,craft=['craft4',['that_is_the_tentmakers_craft
   return b?['dan4b',['elymas_twists_the_scriptures','saul_should_answer_the_proconsul']]
     :['dan4',['he_twists_the_scriptures','i_should_talk_to_the_proconsul']]}
 /* ============ CHAPTER DEFINITION ============ */
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+ROOMS.seleucia.birds={gulls:[130,6,330,30],stand:[[262,102,-1],[400,102.5,1]]};
+ROOMS.salamis.birds={gulls:[6,5,100,30],gullsN:2,stand:[[40,98.5,1]]};
+ROOMS.paphos.birds={gulls:[170,14,50,20],gullsN:1};
+
 return{rooms:['seleucia','salamis','synagogue','paphos'],setup:setup4,start:start4,hint:hint4,music:MUSIC,scenes:{sendoff:sendoffScene,voyage:voyageScene},topics:TOPICS,tablets:TABLETS,
   /* the first missionary journey is drawn on its own: the sea lane from Caesarea to Tarsus (Chapter Two) runs between Cyprus and Syria,
      where the ship from Seleucia must pass, and routes on the map never cross */

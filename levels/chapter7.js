@@ -1183,7 +1183,7 @@ const LIT='#eadfcc';
 function cast(g,list,lit){list.sort((a,b)=>a[2]-b[2]).forEach(([id,x,y,dir,o])=>{o=o||{};const fr=o.fr||0,bow=o.bow?1:0,ges=o.ges?1:0;
   figure(g,x,y,lit||LIT,id+dir+'s'+fr+bow+ges,s=>person(s,0,0,LOOK[id],dir,fr,0,bow,ges,bow),7.5)})}
 /* The courtyard in Antioch, three times: the dispute (k 0), the letter read (k 1), and the parting (k 2; away: how far Barnabas and Mark have gone). */
-function antiochScene(g,t){backdrop(g,'antioch7');const s=G.st||{},talk=Math.floor(t/600)%2;
+function antiochScene(g,t){backdrop(g,'antioch7');SHARED.birds.draw(g,t,'antioch7',BIRDS_ANTIOCH);const s=G.st||{},talk=Math.floor(t/600)%2;
   if(!s.k)cast(g,[['br1',16,119,1],['br3',84,116,1],['br4',276,119,-1],['br2',170,113,1],['barnabas7',98,124,1],['paul',124,127,1,{ges:talk}],['jud1',216,124,-1,{ges:1-talk}],['jud2',242,127,-1]]);
   else if(s.k===1)cast(g,[['br2',190,114,-1],['br3',208,118,-1],['br1',228,114,-1],['br4',246,118,-1],['ap3',266,115,-1],['tc5',180,123,-1],['tc4',222,125,-1],['tc2',256,126,-1],
     ['barnabas7',58,122,1],['paul',82,125,1],['judas7',110,123,1],['silas',138,126,1,{ges:talk}]]);
@@ -1322,6 +1322,12 @@ function hint7(){const b=PC()!==P,craft=['craft7',['that_is_the_tentmakers_craft
 /* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
    plainly says no. Each is a line of this chapter, in English, as it stands above. */
 const ACTING={shake:['no_eunice']};
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+ROOMS.tarsus7.birds={perch:[{k:'sparrow',y:37,x:[150,160,172]},{k:'dove',y:6,x:[40,58],d:[1,-1]}]};
+ROOMS.iconium7.birds={perch:[{k:'sparrow',y:20,x:[100,110,122]},{k:'dove',y:31,x:[321,347.5],d:[1,-1]}]};
+const BIRDS_ANTIOCH={perch:[{k:'sparrow',y:36,x:[30,40,52]},{k:'dove',y:36,x:[290,304],d:[1,-1]}]};
+
 return{acting:ACTING,rooms:['tarsus7','gates','lystra7','iconium7'],setup:setup7,start:start7,hint:hint7,music:MUSIC,scenes:{antioch:antiochScene,council:councilScene},topics:TOPICS,tablets:TABLETS,
   /* painters: the chapter's animal, for the playtest, which checks that every part of it is attached */
   painters:{ox},

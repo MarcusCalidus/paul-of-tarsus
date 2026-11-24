@@ -1293,6 +1293,14 @@ function hint8(){const b=PC()!==P,his=['paul8b',['this_is_for_paul_to_decide','p
 /* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
    plainly says no. Each is a line of this chapter, in English, as it stands above. */
 const ACTING={shake:['no_paul']};
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+ROOMS.troas.birds={gulls:[375,4,100,22],stand:[[360,101.5,-1]]};
+ROOMS.fork.birds={prey:[150,8,200,30],lark:[170,72,24]};
+ROOMS.ferry.birds={prey:[120,6,260,26],swallows:[40,86,330,14]};
+ROOMS.river.birds={swallows:[50,86,230,14],prey:[240,6,140,24]};
+ROOMS.philippi.birds={perch:[{k:'sparrow',y:19,x:[175,185,197]},{k:'dove',y:12,x:[20,47.5],d:[1,-1]}]};
+
 return{acting:ACTING,rooms:['fork','ferry','troas','philippi','river'],setup:setup8,start:start8,hint:hint8,music:MUSIC,scenes:{dark,deck:deckScene,house:houseScene},topics:TOPICS,tablets:TABLETS,
   /* The whole road of the chapter, on a map of its own, as Chapters Four and Seven have theirs: seen through the Aegean window. */
   view:'aegean',labels:LABELS,route:ROAD,
