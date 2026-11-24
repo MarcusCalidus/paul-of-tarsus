@@ -117,9 +117,10 @@ ART.upper={w:320,q:12,
   /* cracks cut by hand, high on the wall under the ceiling, where they run to no head; rb: a seed of their own */
   {const rb=rng(831);for(const[x,y,n]of[[30,16,3],[152,15,4],[208,16,3],[296,16,4]])crack2(g,x,y,n,rb)}
   comp(g,'multiply',.5,()=>R(g,0,86,320,19,'#d6b890'));R(g,0,85.5,320,.5,'rgba(110,70,30,.4)');for(let i=0;i<320;i+=8){R(g,i,83,4,1.6,RED);R(g,i+4,83,4,1.6,BLUE)}
-  /* ceiling: joists run toward the viewer over a wall plate; the boards between them and the corners beside each joist lie in shade */
+  /* ceiling: joists run toward the viewer over a wall plate; the boards between them and the corners beside each joist lie in shade.
+     The eye's point falls between two of them, so that every joist slants and none stands straight up on the plate as a T */
   plank2(g,0,0,320,10,'#3a2a1c',rw,0);ao(g,0,0,320,7,'t',.4,'#0c0808');
-  for(let i=-1;i<10;i++){const a=8+i*38,k=1.17,x0=160+(a-160)*k,x1=160+(a+7-160)*k;joistAO2(g,a,x0,7,10,'#0c0808');poly(g,[a,10,a+7,10,x1,0,x0,0],T);
+  for(let i=-1;i<9;i++){const a=23.5+i*38,k=1.17,x0=160+(a-160)*k,x1=160+(a+7-160)*k;joistAO2(g,a,x0,7,10,'#0c0808');poly(g,[a,10,a+7,10,x1,0,x0,0],T);
     clipTo(g,()=>poly(g,[a,10,a+7,10,x1,0,x0,0]),()=>tex(g,'vert',.16,x0-2,0,x1-x0+4,10,'overlay',.5));
     poly(g,[a+5,10,a+7,10,x1,0,x1-2.2,0],tint(T,-.4));stroke(g,[a+.25,10,x0+.25,0],tint(T,.25),.5)}
   ao(g,0,7,320,2.5,'b',.28,'#0c0808');board2(g,0,9.5,320,3.5,'#6a4a2c',rw);ao(g,0,13,320,8,'t',.35,'#2a2030');
