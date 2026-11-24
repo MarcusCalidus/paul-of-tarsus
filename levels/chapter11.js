@@ -51,7 +51,7 @@ const CALLS={chisel:[1.2,3.6,(t,d)=>{const n=3+(Math.random()*4|0);for(let i=0;i
 const SH='#8f95c8',MAR='#e2dac6',BRZ='#6f8a6a';
 /* The shared materials (shared/materials.js): quiet grain on wood, two-tone cracks set by hand, soft contact shadows, earth colors.
    This chapter has an earth() of its own, the trodden road, so the shared one is earth11 here. */
-const{plank:plank11,board:board11,crack:crack11,skipCracks:skipCracks11,shadow:shadow11,earth:earth11}=SHARED.materials;
+const{plank:plank11,board:board11,crack:crack11,skipCracks:skipCracks11,shadow:shadow11,earth:earth11,ceiling:ceiling11}=SHARED.materials;
 /* SKY11: a sky drawn a little toward its own grey, so that it sits among the earth and mineral colors of the stone */
 const SKY11=st=>st.map(c=>earth11(c,.14));
 /* sunlight11: the light of a clear day in Athens, high and from the left: the sky and the far country keep it full, what faces the sun
@@ -223,11 +223,9 @@ ART.street11={w:640,q:12,
 
 /* niche: a lamp in a round-headed niche in a plastered wall. bench: a stone bench along a wall, in two tiers; the joints of each tier
    stop short of its edges, and those of the lower tier stand between those of the upper one. */
-/* joists11: the ends of the ceiling joists over the wall plate, from x0 every step, each a short upright board with the soft shade of
-   the ceiling beside it, and the plate along the top of the wall under them, with its shade on the plaster */
-function joists11(g,w,x0,step,jw,jh,ph,r){R(g,0,0,w,jh,'#2e241c');ao(g,0,0,w,jh,'t',.4,'#0c0808');
-  for(let i=x0;i<w;i+=step){ao(g,i-3,0,3,jh,'r',.3,'#0c0808');ao(g,i+jw,0,3,jh,'l',.3,'#0c0808');board11(g,i,0,jw,jh,'#5a4226',r,1)}
-  board11(g,0,jh,w,ph,'#6a4e2c',r);R(g,0,jh+ph-.5,w,.6,'#2a1c12')}
+/* joists11: the ceiling over the back wall, its joists from x0 every step running toward the viewer from the wall plate in the
+   perspective of the floor (shared ceiling(), as in Chapter One's workshop), and the plate along the top of the wall under them */
+function joists11(g,w,x0,step,jw,jh,ph,r){ceiling11(g,w,{x0,step,jw,U:jh,ph,r,boards:'#2e241c',vx:w/2,vy:60});R(g,0,jh+ph-.5,w,.6,'#2a1c12')}
 function niche(g,x,y,W){arch(g,x,y,14,18,tint(W,-.32));arch(g,x+1.4,y+1.4,11.2,16.6,'#4a3828');R(g,x-1,y+17.6,16,1.6,tint(W,.16));R(g,x+3.6,y+15,6.4,2.6,'#b8733c');R(g,x+3.6,y+15,6.4,.6,'#e0a064');R(g,x+9.4,y+14.2,1.8,1.2,'#b8733c')}
 function bench(g,x,y,w,c){R(g,x,y,w,2.4,tint(c,.16));R(g,x,y,w,.7,tint(c,.4));R(g,x,y+2.4,w,5,tint(c,-.2));R(g,x,y+7.4,w,2.2,tint(c,.06));R(g,x,y+7.4,w,.6,tint(c,.3));R(g,x,y+9.6,w,5.4,tint(c,-.3));
   for(let i=x+18;i<x+w-6;i+=26)R(g,i,y+3,.6,3.8,tint(c,-.42));for(let i=x+31;i<x+w-6;i+=26)R(g,i,y+10.2,.6,4.6,tint(c,-.46));ao(g,x,y+11,w,4,'b',.35,'#2a2030')}
@@ -897,10 +895,13 @@ async function speak(){if(F.spoke)return;const st=sp11(),n=partNo(),p=PARTS[n];
   else return broke();
   codeBtn()}
 /* the hearing breaks off (Acts 17:32). Nothing the player did wins anyone or loses anyone. */
+/* After the break each man stands beside his own group, not in front of a man on the seats: Antigenes at the left end of those who
+   laugh, Philokles at the right end of those who would hear more. When Paul goes, he stands beside the man in the brown mantle and
+   Dionysius beside him, so that nobody hides another (the playtest checks it in stop down11). */
 async function broke(){await say(AN,'raised_from_the_dead_said',{to:null});await tell('v32');F.spoke=1;G.sp11=null;
   await narr('he_got_as_far_as_the_resurrection',{dur:4600});
   await say(PH,'not_all_of_us_are_laughing_stranger');
-  place(PH,'hill11',452,124,-1);place(AN,'hill11',262,124,1);SFX.good();codeBtn()}
+  place(PH,'hill11',504,124,-1);place(AN,'hill11',214,124,1);SFX.good();codeBtn()}
 
 /* ============ SO PAUL LEFT THEM ============ */
 /* Three kinds of men are left on the rock (Acts 17:32-34). Those who scoff are answered by the path down; those who would hear more
@@ -918,7 +919,7 @@ async function later(){if(F.later)return say(PH,'by_the_steps_of_the_long_colonn
   await say(PH,'by_the_statues_said');F.later=1;SFX.good();codeBtn()}
 async function down(){if(F.down)return say(P,'they_are_waiting_for_me_here');
   if(!F.later)return say(P,'some_of_them_asked_to_hear');
-  await tell('v33');await walk(P,150,126);F.rose=1;place(DI,'hill11',348,112,-1);await walk(DI,186,124);DI.dir=-1;P.dir=1;await tell('v34');
+  await tell('v33');await walk(P,160,123);F.rose=1;place(DI,'hill11',348,112,-1);await walk(DI,190,124);DI.dir=-1;P.dir=1;await tell('v34');
   await say(DI,'i_have_sat_in_judgment');
   await say(DM,'i_am_damaris');
   await say(DI,'you_spoke_of_the_god_who');
@@ -1137,8 +1138,8 @@ function place11(room){for(const a of[NI,CH,AR,XE,SL,PH,AN,DS,DI,DM]){a.room=nul
   else if(room==='stoa11'){place(P,room,40,124,1);place(PH,room,80,121,1);place(AN,room,402,121,-1);G.z11=null;h11()}
   else if(room==='bases11'){place(P,room,160,236,1);b11()}
   else if(room==='hill11'){place(P,room,366,120,1);place(DM,room,96,126,1);
-    if(F.spoke){place(PH,room,452,124,-1);place(AN,room,262,124,1);G.sp11=null}else{place(PH,room,504,122,-1);place(AN,room,214,122,1);G.sp11=null;sp11()}
-    if(F.rose)place(DI,room,186,124,-1);if(F.down)place(P,room,150,126,1)}
+    if(F.spoke){place(PH,room,504,124,-1);place(AN,room,214,124,1);G.sp11=null}else{place(PH,room,504,122,-1);place(AN,room,214,122,1);G.sp11=null;sp11()}
+    if(F.rose)place(DI,room,190,124,-1);if(F.down)place(P,room,160,123,1)}
   swapBtn()}
 function setup11(){P.hs=null;P.called='Paul';G.b11=G.h11=G.sp11=null;G.wrong11=0;G.s11={};G.z11=null;G.caps11=[];place11('road11');G.inv=['tablets'];G.invs={paul:G.inv};drawInv()}
 

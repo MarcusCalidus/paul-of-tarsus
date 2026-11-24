@@ -16,7 +16,14 @@
      earth(c, k)                          a color drawn a little toward its own grey (k, default .18), so that dyes and painted blues sit
                                           among the mineral and earth colors of the rest
      joistAO(g, a, x0, w, U, c)           the soft shade of the boards beside each joist of a ceiling seen from below, in two steps: a
-                                          joist from a at the wall plate (y = U) to x0 at the top of the picture */
+                                          joist from a at the wall plate (y = U) to x0 at the top of the picture
+     ceiling(g, w, o)                     the ceiling over a back wall, seen from below as Chapter One's workshop shows it: the boards, and
+                                          the joists running from the wall plate toward the viewer in the perspective of the floor (o.vx,
+                                          o.vy: its vanishing point, default the middle of the room and 60), each with its shaded side
+                                          turned to the middle and the soft shade beside it, and the plate along the top of the wall. No
+                                          row of upright beam ends stands on the plate, which would make a row of small T shapes.
+                                          o: {x0, step, U (the top of the plate, default 8), ph (its height, 2.4), jw (a joist's width, 6),
+                                          boards, joist, plate (colors), r} */
 SHARED.materials=(()=>{
 "use strict";
 function plank(g,x,y,w,h,c,r,vert){inRect(g,x,y,w,h,()=>{g.fillStyle=vert?lg(g,x,0,x+w,0,[tint(c,.08),c,tint(c,-.12)]):lg(g,0,y,0,y+h,[tint(c,.08),c,tint(c,-.12)]);g.fillRect(x,y,w,h);
@@ -31,4 +38,12 @@ function skipCracks(r,n){for(let k=0;k<n;k++){r();r();for(let s=0;s<5+r()*4;s++)
 function shadow(g,x,y,rx,ry,a,c){c=c||'#181220';oval(g,x,y,rx*1.3,ry*1.35,rgba(c,a*.3));oval(g,x,y,rx,ry,rgba(c,a*.4));oval(g,x,y,rx*.62,Math.max(1,ry*.6),rgba(c,a*.45))}
 function earth(c,k){const[r,gg,b]=hex(c),m=r*.3+gg*.59+b*.11;return mix(c,toHex(m,m,m),k==null?.18:k)}
 function joistAO(g,a,x0,w,U,c){for(const[d,al]of[[3.4,.14],[1.6,.2]]){poly(g,[a-d,U,a,U,x0,0,x0-d*1.17,0],rgba(c,al));poly(g,[a+w,U,a+w+d,U,x0+w*1.17+d*1.17,0,x0+w*1.17,0],rgba(c,al*.6))}}
-return{plank,board,crack,skipCracks,shadow,earth,joistAO}})();
+function ceiling(g,w,o){const U=o.U||8,ph=o.ph||2.4,jw=o.jw||6,vx=o.vx==null?w/2:o.vx,k=(o.vy||60)/((o.vy||60)-U),T=o.joist||'#5a4226',r=o.r,A='#0c0808';
+  plank(g,0,0,w,U,o.boards||'#2a1d14',r,0);ao(g,0,0,w,U*.75,'t',.45,A);
+  for(let a=o.x0-o.step;a<w+o.step;a+=o.step){if(a+jw<0)continue;const xa=vx+(a-vx)*k,xb=vx+(a+jw-vx)*k,left=a+jw/2<vx,sd=1.8;
+    for(const[d,al]of[[3.4,.14],[1.6,.2]]){poly(g,[a-d,U,a,U,xa,0,xa-d*k,0],rgba(A,left?al*.6:al));poly(g,[a+jw,U,a+jw+d,U,xb+d*k,0,xb,0],rgba(A,left?al:al*.6))}
+    const J=[a,U,a+jw,U,xb,0,xa,0];poly(g,J,T);clipTo(g,()=>poly(g,J),()=>tex(g,'vert',.16,Math.min(a,xa)-2,0,Math.abs(xb-xa)+jw+4,U,'overlay',.5));
+    if(left){poly(g,[a+jw-sd,U,a+jw,U,xb,0,xb-sd*k,0],tint(T,-.4));stroke(g,[a+.25,U,xa+.25,0],tint(T,.25),.5)}
+    else{poly(g,[a,U,a+sd,U,xa+sd*k,0,xa,0],tint(T,-.4));stroke(g,[a+jw-.25,U,xb-.25,0],tint(T,.25),.5)}}
+  ao(g,0,U-2.4,w,2.4,'b',.3,A);board(g,0,U,w,ph,o.plate||'#6a4e2c',r)}
+return{plank,board,crack,skipCracks,shadow,earth,joistAO,ceiling}})();

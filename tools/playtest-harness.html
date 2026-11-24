@@ -1383,6 +1383,13 @@
   /* the river */
   heard.length=0;act(null,'west_gate');await until(()=>G.room==='river'&&!G.busy);
   ok(G.room==='river'&&A('lydia').room==='river'&&A('phila').room==='river'&&A('elpis').room==='river'&&quoted(4)&&said('on_the_sabbath_acts_16_13'),'the Sabbath: women at prayer beside the river');
+  /* depth: the five flat stones where the women sit are props. With the others stepped aside for a moment, Paul walks behind each stone (his feet
+     at its middle) and in front of it: behind, the stone hides his feet and his shadow; in front, his legs hide the stone. */
+  {const away=Object.values(ACT).filter(a=>a!==P&&a.room==='river').map(a=>[a,a.room]);for(const[a]of away)a.room=null;
+   const st=props('river'),bad=[];
+   for(const p of st){const sx=p.x+p.w/2,sy=p.t+p.h/2;if(!await hides([sx-4,sy-1.2,8,2.2],[sx-70,136],[sx,sy],[sx,sy+8]))bad.push(Math.round(sx))}
+   for(const[a,r]of away)a.room=r;for(let i=0;i<300&&G.cam!==camAt(G.room,P.x,P.y)[0];i++)await wait(20);
+   ok(st.length===5&&!bad.length,'depth: whoever walks behind one of the '+st.length+' flat stones by the river is hidden by it, and whoever stands before it hides it'+(bad.length?'. WRONG at x '+bad.join(', '):''))}
   halt('river8',()=>{say(TI,'women_paul')});
   await enter(c8d);ok(G.ch===8&&G.room==='philippi'&&F.gate&&F.shop&&F.awn&&!F.sab&&LU.room==='philippi','a code from Philippi restores it');
   await act(null,'bench');act(null,'west_gate');await until(()=>G.room==='river'&&!G.busy);
@@ -1981,6 +1988,16 @@
   halt('later11');await sweep(PH,AN);
   heard.length=0;await act(null,'path_down');await until(()=>F.down&&!G.busy);note();
   ok(F.down&&F.rose&&told('v33')&&told('v34')&&DI.room==='hill11'&&DM.room==='hill11'&&P.x<200,'so Paul left them, and some joined him: Dionysius, and Damaris (Acts 17:33, 34)');
+  /* nobody hides another (CONTRIBUTING section 4): every figure the next frames draw on the rock, the men on the seats and the two who stand
+     by as well as those who walk, is laid on the others pixel by pixel, and no two share more than a touch */
+  {const rec=[],f0=window.figure;window.figure=function(g,x,y,lit,key,fn,sw){if(!DQ&&g===cx){const X=hp(x),Y=hp(y);
+       rec.push({key,c:sprite(key,fn,key.includes('-1')?-1:1),dx:Math.round((X-FIG.OX/HR)*HR),dy:Math.round((Y-FIG.OY/HR)*HR)})}return f0.apply(this,arguments)};
+   await wait(200);rec.length=0;await wait(200);window.figure=f0;
+   const at=new Set(),fg=rec.filter(f=>!at.has(f.dx+','+f.dy)&&at.add(f.dx+','+f.dy)),A=fg.map(f=>f.c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data),bad=[];
+   for(let i=0;i<fg.length;i++)for(let j=i+1;j<fg.length;j++){const ox=fg[j].dx-fg[i].dx,oy=fg[j].dy-fg[i].dy;if(Math.abs(ox)>=FIG.W||Math.abs(oy)>=FIG.H)continue;let n=0;
+     for(let y=Math.max(0,oy);y<Math.min(FIG.H,FIG.H+oy);y++)for(let x=Math.max(0,ox);x<Math.min(FIG.W,FIG.W+ox);x++)if(A[i][(y*FIG.W+x)*4+3]&&A[j][((y-oy)*FIG.W+x-ox)*4+3])n++;
+     if(n>8)bad.push(fg[i].key.split(/-?1[fs]/)[0]+' and '+fg[j].key.split(/-?1[fs]/)[0]+' ('+n+' px)')}
+   ok(fg.length>=14&&!bad.length,'on the rock as Paul goes, '+fg.length+' figures stand apart: Paul beside the man in the brown mantle, and nobody hides another'+(bad.length?'. OVERLAP: '+bad.join(', '):''))}
   halt('down11');
   pray();await idle();ok(hint()[0]==='open11','the hint: the tablets, for those who ask');
   {const el=await tabs();ok(leaf(0,T('dionysius_asks_whether')).length===1&&leaf(1).length>=12,'the tablets, as they stand at the end');halt('deutsch11');el.click();await idle()}

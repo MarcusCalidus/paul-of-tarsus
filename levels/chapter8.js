@@ -42,7 +42,7 @@ const _=null,
 /* ============ ART ============ */
 /* The shared materials (shared/materials.js): quiet grain, hand-set cracks, soft contact shadows, earth colors. This chapter has an earth() of its
    own (trodden ground), so the shared one is earthTone here. */
-const{plank,board,crack,skipCracks,shadow:softShadow,earth:earthTone}=SHARED.materials;
+const{plank,board,crack,skipCracks,shadow:softShadow,earth:earthTone,ceiling:ceiling8}=SHARED.materials;
 const SH=earthTone('#8f95c8',.2);
 /* dayLight8: the light of an open scene, laid over it as a lightmap: the sky above hz untouched, everything below it a little less than full
    day, and fn(l) adds where the sun falls (pools, long and low wherever a head can come) and where shade gathers */
@@ -521,9 +521,8 @@ ART.lydia8={w:320,q:12,
   /* cracks cut by hand, high under the beams, where they run to no head */
   for(const[x,y,n]of[[40,13,3],[150,12.6,2],[262,13.4,3]])crack(g,x,y,n,rb,.9);
   R(g,0,70,320,34,RED);tex(g,'mott',.28,0,70,320,34,'overlay',1);R(g,0,69,320,1.6,'#e8dcc0');R(g,0,70.6,320,.6,tint(RED,-.32));ao(g,0,70.6,320,4,'t',.18,'#2a1820');
-  /* the beam ends under the ceiling and the plate they rest on, each in the shade of the next */
-  for(let i=10;i<320;i+=36){ao(g,i-3,0,3,8,'r',.28,'#1a1018');ao(g,i+6,0,3.4,8,'l',.34,'#1a1018');board(g,i,0,6,8,'#5a4226',rw,1)}
-  board(g,0,8,320,2.4,'#6a4e2c',rw,0);ao(g,0,10.4,320,12,'t',.42,'#2a2030');ao(g,0,0,320,4,'t',.3,'#1a1018');
+  /* the ceiling: its joists run toward the viewer from the wall plate, in the perspective of the floor (shared ceiling()) */
+  ceiling8(g,320,{x0:10,step:36,r:rw,vx:160,vy:60});ao(g,0,10.4,320,12,'t',.42,'#2a2030');
   /* the door to the street, and beside it the stair to the upper room */
   R(g,14,44,34,60,tint(W,-.16));doorArt(g,17,47,28,57,'#6a4a2c',r,{bands:[]});ao(g,14,44,34,3,'t',.22,'#2a2030');
   for(let i=0;i<7;i++){const x=262+i*8,y=96-i*8;R(g,x,y,58-i*8,8,tint('#cabea2',-i*.02));R(g,x,y,58-i*8,.7,'#f0e6cc');R(g,x,y+7.2,58-i*8,.8,'#8a8068')}
