@@ -78,7 +78,7 @@ function bundles(g,x,y){shadow6(g,x+17,y,18,1.4,.4,'#282040');
 function earth(g,x,y0,w,y1,c,r,n){g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.12),c,tint(c,.1)]);g.fillRect(x,y0,w,y1-y0);tex(g,'mott',.34,x,y0,w,y1-y0,'overlay',1);tex(g,'grain',.14,x,y0,w,y1-y0,'overlay',.5);
   for(let i=0;i<(n||w*.4);i++){const k=r(),sy=y0+1+k*(y1-y0-2),sx=x+r()*w,s=.5+k*1.3;oval(g,sx,sy,s*1.5,s*.6,r()<.5?tint(c,.2):tint(c,-.24));if(r()<.3)oval(g,sx+s*.5,sy+s*.4,s*1.3,s*.3,'rgba(40,36,70,.22)')}}
 /* the oxen and the bulls are painted by shared/beasts.js */
-const cattle=(g,x,y,dir,fr,c,gar,lit)=>SHARED.beasts.ox(g,x,y,dir,fr,c,gar,lit);
+const cattle=(g,x,y,dir,fr,c,gar,lit,z)=>SHARED.beasts.ox(g,x,y,dir,fr,c,gar,lit,z);
 /* wagon: a four-wheeled wagon with solid wheels, its bed at x, standing on the ground at y. cov: 1 the cover is on its hoops, 0 the hoops stand bare, -1 an open wagon with no hoops. load: sacks on its bed.
    pole: how far its pole reaches out in front (13 when it is left out); behind a yoked team it is only a stub, which ends short of the
    near ox's tail: the tail hangs to the hock, and a pole that ran on behind it would cross it */
@@ -393,8 +393,8 @@ ART.derbe={w:320,q:12,
      hangs behind the near ox's flank: lower, its dark switch would show under the near ox's belly and read as a sheath. The yoke rests on
      the crest of the near ox's neck just behind its horns, ending short of the horn, and the near head hides the rest of it and its far
      end, which a horn would otherwise cross. The wagon stands close behind the near ox, its pole a stub that ends short of the tail */
-  depth(111,()=>{cattle(g,276,103.5,1,0,'#6f4630',0);wagon(g,169,110,-1,1,1);cattle(g,262,111,1,SHARED.beasts.pose('oxen6',0),'#8a5a3a',0);
-    R(g,273,73.4,5,2.5,'#5a3e22');R(g,273,73.4,5,.5,'#a8845a')});depth(112,()=>bundles(g,60,112))},
+  cattle(g,276,103.5,1,0,'#6f4630',0,null,111);depth(111,()=>wagon(g,169,110,-1,1,1));cattle(g,262,111,1,SHARED.beasts.pose('oxen6',0),'#8a5a3a',0,null,111);
+  depth(111,()=>{R(g,273,73.4,5,2.5,'#5a3e22');R(g,273,73.4,5,.5,'#a8845a')});depth(112,()=>bundles(g,60,112))},
  front(){}};
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
 Object.assign(LOOK,{

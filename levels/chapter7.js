@@ -88,7 +88,7 @@ function earth(g,x,y0,w,y1,c,r,n){g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.12),c,tin
 function stoneGround(g,x,y0,w,y1,c,r,n){g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.1),c,tint(c,.08)]);g.fillRect(x,y0,w,y1-y0);tex(g,'mott',.45,x,y0,w,y1-y0,'overlay',1);tex(g,'grain',.16,x,y0,w,y1-y0,'overlay',.5);
   for(let i=0;i<(n||w*.5);i++){const k=r(),sy=y0+1+k*(y1-y0-2),sx=x+r()*w,s=.6+k*1.6;oval(g,sx,sy,s*1.5,s*.6,r()<.5?tint(c,.2):tint(c,-.25));if(r()<.3)oval(g,sx+s*.5,sy+s*.4,s*1.4,s*.3,'rgba(40,36,70,.25)')}}
 /* Zenon's team, as it stood at Derbe in Chapter Six: painted by shared/beasts.js */
-const cattle=(g,x,y,dir,fr,c,lit)=>SHARED.beasts.ox(g,x,y,dir,fr,c,0,lit);
+const cattle=(g,x,y,dir,fr,c,lit,z)=>SHARED.beasts.ox(g,x,y,dir,fr,c,0,lit,z);
 /* wagon: a four-wheeled wagon with solid wheels, its bed at x, standing on the ground at y. cov: 1 a cover on its hoops, -1 an open wagon. load: sacks or bales on its bed.
    pole: how far its pole reaches out in front (13 when it is left out); a wagon parked with no team takes its pole in, so that the pole does
    not run across an upright behind it, such as the jamb of a gateway, and make a cross */
@@ -327,8 +327,8 @@ ART.gates={w:480,fp:1.25,q:12,
      The yoke rests on the crest of the near ox's neck just behind its horns, ending short of the horn; the near head hides the rest of it
      and its far end, which a horn would otherwise cross. The wagon stands close behind the near ox and its pole is a stub that ends short
      of the tail, which hangs to the hock: a pole that ran on behind the tail would cross it. */
-  depth(113,()=>{cattle(g,125,105.5,1,0,'#6f4630',lit);wagon(g,18,112,-1,1,1);cattle(g,111,113,1,SHARED.beasts.pose('oxen7',0),'#8a5a3a',lit);
-    R(g,122,75.4,5,2.5,'#5a3e22');R(g,122,75.4,5,.5,'#a8845a')});
+  cattle(g,125,105.5,1,0,'#6f4630',lit,113);depth(113,()=>wagon(g,18,112,-1,1,1));cattle(g,111,113,1,SHARED.beasts.pose('oxen7',0),'#8a5a3a',lit,113);
+  depth(113,()=>{R(g,122,75.4,5,2.5,'#5a3e22');R(g,122,75.4,5,.5,'#a8845a')});
   tentArt(g,t)},
  /* the weather: before the tent is up, the wind, and what it carries; after it, the rain */
  front(g,t){if(!F.up){for(let i=0;i<14;i++){const k=((t/900+i*.0714)%1),x=500-k*540,y=18+((i*37)%96)+Math.sin(k*9+i)*3;R(g,x,y,5+(i%3)*2,.5,`rgba(226,220,206,${.34*(1-Math.abs(k-.5)*2)})`)}return}

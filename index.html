@@ -1892,9 +1892,10 @@ function props(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;if(!a.props
    (and bent upright onto solid back-wall spans when a foreground lamp stands at lz > y). */
 const lumOf=([r,g,b])=>(r*.3+g*.59+b*.11)/255;
 function wallAt(L,id,x){const w=L.wallY;if(typeof w==='function')return w(x);if(w!=null)return w;const r=id&&ROOMS[id];return r&&r.walk?r.walk[2]-2:105}
-function figShadow(g,id,x,y,c,sw){
+function figShadow(g,id,x,y,c,sw,cxOff){
+  cxOff=cxOff||0;
   let L=id&&ART[id]&&ART[id].light;if(typeof L==='function')L=L();
-  if(!L){oval(g,x,y-.4,sw,2,'rgba(24,18,32,.2)');oval(g,x,y-.4,sw*.68,1.3,'rgba(24,18,32,.24)');return}
+  if(!L){oval(g,x+cxOff,y-.4,sw,2,'rgba(24,18,32,.2)');oval(g,x+cxOff,y-.4,sw*.68,1.3,'rgba(24,18,32,.24)');return}
   let[ar,ag,ab]=hex(L.amb||'#ffffff');
   for(const[x0,x1,sc0]of L.shade||[]){const k=clamp(Math.min(x-x0,x1-x)/8,0,1);if(k>0){const q=hex(sc0);ar*=1-k+k*q[0]/255;ag*=1-k+k*q[1]/255;ab*=1-k+k*q[2]/255}}
   const Iamb=lumOf([ar,ag,ab]),wyBase=wallAt(L,id,x);
@@ -1914,8 +1915,8 @@ function figShadow(g,id,x,y,c,sw){
   if(ca<=.01)return;
   srcs.sort((a,b)=>b.I-a.I);const top=srcs.slice(0,2);
   let ox=0,oy=0;if(top.length){const s0=top[0],sh0=s0.I/(Eamb+sumI+.06);ox=clamp(s0.vx*.06*sh0,-2.2,2.2);oy=clamp(s0.vy*.05*sh0,-1,1)}
-  oval(g,x+ox,y-.4+oy,sw,2,rgba('#181220',(.2*ca).toFixed(3)));
-  oval(g,x+ox*.4,y-.4+oy*.4,sw*.68,1.3,rgba('#181220',(.25*ca).toFixed(3)));
+  oval(g,x+cxOff+ox,y-.4+oy,sw,2,rgba('#181220',(.2*ca).toFixed(3)));
+  oval(g,x+cxOff+ox*.4,y-.4+oy*.4,sw*.68,1.3,rgba('#181220',(.25*ca).toFixed(3)));
   if(!top.length||y<wyBase-2)return;
   const casts=top.map(s=>({s,a:clamp(s.I/(Eamb+sumI+.05)*.72*s.grz,0,.44)})).filter(e=>e.a>.016);
   if(!casts.length)return;
@@ -1946,12 +1947,13 @@ function figShadow(g,id,x,y,c,sw){
 function figSprite(g,x,y,lit,c){const W=FIG.W/HR,Hh=FIG.H/HR,dx=x-FIG.OX/HR,dy=y-FIG.OY/HR;if(!lit){g.drawImage(c,dx,dy,W,Hh);return}
   sb.globalCompositeOperation='copy';sb.drawImage(c,0,0);sb.globalCompositeOperation='multiply';sb.fillStyle=lit;sb.fillRect(0,0,FIG.W,FIG.H);
   sb.globalCompositeOperation='destination-in';sb.drawImage(c,0,0);g.drawImage(SB,dx,dy,W,Hh)}
-/* figure: place a sprite with its feet at x,y. lit: the light on it; key: names the pose for the cache; sw: shadow half-width (0 for none). */
-function figure(g,x,y,lit,key,fn,sw){x=hp(x);y=hp(y);sw=sw==null?8.5:sw;
-  const c=sprite(key,fn,key.includes('-1')?-1:1),lid=LID;
-  if(DQ){if(sw>0){if(SQ)SQ.push(()=>figShadow(g,lid,x,y,c,sw));else DQ.push([y,()=>figShadow(g,lid,x,y,c,sw)])}
-    DQ.push([y,()=>figSprite(g,x,y,lit,c)]);return}
-  if(sw>0)figShadow(g,lid,x,y,c,sw);
+/* figure: place a sprite with its feet at x,y. lit: the light on it; key: names the pose for the cache; sw: shadow half-width (0 for none);
+   cxOff: horizontal offset of the contact shadow oval (so a four-footed beast's oval centers under its hooves); z: depth override for a grouped team. */
+function figure(g,x,y,lit,key,fn,sw,cxOff,z){x=hp(x);y=hp(y);sw=sw==null?8.5:sw;
+  const c=sprite(key,fn,key.includes('-1')?-1:1),lid=LID,zy=z==null?y:z;
+  if(DQ){if(sw>0){if(SQ)SQ.push(()=>figShadow(g,lid,x,y,c,sw,cxOff));else DQ.push([zy,()=>figShadow(g,lid,x,y,c,sw,cxOff)])}
+    DQ.push([zy,()=>figSprite(g,x,y,lit,c)]);return}
+  if(sw>0)figShadow(g,lid,x,y,c,sw,cxOff);
   figSprite(g,x,y,lit,c)}
 const blinks=(o,ts)=>((ts+o.ph)%4300)<140;
 /* man: a person by look id, for scenes that pose figures themselves (the ship, the road, the prologue). */
