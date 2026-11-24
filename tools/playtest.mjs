@@ -8,6 +8,7 @@
 //   node tools/playtest.mjs pwa              the installable app: service worker, manifest, offline play (served over http; icon saved as pwa-icon.png)
 //   node tools/playtest.mjs continue         the title screen of a returning player (the game is reloaded; its autosave must bring them back)
 //   node tools/playtest.mjs lanesall         the lane map (shared/lanes.js) on Chapter Fourteen's Ephesus; lanes, lanes2, lanesfolk and lanesmap are its pictures
+//   node tools/playtest.mjs shadows          cast & contact shadows across single-lamp, multi-lamp, pitch-dark and wall-crease rooms (saves cast-shadows and room sheets)
 // It first checks the translations against the English text (tools/strings.mjs), and that every picture in docs/screenshots is listed
 // with its stop in tools/screenshots.txt (tools/retake.mjs takes the pictures again from that list).
 // Screenshots go to tools/out/ (or $SHOTS). Set $CHROME to use another Chromium-based browser.

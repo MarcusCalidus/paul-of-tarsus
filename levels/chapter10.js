@@ -139,7 +139,7 @@ ART.yard10={w:320,q:12,variant:yardV,
   else if(dusk)lightmap(g,320,'#b89c98',l=>{pool(l,34,84,70,80,'#ffd0a0',1);pool(l,90,124,150,40,'#ffc898',.6);pool(l,200,26,150,12,'#ffc8a0',.45);pool(l,140,112,60,8,'#ffd4a8',.3);bands(l,.12,.24)});
   else{lightmap(g,320,'#e2dcdc',l=>{pool(l,170,52,210,48,'#fff6e4',.55);pool(l,34,80,56,60,'#fffbec',.6);pool(l,160,126,210,26,'#fff4dc',.5);pool(l,211,96,40,8,'#fff0d8',.3);bands(l,.08,.16)});
     shade(g,[0,104,320,104,320,112,0,116],SH,.35);comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(250,244,222,0)','rgba(250,244,222,.9)']);g.fillRect(0,103,320,41)});pool(g,34,84,70,70,'#fff0cc',.22,'screen')}},
- light(){const v=yardV();return v==='n'?{amb:'#6c6e96',lamps:[[211,96,96,'#7a5220']]}:v==='u'?{amb:'#e8cdbc'}:null},
+ light(){const v=yardV();return v==='n'?{amb:'#6c6e96',wallY:103,wall:[[0,18,103,19],[50,320,103,19]],lamps:[[211,96,96,'#7a5220',103,55.6]]}:v==='u'?{amb:'#e8cdbc',wallY:103}:null},
  draw(g,t){const v=yardV();if(v==='n')flame(g,214.6,55.6,t);
   /* the bolt, pegged out at the foot of the wall: until it is cut. Its third cubit from the left is woven thin. */
   if(!F.cutd&&v!=='u'){const x0=80,x1=200,y0=105.2,y1=112.4,k=v==='n'?.5:1,c=tint(CLOTH,k<1?-.3:0);poly(g,[x0,y0,x1,y0,x1+6,y1,x0-6,y1],c);
@@ -360,7 +360,7 @@ ART.night10={w:320,q:12,
   lightmap(g,320,earth10('#4a4460',.15),l=>{nicheLight(l,185,53,36,30,'#ffc070',.95);pool(l,185,104,110,56,'#ffb060',.6);pool(l,166,127,90,12,'#ffb060',.3);pool(l,252,52,34,10,'#ffb868',.22);
     pool(l,60,110,60,40,'#5a5e90',.25);pool(l,113,47,16,10,'#5a6090',.2);
     l.fillStyle=lg(l,0,0,0,30,['rgba(20,16,24,.3)','rgba(20,16,24,0)']);l.fillRect(0,0,320,30);l.fillStyle=lg(l,0,124,0,144,['rgba(20,16,24,0)','rgba(20,16,24,.32)']);l.fillRect(0,124,320,20)})},
- light:{amb:'#6e627a',lamps:[[185,96,110,'#7a5220']]},
+ light:{amb:'#6e627a',wallY:103,wall:[[0,320,103,14]],lamps:[[185,96,110,'#7a5220',103,53.6]]},
  draw(g,t){flame(g,188.6,53.6,t)},front(){}};
 
 /* ---------- The synagogue of Beroea ---------- */

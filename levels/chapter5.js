@@ -270,7 +270,7 @@ ART.pisidia={w:480,fp:1.3,q:12,
  front(){}};
 /* ---------- Antioch in Pisidia: inside the synagogue ---------- */
 ART.synp={w:320,q:12,
- light:()=>({amb:'#d6ccc4',lamps:[[98,54,44,'#5a3a14'],[222,54,44,'#5a3a14']]}),
+ light:()=>({amb:'#d6ccc4',wallY:103,wall:[[0,320,103,38]],lamps:[[98,54,44,'#5a3a14',103,54.2],[222,54,44,'#5a3a14',103,54.2]]}),
  paint(g){const r=rng(383),rw=rng(389),ST='#d4c9ae',W='#dcd0b4';
   /* the wall; the ceiling at its edge, its joists running toward us; the wall plate they rest on, and the shade under it */
   ashlar(g,0,0,320,104,W,r,{bw:22,bh:9,v:.06,t:.3});

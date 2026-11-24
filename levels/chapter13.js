@@ -198,7 +198,7 @@ ART.shop13={w:320,q:12,variant:()=>SHOPV(),
   if(v==='n')lightmap(g,320,'#4a4460',l=>{pool(l,148,50,78,64,'#ffd9a0',1);pool(l,140,98,130,42,'#ffcf90',.7);pool(l,130,86,64,8,'#ffe0b0',.4);pool(l,206,92,30,18,'#ffcf90',.3);pool(l,264,70,40,50,'#7a84b8',.4);pool(l,14,70,40,70,'#6a6080',.5,'multiply')});
   else if(v==='m')lightmap(g,320,'#5a5470',l=>{pool(l,148,50,74,62,'#ffd9a0',1);pool(l,136,98,120,40,'#ffcf90',.7);pool(l,130,86,60,8,'#ffe0b0',.36);pool(l,264,74,54,64,'#c8c4d8',.75);pool(l,240,124,90,30,'#b8b4c8',.4);pool(l,14,70,40,70,'#7a7090',.5,'multiply')});
   else lightmap(g,320,'#b0a69c',l=>{pool(l,264,74,84,74,'#fff4d8',.95);pool(l,200,122,170,36,'#ffeecc',.6);pool(l,150,86,80,10,'#fff0d4',.3);pool(l,210,96,26,16,'#fff4d8',.3);pool(l,14,74,44,74,'#9a9098',.5,'multiply')})},
- light:()=>SHOPV()==='n'?{amb:'#8a84a8',lamps:[[148,70,90,'#7a5a30']]}:SHOPV()==='m'?{amb:'#9a94b0',lamps:[[148,70,90,'#6a4e2a']]}:{amb:'#e6dcd4'},
+ light:()=>{const W=[[0,24,103,46],[24,232,103,12],[296,320,103,12]];return SHOPV()==='n'?{amb:'#8a84a8',wallY:103,wall:W,lamps:[[148,70,90,'#7a5a30',103,47]]}:SHOPV()==='m'?{amb:'#9a94b0',wallY:103,wall:W,lamps:[[148,70,90,'#6a4e2a',103,47]]}:{amb:'#e6dcd4',wallY:103}},
  draw(g,t){benchTop13(g);if(SHOPV()!=='d')flame(g,152,47,t)},front(){}};
 
 /* ---------- The synagogue of Ephesus ---------- */
@@ -311,7 +311,7 @@ ART.street13={w:640,q:12,variant:()=>STREETV(),
       ao(g,166,52,10,52,'l',.4,'#2a1a10');ao(g,214,52,10,52,'r',.4,'#2a1a10')});
     litLayer(g,640,'#6a5a68',l=>{for(const[x,h,c]of[[172,12,GOAT],[186,9,'#4a3e34'],[200,13,GOAT],[212,8,LIN]])clothRoll(l,x,103,9,h,c)},l=>pool(l,196,84,40,10,'#ffb868',.5));
     for(const[x,y,rx,ry,a]of[[195,100,60,34,.5],[508,96,34,30,.42],[564,96,30,28,.42],[617,96,34,30,.45],[133,96,26,26,.38]])pool(g,x,y,rx,ry,'#ffb868',a,'screen')}},
- light:()=>{const v=STREETV();return v==='e'?{amb:'#a89ac0',lamps:[[195,96,50,'#6a4a20'],[508,96,30,'#5a4018'],[564,96,28,'#5a4018'],[617,96,30,'#5a4018'],[133,96,26,'#4a3414']]}:v==='n'?null:{amb:'#f0e8dc'}},
+ light:()=>{const v=STREETV();return v==='e'?{amb:'#a89ac0',wallY:103,lamps:[[195,96,50,'#6a4a20',103,92],[508,96,30,'#5a4018',103,72],[564,96,28,'#5a4018',103,76],[617,96,30,'#5a4018',103,72],[133,96,26,'#4a3414',103,78]]}:v==='n'?null:{amb:'#f0e8dc',wallY:103}},
  draw(g,t){streetDraw(g,t)},front(){}};
 /* dialArt: the sundial on its pillar, in the street, its foot at x,y. A block of pale stone with a hollow like a quarter of a bowl cut into
    its face; three notches on the rim of the hollow (morning, midday, evening), and a bronze pointer leaded into its top that leans out

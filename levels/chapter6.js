@@ -296,7 +296,7 @@ function lowTable(g,day){const rt=rng(4621);board6(g,170,112,40,3,'#96703e',rt);
 ART.house6={w:320,q:12,
  variant:()=>F.back?'d':'n',
  props:[{y:123,shape:(g,v)=>lowTable(g,v==='d')}],
- light:()=>F.back?{amb:'#f0e8dc'}:{amb:'#7c6f86',lamps:[[150,58,60,'#7a5420'],[92,96,46,'#7a3c14']]},
+ light:()=>F.back?{amb:'#f0e8dc',wallY:103}:{amb:'#7c6f86',wallY:103,wall:[[0,52,103,11],[52,68,103,45],[68,320,103,11]],lamps:[[150,58,60,'#7a5420',103,59.4],[92,96,46,'#7a3c14',103,100]]},
  paint(g,v){const r=rng(461),rw=rng(4611),rc=rng(4612),W='#d8c8a4',day=v==='d';
   /* the plaster's random cracks are set by hand now, high on the wall where they run to no head; their draws are still taken */
   plaster(g,0,0,320,104,W,r,{patch:4,cracks:0,brick:'#a8875a',t:.36});skipCracks6(r,6);

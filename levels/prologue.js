@@ -213,7 +213,7 @@ ART.pro_road={w:320,q:12,
 
 /* ---------- Picture 8: A room in Damascus (the house of Judas on the street called Straight) ---------- */
 ART.pro_judas={w:320,q:12,
-  light:()=>({amb:'#7a7288',lamps:[[42,76,120,'#e8cfa0'],[232,48,95,'#d8c4a0']]}),
+  light:()=>({amb:'#7a7288',wallY:105,wall:[[7,22,105,12],[54,223,105,12],[223,243,105,46],[243,313,105,12]],lamps:[[42,76,120,'#e8cfa0',105,72],[232,48,95,'#d8c4a0',105,36]]}),
   paint(g){const r=rng(548),rb=rng(5481),rw=rng(5482),W='#d4c09e',T='#68482c';
     plaster(g,0,0,320,105,W,r,{patch:4,cracks:0,brick:'#a67850',t:.36});skipCracks(r,5);
     /* cracks cut by hand, high on the wall under the ceiling, where they run to no head */
