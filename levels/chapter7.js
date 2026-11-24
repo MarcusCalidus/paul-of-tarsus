@@ -316,8 +316,9 @@ ART.gates={w:480,fp:1.25,q:12,
   for(const[a,b,c,d]of FIS){stroke(g,[a,b,(a+c)/2+1.4,(b+d)/2,c,d],rgba(DK,.4),.9);stroke(g,[a+.7,b,(a+c)/2+2.1,(b+d)/2,c+.7,d],'rgba(246,238,220,.16)',.5)}
   for(const[x,y,w]of[[14,42,36],[120,30,30],[178,64,34],[270,50,36],[446,60,28]]){poly(g,[x,y,x+w,y-1.4,x+w-3,y+2.2,x+4,y+3],rgba(DK,.36));stroke(g,[x,y,x+w,y-1.4],'rgba(246,238,220,.4)',.6)}
   stroke(g,[340,0,351,16,343,44,355,70,348,100],'rgba(246,238,220,.4)',.8);stroke(g,[394,0,383,20,390,46,380,74,388,100],rgba(DK,.4),.8);
-  /* the road: a ledge cut into the foot of the left wall, the marks of the picks still on the rock above it, and climbing on into the gap */
-  clipTo(g,()=>poly(g,[0,84,170,86,280,89,348,92,348,100,0,100]),()=>{R(g,0,82,350,18,tint(LS,-.3));for(let x=3;x<348;x+=2.4+r()*3)stroke(g,[x,85+x*.02,x+1.4,96],rgba(DK,.36),.5);tex(g,'mott',.36,0,82,350,18,'overlay',1);
+  /* the road: a ledge cut into the foot of the left wall, the marks of the picks still on the rock above it, and climbing on into the gap.
+     Each pick mark slants as the blow fell and stops short of the ledge's lit edge, so that none stands on it as an upside-down T */
+  clipTo(g,()=>poly(g,[0,84,170,86,280,89,348,92,348,100,0,100]),()=>{R(g,0,82,350,18,tint(LS,-.3));for(let x=3;x<348;x+=2.4+r()*3)stroke(g,[x,85+x*.02,x+3.6,93.6+x/348],rgba(DK,.36),.5);tex(g,'mott',.36,0,82,350,18,'overlay',1);
     ao(g,0,84,350,5,'t',.35,DK)});
   poly(g,[0,95.4,348,96.4,374,100,0,100],'#c9bea6');stroke(g,[0,95.4,348,96.4],'rgba(250,244,226,.5)',.5);
   poly(g,[348,100,374,100,369,78,361,78],'#b8ad98');stroke(g,[348,100,361,78],rgba(DK,.5),.7);stroke(g,[374,100,369,78],'rgba(255,246,224,.3)',.5);
