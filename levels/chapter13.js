@@ -1360,7 +1360,7 @@ ROOMS.road13={space:.5,walk:[20,304,112,138],mood:'road',amb:{wind:.5,birds:.3,l
   {name:'city',x:102,y:82,w:60,h:20,wx:130,wy:114,look:'ephesus_the'},
   {name:'theater',x:140,y:62,w:50,h:24,wx:164,wy:114,look:'theater_cut_into_the_hill'},
   {name:'building_in_the_plain',x:244,y:48,w:44,h:22,wx:250,wy:114,look:'far_off_in_the_plain_a_house'},
-  {name:'pine',x:4,y:30,w:36,h:74,wx:44,wy:114,dir:-1,look:'pine_bent_by_the_wind_off'},
+  {name:'pine',x:4,y:30,w:46,h:74,wx:44,wy:114,dir:-1,look:'pine_bent_by_the_wind_off'},
   {name:'road_down_to_the_city',x:296,y:96,w:24,h:48,wx:302,wy:126,dir:1,exit:intoCity,look:'road_goes_on_down_into_the_city'}]};
 ROOMS.hall13={space:1.3,walk:[58,238,112,137],mood:'noon',amb:{cicada:.5,flap:.35},enter:hallEnter,hs:[
   {name:'door_curtain',x:13,y:39,w:34,h:65,wx:62,wy:118,dir:-1,exit:()=>goto('street13',428,120,1),look:'curtain_and_behind_it_a_street'},
