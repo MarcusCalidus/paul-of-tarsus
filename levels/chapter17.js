@@ -184,8 +184,7 @@ function cap17(g,s,x,y,w,o){o=o||{};s=T(s);let sz=o.sz||5;g.font=FONT17(sz);g.te
    square at this size), and a bale of wool in sacking, corded round its middle only; both as they stand in the hold or on a quay */
 function jarsRow17(g,x,y,w,h,c){c=c||'#a65a34';R(g,x,y+h-2,w,2,'#6a5a3a');
   for(let i=0;i<4;i++){const cx=x+w*(i+.5)/4,rx=w/8-.4;poly(g,[cx-rx,y+h-1.5,cx-rx*1.05,y+h*.45,cx-rx*.45,y+2.2,cx+rx*.45,y+2.2,cx+rx*1.05,y+h*.45,cx+rx,y+h-1.5]);
-    g.fillStyle=lg(g,cx-rx,0,cx+rx,0,[tint(c,.2),c,tint(c,-.32)]);g.fill();R(g,cx-1,y+.6,2,1.8,tint(c,-.4));R(g,cx-1,y+.6,2,.5,tint(c,.3))}
-  for(let i=0;i<10;i++)R(g,x+i*w/10,y+h*.5,w/12,.5,'rgba(120,100,60,.45)')}
+    g.fillStyle=lg(g,cx-rx,0,cx+rx,0,[tint(c,.2),c,tint(c,-.32)]);g.fill();R(g,cx-1,y+.6,2,1.8,tint(c,-.4));R(g,cx-1,y+.6,2,.5,tint(c,.3))}}
 function bale17(g,x,y,w,h,c){c=c||'#c8b48a';const P=[x+1,y+h,x,y+h*.4,x+1.4,y+.6,x+w-1.4,y+.6,x+w,y+h*.4,x+w-1,y+h];poly(g,P);
   g.fillStyle=lg(g,0,y,0,y+h,[tint(c,.2),c,tint(c,-.25)]);g.fill();clipTo(g,()=>poly(g,P),()=>tex(g,'mott',.4,x,y,w,h,'overlay',.5));
   stroke(g,[x+.6,y+h*.55,x+w-.6,y+h*.55],tint(c,-.45),.8)}
@@ -331,7 +330,7 @@ function boxHold17(id){const L=LOTS17.find(l=>l.id===id),bx={'-2':64,'-1':104,'2
 function drawHold17(g,t){const k=keel17(),a=k.trim*TILTHold17,[px,py]=PIVOTHold17;
   g.save();g.translate(px,py);g.rotate(a);g.translate(-px,-py);hullHold17(g);
   for(const l of LOTS17){if(k.out.includes(l.id))continue;const[x,y,w,h]=boxHold17(l.id);(l.w===3?jarsRow17:bale17)(g,x,y,w,h);
-    const d=k.chalk[l.id];if(d){for(let i=0;i<d;i++)R(g,x+w/2-d*1.5+i*3+.5,y+h*.3,1,h*.4,'#f4f0e6')}
+    const d=k.chalk[l.id];if(d){for(let i=0;i<d;i++)R(g,x+w/2-d*1.5+i*3+.5,y+2.5,1,h*.42-2.5,'#f4f0e6')}
     if(k.sel===l.id){stroke(g,[x,y,x+w,y,x+w,y+h,x,y+h,x,y],'#ffe6a0',.6)}}
   g.restore();
   /* the water outside, level whatever she does: it covers her below the waterline */
