@@ -1981,6 +1981,16 @@
   halt('later11');await sweep(PH,AN);
   heard.length=0;await act(null,'path_down');await until(()=>F.down&&!G.busy);note();
   ok(F.down&&F.rose&&told('v33')&&told('v34')&&DI.room==='hill11'&&DM.room==='hill11'&&P.x<200,'so Paul left them, and some joined him: Dionysius, and Damaris (Acts 17:33, 34)');
+  /* nobody hides another (CONTRIBUTING section 4): every figure the next frames draw on the rock, the men on the seats and the two who stand
+     by as well as those who walk, is laid on the others pixel by pixel, and no two share more than a touch */
+  {const rec=[],f0=window.figure;window.figure=function(g,x,y,lit,key,fn,sw){if(!DQ&&g===cx){const X=hp(x),Y=hp(y);
+       rec.push({key,c:sprite(key,fn,key.includes('-1')?-1:1),dx:Math.round((X-FIG.OX/HR)*HR),dy:Math.round((Y-FIG.OY/HR)*HR)})}return f0.apply(this,arguments)};
+   await wait(200);rec.length=0;await wait(200);window.figure=f0;
+   const at=new Set(),fg=rec.filter(f=>!at.has(f.dx+','+f.dy)&&at.add(f.dx+','+f.dy)),A=fg.map(f=>f.c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data),bad=[];
+   for(let i=0;i<fg.length;i++)for(let j=i+1;j<fg.length;j++){const ox=fg[j].dx-fg[i].dx,oy=fg[j].dy-fg[i].dy;if(Math.abs(ox)>=FIG.W||Math.abs(oy)>=FIG.H)continue;let n=0;
+     for(let y=Math.max(0,oy);y<Math.min(FIG.H,FIG.H+oy);y++)for(let x=Math.max(0,ox);x<Math.min(FIG.W,FIG.W+ox);x++)if(A[i][(y*FIG.W+x)*4+3]&&A[j][((y-oy)*FIG.W+x-ox)*4+3])n++;
+     if(n>8)bad.push(fg[i].key.split(/-?1[fs]/)[0]+' and '+fg[j].key.split(/-?1[fs]/)[0]+' ('+n+' px)')}
+   ok(fg.length>=14&&!bad.length,'on the rock as Paul goes, '+fg.length+' figures stand apart: Paul beside the man in the brown mantle, and nobody hides another'+(bad.length?'. OVERLAP: '+bad.join(', '):''))}
   halt('down11');
   pray();await idle();ok(hint()[0]==='open11','the hint: the tablets, for those who ask');
   {const el=await tabs();ok(leaf(0,T('dionysius_asks_whether')).length===1&&leaf(1).length>=12,'the tablets, as they stand at the end');halt('deutsch11');el.click();await idle()}

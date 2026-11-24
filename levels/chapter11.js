@@ -895,10 +895,13 @@ async function speak(){if(F.spoke)return;const st=sp11(),n=partNo(),p=PARTS[n];
   else return broke();
   codeBtn()}
 /* the hearing breaks off (Acts 17:32). Nothing the player did wins anyone or loses anyone. */
+/* After the break each man stands beside his own group, not in front of a man on the seats: Antigenes at the left end of those who
+   laugh, Philokles at the right end of those who would hear more. When Paul goes, he stands beside the man in the brown mantle and
+   Dionysius beside him, so that nobody hides another (the playtest checks it in stop down11). */
 async function broke(){await say(AN,'raised_from_the_dead_said',{to:null});await tell('v32');F.spoke=1;G.sp11=null;
   await narr('he_got_as_far_as_the_resurrection',{dur:4600});
   await say(PH,'not_all_of_us_are_laughing_stranger');
-  place(PH,'hill11',452,124,-1);place(AN,'hill11',262,124,1);SFX.good();codeBtn()}
+  place(PH,'hill11',504,124,-1);place(AN,'hill11',214,124,1);SFX.good();codeBtn()}
 
 /* ============ SO PAUL LEFT THEM ============ */
 /* Three kinds of men are left on the rock (Acts 17:32-34). Those who scoff are answered by the path down; those who would hear more
@@ -916,7 +919,7 @@ async function later(){if(F.later)return say(PH,'by_the_steps_of_the_long_colonn
   await say(PH,'by_the_statues_said');F.later=1;SFX.good();codeBtn()}
 async function down(){if(F.down)return say(P,'they_are_waiting_for_me_here');
   if(!F.later)return say(P,'some_of_them_asked_to_hear');
-  await tell('v33');await walk(P,150,126);F.rose=1;place(DI,'hill11',348,112,-1);await walk(DI,186,124);DI.dir=-1;P.dir=1;await tell('v34');
+  await tell('v33');await walk(P,160,123);F.rose=1;place(DI,'hill11',348,112,-1);await walk(DI,190,124);DI.dir=-1;P.dir=1;await tell('v34');
   await say(DI,'i_have_sat_in_judgment');
   await say(DM,'i_am_damaris');
   await say(DI,'you_spoke_of_the_god_who');
@@ -1135,8 +1138,8 @@ function place11(room){for(const a of[NI,CH,AR,XE,SL,PH,AN,DS,DI,DM]){a.room=nul
   else if(room==='stoa11'){place(P,room,40,124,1);place(PH,room,80,121,1);place(AN,room,402,121,-1);G.z11=null;h11()}
   else if(room==='bases11'){place(P,room,160,236,1);b11()}
   else if(room==='hill11'){place(P,room,366,120,1);place(DM,room,96,126,1);
-    if(F.spoke){place(PH,room,452,124,-1);place(AN,room,262,124,1);G.sp11=null}else{place(PH,room,504,122,-1);place(AN,room,214,122,1);G.sp11=null;sp11()}
-    if(F.rose)place(DI,room,186,124,-1);if(F.down)place(P,room,150,126,1)}
+    if(F.spoke){place(PH,room,504,124,-1);place(AN,room,214,124,1);G.sp11=null}else{place(PH,room,504,122,-1);place(AN,room,214,122,1);G.sp11=null;sp11()}
+    if(F.rose)place(DI,room,190,124,-1);if(F.down)place(P,room,160,123,1)}
   swapBtn()}
 function setup11(){P.hs=null;P.called='Paul';G.b11=G.h11=G.sp11=null;G.wrong11=0;G.s11={};G.z11=null;G.caps11=[];place11('road11');G.inv=['tablets'];G.invs={paul:G.inv};drawInv()}
 
