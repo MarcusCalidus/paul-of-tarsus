@@ -256,7 +256,7 @@ ART.troas={w:480,fp:1.25,q:12,
  /* what stands or lies out on the quay, where a man can walk behind it: the jar that stands forward of the others, the two halves of the broken one
     (the oil and the shards lie flat, and hide nobody), and the heap of sailcloth */
  props:[{y:113,shape:g=>vessel(g,170,113,4.6,15,'#9a4c28','amph',{noShadow:1})},{y:118.6,shape:(g,v)=>{if(v!=='m')brokenJar(g,1)}},{y:118,shape:g=>sailHeap(g,1)}],
- light:()=>F.vision?null:{amb:'#e6c2a8',lamps:[[52,92,46,'#5a3c10']]},
+ light:()=>F.vision?null:{amb:'#e6c2a8',wallY:104,wall:[[0,92,104,25],[92,104,104,31],[138,152,104,31],[186,196,104,31]],lamps:[[52,92,46,'#5a3c10',104,77]]},
  paint(g,v){const r=rng(829),eve=v!=='m',W=eve?'#d8c4a0':'#e6dcc0',ST='#cfc4a6';
   /* the sky over the sea: the sun going down into it, or the clear light of a morning with the wind in the south */
   if(eve){sky(g,480,64,['#283868','#585a92','#b86a80','#ee9858','#f8d084']);pool(g,372,62,90,38,'#ffe0a0',.7);pool(g,372,62,26,13,'#fff6d8',.9);
@@ -680,7 +680,7 @@ ROOMS.fork={space:.5,walk:[16,464,112,138],mood:'hope',amb:{wind:.5,birds:.5,hoo
   {name:'sheepfold',x:332,y:62,w:92,h:24,wx:380,look:'sheepfold_of_field_stone'},
   {name:'milestone',x:207,y:86,w:12,h:23,wx:226,wy:114,dir:-1,look:async()=>{await say(P,'milestone_of_the_romans');return say(P,quote('prov16'))},
     use:'i_lean_on_it_for_a_moment',pickup:'it_has_stood_here_longer'},
-  {name:'mule',x:128,y:90,w:44,h:34,wx:184,wy:126,dir:-1,look:'carriers_mule_under_more',pickup:'it_is_attaloss_and_it_would'},
+  {name:'mule',x:116,y:74,w:56,h:49,wx:104,wy:127,dir:1,look:'carriers_mule_under_more',pickup:'it_is_attaloss_and_it_would'},
   {name:'track_to_the_north',x:232,y:76,w:76,h:32,wx:254,wy:113,dir:1,exit:trackNorth,
     look:()=>say(P,F.asia?'track_north_bare_earth':'track_leaving_the_paved')},
   {name:'paved_road_west',x:0,y:104,w:15,h:34,wx:22,wy:122,dir:-1,exit:roadWest,

@@ -1300,7 +1300,7 @@ const camAt=(id,x,y)=>{const z=zoomOf(id),w=VW/z,h=VH/z;return[clamp(x-w/2,0,Mat
 /* A room whose light changes (a lamp put out, shutters opened) names its current variant, and gets one backdrop per variant. */
 function bg(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;return BG[k]||(BG[k]=bake(a.w,g=>a.paint(g,v),a.q,a.h))}
 function fg(id){const a=ART[id];if(!a.fore)return null;return FG[id]||(FG[id]=bake(Math.round(VW+(a.w-VW)*(a.fp||1)),g=>a.fore(g),a.q))}
-const backdrop=(g,id,cam,camY)=>g.drawImage(bg(id),-(cam||0),-(camY||0),ART[id].w,roomH(id));
+const backdrop=(g,id,cam,camY)=>{LID=planOf(id)?null:id;g.drawImage(bg(id),-(cam||0),-(camY||0),ART[id].w,roomH(id))};
 /* planOf: a room seen from above (a lane map, shared/lanes.js) has a plan, which walks, draws and moves the people in it: see walk, update,
    drawActor and clickView. Its fig is the size of a figure on it, [half its width, its height]; a room's own figures are [10, 49]. */
 const planOf=id=>id&&ROOMS[id]&&ROOMS[id].plan||null;
@@ -1628,7 +1628,7 @@ function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
   if(G.room&&!G.scene){const[t,u]=camAt(G.room,PC().x,PC().y),k=Math.min(1,dt*5);G.cam+=(t-G.cam)*k;if(Math.abs(t-G.cam)<.5)G.cam=t;
     G.camY+=(u-G.camY)*k;if(Math.abs(u-G.camY)<.5)G.camY=u}}
 /* --- figures: each pose is drawn once into a cached sprite (dark contour, dither), then lit by the room and laid on the scene --- */
-const[SA,sa]=mk(FIG.W,FIG.H),[SB,sb]=mk(FIG.W,FIG.H),SPR=new Map();sa.imageSmoothingEnabled=false;
+const[SA,sa]=mk(FIG.W,FIG.H),[SB,sb]=mk(FIG.W,FIG.H),[SC,sc]=mk(FIG.W,FIG.H),SPR=new Map();sa.imageSmoothingEnabled=false;sc.imageSmoothingEnabled=false;
 /* sprite: draw a pose once and keep it. Edge pixels are darkened, more so on the side away from the light (dir tells which).
    A speaking figure has many poses (mouth, head, hand), so the store holds up to 500 and then lets the 150 oldest go. */
 function sprite(key,fn,dir){let c=SPR.get(key);if(c)return c;if(SPR.size>=500){let n=150;for(const k of SPR.keys()){SPR.delete(k);if(!--n)break}}const W=FIG.W,Hh=FIG.H;
@@ -1647,7 +1647,7 @@ function lightAt(id,x,y){let L=id&&ART[id].light;if(typeof L==='function')L=L();
    puts any other drawing in that queue. Then the queue, the room's props and its actors are drawn in order of y; where two stand level, the actor is
    in front. Inside fn figures are drawn at once, in the order written: a team of oxen with its wagon and yoke is one thing, at one depth. Outside a
    room's draw() (a cutscene, the front layer) there is no queue, and everything is drawn where it is written. */
-let DQ=null;
+let DQ=null,SQ=null,LID=null;
 function depth(y,fn){if(DQ)DQ.push([y,fn]);else fn()}
 /* props: a thing that is painted into the backdrop and stands inside the walkable strip (a stool, a low table, a heap of sailcloth) is named once more
    in ART[id].props, as {y, shape(g,variant)}: y is where it stands on the floor, and shape() fills its outline in any color, without its shadow. The
@@ -1659,11 +1659,71 @@ function props(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;if(!a.props
   for(let y=0,i=3;y<Hh;y++)for(let x=0;x<W;x++,i+=4){if(d[i]<128){d[i]=0;continue}d[i]=255;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
   if(x1<0)return null;g.putImageData(im,0,0);g.globalCompositeOperation='source-in';g.drawImage(bg(id),0,0);
   const w=x1-x0+1,h=y1-y0+1,[o,og]=mk(w,h);og.drawImage(c,-x0,-y0);return{y:p.y,c:o,x:x0/HR,t:y0/HR,w:w/HR,h:h/HR}}).filter(Boolean))}
-/* figure: place a sprite with its feet at x,y. lit: the light on it; key: names the pose for the cache; sw: shadow half-width (0 for none). */
-function figure(g,x,y,lit,key,fn,sw){if(DQ){DQ.push([y,()=>figure(g,x,y,lit,key,fn,sw)]);return}x=hp(x);y=hp(y);if(sw!==0){oval(g,x,y-.4,sw||8.5,2,'rgba(0,0,0,.2)');oval(g,x,y-.4,(sw||8.5)*.68,1.3,'rgba(0,0,0,.24)')}
-  const c=sprite(key,fn,key.includes('-1')?-1:1),W=FIG.W/HR,Hh=FIG.H/HR,dx=x-FIG.OX/HR,dy=y-FIG.OY/HR;if(!lit){g.drawImage(c,dx,dy,W,Hh);return}
+/* figShadow: grounded contact oval plus up to two softened #181220 multiply silhouette shadows projected from ART[id].light onto the floor
+   (and bent upright onto solid back-wall spans when a foreground lamp stands at lz > y). */
+const lumOf=([r,g,b])=>(r*.3+g*.59+b*.11)/255;
+function wallAt(L,id,x){const w=L.wallY;if(typeof w==='function')return w(x);if(w!=null)return w;const r=id&&ROOMS[id];return r&&r.walk?r.walk[2]-2:105}
+function figShadow(g,id,x,y,c,sw){
+  let L=id&&ART[id]&&ART[id].light;if(typeof L==='function')L=L();
+  if(!L){oval(g,x,y-.4,sw,2,'rgba(24,18,32,.2)');oval(g,x,y-.4,sw*.68,1.3,'rgba(24,18,32,.24)');return}
+  let[ar,ag,ab]=hex(L.amb||'#ffffff');
+  for(const[x0,x1,sc0]of L.shade||[]){const k=clamp(Math.min(x-x0,x1-x)/8,0,1);if(k>0){const q=hex(sc0);ar*=1-k+k*q[0]/255;ag*=1-k+k*q[1]/255;ab*=1-k+k*q[2]/255}}
+  const Iamb=lumOf([ar,ag,ab]),wyBase=wallAt(L,id,x);
+  if(y<wyBase-6)return;
+  const srcs=[];let sumI=0;
+  for(const lp of L.lamps||[]){const[lx,ly,lr,col]=lp,d=Math.hypot(x-lx,(y-22-ly)*1.5)/lr;
+    if(d<1){const I=lumOf(hex(col))*(1-d)*(1-d);if(I>.004){sumI+=I;
+      const lz=lp[4]!=null?lp[4]:wallAt(L,id,lx),wy=lp[5]!=null?lp[5]:ly,lh=Math.max(12,lz-wy),
+        dx=x-lx,dy=y-lz,tBack=clamp(-dy/7,0,1),pf=1.75-.6*tBack,dist=Math.hypot(dx,dy*pf)||.001,
+        denom=(1-tBack)*Math.max(22,lh*.92)+tBack*Math.max(12,lh-32),
+        maxL=35+21*tBack,rawL=dist*46/denom,effL=rawL>maxL*.7?maxL*.7+maxL*.3*Math.tanh((rawL-maxL*.7)/(maxL*.45)):rawL,
+        vx=dx/dist*effL,vy=dy/dist*effL,grz=1/(1+Math.max(0,rawL/maxL-.85)*.5);
+      srcs.push({I,vx,vy,lz,grz})}}}
+  const dirV=L.sun||L.dir;
+  if(dirV){const[sdx,sdy,str]=dirV,I=str==null?.45:str;if(I>.004){sumI+=I;srcs.push({I,vx:sdx,vy:sdy,lz:sdy<0?y+20:wyBase,grz:1})}}
+  const Itot=Iamb+sumI,Eamb=Iamb*Iamb*.85+Iamb*.15,ca=clamp((Itot-.035)/.515,0,1);
+  if(ca<=.01)return;
+  srcs.sort((a,b)=>b.I-a.I);const top=srcs.slice(0,2);
+  let ox=0,oy=0;if(top.length){const s0=top[0],sh0=s0.I/(Eamb+sumI+.06);ox=clamp(s0.vx*.06*sh0,-2.2,2.2);oy=clamp(s0.vy*.05*sh0,-1,1)}
+  oval(g,x+ox,y-.4+oy,sw,2,rgba('#181220',(.2*ca).toFixed(3)));
+  oval(g,x+ox*.4,y-.4+oy*.4,sw*.68,1.3,rgba('#181220',(.25*ca).toFixed(3)));
+  if(!top.length||y<wyBase-2)return;
+  const casts=top.map(s=>({s,a:clamp(s.I/(Eamb+sumI+.05)*.72*s.grz,0,.44)})).filter(e=>e.a>.016);
+  if(!casts.length)return;
+  const W=FIG.W/HR,Hh=FIG.H/HR,dx0=-FIG.OX/HR,dy0=-FIG.OY/HR,rw=(ART[id]&&ART[id].w)||VW,rh=roomH(id);
+  sc.globalCompositeOperation='copy';sc.drawImage(c,0,0);
+  sc.globalCompositeOperation='source-in';sc.fillStyle='#181220';sc.fillRect(0,0,FIG.W,FIG.H);
+  for(const{s,a}of casts){
+    const sx=-s.vx/46,sz=-s.vy/46,bend=s.lz>y&&sz>.02&&y>=wyBase;
+    g.save();g.beginPath();
+    if(typeof L.wallY==='function'){const xA=Math.max(-32,x-72),xB=Math.min(rw+32,x+72);g.moveTo(xA,rh+32);for(let qx=xA;qx<=xB;qx+=8)g.lineTo(qx,L.wallY(qx));g.lineTo(xB,rh+32);g.closePath()}
+    else g.rect(-32,Math.min(y,wyBase),rw+64,rh-Math.min(y,wyBase)+32);
+    g.clip();g.globalCompositeOperation='multiply';g.imageSmoothingEnabled=true;
+    g.save();g.transform(1,0,sx,sz,x,y);
+    g.globalAlpha=a*.26;g.drawImage(SC,dx0-.55,dy0,W,Hh);g.drawImage(SC,dx0+.55,dy0,W,Hh);
+    g.globalAlpha=a*.52;g.drawImage(SC,dx0,dy0,W,Hh);
+    g.restore();g.restore();
+    if(bend&&L.wall&&L.wall.length){
+      const wyC=wallAt(L,id,x),hw=(y-wyC)/sz;
+      if(hw<54){const xw=x-sx*hw,ws=clamp((s.lz-wyC)/Math.max(4,s.lz-y)*.42+.62,.9,1.24);
+        g.save();g.beginPath();
+        for(const[wx0,wx1,wa,wb]of L.wall){const yt=Math.min(wa,wb),yb=Math.max(wa,wb);g.rect(wx0,yt,wx1-wx0,yb-yt)}
+        g.clip();g.globalCompositeOperation='multiply';g.imageSmoothingEnabled=true;
+        g.save();g.transform(1,0,0,ws,xw,wyC+ws*hw);
+        g.globalAlpha=a*.24;g.drawImage(SC,dx0-.6,dy0,W,Hh);g.drawImage(SC,dx0+.6,dy0,W,Hh);
+        g.globalAlpha=a*.48;g.drawImage(SC,dx0,dy0,W,Hh);
+        g.restore();g.restore()}}}
+}
+function figSprite(g,x,y,lit,c){const W=FIG.W/HR,Hh=FIG.H/HR,dx=x-FIG.OX/HR,dy=y-FIG.OY/HR;if(!lit){g.drawImage(c,dx,dy,W,Hh);return}
   sb.globalCompositeOperation='copy';sb.drawImage(c,0,0);sb.globalCompositeOperation='multiply';sb.fillStyle=lit;sb.fillRect(0,0,FIG.W,FIG.H);
   sb.globalCompositeOperation='destination-in';sb.drawImage(c,0,0);g.drawImage(SB,dx,dy,W,Hh)}
+/* figure: place a sprite with its feet at x,y. lit: the light on it; key: names the pose for the cache; sw: shadow half-width (0 for none). */
+function figure(g,x,y,lit,key,fn,sw){x=hp(x);y=hp(y);sw=sw==null?8.5:sw;
+  const c=sprite(key,fn,key.includes('-1')?-1:1),lid=LID;
+  if(DQ){if(sw>0){if(SQ)SQ.push(()=>figShadow(g,lid,x,y,c,sw));else DQ.push([y,()=>figShadow(g,lid,x,y,c,sw)])}
+    DQ.push([y,()=>figSprite(g,x,y,lit,c)]);return}
+  if(sw>0)figShadow(g,lid,x,y,c,sw);
+  figSprite(g,x,y,lit,c)}
 const blinks=(o,ts)=>((ts+o.ph)%4300)<140;
 /* man: a person by look id, for scenes that pose figures themselves (the ship, the road, the prologue). */
 function man(g,x,y,id,dir,fr,lit,ges,sw,bow,bl){const o=LOOK[id];figure(g,x,y,lit,id+dir+'f'+fr+(ges?'g'+ges:'')+(bow?'b':'')+(bl?'k':''),s=>person(s,0,0,o,dir,fr,0,bow||0,ges||0,bl||0),sw!=null?sw:walkSw(o,fr))}
@@ -1720,12 +1780,13 @@ function drawActor(g,o,ts,id){const pl=planOf(id);if(pl)return pl.drawActor(g,o,
   const m=o.mate;if(m){const L=LOOK[m.fig],mx=o.x+m.dx*o.dir,md=mateFacing(o,mx),[mt,mg,mb,mm]=moves({talk:m.talk,bow:o.bow,fr:o.fr,x:mx},L,m.talk&&ln&&ln.a&&ln.a!==o?ln:null,ts);
     figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+md+'f'+(o.fr<0?'s':o.fr)+'t'+mt+bow+mg+mb+'m'+mm,s=>person(s,0,0,L,md,o.fr,mt,bow,mg,mb,mm),walkSw(L,o.fr))}
   figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+'f'+(o.fr<0?'s':o.fr)+'t'+talk+bow+ges+bl+'m'+mv,s=>person(s,0,0,o.look,dir,o.fr,talk,bow,ges,bl,mv),walkSw(o.look,o.fr))}
-function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
+function render(ts){G.t=ts;update(ts);LID=null;cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
   else if(G.room){const id=G.room,a=ART[id],z=zoomOf(id),cam=hp(G.cam),cy=hp(G.camY),f=fg(id);if(z!==1)cx.setTransform(HR*z,0,0,HR*z,0,0);backdrop(cx,id,cam,cy);cx.save();cx.translate(-cam,-cy);
-    const q=DQ=[];a.draw(cx,ts);DQ=null;
+    const q=DQ=[],sq=SQ=LID?[]:null;a.draw(cx,ts);
     for(const p of props(id))q.push([p.y,()=>cx.drawImage(p.c,p.x,p.t,p.w,p.h)]);
-    for(const o of Object.values(ACT))if(o.room===id)q.push([o.y,()=>drawActor(cx,o,ts,id)]);
+    for(const o of Object.values(ACT))if(o.room===id)drawActor(cx,o,ts,id);
+    DQ=SQ=null;if(sq)for(const fn of sq)fn();
     q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());
     cx.restore();if(f)cx.drawImage(f,-hp(cam*(a.fp||1)),0,f.width/HR,VH);
     cx.save();cx.translate(-cam,-cy);a.front(cx,ts);cx.restore();if(z!==1)cx.setTransform(HR,0,0,HR,0,0)}

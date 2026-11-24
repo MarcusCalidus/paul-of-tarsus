@@ -199,7 +199,7 @@ function box15(g,x,y,w,h,c){const t=Math.min(4,h*.3);R(g,x,y+t,w,h-t,c);poly(g,[
    wall, its feet above y 112. Nothing round lies where a head comes: the rolls on the shelf are above every head, the glow of the coals
    is long and low, and the wall behind Tertius is bare. */
 const VPGaius15=[160,78],TOPGaius15=[95,92.5,153,92.5,156,99.5,92,99.5];
-ART.gaius15={w:320,q:12,paint(g){paintGaius15(g)},light:{amb:'#d6d8e2',lamps:[[178,100,44,'#3a2008']],shade:[[240,340,'#e0dada']]},
+ART.gaius15={w:320,q:12,paint(g){paintGaius15(g)},light:{amb:'#d6d8e2',wallY:104,wall:[[9,25,104,15],[25,51,104,63],[51,311,104,15]],lamps:[[178,100,44,'#3a2008',109.4,94.8]],shade:[[240,340,'#e0dada']]},
   draw(g,t){emberGaius15(g,t)},front(){},props:[{y:113.4,shape(g){stoolGaius15(g,1)}},{y:116.5,shape(g){tableShapeGaius15(g)}}]};
 function paintGaius15(g){const r=rng(1501),W='#cfc4a8';
   ceilGaius15(g);wallGaius15(g,r,W);floorGaius15(g,r);sidesGaius15(g,W);
@@ -1599,8 +1599,9 @@ function flameUpper15(g,x,y,t,v){const f=Math.floor(t/110)%3;v=Math.max(0,v);
   poly(g,[x-.8,y+.3,x-1,y-h*.25,x-.1+s,y-h*.74,x+.9,y-h*.24,x+.8,y+.3],'#ffc040');
   poly(g,[x-.5,y+.2,x-.5,y-h*.26,x+s*.5,y-h*.5,x+.5,y-h*.26,x+.5,y+.2],'#fff4cc')}
 /* lightUpper15: the light on the people in the room: one lamp of the engine's for each of the five, its reach and warmth by its oil */
-function lightUpper15(){const L=lamps15(),C=[[272,92,.8],[298,96,.8],[122,74,1],[176,86,1],[228,96,1.15]];
-  return{amb:'#2e2a40',lamps:C.map(([x,y,s],i)=>{const v=Math.max(0,L[i]);return[x,y,(62+v*24)*s,mix('#000000','#c48e46',.12+.48*Math.min(1,v)+.4*Math.min(1,v/CAPUpper15[i]))]})}}
+function lightUpper15(){const L=lamps15(),v0=stage15(),C=[[272,92,.8,101.5,58.7],[298,96,.8,101.5,80.9],[122,74,1,110,41.6],[176,86,1,120.6,67.4],[228,96,1.15,109.6,92.6]];
+  return{amb:'#2e2a40',wallY:101.5,wall:[[11,38,101.5,10],[38,66,101.5,58],v0==='a'?[158,196,101.5,10]:[144,182,101.5,10]],
+    lamps:C.map(([x,y,s,lz,wy],i)=>{const v=Math.max(0,L[i]);return[x,y,(62+v*24)*s,mix('#000000','#c48e46',.12+.48*Math.min(1,v)+.4*Math.min(1,v/CAPUpper15[i])),lz,wy]})}}
 
 /* roomUpper15: the room in full light */
 function roomUpper15(g,v){const r=rng(1507),W=WUpper15;

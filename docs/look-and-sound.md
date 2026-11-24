@@ -34,6 +34,8 @@ The pack donkey is a small grey-brown animal seen from the side, its head turned
 
 The donkey walks in four beats, near hind, near fore, far hind, far fore, with short, quick, neat steps: each hoof stands while the body passes over it and is then lifted and swung forward, the knee of a fore leg folding forward and the hock of a hind leg further back, and the body sinks a pixel and the head nods as each fore hoof lands. It covers ground at the same speed as the people beside it, each leg stepping twice a second, and at that speed a hoof that stands stays exactly where it was set down. Spoken to, it brays: its head goes up and forward with the ears laid back, and its mouth opens wide on a thin rising "hee" and again on a lower, rougher "haw".
 
+The pack mule is a painter of its own and a size bigger than the donkey: its back stands about as high as a man's chest and its ears as high as his head. It is more like a horse than the donkey is, with a deeper body and a round haunch, longer, finer legs on larger hooves, a longer neck carried higher under a short upright mane, a long straight face, ears long but shorter than a donkey's, and a tail that grows long hair from high up. Its coat is a dark bay, with dark legs below the knees and hocks and a mealy muzzle and belly, so that it never reads as the grey donkey. It walks in the same four beats with a longer, swinging stride, its head nodding as each fore hoof lands, and at the game's walking speed its hooves do not slip at all. Under a full load it carries bags stuffed with wool and fleeces piled high on its back, as the carrier's mule does in Chapter Eight. Spoken to, as Kleon's mule is in Chapter Three, it brays: it raises its head and lays back its ears, and its call begins like a horse's whinny and ends in two hee-haws, with the mouth opening on each. `node tools/playtest.mjs mules` shows every frame of its walk and voice enlarged.
+
 ![Every second moment of a stride, enlarged](screenshots/walk.png)
 
 ![Paul in the workshop, as a heel lands](screenshots/stride.png)
@@ -43,6 +45,10 @@ The donkey walks in four beats, near hind, near fore, far hind, far fore, with s
 A scene has depth: whoever stands farther back is drawn behind. A man who walks behind the carrier's mule is hidden by it up to the waist, and hides it when he stands in front; the same holds for a stool, a low table or a heap of sailcloth that stands out on the floor.
 
 ![Paul behind the mule, and Timothy in front of it](screenshots/depth.png)
+
+A lamp, a brazier or the moon through a window also throws the shadows of the people in the room. Each figure stands on a soft contact shadow and casts up to two softened shadows away from the nearest lights across the paving or the floorboards, following every step, gesture and fold of cloth; as a lamp's oil burns low, or daylight fills the room, the cast shadows soften with it, and in pitch dark there are none. Where a lamp is held or set on a stand in front of someone—as when the jailer brings lights into the inner prison at Philippi, or Paul speaks behind the tall lampstand in the upper room at Troas—the shadow runs back to the foot of the wall and bends straight up the stone or plaster behind him, stopping at open doorways and windows. Because all shadows lie on the floor and the wall before anyone or any furniture is laid over them, a stool, a low table or another person in the foreground is never darkened by a shadow behind it.
+
+![Shadows from the lamps in the upper room at Troas, across the floor and up the wall behind Paul](screenshots/shadows.png)
 
 A scene has one horizon. The sea, the fields and the paving run back to one level, about as high as the eyes of the people in it, and the country seen through a city gate ends at that level too: the road beyond the gate of Lystra runs back to the line where the valley beside the well ends.
 

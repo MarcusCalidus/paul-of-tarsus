@@ -79,7 +79,8 @@ ART.tarsus={w:320,q:12,
  draw(g,t){
   if(!F.gotLoops){const hd=[21,86.4,45,86,46.4,90,44,96.6,40,95,37,97.4,31,95.6,27,97.6,23,95,21.6,90];oval(g,34,97.6,13,1.2,'rgba(40,30,60,.3)');poly(g,hd,'#a8703e');
     clipTo(g,()=>poly(g,hd),()=>{g.fillStyle=lg(g,0,86,0,98,['#c8905a','#a8703e','#7a4e28']);g.fillRect(20,86,28,12);R(g,21,86.4,25,.8,'#deb07a')});stroke(g,[25,89,42,88.6],'#7a4e28',.5)}
-  SHARED.beasts.mule(g,252,110,-1,SHARED.beasts.pose('mule3',0),2);
+  /* Kleon's mule stands with its head by the tether post, toward the east gate and the mountain road */
+  SHARED.beasts.mule(g,244,110,1,SHARED.beasts.pose('mule3',0),2);
   /* the tent on its frame. The two poles meet at the top and do not cross there, and no band runs across the cloth, so that the seam's
      stitches, which run down its middle, cross nothing */
   stroke(g,[166.5,49.4,140,106.5],'#5a3e22',1.6);stroke(g,[166.5,49.4,193,106.5],'#5a3e22',1.6);stroke(g,[166,49.6,139.5,106.5],'#9a7040',.5);
@@ -449,7 +450,7 @@ ROOMS.tarsus={space:0.8,walk:[16,304,110,138],mood:'calm',amb:{birds:.5,crowd:.2
       if(!F.seam)return sewSeam();if(has('loops'))return sewLoops();
       return say(P,F.loopsOn?'it_is_finished_said':'seam_is_closed_said')}},
   {name:'tent_frame',x:139,y:52,w:55,h:54,wx:182,wy:113,dir:-1,vis:()=>F.gotTent,look:'frame_stands_empty'},
-  {name:'pack_mule',x:227,y:68,w:42,h:42,wx:240,wy:122,look:'kleons_lead_mule_loaded',pickup:'it_is_not_mine',
+  {name:'pack_mule',x:224,y:62,w:50,h:48,wx:292,wy:117,dir:-1,look:'kleons_lead_mule_loaded',pickup:'it_is_not_mine',
     talk:async()=>{SHARED.beasts.speak('mule3','mule');await say(P,'it_has_nothing_to_say_that_kleon')}},
   {name:'east_gate',x:274,y:50,w:42,h:54,wx:292,wy:112,dir:1,look:'the_east_gate',exit:()=>leave3()}]};
 KL.hs={name:'Kleon',actor:KL,look:()=>say(P,F.sold?'kleon_well_pleased_with_his_tent':'kleon_a_caravan_master'),
