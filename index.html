@@ -1504,8 +1504,9 @@ function roomRoute(a,X,Y,click){const id=a.room,R=ROOMS[id],w=R&&R.walk;if(!w)re
   if(t<0)return null;
   const cells=[];for(let c=t;c>=0;c=from[c])cells.push(c);cells.reverse();
   const pts=cells.map(cxy);pts[0]=[a.x,a.y];const end=exact?[tx,ty]:pts[pts.length-1];if(cells.length>1)pts[pts.length-1]=end;
-  /* pulled straight: from where he is to the farthest point a straight line reaches; one who stands in a footprint first steps out of it */
-  const clear=(p,q)=>{const n=Math.ceil(Math.hypot(q[0]-p[0],q[1]-p[1]));for(let k=1;k<n;k++)if(B[cOf(p[0]+(q[0]-p[0])*k/n,p[1]+(q[1]-p[1])*k/n)])return false;return true};
+  /* pulled straight: from where he is to the farthest point a straight line reaches (tested on the boxes themselves, not only on the grid,
+     whose rows lie two pixels apart); one who stands in a footprint first steps out of it */
+  const clear=(p,q)=>{const n=Math.ceil(Math.hypot(q[0]-p[0],q[1]-p[1])*2);for(let k=1;k<n;k++){const x=p[0]+(q[0]-p[0])*k/n,y=p[1]+(q[1]-p[1])*k/n;if(B[cOf(x,y)]||hit(x,y,.9))return false}return true};
   let k0=0;while(k0<pts.length-1&&B[cOf(...pts[k0])])k0++;
   const out=[];if(k0>0)out.push(pts[k0]);let cur=pts[k0];
   for(let i=k0;i<pts.length-1;){let j=Math.min(pts.length-1,i+160);while(j>i+1&&!clear(cur,pts[j]))j--;out.push(pts[j]);cur=pts[j];i=j}
