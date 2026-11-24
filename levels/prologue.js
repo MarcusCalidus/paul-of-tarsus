@@ -72,8 +72,9 @@ ART.pro_wall={w:320,q:12,
     for(let i=2;i<34;i+=11){R(g,i,1.5,7,5,'#cdbda0');R(g,i,1.5,7,.6,'#efe2c4')}
     /* the corner where the tower meets the wall lies in shade, in two steps */
     R(g,35,6,1,110,'#8a7c66');ao(g,36,6,5,108,'l',.26,'#3a3050');ao(g,30,6,5,110,'r',.18,'#3a3050');ao(g,0,92,36,24,'b',.4,'#3a2c20');
-    /* the wall's shadow on the ground, its edge soft: a faint margin, the body, a darker core along the wall's foot */
-    softShade(g,[0,115,36,113,154,96,216,114,76,146,0,146],[0,116,36,114,154,98,210,114,72,144,0,144],[0,118,36,116,154,100,184,108,52,138,0,140],SH,.5);
+    /* the sun stands in front of the wall, behind us: its face is lit and its shadow falls behind it, out of sight, so that Saul stands
+       in the sun. Only the soft contact shade along the wall's foot is left on the ground: a faint margin, the body, a darker core */
+    softShade(g,[0,115,36,113,154,96,157,98,154,101.4,36,119.4,0,121.6],[0,116,36,114,154,98,155.6,99,154,100.2,36,117.4,0,119.4],[0,116,36,114,154,98,154,99,36,115.8,0,117.6],SH,.5);
     /* outer garments laid in a heap at Saul's feet */
     garmentsArt(g,192,124);
     /* the light of the day: the sun on the face of the wall and on the open ground; the near ground and the foot of the wall a little
