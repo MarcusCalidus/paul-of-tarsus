@@ -211,14 +211,15 @@ const foot17=(g,x,y,rx,ry)=>oval(g,x,y,rx,ry||1.4,'rgba(30,24,40,.28)');
        bottom out of the water, a red wale, jars standing on her deck by the open hatch round the foot of her mast, her gangplank down
        onto the quay at x 246..258, and the jars that have come out of her standing in rows on the quay behind the walk strip (x 286..318).
      the coaster (Moschos), moored at the quay at the left (x -8..76, waterline 99): small and open, oil jars bedded in brushwood round her
-       mast, and the goat standing on the brushwood at x 40 with a scrap of the lading list in her mouth.
+       mast, and the goat standing on the brushwood forward at x 50..62, where no head on the quay hides her (her hotspot was moved there
+       from x 32 with her), with a scrap of the lading list in her mouth.
    Every mast stands on a heap of cargo, never straight on a rail, rises against the mountains or the town and leaves the picture at the
    top: none crosses the horizon. A lowered yard ends at the side of the heap round its mast. No tie is drawn across a furled sail, no oar
    or plank across a hull, and the steering oars hang from the stern beyond the planking. Gulls (ROOMS.patara17.birds) should wheel in
-   the open sky x 80..160, between the white ship's mast (x 68) and the black ship's (x 172).
+   the open sky x 78..160, between the white ship's mast (x 68) and the black ship's (x 171): gulls [78,4,82,22].
    Called from outside: ART.patara17. Reads nothing.
    Hotspots (ROOMS.patara17): the mountains 0,0,320,40 · the harbor mouth 100,52,24,14 · the white-waled ship 30,50,70,26 · the black
-   ship 126,58,92,28 · the boat 176,84,30,10 · the red-waled ship 214,48,106,52 · the coaster 0,76,76,24 · the goat 32,74,16,10 · the
+   ship 126,58,92,28 · the boat 176,84,30,10 · the red-waled ship 214,48,106,52 · the coaster 0,76,76,24 · the goat 48,74,16,10 · the
    water jars 206,104,22,12 · the chest 46,120,26,12. Walk strip 16..304, 110..138. Actors (place17): Timothy 20,128 · Aristarchus 34,116 ·
    Trophimus 84,132 · Luke 102,124 · Moschos 120,114 · Sostratos 152,118 (seated on a stone, a prop with foot 144,116,16,4) · Akestor
    190,128 · the water seller 232,116 · Kleon 272,122; Paul comes in at 140,134. Gulls stand on the edge at x 160..170. Heads along the
@@ -384,11 +385,12 @@ const ptsLine17=(f,a,b)=>{const p=[];for(let x=a;x<=b;x+=2)p.push(x,f(x));return
 function coasterPatara17(g){const r=rng(1715),x0=-8,x1=76,yB=99.2,WL=x=>89.4-8.4*Math.pow(clamp((x-52)/24,0,1),2)-5*Math.pow(clamp((10-x)/18,0,1),2);
   SHARED.ship.paint(g,{r,dir:1,view:'full',x0,x1,yBot:yB,sheer:WL,gradY0:76,gradY1:yB,hullGrad:['#b08a5e','#8a6a46','#664c32','#463222'],
     mast:{x:21.6,y0:-2,y1:86,w:2.2,cols:['#5a4634','#8e7252','#463628'],hiCol:'#c4a47a',cap:false},
-    figs(q){/* oil jars bedded in brushwood round the mast, and the heap of brushwood the goat stands on */
+    figs(q){/* oil jars bedded in brushwood round the mast, and forward of them the heap of brushwood the goat stands on, clear of the heads of
+         the people on the quay before her */
       brushPatara17(q,r,6,36,WL,4.6);
       for(let i=0;i<7;i++){const x=8+i*3.6+(r()-.5)*.8,y=WL(x)-1.2+(r()-.5)*.6,h=4.2+r()*.9;poly(q,[x-1.4,y,x-1.7,y-h*.55,x-.6,y-h,x+.6,y-h,x+1.7,y-h*.55,x+1.4,y],i%2?'#a65c36':'#b86a40');
         R(q,x-1.7,y-h*.55,.6,h*.4,'#d89060');R(q,x-.5,y-h-.6,1,.7,'#6a3a22')}
-      brushPatara17(q,r,4,35,WL,2.4);brushPatara17(q,r,31,50,WL,5);goatPatara17(q,34.4,85.8)},
+      brushPatara17(q,r,4,35,WL,2.4);brushPatara17(q,r,47,65,WL,5);goatPatara17(q,50.4,85.8)},
     pitch:{f0:.6,color:'rgba(30,20,14,.42)'},wale:{f0:.08,f1:.2,color:'#3a5a7a'},waleWear:{count:14,c1:'#5a7a92',c2:'#2a4258'},lowerWale:{f0:.44,f1:.52,color:'#3a2618',hi:'#b88a58'},
     seams:[.2,.32,.44,.52,.64,.76,.88],buttCourses:[[.2,.32],[.32,.44],[.52,.64],[.64,.76]],buttX0:-4,buttX1:70,buttStepMin:14,buttStepVar:10,buttStartVar:10,
     beams:{f:.28,x0:2,x1:66,step:13,w:1.4,h:1.4,color:'#24160e',hi:'#c89a60'},
@@ -1088,7 +1090,7 @@ ROOMS.patara17={space:.5,walk:[16,304,110,138],mood:'harbor',amb:AMB.patara17,hs
   {name:'boat_with_water_jars',x:176,y:84,w:30,h:10,wx:190,wy:114,look:()=>{seen17().black=1;return say(P,'boat_with_water_jars_look')}},
   {name:'ship_with_the_red_wale',x:214,y:48,w:106,h:52,wx:262,wy:114,look:()=>lookShip17('red','red_wale_ship_look'),use:()=>say(P,'not_without_asking_her_master'),open:()=>say(P,'not_without_asking_her_master')},
   {name:'coaster',x:0,y:76,w:76,h:24,wx:40,wy:114,look:()=>lookShip17('coaster','coaster_patara_look')},
-  {name:'goat',x:32,y:74,w:16,h:10,wx:40,wy:114,look:'goat_lading_list',talk:'goats_dont_answer'},
+  {name:'goat',x:48,y:74,w:16,h:10,wx:56,wy:114,look:'goat_lading_list',talk:'goats_dont_answer'},
   {name:'water_jars',x:206,y:104,w:22,h:12,wx:206,wy:122,look:'water_jars_look',pickup:'theyre_the_water_sellers'},
   {name:'chest',x:46,y:118,w:26,h:14,wx:80,wy:126,look:'the_gifts_chest_look',pickup:'the_brothers_carry_it'}]};
 ROOMS.tyre17={space:.5,walk:[16,304,110,138],mood:'harbor',amb:AMB.tyre17,hs:[
@@ -1242,7 +1244,7 @@ function hint17(){const r=G.room,me=PC();
 /* ============ CHAPTER DEFINITION ============ */
 /* Birds (shared/birds.js): gulls over the harbors of Patara and Tyre, and far off over the bay of Ptolemais; sparrows on the roofs of the
    court; none over the beach while they pray (a gull far off, only after). Scenery: they change nothing in the story. */
-ROOMS.patara17.birds={gulls:[100,4,120,24],stand:[[160,101.2,-1],[169.4,101.4,1]]};
+ROOMS.patara17.birds={gulls:[78,4,82,22],stand:[[160,101.2,-1],[169.4,101.4,1]]};
 ROOMS.tyre17.birds={gulls:[60,4,140,24],stand:[[172,101.2,-1]]};
 ROOMS.beach17.birds=()=>F.beach?{gulls:[180,6,80,18]}:null;
 ROOMS.ptolemais17.birds={gulls:[200,8,100,20]};
