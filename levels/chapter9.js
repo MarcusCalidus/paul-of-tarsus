@@ -201,7 +201,7 @@ ART.lydia9={w:320,q:12,
     pool(l,96,62,80,40,'#f4e8d8',.42);pool(l,158,92,64,16,'#f8ead2',.4);pool(l,284,90,50,30,'#f2e4d2',.34);
     l.fillStyle=lg(l,0,0,0,28,['rgba(20,16,24,.3)','rgba(20,16,24,0)']);l.fillRect(0,0,320,28);
     l.fillStyle=lg(l,0,126,0,144,['rgba(20,16,24,0)','rgba(20,16,24,.24)']);l.fillRect(0,126,320,18)})},
- light:{amb:'#e6dcd8',lamps:[[31,96,80,'#30281a']]},
+ light:{amb:'#e6dcd8',wallY:103,wall:[[0,17,103,11],[45,300,103,11],[300,320,103,48]],lamps:[[31,96,80,'#30281a',103,76]]},
  draw(){},front(){}};
 
 /* ---------- Outside the gate: the river, and the bank where the women sit; the road from the gate comes down on the right ---------- */
@@ -342,7 +342,7 @@ ART.cell9={w:320,q:12,variant:cellV,
     l.fillStyle=lg(l,0,128,0,144,['rgba(14,10,16,0)','rgba(14,10,16,.3)']);l.fillRect(0,128,320,16)});
   else if(v)lightmap(g,320,'#11131f',l=>{pool(l,216,80,46,56,'#6a76a6',.9);pool(l,200,124,90,26,'#4a5684',.7);pool(l,190,72,10,34,'#5a6698',.4);pool(l,242,72,10,34,'#5a6698',.4);pool(l,218,112,30,6,'#7a86b6',.4)});
   else lightmap(g,320,'#020204',l=>{pool(l,216,106,26,5,'#2a2e44',.9)})},
- light(){const v=cellV();return v==='l'?{amb:'#7a6c72',lamps:[[216,96,90,'#6a4a20'],[160,124,90,'#5a3a14']]}:v?{amb:'#1c2030',lamps:[[214,110,60,'#20284a']]}:{amb:'#07070b'}},
+ light(){const v=cellV(),W=[[0,196,105,14],[236,320,105,14]];return v==='l'?{amb:'#7a6c72',wallY:105,wall:W,lamps:[[216,96,90,'#6a4a20',105,84],[160,124,90,'#5a3a14',140,114]]}:v?{amb:'#1c2030',wallY:105,wall:W,lamps:[[214,110,60,'#20284a',105,84]]}:{amb:'#07070b'}},
  draw(g,t){/* the jailer, as he is seen from the dark: a man against the grey of the outer door, with his sword drawn. The blade is one slanting
      line from his raised hand; his hand covers the guard, so that hilt and blade make no cross. */
   if(F.quake&&!G.lit9&&!F.saved){const x=216,y=105;figure(g,x,y,'#3a4266','jailer9-1s01',s=>person(s,0,0,LOOK.jailer9,-1,0,0,0,1,0),6);
@@ -382,7 +382,7 @@ ART.gaol9={w:320,q:12,variant:()=>F.back?'d':'',
   else lightmap(g,320,'#363a5c',l=>{nicheLight(l,258,74,34,28,'#ffc070',.92);pool(l,262,112,80,40,'#ffb060',.5);pool(l,120,116,150,40,'#8a94c8',.35);
     pool(l,140,26,180,14,'#8e98c8',.4);pool(l,290,96,30,12,'#ffb060',.3);
     l.fillStyle=lg(l,0,128,0,144,['rgba(10,10,20,0)','rgba(10,10,20,.26)']);l.fillRect(0,128,320,16)})},
- light(){return F.back?null:{amb:'#6c6e96',lamps:[[258,90,84,'#7a5220']]}},
+ light(){return F.back?null:{amb:'#6c6e96',wallY:105,wall:[[0,194,105,23],[230,320,105,30]],lamps:[[258,90,84,'#7a5220',105,74.6]]}},
  draw(g,t){if(!F.back)flame(g,258.2,74.6,t);
   /* what the constables carry, drawn with them */
   for(const a of[CO,C2])if(a.room==='gaol9')depth(a.y+.2,()=>rods(g,a.x-a.dir*3.4,a.y-28,-a.dir))},

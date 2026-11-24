@@ -429,6 +429,125 @@
         field(gd,i+1,x,36+dh,dw,dh);cut(gd,spr(o,'rmd2_'+i,1),-19,-54,38,55,x,36+dh+4,ZD);text(gd,'waist, gladius & boots',x+6,36+dh*2-8,11)});
       SHEETS['cast-romans-detail']=cd.toDataURL();
       window.SHEETS=SHEETS;halt('romans')}}
+  /* Dynamic cast & contact shadows in figure() (issue #81): floor skew, foreground-lamp back-wall bend, prop/actor ordering, pitch-dark
+     zero shadow, multi-lamp steadiness across 110ms flame ticks, solid-wall clipping, and enlarged/gallery sheets across all 22 rooms. */
+  if(stop==='shadows'){clearInterval(sk);G.speedAll=0;ov.className='';ov.onclick=null;G.splash=0;G.scene=null;
+    await loadPrologue();for(const n of[1,2,4,5,6,7,8,9,10,12,13,14,15])await loadLevel(n);
+    const snapRoom=(id,ts,setup)=>{const w=VW*HR,h=VH*HR,[c,g]=mk(w,h);g.setTransform(HR,0,0,HR,0,0);g.imageSmoothingEnabled=false;
+      for(const o of Object.values(ACT))o.room=null;if(setup)setup();
+      const a=ART[id],cam=clamp((G.cam||0),0,Math.max(0,(a.w||VW)-VW));LID=null;backdrop(g,id,cam,0);g.save();g.translate(-cam,0);
+      const q=DQ=[],sq=SQ=LID?[]:null;a.draw(g,ts||1000);
+      for(const p of props(id))q.push([p.y,()=>g.drawImage(p.c,p.x,p.t,p.w,p.h)]);
+      for(const o of Object.values(ACT))if(o.room===id)drawActor(g,o,ts||1000,id);
+      DQ=SQ=null;if(sq)for(const fn of sq)fn();
+      q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());g.restore();
+      const f=fg(id);if(f)g.drawImage(f,-hp(cam*(a.fp||1)),0,f.width/HR,VH);
+      g.save();g.translate(-cam,0);a.front(g,ts||1000);g.restore();return[c,g]};
+    const avgLum=(g,x0,y0,w,h)=>{const d=g.getImageData(Math.round(x0*HR),Math.round(y0*HR),Math.max(1,Math.round(w*HR)),Math.max(1,Math.round(h*HR))).data;
+      let s=0;for(let i=0;i<d.length;i+=4)s+=d[i]*.3+d[i+1]*.59+d[i+2]*.11;return s/(d.length/4)};
+    const boxDiff=(ga,gb,x0,y0,w,h)=>{const A=ga.getImageData(Math.round(x0*HR),Math.round(y0*HR),Math.round(w*HR),Math.round(h*HR)).data,
+      B=gb.getImageData(Math.round(x0*HR),Math.round(y0*HR),Math.round(w*HR),Math.round(h*HR)).data;let n=0;
+      for(let i=0;i<A.length;i+=4)if(A[i]!==B[i]||A[i+1]!==B[i+1]||A[i+2]!==B[i+2])n++;return n};
+    /* 1. Single-lamp floor cast shadow, prop cutout layering (stool), and actor-over-shadow ordering in workshop */
+    setChapter(1);G.cam=0;
+    {const[,g0]=snapRoom('workshop',1000),[,g1]=snapRoom('workshop',1000,()=>place(P,'workshop',184,119,1));
+      const away0=avgLum(g0,196,121,14,6),away1=avgLum(g1,196,121,14,6),near0=avgLum(g0,162,113,12,5),near1=avgLum(g1,162,113,12,5);
+      ok(away1<away0-5&&Math.abs(near1-near0)<.2,`workshop: floor cast shadow falls away from the lamp (${away0.toFixed(1)} -> ${away1.toFixed(1)}) and leaves the lamp side untouched`);
+      const[,gStool]=snapRoom('workshop',1000,()=>place(P,'workshop',136,115,-1));
+      const stoolDiff=boxDiff(g0,gStool,120.5,108.4,14,2),underStool=avgLum(g0,112,121,7,4)-avgLum(gStool,112,121,7,4);
+      ok(stoolDiff===0&&underStool>2,`workshop: shadow passes under the foreground stool cutout (${stoolDiff} stool pixels changed; floor beyond darkened by ${underStool.toFixed(1)})`);
+      const[,gE0]=snapRoom('workshop',1000,()=>place(ACT.eliab,'workshop',202,124,-1)),
+        [,gE1]=snapRoom('workshop',1000,()=>{place(P,'workshop',184,119,1);place(ACT.eliab,'workshop',202,124,-1)});
+      const eliabDiff=boxDiff(gE0,gE1,199,94,6,22);
+      ok(eliabDiff===0,'workshop: a figure standing in another\'s shadow is never darkened by it ('+eliabDiff+' pixels changed)')}
+    /* 2. Pitch-dark zero shadow in cell9 before the earthquake */
+    setChapter(9);F.quake=0;G.lit9=0;G.cam=0;
+    {const[,gt]=mk(160,120);gt.scale(HR,HR);const sp=sprite('sh-test-paul',s=>person(s,0,0,paulLook(9),1,0,0,0,0,0),1);
+      figShadow(gt,'cell9',40,48,sp,8.5);const d=gt.getImageData(0,0,160,120).data;let nz=0;for(let i=3;i<d.length;i+=4)if(d[i])nz++;
+      ok(nz===0,'cell9: pitch-dark room (#07070b) draws zero contact or cast shadow pixels ('+nz+')')}
+    /* 3. Foreground carried lamp bending shadows cleanly up the stone wall in cell9, clipped off the open doorway */
+    F.quake=1;G.lit9=1;
+    {const[,g0]=snapRoom('cell9',1000),[,g1]=snapRoom('cell9',1000,()=>{place(P,'cell9',148,124,1);place(ACT.silas9,'cell9',181,124,-1)});
+      const flDrop=avgLum(g0,136,108,10,10)-avgLum(g1,136,108,10,10),wlDrop=avgLum(g0,127,86,10,15)-avgLum(g1,127,86,10,15);
+      const doorDiff=boxDiff(g0,g1,197,45,38,59);
+      /* check horizontal continuity across the wall-floor crease y=105 */
+      const cxAt=y=>{let sx=0,sw=0;for(let x=116;x<=152;x+=.5){const drop=Math.max(0,avgLum(g0,x,y,.5,.5)-avgLum(g1,x,y,.5,.5));sx+=x*drop;sw+=drop}return sw>0?sx/sw:NaN};
+      const cWall=cxAt(103.5),cFloor=cxAt(106.5);
+      ok(flDrop>2&&wlDrop>2&&Math.abs(cWall-cFloor)<2,`cell9: foreground lamp bends shadow across y=105 onto stone wall (floor -${flDrop.toFixed(1)}, wall -${wlDrop.toFixed(1)}, crease dx=${Math.abs(cWall-cFloor).toFixed(2)})`);
+      ok(doorDiff===0,'cell9: wall shadow clips strictly to solid wall spans and never enters the open doorway ('+doorDiff+' doorway pixels changed)')}
+    /* 4. Multi-lamp upper15: steadiness across 110ms flame ticks, oil-level scaling, window-perched Eutychus, and foreground stand wall bend */
+    setChapter(15);G.cam=0;G.l15=[2,2,3,4,4];
+    {const[,gA]=snapRoom('upper15',1000,()=>{place(ACT.eut15,'upper15',52,69,1);ACT.eut15.seat=1;place(ACT.luke15,'upper15',102,121,1);place(P,'upper15',164,110,-1)}),
+        [,gB]=snapRoom('upper15',1110,()=>{place(ACT.eut15,'upper15',52,69,1);ACT.eut15.seat=1;place(ACT.luke15,'upper15',102,121,1);place(P,'upper15',164,110,-1)}),
+        [,gEmpty]=snapRoom('upper15',1000,()=>{place(ACT.eut15,'upper15',52,69,1);ACT.eut15.seat=1}),
+        [,gNoEu]=snapRoom('upper15',1000);
+      const[,gtEu]=mk(160,120);gtEu.scale(HR,HR);const spEu=sprite('sh-test-eu',s=>person(s,0,0,LOOK.eut15,1,-1,0,0,0,0),1);
+      figShadow(gtEu,'upper15',52,69,spEu,8);const dEu=gtEu.getImageData(0,0,160,120).data;let euNz=0;for(let i=3;i<dEu.length;i+=4)if(dEu[i])euNz++;
+      const jitter=boxDiff(gA,gB,72,118,86,22),wallBend=avgLum(gEmpty,150,76,16,22)-avgLum(gA,150,76,16,22),
+        sillDiff=boxDiff(gNoEu,gEmpty,39,74,26,24),standDiff=boxDiff(gEmpty,gA,173,70,6,34);
+      G.l15=[.05,.05,.05,.05,.05];
+      const[,gLow0]=snapRoom('upper15',1000),[,gLow1]=snapRoom('upper15',1000,()=>place(ACT.luke15,'upper15',102,121,1));
+      const fullDrop=avgLum(gEmpty,84,124,14,6)-avgLum(gA,84,124,14,6),lowDrop=avgLum(gLow0,84,124,14,6)-avgLum(gLow1,84,124,14,6);
+      ok(jitter===0,`upper15: cast shadows stay completely steady across 110ms flame ticks (${jitter} floor pixels changed)`);
+      ok(wallBend>2&&standDiff===0&&euNz===0&&sillDiff===0,`upper15: foreground stand bends shadow up plaster wall (-${wallBend.toFixed(1)}), stand cutout stays over figure (${standDiff}), window-perched figure casts zero shadow (${euNz}, ${sillDiff})`);
+      ok(fullDrop>lowDrop&&fullDrop>1.5,`upper15: shadow contrast scales with dynamic lamp oil levels (full -${fullDrop.toFixed(1)} vs low -${lowDrop.toFixed(1)})`)}
+    /* 5. Cache size, lightAt() preservation across all 22 checklist rooms, and lane-map exclusion */
+    {const ROOM22=['pro_judas','workshop','street','house','upper','synagogue','synp','house6','gates','lystra7','troas','lydia9','cell9','gaol9','yard10','night10','shop12','shop13','street13','door14','gaius15','upper15'];
+      const refLight=(id,x,y)=>{let L=ART[id].light;if(typeof L==='function')L=L();if(!L)return null;let[r,g,b]=hex(L.amb||'#ffffff');
+        for(const lp of L.lamps||[]){const[lx,ly,lr,c]=lp,d=Math.hypot(x-lx,(y-22-ly)*1.5)/lr;if(d<1){const k=(1-d)*(1-d),q=hex(c);r+=q[0]*k;g+=q[1]*k;b+=q[2]*k}}
+        for(const[x0,x1,c]of L.shade||[]){const k=clamp(Math.min(x-x0,x1-x)/8,0,1);if(k>0){const q=hex(c);r*=1-k+k*q[0]/255;g*=1-k+k*q[1]/255;b*=1-k+k*q[2]/255}}
+        return r>=254&&g>=254&&b>=254?null:toHex(r,g,b)};
+      const mismatch=ROOM22.filter(id=>!ART[id]||lightAt(id,160,120)!==refLight(id,160,120));
+      const[,gl]=mk(16,16);backdrop(gl,'lanes14',0,0);const lanesLid=LID;
+      ok(!mismatch.length&&SPR.size<=500&&lanesLid===null,`all 22 lamplit rooms preserve lightAt() tinting, SPR.size=${SPR.size}<=500, and lanes14 keeps LID=${lanesLid}`)}
+    /* Build enlarged inspection sheets: cast-shadows (4x detail panels) + shadows-rooms-1/2 (all 22 rooms + key variants) */
+    const SHEETS={},sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#1e1c24';g.fillRect(0,0,w,h);return[c,g]},
+      label=(g,t,x,y)=>{g.fillStyle='rgba(12,10,16,.78)';g.fillRect(x-4,y-13,t.length*7.4+8,17);g.fillStyle='#f4e8c8';g.font='bold 12px Menlo,Consolas,monospace';g.fillText(t,x,y)};
+    {const[cd,gd]=sheet(1280,820);
+      setChapter(1);G.cam=0;const[w1]=snapRoom('workshop',1000,()=>{place(P,'workshop',136,115,1);P.fr=8;place(ACT.eliab,'workshop',196,118,-1)});
+      G.cam=120;const[st1]=snapRoom('street',1000,()=>{place(ACT.guard,'street',230,119,1);place(P,'street',276,121,-1);P.fr=12});G.cam=0;
+      setChapter(9);F.quake=1;G.lit9=1;const[c9]=snapRoom('cell9',1000,()=>{place(P,'cell9',148,124,1);place(ACT.silas9,'cell9',181,124,-1);place(ACT.jailer9,'cell9',118,132,1);ACT.jailer9.bow=true});
+      setChapter(15);G.l15=[2,2,3,4,4];const[u15]=snapRoom('upper15',1000,()=>{place(ACT.eut15,'upper15',52,69,1);ACT.eut15.seat=1;place(ACT.kor15,'upper15',38,122,1);place(ACT.luke15,'upper15',102,121,1);place(P,'upper15',164,110,-1)});
+      const crops=[[w1,96,62,150,82,'1. workshop (4x): stride + stool cutout + single stand lamp'],[st1,84,62,150,82,'2. street (4x): spearman + brazier (check spear & joints)'],
+        [c9,88,60,160,82,'3. cell9 (4x): foreground lamp wall-crease bend + doorway clip'],[u15,68,54,160,86,'4. upper15 (4x): stand cutout + wall bend + twin lamps']];
+      crops.forEach(([src,sx,sy,sw,sh,cap],i)=>{const dx=(i%2)*640+16,dy=Math.floor(i/2)*404+28;
+        gd.drawImage(src,sx*HR,sy*HR,sw*HR,sh*HR,dx,dy,608,364);label(gd,cap,dx+6,dy+16)});
+      SHEETS['cast-shadows']=cd.toDataURL()}
+    {const CASES=[
+        ['1. pro_judas',()=>{G.pro={ax:84,afr:8,hand:0,sight:0}},'pro_judas',0],
+        ['2. workshop',()=>{setChapter(1);place(P,'workshop',152,122,1);place(ACT.eliab,'workshop',196,118,-1)},'workshop',0],
+        ['3. street',()=>{setChapter(1);place(ACT.guard,'street',232,118,1);place(P,'street',106,120,1);place(ACT.zakkai,'street',340,118,-1)},'street',80],
+        ['4a. house (lamp)',()=>{setChapter(1);F.lampOut=0;F.shutters=0;place(P,'house',142,120,-1);place(ACT.naomi,'house',84,118,1)},'house',0],
+        ['4b. house (moon)',()=>{setChapter(1);F.lampOut=1;F.shutters=1;place(P,'house',204,120,-1);place(ACT.eliab,'house',168,122,1)},'house',0],
+        ['5. upper (Ch2)',()=>{setChapter(2);place(P,'upper',218,120,1);place(ACT.barnabas,'upper',172,118,1)},'upper',0],
+        ['6. synagogue (Ch4)',()=>{setChapter(4);place(P,'synagogue',156,118,1);place(ACT.barnabas,'synagogue',118,120,1)},'synagogue',0],
+        ['7. synp (Ch5)',()=>{setChapter(5);place(P,'synp',144,118,1);place(ACT.barnabas,'synp',198,120,-1)},'synp',0],
+        ['8. house6 (Ch6)',()=>{setChapter(6);F.back=0;place(P,'house6',162,118,-1);place(ACT.barnabas,'house6',118,120,1)},'house6',0],
+        ['9. gates (Ch7 night)',()=>{setChapter(7);F.mended=1;F.up=1;place(P,'gates',276,120,1);place(ACT.silas,'gates',318,122,-1)},'gates',130],
+        ['10. lystra7 (Ch7)',()=>{setChapter(7);place(P,'lystra7',118,118,1);place(ACT.timothy7,'lystra7',152,120,-1)},'lystra7',0],
+        ['11. troas (Ch8)',()=>{setChapter(8);F.vision=0;place(P,'troas',68,120,1);place(ACT.luke,'troas',158,118,-1)},'troas',0],
+        ['12. lydia9 (Ch9)',()=>{setChapter(9);place(P,'lydia9',64,120,1);place(ACT.lydia9,'lydia9',112,118,-1)},'lydia9',0],
+        ['13a. cell9 (dark)',()=>{setChapter(9);F.quake=0;G.lit9=0;place(P,'cell9',148,126,1);place(ACT.silas9,'cell9',176,126,-1)},'cell9',0],
+        ['13b. cell9 (lights)',()=>{setChapter(9);F.quake=1;G.lit9=1;place(P,'cell9',148,126,1);place(ACT.silas9,'cell9',176,126,-1);place(ACT.jailer9,'cell9',122,134,1)},'cell9',0],
+        ['14. gaol9 (Ch9 night)',()=>{setChapter(9);F.back=0;place(P,'gaol9',238,120,1);place(ACT.silas9,'gaol9',210,122,1)},'gaol9',0],
+        ['15. yard10 (Ch10 night)',()=>{setChapter(10);F.r2=1;F.sewn=0;G.up10=0;place(P,'yard10',196,120,1);place(ACT.jason10,'yard10',236,122,-1)},'yard10',0],
+        ['16. night10 (Ch10)',()=>{setChapter(10);place(P,'night10',170,120,1);place(ACT.silas10,'night10',208,122,-1)},'night10',0],
+        ['17. shop12 (Ch12 night)',()=>{setChapter(12);F.r2=1;F.night=0;place(P,'shop12',196,120,1);place(ACT.aquila12,'shop12',238,122,-1)},'shop12',0],
+        ['18. shop13 (Ch13 night)',()=>{setChapter(13);F.hall=1;F.e1=1;place(P,'shop13',136,120,1);place(ACT.aq13,'shop13',176,122,-1)},'shop13',0],
+        ['19. street13 (Ch13 eve)',()=>{setChapter(13);F.hall=1;F.e1=1;place(P,'street13',188,120,1);place(ACT.apollos13,'street13',514,120,-1)},'street13',100],
+        ['20. door14 (Ch14)',()=>{setChapter(14);F.court=1;F.plea=0;G.dl14=.45;CHAP[14].place('door14')},'door14',0],
+        ['21. gaius15 (Ch15)',()=>{setChapter(15);CHAP[15].place('gaius15');place(P,'gaius15',164,120,-1)},'gaius15',0],
+        ['22. upper15 (Ch15)',()=>{setChapter(15);F.mid=0;G.l15=[2,2,3,4,4];CHAP[15].place('upper15');place(ACT.luke15,'upper15',102,121,1);place(P,'upper15',164,110,-1)},'upper15',0]];
+      [0,1].forEach(pg=>{const[cg,gg]=sheet(1920,1184);
+        CASES.slice(pg*12,(pg+1)*12).forEach(([nm,fn,id,cam],i)=>{G.cam=cam||0;const[sc2]=snapRoom(id,1000,fn),dx=(i%3)*640,dy=Math.floor(i/3)*296;
+          gg.drawImage(sc2,0,0,640,288,dx,dy,640,288);label(gg,nm,dx+8,dy+16)});
+        SHEETS['shadows-rooms-'+(pg+1)]=cg.toDataURL()})}
+    /* Showcase in-game frame in upper15 for docs/screenshots/shadows.png */
+    setChapter(15);F.mid=0;G.l15=[2,2,3,4,4];G.j15=3;CHAP[15].place('upper15');
+    G.pc=ACT.luke15;G.inv=['tab15','jug15'];enterRoom('upper15',102,121,1);
+    place(P,'upper15',164,110,-1);place(ACT.kor15,'upper15',38,122,1);
+    G.busy=false;lock(false);drawInv();syncVerbs();status();codeBtn();await wait(240);
+    window.SHEETS=SHEETS;halt('shadows')}
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
   /* the title card at full length, the prologue stops, and a room change caught half-way through its cross-fade */
   if(stop==='card'){await loadLevel(1);AU.key=CHAP[1].music;G.speedAll=0;clearInterval(sk);showCard(1);await wait(300);halt('card')}
@@ -4054,6 +4173,14 @@
     ok(!bad.length&&!none&&feast.some(tr=>tr.inst==='aulos'&&tr.hold===0)&&feast.some(tr=>tr.drone&&tr.drone.join()==='0'&&tr.every===16&&tr.vol===.6),'the held pipe: on the tonic or the fifth in all ten keys, once a bar while the melody plays and not in a silent bar; none without hold; Chapter Six\'s feast holds the tonic over its drone'+(bad.length?' WRONG '+bad:''))}
   {const real=Object.values(CHAP).filter(c=>c.src);/* the chapters that are level files: not the hub test's own */
     ok(real.length>=9&&real.every(c=>c.ready)&&!taken.length,'ids: all '+real.length+' chapters are loaded, and none took a room, a backdrop or an item from another'+(taken.length?'. TAKEN: '+taken.join(' | '):''))}
+  /* cast & contact shadows (issue #81): pitch-dark zero shadow, floor cast & wall bend, SPR cache cap and lane-map exclusion */
+  {const[,gt]=mk(120,100);gt.scale(HR,HR);const sp=sprite('sh-end-paul',s=>person(s,0,0,paulLook(9),1,0,0,0,0,0),1);
+    const q0=F.quake,l0=G.lit9;F.quake=0;G.lit9=0;figShadow(gt,'cell9',40,48,sp,8.5);
+    const d0=gt.getImageData(0,0,120,100).data;let nz0=0;for(let i=3;i<d0.length;i+=4)if(d0[i])nz0++;
+    F.quake=1;G.lit9=1;figShadow(gt,'cell9',40,48,sp,8.5);
+    const d1=gt.getImageData(0,0,120,100).data;let nz1=0;for(let i=3;i<d1.length;i+=4)if(d1[i])nz1++;
+    F.quake=q0;G.lit9=l0;
+    ok(nz0===0&&nz1>50&&SPR.size<=500,`shadows: zero pixels in pitch-dark cell9 (${nz0}), ${nz1} shadow pixels when lit, SPR.size=${SPR.size}<=500`)}
   ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
   {const wrong=prayName.filter(([,w,nm])=>w!==nm);
    ok(prayName.length>0&&!wrong.length,prayName.length+' prayers of Paul name him as the narration does: Saul before Acts 13:9, Paul from there on'+(wrong.length?'. WRONG: '+wrong.slice(0,6).map(([c,w,nm])=>'chapter '+c+' says '+nm+', wanted '+w).join(' | '):''))}

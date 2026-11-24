@@ -79,7 +79,7 @@ function stoolArt(g){stroke(g,[122,111,120.5,119],'#3e2a1a',1.6);stroke(g,[133,1
   board1(g,119.5,108,16,3,'#7a5632',rng(13));R(g,119.5,110.5,16,.5,'#3e2a1a')}
 ART.workshop={w:320,q:12,
  props:[{y:119,shape:stoolArt}],
- light:()=>({amb:'#827488',lamps:[[157,60,140,'#d8a860']]}),
+ light:()=>({amb:'#827488',wallY:105,wall:[[7,67,105,13],[67,95,105,45],[95,313,105,13]],lamps:[[157,60,140,'#d8a860',106,66.5]]}),
  paint(g){const r=rng(11),W='#c9a476',T='#6b4a2e';
   plaster(g,0,0,320,105,W,r,{patch:7,cracks:0,brick:'#a8744c',bot:-.2,t:.36});skipCracks1(r,8);
   /* cracks cut by hand, high on the wall, where they run to no head; rb: a seed of their own, so the rest of the room keeps its shape */
@@ -171,7 +171,7 @@ function awningCloth(g,p,c,r){clipTo(g,()=>poly(g,p),()=>{let x0=1e9,x1=-1e9,y0=
     R(g,x0,y0,x1-x0,y1-y0,c);for(let i=0;i<x1-x0;i+=7)R(g,x0+i,y0,3.5,y1-y0,tint(c,-.25));
     for(let i=0;i<x1-x0;i+=7)R(g,x0+i+3.5,y0,.5,y1-y0,tint(c,.12));ao(g,x0,y0,x1-x0,Math.min(4,y1-y0),'t',.45)})}
 ART.street={w:480,fp:1.3,q:12,
- light:()=>({amb:'#7f88b8',lamps:[[248,98,80,'#c08444'],[92,112,44,'#9a7038']],shade:F.awning?[[402,476,'#6c6c98']]:[]}),
+ light:()=>({amb:'#7f88b8',wallY:103,wall:[[0,83,103,31],[83,101,103,73],[101,140,103,31],[140,236,103,84],[257,425,103,25],[455,480,103,35]],lamps:[[248,98,80,'#c08444',112.5,97.5],[92,112,44,'#9a7038',103,62]],shade:F.awning?[[402,476,'#6c6c98']]:[]}),
  paint(g){const r=rng(23);
   /* sky, moon, hills */
   /* the night's blues are drawn a little toward grey (earth1), so that they sit with the stone and plaster of the street */
@@ -261,7 +261,7 @@ ART.street={w:480,fp:1.3,q:12,
 /* ---------- Naomi's upper room on the city wall: lamplight first, then darkness and the moon ---------- */
 ART.house={w:320,q:12,
  variant:()=>F.lampOut?(F.shutters?'moon':'dark'):'lamp',
- light:()=>F.lampOut?(F.shutters?{amb:'#4a5484',lamps:[[216,104,70,'#5a6aa8']]}:{amb:'#444a74'}):{amb:'#827488',lamps:[[104,56,135,'#d8a860']]},
+ light:()=>{const W=[[44,196,105,12],[196,236,105,89],[236,313,105,12]];return F.lampOut?(F.shutters?{amb:'#4a5484',wallY:105,wall:W,lamps:[[216,104,70,'#5a6aa8',105,68]]}:{amb:'#444a74',wallY:105}):{amb:'#827488',wallY:105,wall:W,lamps:[[104,56,135,'#d8a860',105,62.5]]}},
  paint(g,v){const r=rng(37),S='#b4a894',T='#6b4a2e';
   ashlar(g,0,0,320,105,S,r,{bw:24,bh:11.5,v:.1,t:.3});
   /* a few hairline cracks in the stones, high up, where they run to no head */

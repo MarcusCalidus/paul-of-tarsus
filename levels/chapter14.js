@@ -113,7 +113,7 @@ ART.colon14={w:480,q:12,
 /* The entrance room of Damon and Theano's house: the door to the court with its bolt and a hatch, a bench beside it, a lamp in a niche,
    shutters with the day coming through their slats. The light through the hatch moves across the floor while they wait (dlight). */
 ART.door14={w:320,q:12,
- paint(g){paintDoor(g)},light:{amb:'#c8bcb0',lamps:[[250,96,60,'#5a4a30']]},draw(g,t){doorDraw(g,t)},front(){}};
+ paint(g){paintDoor(g)},light:{amb:'#c8bcb0',wallY:104,wall:[[0,7,104,15],[33,320,104,15]],lamps:[[250,96,60,'#5a4a30',104,62.5]]},draw(g,t){doorDraw(g,t)},front(){}};
 /* ---------- The close view: sealing the tablet ---------- */
 /* On the base of a column in the shade: the two leaves of a tablet, each with the writing inside, in the wax, and two holes along one
    edge; Aristokles's hand with his signet ring comes in from the right. The cord and the clay are in the runner's hands (the inventory).
