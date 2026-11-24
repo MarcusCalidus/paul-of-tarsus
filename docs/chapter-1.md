@@ -39,8 +39,8 @@ Optional: fill the waterskin at the well and give the guard a drink.
 
 | Chapter | Music | Around you |
 |---|---|---|
-| Prologue: The Road to Damascus | Ten-bar overture in D Hijaz (two-bar harp fanfare, four-bar theme for ney, aulos with tonic drone pipe, lyre, oud, harp and road percussion, and four-bar high unison climax); low drone and sparse oud outside Jerusalem; silence on the white screen; gentle harp for Ananias | Desert wind and cicadas by day, room ambience in the house of Judas |
-| Escape from Damascus | Oud, frame drum and ney in D Hijaz; in the watched street only a drone and a heartbeat remain | Crickets, an owl, the soldier's brazier, night wind at the open window |
+| Prologue: The Road to Damascus | Ten-bar overture in D Hijaz (two-bar harp fanfare, four-bar theme for ney, aulos with tonic drone pipe, lyre, oud, harp and road percussion, and four-bar high unison climax); a low string under a slow drum outside Jerusalem, with nothing held; silence on the white screen; gentle harp for Ananias | Desert wind and cicadas by day, room ambience in the house of Judas |
+| Escape from Damascus | Oud, frame drum and ney in D Hijaz; in the watched street nothing is held: a low string that plucks the keynote and leans on the note above it, a ticking drum that almost stops every fourth bar, and a ney that begins the tune and breaks off before it comes home | Crickets, an owl, the soldier's brazier, night wind at the open window |
 
 ## About the content
 

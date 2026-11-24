@@ -790,5 +790,6 @@ TEXTS('de',6,{
   "there_are_stones_waiting":["In Ikonion warten Steine auf uns. Noch nicht.","1lzxd0v"],
   "derbe_lies_beyond_lystra":["Derbe liegt hinter Lystra, und auch Lystra hat noch nichts gehört. Eine Stadt nach der anderen.","1cm1ico"],
   "out_of_habit_i_run_the_point":["Aus Gewohnheit fahre ich mit der Spitze der Ahle um jede Öse an den Ecken. Kein einziger Stich hat nachgegeben.","111f3uj"],
-  "whether_or_not_he_ever":["Ob er je daran denkt, wer sie genäht hat, oder nicht: Sie hält seine Ladung trocken.","0t5m3r8"]
+  "whether_or_not_he_ever":["Ob er je daran denkt, wer sie genäht hat, oder nicht: Sie hält seine Ladung trocken.","0t5m3r8"],
+  "i_wish_him_a_good_road":["Ich wünsche ihm einen guten Weg. Er muht einmal, tief aus der Brust, und kaut weiter.","1i906ol"]
 });

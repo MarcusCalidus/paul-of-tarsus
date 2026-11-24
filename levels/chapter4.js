@@ -5,11 +5,27 @@
    town opens the map. A place opens when the story reaches it, and the road never leads back. */
 LEVEL(4,()=>{
 "use strict";
+const{plank:plank4,board:board4,crack:crack4,skipCracks:skipCracks4,shadow:shadow4,earth:earth4,joistAO:joistAO4}=SHARED.materials;
+/* joists4: the ceiling seen from below at its edge, as in Chapter One's workshop: dark boards, and the joists running toward us in
+   perspective from the wall plate (y = U) to the top of the picture, each with the soft shade of the boards beside it. They stand in pairs
+   about the middle, so that none rises upright from the plate, and no square beam end sits on it to make a T; the room lays the plate over
+   their feet. rj: a seed of its own. burn4: the draws that board() took for the square beam ends the room used to show, taken on a scrap
+   canvas, so that everything the room draws after them stays where it was */
+function joists4(g,U,step,rj,c){c=c||{};const T=c.joist||'#6b4a2e',k=1.17;
+  if(c.boards!==0){plank4(g,0,0,320,U,c.boards||'#33251a',rj,0);ao(g,0,0,320,U*.7,'t',.45,'#0c0808')}
+  let a=160+step/2-3.5;while(a>-step)a-=step;
+  for(;a<330;a+=step){const x0=160+(a-160)*k,x1=160+(a+7-160)*k,P=[a,U,a+7,U,x1,0,x0,0];joistAO4(g,a,x0,7,U,'#0c0808');poly(g,P,T);
+    clipTo(g,()=>poly(g,P),()=>tex(g,'vert',.16,x0-2,0,x1-x0+4,U,'overlay',.5));
+    poly(g,[a+5,U,a+7,U,x1,0,x1-2.2,0],tint(T,-.4));stroke(g,[a+.25,U,x0+.25,0],tint(T,.25),.5)}
+  ao(g,0,U-2.5,320,2.5,'b',.3,'#0c0808')}
+function burn4(r,x0,step,w,h){const d=mk(4,4)[1];for(let i=x0;i<320;i+=step)board4(d,i,0,w,h,'#5a4226',r,1)}
 
 /* ============ MUSIC AND AMBIENCE (plain data, played by the engine's sequencer) ============ */
 /* A sea crossing in E Aeolian: a harp rocks in three, three and two like a hull on a swell, over a slow bass and a frame drum.
    In the synagogue and at sea (mood "calm") a ney takes the tune in the second half; in the harbors (mood "hope") a reed pipe plays it
-   throughout, with a shaker. Before the proconsul (mood "tense") only a drone, a slow drum and a few notes of the lyre remain. */
+   throughout, with a shaker. Before the proconsul (mood "tense") nothing is held: the low string plucks the keynote in the same
+   threes, threes and twos and leans on the note above it, the drum ticks with it and almost stops every fourth bar, and the ney
+   begins the tune and breaks off a note before it comes home. */
 const _=null,
  TUNE=[[[0,4,4],[4,5,2],[6,4,2],[8,2,4],[12,4,4]],[[0,3,4],[4,2,2],[6,1,2],[8,0,8]],[[0,2,4],[4,4,2],[6,5,2],[8,6,4],[12,4,4]],[[0,5,4],[4,4,4],[8,4,8]],
   [[0,7,4],[4,6,2],[6,5,2],[8,4,4],[12,2,4]],[[0,3,4],[4,4,2],[6,5,2],[8,4,8]],[[0,2,2],[2,3,2],[4,4,2],[6,6,2],[8,7,4],[12,6,4]],[[0,4,4],[4,2,4],[8,0,8]]],
@@ -18,79 +34,104 @@ const _=null,
   {inst:'bass',moods:['calm','hope'],prog:'AABAACDA',len:5,seq:{A:[-7,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],B:[-8,_,_,_,_,_,_,_,-4,_,_,_,_,_,_,_],C:[-5,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],D:[-9,_,_,_,_,_,_,_,-5,_,_,_,_,_,-4,_]}},
   {drum:1,moods:['calm'],seq:{A:'d..k..t.d..k..t.'},vol:.6},
   {drum:1,moods:['hope'],prog:'AB',seq:{A:'d.sk.st.d.sk.st.',B:'d.sk.st.d.skbst.'}},
-  {drum:1,moods:['tense'],seq:{A:'d.......d.d.....'},vol:.8},
-  {drone:[0,7],every:32,moods:['tense']},
-  {inst:'lyre',moods:['tense'],prog:'AB',len:4,seq:{A:[0,_,_,_,_,_,_,_,_,_,1,_,_,_,_,_],B:[0,_,_,_,_,_,_,_,_,_,-1,_,2,_,_,_]},vol:.7},
+  {inst:'bass',moods:['tense'],prog:'AABC',len:2,vol:.9,seq:{
+    A:[-7,_,_,-7,_,_,-6,_,-7,_,_,-7,_,_,_,_],B:[-7,_,_,-7,_,_,-6,_,-6,_,_,-7,_,_,-10,_],C:[-7,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_]}},
+  {drum:1,moods:['tense'],prog:'AABC',seq:{A:'d..k..k.d..k..k.',B:'d..k..k.d..k.kk.',C:'d...............'},vol:.6},
+  {inst:'ney',moods:['tense'],oct:12,loop:8,vol:.8,lines:[TUNE[0],TUNE[1].slice(0,-1),[],[],TUNE[4],TUNE[5].slice(0,2),[],[]]},
   {inst:'ney',moods:['calm'],from:8,oct:12,lines:TUNE},
   {inst:'aulos',moods:['hope'],loop:8,oct:12,lines:TUNE}]};
 
 /* ============ ART ============ */
 const SH='#8f95c8';
+/* The skies and the sea of this chapter, drawn a little toward their own grey (earth4), so that they sit with the stone, the plaster
+   and the timber of the harbors */
+const SKY4=['#3f7cc6','#6ea4dc','#a6c8e6','#dfe9ec'].map(c=>earth4(c,.14)),SKY4S=['#3a78c8','#66a0dc','#9cc4ea','#d6e6ee'].map(c=>earth4(c,.14)),
+  SEA4=['#a9cbd6','#62a0bc','#3f80a6','#2f6a92','#245a80'].map(c=>earth4(c,.12));
 /* What is seen through a gate of Seleucia or of Salamis: hills, and the road running on. Each gate adds the horizon and the sky of its own scene. */
 const GATE4={far:['#9aa890','#b0ba98'],near:['#86a070','#98b082'],land:'#c2c494',road:'#ead9ae'};
+/* shadowBox4: the soft shadow under a table, a bench or a platform, laid in three passes of alpha like shadow4: a wide faint one, the
+   body, and a darker core under the middle */
+function shadowBox4(g,x,y,w,h,a,c){c=c||'#28203c';R(g,x-1.6,y-.4,w+3.2,h+.8,rgba(c,a*.3));R(g,x,y,w,h,rgba(c,a*.4));R(g,x+w*.12,y+h*.15,w*.76,h*.6,rgba(c,a*.45))}
 /* a strip of sea between y0 and y1, lighter toward the horizon, with glints */
-function seaArt(g,x,y0,w,y1,r,st){g.fillStyle=lg(g,0,y0,0,y1,st||['#a9cbd6','#62a0bc','#3f80a6','#2f6a92','#245a80']);g.fillRect(x,y0,w,y1-y0);
+function seaArt(g,x,y0,w,y1,r,st){g.fillStyle=lg(g,0,y0,0,y1,st||SEA4);g.fillRect(x,y0,w,y1-y0);
   for(let i=0;i<w*.6;i++){const k=r()*r(),sy=y0+1+k*(y1-y0-2);R(g,x+r()*w,sy,2+k*6+r()*4,.5,r()<.55?'rgba(214,238,244,.5)':'rgba(20,50,84,.35)')}}
 /* a roll of bedding or cloth lying on the ground: x,y the left end, w long */
-function roll(g,x,y,w,hh,c){oval(g,x+w/2+2,y+hh+.4,w/2+3,1.4,'rgba(40,30,60,.35)');clothRoll(g,x,y+hh,w,hh,c,{k:.32})}
+function roll(g,x,y,w,hh,c){shadow4(g,x+w/2+2,y+hh+.4,w/2+3,1.4,.4,'#28203c');clothRoll(g,x,y+hh,w,hh,c,{k:.32})}
 /* the travelers' baggage, which John Mark looks after: two bed rolls, a leather bag, a food bag and a water flask */
-function baggage(g,x,y){roll(g,x,y-5,17,5,'#8a5a4a');roll(g,x+3,y-9.6,15,4.6,'#6f7a5a');
+function baggage(g,x,y){shadow4(g,x+26.6,y,6.4,1.3,.36,'#28203c');roll(g,x,y-5,17,5,'#8a5a4a');roll(g,x+3,y-9.6,15,4.6,'#6f7a5a');
   g.fillStyle=lg(g,x+20,0,x+31,0,['#a8703e','#8a5830','#5a3618']);g.beginPath();g.ellipse(x+25.6,y-4.4,5.6,4.6,0,0,6.2832);g.fill();R(g,x+23,y-10,5.2,2.6,'#7a4e28');R(g,x+22.4,y-8,6.4,1,'#3e2612');
   sack(g,x+36,y,3.6,6.4,'#cdbb8c');vessel(g,x+43,y,2.2,6.6,'#7a5a3a','jug',{noShadow:1})}
 /* The ship for Cyprus: a round-bellied merchantman, bow to the left, with a plain curved sternpost and no figurehead.
-   In harbor the yard is lowered to the rail with the sail furled on it, and the mast stands bare between its stays. Under sail (o.sail)
-   the mast stops at the yard, so that the two never make a cross. o.plank: the gangplank to the quay; o.tent: our shelter on the
-   foredeck; o.figs: a painter for the people on deck, who stand behind the rail. */
-function ship(g,X,Y,t,o){o=o||{};const y=Y+Math.round(Math.sin(t/900)*2)/2,PL=(p,c)=>poly(g,p.map((v,i)=>i%2?v+y:v+X),c),SK=(p,c,w)=>stroke(g,p.map((v,i)=>i%2?v+y:v+X),c,w),H=(a,b,w,h,c)=>R(g,X+a,b+y,w,h,c),
+   In harbor the yard is lowered abaft the mast with the sail furled on it (meeting the mast at a corner and never crossing it), and
+   the mast stands bare between its stays. Under sail (o.sail) the mast stops at the yard, so that the two never make a cross.
+   o.plank: the gangplank to the quay; o.tent: our shelter on the foredeck; o.figs: a painter for the people on deck, who stand
+   behind the rail. */
+function ship4Opts(o){
+  const hb=o.plank?102:101;
+  return{seed:409,dir:-1,view:'full',x0:4,x1:208,yBot:hb,yWaist:76,bowRise:16,bowSpan:44,bowPow:2.2,sternRise:22,sternSpan:46,sternPow:2.2,
+    palette:o.sail?'shaded':'lit',gradY0:54,gradY1:hb,
+    mast:{x:96,y0:13.4,y1:77,w:3.2,stays:[[97.5,13.4,8,60],[97.5,13.4,203,56]],
+      sail:o.sail?'full':'none',yardX0:50,yardX1:146,yardY0:15.4,yardY1:11,sailH:44,sailBow:5.5,sailLeeIn:1,seams:8},
+    cabin:{x:160,y:63.6,w:31,h:13.4,c:'#7a5632',hi:'#b88a52',roof:'#4a3220'},
+    tent:o.tent?{x0:22,x1:84,rx0:34,rx1:72,ry:62.6,by:77}:null,
+    sacks:!o.tent?[[34,3.4,'#b9a67c'],[46,4.2,'#c6b388'],[58,3.6,'#a8956c'],[70,4.4,'#c4b186'],[82,3.2,'#b09c72']]:null,
+    pitch:{f0:.535,color:'rgba(28,16,10,.44)'},
+    wale:{f0:.12,f1:.21,color:'#a8482c'},waleWear:{count:20,c1:'#8c6438',c2:'#c86a48'},
+    lowerWale:{f0:.47,f1:.535,color:'#382416',hi:'#b88a52'},
+    beams:{f:.32,x0:24,x1:190,step:18,w:1.9,h:1.9,color:'#24160e',hi:'#d4a66a'},
+    scuppers:[44,88,136],
+    sunGlow:o.sail?{comp:'screen',a:.3,x0:2,x1:54,stops:['rgba(255,210,140,1)','rgba(255,210,140,0)'],rx:0,ry:52,rw:58,rh:52}
+      :{comp:'screen',a:.22,x0:110,x1:208,stops:['rgba(255,232,180,0)','rgba(255,232,180,1)'],rx:110,ry:52,rw:102,rh:52},
+    turnShade:o.sail?{comp:'multiply',a:.34,x0:70,x1:208,stops:['rgba(90,82,138,0)','rgba(90,82,138,1)'],rx:68,ry:52,rw:144,rh:52}
+      :{comp:'multiply',a:.26,x0:2,x1:90,stops:['rgba(96,92,140,1)','rgba(96,92,140,0)'],rx:0,ry:52,rw:92,rh:52},
+    rail:{x0:6,x1:206,h:1.6,color:'#9e7442',hi:'#f0cc90'},
+    stem:{thick:3,sweep:10,rimCol:'#f0d4a0',capCol:'#d8ac70'},
+    stern:{thick:3.2,sweep:11,rimCol:'#e8c890',capCol:'#c89a60'},
+    furledYard:!o.sail?{x0:99.6,x1:154,yardX0:99.4,yardX1:157.5,bays:5,th0:4.6,th1:2.8,belly:.85}:null,
+    rudders:[
+      {loom:[186,70,188.4,70,196,98,192,98],blade:[192,96,196.4,96,198,107,193,107]},
+      {loom:[194,66,197,66,207,98,202,98],blade:[202,96,207.4,96,210,108,204,108],hi:[194.4,66.4,204.4,98]}]};
+}
+function ship(g,X,Y,t,o){o=o||{};const y=Y+Math.round(Math.sin(t/900)*2)/2,
   body=()=>{
-  /* stays and mast */
-  SK([97.5,13.4,6,60],'#4a3a2a',.6);SK([97.5,13.4,203,54],'#4a3a2a',.6);H(96,13.4,3.2,64,'#5a3c22');H(96,13.4,1,64,'#9a7040');
-  if(o.sail){PL([50,15.4,146,11,146,13.6,50,18],'#5a3c22');SK([50,15.6,146,11.2],'#9a7040',.5);const sp=[53,17];for(let j=0;j<=10;j++)sp.push(51-Math.sin(j/10*3.1416)*6,17+j*4.4);for(let i=0;i<=10;i++)sp.push(51+i*9.2,61+Math.sin(i/10*3.1416)*3.5);for(let j=10;j>=0;j--)sp.push(143-Math.sin(j/10*3.1416)*4,13+j*4.8);
-    PL(sp,'#e2d5b4');for(let i=1;i<8;i++)SK([53+i*11.4,17-i*.5,51+i*11.6,62.5],'#bfb292',.5);
-    const q=sp.map((v,i)=>i%2?v+y:v+X);g.fillStyle=lg(g,X+45,0,X+146,0,['rgba(110,84,60,.34)','rgba(255,244,214,.1)','rgba(110,84,60,.3)']);g.beginPath();g.moveTo(q[0],q[1]);for(let i=2;i<q.length;i+=2)g.lineTo(q[i],q[i+1]);g.fill()}
-  else{SK([28,74.6,156,73.4],'#5a3c22',1.6);for(let i=0;i<9;i++){const x0=34+i*13,yy=71.6-i*.1;PL([x0,yy+1,x0+3,yy,x0+10,yy,x0+13,yy+1,x0+12.4,yy+5.6,x0+.6,yy+5.6],i%2?'#cfc2a2':'#dccfb0');SK([x0+13,yy+.6,x0+12.6,yy+5.6],'#8a7c5c',.5)}}
-  /* the steersman's cabin aft */
-  H(160,63.6,31,13.4,'#7a5632');H(160,63.6,31,1,'#b88a52');H(159,62.4,33,1.6,'#4a3220');H(166,67.6,5,5,'#2a1c14');H(179,67.6,5,5,'#2a1c14');H(160,63.6,1.4,13.4,'rgba(30,16,8,.4)');
-  /* our shelter on the foredeck: goat-hair cloth over a staff, its rope edge lashed down to the rail */
-  if(o.tent){const tp=[22,77,34,62.6,72,62.6,84,77];PL(tp,'#241c18');g.fillStyle=lg(g,X+22,0,X+84,0,['#3e3229','#2a211c','#17110e']);g.beginPath();tp.forEach((v,i)=>{if(i%2)return;i?g.lineTo(X+v,tp[i+1]+y):g.moveTo(X+v,tp[i+1]+y)});g.fill();
-    for(let j=64;j<77;j+=1.6)SK([34-(j-62.6)*.84,j,72+(j-62.6)*.84,j],j%3<1.6?'rgba(0,0,0,.2)':'rgba(255,240,210,.06)',.5);SK([30,62.4,76,62.4],'#a8804e',1);SK([30,63,76,63],'#5a3c20',.5);
-    SK([22,77,34,62.6,72,62.6,84,77],'#8a7a5a',.7);for(const q of[26,40,66,80])SK([q,74.6,q+1,77.4],'#8a7a5a',.6)}
-  if(o.figs)o.figs(X,y);
-  /* hull */
-  const hb=o.plank?102:101,hull=[0,60,7,58,13,76,196,76,204,57,212,52,211,66,203,93,190,hb,22,hb,9,94,2,78],
-    hp=()=>{g.beginPath();hull.forEach((v,i)=>{if(i%2)return;i?g.lineTo(X+v,hull[i+1]+y):g.moveTo(X+v,hull[i+1]+y)});g.closePath()};
-  g.fillStyle=lg(g,0,56+y,0,101+y,['#7a5230','#5e3e24','#33200f']);hp();g.fill();
-  clipTo(g,hp,()=>{
-    SK([4,82,205,82],'#a8482c',2);SK([4,83.6,205,83.6],'#6a2a18',.6);SK([5,80.4,205,80.4],'#e2d2a8',.6);
-    /* strakes, their butt joints staggered from one to the next like courses of brick */
-    for(let j=0;j<4;j++){SK([7+j*1.4,87+j*3.6,204-j*1.8,87+j*3.6],'#2e1c0e',.5);for(let i=0;i<7;i++)H(26+i*26+(j%2)*13,84.4+j*3.6-(j?1:0),.6,j?3.6:2.6,'rgba(24,12,6,.4)')}});
-  SK([1.5,62,13.5,77.6,197,77.6,206,58],'#2e1c0e',1.4);
-  SK([0,60,7,58],'#b88a52',.8);SK([204.6,57,212,52.4],'#b88a52',.8);
-  /* the two steering oars, one to each side of the stern */
-  PL([186,70,188.4,70,196,98,198,107,193,107,192,98],'#553720');PL([194,66,197,66,207,98,210,108,204,108,202,98],'#6e4a2a')};
+    const preKey='ch4-pre-'+(o.sail?1:0)+(o.tent?1:0),
+      pc=SHARED.ship.cached(preKey,224,112,cg=>{cg.translate(4,0);SHARED.ship.paint(cg,{...ship4Opts(o),layer:'pre'})});
+    g.drawImage(pc,hp(X-4),hp(y),224,112);
+    if(o.figs)o.figs(X,y);
+    const hullKey='ch4-hull-'+(o.sail?1:0)+(o.plank?1:0),
+      hc=SHARED.ship.cached(hullKey,224,112,cg=>{cg.translate(4,0);SHARED.ship.paint(cg,{...ship4Opts(o),layer:'hull'})});
+    g.drawImage(hc,hp(X-4),hp(y),224,112);
+  };
   if(o.plank){inRect(g,0,0,480,100,body);
-    poly(g,[X+40,77+y,X+49,77+y,X+31,104.5,X+21,104.5],'#8a6238');
-    for(let i=0;i<6;i++){const y0=77+y+(27.5-y)*(i+1)*3.6/27.5;stroke(g,[X+40-i*3,y0,X+48-i*3,y0],'#5a3e22',.6)}
-    stroke(g,[X+49,77+y,X+31,104.5],'#b88a52',.5)}
+    SHARED.ship.gangplank(g,{x0:X+40,y0:77+y,x1:X+21,y1:104.5,w0:9,w1:10,sunSide:'r'})}
   else body();
   if(o.wake)for(let i=0;i<8;i++)R(g,X+214+i*9+(t/60%9),97.6+(i%2)+y,7-i*.6,.6,'#e6f2f4')}
 /* ---------- Seleucia: the harbor of Antioch, in the morning ---------- */
 function post4(g,x){g.fillStyle=lg(g,x-1,0,x+7,0,['#8a7a66','#5a4c40','#3a302c']);g.fillRect(x,96,6,8);R(g,x-1,94.6,8,2,'#6a5a4a');R(g,x-1,94.6,8,.6,'#e8d8b8')}
-ART.seleucia={w:480,fp:1.3,
+ART.seleucia={w:480,fp:1.3,q:12,
  paint(g){const r=rng(211),ST='#d9cba6';
-  sky(g,480,64,['#3f7cc6','#6ea4dc','#a6c8e6','#dfe9ec']);cloud(g,330,12,64,9,r);cloud(g,190,22,40,6,r);cloud(g,440,26,34,5,r);
+  sky(g,480,64,SKY4);cloud(g,330,12,64,9,r);cloud(g,190,22,40,6,r);cloud(g,440,26,34,5,r);
   /* the mountain above the town, falling steeply to the sea */
   const mt=x=>Math.max(0,46-x*.21+5*Math.sin(x/23)+3*Math.sin(x/9+1));ridge(g,0,222,60,mt,['#7f94a8','#98aab0','#aebaae']);
   for(let i=0;i<70;i++){const tx=r()*200,ty=60-r()*mt(tx)*.8;oval(g,tx,ty,1.4+r()*1.6,.8+r()*.5,r()<.5?'#6f8a6a':'#8aa07c')}
+  /* a far headland across the bay, low and hazy on the horizon behind the ship, so that her mast never stands across the bare line of
+     the sea; where the mast crosses it, the headland falls away steeply */
+  ridge(g,300,480,60,x=>Math.min(1,(x-300)/24)*(7.4*Math.exp(-Math.pow((x-351)/9,2))+2.2*Math.exp(-Math.pow((x-392)/40,2))+.8+.3*Math.sin(x/5)),[earth4('#94a8b8',.12),earth4('#a8b8c2',.12)]);
   comp(g,'screen',.25,()=>R(g,0,24,480,38,'#c8d8ee'));
   /* the sea, and the mole that shelters the basin */
   seaArt(g,0,60,480,104,r);
   ashlar(g,128,55,166,6,'#c6b592',r,{bw:9,bh:3,v:.08,t:.25});for(let i=128;i<288;i+=11){R(g,i,52.8,6.4,2.4,'#c6b592');R(g,i,52.8,6.4,.5,'#efe0b8')}R(g,128,60.6,166,1.2,'#5f6470');
   ashlar(g,286,43,12,18,'#d2c19c',r,{bw:6,bh:3.4,v:.08,t:.25});R(g,284.5,41,15,2.4,'#e8d9b4');R(g,286,43,2.4,18,'rgba(60,50,90,.3)');
   /* the town wall and the gate to the Antioch road */
-  ashlar(g,0,24,112,80,ST,r,{bw:13,bh:6.4,v:.09,t:.35});for(let i=0;i<112;i+=9){R(g,i,19.6,5.6,4.4,ST);R(g,i,19.6,5.6,.5,'#f4e8c8')}R(g,0,23.6,112,1,'#a8987a');
-  poly(g,[112,19.6,119,23,119,104,112,104],'#a9a2b4');
-  arch(g,22,52,40,52,'#c2b28c');gateView(g,24,54,36,50,{...GATE4,hz:60,sky:[64,['#3f7cc6','#6ea4dc','#a6c8e6','#dfe9ec']],rise:3});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,42+Math.cos(a)*20-.3,72+Math.sin(a)*20-1,.6,2.6,'#a8987a')}
+  ashlar(g,0,24,112,80,ST,r,{bw:13,bh:6.4,v:.09,t:.24});for(let i=0;i<112;i+=9){R(g,i,19.6,5.6,4.4,ST);R(g,i,19.6,5.6,.5,'#f4e8c8')}R(g,0,23.6,112,1,'#a8987a');
+  /* the shade under the wall walk, a few hairline cracks high in the stones where they run to no head, and the shade gathering
+     at the wall's foot and in its corner */
+  ao(g,0,24.6,112,4,'t',.2,'#4a3a60');{const rb=rng(2111);for(const[x,y,n]of[[10,29,3],[71,27,3],[104,31,3]])crack4(g,x,y,n,rb,.8)}
+  ao(g,0,92,112,12,'b',.16,'#4a3a60');ao(g,102,24,10,80,'r',.16,'#4a3a60');
+  poly(g,[112,19.6,119,23,119,104,112,104],'#a9a2b4');ao(g,112,23,7,81,'l',.22,'#3a3058');
+  arch(g,22,52,40,52,'#c2b28c');gateView(g,24,54,36,50,{...GATE4,hz:60,sky:[64,SKY4],rise:3});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,42+Math.cos(a)*20-.3,72+Math.sin(a)*20-1,.6,2.6,'#a8987a')}
+  /* the reveal of the gate keeps its own shade at the crown and down the side away from the sun */
+  clipTo(g,()=>arch(g,22,52,40,52),()=>{ao(g,22,52,40,8,'t',.22,'#3a3058');ao(g,22,52,3,52,'l',.2,'#3a3058')});
   windowArt(g,84,42,9,10,ST,{bars:2});
   /* the quay */
   pave(g,0,103,480,144,'#cdbd98',r,{vx:210,vy:58,rows:5,step:36,v:.09});ao(g,0,103,119,5,'t',.3,'#4a3a60');
@@ -98,13 +139,19 @@ ART.seleucia={w:480,fp:1.3,
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(255,240,200,0)','rgba(255,240,200,.9)']);g.fillRect(0,103,480,41)});
   shade(g,[0,104,112,104,128,112,0,114],SH,.6);
   /* mooring posts */
-  for(const x of[236,444]){oval(g,x+3,104.4,4.6,1.2,'rgba(40,30,60,.5)');shade(g,[x+6,104,x+9,104,x+17,108.6,x+12,108.6],SH,.6);post4(g,x)}
+  for(const x of[236,444]){shadow4(g,x+3,104.4,4.6,1.2,.55,'#28203c');shade(g,[x+6,104,x+9,104,x+17,108.6,x+12,108.6],SH,.6);post4(g,x)}
   /* cargo for Cyprus: wine jars, sacks of grain */
-  shade(g,[128,106,200,106,210,112,138,112],SH,.5);for(let i=0;i<4;i++)vessel(g,134+i*9.5,106,4.2,15-(i%2),['#a05a34','#8a4a2a','#b0683c','#96502e'][i],'amph');
-  sack(g,177,106,7,11,'#cdbb8c');sack(g,190,107,8,13,'#d8c698');sack(g,184,97.4,6,8.6,'#c4b282');
+  shade(g,[128,106,200,106,210,112,138,112],SH,.5);for(let i=0;i<4;i++){shadow4(g,136+i*9.5,106,5.4,1.2,.4,'#28203c');vessel(g,134+i*9.5,106,4.2,15-(i%2),['#a05a34','#8a4a2a','#b0683c','#96502e'][i],'amph',{noShadow:1})}
+  shadow4(g,186,107,14,1.6,.3,'#28203c');sack(g,177,106,7,11,'#cdbb8c');sack(g,190,107,8,13,'#d8c698');sack(g,184,97.4,6,8.6,'#c4b282');
   /* a coil of tarred cord beside the mooring post */
-  oval(g,216,106,10,1.6,'rgba(40,30,60,.4)');for(let i=0;i<4;i++){g.strokeStyle=i%2?'#2e2620':'#463a2e';g.lineWidth=2.2;g.beginPath();g.ellipse(215,104.6-i*1.7,7.6-i*.5,2,0,0,6.2832);g.stroke()}stroke(g,[221,100,226,102.6,229,105.6],'#3a3028',.9);
+  shadow4(g,216,106,10,1.6,.45,'#28203c');for(let i=0;i<4;i++){g.strokeStyle=i%2?'#2e2620':'#463a2e';g.lineWidth=2.2;g.beginPath();g.ellipse(215,104.6-i*1.7,7.6-i*.5,2,0,0,6.2832);g.stroke()}stroke(g,[221,100,226,102.6,229,105.6],'#3a3028',.9);
   baggage(g,44,108);
+  /* light: the morning sun stands over the basin at the right; it falls full on the ship, the open quay and the cargo, warms the
+     face of the town wall a little less, and the cargo throws a little of it back onto the stones. The near edge of the quay and the
+     foot of the wall lie in the air's own cool shade. */
+  lightmap(g,480,'#e6dfd8',l=>{pool(l,340,44,250,96,'#ffffff',.75);pool(l,300,118,190,26,'#fff4e0',.45);pool(l,60,66,74,46,'#fff0dc',.32);
+    pool(l,170,109,44,7,'#ffe6c4',.3);pool(l,216,108,16,4,'#ffe6c4',.2);
+    comp(l,'multiply',1,()=>{ao(l,0,126,480,18,'b',.16,'#3a3050');ao(l,0,103,128,10,'t',.14,'#3a3050');ao(l,0,0,480,8,'t',.08,'#3a3050')})});
   pool(g,330,0,300,150,'#fff0c0',.14,'screen');ao(g,0,0,110,144,'l',.1,'#2a2050')},
  fore(g){vessel(g,18,152,12,34,'#6a3420','amph',{noShadow:1});sack(g,42,148,10,15,'#a89870');
   for(let i=0;i<4;i++){g.strokeStyle=i%2?'#3a3028':'#52463a';g.lineWidth=3;g.beginPath();g.ellipse(500,139-i*2.6,16-i,4.2,0,0,6.2832);g.stroke()}
@@ -112,10 +159,13 @@ ART.seleucia={w:480,fp:1.3,
  draw(g,t){ship(g,262,0,t,{plank:1});post4(g,444)},
  front(){}};
 /* ---------- Salamis: the square between the harbor and the synagogue ---------- */
-ART.salamis={w:480,fp:1.3,
+ART.salamis={w:480,fp:1.3,q:12,
  paint(g){const r=rng(233),LS='#e4d9bc',MB='#eee6d2',CU=['#c8743c','#b8632e','#d88a4a','#a85628'];
-  sky(g,480,70,['#3a78c8','#66a0dc','#9cc4ea','#d6e6ee']);cloud(g,140,10,56,8,r);cloud(g,318,15,44,6,r);cloud(g,436,8,34,5,r);
-  /* the harbor we landed in: the mole, and our ship at anchor with her sail furled */
+  sky(g,480,70,SKY4S);cloud(g,140,10,56,8,r);cloud(g,318,15,44,6,r);cloud(g,436,8,34,5,r);
+  /* the harbor we landed in: the mole, and our ship at anchor with her sail furled. The low coast running away to the north lies on
+     the horizon behind her mast, so that the mast never stands across the bare line of the sea; where the mast crosses it, the coast
+     falls away steeply. */
+  ridge(g,62,112,60,x=>3.4*Math.exp(-Math.pow((x-87)/6,2))+1.2*Math.exp(-Math.pow((x-74)/12,2))+.8+.25*Math.sin(x/3),[earth4('#9aaebc',.12),earth4('#aebec6',.12)]);
   seaArt(g,0,60,112,104,r);ashlar(g,0,56,62,5,'#c6b592',r,{bw:9,bh:2.6,v:.08,t:.25});R(g,0,60.8,62,1,'#5f6470');
   R(g,91.6,51,1.4,25,'#5a3c22');stroke(g,[92.3,51,74,68.6],'#4a3a2a',.5);stroke(g,[92.3,51,110.6,66.6],'#4a3a2a',.5);poly(g,[80,73,104,72.4,104,75.4,80,76],'#dccfb0');
   poly(g,[72,69,77,68,80,76,105,76,109,67,112,66,112,81,80,81,75,78],'#5e3e24');R(g,77,77.6,35,1,'#a8482c');R(g,72,80.6,40,.8,'rgba(20,40,60,.5)');
@@ -128,82 +178,114 @@ ART.salamis={w:480,fp:1.3,
   /* the stoa of the marketplace: a tiled roof on stone columns, shops in its shade */
   for(let i=112;i<300;i+=5.5){R(g,i,26,5,8,(i|0)%11?'#c0603c':'#a84c2c');R(g,i,26,5,.7,'#e08a60');R(g,i+4.5,26,.6,8,'#7a3620')}
   g.fillStyle=lg(g,0,34,0,40.5,['#fdf8ea','#e8dfc8','#c4bca6']);g.fillRect(112,34,188,6.5);for(let i=114;i<300;i+=4)R(g,i,37.4,2,1.6,'#cfc6b0');
-  plaster(g,112,40.5,188,63.5,'#b8ac92',r,{patch:3,cracks:4,brick:'#8a7a62',t:.4});comp(g,'multiply',.75,()=>R(g,112,40.5,188,63.5,'#a8a8cc'));
+  plaster(g,112,40.5,188,63.5,'#b8ac92',r,{patch:3,cracks:0,brick:'#8a7a62',t:.3});skipCracks4(r,4);
+  /* hairline cracks set by hand, high on the piers between the arches, where they run to no head */
+  {const rb=rng(2331);for(const[x,y,n]of[[157,43,3],[217,44,3],[268,43,3]])crack4(g,x,y,n,rb,.8)}comp(g,'multiply',.75,()=>R(g,112,40.5,188,63.5,'#a8a8cc'));
   for(let x=120;x<290;x+=56){R(g,x-2.5,53.5,25,50.5,'#8a8296');arch(g,x,56,20,48,'#1e1820');R(g,x+2,82,16,22,'rgba(90,70,60,.5)');ao(g,x,56,20,14,'t',.6)}
   for(let x=114;x<300;x+=28){shade(g,[x+7,104,x+12,104,x+20,108,x+13,108],SH,.6);g.fillStyle=lg(g,x,0,x+7,0,['#cbc2ac',MB,'#fffbee','#dbd2bc','#aaa4a0']);g.fillRect(x,42.5,7,59);
     for(let j=0;j<3;j++)R(g,x+1.6+j*1.8,44,.5,56,'rgba(120,112,104,.28)');R(g,x-1.2,40.5,9.4,2.6,MB);R(g,x-1.2,42.8,9.4,.6,'#a8a094');R(g,x-1.2,100.4,9.4,3.6,'#dfd6c0');R(g,x-1.2,100.4,9.4,.6,'#fffbee')}
-  /* the coppersmith's stall: Cyprus copper, beaten into pots and pans */
-  shade(g,[150,104,236,104,244,112,158,112],SH,.55);wood(g,152,50,2.4,56,'#6a4e2c',1);wood(g,231,50,2.4,56,'#6a4e2c',1);wood(g,150,52.4,86,2,'#7a5c36');awning(g,149,43,88,9,'#3f6a8a','#e6dcc4',8);
-  [162,174,188,203,217].forEach((x,i)=>{R(g,x+.2,54.4,.6,3.4,'#5a4226');const c=CU[i%4],rr=3.4+(i%2);g.fillStyle=rg(g,x-1,60+rr-1.5,rr*1.6,[tint(c,.45),c,tint(c,-.45)]);g.beginPath();g.arc(x+.5,58+rr,rr,0,6.2832);g.fill()});
-  R(g,160,94,66,11,'rgba(40,30,60,.4)');wood(g,160.6,94,3,11.5,'#6a4e2c',1);wood(g,220,94,3,11.5,'#6a4e2c',1);wood(g,157.5,88,69,4.4,'#96703e');R(g,157.5,92,69,1.2,'#5a4226');
+  /* the coppersmith's stall: Cyprus copper, beaten into pots and pans. It stands before the colonnade, and a hanging of undyed cloth
+     closes its back from the beam to the paving, so that no column runs down behind the table and across it; its folds are broad
+     and soft and run one way. Each pot hangs from the beam by two cords that part as they rise. */
+  {const rc=rng(2332);inRect(g,154.4,52.4,76.6,51.6,()=>{for(let i=0;i<77;i+=6.4){const c=tint('#968b7c',(rc()-.5)*.08);g.fillStyle=lg(g,154.4+i,0,154.4+i+6.4,0,[tint(c,.07),c,tint(c,-.1)]);g.fillRect(154.4+i,52.4,6.4,51.6)}
+    tex(g,'vert',.12,154.4,52.4,76.6,51.6,'overlay',.5);ao(g,154.4,52.4,76.6,8,'t',.3,'#2a2030');ao(g,154.4,90,76.6,14,'b',.3,'#2a2030')})}
+  const rw=rng(2333);
+  shade(g,[150,104,236,104,244,112,158,112],SH,.55);board4(g,152,50,2.4,56,'#6a4e2c',rw,1);board4(g,231,50,2.4,56,'#6a4e2c',rw,1);board4(g,150,52.4,86,2,'#7a5c36',rw);awning(g,149,43,88,9,earth4('#3f6a8a',.2),'#e6dcc4',8);
+  [162,174,188,203,217].forEach((x,i)=>{stroke(g,[x-.6,54.4,x+.5,58],'#5a4226',.5);stroke(g,[x+1.6,54.4,x+.5,58],'#5a4226',.5);const c=CU[i%4],rr=3.4+(i%2);g.fillStyle=rg(g,x-1,60+rr-1.5,rr*1.6,[tint(c,.45),c,tint(c,-.45)]);g.beginPath();g.arc(x+.5,58+rr,rr,0,6.2832);g.fill()});
+  shadowBox4(g,160,96,66,9,.5);ao(g,157.5,92.4,69,4,'t',.3,'#1a1420');board4(g,160.6,94,3,11.5,'#6a4e2c',rw,1);board4(g,220,94,3,11.5,'#6a4e2c',rw,1);board4(g,157.5,88,69,4.4,'#96703e',rw);R(g,157.5,92,69,1.2,'#5a4226');
+  shadow4(g,162,105.4,3,.8,.4,'#28203c');shadow4(g,221.5,105.4,3,.8,.4,'#28203c');
   vessel(g,166,88,4,8,CU[0],'jug',{noShadow:1});vessel(g,178,88,5.6,6,CU[2],'bowl',{noShadow:1});vessel(g,191,88,4.2,10,CU[1],'jar',{noShadow:1});vessel(g,204,88,5,5,CU[3],'bowl',{noShadow:1});vessel(g,216,88,3.6,9,CU[2],'amph',{noShadow:1});
   for(const x of[166,178,191,204,216])R(g,x-1.6,82.4,1,2.4,'rgba(255,236,200,.7)');
   /* the synagogue: plain dressed stone, two steps and a door */
   house(g,304,28,126,76,LS,r,{stone:{bw:12,bh:6,v:.07,t:.3},beams:0});windowArt(g,318,40,10,10,LS,{bars:2});windowArt(g,406,40,10,10,LS,{bars:2});
-  R(g,343,52,44,5.4,'#f1e8d0');R(g,343,52,44,.6,'#fffbee');R(g,343,57,44,.8,'#a59c86');R(g,346,57.8,38,46.2,'#d2c7aa');doorArt(g,350,60,30,44,'#6a4a2c',r);
+  R(g,343,52,44,5.4,'#f1e8d0');R(g,343,52,44,.6,'#fffbee');R(g,343,57,44,.8,'#a59c86');R(g,346,57.8,38,46.2,'#d2c7aa');doorArt(g,350,60,30,44,'#6a4a2c',r,{bands:[]});ao(g,346,57.8,38,6,'t',.3,'#2a2030');
   R(g,340,102,50,2.4,'#e6dcc2');R(g,340,102,50,.6,'#fffbee');R(g,336,104.2,58,2.6,'#dcd1b6');R(g,336,104.2,58,.6,'#fbf3dc');R(g,336,106.6,58,.8,'rgba(60,50,90,.4)');
-  R(g,396,98,28,6,'rgba(40,30,60,.3)');R(g,396,95,28,3,'#d8cdb2');R(g,396,95,28,.6,'#fbf3dc');R(g,398,98,3.4,6,'#bdb298');R(g,418.6,98,3.4,6,'#bdb298');
-  vessel(g,328,106,5.6,17,'#a05a34','pithos');shade(g,[304,104,336,104,330,110,304,110],SH,.4);
+  shadowBox4(g,396,98.6,28,5.4,.4);R(g,396,95,28,3,'#d8cdb2');R(g,396,95,28,.6,'#fbf3dc');R(g,398,98,3.4,6,'#bdb298');R(g,418.6,98,3.4,6,'#bdb298');
+  shadow4(g,331,106,7.4,1.5,.42,'#28203c');vessel(g,328,106,5.6,17,'#a05a34','pithos',{noShadow:1});shade(g,[304,104,336,104,330,110,304,110],SH,.4);
   /* the west gate, and the road across the island */
   ashlar(g,434,22,46,82,'#dccfaa',r,{bw:13,bh:6.4,v:.09});for(let i=434;i<480;i+=8){R(g,i,17.6,5,4.4,'#dccfaa');R(g,i,17.6,5,.5,'#f8eccc')}R(g,434,21.6,46,1,'#a8987a');poly(g,[434,17.6,429,21,429,104,434,104],'#a8a0b0');
-  arch(g,440,54,34,50,'#c2b28c');gateView(g,442,56,30,48,{...GATE4,hz:62,sky:[70,['#3a78c8','#66a0dc','#9cc4ea','#d6e6ee']],rise:3});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,457+Math.cos(a)*17-.3,71+Math.sin(a)*17-1,.6,2.6,'#a8987a')}
+  arch(g,440,54,34,50,'#c2b28c');gateView(g,442,56,30,48,{...GATE4,hz:62,sky:[70,SKY4S],rise:3});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,457+Math.cos(a)*17-.3,71+Math.sin(a)*17-1,.6,2.6,'#a8987a')}
   /* paving */
   pave(g,0,103,480,144,'#ddd2b8',r,{vx:250,vy:62,rows:5,step:36,v:.08,joint:'#a59c88'});ao(g,112,103,368,5,'t',.3,'#4a4460');
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(255,240,200,0)','rgba(255,240,200,.9)']);g.fillRect(0,103,480,41)});
   shade(g,[112,104,300,104,306,108,118,108],SH,.4);shade(g,[429,104,434,104,448,110,436,110],SH,.6);
+  /* light: the sun stands high over the square; it falls full on the paving and the face of the synagogue, while the stoa keeps
+     its shops in shade and the shade gathers deepest under its roof and in the arches. The copper throws a warm glint onto the
+     table, and the near edge of the square lies in the air's cool shade. */
+  lightmap(g,480,'#e6dfd8',l=>{pool(l,250,60,300,110,'#ffffff',.6);pool(l,368,74,80,46,'#fff4e0',.4);pool(l,250,122,230,24,'#fff4e0',.42);
+    pool(l,192,90,40,8,'#ffd8a8',.3);
+    comp(l,'multiply',1,()=>{ao(l,112,40.5,188,10,'t',.18,'#3a3050');ao(l,0,126,480,18,'b',.16,'#3a3050');ao(l,0,0,480,8,'t',.08,'#3a3050');
+      ao(l,296,28,8,76,'r',.12,'#3a3050')})});
   pool(g,200,0,300,160,'#fff0c0',.14,'screen');ao(g,360,0,120,144,'r',.08,'#2a2050')},
  fore(g){const r=rng(234);/* the market spills to the street's edge: baskets of figs and pomegranates, a jar, a sack */
   for(const[bx,bw,bh]of[[46,14,12],[76,10,9]]){vessel(g,bx,148,bw,bh,'#6a5230','bowl',{noShadow:1});for(let i=0;i<12;i++)oval(g,bx-bw+3+r()*(bw*2-6),148-bh-r()*2.4,1.8,1.4,r()<.5?'#a8503a':'#6a3458')}
   vessel(g,506,152,10,30,'#5a2e1e','amph',{noShadow:1});sack(g,480,148,9,13,'#a89870');comp(g,'source-atop',.4,()=>R(g,0,0,530,150,'#34305a'))},
- draw(g){if(MK.room==='salamis')baggage(g,MK.x-52,MK.y-13)},
+ draw(g){if(MK.room==='salamis')depth(MK.y-13,()=>baggage(g,MK.x-52,MK.y-13))},
  front(){}};
 /* ---------- Salamis: inside the synagogue ---------- */
-ART.synagogue={w:320,
- light:()=>({amb:'#dccbb8',lamps:[[118,60,44,'#5a3a14'],[202,60,44,'#5a3a14']]}),
- paint(g){const r=rng(251),W='#e2d4b4',ST='#cfc3a6';
-  plaster(g,0,0,320,104,W,r,{patch:2,cracks:5,brick:'#b89468'});
-  for(let i=8;i<320;i+=28)wood(g,i,0,5,7,'#5a4226',1);wood(g,0,7,320,2.4,'#6a4e2c');ao(g,0,9.4,320,10,'t',.4,'#2a2030');
+ART.synagogue={w:320,q:12,
+ light:()=>({amb:'#dccbb8',wallY:103,wall:[[0,320,103,44]],lamps:[[118,60,44,'#5a3a14',103,60.6],[202,60,44,'#5a3a14',103,60.6]]}),
+ paint(g){const r=rng(251),W='#e2d4b4',ST='#cfc3a6',rw=rng(2511);
+  plaster(g,0,0,320,104,W,r,{patch:2,cracks:0,brick:'#b89468',t:.36});skipCracks4(r,5);
+  /* hairline cracks set by hand, high on the wall between the windows, where they run to no head */
+  {const rb=rng(2512);for(const[x,y,n]of[[30,14,3],[150,13,3],[176,16,2],[290,14,3]])crack4(g,x,y,n,rb,.85)}
+  /* the ceiling at its edge, its joists running toward us, and the wall plate they rest on */
+  joists4(g,7.5,36,rng(2513));burn4(rw,8,28,5,7);
+  board4(g,0,7,320,2.4,'#6a4e2c',rw);ao(g,0,9.4,320,10,'t',.4,'#2a2030');
+  /* the shade gathers at both ends of the long wall and along its foot */
+  ao(g,0,9.4,10,94.6,'l',.2,'#2a2030');ao(g,310,9.4,10,94.6,'r',.2,'#2a2030');ao(g,0,95,320,8,'b',.2,'#2a2030');
   /* two high windows, and two niches for the lamps */
   for(const x of[70,236])windowArt(g,x,24,14,18,W,{dark:'#bfe0f4',bars:2,wood:'#6a4e2c'});
   for(const x of[112,196]){arch(g,x-1,47,14,18,tint(W,-.3));arch(g,x,48,12,17,'#3a2c22');R(g,x-2,64.6,16,1.6,tint(W,.15));R(g,x-2,66.2,16,.6,tint(W,-.35));
     R(g,x+3,62,6,2.4,'#b8733c');R(g,x+3,62,6,.6,'#e0a064');R(g,x+8.6,61,2,1.4,'#b8733c')}
   /* the door to the square */
-  R(g,5,50,30,54,'#cfc3a6');doorArt(g,8,53,24,51,'#6a4a2c',r,{left:1});
-  /* the bench along the wall, where the people sit */
-  const bench=(x,w)=>{R(g,x,91,w,13,'rgba(40,30,60,.3)');R(g,x,88,w,3.4,ST);R(g,x,88,w,.7,'#f0e6cc');R(g,x,91.4,w,12.6,'#b4a88c');R(g,x,91.4,w,1,'rgba(60,50,80,.35)')};
+  R(g,5,50,30,54,'#cfc3a6');doorArt(g,8,53,24,51,'#6a4a2c',r,{left:1,bands:[]});ao(g,8,53,24,5,'t',.3,'#1a1420');
+  /* the bench along the wall, where the people sit, with the soft shade at its foot */
+  const bench=(x,w)=>{R(g,x,88,w,3.4,ST);R(g,x,88,w,.7,'#f0e6cc');R(g,x,91.4,w,12.6,'#b4a88c');R(g,x,91.4,w,1,'rgba(60,50,80,.35)');ao(g,x,91.4,w,4,'t',.22,'#2a2030');
+    ao(g,x,99,w,5,'b',.24,'#2a2030');shadowBox4(g,x,102.6,w,2,.36)};
   bench(42,96);bench(286,34);
-  /* the seats of the presiding officers, beside the chest and facing the people */
-  R(g,186,71,54,18,'#d6cbb0');R(g,186,71,54,1,'#f4ead0');bench(184,58);for(const x of[184,211,238.6]){R(g,x,78,3.4,10,'#bdb196');R(g,x,78,3.4,.8,'#efe4c8')}
+  /* the seats of the presiding officers, beside the chest and facing the people: two seats of stone, each with an arm at either end,
+     so that no upright stands on the middle of a seat */
+  for(const[x,w]of[[184,27],[213.6,28.4]]){R(g,x+2,71,w-4,18,'#d6cbb0');R(g,x+2,71,w-4,1,'#f4ead0');ao(g,x+2,72,w-4,5,'t',.14,'#2a2030');bench(x,w);
+    for(const ax of[x,x+w-3.4]){R(g,ax,78,3.4,10,'#bdb196');R(g,ax,78,3.4,.8,'#efe4c8')}}
   /* the chest for the scrolls, under its cloth */
-  R(g,250,96,32,8,'rgba(40,30,60,.35)');wood(g,252,62,28,40,'#6a4a2c',1);boards(g,254.4,67,23.2,31,5.8,'#8a6238',r);R(g,265.6,67,.8,31,'#3a2414');R(g,252,98,28,4,'#5a3e22');R(g,252,98,28,.6,'#9a7040');
+  shadowBox4(g,250,100.6,32,3.6,.5);board4(g,252,62,28,40,'#6a4a2c',rw,1);boards(g,254.4,67,23.2,31,5.8,'#8a6238',r);R(g,265.6,67,.8,31,'#3a2414');R(g,252,98,28,4,'#5a3e22');R(g,252,98,28,.6,'#9a7040');
   R(g,263.4,81,1.6,1.6,'#d8b860');R(g,267,81,1.6,1.6,'#d8b860');
   poly(g,[249,60,283,60,284,67.6,278,65.6,272,68.6,266,65.6,260,68.6,254,65.6,248,67.6],'#7a2f3a');R(g,249,60,34,1,'#a8505c');
   /* stone flags, and the platform for the reading with its desk */
   pave(g,0,103,320,144,'#c8b898',r,{vx:160,vy:64,rows:5,step:34,v:.08});ao(g,0,103,320,6,'t',.35,'#3a3050');
-  R(g,114,108,96,3,'rgba(30,20,40,.4)');poly(g,[116,98.6,204,98.6,210,103,110,103],'#a47a48');wood(g,110,103,100,5,'#8a6238');R(g,110,103,100,.6,'#c89a5c');
-  poly(g,[150,99,170,99,168,86,152,86],'#6a4a2c');R(g,150,97.6,20,1.4,'#4a3220');poly(g,[148.6,86,171.4,86,169.4,82.6,150.6,82.6],'#8a6238');R(g,150.6,82.6,18.8,.6,'#c89a5c');
+  shadowBox4(g,112,107.6,98,3.4,.5,'#1e1628');clipTo(g,()=>poly(g,[116,98.6,204,98.6,210,103,110,103]),()=>plank4(g,110,98.6,100,4.4,'#a47a48',rw));
+  board4(g,110,103,100,5,'#8a6238',rw);R(g,110,103,100,.6,'#c89a5c');
+  clipTo(g,()=>poly(g,[150,99,170,99,168,86,152,86]),()=>plank4(g,150,86,20,13,'#6a4a2c',rw,1));R(g,150,97.6,20,1.4,'#4a3220');poly(g,[148.6,86,171.4,86,169.4,82.6,150.6,82.6],'#8a6238');R(g,150.6,82.6,18.8,.6,'#c89a5c');
   R(g,153.4,83.2,13.2,2.2,'#ecdcb0');R(g,152.2,82.8,1.8,3,'#8a5a2c');R(g,166,82.8,1.8,3,'#8a5a2c');
   /* daylight from the windows, lamplight from the niches */
   lightmap(g,320,'#a09488',l=>{for(const x of[77,243]){pool(l,x,33,24,26,'#fff4d8',1);l.fillStyle=lg(l,0,42,0,140,['rgba(255,240,200,.45)','rgba(255,240,200,0)']);poly(l,[x-7,42,x+7,42,x+(x<160?44:-30),140,x+(x<160?-10:-84),140]);l.fill()}
-    for(const x of[118,202])nicheLight(l,x,60,36,30,'#ffc070',.8);pool(l,160,120,150,44,'#fff0d8',.4)})},
+    for(const x of[118,202])nicheLight(l,x,60,36,30,'#ffc070',.8);pool(l,160,120,150,44,'#fff0d8',.4);
+    /* where the window light lands: the bench at the left, the seats and the chest at the right; and the lamps reach the desk */
+    pool(l,104,95,36,10,'#fff0d0',.3);pool(l,222,92,34,12,'#fff0d0',.28);pool(l,160,86,24,12,'#ffd8a0',.22);
+    comp(l,'multiply',1,()=>{ao(l,0,0,56,144,'l',.3,'#2a2030');ao(l,264,0,56,144,'r',.3,'#2a2030');ao(l,0,0,320,14,'t',.3,'#2a2030');ao(l,0,128,320,16,'b',.3,'#2a2030')})})},
  fore(g){/* the backs of the nearest bench */
   R(g,0,138,104,6,'#3a3028');R(g,0,138,104,.8,'#7a6a58');R(g,216,138,104,6,'#3a3028');R(g,216,138,104,.8,'#7a6a58')},
  draw(g,t){for(const x of[112,196]){flame(g,x+8.6,60.6,t+x*7);pool(g,x+9,58,8+Math.sin(t/190+x),6,'#ffb050',.14)}},
  front(){}};
 /* ---------- Paphos: the hall of the proconsul, open to the harbor ---------- */
-ART.paphos={w:400,fp:1.25,
+ART.paphos={w:400,fp:1.25,q:12,
  light:()=>({amb:'#f0e2d2',shade:[[0,96,'#d8c8c4'],[306,400,'#e0d0c8']]}),
- paint(g){const r=rng(271),MB='#f1eadb',RED='#a8402e';
+ paint(g){const r=rng(271),MB='#f1eadb',RED=earth4('#a8402e',.08),rw=rng(2711);
   /* the view between the columns: the harbor of Paphos inside its two moles */
-  sky(g,400,54,['#3a78c8','#6aa2dc','#a4c8e8','#dbe8ee']);cloud(g,190,22,50,7,r);cloud(g,270,30,32,5,r);
+  sky(g,400,54,['#3a78c8','#6aa2dc','#a4c8e8','#dbe8ee'].map(c=>earth4(c,.14)));cloud(g,190,22,50,7,r);cloud(g,270,30,32,5,r);
   ridge(g,236,306,53,x=>Math.max(0,(x-236)*.14+1.5*Math.sin(x/6)),['#8ea284','#a8b890']);seaArt(g,96,53,210,84,r);
   ashlar(g,112,62,40,3.4,'#c6b592',r,{bw:8,bh:3.4,v:.08,t:.2});R(g,112,65.2,40,.8,'#5f6470');ashlar(g,188,62,36,3.4,'#c6b592',r,{bw:8,bh:3.4,v:.08,t:.2});R(g,188,65.2,36,.8,'#5f6470');
   for(const[sx,sy]of[[180,59],[250,61],[272,58.4]]){poly(g,[sx-2.5,sy,sx+2.5,sy,sx+2,sy+1.4,sx-2,sy+1.4],'#4a4a5c');poly(g,[sx-1.6,sy-.4,sx-1.2,sy-4.6,sx+1.8,sy-.6],'#ecdfc6')}
   /* the parapet */
   g.fillStyle=lg(g,0,82,0,104,['#e9e0cc','#d6ccb4','#bdb39c']);g.fillRect(96,82,210,22);
   /* the walls: red plaster above a dark dado */
-  plaster(g,0,0,96,104,RED,r,{patch:0,cracks:3,t:.35});plaster(g,306,0,94,104,RED,r,{patch:0,cracks:3,t:.35});
-  for(const[x,w]of[[0,96],[306,94]]){R(g,x,84,w,20,'#3a2a2c');R(g,x,82.6,w,1.4,'#e6d6a8');ao(g,x,60,w,24,'b',.18,'#2a1020')}
+  plaster(g,0,0,96,104,RED,r,{patch:0,cracks:0,t:.26});skipCracks4(r,3);plaster(g,306,0,94,104,RED,r,{patch:0,cracks:0,t:.26});skipCracks4(r,3);
+  /* hairline cracks set by hand, high on both walls, where they run to no head */
+  {const rb=rng(2712);for(const[x,y,n]of[[9,17,3],[80,20,3],[312,19,3],[393,21,3]])crack4(g,x,y,n,rb,.9)}
+  for(const[x,w]of[[0,96],[306,94]]){R(g,x,84,w,20,'#3a2a2c');R(g,x,82.6,w,1.4,'#e6d6a8');ao(g,x,60,w,24,'b',.18,'#2a1020');ao(g,x,97,w,7,'b',.3,'#120a10')}
+  /* the shade in the corners where the walls turn into the opening */
+  ao(g,84,12,12,92,'r',.2,'#2a1020');ao(g,306,12,12,92,'l',.2,'#2a1020');
   poly(g,[96,12,100,14,100,104,96,104],'#7a3024');poly(g,[306,12,302,14,302,104,306,104],'#8a3628');
   /* entablature, and the shade under it */
   g.fillStyle=lg(g,0,0,0,12,['#cfc6b2','#f6f0e0']);g.fillRect(0,0,400,12);R(g,0,11,400,1.4,'#a8a090');for(let i=2;i<400;i+=5)R(g,i,7.4,2.4,2,'#d9d0bc');ao(g,0,12.4,400,10,'t',.35,'#2a2040');
@@ -211,49 +293,66 @@ ART.paphos={w:400,fp:1.25,
   for(const x of[104,164,228,290]){g.fillStyle=lg(g,x,0,x+8,0,['#cfc7b4',MB,'#fffdf4','#ded6c2','#aea8a4']);g.fillRect(x,15,8,87);for(let j=0;j<3;j++)R(g,x+1.8+j*2,17,.5,84,'rgba(120,112,104,.28)');
     R(g,x-1.4,12.4,10.8,3,MB);R(g,x-1.4,15.2,10.8,.6,'#a8a094');R(g,x-1.4,100.6,10.8,3.6,'#e2dac6');R(g,x-1.4,100.6,10.8,.6,'#fffdf4')}
   /* the door to the city */
-  R(g,26,44,40,60,'#d8cdb4');R(g,26,44,40,1,'#fbf5e4');doorArt(g,30,48,32,56,'#6a4a2c',r,{left:1});
+  R(g,26,44,40,60,'#d8cdb4');R(g,26,44,40,1,'#fbf5e4');doorArt(g,30,48,32,56,'#6a4a2c',r,{left:1,bands:[]});ao(g,30,48,32,5,'t',.3,'#1a1420');
   /* a hanging behind the proconsul's seat, the dais, and the seat itself */
-  for(let i=0;i<10;i++){const x=324+i*6.4,c=i%2?'#5a2848':'#6c3458';g.fillStyle=lg(g,0,16,0,84,[tint(c,.12),c,tint(c,-.3)]);g.fillRect(x,16,6.4,66+(i%2)*1.6)}R(g,322,14.6,68,2.4,'#8a6a2a');R(g,322,14.6,68,.6,'#d8b860');
+  for(let i=0;i<10;i++){const x=324+i*6.4,c=earth4(i%2?'#5a2848':'#6c3458',.2);g.fillStyle=lg(g,0,16,0,84,[tint(c,.12),c,tint(c,-.3)]);g.fillRect(x,16,6.4,66+(i%2)*1.6)}R(g,322,14.6,68,2.4,'#8a6a2a');R(g,322,14.6,68,.6,'#d8b860');
   R(g,314,100,82,4.4,'#e4dcc8');R(g,314,100,82,.6,'#fffdf4');R(g,320,95.6,70,4.4,'#ebe4d2');R(g,320,95.6,70,.6,'#fffdf4');R(g,314,104.2,82,.8,'rgba(60,50,90,.4)');
-  wood(g,343,56,26,28,'#6a4424',1);R(g,343,56,26,1.4,'#b88a52');R(g,345.6,60,20.8,20,'#5a3418');R(g,340,82,32,4,'#8a5a2c');R(g,340,82,32,.6,'#c8945a');R(g,342,79.6,28,2.6,'#7a2a4a');R(g,342,79.6,28,.6,'#a8507a');
-  wood(g,340.6,86,3.4,9.6,'#5a3418',1);wood(g,368,86,3.4,9.6,'#5a3418',1);R(g,339,72,4.4,12,'#7a4e28');R(g,368.6,72,4.4,12,'#7a4e28');R(g,339,72,4.4,.8,'#c8945a');R(g,368.6,72,4.4,.8,'#c8945a');
+  shadowBox4(g,338,94.4,36,1.6,.4);board4(g,343,56,26,28,'#6a4424',rw,1);R(g,343,56,26,1.4,'#b88a52');R(g,345.6,60,20.8,20,'#5a3418');R(g,340,82,32,4,'#8a5a2c');R(g,340,82,32,.6,'#c8945a');R(g,342,79.6,28,2.6,'#7a2a4a');R(g,342,79.6,28,.6,'#a8507a');
+  board4(g,340.6,86,3.4,9.6,'#5a3418',rw,1);board4(g,368,86,3.4,9.6,'#5a3418',rw,1);board4(g,339,72,4.4,12,'#7a4e28',rw,1);board4(g,368.6,72,4.4,12,'#7a4e28',rw,1);R(g,339,72,4.4,.8,'#c8945a');R(g,368.6,72,4.4,.8,'#c8945a');
   /* the proconsul's table: scrolls, a writing tablet, an inkpot */
-  R(g,244,97,40,8,'rgba(40,30,60,.4)');wood(g,245,92,3,12.4,'#5a4226',1);wood(g,279,92,3,12.4,'#5a4226',1);wood(g,241.5,88,45,4,'#8a6238');R(g,241.5,91.6,45,1,'#4a3220');
+  shadowBox4(g,244,100,40,4.6,.5);board4(g,245,92,3,12.4,'#5a4226',rw,1);board4(g,279,92,3,12.4,'#5a4226',rw,1);board4(g,241.5,88,45,4,'#8a6238',rw);
+  shadow4(g,246.5,104.4,2.6,.8,.4,'#28203c');shadow4(g,280.5,104.4,2.6,.8,.4,'#28203c');R(g,241.5,91.6,45,1,'#4a3220');
   for(const[sx,c]of[[247,'#ecdcb0'],[253,'#e2d0a0'],[259,'#f0e4c0']]){R(g,sx,84.6,5,3.4,c);R(g,sx,84.6,5,.6,'#fff6dc');R(g,sx-.6,84.2,1.2,4.2,'#8a5a2c');R(g,sx+4.4,84.2,1.2,4.2,'#8a5a2c')}
   R(g,267,85.4,9,2.6,'#6a4424');R(g,267.8,85.9,7.4,1.4,'#2a2018');vessel(g,281,88,1.8,3.6,'#3a3a4a','jar',{noShadow:1});
   /* a brazier of bronze on three legs */
-  oval(g,132,106,8,1.4,'rgba(40,30,60,.4)');stroke(g,[127,98,125,105.6],'#6a4a24',1);stroke(g,[137,98,139,105.6],'#6a4a24',1);stroke(g,[132,98,132.6,104.6],'#5a3e1e',1);vessel(g,132,98.6,6.6,5,'#b8863c','bowl',{noShadow:1});
+  shadow4(g,132,106,8,1.4,.45,'#28203c');stroke(g,[127,98,125,105.6],'#6a4a24',1);stroke(g,[137,98,139,105.6],'#6a4a24',1);stroke(g,[132,98,132.6,104.6],'#5a3e1e',1);vessel(g,132,98.6,6.6,5,'#b8863c','bowl',{noShadow:1});
   /* the floor: pale marble, the shadows of the columns across it */
   pave(g,0,103,400,144,'#e8e0d0',r,{vx:200,vy:62,rows:5,step:36,v:.1,joint:'#9c948a'});ao(g,0,103,400,5,'t',.3,'#4a4460');
   R(g,0,104.6,400,2,'rgba(138,58,48,.5)');
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(255,240,200,0)','rgba(255,240,200,.9)']);g.fillRect(0,103,400,41)});
   for(const x of[104,164,228,290])shade(g,[x,104,x+8,104,x+30,126,x+18,126],SH,.5);shade(g,[0,104,96,104,112,116,0,118],SH,.5);shade(g,[306,104,400,104,400,112,318,110],SH,.45);
+  /* light: the day comes in between the columns from the harbor. It lies brightest on the parapet and the floor before the
+     opening and reaches the proconsul's table; the red walls at either side get less of it, and the shade gathers under the
+     entablature, in the far corners and on the near floor */
+  lightmap(g,400,'#e4dcd8',l=>{pool(l,200,64,140,64,'#ffffff',.8);pool(l,200,116,170,28,'#fff4e4',.45);pool(l,262,92,40,14,'#fff4e0',.3);
+    pool(l,132,100,16,8,'#ffc890',.25);
+    comp(l,'multiply',1,()=>{ao(l,0,12,400,12,'t',.16,'#3a2838');ao(l,0,0,70,144,'l',.2,'#3a2838');ao(l,330,0,70,144,'r',.18,'#3a2838');ao(l,0,128,400,16,'b',.18,'#3a2838')})});
   pool(g,200,40,170,120,'#fff0c0',.16,'screen');ao(g,0,0,60,144,'l',.14,'#2a1030');ao(g,340,0,60,144,'r',.1,'#2a1030')},
  fore(g){g.fillStyle=lg(g,0,0,22,0,['#8a8494','#c8c2c0','#6a6478']);g.fillRect(0,0,20,150);R(g,-2,128,25,22,'#7a7488');R(g,-2,128,25,1,'#d8d2d0');
   g.fillStyle=lg(g,400,0,422,0,['#8a8494','#c8c2c0','#6a6478']);g.fillRect(402,0,20,150);R(g,399,128,25,22,'#7a7488');R(g,399,128,25,1,'#d8d2d0');
   comp(g,'source-atop',.4,()=>R(g,0,0,430,150,'#34305a'))},
  draw(g,t){for(let i=0;i<5;i++){const k=(Math.floor(t/170)+i*3)%7;R(g,128+((i*5+k)%8),96.4+(k%2)*.5,1.4,.8,k<3?'#ffb040':'#e8581c')}pool(g,132,95,9+Math.sin(t/210),6,'#ff9a40',.12);
-  if(MK.room==='paphos')baggage(g,MK.x-14,MK.y-12)},
+  if(MK.room==='paphos')depth(MK.y-12,()=>baggage(g,MK.x-14,MK.y-12))},
  front(){}};
 /* ---------- Antioch: the room where the congregation fasted and prayed (opening scene) ---------- */
-ART.sendoff={w:320,paint(g){const r=rng(291),W='#e6d6ac';
-  plaster(g,0,0,320,104,W,r,{patch:3,cracks:6,brick:'#b89468'});for(let i=10;i<320;i+=30)wood(g,i,0,6,6,'#5a4226',1);wood(g,0,6,320,2.4,'#6a4e2c');ao(g,0,8.4,320,10,'t',.35,'#2a2030');
-  windowArt(g,236,24,20,22,W,{bars:3,dark:'#8fc0e8',wood:'#8a6a40'});R(g,21,43,36,61,'#d8c8a0');doorArt(g,24,46,30,58,'#8a6a40',r);
+ART.sendoff={w:320,q:12,paint(g){const r=rng(291),W='#e6d6ac',rw=rng(2911);
+  plaster(g,0,0,320,104,W,r,{patch:3,cracks:0,brick:'#b89468',t:.36});skipCracks4(r,6);
+  /* hairline cracks set by hand, high on the wall, where they run to no head */
+  {const rb=rng(2912);for(const[x,y,n]of[[60,14,3],[186,13,3],[296,15,3]])crack4(g,x,y,n,rb,.85)}
+  /* the ceiling at its edge, its joists running toward us, and the wall plate they rest on */
+  joists4(g,6.5,36,rng(2913));burn4(rw,10,30,6,6);
+  board4(g,0,6,320,2.4,'#6a4e2c',rw);ao(g,0,8.4,320,10,'t',.35,'#2a2030');
+  ao(g,0,8.4,10,95.6,'l',.2,'#2a2030');ao(g,310,8.4,10,95.6,'r',.2,'#2a2030');ao(g,0,95,320,8,'b',.2,'#2a2030');
+  windowArt(g,236,24,20,22,W,{bars:3,dark:'#8fc0e8',wood:'#8a6a40'});R(g,21,43,36,61,'#d8c8a0');doorArt(g,24,46,30,58,'#8a6a40',r,{bands:[]});ao(g,24,46,30,5,'t',.3,'#1a1420');
   arch(g,120,46,13,17,tint(W,-.3));arch(g,121,47,11,16,'#3a2c22');R(g,119,62.6,15,1.6,tint(W,.15));R(g,124,60,6,2.4,'#b8733c');R(g,124,60,6,.6,'#e0a064');
-  R(g,150,96,60,8,'rgba(40,30,60,.3)');wood(g,152,93,3,11,'#5a4226',1);wood(g,205,93,3,11,'#5a4226',1);wood(g,148,89,64,4,'#96703e');R(g,148,92.6,64,1,'#5a4226');
+  shadowBox4(g,150,100,60,4.4,.42);board4(g,152,93,3,11,'#5a4226',rw,1);board4(g,205,93,3,11,'#5a4226',rw,1);board4(g,148,89,64,4,'#96703e',rw);R(g,148,92.6,64,1,'#5a4226');
   for(const[sx,c]of[[158,'#ecdcb0'],[168,'#e2d0a0']]){R(g,sx,85.6,7,3.4,c);R(g,sx-.6,85.2,1.2,4.2,'#8a5a2c');R(g,sx+6.4,85.2,1.2,4.2,'#8a5a2c')}
   pave(g,0,103,320,144,'#cdbb94',r,{vx:160,vy:64,rows:5,step:34,v:.08});ao(g,0,103,320,6,'t',.35,'#3a3050');
-  poly(g,[70,112,250,112,268,136,52,136],'#8a4a3a');poly(g,[74,114,246,114,262,134,58,134],'#a25a44');for(let i=0;i<9;i++)stroke(g,[78+i*20,114,64+i*23.6,134],'rgba(60,20,16,.3)',.6);
-  lightmap(g,320,'#b4a698',l=>{pool(l,246,35,30,30,'#fff4d8',1);l.fillStyle=lg(l,0,46,0,140,['rgba(255,240,200,.5)','rgba(255,240,200,0)']);poly(l,[236,46,256,46,216,140,130,140]);l.fill();nicheLight(l,126,58,36,28,'#ffc070',.72);pool(l,160,120,150,44,'#fff0d8',.4)})},
+  poly(g,[70,112,250,112,268,136,52,136],earth4('#8a4a3a',.12));poly(g,[74,114,246,114,262,134,58,134],earth4('#a25a44',.12));for(let i=0;i<9;i++)stroke(g,[78+i*20,114,64+i*23.6,134],'rgba(60,20,16,.3)',.6);
+  lightmap(g,320,'#b4a698',l=>{pool(l,246,35,30,30,'#fff4d8',1);l.fillStyle=lg(l,0,46,0,140,['rgba(255,240,200,.5)','rgba(255,240,200,0)']);poly(l,[236,46,256,46,216,140,130,140]);l.fill();nicheLight(l,126,58,36,28,'#ffc070',.72);pool(l,160,120,150,44,'#fff0d8',.4);
+    /* where the light lands besides: the table under the lamp, the rug where the window's fall ends; the corners and the near floor in shade */
+    pool(l,180,90,40,10,'#fff0d0',.26);pool(l,190,126,70,12,'#fff0d8',.2);
+    comp(l,'multiply',1,()=>{ao(l,0,0,56,144,'l',.3,'#2a2030');ao(l,264,0,56,144,'r',.26,'#2a2030');ao(l,0,0,320,14,'t',.3,'#2a2030');ao(l,0,128,320,16,'b',.3,'#2a2030')})})},
  draw(){},front(){}};
 /* ---------- The crossing: evening on the sea, Cyprus ahead (voyage scene) ---------- */
-ART.voyage={w:320,q:10,paint(g){const r=rng(307);
-  sky(g,320,86,['#22386a','#45588e','#8f7696','#e09a72','#f8c680']);pool(g,58,86,130,54,'#ffd890',.55,'screen');pool(g,58,84,34,22,'#fff0c0',.7,'screen');oval(g,58,83,7,7,'#fff2c8');
+ART.voyage={w:320,q:12,paint(g){const r=rng(307);
+  /* the evening's blues drawn a little toward grey (earth4), the sunset's warmth left as it is */
+  sky(g,320,86,['#22386a','#45588e','#8f7696','#e09a72','#f8c680'].map((c,i)=>i<3?earth4(c,.12):c));pool(g,58,86,130,54,'#ffd890',.55,'screen');pool(g,58,84,34,22,'#fff0c0',.7,'screen');oval(g,58,83,7,7,'#fff2c8');
   for(const[cx0,cy,cw]of[[70,40,70],[210,26,90],[280,52,50],[150,60,44]]){pool(g,cx0,cy+1.6,cw,4,'#7a5a84',.5,'source-over');pool(g,cx0,cy,cw*.9,3,'#ffc898',.75,'source-over')}
   for(let i=0;i<26;i++){const sx=120+r()*200,sy=2+r()*26;R(g,sx,sy,.5,.5,'#f4f0ff')}
   /* the long arm of Cyprus on the horizon */
   ridge(g,0,170,86,x=>Math.max(0,3.4+2.6*Math.sin(x/19)+1.2*Math.sin(x/6)-Math.max(0,x-120)*.1),['#5a5684','#6e6690']);
-  g.fillStyle=lg(g,0,86,0,144,['#f0b080','#8a94b0','#3f6c96','#244c78','#16345c']);g.fillRect(0,86,320,58);
+  g.fillStyle=lg(g,0,86,0,144,['#f0b080','#8a94b0','#3f6c96','#244c78','#16345c'].map((c,i)=>i?earth4(c,.12):c));g.fillRect(0,86,320,58);
   for(let i=0;i<300;i++){const k=r()*r(),sy=87+k*56;R(g,r()*320,sy,2+k*8+r()*4,.5+k*.4,r()<.5?'rgba(190,210,235,.45)':'rgba(10,30,60,.4)')}
   for(let i=0;i<70;i++){const k=r(),sy=87+k*40,w=5+k*34;R(g,58-w/2+r()*w,sy,2+r()*5,.5+k*.5,r()<.6?'#ffdc9c':'#fff4d0')}},
  draw(){},front(){}};
@@ -832,6 +931,12 @@ function hint4(){const b=PC()!==P,craft=['craft4',['that_is_the_tentmakers_craft
   return b?['dan4b',['elymas_twists_the_scriptures','saul_should_answer_the_proconsul']]
     :['dan4',['he_twists_the_scriptures','i_should_talk_to_the_proconsul']]}
 /* ============ CHAPTER DEFINITION ============ */
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+ROOMS.seleucia.birds={gulls:[130,6,330,30],stand:[[262,102,-1],[400,102.5,1]]};
+ROOMS.salamis.birds={gulls:[6,5,100,30],gullsN:2,stand:[[40,98.5,1]]};
+ROOMS.paphos.birds={gulls:[170,14,50,20],gullsN:1};
+
 return{rooms:['seleucia','salamis','synagogue','paphos'],setup:setup4,start:start4,hint:hint4,music:MUSIC,scenes:{sendoff:sendoffScene,voyage:voyageScene},topics:TOPICS,tablets:TABLETS,
   /* the first missionary journey is drawn on its own: the sea lane from Caesarea to Tarsus (Chapter Two) runs between Cyprus and Syria,
      where the ship from Seleucia must pass, and routes on the map never cross */

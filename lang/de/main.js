@@ -1,4 +1,4 @@
-/* Paul of Tarsus: the German text (Deutsch) for the engine (index.html) and the shared files (shared/tablets.js, shared/map.js).
+/* Paul of Tarsus: the German text (Deutsch) for the engine (index.html) and the shared files (shared/tablets.js, shared/map.js, shared/birds.js).
    Loaded on demand by index.html (see LANGUAGES there). Each entry is a key, as the code uses it, its German, and the fingerprint of
    the English line (lang/en/main.js) it was made from: when that English changes, the playtest fails until the German
    has been checked against it (node tools/strings.mjs --show de main --stale, then --confirm).
@@ -67,8 +67,6 @@ TEXTS('de','main',{
   "chapter_thirteen":["Dreizehntes Kapitel","0ma9c99"],
   "chapter_fourteen":["Vierzehntes Kapitel","1havb06"],
   "chapter_fifteen":["Fünfzehntes Kapitel","1rm190n"],
-  "Fifteen":["Fünfzehn","0gcos0a"],
-  "acts_20_1_12":["Apostelgeschichte 20:1-12","0xjsr89"],
   "chapter_sixteen":["Sechzehntes Kapitel","11g2ivq"],
   "Sixteen":["Sechzehn","17rus7f"],
   "acts_20_13_38":["Apostelgeschichte 20:13-38","14hlynw"],
@@ -140,6 +138,8 @@ TEXTS('de','main',{
   "the_hall_of_tyrannus":["Der Hörsaal des Tyrannus","1yxkuvq"],
   "two_hours_in_the_theater":["ZWEI STUNDEN IM THEATER","1rtgzdf"],
   "two_hours_in_the_theater_2":["Zwei Stunden im Theater","0dxph4j"],
+  "until_daybreak":["BIS DER TAG ANBRACH","00k54tk"],
+  "until_daybreak_2":["Bis der Tag anbrach","1jx5a88"],
   "chapter_ten":["Zehntes Kapitel","04rp5rp"],
   "is_it_so_q":["Stimmt das?","1dgywal"],
   "file_was_loaded_but_it_is_incomplete":["{file} wurde geladen, ist aber unvollständig.","0ps75pn"],
@@ -268,7 +268,30 @@ TEXTS('de','main',{
   "cloth_of_his_own_country":["Das Tuch seiner Heimat","1me9eof"],
   "pupils_tablet":["Die Tafel eines Schülers","04oul8m"],
   "kneading_behind_a_shutter":["Kneten hinter einem Laden","1ck1biw"],
+  "tertius_own_line":["Tertius' eigene Zeile","0zwkeol"],
   "mule_in_a_sheepfold":["Ein Maultier im Schafstall","0m7jhub"],
   "not_another_basket":["Nicht noch ein Korb","0o3o1h1"],
-  "barnabas_at_the_bench":["Barnabas an der Werkbank","098m6ix"]
+  "barnabas_at_the_bench":["Barnabas an der Werkbank","098m6ix"],
+  "layout":["Ansicht","1woj3tr"],
+  "layout_auto":["Automatisch","0540b06"],
+  "layout_phone":["Handy","0kb2lhr"],
+  "layout_classic":["Klassisch","0y7erjn"],
+  "turn_phone_sideways":["Dreh dein Handy quer, um zu spielen.","02e7l21"],
+  "gulls":["Möwen","0x1ru6m"],
+  "gull":["Möwe","1opuhzd"],
+  "bird_of_prey":["Greifvogel","08u52el"],
+  "swallows":["Schwalben","1q78b41"],
+  "lark":["Lerche","1pbyx0d"],
+  "storks":["Störche","0nj8tfh"],
+  "sparrows":["Spatzen","12ihmbc"],
+  "doves":["Tauben","1ylige6"],
+  "gulls_over_the_harbor":["Möwen. Wo Boote sind, sind sie nie weit.","1txpn8c"],
+  "gull_on_the_quay_edge":["Eine Möwe auf der Kaikante. Sie beobachtet die Boote.","03t2tm6"],
+  "gulls_hunched_in_the_rain":["Möwen ducken sich vor dem Regen und warten ab.","07it3cj"],
+  "bird_of_prey_circling":["Ein großer Greifvogel kreist hoch oben. Ein Adler oder ein Geier? Von hier unten kann ich das nicht erkennen.","116l5b8"],
+  "swallows_over_the_water":["Schwalben jagen dicht über dem Wasser nach Insekten.","0tej08s"],
+  "lark_climbing_and_singing":["Eine Lerche steigt singend auf. Sie ist so klein, dass ich sie kaum sehe.","1e6brlf"],
+  "storks_flying_north":["Störche ziehen in einer langen Reihe nach Norden. Der Frühling ist da.","1t6b6z4"],
+  "sparrows_on_the_roof":["Spatzen auf dem Dach. Sie schwatzen ohne Pause.","00t6cnv"],
+  "doves_on_the_wall":["Tauben auf der Mauer gurren in der Sonne.","1mvudxd"]
 });

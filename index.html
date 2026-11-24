@@ -2,16 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1c130c">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<!-- installed on an iPhone, the game is laid out up to the top edge of the screen (a status bar lies over it, kept clear by the safe margins) -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Paul of Tarsus">
 <title>Paul of Tarsus: On the Roads of Rome</title>
 <style>
 :root{--s:3;--gold:#e2b24c;--hi:#fff3b8;--dim:#8a6628;--ink:#0b0812;--pray:#a8d0f8;--px:calc(var(--s)*.5px);--wood:none}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:#000;color:#ddd;overflow:hidden;
+html,body{margin:0;height:var(--vh,100%);background:#000;color:#ddd;overflow:hidden;
   font-family:"Lucida Console",Monaco,"Courier New",monospace;font-weight:bold;
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 body{display:flex;align-items:center;justify-content:center}
@@ -122,10 +124,11 @@ body{display:flex;align-items:center;justify-content:center}
    the upper part of the picture has not moved. A menu or the code box opened over the title covers all of it. */
 #wrap.title #view{height:calc(var(--s)*210px)}
 #wrap.title #status,#wrap.title #panel{display:none}
-/* with that height the title holds its prologue, thirteen chapters and the line of the planned ones without scrolling; the list still scrolls
-   when there are more lines than room, as it does when the planned chapters are opened */
+/* with that height the title holds its prologue, fifteen chapters and the line of the planned ones without scrolling (the lines stand
+   half a pixel closer than they did for fourteen); the list still scrolls when there are more lines than room, as it does when the
+   planned chapters are opened */
 #overlay.title{padding-top:calc(var(--s)*5px);padding-bottom:calc(var(--s)*5px)}
-#overlay.title .chs p{margin:calc(var(--s)*1.2px) auto;font-size:calc(var(--s)*5.6px);line-height:1.24}
+#overlay.title .chs p{margin:calc(var(--s)*.7px) auto;font-size:calc(var(--s)*5.6px);line-height:1.24}
 /* splash: the opening picture (shared/splash.js). The title is laid out as it always is, so that its name does not move when the chapters
    appear, but only the name and the line under it are seen; the rest comes in when the splash is left. begin: the one line that asks for a click,
    seen until the overture starts. */
@@ -222,6 +225,86 @@ body{display:flex;align-items:center;justify-content:center}
 #menu .slot .seg{flex:none;align-items:center}
 #menu .slot button{font-size:calc(var(--s)*4.5px);padding:calc(var(--s)*1px) calc(var(--s)*2.6px)}
 #menu .slot em{font-style:normal;color:#f0c890;margin-right:calc(var(--s)*1px)}
+/* ============ PHONE: a phone held sideways (see layout) ============
+   The verbs stand in a column on the left, under the menu and NAMES, and the inventory in a column on the right; the field between them
+   is as tall as the screen. The picture fills it and is cropped at the sides, and a finger moves it (see lensTick). The status line lies
+   over the top of the field, and the choices of a conversation over its foot. A menu, an end screen, the tablets and the narrator's
+   scroll take the whole screen: the columns slide out to the sides. The values that change with the screen and the picture are set by
+   the engine: --cw the width of a column (with --ci, what the phone's rounded corners and its camera take of it), --cs the scale inside the
+   columns, --ts that of the words on the field, --fl, --fr and --fw the field's left and right edges and its width, and --fx, --fy, --fk
+   the box in which the whole picture would fit in the field (the scroll is drawn in it). Held upright, a phone asks to be turned. */
+#lcol,#rcol,#ltop,#ttop{display:none}
+#safe{position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+#rotate{position:fixed;top:0;left:0;right:0;height:var(--vh,100%);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;
+  background:#1c130c var(--wood);background-size:256px 64px;image-rendering:pixelated;color:var(--gold);font-size:17px;line-height:1.4;text-align:center;
+  text-shadow:1px 1px 0 #000;box-shadow:inset 0 0 0 2px #000,inset 0 0 0 4px #6a4c24}
+#rotate canvas{width:96px;height:96px;image-rendering:pixelated;image-rendering:crisp-edges}
+#rotate p{margin:0;max-width:280px}
+html.portrait #rotate{display:flex}
+html:not(.phone) body{padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+html.phone,html.phone body{overscroll-behavior:none;touch-action:none}
+html.phone body{display:block}
+html.phone #wrap{position:fixed;top:0;left:0;right:0;bottom:auto;width:auto;height:var(--vh,100%);background:#0a0706}
+html.phone #top{display:none}
+html.phone #view,html.phone #wrap.title #view{position:absolute;inset:0;width:auto;height:auto;touch-action:none;
+  background:#1c130c var(--wood);background-size:calc(var(--cs)*128px) calc(var(--cs)*32px);background-blend-mode:multiply;background-color:#4a3a2a}
+/* the canvas is as tall as the title's picture; in play only its upper 144 rows are the room, and the rest is cut off */
+html.phone #screen{position:absolute;left:0;top:0;width:320px;height:210px;transform-origin:0 0;clip-path:inset(0 0 31.4286% 0)}
+html.phone #wrap.title #screen{clip-path:none}
+html.phone #lcol,html.phone #rcol{display:flex;flex-direction:column;position:absolute;top:0;bottom:0;width:var(--cw);z-index:7;
+  --s:var(--cs);--px:calc(var(--s)*.5px);gap:calc(var(--s)*2px);padding:calc(var(--s)*2.5px);padding-top:calc(var(--s)*2.5px + env(safe-area-inset-top,0px));
+  background:#1c130c var(--wood);background-size:calc(var(--s)*128px) calc(var(--s)*32px);image-rendering:pixelated;transition:transform .45s ease-in-out}
+html.phone #lcol{left:0;padding-left:calc(var(--ci) + var(--s)*2.5px);box-shadow:inset calc(var(--px)*-1) 0 0 #000,inset calc(var(--px)*-2) 0 0 #6a4c24}
+html.phone #rcol{right:0;padding-right:calc(var(--ci) + var(--s)*2.5px);box-shadow:inset var(--px) 0 0 #000,inset calc(var(--px)*2) 0 0 #6a4c24}
+html.phone #wrap.wide #lcol{transform:translateX(-100%)}
+html.phone #wrap.wide #rcol{transform:translateX(100%)}
+html.phone #ltop{display:flex;gap:calc(var(--s)*1.5px);flex:0 0 calc(var(--s)*16px)}
+html.phone #ltop button,html.phone #wrap>#skip,html.phone #ttop button{font:inherit;font-size:calc(var(--s)*5.6px);color:var(--gold);background:rgba(10,6,4,.55);
+  border:var(--px) solid var(--dim);text-shadow:var(--px) var(--px) 0 #000;padding:0 calc(var(--s)*2px);cursor:pointer;touch-action:manipulation}
+html.phone #ltop #opts{flex:0 0 calc(var(--s)*19px);font-size:calc(var(--s)*9px);line-height:1}
+html.phone #ltop #names{flex:1;min-width:0}
+html.phone #ltop #names.on{color:#fff;border-color:var(--gold);background:rgba(168,98,30,.66)}
+html.phone #ltop #names::before{content:'';display:inline-block;vertical-align:middle;width:calc(var(--s)*2px);height:calc(var(--s)*2px);border-radius:50%;
+  background:var(--gold);box-shadow:0 0 0 var(--px) #000;margin:0 calc(var(--s)*1.5px) calc(var(--s)*.5px) 0}
+html.phone #verbs{flex:1;width:auto;min-height:0;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,1fr);gap:calc(var(--s)*1.5px)}
+html.phone #verbs.party{grid-template-rows:repeat(5,1fr)}
+html.phone #verbs #pray,html.phone #verbs.party #pray,html.phone #verbs #swap{grid-column:1/3}
+html.phone #verbs button{font-size:calc(var(--s)*5.5px);line-height:1.2;padding:0 calc(var(--s)*.5px);touch-action:manipulation}
+html.phone #inv{flex:1;min-height:0;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(5,1fr);gap:calc(var(--s)*1.5px)}
+html.phone #inv .slot{touch-action:manipulation}
+html.phone #inv canvas{width:calc(var(--s)*22px);height:calc(var(--s)*22px)}
+html.phone #wrap.locked #verbs,html.phone #wrap.locked #inv{opacity:.35;pointer-events:none}
+/* the panel no longer holds the verbs and the inventory: it is only the frame for the choices, which lie over the foot of the field */
+html.phone #panel{position:absolute;inset:0;height:auto;padding:0;background:none;pointer-events:none;display:block;z-index:6}
+html.phone #wrap.full #panel,html.phone #wrap.full #status{transform:none}
+html.phone #choices{--s:var(--ts);--px:calc(var(--s)*.5px);inset:auto var(--fr) 0 var(--fl);max-height:60%;pointer-events:auto;touch-action:pan-y;
+  padding:calc(var(--s)*2px) calc(var(--s)*2px) calc(var(--s)*2px + env(safe-area-inset-bottom,0px));gap:calc(var(--s)*1.5px);
+  background:rgba(18,12,8,.95);box-shadow:inset 0 var(--px) 0 #000,inset 0 calc(var(--px)*2) 0 #6a4c24,0 calc(var(--s)*-1px) calc(var(--s)*4px) rgba(0,0,0,.55)}
+html.phone #choices button{flex:0 0 auto;white-space:normal;text-overflow:clip;line-height:1.3;font-size:calc(var(--s)*6px);
+  padding:calc(var(--s)*4px) calc(var(--s)*3.5px);touch-action:manipulation}
+html.phone #status{--s:var(--ts);--px:calc(var(--s)*.5px);position:absolute;left:var(--fl);right:var(--fr);top:0;height:auto;z-index:6;padding:env(safe-area-inset-top,0px) calc(var(--s)*3px) 0;
+  line-height:calc(var(--s)*9px);font-size:calc(var(--s)*5.8px);text-overflow:ellipsis;background:rgba(10,6,4,.6);border:0;box-shadow:none;pointer-events:none;transition:opacity .25s}
+html.phone #status.none,html.phone #wrap.wide #status{opacity:0}
+html.phone #speech,html.phone #tags{--s:var(--ts);--px:calc(var(--s)*.5px)}
+html.phone .line{max-width:min(calc(var(--s)*200px),calc(var(--fw) - var(--s)*8px))}
+html.phone .line.white{max-width:min(calc(var(--s)*230px),calc(var(--fw) - var(--s)*12px))}
+html.phone .line.ink{--s:var(--fk);--px:calc(var(--s)*.5px);left:calc(var(--fx) + var(--fk)*170px);top:calc(var(--fy) + var(--fk)*72px);max-width:calc(var(--fk)*164px)}
+html.phone .tag{font-size:calc(var(--s)*5px)}
+html.phone #scroll{inset:auto;left:var(--fx);top:var(--fy);width:calc(var(--fk)*320px);height:calc(var(--fk)*144px)}
+html.phone #found{left:calc(var(--fl) + var(--s)*3px);top:calc(var(--ts)*12px + env(safe-area-inset-top,0px))}
+html.phone #hush{right:calc(var(--fr) + var(--s)*3px);top:calc(var(--ts)*12px + env(safe-area-inset-top,0px))}
+html.phone #overlay{padding-top:calc(var(--s)*8px + env(safe-area-inset-top,0px))}
+html.phone #menu{padding-top:calc(var(--s)*6px + env(safe-area-inset-top,0px))}
+html.phone #codebox{padding-top:calc(var(--s)*8px + env(safe-area-inset-top,0px))}
+html.phone #wrap>#skip{--s:var(--ts);--px:calc(var(--s)*.5px);position:absolute;z-index:8;top:calc(var(--s)*12px + env(safe-area-inset-top,0px));right:calc(var(--fr) + var(--s)*3px);height:calc(var(--s)*11px)}
+/* on the title the columns are away: ENTER CODE and the menu stand one over the other in the upper right corner of the screen, where the
+   title's last line says they are, in the strip of timber beside its picture (--tb) */
+html.phone #wrap.title #ttop{display:flex;flex-direction:column;gap:calc(var(--s)*2px);--s:var(--ts);--px:calc(var(--s)*.5px);position:absolute;z-index:8;
+  top:calc(var(--s)*3px + env(safe-area-inset-top,0px));right:calc(var(--ci) + 5px);width:calc(var(--tb) - 10px)}
+html.phone #ttop button{min-height:calc(var(--s)*13px);width:100%;white-space:normal;line-height:1.2;font-size:calc(var(--s)*5.2px);padding:calc(var(--s)*1.5px) calc(var(--s)*.5px)}
+html.phone #ttop #optsT{padding:0;font-size:calc(var(--s)*9px);line-height:1}
+html.phone #wrap.title.splash #ttop{display:none}
 </style>
 </head>
 <body>
@@ -244,7 +327,12 @@ body{display:flex;align-items:center;justify-content:center}
     <div id="inv"></div>
     <div id="choices"></div>
   </div>
+  <div id="lcol"><div id="ltop"></div></div>
+  <div id="rcol"></div>
+  <div id="ttop"><button id="optsT" type="button" aria-label="Options">&#8801;</button></div>
 </div>
+<div id="rotate"><canvas width="48" height="48"></canvas><p></p></div>
+<div id="safe"></div>
 <script>
 "use strict";
 /* Paul of Tarsus: On the Roads of Rome. This file is the engine: layout, the paint toolkit, figures, the audio sequencer,
@@ -257,7 +345,7 @@ const cv=$('#screen'),cx=cv.getContext('2d');
 cx.imageSmoothingEnabled=false;
 const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,camY:0,zoom:1,zoomTo:1,t:0,scene:null,
   hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false,pc:null,invs:{},lang:'en',turn:new Map(),turnN:0};
-const OPTS_KEY='paul.opts',OPTS={mus:1,fx:1,spd:1,mov:1};   /* mov: 1 lively, 0 calm (see moves) */
+const OPTS_KEY='paul.opts',OPTS={mus:1,fx:1,spd:1,mov:1,lay:'auto'};   /* mov: 1 lively, 0 calm (see moves); lay: the layout, auto, phone or classic (see fit) */
 /* ============ LANGUAGES: every language is data under lang/, English as well ============ */
 /* The code never holds a line of text: it holds a key, and every line is looked up as it is shown, by say and narr, choose, the status
    line, the labels, the overlays, the tablets and the map. So the story's logic (its flags, and the names it compares) never sees a
@@ -345,10 +433,60 @@ function pointer(s,kind='default'){ptrScale=s;const d=window.devicePixelRatio||1
   el.style.cursor=css(a1,u1,`url(${a1.toDataURL()})`);
   if(d!==1){const a=art(kind,u);el.style.cursor=css(a,u/d,`-webkit-image-set(url(${a.toDataURL()}) ${d}x)`)}}
 /* layout scale */
-function fit(){const top=10,st=13,pn=53,tot=144+top+st+pn;
-  const d=window.devicePixelRatio||1,s=Math.min(innerWidth/320,innerHeight/tot),k=Math.floor(s*d)/d,sc=k>=1?k:Math.max(.5,s);
-  document.documentElement.style.setProperty('--s',sc.toFixed(3));pointer(sc,pointerKind(G.hover))}
-addEventListener('resize',fit);fit();
+/* LENS: how the picture (VW by VH room pixels, the frame that render paints; VT on the title) lies in the view, in CSS pixels: k to the room
+   pixel, its left top corner at tx, ty inside the view, and F, the part of the view in which the field is seen. In the classic layout the
+   picture is the view (tx = ty = 0). On a phone (PH, see lensTick) the view is the whole screen, and the picture is moved and zoomed in it. */
+const LENS={k:3,tx:0,ty:0,F:{l:0,t:0,w:960,h:432}};
+/* PH: the phone layout. on: in use; cw: the width of a column; ci: of it, the safe margin at the screen's edge; cs, ts, os, kT: the scales of
+   the columns, of the words on the field, of a screen that takes the whole of it (a menu, an end screen) and of the title; pz: the zoom of
+   the field (two fingers, 1 to 3) and pzFit that of a close view; pan: how far a finger has moved the view from whoever it follows. */
+const PH={on:false,live:false,vz:1,cw:0,ci:0,cs:2,ts:2,os:2,kT:2,W:0,H:0,pz:1,pzFit:1,pan:{x:0,y:0},c:null,k:0,Fl:0,Fw:0,room:null,mode:'',wide:false,vars:'',gest:null,lastTap:null,ctx:null};
+/* phoneWanted: the phone layout is used on a screen that is touched and has no mouse, and whose shorter side is no more than 500 CSS
+   pixels: a phone and not a tablet. The player may choose it, or the classic layout, in the options (OPTS.lay). */
+const mq=q=>!!(window.matchMedia&&matchMedia(q).matches),touchDev=()=>mq('(pointer: coarse)')||(navigator.maxTouchPoints||0)>0;
+function phoneWanted(){if(OPTS.lay==='phone')return true;if(OPTS.lay==='classic')return false;
+  return mq('(hover: none) and (pointer: coarse)')&&Math.min(screen.width,screen.height)<=500}
+/* insets: what the phone's rounded corners, its camera and its home bar take of the screen [top, right, bottom, left] */
+function insets(){const c=getComputedStyle($('#safe'));return['Top','Right','Bottom','Left'].map(k=>parseFloat(c['padding'+k])||0)}
+/* dock: on a phone the verbs and the inventory move into their columns, and the menu and NAMES buttons to the top of the left one; SKIP
+   stands on the field; the code button goes to the corner of the title (see #ttop). Off the phone each goes back where it came from. */
+let HOMES=null;
+function dock(on){const els=['#skip','#code','#names','#opts','#verbs','#inv'].map(s=>$(s));
+  if(!HOMES)HOMES=els.map(e=>[e,e.parentNode,e.nextSibling]);
+  if(on){$('#wrap').appendChild($('#skip'));$('#ttop').prepend($('#code'));$('#ltop').append($('#opts'),$('#names'));$('#lcol').appendChild($('#verbs'));$('#rcol').appendChild($('#inv'))}
+  else{for(let i=HOMES.length-1;i>=0;i--){const[e,p,n]=HOMES[i];p.insertBefore(e,n&&n.parentNode===p?n:null)}
+    cv.style.width=cv.style.height=cv.style.transform='';PH.vars='';const st=document.documentElement.style;
+    for(const v of['--cw','--ci','--cs','--ts','--tb','--fl','--fr','--fw','--fx','--fy','--fk'])st.removeProperty(v);$('#wrap').classList.remove('wide','locked','splash');$('#wrap').style.transform=''}
+  if(on)$('#wrap').classList.toggle('locked',$('#panel').classList.contains('locked'))}
+/* layout scale */
+function fit(){const root=document.documentElement,ph=phoneWanted(),[it,ir,ib,il]=insets();
+  const de=document.documentElement;root.classList.toggle('portrait',ph&&de.clientHeight>de.clientWidth&&touchDev());
+  /* Installed on an iPhone, with the page laid out under the status bar (see the meta tags), Safari reports a page that is short by the
+     status bar's height and leaves a black band at its foot: there the game is made as tall as the screen itself (--vh). */
+  {const a=screen.width,b=screen.height,full=navigator.standalone?(de.clientHeight>de.clientWidth?Math.max(a,b):Math.min(a,b)):0;
+    root.style.setProperty('--vh',full>de.clientHeight?full+'px':'100%')}
+  if(ph!==PH.on){PH.on=ph;root.classList.toggle('phone',ph);dock(ph);PH.k=0;
+    /* the page itself is never zoomed on a phone (the field is, see lensTick); off the phone the browser's own zoom is left alone */
+    $('meta[name=viewport]').content='width=device-width, initial-scale=1, viewport-fit=cover'+(ph?', maximum-scale=1, user-scalable=no':'')}
+  if(!ph){const top=10,st=13,pn=53,tot=144+top+st+pn;
+    const d=window.devicePixelRatio||1,s=Math.min((innerWidth-il-ir)/320,(innerHeight-it-ib)/tot),k=Math.floor(s*d)/d,sc=k>=1?k:Math.max(.5,s);
+    root.style.setProperty('--s',sc.toFixed(3));pointer(sc,pointerKind(G.hover));LENS.k=sc;LENS.tx=LENS.ty=0;LENS.F={l:0,t:0,w:sc*VW,h:sc*VH};return}
+  /* a column is about four tenths of the screen's height wide, and no column is wider than a quarter of the screen */
+  /* the size of the screen as the page is laid out (#wrap is fixed to it): Safari reports a smaller window while the page is pinched */
+  const wr=$('#wrap'),W=PH.W=wr.clientWidth||innerWidth,H=PH.H=wr.clientHeight||innerHeight;PH.it=it;const ci=PH.ci=Math.max(il,ir),cw=PH.cw=Math.round(Math.min(H*.37,W*.25-ci)+ci);
+  /* the title's picture leaves a strip of timber at each side, wide enough for ENTER CODE and the menu button in its upper corner (--tb) */
+  PH.cs=Math.min(H/185,(cw-ci)/68);PH.ts=Math.max(1.6,H/180);PH.os=Math.min(W/320,H/144);PH.kT=Math.min((W-2*ci-144)/320,H/VT);
+  for(const[k,v]of[['--cw',cw+'px'],['--ci',ci+'px'],['--cs',PH.cs.toFixed(3)],['--ts',PH.ts.toFixed(3)],['--tb',((W-320*PH.kT)/2-ci).toFixed(1)+'px']])root.style.setProperty(k,v);
+  PH.vars='';if(PH.live)lensTick(0);pointer(PH.ts,pointerKind(G.hover))}
+/* vvFit: Safari may still zoom the page itself, by a pinch it does not tell the page about (a trackpad's, in the iPhone Simulator or on an
+   iPad). Then the layout is laid back over what is seen: #wrap is moved to the part of the page in sight and made smaller by as much as
+   Safari zoomed, so that the columns stay as they were, and the zoom is handed to the field instead (PH.vz, see lensTick). Safari's
+   own notices of the zoom come late, so it is read again for every frame. */
+function vvFit(){const v=window.visualViewport,w=$('#wrap'),s=PH.on&&v?v.scale||1:1,t=s>1.001||PH.on&&v&&(v.offsetLeft||v.offsetTop)?`translate(${v.offsetLeft}px,${v.offsetTop}px) scale(${1/s})`:'';
+  PH.vz=s;if(w.style.transform!==t){w.style.transformOrigin='0 0';w.style.transform=t}}
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,120));
+if(window.visualViewport){visualViewport.addEventListener('resize',()=>{fit();vvFit()});visualViewport.addEventListener('scroll',vvFit)}
+fit();
 /* fitTop: the top bar is one line. When the chapter's name, the code and the buttons do not fit on it, the game's name gives way. It is
    checked whenever the bar's words change and when the window does. */
 function fitTop(){const t=$('#top');t.classList.remove('tight');if(t.scrollWidth>t.clientWidth+1||t.scrollHeight>t.clientHeight+1)t.classList.add('tight')}
@@ -358,7 +496,9 @@ const F=G.flags;
 const has=id=>G.inv.includes(id);
 function flyItem(id,idx){if(G.speedAll>200||!G.room||G.scene)return;const slot=$('#inv').children[idx];if(!slot)return;
   const vr=$('#view').getBoundingClientRect(),sr=slot.getBoundingClientRect(),src=iconArt(ITEMS[id].icon||id),[c,g]=mk(48,48);g.drawImage(src,0,0);
-  const z=zoomNow(),p=G.actPos||[(PC().x-G.cam)*z,(PC().y-G.camY-24)*z],sx=vr.left+clamp(p[0],12,VW-12)/VW*vr.width,sy=vr.top+clamp(p[1],12,VH-12)/VH*vr.height;
+  const z=zoomNow(),p=G.actPos||[(PC().x-G.cam)*z,(PC().y-G.camY-24)*z],F=LENS.F,
+    q=PH.on?vpq()[1]:1,[sx,sy]=PH.on?[vr.left+q*clamp(LENS.tx+p[0]*LENS.k,F.l+24,F.l+F.w-24),vr.top+q*clamp(LENS.ty+p[1]*LENS.k,F.t+24,F.t+F.h-24)]
+      :[vr.left+clamp(p[0],12,VW-12)/VW*vr.width,vr.top+clamp(p[1],12,VH-12)/VH*vr.height];
   const tx=sr.left+sr.width/2,ty=sr.top+sr.height/2,sz=sr.height*.8;
   c.className='flyitem';c.style.width=sz+'px';c.style.height=sz+'px';document.body.appendChild(c);
   tween(320,k=>{const e=1-(1-k)*(1-k),x=sx+(tx-sx)*e,y=sy+(ty-sy)*e-Math.sin(k*Math.PI)*24*ptrScale;
@@ -726,10 +866,18 @@ function wood(g,x,y,w,h,c,vert,a){R(g,x,y,w,h,c);inRect(g,hp(x),hp(y),hp(w),hp(h
 function boards(g,x,y,w,h,pw,c,r){for(let i=0;i<w-.01;i+=pw){const ww=Math.min(pw,w-i),cc=tint(c,(r()-.5)*.2);R(g,x+i,y,ww,h,cc);
     R(g,x+i,y,.5,h,tint(cc,.18));R(g,x+i+ww-.5,y,.5,h,tint(cc,-.4));if(r()<.5)R(g,x+i+1+r()*(ww-2.5),y+r()*h*.8,.5,3+r()*6,tint(cc,-.22))}
   inRect(g,hp(x),hp(y),hp(w),hp(h),()=>tex(g,'vert',.5,x,y,w,h,'overlay',.5))}
-/* door: a plank door in a recessed frame, with iron bands, studs and a ring. */
+/* door: a plank door in a recessed frame, with a ring. Its planks have the quiet grain of the shared plank (shared/materials.js,
+   plankGaius15 in Chapter Fifteen): a soft fall of tone across each, a light overlay and a few long streaks. They draw from r just as
+   boards() did, so that everything painted after a door stays where it was; the streaks come from the door's own seed. Iron bands
+   across the planks only where a caller asks for them (o.bands: heights as parts of h): a band across upright planks makes a cross. */
 function doorArt(g,x,y,w,h,c,r,o){o=o||{};const f=o.frame||tint(c,-.5);R(g,x,y,w,h,'#0c0806');wood(g,x,y,2.5,h,f,1);wood(g,x+w-2.5,y,2.5,h,f,1);wood(g,x,y,w,3,f);
-  boards(g,x+3,y+3.5,w-6,h-3.5,o.pw||5,c,r);ao(g,x+3,y+3.5,w-6,5,'t',.5);ao(g,x+3,y+3.5,2.5,h-3.5,'l',.4);
-  for(const by of o.bands||[.22,.72]){const Y=y+h*by;R(g,x+3,Y,w-6,2,'#2a2420');R(g,x+3,Y,w-6,.5,'#5a5048');for(let i=x+4.5;i<x+w-4;i+=4)R(g,i,Y+.5,1,1,'#7a6e60')}
+  const bx=x+3,by0=y+3.5,bw=w-6,bh=h-3.5,pw=o.pw||5,lr=rng(Math.round(x*131+y*17+w*7+h));
+  for(let i=0;i<bw-.01;i+=pw){const ww=Math.min(pw,bw-i),cc=tint(c,(r()-.5)*.16),px=bx+i;if(r()<.5){r();r();r()}
+    inRect(g,px,by0,ww,bh,()=>{g.fillStyle=lg(g,px,0,px+ww,0,[tint(cc,.08),cc,tint(cc,-.12)]);g.fillRect(px,by0,ww,bh);tex(g,'vert',.2,px,by0,ww,bh,'overlay',.5);
+      for(let k=0;k<ww*.9;k++){const a=lr(),l=bh*(.2+lr()*.5),oo=lr()*(bh-l);R(g,px+a*ww,by0+oo,.5,l,lr()<.5?tint(cc,-.16):tint(cc,.1))}});
+    R(g,px,by0,.5,bh,tint(cc,.16));R(g,px+ww-.5,by0,.5,bh,tint(cc,-.32))}
+  ao(g,bx,by0,bw,5,'t',.5);ao(g,bx,by0,2.5,bh,'l',.4);
+  for(const by of o.bands||[]){const Y=y+h*by;R(g,x+3,Y,w-6,2,'#2a2420');R(g,x+3,Y,w-6,.5,'#5a5048');for(let i=x+4.5;i<x+w-4;i+=4)R(g,i,Y+.5,1,1,'#7a6e60')}
   const kx=o.left?x+5.5:x+w-7.5,ky=y+h*.52;oval(g,kx+1,ky+1,1.8,1.8,'#1a1410');g.strokeStyle='#b89648';g.lineWidth=.7;g.beginPath();g.arc(kx+1,ky+2,1.5,0,6.2832);g.stroke();R(g,kx+.5,ky,1,1,'#d8b860')}
 /* pot: a lathe-turned vessel. pts are [t,halfWidth] pairs from the rim (t=0) down to the foot (t=1); lit from the upper left. */
 function pot(g,x,y,h,pts,c,o){o=o||{};const hw=t=>{let i=1;while(i<pts.length-1&&pts[i][0]<t)i++;const a=pts[i-1],b=pts[i],k=clamp((t-a[0])/((b[0]-a[0])||1),0,1),s=k*k*(3-2*k);return a[1]+(b[1]-a[1])*s};
@@ -1233,68 +1381,6 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   if((mv&MV.lean)||(W&&W.lean&&!ARM&&!c.ar&&!o.long&&!ges&&!bow)){const yb=-7-(o.h?32:39)+bob;for(const up of[0,1]){g.save();g.beginPath();g.rect(-90,up?-220:yb,180,up?220+yb:220);g.clip();if(up)g.translate(1,0);body();g.restore()}}
   else body();
   g.restore()}
-/* A pack donkey in the same pixel manner, seen from the side. load: 0 saddle blanket only, 1 pack bags, 2 bags filled, with sacks on top.
-   fr 0 stands. fr 4 to 19 are the sixteen frames of its walk (beastFr below gives the frame for a distance walked); 1, 2 and 3 are three
-   moments of that walk, a quarter of a cycle apart, for a scene that counts frames itself. The walk has four beats: near hind, near
-   fore, far hind, far fore, each a quarter of the cycle after the one before. A hoof stands for ten frames, going back under the body,
-   and swings forward for six, lifted, with the leg bent at the hock or the knee. While the donkey walks, the two legs of a pair leave
-   the body at nearly one place and open like a pair of compasses: set apart as they stand, they would cross as an X under the belly.
-   The body sinks a pixel as each fore hoof lands, the head dips with it and for a frame after it, and the tip of the tail swings a
-   pixel, away from the near hind leg when that leg is back. The load rides with the body. */
-const DONKEY_HEAD=["...e...e................","..eE..eE................","..eE..eE................","..eEe.eE................","..eEe.eEe...............","..eEeeeEe...............","..eeeeeeeh..............",
-  ".dhhhhhhhhh.............",".dhHHHHHHhhhh...........","dhhHHkkHHHHhhhh.........","dhhHHkkHHHHHHhhhhm......","dhhhHHHHHHHHHhhhmmmm....",".dhhhhhHHHHHhhhmmmmmm...",".ddhhhhhhhhhhhmmmMMmmm..",
-  "..ddhhhhhhhhhhmmmMMmnm..","...dddhhhhhhhhmmmmmmmm..",".....ddddhhhhdmmmmmmm...",".........ddddd.mmmm....."];
-/* The numbers of that walk. A hoof reaches DONKEY_REACH drawing units (two to a room pixel) from the front of its step to the back, and
-   stands on the ground for DONKEY_STANCE of the cycle. So one cycle carries the donkey DONKEY_STRIDE room pixels with its hooves
-   planted: 22 / .625 / 2 = 17.6. A cycle is never quicker than DONKEY_BEAT seconds, or it would be a scurry and not a walk: up to
-   17.6 / .64 = 27.5 room pixels a second the hooves stay where they are set down, and above that they slip (at 66, the speed people
-   walk at, by 58 hundredths of each cycle).
-   beastFr: the frame of the walk for a distance walked (dist, in room pixels) at a speed (v, room pixels a second; 66 if none is given).
-   A scene that moves a donkey draws it with beast(g, x, y, dir, beastFr(dist, v), load), and with frame 0 where it stands. */
-const DONKEY_REACH=22,DONKEY_STANCE=.625,DONKEY_STRIDE=DONKEY_REACH/DONKEY_STANCE/2,DONKEY_BEAT=.64;
-const beastFr=(dist,v)=>{const c=Math.max(DONKEY_STRIDE,Math.abs(v==null?WALK_V:v)*DONKEY_BEAT);return 4+Math.floor((dist/c%1+1)%1*16)%16};
-function donkey(g,x,y,dir,fr,load){g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
-  const px=(a,b,col,w,h)=>{g.fillStyle=col;g.fillRect(a,b,w||1,h||1)},D=ramp('#94836e'),pale='#c4b49c',hoof='#2a2018';
-  const W=fr>0,k=fr>=4?(fr-4)%16:(fr-1)*4,ph=k/16,o=W&&(k%8===4||k%8===5)?1:0,hd=W&&(k%8===5||k%8===6)?1:0,tl=W?Math.round(Math.cos(6.2832*(ph-.05))):0;
-  /* at: where the hoof of a leg is at this moment, the leg's beat being off of a cycle after the near hind leg's: hx before or behind the
-     leg's root, lift off the ground, and bend, how far the joint is flexed */
-  const at=off=>{if(!W)return{hx:0,lift:0,bend:0};const p=((ph-off)%1+1)%1,T=DONKEY_REACH,B=DONKEY_STANCE;if(p<B)return{hx:T/2-T*p/B,lift:0,bend:0};
-    const v=(p-B)/(1-B),q=Math.sin(Math.PI*v);return{hx:-T/2*Math.cos(Math.PI*v),lift:Math.round(4*q),bend:3*q}};
-  /* leg: from its root at lx down to the hoof, in two parts: the hock of a hind leg bends back, the knee of a fore leg forward. A part
-     that slants is drawn a pixel or two wider, so that it is as thick as one that stands. */
-  const leg=(lx,P,far,hind)=>{const y0=-31+o,n=-3-P.lift-y0,J=Math.round(n*.5),jx=hind?P.hx*.42-P.bend:P.hx*.5+P.bend;
-    for(let i=0;i<n;i++){const t=i/(n-1),sl=Math.abs(i<=J?jx/J:(P.hx-jx)/(n-1-J)),ex=sl>.7?2:sl>.4?1:0,cx=lx+Math.round(i<=J?jx*i/J:jx+(P.hx-jx)*(i-J)/(n-1-J)),
-        w=(t<.3?8:t<.6?7:6)+ex,x0=cx+(t<.3?0:1)-(ex>1?1:0),knee=t>.42&&t<.52?1:0;
-      for(let q=0;q<w+knee;q++){const u=(q+.5)/(w+knee);px(x0+q,y0+i,D[Math.min(4,(u<.22?4:u<.5?3:u<.82?2:1)+(far?1:0))])}}
-    const hx=lx+Math.round(P.hx)+1,hy=-3-P.lift;px(hx,hy,hoof,7,3);px(hx+5,hy,'#4a3a2c',2)};
-  leg(W?-20:-17,at(.5),1,1);leg(W?15:14,at(.75),1,0);
-  /* tail: set on at the top of the rump and lying along it, then hanging free to its tuft */
-  const rump=yy=>{const dy=(yy+37.5)/13.5;return-Math.round(27*Math.sqrt(Math.max(0,1-dy*dy)))-1};
-  for(let yy=-49;yy<=-23;yy++){const i=yy+49,tuft=i>20;px((tuft?-31:yy<-38?rump(yy)-2:-30)+(i>10?Math.round(tl*(i-10)/16):0),yy+o,tuft?hoof:D[i%5?3:4],tuft?3:2)}
-  /* barrel of the body: lit along the back, pale under the belly */
-  for(let yy=-51;yy<=-24;yy++){const dy=(yy+37.5)/13.5,hw=Math.round(27*Math.sqrt(Math.max(0,1-dy*dy)));
-    for(let xx=-hw-1;xx<=hw-1;xx++){let v=dy<-.7?1:dy<-.2?2:dy<.45?3:4;if(xx<-hw+3)v=Math.min(4,v+1);if(xx>hw-6&&dy<.3)v=Math.max(1,v-1);px(xx,yy+o,dy>.72&&xx>-hw+4?pale:D[v])}}
-  /* a broken highlight along the line of the back: each dash lies on the top row of the body where it is */
-  for(let xx=-20;xx<16;xx+=3)px(xx,Math.ceil(-37.5-13.5*Math.sqrt(1-Math.pow((Math.abs(xx)+3)/27,2)))+o,D[0],2);
-  leg(W?-22:-25,at(0),0,1);leg(W?17:18,at(.25),0,0);
-  /* a short thick neck with its dark mane, the head carried low and forward. When the head dips (hd), the upper half of the neck goes down with it */
-  for(let yy=-59;yy<=-41;yy++){const t=(yy+59)/18,x0=Math.round(25-13*t),x1=Math.round(38-9*t);for(let xx=x0;xx<=x1;xx++){const u=(xx-x0+.5)/(x1-x0+1);px(xx,yy+o+(t<.5?hd:0),xx-x0<2?'#3a2e24':D[u<.3?3:u<.7?2:1])}}
-  /* the breast, rounding the foot of the neck back into the body */
-  for(let yy=-40;yy<=-33;yy++){const x1=Math.round(29-(yy+41)*.6);for(let xx=24;xx<=x1;xx++)px(xx,yy+o,D[xx>x1-2?1:2])}
-  stamp(g,DONKEY_HEAD,24,-75+o+hd,{h:D[2],H:D[1],d:D[3],e:D[2],E:'#5a4636',k:'#1a120c',m:pale,M:'#dccdb6',n:hoof});
-  for(let i=0;i<6;i++)px(38,-63+o+hd+i,'#7a4a24');for(let i=0;i<9;i++)px(38-i,-64+o+hd-Math.round(i*.35),'#7a4a24');
-  /* saddle blanket, held by two girths */
-  const K=ramp('#8a4a3a');px(-9,-40+o,'#5a3a20',2,16);px(8,-40+o,'#5a3a20',2,16);px(-8,-40+o,'#3a2616',1,16);px(9,-40+o,'#3a2616',1,16);
-  for(let i=0;i<12;i++){const hw=i<2?11:14;for(let xx=-hw;xx<=hw;xx++){const u=(xx+hw+.5)/(2*hw+1);px(xx,-53+o+i,i===8?'#d8c9a0':K[i===0?0:i===11?4:u<.15?4:u<.35?3:u<.75?2:1])}}
-  for(let xx=-14;xx<=14;xx+=2)px(xx,-41+o,K[3]);
-  if(load){const B=ramp('#30261f');px(-18,-55+o,'#4a3e34',37,5);px(-18,-55+o,'#6a5a4c',37);
-    for(let i=0;i<26;i++){const ins=i>22?i-22:0;for(let xx=-18+ins;xx<=18-ins;xx++){const u=(xx+18.5)/37;let v=u<.12?4:u<.3?3:u<.7?2:1;if((xx+i*2)%4===0&&i%2)v=Math.max(0,v-1);px(xx,-50+o+i,B[v])}}
-    px(-18,-50+o,'#5a4c40',37);px(-12,-56+o,'#9a7448',2,12);px(10,-56+o,'#9a7448',2,12);px(-11,-56+o,'#6a4e30',1,12);px(11,-56+o,'#6a4e30',1,12);
-    if(load>1){for(const[sx,sy,sw,sh,sc]of[[-9,-56,10,15,'#cdbb8c'],[8,-56,10,17,'#d8c698']]){const Q=ramp(sc);
-        for(let i=0;i<sh;i++){const dy=(i+.5-sh/2)/(sh/2),hw=Math.round(sw*Math.sqrt(Math.max(0,1-dy*dy)));for(let xx=-hw;xx<hw;xx++){const u=(xx+hw+.5)/(2*hw);px(sx+xx,sy-sh+i+o,Q[u<.15?4:u<.35?3:u<.7?2:dy<-.2?0:1])}}
-        px(sx-2,sy-sh-3+o,Q[3],4,3);px(sx-1,sy-sh-3+o,Q[1],2,2);px(sx-3,sy-sh+o,'#7a5a34',6)}
-      px(-18,-62+o,'#8a6a40',37);px(-18,-66+o,'#8a6a40',14);px(4,-67+o,'#8a6a40',14)}}
-  g.restore()}
 /* --- icon helpers: each icon is drawn on a 24-unit grid --- */
 const IH={
   /* a roll of cloth lying on its side */
@@ -1353,7 +1439,7 @@ const camAt=(id,x,y)=>{const z=zoomOf(id),w=VW/z,h=VH/z;return[clamp(x-w/2,0,Mat
 /* A room whose light changes (a lamp put out, shutters opened) names its current variant, and gets one backdrop per variant. */
 function bg(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;return BG[k]||(BG[k]=bake(a.w,g=>a.paint(g,v),a.q,a.h))}
 function fg(id){const a=ART[id];if(!a.fore)return null;return FG[id]||(FG[id]=bake(Math.round(VW+(a.w-VW)*(a.fp||1)),g=>a.fore(g),a.q))}
-const backdrop=(g,id,cam,camY)=>g.drawImage(bg(id),-(cam||0),-(camY||0),ART[id].w,roomH(id));
+const backdrop=(g,id,cam,camY)=>{LID=planOf(id)?null:id;g.drawImage(bg(id),-(cam||0),-(camY||0),ART[id].w,roomH(id))};
 /* planOf: a room seen from above (a lane map, shared/lanes.js) has a plan, which walks, draws and moves the people in it: see walk, update,
    drawActor and clickView. Its fig is the size of a figure on it, [half its width, its height]; a room's own figures are [10, 49]. */
 const planOf=id=>id&&ROOMS[id]&&ROOMS[id].plan||null;
@@ -1448,11 +1534,18 @@ const narr=(t,o)=>say(null,t,o);
    tells, as it always did. DARK is the scene for what is told and not shown (a vision by night, a beating): a chapter sets it as G.scene. */
 function DARK(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}
 const inDark=()=>!G.white&&(+$('#dim').style.opacity>=1||G.scene===DARK);
-function posSpeech(){if(!cur||cur.ink||cur.white)return;const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
+function posSpeech(){if(!cur||cur.ink||cur.white)return;if(PH.on)return posSpeechPh();const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
   if(a&&a.room===G.room&&!G.scene){const z=zoomNow();el.style.left=clamp((a.x-G.cam)*z*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-G.camY-figBox(a.room)[1])*z+7,40,132)*s+'px';el.style.top=''}
   else if(cur.low){el.style.left='50%';el.style.top='';el.style.bottom=7*s+'px'}   /* low: a line told over a map whose road runs along its upper edge stands at the foot of the view */
   else{el.style.left='50%';el.style.top=10*s+'px';el.style.bottom=''}}
-function lock(b){$('#panel').classList.toggle('locked',b)}
+/* posSpeechPh: on a phone a line stands over its speaker where the field shows him, inside the field, and the narrator's lines at its top,
+   below the status line. The words keep their size when the field is zoomed. */
+function posSpeechPh(){const{el,a}=cur,L=LENS,F=L.F,ts=PH.ts,hw=el.offsetWidth/2+4*ts,H=PH.H,eh=el.offsetHeight;
+  if(a&&a.room===G.room&&!G.scene){const z=zoomNow(),X=L.tx+(a.x-G.cam)*z*L.k,Y=L.ty+(a.y-G.camY-figBox(a.room)[1])*z*L.k;
+    el.style.left=clamp(X,F.l+hw,F.l+F.w-hw)+'px';el.style.bottom=clamp(H-Y+5*ts,H*.22,H-eh-3*ts-(PH.it||0))+'px';el.style.top=''}
+  else if(cur.low){el.style.left=(F.l+F.w/2)+'px';el.style.top='';el.style.bottom=7*ts+'px'}
+  else{el.style.left=(F.l+F.w/2)+'px';el.style.top=12*ts+(PH.it||0)+'px';el.style.bottom=''}}
+function lock(b){$('#panel').classList.toggle('locked',b);$('#wrap').classList.toggle('locked',b)}
 async function cut(fn,force){if(G.busy&&!force)return;G.busy=true;lock(true);status();
   try{await fn()}catch(e){console.error(e)}
   G.with=null;G.turn.clear();G.busy=false;lock(false);G.verb='walk';G.item=null;syncVerbs();drawInv();status();codeBtn()}
@@ -1531,7 +1624,10 @@ function drawInv(){const el=$('#inv');el.innerHTML='';for(let i=0;i<10;i++){cons
     s.oncontextmenu=e=>{e.preventDefault();if(G.busy)return;audioInit();G.verb='walk';G.item=null;syncVerbs();cut(()=>say(PC(),itemLook(id)))}}
   el.appendChild(s)}}
 /* status: the sentence being built, such as "Use awl with torn awning". Each language words it through the templates in it. */
-function status(){const el=$('#status');litVerb();pointer(ptrScale,pointerKind(G.hover));if(G.busy){el.textContent='\u00a0';return}
+/* On a phone the status line lies over the field, and is seen only while it says more than Walk to: while something is touched, or a verb
+   or an item is chosen. */
+function status(){statusText();const el=$('#status');el.classList.toggle('none',G.busy||!G.hover&&!G.item&&G.verb==='walk')}
+function statusText(){const el=$('#status');litVerb();pointer(ptrScale,pointerKind(G.hover));if(G.busy){el.textContent='\u00a0';return}
   const h=G.hover,hn=h?T(h.item?ITEMS[h.item].name:h.name):'',v=VNAME[G.verb==='walk'&&h&&!G.item?(h.item?itemVerb(h.item):defVerb(h)):G.verb];
   if(G.item){const on=hn&&!(h&&h.item===G.item),item=T(ITEMS[G.item].name);
     el.textContent=G.verb==='give'?(on?T('give_item_to_thing',{item,thing:hn}):T('give_item_to',{item})):(on?T('use_item_with_thing',{item,thing:hn}):T('use_item_with',{item}))}
@@ -1589,7 +1685,13 @@ async function clickView(x,y,at){
   me.dir=A?(A.x>me.x?1:-1):h.dir||((h.x+h.w/2)>=me.x?1:-1);if(pl)pl.face(me,A?A.x:h.x+h.w/2,A?A.y:h.y+h.h/2);
   await cut(()=>act(v,h,item))}
 const vp=$('#view');
-function evPos(e){const r=vp.getBoundingClientRect(),z=zoomNow();return[(e.clientX-r.left)/r.width*VW/z+G.cam,(e.clientY-r.top)/r.height*VH/z+G.camY]}
+/* evPos: where a pointer event is, in the room; framePos: in the picture (VW by VH); toClient: where a place in the room is on the screen */
+function evPos(e){if(PH.on){const[x,y]=framePos(e),z=zoomNow();return[x/z+G.cam,y/z+G.camY]}const r=vp.getBoundingClientRect(),z=zoomNow();return[(e.clientX-r.left)/r.width*VW/z+G.cam,(e.clientY-r.top)/r.height*VH/z+G.camY]}
+const vpq=()=>{const r=vp.getBoundingClientRect();return[r,r.width/(vp.offsetWidth||r.width)||1]};   /* q: screen pixels to one of the view's own (below 1 while Safari zooms, see vvFit) */
+function framePos(e){if(PH.on){const[r,q]=vpq();return[((e.clientX-r.left)/q-LENS.tx)/LENS.k,((e.clientY-r.top)/q-LENS.ty)/LENS.k]}const r=vp.getBoundingClientRect();
+  return[(e.clientX-r.left)/r.width*VW,(e.clientY-r.top)/r.height*VH]}
+function toClient(x,y){const r=vp.getBoundingClientRect(),z=zoomNow();if(PH.on){const q=vpq()[1];return[r.left+(LENS.tx+(x-G.cam)*z*LENS.k)*q,r.top+(LENS.ty+(y-G.camY)*z*LENS.k)*q]}
+  return[r.left+(x-G.cam)*z/VW*r.width,r.top+(y-G.camY)*z/VH*r.height]}
 /* hsOf: what a pointer event is about: the thing a pinned label names if the pointer is on a label, else whatever lies under it.
    Labels are moved apart and do not always sit on what they name, so pointing, a tap, a right-click and a double-click all ask here. */
 const hsOf=e=>{const t=e.target.closest('.tag');return t&&t.hs||hsAt(...evPos(e))};
@@ -1608,6 +1710,77 @@ vp.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch')return;fingers.
 vp.addEventListener('pointermove',e=>{if(!fingers.has(e.pointerId))return;fingers.set(e.pointerId,[e.clientX,e.clientY]);
   if(pinch&&fingers.size===2){const[a,b]=[...fingers.values()];G.zoomTo=clamp(pinch.z*Math.hypot(a[0]-b[0],a[1]-b[1])/pinch.d,.75,2);pinchT=performance.now()}});
 for(const t of['pointerup','pointercancel'])vp.addEventListener(t,e=>{fingers.delete(e.pointerId);if(pinch&&fingers.size<2){pinch=null;pinchT=performance.now()}});
+/* lensTick: on a phone, where the picture lies in the view (LENS), worked out for every frame. The field is the part of the screen between the
+   columns, or all of it while they are away (wide: on the title, a menu, the safe-point box, an end screen, the tablets and the narrator's
+   scroll). The title's picture is fitted into the screen whole, with timber beside it (PH.kT). A close view (where whoever is played stands below the picture) and the travel
+   map are fitted into the field whole as well, and wood shows above and below them; every other picture fills the field from top to bottom,
+   cropped at the sides. That one follows whoever is played, or whoever speaks while a line stands, and a finger may move it (pan, which
+   melts away as he walks or someone speaks); in a room wider than the picture the room's own view (G.cam) follows the same point. Two
+   fingers zoom it up to three times (pz; a close view: pzFit). The picture never leaves a gap in the field it could fill. */
+function lensTick(dt){if(!PH.on)return;vvFit();const W=PH.W,H=PH.H,wc=$('#wrap').classList,S=SHARED.scroll,
+    title=wc.contains('title'),wide=title||wc.contains('full')||!!(S&&S.state!=='down')||!!$('#tablets.on'),e=r=>1-Math.exp(-dt*r);
+  if(wide!==PH.wide){PH.wide=wide;wc.toggle('wide',wide)}
+  if(wc.contains('splash')!==ov.classList.contains('splash'))wc.toggle('splash');
+  const Fl=wide?0:PH.cw,Fw=W-2*Fl;
+  if(!PH.k||!dt||Math.abs(Fl-PH.Fl)<.3){PH.Fl=Fl;PH.Fw=Fw}else{PH.Fl+=(Fl-PH.Fl)*e(9);PH.Fw+=(Fw-PH.Fw)*e(9)}
+  const F={l:PH.Fl,t:0,w:PH.Fw,h:H},room=G.room&&!G.scene?G.room:null,me=PC(),plan=!!planOf(room),
+    close=!!room&&!plan&&(me.room!==room||me.y>roomH(room)+20),map=!!(G.scene&&SHARED.map&&G.scene===SHARED.map.draw),
+    mode=title?'title':close||map?'fit':'fill',FH=title?VT:VH;
+  if(room!==PH.room){PH.room=room;PH.pan={x:0,y:0};PH.pzFit=1;PH.c=null}
+  const vz=PH.vz||1,kT=mode==='title'?PH.kT:mode==='fit'?Math.min(F.w/VW,F.h/VH)*Math.min(3,PH.pzFit*vz):Math.max(F.w/VW,F.h/VH)*Math.min(3,(plan?1:PH.pz)*vz),
+    snap=!PH.k||mode!==PH.mode||!!PH.gest&&PH.gest.kind==='pinch';
+  if(mode!==PH.mode){PH.mode=mode;PH.c=null}
+  PH.k=snap?kT:PH.k+(kT-PH.k)*e(10);if(Math.abs(PH.k-kT)<.002)PH.k=kT;
+  const k=PH.k,ww=F.w/k,wh=F.h/k,still=!!PH.gest&&PH.gest.kind!=='tap',ease=(Tx,Ty)=>{if(!PH.c||snap||still)PH.c={x:Tx,y:Ty};else{const q=e(6);PH.c.x+=(Tx-PH.c.x)*q;PH.c.y+=(Ty-PH.c.y)*q}};
+  let cx=VW/2,cy=FH/2;PH.ctx=null;
+  if(mode==='fill'&&room){const z=zoomNow(),fh=figBox(room)[1],sp=cur&&cur.a&&cur.a.room===room&&!cur.ink&&!cur.white?cur.a:null,a=sp||me,
+      hx=ww/2/z,hy=wh/2/z,rw=ART[room].w,rh=roomH(room),ay=a.y-fh/2;
+    if(!PH.gest&&(me.walk||sp))PH.pan.x=PH.pan.y=0;   /* he walks, or someone speaks: the view goes back to him (PH.c eases there) */
+    const Tx=clamp(a.x+PH.pan.x,Math.min(hx,rw/2),Math.max(rw-hx,rw/2)),Ty=clamp(ay+PH.pan.y,Math.min(hy,rh/2),Math.max(rh-hy,rh/2));
+    if(still){PH.pan.x=Tx-a.x;PH.pan.y=Ty-ay}ease(Tx,Ty);   /* a finger that drags past the edge does not store up a way back */cx=(PH.c.x-G.cam)*z;cy=(PH.c.y-G.camY)*z;PH.ctx={a,z,fh}}
+  else if(mode!=='title'){const hx=ww/2,hy=wh/2,Tx=clamp(VW/2+PH.pan.x,Math.min(hx,VW/2),Math.max(VW-hx,VW/2)),Ty=clamp(VH/2+PH.pan.y,Math.min(hy,VH/2),Math.max(VH-hy,VH/2));
+    if(still){PH.pan.x=Tx-VW/2;PH.pan.y=Ty-VH/2}ease(Tx,Ty);cx=PH.c.x;cy=PH.c.y}
+  cx=ww>=VW?VW/2:clamp(cx,ww/2,VW-ww/2);cy=wh>=FH?FH/2:clamp(cy,wh/2,FH-wh/2);
+  const d=window.devicePixelRatio||1,r=v=>Math.round(v*d)/d,tx=r(F.l+F.w/2-cx*k),ty=r(F.t+F.h/2-cy*k),cw=r(VW*k)+'px',tf=`translate(${tx}px,${ty}px)`;
+  LENS.k=k;LENS.tx=tx;LENS.ty=ty;LENS.F=F;
+  if(cv.style.width!==cw){cv.style.width=cw;cv.style.height=r(VT*k)+'px'}if(cv.style.transform!==tf)cv.style.transform=tf;
+  /* the field and the whole-picture box, for the stylesheet; set only when they change */
+  const fk=Math.min(F.w/VW,F.h/VH),fx=F.l+(F.w-VW*fk)/2,fy=F.t+(F.h-VH*fk)/2,os=title?PH.kT:PH.os,
+    v=[F.l,W-F.l-F.w,F.w,fx,fy].map(x=>Math.round(x*2)/2).join()+'|'+fk.toFixed(3)+'|'+os.toFixed(3);
+  if(v!==PH.vars){PH.vars=v;const st=document.documentElement.style;
+    for(const[n,x]of[['--fl',F.l],['--fr',W-F.l-F.w],['--fw',F.w],['--fx',fx],['--fy',fy]])st.setProperty(n,x.toFixed(1)+'px');st.setProperty('--fk',fk.toFixed(4));st.setProperty('--s',os.toFixed(3))}}
+/* lensAim: zoom the field to pz and move it so that the point m of the picture lies at vx, vy in the view (the point between two fingers) */
+function lensAim(m,vx,vy,pz){const F=LENS.F,k=(PH.mode==='fit'?Math.min(F.w/VW,F.h/VH):Math.max(F.w/VW,F.h/VH))*Math.min(3,pz*(PH.vz||1)),
+    cx=m[0]-(vx-F.l-F.w/2)/k,cy=m[1]-(vy-F.t-F.h/2)/k,c=PH.ctx;
+  if(PH.mode==='fit')PH.pzFit=pz;else PH.pz=pz;
+  if(c){PH.pan.x=cx/c.z+G.cam-c.a.x;PH.pan.y=cy/c.z+G.camY-(c.a.y-c.fh/2)}else{PH.pan.x=cx-VW/2;PH.pan.y=cy-VH/2}}
+/* On a phone one finger moves the field and two zoom it; two quick taps bring it back to the field filled. A tap that has not moved is a
+   click, as always. The page itself is never zoomed: Safari's own pinch is held back. */
+vp.addEventListener('pointerdown',e=>{if(!PH.on||e.pointerType!=='touch')return;
+  if(fingers.size===1)PH.gest={kind:'tap',x:e.clientX,y:e.clientY,pan:{...PH.pan}};
+  else if(fingers.size===2&&!(planOf(G.room)&&!G.scene)&&PH.mode!=='title'){const[a,b]=[...fingers.values()],[r,q]=vpq(),mx=((a[0]+b[0])/2-r.left)/q,my=((a[1]+b[1])/2-r.top)/q;
+    PH.gest={kind:'pinch',d:Math.hypot(a[0]-b[0],a[1]-b[1])||1,pz:PH.mode==='fit'?PH.pzFit:PH.pz,m:[(mx-LENS.tx)/LENS.k,(my-LENS.ty)/LENS.k]}}
+  else PH.gest={kind:'none'}});
+vp.addEventListener('pointermove',e=>{const g=PH.gest;if(!PH.on||!g||!fingers.has(e.pointerId))return;
+  if(g.kind==='tap'&&PH.mode!=='title'&&Math.hypot(e.clientX-g.x,e.clientY-g.y)>10)g.kind='drag';
+  if(g.kind==='drag'){const z=PH.ctx?PH.ctx.z:1,q=vpq()[1];PH.pan.x=g.pan.x-(e.clientX-g.x)/q/LENS.k/z;PH.pan.y=g.pan.y-(e.clientY-g.y)/q/LENS.k/z;pinchT=performance.now()}
+  else if(g.kind==='pinch'&&fingers.size===2){const[a,b]=[...fingers.values()],[r,q]=vpq();
+    lensAim(g.m,((a[0]+b[0])/2-r.left)/q,((a[1]+b[1])/2-r.top)/q,clamp(g.pz*Math.hypot(a[0]-b[0],a[1]-b[1])/g.d,1,3));pinchT=performance.now()}});
+for(const t of['pointerup','pointercancel'])vp.addEventListener(t,e=>{if(!PH.on||e.pointerType!=='touch')return;const g=PH.gest;
+  if(fingers.size){if(g&&g.kind==='pinch')PH.gest={kind:'none'};return}
+  if(g&&g.kind==='tap'&&t==='pointerup'){const now=performance.now(),l=PH.lastTap;
+    if(l&&now-l.t<330&&Math.hypot(e.clientX-l.x,e.clientY-l.y)<40){PH.lastTap=null;
+      if((PH.mode==='fit'?PH.pzFit:PH.pz)!==1||PH.pan.x||PH.pan.y){if(PH.mode==='fit')PH.pzFit=1;else PH.pz=1;PH.pan={x:0,y:0};pinchT=now}}
+    else PH.lastTap={t:now,x:e.clientX,y:e.clientY}}
+  PH.gest=null});
+/* Safari decides at the first movement of a finger whether the page may stop it, so every movement is held back from the start, except
+   where something scrolls (the title's chapters, the choices, the menu and its sliders, the code box, the tablets); a second finger always.
+   A second tap on the field soon after the first is held back too, or Safari zooms the page on it. */
+for(const t of['gesturestart','gesturechange','gestureend'])document.addEventListener(t,e=>{if(PH.on)e.preventDefault()},{passive:false});
+document.addEventListener('touchstart',e=>{if(PH.on&&e.touches.length>1)e.preventDefault()},{passive:false});
+document.addEventListener('touchmove',e=>{if(PH.on&&e.cancelable&&(e.touches.length>1||!(e.target.closest&&e.target.closest('.chs,#choices,#menu,#codebox,#tablets'))))e.preventDefault()},{passive:false});
+let lastTouchEnd=0;document.addEventListener('touchend',e=>{if(!PH.on)return;const now=performance.now();
+  if(e.cancelable&&e.target===cv&&now-lastTouchEnd<350)e.preventDefault();lastTouchEnd=now},{passive:false});
 /* Right-click looks at whatever is under the pointer, from where Paul stands; on empty ground it puts the chosen verb down. */
 vp.addEventListener('contextmenu',e=>{e.preventDefault();if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
   if(G.busy||G.scene||!G.room)return;audioInit();const h=hsOf(e);G.verb='walk';G.item=null;syncVerbs();drawInv();status();if(!h)return;
@@ -1631,21 +1804,24 @@ function tagsOn(on){if(on!=null)G.tagKey=!!on;on=!!(G.tagKey||G.tagPin||heardRoo
 function namesBtn(){const b=$('#names');b.textContent=T('NAMES');b.classList.toggle('on',!!G.tagPin);tagsOn()}
 $('#names').onclick=e=>{e.stopPropagation();audioInit();SFX.click();G.tagPin=!G.tagPin;namesBtn();tagsOn(G.tagPin)};
 function drawTags(ts){if(!G.tags)return;const act=G.room&&!G.scene&&!G.busy&&!G.skip;if(act&&ts-tagT<90)return;tagT=ts;
-  const s=vp.clientWidth/VW,cam=G.cam,cy=G.camY,list=[],put=[],fh=figBox(G.room)[1],z=zoomNow(),vw=VW/z,vh=VH/z;
+  /* the part of the picture that is seen, [wx0, wx1] across and [wy0, wy1] down: the whole of it, or on a phone the field (below its status line) */
+  const ph=PH.on,L=LENS,s=ph?L.k:vp.clientWidth/VW,ox=ph?L.tx:0,oy=ph?L.ty:0,wx0=ph?Math.max(0,(L.F.l-ox)/s):0,wx1=ph?Math.min(VW,(L.F.l+L.F.w-ox)/s):VW,
+    wy0=ph?Math.max(0,(L.F.t+11*PH.ts-oy)/s):0,wy1=ph?Math.min(VH,(L.F.t+L.F.h-oy)/s):VH,
+    cam=G.cam,cy=G.camY,list=[],put=[],fh=figBox(G.room)[1],z=zoomNow(),rx0=cam+wx0/z,rx1=cam+wx1/z,ry0=cy+wy0/z,ry1=cy+wy1/z;
   /* each label: its name, where it stands in the room, its kind, its hotspot, and where it is clicked (y in the room: a lane map is taller than the view) */
   if(act){
-    for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+vw&&a.y>cy&&a.y<cy+vh+fh)list.push([T(a.hs.name),a.x,(a.y-fh-3-cy)*z,'who',a.hs,a.y-fh/2]);
-    for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const tall=roomH(G.room)>VH,x0=Math.max(h.x,cam+4/z),x1=Math.min(h.x+h.w,cam+vw-4/z),y0=tall?Math.max(h.y,cy+2/z):h.y,y1=tall?Math.min(h.y+h.h,cy+vh-2/z):h.y+h.h;
+    for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>rx0&&a.x<rx1&&a.y>ry0&&a.y<ry1+fh)list.push([T(a.hs.name),a.x,(a.y-fh-3-cy)*z,'who',a.hs,a.y-fh/2]);
+    for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const tall=roomH(G.room)>VH||ph,x0=Math.max(h.x,rx0+4/z),x1=Math.min(h.x+h.w,rx1-4/z),y0=tall?Math.max(h.y,ry0+2/z):h.y,y1=tall?Math.min(h.y+h.h,ry1-2/z):h.y+h.h;
       if(x1>x0&&y1>y0)list.push([T(h.name),(x0+x1)/2,((y0+y1)/2-cy)*z,h.exit?'exit':'',h,(y0+y1)/2])}}
   /* rebuilt only when something changed, so that a label is not replaced under the finger tapping it. What changed may be the thing
      itself and nothing that shows (a place that comes back in a later chapter keeps its names), so the hotspots are compared as well. */
-  const sig=s+'|'+cam+'|'+cy+'|'+z+'|'+list.map(l=>l.slice(0,4).join(',')).join('|');if(sig===tagSig&&list.every((l,i)=>l[4]===tagHs[i]))return;tagSig=sig;tagHs=list.map(l=>l[4]);tagEl.innerHTML='';
+  const sig=s+'|'+Math.round(ox)+'|'+Math.round(oy)+'|'+cam+'|'+cy+'|'+z+'|'+list.map(l=>l.slice(0,4).join(',')).join('|');if(sig===tagSig&&list.every((l,i)=>l[4]===tagHs[i]))return;tagSig=sig;tagHs=list.map(l=>l[4]);tagEl.innerHTML='';
   list.sort((a,b)=>a[2]-b[2]);
   for(const[name,x,y,k,h,ry]of list){const el=document.createElement('div');el.className='tag '+k;el.textContent=name;el.hs=h;tagEl.appendChild(el);
     el.onclick=e=>{e.stopPropagation();if(tagTap())clickView(x,ry,h)};
-    const w=el.offsetWidth/s,hh=el.offsetHeight/s+3,lx=clamp((x-cam)*z,w/2+1,VW-w/2-1);let ty=clamp(y,4,VH-hh);
+    const w=el.offsetWidth/s,hh=el.offsetHeight/s+3,lx=clamp((x-cam)*z,wx0+w/2+1,wx1-w/2-1);let ty=clamp(y,wy0+4,wy1-hh);
     for(let n=0;n<10;n++){const hit=put.find(p=>Math.abs(p.x-lx)<(p.w+w)/2+1&&Math.abs(p.y-ty)<hh);if(!hit)break;ty=hit.y+hh}
-    if(ty>VH-hh)ty=VH-hh;put.push({x:lx,y:ty,w});el.style.left=lx*s+'px';el.style.top=ty*s+'px'}}
+    if(ty>wy1-hh)ty=wy1-hh;put.push({x:lx,y:ty,w});el.style.left=(ox+lx*s)+'px';el.style.top=(oy+ty*s)+'px'}}
 addEventListener('keyup',e=>{if(e.key==='Tab')tagsOn(false)});addEventListener('blur',()=>tagsOn(false));
 addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;const k=e.key.toLowerCase();
   if(k==='tab'){e.preventDefault();tagsOn(true)}
@@ -1678,10 +1854,10 @@ function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
       a.fr=4+Math.floor(q.ph*16)+16*(!pl&&Math.abs(dx)<Math.abs(dy)*2||near<6?2:near<14?1:0);
       if(a.room===G.room&&(q.ph<p0||p0<.5&&q.ph>=.5)&&ts-stepT>90){stepT=ts;SFX.step()}}}
   if(G.zoom!==G.zoomTo){G.zoom+=(G.zoomTo-G.zoom)*Math.min(1,dt*12);if(Math.abs(G.zoomTo-G.zoom)<.004)G.zoom=G.zoomTo}
-  if(G.room&&!G.scene){const[t,u]=camAt(G.room,PC().x,PC().y),k=Math.min(1,dt*5);G.cam+=(t-G.cam)*k;if(Math.abs(t-G.cam)<.5)G.cam=t;
+  if(G.room&&!G.scene){const fo=PH.on&&PH.c&&PH.mode==='fill'&&PH.room===G.room&&PH.ctx?{x:PH.c.x,y:PH.c.y+PH.ctx.fh/2}:PC(),[t,u]=camAt(G.room,fo.x,fo.y),k=Math.min(1,dt*5);G.cam+=(t-G.cam)*k;if(Math.abs(t-G.cam)<.5)G.cam=t;
     G.camY+=(u-G.camY)*k;if(Math.abs(u-G.camY)<.5)G.camY=u}}
 /* --- figures: each pose is drawn once into a cached sprite (dark contour, dither), then lit by the room and laid on the scene --- */
-const[SA,sa]=mk(FIG.W,FIG.H),[SB,sb]=mk(FIG.W,FIG.H),SPR=new Map();sa.imageSmoothingEnabled=false;
+const[SA,sa]=mk(FIG.W,FIG.H),[SB,sb]=mk(FIG.W,FIG.H),[SC,sc]=mk(FIG.W,FIG.H),SPR=new Map();sa.imageSmoothingEnabled=false;sc.imageSmoothingEnabled=false;
 /* sprite: draw a pose once and keep it. Edge pixels are darkened, more so on the side away from the light (dir tells which).
    A speaking figure has many poses (mouth, head, hand), so the store holds up to 500 and then lets the 150 oldest go. */
 function sprite(key,fn,dir){let c=SPR.get(key);if(c)return c;if(SPR.size>=500){let n=150;for(const k of SPR.keys()){SPR.delete(k);if(!--n)break}}const W=FIG.W,Hh=FIG.H;
@@ -1696,11 +1872,11 @@ function lightAt(id,x,y){let L=id&&ART[id].light;if(typeof L==='function')L=L();
   for(const[x0,x1,c]of L.shade||[]){const k=clamp(Math.min(x-x0,x1-x)/8,0,1);if(k>0){const q=hex(c);r*=1-k+k*q[0]/255;g*=1-k+k*q[1]/255;b*=1-k+k*q[2]/255}}
   return r>=254&&g>=254&&b>=254?null:toHex(r,g,b)}
 /* Depth: whatever stands on the ground is drawn from the back of the room to the front, so that the nearer hides the farther. A room's draw() runs
-   first. What it places with figure() (man, beast, a chapter's cattle) is not drawn at once: it waits in a queue at the y of its feet, and depth(y,fn)
+   first. What it places with figure() (man, the animals of shared/beasts.js) is not drawn at once: it waits in a queue at the y of its feet, and depth(y,fn)
    puts any other drawing in that queue. Then the queue, the room's props and its actors are drawn in order of y; where two stand level, the actor is
    in front. Inside fn figures are drawn at once, in the order written: a team of oxen with its wagon and yoke is one thing, at one depth. Outside a
    room's draw() (a cutscene, the front layer) there is no queue, and everything is drawn where it is written. */
-let DQ=null;
+let DQ=null,SQ=null,LID=null;
 function depth(y,fn){if(DQ)DQ.push([y,fn]);else fn()}
 /* props: a thing that is painted into the backdrop and stands inside the walkable strip (a stool, a low table, a heap of sailcloth) is named once more
    in ART[id].props, as {y, shape(g,variant)}: y is where it stands on the floor, and shape() fills its outline in any color, without its shadow. The
@@ -1712,15 +1888,76 @@ function props(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;if(!a.props
   for(let y=0,i=3;y<Hh;y++)for(let x=0;x<W;x++,i+=4){if(d[i]<128){d[i]=0;continue}d[i]=255;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
   if(x1<0)return null;g.putImageData(im,0,0);g.globalCompositeOperation='source-in';g.drawImage(bg(id),0,0);
   const w=x1-x0+1,h=y1-y0+1,[o,og]=mk(w,h);og.drawImage(c,-x0,-y0);return{y:p.y,c:o,x:x0/HR,t:y0/HR,w:w/HR,h:h/HR}}).filter(Boolean))}
-/* figure: place a sprite with its feet at x,y. lit: the light on it; key: names the pose for the cache; sw: shadow half-width (0 for none). */
-function figure(g,x,y,lit,key,fn,sw){if(DQ){DQ.push([y,()=>figure(g,x,y,lit,key,fn,sw)]);return}x=hp(x);y=hp(y);if(sw!==0){oval(g,x,y-.4,sw||8.5,2,'rgba(0,0,0,.2)');oval(g,x,y-.4,(sw||8.5)*.68,1.3,'rgba(0,0,0,.24)')}
-  const c=sprite(key,fn,key.includes('-1')?-1:1),W=FIG.W/HR,Hh=FIG.H/HR,dx=x-FIG.OX/HR,dy=y-FIG.OY/HR;if(!lit){g.drawImage(c,dx,dy,W,Hh);return}
+/* figShadow: grounded contact oval plus up to two softened #181220 multiply silhouette shadows projected from ART[id].light onto the floor
+   (and bent upright onto solid back-wall spans when a foreground lamp stands at lz > y). */
+const lumOf=([r,g,b])=>(r*.3+g*.59+b*.11)/255;
+function wallAt(L,id,x){const w=L.wallY;if(typeof w==='function')return w(x);if(w!=null)return w;const r=id&&ROOMS[id];return r&&r.walk?r.walk[2]-2:105}
+function figShadow(g,id,x,y,c,sw,cxOff){
+  cxOff=cxOff||0;
+  let L=id&&ART[id]&&ART[id].light;if(typeof L==='function')L=L();
+  if(!L){oval(g,x+cxOff,y-.4,sw,2,'rgba(24,18,32,.2)');oval(g,x+cxOff,y-.4,sw*.68,1.3,'rgba(24,18,32,.24)');return}
+  let[ar,ag,ab]=hex(L.amb||'#ffffff');
+  for(const[x0,x1,sc0]of L.shade||[]){const k=clamp(Math.min(x-x0,x1-x)/8,0,1);if(k>0){const q=hex(sc0);ar*=1-k+k*q[0]/255;ag*=1-k+k*q[1]/255;ab*=1-k+k*q[2]/255}}
+  const Iamb=lumOf([ar,ag,ab]),wyBase=wallAt(L,id,x);
+  if(y<wyBase-6)return;
+  const srcs=[];let sumI=0;
+  for(const lp of L.lamps||[]){const[lx,ly,lr,col]=lp,d=Math.hypot(x-lx,(y-22-ly)*1.5)/lr;
+    if(d<1){const I=lumOf(hex(col))*(1-d)*(1-d);if(I>.004){sumI+=I;
+      const lz=lp[4]!=null?lp[4]:wallAt(L,id,lx),wy=lp[5]!=null?lp[5]:ly,lh=Math.max(12,lz-wy),
+        dx=x-lx,dy=y-lz,tBack=clamp(-dy/7,0,1),pf=1.75-.6*tBack,dist=Math.hypot(dx,dy*pf)||.001,
+        denom=(1-tBack)*Math.max(22,lh*.92)+tBack*Math.max(12,lh-32),
+        maxL=35+21*tBack,rawL=dist*46/denom,effL=rawL>maxL*.7?maxL*.7+maxL*.3*Math.tanh((rawL-maxL*.7)/(maxL*.45)):rawL,
+        vx=dx/dist*effL,vy=dy/dist*effL,grz=1/(1+Math.max(0,rawL/maxL-.85)*.5);
+      srcs.push({I,vx,vy,lz,grz})}}}
+  const dirV=L.sun||L.dir;
+  if(dirV){const[sdx,sdy,str]=dirV,I=str==null?.45:str;if(I>.004){sumI+=I;srcs.push({I,vx:sdx,vy:sdy,lz:sdy<0?y+20:wyBase,grz:1})}}
+  const Itot=Iamb+sumI,Eamb=Iamb*Iamb*.85+Iamb*.15,ca=clamp((Itot-.035)/.515,0,1);
+  if(ca<=.01)return;
+  srcs.sort((a,b)=>b.I-a.I);const top=srcs.slice(0,2);
+  let ox=0,oy=0;if(top.length){const s0=top[0],sh0=s0.I/(Eamb+sumI+.06);ox=clamp(s0.vx*.06*sh0,-2.2,2.2);oy=clamp(s0.vy*.05*sh0,-1,1)}
+  oval(g,x+cxOff+ox,y-.4+oy,sw,2,rgba('#181220',(.2*ca).toFixed(3)));
+  oval(g,x+cxOff+ox*.4,y-.4+oy*.4,sw*.68,1.3,rgba('#181220',(.25*ca).toFixed(3)));
+  if(!top.length||y<wyBase-2)return;
+  const casts=top.map(s=>({s,a:clamp(s.I/(Eamb+sumI+.05)*.72*s.grz,0,.44)})).filter(e=>e.a>.016);
+  if(!casts.length)return;
+  const W=FIG.W/HR,Hh=FIG.H/HR,dx0=-FIG.OX/HR,dy0=-FIG.OY/HR,rw=(ART[id]&&ART[id].w)||VW,rh=roomH(id);
+  sc.globalCompositeOperation='copy';sc.drawImage(c,0,0);
+  sc.globalCompositeOperation='source-in';sc.fillStyle='#181220';sc.fillRect(0,0,FIG.W,FIG.H);
+  for(const{s,a}of casts){
+    const sx=-s.vx/46,sz=-s.vy/46,bend=s.lz>y&&sz>.02&&y>=wyBase;
+    g.save();g.beginPath();
+    if(typeof L.wallY==='function'){const xA=Math.max(-32,x-72),xB=Math.min(rw+32,x+72);g.moveTo(xA,rh+32);for(let qx=xA;qx<=xB;qx+=8)g.lineTo(qx,L.wallY(qx));g.lineTo(xB,rh+32);g.closePath()}
+    else g.rect(-32,Math.min(y,wyBase),rw+64,rh-Math.min(y,wyBase)+32);
+    g.clip();g.globalCompositeOperation='multiply';g.imageSmoothingEnabled=true;
+    g.save();g.transform(1,0,sx,sz,x,y);
+    g.globalAlpha=a*.26;g.drawImage(SC,dx0-.55,dy0,W,Hh);g.drawImage(SC,dx0+.55,dy0,W,Hh);
+    g.globalAlpha=a*.52;g.drawImage(SC,dx0,dy0,W,Hh);
+    g.restore();g.restore();
+    if(bend&&L.wall&&L.wall.length){
+      const wyC=wallAt(L,id,x),hw=(y-wyC)/sz;
+      if(hw<54){const xw=x-sx*hw,ws=clamp((s.lz-wyC)/Math.max(4,s.lz-y)*.42+.62,.9,1.24);
+        g.save();g.beginPath();
+        for(const[wx0,wx1,wa,wb]of L.wall){const yt=Math.min(wa,wb),yb=Math.max(wa,wb);g.rect(wx0,yt,wx1-wx0,yb-yt)}
+        g.clip();g.globalCompositeOperation='multiply';g.imageSmoothingEnabled=true;
+        g.save();g.transform(1,0,0,ws,xw,wyC+ws*hw);
+        g.globalAlpha=a*.24;g.drawImage(SC,dx0-.6,dy0,W,Hh);g.drawImage(SC,dx0+.6,dy0,W,Hh);
+        g.globalAlpha=a*.48;g.drawImage(SC,dx0,dy0,W,Hh);
+        g.restore();g.restore()}}}
+}
+function figSprite(g,x,y,lit,c){const W=FIG.W/HR,Hh=FIG.H/HR,dx=x-FIG.OX/HR,dy=y-FIG.OY/HR;if(!lit){g.drawImage(c,dx,dy,W,Hh);return}
   sb.globalCompositeOperation='copy';sb.drawImage(c,0,0);sb.globalCompositeOperation='multiply';sb.fillStyle=lit;sb.fillRect(0,0,FIG.W,FIG.H);
   sb.globalCompositeOperation='destination-in';sb.drawImage(c,0,0);g.drawImage(SB,dx,dy,W,Hh)}
+/* figure: place a sprite with its feet at x,y. lit: the light on it; key: names the pose for the cache; sw: shadow half-width (0 for none);
+   cxOff: horizontal offset of the contact shadow oval (so a four-footed beast's oval centers under its hooves); z: depth override for a grouped team. */
+function figure(g,x,y,lit,key,fn,sw,cxOff,z){x=hp(x);y=hp(y);sw=sw==null?8.5:sw;
+  const c=sprite(key,fn,key.includes('-1')?-1:1),lid=LID,zy=z==null?y:z;
+  if(DQ){if(sw>0){if(SQ)SQ.push(()=>figShadow(g,lid,x,y,c,sw,cxOff));else DQ.push([zy,()=>figShadow(g,lid,x,y,c,sw,cxOff)])}
+    DQ.push([zy,()=>figSprite(g,x,y,lit,c)]);return}
+  if(sw>0)figShadow(g,lid,x,y,c,sw,cxOff);
+  figSprite(g,x,y,lit,c)}
 const blinks=(o,ts)=>((ts+o.ph)%4300)<140;
 /* man: a person by look id, for scenes that pose figures themselves (the ship, the road, the prologue). */
 function man(g,x,y,id,dir,fr,lit,ges,sw,bow,bl){const o=LOOK[id];figure(g,x,y,lit,id+dir+'f'+fr+(ges?'g'+ges:'')+(bow?'b':'')+(bl?'k':''),s=>person(s,0,0,o,dir,fr,0,bow||0,ges||0,bl||0),sw!=null?sw:walkSw(o,fr))}
-const beast=(g,x,y,dir,fr,load,lit)=>figure(g,x,y,lit,'donkey'+dir+fr+load,s=>donkey(s,0,0,dir,fr,load),15);
 /* An actor whose dress changes with the story (a cloak torn off him) is given another look and says so in wear, a letter or two that
    names it: the poses of each look are kept apart. A chapter's start gives everyone his own look back (see setChapter). */
 /* moves: what a figure does at this moment, as [mouth, far hand, eyes shut, a sum of MV]. o: the actor; L: its look; ln: the line it is
@@ -1774,18 +2011,20 @@ function drawActor(g,o,ts,id){const pl=planOf(id);if(pl)return pl.drawActor(g,o,
   const m=o.mate;if(m){const L=LOOK[m.fig],mx=o.x+m.dx*o.dir,md=mateFacing(o,mx),[mt,mg,mb,mm]=moves({talk:m.talk,bow:o.bow,fr:o.fr,x:mx},L,m.talk&&ln&&ln.a&&ln.a!==o?ln:null,ts);
     figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+md+'f'+(o.fr<0?'s':o.fr)+'t'+mt+bow+mg+mb+'m'+mm,s=>person(s,0,0,L,md,o.fr,mt,bow,mg,mb,mm),walkSw(L,o.fr))}
   figure(g,o.x,o.y,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+'f'+(o.fr<0?'s':o.fr)+'t'+talk+bow+ges+bl+'m'+mv,s=>person(s,0,0,o.look,dir,o.fr,talk,bow,ges,bl,mv),walkSw(o.look,o.fr))}
-function render(ts){G.t=ts;update(ts);cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
+function render(ts){G.t=ts;update(ts);LID=null;cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
   else if(G.room){const id=G.room,a=ART[id],z=zoomOf(id),cam=hp(G.cam),cy=hp(G.camY),f=fg(id);if(z!==1)cx.setTransform(HR*z,0,0,HR*z,0,0);backdrop(cx,id,cam,cy);cx.save();cx.translate(-cam,-cy);
-    const q=DQ=[];a.draw(cx,ts);DQ=null;
+    const q=DQ=[],sq=SQ=LID?[]:null;if(ROOMS[id].birds&&SHARED.birds)SHARED.birds.draw(cx,ts,id);a.draw(cx,ts);
     for(const p of props(id))q.push([p.y,()=>cx.drawImage(p.c,p.x,p.t,p.w,p.h)]);
-    for(const o of Object.values(ACT))if(o.room===id)q.push([o.y,()=>drawActor(cx,o,ts,id)]);
+    for(const o of Object.values(ACT))if(o.room===id)drawActor(cx,o,ts,id);
+    DQ=SQ=null;if(sq)for(const fn of sq)fn();
     q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());
     cx.restore();if(f)cx.drawImage(f,-hp(cam*(a.fp||1)),0,f.width/HR,VH);
     cx.save();cx.translate(-cam,-cy);a.front(cx,ts);cx.restore();if(z!==1)cx.setTransform(HR,0,0,HR,0,0)}
   if(G.xfade){cx.save();cx.setTransform(1,0,0,1,0,0);cx.globalAlpha=G.xfade.a;cx.drawImage(G.xfade.img,0,0);cx.restore()}
   {const S=SHARED.scroll;if(S&&S.state!=='down')S.draw(ts)}
   {const pl=!!(G.room&&!G.scene&&planOf(G.room));if(vp.plan!==pl){vp.plan=pl;vp.classList.toggle('plan',pl)}}
+  {const d=Math.min(.1,Math.max(0,(ts-(PH.t||ts))/1000));PH.t=ts;PH.live=true;lensTick(d)}
   posSpeech();tagsOn();drawTags(ts);requestAnimationFrame(render)}
 /* ============ GAME: items, combinations, prayer hints ============ */
 Object.assign(ITEMS,{
@@ -1847,27 +2086,28 @@ function tween(ms,fn){return new Promise(res=>{const t0=performance.now();(funct
 /* ============ LEVELS: each chapter is a separate file under levels/, loaded on demand ============ */
 /* The manifest holds only what is needed before a level is loaded: its name, its file, and the salt that validates its codes. */
 const CHAP={
-  1:{name:'escape_from_damascus',label:'chapter_one',title:'escape_from_damascus_2',salt:0x5A17,src:'levels/chapter1.js',treasure:{name:'mule_in_a_sheepfold',at:'9SK-FPZ'}},
-  2:{name:'friend_in_jerusalem',label:'chapter_two',title:'a_friend_in_jerusalem',salt:0x2B6D,src:'levels/chapter2.js',treasure:{name:'not_another_basket',at:'2-B5Q-PSJ'}},
-  3:{name:'called_to_antioch',label:'chapter_three',title:'called_to_antioch_2',salt:0x3C91,src:'levels/chapter3.js',treasure:{name:'barnabas_at_the_bench',at:'3-MKP-96F-266'}},
-  4:{name:'sent_out_to_cyprus',label:'chapter_four',title:'sent_out_to_cyprus_2',salt:0x4D2F,src:'levels/chapter4.js',treasure:{name:'roof_cut_wide',at:'4-CBS-2XW-MAT'}},
-  5:{name:'light_of_nations',label:'chapter_five',title:'a_light_of_nations',salt:0x5E73,src:'levels/chapter5.js',treasure:{name:'echo_in_the_gorge',at:'5-TG6-X5J-5RG'}},
-  6:{name:'door_to_faith',label:'chapter_six',title:'the_door_to_faith',salt:0x6F19,src:'levels/chapter6.js',treasure:{name:'four_good_corners',at:'6-JSK-B2Y-Q58'}},
-  7:{name:'timothy_of_lystra',label:'chapter_seven',title:'timothy_of_lystra_2',salt:0x7B43,src:'levels/chapter7.js',treasure:{name:'marks_by_the_door',at:'7-7P9-F36-V9Z'}},
-  8:{name:'man_from_macedonia',label:'chapter_eight',title:'the_man_from_macedonia',salt:0x8C57,src:'levels/chapter8.js',treasure:{name:'lukes_notes',at:'8-RRB-QCB-1EC'}},
-  9:{name:'midnight_in_philippi',label:'chapter_nine',title:'midnight_in_philippi_2',salt:0x9D61,src:'levels/chapter9.js',treasure:{name:'cricket_in_the_wall',at:'9-P6X-82V-AE3'}},
-  10:{name:'is_it_so',label:'chapter_ten',title:'is_it_so_q',salt:0xA37B,src:'levels/chapter10.js',treasure:{name:'wound_too_far',at:'10-E04-FJ9-Y7P'}},
-  11:{name:'unknown_god',label:'chapter_eleven',title:'the_unknown_god',salt:0xB48D,src:'levels/chapter11.js',treasure:{name:'back_at_the_fountain',at:'11-8VM-7EW-T68'}},
-  12:{name:'tentmakers_of_corinth',label:'chapter_twelve',title:'tentmakers_of_corinth_2',salt:0xC59F,src:'levels/chapter12.js',needs:['weather'],treasure:{name:'cloth_of_his_own_country',at:'12-AXS-T1E-4S6-EEE-J5F'}},
-  13:{name:'hall_of_tyrannus',label:'chapter_thirteen',title:'the_hall_of_tyrannus',salt:0xD6B3,src:'levels/chapter13.js',treasure:{name:'pupils_tablet',at:'13-KQC-4NT-ZTX-2SR-Z2V'}},
-  14:{name:'two_hours_in_the_theater',label:'chapter_fourteen',title:'two_hours_in_the_theater_2',salt:0xE7C5,src:'levels/chapter14.js',needs:['lanes'],treasure:{name:'kneading_behind_a_shutter',at:'14-JAT-FJH-QJ3-2K1-QBZ'}}};
+  1:{name:'escape_from_damascus',label:'chapter_one',title:'escape_from_damascus_2',salt:0x5A17,src:'levels/chapter1.js',needs:['materials'],treasure:{name:'mule_in_a_sheepfold',at:'9SK-FPZ'}},
+  2:{name:'friend_in_jerusalem',label:'chapter_two',title:'a_friend_in_jerusalem',salt:0x2B6D,src:'levels/chapter2.js',needs:['materials','ship','birds'],treasure:{name:'not_another_basket',at:'2-B5Q-PSJ'}},
+  3:{name:'called_to_antioch',label:'chapter_three',title:'called_to_antioch_2',salt:0x3C91,src:'levels/chapter3.js',needs:['materials','beasts','birds'],treasure:{name:'barnabas_at_the_bench',at:'3-MKP-96F-266'}},
+  4:{name:'sent_out_to_cyprus',label:'chapter_four',title:'sent_out_to_cyprus_2',salt:0x4D2F,src:'levels/chapter4.js',needs:['materials','ship','birds'],treasure:{name:'roof_cut_wide',at:'4-CBS-2XW-MAT'}},
+  5:{name:'light_of_nations',label:'chapter_five',title:'a_light_of_nations',salt:0x5E73,src:'levels/chapter5.js',needs:['materials','beasts','birds'],treasure:{name:'echo_in_the_gorge',at:'5-TG6-X5J-5RG'}},
+  6:{name:'door_to_faith',label:'chapter_six',title:'the_door_to_faith',salt:0x6F19,src:'levels/chapter6.js',needs:['materials','beasts','birds'],treasure:{name:'four_good_corners',at:'6-JSK-B2Y-Q58'}},
+  7:{name:'timothy_of_lystra',label:'chapter_seven',title:'timothy_of_lystra_2',salt:0x7B43,src:'levels/chapter7.js',needs:['materials','beasts','birds'],treasure:{name:'marks_by_the_door',at:'7-7P9-F36-V9Z'}},
+  8:{name:'man_from_macedonia',label:'chapter_eight',title:'the_man_from_macedonia',salt:0x8C57,src:'levels/chapter8.js',needs:['materials','ship','beasts','birds'],treasure:{name:'lukes_notes',at:'8-RRB-QCB-1EC'}},
+  9:{name:'midnight_in_philippi',label:'chapter_nine',title:'midnight_in_philippi_2',salt:0x9D61,src:'levels/chapter9.js',needs:['materials','birds'],treasure:{name:'cricket_in_the_wall',at:'9-P6X-82V-AE3'}},
+  10:{name:'is_it_so',label:'chapter_ten',title:'is_it_so_q',salt:0xA37B,src:'levels/chapter10.js',needs:['materials','ship','birds'],treasure:{name:'wound_too_far',at:'10-E04-FJ9-Y7P'}},
+  11:{name:'unknown_god',label:'chapter_eleven',title:'the_unknown_god',salt:0xB48D,src:'levels/chapter11.js',needs:['materials','birds'],treasure:{name:'back_at_the_fountain',at:'11-8VM-7EW-T68'}},
+  12:{name:'tentmakers_of_corinth',label:'chapter_twelve',title:'tentmakers_of_corinth_2',salt:0xC59F,src:'levels/chapter12.js',needs:['materials','weather','ship','birds'],treasure:{name:'cloth_of_his_own_country',at:'12-AXS-T1E-4S6-EEE-J5F'}},
+  13:{name:'hall_of_tyrannus',label:'chapter_thirteen',title:'the_hall_of_tyrannus',salt:0xD6B3,src:'levels/chapter13.js',needs:['materials','birds'],treasure:{name:'pupils_tablet',at:'13-KQC-4NT-ZTX-2SR-Z2V'}},
+  14:{name:'two_hours_in_the_theater',label:'chapter_fourteen',title:'two_hours_in_the_theater_2',salt:0xE7C5,src:'levels/chapter14.js',needs:['materials','lanes','beasts','birds'],treasure:{name:'kneading_behind_a_shutter',at:'14-JAT-FJH-QJ3-2K1-QBZ'}},
+  15:{name:'until_daybreak',label:'chapter_fifteen',title:'until_daybreak_2',salt:0xF8D7,src:'levels/chapter15.js',needs:['ship','birds'],treasure:{name:'tertius_own_line',at:'15-3K9-1WB-KBX-H5R'}}};
 const TITLE={level:1,scene:'title',mood:'ancient',amb:{crickets:.5,wind:.35,owl:.4}};
-const PRO={name:'road_to_damascus',label:'Prologue',title:'the_road_to_damascus',src:'levels/prologue.js'};
+const PRO={name:'road_to_damascus',label:'Prologue',title:'the_road_to_damascus',src:'levels/prologue.js',needs:['materials','birds']};
 /* PLANNED: the chapters that are planned and not built (issue #47). The title lists them, dimmed, under one line that opens them in place.
    Each is named by the part of Acts it will tell, not by a working title, which may still change; the title it is given replaces that
    reference when the chapter is built and moves into CHAP. Nothing else reads this list: these chapters have no file, no salt and no codes. */
 const PLANNED=[
-  {label:'chapter_fifteen',short:'Fifteen',ref:'acts_20_1_12'},{label:'chapter_sixteen',short:'Sixteen',ref:'acts_20_13_38'},
+  {label:'chapter_sixteen',short:'Sixteen',ref:'acts_20_13_38'},
   {label:'chapter_seventeen',short:'Seventeen',ref:'acts_21_1_16'},{label:'chapter_eighteen',short:'Eighteen',ref:'acts_21_17_22_29'},
   {label:'chapter_nineteen',short:'Nineteen',ref:'acts_22_30_23_35'},{label:'chapter_twenty',short:'Twenty',ref:'acts_24_1_27'},
   {label:'chapter_twenty_one',short:'twenty_one',ref:'acts_25_1_26_32'},{label:'chapter_twenty_two',short:'twenty_two',ref:'acts_27_1_26'},
@@ -1884,7 +2124,7 @@ function loadScript(src,ok){return new Promise((res,rej)=>{const el=document.cre
 function loadLevel(n){const c=CHAP[n];if(c.ready)return langFile(G.lang,n);
   return c.loading||(c.loading=Promise.all((c.needs||[]).map(need)).then(()=>loadScript(c.src,()=>c.ready)).then(()=>langFile(G.lang,n)).catch(e=>{c.loading=null;throw e}))}
 function loadPrologue(){if(PRO.ready)return langFile(G.lang,'prologue');
-  return PRO.loading||(PRO.loading=loadScript(PRO.src,()=>PRO.ready).then(()=>langFile(G.lang,'prologue')).catch(e=>{PRO.loading=null;throw e}))}
+  return PRO.loading||(PRO.loading=Promise.all(PRO.needs.map(need)).then(()=>loadScript(PRO.src,()=>PRO.ready)).then(()=>langFile(G.lang,'prologue')).catch(e=>{PRO.loading=null;throw e}))}
 /* Anything shared between chapters lives in its own file under shared/, which registers itself in SHARED and is loaded the first time it is needed. */
 const SHARED={},NEEDING={};
 function need(name){if(SHARED[name])return Promise.resolve(SHARED[name]);
@@ -1909,7 +2149,7 @@ function relang(){document.documentElement.lang=G.lang;document.title=T('paul_of
   const ks=Object.keys(LANGS),nx=ks[(ks.indexOf(G.lang)+1)%ks.length];$('#lang').textContent=G.lang.toUpperCase();
   $('#lang').title=LANGS[nx].native;$('#lang').style.display=ks.length>1?'':'none';
   buildVerbs();swapBtn();setMute(AU.muted);namesBtn();codeBtn();drawInv();status();
-  $('#opts').title=T('Options');$('#opts').setAttribute('aria-label',T('Options'));
+  for(const b of[$('#opts'),$('#optsT')]){b.title=T('Options');b.setAttribute('aria-label',T('Options'))}$('#rotate p').textContent=T('turn_phone_sideways');
   for(const b of document.querySelectorAll('#choices button'))b.textContent='› '+T(b.dataset.src);
   if(ov.classList.contains('on')&&ov.draw)ov.draw();if(cb.classList.contains('on')&&cb.draw)cb.draw();
   if($('#menu').classList.contains('on')&&$('#menu').draw)$('#menu').draw();
@@ -2195,7 +2435,8 @@ const mn=$('#menu');
 function loadOpts(){try{const o=JSON.parse(store(OPTS_KEY)||'{}');if(typeof o.mus==='number')OPTS.mus=clamp(o.mus,0,1);
   if(typeof o.fx==='number')OPTS.fx=clamp(o.fx,0,1);if(typeof o.spd==='number'&&[1.35,1,.7].includes(o.spd))OPTS.spd=o.spd;
   /* movement: as the player chose; until he has, calm on a device that asks for less motion */
-  OPTS.mov=o.mov===0||o.mov===1?o.mov:window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches?0:1}catch(e){}}
+  OPTS.mov=o.mov===0||o.mov===1?o.mov:window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches?0:1;
+  if(['auto','phone','classic'].includes(o.lay))OPTS.lay=o.lay}catch(e){}}
 function saveOpts(){store(OPTS_KEY,JSON.stringify(OPTS))}
 function applyOpts(){if(!AU.ctx)return;if(AU.mus)AU.mus.gain.value=.55*OPTS.mus;if(AU.fx)AU.fx.gain.value=.7*OPTS.fx;if(AU.ambG)AU.ambG.gain.value=.5*OPTS.fx}
 function closeMenu(){mn.classList.remove('on');G.busy=mn.was;if(!G.busy)lock(false);status()}
@@ -2213,7 +2454,10 @@ function openMenu(view){audioInit();if(mn.classList.contains('on'))return closeM
       '<div class="row"><label>'+esc(T('Movement'))+'</label><div class="seg">'+movs.map(([v,l])=>`<button type="button" data-mov="${v}"${OPTS.mov===v?' class="on"':''}>${esc(T(l))}</button>`).join('')+'</div></div>'+
       '<div class="row"><label>'+esc(T('Names'))+'</label><div class="seg"><button type="button" id="opt-names"'+(G.tagPin?' class="on"':'')+'>'+esc(T(G.tagPin?'On':'Off'))+'</button></div></div>'+
       (Object.keys(LANGS).length>1?'<div class="row"><label>'+esc(T('Language'))+'</label><div class="seg">'+Object.keys(LANGS).map(l=>`<button type="button" data-lang="${l}"${l===G.lang?' class="on"':''}>${esc(LANGS[l].native)}</button>`).join('')+'</div></div>':'')+
-      '<div class="row"><label>'+esc(T('saved_games'))+'</label><div class="seg"><button type="button" id="opt-saves">'+esc(T(inGame?'save_load':'Load'))+'</button></div></div>'+
+      /* the layout: on a device that is touched, or once it has been chosen */
+      (touchDev()||OPTS.lay!=='auto'?'<div class="row"><label>'+esc(T('layout'))+'</label><div class="seg">'+[['auto','layout_auto'],['phone','layout_phone'],['classic','layout_classic']].map(([v,l])=>`<button type="button" data-lay="${v}"${OPTS.lay===v?' class="on"':''}>${esc(T(l))}</button>`).join('')+'</div></div>':'')+
+      /* on a phone the top bar is not there: the safe-point code is shown and entered from here */
+      '<div class="row"><label>'+esc(T('saved_games'))+'</label><div class="seg">'+(PH.on?'<button type="button" id="opt-code">'+esc(inGame?T('code_code',{code:makeCode()}):T('enter_code'))+'</button>':'')+'<button type="button" id="opt-saves">'+esc(T(inGame?'save_load':'Load'))+'</button></div></div>'+
       '<div class="row"><label>'+esc(T('hidden_treasures'))+'</label><div class="seg"><button type="button" id="opt-tre">'+esc(T('n_of_all',{n:treasures().size,all:hidden().length}))+'</button></div></div>'+
       '<div class="acts">'+(inGame?'<button type="button" id="opt-title">'+esc(T('back_to_title'))+'</button>':'')+
       '<button type="button" id="opt-x">'+esc(inGame?T('back_to_the_game'):T('Back'))+'</button></div>';
@@ -2221,6 +2465,8 @@ function openMenu(view){audioInit();if(mn.classList.contains('on'))return closeM
     $('#opt-fx').oninput=e=>{OPTS.fx=+e.target.value/100;applyOpts();saveOpts()};
     mn.querySelectorAll('[data-spd]').forEach(b=>b.onclick=()=>{SFX.click();OPTS.spd=+b.dataset.spd;saveOpts();mn.draw()});
     mn.querySelectorAll('[data-mov]').forEach(b=>b.onclick=()=>{SFX.click();OPTS.mov=+b.dataset.mov;saveOpts();mn.draw()});
+    mn.querySelectorAll('[data-lay]').forEach(b=>b.onclick=()=>{SFX.click();OPTS.lay=b.dataset.lay;saveOpts();fit();mn.draw()});
+    if($('#opt-code'))$('#opt-code').onclick=()=>{SFX.click();closeMenu();openCode()};
     $('#opt-names').onclick=()=>{SFX.click();G.tagPin=!G.tagPin;namesBtn();mn.draw()};
     $('#opt-saves').onclick=()=>{SFX.click();mn.view='saves';mn.ask=null;mn.draw()};
     $('#opt-tre').onclick=()=>{SFX.click();mn.view='treasures';mn.only=false;mn.ask=null;mn.draw()};
@@ -2256,11 +2502,24 @@ async function slotDo(k,a){const s=saves(),e=k==='far'?s.far:k==='last'?(saved()
   if(a==='!del'){if(k==='far')s.far=null;else if(k!=='last')s.slots[k]=null;keepSaves(s);SFX.click();return mn.draw()}
   if(a==='!load'){if(!e)return mn.draw();mn.classList.remove('on');mn.view='opts';
     if(await restore(e.code)===false){SFX.nope();mn.classList.add('on');mn.view='saves';mn.draw()}}}
-$('#opts').onclick=e=>{e.stopPropagation();openMenu()};mn.onclick=e=>e.stopPropagation();
+$('#opts').onclick=$('#optsT').onclick=e=>{e.stopPropagation();openMenu()};mn.onclick=e=>e.stopPropagation();
+/* rotateIcon: the picture on the card that asks for a phone held upright to be turned: a phone lying on its side, and an arrow that
+   curves over it, painted in whole pixels in the colors of the panel */
+function rotateIcon(){const c=$('#rotate canvas'),g=c.getContext('2d'),P=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(x,y,w,h)};g.clearRect(0,0,48,48);
+  P(7,26,34,19,'#0a0604');P(8,27,32,17,'#e2b24c');P(10,29,28,13,'#2a1c10');P(11,30,26,11,'#4a3420');P(9,27,30,1,'#fff3b8');
+  /* the arrow: an arc over the phone from its left to its right, two pixels thick and outlined, and a head that points down along it */
+  const cx=24,cy=24,rx=15,ry=12,a0=Math.PI+.25,a1=2*Math.PI-.5,pt=a=>[cx+rx*Math.cos(a),cy+ry*Math.sin(a)],arc=[];
+  for(let i=0;i<=60;i++){const[x,y]=pt(a0+(a1-a0)*i/60);arc.push([Math.round(x),Math.round(y)])}
+  for(const[x,y]of arc)P(x-1,y-1,4,4,'#0a0604');
+  const[ex,ey]=pt(a1),dx=-rx*Math.sin(a1),dy=ry*Math.cos(a1),dl=Math.hypot(dx,dy),ux=dx/dl,uy=dy/dl,tip=[ex+ux*6,ey+uy*6],b1=[ex-uy*4,ey+ux*4],b2=[ex+uy*4,ey-ux*4],
+    side=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]),inTri=(x,y)=>{const p=[x+.5,y+.5],s1=side(b1,b2,p),s2=side(b2,tip,p),s3=side(tip,b1,p);return(s1>=0&&s2>=0&&s3>=0)||(s1<=0&&s2<=0&&s3<=0)};
+  for(let y=0;y<48;y++)for(let x=0;x<48;x++)if(inTri(x,y)||inTri(x-1,y)||inTri(x+1,y)||inTri(x,y-1)||inTri(x,y+1))P(x,y,1,1,'#0a0604');
+  for(const[x,y]of arc)P(x,y,2,2,'#e2b24c');
+  for(let y=0;y<48;y++)for(let x=0;x<48;x++)if(inTri(x,y))P(x,y,1,1,'#e2b24c')}
 const syncFull=()=>{const w=$('#wrap').classList;w.toggle('full',ov.classList.contains('on')||cb.classList.contains('on')||mn.classList.contains('on'));w.toggle('title',ov.classList.contains('title'))};
 for(const el of[ov,cb,mn])new MutationObserver(syncFull).observe(el,{attributes:true,attributeFilter:['class']});
 /* the engine's English comes first: nothing is shown before it is there */
-oneLang('en','main').then(()=>{loadOpts();skin();buildVerbs();requestAnimationFrame(render);title()});
+oneLang('en','main').then(()=>{loadOpts();fit();skin();rotateIcon();buildVerbs();requestAnimationFrame(render);title()});
 /* An installable app that plays offline (shared/pwa.js, sw.js): only where the game is served over http(s), never from disk or in the playtest's pages. */
 if(/^https?:$/.test(location.protocol)&&'serviceWorker' in navigator)need('logo').then(()=>need('pwa')).then(p=>p.install({CHAP,LANGS})).catch(e=>console.error(e));
 </script>

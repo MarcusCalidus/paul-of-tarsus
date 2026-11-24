@@ -49,7 +49,7 @@ Optional: use the awl on Zosime's torn awning.
 
 | Chapter | Music | Around you |
 |---|---|---|
-| The Man from Macedonia | A walking tune in bars of five, three steps and two, on the white notes from D: a lyre, a low string, a hand drum and a pair of pipes whose phrases never come to rest on their own first note; a harp and a ney in the harbor and the street; a drone, a slow drum and a few notes of the oud where a road is closed; a drone and a harp by night; and beside the river the same notes settle a step lower, on C, where the ney's tune ends. Nothing is claimed about how music was played then | Wind, larks and hooves on the plateau; the river and the leaves at the ferry; waves, gulls and creaking timbers at Troas and at anchor; the fountain and the crowd of a Roman street; water, birds and leaves at the place of prayer |
+| The Man from Macedonia | A walking tune in bars of five, three steps and two, on the white notes from D: a lyre, a low string, a hand drum and a pair of pipes whose phrases never come to rest on their own first note; a harp and a ney in the harbor and the street; a low string that plucks the keynote and leans on the note above it, a ticking drum that almost stops every fourth bar, and a ney that begins the tune and breaks off before it comes home where a road is closed; a drone and a harp by night; and beside the river the same notes settle a step lower, on C, where the ney's tune ends. Nothing is claimed about how music was played then | Wind, larks and hooves on the plateau; the river and the leaves at the ferry; waves, gulls and creaking timbers at Troas and at anchor; the fountain and the crowd of a Roman street; water, birds and leaves at the place of prayer |
 
 ## The travel map
 

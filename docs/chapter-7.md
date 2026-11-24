@@ -43,7 +43,7 @@ Optional: give the wax tablets to Lois.
 
 | Chapter | Music | Around you |
 |---|---|---|
-| Timothy of Lystra | A road tune on five notes, in E flat, such as a shepherd's pipe plays: lyre, bass, frame drum and reed pipe on the roads; harp and ney in the courtyard and by the hearth; a drone, a slow drum and a few notes of the oud while a congregation is of two minds; and in the gorge a drum that rolls like thunder a long way off | Birds in a fig tree over a divided congregation, the wind coming down the Gates and then rain on a goat-hair tent, a thorn fire in the house of Lois, the fountain and the saddlers' hammers of Iconium |
+| Timothy of Lystra | A road tune on five notes, in E flat, such as a shepherd's pipe plays: lyre, bass, frame drum and reed pipe on the roads; harp and ney in the courtyard and by the hearth; a low string that plucks the keynote and leans on the note above it, a ticking drum that almost stops every fourth bar, and a ney that begins the tune and breaks off before it comes home while a congregation is of two minds; and in the gorge the same low string under a drum that rolls like thunder a long way off | Birds in a fig tree over a divided congregation, the wind coming down the Gates and then rain on a goat-hair tent, a thorn fire in the house of Lois, the fountain and the saddlers' hammers of Iconium |
 
 ## The travel map
 

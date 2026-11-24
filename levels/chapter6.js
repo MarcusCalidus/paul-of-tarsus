@@ -9,7 +9,9 @@ LEVEL(6,()=>{
 /* ============ MUSIC AND AMBIENCE (plain data, played by the engine's sequencer) ============ */
 /* A tune for a high, well-watered plain, in F Lydian: a lyre in even fours over a bass, a frame drum, and a reed pipe carrying the tune
    (mood "hope": the streets and the roads). Indoors (mood "calm") a harp takes the lyre's place and a ney the pipe's. When stones are
-   spoken of (mood "tense") only a drone, a slow drum and a few notes of the oud remain. And when a whole town runs to the gate with
+   spoken of (mood "tense") nothing is held: the low string plucks the keynote in threes, threes and twos and leans on the note above
+   it, the drum ticks with it and almost stops every fourth bar, and the ney begins the tune and breaks off a note before it comes
+   home. And when a whole town runs to the gate with
    garlands (mood "feast") the drum doubles, hands clap, a drone sounds the keynote, and the pipe goes round and round on four notes while its
    second pipe holds the keynote under it (hold:0). */
 const _=null,
@@ -21,9 +23,10 @@ const _=null,
   {inst:'bass',moods:['hope','calm'],prog:'ABACABCA',len:6,seq:{A:[-7,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],B:[-6,_,_,_,_,_,_,_,-3,_,_,_,_,_,_,_],C:[-9,_,_,_,_,_,_,_,-8,_,_,_,_,_,-6,_]}},
   {drum:1,moods:['hope'],prog:'AAAB',seq:{A:'d..st.s.d.s.t.s.',B:'d..st.s.d.k.t.tk'}},
   {drum:1,moods:['calm'],seq:{A:'d.........t.....'},vol:.45},
-  {drum:1,moods:['tense'],seq:{A:'d.......d..d....'},vol:.8,group:[3,3,2]},
-  {drone:[0,7],every:32,moods:['tense']},
-  {inst:'oud',moods:['tense'],group:[3,3,2,2,2,4],prog:'AB',len:4,seq:{A:[0,_,_,_,_,_,3,_,_,_,_,_,4,_,_,_],B:[0,_,_,_,_,_,-1,_,_,_,3,_,_,_,_,_]},vol:.7},
+  {inst:'bass',moods:['tense'],prog:'AABC',len:2,group:[3,3,2],vol:.9,seq:{
+    A:[-7,_,_,-7,_,_,-6,_,-7,_,_,-7,_,_,_,_],B:[-7,_,_,-7,_,_,-6,_,-6,_,_,-7,_,_,-10,_],C:[-7,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_]}},
+  {drum:1,moods:['tense'],prog:'AABC',group:[3,3,2],seq:{A:'d..k..k.d..k..k.',B:'d..k..k.d..k.kk.',C:'d...............'},vol:.6},
+  {inst:'ney',moods:['tense'],oct:12,loop:8,vol:.8,lines:[TUNE[0],TUNE[1].slice(0,-1),[],[],TUNE[4],TUNE[5].slice(0,2),[],[]]},
   {drum:1,moods:['feast'],prog:'AB',seq:{A:'d.tkd.t.d.tkd.tc',B:'d.tkd.tcd.tkc.tc'},vol:1.1},
   {drum:1,moods:['feast'],seq:{A:'s.s.s.s.s.s.s.s.'},vol:.9},
   {drone:[0],every:16,moods:['feast'],vol:.6},
@@ -32,6 +35,29 @@ const _=null,
   {inst:'ney',moods:['calm'],from:8,oct:12,lines:TUNE}]};
 
 /* ============ ART ============ */
+/* The shared materials (shared/materials.js): quiet grain on wood, two-tone cracks set by hand, soft contact shadows, earth colors.
+   This chapter has an earth() of its own, the trodden ground, so the shared one is earth6 here. */
+const{plank:plank6,board:board6,crack:crack6,skipCracks:skipCracks6,shadow:shadow6,earth:earth6,joistAO:joistAO6}=SHARED.materials;
+/* joists6: the ceiling seen from below at its edge, as in Chapter One's workshop: dark boards, and the joists running toward us in
+   perspective from the wall plate (y = U) to the top of the picture, each with the soft shade of the boards beside it. They stand in pairs
+   about the middle, so that none rises upright from the plate, and no square beam end sits on it to make a T; the room lays the plate over
+   their feet. rj: a seed of its own. burn6: the draws that board() took for the square beam ends the room used to show, taken on a scrap
+   canvas, so that everything the room draws after them stays where it was */
+function joists6(g,U,step,rj,c){c=c||{};const T=c.joist||'#6b4a2e',k=1.17;
+  if(c.boards!==0){plank6(g,0,0,320,U,c.boards||'#33251a',rj,0);ao(g,0,0,320,U*.7,'t',.45,'#0c0808')}
+  let a=160+step/2-3.5;while(a>-step)a-=step;
+  for(;a<330;a+=step){const x0=160+(a-160)*k,x1=160+(a+7-160)*k,P=[a,U,a+7,U,x1,0,x0,0];joistAO6(g,a,x0,7,U,'#0c0808');poly(g,P,T);
+    clipTo(g,()=>poly(g,P),()=>tex(g,'vert',.16,x0-2,0,x1-x0+4,U,'overlay',.5));
+    poly(g,[a+5,U,a+7,U,x1,0,x1-2.2,0],tint(T,-.4));stroke(g,[a+.25,U,x0+.25,0],tint(T,.25),.5)}
+  ao(g,0,U-2.5,320,2.5,'b',.3,'#0c0808')}
+function burn6(r,x0,step,w,h){const d=mk(4,4)[1];for(let i=x0;i<320;i+=step)board6(d,i,0,w,h,'#5a4226',r,1)}
+/* SKY6: a sky drawn a little toward its own grey, so that it sits among the earth and mineral colors of walls and fields */
+const SKY6=st=>st.map(c=>earth6(c,.14));
+/* sunlight6: the light of a day on the plateau, from the left and high: the sky and the far country keep it full, what faces the sun takes
+   it in soft pools (pools: [x, y, rx, ry, strength]), and the near ground falls off a little toward us. top: where the sky's full light ends. */
+function sunlight6(g,w,top,pools,more){lightmap(g,w,'#e2dee8',l=>{R(l,0,0,w,top,'#ffffff');l.fillStyle=lg(l,0,top,0,top+20,['#ffffff','rgba(255,255,255,0)']);l.fillRect(0,top,w,20);
+  for(const[x,y,rx,ry,a]of pools)pool(l,x,y,rx,ry,'#fff6e6',a);if(more)more(l);
+  comp(l,'multiply',1,()=>{ao(l,0,96,w,10,'b',.1,'#4a4468');ao(l,0,128,w,16,'b',.18,'#4a4468')})})}
 const SH='#8f95c8';
 /* What is seen through the gates of Lycaonia: the plateau, with blue ranges round it. Each gate adds the horizon and the sky of its own scene. */
 const GATE6={far:['#8f9ec4','#b4bfd2'],near:['#8fa468','#a2b274'],land:'#a8b464',road:'#ead9ae'};
@@ -39,53 +65,26 @@ const GATE6={far:['#8f9ec4','#b4bfd2'],near:['#8fa468','#a2b274'],land:'#a8b464'
 function snowy(g,x0,x1,base,f,st,s){ridge(g,x0,x1,base,f,st);for(let x=x0;x<x1;x+=.5){const h=f(x);if(h>s)R(g,x,base-h,.5,Math.min(h-s,2.2+1.6*Math.sin(x*.9)+(h-s)*.3),'#f4f4f8')}}
 /* rock: a stone sitting on the ground at x,y */
 function rock(g,x,y,w,h,c){oval(g,x+w*.1,y,w*.62,Math.max(.8,h*.16),'rgba(30,26,50,.34)');const p=[x-w/2,y,x-w*.42,y-h*.6,x-w*.14,y-h,x+w*.22,y-h*.9,x+w/2,y-h*.42,x+w*.46,y];
-  poly(g,p,c);clipTo(g,()=>poly(g,p),()=>{poly(g,[x-w*.42,y-h*.6,x-w*.14,y-h,x+w*.22,y-h*.9,x,y-h*.5],tint(c,.22));poly(g,[x+w*.22,y-h*.9,x+w/2,y-h*.42,x+w*.46,y,x+w*.1,y],tint(c,-.26));tex(g,'mott',.5,x-w/2,y-h,w,h,'overlay',1)})}
+  poly(g,p,c);clipTo(g,()=>poly(g,p),()=>{poly(g,[x-w*.42,y-h*.6,x-w*.14,y-h,x+w*.22,y-h*.9,x,y-h*.5],tint(c,.22));poly(g,[x+w*.22,y-h*.9,x+w/2,y-h*.42,x+w*.46,y,x+w*.1,y],tint(c,-.26));tex(g,'mott',.34,x-w/2,y-h,w,h,'overlay',1);
+    ao(g,x-w/2,y-h*.3,w,h*.3,'b',.22,'#1a1630')})}
 /* poplar: a tall narrow tree, such as line every water channel of the plateau */
 function poplar(g,x,y,h,c,r){R(g,x-.6,y-h*.24,1.3,h*.24,'#5a4630');foliage(g,x,y-h*.6,h*.11+1.6,h*.42,c||'#5f8a4a',r,h*2.4)}
-/* bundles: what the two men carry between them: two bed rolls and a bag */
-function bundles(g,x,y){for(const[dx,dy,w,hh,c]of[[0,-5,17,5,'#8a5a4a'],[4,-9.6,15,4.6,'#6f7a5a']]){oval(g,x+dx+w/2+2,y+dy+hh+.4,w/2+3,1.4,'rgba(40,30,60,.35)');g.fillStyle=lg(g,0,y+dy,0,y+dy+hh,[tint(c,.3),c,tint(c,-.5)]);g.fillRect(x+dx,y+dy,w,hh);
-    for(let i=0;i<w;i+=2.5)R(g,x+dx+i,y+dy,.5,hh,'rgba(0,0,0,.22)');oval(g,x+dx,y+dy+hh/2,hh*.32,hh/2,tint(c,.12));oval(g,x+dx+w,y+dy+hh/2,hh*.32,hh/2,tint(c,-.35))}
+/* bundles: what the two men carry between them: two bed rolls and a bag. A roll shows one end only, the one toward the middle of the road,
+   and nothing is tied across it. */
+function bundles(g,x,y){shadow6(g,x+17,y,18,1.4,.4,'#282040');
+  for(const[dx,dy,w,hh,c]of[[0,-5,17,5,'#8a5a4a'],[4,-9.6,15,4.6,'#6f7a5a']])clothRoll(g,x+dx,y+dy+hh,w,hh,c,{near:1,hi:1});
   g.fillStyle=lg(g,x+22,0,x+33,0,['#3a302a','#2a211c','#17110e']);g.beginPath();g.ellipse(x+27.6,y-3.4,5.6,3.6,0,0,6.2832);g.fill();R(g,x+23,y-5,9,.6,'#8a7a5a')}
 /* earth: trodden ground between y0 and y1, with small stones in it */
-function earth(g,x,y0,w,y1,c,r,n){g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.12),c,tint(c,.1)]);g.fillRect(x,y0,w,y1-y0);tex(g,'mott',.55,x,y0,w,y1-y0,'overlay',1);tex(g,'grain',.14,x,y0,w,y1-y0,'overlay',.5);
+function earth(g,x,y0,w,y1,c,r,n){g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.12),c,tint(c,.1)]);g.fillRect(x,y0,w,y1-y0);tex(g,'mott',.34,x,y0,w,y1-y0,'overlay',1);tex(g,'grain',.14,x,y0,w,y1-y0,'overlay',.5);
   for(let i=0;i<(n||w*.4);i++){const k=r(),sy=y0+1+k*(y1-y0-2),sx=x+r()*w,s=.5+k*1.3;oval(g,sx,sy,s*1.5,s*.6,r()<.5?tint(c,.2):tint(c,-.24));if(r()<.3)oval(g,sx+s*.5,sy+s*.4,s*1.3,s*.3,'rgba(40,36,70,.22)')}}
-/* An ox or a bull, in the pixel manner of the engine's pack donkey and seen from the side. c: its coat. gar: a garland of leaves round its neck.
-   Every part grows out of the one before it: the tail is set on at the top of the rump and lies along it before it hangs free, the crest of
-   the shoulders sits on the back, and the neck is painted in the same bands of tone as the body it comes out of, so that no seam shows. */
-const OX_HEAD=["......www.............","....wwW.ww............","...wwW................","...wWhhhhhhh..........",".eehhHHHHHhhh.........","eEehHHHHHHHhhh........",".eehHHHkHHHHHhhh......",
-  "..dhHHHHHHHHHHhhhh....","..dhhHHHHHHHHHHhhhmm..","..dhhhHHHHHHHHHhhmmmm.","...dhhhhHHHHHHhhmmmMmm","...ddhhhhhhhhhhhmmMMmm","....ddhhhhhhhhhhmmmnmm",".....dddhhhhhhhhmmmmm.",".......ddddhhhhdmmmm..","...........dddd.mmm..."];
-function ox(g,x,y,dir,fr,c,gar){g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
-  const px=(a,b,col,w,h)=>{g.fillStyle=col;g.fillRect(a,b,w||1,h||1)},D=ramp(c),hoof='#2a2018',s=fr===1?3:fr===3?-3:0,o=fr%2?-1:0;
-  /* hw: the half-width of the barrel of the body in each row. band: the tone a row is painted in, for the body and the neck alike. */
-  const hw=yy=>{const dy=(yy+43.5)/16.5;return Math.round(34*Math.sqrt(Math.max(0,1-dy*dy*.9)))},band=yy=>yy<-55?1:yy<-46?2:yy<-35?3:4;
-  /* back: the line of the back, rising to the crest of the shoulders */
-  const back=xx=>-60-2.6*Math.exp(-Math.pow((xx-18)/7,2));
-  /* a leg: the far ones start under the belly. The near ones start higher, inside the body, and are painted in the body's own tones as far
-     down as the belly, so that haunch and shoulder grow out of it instead of being laid on top */
-  const leg=(lx,sh,far)=>{const y0=(far?-30:-37)+o,n=-3-y0;for(let i=0;i<n;i++){const yy=y0+i-o,t=i/(n-1),cx=lx+Math.round(sh*t*t),w=t<.36?9:t<.64?7:6,x0=cx+(t<.36?0:1);
-      for(let k=0;k<w;k++){const u=(k+.5)/w;px(x0+k,y0+i,D[!far&&yy<-27?Math.min(4,band(yy)+(u<.22?1:0)):Math.min(4,(u<.22?4:u<.5?3:u<.82?2:1)+(far?1:0))])}}
-    px(lx+Math.round(sh)+1,-3,hoof,7,3);px(lx+Math.round(sh)+6,-3,'#4a3a2c',2)};
-  leg(-22,s,1);leg(17,-s,1);
-  /* the tail */
-  for(let yy=-57;yy<=-24;yy++){const i=yy+57,tuft=yy>-31;px(tuft?-38:yy<-44?-hw(yy)-3:-37,yy+o,tuft?hoof:D[i%4?3:4],tuft?4:2)}
-  /* the body: a deep barrel, lit along the back */
-  for(let yy=-60;yy<=-27;yy++){const w=hw(yy);for(let xx=-w-1;xx<=w-1;xx++)px(xx,yy+o,D[Math.min(4,band(yy)+(xx<-w+3?1:0))])}
-  /* the crest of the shoulders, on the line of the back */
-  for(let xx=2;xx<20;xx++){const yb=Math.round(back(xx));let top=-60;while(hw(top)<xx+1)top++;if(top>yb)px(xx,yb+o,D[1],1,top-yb)}
-  leg(-30,-s,0);leg(23,s,0);
-  /* a thick neck, from the shoulders to the poll, with the dewlap hanging under it */
-  for(let xx=20;xx<=44;xx++){const t=(xx-20)/24,y0=Math.round(back(xx)+2*t),y1=Math.round(-29-19*t+1.8*Math.sin(t*Math.PI));
-    for(let yy=y0;yy<=y1;yy++)px(xx,yy+o,D[yy===y0?1:yy>=y1-1?4:band(yy)])}
-  /* the head, carried low and forward: one horn in a crescent, an ear behind it, a broad pale muzzle */
-  stamp(g,OX_HEAD,38,-62+o,{h:D[2],H:D[1],d:D[3],e:D[3],E:mix(c,'#6a4a40',.55),k:'#1a120c',m:mix(c,'#d8c8b8',.5),M:'#e6dccc',n:hoof,w:'#efe4c8',W:'#b8a888'});
-  /* a garland: leaves and a few yellow flowers in a band round the neck, hanging a little below the throat */
-  if(gar)for(let i=0;i<11;i++){const gx=28+Math.round(i*.75),gy=-61+o+i*2;px(gx,gy,i%2?'#4f7a3a':'#6f9a4a',6,2);px(gx+1,gy,'#8fb45a',2);if(i%3===1)px(gx+3,gy,'#f0d060',2,2)}
-  g.restore()}
-const cattle=(g,x,y,dir,fr,c,gar,lit)=>figure(g,x,y,lit,'ox'+dir+fr+c+(gar?'g':''),s=>ox(s,0,0,dir,fr,c,gar),17);
-/* wagon: a four-wheeled wagon with solid wheels, its bed at x, standing on the ground at y. cov: 1 the cover is on its hoops, 0 the hoops stand bare, -1 an open wagon with no hoops. load: sacks on its bed. */
-function wagon(g,x,y,cov,load){oval(g,x+30,y+.6,36,2.2,'rgba(30,26,50,.35)');
+/* the oxen and the bulls are painted by shared/beasts.js */
+const cattle=(g,x,y,dir,fr,c,gar,lit,z)=>SHARED.beasts.ox(g,x,y,dir,fr,c,gar,lit,z);
+/* wagon: a four-wheeled wagon with solid wheels, its bed at x, standing on the ground at y. cov: 1 the cover is on its hoops, 0 the hoops stand bare, -1 an open wagon with no hoops. load: sacks on its bed.
+   pole: how far its pole reaches out in front (13 when it is left out); behind a yoked team it is only a stub, which ends short of the
+   near ox's tail: the tail hangs to the hock, and a pole that ran on behind it would cross it */
+function wagon(g,x,y,cov,load,pole){pole=pole==null?13:pole;shadow6(g,x+30,y+.6,32,1.9,.42,'#1e1a34');
   for(const wx of[x+13,x+47])oval(g,wx+2.4,y-6,5.4,5.6,'#33261a');
-  wood(g,x,y-13.6,60,4.6,'#7a5a34');R(g,x,y-9,60,1,'#3a2a1a');R(g,x+60,y-12,13,1.6,'#6a4a2a');R(g,x+60,y-12,13,.5,'#a07a48');
+  board6(g,x,y-13.6,60,4.6,'#7a5a34',rng(611));R(g,x,y-9,60,1,'#3a2a1a');R(g,x+60,y-12,pole,1.6,'#6a4a2a');R(g,x+60,y-12,pole,.5,'#a07a48');
   if(load)for(const[sx,sw,sh,sc]of[[x+10,6.4,10,'#cdbb8c'],[x+23,7,12,'#d8c698'],[x+37,6.6,11,'#c4b284'],[x+50,6,9.6,'#d2c090']])sack(g,sx,y-13.6,sw,sh,sc);
   if(cov>0){g.beginPath();g.moveTo(x+1,y-13.6);g.bezierCurveTo(x+1,y-39,x+59,y-39,x+59,y-13.6);g.closePath();g.fillStyle=lg(g,0,y-34,0,y-13,['#51443a','#2e2620','#1a1410']);g.fill();
     clipTo(g,()=>{g.beginPath();g.moveTo(x+1,y-13.6);g.bezierCurveTo(x+1,y-39,x+59,y-39,x+59,y-13.6);g.closePath()},()=>{for(let i=0;i<5;i++){const hx=x+6+i*12;g.fillStyle='rgba(255,236,200,.1)';g.fillRect(hx,y-34,1,21)}
@@ -96,9 +95,9 @@ function wagon(g,x,y,cov,load){oval(g,x+30,y+.6,36,2.2,'rgba(30,26,50,.35)');
   for(const wx of[x+13,x+47]){oval(g,wx,y-6,6.2,6.2,'#4a341e');oval(g,wx,y-6,5,5,'#8a6638');oval(g,wx-.8,y-6.8,3.6,3.6,'#9a7646');stroke(g,[wx-4.2,y-8.4,wx+4.2,y-8.4],'#5a4026',.5);stroke(g,[wx-4.2,y-3.6,wx+4.2,y-3.6],'#5a4026',.5);oval(g,wx,y-6,1.5,1.5,'#33261a')}}
 /* ---------- Iconium: the saddlers' street, where two roads cross ---------- */
 const sultan6=x=>30+8*Math.sin(x/57+1)+4*Math.sin(x/21+2)+2*Math.sin(x/7);
-ART.iconium={w:480,fp:1.3,
- paint(g){const r=rng(431),W='#e6d8b4',ST='#d8ccae';
-  sky(g,480,72,['#3c7ac8','#6ea4dc','#a8cae6','#e2e8dc']);cloud(g,236,12,60,7,r);cloud(g,360,22,40,5,r);cloud(g,70,8,40,5,r);
+ART.iconium={w:480,fp:1.3,q:12,
+ paint(g){const r=rng(431),rw=rng(4311),rc=rng(4312),W='#e6d8b4',ST='#d8ccae';
+  sky(g,480,72,SKY6(['#3c7ac8','#6ea4dc','#a8cae6','#e2e8dc']));cloud(g,236,12,60,7,r);cloud(g,360,22,40,5,r);cloud(g,70,8,40,5,r);
   /* beyond the fountain: the plateau, its orchards, and the mountains that close it in */
   snowy(g,186,300,66,sultan6,['#7f90bc','#9eaccc','#c0c8cc'],33);comp(g,'screen',.3,()=>{g.fillStyle=lg(g,0,34,0,68,['rgba(214,224,238,0)','rgba(214,224,238,1)']);g.fillRect(186,34,114,34)});
   g.fillStyle=lg(g,0,64,0,104,['#b4bc7c','#a2b468','#8fa858']);g.fillRect(186,64,114,40);tex(g,'mott',.5,186,64,114,40,'overlay',1);
@@ -106,23 +105,35 @@ ART.iconium={w:480,fp:1.3,
   for(const[x,y]of[[200,80],[228,75],[260,79],[286,84],[244,84]]){oval(g,x+2,y+3.4,5,1,'rgba(50,60,90,.34)');R(g,x-.4,y+1,1.2,2.8,'#5a4630');foliage(g,x,y-.6,4.6,3,'#6f8a58',r,20)}
   /* the street we came by, running back to the synagogue of the Jews. A house front stands across its far end, its roof at the level the
      paving runs to: a street must not end in the sky below that level. */
-  R(g,0,40,60,64,'#cfc4a8');g.save();g.beginPath();g.rect(0,28,60,76);g.clip();sky(g,480,80,['#6ea4dc','#e2e8dc']);
+  R(g,0,40,60,64,'#cfc4a8');g.save();g.beginPath();g.rect(0,28,60,76);g.clip();sky(g,480,80,SKY6(['#6ea4dc','#e2e8dc']));
   R(g,24,64,10,40,'#d6d0c2');R(g,24,62,10,2.4,'#b8603c');R(g,24,72.4,10,1.6,'rgba(60,50,90,.2)');
   for(const[hx,hy,hw,hh,c]of[[0,42,18,62,'#d6caa8'],[42,48,18,56,'#e2d6b4'],[16,56,10,48,'#c8bc9c'],[32,60,9,44,'#d8ccac']]){R(g,hx,hy,hw,hh,c);R(g,hx,hy-2,hw,2.4,'#b8603c');R(g,hx+hw-2.4,hy,2.4,hh,'rgba(60,50,90,.3)')}
   poly(g,[18,104,42,104,33,74,27,74],'#e0d6ba');ao(g,0,28,60,12,'t',.2,'#2a2440');g.restore();
   /* Nathan's saddlery: a plastered house, its whole front open to the street under an awning */
-  house(g,60,24,126,80,W,r,{side:0,patch:3,cracks:5,beams:12});windowArt(g,72,34,10,10,W,{bars:2,wood:'#6a4e2c'});windowArt(g,162,34,10,10,W,{bars:2,wood:'#6a4e2c'});
+  /* the plaster's random cracks are set by hand now, high on the wall where they run to no head; their draws are still taken */
+  house(g,60,24,126,80,W,r,{side:0,patch:3,cracks:0,beams:0});skipCracks6(r,5);
+  for(const[x,y,n]of[[66,27,3],[100,26.6,3],[148,27.4,3],[181,28,4]])crack6(g,x,y,n,rc,.9);
+  /* the two upper windows sit high under the eaves, their sills clear above the awning; the ends of the roof beams run along the
+     wall between them, as house() would set them, and none where a window is */
+  for(let i=66;i<182;i+=12)if(i!==78&&i!==162){R(g,i,28,2.5,2.5,'#6a4a2c');R(g,i,28,2.5,.5,'#a67c4a');poly(g,[i+.5,30.5,i+3,30.5,i+4.5,34,i+2,34],'rgba(50,40,90,.28)')}
+  windowArt(g,72,28,10,9,W,{bars:2,wood:'#6a4e2c'});windowArt(g,162,28,10,9,W,{bars:2,wood:'#6a4e2c'});
   R(g,84,56,84,48,'#231a15');g.fillStyle=lg(g,0,56,0,104,['#2c211a','#4a382a']);g.fillRect(86,58,80,46);
-  /* inside: a shelf of pack saddles, and hides rolled on the floor */
-  wood(g,88,70,76,1.6,'#5a4226');for(const[sx,c]of[[94,'#8a5a34'],[110,'#a06a3c'],[126,'#7a4c2c'],[144,'#96643a']]){g.fillStyle=lg(g,sx,0,sx+11,0,[tint(c,.2),c,tint(c,-.4)]);g.beginPath();g.ellipse(sx+5.5,70,5.6,4.6,0,Math.PI,0);g.fill();R(g,sx+1,66.4,9,.6,tint(c,.4))}
-  for(const[sx,c]of[[96,'#9a6a40'],[108,'#7a5030'],[152,'#8a5c36']]){g.fillStyle=lg(g,0,96,0,104,[tint(c,.25),c,tint(c,-.45)]);g.fillRect(sx,97,10,7);oval(g,sx,100.5,1.6,3.5,tint(c,.15));oval(g,sx+10,100.5,1.6,3.5,tint(c,-.3))}
-  /* harness on a bar across the opening: collars, girths and bridles, hanging */
-  wood(g,84,58,84,1.8,'#7a5c36');for(const[sx,ln,c]of[[92,16,'#6a4424'],[99,22,'#8a5a30'],[118,13,'#5a3a20'],[137,20,'#7a4c28'],[158,15,'#6a4424']]){R(g,sx,59.8,1.2,ln,c);R(g,sx,59.8,.5,ln,tint(c,.3));oval(g,sx+.6,59.8+ln+1.6,1.8,1.8,c);oval(g,sx+.6,59.8+ln+1.6,.8,.8,'#231a15')}
-  for(const sx of[108,147]){g.strokeStyle='#5a3a20';g.lineWidth=2.4;g.beginPath();g.ellipse(sx,67.6,3.8,6,0,0,6.2832);g.stroke();g.strokeStyle='#a8743e';g.lineWidth=.7;g.beginPath();g.ellipse(sx-.4,67.4,3.8,6,0,2.6,5);g.stroke()}
-  ao(g,84,56,84,10,'t',.6);ao(g,84,56,7,48,'l',.45);
-  wood(g,82,48,2.4,57,'#6a4e2c',1);wood(g,168,48,2.4,57,'#6a4e2c',1);awning(g,80,41,92,9,'#3f5a7a','#e6dcc4',8);shade(g,[80,104,172,104,180,111,88,111],SH,.5);
+  /* inside: a shelf of pack saddles, low enough that nothing hanging from the bar reaches it, and hides rolled on the floor, each showing
+     the one end that is turned to the middle of the shop */
+  ao(g,86,80,80,6,'t',.3,'#0c0806');board6(g,88,80,76,1.6,'#5a4226',rw);R(g,90,81.6,72,1,'rgba(10,6,4,.4)');
+  for(const[sx,c]of[[94,'#8a5a34'],[110,'#a06a3c'],[126,'#7a4c2c'],[144,'#96643a']]){g.fillStyle=lg(g,sx,0,sx+11,0,[tint(c,.2),c,tint(c,-.4)]);g.beginPath();g.ellipse(sx+5.5,80,5.6,4.6,0,Math.PI,0);g.fill();R(g,sx+1,76.4,9,.6,tint(c,.4))}
+  for(const[sx,c]of[[96,'#9a6a40'],[108,'#7a5030'],[152,'#8a5c36']]){shadow6(g,sx+5,104,6,1,.4,'#0c0806');clothRoll(g,sx,104,10,7,tint(c,.04),{near:sx<126?1:-1,hi:1})}
+  /* harness on a bar across the opening: girths and bridles, each hung by a strap whose two ends part downward from the bar to its buckle,
+     and two collars, hung on the bar by their tops */
+  board6(g,84,58,84,1.8,'#7a5c36',rw);
+  for(const[sx,ln,c]of[[92,11,'#6a4424'],[99,15,'#8a5a30'],[118,9,'#5a3a20'],[137,14,'#7a4c28'],[158,10,'#6a4424']]){const y0=59.8,y1=y0+ln,s=1.1+ln*.04;
+    poly(g,[sx,y0,sx+1.2,y0,sx+1.2+s,y1,sx+.2+s,y1],tint(c,-.12));poly(g,[sx,y0,sx+1.2,y0,sx+1-s,y1,sx-s,y1],c);stroke(g,[sx+.2,y0,sx-s+.2,y1],tint(c,.3),.4);
+    R(g,sx-s-.4,y1,2*s+2,2.2,tint(c,-.2));R(g,sx-s-.4,y1,2*s+2,.5,'#b89858');R(g,sx-.1,y1+.7,1.4,.8,'#231a15')}
+  for(const sx of[108,147]){g.strokeStyle='#5a3a20';g.lineWidth=2.4;g.beginPath();g.ellipse(sx,65.8,3.8,6,0,0,6.2832);g.stroke();g.strokeStyle='#a8743e';g.lineWidth=.7;g.beginPath();g.ellipse(sx-.4,65.6,3.8,6,0,2.6,5);g.stroke()}
+  ao(g,84,56,84,10,'t',.6);ao(g,84,56,7,48,'l',.45);ao(g,160,56,8,48,'r',.3);ao(g,84,96,84,8,'b',.35,'#0c0806');
+  board6(g,82,48,2.4,57,'#6a4e2c',rw,1);board6(g,168,48,2.4,57,'#6a4e2c',rw,1);awning(g,80,41,92,9,earth6('#3f5a7a',.3),'#e6dcc4',8);ao(g,82,50,90,4,'t',.3,'#1a1420');shade(g,[80,104,172,104,180,111,88,111],SH,.5);
   /* the saddler's bench, out in the light */
-  R(g,104,97,50,9,'rgba(40,30,60,.38)');wood(g,105,95,3,11,'#6a4e2c',1);wood(g,148,95,3,11,'#6a4e2c',1);wood(g,102,90,52,4.6,'#96703e');R(g,102,94.2,52,1.2,'#5a4226');
+  shadow6(g,129,105.6,26,1.6,.5,'#282040');R(g,104,95,50,10,'rgba(40,30,60,.16)');board6(g,105,95,3,11,'#6a4e2c',rw,1);board6(g,148,95,3,11,'#6a4e2c',rw,1);board6(g,102,90,52,4.6,'#96703e',rw);R(g,102,94.2,52,1.2,'#5a4226');
   /* a low wall along the water, and the poplars that drink from it */
   ashlar(g,186,92,114,12,'#cdbf9c',r,{bw:9,bh:4,v:.1,t:.3});R(g,186,91,114,1.4,'#eadcb6');
   poplar(g,196,92,50,'#5f8a4a',r);poplar(g,205,92,40,'#6a9450',r);poplar(g,290,92,54,'#5a8446',r);poplar(g,281,92,38,'#679252',r);
@@ -134,16 +145,22 @@ ART.iconium={w:480,fp:1.3,
   ashlar(g,300,34,138,70,ST,r,{bw:13,bh:6.4,v:.08,t:.3});for(let i=300;i<438;i+=9){R(g,i,30,5.6,4,ST);R(g,i,30,5.6,.5,'#f4e8c8')}R(g,300,33.6,138,1,'#a8987a');
   R(g,372,50,58,54,'#b8ac90');R(g,375,53,52,51,'#2a2018');g.fillStyle=lg(g,0,53,0,104,['#3a2e24','#6a5a44']);g.fillRect(377,55,48,49);
   for(const[sx,sy,sw,sh,c]of[[384,104,5,9,'#b8a880'],[394,104,5.6,11,'#c8b890'],[414,104,4.6,8,'#a89870']])sack(g,sx,sy,sw,sh,c);vessel(g,404,104,4,12,'#8a4a2a','amph',{noShadow:1});
-  wood(g,372,50,58,3.4,'#6a4e2c');R(g,372,53.2,58,.8,'#2a1c10');ao(g,377,55,48,12,'t',.6);ao(g,377,55,7,49,'l',.45);
-  windowArt(g,318,46,9,9,ST,{bars:2});for(const x of[312,340]){oval(g,x,96,1.6,1.6,'#4a443c');oval(g,x,96,.8,.8,ST)}
+  board6(g,372,50,58,3.4,'#6a4e2c',rw);R(g,372,53.2,58,.8,'#2a1c10');ao(g,377,55,48,12,'t',.6);ao(g,377,55,7,49,'l',.45);ao(g,418,55,7,49,'r',.3);ao(g,377,96,48,8,'b',.3,'#0c0806');
+  /* tethering rings in the wall: small, so they are square, and a stone's shade under each */
+  windowArt(g,318,46,9,9,ST,{bars:2});for(const x of[312,340]){R(g,x-1.4,94.6,2.8,2.8,'#4a443c');R(g,x-.5,95.5,1,1,tint(ST,-.06));R(g,x-1.4,97.4,2.8,.6,'rgba(40,30,50,.25)')}
   /* the south gate, and the road to Lycaonia */
   ashlar(g,438,22,42,82,'#dccfaa',r,{bw:13,bh:6.4,v:.09});for(let i=438;i<480;i+=8){R(g,i,17.6,5,4.4,'#dccfaa');R(g,i,17.6,5,.5,'#f8eccc')}R(g,438,21.6,42,1,'#a8987a');poly(g,[438,17.6,433,21,433,104,438,104],'#a8a0b0');
-  arch(g,444,54,32,50,'#c2b28c');gateView(g,446,56,28,48,{...GATE6,hz:66,sky:[72,['#3c7ac8','#6ea4dc','#a8cae6','#e2e8dc']]});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,460+Math.cos(a)*16-.3,70+Math.sin(a)*16-1,.6,2.6,'#a8987a')}
+  arch(g,444,54,32,50,'#c2b28c');gateView(g,446,56,28,48,{...GATE6,hz:66,sky:[72,SKY6(['#3c7ac8','#6ea4dc','#a8cae6','#e2e8dc'])]});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,460+Math.cos(a)*16-.3,70+Math.sin(a)*16-1,.6,2.6,'#a8987a')}
+  ao(g,444,70,4,34,'l',.3,'#2a2440');ao(g,433,22,5,82,'r',.2,'#2a2440');
   /* paving */
-  pave(g,0,103,480,144,'#d8ceb4',r,{vx:240,vy:62,rows:5,step:36,v:.08,joint:'#a59c88'});ao(g,0,103,480,5,'t',.3,'#4a4460');
+  pave(g,0,103,480,144,'#d8ceb4',r,{vx:240,vy:62,rows:5,step:36,v:.08,joint:'#a59c88',t:.26});ao(g,0,103,480,5,'t',.3,'#4a4460');
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(255,244,214,0)','rgba(255,244,214,.9)']);g.fillRect(0,103,480,41)});
   shade(g,[300,104,438,104,446,109,308,109],SH,.45);shade(g,[0,104,60,104,60,107,0,110],SH,.5);shade(g,[186,104,222,104,226,107,190,107],SH,.4);
-  pool(g,240,0,300,160,'#fff4d0',.14,'screen');ao(g,0,0,90,144,'l',.08,'#2a2050')},
+  /* the light of the day: the sky, the plateau and the mountains keep it full; the saddler's front, the carrier's wall, the gate and the
+     open paving take the sun; the lane behind us, the shop under its awning and the near paving lie in the day's cool shade */
+  sunlight6(g,480,40,[[124,40,70,24,.6],[243,80,62,30,.7],[372,66,80,40,.55],[458,60,30,44,.5],[240,120,250,22,.62],[56,118,60,12,.3]],
+    l=>{l.fillStyle='#ffffff';l.fillRect(186,0,114,92);comp(l,'multiply',1,()=>{ao(l,0,28,60,76,'l',.2,'#4a4468');R(l,84,52,84,52,'#ece6f0')})});
+  pool(g,240,0,300,160,'#fff4d0',.1,'screen');ao(g,0,0,90,144,'l',.08,'#2a2050')},
  fore(g){const r=rng(432);/* a wine jar and a heap of pack saddles at the street's edge */
   vessel(g,34,152,11,30,'#5a2e1e','amph',{noShadow:1});
   for(const[sx,c]of[[470,'#6a4428'],[494,'#7a5030']]){g.fillStyle=lg(g,sx,0,sx+26,0,[tint(c,.2),c,tint(c,-.4)]);g.beginPath();g.ellipse(sx+13,150,14,13,0,Math.PI,0);g.fill()}
@@ -159,9 +176,9 @@ ART.iconium={w:480,fp:1.3,
  front(){}};
 /* ---------- Lystra: the open place inside the gate, where the well is ---------- */
 const lyhill=x=>14+6*Math.sin(x/43+2)+3*Math.sin(x/17)+1.4*Math.sin(x/6);
-ART.lystra={w:480,fp:1.3,
- paint(g){const r=rng(443),ST='#c8b890',MB='#d8c49a',MB2='#cdb68a';
-  sky(g,480,74,['#4080c8','#74aadc','#b0cee6','#e8e8d4']);cloud(g,290,12,56,7,r);cloud(g,410,22,40,5,r);cloud(g,170,8,36,5,r);
+ART.lystra={w:480,fp:1.3,q:12,
+ paint(g){const r=rng(443),rw=rng(4431),rc=rng(4432),ST='#c8b890',MB='#d8c49a',MB2='#cdb68a';
+  sky(g,480,74,SKY6(['#4080c8','#74aadc','#b0cee6','#e8e8d4']));cloud(g,290,12,56,7,r);cloud(g,410,22,40,5,r);cloud(g,170,8,36,5,r);
   /* the valley beyond the wall: hills, fields, and the Taurus far to the south */
   snowy(g,236,480,68,x=>22+8*Math.sin(x/61+3)+4*Math.sin(x/19)+2*Math.sin(x/7),['#7f90bc','#9eaccc','#c0c8cc'],28);comp(g,'screen',.3,()=>{g.fillStyle=lg(g,0,40,0,70,['rgba(214,224,238,0)','rgba(214,224,238,1)']);g.fillRect(236,40,244,30)});
   ridge(g,236,480,70,lyhill,['#8fa468','#a2b274']);
@@ -170,34 +187,47 @@ ART.lystra={w:480,fp:1.3,
   for(const[x,y]of[[252,82],[300,78],[328,84],[452,80],[470,86]]){oval(g,x+2,y+3.4,5,1,'rgba(50,60,90,.34)');R(g,x-.4,y+1,1.2,2.8,'#5a4630');foliage(g,x,y-.6,4.6,3,'#6f8a58',r,20)}
   /* the wall of the colony, and the gate that leads out to the valley */
   ashlar(g,0,22,100,82,ST,r,{bw:12,bh:6,v:.1,t:.4});for(let i=0;i<98;i+=9){R(g,i,17.6,5.6,4.4,ST);R(g,i,17.6,5.6,.5,'#eadcb4')}R(g,0,21.6,100,1,'#98886a');
-  arch(g,26,48,48,56,'#b2a27c');gateView(g,29,51,42,53,{...GATE6,hz:69,sky:[74,['#4080c8','#74aadc','#b0cee6','#e8e8d4']],rise:6});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,50+Math.cos(a)*24-.3,72+Math.sin(a)*24-1,.6,2.6,'#98886a')}
+  arch(g,26,48,48,56,'#b2a27c');gateView(g,29,51,42,53,{...GATE6,hz:69,sky:[74,SKY6(['#4080c8','#74aadc','#b0cee6','#e8e8d4'])],rise:6});for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,50+Math.cos(a)*24-.3,72+Math.sin(a)*24-1,.6,2.6,'#98886a')}
+  ao(g,29,72,5,32,'l',.3,'#2a2440');
   poly(g,[100,17.6,105,21,105,104,100,104],'#9a94a8');
-  /* a house of mud brick and timber, and beside it the house of Lois */
-  house(g,105,32,58,72,MB2,r,{side:0,patch:4,cracks:5,beams:10,brick:'#a8875a'});windowArt(g,118,46,9,9,MB2,{bars:2,wood:'#6a4e2c'});R(g,138,66,18,38,'#bca67c');doorArt(g,140,68,14,36,'#6a4a2c',r,{pw:4.6});
-  house(g,163,26,73,78,MB,r,{side:0,patch:3,cracks:4,beams:11,brick:'#a8875a'});windowArt(g,172,42,10,10,MB,{bars:2,wood:'#6a4e2c'});windowArt(g,216,42,10,10,MB,{bars:2,wood:'#6a4e2c'});
-  R(g,187,60,28,44,'#c8b288');doorArt(g,190,63,22,41,'#7a5a3a',r);R(g,186,102.6,30,1.6,'#e0d2ac');
+  /* a house of mud brick and timber, and beside it the house of Lois. The plaster's random cracks are set by hand now, high on the walls
+     where they run to no head (their draws are still taken), and no iron band lies across the planks of a door. */
+  house(g,105,32,58,72,MB2,r,{side:0,patch:4,cracks:0,beams:10,brick:'#a8875a'});skipCracks6(r,5);for(const[x,y,n]of[[110,37,3],[148,38,2]])crack6(g,x,y,n,rc,.9);
+  windowArt(g,118,46,9,9,MB2,{bars:2,wood:'#6a4e2c'});R(g,138,66,18,38,'#bca67c');doorArt(g,140,68,14,36,'#6a4a2c',r,{pw:4.6,bands:[]});
+  house(g,163,26,73,78,MB,r,{side:0,patch:3,cracks:0,beams:11,brick:'#a8875a'});skipCracks6(r,4);for(const[x,y,n]of[[167,31,3],[198,30.4,3],[231,32,3]])crack6(g,x,y,n,rc,.9);
+  windowArt(g,172,42,10,10,MB,{bars:2,wood:'#6a4e2c'});windowArt(g,216,42,10,10,MB,{bars:2,wood:'#6a4e2c'});
+  R(g,187,60,28,44,'#c8b288');doorArt(g,190,63,22,41,'#7a5a3a',r,{bands:[]});R(g,186,102.6,30,1.6,'#e0d2ac');
   stroke(g,[216,104,217,86,215,70,219,58],'#5a4630',1.2);foliage(g,206,57,15,4.6,'#5f8a4a',r,50);foliage(g,221,64,4.6,8,'#527c40',r,22);
   /* a low wall at the edge of the hill, and the country beyond it */
   ashlar(g,236,92,244,12,'#c4b48c',r,{bw:9,bh:4,v:.11,t:.34});R(g,236,91,244,1.4,'#e2d4aa');
   /* a farmer's stall against the last house: grain, and the fruit of the valley */
-  house(g,392,36,88,68,MB2,r,{side:0,patch:3,cracks:4,beams:10,brick:'#a8875a'});windowArt(g,452,48,9,9,MB2,{bars:2,wood:'#6a4e2c'});R(g,404,68,18,36,'#bca67c');doorArt(g,406,70,14,34,'#6a4a2c',r,{pw:4.6});
-  wood(g,428,56,2.2,50,'#6a4e2c',1);wood(g,476,56,2.2,50,'#6a4e2c',1);awning(g,426,50,54,8,'#8a6a3a','#e6dcc4',7);shade(g,[426,104,480,104,480,111,434,111],SH,.5);
-  R(g,432,97,44,8,'rgba(40,30,60,.38)');wood(g,430,92,48,4,'#96703e');R(g,430,95.8,48,1,'#5a4226');
+  house(g,392,36,88,68,MB2,r,{side:0,patch:3,cracks:0,beams:10,brick:'#a8875a'});skipCracks6(r,4);for(const[x,y,n]of[[398,41,3],[436,40.6,2]])crack6(g,x,y,n,rc,.9);
+  windowArt(g,452,48,9,9,MB2,{bars:2,wood:'#6a4e2c'});R(g,404,68,18,36,'#bca67c');doorArt(g,406,70,14,34,'#6a4a2c',r,{pw:4.6,bands:[]});
+  board6(g,428,56,2.2,50,'#6a4e2c',rw,1);board6(g,476,56,2.2,50,'#6a4e2c',rw,1);awning(g,426,50,54,8,'#8a6a3a','#e6dcc4',7);ao(g,428,58,52,5,'t',.3,'#1a1420');shade(g,[426,104,480,104,480,111,434,111],SH,.5);
+  shadow6(g,454,104.6,23,1.6,.5,'#282040');R(g,432,96,44,8,'rgba(40,30,60,.16)');board6(g,430,92,48,4,'#96703e',rw);R(g,430,95.8,48,1,'#5a4226');ao(g,430,96.8,48,3,'t',.3,'#1a1420');
   for(const[bx,c]of[[436,'#b84a34'],[448,'#c9a23a'],[460,'#6a8a3a'],[471,'#8a4a6a']]){vessel(g,bx,92,4.6,4.4,'#a8844e','bowl',{noShadow:1});for(let i=0;i<6;i++)oval(g,bx-3+r()*6,86.6+r()*1.6,1.2,1,tint(c,(r()-.5)*.3))}
   sack(g,418,106,6,11,'#d8c698');sack(g,426,107,5.4,9,'#cdbb8c');
   /* the well: a curb of field stone, two posts and a beam. The rope is wound on the beam and runs slanting down to the curb: a rope hanging
      straight from the middle of the beam would make a T of it. */
   shade(g,[262,107,300,107,310,113,272,113],SH,.5);
-  wood(g,265,72,2.4,24,'#6a4e2c',1);wood(g,293.6,72,2.4,24,'#6a4e2c',1);wood(g,262,70,36,2.6,'#7a5c36');
+  board6(g,265,72,2.4,24,'#6a4e2c',rw,1);board6(g,293.6,72,2.4,24,'#6a4e2c',rw,1);board6(g,262,70,36,2.6,'#7a5c36',rw);ao(g,265,72.6,31,2,'t',.25,'#1a1420');
   ashlar(g,264,95,33,12,'#b8ac94',r,{bw:7,bh:4,v:.14,t:.4});oval(g,280.5,107,16.5,2.4,'#8a8270');oval(g,280.5,95,16.5,3.2,'#d8ceb6');oval(g,280.5,95.3,13.6,2.3,'#1e1a1c');
-  for(let i=0;i<5;i++)R(g,275+i*1.6,69.6,1,3.4,i%2?'#8a7450':'#a8905e');stroke(g,[283,73,286,84,290,95.6],'#8a7450',.8);
-  vessel(g,304,108,4,7,'#7a5a34','bowl',{noShadow:1});R(g,301.6,100.4,4.8,.8,'#5a4226');
+  ao(g,264,103,33,4,'b',.25,'#2a2030');
+  /* the rope wound on the beam: one swelling of coils, their turns slanting, nothing standing up across the beam */
+  {const x0=274.6,x1=283,y0=69.4,y1=73.2;R(g,x0,y0,x1-x0,y1-y0,'#8a7450');R(g,x0,y0,x1-x0,.6,'#b8a070');R(g,x0,y1-.6,x1-x0,.6,'#5a4a30');
+    clipTo(g,()=>{g.beginPath();g.rect(x0,y0,x1-x0,y1-y0)},()=>{for(let i=-4;i<x1-x0;i+=1.6)stroke(g,[x0+i,y1,x0+i+3.8,y0],'rgba(60,44,24,.45)',.4)})}
+  stroke(g,[283,73,286,84,290,95.6],'#8a7450',.8);
+  vessel(g,304,108,4,7,'#7a5a34','bowl',{noShadow:1});shadow6(g,305,108.2,5,1,.4,'#282040');R(g,301.6,100.4,4.8,.8,'#5a4226');
   /* the ground: trodden earth, paved only round the well */
   earth(g,0,103,480,144,'#c8b48a',r,220);ao(g,0,103,480,5,'t',.3,'#4a4460');
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(255,240,200,0)','rgba(255,240,200,.9)']);g.fillRect(0,103,480,41)});
   for(let i=0;i<26;i++){const a=r()*6.28,d=18+r()*16;oval(g,280+Math.cos(a)*d*1.5,111+Math.abs(Math.sin(a))*d*.3,3+r()*2,1+r()*.6,r()<.5?'#b4a88e':'#d2c6aa')}
   shade(g,[0,104,105,104,120,112,0,114],SH,.55);shade(g,[105,104,236,104,242,108,111,108],SH,.4);
-  pool(g,300,0,300,160,'#fff4d0',.14,'screen');ao(g,0,0,100,144,'l',.1,'#2a2050')},
+  /* the light of the day: the sky and the valley keep it full; the houses, the well and the open ground take the sun; the wall's foot, the
+     doorways and the stall under its awning lie in the day's cool shade */
+  sunlight6(g,480,40,[[180,52,90,34,.58],[60,40,56,22,.5],[280,96,40,20,.5],[440,62,50,30,.5],[270,122,250,22,.62]],
+    l=>{l.fillStyle='#ffffff';l.fillRect(236,0,244,92);comp(l,'multiply',1,()=>{ao(l,0,22,30,82,'l',.14,'#4a4468');ao(l,426,58,54,46,'t',.14,'#4a4468')})});
+  pool(g,300,0,300,160,'#fff4d0',.1,'screen');ao(g,0,0,100,144,'l',.1,'#2a2050')},
  fore(g){const r=rng(444);/* a heap of straw, a wine jar, and thistles at the roadside */
   for(let i=0;i<70;i++){const sx=40+r()*60;stroke(g,[sx,152,sx+(r()-.5)*14,132+r()*10],r()<.5?'#c8b060':'#a89048',1)}
   vessel(g,560,152,10,26,'#5a2e1e','amph',{noShadow:1});rock(g,26,152,30,14,'#7a7468');
@@ -210,25 +240,33 @@ ART.lystra={w:480,fp:1.3,
   /* the people of Lystra, when they come running: first they face the well, then the gate */
   if(G.crowd)CROWD.forEach(([id,x,y],i)=>man(g,x,y+((Math.floor(t/700)+i)%5===0?-.6:0),id,G.bulls?-1:1,0,null,G.crowd>1&&(Math.floor(t/500)+i)%3===0?1:0,7));
   /* the bulls, garlanded, brought to the gates (Acts 14:13) */
-  /* side by side, the far one half a head in front, so that neither hides the other's head */
-  if(G.bulls){cattle(g,51,112.6,1,0,'#d8c8b0',1);cattle(g,44,116.4,1,0,'#e6dccc',1)}},
+  /* side by side, the far one a head and more in front and a little higher, so that a clear gap parts the two heads and neither seems to sit on the other's body, and the far
+     one's tail hangs behind the near one's flank, never below its belly, where the dark switch would read as a sheath. When the priest gives up (stop6), they are
+     led away after him: they turn, and walk out of the picture by the gate side, at the pace everybody walks (G.led: when they turned) */
+  if(G.led!=null){const d=Math.max(0,(t-G.led-300)/1000*WALK_V),fr=d>0?SHARED.beasts.frame.ox(d):0;
+    if(50-d>-50){cattle(g,50-d,109.5,-1,fr,'#d8c8b0',1);cattle(g,30-d,116.4,-1,fr&&SHARED.beasts.frame.ox(d+9),'#e6dccc',1)}}
+  else if(G.bulls){cattle(g,50,109.5,1,0,'#d8c8b0',1);cattle(g,30,116.4,1,0,'#e6dccc',1)}},
  front(){}};
 /* ---------- Outside Lystra, at dusk ---------- */
-ART.outside={w:320,
+ART.outside={w:320,q:12,
  /* the stones at the roadside that lie a little way out on the ground */
  props:[[82,113,7,4],[104,113,6,3.6],[61,113.4,6,3.4]].map(([x,y,w,h])=>({y,shape:g=>rock(g,x,y,w,h,'#7c7078')})),
  light:()=>({amb:'#e8b49c'}),
  paint(g){const r=rng(457);
-  sky(g,320,86,['#27356e','#5a4f8e','#b0667a','#e8905a','#f6c878']);pool(g,70,84,90,26,'#ffe0a0',.5,'screen');
+  sky(g,320,86,SKY6(['#27356e','#5a4f8e','#b0667a','#e8905a','#f6c878']));pool(g,70,84,90,26,'#ffe0a0',.5,'screen');
   for(const[cx,cy,w]of[[210,22,60],[110,36,44],[280,44,34]])cloud(g,cx,cy,w,5,r,'#f0a888','#6a5a94');
   ridge(g,0,320,84,x=>14+7*Math.sin(x/53+1)+3*Math.sin(x/19),['#5a4a7c','#74608a']);ridge(g,0,200,86,x=>6+3*Math.sin(x/23+2),['#4a4468','#5a5270']);
   /* Lystra on its low hill: the wall, the gate, a lamp already lit inside it */
   ridge(g,150,320,90,x=>Math.max(0,22-(x-262)*(x-262)/560),['#5c5270','#6a6078']);
   ashlar(g,196,46,124,34,'#8a7c88',r,{bw:10,bh:5,v:.08,t:.4,m:'#4a4058'});for(let i=196;i<320;i+=8)R(g,i,42.4,4.6,4,'#8a7c88');R(g,196,45.6,124,1,'#5a5068');
   for(const[hx,hy,hw,hh]of[[206,36,16,10],[232,32,14,14],[292,35,18,11]]){R(g,hx,hy,hw,hh,'#7a6c80');R(g,hx,hy-1.6,hw,2,'#6a4a50');R(g,hx+hw-3,hy,3,hh,'#5a5068')}
-  R(g,252,40,26,40,'#94869a');for(let i=252;i<278;i+=6)R(g,i,36.4,3.6,4,'#94869a');arch(g,257,54,16,26,'#2a2238');pool(g,265,70,9,9,'#ffb860',.75,'screen');
+  /* the gate: an opening in the wall, its dressed stones flush with the wall's top, under the wall's own battlement, so that no tower
+     rises from the middle of the wall */
+  R(g,252,46.6,26,33.4,'#94869a');arch(g,257,54,16,26,'#2a2238');
+  /* the lamp inside the gate: its light lies long and low across the gateway's floor, never round where a head could come */
+  clipTo(g,()=>arch(g,257,54,16,26),()=>{pool(g,265,76,10,4,'#ffb860',.8,'screen');pool(g,265,72,6,3,'#ffd8a0',.4,'screen');ao(g,257,54,16,8,'t',.5,'#0c0814')});
   /* the valley floor: stubble, and the road that runs up to the gate */
-  g.fillStyle=lg(g,0,80,0,110,['#7a6c68','#8a7a64','#96845e']);g.fillRect(0,80,320,30);tex(g,'mott',.5,0,80,320,30,'overlay',1);
+  g.fillStyle=lg(g,0,80,0,110,['#7a6c68','#8a7a64','#96845e']);g.fillRect(0,80,320,30);tex(g,'mott',.32,0,80,320,30,'overlay',1);tex(g,'wood',.12,0,80,320,30,'overlay',.5);
   poly(g,[257,80,273,80,250,96,212,108,150,110,196,98,240,88],'#b89c78');
   earth(g,0,108,320,144,'#9a8468',r,160);ao(g,0,108,320,6,'t',.3,'#2a2048');
   for(let i=0;i<2;i++)stroke(g,[0,118+i*8,110,117+i*8,230,118.6+i*8,320,118+i*8],'rgba(70,56,60,.3)',.8);
@@ -236,7 +274,13 @@ ART.outside={w:320,
   stroke(g,[38,110,37,92,41,78,36,64],'#3a3040',3);stroke(g,[39,92,48,80,56,74],'#3a3040',1.6);stroke(g,[38,84,28,72,22,68],'#3a3040',1.6);stroke(g,[40,74,46,62,45,54],'#3a3040',1.2);stroke(g,[37,70,30,58],'#3a3040',1);
   for(const[x,y,w,h]of[[70,112,9,5],[82,113,7,4],[92,111.6,10,6],[104,113,6,3.6],[61,113.4,6,3.4]])rock(g,x,y,w,h,'#7c7078');
   /* the light is going: long shadows, and a warm edge on everything that faces west */
-  comp(g,'multiply',.5,()=>{g.fillStyle=lg(g,0,0,320,0,['#f0d0b0','#c0a8c8']);g.fillRect(0,86,320,58)});pool(g,60,96,150,60,'#ffc890',.3,'screen');ao(g,200,0,120,144,'r',.2,'#1a1838')},
+  comp(g,'multiply',.5,()=>{g.fillStyle=lg(g,0,0,320,0,['#f0d0b0','#c0a8c8']);g.fillRect(0,86,320,58)});
+  /* the light that is left: the sky keeps all of it; the afterglow low in the west warms the stubble and the side of everything that faces
+     it, the wall of Lystra takes a last warm edge, the east and the ground nearest us go into the dusk */
+  lightmap(g,320,'#c8b8c8',l=>{R(l,0,0,320,80,'#ffffff');l.fillStyle=lg(l,0,80,0,94,['#ffffff','rgba(255,255,255,0)']);l.fillRect(0,80,320,14);
+    pool(l,70,98,140,34,'#ffe4c8',.75);pool(l,150,118,150,20,'#f8dcc8',.5);pool(l,232,62,60,20,'#f0d8d0',.4);pool(l,42,92,30,26,'#ffe0c0',.4);
+    comp(l,'multiply',1,()=>{ao(l,196,40,124,46,'r',.22,'#3a3458');ao(l,0,124,320,20,'b',.3,'#3a3458')})});
+  pool(g,60,96,150,60,'#ffc890',.24,'screen');ao(g,200,0,120,144,'r',.2,'#1a1838')},
  fore(g){const r=rng(458);rock(g,300,150,34,16,'#4a4458');for(let i=0;i<40;i++){const sx=r()*320;stroke(g,[sx,150,sx+(r()-.5)*6,136-r()*8],r()<.5?'#5a5440':'#3a3848',.8)}
   comp(g,'source-atop',.5,()=>R(g,0,0,320,150,'#2a2450'))},
  draw(g,t){/* the stones that were thrown, lying where they fell */
@@ -249,63 +293,75 @@ ART.outside={w:320,
     for(const fx of[16,23,30])stroke(g,[x+fx,y-6.4,x+fx+1.6,y-.6],tint(cl,-.35),.6);R(g,x+7,y-1,31.5,1,tint(cl,-.45));
     R(g,x+10,y-2.5,9,2,sk);R(g,x+18.5,y-3,2.5,2.5,sk);R(g,x+10,y-.5,11,.5,tint(sk,-.35));
     oval(g,x+4,y-3.4,3.4,3.2,sk);poly(g,[x+.4,y-3.4,x+1.2,y-6,x+4,y-7,x+6.6,y-6,x+5,y-5,x+2.4,y-4.4,x+1.6,y-1.4],hr);oval(g,x+6.4,y-1.8,2,1.5,hr);g.restore()});
-  pool(g,265,70,6+Math.sin(t/230),6,'#ffb860',.25,'screen')},
+  g.save();arch(g,257,54,16,26);g.clip();pool(g,265,76,7+Math.sin(t/230),3,'#ffb860',.25,'screen');g.restore()},
  front(){}};
 /* ---------- Lystra: the house of Lois and Eunice ---------- */
 /* the low table of the house at Lystra, and the supper on it by night. It stands out on the mat, so it is a prop as well: whoever walks behind it is hidden by it */
-function lowTable(g,day){wood(g,170,112,40,3,'#96703e');wood(g,172,115,2.6,8,'#5a4226',1);wood(g,205,115,2.6,8,'#5a4226',1);
+function lowTable(g,day){const rt=rng(4621);board6(g,170,112,40,3,'#96703e',rt);board6(g,172,115,2.6,8,'#5a4226',rt,1);board6(g,205,115,2.6,8,'#5a4226',rt,1);
   if(!day){vessel(g,182,112,4.6,3.6,'#a8844e','bowl',{noShadow:1});g.fillStyle=lg(g,0,107,0,112,['#e8c078','#c9a060','#8a6630']);g.beginPath();g.ellipse(197,110.4,5.6,2.2,0,0,6.2832);g.fill()}}
 ART.house6={w:320,q:12,
  variant:()=>F.back?'d':'n',
  props:[{y:123,shape:(g,v)=>lowTable(g,v==='d')}],
- light:()=>F.back?{amb:'#f0e8dc'}:{amb:'#7c6f86',lamps:[[150,58,60,'#7a5420'],[92,96,46,'#7a3c14']]},
- paint(g,v){const r=rng(461),W='#d8c8a4',day=v==='d';
-  plaster(g,0,0,320,104,W,r,{patch:4,cracks:6,brick:'#a8875a',t:.5});for(let i=14;i<320;i+=34)wood(g,i,0,6,8,'#5a4226',1);wood(g,0,8,320,2.4,'#6a4e2c');ao(g,0,10.4,320,12,'t',.42,'#2a2030');
+ light:()=>F.back?{amb:'#f0e8dc',wallY:103}:{amb:'#7c6f86',wallY:103,wall:[[0,52,103,11],[52,68,103,45],[68,320,103,11]],lamps:[[150,58,60,'#7a5420',103,59.4],[92,96,46,'#7a3c14',103,100]]},
+ paint(g,v){const r=rng(461),rw=rng(4611),rc=rng(4612),W='#d8c8a4',day=v==='d';
+  /* the plaster's random cracks are set by hand now, high on the wall where they run to no head; their draws are still taken */
+  plaster(g,0,0,320,104,W,r,{patch:4,cracks:0,brick:'#a8875a',t:.36});skipCracks6(r,6);
+  for(const[x,y,n]of[[24,15,4],[118,14.6,3],[196,15.4,4],[246,16,3],[306,15,3]])crack6(g,x,y,n,rc);
+  /* the ceiling, seen from below at its edge: the boards dark between the joists, the joists running toward us, and the wall plate they
+     lie on */
+  plank6(g,0,0,320,8,'#3e2e22',rw);ao(g,0,0,320,4,'t',.4,'#0c0808');
+  joists6(g,8.5,36,rng(4614),{boards:0});burn6(rw,14,34,6,8);
+  board6(g,0,8,320,2.4,'#6a4e2c',rw);ao(g,0,10.4,320,12,'t',.42,'#2a2030');
   /* a window on the lane */
   windowArt(g,52,28,16,16,W,{dark:day?'#bfe0f4':'#141c3c',bars:2,wood:'#6a4e2c'});if(!day){R(g,57,33,1,1,'#f4f0d8');R(g,64,39,.6,.6,'#d8d4c0')}
   /* a niche for the lamp, and under it a shelf of household jars */
-  arch(g,142,44,16,20,tint(W,-.34));arch(g,143.6,45.6,12.8,18.4,'#4a3828');R(g,146,60.6,8,2.4,'#b8733c');R(g,146,60.6,8,.6,'#e0a064');R(g,152.6,59.6,2.2,1.4,'#b8733c');
-  wood(g,172,62,58,2.4,'#7a5c36');R(g,174,64.4,2,6,'#5a4226');R(g,226,64.4,2,6,'#5a4226');
+  arch(g,142,44,16,20,tint(W,-.34));arch(g,143.6,45.6,12.8,18.4,'#4a3828');clipTo(g,()=>arch(g,143.6,45.6,12.8,18.4),()=>ao(g,143.6,45.6,12.8,8,'t',.5,'#0c0808'));
+  R(g,146,60.6,8,2.4,'#b8733c');R(g,146,60.6,8,.6,'#e0a064');R(g,152.6,59.6,2.2,1.4,'#b8733c');
+  board6(g,172,62,58,2.4,'#7a5c36',rw);ao(g,172,64.4,58,4,'t',.3,'#2a2030');R(g,174,64.4,2,6,'#5a4226');R(g,226,64.4,2,6,'#5a4226');
   vessel(g,182,62,4,10,'#a05a34','jug');vessel(g,196,62,5,8,'#8a6a44','jar');vessel(g,210,62,3.6,9,'#b8733c','jug');vessel(g,222,62,4,6,'#7a5a3a','bowl');
   /* the hearth in the corner, built of field stone */
-  ashlar(g,78,92,30,12,'#a89c88',r,{bw:7,bh:4,v:.14,t:.4});R(g,78,91,30,1.4,'#cfc4ac');R(g,82,94,22,8,'#1c1412');poly(g,[84,102,88,97,96,96,102,102],'#3a2a22');
+  ashlar(g,78,92,30,12,'#a89c88',r,{bw:7,bh:4,v:.14,t:.3});R(g,78,91,30,1.4,'#cfc4ac');R(g,82,94,22,8,'#1c1412');poly(g,[84,102,88,97,96,96,102,102],'#3a2a22');ao(g,82,94,22,3,'t',.5,'#000000');
   poly(g,[80,91,84,40,102,40,106,91],'rgba(30,20,20,.28)');
-  /* a bench along the wall, with a blanket folded on it */
-  R(g,6,92,62,12,'rgba(40,30,60,.3)');wood(g,6,86,62,4,'#8a6a40');wood(g,8,90,3,14,'#5a4226',1);wood(g,63,90,3,14,'#5a4226',1);
-  g.fillStyle=lg(g,0,81,0,86,['#9a5a4a','#7a4438','#4a2a24']);g.fillRect(14,81.4,24,4.6);for(let i=0;i<24;i+=3)R(g,14+i,81.4,.5,4.6,'rgba(0,0,0,.2)');
-  /* the door to the lane */
-  R(g,266,48,34,56,'#c4b48e');doorArt(g,269,51,28,53,'#6a4a2c',r,{left:1});
+  /* a bench along the wall, its legs at its ends, with a blanket folded on it: three thicknesses of one width, the fold at the left */
+  shadow6(g,37,104,32,1.6,.5,'#201828');R(g,6,90,62,14,'rgba(40,30,60,.14)');board6(g,6,86,62,4,'#8a6a40',rw);ao(g,8,90,58,4,'t',.35,'#1a1420');board6(g,8,90,3,14,'#5a4226',rw,1);board6(g,63,90,3,14,'#5a4226',rw,1);
+  {const b='#8a5446';R(g,37.4,82,1.4,4,'rgba(30,22,30,.25)');for(let i=0;i<3;i++){const yy=86-(i+1)*1.54;R(g,14,yy,24,1.54,tint(b,i*.06-.04));R(g,14,yy,24,.5,tint(b,.22));R(g,14,yy+1.04,24,.5,tint(b,-.35))}R(g,13.6,81.4,.8,4.6,tint(b,.1))}
+  /* the door to the lane: three planks in their frame, nothing laid across them */
+  R(g,266,48,34,56,'#c4b48e');doorArt(g,269,51,28,53,'#6a4a2c',r,{left:1,bands:[]});
   /* a great jar of water by the door */
   vessel(g,250,106,7,20,'#9a5a36','pithos');
-  /* the floor: beaten earth, and a woven mat where the household eats */
-  earth(g,0,103,320,144,'#b8a482',r,90);ao(g,0,103,320,6,'t',.4,'#3a3050');
-  clipTo(g,()=>poly(g,[128,112,240,112,252,130,116,130]),()=>{R(g,116,112,136,18,'#9a6a4a');for(let i=0;i<6;i++)R(g,116,113.4+i*3,136,1.1,i%2?'#d8b878':'#5a3a2c');tex(g,'mott',.4,116,112,136,18,'overlay',1);ao(g,116,112,136,5,'t',.25)});
+  /* the floor: beaten earth, and a woven mat where the household eats. Its few stripes are soft and lie only at its ends, beyond the
+     table's legs, so that no leg stands across a band */
+  earth(g,0,103,320,144,'#b8a482',r,90);ao(g,0,103,320,6,'t',.4,'#3a3050');ao(g,0,92,320,12,'b',.18,'#2a2030');
+  clipTo(g,()=>poly(g,[128,112,240,112,252,130,116,130]),()=>{R(g,116,112,136,18,'#9a6a4a');for(const[y,c]of[[113.4,'#b08a5c'],[125.6,'#7a5040'],[127.8,'#b08a5c']])R(g,116,y,136,1.1,c);tex(g,'mott',.3,116,112,136,18,'overlay',1);ao(g,116,112,136,5,'t',.25)});
   /* a low table with the supper on it */
-  R(g,168,122,44,3,'rgba(30,20,40,.4)');lowTable(g,day);
+  shadow6(g,190,123.4,22,1.6,.55,'#1e1428');lowTable(g,day);
+  /* the light: by day the window's shaft and the open door; by night the lamp in its niche, which lights outward and downward and leaves
+     the wall above its arch in shade, and the fire on the hearth. In both the corners, the ceiling and the foot of the walls are darker. */
+  const corners=l=>comp(l,'multiply',1,()=>{ao(l,0,0,30,104,'l',.3,'#3a3050');ao(l,290,0,30,104,'r',.24,'#3a3050');ao(l,0,0,320,22,'t',.3,'#3a3050');ao(l,0,128,320,16,'b',.26,'#3a3050')});
   if(day)lightmap(g,320,'#b8b0a8',l=>{pool(l,60,36,30,26,'#fff8e4',1);l.fillStyle=lg(l,0,44,0,140,['rgba(255,244,210,.5)','rgba(255,244,210,0)']);poly(l,[52,44,68,44,150,140,70,140]);l.fill();
-      pool(l,283,80,40,60,'#fff4dc',.7);pool(l,160,120,170,44,'#fff0d8',.5)});
-  else lightmap(g,320,'#5a5068',l=>{pool(l,150,56,64,50,'#ffc070',.95);pool(l,92,98,52,40,'#ff9a48',.8);pool(l,170,122,120,30,'#ffd090',.35);pool(l,60,36,16,14,'#8090c8',.5)})},
+      pool(l,283,80,40,60,'#fff4dc',.7);pool(l,160,120,170,44,'#fff0d8',.5);pool(l,110,126,44,10,'#fff6e4',.4);corners(l)});
+  else lightmap(g,320,'#5a5068',l=>{nicheLight(l,150,62,62,34,'#ffc070',.95);pool(l,92,98,52,40,'#ff9a48',.8);pool(l,92,86,30,10,'#ff9a48',.3);pool(l,170,122,120,30,'#ffd090',.35);pool(l,60,36,16,14,'#8090c8',.5);corners(l)})},
  fore(g){/* the edge of a storage chest, nearest us */
-  R(g,0,134,58,10,'#3a2c20');R(g,0,134,58,.8,'#7a6248');R(g,56,134,2,10,'#241a12');R(g,262,138,58,6,'#3a2c20');R(g,262,138,58,.8,'#7a6248')},
- draw(g,t){if(!F.back){flame(g,153.6,59.4,t);pool(g,154,57,9+Math.sin(t/190),7,'#ffb050',.16);for(let i=0;i<3;i++)flame(g,88+i*5,100.6-(i%2),t+i*230,i===1);pool(g,93,97,16+Math.sin(t/160)*1.4,9,'#ff8a3a',.2)}
+  const rf=rng(4613);board6(g,0,134,58,10,'#3a2c20',rf);R(g,0,134,58,.8,'#7a6248');R(g,56,134,2,10,'#241a12');board6(g,262,138,58,6,'#3a2c20',rf);R(g,262,138,58,.8,'#7a6248')},
+ draw(g,t){if(!F.back){flame(g,153.6,59.4,t);pool(g,152.6,61,7+Math.sin(t/190),3,'#ffb050',.16);for(let i=0;i<3;i++)flame(g,88+i*5,100.6-(i%2),t+i*230,i===1);pool(g,93,97,16+Math.sin(t/160)*1.4,9,'#ff8a3a',.2)}
   else{/* the older men of Lystra and the rest of the congregation, come in from the lanes */
     for(const[id,x,y,d]of GATHER)man(g,x,y,id,d,0,'#f0e8dc',0,7)}},
  front(){}};
 /* ---------- Derbe: the east road, after the harvest ---------- */
 const taur6=x=>38+12*Math.sin(x/71+2.2)+6*Math.sin(x/27+1)+3*Math.sin(x/9);
-ART.derbe={w:320,
+ART.derbe={w:320,q:12,
  paint(g){const r=rng(467),ST='#d2c4a0';
-  sky(g,320,80,['#3e7cc8','#74a8dc','#b4cee4','#ece8d0']);cloud(g,140,14,60,7,r);cloud(g,250,8,40,5,r);cloud(g,60,26,36,5,r);
+  sky(g,320,80,SKY6(['#3e7cc8','#74a8dc','#b4cee4','#ece8d0']));cloud(g,140,14,60,7,r);cloud(g,250,8,40,5,r);cloud(g,60,26,36,5,r);
   /* the Taurus, close now: the road east runs for the gap in it */
   snowy(g,60,320,76,taur6,['#7f8ebc','#9eaacb','#c2c8cc'],32);comp(g,'screen',.3,()=>{g.fillStyle=lg(g,0,30,0,76,['rgba(226,222,200,0)','rgba(226,222,200,1)']);g.fillRect(60,30,260,46)});
   ridge(g,60,320,78,x=>8+4*Math.sin(x/31+1)+2*Math.sin(x/11),['#a0a878','#b2b486']);
   /* the wall and the east gate of Derbe */
   ashlar(g,0,26,78,78,ST,r,{bw:12,bh:6,v:.09,t:.35});for(let i=0;i<76;i+=9){R(g,i,21.6,5.6,4.4,ST);R(g,i,21.6,5.6,.5,'#f0e4c0')}R(g,0,25.6,78,1,'#a09070');
   arch(g,18,50,42,54,'#b8a880');g.save();arch(g,21,53,36,51);g.clip();R(g,21,53,36,51,'#cfc2a0');for(const[hx,hy,hw,hh,c]of[[21,62,12,42,'#d6caa8'],[44,58,13,46,'#e2d6b4'],[32,70,13,34,'#c8bc9c']]){R(g,hx,hy,hw,hh,c);R(g,hx,hy-2,hw,2.2,'#b8603c')}
-  poly(g,[28,104,52,104,44,84,36,84],'#e0d6ba');ao(g,21,53,36,12,'t',.55,'#2a2440');ao(g,21,53,5,51,'l',.5,'#2a2440');g.restore();
+  poly(g,[28,104,52,104,44,84,36,84],'#e0d6ba');ao(g,21,53,36,12,'t',.55,'#2a2440');ao(g,21,53,5,51,'l',.5,'#2a2440');ao(g,21,96,36,8,'b',.22,'#2a2440');g.restore();
   for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,39+Math.cos(a)*21-.3,71+Math.sin(a)*21-1,.6,2.6,'#a09070')}poly(g,[78,21.6,83,25,83,104,78,104],'#a39cae');
   /* the fields: stubble as far as the hills, and one field already under the plow */
-  g.fillStyle=lg(g,0,76,0,106,['#d0c084','#d6c074','#ccb468']);g.fillRect(83,76,237,30);tex(g,'mott',.5,83,76,237,30,'overlay',1);
+  g.fillStyle=lg(g,0,76,0,106,['#d0c084','#d6c074','#ccb468']);g.fillRect(83,76,237,30);tex(g,'mott',.34,83,76,237,30,'overlay',1);
   poly(g,[196,82,262,80,300,92,214,96],'rgba(120,84,54,.5)');for(let i=0;i<9;i++)stroke(g,[200+i*7,82.6-i*.2,220+i*9,95.6-i*.4],'rgba(70,46,30,.35)',.5);
   for(let i=0;i<120;i++){const sx=84+r()*236,sy=78+r()*27;R(g,sx,sy,.5,1+r()*1.4,r()<.5?'#e8d898':'#a89858')}
   /* the threshing floor: a ring of flat stones, a heap of grain and a heap of chaff */
@@ -313,21 +369,32 @@ ART.derbe={w:320,
   g.fillStyle=lg(g,128,0,152,0,['#f0d480','#d8b458','#a8843c']);poly(g,[126,96,139,84,152,96]);g.fill();g.fillStyle=lg(g,160,0,186,0,['#f4ecc8','#e2d6a8','#b8aa7c']);poly(g,[158,97,173,88,188,97]);g.fill();
   stroke(g,[190,97,198,80],'#6a4e2c',1);stroke(g,[196.4,80.6,199.6,80,201,84],'#8a6a40',.8);
   /* a milestone on the road east */
-  oval(g,304,108.6,6,1.2,'rgba(50,40,90,.35)');g.fillStyle=lg(g,299,0,306,0,['#b8b0a0','#f0eade','#a8a094']);g.fillRect(299,94,7,14);oval(g,302.5,94.2,3.5,1.6,'#f0eade');for(const y of[98,100.4,102.8])R(g,300.6,y,3.8,.6,'#8a8474');
+  shadow6(g,304,108.6,6,1.2,.4,'#2a2050');g.fillStyle=lg(g,299,0,306,0,['#b8b0a0','#f0eade','#a8a094']);g.fillRect(299,94,7,14);oval(g,302.5,94.2,3.5,1.6,'#f0eade');for(const y of[98,100.4,102.8])R(g,300.6,y,3.8,.6,'#8a8474');
   /* the road */
-  g.fillStyle=lg(g,0,104,0,128,['#d2c298','#e6d8b0','#d8c8a0']);g.fillRect(0,104,320,24);tex(g,'mott',.45,0,104,320,24,'overlay',1);R(g,83,104,237,.8,'#a89a74');
+  g.fillStyle=lg(g,0,104,0,128,['#d2c298','#e6d8b0','#d8c8a0']);g.fillRect(0,104,320,24);
+  /* the road's dust: a low mottle and the grain of the wheels and feet that run along it, never across */
+  tex(g,'mott',.24,0,104,320,24,'overlay',1);tex(g,'wood',.16,0,104,320,24,'overlay',.5);R(g,83,104,237,.8,'#a89a74');
   for(let i=0;i<60;i++){const sx=r()*320,sy=106+r()*20;oval(g,sx,sy,1+r()*1.6,.5+r()*.4,r()<.5?'#bcae86':'#f0e4c0')}
   for(let i=0;i<2;i++)stroke(g,[0,113+i*8,100,112.6+i*8,220,113.6+i*8,320,113+i*8],'rgba(150,130,90,.35)',.8);
-  g.fillStyle=lg(g,0,127,0,144,['#b8a868','#a09858','#8a8848']);g.fillRect(0,127,320,17);tex(g,'mott',.5,0,127,320,17,'overlay',1);
+  g.fillStyle=lg(g,0,127,0,144,['#b8a868','#a09858','#8a8848']);g.fillRect(0,127,320,17);tex(g,'mott',.3,0,127,320,17,'overlay',1);tex(g,'vert',.14,0,127,320,17,'overlay',.5);
   for(let i=0;i<180;i++){const sx=r()*320,sy=128+r()*16;stroke(g,[sx,sy,sx+(r()-.5)*2,sy-2-r()*3],r()<.5?'#d8c880':'#7a7a44',.5)}
-  shade(g,[0,104,83,104,98,112,0,114],SH,.55);pool(g,210,0,240,150,'#fff0c8',.16,'screen');ao(g,0,0,70,144,'l',.1,'#2a2050')},
+  shade(g,[0,104,83,104,98,112,0,114],SH,.55);
+  /* the light of the day: the sky and the Taurus keep it full; the stubble, the threshing floor and the road lie in the sun, a cloud throws
+     its soft shade across the far fields, and the town wall, turned from the sun, and the near verge are a little cooler */
+  sunlight6(g,320,62,[[190,94,130,16,.6],[150,116,170,14,.6],[40,46,40,30,.3]],
+    l=>comp(l,'multiply',1,()=>{pool(l,250,84,40,5,'#c4c2d2',.45,'source-over');ao(l,0,26,83,78,'r',.12,'#4a4468')}));
+  pool(g,210,0,240,150,'#fff0c8',.12,'screen');ao(g,0,0,70,144,'l',.1,'#2a2050')},
  fore(g){const r=rng(468);rock(g,22,150,30,14,'#8a8478');for(let i=0;i<40;i++){const sx=r()*320;stroke(g,[sx,150,sx+(r()-.5)*5,137-r()*7],r()<.5?'#a89850':'#c8b868',.8)}
   comp(g,'source-atop',.36,()=>R(g,0,0,320,150,'#34305a'))},
  draw(g,t){/* chaff on the wind; Zenon's wagon, loaded for the road east */
   for(let i=0;i<9;i++){const k=((t/2600+i*.111)%1);R(g,176+k*60+Math.sin(i*2.1)*6,90-k*14-Math.sin(k*9+i)*3,1,.6,`rgba(244,236,200,${.8*(1-k)})`)}
-  /* the far ox, the wagon and its pole, the near ox, and the yoke that lies across both their necks */
-  depth(111,()=>{cattle(g,266,108.6,1,0,'#6f4630',0);wagon(g,174,110,-1,1);cattle(g,262,111,1,0,'#8a5a3a',0);
-    R(g,275,79,5,2.5,'#5a3e22');R(g,275,79,5,.5,'#a8845a');R(g,279.5,77.5,1.5,1.5,'#5a3e22')});depth(112,()=>bundles(g,60,112))},
+  /* the far ox, the wagon and its pole, the near ox, and the yoke that lies across both their necks. The pair is seen a little from the
+     front: the far ox stands a little ahead and higher, so that its head stands clear above and beside the near one's, and its tail
+     hangs behind the near ox's flank: lower, its dark switch would show under the near ox's belly and read as a sheath. The yoke rests on
+     the crest of the near ox's neck just behind its horns, ending short of the horn, and the near head hides the rest of it and its far
+     end, which a horn would otherwise cross. The wagon stands close behind the near ox, its pole a stub that ends short of the tail */
+  cattle(g,276,103.5,1,0,'#6f4630',0,null,111);depth(111,()=>wagon(g,169,110,-1,1,1));cattle(g,262,111,1,SHARED.beasts.pose('oxen6',0),'#8a5a3a',0,null,111);
+  depth(111,()=>{R(g,273,73.4,5,2.5,'#5a3e22');R(g,273,73.4,5,.5,'#a8845a')});depth(112,()=>bundles(g,60,112))},
  front(){}};
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
 Object.assign(LOOK,{
@@ -577,14 +644,14 @@ async function stop6(){playAs(P);
     {q:'rain_from_heaven_and_seasons_of_harvest',ok:1}]);
   await say(P,'even_so_there_acts_14_17',{to:null});
   PR.dir=-1;await say(PR,'you_will_not_have_the_bulls');
-  walk(PR,20,118);await wait(900);G.bulls=0;G.crowd=1;AU.mood='tense';PR.room=null;
+  G.led=G.t;walk(PR,20,118);await wait(900);G.bulls=0;G.crowd=1;AU.mood='tense';PR.room=null;
   await narr('crowds_would_still_have_sacrificed_to_them_acts_14_18',{dur:8000});
   F.stopped=1;SFX.good();
   await say(TI,'they_are_going_home_sir');
   await say(P,'tomorrow_we_shall_be_at_the_well');
   return stoned()}
 /* What followed is told as Acts tells it (14:19, 20). Nothing of it is shown, and nothing the player does prevents it. */
-async function stoned(){await fade(1,700);G.crowd=0;G.bulls=0;AU.mood='tense';
+async function stoned(){await fade(1,700);G.crowd=0;G.bulls=0;G.led=null;AU.mood='tense';
   await narr('how_long_they_went_on_declaring',{dur:8500});
   await narr('jews_came_from_antioch_acts_14_19',{dur:11000});
   for(const a of[NA,XA,TA,PR,ZE])a.room=null;G.down=1;enterRoom('outside',-80,127,1);
@@ -686,7 +753,7 @@ ROOMS.lystra={space:0.8,walk:[16,464,110,138],get mood(){return G.bulls?'feast':
   {name:'fields',x:300,y:68,w:92,h:22,wx:350,look:async()=>{await say(P,'fields_orchards_and_good_pasture');await say(P,quote('ps65'))}},
   {name:'city_wall',x:0,y:18,w:100,h:28,wx:76,look:'wall_of_lystra'},
   {name:'city_gate',x:26,y:48,w:48,h:56,wx:98,wy:116,dir:-1,look:()=>say(P,G.bulls?'bulls_at_the_gates_garlanded':'gate_of_lystra'),exit:gate6},
-  {name:'bulls',x:24,y:84,w:58,h:34,wx:112,wy:118,dir:-1,vis:()=>!!G.bulls,look:'two_white_bulls_with_garlands',use:stop6,pickup:'they_are_not_mine_and_what'},
+  {name:'bulls',x:8,y:80,w:80,h:38,wx:112,wy:118,dir:-1,vis:()=>!!G.bulls,look:'two_white_bulls_with_garlands',use:stop6,pickup:'they_are_not_mine_and_what'},
   {name:'door_of_a_house',x:140,y:68,w:14,h:36,wx:147,wy:112,look:'house_of_mud_brick_with_its_door',use:'it_is_not_my_house',open:'it_is_not_my_house'},
   {name:'door_of_loiss_house',x:190,y:63,w:22,h:41,wx:201,wy:112,look:'door_of_a_house_where_the_sabbath',use:'i_will_go_in_when_i_am',open:'i_will_go_in_when_i_am'},
   {name:'well',x:262,y:70,w:36,h:38,wx:262,wy:118,dir:1,def:'use',look:['well_of_lystra','with_no_synagogue_this_is'],use:speak6,pickup:'bucket_belongs_to_the_well'},
@@ -778,8 +845,8 @@ ROOMS.derbe={space:0.5,walk:[16,304,110,138],mood:'hope',amb:{wind:.5,birds:.4,c
   {name:'threshing_floor',x:112,y:82,w:82,h:20,wx:150,wy:113,look:['zenons_threshing_floor','rain_from_heaven_and_seasons_of_harvest_said']},
   {name:'plowed_field',x:198,y:78,w:92,h:12,wx:240,look:'one_field_under_the_plow'},
   {name:'wagon',x:174,y:78,w:72,h:32,wx:166,wy:117,dir:1,look:'zenons_wagon_loaded_with_grain_for_tarsus',pickup:'it_is_zenons_and_it_is_loaded',use:'climb_up_and_ride_home'},
-  {name:'oxen',x:248,y:78,w:40,h:34,wx:240,wy:120,dir:1,look:'yoke_of_brown_oxen',pickup:'they_are_zenons',
-    use:'i_scratch_one_of_the_oxen'},
+  {name:'oxen',x:242,y:66,w:72,h:46,wx:232,wy:123,dir:1,look:'yoke_of_brown_oxen',pickup:'they_are_zenons',
+    use:'i_scratch_one_of_the_oxen',talk:async()=>{SHARED.beasts.speak('oxen6','ox');await say(P,'i_wish_him_a_good_road')}},
   {name:'milestone',x:297,y:91,w:10,h:18,wx:290,wy:122,dir:1,look:'milestone_from'},
   {name:'our_baggage',x:58,y:98,w:38,h:14,wx:84,wy:115,dir:-1,look:'two_bed_rolls_and_a_bag',pickup:'when_we_have_chosen_our_road'},
   {name:'road',x:308,y:100,w:12,h:38,wx:302,wy:126,dir:1,look:'the_road',exit:()=>travel()}]};
@@ -903,7 +970,7 @@ for(const r in AS_B)for(const h of ROOMS[r].hs)if(AS_B[r][h.name])h.as={barnabas
 /* ENT: where Paul stands when a room is entered by a code. */
 const ENT={iconium:[178,124,1],get lystra(){return F.healed?[262,126,1]:[112,124,1]},outside:[156,127,1],house6:[236,124,-1],derbe:[120,124,1]};
 /* place6: put everyone where the story has them, for the room the two men are in. They keep together throughout. */
-function place6(room){const o=other(),e=ENT[room];for(const a of[NA,XA,TA,TI,EN,LO,LM,PR,ZE])a.room=null;G.crowd=0;G.bulls=0;G.down=0;
+function place6(room){const o=other(),e=ENT[room];for(const a of[NA,XA,TA,TI,EN,LO,LM,PR,ZE])a.room=null;G.crowd=0;G.bulls=0;G.led=null;G.down=0;
   place(o,room,e[0]-e[2]*26,e[1]+2,e[2]);
   if(room==='iconium'){place(NA,room,92,114,1);place(TA,room,278,116,-1);place(XA,room,400,117,-1)}
   else if(room==='lystra'){place(TI,room,224,119,1);place(EN,room,204,115,1);place(LO,room,180,113,1);
@@ -998,9 +1065,13 @@ const ACTING={nod:['yes_sir'],
   'no_sir_said',
   'no_let',
   'no_2']};
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+ROOMS.derbe.birds={prey:[100,6,200,22],lark:[130,80,26]};
+ROOMS.iconium.birds={perch:[{k:'sparrow',y:20,x:[100,110,122]},{k:'dove',y:31,x:[329.5,347.5],d:[1,-1]}]};
+ROOMS.lystra.birds={perch:[{k:'sparrow',y:22,x:[180,190,202]},{k:'dove',y:17.5,x:[30,57],d:[1,-1]}]};
+
 return{acting:ACTING,rooms:['iconium','lystra','outside','house6','derbe'],setup:setup6,start:start6,hint:hint6,music:MUSIC,topics:TOPICS,tablets:TABLETS,
-  /* painters: the chapter's animal, for the playtest, which checks that every part of it is attached and shows it enlarged */
-  painters:{ox},
   /* Iconium, Lystra and Derbe lie north of the map's usual window, so this chapter looks through the northern one */
   view:'north',
   places:{

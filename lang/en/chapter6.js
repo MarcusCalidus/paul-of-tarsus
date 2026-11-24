@@ -786,5 +786,6 @@ TEXTS('en',6,{
   "there_are_stones_waiting":"There are stones waiting for us in Iconium. Not yet.",
   "derbe_lies_beyond_lystra":"Derbe lies beyond Lystra, and Lystra has not heard either. One city at a time.",
   "out_of_habit_i_run_the_point":"Out of habit, I run the point of the awl around each corner eyelet. Not one stitch has given.",
-  "whether_or_not_he_ever":"Whether or not he ever thinks of who sewed it, it will keep his loads dry."
+  "whether_or_not_he_ever":"Whether or not he ever thinks of who sewed it, it will keep his loads dry.",
+  "i_wish_him_a_good_road":"I wish him a good road. He lows once, deep in his chest, and goes on chewing."
 });
