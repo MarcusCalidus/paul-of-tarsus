@@ -235,11 +235,11 @@ ART.lystra={w:480,fp:1.3,q:12,
   /* the people of Lystra, when they come running: first they face the well, then the gate */
   if(G.crowd)CROWD.forEach(([id,x,y],i)=>man(g,x,y+((Math.floor(t/700)+i)%5===0?-.6:0),id,G.bulls?-1:1,0,null,G.crowd>1&&(Math.floor(t/500)+i)%3===0?1:0,7));
   /* the bulls, garlanded, brought to the gates (Acts 14:13) */
-  /* side by side, the far one half a head in front, so that neither hides the other's head. When the priest gives up (stop6), they are
+  /* side by side, the far one a head and more in front, so that a clear gap parts the two heads and neither seems to sit on the other's body. When the priest gives up (stop6), they are
      led away after him: they turn, and walk out of the picture by the gate side, at the pace everybody walks (G.led: when they turned) */
   if(G.led!=null){const d=Math.max(0,(t-G.led-300)/1000*WALK_V),fr=d>0?SHARED.beasts.frame.ox(d):0;
-    if(54-d>-50){cattle(g,54-d,112.6,-1,fr,'#d8c8b0',1);cattle(g,40-d,116.4,-1,fr&&SHARED.beasts.frame.ox(d+9),'#e6dccc',1)}}
-  else if(G.bulls){cattle(g,54,112.6,1,0,'#d8c8b0',1);cattle(g,40,116.4,1,0,'#e6dccc',1)}},
+    if(50-d>-50){cattle(g,50-d,112.6,-1,fr,'#d8c8b0',1);cattle(g,30-d,116.4,-1,fr&&SHARED.beasts.frame.ox(d+9),'#e6dccc',1)}}
+  else if(G.bulls){cattle(g,50,112.6,1,0,'#d8c8b0',1);cattle(g,30,116.4,1,0,'#e6dccc',1)}},
  front(){}};
 /* ---------- Outside Lystra, at dusk ---------- */
 ART.outside={w:320,q:12,
@@ -382,9 +382,11 @@ ART.derbe={w:320,q:12,
   comp(g,'source-atop',.36,()=>R(g,0,0,320,150,'#34305a'))},
  draw(g,t){/* chaff on the wind; Zenon's wagon, loaded for the road east */
   for(let i=0;i<9;i++){const k=((t/2600+i*.111)%1);R(g,176+k*60+Math.sin(i*2.1)*6,90-k*14-Math.sin(k*9+i)*3,1,.6,`rgba(244,236,200,${.8*(1-k)})`)}
-  /* the far ox, the wagon and its pole, the near ox, and the yoke that lies across both their necks */
-  depth(111,()=>{cattle(g,272,108.6,1,0,'#6f4630',0);wagon(g,174,110,-1,1);cattle(g,262,111,1,SHARED.beasts.pose('oxen6',0),'#8a5a3a',0);
-    R(g,273,73.6,6,2.5,'#5a3e22');R(g,273,73.6,6,.5,'#a8845a')});depth(112,()=>bundles(g,60,112))},
+  /* the far ox, the wagon and its pole, the near ox, and the yoke that lies across both their necks. The pair is seen a little from the
+     front: the far ox stands a head ahead and a little higher, so that its head stands clear beside the near one's, and the near head
+     hides the middle of the yoke, whose ends lie on the two necks */
+  depth(111,()=>{cattle(g,279,108,1,0,'#6f4630',0);R(g,291,73.4,5,2.5,'#5a3e22');R(g,291,73.4,5,.5,'#a8845a');wagon(g,174,110,-1,1);cattle(g,262,111,1,SHARED.beasts.pose('oxen6',0),'#8a5a3a',0);
+    R(g,274,76.4,5,2.5,'#5a3e22');R(g,274,76.4,5,.5,'#a8845a')});depth(112,()=>bundles(g,60,112))},
  front(){}};
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
 Object.assign(LOOK,{
@@ -743,7 +745,7 @@ ROOMS.lystra={space:0.8,walk:[16,464,110,138],get mood(){return G.bulls?'feast':
   {name:'fields',x:300,y:68,w:92,h:22,wx:350,look:async()=>{await say(P,'fields_orchards_and_good_pasture');await say(P,quote('ps65'))}},
   {name:'city_wall',x:0,y:18,w:100,h:28,wx:76,look:'wall_of_lystra'},
   {name:'city_gate',x:26,y:48,w:48,h:56,wx:98,wy:116,dir:-1,look:()=>say(P,G.bulls?'bulls_at_the_gates_garlanded':'gate_of_lystra'),exit:gate6},
-  {name:'bulls',x:16,y:80,w:78,h:38,wx:112,wy:118,dir:-1,vis:()=>!!G.bulls,look:'two_white_bulls_with_garlands',use:stop6,pickup:'they_are_not_mine_and_what'},
+  {name:'bulls',x:8,y:80,w:80,h:38,wx:112,wy:118,dir:-1,vis:()=>!!G.bulls,look:'two_white_bulls_with_garlands',use:stop6,pickup:'they_are_not_mine_and_what'},
   {name:'door_of_a_house',x:140,y:68,w:14,h:36,wx:147,wy:112,look:'house_of_mud_brick_with_its_door',use:'it_is_not_my_house',open:'it_is_not_my_house'},
   {name:'door_of_loiss_house',x:190,y:63,w:22,h:41,wx:201,wy:112,look:'door_of_a_house_where_the_sabbath',use:'i_will_go_in_when_i_am',open:'i_will_go_in_when_i_am'},
   {name:'well',x:262,y:70,w:36,h:38,wx:262,wy:118,dir:1,def:'use',look:['well_of_lystra','with_no_synagogue_this_is'],use:speak6,pickup:'bucket_belongs_to_the_well'},
@@ -835,7 +837,7 @@ ROOMS.derbe={space:0.5,walk:[16,304,110,138],mood:'hope',amb:{wind:.5,birds:.4,c
   {name:'threshing_floor',x:112,y:82,w:82,h:20,wx:150,wy:113,look:['zenons_threshing_floor','rain_from_heaven_and_seasons_of_harvest_said']},
   {name:'plowed_field',x:198,y:78,w:92,h:12,wx:240,look:'one_field_under_the_plow'},
   {name:'wagon',x:174,y:78,w:72,h:32,wx:166,wy:117,dir:1,look:'zenons_wagon_loaded_with_grain_for_tarsus',pickup:'it_is_zenons_and_it_is_loaded',use:'climb_up_and_ride_home'},
-  {name:'oxen',x:242,y:66,w:62,h:46,wx:232,wy:123,dir:1,look:'yoke_of_brown_oxen',pickup:'they_are_zenons',
+  {name:'oxen',x:242,y:66,w:72,h:46,wx:232,wy:123,dir:1,look:'yoke_of_brown_oxen',pickup:'they_are_zenons',
     use:'i_scratch_one_of_the_oxen',talk:async()=>{SHARED.beasts.speak('oxen6','ox');await say(P,'i_wish_him_a_good_road')}},
   {name:'milestone',x:297,y:91,w:10,h:18,wx:290,wy:122,dir:1,look:'milestone_from'},
   {name:'our_baggage',x:58,y:98,w:38,h:14,wx:84,wy:115,dir:-1,look:'two_bed_rolls_and_a_bag',pickup:'when_we_have_chosen_our_road'},
