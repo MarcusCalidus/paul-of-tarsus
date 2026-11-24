@@ -248,9 +248,53 @@ ART.lystra={w:480,fp:1.3,q:12,
   else if(G.bulls){cattle(g,50,109.5,1,0,'#d8c8b0',1);cattle(g,30,116.4,1,0,'#e6dccc',1)}},
  front(){}};
 /* ---------- Outside Lystra, at dusk ---------- */
+/* downPaul: Paul where they left him (Acts 14:19), a sprite placed by hand pixel by pixel in his own colors, and not the figure painter
+   laid on its side. One sprite pixel is half a room pixel, as in person(). Head to the left, face to the ground, his mantle over his back,
+   the tunic over his thighs, bare calves and the soles of his sandals turned up. x runs from -48 (crown) to 50 (toes); y=0 is the ground. */
+function downPaul(s,o){const c=pal(o),S=c.sk,T=c.tu,C=c.cl,H=c.ha,B=c.be,Gr=c.gr,LE=c.le||ramp('#6a4428');
+  s.save();s.scale(.5,.5);const px=(x,y,col,w,h)=>{s.fillStyle=col;s.fillRect(x,y,w||1,h||1)};
+  const X=-48,lerp=(k,x)=>{for(let i=1;i<k.length;i++)if(x<=k[i][0]){const[a,ya]=k[i-1],[b,yb]=k[i];return Math.round(ya+(yb-ya)*(x-a)/(b-a))}return k[k.length-1][1]};
+  /* the line of his back, from the nape over the shoulders, the small of the back, the seat and the thighs to the backs of the knees */
+  const BK=[[14,-12],[16,-17],[20,-21],[26,-22],[33,-21],[40,-19],[46,-17],[51,-18],[56,-19],[61,-18],[66,-15],[71,-12]];
+  /* shade: a band of the rounded form lit from above; u runs 0 at the top to 1 on the ground */
+  const band=(u,top)=>top?0:u<.3?1:u<.68?2:u<.92?3:4,bandT=(u,top)=>top?0:u<.45?1:u<.86?2:3;
+  /* the far leg, a tone darker, just above the near one, and its foot */
+  for(let x=70;x<=90;x++){const ty=Math.round(-13+(x-70)*.2)-(x>72&&x<80?1:0);for(let y=ty;y<=ty+3;y++)px(X+x,y,[S[2],S[3],S[3],S[4]][y-ty])}
+  for(const[x,a,b]of[[90,-11,-7],[91,-11,-6],[92,-10,-6],[93,-10,-5],[94,-9,-5],[95,-8,-5]]){px(X+x,a-1,'#2a1810');px(X+x,a,LE[3]);for(let y=a+1;y<=b;y++)px(X+x,y,S[3])}
+  /* the near leg: calf and shin to the ankle */
+  for(let x=69;x<=90;x++){const ty=Math.round(-11+(x-69)*.16)-(x>71&&x<81?1:0);
+    for(let y=ty;y<=-1;y++){const u=(y-ty)/Math.max(1,-1-ty);px(X+x,y,S[y===ty?1:u<.3?1:u<.7?2:u<.9?3:4])}}
+  /* the near foot: the instep on the ground, the heel up, the sole of the sandal turned to the sky and its strap over the ankle */
+  for(const[x,a]of[[90,-10],[91,-10],[92,-9],[93,-9],[94,-8],[95,-7],[96,-6],[97,-5],[98,-3]]){px(X+x,a,'#2a1810');px(X+x,a+1,LE[2]);for(let y=a+2;y<=-1;y++)px(X+x,y,S[y===-1?4:y<a+4?2:3])}
+  for(let k=0;k<4;k++)px(X+90+k,-7+k,LE[3]);
+  /* the tunic over the hips and thighs, its hem at the backs of the knees */
+  for(let x=42;x<=74;x++){const ty=lerp(BK,x),hem=x<70?-1:Math.round(-1-(x-70)*2.2);
+    for(let y=ty;y<=hem;y++){const u=(y-ty)/Math.max(1,hem-ty);let v=bandT(u,y===ty);
+      for(const[f0,sl]of[[55,.35],[63,.5]]){const fx=f0+Math.round((y-ty)*sl);if(u>.25&&x===fx)v=Math.min(4,v+1);else if(u>.25&&x===fx+1)v=Math.max(0,v-1)}
+      if(y===hem)v=4;else if(x===74||y===hem-1)v=Math.max(v,3);px(X+x,y,T[v])}}
+  /* the mantle, drawn over his shoulders and back and falling to the ground on our side; its edge slants down across the small of the back */
+  const edge=y=>48+Math.round((y+18)*.45)+(y%3===0?1:0);
+  for(let x=13;x<=58;x++){const ty=lerp(BK,x);
+    for(let y=ty;y<=-1;y++){if(x>edge(y))continue;const u=(y-ty)/Math.max(1,-1-ty);let v=band(u,y===ty);
+      for(const[f0,sl]of[[20,.55],[28,.6],[36,.55],[43,.6]]){const fx=f0+Math.round((y-ty)*sl);if(u>.3&&x===fx)v=Math.min(4,v+1);else if(u>.3&&x===fx+1)v=Math.max(0,v-1)}
+      if(y===-1||x===edge(y))v=Math.max(v,3);if(x===edge(y)&&y>-4)v=4;px(X+x,y,C[v])}}
+  /* the near hand, out from under the mantle, palm up on the ground */
+  px(X+39,-3,T[2],2);px(X+38,-2,T[3],3);px(X+38,-1,T[4],3);px(X+41,-4,S[1],4);px(X+41,-3,S[0],5);px(X+41,-2,S[1],6);px(X+41,-1,S[3],6);px(X+46,-3,S[1]);px(X+47,-2,S[2]);px(X+47,-1,S[3]);
+  /* the head lies face down: its crown toward the left (bare where his hair recedes), the back of the head on top, the ear, the temple
+     and cheek, and his beard on the ground toward the neck */
+  const HD=['.......hhhhhh.....','.....hhHHHHhhhh...','...hhHHhhhhhhhhd..','..hHHhhhhhhhhhhdd.','.SLhhhhhhhhhhhhdd.','SLSShhhhhhhhhhddd.',
+            'SSSSShhhhszhhhdd..','SSsSSShhsSSzhhdd..','sSssSSshsSszzhdz..','ssssSSssszzzssss..','zzzsssssssssssss..','zsssssssssBBBss...',
+            'zzssssBBBBBVBBBBz.','.zzBBBVBBBBBVBBv..','..vvBBBvBBBvBvv...'];
+  const L={h:H[2],H:Gr?Gr[2]:H[1],d:H[3],s:S[2],S:S[1],L:S[0],z:S[3],B:B?B[2]:H[2],V:Gr?Gr[2]:(B||H)[1],v:B?B[3]:H[3]};
+  for(let j=0;j<HD.length;j++)for(let i=0;i<HD[j].length;i++){const k=L[HD[j][i]];if(k)px(X+i,-15+j,k)}
+  s.restore()}
+/* STONES6: the stones that were thrown: many, of a size to be thrown by hand, thickest round where he lies and thinning outward */
+const STONES6=(()=>{const r=rng(1419),o=[],cols=['#8a7c7c','#968a80','#7c7078','#a49686','#857a70'];
+  for(let i=0;i<30;i++){const a=r()*6.283,d=Math.sqrt(r()),x=156+Math.cos(a)*d*46,y=129+Math.sin(a)*d*11;if(y<119||y>140)continue;
+    const w=2.4+r()*3.4;o.push([+x.toFixed(1),+y.toFixed(1),+w.toFixed(1),+(w*(.5+r()*.18)).toFixed(1),cols[i%5]])}return o})();
 ART.outside={w:320,q:12,
  /* the stones at the roadside that lie a little way out on the ground */
- props:[[82,113,7,4],[104,113,6,3.6],[61,113.4,6,3.4]].map(([x,y,w,h])=>({y,shape:g=>rock(g,x,y,w,h,'#7c7078')})),
+ props:[[82,113,7,4],[104,113,6,3.6],[61,113.4,6,3.4]].map(([x,y,w,h])=>({y,shape:g=>rock(g,x,y,w,h,'#7c7078'),foot:[x-w/2,y-2,w,2]})),
  light:()=>({amb:'#e8b49c'}),
  paint(g){const r=rng(457);
   sky(g,320,86,SKY6(['#27356e','#5a4f8e','#b0667a','#e8905a','#f6c878']));pool(g,70,84,90,26,'#ffe0a0',.5,'screen');
@@ -284,15 +328,9 @@ ART.outside={w:320,q:12,
  fore(g){const r=rng(458);rock(g,300,150,34,16,'#4a4458');for(let i=0;i<40;i++){const sx=r()*320;stroke(g,[sx,150,sx+(r()-.5)*6,136-r()*8],r()<.5?'#5a5440':'#3a3848',.8)}
   comp(g,'source-atop',.5,()=>R(g,0,0,320,150,'#2a2450'))},
  draw(g,t){/* the stones that were thrown, lying where they fell */
-  for(const[x,y,w,h]of[[118,127,5,3],[134,131,6,3.4],[150,124,4.6,2.6],[164,130,5.6,3],[176,126,4,2.4],[142,121,4,2.2],[126,134,5,2.8]])depth(y,()=>rock(g,x,y,w,h,'#8a7c7c'));
-  /* Paul, as they left him: face down, his mantle over him. Those who stand around him stand behind him or before him, by where their feet are */
-  if(G.down)depth(129,()=>{const x=0,y=0,L='#e8b49c',sk=mul('#c08a5c',L),cl=mul('#6e4a2e',L),tu=mul('#c4b08a',L),hr=mul('#2a1a12',L);
-    g.save();g.translate(132,129);g.scale(1,1.4);oval(g,x+25,y+.4,29,2,'rgba(20,16,40,.42)');
-    R(g,x+41,y-3.5,9,2.5,sk);R(g,x+41,y-1.5,9,.5,tint(sk,-.3));R(g,x+49.5,y-5,2.5,5,sk);R(g,x+51.5,y-5,.5,5,'#2a1810');R(g,x+36,y-4.5,6,4.5,tu);R(g,x+36,y-1,6,1,tint(tu,-.3));
-    poly(g,[x+7,y,x+8,y-4.6,x+14,y-6.6,x+26,y-7,x+35,y-5.6,x+38,y-3,x+38.6,y],cl);poly(g,[x+8,y-4.6,x+14,y-6.6,x+26,y-7,x+35,y-5.6,x+33,y-4.4,x+24,y-5.4,x+14,y-5],tint(cl,.22));
-    for(const fx of[16,23,30])stroke(g,[x+fx,y-6.4,x+fx+1.6,y-.6],tint(cl,-.35),.6);R(g,x+7,y-1,31.5,1,tint(cl,-.45));
-    R(g,x+10,y-2.5,9,2,sk);R(g,x+18.5,y-3,2.5,2.5,sk);R(g,x+10,y-.5,11,.5,tint(sk,-.35));
-    oval(g,x+4,y-3.4,3.4,3.2,sk);poly(g,[x+.4,y-3.4,x+1.2,y-6,x+4,y-7,x+6.6,y-6,x+5,y-5,x+2.4,y-4.4,x+1.6,y-1.4],hr);oval(g,x+6.4,y-1.8,2,1.5,hr);g.restore()});
+  for(const[x,y,w,h,c]of STONES6)depth(y,()=>rock(g,x,y,w,h,c));
+  /* Paul, as they left him. Those who stand around him stand behind him or before him, by where their feet are */
+  if(G.down)figure(g,156,129,lightAt('outside',156,129),'paulDown6',s=>downPaul(s,LOOK.paul),24);
   g.save();arch(g,257,54,16,26);g.clip();pool(g,265,76,7+Math.sin(t/230),3,'#ffb860',.25,'screen');g.restore()},
  front(){}};
 /* ---------- Lystra: the house of Lois and Eunice ---------- */
@@ -301,7 +339,7 @@ function lowTable(g,day){const rt=rng(4621);board6(g,170,112,40,3,'#96703e',rt);
   if(!day){vessel(g,182,112,4.6,3.6,'#a8844e','bowl',{noShadow:1});g.fillStyle=lg(g,0,107,0,112,['#e8c078','#c9a060','#8a6630']);g.beginPath();g.ellipse(197,110.4,5.6,2.2,0,0,6.2832);g.fill()}}
 ART.house6={w:320,q:12,
  variant:()=>F.back?'d':'n',
- props:[{y:123,shape:(g,v)=>lowTable(g,v==='d')}],
+ props:[{y:123,shape:(g,v)=>lowTable(g,v==='d'),foot:[171,119,37,4]}],
  light:()=>F.back?{amb:'#f0e8dc',wallY:103}:{amb:'#7c6f86',wallY:103,wall:[[0,52,103,11],[52,68,103,45],[68,320,103,11]],lamps:[[150,58,60,'#7a5420',103,59.4],[92,96,46,'#7a3c14',103,100]]},
  paint(g,v){const r=rng(461),rw=rng(4611),rc=rng(4612),W='#d8c8a4',day=v==='d';
   /* the plaster's random cracks are set by hand now, high on the wall where they run to no head; their draws are still taken */
@@ -568,7 +606,9 @@ TA.hs={name:'Tatia',actor:TA,
 /* the hidden treasure (index.html, treasure): once the cover is on Xanthos's wagon, the tentmaker tries its corners with his awl, out of habit */
 async function awl6(){await say(P,'out_of_habit_i_run_the_point');
   await say(P,'whether_or_not_he_ever');treasure()}
-ROOMS.iconium={space:0.9,walk:[16,464,110,138],mood:'tense',amb:{crowd:.4,fountain:.7,birds:.3,hammer:.3,leaves:.3},hs:[
+ROOMS.iconium={space:0.9,walk:[16,464,110,138],
+  /* Xanthos's wagon, its wheels at the back edge of the strip */
+  block:[[310,107,60,3.2]],mood:'tense',amb:{crowd:.4,fountain:.7,birds:.3,hammer:.3,leaves:.3},hs:[
   {name:'mountains',x:188,y:26,w:110,h:24,wx:244,look:'mountains_on_every_side'},
   {name:'street_to_the_synagogue',x:0,y:36,w:60,h:68,wx:42,wy:113,dir:-1,look:['street_to_the_synagogue_of_the_jews','by_tomorrow_that_street'],
     use:'back_to_the_synagogue_today',open:'back_to_the_synagogue_today'},
@@ -748,7 +788,11 @@ LM.hs={name:'man_from_the_well',actor:LM,
 PR.hs={name:'priest_of_zeus',actor:PR,look:'priest_of_zeus_all_in_white',
   show:{'*':'an_offering'},talk:stop6,
   as:{barnabas:{look:'the_priest',talk:stop6,show:{'*':'an_offering'}}}};
-ROOMS.lystra={space:0.8,walk:[16,464,110,138],get mood(){return G.bulls?'feast':F.healed?'tense':'hope'},amb:()=>G.crowd?{crowd:.9,wind:.3,birds:.2}:{birds:.5,wind:.35,crickets:.3,crowd:.12},enter:lysIntro,hs:[
+ROOMS.lystra={space:0.8,walk:[16,464,110,138],
+  /* the man who has never walked, on his blanket by the well; the front row of the crowd when it comes running; and the two bulls at
+     the gate, until they are led away */
+  block:()=>[...F.healed?[]:[[297,107,40,4.4]],...G.crowd?CROWD.filter(c=>c[2]>110).map(([,x,y])=>[x-4,y-1.5,8,2]):[],
+    ...G.bulls&&G.led==null?[[7,113,38,3.5],[27,106,38,3.5]]:[]],get mood(){return G.bulls?'feast':F.healed?'tense':'hope'},amb:()=>G.crowd?{crowd:.9,wind:.3,birds:.2}:{birds:.5,wind:.35,crickets:.3,crowd:.12},enter:lysIntro,hs:[
   {name:'hills',x:238,y:44,w:240,h:24,wx:360,look:'low_hills_round_a_secluded'},
   {name:'fields',x:300,y:68,w:92,h:22,wx:350,look:async()=>{await say(P,'fields_orchards_and_good_pasture');await say(P,quote('ps65'))}},
   {name:'city_wall',x:0,y:18,w:100,h:28,wx:76,look:'wall_of_lystra'},
@@ -773,7 +817,9 @@ async function enterCity(){playAs(P);
   await say(BN,'we_ripped_our_garments');
   await say(P,'torn_from_the_neck_to_the_belt',TH)}
 const derbeRoad=()=>say(PC(),PC()===P?'tonight_in_the_dark':'not_without_a_word_to_the_disciples');
-ROOMS.outside={space:0.5,walk:[16,304,112,138],mood:'tense',amb:{wind:.6,crickets:.6,owl:.3},hs:[
+ROOMS.outside={space:0.5,walk:[16,304,112,138],
+  /* the two stones of the fallen field wall that lie at the back edge of the strip, and Paul where they left him */
+  block:()=>[[65.5,110,9,2],[87,109.6,10,2],...G.down?[[136,126,40,4]]:[]],mood:'tense',amb:{wind:.6,crickets:.6,owl:.3},hs:[
   {name:'hills',x:0,y:60,w:150,h:22,wx:80,look:'hills_are_going_dark'},
   {name:'Lystra',x:196,y:30,w:124,h:22,wx:240,look:['lystra_on_its_low_hill','still_there_are_disciples_inside_that_wall']},
   {name:'city_gate',x:254,y:52,w:24,h:30,wx:250,wy:113,dir:1,look:'the_gate',exit:enterCity},
@@ -785,7 +831,7 @@ ROOMS.outside={space:0.5,walk:[16,304,112,138],mood:'tense',amb:{wind:.6,cricket
 async function mend6(it){if(!night()||!['awl','thread'].includes(it))return false;
   if(F.mended)return say(BN,'it_is_mended_paul_and_better');
   await say(P,'off_with_that_mantle_barnabas');
-  await Promise.all([walk(P,176,120),walk(BN,150,118)]);P.dir=-1;BN.dir=1;P.bow=true;
+  await Promise.all([walk(P,176,116),walk(BN,150,118)]);P.dir=-1;BN.dir=1;P.bow=true;
   SFX.sew();await say(P,'tear_along_the_weave_is');SFX.sew();await wait(700);
   await say(P,'now_my_own');
   P.bow=false;F.mended=1;SFX.good();
@@ -812,7 +858,9 @@ async function backIntro(){if(!F.back||F.strong)return;
   await say(LO,'paul_barnabas');
   await say(TI,'you_came_in_at_the_same');
   await say(EN,'sit_down_both_of_you')}
-ROOMS.house6={space:1.25,walk:[16,304,110,136],mood:'calm',amb:()=>F.back?{birds:.3,crowd:.1}:{fire:.5,crickets:.3,owl:.2},enter:backIntro,hs:[
+ROOMS.house6={space:1.25,walk:[16,304,110,136],
+  /* months later, the older men and the rest of the congregation who stand in the room */
+  block:()=>F.back?GATHER.map(([,x,y])=>[x-5,y-2.5,10,3.5]):[],mood:'calm',amb:()=>F.back?{birds:.3,crowd:.1}:{fire:.5,crickets:.3,owl:.2},enter:backIntro,hs:[
   {name:'window',x:48,y:24,w:24,h:26,wx:64,look:()=>say(P,F.back?'daylight_and_the_lane':'night_over_lystra')},
   {name:'lamp',x:140,y:42,w:20,h:24,wx:150,look:()=>say(P,F.back?'lamp_in_its_niche':'one_lamp_in_a_niche'),pickup:'it_gives_light_to_the_whole_said'},
   {name:'shelf',x:172,y:48,w:60,h:18,wx:200,look:'jars_of_oil_meal_and_olives',pickup:'it_is_their_winter_store'},
@@ -838,7 +886,9 @@ ZE.hs={name:'Zenon',actor:ZE,
     {q:'what_will_the_brothers',a:async()=>{await say(ZE,'we_meet_on_my_threshing_floor');await say(P,'quite_a_few_and_no_one')}},
     {q:'thank_you_for_the_offer_zenon',bye:1}]),
   as:{barnabas:{look:'zenon_said',talk:()=>say(ZE,'room_for_two_barnabas_and_the_oxen'),show:{staff6:'you_would_not_need_that_on_my_wagon','*':'stow_it_on_the_load_if_you_said'}}}};
-ROOMS.derbe={space:0.5,walk:[16,304,110,138],mood:'hope',amb:{wind:.5,birds:.4,crickets:.3,hooves:.2},enter:derIntro,hs:[
+ROOMS.derbe={space:0.5,walk:[16,304,110,138],
+  /* Zenon's wagon and the near ox, at the back edge of the strip, and our baggage by the gate */
+  block:[[170,107,58,3.2],[239,107,37,3.2],[60,109,33.5,3]],mood:'hope',amb:{wind:.5,birds:.4,crickets:.3,hooves:.2},enter:derIntro,hs:[
   {name:'mountains',x:90,y:20,w:230,h:34,wx:220,look:'taurus_with_new_snow_on_it'},
   {name:'east_gate_of_derbe',x:18,y:50,w:42,h:54,wx:52,wy:113,dir:-1,look:'the_east_gate_of_derbe',
     use:'there_are_disciples_enough',open:'there_are_disciples_enough'},

@@ -452,6 +452,8 @@ BN.hs={get name(){return F.cartFixed||G.room!=='jerusalem'?'Barnabas':'man_with_
       {q:'do_you_know_the_people',a:async()=>{await say(BN,'know_them');await say(P,'i_will_tell_you')}},
       {q:'i_will_see_what_i_can_do',bye:1}])}};
 ROOMS.upper={space:1.25,walk:[24,300,112,138],mood:'calm',amb:{birds:.25,crowd:.12},
+  /* the floor cushion in the near right corner (painted in fore) reaches into the strip: nobody walks into it (#83) */
+  block:[[291,134,29,10]],
   enter:async()=>{if(F.upper)return;F.upper=1;place(BN,'upper',96,124,1);await say(BN,'cephas_james_this_is_saul_of_tarsus',{to:CE});
     await narr('barnabas_stood_up_for_saul_acts_9_27',{dur:9500});
     await say(CE,'saul_i');await say(CE,'stay_in_my_house_brother');
@@ -494,7 +496,10 @@ async function mendSail(it){if(!SEW.includes(it))return false;
 async function lowerSail(){if(!F.metCapt)return say(P,'i_should_not_touch_a_ships');
   await say(P,'easy_said');SFX.creak();await fade(1,220);F.sailDown=1;await wait(250);await fade(0,220);SFX.creak();
   await say(CP,'gently_done');await say(P,'tent_ropes_mostly')}
-ROOMS.harbor={space:0.6,walk:[16,466,110,138],mood:'hope',amb:{waves:.8,gulls:.6,wind:.3,creak:.5},hs:[
+ROOMS.harbor={space:0.6,walk:[16,466,110,138],mood:'hope',amb:{waves:.8,gulls:.6,wind:.3,creak:.5},
+  /* the coil of hawser by the mooring post (painted in fore) lies on the quay at the near edge of the strip, where it stands while the view
+     is at the left end, as it is whenever anyone comes near it: nobody walks into it (#83) */
+  block:[[32,135,32,8]],hs:[
   {name:'warehouse',x:0,y:24,w:112,h:66,wx:60,look:'grain_warehouses'},
   {name:'heap_of_old_sailcloth',x:16,y:90,w:56,h:20,wx:48,wy:116,look:'worn_out_sails_heaped_for_rag',
     pickup:()=>say(P,F.gotPatch?'i_have_all_i_need_from_it':'whole_sail_is_far_too_heavy'),

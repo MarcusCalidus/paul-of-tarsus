@@ -37,6 +37,10 @@ const _=null,
 /* materials and light shared by the backdrops of every chapter (shared/materials.js, to the standard of Chapter Fifteen's room of Gaius):
    quiet directional grain on wood, two-tone cracks set by hand, contact shadows in three steps of alpha, dyes drawn toward earth colors */
 const{plank:plank7,board:board7,crack:crack7,skipCracks:skipCracks7,shadow:shadow7,earth:earth7,joistAO:joistAO7}=SHARED.materials;
+/* The open country (shared/country.js): rock, stony ground, boulders and grass, painted alike in every chapter. Where a room's old painter has
+   made way for it, the old one still runs on SCRAP7, a scrap canvas nobody sees, so that it takes its draws from the room's rng() in their
+   order and everything the room paints after it stays where it was */
+const CO=SHARED.country,SCRAP7=mk(4,4)[1];
 /* joists7: the ceiling seen from below at its edge, as in Chapter One's workshop: dark boards, and the joists running toward us in
    perspective from the wall plate (y = U) to the top of the picture, each with the soft shade of the boards beside it. They stand in pairs
    about the middle, so that none rises upright from the plate, and no square beam end sits on it to make a T; the room lays the plate over
@@ -277,12 +281,13 @@ ART.gates={w:480,fp:1.25,q:12,
   /* far up the gap: the next turn of the gorge, blue with distance, and darker toward its foot */
   /* FIS: the fissures cut across the faces below; the bedding lines of every face stop short of them, so that no fissure crosses a bed */
   const FIS=[[86,2,92,28],[258,8,251,40],[322,58,327,84],[160,48,154,78],[430,4,425,34]];
-  crag(g,[334,44,346,33,362,27,380,32,402,44,404,100,334,100],mix(LS,night?'#3a4468':'#5c6890',.62),r,{dip:.02});ao(g,334,30,70,70,'b',.42,DK);
+  {const P=[334,44,346,33,362,27,380,32,402,44,404,100,334,100],c=mix(LS,night?'#3a4468':'#5c6890',.62);crag(SCRAP7,P,c,r,{dip:.02});CO.crag(g,P,c,7301,{dip:.02,bed:6,light:1,haze:night?'#3a4468':'#8a94b8',hazeA:.25})}ao(g,334,30,70,70,'b',.42,DK);
   /* the Gates themselves: two walls of limestone, and between them room for a stream and a road */
   const LW=[0,0,340,0,351,16,343,44,355,70,348,100,0,100],RW=[394,0,480,0,480,100,388,100,380,74,390,46,383,20];
-  crag(g,LW,LS,r,{dip:.03,shade:'l',gaps:FIS});crag(g,RW,tint(LS,.05),r,{dip:-.05,shade:'r',gaps:FIS});
+  crag(SCRAP7,LW,LS,r,{dip:.03,shade:'l',gaps:FIS});crag(SCRAP7,RW,tint(LS,.05),r,{dip:-.05,shade:'r',gaps:FIS});
+  CO.crag(g,LW,LS,7302,{dip:.03,bed:8,light:1,shade:'l',gaps:FIS,scrub:4,green:night?'#2c4038':'#4e6444'});CO.crag(g,RW,tint(LS,.05),7303,{dip:-.05,bed:8,light:-1,shade:'r',gaps:FIS,scrub:3,green:night?'#2c4038':'#4e6444'});
   /* the left wall is not one face: a buttress stands out of it, a cleft runs up behind the buttress, and ledges catch what light there is */
-  crag(g,[112,0,214,0,228,26,219,58,231,86,104,86,116,56,102,28],tint(LS,.09),r,{dip:.05,gaps:FIS});
+  {const P=[112,0,214,0,228,26,219,58,231,86,104,86,116,56,102,28];crag(SCRAP7,P,tint(LS,.09),r,{dip:.05,gaps:FIS});CO.crag(g,P,tint(LS,.09),7304,{dip:.05,bed:7,light:1,gaps:FIS,scrub:2,green:night?'#2c4038':'#4e6444'})}
   /* the shade gathers where the buttress stands out of the wall, and in the cleft behind it */
   ao(g,231,0,14,86,'l',.3,DK);ao(g,90,0,14,86,'r',.2,DK);
   shade(g,[214,0,250,0,262,36,248,86,231,86,219,58,228,26],SH,.62);shade(g,[0,0,112,0,102,28,116,56,104,86,0,86],SH,.46);shade(g,[250,0,340,0,351,16,343,44,355,70,348,86,248,86,262,36],SH,.24);
@@ -298,14 +303,14 @@ ART.gates={w:480,fp:1.25,q:12,
   poly(g,[348,100,374,100,369,78,361,78],'#b8ad98');stroke(g,[348,100,361,78],rgba(DK,.5),.7);stroke(g,[374,100,369,78],'rgba(255,246,224,.3)',.5);
   for(const[x,y,h]of[[62,36,20],[166,24,18],[236,50,15],[296,30,17],[408,46,16],[468,28,16]])pine(g,x,y,h,night?'#2c4638':'#3c5a44');
   /* the floor of the gorge, and the wheel ruts across it */
-  stoneGround(g,0,100,480,144,GR,r,280);poly(g,[0,100,374,100,378,104,348,108,0,109],'rgba(214,200,170,.4)');ao(g,0,100,480,6,'t',.35,'#2a2848');ao(g,0,100,480,2,'t',.25,DK);
+  stoneGround(SCRAP7,0,100,480,144,GR,r,280);CO.ground(g,0,100,480,144,GR,7305,{n:200,tufts:18,tuftC:'#8a8a5a',light:1});poly(g,[0,100,374,100,378,104,348,108,0,109],'rgba(214,200,170,.4)');ao(g,0,100,480,6,'t',.35,'#2a2848');ao(g,0,100,480,2,'t',.25,DK);
   for(let i=0;i<2;i++)stroke(g,[0,102.6+i*4,140,103+i*4,280,102.6+i*3.4,360,100.6+i*2],'rgba(70,60,80,.34)',.8);
   /* the stream, coming down out of the gap along the foot of the right wall */
   poly(g,RIV);g.fillStyle=lg(g,0,98,0,144,['#dfeef2','#8fb8c4','#5a8ea6','#3f7290']);g.fill();
   clipTo(g,()=>poly(g,RIV),()=>{for(let i=0;i<130;i++){const k=r(),sy=100+k*44,sx=378+k*90+(r()-.5)*40;R(g,sx,sy,2+k*7,.5+k*.4,r()<.6?'rgba(236,248,250,.6)':'rgba(20,56,80,.35)')}});
   stroke(g,[374,99,388,106,416,120,452,144],'rgba(240,250,250,.6)',.8);
-  for(const[x,y,w,h]of[[400,112,9,5],[432,128,12,7],[466,122,10,6],[382,103.4,6,3.4]])rock(g,x,y,w,h,'#8e8a80');
-  rock(g,224,105,18,8,'#9c968a');rock(g,8,107,16,8,'#a39d90');
+  for(const[x,y,w,h]of[[400,112,9,5],[432,128,12,7],[466,122,10,6],[382,103.4,6,3.4]]){CO.boulder(g,x,y,w,h,'#8e8a80',7306+x,{light:1});R(g,x-w*.55,y-.3,w*1.1,.5,'rgba(236,248,250,.5)')}
+  CO.boulder(g,224,105,18,8,'#9c968a',7310,{light:1,moss:'#6a7a50'});CO.boulder(g,8,107,16,8,'#a39d90',7311,{light:1,moss:'#6a7a50'});
   /* the merchant's bales of goat-hair cloth, stacked clear of the wet ground */
   bale(g,346,112,34,7,'#2e2620');bale(g,350,105,30,6.4,'#3a3029');bale(g,348,98.6,24,6,'#2a221d');
   /* light. By day, under the storm: what light there is comes down the gap, so the far turn of the gorge and the stream below it are
@@ -318,7 +323,10 @@ ART.gates={w:480,fp:1.25,q:12,
   else lightmap(g,480,'#a4a0b6',l=>{pool(l,366,26,60,60,'#f4e6c6',.8);pool(l,280,120,260,50,'#e8dcc8',.3);
     pool(l,368,70,46,40,'#e8e0d4',.4);pool(l,420,118,70,22,'#eef0f2',.32);pool(l,330,40,40,50,'#e4dcd0',.22);pool(l,404,50,30,60,'#e4dcd0',.18);
     comp(l,'multiply',1,()=>{ao(l,0,0,480,24,'t',.25,'#3a3858');ao(l,0,0,90,144,'l',.3,'#3a3858');ao(l,0,130,480,14,'b',.3,'#3a3858');ao(l,0,84,348,16,'b',.18,'#3a3858');shade(l,[214,0,250,0,262,36,248,86,231,86,219,58,228,26],'#d8d4e4',.5)})})},
- fore(g){const r=rng(734);rock(g,30,152,44,22,'#6a665e');rock(g,488,154,50,24,'#5e5a54');for(let i=0;i<24;i++){const sx=80+r()*60;stroke(g,[sx,150,sx+3+r()*6,137-r()*7],r()<.5?'#6a6a48':'#4a5038',.8)}
+ fore(g){const r=rng(734);CO.boulder(g,30,152,44,22,'#6a665e',7320,{light:1});CO.boulder(g,488,154,50,24,'#5e5a54',7321,{light:1});
+  /* grass bent by the wind, every blade the same way */
+  for(let i=0;i<24;i++){const sx=80+r()*60;stroke(SCRAP7,[sx,150,sx+3+r()*6,137-r()*7],r()<.5?'#6a6a48':'#4a5038',.8)}
+  for(let i=0;i<30;i++){const q=rng(7322+i),sx=80+q()*60,h=9+q()*8,l=3+q()*3;stroke(g,[sx,150,sx+l*.5,150-h*.6,sx+l,150-h],q()<.5?'#6a6a48':'#4a5038',.8)}
   comp(g,'source-atop',.5,()=>R(g,0,0,610,150,'#2a2850'))},
  draw(g,t){const lit=lightAt('gates',70,112);
   /* the far ox, the carter's wagon and its pole, the near ox, and the yoke that lies across both their necks: they face the cleft, and the wind.
@@ -341,7 +349,7 @@ function wellJar(g,x,y,c){R(g,x-3,y-.4,8,1,'rgba(30,20,40,.3)');poly(g,[x-1.6,y-
 /* the low table of the house at Lystra. It stands out on the mat, so it is a prop as well: whoever walks behind it is hidden by it */
 function lowTable(g){const rw=rng(4611);board7(g,170,112,40,3,'#96703e',rw);board7(g,170,115,2.6,8,'#5a4226',rw,1);board7(g,207.4,115,2.6,8,'#5a4226',rw,1);vessel(g,190,112,4.6,3.6,'#a8844e','bowl',{noShadow:1})}
 ART.lystra7={w:320,q:12,
- props:[{y:123,shape:lowTable}],
+ props:[{y:123,shape:lowTable,foot:[171,119,37,4]}],
  light:()=>({amb:'#f0e8dc',wallY:103,wall:[[0,52,103,11],[52,68,103,45],[68,320,103,11]],lamps:[[92,96,38,'#4a2410',103,100]]}),
  paint(g){const r=rng(461),W='#d8c8a4';
   plaster(g,0,0,320,104,W,r,{patch:4,cracks:0,brick:'#a8875a',t:.36});skipCracks7(r,6);
@@ -812,7 +820,9 @@ ME.hs={name:'Melissa',actor:ME,
   show:{awl:'is_it_sharp',tablets:'are_there_pictures_in_it','*':'is_that_for_our_tent'},
   talk:async()=>{await say(ME,'does_the_big_ox_bite');await say(P,'not_that_i_have_seen_and_i')},
   as:{silas:{look:'merchants_daughter',talk:async()=>{await say(ME,'are_you_cold_too');await say(SI,'a_little')},show:{'*':'is_that_for_our_tent'}}}};
-ROOMS.gates={space:0.8,walk:[16,388,112,138],get mood(){return F.up?'calm':'storm'},amb:()=>F.up?{fountain:.9,leaves:.9,wind:.5}:{wind:1,leaves:.5,fountain:.25,creak:.3},enter:gatesIntro,hs:[
+ROOMS.gates={space:0.8,walk:[16,388,112,138],
+  /* Zenon's wagon and the near ox, at the back edge of the strip */
+  block:[[19,109,58,3.2],[88,110,37,3]],get mood(){return F.up?'calm':'storm'},amb:()=>F.up?{fountain:.9,leaves:.9,wind:.5}:{wind:1,leaves:.5,fountain:.25,creak:.3},enter:gatesIntro,hs:[
   {name:'rock_wall',x:0,y:0,w:338,h:82,wx:180,look:'limestone_as_high_as_i_can_see'},
   {name:'cilician_gates',x:342,y:8,w:54,h:58,wx:360,wy:113,dir:1,exit:leaveGates,look:['the_cilician_gates','every_wagon_between_tarsus']},
   {name:'stream',x:398,y:100,w:82,h:44,wx:384,wy:127,dir:1,look:'snow_water_coming_down_fast',use:'i_fill_my_hands_and_drink',pickup:'stream_stays_in_its_bed'},
@@ -942,7 +952,9 @@ MY.hs={name:'Myron',actor:MY,
   talk:askMyron,
   as:{silas:{look:'myron_one_of_the_elders',give:deliverL,
     talk:()=>say(MY,F.readL?'good_letter_brother_and_well_carried':'peace_brother_said'),show:{'*':'keep_it_by_you_brother_said'}}}};
-ROOMS.lystra7={space:1.25,walk:[16,304,110,136],mood:'calm',amb:{fire:.5,birds:.25,wind:.2},enter:lysIntro,hs:[
+ROOMS.lystra7={space:1.25,walk:[16,304,110,136],
+  /* the elder and the two sisters of the congregation, whom the room paints where they stand */
+  block:()=>GATHER.map(([,x,y])=>[x-5,y-2.5,10,3.5]),mood:'calm',amb:{fire:.5,birds:.25,wind:.2},enter:lysIntro,hs:[
   {name:'window',x:48,y:24,w:24,h:26,wx:64,look:'lane_in_winter_daylight'},
   {name:'lamp',x:140,y:42,w:20,h:24,wx:150,look:'the_lamp_in_its_niche',pickup:'it_gives_light_to_the_whole_said'},
   {name:'shelf',x:172,y:48,w:60,h:18,wx:200,look:'oil_meal_and_olives',pickup:'it_is_their_winter_store'},
@@ -1015,7 +1027,9 @@ TA.hs={name:'Tatia',actor:TA,
   talk:()=>F.readI?askTatia():say(TA,'paul_in'),
   as:{silas:{look:'sister_at_the_fountain',
     talk:()=>say(TA,'you_are_the_brother_from_jerusalem_said'),show:{'*':'keep_it_brother_2'}}}};
-ROOMS.iconium7={space:0.9,walk:[16,464,110,138],mood:'hope',amb:{fountain:.7,birds:.2,hammer:.3,wind:.3,crowd:.2},enter:icoIntro,hs:[
+ROOMS.iconium7={space:0.9,walk:[16,464,110,138],
+  /* the carrier's wagon, at the back edge of the strip */
+  block:[[310,107,60,3.2]],mood:'hope',amb:{fountain:.7,birds:.2,hammer:.3,wind:.3,crowd:.2},enter:icoIntro,hs:[
   {name:'mountains',x:188,y:26,w:110,h:24,wx:244,look:'mountains_round_the_plain'},
   {name:'street_to_the_synagogue',x:0,y:36,w:60,h:68,wx:42,wy:113,dir:-1,look:'the_street_to_the_synagogue_of_the_jews',use:'not_today_said',open:'not_today_said'},
   {name:'saddlery',x:84,y:56,w:84,h:30,wx:126,wy:113,look:'nathans_shop_pack_saddles_said',pickup:'they_are_nathans_living'},

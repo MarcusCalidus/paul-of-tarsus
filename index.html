@@ -295,6 +295,7 @@ html.phone #scroll{inset:auto;left:var(--fx);top:var(--fy);width:calc(var(--fk)*
 html.phone #found{left:calc(var(--fl) + var(--s)*3px);top:calc(var(--ts)*12px + env(safe-area-inset-top,0px))}
 html.phone #hush{right:calc(var(--fr) + var(--s)*3px);top:calc(var(--ts)*12px + env(safe-area-inset-top,0px))}
 html.phone #overlay{padding-top:calc(var(--s)*8px + env(safe-area-inset-top,0px))}
+html.phone #overlay.title{padding-top:calc(var(--s)*5px + env(safe-area-inset-top,0px))}
 html.phone #menu{padding-top:calc(var(--s)*6px + env(safe-area-inset-top,0px))}
 html.phone #codebox{padding-top:calc(var(--s)*8px + env(safe-area-inset-top,0px))}
 html.phone #wrap>#skip{--s:var(--ts);--px:calc(var(--s)*.5px);position:absolute;z-index:8;top:calc(var(--s)*12px + env(safe-area-inset-top,0px));right:calc(var(--fr) + var(--s)*3px);height:calc(var(--s)*11px)}
@@ -1446,19 +1447,101 @@ const planOf=id=>id&&ROOMS[id]&&ROOMS[id].plan||null;
 const figBox=id=>{const p=planOf(id);return p?p.fig:[10,49]};
 function place(a,room,x,y,dir){a.room=room;a.x=x;a.y=y;a.dir=dir||1;a.walk=null}
 /* --- script primitives --- */
-function walk(a,x,y){return new Promise(res=>{const rm=ROOMS[a.room],pl=planOf(a.room);
+function walk(a,x,y,o){return new Promise(res=>{const rm=ROOMS[a.room],pl=planOf(a.room);
   /* on a plan the way runs along the lanes: route gives the points to pass, the last of them where he stops (or null: there is no way) */
   if(pl&&!a.free){const r=pl.route(a,x,y);if(a.walk)a.walk.res(false);a.walk=null;if(!r){res(false);return}if(!r.length){res(!r.partial);return}
     let rest=0;for(let i=1;i<r.length;i++)rest+=Math.hypot(r[i][0]-r[i-1][0],r[i][1]-r[i-1][1]);
     /* partial: the way he knows does not reach the place: he goes as near as it takes him, and what was clicked is not acted on */
     a.walk={x:r[0][0],y:r[0][1],path:r.slice(1),rest,res,partial:!!r.partial};return}
   if(a===PC()&&rm&&!a.free){const w=rm.walk;x=clamp(x,w[0],w[1]);y=clamp(y,w[2],w[3])}
-  if(a.walk)a.walk.res(false);a.walk={x,y,res};if(Math.abs(x-a.x)>1)a.dir=x>a.x?1:-1})}
+  if(a.walk)a.walk.res(false);a.walk={x,y,res};if(Math.abs(x-a.x)>1)a.dir=x>a.x?1:-1;
+  /* in a room the way round what stands on the floor is found on the next frame (routeStart), together with every other walk begun now;
+     o.click: the player clicked, and what was clicked is acted on only if he comes close enough to it */
+  if(rm&&rm.walk&&!a.free&&!pl){a.walk.pend=1;a.walk.click=!!(o&&o.click)}})}
+/* --- routes in a room (issue #83) ---
+   What stands on the floor of a room blocks a walk. A thing painted into the backdrop has a footprint, the floor it covers, as a box
+   [x, y, w, h] in room pixels (y its back edge, y + h its front), named beside its entry in ART[id].props as foot; what blocks the floor
+   without being cut out (a beast or a bystander the room paints itself, a well at the back) is named in ROOMS[id].block. Either may be one
+   box, a list of them, or a function of the room's variant that gives them. A prop that someone sits on says seat:1: a script may walk him
+   into it. Everyone who is standing still when a walk begins blocks it too, with a box round his feet (and round his mate's); two who are
+   both walking pass each other, as in the old games. A figure marked free walks straight, as before.
+   roomRoute finds the way across the walk strip (ROOMS[id].walk), round all of it, on a grid of two-pixel cells where a step into the
+   room's depth counts double, as it does when he walks; pulls it straight from corner to corner; and rounds each corner into a curve, so
+   that a walk round a stool reads as one bend. Whoever stands inside a footprint (on a seat, or too close to someone) steps out of it first.
+   A click that cannot be reached takes him to the nearest place that can; a script's walk always ends where the script says, and the
+   playtest is told (ROUTE.bad) when that place lies in a footprint that is not a seat, or cannot be reached. */
+const RCS=2,FOOT_M=[6,1.5],ACT_FOOT=[6,3],ROUTE={bad:new Set(),last:[]};
+const boxesOf=(f,v)=>{if(typeof f==='function')f=f(v);if(!f||!f.length)return[];return typeof f[0]==='number'?[f]:f};
+/* roomFeet: the footprints of the floor of a room, as {b:[x0, y0, x1, y1], seat}; standing: those of everyone standing still in it but a */
+function roomFeet(id){const a=ART[id],r=ROOMS[id],v=a&&a.variant?a.variant():'',out=[];
+  for(const p of a&&a.props||[])for(const b of boxesOf(p.foot,v))out.push({b:[b[0],b[1],b[0]+b[2],b[1]+b[3]],seat:!!p.seat});
+  for(const b of boxesOf(r&&r.block,v))out.push({b:[b[0],b[1],b[0]+b[2],b[1]+b[3]]});return out}
+const standing=(a,id)=>Object.values(ACT).filter(o=>o!==a&&o.room===id&&!o.walk).flatMap(o=>(o.mate?[o.x,o.x+o.mate.dx*o.dir]:[o.x]).map(x=>
+  ({b:[x-ACT_FOOT[0],o.y-ACT_FOOT[1],x+ACT_FOOT[0],o.y+ACT_FOOT[1]],who:o})));
+/* inBox: x, y is where a figure's feet would stand inside the footprint b, which keeps him off by half his body across and a little in
+   depth (k: a part of that margin) */
+const inBox=(b,x,y,k)=>x>b[0]-FOOT_M[0]*k&&x<b[2]+FOOT_M[0]*k&&y>b[1]-FOOT_M[1]*k&&y<b[3]+FOOT_M[1]*k;
+const floorHit=(id,x,y)=>roomFeet(id).some(f=>inBox(f.b,x,y,1));
+function roomRoute(a,X,Y,click){const id=a.room,R=ROOMS[id],w=R&&R.walk;if(!w)return null;
+  const F=roomFeet(id),S=standing(a,id),all=F.concat(S),hit=(x,y,k)=>all.some(f=>inBox(f.b,x,y,k)),
+    x0=w[0],y0=w[2],GW=Math.floor((w[1]-x0)/RCS)+1,GH=Math.floor((w[3]-y0)/RCS)+1,N=GW*GH,
+    cxy=i=>[x0+(i%GW)*RCS,y0+((i/GW)|0)*RCS],cOf=(x,y)=>clamp(Math.round((y-y0)/RCS),0,GH-1)*GW+clamp(Math.round((x-x0)/RCS),0,GW-1),
+    B=new Uint8Array(N);
+  for(let i=0;i<N;i++){const[x,y]=cxy(i);B[i]=hit(x,y,1)?1:0}
+  /* where he sets out: the cell he stands on; if he stands free but that cell is blocked (the grid's rows lie two pixels apart), the free
+     cell nearest to him; and only the footprints he really stands in may be stepped out of, never another whose margin touches them */
+  const own=all.filter(f=>inBox(f.b,a.x,a.y,1)),O=new Uint8Array(N);if(own.length)for(let i=0;i<N;i++){const[x,y]=cxy(i);O[i]=own.some(f=>inBox(f.b,x,y,1))?1:0}
+  let s=cOf(a.x,a.y);if(B[s]&&!own.length){let bd=Infinity;const sx=s%GW,sy=(s/GW)|0;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const X=sx+dx,Y=sy+dy;if(X<0||Y<0||X>=GW||Y>=GH)continue;
+    const n=Y*GW+X,[x,y]=cxy(n),d=Math.hypot(x-a.x,(y-a.y)*2);if(!B[n]&&d<bd){bd=d;s=n}}}
+  const tx=clamp(X,w[0],w[1]),ty=clamp(Y,w[2],w[3]),C=new Float64Array(N).fill(Infinity),from=new Int32Array(N).fill(-1),hp=[],hk=[];
+  /* the shortest way out from where he stands (a heap of cells by cost, kept in 64 bits: a cost rounded to 32 is found stale and the search
+     stops short, as on the lane maps); a blocked cell is entered only from a blocked cell, so that he
+     steps out of a footprint he stands in, and never into another */
+  const push=(i,k)=>{let j=hp.length;hp.push(i);hk.push(k);while(j){const p=(j-1)>>1;if(hk[p]<=k)break;hp[j]=hp[p];hk[j]=hk[p];j=p}hp[j]=i;hk[j]=k},
+    pop=()=>{const top=hp[0],li=hp.pop(),lk=hk.pop(),n=hp.length;if(n){let j=0;for(;;){let c=2*j+1;if(c>=n)break;if(c+1<n&&hk[c+1]<hk[c])c++;if(hk[c]>=lk)break;hp[j]=hp[c];hk[j]=hk[c];j=c}hp[j]=li;hk[j]=lk}return top};
+  C[s]=0;push(s,0);
+  while(hp.length){const k0=hk[0],c=pop();if(k0>C[c])continue;const cx=c%GW,cy=(c/GW)|0;
+    for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;const nx=cx+dx,ny=cy+dy;if(nx<0||ny<0||nx>=GW||ny>=GH)continue;const n=ny*GW+nx;if(B[n]&&!(B[c]&&O[n]))continue;
+      const nc=C[c]+Math.hypot(dx,dy*2)*RCS;if(nc<C[n]){C[n]=nc;from[n]=c;push(n,nc)}}}
+  /* where the way ends: on x, y if it is free and can be reached, else on the free place nearest to it that can be */
+  let t=cOf(tx,ty);const exact=!B[t]&&C[t]<Infinity&&!hit(tx,ty,1);
+  if(!exact){let bd=Infinity;t=-1;for(let i=0;i<N;i++)if(!B[i]&&C[i]<Infinity){const[x,y]=cxy(i),d=Math.hypot(x-tx,(y-ty)*2)+C[i]*.01;if(d<bd){bd=d;t=i}}}
+  if(t<0)return null;
+  const cells=[];for(let c=t;c>=0;c=from[c])cells.push(c);cells.reverse();
+  const pts=cells.map(cxy);pts[0]=[a.x,a.y];const end=exact?[tx,ty]:pts[pts.length-1];if(cells.length>1)pts[pts.length-1]=end;
+  /* pulled straight: from where he is to the farthest point a straight line reaches (tested on the boxes themselves, not only on the grid,
+     whose rows lie two pixels apart); one who stands in a footprint first steps out of it */
+  const clear=(p,q)=>{const n=Math.ceil(Math.hypot(q[0]-p[0],q[1]-p[1])*2);for(let k=1;k<n;k++){const x=p[0]+(q[0]-p[0])*k/n,y=p[1]+(q[1]-p[1])*k/n;if(B[cOf(x,y)]||hit(x,y,.9))return false}return true};
+  let k0=0;while(k0<pts.length-1&&B[cOf(...pts[k0])])k0++;
+  const out=[];if(k0>0)out.push(pts[k0]);let cur=pts[k0];
+  for(let i=k0;i<pts.length-1;){let j=Math.min(pts.length-1,i+160);while(j>i+1&&!clear(cur,pts[j]))j--;out.push(pts[j]);cur=pts[j];i=j}
+  if(!out.length&&Math.hypot(end[0]-a.x,end[1]-a.y)>.5)out.push(end);
+  /* a script's walk ends where the script says, even beyond the strip (out at the edge of the picture, in at a door) */
+  if(!click&&Math.hypot(X-end[0],Y-end[1])>.5)out.push([X,Y]);
+  /* each corner rounded into a curve, as far as it keeps clear of what stands there */
+  const way=[[a.x,a.y]].concat(out),bent=[way[0]];
+  for(let i=1;i<way.length-1;i++){const P=way[i],A=way[i-1],Q=way[i+1],li=Math.hypot(P[0]-A[0],P[1]-A[1]),lo=Math.hypot(Q[0]-P[0],Q[1]-P[1]);
+    const ui=[(P[0]-A[0])/li,(P[1]-A[1])/li],uo=[(Q[0]-P[0])/lo,(Q[1]-P[1])/lo],ang=Math.acos(clamp(ui[0]*uo[0]+ui[1]*uo[1],-1,1));
+    let done=false;if(li>1&&lo>1&&ang>.12)for(let r=Math.min(10,li*.45,lo*.45);r>=2&&!done;r/=2){const a0=[P[0]-ui[0]*r,P[1]-ui[1]*r],b0=[P[0]+uo[0]*r,P[1]+uo[1]*r],m=Math.max(3,Math.ceil(ang*4)),arc=[];
+      for(let k=0;k<=m;k++){const q=k/m,u=1-q;arc.push([u*u*a0[0]+2*u*q*P[0]+q*q*b0[0],u*u*a0[1]+2*u*q*P[1]+q*q*b0[1]])}
+      if(arc.every(([x,y])=>!hit(x,y,.5))){bent.push(...arc);done=true}}
+    if(!done)bent.push(P)}
+  if(way.length>1)bent.push(way[way.length-1]);bent.shift();
+  const near=Math.hypot(end[0]-tx,(end[1]-ty)*2),ok=click?exact||near<=16:true;
+  if(!click&&!exact){const f=F.find(f=>inBox(f.b,tx,ty,0)),who=`${G.ch} ${id}: ${a.id} to ${X|0},${Y|0}`;
+    if(f&&!f.seat)ROUTE.bad.add(who+' ends in a footprint');else if(!f&&!S.some(f=>inBox(f.b,tx,ty,1))&&near>14)ROUTE.bad.add(who+' cannot be reached');}
+  ROUTE.last.push({id,who:a.id,from:[a.x,a.y],to:[X,Y],pts:bent,ok,exact});if(ROUTE.last.length>80)ROUTE.last.shift();
+  return{pts:Math.hypot(end[0]-a.x,end[1]-a.y)<.5&&bent.length<2&&click?[]:bent,ok,exact}}
+/* routeStart: a walk begun in a room sets off on its way */
+function routeStart(a){const w=a.walk;delete w.pend;const r=roomRoute(a,w.x,w.y,w.click);if(!r)return;
+  if(!r.pts.length){a.walk=null;a.fr=0;a.gait=null;w.res(r.ok);return}
+  const p=r.pts;let rest=0;for(let i=1;i<p.length;i++)rest+=Math.hypot(p[i][0]-p[i-1][0],(p[i][1]-p[i-1][1])*2);
+  w.x=p[0][0];w.y=p[0][1];w.path=p.slice(1);w.rest=rest;w.partial=!r.ok;if(Math.abs(w.x-a.x)>2)a.dir=w.x>a.x?1:-1}
 /* spot: where a script may walk someone, at or near x, y: a free place in his room, clear of everybody else (and of a mate) by 14 pixels
    across or 11 in depth, so that whoever talks there is seen; x itself if it is free, else a step to either side, farther and farther out.
    A script uses it where a companion the player has moved about may be standing on the spot it wants: walk(P, ...spot(P, 262, 132)). */
 function spot(a,x,y){const w=ROOMS[a.room].walk,others=Object.values(ACT).filter(o=>o!==a&&o.room===a.room).flatMap(o=>(o.mate?[[o.x+o.mate.dx*o.dir,o.y]]:[]).concat([[o.x,o.y]])),
-    free=X=>X>=w[0]&&X<=w[1]&&!others.some(([sx,sy])=>Math.abs(sx-X)<14&&Math.abs(sy-y)<11);
+    free=X=>X>=w[0]&&X<=w[1]&&!others.some(([sx,sy])=>Math.abs(sx-X)<14&&Math.abs(sy-y)<11)&&!floorHit(a.room,X,y);
   for(let k=0;k<6;k++)for(const d of k?[1,-1]:[0]){const X=x+d*14*k;if(free(X))return[X,y]}return[x,y]}
 /* cadence: the words of a line, as they stand on the screen, read into what a mouth does with them. ev: a row of {t0, t1, m, beat}, the
    mouth m (see person) from t0 to t1 in milliseconds, beat on a stressed syllable; cl: the clauses, {t0, t1, end, n}, end being the mark
@@ -1669,18 +1752,18 @@ async function clickView(x,y,at){
   if(G.busy||G.scene||!G.room)return;audioInit();
   const h=at||hsAt(x,y),item=G.item;let v=G.verb;G.actPos=[(x-G.cam)*zoomNow(),(y-G.camY)*zoomNow()];
   const me=PC(),pl=planOf(G.room);
-  if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(me,x,y);return}
+  if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(me,x,y,{click:1});return}
   if(v==='walk'){v=defVerb(h);if(v==='walk')v=h.exit?'exit':'look'}
   const A=h.actor,ty=h.wy!=null?h.wy:A?A.y+1:pl?h.y+h.h:118;let tx=h.wx!=null?h.wx:A?A.x+(me.x<A.x?-1:1)*(pl?pl.fig[0]*2:22):h.x+h.w/2;
   /* beside a person, but not on the spot where somebody already stands, a mate included, nor just in front of him or behind him: then the
      other side, if it is free, or a step farther out, so that neither of the two who talk hides the other or is hidden */
   if(!pl&&A&&h.wx==null){const w=ROOMS[G.room].walk,spots=Object.values(ACT).filter(a=>a!==me&&a.room===G.room).flatMap(a=>(a.mate?[[a.x+a.mate.dx*a.dir,a.y]]:[]).concat(a===A?[]:[[a.x,a.y]])),
-      taken=x=>spots.some(([sx,sy])=>Math.abs(sx-x)<14&&Math.abs(sy-ty)<11),s=tx<A.x?-1:1;
+      taken=x=>spots.some(([sx,sy])=>Math.abs(sx-x)<14&&Math.abs(sy-ty)<11)||floorHit(G.room,x,ty),s=tx<A.x?-1:1;
     const at=[0,1,2].flatMap(k=>[s,-s].map(d=>A.x+d*(22+14*k))).find(x=>x>=w[0]&&x<=w[1]&&!taken(x));if(at!=null)tx=at}
   /* at a thing, a door or a spot that the room names: beside whoever stands there already, a companion left there perhaps, and not on him.
      On a plan, the way to a person or a thing ends on the lane nearest to it (see route). */
   else if(!pl)tx=spot(me,tx,ty)[0];
-  if(!(await walk(me,tx,ty)))return;
+  if(!(await walk(me,tx,ty,{click:1})))return;
   if(G.busy||me!==PC())return;
   me.dir=A?(A.x>me.x?1:-1):h.dir||((h.x+h.w/2)>=me.x?1:-1);if(pl)pl.face(me,A?A.x:h.x+h.w/2,A?A.y:h.y+h.h/2);
   await cut(()=>act(v,h,item))}
@@ -1843,15 +1926,23 @@ function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
      only at the last. Its plan says how fast people go on it, and how far a stride carries them; distances there are the same both ways,
      where in a room a step into its depth counts double. */
   const pr=G.room&&!G.scene&&planOf(G.room);if(pr)pr.tick(dt,ts);
+  /* the walks begun since the last frame find their ways round what stands on the floor, all at once (see walk) */
+  for(const a of Object.values(ACT))if(a.walk&&a.walk.pend)routeStart(a);
   for(const a of Object.values(ACT)){const w=a.walk;if(!w){a.fr=a.seat?-1:0;a.gait=null;continue}
-    const pl=planOf(a.room),dx=w.x-a.x,dy=w.y-a.y,d=Math.hypot(dx,dy*(pl?1:2)),v0=a.speed||G.speedAll||(pl?pl.pace(a):WALK_V),
-      EASE=14,gone0=a.gait?a.gait.gone:0,near0=Math.min(gone0,d+(w.rest||0)),
+    const pl=planOf(a.room),v0=a.speed||G.speedAll||(pl?pl.pace(a):WALK_V);let dx=w.x-a.x,dy=w.y-a.y,d=Math.hypot(dx,dy*(pl?1:2));
+    const EASE=14,gone0=a.gait?a.gait.gone:0,near0=Math.min(gone0,d+(w.rest||0)),
       v=!pl&&!a.speed&&!G.speedAll&&near0<EASE?v0*(.58+.42*near0/EASE):v0,sp=v*dt;
-    if(d<=sp&&w.path&&w.path.length){a.x=w.x;a.y=w.y;const n=w.path.shift();w.rest-=Math.hypot(n[0]-w.x,n[1]-w.y);w.x=n[0];w.y=n[1];continue}
-    if(d<=sp){a.x=w.x;a.y=w.y;a.walk=null;a.fr=0;a.gait=null;w.res(!w.partial)}
-    else{const q=a.gait||(a.gait={ph:.25,gone:0}),p0=q.ph,near=Math.min(q.gone,d+(w.rest||0)-sp);a.x+=dx/d*sp;a.y+=dy/d*sp;q.gone+=sp;q.ph=(p0+sp/(pl?pl.stride(a,v0):strideOf(a.look,v0)))%1;
+    if(pl&&d<=sp&&w.path&&w.path.length){a.x=w.x;a.y=w.y;const n=w.path.shift();w.rest-=Math.hypot(n[0]-w.x,n[1]-w.y);w.x=n[0];w.y=n[1];continue}
+    /* in a room, a way round has many short legs: those passed in this frame are passed at once, so that the curve is walked at full pace,
+       and he faces the way each leg goes */
+    let left=sp;if(!pl)while(d<=left&&w.path&&w.path.length){a.x=w.x;a.y=w.y;left-=d;const n=w.path.shift();w.rest-=Math.hypot(n[0]-w.x,(n[1]-w.y)*2);w.x=n[0];w.y=n[1];
+      dx=w.x-a.x;dy=w.y-a.y;d=Math.hypot(dx,dy*2);if(Math.abs(dx)>2)a.dir=dx>0?1:-1}
+    if(d<=left){a.x=w.x;a.y=w.y;a.walk=null;a.fr=0;a.gait=null;w.res(!w.partial)}
+    else{const q=a.gait||(a.gait={ph:.25,gone:0}),p0=q.ph,near=Math.min(q.gone,d+(w.rest||0)-left);a.x+=dx/d*left;a.y+=dy/d*left;q.gone+=sp;q.ph=(p0+sp/(pl?pl.stride(a,v0):strideOf(a.look,v0)))%1;
       if(pl){a.mvx=dx/d;a.mvy=dy/d}
-      a.fr=4+Math.floor(q.ph*16)+16*(!pl&&Math.abs(dx)<Math.abs(dy)*2||near<6?2:near<14?1:0);
+      /* which way he is seen walking: towards a point a little ahead on his way, so that a short leg of a curve does not turn him */
+      const ah=!pl&&w.path&&w.path.length&&d<10?w.path[Math.min(w.path.length-1,2)]:null,ax=ah?ah[0]-a.x:dx,ay=ah?ah[1]-a.y:dy;
+      a.fr=4+Math.floor(q.ph*16)+16*(!pl&&Math.abs(ax)<Math.abs(ay)*2||near<6?2:near<14?1:0);
       if(a.room===G.room&&(q.ph<p0||p0<.5&&q.ph>=.5)&&ts-stepT>90){stepT=ts;SFX.step()}}}
   if(G.zoom!==G.zoomTo){G.zoom+=(G.zoomTo-G.zoom)*Math.min(1,dt*12);if(Math.abs(G.zoomTo-G.zoom)<.004)G.zoom=G.zoomTo}
   if(G.room&&!G.scene){const fo=PH.on&&PH.c&&PH.mode==='fill'&&PH.room===G.room&&PH.ctx?{x:PH.c.x,y:PH.c.y+PH.ctx.fh/2}:PC(),[t,u]=camAt(G.room,fo.x,fo.y),k=Math.min(1,dt*5);G.cam+=(t-G.cam)*k;if(Math.abs(t-G.cam)<.5)G.cam=t;
@@ -2090,11 +2181,11 @@ const CHAP={
   2:{name:'friend_in_jerusalem',label:'chapter_two',title:'a_friend_in_jerusalem',salt:0x2B6D,src:'levels/chapter2.js',needs:['materials','ship','birds'],treasure:{name:'not_another_basket',at:'2-B5Q-PSJ'}},
   3:{name:'called_to_antioch',label:'chapter_three',title:'called_to_antioch_2',salt:0x3C91,src:'levels/chapter3.js',needs:['materials','beasts','birds'],treasure:{name:'barnabas_at_the_bench',at:'3-MKP-96F-266'}},
   4:{name:'sent_out_to_cyprus',label:'chapter_four',title:'sent_out_to_cyprus_2',salt:0x4D2F,src:'levels/chapter4.js',needs:['materials','ship','birds'],treasure:{name:'roof_cut_wide',at:'4-CBS-2XW-MAT'}},
-  5:{name:'light_of_nations',label:'chapter_five',title:'a_light_of_nations',salt:0x5E73,src:'levels/chapter5.js',needs:['materials','beasts','birds'],treasure:{name:'echo_in_the_gorge',at:'5-TG6-X5J-5RG'}},
+  5:{name:'light_of_nations',label:'chapter_five',title:'a_light_of_nations',salt:0x5E73,src:'levels/chapter5.js',needs:['materials','country','beasts','birds'],treasure:{name:'echo_in_the_gorge',at:'5-TG6-X5J-5RG'}},
   6:{name:'door_to_faith',label:'chapter_six',title:'the_door_to_faith',salt:0x6F19,src:'levels/chapter6.js',needs:['materials','beasts','birds'],treasure:{name:'four_good_corners',at:'6-JSK-B2Y-Q58'}},
-  7:{name:'timothy_of_lystra',label:'chapter_seven',title:'timothy_of_lystra_2',salt:0x7B43,src:'levels/chapter7.js',needs:['materials','beasts','birds'],treasure:{name:'marks_by_the_door',at:'7-7P9-F36-V9Z'}},
-  8:{name:'man_from_macedonia',label:'chapter_eight',title:'the_man_from_macedonia',salt:0x8C57,src:'levels/chapter8.js',needs:['materials','ship','beasts','birds'],treasure:{name:'lukes_notes',at:'8-RRB-QCB-1EC'}},
-  9:{name:'midnight_in_philippi',label:'chapter_nine',title:'midnight_in_philippi_2',salt:0x9D61,src:'levels/chapter9.js',needs:['materials','birds'],treasure:{name:'cricket_in_the_wall',at:'9-P6X-82V-AE3'}},
+  7:{name:'timothy_of_lystra',label:'chapter_seven',title:'timothy_of_lystra_2',salt:0x7B43,src:'levels/chapter7.js',needs:['materials','country','beasts','birds'],treasure:{name:'marks_by_the_door',at:'7-7P9-F36-V9Z'}},
+  8:{name:'man_from_macedonia',label:'chapter_eight',title:'the_man_from_macedonia',salt:0x8C57,src:'levels/chapter8.js',needs:['materials','country','ship','beasts','birds'],treasure:{name:'lukes_notes',at:'8-RRB-QCB-1EC'}},
+  9:{name:'midnight_in_philippi',label:'chapter_nine',title:'midnight_in_philippi_2',salt:0x9D61,src:'levels/chapter9.js',needs:['materials','country','birds'],treasure:{name:'cricket_in_the_wall',at:'9-P6X-82V-AE3'}},
   10:{name:'is_it_so',label:'chapter_ten',title:'is_it_so_q',salt:0xA37B,src:'levels/chapter10.js',needs:['materials','ship','birds'],treasure:{name:'wound_too_far',at:'10-E04-FJ9-Y7P'}},
   11:{name:'unknown_god',label:'chapter_eleven',title:'the_unknown_god',salt:0xB48D,src:'levels/chapter11.js',needs:['materials','birds'],treasure:{name:'back_at_the_fountain',at:'11-8VM-7EW-T68'}},
   12:{name:'tentmakers_of_corinth',label:'chapter_twelve',title:'tentmakers_of_corinth_2',salt:0xC59F,src:'levels/chapter12.js',needs:['materials','weather','ship','birds'],treasure:{name:'cloth_of_his_own_country',at:'12-AXS-T1E-4S6-EEE-J5F'}},

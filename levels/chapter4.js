@@ -936,6 +936,10 @@ function hint4(){const b=PC()!==P,craft=['craft4',['that_is_the_tentmakers_craft
 ROOMS.seleucia.birds={gulls:[130,6,330,30],stand:[[262,102,-1],[400,102.5,1]]};
 ROOMS.salamis.birds={gulls:[6,5,100,30],gullsN:2,stand:[[40,98.5,1]]};
 ROOMS.paphos.birds={gulls:[170,14,50,20],gullsN:1};
+/* What stands on the floor (issue #83): the cargo, the posts, the platform, the brazier and the tables all stand behind the walk strip;
+   only the baggage John Mark keeps beside him in Salamis and in Paphos reaches into it, and it lies where he stands (see draw). */
+ROOMS.salamis.block=()=>MK.room==='salamis'?[MK.x-53,MK.y-17,47,4]:[];
+ROOMS.paphos.block=()=>MK.room==='paphos'?[MK.x-15,MK.y-16,47,4]:[];
 
 return{rooms:['seleucia','salamis','synagogue','paphos'],setup:setup4,start:start4,hint:hint4,music:MUSIC,scenes:{sendoff:sendoffScene,voyage:voyageScene},topics:TOPICS,tablets:TABLETS,
   /* the first missionary journey is drawn on its own: the sea lane from Caesarea to Tarsus (Chapter Two) runs between Cyprus and Syria,
