@@ -76,10 +76,12 @@ function earth(g,x,y0,w,y1,c,r,n){g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.12),c,tin
   for(let i=0;i<(n||w*.4);i++){const k=r(),sy=y0+1+k*(y1-y0-2),sx=x+r()*w,s=.5+k*1.3;oval(g,sx,sy,s*1.5,s*.6,r()<.5?tint(c,.2):tint(c,-.24));if(r()<.3)oval(g,sx+s*.5,sy+s*.4,s*1.3,s*.3,'rgba(40,36,70,.22)')}}
 /* the oxen and the bulls are painted by shared/beasts.js */
 const cattle=(g,x,y,dir,fr,c,gar,lit)=>SHARED.beasts.ox(g,x,y,dir,fr,c,gar,lit);
-/* wagon: a four-wheeled wagon with solid wheels, its bed at x, standing on the ground at y. cov: 1 the cover is on its hoops, 0 the hoops stand bare, -1 an open wagon with no hoops. load: sacks on its bed. */
-function wagon(g,x,y,cov,load){shadow6(g,x+30,y+.6,32,1.9,.42,'#1e1a34');
+/* wagon: a four-wheeled wagon with solid wheels, its bed at x, standing on the ground at y. cov: 1 the cover is on its hoops, 0 the hoops stand bare, -1 an open wagon with no hoops. load: sacks on its bed.
+   pole: how far its pole reaches out in front (13 when it is left out); behind a yoked team it is only a stub, which ends short of the
+   near ox's tail: the tail hangs to the hock, and a pole that ran on behind it would cross it */
+function wagon(g,x,y,cov,load,pole){pole=pole==null?13:pole;shadow6(g,x+30,y+.6,32,1.9,.42,'#1e1a34');
   for(const wx of[x+13,x+47])oval(g,wx+2.4,y-6,5.4,5.6,'#33261a');
-  board6(g,x,y-13.6,60,4.6,'#7a5a34',rng(611));R(g,x,y-9,60,1,'#3a2a1a');R(g,x+60,y-12,13,1.6,'#6a4a2a');R(g,x+60,y-12,13,.5,'#a07a48');
+  board6(g,x,y-13.6,60,4.6,'#7a5a34',rng(611));R(g,x,y-9,60,1,'#3a2a1a');R(g,x+60,y-12,pole,1.6,'#6a4a2a');R(g,x+60,y-12,pole,.5,'#a07a48');
   if(load)for(const[sx,sw,sh,sc]of[[x+10,6.4,10,'#cdbb8c'],[x+23,7,12,'#d8c698'],[x+37,6.6,11,'#c4b284'],[x+50,6,9.6,'#d2c090']])sack(g,sx,y-13.6,sw,sh,sc);
   if(cov>0){g.beginPath();g.moveTo(x+1,y-13.6);g.bezierCurveTo(x+1,y-39,x+59,y-39,x+59,y-13.6);g.closePath();g.fillStyle=lg(g,0,y-34,0,y-13,['#51443a','#2e2620','#1a1410']);g.fill();
     clipTo(g,()=>{g.beginPath();g.moveTo(x+1,y-13.6);g.bezierCurveTo(x+1,y-39,x+59,y-39,x+59,y-13.6);g.closePath()},()=>{for(let i=0;i<5;i++){const hx=x+6+i*12;g.fillStyle='rgba(255,236,200,.1)';g.fillRect(hx,y-34,1,21)}
@@ -383,10 +385,11 @@ ART.derbe={w:320,q:12,
  draw(g,t){/* chaff on the wind; Zenon's wagon, loaded for the road east */
   for(let i=0;i<9;i++){const k=((t/2600+i*.111)%1);R(g,176+k*60+Math.sin(i*2.1)*6,90-k*14-Math.sin(k*9+i)*3,1,.6,`rgba(244,236,200,${.8*(1-k)})`)}
   /* the far ox, the wagon and its pole, the near ox, and the yoke that lies across both their necks. The pair is seen a little from the
-     front: the far ox stands a head ahead and a little higher, so that its head stands clear beside the near one's, and the near head
-     hides the middle of the yoke, whose ends lie on the two necks */
-  depth(111,()=>{cattle(g,279,108,1,0,'#6f4630',0);R(g,291,73.4,5,2.5,'#5a3e22');R(g,291,73.4,5,.5,'#a8845a');wagon(g,174,110,-1,1);cattle(g,262,111,1,SHARED.beasts.pose('oxen6',0),'#8a5a3a',0);
-    R(g,274,76.4,5,2.5,'#5a3e22');R(g,274,76.4,5,.5,'#a8845a')});depth(112,()=>bundles(g,60,112))},
+     front: the far ox stands a head ahead and a little higher, so that its head stands clear beside the near one's. The yoke rests on
+     the crest of the near ox's neck just behind its horns, ending short of the horn, and the near head hides the rest of it and its far
+     end, which a horn would otherwise cross. The wagon stands close behind the near ox, its pole a stub that ends short of the tail */
+  depth(111,()=>{cattle(g,279,108,1,0,'#6f4630',0);wagon(g,169,110,-1,1,1);cattle(g,262,111,1,SHARED.beasts.pose('oxen6',0),'#8a5a3a',0);
+    R(g,273,73.4,5,2.5,'#5a3e22');R(g,273,73.4,5,.5,'#a8845a')});depth(112,()=>bundles(g,60,112))},
  front(){}};
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
 Object.assign(LOOK,{
