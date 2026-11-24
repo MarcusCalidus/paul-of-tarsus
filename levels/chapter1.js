@@ -84,7 +84,7 @@ function floorGrain1(g,r,c){const vx=160,vy=70,y0=105,y1=144,st=15,ys=[y0,y0+(y1
 function stoolArt(g){stroke(g,[122,111,120.5,119],'#3e2a1a',1.6);stroke(g,[133,111,134.5,119],'#3e2a1a',1.6);stroke(g,[127.5,111,127.5,118],'#2e1e12',1.4);
   board1(g,119.5,108,16,3,'#7a5632',rng(13));R(g,119.5,110.5,16,.5,'#3e2a1a')}
 ART.workshop={w:320,q:12,
- props:[{y:119,shape:stoolArt}],
+ props:[{y:119,shape:stoolArt,foot:[120,116.5,15,2.5]}],
  light:()=>({amb:'#827488',wallY:105,wall:[[7,67,105,13],[67,95,105,45],[95,313,105,13]],lamps:[[157,60,140,'#d8a860',106,66.5]]}),
  paint(g){const r=rng(11),W='#c9a476',T='#6b4a2e';
   plaster(g,0,0,320,105,W,r,{patch:7,cracks:0,brick:'#a8744c',bot:-.2,t:.36});skipCracks1(r,8);
