@@ -45,6 +45,10 @@ const _=null,
 /* The shared materials (shared/materials.js): quiet grain, hand-set cracks, soft contact shadows, earth colors. This chapter has an earth() of its
    own (trodden ground), so the shared one is earthTone here. */
 const{plank,board,crack,skipCracks,shadow:softShadow,earth:earthTone,ceiling:ceiling8}=SHARED.materials;
+/* The open country (shared/country.js): rock, turf, the plots of a plain, reeds and trees, painted alike in every chapter. Where a room's old
+   painter has made way for it, the old one still runs on SCRAP8, a scrap canvas nobody sees, so that it takes its draws from the room's
+   rng() in their order and everything the room paints after it stays where it was */
+const CO=SHARED.country,SCRAP8=mk(4,4)[1];
 const SH=earthTone('#8f95c8',.2);
 /* dayLight8: the light of an open scene, laid over it as a lightmap: the sky above hz untouched, everything below it a little less than full
    day, and fn(l) adds where the sun falls (pools, long and low wherever a head can come) and where shade gathers */
@@ -79,20 +83,25 @@ ART.fork={w:480,fp:1.25,q:12,
  paint(g){const r=rng(811);
   sky(g,480,74,skyE(['#3b79c4','#74a6da','#b6d0e4','#ebe6d2']));cloud(g,96,12,60,7,r);cloud(g,250,22,46,5,r);cloud(g,408,10,56,6,r);
   /* far to the north: the mountains of the plateau, with the snow still on them in spring */
-  snowy(g,0,480,66,plat8,['#8696be','#a8b4cc','#c9ccd0'],15);
+  snowy(g,0,480,66,plat8,['#8696be','#a8b4cc','#c9ccd0'],15);CO.range(g,0,480,66,x=>Math.min(plat8(x),15),['#8696be','#a8b4cc','#c9ccd0'],{k:.7});
   comp(g,'screen',.32,()=>{g.fillStyle=lg(g,0,40,0,66,['rgba(220,226,236,0)','rgba(220,226,236,1)']);g.fillRect(0,40,480,26)});
   /* the plateau: long swells of steppe, green with the spring, and a few fields on them */
-  ridge(g,0,480,84,x=>19+4*Math.sin(x/97+2)+2*Math.sin(x/33),['#a3b07a','#b3ba82']);
-  for(let i=0;i<9;i++){const fx=14+i*52+r()*14,fy=69+r()*7;poly(g,[fx,fy,fx+26,fy-1.4,fx+32,fy+5,fx+4,fy+6.4],i%3?'rgba(110,146,78,.34)':'rgba(176,154,98,.36)')}
-  R(g,0,83,480,17,'#b0b476');ridge(g,0,480,99,x=>14+3*Math.sin(x/61+1)+1.6*Math.sin(x/19+3),['#a8b26c','#bcbb7a']);
+  const sw1=x=>19+4*Math.sin(x/97+2)+2*Math.sin(x/33),sw2=x=>14+3*Math.sin(x/61+1)+1.6*Math.sin(x/19+3),
+    swell=(b,f)=>()=>{g.beginPath();g.moveTo(0,b);for(let x=0;x<=480;x+=2)g.lineTo(x,b-f(x));g.lineTo(480,b);g.closePath()};
+  ridge(g,0,480,84,sw1,['#a3b07a','#b3ba82']);
+  clipTo(g,swell(84,sw1),()=>CO.plain(g,0,480,62,86,8111,{vx:250,land:'#a8b47a',haze:'#c4ccd0',kinds:['meadow','meadow','green','fallow','stubble','plough','meadow','green'],clouds:2}));
+  for(let i=0;i<9;i++){const fx=14+i*52+r()*14,fy=69+r()*7;poly(SCRAP8,[fx,fy,fx+26,fy-1.4,fx+32,fy+5,fx+4,fy+6.4],'#000')}
+  R(g,0,83,480,17,'#b0b476');ridge(g,0,480,99,sw2,['#a8b26c','#bcbb7a']);
+  clipTo(g,()=>{swell(99,sw2)();g.rect(0,83,480,16)},()=>CO.turf(g,0,80,480,100,'#aab470',8112,{dense:.7,dry:.3,flowers:30,scale:.35}));
+  {const f=x=>99-sw2(x);for(let x=0;x<480;x+=1)R(g,x,f(x),1,.6,'rgba(255,248,224,.25)')}
   /* a sheepfold of field stone, and a wild pear in blossom beside it */
   ashlar(g,372,79,34,5,'#b6ad94',r,{bw:5,bh:2.5,v:.12,t:.3});R(g,372,78.4,34,.8,'#d6ccb0');
-  stroke(g,[414,84,413.4,76,415,71],'#5a4632',1.4);foliage(g,414,68,7,5,'#e6e2d2',r,46);foliage(g,411,71,4,3,'#9ab07a',r,14);
+  foliage(SCRAP8,414,68,7,5,'#e6e2d2',r,46);foliage(SCRAP8,411,71,4,3,'#9ab07a',r,14);CO.tree(g,414,84,16,'#e2ded0',{kind:'olive',seed:8113,lean:.2})
   for(let i=0;i<9;i++){const sx=336+i*4+r()*3,sy=82+r()*2;R(g,sx,sy,2.4,1.4,'#e8e2d0');R(g,sx+2,sy-.4,1,1,'#3a3028')}
   /* the ground on the far side of the road, the track north, and its two ruts. It narrows as it climbs, and is lost between the swells */
-  earth(g,0,98,480,144,'#b8b07a',r,230);
-  comp(g,'soft-light',.55,()=>{g.fillStyle=lg(g,0,98,0,144,['rgba(104,150,66,.95)','rgba(104,150,66,.25)']);g.fillRect(0,98,480,46)});
-  poly(g,[232,109,272,109,300,92,306,84,301,84,290,92],'#d0c29a');
+  earth(SCRAP8,0,98,480,144,'#b8b07a',r,230);
+  CO.turf(g,0,97,480,144,'#a2ae6a',8114,{dry:.25,flowers:220});
+  {const T=[232,109,272,109,300,92,306,84,301,84,290,92];poly(g,T,'#d0c29a');clipTo(g,()=>poly(g,T),()=>CO.ground(g,232,84,76,110,'#d0c29a',8115,{n:24,size:.5}))}
   stroke(g,[242,109,293,91,303,84],'rgba(120,104,70,.5)',.7);stroke(g,[262,109,298,92,305,84],'rgba(120,104,70,.5)',.7);
   stroke(g,[303,84,306,80,303,77],'#c6ba92',1.6);
   /* the paved road: close-fitted slabs between two kerbs, running east and west */
@@ -100,7 +109,7 @@ ART.fork={w:480,fp:1.25,q:12,
   R(g,0,108,480,1.4,'#e2dac2');R(g,0,108,232,1.4,'#e2dac2');R(g,232,108,40,1.4,'#cfc4a2');R(g,0,129,480,1.6,'#a0977e');R(g,0,129,480,.5,'#d8cfb6');
   ao(g,0,109.4,480,4,'t',.2,'#3a3050');
   /* the verge on the near side: turf, thistles and the flowers of spring */
-  flowers(g,0,99,480,8,r,60);flowers(g,0,131,480,12,r,150);tufts(g,0,480,142,5,'#7c9450',r,150);
+  flowers(SCRAP8,0,99,480,8,r,60);flowers(SCRAP8,0,131,480,12,r,150);tufts(SCRAP8,0,480,142,5,'#7c9450',r,150);
   /* the milestone: a plain pillar of grey stone, flat-topped, standing on the far kerb where the track leaves. It has no wider base:
      a pillar on a plinth would be an upright on a level band */
   for(const[a,p]of[[.1,[209,109,219,109,226,112.6,214,112.6]],[.14,[209.6,109,217.6,109,223,111.8,214.6,111.8]],[.18,[210,109,216.4,109,220.4,110.8,213,110.8]]])poly(g,p,`rgba(50,40,80,${a})`);
@@ -114,8 +123,10 @@ ART.fork={w:480,fp:1.25,q:12,
      own grass; and the pools are long and low */
   dayLight8(g,480,66,l=>{pool(l,240,82,280,16,'#fffaf0',.55);pool(l,250,118,250,12,'#fff6e6',.6);pool(l,300,94,90,8,'#fff4e0',.35);
     comp(l,'multiply',1,()=>ao(l,0,128,480,16,'b',.22,'#5a5070'));comp(l,'multiply',1,()=>ao(l,0,98,480,8,'t',.1,'#6a6080'))})},
- fore(g){const r=rng(812);rock(g,44,152,40,18,'#8a8474');rock(g,560,154,46,20,'#7e786a');
-  for(let i=0;i<50;i++){const sx=90+r()*80;stroke(g,[sx,152,sx+(r()-.5)*8,134+r()*10],r()<.5?'#6f8a48':'#566e3a',.9)}
+ fore(g){const r=rng(812);CO.boulder(g,44,152,40,18,'#8a8474',8120);CO.boulder(g,560,154,46,20,'#7e786a',8121);
+  /* grass, every blade bent the same way by the wind */
+  for(let i=0;i<50;i++){const sx=90+r()*80;stroke(SCRAP8,[sx,152,sx+(r()-.5)*8,134+r()*10],r()<.5?'#6f8a48':'#566e3a',.9)}
+  for(let i=0;i<56;i++){const q=rng(8122+i),sx=90+q()*80,h=8+q()*12,l=2+q()*3;stroke(g,[sx,152,sx+l*.5,152-h*.6,sx+l,152-h],q()<.5?'#6f8a48':'#566e3a',.9)}
   for(let i=0;i<7;i++){const sx=96+i*10+r()*5,sy=132+r()*6;R(g,sx,sy,2,2,'#8a5a9a');R(g,sx+.4,sy-.6,1.2,.8,'#b88ac0')}
   comp(g,'source-atop',.36,()=>R(g,0,0,640,150,'#34305a'))},
  draw(g,t){/* the carrier's mule, loaded with wool, standing on the road with its head toward the west */
@@ -469,49 +480,68 @@ const pang8=x=>12+9*Math.sin(x/97+.3)+4*Math.sin(x/31+1)+2*Math.sin(x/11);
 ART.river={w:480,fp:1.3,q:12,
  /* the flat stones where the women sit stand a little up from the turf: whoever walks behind one is hidden by it */
  props:STONES.map(([x,y])=>({y:y+1,shape:g=>oval(g,x,y,10,2.8,'#000'),foot:[x-8,y-2,16,4],seat:1})),
- paint(g){const r=rng(859);
+ /* The sun stands to the right of the picture (o.light 1), so that the great plane tree throws its shade over the stones. */
+ paint(g){const r=rng(859),S=SCRAP8,L=1;
   sky(g,480,70,skyE(['#3f80c8','#7aacdc','#c0d6e6','#ecead8']));cloud(g,90,14,54,6,r);cloud(g,236,8,60,6,r);cloud(g,386,22,40,4,r);
-  /* far across the plain: a long mountain, blue with the morning */
-  ridge(g,0,330,66,pang8,['#8494b8','#a4b0c8','#c2c8cc']);comp(g,'screen',.36,()=>{g.fillStyle=lg(g,0,40,0,66,['rgba(224,230,238,0)','rgba(224,230,238,1)']);g.fillRect(0,40,480,26)});
+  /* far across the plain: a long mountain, blue with the morning, its slopes turned to the sun a little lighter */
+  CO.range(g,0,330,66,pang8,['#8494b8','#a4b0c8','#c2c8cc'],{light:L,k:.6});comp(g,'screen',.36,()=>{g.fillStyle=lg(g,0,40,0,66,['rgba(224,230,238,0)','rgba(224,230,238,1)']);g.fillRect(0,40,480,26)});
   /* the city on its hill, small with distance: its wall, the gate we came out by, and the road down from it */
-  ridge(g,300,480,72,x=>4+16*Math.exp(-Math.pow((x-420)/60,2))+1.4*Math.sin(x/6),['#a8b07c','#b4b888']);
+  CO.range(g,300,480,72,x=>4+16*Math.exp(-Math.pow((x-420)/60,2))+1.4*Math.sin(x/6),['#a8b07c','#b4b888'],{light:L,k:.5});
+  for(const[x,h]of[[336,2.6],[352,3],[366,2.4],[470,2.8],[478,2.4]])CO.tree(g,x,66.6,h,'#7a8c5a',{kind:'oak',light:L});
   R(g,380,50,84,5.6,'#d6ccb2');R(g,380,50,84,.6,'#f2ead2');for(let i=380;i<464;i+=5)R(g,i,48.4,2.6,1.8,'#d6ccb2');R(g,416,47,7,8.6,'#cabfa4');R(g,418,51,3,4.6,'#4a3c30');
-  for(const[hx,hw,hh]of[[388,9,5],[402,8,6],[432,10,5],[448,9,6]]){R(g,hx,50-hh,hw,hh,'#e2d8be');R(g,hx,50-hh-1,hw,1.2,'#b8603c')}
+  for(const[hx,hw,hh]of[[388,9,5],[402,8,6],[432,10,5],[448,9,6]]){R(g,hx,50-hh,hw,hh,'#e2d8be');R(g,hx,50-hh-1,hw,1.2,'#b8603c');R(g,hx+hw-2,50-hh,2,hh,'rgba(90,96,140,.25)')}
+  R(g,380,55,84,1,'rgba(70,70,110,.25)');R(g,454,50,10,5.6,'rgba(90,96,140,.2)');
   stroke(g,[419.6,55.6,424,62,440,72,468,84,480,90],'#d8cca8',1.6);
-  /* the plain: fields, and the green of the marsh to the south of the city */
-  g.fillStyle=lg(g,0,66,0,96,['#a8b47a','#9cae6c','#8ea660']);g.fillRect(0,66,480,30);tex(g,'mott',.35,0,66,480,30,'overlay',1);
-  for(let i=0;i<10;i++){const fx=8+i*33+r()*10,fy=70+r()*9;poly(g,[fx,fy,fx+22,fy-1,fx+28,fy+5.6,fx+4,fy+6.6],i%3===0?'rgba(170,150,96,.36)':i%3===1?'rgba(96,136,74,.32)':'rgba(200,184,120,.3)')}
-  for(const[x,y]of[[40,84],[150,80],[204,83],[292,78]]){oval(g,x+2,y+3.2,5,1,'rgba(50,60,90,.3)');R(g,x-.4,y+1,1.2,2.6,'#5a4630');foliage(g,x,y-.8,4.6,3.2,'#6a8c52',r,22)}
+  /* the plain: plots of stubble, green grain, fallow and ploughland, running back to the foot of the mountain, with the shadows of the clouds on them */
+  g.fillStyle=lg(g,0,66,0,96,['#a8b47a','#9cae6c','#8ea660']);g.fillRect(0,66,480,30);tex(S,'mott',.35,0,66,480,30,'overlay',1);
+  clipTo(g,()=>{g.beginPath();g.rect(0,66,480,30)},()=>CO.plain(g,0,480,66,97,8591,{vx:200,land:'#9cae6c',haze:'#c8d2d0'}));
+  stroke(g,[419.6,55.6,424,62,440,72,468,84,480,90],'#d8cca8',1.6);
+  for(let i=0;i<10;i++){const fx=8+i*33+r()*10,fy=70+r()*9;poly(S,[fx,fy,fx+22,fy-1,fx+28,fy+5.6,fx+4,fy+6.6],'#000')}
+  for(const[x,y]of[[40,84],[150,80],[204,83],[292,78]]){foliage(S,x,y-.8,4.6,3.2,'#6a8c52',r,22);CO.tree(g,x,y+2.6,8+(x%3),'#6a8a50',{kind:'oak',light:L})}
   /* the far bank, its reeds, and the trees that stand along the water */
-  poly(g,[0,93,120,90.4,240,87.6,340,84,480,84,480,90,340,88,240,91,120,94,0,96.6],'#86a05a');
-  tufts(g,0,330,92,5,'#6f8c48',r,150);
+  const FB=[0,93,120,90.4,240,87.6,340,84,480,84,480,90,340,88,240,91,120,94,0,96.6];
+  clipTo(g,()=>poly(g,FB),()=>CO.turf(g,0,83,480,97,'#86a05a',8592,{dense:.8}));
+  tufts(S,0,330,92,5,'#6f8c48',r,150);
+  for(let x=0;x<330;x+=16){const y=96.6-(x/330)*(96.6-88);CO.reeds(g,x,x+16,y,5,8593+x,{n:14,c:'#6f8c48',wind:-1})}
   /* the river: clear, and quick over its stones */
   poly(g,WATER);g.fillStyle=lg(g,0,86,0,112,['#b8dce0','#7fb2c4','#5a94ac','#4a8098']);g.fill();
   clipTo(g,()=>poly(g,WATER),()=>{comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,0,86,0,98,['rgba(80,120,70,1)','rgba(80,120,70,0)']);g.fillRect(0,86,340,12)});
+    /* the far bank and its trees, mirrored dark in the water, and the sky pale in the middle of the stream */
+    for(const[x,w,y]of[[96,30,93],[214,26,90],[300,9,88]])pool(g,x,y+4,w/2,6,'#4a6a4a',.36,'multiply');
+    comp(g,'screen',.25,()=>{g.fillStyle=lg(g,0,94,0,110,['rgba(230,240,246,0)','rgba(230,240,246,1)','rgba(230,240,246,0)']);g.fillRect(0,94,340,16)});
     for(let i=0;i<150;i++){const k=r(),sy=88+k*24,sx=(1-k)*330*r()+k*r()*260;R(g,sx,sy,2+k*7,.5,r()<.6?'rgba(238,250,250,.6)':'rgba(24,64,84,.32)')}});
   stroke(g,[0,112,152,105.6,262,98,331,90],'rgba(240,250,250,.55)',.7);
-  for(const[x,y,w,h]of[[60,104,9,4],[118,101,7,3.4],[176,100.6,8,3.6],[236,96.4,6,3]])rock(g,x,y,w,h,'#9a9486');
-  tree(g,96,93,46,'#5c8a48',r);tree(g,214,90,38,'#688f50',r);tree(g,300,88,30,'#5a8648',r);
+  for(const[x,y,w,h]of[[60,104,9,4],[118,101,7,3.4],[176,100.6,8,3.6],[236,96.4,6,3]]){CO.boulder(g,x,y,w,h,'#9a9486',Math.round(x*7+y),{light:L});R(g,x-w*.6,y-.2,w*1.2,.5,'rgba(240,250,250,.7)')}
+  tree(S,96,93,46,'#5c8a48',r);tree(S,214,90,38,'#688f50',r);tree(S,300,88,30,'#5a8648',r);
+  CO.tree(g,96,93,46,null,{kind:'willow',light:L,seed:8594,cast:false});CO.tree(g,214,90,38,null,{kind:'plane',light:L,seed:8595,cast:false});CO.tree(g,300,88,30,null,{kind:'poplar',light:L,seed:8596,cast:false});
   /* the near bank: turf, flowers, and a path worn down to the water from the road */
-  earth(g,0,104,480,144,'#a8ac74',r,150);
-  comp(g,'soft-light',.6,()=>{g.fillStyle=lg(g,0,104,0,144,['rgba(96,146,62,.95)','rgba(96,146,62,.5)']);g.fillRect(0,104,480,40)});
-  clipTo(g,()=>poly(g,[0,112,152,105.6,262,98,331,90,338,86,480,86,480,104,0,104]),()=>{g.fillStyle='#96aa64';g.fillRect(0,86,480,26);tex(g,'mott',.35,0,86,480,26,'overlay',1)});
-  poly(g,[480,90,480,98,420,104,350,116,332,128,318,128,340,113,412,99],'#cfc39c');
-  flowers(g,0,112,330,30,r,170);flowers(g,330,118,150,24,r,60);tufts(g,0,480,142,5,'#6f8c48',r,160);tufts(g,0,150,113,4,'#7a9650',r,50);
+  earth(S,0,104,480,144,'#a8ac74',r,150);
+  const NB=[0,112,152,105.6,262,98,331,90,338,86,480,86,480,144,0,144];
+  clipTo(g,()=>poly(g,NB),()=>CO.turf(g,0,86,480,144,'#90a660',8597,{flowers:260,dry:.15}));
+  clipTo(g,()=>poly(g,NB),()=>ao(g,0,86,480,22,'t',.12,'#2a3050'));
+  const PATH=[480,90,480,98,420,104,350,116,332,128,318,128,340,113,412,99];
+  clipTo(g,()=>poly(g,PATH),()=>CO.ground(g,316,88,164,130,'#cfc39c',8598,{n:40,size:.6}));
+  stroke(g,[412,99,340,113,318,128],'rgba(90,110,60,.45)',.6);stroke(g,[480,98,420,104,350,116,332,128],'rgba(90,110,60,.35)',.6);
+  flowers(S,0,112,330,30,r,170);flowers(S,330,118,150,24,r,60);tufts(S,0,480,142,5,'#6f8c48',r,160);tufts(S,0,150,113,4,'#7a9650',r,50);
+  CO.reeds(g,0,150,113,4,8599,{n:40,c:'#7a9650'});
   /* the flat stones, set in a half circle and worn smooth: this is where they sit */
-  for(const[x,y]of STONES){softShadow(g,x+1.4,y+1.6,10,2.2,.5,'#1e1e3a');g.fillStyle=lg(g,x-10,0,x+10,0,['#8e887a','#d6d0c0','#b8b2a2','#7e786c']);g.beginPath();g.ellipse(x,y,10,2.8,0,0,6.2832);g.fill();R(g,x-8,y-2.2,14,.6,'rgba(250,246,232,.5)');R(g,x-9,y+1,18,1.4,'#7e786c')}
-  /* a great plane tree on this bank, and its shade over the stones */
-  comp(g,'multiply',.34,()=>{oval(g,286,123,104,13,'#7a80b4');oval(g,340,118,60,9,'#7a80b4')});comp(g,'screen',.3,()=>{for(let i=0;i<46;i++)oval(g,184+r()*180,114+r()*18,1.5+r()*3,.5+r()*.8,'#fff4c8')});
-  softShadow(g,374,114.4,6,1.2,.45,'#1e1e3a');tree(g,372,114,84,'#5a8a48',r);rock(g,398,116,12,6,'#948e80');
+  for(const[x,y]of STONES){softShadow(g,x+1.4,y+1.6,10,2.2,.5,'#1e1e3a');g.fillStyle=lg(g,x-10,0,x+10,0,['#8e887a','#d6d0c0','#b8b2a2','#7e786c']);g.beginPath();g.ellipse(x,y,10,2.8,0,0,6.2832);g.fill();
+    clipTo(g,()=>oval(g,x,y,10,2.8),()=>{tex(g,'mott',.4,x-10,y-3,20,6,'overlay',1);ao(g,x-10,y,20,2.8,'b',.3,'#2a2436')});R(g,x-8,y-2.2,14,.6,'rgba(250,246,232,.5)');R(g,x-9,y+1,18,1.4,'#7e786c')}
+  /* a great plane tree on this bank, and its shade over the stones, broken by sun through the leaves */
+  comp(g,'multiply',.34,()=>{oval(g,286,123,104,13,'#7a80b4');oval(g,340,118,60,9,'#7a80b4')});for(let i=0;i<46;i++)oval(S,184+r()*180,114+r()*18,1.5+r()*3,.5+r()*.8,'#fff4c8');
+  {const q=rng(8600);for(let i=0;i<40;i++){const px=190+q()*170,py=114+q()*18,w=2+q()*5;pool(g,px,py,w,w*.28,'#fff4c8',.32,'screen')}}
+  softShadow(g,374,114.4,6,1.2,.45,'#1e1e3a');tree(S,372,114,84,'#5a8a48',r);CO.tree(g,372,114,84,null,{kind:'plane',light:L,lean:0,seed:8601,cast:false});
+  CO.boulder(g,398,116,12,6,'#948e80',8602,{light:L,moss:'#7a8a50'});
   pool(g,180,0,300,160,'#fff6d6',.1,'screen');ao(g,0,128,480,16,'b',.1,'#2a2050');
   /* the light of the morning: the sun on the plain and on the water, the path from the road lit, the shade of the plane tree deeper
      over the stones, and the near bank in the shade of its own grass. Every pool is long and low */
   dayLight8(g,480,66,l=>{pool(l,200,82,260,14,'#fffaf0',.55);pool(l,170,100,170,8,'#fff8ec',.45);pool(l,400,108,70,10,'#fff6e6',.45);
     comp(l,'multiply',1,()=>{pool(l,300,122,90,10,'#8e8aa0',.3,'source-over');ao(l,0,128,480,16,'b',.22,'#5a5070')})})},
- fore(g){const r=rng(860);/* reeds and iris at the water's edge, nearest us */
-  for(let i=0;i<80;i++){const sx=-6+r()*130;stroke(g,[sx,154,sx+(r()-.5)*12,116+r()*20],r()<.5?'#56723a':'#6c8a48',1)}
+ fore(g){const r=rng(860);/* reeds and iris at the water's edge, nearest us: every blade leans the same way, so that none crosses another */
+  for(let i=0;i<80;i++){const sx=-6+r()*130;stroke(SCRAP8,[sx,154,sx+(r()-.5)*12,116+r()*20],r()<.5?'#56723a':'#6c8a48',1)}
+  for(let k=0;k<70;k++){const q=rng(8610+k),sx=-6+q()*130,h=18+q()*20,l=2+q()*4,c=q()<.5?'#56723a':'#6c8a48';stroke(g,[sx,154,sx+l*.4,154-h*.6,sx+l,154-h],c,1);stroke(g,[sx+.6,154,sx+l*.4+.6,154-h*.6,sx+l+.4,154-h+2],tint(c,.2),.5)}
   for(let i=0;i<8;i++){const sx=8+i*14+r()*6,sy=120+r()*12;R(g,sx,sy,2,1.6,'#e8c84a');R(g,sx+.4,sy+1.6,1.2,1,'#c8a02a')}
-  rock(g,580,154,46,18,'#7a7468');comp(g,'source-atop',.36,()=>R(g,0,0,640,150,'#2c3a58'))},
+  CO.boulder(g,580,154,46,18,'#7a7468',8611,{light:1,moss:'#6a7a48'});comp(g,'source-atop',.36,()=>R(g,0,0,640,150,'#2c3a58'))},
  draw(g,t){/* light running down the water */
   for(let i=0;i<18;i++){const k=((t/1500+i*.0556)%1),x=320-k*320,y=87+k*19+(i%3);if(i%2)R(g,x,y,3+k*5,.5,`rgba(244,252,252,${.6*Math.sin(k*3.1416)})`)}
   /* the women of Lydia's household, with her on the Sabbath */

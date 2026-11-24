@@ -31,6 +31,10 @@ const _=null,
 /* materials and light shared with every chapter (shared/materials.js, the standard of Chapter Fifteen's room of Gaius): quiet grain, two-tone
    cracks set by hand, contact shadows in three steps of alpha, and dyes and painted blues drawn a little toward earth and mineral colors */
 const{plank:plank5,board:board5,crack:crack5,skipCracks:skipCracks5,shadow:shadow5,earth:earth5,joistAO:joistAO5}=SHARED.materials;
+/* The open country (shared/country.js): rock, stony ground, boulders and trees, painted alike in every chapter. Where a room's old painter has
+   made way for it, the old one still runs on SCRAP5, a scrap canvas nobody sees, so that it takes its draws from the room's rng() in their
+   order and everything the room paints after it stays where it was */
+const CO=SHARED.country,SCRAP5=mk(4,4)[1];
 /* joists5: the ceiling seen from below at its edge, as in Chapter One's workshop: dark boards, and the joists running toward us in
    perspective from the wall plate (y = U) to the top of the picture, each with the soft shade of the boards beside it. They stand in pairs
    about the middle, so that none rises upright from the plate, and no square beam end sits on it to make a T; the room lays the plate over
@@ -142,36 +146,51 @@ ART.ford={w:480,fp:1.25,q:12,
   sky(g,480,46,SKY5(['#5088c8','#8fb8e0','#d0e0ea']));cloud(g,236,12,46,6,r);
   /* far peaks through the gap of the gorge */
   snowy(g,150,340,44,x=>16+12*Math.sin((x-150)/64*3.14)+4*Math.sin(x/9),['#a4b0cc','#c0c8d6'],19);comp(g,'screen',.3,()=>R(g,150,10,190,34,'#d0dcee'));
-  /* the walls of the gorge: the cliff the river comes from, and a wall to either side */
-  crag(g,[150,36,196,30,236,38,282,28,330,34,340,66,150,66],LS,r,{dip:.03});
+  /* the walls of the gorge: the cliff the river comes from, and a wall to either side. The sun stands high over the right wall (o.light 1) */
+  const CL=[150,36,196,30,236,38,282,28,330,34,340,66,150,66],WL=[0,0,150,0,166,10,172,30,160,52,176,74,168,104,0,104],WR=[330,0,480,0,480,104,316,104,304,80,318,56,308,30,322,10];
+  crag(SCRAP5,CL,LS,r,{dip:.03});CO.crag(g,CL,LS,5101,{dip:.03,bed:6,light:1,scrub:2,haze:'#c8d0e2',hazeA:.16});
   /* the floor of the gorge, running back to the foot of that cliff */
-  stoneGround(g,150,62,190,106,tint(GR,-.14),r,110);ao(g,150,62,190,16,'t',.4,'#2a2848');
-  crag(g,[0,0,150,0,166,10,172,30,160,52,176,74,168,104,0,104],tint(LS,-.08),r,{dip:.05,shade:'l'});
-  crag(g,[330,0,480,0,480,104,316,104,304,80,318,56,308,30,322,10],tint(LS,.02),r,{dip:-.04,shade:'r'});
-  shade(g,[0,0,150,0,166,10,172,30,160,52,176,74,168,104,0,104],'#a6a6bc',.42);
-  /* the road beyond the ford, climbing the far wall to the pass */
-  poly(g,[316,104,338,104,372,90,410,76,452,58,480,50,480,44,450,52,406,70,366,84,330,98],'#d6caac');stroke(g,[316,104,330,98,366,84,406,70,450,52,480,44],'rgba(60,50,80,.45)',.6);
+  stoneGround(SCRAP5,150,62,190,106,tint(GR,-.14),r,110);CO.ground(g,150,62,190,106,tint(GR,-.08),5102,{n:70,size:.7,tufts:10,light:1});ao(g,150,62,190,10,'t',.3,'#2a2848');
+  /* scree fallen from the cliff, along its foot */
+  {const q=rng(5110);for(let x=152;x<338;x+=2+q()*5){const w=1.6+q()*3.4,y=63+q()*3.2;if(x>218&&x<260)continue;CO.boulder(g,x,y,w,w*.6,tint(LS,-.1+q()*.12),5111+Math.round(x*10),{light:1})}}
+  crag(SCRAP5,WL,tint(LS,-.08),r,{dip:.05,shade:'l'});CO.crag(g,WL,tint(LS,-.08),5103,{dip:.05,bed:9,light:1,shade:'l',scrub:5});
+  crag(SCRAP5,WR,tint(LS,.02),r,{dip:-.04,shade:'r'});CO.crag(g,WR,tint(LS,.02),5104,{dip:-.04,bed:9,light:1,scrub:5});
+  shade(g,WL,'#a6a6bc',.42);
+  /* the road beyond the ford, climbing the far wall to the pass: trodden dust with its stones, a darker edge where it is cut into the rock */
+  const RD=[316,104,338,104,372,90,410,76,452,58,480,50,480,44,450,52,406,70,366,84,330,98];
+  clipTo(g,()=>poly(g,RD),()=>{CO.ground(g,316,44,164,104,'#ddd0b0',5105,{n:40,size:.5,light:1});comp(g,'screen',.22,()=>R(g,316,44,164,60,'#fff4dc'))});poly(g,[316,104,330,98,366,84,406,70,450,52,480,44,480,46.5,450,54.5,406,72.5,366,86.5,330,100.5,318,106],'rgba(42,36,64,.22)');stroke(g,[316,104,330,98,366,84,406,70,450,52,480,44],'rgba(60,50,80,.45)',.6);stroke(g,[338,104,372,90,410,76,452,58,480,50],'rgba(255,248,230,.35)',.5);
   ao(g,316,44,164,60,'b',.16,'#2a2848');
   for(const[x,y,h]of[[18,34,20],[44,60,24],[70,26,17],[112,48,22],[138,84,18],[352,36,20],[386,58,16],[420,30,22],[456,82,19],[470,30,16]])pine(g,x,y,h);
-  /* where the water breaks out under the cliff */
-  poly(g,[224,64,228,50,236,46,246,48,254,64],'#1c1a26');poly(g,[229,64,232,54,238,51,245,54,250,64],'#dfeef2');
+  /* where the water breaks out under the cliff: a low, ragged mouth in the rock, dark inside, the water white where it falls out of it */
+  poly(SCRAP5,[224,64,228,50,236,46,246,48,254,64]);
+  {const M=[222,63,225,58,229,54.6,234,52.4,239,52,244,52.8,249,55,253,58.6,256,63];poly(g,M,'#14121c');
+    /* the brow of the rock over it in shade, and its lit lip */
+    poly(g,[224,58.4,229,55,234,52.8,239,52.4,244,53.2,249,55.4,252,58,246,56.4,239,55.4,232,56.2],'rgba(70,64,90,.55)');
+    stroke(g,[221,63.4,225,57.6,229,54,234,51.8,239,51.4,244,52.2,249,54.4,253,58,257,63.4],'rgba(255,246,226,.32)',.5);
+    /* the water pours out over the sill of the mouth, white, and falls into the river */
+    poly(g,[226,63,231,60.4,239,59.6,247,60.4,252,63,252,64.4,226,64.4],'#dfeef2');for(let i=0;i<12;i++){const q=rng(5106+i),x=228+q()*22;R(g,x,60.6+q()*2,.5,1.6+q()*2,'rgba(150,190,200,.55)')}}
   /* the river bed */
   poly(g,RIV);g.fillStyle=lg(g,0,60,0,144,['#e8f4f4','#8fc4cc','#5a9cae','#3f7e98','#2f6684']);g.fill();
   clipTo(g,()=>poly(g,RIV),()=>{for(let i=0;i<150;i++){const k=r()*r(),sy=62+k*82,hw=10+k*36;R(g,239-hw+r()*hw*2,sy,2+k*7,.5+k*.4,r()<.6?'rgba(236,248,250,.6)':'rgba(20,56,80,.35)')}
-    /* the ford itself: a shelf of shallow water, its stones just under the surface */
-    comp(g,'screen',.3,()=>R(g,190,110,100,28,'#bfe6e6'));for(let i=0;i<22;i++)oval(g,202+r()*74,112+r()*24,2+r()*3,.8+r(),'rgba(96,120,120,.5)')});
+    /* the ford itself: a shelf of shallow water, its stones just under the surface, each a flat stone with its lit top */
+    comp(g,'screen',.3,()=>R(g,190,110,100,28,'#bfe6e6'));for(let i=0;i<22;i++){const x=202+r()*74,y=112+r()*24,w=2+r()*3,h=.8+r();oval(SCRAP5,x,y,w,h,'#000');
+      const hh=Math.max(1.2,h);poly(g,[x-w,y,x-w*.6,y-hh*.7,x+w*.4,y-hh,x+w,y-hh*.2,x+w*.6,y+hh*.6,x-w*.5,y+hh*.6],'rgba(96,120,120,.5)');R(g,x-w*.4,y-hh*.7,w*.9,.5,'rgba(220,240,236,.35)')}});
   stroke(g,[226,69,221,78,213,91,205,104,201,117,198,131,193,144],'rgba(240,250,250,.7)',.8);stroke(g,[254,69,257,78,263,91,269,104,274,116,279,129,285,144],'rgba(240,250,250,.7)',.8);
   /* the banks: rock and gravel following the organic curve of the water's edge */
-  clipTo(g,()=>{g.beginPath();g.moveTo(0,104);g.lineTo(205,104);g.lineTo(201,117);g.lineTo(198,131);g.lineTo(193,144);g.lineTo(0,144);g.closePath()},()=>stoneGround(g,0,104,207,144,GR,r,150));
-  clipTo(g,()=>{g.beginPath();g.moveTo(269,104);g.lineTo(480,104);g.lineTo(480,144);g.lineTo(285,144);g.lineTo(279,129);g.lineTo(274,116);g.closePath()},()=>stoneGround(g,268,104,212,144,GR,r,150));
+  const BL=()=>{g.beginPath();g.moveTo(0,104);g.lineTo(205,104);g.lineTo(201,117);g.lineTo(198,131);g.lineTo(193,144);g.lineTo(0,144);g.closePath()},
+    BR=()=>{g.beginPath();g.moveTo(269,104);g.lineTo(480,104);g.lineTo(480,144);g.lineTo(285,144);g.lineTo(279,129);g.lineTo(274,116);g.closePath()};
+  stoneGround(SCRAP5,0,104,207,144,GR,r,150);stoneGround(SCRAP5,268,104,212,144,GR,r,150);
+  clipTo(g,BL,()=>CO.ground(g,0,104,207,144,GR,5107,{n:110,tufts:14,light:1}));clipTo(g,BR,()=>CO.ground(g,268,104,212,144,GR,5108,{n:110,tufts:14,light:1}));
   /* water-smoothed cobbles and low bank scrub softening the shore */
-  for(const[bx,by,bw,bh]of[[203,108,5,2.6],[198,121,6,3],[196,136,5.5,2.8],[271,109,5.5,2.8],[277,122,6,3],[283,137,5,2.6]])rock(g,bx,by,bw,bh,'#9a9284');
-  for(const[tx,ty]of[[200,113],[194,129],[273,115],[281,132]])for(let i=0;i<4;i++)stroke(g,[tx+i*1.2,ty,tx+i*1.2+(r()-.5)*1.5,ty-2.5-r()*2],'#5a6e42',.55);
-  poly(g,[0,112,150,110,196,116,192,132,0,136],'rgba(226,212,176,.4)');poly(g,[280,116,330,110,480,112,480,134,286,132],'rgba(226,212,176,.4)');
+  for(const[bx,by,bw,bh]of[[203,108,5,2.6],[198,121,6,3],[196,136,5.5,2.8],[271,109,5.5,2.8],[277,122,6,3],[283,137,5,2.6]])CO.boulder(g,bx,by,bw,bh,'#9a9284',Math.round(bx*13+by),{light:1});
+  for(const[tx,ty]of[[200,113],[194,129],[273,115],[281,132]])for(let i=0;i<4;i++){stroke(SCRAP5,[tx+i*1.2,ty,tx+i*1.2+(r()-.5)*1.5,ty-2.5-r()*2],'#000',.55);CO.tuft(g,tx+i*1.2,ty,3+(i%2),'#5a6e42',rng(5109+tx+i))}
+  poly(g,[0,112,150,110,196,116,192,132,0,136],'rgba(226,212,176,.3)');poly(g,[280,116,330,110,480,112,480,134,286,132],'rgba(226,212,176,.3)');
   ao(g,0,104,480,6,'t',.3,'#3a3460');shade(g,[0,104,170,104,186,116,0,122],SH,.5);
   /* the two posts of the guide rope, set in the rock */
-  for(const[x]of[NEAR,FAR]){oval(g,x+2,110.4,5,1.3,'rgba(30,26,50,.4)');poly(g,[x-2.6,110,x-2,99,x+2,99,x+2.8,110],'#6a5238');poly(g,[x-2.6,110,x-2,99,x-.6,99,x-1,110],'#9a7c54');R(g,x-2,99,4,.6,'#b8986a');rock(g,x-6,111,7,4,'#9a9284');rock(g,x+6,111.4,6,3.4,'#8e8678')}
-  rock(g,40,108,22,12,'#a8a092');rock(g,150,107,16,9,'#9c9486');rock(g,330,108,18,10,'#a39b8d');rock(g,444,107,24,13,'#a8a092');
+  for(const[x]of[NEAR,FAR]){oval(g,x+2,110.4,5,1.3,'rgba(30,26,50,.4)');poly(g,[x-2.6,110,x-2,99,x+2,99,x+2.8,110],'#6a5238');poly(g,[x-2.6,110,x-2,99,x-.6,99,x-1,110],'#9a7c54');R(g,x-2,99,4,.6,'#b8986a');
+    clipTo(g,()=>poly(g,[x-2.6,110,x-2,99,x+2,99,x+2.8,110]),()=>{tex(g,'vert',.3,x-3,99,6,11,'overlay',.5);ao(g,x-3,106,6,4,'b',.35,'#1e1a32')});
+    CO.boulder(g,x-6,111,7,4,'#9a9284',x*3+1,{light:1});CO.boulder(g,x+6,111.4,6,3.4,'#8e8678',x*3+2,{light:1})}
+  for(const[x,y,w,h,c]of[[40,108,22,12,'#a8a092'],[150,107,16,9,'#9c9486'],[330,108,18,10,'#a39b8d'],[444,107,24,13,'#a8a092']])CO.boulder(g,x,y,w,h,c,x*7+y,{light:1,moss:'#7a8a50'});
   /* the shade gathers at the foot of each wall of the gorge and behind every boulder */
   ao(g,0,96,172,8,'b',.2,'#2a2848');ao(g,316,96,164,8,'b',.14,'#2a2848');
   /* light: the sun stands high over the right wall. The sky and the far peaks keep the full day; the cliff the river comes from, the right wall,
@@ -181,7 +200,7 @@ ART.ford={w:480,fp:1.25,q:12,
     pool(l,86,122,110,18,'#f0e8dc',.26);pool(l,239,86,30,30,'#f6f8fa',.3);
     comp(l,'multiply',1,()=>{ao(l,0,0,170,144,'l',.14,'#4a4468');ao(l,0,128,480,16,'b',.16,'#4a4468')})});
   pool(g,240,30,150,90,'#fff4d8',.14,'screen');ao(g,0,0,100,144,'l',.16,'#20203c');ao(g,400,0,80,144,'r',.1,'#20203c')},
- fore(g){rock(g,24,152,46,26,'#5c5868');rock(g,500,152,40,22,'#5c5868');pine(g,522,128,44,'#2a4034');comp(g,'source-atop',.42,()=>R(g,0,0,530,150,'#2c2a50'))},
+ fore(g){CO.boulder(g,24,152,46,26,'#5c5868',5120,{light:1});CO.boulder(g,500,152,40,22,'#5c5868',5121,{light:1});pine(g,522,128,44,'#2a4034');comp(g,'source-atop',.42,()=>R(g,0,0,530,150,'#2c2a50'))},
  draw(g,t){/* the water, running toward us */
   g.save();poly(g,RIV);g.clip();for(let i=0;i<34;i++){const k=((t/1500+i*.137)%1),kk=k*k,sy=62+kk*82,hw=8+kk*38,sx=239+Math.sin(i*2.4)*hw*.9+Math.sin(t/300+i)*1.5;R(g,sx,sy,2+kk*6,.5+kk*.5,`rgba(240,250,252,${.75-k*.4})`)}
   for(let i=0;i<5;i++){const k=(t/260+i*1.3)%4;R(g,232+i*3.4,52+k*2.4,2,1.4,'rgba(255,255,255,.85)')}g.restore();
