@@ -44,6 +44,12 @@ The ox is the heaviest of the three, drawn after a reference picture the maintai
 
 ![The road to Judea in Chapter Three: two men and the donkey, each at a stride of its own](screenshots/road.png)
 
+Birds keep the open air alive, by day and in fair weather. Gulls wheel over every harbor, and one or two stand on the edge of the quay; in the winter rain at Cenchreae none flies, and two sit hunched on the stones. Over open country a bird of prey circles high and slow, its wings in a shallow V, swallows skim the rivers, a lark climbs singing over the fields, hangs there and drops, and in spring a loose line of storks passes north. On the roofs and walls of the towns sparrows peck and look about and doves sit in the sun; when Paul comes under them they fly up with a flutter of wings, and some while after he has gone they come back. Each of them can be looked at, from where one stands. A bird in flight is drawn as a bent line of pixels, never as a level stroke with a body across it, and its path keeps to open sky.
+
+![Corinth in spring: storks pass over the roofs, sparrows and doves sit on them](screenshots/birds.png)
+
+![Every bird and every frame, enlarged](screenshots/birds-sheet.png)
+
 A scene has depth: whoever stands farther back is drawn behind. A man who walks behind the carrier's mule is hidden by it up to the waist, and hides it when he stands in front; the same holds for a stool, a low table or a heap of sailcloth that stands out on the floor.
 
 ![Paul behind the mule, and Timothy in front of it](screenshots/depth.png)

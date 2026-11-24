@@ -1189,6 +1189,13 @@ function hint11(){
 /* the lines that are spoken with a gesture (see gesture in index.html): a nod where a line plainly says yes, a shake of the head where it
    plainly says no. Each is a line of this chapter, in English, as it stands above. */
 const ACTING={shake:['no_i_said']};
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+ROOMS.road11.birds={prey:[60,6,200,24]};
+ROOMS.street11.birds={perch:[{k:'sparrow',y:27,x:[40,50,62]},{k:'dove',y:27,x:[480,496],d:[1,-1]}]};
+ROOMS.agora11.birds={perch:[{k:'sparrow',y:36,x:[300,310,322]},{k:'dove',y:47,x:[150,168],d:[1,-1]}]};
+ROOMS.yard11.birds={perch:[{k:'sparrow',y:43,x:[80,90,102]},{k:'dove',y:44.5,x:[295,310],d:[-1,1]}]};
+
 return{acting:ACTING,rooms:['road11','street11','syn11','agora11','yard11','stoa11','bases11','hill11'],setup:setup11,start:start11,hint:hint11,music:MUSIC,scenes:{},topics:[],tablets:TABLETS,calls:CALLS,
   /* for the playtest: what is told, the passages, the grains and the parts of the speech, the stones and the statues, and the sayings */
   told:TOLD,ps:PS,grain:GRAIN,parts:PARTS,stones:STONES,stat:STAT,says:SAYS,way:WAY,lanes:LANES,voices:VOICES,voice:VOICE,sx,ring:ring11,

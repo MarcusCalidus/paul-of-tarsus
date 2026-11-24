@@ -433,6 +433,39 @@
       window.SHEETS=SHEETS;halt('romans')}}
   /* Dynamic cast & contact shadows in figure() (issue #81): floor skew, foreground-lamp back-wall bend, prop/actor ordering, pitch-dark
      zero shadow, multi-lamp steadiness across 110ms flame ticks, solid-wall clipping, and enlarged/gallery sheets across all 22 rooms. */
+  /* birds (shared/birds.js): every shape is one piece, in every frame and facing both ways; a flock on a roof can be looked at, flies up
+     when Paul comes under it, and comes back after he has gone; in the winter rain nothing flies and nothing sits on the roofs; the stop
+     hands over birds-sheet.png, every bird and every frame ten times enlarged, and ends on the street of Corinth in spring, as the storks
+     pass over the sparrows and the doves */
+  if(stop==='birds'){G.speedAll=0;ov.className='';ov.onclick=null;G.splash=0;G.scene=null;
+    await loadLevel(12);await need('birds');const B=SHARED.birds.sheet,
+      pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
+        for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
+          for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n},
+      one=(name,fn)=>{const[c,g]=mk(40*HR,24*HR);g.setTransform(HR,0,0,HR,0,0);fn(g);return[name,c]},
+      SH=[...B.GULL[0].map((m,i)=>one('gull '+i,g=>B.glyph(g,m,20,12,'#000'))),...B.GULL[1].map((m,i)=>one('big gull '+i,g=>B.glyph(g,m,20,12,'#000'))),
+        ...[0,.12,-.12].map(s=>one('bird of prey, banking '+s,g=>B.glyph(g,B.PREY,20,12,'#000',s))),...B.STORK.map((m,i)=>one('stork '+i,g=>B.glyph(g,m,20,12,{K:'#000',W:'#888'}))),
+        ...B.SMALL.map((m,i)=>one('small bird on the wing '+i,g=>B.glyph(g,m,20,12,'#000'))),...B.DOVEF.map((m,i)=>one('dove on the wing '+i,g=>B.glyph(g,m,20,12,'#000'))),
+        ...B.LARK.map((m,i)=>one('lark '+i,g=>B.glyph(g,m,20,12,'#000'))),
+        ...['sit','peck','look'].flatMap(k=>[1,-1].flatMap(d=>[one('sparrow '+k+' '+d,g=>B.sitter(g,B.SPARROW[k],B.SP,20,16,d)),one('dove '+k+' '+d,g=>B.sitter(g,B.DOVE[k],B.DV,20,16,d))])),
+        ...[0,1].flatMap(h=>[1,-1].map(d=>one('gull standing '+(h?'hunched ':'')+d,g=>B.gullStand(g,20,18,d,h))))],
+      bad=SH.filter(([,c])=>pieces(c)!==1).map(s=>s[0]);
+    ok(!bad.length,`birds: every shape is one piece, ${SH.length} of them (sky birds in every frame, sitting birds facing both ways, standing gulls)`+(bad.length?'. IN PIECES: '+bad.join(', '):''));
+    {const Z=10,per=8,cw=24,chh=20,c=document.createElement('canvas');c.width=per*cw*Z;c.height=Math.ceil(SH.length/per)*(chh*Z+16);const g=c.getContext('2d');g.imageSmoothingEnabled=false;
+      g.fillStyle='#a8c0dc';g.fillRect(0,0,c.width,c.height);SH.forEach(([n,sp],i)=>{const x=(i%per)*cw*Z,y=Math.floor(i/per)*(chh*Z+16);g.drawImage(sp,8*HR,2*HR,cw*HR,chh*HR,x,y,cw*Z,chh*Z);
+        g.fillStyle='#14100c';g.font='bold 11px Menlo,Consolas,monospace';g.fillText(n,x+4,y+chh*Z+12)});window.SHEETS=Object.assign(window.SHEETS||{},{'birds-sheet':c.toDataURL()})}
+    setChapter(12);for(const k in F)delete F[k];
+    F.shook=1;ok(ROOMS.street12.birds()===null&&ROOMS.court12.birds()===null&&!ROOMS.cen12.birds().gulls&&ROOMS.cen12.birds().huddle,'birds: in the winter rain nothing flies and nothing sits on a roof; at Cenchreae two gulls sit hunched on the quay');
+    delete F.shook;F.spring=1;G.invs={};G.busy=0;enterRoom('street12',60,124,1);drawInv();status();await wait(400);
+    const fl=()=>ROOMS.street12.hs.find(h=>h.name==='sparrows'&&h.vis()),cfg=ROOMS.street12.birds(),
+      cx=cfg.perch[0].x.reduce((a,b)=>a+b,0)/cfg.perch[0].x.length;
+    ok(cfg.storks&&fl(),'birds: in spring, storks pass over Corinth, and sparrows sit on a roof where they can be looked at');
+    heard.length=0;await act('look','sparrows');ok(heard.includes(T('sparrows_on_the_roof'))&&Math.abs(PC().x-60)<2,'birds: Paul looks at the sparrows from where he stands, and says what they are');
+    walk(PC(),cx+4,124);await idle();await wait(600);ok(!fl(),'birds: when Paul comes under the roof, the sparrows fly up');
+    walk(PC(),cx+110,124);await idle();const t0=performance.now();while(!fl()&&performance.now()-t0<45000)await wait(500);
+    ok(!!fl(),`birds: once he has gone, they come back (after ${((performance.now()-t0)/1000).toFixed(0)} s)`);
+    /* the picture: the sparrows back on their roof, the doves on theirs, and the storks halfway across */
+    {const t1=performance.now();while(((G.t/1000)%70<13||(G.t/1000)%70>17)&&performance.now()-t1<75000)await wait(200)}halt('birds')}
   if(stop==='shadows'){clearInterval(sk);G.speedAll=0;ov.className='';ov.onclick=null;G.splash=0;G.scene=null;
     await loadPrologue();for(const n of[1,2,4,5,6,7,8,9,10,12,13,14,15])await loadLevel(n);
     const snapRoom=(id,ts,setup)=>{const w=VW*HR,h=VH*HR,[c,g]=mk(w,h);g.setTransform(HR,0,0,HR,0,0);g.imageSmoothingEnabled=false;

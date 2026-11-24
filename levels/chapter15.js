@@ -2555,6 +2555,17 @@ function hint15(){const r=G.room;
   return['dawn15',['hint_dawn_1','hint_dawn_2']]}
 
 /* ============ CHAPTER DEFINITION ============ */
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+/* The gulls of Cenchreae and Troas are this chapter's own (drawCen15, drawQuay15); the shared painter adds the storks that pass north
+   over Troas after the days of Unleavened Bread (Acts 20:6), in April, kept between the forestay and the house. Each hand-made gull can be
+   looked at: the hotspot follows the first of them along its path, and the two standing on the Troas quay have one of their own. */
+ROOMS.quay15.birds={storks:[10,1.6,118,210]};
+{const fly=(room,cx,cy,ax,ay,T,ph,w)=>({name:'gulls',look:'gulls_over_the_harbor',h:6,w,get x(){const a=G.t/T*6.2832+ph;return cx+ax*Math.cos(a)-w/2},
+    get y(){const a=G.t/T*6.2832+ph;return cy+ay*Math.sin(2*a)-3},get wx(){return PC().x},get wy(){return PC().y}});
+  ROOMS.cen15.hs.unshift(fly('cen15',86,25,62,8,26000,0,12));
+  ROOMS.quay15.hs.unshift(fly('quay15',156,24,62,7,34000,0,10),{name:'gull',look:'gull_on_the_quay_edge',x:176,y:94,w:22,h:9,get wx(){return PC().x},get wy(){return PC().y}})}
+
 return{rooms:['gaius15','scale15','cen15','sand15','quay15','upper15','street15'],setup:setup15,start:start15,hint:hint15,music:MUSIC,beds:BEDS,calls:CALLS,topics:[],tablets:TABLETS,
   /* for the playtest: what is told; the questions about Phoebe; the weights and the bags; the lamps and the search; the roads on the map; the cry at midnight */
   told:TOLD,phoebe:PHOEBE,weights:WT,rounds:ROUND,sc:sc15,tilt:tiltScale15,lamps:LAMPS,oil:lamps15,after:AFTER,canLast,sat,stage:stage15,pebbles:PEB15,roads:[ROAD_A,ROAD_B],cry:cry15,

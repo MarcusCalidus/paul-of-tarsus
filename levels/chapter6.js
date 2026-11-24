@@ -1065,6 +1065,12 @@ const ACTING={nod:['yes_sir'],
   'no_sir_said',
   'no_let',
   'no_2']};
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+ROOMS.derbe.birds={prey:[100,6,200,22],lark:[130,80,26]};
+ROOMS.iconium.birds={perch:[{k:'sparrow',y:20,x:[100,110,122]},{k:'dove',y:31,x:[329.5,347.5],d:[1,-1]}]};
+ROOMS.lystra.birds={perch:[{k:'sparrow',y:22,x:[180,190,202]},{k:'dove',y:17.5,x:[30,57],d:[1,-1]}]};
+
 return{acting:ACTING,rooms:['iconium','lystra','outside','house6','derbe'],setup:setup6,start:start6,hint:hint6,music:MUSIC,topics:TOPICS,tablets:TABLETS,
   /* Iconium, Lystra and Derbe lie north of the map's usual window, so this chapter looks through the northern one */
   view:'north',

@@ -1825,6 +1825,12 @@ function lanesPass(pass){setChapter(14);const upto=pass===1?'run':'left';for(con
   G.busy=false;lock(false);G.verb='walk';G.item=null;syncVerbs();drawInv();status();swapBtn();codeBtn()}
 
 /* ============ CHAPTER DEFINITION ============ */
+/* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
+   roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+/* in the morning only: by the evening of the riot the birds have gone to roost */
+ROOMS.court14.birds=()=>F.plea?null:{perch:[{k:'sparrow',y:9,x:[120,130,142]}]};
+ROOMS.market14.birds=()=>F.plea?null:{perch:[{k:'sparrow',y:21,x:[150,160,172]},{k:'dove',y:21,x:[330,348],d:[1,-1]}]};
+
 return{rooms:['colon14','seal14','lanes14','door14','court14','market14'],setup:setup14,start:start14,hint:hint14,music:MUSIC,topics:[],tablets:TABLETS,beds:BEDS,calls:CALLS,
   /* for the playtest: what is told, the people at the theater and the report, the lane map and its plan */
   told:TOLD,who:WHO,report:REPORT,others:OTHERS,self:SELF,bye:BYE,cry,parseCry,map:M,ox:OX,at:(x,y)=>[X(x),Y(y)],len:q,city:{house:HOUSE,courts:COURT,gates:GATES,alley:ALLEY,start:START},

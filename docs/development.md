@@ -23,6 +23,7 @@ shared/scroll.js      the narrator's scroll: narration told in the dark is read 
 shared/cast.js        reusable Roman military looks (foot soldiers, centurions, Praetorian Guard) and wet/torn shipwreck clothing
 shared/lanes.js       the lane map: a city seen at a slant from above, its lanes, its standing houses, its crowd and the figures on it
 shared/beasts.js      the animals: the pack donkey, the mule and the ox or bull, their walks and their voices
+shared/birds.js       the birds of the open air: gulls over the harbors, birds of prey, swallows, larks and storks over open country, sparrows and doves on the roofs
 shared/materials.js   materials and light for backdrops: quiet wood grain, two-tone cracks, soft contact shadows, earth colors, joist shade, ceilings with joists in perspective
 lang/en/              the English text: main.js for the engine and shared files, prologue.js, chapterN.js for each chapter
 lang/de/              the German text, for the same keys, each line with the fingerprint of its English

@@ -262,7 +262,7 @@ ART.pro_judas={w:320,q:12,
   front(){}};
 
 function scene(id){return(g,t)=>{backdrop(g,id,0);ART[id].draw(g,t)}}
-const SCENES={stones:scene('pro_wall'),zeal:scene('pro_near'),door:scene('pro_door'),road:scene('pro_road'),judas:scene('pro_judas')};
+const SCENES={stones:scene('pro_wall'),zeal:scene('pro_near'),door:scene('pro_door'),road:(g,t)=>{scene('pro_road')(g,t);SHARED.birds.draw(g,t,'pro_road',{prey:[70,36,150,14],lark:[110,92,26]})},judas:scene('pro_judas')};
 
 /* pwait: wait ms (shortened in fast playtest mode), resolving early if SKIP is pressed */
 function pwait(ms){if(G.proSkip)return Promise.resolve();const d=G.speedAll>200?40:ms;
