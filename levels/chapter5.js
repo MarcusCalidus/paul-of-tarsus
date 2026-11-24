@@ -69,6 +69,8 @@ function rock(g,x,y,w,h,c){shadow5(g,x+w*.1,y,w*.56,Math.max(1,h*.14),.4,'#1e1a3
 function bundles(g,x,y){const near=x<200?1:-1;shadow5(g,x+12,y+.2,14,1.4,.42,'#281e30');
   for(const[dx,dy,w,hh,c]of[[0,-5,17,5,earth5('#8a5a4a',.1)],[4,-9.6,15,4.6,earth5('#6f7a5a',.1)]])clothRoll(g,x+dx,y+dy+hh,w,hh,c,{near,k:.32,face:.18,hi:1});
   shadow5(g,x+38,y+.2,6,1.2,.4,'#281e30');sack(g,x+27,y,4,7,'#cdbb8c');g.fillStyle=lg(g,x+33,0,x+44,0,['#3a302a','#2a211c','#17110e']);g.beginPath();g.ellipse(x+38.6,y-3.4,5.6,3.6,0,0,6.2832);g.fill();R(g,x+34,y-5,9,.6,'#8a7a5a')}
+/* the floor they cover (#83): the bundles laid out at x,y, and a pack donkey standing at x,y facing dir, from hoof to hoof */
+const bundlesFoot5=(x,y)=>[x,y-2.5,44,3],donkeyFoot5=(x,y,d)=>[x-(d>0?13:12),y-2,25,3];
 /* stoneGround: bare ground of rock and gravel between y0 and y1 */
 function stoneGround(g,x,y0,w,y1,c,r,n){g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.1),c,tint(c,.08)]);g.fillRect(x,y0,w,y1-y0);tex(g,'mott',.42,x,y0,w,y1-y0,'overlay',1);tex(g,'grain',.16,x,y0,w,y1-y0,'overlay',.5);
   for(let i=0;i<(n||w*.5);i++){const k=r(),sy=y0+1+k*(y1-y0-2),sx=x+r()*w,s=.6+k*1.6;oval(g,sx,sy,s*1.5,s*.6,r()<.5?tint(c,.2):tint(c,-.25));if(r()<.3)oval(g,sx+s*.5,sy+s*.4,s*1.4,s*.3,'rgba(40,36,70,.25)')}}
@@ -714,7 +716,9 @@ const BN5={name:'Barnabas',actor:BN,
       {q:'what_do_you_make_of_this_city',a:()=>say(BN,F.spoke1?'it_listens':'it_is_full_of_people_who')},
       {q:'how_do_i_look_to_you',once:1,a:async()=>{await say(BN,'like_a_man_who_waded_a_river');await say(P,'i_will_rest')}},
       {q:'stay_close_brother',bye:1}])};
-ROOMS.perga={space:0.6,walk:[16,464,110,138],mood:'hope',amb:{crickets:.5,birds:.4,wind:.2,hooves:.5},hs:[
+ROOMS.perga={space:0.6,walk:[16,464,110,138],
+  /* the three pack donkeys at the wall and our baggage, at the back edge of the strip */
+  block:[donkeyFoot5(300,109,-1),donkeyFoot5(344,108,1),donkeyFoot5(391,109.4,-1),bundlesFoot5(126,108)],mood:'hope',amb:{crickets:.5,birds:.4,wind:.2,hooves:.5},hs:[
   {name:'mountains',x:120,y:6,w:330,h:40,wx:300,look:['taurus_said','i_look_up_toward_psalm_121_1']},
   {name:'city_wall',x:0,y:18,w:122,h:30,wx:76,look:'wall_of_perga_a_prominent'},
   {name:'north_gate_of_perga',x:26,y:50,w:44,h:54,wx:48,wy:112,look:'the_north_gate_of_perga',
@@ -767,7 +771,11 @@ function echo5(){if(!AU.ctx)return;const t0=now()+.05;for(let k=1;k<=3;k++)[[0,3
 async function call5(){await say(P,'barnabas_ex');echo5();await wait(2300);
   await say(BN,F.lineUp&&!F.crossed?'i_can_hear_you_paul':'i_am_right_here_paul');
   await say(PA,'every_man_up_in_those_rocks');await say(P,'i_will_keep_my_voice_for_antioch');treasure()}
-ROOMS.ford={space:0.7,get walk(){return PC().x>240?[300,464,112,138]:[16,186,112,138]},mood:'tense',amb:{fountain:.9,waves:.6,wind:.45,birds:.15},enter:fordIntro,hs:[
+ROOMS.ford={space:0.7,get walk(){return PC().x>240?[300,464,112,138]:[16,186,112,138]},
+  /* the pack train and our baggage at the back edge of the strip: on this bank, or on the other once all are over; and the coil of the
+     spliced rope by the near post */
+  block:()=>F.crossed?[donkeyFoot5(372,108.6,1),donkeyFoot5(414,109.4,1),donkeyFoot5(456,108.4,1),bundlesFoot5(332,111)]
+    :[donkeyFoot5(84,108.6,1),donkeyFoot5(44,109.4,-1),donkeyFoot5(128,108,1),bundlesFoot5(134,111),...F.spliced&&!F.lineUp?[[174,108.5,12,3]]:[]],mood:'tense',amb:{fountain:.9,waves:.6,wind:.45,birds:.15},enter:fordIntro,hs:[
   {name:'pass',x:404,y:36,w:76,h:40,wx:440,look:'road_climbs_on_beyond_the_ford'},
   {name:'rocks_above_the_road',x:330,y:0,w:150,h:34,wx:400,look:['something_moved_up_among_those_rocks','perhaps_not']},
   {name:'cliff',x:150,y:10,w:190,h:36,wx:176,look:'river_does_not_run_down',talk:call5},
@@ -920,7 +928,9 @@ AM.hs={name:'Ammia',actor:AM,look:'woman_of_standing_by_her_dress',
   ask:{sabbath:'i_could_not_tell_you'},
   talk:async()=>{await say(AM,'ammia_said');await say(AM,'i_come_here_for_the_reading')},
   as:{barnabas:{look:'a_woman_of_high_standing',talk:()=>say(AM,'you_are_strangers_here'),show:{'*':'they_have_no_place_in_this_house'}}}};
-ROOMS.pisidia={space:0.8,walk:[16,464,110,138],mood:'hope',amb:{crowd:.5,birds:.3,wind:.3,hammer:.2,hooves:.3},hs:[
+ROOMS.pisidia={space:0.8,walk:[16,464,110,138],
+  /* the drover's panniers of salt fish, and on the second Sabbath the front of the crowd that fills the square */
+  block:()=>[[198,106,28,2.6],...G.crowd?CROWD.filter(c=>c[2]>109).map(([,x,y])=>[x-4,y-1.5,8,2]):[]],mood:'hope',amb:{crowd:.5,birds:.3,wind:.3,hammer:.2,hooves:.3},hs:[
   {name:'mountains',x:60,y:2,w:370,h:20,wx:240,look:'snow_on_them_halfway_down'},
   {name:'street_to_the_south_gate',x:0,y:36,w:58,h:68,wx:40,wy:113,dir:-1,look:'street_we_came_in_by_from_the_south',
     use:'back_down_to_the_coast',open:'back_down_to_the_coast'},
@@ -1002,7 +1012,9 @@ const dust=()=>F.cheered?finale5():say(PC(),PC()===P?'not_yet_they':'not_yet_pau
 SN.hs={name:'Straton',actor:SN,look:'straton_one_of_the_leading',
   show:{'*':'i_want_nothing_of_yours'},talk:()=>say(SN,'i_have_nothing_more_to_say'),
   as:{barnabas:{look:'one_of_the_leading_men',talk:()=>say(SN,'order_stands_for_both_of_you'),show:{'*':'i_want_nothing_of_yours_said'}}}};
-ROOMS.border={space:0.5,walk:[16,304,112,138],mood:'tense',amb:{wind:.6,birds:.4,crickets:.2},hs:[
+ROOMS.border={space:0.5,walk:[16,304,112,138],
+  /* our baggage, thrown out after us, at the back edge of the strip, and the attendant who stands by until we are gone */
+  block:[bundlesFoot5(262,112),[43,118.5,10,4]],mood:'tense',amb:{wind:.6,birds:.4,crickets:.2},hs:[
   {name:'mountains',x:0,y:30,w:320,h:22,wx:200,look:'same_mountains_that_stood_over_the_square'},
   {name:'Antioch',x:2,y:48,w:118,h:30,wx:120,look:['antioch_on_its_rise','there_are_disciples_inside_that_wall_now']},
   {name:'poplars',x:198,y:72,w:92,h:22,wx:240,look:'poplars_along_a_stream'},
