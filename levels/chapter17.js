@@ -205,7 +205,7 @@ const foot17=(g,x,y,rx,ry)=>oval(g,x,y,rx,ry||1.4,'rgba(30,24,40,.28)');
        deck behind the rail with a sail spread over the bulwark, mending it; sacks of wheat heaped at the foot of her mast.
      the black-hulled ship (Akestor), anchored nearer in the middle (x 130..212, waterline 84.5), head to the wind: deep laden, tarred
        black, her yard lowered abaft the mast with the sail still furled, three of her crew at it, loosing its ties (the loose ends lie on
-       the roll); bales and jars round the foot of her mast, a row of water jars along her rail forward, her cable running out from the
+       the roll); sacks heaped round the foot of her mast, a row of water jars along her rail forward, her cable running out from the
        bow; beside her the boat (x 178..204, waterline 92) with water jars and a man at the oars.
      the red-waled ship (Kleon), moored at the quay at the right (x 214.., waterline 99): big and riding high, the weedy green band of her
        bottom out of the water, a red wale, jars standing on her deck by the open hatch round the foot of her mast, her gangplank down
@@ -323,8 +323,7 @@ function blackPatara17(g){const r=rng(1712),x0=130,x1=212,yB=84.5,WL=x=>77.4-5.6
   reflPatara17(g,x0,x1,yB,7,'#141218',r);
   SHARED.ship.paint(g,{r,dir:1,view:'full',x0,x1,yBot:yB,sheer:WL,gradY0:66,gradY1:yB,hullGrad:['#4c4648','#2e2a2e','#1e1a1e','#141014'],
     mast:{x:171.4,y0:-2,y1:76,w:1.8,cols:['#4c3e32','#7c6650','#3c3028'],hiCol:'#ae967a',cap:false,stays:[[172.6,-2,209.6,69]],stayCol:'#4a3e34',stayW:.5},
-    bales:[[163.6,4.2,2.2,'#b8a07a'],[175,4.2,2,'#a88e68'],[169.4,5.6,3.2,'#c2aa82']],baleDy:.4,
-    sacks:[[170,1.8,'#9a7a5a',3.4],[176,1.4,'#a88a62',2.6]],sackDy:-1.6,
+    sacks:[[165.4,1.8,'#b09a74',2.6],[177.8,1.6,'#a08a66',2.4],[168.4,2.4,'#c2aa82',2.8],[175,2.3,'#b8a07a',2.8],[172.2,2.8,'#ccb48a',3]],sackDy:.2,
     figs(q){manPatara17(q,144,76.6,{pose:'bend',s:1.25,c:'#c8b896',dir:1});manPatara17(q,153.4,76.4,{pose:'bend',s:1.2,c:'#8c6a4a',dir:1,hair:'#3a2a1e'});
       manPatara17(q,161.6,76.4,{pose:'bend',s:1.25,c:'#a8a090',dir:-1});
       /* water jars stood along her rail forward, come aboard from the boat */
@@ -362,7 +361,7 @@ function redPatara17(g){const r=rng(1714),x0=214,x1=338,yB=98.4,WL=x=>79.6-13*Ma
   SHARED.ship.paint(g,{r,dir:-1,view:'full',x0,x1,yBot:yB,sheer:WL,gradY0:60,gradY1:yB,hullGrad:['#b08a62','#8e6a48','#6a4e36','#4a3626'],
     mast:{x:285,y0:-2,y1:80,w:2.8,cols:['#5a4634','#8e7252','#463628'],hiCol:'#c4a47a',cap:false},
     figs(q){/* jars standing on her deck by the open hatch, round the foot of her mast, waiting to be carried off */
-      for(let i=0;i<8;i++){const x=274+i*3.2+(i>3?1.4:0),y=WL(x)+.4,h=5.6+(i%3)*.4;poly(q,[x-1.3,y,x-1.6,y-h*.5,x-1.1,y-h*.82,x-.5,y-h,x+.5,y-h,x+1.1,y-h*.82,x+1.6,y-h*.5,x+1.3,y],i%2?'#b07a4e':'#c0885a');
+      for(let i=0;i<9;i++){const x=i<8?274+i*3.2+(i>3?1.4:0):286.4,y=WL(x)+(i<8?.4:1.2),h=5.6+(i%3)*.4;poly(q,[x-1.3,y,x-1.6,y-h*.5,x-1.1,y-h*.82,x-.5,y-h,x+.5,y-h,x+1.1,y-h*.82,x+1.6,y-h*.5,x+1.3,y],i%2?'#b07a4e':'#c0885a');
         R(q,x-1.6,y-h*.5,.6,h*.4,'#dca474');R(q,x-.5,y-h-.6,1,.7,'#7a4a2c')}},
     pitch:{f0:.66,color:'rgba(30,20,14,.42)'},wale:{f0:.1,f1:.17,color:'#a83a28'},waleWear:{count:24,c1:'#c05a40',c2:'#8a3020'},
     lowerWale:{f0:.42,f1:.48,color:'#3a2618',hi:'#b88a58'},
