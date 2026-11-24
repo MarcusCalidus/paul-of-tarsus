@@ -359,16 +359,19 @@ const MULE=(()=>{
 /* ================================================================== the ox ================================================================== */
 const OX=(()=>{
     /* A working ox or a bull, the heaviest of the animals, in the pixel manner of the figures and seen from the side, as in the maintainer's
-       reference picture: a deep barrel of a body that rises to a hump of muscle at the withers, a short thick neck with the dewlap hanging
-       under it, and a broad head turned a little toward us, so that both short pale horns, both ears and both eyes read. c: its coat, from
+       reference picture: a deep barrel of a body that rises to a hump of muscle at the withers, a short thick neck that comes out of the
+       shoulders below the line of the back with the dewlap hanging from throat to brisket under it, and the head carried low and forward,
+       hanging in front of the chest with its poll below the withers, turned three-quarters toward us: one side of the face and its broad
+       front, both short pale horns, both ears and both eyes, the muzzle lowest. The barrel is modelled in flat bands, as in the reference,
+       with a crease where the shoulder and the haunch meet it. c: its coat, from
        which every tone is taken (ramp), so that the brown oxen of Zenon's wagon and the near-white bulls of Lystra are the same painter.
        gar: a garland of leaves and yellow flowers round the neck (Acts 14:13).
        Every part grows out of the one before it: the tail is set on at the top of the rump and lies along it before it hangs free, the near
        legs are painted in the body's own tones as far down as the belly, so that haunch and shoulder grow out of it, and the neck is painted
        in the same bands of tone as the body it comes out of, so that no seam shows.
        Crosses: the horns curve out and straight up from a poll that rises between them, so that the crown of the head is no level bar over
-       the face; the ears droop; the garland is a loose band of leaves that slants across the neck and crosses no line; nothing is ever laid
-       across the neck.
+       the face; the ears droop; the garland hangs round the neck in a curve over the dewlap and crosses no line or crease; nothing else is
+       ever laid across the neck.
        fr 0 stands. fr 4 to 19 are the sixteen frames of its walk (frame below gives the frame for a distance walked); 1, 2 and 3 are three
        moments of that walk, a quarter of a cycle apart, for a scene that counts frames itself. The walk has four beats: near hind, near
        fore, far hind, far fore, each a quarter of the cycle after the one before. A hoof stands on the ground for OX_STANCE of the cycle,
@@ -378,44 +381,50 @@ const OX=(()=>{
        plods: the body sinks a pixel as each fore hoof takes its weight, the hip and the shoulder roll up a pixel in turn over the leg that
        stands under them, the head sways a pixel forward and back and dips with the fore hooves, the dewlap swings after it, and the tip of
        the tail swings away from the near hind leg when that leg is back.
-       fr 20 to 22 are its voice (see voice and sound): 20 the head lifted and the neck stretched, the mouth shut; 21 the mouth half open;
-       22 wide open, the dewlap drawn taut under the stretched neck. */
+       fr 20 to 22 are its voice (see voice and sound), with the same head: 20 lifted a little and the muzzle pushed forward, the mouth shut;
+       21 the lower jaw dropping; 22 the mouth wide open and the dewlap drawn taut. */
+    /* the head in three-quarter view, as it hangs (OX_HEAD), lifted with the muzzle forward (OX_RAISE), and lowing (OX_LOW1, OX_LOW2) */
     const OX_HEAD=[
-      "...x..............................x...","..xx..............................xx..","..xx..............................xx..",".ycC..............................ccy.",
-      ".ycC..............................ccy.",".ycC..............................ccy.",".yccC............................cccy.","..yccC..........................cccy..",
-      "..yyccC.........HHLLLLdd.......cccyy..","...yyccCC.....HHLLLLLLLLd.....cccyy...",".....yyccCcc.HHHLLLLLLLLdd.ccccyy.....","........yyccHHHHLLLLLLLLdddccy........",
-      "........eeeHHHHHhLLLLLLhdddddD........",".....eeeEEeHHHHhhhLLLLhhdddddEddD.....","..eeEEEEEEeHHHHhhhhLLhhhdddddEEEEEdD..",".eEEEEEEEeeHHHHhhhhhhhhhddddddEEEEEED.",
-      "..eeEEEEeddHkkkHhhhhhhhhkkkdddEEEEdD..","....eeeddddHkwkHhhhhhhhhkkkddddddD....","........dddHdkkHhhhhhhhhkkdddD........","...........HHddHhhhhhhhhdddD..........",
-      "...........HHHHhhhhhhhhhdddD..........","............HHHhhhhhhhhhddD...........","............HHHhhhhhhhhhddD...........","............HHhhhhhhhhhhhdD...........",
-      "............HHhhhhhhhhhhhdD...........","............MMMmmmmmmmmmmmm...........","...........MMMMmmmmmmmmmmmmm..........","...........MMnnMmmmmmmmmnnmm..........",
-      "...........MnnnMmmmmmmmmnnnm..........","...........MMnMmmmmmmmmmmnmm..........","...........mmmmmmmmmmmmmmmmm..........","............qnnnnnnnnnnnnnq...........",
-      "............mmmmmmmmmmmmmmm...........",".............qqqqqqqqqqqqq............"];
-    /* the head lifted and the neck stretched to low: the muzzle comes forward, the horns sweep back over the poll, and the near ear lies back.
-       RAISE has the mouth shut, LOW1 half open, LOW2 wide open with the tongue showing. Each is drawn by hand. */
+      ".............................x......","...x.........................x......","...xx.......................cy......","...yc.......................cy......",
+      "...ycC.....................Ccy......","....ycC..................Cccy.......",".....yccC....HHHHHHHH..cccy.........","......yyccC.LLLLLLLLLLcy............",
+      "........yycchHLLLLLLLh..............","..........HHhHLLLLLLLHHh............","....eeeehHHHhHLLLLLLLHHhd...........",".eEEEEehHLLLhHHHHHHHHHhhhdeee.......",
+      "eEEEeedhHHkwhHHHHHHHHHHkkddeEEEe....",".eeedddhHHkkhhhhhhhhhhhkhddeEEEEe...","....dddhHHddhhhhhhhhhhhhhddeeeee....","........hHHHhhhhhhhhhhhhhd.ddd......",
+      "........dHHHHhhhhhhhhhhhhd..........",".........dHHHhhhhhhhhhhhhd..........",".........dhhhhhhhhhhhhhhhd..........","..........dhhhhhhhhhhhhhhd..........",
+      "..........dhhhhhhhhhhhhhhhd.........","...........dhhhhhhhhhhhhhhd.........","...........dhhhhhhhhhhhhhhd.........","............dhhhhhhhhhhhhhhd........",
+      "............dhhhhhhhhhhhhhhd........","............DqqMMMMMMMMMMMMMM.......",".............DqMMmmmmmmmmmmmq.......",".............DqMMmmnnmmmmmnnq.......",
+      ".............DqMMmmnmmmmmmmnq.......","..............Dmmmmmmmmmmmmmq.......","..............ddnnnnnnnnnnnnq.......","...............DqqqqqqqqqqqD........",
+      "................DqqqqqqqqqD.........",".................DqqqqqqqD.........."];
     const OX_RAISE=[
-      "...x..............x.....................","...xx.............xx....................","...yc.............cy....................","....ycC..........Ccy....................",
-      ".....ycC........Ccy.....................","......ycC......Ccy......................",".......ycC....ccy.......................","........yccCHccy........................",
-      ".........yyccHHHL.......................",".........dHLLLLLLLL.....................","........dHHLLLLLLLLLLLL.................",".......dHHHHHLLLLLLLLLLLLLL.............",
-      ".....eedHHHHHHHHHHHLLLLLLLLLLMM.........","...eeEEdHHHHHHHHkwkHHHHHHHHHHMMMMM......",".eEEEEEdhHHHHHHHkkkhHHHHHHHHMMMMMMMM....","eEEEEeddhhhhhhhhhddhhhhhhhhhmMMMMMMnnM..",
-      ".eeedddhhhhhhhhhhhhhhhhhhhhhmmmmmmmmnm..","....ddhhhhhhhhhhhhhhhhhhhhhhmmmmmmmmmm..","....ddhhhhhhhhhhhhhhhhhhhhhhmmmmmmmmmq..","....ddhhhhhhhhhhhhhhhhhhhhhdmmmmmmmmmq..",
-      "....dddhhhhhhhhhhhhhhhhhhhddnnnnnnnnnq..",".....ddhhhhhhhhhhhhhhhhhdddqmmmmmmmmq...",".....dddhhhhhhhhhhhhhhddddqqmmmmmmqq....","......dddhhhhhhhhhhdddddD..qqqqqq.......",
-      ".......dddddddddddddDDD.................",".........DDDDDDDDDDD...................."];
+      ".............................x......","...x.........................x......","...xx.......................cy......","...yc.......................cy......",
+      "...ycC.....................Ccy......","....ycC..................Cccy.......",".....yccC....HHHHHHHH..cccy.........","......yyccC.LLLLLLLLLLcy............",
+      "........yycchHLLLLLLLh..............","..........HHhHLLLLLLLHHh............","....eeeehHHHhHLLLLLLLHHhd...........",".eEEEEehHLLLhHHHHHHHHHhhhdeee.......",
+      "eEEEeedhHHkwhHHHHHHHHHHkkddeEEEe....",".eeedddhHHkkhhhhhhhhhhhkhddeEEEEe...","....dddhHHddhhhhhhhhhhhhhddeeeee....","........hHHHhhhhhhhhhhhhhd.ddd......",
+      ".........dHHHHhhhhhhhhhhhhd.........","..........dHHHhhhhhhhhhhhhd.........","..........dhhhhhhhhhhhhhhhd.........","...........dhhhhhhhhhhhhhhd.........",
+      "...........dhhhhhhhhhhhhhhhd........","............dhhhhhhhhhhhhhhd........","............dhhhhhhhhhhhhhhd........","..............dhhhhhhhhhhhhhhd......",
+      "..............dhhhhhhhhhhhhhhd......","..............DqqMMMMMMMMMMMMMM.....","...............DqMMmmmmmmmmmmmq.....","...............DqMMmmnnmmmmmnnq.....",
+      "...............DqMMmmnmmmmmmmnq.....","................Dmmmmmmmmmmmmmq.....",".................ddnnnnnnnnnnnnq....","..................DqqqqqqqqqqqD.....",
+      "...................DqqqqqqqqqD......","....................DqqqqqqqD......."];
     const OX_LOW1=[
-      "...x..............x.....................","...xx.............xx....................","...yc.............cy....................","....ycC..........Ccy....................",
-      ".....ycC........Ccy.....................","......ycC......Ccy......................",".......ycC....ccy.......................","........yccCHccy........................",
-      ".........yyccHHHL.......................",".........dHLLLLLLLL.....................","........dHHLLLLLLLLLLLL.................",".......dHHHHHLLLLLLLLLLLLLL.............",
-      ".....eedHHHHHHHHHHHLLLLLLLLLLMM.........","...eeEEdHHHHHHHHkwkHHHHHHHHHHMMMMM......",".eEEEEEdhHHHHHHHkkkhHHHHHHHHMMMMMMMM....","eEEEEeddhhhhhhhhhddhhhhhhhhhmMMMMMMnnM..",
-      ".eeedddhhhhhhhhhhhhhhhhhhhhhmmmmmmmmnm..","....ddhhhhhhhhhhhhhhhhhhhhhhmmmmmmmmmm..","....ddhhhhhhhhhhhhhhhhhhhhhhmmmmmmmmmq..","....ddhhhhhhhhhhhhhhhhhhhhhdmmmmmmmmmq..",
-      "....dddhhhhhhhhhhhhhhhhhhhddqqqqqqqqqq..",".....ddhhhhhhhhhhhhhhhhhdddooooooooo....",".....dddhhhhhhhhhhhhhhddddqoooooooo.....","......dddhhhhhhhhhhdddddDqmmmmmmmmq.....",
-      ".......dddddddddddddDDD..qqmmmmmq.......",".........DDDDDDDDDDD......qqqqq........."];
+      ".............................x......","...x.........................x......","...xx.......................cy......","...yc.......................cy......",
+      "...ycC.....................Ccy......","....ycC..................Cccy.......",".....yccC....HHHHHHHH..cccy.........","......yyccC.LLLLLLLLLLcy............",
+      "........yycchHLLLLLLLh..............","..........HHhHLLLLLLLHHh............","....eeeehHHHhHLLLLLLLHHhd...........",".eEEEEehHLLLhHHHHHHHHHhhhdeee.......",
+      "eEEEeedhHHkwhHHHHHHHHHHkkddeEEEe....",".eeedddhHHkkhhhhhhhhhhhkhddeEEEEe...","....dddhHHddhhhhhhhhhhhhhddeeeee....",".........hHHHhhhhhhhhhhhhhdddd......",
+      ".........dHHHHhhhhhhhhhhhhd.........","..........dHHHhhhhhhhhhhhhd.........","..........dhhhhhhhhhhhhhhhd.........","...........dhhhhhhhhhhhhhhd.........",
+      "............dhhhhhhhhhhhhhhhd.......",".............dhhhhhhhhhhhhhhd.......",".............dhhhhhhhhhhhhhhd.......","..............dhhhhhhhhhhhhhhd......",
+      "..............dhhhhhhhhhhhhhhd......","..............DqqMMMMMMMMMMMMMM.....","................DqMMmmmmmmmmmmmq....","................DqMMmmnnmmmmmnnq....",
+      "................DqMMmmnmmmmmmmnq....",".................Dmmmmmmmmmmmmmq....","...................oooooooooooo.....","..................oooooooooooo......",
+      ".................Dqqmmmmmmmmmmmq....","...................DqqqqqqqqqqqD....","....................DqqqqqqqqqD.....",".....................DqqqqqqqD......"];
     const OX_LOW2=[
-      "...x..............x.....................","...xx.............xx....................","...yc.............cy....................","....ycC..........Ccy....................",
-      ".....ycC........Ccy.....................","......ycC......Ccy......................",".......ycC....ccy.......................","........yccCHccy........................",
-      ".........yyccHHHL.......................",".........dHLLLLLLLL.....................","........dHHLLLLLLLLLLLL.................",".......dHHHHHLLLLLLLLLLLLLL.............",
-      ".....eedHHHHHHHHHHHLLLLLLLLLLMM.........","...eeEEdHHHHHHHHkwkHHHHHHHHHHMMMMM......",".eEEEEEdhHHHHHHHkkkhHHHHHHHHMMMMMMMM....","eEEEEeddhhhhhhhhhddhhhhhhhhhmMMMMMMnnM..",
-      ".eeedddhhhhhhhhhhhhhhhhhhhhhmmmmmmmmnm..","....ddhhhhhhhhhhhhhhhhhhhhhhmmmmmmmmmm..","....ddhhhhhhhhhhhhhhhhhhhhhhmmmmmmmmmq..","....ddhhhhhhhhhhhhhhhhhhhhhdmmmmmmmmmq..",
-      "....dddhhhhhhhhhhhhhhhhhhhddqqqqqqqqqq..",".....ddhhhhhhhhhhhhhhhhhdddoooooooooo...",".....dddhhhhhhhhhhhhhhddddoooooooooo....","......dddhhhhhhhhhhdddddooottttoooo.....",
-      ".......dddddddddddddDDDqootttttoo.......",".........DDDDDDDDDDD..qmmmmmmmmq........","......................qqmmmmmq..........",".......................qqqqq............"];
+      ".............................x......","...x.........................x......","...xx.......................cy......","...yc.......................cy......",
+      "...ycC.....................Ccy......","....ycC..................Cccy.......",".....yccC....HHHHHHHH..cccy.........","......yyccC.LLLLLLLLLLcy............",
+      "........yycchHLLLLLLLh..............","..........HHhHLLLLLLLHHh............","....eeeehHHHhHLLLLLLLHHhd...........",".eEEEEehHLLLhHHHHHHHHHhhhdeee.......",
+      "eEEEeedhHHkwhHHHHHHHHHHkkddeEEEe....",".eeedddhHHkkhhhhhhhhhhhkhddeEEEEe...","....dddhHHddhhhhhhhhhhhhhddeeeee....",".........hHHHhhhhhhhhhhhhhdddd......",
+      ".........dHHHHhhhhhhhhhhhhd.........","..........dHHHhhhhhhhhhhhhd.........","..........dhhhhhhhhhhhhhhhd.........","............dhhhhhhhhhhhhhhd........",
+      "............dhhhhhhhhhhhhhhhd.......",".............dhhhhhhhhhhhhhhd.......",".............dhhhhhhhhhhhhhhd.......","...............dhhhhhhhhhhhhhhd.....",
+      "...............dhhhhhhhhhhhhhhd.....","...............DqqMMMMMMMMMMMMMM....","................DqMMmmmmmmmmmmmq....",".................DqMMmmnnmmmmmnnq...",
+      ".................DqMMmmnmmmmmmmnq...","..................Dmmmmmmmmmmmmmq...","....................oooooooooooo....","...................ooooooooooooo....",
+      "...................oooottttttooo....","...................oooottttttoo.....","..................Dqqmmmmmmmmmmmq...","....................DqqqqqqqqqqqD...",
+      ".....................DqqqqqqqqqD....","......................DqqqqqqqD....."];
     /* The numbers of the walk. A hoof reaches OX_REACH drawing units (two to a room pixel) from the front of its step to the back, and stands
        on the ground for OX_STANCE of the cycle. So one cycle carries the ox OX_STRIDE room pixels with its hooves planted: 40 / .62 / 2 =
        32.3, a long step for a beast whose legs swing from a hip and a shoulder high in the body, so that a hoof can reach twenty units
@@ -434,67 +443,81 @@ const OX=(()=>{
         rl=W&&(k>=1&&k<=4)?-1:0,rs=W&&(k>=5&&k<=8)?-1:0,tl=W?Math.round(1.4*Math.cos(6.2832*(ph-.05))):0,dw=W?Math.round(1.5*Math.sin(6.2832*(ph-.35))):0;
       /* P, the poll (where the crest of the neck meets the head), and Q, the throat, for each pose; sag, how far the dewlap hangs below the
          line between brisket and throat; H, the head's map and where it is laid */
-      const pose=V===0?{P:[36+sway,-73+hd],Q:[40+sway,-46+hd],sag:7,H:OX_HEAD,hx:28+sway,hy:-81+hd}
-        :V===1?{P:[40,-75],Q:[40,-58],sag:4,H:OX_RAISE,hx:30,hy:-84}
-        :{P:[42,-76],Q:[42,-60],sag:2,H:V===2?OX_LOW1:OX_LOW2,hx:32,hy:-85};
+      const pose=V===0?{P:[43+sway,-61+hd],Q:[46+sway,-43+hd],sag:9,H:OX_HEAD,hx:34+sway,hy:-70+hd}
+        :V===1?{P:[45,-64],Q:[50,-48],sag:5,H:OX_RAISE,hx:36,hy:-73}
+        :{P:[46,-65],Q:[52,-50],sag:3,H:V===2?OX_LOW1:OX_LOW2,hx:37,hy:-74};
       /* top: the line of the back, from the rump over the hump of the withers and along the crest of the neck to the poll */
-      const top=xx=>{if(xx<-35)return-58-8*Math.sqrt(Math.max(0,1-Math.pow((xx+35)/8,2)))+rl;
-        if(xx<=14)return-65.5-1.2*Math.exp(-Math.pow((xx+28)/5,2))+.8*Math.exp(-Math.pow((xx+6)/10,2))-6.5*Math.exp(-Math.pow((xx-14)/11,2))+(xx<-20?rl:xx>2?rs:0);
-        const u=Math.min(1,(xx-14)/(pose.P[0]-14)),d=pose.P[1]+72-rs;return-72+rs+d*(u*u*.5+u*.5)};
-      /* bot: the underline, from the buttock along the belly to the brisket, which stays where it is whatever the head does, and then the
-         dewlap up to the throat, swinging as it walks and drawn taut when the neck is stretched */
-      const bot=xx=>{if(xx<-34)return-36-6*(1-Math.sqrt(Math.max(0,1-Math.pow((xx+34)/9,2))));
-        if(xx<20)return-28.6+2.6*Math.exp(-Math.pow((xx+4)/14,2))-3*Math.exp(-Math.pow((xx+27)/6,2))+.8*Math.exp(-Math.pow((xx-14)/5,2));
-        if(xx<30)return-27.6-(xx-20)*.25;
-        const u=Math.min(1,(xx-30)/(pose.Q[0]-30)),s=Math.min(1,Math.max(0,u-dw*.06));return-30.1+(pose.Q[1]+30.1)*u+pose.sag*Math.sin(Math.PI*s)};
-      const X0=-43,X1=pose.Q[0]+2;
-      /* tone: the band of tone of a pixel of the body, lit from above and a little from the front: a highlight along the back, the light on
-         the hump of the shoulder and on the haunch, the side in the base tone, the belly and the underside of the neck in shadow; the
-         rear falls into shade. A checker dither softens each change of band, as the backdrops are dithered. */
-      const tone=(xx,yy)=>{const t0=top(xx),b0=bot(xx),r=(yy-t0)/Math.max(1,b0-t0);let v=.8+r*3.3;
-        const sh=Math.pow((xx-17)/12,2)+Math.pow((yy+55)/14,2),hu=Math.pow((xx+31)/10,2)+Math.pow((yy+57)/10,2);
-        if(sh<1)v-=.9*(1-sh);if(hu<1)v-=.8*(1-hu);if(xx<-36)v+=(-36-xx)*.16;if(xx>22&&r>.45)v+=.35;
-        if(yy-t0<1.2&&xx>-38)v=Math.min(v,.45);
-        return Math.max(0,Math.min(4,Math.floor(v+((xx+yy)&1?.14:-.14))))};
+      /* top: the line of the back. From the buttock it rises over the rump to the hip bones (the hooks, a slight angular rise), runs nearly
+         level along the loin and the back to a low rise at the withers, and goes down along the crest of the neck to the poll, below the
+         line of the back. The tail is set on high, where the rump begins to slope. */
+      const top=xx=>{if(xx<=-40)return-63+Math.pow(-40-xx,1.5)+rl;
+        if(xx<=-28)return-63-4.7*(xx+40)/12+rl;
+        if(xx<=14)return-66.5-1.2*Math.max(0,1-(xx+28)/5)-3*Math.exp(-Math.pow((xx-12)/9,2))+(xx<-20?rl:xx>2?rs:0);
+        const u=Math.min(1,(xx-14)/(pose.P[0]-14)),d=pose.P[1]+69.5-rs;return-69.5+rs+d*Math.sin(u*Math.PI/2)};
+      /* bot: the underline. Under the buttock it runs into the thigh; it is tucked up high at the flank, in front of the hind leg, where the
+         flank is hollow; the belly is rounded and the chest lies deep and low between the forelegs. From the brisket on, which stays where
+         it is whatever the head does, the dewlap hangs as a loose fold up to the throat, swinging as it walks and drawn taut when the neck is
+         stretched. */
+      const bot=xx=>{if(xx<-34)return-38-5*(1-Math.sqrt(Math.max(0,1-Math.pow((xx+34)/11,2))));
+        if(xx<-20)return-38+(xx+34)/14;
+        if(xx<-6)return-37+10.5*(1-Math.pow((-6-xx)/14,2));
+        if(xx<26)return-26.5-.6*Math.exp(-Math.pow((xx-8)/10,2));
+        const u=Math.min(1,(xx-26)/(pose.Q[0]-26)),s=Math.min(1,Math.max(0,u-dw*.06));return-26.5+(pose.Q[1]+26.5)*u+pose.sag*Math.sin(Math.PI*s)};
+      const X0=-45,X1=pose.Q[0]+2;
+      /* tone: the band of tone of a pixel of the body, in flat bands that follow the line of the back: a highlight along the back, the light
+         band reaching further down on the top of the shoulder (in front of its crease, cs) and of the haunch (behind the flank's crease, ch),
+         the side in the base tone, the shade under the belly, behind the shoulder and in front of the haunch; the rear and the underside of
+         the neck fall into shade. Only the edge between two bands is dithered, a pixel wide. */
+      const cs=yy=>5+(yy+68)*4/28,ch=yy=>-24+(yy+62)*5/22;
+      const tone=(xx,yy)=>{const t0=top(xx),b0=bot(xx),r=(yy-t0)/Math.max(1,b0-t0)+((xx+yy)&1?.025:-.025);
+        let v=yy-t0<1.2&&xx>-38?0:r<.36?1:r<.66?2:r<.86?3:4;
+        if(v>=1&&v<=2&&yy<-50&&(xx>cs(yy)&&xx<27||xx<ch(yy)&&xx>-38))v=Math.max(1,v-(r<.5?1:0));
+        if(r>.3&&r<.7&&(xx<=cs(yy)&&xx>cs(yy)-3||xx>=ch(yy)&&xx<ch(yy)+3))v++;
+        if(xx<-38&&v)v++;if(xx>26&&r>.45)v++;
+        return Math.min(4,v)};
       /* at: where the hoof of a leg is at this moment, the leg's beat being off of a cycle after the near hind leg's: hx before or behind the
          leg's root, lift off the ground, and bend, how far the hock or the knee is flexed */
       const at=off=>{if(!W)return{hx:0,lift:0,bend:0};const p=((ph-off)%1+1)%1,T=OX_REACH,B=OX_STANCE;if(p<B)return{hx:T/2-T*p/B,lift:0,bend:0};
         const v=(p-B)/(1-B),q=Math.sin(Math.PI*v);return{hx:-T/2*Math.cos(Math.PI*v),lift:Math.round(5*q),bend:5*q}};
       /* leg: from its root at lx down to the hoof. The top of a near leg lies inside the body and is painted in the body's tones as far as the
          belly; below it the leg is lit from the front and darker behind, a far leg a band darker again. A hind leg goes down from the stifle
-         to the hock, which stands back, and on down the cannon; a fore leg goes straight down the forearm to the knee. The top moves with a
-         third of the hoof's swing, since the leg swings from the hip or the shoulder high above. */
-      const leg=(lx,P,far,hind)=>{const y0=(far?-31:hind?-50:-46)+o,yh=-3-P.lift,tx=lx+P.hx*.33+(hind?3:0),jy=hind?-17:-14,
-          jx=hind?lx-6+P.hx*.62-P.bend:lx+P.hx*.6+P.bend,hx=lx+P.hx,n=yh-y0;
+         to the hock, which stands back, and on down a fine bony cannon to the fetlock and its dewclaw; a fore leg goes down the thick forearm to
+         the knee and the cannon below it. The top moves with a
+         two fifths of the hoof's swing, since the leg swings from the hip or the shoulder high above. */
+      const leg=(lx,P,far,hind)=>{const y0=(far?(hind?-42:-31):hind?-50:-46)+o,yh=-3-P.lift,tx=lx+P.hx*.4+(hind?4:0),jy=hind?-22:-18,
+          jx=hind?lx-5+P.hx*.52-P.bend*.8:lx+P.hx*.6+P.bend,hx=lx+P.hx,n=yh-y0;
         for(let i=0;i<n;i++){const yy=y0+i,cx=yy<=jy?tx+(jx-tx)*(yy-y0)/(jy-y0):jx+(hx-jx)*(yy-jy)/(yh-jy),t=(yy-y0)/(jy-y0),b=(yy-jy)/(yh-jy),
-            w=yy<=jy?(hind?Math.round(16-6*t):Math.round(14-4*t)):(b<.15?(hind?10:11):b<.72?8:9),x0=Math.round(cx-w/2+(hind&&yy<=jy?1:0));
+            joint=Math.abs(yy-jy)<=1,w=joint?10:yy<jy?(hind?Math.round(16-7*t):Math.round(13-4*t)):(b<.12?8:b<.7?6:b<.9?8:7),
+            x0=Math.round(cx-w/2+(hind&&yy<=jy?1:0))-(joint&&hind?1:0);
           for(let q=0;q<w;q++){const xx=x0+q,u=(q+.5)/w;
             if(!far&&yy-o<bot(xx)-.5&&xx>=X0)px(xx,yy,D[tone(xx,yy-o)]);
-            else px(xx,yy,D[Math.min(4,(u<.18?4:u<.42?3:u<.86?2:1)+(far?1:0))])}}
+            else px(xx,yy,D[Math.min(4,(u<.18?4:u<.42?3:u<.86?2:1)+(far?1:0))])}
+          /* the dewclaw, a dark knob at the back of the fetlock */
+          if(yy===yh-4)px(x0-1,yy,hoof,1,2)}
         const hx0=Math.round(hx-4);px(hx0,yh,hoof,9,2);px(hx0,yh+2,hoof,4);px(hx0+5,yh+2,hoof,4);px(hx0+6,yh,hoofL,2);px(hx0-1,yh-1,hoof,2)};
       /* the far legs, behind the body: walking, each pair leaves the body at one place */
       leg(W?-24:-20,at(.5),1,1);leg(W?24:25,at(.75),1,0);
       /* the tail: set on at the top of the rump, lying along it, then hanging free to a dark switch */
-      {const ty0=Math.round(top(-40))+o;for(let yy=ty0;yy<=-31+o;yy++){const i=yy-ty0,lie=yy<-51+o,sw=i>8?Math.round(tl*(i-8)/16):0,
-          xx=lie?Math.round(-35-8*Math.sqrt(Math.max(0,1-Math.pow((yy-o+58)/8.5,2))))-1:-44+sw,tuft=yy>-40+o;
+      {const ty0=Math.round(top(-40))+o;for(let yy=ty0;yy<=-31+o;yy++){const i=yy-ty0,lie=yy<-52+o,sw=i>10?Math.round(tl*(i-10)/14):0,
+          xx=lie?Math.round(-40-Math.pow(Math.max(0,yy-o+63),1/1.5))-1:-46+sw,tuft=yy>-40+o;
         if(tuft){const w=yy>-35+o?5:4;px(xx-(w>4?2:1),yy,hoof,w)}else px(xx,yy,D[i%4?3:4],2)}}
       /* the body and the neck: column by column, between the line of the back and the underline */
       for(let xx=X0;xx<=X1;xx++){const t0=Math.round(top(xx)),b0=Math.round(bot(xx));for(let yy=t0;yy<=b0;yy++)px(xx,yy+o,D[tone(xx,yy)])}
       /* creases: where the flank folds in front of the haunch, and behind the shoulder; each a short soft line that ends inside the body */
-      for(let yy=-58;yy<=-38;yy++){const xx=Math.round(-22+(yy+58)*.15);px(xx,yy+o,D[Math.min(4,tone(xx,yy)+1)])}
-      for(let yy=-64;yy<=-46;yy++){const xx=Math.round(6-(yy+64)*.12);if(yy%3)px(xx,yy+o,D[Math.min(4,tone(xx,yy)+1)])}
+      for(let yy=-60;yy<=-40;yy++){const xx=Math.round(ch(yy));px(xx,yy+o,D[Math.min(4,tone(xx,yy)+1)])}
+      for(let yy=-66;yy<=-42;yy++){const xx=Math.round(cs(yy));px(xx,yy+o,D[Math.min(4,tone(xx,yy)+1)])}
       /* the near legs, in front of the body */
       leg(W?-26:-29,at(0),0,1);leg(W?22:19,at(.25),0,0);
-      /* a garland: leaves set two by two along a cord, slanting either way, and a few yellow flowers among them, laid on the neck from the
-         crest down round the throat, where it hangs a little loose. The leaves overlap, so that no line of them crosses another. */
-      if(gar){const[ax,ay]=V?[30,-72]:[24+sway,-70+hd],[bx,by]=V?[42,-54]:[33+sway,-39+hd],G0='#3f6a32',G1='#4f7a3a',G2='#6f9a4a',G3='#8fb45a';
-        for(let i=0;i<16;i++){const u=i/15,gx=Math.round(ax+(bx-ax)*u+2.4*Math.sin(u*Math.PI)),gy=Math.round(ay+(by-ay)*u+1.5*Math.sin(u*Math.PI))+o,s=i%2;
-          px(gx-2,gy,G0,5,2);px(gx-(s?4:0),gy+(s?-1:1),s?G1:G2,4,2);px(gx-(s?3:-1),gy+(s?-1:1),G3,2,1);px(gx+(s?1:-2),gy+1,G1,2,1);
-          if(i%5===2){px(gx-1,gy-1,'#e8c040',3,2);px(gx,gy-1,'#fff0a0',1);px(gx-1,gy,'#c89a30',1)}}}
+      /* a garland: leaves set two by two along a cord, slanting either way, and a few yellow flowers among them. It hangs round the neck from
+         behind the poll, sags in a curve over the dewlap and goes up again under the jaw, where the head hides it. No line crosses it. */
+      if(gar){const[S,C,E]=V?[[30,-67],[37,-29],[51,-49]]:[[27+sway,-66+hd],[33+sway,-24+hd],[47+sway,-43+hd]],G0='#3f6a32',G1='#4f7a3a',G2='#6f9a4a',G3='#8fb45a';
+        for(let i=0;i<17;i++){const u=i/16,w=(1-u)*(1-u),v2=2*u*(1-u),z=u*u,gx=Math.round(w*S[0]+v2*C[0]+z*E[0]),gy=Math.round(w*S[1]+v2*C[1]+z*E[1])+o,s=i%2;
+          px(gx-2,gy-1,G0,4,3);px(gx-(s?4:0),gy+(s?-1:0),s?G1:G2,4,2);px(gx-(s?3:-1),gy+(s?-1:0),G3,2,1);px(gx+(s?0:-3),gy+1,G1,3,1);
+          if(i%5===2){px(gx-1,gy-2,'#e8c040',3,2);px(gx,gy-2,'#fff0a0',1);px(gx-1,gy-1,'#c89a30',1)}}}
       /* the head */
-      const pale=mix(c,'#e8dccb',.55),horn='#e6dcc0';
+      const pale=mix('#b4aca6',c,.22),horn='#e6dcc0';
       stamp(g,pose.H,pose.hx,pose.hy+o,{L:D[0],H:D[1],h:D[2],d:D[3],D:D[4],e:D[3],E:mix(c,'#5a3436',.5),k:'#1a120c',w:'#e8e0d0',
-        m:pale,M:tint(pale,.25),q:mix(pale,D[3],.5),n:'#2a1c18',o:'#3a1418',t:'#b06a70',c:horn,C:'#f6f0e0',y:'#b0a284',x:'#4a3c30'});
+        m:pale,M:tint(pale,.3),q:mix(pale,'#3a3034',.35),n:'#2a1c18',o:'#3a1418',t:'#b06a70',c:horn,C:'#f6f0e0',y:'#b0a284',x:'#4a3c30'});
       g.restore()}
   /* sound: a low. A deep note through a closed mouth swells, opens as the mouth opens (the filter rises) and closes again, falling a little
      in pitch; a note an octave below gives it its chest. About one and a half seconds, and quiet like every effect. */
