@@ -7,7 +7,7 @@
                               (the playtest checks this). */
 SHARED.pwa=(()=>{
 "use strict";
-const FILES=['shared/birds.js','shared/cast.js','shared/lanes.js','shared/logo.js','shared/map.js','shared/materials.js','shared/pwa.js','shared/scroll.js','shared/ship.js','shared/splash.js','shared/tablets.js','shared/weather.js'];
+const FILES=['shared/beasts.js','shared/birds.js','shared/cast.js','shared/lanes.js','shared/logo.js','shared/map.js','shared/materials.js','shared/pwa.js','shared/scroll.js','shared/ship.js','shared/splash.js','shared/tablets.js','shared/weather.js'];
 const SKY=['#2c1c3e','#161026','#0b0812'];
 /* the icon at a size in pixels: a gold P on a night sky. pad is the margin all round, as a part of the size; the 'maskable' icon is
    given a wide one, because a phone may cut it to a circle or a rounded square. */

@@ -79,7 +79,8 @@ ART.tarsus={w:320,q:12,
  draw(g,t){
   if(!F.gotLoops){const hd=[21,86.4,45,86,46.4,90,44,96.6,40,95,37,97.4,31,95.6,27,97.6,23,95,21.6,90];oval(g,34,97.6,13,1.2,'rgba(40,30,60,.3)');poly(g,hd,'#a8703e');
     clipTo(g,()=>poly(g,hd),()=>{g.fillStyle=lg(g,0,86,0,98,['#c8905a','#a8703e','#7a4e28']);g.fillRect(20,86,28,12);R(g,21,86.4,25,.8,'#deb07a')});stroke(g,[25,89,42,88.6],'#7a4e28',.5)}
-  beast(g,252,110,-1,0,2);
+  /* Kleon's mule stands with its head by the tether post, toward the east gate and the mountain road */
+  SHARED.beasts.mule(g,244,110,1,SHARED.beasts.pose('mule3',0),2);
   /* the tent on its frame. The two poles meet at the top and do not cross there, and no band runs across the cloth, so that the seam's
      stitches, which run down its middle, cross nothing */
   stroke(g,[166.5,49.4,140,106.5],'#5a3e22',1.6);stroke(g,[166.5,49.4,193,106.5],'#5a3e22',1.6);stroke(g,[166,49.6,139.5,106.5],'#9a7040',.5);
@@ -168,7 +169,7 @@ ART.court={w:320,q:12,
   if(!G.meet&&!F.loaded){oval(g,216,109.6,26,2.4,'rgba(40,30,60,.35)');vessel(g,199,108,4.6,12,'#8a4a2a','jar',{noShadow:1});sack(g,212,103,8,13,'#cdbb8c');sack(g,227,104,9,15,'#d8c698');sack(g,219,93.4,6.6,9.6,'#c4b282');
     vessel(g,232.6,110,4.4,11,'#a05a34','jug',{noShadow:1});vessel(g,207,108,5.6,5.6,'#8a6a34','bowl',{noShadow:1});for(let k=0;k<8;k++)oval(g,203.6+(k%4)*2.2,101.6+(k>3?-1:0)+(k%2)*.5,1.2,1,k%2?'#5a2a4a':'#6a3458')}
   if(F.jar&&!F.loaded)oilJar(g,190,112);
-  stroke(g,[233,86.4,238,89,244,88],'#8a7a5a',.7);beast(g,262,110,-1,0,F.loaded?2:F.bagsOn?1:0)},
+  stroke(g,[233,86.4,238,89,244,88],'#8a7a5a',.7);SHARED.beasts.donkey(g,262,110,-1,SHARED.beasts.pose('donkey3',0),F.loaded?2:F.bagsOn?1:0)},
  front(){}};
 /* ---------- Antioch: the colonnaded street under Mount Silpius ---------- */
 ART.antioch={w:480,fp:1.3,q:12,
@@ -279,7 +280,7 @@ ART.road={w:320,q:12,paint(g){const r=rng(167);
  draw(){},front(){}};
 /* The three cross the picture in seventeen seconds (the tween that moves G.trek): their steps follow the road under them (walkFr, and beastFr for the donkey), each at his own stride. */
 function roadScene(g,t){backdrop(g,'road');SHARED.birds.draw(g,t,'road',BIRDS_ROAD);const x=-50+420*((G.trek||{}).k||0),v=420/17;
-  man(g,x+46,121,'barnabas',1,walkFr(LOOK.barnabas,x+50,v));beast(g,x+8,120,1,beastFr(x+50,v),2);man(g,x-30,122,'paul',1,walkFr(LOOK.paul,x+62,v));g.drawImage(fg('road'),0,0,320,VH)}
+  man(g,x+46,121,'barnabas',1,walkFr(LOOK.barnabas,x+50,v));SHARED.beasts.donkey(g,x+8,120,1,SHARED.beasts.frame.donkey(x+50,v),2);man(g,x-30,122,'paul',1,walkFr(LOOK.paul,x+62,v));g.drawImage(fg('road'),0,0,320,VH)}
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
 Object.assign(LOOK,{
   barnabas:{skin:'#b8844f',hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1,tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},
@@ -290,7 +291,6 @@ Object.assign(LOOK,{
   theron:{skin:'#c49268',hair:'#5a4630',tunic:'#e8e0cc',belt:'#8a4a2a',trim:'#3f6a8a',ph:2700}});
 const BN=actor('barnabas','Barnabas','#f0b070',128),KL=actor('kleon','Kleon','#e0b470',112),AG=actor('agabus','Agabus','#dfe4d0',104),LU=actor('lucius','Lucius','#f2cc5a',120),
   XA=actor('xanthe','Xanthe','#b4e0a4',240),TN=actor('theron','Theron','#a4d0ee',165);
-SFX.bray=()=>{tone({f:520,to:300,d:.22,type:'sawtooth',v:.06});tone({f:230,to:150,t:now()+.24,d:.4,type:'sawtooth',v:.07})};
 Object.assign(ICON,{
   loops(g){for(let k=0;k<3;k++){const x=4.6+k*5.6,y=4.6+k*2;g.lineWidth=2.2;g.strokeStyle='#6a4424';g.beginPath();g.ellipse(x+2.4,y+5.6,2.2,5.2,0,0,6.2832);g.stroke();g.lineWidth=1.2;g.strokeStyle='#b07a48';g.stroke();
       stroke(g,[x+.6,y+2.6,x+.6,y+8.4],'#deb07a',.5);R(g,x+1,y+10.2,2.8,1.4,'#7a4e28')}},
@@ -450,8 +450,8 @@ ROOMS.tarsus={space:0.8,walk:[16,304,110,138],mood:'calm',amb:{birds:.5,crowd:.2
       if(!F.seam)return sewSeam();if(has('loops'))return sewLoops();
       return say(P,F.loopsOn?'it_is_finished_said':'seam_is_closed_said')}},
   {name:'tent_frame',x:139,y:52,w:55,h:54,wx:182,wy:113,dir:-1,vis:()=>F.gotTent,look:'frame_stands_empty'},
-  {name:'pack_mule',x:227,y:68,w:42,h:42,wx:240,wy:122,look:'kleons_lead_mule_loaded',pickup:'it_is_not_mine',
-    talk:async()=>{SFX.bray();await say(P,'it_has_nothing_to_say_that_kleon')}},
+  {name:'pack_mule',x:224,y:62,w:50,h:48,wx:292,wy:117,dir:-1,look:'kleons_lead_mule_loaded',pickup:'it_is_not_mine',
+    talk:async()=>{SHARED.beasts.speak('mule3','mule');await say(P,'it_has_nothing_to_say_that_kleon')}},
   {name:'east_gate',x:274,y:50,w:42,h:54,wx:292,wy:112,dir:1,look:'the_east_gate',exit:()=>leave3()}]};
 KL.hs={name:'Kleon',actor:KL,look:()=>say(P,F.sold?'kleon_well_pleased_with_his_tent':'kleon_a_caravan_master'),
   show:{awl:'awl_is_not_a_tent_tentmaker',thread:()=>say(KL,F.seam?'thread_ex':'thread_good'),
@@ -537,7 +537,7 @@ ROOMS.court={walk:[16,304,112,138],mood:'calm',amb:{birds:.6,leaves:.5,crowd:.12
     useWith:async it=>['awl','spool','knife'].includes(it)?say(P,'there_is_no_sound_cloth'):false},
   {name:'donkey',x:238,y:72,w:42,h:40,wx:232,wy:116,dir:1,
     look:()=>say(P,F.bagsOn?'new_bags_across_his_saddle':'sturdy_pack_donkey_with_a_bare_saddle'),
-    talk:async()=>{SFX.bray();await say(P,'he_listens_well_and_says_little')},pickup:'he_weighs_a_good_deal_more',
+    talk:async()=>{SHARED.beasts.speak('donkey3','donkey');await say(P,'he_listens_well_and_says_little')},pickup:'he_weighs_a_good_deal_more',
     use:()=>say(P,F.bagsOn?'he_is_ready':'he_cannot_carry_grain_on_a_bare'),useWith:loadBags},
   {name:'gate_to_the_street',x:284,y:44,w:32,h:60,wx:298,wy:113,dir:1,look:'gate_to_the_great_colonnaded_street',exit:()=>go('antioch',44,116,1)}]};
 LU.hs={name:'Lucius',actor:LU,look:'lucius_of_cyrene_one_of_the_teachers',
@@ -667,14 +667,14 @@ const AS_B={
     'tent':{look:()=>say(BN,F.seam?'seam_is_closed_i':'one_seam_still_gapes_open'),
       use:hold,pickup:hold,useWith:async it=>say(BN,'stitching_is_sauls_work')},
     'tent_frame':{look:'empty_now'},
-    'pack_mule':{look:'kleons_mule',talk:async()=>{SFX.bray();await say(BN,'it_has_nothing_to_say_to_a_levite')}}},
+    'pack_mule':{look:'kleons_mule',talk:async()=>{SHARED.beasts.speak('mule3','mule');await say(BN,'it_has_nothing_to_say_to_a_levite')}}},
   court:{'door_of_the_house':{look:'house_of_a_brother_who'},
     'water_jar':{look:'water_for_washing_off_the_dust'},'vine_arbor':{look:'whole_year_we_have_taught'},
     'bench':{look:'jews_and_greeks_side_by_side'},
     'table':{look:()=>say(BN,F.sealed?'counted_written_twice_and_sealed':'luciuss_tally_and_the_purse'),useWith:async it=>say(BN,it==='wages'?'that_is_sauls_to_give_not_mine':'lucius_would_only_count_it')},
     'gifts_of_the_congregation':{look:'grain_figs_and_oil_from_jews'},
     'old_pack_bags':{look:'rotten_through'},
-    'donkey':{look:'he_has_walked_the_road',talk:async()=>{SFX.bray();await say(BN,'fine_traveling_companion')},
+    'donkey':{look:'he_has_walked_the_road',talk:async()=>{SHARED.beasts.speak('donkey3','donkey');await say(BN,'fine_traveling_companion')},
       useWith:async it=>say(BN,it==='bags'?'saul_sewed_them_so_let':'he_has_no_use_for_that')}},
   antioch:{'mountain':{look:'the_mountain_above_the_city'},
     'colonnade':{look:'when_i_first_acts_11_23'},

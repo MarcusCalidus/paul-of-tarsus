@@ -172,7 +172,7 @@
   const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3|map3)$/.test(stop),HUB=stop==='hubmap',
     C4=/^(sendoff|seleucia|kallias|shelter|jair|voyage|map4|salamis|synagogue|speech|hubmap4|paphos|tools|daniel|blind|name4|journey4|final4|deutsch4)$/.test(stop),
     C5=/^(voyage5|perga|parting|sandal|hubmap5|ford|splice|wade|line|pisidia|synp|speech5|week|greek|sabbath2|border|dust|journey5|final5)$/.test(stop),
-    C6=/^(beasts|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house6|mend|derbe|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
+    C6=/^(beasts|mules|oxen|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house6|mend|derbe|oxtalk6|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
   const lang=(location.search.match(/[?&]lang=(\w+)/)||[])[1]||'en',toLang=async l=>{for(let i=0;i<150&&G.lang!==l;i++)await wait(30);await wait(60)};
   ok(G.lang===lang&&document.documentElement.lang===lang,'the game is in '+LANGS[lang].native+', as the address asks');fitVerbs();
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
@@ -279,7 +279,7 @@
      the head coverings, a woman veiled and bareheaded, a boy, a statue. Look there when a head map or the figure painter changes: for a
      head that has come apart, for a covering that does not sit, and for crosses. Nothing on a sheet crosses a figure. cast-main.png and
      cast-closeup.png are the two pictures kept in docs/screenshots as cast.png and cast-closeup.png. */
-  if(stop==='cast'){const SHEETS={},
+  if(stop==='cast'){await need('beasts');const SHEETS={},
       sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,w,h);return[c,g]},
       text=(g,t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},
       /* cut: a part of a sprite, given in drawing units from its feet (left of them and above them are negative), enlarged z times */
@@ -359,7 +359,7 @@
         miss=WHO.filter(w=>typeof w==='string'&&!LOOK[w]),Z=3,cw=128,chh=384,cols=10,[c,g]=sheet(cols*cw,2*chh);g.fillStyle='#cbbda2';g.fillRect(0,0,cols*cw,2*chh);
       ok(!miss.length,'the people of the cast sheet all have a look'+(miss.length?'. MISSING: '+miss:''));
       WHO.concat('donkey').forEach((w,i)=>{const x=(i%cols)*cw,y=Math.floor(i/cols)*chh,gy=y+chh-18;g.fillStyle='rgba(60,48,40,.22)';
-        if(w==='donkey'){g.fillRect(x+cw-30*Z,gy,60*Z,3);cut(g,sprite('cast|donkey',q=>donkey(q,0,0,1,0,2),1),-40,-80,80,81,x+cw-40*Z,gy-80*Z,Z)}   /* the donkey takes the last two fields */
+        if(w==='donkey'){g.fillRect(x+8-Z,gy,64*Z,3);cut(g,sprite('cast|donkey',q=>SHARED.beasts.paint.donkey(q,0,0,1,0,2),1),-31,-84,80,85,x+8,gy-84*Z,Z)}   /* the donkey takes the last two fields, from the tip of its tail to its muzzle and the tips of its ears */
         else{g.fillRect(x+cw/2-15*Z,gy,30*Z,3);cut(g,spr(typeof w==='string'?LOOK[w]:w,'main'+i,1),-21,-124,42,125,x+cw/2-21*Z,gy-124*Z,Z)}});
       SHEETS['cast-main']=c.toDataURL()}
     {const B={skin:'#c08a5c',tunic:'#c4b08a',belt:'#3a2414'},fm={skin:'#c8a078',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#6a2a5a',brow:'#3a2414'},
@@ -1216,7 +1216,7 @@
   /* Chapter Seven stops start Chapter Seven from the title screen. Its test is a function of its own: the full run calls it when Chapter Six
      has ended, and a Chapter Seven stop calls it at once. The stop all7 halts nowhere: it plays the chapter through, and then checks that
      every line was translated and that no text overflowed its box. */
-  const C7=/^(dispute7|council|letter7|parting7|map7|tarsus7|witness|reading|hubmap7|gates|holdline|pitched|case7|lystra7|myron|hubmap7b|iconium7|tatia7|invite|hands|journey7|final7|deutsch7|all7)$/.test(stop);
+  const C7=/^(dispute7|council|letter7|parting7|map7|tarsus7|witness|reading|hubmap7|gates|oxtalk7|holdline|pitched|case7|lystra7|myron|hubmap7b|iconium7|tatia7|invite|hands|journey7|final7|deutsch7|all7)$/.test(stop);
   const ch7=async()=>{let SI;const P7=i=>T(CHAP[7].tablets.scripture[i].gist),said=t=>heard.includes(T(t)),quoted=i=>heard.some(h=>h.includes(P7(i))),A=id=>ACT[id];
   const mapOpen=async()=>{for(let i=0;i<100&&!(SHARED.map&&G.scene===SHARED.map.draw);i++)await wait(50);await wait(450)},
     mapClick=id=>{const[x,y]=SHARED.map.where(id),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+x/320*r.width,clientY:r.top+y/144*r.height,bubbles:true}))},
@@ -1250,10 +1250,10 @@
   ok(/^7-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===7&&decode(makeCode()).w!=null,'chapter seven code format (wide, nine characters) '+makeCode());
   ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Silas')),'a party: the panel offers to switch to Silas');fitVerbs();
   /* the oxen on the Taurus road: every part attached, like the animals of Chapter Six */
-  {const ox=CHAP[7].painters.ox,pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
+  {const ox=SHARED.beasts.paint.ox,pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
       for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
         for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n},
-    bad=[['ox',s=>ox(s,0,0,1,0,'#8a5a3a')],['ox, walking',s=>ox(s,0,0,-1,1,'#6f4630')],['ox, the other step',s=>ox(s,0,0,1,3,'#8a5a3a')]].filter(([n,fn],i)=>pieces(sprite('ox7-test'+i,fn,1))!==1).map(b=>b[0]);
+    bad=[['ox',s=>ox(s,0,0,1,0,'#8a5a3a')],['ox, walking',s=>ox(s,0,0,-1,1,'#6f4630')],['ox, the other step',s=>ox(s,0,0,1,3,'#8a5a3a')],['ox, lowing',s=>ox(s,0,0,1,22,'#6f4630')]].filter(([n,fn],i)=>pieces(sprite('ox7-test'+i,fn,1))!==1).map(b=>b[0]);
     ok(!bad.length,'animals: every part of the oxen on the Taurus road is attached'+(bad.length?'. IN PIECES: '+bad.join(', '):''))}
   if(lang==='de'){move(...hs('gate_to_the_street'));ok($('#status').textContent==='Gehe zu Tor zur Straße','German status line: Gehe zu Tor zur Straße');
     verb('use');item('letter');move(...hs('loom'));ok($('#status').textContent==='Benutze Brief aus Jerusalem mit Webstuhl','German status line: Benutze Brief aus Jerusalem mit Webstuhl');verb('use');G.hover=null;status()}
@@ -1310,6 +1310,9 @@
     'a click on the Cilician Gates: the Taurus road, Zenon and his wagon, and a family whose tent is down');
   /* the Cilician Gates */
   halt('gates',()=>{say(A('zenon7'),'this_is_as_far_as_we_go')});
+  {const fr=[],iv=setInterval(()=>fr.push(SHARED.beasts.pose('oxen7',0)),15);heard.length=0;await act('talk','oxen');await wait(1700);clearInterval(iv);
+    ok(said('he_lows_once_long_and_deep')&&G.room==='gates'&&fr.includes(22)&&fr[fr.length-1]===0,"Zenon's near ox at the Gates, talked to, lows once, long and deep ["+[...new Set(fr)].join()+']')}
+  halt('oxtalk7',()=>{SHARED.beasts.speak('oxen7','ox');say(P,'he_lows_once_long_and_deep')});
   ok(H('torn_tent')&&!H('tent')&&!H('mended_tent'),'the tent is down');
   heard.length=0;await act(null,'cilician_gates');ok(G.room==='gates'&&!G.scene&&said('leave_a_child_in_the_open'),'no going on while a family stands in the storm');
   heard.length=0;await act(null,'road_to_tarsus');ok(G.room==='gates'&&heard.length===1,'and no going back');
@@ -1473,7 +1476,7 @@
   ok(!heard.some(h=>h.includes('16:6')||h.includes('16:7')),'the opening does not tell beforehand that the road will be closed');
   halt('fork8',()=>{say(A('attalos'),'to_ephesus')});
   /* depth: the mule stands out on the road. A man who walks behind it is hidden by it, and a man in front of it hides it */
-  ok(await hides([146,105,8,6],[60,126],[150,117],[150,129]),'depth: the mule hides the man who stands behind it, and is hidden by the man in front of it');
+  ok(await hides([145,95,10,6],[60,126],[150,117],[150,129]),'depth: the mule hides the man who stands behind it, and is hidden by the man in front of it');
   halt('depth8',()=>{place(P,'fork',148,118,-1);place(TI,'fork',166,131,-1)});
   ok(/^8-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===8&&decode(makeCode()).w!=null,'chapter eight code format (wide, nine characters) '+makeCode());
   ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Luke'))&&$('#swap').disabled,'the panel names Luke, and the button waits until he is with them');fitVerbs();
@@ -4015,37 +4018,161 @@
   halt('iconium',()=>{place(A('nathan'),'iconium',128,118,1);P.dir=-1;BN.dir=-1;say(A('nathan'),'paul_barnabas_leave')});
   ok(/^6-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===6&&decode(makeCode()).w!=null,'chapter six code format (wide, nine characters) '+makeCode());
   ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Barnabas')),'a party: the panel offers to switch to Barnabas');fitVerbs();
+  /* --- the mule: its checks, and its own stop `mules` with its sheets (the mule's section of shared/beasts.js) --- */
+  /* The mule (shared/beasts.js, its own painter, drawn after the maintainer's picture of a mule; it wears no halter): every pose is one
+     piece, facing both ways and with each load the game uses (0 a blanket, 1 pack bags, 2 the bags stuffed with wool and fleeces piled on
+     top; -1, the bare mule, is only for sheets that compare it with the picture), in its sixteen frames of walk (fr 4 to 19) and its four of voice (20 to 23).
+     Two hooves or more stand on the ground in every walk frame; the body sinks a pixel as each fore hoof lands (frames 4, 5, 12 and 13)
+     and never rises; frames 1, 2 and 3 are three moments of the walk. It is a size bigger than the donkey: its back stands 30 to 33 room
+     pixels high and the tips of its ears 46 to 50, about a man's height. frame.mule: at WALK_V the planted hooves do not slip, and a cycle is
+     never quicker than its beat. Its voice: the list runs forward in time, shows each of the frames 20 to 23, ends on 0 within 1.8 s.
+     The stop `mules` hands over mules-walk.png, every frame of the walk and the voice three times enlarged, two rows for each load and
+     each way it faces: look there for a leg that has come apart, legs that cross as an X under the belly, a leg under the middle of the
+     body as a T, a tail across a leg, a girth that meets the blanket as a T rather than at its corner, a crease from the withers that
+     crosses the mane, and ears that read as a cross. */
+  {const mule=SHARED.beasts.paint.mule,K=SHARED.beasts.kinds.mule,muleFr=SHARED.beasts.frame.mule,
+    pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
+      for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
+        for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n},
+    mu=(fr,d,ld)=>sprite(['mule-test',d<0?'-1':'1',fr,ld].join('|'),s=>mule(s,0,0,d,fr,ld),d),px=c=>c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data,
+    FR=[0,1,2,3,...[...Array(16)].map((_,k)=>4+k),20,21,22,23],ALL=[];for(const ld of[0,1,2])for(const d of[1,-1])for(const fr of FR)ALL.push([ld,d,fr,mu(fr,d,ld)]);
+    const apart=ALL.filter(w=>pieces(w[3])!==1).map(w=>w.slice(0,3).join('/'));
+    ok(!apart.length,'the mule is one piece in every pose: standing, sixteen frames of walk and four of voice, facing both ways and with each load: '+ALL.length+' sprites'+(apart.length?'. IN PIECES (load/way/frame): '+apart.join(', '):''));
+    /* hooves: the runs of the lowest row; top: the highest pixel of a column, in drawing units above the feet */
+    const hooves=c=>{const d=px(c);let r=0,on=false;for(let x=0;x<FIG.W;x++){const v=d[((FIG.OY-1)*FIG.W+x)*4+3]>0;if(v&&!on)r++;on=v}return r},
+      top=(c,dx)=>{const d=px(c);for(let y=0;y<FIG.H;y++)if(d[(y*FIG.W+FIG.OX+dx)*4+3])return y;return-1},
+      walk=ALL.filter(w=>w[2]>=4&&w[2]<20),few=walk.filter(w=>hooves(w[3])<2).map(w=>w.slice(0,3).join('/')),t0=top(mu(0,1,0),-28),
+      sink=[...Array(16)].map((_,k)=>top(mu(4+k,1,0),-28)-t0),same=(a,b)=>a.toDataURL()===b.toDataURL();
+    ok(!few.length&&sink.every((v,k)=>v===(k%8===4||k%8===5?1:0)),'the mule: in every frame of its walk two hooves or more stand on the ground; the body sinks a pixel as each fore hoof lands (frames 4, 5, 12 and 13) and never rises: '+sink.join('')+(few.length?'. TOO FEW HOOVES: '+few.join(', '):''));
+    ok(same(mu(1,1,0),mu(4,1,0))&&same(mu(2,1,1),mu(8,1,1))&&same(mu(3,-1,2),mu(12,-1,2))&&!same(mu(0,1,0),mu(4,1,0))&&new Set(walk.filter(w=>w[0]===0&&w[1]===1).map(w=>w[3].toDataURL())).size===16,
+      'the mule: frames 1, 2 and 3 are three moments of its walk, a quarter of a cycle apart, and no two of its sixteen frames are the same picture');
+    const H=c=>{const d=px(c);for(let y=0;y<FIG.H;y++)for(let x=0;x<FIG.W;x++)if(d[(y*FIG.W+x)*4+3])return(FIG.OY-y)/2;return 0},ears=H(mu(0,1,0)),back=(FIG.OY-top(mu(0,1,0),-16))/2,
+      dk=SHARED.beasts.paint.donkey,donkeyH=H(sprite('mule-test|donkey',s=>dk(s,0,0,1,0,0),1));
+    ok(back>=30&&back<=33&&ears>=46&&ears<=50&&ears>donkeyH,`the mule is a size bigger than the donkey: its back ${back}, the tips of its ears ${ears} room pixels high (the donkey ${donkeyH})`);
+    /* the walk: a cycle of c room pixels carries a planted hoof K.stride of them; slip is the share of the cycle that is not carried */
+    const cyc=v=>Math.max(K.stride,v*K.beat),slip=v=>1-K.stride/cyc(v),
+      even=[...Array(16)].map((_,i)=>muleFr(cyc(WALK_V)*(i+.5)/16)),slow=[...Array(16)].map((_,i)=>muleFr(K.stride*(i+.5)/16,10)),fast=[...Array(16)].map((_,i)=>muleFr(90*K.beat*(i+.5)/16,90));
+    ok(even.every((f,i)=>f===4+i)&&slow.every((f,i)=>f===4+i)&&fast.every((f,i)=>f===4+i)&&muleFr(0)===4&&muleFr(-3,10)>=4&&muleFr(-3,10)<=19&&
+      Math.abs(K.stride-K.reach/K.stance/2)<1e-9&&slip(WALK_V)<=.04&&K.stride/WALK_V>=K.beat-1e-9,
+      `frame.mule: a cycle carries the mule ${K.stride} room pixels with its hooves planted (reach ${K.reach}, stance ${K.stance}); at WALK_V (${WALK_V}) a cycle takes ${(cyc(WALK_V)/WALK_V).toFixed(2)} s and the hooves slip by ${Math.round(slip(WALK_V)*100)} %; never quicker than ${K.beat} s`);
+    const V=K.voice,vf=V.map(v=>v[1]);
+    ok(V.every((v,i)=>!i||v[0]>V[i-1][0])&&V[0][0]===0&&vf[vf.length-1]===0&&[20,21,22,23].every(f=>vf.includes(f))&&V[V.length-1][0]<=1800&&typeof K.sound==='function'&&
+      new Set([20,21,22,23].map(f=>mu(f,1,1).toDataURL())).size===4&&!same(mu(0,1,1),mu(20,1,1)),
+      'the mule brays: its voice runs '+V.map(v=>v[0]+':'+v[1]).join(' ')+', four frames of its own, over in '+V[V.length-1][0]+' ms');
+    halt('mules',()=>{/* mules-walk.png: the walk and the voice, frame by frame */
+      {const Z=3,cw=168,chh=104,per=10,list=[];for(const ld of[0,1,2])for(const d of[1,-1])for(let fr=4;fr<24;fr++)list.push([ld,d,fr,mu(fr,d,ld)]);
+        const rows=list.length/per,c=document.createElement('canvas');c.width=per*cw*Z;c.height=24+rows*(chh*Z+16);const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);
+        g.fillStyle='#f4f0e6';g.font='bold 15px Menlo,Consolas,monospace';g.fillText("The mule's walk (frames 4 to 19) and its voice (20 to 23), three times enlarged, for each load and each way it faces",8,17);
+        list.forEach(([ld,d,fr,sp],i)=>{const x=(i%per)*cw*Z,y=24+Math.floor(i/per)*(chh*Z+16);g.fillStyle=(i+Math.floor(i/per))%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw*Z-2,chh*Z+14);g.fillStyle='#6f7a6a';g.fillRect(x+1,y+chh*Z-6,cw*Z-2,6);
+          g.drawImage(sp,FIG.OX-cw/2,FIG.OY-chh+2,cw,chh,x,y,cw*Z,chh*Z);g.fillStyle='#14100c';g.font='bold 11px Menlo,Consolas,monospace';g.fillText('frame '+fr+(fr===4||fr===20?' · load '+ld+(d>0?', facing right':', facing left'):''),x+5,y+chh*Z+11)});
+        window.SHEETS=Object.assign(window.SHEETS||{},{'mules-walk':c.toDataURL()})}
+      /* on the screen: the mule standing with each load, beside the donkey and a man for its size, and its four frames of voice */
+      const c=document.createElement('canvas');c.width=960;c.height=432;c.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;z-index:8';$('#view').appendChild(c);
+      const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,960,432);
+      const man=sprite('mule-test|man',s=>person(s,0,0,LOOK.paul,-1,0,0,0,0,0,0),-1),dn=sprite('mule-test|donkey2',s=>dk(s,0,0,1,0,1),1),
+        cells=[['blanket',mu(0,1,0)],['pack bags',mu(0,1,1)],['wool',mu(0,-1,2)],['beside the donkey and a man',null],['voice 20',mu(20,1,1)],['voice 21',mu(21,1,1)],['voice 22',mu(22,1,2)],['voice 23',mu(23,-1,2)]];
+      cells.forEach(([n,sp],i)=>{const x=(i%4)*240,y=Math.floor(i/4)*216;g.fillStyle='#a8b0bc';g.fillRect(x+2,y+2,236,212);g.fillStyle='#6f7a6a';g.fillRect(x+2,y+196,236,18);
+        if(sp)g.drawImage(sp,FIG.OX-59,FIG.OY-106,118,106,x+2,y+2,236,212);
+        else{g.drawImage(dn,FIG.OX-40,FIG.OY-106,80,106,x+2,y+2,160,212);g.drawImage(man,FIG.OX-20,FIG.OY-106,40,106,x+150,y+2,80,212)}
+        g.fillStyle='#101418';g.font='bold 12px monospace';g.fillText(n,x+8,y+16)})})}
+  /* --- end of the mule --- */
+
+  /* --- the ox: its checks, and its own stop `oxen` with its sheets (the ox's section of shared/beasts.js) --- */
+  /* the ox (and the bull): every pose is one piece, facing both ways, plain and garlanded, brown and white, and lies inside the sprite box;
+     two hooves or more stand on the ground in every frame of the walk; the frames 1, 2 and 3 are three moments of that walk; its frame
+     function carries the ox without a slip at WALK_V and never quicker than a plod; the voice runs through frames 20 to 22 and ends with
+     the sound; and the bulls at the gate of Lystra are led away when the priest gives up, at WALK_V and out of the picture. The stop
+     `oxen` hands over oxen-walk.png: every frame of the walk and the voice three times enlarged, both ways, plain and garlanded, brown and
+     white. Look there for a leg that has come apart, legs that cross as an X under the belly, a tail across a leg, horns or ears that
+     read as a cross, and a garland that crosses a line as a plus. */
+  {const ox=SHARED.beasts.paint.ox,OX=SHARED.beasts.kinds.ox,oxFr=SHARED.beasts.frame.ox,COATS=[['#8a5a3a',0],['#6f4630',0],['#e6dccc',1],['#d8c8b0',1]],
+      FR=[0,1,2,3,...[...Array(16)].map((_,i)=>4+i),20,21,22],
+      pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
+        for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
+          for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n},
+      sp=(fr,d,c,gar)=>sprite(['ox-test',d<0?'-1':'1',fr,c,gar].join('|'),s=>ox(s,0,0,d,fr,c,gar),d),
+      px=c=>c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data,
+      /* hooves on the ground: the runs of the lowest row of a sprite, where a gap of a pixel or two (the cleft of a hoof) does not part them */
+      hooves=c=>{const d=px(c);let r=0,gap=9;for(let x=0;x<FIG.W;x++){if(d[((FIG.OY-1)*FIG.W+x)*4+3]>0){if(gap>2)r++;gap=0}else gap++}return r},
+      edge=c=>{const d=px(c);for(let y=0;y<FIG.H;y++)for(let x=0;x<FIG.W;x++)if(d[(y*FIG.W+x)*4+3]&&(x<1||x>=FIG.W-1||y<1))return true;return false},
+      ALL=[];for(const[c,gar]of COATS)for(const d of[1,-1])for(const fr of FR)ALL.push([c,gar,d,fr,sp(fr,d,c,gar)]);
+    const apart=ALL.filter(a=>pieces(a[4])!==1).map(a=>a.slice(0,4).join('/')),out=ALL.filter(a=>edge(a[4])).map(a=>a.slice(0,4).join('/')),
+      few=ALL.filter(a=>a[3]>=4&&a[3]<20&&hooves(a[4])<2).map(a=>a.slice(0,4).join('/')),same=(a,b)=>a.toDataURL()===b.toDataURL(),c0='#8a5a3a';
+    ok(!apart.length&&!out.length,'the ox is one piece in every pose and lies inside the sprite box: '+ALL.length+' sprites (stand, walk, voice; both ways; brown and white, plain and garlanded)'+(apart.length?'. IN PIECES (coat/garland/way/frame): '+apart.join(', '):'')+(out.length?'. AT THE EDGE: '+out.join(', '):''));
+    ok(!few.length,'in every frame of the ox\'s walk two hooves or more stand on the ground'+(few.length?'. TOO FEW: '+few.join(', '):''));
+    ok(same(sp(1,1,c0,0),sp(4,1,c0,0))&&same(sp(2,-1,c0,0),sp(8,-1,c0,0))&&same(sp(3,1,c0,0),sp(12,1,c0,0))&&new Set([...Array(16)].map((_,i)=>sp(4+i,1,c0,0).toDataURL())).size===16&&
+      new Set([0,20,21,22].map(f=>sp(f,1,c0,0).toDataURL())).size===4,'the ox: frames 1, 2 and 3 are three moments of its walk, its sixteen walking frames and its four standing and voice frames are each a picture of their own');
+    const slow=[...Array(16)].map((_,i)=>oxFr(OX.stride*(i+.5)/16,10)),at=[...Array(16)].map((_,i)=>oxFr(OX.stride*(i+.5)/16));
+    ok(slow.every((f,i)=>f===4+i)&&at.every((f,i)=>f===4+i)&&OX.stride>=WALK_V*OX.beat&&oxFr(0)===4&&oxFr(-3)>=4&&oxFr(-3)<=19&&Math.abs(OX.stride-OX.reach/OX.stance/2)<1e-9&&OX.stride/WALK_V>.6,
+      `the ox's walk: a cycle carries it ${OX.stride.toFixed(1)} room pixels with its hooves planted and takes ${(OX.stride/WALK_V).toFixed(2)} s at WALK_V: no slip, and a plod`);
+    const V=OX.voice,end=V[V.length-1][0];
+    ok(V[0][0]===0&&V.slice(0,-1).every(([t,f])=>f>=20&&f<=22)&&V.some(v=>v[1]===22)&&V[V.length-1][1]===0&&end>=1000&&end<=1700&&V.every((v,i)=>!i||v[0]>V[i-1][0])&&typeof OX.sound==='function',
+      'the ox lows: its head lifts, its mouth opens wide and closes again over '+end+' ms, as long as its sound');
+    /* the bulls are led away: drawn standing at the gate while G.bulls, then turned, and walking left out of the picture at WALK_V */
+    {const s0=SHARED.beasts.ox,calls=[],[cv,g]=mk(VW*HR,VH*HR);g.scale(HR,HR);SHARED.beasts.ox=(...a)=>{calls.push(a);return s0(...a)};
+      const shot=(t,led,b)=>{calls.length=0;const o=[G.led,G.bulls,G.crowd];G.led=led;G.bulls=b;G.crowd=0;try{ART.lystra.draw(g,t)}finally{[G.led,G.bulls,G.crowd]=o}return calls.map(c=>[c[1],c[3],c[4]])};
+      try{const st=shot(5000,null,1),tu=shot(5200,5000,1),w1=shot(6300,5000,0),w2=shot(6800,5000,0),gone=shot(9000,5000,0);
+        ok(st.length===2&&st.every(c=>c[1]===1&&c[2]===0)&&tu.length===2&&tu.every(c=>c[1]===-1&&c[2]===0)&&w1.length===2&&w1.every(c=>c[1]===-1&&c[2]>=4&&c[2]<=19)&&
+          Math.abs((w1[0][0]-w2[0][0])-WALK_V*.5)<.01&&w1[0][2]!==w1[1][2]&&!gone.length,
+          'the bulls of Lystra: they stand at the gate, turn when the priest gives up, walk off after him at WALK_V, stepping each in its own time, and are gone out of the picture')}
+      finally{SHARED.beasts.ox=s0}}
+    halt('oxen',()=>{/* oxen-walk.png: the walk and the voice, frame by frame */
+      {const Z=3,cw=150,chh=100,per=8,CELLS=[];for(const[c,gar]of[COATS[0],COATS[2]])for(const d of[1,-1]){for(let k=0;k<16;k++)CELLS.push([c,gar,d,4+k]);for(const f of[0,20,21,22])CELLS.push([c,gar,d,f])}
+        const rows=Math.ceil(CELLS.length/per),c=document.createElement('canvas');c.width=per*cw*Z;c.height=24+rows*(chh*Z+16);const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);
+        g.fillStyle='#f4f0e6';g.font='bold 15px Menlo,Consolas,monospace';g.fillText("The ox: its walk in sixteen frames, standing, and its voice (20 to 22), three times enlarged, both ways, brown and plain, white and garlanded",8,17);
+        CELLS.forEach(([col,gar,d,f],i)=>{const x=(i%per)*cw*Z,y=24+Math.floor(i/per)*(chh*Z+16);g.fillStyle=(i+Math.floor(i/per))%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw*Z-2,chh*Z+14);g.fillStyle='#6f7a6a';g.fillRect(x+1,y+chh*Z-6,cw*Z-2,6);
+          g.drawImage(sp(f,d,col,gar),FIG.OX-cw/2,FIG.OY-chh+2,cw,chh,x,y,cw*Z,chh*Z);g.fillStyle='#14100c';g.font='bold 11px Menlo,Consolas,monospace';g.fillText('frame '+f+(d>0?', right':', left')+(gar?', garlanded':''),x+5,y+chh*Z+11)});
+        window.SHEETS=Object.assign(window.SHEETS||{},{'oxen-walk':c.toDataURL()})}
+      const c=document.createElement('canvas');c.width=960;c.height=432;c.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;z-index:8';$('#view').appendChild(c);
+      const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,960,432);
+      [[0,1,'#8a5a3a',0],[0,-1,'#e6dccc',1],[8,1,'#6f4630',0],[22,1,'#d8c8b0',1]].forEach(([f,d,col,gar],i)=>{const x=(i%2)*480,y=Math.floor(i/2)*216;g.fillStyle='#a8b0bc';g.fillRect(x+2,y+2,476,212);g.fillStyle='#6f7a6a';g.fillRect(x+2,y+196,476,18);
+        g.drawImage(sp(f,d,col,gar),FIG.OX-75,FIG.OY-98,150,100,x+90,y+2,300,200)})})}
+  /* --- end of the ox --- */
+
+  /* --- the donkey (and the pose list shared with the ox), with the stop `beasts` --- */
   /* the animals: every part of each must be attached. A sprite is one piece: no tail, head, hump or highlight floats free of the body.
      The donkey walks in sixteen frames (donkey's fr 4 to 19), four beats to a cycle: each frame is one piece, facing both ways and with each
      load; two hooves or more stand on the ground in every one; the body sinks a pixel as each fore hoof lands and never rises; the frames 1, 2
-     and 3 are three moments of the same walk; and beastFr gives a scene the frame for a distance walked. The stop `beasts` hands over
-     beasts-walk.png, every frame three times enlarged, two rows for each load and each way the donkey faces: look there for a leg that has
-     come apart, for legs that cross as an X under the belly, for a leg under the middle of the body, and for a tail across a leg. */
-  {const ox=CHAP[6].painters.ox,BEASTS=[['pack donkey',s=>donkey(s,0,0,1,0,0)],['pack donkey, walking',s=>donkey(s,0,0,1,1,0)],['pack donkey with bags',s=>donkey(s,0,0,-1,2,1)],['pack donkey, loaded',s=>donkey(s,0,0,1,3,2)],
+     and 3 are three moments of the same walk; and beastFr gives a scene the frame for a distance walked. At WALK_V a planted hoof stays where
+     it was set down: from one frame to the next it goes back under the body by just as far as the body goes forward (three drawing units,
+     a room pixel and a half). It brays in the frames 20 to 23 (its voice list), each one piece, the head up and the ears laid back.
+     The stop `beasts` hands over beasts-walk.png, every frame of the walk and of the bray three times enlarged, for each load and each way
+     the donkey faces: look there for a leg that has come apart, for legs that cross as an X under the belly, for a leg under the middle of
+     the body, for a tail across a leg, for a strap across a stripe, and for ears that read as a cross. */
+  {const{donkey}=SHARED.beasts.paint,beastFr=SHARED.beasts.frame.donkey,{DONKEY_STRIDE,DONKEY_BEAT}=SHARED.beasts,ox=SHARED.beasts.paint.ox,BEASTS=[['pack donkey',s=>donkey(s,0,0,1,0,0)],['pack donkey, walking',s=>donkey(s,0,0,1,1,0)],['pack donkey with bags',s=>donkey(s,0,0,-1,2,1)],['pack donkey, loaded',s=>donkey(s,0,0,1,3,2)],
       ['bull with its garland',s=>ox(s,0,0,1,0,'#e6dccc',1)],['bull, walking',s=>ox(s,0,0,1,1,'#d8c8b0',1)],['ox',s=>ox(s,0,0,-1,0,'#8a5a3a',0)],['ox, walking',s=>ox(s,0,0,1,3,'#6f4630',0)]],
     pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
       for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
         for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n},
     sheet=BEASTS.map(([n,fn],i)=>[n,sprite('beast-test'+i,fn,1)]),bad=sheet.filter(([n,c])=>pieces(c)!==1).map(b=>b[0]);
     ok(!bad.length,'animals: every part is attached, in '+sheet.length+' poses of the donkey and the ox'+(bad.length?'. IN PIECES: '+bad.join(', '):''));
-    const dk=(fr,d,ld)=>sprite(['donkey-walk',d<0?'-1':'1',fr,ld].join('|'),s=>donkey(s,0,0,d,fr,ld),d),WALK=[];for(const ld of[0,1,2])for(const d of[1,-1])for(let k=0;k<16;k++)WALK.push([ld,d,k,dk(4+k,d,ld)]);
+    const dk=(fr,d,ld)=>sprite(['donkey-walk',d<0?'-1':'1',fr,ld].join('|'),s=>donkey(s,0,0,d,fr,ld),d),WALK=[],BRAY=[];for(const ld of[0,1,2])for(const d of[1,-1]){for(let k=0;k<16;k++)WALK.push([ld,d,k,dk(4+k,d,ld)]);for(let k=20;k<24;k++)BRAY.push([ld,d,k,dk(k,d,ld)])}
     {const apart=WALK.filter(w=>pieces(w[3])!==1).map(w=>w.slice(0,3).join('/')),px=c=>c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data,
-        /* hooves: the runs of the lowest row of a sprite; top: the highest pixel of the tail's root, which rides with the body */
-        hooves=c=>{const d=px(c);let r=0,on=false;for(let x=0;x<FIG.W;x++){const v=d[((FIG.OY-1)*FIG.W+x)*4+3]>0;if(v&&!on)r++;on=v}return r},
-        top=c=>{const d=px(c);for(let y=0;y<FIG.H;y++)if(d[(y*FIG.W+FIG.OX-29)*4+3])return y;return-1},t0=top(dk(0,1,0)),
-        sink=WALK.filter(w=>w[0]===0&&w[1]===1).map(w=>top(w[3])-t0),few=WALK.filter(w=>hooves(w[3])<2).map(w=>w.slice(0,3).join('/')),same=(a,b)=>a.toDataURL()===b.toDataURL();
+        /* runs: the runs of the lowest row of a sprite, [left, right]; top: the highest pixel of the croup, which rides with the body */
+        runs=c=>{const d=px(c),r=[];let s=-1;for(let x=0;x<=FIG.W;x++){const v=x<FIG.W&&d[((FIG.OY-1)*FIG.W+x)*4+3]>0;if(v&&s<0)s=x;if(!v&&s>=0){r.push([s,x-1]);s=-1}}return r},hooves=c=>runs(c).length,
+        top=c=>{const d=px(c);for(let y=0;y<FIG.H;y++)if(d[(y*FIG.W+FIG.OX-20)*4+3])return y;return-1},t0=top(dk(0,1,0)),
+        sink=WALK.filter(w=>w[0]===0&&w[1]===1).map(w=>top(w[3])-t0),few=WALK.filter(w=>hooves(w[3])<2).map(w=>w.slice(0,3).join('/')),same=(a,b)=>a.toDataURL()===b.toDataURL(),
+        /* slip: a frame whose planted hooves do not all reappear in the next frame three units further back (facing right) */
+        K=SHARED.beasts.kinds.donkey,step=K.reach/K.stance/16,slip=WALK.filter(w=>w[0]===0&&w[1]===1).filter((w,k,A)=>{const a=runs(w[3]),b=runs(A[(k+1)%16][3]);
+          return!a.some(([l,r])=>b.some(([L,R])=>L===l-step&&R===r-step))}).map(w=>w[2]);
       ok(!apart.length,'the donkey walks in sixteen frames, and each is one piece, facing both ways and with each load: '+WALK.length+' sprites'+(apart.length?'. IN PIECES (load/way/frame): '+apart.join(', '):''));
       ok(!few.length&&sink.every((v,k)=>v===(k%8===4||k%8===5?1:0)),'in every frame two hooves or more stand on the ground; the body sinks a pixel as each fore hoof lands (frames 4, 5, 12 and 13) and never rises: '+sink.join(''));
       ok(same(dk(1,1,0),dk(4,1,0))&&same(dk(2,1,1),dk(8,1,1))&&same(dk(3,-1,2),dk(12,-1,2))&&!same(dk(0,1,0),dk(4,1,0))&&new Set(WALK.filter(w=>w[0]===0&&w[1]===1).map(w=>w[3].toDataURL())).size===16,
         'the frames 1, 2 and 3 are three moments of the walk, a quarter of a cycle apart, and no two of its sixteen frames are the same picture');
       const slow=[...Array(16)].map((_,i)=>beastFr(DONKEY_STRIDE*(i+.5)/16,10)),fast=[...Array(16)].map((_,i)=>beastFr(WALK_V*DONKEY_BEAT*(i+.5)/16));
-      ok(slow.every((f,i)=>f===4+i)&&fast.every((f,i)=>f===4+i)&&beastFr(0)===4&&beastFr(-3,10)>=4&&beastFr(-3,10)<=19&&Math.abs(DONKEY_STRIDE-17.6)<1e-9,
-        `beastFr: a cycle carries the donkey ${DONKEY_STRIDE} room pixels with its hooves planted, up to ${(DONKEY_STRIDE/DONKEY_BEAT).toFixed(1)} a second; faster than that, a cycle still takes ${DONKEY_BEAT} s`)}
-    halt('beasts',()=>{/* beasts-walk.png: the walk, frame by frame */
-      {const Z=3,cw=90,chh=84,per=8,rows=WALK.length/per,c=document.createElement('canvas');c.width=per*cw*Z;c.height=24+rows*(chh*Z+16);const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);
-        g.fillStyle='#f4f0e6';g.font='bold 15px Menlo,Consolas,monospace';g.fillText("The donkey's walk: sixteen frames, three times enlarged, for each load and each way it faces",8,17);
-        WALK.forEach(([ld,d,k,sp],i)=>{const x=(i%per)*cw*Z,y=24+Math.floor(i/per)*(chh*Z+16);g.fillStyle=(i+Math.floor(i/per))%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw*Z-2,chh*Z+14);g.fillStyle='#6f7a6a';g.fillRect(x+1,y+chh*Z-6,cw*Z-2,6);
-          g.drawImage(sp,FIG.OX-(d>0?39:51),FIG.OY-chh+2,cw,chh,x,y,cw*Z,chh*Z);g.fillStyle='#14100c';g.font='bold 11px Menlo,Consolas,monospace';g.fillText('frame '+k+(k?'':' · load '+ld+(d>0?', facing right':', facing left')),x+5,y+chh*Z+11)});
+      ok(slow.every((f,i)=>f===4+i)&&fast.every((f,i)=>f===4+i)&&beastFr(0)===4&&beastFr(-3,10)>=4&&beastFr(-3,10)<=19&&Math.abs(DONKEY_STRIDE-24)<1e-9&&DONKEY_STRIDE/DONKEY_BEAT>=WALK_V,
+        `beastFr: a cycle carries the donkey ${DONKEY_STRIDE} room pixels with its hooves planted, up to ${(DONKEY_STRIDE/DONKEY_BEAT).toFixed(1)} a second, which is WALK_V or more; faster than that, a cycle still takes ${DONKEY_BEAT} s`);
+      ok(!slip.length&&step===3&&Math.abs(Math.max(DONKEY_STRIDE,WALK_V*DONKEY_BEAT)/16*2-step)<1e-9,
+        'at WALK_V the donkey\'s hooves do not slip: in each of its sixteen frames a planted hoof stands, in the next, '+step+' drawing units further back, as far as the body has gone forward'+(slip.length?'. NOT IN FRAMES: '+slip.join(', '):''));
+      const V=K.voice,vb=BRAY.filter(w=>pieces(w[3])!==1).map(w=>w.slice(0,3).join('/'));
+      ok(!vb.length&&V.every((v,i)=>!i||v[0]>V[i-1][0])&&V[V.length-1][0]<=1500&&V.slice(0,-1).every(v=>v[1]>=20&&v[1]<=23)&&[20,21,22,23].every(f=>V.some(v=>v[1]===f))&&
+          new Set(BRAY.filter(w=>w[0]===0&&w[1]===1).map(w=>w[3].toDataURL())).size===4&&BRAY.every(w=>!same(w[3],dk(0,w[1],w[0]))),
+        'the donkey brays in four frames of its own (20 to 23), each one piece, facing both ways and with each load, and its voice list runs through them in '+V[V.length-1][0]+' ms'+(vb.length?'. IN PIECES: '+vb.join(', '):''))}
+    halt('beasts',()=>{/* beasts-walk.png: the walk and the bray, frame by frame */
+      {const ALL=[...WALK,...BRAY],Z=3,cw=92,chh=84,per=8,rows=Math.ceil(ALL.length/per),c=document.createElement('canvas');c.width=per*cw*Z;c.height=24+rows*(chh*Z+16);const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);
+        g.fillStyle='#f4f0e6';g.font='bold 15px Menlo,Consolas,monospace';g.fillText("The donkey's walk (sixteen frames) and its bray (frames 20 to 23), three times enlarged, for each load and each way it faces",8,17);
+        ALL.forEach(([ld,d,k,sp],i)=>{const x=(i%per)*cw*Z,y=24+Math.floor(i/per)*(chh*Z+16);g.fillStyle=(i+Math.floor(i/per))%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw*Z-2,chh*Z+14);g.fillStyle='#6f7a6a';g.fillRect(x+1,y+chh*Z-6,cw*Z-2,6);
+          g.drawImage(sp,FIG.OX-(d>0?36:56),FIG.OY-chh+2,cw,chh,x,y,cw*Z,chh*Z);g.fillStyle='#14100c';g.font='bold 11px Menlo,Consolas,monospace';g.fillText((k>=20?'bray '+k:'frame '+k)+(k&&k!==20?'':' · load '+ld+(d>0?', facing right':', facing left')),x+5,y+chh*Z+11)});
         window.SHEETS=Object.assign(window.SHEETS||{},{'beasts-walk':c.toDataURL()})}
       const c=document.createElement('canvas');c.width=960;c.height=432;c.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;z-index:8';$('#view').appendChild(c);
       const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,960,432);
@@ -4137,7 +4264,9 @@
   halt('speech6',()=>{});
   await pickQ('to_the_living_god_who_made');ok(nq()===3&&said('we_bring_you_acts_14_15'),'to the living God who made heaven, earth and sea; then, his witness');
   await pickQ('man_from_the_well_on_his_feet');ok(nq()===2,'a sign needs someone to say whose it is');
-  heard.length=0;await pickQ('rain_from_heaven_and_seasons_of_harvest');
+  let led=0;const ivL=setInterval(()=>{if(G.led!=null&&G.room==='lystra'&&A('priest').room)led=1},20);
+  heard.length=0;await pickQ('rain_from_heaven_and_seasons_of_harvest');clearInterval(ivL);
+  ok(led&&G.led==null,'when the priest gives up, the bulls are led away after him, and nothing of them is left when the city is left');
   ok(F.stopped&&G.room==='outside'&&!G.busy&&!G.down&&!G.bulls&&!G.crowd&&PC()===P&&P.x>100&&BN.room==='outside'&&A('timothy').room==='outside'&&A('lois').room==='outside'&&!A('priest').room&&
     said('even_so_there_acts_14_17')&&
     said('crowds_would_still_have_sacrificed_to_them_acts_14_18')&&
@@ -4173,6 +4302,11 @@
   await sweep(A('zenon'),BN);
   await actor(null,A('zenon'));ok(nq()===4&&hasQ('road_runs_east_from_here'),'Zenon offers the short road home');await choose(0);await choose(-1);
   heard.length=0;await act('use','oxen');ok(said('i_scratch_one_of_the_oxen')&&G.room==='derbe',"Zenon's oxen: one is scratched between the horns, and goes on chewing");
+  /* talked to, the near ox lows: its head lifts and its mouth opens while the sound lasts. Barnabas gets no answer from him. */
+  {const fr=[],iv=setInterval(()=>fr.push(SHARED.beasts.pose('oxen6',0)),15);heard.length=0;await act('talk','oxen');await wait(1700);clearInterval(iv);
+    ok(said('i_wish_him_a_good_road')&&G.room==='derbe'&&fr.includes(22)&&fr.includes(20)&&fr[fr.length-1]===0,"Zenon's near ox, talked to, lows once and goes on chewing: his head lifts and his mouth opens with the sound ["+[...new Set(fr)].join()+']')}
+  halt('oxtalk6',()=>{SHARED.beasts.speak('oxen6','ox');say(P,'i_wish_him_a_good_road')});
+  key('c');await idle();heard.length=0;await act('talk','oxen');ok(PC()===BN&&heard.length===1&&said('i_would_get_no_answer'),'Barnabas talks to the oxen, and gets no answer');key('c');await idle();
   pray();await idle();ok(hint()[0]==='back6','the hint points back the way they came');
   act(null,'road');await mapOpen();
   ok(G.scene===SHARED.map.draw&&SHARED.map.state.places.join()==='antiochp,iconium,lystra,derbe,tarsus'&&SHARED.map.state.legs.length===3,'the road opens the map: and now Tarsus is on it');

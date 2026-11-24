@@ -119,7 +119,7 @@ ART.fork={w:480,fp:1.25,q:12,
   for(let i=0;i<7;i++){const sx=96+i*10+r()*5,sy=132+r()*6;R(g,sx,sy,2,2,'#8a5a9a');R(g,sx+.4,sy-.6,1.2,.8,'#b88ac0')}
   comp(g,'source-atop',.36,()=>R(g,0,0,640,150,'#34305a'))},
  draw(g,t){/* the carrier's mule, loaded with wool, standing on the road with its head toward the west */
-  beast(g,150,123,-1,0,2,null)},
+  SHARED.beasts.mule(g,150,123,-1,0,2,null)},
  front(){}};
 /* ---------- The edge of Bithynia: a river, and a ferry drawn up on its near bank ---------- */
 const bith8=x=>15+6*Math.sin(x/83+1)+3*Math.sin(x/29)+1.4*Math.sin(x/7);
@@ -682,7 +682,7 @@ ROOMS.fork={space:.5,walk:[16,464,112,138],mood:'hope',amb:{wind:.5,birds:.5,hoo
   {name:'sheepfold',x:332,y:62,w:92,h:24,wx:380,look:'sheepfold_of_field_stone'},
   {name:'milestone',x:207,y:86,w:12,h:23,wx:226,wy:114,dir:-1,look:async()=>{await say(P,'milestone_of_the_romans');return say(P,quote('prov16'))},
     use:'i_lean_on_it_for_a_moment',pickup:'it_has_stood_here_longer'},
-  {name:'mule',x:128,y:90,w:44,h:34,wx:184,wy:126,dir:-1,look:'carriers_mule_under_more',pickup:'it_is_attaloss_and_it_would'},
+  {name:'mule',x:116,y:74,w:56,h:49,wx:104,wy:127,dir:1,look:'carriers_mule_under_more',pickup:'it_is_attaloss_and_it_would'},
   {name:'track_to_the_north',x:232,y:76,w:76,h:32,wx:254,wy:113,dir:1,exit:trackNorth,
     look:()=>say(P,F.asia?'track_north_bare_earth':'track_leaving_the_paved')},
   {name:'paved_road_west',x:0,y:104,w:15,h:34,wx:22,wy:122,dir:-1,exit:roadWest,

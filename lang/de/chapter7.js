@@ -897,5 +897,6 @@ TEXTS('de',7,{
   "derbe_has_its_letter_and_zenon":["Derbe hat seinen Brief, und Zenon ist dort zu Hause. Unser Weg führt nicht zurück.","0147a79"],
   "lystra_lies_beyond_derbe":["Lystra liegt hinter Derbe und hinter den Bergen. Eine Etappe nach der anderen.","1mesiq0"],
   "iconium_has_had_its_letter_said":["Ikonion hat seinen Brief bekommen, und ich habe seine Antwort bekommen. Was noch zu tun ist, liegt in diesem Haus.","0h8pp9p"],
-  "iconium_lies_beyond_lystra":["Ikonion liegt hinter Lystra. Eine Etappe nach der anderen.","097gqvn"]
+  "iconium_lies_beyond_lystra":["Ikonion liegt hinter Lystra. Eine Etappe nach der anderen.","097gqvn"],
+  "he_lows_once_long_and_deep":["Er muht einmal, lang und tief, und dreht ein Ohr zum Wagen hin.","0rv7ywj"]
 });
