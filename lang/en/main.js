@@ -268,5 +268,10 @@ TEXTS('en','main',{
   "tertius_own_line":"Tertius's own line",
   "mule_in_a_sheepfold":"A mule in a sheepfold",
   "not_another_basket":"Not another basket",
-  "barnabas_at_the_bench":"Barnabas at the bench"
+  "barnabas_at_the_bench":"Barnabas at the bench",
+  "layout":"Layout",
+  "layout_auto":"Auto",
+  "layout_phone":"Phone",
+  "layout_classic":"Classic",
+  "turn_phone_sideways":"Turn your phone sideways to play."
 });
