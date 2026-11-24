@@ -166,60 +166,159 @@ const BX=28,BY=13,CELL=22,COLS=12,ROWS_B=4,THIN=2,TRAY_Y=112,TC=6;
 /* the panels of the tent, in cubits; where each waits on the board; and its tint */
 const PIECES=[{id:'roof',name:'roof_panel',w:4,h:4,tx:26,c:'#b89c62'},{id:'long',name:'long_wall',w:6,h:2,tx:60,c:'#8c9aa8'},{id:'end',name:'end_wall',w:3,h:2,tx:106,c:'#9aa88c'},
   {id:'flap',name:'door_flap',w:2,h:2,tx:134,c:'#b0806a'},{id:'g1',name:'gusset',w:2,h:1,tx:156,c:'#a898b0'},{id:'g2',name:'second_gusset',w:2,h:1,tx:178,c:'#a898b0'}];
+/* close views, to the finer standard of Chapter Fifteen's scale and Chapter Thirteen's counting board: veined and weathered stone,
+   fine-grained wood that never competes with what lies on it, cloth whose threads all run one way, and soft contact shadows. */
+/* soft10: the shade a thing throws on what it lies on: down and to the right, soft at its edge (three passes, as shadeScale15 does) */
+function soft10(g,p,d,a){for(const[k,q]of[[1,.32],[.66,.3],[.33,.36]])comp(g,'multiply',(a||1)*q,()=>poly(g,p.map((v,i)=>i%2?v+d*k*.5:v+d*k),'#4a3c50'))}
+/* grain10: a fine grain for a close view: thin strokes, each a little lighter or darker than the wood, that wander gently along it and
+   end where they end, so that no line runs ruled from one end of a board to the other */
+function grain10(g,x,y,w,h,c,seed,o){o=o||{};const r=rng(seed),A=o.amp||.4,al=o.a||1;
+  inRect(g,x,y,w,h,()=>{for(let yy=y-1;yy<y+h+1;yy+=.45+r()*.8){const dark=r()<.55,f=.02+r()*.03,ph=r()*6.3,l=w*(.25+r()*.75),x0=x-4+r()*(w-l+8),p=[];
+    for(let xx=x0;xx<=x0+l;xx+=3)p.push(xx,yy+A*Math.sin(xx*f+ph));
+    stroke(g,p,dark?rgba(tint(c,-.38),(.08+r()*.14)*al):rgba(tint(c,.32),(.06+r()*.12)*al),.45)}})}
+/* flags10: the flagstones of a courtyard seen from above, in courses of uneven slabs. Each slab has its own tone, lies a little dished
+   and worn round at its edges, and has a vein, a few pits and a chipped corner of its own; grit lies in the joints. A joint stops at the
+   edge of its course, and none stands in line with one in the course before it. o.y0: where the first course begins; o.avoid: heights
+   where no course may end (a course joint of the paving beside), so that two runs of courses meet in T shapes and never in a cross.
+   Returns the heights where its courses end. */
+function flags10(g,x,y,w,h,c,seed,o){o=o||{};const r=rng(seed),ch=o.ch||30,ys=[],av=o.avoid||[];
+  inRect(g,x,y,w,h,()=>{R(g,x,y,w,h,mix(tint(c,-.22),'#6a5c50',.4));tex(g,'grain',.6,x,y,w,h,'overlay',.5);let prev=[];
+    for(let Y=o.y0==null?y-r()*ch*.6:o.y0;Y<y+h;){let hh=ch*(.78+r()*.44);for(const q of av)if(Math.abs(Y+hh-q)<5)hh=q-Y+6;const cur=[];let X=x-r()*40;ys.push(Y+hh);
+      while(X<x+w){let e=X+28+r()*30;for(const q of prev)if(Math.abs(e-q)<8)e=q+10;cur.push(e);
+        const k=r(),cc=k<.3?mix(c,'#c0a088',.4):k<.6?mix(c,'#9c9a92',.4):k<.75?tint(c,.1):c;slab10(g,X+.4,Y+.4,e-X-.8,hh-.8,tint(cc,(r()-.5)*.2),r);X=e}
+      prev=cur;Y+=hh}
+    tex(g,'mott',.4,x,y,w,h,'overlay',1);tex(g,'blotch',.22,x,y,w,h,'soft-light',.8);
+    for(let i=0;i<Math.round(w*h/3300);i++)pool(g,x+r()*w,y+r()*h,14+r()*30,6+r()*14,'#7a6450',.12,'multiply')});return ys}
+function slab10(g,x,y,w,h,c,r){const k=.9+r()*.8,o=[x+k,y,x+w-r()*1.2,y+r()*.5,x+w,y+k,x+w-r()*.5,y+h-r()*1.2,x+w-k,y+h,x+r()*1.2,y+h-r()*.5,x,y+h-k,x+r()*.5,y+r()*1.2];
+  poly(g,o);g.fillStyle=lg(g,x,y,x+w*.6,y+h,[tint(c,.07),c,tint(c,-.05)]);g.fill();
+  clipTo(g,()=>poly(g,o),()=>{
+    /* worn round: the edges catch the light on the upper left and fall into shade on the lower right; the middle is a little dished */
+    ao(g,x,y+h-3,w,3,'b',.18,'#3a2e2a');ao(g,x+w-3,y,3,h,'r',.14,'#3a2e2a');
+    pool(g,x+w*.5,y+h*.55,w*.42,h*.36,'#6a5a4c',.1,'multiply');
+    R(g,x+1,y,w-2,.5,rgba(tint(c,.3),.45));R(g,x,y+1,.5,h-2,rgba(tint(c,.24),.35));
+    /* a vein that runs across part of it, and sometimes a fork from it */
+    if(r()<.7){let vx=x+r()*w*.4,vy=y+r()*h;const p=[vx,vy],dx=w*(.4+r()*.5)/6,dy=(r()-.5)*h*.12;
+      for(let i=0;i<6;i++){vx+=dx;vy+=dy+(r()-.5)*1.6;p.push(vx,vy)}
+      stroke(g,p,rgba(tint(c,-.24),.4),.45);stroke(g,p.map((v,i)=>i%2?v+.5:v),rgba(tint(c,.3),.25),.4)}else{r();r();r();r()}
+    for(let i=0;i<6;i++){const px=x+r()*w,py=y+r()*h;R(g,px,py,.5,.5,rgba(tint(c,-.4),.5));if(r()<.4)R(g,px,py-.5,.5,.5,rgba(tint(c,.4),.3))}});
+  if(r()<.35){const cx=r()<.5?x:x+w,cy=r()<.5?y:y+h,sx=cx===x?1:-1,sy=cy===y?1:-1;poly(g,[cx,cy,cx+sx*2.6,cy,cx,cy+sy*2],rgba(tint(c,-.42),.8))}}
+/* hair10: goat-hair cloth seen from above, nearly black: its threads all run the long way, some a shade lighter, some thicker for a
+   stretch; the cloth lifts a little between the pegs and is drawn toward each of them at the corners; a selvage along both long edges */
+function hair10(g,x,y,w,h,c,seed){const r=rng(seed);
+  g.fillStyle=lg(g,0,y,0,y+h,[tint(c,.04),tint(c,-.08),tint(c,-.04),tint(c,-.16)]);g.fillRect(x,y,w,h);
+  /* the threads: short runs a shade lighter or darker, row by row, and the fuzz of the hair over them */
+  for(let yy=y;yy<y+h;yy+=.5){let xx=x-r()*6;while(xx<x+w){const l=1.5+r()*6,q=r();if(q<.4)R(g,xx,yy,l,.5,q<.16?rgba('#d8c4a4',.05+r()*.05):rgba('#000000',.14+r()*.12));xx+=l}}
+  for(let i=0;i<w*h*.05;i++){const sx=x+r()*w,sy=y+r()*h;R(g,sx,sy,.5+r()*1.5,.5,rgba('#cdb898',.06+r()*.08))}
+  /* the cloth lifts between the pegs: long low swells, lit on their upper side */
+  for(let i=0;i<8;i++){const sx=x+r()*w,sy=y+8+r()*(h-16),rx=30+r()*50,ry=4+r()*5;pool(g,sx,sy-ry*.5,rx,ry,'#e8d2b4',.06,'screen');pool(g,sx,sy+ry*.6,rx,ry*.8,'#000000',.12,'source-over')}
+  tex(g,'mott',.22,x,y,w,h,'soft-light',.5);
+  /* drawn toward the pegs: a few faint creases that open out from each corner */
+  for(const[cx,cy,sx,sy]of[[x,y,1,1],[x+w,y,-1,1],[x,y+h,1,-1],[x+w,y+h,-1,-1]])for(let i=0;i<3;i++){const L=8+r()*9,a=.25+i*.3+(r()-.5)*.15,ex=cx+sx*L*Math.cos(a),ey=cy+sy*L*Math.sin(a)*.8;
+    stroke(g,[cx+sx*1.5,cy+sy*1.2,ex,ey],'rgba(0,0,0,.26)',.6);stroke(g,[cx+sx*1.5,cy+sy*.7,ex,ey-sy*.5],'rgba(240,220,190,.07)',.5)}
+  /* the selvage: a closer, slightly paler weave along both long edges */
+  for(const sy of[y,y+h-2.2]){R(g,x,sy,w,2.2,rgba(tint(c,.14),.5));for(let xx=x;xx<x+w;){const l=2+r()*8;R(g,xx,sy+(r()<.5?.5:1.2),l,.5,rgba('#e8d4b0',.06));xx+=l+r()*3}}
+  ao(g,x,y,w,4,'t',.14,'#e8d4b0')}
+/* cord10: the measuring cord, twisted flax laid on the stone: a shade under it, its body, a lit strand, and along it the lay of the twist
+   as short lighter dashes that stay inside the cord (nothing drawn across it). The knots are small lumps, one to the cubit. */
+function cord10(g,p,knots,vert){const C='#d2c098';stroke(g,p.map((v,i)=>v+.7),'rgba(40,30,40,.28)',1.2);stroke(g,p,tint(C,-.3),.9);stroke(g,p.map((v,i)=>(i%2)===(vert?0:1)?v-.2:v),C,.5);
+  for(let i=0;i<p.length-2;i+=2){const n=Math.hypot(p[i+2]-p[i],p[i+3]-p[i+1]);for(let s=0;s<n;s+=1.6){const k=s/n,X=p[i]+(p[i+2]-p[i])*k,Y=p[i+1]+(p[i+3]-p[i+1])*k;R(g,X-(vert?.25:0),Y-(vert?0:.25),vert?.5:.7,vert?.7:.5,rgba('#fff4d6',.45))}}
+  for(const[kx,ky]of knots){R(g,kx-.4,ky-.3,2.4,2.4,'rgba(40,30,40,.3)');R(g,kx-1.1,ky-1.1,2.2,2.2,tint(C,-.28));R(g,kx-1.1,ky-1.1,1.6,1.4,C);R(g,kx-1.1,ky-1.1,1,.6,'#fff0cc')}}
+/* peg10: a wooden peg driven into a joint, seen from above: its battered head, and the loop of cord that holds the cloth's corner */
+function peg10(g,px,py,cx,cy){soft10(g,[px,py,px+2.6,py,px+2.6,py+2.6,px,py+2.6],1.6,.8);
+  stroke(g,[cx,cy,px+1.3,py+1.3],'rgba(40,30,40,.3)',1);stroke(g,[cx,cy,px+1.3,py+1.3],'#a89670',.6);
+  R(g,px,py,2.6,2.6,'#6a4c2c');R(g,px,py,2.6,.6,'#b08a5a');R(g,px,py,.6,2.6,'#96703e');R(g,px+2,py+.6,.6,2,'#4a3420');R(g,px+.8,py+.9,1,.8,'#8a6a42')}
+/* panel10: a panel of the tent, cut from the same cloth and dyed only in the game's eye (its tint tells one from another): folded flat,
+   its threads running the long way, the fold along its top lit, a soft shade under its near side */
+function panel10(g,x,y,w,h,c,seed){const r=rng(seed),b=mix(CLOTH,earth10(c,.2),.55),o=[x+.5,y,x+w-.5,y,x+w,y+.6,x+w,y+h-.5,x+w-.6,y+h,x+.5,y+h,x,y+h-.6,x,y+.5];
+  soft10(g,o,1.6);poly(g,o);g.fillStyle=lg(g,x,y,x+w*.4,y+h,[tint(b,.16),b,tint(b,-.16)]);g.fill();
+  clipTo(g,()=>poly(g,o),()=>{for(let yy=y;yy<y+h;yy+=.5){let xx=x-r()*6;while(xx<x+w){const l=2+r()*9,q=r();R(g,xx,yy,l,.5,q<.35?rgba('#fff2d8',.06+r()*.06):q<.7?rgba('#000000',.1):rgba(b,0));xx+=l}}
+    ao(g,x,y+h-2,w,2,'b',.28,'#140e14');ao(g,x+w-1.6,y,1.6,h,'r',.2,'#140e14')});
+  R(g,x+.5,y,w-1,.5,rgba('#fff2d8',.5));R(g,x+.5,y+.5,w-1,.5,rgba(tint(b,-.4),.5));R(g,x,y+.6,.5,h-1.2,rgba('#fff2d8',.28))}
 ART.bolt10={w:320,q:12,
  paint(g){const r=rng(1013);
-  ashlar(g,0,0,320,144,'#bfb294',r,{bw:30,bh:19,v:.07,t:.45,m:'#8e8670'});
-  /* the shadow of the wall across one corner, and the day on the rest */
-  /* its edge is soft: three passes, each a little further out and fainter */
-  for(const[d,a]of[[10,.1],[5,.12],[0,.14]])comp(g,'multiply',1,()=>poly(g,[0,0,120+d,0,0,40+d/3],rgba(earth10('#7a80b4',.2),a)));
+  /* the courtyard's flagstones, seen from above */
+  /* the measuring cord lies along joints, not across them: the paving under the far edge of the cloth ends in a course joint where the
+     cord runs, and a border of slabs of its own rhythm runs down the left where the other cord lies */
+  {const S='#aea086',ys=flags10(g,21.4,6.6,298.6,137.4,S,1041,{ch:34,y0:6.6});flags10(g,21.4,0,298.6,6.6,S,1048,{ch:34});flags10(g,0,0,21.4,144,S,1049,{ch:26,avoid:ys})}
   /* the cloth: goat hair, nearly black, its weave running the long way; the selvage along both long edges. The weave is drawn the long
      way only, and stops at the thin strip, so that no thread crosses the loose ones there */
-  shadow10(g,BX+COLS*CELL/2+1.6,BY+ROWS_B*CELL+1,COLS*CELL/2+4,3,.3);R(g,BX+1.6,BY+2,COLS*CELL,ROWS_B*CELL,'rgba(20,16,30,.32)');R(g,BX+.8,BY+1,COLS*CELL,ROWS_B*CELL,'rgba(20,16,30,.18)');R(g,BX,BY,COLS*CELL,ROWS_B*CELL,CLOTH);
-  inRect(g,BX,BY,COLS*CELL,ROWS_B*CELL,()=>{const rc=rng(1015),tx=BX+THIN*CELL;
-    for(const[x0,x1]of[[BX,tx],[tx+CELL,BX+COLS*CELL]]){plank10(g,x0,BY,x1-x0,ROWS_B*CELL,CLOTH,rc,0);
-      for(let j=0;j<ROWS_B*CELL;j+=1)R(g,x0,BY+j,x1-x0,.5,j%2?'rgba(0,0,0,.12)':'rgba(255,240,210,.035)')}
-    /* the thin strip: one cubit where the weave is loose, and the paving shows through it */
-    R(g,tx,BY,CELL,ROWS_B*CELL,'rgba(196,184,152,.16)');
-    for(let i=0;i<CELL;i+=1.5){let y=BY;while(y<BY+ROWS_B*CELL){const len=6+r()*16;R(g,tx+i,y,.75,Math.min(len,BY+ROWS_B*CELL-y),'rgba(206,194,160,.4)');y+=len+1+r()*3}}
-    ao(g,BX,BY,COLS*CELL,5,'t',.25);ao(g,BX,BY+ROWS_B*CELL-5,COLS*CELL,5,'b',.25)});
-  R(g,BX,BY,COLS*CELL,1,tint(CLOTH,.24));R(g,BX,BY+ROWS_B*CELL-1,COLS*CELL,1,tint(CLOTH,.14));
-  /* pegs at the corners, each a small square of wood */
-  for(const[px,py]of[[BX-3,BY-3],[BX+COLS*CELL+1,BY-3],[BX-3,BY+ROWS_B*CELL+1],[BX+COLS*CELL+1,BY+ROWS_B*CELL+1]]){R(g,px,py,2.4,2.4,'#7a5a34');R(g,px,py,2.4,.6,'#b08a5a')}
-  /* the measuring cord, one knot to the cubit: along the far edge, and down the left one. The two do not meet. */
-  R(g,BX+4,BY-6.4,COLS*CELL-8,.6,'#d8c9a0');for(let i=1;i<COLS;i++)R(g,BX+i*CELL-.8,BY-7.2,1.6,2,'#f0e2bc');
-  R(g,BX-6.6,BY+5,.6,ROWS_B*CELL-10,'#d8c9a0');for(let j=1;j<ROWS_B;j++)R(g,BX-7.3,BY+j*CELL-.8,2,1.6,'#f0e2bc');
-  /* the board on which the panels are reckoned, and the stool he rose from, with his pouch */
-  R(g,19,TRAY_Y-2.6,184,31,'rgba(20,16,30,.14)');R(g,18,TRAY_Y-3.4,184,31,'rgba(20,16,30,.2)');R(g,17,TRAY_Y-4.2,184,31,'rgba(20,16,30,.16)');
-  /* three boards side by side, each with its own quiet grain, the joints running the long way only */
-  {const rt=rng(1016);[['#8a6a40',0],['#7e6038',10.4],['#6e5230',20.7]].forEach(([c,dy],i)=>{plank10(g,16,TRAY_Y-5+dy,184,i<2?10.4:10.3,c,rt,0);if(i)R(g,16,TRAY_Y-5+dy,184,.6,'rgba(40,26,12,.4)')})}
-  R(g,16,TRAY_Y-5,184,.8,'#bfa06c');R(g,16,TRAY_Y+25,184,1,'#4a341c');
-  shadow10(g,268,128,24,9,.42);oval(g,266,125,22,9,'#6a4e2c');oval(g,266,124,20,8,'#96703e');g.strokeStyle='#b89058';g.lineWidth=.6;g.beginPath();g.ellipse(266,124,14,5.4,0,0,6.2832);g.stroke();
-  shadow10(g,240,126,9,3,.3);poly(g,[230,116,244,113,248,124,236,128],'#6e4a2e');poly(g,[230,116,244,113,245,116,231,119],'#8a6a4a');
-  /* the day: the sun on the open paving and the cloth, a cooler shade toward the wall's corner and the near edge */
-  lightmap(g,320,'#e6e0e2',l=>{pool(l,210,60,200,110,'#fff6e2',.6);pool(l,120,126,120,20,'#fff2dc',.35);
+  const CW=COLS*CELL,CH=ROWS_B*CELL,tx=BX+THIN*CELL;
+  soft10(g,[BX,BY,BX+CW,BY,BX+CW,BY+CH,BX,BY+CH],3.2,.9);
+  inRect(g,BX,BY,tx-BX,CH,()=>hair10(g,BX,BY,CW,CH,tint(CLOTH,-.12),1042));inRect(g,tx+CELL,BY,BX+CW-tx-CELL,CH,()=>hair10(g,BX,BY,CW,CH,tint(CLOTH,-.12),1042));
+  /* the thin strip: one cubit where the weave is loose, and the paving shows through it between the threads */
+  R(g,tx,BY,CELL,CH,tint(CLOTH,-.2));
+  inRect(g,tx,BY,CELL,CH,()=>{for(let i=.4;i<CELL;i+=1.1+r()*1.2){let y=BY+r()*6;const X=tx+i+(r()-.5)*.4;while(y<BY+CH){const len=5+r()*16;
+      R(g,X,y,.6,Math.min(len,BY+CH-y),r()<.7?'rgba(190,176,146,.42)':'rgba(150,136,112,.3)');y+=len+1+r()*4}}
+    for(let i=0;i<CELL;i+=2+r()*2)R(g,tx+i,BY,.5,CH,rgba(tint(CLOTH,.16),.5));
+    ao(g,tx,BY,2,CH,'l',.3,'#000000');ao(g,tx+CELL-2,BY,2,CH,'r',.3,'#000000')});
+  /* the ends of the bolt, cut and left as they are: the threads stand out a little past the last of the weave, all the long way */
+  {const rf=rng(1043);for(const[ex,d]of[[BX,-1],[BX+CW,1]])for(let y=BY+1;y<BY+CH-1;y+=.5+rf()*.6){const l=.6+rf()*1.8;R(g,d<0?ex-l:ex,y,l,.5,rgba(tint(CLOTH,.1),.8))}}
+  R(g,BX,BY,CW,.5,tint(CLOTH,.3));R(g,BX,BY+CH-.5,CW,.5,tint(CLOTH,-.3));
+  /* pegs at the corners, each driven in a little out from the corner and tied to it */
+  for(const[px,py,cx,cy]of[[BX-3,BY-3,BX,BY],[BX+CW+1,BY-3,BX+CW,BY],[BX-3,BY+CH+1,BX,BY+CH],[BX+CW+1,BY+CH+1,BX+CW,BY+CH]])peg10(g,px,py,cx,cy);
+  /* the measuring cord, one knot to the cubit: along the far edge, and down the left one. The two do not meet, and each ends loose */
+  {const top=[BX+4,BY-6.4],left=[BX-6.6,BY+5];for(let x=BX+8;x<BX+CW-4;x+=8)top.push(Math.min(x,BX+CW-4),BY-6.4+Math.sin(x*.07)*.25);top.push(BX+CW-4,BY-6.4,BX+CW-1,BY-5.6);
+   for(let y=BY+10;y<BY+CH-5;y+=8)left.push(BX-6.6+Math.sin(y*.09)*.25,Math.min(y,BY+CH-5));left.push(BX-6.6,BY+CH-5,BX-5.8,BY+CH-2.6);
+   cord10(g,top,Array.from({length:COLS-1},(_,i)=>[BX+(i+1)*CELL,BY-6.2]),0);
+   cord10(g,left,Array.from({length:ROWS_B-1},(_,j)=>[BX-6.4,BY+(j+1)*CELL]),1)}
+  /* the board on which the panels are reckoned: three boards side by side, of a paler and finer wood, the joints running the long way */
+  const TX=16,TY=TRAY_Y-5,TW=184,TH=30;
+  soft10(g,[TX,TY,TX+TW,TY,TX+TW,TY+TH,TX,TY+TH],3.4);
+  [['#94805e',0,10.4],['#8a7658',10.4,10.3],['#806c50',20.7,9.3]].forEach(([c,dy,h],i)=>{
+    g.fillStyle=lg(g,0,TY+dy,0,TY+dy+h,[tint(c,.1),c,tint(c,-.1)]);g.fillRect(TX,TY+dy,TW,h);
+    grain10(g,TX,TY+dy,TW,h,c,1044+i,{amp:.6,a:1.5});tex(g,'mott',.16,TX,TY+dy,TW,h,'overlay',.6);
+    if(i){R(g,TX,TY+dy,TW,.6,'rgba(48,32,18,.55)');R(g,TX,TY+dy+.6,TW,.5,rgba(tint(c,.3),.5))}
+    /* the end grain at each end of the board, darker */
+    for(const ex of[TX,TX+TW-1.4])R(g,ex,TY+dy+.6,1.4,h-.6,rgba(tint(c,-.34),.85))});
+  R(g,TX,TY,TW,.6,'#c8b088');R(g,TX,TY+TH-.8,TW,.8,'#5a4026');R(g,TX,TY,.6,TH,'#c8a878');
+  pool(g,90,118,110,16,'#fff0d0',.12,'screen');
+  {const rs=rng(1045);for(let i=0;i<9;i++){const sx=TX+8+rs()*(TW-24),sy=TY+3+rs()*(TH-6),l=4+rs()*8;stroke(g,[sx,sy+.4,sx+l,sy+.4+(rs()-.5)],'rgba(50,34,20,.22)',.45);stroke(g,[sx,sy,sx+l,sy+(rs()-.5)],'rgba(240,220,180,.2)',.4)}}
+  /* the stool he rose from, seen from above: a round seat of one piece of wood, worn in the middle; and his pouch beside it */
+  {const sx=268,sy=123,rx=17,ry=12.5,rs=rng(1046);
+   soft10(g,Array.from({length:24},(_,i)=>[sx+Math.cos(i/24*6.2832)*rx,sy+Math.sin(i/24*6.2832)*ry+2]).flat(),3.6);
+   oval(g,sx,sy+2,rx,ry,'#5a4026');
+   clipTo(g,()=>oval(g,sx,sy,rx,ry),()=>{g.fillStyle=lg(g,sx-rx,sy-ry,sx+rx,sy+ry,['#a68a62','#8c7252','#6a5640']);g.fillRect(sx-rx,sy-ry,rx*2,ry*2);
+     grain10(g,sx-rx,sy-ry,rx*2,ry*2,'#8c7252',1047,{amp:.8,a:1.4});pool(g,sx-2,sy-1,10,6,'#ffe8c0',.18,'screen');
+     ao(g,sx-rx,sy+ry-3,rx*2,3,'b',.3,'#2a1c10')});
+   g.strokeStyle='rgba(255,232,190,.4)';g.lineWidth=.5;g.beginPath();g.ellipse(sx,sy,rx-.3,ry-.3,0,3.4,5.2);g.stroke();
+   for(let i=0;i<5;i++){const a=rs()*6.28,d=.4+rs()*.4;R(g,sx+Math.cos(a)*rx*d,sy+Math.sin(a)*ry*d,1+rs()*2,.5,'rgba(60,40,20,.3)')}}
+  /* the pouch: soft leather, gathered at its neck by a thong, lying on its side */
+  {const P='#7a5434',o=[231,118.6,236,115.6,242,114.2,246.6,115.4,248.4,119.4,247.6,124,243,127.4,237,127.8,232.4,125.4,230.4,121.6].map((v,i)=>i%2?v:v-6);
+   soft10(g,o,2.4);poly(g,o);g.fillStyle=lg(g,231,114,247,128,[tint(P,.24),P,tint(P,-.3)]);g.fill();
+   clipTo(g,()=>poly(g,o),()=>{tex(g,'mott',.4,223,113,21,16,'overlay',.5);stroke(g,[228,124,233,121,239,121.6],rgba(tint(P,-.45),.6),.6);stroke(g,[230,118,234,117.4],rgba(tint(P,.4),.45),.5);
+     pool(g,230,118,5,3,'#ffe0b8',.2,'screen')});
+   /* its neck, gathered, and the thong round it */
+   poly(g,[240.6,115.4,244.6,113.4,246,115.6,242.4,119.4],tint(P,-.12));stroke(g,[241.2,114.8,242.8,119],'#3a2414',.7);stroke(g,[243,118.6,246,121.4,246.4,124.6],'#4a3020',.5)}
+  /* the day: the sun on the open paving and the cloth; the shade of the eave lies along the foot of the wall, at the top of the view */
+  lightmap(g,320,'#dcd4d8',l=>{pool(l,190,70,210,110,'#fff6e2',.5);pool(l,120,126,120,20,'#fff2dc',.35);
+    l.fillStyle=lg(l,0,0,0,14,['rgba(40,40,80,.34)','rgba(40,40,80,0)']);l.fillRect(0,0,320,14);
     l.fillStyle=lg(l,0,124,0,144,['rgba(20,16,24,0)','rgba(20,16,24,.12)']);l.fillRect(0,124,320,20)});
-  pool(g,200,40,220,130,'#fff4d6',.1,'screen')},
+  comp(g,'soft-light',.22,()=>{g.fillStyle=lg(g,0,0,320,144,['#ffe0a8','rgba(255,224,168,0)']);g.fillRect(0,0,320,144)});
+  pool(g,200,40,220,130,'#fff4d6',.08,'screen')},
  light:{amb:'#ffffff'},
  draw(g,t){const st=G.bolt10;if(!st)return;
-  /* panels laid out on the cloth: tinted woven patches with soft horizontal weave sheen and inset chalk stitch marks stopping clear of corners */
-  /* where a panel lies over the thin strip, its sheen and its stitch marks stop at the strip, so that nothing runs across the loose threads */
+  /* panels laid out on the cloth: a paler patch of the same cloth with its own tint, its threads the long way, a lit fold along its top
+     and a hem of shadow on its two near sides; small stitch marks of chalk, inset, stopping clear of the corners */
+  /* where a panel lies over the thin strip, its threads and its stitch marks stop at the strip, so that nothing runs across the loose
+     threads */
   const sx0=BX+THIN*CELL,sx1=sx0+CELL,off=(a,b)=>[[a,Math.min(b,sx0)],[Math.max(a,sx1),b]].filter(([u,v])=>v-u>.5);
-  for(const p of PIECES){const q=st.at[p.id];if(!q)continue;const x=BX+q.x*CELL,y=BY+q.y*CELL,w=q.w*CELL,h=q.h*CELL;
-    g.fillStyle=rgba(p.c,.44);g.fillRect(x,y,w,h);
-    for(let j=2.5;j<h-2;j+=3)for(const[u,v]of off(x+2,x+w-2))R(g,u,y+j,v-u,.5,rgba('#fff6dc',.1));
-    R(g,x,y,w,.7,rgba('#fff6dc',.55));R(g,x,y,.7,h,rgba('#fff6dc',.42));R(g,x,y+h-1.1,w,1.1,'rgba(12,9,16,.55)');R(g,x+w-1.1,y,1.1,h,'rgba(12,9,16,.55)');
-    for(let i=4;i<w-5;i+=5){if(x+i+2.2>sx0&&x+i<sx1)continue;R(g,x+i,y+1.8,2.2,.55,rgba('#fff6dc',.5));R(g,x+i,y+h-2.4,2.2,.55,rgba('#fff6dc',.38))}
-    for(let j=4;j<h-5;j+=5){R(g,x+1.8,y+j,.55,2.2,rgba('#fff6dc',.45));R(g,x+w-2.4,y+j,.55,2.2,rgba('#fff6dc',.35))}}
+  for(const p of PIECES){const q=st.at[p.id];if(!q)continue;const x=BX+q.x*CELL,y=BY+q.y*CELL,w=q.w*CELL,h=q.h*CELL,c=earth10(p.c,.2),r=rng(1061+PIECES.indexOf(p));
+    soft10(g,[x,y,x+w,y,x+w,y+h,x,y+h],1.4,.7);
+    g.fillStyle=lg(g,x,y,x+w*.3,y+h,[rgba(tint(c,.14),.5),rgba(c,.42),rgba(tint(c,-.14),.38)]);g.fillRect(x,y,w,h);
+    for(let j=.5;j<h-1;j+=1)for(const[u,v]of off(x+1,x+w-1)){let xx=u+r()*4;while(xx<v){const l=Math.min(v-xx,3+r()*10);if(r()<.5)R(g,xx,y+j,l,.5,rgba(r()<.5?'#fff6dc':'#000000',.07));xx+=l}}
+    R(g,x,y,w,.7,rgba('#fff6dc',.5));R(g,x,y+.7,w,.5,rgba('#000000',.18));R(g,x,y,.7,h,rgba('#fff6dc',.36));
+    ao(g,x,y+h-2.4,w,2.4,'b',.5,'#0c0910');ao(g,x+w-2.4,y,2.4,h,'r',.5,'#0c0910');
+    for(let i=4;i<w-5;i+=5){if(x+i+2.2>sx0&&x+i<sx1)continue;R(g,x+i,y+1.8,2.2,.5,rgba('#fff6dc',.42));R(g,x+i,y+h-2.8,2.2,.5,rgba('#fff6dc',.3))}
+    for(let j=4;j<h-5;j+=5){R(g,x+1.8,y+j,.5,2.2,rgba('#fff6dc',.38));R(g,x+w-2.8,y+j,.5,2.2,rgba('#fff6dc',.28))}}
   /* the panel in hand, shown where it would lie: under the pointer */
   const sel=PIECES.find(p=>p.id===st.sel);
   if(sel&&st.mx!=null&&!G.busy){const cx0=Math.floor((st.mx-BX)/CELL),cy0=Math.floor((st.my-BY)/CELL),[w,h]=st.turn[sel.id]?[sel.h,sel.w]:[sel.w,sel.h];
     if(cx0>=0&&cy0>=0&&cx0<COLS&&cy0<ROWS_B){const fits=cx0+w<=COLS&&cy0+h<=ROWS_B;g.fillStyle=rgba(fits?sel.c:'#b04a3a',.34+.08*Math.sin(t/260));g.fillRect(BX+cx0*CELL,BY+cy0*CELL,Math.min(w,COLS-cx0)*CELL,Math.min(h,ROWS_B-cy0)*CELL)}}
-  /* the board: each panel small, as it is turned; one that lies on the cloth leaves only its place */
+  /* the board: each panel small, folded, as it is turned; one that lies on the cloth leaves only its place, a little paler than the
+     board round it, where the sun has not darkened the wood */
   for(const p of PIECES){const[w,h]=st.turn[p.id]?[p.h,p.w]:[p.w,p.h],x=p.tx,y=TRAY_Y;
-    if(st.at[p.id]){R(g,x,y,w*TC,h*TC,'rgba(30,20,10,.3)');continue}
-    R(g,x+1,y+1,w*TC,h*TC,'rgba(20,14,8,.5)');R(g,x,y,w*TC,h*TC,mix(CLOTH,p.c,.58));
-    for(let j=1.5;j<h*TC-1;j+=2)R(g,x+1,y+j,w*TC-2,.4,rgba('#fff6dc',.12));
-    R(g,x,y,w*TC,.6,rgba('#fff6dc',.55));R(g,x,y,.6,h*TC,rgba('#fff6dc',.4));R(g,x,y+h*TC-.7,w*TC,.7,'rgba(12,9,16,.45)');
+    if(st.at[p.id]){R(g,x,y,w*TC,h*TC,'rgba(255,240,210,.12)');ao(g,x,y,w*TC,1.4,'t',.25,'#3a2818');ao(g,x,y,1.2,h*TC,'l',.2,'#3a2818');continue}
+    panel10(g,x,y,w*TC,h*TC,p.c,1071+PIECES.indexOf(p));
     if(st.sel===p.id){g.fillStyle=rgba('#ffe9a8',.3+.16*Math.sin(t/200));g.fillRect(x,y,w*TC,h*TC)}}},
  front(){}};
 
