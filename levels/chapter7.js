@@ -34,6 +34,19 @@ const _=null,
 /* materials and light shared by the backdrops of every chapter (shared/materials.js, to the standard of Chapter Fifteen's room of Gaius):
    quiet directional grain on wood, two-tone cracks set by hand, contact shadows in three steps of alpha, dyes drawn toward earth colors */
 const{plank:plank7,board:board7,crack:crack7,skipCracks:skipCracks7,shadow:shadow7,earth:earth7,joistAO:joistAO7}=SHARED.materials;
+/* joists7: the ceiling seen from below at its edge, as in Chapter One's workshop: dark boards, and the joists running toward us in
+   perspective from the wall plate (y = U) to the top of the picture, each with the soft shade of the boards beside it. They stand in pairs
+   about the middle, so that none rises upright from the plate, and no square beam end sits on it to make a T; the room lays the plate over
+   their feet. rj: a seed of its own. burn7: the draws that board() took for the square beam ends the room used to show, taken on a scrap
+   canvas, so that everything the room draws after them stays where it was */
+function joists7(g,U,step,rj,c){c=c||{};const T=c.joist||'#6b4a2e',k=1.17;
+  if(c.boards!==0){plank7(g,0,0,320,U,c.boards||'#33251a',rj,0);ao(g,0,0,320,U*.7,'t',.45,'#0c0808')}
+  let a=160+step/2-3.5;while(a>-step)a-=step;
+  for(;a<330;a+=step){const x0=160+(a-160)*k,x1=160+(a+7-160)*k,P=[a,U,a+7,U,x1,0,x0,0];joistAO7(g,a,x0,7,U,'#0c0808');poly(g,P,T);
+    clipTo(g,()=>poly(g,P),()=>tex(g,'vert',.16,x0-2,0,x1-x0+4,U,'overlay',.5));
+    poly(g,[a+5,U,a+7,U,x1,0,x1-2.2,0],tint(T,-.4));stroke(g,[a+.25,U,x0+.25,0],tint(T,.25),.5)}
+  ao(g,0,U-2.5,320,2.5,'b',.3,'#0c0808')}
+function burn7(r,x0,step,w,h){const d=mk(4,4)[1];for(let i=x0;i<320;i+=step)board7(d,i,0,w,h,'#5a4226',r,1)}
 const SH='#8f95c8';
 /* What is seen through the south gate of Iconium: the plateau, blue ranges round it, and the road running on. The gate adds the horizon and the sky of its scene. */
 const GATE7={far:['#a9b4c8','#c2cad4'],near:['#98a86c','#a8b47c'],land:'#c4c08a',road:'#ead9ae'};
@@ -164,8 +177,8 @@ ART.council={w:320,q:12,
   ashlar(g,0,0,320,104,ST,r,{bw:17,bh:8.5,v:.07,t:.22});
   /* a few hairline cracks in the stones, high up, where they run to no head */
   {const rb=rng(7091);for(const[x,y,n]of[[36,14,3],[132,12,3],[226,15,3],[292,13,4]])crack7(g,x,y,n,rb,.9)}
-  /* the beam ends over the wall plate; the stone darkens beside each and under the plate */
-  for(let i=8;i<320;i+=38){ao(g,i-3,0,3,7,'r',.3,'#1a1420');ao(g,i+7,0,3,7,'l',.22,'#1a1420');board7(g,i,0,7,7,'#5a4226',rw,1)}board7(g,0,7,320,2.4,'#6a4e2c',rw);ao(g,0,9.4,320,12,'t',.4,'#2a2030');ao(g,0,9.4,320,3,'t',.25,'#1a1420');
+  /* the ceiling at its edge, its joists running toward us, and the wall plate they rest on; the stone darkens under the plate */
+  joists7(g,7.5,36,rng(7111));burn7(rw,8,38,7,7);board7(g,0,7,320,2.4,'#6a4e2c',rw);ao(g,0,9.4,320,12,'t',.4,'#2a2030');ao(g,0,9.4,320,3,'t',.25,'#1a1420');
   /* three round-headed windows, high in the wall: the roofs of the city, and the sky over them */
   for(const x of[60,150,240]){arch(g,x-2,22,24,36,tint(ST,-.25));g.save();arch(g,x,24,20,34);g.clip();sky(g,320,58,['#6aa2dc','#d8e8f0']);R(g,x,48,20,10,'#d8d0bc');R(g,x+11,43,9,5,'#e2dac4');R(g,x,46.6,20,1.4,'#b8a888');
     ao(g,x,24,20,7,'t',.4,'#2a2440');ao(g,x,24,4,34,'l',.35,'#2a2440');g.restore();R(g,x-3,58,26,1.8,tint(ST,.2));R(g,x-3,59.8,26,.6,tint(ST,-.4))}
@@ -303,8 +316,9 @@ ART.gates={w:480,fp:1.25,q:12,
   for(const[a,b,c,d]of FIS){stroke(g,[a,b,(a+c)/2+1.4,(b+d)/2,c,d],rgba(DK,.4),.9);stroke(g,[a+.7,b,(a+c)/2+2.1,(b+d)/2,c+.7,d],'rgba(246,238,220,.16)',.5)}
   for(const[x,y,w]of[[14,42,36],[120,30,30],[178,64,34],[270,50,36],[446,60,28]]){poly(g,[x,y,x+w,y-1.4,x+w-3,y+2.2,x+4,y+3],rgba(DK,.36));stroke(g,[x,y,x+w,y-1.4],'rgba(246,238,220,.4)',.6)}
   stroke(g,[340,0,351,16,343,44,355,70,348,100],'rgba(246,238,220,.4)',.8);stroke(g,[394,0,383,20,390,46,380,74,388,100],rgba(DK,.4),.8);
-  /* the road: a ledge cut into the foot of the left wall, the marks of the picks still on the rock above it, and climbing on into the gap */
-  clipTo(g,()=>poly(g,[0,84,170,86,280,89,348,92,348,100,0,100]),()=>{R(g,0,82,350,18,tint(LS,-.3));for(let x=3;x<348;x+=2.4+r()*3)stroke(g,[x,85+x*.02,x+1.4,96],rgba(DK,.36),.5);tex(g,'mott',.36,0,82,350,18,'overlay',1);
+  /* the road: a ledge cut into the foot of the left wall, the marks of the picks still on the rock above it, and climbing on into the gap.
+     Each pick mark slants as the blow fell and stops short of the ledge's lit edge, so that none stands on it as an upside-down T */
+  clipTo(g,()=>poly(g,[0,84,170,86,280,89,348,92,348,100,0,100]),()=>{R(g,0,82,350,18,tint(LS,-.3));for(let x=3;x<348;x+=2.4+r()*3)stroke(g,[x,85+x*.02,x+3.6,93.6+x/348],rgba(DK,.36),.5);tex(g,'mott',.36,0,82,350,18,'overlay',1);
     ao(g,0,84,350,5,'t',.35,DK)});
   poly(g,[0,95.4,348,96.4,374,100,0,100],'#c9bea6');stroke(g,[0,95.4,348,96.4],'rgba(250,244,226,.5)',.5);
   poly(g,[348,100,374,100,369,78,361,78],'#b8ad98');stroke(g,[348,100,361,78],rgba(DK,.5),.7);stroke(g,[374,100,369,78],'rgba(255,246,224,.3)',.5);
@@ -355,8 +369,8 @@ ART.lystra7={w:320,q:12,
   plaster(g,0,0,320,104,W,r,{patch:4,cracks:0,brick:'#a8875a',t:.36});skipCracks7(r,6);
   /* cracks cut by hand, high on the wall, where they run to no head; rb: a seed of their own, so the rest of the room keeps its shape */
   {const rb=rng(4613);for(const[x,y,n]of[[22,16,4],[112,18,3],[244,16,4],[300,20,3]])crack7(g,x,y,n,rb)}
-  /* the beam ends over the wall plate; the plaster darkens beside each and under the plate */
-  const rw=rng(4617);for(let i=14;i<320;i+=34){ao(g,i-3,0,3,8,'r',.3,'#1a1420');ao(g,i+6,0,3,8,'l',.22,'#1a1420');board7(g,i,0,6,8,'#5a4226',rw,1)}
+  /* the ceiling at its edge, its joists running toward us, and the wall plate they rest on; the plaster darkens under the plate */
+  const rw=rng(4617);joists7(g,8.5,36,rng(4618));burn7(rw,14,34,6,8);
   board7(g,0,8,320,2.4,'#6a4e2c',rw);ao(g,0,10.4,320,12,'t',.42,'#2a2030');ao(g,0,10.4,320,3,'t',.25,'#1a1420');
   /* a window on the lane */
   windowArt(g,52,28,16,16,W,{dark:'#c8dcec',bars:2,wood:'#6a4e2c'});
@@ -379,10 +393,11 @@ ART.lystra7={w:320,q:12,
   for(const y of[87,83,79.5,76.2,73.2,70.4]){R(g,302.6,y,3.6,.7,'#7a6648');R(g,302.6,y+.7,3.6,.4,'#ece2c6')}
   /* a great jar of water by the door, and the two that go to the well */
   vessel(g,250,106,7,20,'#9a5a36','pithos');wellJar(g,235,107,'#a8683c');wellJar(g,226,108,'#96582e');
-  /* the floor: beaten earth, and a woven mat where the household eats */
+  /* the floor: beaten earth, and a woven mat where the household eats. Its few stripes are soft and lie only at its ends, beyond the
+     table's legs, so that no leg stands across a band */
   ao(g,0,95,320,9,'b',.22,'#2a2030');
   earth(g,0,103,320,144,'#b8a482',r,90);ao(g,0,103,320,6,'t',.4,'#3a3050');ao(g,0,103,320,2,'t',.22,'#1a1420');
-  clipTo(g,()=>poly(g,[128,112,214,112,224,130,116,130]),()=>{R(g,116,112,110,18,earth7('#9a6a4a'));for(let i=0;i<6;i++)R(g,116,113.4+i*3,110,1.1,i%2?'#d8b878':earth7('#5a3a2c'));tex(g,'mott',.3,116,112,110,18,'overlay',1);ao(g,116,112,110,5,'t',.25)});
+  clipTo(g,()=>poly(g,[128,112,214,112,224,130,116,130]),()=>{R(g,116,112,110,18,earth7('#9a6a4a'));for(const[y,c]of[[113.4,'#b08a5c'],[125.6,earth7('#7a5040')],[127.8,'#b08a5c']])R(g,116,y,110,1.1,c);tex(g,'mott',.3,116,112,110,18,'overlay',1);ao(g,116,112,110,5,'t',.25)});
   /* a low table */
   R(g,168,122,44,3,'rgba(30,20,40,.26)');shadow7(g,171.3,123.2,3,.9,.4);shadow7(g,208.7,123.2,3,.9,.4);lowTable(g);
   /* light: the winter day through the window, its fall across the floor, and a little at the door; the hearth's glow on the floor before
@@ -415,9 +430,12 @@ ART.iconium7={w:480,fp:1.3,q:12,
   for(const[hx,hy,hw,hh,c]of[[0,42,18,62,'#d6caa8'],[42,48,18,56,'#e2d6b4'],[16,56,10,48,'#c8bc9c'],[32,60,9,44,'#d8ccac']]){R(g,hx,hy,hw,hh,c);R(g,hx,hy-2,hw,2.4,'#b8603c');R(g,hx+hw-2.4,hy,2.4,hh,'rgba(60,50,90,.3)')}
   poly(g,[18,104,42,104,33,74,27,74],'#e0d6ba');ao(g,0,28,60,12,'t',.2,'#2a2440');g.restore();
   /* Nathan's saddlery: a plastered house, its whole front open to the street under an awning */
-  house(g,60,24,126,80,W,r,{side:0,patch:3,cracks:0,beams:12,t:.36});skipCracks7(r,5);
+  house(g,60,24,126,80,W,r,{side:0,patch:3,cracks:0,beams:0,t:.36});skipCracks7(r,5);
   /* cracks cut by hand, high on the wall, where they run to no head; rb: a seed of their own, so the rest of the room keeps its shape */
-  {const rb=rng(4311);for(const[x,y,n]of[[66,30,3],[124,29,4],[178,48,3]])crack7(g,x,y,n,rb)}windowArt(g,72,34,10,10,W,{bars:2,wood:'#6a4e2c'});windowArt(g,162,34,10,10,W,{bars:2,wood:'#6a4e2c'});
+  {const rb=rng(4311);for(const[x,y,n]of[[66,30,3],[124,29,4],[178,48,3]])crack7(g,x,y,n,rb)}/* the two upper windows sit high under the eaves, their sills clear above the awning; the ends of the roof beams run along the
+     wall between them, as house() would set them, and none where a window is */
+  for(let i=66;i<182;i+=12)if(i!==78&&i!==162){R(g,i,28,2.5,2.5,'#6a4a2c');R(g,i,28,2.5,.5,'#a67c4a');poly(g,[i+.5,30.5,i+3,30.5,i+4.5,34,i+2,34],'rgba(50,40,90,.28)')}
+  windowArt(g,72,28,10,9,W,{bars:2,wood:'#6a4e2c'});windowArt(g,162,28,10,9,W,{bars:2,wood:'#6a4e2c'});
   R(g,84,56,84,48,'#231a15');g.fillStyle=lg(g,0,56,0,104,['#2c211a','#4a382a']);g.fillRect(86,58,80,46);
   /* inside: a shelf of pack saddles, and hides rolled on the floor */
   board7(g,88,70,76,1.6,'#5a4226',rw);for(const[sx,c]of[[94,'#8a5a34'],[110,'#a06a3c'],[126,'#7a4c2c'],[144,'#96643a']]){g.fillStyle=lg(g,sx,0,sx+11,0,[tint(c,.2),c,tint(c,-.4)]);g.beginPath();g.ellipse(sx+5.5,70,5.6,4.6,0,Math.PI,0);g.fill();R(g,sx+1,66.4,9,.6,tint(c,.4))}

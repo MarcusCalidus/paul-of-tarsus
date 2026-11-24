@@ -5,7 +5,20 @@
    town opens the map. A place opens when the story reaches it, and the road never leads back. */
 LEVEL(4,()=>{
 "use strict";
-const{plank:plank4,board:board4,crack:crack4,skipCracks:skipCracks4,shadow:shadow4,earth:earth4}=SHARED.materials;
+const{plank:plank4,board:board4,crack:crack4,skipCracks:skipCracks4,shadow:shadow4,earth:earth4,joistAO:joistAO4}=SHARED.materials;
+/* joists4: the ceiling seen from below at its edge, as in Chapter One's workshop: dark boards, and the joists running toward us in
+   perspective from the wall plate (y = U) to the top of the picture, each with the soft shade of the boards beside it. They stand in pairs
+   about the middle, so that none rises upright from the plate, and no square beam end sits on it to make a T; the room lays the plate over
+   their feet. rj: a seed of its own. burn4: the draws that board() took for the square beam ends the room used to show, taken on a scrap
+   canvas, so that everything the room draws after them stays where it was */
+function joists4(g,U,step,rj,c){c=c||{};const T=c.joist||'#6b4a2e',k=1.17;
+  if(c.boards!==0){plank4(g,0,0,320,U,c.boards||'#33251a',rj,0);ao(g,0,0,320,U*.7,'t',.45,'#0c0808')}
+  let a=160+step/2-3.5;while(a>-step)a-=step;
+  for(;a<330;a+=step){const x0=160+(a-160)*k,x1=160+(a+7-160)*k,P=[a,U,a+7,U,x1,0,x0,0];joistAO4(g,a,x0,7,U,'#0c0808');poly(g,P,T);
+    clipTo(g,()=>poly(g,P),()=>tex(g,'vert',.16,x0-2,0,x1-x0+4,U,'overlay',.5));
+    poly(g,[a+5,U,a+7,U,x1,0,x1-2.2,0],tint(T,-.4));stroke(g,[a+.25,U,x0+.25,0],tint(T,.25),.5)}
+  ao(g,0,U-2.5,320,2.5,'b',.3,'#0c0808')}
+function burn4(r,x0,step,w,h){const d=mk(4,4)[1];for(let i=x0;i<320;i+=step)board4(d,i,0,w,h,'#5a4226',r,1)}
 
 /* ============ MUSIC AND AMBIENCE (plain data, played by the engine's sequencer) ============ */
 /* A sea crossing in E Aeolian: a harp rocks in three, three and two like a hull on a swell, over a slow bass and a frame drum.
@@ -213,9 +226,8 @@ ART.synagogue={w:320,q:12,
   plaster(g,0,0,320,104,W,r,{patch:2,cracks:0,brick:'#b89468',t:.36});skipCracks4(r,5);
   /* hairline cracks set by hand, high on the wall between the windows, where they run to no head */
   {const rb=rng(2512);for(const[x,y,n]of[[30,14,3],[150,13,3],[176,16,2],[290,14,3]])crack4(g,x,y,n,rb,.85)}
-  /* the beam ends under the roof, each with the shade it keeps on the wall beside it, and the wall plate they rest on */
-  ao(g,0,0,320,8,'t',.3,'#2a2030');
-  for(let i=8;i<320;i+=28){ao(g,i-3,0,3,7,'r',.22,'#2a2030');ao(g,i+5,0,3.4,7,'l',.16,'#2a2030');board4(g,i,0,5,7,'#5a4226',rw,1)}
+  /* the ceiling at its edge, its joists running toward us, and the wall plate they rest on */
+  joists4(g,7.5,36,rng(2513));burn4(rw,8,28,5,7);
   board4(g,0,7,320,2.4,'#6a4e2c',rw);ao(g,0,9.4,320,10,'t',.4,'#2a2030');
   /* the shade gathers at both ends of the long wall and along its foot */
   ao(g,0,9.4,10,94.6,'l',.2,'#2a2030');ao(g,310,9.4,10,94.6,'r',.2,'#2a2030');ao(g,0,95,320,8,'b',.2,'#2a2030');
@@ -314,8 +326,8 @@ ART.sendoff={w:320,q:12,paint(g){const r=rng(291),W='#e6d6ac',rw=rng(2911);
   plaster(g,0,0,320,104,W,r,{patch:3,cracks:0,brick:'#b89468',t:.36});skipCracks4(r,6);
   /* hairline cracks set by hand, high on the wall, where they run to no head */
   {const rb=rng(2912);for(const[x,y,n]of[[60,14,3],[186,13,3],[296,15,3]])crack4(g,x,y,n,rb,.85)}
-  ao(g,0,0,320,7,'t',.28,'#2a2030');
-  for(let i=10;i<320;i+=30){ao(g,i-3,0,3,6,'r',.22,'#2a2030');ao(g,i+6,0,3.4,6,'l',.16,'#2a2030');board4(g,i,0,6,6,'#5a4226',rw,1)}
+  /* the ceiling at its edge, its joists running toward us, and the wall plate they rest on */
+  joists4(g,6.5,36,rng(2913));burn4(rw,10,30,6,6);
   board4(g,0,6,320,2.4,'#6a4e2c',rw);ao(g,0,8.4,320,10,'t',.35,'#2a2030');
   ao(g,0,8.4,10,95.6,'l',.2,'#2a2030');ao(g,310,8.4,10,95.6,'r',.2,'#2a2030');ao(g,0,95,320,8,'b',.2,'#2a2030');
   windowArt(g,236,24,20,22,W,{bars:3,dark:'#8fc0e8',wood:'#8a6a40'});R(g,21,43,36,61,'#d8c8a0');doorArt(g,24,46,30,58,'#8a6a40',r,{bands:[]});ao(g,24,46,30,5,'t',.3,'#1a1420');
