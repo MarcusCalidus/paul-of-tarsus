@@ -520,5 +520,7 @@ TEXTS('de',16,{
   "Tychicus":["Tychikus","194hz8x"],
   "harbor":["Hafen","0m8pkuj"],
   "lukes_tablets":["Wachstafeln","1742j86"],
-  "lukes_tablets_look":["Meine Tafeln: ein Ort, ein Tag und was ich dort gesehen habe.","0xuypxx"]
+  "lukes_tablets_look":["Meine Tafeln: ein Ort, ein Tag und was ich dort gesehen habe.","0xuypxx"],
+  "click_to_continue_to_chapter_seventeen":["Klicken, um mit dem siebzehnten Kapitel weiterzumachen","04j2jf2"],
+  "chapter_seventeen_code_code":["Code für das siebzehnte Kapitel: {code}","13x0pcd"]
 });
