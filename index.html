@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#1c130c">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<!-- installed on an iPhone, the game is laid out up to the top edge of the screen (a status bar lies over it, kept clear by the safe margins) -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Paul of Tarsus">
 <title>Paul of Tarsus: On the Roads of Rome</title>
 <style>
@@ -251,7 +253,7 @@ html.phone #view,html.phone #wrap.title #view{position:absolute;inset:0;width:au
 html.phone #screen{position:absolute;left:0;top:0;width:320px;height:210px;transform-origin:0 0;clip-path:inset(0 0 31.4286% 0)}
 html.phone #wrap.title #screen{clip-path:none}
 html.phone #lcol,html.phone #rcol{display:flex;flex-direction:column;position:absolute;top:0;bottom:0;width:var(--cw);z-index:7;
-  --s:var(--cs);--px:calc(var(--s)*.5px);gap:calc(var(--s)*2px);padding:calc(var(--s)*2.5px);
+  --s:var(--cs);--px:calc(var(--s)*.5px);gap:calc(var(--s)*2px);padding:calc(var(--s)*2.5px);padding-top:calc(var(--s)*2.5px + env(safe-area-inset-top,0px));
   background:#1c130c var(--wood);background-size:calc(var(--s)*128px) calc(var(--s)*32px);image-rendering:pixelated;transition:transform .45s ease-in-out}
 html.phone #lcol{left:0;padding-left:calc(var(--ci) + var(--s)*2.5px);box-shadow:inset calc(var(--px)*-1) 0 0 #000,inset calc(var(--px)*-2) 0 0 #6a4c24}
 html.phone #rcol{right:0;padding-right:calc(var(--ci) + var(--s)*2.5px);box-shadow:inset var(--px) 0 0 #000,inset calc(var(--px)*2) 0 0 #6a4c24}
@@ -281,7 +283,7 @@ html.phone #choices{--s:var(--ts);--px:calc(var(--s)*.5px);inset:auto var(--fr) 
   background:rgba(18,12,8,.95);box-shadow:inset 0 var(--px) 0 #000,inset 0 calc(var(--px)*2) 0 #6a4c24,0 calc(var(--s)*-1px) calc(var(--s)*4px) rgba(0,0,0,.55)}
 html.phone #choices button{flex:0 0 auto;white-space:normal;text-overflow:clip;line-height:1.3;font-size:calc(var(--s)*6px);
   padding:calc(var(--s)*4px) calc(var(--s)*3.5px);touch-action:manipulation}
-html.phone #status{--s:var(--ts);--px:calc(var(--s)*.5px);position:absolute;left:var(--fl);right:var(--fr);top:0;height:auto;z-index:6;padding:0 calc(var(--s)*3px);
+html.phone #status{--s:var(--ts);--px:calc(var(--s)*.5px);position:absolute;left:var(--fl);right:var(--fr);top:0;height:auto;z-index:6;padding:env(safe-area-inset-top,0px) calc(var(--s)*3px) 0;
   line-height:calc(var(--s)*9px);font-size:calc(var(--s)*5.8px);text-overflow:ellipsis;background:rgba(10,6,4,.6);border:0;box-shadow:none;pointer-events:none;transition:opacity .25s}
 html.phone #status.none,html.phone #wrap.wide #status{opacity:0}
 html.phone #speech,html.phone #tags{--s:var(--ts);--px:calc(var(--s)*.5px)}
@@ -290,9 +292,12 @@ html.phone .line.white{max-width:min(calc(var(--s)*230px),calc(var(--fw) - var(-
 html.phone .line.ink{--s:var(--fk);--px:calc(var(--s)*.5px);left:calc(var(--fx) + var(--fk)*170px);top:calc(var(--fy) + var(--fk)*72px);max-width:calc(var(--fk)*164px)}
 html.phone .tag{font-size:calc(var(--s)*5px)}
 html.phone #scroll{inset:auto;left:var(--fx);top:var(--fy);width:calc(var(--fk)*320px);height:calc(var(--fk)*144px)}
-html.phone #found{left:calc(var(--fl) + var(--s)*3px);top:calc(var(--ts)*12px)}
-html.phone #hush{right:calc(var(--fr) + var(--s)*3px);top:calc(var(--ts)*12px)}
-html.phone #wrap>#skip{--s:var(--ts);--px:calc(var(--s)*.5px);position:absolute;z-index:8;top:calc(var(--s)*12px);right:calc(var(--fr) + var(--s)*3px);height:calc(var(--s)*11px)}
+html.phone #found{left:calc(var(--fl) + var(--s)*3px);top:calc(var(--ts)*12px + env(safe-area-inset-top,0px))}
+html.phone #hush{right:calc(var(--fr) + var(--s)*3px);top:calc(var(--ts)*12px + env(safe-area-inset-top,0px))}
+html.phone #overlay{padding-top:calc(var(--s)*8px + env(safe-area-inset-top,0px))}
+html.phone #menu{padding-top:calc(var(--s)*6px + env(safe-area-inset-top,0px))}
+html.phone #codebox{padding-top:calc(var(--s)*8px + env(safe-area-inset-top,0px))}
+html.phone #wrap>#skip{--s:var(--ts);--px:calc(var(--s)*.5px);position:absolute;z-index:8;top:calc(var(--s)*12px + env(safe-area-inset-top,0px));right:calc(var(--fr) + var(--s)*3px);height:calc(var(--s)*11px)}
 /* on the title the columns are away: ENTER CODE and the menu stand one over the other in the upper right corner of the screen, where the
    title's last line says they are, in the strip of timber beside its picture (--tb) */
 html.phone #wrap.title #ttop{display:flex;flex-direction:column;gap:calc(var(--s)*2px);--s:var(--ts);--px:calc(var(--s)*.5px);position:absolute;z-index:8;
@@ -464,7 +469,7 @@ function fit(){const root=document.documentElement,ph=phoneWanted(),[it,ir,ib,il
     root.style.setProperty('--s',sc.toFixed(3));pointer(sc,pointerKind(G.hover));LENS.k=sc;LENS.tx=LENS.ty=0;LENS.F={l:0,t:0,w:sc*VW,h:sc*VH};return}
   /* a column is about four tenths of the screen's height wide, and no column is wider than a quarter of the screen */
   /* the size of the screen as the page is laid out (#wrap is fixed to it): Safari reports a smaller window while the page is pinched */
-  const wr=$('#wrap'),W=PH.W=wr.clientWidth||innerWidth,H=PH.H=wr.clientHeight||innerHeight,ci=PH.ci=Math.max(il,ir),cw=PH.cw=Math.round(Math.min(H*.37,W*.25-ci)+ci);
+  const wr=$('#wrap'),W=PH.W=wr.clientWidth||innerWidth,H=PH.H=wr.clientHeight||innerHeight;PH.it=it;const ci=PH.ci=Math.max(il,ir),cw=PH.cw=Math.round(Math.min(H*.37,W*.25-ci)+ci);
   /* the title's picture leaves a strip of timber at each side, wide enough for ENTER CODE and the menu button in its upper corner (--tb) */
   PH.cs=Math.min(H/185,(cw-ci)/68);PH.ts=Math.max(1.6,H/180);PH.os=Math.min(W/320,H/144);PH.kT=Math.min((W-2*ci-144)/320,H/VT);
   for(const[k,v]of[['--cw',cw+'px'],['--ci',ci+'px'],['--cs',PH.cs.toFixed(3)],['--ts',PH.ts.toFixed(3)],['--tb',((W-320*PH.kT)/2-ci).toFixed(1)+'px']])root.style.setProperty(k,v);
@@ -1595,9 +1600,9 @@ function posSpeech(){if(!cur||cur.ink||cur.white)return;if(PH.on)return posSpeec
    below the status line. The words keep their size when the field is zoomed. */
 function posSpeechPh(){const{el,a}=cur,L=LENS,F=L.F,ts=PH.ts,hw=el.offsetWidth/2+4*ts,H=PH.H,eh=el.offsetHeight;
   if(a&&a.room===G.room&&!G.scene){const z=zoomNow(),X=L.tx+(a.x-G.cam)*z*L.k,Y=L.ty+(a.y-G.camY-figBox(a.room)[1])*z*L.k;
-    el.style.left=clamp(X,F.l+hw,F.l+F.w-hw)+'px';el.style.bottom=clamp(H-Y+5*ts,H*.22,H-eh-3*ts)+'px';el.style.top=''}
+    el.style.left=clamp(X,F.l+hw,F.l+F.w-hw)+'px';el.style.bottom=clamp(H-Y+5*ts,H*.22,H-eh-3*ts-(PH.it||0))+'px';el.style.top=''}
   else if(cur.low){el.style.left=(F.l+F.w/2)+'px';el.style.top='';el.style.bottom=7*ts+'px'}
-  else{el.style.left=(F.l+F.w/2)+'px';el.style.top=12*ts+'px';el.style.bottom=''}}
+  else{el.style.left=(F.l+F.w/2)+'px';el.style.top=12*ts+(PH.it||0)+'px';el.style.bottom=''}}
 function lock(b){$('#panel').classList.toggle('locked',b);$('#wrap').classList.toggle('locked',b)}
 async function cut(fn,force){if(G.busy&&!force)return;G.busy=true;lock(true);status();
   try{await fn()}catch(e){console.error(e)}
