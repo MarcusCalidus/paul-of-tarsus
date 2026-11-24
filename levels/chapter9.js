@@ -210,8 +210,9 @@ ART.lydia9={w:320,q:12,
 const WATER=[0,95,120,92.4,240,89.6,318,86,338,86,331,90,262,98,152,105.6,0,112],STONES=[[196,122],[224,118],[254,116.4],[286,118],[312,123]];
 const pang9=x=>12+9*Math.sin(x/97+.3)+4*Math.sin(x/31+1)+2*Math.sin(x/11);
 ART.river9={w:480,fp:1.3,q:12,
- /* the flat stones stand inside the walkable strip: whoever stands behind one has his feet hidden by it */
- props:STONES.map(([x,y])=>({y,shape(g){oval(g,x,y,10,2.8,'#000');R(g,x-9,y+1,18,1.4,'#000')}})),
+ /* the flat stones stand inside the walkable strip: whoever stands behind one has his feet hidden by it. Each covers the floor under it, and
+    a walk goes round it; they are the seats of the place of prayer (issue #83) */
+ props:STONES.map(([x,y])=>({y,shape(g){oval(g,x,y,10,2.8,'#000');R(g,x-9,y+1,18,1.4,'#000')},foot:[x-10,y-3,20,3],seat:1})),
  paint(g){const r=rng(913);
   sky(g,480,70,['#4a86c8','#86b2dc','#c8dae6','#eeeada'].map(c=>earth9(c,.14)));cloud(g,70,12,50,6,r);cloud(g,206,20,56,5,r);cloud(g,356,9,48,5,r);cloud(g,452,24,30,4,r);
   /* far across the plain: a long mountain, blue with the morning */
@@ -309,10 +310,17 @@ ART.forum9={w:320,q:12,
    the room is its sounds (see ROOMS.cell9, heard). After the earthquake the door stands open; when the jailer has asked for lights, the
    room is seen for the first time. The stocks are two beams lying flat on the floor, one upon the other: nothing stands under them. */
 const cellV=()=>G.lit9?'l':F.quake?'o':'';
+/* stocksFoot9: the floor the stocks cover (issue #83): the lower beam along the front, where the two men's feet were held behind it, and
+   once the earthquake has thrown the upper beam off, that beam too, lying aslant on the floor back to the right, in ten short lengths that
+   follow its slope (it is drawn turned by a tenth of a radian from 134,123, 92 long and 3.6 thick) */
+const stocksFoot9=v=>{const out=[[118,132.5,92,3.5]];if(!v)return out;
+  const x0=134,top=x=>123-.1*(x-x0),bot=x=>126.6-.1*(x-x0),L=91.5;
+  for(let i=0;i<10;i++){const xa=x0+L*i/10,xb=x0+L*(i+1)/10;out.push([xa,top(xb)+1,xb-xa,bot(xa)-top(xb)-1])}return out};
 ART.cell9={w:320,q:12,variant:cellV,
  /* the stocks lie on the floor in front of the two men: their ankles are behind the beams, as they are in them */
  props:[{y:136,shape(g,v){const sx=118,sy=129,sw=92;R(g,sx,sy+2.4,sw,4,'#000');
-   if(v){g.save();g.translate(sx+16,sy-6);g.rotate(-.1);g.fillStyle='#000';g.fillRect(0,0,sw,3.6);g.restore()}else{R(g,sx,sy-1.2,sw,3.6,'#000');R(g,sx+sw-3,sy-1.6,4,8,'#000')}}}],
+   if(v){g.save();g.translate(sx+16,sy-6);g.rotate(-.1);g.fillStyle='#000';g.fillRect(0,0,sw,3.6);g.restore()}else{R(g,sx,sy-1.2,sw,3.6,'#000');R(g,sx+sw-3,sy-1.6,4,8,'#000')}},
+   foot:stocksFoot9}],
  paint(g,v){const r=rng(919),ST='#8e8676',rw=rng(9191);
   ashlar(g,0,0,320,106,ST,r,{bw:22,bh:11,v:.12,t:.36,fade:.25});ao(g,0,0,320,26,'t',.5);ao(g,0,80,320,26,'b',.45,'#1a1410');
   /* the corners of the cell close it in, and a darker seam where the wall meets the floor */
@@ -658,7 +666,7 @@ async function callOut(){await seeJailer();
    extensively: the game shows them speaking, and does not invent the talk. The baptism is told and not drawn. Those of his house are
    seen, and nobody says who they are. */
 async function lights(){await fade(1,500);G.lit9=1;place(JA,'cell9',228,113,-1);enterRoom('cell9',P.x,P.y,P.dir);AU.amb={drip9:.4};await fade(0,700);
-  await walk(JA,P.x-28,P.y+3);JA.dir=1;await tell('v29');JA.bow=true;await wait(900);
+  await walk(JA,...spot(JA,P.x-28,P.y+3));JA.dir=1;await tell('v29');JA.bow=true;await wait(900);
   await say(JA,'all_here');
   await fade(1,700);JA.bow=false;G.lit9=0;place9('gaol9');place(JA,'gaol9',196,124,-1);enterRoom('gaol9',P.x,P.y,P.dir);AU.mood='night';await fade(0,700);
   await tell('v30');await tell('v31');
@@ -819,7 +827,7 @@ ROOMS.cell9={space:1.5,get walk(){return F.quake?[36,296,112,136]:[150,150,131,1
      sound only, like everything else in here, and finding it changes nothing in the story */
   Object.assign({name:'chirping',x:250,y:14,w:50,h:20,wx:150,wy:131,vis:()=>!!F.s3&&!F.quake},cellNo,
     {look:async()=>{await say(P,'cricket_somewhere_in_the_wall');treasure()}}),
-  {name:'fallen_stocks',x:118,y:122,w:106,h:14,wx:150,wy:136,vis:()=>!!F.quake,look:'upper_beam_has_slid_off_the_lower',use:'i_have_had_enough_of_it',pickup:'let_it_lie'},
+  {name:'fallen_stocks',x:118,y:122,w:106,h:14,wx:150,wy:130,vis:()=>!!F.quake,look:'upper_beam_has_slid_off_the_lower',use:'i_have_had_enough_of_it',pickup:'let_it_lie'},
   {name:'doorway',x:196,y:44,w:40,h:62,wx:186,wy:116,dir:1,vis:()=>!!F.quake,exit:doorway,look:()=>doorway()},
   {name:'jailer',x:206,y:54,w:20,h:52,wx:186,wy:116,dir:1,def:'talk',vis:()=>!!F.quake,talk:callOut,use:callOut,
     look:async()=>{await seeJailer();await say(P,'jailer_against_the_gray',TH)},pickup:'that_would_hardly_be_loving'}]};
@@ -1017,6 +1025,8 @@ function hint9(){const b=PC()!==P;
 /* ============ CHAPTER DEFINITION ============ */
 /* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
    roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
+/* the women of Lydia's household, whom the room paints standing among the stones, block the floor round their feet (issue #83) */
+ROOMS.river9.block=HOUSEHOLD.map(([,x,y])=>[x-5,y-2,10,4]);
 ROOMS.river9.birds={swallows:[50,86,230,14],prey:[240,6,140,24]};
 
 return{rooms:['lydia9','river9','cell9','gaol9'],setup:setup9,start:start9,hint:hint9,music:MUSIC,calls:CALLS9,scenes:{dark,forum:forumScene,jailer:jailerScene,shake:shakeScene},topics:[],tablets:TABLETS,
