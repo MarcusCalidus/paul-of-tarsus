@@ -130,46 +130,204 @@ function cap16(g,s,x,y,w,o){o=o||{};s=T(s);let sz=o.sz||5;g.font=FONT16(sz);g.te
 /* ==== ART common16: end ==== */
 
 /* ==== ART quay16: begin ==== */
-/* Troas, the quay, early in the morning after the night of Chapter Fifteen. We look west over the harbor: the sun is up behind the city,
-   out of the picture at the right, and the light comes low from there. One horizon, y 60 (HZQuay16).
+/* Troas, the quay, early in the morning after the night of Chapter Fifteen. We look west over the harbor; the sun is up behind the
+   city, out of the picture at the right, and the light comes low from there: the house fronts take it aslant, their sides towards the
+   harbor are in shade, and every shadow falls to the left. One horizon, y 60 (HZQuay16): the sea, the paving and the foot of the town
+   across the water run to it. Painted with SHARED.coast (sky, sea, the town that climbs its hill, the mole, the quay) in one light.
    The coaster lies moored at the left, bow to the right; her mast stands amidships, out of the picture at the left, and her rail is above
-   the eye all along, so that she hides the horizon behind her. The city climbs at the right, and between its last houses the coast road
-   leaves to the south (the exit at the right edge).
+   the eye all along, so that she hides the horizon behind her as far as her stem. She is drawn in draw(): she rises and falls a little
+   on the swell behind the stone edge of the quay (EDGEQuay16), and her bow line and forestay go with her. Her yard is lowered and lashed
+   along the rail, the sail furled on it, with no tie across the roll; no gangplank lies across her hull.
+   Across the water the mole runs out low, with nothing upright on it, and the town climbs its hill at the right. The near houses stand
+   on the quay at the right, and between the last two of them a lane goes up out of the harbor: the coast road south (the exit).
    Called from outside: ART.quay16 only. Reads F.walk: before the walk begins the gift's chest stands on the quay (variant ''); after it,
    it is aboard (variant 'b').
-   Hotspots (ROOMS.quay16): the coaster 0,34,118,66 · the harbor 124,52,96,40 · the chest 126,102,26,16 (before the walk) · the coast road
+   Hotspots (ROOMS.quay16): the coaster 0,34,128,66 · the harbor 130,52,90,40 (her stem stands at x 120..128, SXQuay16, so that it
+   rises clear of the heads of Aristarchus at 116 and Timothy at 98; the two hotspots were moved with it) · the chest 126,102,26,16 (before the walk) · the coast road
    south 292,36,28,76. Walk strip 16..304, 112..138. Actors (place16): Luke 66,121 · Timothy 98,129 · Aristarchus 116,114 · the master
-   176,118 · his boy 198,113 · Trophimus 250,123; Paul comes in at 214,130. The chest is a prop (foot 126,113,26,4). */
-const HZQuay16=60;
-ART.quay16={w:320,q:12,variant:()=>F.walk?'b':'',paint(g,v){paintQuay16(g,v)},light:{amb:'#f6e4cc',sun:[-.55,.3,.45]},draw(g,t){drawQuay16(g,t)},front(){},
-  props:[{y:118,shape(g,v){if(v==='')chestQuay16(g)},foot:v=>v===''?[[126,113,26,4]]:[]}]};
-function paintQuay16(g,v){const r=rng(1601),HZ=HZQuay16;
-  sky(g,320,HZ+1,['#7f9cc2','#a6bacb','#dcd2c0','#f2dcb6']);pool(g,330,30,170,90,'#fff0cc',.55,'screen');
-  for(const[cx,cy,w,h]of[[70,16,90,3],[190,10,70,2.6],[130,30,70,2]])cloud(g,cx,cy,w,h,r,'#fff2da','#a4a0b8');
-  ridge(g,140,214,HZ+.4,x=>2.4*Math.pow(Math.sin((x-140)/74*Math.PI),.7),['#a6a0b4','#b8acb0']);
-  seaC16(g,HZ,100,r,'#d6ccb6','#3e6a8c',null,260);
-  /* the coaster: a dark hull whose rail sweeps up to the bow, its strakes following the sheer; a furled yard along the rail, no tie across it */
-  const S=x=>56-8*Math.pow(clamp(x/112,0,1),2.2),hull=[];for(let x=0;x<=112;x+=4)hull.push(x,S(x));hull.push(116,48,118,70,114,100,0,100);
-  poly(g,hull);g.fillStyle=lg(g,0,48,0,100,['#7a5634','#5a3e26','#2e2016']);g.fill();
-  clipTo(g,()=>poly(g,hull),()=>{for(let j=1;j<9;j++){const p=[];for(let x=0;x<=118;x+=4)p.push(x,S(x)+j*5.4*(1-x/260));stroke(g,p,'rgba(20,12,8,.45)',.5);stroke(g,p.map((q,i)=>i%2?q+.5:q),'rgba(255,220,170,.12)',.5)}
-    R(g,0,84,120,16,'rgba(26,16,12,.45)');ao(g,0,48,120,40,'r',.0)});
-  {const p=[];for(let x=0;x<=112;x+=4)p.push(x,S(x)-.6);stroke(g,p,'#e8c48c',1)}
-  {const p=[],q=[];for(let x=0;x<=86;x+=4){p.push(x,S(x)-3.6);q.unshift(x,S(x)-.8)}poly(g,p.concat(q),'#d8c8a2');stroke(g,p,'#f6ead0',.5)}
-  /* the quay: paving that runs back to the water, its edge of great blocks, and two squat mooring posts as wide as they are tall */
-  pave(g,0,100,320,144,'#bcae94',r,{rows:6,step:30,vx:150,vy:40});
-  for(let x=0;x<320;x+=11+r()*4)R(g,x,99.4,10,2.6,tint('#a89a80',(r()-.5)*.2));R(g,0,99,320,.6,'#f0e4c8');
-  for(const x of[124,206]){oval(g,x+3,103.6,5,1.2,'rgba(30,26,46,.35)');R(g,x,97,6,6,'#6a5a4a');R(g,x,97,6,1,'#a8947a')}
-  /* the city at the right, and the lane that leaves it to the south between its last two houses */
-  house(g,222,26,40,74,'#d6c6a6',r,{side:-6});house(g,262,40,30,60,'#cdbb98',r);house(g,300,20,22,80,'#d2c2a0',r);
-  poly(g,[292,100,300,100,300,52,294,56],'#9a8a74');poly(g,[294,100,300,100,300,60,296,62],'#b8a68a');
-  for(const[x,y]of[[230,44],[244,44],[270,58],[304,36]])windowArt(g,x,y,5,7,'#d6c6a6',{shut:1});doorArt(g,238,76,12,24,'#7a5a3a',r);
-  comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,220,0,320,0,['rgba(120,120,170,1)','rgba(120,120,170,0)']);g.fillRect(220,20,100,80)});
-  if(v==='')chestQuay16(g)}
-/* the gift's chest on the quay, ready to go aboard: dark wood, iron at its corners only, a soft shadow under it */
-function chestQuay16(g){oval(g,140,117.6,15,1.8,'rgba(30,26,46,.35)');R(g,127,104,26,13,'#6b492c');R(g,127,104,26,2.4,'#8c6440');R(g,127,104,26,.6,'#c8945a');
-  R(g,127,115.4,26,1.6,'#3a2616');for(const x of[127,151])R(g,x,104,2,13,'#3a3436')}
-const GLQuay16=(()=>{const r=rng(1611),a=[];for(let i=0;i<36;i++)a.push([130+r()*90,HZQuay16+2+r()*34,1+r()*3,r()*6.28,300+r()*500]);return a})();
-function drawQuay16(g,t){for(const[x,y,w,ph,sp]of GLQuay16){const k=Math.sin(t/sp+ph);if(k>.6)R(g,x,y,w,.5,'rgba(255,250,230,'+((k-.6)*2).toFixed(2)+')')}}
+   176,118 · his boy 198,113 · Trophimus 250,123; Paul comes in at 214,130. Heads come at y 64..90: behind them lie the hull's strakes,
+   open water and the plastered fronts, and nothing round. The chest is a prop (foot 126,113,26,4). Gulls (ROOMS.quay16.birds) stand on
+   the edge at x 157..166, between the chest and the master, where nobody stands before them. */
+const HZQuay16=60,EDGEQuay16=100;
+ART.quay16={w:320,q:12,variant:()=>F.walk?'b':'',paint(g,v){paintQuay16(g,v)},light:{amb:'#f6e6d0',sun:[-.62,.14,.42]},draw(g,t){drawQuay16(g,t)},front(){},
+  props:[{y:118,shape(g,v){if(v==='')chestQuay16(g,1)},foot:v=>v===''?[[126,113,26,4]]:[]}]};
+/* OQuay16: the one light of the picture (shared/coast.js); PQuay16: what the painters return, for draw() */
+let OQuay16=null,PQuay16={};const SHIPQuay16=[];
+const oQuay16=()=>OQuay16||(OQuay16={w:320,hz:HZQuay16,hour:'morning',sun:[384,0],cloud:.2,wind:SHARED.weather.wind({from:'n',force:2,view:'w'}),seed:1601,y1:EDGEQuay16});
+/* ashlarQuay16: coursed stone as the engine's ashlar() lays it, but no joint of a course is set within a pixel and a half of a joint in
+   the course above, so that no two joints meet across a bed as a cross. Used for the stone of Assos and Miletus too. */
+function ashlarQuay16(g,x,y,w,h,c,r,o){o=o||{};const bw=o.bw||14,bh=o.bh||7,v=o.v==null?.14:o.v,m=o.m||tint(c,-.42);let prev=[];
+  inRect(g,x,y,w,h,()=>{R(g,x,y,w,h,m);
+    for(let j=0,row=0;j<h;j+=bh,row++){let i=-(row%2?bw*.5:0)-r()*bw*.25;const cur=[];
+      while(i<w){let ww=bw*(.75+r()*.5);for(let k=0;k<3&&prev.some(p=>Math.abs(p-(i+ww))<1.6);k++)ww+=1.8;
+        const cc=tint(c,(r()-.5)*v*2),X=x+i,Y=y+j;
+        R(g,X,Y,ww-.5,bh-.5,cc);R(g,X,Y,ww-.5,.5,tint(cc,.2));R(g,X,Y,.5,bh-.5,tint(cc,.1));R(g,X,Y+bh-1,ww-.5,.5,tint(cc,-.16));
+        if(r()<.3)R(g,X+1+r()*Math.max(0,ww-4),Y+1+r()*Math.max(0,bh-3),1+r()*2,.5,tint(cc,-.16));i+=ww;cur.push(i)}prev=cur}
+    tex(g,'mott',o.t==null?.4:o.t,x,y,w,h);tex(g,'grain',.1,x,y,w,h,'overlay',.5)})}
+function lineQuay16(f,x0,x1,st){const p=[];for(let x=x0;x<x1;x+=st)p.push(x,f(x));p.push(x1,f(x1));return p}
+function paintQuay16(g,v){const K=SHARED.coast,O=oQuay16(),r=rng(1601),P=PQuay16={};
+  K.sky(g,O);
+  /* the early light: the sky still warm and pale low down, and brightest towards the sun at the right */
+  pool(g,350,14,220,80,'#ffe2b4',.5,'screen');comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,0,0,HZQuay16,['rgba(150,150,190,1)','rgba(255,220,180,1)']);g.fillRect(0,0,320,HZQuay16)});
+  K.isle(g,126,204,3.4,O,{dist:.84,seed:1602,lean:1.25});
+  P.S=K.sea(g,O);
+  /* across the water: the town on its hill at the right, coming down to the harbor, and the mole that runs out low in front of it */
+  P.T=K.town(g,O,{x0:176,x1:320,base:65,hill:x=>65-Math.min(52,Math.max(0,x-176)*.62)-1.6*Math.sin(x/9),rows:4,size:10,dist:.3,seed:1603,gaps:.22});
+  K.quay(g,O,{view:'face',x0:134,x1:206,y:67.8,slope:.07,face:5,c:'#b6a88e',seed:1604,dist:.22});
+  for(let i=0;i<8;i++){const x=131.4+i*.9,y=73+(i%3)*.4;R(g,x,y-1.2,1.2,1.4,i%2?'#8a8076':'#a49888')}
+  boatsQuay16(g);
+  /* the water in the lee of her bow: a little darker, the ripples broken */
+  for(let i=0;i<110;i++){const x=127+Math.pow(r(),1.6)*46,y=78+r()*22;if(y<80+(x-128)*.3)continue;R(g,x,y,1.5+r()*5,.5,`rgba(30,42,78,${(.42*(1-(x-127)/48)).toFixed(2)})`)}
+  /* the quay: we stand on it; its edge of great blocks runs across, the paving runs back to the horizon */
+  K.quay(g,O,{view:'top',y:EDGEQuay16,y1:144,bollards:[134.5,234],bsize:6,seed:1605,c:'#c8b898',rows:6,step:34});
+  P.S.open=(x,y)=>y<EDGEQuay16-.5&&!(x<129&&y>40)&&!(x>133&&x<206&&y>66&&y<79)&&y<P.T.top(x)-.5&&x<205;
+  wearQuay16(g,r);housesQuay16(g,r);laneQuay16(g,r);thingsQuay16(g,r);
+  if(v==='')chestQuay16(g);
+  lightQuay16(g)}
+/* two small boats under the mole, their masts unstepped, clear of where any head comes */
+function boatsQuay16(g){for(const[bx,by,bw]of[[150.6,74.6,6.4],[163,75.8,7.6]]){poly(g,[bx-.4,by-2,bx+1.4,by-1.5,bx+bw-1.6,by-1.5,bx+bw+.4,by-2.2,bx+bw-1,by,bx+1.2,by],'#4a3a30');
+  R(g,bx+1.4,by-1.5,bw-3,.5,'#d2a878');R(g,bx+1.2,by+.2,bw-2.4,.5,'rgba(30,36,64,.4)')}}
+/* the paving where everybody walks: worn pale along the strip, stained and chipped elsewhere, grit in the joints, damp along the lip */
+function wearQuay16(g,r){const S=y=>(y-HZQuay16)/84;
+  comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,108,0,140,['rgba(255,244,216,0)','rgba(255,244,216,.8)','rgba(255,244,216,0)']);g.fillRect(0,108,320,32)});
+  for(let i=0;i<140;i++){const y=104+Math.pow(r(),.8)*40,k=S(y),x=r()*320;R(g,x,y,(2+r()*8)*k,.5+k*.5,r()<.55?'rgba(96,78,62,.15)':'rgba(255,246,224,.16)')}
+  for(let i=0;i<20;i++){const y=108+r()*34,k=S(y),x=r()*320;oval(g,x,y,(5+r()*13)*k,(1.2+r()*1.6)*k,r()<.6?'rgba(104,86,70,.1)':'rgba(255,244,220,.09)')}
+  for(let i=0;i<80;i++){const y=104+r()*40,x=r()*320;R(g,x,y,.5+r()*(1+S(y)),.5,r()<.3?'rgba(214,186,110,.55)':r()<.5?'rgba(70,58,50,.38)':'rgba(240,230,206,.45)')}
+  for(let i=0;i<50;i++){const x=r()*206;R(g,x,EDGEQuay16+3.2+r()*2.4,1+r()*5,.5,r()<.5?'rgba(84,98,68,.3)':'rgba(70,60,56,.24)')}}
+/* the near houses on the quay at the right: a house of two stories, a low store beside it, and at the far right, past the lane, a
+   tall house cut by the frame. Fronts lit aslant from the right; the sides towards the harbor in shade. Windows are small dark openings
+   or shuttered, none barred; doors of upright planks with no band across them. */
+function winQuay16(g,x,y,w,h,C,shut){R(g,x-.6,y-.6,w+1.2,h+1.2,tint(C,-.2));R(g,x,y,w,h,shut?'#6e4c2e':'#261c1a');
+  if(shut){for(let i=x+1.4;i<x+w-.4;i+=1.6)R(g,i,y,.5,h,'#4e3420');R(g,x,y,w,.5,'#a07a4c')}else R(g,x,y,w,1,'#120c0c');
+  R(g,x-1,y+h+.4,w+2,.8,tint(C,.24));R(g,x-1,y+h+1.2,w+2,.4,tint(C,-.36))}
+function doorQuay16(g,x,y,w,h,C,r){R(g,x-1,y-1,w+2,h+1,tint(C,-.26));R(g,x-1,y-1,w+2,.6,tint(C,-.45));
+  for(let i=0;i<w-.01;i+=2.4){const ww=Math.min(2.4,w-i),c=tint('#7a5634',(r()-.5)*.18);R(g,x+i,y,ww,h,c);R(g,x+i,y,.5,h,tint(c,.2));R(g,x+i+ww-.5,y,.5,h,tint(c,-.35))}
+  inRect(g,x,y,w,h,()=>{tex(g,'vert',.25,x,y,w,h,'overlay',.5);ao(g,x,y,w,4,'t',.5);ao(g,x,y,2.4,h,'l',.35)});R(g,x+w-2.4,y+h*.5,1,1,'#2a1e16');
+  R(g,x-1.4,y+h-.4,w+2.8,1,tint(C,-.1))}
+function housesQuay16(g,r){
+  /* the house of two stories: its side towards the harbor first, in shade, then its front */
+  const A='#dcc8a4',SA=[203.4,41.6,210,37.8,210,104,203.4,101.4];
+  poly(g,SA);g.fillStyle=lg(g,203,0,210,0,['#a8988e','#988a88']);g.fill();
+  clipTo(g,()=>poly(g,SA),()=>{tex(g,'mott',.4,202,36,9,70,'overlay',.5);poly(g,[205.2,60,207.8,59,207.8,64.4,205.2,65],'#3a2c2a');ao(g,203,86,7,18,'b',.25,'#3a2c3c')});
+  stroke(g,[203.4,41.6,210,37.8],'#d8c8b4',.5);
+  plaster(g,210,38,48,66,A,r,{patch:0,cracks:0,t:.4,top:.08,bot:-.1});SHARED.materials.crack(g,252.6,42.6,4,r,.8);SHARED.materials.crack(g,246.4,86,3,r,.6);
+  R(g,209.4,35.4,49.2,2.8,tint(A,.14));R(g,209.4,35.4,49.2,.5,'#fff4dc');R(g,210,38.2,48,.6,tint(A,-.34));
+  for(let x=214;x<256;x+=6.4){R(g,x,40,1.6,1.4,'#6a4a2c');R(g,x,40,1.6,.5,'#b48a56');R(g,x-1.4,41.4,1.6,1.6,'rgba(70,58,96,.22)')}
+  R(g,210,70.2,48,.8,tint(A,-.22));R(g,210,71,48,.4,tint(A,.2));
+  winQuay16(g,216,48,4.4,6,A,0);winQuay16(g,229,48,4.4,6,A,1);winQuay16(g,246,48,4.4,6,A,0);winQuay16(g,238.6,79,4.2,5.2,A,1);
+  doorQuay16(g,218.6,85,9,19,A,r);
+  /* the light: warm from the right across the front, cooler towards its corner on the harbor side */
+  comp(g,'multiply',.45,()=>{g.fillStyle=lg(g,210,0,258,0,['rgba(150,146,188,1)','rgba(150,146,188,0)']);g.fillRect(210,36,48,68)});
+  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,226,0,258,0,['rgba(255,214,150,0)','rgba(255,214,150,1)']);g.fillRect(226,36,32,68)});
+  ao(g,210,90,48,14,'b',.24,'#5a4030');
+  /* the low store beside it, a step back: a wide doorway dark inside, a bench and baskets before it, its roof edge of poles */
+  const B='#d4c09a';plaster(g,258,52,32,52,B,r,{patch:0,cracks:0,t:.4,top:.06,bot:-.12});SHARED.materials.crack(g,284.6,54.6,3,r,.6);
+  R(g,257.6,49.4,32.8,2.8,tint(B,.12));R(g,257.6,49.4,32.8,.5,'#fff2d6');ao(g,258,52.2,32,2.4,'t',.3,'#3a3048');
+  R(g,264,76,16,28,tint(B,-.28));g.fillStyle=lg(g,0,77,0,104,['#140e0c','#24180f','#3a2a1e']);g.fillRect(265,77,14,27);
+  inRect(g,265,77,14,27,()=>{vessel(g,270,103.6,3.8,11,'#6a3e26','jar',{noShadow:1});comp(g,'multiply',.6,()=>R(g,265,77,14,27,'#40364a'));poly(g,[274,104,279,104,279,96,276,98],'rgba(196,150,96,.45)')});
+  R(g,263.4,103,17.2,1.4,'#b8a88a');R(g,263.4,103,17.2,.5,'#eadcc0');
+  comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,258,0,290,0,['rgba(150,146,188,1)','rgba(150,146,188,.2)']);g.fillRect(258,49,32,55)});
+  ao(g,258,92,32,12,'b',.22,'#5a4030');
+  /* the shade the house of two stories throws along the store's front */
+  shade(g,[258,52,262,52,262,104,258,104],'#a29ac4',.4)}
+/* the lane that goes up out of the harbor between the store and the tall house, and the house at its head, in the sun; the tall house
+   itself, of which we see a strip of its front and its side towards the lane, in shade */
+function laneQuay16(g,r){const C='#e2cea8',FL=[290,104,309,104,305,71,297.6,71],LW=[290,104,297.6,71,297.6,55.8,290,52.2],RW=[309,104,305,71,305,30.8,309,24];
+  /* the house at its head */
+  plaster(g,295,40,12,32,C,r,{patch:0,cracks:0,t:.4});R(g,294.6,38.6,12.8,1.6,tint(C,.16));R(g,294.6,38.6,12.8,.5,'#fff6dc');
+  R(g,299.4,46,2.4,3.2,'#2a2020');R(g,300.4,62.6,3.4,8.4,'#3a2a1e');R(g,300,62.2,4.2,.5,tint(C,-.3));
+  /* the lane's floor: beaten earth and old paving, climbing, in the shade of the tall house except a slant of sun at its head */
+  poly(g,FL);g.fillStyle=lg(g,0,71,0,104,['#b8a890','#a89a86','#b4a48a']);g.fill();
+  clipTo(g,()=>poly(g,FL),()=>{for(let y=72,d=1;y<104;d*=1.12,y+=d+1.2){R(g,288,y,24,.5,'rgba(70,58,72,.3)');R(g,288,y+.5,24,.4,'rgba(255,240,214,.12)')}
+    tex(g,'mott',.35,288,70,24,36,'overlay',.5);poly(g,[297.6,71,302,71,299,78,297.6,78],'rgba(255,226,170,.35)')});
+  /* the store's side towards the lane takes the sun; the tall house's side is in shade */
+  poly(g,LW);g.fillStyle=lg(g,290,0,298,0,['#f0d8a8','#e2c898']);g.fill();
+  clipTo(g,()=>poly(g,LW),()=>{tex(g,'mott',.35,289,50,10,56,'overlay',.5);ao(g,290,90,8,14,'b',.2,'#6a4a34')});
+  stroke(g,[290,52.2,297.6,55.8],'#fff2d0',.5);
+  poly(g,RW);g.fillStyle=lg(g,305,0,309,0,['#a29492','#948688']);g.fill();
+  clipTo(g,()=>poly(g,RW),()=>{tex(g,'mott',.4,304,22,6,84,'overlay',.5);poly(g,[306,50,308,48.6,308,55,306,56],'#342826')});
+  shade(g,FL,'#9a94c0',.5);
+  /* the tall house: a strip of its front, three stories, with the sun on it */
+  const T='#e6d2ac';plaster(g,309,24,12,80,T,r,{patch:0,cracks:0,t:.4});R(g,308.6,21.6,12,2.6,tint(T,.14));R(g,308.6,21.6,12,.5,'#fff6dc');
+  winQuay16(g,313,32,3.6,5,T,1);winQuay16(g,313,56,3.6,5,T,0);R(g,309,24,.6,80,'#fff2d4');
+  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,309,0,320,0,['rgba(255,214,150,.3)','rgba(255,214,150,1)']);g.fillRect(309,20,11,84)});
+  ao(g,309,92,11,12,'b',.22,'#5a4030')}
+/* what stands on the quay behind the walk strip: sacks of the cargo before the hull, baskets and a jar at the house's foot; their
+   shadows run long to the left */
+function sackQuay16(g,x,y,w,h,c,k){const P=[x-w,y,x-w*1.1,y-h*.42,x-w*.74,y-h*.8,x-w*.3+k,y-h*.9,x-w*.42+k*1.6,y-h,x+w*.36+k*1.6,y-h*1.03,x+w*.28+k,y-h*.9,x+w*.74,y-h*.78,x+w*1.08,y-h*.4,x+w,y];
+  poly(g,P);g.fillStyle=lg(g,x-w,0,x+w,0,[tint(c,-.34),c,tint(c,.2)]);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.3,x-w-1,y-h-1,w*2+2,h+2,'overlay',.5);stroke(g,[x+w*.5+k,y-h*.84,x+w*.72,y-h*.4],tint(c,.3),.5);ao(g,x-w-1,y-h*.3,w*2+2,h*.3,'b',.3,'#3a2c3c')})}
+function thingsQuay16(g,r){const SH='rgba(44,38,76,.3)';
+  /* sacks of the cargo, waiting to go aboard */
+  poly(g,[44,108.4,30,107.6,14,108.2,18,110.6,48,110.6],SH);
+  sackQuay16(g,34,110,4.4,9.6,'#c2aa7e',-.4);sackQuay16(g,43.6,110.4,4,8.4,'#b49a70',.4);
+  /* round baskets of fish-traps and a jar by the door of the house; their shadows to the left */
+  for(const[x,y,w,h]of[[214,106,4.2,6],[223,105.4,3.6,5],[244,106,3.4,8.4]])poly(g,[x,y+.4,x-w-h*1.6,y-.2,x-w-h*1.6,y-1.2,x-w*.4,y-1.6],SH);
+  for(const[x,y,w,h,c]of[[214,106,4.2,6,'#b8925a'],[223,105.4,3.6,5,'#a8844e']]){poly(g,[x-w,y,x-w-.4,y-h*.7,x-w*.7,y-h,x+w*.7,y-h,x+w+.4,y-h*.7,x+w,y]);
+    g.fillStyle=lg(g,x-w,0,x+w,0,[tint(c,-.3),c,tint(c,.22)]);g.fill();
+    for(let k=1;k<4;k++)R(g,x-w+.2,y-h+k*h/4,w*2-.4,.5,tint(c,-.28));R(g,x-w*.7,y-h,w*1.4,.6,tint(c,.3));oval(g,x,y-h+.2,w*.62,.6,'#3a2a1c')}
+  vessel(g,244,106,3.4,8.4,'#a4643c','amph',{noShadow:1});
+  /* a gull's feather and some straw blown against the house */
+  for(let i=0;i<10;i++){const x=200+r()*12;R(g,x,104.4+r()*1.4,1.5+r()*3,.5,'rgba(226,208,168,.5)')}}
+/* the gift's chest on the quay, ready to go aboard: dark wood, a lid of two boards, iron only at its corners, a soft shadow falling to
+   the left. With cut, its outline only. */
+function chestQuay16(g,cut){const x=127,y=104,w=26,h=13;
+  if(cut){R(g,x-.6,y-1.4,w+1.2,h+1.4,'#000');return}
+  poly(g,[x+2,y+h,x+w,y+h,x+w-8,y+h-3.6,x-14,y+h-2.6,x-12,y+h],'rgba(44,38,76,.32)');oval(g,x+w/2,y+h-.2,15,1.6,'rgba(30,26,46,.3)');
+  /* the body, its front in grazing light from the right */
+  R(g,x,y,w,h,'#5e3e24');inRect(g,x,y,w,h,()=>{g.fillStyle=lg(g,x,0,x+w,0,['#4a3020','#6b482a','#7e5632']);g.fillRect(x,y,w,h);tex(g,'wood',.3,x,y,w,h,'overlay',.6);
+    for(const yy of[y+5,y+9])R(g,x,yy,w,.5,'rgba(30,18,10,.5)');ao(g,x,y+h-3,w,3,'b',.35,'#1a1008')});
+  /* the lid, a little wider, its top edge in the light */
+  R(g,x-.6,y-1.4,w+1.2,2.4,'#7a5434');R(g,x-.6,y-1.4,w+1.2,.6,'#d4a26a');R(g,x-.6,y+.6,w+1.2,.5,'#2e1e12');
+  /* iron at the corners, and the plate of the lock */
+  for(const cx of[x-.6,x+w-2])R(g,cx,y-1.4,2.6,h+1.4,'#3a3436');R(g,x+w-2,y-1.4,.5,h+1.4,'#8a8686');R(g,x,y-1.4,.5,h+1.4,'#5a5658');
+  R(g,x+w/2-1.6,y+1.2,3.2,3,'#3a3436');R(g,x+w/2-1.6,y+1.2,3.2,.5,'#8a8686');R(g,x+w/2-.4,y+2.4,.8,1,'#141012')}
+/* the light of early morning: warm from the right, cool in the corner nearest us at the left, where the hull and the city still shade it */
+function lightQuay16(g){
+  /* the long shadow of the house of two stories, laid along the quay to its left */
+  shade(g,[203.4,101.4,210,104,214,106,160,111,126,110.4,148,104.6],'#a49ec8',.34);
+  comp(g,'soft-light',.45,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(196,170,180,.7)','rgba(255,214,160,.6)','rgba(255,204,136,1)']);g.fillRect(0,0,320,144)});
+  ao(g,0,124,320,20,'b',.14,'#2a2050');ao(g,0,100,60,44,'l',.12,'#2a2050')}
+/* the coaster: her bow, the rest of her and her mast out of the picture at the left. Painted once, by the shared ship painter, and set
+   into the picture by draw() a little up or down with the swell. Her strakes sweep up to the stem with her sheer, each a little flatter
+   than the one above; the butts of her planks stop inside their own strakes. The same ship lies at Assos and at Miletus with her bow
+   to the left: there the picture is turned (shipQuay16(1) is lit for that: its light comes from her stern, which is the right side
+   once it is turned), and drawn by those rooms' draw() in the same way. */
+const railQuay16=x=>58.5-9*Math.pow(clamp(x/110,0,1),2.4);
+function shipPaintQuay16(g,turned){const r=rng(1606),S=railQuay16,
+    IN=[110.6,46.4,112.6,51,114.2,59,114.4,70,113.2,82,111.2,93,109.6,102],OUT=[115.2,46,117.2,49.4,118.2,58,118,70,116.8,82,114.6,93,112.6,102],
+    hull=lineQuay16(S,-12,110,2).concat(IN,[109,106,-12,106]);
+  SHARED.ship.paint(g,{r,dir:1,view:'bow',x0:0,x1:116,yBot:102,sheer:S,palette:'lit',gradY0:48,gradY1:102,
+    hullPath:()=>poly(g,hull),
+    damped:{x0:-12,x1:116,damp:.075,yRef:58.5,step:4.3,count:10},
+    pitch:'rgba(34,20,14,.5)',wale:'#8a4a34',waleWear:{count:30,xSpan:112,c1:'#96703f',c2:'#b0705a'},
+    lowerWale:{color:'#4c321e',hi:'#c0925a'},beams:[16,50,90],
+    butts:[[2,30],[2,80],[3,54],[3,100],[5,22],[5,70],[6,44],[6,92],[7,14],[7,62],[8,36],[8,86],[9,52]],
+    scuppers:[38,74],
+    texRect:{x:-12,y:44,w:132,h:60},woodScale:.2,woodAlpha:.5,mottScale:.34,mottAlpha:1,
+    sunGlow:turned?{x0:-12,x1:60,stops:['rgba(255,220,160,.22)','rgba(255,220,160,0)'],rx:-12,ry:44,rw:72,rh:60}:{x0:56,x1:118,stops:['rgba(255,220,160,0)','rgba(255,220,160,.26)'],rx:56,ry:44,rw:62,rh:60},
+    turnShade:turned?{x0:74,x1:116,stops:['rgba(52,40,76,0)','rgba(52,40,76,.46)'],rx:74,ry:44,rw:44,rh:60}:{x0:-12,x1:46,stops:['rgba(52,40,76,.34)','rgba(52,40,76,0)'],rx:-12,ry:44,rw:58,rh:60},
+    aoY:90,aoHeight:12,aoA:.3,postsBeforeRail:1,
+    stem:{IN,OUT,grad:turned?['#b08250','#74502e','#3e2818']:['#5e3e24','#8a6038','#c49058'],gradX0:110,gradX1:118.4,ao:false,wood:false,rim:false,capRect:[110.8,45.8,4.4,.8],capCol:'#f0c88a'},
+    rail:{strokeOnly:1,x0:-12,x1:110.4,step:2,hi:'#f2d098',w:1},
+    furledYard:{x0:-12,x1:79,yardX0:-12,yardX1:92,gaskets:[-16,-4,8,20,31,42,52,61,70,79],shadowX0:-12,shadowX1:82}})}
+/* the sprite reaches from x -12 to 124 of her own coordinates (her stem at 110..118), and 12 above the picture's top */
+const shipQuay16=turned=>SHIPQuay16[turned?1:0]||(SHIPQuay16[turned?1:0]=bake(136,g=>{g.translate(12,12);shipPaintQuay16(g,turned)},12,120));
+/* SXQuay16: how far right of her own coordinates she lies on the quay of Troas, so that her stem stands clear of the heads before her */
+const SXQuay16=10;
+/* what moves: the sea, the coaster on the swell behind the quay's edge with her forestay and bow line, light on the water, and the
+   smoke of a hearth in the town, which the north wind lays over to the left */
+const GLQuay16=(()=>{const r=rng(1611),a=[];for(let i=0;i<30;i++)a.push([128+r()*76,HZQuay16+12+r()*26,1+r()*3,r()*6.28,300+r()*500]);return a})();
+function drawQuay16(g,t){const P=PQuay16,O=OQuay16,dy=Math.round(Math.sin(t/1500)*2)/2-2;
+  if(P.S)P.S.draw(g,t);
+  for(const[x,y,w,ph,sp]of GLQuay16){const k=Math.sin(t/sp+ph);if(k>.6)R(g,x,y,w,.5,'rgba(255,250,230,'+((k-.6)*2).toFixed(2)+')')}
+  inRect(g,0,0,140,EDGEQuay16,()=>g.drawImage(shipQuay16(),SXQuay16-12,dy-12,136,120));
+  /* the forestay from the stem head up to the mast, across the sky only */
+  stroke(g,[123,46.6+dy,34,-10+dy],'#5a4a3c',.6);stroke(g,[122.6,46.2+dy,33.6,-10.4+dy],'rgba(255,236,196,.45)',.3);
+  /* the bow line: out through her bow below the level of the eyes, beside the stem, sagging down to its bollard */
+  for(const[c,w]of[['#4a3a2a',1.2],['#d6c498',.6]]){g.strokeStyle=c;g.lineWidth=w;g.beginPath();g.moveTo(127.6,66+dy);g.quadraticCurveTo(127,92,131.8,98.8);g.stroke()}
+  /* the smoke of a hearth on the roof of the house of two stories, rising from behind its parapet */
+  if(O)SHARED.weather.smoke(g,t,250,35,O.wind,{h:18,a:.6,c:'#b8b2ae',sh:'#6e6a7a'})}
 /* ==== ART quay16: end ==== */
 
 /* ==== ART road16: begin ==== */
@@ -309,28 +467,88 @@ function drawDeck16(g,t){const v=DECKV();
 /* ==== ART deck16: end ==== */
 
 /* ==== ART assos16: begin ==== */
-/* Assos: the harbor under its rocky hill, late in the morning. The hill fills the left half, bare rock with the city's walls of dressed
-   stone along its top; a tower stands at the wall's end, none in its middle; no temple. The harbor and its mole at the right; the paved
-   quay along the front. Once the ship is in (F.la) she lies moored at the right, bow to the left, her mast out of the picture at the
-   right. One horizon, y 62 (HZAssos16). The path from the pass comes down at the left.
+/* Assos: the harbor under its rocky hill, late in the morning. We look south across the gulf, with Lesbos long and blue on the far side
+   of the water; the sun is high at the right, and shadows fall to the left. The hill fills the left half: bare rock, bedded and broken,
+   with scrub on its ledges, and along its top the city's wall of dressed stone, which follows the ridge; a square tower stands at the
+   wall's end, where the ridge turns down, none in its middle. No temple, no altar, no image: walls and rock only. The path from the
+   pass comes round the flank of the hill at the left edge and down to the quay on a ramp held up by a wall of rough stones, so that
+   no bed of the rock is drawn across it. The harbor and its mole at the right; the paved quay along the front. Once
+   the ship is in (F.la) she lies moored at the right, bow to the left, her mast out of the picture at the right; her rail is above the
+   eye all along, and she rises and falls on the swell behind the stone edge of the quay (drawn in draw(), with the coaster of the Troas
+   quay turned: shipQuay16). One horizon, y 62 (HZAssos16). Painted with SHARED.coast in one light.
    Called from outside: ART.assos16. Reads F.la. Hotspots: the hill 0,0,170,70 · the harbor 170,52,150,44 · the ship 210,56,110,46 (once
-   she is in) · the path from the pass 0,76,18,60. Walk strip 16..304, 112..138. Paul comes down at 40,126; Luke waits at 232,124. */
-const HZAssos16=62;
-ART.assos16={w:320,q:12,variant:()=>F.la?'s':'',paint(g,v){paintAssos16(g,v)},light:{amb:'#f8e6cc',sun:[-.4,.3,.45]},draw(g,t){drawAssos16(g,t)},front(){}};
-function paintAssos16(g,v){const r=rng(1605),HZ=HZAssos16;
-  sky(g,320,HZ+1,['#6c92c4','#98b4cc','#d8d8cc','#efe0c4']);for(const[cx,cy,w,h]of[[250,14,80,2.6]])cloud(g,cx,cy,w,h,r,'#fff4e0','#a8b0c8');
-  ridge(g,180,320,HZ+.4,x=>3+2*Math.sin(x/26),['#9a9cae','#aeaab6']);
-  seaC16(g,HZ,100,r,'#c8ccc6','#3e6a8c',null,200);
-  rockC16(g,0,190,104,x=>x<150?70-x*.08+6*Math.sin(x/13)+3*Math.sin(x/4.4):Math.max(0,58-(x-150)*1.4),'#a2907a',r);
-  /* the walls along the top of the hill, coursed stone, with a tower at the wall's right end */
-  {const T=x=>104-(70-x*.08+6*Math.sin(x/13)+3*Math.sin(x/4.4)),top=[],bot=[];for(let x=8;x<=128;x+=2){top.push(x,T(x)-8);bot.unshift(x,T(x)+1.5)}
-    poly(g,top.concat(bot),'#c4b69a');clipTo(g,()=>poly(g,top.concat(bot)),()=>{tex(g,'mott',.5,8,0,124,60,'overlay',.6);for(let x=8;x<128;x+=2)R(g,x,T(x)-8,2,.6,'#e8dcc0')});
-    const tx=126,ty=T(131);ashlar(g,tx,ty-16,10,17.5,'#c8ba9e',r,{bw:3.4,bh:3})}
-  R(g,190,86,130,5,'#a89a80');R(g,190,86,130,.6,'#e8dcc0');
-  pave(g,0,100,320,144,'#bcae94',r,{rows:6,step:30,vx:160,vy:40});for(let x=0;x<320;x+=12)R(g,x,99.2,11,2.6,'#a89a80');
-  if(v==='s'){const S=x=>54+((320-x)/110)*0,hull=[210,62,320,56,320,100,216,100,206,72];poly(g,hull);g.fillStyle=lg(g,0,56,0,100,['#7a5634','#5a3e26','#2e2016']);g.fill();
-    for(let j=1;j<8;j++)stroke(g,[212,62+j*5,320,56+j*5.6],'rgba(20,12,8,.4)',.5);stroke(g,[210,62,320,56],'#e8c48c',1)}}
-function drawAssos16(g,t){}
+   she is in) · the path from the pass 0,76,18,60. Walk strip 16..304, 112..138. Paul comes down at 40,126; Luke waits at 232,124.
+   Heads come at y 70..90: behind them lie rock, open water and the hull, and nothing round. Gulls (ROOMS.assos16.birds) stand on the
+   quay's edge at x 150..164. */
+const HZAssos16=62,EDGEAssos16=100;
+ART.assos16={w:320,q:12,variant:()=>F.la?'s':'',paint(g,v){paintAssos16(g,v)},light:{amb:'#f8ecd8',sun:[-.42,.22,.45]},draw(g,t){drawAssos16(g,t)},front(){}};
+let OAssos16=null,PAssos16={};
+const oAssos16=()=>OAssos16||(OAssos16={w:320,hz:HZAssos16,hour:'morning',sun:[360,-50],cloud:.18,wind:SHARED.weather.wind({from:'n',force:2,view:'s'}),seed:1621,y1:EDGEAssos16});
+function paintAssos16(g,v){const K=SHARED.coast,O=oAssos16(),L=K.light(O),r=rng(1605),P=PAssos16={};
+  K.sky(g,O);
+  /* Lesbos across the water: long, high in the middle, blue with its distance */
+  K.isle(g,150,320,9,O,{kind:'cape',from:'r',dist:.66,seed:1622});
+  K.isle(g,118,160,2.4,O,{dist:.8,seed:1623});
+  P.S=K.sea(g,O);
+  /* the mole across the harbor: it comes from the right and ends in the water, low, with nothing upright on it */
+  K.quay(g,O,{view:'face',x0:222,x1:322,y:72.4,slope:.04,face:5.2,c:'#b8aa90',seed:1624,dist:.22});
+  for(let i=0;i<9;i++){const x=219.6+i*.9,y=77.4+(i%3)*.5;R(g,x,y-1.2,1.2,1.4,i%2?'#8a8076':'#a49888')}
+  /* the hill, the wall along its top and the tower at its end, the path down its face */
+  P.H=hillAssos16(g,O,L);
+  rampAssos16(g,r);
+  K.quay(g,O,{view:'top',y:EDGEAssos16,y1:144,bollards:[124],bsize:6,seed:1626,c:'#c6b696',rows:6,step:34});
+  P.S.open=(x,y)=>y<EDGEAssos16-.5&&y<P.H.top(x)-.5&&!(x>224&&y>71&&y<80)&&!(v==='s'&&x>196&&y>40);
+  wearAssos16(g,r);
+  if(v==='s')for(let i=0;i<90;i++){const x=199-Math.pow(r(),1.6)*40,y=80+r()*20;if(y<82+(199-x)*.3)continue;R(g,x,y,1.5+r()*5,.5,`rgba(30,42,78,${(.4*(1-(199-x)/44)).toFixed(2)})`)}
+  /* the hill's shadow lies on the water and the quay at its foot; the light of late morning */
+  comp(g,'soft-light',.35,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(180,170,200,.8)','rgba(255,220,170,.5)','rgba(255,214,160,1)']);g.fillRect(0,0,320,144)});
+  ao(g,0,124,320,20,'b',.12,'#2a2050')}
+function hillAssos16(g,O,L){const K=SHARED.coast,XS=118,
+    H=K.headland(g,O,{side:'l',top:15,xs:XS,ys:25,xf:176,foot:97,base:104,scrub:.55,dip:-.1,bed:6,rock:'#a49482',green:'#5a6a3e',dist:.04,seed:1627}),T=H.top;
+  K.land(g,L,.04,q=>{
+    /* the wall: coursed stone that follows the ridge, its foot set into the rock, its top a little lit; no battlements */
+    const W0=-2,W1=XS-4,top=x=>T(x)-7,bot=x=>T(x)+1.8,WP=[];for(let x=W0;x<=W1;x+=1)WP.push(x,top(x));for(let x=W1;x>=W0;x-=1)WP.push(x,bot(x));
+    poly(q,WP);q.fillStyle=lg(q,0,6,0,30,['#d8caac','#c0b092']);q.fill();
+    clipTo(q,()=>poly(q,WP),()=>{const rr=rng(1628);for(let j=1;j<4;j++){const f=x=>top(x)+j*2.2;stroke(q,lineAssos16(f,W0,W1,2),'rgba(84,66,56,.3)',.4)}
+      for(let j=0;j<4;j++){const f=x=>top(x)+j*2.2;for(let x=W0+rr()*4+(j%2)*2.2;x<W1;x+=3.8+rr()*2.6)R(q,x,f(x)+.45,.4,1.4,'rgba(84,66,56,.28)')}
+      tex(q,'mott',.4,W0,0,W1-W0,40,'overlay',.6);q.fillStyle=lg(q,W0,0,W1,0,['rgba(110,104,150,.22)','rgba(110,104,150,0)']);q.fillRect(W0,0,W1-W0,40);ao(q,W0,0,W1-W0,40,'b',0,'#000')});
+    stroke(q,lineAssos16(top,W0,W1,2),'#f4e6c4',.5);
+    /* the tower at the wall's end, on the brow: square, of the same stone, its face to the sun lit, its side in shade, two slits */
+    const tx=XS-6,tw=10,tb=Math.max(T(tx),T(tx+tw))+2.2,tt=tb-20;
+    poly(q,[tx-2.2,tt+1.1,tx,tt,tx,tb,tx-2.2,tb-.6],'#a29890');
+    ashlarQuay16(q,tx,tt,tw,tb-tt,'#d4c6a6',rng(1629),{bw:3.4,bh:2.3,v:.1});
+    R(q,tx,tt,tw,.6,'#fff2d2');R(q,tx+tw-.6,tt,.6,tb-tt,'#f6e6c2');R(q,tx+3.4,tt+4.9,1,1.6,'#3a2e2c');R(q,tx+6.4,tt+9.5,1,1.6,'#3a2e2c');
+    ao(q,tx,tb-5,tw,5,'b',.22,'#4a3a3a')});
+  /* the hill's shade on the water along its foot */
+  for(let x=118;x<200;x+=.5){const y=T(x);if(!isFinite(y)||y<HZAssos16)continue;ao(g,x+.5,y,.5,Math.min(7,EDGEAssos16-y),'t',.22,'#1a2440')}
+  return H}
+/* the ramp: the path's trodden top, pale with dust, falling from the left edge to the quay; under it a retaining wall of rough stones
+   laid without courses, lit from the right. The rock's beds end at its top and none runs on below it. */
+function rampAssos16(g,r){const T=x=>83.6+(x+2)*.42,X1=38,P=[-2,T(-2)];for(let x=-2;x<=X1;x+=1)P.push(x,T(x));P.push(X1,EDGEAssos16,-2,EDGEAssos16);
+  poly(g,P,'#5e5448');
+  clipTo(g,()=>poly(g,P),()=>{const rr=rng(1630);for(let y=T(-2)+2.4;y<EDGEAssos16+2;y+=2.1)for(let x=-4+rr()*3;x<X1+2;x+=2.6+rr()*2.6){const w=2+rr()*2.4,h=1.5+rr()*.7,c=tint('#b4a48c',(rr()-.5)*.3);
+      poly(g,[x+.3,y,x+w-.4,y-.2,x+w,y+h*.5,x+w-.3,y+h,x+.2,y+h+.1,x-.1,y+h*.5],c);R(g,x+w-.6,y,.5,h*.8,tint(c,.22));R(g,x+.3,y+h-.2,w-.7,.4,tint(c,-.3))}
+    tex(g,'mott',.4,-2,80,X1+4,24,'overlay',.6);ao(g,-2,92,X1+4,8,'b',.3,'#2a2030')});
+  /* the path's top, and the shade of the cut along its upper side */
+  const S=[];for(let x=-2;x<=X1;x+=1)S.push(x,T(x));const S2=[];for(let x=X1;x>=-2;x-=1)S2.push(x,T(x)+2.4);
+  poly(g,S.concat(S2));g.fillStyle=lg(g,0,82,0,100,['#d2bc98','#c8b08a']);g.fill();
+  clipTo(g,()=>poly(g,S.concat(S2)),()=>{for(let i=0;i<40;i++){const x=-2+r()*(X1+2);R(g,x,T(x)+.6+r()*1.4,.5+r()*1.4,.5,r()<.5?'rgba(120,100,80,.4)':'rgba(255,246,222,.4)')}});
+  stroke(g,S.map((v,i)=>i%2?v-.3:v),'rgba(40,30,40,.45)',.5);stroke(g,S.map((v,i)=>i%2?v+2.4:v),'rgba(255,240,210,.5)',.4)}
+function lineAssos16(f,x0,x1,st){const p=[];for(let x=x0;x<x1;x+=st)p.push(x,f(x));p.push(x1,f(x1));return p}
+function wearAssos16(g,r){const S=y=>(y-HZAssos16)/82;
+  comp(g,'soft-light',.45,()=>{g.fillStyle=lg(g,0,108,0,140,['rgba(255,244,216,0)','rgba(255,244,216,.8)','rgba(255,244,216,0)']);g.fillRect(0,108,320,32)});
+  for(let i=0;i<120;i++){const y=104+Math.pow(r(),.8)*40,k=S(y),x=r()*320;R(g,x,y,(2+r()*8)*k,.5+k*.5,r()<.55?'rgba(96,78,62,.15)':'rgba(255,246,224,.16)')}
+  for(let i=0;i<70;i++){const y=104+r()*40,x=r()*320;R(g,x,y,.5+r()*(1+S(y)),.5,r()<.3?'rgba(214,186,110,.5)':r()<.5?'rgba(70,58,50,.36)':'rgba(240,230,206,.42)')}
+  /* dust and stones washed down from the hill onto the quay at its foot, where the path comes down */
+  for(let i=0;i<46;i++){const x=Math.pow(r(),1.4)*70,y=101+r()*8;R(g,x,y,1+r()*2.4,.5+r()*.6,r()<.5?'rgba(150,128,100,.45)':'rgba(236,220,190,.4)')}
+  for(let i=0;i<40;i++){const x=r()*320;R(g,x,EDGEAssos16+3.2+r()*2.4,1+r()*5,.5,r()<.5?'rgba(84,98,68,.3)':'rgba(70,60,56,.24)')}}
+/* what moves: the sea, the surf at the hill's foot, and once she is in, the coaster on the swell behind the quay's edge, with her forestay */
+function drawAssos16(g,t){const P=PAssos16;if(P.S)P.S.draw(g,t);if(P.H)P.H.draw(g,t);if(!F.la)return;
+  const dy=Math.round(Math.sin(t/1500+1.3)*2)/2-2;
+  /* she lies with her stem between where Paul and Luke stand when they meet (x 190 and 214), clear of both heads; her lines are made
+     fast out of the picture, at her waist */
+  inRect(g,190,0,130,EDGEAssos16,()=>{g.save();g.translate(318,dy-12);g.scale(-1,1);g.drawImage(shipQuay16(1),-12,0,136,120);g.restore()});
+  stroke(g,[205,46.6+dy,294,-10+dy],'#5a4a3c',.6);stroke(g,[205.4,46.2+dy,294.4,-10.4+dy],'rgba(255,236,196,.45)',.3)}
 /* ==== ART assos16: end ==== */
 
 /* ==== ART sky16: begin ==== */
@@ -403,38 +621,162 @@ function drawWatch16(g,t){const st=w16();
 /* ==== ART watch16: end ==== */
 
 /* ==== ART miletus16: begin ==== */
-/* Miletus: a quay of one of its harbors, in the late morning. Warehouses of stone at the left back, with their doors; bales of wool on
-   the quay; far off across the water, small, the theater on its slope, seen from outside and empty. The coaster lies moored at the
-   right, bow to the left, her mast out of the picture at the right. The torn awning lies spread on the paving until it is mended.
-   At the right end of the quay, under the coaster's stern and off the way anyone takes, one bale by itself (the hidden treasure).
-   One horizon, y 60 (HZMiletus16). The road along the shore leaves at the left edge.
+/* Miletus: a quay of one of its harbors, in the late morning; the sun is high at the right, and shadows fall to the left. Warehouses of
+   dressed stone at the left, with their wide doors, one of them open on the dark and the bales inside; bales of wool on the quay; across
+   the water the far shore of the harbor, its quay, its stores and houses, and on the slope above them, small, the theater, seen from
+   outside and empty: its seats a fan of curved tiers with one walkway following the curve, no stair drawn across them, and its low stage
+   building in front. Nobody is in it, and nothing goes on there. The coaster lies moored at the right, bow to the left, her mast out of
+   the picture at the right (the coaster of the Troas quay, turned: shipQuay16); she rises and falls on the swell behind the stone edge
+   of the quay. The torn awning lies spread on the paving until it is mended. At the right end of the quay, off the way anyone takes,
+   one bale by itself, finer than the rest, its wrapping turned back from the fleece (the hidden treasure).
+   One horizon, y 60 (HZMiletus16). Painted with SHARED.coast in one light. The road along the shore leaves at the left edge.
    Called from outside: ART.miletus16. Reads F.mended (the awning). Hotspots: the harbor 0,56,320,42 · the warehouses 0,18,110,80 · the
    theater 120,40,70,20 · the coaster 210,34,110,66 · the bales of wool 116,92,42,26 · the awning 150,120,80,14 (until mended) · the
    bale at the end 292,98,28,22 · the road to the shore 0,96,14,44. Walk strip 16..304, 112..138. Actors (place16): Timothy 60,118 ·
    Menon 96,127 · Luke 186,114 · the master 254,120; Paul comes in at 140,130. The stacked bales and the lone bale are props with feet,
-   and so is the awning on the paving. */
-const HZMiletus16=60;
-ART.miletus16={w:320,q:12,variant:()=>F.mended?'m':'',paint(g,v){paintMiletus16(g,v)},light:{amb:'#f8e6cc',sun:[-.45,.3,.45]},draw(g,t){},front(){},
-  props:[{y:117,shape(g){balesMiletus16(g)},foot:[[117,112,40,5]]},{y:119,shape(g){loneMiletus16(g)},foot:[[294,114,24,5]]},
-    {y:133,shape(g,v){if(v==='')awningMiletus16(g)},foot:v=>v===''?[[150,122,80,10]]:[]}]};
-function paintMiletus16(g,v){const r=rng(1608),HZ=HZMiletus16;
-  sky(g,320,HZ+1,['#6c92c4','#98b4cc','#d8d8cc','#efe0c4']);for(const[cx,cy,w,h]of[[160,12,90,2.8]])cloud(g,cx,cy,w,h,r,'#fff4e0','#a8b0c8');
-  ridge(g,100,220,HZ+.4,x=>8+5*Math.sin((x-100)/120*Math.PI)+1.4*Math.sin(x/6),['#9a9a8a','#a8a48e']);
-  /* the theater far off on its slope: the curve of its seats as one pale band, no stair drawn across it */
-  {const cx=154,cy=HZ-4;g.beginPath();g.ellipse(cx,cy,20,9,0,Math.PI,2*Math.PI);g.lineTo(cx+14,cy);g.ellipse(cx,cy,14,5,0,0,Math.PI,true);g.closePath();g.fillStyle='#d8ccb4';g.fill();R(g,cx-20,cy-.4,40,.8,'#b8aa92')}
-  seaC16(g,HZ,100,r,'#c8ccc6','#3e6a8c',null,200);
-  /* the warehouses: stone, flat-roofed, with dark doors */
-  house(g,0,22,58,78,'#c8b898',r,{stone:{bw:9,bh:5},beams:0});house(g,58,34,52,66,'#cdbd9c',r,{stone:{bw:9,bh:5},beams:0,side:6});
-  for(const x of[14,38,72,92])doorArt(g,x,78,12,22,'#6a4a2e',r);
-  pave(g,0,100,320,144,'#bcae94',r,{rows:6,step:30,vx:160,vy:40});for(let x=0;x<320;x+=12)R(g,x,99.2,11,2.6,'#a89a80');
-  /* the coaster at the right, bow to the left */
-  {const hull=[210,64,320,58,320,100,216,100,206,74];poly(g,hull);g.fillStyle=lg(g,0,58,0,100,['#7a5634','#5a3e26','#2e2016']);g.fill();
-    for(let j=1;j<8;j++)stroke(g,[212,64+j*5,320,58+j*5.6],'rgba(20,12,8,.4)',.5);stroke(g,[210,64,320,58],'#e8c48c',1)}
-  balesMiletus16(g);loneMiletus16(g);if(v==='')awningMiletus16(g)}
-function baleMiletus16(g,x,y,w,h,c){R(g,x,y-h,w,h,c);R(g,x,y-h,w,1,tint(c,.35));R(g,x,y-1,w,1,tint(c,-.35));tex(g,'mott',.5,x,y-h,w,h,'overlay',1)}
-function balesMiletus16(g){oval(g,137,116.8,22,1.8,'rgba(30,26,46,.35)');baleMiletus16(g,117,116,20,12,'#e6dcc4');baleMiletus16(g,137,116,20,12,'#ded2b8');baleMiletus16(g,125,104,22,11,'#ece2cc')}
-function loneMiletus16(g){oval(g,306,118.8,13,1.6,'rgba(30,26,46,.35)');baleMiletus16(g,294,118,24,13,'#f0e8d6')}
-function awningMiletus16(g){poly(g,[150,124,228,123,232,133,148,134],'#4a3e36');for(let x=152;x<228;x+=3)R(g,x,124,.5,9.6,'rgba(255,240,210,.07)');poly(g,[182,125,192,125,196,131,184,132],'#b8a890');R(g,150,123.4,78,.6,'#8a7a6a')}
+   and so is the awning on the paving. Heads come at y 64..90: behind them lie the warehouses' stone, open water and the hull; the
+   theater stands well above them, small. Gulls (ROOMS.miletus16.birds) stand on the quay's edge at x 163..172, clear of Luke. */
+const HZMiletus16=60,EDGEMiletus16=100;
+ART.miletus16={w:320,q:12,variant:()=>F.mended?'m':'',paint(g,v){paintMiletus16(g,v)},light:{amb:'#f8ecd8',sun:[-.45,.22,.45]},draw(g,t){drawMiletus16(g,t)},front(){},
+  props:[{y:117,shape(g){balesMiletus16(g,1)},foot:[[117,112,40,5]]},{y:119,shape(g){loneMiletus16(g,1)},foot:[[294,114,24,5]]},
+    {y:133,shape(g,v){if(v==='')awningMiletus16(g,1)},foot:v=>v===''?[[148,122,84,12]]:[]}]};
+let OMiletus16=null,PMiletus16={};
+const oMiletus16=()=>OMiletus16||(OMiletus16={w:320,hz:HZMiletus16,hour:'morning',sun:[372,-56],cloud:.24,wind:SHARED.weather.wind({from:'n',force:2,view:'w'}),seed:1641,y1:EDGEMiletus16});
+/* the far shore: its hill, highest behind the theater */
+const farMiletus16=x=>HZMiletus16+3-(x<230?27-Math.pow((x-156)/74,2)*16:11+Math.min(9,(x-230)*.1))-1.2*Math.sin(x/7);
+function paintMiletus16(g,v){const K=SHARED.coast,O=oMiletus16(),L=K.light(O),r=rng(1608),P=PMiletus16={};
+  K.sky(g,O);
+  P.S=K.sea(g,O);
+  /* across the water: the hill, the stores and houses along the far quay, and the theater on the slope */
+  K.land(g,L,.42,q=>{const H=[84,64];for(let x=84;x<=322;x+=1)H.push(x,farMiletus16(x));H.push(322,64);SHARED.country.crag(q,H,'#a89e80',1642,{light:1,dip:.02,bed:6,scrub:22})});
+  P.T1=K.town(g,O,{x0:84,x1:126,base:64,hill:x=>Math.max(farMiletus16(x)+6,64-(x-84)*.5),rows:2,size:6,dist:.4,seed:1643,gaps:.2,warehouses:[[90,22,4.4]]});
+  P.T2=K.town(g,O,{x0:188,x1:322,base:64,hill:x=>Math.max(farMiletus16(x)+4,64-(322-x)*.4),rows:3,size:6,dist:.4,seed:1644,gaps:.25,warehouses:[[192,26,4.6],[222,30,5]]});
+  theaterMiletus16(g,L);
+  K.quay(g,O,{view:'face',x0:84,x1:322,y:63.4,face:1.6,seed:1645,dist:.4});
+  /* the quay we stand on */
+  K.quay(g,O,{view:'top',y:EDGEMiletus16,y1:144,bollards:[112,197.5],bsize:6,seed:1646,c:'#c8b898',rows:6,step:34});
+  P.S.open=(x,y)=>y<EDGEMiletus16-.5&&y>65.4&&x>108&&!(x>200&&y>40);
+  if(true)for(let i=0;i<90;i++){const x=203-Math.pow(r(),1.6)*40,y=80+r()*20;if(y<82+(203-x)*.3)continue;R(g,x,y,1.5+r()*5,.5,`rgba(30,42,78,${(.4*(1-(203-x)/44)).toFixed(2)})`)}
+  wearMiletus16(g,r);warehousesMiletus16(g,r);thingsMiletus16(g,r);
+  balesMiletus16(g);loneMiletus16(g);if(v==='')awningMiletus16(g);
+  comp(g,'soft-light',.35,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(180,170,200,.7)','rgba(255,220,170,.5)','rgba(255,214,160,1)']);g.fillRect(0,0,320,144)});
+  ao(g,0,124,320,20,'b',.12,'#2a2050')}
+/* the theater, far off: the curved tiers of its seats as bands of pale stone, darker where a row's riser is in shade; one walkway along
+   the curve; the low stage building in front. Seen from outside, from across the water: nobody in it. */
+function theaterMiletus16(g,L){SHARED.coast.land(g,L,.36,q=>{const cx=155,cy=57.6,RX=27,RY=14,rx=8,ry=2.8,
+    arc=(k,a0,a1)=>{const p=[];for(let a=a0;a<=a1+1e-6;a+=Math.PI/64)p.push(cx+Math.cos(a)*(rx+(RX-rx)*k),cy-Math.sin(a)*(ry+(RY-ry)*k));return p},
+    band=(k0,k1)=>{const a=arc(k1,0,Math.PI),b=arc(k0,0,Math.PI);for(let i=b.length-2;i>=0;i-=2)a.push(b[i],b[i+1]);return a};
+  /* what it is cut into: the slope round it a little darker, and its outer wall */
+  poly(q,band(1,1.06),'#9a8c76');
+  poly(q,band(0,1));q.fillStyle=lg(q,cx-RX,0,cx+RX,0,['#d2c4a6','#e2d6bc','#cbbd9e']);q.fill();
+  /* the rows: a lit seat and a shaded riser each, following the curve */
+  for(let k=.06;k<1;k+=.075){const p=arc(k,0,Math.PI);stroke(q,p,'rgba(96,80,72,.38)',.5);stroke(q,p.map((v,i)=>i%2?v-.5:v),'rgba(255,246,222,.3)',.4)}
+  /* the one walkway, along the curve halfway up */
+  poly(q,band(.5,.56),'#ece2c8');stroke(q,arc(.5,0,Math.PI),'rgba(96,80,72,.4)',.5);
+  /* the bowl's right side turned a little from the sun */
+  clipTo(q,()=>poly(q,band(0,1)),()=>{q.fillStyle=lg(q,cx-RX,0,cx+RX,0,['rgba(255,236,200,.22)','rgba(255,236,200,0)','rgba(90,86,130,.18)']);q.fillRect(cx-RX,cy-RY,RX*2,RY+1)});
+  /* the orchestra, and the low stage building across the front with its doorways */
+  poly(q,arc(0,0,Math.PI).concat([cx-rx,cy+.4,cx+rx,cy+.4]),'#c6b494');
+  R(q,cx-21,cy-2,42,3.4,'#c8b89a');R(q,cx-21,cy-2,42,.5,'#f2e6c8');R(q,cx-21,cy+.9,42,.5,'#8a7a6a');
+  for(const dx of[-14,-6,2,10])R(q,cx+dx,cy-1.1,2,2,'#5a4c48')})}
+function wearMiletus16(g,r){const S=y=>(y-HZMiletus16)/84;
+  comp(g,'soft-light',.45,()=>{g.fillStyle=lg(g,0,108,0,140,['rgba(255,244,216,0)','rgba(255,244,216,.8)','rgba(255,244,216,0)']);g.fillRect(0,108,320,32)});
+  for(let i=0;i<130;i++){const y=104+Math.pow(r(),.8)*40,k=S(y),x=r()*320;R(g,x,y,(2+r()*8)*k,.5+k*.5,r()<.55?'rgba(96,78,62,.15)':'rgba(255,246,224,.16)')}
+  for(let i=0;i<90;i++){const y=104+r()*40,x=r()*320;R(g,x,y,.5+r()*(1+S(y)),.5,r()<.35?'rgba(236,228,212,.7)':r()<.5?'rgba(70,58,50,.36)':'rgba(214,186,110,.45)')}
+  for(let i=0;i<40;i++){const x=108+r()*212;R(g,x,EDGEMiletus16+3.2+r()*2.4,1+r()*5,.5,r()<.5?'rgba(84,98,68,.3)':'rgba(70,60,56,.24)')}}
+/* the warehouses: dressed stone, flat roofs behind a plain cornice, wide doorways with plank doors; the second stands a little back and
+   shows its side to the sun; its door is open on the dark and on bales stacked inside */
+function doorMiletus16(g,x,y,w,h,r){R(g,x-1.4,y-1.6,w+2.8,1.6,'#b4a688');R(g,x-1.4,y-1.6,w+2.8,.5,'#efe2c4');
+  for(let i=0;i<w-.01;i+=2.6){const ww=Math.min(2.6,w-i),c=tint('#6e4c30',(r()-.5)*.18);R(g,x+i,y,ww,h,c);R(g,x+i,y,.5,h,tint(c,.18));R(g,x+i+ww-.5,y,.5,h,tint(c,-.35))}
+  inRect(g,x,y,w,h,()=>{tex(g,'vert',.25,x,y,w,h,'overlay',.5);ao(g,x,y,w,5,'t',.55);ao(g,x,y,2.6,h,'l',.3)});R(g,x+w/2-.5,y+h*.52,1,1,'#2a1e16')}
+function warehousesMiletus16(g,r){const A='#cbbb9c',B='#d2c2a2';
+  /* the second, set back: its side towards the sun, then its front */
+  poly(g,[108,37.4,113.4,40.4,113.4,101.6,108,104],'#e4d2ac');clipTo(g,()=>poly(g,[108,37.4,113.4,40.4,113.4,101.6,108,104]),()=>{tex(g,'mott',.4,107,36,8,70,'overlay',.5);for(let y=42;y<102;y+=3.4)stroke(g,[108,y,113.4,y-.2],'rgba(84,66,56,.25)',.4)});
+  ashlarQuay16(g,56,38,52,66,B,r,{bw:12.4,bh:5.2,v:.07});tex(g,'mott',.4,56,38,52,66,'overlay',.5);
+  R(g,55.4,34.6,53.2,3.6,tint(B,.12));R(g,55.4,34.6,53.2,.6,'#fff2d6');R(g,56,38.2,52,.8,tint(B,-.4));
+  R(g,70,80,16,24,'#1a120e');g.fillStyle=lg(g,0,80,0,104,['#120c0a','#22180f','#3a2a1e']);g.fillRect(71,81,14,23);
+  inRect(g,71,81,14,23,()=>{for(const[x,y,w,h,c]of[[72,103.6,6.2,5.6,'#bfae8c'],[78.4,103.6,6,5.4,'#b4a282'],[74.6,98.2,6.2,5.2,'#c8b896']])baleMiletus16(g,x,y,w,h,c);
+    comp(g,'multiply',.62,()=>R(g,71,81,14,23,'#40364a'));ao(g,71,81,14,8,'t',.6)});
+  R(g,69.4,78.4,17.2,1.6,'#b8aa8a');R(g,69.4,78.4,17.2,.5,'#efe2c4');
+  doorMiletus16(g,93,84,10,20,r);
+  ao(g,56,90,52,14,'b',.24,'#4a3424');comp(g,'multiply',.25,()=>{g.fillStyle=lg(g,56,0,108,0,['rgba(150,146,188,1)','rgba(150,146,188,.2)']);g.fillRect(56,34,52,70)});
+  /* the first, nearer and taller, running out of the picture at the left */
+  ashlarQuay16(g,-2,24,58,80,A,r,{bw:13,bh:5.4,v:.07});tex(g,'mott',.4,-2,24,58,80,'overlay',.5);
+  R(g,-2,20.4,58.6,3.8,tint(A,.12));R(g,-2,20.4,58.6,.6,'#fff2d6');R(g,-2,24.2,58,.8,tint(A,-.4));
+  for(const x of[6,32])doorMiletus16(g,x,82,13,22,r);
+  /* a row of narrow vents high up, to air the wool */
+  for(const x of[8,18,28,38,48]){R(g,x,30.6,1.2,3.2,'#2e2420');R(g,x+1.2,30.6,.5,3.2,tint(A,.2))}
+  ao(g,-2,90,58,14,'b',.24,'#4a3424');comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,0,0,56,0,['rgba(150,146,188,1)','rgba(150,146,188,0)']);g.fillRect(-2,20,58,84)});
+  comp(g,'soft-light',.35,()=>{g.fillStyle=lg(g,30,0,56,0,['rgba(255,214,150,0)','rgba(255,214,150,1)']);g.fillRect(30,20,26,84)});
+  /* the shadow the first throws on the front of the second */
+  shade(g,[56,38,61,38,61,104,56,104],'#a29ac4',.4)}
+/* what stands at the warehouses' foot: jars against the wall, and a basket; their shadows to the left */
+function thingsMiletus16(g,r){const SH='rgba(44,38,76,.3)';
+  for(const[x,y,w,h]of[[52,106,3.4,9],[58.6,106.4,3.6,10],[100,105.6,3,7.4]])poly(g,[x,y+.4,x-w-h*1.4,y-.2,x-w-h*1.4,y-1.2,x-w*.4,y-1.6],SH);
+  vessel(g,52,106,3.4,9,'#a8663e','amph',{noShadow:1});vessel(g,58.6,106.4,3.6,10,'#9c5c36','amph',{noShadow:1});vessel(g,100,105.6,3,7.4,'#b0704a','jar',{noShadow:1});
+  for(let i=0;i<14;i++){const x=66+r()*40;R(g,x,104.6+r()*2,1+r()*2.4,.5,'rgba(240,232,214,.6)')}}
+/* a bale of wool: fleece pressed into a bundle and sewn into coarse sacking, its sides bulging, its corners drawn out into ears where
+   the seams meet; we look a little down on it, so its top shows. Seams along its edges only, nothing tied across it. Lit from the right
+   and above. With cut, its outline. */
+function baleMiletus16(g,x,y,w,h,c,cut){const t=Math.min(3.2,h*.27),dx=Math.min(1.6,w*.08),
+    F=[x+.8,y,x-.4,y-h*.5,x,y-h+t,x+w,y-h+t,x+w+.4,y-h*.5,x+w-.8,y],
+    TOP=[x,y-h+t,x+dx-.6,y-h+.6,x+dx+.8,y-h,x+w+dx-1,y-h,x+w+dx,y-h+.8,x+w,y-h+t];
+  if(cut){poly(g,F.concat([x+w+dx,y-h,x+dx,y-h]),'#000');return}
+  poly(g,F);g.fillStyle=lg(g,x,0,x+w,0,[tint(c,-.3),tint(c,-.04),tint(c,.1)]);g.fill();
+  clipTo(g,()=>poly(g,F),()=>{g.fillStyle=lg(g,0,y-h+t,0,y,['rgba(60,44,40,.16)','rgba(255,248,226,.16)','rgba(255,248,226,.04)','rgba(40,30,40,.34)']);g.fillRect(x-1,y-h,w+2,h);
+    tex(g,'mott',.3,x-1,y-h-1,w+2,h+1,'overlay',.9);tex(g,'grain',.2,x-1,y-h-1,w+2,h+1,'overlay',.6);
+    /* creases where the sacking is drawn in at the corners */
+    stroke(g,[x+.6,y-h+t+1,x+2.6,y-h+t+3.2],'rgba(70,52,40,.3)',.5);stroke(g,[x+w-.6,y-h+t+1,x+w-2.4,y-h+t+3],'rgba(255,246,222,.3)',.5);
+    stroke(g,[x+1,y-1,x+3,y-2.6],'rgba(70,52,40,.25)',.5);ao(g,x-1,y-2.4,w+2,2.4,'b',.35,'#3a2c2c')});
+  poly(g,TOP);g.fillStyle=lg(g,x,0,x+w,0,[tint(c,.1),tint(c,.26),tint(c,.34)]);g.fill();
+  clipTo(g,()=>poly(g,TOP),()=>tex(g,'mott',.35,x,y-h,w+dx,t+1,'overlay',.6));
+  /* the seam along the top edge, and the ears at its corners */
+  for(let i=x+1;i<x+w-.6;i+=1.6)R(g,i,y-h+t-.4,.8,.5,tint(c,-.28));
+  poly(g,[x,y-h+t,x-1,y-h+t-.8,x-.2,y-h+t-1.4],tint(c,.12));poly(g,[x+w+dx,y-h+.8,x+w+dx+1,y-h+.2,x+w+dx+.4,y-h+1.6],tint(c,.3));
+  R(g,x+w+.1,y-h*.5,.5,h*.4,tint(c,.22))}
+function tuftMiletus16(g,x,y){poly(g,[x,y,x+1.2,y-1.4,x+2.6,y-1,x+3.4,y-.2,x+2.4,y+.8,x+.8,y+.6],'#f4eee0');R(g,x+1.2,y-.8,1.2,.5,'#fffcf2');R(g,x+.6,y+.4,2,.5,'#cfc4ac')}
+function balesMiletus16(g,cut){if(!cut){poly(g,[118,116.8,156,116.8,150,113.8,104,113,99,115.2],'rgba(44,38,76,.3)');SHARED.materials.shadow(g,137,116.6,21,1.4,.45)}
+  baleMiletus16(g,117.4,116.6,19,12,'#cbb690',cut);baleMiletus16(g,137,116.8,19.6,12.4,'#c2ac86',cut);baleMiletus16(g,125.6,105,20,11,'#d4c09a',cut);
+  if(!cut){tuftMiletus16(g,135.4,103.4);tuftMiletus16(g,116.6,112.4)}}
+/* the bale at the end: finer, wrapped in pale linen, the wrapping turned back at the top from fleece as white as cream */
+function loneMiletus16(g,cut){const x=295,y=118.4,w=21,h=12.4,dx=1.6;
+  if(cut){baleMiletus16(g,x,y,w,h,'#000',1);poly(g,[x+2,y-h+1,x+4,y-h-2.2,x+18,y-h-2.6,x+w+1,y-h+1],'#000');return}
+  poly(g,[x+1,y+.2,x+w,y+.2,x+w-10,y-2.6,x-17,y-2,x-14,y+.2],'rgba(44,38,76,.28)');SHARED.materials.shadow(g,x+w/2,y-.2,13,1.4,.4);
+  baleMiletus16(g,x,y,w,h,'#e4dac6');
+  /* the fleece swelling out of the opened top in soft locks, lit from the right and above */
+  for(const[a,b,rx,ry]of[[5.4,-.6,3.4,2],[9.6,-1.6,3.8,2.4],[14.2,-1.2,3.6,2.2],[18,.2,2.8,1.8],[7.6,.8,3,1.6],[12.4,.6,3.4,1.6],[16.4,1.2,2.6,1.4]]){
+    oval(g,x+a-.4,y-h+b+.5,rx,ry,'#c8bca4');oval(g,x+a,y-h+b,rx*.92,ry*.88,'#f4ecdc');oval(g,x+a+rx*.3,y-h+b-ry*.35,rx*.5,ry*.42,'#fffcf4')}
+  for(let i=0;i<16;i++){const a=x+3+(i*1.61%16),b=y-h-2.6+(i*.71%3.4);R(g,a,b,1,.5,i%2?'rgba(255,255,250,.7)':'rgba(176,164,140,.45)')}
+  /* the linen turned back over the rim at both sides, its fold lit */
+  poly(g,[x-.6,y-h+3,x+3.4,y-h+2.4,x+4.4,y-h+5.6,x+1.4,y-h+7,x-.2,y-h+6],'#ece2d0');stroke(g,[x-.6,y-h+3,x+3.4,y-h+2.4],'#fffaf0',.5);
+  poly(g,[x+w-3.6,y-h+2.6,x+w+1,y-h+3,x+w+.8,y-h+6.4,x+w-2.2,y-h+5.4],'#f6f0e2');stroke(g,[x+w-3.6,y-h+2.6,x+w+1,y-h+3],'#fffcf4',.5);
+  ao(g,x+1,y-h+3,w-2,2,'t',.18,'#5a4a3a')}
+/* the torn awning, spread on the paving: dark goat-hair cloth lying a little rumpled, its weave running one way only, two soft folds
+   lit along their ridges, a corner turned under, and the tear, a ragged slit in from its near edge with loose threads along it. With
+   cut, its outline. */
+function awningMiletus16(g,cut){const P=[150.6,124.6,166,123.6,184,124,204,123.2,225.6,122.8,228.4,126.6,231.4,133,214,133.6,196,134.2,172,134.6,148.4,134.8,149.4,129.4];
+  if(cut){poly(g,P,'#000');return}
+  poly(g,[149,134.8,231.4,133,233.6,134.4,196,135.8,150,136.2],'rgba(44,38,76,.34)');
+  poly(g,P);g.fillStyle=lg(g,0,123,0,135,['#5c4e46','#4a3e38','#54463e']);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.4,146,122,90,14,'overlay',.7);tex(g,'grain',.3,146,122,90,14,'overlay',.5);
+    /* two folds, lit along the ridge and dark in the hollow beyond, both running the same way */
+    for(const[a,b]of[[170,175.6],[208,212.4]]){poly(g,[a,123,a+4.6,123,b+3.4,135,b-1.4,135],'rgba(255,232,200,.12)');stroke(g,[a+2.6,123,b+1.6,135],'rgba(255,232,200,.28)',.5);stroke(g,[a+4,123,b+3,135],'rgba(16,10,12,.35)',.5)}
+    /* the light from the right lies on its far side */
+    g.fillStyle=lg(g,146,0,232,0,['rgba(40,30,50,.2)','rgba(255,226,180,.1)']);g.fillRect(146,122,88,14)});
+  /* its hem along the far edge, catching the light */
+  stroke(g,[150.6,124.6,166,123.6,184,124,204,123.2,225.6,122.8],'rgba(255,236,206,.35)',.5);
+  /* the corner turned under at the right */
+  poly(g,[228.4,126.6,231.4,133,226.4,131.6],'#6a5a50');stroke(g,[228.4,126.6,226.4,131.6],'rgba(255,236,206,.3)',.5);
+  /* the tear, the paving showing through, threads hanging over its edges */
+  const T=[196.6,134.2,198.4,131.4,200.2,129.4,201.6,127,202.8,125.6,203.4,127.4,202.6,129.8,203.8,132,204.2,134];poly(g,T,'#bcac8e');
+  stroke(g,[196.6,134.2,198.4,131.4,200.2,129.4,201.6,127,202.8,125.6],'#2e2622',.5);stroke(g,[203.4,127.4,202.6,129.8,203.8,132,204.2,134],'#7a6a5e',.5);
+  for(const[a,b]of[[198.2,130.8],[199.9,129],[202.6,128.6],[203.4,131.2]])R(g,a,b,.5,1.1,'#5e5048')}
+/* what moves: the sea, the coaster on the swell behind the quay's edge with her forestay and her bow line */
+function drawMiletus16(g,t){const P=PMiletus16;if(P.S)P.S.draw(g,t);
+  const dy=Math.round(Math.sin(t/1500+2.1)*2)/2-2;
+  inRect(g,194,0,126,EDGEMiletus16,()=>{g.save();g.translate(322,dy-12);g.scale(-1,1);g.drawImage(shipQuay16(1),-12,0,136,120);g.restore()});
+  stroke(g,[209,46.6+dy,298,-10+dy],'#5a4a3c',.6);stroke(g,[209.4,46.2+dy,298.4,-10.4+dy],'rgba(255,236,196,.45)',.3);
+  for(const[c,w]of[['#4a3a2a',1.2],['#d6c498',.6]]){g.strokeStyle=c;g.lineWidth=w;g.beginPath();g.moveTo(204.4,66+dy);g.quadraticCurveTo(202.4,90,198,96.8);g.stroke()}}
 /* ==== ART miletus16: end ==== */
 
 /* ==== ART list16: begin ==== */
@@ -787,8 +1129,8 @@ const NOW=[160,160,236,236];   /* a close view: whoever is played stands below t
 const deckAmb=()=>{const v=DECKV();return v==='quay'||v==='assos'?AMB.dockd16:v==='sail'?AMB.said16:v==='eve'?AMB.eve16:AMB.morn16};
 const deckMood=()=>{const v=DECKV();return v==='quay'||v==='assos'?'quay':v==='eve'?'anchor':'sail'};
 ROOMS.quay16={space:.5,walk:[16,304,112,138],mood:'quay',amb:AMB.quay16,hs:[
-  {name:'harbor',x:124,y:52,w:96,h:40,wx:150,wy:113,dir:-1,look:'harbor_of_troas_morning_look'},
-  {name:'coaster',x:0,y:34,w:118,h:66,wx:110,wy:116,dir:-1,look:()=>say(PC(),F.walk?'coaster_the_others_are_aboard':'coaster_bound_for_assos_look'),use:()=>say(P,'not_this_time_i_walk'),open:()=>say(P,'not_this_time_i_walk')},
+  {name:'harbor',x:130,y:52,w:90,h:40,wx:150,wy:113,dir:-1,look:'harbor_of_troas_morning_look'},
+  {name:'coaster',x:0,y:34,w:128,h:66,wx:110,wy:116,dir:-1,look:()=>say(PC(),F.walk?'coaster_the_others_are_aboard':'coaster_bound_for_assos_look'),use:()=>say(P,'not_this_time_i_walk'),open:()=>say(P,'not_this_time_i_walk')},
   {name:'chest',x:126,y:102,w:26,h:16,wx:162,wy:120,dir:-1,vis:()=>!F.walk,look:'the_gifts_chest_look',pickup:'the_brothers_carry_it'},
   {name:'coast_road_south',x:292,y:36,w:28,h:76,wx:298,wy:118,dir:1,exit:()=>F.walk?goto16('road16'):say(P,F.m3?'first_the_bag':'first_the_master'),look:'coast_road_south_look'}].map(BOTH)};
 ROOMS.road16={space:.4,walk:[16,304,112,138],mood:'road',amb:AMB.road16,hs:[
@@ -959,12 +1301,12 @@ function hint16(){const r=G.room,ph=phase16(),me=PC();
 /* ============ CHAPTER DEFINITION ============ */
 /* Birds (shared/birds.js): gulls over the harbors of Troas, Assos and Miletus, and aboard by day; a bird of prey over the road and the
    pass; none at night, and none over the parting by the shore. Scenery: they change nothing in the story. */
-ROOMS.quay16.birds={gulls:[120,8,100,30],stand:[[204,99.4,-1]]};
+ROOMS.quay16.birds={gulls:[126,6,86,26],stand:[[157.4,101.2,-1],[166.4,101.4,1]]};
 ROOMS.road16.birds={prey:[30,6,150,24]};
 ROOMS.pass16.birds={prey:[150,4,140,22]};
-ROOMS.assos16.birds={gulls:[180,8,130,28]};
+ROOMS.assos16.birds=()=>({gulls:F.la?[150,4,48,22]:[176,6,130,28],stand:[[151,101.2,1],[163.4,101.4,-1]]});
 ROOMS.deck16.birds=()=>DECKV()==='eve'?null:{gulls:[200,4,100,22]};
-ROOMS.miletus16.birds={gulls:[110,6,100,24],stand:[[124,99.4,1]]};
+ROOMS.miletus16.birds={gulls:[112,4,96,22],stand:[[163,101.2,1],[172.4,101.4,-1]]};
 
 return{rooms:['quay16','road16','pass16','deck16','sky16','assos16','watch16','miletus16','list16','shore16'],setup:setup16,start:start16,hint:hint16,music:MUSIC,calls:CALLS,topics:[],tablets:TABLETS,
   /* for the playtest: what is told, the master's questions, the winds, the watches, the list */
