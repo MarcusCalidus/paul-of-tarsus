@@ -501,70 +501,152 @@ function drawPass16(g,t){if(SPass16)SPass16.draw(g,t);const B=SHARED.beasts;LOOK
 /* ==== ART pass16: end ==== */
 
 /* ==== ART deck16: begin ==== */
-/* The coaster's deck, seen from aboard, looking aft over the stern. Her mast is behind us, out of the picture. The stern rises at the
-   back, its rail at y 72, and the curved stern post comes up from it and ends below the horizon (y 48), so that it never stands across
-   the line where the sea meets the sky. The two steering oars hang outboard at the quarters; only their heads and tillers are seen
-   above the rail, at the ends of the stern, where the master stands. At the left the deck shelter, a goat-hair awning on two posts at
-   its ends; at the right the cargo, bales and jars lashed in a block, and on top of it the ship's cat; in the middle the gift's chest.
-   Variants (variant(), from the story, DECKV): quay (moored at Troas, the harbor wall and houses behind), sail (under way by day, open sea
-   and a far coast, a wake), assos (moored at Assos, its rock behind), morn (at anchor off Mitylene, morning), eve (at anchor off Chios,
-   evening: a lamp burns by the shelter, and the awning is torn), mornt (the next morning off Chios, the awning torn).
-   Called from outside: ART.deck16 and DECKV. Hotspots (ROOMS.deck16): the sky over the stern 30,0,260,46 · the stern 130,14,60,62 ·
-   the steering oars 96,52,40,30 and 184,52,40,30 · the shelter 14,52,104,56 · the chest 120,102,34,16 · the cargo 226,80,84,36 ·
-   the cat 254,70,22,12 · the gangplank 300,88,20,40 (moored only). Walk strip 24..296, 112..138. Actors (place16): the master at the
-   right steering oar 206,113 · his boy 236,121 · the sailor 278,126 · Paul seated on a low bale under the shelter 62,118 (from Assos on;
-   the bale is a prop that is a seat) · the lamp, in the evening, on a low box by the shelter at 86,104, below the heads · Timothy
-   104,130 · Aristarchus 170,126 · Luke comes in at 150,130. The chest, the cargo and the shelter's front posts stand in the strip:
-   props with feet. */
-const HZDeck16=48;
+/* The coaster's deck, seen from aboard, looking aft over the stern: the shared deck of shared/ship.js (SHARED.ship.paint, view
+   'deckAft'). Her mast is behind us, out of the picture; the stern rises at the back above the horizon (y 66), and the stern post
+   rises from its top against the sky, with the pennant at its head, so that no upright crosses the line where the sea meets the sky.
+   On the deck: the low goat-hair shelter in the middle, the rack of jars at the left, the bales at the right with the ship's cat
+   curled on top of them, the gift's chest at the right of the middle near us, a coil of rope at the left, and a low bale at the
+   shelter's mouth, where Paul sits from Assos on (a seat). What lies beyond the stern is the room's own (shared/coast.js, one horizon
+   at 66), and so is the wind: moored and at anchor we look across to the shore with the wind from the left, from up the coast, as over
+   the stern in sky16; under way we look back along her wake, and the north wind comes from behind the stern toward us.
+   Variants (variant(), from the story, DECKV): quay (moored at Troas in the morning: the town at the right, a mole across the water at
+   the left that ends short of the left steering oar, the gangplank on the near rail at the right), sail (under way by day: the coast of the Troad far off at the right, the
+   wake), assos (moored at Assos: its rocky hill and walls behind, a mole at the right), morn (at anchor off Mitylene in the morning, a
+   breath of wind), eve (at anchor off Chios at night: moonlight, the lamp hung under the curl of the stern post, the awning torn),
+   mornt (the next morning off Chios, a strong wind, the awning torn; at anchor the pennant swings with the ship on the current).
+   Called from outside: ART.deck16, DECKV, DECKO16 (the shared deck's options for a variant). Hotspots (ROOMS.deck16): the sky over the
+   stern 0,0,320,58 · the stern 128,16,52,56 · the steering oars 84,60,36,32 and 180,60,36,32 · the shelter 112,74,64,48 · the chest
+   174,104,34,28 · the cargo, the bales 188,82,36,32 and the jars 68,82,36,30 · the cat 199,78,14,9 · the gangplank 258,90,62,40
+   (moored at Troas only). Walk strip SHARED.ship.deck.walk (8..312, 102..140); the bulwarks are blocked (deck.block). Actors
+   (place16): the master by the tiller of the right steering oar 182,105 · his boy 204,139 · the sailor 240,126 · Timothy 106,134 ·
+   Aristarchus 80,120 · Paul seated at the shelter's mouth 134,127 (from Assos on) · Luke comes in at 162,138 (ENT). Nobody is placed in
+   the stern post's column (x 145..168) at the back of the strip, where the post would grow out of his head. The props are the deck's
+   own (shelter, rack, bales, chest, coil) with their footprints, the seat, and the cat on the bales. */
 const DECKV=()=>!F.w1?'quay':!F.aboard?(F.la?'assos':'sail'):!F.w2?'morn':!F.watch?'eve':'mornt';
+/* each variant: the deck's light (dv), the coast painter's hour and cloud, and the wind: the way we look, its force (from the north) */
+const DK16={quay:{dv:'day',hour:'morning',cloud:.22,view:'e',force:2,seed:161},sail:{dv:'day',hour:'midday',cloud:.18,view:'n',force:2,seed:162},
+  assos:{dv:'day',hour:'midday',cloud:.12,view:'n',force:1,seed:163},morn:{dv:'day',hour:'morning',cloud:.3,view:'e',force:1,seed:164},
+  eve:{dv:'night',hour:'night',cloud:.12,view:'e',force:0,seed:165,moon:[252,20,.62]},mornt:{dv:'day',hour:'morning',cloud:.42,view:'e',force:3,seed:166}};
+const DECKO16=v=>({view:'deckAft',variant:DK16[v].dv,chest:true,hz:66,sky:g=>backDeck16(g,v),sea:()=>{}});
+/* per variant: the coast options, the sea's motion, the hearths, and where land or stone lies on the water (dry) */
+const DKC16={};
+function coastDeck16(v){if(DKC16[v])return DKC16[v];const d=DK16[v],W=SHARED.weather.wind({from:'n',force:d.force,view:d.view}),
+  O={w:320,hz:66,hour:d.hour,cloud:d.cloud,wind:W,seed:d.seed,light:1};if(d.moon)O.moon=d.moon;
+  return DKC16[v]={O,W,hearths:[],dry:()=>false}}
+/* the deck's own outline, read once from the shared deck's layer: the sea moves only where none of the ship stands */
+const MASK16={};
+function maskDeck16(v){const k=DK16[v].dv;if(MASK16[k])return MASK16[k];const c=SHARED.ship.deck.overlay(DECKO16(v)),W=c.width,H=c.height,
+  d=c.getContext('2d').getImageData(0,0,W,H).data,m=new Uint8Array(W*H);for(let i=0;i<W*H;i++)m[i]=d[i*4+3];return MASK16[k]={m,W,H}}
+function openDeck16(v,x,y){if(y<66.4||x<0||x>=320||y>=144)return false;const M=maskDeck16(v),C=coastDeck16(v);
+  return!M.m[Math.floor(y*HR)*M.W+Math.floor(x*HR)]&&!C.dry(x,y)}
+/* backDeck16: the sky, the land and the sea beyond the stern, for SHARED.ship.paint (its sky; the sea is painted here too) */
+function backDeck16(g,v){const K=SHARED.coast,C=coastDeck16(v),O=C.O;K.sky(g,O);
+  if(v==='quay'){K.isle(g,0,150,7,O,{kind:'cape',from:'l',dist:.78,seed:31});C.S=K.sea(g,O);
+    K.quay(g,O,{view:'face',x0:0,x1:84,y:70.5,slope:-.004,face:2.6,bollards:[26,64],seed:32});quaySideDeck16(g,O);
+    const T=K.town(g,O,{x0:182,x1:320,base:67.8,hill:x=>55-(x-182)*.05+1.5*Math.sin(x/13),rows:3,size:6.5,dist:.42,warehouses:[[196,40,4.6],[256,50,5.2]],seed:34});
+    C.hearths=T.hearths.filter(([x,y])=>x>190&&x<304).slice(0,3);C.dry=(x,y)=>x<86&&y<74||x>157+1.76*(y-66)}
+  else if(v==='sail'){K.isle(g,196,320,6,O,{kind:'cape',from:'r',dist:.82,seed:41});K.isle(g,30,74,2.4,O,{dist:.92,seed:42});C.S=K.sea(g,O)}
+  else if(v==='assos'){const H=K.headland(g,O,{side:'l',top:10,xs:148,ys:30,xf:178,foot:78,base:80,scrub:.35,seed:51,rock:'#a89a86'});
+    /* the walls of the city along the brow of the hill: one course of dressed stone that follows the ridge; no tower in its middle */
+    K.land(g,K.light(O),0,q=>{const top=[],bot=[];for(let x=22;x<=138;x+=1){const y=H.top(x);top.push(x,y-4.2);bot.unshift(x,y+.8)}
+      poly(q,top.concat(bot),'#c8bca2');clipTo(q,()=>poly(q,top.concat(bot)),()=>{const r=rng(52);for(let x=22;x<138;x+=2.4+r()*1.6){const y=H.top(x);R(q,x,y-4.2,.5,2.2,'rgba(70,58,44,.35)');R(q,x+1.2,y-2,.5,2.6,'rgba(70,58,44,.3)')}
+        for(let x=22;x<=138;x+=1)R(q,x,H.top(x)-4.2,1,.5,'#ece2cc');for(let x=22;x<=138;x+=1)R(q,x,H.top(x)-2.1,1,.5,'rgba(70,58,44,.25)')})});
+    C.S=K.sea(g,O);K.quay(g,O,{view:'face',x0:214,x1:320,y:71,slope:.01,face:2.8,bollards:[240,300],seed:53});C.dry=(x,y)=>x<182&&y<82||x>=212&&y<75}
+  else if(v==='morn'){K.isle(g,0,128,15,O,{kind:'cape',from:'l',dist:.62,seed:61});K.isle(g,110,320,7,O,{kind:'cape',from:'r',dist:.7,seed:62});
+    const T=K.town(g,O,{x0:196,x1:256,base:67.6,hill:x=>61.2+Math.sin(x/9),rows:2,size:3.4,dist:.62,seed:63});C.S=K.sea(g,O);C.dry=(x,y)=>x>194&&x<258&&y<68.4}
+  else if(v==='eve'){K.isle(g,0,214,10,O,{kind:'cape',from:'l',dist:.5,seed:71});K.town(g,O,{x0:84,x1:150,base:67.4,hill:x=>60+Math.sin(x/8),rows:2,size:3.4,dist:.5,lamps:.35,seed:72});
+    C.S=K.sea(g,O);C.dry=(x,y)=>x>82&&x<152&&y<68.2}
+  else{K.isle(g,0,236,8,O,{kind:'cape',from:'l',dist:.78,seed:71});C.S=K.sea(g,O)}
+  C.S.open=(x,y)=>openDeck16(v,x,y)}
+/* the light of the shared deck for a variant, on a face of color c whose normal is n (as shared/ship.js lights the deck) */
+function litDeck16(v,c,n,k){const L=SHARED.ship.deck.geo(DECKO16(v)).L,d=Math.max(0,n[0]*L.L[0]+n[1]*L.L[1]+n[2]*L.L[2])*(k==null?1:k),h=hex(c);
+  return toHex(h[0]*(L.amb[0]+L.sun[0]*d)*1.12,h[1]*(L.amb[1]+L.sun[1]*d)*1.12,h[2]*(L.amb[2]+L.sun[2]*d)*1.12)}
 ART.deck16={w:320,q:12,variant:DECKV,paint(g,v){paintDeck16(g,v)},
-  get light(){const v=DECKV();return v==='eve'?{amb:'#8a7a9a',lamps:[[85,104,70,'#ffb868',112]]}:{amb:v==='sail'?'#fbeed6':'#f4e2c8',sun:[.4,.3,.4]}},
+  get light(){return SHARED.ship.deck.light(DECKO16(DECKV()))},
   draw(g,t){drawDeck16(g,t)},front(){},
-  props:[{y:119,shape(g){chestDeck16(g)},foot:[[121,114,32,4]]},{y:117,shape(g){cargoDeck16(g)},foot:[[226,110,82,6]]},
-    {y:113,shape(g,v){postsDeck16(g,v)},foot:[[20,110,5,3],[110,110,5,3]]},{y:119,shape(g){seatDeck16(g)},foot:[[54,115,16,4]],seat:1}]};
-function paintDeck16(g,v){const r=rng(1604),HZ=HZDeck16,eve=v==='eve';
-  sky(g,320,HZ+1,eve?['#3a3c66','#6a5a7e','#c88a6a','#e6a874']:v==='sail'?['#6a94c8','#98b6d0','#d8dcd2']:['#7c9cc4','#a8bccc','#e2d6be']);
-  if(!eve)for(const[cx,cy,w,h]of[[80,12,80,2.6],[220,20,70,2.2]])cloud(g,cx,cy,w,h,r,'#fff4e0','#a8b0c8');
-  /* what lies behind the stern: a harbor, a rock, a coast or open sea */
-  if(v==='quay'){house(g,0,20,60,30,'#cdbb98',r,{side:4});house(g,250,24,70,26,'#d4c4a2',r);R(g,0,44,320,6,'#a89a80')}
-  else if(v==='assos')rockC16(g,0,320,HZ+1,x=>26+10*Math.sin(x/40)+3*Math.sin(x/7),'#9a8a70',r);
-  else ridge(g,0,320,HZ+.4,x=>v==='sail'?Math.max(0,3+2*Math.sin(x/30)):v==='morn'?7+4*Math.sin(x/37)+1.4*Math.sin(x/9):5+3*Math.sin(x/29+1),eve?['#4a4064','#5a4c6a']:['#9a9cae','#aeaab6']);
-  seaC16(g,HZ,74,r,eve?'#a87a74':'#c8ccc6',eve?'#3a4064':'#3e6a8c',v==='sail'?160:null,140);
-  if(v==='sail')for(let i=0;i<40;i++){const y=HZ+6+r()*20,x=160+(r()-.5)*(y-HZ)*2.4;R(g,x,y,1+r()*2,.5,'rgba(255,255,255,.6)')}
-  /* the stern: the rail across, the planking of the deck coming toward us, and the stern post rising and curving back, ending below the
-     horizon; the heads of the steering oars and their tillers at the two quarters */
-  poly(g,[0,72,320,72,320,110,0,110],'#7a5a3a');
-  g.fillStyle=lg(g,0,72,0,110,['#5a3e26','#8a6642']);g.fillRect(0,76,320,34);
-  for(let j=0;j<6;j++){const y=78+j*5.4+j*j*.2;stroke(g,[0,y,320,y],'rgba(30,18,10,.4)',.5)}
-  R(g,0,70,320,4,'#9a7448');R(g,0,70,320,.8,'#e2b878');R(g,0,73.6,320,.6,'#3a2414');
-  poly(g,[150,72,158,72,160,64,166,56,172,52,170,50,162,54,154,62],'#8a6440');stroke(g,[151,71,155,63,161,56,169,51],'#d8a868',.6);
-  for(const[x,d]of[[112,-1],[208,1]]){poly(g,[x-2.4,72,x+2.4,72,x+1.6+d*9,56,x-1.6+d*9,56],'#6a4a2c');stroke(g,[x-1.6+d*9,56.4,x+d*9-d*.6,57],'#a07a4a',.6);stroke(g,[x+d*8,59,x-d*6,66.5],'#5a3e24',1.4)}
-  /* the deck: planks running toward us, lit from the left */
-  g.fillStyle=lg(g,0,104,0,144,['#9a7650','#7a5a3a']);g.fillRect(0,104,320,40);
-  for(let i=-10;i<14;i++){const x0=160+i*14,x1=160+i*30;stroke(g,[x0,104,x1,144],'rgba(40,24,14,.4)',.5)}
-  tex(g,'wood',.35,0,104,320,40,'overlay',.5);
-  /* the shelter: goat-hair cloth on a ridge, from its back posts by the rail to its front posts at the strip's edge */
-  shelterDeck16(g,v);
-  if(eve){lightmap(g,320,'#9088a8',l=>{pool(l,85,104,70,34,'#ffd8a0',.9)})}
-  chestDeck16(g);cargoDeck16(g);postsDeck16(g,v);seatDeck16(g)}
-/* a low bale under the shelter, where Paul sits from Assos on */
-function seatDeck16(g){oval(g,62,118.6,10,1.4,'rgba(30,26,46,.35)');R(g,53,111,18,7.4,'#a8906a');R(g,53,111,18,1,'#d8c098');R(g,53,117,18,1,'#6a5236');tex(g,'mott',.4,53,111,18,7.4,'overlay',1)}
-function shelterDeck16(g,v){const torn=v==='eve'||v==='mornt',C='#4a3e36';
-  poly(g,[18,58,114,58,118,74,14,74],C);poly(g,[14,74,118,74,116,78,16,78],tint(C,-.3));
-  for(let x=20;x<112;x+=3)R(g,x,59,.5,15,'rgba(255,240,210,.06)');R(g,18,58,96,.6,'#8a7a6a');
-  if(torn){poly(g,[60,60,70,61,74,68,66,72,58,66],'#c8b8a0');stroke(g,[60,60,58,66,66,72],'#2a2018',.5)}
-  R(g,20,74,4,36,'#5a3e26');R(g,110,74,4,36,'#5a3e26');
-  if(v==='eve'){R(g,80,104,10,5,'#6a4a2c');R(g,78,108.6,14,1.6,'#5a3e26');poly(g,[81,104,89,104,88,102,82,102],'#b8784a')}}
-function postsDeck16(g,v){R(g,20,74,4,39,'#6a4a2c');R(g,20,74,1,39,'#a07a4a');R(g,110,74,4,39,'#6a4a2c');R(g,110,74,1,39,'#a07a4a');oval(g,22,112.6,4,1,'rgba(20,16,30,.35)');oval(g,112,112.6,4,1,'rgba(20,16,30,.35)')}
-function chestDeck16(g){oval(g,137,118.4,18,1.8,'rgba(30,26,46,.35)');R(g,122,104,30,14,'#6b492c');R(g,122,104,30,2.4,'#8c6440');R(g,122,104,30,.6,'#c8945a');R(g,122,116.4,30,1.6,'#3a2616');for(const x of[122,150])R(g,x,104,2,14,'#3a3436')}
-function cargoDeck16(g){oval(g,266,116.6,42,2,'rgba(30,26,46,.35)');
-  for(const[x,y,w,h,c]of[[226,96,26,20,'#b8a07a'],[252,92,28,24,'#a8906a'],[280,98,28,18,'#bca47e'],[236,82,24,14,'#c4ac84'],[262,80,22,12,'#b09870']]){R(g,x,y,w,h,c);R(g,x,y,w,1,tint(c,.3));R(g,x,y+h-1,w,1,tint(c,-.35));tex(g,'mott',.4,x,y,w,h,'overlay',1)}}
-function drawDeck16(g,t){const v=DECKV();
-  /* the ship's cat on top of the cargo, curled, her tail round her */
-  oval(g,265,79.4,6,1.2,'rgba(30,26,46,.3)');oval(g,264,77.2,5.2,2.6,'#6a5a4a');oval(g,268.4,75.6,2,1.8,'#7a6a58');poly(g,[267.4,74.4,268,72.8,268.8,74.2],'#5a4a3a');poly(g,[269.2,74.4,270,72.8,270.6,74.4],'#5a4a3a');
-  if(v==='eve'){flame(g,86,101.4,t);pool(g,86,101,7,4,'#ffcc80',.45)}
-  if(v==='sail')for(let i=0;i<6;i++){const k=(t/1600+i/6)%1;R(g,140+k*40,HZDeck16+8+k*16,2+k*3,.5,'rgba(255,255,255,'+(.7-.6*k).toFixed(2)+')')}}
+  props:SHARED.ship.deck.props(DECKO16('quay')).concat([
+    {y:124.6,shape(g,v){seatDeck16(g,v||'quay',1)},foot:[[123.4,121.9,20.7,2.7]],seat:1},
+    {y:114.2,shape(g){catDeck16(g,'quay',1)},foot:[]}])};
+function paintDeck16(g,v){SHARED.ship.paint(g,DECKO16(v));
+  if(v==='eve'||v==='mornt')tearDeck16(g,v);seatDeck16(g,v);catDeck16(g,v);if(v==='quay')plankDeck16(g,v)}
+/* the seat: a low bale of sacking at the shelter's mouth, its seam sewn along it, lit as the deck is */
+const SEAT16=[-.56,.04,4.35,4.56,.3];
+function seatDeck16(g,v,cut){const geo=SHARED.ship.deck.geo(DECKO16(v)),{P}=geo,[x0,x1,z0,z1,h]=SEAT16,L=geo.L,
+    a=P(x0,0,z0),b=P(x1,0,z0),c=P(x1,h,z0),d=P(x0,h,z0),e=P(x1,0,z1),f=P(x1,h,z1),k=P(x0,h,z1),
+    front=[a[0],a[1],b[0],b[1],c[0],c[1]+.4,(c[0]+d[0])/2,c[1]-.3,d[0],d[1]+.4],side=[...b,...e,...f,c[0],c[1]+.4],top=[d[0],d[1]+.4,(c[0]+d[0])/2,c[1]-.3,c[0],c[1]+.4,...f,...k];
+  if(cut){poly(g,front,'#000');poly(g,side,'#000');poly(g,top,'#000');return}
+  const S='#8a6e46';
+  /* its shadow: the soft dark where it meets the deck, and by day the shadow it casts away from the sun */
+  if(L.kx||L.kz){const q=[...a,...b,...e,...P(x1+h*L.kx,0,z1+h*L.kz),...P(x0+h*L.kx,0,z1+h*L.kz),...P(x0+h*L.kx,0,z0+h*L.kz)];comp(g,'multiply',.4,()=>poly(g,q,'#5a5070'))}
+  comp(g,'multiply',.55,()=>{g.fillStyle=lg(g,0,a[1]-1,0,a[1]+1.4,['rgba(40,30,50,0)','rgba(40,30,50,1)','rgba(40,30,50,0)']);g.fillRect(a[0]-1,a[1]-1,b[0]-a[0]+3,2.4)});
+  poly(g,side,litDeck16(v,S,[1,0,0]));poly(g,top,litDeck16(v,S,[0,1,-.2]));
+  poly(g,front);g.fillStyle=lg(g,0,d[1],0,a[1],[tint(litDeck16(v,S,[0,.3,-1]),.08),litDeck16(v,S,[0,0,-1]),tint(litDeck16(v,S,[0,-.3,-1]),-.2)]);g.fill();
+  clipTo(g,()=>poly(g,front.concat()),()=>{tex(g,'grain',.22,a[0]-1,d[1]-1,b[0]-a[0]+2,a[1]-d[1]+2,'overlay',.5);
+    /* the seam along the front, in short stitches that all slant one way */
+    for(let x=a[0]+1.5;x<b[0]-1.5;x+=1.6){const y=d[1]+(a[1]-d[1])*.42;stroke(g,[x,y+.4,x+.6,y-.4],rgba(tint(litDeck16(v,S,[0,0,-1]),.3),.55),.5)}});
+  stroke(g,[d[0]+.5,d[1]+.4,(c[0]+d[0])/2,c[1]-.3,c[0]-.3,c[1]+.4],rgba(litDeck16(v,'#f4e2b8',[0,1,-.3]),.6),.5)}
+/* the ship's cat: curled on the top bale, her head turned toward the deck, her tail laid round her front; two ears, small and apart */
+function catDeck16(g,v,cut){const geo=SHARED.ship.deck.geo(DECKO16(v)),[x,y]=geo.P(2.26,.9,5.9),B=v==='eve'?'#8a7a6a':'#5e4c3e',
+  body=()=>{oval(g,x+.6,y-1.7,3.3,1.75);g.fill();oval(g,x-2.2,y-3,1.55,1.4);g.fill();poly(g,[x-3.5,y-3.6,x-3.2,y-4.7,x-2.5,y-4.1]);g.fill();poly(g,[x-1.9,y-4.2,x-1.3,y-4.9,x-.9,y-3.8]);g.fill()};
+  if(cut){g.fillStyle='#000';body();return}
+  comp(g,'multiply',.5,()=>oval(g,x+.8,y+.1,4,.9,'#3a3050'));
+  g.fillStyle=litDeck16(v,B,[0,.4,-1]);body();
+  /* the light along her back and the top of her head, the shade under her, the tail, an ear's inside, the eye */
+  clipTo(g,()=>{oval(g,x+.6,y-1.7,3.3,1.75);oval(g,x-2.2,y-3,1.55,1.4)},()=>{
+    oval(g,x+1,y-2.6,3,.9,litDeck16(v,tint(B,.25),[0,1,-.2]));oval(g,x-2,y-3.9,1.2,.5,litDeck16(v,tint(B,.25),[0,1,-.2]));
+    R(g,x-3,y-.8,7,1,rgba(litDeck16(v,tint(B,-.4),[0,-1,0]),.8));
+    for(const sx of[.6,2,3.2])R(g,x+sx,y-3.2,.5,1,rgba(litDeck16(v,tint(B,-.35),[0,1,0]),.6))});
+  stroke(g,[x+3.6,y-.9,x+2.2,y-.3,x-.4,y-.35,x-1.8,y-.8],litDeck16(v,tint(B,-.18),[0,.2,-1]),.9);
+  R(g,x-3.1,y-4.2,.5,.5,litDeck16(v,'#b08a74',[0,0,-1]));R(g,x-2.8,y-3.2,.5,.5,v==='eve'?'#6a7454':'#1e1610')}
+/* the torn awning: the wind has ripped the goat-hair of the shelter's front from its frame at the upper left, and a flap hangs down,
+   its paler underside out, its edges frayed; through the rent the dark inside shows */
+function tearDeck16(g,v){const nt=v==='eve',dk=nt?'#0c0a12':'#161014',under=nt?'#3a3542':'#6a5e52',edge=nt?'#5a5464':'#a89884';
+  const hole=[114.2,93.2,119,93.6,123.6,94.4,122.4,96.4,121.6,98.8,118.8,100.6,116.4,101.4,114.4,100.2];
+  poly(g,hole,dk);
+  const flap=[121.6,98.8,118.8,100.6,116.4,101.4,116.9,103.6,117.6,106.2,119.4,105.2,121.6,104.6,123.8,103.4,123.2,101.2];
+  poly(g,flap);g.fillStyle=lg(g,0,99,0,106,[tint(under,.1),under,tint(under,-.25)]);g.fill();
+  clipTo(g,()=>poly(g,flap),()=>{tex(g,'grain',.25,115,98,10,9,'overlay',.6);for(let y=100.5;y<106;y+=1.3)stroke(g,[116.8,y,123.8,y-1.2],rgba(tint(under,-.3),.4),.5)});
+  stroke(g,[116.9,103.6,117.6,106.2,119.4,105.2,121.6,104.6,123.8,103.4],edge,.5);
+  stroke(g,[114.2,93.2,119,93.6,123.6,94.4],rgba(edge,.7),.5);
+  comp(g,'multiply',.45,()=>poly(g,[116.4,106.4,119.4,105.8,121.6,105.2,123.8,104,124.2,105.6,118.6,107.6],'#2a2030'))}
+/* quaySideDeck16: the quay of Troas along her right side, its top a little higher than her rail: the paving runs back from the coping
+   at its edge to the horizon, where the town stands on it; the coping is a band of long stones, one tone to a stone, with no joint
+   drawn across it; the face of the quay under the coping is hidden by her bulwark */
+function quaySideDeck16(g,O){const{P}=SHARED.ship.deck.geo({variant:'day',hz:66}),r=rng(167),edge=[],face=[];
+  for(let z=2.4;z<=420;z*=1.06){edge.push(...P(4.2,1.45,z));face.unshift(...P(4.2,-.4,z))}
+  const top=edge.concat([330,66.2,340,66.2,340,100]);
+  /* the face of the quay, in the shade: courses of dressed stone that run back along her side, each block its own tone, every joint
+     stopping at the edge of its own course; dark and wet toward the water */
+  poly(g,edge.concat(face),'#5e584e');
+  clipTo(g,()=>poly(g,edge.concat(face)),()=>{for(let k=0;k<5;k++){const y0=1.45-k*.38,y1=y0-.36;let z=2.4+r()*1.2;
+      while(z<90){const l=(1.1+r()*.9)*(1+z/40),q=[...P(4.2,y0,z),...P(4.2,y0,z+l*.97),...P(4.2,y1,z+l*.97),...P(4.2,y1,z)];
+        poly(g,q,tint(mix('#8e8474','#5e5a58',k*.16),(r()-.5)*.16));const t=[...P(4.2,y0,z),...P(4.2,y0,z+l*.97)];stroke(g,t,'rgba(232,222,200,.18)',.5);z+=l}}
+    tex(g,'mott',.4,150,64,190,60,'overlay',1);
+    g.fillStyle=lg(g,0,70,0,100,['rgba(30,26,34,0)','rgba(30,26,34,.35)']);g.fillRect(150,66,190,40)});
+  poly(g,top);g.fillStyle=lg(g,0,66,0,80,['#c6bca8','#bcae92','#a89a7e']);g.fill();
+  clipTo(g,()=>poly(g,top),()=>{tex(g,'mott',.35,150,64,190,30,'overlay',1);
+    for(let i=0;i<160;i++){const z=3+Math.pow(r(),2.2)*70,x=4.8+r()*9,[px,py]=P(x,1.45,z),w=(.6+r()*1.6)*Math.min(z,8)/z;R(g,px,py,Math.max(.5,w),.5,rgba(r()<.55?'#86786a':'#eee4cc',.3))}
+    for(let z=2.6;z<80;){const l=1.4+r()*1.3,q=[...P(4.2,1.45,z),...P(4.2,1.45,z+l),...P(4.75,1.45,z+l),...P(4.75,1.45,z)];poly(g,q,tint('#cfc4aa',(r()-.5)*.14));z+=l}
+    const lip=[];for(let z=2.4;z<=420;z*=1.06)lip.push(...P(4.2,1.45,z));stroke(g,lip,'#f0e6d0',.5)})}
+/* the gangplank, moored at Troas: one broad plank from the near rail at the right up to the edge of the quay, its end resting on the
+   rail; nothing is laid across it */
+function plankDeck16(g,v){const{P}=SHARED.ship.deck.geo(DECKO16(v)),W='#a48256',
+  a=P(2.8,1.07,3.2),b=P(2.8,1.07,3.62),c=P(4.3,1.5,3.62),d=P(4.3,1.5,3.2),e=P(2.8,1.0,3.2),f=P(4.3,1.43,3.2);
+  comp(g,'multiply',.45,()=>poly(g,[a[0]-1,a[1]+1.2,b[0]-1.4,b[1]+.8,b[0]+1.6,b[1]+.4,a[0]+1.6,a[1]+.6],'#3a3050'));
+  poly(g,[...e,...f,...d,...a],litDeck16(v,tint(W,-.38),[0,0,-1]));
+  poly(g,[...a,...b,...c,...d]);g.fillStyle=lg(g,a[0],0,c[0],0,[litDeck16(v,W,[-.3,1,0]),litDeck16(v,tint(W,.06),[-.3,1,0])]);g.fill();
+  clipTo(g,()=>poly(g,[...a,...b,...c,...d]),()=>{for(const k of[.28,.55,.8]){const p=P(2.8,1.07,3.2+.42*k),q=P(4.3,1.5,3.2+.42*k);stroke(g,[p[0],p[1],q[0],q[1]],rgba(tint(W,-.35),.3),.5)}});
+  stroke(g,[a[0],a[1],d[0],d[1]],rgba(litDeck16(v,'#f6e2b4',[0,1,0]),.7),.5)}
+/* drawDeck16: the sea, moving where it is open; the wake under way; smoke from the hearths of Troas; the pennant; the lamp's flame */
+function drawDeck16(g,t){const v=DECKV(),C=coastDeck16(v),geo=SHARED.ship.deck.geo(DECKO16(v)),Wt=SHARED.weather;
+  if(!C.S){C.S=SHARED.coast.seaMotion(C.O);C.S.open=(x,y)=>openDeck16(v,x,y)}
+  C.S.draw(g,t);
+  if(v==='sail'){const r=rng(16051);for(let i=0;i<44;i++){const k=((t/5200+i/44)%1),z=14+Math.pow(k,1.6)*150,sd=i%2?1:-1,[x,y]=geo.P(sd*(1.3+(z-11)*.34)+(r()-.5)*(.6+z*.04),-1.1,z);
+    if(openDeck16(v,x,y))R(g,x-1,y,1.5+r()*2,.5,`rgba(246,250,250,${(.6*Math.sin(k*Math.PI)).toFixed(2)})`)}}
+  for(const[x,y]of C.hearths)Wt.smoke(g,t,x,y,C.W,{h:14,c:'#ece6dc',a:.45,n:12});
+  const W=v==='mornt'?{pennant:{dx:Math.sin(t/2600)*.85,dz:.35*Math.cos(t/2600),lift:.5,flap:.7}}:C.W;
+  Wt.pennant(g,t,geo.pennant[0],geo.pennant[1],W,{len:13,w:2,c:v==='eve'?'#56302e':'#a8402c'});
+  if(v==='eve'){const[lx,ly]=geo.lamp;flame(g,lx-.5,ly-1,t)}}
 /* ==== ART deck16: end ==== */
 
 /* ==== ART assos16: begin ==== */
@@ -654,71 +736,187 @@ function drawAssos16(g,t){const P=PAssos16;if(P.S)P.S.draw(g,t);if(P.H)P.H.draw(
 
 /* ==== ART sky16: begin ==== */
 /* A close view: the morning seen over the stern, with the signs a sailor reads and nothing else: no helper marks. The far shore runs
-   across the back of the picture, so that the stern ornament at the left stands against land and not across the horizon; the pennant
-   flies from its top. Hearths smoke on the shore; whitecaps on the sea; clouds drift. At the foot, the stern rail, with the boy's wool
-   tuft on its stick and his knotted cord, and at the right the master's hand on the tiller.
+   across the back of the picture (shared/coast.js: one horizon, the sky and the sea worked out per pixel, the clouds moving with the
+   wind), the sea between, and at the foot the stern rail, close, in fine-grained wood. The stern ornament curls up from the left end
+   of the rail and ends below the horizon, so that it stands against the sea and never across the line where the sea meets the sky;
+   the pennant flies from its head (SHARED.weather.pennant). Hearths smoke on the shore (SHARED.weather.smoke); whitecaps break on the
+   sea as many as the wind has; the clouds drift with it. On the rail lie the boy's wool tuft on its short stick, streaming from the
+   stick's end the way the player has set it, and his knotted cord along the rail's face, with as many knots as the player has tied;
+   at the right the master's hand rests on the tiller, which runs level along the rail. Nothing upright stands on the rail.
    Directions in the picture: up the coast is to the left (the north, from which the master wants his wind), down the coast to the
-   right, the land behind, the open sea behind us. A wind from up the coast drives everything to the right.
-   Rounds (SKY16, from the story, ROUND16()): 1, at Troas: every sign agrees (from up the coast, fresh). 2, off Mitylene: the smoke of
-   the hearths under the steep hill curls back to the left, as smoke does in the lee of a hill; the pennant and the clouds tell it
-   straight (from up the coast, a breath). 3, off Chios: the ship swings at anchor on the current, and the pennant swings with her; the
-   whitecaps and the clouds tell it straight (from up the coast, strong); the shore is too far for smoke.
+   right, the land behind, the open sea behind us. A wind from up the coast drives everything to the right (SHARED.weather.wind, from
+   the north, looking east).
+   Rounds (SKY16, from the story, ROUND16()): 1, at Troas: every sign agrees (from up the coast, fresh: the smoke leans right, the
+   pennant streams right, a few whitecaps, the clouds drift right). 2, off Mitylene: a breath from up the coast, but the smoke of the
+   hearths at the foot of the steep hill curls back to the left, as smoke does in the lee of a hill (smoke:{lee:1}); the pennant lifts
+   lazily to the right, the clouds creep right, no whitecaps. 3, off Chios: strong from up the coast; the ship swings at anchor on the
+   current and the pennant swings with her, now one way, now the other; the whitecaps and the clouds racing right tell it straight;
+   the shore is too far for smoke.
    Called from outside: ART.sky16, SKY16, ROUND16, TUFT16, CORD16. Reads G.sky16 (the tuft and the cord as the player has set them).
-   The ornament rises from the left end of the rail and ends below the line of the shore, so that no upright crosses it; the tuft lies
-   along the rail on its short stick and streams from its end, and the cord lies along the rail's face with its knots: nothing upright
-   stands on the rail.
    Hotspots: the pennant 8,hz,44,20 · the smoke 86,24,80,36 (rounds 1 and 2) · the whitecaps 100,66,220,40 · the clouds 0,0,320,24 ·
    the wool tuft 132,108,46,22 · the knotted cord 184,116,46,20 · the master 250,110,70,24 · back to the deck 0,134,100,10. */
-const SKY16={1:{hz:60,wind:1,flut:1,smoke:1,caps:6,cloud:.6},2:{hz:62,wind:1,flut:.4,smoke:-1,caps:0,cloud:.25},3:{hz:58,wind:1,flut:0,smoke:0,caps:22,cloud:1.4}};
+const SKY16={1:{hz:60,force:2,cloud:.32,seed:171},2:{hz:62,force:1,cloud:.26,seed:172,lee:1},3:{hz:58,force:3,cloud:.5,seed:173,swing:1}};
+const SKC16={};
+function oSky16(k){if(SKC16[k])return SKC16[k];const S=SKY16[k],W=SHARED.weather.wind({from:'n',force:S.force,view:'e',smoke:S.lee?{lee:1}:undefined}),
+  O={w:320,hz:S.hz,hour:'morning',cloud:S.cloud,wind:W,seed:S.seed,light:1,y1:112,moving:1,top:()=>S.hz};
+  return SKC16[k]={O,W,hearths:[],top:()=>S.hz}}
 ART.sky16={w:320,q:12,variant:()=>''+ROUND16(),paint(g,v){paintSky16(g,+v)},light:null,draw(g,t){drawSky16(g,t)},front(g){frontSky16(g)}};
-function paintSky16(g,k){const r=rng(1606+k),S=SKY16[k],HZ=S.hz;
-  sky(g,320,HZ+1,['#7a9cc8','#a4bccc','#e2dccc']);
-  /* the far shore across the back: high at the left (a steep hill in round 2), lower at the right */
-  ridge(g,0,320,HZ+.4,x=>k===2?(x<120?34-x*.05+4*Math.sin(x/9):Math.max(6,28-(x-120)*.12))+2*Math.sin(x/5):k===3?Math.max(5,22-x*.04)+2*Math.sin(x/13):Math.max(8,26-x*.06)+3*Math.sin(x/11),['#8a8c88','#7a8068']);
-  if(k===1){house(g,90,HZ-9,14,9,'#d2c4a6',r,{beams:0});house(g,108,HZ-7,12,7,'#cfc0a0',r,{beams:0})}
-  if(k===2){for(const[x,w]of[[122,10],[136,8]])R(g,x,HZ-5,w,5,'#cfc0a0')}
-  seaC16(g,HZ,112,r,'#c4c8c2','#3a6688',null,240);
-  /* the stern rail at the foot, and the stern ornament rising from it at the left, its top against the land */
-  g.fillStyle=lg(g,0,112,0,144,['#9a7448','#6a4a2c']);g.fillRect(0,112,320,32);R(g,0,112,320,1,'#e2b878');tex(g,'wood',.35,0,112,320,32,'overlay',.5);
-  poly(g,[0,112,10,112,14,96,20,84,24,HZ+9,20,HZ+8,14,82,6,96,0,104],'#8a6440');stroke(g,[1,108,7,95,14,83,21,HZ+8.5],'#d8a868',.7);
-  /* the tiller at the right, and the master's hand on it */
-  stroke(g,[320,120,262,134],'#6a4a2c',3);stroke(g,[320,119,262,133],'#a07a4a',.8);oval(g,284,127.6,4.6,3,'#b0805a');oval(g,283.4,126.6,3,1.6,'#c8946a')}
-const CLOUDS16=[[30,10,40,3],[120,16,50,3.4],[220,8,36,2.6],[300,18,44,3]];
-function drawSky16(g,t){const k=ROUND16(),S=SKY16[k],HZ=S.hz,s=t/1000;
-  for(const[x0,y,w,h]of CLOUDS16){const x=((x0+s*S.cloud*6)%380)-30;pool(g,x,y,w*.6,h*1.2,'#ffffff',.55,'source-over');pool(g,x+w*.2,y-h*.4,w*.4,h,'#ffffff',.5,'source-over')}
-  /* smoke from two hearths on the shore: it rises and leans with the air where it stands */
-  if(S.smoke)for(const hx of k===1?[96,114]:[126,140])for(let i=0;i<10;i++){const u=((s*.35+i/10)%1),y=HZ-6-u*26,x=hx+S.smoke*u*u*26*(k===2?1:1.4);pool(g,x,y,2+u*5,1.6+u*3,'#f4f0ea',.75*(1-u),'source-over')}
-  /* whitecaps: short white strokes on the sea, their foam trailing downwind */
-  const r=rng(1690+k);for(let i=0;i<S.caps;i++){const y=HZ+6+r()*44,x=(r()*340+s*(4+S.cloud*6))%340-10,on=Math.sin(s*1.7+i*2.3)>-.2;if(on){R(g,x,y,2+r()*3,.5,'rgba(255,255,255,.85)');R(g,x+2,y+.5,3,.5,'rgba(255,255,255,.4)')}}
-  /* the pennant from the top of the ornament: three tongues of red wool that stream, lift or swing */
-  const px=23,py=HZ+9,a=k===3?.9*Math.sin(s*.5):S.flut>.5?.05*Math.sin(s*8):-.35+.1*Math.sin(s*2),L=k===2?11:14;
-  for(let j=0;j<3;j++){const ex=px+Math.cos(a)*L,ey=py+Math.sin(a)*L*.7+j*1.1+(k===2?3:0),wv=S.flut>.5?Math.sin(s*12+j)*.8:.3*Math.sin(s*3+j);
-    stroke(g,[px,py+j*.8,(px+ex)/2,(py+ey)/2+wv,ex,ey],j===1?'#c84a3a':'#a83a2c',.8)}
-  /* the boy's wool tuft on its stick, set as the player has set it; and his knotted cord */
-  const sk=sky16(),dir=TUFT16[sk.dir],tx=166,ty=118;R(g,136,ty-.8,30,1.6,'#7a5a3a');R(g,136,ty-.8,30,.5,'#b08a5a');
-  const ends={up:[tx+9,ty+1],down:[tx-9,ty-1.6],land:[tx+2,ty+7],sea:[tx+3,ty-5]}[dir.k];stroke(g,[tx,ty,(tx+ends[0])/2,(ty+ends[1])/2+.6,ends[0],ends[1]],'#efe6d2',1.4);
-  stroke(g,[188,126,226,126],'#c8b48a',1);for(let i=0;i<sk.str;i++)R(g,194+i*10,124.8,2.6,2.4,'#a88e62')}
+/* the ornament's head, where the pennant is made fast: below the horizon, against the sea */
+const ORN16=k=>[25.6,SKY16[k].hz+8.6];
+function paintSky16(g,k){const K=SHARED.coast,C=oSky16(k),O=C.O,HZ=SKY16[k].hz;let tops=[];
+  K.sky(g,O);
+  if(k===1){tops.push(K.isle(g,0,320,15,O,{kind:'cape',from:'l',dist:.48,seed:174}).top);
+    const T=K.town(g,O,{x0:64,x1:214,base:HZ+.8,hill:x=>HZ-1-12*Math.pow(Math.sin(Math.PI*(x-64)/150),.8)-1.2*Math.sin(x/7),rows:3,size:5.5,dist:.38,warehouses:[[98,30,3.6],[150,36,3.8]],seed:175});tops.push(T.top);
+    C.hearths=[102,128,152].map(x=>[x,Math.min(HZ-1,T.top(x)+.6)])}
+  else if(k===2){tops.push(K.isle(g,0,138,34,O,{kind:'cape',from:'l',dist:.36,seed:176}).top);tops.push(K.isle(g,120,320,8,O,{kind:'cape',from:'r',dist:.72,seed:177}).top);
+    const T=K.town(g,O,{x0:112,x1:186,base:HZ+.8,hill:x=>HZ-2.4-Math.max(0,(142-x)*.2)-Math.sin(x/6)*.8-2.2*Math.sin(Math.PI*(x-112)/74),rows:2,size:5,dist:.42,seed:178});tops.push(T.top);
+    C.hearths=[126,144].map(x=>[x,Math.min(HZ-1,T.top(x)+.6)])}
+  else tops.push(K.isle(g,0,250,7,O,{kind:'cape',from:'l',dist:.8,seed:179}).top);
+  C.top=SHARED.coast.skyline(...tops);O.top=x=>Math.min(HZ,C.top(x));
+  C.S=K.sea(g,O);C.S.open=(x,y)=>openSky16(k,x,y);
+  railSky16(g,k);ornSky16(g,k);handSky16(g)}
+function openSky16(k,x,y){const HZ=SKY16[k].hz;return y>HZ+.4&&y<110.5&&!(x<34&&y>HZ+3)}
+/* grainSky16: wood with its grain running along it: fine lines a little lighter or darker than the wood, which all wave alike and so
+   never cross, and here and there a pore */
+function grainSky16(g,x,y,w,h,c,seed,a){const r=rng(seed),f=.03+r()*.02,p=r()*6,A=.4+r()*.5;
+  inRect(g,x,y,w,h,()=>{for(let yy=y-2;yy<y+h+2;yy+=.5+r()*1.1){const col=r()<.55?rgba(tint(c,-.3),(.12+r()*.18)*(a||1)):rgba(tint(c,.22),(.08+r()*.16)*(a||1)),pts=[];
+      for(let xx=x-1;xx<=x+w+2;xx+=2)pts.push(xx,yy+A*Math.sin(xx*f+p)+.3*Math.sin(xx*f*2.7+p*1.6));stroke(g,pts,col,.5)}
+    for(let i=0;i<w*h/60;i++)R(g,x+r()*w,y+r()*h,1+r()*1.5,.5,rgba(tint(c,-.4),.28))})}
+/* railSky16: the stern rail at the foot, seen close: its rounded cap, lit on top, and under it the top strakes of the stern, each plank
+   with its grain along it and its butt joint stopping inside its own strake, staggered */
+function railSky16(g,k){const W='#946c42',r=rng(180+k);
+  /* the strakes under the cap: three, darker as they go down, in the shade of the cap */
+  for(const[y,h,c,j]of[[117,8.5,'#7e5a36',212],[125.5,9,'#74522f',96],[134.5,9.5,'#6a4a2a',248]]){R(g,0,y,320,h,c);grainSky16(g,0,y,320,h,c,190+y,.9);
+    R(g,0,y,320,.5,tint(c,-.45));R(g,0,y+.5,320,.5,rgba(tint(c,.18),.5));
+    R(g,j,y+.5,.5,h-1,tint(c,-.5));R(g,j+.5,y+.5,.5,h-1,rgba(tint(c,.2),.5))}
+  g.fillStyle=lg(g,0,117,0,128,['rgba(20,12,8,.5)','rgba(20,12,8,0)']);g.fillRect(0,117,320,11);
+  /* the cap: a rounded rail, its top in the light, its front turning into the shade */
+  g.fillStyle=lg(g,0,111,0,117.5,[tint(W,.32),tint(W,.12),W,tint(W,-.25),tint(W,-.45)]);g.fillRect(0,111,320,6.5);
+  grainSky16(g,0,111,320,6.5,W,185,.8);R(g,0,111,320,.5,rgba('#fff0d0',.55));R(g,0,111.5,320,.5,rgba('#ffe2b0',.25));R(g,0,117,320,.5,'#2a1a0e');
+  /* the soft shade the cap throws on the strake under it, and the wear of hands along its top */
+  for(let i=0;i<16;i++){const x=r()*320;R(g,x,112,4+r()*12,.5,rgba('#fff4dc',.12+r()*.1))}}
+/* ornSky16: the stern ornament, the curled head of the stern post, rising from the left end of the rail and curling back toward us
+   below the horizon; carved, lit from the right */
+function ornSky16(g,k){const[hx,hy]=ORN16(k),W='#6c4828',
+  /* the neck: from the rail it rises and leans toward the right, then the head turns back over itself in a scroll */
+  out=[0,117,0,108,3,100,7.4,92,12,85,16.6,hy+9,19.6,hy+4,22.6,hy+.6,26.4,hy-.8,30,hy+.6,31.6,hy+3.8,30.4,hy+7.4,27.4,hy+9.2,24.2,hy+9,
+    22.8,hy+11.2,21.6,86,17.6,94,13.4,102,10.2,110,9,117];
+  comp(g,'multiply',.35,()=>poly(g,out.map((v,i)=>i%2?v+1.2:v+1.6),'#3a2a40'));
+  poly(g,out);g.fillStyle=lg(g,2,0,28,0,[tint(W,-.38),tint(W,-.05),tint(W,.22)]);g.fill();
+  clipTo(g,()=>poly(g,out),()=>{g.save();g.translate(12,100);g.rotate(-1.05);grainSky16(g,-40,-14,80,28,W,187,1.4);g.restore();
+    /* a carved collar round the neck, two grooves and the raised band between them, darker with old pitch */
+    for(const[y0,c,a]of[[101.2,'#2a1a0e',.7],[102,'#e0b47c',.45],[104.6,'#2a1a0e',.7]])stroke(g,[1,y0+4.6,16,y0-2.6],rgba(c,a),.6);
+    poly(g,[1,106.4,16,99,16,101.6,1,109],rgba('#4a2e18',.45));
+    /* the lit edge on the right of the neck, the shade on its left */
+    stroke(g,[9.6,117,10.6,110,13.8,102,18,94,21.8,86,23.2,hy+11],rgba('#f6d4a0',.6),.7);
+    stroke(g,[.4,108,3.4,100,7.8,92.4,12.4,85.4,16.8,hy+9.6],rgba('#2a1a10',.45),.8);
+    /* the scroll cut into the head: a groove that winds in and stops, never a ring */
+    stroke(g,[29.8,hy+5.6,29.6,hy+2.4,27,hy+1,24.2,hy+2,23.6,hy+4.8,25.4,hy+6.6,27.6,hy+5.6,27.4,hy+3.8],rgba(tint(W,-.55),.85),.6);
+    stroke(g,[30.4,hy+5,30.2,hy+2.2],rgba('#f6dcae',.7),.5)});
+  stroke(g,[19.6,hy+4,22.6,hy+.6,26.4,hy-.8,30,hy+.6],rgba('#fae2b6',.85),.5)}
+/* handSky16: the tiller of the steering oar, coming in from the right, level along the rail; the master's hand on it and his forearm */
+function handSky16(g){const W='#7a5634',S='#b47e58';
+  comp(g,'multiply',.4,()=>R(g,244,125,80,3,'#3a2a3a'));
+  R(g,246,118.6,76,5.4,W);R(g,246,118.6,76,1,tint(W,.35));R(g,246,123,76,1,tint(W,-.4));grainSky16(g,246,119.6,76,3.4,W,186,.8);
+  poly(g,[244.2,119.2,246.6,118.6,246.6,124,244.2,123.4],tint(W,-.2));R(g,244.2,119.2,.5,4.2,tint(W,.2));
+  /* the forearm from the lower right, bare and sunburnt, and the fist over the tiller: four fingers curled under it, knuckles lit */
+  const arm=[320,138,320,129,300,122.6,292,121.6,288.6,124.8,298,131,306,139,318,144];
+  poly(g,arm);g.fillStyle=lg(g,300,122,312,140,[tint(S,.18),S,tint(S,-.3)]);g.fill();
+  clipTo(g,()=>poly(g,arm),()=>{stroke(g,[320,129.6,300,123.2,292.6,122.2],rgba('#f2c8a0',.6),.6);tex(g,'mott',.2,286,120,36,24,'overlay',1)});
+  const fist=[281.8,118.2,285,116.2,290.6,116,294.6,117.4,296.2,120.4,295.4,124.6,291.6,126.2,286,126,282,124.6,280.6,121.4];
+  comp(g,'multiply',.4,()=>poly(g,fist.map((v,i)=>i%2?v+1:v+.6),'#3a2a3a'));
+  poly(g,fist);g.fillStyle=lg(g,0,116,0,126,[tint(S,.22),S,tint(S,-.25)]);g.fill();
+  clipTo(g,()=>poly(g,fist),()=>{for(const x of[284.6,287.6,290.6])R(g,x,121.4,.5,4.2,rgba(tint(S,-.45),.6));
+    for(const x of[282.6,285.6,288.6,291.6])R(g,x+.6,117.4,1.6,.5,rgba('#f6d2ac',.65));
+    R(g,293.2,118,1.4,3.6,rgba(tint(S,-.3),.5))});
+  R(g,281.4,121,.5,2.6,rgba(tint(S,-.4),.6))}
+function drawSky16(g,t){const k=ROUND16(),C=oSky16(k),S=SKY16[k],Wt=SHARED.weather;
+  if(!C.S){C.S=SHARED.coast.seaMotion(C.O);C.S.open=(x,y)=>openSky16(k,x,y)}
+  if(!C.L)C.L=SHARED.coast.skyLayer(C.O);C.L.draw(g,t);
+  C.S.draw(g,t);
+  for(const[x,y]of C.hearths)Wt.smoke(g,t,x,y-.5,C.W,{h:26,c:'#eeeae2',a:.6});
+  /* the pennant: with the wind; in round 3 the ship swings on the current, and the pennant with her */
+  const s=t/1000,W=S.swing?{pennant:{dx:Math.sin(s*.45)*.95,dz:.3*Math.cos(s*.45),lift:.62,flap:.9}}:C.W,[px,py]=ORN16(k);
+  Wt.pennant(g,t,px,py,W,{len:20,w:2.8,c:'#b03c2c'});
+  /* the boy's wool tuft on its short stick, lying along the rail, set as the player has set it; and his knotted cord along the face */
+  const sk=sky16(),dir=TUFT16[sk.dir].k,tx=166,ty=113.6;
+  comp(g,'multiply',.4,()=>R(g,137,ty+.6,30,1.6,'#3a2a3a'));
+  R(g,134,ty-1.4,32,2.6,'#6e4e2e');R(g,134,ty-1.4,32,.6,'#c89c6e');R(g,134,ty+.8,32,.4,'#3e2a18');R(g,165,ty-1.6,1.6,3,'#5a3e24');
+  const e={up:[12,.8],down:[-11,-1.8],land:[2.4,8.4],sea:[3.6,-6.4]}[dir],wv=Math.sin(s*7)*.6;
+  for(let j=0;j<7;j++){const o=(j-3)*.5,ex=tx+e[0]+o*(dir==='land'||dir==='sea'?1:.2)+(j%2?wv:-wv)*.6,ey=ty+e[1]+o*(dir==='up'||dir==='down'?1:.3);
+    stroke(g,[tx+.4,ty-.2+o*.3,(tx+ex)/2+wv*.4,(ty+ey)/2+.3*j*.2,ex,ey],j===3?'#fbf8ee':j%2?'#e6ded0':'#d2c8b4',j===3?1:.7)}
+  R(g,tx-.4,ty-1.8,2.4,3.4,'#f0e8d8');R(g,tx-.4,ty-1.8,2.4,.6,'#fffaf0');
+  const cy=126.4;comp(g,'multiply',.35,()=>R(g,189,cy+1,38,1.2,'#3a2a3a'));
+  R(g,186,cy-1.6,2.4,3.2,'#4e3620');R(g,226.6,cy-1.6,2.4,3.2,'#4e3620');R(g,186,cy-1.6,2.4,.5,'#a07a52');R(g,226.6,cy-1.6,2.4,.5,'#a07a52');
+  stroke(g,[188.4,cy,207,cy+.6,226.6,cy],'#b8a47a',1.5);stroke(g,[188.4,cy-.5,207,cy+.1,226.6,cy-.5],'#ece0bc',.5);
+  for(let i=0;i<sk.str;i++){const x=197+i*10;R(g,x-2,cy-1.8,4,3.6,'#9a8258');R(g,x-2,cy-1.8,4,.8,'#e8d8ac');R(g,x+1.4,cy-1,.6,2.6,'#5e4c30');R(g,x-1,cy-.4,1.4,.5,'#c8b488')}}
 function frontSky16(g){const sk=sky16();R(g,0,0,320,9,'rgba(14,10,18,.55)');cap16(g,T('the_boy_will_report',{dir:T(TUFT16[sk.dir].n),str:T(CORD16[sk.str])}),160,4.6,300)}
 /* ==== ART sky16: end ==== */
 
 /* ==== ART watch16: begin ==== */
-/* A close view: Luke's wax tablet, by lamplight, with the four watches of the night written down it as four ruled rows (level lines only,
-   no column and no grid), each with its name at the left and room for two names; below the tablet, on the deck, the eight name tokens
-   that have not been laid yet. The tokens are small wooden tags with a name burnt in.
+/* A close view: Luke's wax tablet by lamplight, lying on the deck, in the fine manner of the close views of Chapters Thirteen to Fifteen.
+   A frame of boxwood, its grain running the long way and mitred at the corners, round dark wax that the lamp at the upper right lights
+   with a soft sheen; the frame throws a thin shade onto the wax along its top and right. The four watches of the night are written down
+   it as four separate rows, each with its name scratched in at the left and its own ruled groove under it, which stops short of the
+   frame at both ends: level lines only, no column and no grid. Below the tablet, on the planks of the deck, lie the name tokens that
+   have not been laid yet: small tags of light wood with a name burnt in; a token laid on the tablet lies in its row, one on each side
+   of the row's middle, and the one picked up is lifted toward the light. A bronze stylus lies on the deck at the lower right.
    Called from outside: ART.watch16, ROWS16 (the rows), tokenBox16(id) (where a token lies, for its hotspot and the painter). Reads G.w16
    (where each token lies) and G.w16s (the one picked up). Hotspots: the four rows 20,ROWS16[i],280,22 · each token at tokenBox16 ·
    back to the deck 220,134,100,10. */
 const ROWS16=[10,33,56,79];
 ART.watch16={w:320,q:12,paint(g){paintWatch16(g)},light:null,draw(g,t){drawWatch16(g,t)},front(){}};
-function paintWatch16(g){const r=rng(1607);
-  g.fillStyle=lg(g,0,0,0,144,['#3a2a20','#24180e']);g.fillRect(0,0,320,144);pool(g,300,20,90,60,'#ffb868',.5);
-  R(g,12,4,296,104,'#7e5428');R(g,12,4,296,1,'#c8945a');R(g,12,107,296,1,'#3a2410');R(g,18,8,284,96,'#2e2218');tex(g,'mott',.4,18,8,284,96,'overlay',1);
-  for(const y of ROWS16)R(g,22,y+21,276,.6,'#8a7a5a')}
-function drawWatch16(g,t){const st=w16();
-  WATCHES16.forEach((k,i)=>cap16(g,k,64,ROWS16[i]+11,84,{sz:5,c:'#d8c89a'}));
-  for(const m of WATCH_MEN16){const[x,y,w,h]=tokenBox16(m.id),sel=G.w16s===m.id;
-    R(g,x+.6,y+.8,w,h,'rgba(0,0,0,.35)');R(g,x,y-(sel?1.5:0),w,h,sel?'#e2c48a':'#b8925a');R(g,x,y-(sel?1.5:0),w,.6,'#f0d8a8');
-    cap16(g,m.name,x+w/2,y+h/2-(sel?1.5:0),w-3,{sz:4.6,ink:'#2a1a0c'})}}
+/* grainW16: wood with its grain running along it, the lines a little lighter or darker than the wood, all waving alike so that none
+   crosses another, and here and there a pore (the boxwood of Chapter Fourteen's sealed tablet) */
+function grainW16(g,x,y,w,h,c,seed,a){const r=rng(seed),f=.04+r()*.03,p=r()*6,A=.4+r()*.5;a=a==null?1:a;
+  inRect(g,x,y,w,h,()=>{R(g,x,y,w,h,c);for(let yy=y-2;yy<y+h+2;yy+=.5+r()*1.1){const col=r()<.55?rgba(tint(c,-.3),(.12+r()*.18)*a):rgba(tint(c,.24),(.08+r()*.16)*a),pts=[];
+      for(let xx=x-1;xx<=x+w+2;xx+=1.5)pts.push(xx,yy+A*Math.sin(xx*f+p)+.35*Math.sin(xx*f*2.6+p*1.7));stroke(g,pts,col,.5)}
+    for(let i=0;i<w*h/50;i++)R(g,x+r()*w,y+r()*h,1+r()*1.5,.5,rgba(tint(c,-.42),.28*a))})}
+/* deckW16: the planks of the deck, running across, each with its own tone and grain; each butt joint stops inside its own plank, and the
+   joints of one plank are never in line with those of the next */
+function deckW16(g,y0,y1,c,seed){const r=rng(seed);for(let y=y0,i=0;y<y1;y+=9.2,i++){const cc=tint(c,(r()-.5)*.14);grainW16(g,0,y,320,9.2,cc,seed+i*7,.9);
+    R(g,0,y,320,.5,tint(cc,-.55));R(g,0,y+.5,320,.5,rgba(tint(cc,.2),.16));
+    for(let x=12+(i*67)%160+r()*8;x<320;x+=160){R(g,x,y+.5,.5,8.6,tint(cc,-.5));R(g,x+.5,y+.5,.5,8.6,rgba(tint(cc,.2),.4))}}}
+/* the tablet: frame and wax, with the lamp's light and the shade it throws */
+const TAB16=[12,4,296,104],WAX16=[18.5,9.5,283,93];
+function paintWatch16(g){const r=rng(1607),[x,y,w,h]=TAB16,[wx,wy,ww,wh]=WAX16,B='#a8875c';
+  deckW16(g,0,144,'#6e4e30',1610);
+  /* the tablet's soft shade on the deck, thrown down and to the left */
+  for(const[d,a]of[[5,.12],[3.4,.16],[2,.22],[1,.28]])comp(g,'multiply',1,()=>R(g,x-d*1.1,y+d*.9,w+d*.4,h+d*.5,rgba('#2a2036',a)));
+  /* the frame: four pieces of boxwood, mitred at the corners; the edges turned to the lamp lit, the others in shade */
+  grainW16(g,x,y,w,h,B,1611);
+  for(const[px,py]of[[x,y],[x+w,y],[x,y+h],[x+w,y+h]]){const ix=px===x?wx:wx+ww,iy=py===y?wy:wy+wh;stroke(g,[px,py,ix,iy],rgba(tint(B,-.45),.55),.5)}
+  R(g,x,y,w,.5,tint(B,.4));R(g,x+w-.5,y,.5,h,tint(B,.3));R(g,x,y,.5,h,tint(B,-.2));R(g,x,y+h-.5,w,.5,tint(B,-.35));
+  /* the wax, dark and smooth, with old writing smoothed away and the lamp's sheen on it */
+  R(g,wx-.5,wy-.5,ww+1,wh+1,tint(B,-.55));
+  g.fillStyle=lg(g,wx+ww,wy,wx,wy+wh,['#4c3622','#38281a','#2a1d12']);g.fillRect(wx,wy,ww,wh);
+  tex(g,'mott',.22,wx,wy,ww,wh,'overlay',1);
+  for(let i=0;i<46;i++){const sx=wx+6+r()*(ww-20),sy=wy+4+r()*(wh-8),l=6+r()*22,p=[sx,sy];for(let u=2;u<l;u+=2)p.push(sx+u,sy+Math.sin(u*.7+i)*.4);stroke(g,p,rgba('#6a5034',.12+r()*.1),.5)}
+  pool(g,wx+ww*.78,wy+wh*.22,ww*.34,wh*.32,'#f0d4a0',.16,'screen');
+  /* the shade the frame throws on the wax along its top and its right, away from the lamp's height; a lit lip on the left and below */
+  g.fillStyle=lg(g,0,wy,0,wy+3,['rgba(10,6,4,.55)','rgba(10,6,4,0)']);g.fillRect(wx,wy,ww,3);
+  g.fillStyle=lg(g,wx+ww,0,wx+ww-3,0,['rgba(10,6,4,.45)','rgba(10,6,4,0)']);g.fillRect(wx+ww-3,wy,3,wh);
+  R(g,wx,wy+wh-.5,ww,.5,rgba('#a07a4c',.5));R(g,wx,wy,.5,wh,rgba('#a07a4c',.35));
+  /* four rows, each with its own ruled groove, cut with the stylus's point: dark in the groove, a pale lip under it; none reaches the frame */
+  for(const ry of ROWS16){const gy=ry+21,a=wx+6+r()*2,b=wx+ww-6-r()*2;stroke(g,[a,gy,b,gy+.2],'rgba(8,4,2,.7)',.5);stroke(g,[a+1,gy+.5,b-1,gy+.7],'rgba(200,168,118,.35)',.5)}
+  /* the stylus: bronze, lying along the planks at the lower right, its point to the left and its flat end, for smoothing the wax, to the right */
+  comp(g,'multiply',.5,()=>R(g,238,139.6,56,1.4,'#2a2036'));
+  poly(g,[236,138.6,240,137.8,288,137.8,288,139.4,240,139.4],'#8a6a3a');R(g,240,137.8,48,.5,'#e2bc78');
+  poly(g,[288,137.2,295,136.6,295,140.2,288,139.8],'#7a5c30');R(g,288,137.2,7,.5,'#d4ac6c');
+  /* the lamp at the upper right, out of the picture: its warm light over everything, falling away toward the lower left */
+  comp(g,'multiply',1,()=>{g.fillStyle=rg(g,318,-6,380,['#fff6ea','#e6d2bc','#a08c94','#5a4a5e']);g.fillRect(0,0,320,144)});
+  pool(g,300,4,120,60,'#ffc070',.12,'screen')}
+function tokenW16(g,x,y,w,h,name,sel){const C=sel?'#dcb67e':'#c8a26c',k=sel?2.4:1.2;
+  for(const[d,a]of[[k+1,.14],[k,.24]])R(g,x-d,y+d*.8,w,h,rgba('#1c1424',a));
+  grainW16(g,x,y,w,h,C,name.length*31+x|0,.8);
+  R(g,x,y,w,.5,tint(C,.45));R(g,x+w-.5,y,.5,h,tint(C,.3));R(g,x,y,.5,h,tint(C,-.25));R(g,x,y+h-.5,w,.5,tint(C,-.4));
+  comp(g,'multiply',1,()=>{g.fillStyle=rg(g,318,-6,380,['#ffffff','#f6ece0','#dcd0cc','#c4b8b8']);g.fillRect(x,y,w,h)});
+  if(sel)pool(g,x+w*.6,y+h*.3,w*.5,h*.6,'#fff0c8',.25,'screen');
+  g.save();g.shadowColor='rgba(255,236,200,.35)';g.shadowOffsetX=0;g.shadowOffsetY=1;cap16(g,name,x+w/2,y+h/2+.2,w-4,{sz:4.6,ink:'#3a1e0a'});g.restore()}
+function drawWatch16(g,t){
+  g.save();g.shadowColor='rgba(6,3,1,.8)';g.shadowOffsetX=1;g.shadowOffsetY=1;
+  WATCHES16.forEach((k,i)=>cap16(g,k,64,ROWS16[i]+11,84,{sz:5,ink:'#d4bc8a'}));g.restore();
+  for(const m of WATCH_MEN16){const[x,y,w,h]=tokenBox16(m.id),sel=G.w16s===m.id;tokenW16(g,x,y-(sel?1.5:0),w,h,m.name,sel)}}
 /* ==== ART watch16: end ==== */
 
 /* ==== ART miletus16: begin ==== */
@@ -881,20 +1079,49 @@ function drawMiletus16(g,t){const P=PMiletus16;if(P.S)P.S.draw(g,t);
 /* ==== ART miletus16: end ==== */
 
 /* ==== ART list16: begin ==== */
-/* A close view: a page of Paul's tablets, two leaves in their frames. On the left leaf the names he wrote in Ephesus, one under another;
-   on the right leaf the places, as he noted them. A name picked up is lit; a name and a place that belong together are each marked
-   with a small tick (a V, never a cross), and a name that is no use here is dimmed. Nothing is struck through.
+/* A close view: a page of Paul's tablets, two leaves lying open side by side on a coping stone of the quay in the morning light, which
+   comes from the upper left; each throws its soft shade down and to the right. The leaves are boxwood frames round dark wax, as Luke's
+   tablet in watch16 (whose grainW16 paints the wood); nothing ties them across the gap between them. On the left leaf the names he wrote
+   in Ephesus, one under another; on the right leaf the places, as he noted them, all scratched into the wax with the stylus. A name
+   picked up is lit by a soft glow; a name and a place that belong together are each marked with a small tick (a V, never a cross), and
+   a name that is no use here is dimmed. Nothing is struck through.
    Called from outside: ART.list16, NAMES16 and PLACES16 (in the story), rowBox16(side, i). Reads G.l16 (what is matched, what is set
    aside, what is picked up). Hotspots: each name and each place at rowBox16 · back to the quay 220,134,100,10. */
 ART.list16={w:320,q:12,paint(g){paintList16(g)},light:null,draw(g,t){drawList16(g,t)},front(){}};
-function paintList16(g){const r=rng(1609);g.fillStyle=lg(g,0,0,0,144,['#6a5a46','#4a3e30']);g.fillRect(0,0,320,144);tex(g,'mott',.4,0,0,320,144,'overlay',1);
-  for(const x of[8,164]){R(g,x,6,148,116,'#7e5428');R(g,x,6,148,1,'#c8945a');R(g,x,121,148,1,'#3a2410');R(g,x+5,10,138,108,'#3a2c1e');tex(g,'mott',.4,x+5,10,138,108,'overlay',1)}}
+/* stoneList16: the coping stone, veined and weathered, a little worn smooth along the middle; one joint near the foot, where the next
+   stone begins */
+function stoneList16(g){const r=rng(1612),S='#cabca2';
+  g.fillStyle=lg(g,0,0,320,144,[tint(S,.12),S,tint(S,-.12)]);g.fillRect(0,0,320,144);
+  tex(g,'mott',.45,0,0,320,144,'overlay',1);tex(g,'grain',.2,0,0,320,144,'overlay',.6);
+  for(let i=0;i<9;i++){let x=r()*320,y=r()*144;const p=[x,y],dx=r()-.5,dy=r()-.5;for(let s=0;s<14;s++){x+=dx*6+(r()-.5)*3;y+=dy*6+(r()-.5)*3;p.push(x,y)}
+    stroke(g,p,rgba(tint(S,-.3),.18+r()*.12),.5);stroke(g,p.map((v,j)=>j%2?v+.5:v),rgba(tint(S,.3),.14),.5)}
+  for(let i=0;i<260;i++){const x=r()*320,y=r()*144;R(g,x,y,.5+r(),.5,rgba(r()<.6?tint(S,-.35):tint(S,.3),.2+r()*.25))}
+  R(g,0,131,320,.5,rgba(tint(S,-.5),.8));R(g,0,131.5,320,.5,rgba(tint(S,.3),.5));
+  g.fillStyle=lg(g,0,0,320,144,['rgba(255,246,224,.18)','rgba(255,246,224,0)','rgba(60,50,70,.18)']);g.fillRect(0,0,320,144)}
+function leafList16(g,x,y,w,h,seed){const B='#a8875c',b=5,wx=x+b,wy=y+b,ww=w-2*b,wh=h-2*b;
+  for(const[d,a]of[[5,.1],[3.4,.14],[2,.18],[1,.24]])R(g,x+d*.9,y+d,w,h,rgba('#4a3c4e',a));
+  grainW16(g,x,y,w,h,B,seed);
+  for(const[px,py]of[[x,y],[x+w,y],[x,y+h],[x+w,y+h]])stroke(g,[px,py,px===x?wx:wx+ww,py===y?wy:wy+wh],rgba(tint(B,-.45),.5),.5);
+  R(g,x,y,w,.5,tint(B,.42));R(g,x,y,.5,h,tint(B,.3));R(g,x+w-.5,y,.5,h,tint(B,-.3));R(g,x,y+h-.5,w,.5,tint(B,-.38));
+  R(g,wx-.5,wy-.5,ww+1,wh+1,tint(B,-.55));
+  g.fillStyle=lg(g,wx,wy,wx+ww,wy+wh,['#4e3824','#3a2a1a','#2c1f13']);g.fillRect(wx,wy,ww,wh);tex(g,'mott',.22,wx,wy,ww,wh,'overlay',1);
+  const r=rng(seed+3);for(let i=0;i<24;i++){const sx=wx+4+r()*(ww-16),sy=wy+3+r()*(wh-6),l=5+r()*16,p=[sx,sy];for(let u=2;u<l;u+=2)p.push(sx+u,sy+Math.sin(u*.7+i)*.4);stroke(g,p,rgba('#6a5034',.1+r()*.1),.5)}
+  pool(g,wx+ww*.28,wy+wh*.2,ww*.4,wh*.3,'#fff0d0',.12,'screen');
+  /* the frame's shade on the wax along its top and its left, toward the light; a lit lip on the right and below */
+  g.fillStyle=lg(g,0,wy,0,wy+3,['rgba(10,6,4,.5)','rgba(10,6,4,0)']);g.fillRect(wx,wy,ww,3);
+  g.fillStyle=lg(g,wx,0,wx+3,0,['rgba(10,6,4,.45)','rgba(10,6,4,0)']);g.fillRect(wx,wy,3,wh);
+  R(g,wx,wy+wh-.5,ww,.5,rgba('#b08a58',.5));R(g,wx+ww-.5,wy,.5,wh,rgba('#b08a58',.4))}
+function paintList16(g){stoneList16(g);leafList16(g,8,6,148,116,1613);leafList16(g,164,6,148,116,1614)}
+/* writing in the wax: pale where the stylus has cut, with the groove's shade beside it */
+function scratchList16(g,s,x,y,w,c){g.save();g.shadowColor='rgba(6,3,1,.8)';g.shadowOffsetX=-1;g.shadowOffsetY=1;cap16(g,s,x,y,w,{left:1,sz:5,ink:c});g.restore()}
 function drawList16(g,t){const st=l16();
   NAMES16.forEach((n,i)=>{const[x,y,w,h]=rowBox16('n',i),on=st.sel===n.k,done=st.ok.includes(n.k),off=st.off.includes(n.k);
-    if(on)R(g,x,y,w,h,'rgba(255,220,150,.25)');cap16(g,n.k,x+4,y+h/2,w-16,{left:1,sz:5,c:off?'#7a6a52':done?'#bca878':'#f0dcae'});if(done)tick16(g,x+w-9,y+h/2)});
+    if(on){g.fillStyle=lg(g,x,0,x+w,0,['rgba(255,214,150,0)','rgba(255,214,150,.22)','rgba(255,214,150,.22)','rgba(255,214,150,0)']);g.fillRect(x,y+1,w,h-2)}
+    scratchList16(g,n.k,x+4,y+h/2,w-16,off?'#7a6650':done?'#b8a276':'#e6d2a4');if(done)tick16(g,x+w-9,y+h/2)});
   PLACES16.forEach((p,i)=>{const[x,y,w,h]=rowBox16('p',i),done=NAMES16.some(n=>st.ok.includes(n.k)&&n.at===p.k);
-    cap16(g,p.k,x+4,y+h/2,w-16,{left:1,sz:4.8,c:done?'#bca878':'#f0dcae'});if(done)tick16(g,x+w-9,y+h/2)})}
-function tick16(g,x,y){stroke(g,[x-2,y-.5,x-.4,y+1.6,x+2.6,y-2.4],'#9ad08a',.9)}
+    scratchList16(g,p.k,x+4,y+h/2,w-16,done?'#b8a276':'#e6d2a4');if(done)tick16(g,x+w-9,y+h/2)})}
+/* a tick cut into the wax: a V, its groove dark and its lip pale */
+function tick16(g,x,y){stroke(g,[x-2.4,y-.3,x-.4,y+1.9,x+2.8,y-2.6],'rgba(8,4,2,.75)',.9);stroke(g,[x-2.6,y-.7,x-.6,y+1.5,x+2.6,y-3],'#f2e2b4',.6)}
 /* ==== ART list16: end ==== */
 
 /* ==== ART shore16: begin ==== */
@@ -1298,16 +1525,17 @@ ROOMS.pass16={space:.4,walk:[16,304,112,138],mood:'pass',amb:AMB.pass16,
   {name:'water_skin',x:206,y:116,w:20,h:8,wx:196,wy:128,vis:()=>!F.pass,look:'the_water_skin_split_seam',useWith:onSkin,pickup:'it_is_the_shepherds'},
   {name:'way_down_to_assos',x:266,y:60,w:54,h:52,wx:296,wy:116,dir:1,exit:downToAssos,look:()=>say(P,F.pass?'the_short_way_down':'the_flock_fills_the_path_down')},
   {name:'way_back',x:0,y:60,w:16,h:80,wx:22,wy:126,dir:-1,exit:()=>goto16('road16',270,116,-1),look:'the_way_back_to_the_road'}].map(BOTH)};
-ROOMS.deck16={space:.5,floor:'wood',walk:[24,296,112,138],get mood(){return deckMood()},get amb(){return deckAmb()},hs:[
-  {name:'sky_over_the_stern',x:30,y:0,w:260,h:46,wx:160,wy:116,look:()=>say(PC(),'sky_over_the_stern_look')},
-  {name:'stern',x:130,y:14,w:60,h:62,wx:160,wy:116,look:'stern_look'},
-  {name:'steering_oars',x:96,y:52,w:30,h:30,wx:120,wy:116,look:'steering_oars_look'},
-  {name:'steering_oars',x:194,y:52,w:30,h:30,wx:196,wy:120,look:'steering_oars_look'},
-  {name:'deck_shelter',x:14,y:52,w:104,h:56,wx:80,wy:116,look:()=>say(PC(),F.w2&&F.aboard?'the_awning_is_torn':'deck_shelter_look')},
-  {name:'chest',x:120,y:102,w:34,h:16,wx:164,wy:122,def:'use',look:'the_gifts_chest_aboard_look',use:toWatch,pickup:'luke_not_mine_to_take'},
-  {name:'cargo',x:226,y:80,w:84,h:36,wx:240,wy:124,look:'cargo_look'},
-  {name:'ships_cat',x:254,y:70,w:22,h:12,wx:240,wy:124,look:()=>say(PC(),DECKV()==='eve'?'the_ships_cat_four_watches':'the_ships_cat'),talk:'cats_keep_their_counsel'},
-  {name:'gangplank',x:300,y:88,w:20,h:40,wx:290,wy:124,dir:1,vis:()=>DECKV()==='quay',exit:()=>say(PC(),'luke_we_sail_when_the_master_has_his_wind'),look:'gangplank_look'}].map(BOTH)};
+ROOMS.deck16={space:.5,floor:'wood',walk:SHARED.ship.deck.walk,block:()=>SHARED.ship.deck.block(DECKO16('quay')),get mood(){return deckMood()},get amb(){return deckAmb()},hs:[
+  {name:'sky_over_the_stern',x:0,y:0,w:320,h:58,wx:120,wy:134,look:()=>say(PC(),'sky_over_the_stern_look')},
+  {name:'stern',x:128,y:16,w:52,h:56,wx:120,wy:134,look:'stern_look'},
+  {name:'steering_oars',x:84,y:60,w:36,h:32,wx:98,wy:124,look:'steering_oars_look'},
+  {name:'steering_oars',x:180,y:60,w:36,h:32,wx:222,wy:119,look:'steering_oars_look'},
+  {name:'deck_shelter',x:112,y:74,w:64,h:48,wx:106,wy:127,look:()=>say(PC(),F.w2&&F.aboard?'the_awning_is_torn':'deck_shelter_look')},
+  {name:'chest',x:174,y:104,w:34,h:28,wx:170,wy:137,def:'use',look:'the_gifts_chest_aboard_look',use:toWatch,pickup:'luke_not_mine_to_take'},
+  {name:'cargo',x:68,y:82,w:36,h:30,wx:96,wy:118,look:'cargo_look'},
+  {name:'cargo',x:188,y:82,w:36,h:32,wx:222,wy:119,look:'cargo_look'},
+  {name:'ships_cat',x:199,y:78,w:14,h:9,wx:222,wy:119,look:()=>say(PC(),DECKV()==='eve'?'the_ships_cat_four_watches':'the_ships_cat'),talk:'cats_keep_their_counsel'},
+  {name:'gangplank',x:258,y:90,w:62,h:40,wx:238,wy:132,dir:1,vis:()=>DECKV()==='quay',exit:()=>say(PC(),'luke_we_sail_when_the_master_has_his_wind'),look:'gangplank_look'}].map(BOTH)};
 ROOMS.sky16={space:.4,walk:NOW,get mood(){return'sail'},get amb(){return ROUND16()===1?AMB.dockd16:AMB.morn16},hs:[
   {name:'clouds',x:0,y:0,w:320,h:24,wx:160,wy:236,look:()=>say(PC(),['clouds_drift_right','clouds_creep_right','clouds_race_right'][ROUND16()-1])},
   {name:'smoke',x:86,y:24,w:80,h:36,wx:160,wy:236,vis:()=>ROUND16()<3,look:()=>say(PC(),ROUND16()===1?'smoke_leans_right':'smoke_curls_left_under_the_hill')},
@@ -1357,6 +1585,9 @@ who(BOY,{look:()=>say(PC(),PC()===LK?'luke_simias_look':'simias_look'),talk:asyn
   return say(BOY,PC()===LK?'simias_im_learning':'simias_hello',{to:PC()})}});
 /* the humour of the ship's boy is Luke's to tell, about the boy: approved, and only here */
 BOY.hs.as={luke16:Object.assign({},BOY.hs,{look:()=>say(LK,F.w1?'luke_simias_says_north_wind_and_master':'luke_simias_look')})};
+/* aboard, the master stands in the narrow place by the tiller, between the shelter and the bales (ART deck16): whoever comes to him there
+   stands in front of the bales, at his left hand */
+Object.defineProperties(MA.hs,{wx:{get(){return G.room==='deck16'?196:undefined},configurable:true},wy:{get(){return G.room==='deck16'?119:undefined},configurable:true}});
 who(KE,{look:()=>say(PC(),F.hands?'kerdon_bound_look':'kerdon_look'),talk:()=>say(KE,F.hands?'kerdon_i_can_close_them':'kerdon_its_nothing',{to:PC()}),give:treat,useWith:treat});
 who(TI,{look:()=>say(PC(),PC()===LK?'luke_timothy_look16':'timothy_look'),talk:()=>say(TI,G.room==='quay16'?'timothy_the_master_asks_for_you':'timothy_a_good_day_on_the_water',{to:PC()})});
 who(AR,{look:'aristarchus_look',talk:()=>PC()===LK&&F.w2&&!F.watch&&F.aboard?toWatch():say(AR,'aristarchus_the_chest_is_well',{to:PC()})});
@@ -1409,7 +1640,7 @@ const TABLETS={
       {t:'note_visitors_gone_home',if:pa(()=>phase16()==='D')}]}};
 
 /* ============ PLACING THE CAST, SETUP ============ */
-const ENT={quay16:[214,130,-1],road16:[36,126,1],pass16:[36,126,1],deck16:[150,130,1],sky16:[160,236,1],assos16:[40,126,1],watch16:[160,236,1],miletus16:[140,130,1],list16:[160,236,1],shore16:[160,124,-1]};
+const ENT={quay16:[214,130,-1],road16:[36,126,1],pass16:[36,126,1],deck16:[162,138,1],sky16:[160,236,1],assos16:[40,126,1],watch16:[160,236,1],miletus16:[140,130,1],list16:[160,236,1],shore16:[160,124,-1]};
 const EVERY=[TI,AR,TR,MA,BOY,KE,FI,SH,LY,PH,KL,DA,EU,PO,SO,SE];
 /* place16: everyone where the story has him, in every room at once: in the two at once both rooms are lived in. Who is played is the
    story's choice in phases A, C and D; in phase B it is the player's, and the two stand where they are (a code puts each at the way into
@@ -1418,9 +1649,9 @@ function place16(room){for(const a of EVERY.concat([P,LK])){a.talk=false;a.seat=
   if(setScore&&AU.score!==MUSIC)setScore(MUSIC);
   const ph=phase16();
   if(ph==='A'){setPC16(P);place(LK,'quay16',66,121,1);place(TI,'quay16',98,129,1);place(AR,'quay16',116,114,1);place(MA,'quay16',176,118,-1);place(BOY,'quay16',198,113,-1);place(TR,'quay16',250,123,-1)}
-  if(ph==='B'||ph==='C'){place(MA,'deck16',206,113,-1);place(BOY,'deck16',236,121,-1);if(F.w1)place(KE,'deck16',278,126,-1);place(TI,'deck16',104,130,1);place(AR,'deck16',170,126,-1)}
+  if(ph==='B'||ph==='C'){place(MA,'deck16',182,105,-1);place(BOY,'deck16',204,139,-1);if(F.w1)place(KE,'deck16',240,126,-1);place(TI,'deck16',106,134,1);place(AR,'deck16',80,120,1)}
   if(ph==='B'){place(FI,'road16',150,117,1);FI.seat=1;place(SH,'pass16',136,119,1)}
-  if(ph==='C'){setPC16(LK);place(P,'deck16',62,118,1);P.seat=1}
+  if(ph==='C'){setPC16(LK);place(P,'deck16',134,127,1);P.seat=1}
   if(ph==='D'){setPC16(P);
     if(!F.sent){place(TI,'miletus16',60,118,1);if(G.ly16!==2)place(LY,'miletus16',96,127,1);place(LK,'miletus16',186,114,-1)}
     else{place(LK,'shore16',196,119,-1);place(TI,'shore16',222,127,-1);place(TR,'shore16',248,116,-1)}
