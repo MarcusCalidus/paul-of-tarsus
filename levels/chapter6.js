@@ -137,9 +137,12 @@ ART.iconium={w:480,fp:1.3,q:12,
   poly(g,[18,104,42,104,33,74,27,74],'#e0d6ba');ao(g,0,28,60,12,'t',.2,'#2a2440');g.restore();
   /* Nathan's saddlery: a plastered house, its whole front open to the street under an awning */
   /* the plaster's random cracks are set by hand now, high on the wall where they run to no head; their draws are still taken */
-  house(g,60,24,126,80,W,r,{side:0,patch:3,cracks:0,beams:12});skipCracks6(r,5);
+  house(g,60,24,126,80,W,r,{side:0,patch:3,cracks:0,beams:0});skipCracks6(r,5);
   for(const[x,y,n]of[[66,27,3],[100,26.6,3],[148,27.4,3],[181,28,4]])crack6(g,x,y,n,rc,.9);
-  windowArt(g,72,34,10,10,W,{bars:2,wood:'#6a4e2c'});windowArt(g,162,34,10,10,W,{bars:2,wood:'#6a4e2c'});
+  /* the two upper windows sit high under the eaves, their sills clear above the awning; the ends of the roof beams run along the
+     wall between them, as house() would set them, and none where a window is */
+  for(let i=66;i<182;i+=12)if(i!==78&&i!==162){R(g,i,28,2.5,2.5,'#6a4a2c');R(g,i,28,2.5,.5,'#a67c4a');poly(g,[i+.5,30.5,i+3,30.5,i+4.5,34,i+2,34],'rgba(50,40,90,.28)')}
+  windowArt(g,72,28,10,9,W,{bars:2,wood:'#6a4e2c'});windowArt(g,162,28,10,9,W,{bars:2,wood:'#6a4e2c'});
   R(g,84,56,84,48,'#231a15');g.fillStyle=lg(g,0,56,0,104,['#2c211a','#4a382a']);g.fillRect(86,58,80,46);
   /* inside: a shelf of pack saddles, low enough that nothing hanging from the bar reaches it, and hides rolled on the floor, each showing
      the one end that is turned to the middle of the shop */
@@ -279,7 +282,9 @@ ART.outside={w:320,q:12,
   ridge(g,150,320,90,x=>Math.max(0,22-(x-262)*(x-262)/560),['#5c5270','#6a6078']);
   ashlar(g,196,46,124,34,'#8a7c88',r,{bw:10,bh:5,v:.08,t:.4,m:'#4a4058'});for(let i=196;i<320;i+=8)R(g,i,42.4,4.6,4,'#8a7c88');R(g,196,45.6,124,1,'#5a5068');
   for(const[hx,hy,hw,hh]of[[206,36,16,10],[232,32,14,14],[292,35,18,11]]){R(g,hx,hy,hw,hh,'#7a6c80');R(g,hx,hy-1.6,hw,2,'#6a4a50');R(g,hx+hw-3,hy,3,hh,'#5a5068')}
-  R(g,252,40,26,40,'#94869a');for(let i=252;i<278;i+=6)R(g,i,36.4,3.6,4,'#94869a');arch(g,257,54,16,26,'#2a2238');
+  /* the gate: an opening in the wall, its dressed stones flush with the wall's top, under the wall's own battlement, so that no tower
+     rises from the middle of the wall */
+  R(g,252,46.6,26,33.4,'#94869a');arch(g,257,54,16,26,'#2a2238');
   /* the lamp inside the gate: its light lies long and low across the gateway's floor, never round where a head could come */
   clipTo(g,()=>arch(g,257,54,16,26),()=>{pool(g,265,76,10,4,'#ffb860',.8,'screen');pool(g,265,72,6,3,'#ffd8a0',.4,'screen');ao(g,257,54,16,8,'t',.5,'#0c0814')});
   /* the valley floor: stubble, and the road that runs up to the gate */
