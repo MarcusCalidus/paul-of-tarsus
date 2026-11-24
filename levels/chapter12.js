@@ -76,6 +76,17 @@ function joists12(g,x0,step,U,c,rw){const VX=160,VY=72,pu=x=>VX+(x-VX)*VY/(VY-U)
     const s=(pu(a+3)-(a+3))/U;clipTo(g,()=>poly(g,P),()=>{g.save();g.transform(1,0,-s,1,s*U,0);board12(g,a,0,6,U,c,rw,1);g.restore()});
     stroke(g,[e,U,pu(e),0],left?tint(c,.18):tint(c,.3),.5)}}
 const SH='#8f95c8',LIN='#e9dfc2',GOAT='#3d332c',MBL='#e8e3d6',BLU=earth12('#7f93b4',.14);
+/* the figures each room paints itself (cast, in its draw), as the story has them there; feet12 is the floor under their feet, which
+   nobody walks through (issue #83: the rooms name it in their block) */
+const streetFolk12=()=>{const v=SEAS();return v==='s'?[['hx12c',70,116,1],['hx12d',86,119,-1],['hx12e',586,118,-1],['hx12f',352,114,1]]:
+  v==='u'?[['hx12c',78,116,1],['hx12f',600,117,-1]]:v==='a'?[['hx12d',66,117,1]]:[]};
+const courtFolk12=()=>CV()==='u'&&F.r3?[['hx12a',104,111,1],['hx12b',124,112,1],['hx12g',150,111,-1],['hx12h',170,112,1]]:[];
+const synFolk12=()=>[['op12a',196,121,-1,{ges:1}],['sos12',220,118,-1],['op12b',240,124,-1],['op12c',62,119,1],['hx12b',84,123,1]];
+const agoraFolk12=()=>{const h=HEARING();return h?(G.g12&&G.g12.gone?[]:[['op12a',150,120,1,{ges:1}],['sos12',170,116,1],['op12b',132,124,1],['op12c',116,118,1],['hx12c',350,118,-1],['hx12d',372,122,-1],['hx12e',394,117,-1],['hx12m',98,126,1]]):
+  SEAS()==='s'?[['hx12c',400,118,-1],['hx12e',60,120,1]]:[['hx12d',410,119,-1],['hx12f',52,121,1]]};
+const ephFolk12=()=>[['hx12k',226,114,1],['hx12l',288,115,-1]];
+const antFolk12=()=>[['hx12m',96,116,1],['hx12n',232,114,-1],['hx12b',254,117,-1],['hx12a',70,121,1]];
+const feet12=l=>l.map(([,x,y])=>[x-4,y-2,8,3.5]);
 /* cast: figures posed in a scene, the nearest drawn last. Each is [look id, x, y, dir, {bow, ges, fr, lit}]. */
 function cast(g,list,lit){list.slice().sort((a,b)=>a[2]-b[2]).forEach(([id,x,y,dir,o])=>{o=o||{};const fr=o.fr||0,bow=o.bow?1:0,ges=o.ges?1:0;
   figure(g,x,y,o.lit||lit,id+dir+'s'+fr+bow+ges,s=>person(s,0,0,LOOK[id],dir,fr,0,bow,ges,bow),o.sw==null?7.5:o.sw)})}
@@ -257,8 +268,7 @@ ART.street12={w:640,q:12,variant:SEAS,
  light:()=>SEAS()==='w'?{amb:'#c9cdd8'}:null,
  /* rain, in the winter; the water of the spring; and whoever is in the street in this season */
  draw(g,t){for(let i=0;i<3;i++){const k=((t/700+i*.33)%1);R(g,341.7,84+k*10,1.3,1.4,`rgba(230,246,250,${.7*(1-k)})`)}
-  const v=SEAS();if(v==='s')cast(g,[['hx12c',70,116,1],['hx12d',86,119,-1],['hx12e',586,118,-1],['hx12f',352,114,1]]);
-  else if(v==='u')cast(g,[['hx12c',78,116,1],['hx12f',600,117,-1]]);else if(v==='a')cast(g,[['hx12d',66,117,1]])},
+  const f=streetFolk12();if(f.length)cast(g,f)},
  front(g,t){if(SEAS()==='w')SHARED.weather.rain(g,t,640,{puddles:PUD_ST,splashY:[108,140]})}};
 /* rain: delegates to shared/weather.js (short wind-slanted strokes, puddle ripples, damp surfaces) */
 const rain=(g,t,w,y1,o)=>SHARED.weather.rain(g,t,w,Object.assign({y1:y1||144},o||{}));
@@ -358,7 +368,7 @@ ART.court12={w:320,q:12,variant:CV,
      for(let i=1;i<6;i++)stroke(g,[xa+i*11,yy(xa+i*11)+.6,xa+i*11+8.4,yy(xa+i*11)+8.6],'rgba(40,30,30,.14)',.5);stroke(g,[xa+9,yy(xa)+9,xb+9,yy(xb)+9],tint(c,-.4),.6)}
    /* its shade on the floor, as one field under the cloth */
    if(awnDone()){const b0=B.indexOf(1),b1=B.lastIndexOf(1);if(b0>=0)comp(g,'multiply',.34,()=>poly(g,[40+b0*62,105,102+b1*62,105,112+b1*62,138,34+b0*62,138],SH))}});
-  if(CV()==='u'&&F.r3)cast(g,[['hx12a',104,111,1],['hx12b',124,112,1],['hx12g',150,111,-1],['hx12h',170,112,1]])},
+  const f=courtFolk12();if(f.length)cast(g,f)},
  front(g,t){if(CV()==='w'&&!(G.room==='court12'&&F.r2))rain(g,t,320,144,{puddles:PUD_CT,splashY:[108,140]})}};
 
 /* ---------- The awning, seen from the side ---------- */
@@ -517,7 +527,7 @@ ART.syn12={w:320,q:12,
   lightmap(g,320,'#a8a0ac',l=>{pool(l,157,34,110,18,'#eef0f4',.8);for(const x of[103,157,211])pool(l,x+14,124,36,8,'#f4f2ec',.6);pool(l,160,116,190,40,'#f4eede',.45);
     pool(l,141,90,50,10,'#f0ece4',.35);pool(l,49,92,40,8,'#e8e4e0',.3);pool(l,227,92,40,8,'#e8e4e0',.3);
     comp(l,'multiply',1,()=>{ao(l,0,0,60,144,'l',.25,'#3a3048');ao(l,260,0,60,144,'r',.25,'#3a3048');ao(l,0,130,320,14,'b',.25,'#3a3048')})})},
- light:{amb:'#dcd6d8'},draw(g){cast(g,[['op12a',196,121,-1,{ges:1}],['sos12',220,118,-1],['op12b',240,124,-1],['op12c',62,119,1],['hx12b',84,123,1]],lightAt('syn12',200,120))},front(){}};
+ light:{amb:'#dcd6d8'},draw(g){cast(g,synFolk12(),lightAt('syn12',200,120))},front(){}};
 
 /* ---------- The neck of land, from above ---------- */
 /* A picture, not a room: Corinth below its rock, a gulf on either side, and a harbor on each. Lechaeum, to the west, was the harbor
@@ -788,8 +798,7 @@ ART.agora12={w:480,q:12,variant:()=>SEAS()+(HEARING()?'h':''),
  light:null,
  draw(g,t){const h=HEARING();if(h){/* the proconsul on the seat: seen to the waist, behind the cloth of the chair */
     depth(100,()=>{g.save();g.beginPath();g.rect(230,20,60,48);g.clip();man(g,259,92,'gal12',1,0,null,G.g12&&G.g12.say?1:0,0);g.restore();cast(g,[['lic12',214,80,1,{sw:0}],['lic12b',304,80,-1,{sw:0}]])})}
-  if(h&&!(G.g12&&G.g12.gone))cast(g,[['op12a',150,120,1,{ges:1}],['sos12',170,116,1],['op12b',132,124,1],['op12c',116,118,1],['hx12c',350,118,-1],['hx12d',372,122,-1],['hx12e',394,117,-1],['hx12m',98,126,1]]);
-  else if(!h)cast(g,SEAS()==='s'?[['hx12c',400,118,-1],['hx12e',60,120,1]]:[['hx12d',410,119,-1],['hx12f',52,121,1]])},front(){}};
+  const f=agoraFolk12();if(f.length)cast(g,f)},front(){}};
 
 /* ---------- The waiting room beside the judgment seat ---------- */
 /* A room where those who were to come before the magistrate waited, with a floor of mosaic and a bench of marble (Insight, "Judgment
@@ -852,7 +861,7 @@ ART.eph12={w:320,q:12,
   /* the day's light: the sun on the house fronts, the ship and the open quay; the near quay in the day's shade */
   sun12(g,320,60,'#dcd4d2',l=>{pool(l,230,70,110,40,'#ffffff',.8);pool(l,50,84,70,24,'#ffffff',.7);pool(l,180,114,190,14,'#fff4e0',.55);pool(l,224,101,110,5,'#fff0d8',.35)});
   haze(g,320,103,'f');pool(g,160,0,220,150,WARM.f,.1,'screen')},
- light:null,draw(g){cast(g,[['hx12k',226,114,1],['hx12l',288,115,-1]])},front(){}};
+ light:null,draw(g){cast(g,ephFolk12())},front(){}};
 
 /* ---------- Antioch ---------- */
 /* The court in Antioch of Syria where the journey began (Acts 15:35, 40), painted anew, in the light of evening. */
@@ -927,7 +936,7 @@ ART.ant12={w:320,q:12,
   /* the light of evening, low from the west: warm on the wall and the open paving, the gateway and the near paving in shade */
   sun12(g,320,36,'#d8ccca',l=>{pool(l,150,66,190,40,'#fff2e0',.75);pool(l,160,114,200,14,'#ffeedc',.5);pool(l,180,101,150,5,'#ffe8d0',.3)});
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,0,0,144,['rgba(255,214,150,.5)','rgba(255,200,140,.9)']);g.fillRect(0,0,320,144)});pool(g,160,60,200,90,'#ffd8a0',.14,'screen')},
- light:{amb:'#f4e2cc'},draw(g){cast(g,[['hx12m',96,116,1],['hx12n',232,114,-1],['hx12b',254,117,-1],['hx12a',70,121,1]],'#f4e2cc')},front(){}};
+ light:{amb:'#f4e2cc'},draw(g){cast(g,antFolk12(),'#f4e2cc')},front(){}};
 
 /* ---------- The letter, seen close ---------- */
 /* A sheet of papyrus on the bench: its fibers run one way, the lines of writing are short strokes of uneven length that stop short of
@@ -1528,6 +1537,14 @@ ROOMS.ant12={space:.8,walk:[20,300,112,138],mood:'home',amb:{birds:.4,leaves:.4,
   {name:'olive_tree',x:20,y:44,w:52,h:60,wx:76,wy:114,dir:-1,look:'the_olive_tree'},
   {name:'bench',x:212,y:88,w:84,h:16,wx:200,wy:114,dir:1,look:'bench_along_the_wall'},
   {name:'brothers',x:222,y:70,w:44,h:50,wx:206,wy:120,dir:1,def:'talk',talk:finale,look:'brothers_of_antioch'}]};
+
+/* what blocks the floor in each room: the figures it paints itself (issue #83) */
+ROOMS.street12.block=()=>feet12(streetFolk12());
+ROOMS.court12.block=()=>feet12(courtFolk12());
+ROOMS.syn12.block=()=>feet12(synFolk12());
+ROOMS.agora12.block=()=>feet12(agoraFolk12());
+ROOMS.eph12.block=()=>feet12(ephFolk12());
+ROOMS.ant12.block=()=>feet12(antFolk12());
 
 /* ============ PEOPLE ============ */
 const pairTalk=async()=>{if(!F.met)return meet();if(!F.sewn)return say(AQ,'linen_is_on_the_bench_brother');if(!F.r1)return say(PR,'titius_justus_is_waiting_for_his_roof');
