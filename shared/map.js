@@ -242,8 +242,9 @@ async function journey(route,o){o=o||{};setView(o.view);ST.places=null;ST.hover=
 /* pick: a hub chapter's places as dots; hovering lights a name, a click resolves with that place, Esc or right-click with null */
 function pick(ids,here,o){o=o||{};setView(o.view);ST.places=ids;ST.over=o.labels||null;ST.night=false;ST.legs=(o.legs||[]).map(([a,b])=>({a,b,k:1,dots:path(a,b)}));
   ST.seen=new Set([here]);for(const L of ST.legs)for(const k of[L.a,L.b])if(ids.includes(k))ST.seen.add(k);ST.pulse=here;ST.hover=null;show();
-  const vp=$('#view'),pos=e=>{const r=vp.getBoundingClientRect();return[(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H]},
-    near=e=>{const[x,y]=pos(e);let best=null,bd=7;for(const k of ids){const[px,py]=where(k),d=Math.hypot(px-x,py-y);if(d<bd){bd=d;best=k}}return best};
+  const vp=$('#view'),pos=e=>framePos(e),
+    /* a finger is less precise than a mouse: on a phone a place is found within twice the reach */
+    near=e=>{const[x,y]=pos(e);let best=null,bd=PH.on?14:7;for(const k of ids){const[px,py]=where(k),d=Math.hypot(px-x,py-y);if(d<bd){bd=d;best=k}}return best};
   return new Promise(res=>{const end=v=>{vp.removeEventListener('click',ck,true);vp.removeEventListener('mousemove',mv,true);vp.removeEventListener('contextmenu',no,true);removeEventListener('keydown',kd,true);ST.places=null;res(v)},
     ck=e=>{e.stopImmediatePropagation();const k=near(e);if(k)end(k)},mv=e=>{ST.hover=near(e)},no=e=>{e.preventDefault();e.stopImmediatePropagation();end(null)},
     kd=e=>{if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();end(null)}};

@@ -42,12 +42,15 @@
 | Skip the title card | A chapter opens with its title card for a few seconds. Click or press Space or `Esc` to go on at once. |
 | Skip the prologue | While the prologue plays, click **SKIP** in the top bar to jump straight to Chapter One. |
 | Sound | It starts with your first click, tap or key. **♫ SOUND ON** (or `M`) switches it off and on, and the options menu adjusts music and effects levels independently. On iPhone and iPad the game respects Silent Mode, and Safari cannot tell the game whether it is on, so a short note at the top right says where to look when the sound starts and whenever you switch it on. |
+| Play on a phone | Hold the phone sideways. The verbs stand in a column on the left, under **≡** (the options) and **NAMES**, and the inventory in a column on the right; the picture fills the space between them from top to bottom. It follows Paul, or whoever is speaking. Draw a finger across it to look along the room, pinch with two fingers to zoom in up to three times, and tap twice to go back. A close view, such as the bolt of cloth, and the map are shown whole. The status line lies over the top of the picture while you touch something, and the choices of a conversation over its foot. The options, a safe point, an end screen and the narrator's scroll take the whole screen, and the columns slide out of the way. The safe-point code is shown and entered from the options (**Saved games**); on the title screen **ENTER CODE** and **≡** stand in the top right corner. Held upright, the phone asks to be turned. The game chooses this layout by itself on a phone; **Layout** in the options switches between **Auto**, **Phone** and **Classic**. |
 
 ![Pointing at Eliab lights Talk to](screenshots/verbs.png)
 
 ![Holding Tab names everything in the room](screenshots/hotspots.png)
 
 ![NAMES in the top bar keeps the names on, for touch screens](screenshots/names.png)
+
+![On a phone held sideways: the verbs on the left, the inventory on the right, and the picture between them](screenshots/phone.png)
 
 The pointer over the scene is the game's own: a gold arrow with a dark contour, painted in code like everything else, so that it shows in a night scene as well as on a sunlit quay. It grows with the window, brightens over objects and people, and turns into a directional arrow over exits.
 

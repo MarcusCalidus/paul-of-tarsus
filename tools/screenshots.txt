@@ -95,6 +95,7 @@ other-road map15
 paphos paphos
 perga perga
 philippi philippi8
+phone phone
 pisidia week
 plans plans
 plateau closed8

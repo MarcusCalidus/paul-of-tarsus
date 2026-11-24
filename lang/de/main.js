@@ -271,5 +271,10 @@ TEXTS('de','main',{
   "tertius_own_line":["Tertius' eigene Zeile","0zwkeol"],
   "mule_in_a_sheepfold":["Ein Maultier im Schafstall","0m7jhub"],
   "not_another_basket":["Nicht noch ein Korb","0o3o1h1"],
-  "barnabas_at_the_bench":["Barnabas an der Werkbank","098m6ix"]
+  "barnabas_at_the_bench":["Barnabas an der Werkbank","098m6ix"],
+  "layout":["Ansicht","1woj3tr"],
+  "layout_auto":["Automatisch","0540b06"],
+  "layout_phone":["Handy","0kb2lhr"],
+  "layout_classic":["Klassisch","0y7erjn"],
+  "turn_phone_sideways":["Dreh dein Handy quer, um zu spielen.","02e7l21"]
 });

@@ -6,14 +6,15 @@
  G.speedAll=500;
  const idle=async()=>{await wait(120);let n=0;while((G.busy||P.walk||PC().walk)&&n++<4000){if($('#choices').classList.contains('on')||ov.classList.contains('end'))break;await wait(50)}};
  const verb=v=>document.querySelector(`#verbs button[data-v=${v}]`).click();
- const view=(x,y)=>{const r=vp.getBoundingClientRect(),z=zoomNow();vp.dispatchEvent(new MouseEvent('click',{clientX:r.left+(x-G.cam)*z/320*r.width,clientY:r.top+(y-G.camY)*z/144*r.height,bubbles:true}))};
+ /* a click on a place in the room, wherever the room lies on the screen (toClient: on a phone it is moved and zoomed in the field) */
+ const view=(x,y)=>{const[X,Y]=toClient(x,y);vp.dispatchEvent(new MouseEvent('click',{clientX:X,clientY:Y,bubbles:true}))};
  const item=id=>{const i=G.inv.indexOf(id);if(i<0)throw new Error('no item '+id);document.querySelectorAll('#inv .slot')[i].click()};
  const hs=name=>{const h=ROOMS[G.room].hs.find(h=>h.name===name&&(!h.vis||h.vis()));if(!h)throw new Error('no hs '+name+' in '+G.room);return[h.x+h.w/2,h.y+h.h/2]};
  const act=async(v,name)=>{if(v)verb(v);view(...hs(name));await idle()};
  const use=async(a,b)=>{verb('use');item(a);item(b);await idle()};
  const useOn=async(a,name,v)=>{verb(v||'use');item(a);view(...hs(name));await idle()};
  const actor=async(v,a)=>{if(v)verb(v);view(a.x,a.y-18);await idle()};
- const at=(type,x,y)=>{const r=vp.getBoundingClientRect(),z=zoomNow(),e=new MouseEvent(type,{clientX:r.left+(x-G.cam)*z/320*r.width,clientY:r.top+(y-G.camY)*z/144*r.height,bubbles:true,cancelable:true});vp.dispatchEvent(e);return e.defaultPrevented};
+ const at=(type,x,y)=>{const[X,Y]=toClient(x,y),e=new MouseEvent(type,{clientX:X,clientY:Y,bubbles:true,cancelable:true});vp.dispatchEvent(e);return e.defaultPrevented};
  const move=(x,y)=>at('mousemove',x,y),rclick=(x,y)=>at('contextmenu',x,y),dbl=(x,y)=>at('dblclick',x,y);
  /* a screenshot does not show the mouse pointer: paintPointer points at a place in the room and paints the game's own pointer there */
  const paintPointer=(x,y)=>{move(x,y);const sc=vp.getBoundingClientRect().width/320,d=devicePixelRatio||1,u=clamp(Math.round(sc*d/2),1,6),p=pointerArt(u,pointerKind(G.hover));
@@ -183,8 +184,9 @@
   /* The title screen alone uses the whole height: the status line and the panel give up their place, the view runs down to the foot of the
      window, and the title's picture is painted that tall. Its upper part is the wall's backdrop pixel for pixel, so that nothing moves
      when the title is left. */
-  {const v=vp.getBoundingClientRect(),k=v.width/320,gone=el=>getComputedStyle(el).display==='none',l=ov.querySelector('.chs');
-    ok($('#wrap').classList.contains('title')&&Math.abs(v.height/k-VT)<.5&&VT===210&&gone($('#status'))&&gone($('#panel'))&&cv.height===VT*HR&&Math.abs(ov.getBoundingClientRect().height-v.height)<1,
+  /* on a phone the view is the whole screen, and the title's picture lies in it, fitted (see lensTick): its box is that of the canvas */
+  {const v=(PH.on?cv:vp).getBoundingClientRect(),k=PH.on?LENS.k:v.width/320,gone=el=>getComputedStyle(el).display==='none',l=ov.querySelector('.chs');
+    ok($('#wrap').classList.contains('title')&&Math.abs(v.height/k-VT)<.5&&VT===210&&gone($('#status'))&&gone($('#panel'))&&cv.height===VT*HR&&(Math.abs(ov.getBoundingClientRect().height-v.height)<1||document.documentElement.classList.contains('portrait')),
       'the title screen uses the whole height: its view is '+Math.round(v.height/k)+' room pixels high, and the status line and the panel give up their place');
     const[a,ga]=mk(VW*HR,VH*HR),[b,gb]=mk(VW*HR,VT*HR);ga.scale(HR,HR);gb.scale(HR,HR);CHAP[1].scenes.wall(ga,G.t);CHAP[1].scenes.title(gb,G.t);
     const da=ga.getImageData(0,0,VW*HR,VH*HR).data,db=gb.getImageData(0,0,VW*HR,VH*HR).data,foot=gb.getImageData(0,VH*HR,VW*HR,(VT-VH)*HR).data;let same=true,lit=0;
@@ -196,7 +198,7 @@
      look there for crosses and for letters that have run together, in every language (`de:logo`). */
   {const c=ov.querySelector('h1.art canvas.logo'),words=T('paul_of_tarsus')+' '+T('on_the_roads_of_rome');
     ok(c&&SHARED.logo.can(words)&&c.textContent===words&&!ov.querySelector('h2')&&c.getAttribute('aria-label')===T('paul_of_tarsus_on_the_roads'),'the title is the painted logo, in '+LANGS[lang].native+', and it keeps the words: '+(c&&c.textContent));
-    if(c){const r=c.getBoundingClientRect(),v=ov.getBoundingClientRect(),sc=vp.getBoundingClientRect().width/320,d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+    if(c){const r=c.getBoundingClientRect(),v=ov.getBoundingClientRect(),sc=PH.on?PH.kT:vp.getBoundingClientRect().width/320,d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
       ok(Math.abs(r.width-c.width/HR*sc)<1&&Math.abs(r.height-c.height/HR*sc)<1&&r.left>=v.left&&r.right<=v.right,'the logo is shown at the size of its pixels, inside the view: '+c.width/HR+' by '+c.height/HR+' room pixels');
       let n=0,soft=0;for(let i=3;i<d.length;i+=4){if(d[i]===255)n++;else if(d[i]&&d[i]!==128)soft++}
       ok(n>c.width*c.height*.2&&!soft,'the logo is painted in whole pixels: '+n+' of them, none blurred');
@@ -549,6 +551,82 @@
     G.busy=false;lock(false);drawInv();syncVerbs();status();codeBtn();await wait(240);
     window.SHEETS=SHEETS;halt('shadows')}
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
+  /* the phone layout (fit and lensTick in index.html). playtest.mjs shows these stops on a phone held sideways, 852 by 393 CSS pixels at three
+     device pixels to the CSS pixel, touched and without a mouse (phoneportrait: held upright); emu=1 gives it the safe margins of a phone with
+     its camera in the screen, as Safari reports them. Stops: phonetitle, phone (a line in the workshop), phonenames, phonezoom, phonechoice,
+     phoneclose (a close view, fitted whole), phonemenu, phonescroll, phoneportrait; phoneall runs every check (part of the full run). */
+  if(/^phone/.test(stop)){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120);
+    const root=document.documentElement,R=el=>el.getBoundingClientRect(),W=innerWidth,Hh=innerHeight,
+      touch=(type,id,x,y)=>cv.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:id===1,clientX:x,clientY:y,bubbles:true,cancelable:true})),
+      tap=(x,y)=>{touch('pointerdown',1,x,y);touch('pointerup',1,x,y);vp.dispatchEvent(new MouseEvent('click',{clientX:x,clientY:y,bubbles:true}))},
+      till=async(fn,n)=>{for(let i=0;i<(n||400)&&!fn();i++)await wait(10);return!!fn()};
+    if(stop==='phoneportrait'){ok(root.classList.contains('portrait')&&getComputedStyle($('#rotate')).display==='flex'&&$('#rotate p').textContent===T('turn_phone_sideways'),'a phone held upright is asked to be turned: '+$('#rotate p').textContent);
+      halt('phoneportrait')}
+    ok(PH.on&&OPTS.lay==='auto'&&root.classList.contains('phone')&&!root.classList.contains('portrait'),`a phone held sideways (${W} by ${Hh}, touched, no mouse) is given the phone layout by itself`);
+    /* the title: its picture is fitted into the whole screen, and the menu is opened from the corner */
+    {G.splash=0;ov.classList.remove('splash','playing');await wait(150);const c=R(cv),o=R($('#optsT')),h=R(ov.querySelector('h1'));
+      ok(PH.mode==='title'&&PH.wide&&(Math.abs(c.width-(W-2*PH.ci-144))<2||Math.abs(c.height-Hh)<2)&&c.left>=PH.ci+71&&c.right<=W-PH.ci-71&&c.top>=-1&&c.bottom<=Hh+1,'the title\'s picture fits the screen, with a strip of timber at each side');
+      const cb2=R($('#code'));ok(getComputedStyle($('#ttop')).display!=='none'&&$('#ttop').contains($('#code'))&&$('#code').textContent===T('enter_code')&&cb2.width>0&&cb2.top>=0&&cb2.left>=c.right&&o.left>=c.right&&o.right<=W-PH.ci&&$('#code').scrollWidth<=$('#code').clientWidth+1&&h.top>=0&&h.bottom<=Hh,'on the title ENTER CODE and the menu button stand in its upper right corner, where its last line says, beside the picture and not over it');
+      halt('phonetitle',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'})}
+    await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();G.speedAll=0;place(P,'workshop',160,128,1);[G.cam,G.camY]=camAt('workshop',160,128);await wait(700);
+    const F=LENS.F,lc=R($('#lcol')),rc=R($('#rcol')),cw=PH.cw;
+    ok(!PH.wide&&$('#lcol').contains($('#verbs'))&&$('#rcol').contains($('#inv'))&&$('#ltop').contains($('#opts'))&&$('#ltop').contains($('#names'))&&Math.abs(lc.left)<1&&Math.abs(rc.right-W)<1&&Math.abs(lc.width-cw)<1&&Math.abs(F.l-cw)<1&&Math.abs(F.w-(W-2*cw))<1,
+      `the verbs stand in a column on the left and the inventory in one on the right, ${Math.round(cw)} pixels wide each, and the field between them is ${Math.round(F.w)} by ${Hh}`);
+    {const vs=[...document.querySelectorAll('#verbs button')].filter(b=>getComputedStyle(b).display!=='none').map(R),ss=[...document.querySelectorAll('#inv .slot')].map(R);
+      ok(vs.every(r=>r.left>=lc.left+PH.ci-1&&r.right<=lc.right&&r.height>=40&&r.width>=60)&&ss.length===10&&ss.every(r=>r.right<=W-PH.ci+1&&r.left>=rc.left&&r.height>=40&&r.width>=44),
+        'every verb and inventory slot is large enough for a finger ('+Math.round(Math.min(...vs.map(r=>r.height)))+' and '+Math.round(Math.min(...ss.map(r=>r.height)))+' pixels high) and clear of the screen\'s edge')}
+    {const c=R(cv),k=LENS.k;ok(PH.mode==='fill'&&c.left<=F.l+1&&c.left+VW*k>=F.l+F.w-1&&c.top<=1&&c.top+VH*k>=Hh-1,`the room fills the field from top to bottom, cropped at the sides: ${(F.w/k).toFixed(0)} of its ${VW} pixels across are seen`)}
+    {const[x,y]=toClient(P.x,P.y-20),[rx,ry]=evPos({clientX:x,clientY:y});ok(Math.abs(rx-P.x)<.01&&Math.abs(ry-(P.y-20))<.01&&x>F.l+F.w*.3&&x<F.l+F.w*.7,'a place on the screen and in the room agree, and the field follows whoever is played')}
+    /* a tap walks; one finger drawn across moves the view and walks nobody; two zoom; two quick taps bring it back */
+    {const[x,y]=toClient(110,128);tap(x,y);ok(!!P.walk,'a tap on the floor sends Paul walking there');await idle();
+      const[px]=toClient(P.x,P.y);ok(Math.abs(P.x-110)<2&&px>F.l&&px<F.l+F.w,'and the field has followed him')}
+    {place(P,'workshop',160,128,1);await wait(500);const x0=F.l+F.w/2,y0=Hh/2,t0=LENS.tx;touch('pointerdown',1,x0,y0);for(let i=1;i<=5;i++){touch('pointermove',1,x0-i*30,y0);await wait(16)}
+      touch('pointerup',1,x0-150,y0);vp.dispatchEvent(new MouseEvent('click',{clientX:x0-150,clientY:y0,bubbles:true}));await wait(300);
+      ok(PH.pan.x>20&&LENS.tx<t0-20&&!P.walk,`a finger drawn across the field moves the view along the room (${PH.pan.x.toFixed(0)} pixels), and walks nobody`);await wait(200);
+      tap(...toClient(150,128));await idle();ok(Math.abs(PH.pan.x)<4,'when Paul walks, the view comes back to him')}
+    {const m=[F.l+F.w/2,Hh/2];touch('pointerdown',1,m[0]-30,m[1]);touch('pointerdown',2,m[0]+30,m[1]);for(let i=1;i<=6;i++){touch('pointermove',1,m[0]-30-i*6,m[1]);touch('pointermove',2,m[0]+30+i*6,m[1]);await wait(16)}
+      touch('pointerup',1,m[0]-66,m[1]);touch('pointerup',2,m[0]+66,m[1]);await wait(250);const z=PH.pz,k=LENS.k,base=Math.max(F.w/VW,F.h/VH);
+      ok(Math.abs(z-2.2)<.05&&Math.abs(k-z*base)<.02,`two fingers zoom the field: ${z.toFixed(2)} times`);
+      touch('pointerdown',1,m[0]-20,m[1]);touch('pointerdown',2,m[0]+20,m[1]);for(let i=1;i<=6;i++){touch('pointermove',1,m[0]-20-i*30,m[1]);touch('pointermove',2,m[0]+20+i*30,m[1]);await wait(16)}
+      touch('pointerup',1,m[0],m[1]);touch('pointerup',2,m[0],m[1]);await wait(200);ok(PH.pz===3,'and no farther than three times');
+      await wait(400);tap(m[0],m[1]);await wait(90);tap(m[0],m[1]);await wait(700);await idle();ok(PH.pz===1&&Math.abs(LENS.k-base)<.01,'two quick taps bring the field back to filled')}
+    if(stop==='phonezoom'){lensAim([(P.x-G.cam),P.y-30],F.l+F.w/2,Hh/2,2.2);await wait(500);halt('phonezoom')}
+    /* the status line over the top of the field: seen while something is touched */
+    {const h=ROOMS.workshop.hs.find(h=>(!h.vis||h.vis())&&Math.abs(toClient(h.x+h.w/2,0)[0]-(F.l+F.w/2))<F.w*.35),[x,y]=toClient(h.x+h.w/2,h.y+h.h/2);G.hover=null;status();const was=$('#status').classList.contains('none');
+      touch('pointerdown',1,x,y);touch('pointerup',1,x,y);await wait(300);const st=$('#status'),r=R(st);
+      ok(was&&!st.classList.contains('none')&&!!G.hover&&st.textContent.includes(T(G.hover.name))&&r.left>=F.l-1&&r.right<=F.l+F.w+1&&r.top>=0,'the status line lies over the top of the field, seen only while something is touched: '+st.textContent);G.hover=null;status()}
+    if(stop==='phonenames'){$('#names').click();await wait(400);halt('phonenames')}
+    {$('#names').click();await wait(300);const ts=[...document.querySelectorAll('#tags .tag')].map(R);$('#names').click();
+      ok(ts.length>=3&&ts.every(r=>r.left>=F.l-1&&r.right<=F.l+F.w+1&&r.top>=0&&r.bottom<=Hh),`NAMES labels ${ts.length} things, each inside the field`)}
+    /* a line over its speaker, inside the field */
+    clearInterval(sk);sk=0;
+    {const E=ACT.eliab;place(E,'workshop',190,122,-1);say(E,'you_came_to_damascus_to_bind',{dur:1e6});await wait(400);const l=R($('#speech .line'));
+      ok(l.left>=F.l-1&&l.right<=F.l+F.w+1&&l.top>=0&&l.bottom<=Hh,'a line stands over its speaker, inside the field');
+      halt('phone');G.skip();await wait(100)}
+    /* the choices of a conversation lie over the foot of the field, and wrap rather than run out of it */
+    {G.busy=true;lock(true);status();const pr=window.choose(['basket_loops_are_frayed_through','why_do_you_risk_so_much','tell_me_the_plan_once_more','what_of_the_soldiers'],{order:1});await wait(300);
+      const r=R($('#choices')),bs=[...document.querySelectorAll('#choices button')];
+      ok(r.left>=F.l-1&&r.right<=F.l+F.w+1&&Math.abs(r.bottom-Hh)<1&&bs.every(b=>b.scrollWidth<=b.clientWidth+1&&R(b).height>=32)&&+getComputedStyle($('#verbs')).opacity<.5,
+        'the choices lie over the foot of the field, each line large enough for a finger ('+Math.round(Math.min(...bs.map(b=>R(b).height)))+' pixels high), and the columns are dimmed meanwhile'+(bs.length?'':' (no choices)'));
+      halt('phonechoice');bs[0].click();await pr;G.busy=false;lock(false);status()}
+    /* the menu takes the whole screen: the columns slide out, and come back */
+    {openMenu();await wait(700);const m=R(mn),l=R($('#lcol')),r=R($('#rcol'));
+      ok(PH.wide&&l.right<=1&&r.left>=W-1&&m.left>=-1&&m.right<=W+1&&mn.scrollHeight<=mn.clientHeight+1&&!!mn.querySelector('[data-lay="phone"].on')===false&&!!mn.querySelector('[data-lay="auto"].on')&&$('#opt-code').textContent===T('code_code',{code:makeCode()}),
+        'the menu takes the whole screen while the columns slide out; it fits, with the layout and the safe-point code in it');
+      halt('phonemenu');
+      mn.querySelector('[data-lay="classic"]').click();await wait(100);const cl=!PH.on&&$('#panel').contains($('#verbs'))&&$('#panel').contains($('#inv'))&&$('#top').contains($('#opts'))&&!root.classList.contains('phone');
+      mn.querySelector('[data-lay="auto"]').click();await wait(100);ok(cl&&PH.on&&$('#lcol').contains($('#verbs'))&&JSON.parse(store(OPTS_KEY)).lay==='auto','the layout can be chosen in the menu: Classic puts the panel back as it was, and Auto brings the columns again');
+      closeMenu();await wait(700);ok(!PH.wide&&R($('#lcol')).left>=-1,'when the menu is closed the columns are back')}
+    /* a close view is fitted into the field whole, with wood above and below it */
+    {await loadLevel(10);ov.className='';ov.onclick=null;setChapter(10);CHAP[10].place('bolt10');G.scene=null;enterRoom('bolt10',...CHAP[10].ent.bolt10);G.busy=false;lock(false);await wait(400);
+      const c=R(cv),k=LENS.k;ok(PH.mode==='fit'&&Math.abs(c.left-LENS.F.l)<1&&Math.abs(VW*k-LENS.F.w)<1&&LENS.ty>10,'a close view is fitted into the field whole, with wood above and below it');
+      halt('phoneclose')}
+    /* the narrator's scroll takes the whole screen too */
+    {await loadLevel(5);setChapter(5);G.busy=true;lock(true);status();await fade(1,60);narr('two_of_them_traveled_acts_13_14',{dur:1e6});
+      await till(()=>$('#speech .line.ink')&&SHARED.scroll.state==='up');await wait(700);const sc=R($('#scroll')),l=R($('#speech .line.ink'));
+      ok(PH.wide&&Math.abs(sc.width/sc.height-VW/VH)<.02&&sc.left>=-1&&sc.right<=W+1&&sc.top>=-1&&sc.bottom<=Hh+1&&l.left>=sc.left&&l.right<=sc.right&&!SHARED.scroll.over.length,'the narrator\'s scroll takes the whole screen, and its line lies on the roll');
+      halt('phonescroll');G.skip();await fade(0,60)}
+    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* the title card at full length, the prologue stops, and a room change caught half-way through its cross-fade */
   if(stop==='card'){await loadLevel(1);AU.key=CHAP[1].music;G.speedAll=0;clearInterval(sk);showCard(1);await wait(300);halt('card')}
   if(/^pro(card|1|2|3|4|5|7|8|8b|9)$/.test(stop)){await loadLevel(1);await loadPrologue();ov.className='';ov.onclick=null;setChapter(1);G.inPro=1;$('#chname').textContent=T(PRO.name);$('#skip').style.display='';G.busy=true;lock(true);status();clearInterval(sk);G.speedAll=0;

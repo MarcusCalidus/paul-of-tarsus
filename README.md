@@ -36,7 +36,7 @@ Each chapter has its own page with screenshots, a walkthrough, its music and map
 
 ## How to play
 
-Point at something and click: its usual verb lights up. Use the verbs, the inventory and the blue **Pray to Jehovah** button (the hint system) to get Paul out of trouble with his trade, his brothers and prayer. The game saves your place by itself and shows a safe-point code in the top bar. Every chapter also hides one small treasure for the curious. Everything is in [How to play](docs/how-to-play.md): the controls, languages, prayer, safe-point codes, hidden treasures. How the game looks and sounds is in [Look and sound](docs/look-and-sound.md).
+Point at something and click: its usual verb lights up. Use the verbs, the inventory and the blue **Pray to Jehovah** button (the hint system) to get Paul out of trouble with his trade, his brothers and prayer. On a phone held sideways the verbs and the inventory stand in columns beside the picture, which you can move with a finger and zoom with two. The game saves your place by itself and shows a safe-point code in the top bar. Every chapter also hides one small treasure for the curious. Everything is in [How to play](docs/how-to-play.md): the controls, languages, prayer, safe-point codes, hidden treasures. How the game looks and sounds is in [Look and sound](docs/look-and-sound.md).
 
 ![Pointing at Eliab lights Talk to](docs/screenshots/verbs.png)
 

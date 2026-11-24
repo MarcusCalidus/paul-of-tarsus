@@ -159,7 +159,7 @@ function rest(){clearTimeout(idle);idle=setTimeout(down,700)}
 
 /* ---------- the words, in ink ---------- */
 const SIZES=[8.6,7.6,6.8,6.2],TALL=100,over=[];   /* room pixels: the heights of the letters, and how tall the writing may stand */
-function fit(el){clearTimeout(idle);const text=el.textContent,s=$('#view').clientWidth/VW;
+function fit(el){clearTimeout(idle);const text=el.textContent,s=PH.on?Math.min(LENS.F.w/VW,LENS.F.h/VH):$('#view').clientWidth/VW;   /* on a phone the scroll is fitted into the field (see lensTick) */
   const size=()=>{for(const f of SIZES){el.style.fontSize=`calc(var(--s)*${f}px)`;if(el.offsetHeight<=TALL*s+1&&el.scrollWidth<=el.clientWidth+1)return true}return false};
   /* first with every reference kept whole; a reference too long for a line of its own may be divided after all */
   el.textContent='';let i=0;for(const m of text.matchAll(/\([^()]*\d+:\d+[^()]*\)/g)){el.append(text.slice(i,m.index));const sp=document.createElement('span');sp.textContent=m[0];el.append(sp);i=m.index+m[0].length}

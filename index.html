@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1c130c">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -223,6 +223,83 @@ body{display:flex;align-items:center;justify-content:center}
 #menu .slot .seg{flex:none;align-items:center}
 #menu .slot button{font-size:calc(var(--s)*4.5px);padding:calc(var(--s)*1px) calc(var(--s)*2.6px)}
 #menu .slot em{font-style:normal;color:#f0c890;margin-right:calc(var(--s)*1px)}
+/* ============ PHONE: a phone held sideways (see layout) ============
+   The verbs stand in a column on the left, under the menu and NAMES, and the inventory in a column on the right; the field between them
+   is as tall as the screen. The picture fills it and is cropped at the sides, and a finger moves it (see lensTick). The status line lies
+   over the top of the field, and the choices of a conversation over its foot. A menu, an end screen, the tablets and the narrator's
+   scroll take the whole screen: the columns slide out to the sides. The values that change with the screen and the picture are set by
+   the engine: --cw the width of a column (with --ci, what the phone's rounded corners and its camera take of it), --cs the scale inside the
+   columns, --ts that of the words on the field, --fl, --fr and --fw the field's left and right edges and its width, and --fx, --fy, --fk
+   the box in which the whole picture would fit in the field (the scroll is drawn in it). Held upright, a phone asks to be turned. */
+#lcol,#rcol,#ltop,#ttop{display:none}
+#safe{position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+#rotate{position:fixed;inset:0;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;
+  background:#1c130c var(--wood);background-size:256px 64px;image-rendering:pixelated;color:var(--gold);font-size:17px;line-height:1.4;text-align:center;
+  text-shadow:1px 1px 0 #000;box-shadow:inset 0 0 0 2px #000,inset 0 0 0 4px #6a4c24}
+#rotate canvas{width:96px;height:96px;image-rendering:pixelated;image-rendering:crisp-edges}
+#rotate p{margin:0;max-width:280px}
+html.portrait #rotate{display:flex}
+html:not(.phone) body{padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+html.phone,html.phone body{overscroll-behavior:none;touch-action:none}
+html.phone body{display:block}
+html.phone #wrap{position:fixed;inset:0;width:auto;height:auto;background:#0a0706}
+html.phone #top{display:none}
+html.phone #view,html.phone #wrap.title #view{position:absolute;inset:0;width:auto;height:auto;touch-action:none;
+  background:#1c130c var(--wood);background-size:calc(var(--cs)*128px) calc(var(--cs)*32px);background-blend-mode:multiply;background-color:#4a3a2a}
+/* the canvas is as tall as the title's picture; in play only its upper 144 rows are the room, and the rest is cut off */
+html.phone #screen{position:absolute;left:0;top:0;width:320px;height:210px;transform-origin:0 0;clip-path:inset(0 0 31.4286% 0)}
+html.phone #wrap.title #screen{clip-path:none}
+html.phone #lcol,html.phone #rcol{display:flex;flex-direction:column;position:absolute;top:0;bottom:0;width:var(--cw);z-index:7;
+  --s:var(--cs);--px:calc(var(--s)*.5px);gap:calc(var(--s)*2px);padding:calc(var(--s)*2.5px);
+  background:#1c130c var(--wood);background-size:calc(var(--s)*128px) calc(var(--s)*32px);image-rendering:pixelated;transition:transform .45s ease-in-out}
+html.phone #lcol{left:0;padding-left:calc(var(--ci) + var(--s)*2.5px);box-shadow:inset calc(var(--px)*-1) 0 0 #000,inset calc(var(--px)*-2) 0 0 #6a4c24}
+html.phone #rcol{right:0;padding-right:calc(var(--ci) + var(--s)*2.5px);box-shadow:inset var(--px) 0 0 #000,inset calc(var(--px)*2) 0 0 #6a4c24}
+html.phone #wrap.wide #lcol{transform:translateX(-100%)}
+html.phone #wrap.wide #rcol{transform:translateX(100%)}
+html.phone #ltop{display:flex;gap:calc(var(--s)*1.5px);flex:0 0 calc(var(--s)*16px)}
+html.phone #ltop button,html.phone #wrap>#skip,html.phone #ttop button{font:inherit;font-size:calc(var(--s)*5.6px);color:var(--gold);background:rgba(10,6,4,.55);
+  border:var(--px) solid var(--dim);text-shadow:var(--px) var(--px) 0 #000;padding:0 calc(var(--s)*2px);cursor:pointer;touch-action:manipulation}
+html.phone #ltop #opts{flex:0 0 calc(var(--s)*19px);font-size:calc(var(--s)*9px);line-height:1}
+html.phone #ltop #names{flex:1;min-width:0}
+html.phone #ltop #names.on{color:#fff;border-color:var(--gold);background:rgba(168,98,30,.66)}
+html.phone #ltop #names::before{content:'';display:inline-block;vertical-align:middle;width:calc(var(--s)*2px);height:calc(var(--s)*2px);border-radius:50%;
+  background:var(--gold);box-shadow:0 0 0 var(--px) #000;margin:0 calc(var(--s)*1.5px) calc(var(--s)*.5px) 0}
+html.phone #verbs{flex:1;width:auto;min-height:0;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,1fr);gap:calc(var(--s)*1.5px)}
+html.phone #verbs.party{grid-template-rows:repeat(5,1fr)}
+html.phone #verbs #pray,html.phone #verbs.party #pray,html.phone #verbs #swap{grid-column:1/3}
+html.phone #verbs button{font-size:calc(var(--s)*5.5px);line-height:1.2;padding:0 calc(var(--s)*.5px);touch-action:manipulation}
+html.phone #inv{flex:1;min-height:0;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(5,1fr);gap:calc(var(--s)*1.5px)}
+html.phone #inv .slot{touch-action:manipulation}
+html.phone #inv canvas{width:calc(var(--s)*22px);height:calc(var(--s)*22px)}
+html.phone #wrap.locked #verbs,html.phone #wrap.locked #inv{opacity:.35;pointer-events:none}
+/* the panel no longer holds the verbs and the inventory: it is only the frame for the choices, which lie over the foot of the field */
+html.phone #panel{position:absolute;inset:0;height:auto;padding:0;background:none;pointer-events:none;display:block;z-index:6}
+html.phone #wrap.full #panel,html.phone #wrap.full #status{transform:none}
+html.phone #choices{--s:var(--ts);--px:calc(var(--s)*.5px);inset:auto var(--fr) 0 var(--fl);max-height:60%;pointer-events:auto;touch-action:pan-y;
+  padding:calc(var(--s)*2px) calc(var(--s)*2px) calc(var(--s)*2px + env(safe-area-inset-bottom,0px));gap:calc(var(--s)*1.5px);
+  background:rgba(18,12,8,.95);box-shadow:inset 0 var(--px) 0 #000,inset 0 calc(var(--px)*2) 0 #6a4c24,0 calc(var(--s)*-1px) calc(var(--s)*4px) rgba(0,0,0,.55)}
+html.phone #choices button{flex:0 0 auto;white-space:normal;text-overflow:clip;line-height:1.3;font-size:calc(var(--s)*6px);
+  padding:calc(var(--s)*4px) calc(var(--s)*3.5px);touch-action:manipulation}
+html.phone #status{--s:var(--ts);--px:calc(var(--s)*.5px);position:absolute;left:var(--fl);right:var(--fr);top:0;height:auto;z-index:6;padding:0 calc(var(--s)*3px);
+  line-height:calc(var(--s)*9px);font-size:calc(var(--s)*5.8px);text-overflow:ellipsis;background:rgba(10,6,4,.6);border:0;box-shadow:none;pointer-events:none;transition:opacity .25s}
+html.phone #status.none,html.phone #wrap.wide #status{opacity:0}
+html.phone #speech,html.phone #tags{--s:var(--ts);--px:calc(var(--s)*.5px)}
+html.phone .line{max-width:min(calc(var(--s)*200px),calc(var(--fw) - var(--s)*8px))}
+html.phone .line.white{max-width:min(calc(var(--s)*230px),calc(var(--fw) - var(--s)*12px))}
+html.phone .line.ink{--s:var(--fk);--px:calc(var(--s)*.5px);left:calc(var(--fx) + var(--fk)*170px);top:calc(var(--fy) + var(--fk)*72px);max-width:calc(var(--fk)*164px)}
+html.phone .tag{font-size:calc(var(--s)*5px)}
+html.phone #scroll{inset:auto;left:var(--fx);top:var(--fy);width:calc(var(--fk)*320px);height:calc(var(--fk)*144px)}
+html.phone #found{left:calc(var(--fl) + var(--s)*3px);top:calc(var(--ts)*12px)}
+html.phone #hush{right:calc(var(--fr) + var(--s)*3px);top:calc(var(--ts)*12px)}
+html.phone #wrap>#skip{--s:var(--ts);--px:calc(var(--s)*.5px);position:absolute;z-index:8;top:calc(var(--s)*12px);right:calc(var(--fr) + var(--s)*3px);height:calc(var(--s)*11px)}
+/* on the title the columns are away: ENTER CODE and the menu stand one over the other in the upper right corner of the screen, where the
+   title's last line says they are, in the strip of timber beside its picture (--tb) */
+html.phone #wrap.title #ttop{display:flex;flex-direction:column;gap:calc(var(--s)*2px);--s:var(--ts);--px:calc(var(--s)*.5px);position:absolute;z-index:8;
+  top:calc(var(--s)*3px + env(safe-area-inset-top,0px));right:calc(var(--ci) + 5px);width:calc(var(--tb) - 10px)}
+html.phone #ttop button{min-height:calc(var(--s)*13px);width:100%;white-space:normal;line-height:1.2;font-size:calc(var(--s)*5.2px);padding:calc(var(--s)*1.5px) calc(var(--s)*.5px)}
+html.phone #ttop #optsT{padding:0;font-size:calc(var(--s)*9px);line-height:1}
+html.phone #wrap.title.splash #ttop{display:none}
 </style>
 </head>
 <body>
@@ -245,7 +322,12 @@ body{display:flex;align-items:center;justify-content:center}
     <div id="inv"></div>
     <div id="choices"></div>
   </div>
+  <div id="lcol"><div id="ltop"></div></div>
+  <div id="rcol"></div>
+  <div id="ttop"><button id="optsT" type="button" aria-label="Options">&#8801;</button></div>
 </div>
+<div id="rotate"><canvas width="48" height="48"></canvas><p></p></div>
+<div id="safe"></div>
 <script>
 "use strict";
 /* Paul of Tarsus: On the Roads of Rome. This file is the engine: layout, the paint toolkit, figures, the audio sequencer,
@@ -258,7 +340,7 @@ const cv=$('#screen'),cx=cv.getContext('2d');
 cx.imageSmoothingEnabled=false;
 const G={ch:1,ship:null,room:null,verb:'walk',item:null,busy:true,flags:{},inv:[],cam:0,camY:0,zoom:1,zoomTo:1,t:0,scene:null,
   hover:null,prays:0,hintAt:{},skip:null,started:0,dialog:false,pc:null,invs:{},lang:'en',turn:new Map(),turnN:0};
-const OPTS_KEY='paul.opts',OPTS={mus:1,fx:1,spd:1,mov:1};   /* mov: 1 lively, 0 calm (see moves) */
+const OPTS_KEY='paul.opts',OPTS={mus:1,fx:1,spd:1,mov:1,lay:'auto'};   /* mov: 1 lively, 0 calm (see moves); lay: the layout, auto, phone or classic (see fit) */
 /* ============ LANGUAGES: every language is data under lang/, English as well ============ */
 /* The code never holds a line of text: it holds a key, and every line is looked up as it is shown, by say and narr, choose, the status
    line, the labels, the overlays, the tablets and the map. So the story's logic (its flags, and the names it compares) never sees a
@@ -346,10 +428,56 @@ function pointer(s,kind='default'){ptrScale=s;const d=window.devicePixelRatio||1
   el.style.cursor=css(a1,u1,`url(${a1.toDataURL()})`);
   if(d!==1){const a=art(kind,u);el.style.cursor=css(a,u/d,`-webkit-image-set(url(${a.toDataURL()}) ${d}x)`)}}
 /* layout scale */
-function fit(){const top=10,st=13,pn=53,tot=144+top+st+pn;
-  const d=window.devicePixelRatio||1,s=Math.min(innerWidth/320,innerHeight/tot),k=Math.floor(s*d)/d,sc=k>=1?k:Math.max(.5,s);
-  document.documentElement.style.setProperty('--s',sc.toFixed(3));pointer(sc,pointerKind(G.hover))}
-addEventListener('resize',fit);fit();
+/* LENS: how the picture (VW by VH room pixels, the frame that render paints; VT on the title) lies in the view, in CSS pixels: k to the room
+   pixel, its left top corner at tx, ty inside the view, and F, the part of the view in which the field is seen. In the classic layout the
+   picture is the view (tx = ty = 0). On a phone (PH, see lensTick) the view is the whole screen, and the picture is moved and zoomed in it. */
+const LENS={k:3,tx:0,ty:0,F:{l:0,t:0,w:960,h:432}};
+/* PH: the phone layout. on: in use; cw: the width of a column; ci: of it, the safe margin at the screen's edge; cs, ts, os, kT: the scales of
+   the columns, of the words on the field, of a screen that takes the whole of it (a menu, an end screen) and of the title; pz: the zoom of
+   the field (two fingers, 1 to 3) and pzFit that of a close view; pan: how far a finger has moved the view from whoever it follows. */
+const PH={on:false,live:false,vz:1,cw:0,ci:0,cs:2,ts:2,os:2,kT:2,W:0,H:0,pz:1,pzFit:1,pan:{x:0,y:0},c:null,k:0,Fl:0,Fw:0,room:null,mode:'',wide:false,vars:'',gest:null,lastTap:null,ctx:null};
+/* phoneWanted: the phone layout is used on a screen that is touched and has no mouse, and whose shorter side is no more than 500 CSS
+   pixels: a phone and not a tablet. The player may choose it, or the classic layout, in the options (OPTS.lay). */
+const mq=q=>!!(window.matchMedia&&matchMedia(q).matches),touchDev=()=>mq('(pointer: coarse)')||(navigator.maxTouchPoints||0)>0;
+function phoneWanted(){if(OPTS.lay==='phone')return true;if(OPTS.lay==='classic')return false;
+  return mq('(hover: none) and (pointer: coarse)')&&Math.min(screen.width,screen.height)<=500}
+/* insets: what the phone's rounded corners, its camera and its home bar take of the screen [top, right, bottom, left] */
+function insets(){const c=getComputedStyle($('#safe'));return['Top','Right','Bottom','Left'].map(k=>parseFloat(c['padding'+k])||0)}
+/* dock: on a phone the verbs and the inventory move into their columns, and the menu and NAMES buttons to the top of the left one; SKIP
+   stands on the field; the code button goes to the corner of the title (see #ttop). Off the phone each goes back where it came from. */
+let HOMES=null;
+function dock(on){const els=['#skip','#code','#names','#opts','#verbs','#inv'].map(s=>$(s));
+  if(!HOMES)HOMES=els.map(e=>[e,e.parentNode,e.nextSibling]);
+  if(on){$('#wrap').appendChild($('#skip'));$('#ttop').prepend($('#code'));$('#ltop').append($('#opts'),$('#names'));$('#lcol').appendChild($('#verbs'));$('#rcol').appendChild($('#inv'))}
+  else{for(let i=HOMES.length-1;i>=0;i--){const[e,p,n]=HOMES[i];p.insertBefore(e,n&&n.parentNode===p?n:null)}
+    cv.style.width=cv.style.height=cv.style.transform='';PH.vars='';const st=document.documentElement.style;
+    for(const v of['--cw','--ci','--cs','--ts','--tb','--fl','--fr','--fw','--fx','--fy','--fk'])st.removeProperty(v);$('#wrap').classList.remove('wide','locked','splash');$('#wrap').style.transform=''}
+  if(on)$('#wrap').classList.toggle('locked',$('#panel').classList.contains('locked'))}
+/* layout scale */
+function fit(){const root=document.documentElement,ph=phoneWanted(),[it,ir,ib,il]=insets();
+  const de=document.documentElement;root.classList.toggle('portrait',ph&&de.clientHeight>de.clientWidth&&touchDev());
+  if(ph!==PH.on){PH.on=ph;root.classList.toggle('phone',ph);dock(ph);PH.k=0;
+    /* the page itself is never zoomed on a phone (the field is, see lensTick); off the phone the browser's own zoom is left alone */
+    $('meta[name=viewport]').content='width=device-width, initial-scale=1, viewport-fit=cover'+(ph?', maximum-scale=1, user-scalable=no':'')}
+  if(!ph){const top=10,st=13,pn=53,tot=144+top+st+pn;
+    const d=window.devicePixelRatio||1,s=Math.min((innerWidth-il-ir)/320,(innerHeight-it-ib)/tot),k=Math.floor(s*d)/d,sc=k>=1?k:Math.max(.5,s);
+    root.style.setProperty('--s',sc.toFixed(3));pointer(sc,pointerKind(G.hover));LENS.k=sc;LENS.tx=LENS.ty=0;LENS.F={l:0,t:0,w:sc*VW,h:sc*VH};return}
+  /* a column is about four tenths of the screen's height wide, and no column is wider than a quarter of the screen */
+  /* the size of the screen as the page is laid out (#wrap is fixed to it): Safari reports a smaller window while the page is pinched */
+  const wr=$('#wrap'),W=PH.W=wr.clientWidth||innerWidth,H=PH.H=wr.clientHeight||innerHeight,ci=PH.ci=Math.max(il,ir),cw=PH.cw=Math.round(Math.min(H*.37,W*.25-ci)+ci);
+  /* the title's picture leaves a strip of timber at each side, wide enough for ENTER CODE and the menu button in its upper corner (--tb) */
+  PH.cs=Math.min(H/185,(cw-ci)/68);PH.ts=Math.max(1.6,H/180);PH.os=Math.min(W/320,H/144);PH.kT=Math.min((W-2*ci-144)/320,H/VT);
+  for(const[k,v]of[['--cw',cw+'px'],['--ci',ci+'px'],['--cs',PH.cs.toFixed(3)],['--ts',PH.ts.toFixed(3)],['--tb',((W-320*PH.kT)/2-ci).toFixed(1)+'px']])root.style.setProperty(k,v);
+  PH.vars='';if(PH.live)lensTick(0);pointer(PH.ts,pointerKind(G.hover))}
+/* vvFit: Safari may still zoom the page itself, by a pinch it does not tell the page about (a trackpad's, in the iPhone Simulator or on an
+   iPad). Then the layout is laid back over what is seen: #wrap is moved to the part of the page in sight and made smaller by as much as
+   Safari zoomed, so that the columns stay as they were, and the zoom is handed to the field instead (PH.vz, see lensTick). Safari's
+   own notices of the zoom come late, so it is read again for every frame. */
+function vvFit(){const v=window.visualViewport,w=$('#wrap'),s=PH.on&&v?v.scale||1:1,t=s>1.001||PH.on&&v&&(v.offsetLeft||v.offsetTop)?`translate(${v.offsetLeft}px,${v.offsetTop}px) scale(${1/s})`:'';
+  PH.vz=s;if(w.style.transform!==t){w.style.transformOrigin='0 0';w.style.transform=t}}
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,120));
+if(window.visualViewport){visualViewport.addEventListener('resize',()=>{fit();vvFit()});visualViewport.addEventListener('scroll',vvFit)}
+fit();
 /* fitTop: the top bar is one line. When the chapter's name, the code and the buttons do not fit on it, the game's name gives way. It is
    checked whenever the bar's words change and when the window does. */
 function fitTop(){const t=$('#top');t.classList.remove('tight');if(t.scrollWidth>t.clientWidth+1||t.scrollHeight>t.clientHeight+1)t.classList.add('tight')}
@@ -359,7 +487,9 @@ const F=G.flags;
 const has=id=>G.inv.includes(id);
 function flyItem(id,idx){if(G.speedAll>200||!G.room||G.scene)return;const slot=$('#inv').children[idx];if(!slot)return;
   const vr=$('#view').getBoundingClientRect(),sr=slot.getBoundingClientRect(),src=iconArt(ITEMS[id].icon||id),[c,g]=mk(48,48);g.drawImage(src,0,0);
-  const z=zoomNow(),p=G.actPos||[(PC().x-G.cam)*z,(PC().y-G.camY-24)*z],sx=vr.left+clamp(p[0],12,VW-12)/VW*vr.width,sy=vr.top+clamp(p[1],12,VH-12)/VH*vr.height;
+  const z=zoomNow(),p=G.actPos||[(PC().x-G.cam)*z,(PC().y-G.camY-24)*z],F=LENS.F,
+    q=PH.on?vpq()[1]:1,[sx,sy]=PH.on?[vr.left+q*clamp(LENS.tx+p[0]*LENS.k,F.l+24,F.l+F.w-24),vr.top+q*clamp(LENS.ty+p[1]*LENS.k,F.t+24,F.t+F.h-24)]
+      :[vr.left+clamp(p[0],12,VW-12)/VW*vr.width,vr.top+clamp(p[1],12,VH-12)/VH*vr.height];
   const tx=sr.left+sr.width/2,ty=sr.top+sr.height/2,sz=sr.height*.8;
   c.className='flyitem';c.style.width=sz+'px';c.style.height=sz+'px';document.body.appendChild(c);
   tween(320,k=>{const e=1-(1-k)*(1-k),x=sx+(tx-sx)*e,y=sy+(ty-sy)*e-Math.sin(k*Math.PI)*24*ptrScale;
@@ -1457,11 +1587,18 @@ const narr=(t,o)=>say(null,t,o);
    tells, as it always did. DARK is the scene for what is told and not shown (a vision by night, a beating): a chapter sets it as G.scene. */
 function DARK(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}
 const inDark=()=>!G.white&&(+$('#dim').style.opacity>=1||G.scene===DARK);
-function posSpeech(){if(!cur||cur.ink||cur.white)return;const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
+function posSpeech(){if(!cur||cur.ink||cur.white)return;if(PH.on)return posSpeechPh();const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
   if(a&&a.room===G.room&&!G.scene){const z=zoomNow();el.style.left=clamp((a.x-G.cam)*z*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-G.camY-figBox(a.room)[1])*z+7,40,132)*s+'px';el.style.top=''}
   else if(cur.low){el.style.left='50%';el.style.top='';el.style.bottom=7*s+'px'}   /* low: a line told over a map whose road runs along its upper edge stands at the foot of the view */
   else{el.style.left='50%';el.style.top=10*s+'px';el.style.bottom=''}}
-function lock(b){$('#panel').classList.toggle('locked',b)}
+/* posSpeechPh: on a phone a line stands over its speaker where the field shows him, inside the field, and the narrator's lines at its top,
+   below the status line. The words keep their size when the field is zoomed. */
+function posSpeechPh(){const{el,a}=cur,L=LENS,F=L.F,ts=PH.ts,hw=el.offsetWidth/2+4*ts,H=PH.H,eh=el.offsetHeight;
+  if(a&&a.room===G.room&&!G.scene){const z=zoomNow(),X=L.tx+(a.x-G.cam)*z*L.k,Y=L.ty+(a.y-G.camY-figBox(a.room)[1])*z*L.k;
+    el.style.left=clamp(X,F.l+hw,F.l+F.w-hw)+'px';el.style.bottom=clamp(H-Y+5*ts,H*.22,H-eh-3*ts)+'px';el.style.top=''}
+  else if(cur.low){el.style.left=(F.l+F.w/2)+'px';el.style.top='';el.style.bottom=7*ts+'px'}
+  else{el.style.left=(F.l+F.w/2)+'px';el.style.top=12*ts+'px';el.style.bottom=''}}
+function lock(b){$('#panel').classList.toggle('locked',b);$('#wrap').classList.toggle('locked',b)}
 async function cut(fn,force){if(G.busy&&!force)return;G.busy=true;lock(true);status();
   try{await fn()}catch(e){console.error(e)}
   G.with=null;G.turn.clear();G.busy=false;lock(false);G.verb='walk';G.item=null;syncVerbs();drawInv();status();codeBtn()}
@@ -1540,7 +1677,10 @@ function drawInv(){const el=$('#inv');el.innerHTML='';for(let i=0;i<10;i++){cons
     s.oncontextmenu=e=>{e.preventDefault();if(G.busy)return;audioInit();G.verb='walk';G.item=null;syncVerbs();cut(()=>say(PC(),itemLook(id)))}}
   el.appendChild(s)}}
 /* status: the sentence being built, such as "Use awl with torn awning". Each language words it through the templates in it. */
-function status(){const el=$('#status');litVerb();pointer(ptrScale,pointerKind(G.hover));if(G.busy){el.textContent='\u00a0';return}
+/* On a phone the status line lies over the field, and is seen only while it says more than Walk to: while something is touched, or a verb
+   or an item is chosen. */
+function status(){statusText();const el=$('#status');el.classList.toggle('none',G.busy||!G.hover&&!G.item&&G.verb==='walk')}
+function statusText(){const el=$('#status');litVerb();pointer(ptrScale,pointerKind(G.hover));if(G.busy){el.textContent='\u00a0';return}
   const h=G.hover,hn=h?T(h.item?ITEMS[h.item].name:h.name):'',v=VNAME[G.verb==='walk'&&h&&!G.item?(h.item?itemVerb(h.item):defVerb(h)):G.verb];
   if(G.item){const on=hn&&!(h&&h.item===G.item),item=T(ITEMS[G.item].name);
     el.textContent=G.verb==='give'?(on?T('give_item_to_thing',{item,thing:hn}):T('give_item_to',{item})):(on?T('use_item_with_thing',{item,thing:hn}):T('use_item_with',{item}))}
@@ -1598,7 +1738,13 @@ async function clickView(x,y,at){
   me.dir=A?(A.x>me.x?1:-1):h.dir||((h.x+h.w/2)>=me.x?1:-1);if(pl)pl.face(me,A?A.x:h.x+h.w/2,A?A.y:h.y+h.h/2);
   await cut(()=>act(v,h,item))}
 const vp=$('#view');
-function evPos(e){const r=vp.getBoundingClientRect(),z=zoomNow();return[(e.clientX-r.left)/r.width*VW/z+G.cam,(e.clientY-r.top)/r.height*VH/z+G.camY]}
+/* evPos: where a pointer event is, in the room; framePos: in the picture (VW by VH); toClient: where a place in the room is on the screen */
+function evPos(e){if(PH.on){const[x,y]=framePos(e),z=zoomNow();return[x/z+G.cam,y/z+G.camY]}const r=vp.getBoundingClientRect(),z=zoomNow();return[(e.clientX-r.left)/r.width*VW/z+G.cam,(e.clientY-r.top)/r.height*VH/z+G.camY]}
+const vpq=()=>{const r=vp.getBoundingClientRect();return[r,r.width/(vp.offsetWidth||r.width)||1]};   /* q: screen pixels to one of the view's own (below 1 while Safari zooms, see vvFit) */
+function framePos(e){if(PH.on){const[r,q]=vpq();return[((e.clientX-r.left)/q-LENS.tx)/LENS.k,((e.clientY-r.top)/q-LENS.ty)/LENS.k]}const r=vp.getBoundingClientRect();
+  return[(e.clientX-r.left)/r.width*VW,(e.clientY-r.top)/r.height*VH]}
+function toClient(x,y){const r=vp.getBoundingClientRect(),z=zoomNow();if(PH.on){const q=vpq()[1];return[r.left+(LENS.tx+(x-G.cam)*z*LENS.k)*q,r.top+(LENS.ty+(y-G.camY)*z*LENS.k)*q]}
+  return[r.left+(x-G.cam)*z/VW*r.width,r.top+(y-G.camY)*z/VH*r.height]}
 /* hsOf: what a pointer event is about: the thing a pinned label names if the pointer is on a label, else whatever lies under it.
    Labels are moved apart and do not always sit on what they name, so pointing, a tap, a right-click and a double-click all ask here. */
 const hsOf=e=>{const t=e.target.closest('.tag');return t&&t.hs||hsAt(...evPos(e))};
@@ -1617,6 +1763,77 @@ vp.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch')return;fingers.
 vp.addEventListener('pointermove',e=>{if(!fingers.has(e.pointerId))return;fingers.set(e.pointerId,[e.clientX,e.clientY]);
   if(pinch&&fingers.size===2){const[a,b]=[...fingers.values()];G.zoomTo=clamp(pinch.z*Math.hypot(a[0]-b[0],a[1]-b[1])/pinch.d,.75,2);pinchT=performance.now()}});
 for(const t of['pointerup','pointercancel'])vp.addEventListener(t,e=>{fingers.delete(e.pointerId);if(pinch&&fingers.size<2){pinch=null;pinchT=performance.now()}});
+/* lensTick: on a phone, where the picture lies in the view (LENS), worked out for every frame. The field is the part of the screen between the
+   columns, or all of it while they are away (wide: on the title, a menu, the safe-point box, an end screen, the tablets and the narrator's
+   scroll). The title's picture is fitted into the screen whole, with timber beside it (PH.kT). A close view (where whoever is played stands below the picture) and the travel
+   map are fitted into the field whole as well, and wood shows above and below them; every other picture fills the field from top to bottom,
+   cropped at the sides. That one follows whoever is played, or whoever speaks while a line stands, and a finger may move it (pan, which
+   melts away as he walks or someone speaks); in a room wider than the picture the room's own view (G.cam) follows the same point. Two
+   fingers zoom it up to three times (pz; a close view: pzFit). The picture never leaves a gap in the field it could fill. */
+function lensTick(dt){if(!PH.on)return;vvFit();const W=PH.W,H=PH.H,wc=$('#wrap').classList,S=SHARED.scroll,
+    title=wc.contains('title'),wide=title||wc.contains('full')||!!(S&&S.state!=='down')||!!$('#tablets.on'),e=r=>1-Math.exp(-dt*r);
+  if(wide!==PH.wide){PH.wide=wide;wc.toggle('wide',wide)}
+  if(wc.contains('splash')!==ov.classList.contains('splash'))wc.toggle('splash');
+  const Fl=wide?0:PH.cw,Fw=W-2*Fl;
+  if(!PH.k||!dt||Math.abs(Fl-PH.Fl)<.3){PH.Fl=Fl;PH.Fw=Fw}else{PH.Fl+=(Fl-PH.Fl)*e(9);PH.Fw+=(Fw-PH.Fw)*e(9)}
+  const F={l:PH.Fl,t:0,w:PH.Fw,h:H},room=G.room&&!G.scene?G.room:null,me=PC(),plan=!!planOf(room),
+    close=!!room&&!plan&&(me.room!==room||me.y>roomH(room)+20),map=!!(G.scene&&SHARED.map&&G.scene===SHARED.map.draw),
+    mode=title?'title':close||map?'fit':'fill',FH=title?VT:VH;
+  if(room!==PH.room){PH.room=room;PH.pan={x:0,y:0};PH.pzFit=1;PH.c=null}
+  const vz=PH.vz||1,kT=mode==='title'?PH.kT:mode==='fit'?Math.min(F.w/VW,F.h/VH)*Math.min(3,PH.pzFit*vz):Math.max(F.w/VW,F.h/VH)*Math.min(3,(plan?1:PH.pz)*vz),
+    snap=!PH.k||mode!==PH.mode||!!PH.gest&&PH.gest.kind==='pinch';
+  if(mode!==PH.mode){PH.mode=mode;PH.c=null}
+  PH.k=snap?kT:PH.k+(kT-PH.k)*e(10);if(Math.abs(PH.k-kT)<.002)PH.k=kT;
+  const k=PH.k,ww=F.w/k,wh=F.h/k,still=!!PH.gest&&PH.gest.kind!=='tap',ease=(Tx,Ty)=>{if(!PH.c||snap||still)PH.c={x:Tx,y:Ty};else{const q=e(6);PH.c.x+=(Tx-PH.c.x)*q;PH.c.y+=(Ty-PH.c.y)*q}};
+  let cx=VW/2,cy=FH/2;PH.ctx=null;
+  if(mode==='fill'&&room){const z=zoomNow(),fh=figBox(room)[1],sp=cur&&cur.a&&cur.a.room===room&&!cur.ink&&!cur.white?cur.a:null,a=sp||me,
+      hx=ww/2/z,hy=wh/2/z,rw=ART[room].w,rh=roomH(room),ay=a.y-fh/2;
+    if(!PH.gest&&(me.walk||sp))PH.pan.x=PH.pan.y=0;   /* he walks, or someone speaks: the view goes back to him (PH.c eases there) */
+    const Tx=clamp(a.x+PH.pan.x,Math.min(hx,rw/2),Math.max(rw-hx,rw/2)),Ty=clamp(ay+PH.pan.y,Math.min(hy,rh/2),Math.max(rh-hy,rh/2));
+    if(still){PH.pan.x=Tx-a.x;PH.pan.y=Ty-ay}ease(Tx,Ty);   /* a finger that drags past the edge does not store up a way back */cx=(PH.c.x-G.cam)*z;cy=(PH.c.y-G.camY)*z;PH.ctx={a,z,fh}}
+  else if(mode!=='title'){const hx=ww/2,hy=wh/2,Tx=clamp(VW/2+PH.pan.x,Math.min(hx,VW/2),Math.max(VW-hx,VW/2)),Ty=clamp(VH/2+PH.pan.y,Math.min(hy,VH/2),Math.max(VH-hy,VH/2));
+    if(still){PH.pan.x=Tx-VW/2;PH.pan.y=Ty-VH/2}ease(Tx,Ty);cx=PH.c.x;cy=PH.c.y}
+  cx=ww>=VW?VW/2:clamp(cx,ww/2,VW-ww/2);cy=wh>=FH?FH/2:clamp(cy,wh/2,FH-wh/2);
+  const d=window.devicePixelRatio||1,r=v=>Math.round(v*d)/d,tx=r(F.l+F.w/2-cx*k),ty=r(F.t+F.h/2-cy*k),cw=r(VW*k)+'px',tf=`translate(${tx}px,${ty}px)`;
+  LENS.k=k;LENS.tx=tx;LENS.ty=ty;LENS.F=F;
+  if(cv.style.width!==cw){cv.style.width=cw;cv.style.height=r(VT*k)+'px'}if(cv.style.transform!==tf)cv.style.transform=tf;
+  /* the field and the whole-picture box, for the stylesheet; set only when they change */
+  const fk=Math.min(F.w/VW,F.h/VH),fx=F.l+(F.w-VW*fk)/2,fy=F.t+(F.h-VH*fk)/2,os=title?PH.kT:PH.os,
+    v=[F.l,W-F.l-F.w,F.w,fx,fy].map(x=>Math.round(x*2)/2).join()+'|'+fk.toFixed(3)+'|'+os.toFixed(3);
+  if(v!==PH.vars){PH.vars=v;const st=document.documentElement.style;
+    for(const[n,x]of[['--fl',F.l],['--fr',W-F.l-F.w],['--fw',F.w],['--fx',fx],['--fy',fy]])st.setProperty(n,x.toFixed(1)+'px');st.setProperty('--fk',fk.toFixed(4));st.setProperty('--s',os.toFixed(3))}}
+/* lensAim: zoom the field to pz and move it so that the point m of the picture lies at vx, vy in the view (the point between two fingers) */
+function lensAim(m,vx,vy,pz){const F=LENS.F,k=(PH.mode==='fit'?Math.min(F.w/VW,F.h/VH):Math.max(F.w/VW,F.h/VH))*Math.min(3,pz*(PH.vz||1)),
+    cx=m[0]-(vx-F.l-F.w/2)/k,cy=m[1]-(vy-F.t-F.h/2)/k,c=PH.ctx;
+  if(PH.mode==='fit')PH.pzFit=pz;else PH.pz=pz;
+  if(c){PH.pan.x=cx/c.z+G.cam-c.a.x;PH.pan.y=cy/c.z+G.camY-(c.a.y-c.fh/2)}else{PH.pan.x=cx-VW/2;PH.pan.y=cy-VH/2}}
+/* On a phone one finger moves the field and two zoom it; two quick taps bring it back to the field filled. A tap that has not moved is a
+   click, as always. The page itself is never zoomed: Safari's own pinch is held back. */
+vp.addEventListener('pointerdown',e=>{if(!PH.on||e.pointerType!=='touch')return;
+  if(fingers.size===1)PH.gest={kind:'tap',x:e.clientX,y:e.clientY,pan:{...PH.pan}};
+  else if(fingers.size===2&&!(planOf(G.room)&&!G.scene)&&PH.mode!=='title'){const[a,b]=[...fingers.values()],[r,q]=vpq(),mx=((a[0]+b[0])/2-r.left)/q,my=((a[1]+b[1])/2-r.top)/q;
+    PH.gest={kind:'pinch',d:Math.hypot(a[0]-b[0],a[1]-b[1])||1,pz:PH.mode==='fit'?PH.pzFit:PH.pz,m:[(mx-LENS.tx)/LENS.k,(my-LENS.ty)/LENS.k]}}
+  else PH.gest={kind:'none'}});
+vp.addEventListener('pointermove',e=>{const g=PH.gest;if(!PH.on||!g||!fingers.has(e.pointerId))return;
+  if(g.kind==='tap'&&PH.mode!=='title'&&Math.hypot(e.clientX-g.x,e.clientY-g.y)>10)g.kind='drag';
+  if(g.kind==='drag'){const z=PH.ctx?PH.ctx.z:1,q=vpq()[1];PH.pan.x=g.pan.x-(e.clientX-g.x)/q/LENS.k/z;PH.pan.y=g.pan.y-(e.clientY-g.y)/q/LENS.k/z;pinchT=performance.now()}
+  else if(g.kind==='pinch'&&fingers.size===2){const[a,b]=[...fingers.values()],[r,q]=vpq();
+    lensAim(g.m,((a[0]+b[0])/2-r.left)/q,((a[1]+b[1])/2-r.top)/q,clamp(g.pz*Math.hypot(a[0]-b[0],a[1]-b[1])/g.d,1,3));pinchT=performance.now()}});
+for(const t of['pointerup','pointercancel'])vp.addEventListener(t,e=>{if(!PH.on||e.pointerType!=='touch')return;const g=PH.gest;
+  if(fingers.size){if(g&&g.kind==='pinch')PH.gest={kind:'none'};return}
+  if(g&&g.kind==='tap'&&t==='pointerup'){const now=performance.now(),l=PH.lastTap;
+    if(l&&now-l.t<330&&Math.hypot(e.clientX-l.x,e.clientY-l.y)<40){PH.lastTap=null;
+      if((PH.mode==='fit'?PH.pzFit:PH.pz)!==1||PH.pan.x||PH.pan.y){if(PH.mode==='fit')PH.pzFit=1;else PH.pz=1;PH.pan={x:0,y:0};pinchT=now}}
+    else PH.lastTap={t:now,x:e.clientX,y:e.clientY}}
+  PH.gest=null});
+/* Safari decides at the first movement of a finger whether the page may stop it, so every movement is held back from the start, except
+   where something scrolls (the title's chapters, the choices, the menu and its sliders, the code box, the tablets); a second finger always.
+   A second tap on the field soon after the first is held back too, or Safari zooms the page on it. */
+for(const t of['gesturestart','gesturechange','gestureend'])document.addEventListener(t,e=>{if(PH.on)e.preventDefault()},{passive:false});
+document.addEventListener('touchstart',e=>{if(PH.on&&e.touches.length>1)e.preventDefault()},{passive:false});
+document.addEventListener('touchmove',e=>{if(PH.on&&e.cancelable&&(e.touches.length>1||!(e.target.closest&&e.target.closest('.chs,#choices,#menu,#codebox,#tablets'))))e.preventDefault()},{passive:false});
+let lastTouchEnd=0;document.addEventListener('touchend',e=>{if(!PH.on)return;const now=performance.now();
+  if(e.cancelable&&e.target===cv&&now-lastTouchEnd<350)e.preventDefault();lastTouchEnd=now},{passive:false});
 /* Right-click looks at whatever is under the pointer, from where Paul stands; on empty ground it puts the chosen verb down. */
 vp.addEventListener('contextmenu',e=>{e.preventDefault();if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
   if(G.busy||G.scene||!G.room)return;audioInit();const h=hsOf(e);G.verb='walk';G.item=null;syncVerbs();drawInv();status();if(!h)return;
@@ -1640,21 +1857,24 @@ function tagsOn(on){if(on!=null)G.tagKey=!!on;on=!!(G.tagKey||G.tagPin||heardRoo
 function namesBtn(){const b=$('#names');b.textContent=T('NAMES');b.classList.toggle('on',!!G.tagPin);tagsOn()}
 $('#names').onclick=e=>{e.stopPropagation();audioInit();SFX.click();G.tagPin=!G.tagPin;namesBtn();tagsOn(G.tagPin)};
 function drawTags(ts){if(!G.tags)return;const act=G.room&&!G.scene&&!G.busy&&!G.skip;if(act&&ts-tagT<90)return;tagT=ts;
-  const s=vp.clientWidth/VW,cam=G.cam,cy=G.camY,list=[],put=[],fh=figBox(G.room)[1],z=zoomNow(),vw=VW/z,vh=VH/z;
+  /* the part of the picture that is seen, [wx0, wx1] across and [wy0, wy1] down: the whole of it, or on a phone the field (below its status line) */
+  const ph=PH.on,L=LENS,s=ph?L.k:vp.clientWidth/VW,ox=ph?L.tx:0,oy=ph?L.ty:0,wx0=ph?Math.max(0,(L.F.l-ox)/s):0,wx1=ph?Math.min(VW,(L.F.l+L.F.w-ox)/s):VW,
+    wy0=ph?Math.max(0,(L.F.t+11*PH.ts-oy)/s):0,wy1=ph?Math.min(VH,(L.F.t+L.F.h-oy)/s):VH,
+    cam=G.cam,cy=G.camY,list=[],put=[],fh=figBox(G.room)[1],z=zoomNow(),rx0=cam+wx0/z,rx1=cam+wx1/z,ry0=cy+wy0/z,ry1=cy+wy1/z;
   /* each label: its name, where it stands in the room, its kind, its hotspot, and where it is clicked (y in the room: a lane map is taller than the view) */
   if(act){
-    for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>cam&&a.x<cam+vw&&a.y>cy&&a.y<cy+vh+fh)list.push([T(a.hs.name),a.x,(a.y-fh-3-cy)*z,'who',a.hs,a.y-fh/2]);
-    for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const tall=roomH(G.room)>VH,x0=Math.max(h.x,cam+4/z),x1=Math.min(h.x+h.w,cam+vw-4/z),y0=tall?Math.max(h.y,cy+2/z):h.y,y1=tall?Math.min(h.y+h.h,cy+vh-2/z):h.y+h.h;
+    for(const a of Object.values(ACT))if(a!==PC()&&a.room===G.room&&a.hs&&a.x>rx0&&a.x<rx1&&a.y>ry0&&a.y<ry1+fh)list.push([T(a.hs.name),a.x,(a.y-fh-3-cy)*z,'who',a.hs,a.y-fh/2]);
+    for(const h of ROOMS[G.room].hs)if(!h.vis||h.vis()){const tall=roomH(G.room)>VH||ph,x0=Math.max(h.x,rx0+4/z),x1=Math.min(h.x+h.w,rx1-4/z),y0=tall?Math.max(h.y,ry0+2/z):h.y,y1=tall?Math.min(h.y+h.h,ry1-2/z):h.y+h.h;
       if(x1>x0&&y1>y0)list.push([T(h.name),(x0+x1)/2,((y0+y1)/2-cy)*z,h.exit?'exit':'',h,(y0+y1)/2])}}
   /* rebuilt only when something changed, so that a label is not replaced under the finger tapping it. What changed may be the thing
      itself and nothing that shows (a place that comes back in a later chapter keeps its names), so the hotspots are compared as well. */
-  const sig=s+'|'+cam+'|'+cy+'|'+z+'|'+list.map(l=>l.slice(0,4).join(',')).join('|');if(sig===tagSig&&list.every((l,i)=>l[4]===tagHs[i]))return;tagSig=sig;tagHs=list.map(l=>l[4]);tagEl.innerHTML='';
+  const sig=s+'|'+Math.round(ox)+'|'+Math.round(oy)+'|'+cam+'|'+cy+'|'+z+'|'+list.map(l=>l.slice(0,4).join(',')).join('|');if(sig===tagSig&&list.every((l,i)=>l[4]===tagHs[i]))return;tagSig=sig;tagHs=list.map(l=>l[4]);tagEl.innerHTML='';
   list.sort((a,b)=>a[2]-b[2]);
   for(const[name,x,y,k,h,ry]of list){const el=document.createElement('div');el.className='tag '+k;el.textContent=name;el.hs=h;tagEl.appendChild(el);
     el.onclick=e=>{e.stopPropagation();if(tagTap())clickView(x,ry,h)};
-    const w=el.offsetWidth/s,hh=el.offsetHeight/s+3,lx=clamp((x-cam)*z,w/2+1,VW-w/2-1);let ty=clamp(y,4,VH-hh);
+    const w=el.offsetWidth/s,hh=el.offsetHeight/s+3,lx=clamp((x-cam)*z,wx0+w/2+1,wx1-w/2-1);let ty=clamp(y,wy0+4,wy1-hh);
     for(let n=0;n<10;n++){const hit=put.find(p=>Math.abs(p.x-lx)<(p.w+w)/2+1&&Math.abs(p.y-ty)<hh);if(!hit)break;ty=hit.y+hh}
-    if(ty>VH-hh)ty=VH-hh;put.push({x:lx,y:ty,w});el.style.left=lx*s+'px';el.style.top=ty*s+'px'}}
+    if(ty>wy1-hh)ty=wy1-hh;put.push({x:lx,y:ty,w});el.style.left=(ox+lx*s)+'px';el.style.top=(oy+ty*s)+'px'}}
 addEventListener('keyup',e=>{if(e.key==='Tab')tagsOn(false)});addEventListener('blur',()=>tagsOn(false));
 addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;const k=e.key.toLowerCase();
   if(k==='tab'){e.preventDefault();tagsOn(true)}
@@ -1687,7 +1907,7 @@ function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
       a.fr=4+Math.floor(q.ph*16)+16*(!pl&&Math.abs(dx)<Math.abs(dy)*2||near<6?2:near<14?1:0);
       if(a.room===G.room&&(q.ph<p0||p0<.5&&q.ph>=.5)&&ts-stepT>90){stepT=ts;SFX.step()}}}
   if(G.zoom!==G.zoomTo){G.zoom+=(G.zoomTo-G.zoom)*Math.min(1,dt*12);if(Math.abs(G.zoomTo-G.zoom)<.004)G.zoom=G.zoomTo}
-  if(G.room&&!G.scene){const[t,u]=camAt(G.room,PC().x,PC().y),k=Math.min(1,dt*5);G.cam+=(t-G.cam)*k;if(Math.abs(t-G.cam)<.5)G.cam=t;
+  if(G.room&&!G.scene){const fo=PH.on&&PH.c&&PH.mode==='fill'&&PH.room===G.room&&PH.ctx?{x:PH.c.x,y:PH.c.y+PH.ctx.fh/2}:PC(),[t,u]=camAt(G.room,fo.x,fo.y),k=Math.min(1,dt*5);G.cam+=(t-G.cam)*k;if(Math.abs(t-G.cam)<.5)G.cam=t;
     G.camY+=(u-G.camY)*k;if(Math.abs(u-G.camY)<.5)G.camY=u}}
 /* --- figures: each pose is drawn once into a cached sprite (dark contour, dither), then lit by the room and laid on the scene --- */
 const[SA,sa]=mk(FIG.W,FIG.H),[SB,sb]=mk(FIG.W,FIG.H),[SC,sc]=mk(FIG.W,FIG.H),SPR=new Map();sa.imageSmoothingEnabled=false;sc.imageSmoothingEnabled=false;
@@ -1856,6 +2076,7 @@ function render(ts){G.t=ts;update(ts);LID=null;cx.setTransform(HR,0,0,HR,0,0);cx
   if(G.xfade){cx.save();cx.setTransform(1,0,0,1,0,0);cx.globalAlpha=G.xfade.a;cx.drawImage(G.xfade.img,0,0);cx.restore()}
   {const S=SHARED.scroll;if(S&&S.state!=='down')S.draw(ts)}
   {const pl=!!(G.room&&!G.scene&&planOf(G.room));if(vp.plan!==pl){vp.plan=pl;vp.classList.toggle('plan',pl)}}
+  {const d=Math.min(.1,Math.max(0,(ts-(PH.t||ts))/1000));PH.t=ts;PH.live=true;lensTick(d)}
   posSpeech();tagsOn();drawTags(ts);requestAnimationFrame(render)}
 /* ============ GAME: items, combinations, prayer hints ============ */
 Object.assign(ITEMS,{
@@ -1980,7 +2201,7 @@ function relang(){document.documentElement.lang=G.lang;document.title=T('paul_of
   const ks=Object.keys(LANGS),nx=ks[(ks.indexOf(G.lang)+1)%ks.length];$('#lang').textContent=G.lang.toUpperCase();
   $('#lang').title=LANGS[nx].native;$('#lang').style.display=ks.length>1?'':'none';
   buildVerbs();swapBtn();setMute(AU.muted);namesBtn();codeBtn();drawInv();status();
-  $('#opts').title=T('Options');$('#opts').setAttribute('aria-label',T('Options'));
+  for(const b of[$('#opts'),$('#optsT')]){b.title=T('Options');b.setAttribute('aria-label',T('Options'))}$('#rotate p').textContent=T('turn_phone_sideways');
   for(const b of document.querySelectorAll('#choices button'))b.textContent='› '+T(b.dataset.src);
   if(ov.classList.contains('on')&&ov.draw)ov.draw();if(cb.classList.contains('on')&&cb.draw)cb.draw();
   if($('#menu').classList.contains('on')&&$('#menu').draw)$('#menu').draw();
@@ -2266,7 +2487,8 @@ const mn=$('#menu');
 function loadOpts(){try{const o=JSON.parse(store(OPTS_KEY)||'{}');if(typeof o.mus==='number')OPTS.mus=clamp(o.mus,0,1);
   if(typeof o.fx==='number')OPTS.fx=clamp(o.fx,0,1);if(typeof o.spd==='number'&&[1.35,1,.7].includes(o.spd))OPTS.spd=o.spd;
   /* movement: as the player chose; until he has, calm on a device that asks for less motion */
-  OPTS.mov=o.mov===0||o.mov===1?o.mov:window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches?0:1}catch(e){}}
+  OPTS.mov=o.mov===0||o.mov===1?o.mov:window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches?0:1;
+  if(['auto','phone','classic'].includes(o.lay))OPTS.lay=o.lay}catch(e){}}
 function saveOpts(){store(OPTS_KEY,JSON.stringify(OPTS))}
 function applyOpts(){if(!AU.ctx)return;if(AU.mus)AU.mus.gain.value=.55*OPTS.mus;if(AU.fx)AU.fx.gain.value=.7*OPTS.fx;if(AU.ambG)AU.ambG.gain.value=.5*OPTS.fx}
 function closeMenu(){mn.classList.remove('on');G.busy=mn.was;if(!G.busy)lock(false);status()}
@@ -2284,7 +2506,10 @@ function openMenu(view){audioInit();if(mn.classList.contains('on'))return closeM
       '<div class="row"><label>'+esc(T('Movement'))+'</label><div class="seg">'+movs.map(([v,l])=>`<button type="button" data-mov="${v}"${OPTS.mov===v?' class="on"':''}>${esc(T(l))}</button>`).join('')+'</div></div>'+
       '<div class="row"><label>'+esc(T('Names'))+'</label><div class="seg"><button type="button" id="opt-names"'+(G.tagPin?' class="on"':'')+'>'+esc(T(G.tagPin?'On':'Off'))+'</button></div></div>'+
       (Object.keys(LANGS).length>1?'<div class="row"><label>'+esc(T('Language'))+'</label><div class="seg">'+Object.keys(LANGS).map(l=>`<button type="button" data-lang="${l}"${l===G.lang?' class="on"':''}>${esc(LANGS[l].native)}</button>`).join('')+'</div></div>':'')+
-      '<div class="row"><label>'+esc(T('saved_games'))+'</label><div class="seg"><button type="button" id="opt-saves">'+esc(T(inGame?'save_load':'Load'))+'</button></div></div>'+
+      /* the layout: on a device that is touched, or once it has been chosen */
+      (touchDev()||OPTS.lay!=='auto'?'<div class="row"><label>'+esc(T('layout'))+'</label><div class="seg">'+[['auto','layout_auto'],['phone','layout_phone'],['classic','layout_classic']].map(([v,l])=>`<button type="button" data-lay="${v}"${OPTS.lay===v?' class="on"':''}>${esc(T(l))}</button>`).join('')+'</div></div>':'')+
+      /* on a phone the top bar is not there: the safe-point code is shown and entered from here */
+      '<div class="row"><label>'+esc(T('saved_games'))+'</label><div class="seg">'+(PH.on?'<button type="button" id="opt-code">'+esc(inGame?T('code_code',{code:makeCode()}):T('enter_code'))+'</button>':'')+'<button type="button" id="opt-saves">'+esc(T(inGame?'save_load':'Load'))+'</button></div></div>'+
       '<div class="row"><label>'+esc(T('hidden_treasures'))+'</label><div class="seg"><button type="button" id="opt-tre">'+esc(T('n_of_all',{n:treasures().size,all:hidden().length}))+'</button></div></div>'+
       '<div class="acts">'+(inGame?'<button type="button" id="opt-title">'+esc(T('back_to_title'))+'</button>':'')+
       '<button type="button" id="opt-x">'+esc(inGame?T('back_to_the_game'):T('Back'))+'</button></div>';
@@ -2292,6 +2517,8 @@ function openMenu(view){audioInit();if(mn.classList.contains('on'))return closeM
     $('#opt-fx').oninput=e=>{OPTS.fx=+e.target.value/100;applyOpts();saveOpts()};
     mn.querySelectorAll('[data-spd]').forEach(b=>b.onclick=()=>{SFX.click();OPTS.spd=+b.dataset.spd;saveOpts();mn.draw()});
     mn.querySelectorAll('[data-mov]').forEach(b=>b.onclick=()=>{SFX.click();OPTS.mov=+b.dataset.mov;saveOpts();mn.draw()});
+    mn.querySelectorAll('[data-lay]').forEach(b=>b.onclick=()=>{SFX.click();OPTS.lay=b.dataset.lay;saveOpts();fit();mn.draw()});
+    if($('#opt-code'))$('#opt-code').onclick=()=>{SFX.click();closeMenu();openCode()};
     $('#opt-names').onclick=()=>{SFX.click();G.tagPin=!G.tagPin;namesBtn();mn.draw()};
     $('#opt-saves').onclick=()=>{SFX.click();mn.view='saves';mn.ask=null;mn.draw()};
     $('#opt-tre').onclick=()=>{SFX.click();mn.view='treasures';mn.only=false;mn.ask=null;mn.draw()};
@@ -2327,11 +2554,24 @@ async function slotDo(k,a){const s=saves(),e=k==='far'?s.far:k==='last'?(saved()
   if(a==='!del'){if(k==='far')s.far=null;else if(k!=='last')s.slots[k]=null;keepSaves(s);SFX.click();return mn.draw()}
   if(a==='!load'){if(!e)return mn.draw();mn.classList.remove('on');mn.view='opts';
     if(await restore(e.code)===false){SFX.nope();mn.classList.add('on');mn.view='saves';mn.draw()}}}
-$('#opts').onclick=e=>{e.stopPropagation();openMenu()};mn.onclick=e=>e.stopPropagation();
+$('#opts').onclick=$('#optsT').onclick=e=>{e.stopPropagation();openMenu()};mn.onclick=e=>e.stopPropagation();
+/* rotateIcon: the picture on the card that asks for a phone held upright to be turned: a phone lying on its side, and an arrow that
+   curves over it, painted in whole pixels in the colors of the panel */
+function rotateIcon(){const c=$('#rotate canvas'),g=c.getContext('2d'),P=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(x,y,w,h)};g.clearRect(0,0,48,48);
+  P(7,26,34,19,'#0a0604');P(8,27,32,17,'#e2b24c');P(10,29,28,13,'#2a1c10');P(11,30,26,11,'#4a3420');P(9,27,30,1,'#fff3b8');
+  /* the arrow: an arc over the phone from its left to its right, two pixels thick and outlined, and a head that points down along it */
+  const cx=24,cy=24,rx=15,ry=12,a0=Math.PI+.25,a1=2*Math.PI-.5,pt=a=>[cx+rx*Math.cos(a),cy+ry*Math.sin(a)],arc=[];
+  for(let i=0;i<=60;i++){const[x,y]=pt(a0+(a1-a0)*i/60);arc.push([Math.round(x),Math.round(y)])}
+  for(const[x,y]of arc)P(x-1,y-1,4,4,'#0a0604');
+  const[ex,ey]=pt(a1),dx=-rx*Math.sin(a1),dy=ry*Math.cos(a1),dl=Math.hypot(dx,dy),ux=dx/dl,uy=dy/dl,tip=[ex+ux*6,ey+uy*6],b1=[ex-uy*4,ey+ux*4],b2=[ex+uy*4,ey-ux*4],
+    side=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]),inTri=(x,y)=>{const p=[x+.5,y+.5],s1=side(b1,b2,p),s2=side(b2,tip,p),s3=side(tip,b1,p);return(s1>=0&&s2>=0&&s3>=0)||(s1<=0&&s2<=0&&s3<=0)};
+  for(let y=0;y<48;y++)for(let x=0;x<48;x++)if(inTri(x,y)||inTri(x-1,y)||inTri(x+1,y)||inTri(x,y-1)||inTri(x,y+1))P(x,y,1,1,'#0a0604');
+  for(const[x,y]of arc)P(x,y,2,2,'#e2b24c');
+  for(let y=0;y<48;y++)for(let x=0;x<48;x++)if(inTri(x,y))P(x,y,1,1,'#e2b24c')}
 const syncFull=()=>{const w=$('#wrap').classList;w.toggle('full',ov.classList.contains('on')||cb.classList.contains('on')||mn.classList.contains('on'));w.toggle('title',ov.classList.contains('title'))};
 for(const el of[ov,cb,mn])new MutationObserver(syncFull).observe(el,{attributes:true,attributeFilter:['class']});
 /* the engine's English comes first: nothing is shown before it is there */
-oneLang('en','main').then(()=>{loadOpts();skin();buildVerbs();requestAnimationFrame(render);title()});
+oneLang('en','main').then(()=>{loadOpts();fit();skin();rotateIcon();buildVerbs();requestAnimationFrame(render);title()});
 /* An installable app that plays offline (shared/pwa.js, sw.js): only where the game is served over http(s), never from disk or in the playtest's pages. */
 if(/^https?:$/.test(location.protocol)&&'serviceWorker' in navigator)need('logo').then(()=>need('pwa')).then(p=>p.install({CHAP,LANGS})).catch(e=>console.error(e));
 </script>

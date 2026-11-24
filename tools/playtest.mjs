@@ -8,6 +8,7 @@
 //   node tools/playtest.mjs pwa              the installable app: service worker, manifest, offline play (served over http; icon saved as pwa-icon.png)
 //   node tools/playtest.mjs continue         the title screen of a returning player (the game is reloaded; its autosave must bring them back)
 //   node tools/playtest.mjs lanesall         the lane map (shared/lanes.js) on Chapter Fourteen's Ephesus; lanes, lanes2, lanesfolk and lanesmap are its pictures
+//   node tools/playtest.mjs phoneall         the phone layout, on a phone held sideways (phone, phonetitle, phonezoom, phonechoice, phoneclose, phonemenu ... are its pictures)
 //   node tools/playtest.mjs shadows          cast & contact shadows across single-lamp, multi-lamp, pitch-dark and wall-crease rooms (saves cast-shadows and room sheets)
 // It first checks the translations against the English text (tools/strings.mjs), and that every picture in docs/screenshots is listed
 // with its stop in tools/screenshots.txt (tools/retake.mjs takes the pictures again from that list).
@@ -23,7 +24,7 @@ const here=path.dirname(fileURLToPath(import.meta.url)),root=path.join(here,'..'
 const CHROME=process.env.CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const out=process.env.SHOTS||path.join(here,'out');
 const langs=fs.readdirSync(path.join(root,'lang')).filter(l=>fs.statSync(path.join(root,'lang',l)).isDirectory()).sort();
-const stops=process.argv.slice(2);if(!stops.length)stops.push('pwa','all','resume','treasures','lanesall',...langs.flatMap(l=>[l+':all',l+':resume',l+':treasures',l+':lanesall']));
+const stops=process.argv.slice(2);if(!stops.length)stops.push('pwa','all','resume','treasures','lanesall','phoneall',...langs.flatMap(l=>[l+':all',l+':resume',l+':treasures',l+':lanesall',l+':phoneall']));
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'paul-playtest-'));
 const game=fs.readFileSync(path.join(root,'index.html'),'utf8');
 // The copy runs from a temp folder, so a <base> points it back at the repository for the level files. Every page starts without a
@@ -56,7 +57,12 @@ try{
   await send('Emulation.setDeviceMetricsOverride',{width:960,height:669,deviceScaleFactor:1,mobile:false});
   for(const name of stops){if(name==='pwa'){const r=await checkPwa({send,ev,sleep,root,out});console.log('=== pwa\n'+r.log.join('\n'));if(r.failed)failed=true;continue}
     const[lang,stop]=name.includes(':')?name.split(':'):['en',name];
-    await send('Page.navigate',{url:`file://${path.join(tmp,'test.html')}?stop=${stop}&lang=${lang}`});
+    /* the phone stops are seen on a phone: held sideways (852 by 393, as an iPhone of 2023 shows a page), or held upright, touched and with no mouse */
+    const phone=/^phone/.test(stop),up=stop==='phoneportrait';
+    await send('Emulation.setDeviceMetricsOverride',phone?{width:up?393:852,height:up?852:393,deviceScaleFactor:3,mobile:true,screenWidth:up?393:852,screenHeight:up?852:393}:{width:960,height:669,deviceScaleFactor:1,mobile:false});
+    await send('Emulation.setTouchEmulationEnabled',{enabled:phone,maxTouchPoints:phone?5:1});
+    await send('Emulation.setEmitTouchEventsForMouse',{enabled:phone});
+    await send('Page.navigate',{url:`file://${path.join(tmp,'test.html')}?stop=${stop}&lang=${lang}${phone?'&emu=1':''}`});
     // ten chapters take a while (about twenty minutes): wait up to forty-five minutes for a run to say STOP or DONE
     let log='';for(let i=0;i<10800;i++){await sleep(250);log=await ev("(document.querySelector('#tlog')||{}).textContent||''");if(/STOP|DONE|ERR|JSERR|REJ/.test(log))break}
     await sleep(1600);await ev("document.querySelector('#tlog').style.display='none'");await sleep(100);
