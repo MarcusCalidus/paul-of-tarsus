@@ -275,6 +275,7 @@ TEXTS('de','main',{
   "pupils_tablet":["Die Tafel eines Schülers","04oul8m"],
   "kneading_behind_a_shutter":["Kneten hinter einem Laden","1ck1biw"],
   "tertius_own_line":["Tertius' eigene Zeile","0zwkeol"],
+  "wool_of_miletus":["Die Wolle aus Milet","0kwix31"],
   "mule_in_a_sheepfold":["Ein Maultier im Schafstall","0m7jhub"],
   "not_another_basket":["Nicht noch ein Korb","0o3o1h1"],
   "barnabas_at_the_bench":["Barnabas an der Werkbank","098m6ix"],
