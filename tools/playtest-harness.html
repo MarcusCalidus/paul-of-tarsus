@@ -3789,7 +3789,7 @@
       ok(!few.length&&sink.every((v,k)=>v===(k%8===4||k%8===5?1:0)),'in every frame two hooves or more stand on the ground; the body sinks a pixel as each fore hoof lands (frames 4, 5, 12 and 13) and never rises: '+sink.join(''));
       ok(same(dk(1,1,0),dk(4,1,0))&&same(dk(2,1,1),dk(8,1,1))&&same(dk(3,-1,2),dk(12,-1,2))&&!same(dk(0,1,0),dk(4,1,0))&&new Set(WALK.filter(w=>w[0]===0&&w[1]===1).map(w=>w[3].toDataURL())).size===16,
         'the frames 1, 2 and 3 are three moments of the walk, a quarter of a cycle apart, and no two of its sixteen frames are the same picture');
-      const slow=[...Array(16)].map((_,i)=>beastFr(DONKEY_STRIDE*(i+.5)/16,10)),fast=[...Array(16)].map((_,i)=>beastFr(66*DONKEY_BEAT*(i+.5)/16));
+      const slow=[...Array(16)].map((_,i)=>beastFr(DONKEY_STRIDE*(i+.5)/16,10)),fast=[...Array(16)].map((_,i)=>beastFr(WALK_V*DONKEY_BEAT*(i+.5)/16));
       ok(slow.every((f,i)=>f===4+i)&&fast.every((f,i)=>f===4+i)&&beastFr(0)===4&&beastFr(-3,10)>=4&&beastFr(-3,10)<=19&&Math.abs(DONKEY_STRIDE-17.6)<1e-9,
         `beastFr: a cycle carries the donkey ${DONKEY_STRIDE} room pixels with its hooves planted, up to ${(DONKEY_STRIDE/DONKEY_BEAT).toFixed(1)} a second; faster than that, a cycle still takes ${DONKEY_BEAT} s`)}
     halt('beasts',()=>{/* beasts-walk.png: the walk, frame by frame */
