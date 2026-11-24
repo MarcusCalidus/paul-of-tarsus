@@ -1261,10 +1261,13 @@ function benchTop13(g){const cl=(x,w,c,d)=>{poly(g,[x,84,x+w,84,x+w+2,91+(d||0),
   else if(F.hall&&DAY()===1&&PART()==='m')cl(88,60,'#b8703c',1);
   else if(F.hall&&DAY()<4&&PART()==='m')cl(100,54,GOAT,2)}
 /* who is in the synagogue, besides those who speak: hearers on the benches (a figure with fr -1 sits), and, when the quarrel comes, men on their feet */
-function synCast(g){const L=lightAt('syn13',160,120),sit={fr:-1,sw:0};
-  if(!F.came)cast(g,[['hx13h',72,107,1,sit],['dz13b',92,107,1,sit],['hx13c',110,107,1,sit],['dz13e',214,107,-1,sit],['op13a',236,107,-1,sit],['dz13k',258,107,-1,sit],['hx13f',282,107,-1,sit],['dz13g',226,121,-1],['op13b',296,118,-1]],L);
-  else if(F.syn&&!F.out)cast(g,[['op13a',214,120,-1,{ges:1}],['op13b',236,124,-1],['hx13h',262,118,-1],['hx13f',282,107,-1,sit],['dz13b',70,119,1],['dz13c',88,124,1],['dz13e',40,123,1],['dz13h',56,127,1],['dz13k',104,119,1]],L);
-  else cast(g,[['hx13h',72,107,1,sit],['hx13c',110,107,1,sit],['op13a',236,107,-1,sit],['hx13f',282,107,-1,sit]],L)}
+function synFolk13(){const sit={fr:-1,sw:0};
+  if(!F.came)return[['hx13h',72,107,1,sit],['dz13b',92,107,1,sit],['hx13c',110,107,1,sit],['dz13e',214,107,-1,sit],['op13a',236,107,-1,sit],['dz13k',258,107,-1,sit],['hx13f',282,107,-1,sit],['dz13g',226,121,-1],['op13b',296,118,-1]];
+  if(F.syn&&!F.out)return[['op13a',214,120,-1,{ges:1}],['op13b',236,124,-1],['hx13h',262,118,-1],['hx13f',282,107,-1,sit],['dz13b',70,119,1],['dz13c',88,124,1],['dz13e',40,123,1],['dz13h',56,127,1],['dz13k',104,119,1]];
+  return[['hx13h',72,107,1,sit],['hx13c',110,107,1,sit],['op13a',236,107,-1,sit],['hx13f',282,107,-1,sit]]}
+function synCast(g){cast(g,synFolk13(),lightAt('syn13',160,120))}
+/* folkFeet13: where each of those the room paints stands on the floor, a box round his feet, so that a walk goes round him (issue #83) */
+const folkFeet13=list=>list.map(([,x,y])=>[x-5,y-2.5,10,4]);
 /* the curtain in the door of the hall: torn; taken down; or whole, and drawn across at midday */
 function curtainArt(g){if(F.curt&&!F.hall)return;const whole=!!F.hall,x=414,y=54,P=whole?(PART()==='n'?[x,y,x+28,y,x+27,y+44,x,y+44]:[x,y,x+12,y,x+9,y+20,x+11,y+44,x,y+44]):[x,y,x+11,y,x+8,y+22,x+12,y+44,x,y+44];
   const dr=Q=>{poly(g,Q);g.fillStyle=lg(g,0,y,0,y+44,[tint(GOAT,.16),GOAT,tint(GOAT,-.3)]);g.fill();clipTo(g,()=>poly(g,Q),()=>{for(let i=2;i<28;i+=4.6)stroke(g,[x+i,y+1,x+i-.8,y+44],'rgba(0,0,0,.28)',.5)})};
@@ -1288,19 +1291,24 @@ function heapArt(g,t){const r=rng(1319);oval(g,347,124.6,30,3,'rgba(30,24,40,.3)
       oval(g,x,by-.4,w*.32,.9,rgba('#fff0a8',.85*k))}
     for(let i=0;i<5;i++){const q=((t/2600+i/5)%1);oval(g,346+Math.sin(i*2.4+q*3)*7,106-q*46,4+q*9,2.6+q*5,`rgba(90,84,96,${.28*k*(1-q)})`)}
     pool(g,346,122,42,16,'#ffb060',.22*k,'screen')}}
-function streetDraw(g,t){depth(104.5,()=>curtainArt(g));const v=STREETV(),L=lightAt('street13',300,120);
-  if(F.awl&&!F.tw)cast(g,[['dz13d',262,117,-1],['dz13e',300,116,-1],['dz13f',314,121,-1],['dz13g',288,126,-1],['dz13h',330,117,-1],['dz13i',346,123,-1],['dz13j',362,117,-1],['dz13k',376,125,-1],['dz13l',392,119,-1]],L);
-  else if(v==='f'){depth(124,()=>heapArt(g,t));
+/* who stands in the street, besides those who speak: the twelve; those who have come to see the fire; a passer-by or two in the morning */
+function streetFolk13(){const v=STREETV();
+  if(F.awl&&!F.tw)return[['dz13d',262,117,-1],['dz13e',300,116,-1],['dz13f',314,121,-1],['dz13g',288,126,-1],['dz13h',330,117,-1],['dz13i',346,123,-1],['dz13j',362,117,-1],['dz13k',376,125,-1],['dz13l',392,119,-1]];
+  if(v==='f')return[['hx13b',402,121,-1],['hx13c',420,117,-1],['dz13a',388,127,-1],['hx13d',434,124,-1],['hx13f',452,118,-1],['dz13b',226,118,1],['hx13g',210,124,1],['dz13i',470,125,-1],['hx13h',246,126,1],['hx13e',196,117,1]];
+  if(v==='m'&&F.came&&F.tw&&!F.syn)return[['hx13c',96,117,1],['hx13d',540,118,-1]];
+  if(v==='m'&&!F.came)return[['hx13c',96,117,1],['hx13b',448,119,-1],['hx13e',560,118,1]];
+  if(v==='m'&&F.hall)return[['hx13e',100,117,1],['hx13b',540,119,-1]];
+  return[]}
+function streetDraw(g,t){depth(104.5,()=>curtainArt(g));const v=STREETV(),L=lightAt('street13',300,120),folk=streetFolk13();
+  if(!(F.awl&&!F.tw)&&v==='f'){depth(124,()=>heapArt(g,t));
     /* the table with the board, its two legs at its ends; and those who have come to see */
-    depth(113,()=>{R(g,282,113.6,26,1.2,'rgba(30,22,40,.3)');wood(g,280,104,28,2.2,'#8a683a');R(g,280,104,28,.6,'#c8a06a');wood(g,281,106.2,2,7,'#5a4226',1);wood(g,305,106.2,2,7,'#5a4226',1);R(g,284,102.6,20,1.6,'#c8a878');R(g,284,102.6,20,.5,'#e8cc9c')});
-    cast(g,[['hx13b',402,121,-1],['hx13c',420,117,-1],['dz13a',388,127,-1],['hx13d',434,124,-1],['hx13f',452,118,-1],['dz13b',226,118,1],['hx13g',210,124,1],['dz13i',470,125,-1],['hx13h',246,126,1],['hx13e',196,117,1]],L)}
-  else if(v==='m'&&F.came&&F.tw&&!F.syn)cast(g,[['hx13c',96,117,1],['hx13d',540,118,-1]],L);
-  else if(v==='m'&&!F.came)cast(g,[['hx13c',96,117,1],['hx13b',448,119,-1],['hx13e',560,118,1]],L);
-  else if(v==='m'&&F.hall)cast(g,[['hx13e',100,117,1],['hx13b',540,119,-1]],L)}
+    depth(113,()=>{R(g,282,113.6,26,1.2,'rgba(30,22,40,.3)');wood(g,280,104,28,2.2,'#8a683a');R(g,280,104,28,.6,'#c8a06a');wood(g,281,106.2,2,7,'#5a4226',1);wood(g,305,106.2,2,7,'#5a4226',1);R(g,284,102.6,20,1.6,'#c8a878');R(g,284,102.6,20,.5,'#e8cc9c')})}
+  if(folk.length)cast(g,folk,L)}
 /* who sits in the hall at midday, besides those who speak: more of them on each of the three days */
-function hallCast(g){const d=DAY(),L=lightAt('hall13',160,120),sit={fr:-1,sw:0},A=[['dz13a',84,107,1,sit],['dz13b',106,107,1,sit],['dz13c',128,107,1,sit]],
+function hallFolk13(){const d=DAY(),sit={fr:-1,sw:0},A=[['dz13a',84,107,1,sit],['dz13b',106,107,1,sit],['dz13c',128,107,1,sit]],
     B=[['hx13b',150,107,1,sit],['dz13e',172,107,1,sit],['hx13f',194,107,1,sit],['dz13k',216,107,1,sit]],C=[['hx13d',118,121,1],['hx13c',98,125,1],['dz13i',140,126,1],['hx13h',78,122,1],['hx13g',160,121,1]];
-  cast(g,d===1?A:d===2?A.concat(B):A.concat(B,C),L)}
+  return d===1?A:d===2?A.concat(B):A.concat(B,C)}
+function hallCast(g){cast(g,hallFolk13(),lightAt('hall13',160,120))}
 /* the house: its owner, and what has been found so far, heaped by the door */
 function houseDraw(g,t){const f=found13();cast(g,[['klea13',166,HFL+1,-1,{sw:0}]],'#f0d0a8');if(f.length){const r=rng(1321);heapOf(g,74,HFL+1,Math.min(7,f.length+(F.last?1:0)),r)}}
 function houseFront(g){G.caps13=[];const n=found13().length+(F.last?1:0);cap13(g,T('found_n_of_seven',{n}),160,137,220)}
@@ -1575,6 +1583,11 @@ const BOARDH=()=>['sum13',['greeks_write_their_numbers_with_letters',
 /* not in the evening, when the lamps are lit */
 ROOMS.street13.birds=()=>STREETV()==='e'?null:{perch:[{k:'sparrow',y:34.5,x:[80,90,102]},{k:'dove',y:21.5,x:[262,280],d:[1,-1]}]};
 ROOMS.road13.birds={prey:[120,6,170,24],lark:[220,92,28]};
+/* what stands on the floor (issue #83): those the rooms paint, each in his place; and on the morning of the fire the heap of rolls, and the
+   table with the board on its two legs */
+ROOMS.street13.block=()=>folkFeet13(streetFolk13()).concat(STREETV()==='f'?[[312,117,54,8],[280,111,28,2.6]]:[]);
+ROOMS.syn13.block=()=>folkFeet13(synFolk13());
+ROOMS.hall13.block=()=>folkFeet13(hallFolk13());
 
 return{rooms:['shop13','street13','syn13','road13','hall13','house13','board13'],setup:setup13,start:start13,hint:hint13,music:MUSIC,scenes:{asia:asia13,dial:dial13},topics:[],tablets:TABLETS,beds:BEDS,calls:CALLS,
   /* for the playtest: what is told, the notes, the hiding places, the board, the province, the day */
