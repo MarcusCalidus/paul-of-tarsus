@@ -352,7 +352,8 @@ TEXTS('en',15,{
   /* Names and lines kept from earlier chapters */
   "Timothy":"Timothy",
   "Luke":"Luke",
-  "click_to_return_to_the_title":"Click to return to the title",
+  "click_to_continue_to_chapter_sixteen":"Click to continue to Chapter Sixteen",
+  "chapter_sixteen_code_code":"Chapter Sixteen code: {code}",
   "reed_pen":"reed pen",
   "table":"table",
   "jars_of_oil":"jars of oil",

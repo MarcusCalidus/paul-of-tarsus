@@ -33,6 +33,7 @@ Each chapter has its own page with screenshots, a walkthrough, its music and map
 13. [Chapter Thirteen: The Hall of Tyrannus](docs/chapter-13.md)
 14. [Chapter Fourteen: Two Hours in the Theater](docs/chapter-14.md)
 15. [Chapter Fifteen: Until Daybreak](docs/chapter-15.md)
+16. [Chapter Sixteen: These Hands](docs/chapter-16.md)
 
 ## How to play
 
@@ -44,7 +45,7 @@ Point at something and click: its usual verb lights up. Use the verbs, the inven
 
 The game follows the scriptural understanding of Jehovah's Witnesses and the New World Translation of the Holy Scriptures (Study Edition); the German version follows the German edition, the *Neue-Welt-Übersetzung der Heiligen Schrift (Studienausgabe)*. Verses are told in the game's own words with their references, and no text, artwork or other material of jw.org is reproduced. Historical details are checked by hand against jw.org and wol.jw.org. Paul is shown as a courageous, observant minister who relies on practical wisdom, cooperation with fellow believers and trust in Jehovah. There are no halos, crosses or mystical effects, and no puzzle is solved by a miracle or by violence.
 
-The events themselves are from the Scriptures. All dialogue is dramatization, including the words given to Ananias, Barnabas, Cephas, James, Agabus, Lucius, John Mark, Sergius Paulus, Bar-Jesus, Timothy, Eunice, Lois, Jason, Dionysius, Damaris, Aquila, Priscilla, Titius Justus, Crispus, Stephanas, Gaius, Apollos, Erastus, Tertius, Aristarchus, Trophimus, Eutychus, Luke, the man who was lame and the priest of Zeus. Where a chapter shows somebody whom Acts does not name at that place or at that time (Stephanas and Gaius in Corinth, who are known from 1 Corinthians 1:14, 16; Timothy in the hall at Ephesus, where Acts 19:22 places him without telling when he came; Tertius and Gaius in the three months of Acts 20:3, whom Romans 16:22, 23 names and Acts does not), its page and its end screen say so. The supporting characters are invented too. Each chapter's page has an "About the content" section that says what the account leaves unsaid, what is invented and which publications the details come from, and each chapter's end screen says so too:
+The events themselves are from the Scriptures. All dialogue is dramatization, including the words given to Ananias, Barnabas, Cephas, James, Agabus, Lucius, John Mark, Sergius Paulus, Bar-Jesus, Timothy, Eunice, Lois, Jason, Dionysius, Damaris, Aquila, Priscilla, Titius Justus, Crispus, Stephanas, Gaius, Apollos, Erastus, Tertius, Aristarchus, Trophimus, Eutychus, Luke, Sopater, Secundus, the man who was lame and the priest of Zeus. Where a chapter shows somebody whom Acts does not name at that place or at that time (Stephanas and Gaius in Corinth, who are known from 1 Corinthians 1:14, 16; Timothy in the hall at Ephesus, where Acts 19:22 places him without telling when he came; Tertius and Gaius in the three months of Acts 20:3, whom Romans 16:22, 23 names and Acts does not), its page and its end screen say so. The supporting characters are invented too. Each chapter's page has an "About the content" section that says what the account leaves unsaid, what is invented and which publications the details come from, and each chapter's end screen says so too:
 
 - [Chapter One: Escape from Damascus](docs/chapter-1.md#about-the-content)
 - [Chapter Two: A Friend in Jerusalem](docs/chapter-2.md#about-the-content)
@@ -61,6 +62,7 @@ The events themselves are from the Scriptures. All dialogue is dramatization, in
 - [Chapter Thirteen: The Hall of Tyrannus](docs/chapter-13.md#about-the-content)
 - [Chapter Fourteen: Two Hours in the Theater](docs/chapter-14.md#about-the-content)
 - [Chapter Fifteen: Until Daybreak](docs/chapter-15.md#about-the-content)
+- [Chapter Sixteen: These Hands](docs/chapter-16.md#about-the-content)
 
 This is an independent, non-commercial fan project. It is not produced, endorsed or reviewed by Jehovah's Witnesses or the Watch Tower Bible and Tract Society, and it is not affiliated with jw.org. It contains no material from jw.org or its subdomains; it only refers to them as sources that its authors read. Their [Terms of Use](https://www.jw.org/en/terms-of-use/) apply to their content.
 

@@ -2418,8 +2418,8 @@ async function midnight(){AU.mood='none';AU.amb={};
 
 /* ---- daybreak ---- */
 async function leave(){await say(LK,'a_place_and_a_day',TH);
-  endScreen({title:'until_daybreak_2',text:'until_daybreak_end',based:'based_on_acts_20_1_12',go:'click_to_return_to_the_title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+  endScreen({title:'until_daybreak_2',text:'until_daybreak_end',based:'based_on_acts_20_1_12',go:'click_to_continue_to_chapter_sixteen',code:['chapter_sixteen_code_code',codeOf(16,0)]});
+  await wait(1500);ov.onclick=()=>{ov.onclick=null;startChapter(16)};await new Promise(()=>{})}
 
 /* ============ ROOMS ============ */
 /* A room's hotspots are listed from the back to the front: where two overlap, the later one is meant (the table, then what lies on it).

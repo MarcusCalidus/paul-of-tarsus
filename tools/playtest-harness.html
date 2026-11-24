@@ -121,6 +121,7 @@
   13:()=>act('look','something_under_the_bench'), // Chapter Thirteen: in the hall at midday, what a pupil left under the bench
   14:async()=>{const M=CHAP[14].map,h=ROOMS.lanes14.hs.filter(h=>h.name==='shutter'&&h.vis&&h.vis())[0];M.seeAll=1;verb('look');await clickView(h.x+h.w/2,h.y+h.h/2,h);await idle();M.seeAll=0}, // Chapter Fourteen: after the uproar, the shutter ajar in the blind alley
   15:()=>act('look','spare_tablet'), // Chapter Fifteen: in the house of Gaius, the spare tablet on Tertius's table
+  16:()=>act('look','bale_at_the_end'), // Chapter Sixteen: on the quay of Miletus, the lone bale of wool at the far end
  };
  (async()=>{try{
   while(!G.ready)await wait(30);
@@ -3062,8 +3063,7 @@
   window.say=function(a,t,o){if(!a&&typeof t==='string'&&!(o&&o.plain))toldN[t]=(toldN[t]||0)+1;return say0.apply(this,arguments)};
   heard.length=0;
   if(C15){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans'),plan=l.querySelector('.plan');
-    ok(chs.length===15&&last.dataset.ch==='15'&&last.textContent.includes(T('chapter_fifteen'))&&last.textContent.includes(T('until_daybreak_2'))&&PLANNED.length===10&&PLANNED[0].label==='chapter_sixteen'
-      &&plans.textContent.includes(T('Sixteen'))&&plan.textContent===T('chapter_sixteen')+' · '+T('acts_20_13_38'),'the title lists fifteen chapters, the last of them Until Daybreak, and the chapters in preparation begin with the sixteenth')}
+    ok(chs.length>=15&&chs[14].dataset.ch==='15'&&chs[14].textContent.includes(T('chapter_fifteen'))&&chs[14].textContent.includes(T('until_daybreak_2'))&&!!plans&&!!plan,'the title lists Until Daybreak as the fifteenth chapter, and the chapters in preparation after the last one built')}
   (C15?document.querySelector('#overlay [data-ch="15"]'):ov).click();
   await when(()=>G.ch===15&&SHARED.map&&G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===7&&SHARED.map.state.legs.every(l=>l.k===1),3000);
   ok(G.ch===15&&G.scene===SHARED.map.draw,'chapter fifteen opens on the map: from Ephesus to Macedonia and on to Greece (Acts 20:1-3)');road(7,'the road of the opening');halt('open15');
@@ -3350,9 +3350,159 @@
     ok(Object.keys(kept).length===PTS.length&&G.room==='street15'&&F.mid&&makeCode()===dawn&&eu()===eu1,'all '+PTS.length+' safe points of the way restore; and whatever was done or left undone on the way, daybreak is the same, and so is Eutychus')}
   heard.length=0;onH('way_to_the_harbor','walk');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);
   ok(ov.classList.contains('end')&&said('a_place_and_a_day'),'Luke goes down to the ship, and the end screen follows');
-  ok(ov.textContent.includes(T('click_to_return_to_the_title'))&&ov.textContent.includes(T('until_daybreak_2'))&&ov.textContent.includes(T('until_daybreak_end'))&&/20:1-12/.test(ov.textContent)&&store('paul.save')===null&&inOv(),'the closing screen says what the account leaves unsaid, fits its place, and a finished game keeps no save');
+  ok(ov.textContent.includes(T('click_to_continue_to_chapter_sixteen'))&&ov.textContent.includes(T('chapter_sixteen_code_code',{code:codeOf(16,0)}))&&ov.textContent.includes(T('until_daybreak_2'))&&ov.textContent.includes(T('until_daybreak_end'))&&/20:1-12/.test(ov.textContent)&&store('paul.save')===codeOf(16,0)&&inOv(),'the closing screen says what the account leaves unsaid, fits its place, and leads on to Chapter Sixteen with its first code');
   window.say=say0;halt('final15');
   };
+  /* Chapter Sixteen stops start Chapter Sixteen from the title screen; the full run calls its test when Chapter Fifteen has ended. all16
+     halts nowhere. The stops that begin with "p" open one room at once, with the story's flags set for it, and say the safe-point code of
+     their point (CODE): pquay16 · proad16 · ppass16, ppassb16 (the flock on the path, and off it) · passos16 (Paul waiting), passosl16
+     (Luke waiting) · pdeck16 (moored at Troas), psail16 (under way), pmorn16 (off Mitylene), peve16 (off Chios, the evening), pmornt16
+     (the next morning) · pskya16, pskyb16, pskyc16 (the three rounds of the wind) · pwatch16 · pmiletus16 · plist16 · pshore16. */
+  const C16=/^(quay16|road16|pass16|deck16|sky16|assos16|watch16|miletus16|list16|shore16|final16|all16)$/.test(stop);
+  if(!C16&&/^p[a-z]+16$/.test(stop)){await loadLevel(16);ov.className='';ov.onclick=null;const C=CHAP[16],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),LK=ACT.luke16,
+      S={pquay16:[[],'quay16'],proad16:[upto('walk'),'road16',P,'deck16'],ppass16:[upto('asked'),'pass16',P,'deck16'],ppassb16:[upto('pass'),'pass16',P,'deck16'],
+        passos16:[upto('pa'),'assos16',P,'deck16'],passosl16:[upto('la').filter(k=>k!=='pa'),'assos16',LK,'pass16'],
+        pdeck16:[upto('walk'),'deck16',LK,'road16'],psail16:[upto('w1'),'deck16',LK,'road16'],pskya16:[upto('walk'),'sky16',LK,'road16'],
+        pmorn16:[upto('aboard'),'deck16'],pskyb16:[upto('aboard'),'sky16'],peve16:[upto('w2'),'deck16'],pwatch16:[upto('w2'),'watch16'],
+        pmornt16:[upto('watch'),'deck16'],pskyc16:[upto('watch'),'sky16'],pmiletus16:[upto('w3'),'miletus16'],plist16:[upto('fare'),'list16'],pshore16:[upto('spoke'),'shore16']}[stop];
+    if(!S)throw new Error('no such stop '+stop);setChapter(16);for(const k of S[0])F[k]=1;
+    const room=S[1];C.place(room);if(S[2]){const o=S[2]===P?LK:P;place(o,S[3],...C.ent[S[3]]);G.pc=S[2]}
+    dealInv(room);G.scene=null;enterRoom(room,...C.ent[room]);
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+makeCode());await wait(1100);halt(stop)}
+  const ch16=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[16],told=k=>heard.includes(T(C().told[k])),
+    until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(name,v)=>{const h=H(name);if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    useH=async(id,name)=>{const h=H(name);if(!h)throw new Error('no hs '+name+' in '+G.room);verb('use');item(id);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    talkTo=async(a,v)=>{verb(v||'talk');clickView(a.x,a.y-10,a.hs);await idle()},
+    useA=async(id,a,v)=>{verb(v||'use');item(id);clickView(a.x,a.y-10,a.hs);await idle()},
+    openI=async id=>{verb('open');item(id);await idle()},
+    pray16=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
+    hints=async(a,b,where)=>{heard.length=0;const p=await pray16(),first=said(a)&&!said(b),q=await pray16();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
+    line=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await idle()},
+    asked=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);return[...document.querySelectorAll('#choices button')].map(x=>x.dataset.src)},
+    point=c=>{const u=unpackWide(C(),decode(c).w);return u.flags.join()+'/'+u.pc+'/'+u.rooms.join()},
+    amb=()=>Object.keys(AU.amb||{}).filter(k=>AU.amb[k]>0).sort().join(),seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)},
+    swapTo=async a=>{if(PC()!==a){$('#swap').click();await idle()}},
+    setSky=async(dir,str)=>{for(let i=0;i<5&&C().sky().dir!==dir;i++)await onH('wool_tuft','use');for(let i=0;i<5&&C().sky().str!==str;i++)await onH('knotted_cord','use')};
+  heard.length=0;
+  if(C16){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
+    ok(chs.length===16&&last.dataset.ch==='16'&&last.textContent.includes(T('chapter_sixteen'))&&last.textContent.includes(T('these_hands_2'))&&PLANNED.length===9&&PLANNED[0].label==='chapter_seventeen'&&plans.textContent.includes(T('Seventeen')),
+      'the title lists sixteen chapters, the last of them These Hands, and the chapters in preparation begin with the seventeenth')}
+  (C16?document.querySelector('#overlay [data-ch="16"]'):ov).click();
+  await until(()=>G.ch===16&&G.room==='quay16'&&!G.busy,3000);note();
+  const LK=A('luke16'),MA=A('master16'),BOY=A('boy16'),KE=A('sailor16'),FI=A('fisher16'),SH=A('shep16'),LY=A('lykon16'),AR=A('arist16');
+  ok(G.room==='quay16'&&PC()===P&&LK.room==='quay16'&&said('troas_the_morning_after')&&said('timothy_the_master_asks_for_you')&&srt()==='awl,knife,pbag16,tablets,thread16','Troas at daybreak: the coaster for Assos, and Paul is played ['+srt()+']');
+  ok(/^16(-[0-9A-Z]{3}){4,5}$/.test(makeCode())&&decode(makeCode()).ch===16&&!document.querySelector('#verbs').classList.contains('party'),'chapter sixteen has wide codes, and nobody else can be played yet: '+makeCode());
+  ok(AU.score===C().music&&AU.mood==='quay'&&C().music.steps===11&&C().music.root===49,'the chapter\'s score, in C sharp and in bars of eleven, plays the quay');
+  halt('quay16');
+  heard.length=0;await onH('coast_road_south','walk');ok(said('first_the_master')&&G.room==='quay16','not on the road before the master is settled');
+  await hints('hint_master_1','hint_master_2','on the quay of Troas');
+  heard.length=0;await onH('harbor','look');await onH('coaster','look');await onH('chest','look');await talkTo(MA,'look');
+  ok(['harbor_of_troas_morning_look','coaster_bound_for_assos_look','the_gifts_chest_look','pamphilos_look'].every(said),'the harbor, the coaster, the chest and the master, each with its line');
+  /* the instructions: only true lines on offer; the master gets no reason for the walk */
+  heard.length=0;talkTo(MA);
+  for(const r of C().master){let o=await asked();ok(said(r.q)&&o.length===3&&o.includes(r.ok),'the master asks, and three true lines are offered ('+r.f+')');
+    for(const[k,n]of r.no.entries()){await line(n[0]);o=await asked();ok(said(n[1])&&!F[r.f]&&o.length===2-k&&!o.includes(n[0]),'a line beside the point is turned back, and not offered again ('+n[0]+')')}
+    await line(r.ok);ok(said(r.yes),'the line that answers him ('+r.ok+')')}
+  await until(()=>F.walk&&!G.busy);
+  ok(F.m3&&F.walk&&said('i_have_decided_to_go_on_foot')&&said('here_is_my_fare_from_troas')&&said('luke_take_my_bag')&&LK.room==='deck16'&&MA.room==='deck16'&&G.invs.luke16.includes('pbag16')&&!has('pbag16'),
+    'three answers; the fare is paid, the bag goes aboard with Luke, and the others go aboard');
+  ok(document.querySelector('#verbs').classList.contains('party')&&!$('#swap').disabled&&$('#swap').textContent.includes(T('Luke')),'two at once: the swap button names Luke');
+  /* Paul on the coast road */
+  await onH('coast_road_south','walk');await until(()=>G.room==='road16'&&!G.busy);
+  ok(G.room==='road16'&&AU.mood==='road'&&ROOMS.road16.birds.prey,'the coast road south: the road\'s tune, and a bird of prey over the hills');halt('road16');
+  heard.length=0;await onH('cape','look');await onH('sea','look');await talkTo(FI,'look');await talkTo(FI);
+  ok(said('the_cape_no_ship_yet')&&said('the_sea_on_my_right')&&said('fisherman_look')&&said('fisherman_the_upper_path')&&F.asked,'the cape with no ship yet, the sea, and the fisherman, who knows the way');
+  heard.length=0;await onH('path_down_to_the_shore','walk');ok(said('this_way_ends_at_the_shore')&&G.room==='road16','the lower path ends at the shore');
+  /* Luke aboard at Troas: the north wind, round one */
+  await swapTo(LK);ok(PC()===LK&&G.room==='deck16'&&C().deck()==='quay'&&srt()==='lbag16,pbag16,tab16','swapped: Luke aboard, moored at Troas, with his bag and Paul\'s ['+srt()+']');halt('deck16');
+  {const cd=makeCode();await enter(cd);ok(PC()===LK&&G.room==='deck16'&&P.room==='road16'&&srt()==='lbag16,pbag16,tab16'&&point(makeCode())===point(cd),'a code made in the middle of the walk restores both, each in his own room, and whoever was played: '+cd)}
+  await hints('hint_wind_1','hint_wind_2','aboard at Troas');
+  heard.length=0;await onH('ships_cat','look');await onH('stern','look');await onH('chest','look');await onH('gangplank','walk');
+  ok(said('the_ships_cat')&&said('stern_look')&&said('the_gifts_chest_aboard_look')&&said('luke_we_sail_when_the_master_has_his_wind')&&G.room==='deck16','the cat, the stern, the chest; and Luke stays aboard');
+  heard.length=0;await talkTo(BOY);await until(()=>G.room==='sky16'&&!G.busy);
+  ok(G.room==='sky16'&&said('simias_master_wants_the_wind')&&said('pamphilos_north_wind_only')&&C().round()===1,'the boy and Luke read the wind over the stern');halt('sky16');
+  heard.length=0;for(const n of['pennant','smoke','whitecaps','clouds'])await onH(n,'look');ok(['pennant_streams_right','smoke_leans_right','a_few_whitecaps','clouds_drift_right'].every(said),'round one: every sign says the same');
+  await hints('hint_sky_1_1','hint_sky_1_2','over the stern at Troas');
+  heard.length=0;await onH('Pamphilos','talk');ok(said('pamphilos_look_again_where_it_comes_from')&&!F.w1,'a wrong report is sent back kindly');
+  await setSky(0,3);heard.length=0;await onH('Pamphilos','talk');ok(said('pamphilos_it_blows_softer_than_that')&&!F.w1,'the right side but too strong: sent back');
+  await setSky(0,2);onH('Pamphilos','talk');await until(()=>F.w1&&G.room==='deck16'&&!G.busy,3000);note();
+  ok(F.w1&&seenTold.has('v13')&&C().deck()==='sail'&&said('pamphilos_kerdon_your_hands')&&KE.room==='deck16'&&AU.mood==='sail','from up the coast, fresh: they sail ahead (Acts 20:13), and a sailor\'s hands are raw');
+  /* Kerdon's hands */
+  await hints('hint_hands_1','hint_hands_2','under way');
+  heard.length=0;await openI('pbag16');ok(said('luke_a_clean_linen_cloth_in_pauls_bag')&&has('linen16'),'Paul\'s bag: a clean linen cloth, as he said');
+  heard.length=0;await useA('linen16',KE);ok(said('luke_oil_before_linen')&&!F.hands,'oil first, then the linen');
+  heard.length=0;await useA('lbag16',KE);ok(F.oiled&&said('luke_oil_first'),'oil on the raw skin');
+  await useA('linen16',KE);await until(()=>F.la&&!G.busy,3000);
+  ok(F.hands&&F.la&&G.room==='assos16'&&LK.room==='assos16'&&said('luke_no_sign_of_paul_yet')&&!has('linen16'),'bound; the master brings her in at Assos, and Luke waits on the quay');
+  {const cd=makeCode();await enter(cd);ok(PC()===LK&&G.room==='assos16'&&P.room==='road16'&&F.la&&!F.pa,'and a code holds that too: '+cd)}
+  await hints('hint_wait_luke_1','hint_wait_luke_2','at Assos without Paul');
+  /* Paul on the pass */
+  await swapTo(P);ok(PC()===P&&G.room==='road16','back to Paul on the road');
+  await onH('path_over_the_hill','walk');await until(()=>G.room==='pass16'&&!G.busy);ok(G.room==='pass16'&&said('sheep_fill_the_way_down'),'the pass: sheep fill the way down');halt('pass16');
+  heard.length=0;await onH('way_down_to_assos','walk');ok(said('the_flock_fills_the_path_down')&&G.room==='pass16','he cannot get past the flock');
+  heard.length=0;await onH('ewe','look');ok(said('ewe_chews_and_looks_at_me'),'the ewe');
+  await hints('hint_shepherd_1','hint_shepherd_2','on the pass');
+  heard.length=0;await talkTo(SH);ok(['your_flock_fills_the_path','shepherd_my_skin_split','shepherd_i_carry_water_down','let_me_look_at_that_seam'].every(said),'the shepherd\'s water skin has split');
+  heard.length=0;await useH('thread16','water_skin');await useH('awl','water_skin');ok(said('this_thread_would_let_the_water_through')&&said('the_awl_makes_holes_i_need_thread'),'the thread would let the water through');
+  await hints('hint_wax_1','hint_wax_2','over the split skin');
+  heard.length=0;await use('knife','tablets');ok(F.wax&&has('wax16')&&said('i_scrape_a_spare_leaf'),'wax scraped from a spare leaf of the tablets');
+  await use('thread16','wax16');ok(F.waxed&&has('wthread16')&&!has('thread16')&&!has('wax16'),'the thread waxed');
+  await useH('wthread16','water_skin');await until(()=>F.pass&&!G.busy);ok(F.pass&&said('shepherd_it_holds')&&said('shepherd_short_way_down'),'the seam holds; the flock drinks and leaves the path');
+  await onH('way_down_to_assos','walk');await until(()=>F.aboard&&G.room==='deck16'&&!G.busy,4000);note();
+  ok(F.pa&&F.aboard&&seenTold.has('v14')&&said('luke_there_you_are')&&said('luke_your_bag')&&PC()===LK&&P.room==='deck16'&&P.seat&&G.invs.paul.includes('pbag16')&&C().deck()==='morn'&&!document.querySelector('#verbs').classList.contains('party'),
+    'they meet at Assos and take him aboard (Acts 20:14); off Mitylene in the morning Luke is played, and Paul rests ['+[F.pa,F.aboard,seenTold.has('v14'),said('luke_there_you_are'),said('luke_your_bag'),PC().id,P.room,P.seat,G.invs.paul.join(),C().deck(),document.querySelector('#verbs').classList.contains('party')].join()+']');
+  {const cd=makeCode();await enter(cd);ok(PC()===LK&&G.room==='deck16'&&P.room==='deck16'&&G.invs.paul.includes('pbag16')&&srt()==='lbag16,tab16','a code off Mitylene restores Luke played and Paul resting: '+cd)}
+  /* round two: the smoke under the hill lies */
+  heard.length=0;await talkTo(BOY);await until(()=>G.room==='sky16'&&!G.busy);ok(C().round()===2,'round two of the wind');
+  heard.length=0;await onH('smoke','look');ok(said('smoke_curls_left_under_the_hill'),'the smoke under the hill curls the other way');
+  await setSky(1,1);heard.length=0;await onH('Pamphilos','talk');ok(said('pamphilos_smoke_under_a_hill_lies')&&!F.w2,'read from the smoke, it is wrong; the master says why');
+  await setSky(0,1);onH('Pamphilos','talk');await until(()=>F.w2&&G.room==='deck16'&&!G.busy,3000);note();
+  ok(seenTold.has('v15a')&&C().deck()==='eve'&&said('pamphilos_the_wind_took_my_awning')&&said('aristarchus_who_keeps_watch_tonight')&&AU.mood==='anchor'&&!ROOMS.deck16.birds(),'level with Chios (Acts 20:15); evening at anchor, the awning torn, no birds');
+  heard.length=0;await onH('ships_cat','look');ok(said('the_ships_cat_four_watches'),'the ship\'s cat at night');
+  /* the night watch */
+  await talkTo(AR);await until(()=>G.room==='watch16'&&!G.busy);ok(['luke_two_to_a_watch_never_same_place','trophimus_give_me_the_last_watch','timothy_put_me_with_trophimus','sopater_gaius_and_i_together','secundus_put_me_just_before_aristarchus','aristarchus_not_paul_he_walked'].every(said),'the watches: the rule, and what each man asks');halt('watch16');
+  await hints('hint_watch_1','hint_watch_2','over the watches');
+  const tok=async(id,row)=>{await onH(C().men.find(m=>m.id===id).name,'use');if(row)await onH(['late_evening','midnight','cockcrow','early_morning'][row-1],'use')};
+  heard.length=0;await tok('ar',2);await tok('se',2);ok(said('luke_both_from_thessalonica')&&C().watch().se===0,'two from the same place are never put together');
+  await onH(C().men.find(m=>m.id==='se').name,'use');
+  heard.length=0;for(const[id,r]of[['se',1],['ty',1],['lu',2],['so',3],['ga',3],['tr',4],['ti',4]])await tok(id,r);
+  ok(said('luke_all_eight_let_me_read_it')&&said('luke_ill_take_the_first_myself')&&!F.watch&&!C().watch().lu,'a list that breaks a wish is turned back, by the man who asked it');
+  await onH(C().men.find(m=>m.id==='ty').name,'use');await tok('ty',2);await tok('lu',1);
+  await until(()=>F.watch&&G.room==='deck16'&&!G.busy,3000);
+  ok(F.watch&&said('luke_four_watches_two_by_two')&&said('the_watches_were_kept_two_by_two')&&C().deck()==='mornt','four watches, two by two; the night passes');
+  /* round three, and on to Miletus */
+  await talkTo(BOY);await until(()=>G.room==='sky16'&&!G.busy);
+  heard.length=0;await onH('pennant','look');ok(said('pennant_swings_with_the_ship')&&!H('smoke'),'round three: the pennant swings at anchor, and no smoke');
+  await setSky(0,3);onH('Pamphilos','talk');await until(()=>F.w3&&G.room==='miletus16'&&!G.busy,4000);note();
+  ok(['v16','v15b','v15c'].every(k=>seenTold.has(k))&&PC()===P&&said('pamphilos_paul_my_awning')&&AU.mood==='miletus','past Ephesus to Samos and Miletus (Acts 20:15, 16); Paul is played again');halt('miletus16');
+  /* Miletus: the treasure, the awning, the messenger */
+  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('bale_at_the_end','look');
+    ok(said('milesian_wool_softer')&&treasures().has(16)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'the bale at the end of the quay: the wool of Miletus, the chapter\'s hidden treasure; nothing has changed')}
+  await hints('hint_patch_1','hint_patch_2','at Miletus');
+  heard.length=0;await useH('wthread16','torn_awning');ok(said('it_needs_a_patch_first')&&!F.mended,'a tear like that wants a patch');
+  await openI('pbag16');ok(F.patch&&has('patch16'),'a patch of goat-hair cloth from his bag');
+  await useH('patch16','torn_awning');await useH('wthread16','torn_awning');ok(F.mended&&has('coins16')&&said('pamphilos_good_work_heres_your_pay'),'the awning mended, and paid for honestly');
+  heard.length=0;await talkTo(LY);await until(()=>G.room==='list16'&&!G.busy,3000);ok(F.fare&&!has('coins16')&&said('lykon_never_been_to_ephesus'),'the pay goes to the messenger, who has never been to Ephesus');halt('list16');
+  heard.length=0;await onH('Glaukos','use');await onH('hall_of_tyrannus','use');ok(said('glaukos_went_home_to_sardis')&&C().list().off.includes('Glaukos'),'Glaukos went home long ago');
+  heard.length=0;await onH('Philon','use');await onH('court_with_the_fig_tree','use');ok(heard.includes(T('no_not_where_name_is',{name:T('Philon')})),'a wrong place is only Paul\'s own check');
+  await hints('hint_list_1','hint_list_2','over the list');
+  await onH('Philon','use');await onH('hall_of_tyrannus','use');await onH('Kleandros','use');await onH('big_house_at_the_streets_end','use');
+  await onH('Damon','use');onH('court_with_the_fig_tree','use');await until(()=>F.sent&&G.room==='miletus16'&&!G.busy,3000);note();
+  ok(said('the_list_philon_kleandros_damon')&&seenTold.has('v17')&&!LY.room,'the finished list is spoken, and the messenger goes (Acts 20:17)');
+  /* the shore */
+  await onH('road_to_the_shore','walk');await until(()=>F.spoke&&G.room==='shore16'&&!G.busy,6000);note();
+  ok(['v18','v20','v22','v24','v25','v28','v29','v31','v32','v33','v35','v36'].every(k=>seenTold.has(k))&&AU.mood==='parting'&&A('philon16').room==='shore16','the elders come; the speech is told, and they kneel and pray (Acts 20:18-36)');halt('shore16');
+  {const cd=makeCode();await enter(cd);ok(G.room==='shore16'&&F.spoke&&A('philon16').room==='shore16'&&LK.room==='shore16','a code by the shore: '+cd)}
+  await hints('hint_ship_1','hint_ship_2','by the shore');
+  heard.length=0;onH('way_down_to_the_ship','walk');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
+  ok(ov.classList.contains('end')&&seenTold.has('v37')&&ov.textContent.includes(T('these_hands_2'))&&/20:13-38/.test(ov.textContent)&&store('paul.save')===null&&inOv(),'they go down to the ship (Acts 20:37, 38), and the end screen says what the account leaves unsaid');
+  {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 20:13-38 was told'+(miss.length?' MISSING '+miss:''))}
+  {const bad=(G.caps16||[]).filter(c=>c.w>c.max+.5);ok(!bad.length,'every word painted on a close view fits its width'+(bad.length?': '+bad.slice(0,4).map(c=>c.s).join(' | '):''))}
+  halt('final16')};
+  if(C16){await ch16();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(C15){await ch15();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
@@ -4408,7 +4558,7 @@
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('journey6',()=>{ov.className=''});halt('final6');await wait(1700)}
-  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13();await wait(1700);await ch14();await wait(1700);await ch15()}
+  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13();await wait(1700);await ch14();await wait(1700);await ch15();await wait(1700);await ch16()}
   ok(!MISSING.size&&!RAWKEY.size,'every line shown in the game had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);
