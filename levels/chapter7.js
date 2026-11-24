@@ -34,6 +34,19 @@ const _=null,
 /* materials and light shared by the backdrops of every chapter (shared/materials.js, to the standard of Chapter Fifteen's room of Gaius):
    quiet directional grain on wood, two-tone cracks set by hand, contact shadows in three steps of alpha, dyes drawn toward earth colors */
 const{plank:plank7,board:board7,crack:crack7,skipCracks:skipCracks7,shadow:shadow7,earth:earth7,joistAO:joistAO7}=SHARED.materials;
+/* joists7: the ceiling seen from below at its edge, as in Chapter One's workshop: dark boards, and the joists running toward us in
+   perspective from the wall plate (y = U) to the top of the picture, each with the soft shade of the boards beside it. They stand in pairs
+   about the middle, so that none rises upright from the plate, and no square beam end sits on it to make a T; the room lays the plate over
+   their feet. rj: a seed of its own. burn7: the draws that board() took for the square beam ends the room used to show, taken on a scrap
+   canvas, so that everything the room draws after them stays where it was */
+function joists7(g,U,step,rj,c){c=c||{};const T=c.joist||'#6b4a2e',k=1.17;
+  if(c.boards!==0){plank7(g,0,0,320,U,c.boards||'#33251a',rj,0);ao(g,0,0,320,U*.7,'t',.45,'#0c0808')}
+  let a=160+step/2-3.5;while(a>-step)a-=step;
+  for(;a<330;a+=step){const x0=160+(a-160)*k,x1=160+(a+7-160)*k,P=[a,U,a+7,U,x1,0,x0,0];joistAO7(g,a,x0,7,U,'#0c0808');poly(g,P,T);
+    clipTo(g,()=>poly(g,P),()=>tex(g,'vert',.16,x0-2,0,x1-x0+4,U,'overlay',.5));
+    poly(g,[a+5,U,a+7,U,x1,0,x1-2.2,0],tint(T,-.4));stroke(g,[a+.25,U,x0+.25,0],tint(T,.25),.5)}
+  ao(g,0,U-2.5,320,2.5,'b',.3,'#0c0808')}
+function burn7(r,x0,step,w,h){const d=mk(4,4)[1];for(let i=x0;i<320;i+=step)board7(d,i,0,w,h,'#5a4226',r,1)}
 const SH='#8f95c8';
 /* What is seen through the south gate of Iconium: the plateau, blue ranges round it, and the road running on. The gate adds the horizon and the sky of its scene. */
 const GATE7={far:['#a9b4c8','#c2cad4'],near:['#98a86c','#a8b47c'],land:'#c4c08a',road:'#ead9ae'};
@@ -164,8 +177,8 @@ ART.council={w:320,q:12,
   ashlar(g,0,0,320,104,ST,r,{bw:17,bh:8.5,v:.07,t:.22});
   /* a few hairline cracks in the stones, high up, where they run to no head */
   {const rb=rng(7091);for(const[x,y,n]of[[36,14,3],[132,12,3],[226,15,3],[292,13,4]])crack7(g,x,y,n,rb,.9)}
-  /* the beam ends over the wall plate; the stone darkens beside each and under the plate */
-  for(let i=8;i<320;i+=38){ao(g,i-3,0,3,7,'r',.3,'#1a1420');ao(g,i+7,0,3,7,'l',.22,'#1a1420');board7(g,i,0,7,7,'#5a4226',rw,1)}board7(g,0,7,320,2.4,'#6a4e2c',rw);ao(g,0,9.4,320,12,'t',.4,'#2a2030');ao(g,0,9.4,320,3,'t',.25,'#1a1420');
+  /* the ceiling at its edge, its joists running toward us, and the wall plate they rest on; the stone darkens under the plate */
+  joists7(g,7.5,36,rng(7111));burn7(rw,8,38,7,7);board7(g,0,7,320,2.4,'#6a4e2c',rw);ao(g,0,9.4,320,12,'t',.4,'#2a2030');ao(g,0,9.4,320,3,'t',.25,'#1a1420');
   /* three round-headed windows, high in the wall: the roofs of the city, and the sky over them */
   for(const x of[60,150,240]){arch(g,x-2,22,24,36,tint(ST,-.25));g.save();arch(g,x,24,20,34);g.clip();sky(g,320,58,['#6aa2dc','#d8e8f0']);R(g,x,48,20,10,'#d8d0bc');R(g,x+11,43,9,5,'#e2dac4');R(g,x,46.6,20,1.4,'#b8a888');
     ao(g,x,24,20,7,'t',.4,'#2a2440');ao(g,x,24,4,34,'l',.35,'#2a2440');g.restore();R(g,x-3,58,26,1.8,tint(ST,.2));R(g,x-3,59.8,26,.6,tint(ST,-.4))}
@@ -355,8 +368,8 @@ ART.lystra7={w:320,q:12,
   plaster(g,0,0,320,104,W,r,{patch:4,cracks:0,brick:'#a8875a',t:.36});skipCracks7(r,6);
   /* cracks cut by hand, high on the wall, where they run to no head; rb: a seed of their own, so the rest of the room keeps its shape */
   {const rb=rng(4613);for(const[x,y,n]of[[22,16,4],[112,18,3],[244,16,4],[300,20,3]])crack7(g,x,y,n,rb)}
-  /* the beam ends over the wall plate; the plaster darkens beside each and under the plate */
-  const rw=rng(4617);for(let i=14;i<320;i+=34){ao(g,i-3,0,3,8,'r',.3,'#1a1420');ao(g,i+6,0,3,8,'l',.22,'#1a1420');board7(g,i,0,6,8,'#5a4226',rw,1)}
+  /* the ceiling at its edge, its joists running toward us, and the wall plate they rest on; the plaster darkens under the plate */
+  const rw=rng(4617);joists7(g,8.5,36,rng(4618));burn7(rw,14,34,6,8);
   board7(g,0,8,320,2.4,'#6a4e2c',rw);ao(g,0,10.4,320,12,'t',.42,'#2a2030');ao(g,0,10.4,320,3,'t',.25,'#1a1420');
   /* a window on the lane */
   windowArt(g,52,28,16,16,W,{dark:'#c8dcec',bars:2,wood:'#6a4e2c'});

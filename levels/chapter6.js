@@ -34,7 +34,20 @@ const _=null,
 /* ============ ART ============ */
 /* The shared materials (shared/materials.js): quiet grain on wood, two-tone cracks set by hand, soft contact shadows, earth colors.
    This chapter has an earth() of its own, the trodden ground, so the shared one is earth6 here. */
-const{plank:plank6,board:board6,crack:crack6,skipCracks:skipCracks6,shadow:shadow6,earth:earth6}=SHARED.materials;
+const{plank:plank6,board:board6,crack:crack6,skipCracks:skipCracks6,shadow:shadow6,earth:earth6,joistAO:joistAO6}=SHARED.materials;
+/* joists6: the ceiling seen from below at its edge, as in Chapter One's workshop: dark boards, and the joists running toward us in
+   perspective from the wall plate (y = U) to the top of the picture, each with the soft shade of the boards beside it. They stand in pairs
+   about the middle, so that none rises upright from the plate, and no square beam end sits on it to make a T; the room lays the plate over
+   their feet. rj: a seed of its own. burn6: the draws that board() took for the square beam ends the room used to show, taken on a scrap
+   canvas, so that everything the room draws after them stays where it was */
+function joists6(g,U,step,rj,c){c=c||{};const T=c.joist||'#6b4a2e',k=1.17;
+  if(c.boards!==0){plank6(g,0,0,320,U,c.boards||'#33251a',rj,0);ao(g,0,0,320,U*.7,'t',.45,'#0c0808')}
+  let a=160+step/2-3.5;while(a>-step)a-=step;
+  for(;a<330;a+=step){const x0=160+(a-160)*k,x1=160+(a+7-160)*k,P=[a,U,a+7,U,x1,0,x0,0];joistAO6(g,a,x0,7,U,'#0c0808');poly(g,P,T);
+    clipTo(g,()=>poly(g,P),()=>tex(g,'vert',.16,x0-2,0,x1-x0+4,U,'overlay',.5));
+    poly(g,[a+5,U,a+7,U,x1,0,x1-2.2,0],tint(T,-.4));stroke(g,[a+.25,U,x0+.25,0],tint(T,.25),.5)}
+  ao(g,0,U-2.5,320,2.5,'b',.3,'#0c0808')}
+function burn6(r,x0,step,w,h){const d=mk(4,4)[1];for(let i=x0;i<320;i+=step)board6(d,i,0,w,h,'#5a4226',r,1)}
 /* SKY6: a sky drawn a little toward its own grey, so that it sits among the earth and mineral colors of walls and fields */
 const SKY6=st=>st.map(c=>earth6(c,.14));
 /* sunlight6: the light of a day on the plateau, from the left and high: the sky and the far country keep it full, what faces the sun takes
@@ -311,10 +324,10 @@ ART.house6={w:320,q:12,
   /* the plaster's random cracks are set by hand now, high on the wall where they run to no head; their draws are still taken */
   plaster(g,0,0,320,104,W,r,{patch:4,cracks:0,brick:'#a8875a',t:.36});skipCracks6(r,6);
   for(const[x,y,n]of[[24,15,4],[118,14.6,3],[196,15.4,4],[246,16,3],[306,15,3]])crack6(g,x,y,n,rc);
-  /* the ceiling, seen from below at its edge: the boards dark between the joists, the joists' ends with the shade beside each, and the wall
-     plate they lie on */
+  /* the ceiling, seen from below at its edge: the boards dark between the joists, the joists running toward us, and the wall plate they
+     lie on */
   plank6(g,0,0,320,8,'#3e2e22',rw);ao(g,0,0,320,4,'t',.4,'#0c0808');
-  for(let i=14;i<320;i+=34){ao(g,i-3.4,0,3.4,8,'r',.34,'#0c0808');ao(g,i+6,0,3,8,'l',.22,'#0c0808');board6(g,i,0,6,8,'#5a4226',rw,1)}
+  joists6(g,8.5,36,rng(4614),{boards:0});burn6(rw,14,34,6,8);
   board6(g,0,8,320,2.4,'#6a4e2c',rw);ao(g,0,10.4,320,12,'t',.42,'#2a2030');
   /* a window on the lane */
   windowArt(g,52,28,16,16,W,{dark:day?'#bfe0f4':'#141c3c',bars:2,wood:'#6a4e2c'});if(!day){R(g,57,33,1,1,'#f4f0d8');R(g,64,39,.6,.6,'#d8d4c0')}

@@ -28,7 +28,20 @@ const _=null,
 /* ============ ART ============ */
 /* materials and light shared with every chapter (shared/materials.js, the standard of Chapter Fifteen's room of Gaius): quiet grain, two-tone
    cracks set by hand, contact shadows in three steps of alpha, and dyes and painted blues drawn a little toward earth and mineral colors */
-const{plank:plank5,board:board5,crack:crack5,skipCracks:skipCracks5,shadow:shadow5,earth:earth5}=SHARED.materials;
+const{plank:plank5,board:board5,crack:crack5,skipCracks:skipCracks5,shadow:shadow5,earth:earth5,joistAO:joistAO5}=SHARED.materials;
+/* joists5: the ceiling seen from below at its edge, as in Chapter One's workshop: dark boards, and the joists running toward us in
+   perspective from the wall plate (y = U) to the top of the picture, each with the soft shade of the boards beside it. They stand in pairs
+   about the middle, so that none rises upright from the plate, and no square beam end sits on it to make a T; the room lays the plate over
+   their feet. rj: a seed of its own. burn5: the draws that board() took for the square beam ends the room used to show, taken on a scrap
+   canvas, so that everything the room draws after them stays where it was */
+function joists5(g,U,step,rj,c){c=c||{};const T=c.joist||'#6b4a2e',k=1.17;
+  if(c.boards!==0){plank5(g,0,0,320,U,c.boards||'#33251a',rj,0);ao(g,0,0,320,U*.7,'t',.45,'#0c0808')}
+  let a=160+step/2-3.5;while(a>-step)a-=step;
+  for(;a<330;a+=step){const x0=160+(a-160)*k,x1=160+(a+7-160)*k,P=[a,U,a+7,U,x1,0,x0,0];joistAO5(g,a,x0,7,U,'#0c0808');poly(g,P,T);
+    clipTo(g,()=>poly(g,P),()=>tex(g,'vert',.16,x0-2,0,x1-x0+4,U,'overlay',.5));
+    poly(g,[a+5,U,a+7,U,x1,0,x1-2.2,0],tint(T,-.4));stroke(g,[a+.25,U,x0+.25,0],tint(T,.25),.5)}
+  ao(g,0,U-2.5,320,2.5,'b',.3,'#0c0808')}
+function burn5(r,x0,step,w,h){const d=mk(4,4)[1];for(let i=x0;i<320;i+=step)board5(d,i,0,w,h,'#5a4226',r,1)}
 const SH='#8f95c8',SKY5=c=>c.map(k=>earth5(k,.12)),TR5=earth5('#c0603c',.14),TD5=earth5('#a84c2c',.14),TL5=earth5('#e08a60',.14),TE5=earth5('#7a3620',.1),RT5=earth5('#b8603c',.14);
 /* What is seen through the east gate of Antioch: the plateau, blue ranges round it, and the road running on. The gate adds the horizon and the sky of its scene. */
 const GATE5={far:['#a9b4c8','#c2cad4'],near:['#a8a878','#b8b488'],land:'#cdc296',road:'#ead9ae'};
@@ -259,9 +272,9 @@ ART.pisidia={w:480,fp:1.3,q:12,
 ART.synp={w:320,q:12,
  light:()=>({amb:'#d6ccc4',lamps:[[98,54,44,'#5a3a14'],[222,54,44,'#5a3a14']]}),
  paint(g){const r=rng(383),rw=rng(389),ST='#d4c9ae',W='#dcd0b4';
-  /* the wall, and the ends of the roof beams on the wall plate; the shade gathers beside each beam end and under the plate */
-  ashlar(g,0,0,320,104,W,r,{bw:22,bh:9,v:.06,t:.3});ao(g,0,0,320,7,'t',.3,'#2a2030');
-  for(let i=10;i<320;i+=30){ao(g,i-3,0,3,7,'r',.22,'#2a2030');ao(g,i+6,0,3,7,'l',.16,'#2a2030');board5(g,i,0,6,7,'#5a4226',rw,1)}
+  /* the wall; the ceiling at its edge, its joists running toward us; the wall plate they rest on, and the shade under it */
+  ashlar(g,0,0,320,104,W,r,{bw:22,bh:9,v:.06,t:.3});
+  joists5(g,7.5,36,rng(3891));burn5(rw,10,30,6,7);
   board5(g,0,7,320,2.4,'#6a4e2c',rw);ao(g,0,9.4,320,12,'t',.42,'#2a2030');ao(g,0,9.4,320,3,'t',.24,'#1a1420');
   /* three high windows */
   for(const x of[58,153,248])windowArt(g,x,20,14,16,W,{dark:'#bfe0f4',bars:2,wood:'#6a4e2c'});
