@@ -2223,7 +2223,7 @@
   ok(F.down&&F.rose&&told('v33')&&told('v34')&&DI.room==='hill11'&&DM.room==='hill11'&&P.x<200,'so Paul left them, and some joined him: Dionysius, and Damaris (Acts 17:33, 34)');
   /* nobody hides another (CONTRIBUTING section 4): every figure the next frames draw on the rock, the men on the seats and the two who stand
      by as well as those who walk, is laid on the others pixel by pixel, and no two share more than a touch */
-  {const rec=[],f0=window.figure;window.figure=function(g,x,y,lit,key,fn,sw){if(!DQ&&g===cx){const X=hp(x),Y=hp(y);
+  {const rec=[],f0=window.figure;window.figure=function(g,x,y,lit,key,fn,sw){if(g===cx){const X=hp(x),Y=hp(y);
        rec.push({key,c:sprite(key,fn,key.includes('-1')?-1:1),dx:Math.round((X-FIG.OX/HR)*HR),dy:Math.round((Y-FIG.OY/HR)*HR)})}return f0.apply(this,arguments)};
    await wait(200);rec.length=0;await wait(200);window.figure=f0;
    const at=new Set(),fg=rec.filter(f=>!at.has(f.dx+','+f.dy)&&at.add(f.dx+','+f.dy)),A=fg.map(f=>f.c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data),bad=[];
@@ -4419,10 +4419,10 @@
   {const real=Object.values(CHAP).filter(c=>c.src);/* the chapters that are level files: not the hub test's own */
     ok(real.length>=9&&real.every(c=>c.ready)&&!taken.length,'ids: all '+real.length+' chapters are loaded, and none took a room, a backdrop or an item from another'+(taken.length?'. TAKEN: '+taken.join(' | '):''))}
   /* cast & contact shadows (issue #81): pitch-dark zero shadow, floor cast & wall bend, SPR cache cap and lane-map exclusion */
-  {const[,gt]=mk(120,100);gt.scale(HR,HR);const sp=sprite('sh-end-paul',s=>person(s,0,0,paulLook(9),1,0,0,0,0,0),1);
-    const q0=F.quake,l0=G.lit9;F.quake=0;G.lit9=0;figShadow(gt,'cell9',40,48,sp,8.5);
+  {const[,gt]=mk(120,100);gt.scale(HR,HR);gt.translate(-110,-95);const sp=sprite('sh-end-paul',s=>person(s,0,0,paulLook(9),1,0,0,0,0,0),1);
+    const q0=F.quake,l0=G.lit9;F.quake=0;G.lit9=0;figShadow(gt,'cell9',150,131,sp,8.5);
     const d0=gt.getImageData(0,0,120,100).data;let nz0=0;for(let i=3;i<d0.length;i+=4)if(d0[i])nz0++;
-    F.quake=1;G.lit9=1;figShadow(gt,'cell9',40,48,sp,8.5);
+    F.quake=1;G.lit9=1;figShadow(gt,'cell9',150,131,sp,8.5);
     const d1=gt.getImageData(0,0,120,100).data;let nz1=0;for(let i=3;i<d1.length;i+=4)if(d1[i])nz1++;
     F.quake=q0;G.lit9=l0;
     ok(nz0===0&&nz1>50&&SPR.size<=500,`shadows: zero pixels in pitch-dark cell9 (${nz0}), ${nz1} shadow pixels when lit, SPR.size=${SPR.size}<=500`)}
