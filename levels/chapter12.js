@@ -572,21 +572,21 @@ ART.wait12={w:320,q:12,
  paint(g){const r=rng(1217),W='#d8ceb8';
   plaster(g,0,0,320,104,W,r,{patch:0,cracks:0,t:.3});skipCracks12(r,3);
   /* cracks cut by hand, high on the wall, where they run to no head; the shade under the ceiling, in the corner and along the foot */
-  cracks12(g,1302,[[30,5,3],[150,5,3],[290,6,3]]);ao(g,0,0,320,10,'t',.3,'#2a2030');ao(g,306,0,14,104,'r',.22,'#2a2030');for(let i=0;i<5;i++){const x=70+i*48;R(g,x,22,40,54,tint(W,-.07));R(g,x,22,40,.8,tint(W,.2));R(g,x+39.2,22,.8,54,tint(W,-.24));R(g,x,75.2,40,.8,tint(W,-.24))}
+  cracks12(g,1302,[[30,5,3],[150,5,3],[290,6,3]]);ao(g,0,0,320,10,'t',.3,'#2e241c');ao(g,306,0,14,104,'r',.22,'#2e241c');for(let i=0;i<5;i++){const x=70+i*48;R(g,x,22,40,54,tint(W,-.07));R(g,x,22,40,.8,tint(W,.2));R(g,x+39.2,22,.8,54,tint(W,-.24));R(g,x,75.2,40,.8,tint(W,-.24))}
   R(g,0,78,320,3,tint(MBL,.04));R(g,0,78,320,.7,'#ffffff');
   /* the doorway onto the square: the side of the platform, in the sun */
-  R(g,14,26,46,78,'#2a2430');g.fillStyle=lg(g,0,30,0,70,['#78a8d8','#e2e8de']);g.fillRect(18,30,38,40);R(g,18,62,38,26,MBL);for(let i=0;i<2;i++)R(g,20+i*19,66,17,18,i?BLU:tint(MBL,-.06));R(g,18,60,38,3,'#ffffff');R(g,18,88,38,16,'#cfc3a2');
+  R(g,14,26,46,78,'#2a221c');g.fillStyle=lg(g,0,30,0,70,['#78a8d8','#e2e8de']);g.fillRect(18,30,38,40);R(g,18,62,38,26,MBL);for(let i=0;i<2;i++)R(g,20+i*19,66,17,18,i?BLU:tint(MBL,-.06));R(g,18,60,38,3,'#ffffff');R(g,18,88,38,16,'#cfc3a2');
   R(g,12,24,50,3,tint(MBL,-.1));R(g,12,24,3,80,tint(MBL,-.16));R(g,59,24,3,80,tint(MBL,-.2));
   /* the bench of marble along the wall */
-  R(g,84,101,200,3,'rgba(40,30,60,.12)');for(const x of[87.5,275.5])shadow12(g,x,104.4,5,1.1,.4,'#2a2440');g.fillStyle=lg(g,0,86,0,104,[tint(MBL,.04),tint(MBL,-.1),tint(MBL,-.26)]);g.fillRect(82,86,200,18);R(g,80,84,204,3,MBL);R(g,80,84,204,.7,'#ffffff');for(const x of[84,272])R(g,x,87,7,17,tint(MBL,-.2));tex(g,'mott',.2,80,84,204,20,'overlay',.6);ao(g,82,87,200,3,'t',.3,'#3a3050');
+  R(g,84,101,200,3,'rgba(50,36,24,.12)');for(const x of[87.5,275.5])shadow12(g,x,104.4,5,1.1,.4,'#2a2018');g.fillStyle=lg(g,0,86,0,104,[tint(MBL,.04),tint(MBL,-.1),tint(MBL,-.26)]);g.fillRect(82,86,200,18);R(g,80,84,204,3,MBL);R(g,80,84,204,.7,'#ffffff');for(const x of[84,272])R(g,x,87,7,17,tint(MBL,-.2));tex(g,'mott',.2,80,84,204,20,'overlay',.6);ao(g,82,87,200,3,'t',.3,'#3a2e26');
   /* the mosaic floor */
   R(g,0,103,320,41,'#b9ad92');for(let i=0;i<1500;i++){const k=r(),y=106+k*37,x=r()*320,s=1.2+k*1.6;R(g,x,y,s*(1+r()*.5),s*.6,['#e6dcc4','#8a8474','#c9a878','#6f7f94','#d8ceb4','#a8563e'][(r()*6)|0])}
-  R(g,0,104,320,2.2,'#4a4250');R(g,0,141,320,3,'#4a4250');ao(g,0,103,320,6,'t',.35,'#3a3050');
+  R(g,0,104,320,2.2,'#4e4238');R(g,0,141,320,3,'#4e4238');ao(g,0,103,320,6,'t',.35,'#3a2e26');
   /* light: the day through the doorway, bright in it and falling long and low across the floor and the near end of the bench; along the
-     wall it fades, and nothing round lies where a head comes. The ceiling and the far corner lie in the room's own shade. */
-  lightmap(g,320,'#a8a4b0',l=>{pool(l,37,64,28,44,'#fff4d8',.95);pool(l,66,100,30,7,'#fff0d4',.45);pool(l,96,118,110,18,'#ffeecc',.75);pool(l,150,126,170,30,'#ffeecc',.4);pool(l,104,92,44,8,'#fff0d4',.35);
-    comp(l,'multiply',1,()=>{ao(l,0,0,320,20,'t',.25,'#3a3048');ao(l,240,0,80,144,'r',.25,'#3a3048');ao(l,0,132,320,12,'b',.2,'#3a3048')})})},
- light:{amb:'#dcd8dc'},draw(){},front(){}};
+     wall it fades, and nothing round lies where a head comes. The ceiling and the far corner lie in the room's own shade, a warm grey of the earth, as the rest of the city's walls. */
+  lightmap(g,320,'#b0a698',l=>{pool(l,37,64,28,44,'#fff4d8',.95);pool(l,66,100,30,7,'#fff0d4',.45);pool(l,96,118,110,18,'#ffeecc',.75);pool(l,150,126,170,30,'#ffeecc',.4);pool(l,104,92,44,8,'#fff0d4',.35);
+    comp(l,'multiply',1,()=>{ao(l,0,0,320,20,'t',.25,'#3e3228');ao(l,240,0,80,144,'r',.25,'#3e3228');ao(l,0,132,320,12,'b',.2,'#3e3228')})})},
+ light:{amb:'#e0dace'},draw(){},front(){}};
 
 /* ---------- Ephesus ---------- */
 /* A quay, and a street that climbs from it to the door of a synagogue (Acts 18:19). The temple of the city is not in this picture:
