@@ -984,24 +984,24 @@ const CITY17=[
   {pts:[440,298,440,256,466,234],w:6}];
 const OPEN17={square:[200,276,290,276,290,330,200,330],jew:[130,178,166,178,166,206,130,206],glass:[296,184,356,184,356,224,296,224],house:[374,62,406,62,406,84,374,84],
   other:[270,72,296,72,296,90,270,90],ya:[96,200,124,200,124,222,96,222],yb:[366,346,398,346,398,364,366,364],yc:[436,164,466,164,466,188,436,188],yd:[458,220,484,220,484,240,458,240]};
-const SEA17=[[0,0,560,0,560,22,0,22],[0,372,560,372,560,392,0,392],[0,22,6,22,6,290,0,290],[0,312,6,312,6,372,0,372],[554,22,560,22,560,280,554,280],[554,300,560,300,560,372,554,372]];
-const STALL17=[222,284,30,6],FURNACE17=[336,188,10,6],FORK17=[318,96,36,30];
+const SEA17=[[0,0,560,0,560,22,0,22],[0,372,560,372,560,400,0,400],[0,22,6,22,6,290,0,290],[0,312,6,312,6,372,0,372],[554,22,560,22,560,280,554,280],[554,300,560,300,560,372,554,372]];
+const STALL17=[222,284,30,6],FURNACE17=[336,188,10,6],FORK17=[318,96,36,30],ANVIL17=[337,211,6,4];
 /* where the people of the signs stand (in units): at the stall, at the glassworkers' yard, and at the door where the disciples meet */
 const AT17={butcher:[237,281,1],blue:[226,296,1],red:[248,296,-1],redYard:[312,192,1],blueHome:[148,192],phanias:[330,196,1],smith:[346,214,-1],
   houseDoor:[388,70],phDoor:[384,76,1],joDoor:[394,72,-1],start:[8,300,1],otherDoor:[282,74]};
 const lanes17=CITY17.map(l=>Object.assign({},l,{pts:pts17(l.pts),w:Math.round(l.w*SC17)}));
-const LM17=SHARED.lanes.make('tyrelanes17',{w:LW17,h:LH17,seed:1717,lot:30,door:3,win:3,winH:3,doorH:8,flat:.35,ew:.7,
+const LM17=SHARED.lanes.make('tyrelanes17',{w:LW17,h:LH17,seed:1717,lot:30,door:3,win:3,winH:3,doorH:8,flat:.55,ew:.7,
   lanes:lanes17,open:[...['square'].map(k=>({poly:pts17(OPEN17[k]),kind:'square'})),...Object.keys(OPEN17).filter(k=>k!=='square').map(k=>({poly:pts17(OPEN17[k]),kind:'earth'}))],
   keep:SEA17.map(p=>({poly:pts17(p)})),
-  solid:[box17(STALL17),box17(FURNACE17)],
+  solid:[box17(STALL17),box17(FURNACE17),box17(ANVIL17)],
   targets:{house:[X17(AT17.houseDoor[0]),Y17(AT17.houseDoor[1])],glass:[X17(326),Y17(204)]},
   pace:()=>'walk',
   /* the doors: the house where the disciples meet, and the other at the fork; painted on the fronts that face the two courts */
-  marks:[[AT17.houseDoor[0],62],[AT17.otherDoor[0],72]].map(([x,y])=>({x:Math.round(X17(x)),y:Y17(y)-3,paint:(g,v,[top,foot])=>{const X=Math.round(X17(x))-2,yy=foot+1-7;
-    R(g,X-.5,yy-.5,6,7.5,'#5a3e28');R(g,X,yy,5,7,'#6e4a2c');for(let i=1;i<5;i+=1.5)R(g,X+i,yy+.5,.5,6.5,'#4a3020')}})),
+  marks:[[AT17.houseDoor[0],62,1],[AT17.otherDoor[0],72,0]].map(([x,y,vine])=>({x:Math.round(X17(x)),y:Y17(y)-3,paint:(g,v,[top,foot])=>doorLanes17(g,Math.round(X17(x))-2,foot+1-7,vine)})),
   zones:[{...zone17(OPEN17.square),enter:()=>market17()},{...zone17(OPEN17.jew),enter:()=>jewHome17()},{...zone17(OPEN17.glass),enter:()=>glassYard17()},
     {x:X17(FORK17[0]),y:Y17(FORK17[1]),w:q17(FORK17[2]),h:q17(FORK17[3]),enter:()=>fork17()}],
-  paint:(g,v,M)=>paintLanes17(g),
+  paint:(g,v,M)=>paintLanes17(g),draw:(g,ts)=>drawLanes17(g,ts),
+  props:[{y:Y17(FURNACE17[1]+FURNACE17[3]),shape:g=>furnaceLanes17(g,1)},{y:Y17(ANVIL17[1]+ANVIL17[3]),shape:g=>anvilLanes17(g,1)}],
   room:{floor:'stone',mood:'lanes',amb:()=>{const p=PC(),sea=clamp(1-Math.min(p.x,LW17-p.x,p.y,LH17-p.y)/120,0,1);return{crowd:.25,birds:.25,wind:.12,gulls:.4*sea,waves:.3*sea}},
     hs:[
       {name:'harbor_gate',x:-4,y:288,w:12,h:26,wx:8,wy:300,dir:-1,exit:()=>outLanes17(),look:'harbor_gate_tyre_look'},
@@ -1012,11 +1012,70 @@ const LM17=SHARED.lanes.make('tyrelanes17',{w:LW17,h:LH17,seed:1717,lot:30,door:
       {name:'door',x:AT17.otherDoor[0]-4,y:62,w:9,h:10,wx:AT17.otherDoor[0],wy:84,dir:-1,look:'a_door_like_any_other',open:()=>say(P,'no_reason_to_knock_here'),use:()=>say(P,'no_reason_to_knock_here')}]
       .map(h=>Object.assign(h,{x:X17(h.x),y:Y17(h.y),w:q17(h.w),h:q17(h.h),wx:X17(h.wx),wy:Y17(h.wy)}))}});
 function zone17(p){return{x:X17(p[0]),y:Y17(p[1]),w:q17(p[2]-p[0]),h:q17(p[5]-p[1])}}
-/* the ground that is not city: the sea round the island, and the stall and the glass furnace standing on their lanes */
-function paintLanes17(g){const r=rng(1718);
-  for(const p of SEA17){const P=pts17(p);poly(g,P);g.fillStyle='#3a6a8a';g.fill();clipTo(g,()=>poly(g,P),()=>{for(let i=0;i<200;i++)R(g,r()*LW17,r()*LH17,1+r()*3,.5,r()<.5?'rgba(220,240,250,.35)':'rgba(20,40,70,.3)')})}
+/* The look of the map, which the chapter paints itself (shared/lanes.js paints the houses and the paving): the sea round the island and
+   the sea wall along its edge, two fishing boats, the butcher's stall with his meat on the board, the glassworkers' yard with its furnace,
+   its fuel and its heaps of sand and broken glass, the coppersmith's anvil, and the doors, the one where the disciples meet with a vine
+   beside it. The furnace and the anvil stand up from the ground (props, and in solid: nobody walks through them); the furnace glows and
+   smokes (draw) until the glassworker banks it for the evening (F.m2). Nothing round is smaller than two pixels, no line crosses another,
+   and the sea wall runs along the shore without a joint across it. */
+const WINDLanes17=SHARED.weather.wind({from:'w',force:3,view:'n'});
+function paintLanes17(g){const r=rng(1718),E=[q17(22),Y17(372),X17(6),X17(554)];
+  /* the sea: deep blue away from the island, lighter and greener over the shallows along the wall, its small waves running one way */
+  for(const p of SEA17){const P=pts17(p);clipTo(g,()=>poly(g,P),()=>{
+    g.fillStyle='#2c5672';g.fillRect(0,0,LW17,LH17);
+    for(const[x0,y0,x1,y1]of[[0,E[0],0,0],[0,E[1],0,LH17]])if(1){g.fillStyle=lg(g,0,y0,0,y1,['#4a8a90','#3a7088','#2c5672']);g.fillRect(0,Math.min(y0,y1),LW17,Math.abs(y1-y0))}
+    for(const[x0,x1]of[[E[2],0],[E[3],LW17]]){g.fillStyle=lg(g,x0,0,x1,0,['#4a8a90','#36687e']);g.fillRect(Math.min(x0,x1),0,Math.abs(x1-x0),LH17)}
+    for(let i=0;i<900;i++){const x=r()*LW17,y=r()*LH17;R(g,x,y,1+r()*3.5,.5,r()<.45?'rgba(220,240,246,.22)':'rgba(16,34,60,.25)')}
+    tex(g,'mott',.3,0,0,LW17,LH17,'overlay',.4)})}
+  /* the sea wall along the island's shore: rough blocks seen from above, a lit top, a foot of spray; it stops at the two gates */
+  const wall=(x,y,w,h,horiz)=>{R(g,x,y,w,h,'#b8aa8c');inRect(g,x,y,w,h,()=>{tex(g,'mott',.5,x,y,w,h,'overlay',.8);for(let i=0;i<(w+h)*.8;i++)R(g,x+r()*w,y+r()*h,.5+r(),.5,r()<.5?'rgba(80,66,50,.35)':'rgba(255,246,220,.35)')});
+    if(horiz){R(g,x,y,w,.5,'#e6dcc0');R(g,x,y+h-.5,w,.5,'#6e6250')}else{R(g,x,y,.5,h,'#e6dcc0');R(g,x+w-.5,y,.5,h,'#6e6250')}};
+  wall(0,E[0]-2.4,LW17,2.4,1);wall(0,E[1],LW17,2.4,1);
+  wall(E[2]-2.4,E[0]-2.4,2.4,Y17(290)-E[0]+2.4,0);wall(E[2]-2.4,Y17(312),2.4,E[1]-Y17(312),0);
+  wall(E[3],E[0]-2.4,2.4,Y17(280)-E[0]+2.4,0);wall(E[3],Y17(300),2.4,E[1]-Y17(300),0);
+  /* the foam where the sea breaks on the wall's foot */
+  for(let x=0;x<LW17;x+=1.5){R(g,x,E[0]-3.4-r()*1.2,1.5,.5,'rgba(240,248,250,.5)');R(g,x,E[1]+2.4+r()*1.2,1.5,.5,'rgba(240,248,250,.5)')}
+  for(let y=E[0];y<E[1];y+=1.5){if(y>Y17(289)&&y<Y17(313))continue;R(g,E[2]-3.4-r()*1,y,.5,1.5,'rgba(240,248,250,.4)');if(y<Y17(279)||y>Y17(301))R(g,E[3]+2.4+r()*1,y,.5,1.5,'rgba(240,248,250,.4)')}
+  /* two fishing boats off the island, from above: a hull with its gunwale lit, no thwart or oar across it, a net heaped in the stern */
+  for(const[x,y,l,d]of[[X17(118),Y17(8),22,1],[X17(430),Y17(384),18,-1]]){const P=[x,y,x+l*.3,y-2.6,x+l*.85,y-2.2,x+l,y,x+l*.85,y+2.2,x+l*.3,y+2.6];
+    const Q=d<0?P.map((v,i)=>i%2?v:2*x+l-v):P;poly(g,Q.map((v,i)=>i%2?v+1:v+1.4),'rgba(10,20,36,.35)');poly(g,Q,'#6a4a30');
+    poly(g,Q.map((v,i)=>i%2?y+(v-y)*.6:x+l/2+(v-x-l/2)*.86),'#a07a50');R(g,d>0?x+2.4:x+l-6.4,y-1,4,2,'#8a8270');R(g,d>0?x+2.4:x+l-6.4,y-1,4,.5,'#b4ac98')}
+  /* the butcher's stall, and his meat on the board before it */
   SHARED.lanes.stall(g,X17(STALL17[0]),Y17(STALL17[1]),q17(STALL17[2]),q17(STALL17[3]),'#8a2a3a','#e8dcb8');
-  {const[x,y,w,h]=box17(FURNACE17);poly(g,[x,y+h,x+1,y+2,x+w/2,y-2,x+w-1,y+2,x+w,y+h],'#9a6a4a');R(g,x+w/2-1.5,y+h-3,3,2,'#e8783a');R(g,x+w/2-1,y+h-2.6,2,1,'#ffd080')}}
+  {const x=X17(STALL17[0]),y=Y17(STALL17[1])+q17(STALL17[3]),w=q17(STALL17[2]);R(g,x+1,y-.5,w-2,1,'#c8b088');
+    for(let i=0;i<6;i++){const cx=x+3+i*(w-6)/5;R(g,cx-1,y-.8,2,1.3,i%2?'#8a2a2a':'#a43a32');R(g,cx-1,y-.8,2,.4,'#e8c8b0')}
+    R(g,x+w-5,y-1.6,3,2,'#7a5a3a');R(g,x+w-5,y-1.6,3,.5,'#b08a5a')}
+  /* the glassworkers' yard: ash and sand on its floor, a heap of sand, and a heap of broken glass to be melted again */
+  {const[x,y,w,h]=box17([296,184,60,40]);for(let i=0;i<220;i++){const px=x+r()*w,py=y+r()*h;R(g,px,py,.5+r(),.5,r()<.5?'rgba(70,60,56,.18)':'rgba(230,214,170,.22)')}
+    oval(g,X17(305),Y17(188),5,2.4,'#d8c494');oval(g,X17(304.4),Y17(187.4),3.4,1.4,'#ecdcb0');
+    oval(g,X17(350),Y17(190),4,2,'#5e7a6a');for(let i=0;i<18;i++)R(g,X17(347)+r()*7,Y17(188.6)+r()*3,.5,.5,r()<.5?'#bfe8d8':'#7ab8a4');
+}
+  furnaceLanes17(g);anvilLanes17(g)}
+/* the glass furnace: a squat dome of clay over its firing pit, seen at a slant from above, its mouth toward the yard, soot above it; with
+   cut, its outline only */
+function furnaceLanes17(g,cut){const[x,y,w,h]=box17(FURNACE17),cx=x+w/2,D=[x,y+h,x,y+2.4,x+1.6,y-.6,x+4,y-2.4,x+w-4,y-2.4,x+w-1.6,y-.6,x+w,y+2.4,x+w,y+h];
+  if(cut){poly(g,D,'#000');return}
+  poly(g,D.map((v,i)=>i%2?v+1:v+1.6),'rgba(20,16,30,.35)');
+  poly(g,D);g.fillStyle=lg(g,x,0,x+w,0,['#c49268','#a8764e','#7a5236']);g.fill();
+  clipTo(g,()=>poly(g,D),()=>{tex(g,'mott',.4,x,y-3,w,h+3,'overlay',.7);g.fillStyle=lg(g,0,y-2.4,0,y+h,['rgba(255,226,180,.4)','rgba(0,0,0,0)','rgba(40,20,10,.3)']);g.fillRect(x,y-3,w,h+3);
+    poly(g,[cx-2.4,y+h,cx-2,y+h-3,cx-1,y+h-4.2,cx+1,y+h-4.2,cx+2,y+h-3,cx+2.4,y+h],'#2a1810');poly(g,[cx-2,y+h-4.2,cx+2,y+h-4.2,cx+1.4,y,cx-1.4,y],'rgba(30,24,24,.45)')});
+  R(g,cx-1,y-2.4,2,1,'#3a2a22')}
+/* the coppersmith's anvil: a block of stone with an iron top, a pot and a pan of copper on it waiting for him; with cut, its outline */
+function anvilLanes17(g,cut){const[x,y,w,h]=box17(ANVIL17);if(cut){R(g,x,y-3,w,h+3,'#000');return}
+  R(g,x+1.4,y+h,w,1,'rgba(20,16,30,.35)');R(g,x,y-1,w,h+1,'#8a8070');R(g,x,y-1,w,.6,'#c4baa4');R(g,x+w-.6,y-1,.6,h+1,'#5a5248');
+  R(g,x+.8,y-2.2,3.2,1.4,'#3a3a40');R(g,x+.8,y-2.2,3.2,.5,'#8a8a90');
+  R(g,x+4.4,y-2.6,2.4,2.2,'#b0643a');R(g,x+4.4,y-2.6,2.4,.6,'#f0a874');R(g,x+5.6,y-.6,2,1.2,'#9a5432');R(g,x+5.6,y-.6,2,.4,'#e09060')}
+/* a door on a house front, of upright boards; over the door where the disciples meet a vine is trained, up its left jamb
+   and along the top, its leaves in clumps (painted on that house's own front) */
+function doorLanes17(g,X,yy,vine){R(g,X-.5,yy-.5,6,7.5,'#5a3e28');R(g,X,yy,5,7,'#6e4a2c');for(let i=1;i<5;i+=1.5)R(g,X+i,yy+.5,.5,6.5,'#4a3020');R(g,X,yy,5,.5,'#9a7448');
+  if(vine){const r=rng(1719);stroke(g,[X-1.2,yy+7,X-1,yy+4,X-1.4,yy+1.4,X-.6,yy-1.4,X+2,yy-2],'#5a4430',.6);
+    for(let i=0;i<18;i++){const lx=X-2.4+r()*8.4,ly=yy-3.6+r()*2.8+(lx<X?r()*3:0);R(g,lx,ly,1,1,r()<.4?'#7e9a48':r()<.7?'#5e7a3a':'#46602e')}}}
+/* what moves: the furnace's glow at its mouth, and its smoke, until the glassworker banks it */
+function drawLanes17(g,t){const[x,y,w,h]=box17(FURNACE17),cx=x+w/2,k=.75+.25*Math.sin(t/180)*Math.sin(t/77);
+  /* among the houses by the furnace's own front row, so that the house behind it does not cover the smoke that rises over it */
+  depth(y+h+.6,()=>{if(!F.m2){R(g,cx-1.4,y+h-2.6,2.8,2.4,`rgba(255,150,60,${(.6+.3*k).toFixed(2)})`);R(g,cx-.8,y+h-2,1.6,1.4,`rgba(255,226,140,${(.5+.4*k).toFixed(2)})`);
+    SHARED.weather.smoke(g,t,cx,y-2.4,WINDLanes17,{h:18,a:.7,c:'#9a9494',sh:'#5a5668',n:12})}
+  else R(g,cx-1,y+h-2,2,1.6,'rgba(170,60,30,.55)')})}
 
 /* ============ THE STORY ============ */
 /* the opening: from Miletus by Cos and Rhodes to Patara (21:1), told over the map; then the harbor of Patara in the morning */
