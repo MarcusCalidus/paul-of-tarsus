@@ -579,9 +579,9 @@ function tokenBox16(id){const w=w16(),r=w[id],W=34,H=13;if(!r){const i=WATCH_MEN
   const mates=WATCH_MEN16.filter(m=>w[m.id]===r).map(m=>m.id).sort((a,b)=>(G.w16o[a]||0)-(G.w16o[b]||0)),k=mates.indexOf(id);return[128+k*86,ROWS16[r-1]+4,72,H]}
 /* the list for the messenger: the names on Paul's old page (the three who are elders, with where they are found, and three visitors
    to Ephesus who went home long ago, as Chapter Thirteen has it), and the places noted beside them */
-const NAMES16=[{k:'Philon',at:'hall_of_tyrannus'},{k:'Glaukos',home:'glaukos_went_home_to_sardis'},{k:'Kleandros',at:'big_house_at_the_streets_end'},
+const NAMES16=[{k:'Philon',at:'hall_of_tyrannus_place'},{k:'Glaukos',home:'glaukos_went_home_to_sardis'},{k:'Kleandros',at:'big_house_at_the_streets_end'},
   {k:'Hegesias',home:'hegesias_went_home_to_smyrna'},{k:'Damon',at:'court_with_the_fig_tree'},{k:'Diodotos',home:'diodotos_went_home_to_thyatira'}];
-const PLACES16=[{k:'court_with_the_fig_tree'},{k:'where_the_fuller_lives_place'},{k:'hall_of_tyrannus'},{k:'wine_sellers_under_the_colonnade'},
+const PLACES16=[{k:'court_with_the_fig_tree'},{k:'where_the_fuller_lives_place'},{k:'hall_of_tyrannus_place'},{k:'wine_sellers_under_the_colonnade'},
   {k:'big_house_at_the_streets_end'},{k:'under_the_vine_where_carriers_stay'}];
 const l16=()=>G.l16||(G.l16={sel:null,ok:[],off:[]});
 const rowBox16=(s,i)=>[s==='n'?14:170,14+i*17,136,15];
