@@ -74,39 +74,8 @@ function bundles(g,x,y){shadow6(g,x+17,y,18,1.4,.4,'#282040');
 /* earth: trodden ground between y0 and y1, with small stones in it */
 function earth(g,x,y0,w,y1,c,r,n){g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.12),c,tint(c,.1)]);g.fillRect(x,y0,w,y1-y0);tex(g,'mott',.34,x,y0,w,y1-y0,'overlay',1);tex(g,'grain',.14,x,y0,w,y1-y0,'overlay',.5);
   for(let i=0;i<(n||w*.4);i++){const k=r(),sy=y0+1+k*(y1-y0-2),sx=x+r()*w,s=.5+k*1.3;oval(g,sx,sy,s*1.5,s*.6,r()<.5?tint(c,.2):tint(c,-.24));if(r()<.3)oval(g,sx+s*.5,sy+s*.4,s*1.3,s*.3,'rgba(40,36,70,.22)')}}
-/* An ox or a bull, in the pixel manner of the engine's pack donkey and seen from the side. c: its coat. gar: a garland of leaves round its neck.
-   Every part grows out of the one before it: the tail is set on at the top of the rump and lies along it before it hangs free, the crest of
-   the shoulders sits on the back, and the neck is painted in the same bands of tone as the body it comes out of, so that no seam shows. */
-const OX_HEAD=["......www.............","....wwW.ww............","...wwW................","...wWhhhhhhh..........",".eehhHHHHHhhh.........","eEehHHHHHHHhhh........",".eehHHHkHHHHHhhh......",
-  "..dhHHHHHHHHHHhhhh....","..dhhHHHHHHHHHHhhhmm..","..dhhhHHHHHHHHHhhmmmm.","...dhhhhHHHHHHhhmmmMmm","...ddhhhhhhhhhhhmmMMmm","....ddhhhhhhhhhhmmmnmm",".....dddhhhhhhhhmmmmm.",".......ddddhhhhdmmmm..","...........dddd.mmm..."];
-function ox(g,x,y,dir,fr,c,gar){g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
-  const px=(a,b,col,w,h)=>{g.fillStyle=col;g.fillRect(a,b,w||1,h||1)},D=ramp(c),hoof='#2a2018',s=fr===1?3:fr===3?-3:0,o=fr%2?-1:0;
-  /* hw: the half-width of the barrel of the body in each row. band: the tone a row is painted in, for the body and the neck alike. */
-  const hw=yy=>{const dy=(yy+43.5)/16.5;return Math.round(34*Math.sqrt(Math.max(0,1-dy*dy*.9)))},band=yy=>yy<-55?1:yy<-46?2:yy<-35?3:4;
-  /* back: the line of the back, rising to the crest of the shoulders */
-  const back=xx=>-60-2.6*Math.exp(-Math.pow((xx-18)/7,2));
-  /* a leg: the far ones start under the belly. The near ones start higher, inside the body, and are painted in the body's own tones as far
-     down as the belly, so that haunch and shoulder grow out of it instead of being laid on top */
-  const leg=(lx,sh,far)=>{const y0=(far?-30:-37)+o,n=-3-y0;for(let i=0;i<n;i++){const yy=y0+i-o,t=i/(n-1),cx=lx+Math.round(sh*t*t),w=t<.36?9:t<.64?7:6,x0=cx+(t<.36?0:1);
-      for(let k=0;k<w;k++){const u=(k+.5)/w;px(x0+k,y0+i,D[!far&&yy<-27?Math.min(4,band(yy)+(u<.22?1:0)):Math.min(4,(u<.22?4:u<.5?3:u<.82?2:1)+(far?1:0))])}}
-    px(lx+Math.round(sh)+1,-3,hoof,7,3);px(lx+Math.round(sh)+6,-3,'#4a3a2c',2)};
-  leg(-22,s,1);leg(17,-s,1);
-  /* the tail */
-  for(let yy=-57;yy<=-24;yy++){const i=yy+57,tuft=yy>-31;px(tuft?-38:yy<-44?-hw(yy)-3:-37,yy+o,tuft?hoof:D[i%4?3:4],tuft?4:2)}
-  /* the body: a deep barrel, lit along the back */
-  for(let yy=-60;yy<=-27;yy++){const w=hw(yy);for(let xx=-w-1;xx<=w-1;xx++)px(xx,yy+o,D[Math.min(4,band(yy)+(xx<-w+3?1:0))])}
-  /* the crest of the shoulders, on the line of the back */
-  for(let xx=2;xx<20;xx++){const yb=Math.round(back(xx));let top=-60;while(hw(top)<xx+1)top++;if(top>yb)px(xx,yb+o,D[1],1,top-yb)}
-  leg(-30,-s,0);leg(23,s,0);
-  /* a thick neck, from the shoulders to the poll, with the dewlap hanging under it */
-  for(let xx=20;xx<=44;xx++){const t=(xx-20)/24,y0=Math.round(back(xx)+2*t),y1=Math.round(-29-19*t+1.8*Math.sin(t*Math.PI));
-    for(let yy=y0;yy<=y1;yy++)px(xx,yy+o,D[yy===y0?1:yy>=y1-1?4:band(yy)])}
-  /* the head, carried low and forward: one horn in a crescent, an ear behind it, a broad pale muzzle */
-  stamp(g,OX_HEAD,38,-62+o,{h:D[2],H:D[1],d:D[3],e:D[3],E:mix(c,'#6a4a40',.55),k:'#1a120c',m:mix(c,'#d8c8b8',.5),M:'#e6dccc',n:hoof,w:'#efe4c8',W:'#b8a888'});
-  /* a garland: leaves and a few yellow flowers in a band round the neck, hanging a little below the throat */
-  if(gar)for(let i=0;i<11;i++){const gx=28+Math.round(i*.75),gy=-61+o+i*2;px(gx,gy,i%2?'#4f7a3a':'#6f9a4a',6,2);px(gx+1,gy,'#8fb45a',2);if(i%3===1)px(gx+3,gy,'#f0d060',2,2)}
-  g.restore()}
-const cattle=(g,x,y,dir,fr,c,gar,lit)=>figure(g,x,y,lit,'ox'+dir+fr+c+(gar?'g':''),s=>ox(s,0,0,dir,fr,c,gar),17);
+/* the oxen and the bulls are painted by shared/beasts.js */
+const cattle=(g,x,y,dir,fr,c,gar,lit)=>SHARED.beasts.ox(g,x,y,dir,fr,c,gar,lit);
 /* wagon: a four-wheeled wagon with solid wheels, its bed at x, standing on the ground at y. cov: 1 the cover is on its hoops, 0 the hoops stand bare, -1 an open wagon with no hoops. load: sacks on its bed. */
 function wagon(g,x,y,cov,load){shadow6(g,x+30,y+.6,32,1.9,.42,'#1e1a34');
   for(const wx of[x+13,x+47])oval(g,wx+2.4,y-6,5.4,5.6,'#33261a');
@@ -1084,8 +1053,6 @@ const ACTING={nod:['yes_sir'],
   'no_let',
   'no_2']};
 return{acting:ACTING,rooms:['iconium','lystra','outside','house6','derbe'],setup:setup6,start:start6,hint:hint6,music:MUSIC,topics:TOPICS,tablets:TABLETS,
-  /* painters: the chapter's animal, for the playtest, which checks that every part of it is attached and shows it enlarged */
-  painters:{ox},
   /* Iconium, Lystra and Derbe lie north of the map's usual window, so this chapter looks through the northern one */
   view:'north',
   places:{

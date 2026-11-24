@@ -84,37 +84,8 @@ function earth(g,x,y0,w,y1,c,r,n){g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.12),c,tin
 /* stoneGround: bare ground of rock and gravel between y0 and y1 */
 function stoneGround(g,x,y0,w,y1,c,r,n){g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.1),c,tint(c,.08)]);g.fillRect(x,y0,w,y1-y0);tex(g,'mott',.45,x,y0,w,y1-y0,'overlay',1);tex(g,'grain',.16,x,y0,w,y1-y0,'overlay',.5);
   for(let i=0;i<(n||w*.5);i++){const k=r(),sy=y0+1+k*(y1-y0-2),sx=x+r()*w,s=.6+k*1.6;oval(g,sx,sy,s*1.5,s*.6,r()<.5?tint(c,.2):tint(c,-.25));if(r()<.3)oval(g,sx+s*.5,sy+s*.4,s*1.4,s*.3,'rgba(40,36,70,.25)')}}
-/* An ox, in the pixel manner of the engine's pack donkey and seen from the side: Zenon's team, as it stood at Derbe in Chapter Six.
-   Every part grows out of the one before it: the tail is set on at the top of the rump and lies along it before it hangs free, the crest of
-   the shoulders sits on the back, and the neck is painted in the same bands of tone as the body it comes out of, so that no seam shows. */
-const OX_HEAD=["......www.............","....wwW.ww............","...wwW................","...wWhhhhhhh..........",".eehhHHHHHhhh.........","eEehHHHHHHHhhh........",".eehHHHkHHHHHhhh......",
-  "..dhHHHHHHHHHHhhhh....","..dhhHHHHHHHHHHhhhmm..","..dhhhHHHHHHHHHhhmmmm.","...dhhhhHHHHHHhhmmmMmm","...ddhhhhhhhhhhhmmMMmm","....ddhhhhhhhhhhmmmnmm",".....dddhhhhhhhhmmmmm.",".......ddddhhhhdmmmm..","...........dddd.mmm..."];
-function ox(g,x,y,dir,fr,c){g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
-  const px=(a,b,col,w,h)=>{g.fillStyle=col;g.fillRect(a,b,w||1,h||1)},D=ramp(c),hoof='#2a2018',s=fr===1?3:fr===3?-3:0,o=fr%2?-1:0;
-  /* hw: the half-width of the barrel of the body in each row. band: the tone a row is painted in, for the body and the neck alike. */
-  const hw=yy=>{const dy=(yy+43.5)/16.5;return Math.round(34*Math.sqrt(Math.max(0,1-dy*dy*.9)))},band=yy=>yy<-55?1:yy<-46?2:yy<-35?3:4;
-  /* back: the line of the back, rising to the crest of the shoulders */
-  const back=xx=>-60-2.6*Math.exp(-Math.pow((xx-18)/7,2));
-  /* a leg: the far ones start under the belly. The near ones start higher, inside the body, and are painted in the body's own tones as far
-     down as the belly, so that haunch and shoulder grow out of it instead of being laid on top */
-  const leg=(lx,sh,far)=>{const y0=(far?-30:-37)+o,n=-3-y0;for(let i=0;i<n;i++){const yy=y0+i-o,t=i/(n-1),cx=lx+Math.round(sh*t*t),w=t<.36?9:t<.64?7:6,x0=cx+(t<.36?0:1);
-      for(let k=0;k<w;k++){const u=(k+.5)/w;px(x0+k,y0+i,D[!far&&yy<-27?Math.min(4,band(yy)+(u<.22?1:0)):Math.min(4,(u<.22?4:u<.5?3:u<.82?2:1)+(far?1:0))])}}
-    px(lx+Math.round(sh)+1,-3,hoof,7,3);px(lx+Math.round(sh)+6,-3,'#4a3a2c',2)};
-  leg(-22,s,1);leg(17,-s,1);
-  /* the tail */
-  for(let yy=-57;yy<=-24;yy++){const i=yy+57,tuft=yy>-31;px(tuft?-38:yy<-44?-hw(yy)-3:-37,yy+o,tuft?hoof:D[i%4?3:4],tuft?4:2)}
-  /* the body: a deep barrel, lit along the back */
-  for(let yy=-60;yy<=-27;yy++){const w=hw(yy);for(let xx=-w-1;xx<=w-1;xx++)px(xx,yy+o,D[Math.min(4,band(yy)+(xx<-w+3?1:0))])}
-  /* the crest of the shoulders, on the line of the back */
-  for(let xx=2;xx<20;xx++){const yb=Math.round(back(xx));let top=-60;while(hw(top)<xx+1)top++;if(top>yb)px(xx,yb+o,D[1],1,top-yb)}
-  leg(-30,-s,0);leg(23,s,0);
-  /* a thick neck, from the shoulders to the poll, with the dewlap hanging under it */
-  for(let xx=20;xx<=44;xx++){const t=(xx-20)/24,y0=Math.round(back(xx)+2*t),y1=Math.round(-29-19*t+1.8*Math.sin(t*Math.PI));
-    for(let yy=y0;yy<=y1;yy++)px(xx,yy+o,D[yy===y0?1:yy>=y1-1?4:band(yy)])}
-  /* the head, carried low and forward: one horn in a crescent, an ear behind it, a broad pale muzzle */
-  stamp(g,OX_HEAD,38,-62+o,{h:D[2],H:D[1],d:D[3],e:D[3],E:mix(c,'#6a4a40',.55),k:'#1a120c',m:mix(c,'#d8c8b8',.5),M:'#e6dccc',n:hoof,w:'#efe4c8',W:'#b8a888'});
-  g.restore()}
-const cattle=(g,x,y,dir,fr,c,lit)=>figure(g,x,y,lit,'ox7'+dir+fr+c,s=>ox(s,0,0,dir,fr,c),17);
+/* Zenon's team, as it stood at Derbe in Chapter Six: painted by shared/beasts.js */
+const cattle=(g,x,y,dir,fr,c,lit)=>SHARED.beasts.ox(g,x,y,dir,fr,c,0,lit);
 /* wagon: a four-wheeled wagon with solid wheels, its bed at x, standing on the ground at y. cov: 1 a cover on its hoops, -1 an open wagon. load: sacks or bales on its bed.
    pole: how far its pole reaches out in front (13 when it is left out); a wagon parked with no team takes its pole in, so that the pole does
    not run across an upright behind it, such as the jamb of a gateway, and make a cross */
@@ -1320,8 +1291,6 @@ function hint7(){const b=PC()!==P,craft=['craft7',['that_is_the_tentmakers_craft
    plainly says no. Each is a line of this chapter, in English, as it stands above. */
 const ACTING={shake:['no_eunice']};
 return{acting:ACTING,rooms:['tarsus7','gates','lystra7','iconium7'],setup:setup7,start:start7,hint:hint7,music:MUSIC,scenes:{antioch:antiochScene,council:councilScene},topics:TOPICS,tablets:TABLETS,
-  /* painters: the chapter's animal, for the playtest, which checks that every part of it is attached */
-  painters:{ox},
   /* Tarsus, the Gates and the cities of Lycaonia lie in the map's northern window. This journey is drawn on its own, as Chapter Four's was:
      the road from Antioch, by the Syrian Gates to Tarsus, over the Taurus by the Cilician Gates to Derbe and Lystra, and on to Iconium. */
   view:'north',labels:LABELS,

@@ -960,7 +960,7 @@ function columnSeal(g){const[cx,cy,rs]=SEAL.col,K=.55,Z=.83,C='#d6cec0',D='#6661
    step with it. The hammer is drawn only while that smith stands at the anvil, facing it. */
 function marketDraw(g,t){const busy=!F.plea,[ax,ay]=ANVIL_Market,s=ACT.smith14c,
     work=busy&&s&&s.room==='market14'&&Math.abs(s.x-381.5)<1&&Math.abs(s.y-ay)<1&&!s.walk&&facing(s)===-1;
-  beast(g,99,114,1,0,0,lightAt('market14',99,114));
+  SHARED.beasts.donkey(g,99,114,1,0,0,lightAt('market14',99,114));
   if(busy){const k=.5+.5*Math.sin(t/230)*Math.sin(t/570);pool(g,358,97,10,5,'#ff9040',.16+.14*k)}
   depth(ay-.2,()=>anvilMarket(g,ax,ay,busy));
   if(s)s.ges=0;

@@ -277,7 +277,7 @@
      the head coverings, a woman veiled and bareheaded, a boy, a statue. Look there when a head map or the figure painter changes: for a
      head that has come apart, for a covering that does not sit, and for crosses. Nothing on a sheet crosses a figure. cast-main.png and
      cast-closeup.png are the two pictures kept in docs/screenshots as cast.png and cast-closeup.png. */
-  if(stop==='cast'){const SHEETS={},
+  if(stop==='cast'){await need('beasts');const SHEETS={},
       sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,w,h);return[c,g]},
       text=(g,t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},
       /* cut: a part of a sprite, given in drawing units from its feet (left of them and above them are negative), enlarged z times */
@@ -357,7 +357,7 @@
         miss=WHO.filter(w=>typeof w==='string'&&!LOOK[w]),Z=3,cw=128,chh=384,cols=10,[c,g]=sheet(cols*cw,2*chh);g.fillStyle='#cbbda2';g.fillRect(0,0,cols*cw,2*chh);
       ok(!miss.length,'the people of the cast sheet all have a look'+(miss.length?'. MISSING: '+miss:''));
       WHO.concat('donkey').forEach((w,i)=>{const x=(i%cols)*cw,y=Math.floor(i/cols)*chh,gy=y+chh-18;g.fillStyle='rgba(60,48,40,.22)';
-        if(w==='donkey'){g.fillRect(x+cw-30*Z,gy,60*Z,3);cut(g,sprite('cast|donkey',q=>donkey(q,0,0,1,0,2),1),-40,-80,80,81,x+cw-40*Z,gy-80*Z,Z)}   /* the donkey takes the last two fields */
+        if(w==='donkey'){g.fillRect(x+cw-30*Z,gy,60*Z,3);cut(g,sprite('cast|donkey',q=>SHARED.beasts.paint.donkey(q,0,0,1,0,2),1),-40,-80,80,81,x+cw-40*Z,gy-80*Z,Z)}   /* the donkey takes the last two fields */
         else{g.fillRect(x+cw/2-15*Z,gy,30*Z,3);cut(g,spr(typeof w==='string'?LOOK[w]:w,'main'+i,1),-21,-124,42,125,x+cw/2-21*Z,gy-124*Z,Z)}});
       SHEETS['cast-main']=c.toDataURL()}
     {const B={skin:'#c08a5c',tunic:'#c4b08a',belt:'#3a2414'},fm={skin:'#c8a078',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#6a2a5a',brow:'#3a2414'},
@@ -1020,7 +1020,7 @@
   ok(/^7-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===7&&decode(makeCode()).w!=null,'chapter seven code format (wide, nine characters) '+makeCode());
   ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Silas')),'a party: the panel offers to switch to Silas');fitVerbs();
   /* the oxen on the Taurus road: every part attached, like the animals of Chapter Six */
-  {const ox=CHAP[7].painters.ox,pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
+  {const ox=SHARED.beasts.paint.ox,pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
       for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
         for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n},
     bad=[['ox',s=>ox(s,0,0,1,0,'#8a5a3a')],['ox, walking',s=>ox(s,0,0,-1,1,'#6f4630')],['ox, the other step',s=>ox(s,0,0,1,3,'#8a5a3a')]].filter(([n,fn],i)=>pieces(sprite('ox7-test'+i,fn,1))!==1).map(b=>b[0]);
@@ -3785,13 +3785,22 @@
   halt('iconium',()=>{place(A('nathan'),'iconium',128,118,1);P.dir=-1;BN.dir=-1;say(A('nathan'),'paul_barnabas_leave')});
   ok(/^6-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===6&&decode(makeCode()).w!=null,'chapter six code format (wide, nine characters) '+makeCode());
   ok($('#verbs').classList.contains('party')&&$('#swap').textContent.includes(T('Barnabas')),'a party: the panel offers to switch to Barnabas');fitVerbs();
+  /* --- the mule: its checks, and its own stop `mules` with its sheets (the mule's section of shared/beasts.js) --- */
+
+  /* --- end of the mule --- */
+
+  /* --- the ox: its checks, and its own stop `oxen` with its sheets (the ox's section of shared/beasts.js) --- */
+
+  /* --- end of the ox --- */
+
+  /* --- the donkey (and the pose list shared with the ox), with the stop `beasts` --- */
   /* the animals: every part of each must be attached. A sprite is one piece: no tail, head, hump or highlight floats free of the body.
      The donkey walks in sixteen frames (donkey's fr 4 to 19), four beats to a cycle: each frame is one piece, facing both ways and with each
      load; two hooves or more stand on the ground in every one; the body sinks a pixel as each fore hoof lands and never rises; the frames 1, 2
      and 3 are three moments of the same walk; and beastFr gives a scene the frame for a distance walked. The stop `beasts` hands over
      beasts-walk.png, every frame three times enlarged, two rows for each load and each way the donkey faces: look there for a leg that has
      come apart, for legs that cross as an X under the belly, for a leg under the middle of the body, and for a tail across a leg. */
-  {const ox=CHAP[6].painters.ox,BEASTS=[['pack donkey',s=>donkey(s,0,0,1,0,0)],['pack donkey, walking',s=>donkey(s,0,0,1,1,0)],['pack donkey with bags',s=>donkey(s,0,0,-1,2,1)],['pack donkey, loaded',s=>donkey(s,0,0,1,3,2)],
+  {const{donkey}=SHARED.beasts.paint,beastFr=SHARED.beasts.frame.donkey,{DONKEY_STRIDE,DONKEY_BEAT}=SHARED.beasts,ox=SHARED.beasts.paint.ox,BEASTS=[['pack donkey',s=>donkey(s,0,0,1,0,0)],['pack donkey, walking',s=>donkey(s,0,0,1,1,0)],['pack donkey with bags',s=>donkey(s,0,0,-1,2,1)],['pack donkey, loaded',s=>donkey(s,0,0,1,3,2)],
       ['bull with its garland',s=>ox(s,0,0,1,0,'#e6dccc',1)],['bull, walking',s=>ox(s,0,0,1,1,'#d8c8b0',1)],['ox',s=>ox(s,0,0,-1,0,'#8a5a3a',0)],['ox, walking',s=>ox(s,0,0,1,3,'#6f4630',0)]],
     pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
       for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;

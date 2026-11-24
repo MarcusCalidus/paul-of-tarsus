@@ -127,7 +127,7 @@ ART.perga={w:480,fp:1.3,q:12,
  draw(g,t){/* water running from the spout; the pack train at the wall; the bundles */
   const f=t/90;R(g,204.6,87,1.6,6,'#a8d8ec');for(let i=0;i<3;i++)R(g,204.6,87+((f+i*2.1)%6),1.6,1.2,'#f0fafe');
   for(let i=0;i<3;i++){const k=((t/420+i*.33)%1);g.strokeStyle=`rgba(230,246,252,${.7*(1-k)})`;g.lineWidth=.5;g.beginPath();g.ellipse(205.4,94.4,1.4+k*8,.3+k*.5,0,0,6.2832);g.stroke()}
-  beast(g,300,109,-1,0,2);beast(g,344,108,1,0,2);beast(g,388,109.4,-1,0,2);bundles(g,126,108)},
+  SHARED.beasts.donkey(g,300,109,-1,0,2);SHARED.beasts.donkey(g,344,108,1,0,2);SHARED.beasts.donkey(g,388,109.4,-1,0,2);bundles(g,126,108)},
  front(){}};
 /* ---------- The ford: a river in the Taurus, where the road crosses it ---------- */
 /* The river comes out at the foot of the cliff and runs toward us (RIV: its bed). NEAR and FAR: the tops of the two posts of the guide rope. */
@@ -190,7 +190,7 @@ ART.ford={w:480,fp:1.25,q:12,
     else rope([NEAR[0],NEAR[1]+.6,196,105,200,110.6,207,113]);
     rope([FAR[0],FAR[1]+.6,278,106,274,112.6,270+Math.sin(t/260)*1.2,118,268+Math.sin(t/300)*1.6,124]);R(g,265,123.6,6,.8,'rgba(240,250,252,.8)')}
   /* the pack train: waiting on this bank, or safe on the other */
-  const d=F.crossed?1:-1;beast(g,(F.crossed?372:84),108.6,1,0,2);beast(g,(F.crossed?414:44),109.4,d,0,2);if(!F.crossed)beast(g,124,108,1,0,2);else beast(g,452,108.4,1,0,2);
+  const d=F.crossed?1:-1;SHARED.beasts.donkey(g,(F.crossed?372:84),108.6,1,0,2);SHARED.beasts.donkey(g,(F.crossed?414:44),109.4,d,0,2);if(!F.crossed)SHARED.beasts.donkey(g,124,108,1,0,2);else SHARED.beasts.donkey(g,452,108.4,1,0,2);
   depth(111,()=>bundles(g,F.crossed?332:134,111))},
  front(g,t){/* the river closes over the legs of a man who wades it */
   for(const a of[P,BN])if(a.room==='ford'&&a.x>199&&a.x<277){const d=Math.min(1,Math.min(a.x-199,277-a.x)/12),h=4+d*9;g.fillStyle=lg(g,0,a.y-h,0,a.y+1,['rgba(150,206,214,.7)','rgba(78,146,168,.94)']);g.fillRect(a.x-9,a.y-h,18,h+1.5);

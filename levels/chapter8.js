@@ -117,7 +117,7 @@ ART.fork={w:480,fp:1.25,q:12,
   for(let i=0;i<7;i++){const sx=96+i*10+r()*5,sy=132+r()*6;R(g,sx,sy,2,2,'#8a5a9a');R(g,sx+.4,sy-.6,1.2,.8,'#b88ac0')}
   comp(g,'source-atop',.36,()=>R(g,0,0,640,150,'#34305a'))},
  draw(g,t){/* the carrier's mule, loaded with wool, standing on the road with its head toward the west */
-  beast(g,150,123,-1,0,2,null)},
+  SHARED.beasts.mule(g,150,123,-1,0,2,null)},
  front(){}};
 /* ---------- The edge of Bithynia: a river, and a ferry drawn up on its near bank ---------- */
 const bith8=x=>15+6*Math.sin(x/83+1)+3*Math.sin(x/29)+1.4*Math.sin(x/7);
