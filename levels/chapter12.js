@@ -630,23 +630,85 @@ ART.cen12={w:320,q:12,variant:()=>F.cen?'f':F.summer?'u':'w',
    upper and the lower level, with a waiting room beside it (Insight, "Corinth", "Judgment Seat"; the Study Edition's media note
    "Judgment Seat in Corinth"). In the spring the seat stands empty: the proconsul's year began with the summer (Insight, "Gallio"). */
 const HEARING=()=>!!(F.stay2&&(F.opA||F.opB)&&!F.gallio);
+/* marble12: a face of marble, worn and lit from above: a soft fall of tone, a mottle, and veins that wander across it, faint, none of them
+   ruled; blue: the veins of the blue marble run long and wavy. q: a rng() of the caller's own. */
+function marble12(g,x,y,w,h,c,q,blue){inRect(g,x,y,w,h,()=>{g.fillStyle=lg(g,0,y,0,y+h,[tint(c,.06),c,tint(c,-.1)]);g.fillRect(x,y,w,h);
+  tex(g,'blotch',blue?.3:.18,x,y,w,h,'soft-light',blue?.8:1.2);
+  for(let i=0;i<(blue?w*h/30:w*h/60);i++){let vx=x+q()*w,vy=y+q()*h;const p=[vx,vy],dx=(q()-.5)*4,dy=(q()<.5?1:-1)*(1+q()*1.5),n=3+q()*4;for(let s=0;s<n;s++){vx+=dx+(q()-.5)*1.4;vy+=(blue?dy:0)+(q()-.5)*3;p.push(vx,vy)}
+    stroke(g,p,q()<.5?rgba(tint(c,blue?-.34:-.3),blue?.36:.22):rgba(tint(c,blue?.4:.2),blue?.26:.3),.5)}
+  tex(g,'grain',.06,x,y,w,h,'overlay',.5)})}
+/* stoaBack12: the back of the colonnade: a plastered wall in the colonnade's shade, and the shops in it, each opening set between two
+   columns, so that no column stands in front of a door, a counter or what is on it. Inside, the dark of the shop; on the counters and
+   on the floor, jars, bowls and folded cloth. Nothing hangs from a pole, and no shelf runs behind a column. From a seed of its own. */
+const STOA12=[0,1,2,3,5,6,7,10,11].map(i=>24+(i+1)*432/13);
+function stoaBack12(g){const q=rng(1231),W=earth12('#8e7c6c',.3);
+  plaster(g,24,60,432,36,W,q,{patch:0,cracks:0,t:.4,top:-.06,bot:.04});
+  for(let i=0;i<14;i++)pool(g,24+q()*432,66+q()*26,10+q()*16,6+q()*6,q()<.5?'#a89482':'#6a5a52',.25,'source-over');
+  STOA12.forEach((cx,k)=>{const x=cx-8.5,w=17,y=68,b=96,J=tint(W,.07);
+    /* the jambs and the lintel of dressed stone, the dark inside with its floor a little lit from the door */
+    R(g,x-2,y-2.4,w+4,2.4,tint(W,.1));R(g,x-2,y-2.4,w+4,.5,tint(W,.24));R(g,x-2,y,2,b-y,J);R(g,x+w,y,2,b-y,tint(J,-.1));
+    g.fillStyle=lg(g,0,y,0,b,['#1e1a20','#2a2228','#3e3430']);g.fillRect(x,y,w,b-y);
+    R(g,x+w-3,y+3,3,b-y-3,'#3a3236');ao(g,x,y,w,5,'t',.6,'#0c0a0e');pool(g,cx,b-1,w*.6,2.5,'#8a7462',.4,'source-over');
+    const kind=k%3,wc=['#9a5a36','#b8863c','#8a4a2a','#a8642e'][k%4];
+    if(kind===0){/* a counter of masonry across the front, and on it a bowl and two jugs */
+      R(g,x,88,w,8,tint(W,.04));R(g,x,88,w,.6,tint(W,.3));ao(g,x,88.6,w,2,'t',.3,'#1e1820');
+      vessel(g,x+4,88,2.4,2,'#b06a3a','bowl',{noShadow:1});vessel(g,x+9.5,88,1.8,4.6,wc,'jug',{noShadow:1});vessel(g,x+13.6,88,1.6,4,tint(wc,-.12),'jug',{noShadow:1})}
+    else if(kind===1){/* jars standing on the floor, the farther ones in the dark */
+      vessel(g,x+5,96,3,8,tint(wc,-.3),'jar',{noShadow:1});vessel(g,x+11.5,96,3.2,9,wc,'jar',{noShadow:1})}
+    else{/* folded cloth in a pile on a low bench, and a basket */
+      R(g,x+1,91,9,5,tint(W,-.1));R(g,x+1,91,9,.5,tint(W,.1));
+      for(let j=0;j<3;j++){const c=['#8a3a3a','#4a6a8a','#c8b890'][(j+k)%3];R(g,x+1.5,89.4-j*1.6,8,1.6,c);R(g,x+1.5,89.4-j*1.6,8,.5,tint(c,.25))}
+      R(g,x+11,90,5,6,'#8a6a3a');R(g,x+11,90,5,.6,'#b89a62');for(let j=0;j<3;j++)R(g,x+11,91.2+j*1.6,5,.5,'#6a4e2a')}
+    shadow12(g,cx,96.2,w*.55,1,.4,'#100c14')})}
+/* bema12: the judgment seat, raised on its platform: the marble in its blocks and panels, white and blue, moldings that throw their small
+   shade, the carved band along the top as a row of square dentils each with its shade, the steps worn at their edges, and the chair
+   with the cloth over its front. From a seed of its own. */
+function bema12(g){const q=rng(1233),M=tint(MBL,-.05);
+  ao(g,194,104,128,4,'t',.34,'#2a2440');ao(g,176,104,20,3,'t',.24,'#2a2440');
+  marble12(g,196,80,124,24,M,q);
+  for(let i=0;i<6;i++){const x=198+i*20.4,blue=i%2,c=blue?earth12('#6a7a96',.3):tint(M,-.04);
+    /* the frame of the panel: lit along its top and left, in shade along its bottom and right, the panel sunk a little */
+    R(g,x-.6,84.4,19.2,17.2,tint(M,-.12));marble12(g,x,85,18,16,c,q,blue);
+    ao(g,x,85,18,1.6,'t',.3,'#2a2440');ao(g,x,85,1.2,16,'l',.22,'#2a2440');
+    R(g,x-.6,101.2,19.2,.6,tint(M,.2));R(g,x+18,84.4,.6,17.2,tint(M,.16))}
+  /* the cornice and the carved band under it */
+  marble12(g,194,76.6,128,3.8,tint(M,.06),q);R(g,194,76.6,128,.6,'#fbf8f0');R(g,194,80.2,128,.7,tint(M,-.36));ao(g,196,80.9,124,2.6,'t',.28,'#3a3050');
+  for(let i=0;i<40;i++){const x=197+i*3.1;R(g,x,81.6,1.8,1.6,tint(M,.04));R(g,x,81.6,1.8,.5,'#ffffff');R(g,x+.4,83.2,1.8,.5,'rgba(50,44,70,.3)')}
+  R(g,196,102.4,124,1.6,tint(M,-.14));R(g,196,102.4,124,.5,tint(M,.12));
+  comp(g,'multiply',.2,()=>{g.fillStyle=lg(g,0,96,0,104,['rgba(150,130,100,0)','rgba(150,130,100,.9)']);g.fillRect(196,96,124,8)});
+  /* the steps */
+  for(let i=0;i<5;i++){const x=176+i*4,y=100-i*4.6,w=20-i*4,h=4.6+i*4.6,c=tint(M,-.05*i-.04);marble12(g,x,y,w,h,c,q);R(g,x,y,w,.7,'#fbf8f0');R(g,x,y+.7,w,1.2,tint(c,-.14));R(g,x,y,.6,h,tint(c,.1))}
+  ao(g,176,100,4,4,'l',.2,'#2a2440');
+  /* the chair of marble with its high back, and the cloth over its front, falling in a few soft folds */
+  shadow12(g,259,77.4,15,1,.3,'#2a2440');marble12(g,246,56,26,21,tint(M,-.08),q);R(g,246,56,26,.8,'#ffffff');R(g,271,56,1,21,tint(M,-.3));ao(g,246,57,26,3,'t',.12,'#2a2440');
+  marble12(g,244,66,3.4,11,tint(M,-.16),q);R(g,244,66,3.4,.6,'#ffffff');marble12(g,270.6,66,3.4,11,tint(M,-.24),q);R(g,270.6,66,3.4,.6,tint(M,.1));
+  const CL=earth12('#7a3242',.22);g.fillStyle=lg(g,0,68,0,78,[earth12('#9a4a58',.22),CL,earth12('#5a2232',.22)]);g.fillRect(248,68,22,9.4);
+  for(const fx of[252,257.5,263,267])poly(g,[fx,69.2,fx+1.2,69.2,fx+1.6,77.4,fx-.4,77.4],'rgba(40,10,20,.25)');
+  for(const fx of[254.5,260,265.5])poly(g,[fx,69,fx+.7,69,fx+1,77.4,fx-.1,77.4],'rgba(255,200,200,.14)');
+  R(g,248,68,22,.7,earth12('#c87080',.22));R(g,248,76.8,22,.6,earth12('#4a1a28',.22))}
+/* waitRoom12: the waiting room beside the platform: blocks of marble in courses, a cornice with its shade, and the doorway in the thickness
+   of the wall, its left side lit and its inside dark */
+function waitRoom12(g){const q=rng(1235),M=tint(MBL,-.1);
+  marble12(g,320,66,40,38,M,q);for(let j=0;j<4;j++){const y=66+j*9.5;R(g,320,y+9,40,.5,tint(M,-.22));for(let x=320+(j%2?7:13);x<360;x+=14)R(g,x,y+.5,.5,8.5,tint(M,-.2))}
+  marble12(g,318,62,44,4.4,tint(M,.08),q);R(g,318,62,44,.7,'#ffffff');R(g,318,65.8,44,.6,tint(M,-.36));ao(g,320,66.4,40,3,'t',.3,'#3a3050');
+  R(g,328.4,74.4,21.2,1.6,tint(M,.12));R(g,328.4,74.4,21.2,.5,'#ffffff');
+  g.fillStyle=lg(g,0,76,0,104,['#1a161e','#2a2430','#3a3236']);g.fillRect(330,76,18,28);
+  poly(g,[330,76,333,78,333,104,330,104],tint(M,-.18));ao(g,330,76,18,6,'t',.6,'#0a080c');R(g,346.8,76,1.2,28,'#14101a');
+  ao(g,318,104,44,3,'t',.3,'#2a2440')}
 ART.agora12={w:480,q:12,variant:()=>SEAS()+(HEARING()?'h':''),
  paint(g,vv){const v=vv[0],r=rng(1215),ST='#dbd1b6',PV='#cfc3a2';
   sky(g,480,72,SKY[v]||SKY.u);cloud(g,60,10,50,4,r);cloud(g,400,14,46,4,r);
-  ridge(g,0,480,72,x=>8+5*Math.sin(x/61+2)+3*Math.sin(x/19),['#9aa8b8','#aab4ac']);R(g,0,70,480,36,'#b2a878');rock(g,150,76,1.14,r);
+  ridge(g,0,480,72,x=>8+5*Math.sin(x/61+2)+3*Math.sin(x/19),['#9aa8b8','#aab4ac']);R(g,0,70,480,36,'#b2a878');
+  /* the country at the two ends of the terrace: fields in strips toward the hills, and olive trees, from a seed of their own */
+  {const q=rng(1237);tex(g,'blotch',.3,0,70,480,36,'soft-light',1);for(const[x0,x1]of[[0,26],[454,480]]){for(let j=0;j<4;j++){const y=71+j*j*1.6;R(g,x0,y,x1-x0,.6,'rgba(120,110,60,.25)')}
+    for(let i=0;i<4;i++){const tx=x0+3+q()*(x1-x0-6),ty=76+i*3+q()*2,k=.6+i*.15;R(g,tx-.3,ty,.8,2*k,'#5a4a3a');R(g,tx-2*k,ty+2*k,4.6*k,.6,'rgba(70,70,40,.35)');foliage(g,tx,ty-.4,2.4*k,1.4*k,'#6f7c4e',q,8)}}}
+  rock(g,150,76,1.14,r);
   /* the terrace of the upper level, with its colonnade and shops */
-  colonnade(g,24,96,432,46,13,ST,{beam:5,cw:5.2,back:()=>{R(g,24,60,432,36,'#7a6a62');for(let i=0;i<9;i++){const x=40+i*47;R(g,x,68,22,28,'#3a3038');R(g,x,68,22,1,'#8a7c62');if(i%3!==1)vessel(g,x+11,96,3,8,i%2?'#9a5a36':'#b8863c',i%2?'jar':'jug',{noShadow:1})}}});
+  colonnade(g,24,96,432,46,13,ST,{beam:5,cw:5.2,back:()=>stoaBack12(g)});
   ashlar(g,0,96,480,8,'#c9bfa4',r,{bw:16,bh:4,v:.08});R(g,0,96,480,.8,'#eee6cc');
-  /* the judgment seat: white and blue marble, in panels, with a band of fine carving along its top */
-  ao(g,194,104,128,4,'t',.34,'#2a2440');ao(g,176,104,20,3,'t',.24,'#2a2440');R(g,196,80,124,24,MBL);for(let i=0;i<6;i++){const x=198+i*20.4;R(g,x,85,18,16,i%2?BLU:tint(MBL,-.06));R(g,x,85,18,.7,i%2?tint(BLU,.3):'#ffffff');R(g,x+17.3,85,.7,16,i%2?tint(BLU,-.3):tint(MBL,-.3))}
-  R(g,194,77,128,3.6,tint(MBL,.04));R(g,194,77,128,.7,'#ffffff');R(g,194,80.2,128,.6,tint(MBL,-.3));for(let i=0;i<40;i++)R(g,197+i*3.1,82,1.6,1.4,i%2?tint(BLU,-.1):tint(MBL,-.2));
-  tex(g,'mott',.2,194,77,128,27,'overlay',.6);ao(g,196,80.8,124,3,'t',.25,'#3a3050');
-  for(let i=0;i<5;i++){R(g,176+i*4,100-i*4.6,20-i*4,4.6+i*4.6,tint(MBL,-.05*i-.04));R(g,176+i*4,100-i*4.6,20-i*4,.7,'#ffffff')}
-  /* the seat on it: a chair of marble with a high back, and a cloth over its front */
-  R(g,246,56,26,21,tint(MBL,-.1));R(g,246,56,26,.8,'#ffffff');R(g,244,66,3.4,11,tint(MBL,-.2));R(g,270.6,66,3.4,11,tint(MBL,-.24));
-  g.fillStyle=lg(g,0,68,0,78,['#8a3a4a','#6a2a3a'].map(c=>earth12(c,.22)));g.fillRect(248,68,22,9.4);R(g,248,68,22,.7,earth12('#b8606e',.22));
-  /* the waiting room beside it */
-  R(g,320,66,40,38,tint(MBL,-.08));R(g,318,62,44,4.4,tint(MBL,.04));R(g,318,62,44,.7,'#ffffff');R(g,330,76,18,28,'#2a2430');R(g,330,76,18,1,'#8a8272');ao(g,330,76,18,8,'t',.5);tex(g,'mott',.2,320,62,40,42,'overlay',.6);ao(g,320,66.4,40,3,'t',.25,'#3a3050');ao(g,318,104,44,3,'t',.3,'#2a2440');
+  /* the judgment seat: white and blue marble, in panels, with a band of fine carving along its top; the seat on it; and the waiting
+     room beside it */
+  bema12(g);waitRoom12(g);
   if(v==='u'||v==='f'){shadow12(g,89,110.4,34,1.4,.34,'#2a2440');poly(g,[60,105,118,105,122,110,56,110],'#a8926a');for(const[x,y,k,c,w,h]of[[66,107,'jar','#9a5a36',3,8],[75,108,'jug','#8a4a2a',2.6,6],[84,107,'amph','#a8642e',3,10],[94,108,'bowl','#b06a3a',3.4,2.6],[103,107,'jar','#7a4226',2.8,7],[112,108,'jug','#9a5a36',2.4,5.4]])vessel(g,x,y,w,h,c,k)}
   pave(g,0,103,480,144,PV,r,{vx:240,vy:56,rows:4,step:46,v:.07,rand:1});ao(g,0,103,480,6,'t',.3,'#3a3050');
   ao(g,0,100,480,4,'b',.2,'#3a3050');shade(g,[24,104,456,104,470,111,10,112],SH,.28);
