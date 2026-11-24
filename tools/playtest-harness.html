@@ -440,6 +440,47 @@
       window.SHEETS=SHEETS;halt('romans')}}
   /* Dynamic cast & contact shadows in figure() (issue #81): floor skew, foreground-lamp back-wall bend, prop/actor ordering, pitch-dark
      zero shadow, multi-lamp steadiness across 110ms flame ticks, solid-wall clipping, and enlarged/gallery sheets across all 22 rooms. */
+  /* deck (shared/ship.js, view 'deckAft'): the deck of a coaster seen from aboard, looking aft, in its three lights. It checks the one
+     horizon (the stern post rises from the top of the stern, above it; the steering oars' heads, the tillers and the shelter's ridge stay
+     below it; the lamp hangs above every head the strip can show), that each thing on the deck is cut out in one piece, that the deck
+     can be walked round all of it (behind the chest, behind the shelter, beside the rack and the bales), and that the deck laid again
+     over the moving sea is the backdrop's own. It hands over deck-sheet (the three lights with figures before and behind the chest and
+     the shelter, twice enlarged) and deck-detail (the stern post, the oars, the shelter, the chest and bales, the rack and the coil, six
+     times enlarged), and ends on the deck by day with the figures standing about. */
+  if(stop==='deck'){clearInterval(sk);G.speedAll=0;ov.className='';ov.onclick=null;G.splash=0;G.scene=null;
+    await loadLevel(15);await need('ship');setChapter(15);const S=SHARED.ship,D=S.deck,O={view:'deckAft',chest:1,wind:{a:70,s:.8}},V=['day','eve','night'],
+      geo=D.geo(O),hz=geo.hz,top=Math.min(...geo.OAR.map(o=>geo.P(...o.head)[1]-1.4)),till=Math.min(...geo.OAR.map(o=>geo.P(...o.tiller)[1])),
+      sh=geo.things.shelter,ridge=Math.min(geo.P((sh[0]+sh[1])/2,sh[4],sh[2])[1],geo.P((sh[0]+sh[1])/2,sh[4],sh[3])[1]),heads=D.walk[2]-49;
+    ok(hz===66&&geo.postFoot[1]<hz-3&&geo.pennant[1]<geo.postFoot[1],`deck: one horizon at y ${hz}; the stern post rises from the top of the stern, above it (its foot at y ${geo.postFoot[1].toFixed(1)}), and never stands across it`);
+    ok(top>hz+1.5&&till>hz+1.5&&ridge>hz+2,`deck: the steering oars' heads (y ${top.toFixed(1)}), their tillers and the shelter's ridge (y ${ridge.toFixed(1)}) stay below the horizon`);
+    ok(geo.lamp[1]+1.5<heads,`deck: the lamp hangs by two cords under the curl of the stern post at y ${geo.lamp[1].toFixed(1)}, above every head the strip can show (y ${heads} and lower)`);
+    G.deck0v='day';ART.deck0={w:320,q:12,variant:()=>G.deck0v,paint(g,v){S.paint(g,{...O,variant:v})},draw(g,t){D.draw(g,t,{...O,variant:G.deck0v})},get light(){return D.light({...O,variant:G.deck0v})},front(){},props:D.props(O)};
+    ROOMS.deck0={space:.5,walk:D.walk,block:D.block(O),mood:'quay',amb:{waves:.6,wind:.4,creak:.5},hs:[]};
+    const pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
+      for(let i=0;i<W*Hh;i++){if(d[i*4+3]<128||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
+        for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]>=128){seen[j]=1;st.push(j)}}}}return n};
+    {const pc=props('deck0'),bad=pc.filter(p=>pieces(p.c)!==1);ok(pc.length===5&&!bad.length,`deck: the shelter, the rack of jars, the bales, the chest and the coil are each cut out of the deck in one piece (${pc.length})`)}
+    setChapter(15);enterRoom('deck0',160,138,-1);for(const a of Object.values(ACT))if(a!==PC())a.room=null;
+    {const goal=[[196,119,'behind the chest'],[150,104,'behind the shelter'],[106,118,'before the rack'],[214,119,'before the bales'],[34,138,'by the coil'],[176,104,'behind the shelter, to its right']],
+        miss=goal.filter(([x,y])=>{const r=roomRoute(PC(),x,y,true);return!r||!r.exact});
+      ok(!miss.length,'deck: from the near edge of the deck every place can be walked to round what stands on it: '+goal.map(g=>g[2]).join(', ')+(miss.length?'. NOT REACHED: '+miss.map(g=>g[2]).join(', '):''))}
+    {let diff=0,n=0;for(const v of V){G.deck0v=v;const b=bg('deck0').getContext('2d').getImageData(0,0,320*HR,144*HR).data,o=D.overlay({...O,variant:v}).getContext('2d').getImageData(0,0,320*HR,144*HR).data;
+        for(let i=0;i<o.length;i+=4)if(o[i+3]===255){n++;if(Math.abs(o[i]-b[i])+Math.abs(o[i+1]-b[i+1])+Math.abs(o[i+2]-b[i+2])>24)diff++}}
+      ok(n>0&&diff/n<.02,`deck: the deck laid again over the moving sea is the backdrop's own, pixel for pixel (${(100*diff/n).toFixed(2)} % differ, at the edges)`)}
+    /* the sheets: figures before and behind the chest and the shelter, beside the rack and the bales, in each light */
+    const FIGS=[['paul',150,104],['luke15',196,119],['tim15',190,138],['luke15',106,118],['paul',214,119],['tim15',34,138],['paul',70,104],['tim15',140,126]],
+      shot=v=>{G.deck0v=v;const[c,g]=mk(320*HR,144*HR);g.scale(HR,HR);backdrop(g,'deck0');D.draw(g,1500,{...O,variant:v});DQ=[];SQ=[];
+        for(const[id,x,y]of FIGS)man(g,x,y,id,x<160?1:-1,0,ART.deck0.light.amb);for(const p of props('deck0'))DQ.push([p.y,()=>g.drawImage(p.c,p.x,p.t,p.w,p.h)]);
+        const dq=DQ,sq=SQ;DQ=SQ=null;for(const f of sq)f();dq.sort((a,b)=>a[0]-b[0]);for(const[,f]of dq)f();LID=null;return c},
+      shots=V.map(shot);
+    {const Z=2,c=document.createElement('canvas');c.width=320*Z;c.height=144*Z*3+8;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#14100c';g.fillRect(0,0,c.width,c.height);
+      shots.forEach((s,j)=>g.drawImage(s,0,j*(144*Z+4),320*Z,144*Z));
+      const CR=[[140,8,36,58],[92,58,40,26],[170,58,40,26],[106,66,76,58],[168,76,66,62],[28,92,84,50]],Z2=6,W=CR.reduce((s,r)=>s+r[2]*Z2+6,0),Hh=Math.max(...CR.map(r=>r[3]))*Z2;
+      const d=document.createElement('canvas');d.width=W;d.height=(Hh+6)*3;const dg=d.getContext('2d');dg.imageSmoothingEnabled=false;dg.fillStyle='#14100c';dg.fillRect(0,0,d.width,d.height);
+      shots.forEach((s,j)=>{let x=0;for(const[cx,cy,w,h]of CR){dg.drawImage(s,cx*HR,cy*HR,w*HR,h*HR,x,j*(Hh+6),w*Z2,h*Z2);x+=w*Z2+6}});
+      window.SHEETS=Object.assign(window.SHEETS||{},{'deck-sheet':c.toDataURL(),'deck-detail':d.toDataURL()})}
+    G.deck0v='day';for(const[id,x,y]of[['luke15',196,119],['tim15',190,138],['tert15',106,118],['host15',214,119]])place(ACT[id],'deck0',x,y,x<160?1:-1);place(PC(),'deck0',150,104,1);
+    G.busy=false;lock(false);drawInv();status();await wait(1200);halt('deck')}
   /* birds (shared/birds.js): every shape is one piece, in every frame and facing both ways; a flock on a roof can be looked at, flies up
      when Paul comes under it, and comes back after he has gone; in the winter rain nothing flies and nothing sits on the roofs; the stop
      hands over birds-sheet.png, every bird and every frame ten times enlarged, and ends on the street of Corinth in spring, as the storks
