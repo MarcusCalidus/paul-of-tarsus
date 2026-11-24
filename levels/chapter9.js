@@ -1062,7 +1062,8 @@ function hint9(){const b=PC()!==P;
 /* Birds (shared/birds.js): gulls over the harbors, birds of prey, swallows and larks over open country, sparrows and doves on the
    roofs and walls of the towns; by day and in fair weather only. Scenery: they change nothing in the story. */
 /* the women of Lydia's household, whom the room paints standing among the stones, block the floor round their feet (issue #83) */
-ROOMS.river9.block=HOUSEHOLD.map(([,x,y])=>[x-5,y-2,10,4]);
+/* the boulder under the plane tree stands at the back edge of the strip, as in Chapter Eight's river, and the two women of the household */
+ROOMS.river9.block=[[392,113,12,3]].concat(HOUSEHOLD.map(([,x,y])=>[x-5,y-2,10,4]));
 ROOMS.river9.birds={swallows:[50,86,230,14],prey:[240,6,140,24]};
 
 return{rooms:['lydia9','river9','cell9','gaol9'],setup:setup9,start:start9,hint:hint9,music:MUSIC,calls:CALLS9,scenes:{dark,forum:forumScene,jailer:jailerScene,shake:shakeScene},topics:[],tablets:TABLETS,
