@@ -845,25 +845,66 @@ ART.ant12={w:320,q:12,
 /* ---------- The letter, seen close ---------- */
 /* A sheet of papyrus on the bench: its fibers run one way, the lines of writing are short strokes of uneven length that stop short of
    the edge, and the reed lies beside the sheet, not across it. G.let12 says how many lines stand on it. */
-function letter12(g,t){const r=rng(1223),n=(G.let12||{n:0}).n;
+/* The picture is painted once for each number of lines and kept (G.let12c), so that the scene draws one image a frame. */
+function letter12(g,t){const n=(G.let12||{n:0}).n;let C=G.let12c;
+  if(!C||C.n!==n){const[c,x]=mk(VW*HR,VH*HR);x.scale(HR,HR);letterPaint12(x,n);C=G.let12c={n,c}}
+  g.drawImage(C.c,0,0,VW,VH)}
+/* glyph12: one letter of the hand, small and upright, made of the strokes a reed makes: a down stroke, a slant, a round, an arch. Each is
+   drawn so that no stroke crosses another and none stands from the middle of another, and every round is wider than a pixel of the
+   view. It reads as writing at a glance and spells nothing. Returns the width it took. */
+function glyph12(g,x,y,k,q,ink){const h=2.9,w=k<2?1.1:2.2+q()*.5;g.strokeStyle=ink;g.lineWidth=.56;g.lineCap='round';g.beginPath();
+  switch(k){case 0:g.moveTo(x+.5,y);g.lineTo(x+.4,y+h);break;                                   /* a down stroke */
+    case 1:g.moveTo(x+.6,y+.2);g.lineTo(x+.5,y+h+1);break;                                       /* one that runs a little below the line */
+    case 2:g.moveTo(x,y+h);g.lineTo(x+w/2,y);g.lineTo(x+w,y+h);break;                           /* a peak */
+    case 3:g.ellipse(x+w/2,y+h/2,w/2,h/2,0,.5,5.8);break;                                       /* an open round */
+    case 4:g.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,6.283);break;                                      /* a round */
+    case 5:g.moveTo(x,y+h);g.lineTo(x,y);g.lineTo(x+w,y+h);g.lineTo(x+w,y);break;                /* a zigzag of three */
+    case 6:g.moveTo(x,y+h);g.lineTo(x,y+.2);g.lineTo(x+w,y+.2);g.lineTo(x+w,y+h);break;          /* an arch with square shoulders */
+    default:g.moveTo(x,y+h);g.quadraticCurveTo(x+w/2,y-1.4,x+w,y+h)}                            /* an arch */
+  g.stroke();return w}
+function letterPaint12(g,n){const r=rng(1223),q=rng(1307);
   /* three broad oak planks with natural tone shifts, bevel seams, and fine wood grain */
   const planks=[[0,46,'#6e502d','#5e4223'],[46,50,'#664a28','#563c20'],[96,48,'#5e4324','#4e361c']];
-  /* each plank with a quiet grain of its own (plank12): long streaks that stop inside the plank, never ruled from edge to edge; the random
-     draws of the old full-width streaks are still taken, so the sheet and the lines on it keep their place */
-  const rw=rng(1305);for(const[py,ph,c0,c1]of planks){plank12(g,0,py,VW,ph,mix(c0,c1,.5),rw,0);for(let i=0;i<22;i++)r();
+  /* each plank with a quiet grain of its own (plank12): long streaks that stop inside the plank, never ruled from edge to edge */
+  const rw=rng(1305);for(const[py,ph,c0,c1]of planks){plank12(g,0,py,VW,ph,mix(c0,c1,.5),rw,0);
     if(py>0){R(g,0,py,VW,.9,'rgba(22,12,6,.55)');R(g,0,py+.9,VW,.6,'rgba(210,170,116,.16)')}}
   tex(g,'mott',.14,0,0,VW,VH,'overlay',.9);
-  /* papyrus sheet with natural horizontal fiber strips, gentle edge aging, and contact shadow */
-  R(g,95,13,134,117,'rgba(16,9,5,.45)');g.fillStyle=lg(g,92,10,92,126,['#ebddb4','#e2d2a2','#d6c28e']);g.fillRect(92,10,132,116);
-  for(let y=11;y<125;){const hh=1+r()*2.2;R(g,92,y,132,hh,r()<.5?'rgba(146,112,56,.08)':'rgba(255,248,220,.12)');y+=hh}
-  tex(g,'mott',.16,92,10,132,116,'overlay',.8);ao(g,92,10,132,7,'t',.14,'#6e4c1e');ao(g,92,118,132,8,'b',.18,'#6e4c1e');
-  R(g,92,10,132,.8,'#f8eed0');R(g,92,10,.7,116,'#f4e8c4');R(g,223.3,10,.7,116,'rgba(90,64,34,.35)');
-  for(let j=0;j<Math.min(n,17);j++){let x=102+(j%5===0?8:0);const y=20+j*5.9,end=j===Math.min(n,17)-1?150+r()*30:206+r()*8;while(x<end){const l=2.6+r()*5.4;R(g,x,y,Math.min(l,end-x),1.1,'rgba(36,26,22,.86)');x+=l+1.6}}
-  /* reed pen with shadow and highlighted shaft, inkwell with wet gleam, and shaded pumice stone */
-  poly(g,[248,105.5,252,103.5,288,36,285,34],'rgba(16,9,5,.36)');
-  poly(g,[246,104,250,102,286,34,283,32],'#baa868');stroke(g,[247.5,102.5,283.6,33],'#e0d090',.7);poly(g,[246,104,250,102,251.4,98,248,97],'#261812');
-  oval(g,264,118,14,6.6,'rgba(16,9,5,.42)');oval(g,262,116,13.4,6.6,'#7a4226');oval(g,262,115.2,12.2,5.6,'#9a5a36');oval(g,262,114.6,10.6,4.4,'#181010');oval(g,258.6,113.4,4.6,1.4,'rgba(148,142,172,.55)');
-  oval(g,56,106,12,7.2,'rgba(16,9,5,.38)');oval(g,54,104,11.4,7.2,'#b8a678');oval(g,52.8,102.8,9.4,5.6,'#d2c294');oval(g,50.8,101.8,2.8,1.8,'#9c8c60');oval(g,58,106,2.2,1.5,'#8e7e54');
+  /* a few marks of the bench's years: a dark stain where ink was once spilled, worn pale where the arms rest, a knot */
+  pool(g,40,60,22,9,'#2a1a10',.22,'source-over');pool(g,160,138,120,8,'#c8a070',.08,'source-over');
+  for(const[kx,ky]of[[296,22],[18,124]]){oval(g,kx,ky,3.4,1.8,'rgba(40,24,12,.4)');oval(g,kx,ky,1.8,1,'rgba(30,18,10,.5)')}
+  /* the sheet's soft shadow on the bench: wide and faint, then close and darker */
+  for(const[d,a]of[[5,.1],[3,.16],[1.6,.24]]){g.fillStyle=`rgba(16,9,5,${a})`;g.fillRect(92-d+2.4,10-d+3,132+d*2,116+d*2)}
+  /* the sheet: its edges a little uneven, as a cut sheet of papyrus is, and frayed where the fibers end */
+  const E=[],jit=(a,i)=>a*(Math.sin(i*.9)*.5+(q()-.5)*.5);for(let x=92,i=0;x<=224;x+=2,i++)E.push(x,10+jit(.5,i));for(let y=10,i=0;y<=126;y+=2,i++)E.push(224+jit(.35,i),y);for(let x=224,i=0;x>=92;x-=2,i++)E.push(x,126+jit(.5,i));for(let y=126,i=0;y>=10;y-=2,i++)E.push(92+jit(.35,i),y);
+  clipTo(g,()=>poly(g,E),()=>{g.fillStyle=lg(g,92,10,92,126,['#ebddb4','#e2d2a2','#d6c28e']);g.fillRect(90,8,136,120);
+    /* the fibers, all of them running across: broad strips of their own tone, and fine threads, lighter and darker, that stop and start */
+    for(let y=9;y<127;){const hh=1+r()*2.2;R(g,90,y,136,hh,r()<.5?'rgba(146,112,56,.08)':'rgba(255,248,220,.12)');y+=hh}
+    for(let i=0;i<260;i++){const y=10+q()*116,x=90+q()*120,l=6+q()*40;R(g,x,y,l,.5,q()<.55?'rgba(120,90,44,.13)':'rgba(255,250,228,.18)')}
+    tex(g,'mott',.16,92,10,132,116,'overlay',.8);tex(g,'wood',.12,92,10,132,116,'soft-light',.6);
+    ao(g,92,10,132,7,'t',.14,'#6e4c1e');ao(g,92,118,132,8,'b',.18,'#6e4c1e');ao(g,92,10,5,116,'l',.1,'#6e4c1e');ao(g,219,10,5,116,'r',.14,'#6e4c1e')});
+  stroke(g,E.slice(0,E.length/4|0),'rgba(255,246,214,.7)',.5);
+  /* the writing: line after line in an even hand, letters run together as the Greek of the day was written, a gap now and then where a
+     word ends; darker after each dip of the reed and paler as the ink runs out. The last line is still being written. */
+  const lines=Math.min(n,17);for(let j=0;j<lines;j++){let x=102+(j%5===0?8:0),dip=q()*.3;const y=18.6+j*5.9,last=j===lines-1,end=last?150+r()*30:206+r()*8;
+    while(x<end-2){const k=Math.floor(q()*8),a=Math.max(.5,.88-dip*.8);x+=glyph12(g,x,y+(q()-.5)*.3,k,q,`rgba(34,24,20,${a.toFixed(2)})`)+.75+q()*.35;dip+=.012+q()*.01;
+      if(q()<.06){x+=1.4}if(dip>.5&&q()<.08)dip=0}}
+  /* the reed pen beside the sheet: a hollow reed, round, lit along one side; its cut nib black with ink, the slit in it */
+  poly(g,[249,106.5,253.4,104.6,289,37,285.6,35.4],'rgba(16,9,5,.18)');poly(g,[248.4,105.6,252.4,103.6,288,36,284.6,34.4],'rgba(16,9,5,.3)');
+  poly(g,[246,104,250,102,286,34,283,32]);g.fillStyle=lg(g,246,0,250,0,['#d6c484','#baa868','#8a7a44']);g.fill();
+  stroke(g,[247.2,102.8,283.4,32.8],'#eee0a4',.6);stroke(g,[249.2,102.4,285.4,33.6],'rgba(80,64,30,.6)',.5);
+  poly(g,[246,104,250,102,251.4,98,248,97],'#261812');stroke(g,[248.6,100.2,250.2,97.8],'rgba(160,150,170,.5)',.4);
+  poly(g,[283,32,286,34,286.6,32.6,284.4,31.4],tint('#baa868',-.2));
+  /* the inkpot of fired clay, seen from above: its soft shadow, the body lit from the lamp, the rim, and the ink with the lamp in it */
+  pool(g,265,119,17,8,'#100804',.5,'source-over');
+  oval(g,262,116,13.4,6.6,'#6a361e');g.save();g.beginPath();g.ellipse(262,116,13.4,6.6,0,0,6.283);g.clip();g.fillStyle=lg(g,249,0,275,0,['#b0703e','#8a4a2a','#5a2e1a']);g.fillRect(248,109,28,14);tex(g,'mott',.3,248,109,28,14,'overlay',.6);g.restore();
+  oval(g,262,115.2,12.2,5.6,'#a8683a');oval(g,262,115,11.6,5.2,'#8a5230');oval(g,262,114.6,10.6,4.4,'#181010');
+  g.save();g.beginPath();g.ellipse(262,114.6,10.6,4.4,0,0,6.283);g.clip();g.fillStyle=lg(g,0,110,0,119,['#2a2028','#0e0a0c']);g.fillRect(250,110,24,9);g.restore();
+  oval(g,258.6,113.4,4.6,1.4,'rgba(170,162,190,.5)');oval(g,257.6,113.2,2,1,'rgba(230,224,240,.6)');
+  /* the pumice for smoothing the sheet: a lump with an uneven outline, pitted, lit from above, on its soft shadow */
+  pool(g,57,107,14,7,'#100804',.5,'source-over');
+  const PM=[43,104,45,99.6,50,97,56.6,97.2,62,99.4,65.4,103.2,64,108,58.4,110.6,50.6,110.4,45.4,108];poly(g,PM);g.fillStyle=lg(g,0,97,0,111,['#ddcfa4','#c2b286','#958658']);g.fill();
+  clipTo(g,()=>poly(g,PM),()=>{tex(g,'mott',.4,42,96,24,16,'overlay',.4);for(let i=0;i<34;i++){const px=44+q()*21,py=98+q()*12;R(g,px,py,.8+q()*.8,.6+q()*.5,'rgba(90,76,48,.5)');R(g,px,py-.5,.8,.5,'rgba(255,248,220,.35)')}
+    ao(g,42,104,24,7,'b',.3,'#3a2c16')});stroke(g,PM.slice(0,10),'rgba(255,246,214,.5)',.5);
   comp(g,'multiply',.46,()=>{g.fillStyle=rg(g,160,66,225,['#fff2d6','#76666e']);g.fillRect(0,0,VW,VH)})}
 const dark12=DARK;   /* the engine's dark scene: what is told in it is read from the narrator's scroll */
 
@@ -1494,7 +1535,7 @@ function place12(room){const pc=PC();for(const a of EVERY){a.room=null;a.bow=fal
   else if(room==='eph12')place(PH,room,232,118,-1);
   /* a thing is shown to these two, or laid down with them: it is not handed over as between travelling companions */
   P.hs=PAULHS;P.party=AP.party=0;swapBtn()}
-function setup12(){P.hs=PAULHS;P.called='Paul';G.aw12=G.lf12=G.g12=G.let12=null;G.c12=G.c12b=G.c12c=0;G.ink12=0;G.back12='street12';G.caps12=[];drum12.off();place12('street12');G.inv=['tablets','awl','thread','knife'];G.invs={paul:G.inv,aq12:[]};drawInv()}
+function setup12(){P.hs=PAULHS;P.called='Paul';G.aw12=G.lf12=G.g12=G.let12=G.let12c=null;G.c12=G.c12b=G.c12c=0;G.ink12=0;G.back12='street12';G.caps12=[];drum12.off();place12('street12');G.inv=['tablets','awl','thread','knife'];G.invs={paul:G.inv,aq12:[]};drawInv()}
 
 /* ============ THE START ============ */
 async function start12(){ov.onclick=null;ov.className='';audioInit();SFX.good();if(!G.started)G.started=performance.now();
