@@ -319,11 +319,12 @@ ART.gates={w:480,fp:1.25,q:12,
   comp(g,'source-atop',.5,()=>R(g,0,0,610,150,'#2a2850'))},
  draw(g,t){const lit=lightAt('gates',70,112);
   /* the far ox, the carter's wagon and its pole, the near ox, and the yoke that lies across both their necks: they face the cleft, and the wind.
-     As at Derbe the pair is seen a little from the front, the far ox a head ahead and a little higher, its head clear beside the near one's.
+     As at Derbe the pair is seen a little from the front, the far ox a little ahead and higher, its head clear above and beside the near one's
+     and its tail behind the near ox's flank, where its dark switch cannot show under the near ox's belly.
      The yoke rests on the crest of the near ox's neck just behind its horns, ending short of the horn; the near head hides the rest of it
      and its far end, which a horn would otherwise cross. The wagon stands close behind the near ox and its pole is a stub that ends short
      of the tail, which hangs to the hock: a pole that ran on behind the tail would cross it. */
-  depth(113,()=>{cattle(g,128,110,1,0,'#6f4630',lit);wagon(g,18,112,-1,1,1);cattle(g,111,113,1,SHARED.beasts.pose('oxen7',0),'#8a5a3a',lit);
+  depth(113,()=>{cattle(g,125,105.5,1,0,'#6f4630',lit);wagon(g,18,112,-1,1,1);cattle(g,111,113,1,SHARED.beasts.pose('oxen7',0),'#8a5a3a',lit);
     R(g,122,75.4,5,2.5,'#5a3e22');R(g,122,75.4,5,.5,'#a8845a')});
   tentArt(g,t)},
  /* the weather: before the tent is up, the wind, and what it carries; after it, the rain */

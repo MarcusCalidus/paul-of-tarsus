@@ -237,11 +237,12 @@ ART.lystra={w:480,fp:1.3,q:12,
   /* the people of Lystra, when they come running: first they face the well, then the gate */
   if(G.crowd)CROWD.forEach(([id,x,y],i)=>man(g,x,y+((Math.floor(t/700)+i)%5===0?-.6:0),id,G.bulls?-1:1,0,null,G.crowd>1&&(Math.floor(t/500)+i)%3===0?1:0,7));
   /* the bulls, garlanded, brought to the gates (Acts 14:13) */
-  /* side by side, the far one a head and more in front, so that a clear gap parts the two heads and neither seems to sit on the other's body. When the priest gives up (stop6), they are
+  /* side by side, the far one a head and more in front and a little higher, so that a clear gap parts the two heads and neither seems to sit on the other's body, and the far
+     one's tail hangs behind the near one's flank, never below its belly, where the dark switch would read as a sheath. When the priest gives up (stop6), they are
      led away after him: they turn, and walk out of the picture by the gate side, at the pace everybody walks (G.led: when they turned) */
   if(G.led!=null){const d=Math.max(0,(t-G.led-300)/1000*WALK_V),fr=d>0?SHARED.beasts.frame.ox(d):0;
-    if(50-d>-50){cattle(g,50-d,112.6,-1,fr,'#d8c8b0',1);cattle(g,30-d,116.4,-1,fr&&SHARED.beasts.frame.ox(d+9),'#e6dccc',1)}}
-  else if(G.bulls){cattle(g,50,112.6,1,0,'#d8c8b0',1);cattle(g,30,116.4,1,0,'#e6dccc',1)}},
+    if(50-d>-50){cattle(g,50-d,109.5,-1,fr,'#d8c8b0',1);cattle(g,30-d,116.4,-1,fr&&SHARED.beasts.frame.ox(d+9),'#e6dccc',1)}}
+  else if(G.bulls){cattle(g,50,109.5,1,0,'#d8c8b0',1);cattle(g,30,116.4,1,0,'#e6dccc',1)}},
  front(){}};
 /* ---------- Outside Lystra, at dusk ---------- */
 ART.outside={w:320,q:12,
@@ -385,10 +386,11 @@ ART.derbe={w:320,q:12,
  draw(g,t){/* chaff on the wind; Zenon's wagon, loaded for the road east */
   for(let i=0;i<9;i++){const k=((t/2600+i*.111)%1);R(g,176+k*60+Math.sin(i*2.1)*6,90-k*14-Math.sin(k*9+i)*3,1,.6,`rgba(244,236,200,${.8*(1-k)})`)}
   /* the far ox, the wagon and its pole, the near ox, and the yoke that lies across both their necks. The pair is seen a little from the
-     front: the far ox stands a head ahead and a little higher, so that its head stands clear beside the near one's. The yoke rests on
+     front: the far ox stands a little ahead and higher, so that its head stands clear above and beside the near one's, and its tail
+     hangs behind the near ox's flank: lower, its dark switch would show under the near ox's belly and read as a sheath. The yoke rests on
      the crest of the near ox's neck just behind its horns, ending short of the horn, and the near head hides the rest of it and its far
      end, which a horn would otherwise cross. The wagon stands close behind the near ox, its pole a stub that ends short of the tail */
-  depth(111,()=>{cattle(g,279,108,1,0,'#6f4630',0);wagon(g,169,110,-1,1,1);cattle(g,262,111,1,SHARED.beasts.pose('oxen6',0),'#8a5a3a',0);
+  depth(111,()=>{cattle(g,276,103.5,1,0,'#6f4630',0);wagon(g,169,110,-1,1,1);cattle(g,262,111,1,SHARED.beasts.pose('oxen6',0),'#8a5a3a',0);
     R(g,273,73.4,5,2.5,'#5a3e22');R(g,273,73.4,5,.5,'#a8845a')});depth(112,()=>bundles(g,60,112))},
  front(){}};
 /* ============ CAST, ITEMS, COMBINATIONS ============ */
