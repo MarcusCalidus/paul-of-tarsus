@@ -11,7 +11,8 @@
                                          turned from it, then angular slabs that the rock has broken into, lit or in shade, and beds that
                                          dip (o.dip, spaced about o.bed) and pinch out, each with its lit lip and the shade under its
                                          ledge; cracks, pits, lichen, and here and there a bush or a tuft on a ledge (o.scrub: how many).
-                                         o.shade: 'l' or 'r', a side in the shade of a gorge; o.haze: a color the face is drawn toward
+                                         o.shade: 'l' or 'r', a side in the shade of a gorge; o.haze: a color the face is drawn toward;
+                                         o.gaps: fissures [x1,y1,x2,y2] that the room draws across it, which no line of the face crosses
      boulder(g, x, y, w, h, c, seed, o)  a weathered stone sitting on the ground, its foot at y: a lit top, a face to the sun, a shaded
                                          side, a crack or two and its shadow. o.cut: the outline only (for a room's props)
      ground(g, x, y0, w, y1, c, seed, o) stony ground between y0 (far) and y1 (near): dust, worn patches, and stones that grow toward us,
@@ -41,7 +42,10 @@ const bbox=p=>{let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(let i=0;i<p.length;i+=2){x0
 
 /* ---------- rock ---------- */
 function crag(g,p,c,seed,o){o=o||{};const r=rng(seed),L=o.light==null?-1:o.light,[x0,y0,x1,y1]=bbox(p),W=x1-x0,H=y1-y0,sl=o.dip||0,
-  hi=tint(c,.3),cool=mix(tint(c,-.3),'#5a5c8c',.32),ink='#1c1828';
+  hi=tint(c,.3),cool=mix(tint(c,-.3),'#5a5c8c',.32),ink='#1c1828',
+  /* gaps: fissures the room cuts across the face ([x1,y1,x2,y2]); no line of the face is drawn within a few pixels of one, so that none crosses it */
+  gap=(xa,ya,xb,yb)=>{for(const[a,b,c2,d]of o.gaps||[])for(let t=0;t<=1;t+=.1){const x=xa+(xb-xa)*t,y=ya+(yb-ya)*t,lo=Math.min(b,d)-2.5,hi2=Math.max(b,d)+2.5;
+    if(y<lo||y>hi2)continue;const u=Math.max(0,Math.min(1,(y-b)/((d-b)||1))),fx=a+(c2-a)*u;if(Math.abs(x-fx)<4)return true}return false};
   clipTo(g,()=>poly(g,p),()=>{
     g.fillStyle=lg(g,0,y0,0,y1,[tint(c,.1),c,tint(c,-.14)]);g.fillRect(x0,y0,W,H);
     tex(g,'mott',.4,x0,y0,W,H,'overlay',1);tex(g,'blotch',.25,x0,y0,W,H,'soft-light',.6);
@@ -49,7 +53,7 @@ function crag(g,p,c,seed,o){o=o||{};const r=rng(seed),L=o.light==null?-1:o.light
        shade. Its edges that face the sun catch it and those that face down are dark, but only where an edge runs more across than down:
        an upright edge is a change of tone and no line, so that nothing runs down across a bed */
     const bedY=[];for(let j=y0+3+r()*6;j<y1;j+=(o.bed||8)*(.5+r()*1.6))bedY.push(j);
-    const tones=[tint(c,.2),tint(c,.09),c,mix(tint(c,-.1),cool,.3),mix(tint(c,-.2),cool,.45)];
+    const tones=[tint(c,.24),tint(c,.11),c,mix(tint(c,-.13),cool,.35),mix(tint(c,-.26),cool,.5)];
     /* first the great forms: soft buttresses turned to the sun and gullies turned away, with no edge drawn */
     let bx=x0-r()*30;while(bx<x1){const bw=26+r()*50,sk=(r()-.5)*.3,mid=bx+bw*(.35+r()*.3),P=[bx,y0,mid+sk*H*.5,y0,mid-sk*H*.5,y1,bx,y1],Q=[mid+sk*H*.5,y0,bx+bw,y0,bx+bw,y1,mid-sk*H*.5,y1];
       comp(g,'source-over',.2+r()*.12,()=>{poly(g,L<0?P:Q);g.fillStyle=lg(g,bx,0,bx+bw,0,L<0?[rgba(hi,0),rgba(hi,.8),rgba(hi,.2)]:[rgba(hi,.2),rgba(hi,.8),rgba(hi,0)]);g.fill()});
@@ -60,18 +64,18 @@ function crag(g,p,c,seed,o){o=o||{};const r=rng(seed),L=o.light==null?-1:o.light
       comp(g,'source-over',a,()=>{poly(g,P);g.fillStyle=lg(g,cx-R0,cy-R0*.5,cx+R0,cy+R0*.5,L<0?[tint(cc,.06),cc,tint(cc,-.06)]:[tint(cc,-.06),cc,tint(cc,.06)]);g.fill()});
       for(let i=0;i<P.length;i+=2){const xa=P[i],ya=P[i+1],xb=P[(i+2)%P.length],yb=P[(i+3)%P.length],dx=xb-xa,dy=yb-ya;if(Math.abs(dy)>Math.abs(dx)*.6)continue;
         const ox=dy,oy=-dx,face=(ox*L*.5-oy)/Math.hypot(ox,oy);/* outward normal of a clockwise outline */
-        if(oy>0)stroke(g,[xa,ya,xb,yb],rgba(ink,.32*a),.5);else if(face>.2)stroke(g,[xa,ya,xb,yb],rgba(hi,.34*a),.5)}};
-    for(let k=0;k<W*H/420;k++)slab(14+r()*20,.6);for(let k=0;k<W*H/110;k++)slab(5+r()*8,.6);
+        if(gap(xa,ya,xb,yb))continue;if(oy>0)stroke(g,[xa,ya,xb,yb],rgba(ink,.32*a),.5);else if(face>.2)stroke(g,[xa,ya,xb,yb],rgba(hi,.34*a),.5)}};
+    for(let k=0;k<W*H/420;k++)slab(14+r()*20,.7);for(let k=0;k<W*H/110;k++)slab(5+r()*8,.68);
     tex(g,'mott',.38,x0,y0,W,H,'overlay',1);tex(g,'blotch',.22,x0,y0,W,H,'soft-light',.6);tex(g,'grain',.12,x0,y0,W,H,'overlay',.5);
     /* a few beds of the limestone, which pinch out and come back, each with its lit lip and the shade under its ledge */
     const beds=[];for(const j of bedY){const q=[];let x=x0-4+(r()<.6?r()*W*.5:0);const end=x1+8-(r()<.6?r()*W*.5:0);
       for(;x<=end;x+=5+r()*8)q.push(x,j+(x-x0)*sl+(r()-.5)*2);if(q.length>=4)beds.push(q)}
-    for(const q of beds){const th=1.5+r()*2.6;for(let i=0;i<q.length-2;i+=2){const s=[q[i],q[i+1],q[i+2],q[i+3]],fade=Math.min(1,i/6,(q.length-4-i)/6+.15);
+    for(const q of beds){const th=1.5+r()*2.6;for(let i=0;i<q.length-2;i+=2){const s=[q[i],q[i+1],q[i+2],q[i+3]],fade=Math.min(1,i/6,(q.length-4-i)/6+.15);if(gap(s[0],s[1],s[2],s[3]))continue;
       poly(g,[s[0],s[1],s[2],s[3],s[2],s[3]+th,s[0],s[1]+th],rgba(ink,.2*fade));stroke(g,s,rgba(ink,.36*fade),.6);stroke(g,s.map((v,k)=>k%2?v-.6:v),rgba(hi,.3*fade),.5)}}
     /* cracks that wander down a little way, pits, and lichen */
     const bedAt=(q,x)=>{if(x<q[0]||x>q[q.length-2])return null;let i=0;while(i<q.length-4&&q[i+2]<x)i+=2;return q[i+1]+(q[i+3]-q[i+1])*(x-q[i])/((q[i+2]-q[i])||1)},
       under=(x,y)=>{let nb=1e9;for(const q of beds){const v=bedAt(q,x);if(v!=null&&v>y&&v<nb)nb=v}return nb};
-    for(let k=0;k<W*H/320;k++){let x=x0+r()*W,y=y0+r()*H;const q=[x,y],nb=under(x,y)-1.4;for(let s=0;s<2+r()*3;s++){x+=(r()-.5)*2.6;y+=1+r()*2.2;if(y>nb)break;q.push(x,y)}if(q.length<4)continue;
+    for(let k=0;k<W*H/320;k++){let x=x0+r()*W,y=y0+r()*H;const q=[x,y],nb=under(x,y)-1.4;for(let s=0;s<2+r()*3;s++){x+=(r()-.5)*2.6;y+=1+r()*2.2;if(y>nb)break;q.push(x,y)}if(q.length<4||gap(q[0],q[1],q[q.length-2],q[q.length-1]))continue;
       stroke(g,q,rgba(ink,.3),.5);stroke(g,q.map((v,i)=>i%2?v:v-L*.5),rgba(hi,.16),.5)}
     for(let k=0;k<W*H/110;k++){const x=x0+r()*W,y=y0+r()*H,s=.5+r()*.7;R(g,x,y,s,.5,rgba('#140f1e',.3));R(g,x,y+.5,s,.5,rgba(hi,.2))}
     for(let k=0;k<W*H/180;k++){const x=x0+r()*W,y=y0+r()*H,w=.8+r()*2.2,k2=r();R(g,x,y,w,.5+r()*.5,rgba(k2<.4?'#c8b878':k2<.75?'#8c9670':'#e0dccc',.25+r()*.18))}
