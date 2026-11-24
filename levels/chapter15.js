@@ -200,7 +200,7 @@ function box15(g,x,y,w,h,c){const t=Math.min(4,h*.3);R(g,x,y+t,w,h-t,c);poly(g,[
    is long and low, and the wall behind Tertius is bare. */
 const VPGaius15=[160,78],TOPGaius15=[95,92.5,153,92.5,156,99.5,92,99.5];
 ART.gaius15={w:320,q:12,paint(g){paintGaius15(g)},light:{amb:'#d6d8e2',wallY:104,wall:[[9,25,104,15],[25,51,104,63],[51,311,104,15]],lamps:[[178,100,44,'#3a2008',109.4,94.8]],shade:[[240,340,'#e0dada']]},
-  draw(g,t){emberGaius15(g,t)},front(){},props:[{y:113.4,shape(g){stoolGaius15(g,1)}},{y:116.5,shape(g){tableShapeGaius15(g)}}]};
+  draw(g,t){emberGaius15(g,t)},front(){},props:[{y:113.4,shape(g){stoolGaius15(g,1)},foot:[118,111,14,2.4],seat:1},{y:116.5,shape(g){tableShapeGaius15(g)},foot:[93.5,111,61,5]}]};
 function paintGaius15(g){const r=rng(1501),W='#cfc4a8';
   ceilGaius15(g);wallGaius15(g,r,W);floorGaius15(g,r);sidesGaius15(g,W);
   windowGaius15(g,W);doorGaius15(g,r);shelfGaius15(g);pegsGaius15(g);benchGaius15(g,r);stoolGaius15(g);brazierGaius15(g,r);chestGaius15(g,r);
@@ -789,7 +789,8 @@ function weightScale15(g,w,[x,y,ww,h],inPan){const ht=Math.max(2.4,h*.25),f=x+ww
    goat with her tether, the block Tychicus sits on, the chest, and the two boats on the sand (the nearer one is in front of everybody). */
 const HZCen15=62,SUNCen15=74,QYCen15=104.4;
 ART.cen15={w:320,q:12,paint(g){paintCen15(g)},light:{amb:'#f6f0e6'},draw(g,t){drawCen15(g,t)},front(){},
-  props:[{y:118,shape(g){goatCen15(g)}},{y:119.6,shape(g){seatCen15(g)}},{y:120,shape(g){chestCen15(g)}},{y:128,shape(g){skiffCen15(g,0)}},{y:150,shape(g){skiffCen15(g,1)}}]};
+  props:[{y:118,shape(g){goatCen15(g)},foot:[56,114.5,25,3.5]},{y:119.6,shape(g){seatCen15(g)},foot:[251,115,14.5,4.6],seat:1},{y:120,shape(g){chestCen15(g)},foot:[227.5,114.5,24,5.5]},
+    {y:128,shape(g){skiffCen15(g,0)},foot:[0,122,7,6]},{y:150,shape(g){skiffCen15(g,1)},foot:[0,130,17,14]}]};
 function paintCen15(g){const r=rng(1503),SX=SUNCen15,QY=QYCen15;
   skyCen15(g,r);seaCen15(g,r);moleCen15(g,r);shipCen15(g,r);quayCen15(g,r);sandCen15(g,r);cargoCen15(g,r);
   /* the goat, the block, the chest, the boats: each on its own shadow */
@@ -1264,7 +1265,7 @@ function awlSand15(g,fx,fy){const[lx,ly]=SUNSand15,ux=.72,uy=-.69,nx=-uy,ny=ux,L
    strakes, a wall and the dark of the shop, and nothing round. The front row of jars stands inside the walk strip (y 112..138): it
    is named in props. */
 const HZQuay15=62;
-ART.quay15={w:320,q:12,paint(g){paintQuay15(g)},light:{amb:'#f2dcc2'},draw(g,t){drawQuay15(g,t)},front(){},props:[{y:114,shape(g){jarsQuay15(g,1)}}]};
+ART.quay15={w:320,q:12,paint(g){paintQuay15(g)},light:{amb:'#f2dcc2'},draw(g,t){drawQuay15(g,t)},front(){},props:[{y:114,shape(g){jarsQuay15(g,1)},foot:[[237,110,18,4],[264,110,14,4]]}]};
 function paintQuay15(g){const r=rng(1505);
   skyQuay15(g,r);seaQuay15(g,r);moleQuay15(g,r);shipQuay15(g,r);paveQuay15(g,r);laneQuay15(g,r);houseQuay15(g,r);standQuay15(g,r);thingsQuay15(g,r);
   jarsQuay15(g);lightQuay15(g)}
@@ -1525,7 +1526,8 @@ function drawQuay15(g,t){if(!GLQuay15){const r=rng(1506);GLQuay15=[];
    window keep clear of his outline: those behind him are seen when the window is empty. */
 const WINUpper15={x:38,y:22,w:34,s:54,d:70},EUTUpper15=[52,69];
 ART.upper15={w:320,q:12,variant:()=>stage15(),paint(g,v){paintUpper15(g,v)},light:()=>lightUpper15(),draw(g,t){drawUpper15(g,t)},front(){},
-  props:[{y:122,shape(g){jarUpper15(g)}},{y:126,shape(g){stoolUpper15(g)}},{y:120,shape(g){standUpper15(g);clayUpper15(g,LAMPUpper15[3][0],LAMPUpper15[3][1],1,1)}},
+  props:[{y:122,shape(g){jarUpper15(g)},foot:[13,118,12,4]},{y:126,shape(g){stoolUpper15(g)},foot:[81,122.5,13,3.5],seat:1},
+    {y:120,shape(g){standUpper15(g);clayUpper15(g,LAMPUpper15[3][0],LAMPUpper15[3][1],1,1)},foot:[166,117.5,13,2.5]},
     {y:WINUpper15.d,shape(g){sillShapeUpper15(g)}}]};
 const LAMPUpper15=[[273,58.7],[300.5,80.9],[123,41.6],[176.6,67.4],[228,92.6]],   /* where each lamp's wick is: the foot of its flame (the table's lamp has two, 6.5 to either side) */
   CAPUpper15=[2,2,3,3,4],SKYUpper15=[WINUpper15.x+3.5,WINUpper15.y+2.5,WINUpper15.x+WINUpper15.w,WINUpper15.y+2.5,WINUpper15.x+WINUpper15.w,WINUpper15.s,WINUpper15.x+3.5,WINUpper15.s],
@@ -1847,7 +1849,7 @@ function risenUpper15(g,x,y,o){const d=o.d,l=o.l,G=o.g,sk=o.s,sh=y-31.6,wy=y-18,
    Only the two flames move (drawStreet15), and only by night. The storage jar at our own side of the street, in the left corner,
    stands in front of whoever walks behind it (props). */
 ART.street15={w:320,q:12,variant:()=>F.mid?'d':'n',paint(g,v){paintStreet15(g,v)},light:()=>F.mid?{amb:'#d6cad2'}:{amb:'#3a3a56'},draw(g,t){drawStreet15(g,t)},front(){},
-  props:[{y:143.6,shape(g){nearStreet15(g)}}]};
+  props:[{y:143.6,shape(g){nearStreet15(g)},foot:[8.5,138,21,6]}]};
 /* HZStreet15: the level of the sea, which is the horizon of the whole picture. NIGHTStreet15: where the two flames stand */
 const HZStreet15=64,NIGHTStreet15=[[193.6,79.4],[221.6,119.2]];
 /* riseStreet15: how high on the screen a point of a house front stands that is p room pixels above the street at the scale of the people
