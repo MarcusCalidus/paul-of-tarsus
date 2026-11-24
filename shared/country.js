@@ -18,7 +18,8 @@
      ground(g, x, y0, w, y1, c, seed, o) stony ground between y0 (far) and y1 (near): dust, worn patches, and stones that grow toward us,
                                          each with its lit top and its shadow. o.n: how many stones; o.size; o.tufts: dry tufts
      turf(g, x, y0, w, y1, c, seed, o)   grass between y0 and y1: blades that lean with the wind (o.wind, default 1, to the right) and grow
-                                         toward us, lit at the tips, darker in hollows; o.flowers: how many; o.dry: how much of it is straw
+                                         toward us, lit at the tips, darker in hollows; o.flowers: how many; o.dry: how much of it is straw;
+                                         o.scale: the length of the blades (default 1), shorter for ground farther off
      plain(g, x0, x1, hz, y1, seed, o)   the plots of a plain from its horizon hz down to y1, seen in perspective toward o.vx: stubble,
                                          green grain, ploughed land, fallow and orchard, hazed toward the horizon, with field banks and the
                                          soft shadows of clouds. o.land: the general green; o.haze: the color of the distance
@@ -136,7 +137,7 @@ function turf(g,x,y0,w,y1,c,seed,o){o=o||{};const r=rng(seed),H=y1-y0,wind=o.win
   for(let k=0;k<w*H/500;k++){const k2=r(),px=x+r()*w,py=y0+k2*H,rx=10+k2*30;pool(g,px,py,rx,rx*.18,r()<.5?tint(c,.32):dk,.22,'source-over')}
   if(dry)for(let k=0;k<w*H/600*dry;k++){const px=x+r()*w,py=y0+r()*H,rx=6+r()*20;pool(g,px,py,rx,rx*.2,'#c8b878',.3,'source-over')}
   /* blades: far ones are a stipple, near ones are strokes that lean with the wind */
-  const n=w*H*(o.dense||1.1);for(let k=0;k<n;k++){const k2=Math.pow(r(),.6),px=x+r()*w,py=y0+k2*H,h=.6+k2*3.4*(.6+r()*.7),t=r(),
+  const n=w*H*(o.dense||1.1),sc=o.scale||1;for(let k=0;k<n;k++){const k2=Math.pow(r(),.6),px=x+r()*w,py=y0+k2*H,h=(.6+k2*3.4*(.6+r()*.7))*sc,t=r(),
       cc=r()<dry*.6?(t<.5?'#c8b47a':'#a89660'):t<.22?dk:t<.55?tint(c,-.12):t<.85?tint(c,.1):tint(c,.28);
     if(h<1.2){R(g,px,py,.5,.5,cc);continue}const lean=wind*(.15+r()*.2)*h;stroke(g,[px,py,px+lean,py-h],cc,.5);if(t>.7)R(g,px+lean,py-h,.5,.5,tint(c,.4))}
   for(let k=0;k<(o.flowers||0);k++){const k2=Math.pow(r(),.6),px=x+r()*w,py=y0+k2*H,C=o.fc||['#d84a3a','#e8c84a','#f0ece0','#b86ab0','#e8c84a'],cc=C[Math.floor(r()*C.length)];
