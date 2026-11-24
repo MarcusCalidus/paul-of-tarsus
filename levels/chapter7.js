@@ -320,9 +320,11 @@ ART.gates={w:480,fp:1.25,q:12,
  draw(g,t){const lit=lightAt('gates',70,112);
   /* the far ox, the carter's wagon and its pole, the near ox, and the yoke that lies across both their necks: they face the cleft, and the wind.
      As at Derbe the pair is seen a little from the front, the far ox a head ahead and a little higher, its head clear beside the near one's.
-     The pole ends behind the near ox's tail: if it ran on under the tail, the two would make a T upside down. */
-  depth(113,()=>{cattle(g,128,110,1,0,'#6f4630',lit);R(g,140,75.4,5,2.5,'#5a3e22');R(g,140,75.4,5,.5,'#a8845a');wagon(g,20,112,-1,1);cattle(g,111,113,1,SHARED.beasts.pose('oxen7',0),'#8a5a3a',lit);
-    R(g,123,78.4,5,2.5,'#5a3e22');R(g,123,78.4,5,.5,'#a8845a')});
+     The yoke rests on the crest of the near ox's neck just behind its horns, ending short of the horn; the near head hides the rest of it
+     and its far end, which a horn would otherwise cross. The wagon stands close behind the near ox and its pole is a stub that ends short
+     of the tail, which hangs to the hock: a pole that ran on behind the tail would cross it. */
+  depth(113,()=>{cattle(g,128,110,1,0,'#6f4630',lit);wagon(g,18,112,-1,1,1);cattle(g,111,113,1,SHARED.beasts.pose('oxen7',0),'#8a5a3a',lit);
+    R(g,122,75.4,5,2.5,'#5a3e22');R(g,122,75.4,5,.5,'#a8845a')});
   tentArt(g,t)},
  /* the weather: before the tent is up, the wind, and what it carries; after it, the rain */
  front(g,t){if(!F.up){for(let i=0;i<14;i++){const k=((t/900+i*.0714)%1),x=500-k*540,y=18+((i*37)%96)+Math.sin(k*9+i)*3;R(g,x,y,5+(i%3)*2,.5,`rgba(226,220,206,${.34*(1-Math.abs(k-.5)*2)})`)}return}

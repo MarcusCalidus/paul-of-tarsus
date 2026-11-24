@@ -518,167 +518,224 @@ const MULE=(()=>{
 
 /* ================================================================== the ox ================================================================== */
 const OX=(()=>{
-    /* A working ox or a bull, the heaviest of the animals, in the pixel manner of the figures and seen from the side, as in the maintainer's
-       reference picture: a deep barrel of a body that rises to a hump of muscle at the withers, a short thick neck that comes out of the
-       shoulders below the line of the back with the dewlap hanging from throat to brisket under it, and the head carried low and forward,
-       hanging in front of the chest with its poll below the withers, turned three-quarters toward us: one side of the face and its broad
-       front, both short pale horns, both ears and both eyes, the muzzle lowest. The barrel is modelled in flat bands, as in the reference,
-       with a crease where the shoulder and the haunch meet it. c: its coat, from
-       which every tone is taken (ramp), so that the brown oxen of Zenon's wagon and the near-white bulls of Lystra are the same painter.
-       gar: a garland of leaves and yellow flowers round the neck (Acts 14:13).
-       Every part grows out of the one before it: the tail is set on at the top of the rump and lies along it before it hangs free, the near
-       legs are painted in the body's own tones as far down as the belly, so that haunch and shoulder grow out of it, and the neck is painted
-       in the same bands of tone as the body it comes out of, so that no seam shows.
-       Crosses: the horns curve out and straight up from a poll that rises between them, so that the crown of the head is no level bar over
-       the face; the ears droop; the garland hangs round the neck in a curve over the dewlap and crosses no line or crease; nothing else is
-       ever laid across the neck.
-       fr 0 stands. fr 4 to 19 are the sixteen frames of its walk (frame below gives the frame for a distance walked); 1, 2 and 3 are three
-       moments of that walk, a quarter of a cycle apart, for a scene that counts frames itself. The walk has four beats: near hind, near
-       fore, far hind, far fore, each a quarter of the cycle after the one before. A hoof stands on the ground for OX_STANCE of the cycle,
-       going back under the body, and swings forward for the rest, lifted, with the hock or the knee bent. The legs swing from the hip and
-       the shoulder, high inside the body, so that a leg slants less than a pendulum hung at the belly would; while it walks the two legs of
-       a pair leave the body at nearly one place and open like a pair of compasses, and never cross as an X under the belly. A heavy beast
-       plods: the body sinks a pixel as each fore hoof takes its weight, the hip and the shoulder roll up a pixel in turn over the leg that
-       stands under them, the head sways a pixel forward and back and dips with the fore hooves, the dewlap swings after it, and the tip of
-       the tail swings away from the near hind leg when that leg is back.
-       fr 20 to 22 are its voice (see voice and sound), with the same head: 20 lifted a little and the muzzle pushed forward, the mouth shut;
-       21 the lower jaw dropping; 22 the mouth wide open and the dewlap drawn taut. */
-    /* the head in three-quarter view, as it hangs (OX_HEAD), lifted with the muzzle forward (OX_RAISE), and lowing (OX_LOW1, OX_LOW2) */
-    const OX_HEAD=[
-      ".............................x......","...x.........................x......","...xx.......................cy......","...yc.......................cy......",
-      "...ycC.....................Ccy......","....ycC..................Cccy.......",".....yccC....HHHHHHHH..cccy.........","......yyccC.LLLLLLLLLLcy............",
-      "........yycchHLLLLLLLh..............","..........HHhHLLLLLLLHHh............","....eeeehHHHhHLLLLLLLHHhd...........",".eEEEEehHLLLhHHHHHHHHHhhhdeee.......",
-      "eEEEeedhHHkwhHHHHHHHHHHkkddeEEEe....",".eeedddhHHkkhhhhhhhhhhhkhddeEEEEe...","....dddhHHddhhhhhhhhhhhhhddeeeee....","........hHHHhhhhhhhhhhhhhd.ddd......",
-      "........dHHHHhhhhhhhhhhhhd..........",".........dHHHhhhhhhhhhhhhd..........",".........dhhhhhhhhhhhhhhhd..........","..........dhhhhhhhhhhhhhhd..........",
-      "..........dhhhhhhhhhhhhhhhd.........","...........dhhhhhhhhhhhhhhd.........","...........dhhhhhhhhhhhhhhd.........","............dhhhhhhhhhhhhhhd........",
-      "............dhhhhhhhhhhhhhhd........","............DqqMMMMMMMMMMMMMM.......",".............DqMMmmmmmmmmmmmq.......",".............DqMMmmnnmmmmmnnq.......",
-      ".............DqMMmmnmmmmmmmnq.......","..............Dmmmmmmmmmmmmmq.......","..............ddnnnnnnnnnnnnq.......","...............DqqqqqqqqqqqD........",
-      "................DqqqqqqqqqD.........",".................DqqqqqqqD.........."];
-    const OX_RAISE=[
-      ".............................x......","...x.........................x......","...xx.......................cy......","...yc.......................cy......",
-      "...ycC.....................Ccy......","....ycC..................Cccy.......",".....yccC....HHHHHHHH..cccy.........","......yyccC.LLLLLLLLLLcy............",
-      "........yycchHLLLLLLLh..............","..........HHhHLLLLLLLHHh............","....eeeehHHHhHLLLLLLLHHhd...........",".eEEEEehHLLLhHHHHHHHHHhhhdeee.......",
-      "eEEEeedhHHkwhHHHHHHHHHHkkddeEEEe....",".eeedddhHHkkhhhhhhhhhhhkhddeEEEEe...","....dddhHHddhhhhhhhhhhhhhddeeeee....","........hHHHhhhhhhhhhhhhhd.ddd......",
-      ".........dHHHHhhhhhhhhhhhhd.........","..........dHHHhhhhhhhhhhhhd.........","..........dhhhhhhhhhhhhhhhd.........","...........dhhhhhhhhhhhhhhd.........",
-      "...........dhhhhhhhhhhhhhhhd........","............dhhhhhhhhhhhhhhd........","............dhhhhhhhhhhhhhhd........","..............dhhhhhhhhhhhhhhd......",
-      "..............dhhhhhhhhhhhhhhd......","..............DqqMMMMMMMMMMMMMM.....","...............DqMMmmmmmmmmmmmq.....","...............DqMMmmnnmmmmmnnq.....",
-      "...............DqMMmmnmmmmmmmnq.....","................Dmmmmmmmmmmmmmq.....",".................ddnnnnnnnnnnnnq....","..................DqqqqqqqqqqqD.....",
-      "...................DqqqqqqqqqD......","....................DqqqqqqqD......."];
-    const OX_LOW1=[
-      ".............................x......","...x.........................x......","...xx.......................cy......","...yc.......................cy......",
-      "...ycC.....................Ccy......","....ycC..................Cccy.......",".....yccC....HHHHHHHH..cccy.........","......yyccC.LLLLLLLLLLcy............",
-      "........yycchHLLLLLLLh..............","..........HHhHLLLLLLLHHh............","....eeeehHHHhHLLLLLLLHHhd...........",".eEEEEehHLLLhHHHHHHHHHhhhdeee.......",
-      "eEEEeedhHHkwhHHHHHHHHHHkkddeEEEe....",".eeedddhHHkkhhhhhhhhhhhkhddeEEEEe...","....dddhHHddhhhhhhhhhhhhhddeeeee....",".........hHHHhhhhhhhhhhhhhdddd......",
-      ".........dHHHHhhhhhhhhhhhhd.........","..........dHHHhhhhhhhhhhhhd.........","..........dhhhhhhhhhhhhhhhd.........","...........dhhhhhhhhhhhhhhd.........",
-      "............dhhhhhhhhhhhhhhhd.......",".............dhhhhhhhhhhhhhhd.......",".............dhhhhhhhhhhhhhhd.......","..............dhhhhhhhhhhhhhhd......",
-      "..............dhhhhhhhhhhhhhhd......","..............DqqMMMMMMMMMMMMMM.....","................DqMMmmmmmmmmmmmq....","................DqMMmmnnmmmmmnnq....",
-      "................DqMMmmnmmmmmmmnq....",".................Dmmmmmmmmmmmmmq....","...................oooooooooooo.....","..................oooooooooooo......",
-      ".................Dqqmmmmmmmmmmmq....","...................DqqqqqqqqqqqD....","....................DqqqqqqqqqD.....",".....................DqqqqqqqD......"];
-    const OX_LOW2=[
-      ".............................x......","...x.........................x......","...xx.......................cy......","...yc.......................cy......",
-      "...ycC.....................Ccy......","....ycC..................Cccy.......",".....yccC....HHHHHHHH..cccy.........","......yyccC.LLLLLLLLLLcy............",
-      "........yycchHLLLLLLLh..............","..........HHhHLLLLLLLHHh............","....eeeehHHHhHLLLLLLLHHhd...........",".eEEEEehHLLLhHHHHHHHHHhhhdeee.......",
-      "eEEEeedhHHkwhHHHHHHHHHHkkddeEEEe....",".eeedddhHHkkhhhhhhhhhhhkhddeEEEEe...","....dddhHHddhhhhhhhhhhhhhddeeeee....",".........hHHHhhhhhhhhhhhhhdddd......",
-      ".........dHHHHhhhhhhhhhhhhd.........","..........dHHHhhhhhhhhhhhhd.........","..........dhhhhhhhhhhhhhhhd.........","............dhhhhhhhhhhhhhhd........",
-      "............dhhhhhhhhhhhhhhhd.......",".............dhhhhhhhhhhhhhhd.......",".............dhhhhhhhhhhhhhhd.......","...............dhhhhhhhhhhhhhhd.....",
-      "...............dhhhhhhhhhhhhhhd.....","...............DqqMMMMMMMMMMMMMM....","................DqMMmmmmmmmmmmmq....",".................DqMMmmnnmmmmmnnq...",
-      ".................DqMMmmnmmmmmmmnq...","..................Dmmmmmmmmmmmmmq...","....................oooooooooooo....","...................ooooooooooooo....",
-      "...................oooottttttooo....","...................oooottttttoo.....","..................Dqqmmmmmmmmmmmq...","....................DqqqqqqqqqqqD...",
-      ".....................DqqqqqqqqqD....","......................DqqqqqqqD....."];
-    /* The numbers of the walk. A hoof reaches OX_REACH drawing units (two to a room pixel) from the front of its step to the back, and stands
-       on the ground for OX_STANCE of the cycle. So one cycle carries the ox OX_STRIDE room pixels with its hooves planted: 40 / .62 / 2 =
-       32.3, a long step for a beast whose legs swing from a hip and a shoulder high in the body, so that a hoof can reach twenty units
-       before and behind while the leg under the belly slants no more than a plodding leg does. A cycle is never quicker than OX_BEAT
-       seconds: up to 32.3 / .67 = 48.1 room pixels a second, just above WALK_V, the hooves stay exactly where they are set down (no slip at
-       all), and a cycle takes two thirds of a second, a plod and not a scurry. Only faster than WALK_V would they begin to slip.
-       frame(dist, v): the frame of the walk after dist room pixels at v room pixels a second (WALK_V if none is given). */
-    const OX_REACH=40,OX_STANCE=.62,OX_STRIDE=OX_REACH/OX_STANCE/2,OX_BEAT=.67;
-    const oxFr=(dist,v)=>{const c=Math.max(OX_STRIDE,Math.abs(v==null?WALK_V:v)*OX_BEAT);return 4+Math.floor((dist/c%1+1)%1*16)%16};
-    function ox(g,x,y,dir,fr,c,gar){g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
-      const px=(a,b,col,w,h)=>{g.fillStyle=col;g.fillRect(a,b,w||1,h||1)},D=ramp(c),hoof='#2a2018',hoofL='#4a3a2c';
-      const W=fr>0&&fr<20,V=fr>=20?fr-19:0,k=fr>=4&&fr<20?(fr-4)%16:W?(fr-1)*4:0,ph=k/16;
-      /* the beats: o, the body sinks a pixel as each fore hoof takes the weight; hd, the head dips with it and a frame after; sway, the head a
-         pixel forward and back over the cycle; roll, the hip (rl) and the shoulder (rs) rise a pixel over the leg that stands under them */
-      const o=W&&(k%8===5||k%8===6)?1:0,hd=W&&(k%8===6||k%8===7)?1:0,sway=W?Math.round(Math.cos(6.2832*(ph-.2))):0,
-        rl=W&&(k>=1&&k<=4)?-1:0,rs=W&&(k>=5&&k<=8)?-1:0,tl=W?Math.round(1.4*Math.cos(6.2832*(ph-.05))):0,dw=W?Math.round(1.5*Math.sin(6.2832*(ph-.35))):0;
-      /* P, the poll (where the crest of the neck meets the head), and Q, the throat, for each pose; sag, how far the dewlap hangs below the
-         line between brisket and throat; H, the head's map and where it is laid */
-      const pose=V===0?{P:[43+sway,-61+hd],Q:[46+sway,-43+hd],sag:9,H:OX_HEAD,hx:34+sway,hy:-70+hd}
-        :V===1?{P:[45,-64],Q:[50,-48],sag:5,H:OX_RAISE,hx:36,hy:-73}
-        :{P:[46,-65],Q:[52,-50],sag:3,H:V===2?OX_LOW1:OX_LOW2,hx:37,hy:-74};
-      /* top: the line of the back, from the rump over the hump of the withers and along the crest of the neck to the poll */
-      /* top: the line of the back. From the buttock it rises over the rump to the hip bones (the hooks, a slight angular rise), runs nearly
-         level along the loin and the back to a low rise at the withers, and goes down along the crest of the neck to the poll, below the
-         line of the back. The tail is set on high, where the rump begins to slope. */
-      const top=xx=>{if(xx<=-40)return-63+Math.pow(-40-xx,1.5)+rl;
-        if(xx<=-28)return-63-4.7*(xx+40)/12+rl;
-        if(xx<=14)return-66.5-1.2*Math.max(0,1-(xx+28)/5)-3*Math.exp(-Math.pow((xx-12)/9,2))+(xx<-20?rl:xx>2?rs:0);
-        const u=Math.min(1,(xx-14)/(pose.P[0]-14)),d=pose.P[1]+69.5-rs;return-69.5+rs+d*Math.sin(u*Math.PI/2)};
-      /* bot: the underline. Under the buttock it runs into the thigh; it is tucked up high at the flank, in front of the hind leg, where the
-         flank is hollow; the belly is rounded and the chest lies deep and low between the forelegs. From the brisket on, which stays where
-         it is whatever the head does, the dewlap hangs as a loose fold up to the throat, swinging as it walks and drawn taut when the neck is
-         stretched. */
-      const bot=xx=>{if(xx<-34)return-38-5*(1-Math.sqrt(Math.max(0,1-Math.pow((xx+34)/11,2))));
-        if(xx<-20)return-38+(xx+34)/14;
-        if(xx<-6)return-37+10.5*(1-Math.pow((-6-xx)/14,2));
-        if(xx<26)return-26.5-.6*Math.exp(-Math.pow((xx-8)/10,2));
-        const u=Math.min(1,(xx-26)/(pose.Q[0]-26)),s=Math.min(1,Math.max(0,u-dw*.06));return-26.5+(pose.Q[1]+26.5)*u+pose.sag*Math.sin(Math.PI*s)};
-      const X0=-45,X1=pose.Q[0]+2;
-      /* tone: the band of tone of a pixel of the body, in flat bands that follow the line of the back: a highlight along the back, the light
-         band reaching further down on the top of the shoulder (in front of its crease, cs) and of the haunch (behind the flank's crease, ch),
-         the side in the base tone, the shade under the belly, behind the shoulder and in front of the haunch; the rear and the underside of
-         the neck fall into shade. Only the edge between two bands is dithered, a pixel wide. */
-      const cs=yy=>5+(yy+68)*4/28,ch=yy=>-24+(yy+62)*5/22;
-      const tone=(xx,yy)=>{const t0=top(xx),b0=bot(xx),r=(yy-t0)/Math.max(1,b0-t0)+((xx+yy)&1?.025:-.025);
-        let v=yy-t0<1.2&&xx>-38?0:r<.36?1:r<.66?2:r<.86?3:4;
-        if(v>=1&&v<=2&&yy<-50&&(xx>cs(yy)&&xx<27||xx<ch(yy)&&xx>-38))v=Math.max(1,v-(r<.5?1:0));
-        if(r>.3&&r<.7&&(xx<=cs(yy)&&xx>cs(yy)-3||xx>=ch(yy)&&xx<ch(yy)+3))v++;
-        if(xx<-38&&v)v++;if(xx>26&&r>.45)v++;
-        return Math.min(4,v)};
-      /* at: where the hoof of a leg is at this moment, the leg's beat being off of a cycle after the near hind leg's: hx before or behind the
-         leg's root, lift off the ground, and bend, how far the hock or the knee is flexed */
-      const at=off=>{if(!W)return{hx:0,lift:0,bend:0};const p=((ph-off)%1+1)%1,T=OX_REACH,B=OX_STANCE;if(p<B)return{hx:T/2-T*p/B,lift:0,bend:0};
-        const v=(p-B)/(1-B),q=Math.sin(Math.PI*v);return{hx:-T/2*Math.cos(Math.PI*v),lift:Math.round(5*q),bend:5*q}};
-      /* leg: from its root at lx down to the hoof. The top of a near leg lies inside the body and is painted in the body's tones as far as the
-         belly; below it the leg is lit from the front and darker behind, a far leg a band darker again. A hind leg goes down from the stifle
-         to the hock, which stands back, and on down a fine bony cannon to the fetlock and its dewclaw; a fore leg goes down the thick forearm to
-         the knee and the cannon below it. The top moves with a
-         two fifths of the hoof's swing, since the leg swings from the hip or the shoulder high above. */
-      const leg=(lx,P,far,hind)=>{const y0=(far?(hind?-42:-31):hind?-50:-46)+o,yh=-3-P.lift,tx=lx+P.hx*.4+(hind?4:0),jy=hind?-22:-18,
-          jx=hind?lx-5+P.hx*.52-P.bend*.8:lx+P.hx*.6+P.bend,hx=lx+P.hx,n=yh-y0;
-        for(let i=0;i<n;i++){const yy=y0+i,cx=yy<=jy?tx+(jx-tx)*(yy-y0)/(jy-y0):jx+(hx-jx)*(yy-jy)/(yh-jy),t=(yy-y0)/(jy-y0),b=(yy-jy)/(yh-jy),
-            joint=Math.abs(yy-jy)<=1,w=joint?10:yy<jy?(hind?Math.round(16-7*t):Math.round(13-4*t)):(b<.12?8:b<.7?6:b<.9?8:7),
-            x0=Math.round(cx-w/2+(hind&&yy<=jy?1:0))-(joint&&hind?1:0);
-          for(let q=0;q<w;q++){const xx=x0+q,u=(q+.5)/w;
-            if(!far&&yy-o<bot(xx)-.5&&xx>=X0)px(xx,yy,D[tone(xx,yy-o)]);
-            else px(xx,yy,D[Math.min(4,(u<.18?4:u<.42?3:u<.86?2:1)+(far?1:0))])}
-          /* the dewclaw, a dark knob at the back of the fetlock */
-          if(yy===yh-4)px(x0-1,yy,hoof,1,2)}
-        const hx0=Math.round(hx-4);px(hx0,yh,hoof,9,2);px(hx0,yh+2,hoof,4);px(hx0+5,yh+2,hoof,4);px(hx0+6,yh,hoofL,2);px(hx0-1,yh-1,hoof,2)};
-      /* the far legs, behind the body: walking, each pair leaves the body at one place */
-      leg(W?-24:-20,at(.5),1,1);leg(W?24:25,at(.75),1,0);
-      /* the tail: set on at the top of the rump, lying along it, then hanging free to a dark switch */
-      {const ty0=Math.round(top(-40))+o;for(let yy=ty0;yy<=-31+o;yy++){const i=yy-ty0,lie=yy<-52+o,sw=i>10?Math.round(tl*(i-10)/14):0,
-          xx=lie?Math.round(-40-Math.pow(Math.max(0,yy-o+63),1/1.5))-1:-46+sw,tuft=yy>-40+o;
-        if(tuft){const w=yy>-35+o?5:4;px(xx-(w>4?2:1),yy,hoof,w)}else px(xx,yy,D[i%4?3:4],2)}}
-      /* the body and the neck: column by column, between the line of the back and the underline */
-      for(let xx=X0;xx<=X1;xx++){const t0=Math.round(top(xx)),b0=Math.round(bot(xx));for(let yy=t0;yy<=b0;yy++)px(xx,yy+o,D[tone(xx,yy)])}
-      /* creases: where the flank folds in front of the haunch, and behind the shoulder; each a short soft line that ends inside the body */
-      for(let yy=-60;yy<=-40;yy++){const xx=Math.round(ch(yy));px(xx,yy+o,D[Math.min(4,tone(xx,yy)+1)])}
-      for(let yy=-66;yy<=-42;yy++){const xx=Math.round(cs(yy));px(xx,yy+o,D[Math.min(4,tone(xx,yy)+1)])}
-      /* the near legs, in front of the body */
-      leg(W?-26:-29,at(0),0,1);leg(W?22:19,at(.25),0,0);
-      /* a garland: leaves set two by two along a cord, slanting either way, and a few yellow flowers among them. It hangs round the neck from
-         behind the poll, sags in a curve over the dewlap and goes up again under the jaw, where the head hides it. No line crosses it. */
-      if(gar){const[S,C,E]=V?[[30,-67],[37,-29],[51,-49]]:[[27+sway,-66+hd],[33+sway,-24+hd],[47+sway,-43+hd]],G0='#3f6a32',G1='#4f7a3a',G2='#6f9a4a',G3='#8fb45a';
-        for(let i=0;i<17;i++){const u=i/16,w=(1-u)*(1-u),v2=2*u*(1-u),z=u*u,gx=Math.round(w*S[0]+v2*C[0]+z*E[0]),gy=Math.round(w*S[1]+v2*C[1]+z*E[1])+o,s=i%2;
-          px(gx-2,gy-1,G0,4,3);px(gx-(s?4:0),gy+(s?-1:0),s?G1:G2,4,2);px(gx-(s?3:-1),gy+(s?-1:0),G3,2,1);px(gx+(s?0:-3),gy+1,G1,3,1);
-          if(i%5===2){px(gx-1,gy-2,'#e8c040',3,2);px(gx,gy-2,'#fff0a0',1);px(gx-1,gy-1,'#c89a30',1)}}}
-      /* the head */
-      const pale=mix('#b4aca6',c,.22),horn='#e6dcc0';
-      stamp(g,pose.H,pose.hx,pose.hy+o,{L:D[0],H:D[1],h:D[2],d:D[3],D:D[4],e:D[3],E:mix(c,'#5a3436',.5),k:'#1a120c',w:'#e8e0d0',
-        m:pale,M:tint(pale,.3),q:mix(pale,'#3a3034',.35),n:'#2a1c18',o:'#3a1418',t:'#b06a70',c:horn,C:'#f6f0e0',y:'#b0a284',x:'#4a3c30'});
-      g.restore()}
+  /* A working ox or a bull, the heaviest of the animals, drawn after the maintainer's reference picture and seen from the side: a
+     massive body, the back running level from a square rump to the high, heavy hump over the shoulder, the chest deep and low between
+     the forelegs, a thick neck with the dewlap hanging under it in a soft fold from the throat to the brisket; the head carried low and
+     forward, clear of the shoulder, turned three-quarters toward us; stout legs, darker below the knee and the hock, on dark cloven
+     hooves; a thin tail. The belly line is kept clean. The withers stand about 38 room pixels above the hooves, the horn tips about 43,
+     and it is about 60 long.
+     How it is painted. The picture is built in a buffer of color and nearness (z), and the nearer pixel wins. The body and the neck are
+     one smooth surface between the line of the back (top) and the underline (bot), whose nearness rises as a rounded section between
+     them, with the shoulder, the haunch and the crest swelling out of it. Its light is laid out as in the reference, in flat bands
+     (bodyTone): the light tone along the top of the back and the crest, one soft lit round slanting down the shoulder from the hump and
+     one along the hip; the side in the coat's own tone; a darker tone only in the lower third (the belly, under the chest and the
+     throat, behind the elbow) and down the back of the thigh. The legs are rounded limbs in flat bands too (lt): lit in front, the
+     coat's tone, shaded behind; the far ones a tone darker. The head, the horns, the ears and the tail are rounded masses, each lit by
+     its own surface from the front and above, the forehead and the long face a tone lighter, so that the face is the brightest and
+     most readable part of the ox; the muzzle is placed pixel by pixel (MUZ). Every edge between two tones is a checker a pixel or two
+     wide, and no outline is drawn (sprite() darkens the edge).
+     c: its coat, from which every tone is taken (its light tones are the coat brightened in its own hue, warm and not grey), so that the
+     brown oxen of Zenon's wagon and the near-white bulls of Lystra are the same painter. gar: a garland of leaves and yellow flowers
+     round the neck (Acts 14:13).
+     Every part grows out of the one before it: the near thigh runs down out of the rump to a pointed hock, the forearm grows out from
+     under the chest, the neck carries on into the head (also when it is lifted), the horns grow thick out of the corners of the poll
+     with a tuft of darker hair between them, and the tail is set on at the top of the rump and hangs close behind the thigh, behind
+     the near hind leg, to its dark switch at the hock.
+     Crosses: the horns are crescents, thick at the root, that curve out, up and a little in from the corners of the poll, which is the
+     top of the head, and no horn stands straight over a level line; the ears droop out to the sides below them, short, each on its own
+     side, and cross nothing; the eye is a small block, never a one-pixel-high ellipse; there is no stripe over the shoulders; the
+     garland hangs round the neck in a wide curve, from behind the head down over the dewlap and up under the jaw, and crosses no line
+     or crease.
+     fr 0 stands. fr 4 to 19 are the sixteen frames of its walk (frame below gives the frame for a distance walked); 1, 2 and 3 are three
+     moments of that walk, a quarter of a cycle apart, for a scene that counts frames itself. The walk has four beats: near hind, near
+     fore, far hind, far fore, each a quarter of the cycle after the one before. A hoof stands on the ground for OX_STANCE of the cycle,
+     going back under the body, and swings forward for the rest, lifted, with the hock or the knee bent. The two legs of a pair leave the
+     body at one place and open like a pair of compasses, and never cross as an X under the belly. A heavy beast plods: the body sinks a
+     pixel as each fore hoof takes its weight, the hip and the shoulder roll up a pixel in turn over the leg that stands under them, the
+     head sways a pixel forward and back and dips with the fore hooves, the dewlap swings after it, and the tip of the tail swings.
+     fr 20 to 22 are its voice (see voice and sound): 20 the head lifted a little about the top of the neck and the muzzle pushed
+     forward, the mouth shut; 21 the lower jaw dropping; 22 the mouth wide open and the dewlap drawn taut. */
+  /* The numbers of the walk. A hoof reaches OX_REACH drawing units (two to a room pixel) from the front of its step to the back, and stands
+     on the ground for OX_STANCE of the cycle. So one cycle carries the ox OX_STRIDE room pixels with its hooves planted: 40 / .62 / 2 =
+     32.3. A cycle is never quicker than OX_BEAT seconds: up to 32.3 / .67 = 48.1 room pixels a second, just above WALK_V, the hooves stay
+     exactly where they are set down (no slip at all), and a cycle takes two thirds of a second, a plod and not a scurry.
+     frame(dist, v): the frame of the walk after dist room pixels at v room pixels a second (WALK_V if none is given). */
+  const OX_REACH=40,OX_STANCE=.62,OX_STRIDE=OX_REACH/OX_STANCE/2,OX_BEAT=.67;
+  const oxFr=(dist,v)=>{const c=Math.max(OX_STRIDE,Math.abs(v==null?WALK_V:v)*OX_BEAT);return 4+Math.floor((dist/c%1+1)%1*16)%16};
+  const FW=FIG.W,FH=FIG.H,X0=FIG.OX,Y0=FIG.OY;
+  /* the head in each pose: rot, how far it is lifted about the top of the neck (degrees; the muzzle comes up and forward), dx and dy a
+     shift, jaw how far the lower jaw drops (degrees), and sag how loose the dewlap hangs (1 at rest, less as the neck is stretched) */
+  const HEAD={0:{rot:0,dx:0,dy:0,jaw:0,sag:1},20:{rot:-10,dx:1,dy:-1,jaw:0,sag:.75},21:{rot:-16,dx:1.5,dy:-1.5,jaw:10,sag:.55},22:{rot:-20,dx:2,dy:-2,jaw:22,sag:.4}};
+  function ox(g,x,y,dir,fr,c,gar){g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+    const W=fr>0&&fr<20,k=fr>=4&&fr<20?(fr-4)%16:W?(fr-1)*4:0,ph=k/16,HP=HEAD[fr>=20?fr:0]||HEAD[0];
+    /* the beats: o, the body sinks a pixel as each fore hoof takes the weight; hd, the head dips with it and a frame after; sway, the head
+       a pixel forward and back over the cycle; rl and rs, the hip and the shoulder rise a pixel over the leg that stands under them; tl,
+       the tip of the tail; dw, the swing of the dewlap */
+    const o=W&&(k%8===5||k%8===6)?1:0,hd=W&&(k%8===6||k%8===7)?1:0,sway=W?Math.round(Math.cos(6.2832*(ph-.2))):0,
+      rl=W&&(k>=1&&k<=4)?-1:0,rs=W&&(k>=5&&k<=8)?-1:0,tl=W?Math.round(1.4*Math.cos(6.2832*(ph-.05))):0,dw=W?Math.sin(6.2832*(ph-.35)):0;
+    /* the tones, all taken from the coat: the coat itself, the lower legs a good deal darker, the muzzle pale, the switch of the tail
+       dark; the hooves dark grey and the horns pale cream, the same on every coat */
+    const warm=(cc,f)=>{const[r,g2,b2]=hex(cc);return toHex(Math.min(255,r*(1+f)+6*f),Math.min(255,g2*(1+f*.9)+4*f),Math.min(255,b2*(1+f*.7)))},
+      COAT=((R0)=>[warm(c,.42),warm(c,.2),c,R0[3],R0[4]])(ramp(c)),LOW=ramp(mix(c,'#24160f',.5)),
+      MZ=[mix(c,'#c0aea0',.6),mix(c,'#a89488',.6),mix(c,'#5e5a56',.6),mix(c,'#30302c',.7),mix(c,'#0c0806',.85)],SW=ramp(mix(c,'#1a110c',.65)),HOOF=ramp('#4a4440'),
+      HORN=ramp('#e2d8bc'),MID=ramp('#b4a688'),TIP=ramp('#5a4c3c');
+    /* the picture is built in a buffer first: color, nearness (z) and part of every pixel; then laid down */
+    const Zb=new Float32Array(FW*FH).fill(-1e9),Cb=new Array(FW*FH),Pb=new Uint8Array(FW*FH);
+    const idx=(px,py)=>(py>=0||py<-Y0||px<-X0||px>=FW-X0)?-1:(py+Y0)*FW+px+X0;
+    let LIM=null;const put=(px,py,z,col,part)=>{if(LIM!=null&&py<LIM)z-=60;const i=idx(Math.floor(px),Math.floor(py));if(i>=0&&z>Zb[i]){Zb[i]=z;Cb[i]=col;Pb[i]=part}};
+    const partAt=(px,py)=>{const i=idx(Math.floor(px),Math.floor(py));return i<0?0:Pb[i]};
+    const set=(px,py,col)=>{const i=idx(Math.floor(px),Math.floor(py));if(i>=0&&Pb[i])Cb[i]=col};
+    /* the light falls from the front and above: s, how much a surface with normal (nx, ny, nz) faces it, gives the tone; near the edge
+       between two tones the pixels take one or the other as a checker */
+    const tn=(nx,ny,nz,px,py,ex)=>{const s=nx*.42-ny*.86+nz*.46+((px+py)&1?.04:-.04);return Math.max(0,Math.min(4,(s>.9?0:s>.64?1:s>.3?2:s>-.04?3:4)+(ex||0)))};
+    const lt=(R,ex)=>(nx,ny,nz,px,py)=>{const a=nx+((px+py)&1?.1:-.1);return R[Math.min(4,(ex||0)+(a<-.3?3:a>.55?1:2))]};
+    const mat=(R,ex)=>(nx,ny,nz,px,py)=>R[tn(nx,ny,nz,px,py,ex)];
+    /* ell: a rounded mass, half-sizes a, b, c, turned by th; sell: a rounded block, its sides flatter (p > 2); cap: a limb from one round
+       to another */
+    const ell=(cx,cy,cz,a,b,cc,th,m,part)=>{const co=Math.cos(th),si=Math.sin(th),R=Math.max(a,b)+1;
+      for(let py=Math.floor(cy-R);py<=cy+R;py++)for(let px=Math.floor(cx-R);px<=cx+R;px++){const X=px+.5-cx,Y=py+.5-cy,u=(X*co+Y*si)/a,v=(-X*si+Y*co)/b,q=1-u*u-v*v;if(q<0)continue;
+        const w=Math.sqrt(q),lx=u/a,ly=v/b,lz=w/cc,nx=lx*co-ly*si,ny=lx*si+ly*co,l=Math.hypot(nx,ny,lz);put(px,py,cz+cc*w,m(nx/l,ny/l,lz/l,px,py),part)}};
+    const sell=(cx,cy,cz,A,B,C,th,p,m,part)=>{const co=Math.cos(th),si=Math.sin(th),R=Math.max(A,B)*1.2+1;
+      for(let py=Math.floor(cy-R);py<=cy+R;py++)for(let px=Math.floor(cx-R);px<=cx+R;px++){const X=px+.5-cx,Y=py+.5-cy,u=(X*co+Y*si)/A,v=(-X*si+Y*co)/B,
+          au=Math.abs(u),av=Math.abs(v),q=1-Math.pow(au,p)-Math.pow(av,p);if(q<0)continue;const w=Math.pow(q,1/p),
+          lx=Math.sign(u)*Math.pow(au,p-1)/A,ly=Math.sign(v)*Math.pow(av,p-1)/B,lz=Math.pow(w,p-1)/C,nx=lx*co-ly*si,ny=lx*si+ly*co,l=Math.hypot(nx,ny,lz)||1;
+        put(px,py,cz+C*w,m(nx/l,ny/l,lz/l,px,py),part)}};
+    const cap=(x0,y0,r0,x1,y1,r1,cz,m,part)=>{const dx=x1-x0,dy=y1-y0,L2=dx*dx+dy*dy||1,R=Math.max(r0,r1)+1;
+      for(let py=Math.floor(Math.min(y0,y1)-R);py<=Math.max(y0,y1)+R;py++)for(let px=Math.floor(Math.min(x0,x1)-R);px<=Math.max(x0,x1)+R;px++){
+        const X=px+.5-x0,Y=py+.5-y0;let t=(X*dx+Y*dy)/L2;t=t<0?0:t>1?1:t;const ex=X-dx*t,ey=Y-dy*t,d=Math.hypot(ex,ey),r=r0+(r1-r0)*t;if(d>r)continue;
+        const kk=d/r,w=Math.sqrt(1-kk*kk);put(px,py,cz+r*w,m(ex/r,ey/r,w,px,py,t),part)}};
+    /* HT places a point of the head in its pose: lifted about the top of the neck (PX, PY), shifted, swaying and dipping with the walk */
+    const hr=HP.rot*Math.PI/180,hc=Math.cos(hr),hs=Math.sin(hr),PX=36,PY=-62,hox=HP.dx+sway,hoy=HP.dy+o+hd,
+      HT=(x,y)=>[PX+(x-PX)*hc-(y-PY)*hs+hox,PY+(x-PX)*hs+(y-PY)*hc+hoy];
+    /* at: where the hoof of a leg is at this moment, its beat being off of a cycle after the near hind's: hx before or behind the leg's
+       root (st where it stands at rest), lift off the ground, and bend, how far the knee or the hock is flexed */
+    const at=(off,st)=>{if(!W)return{hx:st,lift:0,bend:0};const p=((ph-off)%1+1)%1,T=OX_REACH,B=OX_STANCE;if(p<B)return{hx:T/2-T*p/B,lift:0,bend:0};
+      const v=(p-B)/(1-B),q=Math.sin(Math.PI*v);return{hx:-T/2*Math.cos(Math.PI*v),lift:Math.round(5*q),bend:q}};
+    /* leg: from the shoulder or the hip at sx down to the hoof, stout. A fore leg: the thick forearm down to the knee, a straight cannon
+       below it, the knee coming forward as the leg folds in its swing. A hind leg: the broad gaskin down to the hock, which stands behind
+       the line of the leg and further back as it swings, and the cannon slanting forward from it to the fetlock. Below the knee and the
+       hock the leg is dark; a far leg is a tone darker again. The near legs are laid in front of the body only below LIM (under the
+       rump, under the chest), so that the thigh runs down out of the rump to a pointed hock and the forearm grows out of the chest with no
+       seam; above it the body covers them. They are painted in flat bands (lt): lit in front, the coat's tone, shaded behind. */
+    const leg=(sx,P,near,hind)=>{const ex=near?0:1,cz=near?24:-9,up=lt(COAT,ex),lo=lt(LOW,ex),hx=sx+P.hx,fy=-6.5-P.lift,b=P.bend;
+      if(hind){const jx=hx-4.6-2.5*b+P.hx*.06,jy=-23-P.lift*.6+o*.5,fx=hx+.4*b,tx=sx-3+P.hx*.12,kx=sx+3+P.hx*.22;LIM=near?-46+o:null;
+        cap(tx,-48+o+rl,11,jx,jy,3.6,cz,up,4);cap(kx,-40+o,7.5,jx+1.2,jy-3,3.4,cz,up,4);cap(jx-.6,jy-1.6,2.6,jx-2,jy-3.6,1.7,cz,up,4);
+        LIM=null;cap(jx,jy,2.9,fx,fy,2.5,cz,lo,4);foot(fx,fy,b,cz,ex)}
+      else{const kx=sx+P.hx*.72+4.5*b,ky=-17-P.lift*.7,ax=sx+P.hx*.25,fx=hx-3.5*b,fy2=fy-1.5*b;LIM=near?-30+o:null;
+        cap(ax,-42+o+rs,10,kx,ky,4.6,cz,up,4);LIM=null;ell(kx,ky,cz+.4,3.6,3.4,3.4,0,lo,4);
+        cap(kx,ky,3.1,fx,fy2,2.6,cz,lo,4);foot(fx,fy2,b,cz,ex)}};
+    /* foot: the fetlock, the dewclaw at its back, the short pastern and the cloven hoof, dark grey, its toe forward */
+    const foot=(fx,fy,b,cz,ex)=>{const lo=lt(LOW,ex),hf=mat(HOOF,ex);ell(fx,fy,cz+.3,3.4,3.1,3,0,lo,4);ell(fx-3,fy+.6,cz-.5,1.4,1.5,1.2,0,mat(HOOF,ex+1),4);
+      sell(fx+.9+.6*b,fy+4.3-1.5*b,cz+.5,4.8,2.5,3.2,-.35*b,2.4,hf,5)};
+    /* the legs: the far ones behind the body, the near ones in front of it; each pair leaves the body at one place */
+    const SF=12,SH=-37;
+    leg(SH,at(.5,7),0,1);leg(SF,at(.75,7),0,0);leg(SH,at(0,-5),1,1);leg(SF,at(.25,-2),1,0);
+    /* the body and the neck, one smooth mass. Its outline: top, the line of the back, level from the square rump to the hump over the
+       shoulder and down the crest of the neck to the head; bot, the underline, from the buttock along the belly to the deep chest, up
+       the brisket and along the dewlap, which hangs in a soft fold to the throat. Its surface rises as a rounded section between the two
+       lines, with the broad round of the shoulder, the haunch and the crest of the neck swelling out of it, and takes the light as one
+       surface: broad soft bands, the light on the back, the shoulder and the haunch, the shade under the belly and the throat. */
+    const[Tx,Ty1]=HT(39,-49),[Nx,Ny1]=HT(40,-70.5),Ty=Ty1-o,Ny=Ny1-o,SAG=HP.sag;
+    const top=xx=>{if(xx<-50){const q=(-50-xx)/6.5;return-69.5+rl+4.5*(1-Math.sqrt(Math.max(0,1-q*q)))}
+      if(xx<-6)return-69.5+(xx<-24?rl:0)-1.2*(xx+50)/44;
+      if(xx<22)return-70.7-5.4*Math.exp(-Math.pow((xx-9)/10,2))+(xx>-2?rs:0);
+      const y22=-70.7-5.4*Math.exp(-1.69),u=Math.min(1,(xx-22)/(Nx-22));return y22+(Ny-y22)*(u*u*(3-2*u))};
+    const bot=xx=>{if(xx<-50){const q=(-50-xx)/6.5;return-38-5*(1-Math.sqrt(Math.max(0,1-q*q)))}
+      if(xx<-28)return-38+7*(xx+50)/22;
+      if(xx<0)return-31+6.5*Math.sin(Math.PI/2*(xx+28)/28);
+      if(xx<22)return-24.5+1.2*Math.exp(-Math.pow((xx-12)/8,2));
+      if(xx<27){const q=(xx-22)/5;return-24.5-2.5*q*q}
+      const u=Math.min(1,(xx-27)/(Tx-27)),s=Math.min(1,Math.max(0,u-dw*.05));return-27+(Ty+27)*u+4.2*SAG*Math.sin(Math.PI*s)};
+    const bump=(xx,yy)=>6*Math.exp(-Math.pow((xx-12)/11,2)-Math.pow((yy+54)/13,2))+5*Math.exp(-Math.pow((xx+42)/9,2)-Math.pow((yy+57)/10,2))
+      +1.8*Math.exp(-Math.pow((xx-26)/8,2)-Math.pow((yy+62)/8,2))-1.2*Math.exp(-Math.pow((xx-31)/5,2)-Math.pow((yy+42)/5,2));
+    /* the light on the body is laid out as the reference has it, in flat bands: the light tone along the top of the back and the crest,
+       one soft lit round on the shoulder and one on the hip; the side the coat's own tone; a darker tone only in the lower third (the
+       belly, under the chest and the throat, behind the elbow) and down the back of the thigh. Each edge is a checker a pixel or two wide. */
+    const sm=(a,b,v)=>Math.max(0,Math.min(1,(v-a)/(b-a))),bodyTone=(xx,yy)=>{const t0=top(xx),b0=bot(xx),r=(yy-t0)/Math.max(1,b0-t0);let L=2;
+      const el=(cx,cy,a,b,th)=>{const X=xx-cx,Y=yy-cy,co=Math.cos(th),si=Math.sin(th),u=(X*co+Y*si)/a,v=(-X*si+Y*co)/b;return u*u+v*v};
+      L-=sm(6.5,2.5,yy-t0);
+      L-=sm(1,.45,el(12,-61,15,7.5,1.2));L-=sm(1,.45,el(-41,-63.5,12,6.5,-.1));L=Math.max(1,L);
+      const w=sm(-40,-33,xx);L+=w*sm(.6,.7,r)+w*sm(.86,.94,r);
+      L+=.8*sm(1,.4,Math.pow((xx-2)/4.5,2)+Math.pow((yy+31)/7,2));
+      L+=sm(-49.5,-52,xx)*sm(-54,-50,yy);
+      const k=((Math.floor(xx)+Math.floor(yy))&1)?.2:-.2;return Math.max(0,Math.min(4,Math.round(L+k)))};
+    {const BX0=-57,BX1=Math.ceil(Math.max(Tx,Nx))+1,BY0=-80,BY1=-18,bw=BX1-BX0+1,bh=BY1-BY0+1,ZF=new Float32Array(bw*bh);
+      const zAt=(xx,yy)=>{const t0=top(xx),b0=bot(xx);if(yy<t0||yy>b0)return 0;const mid=(t0+b0)/2,hh=(b0-t0)/2,v=(yy-mid)/Math.max(1,hh),
+          er=xx<-50?Math.sqrt(Math.max(0,1-Math.pow((-50-xx)/6.6,2))):1,D=xx>24?16-4*Math.min(1,(xx-24)/12):17;
+        return Math.max(.01,D*er*Math.pow(Math.max(0,1-v*v),.55)+bump(xx,yy)*Math.pow(Math.max(0,1-v*v),.5))};
+      for(let j=0;j<bh;j++)for(let i=0;i<bw;i++)ZF[j*bw+i]=zAt(BX0+i+.5,BY0+j+.5-o);
+      const zf=(i,j)=>i<0||j<0||i>=bw||j>=bh?0:ZF[j*bw+i];
+      for(let j=0;j<bh;j++)for(let i=0;i<bw;i++){const z=ZF[j*bw+i];if(!z)continue;
+        const gx=(zf(i+1,j)-zf(i-1,j))/2,gy=(zf(i,j+1)-zf(i,j-1))/2,l=Math.hypot(gx,gy,1),px=BX0+i,py=BY0+j;
+        put(px,py,z,COAT[bodyTone(px+.5,py+.5-o)],BX0+i>27&&BY0+j>-50?2:1)}}
+    /* the tail: thin, set on at the top of the rump and hanging close behind the thigh to a dark switch at the hock */
+    {const T=[[-53,-68],[-56,-65.5],[-57.2,-60],[-57.6+tl*.3,-48],[-57.4+tl*.7,-30]];for(let i=0;i<T.length-1;i++)cap(T[i][0],T[i][1]+o,1.05,T[i+1][0],T[i+1][1]+o,.95,i?3:15,mat(COAT,1),7);
+      ell(-57.3+tl,-23.5+o,3,2,6.5,2,0,mat(SW),7)}
+    /* behind the head, hidden while it hangs: the neck carried on into it and the throat, for when it is lifted */
+    {const[a0,a1]=HT(40,-62),[b0,b1]=HT(40,-50);cap(30,-60+o,10,a0,a1,8,0,mat(COAT),2);cap(29,-44+o,8,b0,b1,6,0,mat(COAT,1),2)}
+    /* the head: low and forward, clear of the shoulder, turned three-quarters toward us: the broad forehead and the long face take the
+       light and are its brightest part; the cheek and the lower jaw are in the coat's own tone, and the muzzle is broad and pale */
+    const E=(x0,y0,cz,a,b,cc,th,m)=>{const[p,q]=HT(x0,y0);ell(p,q,cz,a,b,cc,th+hr,m,3)},Sx=(x0,y0,cz,A,B,C,th,p,m)=>{const[u,v]=HT(x0,y0);sell(u,v,cz,A,B,C,th+hr,p,m,3)};
+    Sx(49,-66.8,14,9.6,5.6,4.5,.08,2.6,mat(COAT,-1));
+    Sx(54,-56.5,14,6.6,12,4.5,-.4,2.6,mat(COAT,-1));
+    E(45,-55.5,12,6.6,7.2,6,0,mat(COAT));
+    /* the lower jaw, which drops on its hinge for the low, and the dark mouth inside */
+    const jr=HP.jaw*Math.PI/180,JX=42,JY=-50,JT=(x0,y0)=>HT(JX+(x0-JX)*Math.cos(jr)-(y0-JY)*Math.sin(jr),JY+(x0-JX)*Math.sin(jr)+(y0-JY)*Math.cos(jr));
+    {const[p,q]=JT(50,-45.4);ell(p,q,12,7.4,2.8,6,.15+hr+jr,mat(COAT,1),3)}
+    /* behind the corner of the mouth, under everything else: the dark between the cheek and the lower jaw, so that no gap opens there */
+    {const Q=[HT(43,-53),HT(53,-52),JT(53,-45.5),JT(43,-46)];let x0=99,x1=-99,y0=99,y1=-99;for(const[p,q]of Q){x0=Math.min(x0,p);x1=Math.max(x1,p);y0=Math.min(y0,q);y1=Math.max(y1,q)}
+      for(let py=Math.floor(y0);py<=y1;py++)for(let px=Math.floor(x0);px<=x1;px++){let ins=false;for(let i=0,j=3;i<4;j=i++){const[xi,yi]=Q[i],[xj,yj]=Q[j];if(yi>py+.5!==yj>py+.5&&px+.5<(xj-xi)*(py+.5-yi)/(yj-yi)+xi)ins=!ins}
+        if(ins)put(px,py,-40,COAT[4],3)}}
+    if(HP.jaw){const Q=[HT(44,-48),HT(63,-45.5),JT(61,-44.5),JT(44,-47)];let x0=99,x1=-99,y0=99,y1=-99;for(const[p,q]of Q){x0=Math.min(x0,p);x1=Math.max(x1,p);y0=Math.min(y0,q);y1=Math.max(y1,q)}
+      for(let py=Math.floor(y0);py<=y1;py++)for(let px=Math.floor(x0);px<=x1;px++){let ins=false;for(let i=0,j=3;i<4;j=i++){const[xi,yi]=Q[i],[xj,yj]=Q[j];if(yi>py+.5!==yj>py+.5&&px+.5<(xj-xi)*(py+.5-yi)/(yj-yi)+xi)ins=!ins}
+        if(ins)put(px,py,11.5,py+.5>(Q[2][1]+Q[3][1])/2-1?'#8a4a4a':'#2a1414',3)}}
+    /* the horns: thick at the root, out of the corners of the poll, curving out, up and a little in, pale cream darkening to the tips;
+       the near one in front of the neck */
+    const horn=(P,cz)=>{const n=P.length-1;for(let i=0;i<n;i++){const[a0,a1]=HT(...P[i]),[b0,b1]=HT(...P[i+1]),r0=3.7-2.6*Math.pow(i/n,.8),r1=3.7-2.6*Math.pow((i+1)/n,.8),
+      R=i>=n-1?TIP:i>=n-2?MID:HORN;cap(a0,a1,r0,b0,b1,r1,cz,mat(R),8)}};
+    horn([[54.5,-69.6],[59.8,-72.2],[62.8,-75.8],[63.2,-80.4],[61.2,-85]],6);
+    horn([[42.5,-69.6],[37,-72.2],[34,-75.8],[33.6,-80.4],[35.6,-85]],20);
+    /* the ears: short, drooping out to the sides and a little down below the roots of the horns; the near one shows its darker inside
+       within a rim of coat, the far one its back */
+    const ear=(x0,y0,ang,len,hw,cz,near)=>{const[bx,by]=HT(x0,y0),ea=ang+hr,ex=Math.cos(ea),ey=Math.sin(ea),R=len+hw+1;
+      for(let py=Math.floor(by-R);py<=by+R;py++)for(let px=Math.floor(bx-R);px<=bx+R;px++){const X=px+.5-bx,Y=py+.5-by,t=(X*ex+Y*ey)/len,s=-X*ey+Y*ex;if(t<0||t>1)continue;
+        const w=hw*Math.pow(Math.sin(Math.PI*(t*.75+.25)),.7);if(Math.abs(s)>w)continue;const l=s/w;
+        put(px,py,cz,near&&t>.2&&t<.85&&Math.abs(s)<w-1.1?mix(c,l<0?'#c89c8c':'#a87868',.38):COAT[tn(-ey*l*.6,ex*l*.6-.3,.7,px,py,near?0:1)],6)}};
+    ear(57.5,-65.2,.5,6.5,2.5,13,0);ear(41.5,-64.4,Math.PI-.6,8,3,19,1);
+    /* the tuft of darker hair on the poll between the horns */
+    for(const[dx,dy,t]of[[1,0,3],[2,0,4],[3,0,3],[0,1,3],[1,1,4],[2,1,3],[3,1,4],[4,1,3],[1,2,3],[2,2,3],[3,2,3]]){const[p,q]=HT(46+dx,-73+dy);set(p,q,COAT[t])}
+    /* the eye under the shade of its lid, high on the near side of the face, dark with a light catch */
+    {const[e0,e1]=HT(47,-60.2),X=Math.round(e0),Y=Math.round(e1);for(const dx of[-1,0,1,2,3])set(X+dx,Y-1,COAT[3]);set(X-2,Y,COAT[3]);
+      set(X,Y,'#140e0a');set(X+1,Y,'#d8d0c0');set(X+2,Y,'#140e0a');set(X-1,Y,'#2a1c16');set(X,Y+1,'#1e1410');set(X+1,Y+1,'#1e1410');set(X+2,Y+1,COAT[3])}
+    /* the muzzle, after the reference, placed pixel by pixel: MUZ is its map, a row to a pixel from the top of the muzzle (drawing
+       y -53) to under the chin, a column to a pixel from drawing x 47. The top of the muzzle carries on the lit face; below it the broad
+       muzzle, pale on top (p), a tone darker on its lit side (q), and shaded (r, s) on its front and below; the dark nostril (t) a comma
+       on the side of it, set back from the front; the dark line of the mouth under it (t), running back into the shadow under the cheek
+       (E); the chin and the lower lip in the coat's shade (D) with a greyer front (s, r), and
+       the underside of the jaw dark (E). Coat tones A to E, muzzle tones p to t; '.' leaves the pixel as the head painted it and '_'
+       clears it. The rows above the mouth line go with the head, the last two with the lower jaw, so that the low opens the mouth
+       between them; each pixel looks up the cell it falls in, so the map follows the head when it is lifted. */
+    {const MUZ=['...........BBCCD__','........BBBBCCCrs_','.......CCBqqppppqs','......DCBBqtqpppqs','......DCBBqttqqqrs','......DDBBqrtrrrs_',
+        '......DCBBrrsssss_','..EEEEEEDDsttttts_','.......EDDDDssr...','.........EEEE.....'],LOW0=8,MX=47,MY=-53,
+        tone=ch=>ch>='A'&&ch<='E'?COAT[ch.charCodeAt(0)-65]:MZ['pqrst'.indexOf(ch)];
+      const cj=Math.cos(jr),sj=Math.sin(jr),HI=(X,Y)=>{const u=X-hox-PX,v=Y-hoy-PY;return[PX+u*hc+v*hs,PY-u*hs+v*hc]},
+        JI=(X,Y)=>{const[a,b]=HI(X,Y);return[JX+(a-JX)*cj+(b-JY)*sj,JY-(a-JX)*sj+(b-JY)*cj]};
+      const cell=(l,lower)=>{const i=Math.floor(l[0]-MX),j=Math.floor(l[1]-MY);if(j<0||j>=MUZ.length||i<0||i>=MUZ[0].length||(j>=LOW0)!==lower)return'.';return MUZ[j][i]};
+      const[cx0,cy0]=HT(MX+9,MY+5);for(let py=Math.floor(cy0-16);py<=cy0+16;py++)for(let px=Math.floor(cx0-16);px<=cx0+16;px++){
+        const up=cell(HI(px+.5,py+.5),false),lo=cell(JI(px+.5,py+.5),true);
+        if(up==='_'){const i=idx(px,py);if(i>=0){Pb[i]=0;Zb[i]=38.5}}else if(up!=='.')put(px,py,40,tone(up),3);
+        if(lo!=='.'&&lo!=='_')put(px,py,39,tone(lo),3)}}
+    /* a garland: leaves set two by two along a cord, slanting either way, and a few yellow flowers among them. It hangs round the neck from
+       behind the head, sags in a curve over the dewlap and goes up again under the jaw, where the head hides it. No line crosses it. */
+    if(gar){const S=HT(29,-71.5),C1=[19,-52+o],C2=[22,-27+o],E2=HT(43,-48.5),G0='#3f6a32',G1='#4f7a3a',G2='#6f9a4a',G3='#8fb45a',z=18,N=21;
+      for(let i=0;i<N;i++){const u=i/(N-1),a0=(1-u)*(1-u)*(1-u),a1=3*u*(1-u)*(1-u),a2=3*u*u*(1-u),a3=u*u*u,
+          gx=Math.round(a0*S[0]+a1*C1[0]+a2*C2[0]+a3*E2[0]),gy=Math.round(a0*S[1]+a1*C1[1]+a2*C2[1]+a3*E2[1]),s=i%2,
+          P=(a,b,col,ww,hh)=>{for(let j=0;j<(hh||1);j++)for(let q=0;q<(ww||1);q++)put(a+q,b+j,z+(i%3)*.1,col,9)};
+        P(gx-2,gy-1,G0,4,3);P(gx-(s?4:0),gy+(s?-1:0),s?G1:G2,4,2);P(gx-(s?3:-1),gy+(s?-1:0),G3,2,1);P(gx+(s?0:-3),gy+1,G1,3,1);
+        if(i%5===2){P(gx-1,gy-2,'#e8c040',3,2);P(gx,gy-2,'#fff0a0',1);P(gx-1,gy-1,'#c89a30',1)}}}
+    /* lay the buffer down */
+    for(let i=0;i<FW*FH;i++)if(Pb[i]){g.fillStyle=Cb[i];g.fillRect(i%FW-X0,Math.floor(i/FW)-Y0,1,1)}
+    g.restore()}
   /* sound: a low. A deep note through a closed mouth swells, opens as the mouth opens (the filter rises) and closes again, falling a little
      in pitch; a note an octave below gives it its chest. About one and a half seconds, and quiet like every effect. */
   const sound=()=>{tone({f:104,bend:[-260,.28],to:84,d:1.45,type:'sawtooth',v:.038,a:.14,sus:1,vib:1.2,vibd:.6,lp:[[240,0],[620,.3],[820,.7],[520,1.05],[220,1.45]]});
