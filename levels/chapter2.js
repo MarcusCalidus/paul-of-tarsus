@@ -183,7 +183,8 @@ const SHIP2_OPTS={seed:209,dir:-1,view:'full',x0:4,x1:212,yBot:101,yWaist:77,bow
   stem:{thick:3,sweep:10,rimCol:'#f4d8a4',capCol:'#d8ac70'},
   stern:{thick:3,sweep:11,rimCol:'#d8b078',capCol:'#c89a60'},
   rudders:[{loom:[196,68,199,68,208,96,205,96],blade:[204,94,209,94,213,104,207,104],hi:[196.4,68.4,205.4,96]}]};
-function bollard2(g,x){g.fillStyle=lg(g,x-1,0,x+7,0,['#8a7a66','#5a4c40','#3a302c']);g.fillRect(x,96,6,8);R(g,x-1,94.6,8,2,'#6a5a4a');R(g,x-1,94.6,8,.6,'#e8c898')}
+/* bollard2: a stone bollard on the quay, drawn again over the ship; its cap is as wide as the post (a block on a thinner post makes a T) */
+function bollard2(g,x){g.fillStyle=lg(g,x-1,0,x+7,0,['#8a7a66','#5a4c40','#3a302c']);g.fillRect(x,96,6,8);R(g,x,94.6,6,2,'#6a5a4a');R(g,x,94.6,6,.6,'#e8c898')}
 function shipArt(g,X,t,st,sh){const y=Math.round(Math.sin(t/900)*2)/2,
     mast={x:111,y0:18,y1:78,w:3.2,stays:[[112.5,18,16,76],[112.5,18,206,70]],
       sail:st===1?'lowered':st===2?'full':'torn',flap:Math.sin(t/420)*.8,
@@ -232,7 +233,7 @@ ART.harbor={w:480,fp:1.3,q:12,
   comp(g,'soft-light',.9,()=>{g.fillStyle=rg(g,150,104,260,['rgba(255,214,140,.95)','rgba(255,200,120,.3)','rgba(90,70,120,.5)']);g.fillRect(0,100,480,44)});
   /* long shadows reach toward us, away from the sun */
   const cast=(x,w,len)=>shade(g,[x,104,x+w,104,x+w+(x+w-150)*len/46,104+len,x+(x-150)*len/46,104+len],SH,.55);
-  for(const x of[236,300,420]){cast(x-1,8,16);shadow2(g,x+3,104,4.4,1.1,.5,'#281e3c');g.fillStyle=lg(g,x-1,0,x+7,0,['#8a7a66','#5a4c40','#3a302c']);g.fillRect(x,96,6,8);R(g,x-1,94.6,8,2,'#6a5a4a');R(g,x-1,94.6,8,.6,'#e8c898')}
+  for(const x of[236,300,420]){cast(x,6,16);shadow2(g,x+3,104,4.4,1.1,.5,'#281e3c');g.fillStyle=lg(g,x-1,0,x+7,0,['#8a7a66','#5a4c40','#3a302c']);g.fillRect(x,96,6,8);R(g,x,94.6,6,2,'#6a5a4a');R(g,x,94.6,6,.6,'#e8c898')}
   cast(115,3,26);cast(165,3,26);cast(430,46,12);shade(g,[0,104,112,104,96,112,0,112],SH,.5);
   /* heap of old sailcloth: stiff worn canvas heaped by the warehouse, resting flat on the quay */
   {const LIT='#f6f0de',C='#e0d9c2',MID='#b4ac96',SHD='#80796a',DEEP='#565048',SEAM='rgba(100,88,66,.6)',
@@ -274,8 +275,8 @@ ART.harbor={w:480,fp:1.3,q:12,
     comp(l,'multiply',1,()=>{ao(l,0,90,112,14,'b',.18,'#4a4068');ao(l,380,0,100,144,'r',.14,'#4a4068');ao(l,0,126,480,18,'b',.14,'#4a4068')})});
   pool(g,150,47,330,120,'#ffcf88',.14,'screen');ao(g,300,0,180,144,'r',.2,'#1a1840')},
  fore(g){const r=rng(98);
-  /* a mooring post and a coil of hawser close by; a fisherman's baskets at the other end */
-  g.fillStyle=lg(g,2,0,20,0,['#2a2028','#4a3830','#1a1418']);g.fillRect(4,108,15,40);R(g,2,105,19,4,'#3a2c2a');R(g,2,105,19,.8,'#c8946a');
+  /* a mooring post, its cap no wider than the post, and a coil of hawser close by; a fisherman's baskets at the other end */
+  g.fillStyle=lg(g,2,0,20,0,['#2a2028','#4a3830','#1a1418']);g.fillRect(4,108,15,40);R(g,4,105,15,4,'#3a2c2a');R(g,4,105,15,.8,'#c8946a');
   for(let i=0;i<4;i++){g.strokeStyle=i%2?'#3a3028':'#52463a';g.lineWidth=3;g.beginPath();g.ellipse(48,139-i*2.6,16-i,4.2,0,0,6.2832);g.stroke()}
   for(const[bx,bw,bh]of[[496,16,14],[516,10,10]]){vessel(g,bx,148,bw,bh,'#4a3a2a','bowl',{noShadow:1});for(let i=0;i<10;i++)oval(g,bx-bw+3+r()*(bw*2-6),148-bh-r()*2,2.4,1,'#6a8a94')}},
  draw(g,t){flame(g,211.6,20,t);pool(g,212,18,9+Math.sin(t/200),7,'#ff9a40',.2);
