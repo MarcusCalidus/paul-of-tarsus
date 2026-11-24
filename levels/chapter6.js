@@ -294,7 +294,7 @@ const STONES6=(()=>{const r=rng(1419),o=[],cols=['#8a7c7c','#968a80','#7c7078','
     const w=2.4+r()*3.4;o.push([+x.toFixed(1),+y.toFixed(1),+w.toFixed(1),+(w*(.5+r()*.18)).toFixed(1),cols[i%5]])}return o})();
 ART.outside={w:320,q:12,
  /* the stones at the roadside that lie a little way out on the ground */
- props:[[82,113,7,4],[104,113,6,3.6],[61,113.4,6,3.4]].map(([x,y,w,h])=>({y,shape:g=>rock(g,x,y,w,h,'#7c7078')})),
+ props:[[82,113,7,4],[104,113,6,3.6],[61,113.4,6,3.4]].map(([x,y,w,h])=>({y,shape:g=>rock(g,x,y,w,h,'#7c7078'),foot:[x-w/2,y-2,w,2]})),
  light:()=>({amb:'#e8b49c'}),
  paint(g){const r=rng(457);
   sky(g,320,86,SKY6(['#27356e','#5a4f8e','#b0667a','#e8905a','#f6c878']));pool(g,70,84,90,26,'#ffe0a0',.5,'screen');
@@ -339,7 +339,7 @@ function lowTable(g,day){const rt=rng(4621);board6(g,170,112,40,3,'#96703e',rt);
   if(!day){vessel(g,182,112,4.6,3.6,'#a8844e','bowl',{noShadow:1});g.fillStyle=lg(g,0,107,0,112,['#e8c078','#c9a060','#8a6630']);g.beginPath();g.ellipse(197,110.4,5.6,2.2,0,0,6.2832);g.fill()}}
 ART.house6={w:320,q:12,
  variant:()=>F.back?'d':'n',
- props:[{y:123,shape:(g,v)=>lowTable(g,v==='d')}],
+ props:[{y:123,shape:(g,v)=>lowTable(g,v==='d'),foot:[171,119,37,4]}],
  light:()=>F.back?{amb:'#f0e8dc',wallY:103}:{amb:'#7c6f86',wallY:103,wall:[[0,52,103,11],[52,68,103,45],[68,320,103,11]],lamps:[[150,58,60,'#7a5420',103,59.4],[92,96,46,'#7a3c14',103,100]]},
  paint(g,v){const r=rng(461),rw=rng(4611),rc=rng(4612),W='#d8c8a4',day=v==='d';
   /* the plaster's random cracks are set by hand now, high on the wall where they run to no head; their draws are still taken */
@@ -606,7 +606,9 @@ TA.hs={name:'Tatia',actor:TA,
 /* the hidden treasure (index.html, treasure): once the cover is on Xanthos's wagon, the tentmaker tries its corners with his awl, out of habit */
 async function awl6(){await say(P,'out_of_habit_i_run_the_point');
   await say(P,'whether_or_not_he_ever');treasure()}
-ROOMS.iconium={space:0.9,walk:[16,464,110,138],mood:'tense',amb:{crowd:.4,fountain:.7,birds:.3,hammer:.3,leaves:.3},hs:[
+ROOMS.iconium={space:0.9,walk:[16,464,110,138],
+  /* Xanthos's wagon, its wheels at the back edge of the strip */
+  block:[[310,107,60,3.2]],mood:'tense',amb:{crowd:.4,fountain:.7,birds:.3,hammer:.3,leaves:.3},hs:[
   {name:'mountains',x:188,y:26,w:110,h:24,wx:244,look:'mountains_on_every_side'},
   {name:'street_to_the_synagogue',x:0,y:36,w:60,h:68,wx:42,wy:113,dir:-1,look:['street_to_the_synagogue_of_the_jews','by_tomorrow_that_street'],
     use:'back_to_the_synagogue_today',open:'back_to_the_synagogue_today'},
@@ -786,7 +788,11 @@ LM.hs={name:'man_from_the_well',actor:LM,
 PR.hs={name:'priest_of_zeus',actor:PR,look:'priest_of_zeus_all_in_white',
   show:{'*':'an_offering'},talk:stop6,
   as:{barnabas:{look:'the_priest',talk:stop6,show:{'*':'an_offering'}}}};
-ROOMS.lystra={space:0.8,walk:[16,464,110,138],get mood(){return G.bulls?'feast':F.healed?'tense':'hope'},amb:()=>G.crowd?{crowd:.9,wind:.3,birds:.2}:{birds:.5,wind:.35,crickets:.3,crowd:.12},enter:lysIntro,hs:[
+ROOMS.lystra={space:0.8,walk:[16,464,110,138],
+  /* the man who has never walked, on his blanket by the well; the front row of the crowd when it comes running; and the two bulls at
+     the gate, until they are led away */
+  block:()=>[...F.healed?[]:[[297,107,40,4.4]],...G.crowd?CROWD.filter(c=>c[2]>110).map(([,x,y])=>[x-4,y-1.5,8,2]):[],
+    ...G.bulls&&G.led==null?[[7,113,38,3.5],[27,106,38,3.5]]:[]],get mood(){return G.bulls?'feast':F.healed?'tense':'hope'},amb:()=>G.crowd?{crowd:.9,wind:.3,birds:.2}:{birds:.5,wind:.35,crickets:.3,crowd:.12},enter:lysIntro,hs:[
   {name:'hills',x:238,y:44,w:240,h:24,wx:360,look:'low_hills_round_a_secluded'},
   {name:'fields',x:300,y:68,w:92,h:22,wx:350,look:async()=>{await say(P,'fields_orchards_and_good_pasture');await say(P,quote('ps65'))}},
   {name:'city_wall',x:0,y:18,w:100,h:28,wx:76,look:'wall_of_lystra'},
@@ -811,7 +817,9 @@ async function enterCity(){playAs(P);
   await say(BN,'we_ripped_our_garments');
   await say(P,'torn_from_the_neck_to_the_belt',TH)}
 const derbeRoad=()=>say(PC(),PC()===P?'tonight_in_the_dark':'not_without_a_word_to_the_disciples');
-ROOMS.outside={space:0.5,walk:[16,304,112,138],mood:'tense',amb:{wind:.6,crickets:.6,owl:.3},hs:[
+ROOMS.outside={space:0.5,walk:[16,304,112,138],
+  /* the two stones of the fallen field wall that lie at the back edge of the strip, and Paul where they left him */
+  block:()=>[[65.5,110,9,2],[87,109.6,10,2],...G.down?[[136,126,40,4]]:[]],mood:'tense',amb:{wind:.6,crickets:.6,owl:.3},hs:[
   {name:'hills',x:0,y:60,w:150,h:22,wx:80,look:'hills_are_going_dark'},
   {name:'Lystra',x:196,y:30,w:124,h:22,wx:240,look:['lystra_on_its_low_hill','still_there_are_disciples_inside_that_wall']},
   {name:'city_gate',x:254,y:52,w:24,h:30,wx:250,wy:113,dir:1,look:'the_gate',exit:enterCity},
@@ -823,7 +831,7 @@ ROOMS.outside={space:0.5,walk:[16,304,112,138],mood:'tense',amb:{wind:.6,cricket
 async function mend6(it){if(!night()||!['awl','thread'].includes(it))return false;
   if(F.mended)return say(BN,'it_is_mended_paul_and_better');
   await say(P,'off_with_that_mantle_barnabas');
-  await Promise.all([walk(P,176,120),walk(BN,150,118)]);P.dir=-1;BN.dir=1;P.bow=true;
+  await Promise.all([walk(P,176,116),walk(BN,150,118)]);P.dir=-1;BN.dir=1;P.bow=true;
   SFX.sew();await say(P,'tear_along_the_weave_is');SFX.sew();await wait(700);
   await say(P,'now_my_own');
   P.bow=false;F.mended=1;SFX.good();
@@ -850,7 +858,9 @@ async function backIntro(){if(!F.back||F.strong)return;
   await say(LO,'paul_barnabas');
   await say(TI,'you_came_in_at_the_same');
   await say(EN,'sit_down_both_of_you')}
-ROOMS.house6={space:1.25,walk:[16,304,110,136],mood:'calm',amb:()=>F.back?{birds:.3,crowd:.1}:{fire:.5,crickets:.3,owl:.2},enter:backIntro,hs:[
+ROOMS.house6={space:1.25,walk:[16,304,110,136],
+  /* months later, the older men and the rest of the congregation who stand in the room */
+  block:()=>F.back?GATHER.map(([,x,y])=>[x-5,y-2.5,10,3.5]):[],mood:'calm',amb:()=>F.back?{birds:.3,crowd:.1}:{fire:.5,crickets:.3,owl:.2},enter:backIntro,hs:[
   {name:'window',x:48,y:24,w:24,h:26,wx:64,look:()=>say(P,F.back?'daylight_and_the_lane':'night_over_lystra')},
   {name:'lamp',x:140,y:42,w:20,h:24,wx:150,look:()=>say(P,F.back?'lamp_in_its_niche':'one_lamp_in_a_niche'),pickup:'it_gives_light_to_the_whole_said'},
   {name:'shelf',x:172,y:48,w:60,h:18,wx:200,look:'jars_of_oil_meal_and_olives',pickup:'it_is_their_winter_store'},
@@ -876,7 +886,9 @@ ZE.hs={name:'Zenon',actor:ZE,
     {q:'what_will_the_brothers',a:async()=>{await say(ZE,'we_meet_on_my_threshing_floor');await say(P,'quite_a_few_and_no_one')}},
     {q:'thank_you_for_the_offer_zenon',bye:1}]),
   as:{barnabas:{look:'zenon_said',talk:()=>say(ZE,'room_for_two_barnabas_and_the_oxen'),show:{staff6:'you_would_not_need_that_on_my_wagon','*':'stow_it_on_the_load_if_you_said'}}}};
-ROOMS.derbe={space:0.5,walk:[16,304,110,138],mood:'hope',amb:{wind:.5,birds:.4,crickets:.3,hooves:.2},enter:derIntro,hs:[
+ROOMS.derbe={space:0.5,walk:[16,304,110,138],
+  /* Zenon's wagon and the near ox, at the back edge of the strip, and our baggage by the gate */
+  block:[[170,107,58,3.2],[239,107,37,3.2],[60,109,33.5,3]],mood:'hope',amb:{wind:.5,birds:.4,crickets:.3,hooves:.2},enter:derIntro,hs:[
   {name:'mountains',x:90,y:20,w:230,h:34,wx:220,look:'taurus_with_new_snow_on_it'},
   {name:'east_gate_of_derbe',x:18,y:50,w:42,h:54,wx:52,wy:113,dir:-1,look:'the_east_gate_of_derbe',
     use:'there_are_disciples_enough',open:'there_are_disciples_enough'},
