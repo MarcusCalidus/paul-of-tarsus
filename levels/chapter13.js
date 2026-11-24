@@ -414,8 +414,10 @@ ART.road13={w:320,q:12,
     for(const[x,y,w,h]of[[60,108,15,6],[254,107,19,7],[150,104.6,9,3.6]]){shadow13(g,x+w*.56,y+.3,w*.6,1.2,.36,'#28222e');poly(g,[x,y,x+w*.3,y-h,x+w*.8,y-h*.8,x+w,y],'#a89c82');poly(g,[x,y,x+w*.3,y-h,x+w*.5,y-h*.4],'#cfc4a8');
       poly(g,[x+w*.5,y-h*.4,x+w*.8,y-h*.8,x+w,y,x+w*.6,y],'rgba(70,60,80,.22)')}
     for(let i=0;i<14;i++)foliage(g,r()*320,103+r()*5,3+r()*4,2,'#6c7a4c',r,12)}
-  /* a pine at the left, bent by the wind off the sea */
-  stroke(g,[18,112,16,72,21,52],'#5a4636',3);stroke(g,[17,76,8,65],'#5a4636',1.6);for(const[x,y,w]of[[21,46,22],[10,54,14],[29,56,15],[19,38,12]])foliage(g,x,y,w,5,'#4f6a3e',r,70);
+  /* a pine at the left, bent by the wind off the sea: the engine's pine (CONTRIBUTING section 3), leaning hard inland. The clumps of
+     needles that stood here before are drawn once more on a canvas that is thrown away, so that the room takes from r all it ever took. */
+  {const[,t]=mk(1,1);for(const[x,y,w]of[[21,46,22],[10,54,14],[29,56,15],[19,38,12]])foliage(t,x,y,w,5,'#4f6a3e',r,70)}
+  pine(g,8,112,66,'#4f6a3e',{lean:.8,shade:false});
   pool(g,34,116,44,9,'#3a3458',.34,'multiply');pool(g,220,0,240,150,'#fff0cc',.1,'screen')},
  light:null,draw(){},front(){}};
 
