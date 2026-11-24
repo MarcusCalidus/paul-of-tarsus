@@ -223,174 +223,287 @@ const DONKEY=(()=>{
 
 /* ================================================================= the mule ================================================================= */
 const MULE=(()=>{
-    /* A pack mule, the foal of a donkey and a mare, and a size bigger than the donkey: seen from the side, with its head turned a little
-       toward us so that both ears read. It is more like a horse than the donkey is: a deeper body with a round haunch, longer and finer
-       legs on larger hooves, a longer neck carried higher, with a short upright mane; its head is a donkey's made a little longer and
-       finer, broad in the forehead and deep in the jaw, with a big pale muzzle and a large eye in a pale ring, ears long but shorter
-       than a donkey's, and a tail that grows long hair from high up. Its coat is a dark bay: a brown body, the mane, the tail and
-       the legs below the knees and hocks dark, and a mealy muzzle and belly, so that it never reads as the grey donkey beside it.
-       Sizes, in drawing units (two to a room pixel): the withers stand 62 high (31 room pixels), the tips of the ears 97 (48 room
-       pixels, a man's height), the belly 33 above the ground.
-       load: 0 a saddle blanket and its girth, 1 pack bags, 2 the bags stuffed with wool and fleeces piled four deep on top, half as
-       high again as the back. fr 0 stands; fr 4 to 19 are the sixteen frames of its walk (frame.mule gives the frame for a distance walked), and 1, 2 and
-       3 three moments of it, a quarter of a cycle apart; fr 20 to 23 are its voice: 20 the head raised and the ears laid back, 21 the
-       mouth a little open for the whinny, 22 the neck stretched and the mouth wide for the hee, 23 half shut for the haw.
-       The walk has four beats, as every walk of a four-footed beast: near hind, near fore, far hind, far fore, each a quarter of a cycle
-       after the one before. A hoof stands for ten frames, going back under the body, and swings forward for six, lifted, with the hock
-       or the knee bent. The legs of a pair hang from one place in the body and open like a pair of compasses. The body sinks a pixel
-       as each fore hoof lands, the head nods a pixel more with it and a frame after it, and the tail swings away from the near hind leg
-       when that leg is back. Every part is painted from the one it grows out of: the legs come out of the body, the neck out of the
-       shoulders, the head out of the neck, the tail out of the top of the rump. */
-    const COAT='#7a4b2f',POINT='#34271f',MEAL='#c4a27c',HOOF='#1d1713',HOOF_LIT='#4e3e32',EYE='#120c0a',MOUTH='#3e1a16',TEETH='#d8cdb2',
-      STRAP='#5c3318',STRAP_LIT='#8a5a30',D=ramp(COAT),PT=ramp(POINT),M=ramp(MEAL);
-    /* The numbers of the walk. A hoof reaches MULE_REACH drawing units from the front of its step to the back while it stands, and stands
-       for MULE_STANCE of the cycle, so a cycle carries the mule MULE_STRIDE room pixels with its hooves planted: 36 / .625 / 2 = 28.8, against
-       the donkey's 17.6 and a man's 27. A cycle is never quicker than MULE_BEAT seconds, or the walk would turn into a scurry: up to
-       28.8 / .6 = 48 room pixels a second the hooves stay where they are set down, so at WALK_V (48) they do not slip at all, and a
-       cycle takes .6 s. The reach swings legs 33 units long under the belly through about twenty degrees each way; a longer one would
-       bring the hind hoof of one side up against the fore hoof of that side as it lifts, and the two legs would cross as an X.
-       muleFr: the frame of the walk for a distance walked (dist, in room pixels) at a speed (v, room pixels a second; WALK_V if none). */
-    const MULE_REACH=36,MULE_STANCE=.625,MULE_STRIDE=MULE_REACH/MULE_STANCE/2,MULE_BEAT=.6;
-    const muleFr=(dist,v)=>{const c=Math.max(MULE_STRIDE,Math.abs(v==null?WALK_V:v)*MULE_BEAT);return 4+Math.floor((dist/c%1+1)%1*16)%16};
-    /* the body: a deep barrel, the round haunch behind and the chest before, in drawing units with the feet at 0,0 */
-    const ell=(x,y,cx,cy,rx,ry)=>((x-cx)/rx)**2+((y-cy)/ry)**2<=1;
-    const inBody=(x,y)=>ell(x,y,0,-46.5,29.5,13.5)||ell(x,y,-19.5,-48.5,15,12.5)||ell(x,y,20,-48,13.5,13.5);
-    const COLS={},ROWS={};
-    for(let x=-40;x<=40;x++)for(let y=-70;y<=-28;y++)if(inBody(x+.5,y+.5)){const c=COLS[x]||(COLS[x]=[y,y]);c[1]=y;const r=ROWS[y]||(ROWS[y]=[x,x]);r[1]=Math.max(r[1],x)}
-    /* capsule: the pixels within ra..rb of the segment a-b, each given to paint(u, t, x, y): u runs across the segment from -1 to 1, 1 being the
-       side to the left of its way (the front of a leg that runs down, the crest of a neck that runs up), and t along it from 0 to 1 */
-    const capsule=(ax,ay,bx,by,ra,rb,paint)=>{const dx=bx-ax,dy=by-ay,L2=dx*dx+dy*dy||1,L=Math.sqrt(L2),R=Math.max(ra,rb)+1;
-      for(let y=Math.floor(Math.min(ay,by)-R);y<=Math.ceil(Math.max(ay,by)+R);y++)for(let x=Math.floor(Math.min(ax,bx)-R);x<=Math.ceil(Math.max(ax,bx)+R);x++){
-        const qx=x+.5-ax,qy=y+.5-ay,t=Math.max(0,Math.min(1,(qx*dx+qy*dy)/L2)),ex=qx-dx*t,ey=qy-dy*t,r=ra+(rb-ra)*t;
-        if(ex*ex+ey*ey<=r*r)paint((ex*dy-ey*dx)/L/r,t,x,y)}};
-    /* poses of the head: the poll (px, py), the slant of the face below the level (al, degrees), how far the lower jaw is open (jaw,
-       degrees), and the ears (ear: 0 up, 1 laid back along the neck). At rest the face runs steeply down and forward; braying, the head
-       goes up with the muzzle forward and up, the jaw drops open and the ears lie back. */
-    const HEADS={0:{px:43,py:-82,al:58,jaw:0,ear:0},20:{px:44,py:-85,al:26,jaw:0,ear:1},21:{px:45,py:-85,al:4,jaw:20,ear:1},
-      22:{px:45,py:-85,al:-4,jaw:36,ear:1},23:{px:44,py:-84,al:22,jaw:12,ear:.6}};
-    function mule(g,x,y,dir,fr,load){g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
-      const px=(a,b,col,w,h)=>{g.fillStyle=col;g.fillRect(a,b,w||1,h||1)};
-      const W=fr>0&&fr<20,k=fr>=4?(fr-4)%16:(fr-1)*4,ph=k/16,o=W&&(k%8===4||k%8===5)?1:0,hd=W?[0,0,0,0,1,2,1,0][k%8]:0;
-      /* at: where the hoof of a leg is at this moment, the leg's beat being off of a cycle after the near hind leg's: hx before or behind
-         the leg's root, lift off the ground, and q, how far it is through its swing (0 while it stands) */
-      const at=off=>{if(!W)return{hx:0,lift:0,q:0,sw:0};const p=((ph-off)%1+1)%1,T=MULE_REACH,B=MULE_STANCE;if(p<B)return{hx:T/2-T*p/B,lift:0,q:0,sw:0};
-        const v=(p-B)/(1-B),q=Math.sin(Math.PI*v);return{hx:-T/2*Math.cos(Math.PI*v),lift:Math.round(6*q),q,sw:1}};
-      /* leg: from inside the body at its root rx, by the hock (hind) or the knee (fore) and the fetlock down to the hoof. The upper leg is
-         in the coat's tones, the leg from the hock or knee down in the dark of the points; a far leg is a tone darker. Only what lies
-         outside the body is painted, so the leg grows out of it. The hock bends back and the knee forward; as a fore leg swings the
-         knee lifts and the hoof folds back under it. */
-      const leg=(rx,P,far,hind)=>{const y0=-44+o,hx=rx+P.hx,hy=-P.lift,q=P.q,f=far?1:0,out=(xx,yy)=>!inBody(xx+.5,yy+.5-o);
-        const J=hind?[rx+P.hx*.7-5-2*q,-23-P.lift*.6]:[rx+P.hx*.55+5*q,-18-P.lift*.5-3*q];
-        const F=hind?[hx-2+3*q,hy-7]:[hx-1+3*q,hy-7+q];
-        const tone=(R,lo)=>(u,t,xx,yy)=>{if(!out(xx,yy))return;px(xx,yy,R[Math.min(4,(u>.5?1:u>-.15?2:u>-.6?3:4)+f+(lo&&t>.7?0:0))])};
-        capsule(rx,y0,J[0],J[1],hind?6.5:5.5,hind?3.6:3.4,tone(D));
-        capsule(J[0],J[1],F[0],F[1],hind?3.2:3,2.6,tone(PT,1));
-        capsule(F[0],F[1],hx+(P.sw?2*q:0),hy-4,2.9,2.6,tone(PT));
-        /* the hoof: flat on the ground while it stands, tipped back as it swings */
-        if(!P.sw||P.lift===0){for(let i=0;i<4;i++){const w=[6,7,8,8][i],x0=Math.round(hx)-3-(i>1?1:0);px(x0,hy-4+i,HOOF,w);px(x0+w-2,hy-4+i,far?HOOF:HOOF_LIT,2)}}
-        else capsule(hx+2*q,hy-4,hx+2*q-2.4*q,hy-.5,3,3.6,(u,t,xx,yy)=>px(xx,yy,u>.5&&!far?HOOF_LIT:HOOF))};
-      const N=at(0),NF=at(.25),FH=at(.5),FF=at(.75);
-      leg(-21,FH,1,1);leg(20,FF,1,0);
-      /* tail: set on at the top of the rump, a short dock in the coat, then long dark hair from high up, fuller than a donkey's tuft. It
-         swings a pixel or two, away from the near hind leg when that leg is back, and ends above the hocks,
-         so that it never hangs across a leg. */
-      const sway=W?Math.round(2*Math.cos(6.2832*(ph-.05))):0;
-      capsule(-31.5,-58+o,-36,-51+o,2.2,2.2,(u,t,xx,yy)=>px(xx,yy,D[u>.3?2:3]));
-      for(let yy=-54;yy<=-27;yy++){const i=yy+54,s=i/27,cx=-37.5-s*1.6+sway*s,w=Math.round(s<.4?3+s*7:s<.85?6:6-(s-.85)*20);
-        for(let q=0;q<w;q++){const xx=Math.round(cx-w/2+q);px(xx,yy+o,q===w-1&&s<.6?PT[1]:(q+(i>>2))%3===0?PT[3]:q<1?PT[3]:PT[2])}}
-      /* the barrel: lit along the back, darker toward the rump's round edge, the belly mealy */
-      for(const xs in COLS){const xx=+xs,[t0,t1]=COLS[xs];for(let yy=t0;yy<=t1;yy++){const t=(yy-t0)/Math.max(1,t1-t0),[l,r]=ROWS[yy];
-        let v=t<.12?1:t<.48?2:t<.78?3:4;if(xx-l<3)v=Math.min(4,v+1);if(r-xx<4&&t<.45)v=Math.max(1,v-1);
-        /* the round haunch catches the light on its upper front, and the hollow of the flank before it lies in shade */
-        const hr=((xx+19.5)/15)**2+((yy+48.5)/12.5)**2;if(hr<.42&&yy<-50&&xx>-28)v=Math.max(1,v-1);if(xx>-9&&xx<-5&&t>.35&&t<.8)v=Math.min(4,v+1);
-        px(xx,yy+o,xx>-20&&xx<13&&(t>.9||t>.8&&(xx+yy)%2)?M[3]:D[v])}}
-      /* a broken highlight along the line of the back */
-      for(let xx=-26;xx<24;xx+=3)if(COLS[xx])px(xx,COLS[xx][0]+o,D[0],2);
-      leg(-23,N,0,1);leg(22,NF,0,0);
-      /* the head's pose: at rest it nods with the walk; its voice raises it */
-      const HP=HEADS[fr>=20?Math.min(23,fr):0],a=(HP.al+hd*2)*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),PX=HP.px+hd*.4,PY=HP.py+o+hd;
-      const wx=(u,v)=>PX+u*ca-v*sa,wy=(u,v)=>PY+u*sa+v*ca;
-      /* the neck: from the withers and the chest up to the poll and the throat, its crest arched, lit along the crest and dark under the throat */
-      const c0=[11,-61+o],c2=[wx(-1,-1.5),wy(-1,-1.5)],c1=[c0[0]+(c2[0]-c0[0])*.4-2,c2[1]+(c0[1]-c2[1])*.38-3],t0=[37,-45+o],t1=[wx(4,13),wy(4,13)];
-      const crest=s=>[(1-s)*(1-s)*c0[0]+2*s*(1-s)*c1[0]+s*s*c2[0],(1-s)*(1-s)*c0[1]+2*s*(1-s)*c1[1]+s*s*c2[1]],poly=[];
-      for(let i=0;i<=16;i++)poly.push(crest(i/16));poly.push(t1,t0,[30,-40+o]);
-      const inPoly=(x,y)=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const[xi,yi]=poly[i],[xj,yj]=poly[j];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c};
-      const dSeg=(x,y,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/(dx*dx+dy*dy))),ex=x-a[0]-dx*t,ey=y-a[1]-dy*t;return Math.sqrt(ex*ex+ey*ey)};
-      for(let yy=Math.floor(Math.min(c2[1],t1[1])-2);yy<=t0[1]+1;yy++)for(let xx=10;xx<=Math.ceil(Math.max(t0[0],t1[0],c2[0]))+2;xx++){const X=xx+.5,Y=yy+.5;
-        if(!inPoly(X,Y)||inBody(X,Y-o))continue;let dc=1e9;for(let i=0;i<16;i++)dc=Math.min(dc,dSeg(X,Y,poly[i],poly[i+1]));const s=dc/(dc+dSeg(X,Y,t0,t1));
-        px(xx,yy,D[s<.14?1:s<.5?2:s<.8?3:4])}
-      /* the mane: a short dark upright brush along the crest, from the withers up to between the ears, a few hairs catching the light */
-      for(let i=1;i<=31;i++){const s=i/31,[mx,my]=crest(Math.min(s,.99)),[nx,ny]=crest(Math.min(1,s+.02)),dx=nx-mx,dy=ny-my,l=Math.hypot(dx,dy)||1,ux=dy/l,uy=-dx/l,h=2+(i%3===1?1:0);
-        for(let j=0;j<=h;j++)px(Math.round(mx+ux*j),Math.round(my+uy*j),j===h&&i%4===2?PT[1]:PT[j?2:3])}
-      /* The head, a donkey's head made a little longer and finer, seen three-quarters toward us as the body is: a broad flat forehead and
-         the front of the face catch the light, the near cheek is a deep round jaw, and the face runs down and forward to a big pale mealy
-         muzzle, its lowest and frontmost part, with the nostrils on its front and the mouth under it. It is built of rounded masses, each
-         lit from the front and above by its own surface, in a buffer of its own (color and nearness of every pixel), and laid down over
-         the neck: where two masses meet the nearer one wins. The lower jaw turns on its hinge to open the mouth as the mule brays. */
-      const HB=new Map(),put=(x,y,z,col,part)=>{x=Math.floor(x);y=Math.floor(y);const k=x*1024+y,h=HB.get(k);if(!h||z>h.z)HB.set(k,{x,y,z,col,part})},
-        partAt=(x,y)=>{const h=HB.get(Math.floor(x)*1024+Math.floor(y));return h?h.part:0},set=(x,y,col)=>{const h=HB.get(Math.floor(x)*1024+Math.floor(y));if(h)h.col=col};
-      const tn=(nx,ny,nz,x,y,ex)=>{const s=nx*.5-ny*.7+nz*.5+((x+y)&1?.03:-.03);return Math.min(4,(s>.86?0:s>.62?1:s>.3?2:s>-.05?3:4)+(ex||0))},
-        hm=(nx,ny,nz,x,y)=>D[tn(nx,ny,nz,x,y)],pale=(nx,ny,nz,x,y)=>M[Math.max(0,Math.min(4,tn(nx,ny,nz,x,y)-1))];
-      const ellH=(cx,cy,cz,A,B,C,th,mat,part)=>{const co=Math.cos(th),si=Math.sin(th),R=Math.max(A,B)+1;
-        for(let y=Math.floor(cy-R);y<=cy+R;y++)for(let x=Math.floor(cx-R);x<=cx+R;x++){const X=x+.5-cx,Y=y+.5-cy,u=(X*co+Y*si)/A,v=(-X*si+Y*co)/B,q=1-u*u-v*v;if(q<0)continue;
-          const w=Math.sqrt(q),lx=u/A,ly=v/B,lz=w/C,nx=lx*co-ly*si,ny=lx*si+ly*co,l=Math.hypot(nx,ny,lz);put(x,y,cz+C*w,mat(nx/l,ny/l,lz/l,x,y),part)}};
-      const capH=(x0,y0,r0,x1,y1,r1,cz,mat,part)=>{const dx=x1-x0,dy=y1-y0,L2=dx*dx+dy*dy||1,R=Math.max(r0,r1)+1;
-        for(let y=Math.floor(Math.min(y0,y1)-R);y<=Math.max(y0,y1)+R;y++)for(let x=Math.floor(Math.min(x0,x1)-R);x<=Math.max(x0,x1)+R;x++){
-          const X=x+.5-x0,Y=y+.5-y0;let t=(X*dx+Y*dy)/L2;t=t<0?0:t>1?1:t;const ex=X-dx*t,ey=Y-dy*t,d=Math.hypot(ex,ey),r=r0+(r1-r0)*t;if(d>r)continue;
-          const kk=d/r,w=Math.sqrt(1-kk*kk);put(x,y,cz+r*w,mat(ex/r,ey/r,w,x,y),part)}};
-      const Wp=(u,v)=>[wx(u,v),wy(u,v)];
-      /* cranium with its broad forehead, the deep jaw of the near cheek, the long face, and the muzzle */
-      {const[c0,c1]=Wp(3,2.2);ellH(c0,c1,1,7.6,7,7,a,hm,3)}
-      {const[c0,c1]=Wp(9.5,6.4);ellH(c0,c1,1.5,8.2,6.8,6.2,a,hm,3)}
-      {const[a0,a1]=Wp(3.5,.5),[b0,b1]=Wp(21,1.8);capH(a0,a1,6,b0,b1,4.8,1.5,hm,3)}
-      {const[c0,c1]=Wp(24,2.8);ellH(c0,c1,1.2,5.4,5,5.4,a,pale,3)}
-      /* the lower jaw on its hinge, with the pale chin */
-      const ja=HP.jaw*Math.PI/180,hu=11.5,hv=7,rot=(u,v)=>[hu+(u-hu)*Math.cos(ja)-(v-hv)*Math.sin(ja),hv+(u-hu)*Math.sin(ja)+(v-hv)*Math.cos(ja)],Wr=(u,v)=>Wp(...rot(u,v));
-      {const[h0,h1]=Wp(hu,hv),[c0,c1]=Wr(22.5,7.2);capH(h0,h1,4.2,c0,c1,2.7,1,hm,3);ellH(c0,c1,1.3,3.5,2.6,3.5,a+ja,pale,3)}
-      if(HP.jaw){/* the open mouth: dark within, the teeth along both jaws */
-        const Q=[Wp(13.5,6.5),Wp(28.4,6.3),Wr(26.2,4.2),Wr(13.5,5.4)];let x0=99,x1=-99,y0=99,y1=-99;for(const[p,q]of Q){x0=Math.min(x0,p);x1=Math.max(x1,p);y0=Math.min(y0,q);y1=Math.max(y1,q)}
-        for(let y=Math.floor(y0);y<=y1;y++)for(let x=Math.floor(x0);x<=x1;x++){let c=false;for(let i=0,j=3;i<4;j=i++){const[xi,yi]=Q[i],[xj,yj]=Q[j];if(yi>y+.5!==yj>y+.5&&x+.5<(xj-xi)*(y+.5-yi)/(yj-yi)+xi)c=!c}if(c)put(x,y,-1,MOUTH,3)}
-        for(let u=17.5;u<=26.5;u+=.5){const[p,q]=Wp(u,7.3);put(p,q,-.5,TEETH,3);const[r,s]=Wr(u+.5,3.8);put(r,s,-.5,'#cbbfa4',3)}}
-      /* the ears: long, set wide apart at the top of the head in a V, or laid back along the neck as it brays. The near one shows its
-         pale inside with a dark rim and tip; the far one is seen from behind, in the coat, darker, with a dark tip */
-      const ear=(bx,by,ang,len,near)=>{const ex=Math.cos(ang),ey=Math.sin(ang),R=len+4;
-        for(let y=Math.floor(by-R);y<=by+R;y++)for(let x=Math.floor(bx-R);x<=bx+R;x++){const X=x+.5-bx,Y=y+.5-by,t=(X*ex+Y*ey)/len,s=-X*ey+Y*ex;if(t<0||t>1)continue;
-          const hw=3.1*Math.sin(Math.PI*(t*.8+.2));if(Math.abs(s)>hw)continue;const l=s/hw;let col;
-          if(t>.8)col=PT[near?2:3];else if(Math.abs(s)>hw-1)col=near?PT[3]:PT[2];
-          else if(near&&t>.14&&Math.abs(s)<hw-1.6)col=M[l<0?1:2];
-          else col=D[tn(-ey*l*.7,ex*l*.7,.7,x,y,near?0:1)];
-          put(x,y,near?12:-6,col,6)}};
-      {const e=HP.ear,up=-Math.PI/2,bk=Math.PI+.5;ear(PX+2.5,PY-1.5,up+.24+(bk-up-.05)*e,13.5,0);ear(PX-1.5,PY-.5,up-.2+(bk-up+.1)*e,14.5,1)}
-      /* the brush of the mane goes on between the ears, onto the poll */
-      for(let i=0;i<4;i++){const[fx,fy]=Wp(-1+i*.9,-2.2-i*.2);capH(fx,fy,.8,fx-.4,fy-2.6+i*.3,.7,8,()=>i%2?PT[3]:PT[2],8)}
-      /* a halter: a noseband round the face and a headstall behind the ears, apart, so that no strap crosses another or the line of the face */
-      for(let v=-6;v<=10;v+=.3)for(let du=0;du<=1.2;du+=.3){const[p,q]=Wp(18+du,v);if(partAt(p,q)===3)set(p,q,v<-2.5?STRAP_LIT:STRAP)}
-      for(let v=.5;v<=13;v+=.35){const[p,q]=Wp(-1.6,v);if(partAt(p,q)===3)set(p,q,STRAP)}
-      /* the eye, large and dark in its pale ring, under a dark brow; the nostrils on the front of the muzzle; the line of the closed mouth */
-      {const[e0,e1]=Wp(7.6,-1.4),X=Math.floor(e0),Y=Math.floor(e1);if(partAt(X,Y)===3){for(const[dx,dy]of[[-1,0],[-1,1],[3,0],[3,1],[0,2],[1,2],[2,2]])set(X+dx,Y+dy,M[1]);
-          for(const dx of[-1,0,1,2,3])set(X+dx,Y-1,D[4]);set(X,Y,EYE);set(X+1,Y,EYE);set(X+2,Y,'#4e3e36');set(X,Y+1,'#2a1e18');set(X+1,Y+1,EYE);set(X+2,Y+1,EYE)}}
-      for(const[u,v,c]of[[26,1.1,M[4]],[26.8,1.7,'#2a1e18'],[27.4,2.5,'#2a1e18'],[27.6,3.3,M[4]]]){const[n0,n1]=Wp(u,v);set(n0,n1,c)}
-      if(!HP.jaw)for(let u=20;u<=27.6;u+=.5){const[p,q]=Wp(u,5.8);if(partAt(p,q)===3)set(p,q,M[4])}
-      for(const h of HB.values())px(h.x,h.y,h.col);
-      /* the saddle blanket on the back, held by one girth behind the elbow */
-      const K=ramp('#7e3a2e');for(let xx=-13;xx<=13;xx++){const tp=COLS[xx][0]-1+o;for(let i=0;i<13;i++){const u=(xx+13.5)/27;px(xx,tp+i,i===9?'#d4c49c':K[i===0?0:i===12?4:u<.12?4:u<.3?3:u<.8?2:1])}}
-      {const gx=9;for(let yy=COLS[gx][0]+12+o;yy<=COLS[gx][1]+o;yy++){px(gx,yy,STRAP,2);px(gx+1,yy,STRAP_LIT)}}
-      if(load){/* the pack saddle's pad over the blanket, and a pack bag of dark goat's hair, banded, hanging on each side; the near one hides the far */
-        const S=ramp('#6a4a2c'),B=ramp('#3e3029'),full=load>1;for(let xx=-11;xx<=11;xx++){const tp=COLS[xx][0]-4+o,u=(xx+11.5)/23;for(let i=0;i<4;i++)px(xx,tp+i,S[i===0?(u>.5?0:1):u<.15?4:u<.4?3:2])}
-        const bt=-59+o,bh=full?23:20;for(let i=0;i<bh;i++){const s=i/(bh-1),hw=Math.round(15.5+(full?2.5:1.2)*Math.sin(Math.PI*Math.min(1,s*1.15))-(s>.86?(s-.86)*28:0));
-          for(let xx=-hw;xx<=hw;xx++){const u=(xx+hw+.5)/(2*hw+1);let v=u<.1?4:u<.3?3:u<.78?2:1;if(i<2)v=Math.max(0,v-1);if(s>.84)v=Math.min(4,v+1);
-            const band=i===5||i===6||i===bh-6;px(xx,bt+i,band?(v<2?'#b88a44':v<3?'#9a6e34':'#6e4c26'):B[v])}}
-        for(let xx=-15;xx<=15;xx++)px(xx,bt,xx%2?S[1]:S[2]);
-        if(full){/* wool bulging out of the bags' mouths, and two sacks of wool laid on top, the upper one smaller, their mouths tied */
-          const Wl=ramp('#d8ceb6');for(let xx=-16;xx<=16;xx++){const h=2+((xx*7+3)%5+5)%5%3;for(let j=0;j<h;j++)px(xx,bt-1-j,Wl[j===h-1?0:j?1:2])}
-          /* fleeces, folded and piled on the pack saddle four deep, each a little narrower than the one under it, their edges hanging
-             in soft waves and drooping over the bags at the ends; curls of shade in the wool, lit along the top and toward the front */
-          for(let L=0;L<4;L++){const yb=bt+2-L*7,hw=20-L*2.6,cx=L%2?1.5:-.5,Q=ramp(['#d4c9ae','#dcd2b8','#cfc3a6','#d9cfb4'][L]);
-            for(let xx=Math.floor(cx-hw);xx<=Math.ceil(cx+hw);xx++){const e=(xx-cx)/hw;if(Math.abs(e)>1)continue;
-              const bot=yb+Math.round(1.2*Math.sin(xx*.8+L*1.7))+(Math.abs(e)>.82?2:0),top=yb-9+Math.round(3*Math.pow(Math.abs(e),3))+(((xx*5+L*3)%7+7)%7<2?1:0);
-              for(let yy=top;yy<=bot;yy++){const t=(yy-top)/Math.max(1,bot-top);let v=t<.2?0:t<.45?1:t<.8?2:3;if(e<-.75)v=Math.min(4,v+1);if(e>.7&&v>1)v--;
-                if(v<3&&((xx*3+yy*7+L)%11===0||(xx*3+yy*7+L)%11===1&&t>.3))v++;if(yy===bot)v=Math.max(v,3);px(xx,yy,Q[v])}}}}}
-      g.restore()}
+  /* A pack mule, the foal of a donkey and a mare, and a size bigger than the donkey, drawn after the maintainer's picture of a mule:
+     seen from the side and built more like a horse than the donkey is. A compact, deep barrel that hangs low between the legs, a round
+     high croup, and a deep chest before the fore legs; each leg grows out of a mass of muscle, the hind out of a big thigh and gaskin
+     that come down from the haunch to a clear hock, the fore out of a broad forearm to the knee, and below the hock and the knee a slim
+     dark cannon to a large dark hoof. A neck thick at its base, carried high, with a short, even, upright dark mane whose top is a
+     little ragged. The long head is turned three-quarters toward us, so that the broad forehead and the front of the face catch the
+     light and both long ears read, set in a V: the near one shows its inside, the far one its back. A large dark eye in a pale ring, a
+     pale mealy muzzle, and a long tail of dark hair, narrow at the dock and a little wider below, hanging close behind the thigh from
+     high on the rump. The coat is a bay brown: a lighter strip along the crest under the mane and down the throat, the belly paler, the
+     back of the haunch darker, the legs dark from the knees and hocks down and the far legs darker still. It wears no halter.
+     It is painted as the donkey is: rounded masses (barrel, haunch, shoulder, breast; a neck lit across its round; cranium, cheek, face,
+     muzzle and lower jaw; legs of tapering limbs), each lit by its own surface from the front and above and laid down pixel by pixel in
+     five flat tones, with a checker of the two tones where one band passes into the next; where two masses meet the nearer one wins, so
+     a crease shows behind the shoulder and in front of the haunch. No outline is drawn: the engine darkens the edge. The mane, the ears,
+     the eye, the nostril and the loads go on top; as it brays, the muzzle and the mouth are laid over by hand (VMZ, below). No crease
+     runs down from the withers, which would cross the line of the back under the mane, and the eye is a block of pixels, not a round.
+     Sizes, in drawing units (two to a room pixel): the back stands 66 high (33 room pixels), the tips of the ears 93 (46 or 47 room
+     pixels, a man's height), the belly 31 above the ground: the barrel is about half the height of the back.
+     load: 0 a saddle blanket behind the withers, its girth hanging from its front corner, so that the two make an L and never a T; 1 a
+     pack saddle's pad over it and a pack bag of banded goat's hair on each side, hanging down against the barrel to just above the
+     belly; 2 the bags stuffed with wool and fleeces piled four deep on top, half as high again as the back; -1 the bare mule, nothing
+     on its back, only for the sheets that compare it with the picture it was drawn after (no scene uses it).
+     fr 0 stands; fr 4 to 19 are the sixteen frames of its walk (frame.mule gives the frame for a distance walked), and 1, 2 and 3 three
+     moments of it, a quarter of a cycle apart; fr 20 to 23 are its voice: 20 the head raised and the ears laid back, 21 the mouth a
+     little open for the whinny, 22 the neck stretched and the mouth wide for the hee, 23 half shut for the haw.
+     The walk has four beats, as every walk of a four-footed beast: near hind, near fore, far hind, far fore, each a quarter of a cycle
+     after the one before. A hoof stands for ten frames, going back under the body, and swings forward for six, lifted, with the hock
+     or the knee bent; a swinging fore hoof hangs under its knee and does not fold back across the leg that stands. The legs of a pair
+     hang from one place in the body and open like a pair of compasses. Standing, it stands as in the picture: the near hind straight
+     under the buttock, the far hind a step forward, the far fore a little before the near one. The body sinks a pixel as each fore
+     hoof lands, the head nods a pixel more with it and a frame after it, and the tail swings. Every part grows out of the one before
+     it: the legs out of the body, the neck out of the shoulders, the head out of the neck, the tail out of the top of the rump. */
+  /* The numbers of the walk. A hoof reaches MULE_REACH drawing units from the front of its step to the back while it stands, and stands
+     for MULE_STANCE of the cycle, so a cycle carries the mule MULE_STRIDE room pixels with its hooves planted: 36 / .625 / 2 = 28.8, against
+     the donkey's 24 and a man's 27. A cycle is never quicker than MULE_BEAT seconds, or the walk would turn into a scurry: up to
+     28.8 / .6 = 48 room pixels a second the hooves stay where they are set down, so at WALK_V (48) they do not slip at all, and a
+     cycle takes .6 s.
+     muleFr: the frame of the walk for a distance walked (dist, in room pixels) at a speed (v, room pixels a second; WALK_V if none). */
+  const MULE_REACH=36,MULE_STANCE=.625,MULE_STRIDE=MULE_REACH/MULE_STANCE/2,MULE_BEAT=.6;
+  const muleFr=(dist,v)=>{const c=Math.max(MULE_STRIDE,Math.abs(v==null?WALK_V:v)*MULE_BEAT);return 4+Math.floor((dist/c%1+1)%1*16)%16};
+  /* the tones, highlight to deep shadow: the bay coat, the paler belly, the mealy muzzle and eye ring, the dark legs, the hooves, the mane */
+  const COAT=['#9a7150','#825c3c','#6e4a2d','#583420','#3e2418'],PALE=['#c49c76','#ac8462','#94704f','#7a5840','#5e4230'],
+    MEAL=['#d8c8ae','#c2ae92','#a8927a','#8a7664','#6a5a4c'],PT=['#5e4030','#4a3022','#3a241a','#2a1912','#1c0f0a'],
+    HOOF=['#544640','#3e322c','#2c221e','#201814','#150f0c'],MANE='#22150f',MANE2='#3a2418',EYE='#120c0a',MOUTH='#3e1a16',TEETH='#d8cdb2',
+    STRAP='#5c3318',STRAP_LIT='#8a5a30';
+  /* poses of the head: the poll (px, py), the slant of the face below the level (al, degrees), how far the lower jaw is open (jaw,
+     degrees), and the ears (ear: 0 up, 1 laid back along the neck). At rest the long face runs steeply down and forward; braying, the
+     head goes up with the muzzle forward, the jaw drops open and the ears lie back. */
+  const HEADS={0:{px:43,py:-82,al:64,jaw:0,ear:0},20:{px:44,py:-85,al:38,jaw:0,ear:1},21:{px:45,py:-85,al:16,jaw:20,ear:1},
+    22:{px:46,py:-85,al:6,jaw:34,ear:1},23:{px:44.5,py:-84,al:28,jaw:12,ear:.6}};
+  /* The muzzle of the voice frames, by hand (see the painter): for each frame its top left corner (x, y, in drawing units from the
+     mule's feet) and its rows. The letters: a to e the coat, 0 to 4 the meal, as above; w the coat warming into the meal, p the meal
+     itself, g its shade; n the ring of the nostril, N the nostril; l the lip, L its shade, k the dark under the lips and the chin;
+     M the mouth within, q the tongue deep in it, T the front teeth. */
+  const VMC={a:COAT[0],b:COAT[1],c:COAT[2],d:COAT[3],e:COAT[4],0:MEAL[0],1:MEAL[1],2:MEAL[2],3:MEAL[3],4:MEAL[4],
+    w:'#a38466',p:'#b39d82',g:'#968272',n:'#5e4c3a',N:'#1c100a',l:'#7e6250',L:'#644838',k:'#4a3428',M:'#24120e',q:'#4a2620',T:'#c4b89c'};
+  const VMZ={
+    20:[58,-73,[
+      '......wwwp..',
+      '...wwp111pp.',
+      '.bwppp11ppp2',
+      'cwpppp1nNNp2',
+      'cwlg2ppnNNpp',
+      'LLMlg2ppggg2',
+      '.LLMlg2glllL',
+      '.LllMlllllL.',
+      '.LLLlMlLLLk.',
+      '.kkLLLMkkk..',
+      '...kkkk.....']],
+    21:[64,-83,[
+      '......a.....',
+      '.....w111...',
+      '....wp11pp..',
+      '...wppnNNp2.',
+      '..wpp2nNNnp.',
+      '.wpp22gggpp2',
+      'w222222222gg',
+      'LggglllllllL',
+      'LLllllllLLL.',
+      'MkLLLLLLLkk.',
+      '..MMMMMTTM..',
+      '...lMMMM....',
+      '..LllllL....',
+      '..LLlLL.....',
+      '..kLLLk.....',
+      '..kkLkk.....',
+      '..kkkkk.....']],
+    22:[63,-88,[
+      '.........a......',
+      '........w111....',
+      '.......wp1111p..',
+      '......wpp11pp2..',
+      '.....wpppnNNp2..',
+      '.....wpp2nNNnp2.',
+      '....wpp22gggpp2.',
+      '...cw22222222gg.',
+      '...LlllllllllL..',
+      '....LLllllllLL..',
+      '...MkLLLLLLLk...',
+      '...MMMkkkkkk....',
+      '...MMMMMMMTT....',
+      '....MMMMMMMM....',
+      '......qqMMM.....',
+      '......llMMM.....',
+      '......lllM......',
+      '.....LlllL......',
+      '.....LLlLL......',
+      '.....kLLLk......',
+      '.....kkkkk......']],
+    23:[61,-77,[
+      '.......a....',
+      '......w111..',
+      '....wwp11pp.',
+      '..wwppp11pp2',
+      '.wwppppnNNp2',
+      'wwppp2pnNNnp',
+      'cw22pp22ggg2',
+      'cLg2222222gg',
+      '.LggllllllL.',
+      '..LLllllLLL.',
+      '..MLLLLLkk..',
+      '.LlMMTTM....',
+      '.LlllLL.....',
+      '.kLLLk......',
+      '..kkkk......']]};
+  const FW=FIG.W,FH=FIG.H,X0=FIG.OX,Y0=FIG.OY;
+  function mule(g,x,y,dir,fr,load){g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+    const W=fr>0&&fr<20,k=fr>=4?(fr-4)%16:(fr-1)*4,ph=k/16,o=W&&(k%8===4||k%8===5)?1:0,hd=W?[0,0,0,0,1,2,1,0][k%8]:0;
+    /* the picture is built in a buffer first: color, nearness (z) and part of every pixel; then laid down */
+    const Zb=new Float32Array(FW*FH).fill(-1e9),Cb=new Array(FW*FH),Pb=new Uint8Array(FW*FH);
+    const idx=(px,py)=>py>=0||py<-Y0||px<-X0||px>=FW-X0?-1:(py+Y0)*FW+px+X0;
+    const put=(px,py,z,col,part)=>{const i=idx(Math.floor(px),Math.floor(py));if(i>=0&&z>Zb[i]){Zb[i]=z;Cb[i]=col;Pb[i]=part}};
+    const partAt=(px,py)=>{const i=idx(Math.floor(px),Math.floor(py));return i<0?0:Pb[i]};
+    const set=(px,py,col)=>{const i=idx(Math.floor(px),Math.floor(py));if(i<0)return;Cb[i]=col;if(!Pb[i]){Pb[i]=9;Zb[i]=99}};
+    /* the light falls from the front and above: s, how much a surface with normal (nx, ny, nz) faces it, gives the tone; near the edge
+       of a band the two tones alternate pixel by pixel */
+    const tn=(nx,ny,nz,px,py,ex)=>{const s=nx*.3-ny*.85+nz*.45+((px+py)&1?.04:-.04);return Math.max(0,Math.min(4,(s>.9?0:s>.64?1:s>.2?2:s>-.18?3:4)+(ex||0)))};
+    const coat=(ex,R)=>(nx,ny,nz,px,py)=>(R||COAT)[tn(nx,ny,nz,px,py,ex)];
+    const belly=(nx,ny,nz,px,py)=>{const b=tn(nx,ny,nz,px,py);return ny>.5&&nz>.12?PALE[Math.max(1,Math.min(3,b-1))]:COAT[b]};
+    /* sell: a rounded block, its sides flatter than an ell's (p > 2) */
+    const sell=(cx,cy,cz,A,B,C,th,p,mat,part)=>{const co=Math.cos(th),si=Math.sin(th),R=Math.max(A,B)*1.2+1;
+      for(let py=Math.floor(cy-R);py<=cy+R;py++)for(let px=Math.floor(cx-R);px<=cx+R;px++){const X=px+.5-cx,Y=py+.5-cy,u=(X*co+Y*si)/A,v=(-X*si+Y*co)/B,
+          au=Math.abs(u),av=Math.abs(v),q=1-Math.pow(au,p)-Math.pow(av,p);if(q<0)continue;const w=Math.pow(q,1/p),
+          lx=Math.sign(u)*Math.pow(au,p-1)/A,ly=Math.sign(v)*Math.pow(av,p-1)/B,lz=Math.pow(w,p-1)/C,nx=lx*co-ly*si,ny=lx*si+ly*co,l=Math.hypot(nx,ny,lz)||1;
+        put(px,py,cz+C*w,mat(nx/l,ny/l,lz/l,px,py),part)}};
+    /* ell: a rounded mass, half-sizes a, b, c, turned by th; cap: a limb from one round to another */
+    const ell=(cx,cy,cz,a,b,c,th,mat,part)=>{const co=Math.cos(th),si=Math.sin(th),R=Math.max(a,b)+1;
+      for(let py=Math.floor(cy-R);py<=cy+R;py++)for(let px=Math.floor(cx-R);px<=cx+R;px++){const X=px+.5-cx,Y=py+.5-cy,u=(X*co+Y*si)/a,v=(-X*si+Y*co)/b,q=1-u*u-v*v;if(q<0)continue;
+        const w=Math.sqrt(q),lx=u/a,ly=v/b,lz=w/c,nx=lx*co-ly*si,ny=lx*si+ly*co,l=Math.hypot(nx,ny,lz);put(px,py,cz+c*w,mat(nx/l,ny/l,lz/l,px,py),part)}};
+    const cap=(x0,y0,r0,x1,y1,r1,cz,mat,part)=>{const dx=x1-x0,dy=y1-y0,L2=dx*dx+dy*dy||1,R=Math.max(r0,r1)+1;
+      for(let py=Math.floor(Math.min(y0,y1)-R);py<=Math.max(y0,y1)+R;py++)for(let px=Math.floor(Math.min(x0,x1)-R);px<=Math.max(x0,x1)+R;px++){
+        const X=px+.5-x0,Y=py+.5-y0;let t=(X*dx+Y*dy)/L2;t=t<0?0:t>1?1:t;const ex=X-dx*t,ey=Y-dy*t,d=Math.hypot(ex,ey),r=r0+(r1-r0)*t;if(d>r)continue;
+        const kk=d/r,w=Math.sqrt(1-kk*kk);put(px,py,cz+r*w,mat(ex/r,ey/r,w,px,py,t),part)}};
+    /* at: where the hoof of a leg is at this moment, its beat being off of a cycle after the near hind's: hx before or behind the leg's
+       root (st when it stands still), lift off the ground, and bend, how far the knee or the hock is flexed */
+    const at=(off,st)=>{if(!W)return{hx:st,lift:0,bend:0};const p=((ph-off)%1+1)%1,T=MULE_REACH,B=MULE_STANCE;if(p<B)return{hx:T/2-T*p/B,lift:0,bend:0};
+      const v=(p-B)/(1-B),q=Math.sin(Math.PI*v);return{hx:-T/2*Math.cos(Math.PI*v),lift:v?2+Math.round(5*q):0,bend:q}};
+    /* leg: from inside the body at (sx, sy) by the knee (fore) or the hock (hind) and the fetlock down to the hoof. The upper leg is in
+       the coat, lit along its front; from the knee or the hock down it is in the dark of the points; a far leg is a tone darker and
+       behind the body. A fore leg is straight while it stands and folds at the knee as it swings, the hoof turning back under it; the
+       hock of a hind leg stands behind the line of the leg, more so as it swings. */
+    const leg=(sx,P,near,hind)=>{const ex=near?0:2,cz=near?3:-8,sy=(hind?-42:-40)+o,b=P.bend,
+        pd0=.3*(1-b)-(hind?.5:.12)*b,pd1=(1-b)+(hind?.85:1)*b,pl=Math.hypot(pd0,pd1),ux=pd0/pl,uy=pd1/pl,
+        gy=0,hc=sx+P.hx,fx=hc-ux*7.6+.4,fy=gy-P.lift-uy*7.6-.4,dx=fx-sx,dy=fy-sy,L=Math.hypot(dx,dy),nx=-dy/L,ny=dx/L,
+        f=hind?.58:.6,off=hind?-(1.6+3.4*b):.4+4*b,jx=sx+dx*f-nx*off,jy=sy+dy*f-ny*off,up=(nx,ny,nz,px,py)=>COAT[tn(nx,ny,nz,px,py,ex+(hind&&nx<-.45?1:0))],lo=coat(ex,PT);
+      if(hind){/* the thigh and the gaskin, deep under the haunch, narrowing to the point of the hock */
+        cap(sx,sy-2,6.5,jx,jy,2.6,cz,up,4);cap(sx-3.5,sy-6,4.8,jx-.5,jy,2.3,cz-.5,up,4)}
+      else{/* the forearm, broad at the elbow */
+        cap(sx,sy-1,5.4,jx,jy,2.6,cz,up,4)}
+      cap(jx,jy,1.9,fx,fy,1.7,cz,lo,4);ell(fx,fy,cz+.3,2.2,2.3,2.2,0,lo,4);
+      /* the pastern slants down and forward to the hoof; the hoof, wider at the ground, its toe sloped, its heel steep */
+      cap(fx+ux*1.5,fy+uy*1.5,1.7,fx+ux*3.5,fy+uy*3.5,1.9,cz,lo,4);
+      const vx=uy,vy=-ux;/* (vx, vy): toward the toe */
+      for(let py=Math.floor(fy-2);py<=fy+10;py++)for(let px=Math.floor(fx-7);px<=fx+7;px++){const X=px+.5-fx,Y=py+.5-fy,a=X*ux+Y*uy,c=X*vx+Y*vy;
+        if(a<3.6||a>7.9)continue;const t=(a-3.6)/4.3;if(c<-2.7-t*.6||c>2.2+t*2.2)continue;
+        put(px,py,cz+1,a<4.6?HOOF[Math.min(4,1+ex)]:HOOF[Math.min(4,(c>1.2+t*2.2?1:c<-1.6?3:2)+ex)],5)}};
+    /* the far legs, behind the body */
+    leg(-28,at(.5,11),0,1);leg(17,at(.75,5),0,0);
+    /* the tail: set on high at the top of the rump, a short dock in the coat, then long dark hair hanging close behind the thigh, fuller
+       below; it swings a little as the mule walks, and ends above the hocks */
+    {const sw=W?1.6*Math.cos(6.2832*(ph-.05)):0;cap(-33,-62+o,1.6,-37.4,-57+o,1.6,-1,coat(1),7);
+      for(let py=-58;py<=-25;py++){const s=(py+58)/33,cx=-38.4-s*1.8+sw*s*s,w=2.2+s*2.6-(s>.88?(s-.88)*16:0);
+        for(let px=Math.floor(cx-w/2);px<cx+w/2;px++){const e=(px+.5-cx)/(w/2),hair=((px*5+Math.floor((py+60)/3))%4+4)%4;
+          put(px,py+o,-2,e>.45&&s<.7?MANE2:hair===0?PT[3]:e<-.5?MANE:PT[4],7)}}}
+    /* the body: barrel, haunch, shoulder and breast */
+    sell(0,-48.5+o,0,22.5,17,13,0,2.5,belly,1);
+    ell(-22,-52.5+o,2,15,14.5,9,-.08,(nx,ny,nz,px,py)=>COAT[tn(nx,ny,nz,px,py,nx<-.5?1:0)],1);
+    ell(17,-51.5+o,2,14,10,5.5,1,coat(0),1);
+    ell(24,-44.5+o,1,9,11.5,4,0,coat(0),1);
+    /* the near legs, in front of it */
+    leg(-28,at(0,-5),1,1);leg(17,at(.25,-4),1,0);
+    /* the head's pose: at rest it nods with the walk; its voice raises it. u runs down the face from the poll, v across it toward the
+       jaw, so that the side of the head turned to us lies at positive v and the front of the face at negative v */
+    const HP=HEADS[fr>=20?Math.min(23,fr):0],a=(HP.al+hd*2)*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),PX=HP.px+hd*.4,PY=HP.py+o+hd,
+      Wp=(u,v)=>[PX+u*ca-v*sa,PY+u*sa+v*ca],hm=coat(0),pm=(nx,ny,nz,px,py)=>MEAL[Math.max(0,Math.min(3,tn(nx,ny,nz,px,py)-1))];
+    /* the neck: from the withers and the breast up to the poll and the throat, its crest a little arched; lit across its round, so that
+       the crest under the mane and the front of the throat catch the light and its middle lies in a band of shade */
+    const c0=[7,-62+o],c2=Wp(-1.5,-.5),c1=[c0[0]+(c2[0]-c0[0])*.42-2.5,c0[1]+(c2[1]-c0[1])*.62-3.5],t1=Wp(14,9.5),t0=[35,-47+o];
+    const crest=s=>[(1-s)*(1-s)*c0[0]+2*s*(1-s)*c1[0]+s*s*c2[0],(1-s)*(1-s)*c0[1]+2*s*(1-s)*c1[1]+s*s*c2[1]],poly=[];
+    for(let i=0;i<=16;i++)poly.push(crest(i/16));poly.push(Wp(10,3),t1,t0,[26,-40+o],[8,-48+o]);
+    {const inPoly=(x,y)=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const[xi,yi]=poly[i],[xj,yj]=poly[j];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c};
+      const dSeg=(x,y,p,q)=>{const dx=q[0]-p[0],dy=q[1]-p[1],t=Math.max(0,Math.min(1,((x-p[0])*dx+(y-p[1])*dy)/(dx*dx+dy*dy))),ex=x-p[0]-dx*t,ey=y-p[1]-dy*t;return Math.hypot(ex,ey)};
+      const ax=t0[0]-c0[0]*.5-c2[0]*.5,ay=t0[1]-c0[1]*.5-c2[1]*.5,al=Math.hypot(ax,ay),acx=ax/al,acy=ay/al;
+      let x0=99,x1=-99,y0=99,y1=-99;for(const[p,q]of poly){x0=Math.min(x0,p);x1=Math.max(x1,p);y0=Math.min(y0,q);y1=Math.max(y1,q)}
+      for(let py=Math.floor(y0);py<=y1;py++)for(let px=Math.floor(x0);px<=x1;px++){const X=px+.5,Y=py+.5;if(!inPoly(X,Y))continue;
+        let dc=1e9;for(let i=0;i<16;i++)dc=Math.min(dc,dSeg(X,Y,poly[i],poly[i+1]));const s=dc/(dc+dSeg(X,Y,t1,t0)),
+          th=(s*2-1)*1.25,nz=Math.cos(th),sn=Math.sin(th);{let b=tn(acx*sn*1.2,acy*sn*.3-.25*Math.max(0,-sn),nz,px,py);if(s<.13||s>.9&&s<.97)b=Math.max(1,b-1);put(px,py,-1,COAT[b],2)}}}
+    /* the mane: a short, even, upright crest along the neck, from the withers up to the poll, its top a little ragged and a few hairs
+       there catching the light */
+    for(let i=0;i<=80;i++){const s=.03+i/80*.95,[mx,my]=crest(s),[nx,ny]=crest(Math.min(1,s+.02)),dx=nx-mx,dy=ny-my,l=Math.hypot(dx,dy)||1,ox=dy/l,oy=-dx/l,
+        h=(i<8?1+i*.2:2.6)+(((i*13)%7)<2?.5:0)+(i>64?(i-64)*.03:0);
+      for(let j=-1;j<=h;j+=.5)put(mx+ox*j,my+oy*j,20,j>h-.6&&((i*5)%9)<3?MANE2:MANE,8)}
+    /* The head, long and fine, turned three-quarters toward us: the cranium with its broad forehead, the round jaw of the near cheek, the
+       long straight face, and the big pale muzzle, its lowest and frontmost part. The lower jaw turns on its hinge to open the mouth. */
+    {const[c0x,c0y]=Wp(3.5,.5);ell(c0x,c0y,1,6.5,7.5,7,a,hm,3)}
+    {const[c0x,c0y]=Wp(12.5,5);ell(c0x,c0y,1.5,8.5,6.3,6,a,hm,3)}
+    {const[ax0,ay0]=Wp(4.5,-2.4),[bx0,by0]=Wp(22.5,-1.2);cap(ax0,ay0,4.7,bx0,by0,4.2,2,hm,3)}
+    {const[c0x,c0y]=Wp(26,.9);ell(c0x,c0y,2.2,6,5.8,5.4,a,pm,3)}
+    const ja=HP.jaw*Math.PI/180,hu=13,hv=8,rot=(u,v)=>[hu+(u-hu)*Math.cos(ja)-(v-hv)*Math.sin(ja),hv+(u-hu)*Math.sin(ja)+(v-hv)*Math.cos(ja)],Wr=(u,v)=>Wp(...rot(u,v));
+    {const[h0,h1]=Wp(hu,hv),[m0,m1]=Wr(23.5,5.6);cap(h0,h1,4,m0,m1,2.9,1,hm,3);const[c0x,c0y]=Wr(26,4.8);ell(c0x,c0y,1.3,3.6,2.8,3,a+ja,pm,3)}
+    if(HP.jaw){/* the open mouth: dark within, the teeth along both jaws */
+      const Q=[Wp(18.5,5.2),Wp(30.6,2.8),Wr(28.4,3.8),Wr(18.5,5.6)];let x0=99,x1=-99,y0=99,y1=-99;for(const[p,q]of Q){x0=Math.min(x0,p);x1=Math.max(x1,p);y0=Math.min(y0,q);y1=Math.max(y1,q)}
+      for(let py=Math.floor(y0);py<=y1;py++)for(let px=Math.floor(x0);px<=x1;px++){let c=false;for(let i=0,j=3;i<4;j=i++){const[xi,yi]=Q[i],[xj,yj]=Q[j];if(yi>py+.5!==yj>py+.5&&px+.5<(xj-xi)*(py+.5-yi)/(yj-yi)+xi)c=!c}if(c)put(px,py,-1,MOUTH,3)}
+      /* the teeth go only where the mouth shows */
+      const tooth=(p,q,c)=>{const i=idx(Math.floor(p),Math.floor(q));if(i>=0&&Cb[i]===MOUTH)Cb[i]=c};
+      for(let u=21;u<=29;u+=.5){const[p,q]=Wp(u,4.2-(u-19)*.12);tooth(p,q,TEETH);const[r,s]=Wr(u,3.6);tooth(r,s,'#cbbfa4')}}
+    /* the ears: long, set apart on the top of the head in a V, or laid back along the neck as it brays. The near one shows its inside,
+       paler, within a dark rim; the far one is seen from behind, darker; both have dark tips */
+    const ear=(bx0,by0,ang,len,near)=>{const ex=Math.cos(ang),ey=Math.sin(ang),bx=bx0-ex*2,by=by0-ey*2,L=len+2,R=L+4;
+      for(let py=Math.floor(by-R);py<=by+R;py++)for(let px=Math.floor(bx-R);px<=bx+R;px++){const X=px+.5-bx,Y=py+.5-by,t=(X*ex+Y*ey)/L,s=-X*ey+Y*ex;if(t<0||t>1)continue;
+        const hw=(near?2.9:2.6)*Math.sin(Math.PI*(t*.8+.2));if(Math.abs(s)>hw)continue;const l=s/hw;let col;
+        if(t>.82)col=MANE;else if(Math.abs(s)>hw-1)col=near?MANE2:MANE;
+        else if(near&&t>.14)col=(l<-.1?PALE[3]:(px+py)&1&&l<.3?PALE[3]:COAT[3]);
+        else col=COAT[tn(-ey*l*.7,ex*l*.7,.7,px,py,near?0:1)];
+        put(px,py,near?12:-6,col,6)}};
+    {const e=HP.ear,bk=-Math.PI+.42,nA=-1.41,fA=-.92,[f0,f1]=Wp(1.8,-5.2),[n0,n1]=Wp(.4,1.6);
+      ear(f0,f1,fA+(bk+.1-fA)*e,11.5,0);ear(n0,n1,nA+(bk-nA)*e,13,1)}
+    /* a short forelock lies back over the poll between the ears */
+    for(const[u,v]of[[1,-2.4],[.2,-1],[1.6,-.4]]){const[r0,r1]=Wp(u+1.4,v),[e0,e1]=Wp(u-1.2,v+1.8);cap(r0,r1,.9,e0,e1,.8,14,()=>MANE,8)}
+    /* the eye, large and dark in its pale ring, under the brow on the near side; the nostril on the front of the muzzle; the mouth */
+    {const[e0,e1]=Wp(9,3),X=Math.floor(e0),Y=Math.floor(e1),sh=(x,y,c)=>{if(partAt(x,y)===3)set(x,y,c)};
+      for(const[dx,dy,c]of[[-1,-1,MEAL[0]],[0,-1,MEAL[0]],[1,-1,MEAL[0]],[2,-1,MEAL[1]],[-2,0,MEAL[1]],[3,0,MEAL[1]],[-1,1,MEAL[1]],[3,1,MEAL[2]],[0,2,MEAL[1]],[1,2,MEAL[1]],[2,2,MEAL[2]]])sh(X+dx,Y+dy,c);
+      for(const dx of[-1,0,1,2])sh(X+dx,Y,EYE);for(const dx of[0,1,2])sh(X+dx,Y+1,dx===2?'#2a1e18':EYE);sh(X,Y,'#4e3e36');
+      for(const dx of[-2,-1,0,1])sh(X+dx,Y-2,COAT[3])}
+    for(const[u,v,c]of[[26.8,-1.8,MEAL[4]],[27.4,-.9,'#2a1e18'],[28,0,'#2a1e18'],[28,.9,MEAL[4]]]){const[n0,n1]=Wp(u,v);if(partAt(n0,n1)===3)set(n0,n1,c)}
+    if(!HP.jaw)for(let u=24;u<=30.4;u+=.5){const[p,q]=Wp(u,3.8);if(partAt(p,q)===3)set(p,q,MEAL[4])}
+    /* As it brays, the muzzle and the mouth are placed by hand, pixel by pixel, after the maintainer's picture, one map to each frame of
+       the voice: the coat warming into a mealy muzzle, lit along its top; a round dark nostril high on its front in a ring of shade; the
+       upper lip below it brown, and its underside dark; the mouth dark within, with a glimpse of the front teeth; the lower lip and the
+       chin brown, darker underneath. A map is laid over what the masses painted: '.' leaves a pixel as it is, any other letter sets it
+       (see VMC). The maps keep to the muzzle and the jaw; nothing else of the head changes. */
+    if(VMZ[fr]){const[x0,y0,R]=VMZ[fr];R.forEach((r,j)=>{for(let i=0;i<r.length;i++){const ch=r[i];if(ch==='.')continue;const k=idx(x0+i,y0+j);if(k<0)continue;
+      if(ch===' '){Pb[k]=0;Zb[k]=-1e9;continue}Cb[k]=VMC[ch];if(!Pb[k]){Pb[k]=3;Zb[k]=99}}})}
+    /* the loads */
+    const topAt=X=>{let Y=-Y0;while(Y<0&&![1,2].includes(partAt(X,Y)))Y++;return Y},botAt=X=>{let Y=-1;while(Y>-Y0&&partAt(X,Y)!==1)Y--;return Y};
+    if(load>=0){/* the saddle blanket on the back, following its line, and one girth from its front corner down behind the elbow */
+      const K=['#b4604c','#9a4a3a','#7e3a2e','#642a24','#4a1e1c'];for(let X=-15;X<=8;X++){const tp=topAt(X)-1;for(let i=0;i<13;i++){const u=(X+15.5)/24;
+        set(X,tp+i,i===9?'#d4c49c':K[i===0?0:i===12?4:u<.1?4:u<.28?3:u<.82?2:1])}}
+      if(!load){const yb=topAt(8)+12,yb2=botAt(9);for(let Y=yb;Y<=yb2;Y++){const X=8+Math.round((Y-yb)/Math.max(1,yb2-yb)*1.5);set(X,Y,STRAP);set(X-1,Y,STRAP_LIT)}}}
+    if(load>0){/* the pack saddle's pad over the blanket, and a pack bag of dark goat's hair, banded, hanging on each side; the near one hides the far */
+      const S=ramp('#6a4a2c'),B=ramp('#3e3029'),full=load>1;for(let X=-11;X<=11;X++){const tp=topAt(X)-4,u=(X+11.5)/23;for(let i=0;i<4;i++)set(X,tp+i,S[i===0?(u>.5?0:1):u<.15?4:u<.4?3:2])}
+      const bt=topAt(0)+4,bh=full?28:25;for(let i=0;i<bh;i++){const s=i/(bh-1),hw=Math.round(15.5+(full?2.5:1.2)*Math.sin(Math.PI*Math.min(1,s*1.15))-(s>.86?(s-.86)*28:0));
+        for(let X=-hw;X<=hw;X++){const u=(X+hw+.5)/(2*hw+1);let v=u<.1?4:u<.3?3:u<.78?2:1;if(i<2)v=Math.max(0,v-1);if(s>.84)v=Math.min(4,v+1);
+          const band=i===5||i===6||i===bh-6;set(X-1,bt+i,band?(v<2?'#b88a44':v<3?'#9a6e34':'#6e4c26'):B[v])}}
+      for(let X=-15;X<=15;X++)set(X-1,bt,X%2?S[1]:S[2]);
+      if(full){/* wool bulging out of the bags' mouths, and fleeces, folded and piled on the pack saddle four deep, each a little narrower
+          than the one under it, their edges hanging in soft waves and drooping over the bags at the ends; curls of shade in the wool */
+        const Wl=ramp('#d8ceb6');for(let X=-16;X<=16;X++){const h=2+((X*7+3)%5+5)%5%3;for(let j=0;j<h;j++)set(X-1,bt-1-j,Wl[j===h-1?0:j?1:2])}
+        for(let L=0;L<4;L++){const yb=bt+2-L*7,hw=20-L*2.6,cx=(L%2?1.5:-.5)-1,Q=ramp(['#d4c9ae','#dcd2b8','#cfc3a6','#d9cfb4'][L]);
+          for(let X=Math.floor(cx-hw);X<=Math.ceil(cx+hw);X++){const e=(X-cx)/hw;if(Math.abs(e)>1)continue;
+            const bot=yb+Math.round(1.2*Math.sin(X*.8+L*1.7))+(Math.abs(e)>.82?2:0),top=yb-9+Math.round(3*Math.pow(Math.abs(e),3))+(((X*5+L*3)%7+7)%7<2?1:0);
+            for(let Y=top;Y<=bot;Y++){const t=(Y-top)/Math.max(1,bot-top);let v=t<.2?0:t<.45?1:t<.8?2:3;if(e<-.75)v=Math.min(4,v+1);if(e>.7&&v>1)v--;
+              if(v<3&&((X*3+Y*7+L)%11===0||(X*3+Y*7+L)%11===1&&t>.3))v++;if(Y===bot)v=Math.max(v,3);set(X,Y,Q[v])}}}}}
+    /* a pinhole the masses leave between them (a speck or two where an ear, the mane and the head meet) is filled from its neighbour */
+    {const seen=new Uint8Array(FW*FH);for(let i=0;i<FW*FH;i++){if(Pb[i]||seen[i])continue;const st=[i],comp=[];let edge=false;seen[i]=1;
+      while(st.length){const k=st.pop(),x=k%FW,y=(k-x)/FW;comp.push(k);if(!x||!y||x===FW-1||y===FH-1)edge=true;
+        for(const j of[k-1,k+1,k-FW,k+FW])if(j>=0&&j<FW*FH&&!seen[j]&&!Pb[j]&&Math.abs(j%FW-x)<=1){seen[j]=1;st.push(j)}}
+      if(!edge&&comp.length<8)for(const k of comp){const n=[k-1,k+1,k-FW,k+FW].find(j=>Pb[j]&&Pb[j]!==10);if(n!=null){Cb[k]=Cb[n];Pb[k]=10}}}}
+    /* lay the buffer down */
+    for(let i=0;i<FW*FH;i++)if(Pb[i]){g.fillStyle=Cb[i];g.fillRect(i%FW-X0,Math.floor(i/FW)-Y0,1,1)}
+    g.restore()}
     /* The voice: a mule's bray begins like a horse's whinny, high and shaking, and ends like a donkey's hee-haw, twice over. About one and
        a half seconds, as quiet as the game's other sounds. The voice list follows it: the head rises as the whinny begins, the mouth opens
        with it, and with each hee the neck stretches and the mouth opens wide, closing halfway for the haw. */
