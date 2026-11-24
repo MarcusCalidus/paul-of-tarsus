@@ -50,6 +50,12 @@ Birds keep the open air alive, by day and in fair weather. Gulls wheel over ever
 
 ![Every bird and every frame, enlarged](screenshots/birds-sheet.png)
 
+The sea is painted as it is seen from a quay or a deck, a man's height above it. Each pixel of it is the color of the sky that the waves turn toward us, laid over the blue of the water: near at hand the swell and the small waves show, and toward the horizon they close up into level bands, until a little haze lies along the line where sea meets sky. Under the sun, or the moon at night, the light breaks on the waves into a long, narrow road of level glints that twinkle as the water moves. The wind decides the rest: the harder it blows, the more the waves chop and the more whitecaps break, each a short crest of foam spilling down the face of its wave and blown on ahead; small waves run before it, and the clouds drift with it on a deck that lies in perspective over the sea. The same wind lifts a pennant at a ship's stern and bends the smoke of the hearths on shore; and because a sign can mislead, as smoke does in the lee of a hill, or a pennant on a ship swung round at anchor by the current, each can be set by itself. The coast is painted to the same standard: islands and capes on the horizon in the haze of their distance, headlands of bedded rock with scrub above and tumbled stones at the water's edge, beaches of sand or shingle with the sky lying in their wet edge and a lace of foam that runs up and back, the coast road, the stone quays with their squat mooring stones, and harbor towns whose houses step up the hill above their warehouses. All of it is lit by the hour: dawn, morning, midday, evening and night.
+
+![The sea and the coast at five hours of the day](screenshots/coast-sheet.png)
+
+![The signs of the wind, from a calm to a gale, and two that mislead](screenshots/coast-wind.png)
+
 A scene has depth: whoever stands farther back is drawn behind. A man who walks behind the carrier's mule is hidden by it up to the waist, and hides it when he stands in front; the same holds for a stool, a low table or a heap of sailcloth that stands out on the floor.
 
 ![Paul behind the mule, and Timothy in front of it](screenshots/depth.png)

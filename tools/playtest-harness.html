@@ -473,6 +473,75 @@
     ok(!!fl(),`birds: once he has gone, they come back (after ${((performance.now()-t0)/1000).toFixed(0)} s)`);
     /* the picture: the sparrows back on their roof, the doves on theirs, and the storks halfway across */
     {const t1=performance.now();while(((G.t/1000)%70<13||(G.t/1000)%70>17)&&performance.now()-t1<75000)await wait(200)}halt('birds')}
+  /* coast (shared/coast.js, and the wind of shared/weather.js): six scenes at the hours, winds and coasts the chapters ahead need (the
+     quay of Troas in the morning with its town, a cliff coast and the coast road at midday, a harbor under a rocky hill at evening, dawn
+     at sea, night at anchor with the moon on the water, a harbor of warehouses under drifting cloud), each with its sea moving. It hands
+     over coast-sheet.png (each scene at the size the game paints it, its sea and smoke caught in motion), coast-detail.png (parts of them four
+     times enlarged, for crosses, posts across the horizon and halos) and coast-wind.png (the signs of the wind for each strength, and two
+     signs that lie: smoke in the lee of a hill and a pennant swung by the current). It ends on the first scene, its sea and smoke moving */
+  if(stop==='coast'){G.speedAll=0;ov.className='';ov.onclick=null;G.splash=0;G.scene=null;clearInterval(sk);
+    await need('country');await need('weather');await need('coast');const K=SHARED.coast,Wt=SHARED.weather,CO=SHARED.country,SHEETS={},
+      label=(g,t,x,y)=>{g.font='bold 14px Menlo,Consolas,monospace';g.lineWidth=3;g.strokeStyle='#14100c';g.strokeText(t,x,y);g.fillStyle='#f4f0e6';g.fillText(t,x,y)};
+    /* the wind and its signs */
+    const wN=Wt.wind({from:'n',force:2,view:'w'}),calmW=Wt.wind({force:0}),lee=Wt.wind({from:'n',force:2,view:'w',smoke:{lee:1}}),cur=Wt.wind({from:'n',force:2,view:'w',pennant:{from:'s',force:1}});
+    ok(wN.dx<-.99&&Math.abs(wN.dz)<.01&&Wt.wind({from:'n',view:'s'}).dz>.99&&Wt.wind({from:'e',view:'s'}).dx>.99,'coast: a north wind blows to the left of a picture that looks west, into one that looks south; an east wind looking south blows to the right');
+    ok(!calmW.caps&&!calmW.pennant.lift&&calmW.smoke.rise===1&&[0,1,2,3,4].every(f=>f<1||Wt.wind({force:f}).caps>=Wt.wind({force:f-1}).caps&&Wt.wind({force:f}).pennant.lift>Wt.wind({force:f-1}).pennant.lift),
+      'coast: in a calm no whitecaps break, the pennant hangs and smoke rises straight; the harder it blows, the more whitecaps and the higher the pennant flies');
+    ok(lee.smoke.dx>0&&lee.smoke.curl&&lee.pennant.dx===wN.pennant.dx&&cur.pennant.dx>.5&&cur.smoke.dx===wN.smoke.dx&&cur.caps===wN.caps,'coast: a sign can lie by itself: smoke in the lee of a hill lies back against the wind, a pennant swung by the current points another way, and the other signs still show the wind');
+    const SC=[
+      ()=>{const O={w:320,hz:62,hour:'morning',sun:[-40,6],cloud:.2,wind:wN,seed:3},p={};
+        const c=bake(320,g=>{K.sky(g,O);K.isle(g,110,196,4.5,O,{dist:.8,seed:4});p.S=K.sea(g,O);
+          p.T=K.town(g,O,{x0:200,x1:320,base:100,hill:x=>Math.min(99,30+(320-x)*.22+Math.sin(x/9)*2+Math.max(0,236-x)*.9),rows:5,size:15,warehouses:[[236,40,9],[280,40,10]],seed:9});
+          p.Q=K.quay(g,O,{view:'top',y:100,y1:144,bollards:[34,112,190],seed:5});p.S.open=(x,y)=>y<100&&y<p.T.top(x)-1},12);
+        return[c,(g,t)=>{p.S.draw(g,t);for(const[x,y]of p.T.hearths)Wt.smoke(g,t,x,y,O.wind,{h:20})},'Troas quay, morning, fresh north wind']},
+      ()=>{const O={w:320,hz:60,hour:'midday',sun:[250,-30],cloud:.1,wind:Wt.wind({from:'n',force:3,view:'s'}),seed:6},p={};
+        const c=bake(320,g=>{K.sky(g,O);K.isle(g,150,280,7,O,{dist:.78,seed:8});p.S=K.sea(g,O);
+          p.H=K.headland(g,O,{side:'l',top:14,xs:96,ys:44,xf:126,foot:72,base:100,scrub:.8,seed:12});
+          p.B=K.shore(g,O,{kind:'shingle',edge:x=>100+x*.04+Math.sin(x/13)*1.2,x0:0,x1:220,y1:120,seed:3});
+          clipTo(g,()=>poly(g,[0,144,0,120,120,116,200,110,250,94,320,78,320,144]),()=>CO.turf(g,0,76,320,144,'#8a9058',5,{dry:.6,flowers:6}));
+          K.road(g,O,{pts:[318,84,280,94,240,105,190,118,140,132,96,144],w0:4,w1:22,kerb:'l',seed:7});p.S.open=(x,y)=>y<p.H.top(x)-.5&&y<100},12);
+        return[c,(g,t)=>{p.S.draw(g,t);p.H.draw(g,t);p.B.draw(g,t)},'cliff, shingle and coast road, midday, strong wind']},
+      ()=>{const O={w:320,hz:64,hour:'evening',sun:[40,50],cloud:.3,wind:Wt.wind({from:'n',force:1,view:'s'}),seed:9},p={};
+        const c=bake(320,g=>{K.sky(g,O);K.isle(g,0,120,8,O,{kind:'cape',from:'l',dist:.75,seed:2});p.S=K.sea(g,O);
+          p.H=K.headland(g,O,{side:'r',top:4,xs:214,ys:34,xf:188,foot:82,base:100,scrub:.4,seed:14,rock:'#a89a86'});
+          p.M=K.quay(g,O,{view:'face',x0:60,x1:190,y:84,slope:-.012,face:6,bollards:[80,120,160],seed:3});p.S.open=(x,y)=>y<p.H.top(x)-.5&&!(x>58&&x<192&&y>80&&y<92)},12);
+        return[c,(g,t)=>{p.S.draw(g,t);p.H.draw(g,t)},'harbor under a rocky hill, evening, light wind']},
+      ()=>{const O={w:320,hz:66,hour:'dawn',sun:[190,62],cloud:.25,wind:Wt.wind({from:'n',force:1,view:'e'}),seed:12},p={};
+        const c=bake(320,g=>{K.sky(g,O);K.isle(g,0,90,10,O,{kind:'cape',from:'l',dist:.55,seed:21});K.isle(g,250,300,3,O,{dist:.9,seed:22});p.S=K.sea(g,O)},12);
+        return[c,(g,t)=>p.S.draw(g,t),'dawn at sea, a cape and an island']},
+      ()=>{const O={w:320,hz:62,hour:'night',moon:[96,20,.72],cloud:.15,wind:Wt.wind({from:'n',force:1,view:'w'}),seed:15},p={};
+        const c=bake(320,g=>{K.sky(g,O);K.isle(g,180,320,12,O,{kind:'cape',from:'r',dist:.4,seed:31});p.T=K.town(g,O,{x0:250,x1:316,base:62,hill:x=>51+(320-x)*.02,rows:3,size:6,dist:.4,lamps:.3,seed:5});p.S=K.sea(g,O)},12);
+        return[c,(g,t)=>p.S.draw(g,t),'night at anchor, the waning moon']},
+      ()=>{const O={w:320,hz:60,hour:'midday',sun:[120,-60],cloud:.55,wind:Wt.wind({from:'nw',force:3,view:'s'}),seed:18,moving:1},p={};
+        const c=bake(320,g=>{K.sky(g,O);p.S=K.sea(g,O);K.quay(g,O,{view:'face',x0:0,x1:320,y:78,face:5,seed:8,bollards:[30,150,280]});
+          p.T=K.town(g,O,{x0:0,x1:320,base:78,hill:x=>48-Math.sin(x/50)*4,rows:3,size:12,dist:.15,warehouses:[[20,60,11],[96,70,12],[190,64,11]],seed:6});
+          K.quay(g,O,{view:'top',y:112,y1:144,bollards:[60,240],seed:9});p.S.open=(x,y)=>y>84&&y<112},12);
+        O.top=K.skyline(x=>O.hz,p.T.top);const LY=K.skyLayer(O);
+        return[c,(g,t)=>{LY.draw(g,t);p.S.draw(g,t);for(const[x,y]of p.T.hearths)Wt.smoke(g,t,x,y,O.wind,{h:16})},'warehouses across a harbor, drifting cloud',LY,O]}];
+    const shots=[],made=SC.map(f=>f());for(const[c,dr]of made){const[d,dg]=mk(640,288);dg.drawImage(c,0,0);dg.setTransform(HR,0,0,HR,0,0);dr(dg,2400);shots.push(d)}
+    {const[c,g]=mk(1280,288*3);shots.forEach((d,i)=>{g.drawImage(d,(i%2)*640,Math.floor(i/2)*288);label(g,made[i][2],(i%2)*640+8,Math.floor(i/2)*288+18)});SHEETS['coast-sheet']=c.toDataURL()}
+    /* the parts to look at enlarged: the town, the cliff's foot, the moon, the mole with its mooring stones, the quay's edge, the beach and the road */
+    {const Z=[[0,200,30,120,74],[1,60,30,90,76],[2,150,26,170,76],[4,80,10,40,20],[2,50,76,150,20],[0,20,88,110,24],[1,0,94,160,50],[5,0,40,160,50]],[c,g]=mk(1600,640);g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,1600,640);
+      let x=0,y=0,rh=0;for(const[i,a,b,w,h]of Z){const k=Math.min(4,1600/w/2);if(x+w*k>1600){x=0;y+=rh+4;rh=0}g.drawImage(shots[i],a*2,b*2,w*2,h*2,x,y,w*k,h*k);x+=w*k+4;rh=Math.max(rh,h*k)}SHEETS['coast-detail']=c.toDataURL()}
+    /* the signs of the wind: smoke from two hearths at the shore, a pennant, whitecaps, and cloud */
+    {const cells=[['calm',{force:0}],['light north wind',{force:1}],['fresh north wind',{force:2}],['strong north wind',{force:3}],['north wind, a gale',{force:4}],['fresh north, smoke in the lee',{force:2,smoke:{lee:1}}],['fresh north, pennant swung by the current',{force:2,pennant:{from:'s',force:1}}],['fresh north-east wind',{from:'ne',force:2}]],
+        CW=160,CH=96,[c,g]=mk(CW*8,CH*16);g.imageSmoothingEnabled=false;
+      cells.forEach(([name,wo],i)=>{const W=Wt.wind(Object.assign({from:'n',view:'w'},wo)),O={w:CW,hz:52,hour:'morning',sun:[30,8],wind:W,seed:4+i,cloud:.3},p={};
+        const b=bake(CW,q=>{K.sky(q,O);p.S=K.sea(q,Object.assign(O,{y1:CH}));p.H=K.headland(q,O,{side:'r',top:22,xs:110,ys:40,xf:96,foot:60,base:70,scrub:.6,seed:5})},12),[d,dg]=mk(CW*2,CH*2);
+        dg.drawImage(b,0,0);dg.setTransform(2,0,0,2,0,0);p.S.open=(x,y)=>y<p.H.top(x)-.5;p.S.draw(dg,1500);Wt.smoke(dg,2600,104,60,W,{h:28});Wt.smoke(dg,2600,150,63,W,{h:22});Wt.pennant(dg,1500,48,14,W,{len:16});
+        g.drawImage(d,0,0,CW*2,CH*2,(i%2)*CW*4,Math.floor(i/2)*CH*4,CW*4,CH*4);label(g,name+', looking west',(i%2)*CW*4+8,Math.floor(i/2)*CH*4+20)});SHEETS['coast-wind']=c.toDataURL()}
+    window.SHEETS=SHEETS;
+    /* nothing upright across the horizon: a mooring stone that would stand across it is left out */
+    {const O={w:320,hz:62,hour:'morning',seed:2},a=bake(320,g=>K.quay(g,O,{view:'face',x0:20,x1:200,y:63,face:5,seed:4}),12),b=bake(320,g=>K.quay(g,O,{view:'face',x0:20,x1:200,y:63,face:5,seed:4,bollards:[60,120]}),12),
+        A=a.getContext('2d').getImageData(0,0,640,288).data,B=b.getContext('2d').getImageData(0,0,640,288).data;let same=true;for(let i=0;i<A.length;i++)if(A[i]!==B[i]){same=false;break}
+      ok(same,'coast: no mooring stone is set where it would stand across the horizon')}
+    /* the moving sky: the clouds drift, and nothing below the skyline is touched */
+    {const[,,,LY,O]=made[5],f=t=>{const[c,g]=mk(640,288);g.setTransform(HR,0,0,HR,0,0);LY.draw(g,t);return g.getImageData(0,0,640,288).data},a=f(0),b=f(5000);let moved=0,below=0;
+      for(let y=0;y<288;y++)for(let x=0;x<640;x++){const i=(y*640+x)*4;if(a[i]!==b[i])moved++;if(b[i+3]&&y/2>=O.top((x+.5)/2))below++}
+      ok(moved>2000&&!below,`coast: the clouds drift with the wind (${moved} pixels changed in five seconds), and the moving sky leaves everything below the skyline alone`)}
+    {const[c,dr]=made[0],[w,wg]=mk(640,288);wg.setTransform(HR,0,0,HR,0,0);const t0=performance.now();for(let k=0;k<60;k++)dr(wg,k*16);const ms=(performance.now()-t0)/60;
+      ok(ms<4,`coast: the moving sea and its smoke cost ${ms.toFixed(2)} ms a frame`)}
+    const[c0,dr0]=made[0];G.scene=(g,t)=>{g.drawImage(c0,0,0,320,144);dr0(g,t)};await wait(1200);halt('coast')}
   /* routes<N> (routespro for the Prologue): the rooms of a chapter with what stands on their floors. For each room a sheet, routes-<room>, three
      times enlarged: the walk strip, each footprint (solid) with the margin that keeps a figure's feet off it, the place each hotspot and exit is
      walked to (a small diamond, green if it can be reached, red if not), and the ways from every exit to every one of them. It fails if a

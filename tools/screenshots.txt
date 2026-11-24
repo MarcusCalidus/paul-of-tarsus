@@ -8,6 +8,8 @@ altars altar11
 antioch antioch
 birds birds
 birds-sheet birds birds-sheet
+coast-sheet coast coast-sheet
+coast-wind coast coast-wind
 antioch12 pant12
 apollos psyn13
 areopagus speech11
