@@ -371,30 +371,152 @@ function paintCourt17(g){const r=rng(1731),W='#dccaa6';
 /* ==== ART tyrecourt17: end ==== */
 
 /* ==== ART beach17: begin ==== */
-/* The beach outside Tyre, on the mainland side of the causeway, in the morning they sail. The sea lies before us to the west, the open
-   horizon across it; the ship lies at anchor far off at the right, her stern toward us, low, her mast left out of the picture. At the
-   far left, off the way, a heap of spent murex shells thrown out by the dyers. One horizon, y 60 (HZBeach17).
-   Called from outside: ART.beach17. Reads nothing. Hotspots (ROOMS.beach17): the sea 40,60,240,34 · the ship far off 256,56,30,12 · the
-   heap of shells 16,104,28,16 · the ship's boat 286,100,34,24 (the exit). Walk strip 16..304, 110..138. Everyone kneels in a group in the
-   middle of the strip, facing the sea (kneel17). */
+/* The beach outside Tyre, on the mainland south of the causeway, in the morning they sail. We look west over the sea: the open horizon
+   across it, and at the right, far off, the island city of Tyre on the water behind its sea wall, with the broad causeway that joins it
+   to the mainland running out to it from the right edge. Our ship lies at anchor off the beach, small, her stern toward us, in front of
+   the city, so that her short mast stands against its walls and nothing of her crosses the open horizon. The ship's boat is drawn up
+   at the right where the water comes nearer, her bow on the sand. Far off the way at the left lies a heap of spent murex shells,
+   thrown out by the dyers, with the purple they left in the sand round it. The sun is behind us at the left: the sand is lit, the
+   water is blue without a road of light, and the shadows fall away from us. One horizon, y 60 (HZBeach17).
+   Called from outside: ART.beach17 (the beach) and ART.beachpray17 (the prayer of 21:5, seen from up the shore; ROOMS.beachpray17 is
+   a told picture, as ptolemais17 is, and toBeach17 shows it while the narrator tells). Reads nothing. Hotspots (ROOMS.beach17): the sea
+   40,60,240,34 · the ship far off 256,56,30,12 · the heap of shells 16,104,28,16 · the ship's boat 286,100,34,24 (the exit). Walk strip
+   16..304, 110..138. The heap and the boat stand on the floor: props, with footprints. Heads come at y 62..92: behind them lie the sea
+   and the sand. */
 const HZBeach17=60;
-let SBeach17=null;
-const OBeach17={w:320,hz:HZBeach17,hour:'morning',light:1,cloud:.18,streak:.2,seed:1741};
-ART.beach17={w:320,q:12,paint(g){paintBeach17(g)},light:{amb:'#fff0dc',sun:[-.5,.3,.4]},draw(g,t){if(SBeach17)SBeach17.draw(g,t)},front(){},
-  props:[{y:120,shape(g){heapBeach17(g,1)},foot:[[16,114,28,6]]}]};
-function paintBeach17(g){const K=SHARED.coast,CO=SHARED.country,O=OBeach17,HZ=HZBeach17;if(!O.wind)O.wind=SHARED.weather.wind({from:'w',force:1,view:'w'});const L=K.light(O);
+let SBeach17=null,WBeach17=null;
+const OBeach17={w:320,hz:HZBeach17,hour:'morning',light:-1,cloud:.18,streak:.25,seed:1741,y1:112,swell:-.3};
+ART.beach17={w:320,q:12,paint(g){paintBeach17(g)},light:{amb:'#fff2e0',sun:[.36,-.22,.4]},draw(g,t){if(SBeach17)SBeach17.draw(g,t);if(WBeach17)WBeach17.draw(g,t)},front(){},
+  props:[{y:120,shape(g){heapBeach17(g,1)},foot:[[16,114,28,6]]},{y:121,shape(g){boatBeach17(g,1)},foot:[[290,115,14,5]]}]};
+/* the water's edge: straight across, coming nearer at the right, where the boat lies */
+const edgeBeach17=x=>94+1.2*Math.sin(x/13)+.7*Math.sin(x/5.3)+Math.max(0,x-236)*.2;
+function paintBeach17(g){const K=SHARED.coast,O=OBeach17,HZ=HZBeach17;if(!O.wind)O.wind=SHARED.weather.wind({from:'w',force:1,view:'w'});const L=K.light(O);
   K.sky(g,O);
-  SBeach17=K.sea(g,Object.assign(O,{y1:100}));SBeach17.open=(x,y)=>y>HZ+.5&&y<96&&!(x>254&&x<290&&y<HZ+10);
-  /* the ship far off, her stern toward us */
-  {const x=270,y=HZ+8,H='#3e3438';poly(g,[x-5,y-3,x-2,y-4.4,x,y-7,x+1.4,y-7.4,x+1.6,y-6.4,x+1,y-4.4,x+5,y-3,x+4,y,x-4,y],H);R(g,x-4,y-3.4,3,.6,'#7a6e70')}
-  K.shore(g,O,{x0:-2,x1:322,edge:x=>94+1.4*Math.sin(x/13)+.8*Math.sin(x/5),y1:144,kind:'sand',seed:1742});
-  /* the ship's boat drawn up at the right edge, its bow on the sand */
-  poly(g,[288,112,322,108,322,120,292,120],'#5a4636');R(g,292,111,30,.6,'#a8885a');
-  heapBeach17(g)}
-/* the heap of shells: many small spiny shells, pale, some broken, in a low mound */
-function heapBeach17(g,cut){if(cut){poly(g,[16,120,20,112,30,108,40,112,44,120],'#000');return}foot17(g,30,120.4,15,1.6);
-  poly(g,[16,120,20,112,30,108,40,112,44,120],'#c8b8a0');const r=rng(1743);for(let i=0;i<70;i++){const x=18+r()*24,y=110+r()*10;if(y<108+Math.abs(x-30)*.3)continue;
-    R(g,x,y,1.4,1,r()<.5?'#e8dcc8':r()<.5?'#a89480':'#8a6a6a');if(r()<.2)R(g,x+.5,y-.5,.5,.5,'#f8f0e4')}}
+  /* the coast running north beyond the city, far off and low */
+  K.isle(g,236,322,4.5,O,{kind:'cape',from:'r',dist:.82,seed:1744});
+  SBeach17=K.sea(g,O);SBeach17.open=(x,y)=>y>HZ+.5&&y<edgeBeach17(x)-.5&&!(x>196&&y<HZ+6)&&!(x>262&&x<280&&y<HZ+7);
+  tyreBeach17(g,O,200,318,HZ,1);
+  shipBeach17(g,271,HZ+5.4,1);
+  WBeach17=K.shore(g,O,{x0:-2,x1:322,edge:edgeBeach17,y1:144,kind:'sand',seed:1742,wet:6});
+  /* the beach toward us: dry sand with a few stones and weed at the tide line, dune grass in tufts along the bottom */
+  K.land(g,L,0,q=>{const r=rng(1745);for(let i=0;i<40;i++){const x=r()*320,y=edgeBeach17(x)+6+r()*3;R(q,x,y,1+r()*2.6,.5,rgba(r()<.5?'#5a5a3a':'#8a7a5a',.5))}
+    for(let i=0;i<26;i++){const x=r()*322,y=139+r()*5;SHARED.country.tuft(q,x,y,2+r()*3,r()<.5?'#9a9a62':'#b0a46a',r)}
+    for(const[x,y,w,h,s]of[[64,104,5,2.2,1746],[150,140,7,3,1747],[232,104,4,1.8,1748]])SHARED.country.boulder(q,x,y,w,h,'#a49a8a',s,{light:-1})});
+  /* the purple the dyers' shells left in the sand round the heap, and the heap itself */
+  pool(g,30,117,22,4.6,'#7a3a6a',.32,'multiply');pool(g,22,121,9,2,'#6a2a5a',.3,'multiply');pool(g,41,116,7,1.6,'#7a3a6a',.25,'multiply');
+  heapBeach17(g);
+  boatBeach17(g)}
+/* Tyre on its island: the sea wall of dressed stone along the water, the houses close and tall behind it, flat-roofed, the stores by the
+   harbor, all in the haze of the distance; the causeway running out to it from the right, broad and sandy, with the road on it.
+   k: 1 from the beach, and a little smaller from up the shore. */
+function tyreBeach17(g,O,x0,x1,hz,k){const K=SHARED.coast;
+  K.town(g,O,{x0,x1:x1-10,base:hz-1.6*k,hill:x=>hz-5*k-Math.max(0,1.6-Math.abs(x-(x0+x1)/2)/30)*k*1.6,rows:3,size:3.4*k,dist:.48,seed:1749,warehouses:[[x0+6,14*k,2.2*k],[x1-34,12*k,2*k]]});
+  K.quay(g,O,{view:'face',x0:x0-2,x1:x1-8,y:hz-1.8*k,face:2.2*k,c:'#cbb894',dist:.5,seed:1750});
+  /* the causeway: a broad low strip of sand and stone from the right edge out to the island, its far end lost behind the wall */
+  K.land(g,K.light(O),.4,q=>{const T=[x1-14,hz+.2,322,hz+3.6*k,322,hz+6.4*k,x1-14,hz+.8];poly(q,T,'#d4c29c');
+    stroke(q,[x1-14,hz+.25,322,hz+3.7*k],'#f4e6c4',.5);stroke(q,[x1-14,hz+.8,322,hz+6.4*k],'rgba(60,64,90,.45)',.5)})}
+/* the ship at anchor far off, her stern toward us: a rounded hull, the stern post's curl, the two steering oars at its sides, a short
+   mast (her yard is down on deck), all of it against the city's wall and houses behind her, its top under their skyline */
+function shipBeach17(g,x,y,k){const H='#3e3438';
+  R(g,x-.4*k,y-8*k,.8*k,5*k,'#4a3c34');
+  poly(g,[x-4.6*k,y-2.6*k,x-3*k,y-3.4*k,x-1.4*k,y-4*k,x-.6*k,y-5.6*k,x+.2*k,y-6.4*k,x+1.4*k,y-6.6*k,x+1.6*k,y-5.8*k,x+.8*k,y-5.4*k,x+1*k,y-4*k,x+3*k,y-3.4*k,x+4.6*k,y-2.6*k,x+4*k,y-.6*k,x+2*k,y,x-2*k,y,x-4*k,y-.6*k],H);
+  poly(g,[x-4.2*k,y-2.6*k,x-2.8*k,y-3.2*k,x-1.2*k,y-3.6*k,x-1*k,y-2.8*k,x-3*k,y-2.2*k],'#7a6e70');
+  poly(g,[x-5.2*k,y-3.4*k,x-4.6*k,y-3.4*k,x-4.2*k,y-.4*k,x-4.8*k,y-.2*k],'#3a3238');poly(g,[x+4.6*k,y-3.4*k,x+5.2*k,y-3.4*k,x+4.8*k,y-.2*k,x+4.2*k,y-.4*k],'#3a3238');
+  R(g,x-4*k,y+.2,8*k,.5,'rgba(24,30,56,.4)')}
+/* the heap of shells: hundreds of spent murex shells in a low mound, pale and chalky, each a small spindle with its long beak and a few
+   spines that all point along it, some broken open and stained inside with purple; the heap's own shadow at its foot. cut: its outline
+   only, for the prop. Nothing on it makes a cross: a spine is a dot on the shell's edge, never a stroke across it. */
+const outBeach17=[15,120.5,16.6,117,19,114.6,21.6,111.6,25,110,28,108.4,31.4,108.8,34,108,37.6,110.4,40,113,42.4,115.6,45,120.5];
+function heapBeach17(g,cut){if(cut){poly(g,outBeach17,'#000');return}
+  SHARED.materials.shadow(g,31,120.4,15,1.6,.9);
+  poly(g,outBeach17);g.fillStyle=lg(g,0,108,0,121,['#a0907e','#7a6a64','#5a4a50']);g.fill();
+  const r=rng(1743),S=[];
+  /* the shells, back to front: each a fat spindle lit on its upper side, its long beak tapering away, the dark mouth on its lower side,
+     two or three blunt spines as lighter knobs along its upper edge only; a few broken open, dull purple inside */
+  for(let i=0;i<120;i++){const u=r(),x=16.5+u*27,yt=121-12*Math.sin(Math.PI*clamp((x-15)/30,0,1))+1.4,y=yt+Math.pow(r(),1.6)*(120.4-yt);S.push([x,y,r(),r(),r()])}
+  for(let i=0;i<7;i++){const a=r()*6.28,d=16+r()*9;S.push([30+Math.cos(a)*d,121+Math.sin(a)*2.6*(r()<.5?1:-.6),r(),r(),r()])}
+  S.sort((a,b)=>a[1]-b[1]);
+  clipTo(g,()=>{g.beginPath();g.rect(0,100,60,22)},()=>{for(const[x,y,a,b,c]of S){const ang=(a-.5)*2.6,len=1.6+b*.9,cs=Math.cos(ang),sn=Math.sin(ang),broken=c<.12,
+      body=['#e2d8c4','#d2c4ac','#c0ae96','#ad9a86'][Math.floor(c*4)];
+    oval(g,x+.6,y+.9,len*1.1,.7,'rgba(50,36,52,.35)');
+    /* the beak */
+    poly(g,[x+cs*len*.6-sn*.45,y+sn*len*.6+cs*.45,x+cs*len*2,y+sn*len*2,x+cs*len*.6+sn*.45,y+sn*len*.6-cs*.45],tint(body,-.18));
+    g.save();g.translate(x,y);g.rotate(ang);g.beginPath();g.ellipse(0,0,len,len*.62,0,0,6.2832);g.fillStyle=lg(g,0,-len*.62,0,len*.62,[tint(body,.22),body,tint(body,-.34)]);g.fill();
+    if(broken){g.beginPath();g.ellipse(0,len*.1,len*.62,len*.36,0,0,6.2832);g.fillStyle='#7a4a62';g.fill()}
+    else{g.fillStyle=tint(body,-.5);g.fillRect(-len*.3,len*.2,len*.6,.5)}
+    g.fillStyle=tint(body,.36);for(const t of[-.55,0,.5])g.fillRect(t*len-.25,-len*.62-.25,.5,.5);g.restore()}});
+  ao(g,15,116,30,5,'b',.22,'#2a1e2a')}
+/* the ship's boat, drawn up at the right with her bow on the sand and her stern in the water beyond the edge: planks that sweep up to
+   the bow, the oars lying inside her along her length, nothing laid across her. cut: its outline only, for the prop. */
+function boatBeach17(g,cut){const sh=x=>110.4-Math.pow(clamp((326-x)/36,0,1),2.2)*3.6,P=[];for(let x=326;x>=289;x-=1)P.push(x,sh(x));P.push(287.6,sh(289)-1.4,288.4,113,292,118.4,300,120.6,326,121);
+  if(cut){poly(g,P,'#000');return}
+  SHARED.materials.shadow(g,304,121,18,1.6,.9);
+  poly(g,P);g.fillStyle=lg(g,0,106,0,121,['#7a5a40','#5a4232','#3a2a24']);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{for(let j=1;j<4;j++){const q=[];for(let x=287;x<=326;x+=2)q.push(x,sh(x)+(121-sh(x))*j/4-(326-x)*.02*j);stroke(g,q,'rgba(30,20,20,.4)',.5);stroke(g,q.map((v,i)=>i%2?v+.5:v),'rgba(220,180,130,.18)',.5)}
+    tex(g,'wood',.3,286,104,40,18,'overlay',.4);ao(g,286,116,40,5,'b',.4,'#141018')});
+  /* the gunwale lit along its top, the oars' blades showing over it inside her, lying along her */
+  const T=[];for(let x=289;x<=326;x+=2)T.push(x,sh(x));stroke(g,T,'#d8b884',.6);
+  stroke(g,[296,sh(296)-.6,318,sh(318)-.8],'#9a7a52',.7);poly(g,[312,sh(312)-.4,320,sh(320)-.9,320,sh(320)-.1,312,sh(312)+.3],'#b08a5a');
+  /* the stem at the bow */
+  poly(g,[287.6,sh(289)-1.4,289.4,sh(289)-1,289.6,113,288.4,113],'#4a3426')}
+
+/* ---- the prayer (21:5), from up the shore ---- */
+/* The same beach, seen from the top of the dune where the way comes down from the city: the eye is high, so the sea's horizon lies
+   high in the picture and the people on the sand below are small. At the water's edge the whole congregation kneels in two loose rows,
+   seen from behind and far off, with its women and children and the travellers among them: heads bowed, the arms down or folded in
+   front, out of sight, the backs lit by the sun behind us. The ship's boat lies drawn up beside them; the ship waits off shore in front
+   of the city. No bird flies near them. One horizon, y 44 (HZPray17). The picture is told over (toBeach17) and has no hotspots. */
+const HZPray17=44;
+let SPray17=null,WPray17=null;
+const OPray17={w:320,hz:HZPray17,hour:'morning',light:-1,cloud:.16,streak:.25,seed:1791,y1:104,eye:6,swell:-.3};
+ART.beachpray17={w:320,q:12,paint(g){paintPray17(g)},light:{amb:'#fff2e0'},draw(g,t){if(SPray17)SPray17.draw(g,t);if(WPray17)WPray17.draw(g,t)},front(){}};
+ROOMS.beachpray17={space:.4,walk:[160,160,236,236],mood:'parting',amb:{waves:.5,wind:.3},hs:[]};
+const edgePray17=x=>89+1.4*Math.sin(x/17)+.8*Math.sin(x/6.1)+Math.max(0,x-250)*.12;
+function paintPray17(g){const K=SHARED.coast,CO=SHARED.country,O=OPray17,HZ=HZPray17;if(!O.wind)O.wind=SHARED.weather.wind({from:'w',force:1,view:'w'});const L=K.light(O);
+  K.sky(g,O);
+  K.isle(g,240,322,3.4,O,{kind:'cape',from:'r',dist:.84,seed:1792});
+  SPray17=K.sea(g,O);SPray17.open=(x,y)=>y>HZ+.5&&y<edgePray17(x)-.5&&!(x>218&&y<HZ+5)&&!(x>272&&x<288&&y<HZ+6);
+  tyreBeach17(g,O,220,320,HZ,.85);
+  shipBeach17(g,280,HZ+4.6,.8);
+  WPray17=K.shore(g,O,{x0:-2,x1:322,edge:edgePray17,y1:144,kind:'sand',seed:1793,wet:4});
+  /* the ship's boat beside them at the edge, small */
+  {const x=224,y=edgePray17(224)+2.2;poly(g,[x-5,y-1.6,x+6,y-2.2,x+5,y,x-4,y],'#4a3628');R(g,x-4.6,y-1.9,10.4,.5,'#c8a474');R(g,x-4,y+.2,9,.5,'rgba(40,40,70,.35)')}
+  prayFolk17(g);
+  /* the dune we look down from: its top in the foreground, grass and a few bushes along it, the way down through it */
+  K.land(g,L,0,q=>{const top=x=>118+5*Math.sin(x/37)+2*Math.sin(x/11)-(x>120&&x<170?6*Math.sin((x-120)/50*Math.PI):0)+(x>260?-(x-260)*.12:0),T=[-2,146];
+    for(let x=-2;x<=322;x+=2)T.push(x,top(x));T.push(322,146);
+    clipTo(q,()=>poly(q,T),()=>{CO.ground(q,-2,104,324,146,'#cdb890',1794,{n:30,size:.9});CO.turf(q,-2,104,324,146,'#9a9a5e',1795,{dry:.6,wind:1,scale:1.1});
+      const way=[128,146,140,118,154,116,170,146];poly(q,way,rgba('#d8c49c',.85));clipTo(q,()=>poly(q,way),()=>CO.ground(q,120,112,52,36,'#d4c09a',1796,{n:10,size:.8}))});
+    stroke(q,T.slice(2,T.length-2),rgba('#fff2d0',.3),.5);
+    for(const[x,y,w,h]of[[40,121,14,6],[86,117,10,4.6],[214,121,12,5],[292,113,16,6.4],[16,130,12,5]])CO.bush(q,x,y,w,h,'#6a7448',x*3+y,{light:-1})})}
+/* the congregation kneeling, seen from behind: each a small shape of its own, drawn in half pixels by hand. The head is bowed, so the
+   shoulders rise round it; a man shows his hair (Paul his bare crown with its grey fringe), his tunic, and his mantle over the left
+   shoulder and down across the back; a woman's mantle is drawn over her head and falls over her back. The robe spreads on the sand
+   and the soles of the feet show under its hem. The arms are not seen: folded in front, or down at the sides. The backs are lit by
+   the sun behind us, the left edge lighter and the right in shade; no belt or seam is drawn across a back, and no fold runs down its
+   middle. The children kneel among the grown, smaller. */
+function prayFolk17(g){
+  /* [x, y of the knees, kind (m man, w woman, b boy, g girl, p Paul), mantle, tunic or hair] the row nearer the sea first */
+  const F=[[108,93.6,'m','#6e5a46','#2a1e18'],[117,93.2,'w','#e2dccb'],[126,93.8,'m','#4e5e70','#3a2a1c'],[137,93.4,'p','#7a5a3c'],[147,93.8,'m','#a8b0a0','#d8d4cc'],
+    [157,93.2,'w','#8a2a3a'],[165,94,'g','#c8a25a'],[174,93.6,'m','#6a5a3a','#2a1e18'],[184,93.4,'w','#6a5a70'],[194,93.8,'m','#9a6a44','#2a1a12'],[204,93.4,'w','#5e6a52'],
+    [112,98.2,'w','#4e5a6a'],[121,98.6,'b','#b8a882','#34241c'],[131,98.4,'m','#5a6a4a','#3a2a1c'],[142,98,'w','#c8bca0'],[152,98.6,'m','#8a7458','#34241c'],
+    [163,98.2,'w','#7a4a3a'],[171,98.8,'b','#a89878','#2a1e16'],[180,98.4,'m','#7a6a5a','#9a948c'],[191,98.6,'w','#5a6a7a'],[200,98.2,'g','#8a6a5a']];
+  F.sort((a,b)=>a[1]-b[1]);for(const f of F)kneelBack17(g,...f)}
+/* one figure kneeling, from behind, the hem at y */
+function kneelBack17(g,x,y,kind,mantle,hair){const u=.5,child=kind==='b'||kind==='g',woman=kind==='w'||kind==='g',
+    W=child?[2,3,3,5,6,6,7,7,8,8,8]:[3,4,4,7,9,9,10,10,10,10,11,11,12,12,12],n=W.length,top=y-n*u,tunic=kind==='p'?'#cbbfa4':child?mantle:'#d4c8ac';
+  /* its shadow on the sand, falling away from us and to the right */
+  pool(g,x+1.6,y-.8,5*(child?.7:1),1.2,'#3a3450',.34,'multiply');
+  for(let i=0;i<n;i++){const w=W[i],x0=x-w*u/2,yy=top+i*u,head=i<3||(i===3&&!child)||(child&&i<2);
+    for(let c=0;c<w;c++){let col;
+      if(head&&(i<3||(c>=(w-4)/2&&c<(w+4)/2))){if(woman)col=mantle;else if(kind==='p')col=i<2?'#c49a72':'#9a948c';else col=hair;
+        if(i===3&&!woman)col=tint(col,-.2)}
+      else if(woman)col=mantle;
+      else{/* the mantle over the left shoulder, falling across the back to the right hip */
+        const t=(i-3)/(n-3),bc=w*(.12+t*.6);col=Math.abs(c-bc)<2.2||c<bc-1.5&&i<6?mantle:tunic}
+      const e=c===0?.2:c===w-1?-.32:c===w-2?-.12:0,d=i>=n-2?-.1:0;R(g,x0+c*u,yy,u,u,tint(col,e+d))}}
+  /* the soles under the hem */
+  R(g,x-1.5*u,y,u,u,'#a87a58');R(g,x+1*u,y,u,u,'#a87a58')}
 /* ==== ART beach17: end ==== */
 
 /* ==== ART ptolemais17: begin ==== */
@@ -410,52 +532,256 @@ ART.ptolemais17={w:320,q:12,paint(g){const K=SHARED.coast,CO=SHARED.country,O=OP
 /* ==== ART ptolemais17: end ==== */
 
 /* ==== ART philip17: begin ==== */
-/* The court of Philip's house in Caesarea: a Jewish believer's house in a Gentile city. A whitewashed court with the house along the back
-   (its door at the left), a vine over a frame of poles on the right whose poles stand at its ends, and under it a bench (a seat); a low
-   stool by the bench, where Agabus sits to bind himself. In the back wall at the right a gate stands open onto the street, which runs
-   back to the harbor's blue water and the long line of the breakwater: no temple, nothing but the street, the water and the sky. The
-   light from the left; shadows fall to the right. The street seen through the gate runs back to one level, y 62.
+/* The court of Philip's house in Caesarea, in the warm light of late afternoon: a Jewish believer's house in a Gentile city. The house
+   stands along the back, whitewashed, flat-roofed behind its parapet, with its door open at the left and small windows high up; doves sit
+   on the parapet. At the right a vine grows over a frame: its trunk climbs the right post, and the deep beam rests on two posts, one at
+   each end, with the leaves heaped over it; under it a bench with solid ends, and beside it a low stool, where Agabus sits to bind
+   himself. The wall behind the stool is plain plaster, so that his bound hands and feet read against it. In the court's wall at the right
+   a gate stands open onto the street, which runs down to the harbor: the water and the long low line of the breakwater on one level,
+   y 74 (HZPhilip17), the eyes of the people in the court; no temple, nothing but the street, the water and the sky. The sun is low at the
+   left, out of the picture: the wall of the neighbor's house there throws its shade over the left of the court (light.shade), the rest
+   lies in the warm light, and every shadow falls to the right.
    Called from outside: ART.philip17. Reads nothing. Hotspots (ROOMS.philip17): the house 24,20,140,84 · the vine 186,18,110,40 · the
    bench 200,98,56,14 · the stool 166,108,14,8 · the gate 270,40,34,64 (the exit after 21:14). Walk strip 16..304, 110..138. Actors
-   (place17): Philip 220,122 · the eldest daughter 128,118 · the second 150,132 · the third 98,116 · the youngest 252,130 · Aulus 284,116 ·
-   Benaiah 296,130 · Luke 62,126 · Timothy 40,132 · Aristarchus 24,118 · Trophimus 80,134; Paul 180,128. The bench and the stool are
-   props (seats). */
-ART.philip17={w:320,q:12,paint(g){paintPhilip17(g)},light:{amb:'#fff2e0',sun:[.5,.3,.4]},draw(){},front(){},
+   (place17): Philip 262,116 · the eldest daughter 128,118 · the second 150,132 · the third 98,116 · the youngest 286,132 · Aulus 302,114 ·
+   Benaiah 300,136 · Luke 62,126 · Timothy 40,132 · Aristarchus 24,118 · Trophimus 80,134; Paul 180,128. The bench and the stool are
+   props (seats). Heads come at y 64..92: behind them lies plaster without a window or a niche, and nothing round. */
+const HZPhilip17=74,OPhilip17={w:320,hz:HZPhilip17,hour:'evening',sun:[-90,4],cloud:.2,streak:.4,seed:1761,y1:84};
+let SPhilip17=null;
+ART.philip17={w:320,q:12,paint(g){paintPhilip17(g)},light:{amb:'#fff0d8',shade:[[-30,80,'#d4cadc']],sun:[.72,.2,.46]},draw(g,t){if(SPhilip17)SPhilip17.draw(g,t)},front(){},
   props:[{y:112,shape(g){benchPhilip17(g,1)},foot:[[200,106,56,5]],seat:1},{y:117,shape(g){stoolPhilip17(g,1)},foot:[[166,113,14,4]],seat:1}]};
-function paintPhilip17(g){const r=rng(1761),W='#e8dcc4';
-  g.fillStyle=lg(g,0,0,0,62,['#7ab0dc','#d4e4ea']);g.fillRect(0,0,320,62);
-  /* through the gate: the street running down to the harbor, the water and the breakwater on one level */
-  R(g,272,56,30,6,'#5a8ab0');R(g,272,58.4,30,1,'#a8b8b8');g.fillStyle=lg(g,0,62,0,104,['#c8b898','#d8c8a8']);poly(g,[272,62,302,62,304,104,270,104]);g.fill();
-  for(const[x,w]of[[272,6],[296,6]])plaster(g,x,40,w,22,'#d0c0a0',r,{patch:0,cracks:0,t:.3});
-  /* the house along the back and the court's back wall */
-  plaster(g,0,20,270,84,W,r,{patch:1,cracks:0,t:.4,top:.06,bot:-.12});plaster(g,304,30,16,74,W,r,{patch:0,cracks:0,t:.4});
-  R(g,0,17,270,3,tint(W,.12));R(g,0,17,270,.6,'#fffaea');R(g,268,36,38,4,tint(W,.08));
-  R(g,40,58,24,46,'#3a2a1e');R(g,38,56,28,2,tint(W,-.26));for(const x of[100,140,190])R(g,x,40,8,8,'#3a2c24');
-  pave(g,0,104,320,144,'#d4c4a2',r,{vy:-40,rows:5,step:36});
-  /* the vine on its frame: two poles at the ends, the leaves above */
-  for(const x of[190,292])R(g,x,24,2,82,'#6a4a2c');const q=rng(1762);for(let i=0;i<200;i++){const x=186+q()*110,y=16+q()*24;oval(g,x,y,2+q()*2,1.4+q()*1.4,q()<.5?'#5e7a3e':'#4a6432')}
+/* the frame of the vine: its two posts and its beam, and the shade's edge on the wall (sun from the left, low) */
+const PPhilip17=[186,265],BPhilip17=[35.5,41.5];
+function paintPhilip17(g){const K=SHARED.coast,O=OPhilip17,HZ=HZPhilip17,r=rng(1761),W='#eee2c8';const L=K.light(O);
+  /* the sky over the roof: clear, a little warm toward the sun at the left, a few long clouds */
+  {const q=rng(1766);sky(g,320,HZ,['#6e94c4','#9ab6d2','#d8d6c8','#f2d6aa']);pool(g,-40,30,200,60,'#ffe0a8',.45,'screen');
+    for(const[cx,cy,w,h]of[[60,6,80,2.6],[170,3,70,2.2],[250,9,50,2]])cloud(g,cx,cy,w,h,q,'#fff0d8','#b4a2b8')}
+  /* the harbor, seen through the gate only: the sea to the horizon, the breakwater along it */
+  SPhilip17=K.sea(g,O);SPhilip17.open=(x,y)=>x>282&&x<294&&y>HZ+.6&&y<81&&!(x>285.5&&y<77.5);
+  streetPhilip17(g,L);
+  /* the court's wall at the right, with the gate in it, and the house along the back */
+  courtWallPhilip17(g,r);
+  housePhilip17(g,r,W);
+  /* the floor: flagstones laid in courses, running back to the horizon */
+  pave(g,-2,104,322,144,'#d6c4a0',r,{vx:150,vy:HZ,rows:6,step:30,v:.12,t:.36});
+  /* the foot of the wall: a damp, darker band where the floor meets it, and its shadow line */
+  ao(g,-2,96,272,8,'b',.22,'#5a4a50');R(g,-2,103.6,272,.8,'rgba(70,56,64,.45)');
+  /* the jars by the door, and the vine with its frame */
+  jarsPhilip17(g);
+  vinePhilip17(g,r);
   benchPhilip17(g);stoolPhilip17(g);
-  shade(g,[192,104,300,104,316,120,206,120],'#b0a8c8',.35)}
-function benchPhilip17(g,cut){if(cut){R(g,200,98,56,13,'#000');return}foot17(g,228,111,30,1.6);R(g,200,98,56,4,'#8a6a44');R(g,200,98,56,.6,'#d0aa74');R(g,202,102,3,9,'#5a4430');R(g,251,102,3,9,'#5a4430')}
-function stoolPhilip17(g,cut){if(cut){R(g,166,108,14,9,'#000');return}foot17(g,173,117,8,1.2);R(g,166,108,14,3,'#8a6a44');R(g,166,108,14,.6,'#d0aa74');R(g,167,111,2,6,'#5a4430');R(g,177,111,2,6,'#5a4430')}
+  lightPhilip17(g)}
+/* the street beyond the gate: the houses on either side, the lit one at the right, the paving going down, the quay's edge, the water */
+function streetPhilip17(g,L){const HZ=HZPhilip17,r=rng(1762);
+  clipTo(g,()=>{g.beginPath();g.rect(271,48,33,56)},()=>{
+    /* the paving, going down toward the harbor */
+    const P=[271,104,304,104,293,81,282,81];poly(g,P,'#c8b494');clipTo(g,()=>poly(g,P),()=>{for(let k=0;k<7;k++){const y=81+Math.pow(k/7,1.6)*23;R(g,270,y,36,.4,'rgba(80,64,60,.3)')}
+      tex(g,'mott',.4,270,80,36,26,'overlay',1);g.fillStyle=lg(g,0,81,0,104,[rgba('#e8c49a',.3),rgba('#e8c49a',0)]);g.fillRect(270,80,36,26)});
+    R(g,282,80.4,11,.8,'#8a7a70');R(g,282,80.2,11,.4,'#e8d4b0');
+    /* the water of the harbor between the houses, darker toward us, with the low sun's glints; the breakwater a long low line on it,
+       lit along its top, running off behind the house at the right */
+    g.fillStyle=lg(g,0,HZ,0,81,['#a6b8c4','#6e90ac','#4e7496']);g.fillRect(282,HZ,12,7);
+    for(let i=0;i<14;i++)R(g,282+r()*11,HZ+1+r()*6,1+r()*1.5,.5,rgba('#fff0cc',.5+r()*.4));
+    R(g,286,76.2,8,.9,'#9a8a84');R(g,286,76,8,.4,'#f4dcb4');
+    /* the house at the left of the street, its face turned from the sun; the one at the right lit */
+    const Lh=[270,40,283,60,283,82,270,105];poly(g,Lh,'#b4a49c');clipTo(g,()=>poly(g,Lh),()=>{tex(g,'mott',.5,268,40,16,66,'overlay',1);R(g,276,66,2,4,'#4a3c40');ao(g,268,40,16,66,'r',.3,'#3a3048')});
+    const Rh=[305,40,293,58,293,82,305,105];poly(g,Rh,'#f0d4a8');clipTo(g,()=>poly(g,Rh),()=>{tex(g,'mott',.5,292,40,14,66,'overlay',1);R(g,297,64,2,5,'#5a4038');R(g,297,64,2,.6,'#b89878');ao(g,292,40,14,66,'b',.25,'#6a4a48')});
+    stroke(g,[293,58,293,82],rgba('#fff2d6',.5),.5);stroke(g,[283,60,283,82],rgba('#4a3c48',.4),.5);
+    /* the haze of the distance over the water and the far end of the street */
+    pool(g,288,72,10,6,'#ffe2b4',.22,'screen')})}
+/* the court's wall at the right, from the house to the edge, with the gate: a lintel of wood over the opening, the jambs showing the
+   wall's depth, a stone sill */
+function courtWallPhilip17(g,r){const W='#e8dac0';
+  plaster(g,268,28,54,20,W,r,{patch:0,cracks:0,t:.45,top:.08,bot:0});plaster(g,304,48,18,56,W,r,{patch:0,cracks:0,t:.45,top:.02,bot:-.1});
+  R(g,268,28.4,54,2,tint(W,.14));R(g,268,28.4,54,.6,'#fff6e0');R(g,268,30.4,54,.8,'rgba(90,70,80,.3)');
+  /* the opening, the left jamb lit inside, the right in shade */
+  R(g,304,48,1.6,56,'#a69a98');R(g,270,48,1.4,56,'#fff0d2');
+  /* the lintel: a beam set into the wall over the opening, its face lit, its ends inside the plaster */
+  wood(g,272,44.5,34,4,'#7a5a3c',0,.45);R(g,272,44.5,34,.5,'#c89a66');R(g,272,48.5,34,.8,'rgba(40,30,40,.45)');
+  /* the sill */
+  R(g,270,103,35,1.6,'#cbb898');R(g,270,103,35,.5,'#f0e0c0');
+  ao(g,270,48,35,4,'t',.35,'#2a2030')}
+/* the house: whitewash over plaster, the parapet with its coping, the ends of the roof beams under it, two small windows high up, the
+   door open at the left with the dark of the room inside and a little of its lamp. */
+function housePhilip17(g,r,W){
+  plaster(g,-2,21,272,83,W,r,{patch:0,cracks:0,t:.42,top:.06,bot:-.1,brick:'#b49a7c'});
+  /* the parapet over the roof, and the coping that tops it */
+  plaster(g,-2,15,270,6,tint(W,.04),r,{patch:0,cracks:0,t:.4});R(g,-2,14,270,1.6,tint(W,.18));R(g,-2,14,270,.5,'#fffaec');R(g,-2,20.4,270,.9,'rgba(90,70,80,.35)');
+  /* the beam ends of the roof, each with its small shadow falling to the right */
+  for(let x=8;x<262;x+=14.5){R(g,x,23,2.4,2.2,'#6a4a30');R(g,x,23,2.4,.5,'#b88a58');poly(g,[x+2.4,23.4,x+4.6,24,x+4.6,26.2,x+2.4,25.2],'rgba(70,50,80,.25)')}
+  ao(g,-2,21,270,6,'t',.16,'#5a4060');
+  /* hand-set cracks, high on the wall, where they run to no head */
+  for(const[x,y,n]of[[118,26,6],[226,24,4],[20,30,5]])SHARED.materials.crack(g,x,y,n,r,.7);
+  /* the windows: small, high, dark, each with a wooden sill */
+  for(const[x,y]of[[96,33],[140,33],[214,29]]){R(g,x-.8,y-.8,7.6,8.6,'rgba(120,100,100,.35)');R(g,x,y,6,7,'#2a2026');ao(g,x,y,6,3,'t',.5,'#000');
+    wood(g,x-1.4,y+7,8.8,1.4,'#7a5a3c',0,.3);poly(g,[x+6,y,x+7.6,y+1.2,x+7.6,y+7,x+6,y+7],'rgba(70,50,80,.22)')}
+  /* the door: an opening in a wooden frame, the jambs at the ends of the lintel; inside, the dark room, the edge of the open leaf, and
+     a lamp's warmth low on the floor */
+  const dx=40,dy=56,dw=24,dh=48;R(g,dx,dy,dw,dh,'#1e1618');
+  clipTo(g,()=>{g.beginPath();g.rect(dx,dy,dw,dh)},()=>{pool(g,dx+15,dy+dh-6,12,8,'#ffb468',.32,'screen');
+    boards(g,dx+2.4,dy+3,5,dh-3,2.5,'#4a3424',r);ao(g,dx+2.4,dy+3,6,dh-3,'r',.4,'#000');ao(g,dx,dy,dw,10,'t',.6,'#000')});
+  wood(g,dx-2.5,dy-3,2.5,dh+3,'#6e5036',1,.4);wood(g,dx+dw,dy-3,2.5,dh+3,'#6e5036',1,.4);wood(g,dx-2.5,dy-3.5,dw+5,3.2,'#7a5a3c',0,.4);
+  R(g,dx-2.5,dy-3.5,dw+5,.5,'#caa06a');poly(g,[dx+dw+2.5,dy-3,dx+dw+5,dy-1.5,dx+dw+5,dy+dh,dx+dw+2.5,dy+dh],'rgba(70,50,80,.22)');
+  R(g,dx-3,dy+dh-.6,dw+6,1.4,'#cdb898');R(g,dx-3,dy+dh-.6,dw+6,.5,'#f2e2c2')}
+/* the jars by the door: a tall storage jar and a water jug beside it, standing against the wall, outside the walk strip */
+function jarsPhilip17(g){vessel(g,80,106.5,7,17,'#b4704a','pithos');vessel(g,91,106.2,4,9.5,'#c4865a','jug')}
+/* the vine: its old trunk out of the floor at the right post (away from the stool), twisting up it to the beam; the leaves heaped over the beam and along it,
+   lit from the left, shoots hanging a little below; small green clusters of young grapes under the leaves. The posts and the beam: the
+   deep beam rests on the tops of the posts, its ends flush with their outer faces. */
+function vinePhilip17(g,r){const[a,b]=PPhilip17,[t0,t1]=BPhilip17,q=rng(1763);
+  /* their shadows on the wall first: each post's falls to the right of it, the beam's under it */
+  for(const x of PPhilip17)poly(g,[x+3.5,t1,x+6.5,t1,x+7,104,x+4,104],'rgba(80,60,96,.22)');
+  poly(g,[a+3.5,t1,b+6.5,t1,b+6.5,t1+2.6,a+3.5,t1+2.6],'rgba(80,60,96,.18)');
+  /* the posts and the beam */
+  for(const x of PPhilip17){wood(g,x,t1,3.5,106-t1,'#6a4a30',1,.5);R(g,x,t1,.8,106-t1,'#b0865a');SHARED.materials.shadow(g,x+2.4,106,3.6,1,.8)}
+  wood(g,a,t0,b+3.5-a,t1-t0,'#6e4e32',0,.5);R(g,a,t0,b+3.5-a,.6,'#c8996a');R(g,a,t1-.6,b+3.5-a,.6,'#3a281e');
+  /* the trunk: a twisted stem from the floor at the left post up to the beam, darker where it turns from the light */
+  const T=[];for(let y=106;y>=t1;y-=1.5){const u=(106-y)/(106-t1);T.push(b+4.6+Math.sin(u*9.4)*1.6,y)}
+  stroke(g,T,'#3e2c22',1.8);stroke(g,T.map((v,i)=>i%2?v:v-.5),'#8a6a4e',.6);
+  /* a few shoots trained along the beam, under the leaves */
+  stroke(g,[a+1,t0+1,a+20,t0-1.5,a+44,t0+.5,a+70,t0-1,b,t0+.5],'#4e3a2a',.8);
+  /* the leaves: shoots trained up the wall from the beam and along it, each with its leaves in clumps; first the shade they throw on
+     the wall behind them, then the leaves, small, lit from the upper left, darker underneath and toward the right; a few shoots hang
+     over the beam in short festoons, never down to a head. Between the shoots the wall shows. */
+  const shoots=[];for(let i=0;i<34;i++){let x=a-4+q()*(b-a+12),y=t0+1,dx=(q()-.5)*1.4;const pts=[[x,y]],n=8+q()*14|0;
+    for(let k=0;k<n;k++){dx=clamp(dx+(q()-.5)*.7,-1.1,1.1);x+=dx;y-=.9+q()*.7;if(y<6)break;pts.push([x,y])}shoots.push(pts)}
+  for(const[c,d]of[[a+14,7],[a+41,5],[a+63,8],[b-5,5]]){let x=c,y=t0;const pts=[[x,y]];for(let k=0;k<d;k++){x+=(q()-.5)*.8;y+=1;pts.push([x,y])}shoots.push(pts)}
+  const lv=[];for(const pts of shoots){pts.forEach(([x,y],k)=>{const m=1+(q()<.6);for(let j=0;j<m;j++)lv.push([x+(q()-.5)*3.6,y+(q()-.5)*2.4,q(),q()])})}
+  for(let i=0;i<220;i++){const x=a-6+q()*(b-a+14),y=t0-4+q()*5.5;lv.push([x,y,q(),q()])}
+  for(const[x,y]of lv)pool(g,x+1.4,y+1.4,2.6,1.8,'#3a3a52',.12,'multiply');
+  for(const pts of shoots)stroke(g,pts.flat(),'rgba(70,54,40,.7)',.5);
+  lv.sort((u,v)=>u[1]-v[1]);
+  for(const[x,y,c,s2]of lv){const lit=clamp(.95-(y-6)/(t0+6-6)*.7-(x-a)/(b-a)*.25+(c-.5)*.55,0,1),
+      col=mix(mix('#2e4426','#7c9a42',lit),'#d4c674',lit>.85?.3:0),w=.9+s2*1.2,h=.7+s2*.6;
+    if(w<1.15)R(g,x,y,1,1,col);else{oval(g,x,y,w,h,col);if(lit>.5)R(g,x-w*.6,y-h*.7,w*.7,.5,mix(col,'#f6eab0',.45))}}
+  /* young grapes, hard and green, hanging under the leaves */
+  for(const[x,y]of[[202,t1+1],[229,t1+1.5],[251,t1+1]]){for(let k=0;k<5;k++){const w=2.4-k*.4;R(g,x-w/2,y+k*.9,w,.9,k%2?'#7a9a4a':'#94b05a')}R(g,x-.6,y-.4,.6,.5,'#c8d888')}
+  /* the dappled shade on the wall under the vine */
+  for(let i=0;i<46;i++){const x=a+5+q()*(b-a),y=44+q()*56;pool(g,x,y,3+q()*5,1+q()*2,'#6a5a84',.16,'multiply')}}
+/* the bench under the vine: a plank seat on two solid ends, no leg under its middle (cut: its outline only, for the prop) */
+function benchPhilip17(g,cut){if(cut){R(g,200,98,56,4,'#000');R(g,202,101,5,10,'#000');R(g,249,101,5,10,'#000');return}
+  SHARED.materials.shadow(g,231,111,31,1.6,.8);
+  for(const x of[202,249]){wood(g,x,101.5,5,9.5,'#6a4a30',1,.4);R(g,x,101.5,1,9.5,'#a8805a');R(g,x+4,101.5,1,9.5,'#4a3022')}
+  SHARED.materials.board(g,200,98,56,3.6,'#8a6644',rng(1764));R(g,200,98,56,.6,'#e0b47a');R(g,200,101.6,56,.6,'#3e2a20')}
+/* the stool: a low seat on two splayed legs, one at each end (cut: its outline only, for the prop) */
+function stoolPhilip17(g,cut){const lg2=[[167,110.5,166,117,168.4,117,169.4,110.5],[176.6,110.5,177.6,117,180,117,179,110.5]];
+  if(cut){R(g,166,108,14,2.8,'#000');for(const p of lg2)poly(g,p,'#000');return}
+  SHARED.materials.shadow(g,174,117,8.5,1.2,.8);
+  for(const p of lg2){poly(g,p,'#5a3e2a');stroke(g,[p[0]+.3,p[1],p[2]+.3,p[3]],'#9a7450',.5)}
+  SHARED.materials.board(g,166,108,14,2.8,'#8a6644',rng(1765));R(g,166,108,14,.5,'#e0b47a')}
+/* the late light: the neighbor's house out of the picture at the left throws its shade across the left of the court, its edge falling
+   to the right; the warm light lies on the rest, strongest high on the wall */
+function lightPhilip17(g){shade(g,[-2,10,12,10,70,104,98,144,-2,144],'#b8b0d0',.55);
+  comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,10,0,104,['rgba(255,196,120,1)','rgba(255,214,150,.3)']);g.fillRect(-2,10,324,94)});
+  pool(g,180,40,130,40,'#ffd8a0',.16,'screen')}
 /* ==== ART philip17: end ==== */
 
 /* ==== ART gate17: begin ==== */
-/* The road out of Caesarea, inland toward the hills of Judea, in the early morning they set out. Behind us the city; before us the road
-   runs back to the hills at the right; far off at the left the aqueduct's arches cross the plain (seen from the side, a row of arches under
-   a channel, each pier as wide as it needs, nothing crossing it). One horizon, y 64 (HZGate17), where the plain meets the hills' foot.
+/* The road out of Caesarea, inland toward the hills of Judea, in the early morning they set out. We have come out of the city's gate,
+   which stands in its wall at the left, the wall running away from us; the road goes on across the strip and climbs a foothill at the
+   right, into the hills. Behind the plain, far off at the left, Herod's aqueduct crosses it on its arches (a row of round arches under
+   one continuous channel, each pier standing on the ground, nothing laid across it). The morning sun is up ahead of us at the left, out
+   of the picture: slopes that face it are lit, the wall's face and the aqueduct's side are in a cool shade, and every shadow falls to
+   the right and toward us. One horizon, y 66 (HZGate17), where the plain meets the foot of the far hills; the wall's courses and the
+   plain run back to it.
    Called from outside: ART.gate17. Reads nothing. Hotspots (ROOMS.gate17): the hills 160,24,160,40 · the aqueduct 0,48,140,16 · the road
-   up to Jerusalem 284,70,36,60 (the exit) · the way back into the city 0,100,14,44. Walk strip 16..304, 110..138. Actors (place17):
-   Aulus 230,120 · Benaiah 250,130 · Luke 120,126 · Timothy 96,132 · Aristarchus 74,118 · Trophimus 140,134; Paul 170,124. */
-const HZGate17=64,OGate17={w:320,hz:HZGate17,hour:'morning',light:-1,cloud:.2,seed:1771};
-ART.gate17={w:320,q:12,paint(g){const K=SHARED.coast,CO=SHARED.country,O=OGate17,L=K.light(O);K.sky(g,O);
-    K.land(g,L,.45,q=>CO.range(q,120,330,HZGate17+1,x=>Math.max(0,(x-120)*.16+4*Math.sin(x/13)),['#8a8e74','#a4a088'],{k:.8,light:-1}));
-    K.land(g,L,0,q=>{CO.ground(q,-2,HZGate17,324,144,'#c4b08a',1772,{n:60,size:.8,tufts:30})});
-    /* the aqueduct far off: a row of arches under its channel */
-    K.land(g,L,.35,q=>{R(q,0,50,140,4,'#c8b89a');R(q,0,50,140,.6,'#efe2c4');for(let x=2;x<140;x+=9)poly(q,[x,54,x+9,54,x+9,63,x+7.6,63,x+7.6,57.6,x+4.5,55.4,x+1.4,57.6,x+1.4,63,x,63],'#bcac8e')});
-    /* the road: worn earth from the bottom left, climbing to the right into the hills */
-    poly(g,[0,144,0,118,160,108,290,82,320,76,320,96,200,124,120,144],'#cdb890');stroke(g,[0,128,160,114,300,84],'rgba(90,70,50,.25)',1)},
-  light:{amb:'#fff0dc',sun:[.5,.3,.4]},draw(){},front(){}};
+   up to Jerusalem 284,70,36,60 (the exit) · the way back into the city 0,100,14,44. Walk strip 16..304, 110..138: nothing stands in it.
+   Actors (place17): Aulus 230,120 · Benaiah 250,130 · Luke 120,126 · Timothy 96,132 · Aristarchus 74,118 · Trophimus 140,134; Paul
+   170,124. Heads come at y 70..92: behind them lie the plain, the foothill's turf and the far hills, and nothing round. */
+const HZGate17=66,OGate17={w:320,hz:HZGate17,hour:'morning',sun:[-60,-44],cloud:.22,streak:.3,seed:1771};
+ART.gate17={w:320,q:12,paint(g){paintGate17(g)},light:{amb:'#fff0dc',sun:[.5,.3,.45]},draw(){},front(){}};
+/* the foothill at the right that the road climbs: its brow, from the plain up out of the picture */
+const spurGate17=x=>x<206?999:104-Math.pow((x-206)/114,.78)*56+1.3*Math.sin(x/7.3)+.7*Math.sin(x/2.7);
+/* the city wall at the left, running away from us toward the vanishing point (x 168 on the horizon): its top, its foot, its far end */
+const VXGate17=168,WEGate17=46,wallTopGate17=x=>10+(x+2)*(HZGate17-10)/(VXGate17+2),wallFootGate17=x=>110+(x+2)*(HZGate17-110)/(VXGate17+2);
+/* the aqueduct: its channel's top and its foot, from its far end at the left edge to where the wall hides it */
+const aqTopGate17=x=>60.2-(x+2)*.008,aqFootGate17=x=>69.6+(x+2)*.006;
+function paintGate17(g){const K=SHARED.coast,CO=SHARED.country,O=OGate17,HZ=HZGate17,L=K.light(O);
+  K.sky(g,O);
+  /* the hills of Judea: a far range, blue in the haze, rising toward the right; low hills far off at the left behind the plain */
+  K.land(g,L,.62,q=>CO.range(q,-10,330,HZ+1,x=>Math.max(2.4,(x-96)*.15)+2.2*Math.sin(x/19)+1.2*Math.sin(x/7.1),['#8c92a0','#a4a6a4'],{k:.9,light:-1}));
+  K.land(g,L,.36,q=>{CO.range(q,128,330,HZ+1,x=>Math.max(0,(x-128)*.085)+2.4*Math.sin(x/11)+1.1*Math.sin(x/4.3),['#7e8a62','#98986e'],{k:.9,light:-1});
+    /* olives on the foothills, far off: dark specks in rows that follow the slope */
+    const r=rng(1773);for(let i=0;i<150;i++){const x=150+r()*176,top=HZ+1-(Math.max(0,(x-128)*.085)+2.4*Math.sin(x/11)+1.1*Math.sin(x/4.3)),y=top+1.5+r()*(HZ-top);if(y>HZ-.5||y<top+1)continue;R(q,x,y,.5+(r()<.3?.5:0),.5,'#4e5a3a')}});
+  /* the plain of the coast: fields after the harvest, stubble and fallow, a green plot here and there, running back to the horizon */
+  K.land(g,L,0,q=>CO.plain(q,-2,322,HZ,104,1772,{vx:150,land:'#aaa676',haze:'#c8ccc8',kinds:['stubble','stubble','fallow','grain','plough','meadow','orchard','stubble','green']}));
+  K.land(g,L,.22,q=>aqueductGate17(q));
+  /* the foothill: turf burnt pale by the summer, scrub in its folds, two olives, the rock breaking through, and the road climbing it */
+  K.land(g,L,0,q=>{const P=[202,112];for(let x=202;x<=322;x+=2)P.push(x,Math.min(spurGate17(x),110));P.push(322,112);
+    clipTo(q,()=>poly(q,P),()=>{CO.turf(q,200,44,124,112,'#9a9a62',1774,{dry:.6,wind:1,scale:.7});
+      for(const[x0,w,y0,h,sd]of[[272,26,62,9,1775],[236,18,86,7,1776],[300,20,76,8,1777]]){const rr=rng(sd),o=[];
+        for(let i=0;i<=10;i++){const u=i/10;o.push(x0+u*w,y0+h*(.55-.45*Math.sin(Math.PI*u))-rr()*h*.35)}for(let i=10;i>=0;i--){const u=i/10;o.push(x0+u*w,y0+h*(.75+.25*Math.sin(Math.PI*u))+rr()*h*.15)}
+        CO.crag(q,o,'#b8a88a',sd,{light:-1,dip:.12,bed:3.4,scrub:2});for(let i=0;i<w*.7;i++)CO.tuft(q,x0+rr()*w,y0+h*(.7+.3*rr()),1.2+rr()*2,'#9a9a62',rr)}
+      /* the flank turned from the sun, and the haze that lies over the upper slope */
+      comp(q,'multiply',.4,()=>{q.fillStyle=lg(q,206,0,322,0,['rgba(255,255,255,0)','#c4c0d8']);q.fillRect(200,44,124,70)});
+      comp(q,'source-over',1,()=>{q.fillStyle=lg(q,0,44,0,96,[rgba('#c4ccd8',.42),rgba('#c4ccd8',.1),rgba('#c4ccd8',0)]);q.fillRect(200,44,124,70)});
+      const r=rng(1778);for(let i=0;i<20;i++){const cx=212+r()*108,cy=spurGate17(cx)+4+r()*(104-spurGate17(cx)),k=(cy-50)/60;if(cy>106)continue;
+        for(let j=0;j<1+Math.floor(r()*3);j++)CO.bush(q,cx+(r()-.5)*(4+k*8),cy+(r()-.5)*(2+k*4),(3+k*6)*(.6+r()*.6),(1.8+k*3)*(.6+r()*.6),j%2?'#5a6c40':'#66744a',1780+i*7+j,{light:-1})}});
+    stroke(q,P.slice(2,P.length-2).map((v,i)=>i%2?v+.3:v),rgba('#fff2d0',.3),.5);
+    CO.tree(q,262,82,17,null,{kind:'olive',seed:1779,light:-1,lean:.3});CO.tree(q,312,64,12,null,{kind:'olive',seed:1781,light:-1})});
+  K.road(g,O,{pts:[324,77,310,81,294,87,276,94,258,100,242,105,224,110],w0:7,w1:18,c:'#dcc69c',seed:1782,kerb:'r'});
+  /* the near ground: a strip of dry turf along the field's edge, then the road out of the gate, wide and worn, with its ruts, its loose
+     stones and its tufts; along the bottom more dry grass */
+  K.land(g,L,0,q=>{const vg=[-2,96];for(let x=-2;x<=322;x+=3)vg.push(x,Math.min(103.5+1.1*Math.sin(x/7)+.7*Math.sin(x/2.9),spurGate17(x)+2));vg.push(322,96);
+    const nb=[-2,146,-2,104];for(let x=-2;x<=322;x+=3)nb.push(x,Math.min(103.5+1.1*Math.sin(x/7)+.7*Math.sin(x/2.9),spurGate17(x)+2));nb.push(322,146);
+    clipTo(q,()=>poly(q,nb),()=>{CO.ground(q,-2,98,324,146,'#c2ac84',1783,{n:80,size:.8,tufts:18});
+      /* the road itself, paler where feet and wheels have worn it, from the gate across to the foot of the climb */
+      const rd=[-2,107,60,108,140,110,206,109.5,232,107,252,109,264,116,236,132,170,146,-2,146];poly(q,rd,rgba('#d6c29c',.55));
+      clipTo(q,()=>poly(q,rd),()=>{tex(q,'mott',.35,-2,96,324,50,'overlay',1);
+        for(const f of[118,129]){const rp=[];for(let x=-2;x<=322;x+=4)rp.push(x,f+(x>200?-(x-200)*(f-96)/150:0)+.7*Math.sin(x/31));stroke(q,rp,rgba('#5a4636',.2),1.1);stroke(q,rp.map((v,i)=>i%2?v+.7:v),rgba('#fff2d6',.14),.5)}});
+      pool(q,180,126,70,5,'#8a7a96',.14,'multiply');pool(q,90,132,50,4,'#fff2d6',.18,'screen')});
+    clipTo(q,()=>poly(q,vg),()=>CO.turf(q,-2,94,324,108,'#9a9a5e',1784,{dry:.7,wind:1,scale:.55}));
+    const fv=[-2,146];for(let x=-2;x<=322;x+=3)fv.push(x,141+1.2*Math.sin(x/6)+.8*Math.sin(x/2.3));fv.push(322,146);
+    clipTo(q,()=>poly(q,fv),()=>CO.turf(q,-2,138,324,146,'#8e8e58',1785,{dry:.65,wind:1,scale:1}));
+    for(const[x,y,w,h]of[[188,104,9,3.6],[150,103,6,2.6],[312,100,9,3.6]])CO.bush(q,x,y,w,h,'#5e7046',x*5+y,{light:-1});
+    for(const[x,y,w,h,s]of[[206,107,6,3,1786],[300,142.6,8,3.4,1787],[118,143,6,2.6,1788]])CO.boulder(q,x,y,w,h,'#ac9e86',s,{light:-1})});
+  wallGate17(g,L)}
+/* the aqueduct, far off across the plain, from the left edge to where the wall hides it: a row of round arches under one channel that
+   runs on unbroken. Through each arch the plain shows. Its side is turned a little from the sun: in a cool shade, the channel's coping
+   lit along its top, and in each arch the pier's side that faces us, lit as the sun reaches it. Courses run along it; nothing crosses. */
+function aqueductGate17(q){const x0=-2,x1=154,T=aqTopGate17,B=aqFootGate17,r=rng(1789);
+  /* the openings: spacing that grows a little toward us (to the right) */
+  const ops=[];for(let x=x0+1.6;x<x1;){const s=5.6+(x-x0)*.004,ow=s*.66,spring=T(x)+(B(x)-T(x))*.3+ow*.5;ops.push([x,ow,spring]);x+=s}
+  const solid=()=>{q.beginPath();q.moveTo(x0,T(x0));q.lineTo(x1,T(x1));q.lineTo(x1,B(x1));q.lineTo(x0,B(x0));q.closePath();
+    for(const[x,ow,sp]of ops){const b=B(x)+1;q.moveTo(x,b);q.lineTo(x,sp);q.arc(x+ow/2,sp,ow/2,Math.PI,0);q.lineTo(x+ow,b);q.closePath()}};
+  clipTo(q,()=>{solid();q.clip('evenodd')},()=>{q.fillStyle=lg(q,0,54,0,76,['#d6c6a4','#bcaa8c','#a69882']);q.fillRect(x0,50,x1-x0,30);
+    for(let y=61.4;y<70;y+=1.5)R(q,x0,y,x1-x0,.4,'rgba(84,70,64,.22)');
+    for(let i=0;i<60;i++){const x=x0+r()*(x1-x0),y=56+r()*18;R(q,x,y,.5,1.2,'rgba(84,70,64,.18)')}
+    tex(q,'mott',.4,x0,50,x1-x0,30,'overlay',.5);
+    /* the channel: a band along the top with its coping */
+    for(let x=x0;x<x1;x+=1){R(q,x,T(x),1,.6,'#f2e4c4');R(q,x,T(x)+.6,1,1.8,'#d0c0a0');R(q,x,T(x)+2.4,1,.5,'rgba(70,60,80,.35)')}
+    comp(q,'multiply',.5,()=>{q.fillStyle='#b4b4d0';q.fillRect(x0,50,x1-x0,30)})});
+  /* in each arch: the side of the pier at its left, turned toward the sun, and the shade under the crown */
+  for(const[x,ow,sp]of ops){const b=B(x);R(q,x,sp,.6,b-sp,'rgba(240,226,196,.55)');
+    q.save();q.beginPath();q.arc(x+ow/2,sp,ow/2,Math.PI,0);q.lineWidth=.6;q.strokeStyle='rgba(60,52,76,.3)';q.stroke();q.restore()}
+  /* its foot in the field, and a few bushes at the piers */
+  for(let x=x0;x<x1;x+=1)R(q,x,B(x)-.3,1,.8,'rgba(60,56,70,.25)');
+  for(let i=0;i<10;i++){const x=x0+r()*(x1-x0);R(q,x,B(x)-1,1+r()*1.5,1,'#6a7448')}}
+/* the city wall at the left, the face toward us in the shade, its coping lit; the gate's opening near the edge, dark inside with the
+   street beyond showing where the passage ends. Courses run back to the vanishing point; each joint stops at the edges of its course.
+   The wall's shadow lies on the ground before it, falling toward us. */
+function wallGate17(g,L){const T=wallTopGate17,B=wallFootGate17,E=WEGate17,r=rng(1790),C='#c4ae88';
+  SHARED.coast.land(g,L,0,q=>{const P=[-2,T(-2),E,T(E),E,B(E),-2,B(-2)];
+    /* the shadow on the ground first */
+    poly(q,[-2,B(-2)-.5,E,B(E)-.5,E+36,118,E+20,146,-2,146],'rgba(70,64,110,.3)');
+    clipTo(q,()=>poly(q,P),()=>{q.fillStyle=lg(q,-2,0,E,0,['#9c8c80','#b0a08a']);q.fillRect(-2,0,E+2,120);
+      /* courses, each from the near edge to the far end, between two lines that run to the vanishing point */
+      const n=22;for(let k=0;k<n;k++){const f0=k/n,f1=(k+1)/n,y0=x=>T(x)+(B(x)-T(x))*f0,y1=x=>T(x)+(B(x)-T(x))*f1;
+        let x=-2-r()*6;while(x<E){const w=(6+r()*5)*(1-(x+2)/(VXGate17+2)*.9),c=tint(C,(r()-.5)*.18),xe=Math.min(E,x+w);
+          poly(q,[x,y0(x),xe,y0(xe),xe,y1(xe),x,y1(x)],mix(c,'#8a84a8',.42));
+          stroke(q,[x,y0(x)+.3,xe,y0(xe)+.3],rgba('#f0e2c4',.18),.5);stroke(q,[x+.25,y0(x)+.4,x+.25,y1(x)-.2],rgba('#3c3448',.4),.5);x=xe}
+        stroke(q,[-2,y1(-2),E,y1(E)],rgba('#3c3448',.45),.5)}
+      tex(q,'mott',.45,-2,0,E+2,120,'overlay',1);tex(q,'grain',.12,-2,0,E+2,120,'overlay',.5);
+      ao(q,-2,90,E+2,30,'b',.3,'#3a3048');
+      /* the gate: a round-headed opening near the edge, dark inside; the passage's far end lit with the street */
+      const gx0=-2,gx1=13,gt=x=>T(x)+(B(x)-T(x))*.5,gb=x=>B(x);
+      const G=[gx0,gb(gx0)+1];for(let i=0;i<=12;i++){const u=i/12,x=gx0+(gx1-gx0)*u,a=Math.PI*(1-u);G.push(x,gt(x)-Math.sin(a)*7-(u<.5?0:0))}G.push(gx1,gb(gx1)+1);
+      poly(q,G,'#2a2230');clipTo(q,()=>poly(q,G),()=>{poly(q,[gx0+6,gb(gx0)-14,gx1-2,gb(gx1)-12,gx1-2,gb(gx1)+1,gx0+6,gb(gx0)+1],'#9a8a76');pool(q,gx0+9,gb(gx0)-6,6,5,'#fff0cc',.35,'screen');
+        ao(q,gx0,40,gx1-gx0,80,'l',.5,'#14101c')});
+      stroke(q,G.slice(2,G.length-2),rgba('#e8dcc4',.35),.6)});
+    /* the coping along the top, lit by the sun ahead of us, and the far end of the wall, its edge turned to the light */
+    stroke(q,[-2,T(-2)+.4,E,T(E)+.4],'#f2e2bc',1);stroke(q,[-2,T(-2)+1.2,E,T(E)+1.2],rgba('#4a4058',.4),.5);
+    R(q,E-.8,T(E),.8,B(E)-T(E),'#d8c8a6')})}
 /* ==== ART gate17: end ==== */
 
 /* ---- the inventory ---- */
@@ -748,15 +1074,14 @@ async function days17(){await fade(1,500);
   await say(JO,'joezer_paul_dont_set_foot_in_jerusalem',{to:P});await say(EU,'euanthe_we_have_all_felt_it_these_days',{to:P});
   await say(P,'i_hear_the_love_in_it_im_still_going',{to:EU});
   await tell('spirit');F.days=1;codeBtn()}
-async function toBeach17(){if(!F.days)return say(P,'not_yet_we_have_only_just_come');await fade(1,400);show17('beach17');await fade(0,500);
-  if(F.beach)return;
-  const all=beachFolk17();all.forEach((a,i)=>kneel17(a,1,i));await wait(fast()?50:900);
+async function toBeach17(){if(!F.days)return say(P,'not_yet_we_have_only_just_come');await fade(1,400);
+  if(F.beach){show17('beach17');return fade(0,500)}
+  /* the prayer (21:5) is seen from up the shore, from behind and far off: the whole congregation kneels small at the water's edge, in
+     a picture of its own (ART.beachpray17), while the narrator tells; then the beach, and the goodbye */
+  place17('beach17');enterRoom('beachpray17',160,236,1);await fade(0,700);await wait(fast()?50:900);
   await tell('v5');await wait(fast()?50:500);
-  all.forEach(a=>kneel17(a,0));F.beach=1;AU.mood='parting';await say(ME,'melitta_goodbye_paul',{to:P});await say(P,'goodbye_melitta',{to:ME});codeBtn()}
-const beachFolk17=()=>[P,LK,TI,AR,TR,EU,PN,MY,JO,ME,PL];
-/* kneel17: the engine's kneeling pose (KNEEL), heads bowed: every second one with the hands folded low in front, the others with the
-   arms down; never spread or raised. Children kneel with their arms down. */
-function kneel17(a,on,i){const L=LOOK[a.id]||{};a.kneel=on?(i%2||L.h?KNEEL.both:KNEEL.bothFolded):0}
+  await fade(1,500);F.beach=1;show17('beach17');await fade(0,500);
+  AU.mood='parting';await say(ME,'melitta_goodbye_paul',{to:P});await say(P,'goodbye_melitta',{to:ME});codeBtn()}
 /* aboard, to Ptolemais and Caesarea (21:7-9) */
 async function aboard17(){if(!F.beach)return say(P,'not_before_we_have_prayed');
   await fade(1,500);G.scene=null;show17('beach17');
