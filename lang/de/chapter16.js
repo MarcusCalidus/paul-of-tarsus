@@ -182,7 +182,7 @@ TEXTS('de',16,{
   "timothy_a_good_day_on_the_water":["Ein guter Tag auf dem Wasser, Lukas.","1esosx7"],
   "aristarchus_look":["Aristarchus aus Thessalonich. In Ephesus hat ihn die Menge ins Theater gezerrt, und er ist trotzdem hier.","0nk2tqb"],
   "aristarchus_the_chest_is_well":["Mit der Truhe ist alles in Ordnung. Einer von uns ist immer bei ihr.","0g0torq"],
-  "trophimus_look":["Trophimus aus der Provinz Asien. Ein Epheser, weit weg von zu Hause.","0ja8kdf"],
+  "trophimus_look":["Trophimus aus der Provinz Asien. Ein Epheser, und das hier ist seine eigene Küste.","195n1hn"],
   "trophimus_my_own_coast":["Da drüben ist meine eigene Küste. Ich hätte nie gedacht, dass ich sie einmal vom Meer aus sehe.","1te6wum"],
   "luke_timothy_look16":["Timotheus. Er hat ein Auge auf die Truhe, und auf Paulus.","1boxq09"],
   "timothy_look":["Timotheus. Als ich das erste Mal nach Lystra kam, war er noch ein Junge.","04y7k0z"],

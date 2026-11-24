@@ -185,7 +185,7 @@ TEXTS('en',16,{
   "timothy_a_good_day_on_the_water":"A good day on the water, Luke.",
   "aristarchus_look":"Aristarchus of Thessalonica. In Ephesus the crowd dragged him into the theater, and here he is.",
   "aristarchus_the_chest_is_well":"The chest is well. One of us is always beside it.",
-  "trophimus_look":"Trophimus, from the province of Asia. An Ephesian, and far from home.",
+  "trophimus_look":"Trophimus, from the province of Asia. An Ephesian, and this is his own coast.",
   "trophimus_my_own_coast":"That's my own coast over there. I never thought I'd see it from the sea.",
   "luke_timothy_look16":"Timothy. He keeps an eye on the chest, and on Paul.",
   "timothy_look":"Timothy. He was a boy in Lystra when I first came there.",
