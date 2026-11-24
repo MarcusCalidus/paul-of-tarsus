@@ -32,6 +32,8 @@ Everybody covers ground at the same speed, so that companions stay together, but
 
 The pack donkey walks in four beats, near hind, near fore, far hind, far fore: each hoof stands while the body passes over it and is then lifted and swung forward with the joint bent, and the body sinks a pixel as each fore hoof lands. On the road of Chapter Three its hooves stay where they are set down.
 
+The pack mule is a painter of its own and a size bigger than the donkey: its back stands about as high as a man's chest and its ears as high as his head. It is more like a horse than the donkey is, with a deeper body and a round haunch, longer, finer legs on larger hooves, a longer neck carried higher under a short upright mane, a long straight face, ears long but shorter than a donkey's, and a tail that grows long hair from high up. Its coat is a dark bay, with dark legs below the knees and hocks and a mealy muzzle and belly, so that it never reads as the grey donkey. It walks in the same four beats with a longer, swinging stride, its head nodding as each fore hoof lands, and at the game's walking speed its hooves do not slip at all. Under a full load it carries bags stuffed with wool and fleeces piled high on its back, as the carrier's mule does in Chapter Eight. Spoken to, as Kleon's mule is in Chapter Three, it brays: it raises its head and lays back its ears, and its call begins like a horse's whinny and ends in two hee-haws, with the mouth opening on each. `node tools/playtest.mjs mules` shows every frame of its walk and voice enlarged.
+
 ![Every second moment of a stride, enlarged](screenshots/walk.png)
 
 ![Paul in the workshop, as a heel lands](screenshots/stride.png)
