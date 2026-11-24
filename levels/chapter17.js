@@ -826,8 +826,9 @@ function drawHold17(g,t){const k=keel17(),a=k.trim*TILTHold17,[px,py]=PIVOTHold1
   g.save();g.clip(out,'evenodd');waterHold17(g,t);g.restore();
   g.save();g.beginPath();g.rect(0,WLHold17,320,144-WLHold17);g.clip();turn();const skin=new Path2D();skin.addPath(OUTHold17);skin.addPath(INHold17);g.clip(skin,'evenodd');
   g.fillStyle='rgba(24,48,70,.45)';g.fillRect(-20,0,360,160);g.restore()}
+/* the caption stands at the upper left, clear of the mast (no words laid across it: CONTRIBUTING section 3) */
 function frontHold17(g){const k=keel17();g.fillStyle=lg(g,0,0,0,13,['rgba(14,10,18,.62)','rgba(14,10,18,.5)','rgba(14,10,18,0)']);g.fillRect(0,0,320,13);
-  cap17(g,k.day?T('hold_day_n',{n:T(DAYS17[k.day-1])}):T('hold_chalk_n_of_7',{n:k.n}),160,4.6,300)}
+  cap17(g,k.day?T('hold_day_n',{n:T(DAYS17[k.day-1])}):T('hold_chalk_n_of_7',{n:k.n}),6,4.6,136,{left:1})}
 /* ==== ART hold17: end ==== */
 
 /* ==== ART tyrecourt17: begin ==== */
