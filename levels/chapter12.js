@@ -154,6 +154,49 @@ const haze=(g,w,y0,v)=>{comp(g,'soft-light',v==='w'?.22:.4,()=>{g.fillStyle=lg(g
    Paul's day (study note on Acts 18:1), and the chapter's page says so. In winter it rains; in the spring of the games there are booths. */
 const PUD_ST=SHARED.weather.puddles(640,111,139,16,1202),PUD_CT=SHARED.weather.puddles(320,111,138,8,1206),PUD_CN=SHARED.weather.puddles(320,112,139,6,1214);
 const SEAS=()=>F.cen?'f':F.summer?'u':F.spring?'s':F.shook?'w':'a';
+/* westView12: the view at the far left of the street, down to the western harbor. Lechaeum, the port for ships to and from Italy and
+   the west, was joined to the city by two continuous walls (Insight, "Corinth"; study note on Acts 18:18), and the Lechaeum road ran
+   from the harbor to the heart of the city (Awake!, January 22, 1991). Seen from the street: the two walls run away from us between the
+   fields, each with its courses and a parapet along its outer edge; between them the road, worn into ruts, with two travelers far down
+   it; and at the end, where the walls meet the shore, the harbor with its moles and hulls, the gulf and the mountains beyond it. All of
+   it runs back to the scene's one horizon (HZ, the level of the paving's vanishing point). No mast stands over the sea, and no line
+   crosses another: every course and rut runs to the one vanishing point. It draws from a seed of its own. */
+function westView12(g,v){const VX=20,HZ=58,B=104,q=rng(1240),
+  /* a point on the ground at lateral xb (its x at the foot of the view) and depth y, raised h at the foot of the view */
+  at=(xb,y)=>VX+(xb-VX)*(y-HZ)/(B-HZ),up=(xb,h)=>[xb,B-h,VX,HZ];
+  clipTo(g,()=>{g.beginPath();g.rect(0,40,36,64)},()=>{
+  /* the season's sky once more, over the rise of the old temple where it would stand behind the gulf; haze low in it; the mountains
+     across the gulf, and the gulf down to the far shore */
+  clipTo(g,()=>{g.beginPath();g.rect(0,44,36,HZ-44)},()=>sky(g,640,64,SKY[v]));
+  g.fillStyle=lg(g,0,HZ-10,0,HZ,['rgba(212,220,222,0)','rgba(212,220,222,.8)']);g.fillRect(0,HZ-10,36,10);ridge(g,0,36,HZ,x=>3+2*Math.sin(x/9),['#93a3b4','#a6b0b2']);
+  g.fillStyle=lg(g,0,HZ,0,HZ+2.6,['#6a94b4','#5a88ac']);g.fillRect(0,HZ,36,2.6);R(g,0,HZ,36,.5,'#b8d2e0');for(let i=0;i<8;i++)R(g,q()*34,HZ+.6+q()*1.8,1+q()*2,.5,'rgba(220,236,244,.45)');
+  /* the plain, in fields that grow narrower as they go back */
+  g.fillStyle=lg(g,0,HZ+2,0,B,['#b4ae88','#b2a67c','#ab9d72']);g.fillRect(0,HZ+2.4,36,B-HZ-2.4);
+  for(let i=0,y=HZ+2.6;y<B;i++){const h=.6+(y-HZ)*.16;R(g,0,y,36,h,i%3===0?'rgba(112,128,72,.22)':i%3===1?'rgba(196,172,112,.2)':'rgba(150,120,80,.12)');y+=h}
+  for(let i=0;i<26;i++){const y=HZ+3+Math.pow(q(),1.6)*26,k=(y-HZ)/(B-HZ);R(g,q()*36,y,.6+k*2.6,.5+k*1.4,'rgba(84,100,60,.5)')}
+  /* the harbor at the shore, where the walls end: a short mole on each side of its mouth, hulls lying low in the water, and the houses of
+     the port, small and pale */
+  R(g,12,HZ+1.4,4.6,.6,'#d8d0bc');R(g,23,HZ+1.2,4.4,.6,'#d8d0bc');for(const x of[16.2,19,21.8])R(g,x,HZ+1.1,1.8,.7,'#3e3026');
+  for(const[x,w,h]of[[10.4,1.6,1.2],[12.4,2,1.6],[15,1.4,1],[23.6,1.8,1.4],[26,2.2,1.2],[28.6,1.4,1]]){R(g,x,HZ+2.6-h,w,h,'#e2dccc');R(g,x,HZ+2.6-h,w,.4,'#b8704c')}
+  /* the road between the walls: its verges, its worn bed and two ruts, all running to the vanishing point */
+  poly(g,[11,B,29,B,VX+.3,HZ+2.4,VX-.3,HZ+2.4],'#bfb28a');poly(g,[13.6,B,26.4,B,VX+.2,HZ+2.4,VX-.2,HZ+2.4],'#d2c6a4');
+  for(const xb of[16.4,23.6]){stroke(g,[xb,B,at(xb,HZ+2.4),HZ+2.4],'rgba(120,100,70,.5)',.6);stroke(g,[xb+.6,B,at(xb+.6,HZ+2.4),HZ+2.4],'rgba(250,240,214,.35)',.5)}
+  for(let i=0;i<14;i++){const y=HZ+4+Math.pow(q(),1.4)*38,k=(y-HZ)/(B-HZ),x=at(14+q()*12,y);R(g,x,y,.5+k,.5,'rgba(110,92,64,.3)')}
+  /* two travelers far down the road, a man in a brown mantle and one in a pale one, each with his shadow */
+  for(const[xb,y,c]of[[18.2,66,'#7a5a3e'],[22.4,63.4,'#cfc6b0']]){const x=at(xb,y),k=(y-HZ)/(B-HZ),h=1.6+k*14;
+    R(g,x-.2,y-.3,h*.5,.5,'rgba(60,50,40,.3)');R(g,x-h*.13,y-h*.78,h*.26,h*.78,c);R(g,x-h*.13,y-h*.78,h*.08,h*.78,tint(c,.2));R(g,x-h*.1,y-h,h*.2,h*.22,'#a87a58')}
+  /* the two walls: of each, the face turned to the road, in courses, the walk on top, and a parapet along its outer edge. We look west;
+     the sun stands in the south, at the left, so the right wall's face takes it, the left one is in shade and lays its shadow along the
+     left verge. Heights: the wall 30 and the parapet 4 at the foot of the view. */
+  poly(g,[8,B,13,B,VX,HZ],'rgba(70,60,70,.26)');g.save();g.beginPath();g.rect(0,HZ+2.2,36,B-HZ-2.2);g.clip();
+  for(const[xi,xo,lit]of[[8,2,0],[31,37,1]]){const H=30,PH=4,F=lit?'#cdbf9c':'#a39478',T=lit?'#ddd2b4':'#c4b898',
+      face=[xi,B,xi,B-H,VX,HZ],top=[xi,B-H,xo,B-H,VX,HZ],par=[xo,B-H,xo,B-H-PH,VX,HZ];
+    poly(g,face,F);clipTo(g,()=>poly(g,face),()=>{for(let j=1;j<7;j++){const yb=B-H*j/7;stroke(g,[xi,yb,VX,HZ],lit?'rgba(110,90,60,.32)':'rgba(70,58,44,.32)',.5);stroke(g,[xi,yb+.5,VX,HZ],'rgba(255,246,220,.14)',.5)}
+      tex(g,'mott',.3,0,HZ,36,B-HZ,'overlay',.6);g.fillStyle=lg(g,0,B-H,0,B,['rgba(0,0,0,0)','rgba(60,46,36,.25)']);g.fillRect(0,HZ,36,B-HZ)});
+    poly(g,top,T);poly(g,par,lit?tint(F,-.1):tint(F,.08));stroke(g,[xo,B-H-PH,VX,HZ],tint(T,.25),.5);stroke(g,[xi,B-H,VX,HZ],tint(T,.2),.5)}g.restore();
+  /* the far air: everything fades toward the sky as it nears the horizon */
+  g.fillStyle=lg(g,0,HZ,0,HZ+22,['rgba(214,222,222,.42)','rgba(214,222,222,.2)','rgba(214,222,222,0)']);g.fillRect(0,HZ,36,22);
+  ao(g,0,B-6,36,6,'b',.2,'#3a3050')})}
 ART.street12={w:640,q:12,variant:SEAS,
  paint(g,v){const r=rng(1201),W1='#dfd0aa',W2='#d6c59c',ST='#d9cfb4',out=v!=='w';
   sky(g,640,64,SKY[v]);if(v==='w'){for(let i=0;i<7;i++)cloud(g,40+i*96,8+(i%3)*7,90,9,r,'#c9ccd0','#878d98')}else{cloud(g,70,12,56,4,r);cloud(g,292,8,44,4,r);cloud(g,560,15,50,4,r)}
@@ -162,9 +205,8 @@ ART.street12={w:640,q:12,variant:SEAS,
   /* the old temple on its rise, over the roofs */
   ridge(g,20,230,60,x=>24*Math.exp(-Math.pow((x-86)/58,2)),['#b9ae84','#a59a6c']);for(let i=0;i<6;i++)foliage(g,30+i*26+r()*6,50+r()*4,6,2.6,'#6f8250',r,16);
   oldTemple(g,50,35,40,6,15,'#d9cdb0',{side:36});
-  /* at the left, the way down to the western harbor: the road between its two long walls, and the gulf beyond */
-  R(g,0,50,36,56,'#b9c8d4');R(g,0,56,36,5,'#5f8fb4');R(g,0,56,36,.6,'#a8cce0');ridge(g,0,36,56,x=>3+2*Math.sin(x/9),['#93a3b4','#a2aeb0']);
-  poly(g,[10,104,30,104,22,61,17,61],'#cfc2a0');poly(g,[0,104,10,104,17,61,13,61,0,70],'#b3a78a');poly(g,[30,104,36,104,36,72,25,61,22,61],'#a39880');ao(g,0,61,36,10,'t',.25,'#2a2440');
+  /* at the left, the way down to the western harbor: the road between its two long walls, and the gulf beyond (westView12) */
+  westView12(g,v);
   /* the colonnade of shops: bronze and pots under its roof. The wares stand on the ground: a board behind the columns would be crossed by them */
   colonnade(g,36,104,94,56,5,ST,{back:()=>{R(g,40,60,86,44,'#6a5c58');for(const[x,c]of[[48,'#b8863c'],[57,'#a8742e'],[66,'#c49448'],[92,'#9a5a36'],[103,'#8a4a2a']])vessel(g,x,103,3,7+((x*7)%4),c,x>80?'jar':'jug');
     for(let i=0;i<4;i++){R(g,46+i*8,68,3.4,4.2,'#c49448');R(g,46+i*8,68,3.4,.6,'#f0d088')}}});
