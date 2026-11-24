@@ -481,6 +481,8 @@ function paintPray17(g){const K=SHARED.coast,CO=SHARED.country,O=OPray17,HZ=HZPr
   WPray17=K.shore(g,O,{x0:-2,x1:322,edge:edgePray17,y1:144,kind:'sand',seed:1793,wet:4});
   /* the ship's boat beside them at the edge, small */
   {const x=224,y=edgePray17(224)+2.2;poly(g,[x-5,y-1.6,x+6,y-2.2,x+5,y,x-4,y],'#4a3628');R(g,x-4.6,y-1.9,10.4,.5,'#c8a474');R(g,x-4,y+.2,9,.5,'rgba(40,40,70,.35)')}
+  /* the sand they crossed, trodden from the way down to where they kneel: a fan of small dents, each lit on its far lip */
+  {const r=rng(1797);for(let i=0;i<260;i++){const t=r(),x=150+(r()-.5)*(10+t*0)+(r()-.5)*60*(1-t),y=100+t*18;R(g,x,y,.5+r()*.5,.5,rgba('#5a4a44',.22));R(g,x,y-.5,.5,.5,rgba('#fff2d8',.2))}}
   prayFolk17(g);
   /* the dune we look down from: its top in the foreground, grass and a few bushes along it, the way down through it */
   K.land(g,L,0,q=>{const top=x=>118+5*Math.sin(x/37)+2*Math.sin(x/11)-(x>120&&x<170?6*Math.sin((x-120)/50*Math.PI):0)+(x>260?-(x-260)*.12:0),T=[-2,146];
@@ -589,15 +591,15 @@ function streetPhilip17(g,L){const HZ=HZPhilip17,r=rng(1762);
     stroke(g,[293,58,293,82],rgba('#fff2d6',.5),.5);stroke(g,[283,60,283,82],rgba('#4a3c48',.4),.5);
     /* the haze of the distance over the water and the far end of the street */
     pool(g,288,72,10,6,'#ffe2b4',.22,'screen')})}
-/* the court's wall at the right, from the house to the edge, with the gate: a lintel of wood over the opening, the jambs showing the
-   wall's depth, a stone sill */
+/* the court's wall at the right, from the house to the edge, with the gate: a plain opening, the jambs showing the wall's depth, a
+   stone sill; no lintel is drawn, so that nothing level meets the post of the vine beside it */
 function courtWallPhilip17(g,r){const W='#e8dac0';
   plaster(g,268,28,54,20,W,r,{patch:0,cracks:0,t:.45,top:.08,bot:0});plaster(g,304,48,18,56,W,r,{patch:0,cracks:0,t:.45,top:.02,bot:-.1});
   R(g,268,28.4,54,2,tint(W,.14));R(g,268,28.4,54,.6,'#fff6e0');R(g,268,30.4,54,.8,'rgba(90,70,80,.3)');
   /* the opening, the left jamb lit inside, the right in shade */
   R(g,304,48,1.6,56,'#a69a98');R(g,270,48,1.4,56,'#fff0d2');
-  /* the lintel: a beam set into the wall over the opening, its face lit, its ends inside the plaster */
-  wood(g,272,44.5,34,4,'#7a5a3c',0,.45);R(g,272,44.5,34,.5,'#c89a66');R(g,272,48.5,34,.8,'rgba(40,30,40,.45)');
+  /* the head of the opening: the plaster carried over it, its underside in shade */
+  R(g,270,47.4,35.6,.6,'rgba(255,246,226,.6)');
   /* the sill */
   R(g,270,103,35,1.6,'#cbb898');R(g,270,103,35,.5,'#f0e0c0');
   ao(g,270,48,35,4,'t',.35,'#2a2030')}
@@ -636,7 +638,7 @@ function vinePhilip17(g,r){const[a,b]=PPhilip17,[t0,t1]=BPhilip17,q=rng(1763);
   for(const x of PPhilip17){wood(g,x,t1,3.5,106-t1,'#6a4a30',1,.5);R(g,x,t1,.8,106-t1,'#b0865a');SHARED.materials.shadow(g,x+2.4,106,3.6,1,.8)}
   wood(g,a,t0,b+3.5-a,t1-t0,'#6e4e32',0,.5);R(g,a,t0,b+3.5-a,.6,'#c8996a');R(g,a,t1-.6,b+3.5-a,.6,'#3a281e');
   /* the trunk: a twisted stem from the floor at the left post up to the beam, darker where it turns from the light */
-  const T=[];for(let y=106;y>=t1;y-=1.5){const u=(106-y)/(106-t1);T.push(b+4.6+Math.sin(u*9.4)*1.6,y)}
+  const T=[];for(let y=106;y>=t1;y-=1.5){const u=(106-y)/(106-t1);T.push(b+1.75+Math.sin(u*9.4)*1.9,y)}
   stroke(g,T,'#3e2c22',1.8);stroke(g,T.map((v,i)=>i%2?v:v-.5),'#8a6a4e',.6);
   /* a few shoots trained along the beam, under the leaves */
   stroke(g,[a+1,t0+1,a+20,t0-1.5,a+44,t0+.5,a+70,t0-1,b,t0+.5],'#4e3a2a',.8);
@@ -646,13 +648,13 @@ function vinePhilip17(g,r){const[a,b]=PPhilip17,[t0,t1]=BPhilip17,q=rng(1763);
   const shoots=[];for(let i=0;i<34;i++){let x=a-4+q()*(b-a+12),y=t0+1,dx=(q()-.5)*1.4;const pts=[[x,y]],n=8+q()*14|0;
     for(let k=0;k<n;k++){dx=clamp(dx+(q()-.5)*.7,-1.1,1.1);x+=dx;y-=.9+q()*.7;if(y<6)break;pts.push([x,y])}shoots.push(pts)}
   for(const[c,d]of[[a+14,7],[a+41,5],[a+63,8],[b-5,5]]){let x=c,y=t0;const pts=[[x,y]];for(let k=0;k<d;k++){x+=(q()-.5)*.8;y+=1;pts.push([x,y])}shoots.push(pts)}
-  const lv=[];for(const pts of shoots){pts.forEach(([x,y],k)=>{const m=1+(q()<.6);for(let j=0;j<m;j++)lv.push([x+(q()-.5)*3.6,y+(q()-.5)*2.4,q(),q()])})}
+  const lv=[];for(const pts of shoots){pts.forEach(([x,y],k)=>{const m=2+(q()<.5);for(let j=0;j<m;j++)lv.push([x+(q()-.5)*3.8,y+(q()-.5)*2.4,q(),q()])})}
   for(let i=0;i<220;i++){const x=a-6+q()*(b-a+14),y=t0-4+q()*5.5;lv.push([x,y,q(),q()])}
   for(const[x,y]of lv)pool(g,x+1.4,y+1.4,2.6,1.8,'#3a3a52',.12,'multiply');
   for(const pts of shoots)stroke(g,pts.flat(),'rgba(70,54,40,.7)',.5);
   lv.sort((u,v)=>u[1]-v[1]);
   for(const[x,y,c,s2]of lv){const lit=clamp(.95-(y-6)/(t0+6-6)*.7-(x-a)/(b-a)*.25+(c-.5)*.55,0,1),
-      col=mix(mix('#2e4426','#7c9a42',lit),'#d4c674',lit>.85?.3:0),w=.9+s2*1.2,h=.7+s2*.6;
+      col=mix(mix('#2e4426','#7c9a42',lit),'#d4c674',lit>.85?.3:0),w=.7+s2*1,h=.6+s2*.5;
     if(w<1.15)R(g,x,y,1,1,col);else{oval(g,x,y,w,h,col);if(lit>.5)R(g,x-w*.6,y-h*.7,w*.7,.5,mix(col,'#f6eab0',.45))}}
   /* young grapes, hard and green, hanging under the leaves */
   for(const[x,y]of[[202,t1+1],[229,t1+1.5],[251,t1+1]]){for(let k=0;k<5;k++){const w=2.4-k*.4;R(g,x-w/2,y+k*.9,w,.9,k%2?'#7a9a4a':'#94b05a')}R(g,x-.6,y-.4,.6,.5,'#c8d888')}
@@ -695,7 +697,7 @@ const spurGate17=x=>x<206?999:104-Math.pow((x-206)/114,.78)*56+1.3*Math.sin(x/7.
 /* the city wall at the left, running away from us toward the vanishing point (x 168 on the horizon): its top, its foot, its far end */
 const VXGate17=168,WEGate17=46,wallTopGate17=x=>10+(x+2)*(HZGate17-10)/(VXGate17+2),wallFootGate17=x=>110+(x+2)*(HZGate17-110)/(VXGate17+2);
 /* the aqueduct: its channel's top and its foot, from its far end at the left edge to where the wall hides it */
-const aqTopGate17=x=>60.2-(x+2)*.008,aqFootGate17=x=>69.6+(x+2)*.006;
+const aqTopGate17=x=>56+(x-46)*.045,aqFootGate17=x=>71.5-(x-46)*.032;
 function paintGate17(g){const K=SHARED.coast,CO=SHARED.country,O=OGate17,HZ=HZGate17,L=K.light(O);
   K.sky(g,O);
   /* the hills of Judea: a far range, blue in the haze, rising toward the right; low hills far off at the left behind the plain */
@@ -739,24 +741,26 @@ function paintGate17(g){const K=SHARED.coast,CO=SHARED.country,O=OGate17,HZ=HZGa
 /* the aqueduct, far off across the plain, from the left edge to where the wall hides it: a row of round arches under one channel that
    runs on unbroken. Through each arch the plain shows. Its side is turned a little from the sun: in a cool shade, the channel's coping
    lit along its top, and in each arch the pier's side that faces us, lit as the sun reaches it. Courses run along it; nothing crosses. */
-function aqueductGate17(q){const x0=-2,x1=154,T=aqTopGate17,B=aqFootGate17,r=rng(1789);
-  /* the openings: spacing that grows a little toward us (to the right) */
-  const ops=[];for(let x=x0+1.6;x<x1;){const s=5.6+(x-x0)*.004,ow=s*.66,spring=T(x)+(B(x)-T(x))*.3+ow*.5;ops.push([x,ow,spring]);x+=s}
+function aqueductGate17(q){const x0=-2,x1=214,T=aqTopGate17,B=aqFootGate17,r=rng(1789),H=x=>B(x)-T(x);
+  /* the openings, each as wide as the aqueduct is high there allows; where an arch would be under about a pixel and a half it is not
+     drawn, and the far end is a plain band that fades into the haze */
+  const ops=[];for(let x=x0+1.6;x<x1;){const s=H(x)*.46,ow=s*.64;if(ow<1.6)break;ops.push([x,ow,T(x)+H(x)*.3+ow*.5]);x+=s}
   const solid=()=>{q.beginPath();q.moveTo(x0,T(x0));q.lineTo(x1,T(x1));q.lineTo(x1,B(x1));q.lineTo(x0,B(x0));q.closePath();
     for(const[x,ow,sp]of ops){const b=B(x)+1;q.moveTo(x,b);q.lineTo(x,sp);q.arc(x+ow/2,sp,ow/2,Math.PI,0);q.lineTo(x+ow,b);q.closePath()}};
-  clipTo(q,()=>{solid();q.clip('evenodd')},()=>{q.fillStyle=lg(q,0,54,0,76,['#d6c6a4','#bcaa8c','#a69882']);q.fillRect(x0,50,x1-x0,30);
-    for(let y=61.4;y<70;y+=1.5)R(q,x0,y,x1-x0,.4,'rgba(84,70,64,.22)');
-    for(let i=0;i<60;i++){const x=x0+r()*(x1-x0),y=56+r()*18;R(q,x,y,.5,1.2,'rgba(84,70,64,.18)')}
+  clipTo(q,()=>{solid();q.clip('evenodd')},()=>{q.fillStyle=lg(q,0,54,0,74,['#d6c6a4','#bcaa8c','#a69882']);q.fillRect(x0,50,x1-x0,30);
+    /* courses along it, closer together as it goes away */
+    for(let k=1;k<9;k++){const L=[];for(let x=x0;x<=x1;x+=2)L.push(x,T(x)+H(x)*k/9);stroke(q,L,'rgba(84,70,64,.2)',.4)}
     tex(q,'mott',.4,x0,50,x1-x0,30,'overlay',.5);
     /* the channel: a band along the top with its coping */
-    for(let x=x0;x<x1;x+=1){R(q,x,T(x),1,.6,'#f2e4c4');R(q,x,T(x)+.6,1,1.8,'#d0c0a0');R(q,x,T(x)+2.4,1,.5,'rgba(70,60,80,.35)')}
+    for(let x=x0;x<x1;x+=1){const h=H(x);R(q,x,T(x),1,.6,'#f2e4c4');R(q,x,T(x)+.6,1,h*.12,'#d0c0a0');R(q,x,T(x)+.6+h*.12,1,.5,'rgba(70,60,80,.32)')}
     comp(q,'multiply',.5,()=>{q.fillStyle='#b4b4d0';q.fillRect(x0,50,x1-x0,30)})});
   /* in each arch: the side of the pier at its left, turned toward the sun, and the shade under the crown */
-  for(const[x,ow,sp]of ops){const b=B(x);R(q,x,sp,.6,b-sp,'rgba(240,226,196,.55)');
+  for(const[x,ow,sp]of ops){const b=B(x);R(q,x,sp,.6,b-sp,'rgba(240,226,196,.5)');
     q.save();q.beginPath();q.arc(x+ow/2,sp,ow/2,Math.PI,0);q.lineWidth=.6;q.strokeStyle='rgba(60,52,76,.3)';q.stroke();q.restore()}
-  /* its foot in the field, and a few bushes at the piers */
+  /* its foot in the field, a few bushes at the piers, and the haze that takes its far end */
   for(let x=x0;x<x1;x+=1)R(q,x,B(x)-.3,1,.8,'rgba(60,56,70,.25)');
-  for(let i=0;i<10;i++){const x=x0+r()*(x1-x0);R(q,x,B(x)-1,1+r()*1.5,1,'#6a7448')}}
+  for(let i=0;i<12;i++){const x=46+r()*120,h=H(x)*.12;R(q,x,B(x)-h,h*1.6,h,'#6a7448')}
+  comp(q,'destination-out',1,()=>{q.fillStyle=lg(q,150,0,x1,0,['rgba(0,0,0,0)','rgba(0,0,0,1)']);q.fillRect(150,40,x1-150+2,40)})}
 /* the city wall at the left, the face toward us in the shade, its coping lit; the gate's opening near the edge, dark inside with the
    street beyond showing where the passage ends. Courses run back to the vanishing point; each joint stops at the edges of its course.
    The wall's shadow lies on the ground before it, falling toward us. */
@@ -1304,11 +1308,12 @@ function hint17(){const r=G.room,me=PC();
 
 /* ============ CHAPTER DEFINITION ============ */
 /* Birds (shared/birds.js): gulls over the harbors of Patara and Tyre, and far off over the bay of Ptolemais; sparrows on the roofs of the
-   court; none over the beach while they pray (a gull far off, only after). Scenery: they change nothing in the story. */
+   court; doves on the parapet of Philip's house; none over the beach while they pray (a gull far off, only after). Scenery: they change nothing in the story. */
 ROOMS.patara17.birds={gulls:[100,4,120,24],stand:[[160,101.2,-1],[169.4,101.4,1]]};
 ROOMS.tyre17.birds={gulls:[60,4,140,24],stand:[[172,101.2,-1]]};
 ROOMS.beach17.birds=()=>F.beach?{gulls:[180,6,80,18]}:null;
 ROOMS.ptolemais17.birds={gulls:[200,8,100,20]};
+ROOMS.philip17.birds={perch:[{k:'dove',y:16,x:[100,114],d:[1,-1]}]};
 ROOMS.gate17.birds={prey:[180,4,120,20]};
 
 return{rooms:['patara17','tyre17','hold17','tyrelanes17','tyrecourt17','beach17','philip17','gate17'],setup:setup17,start:start17,hint:hint17,music:MUSIC,topics:[],tablets:TABLETS,

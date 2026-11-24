@@ -3720,7 +3720,7 @@
      pcourt17 · pdays17 · pbeach17 (after the prayer: the treasure's point) · pphilip17 · pagabus17 · pplead17 (Luke) · pgate17. */
   /* rooms17: every picture of Chapter Seventeen at twice its size on one sheet (rooms17.png), with the lane map of Tyre whole beside it
      (rooms17-lanes.png), and the hold in each trim the plan can give it: for the art agents, and the cross-shape check. */
-  if(stop==='rooms17'){clearInterval(sk);sk=0;await loadLevel(17);setChapter(17);ov.className='';ov.onclick=null;const C=CHAP[17],ids=[...C.rooms.filter(r=>r!=='tyrelanes17'),'ptolemais17'],K=2;
+  if(stop==='rooms17'){clearInterval(sk);sk=0;await loadLevel(17);setChapter(17);ov.className='';ov.onclick=null;const C=CHAP[17],ids=[...C.rooms.filter(r=>r!=='tyrelanes17'),'ptolemais17','beachpray17'],K=2;
     const[c,g]=mk(320*K*2+8,(ids.length/2|0)*(144*K+8)+144*K+8);g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
     ids.forEach((id,i)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const q=cv.getContext('2d');q.drawImage(bg(id),0,0,W,144);
       const DQ0=DQ;try{DQ=[];ART[id].draw(q,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(q,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
