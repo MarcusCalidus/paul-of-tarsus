@@ -1157,10 +1157,14 @@ const walkSw=(o,fr)=>fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1).shadow
    its head bowed and its eyes shut; it does not turn while others speak, and it stands again when the script sets a.kneel=0 or walks it.
    Never are arms spread or raised (CONTRIBUTING section 3). kneelX: where the middle of its contact shadow lies, in room pixels behind
    the knees (the shins and feet lie back along the ground). */
+/* Bound. An actor sits bound while a script sets a.bound (Agabus with Paul's belt, Acts 21:11): drawn with fr = -6, seated, the feet and
+   the wrists wound round with the belt; he does not turn while others speak, moves no hand, and sits free again when a.bound is cleared. */
 const KNEEL={both:1,bothFolded:2,one:3,oneFolded:4},kneelX=(o,fr)=>fr<=-2&&fr>=-5?(fr>=-3?(o.h?-2.6:-3.2):(o.h?.2:.5)):0;
 /* person: one figure with its feet at x,y, one drawing unit per canvas pixel, facing right (dir -1 mirrors it).
    fr is the walk: 0 stands; -1 the figure sits (the upper body lower, over a lap: bare shins under a short tunic, and under a long robe the cloth hanging from the knees to the feet);
-   -2 to -5 it kneels (see KNEEL: on both knees or one, the arms down or the hands folded, the head bowed; the body lower by the length of a shin). From 4 up it is a moment of a stride, as update and walkFr give it: sixteen moments of a full step, then sixteen
+   -2 to -5 it kneels (see KNEEL: on both knees or one, the arms down or the hands folded, the head bowed; the body lower by the length of a shin);
+   -6 it sits bound, as Agabus bound himself with Paul's belt (Acts 21:11): seated, the feet together and the wrists together low in front,
+   each wound round with the belt (bond: its color, else Paul's belt), its loose end hanging a little way down from the wrists. From 4 up it is a moment of a stride, as update and walkFr give it: sixteen moments of a full step, then sixteen
    of a shorter one and sixteen of a half step (a walk begins and ends on these). 1, 2 and 3, the frames of the old walk, are three moments
    of the same stride: a heel landing, the legs passing, the other heel landing.
    bow lowers the head; blink closes the eyes; mv is a sum of MV.
@@ -1174,7 +1178,9 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   /* kneeling (fr -2 to -5, see KNEEL): the head is bowed, and the figure moves nothing but its mouth */
   const kn=fr<=-2&&fr>=-5?-1-fr:0,both=kn&&kn<=2,fold=kn&&kn%2===0;if(kn)bow=1;
   mv=o.stone||bow?0:mv|0;talk=o.stone?0:talk|0;if(o.stone&&ges===9)ges=0;
-  const seat=fr===-1,W=!seat&&fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):!seat&&!kn&&fr?gaitPose(o,[0,0,.25,.5][fr]||0,1):null,bob=W?W.bob:0;let SH=null;
+  /* bound (fr -6, a.bound): seated, the feet together and the hands held together low in front, both wound round with a belt (see wind) */
+  const tied=fr===-6,seat=fr===-1||tied;if(tied)ges=0;
+  const W=!seat&&fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):!seat&&!kn&&fr?gaitPose(o,[0,0,.25,.5][fr]||0,1):null,bob=W?W.bob:0;let SH=null;
   /* px: a run of pixels. While a foot is painted, SH lets each of its columns sit higher than the next: a heel that is up, or the toes */
   const px=(a,b,col,w,h)=>{g.fillStyle=col;if(SH)for(let i=0;i<(w||1);i++)g.fillRect(a+i,b+SH(a+i),1,h||1);else g.fillRect(a,b,w||1,h||1)};
   /* tearCut: natural 2-3px jagged cloth tongues along a ragged hem (max 2px notch, keeps every column connected to above) */
@@ -1192,6 +1198,12 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
       const P=soaked?RW:(R2&&(x0+k+40)%5<2?R2:R);
       if(soaked&&t>.74&&t<.86&&(yy+k)%5===0&&v<3)v=0;
       px(x0+k,yy,P[v])}};
+  /* wind: a length of belt wound round a limb or two (a figure bound with a belt, Acts 21:11), from x0 to x1 and n rows down from y0: turns of
+     cloth that run with the limb, each lit along its upper edge and shaded where the next turn laps over it, the seam between two turns a pixel
+     higher on the shadow side, as a spiral goes; the corners rounded off. Its tones are the look's bond, or else Paul's belt, which it is, a little lifted so that its turns can be told apart. */
+  const wind=(x0,x1,y0,n)=>{const B=c.bd||(c.bd=ramp(tint(o.bond||PAUL_BASE.belt,.2))),w=x1-x0+1,turn=n>4?3:2;
+    for(let i=0;i<n;i++){const e=i===0||i===n-1?1:0;for(let k=e;k<w-e;k++){const t=(k+.5)/w,q=(i+(t<.5?1:0))%turn;
+      let v=t<.12?4:t<.3?3:t<.66?2:t<.9?1:2;if(q===0)v=Math.max(0,v-1);else if(q===turn-1)v=Math.min(4,v+1);px(x0+k,y0+i,B[v])}}};
   const kid=o.h?1:0,slim=o.slim?1:0,LEG=kid?19:23,SK=kid?13:16,TOR=kid?22:fem?24:26,AL=26;
   const KD=kid?15:19,yA=-4,yH=yA-LEG+bob,yB=yH-SK+(seat?10:0)+(kn?KD:0),yS=yB-3-TOR,SL=o.longSleeve?AL-2:12;   /* ankle, hem, top of the skirt, shoulder line; AL: rows of an arm down to the wrist */
   /* the sleeves are one garment with the body: PIT rows of shoulder yoke, then the arms part from the trunk */
@@ -1211,7 +1223,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
         if(near)v=sl&&!rip?(i===slEnd?4:u<.5?4:3):i===slEnd+1||rip?4:u<.34?3:u<.8?2:3;else v=sl&&!rip?(i===slEnd?3:k===0?(i>PIT+1?3:2):u<.78?1:2):i===slEnd+1||rip?3:k===0?3:u<.78?1:2;px(x0+k,yS+i,Rk[v])}}
     if(stub)return;const hx=(near?x00+w-4:x00)+Math.round(wx);[4,5,5,5,4].forEach((n,j)=>{const x0=hx+(j===0||j===4?near?1:0:0);
       for(let k=0;k<n;k++)px(x0+k,yS+len+j,S[Math.min(4,(j===4?3:k===0?3:k===n-1?1:j===3&&k===2?3:2)+(near?1:0))])})};
-  arm(false,W?W.fa:0,ARM||o.stub||fold||(ges&&ges!==4&&!bow),W?W.fb:0,W?W.armLiftF:0);
+  arm(false,W?W.fa:0,ARM||o.stub||fold||tied||(ges&&ges!==4&&!bow),W?W.fb:0,W?W.armLiftF:0);
   /* legs and sandals (or barefoot, or Roman military caligae), or the feet under a long robe */
   const boot=o.caligae?ramp('#4b2b18'):null;
   const foot=(fx0,fy,R)=>{if(o.barefoot){px(fx0,fy,R[3]);px(fx0+1,fy,R[2],5);px(fx0,fy+1,R[2],7);px(fx0,fy+2,R[2],9);px(fx0+7,fy+2,R[1],2);px(fx0,fy+1,R[3]);px(fx0,fy+2,R[3],2);px(fx0,fy+3,R[3],9);px(fx0+1,fy+3,R[4],6);return}
@@ -1255,12 +1267,13 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   {const REST={ax:0,kx:0,ly:0,p:0},L0=W?W.legs[0]:REST,L1=W?W.legs[1]:REST;
     const ankle=(ax0,P,R)=>{if(!TORN&&!W)return;for(let j=1;j<=4;j++)for(let k=0;k<5;k++)px(ax0+1+k,yA-P.ly-j,R[k===0?4:k===1?3:k<4?2:1])};
     if(kn)kneel();
+    else if(tied){leg(3,REST,1);leg(-2,REST,0)}
     else if(seat&&o.long){footP(9,REST,[S[1],S[2],S[3],S[4],S[4]]);footP(-2,REST,S)}else if(seat){leg(5,REST,1);leg(-2,REST,0)}
     else if(o.long){const r0=[S[1],S[2],S[3],S[4],S[4]],f0=W?Math.round(-3+L0.ax)+1:3,n0=W?Math.round(-4+L1.ax)+1:-8;
       ankle(f0,L0,r0);footP(f0,L0,r0);ankle(n0,L1,S);footP(n0,L1,S)}
     else if(!W){leg(1,REST,1);leg(-9,REST,0)}else{leg(-4,L0,1);leg(-4,L1,0)}}
   /* skirt of a short tunic, or a robe to the ankles; a woman's robe widens over the hips. When torn: jagged ragged tongues & fabric rip. */
-  const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=o.long?yA+1:kn?yB+SK+(TORN?4:3)-(kid?1:0):seat?yH+3:TORN?yH+2:yH+1,n=y1-yB+1,sl=seat&&!!o.long,fsh=W?W.foldShift:0;
+  const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=o.long?(tied?yA-7:yA+1):kn?yB+SK+(TORN?4:3)-(kid?1:0):seat?yH+3:TORN?yH+2:yH+1,n=y1-yB+1,sl=seat&&!!o.long,fsh=W?W.foldShift:0;
   const skWet=WET?((k,w,i)=>i>n*(o.long?.42:.36)+Math.round(Math.sin(k*.7+TORN)*2.5)):null;
   for(let i=0;i<n;i++){const t=i/(n-1),hw=(fem?8+Math.min(3,Math.round(i*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,
       flL=W?Math.round(W.skFlareL*t*t):0,flR=W?Math.round(W.skFlareR*t*t):0,
@@ -1277,6 +1290,9 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
     if(TORN&&!HIM){const ry=n-8-(TORN%3)*2,rx=x0+Math.round(w*(TORN===2?.34:.68));
       if(i>=ry&&i<=ry+3){const rw=i===ry||i===ry+3?1:2,dx=i-ry>1?1:0;
         px(rx+dx-1,yy,T[4],rw+2);px(rx+dx,yy,o.long?T[4]:S[i===ry+1?2:3],rw)}}}
+  /* the ankles of a bound figure, side by side, wound round with the belt above the feet: two turns of cloth that run with the legs, under
+     the hem of a short tunic, or under a long robe drawn up a little; nothing of it stands out beyond the legs but the thickness of the cloth */
+  if(tied)wind(-2,10,yA-6,6);
   /* shoulders and trunk */
   const torWet=WET?((k,w,i)=>i<5+((k+TORN)%3)||i>TOR-6-((k*2+TORN)%3)):null;
   for(let i=0;i<TOR;i++){const yy=yS+i,twi=i<PIT?tw:Math.round(tw*(1-(i-PIT)/(TOR-PIT)));
@@ -1358,7 +1374,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
       else{px(xx+tw,yb+1,T[4]);if(xx%3)px(xx+tw,yb+2,T[3])}}}
   if(o.cape){for(let xx=-16;xx<=15;xx++){const e=Math.abs(xx+.5)>14?1:0;px(xx,yS-1+e,C[1]);px(xx,yS+e,C[xx<-8?3:2]);px(xx,yS+1+e,C[xx<-8?4:3]);if(xx<-5||xx>7)px(xx,yS+2+e,C[4])}px(8,yS,'#f4dc8a',2,2);px(9,yS+1,'#b08a3c')}
   /* near arm (hidden when a mantle hangs over it, unless officer cloak, cape, or reaching back to lead by the hand) */
-  if(!C||o.cape||o.offCloak||ges===4)arm(true,W?W.na:0,ges===4||fold||(ges===9&&!bow&&!o.stub),W?W.nb:0,W?W.armLiftN:0);
+  if(!C||o.cape||o.offCloak||ges===4)arm(true,W?W.na:0,ges===4||fold||tied||(ges===9&&!bow&&!o.stub),W?W.nb:0,W?W.armLiftN:0);
   if(ges===4&&!bow&&!o.stub){const R=o.longSleeve?T:S;
     for(let k=0;k<6;k++){const gx=ax+1-k,gy=yS+12+Math.round(k*.6);px(gx,gy,R[2]);px(gx,gy+1,R[3],1,2);px(gx,gy+3,R[4])}
     px(ax-8,yS+15,S[2],5);px(ax-8,yS+16,S[3],5);px(ax-7,yS+17,S[4],4)}
@@ -1431,6 +1447,15 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
     px(q,yS+15,S[1],5);px(q+5,yS+14,S[1]);px(q,yS+16,S[0],5);px(q+5,yS+15,S[2],1,2);px(q-1,yS+17,S[2],6);px(q,yS+18,S[3],5);
     if(open)for(let k=0;k<4;k++){const gx=ax+3+k,gy=yS+13+Math.round(k*.7);px(gx,gy,R[2]);px(gx,gy+1,R[3],1,2);px(gx,gy+3,R[4])}
     const nx=open?ax+7:4-nw;px(nx+1,yS+16,S[1],4);px(nx+5,yS+15,S[1]);px(nx,yS+17,S[1],5);px(nx+5,yS+16,S[2],1,2);px(nx,yS+18,S[3],6);px(nx+1,yS+19,S[4],4)}
+  else if(tied&&!o.stub){const open=!C||o.cape||o.offCloak,R=o.longSleeve?T:S,hy0=yS+(kid?15:18),hx0=open?-nw:5-nw,B=c.bd||(c.bd=ramp(tint(o.bond||PAUL_BASE.belt,.2)));
+    /* bound: both forearms slant down in a V to the wrists, held side by side low in front (under a mantle only the far one shows, as when
+       the hands are folded); the belt is wound round both wrists, the fists come out under it side by side, and its loose end hangs a little
+       way down off the far end of the winding, slanting away from the hands: nothing lies across anything else */
+    const dr=hy0-yS-13;for(let k=0;k<(open?7:3);k++){const gx=12-nw-k,gy=yS+12+Math.round(k*dr/(open?6:2.6));px(gx,gy,R[1]);px(gx,gy+1,R[2],1,2);px(gx,gy+3,R[3])}
+    if(open)for(let k=0;k<11;k++){const gx=ax+3+k,gy=yS+12+Math.round(k*dr*.11);px(gx,gy,R[2]);px(gx,gy+1,R[3],1,2);px(gx,gy+3,R[4])}
+    px(hx0,hy0+3,S[2],6);px(hx0+3,hy0+3,S[1],2);px(hx0,hy0+4,S[2],6);px(hx0,hy0+3,S[3],1,2);px(hx0+4,hy0+4,S[1]);px(hx0+1,hy0+5,S[3],4);
+    wind(hx0-1,hx0+7,hy0-1,4);
+    px(hx0+6,hy0+3,B[3]);px(hx0+7,hy0+3,B[2]);px(hx0+7,hy0+4,B[3]);px(hx0+8,hy0+4,B[1]);px(hx0+8,hy0+5,B[2]);px(hx0+8,hy0+6,B[3])}
   else if(fold&&!o.stub){const open=!C||o.cape||o.offCloak,R=o.longSleeve?T:S,hy0=yS+18,hx0=open?-nw:5-nw;   /* kneeling, the hands folded low in front: both forearms slant down to them, in a V;
        under a mantle the near arm stays covered and the hands lie nearer the far side, so that no forearm lies across the mantle's edge */
     for(let k=0;k<(open?7:3);k++){const gx=12-nw-k,gy=yS+12+Math.round(k*(open?.9:1.8));px(gx,gy,R[1]);px(gx,gy+1,R[2],1,2);px(gx,gy+3,R[3])}
@@ -1994,7 +2019,7 @@ function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
   const pr=G.room&&!G.scene&&planOf(G.room);if(pr)pr.tick(dt,ts);
   /* the walks begun since the last frame find their ways round what stands on the floor, all at once (see walk) */
   for(const a of Object.values(ACT))if(a.walk&&a.walk.pend)routeStart(a);
-  for(const a of Object.values(ACT)){const w=a.walk;if(!w){a.fr=a.seat?-1:a.kneel?-1-a.kneel:0;a.gait=null;continue}
+  for(const a of Object.values(ACT)){const w=a.walk;if(!w){a.fr=a.bound?-6:a.seat?-1:a.kneel?-1-a.kneel:0;a.gait=null;continue}
     const pl=planOf(a.room),v0=a.speed||G.speedAll||(pl?pl.pace(a):WALK_V);let dx=w.x-a.x,dy=w.y-a.y,d=Math.hypot(dx,dy*(pl?1:2));
     const EASE=14,gone0=a.gait?a.gait.gone:0,near0=Math.min(gone0,d+(w.rest||0)),
       v=!pl&&!a.speed&&!G.speedAll&&near0<EASE?v0*(.58+.42*near0/EASE):v0,sp=v*dt;
@@ -2154,7 +2179,7 @@ function moves(o,L,ln,ts){if(L.stone)return[0,0,0,0];
    that holds. An actor marked noTurn keeps his back turned if the scene wants it so; one who bows or walks does not turn; and two who are
    one actor (a mate) turn each on the spot and do not change places. */
 function turnOf(k,x,room,dir){const t=G.turn.get(k);if(!t||t.dir!==dir||t.to.room!==room)return 0;const d=t.to.x-x;return Math.abs(d)<2?0:d>0?1:-1}
-const still=o=>o.noTurn||o.bow||o.walk||o.kneel;
+const still=o=>o.noTurn||o.bow||o.walk||o.kneel||o.bound;
 const facing=o=>still(o)?o.dir:turnOf(o,o.x,o.room,o.dir)||(G.with===o&&o.dir===G.withDir?(PC().x>=o.x?1:-1):o.dir);
 /* mateFacing: the mate turns to the one she speaks with, or to the one her actor speaks with, whichever was the later; or with him to the
    one played, who talks with them both */
@@ -2457,7 +2482,7 @@ function decode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1'
   const c=v%512,b=Math.floor(v/512)^msk(c);return chk(b,CHAP[ch].salt)!==c||(b>>19&3)>2||b>>21?null:{ch,b}}
 function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];G.pc=P;G.invs={};P.hs=null;P.called=null;
   LOOK.paul=paulLook(ch);if(LOOK.barnabas)LOOK.barnabas=Object.assign({skin:'#b8844f',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},ch>2?{hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1}:{hair:'#3a2a1a',beard:'#3a2a1a'});
-  SPR.clear();Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;a.seat=0;a.kneel=0;a.wear='';a.look=LOOK[a.id]});
+  SPR.clear();Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;a.seat=0;a.kneel=0;a.bound=0;a.wear='';a.look=LOOK[a.id]});
   (CHAP[ch].party||[]).forEach(id=>ACT[id].party=1);
   $('#chname').textContent=T(CHAP[ch].name);G.ship=null;setScore(CHAP[ch].music);CHAP[ch].setup();swapBtn()}
 /* dealInv: rebuild the inventories from the story's flags (the level's inv). Each item goes to the member who carries it (own,
