@@ -341,7 +341,7 @@ function wellJar(g,x,y,c){R(g,x-3,y-.4,8,1,'rgba(30,20,40,.3)');poly(g,[x-1.6,y-
 /* the low table of the house at Lystra. It stands out on the mat, so it is a prop as well: whoever walks behind it is hidden by it */
 function lowTable(g){const rw=rng(4611);board7(g,170,112,40,3,'#96703e',rw);board7(g,170,115,2.6,8,'#5a4226',rw,1);board7(g,207.4,115,2.6,8,'#5a4226',rw,1);vessel(g,190,112,4.6,3.6,'#a8844e','bowl',{noShadow:1})}
 ART.lystra7={w:320,q:12,
- props:[{y:123,shape:lowTable}],
+ props:[{y:123,shape:lowTable,foot:[171,119,37,4]}],
  light:()=>({amb:'#f0e8dc',wallY:103,wall:[[0,52,103,11],[52,68,103,45],[68,320,103,11]],lamps:[[92,96,38,'#4a2410',103,100]]}),
  paint(g){const r=rng(461),W='#d8c8a4';
   plaster(g,0,0,320,104,W,r,{patch:4,cracks:0,brick:'#a8875a',t:.36});skipCracks7(r,6);
@@ -812,7 +812,9 @@ ME.hs={name:'Melissa',actor:ME,
   show:{awl:'is_it_sharp',tablets:'are_there_pictures_in_it','*':'is_that_for_our_tent'},
   talk:async()=>{await say(ME,'does_the_big_ox_bite');await say(P,'not_that_i_have_seen_and_i')},
   as:{silas:{look:'merchants_daughter',talk:async()=>{await say(ME,'are_you_cold_too');await say(SI,'a_little')},show:{'*':'is_that_for_our_tent'}}}};
-ROOMS.gates={space:0.8,walk:[16,388,112,138],get mood(){return F.up?'calm':'storm'},amb:()=>F.up?{fountain:.9,leaves:.9,wind:.5}:{wind:1,leaves:.5,fountain:.25,creak:.3},enter:gatesIntro,hs:[
+ROOMS.gates={space:0.8,walk:[16,388,112,138],
+  /* Zenon's wagon and the near ox, at the back edge of the strip */
+  block:[[19,109,58,3.2],[88,110,37,3]],get mood(){return F.up?'calm':'storm'},amb:()=>F.up?{fountain:.9,leaves:.9,wind:.5}:{wind:1,leaves:.5,fountain:.25,creak:.3},enter:gatesIntro,hs:[
   {name:'rock_wall',x:0,y:0,w:338,h:82,wx:180,look:'limestone_as_high_as_i_can_see'},
   {name:'cilician_gates',x:342,y:8,w:54,h:58,wx:360,wy:113,dir:1,exit:leaveGates,look:['the_cilician_gates','every_wagon_between_tarsus']},
   {name:'stream',x:398,y:100,w:82,h:44,wx:384,wy:127,dir:1,look:'snow_water_coming_down_fast',use:'i_fill_my_hands_and_drink',pickup:'stream_stays_in_its_bed'},
@@ -942,7 +944,9 @@ MY.hs={name:'Myron',actor:MY,
   talk:askMyron,
   as:{silas:{look:'myron_one_of_the_elders',give:deliverL,
     talk:()=>say(MY,F.readL?'good_letter_brother_and_well_carried':'peace_brother_said'),show:{'*':'keep_it_by_you_brother_said'}}}};
-ROOMS.lystra7={space:1.25,walk:[16,304,110,136],mood:'calm',amb:{fire:.5,birds:.25,wind:.2},enter:lysIntro,hs:[
+ROOMS.lystra7={space:1.25,walk:[16,304,110,136],
+  /* the elder and the two sisters of the congregation, whom the room paints where they stand */
+  block:()=>GATHER.map(([,x,y])=>[x-5,y-2.5,10,3.5]),mood:'calm',amb:{fire:.5,birds:.25,wind:.2},enter:lysIntro,hs:[
   {name:'window',x:48,y:24,w:24,h:26,wx:64,look:'lane_in_winter_daylight'},
   {name:'lamp',x:140,y:42,w:20,h:24,wx:150,look:'the_lamp_in_its_niche',pickup:'it_gives_light_to_the_whole_said'},
   {name:'shelf',x:172,y:48,w:60,h:18,wx:200,look:'oil_meal_and_olives',pickup:'it_is_their_winter_store'},
@@ -1015,7 +1019,9 @@ TA.hs={name:'Tatia',actor:TA,
   talk:()=>F.readI?askTatia():say(TA,'paul_in'),
   as:{silas:{look:'sister_at_the_fountain',
     talk:()=>say(TA,'you_are_the_brother_from_jerusalem_said'),show:{'*':'keep_it_brother_2'}}}};
-ROOMS.iconium7={space:0.9,walk:[16,464,110,138],mood:'hope',amb:{fountain:.7,birds:.2,hammer:.3,wind:.3,crowd:.2},enter:icoIntro,hs:[
+ROOMS.iconium7={space:0.9,walk:[16,464,110,138],
+  /* the carrier's wagon, at the back edge of the strip */
+  block:[[310,107,60,3.2]],mood:'hope',amb:{fountain:.7,birds:.2,hammer:.3,wind:.3,crowd:.2},enter:icoIntro,hs:[
   {name:'mountains',x:188,y:26,w:110,h:24,wx:244,look:'mountains_round_the_plain'},
   {name:'street_to_the_synagogue',x:0,y:36,w:60,h:68,wx:42,wy:113,dir:-1,look:'the_street_to_the_synagogue_of_the_jews',use:'not_today_said',open:'not_today_said'},
   {name:'saddlery',x:84,y:56,w:84,h:30,wx:126,wy:113,look:'nathans_shop_pack_saddles_said',pickup:'they_are_nathans_living'},
