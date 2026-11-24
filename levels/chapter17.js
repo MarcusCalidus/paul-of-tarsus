@@ -467,45 +467,155 @@ function drawTyre17(g,t){const P=PTyre17,dy=Math.round(Math.sin(t/1600)*2)/2-2,X
 /* ==== ART tyre17: end ==== */
 
 /* ==== ART hold17: begin ==== */
-/* The hold of Akestor's ship, seen from the side in section: the hull cut down the middle, her bow at the left, her stern at the right, the
-   mast's step in the middle. Curved frames stand inside the hull, each stopping at the strake it meets; no deck beam is drawn across a
-   frame, and the hatch is an opening in the deck line, not a grid. The lots lie in three bays: two frames forward of the mast (x 64..96),
-   one frame forward (x 104..136), and two frames aft (x 224..256), from the top down. Outside the hull the water stands at her waterline,
-   and at the bow and the stern her marks are painted: a short level stroke each. While Akestor reads a plan through, the hull trims as
-   it would (G.k17.trim: plus is down by the stern), turning about the mast's foot at the waterline (PIVOTHold17).
+/* The hold of Akestor's ship, seen from the side in section, as a close view: the hull cut down the middle, her bow at the left, her
+   stern at the right, the mast standing in its step in the middle. Behind her, the stone face of the quay in the afternoon light; below,
+   the harbor's water. Drawn to the finer standard of the close views of Chapters Thirteen to Sixteen: fine-grained wood, soft contact
+   shadows, no flat fills. What could make a cross is left out: the planking inside her far side shows only its grain, which runs along
+   her, and no seam; the frames are broad curved ribs that end short of the shelf under the deck, with dark between, and their feet are
+   lost in the brushwood on her floor; no beam is drawn under the deck; the mast rises through the open hatch, so that it crosses no
+   timber, and stands in a step whose top is as wide as the mast and whose foot spreads; the quay behind has no joint or line, and the
+   water is drawn only outside her hull, so that no water line crosses the mast or a frame.
+   The lots lie in three bays: two frames forward of the mast (x 64..96), one frame forward (x 104..136), and two frames aft (x 224..256),
+   from the top down, on the brushwood bed of her floor (y 120). At the bow and the stern her marks are painted on the outside of her
+   planking, a short level stroke each, at the height the water reaches when she is down three by the head or by the stern; so the
+   water touches a mark exactly at the limit, and passes it beyond. While Akestor reads a plan through, the hull trims as it would
+   (G.k17.trim: plus is down by the stern), turning about the mast's foot at the waterline (PIVOTHold17); the water stays level.
    Called from outside: ART.hold17; boxHold17(id) gives where a lot lies (the hotspots use it). Reads G.k17 (keel17()). */
-const PIVOTHold17=[160,92],TILTHold17=.028;
+const PIVOTHold17=[160,92],TILTHold17=.028,WLHold17=92;
 ART.hold17={w:320,q:12,paint(g){paintHold17(g)},light:{amb:'#e8dcc8'},draw(g,t){drawHold17(g,t)},front(g){frontHold17(g)}};
-function paintHold17(g){const r=rng(1721);
-  /* the quay's edge seen through behind the ship, and the sky over it */
-  g.fillStyle=lg(g,0,0,0,92,['#9cbcd8','#d8e2e0']);g.fillRect(0,0,320,92);
-  R(g,0,70,320,22,'#b8aa8e');for(let x=0;x<320;x+=14+r()*6)R(g,x,70,.5,22,'rgba(70,58,50,.3)');R(g,0,70,320,.6,'#efe2c4');
-  g.fillStyle=lg(g,0,92,0,144,['#3e6a86','#1e3a54']);g.fillRect(0,92,320,52)}
-/* the ship herself is drawn in draw, turned by her trim: the hull in section, the frames, the lots and their chalk */
-function hullHold17(g){const out=[18,40,30,70,42,104,70,124,160,130,250,124,280,104,292,70,304,36,300,32,288,34,276,40,44,40,36,34,22,32];
-  poly(g,out);g.fillStyle=lg(g,0,32,0,130,['#6a4a2c','#5a3c24','#3a2618']);g.fill();
-  const inn=[30,44,40,72,52,102,76,118,160,123,244,118,268,102,280,72,292,44];
-  poly(g,inn.concat([292,44,30,44]));g.fillStyle=lg(g,0,44,0,123,['#2a1e16','#3a2a1e','#2a1e14']);g.fill();
-  /* the frames: curved ribs that rise from the keel and stop at the deck line */
-  for(const fx of[64,100,136,184,220,256]){const k=(fx-160)/140,q=[];for(let t=0;t<=1;t+=.1){const y=123-Math.abs(k)*20-t*(79-Math.abs(k)*20);q.push(fx+k*14*t*t,y)}stroke(g,q,'#6a4c30',2.2);stroke(g,q.map((v,i)=>i%2?v:v-.8),'#9a7448',.5)}
-  /* the mast's step on the floor of the hold, and the mast up through the deck opening (no keelson is drawn across the frames) */
-  stroke(g,[60,121,260,121],'#5a3c24',2);R(g,156,108,8,13,'#6a4a2c');R(g,157,40,6,68,'#7a5634');R(g,157,40,1,68,'#b08a5a');
-  /* the deck line, with the hatch as a gap over the hold, and the rail */
-  R(g,22,36,128,4,'#8a6a44');R(g,172,36,132,4,'#8a6a44');R(g,22,36,128,.6,'#d8b884');R(g,172,36,132,.6,'#d8b884');
-  /* the marks at the bow and the stern, on the outside of the hull */
-  for(const x of[24,296]){R(g,x-3,83,6,.8,'#f0e6d0');R(g,x-3,101,6,.8,'#f0e6d0')}}
+/* the hull's outline (OUT), its hold (IN, the inside of her far side, from the underside of the deck down to her floor), in her own
+   frame; and the height of her marks: where the water stands at the bow or the stern when she is trimmed three either way */
+const OUTHold17=(()=>{const p=new Path2D();p.moveTo(14,22);p.quadraticCurveTo(16,124,66,130);p.lineTo(254,130);p.quadraticCurveTo(304,124,306,22);
+    p.lineTo(300.6,21);p.quadraticCurveTo(298,34,284,36);p.quadraticCurveTo(229,37.3,174,36.6);p.lineTo(174,44);p.lineTo(146,44);p.lineTo(146,36.6);p.quadraticCurveTo(91,37.3,36,36);p.quadraticCurveTo(22,34,19.4,21);p.closePath();return p})(),
+  INHold17=(()=>{const p=new Path2D();p.moveTo(26,41);p.quadraticCurveTo(26,117,66,124.4);p.lineTo(254,124.4);p.quadraticCurveTo(294,117,294,41);p.quadraticCurveTo(160,43.4,26,41);p.closePath();return p})(),
+  MARKHold17=WLHold17-134*Math.tan(3*TILTHold17);
+/* qHold17: a point on a quadratic curve; edgeHold17: where her outside meets a height y at the bow (-1) or the stern (1) */
+const qHold17=(a,b,c,t)=>(1-t)*(1-t)*a+2*t*(1-t)*b+t*t*c;
+function edgeHold17(y,s){let best=0,d=1e9;for(let t=0;t<=1;t+=.002){const yy=qHold17(22,124,130,t);if(Math.abs(yy-y)<d){d=Math.abs(yy-y);best=t}}
+  const x=qHold17(14,16,66,best);return s<0?x:320-x}
+/* the quay's face behind her: weathered stone in the afternoon light, warm at the top, damp and dark at the water, with weed; no joint is
+   drawn, so that nothing crosses her stem, her stern or her mast; and the water of the harbor below */
+function paintHold17(g){const r=rng(1721),WL=WLHold17;
+  g.fillStyle=lg(g,0,0,0,WL,['#d2bf9a','#c4b08c','#a89878','#7a7060']);g.fillRect(0,0,320,WL);
+  inRect(g,0,0,320,WL,()=>{tex(g,'mott',.5,0,0,320,WL,'overlay',.9);
+    for(let i=0;i<260;i++){const x=r()*320,y=r()*WL,w=4+r()*16;oval(g,x,y,w,.8+r()*1.6,r()<.5?'rgba(255,244,214,.06)':'rgba(70,56,52,.06)')}
+    for(let i=0;i<40;i++){const x=r()*320,y=10+r()*(WL-20);stroke(g,[x,y,x+(r()-.5)*2,y+3+r()*8],'rgba(90,74,62,.12)',.6)}
+    for(let i=0;i<420;i++){const x=r()*320,y=r()*(WL-8);R(g,x,y,.5+r()*.6,.5,r()<.7?'rgba(70,56,46,.35)':'rgba(255,246,220,.35)')}
+    for(let i=0;i<50;i++){const x=r()*320,y=r()*(WL-20);oval(g,x,y,1+r()*2.4,.6+r()*1,r()<.6?'rgba(150,150,110,.22)':'rgba(200,180,120,.2)')}
+    g.fillStyle=lg(g,0,WL-22,0,WL,['rgba(60,62,58,0)','rgba(50,56,50,.5)','rgba(36,46,40,.8)']);g.fillRect(0,WL-22,320,22);
+    for(let i=0;i<220;i++){const x=r()*320,y=WL-1-Math.pow(r(),2)*7;R(g,x,y,.5+r()*1.5,.5+r()*1.4,r()<.5?'rgba(60,84,52,.5)':'rgba(96,116,70,.4)')}
+    for(let i=0;i<60;i++){const x=r()*320;stroke(g,[x,WL-.4,x+(r()-.5)*1.2,WL-2-r()*3],'rgba(70,92,56,.5)',.5)}
+    comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,214,160,.7)','rgba(255,226,180,.4)','rgba(200,190,220,.6)']);g.fillRect(0,0,320,WL)})});
+  waterHold17(g,0)}
+/* the water: deeper toward us, the wall's warm light in it near the line, short level ripples; t moves the ripples a little */
+const RIPHold17=(()=>{const r=rng(1722),a=[];for(let i=0;i<150;i++){const k=Math.pow(r(),1.2);a.push([r()*330-5,WLHold17+1+k*50,(2+k*8)*(.5+r()),r()*6.28,r()<.35])}return a})();
+function waterHold17(g,t){const WL=WLHold17;g.fillStyle=lg(g,0,WL,0,144,['#6e7a70','#3e6276','#244a62','#183650']);g.fillRect(0,WL,320,144-WL);
+  g.fillStyle=lg(g,0,WL,0,WL+9,['rgba(220,196,150,.4)','rgba(220,196,150,0)']);g.fillRect(0,WL,320,9);
+  for(const[x,y,w,ph,lit]of RIPHold17){const dx=Math.sin(t/1700+ph)*1.5;R(g,x+dx,y,w,.5,lit?'rgba(236,222,190,.22)':'rgba(16,30,50,.3)')}
+  R(g,0,WL,320,.5,'rgba(236,230,206,.55)')}
+/* the hull in section, baked once in her own frame and turned by her trim in draw */
+let HULLHold17=null;
+const hullImgHold17=()=>HULLHold17||(HULLHold17=bake(320,g=>hullHold17(g),12,144));
+function hullHold17(g){const r=rng(1723),M=SHARED.materials;
+  /* the planking, cut: warm wood along her outline, darker below, a lighter cut face along the top; the keel beneath her */
+  g.fillStyle=lg(g,0,20,0,132,['#8a6440','#6e4c30','#4e3420','#3a2618']);g.fill(OUTHold17);
+  clipTo(g,()=>{g.beginPath();g.rect(0,0,320,144)},()=>{g.save();g.clip(OUTHold17);tex(g,'wood',.22,0,18,320,116,'overlay',.45);
+    /* the cut ends of her strakes in her skin: short level marks that stop inside the skin, never reaching the hold */
+    g.restore()});
+  R(g,64,129.4,192,3.2,'#3a2618');R(g,64,129.4,192,.6,'#7a5638');
+  /* the hold: the inside of her far side, its grain running along her, darker low down and toward the ends, a little light from the hatch */
+  g.save();g.clip(INHold17);
+  g.fillStyle=lg(g,0,41,0,125,['#5a3e28','#4a3220','#3a2618','#2a1c12']);g.fillRect(0,40,320,86);
+  tex(g,'wood',.18,20,40,280,86,'overlay',.6);
+  for(let i=0;i<140;i++){const y=42+r()*82,x=24+r()*260,l=8+r()*40;R(g,x,y,l,.5,r()<.5?'rgba(120,86,54,.18)':'rgba(20,12,8,.2)')}
+  g.fillStyle=lg(g,26,0,294,0,['rgba(16,10,8,.55)','rgba(16,10,8,0)','rgba(16,10,8,0)','rgba(16,10,8,.55)']);g.fillRect(20,40,280,86);
+  pool(g,160,70,70,46,'#ffd8a0',.22,'screen');
+  /* under the open hatch the afternoon comes in: the planking there is lit almost as the quay's face is, and darkens downward, so that
+     the hatch's edge is no line behind the mast */
+  g.fillStyle=lg(g,0,40,0,78,['#b49c76','#8a7050','rgba(90,62,40,.4)','rgba(90,62,40,0)']);g.fillRect(140,40,40,38);
+  g.fillStyle=lg(g,138,0,182,0,['rgba(58,40,26,1)','rgba(58,40,26,0)','rgba(58,40,26,0)','rgba(58,40,26,1)']);g.fillRect(138,40,44,40);
+  /* the frames: broad ribs, each curving with her side, lit on the face toward the hatch; they end short of the shelf, their feet go
+     down into the brushwood */
+  for(const fx of[44,60,100,140,180,220,260,276]){const k=(fx-160)/134,lean=k*k*k*16,top=47+Math.abs(k)*1.5,
+      L=[],Rr=[];for(let t=0;t<=1.0001;t+=.05){const y=top+t*(124-top),x=fx-lean*t*t,hw=2.4+t*.6;L.push(x-hw,y);Rr.unshift(x+hw,y)}
+    poly(g,L.concat(Rr));g.fillStyle=lg(g,fx-3,0,fx+3,0,fx<160?['#4a3220','#6a4a2e','#86603c']:['#86603c','#6a4a2e','#4a3220']);g.fill();
+    clipTo(g,()=>poly(g,L.concat(Rr)),()=>{tex(g,'vert',.2,fx-6,top,12,80,'overlay',.5);ao(g,fx-6,top,12,6,'t',.4)});
+    /* its rounded top, and the soft shade it throws on the planking beside it, away from the hatch */
+    oval(g,fx,top+.4,2.4,1.2,fx<160?'#6a4a2e':'#7a5636');R(g,fx-1.2,top-.6,2.4,.5,'rgba(230,190,140,.4)');
+    const sx=fx<160?-1:1;poly(g,[fx+sx*2.4,top+1,fx+sx*5.2,top+3,fx+sx*5.6-lean,124,fx+sx*3-lean,124],'rgba(16,10,8,.28)')}
+  /* the shelf under the deck, along her side: a long timber, broken at the hatch, so that the mast crosses nothing */
+  for(const[x0,x1]of[[20,146],[174,300]]){g.fillStyle=lg(g,0,41,0,45,['#2a1a10','#6a4a2e','#3a2618']);g.fillRect(x0,41,x1-x0,3.6);R(g,x0,44.2,x1-x0,.5,'rgba(10,6,4,.5)')}
+  /* the brushwood bed on her floor: twigs laid along her, all one way, its top a little ragged */
+  g.fillStyle=lg(g,0,118,0,125,['#7a6844','#5a4a30','#3e3020']);g.fillRect(20,118.6,280,7);
+  for(let i=0;i<520;i++){const x=24+r()*272,y=118.4+r()*6,l=2+r()*7;R(g,x,y,l,.5,['#9a8656','#6e5c3a','#4a3c26','#b09a66'][(r()*4)|0])}
+  for(let i=0;i<90;i++){const x=24+r()*272;R(g,x,118+r()*1.4,1+r()*3,.5,r()<.5?'#a8925e':'#7a6844')}
+  ao(g,20,118,280,3,'t',.3,'#1a1008');
+  /* the step: its top as wide as the mast, its foot spreading over the keelson, in the brushwood */
+  poly(g,[157,111,163,111,170,120.6,150,120.6]);g.fillStyle=lg(g,150,0,170,0,['#4a3220','#7a5636','#a07648','#6a4a2e']);g.fill();
+  clipTo(g,()=>poly(g,[157,111,163,111,170,120.6,150,120.6]),()=>tex(g,'wood',.25,150,110,20,11,'overlay',.5));
+  R(g,157,111,6,.5,'#c09464');
+  /* the mast, up from its step through the open hatch, lit on the side toward the light */
+  g.restore();
+  g.fillStyle=lg(g,157,0,163,0,['#5e4028','#8a6440','#b08654','#7a5636']);g.fillRect(157,0,6,111.2);
+  inRect(g,157,0,6,111.2,()=>{tex(g,'vert',.25,157,0,6,112,'overlay',.6);for(let i=0;i<20;i++)R(g,157.6+r()*4.6,r()*104,.5,3+r()*8,r()<.5?'rgba(40,24,14,.3)':'rgba(230,190,130,.25)')});
+  R(g,162.4,0,.6,111.2,'rgba(20,12,8,.4)');
+  /* the deck, cut: its planking a thick band along her top, open over the hold at the hatch, its cut face lit; the hatch's edges are
+     the ends of the band; nothing stands on it */
+  for(const[x0,x1]of[[22,146],[174,298]]){const P=[];for(let x=x0;x<=x1;x+=2)P.push(x,36+2.6*(1-Math.pow((x-160)/138,2))-2.6+.0);
+    const top=x=>36+2.6*(1-Math.pow((x-160)/138,2))-2.6;poly(g,[x0,top(x0),...P.slice(2),x1,top(x1)+5,x0,top(x0)+5]);
+    g.fillStyle=lg(g,0,34,0,41,['#b08a5a','#8a6440','#5a3e26']);g.fill();
+    stroke(g,P,'#e6c48e',.6);stroke(g,P.map((v,i)=>i%2?v+4.6:v),'rgba(20,12,8,.5)',.5);
+    for(let i=0;i<24;i++){const x=x0+r()*(x1-x0-6);R(g,x,top(x)+1.6+r()*2,3+r()*8,.5,r()<.5?'rgba(60,40,24,.3)':'rgba(220,180,120,.2)')}}
+  /* her stem and stern posts: the cut edges of her outline at the ends, a lit rim on the bow's and the stern's top */
+  g.save();g.clip(OUTHold17);g.beginPath();g.rect(0,0,140,144);g.rect(180,0,140,144);g.clip();g.lineWidth=2.4;g.strokeStyle='#3a2616';g.stroke(OUTHold17);g.restore();
+  g.save();g.lineWidth=.6;g.strokeStyle='rgba(240,200,140,.5)';g.beginPath();g.moveTo(14.4,22);g.quadraticCurveTo(16.4,70,24,96);g.stroke();
+  g.beginPath();g.moveTo(305.6,22);g.quadraticCurveTo(303.6,70,296,96);g.stroke();g.restore();
+  /* her marks: a short level stroke of red ochre on the outside of her planking at the bow and at the stern */
+  for(const s of[-1,1]){const x=edgeHold17(MARKHold17,s),a=s<0?x+.6:x-5.4;R(g,a,MARKHold17-.5,4.8,1.1,'#c8503a');R(g,a,MARKHold17-.5,4.8,.4,'#f0907a')}
+  /* the whole in the light from above and to the left, soft */
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,220,170,1)','rgba(255,220,170,.3)','rgba(180,170,210,.6)']);g.fill(OUTHold17)})}
+/* the lots, each baked once: a row of amphorae standing in their bed of brushwood, and a bale of wool in sacking, corded round its
+   middle only; each amphora's mouth a small square */
+let LOTHold17={};
+function lotImgHold17(w3){const k=w3?'j':'b';return LOTHold17[k]||(LOTHold17[k]=bake(32,g=>(w3?jarsHold17:baleHold17)(g),12,w3?22:16))}
+function jarsHold17(g){const r=rng(1724),C=['#a8603a','#9a5634','#b0683e','#a05a36'];
+  g.fillStyle=lg(g,0,17,0,22,['#7a6844','#4e4028']);g.fillRect(0,17.4,32,4.6);
+  for(let i=0;i<4;i++){const x=4+i*8,c=C[i],t=1.2,
+      J=[x-.9,21.4,x-2.4,17,x-3.4,11.6,x-3.5,8.4,x-2.8,6.6,x-1.2,5.6,x-1,2.2,x-1.3,t,x+1.3,t,x+1,2.2,x+1.2,5.6,x+2.8,6.6,x+3.5,8.4,x+3.4,11.6,x+2.4,17,x+.9,21.4];
+    poly(g,J);g.fillStyle=lg(g,x-3.5,0,x+3.5,0,[[0,tint(c,-.38)],[.3,tint(c,.26)],[.55,c],[1,tint(c,-.52)]]);g.fill();
+    clipTo(g,()=>poly(g,J),()=>{tex(g,'mott',.35,x-4,0,8,22,'overlay',.6);ao(g,x-4,13,8,9,'b',.4,'#2a140a');R(g,x-2.2,7.2,.6,6,rgba(tint(c,.5),.6))});
+    R(g,x-1.3,t,2.6,1.1,tint(c,-.5));R(g,x-1.3,t,2.6,.5,tint(c,.32))}
+  for(let i=0;i<110;i++){const x=r()*31,y=17.6+r()*4;if(Math.abs(((x-4)%8+8)%8-4)>2.4&&y<19)continue;R(g,x,y,1+r()*3,.5,['#9a8656','#6e5c3a','#4a3c26','#b09a66'][(r()*4)|0])}
+  ao(g,0,17,32,2,'t',.2,'#1a1008')}
+function baleHold17(g){const r=rng(1725),c='#cbb68c',B=[1.6,15.8,.6,13.6,.8,4,1.6,2,3.4,1.2,10,1.6,16,.9,22,1.5,28.6,1.1,30.6,2,31.4,4,31.2,13.6,30.4,15.8];
+  poly(g,B);g.fillStyle=lg(g,0,1,0,16,[tint(c,.22),tint(c,.04),tint(c,-.16),tint(c,-.4)]);g.fill();
+  clipTo(g,()=>poly(g,B),()=>{for(let i=0;i<260;i++)R(g,r()*32,r()*16,.5+r()*1.2,.5,r()<.5?'rgba(90,70,40,.16)':'rgba(255,240,210,.12)');tex(g,'mott',.45,0,0,32,16,'overlay',.6);
+    g.fillStyle=lg(g,0,0,32,0,['rgba(30,20,10,.32)','rgba(30,20,10,0)','rgba(30,20,10,0)','rgba(30,20,10,.38)']);g.fillRect(0,0,32,16);ao(g,0,12,32,4,'b',.32,'#2a1a0a');
+    /* a few soft creases where the sacking is drawn in at the corners, slanting, none across the cord */
+    for(const[x0,y0,x1,y1]of[[1.4,3,4.4,6.6],[30.6,3,27.6,6.6],[1.4,14.8,4.6,11.4],[30.6,14.8,27.4,11.4]]){stroke(g,[x0,y0,x1,y1],'rgba(70,52,30,.35)',.5);stroke(g,[x0+.5,y0,x1+.5,y1],'rgba(255,240,210,.18)',.4)}});
+  stroke(g,[3.4,1.3,10,1.7,16,1,22,1.6,28.6,1.2],tint(c,.4),.5);
+  /* the cord round its middle, sunk a little into the sacking */
+  const cy=8.8;R(g,.6,cy-.4,30.8,1.4,'rgba(60,40,20,.3)');R(g,.6,cy,30.8,.9,'#6a5232');R(g,.6,cy,30.8,.4,'#b09464')}
 /* G.k17.lots: for each lot its bay (frames from the mast), weight and the lot on top of it; boxHold17: where it lies, in the hull's frame */
 function boxHold17(id){const L=LOTS17.find(l=>l.id===id),bx={'-2':64,'-1':104,'2':224}[L.p],ys=LOTS17.filter(l=>l.p===L.p);let y=120;
   for(const l of ys.slice().sort((a,b)=>b.lvl-a.lvl)){const h=l.w===3?22:16;y-=h;if(l===L)return[bx,y,32,h]}return[bx,y,32,16]}
-function drawHold17(g,t){const k=keel17(),a=k.trim*TILTHold17,[px,py]=PIVOTHold17;
-  g.save();g.translate(px,py);g.rotate(a);g.translate(-px,-py);hullHold17(g);
-  for(const l of LOTS17){if(k.out.includes(l.id))continue;const[x,y,w,h]=boxHold17(l.id);(l.w===3?jarsRow17:bale17)(g,x,y,w,h);
-    const d=k.chalk[l.id];if(d){for(let i=0;i<d;i++)R(g,x+w/2-d*1.5+i*3+.5,y+2.5,1,h*.42-2.5,'#f4f0e6')}
+function drawHold17(g,t){const k=keel17(),a=k.trim*TILTHold17,[px,py]=PIVOTHold17,turn=()=>{g.translate(px,py);g.rotate(a);g.translate(-px,-py)};
+  waterHold17(g,t);
+  g.save();turn();if(a)g.imageSmoothingEnabled=true;g.drawImage(hullImgHold17(),0,0,320,144);
+  for(const l of LOTS17){if(k.out.includes(l.id))continue;const[x,y,w,h]=boxHold17(l.id);
+    oval(g,x+w/2,y+h,w/2+1,1.2,'rgba(20,12,8,.35)');g.drawImage(lotImgHold17(l.w===3),x,y,w,h);
+    /* the chalk: one stroke a day, a little slanted, rubbed and uneven, on the lot's upper part, clear of the bale's cord */
+    const d=k.chalk[l.id];if(d){const y0=y+2.5,hh=h*.42-2.5;for(let i=0;i<d;i++){const cx=x+w/2-d*1.5+i*3+.5;
+      poly(g,[cx,y0+hh,cx+.4,y0,cx+1.3,y0,cx+.9,y0+hh],'rgba(244,240,230,.92)');R(g,cx+.4,y0+hh*.4,.5,hh*.3,'rgba(200,190,170,.6)')}}
     if(k.sel===l.id){stroke(g,[x,y,x+w,y,x+w,y+h,x,y+h,x,y],'#ffe6a0',.6)}}
   g.restore();
-  /* the water outside, level whatever she does: it covers her below the waterline */
-  comp(g,'source-over',.55,()=>{g.fillStyle=lg(g,0,92,0,144,['#4a7a96','#1e3a54']);g.fillRect(0,92,320,52)});R(g,0,91.6,320,.6,'#cfe4ee')}
-function frontHold17(g){const k=keel17();R(g,0,0,320,9,'rgba(14,10,18,.55)');
+  /* the water outside her, level whatever she does: drawn again over all that lies outside her hull below the waterline, and as a wet
+     darkening on her skin under it */
+  const m=new DOMMatrix().translate(px,py).rotate(a*180/Math.PI).translate(-px,-py),out=new Path2D();out.rect(0,WLHold17,320,144-WLHold17);out.addPath(OUTHold17,m);
+  g.save();g.clip(out,'evenodd');waterHold17(g,t);g.restore();
+  g.save();g.beginPath();g.rect(0,WLHold17,320,144-WLHold17);g.clip();turn();const skin=new Path2D();skin.addPath(OUTHold17);skin.addPath(INHold17);g.clip(skin,'evenodd');
+  g.fillStyle='rgba(24,48,70,.45)';g.fillRect(-20,0,360,160);g.restore()}
+function frontHold17(g){const k=keel17();g.fillStyle=lg(g,0,0,0,13,['rgba(14,10,18,.62)','rgba(14,10,18,.5)','rgba(14,10,18,0)']);g.fillRect(0,0,320,13);
   cap17(g,k.day?T('hold_day_n',{n:T(DAYS17[k.day-1])}):T('hold_chalk_n_of_7',{n:k.n}),160,4.6,300)}
 /* ==== ART hold17: end ==== */
 
