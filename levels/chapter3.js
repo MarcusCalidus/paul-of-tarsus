@@ -429,7 +429,10 @@ async function leave3(){
   await say(LU,'nothing_leaves_this_courtyard_uncounted');
   await say(P,'there_is_work_here_for_a_tentmaker');
   await say(P,'not_an_arms_length_of_thread',TH)}
-ROOMS.tarsus={space:0.8,walk:[16,304,110,138],mood:'calm',amb:{birds:.5,crowd:.25,wind:.2,hammer:.35},hs:[
+ROOMS.tarsus={space:0.8,walk:[16,304,110,138],
+  /* Kleon's mule, its hooves at the back edge of the strip */
+  block:[[232,107,28,3]],
+  mood:'calm',amb:{birds:.5,crowd:.25,wind:.2,hammer:.35},hs:[
   {name:'taurus_mountains',x:118,y:22,w:150,h:26,wx:190,look:['taurus_mountains_with_snow','road_through_the_cilician']},
   {name:'my_workshop',x:12,y:52,w:94,h:34,wx:58,wy:113,look:'my_stall_and_workshop'},
   {name:'awning',x:4,y:40,w:112,h:11,wx:58,wy:113,look:'goat_hair_cloth_of_my_own_sewing',pickup:'it_can_stay'},
@@ -523,7 +526,10 @@ async function loadBags(it){if(it==='bolt'||it==='panels')return say(P,'loose_cl
   await say(BN,'they_hang_as_if_they_had');return checkFinal3()}
 async function checkFinal3(){if(F.bagsOn&&F.sealed)return finale3();
   return say(BN,F.bagsOn?'now_only_the_tally_is_still_open':'counted_and_sealed')}
-ROOMS.court={walk:[16,304,112,138],mood:'calm',amb:{birds:.6,leaves:.5,crowd:.12},hs:[
+ROOMS.court={walk:[16,304,112,138],
+  /* Theron's oil jar, while it waits by the table to be loaded */
+  block:()=>F.jar&&!F.loaded?[[185,109.5,10,2.5]]:[],
+  mood:'calm',amb:{birds:.6,leaves:.5,crowd:.12},hs:[
   {name:'door_of_the_house',x:34,y:56,w:32,h:48,wx:52,wy:113,look:'the_door_of_the_house',
     use:'we_meet_out_here_where',open:'we_meet_out_here_where'},
   {name:'water_jar',x:68,y:86,w:14,h:20,wx:66,wy:113,look:'great_jar_of_water_by_the_door',pickup:'it_would_take_two_men_to_lift'},
@@ -601,7 +607,10 @@ async function xanthe(){
         'i_have_the_cloth_and_the_awl_said'],
       r:['my_thread_holding_the_whole_gift_together','take_the_best_spool_i_have']}]);
   F.gotSpool=1;addItem('spool');await say(P,'i_will_tell_them');await say(P,'she_has_given_more_than_thread',TH)}
-ROOMS.antioch={space:0.9,walk:[16,466,110,138],mood:'hope',amb:{crowd:.6,fountain:.7,birds:.3,hooves:.3},hs:[
+ROOMS.antioch={space:0.9,walk:[16,466,110,138],
+  /* Theron's oil jar at the street's edge, until it is carried to the courtyard */
+  block:()=>F.jar?[]:[[421,110.5,10,2.5]],
+  mood:'hope',amb:{crowd:.6,fountain:.7,birds:.3,hooves:.3},hs:[
   {name:'mountain',x:230,y:4,w:200,h:24,wx:300,look:'mountain_above_the_city'},
   {name:'colonnade',x:112,y:30,w:318,h:28,wx:270,look:['great_street_of_antioch','in_its_shade_people_from_every']},
   {name:'gate_to_the_courtyard',x:16,y:44,w:44,h:60,wx:38,wy:112,dir:-1,look:'gate_of_the_house_where',exit:()=>go('court',296,116,-1)},
