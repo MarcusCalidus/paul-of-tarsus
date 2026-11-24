@@ -13,7 +13,7 @@
 <style>
 :root{--s:3;--gold:#e2b24c;--hi:#fff3b8;--dim:#8a6628;--ink:#0b0812;--pray:#a8d0f8;--px:calc(var(--s)*.5px);--wood:none}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:#000;color:#ddd;overflow:hidden;
+html,body{margin:0;height:var(--vh,100%);background:#000;color:#ddd;overflow:hidden;
   font-family:"Lucida Console",Monaco,"Courier New",monospace;font-weight:bold;
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 body{display:flex;align-items:center;justify-content:center}
@@ -236,7 +236,7 @@ body{display:flex;align-items:center;justify-content:center}
 #lcol,#rcol,#ltop,#ttop{display:none}
 #safe{position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;
   padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
-#rotate{position:fixed;inset:0;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;
+#rotate{position:fixed;top:0;left:0;right:0;height:var(--vh,100%);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;
   background:#1c130c var(--wood);background-size:256px 64px;image-rendering:pixelated;color:var(--gold);font-size:17px;line-height:1.4;text-align:center;
   text-shadow:1px 1px 0 #000;box-shadow:inset 0 0 0 2px #000,inset 0 0 0 4px #6a4c24}
 #rotate canvas{width:96px;height:96px;image-rendering:pixelated;image-rendering:crisp-edges}
@@ -245,7 +245,7 @@ html.portrait #rotate{display:flex}
 html:not(.phone) body{padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
 html.phone,html.phone body{overscroll-behavior:none;touch-action:none}
 html.phone body{display:block}
-html.phone #wrap{position:fixed;inset:0;width:auto;height:auto;background:#0a0706}
+html.phone #wrap{position:fixed;top:0;left:0;right:0;bottom:auto;width:auto;height:var(--vh,100%);background:#0a0706}
 html.phone #top{display:none}
 html.phone #view,html.phone #wrap.title #view{position:absolute;inset:0;width:auto;height:auto;touch-action:none;
   background:#1c130c var(--wood);background-size:calc(var(--cs)*128px) calc(var(--cs)*32px);background-blend-mode:multiply;background-color:#4a3a2a}
@@ -461,6 +461,10 @@ function dock(on){const els=['#skip','#code','#names','#opts','#verbs','#inv'].m
 /* layout scale */
 function fit(){const root=document.documentElement,ph=phoneWanted(),[it,ir,ib,il]=insets();
   const de=document.documentElement;root.classList.toggle('portrait',ph&&de.clientHeight>de.clientWidth&&touchDev());
+  /* Installed on an iPhone, with the page laid out under the status bar (see the meta tags), Safari reports a page that is short by the
+     status bar's height and leaves a black band at its foot: there the game is made as tall as the screen itself (--vh). */
+  {const a=screen.width,b=screen.height,full=navigator.standalone?(de.clientHeight>de.clientWidth?Math.max(a,b):Math.min(a,b)):0;
+    root.style.setProperty('--vh',full>de.clientHeight?full+'px':'100%')}
   if(ph!==PH.on){PH.on=ph;root.classList.toggle('phone',ph);dock(ph);PH.k=0;
     /* the page itself is never zoomed on a phone (the field is, see lensTick); off the phone the browser's own zoom is left alone */
     $('meta[name=viewport]').content='width=device-width, initial-scale=1, viewport-fit=cover'+(ph?', maximum-scale=1, user-scalable=no':'')}
