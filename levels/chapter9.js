@@ -293,10 +293,13 @@ ART.forum9={w:320,q:12,
   /* over the roofs: the rocky acropolis hill with its citadel wall grounded into the slope and tower at the wall's end */
   const ac=x=>8+24*Math.exp(-Math.pow((x-250)/60,2))+2*Math.sin(x/9);
   ridge(g,150,320,50,ac,['#bfb49c','#a69c82','#8c846e']);
-  clipTo(g,()=>{g.beginPath();g.moveTo(150,50);for(let x=150;x<=320;x+=2)g.lineTo(x,50-ac(x));g.lineTo(320,50);g.closePath()},()=>{
-    poly(g,[190,46,248,18,242,46],'rgba(244,236,210,.2)');poly(g,[252,18,314,44,254,48],'rgba(58,50,74,.2)');
-    tex(g,'mott',.3,150,14,170,36,'overlay',.7);
-    for(let i=0;i<14;i++)foliage(g,166+i*10+r()*6,30+r()*14,4+r()*3,1.8+r(),'#7a8658',r,8)});
+  {const HP=[150,50];for(let x=150;x<=320;x+=2)HP.push(x,50-ac(x));HP.push(320,50);
+    /* the hill is bare limestone, bedded and broken as the rock of the open country is (shared/country.js), hazed with distance, with
+       scrub in its hollows; the light from the left and high */
+    CN9.crag(g,HP,'#c2b28e',9171,{dip:.02,bed:4,haze:'#cfd2da',hazeA:.2});
+    clipTo(g,()=>poly(g,HP),()=>{poly(g,[190,46,248,18,242,46],'rgba(244,236,210,.2)');poly(g,[252,18,314,44,254,48],'rgba(58,50,74,.2)')});
+    for(let i=0;i<14;i++)foliage(SCRAP9,166+i*10+r()*6,30+r()*14,4+r()*3,1.8+r(),'#7a8658',r,8);
+    {const q=rng(9172);for(let i=0;i<40;i++){const x=158+q()*156,top=50-ac(x),y=top+3+q()*(50-top-3);if(y>50)continue;const h=2.4+q()*2.6;if(q()<.45)CN9.bush(g,x,y,h*2.2,h,'#6f7c4e',9173+i);else CN9.tree(g,x,y,h,'#76845a',{kind:q()<.3?'poplar':'oak'})}}}
   /* citadel curtain wall seated down onto the ridge slope, with small battlements and an end tower at x=222 */
   const cw=[222,16.5,282,17.8,282,25.5,264,23,222,22];
   poly(g,cw,'#cfc4a8');clipTo(g,()=>poly(g,cw),()=>{for(let y=18.5;y<25;y+=2.4)R(g,222,y,60,.45,'rgba(76,64,48,.28)');tex(g,'mott',.3,222,16,60,10,'overlay',.6)});
