@@ -11,7 +11,7 @@
    more happiness in giving than in receiving. Then he kneels and prays with them all; they weep, embrace him, and go with him to the ship.
    Acts gives no reason for the walk to Assos, and the game gives none. It does not say who carried the message to Ephesus, whether the
    seven carried the gift for Jerusalem (the game's reading, as in Chapter Fifteen), how the gift was watched, that an awning was mended,
-   or where by the shore the elders met Paul. The ship's master, his boy, the sailor, the fisherman, the shepherd, Lykon the messenger,
+   or where by the shore the elders met Paul. The ship's master, his boy, the sailor, the fisherman, the shepherd, Menon the messenger,
    and the elders Euphranor and Polemon are invented; Philon, Kleandros and Damon are the game's own Ephesians from Chapters Thirteen
    and Fourteen. Everything that is said is invented; the end screen says so.
    What the account says is told by the narrator, in paraphrase with its reference (TOLD below), and never put into a mouth as a
@@ -411,7 +411,7 @@ function drawWatch16(g,t){const st=w16();
    Called from outside: ART.miletus16. Reads F.mended (the awning). Hotspots: the harbor 0,56,320,42 · the warehouses 0,18,110,80 · the
    theater 120,40,70,20 · the coaster 210,34,110,66 · the bales of wool 116,92,42,26 · the awning 150,120,80,14 (until mended) · the
    bale at the end 292,98,28,22 · the road to the shore 0,96,14,44. Walk strip 16..304, 112..138. Actors (place16): Timothy 60,118 ·
-   Lykon 96,127 · Luke 186,114 · the master 254,120; Paul comes in at 140,130. The stacked bales and the lone bale are props with feet,
+   Menon 96,127 · Luke 186,114 · the master 254,120; Paul comes in at 140,130. The stacked bales and the lone bale are props with feet,
    and so is the awning on the paving. */
 const HZMiletus16=60;
 ART.miletus16={w:320,q:12,variant:()=>F.mended?'m':'',paint(g,v){paintMiletus16(g,v)},light:{amb:'#f8e6cc',sun:[-.45,.3,.45]},draw(g,t){},front(){},
@@ -501,7 +501,7 @@ Object.assign(ICON,{
 /* ============ PEOPLE ============ */
 /* Dress follows CONTRIBUTING section 4. Paul's party has the looks of Chapter Fifteen, a few days on. The ship's master is a seaman of
    the coast, weathered, a cloth bound round his head; his boy is a boy; the sailor wears a short tunic. The fisherman is old; the
-   shepherd has his mantle over his tunic. Lykon is a young runner of the harbor, slim, in a short tunic. Of the elders, Philon, Kleandros
+   shepherd has his mantle over his tunic. Menon is a young runner of the harbor, slim, in a short tunic. Of the elders, Philon, Kleandros
    and Damon look as Chapters Thirteen and Fourteen painted them; Euphranor and Polemon are men of standing in a Greek city, in the mantle.
    None of this is in the account: it says how none of them looked. */
 const HIM=(skin,hair,tunic,cloak,o)=>Object.assign({skin,hair,beard:hair,tunic,cloak,long:1,himation:1,brow:tint(hair,-.3),ph:0},o);
@@ -515,7 +515,7 @@ Object.assign(LOOK,{
   sailor16:{skin:'#a8703f',hair:'#2a1a12',beard:'#2a1a12',shortBeard:1,tunic:'#7a8a8a',belt:'#3a2a1a',brow:'#1a1210',ph:2300},
   fisher16:{skin:'#a8703f',hair:'#8a8680',beard:'#96928c',thin:1,fullBeard:1,tunic:'#8a7a62',belt:'#3a2a1a',brow:'#5e5a54',ph:2600},
   shep16:{skin:'#b47e52',hair:'#3a2a1c',beard:'#3a2a1c',fullBeard:1,tunic:'#a8946c',cloak:'#6a5a42',belt:'#3a2818',brow:'#2a1c12',ph:2800},
-  lykon16:{skin:'#c08a5c',hair:'#2a1a12',tunic:'#c8b490',belt:'#5a3a20',slim:1,brow:'#1a1210',ph:3000},
+  menon16:{skin:'#c08a5c',hair:'#2a1a12',tunic:'#c8b490',belt:'#5a3a20',slim:1,brow:'#1a1210',ph:3000},
   philon16:{skin:'#b88a62',hair:'#d8d8d8',beard:'#d8d8d8',thin:1,longBeard:1,brow:'#9a9a9a',tunic:'#ece4d0',long:1,stripe:'#3f5f86',belt:'#4a3a24',cloak:'#8a7a5a',ph:500},
   klea16:HIM('#c08c5c','#3a2a1a','#ece4d0','#5f4470',{ph:700}),
   damon16:{skin:'#b8845a',hair:'#4a3a2c',beard:'#4a3a2c',tunic:'#c8b490',cloak:'#5a6a4a',belt:'#3a2a1a',brow:'#2a1a12',ph:400},
@@ -524,7 +524,7 @@ Object.assign(LOOK,{
 const LK=actor('luke16','Luke','#c8e8c0',126),TI=actor('tim16','Timothy','#b8e0b0',142),AR=actor('arist16','Aristarchus','#d0d8b8',112),
   TR=actor('troph16','Trophimus','#c8d8e8',124),MA=actor('master16','Pamphilos','#e0d0b0',96),BOY=actor('boy16','Simias','#f0e0b8',176),
   KE=actor('sailor16','Kerdon','#c8d8d0',108),FI=actor('fisher16','fisherman','#d8d0c0',88),SH=actor('shep16','shepherd','#d8c8a8',100),
-  LY=actor('lykon16','Lykon','#f0d8b0',150),PH=actor('philon16','Philon','#e0e0f0',90),KL=actor('klea16','Kleandros','#c8d8f0',100),
+  LY=actor('menon16','Menon','#f0d8b0',150),PH=actor('philon16','Philon','#e0e0f0',90),KL=actor('klea16','Kleandros','#c8d8f0',100),
   DA=actor('damon16','Damon','#d8e0b8',110),EU=actor('euph16','Euphranor','#e8d8c8',104),PO=actor('polem16','Polemon','#d0c8e8',116);
 /* the four of the seven who are not seen in this chapter's rooms still speak at the night watch, from the deck outside the close view */
 const SO=actor('sop16','Sopater','#e0d0b8',108),SE=actor('sec16','Secundus','#c8e0d8',120);
@@ -730,12 +730,12 @@ async function onAwning(it){if(F.mended)return say(P,'the_awning_is_aboard');
   if(it!=='wthread16'&&it!=='awl')return false;if(!F.laid)return say(P,'it_needs_a_patch_first');
   await say(P,'i_sew_the_patch_down');P.bow=true;await wait(fast()?50:1000);P.bow=false;SFX.good();F.mended=1;
   await say(MA,'pamphilos_good_work_heres_your_pay',{to:P});addItem('coins16');await say(P,'that_is_fair',{to:MA});codeBtn()}
-async function lykon(){if(F.sent)return;if(F.fare)return goList();
-  if(!G.ly16){G.ly16=1;await say(P,'are_you_from_the_harbor',{to:LY});await say(LY,'lykon_i_run_messages',{to:P});await say(P,'i_need_word_taken_to_ephesus',{to:LY});await say(LY,'lykon_the_ferry_and_bread',{to:P})}
-  else await say(LY,'lykon_the_ferry_and_bread',{to:P});
+async function menon(){if(F.sent)return;if(F.fare)return goList();
+  if(!G.ly16){G.ly16=1;await say(P,'are_you_from_the_harbor',{to:LY});await say(LY,'menon_i_run_messages',{to:P});await say(P,'i_need_word_taken_to_ephesus',{to:LY});await say(LY,'menon_the_ferry_and_bread',{to:P})}
+  else await say(LY,'menon_the_ferry_and_bread',{to:P});
   if(has('coins16'))return pay();await say(P,'ill_have_it_soon',{to:LY})}
 async function pay(){if(F.fare)return goList();delItem('coins16');F.fare=1;SFX.pick();await say(P,'here_is_the_fare_and_bread',{to:LY});
-  await say(LY,'lykon_never_been_to_ephesus',{to:P});await say(P,'let_me_look_at_my_tablets',{to:LY});codeBtn();return goList()}
+  await say(LY,'menon_never_been_to_ephesus',{to:P});await say(P,'let_me_look_at_my_tablets',{to:LY});codeBtn();return goList()}
 async function goList(){await goto16('list16');if(!G.li16){G.li16=1;await say(P,'who_will_gather_the_elders',TH)}}
 function pickName(k){const st=l16();if(st.ok.includes(k))return say(P,'that_one_is_on_the_list',TH);const n=NAMES16.find(x=>x.k===k);if(st.off.includes(k))return say(P,n.home,TH);
   st.sel=st.sel===k?null:k;SFX.click()}
@@ -745,7 +745,7 @@ async function pickPlace(p){const st=l16();if(!st.sel)return say(P,'first_a_name
   st.ok.push(n.k);SFX.pick();await say(P,'yes_that_is_where',TH);
   if(NAMES16.filter(x=>x.at).every(x=>st.ok.includes(x.k)))return sendList()}
 async function sendList(){await fade(1,300);show16('miletus16');place(P,'miletus16',118,128,-1);await fade(0,400);
-  await say(P,'the_list_philon_kleandros_damon',{to:LY});await say(LY,'lykon_hall_house_fig_tree',{to:P});
+  await say(P,'the_list_philon_kleandros_damon',{to:LY});await say(LY,'menon_hall_house_fig_tree',{to:P});
   LY.speed=fast()?400:0;await walk(LY,20,126);LY.speed=0;LY.room=null;
   G.ly16=2;await map16(LEGS16.eph,['v17']);G.l16=null;show16('miletus16',118,128,-1);await fade(0,500);await say(LK,'luke_some_days_before_they_come',{to:P});F.sent=1;codeBtn()}
 async function toShore(){if(!F.sent)return say(P,'not_before_word_has_gone');await goto16('shore16');if(!F.spoke)return elders()}
@@ -872,7 +872,7 @@ who(AR,{look:'aristarchus_look',talk:()=>PC()===LK&&F.w2&&!F.watch&&F.aboard?toW
 who(TR,{look:'trophimus_look',talk:()=>say(TR,'trophimus_my_own_coast',{to:PC()})});
 who(FI,{look:'fisherman_look',talk:fisherman});
 who(SH,{look:'shepherd_look',talk:shepherd,useWith:it=>F.pass?false:onSkin(it)});
-who(LY,{look:'lykon_look',talk:lykon,give:it=>it==='coins16'?pay():false});
+who(LY,{look:'menon_look',talk:menon,give:it=>it==='coins16'?pay():false});
 for(const[a,k]of[[PH,'philon_look'],[KL,'kleandros_look'],[DA,'damon_came_with_the_others'],[EU,'euphranor_look'],[PO,'polemon_look']])who(a,{look:k,talk:()=>say(P,'nobody_says_much_now',TH)});
 who(LK,{look:'luke_look',talk:()=>say(LK,G.room==='shore16'?'luke_i_will_write_it_down':G.room==='miletus16'?(F.sent?'luke_some_days_before_they_come':'luke_the_master_will_pay'):'luke_assos_then',{to:P})});
 /* Paul, when Luke is played: aboard from Assos on, resting under the shelter, and at Assos */
@@ -903,7 +903,7 @@ Object.assign(COMBO,{'knife+tablets':c16(scrape),'thread16+wax16':c16(waxThread)
 const pa=f=>()=>PC()===P&&f(),lu=f=>()=>PC()===LK&&f();
 const TABLETS={
   people:[{name:'Luke',note:'note_luke16',if:pa(()=>phase16()!=='D')},{name:'Pamphilos',note:'note_pamphilos',if:pa(()=>!!F.m1)},{name:'shepherd',note:'note_shepherd',if:pa(()=>!!G.sh16||!!F.pass)},
-    {name:'Lykon',note:'note_lykon',if:pa(()=>!!G.ly16||!!F.fare)},
+    {name:'Menon',note:'note_menon',if:pa(()=>!!G.ly16||!!F.fare)},
     {name:'Paul',note:'note_paul_by_luke16',if:lu(()=>true)},{name:'Pamphilos',note:'note_pamphilos_by_luke',if:lu(()=>true)},{name:'Simias',note:'note_simias',if:lu(()=>true)},
     {name:'Kerdon',note:'note_kerdon',if:lu(()=>!!F.w1)}],
   tasks:[{t:'task_settle_with_the_master',if:pa(()=>!F.walk)},{t:'task_on_foot_to_assos',if:pa(()=>!!F.walk&&!F.pa)},{t:'task_wait_for_the_ship',if:pa(()=>!!F.pa&&!F.aboard)},

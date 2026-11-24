@@ -3390,7 +3390,7 @@
       'the title lists sixteen chapters, the last of them These Hands, and the chapters in preparation begin with the seventeenth')}
   (C16?document.querySelector('#overlay [data-ch="16"]'):ov).click();
   await until(()=>G.ch===16&&G.room==='quay16'&&!G.busy,3000);note();
-  const LK=A('luke16'),MA=A('master16'),BOY=A('boy16'),KE=A('sailor16'),FI=A('fisher16'),SH=A('shep16'),LY=A('lykon16'),AR=A('arist16');
+  const LK=A('luke16'),MA=A('master16'),BOY=A('boy16'),KE=A('sailor16'),FI=A('fisher16'),SH=A('shep16'),LY=A('menon16'),AR=A('arist16');
   ok(G.room==='quay16'&&PC()===P&&LK.room==='quay16'&&said('troas_the_morning_after')&&said('timothy_the_master_asks_for_you')&&srt()==='awl,knife,pbag16,tablets,thread16','Troas at daybreak: the coaster for Assos, and Paul is played ['+srt()+']');
   ok(/^16(-[0-9A-Z]{3}){4,5}$/.test(makeCode())&&decode(makeCode()).ch===16&&!document.querySelector('#verbs').classList.contains('party'),'chapter sixteen has wide codes, and nobody else can be played yet: '+makeCode());
   ok(AU.score===C().music&&AU.mood==='quay'&&C().music.steps===11&&C().music.root===49,'the chapter\'s score, in C sharp and in bars of eleven, plays the quay');
@@ -3483,7 +3483,7 @@
   heard.length=0;await useH('wthread16','torn_awning');ok(said('it_needs_a_patch_first')&&!F.mended,'a tear like that wants a patch');
   await openI('pbag16');ok(F.patch&&has('patch16'),'a patch of goat-hair cloth from his bag');
   await useH('patch16','torn_awning');await useH('wthread16','torn_awning');ok(F.mended&&has('coins16')&&said('pamphilos_good_work_heres_your_pay'),'the awning mended, and paid for honestly');
-  heard.length=0;await talkTo(LY);await until(()=>G.room==='list16'&&!G.busy,3000);ok(F.fare&&!has('coins16')&&said('lykon_never_been_to_ephesus'),'the pay goes to the messenger, who has never been to Ephesus');halt('list16');
+  heard.length=0;await talkTo(LY);await until(()=>G.room==='list16'&&!G.busy,3000);ok(F.fare&&!has('coins16')&&said('menon_never_been_to_ephesus'),'the pay goes to the messenger, who has never been to Ephesus');halt('list16');
   heard.length=0;await onH('Glaukos','use');await onH('hall_of_tyrannus','use');ok(said('glaukos_went_home_to_sardis')&&C().list().off.includes('Glaukos'),'Glaukos went home long ago');
   heard.length=0;await onH('Philon','use');await onH('court_with_the_fig_tree','use');ok(heard.includes(T('no_not_where_name_is',{name:T('Philon')})),'a wrong place is only Paul\'s own check');
   await hints('hint_list_1','hint_list_2','over the list');
