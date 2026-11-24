@@ -666,7 +666,7 @@
     const F=LENS.F,cw=PH.cw;let lc=R($('#lcol')),rc=R($('#rcol'));
     ok(!PH.wide&&$('#lcol').contains($('#verbs'))&&$('#rcol').contains($('#inv'))&&$('#ltop').contains($('#opts'))&&$('#ltop').contains($('#names'))&&lc.right<=PH.ci+1&&rc.left>=W-PH.ci-1&&Math.abs(F.l)<1&&Math.abs(F.w-W)<1,
       `the columns are retracted to the sides and the field is the whole screen, ${Math.round(F.w)} by ${Hh}`);
-    {const lh=R($('#lh')),rh=R($('#rh'));ok(lh.width>=14&&lh.height>=40&&lh.left>=0&&lh.right<=W/4&&rh.width>=14&&rh.height>=40&&rh.right<=W&&rh.left>=W*.75,'a handle stays at each side to pull a column out: '+Math.round(lh.width)+' by '+Math.round(lh.height)+' pixels')}
+    {const lh=R($('#lh')),rh=R($('#rh'));ok(lh.width>=14&&lh.height>=40&&Math.abs(lh.left)<1&&Math.abs(rh.right-W)<1&&lh.top>=Hh/2+63&&rh.top>=Hh/2+63&&lh.bottom<=Hh-20&&rh.bottom<=Hh-20,'a handle stays at the very edge of each side, below the camera in the middle of it, to pull a column out: '+Math.round(lh.width)+' by '+Math.round(lh.height)+' pixels')}
     $('#lh').click();$('#rh').click();await wait(700);lc=R($('#lcol'));rc=R($('#rcol'));
     ok($('#wrap').classList.contains('ro')&&!$('#wrap').classList.contains('lo')&&Math.abs(rc.right-W)<1&&Math.abs(rc.width-cw)<1&&lc.right<=PH.ci+1,'a handle pulls its column out over the field, and one drawer is open at a time');
     $('#lh').click();await wait(700);lc=R($('#lcol'));rc=R($('#rcol'));

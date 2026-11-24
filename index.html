@@ -261,10 +261,11 @@ html.phone #rcol{right:0;padding-right:calc(var(--ci) + var(--s)*2.5px);box-shad
 html.phone #lcol{transform:translateX(-100%)}
 html.phone #rcol{transform:translateX(100%)}
 html.phone #wrap.lo:not(.wide) #lcol,html.phone #wrap.ro:not(.wide) #rcol{transform:none}
-html.phone #lcol .dh,html.phone #rcol .dh{position:absolute;top:50%;margin-top:calc(var(--cs)*-17px);width:calc(var(--cs)*8px);height:calc(var(--cs)*34px);padding:0;
+/* a handle stands at the very edge of the screen, below the middle of the side, where a phone held sideways has its camera */
+html.phone #lcol .dh,html.phone #rcol .dh{position:absolute;top:calc(50% + 72px);width:calc(var(--cs)*8px);height:calc(var(--cs)*34px);padding:0;
   background:#1c130c var(--wood);background-size:calc(var(--cs)*128px) calc(var(--cs)*32px);image-rendering:pixelated;border:var(--px) solid var(--dim);cursor:pointer;touch-action:manipulation;z-index:8}
-html.phone #lcol .dh{left:calc(100% + var(--ci));border-left:0;border-radius:0 calc(var(--cs)*3px) calc(var(--cs)*3px) 0}
-html.phone #rcol .dh{right:calc(100% + var(--ci));border-right:0;border-radius:calc(var(--cs)*3px) 0 0 calc(var(--cs)*3px)}
+html.phone #lcol .dh{left:100%;border-left:0;border-radius:0 calc(var(--cs)*3px) calc(var(--cs)*3px) 0}
+html.phone #rcol .dh{right:100%;border-right:0;border-radius:calc(var(--cs)*3px) 0 0 calc(var(--cs)*3px)}
 html.phone #lcol .dh::before,html.phone #rcol .dh::before{content:'';position:absolute;left:50%;top:50%;width:calc(var(--cs)*3px);height:calc(var(--cs)*6px);margin:calc(var(--cs)*-3px) 0 0 calc(var(--cs)*-1.5px);background:var(--gold)}
 html.phone #lcol .dh::before{clip-path:polygon(0 0,100% 50%,0 100%)}
 html.phone #rcol .dh::before{clip-path:polygon(100% 0,0 50%,100% 100%)}
