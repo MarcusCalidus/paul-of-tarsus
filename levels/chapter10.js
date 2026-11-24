@@ -154,7 +154,7 @@ ART.yard10={w:320,q:12,variant:yardV,
   if(F.cutd&&!F.sewn&&v!=='u')for(let i=0;i<4;i++){R(g,204,85.4-i*1.6,22-i*2,1.6,tint(CLOTH,i%2?.12:0));R(g,204,85.4-i*1.6,22-i*2,.4,'rgba(255,240,210,.18)')}
   if(F.sewn&&!F.sold&&v!=='u'){g.fillStyle=lg(g,0,80,0,88,[tint(CLOTH,.3),CLOTH,tint(CLOTH,-.4)]);g.fillRect(200,80.6,30,7.4);R(g,200,80.6,2.4,7.4,tint(CLOTH,.2));R(g,227.6,80.6,2.4,7.4,tint(CLOTH,-.3))}},
  /* at dusk the stool lies on its side inside the strip where people walk: whoever goes behind it is hidden by it */
- props:[{y:118,shape(g,v){if(v!=='u')return;poly(g,[214,110,232,108,234,114,216,116],'#000');poly(g,[216,116,218,122,220.4,121.6,218.6,115.6],'#000');poly(g,[231.6,114.2,236,119,238,118,234,113.8],'#000')}}],
+ props:[{y:118,shape(g,v){if(v!=='u')return;poly(g,[214,110,232,108,234,114,216,116],'#000');poly(g,[216,116,218,122,220.4,121.6,218.6,115.6],'#000');poly(g,[231.6,114.2,236,119,238,118,234,113.8],'#000')},foot:v=>v==='u'?[214,111,24,9]:[]}],
  front(){}};
 
 /* ---------- The bolt, seen from above: twelve cubits by four, pegged out on the paving ---------- */
@@ -354,7 +354,7 @@ ART.syn10={w:320,q:12,
     pool(l,160,70,170,34,'#fff0d8',.45);pool(l,160,116,190,44,'#ffeecc',.5);pool(l,160,98,40,6,'#fff4dc',.3);
     l.fillStyle=lg(l,0,0,0,24,['rgba(20,16,24,.3)','rgba(20,16,24,0)']);l.fillRect(0,0,320,24);l.fillStyle=lg(l,0,126,0,144,['rgba(20,16,24,0)','rgba(20,16,24,.22)']);l.fillRect(0,126,320,18)})},
  /* the platform and its table stand inside the strip where people walk: whoever goes behind them is hidden by them */
- props:[{y:121,shape(g){R(g,118,110,84,11,'#000');R(g,134,96,52,14,'#000')}}],
+ props:[{y:121,shape(g){R(g,118,110,84,11,'#000');R(g,134,96,52,14,'#000')},foot:[118,110,84,11]}],
  light:{amb:'#e6dcd8'},draw(){},front(){}};
 
 /* ---------- The scroll table, seen from above ---------- */
@@ -732,7 +732,7 @@ ART.quay10={w:320,q:12,
     l.fillStyle=lg(l,0,99,0,106,['rgba(20,16,32,.1)','rgba(20,16,32,.22)']);l.fillRect(0,99,320,7);
     l.fillStyle=lg(l,0,126,0,144,['rgba(20,16,24,0)','rgba(20,16,24,.16)']);l.fillRect(0,126,320,18)})},
  /* the coil of rope lies inside the strip where people walk: whoever stands behind it has his feet hidden by it */
- props:[{y:117,shape(g){g.strokeStyle='#000';g.lineWidth=1.6;for(let i=0;i<3;i++){g.beginPath();g.ellipse(112,116-i*1.4,8-i,2.6-i*.3,0,0,6.2832);g.stroke()}}}],
+ props:[{y:117,shape(g){g.strokeStyle='#000';g.lineWidth=1.6;for(let i=0;i<3;i++){g.beginPath();g.ellipse(112,116-i*1.4,8-i,2.6-i*.3,0,0,6.2832);g.stroke()}},foot:[104,113.5,16,4]}],
  draw(g,t){for(let i=0;i<10;i++){const k=((t/2400+i*.1)%1),x=(i*53)%170,y=70+k*30;R(g,x+k*8,y,3+k*5,.5,`rgba(244,252,252,${.5*Math.sin(k*3.1416)})`)}},
  front(){}};
 
@@ -1212,7 +1212,8 @@ Object.assign(COMBO,{'awl+panels10':sewWith,'panels10+thread':sewWith,'knife+pan
 
 /* ============ ROOMS ============ */
 const NOW=[160,160,236,236];   /* a close view: whoever is played stands below the picture, and takes no step */
-ROOMS.yard10={space:.9,walk:[16,304,114,138],get mood(){return yardV()==='n'?'night':'calm'},amb:()=>yardV()==='n'?{crickets:.5,fire:.15}:{crowd:.2,birds:.4,hammer:.15},hs:[
+/* block: at dusk, the pieces of the broken jar on the paving by the gate (the stool on its side is a prop) */
+ROOMS.yard10={space:.9,walk:[16,304,114,138],block:v=>v==='u'?[[52,109,11,5],[66,116,9,4],[80,111,7,4],[60,120,6,3],[90,118,5,3],[74,109,5,3]]:[],get mood(){return yardV()==='n'?'night':'calm'},amb:()=>yardV()==='n'?{crickets:.5,fire:.15}:{crowd:.2,birds:.4,hammer:.15},hs:[
   {name:'gate_to_the_street',x:18,y:46,w:32,h:58,wx:46,wy:116,dir:-1,exit:toSabbath,
     look:()=>say(P,F.cutd?'gate_and_the_street':'gate_to_the_street_beyond')},
   {name:'water_jar',x:55,y:88,w:18,h:20,wx:82,wy:116,dir:-1,look:'great_jar_of_water_in_the_shade',use:'i_drink_a',pickup:'it_is_jasons_and_it_stands'},
