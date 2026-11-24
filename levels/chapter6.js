@@ -351,9 +351,10 @@ ART.house6={w:320,q:12,
   R(g,266,48,34,56,'#c4b48e');doorArt(g,269,51,28,53,'#6a4a2c',r,{left:1,bands:[]});
   /* a great jar of water by the door */
   vessel(g,250,106,7,20,'#9a5a36','pithos');
-  /* the floor: beaten earth, and a woven mat where the household eats */
+  /* the floor: beaten earth, and a woven mat where the household eats. Its few stripes are soft and lie only at its ends, beyond the
+     table's legs, so that no leg stands across a band */
   earth(g,0,103,320,144,'#b8a482',r,90);ao(g,0,103,320,6,'t',.4,'#3a3050');ao(g,0,92,320,12,'b',.18,'#2a2030');
-  clipTo(g,()=>poly(g,[128,112,240,112,252,130,116,130]),()=>{R(g,116,112,136,18,'#9a6a4a');for(let i=0;i<6;i++)R(g,116,113.4+i*3,136,1.1,i%2?'#d8b878':'#5a3a2c');tex(g,'mott',.3,116,112,136,18,'overlay',1);ao(g,116,112,136,5,'t',.25)});
+  clipTo(g,()=>poly(g,[128,112,240,112,252,130,116,130]),()=>{R(g,116,112,136,18,'#9a6a4a');for(const[y,c]of[[113.4,'#b08a5c'],[125.6,'#7a5040'],[127.8,'#b08a5c']])R(g,116,y,136,1.1,c);tex(g,'mott',.3,116,112,136,18,'overlay',1);ao(g,116,112,136,5,'t',.25)});
   /* a low table with the supper on it */
   shadow6(g,190,123.4,22,1.6,.55,'#1e1428');lowTable(g,day);
   /* the light: by day the window's shaft and the open door; by night the lamp in its niche, which lights outward and downward and leaves

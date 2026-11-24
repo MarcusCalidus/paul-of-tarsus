@@ -392,10 +392,11 @@ ART.lystra7={w:320,q:12,
   for(const y of[87,83,79.5,76.2,73.2,70.4]){R(g,302.6,y,3.6,.7,'#7a6648');R(g,302.6,y+.7,3.6,.4,'#ece2c6')}
   /* a great jar of water by the door, and the two that go to the well */
   vessel(g,250,106,7,20,'#9a5a36','pithos');wellJar(g,235,107,'#a8683c');wellJar(g,226,108,'#96582e');
-  /* the floor: beaten earth, and a woven mat where the household eats */
+  /* the floor: beaten earth, and a woven mat where the household eats. Its few stripes are soft and lie only at its ends, beyond the
+     table's legs, so that no leg stands across a band */
   ao(g,0,95,320,9,'b',.22,'#2a2030');
   earth(g,0,103,320,144,'#b8a482',r,90);ao(g,0,103,320,6,'t',.4,'#3a3050');ao(g,0,103,320,2,'t',.22,'#1a1420');
-  clipTo(g,()=>poly(g,[128,112,214,112,224,130,116,130]),()=>{R(g,116,112,110,18,earth7('#9a6a4a'));for(let i=0;i<6;i++)R(g,116,113.4+i*3,110,1.1,i%2?'#d8b878':earth7('#5a3a2c'));tex(g,'mott',.3,116,112,110,18,'overlay',1);ao(g,116,112,110,5,'t',.25)});
+  clipTo(g,()=>poly(g,[128,112,214,112,224,130,116,130]),()=>{R(g,116,112,110,18,earth7('#9a6a4a'));for(const[y,c]of[[113.4,'#b08a5c'],[125.6,earth7('#7a5040')],[127.8,'#b08a5c']])R(g,116,y,110,1.1,c);tex(g,'mott',.3,116,112,110,18,'overlay',1);ao(g,116,112,110,5,'t',.25)});
   /* a low table */
   R(g,168,122,44,3,'rgba(30,20,40,.26)');shadow7(g,171.3,123.2,3,.9,.4);shadow7(g,208.7,123.2,3,.9,.4);lowTable(g);
   /* light: the winter day through the window, its fall across the floor, and a little at the door; the hearth's glow on the floor before
