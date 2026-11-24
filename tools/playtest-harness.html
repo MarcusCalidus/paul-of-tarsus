@@ -4272,7 +4272,7 @@
     said('crowds_would_still_have_sacrificed_to_them_acts_14_18')&&
     said('jews_came_from_antioch_acts_14_19')&&quoted(5),
     'rain from heaven and seasons of harvest: the crowds are scarcely held back. Then he is stoned, and when the disciples surround him he gets up');
-  halt('down',()=>{G.down=1;P.x=-80;G.busy=true;lock(true);status();narr('disciples_gathered_around_acts_14_20',{dur:9000})});
+  halt('down',()=>{G.down=1;P.x=-80;place(BN,'outside',120,125,1);G.busy=true;lock(true);status();narr('disciples_gathered_around_acts_14_20',{dur:9000})});
   halt('outside',()=>{say(A('eunice'),'road_to_derbe_is_behind_you_paul')});
   await sweep(A('timothy'),A('eunice'),A('lois'),A('lame'),BN);
   heard.length=0;await act(null,'road_to_derbe');ok(G.room==='outside'&&said('tonight_in_the_dark'),'not by the Derbe road, tonight');

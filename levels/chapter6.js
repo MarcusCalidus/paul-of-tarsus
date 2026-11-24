@@ -248,6 +248,50 @@ ART.lystra={w:480,fp:1.3,q:12,
   else if(G.bulls){cattle(g,50,109.5,1,0,'#d8c8b0',1);cattle(g,30,116.4,1,0,'#e6dccc',1)}},
  front(){}};
 /* ---------- Outside Lystra, at dusk ---------- */
+/* downPaul: Paul where they left him (Acts 14:19), a sprite placed by hand pixel by pixel in his own colors, and not the figure painter
+   laid on its side. One sprite pixel is half a room pixel, as in person(). Head to the left, face to the ground, his mantle over his back,
+   the tunic over his thighs, bare calves and the soles of his sandals turned up. x runs from -48 (crown) to 50 (toes); y=0 is the ground. */
+function downPaul(s,o){const c=pal(o),S=c.sk,T=c.tu,C=c.cl,H=c.ha,B=c.be,Gr=c.gr,LE=c.le||ramp('#6a4428');
+  s.save();s.scale(.5,.5);const px=(x,y,col,w,h)=>{s.fillStyle=col;s.fillRect(x,y,w||1,h||1)};
+  const X=-48,lerp=(k,x)=>{for(let i=1;i<k.length;i++)if(x<=k[i][0]){const[a,ya]=k[i-1],[b,yb]=k[i];return Math.round(ya+(yb-ya)*(x-a)/(b-a))}return k[k.length-1][1]};
+  /* the line of his back, from the nape over the shoulders, the small of the back, the seat and the thighs to the backs of the knees */
+  const BK=[[14,-12],[16,-17],[20,-21],[26,-22],[33,-21],[40,-19],[46,-17],[51,-18],[56,-19],[61,-18],[66,-15],[71,-12]];
+  /* shade: a band of the rounded form lit from above; u runs 0 at the top to 1 on the ground */
+  const band=(u,top)=>top?0:u<.3?1:u<.68?2:u<.92?3:4,bandT=(u,top)=>top?0:u<.45?1:u<.86?2:3;
+  /* the far leg, a tone darker, just above the near one, and its foot */
+  for(let x=70;x<=90;x++){const ty=Math.round(-13+(x-70)*.2)-(x>72&&x<80?1:0);for(let y=ty;y<=ty+3;y++)px(X+x,y,[S[2],S[3],S[3],S[4]][y-ty])}
+  for(const[x,a,b]of[[90,-11,-7],[91,-11,-6],[92,-10,-6],[93,-10,-5],[94,-9,-5],[95,-8,-5]]){px(X+x,a-1,'#2a1810');px(X+x,a,LE[3]);for(let y=a+1;y<=b;y++)px(X+x,y,S[3])}
+  /* the near leg: calf and shin to the ankle */
+  for(let x=69;x<=90;x++){const ty=Math.round(-11+(x-69)*.16)-(x>71&&x<81?1:0);
+    for(let y=ty;y<=-1;y++){const u=(y-ty)/Math.max(1,-1-ty);px(X+x,y,S[y===ty?1:u<.3?1:u<.7?2:u<.9?3:4])}}
+  /* the near foot: the instep on the ground, the heel up, the sole of the sandal turned to the sky and its strap over the ankle */
+  for(const[x,a]of[[90,-10],[91,-10],[92,-9],[93,-9],[94,-8],[95,-7],[96,-6],[97,-5],[98,-3]]){px(X+x,a,'#2a1810');px(X+x,a+1,LE[2]);for(let y=a+2;y<=-1;y++)px(X+x,y,S[y===-1?4:y<a+4?2:3])}
+  for(let k=0;k<4;k++)px(X+90+k,-7+k,LE[3]);
+  /* the tunic over the hips and thighs, its hem at the backs of the knees */
+  for(let x=42;x<=74;x++){const ty=lerp(BK,x),hem=x<70?-1:Math.round(-1-(x-70)*2.2);
+    for(let y=ty;y<=hem;y++){const u=(y-ty)/Math.max(1,hem-ty);let v=bandT(u,y===ty);
+      for(const[f0,sl]of[[55,.35],[63,.5]]){const fx=f0+Math.round((y-ty)*sl);if(u>.25&&x===fx)v=Math.min(4,v+1);else if(u>.25&&x===fx+1)v=Math.max(0,v-1)}
+      if(y===hem)v=4;else if(x===74||y===hem-1)v=Math.max(v,3);px(X+x,y,T[v])}}
+  /* the mantle, drawn over his shoulders and back and falling to the ground on our side; its edge slants down across the small of the back */
+  const edge=y=>48+Math.round((y+18)*.45)+(y%3===0?1:0);
+  for(let x=13;x<=58;x++){const ty=lerp(BK,x);
+    for(let y=ty;y<=-1;y++){if(x>edge(y))continue;const u=(y-ty)/Math.max(1,-1-ty);let v=band(u,y===ty);
+      for(const[f0,sl]of[[20,.55],[28,.6],[36,.55],[43,.6]]){const fx=f0+Math.round((y-ty)*sl);if(u>.3&&x===fx)v=Math.min(4,v+1);else if(u>.3&&x===fx+1)v=Math.max(0,v-1)}
+      if(y===-1||x===edge(y))v=Math.max(v,3);if(x===edge(y)&&y>-4)v=4;px(X+x,y,C[v])}}
+  /* the near hand, out from under the mantle, palm up on the ground */
+  px(X+39,-3,T[2],2);px(X+38,-2,T[3],3);px(X+38,-1,T[4],3);px(X+41,-4,S[1],4);px(X+41,-3,S[0],5);px(X+41,-2,S[1],6);px(X+41,-1,S[3],6);px(X+46,-3,S[1]);px(X+47,-2,S[2]);px(X+47,-1,S[3]);
+  /* the head lies face down: its crown toward the left (bare where his hair recedes), the back of the head on top, the ear, the temple
+     and cheek, and his beard on the ground toward the neck */
+  const HD=['.......hhhhhh.....','.....hhHHHHhhhh...','...hhHHhhhhhhhhd..','..hHHhhhhhhhhhhdd.','.SLhhhhhhhhhhhhdd.','SLSShhhhhhhhhhddd.',
+            'SSSSShhhhszhhhdd..','SSsSSShhsSSzhhdd..','sSssSSshsSszzhdz..','ssssSSssszzzssss..','zzzsssssssssssss..','zsssssssssBBBss...',
+            'zzssssBBBBBVBBBBz.','.zzBBBVBBBBBVBBv..','..vvBBBvBBBvBvv...'];
+  const L={h:H[2],H:Gr?Gr[2]:H[1],d:H[3],s:S[2],S:S[1],L:S[0],z:S[3],B:B?B[2]:H[2],V:Gr?Gr[2]:(B||H)[1],v:B?B[3]:H[3]};
+  for(let j=0;j<HD.length;j++)for(let i=0;i<HD[j].length;i++){const k=L[HD[j][i]];if(k)px(X+i,-15+j,k)}
+  s.restore()}
+/* STONES6: the stones that were thrown: many, of a size to be thrown by hand, thickest round where he lies and thinning outward */
+const STONES6=(()=>{const r=rng(1419),o=[],cols=['#8a7c7c','#968a80','#7c7078','#a49686','#857a70'];
+  for(let i=0;i<30;i++){const a=r()*6.283,d=Math.sqrt(r()),x=156+Math.cos(a)*d*46,y=129+Math.sin(a)*d*11;if(y<119||y>140)continue;
+    const w=2.4+r()*3.4;o.push([+x.toFixed(1),+y.toFixed(1),+w.toFixed(1),+(w*(.5+r()*.18)).toFixed(1),cols[i%5]])}return o})();
 ART.outside={w:320,q:12,
  /* the stones at the roadside that lie a little way out on the ground */
  props:[[82,113,7,4],[104,113,6,3.6],[61,113.4,6,3.4]].map(([x,y,w,h])=>({y,shape:g=>rock(g,x,y,w,h,'#7c7078')})),
@@ -284,15 +328,9 @@ ART.outside={w:320,q:12,
  fore(g){const r=rng(458);rock(g,300,150,34,16,'#4a4458');for(let i=0;i<40;i++){const sx=r()*320;stroke(g,[sx,150,sx+(r()-.5)*6,136-r()*8],r()<.5?'#5a5440':'#3a3848',.8)}
   comp(g,'source-atop',.5,()=>R(g,0,0,320,150,'#2a2450'))},
  draw(g,t){/* the stones that were thrown, lying where they fell */
-  for(const[x,y,w,h]of[[118,127,5,3],[134,131,6,3.4],[150,124,4.6,2.6],[164,130,5.6,3],[176,126,4,2.4],[142,121,4,2.2],[126,134,5,2.8]])depth(y,()=>rock(g,x,y,w,h,'#8a7c7c'));
-  /* Paul, as they left him: face down, his mantle over him. Those who stand around him stand behind him or before him, by where their feet are */
-  if(G.down)depth(129,()=>{const x=0,y=0,L='#e8b49c',sk=mul('#c08a5c',L),cl=mul('#6e4a2e',L),tu=mul('#c4b08a',L),hr=mul('#2a1a12',L);
-    g.save();g.translate(132,129);g.scale(1,1.4);oval(g,x+25,y+.4,29,2,'rgba(20,16,40,.42)');
-    R(g,x+41,y-3.5,9,2.5,sk);R(g,x+41,y-1.5,9,.5,tint(sk,-.3));R(g,x+49.5,y-5,2.5,5,sk);R(g,x+51.5,y-5,.5,5,'#2a1810');R(g,x+36,y-4.5,6,4.5,tu);R(g,x+36,y-1,6,1,tint(tu,-.3));
-    poly(g,[x+7,y,x+8,y-4.6,x+14,y-6.6,x+26,y-7,x+35,y-5.6,x+38,y-3,x+38.6,y],cl);poly(g,[x+8,y-4.6,x+14,y-6.6,x+26,y-7,x+35,y-5.6,x+33,y-4.4,x+24,y-5.4,x+14,y-5],tint(cl,.22));
-    for(const fx of[16,23,30])stroke(g,[x+fx,y-6.4,x+fx+1.6,y-.6],tint(cl,-.35),.6);R(g,x+7,y-1,31.5,1,tint(cl,-.45));
-    R(g,x+10,y-2.5,9,2,sk);R(g,x+18.5,y-3,2.5,2.5,sk);R(g,x+10,y-.5,11,.5,tint(sk,-.35));
-    oval(g,x+4,y-3.4,3.4,3.2,sk);poly(g,[x+.4,y-3.4,x+1.2,y-6,x+4,y-7,x+6.6,y-6,x+5,y-5,x+2.4,y-4.4,x+1.6,y-1.4],hr);oval(g,x+6.4,y-1.8,2,1.5,hr);g.restore()});
+  for(const[x,y,w,h,c]of STONES6)depth(y,()=>rock(g,x,y,w,h,c));
+  /* Paul, as they left him. Those who stand around him stand behind him or before him, by where their feet are */
+  if(G.down)figure(g,156,129,lightAt('outside',156,129),'paulDown6',s=>downPaul(s,LOOK.paul),24);
   g.save();arch(g,257,54,16,26);g.clip();pool(g,265,76,7+Math.sin(t/230),3,'#ffb860',.25,'screen');g.restore()},
  front(){}};
 /* ---------- Lystra: the house of Lois and Eunice ---------- */
