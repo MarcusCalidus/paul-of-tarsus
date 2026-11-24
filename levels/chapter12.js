@@ -603,18 +603,52 @@ ART.isth12={w:320,q:12,variant:()=>SEAS()==='w'?'w':'d',
 /* The eastern harbor: two piers that reached into the sea like a horseshoe, and room for ships 40 meters long (The Watchtower,
    March 1, 2009). In winter a ship is hauled out, and her mast is down. The far side of the gulf closes the view: no upright
    stands across the line of the sea. The sanctuaries of the harbor are not shown. */
+/* cenSea12: the gulf at Cenchreae made deeper: the sky's light lying on it toward the far shore, long soft swells, darker water close in
+   under the quay, a line of surf along the foot of the far pier, and in fair weather the glitter of the sun. From a seed of its own. */
+function cenSea12(g,wet){const q=rng(1251);
+  inRect(g,0,60,320,44,()=>{g.fillStyle=lg(g,0,60,0,72,[wet?'rgba(200,206,214,.4)':'rgba(220,236,240,.45)','rgba(220,236,240,0)']);g.fillRect(0,60,320,12);
+    tex(g,'wood',.2,0,60,320,44,'soft-light',.7);
+    for(let i=0;i<40;i++){const y=64+q()*38,k=(y-60)/44,x=q()*320;g.fillStyle=lg(g,x,0,x+14+30*k,0,['rgba(20,50,80,0)','rgba(20,50,80,.18)','rgba(20,50,80,0)']);g.fillRect(x,y,14+30*k,.6+k*.8)}
+    g.fillStyle=lg(g,0,88,0,104,['rgba(16,40,64,0)','rgba(16,40,64,.35)']);g.fillRect(0,88,320,16);
+    if(!wet)for(let i=0;i<60;i++){const y=66+q()*30,x=170+q()*120+(y-66)*.6;R(g,x,y,1+q()*3,.5,'rgba(255,250,230,.55)')}})}
+/* cenPier12: the far pier, its blocks in courses with each joint inside its own course, the lit top, the face in its shade, and the surf
+   at its foot; and on it, small and far off, the low sheds of the harbor */
+function cenPier12(g,ST){const q=rng(1253),T=[320,64,250,66,190,69,150,73],F=[320,64,250,66,190,69,150,73,150,76,190,73,250,71,320,71];
+  for(const[x,w]of[[196,16],[226,22],[290,26]]){const yt=u=>u>=250?64+(320-u)/70*2:u>=190?66+(250-u)/60*3:69+(190-u)/40*4,y=Math.max(yt(x),yt(x+w))+.6;R(g,x,y-3.6,w,3.6,'#d8ccb0');R(g,x,y-4.6,w,1.2,'#b0623e');R(g,x,y-4.6,w,.4,'#d88c60');R(g,x+w-2,y-3.6,2,3.6,'#a89a80');R(g,x+3,y-2.4,2,2.4,'#4a4048')}
+  clipTo(g,()=>poly(g,F),()=>{tex(g,'mott',.4,150,63,170,14,'overlay',1);for(let i=0;i<40;i++){const x=150+q()*170,y=67+q()*7;R(g,x,y,.5,1.6,'rgba(60,50,40,.3)')}});
+  stroke(g,[320,71.6,250,71.6,190,73.6,150,76.6],'rgba(240,246,248,.55)',.8);stroke(g,[320,72.6,250,72.8,190,74.8,150,77.8],'rgba(240,246,248,.22)',1.2)}
+/* cenSheds12: the sheds by the quay: the tiles of their roof in rows that run down to the eave, the shade under it, the arches with their
+   voussoirs and the floor inside lit a little from the door; and cargo set down on the quay before the piers between the arches. */
+function cenSheds12(g,wet){const q=rng(1255);
+  clipTo(g,()=>{g.beginPath();g.rect(0,40.4,130,5.6)},()=>{g.fillStyle=lg(g,0,40,0,46,['#d48a60','#b0603c','#8a4430']);g.fillRect(0,40,130,6);for(let i=0;i<130;i+=2.4){R(g,i,40.4,1.1,5.6,'rgba(255,200,160,.18)');R(g,i+1.1,40.4,.5,5.6,'rgba(90,40,24,.3)')}});
+  R(g,0,46,130,.6,'#4a2a20');
+  for(const x of[10,50,90]){g.save();arch(g,x,60,28,44);g.clip();pool(g,x+14,104,16,4,'#8a7462',.35,'source-over');g.restore();
+    for(let k=0;k<7;k++){const a=Math.PI+(k+.5)/7*Math.PI,a2=Math.PI+(k+1)/7*Math.PI,cx=x+14,cy=74,r0=14,r1=17.4;
+      poly(g,[cx+Math.cos(a-.22)*r0,cy+Math.sin(a-.22)*r0,cx+Math.cos(a2-.24)*r0,cy+Math.sin(a2-.24)*r0,cx+Math.cos(a2-.24)*r1,cy+Math.sin(a2-.24)*r1,cx+Math.cos(a-.22)*r1,cy+Math.sin(a-.22)*r1],tint('#cdc1a2',(k%2?.04:-.03)))}
+    g.strokeStyle='rgba(50,40,40,.4)';g.lineWidth=.5;g.beginPath();g.arc(x+14,74,17.4,Math.PI,0);g.stroke()}
+  /* cargo before the piers: amphorae standing together, sacks, and a crate of boards whose planks no band crosses */
+  for(const[x,c,h]of[[41,'#9a5a36',10],[45,'#a8642e',11],[48.6,'#8a4a2a',9.4]])vessel(g,x,105,2.8,h,c,'amph');
+  sack(g,82,105.4,3.6,6,'#c8b890');sack(g,87.4,105.6,3.2,5.4,'#b8a47a');
+  shadow12(g,124,105.6,6,1,.35,'#2a1e28');for(let i=0;i<3;i++){const c=tint('#8a6a42',(q()-.5)*.14);R(g,118+i*3.4,98,3.4,7.4,c);R(g,118+i*3.4,98,.5,7.4,tint(c,.2))}R(g,118,98,10.2,.6,'#c8a46c');ao(g,118,98,10.2,2,'t',.3,'#2a1e14')}
+/* cenQuay12: the quay's stone edge in blocks, its joints inside the course; the bollards rounded at the top, lit on the left; and the
+   paving worn, stained where water stands and ropes have lain */
+function cenQuay12(g,ST,wet){const q=rng(1257);
+  for(let x=136;x<320;){const w=Math.min(12+q()*10,320-x),c=tint(ST,-.12+(q()-.5)*.08);R(g,x,100,w,4,c);R(g,x,100,w,.8,tint(c,.3));if(x>136)R(g,x,101,.5,3,tint(c,-.35));x+=w}
+  for(const x of[150,214,290]){shadow12(g,x+3,104.2,4,1,.4,'#1a1828');R(g,x,96,5,6,'#5a5248');R(g,x,96,1.4,6,'#7a7266');R(g,x+3.8,96,1.2,6,'#3e3830');R(g,x+.5,95.2,4,1.2,'#6e665c');R(g,x+1,95.2,2,.5,'#9a9288')}
+  inRect(g,0,104,320,40,()=>{for(let i=0;i<10;i++)pool(g,q()*320,108+q()*32,10+q()*20,2+q()*3,wet?'#3a4458':'#6a5a48',.12,'source-over');
+    for(let i=0;i<40;i++){const x=q()*320,y=106+q()*36;R(g,x,y,1+q()*2.4,.5,q()<.5?'rgba(60,50,40,.25)':'rgba(255,246,220,.2)')}})}
 ART.cen12={w:320,q:12,variant:()=>F.cen?'f':F.summer?'u':'w',
  paint(g,v){const r=rng(1213),ST='#cfc5a8',wet=v==='w';
   sky(g,320,62,SKY[v]);if(wet)for(let i=0;i<4;i++)cloud(g,30+i*90,8+(i%2)*8,90,9,r,'#c9ccd0','#878d98');else{cloud(g,70,12,50,4,r);cloud(g,240,8,56,4,r)}
   ridge(g,0,320,62,x=>10+5*Math.sin(x/47+2)+3*Math.sin(x/15)+4*Math.exp(-Math.pow((x-250)/60,2)),wet?['#7f8894','#8d9498']:['#8fa0b4','#a2aeae']);
-  g.fillStyle=lg(g,0,60,0,104,(wet?['#5a6f84','#4a6078','#52687c']:['#5d94bc','#3f78a8','#4a84ae']).map(c=>earth12(c,.12)));g.fillRect(0,60,320,44);for(let i=0;i<90;i++){const y=61+r()*42;R(g,r()*320,y,2+r()*6*(y-58)/40,.5,wet?'rgba(214,224,236,.3)':'rgba(214,236,244,.4)')}
+  g.fillStyle=lg(g,0,60,0,104,(wet?['#5a6f84','#4a6078','#52687c']:['#5d94bc','#3f78a8','#4a84ae']).map(c=>earth12(c,.12)));g.fillRect(0,60,320,44);for(let i=0;i<90;i++){const y=61+r()*42;R(g,r()*320,y,2+r()*6*(y-58)/40,.5,wet?'rgba(214,224,236,.3)':'rgba(214,236,244,.4)')}cenSea12(g,wet);
   /* the far pier, curving in from the right; and the near one, on which the sheds stand */
-  poly(g,[320,64,250,66,190,69,150,73,150,76,190,73,250,71,320,71],ST);stroke(g,[320,64,250,66,190,69,150,73],tint(ST,.3),.7);poly(g,[320,71,250,71,190,73,150,76,320,76],'rgba(30,40,60,.3)');
+  poly(g,[320,64,250,66,190,69,150,73,150,76,190,73,250,71,320,71],ST);stroke(g,[320,64,250,66,190,69,150,73],tint(ST,.3),.7);poly(g,[320,71,250,71,190,73,150,76,320,76],'rgba(30,40,60,.3)');cenPier12(g,ST);
   ashlar(g,0,46,128,58,'#cdc1a2',r,{bw:13,bh:6,v:.1});R(g,0,41,130,5,'#b8603c');for(let i=0;i<130;i+=5)R(g,i,41,.5,5,'rgba(90,40,24,.3)');R(g,0,40.4,130,.8,'#d88a5c');
   for(const x of[10,50,90]){arch(g,x,60,28,44,'#2e2838');g.save();arch(g,x,60,28,44);g.clip();ao(g,x,60,28,16,'t',.6);for(let i=0;i<3;i++)vessel(g,x+6+i*8,104,3,9+i%2*2,['#9a5a36','#8a4a2a','#a8642e'][i],'amph');g.restore()}
   poly(g,[128,46,136,52,136,104,128,104],earth12('#9a94a8',.5));
   /* the shade under the eaves of the sheds, and along their foot */
-  ao(g,0,46,128,4,'t',.3,'#2a2440');ao(g,0,98,136,6,'b',.22,'#3a3050');
+  ao(g,0,46,128,4,'t',.3,'#2a2440');ao(g,0,98,136,6,'b',.22,'#3a3050');cenSheds12(g,wet);
   /* in summer/fall: a ship for Asia moored behind the stone edge of the quay and behind the bollards; her mast stands beyond the edge */
   if(!wet)inRect(g,136,0,184,100,()=>SHARED.ship.paint(g,{seed:1215,dir:1,view:'stern',x0:238,x1:322,yBot:100,yWaist:79,
     sternRise:11,sternSpan:42,sternPow:2.2,palette:'lit',gradY0:66,gradY1:100,
@@ -631,7 +665,7 @@ ART.cen12={w:320,q:12,variant:()=>F.cen?'f':F.summer?'u':'w',
     rudders:[{loom:[246,74,248.8,74,243,96,240.2,96],blade:[239.5,94,243.5,94,242,100,237.5,100],hi:[246.4,74.4,240.6,96]}]}));
   /* the quay */
   pave(g,0,103,320,144,'#c9bd9c',r,{vx:160,vy:58,rows:4,step:44,v:.07});ao(g,0,103,320,5,'t',.3,'#3a3050');R(g,136,100,184,4,tint(ST,-.12));R(g,136,100,184,.8,tint(ST,.24));
-  for(const x of[150,214,290]){R(g,x,96,5,5,'#5a5248');R(g,x,96,5,1,'#8a8278')}
+  cenQuay12(g,ST,wet);
   if(wet){/* a ship hauled out for the winter: the hull on its side timbers, the mast taken down */
     shadow12(g,208,104.4,58,1.8,.4,'#1a1830');
     SHARED.ship.paint(g,{seed:1214,dir:1,view:'full',x0:155,x1:261,yBot:102,yWaist:81,
