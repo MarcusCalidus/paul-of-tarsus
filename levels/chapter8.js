@@ -101,7 +101,7 @@ ART.fork={w:480,fp:1.25,q:12,
   /* the ground on the far side of the road, the track north, and its two ruts. It narrows as it climbs, and is lost between the swells */
   earth(SCRAP8,0,98,480,144,'#b8b07a',r,230);
   CO.turf(g,0,97,480,144,'#a2ae6a',8114,{dry:.25,flowers:220});
-  {const T=[232,109,272,109,300,92,306,84,301,84,290,92];poly(g,T,'#d0c29a');clipTo(g,()=>poly(g,T),()=>CO.ground(g,232,84,76,26,'#d0c29a',8115,{n:24,size:.5}))}
+  {const T=[232,109,272,109,300,92,306,84,301,84,290,92];poly(g,T,'#d0c29a');clipTo(g,()=>poly(g,T),()=>CO.ground(g,232,84,76,110,'#d0c29a',8115,{n:24,size:.5}))}
   stroke(g,[242,109,293,91,303,84],'rgba(120,104,70,.5)',.7);stroke(g,[262,109,298,92,305,84],'rgba(120,104,70,.5)',.7);
   stroke(g,[303,84,306,80,303,77],'#c6ba92',1.6);
   /* the paved road: close-fitted slabs between two kerbs, running east and west */

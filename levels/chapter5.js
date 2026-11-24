@@ -156,7 +156,7 @@ ART.ford={w:480,fp:1.25,q:12,
   shade(g,WL,'#a6a6bc',.42);
   /* the road beyond the ford, climbing the far wall to the pass: trodden dust with its stones, a darker edge where it is cut into the rock */
   const RD=[316,104,338,104,372,90,410,76,452,58,480,50,480,44,450,52,406,70,366,84,330,98];
-  clipTo(g,()=>poly(g,RD),()=>{CO.ground(g,316,44,164,60,'#ddd0b0',5105,{n:40,size:.5,light:1});comp(g,'screen',.22,()=>R(g,316,44,164,60,'#fff4dc'))});poly(g,[316,104,330,98,366,84,406,70,450,52,480,44,480,46.5,450,54.5,406,72.5,366,86.5,330,100.5,318,106],'rgba(42,36,64,.22)');stroke(g,[316,104,330,98,366,84,406,70,450,52,480,44],'rgba(60,50,80,.45)',.6);stroke(g,[338,104,372,90,410,76,452,58,480,50],'rgba(255,248,230,.35)',.5);
+  clipTo(g,()=>poly(g,RD),()=>{CO.ground(g,316,44,164,104,'#ddd0b0',5105,{n:40,size:.5,light:1});comp(g,'screen',.22,()=>R(g,316,44,164,60,'#fff4dc'))});poly(g,[316,104,330,98,366,84,406,70,450,52,480,44,480,46.5,450,54.5,406,72.5,366,86.5,330,100.5,318,106],'rgba(42,36,64,.22)');stroke(g,[316,104,330,98,366,84,406,70,450,52,480,44],'rgba(60,50,80,.45)',.6);stroke(g,[338,104,372,90,410,76,452,58,480,50],'rgba(255,248,230,.35)',.5);
   ao(g,316,44,164,60,'b',.16,'#2a2848');
   for(const[x,y,h]of[[18,34,20],[44,60,24],[70,26,17],[112,48,22],[138,84,18],[352,36,20],[386,58,16],[420,30,22],[456,82,19],[470,30,16]])pine(g,x,y,h);
   /* where the water breaks out under the cliff: a low, ragged mouth in the rock, dark inside, the water white where it falls out of it */
