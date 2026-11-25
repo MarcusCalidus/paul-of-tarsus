@@ -153,7 +153,6 @@ function horsePH19(g,x,y,dir,fr,tack,lit,z,rider){depth(z==null?y:z,()=>{const d
   if(fr!==1)poly(g,[X(15),y-24,X(16),y-27,X(17),y-24],c2);
   poly(g,[X(-12),y-16,X(-14),y-14,X(-15),y-6,X(-13),y-7,X(-12),y-12],'#2e1e14');
   if(tack)poly(g,[X(-4),y-18,X(4),y-18,X(5),y-12,X(-5),y-12],'#3a2a4a');
-  if(lit)comp(g,'multiply',.6,()=>{R(g,x-20,y-30,40,31,lit)});
   R(g,Math.min(X(-12),X(12)),y-18,24,.5,'rgba(255,230,190,.35)')})}
 const horse19=(...a)=>SHARED.beasts&&SHARED.beasts.horse?SHARED.beasts.horse(...a):horsePH19(...a);
 /* ==== ART common19: end ==== */
@@ -215,7 +214,7 @@ ART.barracks19={w:320,q:12,variant:varB19,paint(g,v){paintBarracks19(g,v)},
   draw(g,t){const v=varB19();if(v==='night'){for(const x of[48,160,272])flame(g,x,58,t,1);
       HORSES19.forEach(([x,y],i)=>horse19(g,x,y,-1,0,1,lightAt('barracks19',x,y)));
       /* the spearmen's spears: slanting, never upright, the iron to the upper right; held at the shoulder (placeholder until ROMAN.spearman) */
-      for(const a of[ACT.spear19a,ACT.spear19b])if(a&&a.room==='barracks19')depth(a.y+.1,()=>{stroke(g,[a.x-6,a.y-2,a.x+12,a.y-44],'#6a4a2e',.8);poly(g,[a.x+11.4,a.y-43,a.x+13,a.y-44.6,a.x+13.6,a.y-47.6,a.x+12,a.y-45.4],'#c8ccd4')})}},
+      if(!RM.spearman)for(const a of[ACT.spear19a,ACT.spear19b])if(a&&a.room==='barracks19')depth(a.y+.1,()=>{stroke(g,[a.x-6,a.y-2,a.x+12,a.y-44],'#6a4a2e',.8);poly(g,[a.x+11.4,a.y-43,a.x+13,a.y-44.6,a.x+13.6,a.y-47.6,a.x+12,a.y-45.4],'#c8ccd4')})}},
   front(){}};
 function paintBarracks19(g,v){const r=rng(1911),S='#d6c6a4',BK=104,night=v==='night';
   sky19(g,320,9,night?'night':v==='aft'?'aft':'day');
@@ -492,26 +491,26 @@ Object.assign(LOOK,{
   nephew19:look19('pauls_nephew',{skin:'#c8946a',hair:'#2a1a12',beard:'#2a1a12',shortBeard:1,tunic:'#8a9a84',cloak:'#6a5a44',belt:'#5a3a20',slim:1,brow:'#20140e',ph:1200}),
   sister19:look19('pauls_sister',{skin:'#c49a72',veil:'#7a6a5a',tunic:'#6a5a70',long:1,belt:'#4a3a24',slim:1,longSleeve:1,trim:'#8a7a8a',brow:'#5a4a3a',ph:2100}),
   ananias19:look19('ananias',{skin:'#b8845a',wrap:'#ece0c4',beard:'#a8a098',grey:'#c8c0b8',longBeard:1,brow:'#6a625a',tunic:'#e8dcc0',cloak:'#6a3a5a',long:1,belt:'#b08a3c',ph:300}),
-  att19a:JEW19('#b07a4c','#2a1a12','#2a1a12','#d8ccb0','#6a5a44',500),att19b:JEW19('#bc8a60','#3a2a1c','#3a2a1c','#c8b490','#5a4a3a',1500),
-  phar19a:look19('pharisee_a',JEW19('#b8845a','#4a3624','#5a4a3a','#e0d6bc','#4e5a6e',700,{wrap:'#d8cdb0',grey:'#8a8078'})),
-  phar19b:look19('pharisee_b',JEW19('#a8744c','#6a6a6a','#8a8a8a','#d4c8a8','#6a4e3a',1100,{longBeard:1,fullBeard:0})),
-  phar19c:look19('pharisee_c',JEW19('#c09068','#3a2a1c','#3a2a1c','#ccc0a0','#5a6a52',1900)),
-  sad19a:look19('sadducee_a',JEW19('#c49a72','#5a4632','#6a5642','#f0e8d8','#8a6a9a',400,{grey:'#a8a098'})),
-  sad19b:look19('sadducee_b',JEW19('#b8845a','#8a8278','#9a9288','#ece4d4','#4a5a7a',1300,{longBeard:1,fullBeard:0})),
-  sad19c:look19('sadducee_c',JEW19('#bc8a60','#3a2a1c','#3a2a1c','#f4ecdc','#7a4a3a',2300)),
-  clerk19a:look19('clerk_a',JEW19('#c09068','#3a2a1c','#3a2a1c','#d8ccb0','#8a7a5a',800,{shortBeard:1,fullBeard:0})),
-  clerk19b:look19('clerk_b',JEW19('#b07a4c','#2a1a12','#2a1a12','#c8b8a0','#6a6a5a',2700,{shortBeard:1,fullBeard:0})),
-  back19a:JEW19('#b8845a','#9a9a9a','#a8a8a8','#d8ccb0','#5a6a7a',200),back19b:JEW19('#a8703f','#3a2a1c','#3a2a1c','#e8dcc8','#7a5a8a',600,{wrap:'#d8cdb0'}),
-  back19c:JEW19('#c08c5c','#5a4a3a','#6a5a4a','#c8b490','#6a4e3a',1000),back19d:JEW19('#b47e52','#8a8278','#9a9288','#ece4d4','#4a5a7a',1400),
-  back19e:JEW19('#bc8a60','#2a1a12','#2a1a12','#d4c8a8','#5a6a52',1800,{wrap:'#e0d6bc'}),back19f:JEW19('#c49a72','#6a5a4a','#7a6a5a','#e0d6bc','#8a3a2a',2200),
+  att19a:look19('attendant_1',JEW19('#b07a4c','#2a1a12','#2a1a12','#d8ccb0','#6a5a44',500)),att19b:look19('attendant_2',JEW19('#bc8a60','#3a2a1c','#3a2a1c','#c8b490','#5a4a3a',1500)),
+  phar19a:look19('pharisee_3',JEW19('#b8845a','#4a3624','#5a4a3a','#e0d6bc','#4e5a6e',700,{wrap:'#d8cdb0',grey:'#8a8078'})),
+  phar19b:look19('pharisee_4',JEW19('#a8744c','#6a6a6a','#8a8a8a','#d4c8a8','#6a4e3a',1100,{longBeard:1,fullBeard:0})),
+  phar19c:look19('pharisee_5',JEW19('#c09068','#3a2a1c','#3a2a1c','#ccc0a0','#5a6a52',1900)),
+  sad19a:look19('sadducee_1',JEW19('#c49a72','#5a4632','#6a5642','#f0e8d8','#8a6a9a',400,{grey:'#a8a098'})),
+  sad19b:look19('sadducee_2',JEW19('#b8845a','#8a8278','#9a9288','#ece4d4','#4a5a7a',1300,{longBeard:1,fullBeard:0})),
+  sad19c:look19('sadducee_3',JEW19('#bc8a60','#3a2a1c','#3a2a1c','#f4ecdc','#7a4a3a',2300)),
+  clerk19a:look19('clerk_1',JEW19('#c09068','#3a2a1c','#3a2a1c','#d8ccb0','#8a7a5a',800,{shortBeard:1,fullBeard:0})),
+  clerk19b:look19('clerk_2',JEW19('#b07a4c','#2a1a12','#2a1a12','#c8b8a0','#6a6a5a',2700,{shortBeard:1,fullBeard:0})),
+  back19a:look19('pharisee_1',JEW19('#b8845a','#9a9a9a','#a8a8a8','#d8ccb0','#5a6a7a',200)),back19b:look19('sadducee_4',JEW19('#a8703f','#3a2a1c','#3a2a1c','#e8dcc8','#7a5a8a',600,{wrap:'#d8cdb0'})),
+  back19c:look19('pharisee_2',JEW19('#c08c5c','#5a4a3a','#6a5a4a','#c8b490','#6a4e3a',1000)),back19d:look19('sadducee_5',JEW19('#b47e52','#8a8278','#9a9288','#ece4d4','#4a5a7a',1400)),
+  back19e:look19('pharisee_6',JEW19('#bc8a60','#2a1a12','#2a1a12','#d4c8a8','#5a6a52',1800,{wrap:'#e0d6bc'})),back19f:JEW19('#c49a72','#6a5a4a','#7a6a5a','#e0d6bc','#8a3a2a',2200),
   commander19:RM.tribune_armored,officer19:Object.assign({},RM.centurion_crested),officer19b:Object.assign({},RM.centurion_veteran),
   sol19a:noSpear(RM.legionary_guard),sol19b:Object.assign({},RM.legionary_bare),sentry19:noSpear(Object.assign({},RM.legionary_guard,{ph:900})),
   guard19:Object.assign({},RM.legionary_bare,{ph:1700}),horseman19:look19('horseman',Object.assign({},RM.escort_cloak,{ph:2500})),
-  spear19a:look19('spearman',noSpear(Object.assign({},RM.auxiliary_mail,{ph:300}))),spear19b:look19('spearman',noSpear(Object.assign({},RM.auxiliary_mail,{ph:1300}))),
+  spear19a:look19('spearman',noSpear(Object.assign({},RM.auxiliary_mail,{ph:300}))),spear19b:look19('spearman_young',noSpear(Object.assign({},RM.auxiliary_mail,{ph:1300}))),
   felix19:look19('felix',Object.assign({},RM.tribune,{ph:1600})),
   seller19:{skin:'#b8845a',veil:'#a89070',tunic:'#7a6a5a',long:1,belt:'#4a3a24',slim:1,longSleeve:1,brow:'#3a2414',ph:400},
   oath19a:JEW19('#a8744c','#2a1a12','#2a1a12','#9a8a6a','#5a4a3a',800),oath19b:JEW19('#b07a4c','#3a2a1c','#3a2a1c','#8a7a5a','#6a5a44',1600,{shortBeard:1,fullBeard:0}),
-  elder19:JEW19('#b47e52','#9a9a9a','#a8a8a8','#d8ccb0','#5a6a7a',2000,{longBeard:1,fullBeard:0}),priests19:JEW19('#c09068','#3a2a1c','#3a2a1c','#e8dcc8','#6a5a8a',2600,{shortBeard:1,fullBeard:0}),
+  elder19:look19('elder_1',JEW19('#b47e52','#9a9a9a','#a8a8a8','#d8ccb0','#5a6a7a',2000,{longBeard:1,fullBeard:0})),priests19:look19('chief_priest_1',JEW19('#c09068','#3a2a1c','#3a2a1c','#e8dcc8','#6a5a8a',2600,{shortBeard:1,fullBeard:0})),
   oil19:JEW19('#a8703f','#5a4a3a','#6a5a4a','#a89070','#6a4e3a',1100)});
 const NE=actor('nephew19','pauls_nephew','#d8e8c0',150),SI=actor('sister19','pauls_sister','#f0d8e0',210),AN=actor('ananias19','man_who_presides','#e8d8c8',92),
   AT1=actor('att19a','man_at_his_side','#e0d8c8',110),AT2=actor('att19b','man_at_his_side','#d8d0c0',118),

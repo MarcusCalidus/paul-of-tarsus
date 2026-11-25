@@ -124,6 +124,7 @@
   16:()=>act('look','bale_at_the_end'), // Chapter Sixteen: on the quay of Miletus, the lone bale of wool at the far end
   17:()=>act('look','heap_of_shells'), // Chapter Seventeen: on the beach outside Tyre, the heap of spent murex shells off the way
   18:()=>act('look','far_end_of_the_colonnade'), // Chapter Eighteen: in the Court of the Gentiles, the far end of Solomon's Colonnade
+  19:()=>act('look','spring'), // Chapter Nineteen: at Antipatris at dawn, the spring off the way
  };
  (async()=>{try{
   while(!G.ready)await wait(30);
@@ -3935,8 +3936,8 @@
     walkTo=async(x,y)=>{const p=PC();walk(p,x,y);for(let i=0;i<900&&(p.walk||!G.busy&&false);i++)await wait(25);await idle()};
   heard.length=0;
   if(C17){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
-    const c17=chs.find(c=>c.dataset.ch==='17');ok(c17&&c17.textContent.includes(T('chapter_seventeen'))&&c17.textContent.includes(T('the_belt_2'))&&PLANNED[0].label==='chapter_nineteen'&&plans.textContent.includes(T('Nineteen')),
-      'the title lists Chapter Seventeen, The Belt, and the chapters in preparation begin with the nineteenth')}
+    const c17=chs.find(c=>c.dataset.ch==='17');ok(c17&&c17.textContent.includes(T('chapter_seventeen'))&&c17.textContent.includes(T('the_belt_2'))&&PLANNED[0].label==='chapter_twenty'&&plans.textContent.includes(T('Twenty')),
+      'the title lists Chapter Seventeen, The Belt, and the chapters in preparation begin with the twentieth')}
   (C17?document.querySelector('#overlay [data-ch="17"]'):ov).click();
   await until(()=>G.ch===17&&G.room==='patara17'&&!G.busy,4000);note();
   const LK=A('luke17'),AK=A('akestor17'),MO=A('moschos17'),KA=A('kallikrates17'),SO=A('sostratos17'),BU=A('butcher17'),MY=A('myrto17'),PN=A('phanias17'),JO=A('joezer17'),
@@ -4101,8 +4102,8 @@
     code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
   if(C18){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
-    ok(chs.length===18&&last.dataset.ch==='18'&&last.textContent.includes(T('chapter_eighteen'))&&last.textContent.includes(T('on_the_stairs_2'))&&PLANNED.length===7&&PLANNED[0].label==='chapter_nineteen'&&plans.textContent.includes(T('Nineteen')),
-      'the title lists eighteen chapters, the last of them On the Stairs, and the chapters in preparation begin with the nineteenth')}
+    {const c18=chs.find(c=>c.dataset.ch==='18');ok(c18&&c18.textContent.includes(T('chapter_eighteen'))&&c18.textContent.includes(T('on_the_stairs_2'))&&PLANNED[0].label==='chapter_twenty'&&plans.textContent.includes(T('Twenty')),
+      'the title lists Chapter Eighteen, On the Stairs, and the chapters in preparation begin with the twentieth')}}
   (C18?document.querySelector('#overlay [data-ch="18"]'):ov).click();
   await until(()=>G.ch===18&&G.room==='mnason18'&&!G.busy,4000);note();
   const MN=A('mnason_18'),JA=A('james18'),TR=A('troph18'),CY=A('cyrene18'),GR=A('greek18'),LV=A('levite18'),CM=A('commander18'),OF=A('officer18'),S1=A('sol18a'),BA=A('barber18');
@@ -4228,9 +4229,193 @@
   ok(said('officer_let_go_and_wait')&&said('officer_hold_him')&&P.held,'waited too long: a runner calls the officer away, the soldiers let go and wait, and the moment comes again; no blow is shown');
   heard.length=0;useA('roman18',OF);{const o=await asked();ok(said('paul_is_it_lawful')&&said('officer_this_man_is_a_roman')&&said('paul_yes')&&o.includes('paul_i_was_born_one'),'to the officer standing there: is it lawful? (Acts 22:25-28)')}
   await line('paul_i_was_born_one');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
-  ok(ov.classList.contains('end')&&seenTold.has('v29b')&&ov.textContent.includes(T('on_the_stairs_2'))&&/21:17-22:29/.test(ov.textContent)&&inOv(),'they draw back; the commander is afraid (Acts 22:29); the end screen says what the account leaves unsaid');
+  ok(ov.classList.contains('end')&&seenTold.has('v29b')&&ov.textContent.includes(T('on_the_stairs_2'))&&/21:17-22:29/.test(ov.textContent)&&ov.textContent.includes(T('click_to_continue_to_chapter_nineteen'))&&ov.textContent.includes(T('chapter_nineteen_code_code',{code:codeOf(19,0)}))&&store('paul.save')===codeOf(19,0)&&inOv(),'they draw back; the commander is afraid (Acts 22:29); the end screen says what the account leaves unsaid and leads on to Chapter Nineteen with its first code');
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 21:17-22:29 was told'+(miss.length?' MISSING '+miss:''))}
   halt('final18')};
+  /* Chapter Nineteen stops start Chapter Nineteen from the title screen; the full run calls its test when Chapter Eighteen has ended.
+     all19 halts nowhere. Its halts: council19 · session19 (after 23:5) · door19 · lanes19 · gate19 · court19 (the nephew in the soldiers'
+     quarters) · yard19 (the third hour) · anti19 · palace19 · letter19 · final19. The stops that begin with "p" open one room at once, with
+     the story's flags set for it, and say the safe-point code of their point (CODE): pbarracks19 (the opening, 22:30) · pcouncil19 ·
+     ppause19 (the council confers, after 23:5) · pdivided19 (the scribes stand up, 23:9) · pscroll19 (23:11 on the narrator's scroll) ·
+     pdoor19 · planes19 (the errand given) · phalves19 (both halves heard) · pknew19 (the nephew knows) · pgate19 · pcourt19 · pcmd19 ·
+     pyard19 · panti19 (the treasure's point) · ppalace19 · pletter19 (the letter, every note marked). */
+  /* rooms19: every picture of Chapter Nineteen on one sheet at twice its size (rooms19.png), the soldiers' quarters in all three variants
+     (rooms19-barracks.png), and the lane map whole (rooms19-lanes.png): for the art agents, and the cross-shape check. */
+  if(stop==='rooms19'){clearInterval(sk);sk=0;await loadLevel(19);setChapter(19);ov.className='';ov.onclick=null;const C=CHAP[19],ids=C.rooms.filter(r=>r!=='lanes19'),K=2;
+    const pic=(id,q,x,y)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
+      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
+      q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
+    const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    F.anti=1;ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
+    const[c2,g2]=mk(320*K,3*(144*K+8));g2.imageSmoothingEnabled=false;[[],['divided'],['divided','cmd']].forEach((fl,i)=>{for(const k in F)delete F[k];fl.forEach(k=>F[k]=1);pic('barracks19',g2,0,i*(144*K+8))});
+    for(const k in F)delete F[k];
+    const lb=bg('lanes19'),[c3,g3]=mk(ART.lanes19.w,roomH('lanes19'));g3.drawImage(lb,0,0,ART.lanes19.w,roomH('lanes19'));
+    window.SHEETS={rooms19:c.toDataURL(),'rooms19-barracks':c2.toDataURL(),'rooms19-lanes':c3.toDataURL()};halt('rooms19')}
+  const C19=/^(council19|session19|door19|lanes19|gate19|court19|yard19|anti19|palace19|letter19|final19|all19)$/.test(stop);
+  if(!C19&&/^p[a-z]+19$/.test(stop)){await loadLevel(19);ov.className='';ov.onclick=null;const C=CHAP[19],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      S={pbarracks19:[[],'barracks19'],pcouncil19:[[],'council19'],ppause19:[['session'],'council19'],pdivided19:[['ph','sad','session'],'council19'],pscroll19:[['ph','sad','session'],'council19'],
+        pdoor19:[upto('divided'),'door19'],planes19:[upto('errand'),'lanes19'],phalves19:[upto('halfB'),'lanes19'],pknew19:[upto('knew'),'lanes19'],pgate19:[upto('knew'),'gate19'],
+        pcourt19:[upto('sentry'),'barracks19'],pcmd19:[upto('officer'),'cmd19'],pyard19:[upto('cmd'),'barracks19'],panti19:[upto('road'),'antipatris19'],
+        ppalace19:[upto('anti'),'palace19'],pletter19:[upto('anti'),'letter19']}[stop];
+    if(!S)throw new Error('no such stop '+stop);setChapter(19);for(const k of S[0])F[k]=1;
+    const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
+    if(stop==='pdivided19')for(const id of['phar19a','phar19b','phar19c'])ACT[id].seat=0;
+    if(stop==='pletter19')G.mk19={n:Object.fromEntries(C.notes.map(n=>[n.k,n.ok])),o:C.order};
+    if(stop==='pcmd19'){place(ACT.officer19,'cmd19',94,124,1);place(ACT.nephew19,'cmd19',226,122,1);place(ACT.commander19,'cmd19',250,118,-1)}
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    if(stop==='pscroll19'){G.scene=DARK;narr(C.told.v11,{dur:60000})}
+    await wait(1100);halt(stop)}
+  const ch19=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[19],told=k=>heard.includes(T(C().told[k])),
+    until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    clickHs=async(h,v)=>{verb(v||'use');clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    talkTo=async(a,v)=>{verb(v||'talk');clickView(a.x,a.y-10,a.hs);await idle()},
+    useA=async(id,a,v)=>{verb(v||'use');item(id);clickView(a.x,a.y-10,a.hs);await idle()},
+    both=async(a,b)=>{verb('use');item(a);item(b);await idle()},
+    pray19=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
+    hints=async(a,b,where)=>{heard.length=0;const p=await pray19(),first=said(a)&&!said(b),q=await pray19();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
+    asked=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);return[...document.querySelectorAll('#choices button')].map(x=>x.dataset.src)},
+    line=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await idle()},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)},
+    walkTo=async(x,y)=>{const p=PC();walk(p,x,y);for(let i=0;i<900&&p.walk;i++)await wait(25);await idle()},
+    code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)};
+  heard.length=0;
+  if(C19){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
+    ok(chs.length===19&&last.dataset.ch==='19'&&last.textContent.includes(T('chapter_nineteen'))&&last.textContent.includes(T('the_sisters_son_2'))&&PLANNED.length===6&&PLANNED[0].label==='chapter_twenty'&&plans.textContent.includes(T('Twenty')),
+      'the title lists nineteen chapters, the last of them The Sister\'s Son, and the chapters in preparation begin with the twentieth')}
+  (C19?document.querySelector('#overlay [data-ch="19"]'):ov).click();
+  await until(()=>G.ch===19&&G.room==='council19'&&!G.busy,6000);note();
+  const NE=A('nephew19'),SI=A('sister19'),AN=A('ananias19'),PH=A('phar19b'),SA=A('sad19a'),SE=A('sentry19'),GD=A('guard19'),OS=A('oil19'),FX=A('felix19'),M=C().map,X=C().X,Y=C().Y;
+  ok(G.room==='council19'&&PC()===P&&seenTold.has('v22_30')&&said('paul_the_council_gathers')&&srt()==='tablets'&&P.look.bald,'the next day the commander has him untied and brought down to the council (Acts 22:30); Paul is bald now ['+srt()+']');
+  ok(/^19(-[0-9A-Z]{3}){3,5}$/.test(makeCode())&&decode(makeCode()).ch===19,'chapter nineteen has wide codes: '+makeCode());
+  ok(AU.score===C().music&&C().music.steps===7&&C().music.root===52&&C().music.group.join()==='2,2,3','the chapter\'s score, in E Phrygian and in bars of seven');
+  halt('council19');
+  /* two benches */
+  await hints('hint_before_the_council_1','hint_before_the_council_2','before the council');
+  heard.length=0;await talkTo(SA);ok(said('member_the_session_hasnt_begun'),'the members wait for the session');
+  heard.length=0;await onH('door','walk');ok(said('paul_im_here_to_answer')&&G.room==='council19','Paul does not leave');
+  heard.length=0;onH('place_before_the_council','use');await until(()=>F.session&&!G.busy,6000);note();
+  ok(['v1','v2','v3','v4'].every(k=>seenTold.has(k))&&said('paul_a_clear_conscience')&&said('paul_god_will_strike_you')&&said('bystanders_you_insult_gods_high_priest')&&said('paul_i_didnt_know_he_was_high_priest')&&AN.name==='high_priest_ananias'&&A('att19a').x===182,
+    'a clear conscience; the blow is told, never shown; the whitewashed wall; I did not know he was the high priest (Acts 23:1-5)');
+  await code('in the pause',()=>G.room==='council19'&&F.session&&!F.divided&&AN.room==='council19'&&AN.seat);
+  halt('session19');
+  await hints('hint_look_at_the_members_1','hint_look_at_the_members_2','in the pause');
+  heard.length=0;talkTo(AN);{const o=await asked();ok(o.length===4&&!o.includes(C().saykey)&&o.at(-1)==='paul_not_yet','before he knows the benches, Paul has only true sentences that divide nobody')}
+  await line('paul_im_a_roman_citizen');await until(()=>!G.busy);ok(said('ananias_that_is_the_commanders_business')&&!F.divided,'a true sentence, answered truly, and nothing changes');
+  heard.length=0;await talkTo(SA,'look');ok(said('member_in_fine_linen_look'),'a member in fine linen');
+  heard.length=0;await talkTo(PH,'look');ok(said('pharisee_look')&&F.ph,'broader scripture cases and longer fringes than the others\': a Pharisee');
+  await hints('hint_listen_to_the_members_1','hint_listen_to_the_members_2','with the Pharisees seen');
+  heard.length=0;await walkTo(70,128);await until(()=>F.sad&&!G.busy,4000);
+  ok(['sadducee_no_one_rises_from_the_dead','pharisee_the_dead_will_rise','sadducee_no_angel_no_spirit_either','paul_they_part_over_the_resurrection'].every(said),'at the left of the benches: no resurrection, no angel, no spirit; and his neighbour holds all three');
+  heard.length=0;await talkTo(SA,'look');ok(said('the_one_who_denies_the_resurrection_look'),'the man in fine linen is a Sadducee');
+  await hints('hint_the_one_sentence_1','hint_the_one_sentence_2','knowing both benches');
+  heard.length=0;talkTo(AN);{const o=await asked();ok(o.includes(C().saykey),'now the one sentence is on offer')}
+  await line(C().saykey);await until(()=>F.divided&&G.room==='door19'&&!G.busy,9000);note();
+  ok(['v6','v7','v9','v10','v11','v12','v14'].every(k=>seenTold.has(k))&&said('paul_a_pharisee_son_of_pharisees')&&said('scribes_we_find_nothing_wrong')&&PC()===NE&&srt()==='uncle19',
+    'a Pharisee, a son of Pharisees; the council divided; the soldiers take him out; take courage; the forty and their plan (Acts 23:6-15); the nephew is played');
+  /* the nephew */
+  await code('at the sister\'s door',()=>G.room==='door19'&&PC()===NE&&!P.room&&SI.room==='door19'&&srt()==='uncle19');
+  halt('door19');
+  await hints('hint_mother_1','hint_mother_2','at the door');
+  heard.length=0;await onH('lane_into_the_city','walk');ok(said('nephew_first_what_mother_wants')&&G.room==='door19','first what his mother wants');
+  heard.length=0;await talkTo(SI);ok(said('sister_take_the_jug_to_the_oil_seller')&&F.errand&&has('jug19'),'his mother sends him for lamp oil');
+  await hints('hint_into_the_city_1','hint_into_the_city_2','with the jug');
+  onH('lane_into_the_city','walk');await until(()=>G.room==='lanes19'&&!G.busy,4000);
+  {const LN=SHARED.lanes,D=M.def,c=LN.crossings(D),f=LN.fourWays(D),k=LN.corners(M);
+    ok(!c.length&&!f.length&&!k.length,'the upper city is no grid: no lane crosses another, no four ways meet, no four roofs meet at a corner'+(c.length||f.length||k.length?'. AT: '+JSON.stringify(c.concat(f,k)).slice(0,300):''));
+    const Q=M.G['']||(M.walkable(0,0),M.G['']),n={};for(let i=0;i<Q.comp.length;i++)if(Q.cell[i])n[Q.comp[i]]=(n[Q.comp[i]]||0)+1;const big=Object.values(n).filter(v=>v>=12);
+    ok(big.length===1,'every lane of the upper city can be reached from every other: '+big.length+' piece'+(big.length>1?'s: '+JSON.stringify(n):''));
+    const un=[];for(const h of ROOMS.lanes19.hs){const r=M.route(NE,h.wx,h.wy,true),e=r&&r[r.length-1];if(!e&&r&&r.length===0)continue;if(!e||Math.hypot(e[0]-h.wx,e[1]-h.wy)>8)un.push(h.name)}
+    ok(!un.length,'every place on the map can be walked to'+(un.length?'. NOT: '+un.join():''))}
+  ok(said('nephew_the_upper_city_at_this_hour')&&A('seller19').room==='lanes19'&&A('elder19').room==='lanes19','the upper city in the late afternoon');
+  halt('lanes19');
+  M.seeAll=1;await hints('hint_the_lanes_1','hint_the_lanes_2','in the lanes');
+  heard.length=0;await onH('donkey','look');ok(said('donkey_in_the_lane_look')&&M.def.obstacles[''][0].say==='this_donkey_has_decided_the_lane_is_his','the donkey across the short lane, which he names when it stops him');
+  heard.length=0;await onH('gate_of_the_fortress','walk');ok(said('nephew_mothers_oil_first')&&G.room==='lanes19','nothing takes him into the fortress yet');
+  const whoSeen={},whoObs=new MutationObserver(()=>{for(const el of document.querySelectorAll('#speech .line'))whoSeen[el.textContent]=el.dataset.who||''});whoObs.observe($('#speech'),{childList:true});
+  heard.length=0;await walkTo(X(222),Y(250));await until(()=>F.halfA&&!G.busy,4000);whoObs.disconnect();
+  ok(['oath_man_nothing_not_a_crumb','oath_man_we_are_under_a_curse','nephew_under_a_curse_until_a_man_is_dead'].every(said)&&has('oath19')&&whoSeen[T('oath_man_we_are_under_a_curse')]===T('speaker_name',{name:T('man_at_the_stall')}),
+    'at the bread stall: men under a curse, nothing to eat or drink until a man is dead; whom, they do not say (the first half)');
+  heard.length=0;await walkTo(X(364),Y(186));await until(()=>F.halfB&&!G.busy,4000);
+  ok(['elder_bring_the_prisoner_down_tomorrow','nephew_a_prisoner_brought_down_tomorrow','nephew_two_things_ive_heard'].every(said)&&has('plan19'),'before the fine house: the prisoner brought down tomorrow, as if for a closer look (the second half)');
+  await code('with both halves heard',()=>G.room==='lanes19'&&PC()===NE&&F.halfA&&F.halfB&&has('oath19')&&has('plan19')&&has('jug19'));M.seeAll=1;
+  await hints('hint_two_halves_1','hint_two_halves_2','with both halves');
+  heard.length=0;await both('oath19','uncle19');ok(said('nephew_sworn_to_kill_but_whom')&&!F.knew,'an oath and his uncle: but whom do they mean?');
+  heard.length=0;await both('plan19','uncle19');ok(said('nephew_a_prisoner_but_which')&&!F.knew,'a prisoner and his uncle: which prisoner?');
+  heard.length=0;await both('oath19','plan19');ok(said('nephew_they_wait_for_the_prisoner')&&F.plot&&has('plot19')&&!has('oath19'),'the two halves together: men under a curse wait for the prisoner brought down tomorrow');
+  await hints('hint_who_they_mean_1','hint_who_they_mean_2','with the halves together');
+  heard.length=0;await both('plot19','uncle19');ok(said('nephew_they_mean_my_uncle')&&F.knew&&!has('uncle19'),'with his uncle in the fortress: they mean his uncle');
+  heard.length=0;await walkTo(X(288),Y(86));await talkTo(OS);ok(said('oil_seller_there_you_are')&&F.oil,'and the oil, below the fortress');
+  await hints('hint_to_the_fortress_1','hint_to_the_fortress_2','knowing');
+  onH('gate_of_the_fortress','walk');await until(()=>G.room==='gate19'&&!G.busy,5000);M.seeAll=0;
+  halt('gate19');
+  /* in through the front */
+  await hints('hint_sentry_1','hint_sentry_2','at the gate');
+  heard.length=0;await onH('gate_of_the_fortress','walk');ok(said('nephew_the_sentry_first')&&G.room==='gate19','the sentry first');
+  heard.length=0;talkTo(SE);{const o=await asked();ok(o.includes('nephew_theres_a_plot_against_him')&&o.at(-1)==='nephew_ill_come_back'&&said('sentry_who_are_you_and_who_do_you_want'),'the sentry asks who he is and whom he wants')}
+  await line('nephew_theres_a_plot_against_him');ok(said('nephew_not_to_him')&&!heard.includes(T('nephew_theres_a_plot_against_him')),'the matter is not for the sentry: he holds it back himself');
+  heard.length=0;talkTo(SE);await line('nephew_ive_got_oil_for_my_mother');ok(said('sentry_not_my_business'),'the oil is true, and not what the sentry listens for');
+  heard.length=0;talkTo(SE);await line('nephew_im_the_son_of_pauls_sister');ok(said('sentry_and_who_do_you_want')&&!F.sentry,'who he is');
+  heard.length=0;talkTo(SE);await line('nephew_i_want_the_prisoner_paul');await until(()=>F.sentry&&G.room==='barracks19'&&!G.busy,5000);note();
+  ok(said('sentry_go_in_the_guard_will_take_you')&&seenTold.has('v16')&&P.room==='barracks19'&&ART.barracks19.variant()==='aft','and whom he wants; in through the gate to the soldiers\' quarters (Acts 23:16)');
+  await code('in the soldiers\' quarters',()=>G.room==='barracks19'&&PC()===NE&&P.room==='barracks19'&&GD.room==='barracks19'&&F.sentry);
+  halt('court19');
+  await hints('hint_guard_1','hint_guard_2','before the guard');
+  heard.length=0;talkTo(P);await line('nephew_the_sentry_let_me_in');ok(said('guard_not_so_fast')&&said('guard_the_sentry_lets_in_anyone')&&!F.guard,'the guard listens for family');
+  heard.length=0;talkTo(P);await line('nephew_im_his_sisters_son');ok(said('guard_family_be_quick')&&F.guard,'his sister\'s son');
+  await hints('hint_tell_paul_1','hint_tell_paul_2','beside his uncle');
+  heard.length=0;talkTo(P);{const o=await asked();ok(said('nephew_forty_men_and_the_council')&&said('paul_this_young_man_has_news_for_the_commander')&&said('officer_the_commander_is_busy')&&o.length===4,'he tells his uncle; Paul calls an army officer (Acts 23:17)')}
+  await line('nephew_its_for_the_commander_alone');ok(said('officer_it_can_wait_till_morning'),'for the commander alone; can it wait?');
+  await line('nephew_theres_a_plot_against_him');ok(said('nephew_not_to_him'),'not to the officer either');
+  await line('nephew_it_cant_wait');{const o=await asked();ok(said('officer_come_with_me')&&G.room==='cmd19'&&said('officer_the_prisoner_paul_called_me')&&said('commander_what_have_you_come_to_tell_me')&&o.length===2,'to the commander; by the hand, aside (Acts 23:18, 19)')}
+  await line('nephew_its_about_the_prisoner_paul_my_uncle');await until(()=>F.cmd&&G.room==='barracks19'&&PC()===P&&!G.busy,9000);note();
+  ok(['v19','v22','v23'].every(k=>seenTold.has(k))&&said('nephew_they_will_ask_you_tomorrow')&&said('nephew_over_forty_are_lying_in_wait')&&said('commander_tell_no_one')&&said('commander_horses_for_paul')&&ART.barracks19.variant()==='night',
+    'he tells it; not a word to anyone (Acts 23:20-22); at the third hour the column forms (Acts 23:23, 24); Paul is played again');
+  await code('in the yard',()=>G.room==='barracks19'&&PC()===P&&F.cmd&&!F.horse&&A('horseman19').room==='barracks19');
+  halt('yard19');
+  await hints('hint_horse_1','hint_horse_2','in the yard');
+  heard.length=0;for(const i of[0,1,2])await clickHs(ROOMS.barracks19.hs.filter(h=>h.name==='horse')[i],'look');
+  ok(['horse_ears_pinned_back_look','horse_white_of_the_eye_look','horse_ears_forward_look','he_looks_me_over_like_a_customer'].every(said),'ears, feet and eye; and the calm one looks him over like a customer');
+  heard.length=0;await clickHs(ROOMS.barracks19.hs.filter(h=>h.name==='horse')[0],'use');ok(said('horseman_hes_fresh')&&!F.horse,'not the fresh one');
+  heard.length=0;clickHs(ROOMS.barracks19.hs.filter(h=>h.name==='horse')[1],'use');await until(()=>F.road&&G.room==='antipatris19'&&!G.busy,9000);note();
+  ok(said('horseman_hes_steady_up_you_go')&&said('officer_you_ride_behind_the_first_horsemen')&&seenTold.has('v25')&&seenTold.has('v31'),'the calm horse, and his place; the letter is written; by night to Antipatris (Acts 23:25, 31)');
+  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('spring','look');
+    ok(said('the_spring_at_antipatris_look')&&treasures().has(19)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'the spring at Antipatris: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
+  heard.length=0;await onH('horses_at_the_water','look');ok(said('the_horses_found_the_water_first'),'the horses found the water first');
+  halt('anti19');
+  await hints('hint_ride_on_1','hint_ride_on_2','at Antipatris');
+  heard.length=0;await onH('road_to_caesarea','walk');ok(said('paul_not_on_foot')&&!F.anti,'not on foot');
+  heard.length=0;await onH('road_back_to_jerusalem','walk');ok(said('paul_my_way_is_with_the_horsemen')&&!F.anti,'not back with the foot soldiers');
+  heard.length=0;onH('horses_at_the_water','use');await until(()=>F.anti&&G.room==='palace19'&&!G.busy,9000);note();
+  ok(seenTold.has('v32')&&C().letter.every(said)&&said('paul_he_reads_it_again')&&FX.room==='palace19'&&FX.seat,'the foot soldiers go back, the horsemen ride on (Acts 23:32); at Caesarea Felix reads the letter aloud');
+  await code('before Felix',()=>G.room==='palace19'&&F.anti&&!F.letter&&FX.room==='palace19');
+  heard.length=0;await onH('sea_wall','look');ok(said('the_gulls_sit_on_the_governors_wall'),'the gulls on the governor\'s wall');
+  halt('palace19');
+  /* what the letter leaves out */
+  await hints('hint_the_letter_1','hint_the_letter_2','before Felix');
+  await onH('letter','look');await until(()=>G.room==='letter19'&&!G.busy);ok(said('paul_the_letter_and_my_tablet'),'the letter, close, and his tablet');
+  {const hs=ROOMS.letter19.hs.filter(h=>h.l19||h.n19),bad=[];for(let i=0;i<hs.length;i++)for(let j=i+1;j<hs.length;j++){const a=hs[i],b=hs[j];if(a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h)bad.push((a.l19||a.n19)+' on '+(b.l19||b.n19))}
+    ok(!bad.length&&hs.length===12,'six lines of the letter and six notes, each a hotspot of its own'+(bad.length?': '+bad.join(', '):''))}
+  halt('letter19');
+  const nh=k=>ROOMS.letter19.hs.find(h=>h.n19===k),lh=k=>ROOMS.letter19.hs.find(h=>h.l19===k),mark=async(n,k)=>{clickHs(nh(n),'use');await line(k)};
+  {const L=C().label;heard.length=0;for(const n of C().notes)await mark(n.k,'not_in_the_letter');clickHs(lh(C().order),'use');await line('it_tells_it_out_of_order');
+    ok(heard.includes(T('mark_the_letter_does_tell_it',{note:T('the_crowd_at_the_temple')}))&&!F.letter,'a wrong arrangement is answered truly, in a fixed order');
+    for(const n of C().notes){heard.length=0;await mark(n.k,n.ok==='none'?'not_in_the_letter':L[n.ok])}
+    await until(()=>F.letter&&G.room==='palace19'&&$('#choices').classList.contains('on'),6000);
+    ok(said('paul_the_letter_tells_it_his_way')&&said('felix_which_province_are_you_from'),'the chains and the whip are not in it, and the Roman comes before the rescue; Paul says nothing against him; Felix asks his province')}
+  await hints('hint_province_1','hint_province_2','before Felix').catch(()=>{});
+  {const o=await asked();ok(o.length===3&&o.includes('paul_from_cilicia'),'three true answers')}
+  heard.length=0;await line('paul_i_was_brought_up_in_jerusalem');ok(said('felix_i_asked_your_province'),'brought up in Jerusalem: not what he asked');
+  heard.length=0;await line('paul_im_a_roman_citizen');ok(said('felix_ive_read_that_your_province'),'a Roman citizen: he has read that');
+  await line('paul_from_cilicia');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
+  ok(ov.classList.contains('end')&&seenTold.has('v33')&&seenTold.has('v35')&&ov.textContent.includes(T('the_sisters_son_2'))&&/22:30-23:35/.test(ov.textContent)&&ov.textContent.includes(T('click_to_return_to_the_title'))&&inOv(),
+    'Cilicia (Acts 23:34); a hearing when the accusers come, kept in Herod\'s palace (Acts 23:35); the end screen says what the account leaves unsaid');
+  {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 22:30-23:35 was told'+(miss.length?' MISSING '+miss:''))}
+  {const bad=(G.caps19||[]).filter(c=>c.w>c.max+.5||c.h>c.maxh+.5);ok((G.caps19||[]).length>0&&!bad.length,'every word painted on the letter and the tablet fits its box'+(bad.length?': '+bad.slice(0,4).map(c=>c.s).join(' | '):''))}
+  halt('final19')};
+  if(C19){await ch19();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(C18){await ch18();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
@@ -5350,7 +5535,7 @@
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('journey6',()=>{ov.className=''});halt('final6');await wait(1700)}
-  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13();await wait(1700);await ch14();await wait(1700);await ch15();await wait(1700);await ch16();await wait(1700);await ch17();await wait(1700);await ch18()}
+  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13();await wait(1700);await ch14();await wait(1700);await ch15();await wait(1700);await ch16();await wait(1700);await ch17();await wait(1700);await ch18();await wait(1700);await ch19()}
   ok(!MISSING.size&&!RAWKEY.size,'every line shown in the game had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);
