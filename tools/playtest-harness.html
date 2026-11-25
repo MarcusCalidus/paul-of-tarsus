@@ -4291,30 +4291,30 @@
   ok(AU.score===C().music&&C().music.steps===7&&C().music.root===52&&C().music.group.join()==='2,2,3','the chapter\'s score, in E Phrygian and in bars of seven');
   halt('council19');
   /* two benches */
+  const settle=async()=>{await wait(700);await idle()};
   await hints('hint_before_the_council_1','hint_before_the_council_2','before the council');
-  heard.length=0;await talkTo(SA);ok(said('member_the_session_hasnt_begun'),'the members wait for the session');
-  heard.length=0;await onH('door','walk');ok(said('paul_im_here_to_answer')&&G.room==='council19','Paul does not leave');
-  heard.length=0;onH('place_before_the_council','use');await until(()=>F.session&&!G.busy,6000);note();
+  heard.length=0;await onH('door','walk');await settle();
+  ok(said('paul_im_here_to_answer')&&G.room==='council19','Paul does not leave');
+  ok(F.sad&&['sadducee_no_one_rises_from_the_dead','pharisee_the_dead_will_rise','sadducee_no_angel_no_spirit_either','paul_they_part_over_the_resurrection'].every(said),
+    'at the left of the benches, where he comes to rest, the members talk: no resurrection, no angel, no spirit; and his neighbour holds all three');
+  heard.length=0;await talkTo(SA);await settle();ok(said('member_the_session_hasnt_begun'),'the members wait for the session');
+  heard.length=0;await talkTo(SA,'look');ok(said('the_one_who_denies_the_resurrection_look'),'the man in fine linen is a Sadducee');
+  heard.length=0;onH('place_before_the_council','use');await until(()=>F.session&&!G.busy,6000);note();await settle();
   ok(['v1','v2','v3','v4'].every(k=>seenTold.has(k))&&said('paul_a_clear_conscience')&&said('paul_god_will_strike_you')&&said('bystanders_you_insult_gods_high_priest')&&said('paul_i_didnt_know_he_was_high_priest')&&AN.name==='high_priest_ananias'&&A('att19a').x===182,
     'a clear conscience; the blow is told, never shown; the whitewashed wall; I did not know he was the high priest (Acts 23:1-5)');
-  await code('in the pause',()=>G.room==='council19'&&F.session&&!F.divided&&AN.room==='council19'&&AN.seat);
+  await code('in the pause',()=>G.room==='council19'&&F.session&&!F.divided&&AN.room==='council19'&&AN.seat);await settle();
   halt('session19');
   await hints('hint_look_at_the_members_1','hint_look_at_the_members_2','in the pause');
   heard.length=0;talkTo(AN);{const o=await asked();ok(o.length===4&&!o.includes(C().saykey)&&o.at(-1)==='paul_not_yet','before he knows the benches, Paul has only true sentences that divide nobody')}
   await line('paul_im_a_roman_citizen');await until(()=>!G.busy);ok(said('ananias_that_is_the_commanders_business')&&!F.divided,'a true sentence, answered truly, and nothing changes');
-  heard.length=0;await talkTo(SA,'look');ok(said('member_in_fine_linen_look'),'a member in fine linen');
-  heard.length=0;await talkTo(PH,'look');ok(said('pharisee_look')&&F.ph,'broader scripture cases and longer fringes than the others\': a Pharisee');
-  await hints('hint_listen_to_the_members_1','hint_listen_to_the_members_2','with the Pharisees seen');
-  heard.length=0;await walkTo(70,128);await until(()=>F.sad&&!G.busy,4000);
-  ok(['sadducee_no_one_rises_from_the_dead','pharisee_the_dead_will_rise','sadducee_no_angel_no_spirit_either','paul_they_part_over_the_resurrection'].every(said),'at the left of the benches: no resurrection, no angel, no spirit; and his neighbour holds all three');
-  heard.length=0;await talkTo(SA,'look');ok(said('the_one_who_denies_the_resurrection_look'),'the man in fine linen is a Sadducee');
+  heard.length=0;await talkTo(PH,'look');await settle();ok(said('pharisee_look')&&F.ph,'broader scripture cases and longer fringes than the others\': a Pharisee');
   await hints('hint_the_one_sentence_1','hint_the_one_sentence_2','knowing both benches');
   heard.length=0;talkTo(AN);{const o=await asked();ok(o.includes(C().saykey),'now the one sentence is on offer')}
   await line(C().saykey);await until(()=>F.divided&&G.room==='door19'&&!G.busy,9000);note();
   ok(['v6','v7','v9','v10','v11','v12','v14'].every(k=>seenTold.has(k))&&said('paul_a_pharisee_son_of_pharisees')&&said('scribes_we_find_nothing_wrong')&&PC()===NE&&srt()==='uncle19',
     'a Pharisee, a son of Pharisees; the council divided; the soldiers take him out; take courage; the forty and their plan (Acts 23:6-15); the nephew is played');
   /* the nephew */
-  await code('at the sister\'s door',()=>G.room==='door19'&&PC()===NE&&!P.room&&SI.room==='door19'&&srt()==='uncle19');
+  await code('at the sister\'s door',()=>G.room==='door19'&&PC()===NE&&P.room==='barracks19'&&SI.room==='door19'&&srt()==='uncle19');
   halt('door19');
   await hints('hint_mother_1','hint_mother_2','at the door');
   heard.length=0;await onH('lane_into_the_city','walk');ok(said('nephew_first_what_mother_wants')&&G.room==='door19','first what his mother wants');
@@ -4331,13 +4331,13 @@
   halt('lanes19');
   M.seeAll=1;await hints('hint_the_lanes_1','hint_the_lanes_2','in the lanes');
   heard.length=0;await onH('donkey','look');ok(said('donkey_in_the_lane_look')&&M.def.obstacles[''][0].say==='this_donkey_has_decided_the_lane_is_his','the donkey across the short lane, which he names when it stops him');
-  heard.length=0;await onH('gate_of_the_fortress','walk');ok(said('nephew_mothers_oil_first')&&G.room==='lanes19','nothing takes him into the fortress yet');
   const whoSeen={},whoObs=new MutationObserver(()=>{for(const el of document.querySelectorAll('#speech .line'))whoSeen[el.textContent]=el.dataset.who||''});whoObs.observe($('#speech'),{childList:true});
   heard.length=0;await walkTo(X(222),Y(250));await until(()=>F.halfA&&!G.busy,4000);whoObs.disconnect();
   ok(['oath_man_nothing_not_a_crumb','oath_man_we_are_under_a_curse','nephew_under_a_curse_until_a_man_is_dead'].every(said)&&has('oath19')&&whoSeen[T('oath_man_we_are_under_a_curse')]===T('speaker_name',{name:T('man_at_the_stall')}),
     'at the bread stall: men under a curse, nothing to eat or drink until a man is dead; whom, they do not say (the first half)');
   heard.length=0;await walkTo(X(364),Y(186));await until(()=>F.halfB&&!G.busy,4000);
   ok(['elder_bring_the_prisoner_down_tomorrow','nephew_a_prisoner_brought_down_tomorrow','nephew_two_things_ive_heard'].every(said)&&has('plan19'),'before the fine house: the prisoner brought down tomorrow, as if for a closer look (the second half)');
+  heard.length=0;await onH('gate_of_the_fortress','walk');ok(said('nephew_mothers_oil_first')&&G.room==='lanes19','nothing takes him into the fortress yet');
   await code('with both halves heard',()=>G.room==='lanes19'&&PC()===NE&&F.halfA&&F.halfB&&has('oath19')&&has('plan19')&&has('jug19'));M.seeAll=1;
   await hints('hint_two_halves_1','hint_two_halves_2','with both halves');
   heard.length=0;await both('oath19','uncle19');ok(said('nephew_sworn_to_kill_but_whom')&&!F.knew,'an oath and his uncle: but whom do they mean?');
@@ -4398,12 +4398,11 @@
     ok(!bad.length&&hs.length===12,'six lines of the letter and six notes, each a hotspot of its own'+(bad.length?': '+bad.join(', '):''))}
   halt('letter19');
   const nh=k=>ROOMS.letter19.hs.find(h=>h.n19===k),lh=k=>ROOMS.letter19.hs.find(h=>h.l19===k),mark=async(n,k)=>{clickHs(nh(n),'use');await line(k)};
-  {const L=C().label;heard.length=0;for(const n of C().notes)await mark(n.k,'not_in_the_letter');clickHs(lh(C().order),'use');await line('it_tells_it_out_of_order');
+  {const L=C().labels;heard.length=0;for(const n of C().notes)await mark(n.k,'not_in_the_letter');clickHs(lh(C().order),'use');await line('it_tells_it_out_of_order');
     ok(heard.includes(T('mark_the_letter_does_tell_it',{note:T('the_crowd_at_the_temple')}))&&!F.letter,'a wrong arrangement is answered truly, in a fixed order');
     for(const n of C().notes){heard.length=0;await mark(n.k,n.ok==='none'?'not_in_the_letter':L[n.ok])}
     await until(()=>F.letter&&G.room==='palace19'&&$('#choices').classList.contains('on'),6000);
     ok(said('paul_the_letter_tells_it_his_way')&&said('felix_which_province_are_you_from'),'the chains and the whip are not in it, and the Roman comes before the rescue; Paul says nothing against him; Felix asks his province')}
-  await hints('hint_province_1','hint_province_2','before Felix').catch(()=>{});
   {const o=await asked();ok(o.length===3&&o.includes('paul_from_cilicia'),'three true answers')}
   heard.length=0;await line('paul_i_was_brought_up_in_jerusalem');ok(said('felix_i_asked_your_province'),'brought up in Jerusalem: not what he asked');
   heard.length=0;await line('paul_im_a_roman_citizen');ok(said('felix_ive_read_that_your_province'),'a Roman citizen: he has read that');

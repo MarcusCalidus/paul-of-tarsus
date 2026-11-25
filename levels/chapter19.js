@@ -167,8 +167,8 @@ const horse19=(...a)=>SHARED.beasts&&SHARED.beasts.horse?SHARED.beasts.horse(...
    Called from outside: ART.council19. Reads nothing.
    Hotspots (ROOMS.council19): the semicircle 20,30,280,66 · the door 0,56,20,62 · the place before the council 138,116,44,20.
    Walk: 36..288 by 118..138. Actors (place19): the presider 160,98 seated (seat top 89) · men at his side 138,99 and 182,99 · front row,
-   seated on the curved bench (its top 9 above their feet): 56,112 · 80,108 · 104,105 · 216,105 · 240,108 · 264,112 · clerks seated 132,114
-   and 188,114 · the commander 26,118, soldiers 40,124 and 30,134 by the door. The two back rows are painted (drawCouncil19, BACK19). */
+   seated on the curved bench (its top 9 above their feet): 56,112 · 80,108 · 104,105 · 216,105 · 240,108 · 264,112 · clerks seated 140,113
+   and 180,113 (stools, top 104) · the commander 10,116, soldiers 16,126 and 20,138 by the door, outside the strip. The two back rows are painted (drawCouncil19, BACK19). */
 const BACK19=[[66,96,1],[90,93,1],[114,91,1],[206,91,-1],[230,93,-1],[254,96,-1],[78,86,1],[102,83,1],[126,81,1],[194,81,-1],[218,83,-1],[242,86,-1]];
 ART.council19={w:320,q:12,paint(g){paintCouncil19(g)},light:{amb:'#e8dccc',sun:[-.4,.3,.2],wallY:96},
   draw(g){drawCouncil19(g)},front(){}};
@@ -185,7 +185,7 @@ function paintCouncil19(g){const r=rng(1901),S='#d8c8a4';
   stroke(g,[40,top(40)+.5,104,top(104),160,98,216,top(216),280,top(280)+.5],tint(S,.32),.6);
   /* the presider's seat on its step, and the clerks' stools */
   R(g,148,90,24,8,tint(S,-.1));R(g,148,89,24,1.2,tint(S,.3));R(g,150,72,20,18,tint('#7a5a3a',0));R(g,150,72,20,1,'#a07a50');
-  for(const x of[132,188]){R(g,x-5,105,10,9,'#7a5a3a');R(g,x-5,105,10,1,'#a8865a')}
+  for(const x of[140,180]){R(g,x-5,104,10,9,'#7a5a3a');R(g,x-5,105,10,1,'#a8865a')}
   pave(g,-2,112,322,144,'#c8b894',r,{vx:160,vy:70,rows:5,step:36,v:.08,t:.35});ao(g,0,112,320,6,'t',.25,'#3a2c3c');
   /* the door at the left */
   R(g,0,56,20,62,'#2a2018');R(g,0,56,20,1.2,'#8a7a66');R(g,19,56,1.4,62,tint(S,.2));
@@ -281,8 +281,8 @@ const CITY19=[
   {pts:[340,130,376,120,400,96],w:5}];
 const OPEN19={home:[16,236,60,236,60,268,16,268],market:[190,226,252,226,252,268,190,268],fine:[338,168,392,168,392,200,338,200],below:[266,68,330,68,330,104,266,104]};
 const WALL19=[0,0,420,0,420,36,0,36];
-const DOOR19=[38,236],FINE19=[380,168],FORT19=[298,30],STALLA19=[196,228,26,6],STALLO19=[272,70,22,6],DONKEY19=[214,186,12,10];
-const AT19={start:[40,256,1],seller:[200,242,1],oathA:[216,246,-1],oathB:[228,240,-1],elder:[352,182,1],priests:[370,188,-1],oil:[283,80,1],gate:[298,50,1]};
+const DOOR19=[38,236],FINE19=[380,168],FORT19=[298,30],STALLA19=[228,228,22,6],STALLO19=[272,70,22,6],DONKEY19=[214,186,12,10];
+const AT19={start:[40,256,1],seller:[236,241,1],oathA:[248,247,-1],oathB:[222,247,1],elder:[352,182,1],priests:[370,188,-1],oil:[283,80,1],gate:[298,50,1]};
 const lanes19=CITY19.map(l=>Object.assign({},l,{pts:pts19(l.pts),w:Math.round(l.w*SC19)}));
 const LM19=SHARED.lanes.make('lanes19',{w:LW19,h:LH19,seed:1919,lot:30,door:3,win:3,winH:3,doorH:8,flat:.7,ew:.7,
   lanes:lanes19,open:[{poly:pts19(OPEN19.market),kind:'square'},{poly:pts19(OPEN19.below),kind:'square'},{poly:pts19(OPEN19.home),kind:'earth'},{poly:pts19(OPEN19.fine),kind:'earth'}],
@@ -601,7 +601,11 @@ async function murmur19(z){
     if(!F.sad){F.sad=1;await say(P,'paul_they_part_over_the_resurrection',TH);codeBtn()}return}
   if(z==='M'){await say(C1,'clerk_for_acquittal_on_my_board',{to:C2});return say(C2,'clerk_for_conviction_on_mine',{to:C1})}
   await say(SA3,'sadducee_a_roman_calls_the_council',{to:PH3});return say(PH3,'pharisee_hear_the_man_first',{to:SA3})}
-function zoneTick19(){if(G.room!=='council19'||G.busy||G.scene||P.walk||PC()!==P||F.divided)return;const z=zoneC19();if(z!==G.z19){G.z19=z;cut(()=>murmur19(z))}}
+/* zoneTick19: when Paul has come to rest (a moment after his last step, and not while anything else goes on) in a part of the hall
+   whose members he has not yet heard at this point of the session, they talk; each part once before the session and once in the pause */
+function zoneTick19(){if(G.room!=='council19'||F.divided||PC()!==P)return;const now=performance.now();
+  if(G.busy||G.scene||P.walk){G.rt19=now;return}if(now-(G.rt19||0)<350)return;
+  const z=zoneC19(),k=z+(F.session?1:0),h=G.h19||(G.h19={});if(h[k])return;h[k]=1;cut(()=>murmur19(z))}
 async function lookMember19(a){if(PHAR.includes(a)){await say(P,'pharisee_look');if(!F.ph){F.ph=1;await say(P,'paul_some_wear_them_broader',TH);codeBtn()}return}
   return say(P,F.sad&&a===SA1?'the_one_who_denies_the_resurrection_look':'member_in_fine_linen_look')}
 async function talkMember19(a){return say(a,F.session?'member_answer_the_council':'member_the_session_hasnt_begun',{to:P})}
@@ -645,7 +649,7 @@ function halfA19(){if(F.halfA||G.busy||PC()!==NE)return;stop19();cut(async()=>{
   await say(O2,'oath_man_we_are_under_a_curse',{to:BS});await say(BS,'bread_seller_suit_yourselves',{to:O2});
   await say(NE,'nephew_under_a_curse_until_a_man_is_dead',TN);addItem('oath19');F.halfA=1;if(F.halfB)await say(NE,'nephew_two_things_ive_heard',TN);codeBtn()})}
 function halfB19(){if(F.halfB||G.busy||PC()!==NE)return;stop19();cut(async()=>{
-  await say(PM,'priests_man_tomorrow_then',{to:EL});await say(EL,'elder_bring_the_prisoner_down_tomorrow',{to:PM});
+  await say(PM,'priests_man_tomorrow_then',{to:EL});await say(EL,'elder_bring_the_prisoner_down_tomorrow',{to:PM});await say(EL,'elder_as_if_for_a_closer_look',{to:PM});
   await say(PM,'priests_man_and_then',{to:EL});await say(EL,'elder_the_rest_is_not_our_business',{to:PM});
   await say(NE,'nephew_a_prisoner_brought_down_tomorrow',TN);addItem('plan19');F.halfB=1;if(F.halfA)await say(NE,'nephew_two_things_ive_heard',TN);codeBtn()})}
 async function oil19(){if(F.oil)return say(OS,'oil_seller_greet_your_mother',{to:NE});
@@ -690,7 +694,7 @@ async function guard19(){if(F.guard)return say(GD,'guard_be_quick',{to:NE});
 async function uncle19(){if(!F.guard)return guard19();
   await say(NE,'nephew_uncle_i_came_straight_here',{to:P});await say(P,'paul_sit_down_tell_me',{to:NE});
   await say(NE,'nephew_forty_men_and_the_council',{to:P});await say(P,'paul_you_did_right_to_come',{to:NE});
-  OF.free=1;await go19(OF,P.x+30,P.y+2);OF.free=0;
+  OF.free=1;await go19(OF,P.x-48,P.y+4);OF.free=0;
   await say(P,'paul_this_young_man_has_news_for_the_commander',{to:OF});return officer19()}
 async function officer19(){const me=lis19('of19');await say(OF,'officer_the_commander_is_busy',{to:NE});
   for(;;){const opts=['nephew_it_cant_wait','nephew_its_for_the_commander_alone',NOT19,'nephew_im_pauls_nephew'],k=opts[await choose(opts)];
@@ -798,7 +802,7 @@ ROOMS.antipatris19={space:.4,walk:[80,300,116,138],mood:'dawn',amb:AMB.antipatri
   {name:'horses_at_the_water',x:90,y:98,w:58,h:28,wx:150,wy:130,def:'use',look:'the_horses_found_the_water_first',use:()=>rideOn19(),talk:'horses_dont_answer'},
   {name:'road_back_to_jerusalem',x:66,y:126,w:14,h:18,wx:84,wy:134,dir:-1,exit:()=>say(P,'paul_my_way_is_with_the_horsemen',TH),look:'road_back_to_jerusalem_look'},
   {name:'road_to_caesarea',x:304,y:96,w:16,h:48,wx:296,wy:128,dir:1,exit:()=>say(P,'paul_not_on_foot',TH),look:'road_to_caesarea_look'}]};
-ROOMS.palace19={space:.8,walk:[30,300,114,138],mood:'palace',amb:AMB.palace19,block:[[196,98,112,14]],hs:[
+ROOMS.palace19={space:.8,walk:[30,300,114,138],mood:'palace',amb:AMB.palace19,hs:[
   {name:'sea',x:0,y:24,w:320,h:34,wx:150,wy:124,look:'sea_from_the_palace_look'},
   {name:'sea_wall',x:0,y:78,w:190,h:18,wx:120,wy:120,look:'the_gulls_sit_on_the_governors_wall'},
   {name:'dais',x:196,y:96,w:112,h:16,wx:190,wy:120,look:'dais_look'},
@@ -815,7 +819,7 @@ const who=(a,o)=>{a.hs=Object.assign({name:a.name,actor:a},o)};
 const inRoom=r=>G.room===r;
 who(NE,{look:'nephew_look',talk:()=>say(NE,'nephew_uncle',{to:P})});
 who(SI,{look:'sister_look',talk:()=>sister19()});
-who(AN,{look:()=>say(P,F.session?'ananias_look':'presider_look'),talk:()=>presider19()});
+who(AN,{wx:160,wy:124,look:()=>say(P,F.session?'ananias_look':'presider_look'),talk:()=>presider19()});
 for(const a of[AT1,AT2])who(a,{look:'man_at_his_side_look',talk:()=>say(P,'not_to_him_now',TH)});
 MEM.forEach(a=>who(a,{look:()=>lookMember19(a),talk:()=>talkMember19(a)}));
 who(C1,{look:'clerk_look',talk:()=>say(C1,'clerk_i_write_what_is_said',{to:P})});who(C2,{look:'clerk_look',talk:()=>say(C2,'clerk_i_write_what_is_said',{to:P})});
@@ -827,7 +831,7 @@ who(SE,{look:'sentry_look',talk:()=>sentry19()});
 who(GD,{look:'guard_look',talk:()=>guard19()});
 who(HM,{look:'horseman_look',talk:()=>say(HM,'horseman_pick_your_horse',{to:P})});
 for(const a of[SP1,SP2])who(a,{look:'spearman_look',talk:()=>say(P,'not_his_to_decide',TH)});
-who(FX,{look:'felix_look',talk:()=>say(FX,F.letter?'felix_well':'felix_one_moment',{to:P})});
+who(FX,{look:'felix_look',talk:()=>F.letter&&!F.province?province19():say(FX,'felix_one_moment',{to:P})});
 who(BS,{look:'bread_seller_look',talk:()=>say(BS,'bread_seller_bread_for_your_mother',{to:NE})});
 for(const a of[O1,O2])who(a,{look:()=>say(NE,F.halfA?'men_under_an_oath_look':'men_at_the_stall_look',TN),talk:()=>say(NE,'nephew_not_to_them',TN)});
 who(EL,{look:'elder_look19',talk:()=>say(NE,'nephew_not_my_business',TN)});who(PM,{look:'priests_man_look',talk:()=>say(NE,'nephew_not_my_business',TN)});
@@ -871,7 +875,7 @@ function place19(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   setPC19(nephewPlays()?NE:P);
   if(ph==='council'){if(room==='barracks19'){for(const[a,x,y,d]of[[S1,136,124,1],[S2,184,124,-1],[CM,216,118,-1]])pl(a,'barracks19',x,y,d)}
     else{for(const[a,x,y,d]of[[AN,160,98,1],[AT1,182,99,-1],[AT2,138,99,1],[SA1,56,112,1],[PH1,80,108,1],[PH2,104,105,1],[SA2,216,105,-1],[PH3,240,108,-1],[SA3,264,112,-1],
-        [C1,132,114,1],[C2,188,114,-1],[CM,26,118,1],[S1,40,124,1],[S2,30,134,1]])pl(a,'council19',x,y,d);
+        [C1,140,113,1],[C2,180,113,-1],[CM,10,116,1],[S1,16,126,1],[S2,20,138,1]])pl(a,'council19',x,y,d);
       for(const a of[AN,...MEM,C1,C2])a.seat=1}}
   if(ph==='nephew'){pl(SI,'door19',164,114,-1);
     L(BS,AT19.seller);L(O1,AT19.oathA);L(O2,AT19.oathB);L(EL,AT19.elder);L(PM,AT19.priests);L(OS,AT19.oil);
@@ -882,7 +886,7 @@ function place19(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   if(ph==='antipatris')for(const[a,x,y,d]of[[OF,214,122,-1],[OB,246,120,-1],[S1,276,124,-1],[S2,298,130,-1],[HM,166,120,-1]])pl(a,'antipatris19',x,y,d);
   if(ph==='palace'){pl(FX,'palace19',238,100,-1);FX.seat=1;pl(OF,'palace19',122,124,1);pl(S1,'palace19',296,124,-1)}
   P.hs=nephewPlays()?PAULHS:null;P.party=NE.party=0}
-function setup19(){P.hs=null;P.called='Paul';NE.called='pauls_nephew';G.mk19=G.se19=G.of19=null;G.z19=G.l19=G.g19=G.lv19=0;G.caps19=[];
+function setup19(){P.hs=null;P.called='Paul';NE.called='pauls_nephew';G.mk19=G.se19=G.of19=G.h19=null;G.rt19=G.l19=G.g19=G.lv19=0;G.caps19=[];
   G.invs={paul:['tablets'],nephew19:[]};G.inv=G.invs.paul;drawInv()}
 
 /* ============ PRAYER HINTS ============ */
@@ -919,7 +923,7 @@ for(const a of EVERY)if(a.hs&&!a.hs.as)a.hs.as={nephew19:a.hs};
 
 return{rooms:['council19','barracks19','door19','lanes19','gate19','cmd19','antipatris19','palace19','letter19'],setup:setup19,start:start19,hint:hint19,music:MUSIC,topics:[],tablets:TABLETS,
   /* for the playtest: what is told, the letter and the notes, the council's sentences, the horses, the provinces, the lane map */
-  told:TOLD,letter:LETTER19,label:LABEL19,order:ORDER19,notes:NOTES19,say:SAY19,saykey:SAYKEY19,horses:HORSES19,prov:PROV19,phase:phase19,
+  told:TOLD,letter:LETTER19,labels:LABEL19,order:ORDER19,notes:NOTES19,say:SAY19,saykey:SAYKEY19,horses:HORSES19,prov:PROV19,phase:phase19,
   map:LM19,at:AT19,X:X19,Y:Y19,lboxes:LBOX19,nboxes:NBOX19,
   flags:FLAGS,
   /* nine rooms and nineteen flags today; the code keeps room for sixteen rooms and for forty flags. Paul is played, and his nephew from

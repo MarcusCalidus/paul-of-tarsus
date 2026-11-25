@@ -361,7 +361,9 @@ TEXTS('de',19,{
   /*TODO de*/
   "priests_man_tomorrow_then":["Also morgen?","1azb9z2"],
   /*TODO de*/
-  "elder_bring_the_prisoner_down_tomorrow":["Morgen bittet der Rat den Militärbefehlshaber, den Gefangenen herunterzubringen, als wollten wir seinen Fall genauer prüfen.","11u2ua5"],
+  "elder_bring_the_prisoner_down_tomorrow":["Morgen bittet der Rat den Militärbefehlshaber, den Gefangenen herunterzubringen.","0ryg6lp"],
+  /*TODO de*/
+  "elder_as_if_for_a_closer_look":["Als wollten wir seinen Fall genauer prüfen.","0m148s0"],
   /*TODO de*/
   "priests_man_and_then":["Und dann?","1uitjw6"],
   /*TODO de*/
@@ -631,8 +633,6 @@ TEXTS('de',19,{
   "felix_look":["Felix, der Statthalter.","0t5vht4"],
   /*TODO de*/
   "felix_one_moment":["Einen Augenblick.","1nrd341"],
-  /*TODO de*/
-  "felix_well":["Nun?","05y6dnm"],
   /*TODO de*/
   "paul_i_was_brought_up_in_jerusalem":["Ich bin in Jerusalem aufgewachsen.","1wif698"],
   /*TODO de*/
