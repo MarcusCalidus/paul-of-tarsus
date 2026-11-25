@@ -180,36 +180,158 @@ const FONT18=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;
 
 /* ==== ART mnason18: begin ==== */
 /* The court of Mnason's house in Jerusalem, in the evening of the arrival (Acts 21:16, 17). Nothing is said of his house: this one is
-   invented, a plastered court in the upper city. The house at the back, two storeys under a flat roof with a low parapet; its doorway in
-   the middle (to the guest room); the side walls run back to it, and in the left wall, near us, the gate to the street. The sun is low
-   over the left wall. At the right Mnason's donkey stands by a manger against the right wall (drawn in draw, among the people); at the
-   left the gift's chest (a prop). Sparrows on the parapet (ROOMS.mnason18.birds).
+   invented, a court in the upper city, all of the pale limestone of Jerusalem. The house at the back has two storeys: the lower of
+   large dressed blocks, the upper limewashed, the ends of the roof beams under a low parapet (the sparrows sit on its coping, y 11.4).
+   A stair of the same stone climbs the back wall at the left to the upper door; it is a solid flight with no rail. The doorway in the
+   middle leads to the guest room, where a lamp is already lit on the floor, far in and low; a second lamp burns in a small niche left of
+   the door, its light thrown down the wall (nicheLight); a window upstairs glows. By the door stand a water jar, and a copper basin and
+   ewer for the guests' feet: copper, which an old man from Cyprus might well keep (nothing is named). The side walls run back to the
+   house; in the left one, near us, the gate to the street, and through it the lane and the house across it, which closes the view. At
+   the foot of the stair the companions have set down their baggage (two sacks with gathered necks, a bedroll with its near end turned to
+   us, a shoulder bag; no cord runs round any of them), and the gift's chest stands in front of it (a prop). At the right, against the
+   back wall, a stone manger with hay, and Mnason's donkey before it, facing left (drawn in draw, among the people). The sun has gone down
+   behind the left wall: the court lies in the warm shade of the evening, and only the top of the house and of the right wall still
+   catch the last of the light. Heads come at y 64..100: behind them lies dressed stone, the stair's slope and the doorway; the niche
+   lamp's light stops above them (y 64), and the guest room's lamp lies low on its floor.
    Called from outside: ART.mnason18. Reads nothing. Hotspots (ROOMS.mnason18): doorway 140,52,30,52 · donkey 250,90,46,28 · chest 20,110,26,18
    · gate to the street 0,96,14,48. Walk strip 16..304, 110..138. Actors (place18): Mnason 186,118 · brother 214,126 · sister 236,116 ·
-   Luke 72,126 · Timothy 96,134 · Aristarchus 50,118 · Trophimus 120,120; Paul comes in at 140,128. The donkey stands at 272,114 facing left
+   Luke 72,126 · Timothy 96,134 · Aristarchus 50,118 · Trophimus 120,120; Paul comes in at 140,128. The donkey stands at 272,116 facing left
    (block 254,111,34,5); the chest's foot is 20..42 at y 126. */
-ART.mnason18={w:320,q:12,paint(g){paintMnason18(g)},light:{amb:'#f2d8bc',sun:[.6,.4,.4]},draw(g,t){drawMnason18(g,t)},front(){},
+const HZMnason18=79,LAMPMnason18=[124,54];
+ART.mnason18={w:320,q:12,paint(g){paintMnason18(g)},
+  light:{amb:'#e6cfc0',sun:[.6,.2,.2],wallY:104,wall:[[24,140,104,48],[170,296,104,48]],lamps:[[LAMPMnason18[0],LAMPMnason18[1],40,'#5a3c14',104,LAMPMnason18[1]]]},
+  draw(g,t){drawMnason18(g,t)},front(){},
   props:[{y:126,shape(g){chest18(g,20,126,1)},foot:[[20,122,22,5]]}]};
-function paintMnason18(g){const r=rng(1801),W='#dcc6a0',BK=104,TP=14;
-  sky18(g,320,TP+2,'eve');
-  plaster(g,24,TP,272,BK-TP,W,r,{patch:0,cracks:1,t:.4,top:.08,bot:-.12});
-  R(g,22,TP-2.6,276,2.8,tint(W,.12));R(g,22,TP-2.6,276,.6,'#fff2d8');R(g,22,TP,276,.6,tint(W,-.36));
-  for(const[x,open]of[[60,1],[100,0],[212,0],[252,1]])windowArt(g,x,30,8,10,W,{shut:!open});
-  /* the doorway to the guest room: dim inside, a lamp's warm light far in */
-  R(g,138,50.4,34,2.2,'#7a5a3a');g.fillStyle=lg(g,0,52.6,0,104,['#140e0c','#2e2218']);g.fillRect(140,52.6,30,51.4);
-  inRect(g,140,52.6,30,51.4,()=>{pool(g,156,86,12,14,'#ffb860',.4,'screen');ao(g,140,52.6,30,6,'t',.6)});R(g,137,103,36,1.4,'#c4b08c');
-  /* the side walls; the gate in the left one, near us, and the lane beyond it in the evening sun */
-  const LW=[0,0,24,TP-2.6,24,BK,0,132],RW=[296,TP-2.6,320,0,320,132,296,BK];
-  poly(g,LW);g.fillStyle=lg(g,0,0,24,0,['#a69c9c','#b0a49e']);g.fill();clipTo(g,()=>poly(g,LW),()=>tex(g,'mott',.45,0,0,24,132,'overlay',.6));
-  const GATE=[0,66,12,73,12,121,0,134];poly(g,GATE);g.fillStyle=lg(g,0,66,0,134,['#e8c494','#d4b088','#b89a7a']);g.fill();
-  clipTo(g,()=>poly(g,GATE),()=>{g.fillStyle=lg(g,0,66,0,82,['rgba(50,36,40,.85)','rgba(50,36,40,0)']);g.fillRect(0,66,12,16)});
-  poly(g,RW);g.fillStyle=lg(g,296,0,320,0,['#e4cca2','#ecd6ae']);g.fill();clipTo(g,()=>poly(g,RW),()=>tex(g,'mott',.45,296,0,24,132,'overlay',.6));
-  /* the manger against the right wall, long and low, behind the donkey */
-  R(g,262,96,30,6,'#8a6a48');R(g,262,96,30,.6,'#c09a6a');R(g,262,101.4,30,.6,'#4a3420');for(let i=0;i<14;i++)R(g,263+r()*28,94.6+r()*1.6,1.6,.5,'#c8b070');
-  floor18(g,0,320,BK,144,'earth',r);
-  shade(g,[24,TP,40,TP,118,BK,24,BK],'#a49cc6',.4);shade(g,[0,132,24,BK,112,BK,92,144,0,144],'#a8a0c4',.4);
+function paintMnason18(g){const r=rng(1801),S='#e6d8ba',BK=104,TP=14;
+  /* the evening sky over the roofs: blue above, warm where the sun has gone down at the left, two long thin clouds lit from below */
+  sky(g,320,TP+2,['#5a6c9c','#9a98b8','#e4b8a0']);pool(g,-10,16,130,16,'#ffc890',.55,'screen');
+  for(const[x,y,w]of[[40,4.4,70],[150,2.6,54],[236,6,40]]){pool(g,x+w/2,y,w/2,1.2,'#f6d4c4',.7,'source-over');R(g,x+w*.2,y+.6,w*.6,.5,'rgba(255,190,140,.6)')}
+  /* the floor first, so that the walls stand on it: flags of the same stone in courses running back to the house */
+  pave(g,-2,BK,322,144,'#d8c6a4',r,{vx:160,vy:HZMnason18,rows:6,step:32,v:.08,t:.32,rand:1});
+  sideMnason18(g,296,320,11.4,0,104,132,16,'#e2d2b4',r);poly(g,[296,10.6,320,-1,320,1.6,296,12.6],'#f2e4c8');
+  sideMnason18(g,24,0,11.4,0,104,132,16,'#d8c8ac',r);poly(g,[0,-1,24,10.6,24,12.6,0,1.6],'#e8dac0');
+  gateMnason18(g);
+  houseMnason18(g,r,S,TP,BK);
+  stairMnason18(g,r,S);
+  ao(g,24,BK-7,272,7,'b',.2,'#5a4050');R(g,24,BK-.4,272,.8,'rgba(70,50,60,.4)');
+  mangerMnason18(g,r);
+  baggageMnason18(g,r);
+  doorThingsMnason18(g);
   chest18(g,20,126);
-  light18(g,320,1)}
+  lightMnason18(g)}
+/* sideMnason18: a side wall seen running back, x0 (its corner with the house) to x1 (its edge near us), its top from t0 to t1 and its foot
+   from b0 to b1, laid in courses of dressed stone that follow its slope; each joint stops at the edge of its own course */
+function sideMnason18(g,x0,x1,t0,t1,b0,b1,n,c,r){const Y=(u,x)=>{const k=(x-x0)/(x1-x0);return(t0+(t1-t0)*k)*(1-u)+(b0+(b1-b0)*k)*u},P=[x0,t0,x1,t1,x1,b1,x0,b0],
+    xl=Math.min(x0,x1),xr=Math.max(x0,x1);
+  clipTo(g,()=>poly(g,P),()=>{g.fillStyle=tint(c,-.14);g.fillRect(xl,-2,xr-xl,150);
+    for(let k=0;k<n;k++){const u0=k/n,u1=(k+1)/n;for(let x=xl-(k%2)*4.5;x<xr;x+=8.4+r()*2.4){const xa=x+.35,xb=x+8.2;
+        poly(g,[xa,Y(u0,xa)+.3,xb,Y(u0,xb)+.3,xb,Y(u1,xb)-.3,xa,Y(u1,xa)-.3],tint(c,(r()-.5)*.06));stroke(g,[xa,Y(u0,xa)+.45,xb,Y(u0,xb)+.45],tint(c,.08),.5)}}
+    tex(g,'mott',.36,xl,0,xr-xl,150,'overlay',1);tex(g,'grain',.1,xl,0,xr-xl,150,'overlay',.5);ao(g,xl,0,xr-xl,150,x0<x1?'l':'r',.18,'#4a3848')})}
+/* the gate in the left wall: through it the lane, its paving going back, and the house across it with the last light high on its face */
+function gateMnason18(g){const GATE=[0,66,12,72.6,12,121,0,134];
+  clipTo(g,()=>poly(g,GATE),()=>{g.fillStyle=lg(g,0,62,0,124,['#f0c49a','#dcb498','#b8a49c']);g.fillRect(0,60,12,76);
+    tex(g,'mott',.5,0,60,12,76,'overlay',1);
+    /* a window of the house across, small and dark, and the shade line of the roofs on its face */
+    R(g,3.5,86,3,4,'#4a3a3e');R(g,3.5,85.6,3,.5,'#f4dcc0');poly(g,[0,80,12,82,12,84,0,82],'rgba(120,90,110,.35)');
+    const P=[0,117,12,113.6,12,121,0,134];poly(g,P,'#bca88e');clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.5,0,110,12,26,'overlay',1);R(g,0,117,12,.5,'rgba(70,50,60,.35)')});
+    g.fillStyle=lg(g,0,66,0,80,['rgba(40,28,40,.75)','rgba(40,28,40,0)']);g.fillRect(0,66,12,14)});
+  /* the jamb: the wall's depth, in shade, its edge catching the sky */
+  poly(g,[12,72.6,14.2,74,14.2,120,12,121],'#9c8a8c');stroke(g,[12.25,73,12.25,121],'rgba(255,236,214,.4)',.5)}
+/* the house: the lower storey of large dressed blocks, the upper limewashed; the parapet; the upper door, the windows, the doorway */
+function houseMnason18(g,r,S,TP,BK){const L=24,W=272,MID=47;
+  plaster(g,L,TP,W,MID-TP,'#efe4cc',r,{patch:0,cracks:0,t:.4,top:.04,bot:-.06});
+  for(const[x,y,n]of[[178,18,4],[264,21,3]])M18.crack(g,x,y,n,r,.55);
+  /* the parapet's coping, where the sparrows sit, and the ends of the roof beams under it, each with its small shadow */
+  R(g,L-2,11.4,W+4,2.6,'#f4e8d0');R(g,L-2,11.4,W+4,.6,'#fff8e8');R(g,L-2,13.6,W+4,.8,'rgba(90,66,80,.4)');ao(g,L,14.4,W,4,'t',.18,'#5a4060');
+  for(let x=L+8;x<L+W-4;x+=15.5){R(g,x,16,2.4,2.2,'#6a4a30');R(g,x,16,2.4,.5,'#b08858');poly(g,[x+2.4,16.4,x+4.4,17,x+4.4,19.2,x+2.4,18.2],'rgba(90,60,80,.2)')}
+  /* the upper door, at the head of the stair: a plank door shut, in a frame of the stone, no band across its planks */
+  {const x=30,y=26,w=11,h=MID-26;R(g,x-1.6,y-1.6,w+3.2,h+1.6,tint(S,-.12));M18.board(g,x,y,w/2,h,'#6e5036',r,1);M18.board(g,x+w/2,y,w/2,h,'#664a32',r,1);
+    R(g,x+w/2-.2,y,.4,h,'#2e2018');ao(g,x,y,w,4,'t',.5,'#1a1010');R(g,x-2,y-2.4,w+4,1.4,'#f6ead4');R(g,x+4.6,y+h*.5,1,1,'#2a1c14')}
+  /* the windows upstairs: small, with wooden shutters; the one over the guest room stands open and its lamp is lit */
+  for(const[x,open]of[[98,1],[214,0],[256,0]]){const y=26;
+    R(g,x-1.2,y-1.2,9.4,11.4,'rgba(130,104,100,.28)');
+    if(open){R(g,x,y,7,9,'#3a2418');clipTo(g,()=>{g.beginPath();g.rect(x,y,7,9)},()=>{g.fillStyle=lg(g,0,y,0,y+9,['#5a3018','#b86a30','#e09a50']);g.fillRect(x,y+2,7,7);ao(g,x,y,7,3,'t',.6,'#000')});
+      M18.board(g,x-2.6,y,2.4,9,'#6e5036',r,1)}
+    else{M18.board(g,x,y,3.5,9,'#6e5036',r,1);M18.board(g,x+3.5,y,3.5,9,'#664a30',r,1);R(g,x+3.4,y,.4,9,'#2e2018')}
+    M18.board(g,x-1.6,y+9,10.2,1.4,'#7a5a3c',r);poly(g,[x+7,y,x+8.6,y+1,x+8.6,y+9,x+7,y+9],'rgba(90,60,80,.18)')}
+  /* the string course between the storeys */
+  R(g,L,MID,W,2.2,'#eadcc0');R(g,L,MID,W,.6,'#fff4de');R(g,L,MID+2.2,W,.8,'rgba(90,66,80,.3)');
+  /* the lower storey: large blocks, each with its drafted edge; the joints stop at the edge of their course */
+  ashlar(g,L,MID+3,W,BK-MID-3,S,r,{bw:22,bh:9,v:.06,t:.28,m:'#b4a490'});
+  /* the doorway: a lintel block over two jambs; inside, the dark of the guest room and its lamp on the floor, far in and low */
+  const dx=140,dy=52.6,dw=30,dh=BK-dy;
+  R(g,dx,dy,dw,dh,'#1a1210');
+  clipTo(g,()=>{g.beginPath();g.rect(dx,dy,dw,dh)},()=>{g.fillStyle=lg(g,0,dy,0,dy+dh,['#140e0c','#2a1c14','#3e2816']);g.fillRect(dx,dy,dw,dh);
+    R(g,dx,BK-9,dw,9,'#4a3018');g.fillStyle=lg(g,0,BK-9,0,BK,['rgba(30,20,14,.6)','rgba(30,20,14,0)']);g.fillRect(dx,BK-9,dw,9);
+    pool(g,dx+19,BK-6,15,3.6,'#ffb060',.5,'screen');
+    R(g,dx+15.4,BK-6.4,5,1.2,'#9a6a3a');R(g,dx+15.4,BK-6.4,5,.5,'#d8a060');R(g,dx+19.8,BK-7,1.2,.8,'#9a6a3a');R(g,dx+20,BK-8,1,1,'#ffd890');
+    ao(g,dx,dy,dw,8,'t',.7,'#000');ao(g,dx,dy,4,dh,'l',.5,'#000')});
+  for(const x of[dx-3.4,dx+dw]){R(g,x,dy,3.4,dh,tint(S,-.02));R(g,x,dy,.6,dh,tint(S,.2));R(g,x+2.8,dy,.6,dh,tint(S,-.26));tex(g,'mott',.3,x,dy,3.4,dh,'overlay',1)}
+  R(g,dx-4,dy-4.4,dw+8,4.6,tint(S,.06));R(g,dx-4,dy-4.4,dw+8,.6,'#fff4dc');R(g,dx-4,dy-.2,dw+8,.8,'rgba(60,40,50,.5)');tex(g,'mott',.3,dx-4,dy-4.4,dw+8,4.6,'overlay',1);
+  R(g,dx-3,BK-.8,dw+6,1.6,tint(S,.08));R(g,dx-3,BK-.8,dw+6,.5,'#fff2d8');
+  /* the niche left of the door: small, round-headed, its lamp on the niche's sill as wide as the lamp */
+  const[nx,ny]=LAMPMnason18;R(g,nx-3.4,ny-5,6.8,6,'#4a3830');oval(g,nx,ny-5,3.4,2.4,'#4a3830');
+  clipTo(g,()=>{g.beginPath();g.rect(nx-3.4,ny-7.4,6.8,8.4)},()=>{ao(g,nx-3.4,ny-7.4,6.8,4,'t',.55,'#1a1010');pool(g,nx,ny-1.4,4,2.4,'#ffb060',.6,'screen')});
+  R(g,nx-4,ny+1,8,1.2,tint(S,.1));R(g,nx-4,ny+1,8,.5,'#fff0d4');
+  R(g,nx-2.6,ny-.6,4.6,1.6,'#8a5a34');R(g,nx-2.6,ny-.6,4.6,.5,'#c89060');R(g,nx+1.4,ny-1.2,1.2,.8,'#8a5a34');R(g,nx+1.6,ny-3,.8,1.8,'#ffe6a0');R(g,nx+1.3,ny-2,1.4,.9,'#ffb850')}
+/* the stair: a solid flight of the same stone against the back wall, rising from the floor at x 104 to the upper door's landing (y 47);
+   its treads lit, its risers in shade, the face of its mass turned to us; no rail and no post */
+function stairMnason18(g,r,S){const x0=104,x1=44,y0=104,y1=47,n=13,sw=(x0-x1)/n,sh=(y0-y1)/n,P=[x0+2,y0];
+  for(let i=0;i<n;i++){const x=x0-i*sw,y=y0-(i+1)*sh;P.push(x,y,x-sw,y)}P.push(26,y1,26,y0);
+  M18.shadow(g,70,y0+.6,36,1.4,.5);
+  poly(g,P);g.fillStyle=lg(g,0,y1,0,y0,[tint(S,.02),tint(S,-.06)]);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{for(let k=0;k<7;k++){const y=y1+k*8.4;for(let x=24+(k%2)*6;x<x0+2;x+=12+r()*4){R(g,x+.3,y+.3,11.4,7.8,tint(S,(r()-.5)*.07-.04));R(g,x+.3,y+.3,11.4,.5,tint(S,.08))}}
+    tex(g,'mott',.34,24,y1,x0-22,y0-y1,'overlay',1);ao(g,24,y1,x0-22,y0-y1,'b',.18,'#4a3040')});
+  for(let i=0;i<n;i++){const x=x0-i*sw,y=y0-(i+1)*sh;R(g,x-sw,y,sw+.3,.7,'#fff4de');R(g,x-.4,y,.5,sh,'rgba(80,56,70,.35)')}
+  /* the landing before the upper door */
+  R(g,24,y1-.4,22,1,'#fff4de');R(g,24,y1+.6,22,.6,'rgba(80,56,70,.3)')}
+/* the manger: a trough cut from one block of the same stone, long and low against the wall, with hay in it */
+function mangerMnason18(g,r){const x=258,y=94,w=34,h=10;
+  M18.shadow(g,x+w/2,y+h+.4,w/2+2,1.4,.6);
+  g.fillStyle=lg(g,0,y,0,y+h,['#dccaa8','#c8b694','#a89478']);g.fillRect(x,y,w,h);clipTo(g,()=>{g.beginPath();g.rect(x,y,w,h)},()=>tex(g,'mott',.5,x,y,w,h,'overlay',1));
+  R(g,x,y,w,.6,'#f4e6c8');R(g,x+w-.8,y,.8,h,'rgba(80,56,70,.35)');R(g,x,y+h-.6,w,.6,'rgba(70,46,58,.45)');
+  R(g,x+1.4,y-.2,w-2.8,1.2,'#5a4a38');
+  for(let i=0;i<46;i++){const hx=x+1.6+r()*(w-3.2),hy=y-1.6+r()*1.8;R(g,hx,hy,1+r()*1.4,.5,r()<.5?'#d0b874':'#a8904c')}
+  for(let i=0;i<5;i++)R(g,x+3+r()*(w-6),y+h+.2+r()*1.4,1.2,.5,'#b8a060')}
+/* sackMnason18: a soft sack slumped on the floor, wider than it is tall, its neck gathered and its mouth flared above the gathering (a fan,
+   never a line), leaning a little to one side (k) */
+function sackMnason18(g,x,y,w,h,c,k){k=k||0;const P=[x-w*.5,y,x-w*.56,y-h*.36,x-w*.44+k,y-h*.66,x-w*.2+k,y-h*.8,x+w*.1+k,y-h*.82,x+w*.38+k,y-h*.7,x+w*.54,y-h*.4,x+w*.5,y];
+  M18.shadow(g,x+1,y+.3,w*.6,1.1,.6);poly(g,P);g.fillStyle=lg(g,x-w*.6,0,x+w*.6,0,[tint(c,.16),c,tint(c,-.34)]);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.4,x-w,y-h,w*2,h,'overlay',1);ao(g,x-w,y-h*.3,w*2,h*.3,'b',.3,'#3a2830');
+    stroke(g,[x-w*.34,y-h*.6,x-w*.12,y-h*.34,x-w*.02,y-h*.06],rgba(tint(c,-.4),.55),.5);stroke(g,[x+w*.2,y-h*.7,x+w*.28,y-h*.4],rgba(tint(c,-.4),.45),.5)});
+  const nx=x+k-w*.05,ny=y-h*.8;poly(g,[nx-1.6,ny+.4,nx+1.4,ny+.4,nx+.9,ny-1,nx-1.1,ny-1],tint(c,-.22));
+  poly(g,[nx-1.1,ny-1,nx+.9,ny-1,nx+2.8,ny-3,nx+.4,ny-2.4,nx-1,ny-3.2,nx-2.9,ny-2.6],tint(c,.06));R(g,nx-2.6,ny-2.9,1.6,.5,tint(c,.32));R(g,nx+.6,ny-2.7,1.8,.5,tint(c,.26))}
+/* the baggage, set down at the foot of the stair, where the people standing before it leave it in sight */
+function baggageMnason18(g,r){sackMnason18(g,33,104.4,12,8.5,'#bca888',-.6);sackMnason18(g,41.6,105.6,9,6.4,'#a8946e',.6);
+  /* a blanket folded in a soft stack, its folds lying along it */
+  {const x=52,y=106.4,w=15,P=[x,y,x-.6,y-2.6,x+.2,y-4.8,x+w-.4,y-5,x+w+.6,y-2.8,x+w,y];M18.shadow(g,x+w/2,y+.3,w/2+1,1.1,.6);
+    poly(g,P);g.fillStyle=lg(g,0,y-5,0,y,['#a07a5e','#7e5c48','#5a4034']);g.fill();
+    stroke(g,[x-.2,y-2.6,x+w*.5,y-2.9,x+w+.4,y-2.7],'rgba(50,30,30,.5)',.5);stroke(g,[x+.4,y-4.7,x+w-.6,y-4.9],'#c8a080',.5);R(g,x+2,y-1.2,w-4,.5,'#9a3a2a')}
+  /* a shoulder bag of leather, slumped on its side, its strap lying loose beside it on the floor */
+  {const bx=80,by=106,B=[bx,by,bx-.4,by-3.4,bx+1.2,by-5.6,bx+6,by-5.8,bx+7.6,by-3.6,bx+7.4,by];M18.shadow(g,bx+4,by+.3,5,1,.6);
+    stroke(g,[bx+7.4,by-1,bx+9.4,by-.4,bx+11.6,by-.8,bx+12.6,by-.2],'#4a3222',.6);
+    poly(g,B);g.fillStyle=lg(g,bx,0,bx+7,0,['#946c4a','#6e4c32','#4a3222']);g.fill();clipTo(g,()=>poly(g,B),()=>tex(g,'mott',.4,bx-1,by-7,9,8,'overlay',1));
+    poly(g,[bx+1,by-5.6,bx+6.2,by-5.8,bx+6.6,by-3,bx+.6,by-2.8],'#7e5a3c');R(g,bx+1.2,by-5.6,5,.5,'#c09468');R(g,bx+3.2,by-3.4,1,.8,'#3a2418')}}
+/* by the door: a tall water jar, and a copper basin with its ewer at the foot of the wall */
+function doorThingsMnason18(g){vessel(g,112,104.6,5.4,14,'#bc8c64','pithos');
+  const bx=130,by=105.4;M18.shadow(g,bx+1,by+.2,7,1.2,.6);
+  const B=[bx-6,by-3.4,bx+6,by-3.4,bx+4.6,by-.6,bx+2.6,by,bx-2.6,by,bx-4.6,by-.6];poly(g,B);g.fillStyle=lg(g,bx-6,0,bx+6,0,['#8a4420','#e89a58','#c06a30','#5e2a12']);g.fill();
+  R(g,bx-6,by-3.9,12,.9,'#f4b478');R(g,bx-5.4,by-3.9,3.6,.5,'#ffe4b8');R(g,bx-5,by-3,10,.6,'#4a2010');
+  vessel(g,138.4,105.2,2.6,7.4,'#c87038','jug');R(g,137.2,99.4,1,1,'#ffd8a0')}
+/* the evening: the sun has gone down behind the left wall. Its warm shade lies over the court and the lower house; the top of the house
+   and of the right wall still catch the last light; the niche lamp's fan goes down the wall and stops above the heads */
+function lightMnason18(g){
+  shade(g,[24,11,24,104,296,104,296,44,190,32,100,20],'#c8b0bc',.5);
+  shade(g,[0,132,24,104,296,104,320,132,320,144,0,144],'#c6b0bc',.45);
+  shade(g,[0,0,24,11.4,24,104,0,132],'#bca8c0',.4);
+  comp(g,'soft-light',.6,()=>{poly(g,[100,11,296,11,296,44,190,32,100,20]);g.fillStyle=lg(g,100,0,296,0,['rgba(255,170,110,.1)','rgba(255,170,110,1)']);g.fill();
+    poly(g,[296,11.4,320,0,320,64,296,54]);g.fillStyle='rgba(255,172,112,1)';g.fill()});
+  pool(g,240,24,70,9,'#ffb070',.12,'screen');
+  /* the warm glow of the evening sky over everything, and the coolness gathering at the foot of the walls */
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,0,144,['rgba(255,196,150,1)','rgba(240,190,170,1)','rgba(170,150,190,1)']);g.fillRect(0,0,320,144)});
+  {const[nx,ny]=LAMPMnason18;inRect(g,nx-12,ny+1,24,10,()=>nicheLight(g,nx,ny+1,6,7,'#ffa850',.2))}
+  pool(g,159,101,16,3.4,'#ffa850',.22,'screen');
+  ao(g,0,124,320,20,'b',.12,'#2a2050')}
 function drawMnason18(g,t){depth(116,()=>SHARED.beasts.donkey(g,272,116,-1,0,0,lightAt('mnason18',272,116)))}
 /* ==== ART mnason18: end ==== */
 
@@ -390,20 +512,114 @@ function drawStairs18(g,t){const o=G.out18;if(!o)return;const k=(t%1600)/1600;
 /* ==== ART stairs18: end ==== */
 
 /* ==== ART barracks18: begin ==== */
-/* The soldiers' quarters in the fortress of Antonia: a court of the barracks walled in ashlar, a gate at the left (to the stairs), a doorway
-   at the right (to the commander's rooms), a bench of stone along the back wall. No post stands anywhere, no whip is seen, and nobody's
-   arms are spread: when they have stretched him out for the whipping (22:25) two soldiers hold Paul by his arms, bent and down at his
-   sides (a.held). No standard, no image.
+/* The soldiers' quarters in the fortress of Antonia: a court of the barracks, walled in heavy dressed stone, each block with its drafted
+   edge. Along the top runs the gallery of the upper rooms: a row of columns under a deep beam and the eave of its roof, standing on the
+   gallery's floor, with the doors of the rooms in the shade behind, each door between two columns; no rail runs behind the columns. Below,
+   in the left of the wall, the tall arched gate to the passage that leads out to the stairs, with a little daylight at its far end; beside it
+   a bay where the spears lean in a row against plain plaster, all one way, their feet in a wooden trough (no crossbar, no rack across
+   them); a bench of stone along the back wall, two helmets set down on its end; at the right a second bay with the shields leaning and a cloak on a peg, away from the spears;
+   and the doorway to the commander's rooms, warm inside. The sun stands high at the right: it lies on the gallery,
+   and the court below is in the shade of its walls, but for a band of light on the floor near us. No post stands anywhere, no whip is
+   seen, nothing is spread out, and nobody's arms are spread: when they have stretched him out for the whipping (22:25) two soldiers hold
+   Paul by his arms, bent and down at his sides (a.held). No standard, no image. Heads come at y 70..90: behind them lies dressed stone.
    Called from outside: ART.barracks18. Reads nothing. Hotspots (ROOMS.barracks18): the gate 0,40,24,64 · the doorway 286,44,30,60 · the
    bench 100,90,120,12. Walk: Paul stands at 160,124 and takes no step. Actors (place18): soldiers holding him 144,124 and 176,124 · the
    army officer standing there 216,118 · soldiers 92,120, 252,126 · the commander comes in at 300,118. */
-ART.barracks18={w:320,q:12,paint(g){paintBarracks18(g)},light:{amb:'#e8dccc',sun:[.4,.3,.3]},draw(g){if(P.held)SHARED.cast.custody.grips(g,P,ACT.sol18a,ACT.sol18b)},front(){}};
-function paintBarracks18(g){const r=rng(1861),BK=104;sky18(g,320,14,'day');
-  ashlar(g,0,10,320,BK-10,'#c4b08a',r,{bw:16,bh:7,v:.1});ao(g,0,10,320,8,'t',.3,'#3a2c3c');
-  g.fillStyle=lg(g,0,40,0,104,['#2a2018','#16100c']);g.fillRect(2,40,20,64);g.fillRect(288,44,26,60);
-  R(g,100,92,120,4,'#b8a482');R(g,100,92,120,.6,'#e0d0ae');R(g,100,96,120,8,'#8a7a60');M18.shadow(g,160,104,60,1.4,.4);
-  floor18(g,0,320,BK,144,'flags',r,'#bca886');
-  shade(g,[0,10,90,10,40,104,0,104],'#9c94c0',.35);light18(g,320,-1)}
+const COLBarracks18=Array.from({length:11},(_,i)=>30+i*26);
+ART.barracks18={w:320,q:12,paint(g){paintBarracks18(g)},light:{amb:'#d4ccd0',sun:[-.3,.3,.22],wallY:104},
+  draw(g){if(P.held)SHARED.cast.custody.grips(g,P,ACT.sol18a,ACT.sol18b)},front(){}};
+function paintBarracks18(g){const r=rng(1861),S='#d6c6a4',BK=104,SL=47;
+  sky(g,320,8,['#7c9cc8','#b4c8dc']);
+  pave(g,-2,BK,322,144,'#c4b294',r,{vx:160,vy:80,rows:6,step:34,v:.1,t:.4,rand:1});
+  galleryBarracks18(g,r,S,SL);
+  ashlar(g,0,SL,320,BK-SL,S,r,{bw:28,bh:9.5,v:.07,t:.32,m:'#9a8a74'});
+  /* the drafted edge of each block: a faint lit band inside its top and left (the courses are those ashlar laid, 9.5 high) */
+  for(let y=SL;y<BK;y+=9.5)R(g,0,y+1,320,.5,'rgba(255,244,220,.12)');
+  gateBarracks18(g,r);
+  bayBarracks18(g,32,74,r);spearsBarracks18(g,r);
+  bayBarracks18(g,230,272,r);gearBarracks18(g,r);
+  benchBarracks18(g,r,S);
+  doorBarracks18(g,r,S);
+  ao(g,0,BK-8,320,8,'b',.26,'#3a2c3c');R(g,0,BK-.4,320,.8,'rgba(50,36,50,.45)');
+  lightBarracks18(g)}
+/* the gallery of the upper rooms: the eave, the deep beam, the columns with capitals hardly wider than their shafts, the floor slab;
+   behind them the shaded wall of the rooms, a door in every other bay, each between two columns */
+function galleryBarracks18(g,r,S,SL){const B0=9,B1=16,F0=39;
+  g.fillStyle=lg(g,0,B1,0,F0,['#2a2028','#3e3236','#54463e']);g.fillRect(0,B1,320,F0-B1);
+  clipTo(g,()=>{g.beginPath();g.rect(0,B1,320,F0-B1)},()=>{tex(g,'mott',.3,0,B1,320,F0-B1,'overlay',1);
+    for(let i=0;i<COLBarracks18.length-1;i+=2){const cx=(COLBarracks18[i]+COLBarracks18[i+1])/2;R(g,cx-3.5,F0-15,7,15,'#160e0e');R(g,cx-3.5,F0-15,7,.6,'#6a5648');ao(g,cx-3.5,F0-15,7,4,'t',.5,'#000')}
+    ao(g,0,B1,320,7,'t',.55,'#0e0a10')});
+  /* the piers at the two ends, where the gallery meets the side walls */
+  for(const[x,w]of[[0,6],[314,6]]){R(g,x,B1,w,F0-B1,tint(S,-.06));tex(g,'mott',.3,x,B1,w,F0-B1,'overlay',1);R(g,x===0?w-.6:x,B1,.6,F0-B1,x===0?'rgba(40,30,40,.4)':'rgba(255,240,214,.4)')}
+  for(const x of COLBarracks18){const w=4,X=x-w/2;
+    M18.shadow(g,x-1.6,F0+.2,3,.8,.6);
+    g.fillStyle=lg(g,X,0,X+w,0,[tint(S,-.32),tint(S,-.04),tint(S,.2),tint(S,.06)]);g.fillRect(X,B1+1.6,w,F0-B1-2.6);
+    R(g,X-.5,B1,w+1,1.6,tint(S,.12));R(g,X-.5,B1+1.2,w+1,.4,tint(S,-.3));R(g,X-.5,F0-1,w+1,1,tint(S,.04));
+    ao(g,X,B1+1.6,w,2.4,'t',.3,'#2a2030')}
+  /* the floor slab of the gallery, its edge toward us with a moulding along its top, and the beam and the eave of the roof over the
+     columns; rain has streaked the stone under the slab */
+  R(g,0,F0,320,SL-F0,tint(S,-.08));tex(g,'mott',.4,0,F0,320,SL-F0,'overlay',1);R(g,0,F0,320,1.4,tint(S,.12));R(g,0,F0,320,.6,tint(S,.34));R(g,0,F0+1.4,320,.5,'rgba(60,44,56,.4)');
+  g.fillStyle=lg(g,0,F0+2,0,SL,['rgba(255,240,214,0)','rgba(60,44,56,.25)']);g.fillRect(0,F0+2,320,SL-F0-2);R(g,0,SL-1,320,1,'rgba(40,28,40,.55)');ao(g,0,SL,320,5,'t',.35,'#2a2030');
+  for(let i=0;i<26;i++){const x=r()*320,l=4+r()*14;g.fillStyle=lg(g,0,SL,0,SL+l,['rgba(80,66,60,.22)','rgba(80,66,60,0)']);g.fillRect(x,SL,1+r()*2.4,l)}
+  R(g,0,B0,320,B1-B0,tint(S,.02));tex(g,'mott',.4,0,B0,320,B1-B0,'overlay',1);R(g,0,B0,320,.6,tint(S,.3));R(g,0,B0+3,320,.5,tint(S,.2));R(g,0,B0+2.5,320,.5,'rgba(70,56,60,.3)');
+  R(g,0,B1-.8,320,.8,'rgba(40,28,40,.6)');
+  g.fillStyle=lg(g,0,4,0,B0,['#b07658','#7a4a34']);g.fillRect(0,4,320,B0-4);R(g,0,4,320,.6,'#e0a880');
+  for(let x=1;x<320;x+=4.2)R(g,x,B0-1.8,2.6,1.4,'#6a3a28');ao(g,0,B0-1.6,320,1.6,'b',.45,'#1a1010')}
+/* the gate to the passage out to the stairs: a round-headed opening in the thick wall, its vault in shade, daylight far down it */
+function gateBarracks18(g,r){const x=3,w=20,top=51,b=104;
+  arch(g,x-2,top-2,w+4,b-top+2,'#8a7a66');
+  clipTo(g,()=>arch(g,x,top,w,b-top),()=>{g.fillStyle=lg(g,0,top,0,b,['#1a1214','#2a2020','#3a2e26']);g.fillRect(x,top,w,b-top);
+    /* the far end of the passage: an opening of daylight, small, no horizon in it */
+    arch(g,x+7,82,7,22,'#e8dcc4');pool(g,x+10.5,96,8,6,'#fff0d0',.35,'screen');poly(g,[x+3,104,x+17,104,x+14,96,x+7,96],'rgba(200,184,150,.35)');
+    ao(g,x,top,w,10,'t',.6,'#000');ao(g,x,top,4,b-top,'l',.5,'#000');ao(g,x+w-4,top,4,b-top,'r',.4,'#000')});
+  g.strokeStyle='rgba(255,240,214,.3)';g.lineWidth=.5;g.beginPath();g.arc(x+w/2,top+w/2,w/2+1.6,Math.PI*1.05,Math.PI*1.6);g.stroke()}
+/* a bay: a shallow recess in the wall, flat-headed, plastered inside, from x0 to x1 */
+function bayBarracks18(g,x0,x1,r){const top=58,b=104;R(g,x0-1.6,top-2.4,x1-x0+3.2,2.6,'#b8a684');R(g,x0-1.6,top-2.4,x1-x0+3.2,.5,'#e8d8b8');
+  plaster(g,x0,top,x1-x0,b-top,'#b4a48e',r,{patch:0,cracks:0,t:.4,top:-.1,bot:-.04});ao(g,x0,top,x1-x0,6,'t',.45,'#2a2028');ao(g,x0,top,2.4,b-top,'l',.35,'#2a2028');ao(g,x1-2.4,top,2.4,b-top,'r',.25,'#2a2028')}
+/* the spears: a row leaning against the plaster of the bay, all one way, the iron shank and its small point at the top, their feet in a
+   wooden trough at the floor; nothing runs across them */
+function spearsBarracks18(g,r){const y0=101,n=7;
+  for(let i=0;i<n;i++){const fx=37+i*5.4,tx=fx+4.6,ty=61+(i%3)*1.2,s=(y0-ty);
+    poly(g,[fx+1.4,y0,tx+1.6,ty+3,tx+2.4,ty+3,fx+2.4,y0],'rgba(40,30,40,.18)');
+    stroke(g,[fx,y0,tx,ty+5],'#6a4a2e',.8);stroke(g,[fx-.3,y0,tx-.3,ty+5],'#a07a4e',.4);
+    stroke(g,[tx,ty+5,tx+.5,ty],'#7a7a82',.6);poly(g,[tx+.1,ty+.6,tx+1.1,ty+.6,tx+.8,ty-1.6],'#c8ccd4')}
+  M18.shadow(g,55,104,22,1.2,.6);M18.board(g,34,y0-2.4,40,5.4,'#6a4a30',r);R(g,34,y0-2.4,40,.6,'#b08858');ao(g,34,y0+1.6,40,1.4,'b',.3,'#1a1010')}
+/* the gear in the second bay: three shields leaning on their long edges (plain leather faces, rims, no boss and no device) and a cloak
+   on a peg, far from the spears */
+function gearBarracks18(g,r){
+  for(const[x,l]of[[234,.0],[244,.06],[254,-.04]]){const y=104,w=11,h=20,P=[x,y,x+w,y,x+w+1.6,y-h,x+1.6,y-h];
+    M18.shadow(g,x+w/2+1,y,w/2+1,1,.6);poly(g,P);g.fillStyle=lg(g,x,0,x+w+2,0,[tint('#8a3a2a',l+.12),tint('#7a3024',l),tint('#5a2018',l-.1)]);g.fill();
+    clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.4,x,y-h,w+2,h,'overlay',1);ao(g,x,y-h,w+2,h,'r',.3,'#1a0e0e')});
+    stroke(g,[x,y,x+1.6,y-h,x+w+1.6,y-h,x+w,y],'#b89a5a',.6)}
+  R(g,266.4,62,1.6,1,'#3a2a20');poly(g,[265,63,269,63,270.4,80,268,82,265.6,80,264,76],'#7a3a2c');poly(g,[265,63,267,63,266,80,264,76],'#9a4a38')}
+/* the bench of stone along the back wall: one long block on a solid base, no leg under it */
+function benchBarracks18(g,r,S){const x=100,w=120,y=90;
+  M18.shadow(g,x+w/2,104,w/2+2,1.6,.5);
+  R(g,x,y+2.6,w,104-y-2.6,tint(S,-.16));tex(g,'mott',.3,x,y+2.6,w,104-y-2.6,'overlay',1);ao(g,x,y+2.6,w,3,'t',.35,'#2a2030');
+  R(g,x-1.4,y,w+2.8,2.8,tint(S,.06));R(g,x-1.4,y,w+2.8,.6,tint(S,.32));R(g,x-1.4,y+2.4,w+2.8,.5,'rgba(50,36,50,.45)');tex(g,'mott',.3,x-1.4,y,w+2.8,2.8,'overlay',1);
+  /* two helmets set down on its end, each on its rim, seen from the side: the bowl, the brow ridge, the neck guard flaring back */
+  for(const[hx,d]of[[105,1],[119.5,1]]){const yb=y+.2,H=[hx-4*d,yb,hx-4.2*d,yb-3.4,hx-2.6*d,yb-5.6,hx+1*d,yb-6,hx+3.2*d,yb-4.6,hx+3.8*d,yb-2,hx+5.8*d,yb-.4,hx+5.6*d,yb+.2];
+    M18.shadow(g,hx+1*d,yb+.2,5,.8,.6);poly(g,H);g.fillStyle=lg(g,hx-4,0,hx+5,0,hx<110?['#d0d4da','#a4a8b0','#62666e']:['#c8b48a','#a08a5e','#6a5638']);g.fill();
+    clipTo(g,()=>poly(g,H),()=>ao(g,hx-6,yb-2,12,2,'b',.35,'#2a2a34'));R(g,Math.min(hx-4.4*d,hx-1*d),yb-1.4,3.4,.7,'#e2e6ea');R(g,hx-1.4,yb-5.6,2.6,.5,'#f2f4f6')}}
+/* the doorway to the commander's rooms: a lintel block over two jambs, a warm corridor inside, lit from a window out of sight */
+function doorBarracks18(g,r,S){const x=288,w=26,top=58,b=104;
+  R(g,x,top,w,b-top,'#1e1614');
+  clipTo(g,()=>{g.beginPath();g.rect(x,top,w,b-top)},()=>{g.fillStyle=lg(g,0,top,0,b,['#2a1c16','#4a3020','#6a4a30']);g.fillRect(x,top,w,b-top);
+    poly(g,[x+4,b,x+w-2,b,x+w-6,b-12,x+8,b-12],'rgba(255,200,130,.25)');pool(g,x+w-4,b-22,10,16,'#ffc070',.25,'screen');
+ao(g,x,top,w,8,'t',.6,'#000');ao(g,x,top,4,b-top,'l',.45,'#000')});
+  for(const X of[x-3.6,x+w]){R(g,X,top,3.6,b-top,tint(S,-.06));R(g,X,top,.6,b-top,tint(S,.2));R(g,X+3,top,.6,b-top,tint(S,-.3));tex(g,'mott',.3,X,top,3.6,b-top,'overlay',1)}
+  R(g,x-4.4,top-4.6,w+8.8,4.8,tint(S,.04));R(g,x-4.4,top-4.6,w+8.8,.6,tint(S,.3));R(g,x-4.4,top-.2,w+8.8,.8,'rgba(40,28,40,.55)');tex(g,'mott',.3,x-4.4,top-4.6,w+8.8,4.8,'overlay',1);
+  R(g,x-3,b-.8,w+6,1.6,tint(S,.08))}
+/* the light: the sun high at the right lies on the gallery; the court below in the shade of its walls, cooler toward the left; a band
+   of sun on the floor near us */
+function lightBarracks18(g){
+  shade(g,[0,47,320,47,320,104,320,144,0,144,0,104],'#a29ec0',.58);
+  shade(g,[0,16,40,16,8,39,0,39],'#a6a2c2',.3);
+  comp(g,'soft-light',.55,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,220,170,.4)','rgba(255,214,160,1)']);g.fillRect(0,0,320,47)});
+  comp(g,'soft-light',.5,()=>{poly(g,[0,134,320,128,320,144,0,144]);g.fillStyle='rgba(255,214,160,1)';g.fill()});
+  pool(g,240,30,120,16,'#ffe0b0',.1,'screen');
+  comp(g,'multiply',.25,()=>{g.fillStyle=lg(g,0,0,320,0,['#8a86a8','#ffffff']);g.fillRect(0,47,320,97)});
+  ao(g,0,126,320,18,'b',.1,'#2a2050')}
 /* ==== ART barracks18: end ==== */
 
 /* ---- the inventory ---- */
