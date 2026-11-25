@@ -160,39 +160,161 @@ const horse19=(...a)=>SHARED.beasts&&SHARED.beasts.horse?SHARED.beasts.horse(...
 
 /* ==== ART council19: begin ==== */
 /* The council, by day, in a hall of hewn stone (tradition places it so; the end screen says the place is uncertain). We look across the
-   hall at the semicircle of the Sanhedrin, three rows deep, rising toward the back: the front row on a low curved bench, the two rows
-   behind it higher. The presiding man sits at the middle of the curve on a raised seat, two men standing at his side; two clerks sit in
-   front of the curve, one at each side, with writing boards. The door is at the left, where the soldiers wait. Light falls from high
-   openings at the right, long and low, never round: no window lies behind a head. The members sit as they like, mixed: some wear broader
-   scripture cases and longer fringes than the others (the Pharisees). No altar, no image, no lamp behind a head.
+   hall at the semicircle of the Sanhedrin, three rows deep: two wings of stepped stone seats that curve round toward the back, each step
+   as high as a seat (its top 9 over the feet of whoever sits on it, SEATG) and as deep as the next row's footing, solid to the floor with
+   no leg anywhere; a low back wall closes the top row. The presiding man sits at the middle of the curve, between the wings, on a stone
+   chair with a plain square back against the back wall, two men standing at his side; two clerks sit on wooden stools in front of the
+   curve, one at each side, with writing boards. The wall is of large dressed blocks with drafted edges under a cedar ceiling; high in it
+   at the right are two long, low openings, and the light falls from the right: the left wing turns its face to it, the right wing is in
+   its own shade. The door is at the left, in the nearer wall, where the soldiers wait. No window lies behind a head, no lamp burns, no
+   altar or image. The members sit as they like, mixed: some wear broader scripture cases and longer fringes than the others (the
+   Pharisees). Joints in the seats stop at the edges of their own course and keep away from where the sitters' fringes hang.
    Called from outside: ART.council19. Reads nothing.
    Hotspots (ROOMS.council19): the semicircle 20,30,280,66 · the door 0,56,20,62 · the place before the council 138,116,44,20.
    Walk: 36..288 by 118..138. Actors (place19): the presider 160,98 seated (seat top 89) · men at his side 138,99 and 182,99 · front row,
-   seated on the curved bench (its top 9 above their feet): 56,112 · 80,108 · 104,105 · 216,105 · 240,108 · 264,112 · clerks seated 140,113
-   and 180,113 (stools, top 104) · the commander 10,116, soldiers 16,126 and 20,138 by the door, outside the strip. The two back rows are painted (drawCouncil19, BACK19). */
-const BACK19=[[66,96,1],[90,93,1],[114,91,1],[206,91,-1],[230,93,-1],[254,96,-1],[78,86,1],[102,83,1],[126,81,1],[194,81,-1],[218,83,-1],[242,86,-1]];
-ART.council19={w:320,q:12,paint(g){paintCouncil19(g)},light:{amb:'#e8dccc',sun:[-.4,.3,.2],wallY:96},
+   seated on the lowest step (its top 9 above their feet): 56,112 · 80,108 · 104,105 · 216,105 · 240,108 · 264,112 · clerks seated 140,113
+   and 180,113 (stools, top 104) · the commander 10,116, soldiers 16,126 and 20,138 by the door, outside the strip. The two back rows are
+   painted (drawCouncil19, BACK19), on the steps behind.
+   The semicircle in plan is a set of arcs about the middle of the hall, seen from the front: an arc k (0 the front row's foot, 1 and 2 the
+   rows behind, 3 the back of the top row) lies at y = CY19 - A*CK19*sqrt(1-(u/A)^2) - e, A = rad19(k), u = x-160, e its height (9 a step).
+   Each wing ends in a cut that we see (uOut19, uIn19). Where someone sits, the seat's top runs level under his hips (seatTop19). */
+const CA19=130,CD19=15,CY19=126.25,CK19=23.55/130,WALLC19=93.3,
+  rad19=k=>CA19+CD19*k,
+  yArc19=(k,u,e)=>{const A=rad19(k),s=u/A;return CY19-A*CK19*Math.sqrt(Math.max(0,1-s*s))-e},
+  uOut19=k=>-(114+6*k),uIn19=k=>-(36-2*k),
+  /* who sits on each row (x of the left wing; the right wing is 320-x): row 0 the actors of place19, rows 1 and 2 painted */
+  ROWX19=[[56,80,104],[50,74,98],[62,86,108]],ROW0Y19={56:112,80:108,104:105},
+  footY19=(k,x)=>k===0?ROW0Y19[x<160?x:320-x]:yArc19(k,x-160,9*k),
+  SIT19=ROWX19.map((xs,k)=>xs.flatMap(x=>[[x,footY19(k,x),1],[320-x,footY19(k,x),-1]]));
+/* the two back rows, painted seated (their looks back19a..f, mixed so that each wing has both kinds) */
+const BACK19=[1,2].flatMap(k=>SIT19[k].map(([x,y,d],i)=>[x,y,d,'abcdef'[(i+k*3)%6]]));
+/* the top of the seat of row k at x: the arc, run level under each sitter's hips (from behind his back to the middle of his thigh) */
+function seatTop19(k,x){let y=yArc19(k,x-160,9*k+9);
+  for(const[sx,sy,d]of SIT19[k]){const lo=d>0?sx-7:sx-5,hi=d>0?sx+5:sx+7,o=x<lo?lo-x:x>hi?x-hi:0,w=clamp(1-o/4,0,1);if(w>0)y+=(sy-9-y)*w}
+  return y}
+ART.council19={w:320,q:12,paint(g){paintCouncil19(g)},light:{amb:'#ddd0c2',sun:[-.4,.3,.2],wallY:WALLC19},
   draw(g){drawCouncil19(g)},front(){}};
-function paintCouncil19(g){const r=rng(1901),S='#d8c8a4';
-  ashlar(g,0,0,320,100,S,r,{bw:30,bh:10,v:.08,t:.3,m:'#9a8a74'});
-  /* the high openings at the right, long and low */
-  for(const x of[214,262]){R(g,x,10,34,7,'#f4ecd4');R(g,x,10,34,1,'#fff8e8');ao(g,x,10,34,7,'t',.3,'#6a5a48')}
-  /* the curved tiers: three bands of stone bench, rising toward the back */
-  for(const[y0,y1,k]of[[80,86,.06],[88,94,.02],[96,104,-.02]]){poly(g,[20,y1+12,60,y1,160,y0,260,y1,300,y1+12,300,y1+15,260,y1+3,160,y0+3,60,y1+3,20,y1+15],tint(S,k));
-    stroke(g,[20,y1+12,60,y1,160,y0,260,y1,300,y1+12],tint(S,.3),.5)}
-  /* the front row's bench: its top line runs 9 above the feet of those seated on it */
-  const top=x=>x<160?112-9-(x-56)/48*7:112-9-(264-x)/48*7;
-  poly(g,[40,top(40)+.5,160,98,280,top(280)+.5,280,top(280)+6,160,104,40,top(40)+6],tint(S,-.05));
-  stroke(g,[40,top(40)+.5,104,top(104),160,98,216,top(216),280,top(280)+.5],tint(S,.32),.6);
-  /* the presider's seat on its step, and the clerks' stools */
-  R(g,148,90,24,8,tint(S,-.1));R(g,148,89,24,1.2,tint(S,.3));R(g,150,72,20,18,tint('#7a5a3a',0));R(g,150,72,20,1,'#a07a50');
-  for(const x of[140,180]){R(g,x-5,104,10,9,'#7a5a3a');R(g,x-5,105,10,1,'#a8865a')}
-  pave(g,-2,112,322,144,'#c8b894',r,{vx:160,vy:70,rows:5,step:36,v:.08,t:.35});ao(g,0,112,320,6,'t',.25,'#3a2c3c');
-  /* the door at the left */
-  R(g,0,56,20,62,'#2a2018');R(g,0,56,20,1.2,'#8a7a66');R(g,19,56,1.4,62,tint(S,.2));
-  light19(g,320,-1,'rgba(255,226,180,1)',.38);M19&&ao(g,0,126,320,18,'b',.1,'#2a2050')}
-/* the two back rows: members of the council painted seated, to show the whole semicircle (their looks: back19a..f) */
-function drawCouncil19(g){BACK19.forEach(([x,y,d],i)=>man(g,x,y,'back19'+'abcdef'[i%6],d,-1,lightAt('council19',x,y),0,4))}
+function paintCouncil19(g){const r=rng(1901),S='#dccaa2';
+  wallCouncil19(g,r,S);
+  M19.ceiling(g,320,{x0:6,step:28,U:8,r,vx:160,vy:62,boards:'#3a2a1c',joist:'#6a4c2c',plate:'#7a5a36'});
+  pave(g,-2,WALLC19,322,144,'#cdbc98',r,{vx:160,vy:58,rows:6,step:32,v:.07,t:.32});
+  ao(g,0,WALLC19,320,5,'t',.3,'#3a2c3c');
+  for(const s of[1,-1])standCouncil19(g,r,S,s);
+  chairCouncil19(g,S);
+  for(const[x,d]of[[140,1],[180,-1]])stoolCouncil19(g,x,d,r);
+  /* the contact shadows of the painted rows on the steps */
+  for(const[x,y,d]of BACK19)M19.shadow(g,x+d*2,y,7,.9,.5);
+  lightCouncil19(g);
+  doorCouncil19(g,r,S)}
+/* the back wall: large blocks with drafted edges, and the two long, low openings high at the right, the sky in them */
+function wallCouncil19(g,r,S){const top=10.4,b=WALLC19;
+  hewnC19(g,0,top,320,b-top,S,r,11.6,38);
+  for(const[x0,x1]of[[214,250],[262,298]]){const y0=14,y1=20.5;
+    R(g,x0-1.4,y0-1.4,x1-x0+2.8,y1-y0+2.8,tint(S,-.12));
+    g.fillStyle=lg(g,0,y0,0,y1,['#9ab8d8','#cfe0ea','#f2ecd8']);g.fillRect(x0,y0,x1-x0,y1-y0);
+    ao(g,x0,y0,x1-x0,2.2,'t',.35,'#4a5a7a');R(g,x0-1.4,y1,x1-x0+2.8,1.2,tint(S,.3));R(g,x0-1.4,y1+1.2,x1-x0+2.8,.5,'rgba(70,56,52,.4)');
+    /* the light that comes in through it, falling forward and down: a soft wash on the wall under the sill */
+    g.fillStyle=lg(g,0,y1+1,0,y1+14,['rgba(255,236,200,.22)','rgba(255,236,200,0)']);g.fillRect(x0-2,y1+1.7,x1-x0+4,13)}
+  ao(g,0,top,320,8,'t',.35,'#2a2028')}
+/* one wing of the stepped seats (s 1 the left, -1 the right) */
+function standCouncil19(g,r,S,s){const X=u=>160+s*u,L=[.62,.5,.7],q=rng(s>0?1911:1913);
+  /* light on a face that looks toward the middle of the semicircle: brighter where it turns to the right, from where the light comes */
+  const lit=(u,A,k)=>{const sn=u/A,nx=-sn*s,nz=Math.sqrt(Math.max(0,1-sn*sn));return clamp(.42+.62*nx+.12*nz,.12,1)};
+  const xs=(k,b)=>{const a=uOut19(k),c=uIn19(k),o=[];for(let u=a;u<=c+.001;u+=.5)o.push(u);if(o[o.length-1]<c)o.push(c);return o};
+  /* the low back wall of the top row */
+  {const U=xs(3);const top=U.map(u=>[X(u),yArc19(3,u,34)]),bot=U.map(u=>[X(u),yArc19(3,u,27)]);
+    for(let i=0;i<U.length-1;i++){const k=lit(U[i],rad19(3)),c=mix(tint(S,-.34),tint(S,.08),k);
+      poly(g,[top[i][0],top[i][1],top[i+1][0],top[i+1][1],bot[i+1][0],bot[i+1][1]+.3,bot[i][0],bot[i][1]+.3],c)}
+    stroke(g,top.flat(),tint(S,.28),.5);
+    clipTo(g,()=>poly(g,top.flat().concat(bot.slice().reverse().flat())),()=>{tex(g,'mott',.35,0,40,320,60,'overlay',1);ao(g,0,60,320,30,'b',.0)})}
+  for(let k=2;k>=0;k--){
+    /* the tread: the top of the step, the seat of row k at its front and the footing of row k+1 behind */
+    const F=xs(k),B=xs(k+1),front=F.map(u=>[X(u),seatTop19(k,X(u))]),back=B.map(u=>[X(u),yArc19(k+1,u,9*k+9)]);
+    const T=front.flat().concat(back.slice().reverse().flat());
+    poly(g,T);g.fillStyle=lg(g,0,Math.min(...back.map(p=>p[1])),0,Math.max(...front.map(p=>p[1])),[tint(S,.12),tint(S,.34)]);g.fill();
+    clipTo(g,()=>poly(g,T),()=>{tex(g,'mott',.3,0,50,320,70,'overlay',1);
+      /* worn where feet have rested, a little darker toward the back of the footing */
+});
+    /* the riser: the face of the seat, from the floor (or the step below) up to the seat's top, its light by the way it turns */
+    const top=F.map(u=>[X(u),seatTop19(k,X(u))]),bot=F.map(u=>[X(u),yArc19(k,u,9*k)]);
+    for(let i=0;i<F.length-1;i++){const kk=lit(F[i],rad19(k)),c=mix(tint(S,-.5),tint(S,.06),kk);
+      poly(g,[top[i][0],top[i][1],top[i+1][0],top[i+1][1],bot[i+1][0],bot[i+1][1]+.4,bot[i][0],bot[i][1]+.4],c)}
+    const RP=top.flat().concat(bot.slice().reverse().map(p=>[p[0],p[1]+.4]).flat());
+    clipTo(g,()=>poly(g,RP),()=>{tex(g,'mott',.4,0,50,320,80,'overlay',1);tex(g,'grain',.12,0,50,320,80,'overlay',.5);
+      /* the shade of the seat's lip on the face just under it, and the darker foot where the face meets the step below */
+      for(let i=0;i<F.length-1;i++){const[x0,y0]=top[i],[x1]=top[i+1],yb=bot[i][1];R(g,Math.min(x0,x1),y0+.6,Math.abs(x1-x0)+.05,1.6,'rgba(60,44,52,.22)');R(g,Math.min(x0,x1),yb-1.4,Math.abs(x1-x0)+.05,1.6,'rgba(60,44,52,.18)')}
+      /* the joints between the blocks of this course: upright, stopping at its top and its foot, never where a sitter's fringes hang */
+      const seats=SIT19[k].map(p=>p[0]);let u=uOut19(k)+6+q()*6;
+      while(u<uIn19(k)-4){const x=X(u);if(seats.every(sx=>Math.abs(sx-x)>11)){const y0=seatTop19(k,x)+1.4,y1=yArc19(k,u,9*k)-.4;
+          R(g,x,y0,.5,y1-y0,'rgba(70,54,56,.5)');R(g,x+.5*s,y0,.5,y1-y0,'rgba(255,244,222,.18)');u+=14+q()*8}else u+=2}});
+    /* the lip of the seat: a lit arris along its top */
+    stroke(g,top.flat(),tint(S,.42),.5)}
+  /* the ends of the wing: the outer cut and the inner one, each a stepped face, lit or shaded by the way it turns */
+  for(const[uf,face]of[[uOut19,s>0?.32:.72],[uIn19,s>0?.86:.38]]){const P=[];
+    P.push(X(uf(0)),yArc19(0,uf(0),0));for(let k=0;k<3;k++){P.push(X(uf(k)),yArc19(k,uf(k),9*k+9),X(uf(k+1)),yArc19(k+1,uf(k+1),9*k+9))}
+    P.push(X(uf(3)),yArc19(3,uf(3),34),X(uf(3)),yArc19(3,uf(3),0));
+    poly(g,P,mix(tint(S,-.38),tint(S,.12),face));clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.4,0,50,320,80,'overlay',1);
+      /* the courses of the end, level, each the height of a step; no joint crosses them */
+      for(let k=1;k<4;k++){const y=yArc19(k,uf(k),9*k);R(g,Math.min(X(uf(0)),X(uf(3)))-1,y-.25,14,.5,'rgba(70,54,56,.3)')}
+      ao(g,Math.min(X(uf(0)),X(uf(3))),60,8,60,s*(uf===uOut19?1:-1)>0?'l':'r',.15,'#2a2030')});
+    stroke(g,[P[0],P[1],P[2],P[3]],tint(S,face>.5?.3:-.1),.5)}
+  /* the shade the wing throws on the floor and on the wall behind it */
+  const b0=xs(0).map(u=>[X(u),yArc19(0,u,0)]);for(let i=0;i<b0.length-1;i+=2){const[x,y]=b0[i];R(g,x-.25,y+.2,1,1.2,'rgba(40,30,44,.16)')}}
+/* the presider's chair: a seat of dressed stone with a plain square back standing against the back wall; its top 9 above his feet */
+function chairCouncil19(g,S){const x0=150,x1=170,t=89,b=98.4;
+  M19.shadow(g,160,b,12,1.2,.5);
+  R(g,x0+1,74,x1-x0-2,t-74,tint(S,-.2));tex(g,'mott',.35,x0+1,74,x1-x0-2,t-74,'overlay',1);R(g,x0+1,74,x1-x0-2,.6,tint(S,.3));R(g,x0+1,74,.6,t-74,tint(S,.12));
+  ao(g,x0+1,74,x1-x0-2,t-74,'b',.25,'#2a2030');
+  g.fillStyle=lg(g,0,t,0,b,[tint(S,-.06),tint(S,-.22)]);g.fillRect(x0,t,x1-x0,b-t);tex(g,'mott',.35,x0,t,x1-x0,b-t,'overlay',1);
+  R(g,x0-.6,t-.4,x1-x0+1.2,1.4,tint(S,.2));R(g,x0-.6,t-.4,x1-x0+1.2,.5,tint(S,.42));R(g,x0,t+1,x1-x0,.6,'rgba(60,44,52,.35)');
+  R(g,x1-.6,t,.6,b-t,'rgba(255,244,222,.3)')}
+/* a clerk's stool: a thick board on two legs at its ends (no leg under its middle, no rail across them); its top 9 above his feet */
+function stoolCouncil19(g,x,d,r){const hx=x-2*d,x0=hx-6,x1=hx+6,t=104,b=113;
+  M19.shadow(g,hx,b,8,1,.5);
+  for(const lx of[x0+.4,x1-2])M19.board(g,lx,t+1,1.6,b-t-1,'#6a4a2e',r,1);
+  M19.board(g,x0-.4,t-.2,x1-x0+.8,1.6,'#8a6440',r);R(g,x0-.4,t-.2,x1-x0+.8,.5,'#c09468')}
+/* the light of the hall. Inside, the stone lies in a cool half-shade; the sun comes in by openings high in the right wall, out of the
+   picture, and lies in long, low patches slanting down to the left: two on the back wall, well above the heads of the top row, and
+   one across the floor in front of the council; the two openings we see in the back wall give a soft wash under their sills */
+const SUNC19=[[[120,20,178,20,164,29,106,29],.7],[[40,36,92,36,80,44,28,44],.55],[[60,118,196,118,172,136,30,136],.5]];
+function lightCouncil19(g){
+  comp(g,'multiply',.6,()=>{g.fillStyle=lg(g,0,0,320,0,['#8c84a0','#a49cb0','#a49cb0','#988ea8']);g.fillRect(0,0,320,144)});
+  ao(g,0,10,320,30,'t',.25,'#2a2030');
+  for(const[p,a]of SUNC19){const cx=(p[0]+p[2]+p[4]+p[6])/4,cy=(p[1]+p[3]+p[5]+p[7])/4;
+    for(const[k,al]of[[1.1,.25],[1,.4],[.9,.5]])comp(g,'soft-light',a*al,()=>{poly(g,p.map((v,i)=>i%2?cy+(v-cy)*k:cx+(v-cx)*k));g.fillStyle='#ffd8a0';g.fill()});
+    comp(g,'screen',a*.32,()=>{poly(g,p);g.fillStyle='#ffe8c0';g.fill()})}
+  comp(g,'soft-light',.3,()=>{g.fillStyle='#ffd8a8';g.fillRect(0,0,320,144)});
+  ao(g,0,124,320,20,'b',.12,'#2a2050')}
+/* hewnC19: a wall of large dressed blocks in courses of height bh: each block its own tone, a drafted margin round a face a little
+   proud of it, a lit upper edge; joints that stop at the edge of their own course and never line up with those of the course above */
+function hewnC19(g,x,y,w,h,c,r,bh,bw){inRect(g,x,y,w,h,()=>{R(g,x,y,w,h,tint(c,-.3));let prev=[];
+  for(let j=y,row=0;j<y+h;j+=bh,row++){let i=x-r()*bw*.8;const cur=[];
+    while(i<x+w){let ww=bw*(.7+r()*.6);for(let k=0;k<4&&prev.some(p=>Math.abs(p-(i+ww))<3);k++)ww+=3;
+      const cc=mix(tint(c,(r()-.5)*.14),r()<.5?'#d8bc8c':'#c4bab4',r()*.3);
+      g.fillStyle=lg(g,0,j,0,j+bh,[tint(cc,.06),cc,tint(cc,-.1)]);g.fillRect(hp(i+.5),hp(j+.5),hp(ww-.5),hp(bh-.5));
+      /* the margin, a band a little lower round the face: lit along its top and left, in shade along the face's foot */
+      R(g,i+.5,j+.5,ww-.5,.6,rgba(tint(cc,.3),.6));R(g,i+2,j+2,ww-3.5,bh-3.4,rgba(tint(cc,.08),.7));
+      R(g,i+2,j+2,ww-3.5,.5,rgba(tint(cc,.26),.6));R(g,i+2,j+bh-1.9,ww-3.5,.5,rgba(tint(cc,-.2),.6));R(g,i+ww-2,j+2,.5,bh-3.4,rgba(tint(cc,-.14),.5));
+      if(r()<.2)R(g,(r()<.5?i+.5:i+ww-1.5),j+.5,1,1,rgba(tint(c,-.34),.55));
+      i+=ww;cur.push(i)}prev=cur}
+  tex(g,'blotch',.35,x,y,w,h,'soft-light',1.3);tex(g,'mott',.4,x,y,w,h,'overlay',.7);tex(g,'grain',.14,x,y,w,h,'overlay',.5);
+  for(let i=0;i<w*h/220;i++){const sx=x+r()*w,sy=y+r()*h,d=r()<.6;pool(g,sx,sy,2+r()*7,1+r()*3,d?'#9a7c5c':'#fff2d2',d?.18:.12,d?'multiply':'screen')}
+  for(let i=0;i<w*h/12;i++)R(g,x+r()*w,y+r()*h,.5,.5,r()<.55?'rgba(96,76,58,.2)':'rgba(255,248,230,.2)')})}
+/* the door at the left, in the nearer wall: a tall opening with a lintel block, a passage in shade beyond it, a little daylight at its
+   far end (square, low, no horizon); the wall's return runs back to the hall */
+function doorCouncil19(g,r,S){const top=56,b=118.6,d0=1,d1=19.4,e=26;
+  plaster(g,-1,0,e+1,b,tint(S,-.1),r,{patch:0,cracks:0,t:.3,top:-.06,bot:-.12});
+  ashlar(g,-1,0,e+1,top-5,tint(S,-.08),r,{bw:22,bh:11.6,v:.06,t:.3,m:'#8a7a64'});ashlar(g,d1,top-5,e-d1,b-top+5,tint(S,-.08),r,{bw:10,bh:11.6,v:.06,t:.3,m:'#8a7a64'});
+  poly(g,[e,0,e+3.4,0,e+3.4,WALLC19,e,b],tint(S,-.3));tex(g,'mott',.3,e,0,3.4,b,'overlay',1);
+  R(g,d0,top,d1-d0,b-top,'#1a1418');
+  clipTo(g,()=>{g.beginPath();g.rect(d0,top,d1-d0,b-top)},()=>{g.fillStyle=lg(g,0,top,0,b,['#161014','#241c1c','#3a2e28']);g.fillRect(d0,top,d1-d0,b-top);
+    R(g,d0+6,top+26,6,22,'#c8bca4');poly(g,[d0+4,b,d1-3,b,d0+12,top+48,d0+6,top+48],'rgba(200,184,150,.25)');
+    ao(g,d0,top,d1-d0,8,'t',.6,'#000');ao(g,d1-4,top,4,b-top,'r',.5,'#000')});
+  R(g,-1,top-5,d1+4,5,tint(S,-.02));tex(g,'mott',.35,-1,top-5,d1+4,5,'overlay',1);R(g,-1,top-5,d1+4,.6,tint(S,.26));R(g,-1,top-.6,d1+4,.6,'rgba(40,28,40,.55)');
+  R(g,d1,top,.6,b-top,tint(S,.18));R(g,-1,b-.6,e+1,1.2,'rgba(40,30,40,.4)');
+  comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,0,0,e+4,0,['#7a7298','#a8a2c0']);g.fillRect(-1,0,e+5,b)})}
+/* the two back rows: members of the council painted seated on the steps, each set in the queue at his feet's depth */
+function drawCouncil19(g){for(const[x,y,d,k]of BACK19)man(g,x,y,'back19'+k,d,-1,lightAt('council19',x,y),0,4)}
 /* ==== ART council19: end ==== */
 
 /* ==== ART barracks19: begin ==== */
