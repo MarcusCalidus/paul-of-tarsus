@@ -512,20 +512,114 @@ function drawStairs18(g,t){const o=G.out18;if(!o)return;const k=(t%1600)/1600;
 /* ==== ART stairs18: end ==== */
 
 /* ==== ART barracks18: begin ==== */
-/* The soldiers' quarters in the fortress of Antonia: a court of the barracks walled in ashlar, a gate at the left (to the stairs), a doorway
-   at the right (to the commander's rooms), a bench of stone along the back wall. No post stands anywhere, no whip is seen, and nobody's
-   arms are spread: when they have stretched him out for the whipping (22:25) two soldiers hold Paul by his arms, bent and down at his
-   sides (a.held). No standard, no image.
+/* The soldiers' quarters in the fortress of Antonia: a court of the barracks, walled in heavy dressed stone, each block with its drafted
+   edge. Along the top runs the gallery of the upper rooms: a row of columns under a deep beam and the eave of its roof, standing on the
+   gallery's floor, with the doors of the rooms in the shade behind, each door between two columns; no rail runs behind the columns. Below,
+   in the left of the wall, the tall arched gate to the passage that leads out to the stairs, with a little daylight at its far end; beside it
+   a bay where the spears lean in a row against plain plaster, all one way, their feet in a wooden trough (no crossbar, no rack across
+   them); a bench of stone along the back wall, two helmets set down on its end; at the right a second bay with the shields leaning and a cloak on a peg, away from the spears;
+   and the doorway to the commander's rooms, warm inside. The sun stands high at the right: it lies on the gallery,
+   and the court below is in the shade of its walls, but for a band of light on the floor near us. No post stands anywhere, no whip is
+   seen, nothing is spread out, and nobody's arms are spread: when they have stretched him out for the whipping (22:25) two soldiers hold
+   Paul by his arms, bent and down at his sides (a.held). No standard, no image. Heads come at y 70..90: behind them lies dressed stone.
    Called from outside: ART.barracks18. Reads nothing. Hotspots (ROOMS.barracks18): the gate 0,40,24,64 · the doorway 286,44,30,60 · the
    bench 100,90,120,12. Walk: Paul stands at 160,124 and takes no step. Actors (place18): soldiers holding him 144,124 and 176,124 · the
    army officer standing there 216,118 · soldiers 92,120, 252,126 · the commander comes in at 300,118. */
-ART.barracks18={w:320,q:12,paint(g){paintBarracks18(g)},light:{amb:'#e8dccc',sun:[.4,.3,.3]},draw(g){if(P.held)SHARED.cast.custody.grips(g,P,ACT.sol18a,ACT.sol18b)},front(){}};
-function paintBarracks18(g){const r=rng(1861),BK=104;sky18(g,320,14,'day');
-  ashlar(g,0,10,320,BK-10,'#c4b08a',r,{bw:16,bh:7,v:.1});ao(g,0,10,320,8,'t',.3,'#3a2c3c');
-  g.fillStyle=lg(g,0,40,0,104,['#2a2018','#16100c']);g.fillRect(2,40,20,64);g.fillRect(288,44,26,60);
-  R(g,100,92,120,4,'#b8a482');R(g,100,92,120,.6,'#e0d0ae');R(g,100,96,120,8,'#8a7a60');M18.shadow(g,160,104,60,1.4,.4);
-  floor18(g,0,320,BK,144,'flags',r,'#bca886');
-  shade(g,[0,10,90,10,40,104,0,104],'#9c94c0',.35);light18(g,320,-1)}
+const COLBarracks18=Array.from({length:11},(_,i)=>30+i*26);
+ART.barracks18={w:320,q:12,paint(g){paintBarracks18(g)},light:{amb:'#d4ccd0',sun:[-.3,.3,.22],wallY:104},
+  draw(g){if(P.held)SHARED.cast.custody.grips(g,P,ACT.sol18a,ACT.sol18b)},front(){}};
+function paintBarracks18(g){const r=rng(1861),S='#d6c6a4',BK=104,SL=47;
+  sky(g,320,8,['#7c9cc8','#b4c8dc']);
+  pave(g,-2,BK,322,144,'#c4b294',r,{vx:160,vy:80,rows:6,step:34,v:.1,t:.4,rand:1});
+  galleryBarracks18(g,r,S,SL);
+  ashlar(g,0,SL,320,BK-SL,S,r,{bw:28,bh:9.5,v:.07,t:.32,m:'#9a8a74'});
+  /* the drafted edge of each block: a faint lit band inside its top and left (the courses are those ashlar laid, 9.5 high) */
+  for(let y=SL;y<BK;y+=9.5)R(g,0,y+1,320,.5,'rgba(255,244,220,.12)');
+  gateBarracks18(g,r);
+  bayBarracks18(g,32,74,r);spearsBarracks18(g,r);
+  bayBarracks18(g,230,272,r);gearBarracks18(g,r);
+  benchBarracks18(g,r,S);
+  doorBarracks18(g,r,S);
+  ao(g,0,BK-8,320,8,'b',.26,'#3a2c3c');R(g,0,BK-.4,320,.8,'rgba(50,36,50,.45)');
+  lightBarracks18(g)}
+/* the gallery of the upper rooms: the eave, the deep beam, the columns with capitals hardly wider than their shafts, the floor slab;
+   behind them the shaded wall of the rooms, a door in every other bay, each between two columns */
+function galleryBarracks18(g,r,S,SL){const B0=9,B1=16,F0=39;
+  g.fillStyle=lg(g,0,B1,0,F0,['#2a2028','#3e3236','#54463e']);g.fillRect(0,B1,320,F0-B1);
+  clipTo(g,()=>{g.beginPath();g.rect(0,B1,320,F0-B1)},()=>{tex(g,'mott',.3,0,B1,320,F0-B1,'overlay',1);
+    for(let i=0;i<COLBarracks18.length-1;i+=2){const cx=(COLBarracks18[i]+COLBarracks18[i+1])/2;R(g,cx-3.5,F0-15,7,15,'#160e0e');R(g,cx-3.5,F0-15,7,.6,'#6a5648');ao(g,cx-3.5,F0-15,7,4,'t',.5,'#000')}
+    ao(g,0,B1,320,7,'t',.55,'#0e0a10')});
+  /* the piers at the two ends, where the gallery meets the side walls */
+  for(const[x,w]of[[0,6],[314,6]]){R(g,x,B1,w,F0-B1,tint(S,-.06));tex(g,'mott',.3,x,B1,w,F0-B1,'overlay',1);R(g,x===0?w-.6:x,B1,.6,F0-B1,x===0?'rgba(40,30,40,.4)':'rgba(255,240,214,.4)')}
+  for(const x of COLBarracks18){const w=4,X=x-w/2;
+    M18.shadow(g,x-1.6,F0+.2,3,.8,.6);
+    g.fillStyle=lg(g,X,0,X+w,0,[tint(S,-.32),tint(S,-.04),tint(S,.2),tint(S,.06)]);g.fillRect(X,B1+1.6,w,F0-B1-2.6);
+    R(g,X-.5,B1,w+1,1.6,tint(S,.12));R(g,X-.5,B1+1.2,w+1,.4,tint(S,-.3));R(g,X-.5,F0-1,w+1,1,tint(S,.04));
+    ao(g,X,B1+1.6,w,2.4,'t',.3,'#2a2030')}
+  /* the floor slab of the gallery, its edge toward us with a moulding along its top, and the beam and the eave of the roof over the
+     columns; rain has streaked the stone under the slab */
+  R(g,0,F0,320,SL-F0,tint(S,-.08));tex(g,'mott',.4,0,F0,320,SL-F0,'overlay',1);R(g,0,F0,320,1.4,tint(S,.12));R(g,0,F0,320,.6,tint(S,.34));R(g,0,F0+1.4,320,.5,'rgba(60,44,56,.4)');
+  g.fillStyle=lg(g,0,F0+2,0,SL,['rgba(255,240,214,0)','rgba(60,44,56,.25)']);g.fillRect(0,F0+2,320,SL-F0-2);R(g,0,SL-1,320,1,'rgba(40,28,40,.55)');ao(g,0,SL,320,5,'t',.35,'#2a2030');
+  for(let i=0;i<26;i++){const x=r()*320,l=4+r()*14;g.fillStyle=lg(g,0,SL,0,SL+l,['rgba(80,66,60,.22)','rgba(80,66,60,0)']);g.fillRect(x,SL,1+r()*2.4,l)}
+  R(g,0,B0,320,B1-B0,tint(S,.02));tex(g,'mott',.4,0,B0,320,B1-B0,'overlay',1);R(g,0,B0,320,.6,tint(S,.3));R(g,0,B0+3,320,.5,tint(S,.2));R(g,0,B0+2.5,320,.5,'rgba(70,56,60,.3)');
+  R(g,0,B1-.8,320,.8,'rgba(40,28,40,.6)');
+  g.fillStyle=lg(g,0,4,0,B0,['#b07658','#7a4a34']);g.fillRect(0,4,320,B0-4);R(g,0,4,320,.6,'#e0a880');
+  for(let x=1;x<320;x+=4.2)R(g,x,B0-1.8,2.6,1.4,'#6a3a28');ao(g,0,B0-1.6,320,1.6,'b',.45,'#1a1010')}
+/* the gate to the passage out to the stairs: a round-headed opening in the thick wall, its vault in shade, daylight far down it */
+function gateBarracks18(g,r){const x=3,w=20,top=51,b=104;
+  arch(g,x-2,top-2,w+4,b-top+2,'#8a7a66');
+  clipTo(g,()=>arch(g,x,top,w,b-top),()=>{g.fillStyle=lg(g,0,top,0,b,['#1a1214','#2a2020','#3a2e26']);g.fillRect(x,top,w,b-top);
+    /* the far end of the passage: an opening of daylight, small, no horizon in it */
+    arch(g,x+7,82,7,22,'#e8dcc4');pool(g,x+10.5,96,8,6,'#fff0d0',.35,'screen');poly(g,[x+3,104,x+17,104,x+14,96,x+7,96],'rgba(200,184,150,.35)');
+    ao(g,x,top,w,10,'t',.6,'#000');ao(g,x,top,4,b-top,'l',.5,'#000');ao(g,x+w-4,top,4,b-top,'r',.4,'#000')});
+  g.strokeStyle='rgba(255,240,214,.3)';g.lineWidth=.5;g.beginPath();g.arc(x+w/2,top+w/2,w/2+1.6,Math.PI*1.05,Math.PI*1.6);g.stroke()}
+/* a bay: a shallow recess in the wall, flat-headed, plastered inside, from x0 to x1 */
+function bayBarracks18(g,x0,x1,r){const top=58,b=104;R(g,x0-1.6,top-2.4,x1-x0+3.2,2.6,'#b8a684');R(g,x0-1.6,top-2.4,x1-x0+3.2,.5,'#e8d8b8');
+  plaster(g,x0,top,x1-x0,b-top,'#b4a48e',r,{patch:0,cracks:0,t:.4,top:-.1,bot:-.04});ao(g,x0,top,x1-x0,6,'t',.45,'#2a2028');ao(g,x0,top,2.4,b-top,'l',.35,'#2a2028');ao(g,x1-2.4,top,2.4,b-top,'r',.25,'#2a2028')}
+/* the spears: a row leaning against the plaster of the bay, all one way, the iron shank and its small point at the top, their feet in a
+   wooden trough at the floor; nothing runs across them */
+function spearsBarracks18(g,r){const y0=101,n=7;
+  for(let i=0;i<n;i++){const fx=37+i*5.4,tx=fx+4.6,ty=61+(i%3)*1.2,s=(y0-ty);
+    poly(g,[fx+1.4,y0,tx+1.6,ty+3,tx+2.4,ty+3,fx+2.4,y0],'rgba(40,30,40,.18)');
+    stroke(g,[fx,y0,tx,ty+5],'#6a4a2e',.8);stroke(g,[fx-.3,y0,tx-.3,ty+5],'#a07a4e',.4);
+    stroke(g,[tx,ty+5,tx+.5,ty],'#7a7a82',.6);poly(g,[tx+.1,ty+.6,tx+1.1,ty+.6,tx+.8,ty-1.6],'#c8ccd4')}
+  M18.shadow(g,55,104,22,1.2,.6);M18.board(g,34,y0-2.4,40,5.4,'#6a4a30',r);R(g,34,y0-2.4,40,.6,'#b08858');ao(g,34,y0+1.6,40,1.4,'b',.3,'#1a1010')}
+/* the gear in the second bay: three shields leaning on their long edges (plain leather faces, rims, no boss and no device) and a cloak
+   on a peg, far from the spears */
+function gearBarracks18(g,r){
+  for(const[x,l]of[[234,.0],[244,.06],[254,-.04]]){const y=104,w=11,h=20,P=[x,y,x+w,y,x+w+1.6,y-h,x+1.6,y-h];
+    M18.shadow(g,x+w/2+1,y,w/2+1,1,.6);poly(g,P);g.fillStyle=lg(g,x,0,x+w+2,0,[tint('#8a3a2a',l+.12),tint('#7a3024',l),tint('#5a2018',l-.1)]);g.fill();
+    clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.4,x,y-h,w+2,h,'overlay',1);ao(g,x,y-h,w+2,h,'r',.3,'#1a0e0e')});
+    stroke(g,[x,y,x+1.6,y-h,x+w+1.6,y-h,x+w,y],'#b89a5a',.6)}
+  R(g,266.4,62,1.6,1,'#3a2a20');poly(g,[265,63,269,63,270.4,80,268,82,265.6,80,264,76],'#7a3a2c');poly(g,[265,63,267,63,266,80,264,76],'#9a4a38')}
+/* the bench of stone along the back wall: one long block on a solid base, no leg under it */
+function benchBarracks18(g,r,S){const x=100,w=120,y=90;
+  M18.shadow(g,x+w/2,104,w/2+2,1.6,.5);
+  R(g,x,y+2.6,w,104-y-2.6,tint(S,-.16));tex(g,'mott',.3,x,y+2.6,w,104-y-2.6,'overlay',1);ao(g,x,y+2.6,w,3,'t',.35,'#2a2030');
+  R(g,x-1.4,y,w+2.8,2.8,tint(S,.06));R(g,x-1.4,y,w+2.8,.6,tint(S,.32));R(g,x-1.4,y+2.4,w+2.8,.5,'rgba(50,36,50,.45)');tex(g,'mott',.3,x-1.4,y,w+2.8,2.8,'overlay',1);
+  /* two helmets set down on its end, each on its rim, seen from the side: the bowl, the brow ridge, the neck guard flaring back */
+  for(const[hx,d]of[[105,1],[119.5,1]]){const yb=y+.2,H=[hx-4*d,yb,hx-4.2*d,yb-3.4,hx-2.6*d,yb-5.6,hx+1*d,yb-6,hx+3.2*d,yb-4.6,hx+3.8*d,yb-2,hx+5.8*d,yb-.4,hx+5.6*d,yb+.2];
+    M18.shadow(g,hx+1*d,yb+.2,5,.8,.6);poly(g,H);g.fillStyle=lg(g,hx-4,0,hx+5,0,hx<110?['#d0d4da','#a4a8b0','#62666e']:['#c8b48a','#a08a5e','#6a5638']);g.fill();
+    clipTo(g,()=>poly(g,H),()=>ao(g,hx-6,yb-2,12,2,'b',.35,'#2a2a34'));R(g,Math.min(hx-4.4*d,hx-1*d),yb-1.4,3.4,.7,'#e2e6ea');R(g,hx-1.4,yb-5.6,2.6,.5,'#f2f4f6')}}
+/* the doorway to the commander's rooms: a lintel block over two jambs, a warm corridor inside, lit from a window out of sight */
+function doorBarracks18(g,r,S){const x=288,w=26,top=58,b=104;
+  R(g,x,top,w,b-top,'#1e1614');
+  clipTo(g,()=>{g.beginPath();g.rect(x,top,w,b-top)},()=>{g.fillStyle=lg(g,0,top,0,b,['#2a1c16','#4a3020','#6a4a30']);g.fillRect(x,top,w,b-top);
+    poly(g,[x+4,b,x+w-2,b,x+w-6,b-12,x+8,b-12],'rgba(255,200,130,.25)');pool(g,x+w-4,b-22,10,16,'#ffc070',.25,'screen');
+ao(g,x,top,w,8,'t',.6,'#000');ao(g,x,top,4,b-top,'l',.45,'#000')});
+  for(const X of[x-3.6,x+w]){R(g,X,top,3.6,b-top,tint(S,-.06));R(g,X,top,.6,b-top,tint(S,.2));R(g,X+3,top,.6,b-top,tint(S,-.3));tex(g,'mott',.3,X,top,3.6,b-top,'overlay',1)}
+  R(g,x-4.4,top-4.6,w+8.8,4.8,tint(S,.04));R(g,x-4.4,top-4.6,w+8.8,.6,tint(S,.3));R(g,x-4.4,top-.2,w+8.8,.8,'rgba(40,28,40,.55)');tex(g,'mott',.3,x-4.4,top-4.6,w+8.8,4.8,'overlay',1);
+  R(g,x-3,b-.8,w+6,1.6,tint(S,.08))}
+/* the light: the sun high at the right lies on the gallery; the court below in the shade of its walls, cooler toward the left; a band
+   of sun on the floor near us */
+function lightBarracks18(g){
+  shade(g,[0,47,320,47,320,104,320,144,0,144,0,104],'#a29ec0',.58);
+  shade(g,[0,16,40,16,8,39,0,39],'#a6a2c2',.3);
+  comp(g,'soft-light',.55,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,220,170,.4)','rgba(255,214,160,1)']);g.fillRect(0,0,320,47)});
+  comp(g,'soft-light',.5,()=>{poly(g,[0,134,320,128,320,144,0,144]);g.fillStyle='rgba(255,214,160,1)';g.fill()});
+  pool(g,240,30,120,16,'#ffe0b0',.1,'screen');
+  comp(g,'multiply',.25,()=>{g.fillStyle=lg(g,0,0,320,0,['#8a86a8','#ffffff']);g.fillRect(0,47,320,97)});
+  ao(g,0,126,320,18,'b',.1,'#2a2050')}
 /* ==== ART barracks18: end ==== */
 
 /* ---- the inventory ---- */
