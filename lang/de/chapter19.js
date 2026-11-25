@@ -361,7 +361,7 @@ TEXTS('de',19,{
   /*TODO de*/
   "priests_man_tomorrow_then":["Also morgen?","1azb9z2"],
   /*TODO de*/
-  "elder_bring_the_prisoner_down_tomorrow":["Morgen bittet der Rat den Militärbefehlshaber, den Gefangenen herunterzubringen.","0ryg6lp"],
+  "elder_bring_the_prisoner_down_tomorrow":["Morgen bittet der Rat, den Gefangenen herunterzubringen.","0ryg6lp"],
   /*TODO de*/
   "elder_as_if_for_a_closer_look":["Als wollten wir seinen Fall genauer prüfen.","0m148s0"],
   /*TODO de*/

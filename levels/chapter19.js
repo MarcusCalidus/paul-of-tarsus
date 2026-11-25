@@ -136,8 +136,9 @@ const SKY19={day:['#5c8ac4','#94b6d8','#e4e0cc'],aft:['#6a86b8','#b0b4c8','#f0d0
 function sky19(g,w,h,k){g.fillStyle=lg(g,0,0,0,h,SKY19[k]);g.fillRect(0,0,w,h)}
 /* soft light over a whole picture from one side: dir 1 from the left, -1 from the right */
 function light19(g,w,dir,warm,a){comp(g,'soft-light',a||.4,()=>{g.fillStyle=lg(g,dir>0?0:w,0,dir>0?w:0,0,[warm||'rgba(255,214,160,1)','rgba(214,200,196,.6)','rgba(170,172,208,.7)']);g.fillRect(0,0,w,144)})}
-/* torch19: a torch in a bracket on a wall at x, y: the bracket, the head, and its flame (draw); its glow */
-function torch19(g,x,y){R(g,x-.6,y,1.2,6,'#3a2a1c');R(g,x-1.6,y-2,3.2,2.4,'#5a3a22');R(g,x-1.6,y-2,3.2,.5,'#8a6040')}
+/* torch19: a torch in an iron holder on a wall at x, y, leaning out from the wall (never upright with a cross-head): the shaft, the head;
+   its flame (draw) and its glow */
+function torch19(g,x,y){stroke(g,[x-3,y+7,x,y-.6],'#3a2a1c',1.1);poly(g,[x-1.4,y-2.4,x+1,y-2,x+.8,y+.2,x-1.2,y],'#5a3a22');R(g,x-1.2,y-2.3,2,.5,'#8a6040')}
 const FONT19=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;
 /* the horse. PLACEHOLDER until issue #91 lands SHARED.beasts.horse (the same call, the same arguments): a plain flat silhouette of a horse
    seen from the side, its head toward dir, standing (fr 0) or drinking (fr 1: the head down to the water); tack 1 draws a dark saddle
@@ -204,9 +205,9 @@ function drawCouncil19(g){BACK19.forEach(([x,y,d],i)=>man(g,x,y,'back19'+'abcdef
    Hotspots: the gate 0,40,24,64 · the doorway 286,44,30,60 · the bench 100,90,120,12 · at night the three horses (HORSES19).
    Walk: 30..300 by 112..138. Actors: 'day' Paul 160,124, soldiers 144,124 and 176,124, the commander 216,118 · 'aft' Paul 150,118 by the
    bench, the guard 184,120, the army officer 262,120, a soldier 60,116; the nephew comes in at 40,126 · 'night' the commander 150,112, the
-   officers 196,116 and 120,116, the horseman 296,120, spearmen 40,114 and 64,120, soldiers 88,114 and 104,122; Paul at 60,130; the
-   horses at HORSES19 (drawn, with footprints in ROOMS.barracks19.block). */
-const HORSES19=[[214,128,'fresh'],[244,126,'calm'],[274,130,'shy']];
+   officers 196,116 and 120,116, the horseman 306,118, spearmen 36,114 and 56,120, soldiers 86,114 and 102,122; Paul at 60,130; the
+   horses at HORSES19 (200,128 · 240,126 · 280,130, forty apart so that no head lies over another's body) (drawn, with footprints in ROOMS.barracks19.block). */
+const HORSES19=[[200,128,'fresh'],[240,126,'calm'],[280,130,'shy']];
 const varB19=()=>phase19()==='nephew'?'aft':phase19()==='yard'?'night':'day';
 ART.barracks19={w:320,q:12,variant:varB19,paint(g,v){paintBarracks19(g,v)},
   light(){const v=varB19();return v==='night'?{amb:'#5a5070',wallY:104,lamps:[[48,62,90,'#ffb060',104,62],[160,62,90,'#ffb060',104,62],[272,62,90,'#ffb060',104,62]]}:
@@ -247,7 +248,8 @@ function paintBarracks19(g,v){const r=rng(1911),S='#d6c6a4',BK=104,night=v==='ni
 ART.door19={w:320,q:12,paint(g){paintDoor19(g)},light:{amb:'#f0d4b4',sun:[.5,.25,.3],wallY:104},draw(){},front(){}};
 function paintDoor19(g){const r=rng(1921),W='#e4d6b8';
   sky19(g,320,40,'aft');
-  /* houses across the lane at the right, far off; the lane going back */
+  /* the neighbour's house at the left, its front a step back; houses across the lane at the right, far off; the lane going back */
+  plaster(g,0,26,32,78,'#d0c0a0',r,{patch:0,cracks:1,t:.4});R(g,0,24,32,2.4,'#dccca8');shade(g,[24,26,32,26,32,104,24,104],'#a89ab8',.4);
   for(const[x,y,w,h,c]of[[244,34,46,70,'#d8c8a8'],[286,28,40,76,'#ccbc9c']])plaster(g,x,y,w,h,c,r,{patch:1,cracks:1,t:.4});
   plaster(g,30,16,214,88,W,r,{patch:1,cracks:2,t:.4,top:.06,bot:-.06});R(g,28,14,218,3,tint(W,.1));R(g,28,14,218,.6,tint(W,.3));
   for(const x of[62,112,204])R(g,x,40,8,7,'#3a2c24');
@@ -399,7 +401,9 @@ function paintAnti19(g){const r=rng(1961);
   g.fillStyle=lg(g,0,70,0,144,['#8a9a5a','#6e8a46','#5a7a3a']);g.fillRect(0,70,320,74);tex(g,'mott',.35,0,70,320,74,'overlay',.8);
   for(let i=0;i<400;i++)R(g,r()*320,72+r()*72,1,.5,r()<.5?'rgba(40,60,20,.3)':'rgba(200,220,140,.25)');
   /* the young river: from the pool at the left, narrowing back toward the horizon */
-  poly(g,[30,104,62,104,66,98,52,86,40,78,34,72,32,72,36,80,40,90,32,98],'#6a9ab0');stroke(g,[34,73,40,82,50,92],'rgba(230,244,250,.5)',.5);
+  /* it leaves the pool at its far side and winds away to the horizon, a thread at the last */
+  for(const[x0,y0,x1,y1,w]of[[42,106,52,96,5],[52,96,46,88,3.6],[46,88,58,80,2.4],[58,80,52,75,1.4],[52,75,62,71,.8]])stroke(g,[x0,y0,x1,y1],'#6a9ab0',w);
+  stroke(g,[46,100,50,94],'rgba(230,244,250,.45)',.5);
   oval(g,40,112,30,8,'#5a8aa4');oval(g,40,111,24,5,'#7aaac0');pool(g,40,110,16,3,'#e8f4f8',.4,'screen');
   for(let i=0;i<26;i++){const x=10+r()*64,y=104+r()*14;stroke(g,[x,y,x+.6,y-5-r()*4],'#4a6a2a',.5)}
   /* the road on to Caesarea */
@@ -885,7 +889,7 @@ function place19(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
     pl(SE,'gate19',192,116,-1);
     pl(P,'barracks19',150,118,1);for(const[a,x,y,d]of[[GD,184,120,-1],[OF,262,120,-1],[S1,70,116,1]])pl(a,'barracks19',x,y,d);
     pl(CM,'cmd19',254,118,-1)}
-  if(ph==='yard')for(const[a,x,y,d]of[[CM,150,112,1],[OF,190,116,-1],[OB,118,116,1],[HM,298,120,-1],[SP1,36,114,1],[SP2,56,120,1],[S1,86,114,1],[S2,102,122,1]])pl(a,'barracks19',x,y,d);
+  if(ph==='yard')for(const[a,x,y,d]of[[CM,150,112,1],[OF,190,116,-1],[OB,118,116,1],[HM,306,118,-1],[SP1,36,114,1],[SP2,56,120,1],[S1,86,114,1],[S2,102,122,1]])pl(a,'barracks19',x,y,d);
   if(ph==='antipatris')for(const[a,x,y,d]of[[OF,212,122,-1],[OB,240,120,-1],[S1,262,124,-1],[S2,280,132,-1],[HM,166,120,-1]])pl(a,'antipatris19',x,y,d);
   if(ph==='palace'){pl(FX,'palace19',238,100,-1);FX.seat=1;pl(OF,'palace19',122,124,1);pl(S1,'palace19',296,124,-1)}
   P.hs=nephewPlays()?PAULHS:null;P.party=NE.party=0}
