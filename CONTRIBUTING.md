@@ -88,7 +88,6 @@ The [Terms of Use](https://www.jw.org/en/terms-of-use/) of jw.org (which cover i
   - Paul never admires one, and the player never uses one as a tool, a key or a hiding place. The one use the game makes of any of them is the one Paul made of the altar in Acts 17:23.
   - Every other rule of this section holds for them.
 - Jehovah's temple in Jerusalem is drawn as it was, for historical accuracy (decided for Chapter Eighteen, 2026-11-25): the Court of the Gentiles with its colonnades, the barrier with its warning stones, the gates and inner courts, and the sanctuary seen from the courts. Its layout and proportions are checked against the Study Edition's media and the publications on wol.jw.org, and painted in our own way: nothing of their artwork is copied (section 1). No sacrifice, fire, smoke or rite is shown on its altar, and no Roman standard is seen in the city.
-- Jehovah's temple in Jerusalem is drawn as it was, for historical accuracy (decided for Chapter Eighteen, 2026-11-25): the Court of the Gentiles with its colonnades, the barrier with its warning stones, the gates and inner courts, and the sanctuary seen from the courts. Its layout and proportions are checked against the Study Edition's media and the publications on wol.jw.org, and painted in our own way: nothing of their artwork is copied (section 1). No sacrifice, fire, smoke or rite is shown on its altar, and no Roman standard is seen in the city.
 - Look at screenshots of every changed scene before committing.
 
 ## 4. Look and sound
