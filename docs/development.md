@@ -32,6 +32,7 @@ shared/beasts.js      the animals: the pack donkey, the mule, the ox or bull, an
 shared/birds.js       the birds of the open air: gulls over the harbors, birds of prey, swallows, larks and storks over open country, sparrows and doves on the roofs
 shared/weather.js     rain, wet paving and puddles, and the wind with the signs it shows (pennant, smoke, whitecaps, cloud drift)
 shared/coast.js       the sea and the coast: sky by hour and weather, the sea to one horizon, islands, headlands, beaches, the coast road, quays and a harbor town
+shared/crowd.js       the cry of a crowd, heard and never written: shouted vowels and rhythm from a text key, and the roar beds (Chapters Fourteen and Eighteen)
 shared/materials.js   materials and light for backdrops: quiet wood grain, two-tone cracks, soft contact shadows, earth colors, joist shade, ceilings with joists in perspective
 lang/en/              the English text: main.js for the engine and shared files, prologue.js, chapterN.js for each chapter
 lang/de/              the German text, for the same keys, each line with the fingerprint of its English
