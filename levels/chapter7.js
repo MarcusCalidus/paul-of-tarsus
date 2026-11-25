@@ -109,6 +109,8 @@ function wagon(g,x,y,cov,load,pole){pole=pole==null?13:pole;shadow7(g,x+30,y+.6,
 function bale(g,x,y,w,h,c){clothRoll(g,x,y,w,h,c,{shadow:1,hi:1,k:.3})}
 /* ---------- Antioch: the courtyard where the congregation meets (opening scenes) ---------- */
 ART.antioch7={w:320,q:12,
+ /* the morning sun from the upper left, as the house and the arbor throw their shade: shadows fall to the right and a little toward us */
+ light:{amb:'#ffffff',wallY:104,sun:[12,6,.4]},
  paint(g){const r=rng(703),W='#e6d6ac',rw=rng(707);
   /* the sky's blues drawn a little toward grey (earth7), so that they sit with the plaster and the stone */
   sky(g,320,58,['#3e7cc8','#76a8dc','#c2d6e4'].map(c=>earth7(c,.14)));cloud(g,150,10,54,6,r);cloud(g,250,20,40,5,r);
@@ -151,6 +153,9 @@ ART.antioch7={w:320,q:12,
  draw(){},front(){}};
 /* ---------- Jerusalem: the room where the apostles and the elders gathered (opening scene) ---------- */
 ART.council={w:320,q:12,
+ /* the day falls from the three high windows in the back wall onto the floor in front: shadows fall toward us. The lamps in their niches
+    are faint beside it. */
+ light:{amb:'#e4d6c4',wallY:103,sun:[0,10,.28]},
  paint(g){const r=rng(709),ST='#d8ccae',rw=rng(711);
   ashlar(g,0,0,320,104,ST,r,{bw:17,bh:8.5,v:.07,t:.22});
   /* a few hairline cracks in the stones, high up, where they run to no head */
