@@ -364,8 +364,8 @@ ART.court12={w:320,q:12,variant:CV,
   else sun12(g,320,24,'#dcd4d2',l=>{pool(l,170,62,160,46,'#ffffff',.8);pool(l,190,114,170,14,'#fff4e0',.55);pool(l,170,101,130,5,'#fff0d8',.35);pool(l,300,70,30,50,'#fff8f0',.35)});
   haze(g,320,103,v);if(!wet)pool(g,200,0,220,150,WARM[v],.1,'screen')},
  /* the sun stands over the synagogue's wall at the left: its shade lies on the left of the floor, and shadows fall to the right. In
-    winter the sky is grey and even, and only the contact shadow stays. */
- light:()=>CV()==='w'?{amb:'#c9cdd8'}:{amb:'#ffffff',sun:[24,2,.38],wallY:104},
+    winter the sky is grey and even, and only the contact shadow stays. Whoever stands in the wall's shade on the left (x < 70) casts none. */
+ light:()=>CV()==='w'?{amb:'#c9cdd8'}:{amb:'#ffffff',sun:[24,2,.38],wallY:104,shade:[[-40,76,'#d0d2e7']]},
  /* the rope from wall to wall, and the cloth on it, as it was last set */
  draw(g,t){const st=awn(),Y=[40,50,60],y0=Y[st.l],y1=Y[st.r],B=bays(st),yy=x=>y0+(y1-y0)*(x-30)/260;
   depth(104,()=>{stroke(g,[24,y0+1.5,30,y0,290,y1,296,y1+1.5],'#6a5438',.9);

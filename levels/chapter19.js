@@ -350,7 +350,8 @@ const COLB19=Array.from({length:11},(_,i)=>30+i*26);
 const varB19=()=>phase19()==='nephew'?'aft':phase19()==='yard'?'night':'day';
 ART.barracks19={w:320,q:12,variant:varB19,paint(g,v){paintBarracks19(g,v)},
   light(){const v=varB19();return v==='night'?{amb:'#4a4664',wallY:104,lamps:TORCH19.map(([x,y])=>[x+1,y-2,96,'#ffa850',104,y])}:
-    v==='aft'?{amb:'#c8b4b0',sun:[22,-8,.34],wallY:104,wall:[[24,286,104,47]]}:
+    /* in the afternoon the left wall's shadow slants across the floor (lightAftB19): whoever stands in it, on the left, casts none */
+    v==='aft'?{amb:'#c8b4b0',sun:[22,-8,.34],wallY:104,wall:[[24,286,104,47]],shade:[[-40,132,'#cac7dd']]}:
     /* by day the court lies in the shade of its walls where people stand (the sun reaches only the gallery and a band of floor nearer
        than anyone stands): the contact shadow alone */
     {amb:'#d4ccd0',wallY:104}},
@@ -941,7 +942,9 @@ function lightGate19(g){comp(g,'soft-light',.45,()=>{g.fillStyle=lg(g,0,0,320,0,
    Hotspots: the opening onto the city 196,30,114,62 · the hanging 18,24,40,64 · the bronze jar 72,78,12,26 · the door 0,56,16,58.
    Walk: 30..300 by 114..138. Actors: the commander 254,118 by the parapet; the officer and the nephew come in at the left (60,126). */
 const HZCmd19=64,OPCmd19=[196,30,310,84],RVCmd19=[300,32.7,82.4],COLCmd19=[106,148,189,316];
-ART.cmd19={w:320,q:12,paint(g){paintCmd19(g)},light:{amb:'#eccaa8',sun:[-16,16,.36],wallY:104},draw(){},front(){}};
+/* the low sun through the opening lies on the floor in one patch (lightCmd19, about x 175..280 where people stand): only there does a
+   figure cast a shadow; on either side of it the room is in its own warm shade */
+ART.cmd19={w:320,q:12,paint(g){paintCmd19(g)},light:{amb:'#eccaa8',sun:[-16,16,.36],wallY:104,shade:[[-40,176,'#d8ccd4'],[282,360,'#d8ccd4']]},draw(){},front(){}};
 function paintCmd19(g){const r=rng(1951),W='#e0ccaa',BK=104,[ox0,oy0,ox1,oy1]=OPCmd19;
   /* the back wall: limewashed plaster, a little worn, under the ceiling */
   plaster(g,0,8,320,BK-8,W,r,{patch:0,cracks:0,t:.36,top:.02,bot:-.06});

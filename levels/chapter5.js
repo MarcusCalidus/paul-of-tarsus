@@ -143,8 +143,9 @@ ART.perga={w:480,fp:1.3,q:12,
 /* The river comes out at the foot of the cliff and runs toward us (RIV: its bed). NEAR and FAR: the tops of the two posts of the guide rope. */
 const RIV=[230,60,248,60,254,69,257,78,263,91,269,104,274,116,279,129,285,144,193,144,198,131,201,117,205,104,213,91,221,78,226,69],NEAR=[193,99],FAR=[281,99];
 ART.ford={w:480,fp:1.25,q:12,
- /* the near bank lies in the gorge's cool shade: soft light, so the contact shadow alone */
- light:()=>({amb:'#e2e4f0'}),
+ /* the sun stands high over the right wall: the far bank on the right lies in it, and its boulders throw short shadows to the left
+    (CO.boulder, light 1); so do the people there. The near bank on the left lies in the gorge's cool shade, and casts none. */
+ light:()=>({amb:'#ffffff',sun:[-8,4,.38],shade:[[-40,200,'#e2e4f0']]}),
  paint(g){const r=rng(347),LS='#b9b0a4',GR='#b4aa96';
   sky(g,480,46,SKY5(['#5088c8','#8fb8e0','#d0e0ea']));cloud(g,236,12,46,6,r);
   /* far peaks through the gap of the gorge */

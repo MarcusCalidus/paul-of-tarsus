@@ -331,7 +331,11 @@ ART.house={w:320,q:12,
   if(F.basketOn)basketArt(g,202,88,true,k)},
  front(){}};
 /* ---------- Outside the wall (title and ending): open country under the moon ---------- */
-ART.wall={w:320,q:12,paint(g){const r=rng(51),E=c=>earth1(c,.16);
+ART.wall={w:320,q:12,
+ /* night, the moon high on the right beyond the wall: a shadow would fall to the left and toward us, faint. The two at the window and the
+    one who walks away are drawn small by hand in the scene (wallScene), with their own contact shade, so the engine casts nothing here. */
+ light:{amb:'#7a84b8',sun:[-8,14,.18]},
+ paint(g){const r=rng(51),E=c=>earth1(c,.16);
   g.fillStyle=lg(g,0,0,0,116,['#05071a','#0a0f2e','#141c4a','#263468','#3a4a86'].map(E));g.fillRect(0,0,320,116);
   for(let i=0;i<230;i++){const b=r(),sx=r()*320,sy=r()*r()*100;R(g,sx,sy,b>.94?1:.5,b>.94?1:.5,b>.9?'#ffffff':b>.5?'#b9c2f0':'#6f78b4')}
   pool(g,262,24,80,60,'#5a6cc0',.5);pool(g,262,24,28,26,'#aab8f0',.5);oval(g,262,24,9.5,9.5,'#f4f0da');oval(g,258.5,21.5,2.6,2,'#d6d2ba');oval(g,266,28,2,1.4,'#d6d2ba');oval(g,264,19,1.3,1,'#dedac2');

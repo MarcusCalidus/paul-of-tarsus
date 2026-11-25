@@ -361,6 +361,9 @@ ART.troas={w:480,fp:1.25,q:12,
  front(){}};
 /* ---------- At anchor off Samothrace, by night: the deck, as the crossing is told ---------- */
 ART.deck8={w:320,q:12,
+ /* night: the moon high on the right throws faint shadows to the left and toward us; the small lamp on the deck throws those who stand
+    behind it back across the planks and up the bulwark */
+ light:{amb:'#7a84b0',wallY:117,wall:[[0,320,117,101.6]],sun:[-9,12,.16],lamps:[[152.5,129,95,'#e0a050',131,128]]},
  paint(g){const r=rng(839);
   sky(g,320,86,skyE(['#0a1030','#162048','#2a3a68']));for(let i=0;i<110;i++){const x=r()*320,y=r()*70,b=r();R(g,x,y,.5,.5,`rgba(${230+b*25|0},${230+b*20|0},${200+b*55|0},${.35+b*.6})`)}
   pool(g,258,22,60,40,'#c8d4f0',.3);pool(g,258,22,9,9,'#f4f4e6',1);pool(g,258,22,5.4,5.4,'#fffff4',1);
@@ -489,8 +492,9 @@ ART.river={w:480,fp:1.3,q:12,
  /* the flat stones where the women sit stand a little up from the turf: whoever walks behind one is hidden by it */
  props:STONES.map(([x,y])=>({y:y+1,shape:g=>oval(g,x,y,10,2.8,'#000'),foot:[x-8,y-2,16,4],seat:1})),
  /* The sun stands to the right of the picture (o.light 1), so that the great plane tree throws its shade over the stones. */
- /* the morning sun to the right and beyond: shadows fall long to the left and a little toward us, as the plane tree's does */
- light:{amb:'#ffffff',sun:[-16,5,.4]},
+ /* the morning sun to the right and beyond: shadows fall long to the left and a little toward us, as the plane tree's does. Under the
+    plane tree's crown (its shade lies over the stones, x 186..392) whoever stands there is in its shade and casts none. */
+ light:{amb:'#ffffff',sun:[-16,5,.4],shade:[[186,392,'#d0d0e4']]},
  paint(g){const r=rng(859),S=SCRAP8,L=1;
   sky(g,480,70,skyE(['#3f80c8','#7aacdc','#c0d6e6','#ecead8']));cloud(g,90,14,54,6,r);cloud(g,236,8,60,6,r);cloud(g,386,22,40,4,r);
   /* far across the plain: a long mountain, blue with the morning, its slopes turned to the sun a little lighter */
@@ -559,6 +563,8 @@ ART.river={w:480,fp:1.3,q:12,
  front(){}};
 /* ---------- Lydia's house, that evening (the closing scene) ---------- */
 ART.lydia8={w:320,q:12,
+ /* evening: the two lamps in their niches in the back wall; whoever stands on the floor in front throws his shadow forward, away from them */
+ light:{amb:'#9a8a98',wallY:103,lamps:[[68.6,51.6,150,'#c89050',103,51.6],[232.6,51.6,150,'#c89050',103,51.6]]},
  paint(g){const r=rng(863),W='#e2d2ae',rw=rng(8631),rb=rng(8632),RED=earthTone('#9a4a3a',.14);
   plaster(g,0,0,320,104,W,r,{patch:2,cracks:0,brick:'#b08a5a',t:.32});skipCracks(r,4);
   /* cracks cut by hand, high under the beams, where they run to no head */
