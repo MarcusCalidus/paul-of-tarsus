@@ -530,33 +530,117 @@ function lightCmd19(g){const P=[190,111,293,111,262,146,156,146];
 /* ==== ART cmd19: end ==== */
 
 /* ==== ART antipatris19: begin ==== */
-/* Antipatris at dawn, in the well-watered Plain of Sharon (Insight "Antipatris"; "Aphek" No. 3: at the source of the Yarkon). The plain
-   lies green and flat to one horizon (y 70); the town far off at the right, low walls and roofs (a tower only at the end of a wall). At
-   the left the spring wells up in a pool among reeds, and the young river runs away from it into the plain, narrowing as it goes, toward
-   the sea in the west (its mouth out of sight beyond the horizon). The road from the hills comes in at the left behind us; the road on to
-   Caesarea leaves at the right. The sky is pale and warm low in the east (behind us at the left).
+/* Antipatris at dawn, in the well-watered Plain of Sharon (Insight "Antipatris"; "Aphek" No. 3: at the source of the Yarkon). We look west,
+   toward the sea, which lies out of sight beyond the horizon (y 70): the sun is coming up behind us at the left, so the sky before us is
+   pale, with the pink band of dawn low over the cool shadow of the earth, and everything turned toward us is touched with warm light;
+   long shadows run away from us to the right. The plain lies green and flat to the horizon, its fields and meadows in perspective, with
+   mist lying low over the wet ground. At the left, off the road, the spring wells up in a pool among reeds and stones under a willow, and
+   the young river leaves the pool at its right, runs along under the horses' heads, where they drink, and then winds away from us into
+   the plain, narrowing until it is a thread at the horizon (CONTRIBUTING section 4: it does not stop short; its end in the sea is beyond
+   the horizon). At the right, on its low mound, the small walled town: a wall with a tower at its left end only, roofs behind it, trees
+   about it. The road from the hills comes in at the lower left, behind us, crosses before us and leaves at the right for Caesarea. No
+   post or mast stands across the horizon. Heads come at y 76..96: behind them lie the plain and the sky.
    Called from outside: ART.antipatris19. Reads nothing.
    Hotspots: the spring 6,100,64,22 (off the way: the hidden treasure) · the horses at the water 90,100,56,26 · the town 220,52,90,20 ·
    the plain 0,60,320,40 · the road to Caesarea 304,96,16,48. Walk: 80..300 by 116..138 (the spring lies beyond it).
    Actors: the officers 212,122 and 240,120; foot soldiers 262,124 and 280,132; the horseman 160,120. The horses drink at HORSEA19. */
-const HORSEA19=[[108,124,1],[136,122,1]];
-ART.antipatris19={w:320,q:12,paint(g){paintAnti19(g)},light:{amb:'#f4dcc0',sun:[.5,.2,.25]},
+const HORSEA19=[[108,124,1],[136,122,1]],HZAnti19=70,
+  /* the young river from the pool to the horizon: x, y and its width, from near to far */
+  RIVAnti19=[[60,112.6,5.6],[70,115.4,6],[80,117.6,6],[90,118.4,5.6],[99,116.4,5],[105,111.4,4.2],[107,105.6,3.6],[104,99.6,2.8],[107,94.4,2.2],
+    [114,89.6,1.8],[113,84.6,1.4],[108,80.6,1.1],[113,76.8,.9],[118,74,.7],[115,71.8,.5],[117,70.4,.4]];
+ART.antipatris19={w:320,q:12,paint(g){paintAnti19(g)},light:{amb:'#f6dcc8',sun:[.4,-.22,.35]},
   draw(g){HORSEA19.forEach(([x,y],i)=>horse19(g,x,y,-1,i===0?1:0,1,lightAt('antipatris19',x,y)))},front(){}};
-function paintAnti19(g){const r=rng(1961);
-  sky19(g,320,72,'dawn');pool(g,20,70,120,30,'#fff0c8',.35,'screen');
-  /* the town far off */
-  R(g,226,62,78,8,'#b8a48a');R(g,226,62,78,.6,'#e8d2b0');for(const x of[232,252,272,290])R(g,x,58,10,4,'#c4ae90');R(g,298,54,6,8,'#b09a80');
-  g.fillStyle=lg(g,0,70,0,144,['#8a9a5a','#6e8a46','#5a7a3a']);g.fillRect(0,70,320,74);tex(g,'mott',.35,0,70,320,74,'overlay',.8);
-  for(let i=0;i<400;i++)R(g,r()*320,72+r()*72,1,.5,r()<.5?'rgba(40,60,20,.3)':'rgba(200,220,140,.25)');
-  /* the young river: from the pool at the left, narrowing back toward the horizon */
-  /* it leaves the pool at its far side and winds away to the horizon, a thread at the last */
-  for(const[x0,y0,x1,y1,w]of[[42,106,52,96,5],[52,96,46,88,3.6],[46,88,58,80,2.4],[58,80,52,75,1.4],[52,75,62,71,.8]])stroke(g,[x0,y0,x1,y1],'#6a9ab0',w);
-  stroke(g,[46,100,50,94],'rgba(230,244,250,.45)',.5);
-  oval(g,40,112,30,8,'#5a8aa4');oval(g,40,111,24,5,'#7aaac0');pool(g,40,110,16,3,'#e8f4f8',.4,'screen');
-  for(let i=0;i<26;i++){const x=10+r()*64,y=104+r()*14;stroke(g,[x,y,x+.6,y-5-r()*4],'#4a6a2a',.5)}
-  /* the road on to Caesarea */
-  poly(g,[300,144,320,144,320,118,304,116],'#c8b48c');
-  light19(g,320,1,'rgba(255,210,160,1)',.4)}
+function paintAnti19(g){const CO=SHARED.country,HZ=HZAnti19;
+  /* the western sky at dawn: blue above, the pink band, and the cool shadow of the earth just over the horizon */
+  sky(g,320,HZ+1,['#5a6a9e','#8a94bc','#c4b4c4','#e6c0b4','#c8b0b8','#a8a4bc']);
+  pool(g,40,HZ-12,200,10,'#f4cab8',.22,'screen');
+  for(const[x,y,w]of[[30,22,70],[140,14,54],[236,26,60],[96,36,40]]){pool(g,x+w/2,y,w/2,1.4,'#f6d0c4',.5,'source-over');R(g,x+w*.2,y+.6,w*.6,.5,'rgba(255,214,190,.6)');R(g,x+w*.25,y-.7,w*.5,.5,'rgba(120,120,170,.3)')}
+  /* the plain to the horizon, hazed toward it, and the trees here and there along its banks */
+  CO.plain(g,0,320,HZ,104,1962,{vx:150,land:'#86a05e',haze:'#c8c0c8',kinds:['meadow','green','grain','meadow','fallow','green','meadow','orchard'],clouds:0});
+  for(const[x,y,h,k]of[[150,74.4,5,'poplar'],[156,74,4,'poplar'],[60,73,4,'plane'],[188,76,6,'plane'],[24,75.6,5,'plane'],[136,77,7,'willow']])CO.tree(g,x,y,h,null,{kind:k,seed:x*7+3});
+  townAnti19(g);
+  /* the nearer ground: meadow, wet and green, lit from behind us */
+  CO.turf(g,0,100,320,144,'#7a9256',1963,{wind:.6,flowers:40,fc:['#f0ece0','#e8c84a','#d8a0c0'],scale:.9});
+  roadAnti19(g);
+  riverAnti19(g);
+  springAnti19(g);
+  /* the mist that lies low over the wet ground at dawn, and over the river */
+  for(const[x,y,rx,ry,a]of[[80,80,90,3.4,.3],[200,84,110,3,.22],[110,92,40,4,.3],[30,96,40,4,.28],[260,94,70,3,.16]])pool(g,x,y,rx,ry,'#f4e8ec',a,'source-over');
+  /* the low sun behind us at the left: warm over the near ground and the faces turned to us, cooler toward the right and the distance */
+  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,200,150,1)','rgba(240,200,180,.7)','rgba(180,180,220,.8)']);g.fillRect(0,HZ,320,144-HZ)});
+  ao(g,0,124,320,20,'b',.14,'#2a2050')}
+/* the town far off at the right on its low mound: the mound in the plain's haze, the wall across its front with a tower at its left end
+   only, the flat roofs behind the wall, a few trees; all its faces turned to us catch the low sun, its sides in cool shade */
+function townAnti19(g){const r=rng(1964),HZ=HZAnti19,L='#f0c8a8',S='#a898ac';
+  const M=[206,HZ+.6,214,HZ-2,224,HZ-4.4,300,HZ-4.8,312,HZ-2.4,320,HZ-.6,320,HZ+.6];poly(g,M,'#9aa07a');
+  clipTo(g,()=>poly(g,M),()=>{g.fillStyle=lg(g,0,HZ-5,0,HZ+1,['#b4ae8a','#98a07a']);g.fillRect(206,HZ-5,114,6);tex(g,'mott',.3,206,HZ-5,114,6,'overlay',1)});
+  /* the roofs behind the wall, stepping up a little toward the middle of the mound */
+  for(let x=231;x<300;){const w=2.4+r()*5,t=HZ-10.4-r()*2.2-Math.max(0,2-Math.abs(x-262)/14),c=mix(tint(L,-.08),r()<.5?'#d8c8c0':'#c8b0a0',r()*.5);
+    R(g,x,t,w,HZ-4-t,c);R(g,x,t,w,.5,tint(c,.2));R(g,x+w-.8,t+.5,.8,HZ-4.5-t,rgba(S,.6));
+    if(w>4&&r()<.5)R(g,x+1+r()*(w-2.5),t+1.2,.8,.8,'rgba(70,56,70,.6)');x+=w+(r()<.3?.5:0)}
+  /* the wall across the front, its top level, and the tower at its left end */
+  R(g,228,HZ-9,74,5,tint(L,-.06));R(g,228,HZ-9,74,.6,'#fff0dc');R(g,228,HZ-4.5,74,.5,'rgba(90,70,90,.5)');
+  inRect(g,228,HZ-9,74,5,()=>{for(let j=0;j<2;j++)for(let i=228+(j%2)*2.4+r()*1.4;i<302;i+=4.4+r()*1.2)R(g,i,HZ-8.4+j*2.4,.5,2,'rgba(120,96,100,.25)')});
+  R(g,301.4,HZ-9,1.6,5,rgba(S,.8));R(g,258,HZ-7.4,3,3,'#5a4a5a');R(g,258,HZ-7.4,3,.5,'#3a2a3a');
+  R(g,222.4,HZ-15.4,6,11,L);R(g,222.4,HZ-15.4,6,.6,'#fff4e4');R(g,226.8,HZ-15,1.6,10.6,rgba(S,.7));R(g,224,HZ-12,1,1.6,'rgba(70,56,70,.7)');
+  /* trees beside the town, lit from behind us */
+  for(const[x,h]of[[214,7],[218,5],[306,6],[311,8]])SHARED.country.tree(g,x,HZ-1.2,h,null,{kind:'plane',seed:x});
+  /* the haze of the distance over the town */
+  comp(g,'source-over',.26,()=>{g.fillStyle='#dcc8d0';g.fillRect(206,HZ-17,114,18)})}
+/* the road: it comes in at the lower left from behind us, crosses before us and climbs gently away at the right toward Caesarea; dust
+   worn into two faint ruts that run along it and break off, stones, tufts at its ragged edges */
+function roadAnti19(g){const r=rng(1965),C=[[44,150,18],[80,136,15],[130,130.4,13],[190,128.4,12],[246,125.6,10.4],[284,120.6,8.4],[322,110,6]],
+    at=x=>{let i=0;while(i<C.length-2&&C[i+1][0]<x)i++;const[a,b,w]=C[i],[c,d,w2]=C[i+1],k=clamp((x-a)/(c-a),0,1),s=k*k*(3-2*k);return[b+(d-b)*s,w+(w2-w)*k]},
+    T=[],B=[];for(let x=44;x<=322;x+=1.5){const[y,w]=at(x),n1=Math.sin(x*.37)*.4+Math.sin(x*1.3)*.25,n2=Math.sin(x*.29+2)*.4+Math.sin(x*1.1+1)*.25;T.push(x,y-w/2+n1);B.unshift(x,y+w/2+n2)}
+  const P=T.concat(B);
+  poly(g,P.map((v,i)=>i%2?v+.6:v),'rgba(70,80,50,.35)');
+  poly(g,P);g.fillStyle=lg(g,0,108,0,146,['#b8a48c','#c2aa8a','#b49c7c']);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.5,40,100,282,46,'overlay',1);tex(g,'blotch',.3,40,100,282,46,'soft-light',1);
+    for(const k of[-.22,.2])for(let x0=50+r()*20;x0<320;){const len=14+r()*36,q=[];for(let x=x0;x<Math.min(322,x0+len);x+=2){const[y,w]=at(x);q.push(x,y+w*k+Math.sin(x/11)*.3)}
+      if(q.length>3){stroke(g,q,'rgba(120,96,80,.3)',.7);stroke(g,q.map((v,i)=>i%2?v+.7:v),'rgba(255,238,220,.2)',.5)}x0+=len+6+r()*20}
+    for(let i=0;i<160;i++){const x=46+r()*276,[y,w]=at(x),yy=y+(r()-.5)*w;R(g,x,yy,.5+r(),.5,r()<.5?'rgba(110,86,72,.3)':'rgba(255,242,224,.3)')}
+    for(let i=0;i<16;i++){const x=70+r()*240,[y,w]=at(x),yy=y+(r()-.5)*w*.7;R(g,x,yy,1.4,.8,'#a8927c');R(g,x,yy,1.4,.4,'#f0dcc4');R(g,x+.6,yy+.8,1.4,.5,'rgba(70,56,80,.3)')}});
+  for(let i=0;i<70;i++){const x=46+r()*276,[y,w]=at(x),up=r()<.5,yy=up?y-w/2+.6+r():y+w/2+.4;SHARED.country.tuft(g,x,yy,1.4+r()*2.4,r()<.5?'#7a9054':'#9a9e66',r)}}
+/* riverAnti19: the young river from the pool's right side along under the horses and away into the plain, in a ribbon that narrows as it
+   goes: the water the colour of the sky it mirrors (the cool blue overhead near us, the pink band far off), its far bank a little dark
+   over it, a lit ripple here and there; it ends at the horizon as a thread */
+function riverAnti19(g){const V=RIVAnti19,HZ=HZAnti19,S=[];
+  /* a smooth line through the points (Catmull-Rom), with the width at each */
+  for(let i=0;i<V.length-1;i++){const p0=V[Math.max(0,i-1)],p1=V[i],p2=V[i+1],p3=V[Math.min(V.length-1,i+2)];
+    for(let t=0;t<1;t+=.125){const t2=t*t,t3=t2*t,f=(a,b,c,d)=>.5*(2*b+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3);S.push([f(p0[0],p1[0],p2[0],p3[0]),f(p0[1],p1[1],p2[1],p3[1]),p1[2]+(p2[2]-p1[2])*t])}}
+  S.push(V[V.length-1]);
+  const Lf=[],Rt=[];for(let i=0;i<S.length;i++){const a=S[Math.max(0,i-1)],b=S[Math.min(S.length-1,i+1)],dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy)||1,nx=-dy/l,ny=dx/l,[x,y,w]=S[i];
+    Lf.push(x+nx*w*.5,y+ny*w*.32);Rt.unshift(x-nx*w*.5,y-ny*w*.32)}
+  const P=Lf.concat(Rt);
+  poly(g,P.map((v,i)=>i%2?v-.7:v),'rgba(52,70,40,.55)');
+  poly(g,P);g.fillStyle=lg(g,0,HZ,0,122,['#d8bcc0','#b4aac0','#8c94b0','#7a86a6']);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{const q=rng(1971);for(let i=0;i<60;i++){const s=S[Math.floor(q()*S.length)];if(s[2]<1.4)continue;R(g,s[0]-1+q()*2,s[1]+(q()-.5)*s[2]*.25,1+q()*2,.5,q()<.6?'rgba(255,238,232,.4)':'rgba(60,70,100,.3)')}
+    ao(g,56,108,60,14,'t',.15,'#2a3040')});
+  /* the near bank under the horses: wet earth where they stand to drink */
+  stroke(g,[64,117.4,76,120,90,121,100,119.2],'rgba(70,56,40,.4)',.7)}
+/* springAnti19: the pool where the spring rises, among reeds and stones, under a willow: the water wells up at its middle in soft rings
+   that break before they close; the sky lies in it; its rim of wet stones; reeds along its far side and at its right end */
+function springAnti19(g){const CO=SHARED.country,r=rng(1966),cx=36,cy=111.4,rx=28,ry=7.2,P=[];
+  CO.tree(g,16,104.6,34,null,{kind:'willow',seed:1967});
+  CO.reeds(g,8,62,105,9,1968,{wind:1.6,heads:1,c:'#6a8a48'});
+  for(let i=0;i<24;i++){const t=i/24*6.2832,q=1+.08*Math.sin(t*3+1)+(r()-.5)*.06;P.push(cx+Math.cos(t)*rx*q,cy+Math.sin(t)*ry*q*(Math.sin(t)>0?1.05:.9))}
+  M19.shadow(g,cx,cy+1,rx+2,ry,.25,'#2a3a2a');
+  poly(g,P.map((v,i)=>i%2?v+.6:v),'#3e5432');
+  poly(g,P);g.fillStyle=lg(g,0,cy-ry,0,cy+ry,['#d8bcc0','#b0aac0','#8a98b4']);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{
+    /* the willow and the reeds mirrored dark in the far part of the water */
+    pool(g,18,cy-3,14,3,'#4a5a48',.4,'source-over');for(let i=0;i<30;i++){const x=10+r()*52;R(g,x,cy-ry+.6,.5,1.2+r()*2,'rgba(60,80,50,.35)')}
+    /* where the spring wells up: a soft paler dome, and rings that break before they close */
+    pool(g,cx+2,cy+.4,6,2.2,'#f4e8ec',.5,'source-over');
+    g.lineWidth=.5;for(const[k,a0,a1,al]of[[3.2,.4,2.6,.5],[3.2,3.5,5.6,.45],[6.4,.2,2.2,.38],[6.4,3,4.6,.36],[9.6,.6,2.4,.28],[9.6,3.6,5.2,.25]]){
+      g.strokeStyle=`rgba(255,246,240,${al})`;g.beginPath();g.ellipse(cx+2,cy+.4,k,k*.3,0,a0,a1);g.stroke();
+      g.strokeStyle=`rgba(70,80,110,${al*.6})`;g.beginPath();g.ellipse(cx+2,cy+.9,k,k*.3,0,a0,a1);g.stroke()}
+    ao(g,cx-rx,cy-ry,rx*2,3,'t',.25,'#2a3040')});
+  /* the rim: wet stones round the pool, larger toward us, each lit on its top and dark at the water */
+  for(let i=0;i<26;i++){const t=.34+r()*5.3,x=cx+Math.cos(t)*rx*(.98+r()*.1),y=cy+Math.sin(t)*ry*(1+r()*.12);if(Math.sin(t)<-.4||r()<.3)continue;
+    const w=1.2+r()*2.4+(Math.sin(t)>0?r()*1.6:0);CO.boulder(g,x,y+.8,w,w*(.45+r()*.2),r()<.5?'#a8a090':'#988e80',1970+i,{light:-1})}
+  /* the river's mouth out of the pool at its right side: the rim opens for it */
+  CO.reeds(g,58,70,112.6,5,1969,{wind:1.6,c:'#6a8a48',n:10})}
 /* ==== ART antipatris19: end ==== */
 
 /* ==== ART palace19: begin ==== */
