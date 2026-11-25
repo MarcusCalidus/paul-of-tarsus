@@ -563,7 +563,7 @@
     {const ids=Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'&&!LOOK[k].stone),bad=[],tall=[];let n=0;
       const at=(o,id,fr,d)=>sprite(['kneel',id,fr,d].join('|'),q=>person(q,0,0,o,d,fr,0,0,0,0,0),d),
         top=c=>{const d=c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data;for(let y=0;y<FIG.H;y++)for(let x=0;x<FIG.W;x++)if(d[(y*FIG.W+x)*4+3])return y;return FIG.OY};
-      for(const id of ids){const o=LOOK[id],h0=FIG.OY-top(at(o,id,0,1));for(const fr of[-2,-3,-4,-5])for(const d of[1,-1]){n++;const c=at(o,id,fr,d);if(parts(c)!==1)bad.push(id+' '+fr+(d<0?' left':''));
+      for(const id of ids){const o=LOOK[id],h0=FIG.OY-top(o.spear==='slant'?at(Object.assign({},o,{spear:0}),id+'-nospear',0,1):at(o,id,0,1));   /* a spearman puts his slanting spear down to kneel: measure him standing without it */for(const fr of[-2,-3,-4,-5])for(const d of[1,-1]){n++;const c=at(o,id,fr,d);if(parts(c)!==1)bad.push(id+' '+fr+(d<0?' left':''));
         const r=(FIG.OY-top(c))/h0;if(d>0&&(r<.7||r>.9))tall.push(id+' '+fr+': '+r.toFixed(2))}}
       ok(!bad.length,`kneeling: ${n} poses of ${ids.length} looks (both knees or one, arms down or hands folded, both ways), and none comes apart`+(bad.length?'. IN PIECES: '+bad.slice(0,12).join('; '):''));
       ok(!tall.length,'a kneeling figure stands between seven and nine tenths of its height'+(tall.length?'. NOT: '+tall.slice(0,8).join('; '):''));
@@ -1111,7 +1111,11 @@
       halt('phonescroll');G.skip();await fade(0,60)}
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* the title card at full length, the prologue stops, and a room change caught half-way through its cross-fade */
-  if(stop==='card'){await loadLevel(1);AU.key=CHAP[1].music;G.speedAll=0;clearInterval(sk);showCard(1);await wait(300);halt('card')}
+  /* card19 and the like: the title card of that chapter. Every chapter's card is the painted logo in every language: a letter the logo
+     cannot write (as the apostrophe of THE SISTER'S SON was) would leave the card as plain text */
+  if(/^card\d*$/.test(stop)){const n=+stop.slice(4)||1;await loadLevel(n);AU.key=CHAP[n].music;G.speedAll=0;clearInterval(sk);await need('logo');
+    {const bad=Object.keys(CHAP).filter(k=>!SHARED.logo.can(T(CHAP[k].name)+T(CHAP[k].label).toUpperCase()));ok(!bad.length,"every chapter's title card is painted in the logo's letters, in "+LANGS[lang].native+(bad.length?': not '+bad.join(', '):''))}
+    showCard(n);await wait(300);halt(stop)}
   if(/^pro(card|1|2|3|4|5|7|8|8b|9)$/.test(stop)){await loadLevel(1);await loadPrologue();ov.className='';ov.onclick=null;setChapter(1);G.inPro=1;$('#chname').textContent=T(PRO.name);$('#skip').style.display='';G.busy=true;lock(true);status();clearInterval(sk);G.speedAll=0;
     if(stop==='procard'){showCard('prologue');await wait(300);halt('procard')}
     const S=PRO.scenes;
