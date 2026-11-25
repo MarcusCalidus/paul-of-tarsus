@@ -8,6 +8,8 @@ agora agora11
 altars altar11
 antioch antioch
 antioch12 pant12
+antipatris map19
+antipatris19 panti19
 apollos psyn13
 areopagus speech11
 arrest18 parrest18
@@ -44,6 +46,7 @@ coast-sheet coast coast-sheet
 coast-wind coast coast-wind
 code code
 colonnade sift11
+commander19 pcmd19
 conclusion concl8
 continue continue
 corinth pstreet12
@@ -51,7 +54,9 @@ corinth-games pstreets12
 corinth-map map12
 corinth-winter pstreetw12
 council council
+council19 pcouncil19
 counting-board pboardb13
+court19 pcourt19
 damaris down11
 daybreak dawn15
 depth depth8
@@ -72,6 +77,7 @@ ford wade
 fuller-door pfuller13
 gaius gaius15
 garlands bulls
+gate19 pgate19
 gates gates
 guard guard
 hall-tyrannus phallb13
@@ -79,6 +85,7 @@ harbor harbor
 heard cell9
 held-back pdoorb14
 homeward journey6
+horses horses horses-sheet
 hotspots tags
 house house
 iconium deliver
@@ -94,7 +101,9 @@ kleandros phouseb13
 lamplight mend
 lane-map lanes
 lane-map-harbor lanes2
+lanes19 phalves19
 letter12 pletter12
+letter19 letter19
 lookback back12
 lydia lydia8
 lydiahouse house9
@@ -122,6 +131,7 @@ one-by-one pone18
 options de:menu
 other-road map15
 outcry pspeech18
+palace19 ppalace19
 paphos paphos
 patara ppatara17
 perga perga
@@ -145,6 +155,7 @@ romans romans cast-romans
 routes routes15 routes-cen15
 samothrace deck8
 sand-plan plan15
+sanhedrin sanhedrin cast-sanhedrin
 saves saves
 scale store15
 scroll scroll
@@ -161,6 +172,7 @@ show show
 sifted tableb10
 silent silent
 silversmiths pmarket14
+sisters-door pdoor19
 speak speak
 speaker-name pwho16
 speech speech
@@ -208,3 +220,4 @@ withoutpaul tim10
 witness witness
 workshop workshop
 xfade xfade
+yard19 pyard19

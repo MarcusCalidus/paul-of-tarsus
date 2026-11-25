@@ -432,5 +432,6 @@ TEXTS('en',18,{
   /* End */
   "on_the_stairs_end":"In Jerusalem the brothers welcomed them gladly. Paul told James and the elders what God had done among the nations, and on their counsel went into the temple with four men under a vow. Jews from Asia seized him there, and the commander took him away in two chains. On the stairs Paul spoke to the people in Hebrew; in the soldiers' quarters he asked whether it was lawful to scourge a Roman who had not been condemned.",
   "based_on_acts_21_17_22_29":"Based on Acts 21:17-22:29. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are told here in paraphrase. Acts does not say who besides Trophimus was with Paul after the meeting with the elders, that the gift was handed over then (Acts 24:17; Bearing Thorough Witness: likely), what the vow was or what it cost, why seven days, how the two chains were fastened (compare Acts 12:6), where Paul looked on the stairs, or what was said beyond the account. It names the commander later (Acts 23:26). The warning stone follows the reading of the stone that survives. The houses of Mnason and of the elders, the names of the four men, the man from Cyrene, the Greek of the city, the Levite, the barber, and the brother and sister at Mnason's are invented.",
-  "click_to_return_to_the_title":"Click to return to the title"
+  "click_to_continue_to_chapter_nineteen":"Click to continue to Chapter Nineteen",
+  "chapter_nineteen_code_code":"Chapter Nineteen code: {code}"
 });

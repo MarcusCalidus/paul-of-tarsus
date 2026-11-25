@@ -124,6 +124,7 @@
   16:()=>act('look','bale_at_the_end'), // Chapter Sixteen: on the quay of Miletus, the lone bale of wool at the far end
   17:()=>act('look','heap_of_shells'), // Chapter Seventeen: on the beach outside Tyre, the heap of spent murex shells off the way
   18:()=>act('look','far_end_of_the_colonnade'), // Chapter Eighteen: in the Court of the Gentiles, the far end of Solomon's Colonnade
+  19:()=>act('look','spring'), // Chapter Nineteen: at Antipatris at dawn, the spring off the way
  };
  (async()=>{try{
   while(!G.ready)await wait(30);
@@ -182,7 +183,7 @@
   const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3|map3)$/.test(stop),HUB=stop==='hubmap',
     C4=/^(sendoff|seleucia|kallias|shelter|jair|voyage|map4|salamis|synagogue|speech|hubmap4|paphos|tools|daniel|blind|name4|journey4|final4|deutsch4)$/.test(stop),
     C5=/^(voyage5|perga|parting|sandal|hubmap5|ford|splice|wade|line|pisidia|synp|speech5|week|greek|sabbath2|border|dust|journey5|final5)$/.test(stop),
-    C6=/^(beasts|mules|oxen|sheep|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house6|mend|derbe|oxtalk6|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
+    C6=/^(beasts|mules|oxen|sheep|horses|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house6|mend|derbe|oxtalk6|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
   const lang=(location.search.match(/[?&]lang=(\w+)/)||[])[1]||'en',toLang=async l=>{for(let i=0;i<150&&G.lang!==l;i++)await wait(30);await wait(60)};
   ok(G.lang===lang&&document.documentElement.lang===lang,'the game is in '+LANGS[lang].native+', as the address asks');fitVerbs();
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
@@ -337,6 +338,28 @@
       const z=document.createElement('canvas'),Z=4,parts=[[0,0,150,100],[150,40,170,104]];z.width=170*2*Z;z.height=parts.reduce((s,r)=>s+r[3]*2*Z,0);const g=z.getContext('2d');g.imageSmoothingEnabled=false;let y=0;
       for(const[x0,y0,w,h]of parts){g.drawImage(k,x0*2,y0*2,w*2,h*2,0,y,w*2*Z,h*2*Z);y+=h*2*Z}
       window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'map18-zoom']:z.toDataURL()})})}
+  /* map19: Antipatris on the travel map (shared/map.js), for Chapter Nineteen (Acts 23:31-33): by night from Jerusalem to Antipatris, then
+     by day on to Caesarea, in the usual window and in the window levant. In each, no two routes cross, no name crosses a coast, an island
+     or a route, no two names touch, and every name lies inside the window, in each language (de:map19). It stops on the usual window by night (docs/screenshots/antipatris.png) and hands over map19-zoom.png
+     (de-map19-zoom.png): the land between Caesarea and Jerusalem eight times enlarged, by night and by day, for the cross-shape check.
+     It plays in the latest chapter there is, until Chapter Nineteen is in the manifest. */
+  if(stop==='map19'){clearInterval(sk);sk=0;const n=CHAP[19]?19:CHAP[18]?18:17;await loadLevel(n);setChapter(n);await need('map');ov.className='';ov.onclick=null;G.busy=true;lock(true);status();
+    const M=SHARED.map,cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let k=0;
+        for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))k++;return k},
+      tidy=()=>{const[ox,oy,w,h]=M.window(),bx=M.state.boxes,bad=[];for(const b of bx)if(b[0]<ox-.5||b[2]>ox+w+.5||b[1]<oy-.5||b[3]>oy+h+.5)bad.push(b[4]+' (off the map)');
+        for(let i=0;i<bx.length;i++)for(let j=i+1;j<bx.length;j++){const a=bx[i],b=bx[j];if(a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3])bad.push(a[4]+' on '+b[4])}return bad},
+      inWin=id=>{const[x,y]=M.where(id);return x>6&&x<314&&y>6&&y<138},
+      say=(c,cl,td,out)=>(c?'. CROSSINGS: '+c:'')+(cl?'':'. CROSSES: '+[...mapClear.bad].join(', '))+(td.length?'. NAMES: '+td.join(', '):'')+(out.length?'. OUT: '+out.join(', '):'');
+    ok(!!M.places.antipatris&&T('antipatris')!=='antipatris'&&/^Antipatris$/.test(T('antipatris')),'Antipatris is a place on the map, and its name has its text ('+T('antipatris')+')');
+    const shots={};
+    for(const view of['levant',''])for(const night of[0,1]){const R=night?[['jerusalem','antipatris','new']]:[['jerusalem','antipatris'],['antipatris','caesarea','new']];
+      await M.journey(R,{view,night,instant:1});await wait(60);
+      const c=cross(M.state.legs),cl=mapClear(),td=tidy(),out=['caesarea','jerusalem','antipatris'].filter(k=>!inWin(k)&&(night?k!=='caesarea':1));
+      ok(!c&&cl&&!td.length&&!out.length&&M.state.seen.has('antipatris')&&M.state.night===!!night,'map19, '+(night?'by night from Jerusalem to Antipatris':'by day on to Caesarea')+' ('+(view||'the usual window')+'): it crosses nothing, and no name crosses it'+say(c,cl,td,out));
+      if(!view){const k=document.createElement('canvas');k.width=640;k.height=288;const q=k.getContext('2d');q.scale(2,2);M.draw(q,G.t);shots[night?'n':'d']=k}}
+    halt('map19',()=>{const z=document.createElement('canvas'),Z=8,[x0,y0,w,h]=[196,100,60,34];z.width=w*2*Z;z.height=h*2*Z*2;const g=z.getContext('2d');g.imageSmoothingEnabled=false;
+      g.drawImage(shots.n,x0*2,y0*2,w*2,h*2,0,0,w*2*Z,h*2*Z);g.drawImage(shots.d,x0*2,y0*2,w*2,h*2,0,h*2*Z,w*2*Z,h*2*Z);
+      window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'map19-zoom']:z.toDataURL()})})}
   /* A figure bound with a belt (a.bound; person's fr -6): Agabus binds his own feet and hands with Paul's belt (Acts 21:11). For every look
      of Chapters Three, Sixteen and Seventeen (if it is there) and the usual kinds of dress, facing both ways: each pose is one piece, and
      a.bound seats an actor bound, keeps him from turning, and lets him go when it is cleared. cast-bound.png shows them three times
@@ -540,7 +563,7 @@
     {const ids=Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'&&!LOOK[k].stone),bad=[],tall=[];let n=0;
       const at=(o,id,fr,d)=>sprite(['kneel',id,fr,d].join('|'),q=>person(q,0,0,o,d,fr,0,0,0,0,0),d),
         top=c=>{const d=c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data;for(let y=0;y<FIG.H;y++)for(let x=0;x<FIG.W;x++)if(d[(y*FIG.W+x)*4+3])return y;return FIG.OY};
-      for(const id of ids){const o=LOOK[id],h0=FIG.OY-top(at(o,id,0,1));for(const fr of[-2,-3,-4,-5])for(const d of[1,-1]){n++;const c=at(o,id,fr,d);if(parts(c)!==1)bad.push(id+' '+fr+(d<0?' left':''));
+      for(const id of ids){const o=LOOK[id],h0=FIG.OY-top(o.spear==='slant'?at(Object.assign({},o,{spear:0}),id+'-nospear',0,1):at(o,id,0,1));   /* a spearman puts his slanting spear down to kneel: measure him standing without it */for(const fr of[-2,-3,-4,-5])for(const d of[1,-1]){n++;const c=at(o,id,fr,d);if(parts(c)!==1)bad.push(id+' '+fr+(d<0?' left':''));
         const r=(FIG.OY-top(c))/h0;if(d>0&&(r<.7||r>.9))tall.push(id+' '+fr+': '+r.toFixed(2))}}
       ok(!bad.length,`kneeling: ${n} poses of ${ids.length} looks (both knees or one, arms down or hands folded, both ways), and none comes apart`+(bad.length?'. IN PIECES: '+bad.slice(0,12).join('; '):''));
       ok(!tall.length,'a kneeling figure stands between seven and nine tenths of its height'+(tall.length?'. NOT: '+tall.slice(0,8).join('; '):''));
@@ -572,7 +595,7 @@
     window.SHEETS=SHEETS;halt('cast')}
   /* Shipwreck survivor clothing & reusable Roman military cast (shared/cast.js): standing, facing left, mid-stride, and enlarged close-ups.
      Both stops also verify that every look stays one connected piece across standing, talking, seated and all walking frames. */
-  if(stop==='shipwreck'||stop==='romans'){await need('cast');const SHEETS={},C=SHARED.cast,
+  if(stop==='shipwreck'||stop==='romans'||stop==='sanhedrin'){await need('cast');const SHEETS={},C=SHARED.cast,
       sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,w,h);return[c,g]},
       text=(g,t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},
       cut=(g,sp,x0,y0,w,h,dx,dy,z)=>g.drawImage(sp,FIG.OX+x0,FIG.OY+y0,w,h,dx,dy,w*z,h*z),
@@ -618,25 +641,76 @@
           ['Formal city (toga)',R.praetorian_toga],['Armored (plumed)',R.praetorian_armored],['Armored walking',R.praetorian_armored,1,8]]],
         ['The commander in Jerusalem, a military tribune (Acts 21:31): the narrow purple stripe and a gold ring; tunic, cuirass, helmet',[
           ['Tribune (tunic)',R.tribune],['Tribune (facing L)',R.tribune,-1,0],['Tribune walking',R.tribune,1,10],
-          ['Tribune (cuirass)',R.tribune_armored],['Tribune (helmet)',R.tribune_helmet],['Helmet walking',R.tribune_helmet,1,8]]]
+          ['Tribune (cuirass)',R.tribune_armored],['Tribune (helmet)',R.tribune_helmet],['Helmet walking',R.tribune_helmet,1,8]]],
+        ['The escort of Acts 23:23-24: horsemen (standing, and seated as a rider sits) and spearmen, each spear slanting, its shaft behind the body',[
+          ['Horseman',R.horseman],['Horseman, riding pose',R.horseman_b,1,-7],['Spearman',R.spearman,1,0,1],
+          ['Spearman walking',R.spearman_young,1,10,1],['Spearman (facing L)',R.spearman_young,-1,0,1],['Spearman, cloak',R.spearman_old,1,6,1]]],
+        ['Felix, governor (Acts 23:24-35): the white toga with a purple border, a pendant drawn as a square, red shoes, a gold ring',[
+          ['Felix',R.felix],['Felix (facing L)',R.felix,-1,0],['Felix walking',R.felix,1,10],
+          ['Felix seated',R.felix,1,-1],['Seated (facing L)',R.felix,-1,-1],['Felix speaking',R.felix,1,0,0,3,2]]]
       ];
       const Z=3,cw=156,chh=408,cols=6,hdr=30,[c,g]=sheet(cols*cw,36+ROWS.length*(hdr+chh));
       text(g,'Roman Military Contact Sheet — Foot Soldiers, Centurions, Praetorian Guard, the Commander (3x)',12,24,16,'#f4f0e6');
       ok(['tribune','tribune_armored','tribune_helmet'].every(k=>R[k]&&R[k].clavus&&R[k].ring&&R[k].offCloak&&R[k].milBelt&&R[k].caligae)&&!R.tribune.helm&&!R.tribune_armored.helm&&R.tribune_helmet.helm,
         'the commander has the narrow purple stripe and the gold ring of his rank, a military cloak, belt and boots; bareheaded, and with a helmet');
       ROWS.forEach(([title,items],r)=>{const ry=36+r*(hdr+chh);g.fillStyle='#4a5464';g.fillRect(0,ry,cols*cw,hdr);text(g,title,12,ry+20,13,'#f4f0e6');
-        items.forEach(([nm,o,dir,fr],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);
-          cut(g,spr(o,'rm'+r+'_'+i,dir||1,fr||0),-24,-126,48,127,x+Math.floor((cw-48*Z)/2),y+chh-22-126*Z,Z);text(g,nm,x+6,y+chh-6,11)})});
+        items.forEach(([nm,o,dir,fr,wide,talk,ge],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);
+          const sp=talk||ge?sprite(['rmt',r,i].join('|'),q=>person(q,0,0,o,dir||1,fr||0,talk||0,0,ge||0,0),dir||1):spr(o,'rm'+r+'_'+i,dir||1,fr||0);
+          /* a slanting spear reaches well ahead of the face: its cell shows a wider cut, a little smaller */
+          if(wide){const Zw=2.2,x0=(dir||1)>0?-22:-46;cut(g,sp,x0,-128,68,129,x+Math.floor((cw-68*Zw)/2),y+chh-22-128*Zw,Zw)}
+          else cut(g,sp,-24,-126,48,127,x+Math.floor((cw-48*Z)/2),y+chh-22-126*Z,Z);text(g,nm,x+6,y+chh-6,11)})});
+      ok(['spearman','spearman_young','spearman_old'].every(k=>R[k].spear==='slant')&&Object.values(R).every(o=>o.spear!==1||o===R.auxiliary_mail),
+        'the spearmen of the escort hold their spears slanting, never upright');
+      ok(R.felix.toga&&R.felix.edge&&R.felix.pendant&&R.felix.ring&&!R.felix.clavus,'Felix wears the white toga with a purple border, a pendant and a ring');
       SHEETS['cast-romans']=c.toDataURL();
       /* 6x close-ups of helmets/crests/plumes and armor/belts/gladii to verify zero cross shapes */
       const DET=[['Galea + segmentata',R.legionary_guard],['Auxiliary mail',R.auxiliary_mail],['Centurion crest + cuirass',R.centurion_crested],
-        ['Julius bare + cloak',R.centurion_julius],['Praetorian watch',R.praetorian_watch],['Praetorian toga',R.praetorian_toga],['Praetorian plume',R.praetorian_armored],['Tribune: stripe, ring',R.tribune],['Tribune: cuirass',R.tribune_armored]],
+        ['Julius bare + cloak',R.centurion_julius],['Praetorian watch',R.praetorian_watch],['Praetorian toga',R.praetorian_toga],['Praetorian plume',R.praetorian_armored],['Tribune: stripe, ring',R.tribune],['Tribune: cuirass',R.tribune_armored],
+        ['Horseman: mail, cloak',R.horseman],['Spearman: hand, shaft',R.spearman],['Felix: toga, pendant',R.felix]],
         ZD=6,dw=228,dh=364,[cd,gd]=sheet(DET.length*dw,36+dh*2);
       text(gd,'Roman Military Details (6x): helmets, crests & armor (top); belts, gladii & caligae (bottom)',12,24,15,'#f4f0e6');
       DET.forEach(([nm,o],i)=>{const x=i*dw;field(gd,i,x,36,dw,dh);cut(gd,spr(o,'rmd1_'+i,1),-19,-104,38,56,x,36+2,ZD);text(gd,nm,x+6,36+dh-8,11);
         field(gd,i+1,x,36+dh,dw,dh);cut(gd,spr(o,'rmd2_'+i,1),-19,-54,38,55,x,36+dh+4,ZD);text(gd,'waist, gladius & boots',x+6,36+dh*2-8,11)});
       SHEETS['cast-romans-detail']=cd.toDataURL();
-      window.SHEETS=SHEETS;halt('romans')}}
+      window.SHEETS=SHEETS;halt('romans')}
+    /* the Sanhedrin of Acts 22:30-23:10 and Paul's family in Jerusalem (Acts 23:16), shared/cast.js SANHEDRIN and FAMILY: every look one
+       piece standing, speaking, seated and walking; the Pharisees each with a broad scripture case and long fringes, nobody else with
+       either, and every Jewish man in a mantle with fringes of his own. cast-sanhedrin.png shows them all three times enlarged, standing and
+       seated; cast-sanhedrin-detail.png the heads eight times (the case on the forehead, a square box, never a ring, with nothing across it)
+       and the hems eight times (the fringes, short slanting threads that end above the hem's band). */
+    if(stop==='sanhedrin'){const S=C.SANHEDRIN,F=C.FAMILY;checkSet(S,'sanhedrin');checkSet(F,'family');
+      const ph=Object.keys(S).filter(k=>/^pharisee_/.test(k)),rest=Object.keys(S).filter(k=>!/^pharisee_/.test(k));
+      ok(ph.length>=5&&ph.every(k=>S[k].phyl===1&&S[k].fringeLong&&S[k].fringe&&S[k].long&&S[k].cloak),'the Pharisees ('+ph.length+') wear broad scripture cases and long fringes');
+      ok(rest.every(k=>S[k].phyl!==1&&!S[k].fringeLong)&&rest.filter(k=>S[k].cloak).every(k=>S[k].fringe),'nobody else wears a broad case or long fringes, and every other man in a mantle has short fringes');
+      ok(Object.keys(S).filter(k=>/^sadducee_/.test(k)).length>=5&&S.clerk_1.board&&S.clerk_2.board&&S.ananias.wrap&&!S.ananias.phyl,'five Sadducees, two clerks with their writing boards, and the high priest in his headcloth');
+      ok(F.pauls_nephew.shortBeard&&!F.pauls_nephew.cloak&&F.pauls_nephew.long&&F.pauls_sister.veil,"Paul's nephew and Paul's sister have their looks");
+      const ROWS=[
+        ['The high priest Ananias (a rich robe and headcloth, not the vestments) and the men at his side (Acts 23:2)',[
+          ['Ananias',S.ananias],['Ananias seated',S.ananias,1,-1],['Ananias (facing L)',S.ananias,-1,0],['Attendant',S.attendant_1],['Attendant (L)',S.attendant_2,-1,0],['Attendant walking',S.attendant_2,1,10]]],
+        ['Pharisees: a broad scripture case on the forehead, long fringes at the corners of the mantle (Matthew 23:5)',ph.slice(0,6).map((k,i)=>[k,S[k],i%2?-1:1,0])],
+        ['Pharisees seated, as everyone sits',ph.slice(0,6).map((k,i)=>[k+' seated',S[k],i%2?1:-1,-1])],
+        ['Sadducees: fine dress; a small case or none, short fringes',[...Object.keys(S).filter(k=>/^sadducee_/.test(k)).map((k,i)=>[k,S[k],i%2?-1:1,0]),['sadducee walking',S.sadducee_1,1,8]].slice(0,6)],
+        ['Sadducees seated; a chief priest',[...Object.keys(S).filter(k=>/^sadducee_/.test(k)).map((k,i)=>[k+' seated',S[k],i%2?1:-1,-1]),['chief_priest_1',S.chief_priest_1]].slice(0,6)],
+        ['The two clerks with their writing boards; an elder; a chief priest seated',[['clerk_1 seated',S.clerk_1,1,-1],['clerk_2 seated',S.clerk_2,-1,-1],['clerk_1',S.clerk_1],['clerk_2 walking',S.clerk_2,1,10],['elder_1',S.elder_1,-1,0],['chief priest seated',S.chief_priest_1,1,-1]]],
+        ["Paul's family in Jerusalem (Acts 23:16): his sister's son, and his sister at her door",[['pauls_nephew',F.pauls_nephew],['nephew (facing L)',F.pauls_nephew,-1,0],['nephew walking',F.pauls_nephew,1,8],['nephew speaking',F.pauls_nephew,1,0,2,2],['pauls_sister',F.pauls_sister],['sister speaking',F.pauls_sister,-1,0,2,3]]]
+      ];
+      const Z=3,cw=156,chh=408,cols=6,hdr=30,[c,g]=sheet(cols*cw,36+ROWS.length*(hdr+chh));
+      text(g,'The Sanhedrin and the family of Paul in Jerusalem (Acts 22:30-23:16), three times enlarged',12,24,16,'#f4f0e6');
+      ROWS.forEach(([title,items],r)=>{const ry=36+r*(hdr+chh);g.fillStyle='#4a5464';g.fillRect(0,ry,cols*cw,hdr);text(g,title,12,ry+20,12,'#f4f0e6');
+        items.forEach(([nm,o,dir,fr,talk,ge],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);
+          const sp=sprite(['san',r,i].join('|'),q=>person(q,0,0,o,dir||1,fr||0,talk||0,0,ge||0,0),dir||1);
+          cut(g,sp,-24,-126,48,127,x+Math.floor((cw-48*Z)/2),y+chh-22-126*Z,Z);text(g,nm,x+6,y+chh-6,11)})});
+      SHEETS['cast-sanhedrin']=c.toDataURL();
+      const HD=[...ph.map(k=>[k,S[k]]),['sadducee_2 (small)',S.sadducee_2],['sadducee_4 (small)',S.sadducee_4],['sadducee_1',S.sadducee_1],['ananias',S.ananias],['pauls_nephew',F.pauls_nephew],['pauls_sister',F.pauls_sister]],
+        HM=[['pharisee_1',S.pharisee_1,1,0],['pharisee_3 walking',S.pharisee_3,1,10],['pharisee_6 (L)',S.pharisee_6,-1,0],['pharisee_2 seated',S.pharisee_2,1,-1],['sadducee_1',S.sadducee_1,1,0],['ananias walking',S.ananias,1,14],['clerk_1 seated',S.clerk_1,1,-1],['elder_1',S.elder_1,1,0]],
+        ZD=8,dw=208,dh=300,cols2=6,[cd,gd]=sheet(cols2*dw,36+Math.ceil(HD.length/cols2)*dh+Math.ceil(HM.length/4)*dh);
+      text(gd,'Eight times: the scripture case on the forehead (above), the fringes at the mantle\'s corners and the writing board (below)',12,24,14,'#f4f0e6');
+      HD.forEach(([nm,o],i)=>{const x=(i%cols2)*dw,y=36+Math.floor(i/cols2)*dh,f=o.veil||o.fem,top=4+23+16+3+(f?24:26)+20;field(gd,i,x,y,dw,dh);cut(gd,spr(o,'sh'+i,1),-13,-top-6,26,36,x,y,ZD);text(gd,nm,x+6,y+dh-8,11)});
+      const y2=36+Math.ceil(HD.length/cols2)*dh,cw2=dw*cols2/4;
+      HM.forEach(([nm,o,dir,fr],i)=>{const x=(i%4)*cw2,y=y2+Math.floor(i/4)*dh;field(gd,i+1,x,y,cw2,dh);const top=fr===-1?40:34;
+        cut(gd,sprite(['sanh',i].join('|'),q=>person(q,0,0,o,dir,fr,0,0,0,0,0),dir),-28,-top,56,top+2,x,y,Math.min(ZD,Math.floor(cw2/56)));text(gd,nm,x+6,y+dh-8,11)});
+      SHEETS['cast-sanhedrin-detail']=cd.toDataURL();
+      window.SHEETS=SHEETS;halt('sanhedrin')}}
   /* Dynamic cast & contact shadows in figure() (issue #81): floor skew, foreground-lamp back-wall bend, prop/actor ordering, pitch-dark
      zero shadow, multi-lamp steadiness across 110ms flame ticks, solid-wall clipping, and enlarged/gallery sheets across all 22 rooms. */
   /* deck (shared/ship.js, view 'deckAft'): the deck of a coaster seen from aboard, looking aft, in its three lights. It checks the one
@@ -1037,7 +1111,11 @@
       halt('phonescroll');G.skip();await fade(0,60)}
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* the title card at full length, the prologue stops, and a room change caught half-way through its cross-fade */
-  if(stop==='card'){await loadLevel(1);AU.key=CHAP[1].music;G.speedAll=0;clearInterval(sk);showCard(1);await wait(300);halt('card')}
+  /* card19 and the like: the title card of that chapter. Every chapter's card is the painted logo in every language: a letter the logo
+     cannot write (as the apostrophe of THE SISTER'S SON was) would leave the card as plain text */
+  if(/^card\d*$/.test(stop)){const n=+stop.slice(4)||1;await loadLevel(n);AU.key=CHAP[n].music;G.speedAll=0;clearInterval(sk);await need('logo');
+    {const bad=Object.keys(CHAP).filter(k=>!SHARED.logo.can(T(CHAP[k].name)+T(CHAP[k].label).toUpperCase()));ok(!bad.length,"every chapter's title card is painted in the logo's letters, in "+LANGS[lang].native+(bad.length?': not '+bad.join(', '):''))}
+    showCard(n);await wait(300);halt(stop)}
   if(/^pro(card|1|2|3|4|5|7|8|8b|9)$/.test(stop)){await loadLevel(1);await loadPrologue();ov.className='';ov.onclick=null;setChapter(1);G.inPro=1;$('#chname').textContent=T(PRO.name);$('#skip').style.display='';G.busy=true;lock(true);status();clearInterval(sk);G.speedAll=0;
     if(stop==='procard'){showCard('prologue');await wait(300);halt('procard')}
     const S=PRO.scenes;
@@ -3862,8 +3940,8 @@
     walkTo=async(x,y)=>{const p=PC();walk(p,x,y);for(let i=0;i<900&&(p.walk||!G.busy&&false);i++)await wait(25);await idle()};
   heard.length=0;
   if(C17){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
-    const c17=chs.find(c=>c.dataset.ch==='17');ok(c17&&c17.textContent.includes(T('chapter_seventeen'))&&c17.textContent.includes(T('the_belt_2'))&&PLANNED[0].label==='chapter_nineteen'&&plans.textContent.includes(T('Nineteen')),
-      'the title lists Chapter Seventeen, The Belt, and the chapters in preparation begin with the nineteenth')}
+    const c17=chs.find(c=>c.dataset.ch==='17');ok(c17&&c17.textContent.includes(T('chapter_seventeen'))&&c17.textContent.includes(T('the_belt_2'))&&PLANNED[0].label==='chapter_twenty'&&plans.textContent.includes(T('Twenty')),
+      'the title lists Chapter Seventeen, The Belt, and the chapters in preparation begin with the twentieth')}
   (C17?document.querySelector('#overlay [data-ch="17"]'):ov).click();
   await until(()=>G.ch===17&&G.room==='patara17'&&!G.busy,4000);note();
   const LK=A('luke17'),AK=A('akestor17'),MO=A('moschos17'),KA=A('kallikrates17'),SO=A('sostratos17'),BU=A('butcher17'),MY=A('myrto17'),PN=A('phanias17'),JO=A('joezer17'),
@@ -4028,8 +4106,8 @@
     code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
   if(C18){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
-    ok(chs.length===18&&last.dataset.ch==='18'&&last.textContent.includes(T('chapter_eighteen'))&&last.textContent.includes(T('on_the_stairs_2'))&&PLANNED.length===7&&PLANNED[0].label==='chapter_nineteen'&&plans.textContent.includes(T('Nineteen')),
-      'the title lists eighteen chapters, the last of them On the Stairs, and the chapters in preparation begin with the nineteenth')}
+    {const c18=chs.find(c=>c.dataset.ch==='18');ok(c18&&c18.textContent.includes(T('chapter_eighteen'))&&c18.textContent.includes(T('on_the_stairs_2'))&&PLANNED[0].label==='chapter_twenty'&&plans.textContent.includes(T('Twenty')),
+      'the title lists Chapter Eighteen, On the Stairs, and the chapters in preparation begin with the twentieth')}}
   (C18?document.querySelector('#overlay [data-ch="18"]'):ov).click();
   await until(()=>G.ch===18&&G.room==='mnason18'&&!G.busy,4000);note();
   const MN=A('mnason_18'),JA=A('james18'),TR=A('troph18'),CY=A('cyrene18'),GR=A('greek18'),LV=A('levite18'),CM=A('commander18'),OF=A('officer18'),S1=A('sol18a'),BA=A('barber18');
@@ -4155,9 +4233,192 @@
   ok(said('officer_let_go_and_wait')&&said('officer_hold_him')&&P.held,'waited too long: a runner calls the officer away, the soldiers let go and wait, and the moment comes again; no blow is shown');
   heard.length=0;useA('roman18',OF);{const o=await asked();ok(said('paul_is_it_lawful')&&said('officer_this_man_is_a_roman')&&said('paul_yes')&&o.includes('paul_i_was_born_one'),'to the officer standing there: is it lawful? (Acts 22:25-28)')}
   await line('paul_i_was_born_one');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
-  ok(ov.classList.contains('end')&&seenTold.has('v29b')&&ov.textContent.includes(T('on_the_stairs_2'))&&/21:17-22:29/.test(ov.textContent)&&inOv(),'they draw back; the commander is afraid (Acts 22:29); the end screen says what the account leaves unsaid');
+  ok(ov.classList.contains('end')&&seenTold.has('v29b')&&ov.textContent.includes(T('on_the_stairs_2'))&&/21:17-22:29/.test(ov.textContent)&&ov.textContent.includes(T('click_to_continue_to_chapter_nineteen'))&&ov.textContent.includes(T('chapter_nineteen_code_code',{code:codeOf(19,0)}))&&store('paul.save')===codeOf(19,0)&&inOv(),'they draw back; the commander is afraid (Acts 22:29); the end screen says what the account leaves unsaid and leads on to Chapter Nineteen with its first code');
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 21:17-22:29 was told'+(miss.length?' MISSING '+miss:''))}
   halt('final18')};
+  /* Chapter Nineteen stops start Chapter Nineteen from the title screen; the full run calls its test when Chapter Eighteen has ended.
+     all19 halts nowhere. Its halts: council19 · session19 (after 23:5) · door19 · lanes19 · gate19 · court19 (the nephew in the soldiers'
+     quarters) · yard19 (the third hour) · anti19 · palace19 · letter19 · final19. The stops that begin with "p" open one room at once, with
+     the story's flags set for it, and say the safe-point code of their point (CODE): pbarracks19 (the opening, 22:30) · pcouncil19 ·
+     ppause19 (the council confers, after 23:5) · pdivided19 (the scribes stand up, 23:9) · pscroll19 (23:11 on the narrator's scroll) ·
+     pdoor19 · planes19 (the errand given) · phalves19 (both halves heard) · pknew19 (the nephew knows) · pgate19 · pcourt19 · pcmd19 ·
+     pyard19 · panti19 (the treasure's point) · ppalace19 · pletter19 (the letter, every note marked). */
+  /* rooms19: every picture of Chapter Nineteen on one sheet at twice its size (rooms19.png), the soldiers' quarters in all three variants
+     (rooms19-barracks.png), and the lane map whole (rooms19-lanes.png): for the art agents, and the cross-shape check. */
+  if(stop==='rooms19'){clearInterval(sk);sk=0;await loadLevel(19);setChapter(19);ov.className='';ov.onclick=null;const C=CHAP[19],ids=C.rooms.filter(r=>r!=='lanes19'),K=2;
+    const pic=(id,q,x,y)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
+      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
+      q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
+    const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    F.anti=1;ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
+    const[c2,g2]=mk(320*K,3*(144*K+8));g2.imageSmoothingEnabled=false;[[],['divided'],['divided','cmd']].forEach((fl,i)=>{for(const k in F)delete F[k];fl.forEach(k=>F[k]=1);pic('barracks19',g2,0,i*(144*K+8))});
+    for(const k in F)delete F[k];
+    const lb=bg('lanes19'),[c3,g3]=mk(ART.lanes19.w,roomH('lanes19'));g3.drawImage(lb,0,0,ART.lanes19.w,roomH('lanes19'));
+    window.SHEETS={rooms19:c.toDataURL(),'rooms19-barracks':c2.toDataURL(),'rooms19-lanes':c3.toDataURL()};halt('rooms19')}
+  const C19=/^(council19|session19|door19|lanes19|gate19|court19|yard19|anti19|palace19|letter19|final19|all19)$/.test(stop);
+  if(!C19&&/^p[a-z]+19$/.test(stop)){await loadLevel(19);ov.className='';ov.onclick=null;const C=CHAP[19],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      S={pbarracks19:[[],'barracks19'],pcouncil19:[[],'council19'],ppause19:[['session'],'council19'],pdivided19:[['ph','sad','session'],'council19'],pscroll19:[['ph','sad','session'],'council19'],
+        pdoor19:[upto('divided'),'door19'],planes19:[upto('errand'),'lanes19'],phalves19:[upto('halfB'),'lanes19'],pknew19:[upto('knew'),'lanes19'],pgate19:[upto('knew'),'gate19'],
+        pcourt19:[upto('sentry'),'barracks19'],pcmd19:[upto('officer'),'cmd19'],pyard19:[upto('cmd'),'barracks19'],panti19:[upto('road'),'antipatris19'],
+        ppalace19:[upto('anti'),'palace19'],pletter19:[upto('anti'),'letter19']}[stop];
+    if(!S)throw new Error('no such stop '+stop);setChapter(19);for(const k of S[0])F[k]=1;
+    const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
+    if(stop==='pdivided19')for(const id of['phar19a','phar19b','phar19c'])ACT[id].seat=0;
+    if(stop==='pletter19')G.mk19={n:Object.fromEntries(C.notes.map(n=>[n.k,n.ok])),o:C.order};
+    if(stop==='pcmd19'){place(ACT.officer19,'cmd19',94,124,1);place(ACT.nephew19,'cmd19',226,122,1);place(ACT.commander19,'cmd19',250,118,-1)}
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    if(stop==='pscroll19'){G.scene=DARK;narr(C.told.v11,{dur:60000})}
+    await wait(1100);halt(stop)}
+  const ch19=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[19],told=k=>heard.includes(T(C().told[k])),
+    until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    clickHs=async(h,v)=>{verb(v||'use');clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    talkTo=async(a,v)=>{verb(v||'talk');clickView(a.x,a.y-10,a.hs);await idle()},
+    useA=async(id,a,v)=>{verb(v||'use');item(id);clickView(a.x,a.y-10,a.hs);await idle()},
+    both=async(a,b)=>{verb('use');item(a);item(b);await idle()},
+    pray19=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
+    hints=async(a,b,where)=>{heard.length=0;const p=await pray19(),first=said(a)&&!said(b),q=await pray19();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
+    asked=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);return[...document.querySelectorAll('#choices button')].map(x=>x.dataset.src)},
+    line=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await idle()},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)},
+    walkTo=async(x,y)=>{const p=PC();walk(p,x,y);for(let i=0;i<900&&p.walk;i++)await wait(25);await idle()},
+    code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)};
+  heard.length=0;
+  if(C19){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
+    ok(chs.length===19&&last.dataset.ch==='19'&&last.textContent.includes(T('chapter_nineteen'))&&last.textContent.includes(T('the_sisters_son_2'))&&PLANNED.length===6&&PLANNED[0].label==='chapter_twenty'&&plans.textContent.includes(T('Twenty')),
+      'the title lists nineteen chapters, the last of them The Sister\'s Son, and the chapters in preparation begin with the twentieth')}
+  (C19?document.querySelector('#overlay [data-ch="19"]'):ov).click();
+  await until(()=>G.ch===19&&G.room==='council19'&&!G.busy,6000);note();
+  const NE=A('nephew19'),SI=A('sister19'),AN=A('ananias19'),PH=A('phar19b'),SA=A('sad19a'),SE=A('sentry19'),GD=A('guard19'),OS=A('oil19'),FX=A('felix19'),M=C().map,X=C().X,Y=C().Y;
+  ok(G.room==='council19'&&PC()===P&&seenTold.has('v22_30')&&said('paul_the_council_gathers')&&srt()==='tablets'&&P.look.bald,'the next day the commander has him untied and brought down to the council (Acts 22:30); Paul is bald now ['+srt()+']');
+  ok(/^19(-[0-9A-Z]{3}){3,5}$/.test(makeCode())&&decode(makeCode()).ch===19,'chapter nineteen has wide codes: '+makeCode());
+  ok(AU.score===C().music&&C().music.steps===7&&C().music.root===52&&C().music.group.join()==='2,2,3','the chapter\'s score, in E Phrygian and in bars of seven');
+  halt('council19');
+  /* two benches */
+  const settle=async()=>{await wait(700);await idle()};
+  await hints('hint_before_the_council_1','hint_before_the_council_2','before the council');
+  heard.length=0;await onH('door','walk');await settle();
+  ok(said('paul_im_here_to_answer')&&G.room==='council19','Paul does not leave');
+  ok(F.sad&&['sadducee_no_one_rises_from_the_dead','pharisee_the_dead_will_rise','sadducee_no_angel_no_spirit_either','paul_they_part_over_the_resurrection'].every(said),
+    'at the left of the benches, where he comes to rest, the members talk: no resurrection, no angel, no spirit; and his neighbour holds all three');
+  heard.length=0;await talkTo(SA);await settle();ok(said('member_the_session_hasnt_begun'),'the members wait for the session');
+  heard.length=0;await talkTo(SA,'look');ok(said('the_one_who_denies_the_resurrection_look'),'the man in fine linen is a Sadducee');
+  heard.length=0;onH('place_before_the_council','use');await until(()=>F.session&&!G.busy,6000);note();await settle();
+  ok(['v2'].every(k=>seenTold.has(k))&&said('paul_a_clear_conscience')&&said('paul_god_will_strike_you')&&said('bystanders_you_insult_gods_high_priest')&&said('paul_i_didnt_know_he_was_high_priest')&&AN.name==='high_priest_ananias'&&A('att19a').x===182,
+    'a clear conscience; the blow is told, never shown; the whitewashed wall; I did not know he was the high priest (Acts 23:1-5)');
+  await code('in the pause',()=>G.room==='council19'&&F.session&&!F.divided&&AN.room==='council19'&&AN.seat);await settle();
+  halt('session19');
+  await hints('hint_look_at_the_members_1','hint_look_at_the_members_2','in the pause');
+  heard.length=0;talkTo(AN);{const o=await asked();ok(o.length===4&&!o.includes(C().saykey)&&o.at(-1)==='paul_not_yet','before he knows the benches, Paul has only true sentences that divide nobody')}
+  await line('paul_im_a_roman_citizen');await until(()=>!G.busy);ok(said('ananias_that_is_the_commanders_business')&&!F.divided,'a true sentence, answered truly, and nothing changes');
+  heard.length=0;await talkTo(PH,'look');await settle();ok(said('pharisee_look')&&F.ph,'broader scripture cases and longer fringes than the others\': a Pharisee');
+  await hints('hint_the_one_sentence_1','hint_the_one_sentence_2','knowing both benches');
+  heard.length=0;talkTo(AN);{const o=await asked();ok(o.includes(C().saykey),'now the one sentence is on offer')}
+  await line(C().saykey);await until(()=>F.divided&&G.room==='door19'&&!G.busy,9000);note();
+  ok(['v7','v10','v11','v12','v14'].every(k=>seenTold.has(k))&&said('paul_a_pharisee_son_of_pharisees')&&said('scribes_we_find_nothing_wrong')&&PC()===NE&&srt()==='uncle19',
+    'a Pharisee, a son of Pharisees; the council divided; the soldiers take him out; take courage; the forty and their plan (Acts 23:6-15); the nephew is played');
+  /* the nephew */
+  await code('at the sister\'s door',()=>G.room==='door19'&&PC()===NE&&P.room==='barracks19'&&SI.room==='door19'&&srt()==='uncle19');
+  halt('door19');
+  await hints('hint_mother_1','hint_mother_2','at the door');
+  heard.length=0;await onH('lane_into_the_city','walk');ok(said('nephew_first_what_mother_wants')&&G.room==='door19','first what his mother wants');
+  heard.length=0;await talkTo(SI);ok(said('sister_take_the_jug_to_the_oil_seller')&&F.errand&&has('jug19'),'his mother sends him for lamp oil');
+  await hints('hint_into_the_city_1','hint_into_the_city_2','with the jug');
+  onH('lane_into_the_city','walk');await until(()=>G.room==='lanes19'&&!G.busy,4000);
+  {const LN=SHARED.lanes,D=M.def,c=LN.crossings(D),f=LN.fourWays(D),k=LN.corners(M);
+    ok(!c.length&&!f.length&&!k.length,'the upper city is no grid: no lane crosses another, no four ways meet, no four roofs meet at a corner'+(c.length||f.length||k.length?'. AT: '+JSON.stringify(c.concat(f,k)).slice(0,300):''));
+    const Q=M.G['']||(M.walkable(0,0),M.G['']),n={};for(let i=0;i<Q.comp.length;i++)if(Q.cell[i])n[Q.comp[i]]=(n[Q.comp[i]]||0)+1;const big=Object.values(n).filter(v=>v>=12);
+    ok(big.length===1,'every lane of the upper city can be reached from every other: '+big.length+' piece'+(big.length>1?'s: '+JSON.stringify(n):''));
+    const un=[];for(const h of ROOMS.lanes19.hs){const r=M.route(NE,h.wx,h.wy,true),e=r&&r[r.length-1];if(!e&&r&&r.length===0)continue;if(!e||Math.hypot(e[0]-h.wx,e[1]-h.wy)>8)un.push(h.name)}
+    ok(!un.length,'every place on the map can be walked to'+(un.length?'. NOT: '+un.join():''))}
+  ok(said('nephew_the_upper_city_at_this_hour')&&A('seller19').room==='lanes19'&&A('elder19').room==='lanes19','the upper city in the late afternoon');
+  halt('lanes19');
+  M.seeAll=1;await hints('hint_the_lanes_1','hint_the_lanes_2','in the lanes');
+  const whoSeen={},whoObs=new MutationObserver(()=>{for(const el of document.querySelectorAll('#speech .line'))whoSeen[el.textContent]=el.dataset.who||''});whoObs.observe($('#speech'),{childList:true});
+  heard.length=0;await walkTo(X(222),Y(250));await until(()=>F.halfA&&!G.busy,4000);whoObs.disconnect();
+  ok(['oath_man_nothing_not_a_crumb','oath_man_we_are_under_a_curse','nephew_under_a_curse_until_a_man_is_dead'].every(said)&&has('oath19')&&whoSeen[T('oath_man_we_are_under_a_curse')]===T('speaker_name',{name:T('man_at_the_stall')}),
+    'at the bread stall: men under a curse, nothing to eat or drink until a man is dead; whom, they do not say (the first half)');
+  heard.length=0;await walkTo(X(364),Y(186));await until(()=>F.halfB&&!G.busy,4000);
+  ok(['elder_bring_the_prisoner_down_tomorrow','nephew_a_prisoner_brought_down_tomorrow','nephew_two_things_ive_heard'].every(said)&&has('plan19'),'before the fine house: the prisoner brought down tomorrow, as if for a closer look (the second half)');
+  heard.length=0;await onH('donkey','look');ok(said('donkey_in_the_lane_look')&&M.def.obstacles[''][0].say==='this_donkey_has_decided_the_lane_is_his','the donkey across the short lane, which he names when it stops him');
+  heard.length=0;await onH('gate_of_the_fortress','walk');ok(said('nephew_mothers_oil_first')&&G.room==='lanes19','nothing takes him into the fortress yet');
+  await code('with both halves heard',()=>G.room==='lanes19'&&PC()===NE&&F.halfA&&F.halfB&&has('oath19')&&has('plan19')&&has('jug19'));M.seeAll=1;
+  await hints('hint_two_halves_1','hint_two_halves_2','with both halves');
+  heard.length=0;await both('oath19','uncle19');ok(said('nephew_sworn_to_kill_but_whom')&&!F.knew,'an oath and his uncle: but whom do they mean?');
+  heard.length=0;await both('plan19','uncle19');ok(said('nephew_a_prisoner_but_which')&&!F.knew,'a prisoner and his uncle: which prisoner?');
+  heard.length=0;await both('oath19','plan19');ok(said('nephew_they_wait_for_the_prisoner')&&F.plot&&has('plot19')&&!has('oath19'),'the two halves together: men under a curse wait for the prisoner brought down tomorrow');
+  await hints('hint_who_they_mean_1','hint_who_they_mean_2','with the halves together');
+  heard.length=0;await both('plot19','uncle19');ok(said('nephew_they_mean_my_uncle')&&F.knew&&!has('uncle19'),'with his uncle in the fortress: they mean his uncle');
+  heard.length=0;await talkTo(OS);ok(said('oil_seller_there_you_are')&&F.oil,'and the oil, below the fortress');
+  await hints('hint_to_the_fortress_1','hint_to_the_fortress_2','knowing');
+  onH('gate_of_the_fortress','walk');await until(()=>G.room==='gate19'&&!G.busy,5000);M.seeAll=0;
+  halt('gate19');
+  /* in through the front */
+  await hints('hint_sentry_1','hint_sentry_2','at the gate');
+  heard.length=0;await onH('gate_of_the_fortress','walk');ok(said('nephew_the_sentry_first')&&G.room==='gate19','the sentry first');
+  heard.length=0;talkTo(SE);{const o=await asked();ok(o.includes('nephew_theres_a_plot_against_him')&&o.at(-1)==='nephew_ill_come_back'&&said('sentry_who_are_you_and_who_do_you_want'),'the sentry asks who he is and whom he wants')}
+  await line('nephew_theres_a_plot_against_him');ok(said('nephew_not_to_him')&&!heard.includes(T('nephew_theres_a_plot_against_him')),'the matter is not for the sentry: he holds it back himself');
+  heard.length=0;talkTo(SE);await line('nephew_ive_got_oil_for_my_mother');ok(said('sentry_not_my_business'),'the oil is true, and not what the sentry listens for');
+  heard.length=0;talkTo(SE);await line('nephew_im_the_son_of_pauls_sister');ok(said('sentry_and_who_do_you_want')&&!F.sentry,'who he is');
+  heard.length=0;talkTo(SE);await line('nephew_i_want_the_prisoner_paul');await until(()=>F.sentry&&G.room==='barracks19'&&!G.busy,5000);note();
+  ok(said('sentry_go_in_the_guard_will_take_you')&&seenTold.has('v16')&&P.room==='barracks19'&&ART.barracks19.variant()==='aft','and whom he wants; in through the gate to the soldiers\' quarters (Acts 23:16)');
+  await code('in the soldiers\' quarters',()=>G.room==='barracks19'&&PC()===NE&&P.room==='barracks19'&&GD.room==='barracks19'&&F.sentry);
+  halt('court19');
+  await hints('hint_guard_1','hint_guard_2','before the guard');
+  heard.length=0;talkTo(P);await line('nephew_the_sentry_let_me_in');ok(said('guard_not_so_fast')&&said('guard_the_sentry_lets_in_anyone')&&!F.guard,'the guard listens for family');
+  heard.length=0;talkTo(P);await line('nephew_im_his_sisters_son');ok(said('guard_family_be_quick')&&F.guard,'his sister\'s son');
+  await hints('hint_tell_paul_1','hint_tell_paul_2','beside his uncle');
+  heard.length=0;talkTo(P);{const o=await asked();ok(said('nephew_forty_men_and_the_council')&&said('paul_this_young_man_has_news_for_the_commander')&&said('officer_the_commander_is_busy')&&o.length===4,'he tells his uncle; Paul calls an army officer (Acts 23:17)')}
+  await line('nephew_its_for_the_commander_alone');ok(said('officer_it_can_wait_till_morning'),'for the commander alone; can it wait?');
+  await line('nephew_theres_a_plot_against_him');ok(said('nephew_not_to_him'),'not to the officer either');
+  await line('nephew_it_cant_wait');{const o=await asked();ok(said('officer_come_with_me')&&G.room==='cmd19'&&said('officer_the_prisoner_paul_called_me')&&said('commander_what_have_you_come_to_tell_me')&&o.length===2,'to the commander; by the hand, aside (Acts 23:18, 19)')}
+  await line('nephew_its_about_the_prisoner_paul_my_uncle');await until(()=>F.cmd&&G.room==='barracks19'&&PC()===P&&!G.busy,9000);note();
+  ok(['v19'].every(k=>seenTold.has(k))&&said('nephew_they_will_ask_you_tomorrow')&&said('nephew_over_forty_are_lying_in_wait')&&said('commander_tell_no_one')&&said('commander_at_the_third_hour_tonight')&&said('commander_horses_for_paul')&&ART.barracks19.variant()==='night',
+    'he tells it; not a word to anyone (Acts 23:20-22); at the third hour the column forms (Acts 23:23, 24); Paul is played again');
+  await code('in the yard',()=>G.room==='barracks19'&&PC()===P&&F.cmd&&!F.horse&&A('horseman19').room==='barracks19');
+  halt('yard19');
+  await hints('hint_horse_1','hint_horse_2','in the yard');
+  heard.length=0;for(const i of[0,1,2])await clickHs(ROOMS.barracks19.hs.filter(h=>h.name==='horse')[i],'look');
+  ok(['horse_ears_pinned_back_look','horse_white_of_the_eye_look','horse_ears_forward_look','he_looks_me_over_like_a_customer'].every(said),'ears, feet and eye; and the calm one looks him over like a customer');
+  heard.length=0;await clickHs(ROOMS.barracks19.hs.filter(h=>h.name==='horse')[0],'use');ok(said('horseman_hes_fresh')&&!F.horse,'not the fresh one');
+  heard.length=0;clickHs(ROOMS.barracks19.hs.filter(h=>h.name==='horse')[1],'use');await until(()=>F.road&&G.room==='antipatris19'&&!G.busy,9000);note();
+  ok(said('horseman_hes_steady_up_you_go')&&said('officer_you_ride_behind_the_first_horsemen')&&seenTold.has('v25')&&seenTold.has('v31'),'the calm horse, and his place; the letter is written; by night to Antipatris (Acts 23:25, 31)');
+  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('spring','look');
+    ok(said('the_spring_at_antipatris_look')&&treasures().has(19)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'the spring at Antipatris: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
+  heard.length=0;await onH('horses_at_the_water','look');ok(said('the_horses_found_the_water_first'),'the horses found the water first');
+  halt('anti19');
+  await hints('hint_ride_on_1','hint_ride_on_2','at Antipatris');
+  heard.length=0;await onH('road_to_caesarea','walk');ok(said('paul_not_on_foot')&&!F.anti,'not on foot');
+  heard.length=0;await onH('road_back_to_jerusalem','walk');ok(said('paul_my_way_is_with_the_horsemen')&&!F.anti,'not back with the foot soldiers');
+  heard.length=0;onH('horses_at_the_water','use');await until(()=>F.anti&&G.room==='palace19'&&!G.busy,9000);note();
+  ok(seenTold.has('v32')&&C().letter.every(said)&&said('paul_he_reads_it_again')&&FX.room==='palace19'&&FX.seat,'the foot soldiers go back, the horsemen ride on (Acts 23:32); at Caesarea Felix reads the letter aloud');
+  await code('before Felix',()=>G.room==='palace19'&&F.anti&&!F.letter&&FX.room==='palace19');
+  heard.length=0;await onH('sea_wall','look');ok(said('the_gulls_sit_on_the_governors_wall'),'the gulls on the governor\'s wall');
+  halt('palace19');
+  /* what the letter leaves out */
+  await hints('hint_the_letter_1','hint_the_letter_2','before Felix');
+  await onH('letter','look');await until(()=>G.room==='letter19'&&!G.busy);ok(said('paul_the_letter_and_my_tablet'),'the letter, close, and his tablet');
+  {const hs=ROOMS.letter19.hs.filter(h=>h.l19||h.n19),bad=[];for(let i=0;i<hs.length;i++)for(let j=i+1;j<hs.length;j++){const a=hs[i],b=hs[j];if(a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h)bad.push((a.l19||a.n19)+' on '+(b.l19||b.n19))}
+    ok(!bad.length&&hs.length===12,'six lines of the letter and six notes, each a hotspot of its own'+(bad.length?': '+bad.join(', '):''))}
+  halt('letter19');
+  const nh=k=>ROOMS.letter19.hs.find(h=>h.n19===k),lh=k=>ROOMS.letter19.hs.find(h=>h.l19===k),mark=async(n,k)=>{clickHs(nh(n),'use');await line(k)};
+  {const L=C().labels;heard.length=0;for(const n of C().notes)await mark(n.k,'not_in_the_letter');clickHs(lh(C().order),'use');await line('it_tells_it_out_of_order');
+    ok(heard.includes(T('mark_the_letter_does_tell_it',{note:T('the_crowd_at_the_temple')}))&&!F.letter,'a wrong arrangement is answered truly, in a fixed order');
+    for(const n of C().notes){heard.length=0;await mark(n.k,n.ok==='none'?'not_in_the_letter':L[n.ok])}
+    await until(()=>F.letter&&G.room==='palace19'&&$('#choices').classList.contains('on'),6000);
+    ok(said('paul_the_letter_tells_it_his_way')&&said('felix_which_province_are_you_from'),'the chains and the whip are not in it, and the Roman comes before the rescue; Paul says nothing against him; Felix asks his province')}
+  {const o=await asked();ok(o.length===3&&o.includes('paul_from_cilicia'),'three true answers')}
+  heard.length=0;await line('paul_i_was_brought_up_in_jerusalem');ok(said('felix_i_asked_your_province'),'brought up in Jerusalem: not what he asked');
+  heard.length=0;await line('paul_im_a_roman_citizen');ok(said('felix_ive_read_that_your_province'),'a Roman citizen: he has read that');
+  await line('paul_from_cilicia');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
+  ok(ov.classList.contains('end')&&seenTold.has('v33')&&seenTold.has('v35')&&ov.textContent.includes(T('the_sisters_son_2'))&&/22:30-23:35/.test(ov.textContent)&&ov.textContent.includes(T('click_to_return_to_the_title'))&&inOv(),
+    'Cilicia (Acts 23:34); a hearing when the accusers come, kept in Herod\'s palace (Acts 23:35); the end screen says what the account leaves unsaid');
+  {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 22:30-23:35 was told'+(miss.length?' MISSING '+miss:''))}
+  {const bad=(G.caps19||[]).filter(c=>c.w>c.max+.5||c.h>c.maxh+.5);ok((G.caps19||[]).length>0&&!bad.length,'every word painted on the letter and the tablet fits its box'+(bad.length?': '+bad.slice(0,4).map(c=>c.s).join(' | '):''))}
+  halt('final19')};
+  if(C19){await ch19();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(C18){await ch18();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
@@ -5108,6 +5369,106 @@
       [[0,1,0],[1,-1,24],[2,1,20],[3,-1,8],[4,1,22],[5,-1,25],[6,1,0],[7,-1,12]].forEach(([lk,d,f],i)=>{const x=(i%4)*240,y=Math.floor(i/4)*216;g.fillStyle='#a8b0bc';g.fillRect(x+2,y+2,236,212);g.fillStyle='#6f7a6a';g.fillRect(x+2,y+196,236,18);
         g.drawImage(sp(f,d,lk),FIG.OX-40,FIG.OY-60,80,62,x+2,y+30,236,183);g.fillStyle='#101418';g.font='bold 12px monospace';g.fillText('look '+lk+', frame '+f,x+8,y+16)})})}
   /* --- end of the sheep --- */
+  /* --- the horse: its checks, and its own stop `horses` with its sheets (the horse's section of shared/beasts.js) --- */
+  /* A first-century Roman cavalry horse (shared/beasts.js, drawn after the maintainer's reference pictures): bare (tack=0), tacked (tack=1:
+     bridle, bordered saddle cloth, Roman four-horned saddle, breast-collar and curved breeching with bronze phalerae, no stirrups and no
+     horseshoes), and with a rider (paulLook(19), SHARED.cast.ROMAN.*). Every pose is one piece and lies inside the sprite box; two hooves or
+     more stand on the ground in every walk frame (fr 4..19); the body sinks a pixel as each fore hoof lands and never rises; frames 1, 2 and 3
+     are three moments of the walk; frame.horse carries the horse at WALK_V with zero slip; its voice runs through frames 20 to 23.
+     The stop `horses` hands over horses-walk.png (every frame of the walk and the voice three times enlarged, both ways, bare, tacked, and with
+     riders) and horses-sheet.png (2x integer enlarged contact sheet with bare, tacked, riders, night lighting, scale comparison and mini horsemen). */
+  {await need('cast');
+    const horse=SHARED.beasts.paint.horse,K=SHARED.beasts.kinds.horse,horseFr=SHARED.beasts.frame.horse,
+      P19=paulLook(19),R_AUX=SHARED.cast.ROMAN.auxiliary_mail,R_ESC=SHARED.cast.ROMAN.escort_cloak,R_CEN=SHARED.cast.ROMAN.centurion_crested,
+      pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
+        for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
+          for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n},
+      hr=(fr,d,tk,rd,tag)=>sprite(['horse-test',d<0?'-1':'1',fr,tk,tag||''].join('|'),s=>horse(s,0,0,d,fr,tk,rd),d),
+      px=c=>c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data,
+      hooves=c=>{const d=px(c);let r=0,on=false;for(let x=0;x<FIG.W;x++){const v=d[((FIG.OY-1)*FIG.W+x)*4+3]>0;if(v&&!on)r++;on=v}return r},
+      edge=c=>{const d=px(c);for(let y=0;y<FIG.H;y++)for(let x=0;x<FIG.W;x++)if(d[(y*FIG.W+x)*4+3]&&(x<1||x>=FIG.W-1||y<1))return true;return false},
+      top=(c,dx)=>{const d=px(c);for(let y=0;y<FIG.H;y++)if(d[(y*FIG.W+FIG.OX+dx)*4+3])return y;return-1},
+      H=c=>{const d=px(c);for(let y=0;y<FIG.H;y++)for(let x=0;x<FIG.W;x++)if(d[(y*FIG.W+x)*4+3])return(FIG.OY-y)/2;return 0},
+      same=(a,b)=>a.toDataURL()===b.toDataURL(),
+      CFGS=[[0,null,'bare'],[1,null,'tack'],[1,P19,'paul'],[1,R_AUX,'aux'],[1,R_ESC,'esc'],[1,R_CEN,'cen']],
+      FR=[0,1,2,3,...[...Array(16)].map((_,k)=>4+k),20,21,22,23],ALL=[];
+    for(const[tk,rd,tag]of CFGS)for(const d of[1,-1])for(const fr of FR)ALL.push([tag,d,fr,hr(fr,d,tk,rd,tag)]);
+    const apart=ALL.filter(w=>pieces(w[3])!==1).map(w=>w.slice(0,3).join('/')),
+      out=ALL.filter(w=>edge(w[3])).map(w=>w.slice(0,3).join('/'));
+    ok(!apart.length&&!out.length,'the horse is one piece in every pose and lies inside the sprite box: '+ALL.length+' sprites (bare, tacked, Paul, Roman riders; stand, walk, voice; both ways)'+(apart.length?'. IN PIECES: '+apart.join(', '):'')+(out.length?'. AT THE EDGE: '+out.join(', '):''));
+    const walk=ALL.filter(w=>w[2]>=4&&w[2]<20),few=walk.filter(w=>hooves(w[3])<2).map(w=>w.slice(0,3).join('/')),
+      t0=top(hr(0,1,0,null,'bare'),-28),sink=[...Array(16)].map((_,k)=>top(hr(4+k,1,0,null,'bare'),-28)-t0);
+    ok(!few.length&&sink.every((v,k)=>v===(k%8===4||k%8===5?1:0)),'the horse: in every frame of its walk two hooves or more stand on the ground; the body sinks a pixel as each fore hoof lands (frames 4, 5, 12 and 13) and never rises: '+sink.join('')+(few.length?'. TOO FEW HOOVES: '+few.join(', '):''));
+    ok(same(hr(1,1,1,null,'tack'),hr(4,1,1,null,'tack'))&&same(hr(2,-1,1,P19,'paul'),hr(8,-1,1,P19,'paul'))&&same(hr(3,1,1,R_AUX,'aux'),hr(12,1,1,R_AUX,'aux'))&&
+      !same(hr(0,1,1,null,'tack'),hr(4,1,1,null,'tack'))&&new Set(walk.filter(w=>w[0]==='tack'&&w[1]===1).map(w=>w[3].toDataURL())).size===16,
+      'the horse: frames 1, 2 and 3 are three moments of its walk, and no two of its sixteen walking frames are the same picture');
+    const mu=SHARED.beasts.paint.mule,muleH=H(sprite('horse-test|mule',s=>mu(s,0,0,1,0,0),1)),
+      horseH=H(hr(0,1,0,null,'bare')),back=(FIG.OY-top(hr(0,1,0,null,'bare'),-8))/2;
+    ok(back>=33&&back<=37&&horseH>muleH,`the horse stands taller than the mule: its back ${back}, the tips of its ears ${horseH} room pixels high (the mule ${muleH})`);
+    const cyc=v=>Math.max(K.stride,v*K.beat),slip=v=>1-K.stride/cyc(v),
+      even=[...Array(16)].map((_,i)=>horseFr(cyc(WALK_V)*(i+.5)/16)),slow=[...Array(16)].map((_,i)=>horseFr(K.stride*(i+.5)/16,10)),fast=[...Array(16)].map((_,i)=>horseFr(90*K.beat*(i+.5)/16,90));
+    ok(even.every((f,i)=>f===4+i)&&slow.every((f,i)=>f===4+i)&&fast.every((f,i)=>f===4+i)&&horseFr(0)===4&&horseFr(-3,10)>=4&&horseFr(-3,10)<=19&&
+      Math.abs(K.stride-K.reach/K.stance/2)<1e-9&&slip(WALK_V)<=.04&&K.stride/WALK_V>=K.beat-1e-9,
+      `frame.horse: a cycle carries the horse ${K.stride.toFixed(1)} room pixels with its hooves planted (reach ${K.reach}, stance ${K.stance}); at WALK_V (${WALK_V}) a cycle takes ${(cyc(WALK_V)/WALK_V).toFixed(2)} s and the hooves slip by ${Math.round(slip(WALK_V)*100)} %`);
+    const V=K.voice,vf=V.map(v=>v[1]);
+    ok(V.every((v,i)=>!i||v[0]>V[i-1][0])&&V[0][0]===0&&vf[vf.length-1]===0&&[20,21,22,23].every(f=>vf.includes(f))&&V[V.length-1][0]<=1500&&typeof K.sound==='function'&&
+      new Set([20,21,22,23].map(f=>hr(f,1,1,null,'tack').toDataURL())).size===4&&!same(hr(0,1,1,null,'tack'),hr(20,1,1,null,'tack'))&&SHARED.beasts.pose('horse-test',0)===0,
+      'the horse whinnies and snorts: its voice runs '+V.map(v=>v[0]+':'+v[1]).join(' ')+', four frames of its own, over in '+V[V.length-1][0]+' ms');
+    /* small 14-rpx horseman check: one piece in every pose */
+    {const mb=[];for(const lk of[P19,R_AUX,R_CEN])for(const d of[1,-1])for(let f=0;f<4;f++)if(pieces(K.miniCanvas(d,f,lk))!==1)mb.push(d+'/'+f);
+      ok(!mb.length,'the small horseman (~14 room pixels tall) is one piece in every frame and both ways'+(mb.length?'. IN PIECES: '+mb.join(', '):''))}
+    halt('horses',()=>{
+      /* horses-walk.png: every frame of the walk (4..19) and voice (20..23), 3x enlarged, both ways, bare, tacked, and with riders */
+      {const Z=3,cw=152,chh=146,per=10,list=[];
+        for(const[tk,rd,tag]of[[0,null,'bare'],[1,null,'tack'],[1,P19,'paul'],[1,R_AUX,'aux']])for(const d of[1,-1])for(let fr=4;fr<24;fr++)list.push([tag,d,fr,hr(fr,d,tk,rd,tag)]);
+        const rows=Math.ceil(list.length/per),c=document.createElement('canvas');c.width=per*cw*Z;c.height=24+rows*(chh*Z+16);const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);
+        g.fillStyle='#f4f0e6';g.font='bold 15px Menlo,Consolas,monospace';g.fillText("The horse's walk (frames 4 to 19) and voice (20 to 23), three times enlarged, both ways, bare, tacked, with Paul and with Roman horseman",8,17);
+        list.forEach(([tag,d,fr,sp],i)=>{const x=(i%per)*cw*Z,y=24+Math.floor(i/per)*(chh*Z+16);g.fillStyle=(i+Math.floor(i/per))%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw*Z-2,chh*Z+14);g.fillStyle='#6f7a6a';g.fillRect(x+1,y+chh*Z-6,cw*Z-2,6);
+          g.drawImage(sp,FIG.OX-cw/2,FIG.OY-chh+2,cw,chh,x,y,cw*Z,chh*Z);g.fillStyle='#14100c';g.font='bold 11px Menlo,Consolas,monospace';g.fillText('frame '+fr+(fr===4||fr===20?' · '+tag+(d>0?', right':', left'):''),x+5,y+chh*Z+11)});
+        window.SHEETS=Object.assign(window.SHEETS||{},{'horses-walk':c.toDataURL()})}
+      /* horses-sheet.png: crisp 2x enlarged contact sheet for docs/screenshots/horses.png */
+      {const Z=2,cw=152,chh=148,cols=4,rows=2,c=document.createElement('canvas');c.width=cols*cw*Z;c.height=28+rows*(chh*Z+18);
+        const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#2a2c38';g.fillRect(0,0,c.width,c.height);
+        g.fillStyle='#f4f0e6';g.font='bold 14px Menlo,Consolas,monospace';g.fillText('Cavalry horse & riders (2x): bare, Roman tack, Paul (Ch. 19), Roman horsemen, scale beside mule & man, night march',10,19);
+        const manSp=sprite('horse-test|man',s=>person(s,0,0,P19,-1,0,0,0,0,0,0),-1),
+          muleSp=sprite('horse-test|mule2',s=>mu(s,0,0,1,0,0),1),
+          tintSp=(sp,col)=>{const[m,mg]=mk(FIG.W,FIG.H);mg.drawImage(sp,0,0);mg.globalCompositeOperation='multiply';mg.fillStyle=col;mg.fillRect(0,0,FIG.W,FIG.H);mg.globalCompositeOperation='destination-in';mg.drawImage(sp,0,0);return m},
+          cells=[['bare (standing)',hr(0,1,0,null,'bare'),'#b8c0cc'],['Roman tack (standing)',hr(0,1,1,null,'tack'),'#c4beb2'],
+            ['Paul (Ch. 19) riding',hr(8,1,1,P19,'paul'),'#b8c0cc'],['Roman horseman (spear)',hr(12,-1,1,R_AUX,'aux'),'#c4beb2'],
+            ['Centurion riding',hr(0,1,1,R_CEN,'cen'),'#c4beb2'],['Whinny (voice frame 22)',hr(22,1,1,null,'tack'),'#b8c0cc'],
+            ['Scale: horse, mule, man',null,'#c4beb2'],['Night march (moon + torch) & 14px horsemen',null,'#161b2c']];
+        cells.forEach(([label,sp,bgc],i)=>{const x=(i%cols)*cw*Z,y=28+Math.floor(i/cols)*(chh*Z+18),W=cw*Z,Hh=chh*Z;
+          g.fillStyle=bgc;g.fillRect(x+2,y+2,W-4,Hh+14);
+          g.fillStyle=i===7?'#232836':'#727c68';g.fillRect(x+2,y+Hh-12,W-4,12);
+          if(sp)g.drawImage(sp,FIG.OX-cw/2,FIG.OY-chh+6,cw,chh,x,y,W,Hh);
+          else if(i===6){
+            /* 1:1 aspect ratio on the same ground line (ground at y+Hh-12) */
+            const gy=y+Hh-12;
+            g.drawImage(hr(0,1,0,null,'bare'),FIG.OX-46,FIG.OY-120,114,120,x+14,gy-120,114,120);
+            g.drawImage(muleSp,FIG.OX-38,FIG.OY-120,98,120,x+140,gy-120,98,120);
+            g.drawImage(manSp,FIG.OX-18,FIG.OY-120,38,120,x+252,gy-120,38,120)}
+          else{
+            /* moonlit night sky with subtle warm torchlight on horse & Paul (2x), plus distant 14px horsemen (2x) */
+            const grd=g.createRadialGradient(x+W*.78,y+Hh*.45,8,x+W*.78,y+Hh*.45,145);
+            grd.addColorStop(0,'rgba(240,165,85,.28)');grd.addColorStop(1,'rgba(22,27,44,0)');
+            g.fillStyle=grd;g.fillRect(x+2,y+2,W-4,Hh-14);
+            const litSp=tintSp(hr(6,1,1,P19,'paul'),'#c4a892');
+            g.drawImage(litSp,FIG.OX-cw/2,FIG.OY-chh+6,cw,chh,x+14,y,W,Hh);
+            [R_AUX,P19].forEach((lk,j)=>{const mc=K.miniCanvas(1,j,lk);g.drawImage(mc,0,0,mc.width,mc.height,x+8+j*54,y+12,mc.width*2,mc.height*2)})}
+          g.fillStyle=i===7?'#e8e0cc':'#14100c';g.font='bold 11px Menlo,Consolas,monospace';g.fillText(label,x+8,y+Hh+11)});
+        window.SHEETS=Object.assign(window.SHEETS||{},{'horses-sheet':c.toDataURL()})}
+      /* on-screen #view showcase (960 x 432) */
+      const c=document.createElement('canvas');c.width=960;c.height=432;c.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;z-index:8';$('#view').appendChild(c);
+      const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,960,432);
+      const manSp=sprite('horse-test|man2',s=>person(s,0,0,P19,-1,0,0,0,0,0,0),-1),muleSp=sprite('horse-test|mule3',s=>mu(s,0,0,1,0,0),1);
+      [['bare',hr(0,1,0,null,'bare')],['tacked',hr(0,1,1,null,'tack')],['Paul (Ch. 19)',hr(8,1,1,P19,'paul')],['Roman horseman',hr(12,-1,1,R_AUX,'aux')],
+       ['centurion',hr(0,1,1,R_CEN,'cen')],['beside mule and man',null],['escort cloak',hr(4,1,1,R_ESC,'esc')],['voice 22',hr(22,1,1,null,'tack')]].forEach(([n,sp],i)=>{
+        const x=(i%4)*240,y=Math.floor(i/4)*216,gy=y+198;g.fillStyle='#a8b0bc';g.fillRect(x+2,y+2,236,212);g.fillStyle='#6f7a6a';g.fillRect(x+2,y+196,236,18);
+        if(sp)g.drawImage(sp,FIG.OX-74,FIG.OY-142,148,144,x+14,gy-192,197,192);
+        else{g.drawImage(hr(0,1,0,null,'bare'),FIG.OX-46,FIG.OY-110,114,110,x+2,gy-110,114,110);
+          g.drawImage(muleSp,FIG.OX-38,FIG.OY-110,96,110,x+100,gy-110,96,110);g.drawImage(manSp,FIG.OX-18,FIG.OY-110,38,110,x+198,gy-110,38,110)}
+        g.fillStyle='#101418';g.font='bold 12px monospace';g.fillText(n,x+8,y+16)})})}
+  /* --- end of the horse --- */
   if(lang==='de'){move(...hs('south_gate'));ok($('#status').textContent==='Gehe zu Südtor','German status line: Gehe zu Südtor');
     verb('use');item('knife');move(...hs('unfinished_cover'));ok($('#status').textContent==='Benutze Zeltmachermesser mit Wagenplane (unfertig)','German status line: Benutze Zeltmachermesser mit Wagenplane (unfertig)');verb('use');G.hover=null;status()}
   /* Iconium: nothing is left owing, and nothing unsaid */
@@ -5277,7 +5638,7 @@
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('journey6',()=>{ov.className=''});halt('final6');await wait(1700)}
-  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13();await wait(1700);await ch14();await wait(1700);await ch15();await wait(1700);await ch16();await wait(1700);await ch17();await wait(1700);await ch18()}
+  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13();await wait(1700);await ch14();await wait(1700);await ch15();await wait(1700);await ch16();await wait(1700);await ch17();await wait(1700);await ch18();await wait(1700);await ch19()}
   ok(!MISSING.size&&!RAWKEY.size,'every line shown in the game had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);

@@ -1600,8 +1600,8 @@ async function lawful18(){G.held18=0;await say(P,'paul_is_it_lawful',{to:OF});F.
   for(const a of[P,S1,S2])a.held=a.grips=0;for(const a of[S1,S2])a.dir=a.x<P.x?-1:1;await Promise.all([go18(S1,P.x-34,P.y),go18(S2,P.x+34,P.y)]);
   await tell('v29b');await tw(600);return end18()}
 async function end18(){await fade(1,700);
-  endScreen({title:'on_the_stairs_2',text:'on_the_stairs_end',based:'based_on_acts_21_17_22_29',go:'click_to_return_to_the_title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+  endScreen({title:'on_the_stairs_2',text:'on_the_stairs_end',based:'based_on_acts_21_17_22_29',go:'click_to_continue_to_chapter_nineteen',code:['chapter_nineteen_code_code',codeOf(19,0)]});
+  await wait(1500);ov.onclick=()=>{ov.onclick=null;startChapter(19)};await new Promise(()=>{})}
 /* the hidden treasure: the far end of Solomon's colonnade, off the way */
 async function farEnd18(){await say(P,'solomons_colonnade_look');treasure()}
 

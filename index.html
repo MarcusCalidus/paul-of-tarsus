@@ -91,6 +91,11 @@ body{display:flex;align-items:center;justify-content:center}
 #overlay.tight p{margin:calc(var(--s)*1.2px) 0;line-height:1.25}
 #overlay.tight .small{font-size:calc(var(--s)*4px)}
 #overlay.tight h2{margin:calc(var(--s)*1.5px) 0}
+/* and one that still runs over (Chapter Eighteen's long German note with the code that leads on to Nineteen) a step tighter again */
+#overlay.tighter p{margin:calc(var(--s)*.8px) 0;line-height:1.18;font-size:calc(var(--s)*5px)}
+#overlay.tighter .small{font-size:calc(var(--s)*3.7px)}
+#overlay.tighter .go{margin:calc(var(--s)*1.4px) 0}
+#overlay.tighter h1{margin:calc(var(--s)*1px) 0}
 #overlay .go{color:var(--hi);animation:bl 1.1s steps(2) infinite}
 #overlay .go,#overlay .pick{font-size:calc(var(--s)*6.2px);margin:calc(var(--s)*2.5px) 0}
 /* the title screen's chapters scroll in a box that takes whatever room the title leaves; an entry that runs past its top or bottom
@@ -1071,7 +1076,7 @@ const ramp=c=>{const[r,g,b]=hex(c),l=(r*.3+g*.59+b*.11)/255,k=l*l;return[tint(c,
 function pal(o){if(o.p)return o.p;const wd=(c,k)=>o.wet?mix(tint(c,-k),'#1b2a3c',.2):c;
   return o.p={sk:ramp(o.skin),tu:ramp(wd(o.tunic,.14)),tuW:o.wet?ramp(wd(o.tunic,.36)):null,st:o.stripe?ramp(wd(o.stripe,.16)):null,
   cl:o.cloak?ramp(wd(o.cloak,.16)):null,clW:o.wet&&o.cloak?ramp(wd(o.cloak,.36)):null,ha:ramp(wd(o.hair||'#2a1a12',.22)),be:o.beard?ramp(wd(o.beard,.2)):null,
-  bt:o.belt?ramp(o.belt):null,le:ramp('#7a4e2a'),ar:o.armor?ramp(o.armor):null,hd:ramp(wd(o.veil||o.wrap||o.helm||'#888888',o.helm?0:.18)),
+  bt:o.belt?ramp(o.belt):null,le:ramp(o.shoes||'#7a4e2a'),ar:o.armor?ramp(o.armor):null,hd:ramp(wd(o.veil||o.wrap||o.helm||'#888888',o.helm?0:.18)),
   tr:o.trim?ramp(wd(o.trim,.16)):null,gr:o.grey?ramp(wd(o.grey,.18)):null,cr:o.crest?ramp(o.crest):null,sa:o.sash?ramp(wd(o.sash,.14)):null,
   pt:o.pteruges?ramp(wd(o.pteruges,.14)):null}}
 /* stamp: lay down a small pixel map. Each character names a color in the legend L; anything else is left alone. */
@@ -1105,9 +1110,9 @@ const HEADS={
  veil:["......aaaaaaa....","....aaAAAAAAaaa..","..aaaAAAAaaaaaaa.",".aaAAAaaaaaaaaaaq",".aAAaaaakkkkkkaaq","aaAaaakkkKkkkkkaq","aaaaakkkK...kkkaq","aaaaakk......kkaq","aaaak.........kaq","aaaq..........kq.","aaaq...........q.","aaaq...........q.","aaaq...........q.","aaaaq..........q.","aaaaq.........q..","aaaaq.........q..",".aaaaq.......qq..",".aaaaq......qaq..",".aaaaaq....qaaq..","..aaaaaq..qaaaq.."],
  wrap:["....aaaAAAAaaa...","..aaaAAAAAAaaaaa.",".aaAAAAaaaAAAaaaq","aaAAaaaaAAAaaaaqq","aAAaaaAAAaaaaaaqq","aaaaAAAaaaaaaaqqq","aaaAAaaaaaaaqqqqq","aaaaaaaaaaqqqqqq.",".qqaaaaaaqqqqqq..","aaaq.............","aaaq.............","aaq..............","aaq..............","aq...............",".q..............."],
  helm:["........yy.......","......aAAAAa.....","....aaAAAyAAaa...","..aaaAAAyAAAaaaa.",".aaAAAAyAAaaaaaq.",".aaAAAyAAaaaaaaq.",".aAAAAAaaaaaaaqq.",".aaaaaaaaaaaaqqqq",".aaa.............",".aaa.............",".aaq.............",".aaq.............",".aaq.............","aaq..............","qaq..............","..q.............."],
- galea:["......aAAAAa.....","....aaAAyyAAaa...","...aaAAAyyAAAaa..","..aaAAAAyAAAAaaa.","..aAAAAAyyAAAAaa.",".aaAAAAaaaaAAAAa.",".aAAAAAaaaaAAAAq.",".aaaaaaaaaaaaqqqq",".aaaq............",".aaq.............",".aaq.............",".aaq.............","aaaAq............","aaqaAq...........","qaqaaAq..........","....aaq.........."],
- crest:[".......rYYRr.......",".....rYYRRRRRr.....","....rYRRrRRrRRD....","...rYRrRRRRRrRRD...","...rRrRRRRRRRrRD...","...DrRggggggggRD...",".....Dg......gD...."],
- plume:[".......rRRRYYr.....",".....rrRRRRYYRr....","....rRRRRRYYRRRD...","...rRRRRRRRRRRRD...","...rRRggggggggDD...","..rRRD.............","..rRD..............",".rRRD..............",".rRD...............",".rRD...............",".rD................"]};
+ galea:["......aAAAAa.....","....aaAAyyAAaa...","...aAAAAyyAAAAa..","..aaAAAyyyyAAAaa.","..aAAAAAyyAAAAaa.",".aaAAAAaaaaAAAAa.",".ggGGGGggggGGGGg.",".qqqqqqqqqqqqqqq.",".aaqq.........aq.",".aaaq.........aq.",".aaAq.........aq.",".aaAq.........aq.","aaaAq........aaq.","aaqaAq.......qq..","qaqaaAq..........","...aaqq.........."],
+ crest:[".......rrYYYrr.......",".....rrYYRRRYYrr.....","....rYRRrRRRrRRYr....","...rYRrRRRRRRRrRYr...","..rYrrRRRRRRRRrrRYr..","..rDrRRRRRRRRRRRrDr..","..DrRrRRRRRRRRRrRrD..","...DrRRgggggggRRrD...",".....DggYYYYYggD.....","......ggggggggg......"],
+ plume:[".......rRRYYYrr....",".....rrRRRYYYYRr...","....rRRRRRYYYRRRD..","...rRRRRRRRRRRRRD..","..rRRRRRRRRRRRRD...","..rRRRRgggggggDD...",".rRRRD..gggggg.....",".rRRRD.............",".rRRD..............",".rRRD..............",".rRRD..............",".rRD...............",".rD................"]};
 /* MV: how a figure carries its head and body beyond its pose, as a sum of these. dip, lift: the head a pixel down or up; fwd, back: a pixel
    forward or back; brow: the brows raised; glance: the eyes turned back; lean: everything above the belt a pixel forward. */
 const MV={dip:1,lift:2,fwd:4,back:8,brow:16,glance:32,lean:64};
@@ -1216,14 +1221,14 @@ const KNEEL={both:1,bothFolded:2,one:3,oneFolded:4},kneelX=(o,fr)=>fr<=-2&&fr>=-
    too if his far hand holds a spear). ges 10 grips another's arm above the elbow: the far forearm slants forward and a little up from the elbow to a closed
    hand at the height of the other's upper arm (shared/cast.js, custody.grips, lays the fingers over that arm). No arm is ever spread or raised to the side. */
 function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
-  const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=o.stone?c.sk:c.le,fem=!!(o.veil||o.fem),HIM=!!((o.himation||o.toga)&&C),TOGA=!!(o.toga&&C),WET=!!o.wet,TORN=o.torn|0,ARM=o.spear||o.pilum;g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+  const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=o.stone?c.sk:c.le,fem=!!(o.veil||o.fem),HIM=!!((o.himation||o.toga)&&C),TOGA=!!(o.toga&&C),WET=!!o.wet,TORN=o.torn|0,ARM=(o.spear||o.pilum)&&!(o.spear==='slant'&&fr<0);g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
   /* kneeling (fr -2 to -5, see KNEEL): the head is bowed, and the figure moves nothing but its mouth */
   const kn=fr<=-2&&fr>=-5?-1-fr:0,both=kn&&kn<=2,fold=kn&&kn%2===0;if(kn)bow=1;
   mv=o.stone||bow?0:mv|0;talk=o.stone?0:talk|0;if(o.stone&&ges===9)ges=0;
   /* custody (pz): chained or lifted, both arms are still and only the far hand may be raised; a keeper's chained arm is still */
   pz=o.stone?'':pz||'';const CH=pz==='c'||pz==='l',KP=pz==='k'||pz==='K',KN=pz==='K'||KP&&!!(o.spear||o.pilum),LF=pz==='l';if(CH&&(ges!==1||ARM)||KP&&!KN)ges=0;if(pz)mv&=~MV.lean;
   /* bound (fr -6, a.bound): seated, the feet together and the hands held together low in front, both wound round with a belt (see wind) */
-  const tied=fr===-6,hang=fr===-7,seat=fr===-1||tied||hang;if(tied)ges=0;
+  const tied=fr===-6,hang=fr===-7,seat=fr===-1||tied||hang,BD=!!o.board&&!kn&&!tied&&!hang&&!pz;if(tied||BD)ges=0;
   const W=!seat&&fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):!seat&&!kn&&fr?gaitPose(o,[0,0,.25,.5][fr]||0,1):null,bob=W?W.bob:0;let SH=null;
   /* px: a run of pixels. While a foot is painted, SH lets each of its columns sit higher than the next: a heel that is up, or the toes */
   let CL=-999;const px=(a,b,col,w,h)=>{w=w||1;if(a<CL){w-=CL-a;a=CL;if(w<=0)return}g.fillStyle=col;if(SH)for(let i=0;i<(w||1);i++)g.fillRect(a+i,b+SH(a+i),1,h||1);else g.fillRect(a,b,w||1,h||1)};
@@ -1253,11 +1258,23 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
   /* the sleeves are one garment with the body: PIT rows of shoulder yoke, then the arms part from the trunk */
   const PIT=8,nw=slim+(fem?1:0),aw=fem?4:5,ax=-10+nw-aw,fx=11-nw,fw=5,waist=Math.round(TOR*.6),tw=W&&!c.ar&&!ARM&&!ges&&!bow&&!pz?W.twist:0;
   /* custody: which arm hangs still (FA the far one, NA the near one), its hand a little forward (bend 2), and a cuff round its wrist */
-  const FA=(CH&&ges!==1||KP&&!KN)&&!ARM,NA=CH||KN;
-  /* cape, behind everything (when torn: column-notched bottom so every pixel stays connected) */
-  if(o.cape)for(let yy=yS;yy<=yH+13;yy++){const i=yy-yS,e=yy>yH+10?1:0,t=i/(yH+13-yS),sw=W&&!TORN?Math.round(W.mt*t*t*.6):0,wl=WET?((k,w)=>yy>yH+2+(k*3+TORN)%4):null;
-    if(TORN&&yy>yH+9){for(const[x0,x1]of[[-18+e,-10],[10,17-e]]){const w=x1-x0+1;for(let k=0;k<w;k++){const cut=tearCut(k,w);if(yy>yH+13-cut)continue;const edge=yy===yH+13-cut,P=c.clW||C;px(x0+k,yy,edge?P[4]:P[k<2?4:k>w-3?1:2])}}}
-    else{cloth(yy,-18+e+sw,-10+sw,C,i,[[.45,6,0]],null,null,0,c.clW,wl);cloth(yy,10+sw,17-e+sw,C,i,[[.5,8,0]],null,null,0,c.clW,wl)}}
+  const FA=(CH&&ges!==1||KP&&!KN||BD&&!seat)&&!ARM,NA=CH||KN;
+  /* a spear held slanting (spear:'slant', the light infantry of Acts 23:23): the far hand holds it at the side, the shaft leaning forward and
+     up to its leaf-shaped iron head well ahead of the face, and running down and back behind the body, where the torso and the skirt hide
+     its foot. It is painted first, before the cape, so that the body and a cape cover it: one slanting line and nothing laid across it (CONTRIBUTING section 3) */
+  if(o.spear==='slant'&&!seat&&!kn){const sl=.55,hy0=yS+11,X=y=>18+(hy0-y)*sl;
+    for(let y=yS-32;y<=yS+43;y++){const x=Math.round(X(y));px(x,y,'#8a6238');px(x+1,y,'#5a3c20')}
+    [1,1,3,3,5,5,5,5,3,3,1,1].forEach((w,i)=>{const y=yS-44+i,x0=Math.round(X(y))-(w>>1)+(w>1?1:0);px(x0,y,'#c4c4d0',w);px(x0+(w>1?1:0),y,'#f4f4fc');if(w>2)px(x0+w-1,y,'#8a8a98')})}
+  /* cape, behind everything (naturally flaring military cloak with deep vertical folds; column-notched when torn) */
+  if(o.cape)for(let yy=yS;yy<=yH+15;yy++){const i=yy-yS,hC=yH+15-yS,t=i/Math.max(1,hC),fl=Math.round(t*3.2),e=yy>yH+12?1:0,sw=W&&!TORN?Math.round(W.mt*t*t*.65):0,wl=WET?((k,w)=>yy>yH+3+(k*3+TORN)%4):null;
+    const xL0=-15-fl+e+sw,xL1=-9+sw,xR0=9+sw,xR1=14+fl-e+sw;
+    if(TORN&&yy>yH+11){for(const[x0,x1]of[[xL0,xL1],[xR0,xR1]]){const w=x1-x0+1;for(let k=0;k<w;k++){const cut=tearCut(k,w);if(yy>yH+15-cut)continue;const edge=yy===yH+15-cut,P=c.clW||C;px(x0+k,yy,edge?P[4]:P[k<2?4:k>w-3?1:2])}}}
+    else{cloth(yy,xL0,xL1,C,i,[[.35,4,-.02],[.7,10,.01]],null,[5,14],0,c.clW,wl);cloth(yy,xR0,xR1,C,i,[[.35,5,.02],[.72,11,0]],null,[6,15],0,c.clW,wl)}}
+  /* officer's cloak back cascade (behind body and legs, flaring gently on both sides like a draped paludamentum) */
+  if(C&&o.offCloak&&!seat&&!kn){const m1=yH+13,hC=m1-yS;for(let yy=yS+2;yy<=m1;yy++){const i=yy-yS,t=i/Math.max(1,hC),fl=Math.round(t*2.5),sw=W&&!TORN?Math.round(W.mt*t*t*.6):0,wl=WET?((k,w)=>yy>yH+3+(k*3+TORN)%4):null;
+    const xR0=9+sw,xR1=12+fl-(yy>m1-2?1:0)+sw;
+    if(TORN&&yy>m1-4){const w=xR1-xR0+1;for(let k=0;k<w;k++){const cut=tearCut(k,w);if(yy>m1-cut)continue;const P=c.clW||C;px(xR0+k,yy,yy===m1-cut?P[4]:P[k<1?4:2])}}
+    else cloth(yy,xR0,xR1,C,i,[[.45,5,.02]],null,null,0,c.clW,wl)}}
   /* an arm, from the armpit down. near: the arm on the shadow side; sw: how far the hand swings; stub: the upper arm only; bd: how far the
      forearm bends forward at the elbow; lift: pendulum arc shortening at swing extremes. Smooth two-segment curve without elbow notch. */
   const arm=(near,sw,stub,bd,lift)=>{bd=bd||0;lift=lift||0;const x00=(near?ax:fx)+tw,w=near?aw:fw,tr=c.tr||T,len=stub?14:AL-lift,elb=PIT+Math.round((len-PIT)*.5),ex=sw*.48,wx=sw+bd,slp=Math.abs(wx-ex)/Math.max(1,len-elb);
@@ -1272,12 +1289,19 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
     /* a gold ring (ring: 1) on a finger of the far hand: two pixels side by side, never a round shape */
     if(o.ring&&!near){px(hx+1,yS+len+3,'#f0d27a');px(hx+2,yS+len+3,'#b8902e')}};
   arm(false,FA?0:W?W.fa:0,ARM||o.stub||fold||tied||(ges&&ges!==4&&!bow),FA?2:W?W.fb:0,FA?0:W?W.armLiftF:0);
-  /* legs and sandals (or barefoot, or Roman military caligae), or the feet under a long robe */
-  const boot=o.caligae?ramp('#4b2b18'):null;
+  /* legs and sandals (or barefoot, Roman military caligae, officer laced boots, shin greaves, or closed patrician shoes) */
+  const boot=o.caligae?ramp(o.highBoot?'#56321c':'#4b2b18'):null,GRV=o.greaves?ramp(typeof o.greaves==='string'?o.greaves:'#a8b0bc'):null;
   const foot=(fx0,fy,R)=>{if(o.barefoot){px(fx0,fy,R[3]);px(fx0+1,fy,R[2],5);px(fx0,fy+1,R[2],7);px(fx0,fy+2,R[2],9);px(fx0+7,fy+2,R[1],2);px(fx0,fy+1,R[3]);px(fx0,fy+2,R[3],2);px(fx0,fy+3,R[3],9);px(fx0+1,fy+3,R[4],6);return}
-    if(boot){px(fx0+1,fy-1,boot[2],6,2);px(fx0+1,fy-1,boot[3],2,2);px(fx0+5,fy-1,boot[1],2);
-      px(fx0,fy+1,boot[2],9);px(fx0,fy+2,boot[2],11);px(fx0+8,fy+2,boot[1],3);px(fx0,fy+1,boot[4],2);px(fx0,fy+2,boot[4],2);
-      px(fx0+3,fy+1,R[2],2);px(fx0+6,fy+1,boot[1],2);px(fx0-1,fy+3,'#24140c',13);px(fx0+9,fy+3,'#4a3020',3);return}
+    if(o.shoes){px(fx0+1,fy,LE[2],6);px(fx0,fy+1,LE[2],9);px(fx0,fy+2,LE[2],11);px(fx0+7,fy+1,LE[1],2);px(fx0+8,fy+2,LE[1],3);px(fx0+9,fy+2,LE[0]);
+      px(fx0,fy+1,LE[4],2);px(fx0,fy+2,LE[4],2);px(fx0+1,fy,LE[3],2);px(fx0-1,fy+3,'#241010',13);px(fx0+9,fy+3,'#522220',3);return}
+    if(boot){if(o.highBoot){px(fx0+1,fy-1,boot[2],6,2);px(fx0+1,fy-1,boot[3],2,2);px(fx0+5,fy-1,boot[1],2);
+        px(fx0,fy+1,boot[2],9);px(fx0,fy+2,boot[2],11);px(fx0+7,fy+1,boot[1],2);px(fx0+8,fy+2,boot[1],3);px(fx0,fy+1,boot[4],2);px(fx0,fy+2,boot[4],2);
+        px(fx0-1,fy+3,'#24140c',13);px(fx0+9,fy+3,'#4a3020',3);return}
+      /* openwork caligae: brown leather heel counter, instep straps over bare skin, and thick hobnailed sole */
+      px(fx0+1,fy-1,boot[3],3,2);px(fx0+4,fy-1,R[2],3,2);px(fx0+4,fy,boot[2],3);
+      px(fx0,fy+1,boot[4],2);px(fx0+2,fy+1,R[2],2);px(fx0+4,fy+1,boot[2],2);px(fx0+6,fy+1,R[1],2);px(fx0+8,fy+1,boot[1]);
+      px(fx0,fy+2,boot[4],2);px(fx0+2,fy+2,boot[2],3);px(fx0+5,fy+2,R[2],2);px(fx0+7,fy+2,boot[1],3);px(fx0+10,fy+2,R[1]);
+      px(fx0-1,fy+3,'#22120a',13);px(fx0+9,fy+3,'#4a3020',3);return}
     px(fx0+1,fy,R[2],5);px(fx0,fy+1,R[2],8);px(fx0,fy+2,R[2],10);px(fx0+8,fy+2,R[1],2);px(fx0,fy+1,R[3]);px(fx0,fy+2,R[3],2);px(fx0-1,fy+3,'#2a1810',13);px(fx0+9,fy+3,'#4a3020',3);
     px(fx0+1,fy,LE[2],5);px(fx0+5,fy+1,LE[2],2);px(fx0+6,fy+2,LE[3],2);px(fx0+2,fy+1,LE[3]);px(fx0+2,fy+2,LE[3]);px(fx0+1,fy,LE[3])};
   /* a foot with its lift and its pitch (see gaitPose) */
@@ -1288,9 +1312,17 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
       yKnee=Math.round(yHip+(yAnk-yHip)*.52),n=Math.max(4,yAnk-yH+2),slU=Math.abs(P.kx)/Math.max(1,yKnee-yHip),slL=Math.abs(P.ax-P.kx)/Math.max(1,yAnk-yKnee);
     for(let i=-1;i<n;i++){const yy=yH+i,up=yy<=yKnee,ox=up?P.kx*clamp((yy-yHip)/Math.max(1,yKnee-yHip),0,1):P.kx+(P.ax-P.kx)*clamp((yy-yKnee)/Math.max(1,yAnk-yKnee),0,1),
         sl=up?slU:slL,t=clamp(i/Math.max(1,n-2),0,1),ex=sl>.52?2:sl>.26?1:0,w=(t<.15?7:t<.45?8:t<.68?7:t<.85?6:5)+ex,cx=Math.round(k0+ox),x0=cx+(t<.15?0:t<.45?-1:t<.68?0:1)-(ex>1?1:0);
-      const inBoot=boot&&i>=n-6;
+      const inHigh=boot&&o.highBoot&&i>=n-12,inGreave=GRV&&i>=n-15&&i<n-4,inBoot=boot&&!o.highBoot&&i>=n-6;
       for(let k=0;k<w;k++){const u=(k+.5)/w;let v=u<.18?4:u<.4?3:u<.76?2:1;if(i<2)v=Math.min(4,v+1);else if(Math.abs(yy-yKnee)<=2&&u>.45&&u<.78)v=1;if(k===w-3&&t>.3&&t<.72)v=Math.max(0,v-1);
-        if(inBoot){const br=i===n-6||i===n-4||i===n-2;px(x0+k,yy,(br?boot:dk?[boot[2],boot[3],boot[3],boot[4],boot[4]]:boot)[Math.min(4,v+(br?0:1))])}
+        if(inHigh){const cuff=i===n-12||i===n-11,B=dk?[boot[2],boot[3],boot[3],boot[4],boot[4]]:boot;
+          if(cuff)px(x0+k,yy,i===n-12?(u>.55?'#f4dc88':'#c8a248'):(u>.55?'#c8a248':'#8a6824'));
+          else px(x0+k,yy,B[Math.min(4,v+(k===w-2&&i%2===0?-1:0))])}
+        else if(inGreave){const Gp=dk?[GRV[1],GRV[2],GRV[3],GRV[4],GRV[4]]:GRV,top=i===n-15;
+          if(top)px(x0+k,yy,u>.55?'#f0d680':'#b8923c');
+          else px(x0+k,yy,Gp[u>.62&&u<.82?0:v])}
+        else if(inBoot){const strap=i===n-6||i===n-4||i===n-2||k===0;
+          if(strap)px(x0+k,yy,(dk?[boot[2],boot[3],boot[3],boot[4],boot[4]]:boot)[Math.min(4,v)])
+          else px(x0+k,yy,R[Math.min(4,v+1)])}
         else px(x0+k,yy,R[v])}}
     footP(Math.round(k0+P.ax)+1,P,R)};
   /* kneel: the legs of a kneeling figure, facing right. Both knees: each knee on the ground under the hem, its shin lying back along the
@@ -1336,7 +1368,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
       ankle(f0,L0,r0);footP(f0,L0,r0);ankle(n0,L1,S);footP(n0,L1,S)}
     else if(!W){leg(1,REST,1);leg(-9,REST,0)}else{leg(-4,L0,1);leg(-4,L1,0)}}
   /* skirt of a short tunic, or a robe to the ankles; a woman's robe widens over the hips. When torn: jagged ragged tongues & fabric rip. */
-  const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=o.long?(tied?yA-7:yA+1):kn?yB+SK+(TORN?4:3)-(kid?1:0):seat?SQ.b0:TORN?yH+2:yH+1,n=y1-yB+1,fsh=W?W.foldShift:0;
+  const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=o.long?(tied?yA-7:TOGA?yA-1:yA+1):kn?yB+SK+(TORN?4:3)-(kid?1:0):seat?SQ.b0:TORN?yH+2:yH+1,n=y1-yB+1,fsh=W?W.foldShift:0;
   const skWet=WET?((k,w,i)=>i>n*(o.long?.42:.36)+Math.round(Math.sin(k*.7+TORN)*2.5)):null;
   for(let i=0;i<n;i++){CL=seat&&yB+i>SQ.b0?seatX(SQ,yB+i,y1,0,0)[0]:-999;const t=i/(n-1),hw=(fem?8+Math.min(3,Math.round(i*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,
       flL=W?Math.round(W.skFlareL*t*t):0,flR=W?Math.round(W.skFlareR*t*t):0,
@@ -1360,6 +1392,17 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
   if(tied)wind(SQ.ka-6,SQ.ka+4,yA-6,6);
   /* the hem of a short tunic along the underside of the lap */
   if(seat&&!o.long)for(let x=12-slim;x<=SQ.xk-5;x++){const b=Math.min(y1,Math.round(thighY(SQ,x,1)));px(x,b,hem[3]);px(x,b-1,hem[1])}
+  /* a clerk's writing board (board: the color of its wood): seated, it lies across his knees, its waxed face seen a little from above
+     and the far hand resting on it; standing, he holds it upright at his side by its top, the arm still. A plain slab with a dark waxed
+     face inside a frame, its edges straight: no ruled lines, no stylus laid across it (CONTRIBUTING section 3) */
+  if(BD){const Bw=c.bw||(c.bw=ramp(o.board)),wax='#4a3a2a',waxL='#6a5640',hand=hx=>[4,5,5,5,4].forEach((n,j)=>{const x0=hx+(j===0||j===4?0:0);
+      for(let k=0;k<n;k++)px(x0+k,yS+AL+j,S[Math.min(4,j===4?3:k===0?3:k===n-1?1:j===3&&k===2?3:2)])});
+    if(seat){const y0=Math.round(thighY(SQ,14,0))-1,xa=12,xb=SQ.xk+4;
+      for(let x=xa;x<=xb;x++){px(x,y0,Bw[x>xb-3?0:1]);px(x,y0+1,x<=xa||x>=xb?Bw[2]:x>xb-3?waxL:wax);px(x,y0+2,Bw[2]);px(x,y0+3,Bw[4])}
+      hand(fx)}
+    else{const hx=fx+2,y0=yS+AL+2,y1b=y0+15;
+      for(let y=y0;y<=y1b;y++)for(let k=0;k<4;k++)px(hx+1+k,y,y===y1b?Bw[4]:k===0?Bw[3]:k===3?Bw[1]:y>y0+1&&y<y1b-1?(k===1?wax:waxL):Bw[2]);
+      hand(hx)}}
   /* shoulders and trunk */
   const torWet=WET?((k,w,i)=>i<5+((k+TORN)%3)||i>TOR-6-((k*2+TORN)%3)):null;
   for(let i=0;i<TOR;i++){const yy=yS+i,twi=i<PIT?tw:Math.round(tw*(1-(i-PIT)/(TOR-PIT)));
@@ -1377,79 +1420,138 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
   /* body armor: default scale armor (Chapter One), or Roman lorica segmentata ('seg'), mail ('mail'), or molded officer cuirass ('cuirass') */
   if(c.ar){const A=c.ar,AS=o.armorStyle;
     if(AS==='seg'){
-      /* lorica segmentata: overlapping horizontal iron strips across torso and curved shoulder plates (no vertical crossing bands) */
-      for(let i=2;i<TOR;i++){const b=(i-2)%4;for(let xx=-9;xx<=10;xx++){let v=xx<-7?4:xx<-4?3:xx>6?1:2;
-        if(b===0)v=Math.max(0,v-1);else if(b===3)v=Math.min(4,v+1+(xx<-3?0:1));else if(b===1&&xx>2&&xx<8)v=0;px(xx,yS+i,A[v])}}
-      /* curved shoulder plates over the shoulder yoke */
-      for(let i=0;i<7;i++){const xL=i<2?-11:-14,xR=i<2?12:14,seam=i===2||i===5;
-        for(let xx=xL;xx<=-5;xx++)px(xx,yS+i,A[seam?4:xx<xL+2?4:xx<-9?3:2]);
-        for(let xx=6;xx<=xR;xx++)px(xx,yS+i,A[seam?3:xx>xR-2?2:xx>9?0:1])}
-      px(-1,yS,T[2],7);px(-1,yS+1,T[3],7);px(0,yS,S[3],5);px(0,yS+1,S[2],5)}
+      /* lorica segmentata: contoured overlapping steel girth hoops, arched multi-lame shoulder guards, crimson focale collar (no vertical crossing bands) */
+      for(let i=3;i<TOR;i++){const b=(i-3)%4,narrow=i>waist?1:0;for(let xx=-9+narrow;xx<=10-narrow;xx++){let v=xx<-7?4:xx<-4?3:xx>7?1:2;
+        if(b===0)v=Math.max(0,v-1);else if(b===3)v=4;else if(b===1&&xx>2&&xx<8)v=0;else if(b===2&&xx>3&&xx<7)v=1;
+        px(xx,yS+i,A[v])}}
+      /* subtle warm brass collar hinges only on the top breastplate (never a vertical column across the hoops) */
+      px(-4,yS+3,'#d8b454');px(5,yS+3,'#f0d478');
+      /* arched overlapping shoulder lames (curved plates wrapping smoothly over both shoulders) */
+      for(let i=0;i<8;i++){const drop=i>4?1:0,xL=i===0?-10:i===1?-12:i<6?-14:-15+drop,xR=i===0?11:i===1?13:i<6?15:16-drop;
+        for(let xx=xL;xx<=-4;xx++){const l=(i+Math.floor((-xx-4)/3))%3;px(xx,yS+i,A[l===2?4:l===0?(xx>-8?1:2):3])}
+        for(let xx=5;xx<=xR;xx++){const l=(i+Math.floor((xx-5)/3))%3;px(xx,yS+i,A[l===2?3:l===0?(xx<12?0:1):2])}}
+      /* crimson wool focale tucked at the neck above the iron plates */
+      px(-2,yS,T[1],9);px(-2,yS+1,T[2],9);px(-1,yS+2,T[3],7);px(-1,yS,S[3],6);px(0,yS+1,S[2],4)}
     else if(AS==='mail'){
-      /* lorica hamata: interlocking chain mail over torso & shoulders, short scalloped hem */
-      for(let i=1;i<TOR;i++)for(let xx=-9;xx<=10;xx++){const q=(xx+i)&1;let v=xx<-7?4:xx<-4?3:xx>6?1:2;if(q)v=Math.min(4,v+1);else if(xx>3&&xx<8&&i%3===0)v=Math.max(0,v-1);px(xx,yS+i,A[v])}
-      for(let i=0;i<6;i++){for(let xx=-12+(i<2?2:0);xx<=-5;xx++)px(xx,yS+i,A[(xx+i)&1?4:3]);for(let xx=6;xx<=13-(i<2?2:0);xx++)px(xx,yS+i,A[(xx+i)&1?2:1])}
-      for(let i=0;i<5;i++)for(let xx=-9;xx<=10;xx++){if(i===4&&(xx&1))continue;px(xx,yB+i,A[((xx+i)&1)?3:xx<-6?4:xx>6?1:2])}
+      /* lorica hamata: fine shaded chainmail over torso, classic Roman shoulder doubling (humeralia) with leather/bronze trim, and mid-thigh mail skirt */
+      const mpx=(xx,yy,base)=>{const ring=((xx+(yy&1))&1),hi=xx>3&&xx<8&&((xx+yy*3)%5===0);let v=base+(ring?1:0);if(hi&&!ring)v=Math.max(0,v-1);px(xx,yy,A[clamp(v,0,4)])};
+      for(let i=1;i<TOR;i++){const narrow=i>waist?1:0;for(let xx=-9+narrow;xx<=10-narrow;xx++){const base=xx<-7?3:xx<-4?2:xx>5?1:2;mpx(xx,yS+i,base)}}
+      /* shoulder doubling flaps (humeralia) over both shoulders and upper chest */
+      for(let i=0;i<8;i++){const xL=i<2?-11:-13,xR=i<2?12:14;
+        for(let xx=xL;xx<=-4;xx++){const edge=i===7||xx===xL;px(xx,yS+i,edge?'#5a3c22':A[((xx+(i&1))&1)?4:3])}
+        for(let xx=5;xx<=xR;xx++){const edge=i===7||xx===xR;px(xx,yS+i,edge?'#7a5430':A[((xx+(i&1))&1)?2:1])}}
+      /* leather/bronze collar trim & chest clasp dots */
+      px(-3,yS+1,'#5a3c22',11);px(-2,yS+2,'#7a5430',9);px(-3,yS+5,'#c8a44c',2);px(4,yS+5,'#e6c86e',2);
+      /* longer mail skirt extending below the belt over the tunic hem */
+      const mSk=seat?4:kn?6:10;
+      for(let i=0;i<mSk;i++){const fl=Math.floor(i/4);for(let xx=-9-fl;xx<=10+fl;xx++){if(i===mSk-1&&((xx&1)===1))continue;
+        const base=xx<-6?3:xx<-3?2:xx>5?1:2;mpx(xx,yB+i,base+(i===mSk-1?1:0))}}
       px(-1,yS,S[3],7);px(0,yS+1,S[2],5)}
     else if(AS==='cuirass'){
-      /* molded bronze or iron cuirass worn by centurions and senior officers, with layered pteruges at shoulders and waist */
-      const PT=c.pt||ramp('#dfd4ba');
-      for(let i=1;i<TOR;i++)for(let xx=-9;xx<=10;xx++){let v=xx<-7?4:xx<-4?3:xx>7?1:2;
-        if(i>=3&&i<=9&&xx>=2&&xx<=7)v=i>=4&&i<=7&&xx>=3&&xx<=6?0:1;
-        else if(i>=4&&i<=8&&xx>=-5&&xx<=-1)v=Math.max(1,v-1);
-        else if(i===10&&xx>=-6&&xx<=8)v=Math.min(4,v+1);
-        else if(i>=TOR-2)v=i===TOR-1?4:xx>2?0:1;
-        px(xx,yS+i,A[v])}
-      /* shoulder pteruges */
-      for(let i=4;i<9;i++){for(let xx=-13;xx<=-9;xx++)if(i<8||((xx+13)%2===0))px(xx,yS+i,PT[(xx+13)%2?3:2]);
-        for(let xx=10;xx<=14;xx++)if(i<8||((xx-10)%2===0))px(xx,yS+i,PT[(xx-10)%2?2:1])}
-      /* double-tier waist pteruges */
-      for(let i=0;i<9;i++)for(let xx=-9;xx<=10;xx++){const q=(xx+9)%3;if(i===8&&q!==1)continue;const top=i<4;px(xx,yB+i,PT[q===2?4:top?(q===0?0:1):(q===0?1:2)])}
-      /* optional officer's crimson waist sash */
-      if(c.sa){const SA=c.sa;for(let i=TOR-7;i<TOR-2;i++)for(let xx=-9;xx<=10;xx++){const j=i-(TOR-7);px(xx,yS+i,SA[j===0?1:j===4?4:j===2?3:xx<-5?3:xx>5?1:2])}}
+      /* molded bronze, gold or iron muscle cuirass with anatomical pectoral/rib modeling, shoulder clasps, and studded leather/purple pteruges */
+      const PT=c.pt||ramp('#5a361e'),TR=o.cuirassTrim?ramp(o.cuirassTrim):null,ST=WET?'#a88a42':'#f0d478',STd='#9a7628';
+      for(let i=1;i<TOR;i++){const narrow=i>waist?1:0;for(let xx=-9+narrow;xx<=10-narrow;xx++){let v=xx<-7?4:xx<-4?3:xx>7?1:2;
+        /* sculpted pectorals with gentle curved lower arcs (no flat dark bar) */
+        const pecL=xx>=-6&&xx<=-1,pecR=xx>=1&&xx<=7,arcL=xx===-6||xx===-1?8:9,arcR=xx===1||xx===7?8:9;
+        if(pecR&&i>=3&&i<arcR)v=(i>=4&&i<=6&&xx>=3&&xx<=6)?0:1;
+        else if(pecL&&i>=3&&i<arcL)v=(i>=4&&i<=6&&xx>=-4&&xx<=-2)?1:2;
+        else if((pecL&&i===arcL)||(pecR&&i===arcR))v=Math.min(4,v+1);
+        /* subtle abdominal contours */
+        else if(i>=11&&i<=16&&((xx>=2&&xx<=5)||(xx>=-4&&xx<=-2)))v=Math.max(1,v-1);
+        /* sculpted lower lip */
+        else if(i>=TOR-2)v=i===TOR-1?4:(xx>1?0:1);
+        if(TR&&(i===2||i===TOR-2))px(xx,yS+i,TR[xx>2?0:xx<-4?3:1]);
+        else px(xx,yS+i,A[v])}}
+      /* shoulder straps of cuirass */
+      for(let i=0;i<3;i++){px(-9,yS+i,A[3],4);px(6,yS+i,A[1],4);if(i===1){px(-7,yS+i,ST);px(8,yS+i,ST)}}
+      /* shoulder pteruges with gold studded tips */
+      for(let i=3;i<10;i++){for(let xx=-14;xx<=-9;xx++){const g=(xx+14)%2;if(i===9&&g)continue;px(xx,yS+i,i===8&&!g?STd:PT[g?4:i<5?2:3])}
+        for(let xx=10;xx<=15;xx++){const g=(xx-10)%2;if(i===9&&g)continue;px(xx,yS+i,i===8&&!g?ST:PT[g?3:i<5?1:2])}}
+      /* double-tier waist pteruges with gleaming gold/brass tips */
+      const pH=seat?6:11;
+      for(let i=0;i<pH;i++)for(let xx=-9;xx<=10;xx++){const q=(xx+9)%3,top=i<5;if(i===pH-1&&q!==1)continue;
+        if(q===2){px(xx,yB+i,PT[4]);continue}
+        if(i===4&&q===1)px(xx,yB+i,xx>0?ST:STd);
+        else if(i===pH-2&&q===1)px(xx,yB+i,xx>-2?ST:STd);
+        else px(xx,yB+i,PT[top?(q===0?1:2):(q===0?2:3)])}
+      /* officer's waist sash (cinctorium) with compact folded knot on front-left */
+      if(c.sa){const SA=c.sa;for(let i=TOR-7;i<TOR-2;i++)for(let xx=-9;xx<=10;xx++){const j=i-(TOR-7);
+        const knot=xx>=-3&&xx<=1&&j>=0&&j<=3;
+        px(xx,yS+i,knot?SA[j===0||xx===0?0:j===3?4:1]:SA[j===0?1:j===4?4:j===2?3:xx<-5?3:xx>5?1:2])}}
       px(-1,yS,S[3],7);px(0,yS+1,S[2],5)}
     else{
       for(let i=1;i<TOR;i++)for(let xx=-9;xx<=10;xx++){const q=(xx+9+(i>>1)%2*2)%4;let v=xx<-7?4:xx<-5?3:xx>8?1:2;if(i%2===0&&q===0)v=Math.max(0,v-2);else if(i%2===1&&q===0)v=Math.min(4,v+1);px(xx,yS+i,A[v])}
       for(let i=0;i<9;i++)for(let xx=-9;xx<=10;xx++){const q=(xx+9)%3;if(i===8&&q!==1)continue;px(xx,yB+i,A[q===0?1:q===1?2:4])}
       px(-1,yS,S[3],7);px(0,yS+1,S[2],5)}}
-  /* Roman military belt (cingulum with plated studs and four evenly spaced leather apron strips), or civilian belt/sash */
-  if(o.milBelt&&!HIM){const B=c.bt||ramp('#4a2c16'),M=o.armorStyle==='cuirass'?(WET?'#b89a50':'#e6c86e'):(WET?'#989ea8':'#c8ccd6'),Md=o.armorStyle==='cuirass'?'#8a6c28':'#7a808c',St=WET?'#8e7642':'#c4a252';
-    for(let xx=-9+nw;xx<=10-nw;xx++){const dk=xx<-6?1:0,pl=(xx+9)%3!==2;px(xx,yB-3,pl?M:B[1+dk]);px(xx,yB-2,pl?(dk?Md:M):B[2+dk]);px(xx,yB-1,B[4])}
-    if(!c.ar||o.armorStyle==='seg'||o.armorStyle==='mail'){[-4,-1,2,5].forEach((sx,si)=>{const len=si===0||si===3?6:7;for(let j=0;j<len;j++){px(sx,yB+j,B[j===len-1?4:2]);px(sx+1,yB+j,j===len-1?St:j===2||j===4?St:B[3])}})}}
+  /* Roman military belt (cingulum with plated studs and clustered studded leather apron strips on legionaries/watch; sleek buckle belt on mail) */
+  if(o.milBelt&&!HIM){const B=c.bt||ramp('#4a2c16'),gold=o.armorStyle==='cuirass',M=gold?(WET?'#c09e4e':'#f0d478'):(WET?'#989ea8':'#d2d6e0'),Md=gold?'#8e6a24':'#747c88',St=WET?'#9a7e40':'#e6c45a';
+    for(let xx=-9+nw;xx<=10-nw;xx++){const dk=xx<-6?1:0,pl=o.armorStyle==='mail'?(xx>=-1&&xx<=2):((xx+9)%3!==2);
+      px(xx,yB-3,pl?M:B[1+dk]);px(xx,yB-2,pl?(dk?Md:M):B[2+dk]);px(xx,yB-1,B[4])}
+    if(!c.ar||o.armorStyle==='seg'){[-3,-1,1,3].forEach((sx,si)=>{const len=si===0||si===3?8:9;for(let j=0;j<len;j++){px(sx,yB+j,B[j===len-1?4:3]);px(sx+1,yB+j,(j===len-1||j%2===1)?St:B[2])}})}}
   else if(c.bt&&!HIM){const B=c.bt;for(let xx=-9+nw;xx<=10-nw;xx++){const dk=xx<-6?1:0;px(xx,yB-3,B[1+dk]);px(xx,yB-2,B[2+dk]);px(xx,yB-1,B[4])}
-    if(!c.ar){px(2,yB-3,B[0],2,2);px(3,yB,B[2],2,fem?12:8);px(4,yB,B[3],1,fem?12:8);px(3,yB+(fem?12:8),B[3],2);if(fem){px(1,yB,B[2],1,9);px(1,yB+9,B[3])}}}
+    if(!c.ar){px(2,yB-3,B[0],2,2);if(o.buckle){const K=c.bk||(c.bk=ramp(o.buckle));px(1,yB-3,K[1],3);px(1,yB-2,K[2],3);px(1,yB-1,K[3],3);px(3,yB-3,K[0])}px(3,yB,B[2],2,fem?12:8);px(4,yB,B[3],1,fem?12:8);px(3,yB+(fem?12:8),B[3],2);if(fem){px(1,yB,B[2],1,9);px(1,yB+9,B[3])}}}
   if(o.pouch&&!HIM){px(-9,yB-2,LE[2],6,8);px(-9,yB-2,LE[3],6,2);px(-9,yB,LE[4],1,6);px(-5,yB,LE[1],1,4);px(-8,yB+6,LE[4],4);px(-7,yB-1,'#d8b860')}
-  /* sheathed Roman gladius (rounded pommel, flush bronze throat, no protruding crossguard) */
+  /* sheathed Roman gladius (rounded pommel, ribbed ivory grip, flush bronze throat, scabbard bands & pointed chape; no protruding crossguard) */
   if(o.gladius&&!TOGA){const left=o.gladius==='left',gx=left?-10:7;
-    px(gx,yB-6,'#6e4828',3,2);px(gx+1,yB-6,'#b89258',1);px(gx+1,yB-4,'#e4d8b8',2,2);px(gx,yB-2,'#c8a448',3,1);
-    for(let j=0;j<13;j++){const dx=left?-Math.floor(j/6):Math.floor(j/6);px(gx+dx,yB-1+j,j===12?'#c8a448':'#5c2820',3);px(gx+dx+2,yB-1+j,j===12?'#f0d884':'#8a4034',1);if(j===5||j===10)px(gx+dx,yB-1+j,'#c8a448',3)}}
+    px(gx,yB-7,'#5e3a20',3,2);px(gx+1,yB-7,'#d0a668',1);px(gx+1,yB-5,'#eee2c4',2,3);px(gx+1,yB-4,'#b8a684',2,1);px(gx,yB-2,'#d4ae4e',3,1);px(gx+2,yB-2,'#f6de8a',1,1);
+    for(let j=0;j<14;j++){const dx=left?-Math.floor(j/6):Math.floor(j/6);const band=j===4||j===9||j===12;
+      if(j===13){px(gx+dx+1,yB-1+j,'#e8c866',1);continue}
+      px(gx+dx,yB-1+j,band?'#c49e44':'#56241c',3);px(gx+dx+2,yB-1+j,band?'#f6de8a':'#8e3e32',1)}}
   /* a working apron (apron: its color): a length of stiff cloth tied round the waist, over the front of the skirt, as tradesmen wore it (Acts 19:12) */
   if(o.apron&&!HIM&&!seat&&!kn){const A=c.ap||(c.ap=ramp(o.apron)),m=o.long?n-6:n-3;for(let i=-3;i<m;i++){const j=Math.max(0,i),t=j/(n-1),hw=(fem?8+Math.min(3,Math.round(j*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,x0=-hw+3+sw,x1=hw-2+sw;
       if(i<0)for(let xx=x0-1;xx<=x1+1;xx++)px(xx,yB+i,A[i===-3?1:i===-2?2:4]);else if(i===m-1)for(let xx=x0;xx<=x1;xx++)px(xx,yB+i,A[xx<x0+3?4:3]);else cloth(yB+i,x0,x1,A,i,[[.34,2,.02],[.68,4,-.01]])}}
-  /* officer's cloak draped over the near/left shoulder, leaving the breastplate visible (column-notched when torn) */
-  if(C&&o.offCloak){const m1=yH+9,mn=m1-yS+2,wl=WET?((k,w,i)=>i>mn*.5+(k+TORN)%3):null;
-    for(let yy=yS-1;yy<=m1;yy++){const i=yy-yS+1,t=i/(mn-1),bulge=t>.2&&t<.65?1:0,zig=yy>m1-3?(m1-yy<1?3:m1-yy<2?1:0):0;
-      const ms=W?Math.round(W.mt*t*t):0,x0=-16+(i<3?3-i:0)-bulge+(TORN?0:zig)+ms,x1=-8+(i<4?2:t>.4?0:1)+ms,w=x1-x0+1;
+  /* officer's cloak draped over the near shoulder (and optional high shoulder cowl with drape:1), flaring naturally down the side */
+  if(C&&o.offCloak){const m1=yH+12,mn=m1-yS+2,wl=WET?((k,w,i)=>i>mn*.5+(k+TORN)%3):null;
+    for(let yy=yS-1;yy<=m1;yy++){const i=yy-yS+1,t=i/(mn-1),fl=Math.round(t*2.4),bulge=t>.18&&t<.62?1:0,zig=yy>m1-3?(m1-yy<1?2:m1-yy<2?1:0):0;
+      const ms=W?Math.round(W.mt*t*t):0,x0=-16-fl+(i<3?3-i:0)-bulge+(TORN?0:zig)+ms,x1=-8+(i<4?2:t>.4?0:1)+ms,w=x1-x0+1;
       if(TORN&&yy>m1-4){for(let k=0;k<w;k++){const cut=tearCut(k,w);if(yy>m1-cut)continue;const edge=yy===m1-cut,P=c.clW||C;px(x0+k,yy,edge?P[4]:P[k<2?4:k>w-3?1:2])}}
-      else cloth(yy,x0,x1,C,i,[[.35,4,.012],[.7,9,-.01]],null,[4,12],0,c.clW,wl)}
-    for(let xx=-12;xx<=-5;xx++){px(xx,yS-1,C[1]);px(xx,yS,C[2]);px(xx,yS+1,C[3]);px(xx,yS+2,C[4])}
-    px(-7,yS,'#f4dc8a',2,2);px(-6,yS+1,'#b08a3c')}
+      else cloth(yy,x0,x1,C,i,[[.32,4,-.015],[.66,9,.01]],null,[4,13],0,c.clW,wl)}
+    if(o.drape){/* draped chest cowl from near shoulder to far brooch (Centurion / Praetorian watch) */
+      for(let xx=-13;xx<=10;xx++){const u=(xx+13)/23,top=yS+Math.round(Math.sin(u*Math.PI)*1.8),bot=yS+3+Math.round(Math.sin(u*Math.PI)*3.8);
+        for(let yy=top;yy<=bot;yy++){const j=yy-top,h=bot-top;px(xx,yy,C[j===0?1:j===h?4:j===h-1?0:j===2?3:xx>4?1:2])}}
+      px(7,yS,'#f6de8a',3,2);px(7,yS+1,'#b08a3c',2,1)}
+    else{for(let xx=-13;xx<=-4;xx++){px(xx,yS-1,C[1]);px(xx,yS,C[2]);px(xx,yS+1,C[3]);px(xx,yS+2,C[4])}
+      px(-8,yS,'#f6de8a',3,2);px(-7,yS+1,'#b08a3c',2,1)}}
   /* mantle (or Roman toga): hanging from the near shoulder, and across the chest to the far hip */
   else if(C&&!o.cape){const m1=o.long||TOGA?yA-6:yH+6,mn=m1-yS+2,ED=o.edge?ramp(o.edge):null,wl=WET?((k,w,i)=>i>mn*.48+(k+TORN)%3):null;
     for(let yy=yS-1;yy<=m1;yy++){const i=yy-yS+1,t=i/(mn-1),bulge=t>.25&&t<.6?1:0,zig=yy>m1-3?(m1-yy<1?3:m1-yy<2?1:0):0;
       const ms=W?Math.round(W.mt*t*t):0,x0=-16+(i<3?3-i:0)-bulge+(TORN?0:zig)+ms+tw,x1=-9+(t>.45?1:0)-(TORN?0:zig>1?1:0)+ms+tw,w=x1-x0+1;
       if(TORN&&yy>m1-4){for(let k=0;k<w;k++){const cut=tearCut(k,w);if(yy>m1-cut)continue;const edge=yy===m1-cut,P=c.clW||C;px(x0+k,yy,edge?P[4]:P[k<2?4:k>w-3?1:2])}}
       else cloth(yy,x0,x1,C,i,[[.3,4,.012],[.6,9,-.01],[.82,14,.01]],null,[6,14],0,c.clW,wl)}
-    for(let xx=-10+slim;xx<=11-slim;xx++){const k=(xx+10)/21,ya=Math.round(yS-1+k*(TOR-(TOGA?6:8))),yb=ya+(TOGA?13:10)-Math.round(k*3);
-      for(let yy=ya;yy<=yb;yy++){const j=yy-ya;px(xx+tw,yy,(ED&&j>0&&j<3?ED:C)[j===0?(k>.3?0:1):j===yb-ya?4:j===3||j===7||(TOGA&&j===10)?3:j===4||(TOGA&&j===8)?1:k>.72?1:2])}
+    /* fringes (fringe: their color), at the two lower corners of the mantle where it hangs from the shoulder, as every Israelite wore them,
+       a blue cord at the corner above the threads (Numbers 15:38): a few short threads each, slanting back as cloth hangs. fringeLong:1 is
+       the Pharisees' (Matthew 23:5), longer than anyone else's. Under a long robe they end above its hem, so that no thread is laid over the
+       hem's band, and none hangs straight down (CONTRIBUTING section 3) */
+    if(o.fringe&&o.long&&!TORN){const FR=c.fg||(c.fg=ramp(o.fringe)),ms=(W?Math.round(W.mt):0)+tw;
+      for(const[cx,cy,back]of[[-16+ms,m1-2,1],[-9+ms,m1,0]]){const n=o.fringeLong?(seat?3:back?6:4):2;px(cx,cy+1,'#34507a');px(cx+1,cy+1,'#4a6a96');
+        for(const[dx,k0]of[[0,0],[1,1]])for(let k=0;k<n-k0;k++)px(cx+dx-Math.floor((k+1)*.5),cy+2+k,FR[k===0?1:k<n-2?2:3])}}
+    if(TOGA){/* Roman toga: curved sweeping chest drape (balteus) + graceful curved sinus overfold below the waist, with optional purple praetexta border */
+      for(let xx=-10+slim;xx<=11-slim;xx++){const k=(xx+10)/21,curve=Math.sin(k*Math.PI)*3.2;
+        const ya=Math.round(yS-1+k*(TOR-9)+curve*.5),yb=ya+12-Math.round(k*2);
+        for(let yy=ya;yy<=yb;yy++){const j=yy-ya,h=yb-ya;
+          const isEd=ED&&(j===1||j===2);
+          px(xx+tw,yy,(isEd?ED:C)[j===0?(k>.3?0:1):j===h?4:j===4||j===8?3:j===5||j===9?1:k>.7?1:2])}
+        /* body wrap below chest band down to waist */
+        for(let yy=yb+1;yy<=yB;yy++){const j=yy-yb,q=(xx+j*.45+40)%6,twi=Math.round(tw*(1-(yy-yS)/TOR));
+          px(xx+twi,yy,C[j===1?4:j===2?3:xx<-7+slim?4:xx<-4?3:q<1?3:q<2?1:xx>7-slim?1:2])}
+        /* sweeping curved sinus overfold below the waist (standing/walking) */
+        if(!seat&&!kn){const sinBot=yB+3+Math.round(Math.sin(k*Math.PI)*11+k*3),sw2=W?Math.round(W.sk*.35):0;
+          for(let yy=yB+1;yy<=sinBot;yy++){const d=sinBot-yy,isEd=ED&&(d===1||d===2);
+            px(xx+sw2,yy,(isEd?ED:C)[d===0?3:d===3?3:d===4?1:xx<-6?3:xx>6?1:2])}
+          px(xx+sw2,sinBot+1,C[3])}}}
+    else for(let xx=-10+slim;xx<=11-slim;xx++){const k=(xx+10)/21,ya=Math.round(yS-1+k*(TOR-8)),yb=ya+10-Math.round(k*3);
+      for(let yy=ya;yy<=yb;yy++){const j=yy-ya;px(xx+tw,yy,(ED&&j>0&&j<3?ED:C)[j===0?(k>.3?0:1):j===yb-ya?4:j===3||j===7?3:j===4||j===8?1:k>.72?1:2])}
       if(HIM){for(let yy=yb+1;yy<=yB;yy++){const j=yy-yb,q=(xx+j*.5+40)%7,twi=Math.round(tw*(1-(yy-yS)/TOR));px(xx+twi,yy,C[j===1?3:xx<-7+slim?4:xx<-4?3:q<1?3:q<2?1:xx>8-slim?1:2])}}
       else{px(xx+tw,yb+1,T[4]);if(xx%3)px(xx+tw,yb+2,T[3])}}}
-  if(o.cape){for(let xx=-16;xx<=15;xx++){const e=Math.abs(xx+.5)>14?1:0;px(xx,yS-1+e,C[1]);px(xx,yS+e,C[xx<-8?3:2]);px(xx,yS+1+e,C[xx<-8?4:3]);if(xx<-5||xx>7)px(xx,yS+2+e,C[4])}px(8,yS,'#f4dc8a',2,2);px(9,yS+1,'#b08a3c')}
+  if(o.cape){const clCol=o.armorStyle==='mail'?'#d2d8e2':'#f4dc8a',clDk=o.armorStyle==='mail'?'#7c8490':'#b08a3c';
+    for(let xx=-15;xx<=14;xx++){if(xx>=-1&&xx<=4)continue;const u=(xx+15)/29,e=Math.abs(xx+.5)>13?1:0,sag=Math.round(Math.sin(u*Math.PI)*1.2);
+      px(xx,yS-1+e+sag,C[1]);px(xx,yS+e+sag,C[xx<-7?3:2]);px(xx,yS+1+e+sag,C[xx<-7?4:3]);if(xx<-4||xx>6)px(xx,yS+2+e+sag,C[4])}
+    px(7,yS+1,clCol,3,2);px(8,yS+2,clDk,2,1)}
   /* near arm (hidden when a mantle hangs over it, unless officer cloak, cape, or reaching back to lead by the hand) */
   if(!C||o.cape||o.offCloak||ges===4||NA)arm(true,NA?0:W?W.na:0,!NA&&(ges===4||fold||tied||(ges===9&&!bow&&!o.stub)),NA?2:W?W.nb:0,NA?0:W?W.armLiftN:0);
   /* a cuff: an iron band round a wrist, two rows, a pixel wider than the wrist on each side, lit along its top and dark at its ends */
   const cuff=(x0,y0,w)=>{const I=CUFF;for(let k=0;k<w;k++){const e=k===0||k===w-1;px(x0+k,y0,I[e?3:k===w-2?0:1]);px(x0+k,y0+1,I[e?4:k===w-2?2:3])}};
-  if(NA)cuff(ax+2+(fem?0:0),yS+AL-2,aw+1);if(FA)cuff(fx+1,yS+AL-2,fw+1);
+  if(NA)cuff(ax+2+(fem?0:0),yS+AL-2,aw+1);if(FA&&!BD)cuff(fx+1,yS+AL-2,fw+1);
   if(ges===4&&!bow&&!o.stub){const R=o.longSleeve?T:S;
     for(let k=0;k<6;k++){const gx=ax+1-k,gy=yS+12+Math.round(k*.6);px(gx,gy,R[2]);px(gx,gy+1,R[3],1,2);px(gx,gy+3,R[4])}
     px(ax-8,yS+15,S[2],5);px(ax-8,yS+16,S[3],5);px(ax-7,yS+17,S[4],4)}
@@ -1457,9 +1559,15 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
   const hb=W&&!bow&&!o.stone?W.headBob:0,hx=-6+tw+(bow?1:0)+(mv&MV.fwd?1:0)-(mv&MV.back?1:0),hy=yS-20+hb+(bow?2:0)+(mv&MV.dip?1:mv&MV.lift?-1:0),jaw=talk>2,H=c.ha,Bd=c.be,Hd=c.hd,Gr=c.gr,brow=fem?mix(o.brow||'#3a2414',o.skin,.3):o.brow||o.hair||o.beard||'#2a1a12';
   const neckTop=yS-3+Math.min(0,hb),neckH=4-Math.min(0,hb);
   px(-1+tw,neckTop,S[3],7,neckH);px(tw,neckTop,S[2],5,neckH-1);
+  /* a small pendant at the neck (pendant: its color), in the opening of the tunic: a solid 3x3 square lit at top-right, never round, with a V-cord */
+  if(o.pendant&&!c.ar&&!fem){const P=c.pd||(c.pd=ramp(o.pendant));px(tw,yS+1,P[3]);px(4+tw,yS+1,P[3]);
+    px(1+tw,yS+2,P[1],3);px(3+tw,yS+2,P[0]);px(1+tw,yS+3,P[2],3);px(1+tw,yS+3,P[3]);px(1+tw,yS+4,P[3],3);px(3+tw,yS+4,P[2])}
   const L={s:S[2],S:S[1],L:S[0],z:S[3],Z:S[4],n:S[3],w:fem?'#f6eedc':S[0],p:'#1a1018',b:brow,m:'#6a2a22',r:'#b04a44',c:mix(o.skin,'#d86a58',.4),h:H[2],H:Gr?Gr[2]:H[1],d:H[3],k:'#2a1a12',K:'#4a3020'};
+  /* veilHair: the color of the hair that shows under a shawl, where it is not dark (an older woman's, greying) */
+  if(o.veilHair){const V=c.vh||(c.vh=ramp(o.veilHair));L.k=V[3];L.K=V[1]}
   if(Bd){L.B=Bd[2];L.V=Gr?Gr[2]:Bd[1];L.v=Bd[3]}L.a=Hd[2];L.A=Hd[1];L.y=Hd[0];L.q=Hd[3];
-  if(c.cr){L.r=c.cr[2];L.R=c.cr[1];L.Y=c.cr[0];L.D=c.cr[3];L.g='#c8a448'}
+  {const HT=o.helmTrim?ramp(o.helmTrim):Hd;L.g=HT[2];L.G=HT[0]}
+  if(c.cr){L.r=c.cr[2];L.R=c.cr[1];L.Y=c.cr[0];L.D=c.cr[3];L.g=o.helmTrim||'#c8a448'}
   if(o.stone)Object.assign(L,{w:S[1],p:S[3],b:S[3],m:S[4],r:S[3],c:S[2],k:H[3],K:H[2]});
   /* sh: lay down a map of the head. With the chin down, the rows of a face or a beard (low) below the mouth sink by a pixel, and the row under the mouth is doubled */
   const sh=(map,x0,y0,low)=>{for(let j=0;j<map.length;j++){const r=map[j],yy=y0+j,d=low&&jaw?(yy>hy+15?1:yy===hy+15?2:0):0;
@@ -1484,15 +1592,22 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
     [[-5,-2],[-7,-2],[-9,-3],[-11,-4],[ax-1,-5],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax-1,-6],[ax,-6],[ax,-7],[ax+1,-7],[ax+2,-8]].forEach(([a,b],i)=>cloth(yS-4+i+Math.round(hb*.5),a+tw,b+tw,Hd,i,[[.45,5,.02]],null,[4,8]));
     [[5,7],[5,9],[6,11],[7,13-nw],[9,14-nw],[9,14-nw],[10,14-nw],[10,14-nw],[11,14-nw],[12,13-nw]].forEach(([a,b],i)=>{for(let xx=a;xx<=b;xx++)px(xx+tw,yS-4+i+Math.round(hb*.5),Hd[xx===a?3:i<5&&xx>a+1?1:2])})}
   if(o.wrap)sh(HEADS.wrap,hx-1,hy-4);
+  /* a scripture case on the forehead (phyl:1, broad, as the Pharisees wore theirs, Matthew 23:5; phyl:2, a small one, as other Jewish men wore): a small square box of dark leather at the hairline, its top and
+     its front face catching the light so that it stands out from dark hair as a box. No strap is drawn, and never a ring */
+  if(o.phyl&&!o.helm){const B=['#c49e74','#a07c58','#6e5038','#4a3426','#24180f','#160e0a'],sm=o.phyl===2;
+    for(let j=0;j<(sm?2:3);j++)for(let i=0;i<(sm?2:4);i++)if(sm)px(hx+8+i,hy+4+j,j===0?B[i?0:1]:B[i?4:5]);else px(hx+7+i,hy+3+j,j===0?B[i===3?0:1]:j===2?B[i===3?4:5]:i===3?B[2]:i===0?B[4]:B[3])}
   if(o.helm){const HS=o.helmStyle;
     if(HS==='crest'||HS==='plume'){if(!c.cr){L.r='#a62620';L.R='#cc4036';L.Y='#e86e5a';L.D='#641412';L.g='#c8a448'}
-      sh(HS==='crest'?HEADS.crest:HEADS.plume,HS==='crest'?hx-2:hx-3,HS==='crest'?hy-8:hy-7);sh(HEADS.galea,hx-1,hy-2)}
+      sh(HS==='crest'?HEADS.crest:HEADS.plume,HS==='crest'?hx-3:hx-3,HS==='crest'?hy-10:hy-8);sh(HEADS.galea,hx-1,hy-2)}
     else sh(HS==='galea'?HEADS.galea:HEADS.helm,hx-1,hy-2)}
   /* the far hand: holding a spear or Roman pilum, or raised in speech */
-  if(o.spear||o.pilum){const sx=18;
-    if(o.pilum){px(sx,yS-8,'#7a5430',1,8-yS);px(sx+1,yS-8,'#4e341c',1,8-yS);px(sx-1,yS-12,'#b08a3c',3,4);px(sx,yS-12,'#e6c86e',1,4);
-      px(sx,yS-38,'#b8bcc6',1,26);px(sx+1,yS-38,'#6a707c',1,26);
-      [1,1,3,3,3,1,1].forEach((w,i)=>{const x0=sx-(w>>1);px(x0,yS-45+i,'#c8ccd6',w);px(x0+(w>1?1:0),yS-45+i,'#f4f6fc')})}
+  if(ARM){const sx=18;
+    if(o.pilum){px(sx,yS-7,'#7a5430',1,7-yS);px(sx+1,yS-7,'#4e341c',1,7-yS);
+      /* swollen wooden/brass counterweight socket at the base of the iron shank */
+      px(sx-1,yS-13,'#9e7a34',3,6);px(sx,yS-13,'#d8b45c',1,6);px(sx-1,yS-11,'#5e401c',3,1);
+      px(sx,yS-39,'#c2c8d4',1,26);px(sx+1,yS-39,'#6a7280',1,26);
+      [1,1,3,3,3,1,1].forEach((w,i)=>{const x0=sx-(w>>1);px(x0,yS-46+i,'#c8ced8',w);px(x0+(w>1?1:0),yS-46+i,'#f4f6fc')})}
+    else if(o.spear==='slant'){}
     else{px(sx,yS-34,'#8a6238',1,34-yS);px(sx+1,yS-34,'#5a3c20',1,34-yS);
       [1,1,3,3,5,5,5,5,3,3,1,1].forEach((w,i)=>{const x0=sx-(w>>1);px(x0,yS-47+i,'#c4c4d0',w);px(x0+(w>1?1:0),yS-47+i,'#f4f4fc');if(w>2)px(x0+w-1,yS-47+i,'#8a8a98')});px(sx-1,yS-35,'#b08a3c',4,2)}
     for(let i=0;i<5;i++)px(13+i,yS+12+(i>2?-1:0),S[i<1?3:2],1,4);px(16,yS+9,S[2],5,5);px(16,yS+9,S[1],5);px(16,yS+13,S[3],5);px(20,yS+10,S[3],1,3);px(16,yS+11,S[3],4)}
@@ -1789,7 +1904,7 @@ const narr=(t,o)=>say(null,t,o);
 function DARK(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}
 const inDark=()=>!G.white&&(+$('#dim').style.opacity>=1||G.scene===DARK);
 function posSpeech(){if(!cur||cur.ink||cur.white)return;if(PH.on)return posSpeechPh();const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
-  if(a&&a.room===G.room&&!G.scene){const z=zoomNow();el.style.left=clamp((a.x-G.cam)*z*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-G.camY-figBox(a.room)[1])*z+7,40,132)*s+'px';el.style.top=''}
+  if(a&&a.room===G.room&&!G.scene){const z=zoomNow();el.style.left=clamp((a.x-G.cam)*z*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-G.camY-figBox(a.room)[1])*z+7,40,Math.max(40,Math.min(132,VH-el.offsetHeight/s-2)))*s+'px';el.style.top=''}   /* a line of several rows over a speaker near the top of the view comes down far enough to stay inside it */
   else if(cur.low){el.style.left='50%';el.style.top='';el.style.bottom=7*s+'px'}   /* low: a line told over a map whose road runs along its upper edge stands at the foot of the view */
   else{el.style.left='50%';el.style.top=10*s+'px';el.style.bottom=''}}
 /* posSpeechPh: on a phone a line stands over its speaker where the field shows him, inside the field, and the narrator's lines at its top,
@@ -2306,7 +2421,8 @@ Object.assign(ITEMS,{
     open:async()=>{try{await need('tablets')}catch(e){return narr(e.message)}return SHARED.tablets.open(CHAP[G.ch].tablets||{})}}});
 const COMBO={'awl+thread':()=>say(P,'threaded_and_ready')};
 /* combine: two items used together. The crafts are Paul's; another character leaves them to him (noCraft). */
-async function combine(a,b){const c=COMBO[[a,b].sort().join('+')],w=PC();if(w!==P)return say(w,w.noCraft||'i_had_better_leave_that_to_paul');
+/* A combination marked any (thoughts put together, Chapter Nineteen) may be made by whoever is played. */
+async function combine(a,b){const c=COMBO[[a,b].sort().join('+')],w=PC();if(w!==P&&!(c&&c.any))return say(w,w.noCraft||'i_had_better_leave_that_to_paul');
   if(c)return c();SFX.nope();return say(P,pick(NOPE))}
 /* --- "Pray to Jehovah": a pause for calm, then a context-sensitive thought. Never changes the game state. --- */
 const PRAYERS=['name_bows_his_head_james_1_5',
@@ -2373,14 +2489,15 @@ const CHAP={
   15:{name:'until_daybreak',label:'chapter_fifteen',title:'until_daybreak_2',salt:0xF8D7,src:'levels/chapter15.js',needs:['ship','birds'],treasure:{name:'tertius_own_line',at:'15-3K9-1WB-KBX-H5R'}},
   16:{name:'these_hands',label:'chapter_sixteen',title:'these_hands_2',salt:0x1E2B,src:'levels/chapter16.js',needs:['materials','ship','birds','country','weather','coast','beasts'],treasure:{name:'wool_of_miletus',at:'16-PDM-PMF-141-V54'}},
   17:{name:'the_belt',label:'chapter_seventeen',title:'the_belt_2',salt:0x2F4D,src:'levels/chapter17.js',needs:['materials','ship','birds','country','weather','coast','lanes'],treasure:{name:'murex_shells_on_the_beach',at:'17-7MV-VZH-XJX-YMT'}},
-  18:{name:'on_the_stairs',label:'chapter_eighteen',title:'on_the_stairs_2',salt:0x3A61,src:'levels/chapter18.js',needs:['materials','birds','beasts','cast','crowd','damascus','temple'],treasure:{name:'the_far_end_of_solomons_colonnade',at:'18-148-NDX-F9R-SGV'}}};
+  18:{name:'on_the_stairs',label:'chapter_eighteen',title:'on_the_stairs_2',salt:0x3A61,src:'levels/chapter18.js',needs:['materials','birds','beasts','cast','crowd','damascus','temple'],treasure:{name:'the_far_end_of_solomons_colonnade',at:'18-148-NDX-F9R-SGV'}},
+  19:{name:'the_sisters_son',label:'chapter_nineteen',title:'the_sisters_son_2',salt:0x4B83,src:'levels/chapter19.js',needs:['materials','birds','beasts','cast','lanes','temple','country','coast'],treasure:{name:'the_spring_at_antipatris',at:'19-BCP-RK0-B72-69E'}}};
 const TITLE={level:1,scene:'title',mood:'ancient',amb:{crickets:.5,wind:.35,owl:.4}};
 const PRO={name:'road_to_damascus',label:'Prologue',title:'the_road_to_damascus',src:'levels/prologue.js',needs:['materials','birds','damascus','temple']};
 /* PLANNED: the chapters that are planned and not built (issue #47). The title lists them, dimmed, under one line that opens them in place.
    Each is named by the part of Acts it will tell, not by a working title, which may still change; the title it is given replaces that
    reference when the chapter is built and moves into CHAP. Nothing else reads this list: these chapters have no file, no salt and no codes. */
 const PLANNED=[
-  {label:'chapter_nineteen',short:'Nineteen',ref:'acts_22_30_23_35'},{label:'chapter_twenty',short:'Twenty',ref:'acts_24_1_27'},
+  {label:'chapter_twenty',short:'Twenty',ref:'acts_24_1_27'},
   {label:'chapter_twenty_one',short:'twenty_one',ref:'acts_25_1_26_32'},{label:'chapter_twenty_two',short:'twenty_two',ref:'acts_27_1_26'},
   {label:'chapter_twenty_three',short:'twenty_three',ref:'acts_27_27_28_10'},{label:'chapter_twenty_four',short:'twenty_four',ref:'acts_28_11_16'},
   {label:'chapter_twenty_five',short:'twenty_five',ref:'acts_28_16_31'}];
@@ -2522,7 +2639,7 @@ function endScreen(o){const S=SHARED.scroll;if(S&&S.state!=='down'){S.down().the
     [o.time&&T('time_m_m_s_s',{m:Math.floor(s/60),s:s%60}),T('prayers_for_wisdom_n',{n:G.prays}),...(o.extra||[]).map(x=>T(x))].filter(Boolean).map(esc).join(' &middot; ')+'</p>'+
     '<p class="small">'+esc(T(o.based))+'</p><p class="go">'+esc(T(o.go))+'</p>'+(o.code?'<p class="small">'+esc(T(o.code[0],{code:o.code[1]}))+'</p>':'');
     const r=ov.getBoundingClientRect(),over=()=>[...ov.children].some(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});
-    ov.classList.remove('tight');if(over())ov.classList.add('tight')})}
+    ov.classList.remove('tight','tighter');if(over()){ov.classList.add('tight');if(over())ov.classList.add('tighter')}})}
 /* ============ SAFE-POINT CODES: chapter and game state packed into letters and numbers ============ */
 const A32='0123456789ABCDEFGHJKMNPQRSTVWXYZ',cb=$('#codebox');
 const chk=(b,s)=>{let h=Math.imul(b^s,0x9E3779B1)>>>0;h^=h>>>13;return h>>>4&511};
