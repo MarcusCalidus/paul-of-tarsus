@@ -1396,7 +1396,8 @@ const crowd18=on=>{AU.amb=Object.assign({},AU.amb,on?{cry18:on,roar18:on*.7,crow
 
 /* ---- the travel map ---- */
 /* The chapter opens on the road's last stretch, from where Chapter Seventeen left it inland to Jerusalem, in the window of the eastern
-   sea ('levant'). The telling of 21:19 uses the map's pick in the windows of Asia Minor ('north') and of the Aegean ('aegean'). */
+   sea ('levant'). The telling of 21:19 uses the map's pick in its journeys window (view:'journeys', ONE18),
+   from Macedonia to Cyprus, with the roads of the trail drawn between the places picked one after another. */
 const LEGS18=[['caesarea','tojerusalem'],['tojerusalem','jerusalem','new']];
 async function openMap18(){let M=null;try{M=await need('map')}catch(e){}
   const ok=!!(M&&LEGS18.every(([a,b])=>M.places[a]&&M.places[b]));await fade(1,450);

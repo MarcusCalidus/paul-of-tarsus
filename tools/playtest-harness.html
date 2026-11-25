@@ -309,8 +309,9 @@
      places used stay on offer; trail draws the roads between places picked one after another, and nothing between others. On each map no
      two routes cross, no name crosses a coast, an island or a route, no two names touch, and every name lies inside the window, in each
      language (`de:map18`). The stop shows the journeys window with every road of the trail, and hands over map18-zoom.png (de-map18-zoom.png):
-     its west and its east four times enlarged, for the cross-shape check. */
-  if(stop==='map18'){clearInterval(sk);sk=0;const n17=CHAP[17]?17:16;await loadLevel(n17);setChapter(n17);await need('map');ov.className='';ov.onclick=null;G.busy=true;lock(true);status();
+     its west and its east four times enlarged, for the cross-shape check. It plays in Chapter Eighteen, whose name stands in the bar above the
+     map (docs/screenshots/journeys18.png). */
+  if(stop==='map18'){clearInterval(sk);sk=0;const n18=CHAP[18]?18:CHAP[17]?17:16;await loadLevel(n18);setChapter(n18);await need('map');ov.className='';ov.onclick=null;G.busy=true;lock(true);status();
     const M=SHARED.map,cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
         for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;return n},
       tidy=()=>{const[ox,oy,w,h]=M.window(),bx=M.state.boxes,bad=[];for(const b of bx)if(b[0]<ox-.5||b[2]>ox+w+.5||b[1]<oy-.5||b[3]>oy+h+.5)bad.push(b[4]+' (off the map)');
