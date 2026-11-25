@@ -273,57 +273,268 @@ function paintElders18(g,v){const r=rng(1821),W='#e2d4b4',BK=104,TP=8;sky18(g,32
 /* ==== ART elders18: end ==== */
 
 /* ==== ART court18: begin ==== */
-/* The Court of the Gentiles, by day; wide (480 pixels), the view follows Paul. Its layout follows the reference (CH18 temple.md):
-   at the left the fortress of Antonia at the north-west corner, overlooking the court, its tower at the left end of its wall and its
-   stairs coming down along the wall into the court; across the back the barrier (the Soreg), a low balustrade of stone with an opening,
-   and beside the opening a warning stone set in it; behind the barrier the terrace and the steps up to the gate of the inner courts, the
-   inner wall, and the sanctuary rising over it, seen from the court; at the right Solomon's colonnade, on the east, a row of columns under
-   a deep beam and a roof, its far end at the right edge (the hidden treasure). The floor of great flags. No altar is seen, no fire, no
-   smoke; no Roman standard anywhere. The barrier is solid, its top course lit: no lattice that would cross itself.
-   Called from outside: ART.court18. Reads nothing (the crowd and the soldiers are actors). Hotspots (ROOMS.court18): sanctuary
-   196,0,108,40 · gate of the inner courts 232,40,36,36 · fortress of Antonia 0,0,96,56 · stairs of Antonia 28,56,76,48 · barrier 100,80,
-   300,24 · warning stone 220,72,14,32 · opening in the barrier 236,80,28,28 · Solomon's colonnade 400,24,52,80 · its far end 452,24,28,70
-   · way back to the city 466,96,14,48. Walk strip 16..464, 108..138. Actors (place18): the four men 208,116 · 224,126 · 262,118 ·
-   278,128 · Trophimus 180,122 (in the colonnade, 424,118, once the days have begun) · the man from Cyrene 304,116 · the Greek of the city
-   334,124 · the Levite at the opening 250,110; Paul comes in at 446,124. */
-const SOREG18={x0:100,x1:400,top:80,base:104,open:[236,264]};
-ART.court18={w:480,q:12,paint(g){paintCourt18(g)},light:{amb:'#f6eadc',sun:[.6,.3,.4]},draw(g,t){drawCourt18(g,t)},front(){}};
+/* The Court of the Gentiles, by day; wide (480 pixels), the view follows Paul. We look north, on a clear morning: the sun stands behind
+   us in the south-east, so that every face turned south or east is lit, whatever stands out from a wall throws its shadow to its left,
+   and the gold of the sanctuary's front, turned east, catches the light along its edge. The layout follows the reference (CH18 temple.md,
+   read against the Study Edition's media and Insight on wol.jw.org; the painting is our own):
+   at the left the fortress of Antonia at the north-west corner: its long south face with rows of small windows, a tower at each corner,
+   the south-east one (nearest the courts) the tallest, merlons along every top; a bastion of it comes forward to the court with the door
+   the stairs come from, and the stairs come down from the landing at that door in one long flight to the back of the strip, on a solid
+   substructure, with a solid parapet and a block at its foot (no rail, no post). Behind them the north colonnade, far off. Across the
+   middle the barrier (the Soreg): a low solid wall of three courses with a plain coping, about chest high, with an opening and an end
+   block at each side of it; warning stones set in it as slabs, wider than high, their tops a little proud of the coping, one beside the
+   opening and others farther along. Behind it the steps up to the terrace and the inner wall, flat-topped, with its gatehouses (one
+   above the opening; the coping stops at each), the sanctuary rising high over it (its long flank at the left with a band of gold
+   along its top, its taller front block at the right, standing out toward us, with its gold turned east, away from us, so that only its
+   edge blazes), the tall plain block of the gate between the inner courts, and the lower wall of the Court of Women at the east end. At
+   the right Solomon's colonnade, on the east, a row of columns under a deep beam and a roof, running back from the right edge toward its
+   far end, where it meets the north colonnade (the hidden treasure); the long hall behind it in shade, with its second row of columns.
+   The floor of great flags in rows across the picture, their joints staggered and running back to the horizon.
+   No altar is seen, no fire, no smoke; no Roman standard anywhere. Nothing crosses: the colonnades' columns stand under a deep beam and a
+   roof, the towers stand at the corners, the wall's coping stops at each gatehouse, the barrier has no lattice and no post in the middle
+   of a run, every joint stops in its own course, and the steps are drawn as bands.
+   One horizon, y 66 (HZTp18), about at the eyes of the people in the strip; the paving runs back to it, and the colonnade on the right
+   runs back to a point on it (x 360, VXTp18). Behind the heads along the strip lie the barrier, the steps and the wall; the doorways of
+   the gatehouses end above the heads of those who stand at the barrier.
+   Called from outside: ART.court18 (its props: the parapet and substructure of Antonia's stairs, in four lengths, so that whoever stands
+   on the stairs is hidden behind the parapet below the knees). Reads nothing (the crowd and the soldiers are actors). Hotspots
+   (ROOMS.court18): sanctuary 164,0,126,40 · gate of the inner courts 238,30,24,30 · fortress of Antonia 0,0,124,48 · stairs of Antonia
+   0,48,112,58 · barrier 100,74,276,30 · warning stone 208,74,26,20 · opening in the barrier 236,74,28,34 · Solomon's colonnade
+   400,0,66,106 · its far end 362,44,38,36 · way back to the city 466,96,14,48. Walk strip 16..464, 108..138; the foot of the stairs
+   covers 82..114, 104..112 (a footprint).
+   Actors (place18): the four men 208,116 · 224,126 · 262,118 · 278,128 · Trophimus 180,122 (in the colonnade's shade, 424,118, once
+   the days have begun) · the man from Cyrene 304,116 · the Greek of the city 334,124 · the Levite at the opening 250,110; Paul comes in
+   at 446,124. On the stairs (the arrest) the commander and his men come down from about 40,62; the knot that carries Paul goes up to
+   64,82. Doves sit on the coping of the Court of Women's wall (y 39). */
+const HZTp18=66,VXTp18=360,SOREG18={x0:100,x1:376,top:76,base:104,open:[236,264]};
+/* the stairs of Antonia: the line its people stand on (stairWTp18), the bottom of the parapet, and the floor under the flight */
+const stairWTp18=x=>64+(Math.max(x,30)-40)*.676,stairPTp18=x=>Math.min(stairWTp18(x)+5,109),STFTp18=109;
+ART.court18={w:480,q:12,paint(g){paintCourt18(g)},light:{amb:'#f8ecdc',sun:[-9,-11,.42]},draw(g,t){drawCourt18(g,t)},front(){},
+  /* the parapet of the stairs and the wall under them, in four lengths, each standing in front of whoever stands on the steps beside it */
+  props:[[-4,34],[34,60],[60,84],[84,110]].map(([a,b],i)=>({y:i<3?stairWTp18(b)+14:112,shape(g){parapetTp18(g,a,b,1)},foot:i===3?()=>[[82,104,32,8]]:undefined}))};
 /* drawCourt18: in the arrest, the two chains between Paul and his keepers, and the knot of soldiers that carries him (G.knot18) */
 function drawCourt18(g,t){const C=SHARED.cast.custody;if(P.chained&&P.room==='court18')C.chains(g,P,ACT.sol18a,ACT.sol18b);
   const k=G.knot18;if(k)C.knot(g,k.x,k.y,{room:'court18',dir:-1,pdir:k.pdir,d:k.d})}
-function paintCourt18(g){const r=rng(1831),S=SOREG18;sky18(g,480,62,'day');
-  /* the far pavement of the court, back to the horizon (y 62, about the figures' eyes): pale, its rows running across */
-  g.fillStyle=lg(g,0,62,0,104,['#e8dcc0','#ddcfae','#d4c4a0']);g.fillRect(0,62,480,42);
-  for(let y=63,k=1;y<104;y+=k,k*=1.18){R(g,0,y,480,.5,'rgba(150,130,100,.28)');for(let x=(y*7)%23;x<480;x+=14+k*6)R(g,x,y,.5,Math.min(k,104-y),'rgba(150,130,100,.22)')}
-  /* the sanctuary rising over the inner wall: white stone, a broad front with its shoulders, its great doorway dark */
-  const SW='#eee6d2';g.fillStyle=lg(g,196,0,304,0,[tint(SW,.06),SW,tint(SW,-.14)]);g.fillRect(196,6,108,40);g.fillRect(220,0,60,8);
-  inRect(g,196,0,108,46,()=>tex(g,'mott',.3,196,0,108,46,'overlay',.4));R(g,196,6,108,.6,'#fffaf0');R(g,220,0,60,.6,'#fffaf0');
-  g.fillStyle=lg(g,0,10,0,46,['#3a2c24','#24180f']);g.fillRect(242,12,16,34);R(g,240,10.6,20,1.4,'#d8b860');
-  /* the inner wall with its gate, and the steps up to it from the terrace behind the barrier */
-  ashlar(g,110,30,280,30,'#e2d2ae',r,{bw:16,bh:6,v:.08});R(g,110,30,280,.6,'#fff2d0');
-  g.fillStyle=lg(g,0,40,0,60,['#2e221a','#1c140e']);g.fillRect(236,40,28,20);R(g,233,38.6,34,1.6,'#c8a868');
-  R(g,110,60,280,4,'#d6c6a4');stepsUp18(g,222,278,S.top,60,7,'#d8c8a6');
-  /* the fortress of Antonia at the left: its wall, the tower at the wall's left end, small windows high up, and the stairs coming down
-     along the wall to the court, with a solid parapet on their outer side */
-  ashlar(g,0,8,96,96,'#c8b48e',r,{bw:15,bh:7,v:.1});ashlar(g,0,0,30,40,'#d0bc96',r,{bw:12,bh:6,v:.1});ao(g,30,8,6,96,'l',.25,'#3a2c3c');
-  for(const x of[44,66])windowArt(g,x,18,5,7,'#c8b48e',{});
-  g.fillStyle=lg(g,0,36,0,48,['#2a2018','#1a120c']);g.fillRect(28,36,14,20);
-  const STR=[28,56,42,56,104,104,82,104];poly(g,STR);g.fillStyle=lg(g,28,0,104,0,['#d4c4a0','#c4b28e']);g.fill();
-  for(let i=0;i<14;i++){const k=i/14,x=28+k*62,y=56+k*48;R(g,x,y,14+k*8,.5,'rgba(255,244,220,.55)');R(g,x,y+3,14+k*8,.5,'rgba(70,56,44,.35)')}
-  poly(g,[42,52,46,52,108,100,104,104],'#b8a482');stroke(g,[42,52,108,100],'#e8dab8',.6);
-  /* Solomon's colonnade at the right, on the east, and the hall behind its columns */
-  colonnade18(g,404,478,24,104,5,'#e4d6b6',r);
-  /* the floor of the court, and the barrier across the back */
-  floor18(g,0,480,104,144,'flags',r,'#d2c29e');
-  const B=(a,b)=>{g.fillStyle=lg(g,0,S.top,0,S.base,['#e8dcc0','#d4c4a2','#b8a684']);g.fillRect(a,S.top,b-a,S.base-S.top);
-    inRect(g,a,S.top,b-a,S.base-S.top,()=>tex(g,'mott',.35,a,S.top,b-a,S.base-S.top,'overlay',.5));R(g,a,S.top,b-a,1.2,'#f6ecd4');R(g,a,S.top+1.2,b-a,.5,'#8a7a60');
-    M18.shadow(g,(a+b)/2,S.base,(b-a)/2,1.2,.35)};
-  B(S.x0,S.open[0]);B(S.open[1],S.x1);
-  /* the warning stone set in the barrier beside the opening: a pale block, a little taller than the balustrade, its letters too small to
-     read from here (stone18 reads them) */
-  const sx=220,st=72;g.fillStyle=lg(g,sx,0,sx+14,0,['#f2ead6','#e0d4b8','#c4b492']);g.fillRect(sx,st,14,S.base-st);R(g,sx,st,14,.6,'#fffaf0');
-  for(let j=0;j<7;j++)for(let i=0;i<5;i++)if(r()<.8)R(g,sx+1.6+i*2.2,st+3+j*2.6,1.2,.5,'rgba(70,56,40,.55)');
-  light18(g,480,1)}
+/* the gold of the sanctuary: a warm gold with a pale highlight where the sun strikes it and an olive brown in its shade */
+const GOLDTp18=['#fff0b0','#f2cc6a','#d4a03a','#9a6c24','#6a4a20'];
+/* skyTp18: a clear morning sky over the city, deep at the top, pale and warm toward the horizon, with a few high, thin clouds */
+function skyTp18(g,w,hz,seed){g.fillStyle=lg(g,0,0,0,hz,['#4a78ba','#6e98cc','#a2bed8','#dcdcd0']);g.fillRect(0,0,w,hz+2);
+  const r=rng(seed);for(let i=0;i<6;i++){const x=r()*w,y=5+r()*24,ww=30+r()*60;for(let k=0;k<8;k++)pool(g,x+(r()-.5)*ww,y+(r()-.5)*3,ww*(.2+r()*.2),1.2+r()*1.6,'#ffffff',.16,'source-over')}
+  pool(g,w*.85,hz,w*.6,30,'#fff2d8',.28,'source-over')}
+/* stoneTp18: a face of dressed stone in courses: each block its own tone, a lit top edge, joints that stop at the edge of their course.
+   o: {bh course height, bw block width, c tone, v variation, rough: drafted margins and a bossed face (Antonia)} */
+function stoneTp18(g,x,y,w,h,r,o){const bh=o.bh,bw=o.bw,c=o.c,v=o.v==null?.07:o.v;
+  inRect(g,x,y,w,h,()=>{R(g,x,y,w,h,tint(c,-.28));
+    for(let j=y,row=0;j<y+h;j+=bh,row++){let i=x-(row%2?bw*.5:0)-r()*bw*.3;
+      while(i<x+w){const ww=bw*(.7+r()*.6),cc=tint(c,(r()-.5)*v*2);R(g,i+.5,j+.5,ww-.5,bh-.5,cc);
+        if(o.rough&&bh>=2.5){R(g,i+1,j+1,ww-1.5,bh-1.5,tint(cc,.07));R(g,i+1,j+bh-.5,ww-1,.5,tint(cc,-.14))}
+        R(g,i+.5,j+.5,ww-.5,.5,tint(cc,.15));i+=ww}}
+    tex(g,'mott',.35,x,y,w,h,'overlay',.6);tex(g,'grain',.1,x,y,w,h,'overlay',.5)})}
+/* crenelsTp18: square merlons along a level wall top at y, between x0 and x1; the gaps between them are sky */
+function crenelsTp18(g,x0,x1,y,mw,mh,c){for(let x=x0;x<=x1-mw+.01;x+=mw*2){R(g,x,y-mh,mw,mh,tint(c,.04));R(g,x,y-mh,mw,.5,tint(c,.3));R(g,x+mw-.5,y-mh,.5,mh,tint(c,-.25))}}
+/* hazeTp18: paint fn on a layer of its own, lay a haze of colour c over what it painted (and nothing else), and set it in the picture */
+function hazeTp18(g,w,c,a,fn){const[l,q]=mk(w*HR,144*HR);q.scale(HR,HR);fn(q);q.setTransform(1,0,0,1,0,0);
+  if(a>0){q.globalCompositeOperation='source-atop';q.globalAlpha=a;q.fillStyle=c;q.fillRect(0,0,w*HR,144*HR)}g.drawImage(l,0,0,w,144)}
+/* castTp18: the shadow a block standing out from a sunlit face throws on that face, to its left (the sun is to the right, behind us) */
+function castTp18(g,x,y0,y1,w,a){shade(g,[x-w,y0+w*.6,x,y0,x,y1,x-w,y1],'#8a86b8',a==null?.45:a)}
+function paintCourt18(g){const r=rng(1831),HZ=HZTp18;
+  skyTp18(g,480,HZ,1832);
+  /* far off over the north colonnade, the houses of the city's northern hill, low, pale and hazy */
+  for(let i=0;i<20;i++){const x=110+i*7+r()*4,h=2+r()*4,w=5+r()*6;R(g,x,46-h,w,h+2,mix(tint('#d8ccb4',(r()-.5)*.12),'#b4c2d8',.55));R(g,x,46-h,w,.5,'#eee6d8')}
+  hazeTp18(g,480,'#c4cee0',.15,q=>{antoniaTp18(q,r);northColTp18(q,-4,130)});
+  /* the pavement of the court, back to the horizon: great flags in rows across, their joints staggered, paler and hazier far off */
+  pave(g,-2,HZ,482,144,'#dccaa4',r,{vx:VXTp18,vy:HZ-1,rows:15,step:26,v:.06,p:1.9,far:.05,t:.3,joint:'#b6a482'});
+  comp(g,'source-over',1,()=>{g.fillStyle=lg(g,0,HZ,0,94,[rgba('#e6e2d8',.6),rgba('#e6e2d8',0)]);g.fillRect(-2,HZ,484,28)});
+  for(let i=0;i<70;i++){const y=104+r()*40,x=r()*480;R(g,x,y,.5+r()*2.5,.5,r()<.5?'rgba(120,100,76,.18)':'rgba(255,248,232,.22)')}
+  /* the colonnade's shade on the pavement before it, falling west in the morning; its edge runs back to the horizon as the joints do */
+  comp(g,'multiply',.42,()=>poly(g,[VXTp18,HZ,VXTp18+40*78/42,144,484,144,484,HZ+42*124/120],'#a29ec8'));
+  hazeTp18(g,480,'#c8d0e0',.08,q=>innerCourtsTp18(q,r));
+  solomonTp18(g,r);
+  soregTp18(g,r);
+  stairsTp18(g,r);
+  /* light: warm from the right, where the sun is, cooler to the left; the floor near us a little darker */
+  comp(g,'soft-light',.34,()=>{g.fillStyle=lg(g,480,0,0,0,['rgba(255,212,156,1)','rgba(226,208,190,.6)','rgba(172,176,212,.7)']);g.fillRect(0,0,480,144)});
+  ao(g,0,124,480,20,'b',.14,'#2a2050')}
+/* the fortress of Antonia at the north-west corner, behind the north colonnade: its long south face of rough-dressed stone with rows of
+   small windows; the south-east tower at the right end, nearest the courts, the tallest, its east face turned to the morning sun;
+   merlons along every top. Its foot is hidden by the colonnade's roof; the bastion with the stairs' door stands in front of its left end
+   (stairsTp18). A little haze lies over it, for it stands back across the court. */
+function antoniaTp18(g,r){const c='#d6c29a',base=50;
+  stoneTp18(g,20,18,74,base-18,r,{bh:3,bw:8,c,rough:1,v:.08});ao(g,20,18,74,7,'t',.14,'#3a3048');
+  crenelsTp18(g,20,93,18,3,3,c);
+  for(const[y,x0]of[[24,26],[32,31],[40,26]])for(let x=x0;x<90;x+=10){R(g,x,y,2,2.5,'#3a2e30');R(g,x,y+2.5,2,.5,tint(c,.22))}
+  castTp18(g,92,15,base,5,.4);
+  stoneTp18(g,92,4,24,base-4,r,{bh:3,bw:7,c:tint(c,.04),rough:1,v:.08});crenelsTp18(g,92,116,4,3,3,c);
+  /* its east face, a narrow strip turned toward us at the corner, full in the sun */
+  const ef=[116,4,121,5.8,121,base,116,base];poly(g,ef,'#f4e6c4');
+  clipTo(g,()=>poly(g,ef),()=>{for(let y=6;y<base;y+=3)R(g,116,y,5,.5,'rgba(160,134,100,.42)');tex(g,'mott',.3,116,4,5,base,'overlay',.6)});
+  poly(g,[116,1,119,1.8,119,4.8,116,4],'#f0e2c0');R(g,116,4,5,.5,'#fff8e4');
+  for(const y of[10,19,28,37])for(const x of[99,107]){R(g,x,y,2,2.5,'#3a2e30');R(g,x,y+2.5,2,.5,'#f2e4c4')}
+  ao(g,92,4,3,base-4,'l',.22,'#3a3048');
+}
+/* the north colonnade at the back: a row of columns under a deep beam and the roof's edge, small with distance, the hall dark behind */
+function northColTp18(g,x0,x1){const top=48,beam=54,base=HZTp18+2;
+  g.fillStyle=lg(g,0,beam,0,base,['#2c2630','#3a3236','#5c4e46']);g.fillRect(x0,beam,x1-x0,base-beam);
+  for(let x=x0+2;x<x1;x+=5.5){g.fillStyle=lg(g,x,0,x+1.6,0,['#bcac90','#f0e4c8']);g.fillRect(hp(x),beam,1.5,base-beam);R(g,x-.25,beam,2,.5,'#e6d8b8')}
+  g.fillStyle=lg(g,0,top,0,beam,['#f2e6c8','#e0d0ac','#bcac8c']);g.fillRect(x0,top+1,x1-x0,beam-top-1);R(g,x0,top,x1-x0,1,'#b07a58');R(g,x0,top+1,x1-x0,.5,'#f6ecd4');
+  ao(g,x0,beam,x1-x0,2,'t',.35,'#000');R(g,x0,base-.5,x1-x0,.5,'#7a6a58');
+}
+/* the inner courts on their terrace: the sanctuary rising behind, the steps up to the terrace, the inner wall with its gatehouses (the
+   coping stops at each), the tall block of the gate between the courts, and the lower wall of the Court of Women at the east end */
+function innerCourtsTp18(g,r){const W0=124,W1=360,wt=38,wf=56,sb=68,cw=310;
+  sanctuaryTp18(g,r);
+  /* the gate between the Court of Women and the Court of Israel: a tall, plain block standing back behind the wall, a cornice on top */
+  stoneTp18(g,292,21,18,wt-19,r,{bh:2.6,bw:7,c:'#e6d6b0',v:.05});R(g,291.5,18.6,19,2.4,'#f4ead2');R(g,291.5,18.6,19,.5,'#fffaee');R(g,291.5,20.6,19,.5,'#a89878');
+  ao(g,292,21,4,18,'l',.25,'#4a4060');R(g,309,21,1,18,'#fbf0d8');
+  /* the steps up to the terrace: risers seen from below, each a band with the shade of the nosing over it */
+  for(let i=0;i<6;i++){const y=wf+i*2,x=W0-2-i*.8,w=W1-W0+4+i*1.6;g.fillStyle=lg(g,x,0,x+w,0,['#d4c4a2','#e8dabc','#f0e4c8']);g.fillRect(x,y,w,2);R(g,x,y,w,.5,'#b2a286');R(g,x,y+.5,w,.5,'#c8b898')}
+  R(g,W0-7,sb-.5,W1-W0+14,1,'#bcac8c');
+  /* the wall of the inner courts, and the lower wall of the Court of Women at the east end */
+  stoneTp18(g,W0,wt,cw-W0,wf-wt,r,{bh:3,bw:9,c:'#e4d4ae',v:.06});stoneTp18(g,cw,41,W1-cw,wf-41,r,{bh:3,bw:9,c:'#e2d2ac',v:.06});
+  ao(g,W0,wf-5,W1-W0,5,'b',.22,'#4a4060');
+  const gates=[[148,168,31],[239,261,29],[326,346,34]],cope=(a,b,y)=>{R(g,a,y-1.6,b-a,2,'#f4ead2');R(g,a,y-1.6,b-a,.5,'#fffaee');R(g,a,y+.4,b-a,.5,'#a89878')};
+  /* the coping of the wall, in lengths between the gatehouses; where the high wall meets the low one, the high one's end is lit */
+  let a=W0;for(const[x0,x1]of gates.slice(0,2)){cope(a,x0,wt);a=x1}cope(a,cw,wt);cope(cw,gates[2][0],41);cope(gates[2][1],W1,41);
+  R(g,cw-1,wt,1,3,'#fbf2dc');
+  /* the corners of the block: its west end turned from the sun, its east end lit */
+  R(g,W0,wt-1.6,1.2,wf-wt+1.6,'#b4a488');R(g,W1-1,41-1.6,1,wf-41+1.6,'#fbf0d8');
+  for(const[x0,x1,top]of gates)gatehouseTp18(g,x0,x1,top,wf,r)}
+/* a gatehouse: a square block a little taller than the wall and standing a little proud of it, its shadow on the wall to its left; a
+   tall dark doorway framed by a flat band with a cornice over it, the bronze leaves of the door folded back against the jambs; a plain
+   cornice on top. The doorway ends above the heads of those at the barrier. */
+function gatehouseTp18(g,x0,x1,top,foot,r){const w=x1-x0,dw=7,dx=x0+(w-dw)/2,dt=top+10;
+  castTp18(g,x0,Math.max(top+1,foot-16),foot,3,.4);
+  stoneTp18(g,x0,top,w,foot-top,r,{bh:3,bw:8,c:'#ecdcb6',v:.05});
+  R(g,x0-.8,top-2,w+1.6,2.4,'#f6ecd4');R(g,x0-.8,top-2,w+1.6,.5,'#fffaf0');R(g,x0-.8,top+.4,w+1.6,.6,'#9a8a6c');
+  ao(g,x0,top,1.6,foot-top,'l',.22,'#4a4060');R(g,x1-.6,top,.6,foot-top,'#fcf4e2');
+  /* the frame: a flat band round the doorway, its cornice above, a little shadow under the cornice */
+  R(g,dx-1.6,dt-3.2,dw+3.2,foot-dt+3.2,'#f2e6c8');R(g,dx-2.2,dt-3.8,dw+4.4,1.4,'#fbf4e2');R(g,dx-2.2,dt-2.4,dw+4.4,.5,'#9a8a6c');R(g,dx-1.6,dt-1.9,.6,foot-dt+1.9,'#c8b898');
+  g.fillStyle=lg(g,0,dt,0,foot,['#140e12','#241a1e','#3a2e2a']);g.fillRect(dx,dt,dw,foot-dt);
+  R(g,dx,dt,1.2,foot-dt,'#7a5a2e');R(g,dx+.2,dt,.5,foot-dt,'#c49a52');R(g,dx+dw-1.2,dt,1.2,foot-dt,'#a07a3c');R(g,dx+dw-.6,dt,.5,foot-dt,'#e0b866');
+  ao(g,dx,dt,dw,3,'t',.5,'#000')}
+/* the sanctuary over the inner wall, seen from the south. Its long flank at the left, lower: courses of white stone, a band run along
+   it, a row of small high windows, a cornice and a band of gold along its top. At the right its front block, wider and taller, standing
+   out toward us past the flank (its west side in shade, its shadow on the flank), its own cornice and gold; its gilded east face is
+   turned away from us, and only its edge shows, blazing in the morning sun. The roof is flat. */
+function sanctuaryTp18(g,r){const b0=166,b1=262,bt=15,f0=256,f1=288,ft=2,foot=40,sc=bt+13,G=GOLDTp18;
+  const face=(x0,x1,y0,c0,c1)=>{g.fillStyle=lg(g,x0,0,x1,0,[c0,c1]);g.fillRect(x0,y0,x1-x0,foot-y0);
+    inRect(g,x0,y0,x1-x0,foot-y0,()=>{for(let y=y0+2.6,k=0;y<foot;y+=2.8,k++){R(g,x0,y,x1-x0,.5,'rgba(160,142,112,.3)');
+        for(let x=x0+(k%2?3:0)+r()*4;x<x1;x+=8+r()*5)R(g,x,y+.5,.5,2.3,'rgba(160,142,112,.24)')}
+      tex(g,'mott',.28,x0,y0,x1-x0,foot-y0,'overlay',.6);tex(g,'grain',.1,x0,y0,x1-x0,foot-y0,'overlay',.5)})};
+  const goldBand=(x0,x1,y,h)=>{g.fillStyle=lg(g,0,y,0,y+h,[G[0],G[1],G[2],G[3]]);g.fillRect(x0,y,x1-x0,h);
+    for(let x=x0+r()*3;x<x1;x+=2+r()*4)R(g,x,y+.5,.5,.5,r()<.5?'#fffae0':G[3])};
+  const cornice=(x0,x1,y)=>{R(g,x0-1,y-1.8,x1-x0+2,1.8,'#fbf4e4');R(g,x0-1,y-1.8,x1-x0+2,.5,'#fffcf2');R(g,x0-1,y,x1-x0+2,.8,'#9a8a70');ao(g,x0,y+.8,x1-x0,2,'t',.25,'#4a4060')};
+  /* the long flank */
+  face(b0,b1,bt,'#e6dac0','#f6eedc');ao(g,b0,bt,30,foot-bt,'l',.14,'#6a6084');
+  R(g,b0,sc,b1-b0,1,'#fbf4e4');R(g,b0,sc+1,b1-b0,.6,'#a89474');
+  for(let x=b0+5;x<b1-8;x+=9.5){R(g,x,bt+5,3.4,2,'#3a2e30');R(g,x,bt+7,3.4,.5,'#fff6e2')}
+  cornice(b0,b1,bt);goldBand(b0-1,b1+1,bt-4.6,2.8);R(g,b0-1,bt-4.6,b1-b0+2,.5,G[0]);
+  /* the front block: its shadow on the flank, its west side in shade, its lit south face, taller */
+  castTp18(g,f0,bt-4.6,foot,6,.42);
+  poly(g,[f0,ft+1,f0+3,ft,f0+3,foot,f0,foot],'#b8a88c');ao(g,f0,ft,3,foot-ft,'l',.3,'#4a4060');
+  face(f0+3,f1,ft,'#f2e8d4','#fcf6e8');
+  R(g,f0+3,sc,f1-f0-3,1,'#fffaee');R(g,f0+3,sc+1,f1-f0-3,.6,'#a89474');R(g,f0,sc,3,1.4,'#9a8a74');
+  for(let x=f0+7;x<f1-4;x+=8.5){R(g,x,ft+6,3.4,2,'#3a2e30');R(g,x,ft+8,3.4,.5,'#fff6e2')}
+  cornice(f0+2,f1,ft+1.6);goldBand(f0,f1+1,ft-3.6,3);R(g,f0,ft-3.6,f1-f0+1,.5,G[0]);
+  /* the edge of the gilded east face, in the full morning sun, and the glow off it */
+  g.fillStyle=lg(g,0,ft,0,foot,[G[0],G[1],G[2]]);g.fillRect(f1,ft-3.6,2,foot-ft+3.6);R(g,f1+1.4,ft-3.6,.6,foot-ft+3.6,'#fffbe6');
+  pool(g,f1+2,ft+14,5,16,'#fff0b0',.3,'screen')}
+/* Solomon's colonnade on the east: its row of columns runs from the right edge back to its far end, where it meets the north colonnade;
+   each column stands under the deep beam, its capital hardly wider than its shaft, its base a plain step; behind them the long hall in
+   shade: its ceiling, its floor catching a little light from the court, a second row of columns inside, and its back wall, the outer
+   wall of the courts, with small windows high up. The columns are lit on their south side; the far ones become a fine row in a haze. */
+function solomonTp18(g,r){const HZ=HZTp18,VX=VXTp18,X=(L,z)=>VX+L/z,Yb=z=>HZ+42/z,Yt=z=>HZ-54.6/z,Bt=z=>HZ-64/z,Rf=z=>HZ-69/z,
+  F=120,IN=276,BW=433,ZF=14;
+  const line=(L,f,z0,z1)=>{const p=[];for(let z=z0;z<=z1;z*=1.03)p.push(Math.min(X(L,z),486),f(z));return p},
+    band=(ya,yb,c)=>{const p=line(F,ya,.9,ZF).concat(line(F,yb,.9,ZF).reduceRight((o,v,i,a)=>{if(i%2)o.push(a[i-1],v);return o},[]));poly(g,p,c);return p};
+  /* the hall: its ceiling from the beam back to the back wall, its floor, and at the far end the end wall in a quiet half light */
+  const hall=line(F,Bt,.9,ZF).concat(line(F,Yb,.9,ZF).reduceRight((o,v,i,a)=>{if(i%2)o.push(a[i-1],v);return o},[]));
+  poly(g,hall);g.fillStyle=lg(g,0,0,0,108,['#2e2630','#3a3034','#4e4240']);g.fill();
+  clipTo(g,()=>poly(g,hall),()=>{
+    const fl=line(F,Yb,.9,ZF).concat(line(BW,Yb,.9,ZF).reduceRight((o,v,i,a)=>{if(i%2)o.push(a[i-1],v+.5);return o},[]));fl.push(486,150,486,Yb(.9));
+    poly(g,fl,'#6e5e50');pool(g,470,106,46,8,'#d8b888',.3,'screen');pool(g,430,96,30,5,'#c8a880',.18,'screen');
+    const bw=line(BW,z=>Yt(z)-3/z,3.4,ZF).concat(line(BW,Yb,3.4,ZF).reduceRight((o,v,i,a)=>{if(i%2)o.push(a[i-1],v);return o},[]));poly(g,bw,'#4c4246');
+    for(let z=3.9;z<ZF;z+=.84){const x=X(BW,z),y=Yt(z)+10/z;R(g,x,y,Math.max(.5,4/z),Math.max(.5,4/z),'#c4ac86')}
+    poly(g,[X(F,ZF)-.5,Yt(ZF)-2,X(BW,ZF),Yt(ZF)-2,X(BW,ZF),Yb(ZF),X(F,ZF)-.5,Yb(ZF)],'#7a6c60');pool(g,X(F,ZF)+12,HZ+1,14,4,'#e0c8a4',.35,'screen');
+    for(let z=2.3;z<ZF;z+=.42){const x=X(IN,z),w=Math.max(.6,7/z),t=Yt(z),b=Yb(z);g.fillStyle=lg(g,x-w/2,0,x+w/2,0,['#3e363a','#86766a','#4a4242']);g.fillRect(x-w/2,t,w,b-t);
+      if(w>1.4)R(g,x-w/2-.4,t,w+.8,Math.max(.6,3/z),'#6a5e56')}
+    ao(g,400,0,90,40,'t',.4,'#000')});
+  /* the beam, deep, its face in shade turned to the court; the cornice over it and the edge of the roof */
+  const bm=band(Bt,Yt,'#cbbb9c');clipTo(g,()=>poly(g,bm),()=>{g.fillStyle=lg(g,VX,0,480,0,['#c8bca4','#dccdae','#e6d6b6']);g.fillRect(VX,-4,124,70);tex(g,'mott',.3,VX,-4,124,70,'overlay',.6)});
+  band(z=>Bt(z)+1.6/z,z=>Bt(z)+2.1/z+.3,'rgba(255,248,230,.6)');band(z=>Yt(z)-1/z-.3,Yt,'#8a7a68');
+  band(Rf,Bt,'#e4d6b8');band(z=>Rf(z),z=>Rf(z)+.6,'#fbf2de');band(z=>Bt(z)-.7,Bt,'#a09078');
+  band(z=>Rf(z)-1.6/z-.5,Rf,'#b06a4a');band(z=>Rf(z)-1.6/z-.5,z=>Rf(z)-1.6/z,'#e09a70');
+  /* the columns of the front row, from the far end forward */
+  const cols=[];for(let z=1.06;z<ZF;z+=.42)cols.push(z);
+  for(const z of cols.reverse()){const x=X(F,z),w=Math.max(.6,8/z),t=Yt(z),b=Yb(z);
+    if(w<1.4){g.fillStyle=lg(g,x-w/2,0,x+w/2,0,['#a89a88','#e4d6b8']);g.fillRect(x-w/2,t,w,b-t);continue}
+    M18.shadow(g,x-1.5/z,b,w*.9,Math.max(.6,1.4/z),.32);
+    g.fillStyle=lg(g,x-w/2,0,x+w/2,0,[[0,'#968a80'],[.3,'#c4b69c'],[.72,'#f4e8cc'],[1,'#d8caae']]);g.fillRect(x-w/2,t,w,b-t);
+    inRect(g,x-w/2,t,w,b-t,()=>{tex(g,'mott',.22,x-w/2,t,w,b-t,'overlay',.5);ao(g,x-w/2,t,w,10/z+2,'t',.3,'#3a3040')});
+    const cw=w+2.4/z+.3,ch=Math.max(.8,4/z);R(g,x-cw/2,t,cw,ch,'#e6d8b8');R(g,x-cw/2,t+ch-.5,cw,.5,'#8a7a66');R(g,x-cw/2,t,cw,.5,'#fbf4e2');R(g,x+cw/2-.6,t,.6,ch,'#fffaf0');
+    const bw2=w+3/z+.3,bh=Math.max(.8,3.4/z);R(g,x-bw2/2,b-bh,bw2,bh,'#e8dcc0');R(g,x-bw2/2,b-bh,bw2,.5,'#fbf4e2');R(g,x-bw2/2,b-.5,bw2,.5,'#9a8c78')}
+  /* a cool haze over the far end, which lies a long way off; it ends at the roof's edge */
+  clipTo(g,()=>{const p=line(F,z=>Rf(z)-2/z-1,.9,ZF);p.push(486,150,VX,150);poly(g,p)},()=>{g.fillStyle=lg(g,VX+4,0,440,0,[rgba('#c8ccd8',.42),rgba('#c8ccd8',0)]);g.fillRect(VX,0,90,HZ+8)})}
+/* the barrier (Soreg) across the middle: a low wall of three courses on a plinth, its plain coping lit, an end block at each side of the
+   opening and at each end of the run; warning stones set in it as slabs, wider than high, their tops a little proud of the coping */
+const STONESTp18=[[208,232],[140,162],[316,338]];
+function soregTp18(g,r){const S=SOREG18,cop=S.top+3;
+  const run=(a,b)=>{inRect(g,a,cop,b-a,S.base-cop,()=>{R(g,a,cop,b-a,S.base-cop,'#b4a284');
+      const h=(S.base-2-cop)/3;for(let k=0;k<3;k++){const y=cop+k*h;let x=a-(k%2?8:0)-r()*6;
+        while(x<b){const w=13+r()*9,c=tint('#e4d4b0',(r()-.5)*.08-k*.02);R(g,x+.5,y+.5,w-.5,h-.5,c);R(g,x+.5,y+.5,w-.5,.5,tint(c,.14));x+=w}}
+      R(g,a,S.base-2,b-a,2,'#d0c09c');R(g,a,S.base-2,b-a,.5,'#efe4c8');
+      tex(g,'mott',.35,a,cop,b-a,S.base-cop,'overlay',.6);tex(g,'grain',.1,a,cop,b-a,S.base-cop,'overlay',.5);ao(g,a,cop,b-a,3,'t',.25,'#4a4060')});
+    R(g,a-.5,S.top,b-a+1,3,'#f2e8d0');R(g,a-.5,S.top,b-a+1,.8,'#fffaec');R(g,a-.5,S.top+2.4,b-a+1,.6,'#9a8a6e');
+    M18.shadow(g,(a+b)/2,S.base,(b-a)/2,1.4,.3)};
+  const pier=(x,w)=>{castTp18(g,x,S.top,S.base,2,.35);R(g,x,S.top-.5,w,S.base-S.top+.5,'#efe3c6');R(g,x,S.top-.5,1,S.base-S.top+.5,'#c4b494');R(g,x+w-.5,S.top-.5,.5,S.base-S.top+.5,'#fbf4e2');
+    inRect(g,x,S.top,w,S.base-S.top,()=>tex(g,'mott',.3,x,S.top,w,S.base-S.top,'overlay',.6));R(g,x,S.base-2,w,.5,'#efe4c8');
+    R(g,x-.6,S.top-2.2,w+1.2,2.2,'#f4ead4');R(g,x-.6,S.top-2.2,w+1.2,.6,'#fffaf0');R(g,x-.6,S.top-.4,w+1.2,.6,'#9a8a6e')};
+  run(S.x0,S.open[0]-4);run(S.open[1]+4,S.x1);
+  pier(S.x0-4,5);pier(S.x1-1,5);pier(S.open[0]-4,4);pier(S.open[1],4);
+  ao(g,S.open[0],S.top,5,S.base-S.top,'l',.25,'#4a4060');
+  for(const[x0,x1]of STONESTp18)warnStoneTp18(g,x0,x1,S.top-1.4,S.top+16)}
+/* a warning stone in the barrier, seen from the court: a slab of paler stone set in the upper courses, a little proud, softly worn at
+   its corners, with seven lines of small cut letters, each line a row of short strokes and dots (nothing upright crosses them) */
+function warnStoneTp18(g,x0,x1,top,bot){const w=x1-x0,r=rng(x0*7+3);
+  castTp18(g,x0,top+1,bot+1,1.6,.35);
+  g.fillStyle=lg(g,x0,0,x1,0,['#e2d6bc','#f4ecdc','#fbf6ea']);g.fillRect(x0,top+.5,w,bot-top-.5);R(g,x0+.5,top,w-1,.5,'#fffcf4');
+  inRect(g,x0,top,w,bot-top,()=>{tex(g,'mott',.3,x0,top,w,bot-top,'overlay',.6);
+    for(let j=0;j<7;j++){const y=top+2.4+j*1.9,n=j===6?w*.42:w-3.6-r()*1.2;for(let x=x0+1.8;x<x0+1.8+n;x+=.9+r()*.5)if(r()<.62)R(g,x,y,.5+(r()<.35?.5:0),.5,'rgba(96,78,58,.62)')}});
+  R(g,x0,bot-.5,w,.5,'#a89878');R(g,x0+w-.5,top+.5,.5,bot-top-1,'#fffaf0');R(g,x0,top,.5,.5,'#c8b898');R(g,x1-.5,top,.5,.5,'#c8b898')}
+/* the stairs of Antonia. A bastion of the fortress comes forward to the court at the left, crenellated, with the door the stairs come
+   from; before the door a landing, and from it one long flight down to the floor at the back of the strip, on a solid substructure of
+   masonry, a solid parapet with a plain coping along its outer edge, and a block at its foot. Its treads are lit from above. */
+function stairsTp18(g,r){const W=stairWTp18,F=STFTp18,x1=104,c='#d4c09a';
+  /* the bastion: its south face in the sun, its east side lit, its merlons, small windows; the door in it, dark, under a lintel */
+  stoneTp18(g,-4,12,38,F-12,r,{bh:3.4,bw:9,c,rough:1,v:.08});crenelsTp18(g,-4,33,12,3.4,3.4,c);
+  ao(g,-4,12,38,8,'t',.12,'#3a3048');ao(g,-4,80,38,F-80,'b',.22,'#3a3048');
+  const ef=[34,12,37,13.4,37,F,34,F];poly(g,ef,'#f4e6c6');clipTo(g,()=>poly(g,ef),()=>{for(let y=14;y<F;y+=3.4)R(g,34,y,3,.5,'rgba(160,134,100,.4)')});
+  for(const[x,y]of[[6,20],[22,20],[14,80],[26,88]]){R(g,x,y,2,3,'#3a2e30');R(g,x,y+3,2,.5,'#f2e4c4')}
+  R(g,6.6,29.6,17.8,2.4,'#f2e4c4');R(g,6.6,29.6,17.8,.6,'#fffaf0');R(g,6.6,31.6,17.8,.6,'#8a7a62');
+  g.fillStyle=lg(g,0,32,0,56,['#120c10','#221a1e','#382c2a']);g.fillRect(8,32,15,W(30)-32);R(g,8,32,1.4,W(30)-32,'#5a4a40');ao(g,8,32,15,4,'t',.5,'#000');
+  /* the substructure under the flight, its face toward us in the sun, a soft shade along its foot */
+  const sub=[30,W(30)+5];for(let x=30;x<=x1;x+=2)sub.push(x,W(x)+5);sub.push(x1,F,30,F);
+  poly(g,sub,'#c8b694');clipTo(g,()=>poly(g,sub),()=>{stoneTp18(g,30,50,x1-30,F-50,r,{bh:3.4,bw:10,c:'#d0be9a',v:.07});
+    comp(g,'multiply',.22,()=>R(g,30,50,x1-30,F-50,'#b0b0d0'));ao(g,30,90,x1-30,F-90,'b',.25,'#3a3048')});
+  M18.shadow(g,56,F,62,1.8,.32);
+  /* the landing before the door and the flight: each step a lit tread and a riser turned to the morning sun, the far edge stepped */
+  const t0=W(30)-5;R(g,-4,t0,35,5,'#e6d8b8');R(g,-4,t0,35,.6,'#fff6e2');
+  for(let x=30;x<x1-2;x+=3.4){const y=W(x)-5,yn=W(x+3.4)-5;R(g,x,y,3.4,yn-y+4,'#e2d4b2');R(g,x,y,3.4,.6,'#fff4dc');R(g,x+2.6,y+.6,.8,yn-y+3.4,'#f0e4ca');R(g,x,y+.6,3.4,.5,'rgba(110,96,80,.3)')}
+  parapetTp18(g,-4,x1,0)}
+/* the parapet of the stairs between x a and b: a solid low wall along the outer edge of the landing and the flight, its plain coping
+   following the slope, and a block at its foot. With cut: the outline of the parapet and of the wall under it down to the floor (for
+   the props, which hide whoever stands on the stairs behind it) */
+function parapetTp18(g,a,b,cut){const W=stairWTp18,top=x=>Math.min(W(x),105)-2,bot=x=>Math.min(W(x)+5,STFTp18),pts=[];
+  if(cut){for(let x=a;x<=b;x+=1)pts.push(x,x>=100&&x<=109?W(100)-6:top(x));pts.push(b,STFTp18+.5,a,STFTp18+.5);poly(g,pts,'#000');return}
+  for(let x=a;x<=b;x+=1)pts.push(x,top(x));for(let x=b;x>=a;x-=1)pts.push(x,bot(x));
+  const r=rng(1839);poly(g,pts,'#d2c2a0');clipTo(g,()=>poly(g,pts),()=>{stoneTp18(g,a,30,b-a,90,r,{bh:3.5,bw:11,c:'#dccaa6',v:.05})});
+  const cp=[];for(let x=a;x<=b;x+=1)cp.push(x,top(x)-.8);for(let x=b;x>=a;x-=1)cp.push(x,top(x)+1.4);poly(g,cp,'#f2e8cc');
+  stroke(g,(()=>{const q=[];for(let x=a;x<=b;x+=1)q.push(x,top(x)-.6);return q})(),'#fffaec',.5);
+  stroke(g,(()=>{const q=[];for(let x=a;x<=b;x+=1)q.push(x,top(x)+1.6);return q})(),'rgba(120,104,84,.55)',.5);
+  /* the block at its foot, standing on the floor */
+  const bx=100,bt=W(100)-4;castTp18(g,bx,bt,STFTp18,2,.3);g.fillStyle=lg(g,bx,0,bx+9,0,['#d8c8a6','#efe2c6','#f8f0de']);g.fillRect(bx,bt,8,STFTp18-bt);
+  inRect(g,bx,bt,8,STFTp18-bt,()=>tex(g,'mott',.3,bx,bt,8,STFTp18-bt,'overlay',.6));R(g,bx-.6,bt-1.8,9.2,2,'#f6ecd6');R(g,bx-.6,bt-1.8,9.2,.6,'#fffaf0');R(g,bx-.6,bt,9.2,.5,'#9a8a6e');
+  M18.shadow(g,bx+4,STFTp18,6,1.2,.35)}
 /* ==== ART court18: end ==== */
 
 /* ==== ART stone18: begin ==== */
