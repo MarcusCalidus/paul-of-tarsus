@@ -255,6 +255,7 @@ TEXTS('en','main',{
   "Patara":"Patara",
   "Ptolemais":"Ptolemais",
   "LYCIA":"LYCIA",
+  "antipatris":"Antipatris",
   "great_sea":"THE GREAT SEA",
   "click_a_place_to_travel_there":"Click a place to travel there. Esc to stay.",
   "hidden_treasures":"Hidden treasures",

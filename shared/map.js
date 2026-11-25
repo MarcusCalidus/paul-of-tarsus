@@ -98,7 +98,10 @@ const PLACES={
      the old Acco, at the northern end of the bay that Mount Carmel closes (Tyre and Caesarea are above). The road up to Jerusalem from
      Caesarea (Acts 21:15) is drawn only as far as a point inland, where the chapter ends. */
   cos:{name:'Cos',at:[27.29,36.89],lab:'r'},rhodes:{name:'Rhodes',at:[28.22,36.406],lab:'r',dy:6},patara:{name:'Patara',at:[29.35,36.26],lab:'l',dy:5},
-  ptolemais:{name:'Ptolemais',at:[35.07,32.92],lab:'r',dy:-2.4},tojerusalem:{name:'',at:[35.02,32.22],hide:1}};
+  ptolemais:{name:'Ptolemais',at:[35.07,32.92],lab:'r',dy:-2.4},tojerusalem:{name:'',at:[35.02,32.22],hide:1},
+  /* Antipatris (Acts 23:31), rebuilt by Herod the Great at the source of the Yarkon, in the well-watered Plain of Sharon (Insight on the
+     Scriptures, "Antipatris" and "Aphek" No. 3), where the military roads from Jerusalem and from Lydda met on the way to Caesarea */
+  antipatris:{name:'antipatris',at:[34.93,32.10],lab:'r',dy:-1.2}};
 /* waypoints for legs that do not run straight: by sea up the coast and east of Cyprus; by road round the Gulf of Issus; through
    the south of Cyprus, the way tradition has them go from Salamis to Paphos; by sea clear of the western cape of Cyprus; up the valley
    through the Taurus; along the foot of the mountains to Iconium; and home from Attalia by sea, between Cyprus and the coast of Cilicia */

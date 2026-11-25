@@ -8,6 +8,7 @@ agora agora11
 altars altar11
 antioch antioch
 antioch12 pant12
+antipatris map19
 apollos psyn13
 areopagus speech11
 arrest18 parrest18
@@ -145,6 +146,7 @@ romans romans cast-romans
 routes routes15 routes-cen15
 samothrace deck8
 sand-plan plan15
+sanhedrin sanhedrin cast-sanhedrin
 saves saves
 scale store15
 scroll scroll

@@ -337,6 +337,28 @@
       const z=document.createElement('canvas'),Z=4,parts=[[0,0,150,100],[150,40,170,104]];z.width=170*2*Z;z.height=parts.reduce((s,r)=>s+r[3]*2*Z,0);const g=z.getContext('2d');g.imageSmoothingEnabled=false;let y=0;
       for(const[x0,y0,w,h]of parts){g.drawImage(k,x0*2,y0*2,w*2,h*2,0,y,w*2*Z,h*2*Z);y+=h*2*Z}
       window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'map18-zoom']:z.toDataURL()})})}
+  /* map19: Antipatris on the travel map (shared/map.js), for Chapter Nineteen (Acts 23:31-33): by night from Jerusalem to Antipatris, then
+     by day on to Caesarea, in the usual window and in the window levant. In each, no two routes cross, no name crosses a coast, an island
+     or a route, no two names touch, and every name lies inside the window, in each language (de:map19). It stops on the usual window by night (docs/screenshots/antipatris.png) and hands over map19-zoom.png
+     (de-map19-zoom.png): the land between Caesarea and Jerusalem eight times enlarged, by night and by day, for the cross-shape check.
+     It plays in the latest chapter there is, until Chapter Nineteen is in the manifest. */
+  if(stop==='map19'){clearInterval(sk);sk=0;const n=CHAP[19]?19:CHAP[18]?18:17;await loadLevel(n);setChapter(n);await need('map');ov.className='';ov.onclick=null;G.busy=true;lock(true);status();
+    const M=SHARED.map,cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let k=0;
+        for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))k++;return k},
+      tidy=()=>{const[ox,oy,w,h]=M.window(),bx=M.state.boxes,bad=[];for(const b of bx)if(b[0]<ox-.5||b[2]>ox+w+.5||b[1]<oy-.5||b[3]>oy+h+.5)bad.push(b[4]+' (off the map)');
+        for(let i=0;i<bx.length;i++)for(let j=i+1;j<bx.length;j++){const a=bx[i],b=bx[j];if(a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3])bad.push(a[4]+' on '+b[4])}return bad},
+      inWin=id=>{const[x,y]=M.where(id);return x>6&&x<314&&y>6&&y<138},
+      say=(c,cl,td,out)=>(c?'. CROSSINGS: '+c:'')+(cl?'':'. CROSSES: '+[...mapClear.bad].join(', '))+(td.length?'. NAMES: '+td.join(', '):'')+(out.length?'. OUT: '+out.join(', '):'');
+    ok(!!M.places.antipatris&&T('antipatris')!=='antipatris'&&/^Antipatris$/.test(T('antipatris')),'Antipatris is a place on the map, and its name has its text ('+T('antipatris')+')');
+    const shots={};
+    for(const view of['levant',''])for(const night of[0,1]){const R=night?[['jerusalem','antipatris','new']]:[['jerusalem','antipatris'],['antipatris','caesarea','new']];
+      await M.journey(R,{view,night,instant:1});await wait(60);
+      const c=cross(M.state.legs),cl=mapClear(),td=tidy(),out=['caesarea','jerusalem','antipatris'].filter(k=>!inWin(k)&&(night?k!=='caesarea':1));
+      ok(!c&&cl&&!td.length&&!out.length&&M.state.seen.has('antipatris')&&M.state.night===!!night,'map19, '+(night?'by night from Jerusalem to Antipatris':'by day on to Caesarea')+' ('+(view||'the usual window')+'): it crosses nothing, and no name crosses it'+say(c,cl,td,out));
+      if(!view){const k=document.createElement('canvas');k.width=640;k.height=288;const q=k.getContext('2d');q.scale(2,2);M.draw(q,G.t);shots[night?'n':'d']=k}}
+    halt('map19',()=>{const z=document.createElement('canvas'),Z=8,[x0,y0,w,h]=[196,100,60,34];z.width=w*2*Z;z.height=h*2*Z*2;const g=z.getContext('2d');g.imageSmoothingEnabled=false;
+      g.drawImage(shots.n,x0*2,y0*2,w*2,h*2,0,0,w*2*Z,h*2*Z);g.drawImage(shots.d,x0*2,y0*2,w*2,h*2,0,h*2*Z,w*2*Z,h*2*Z);
+      window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'map19-zoom']:z.toDataURL()})})}
   /* A figure bound with a belt (a.bound; person's fr -6): Agabus binds his own feet and hands with Paul's belt (Acts 21:11). For every look
      of Chapters Three, Sixteen and Seventeen (if it is there) and the usual kinds of dress, facing both ways: each pose is one piece, and
      a.bound seats an actor bound, keeps him from turning, and lets him go when it is cleared. cast-bound.png shows them three times
@@ -572,7 +594,7 @@
     window.SHEETS=SHEETS;halt('cast')}
   /* Shipwreck survivor clothing & reusable Roman military cast (shared/cast.js): standing, facing left, mid-stride, and enlarged close-ups.
      Both stops also verify that every look stays one connected piece across standing, talking, seated and all walking frames. */
-  if(stop==='shipwreck'||stop==='romans'){await need('cast');const SHEETS={},C=SHARED.cast,
+  if(stop==='shipwreck'||stop==='romans'||stop==='sanhedrin'){await need('cast');const SHEETS={},C=SHARED.cast,
       sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,w,h);return[c,g]},
       text=(g,t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},
       cut=(g,sp,x0,y0,w,h,dx,dy,z)=>g.drawImage(sp,FIG.OX+x0,FIG.OY+y0,w,h,dx,dy,w*z,h*z),
@@ -618,25 +640,76 @@
           ['Formal city (toga)',R.praetorian_toga],['Armored (plumed)',R.praetorian_armored],['Armored walking',R.praetorian_armored,1,8]]],
         ['The commander in Jerusalem, a military tribune (Acts 21:31): the narrow purple stripe and a gold ring; tunic, cuirass, helmet',[
           ['Tribune (tunic)',R.tribune],['Tribune (facing L)',R.tribune,-1,0],['Tribune walking',R.tribune,1,10],
-          ['Tribune (cuirass)',R.tribune_armored],['Tribune (helmet)',R.tribune_helmet],['Helmet walking',R.tribune_helmet,1,8]]]
+          ['Tribune (cuirass)',R.tribune_armored],['Tribune (helmet)',R.tribune_helmet],['Helmet walking',R.tribune_helmet,1,8]]],
+        ['The escort of Acts 23:23-24: horsemen (standing, and seated as a rider sits) and spearmen, each spear slanting, its shaft behind the body',[
+          ['Horseman',R.horseman],['Horseman, riding pose',R.horseman_b,1,-7],['Spearman',R.spearman,1,0,1],
+          ['Spearman walking',R.spearman_young,1,10,1],['Spearman (facing L)',R.spearman_young,-1,0,1],['Spearman, cloak',R.spearman_old,1,6,1]]],
+        ['Felix, governor (Acts 23:24-35): the white toga with a purple border, a pendant drawn as a square, red shoes, a gold ring',[
+          ['Felix',R.felix],['Felix (facing L)',R.felix,-1,0],['Felix walking',R.felix,1,10],
+          ['Felix seated',R.felix,1,-1],['Seated (facing L)',R.felix,-1,-1],['Felix speaking',R.felix,1,0,0,3,2]]]
       ];
       const Z=3,cw=156,chh=408,cols=6,hdr=30,[c,g]=sheet(cols*cw,36+ROWS.length*(hdr+chh));
       text(g,'Roman Military Contact Sheet — Foot Soldiers, Centurions, Praetorian Guard, the Commander (3x)',12,24,16,'#f4f0e6');
       ok(['tribune','tribune_armored','tribune_helmet'].every(k=>R[k]&&R[k].clavus&&R[k].ring&&R[k].offCloak&&R[k].milBelt&&R[k].caligae)&&!R.tribune.helm&&!R.tribune_armored.helm&&R.tribune_helmet.helm,
         'the commander has the narrow purple stripe and the gold ring of his rank, a military cloak, belt and boots; bareheaded, and with a helmet');
       ROWS.forEach(([title,items],r)=>{const ry=36+r*(hdr+chh);g.fillStyle='#4a5464';g.fillRect(0,ry,cols*cw,hdr);text(g,title,12,ry+20,13,'#f4f0e6');
-        items.forEach(([nm,o,dir,fr],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);
-          cut(g,spr(o,'rm'+r+'_'+i,dir||1,fr||0),-24,-126,48,127,x+Math.floor((cw-48*Z)/2),y+chh-22-126*Z,Z);text(g,nm,x+6,y+chh-6,11)})});
+        items.forEach(([nm,o,dir,fr,wide,talk,ge],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);
+          const sp=talk||ge?sprite(['rmt',r,i].join('|'),q=>person(q,0,0,o,dir||1,fr||0,talk||0,0,ge||0,0),dir||1):spr(o,'rm'+r+'_'+i,dir||1,fr||0);
+          /* a slanting spear reaches well ahead of the face: its cell shows a wider cut, a little smaller */
+          if(wide){const Zw=2.2,x0=(dir||1)>0?-22:-46;cut(g,sp,x0,-128,68,129,x+Math.floor((cw-68*Zw)/2),y+chh-22-128*Zw,Zw)}
+          else cut(g,sp,-24,-126,48,127,x+Math.floor((cw-48*Z)/2),y+chh-22-126*Z,Z);text(g,nm,x+6,y+chh-6,11)})});
+      ok(['spearman','spearman_young','spearman_old'].every(k=>R[k].spear==='slant')&&Object.values(R).every(o=>o.spear!==1||o===R.auxiliary_mail),
+        'the spearmen of the escort hold their spears slanting, never upright');
+      ok(R.felix.toga&&R.felix.edge&&R.felix.pendant&&R.felix.ring&&!R.felix.clavus,'Felix wears the white toga with a purple border, a pendant and a ring');
       SHEETS['cast-romans']=c.toDataURL();
       /* 6x close-ups of helmets/crests/plumes and armor/belts/gladii to verify zero cross shapes */
       const DET=[['Galea + segmentata',R.legionary_guard],['Auxiliary mail',R.auxiliary_mail],['Centurion crest + cuirass',R.centurion_crested],
-        ['Julius bare + cloak',R.centurion_julius],['Praetorian watch',R.praetorian_watch],['Praetorian toga',R.praetorian_toga],['Praetorian plume',R.praetorian_armored],['Tribune: stripe, ring',R.tribune],['Tribune: cuirass',R.tribune_armored]],
+        ['Julius bare + cloak',R.centurion_julius],['Praetorian watch',R.praetorian_watch],['Praetorian toga',R.praetorian_toga],['Praetorian plume',R.praetorian_armored],['Tribune: stripe, ring',R.tribune],['Tribune: cuirass',R.tribune_armored],
+        ['Horseman: mail, cloak',R.horseman],['Spearman: hand, shaft',R.spearman],['Felix: toga, pendant',R.felix]],
         ZD=6,dw=228,dh=364,[cd,gd]=sheet(DET.length*dw,36+dh*2);
       text(gd,'Roman Military Details (6x): helmets, crests & armor (top); belts, gladii & caligae (bottom)',12,24,15,'#f4f0e6');
       DET.forEach(([nm,o],i)=>{const x=i*dw;field(gd,i,x,36,dw,dh);cut(gd,spr(o,'rmd1_'+i,1),-19,-104,38,56,x,36+2,ZD);text(gd,nm,x+6,36+dh-8,11);
         field(gd,i+1,x,36+dh,dw,dh);cut(gd,spr(o,'rmd2_'+i,1),-19,-54,38,55,x,36+dh+4,ZD);text(gd,'waist, gladius & boots',x+6,36+dh*2-8,11)});
       SHEETS['cast-romans-detail']=cd.toDataURL();
-      window.SHEETS=SHEETS;halt('romans')}}
+      window.SHEETS=SHEETS;halt('romans')}
+    /* the Sanhedrin of Acts 22:30-23:10 and Paul's family in Jerusalem (Acts 23:16), shared/cast.js SANHEDRIN and FAMILY: every look one
+       piece standing, speaking, seated and walking; the Pharisees each with a broad scripture case and long fringes, nobody else with
+       either, and every Jewish man in a mantle with fringes of his own. cast-sanhedrin.png shows them all three times enlarged, standing and
+       seated; cast-sanhedrin-detail.png the heads eight times (the case on the forehead, a square box, never a ring, with nothing across it)
+       and the hems eight times (the fringes, short slanting threads that end above the hem's band). */
+    if(stop==='sanhedrin'){const S=C.SANHEDRIN,F=C.FAMILY;checkSet(S,'sanhedrin');checkSet(F,'family');
+      const ph=Object.keys(S).filter(k=>/^pharisee_/.test(k)),rest=Object.keys(S).filter(k=>!/^pharisee_/.test(k));
+      ok(ph.length>=5&&ph.every(k=>S[k].phyl===1&&S[k].fringeLong&&S[k].fringe&&S[k].long&&S[k].cloak),'the Pharisees ('+ph.length+') wear broad scripture cases and long fringes');
+      ok(rest.every(k=>S[k].phyl!==1&&!S[k].fringeLong)&&rest.filter(k=>S[k].cloak).every(k=>S[k].fringe),'nobody else wears a broad case or long fringes, and every other man in a mantle has short fringes');
+      ok(Object.keys(S).filter(k=>/^sadducee_/.test(k)).length>=5&&S.clerk_1.board&&S.clerk_2.board&&S.ananias.wrap&&!S.ananias.phyl,'five Sadducees, two clerks with their writing boards, and the high priest in his headcloth');
+      ok(F.pauls_nephew.shortBeard&&!F.pauls_nephew.cloak&&F.pauls_nephew.long&&F.pauls_sister.veil,"Paul's nephew and Paul's sister have their looks");
+      const ROWS=[
+        ['The high priest Ananias (a rich robe and headcloth, not the vestments) and the men at his side (Acts 23:2)',[
+          ['Ananias',S.ananias],['Ananias seated',S.ananias,1,-1],['Ananias (facing L)',S.ananias,-1,0],['Attendant',S.attendant_1],['Attendant (L)',S.attendant_2,-1,0],['Attendant walking',S.attendant_2,1,10]]],
+        ['Pharisees: a broad scripture case on the forehead, long fringes at the corners of the mantle (Matthew 23:5)',ph.slice(0,6).map((k,i)=>[k,S[k],i%2?-1:1,0])],
+        ['Pharisees seated, as everyone sits',ph.slice(0,6).map((k,i)=>[k+' seated',S[k],i%2?1:-1,-1])],
+        ['Sadducees: fine dress; a small case or none, short fringes',[...Object.keys(S).filter(k=>/^sadducee_/.test(k)).map((k,i)=>[k,S[k],i%2?-1:1,0]),['sadducee walking',S.sadducee_1,1,8]].slice(0,6)],
+        ['Sadducees seated; a chief priest',[...Object.keys(S).filter(k=>/^sadducee_/.test(k)).map((k,i)=>[k+' seated',S[k],i%2?1:-1,-1]),['chief_priest_1',S.chief_priest_1]].slice(0,6)],
+        ['The two clerks with their writing boards; an elder; a chief priest seated',[['clerk_1 seated',S.clerk_1,1,-1],['clerk_2 seated',S.clerk_2,-1,-1],['clerk_1',S.clerk_1],['clerk_2 walking',S.clerk_2,1,10],['elder_1',S.elder_1,-1,0],['chief priest seated',S.chief_priest_1,1,-1]]],
+        ["Paul's family in Jerusalem (Acts 23:16): his sister's son, and his sister at her door",[['pauls_nephew',F.pauls_nephew],['nephew (facing L)',F.pauls_nephew,-1,0],['nephew walking',F.pauls_nephew,1,8],['nephew speaking',F.pauls_nephew,1,0,2,2],['pauls_sister',F.pauls_sister],['sister speaking',F.pauls_sister,-1,0,2,3]]]
+      ];
+      const Z=3,cw=156,chh=408,cols=6,hdr=30,[c,g]=sheet(cols*cw,36+ROWS.length*(hdr+chh));
+      text(g,'The Sanhedrin and the family of Paul in Jerusalem (Acts 22:30-23:16), three times enlarged',12,24,16,'#f4f0e6');
+      ROWS.forEach(([title,items],r)=>{const ry=36+r*(hdr+chh);g.fillStyle='#4a5464';g.fillRect(0,ry,cols*cw,hdr);text(g,title,12,ry+20,12,'#f4f0e6');
+        items.forEach(([nm,o,dir,fr,talk,ge],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);
+          const sp=sprite(['san',r,i].join('|'),q=>person(q,0,0,o,dir||1,fr||0,talk||0,0,ge||0,0),dir||1);
+          cut(g,sp,-24,-126,48,127,x+Math.floor((cw-48*Z)/2),y+chh-22-126*Z,Z);text(g,nm,x+6,y+chh-6,11)})});
+      SHEETS['cast-sanhedrin']=c.toDataURL();
+      const HD=[...ph.map(k=>[k,S[k]]),['sadducee_2 (small)',S.sadducee_2],['sadducee_4 (small)',S.sadducee_4],['sadducee_1',S.sadducee_1],['ananias',S.ananias],['pauls_nephew',F.pauls_nephew],['pauls_sister',F.pauls_sister]],
+        HM=[['pharisee_1',S.pharisee_1,1,0],['pharisee_3 walking',S.pharisee_3,1,10],['pharisee_6 (L)',S.pharisee_6,-1,0],['pharisee_2 seated',S.pharisee_2,1,-1],['sadducee_1',S.sadducee_1,1,0],['ananias walking',S.ananias,1,14],['clerk_1 seated',S.clerk_1,1,-1],['elder_1',S.elder_1,1,0]],
+        ZD=8,dw=208,dh=300,cols2=6,[cd,gd]=sheet(cols2*dw,36+Math.ceil(HD.length/cols2)*dh+Math.ceil(HM.length/4)*dh);
+      text(gd,'Eight times: the scripture case on the forehead (above), the fringes at the mantle\'s corners and the writing board (below)',12,24,14,'#f4f0e6');
+      HD.forEach(([nm,o],i)=>{const x=(i%cols2)*dw,y=36+Math.floor(i/cols2)*dh,f=o.veil||o.fem,top=4+23+16+3+(f?24:26)+20;field(gd,i,x,y,dw,dh);cut(gd,spr(o,'sh'+i,1),-13,-top-6,26,36,x,y,ZD);text(gd,nm,x+6,y+dh-8,11)});
+      const y2=36+Math.ceil(HD.length/cols2)*dh,cw2=dw*cols2/4;
+      HM.forEach(([nm,o,dir,fr],i)=>{const x=(i%4)*cw2,y=y2+Math.floor(i/4)*dh;field(gd,i+1,x,y,cw2,dh);const top=fr===-1?40:34;
+        cut(gd,sprite(['sanh',i].join('|'),q=>person(q,0,0,o,dir,fr,0,0,0,0,0),dir),-28,-top,56,top+2,x,y,Math.min(ZD,Math.floor(cw2/56)));text(gd,nm,x+6,y+dh-8,11)});
+      SHEETS['cast-sanhedrin-detail']=cd.toDataURL();
+      window.SHEETS=SHEETS;halt('sanhedrin')}}
   /* Dynamic cast & contact shadows in figure() (issue #81): floor skew, foreground-lamp back-wall bend, prop/actor ordering, pitch-dark
      zero shadow, multi-lamp steadiness across 110ms flame ticks, solid-wall clipping, and enlarged/gallery sheets across all 22 rooms. */
   /* deck (shared/ship.js, view 'deckAft'): the deck of a coaster seen from aboard, looking aft, in its three lights. It checks the one

@@ -1,7 +1,10 @@
 /* Paul of Tarsus: reusable character looks shared across Chapters Eighteen to Twenty-Five (loaded on demand with need('cast')).
    - ROMAN: Roman foot soldiers (lorica segmentata & lorica hamata), centurions (molded cuirass, transverse crest, officer cloak), the
      commander of the Jerusalem garrison (a military tribune: tunic with the narrow purple stripe, cuirass, gold ring),
-     and Praetorian Guard (inside-Rome watch tunic + military belt/caligae/gladius, formal Roman toga + caligae, and full armored duty).
+     and Praetorian Guard (inside-Rome watch tunic + military belt/caligae/gladius, formal Roman toga + caligae, and full armored duty);
+     the horsemen and spearmen of the escort to Caesarea (Acts 23:23), and Felix, governor of Judea (Acts 23:24-35).
+   - SANHEDRIN: the high priest Ananias, Pharisees, Sadducees, clerks, attendants, an elder and a chief priest (Acts 22:30-23:15; 24:1).
+   - FAMILY: Paul's sister and her son in Jerusalem (Acts 23:16).
    - shipwrecked(look, opts): turns any look into wet, torn shipwreck survivor clothing for Acts 27-28 (Chapter Twenty-Three).
    - SHIPWRECK: ready-to-use shipwreck survivor looks (Paul, Luke, Aristarchus, Julius, escort soldier, sailor, fellow prisoner).
    - custody: the two chains of Acts 21:33, the soldiers who hold Paul by the arms (22:25), and the knot that carries him up the stairs
@@ -60,7 +63,33 @@ const ROMAN={
     caligae:1,ph:800},
   praetorian_armored:{skin:'#bc8a60',hair:'#2e2014',brow:'#20140e',crop:1,tunic:'#7c202a',cloak:'#681a24',cape:1,
     helm:'#9ea4ae',helmStyle:'plume',crest:'#8a1e28',armor:'#b69450',armorStyle:'cuirass',pteruges:'#e6dec6',
-    sash:'#681a24',belt:'#4a2c16',milBelt:1,caligae:1,gladius:1,pilum:1,ph:1600}
+    sash:'#681a24',belt:'#4a2c16',milBelt:1,caligae:1,gladius:1,pilum:1,ph:1600},
+
+  /* The escort of Acts 23:23-24 (Chapter Nineteen): 70 horsemen and 200 spearmen beside the foot soldiers. horseman: an auxiliary
+     cavalryman in mail, helmet and cloak, with his sword and no spear (standing, or riding: a rider is drawn seated with his legs
+     hanging, person's fr -7). spearman, spearman_young, spearman_old: light infantry (Insight on the Scriptures, "Spearmen"), in a tunic
+     and leather belt with a helmet, carrying one simple spear with a wooden shaft and an iron head (the Study Edition's media "Roman
+     Spears"), always slanting (spear:'slant'): the far hand holds it, its head leans forward well ahead of the face, and its shaft runs
+     behind the body, never upright. */
+  horseman:{skin:'#b88458',hair:'#3a2a1c',brow:'#28190f',crop:1,tunic:'#b89a6a',cloak:'#5a4a3a',cape:1,helm:'#9a8a5a',helmStyle:'galea',
+    armor:'#7e848e',armorStyle:'mail',belt:'#422814',milBelt:1,caligae:1,gladius:1,ph:3100},
+  horseman_b:{skin:'#c49066',hair:'#5a4030',brow:'#3a2a1c',crop:1,tunic:'#a88c62',cloak:'#6a3a2c',cape:1,helm:'#8c929c',helmStyle:'galea',
+    armor:'#7a808a',armorStyle:'mail',belt:'#422814',milBelt:1,caligae:1,gladius:1,ph:3300},
+  spearman:{skin:'#b07c52',hair:'#2e1e14',brow:'#20140e',crop:1,tunic:'#a8946c',helm:'#8a8270',helmStyle:'galea',belt:'#4a2c16',milBelt:1,caligae:1,
+    spear:'slant',ph:3500},
+  spearman_young:{skin:'#c09068',hair:'#4a3624',brow:'#342416',crop:1,slim:1,tunic:'#b4a07a',helm:'#948a74',helmStyle:'galea',belt:'#4a2c16',milBelt:1,caligae:1,
+    spear:'slant',ph:3700},
+  spearman_old:{skin:'#a8744c',hair:'#6a625a',grey:'#9a948c',brow:'#4a423a',crop:1,thin:1,tunic:'#9a8662',cloak:'#5a4a3a',cape:1,belt:'#4a2c16',milBelt:1,caligae:1,
+    spear:'slant',ph:3900},
+
+  /* Felix, governor of Judea (Acts 23:24-35): Antonius Felix, a freed slave of the imperial house made procurator (Insight on the
+     Scriptures, "Felix"). Nothing in the publications describes his own appearance. He is drawn in the public dress that The Watchtower
+     (2005, "Who Was Pontius Pilate?") gives a governor of Judea a generation before him: a white toga with a purple border (edge: the
+     band along the toga where it crosses the chest, slanting, never down the middle of the figure), over a white tunic; clean-shaven,
+     his dark hair cut short, a small pendant at the neck (pendant: a square), red shoes (shoes) and a gold ring (ring: two pixels).
+     Seated on his chair, person's fr -1. */
+  felix:{skin:'#c69a70',hair:'#2e2218',brow:'#22180f',crop:1,tunic:'#f0eadc',long:1,cloak:'#f2ecde',toga:1,edge:'#5c2458',
+    pendant:'#e0b850',shoes:'#9a2a24',ring:1,ph:4100}
 };
 
 /* shipwrecked(base, opts): derive a wet, torn shipwreck survivor look from any existing character look.
@@ -72,6 +101,74 @@ function shipwrecked(base,opts){
   delete o.helm;delete o.helmStyle;delete o.crest;delete o.spear;delete o.pilum;delete o.gladius;delete o.pouch;
   if(opts&&opts.barefoot!==undefined)o.barefoot=opts.barefoot;else if(!o.caligae)o.barefoot=1;
   return o}
+
+/* ---- the Sanhedrin (Acts 22:30-23:10; and the high priest and the elders who came down to Caesarea, Acts 24:1) ----
+   Every member is a Jewish man of standing, in a long robe and a mantle, drawn with respect: nothing in a face or a dress makes fun of
+   anyone (CONTRIBUTING section 2). The only mark the publications give to tell the two parties apart is the Pharisees' (Insight on the
+   Scriptures, "Pharisees", from Matthew 23:5): they wore their scripture cases broad and the fringes of their garments long. So:
+     ananias          the high priest Ananias, son of Nedebaeus: an older man in the rich dress of a wealthy priestly family, a fine
+                      robe with long sleeves, a mantle with a band of gold along its edge, a white headcloth and a gold ring. Not the
+                      high priest's vestments: this is a court day, not the service of the temple.
+     pharisee_1 .. 6  a broad scripture case on the forehead (phyl:1, a square box of leather, never a ring, with no strap across
+                      anything and none on the arm) and long fringes at the corners of the mantle (fringe: their color, fringeLong:1;
+                      short slanting threads, never a vertical line over a band). Ages and beards differ; some wear a headcloth.
+     sadducee_1 .. 5  close to the priesthood and the wealthy (Insight, "Sadducees"): fine cloth, a band along the mantle, a ring here and
+                      there; a small case (phyl:2) or none, and short fringes. Nothing else tells them apart, so in the council they sit
+                      mixed with the Pharisees, and the player must look.
+   Every Israelite man wore fringes, with a blue cord above them (Numbers 15:38; Insight, "Dress"), and Jewish men generally wore the cases
+   (study note on Matthew 23:5): so every man here in a mantle has short fringes, and what marks the Pharisees is that theirs are long
+   and their cases broad.
+     clerk_1, clerk_2 the two clerks in front of the court, who wrote down what was said: each with a writing board (board: the color of
+                      its wood), drawn on his knees when he sits (person's fr -1) and under his arm when he stands.
+     attendant_1, _2  the men who stood by the high priest (Acts 23:2): plain good dress, a headcloth, no mantle and no case.
+     elder_1, chief_priest_1   for the chief priests and elders whom the forty went to (23:14), and who came down with Ananias (24:1).
+   Seated, every one of them sits as CONTRIBUTING section 4 says (the figure painter's one seated pose). */
+const SANHEDRIN={
+  ananias:{skin:'#b8865e',wrap:'#f2ecdc',beard:'#8a8278',grey:'#c4beb4',longBeard:1,brow:'#6a625a',tunic:'#e8dcc0',longSleeve:1,trim:'#c9a23a',long:1,
+    cloak:'#5a2430',edge:'#c9a23a',belt:'#8a6a2a',ring:1,fringe:'#e6dcc6',ph:4300},
+  pharisee_1:{skin:'#b47e52',hair:'#5a5048',beard:'#6a6058',grey:'#9a9088',longBeard:1,brow:'#3a322a',tunic:'#d8ccb0',cloak:'#6a5a44',long:1,belt:'#3a2414',
+    phyl:1,fringe:'#e8e0cc',fringeLong:1,ph:4500},
+  pharisee_2:{skin:'#c08c5c',hair:'#2e2018',beard:'#2e2018',fullBeard:1,brow:'#22160e',tunic:'#a89a7a',cloak:'#3e4a5e',long:1,belt:'#3a2414',
+    phyl:1,fringe:'#ece6d4',fringeLong:1,ph:4700},
+  pharisee_3:{skin:'#a8703f',wrap:'#d8cdb0',beard:'#4a3a2c',fullBeard:1,brow:'#2a1a12',tunic:'#8a7a5a',cloak:'#c8b890',long:1,belt:'#3a2414',
+    phyl:1,fringe:'#f0eadc',fringeLong:1,ph:4900},
+  pharisee_4:{skin:'#bc8a60',hair:'#8a847c',beard:'#a49e96',grey:'#c8c2ba',thin:1,longBeard:1,brow:'#78726c',tunic:'#e0d6c0',cloak:'#7a6a52',long:1,belt:'#4a3424',
+    phyl:1,fringe:'#e6dcc6',fringeLong:1,ph:5100},
+  pharisee_5:{skin:'#c49468',hair:'#3a2a1c',beard:'#3a2a1c',brow:'#2a1a12',receding:1,tunic:'#9aa08a',cloak:'#5a4a3a',long:1,belt:'#3a2818',
+    phyl:1,fringe:'#e8e2d0',fringeLong:1,ph:5300},
+  pharisee_6:{skin:'#b07a4c',wrap:'#b8a882',beard:'#6e665c',grey:'#a49c92',longBeard:1,brow:'#4a423a',tunic:'#c8b896',cloak:'#4a5a4a',long:1,belt:'#3a2414',
+    phyl:1,fringe:'#ece4d2',fringeLong:1,ph:5500},
+  sadducee_1:{skin:'#c8966c',hair:'#4a3a2c',beard:'#4a3a2c',fullBeard:1,brow:'#30241a',tunic:'#ece4d2',longSleeve:1,trim:'#8a6a9a',long:1,
+    cloak:'#3a5070',edge:'#b89a50',belt:'#6a4a26',ring:1,fringe:'#e6dcc6',ph:5700},
+  sadducee_2:{skin:'#bc8a60',wrap:'#ece4d0',beard:'#7a7268',grey:'#b0a89e',fullBeard:1,brow:'#5a524a',tunic:'#d4c4a0',longSleeve:1,trim:'#8a6a2a',long:1,
+    cloak:'#7a3a2c',edge:'#c9a23a',belt:'#4a3424',fringe:'#e6dcc6',phyl:2,ph:5900},
+  sadducee_3:{skin:'#c49064',hair:'#2a1c12',beard:'#2a1c12',shortBeard:1,brow:'#20140c',tunic:'#e4dccb',longSleeve:1,trim:'#4a6a7a',long:1,
+    cloak:'#2e5458',belt:'#6a4a26',ring:1,fringe:'#e6dcc6',ph:6100},
+  sadducee_4:{skin:'#b8845a',hair:'#8a8278',beard:'#9a948c',grey:'#c4beb6',bald:1,fullBeard:1,brow:'#6a645c',tunic:'#ddd2b8',longSleeve:1,trim:'#9a7a3a',long:1,
+    cloak:'#2e4a40',edge:'#b8964a',belt:'#4a3424',ring:1,fringe:'#e6dcc6',phyl:2,ph:6300},
+  sadducee_5:{skin:'#c09062',wrap:'#c8a868',beard:'#3e2e20',brow:'#2a1c12',tunic:'#b0a07c',longSleeve:1,trim:'#6a4a2a',long:1,
+    cloak:'#6a5a2c',edge:'#d8c084',belt:'#4a3424',fringe:'#e6dcc6',ph:6500},
+  clerk_1:{skin:'#c08c5c',hair:'#3a2a1c',beard:'#3a2a1c',shortBeard:1,brow:'#2a1a12',tunic:'#ccc0a2',cloak:'#6a6456',long:1,belt:'#3a2414',
+    board:'#a07a4a',fringe:'#e6dcc6',ph:6700},
+  clerk_2:{skin:'#b47e52',hair:'#6a6058',beard:'#7a7066',grey:'#a49c92',thin:1,fullBeard:1,brow:'#4a423a',tunic:'#bcb090',cloak:'#5a5a6a',long:1,belt:'#3a2414',
+    board:'#8a6a40',fringe:'#e6dcc6',phyl:2,ph:6900},
+  attendant_1:{skin:'#b07a4c',wrap:'#d8cdb0',beard:'#3a2a1c',brow:'#2a1a12',tunic:'#9a8a6a',long:1,belt:'#3a2414',ph:7100},
+  attendant_2:{skin:'#c08c5c',wrap:'#a89070',beard:'#4a3a2a',shortBeard:1,brow:'#2a1a12',tunic:'#8a7a5a',long:1,belt:'#3a2414',ph:7300},
+  elder_1:{skin:'#a8703f',wrap:'#d8cdb0',beard:'#7a6a5a',grey:'#a8a098',longBeard:1,brow:'#3a2a1a',tunic:'#8a7a5a',cloak:'#c8b890',long:1,belt:'#3a2414',fringe:'#e6dcc6',ph:7500},
+  chief_priest_1:{skin:'#c4946a',wrap:'#ece6d6',beard:'#5a4a3a',grey:'#8a8278',fullBeard:1,brow:'#3a2a1c',tunic:'#e2d8c2',longSleeve:1,trim:'#7a5a8a',long:1,
+    cloak:'#6a4a2a',edge:'#c4a456',belt:'#6a4a26',ring:1,fringe:'#e6dcc6',ph:7700}
+};
+
+/* ---- the family of Paul in Jerusalem (Acts 23:16; Chapter Nineteen) ----
+     pauls_nephew  the son of Paul's sister, a young man of about eighteen to twenty (unnamed): slim and bareheaded, his dark hair cut
+                   short, his first beard close; a plain tunic to the ankles in a muted grey-green, open at the neck, and a brown
+                   leather belt with a small brass plate. He walks and talks much: every pose is the figure painter's.
+     pauls_sister  Paul's sister, a woman of about his age, at her door in Jerusalem: a long tunic, the mantle drawn over her head, and the
+                   hair that shows under it greying (veilHair). */
+const FAMILY={
+  pauls_nephew:{skin:'#c4926a',hair:'#2e2016',beard:'#5e4230',shortBeard:1,crop:1,brow:'#24160e',slim:1,tunic:'#8a9482',long:1,belt:'#6a4426',buckle:'#d8b45a',ph:7900},
+  pauls_sister:{skin:'#bc8c64',veil:'#6e4c3c',veilHair:'#8a837a',tunic:'#b8a888',long:1,slim:1,longSleeve:1,trim:'#5a4a3a',belt:'#6a4a2a',brow:'#7a7068',ph:8100}
+};
 
 const LUKE_LATE={skin:'#c4946a',hair:'#4e4238',beard:'#564a40',grey:'#8c847c',tunic:'#e4dec8',cloak:'#4f7a6a',belt:'#4a3a24',trim:'#3a5a4a',long:1,brow:'#342a22',ph:1100};
 const ARISTARCHUS={skin:'#bc8a60',hair:'#3a2a1c',beard:'#3a2a1c',tunic:'#96a488',cloak:'#5a4e3e',belt:'#3a2818',trim:'#6a765c',brow:'#2a1c12',ph:1500};
@@ -148,4 +245,4 @@ function knot(g,x,y,o){o=o||{};const d=o.dir||1,pd=o.pdir||d,men=o.men||CARRIERS
     const fr=o.d!=null?36+((walkFr(L,o.d*2,WALK_V)-4)&15):0;figure(g,mx,my,lit(mx,my),'knot|'+off+'|'+d+'|'+fr,q=>person(q,0,0,L,d,fr,0,0,0,0,0),walkSw(L,fr))}})}
 const custody={place,chains,grips,knot,cuffPt,CARRIERS};
 
-return{ROMAN,SHIPWRECK,shipwrecked,custody}})();
+return{ROMAN,SANHEDRIN,FAMILY,SHIPWRECK,shipwrecked,custody}})();
