@@ -729,15 +729,19 @@ function paintCourt18(g){const r=rng(1831),HZ=HZTp18;
 function antoniaTp18(g,r){const c='#d6c29a',base=50;
   stoneTp18(g,20,24,74,base-24,r,{bh:3,bw:8,c,rough:1,v:.1});ao(g,20,24,74,6,'t',.14,'#3a3048');
   crenelsTp18(g,20,93,24,3,3,c);
-  for(const[y,x0]of[[29,26],[36,31],[43,26]])for(let x=x0;x<90;x+=10){R(g,x,y,2,2.5,'#3a2e30');R(g,x,y+2.5,2,.5,tint(c,.22))}
+  /* its windows: a row of small windows high up and a row of slits below, each slit under the middle of a gap above; two rows only,
+     so that no four of them stand two by two or as a diamond round an empty middle */
+  for(let x=26;x<90;x+=10){R(g,x,30,2,2.5,'#3a2e30');R(g,x,32.5,2,.5,tint(c,.22))}
+  for(let x=31.5;x<88;x+=10){R(g,x,39,1,3.5,'#3a2e30');R(g,x,42.5,1,.5,tint(c,.22))}
   castTp18(g,92,21,base,5,.4);
   stoneTp18(g,92,12,24,base-12,r,{bh:3,bw:7,c:tint(c,.04),rough:1,v:.1});crenelsTp18(g,92,116,12,3,3,c);
   /* its east face, a narrow strip turned toward us at the corner, full in the sun */
   const ef=[116,12,121,13.8,121,base,116,base];poly(g,ef,'#f2e2c0');
   clipTo(g,()=>poly(g,ef),()=>{for(let y=14;y<base;y+=3)R(g,116,y,5,.5,'rgba(160,134,100,.42)');ageTp18(g,116,12,5,base-12,r,.8)});
   poly(g,[116,9,119,9.8,119,12.8,116,12],'#f0e2c0');R(g,116,12,5,.5,'#fff8e4');
-  for(const[y,xs]of[[17,[103]],[25,[98,108]],[33,[103]],[41,[98,108]]])for(const x of xs){R(g,x,y,2,2.5,'#3a2e30');R(g,x,y+2.5,2,.5,'#f2e4c4')}
-  ao(g,92,4,3,base-4,'l',.22,'#3a3048');
+  /* the tower's windows: slits one above another in a single column, one to a floor */
+  for(const y of[16,26,36])for(const x of[103.5]){R(g,x,y,1,3.5,'#3a2e30');R(g,x,y+3.5,1,.5,'#f2e4c4')}
+  ao(g,92,12,3,base-12,'l',.22,'#3a3048');
 }
 /* the north colonnade at the back: a row of columns under a deep beam and the roof's edge, small with distance, the hall dark behind */
 function northColTp18(g,x0,x1){const top=48,beam=54,base=HZTp18+2;
@@ -799,7 +803,7 @@ function sanctuaryTp18(g,r){const b0=164,b1=258,bt=13,f0=250,f1=290,ft=4,foot=46
   poly(g,[f0,ft+1,f0+3,ft,f0+3,foot,f0,foot],'#b8a88c');ao(g,f0,ft,3,foot-ft,'l',.3,'#4a4060');
   face(f0+3,f1,ft,'#f4ead6',1);
   R(g,f0+3,ft+19,f1-f0-3,1,'#fffaee');R(g,f0+3,ft+20,f1-f0-3,.6,'#a89474');
-  for(const y of[ft+6,ft+14])for(let x=f0+7;x<f1-4;x+=8.5){R(g,x,y,3.4,2.2,'#3a2e30');R(g,x,y+2.2,3.4,.5,'#fff6e2')}
+  for(let x=f0+7;x<f1-4;x+=8.5){R(g,x,ft+9,3.4,2.2,'#3a2e30');R(g,x,ft+11.2,3.4,.5,'#fff6e2')}
   cornice(f0+2,f1,ft+1.6);goldBand(f0,f1+1,ft-3.6,3);R(g,f0,ft-3.6,f1-f0+1,.5,G[0]);
   /* the edge of the gilded east face, in the full morning sun, and the glow off it */
   g.fillStyle=lg(g,0,ft,0,foot,[G[0],G[1],G[2]]);g.fillRect(f1,ft-3.6,2,foot-ft+3.6);R(g,f1+1.4,ft-3.6,.6,foot-ft+3.6,'#fffbe6');
@@ -1043,7 +1047,7 @@ function innerSt18(g,r){const HZ=HZSt18,G=GOLDTp18,wt=54,wf=72,W1=172,sb=78;
   for(let x=50;x<140;x+=8.5){R(g,x,17,2.6,1.8,'#4a3c3c');R(g,x,18.8,2.6,.5,'#e0d2bc')}
   R(g,43,8.2,104,3,G[2]);R(g,43,8.2,104,.6,G[0]);R(g,43,10.6,104,.6,G[3]);R(g,43,11.2,104,1,'#ddd0bc');R(g,146,8.6,8,3,G[3]);
   sh(14,44,5,wt,'#e6dac6',.28);R(g,14,24,30,1,'#e2d6c2');R(g,14,25,30,.6,'#9a8c84');R(g,13,2,32,3,G[2]);R(g,13,2,32,.6,G[0]);R(g,13,4.4,32,.6,G[3]);R(g,13,5,32,1,'#e0d4c0');
-  for(const y of[10,17])for(let x=19;x<42;x+=8){R(g,x,y,2.6,1.8,'#4a3c3c');R(g,x,y+1.8,2.6,.5,'#e0d2bc')}
+  for(let x=19;x<42;x+=8){R(g,x,13,2.6,1.8,'#4a3c3c');R(g,x,14.8,2.6,.5,'#e0d2bc')}
   g.fillStyle=lg(g,11,0,14,0,[G[1],G[0],G[2]]);g.fillRect(11,2,3,wt-2);comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,0,0,0,wt,['#ffffff','#c8a890']);g.fillRect(11,2,3,wt-2)});pool(g,12,20,5,18,'#fff0b0',.3,'screen');
   /* the steps of the terrace and the hel before the barrier, seen from above: treads lit, risers in shade */
   for(let i=0;i<4;i++){const y=wf+i*1.6;R(g,-4,y,W1+4+i*3,1,'#e4d6b8');R(g,-4,y+1,W1+4+i*3,.6,'#a89a88')}
