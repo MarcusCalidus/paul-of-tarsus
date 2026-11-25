@@ -289,6 +289,52 @@
     halt('map17',()=>{const z=document.createElement('canvas'),Z=4,parts=[[pics[0],[80,40,160,90]],[pics[1],[30,0,90,60]],[pics[1],[180,70,80,70]]];z.width=160*2*Z;z.height=parts.reduce((s,[,r])=>s+r[3]*2*Z*160/r[2],0);
       const q=z.getContext('2d');q.imageSmoothingEnabled=false;let y=0;for(const[c,[x0,y0,w,h]]of parts){const hh=h*2*Z*160/w;q.drawImage(c,x0*2,y0*2,w*2,h*2,0,y,z.width,hh);y+=hh}
       window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'map17-zoom']:z.toDataURL()})})}
+  /* The cry of a crowd (shared/crowd.js), which Chapter Fourteen hears for Artemis (Acts 19:28, 34) and Chapter Eighteen against Paul
+     (Acts 21:36; 22:22): Chapter Fourteen loads it, and its cry renders offline as before, finite and audible, as ten shouted vowels of the
+     words of the player's language, never shown; the shared cry takes its own pitch, size and distance; and the roar beds are the ones
+     Chapter Fourteen always had (`de:cry14` in German). */
+  if(stop==='cry14'){clearInterval(sk);sk=0;await loadLevel(14);setChapter(14);const C=CHAP[14],CR=SHARED.crowd;
+    const render=fn=>{const SR=22050,o=new OfflineAudioContext(1,SR*5,SR),keep=Object.assign({},AU);AU.ctx=o;audioGraph(o);let len=0;try{len=fn(o)}finally{for(const k in AU)AU[k]=keep[k]}
+      return o.startRendering().then(b=>{const d=b.getChannelData(0);let p=0;for(const v of d){if(!isFinite(v)){p=NaN;break}p=Math.max(p,Math.abs(v))}return[len,p]})};
+    ok(C.needs.includes('crowd')&&CR&&C.beds.roar14===CR.ROAR&&C.beds.roarfar14===CR.ROARFAR&&C.calls.cry14&&C.calls.cryfar14,'Chapter Fourteen hears its crowd through shared/crowd.js, with the same roar beds and calls');
+    const L=C.parseCry('cry14'),[len,p]=await render(o=>C.cry(o.destination,.05,6,0)),[l2,p2]=await render(o=>CR.cry(o.destination,.05,{key:'cry14',n:4,base:110,far:900,step:.24}));
+    ok(L.filter(n=>n[0]!=null).length===10&&(lang==='en'||T('cry14')!==textOf('en','cry14'))&&len>2&&p>.005&&p<.95&&l2>len&&p2>.002&&p2<p,
+      'the crowd\'s cry is heard as ten shouted vowels of the '+LANGS[lang].native+' words (peak '+(p||0).toFixed(2)+'); a smaller crowd farther off, at its own pitch and pace, is quieter and slower (peak '+(p2||0).toFixed(3)+')');
+    halt('cry14')}
+  /* The travel map for Chapter Eighteen (shared/map.js). The last leg of the way up, from the point inland where Chapter Seventeen ends to
+     Jerusalem (Acts 21:17), in the usual window and in the levant one. And the journeys window, four fifths of the usual size, for "one
+     by one" (Acts 21:19): Salamis, Paphos, Perga, Antioch in Pisidia, Iconium, Lystra, Derbe, Philippi, Thessalonica, Beroea, Athens,
+     Corinth and Ephesus all in the window and to be clicked; pick shows them again and again, each time waiting for one click, and the
+     places used stay on offer; trail draws the roads between places picked one after another, and nothing between others. On each map no
+     two routes cross, no name crosses a coast, an island or a route, no two names touch, and every name lies inside the window, in each
+     language (`de:map18`). The stop shows the journeys window with every road of the trail, and hands over map18-zoom.png (de-map18-zoom.png):
+     its west and its east four times enlarged, for the cross-shape check. */
+  if(stop==='map18'){clearInterval(sk);sk=0;const n17=CHAP[17]?17:16;await loadLevel(n17);setChapter(n17);await need('map');ov.className='';ov.onclick=null;G.busy=true;lock(true);status();
+    const M=SHARED.map,cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
+        for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;return n},
+      tidy=()=>{const[ox,oy,w,h]=M.window(),bx=M.state.boxes,bad=[];for(const b of bx)if(b[0]<ox-.5||b[2]>ox+w+.5||b[1]<oy-.5||b[3]>oy+h+.5)bad.push(b[4]+' (off the map)');
+        for(let i=0;i<bx.length;i++)for(let j=i+1;j<bx.length;j++){const a=bx[i],b=bx[j];if(a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3])bad.push(a[4]+' on '+b[4])}return bad},
+      inWin=id=>{const[x,y]=M.where(id);return x>6&&x<314&&y>6&&y<138},
+      say=(what,c,cl,td,out)=>(c?'. CROSSINGS: '+c:'')+(cl?'':'. CROSSES: '+[...mapClear.bad].join(', '))+(td.length?'. NAMES: '+td.join(', '):'')+(out.length?'. OUT: '+out.join(', '):'');
+    for(const view of['levant','']){const R=[['ptolemais','caesarea','sea'],['caesarea','tojerusalem'],['tojerusalem','jerusalem','new']];await M.journey(R,{view,instant:1});await wait(60);
+      const c=cross(M.state.legs),cl=mapClear(),td=tidy(),out=['caesarea','jerusalem'].filter(k=>!inWin(k));
+      ok(!c&&cl&&!td.length&&!out.length&&M.state.seen.has('jerusalem'),'map18, the last of the way up to Jerusalem ('+(view||'the usual window')+'): it ends at Jerusalem, crosses nothing, and no name crosses it'+say('',c,cl,td,out))}
+    const IDS=['salamis','paphos','perga','antiochp','iconium','lystra','derbe','philippi','thessalonica','beroea','athens','corinth','ephesus'],all=M.trail(IDS);
+    ok(all.length===16&&M.trail(['derbe','philippi']).length===0&&M.trail(['paphos','salamis']).length===0&&JSON.stringify(M.trail(['beroea','athens']))===JSON.stringify([['beroea','seaward'],['seaward','athens']]),
+      'trail: the roads between places picked in the order they were travelled, through the points between them, and nothing between others');
+    const vp=$('#view'),clickAt=k=>{const[x,y]=M.where(k),r=vp.getBoundingClientRect(),W0=r.width/VW,H0=r.height/VH;vp.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,clientX:r.left+x*W0,clientY:r.top+y*H0}))};
+    let got=[];for(const[i,k]of['perga','salamis','perga','ephesus','athens'].entries()){const p=M.pick(IDS,null,{view:'journeys',legs:M.trail(got)});await wait(40);
+      if(i===0){const c=cross(M.state.legs),cl=mapClear(),td=tidy(),out=IDS.filter(k=>!inWin(k));
+        ok(!out.length&&cl&&!td.length,'map18, the journeys window: every place of the journeys is in it, and no name crosses a coast or another name'+say('',c,cl,td,out))}
+      clickAt(k);const v=await Promise.race([p,wait(800).then(()=>'none')]);got.push(v)}
+    ok(got.join()==='perga,salamis,perga,ephesus,athens','pick can be called again and again, and each place stays on offer: '+got.join());
+    for(const L of[1,0]){await M.journey([],{view:'journeys',instant:1});const p=M.pick(IDS,null,{view:'journeys',legs:all,seen:['salamis'],hint:'click_a_place_to_travel_there'});await wait(60);
+      const c=cross(M.state.legs),cl=mapClear(),td=tidy();ok(!c&&cl&&!td.length&&M.state.legs.length===16&&M.state.seen.has('salamis'),'map18, the journeys window with every road of the trail: none crosses another, and no name crosses one'+say('',c,cl,td,[]));
+      if(L){dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));ok(await p===null,'Esc leaves the map without a place')}}
+    halt('map18',()=>{const k=document.createElement('canvas');k.width=640;k.height=288;const q=k.getContext('2d');q.scale(2,2);M.draw(q,G.t);
+      const z=document.createElement('canvas'),Z=4,parts=[[0,0,150,100],[150,40,170,104]];z.width=170*2*Z;z.height=parts.reduce((s,r)=>s+r[3]*2*Z,0);const g=z.getContext('2d');g.imageSmoothingEnabled=false;let y=0;
+      for(const[x0,y0,w,h]of parts){g.drawImage(k,x0*2,y0*2,w*2,h*2,0,y,w*2*Z,h*2*Z);y+=h*2*Z}
+      window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'map18-zoom']:z.toDataURL()})})}
   /* A figure bound with a belt (a.bound; person's fr -6): Agabus binds his own feet and hands with Paul's belt (Acts 21:11). For every look
      of Chapters Three, Sixteen and Seventeen (if it is there) and the usual kinds of dress, facing both ways: each pose is one piece, and
      a.bound seats an actor bound, keeps him from turning, and lets him go when it is cleared. cast-bound.png shows them three times
@@ -312,6 +358,53 @@
       const sp=sprite(['boundsheet',r,-6,1].join('|'),q=>person(q,0,0,o,1,-6,0,0,0,0,0),1),k=10,top=o.h?48:58;
       for(const[j,[y0,h]]of[[top,28],[14,14]].entries()){const x=W0+j*300;g.fillStyle=(j+r)%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,298,chh-2);g.drawImage(sp,FIG.OX-14,FIG.OY-y0,28,h,x+10,y+6,28*k,h*k)}});
     halt('bound17',()=>{window.SHEETS=Object.assign(window.SHEETS||{},{'cast-bound':c.toDataURL()})})}
+  /* Custody (Acts 21:33-22:29), for Chapter Eighteen: a figure chained (person's pz 'c': both arms down along the body, the hands a little
+     forward, an iron cuff round each wrist; the far hand may be raised), lifted among the soldiers who carry it (pz 'l': seen down to the
+     hem), a soldier chained by one wrist (pz 'k' by the far one, 'K' by the near one), and a soldier who grips another's arm (ges 10). For
+     every look of Chapters Sixteen and Seventeen and every Roman look, facing both ways, and chained while walking: each is one piece, and
+     each cuff is where cuffAt says a chain is fastened. The actors' flags (a.chained, a.held, a.lifted, a.keeper, a.grips) give the pose,
+     keep those who should not turn from turning, and are cleared with the chapter; SHARED.cast.custody places two soldiers for the chains
+     and for the hold, draws the chains short and hanging and the fingers over the arm, and the knot that carries Paul up the stairs.
+     cast-chained.png shows the poses three times enlarged, the three scenes in a court of Chapter Seventeen three times, and the wrists, the
+     chains and the grips ten times: look there for a chain that crosses a limb as a T or an X, a grip that reads as a bar across the arm,
+     arms spread or raised, and a cuff that is round (CONTRIBUTING section 3). */
+  if(stop==='chained18'){clearInterval(sk);sk=0;for(const n of[16,17])if(CHAP[n])await loadLevel(n);setChapter(CHAP[17]?17:16);await need('cast');
+    const C=SHARED.cast,CU=C.custody,R=C.ROMAN,looks=[...Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'&&!LOOK[k].stone).map(k=>[k,LOOK[k]]),...Object.entries(R).map(([k,o])=>['R.'+k,o])],
+      PZ=[['c',0,0],['c',1,0],['l',0,0],['k',0,0],['K',0,0],['',10,0],['c',0,8],['c',0,14],['c',0,40]],bad=[],off=[];let n=0;
+    const at=(id,o,d,pz,ges,fr)=>sprite(['chain',id,d,pz,ges,fr].join('|'),q=>person(q,0,0,o,d,fr,0,0,ges,0,0,pz),d);
+    for(const[id,o]of looks)for(const d of[1,-1])for(const[pz,ges,fr]of PZ){n++;const c=at(id,o,d,pz,ges,fr);if(parts(c)!==1)bad.push(id+' '+pz+ges+'/'+fr+(d<0?' left':''));
+      if(d>0&&pz&&fr===0){const k=cuffAt(o,pz,ges,fr),D=c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data;for(const w of['far','near']){const p=k[w];if(!p)continue;
+        const i=((FIG.OY+p[1])*FIG.W+FIG.OX+p[0])*4,[r,g,b,a]=[D[i],D[i+1],D[i+2],D[i+3]];if(!a||Math.max(r,g,b)-Math.min(r,g,b)>30)off.push(id+' '+pz+ges+' '+w)}}}
+    ok(!bad.length,`custody: ${n} poses of ${looks.length} looks (chained, the far hand raised, lifted, a keeper by either wrist, gripping, chained and walking), facing both ways, and none comes apart`+(bad.length?'. IN PIECES: '+bad.slice(0,12).join('; '):''));
+    ok(!off.length,'every cuff is iron, and lies where cuffAt says a chain is fastened'+(off.length?'. NOT: '+off.slice(0,10).join('; '):''));
+    const room=CHAP[17]?'tyrecourt17':'miletus16',P=ACT.paul,keep=Object.values(ACT).map(a=>[a,a.room]);
+    Object.assign(LOOK,{c18_s1:R.legionary_bare,c18_s2:R.legionary_guard});const A=window.actor('c18_s1','c18_s1','#fff',100),B=window.actor('c18_s2','c18_s2','#fff',100);A.look=LOOK.c18_s1;B.look=LOOK.c18_s2;
+    for(const a of Object.values(ACT))a.room=null;P.room=room;P.look=paulLook(18);P.x=150;P.y=126;P.walk=null;
+    {const f=k=>{const v={};[P,A,B].forEach((a,i)=>v['PAB'[i]]=[poseOf(a),!!still(a)]);return JSON.stringify(v)};
+      P.dir=1;CU.place('chain',P,A,B);const c1=f(),gap=[];for(const S of[A,B]){const sp=CU.cuffPt(S,'far')||CU.cuffPt(S,'near'),pf=CU.cuffPt(P,'far'),pn=CU.cuffPt(P,'near'),pp=Math.abs(pf[0]-sp[0])<Math.abs(pn[0]-sp[0])?pf:pn;gap.push(Math.hypot(pp[0]-sp[0],pp[1]-sp[1]))}
+      ok(c1===JSON.stringify({P:['c',false],A:['k',true],B:['K',true]})&&A.dir===1&&B.dir===1&&A.x<P.x&&B.x>P.x&&gap.every(v=>v>=1.5&&v<=6),'two chains: the soldier behind is chained by his far wrist and the one ahead by his near one, all three face the same way, and each chain is short ('+gap.map(v=>v.toFixed(1)).join(', ')+' px) '+c1);
+      CU.place('hold',P,A,B);const c2=f();ok(c2===JSON.stringify({P:['c',true],A:['',true],B:['',true]})&&A.grips&&B.grips&&A.dir===1&&B.dir===-1&&A.y<P.y&&B.y<P.y,'held by the arms: Paul does not turn, and the two soldiers stand a little behind him and grip his arms '+c2);
+      P.lifted=1;P.held=0;const lz=poseOf(P);P.lifted=0;ok(lz==='l'&&LIFT>=10,'lifted: Paul is raised by '+LIFT+' room pixels and seen down to the hem')}
+    {const P0=ACT.paul;P0.chained=P0.held=1;A.keeper='far';B.grips=1;setChapter(CHAP[17]?17:16);ok(!P0.chained&&!P0.held&&!A.keeper&&!B.grips,'a new chapter clears every custody flag')}
+    /* the sheet */
+    const Z=3,cw=150,chh=330,[c,g]=(()=>{const c=document.createElement('canvas');c.width=10*cw;c.height=36+chh+2*(64*Z+30)+300+40;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);return[c,g]})(),
+      text=(t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},P18=paulLook(18),
+      ROW=[['chained',P18,1,'c',0,0],['chained, left',P18,-1,'c',0,0],['the hand raised',P18,1,'c',1,0],['chained, walking',P18,1,'c',0,8],['walking on',P18,1,'c',0,14],['lifted',P18,1,'l',0,0],
+        ['keeper, far wrist',R.legionary_bare,1,'k',0,0],['keeper, near wrist',R.legionary_guard,1,'K',0,0],['gripping',R.legionary_bare,1,'',10,0],['the commander grips',R.tribune,-1,'',10,0]];
+    text('Custody (Acts 21:33-22:29): chained, raised hand, walking, lifted; keepers and a grip, three times enlarged. Below, in a court; the wrists ten times',10,24,16,'#f4f0e6');
+    ROW.forEach(([nm,o,d,pz,ges,fr],i)=>{const x=i*cw,y=36;g.fillStyle=i%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw-2,chh-2);
+      g.drawImage(at('sheet'+i,o,d,pz,ges,fr),FIG.OX-25,FIG.OY-104,50,106,x,y+8,50*Z,106*Z);text(nm,x+5,y+chh-6,11)});
+    const shots=[],shot=(nm,fn)=>{const k=document.createElement('canvas');k.width=VW*HR;k.height=VH*HR;const q=k.getContext('2d');q.setTransform(HR,0,0,HR,0,0);q.imageSmoothingEnabled=false;
+      backdrop(q,room,0,0);const Q=DQ=[];ART[room].draw(q,G.t);fn(q);for(const o of Object.values(ACT))if(o.room===room)drawActor(q,o,G.t,room);DQ=null;Q.sort((a,b)=>a[0]-b[0]).forEach(e=>e[1]());shots.push([nm,k])};
+    for(const d of[1,-1]){P.dir=d;CU.place('chain',P,A,B);shot('two chains'+(d<0?', left':''),q=>CU.chains(q,P,A,B))}
+    for(const d of[1,-1]){P.dir=d;CU.place('hold',P,A,B);shot('held by the arms'+(d<0?', left':''),q=>CU.grips(q,P,A,B))}
+    P.held=0;A.grips=B.grips=0;A.room=B.room=null;P.room=null;
+    shot('carried, standing',q=>CU.knot(q,150,128,{room,dir:-1,look:P18}));shot('carried up, walking',q=>CU.knot(q,150,128,{room,dir:1,d:14,look:P18}));
+    shots.forEach(([nm,k],i)=>{const x=(i%3)*(90*Z+10),y=36+chh+Math.floor(i/3)*(64*Z+30);g.drawImage(k,105*HR,68*HR,90*HR,64*HR,x,y,90*Z,64*Z);text(nm,x+5,y+64*Z+18,12,'#f4f0e6')});
+    const zx=3*(90*Z+10)+10;[[0,'chains, ten times'],[2,'grips, ten times']].forEach(([j,nm],r)=>{const k=shots[j][1],y=36+chh+r*(64*Z+30);g.drawImage(k,128*HR,96*HR,44*HR,18*HR,zx,y,440,180);text(nm,zx+5,y+198,12,'#f4f0e6')});
+    {const y=36+chh+2*(64*Z+30)+10,sp=at('sheet2',P18,1,'c',1,0),sq=at('sheet0',P18,1,'c',0,0);g.drawImage(sq,FIG.OX-20,FIG.OY-52,40,14,10,y,400,140);g.drawImage(sp,FIG.OX+8,FIG.OY-74,16,14,430,y,160,140);text('the cuffs, and the raised hand, ten times',10,y+170,12,'#f4f0e6')}
+    for(const[a,r]of keep)a.room=r;
+    halt('chained18',()=>{window.SHEETS=Object.assign(window.SHEETS||{},{'cast-chained':c.toDataURL()})})}
   if(stop==='scroll'||stop==='scrolllong'){clearInterval(sk);sk=0;let rustles=0;{const u0=SFX.unroll;SFX.unroll=function(){rustles++;return u0.apply(this,arguments)}}
    await loadLevel(5);await loadLevel(7);ov.className='';ov.onclick=null;setChapter(5);G.busy=true;lock(true);status();
     /* AT: the text of A, taken while Chapter Five (whose line it is) is loaded; the probes below run in Chapter Seven */
@@ -392,7 +485,7 @@
        every look of every chapter. Each pose is as many pieces as the figure at rest, which is one; and a statue is the same picture whatever it
        is asked to do. cast-talk.png shows the frames: the heads six times enlarged, the figures three times. Look there, in every row, for a chin or
        a beard that has come apart from its face, for a hand that floats, and for crosses (CONTRIBUTING section 3). */
-    {const POSES=[[1,0,0],[2,0,0],[3,0,0],[4,0,0],[0,0,MV.dip],[0,0,MV.lift|MV.brow],[0,0,MV.fwd],[0,0,MV.back|MV.glance],[3,0,MV.dip],[4,0,MV.lift|MV.brow],[3,0,MV.back],[2,1,MV.fwd],[2,2,0],[0,3,0],[3,3,MV.dip],[2,1,MV.lean|MV.fwd],[4,2,MV.lean],[0,4,0],[0,5,0],[0,6,0],[0,7,0],[0,8,0],[0,9,0],[2,9,0]],
+    {const POSES=[[1,0,0],[2,0,0],[3,0,0],[4,0,0],[0,0,MV.dip],[0,0,MV.lift|MV.brow],[0,0,MV.fwd],[0,0,MV.back|MV.glance],[3,0,MV.dip],[4,0,MV.lift|MV.brow],[3,0,MV.back],[2,1,MV.fwd],[2,2,0],[0,3,0],[3,3,MV.dip],[2,1,MV.lean|MV.fwd],[4,2,MV.lean],[0,4,0],[0,5,0],[0,6,0],[0,7,0],[0,8,0],[0,9,0],[2,9,0],[0,10,0]],
         ids=Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'),bad=[],apart=[],stone=[],seatBad=[];let n=0;
       for(const id of ids){const o=LOOK[id],at=(t,g,m,d)=>sprite(['pose',id,d<0?'-1':'1',t,g,m].join('|'),q=>person(q,0,0,o,d,0,t,0,g,0,m),d),rest=at(0,0,0,1),r0=parts(rest);if(r0!==1)apart.push(id+' ('+r0+')');
         for(const[t,g,m]of POSES)for(const d of m&MV.lean?[1,-1]:[1]){n++;const c=at(t,g,m,d);if(parts(c)!==r0)bad.push(id+' '+[t,g,m,d]);if(o.stone&&!g&&d>0&&c.toDataURL()!==rest.toDataURL())stone.push(id)}
@@ -520,17 +613,22 @@
           ['Veteran Centurion',R.centurion_veteran],['Julius walking',R.centurion_julius,1,8],['Crested walking',R.centurion_crested,1,12]]],
         ['Praetorian Guard in Rome (watch tunic + mil. belt/caligae, formal toga, full armored)',[
           ['Watch (standard)',R.praetorian_watch],['Watch (young)',R.praetorian_watch_young],['Watch (older)',R.praetorian_watch_old],
-          ['Formal city (toga)',R.praetorian_toga],['Armored (plumed)',R.praetorian_armored],['Armored walking',R.praetorian_armored,1,8]]]
+          ['Formal city (toga)',R.praetorian_toga],['Armored (plumed)',R.praetorian_armored],['Armored walking',R.praetorian_armored,1,8]]],
+        ['The commander in Jerusalem, a military tribune (Acts 21:31): the narrow purple stripe and a gold ring; tunic, cuirass, helmet',[
+          ['Tribune (tunic)',R.tribune],['Tribune (facing L)',R.tribune,-1,0],['Tribune walking',R.tribune,1,10],
+          ['Tribune (cuirass)',R.tribune_armored],['Tribune (helmet)',R.tribune_helmet],['Helmet walking',R.tribune_helmet,1,8]]]
       ];
       const Z=3,cw=156,chh=408,cols=6,hdr=30,[c,g]=sheet(cols*cw,36+ROWS.length*(hdr+chh));
-      text(g,'Roman Military Contact Sheet — Foot Soldiers, Centurions, Praetorian Guard (3x)',12,24,16,'#f4f0e6');
+      text(g,'Roman Military Contact Sheet — Foot Soldiers, Centurions, Praetorian Guard, the Commander (3x)',12,24,16,'#f4f0e6');
+      ok(['tribune','tribune_armored','tribune_helmet'].every(k=>R[k]&&R[k].clavus&&R[k].ring&&R[k].offCloak&&R[k].milBelt&&R[k].caligae)&&!R.tribune.helm&&!R.tribune_armored.helm&&R.tribune_helmet.helm,
+        'the commander has the narrow purple stripe and the gold ring of his rank, a military cloak, belt and boots; bareheaded, and with a helmet');
       ROWS.forEach(([title,items],r)=>{const ry=36+r*(hdr+chh);g.fillStyle='#4a5464';g.fillRect(0,ry,cols*cw,hdr);text(g,title,12,ry+20,13,'#f4f0e6');
         items.forEach(([nm,o,dir,fr],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);
           cut(g,spr(o,'rm'+r+'_'+i,dir||1,fr||0),-24,-126,48,127,x+Math.floor((cw-48*Z)/2),y+chh-22-126*Z,Z);text(g,nm,x+6,y+chh-6,11)})});
       SHEETS['cast-romans']=c.toDataURL();
       /* 6x close-ups of helmets/crests/plumes and armor/belts/gladii to verify zero cross shapes */
       const DET=[['Galea + segmentata',R.legionary_guard],['Auxiliary mail',R.auxiliary_mail],['Centurion crest + cuirass',R.centurion_crested],
-        ['Julius bare + cloak',R.centurion_julius],['Praetorian watch',R.praetorian_watch],['Praetorian toga',R.praetorian_toga],['Praetorian plume',R.praetorian_armored]],
+        ['Julius bare + cloak',R.centurion_julius],['Praetorian watch',R.praetorian_watch],['Praetorian toga',R.praetorian_toga],['Praetorian plume',R.praetorian_armored],['Tribune: stripe, ring',R.tribune],['Tribune: cuirass',R.tribune_armored]],
         ZD=6,dw=228,dh=364,[cd,gd]=sheet(DET.length*dw,36+dh*2);
       text(gd,'Roman Military Details (6x): helmets, crests & armor (top); belts, gladii & caligae (bottom)',12,24,15,'#f4f0e6');
       DET.forEach(([nm,o],i)=>{const x=i*dw;field(gd,i,x,36,dw,dh);cut(gd,spr(o,'rmd1_'+i,1),-19,-104,38,56,x,36+2,ZD);text(gd,nm,x+6,36+dh-8,11);

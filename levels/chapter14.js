@@ -56,29 +56,14 @@ const _=null,SCALE=[0,2,3,5,7,9,10],
   {inst:'harp',moods:['harbor'],prog:'ABCD',len:5,oct:12,seq:SLOW,vol:.32}]};
 
 /* ---- the crowd's cry (Acts 19:28, 34): heard, never written ---- */
-/* A crowd of men shouting the same words, each a little off the beat and off the pitch of the next. Each voice is a buzz from the throat
-   through three resonances of the mouth that move with the vowel, and breath; the shout falls at the end of each syllable, as a shout
-   does. It has no consonants, so it sounds like a crowd and never like words. The vowels and their rhythm are those of what Acts says
-   the crowd shouted, in the player's language: the text gives them under the key cry14 (CONTRIBUTING section 8), each syllable as its
-   height (0 the lowest), a dot, its length in steps, and its vowel; "-.2" is a rest of two steps. */
-const VOW={a:[730,1090,2440],o:[570,840,2410],u:[320,800,2240],e:[530,1840,2480],i:[280,2250,2900],y:[290,1700,2200],'@':[500,1400,2450]};
-const parseCry=s=>T(s).split(' ').map(x=>{const m=/^(-?\d+|-)\.(\d+)(.?)$/.exec(x)||['','-','1',''];return[m[1]==='-'?null:+m[1],+m[2],m[3]||'a']});
-function shout(dest,t,d,f,vow,v,far){const c=AU.ctx,o=c.createOscillator(),src=c.createGain();o.type='sawtooth';
-  o.frequency.setValueAtTime(f*1.06,t);o.frequency.exponentialRampToValueAtTime(f,t+.05);o.frequency.exponentialRampToValueAtTime(f*.82,t+d);o.connect(src);
-  const nz=c.createBufferSource(),ng=c.createGain();nz.buffer=AU.nbuf;nz.loop=true;ng.gain.value=.5;nz.connect(ng);ng.connect(src);
-  const V=VOW[vow]||VOW.a,sum=c.createGain();
-  V.forEach((fr,i)=>{const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=fr*(.95+.1*Math.random());bp.Q.value=[6,8,9][i];const gg=c.createGain();gg.gain.value=[1,.6,.3][i];src.connect(bp);bp.connect(gg);gg.connect(sum)});
-  const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=far?520:2600;sum.connect(lp);
-  const env=c.createGain(),g=env.gain;g.setValueAtTime(.0001,t);g.linearRampToValueAtTime(v,t+.04);g.setValueAtTime(v,t+d*.6);g.linearRampToValueAtTime(.0001,t+d);lp.connect(env);
-  let out=env;if(c.createStereoPanner){const p=c.createStereoPanner();p.pan.value=Math.random()*1.6-.8;env.connect(p);out=p}out.connect(dest);
-  o.start(t);o.stop(t+d+.05);nz.start(t,Math.random()*.5);nz.stop(t+d+.05)}
-/* cry: the whole cry once, from t, by n voices. far: heard through walls and shutters. */
-function cry(dest,t,n,far){if(!AU.ctx)return 0;const L=parseCry('cry14'),STEP=.2;let len=0;for(const s of L)len+=s[1]*STEP;
-  for(let k=0;k<n;k++){let y=t+Math.random()*.06;const base=mtof(note(-7,0,MUSIC))*(.94+.12*Math.random());
-    for(const[h,l,vow]of L){const d=l*STEP;if(h!=null)shout(dest,y,d*.9,base*Math.pow(2,(h*2)/12),vow,(far?.012:.03)/Math.sqrt(n)*3,far);y+=d}}
-  return len}
+/* The cry is painted in sound by shared/crowd.js (see there): a crowd of men shouting the same words, no consonants, so that it sounds
+   like a crowd and never like words. Its vowels and their rhythm are those of what Acts says the crowd shouted, in the player's
+   language: the text gives them under the key cry14 (CONTRIBUTING section 8). Its keynote is the chapter's own, an octave down.
+   cry: the whole cry once, from t, by n voices. far: heard through walls and shutters. */
+const CR=SHARED.crowd,parseCry=s=>CR.parse(s);
+function cry(dest,t,n,far){return CR.cry(dest,t,{key:'cry14',n,far,base:mtof(note(-7,0,MUSIC))})}
 /* the roar of a crowd in the theater and the streets: low, with a slow swell (as in the lane map's demo) */
-const BEDS={roar14:{type:'lowpass',f:340,q:.6,lfo:.19,depth:.55,v:.55},roarfar14:{type:'lowpass',f:180,q:.5,lfo:.12,depth:.6,v:.45}};
+const BEDS={roar14:CR.ROAR,roarfar14:CR.ROARFAR};
 const CALLS={cry14:[3.5,7,(t,d)=>cry(d,t,9,0)],cryfar14:[5,9,(t,d)=>cry(d,t,7,1)],
   /* a silversmith's hammer on silver: light, quick, and now and then a pause */
   hammer14:[.5,1.6,(t,d)=>{const n=2+(Math.random()*4|0);for(let i=0;i<n;i++){tone({f:2400+Math.random()*500,to:1900,t:t+i*.21,d:.06,type:'triangle',v:.035,dest:d});noise({t:t+i*.21,d:.02,v:.04,f:5200,q:4,dest:d})}}]};
