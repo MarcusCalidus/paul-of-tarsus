@@ -755,7 +755,7 @@ function drawAssos16(g,t){const P=PAssos16;if(P.S)P.S.draw(g,t);if(P.H)P.H.draw(
    the shore is too far for smoke.
    Called from outside: ART.sky16, SKY16, ROUND16, TUFT16, CORD16. Reads G.sky16 (the tuft and the cord as the player has set them).
    Hotspots: the pennant 8,hz,44,20 · the smoke 86,24,80,36 (rounds 1 and 2) · the whitecaps 100,66,220,40 · the clouds 0,0,320,24 ·
-   the wool tuft 132,108,46,22 · the knotted cord 184,116,46,20 · the master 250,110,70,24 · back to the deck 0,134,100,10. */
+   the wool tuft 132,108,46,22 · the knotted cord 184,116,46,20 · the master 238,108,82,36 · back to the deck 0,134,100,10. */
 const SKY16={1:{hz:60,force:2,cloud:.32,seed:171},2:{hz:62,force:1,cloud:.26,seed:172,lee:1},3:{hz:58,force:3,cloud:.5,seed:173,swing:1}};
 const SKC16={};
 function oSky16(k){if(SKC16[k])return SKC16[k];const S=SKY16[k],W=SHARED.weather.wind({from:'n',force:S.force,view:'e',smoke:S.lee?{lee:1}:undefined}),
@@ -775,7 +775,7 @@ function paintSky16(g,k){const K=SHARED.coast,C=oSky16(k),O=C.O,HZ=SKY16[k].hz;l
   else tops.push(K.isle(g,0,250,7,O,{kind:'cape',from:'l',dist:.8,seed:179}).top);
   C.top=SHARED.coast.skyline(...tops);O.top=x=>Math.min(HZ,C.top(x));
   C.S=K.sea(g,O);C.S.open=(x,y)=>openSky16(k,x,y);
-  railSky16(g,k);ornSky16(g,k);handSky16(g)}
+  railSky16(g,k);ornSky16(g,k);tillerSky16(g)}
 function openSky16(k,x,y){const HZ=SKY16[k].hz;return y>HZ+.4&&y<110.5&&!(x<34&&y>HZ+3)}
 /* grainSky16: wood with its grain running along it: fine lines a little lighter or darker than the wood, which all wave alike and so
    never cross, and here and there a pore */
@@ -815,22 +815,119 @@ function ornSky16(g,k){const[hx,hy]=ORN16(k),W='#6c4828',
     stroke(g,[29.8,hy+5.6,29.6,hy+2.4,27,hy+1,24.2,hy+2,23.6,hy+4.8,25.4,hy+6.6,27.6,hy+5.6,27.4,hy+3.8],rgba(tint(W,-.55),.85),.6);
     stroke(g,[30.4,hy+5,30.2,hy+2.2],rgba('#f6dcae',.7),.5)});
   stroke(g,[19.6,hy+4,22.6,hy+.6,26.4,hy-.8,30,hy+.6],rgba('#fae2b6',.85),.5)}
-/* handSky16: the tiller of the steering oar, coming in from the right, level along the rail; the master's hand on it and his forearm */
-function handSky16(g){const W='#7a5634',S='#b47e58';
-  comp(g,'multiply',.4,()=>R(g,244,125,80,3,'#3a2a3a'));
-  R(g,246,118.6,76,5.4,W);R(g,246,118.6,76,1,tint(W,.35));R(g,246,123,76,1,tint(W,-.4));grainSky16(g,246,119.6,76,3.4,W,186,.8);
-  poly(g,[244.2,119.2,246.6,118.6,246.6,124,244.2,123.4],tint(W,-.2));R(g,244.2,119.2,.5,4.2,tint(W,.2));
-  /* the forearm from the lower right, bare and sunburnt, and the fist over the tiller: four fingers curled under it, knuckles lit */
-  const arm=[320,138,320,129,300,122.6,292,121.6,288.6,124.8,298,131,306,139,318,144];
-  poly(g,arm);g.fillStyle=lg(g,300,122,312,140,[tint(S,.18),S,tint(S,-.3)]);g.fill();
-  clipTo(g,()=>poly(g,arm),()=>{stroke(g,[320,129.6,300,123.2,292.6,122.2],rgba('#f2c8a0',.6),.6);tex(g,'mott',.2,286,120,36,24,'overlay',1)});
-  const fist=[281.8,118.2,285,116.2,290.6,116,294.6,117.4,296.2,120.4,295.4,124.6,291.6,126.2,286,126,282,124.6,280.6,121.4];
-  comp(g,'multiply',.4,()=>poly(g,fist.map((v,i)=>i%2?v+1:v+.6),'#3a2a3a'));
-  poly(g,fist);g.fillStyle=lg(g,0,116,0,126,[tint(S,.22),S,tint(S,-.25)]);g.fill();
-  clipTo(g,()=>poly(g,fist),()=>{for(const x of[284.6,287.6,290.6])R(g,x,121.4,.5,4.2,rgba(tint(S,-.45),.6));
-    for(const x of[282.6,285.6,288.6,291.6])R(g,x+.6,117.4,1.6,.5,rgba('#f6d2ac',.65));
-    R(g,293.2,118,1.4,3.6,rgba(tint(S,-.3),.5))});
-  R(g,281.4,121,.5,2.6,rgba(tint(S,-.4),.6))}
+/* tillerSky16: the tiller of the steering oar, coming in from the right, level along the stern rail in darker hand-worn oak so it stands
+   clear of the planking behind it, with its cast shadow and the shadow of the master's hand and forearm on the wood */
+function tillerSky16(g){
+  /* soft cast shadow of the tiller on the stern rail planking below and slightly left (morning sun from upper right) */
+  comp(g,'multiply',.32,()=>poly(g,[237.5,123.2,322,124.0,322,130.6,239,129.0,236.2,126.2],'#3a2838'));
+  comp(g,'multiply',.38,()=>poly(g,[238,123.0,322,123.8,322,127.6,239.5,126.4,237.2,124.8],'#2a1a28'));
+  /* the cylindrical wooden tiller bar: slightly tapered toward its rounded, hand-worn grip end at the left */
+  const bar=[241.5,118.0,322,116.8,322,124.2,241.5,123.6,238.4,122.9,237.0,121.4,237.0,119.8,238.4,118.5];
+  poly(g,bar);
+  g.fillStyle=lg(g,0,116.8,0,124.2,['#9c7248','#6a482a','#543820','#3c2614','#28170c','#462e1a']);g.fill();
+  clipTo(g,()=>poly(g,bar),()=>{
+    grainSky16(g,236,116.5,86,8,'#543820',186,.95);
+    /* sunlit upper ridge and worn polish along the grip where hands hold it */
+    g.fillStyle=lg(g,0,116.9,0,119.6,['rgba(248,214,166,.58)','rgba(248,214,166,.12)','rgba(248,214,166,0)']);g.fillRect(237,116.5,85,3.2);
+    pool(g,256,119.2,16,1.6,'#f6d6a6',.22,'screen');
+    /* darker end-grain bevel on the rounded tip facing left */
+    g.fillStyle=lg(g,236.8,0,242.5,0,['rgba(22,12,8,.68)','rgba(22,12,8,.18)','rgba(22,12,8,0)']);g.fillRect(236.5,116.5,6.5,8);
+    /* cool bounce and deep core shadow along the lower curve */
+    g.fillStyle=lg(g,0,121.2,0,124.2,['rgba(16,10,14,0)','rgba(16,10,14,.48)','rgba(92,66,44,.22)']);g.fillRect(236,121,86,3.4);
+    /* soft contact occlusion where the forefinger and thumb press into the tiller wood */
+    pool(g,271,120.4,5.5,3.5,'#180e0a',.48,'multiply');pool(g,266,122.4,6.5,2.4,'#180e0a',.42,'multiply')});
+  stroke(g,[239.2,118.4,242.0,118.0,322,116.9],'rgba(255,232,190,.42)',.5);
+  /* soft cast shadows of Pamphilos' hand, thumb and forearm falling down-left onto the tiller and stern planking */
+  comp(g,'multiply',.36,()=>poly(g,[262.5,124.2,270.0,126.8,280.0,129.6,287.5,133.2,294.5,139.6,299.5,144,322,144,322,127,288,119.5,268,120],'#382638'));
+  comp(g,'multiply',.44,()=>poly(g,[263.4,123.4,272.5,125.6,283.5,128.6,290.8,132.4,297.5,138.8,302.5,144,316,144,310,127,286,120,269,120.5],'#261826'))}
+/* handSky16: Pamphilos' right hand and bare sunburnt forearm gripping the tiller, painted in smooth Catmull-Rom curves and grayscale
+   lighting and quantized once with Bayer ordered dithering onto a weathered skin-tone ramp (as shared/scroll.js paints close-up hands).
+   Baked once at HR=2 into a 90x44 room-pixel canvas (x 230..320, y 100..144) and drawn by drawSky16 so it is never double-dithered. */
+let HANDSky16=null;
+function handSky16(){if(HANDSky16)return HANDSky16;
+  const OX=230,OY=100,W=90,H=44,[c,g]=mk(W*HR,H*HR);g.scale(HR,HR);g.translate(-OX,-OY);
+  const sp=(p,cl)=>{const n=p.length/2,P=i=>{i=cl?(i%n+n)%n:clamp(i,0,n-1);return[p[2*i],p[2*i+1]]};
+    g.beginPath();g.moveTo(p[0],p[1]);
+    for(let i=0;i<(cl?n:n-1);i++){const a=P(i-1),b=P(i),q=P(i+1),d=P(i+2);
+      g.bezierCurveTo(b[0]+(q[0]-a[0])/6,b[1]+(q[1]-a[1])/6,q[0]-(d[0]-b[0])/6,q[1]-(d[1]-b[1])/6,q[0],q[1])}
+    if(cl)g.closePath()},
+    bl=(p,col)=>{sp(p,1);if(col){g.fillStyle=col;g.fill()}},
+    sl=(p,col,w)=>{sp(p,0);g.strokeStyle=col;g.lineWidth=w||.5;g.lineCap='round';g.lineJoin='round';g.stroke()},
+    W_=a=>`rgba(255,255,255,${a})`,K_=a=>`rgba(0,0,0,${a})`,GV=v=>{const k=Math.round(clamp(v,0,1)*255);return`rgb(${k},${k},${k})`};
+  /* 1. Continuous silhouette of forearm, tapered wrist, back of hand and four curled finger arches over the tiller (all below y=112,
+        keeping clear of the rail top edge at y=111 and the sea above it) */
+  const HAND=[
+    322,127.6, 312.5,124.8, 303.2,122.8, 296.0,121.6,   /* sunlit upper forearm tapering smoothly into wrist */
+    293.4,118.4, 291.6,115.6, 289.2,114.4, 286.6,115.0, /* pinky arch */
+    285.8,113.6, 283.4,112.9, 280.8,113.8,              /* ring arch */
+    279.8,112.7, 277.2,112.3, 274.8,113.5,              /* middle arch */
+    273.6,112.8, 271.2,113.1, 269.6,115.2,              /* index arch curling down-left over the tiller */
+    269.4,117.6, 271.4,119.2, 274.2,120.8,              /* radial edge entering the thumb web cleanly */
+    279.2,125.6, 285.6,128.4, 289.8,131.6, 295.4,137.8, /* smooth transition from palm heel into wrist and forearm underside */
+    301.2,145.5, 322,145.5];
+  bl(HAND,GV(.55));
+  clipTo(g,()=>bl(HAND),()=>{
+    /* cylindrical directional lighting: morning sun from upper right, rolling smoothly into deeper shadow down and to the left */
+    g.fillStyle=lg(g,302,113,280,141,[[0,W_(.38)],[.34,W_(.06)],[.52,K_(.06)],[1,K_(.56)]]);g.fillRect(267,110,57,37);
+    /* rounded cylindrical modeling of the forearm: bright upper crest, broad core shadow along its underside */
+    sl(g,[321.5,128.8,312,126.0,302.8,124.0,295.8,122.6],W_(.36),2.8);
+    pool(g,312,131.5,12,4.6,'#ffffff',.16,'source-over');
+    sl(g,[284.5,128.4,290.2,132.2,296.2,138.4,302.5,145.2],K_(.46),4.4);
+    /* sunlit dome across the back of the hand (metacarpals) and subtle ulnar wrist bone highlight */
+    pool(g,284.2,120.2,9.2,4.8,'#ffffff',.24,'source-over');
+    pool(g,296.8,125.4,3.6,2.4,'#ffffff',.18,'source-over');
+    /* subtle tendons radiating from the wrist up into the knuckles */
+    for(const t of[[294.2,123.6,288.4,121.0,283.4,117.6],[292.6,125.0,285.4,122.0,278.0,117.4],[290.2,126.0,282.2,122.6,273.8,117.6]]){
+      sl(g,t,W_(.15),.8);sl(g,t.map((v,i)=>i%2?v+.75:v-.2),K_(.13),.65)}
+    /* individual finger volume: lit knuckle domes, darker far-side curl where each finger wraps away over the tiller,
+       and soft curved inter-finger crevices that fade cleanly onto the back of the hand (never cutting the fingers off) */
+    const F=[
+      {cx:288.6,cy:115.6,rx:2.2,ry:1.5,cr:[286.2,114.6,285.6,116.8,286.0,118.6]},
+      {cx:283.4,cy:114.5,rx:2.4,ry:1.6,cr:[280.6,113.4,280.2,116.0,280.8,118.2]},
+      {cx:277.6,cy:114.0,rx:2.5,ry:1.7,cr:[274.6,113.2,274.4,115.8,275.2,118.2]},
+      {cx:272.2,cy:114.6,rx:2.2,ry:1.6,cr:null}];
+    for(const f of F){
+      /* slight shadow at the very top curl turning away from the sun over the tiller */
+      pool(g,f.cx-.6,f.cy-1.6,f.rx*1.05,1.1,'#000000',.24,'source-over');
+      /* sunlit knuckle/finger dome */
+      pool(g,f.cx+.3,f.cy+.2,f.rx,f.ry,'#ffffff',.28,'source-over');
+      /* delicate curved knuckle skin fold */
+      sl(g,[f.cx-1.3,f.cy+1.2,f.cx+.1,f.cy+1.5,f.cx+1.4,f.cy+1.1],GV(.4),.42);
+      if(f.cr){
+        sl(g,f.cr,K_(.38),.95);
+        sl(g,f.cr.map((v,i)=>i%2?v:v+.65),W_(.14),.55)}}
+    /* shadow along the left edge of the index finger where it turns down into the tiller crook */
+    sl(g,[270.0,114.2,269.4,116.4,270.6,118.6],K_(.36),1.2);
+    /* subtle curved wrist skin creases */
+    for(const c0 of[[291.2,122.8,293.4,125.6,296.0,128.0],[293.8,122.4,295.8,125.0,298.0,127.0]]){
+      sl(g,c0,GV(.38),.48);sl(g,c0.map((v,i)=>i%2?v-.45:v+.45),W_(.12),.42)}
+    tex(g,'mott',.16,267,110,57,37,'overlay',.5)});
+  /* 2. Articulated thumb curving naturally along the near-front curve of the tiller, shorter and relaxed, with joint folds and nail */
+  const THUMB=[285.8,128.2,281.4,123.6,276.6,121.0,271.8,120.4,267.4,120.7,264.0,121.4,262.8,122.6,263.4,124.2,
+    266.2,125.2,270.4,125.6,275.4,126.8,280.6,128.4,284.6,129.0];
+  bl(THUMB,GV(.58));
+  clipTo(g,()=>bl(THUMB),()=>{
+    /* cylindrical shading along the thumb: sunlit upper curve, shaded fleshy pad pressing along the tiller */
+    g.fillStyle=lg(g,273,119.8,271,127.6,[[0,W_(.36)],[.38,W_(.05)],[.58,K_(.08)],[1,K_(.5)]]);g.fillRect(261,119,27,12);
+    sl(g,[277.0,121.8,272.2,121.2,267.8,121.4],W_(.28),1.2);
+    pool(g,278.0,124.8,4.6,2.4,'#ffffff',.18,'source-over');
+    /* weathered thumbnail tucked naturally at the left tip (warm ivory-tan, never stark white) */
+    bl([263.4,121.9,265.2,121.4,266.6,121.9,266.3,123.1,264.6,123.5,263.2,122.9],GV(.78));
+    bl([264.0,121.9,265.4,121.6,266.0,122.2,264.6,122.6],GV(.9));
+    sl(g,[266.0,121.5,266.7,122.3,266.2,123.3],GV(.42),.45);
+    /* curved folds over the thumb knuckle (IP joint) */
+    for(const f0 of[[269.4,120.8,270.0,122.2,269.4,123.6],[271.2,120.8,271.8,122.3,271.2,123.8]]){
+      sl(g,f0,GV(.36),.48);sl(g,f0.map((v,i)=>i%2?v:v+.55),W_(.14),.42)}
+    /* gentle fold where the thenar mound meets the palm */
+    sl(g,[277.6,122.4,280.2,124.4,282.8,126.8],GV(.4),.5);
+    tex(g,'mott',.14,261,119,27,12,'overlay',.45)});
+  /* quantize the whole hand layer once onto a weathered sunburnt skin ramp with Bayer ordered dithering */
+  const SKIN16=['#361c12','#522c1b','#704026','#8d5634','#a86e46','#bf865c','#d49e72','#e6b98e','#f4d4b0'].map(hex),
+    w=c.width,h=c.height,im=g.getImageData(0,0,w,h),d=im.data,n=SKIN16.length-1;
+  for(let y=0,i=0;y<h;y++)for(let x=0;x<w;x++,i+=4){if(d[i+3]<128){d[i+3]=0;continue}d[i+3]=255;
+    const v=(d[i]*.3+d[i+1]*.59+d[i+2]*.11)/255*n,t=(BAYER[(((y+OY*HR)>>1)&3)*4+(((x+OX*HR)>>1)&3)]+.5)/16,p=SKIN16[clamp(Math.floor(v+t),0,n)];
+    d[i]=p[0];d[i+1]=p[1];d[i+2]=p[2]}
+  g.putImageData(im,0,0);return HANDSky16=c}
 function drawSky16(g,t){const k=ROUND16(),C=oSky16(k),S=SKY16[k],Wt=SHARED.weather;
   if(!C.S){C.S=SHARED.coast.seaMotion(C.O);C.S.open=(x,y)=>openSky16(k,x,y)}
   if(!C.L)C.L=SHARED.coast.skyLayer(C.O);C.L.draw(g,t);
@@ -850,7 +947,8 @@ function drawSky16(g,t){const k=ROUND16(),C=oSky16(k),S=SKY16[k],Wt=SHARED.weath
   const cy=126.4;comp(g,'multiply',.35,()=>R(g,189,cy+1,38,1.2,'#3a2a3a'));
   R(g,186,cy-1.6,2.4,3.2,'#4e3620');R(g,226.6,cy-1.6,2.4,3.2,'#4e3620');R(g,186,cy-1.6,2.4,.5,'#a07a52');R(g,226.6,cy-1.6,2.4,.5,'#a07a52');
   stroke(g,[188.4,cy,207,cy+.6,226.6,cy],'#b8a47a',1.5);stroke(g,[188.4,cy-.5,207,cy+.1,226.6,cy-.5],'#ece0bc',.5);
-  for(let i=0;i<sk.str;i++){const x=197+i*10;R(g,x-2,cy-1.8,4,3.6,'#9a8258');R(g,x-2,cy-1.8,4,.8,'#e8d8ac');R(g,x+1.4,cy-1,.6,2.6,'#5e4c30');R(g,x-1,cy-.4,1.4,.5,'#c8b488')}}
+  for(let i=0;i<sk.str;i++){const x=197+i*10;R(g,x-2,cy-1.8,4,3.6,'#9a8258');R(g,x-2,cy-1.8,4,.8,'#e8d8ac');R(g,x+1.4,cy-1,.6,2.6,'#5e4c30');R(g,x-1,cy-.4,1.4,.5,'#c8b488')}
+  g.drawImage(handSky16(),230,100,90,44)}
 function frontSky16(g){const sk=sky16();R(g,0,0,320,9,'rgba(14,10,18,.55)');cap16(g,T('the_boy_will_report',{dir:T(TUFT16[sk.dir].n),str:T(CORD16[sk.str])}),160,4.6,300)}
 /* ==== ART sky16: end ==== */
 
@@ -1544,7 +1642,7 @@ ROOMS.sky16={space:.4,walk:NOW,get mood(){return'sail'},get amb(){return ROUND16
   {name:'whitecaps',x:100,y:66,w:220,h:40,wx:160,wy:236,look:()=>say(PC(),['a_few_whitecaps','no_whitecaps','whitecaps_everywhere'][ROUND16()-1])},
   {name:'wool_tuft',x:132,y:108,w:46,h:22,wx:160,wy:236,def:'use',look:()=>say(PC(),T('tuft_set_to',{dir:T(TUFT16[sky16().dir].n)})),use:setTuft,pickup:setTuft},
   {name:'knotted_cord',x:184,y:116,w:46,h:20,wx:160,wy:236,def:'use',look:()=>say(PC(),T('cord_set_to',{str:T(CORD16[sky16().str])})),use:setCord,pickup:setCord},
-  {name:'Pamphilos',x:250,y:110,w:70,h:24,wx:160,wy:236,def:'talk',look:'pamphilos_hand_on_the_tiller',talk:report,use:report},
+  {name:'Pamphilos',x:238,y:108,w:82,h:36,wx:160,wy:236,def:'talk',look:'pamphilos_hand_on_the_tiller',talk:report,use:report},
   {name:'back_to_the_deck',x:0,y:134,w:100,h:10,wx:160,wy:236,exit:()=>goto16('deck16'),look:'back_to_the_deck_look'}].map(BOTH)};
 ROOMS.watch16={space:.5,walk:NOW,mood:'anchor',amb:AMB.eve16,hs:[
   ...WATCHES16.map((k,i)=>({name:k,x:20,y:ROWS16[i],w:280,h:22,wx:160,wy:236,def:'use',look:()=>say(PC(),'watch_row_look'),use:()=>layRow(i+1)})),
