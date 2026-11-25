@@ -318,45 +318,169 @@ function drawCouncil19(g){for(const[x,y,d,k]of BACK19)man(g,x,y,'back19'+k,d,-1,
 /* ==== ART council19: end ==== */
 
 /* ==== ART barracks19: begin ==== */
-/* The soldiers' quarters in the fortress of Antonia, the same court as Chapter Eighteen's (its layout kept: the gallery of the upper rooms
-   along the top, the arched gate to the passage at the left, the bench of stone along the back wall, the doorway to the commander's rooms
-   at the right). Three variants: 'day' (the morning of 22:30, the opening), 'aft' (the late afternoon, when the nephew comes in: the sun
-   low over the gallery, the court in warm shade), 'night' (the third hour: the yard by torchlight, the column forming: torches in
-   brackets on the wall, the gallery dark; horses, horsemen, spearmen; every spear slants; no standard).
+/* The soldiers' quarters in the fortress of Antonia, the same court as Chapter Eighteen's (its painter copied here and kept: the gallery of
+   the upper rooms along the top, a row of columns under a deep beam and the eave of its roof; the tall arched gate to the passage at the
+   left, open, with no bars; the bay where the spears lean in a trough, all one way; the bench of stone along the back wall, one block on a
+   solid base; the bay with the shields and a cloak on a peg; the doorway to the commander's rooms at the right, warm inside). Three
+   variants, each with its own light:
+   'day' (the morning of 22:30, the opening): the sun high at the right lies on the gallery; the court below in the shade of its walls but
+     for a band of sun on the floor near us. Two helmets on the bench's end.
+   'aft' (the late afternoon, when the nephew comes in): the sun low in the west, at the left, out of the picture. The left wall's shadow
+     slants across the back wall and the floor; the right part of the wall, the gallery and its columns are in warm, low light, each
+     column throwing its shadow to the right on the dark wall behind it. One helmet on the bench.
+   'night' (the third hour, the yard by torchlight, the column forming): the sky dark with a few stars and no birds; the gallery dark; three
+     torches on the back wall, each in an iron arm that leans out from a plate on the wall, the arm and the torch one slanting line, so
+     that nothing crosses it (no ring, no crossbar); soot above each. The spears have been taken from the trough but two, the shields and
+     the cloak from the second bay, the helmets from the bench; the passage is lit from within; the doorway to the commander's rooms warm.
+     Every spear slants; no standard, no image.
+   Heads come at y 70..90: behind them lies dressed stone, and no torch's glow lies round one (the light of a torch is a wash down the
+   wall and over the floor, wider than high).
    Called from outside: ART.barracks19. Reads phase19.
    Hotspots: the gate 0,40,24,64 · the doorway 286,44,30,60 · the bench 100,90,120,12 · at night the three horses (HORSES19).
    Walk: 30..300 by 112..138. Actors: 'day' Paul 160,124, soldiers 144,124 and 176,124, the commander 216,118 · 'aft' Paul 150,118 by the
    bench, the guard 184,120, the army officer 262,120, a soldier 60,116; the nephew comes in at 40,126 · 'night' the commander 150,112, the
    officers 190,116 and 118,116, the horseman 306,118, spearmen 36,114 and 56,120, soldiers 86,114 and 102,122; Paul at 128,134; the
-   horses at HORSES19 (200,128 · 240,126 · 280,130, forty apart so that no head lies over another's body) (drawn, with footprints in ROOMS.barracks19.block). */
+   horses at HORSES19 (200,128 · 240,126 · 280,130, forty apart so that no head lies over another's body) (drawn, with footprints in
+   ROOMS.barracks19.block). The torches (TORCH19) stand high on the wall, above the heads, between the spears' bay and the bench, over the
+   bench's middle, and between the bench and the shields' bay, each on a stone of its own two courses tall, so that no joint of the wall
+   runs across the arm or the torch. */
 const HORSES19=[[200,128,'fresh'],[240,126,'calm'],[280,130,'shy']];
+const TORCH19=[[80,51],[170,51],[220,51]];
+const COLB19=Array.from({length:11},(_,i)=>30+i*26);
 const varB19=()=>phase19()==='nephew'?'aft':phase19()==='yard'?'night':'day';
 ART.barracks19={w:320,q:12,variant:varB19,paint(g,v){paintBarracks19(g,v)},
-  light(){const v=varB19();return v==='night'?{amb:'#5a5070',wallY:104,lamps:[[48,62,90,'#ffb060',104,62],[160,62,90,'#ffb060',104,62],[272,62,90,'#ffb060',104,62]]}:
-    v==='aft'?{amb:'#e6c8a8',sun:[.4,.25,.3],wallY:104}:{amb:'#d4ccd0',sun:[-.3,.3,.22],wallY:104}},
-  draw(g,t){const v=varB19();if(v==='night'){for(const x of[48,160,272])flame(g,x,58,t,1);
+  light(){const v=varB19();return v==='night'?{amb:'#4a4664',wallY:104,lamps:TORCH19.map(([x,y])=>[x+1,y-2,96,'#ffa850',104,y])}:
+    v==='aft'?{amb:'#c8b4b0',sun:[.5,.22,.32],wallY:104}:{amb:'#d4ccd0',sun:[-.3,.3,.22],wallY:104}},
+  draw(g,t){const v=varB19();if(v==='night'){for(const[x,y]of TORCH19)flame(g,x+1.4,y-4.6,t+x*7,1);
       HORSES19.forEach(([x,y],i)=>horse19(g,x,y,-1,0,1,lightAt('barracks19',x,y)));
       /* the spearmen's spears: slanting, never upright, the iron to the upper right; held at the shoulder (placeholder until ROMAN.spearman) */
       if(!RM.spearman)for(const a of[ACT.spear19a,ACT.spear19b])if(a&&a.room==='barracks19')depth(a.y+.1,()=>{stroke(g,[a.x-6,a.y-2,a.x+12,a.y-44],'#6a4a2e',.8);poly(g,[a.x+11.4,a.y-43,a.x+13,a.y-44.6,a.x+13.6,a.y-47.6,a.x+12,a.y-45.4],'#c8ccd4')})}},
   front(){}};
-function paintBarracks19(g,v){const r=rng(1911),S='#d6c6a4',BK=104,night=v==='night';
-  sky19(g,320,9,night?'night':v==='aft'?'aft':'day');
+function paintBarracks19(g,v){const r=rng(1861),S='#d6c6a4',BK=104,SL=47,night=v==='night';
+  if(night){sky(g,320,9,['#060a1a','#141c36']);const q=rng(1917);for(let i=0;i<26;i++)R(g,q()*320,q()*6.5,.5,.5,q()<.3?'#d8dcf0':'#8a90b0')}
+  else sky(g,320,9,v==='aft'?['#7a8cb8','#d8b894']:['#7c9cc8','#b4c8dc']);
   pave(g,-2,BK,322,144,'#c4b294',r,{vx:160,vy:80,rows:6,step:34,v:.1,t:.4,rand:1});
-  R(g,0,9,320,7,'#7a4a34');R(g,0,9,320,.6,'#c08a60');
-  g.fillStyle=lg(g,0,16,0,39,['#2a2028','#54463e']);g.fillRect(0,16,320,23);
-  for(let i=0;i<11;i++){const x=30+i*26;R(g,x-2,17,4,22,tint(S,.05));R(g,x-2.5,16,5,1.4,tint(S,.15))}
-  R(g,0,39,320,8,tint(S,-.08));R(g,0,39,320,1,tint(S,.3));
-  ashlar(g,0,47,320,BK-47,S,r,{bw:28,bh:9.5,v:.07,t:.32,m:'#9a8a74'});
-  arch(g,3,51,20,53,'#1a1214');ao(g,3,51,20,10,'t',.5,'#000');
-  R(g,100,90,120,14,tint(S,-.16));R(g,98.6,90,122.8,2.8,tint(S,.08));R(g,98.6,90,122.8,.6,tint(S,.32));
-  R(g,288,58,26,46,'#2a1c16');R(g,284.4,53.4,34.8,4.8,tint(S,.04));
-  poly(g,[292,104,312,104,308,92,296,92],'rgba(255,200,130,.25)');
-  ao(g,0,BK-8,320,8,'b',.26,'#3a2c3c');
-  if(night){for(const x of[48,160,272])torch19(g,x,58);
-    comp(g,'multiply',.78,()=>{R(g,0,0,320,144,'#3a3462')});
-    for(const x of[48,160,272])pool(g,x,62,80,46,'#ffb060',.4,'lighter')}
-  else if(v==='aft'){light19(g,320,1,'rgba(255,200,140,1)',.5);shade(g,[0,47,320,47,320,144,0,144],'#b8a4b8',.35)}
-  else{shade(g,[0,47,320,47,320,144,0,144],'#a29ec0',.45);light19(g,320,-1,null,.3)}}
+  galleryB19(g,r,S,SL);
+  ashlar(g,0,SL,320,BK-SL,S,r,{bw:28,bh:9.5,v:.07,t:.32,m:'#9a8a74'});
+  for(let y=SL;y<BK;y+=9.5)R(g,0,y+1,320,.5,'rgba(255,244,220,.12)');
+  gateB19(g,r,v);
+  bayB19(g,32,74,r);spearsB19(g,r,night?2:7);
+  bayB19(g,230,272,r);if(!night)gearB19(g,r);
+  benchB19(g,r,S,v==='day'?2:v==='aft'?1:0);
+  doorB19(g,r,S,v);
+  ao(g,0,BK-8,320,8,'b',.26,'#3a2c3c');R(g,0,BK-.4,320,.8,'rgba(50,36,50,.45)');
+  if(night){for(const[x,y]of TORCH19)torchB19(g,x,y);lightNightB19(g)}else if(v==='aft')lightAftB19(g);else lightDayB19(g)}
+/* the gallery of the upper rooms: the eave, the deep beam, the columns with capitals hardly wider than their shafts, the floor slab;
+   behind them the shaded wall of the rooms, a door in every other bay, each between two columns */
+function galleryB19(g,r,S,SL){const B0=9,B1=16,F0=39;
+  g.fillStyle=lg(g,0,B1,0,F0,['#2a2028','#3e3236','#54463e']);g.fillRect(0,B1,320,F0-B1);
+  clipTo(g,()=>{g.beginPath();g.rect(0,B1,320,F0-B1)},()=>{tex(g,'mott',.3,0,B1,320,F0-B1,'overlay',1);
+    for(let i=0;i<COLB19.length-1;i+=2){const cx=(COLB19[i]+COLB19[i+1])/2;R(g,cx-3.5,F0-15,7,15,'#160e0e');R(g,cx-3.5,F0-15,7,.6,'#6a5648');ao(g,cx-3.5,F0-15,7,4,'t',.5,'#000')}
+    ao(g,0,B1,320,7,'t',.55,'#0e0a10')});
+  for(const[x,w]of[[0,6],[314,6]]){R(g,x,B1,w,F0-B1,tint(S,-.06));tex(g,'mott',.3,x,B1,w,F0-B1,'overlay',1);R(g,x===0?w-.6:x,B1,.6,F0-B1,x===0?'rgba(40,30,40,.4)':'rgba(255,240,214,.4)')}
+  for(const x of COLB19){const w=4,X=x-w/2;
+    M19.shadow(g,x-1.6,F0+.2,3,.8,.6);
+    g.fillStyle=lg(g,X,0,X+w,0,[tint(S,-.32),tint(S,-.04),tint(S,.2),tint(S,.06)]);g.fillRect(X,B1+1.6,w,F0-B1-2.6);
+    R(g,X-.5,B1,w+1,1.6,tint(S,.12));R(g,X-.5,B1+1.2,w+1,.4,tint(S,-.3));R(g,X-.5,F0-1,w+1,1,tint(S,.04));
+    ao(g,X,B1+1.6,w,2.4,'t',.3,'#2a2030')}
+  R(g,0,F0,320,SL-F0,tint(S,-.08));tex(g,'mott',.4,0,F0,320,SL-F0,'overlay',1);R(g,0,F0,320,1.4,tint(S,.12));R(g,0,F0,320,.6,tint(S,.34));R(g,0,F0+1.4,320,.5,'rgba(60,44,56,.4)');
+  g.fillStyle=lg(g,0,F0+2,0,SL,['rgba(255,240,214,0)','rgba(60,44,56,.25)']);g.fillRect(0,F0+2,320,SL-F0-2);R(g,0,SL-1,320,1,'rgba(40,28,40,.55)');ao(g,0,SL,320,5,'t',.35,'#2a2030');
+  for(let i=0;i<26;i++){const x=r()*320,l=4+r()*14;g.fillStyle=lg(g,0,SL,0,SL+l,['rgba(80,66,60,.22)','rgba(80,66,60,0)']);g.fillRect(x,SL,1+r()*2.4,l)}
+  R(g,0,B0,320,B1-B0,tint(S,.02));tex(g,'mott',.4,0,B0,320,B1-B0,'overlay',1);R(g,0,B0,320,.6,tint(S,.3));R(g,0,B0+3,320,.5,tint(S,.2));R(g,0,B0+2.5,320,.5,'rgba(70,56,60,.3)');
+  R(g,0,B1-.8,320,.8,'rgba(40,28,40,.6)');
+  g.fillStyle=lg(g,0,4,0,B0,['#b07658','#7a4a34']);g.fillRect(0,4,320,B0-4);R(g,0,4,320,.6,'#e0a880');
+  for(let x=1;x<320;x+=4.2)R(g,x,B0-1.8,2.6,1.4,'#6a3a28');ao(g,0,B0-1.6,320,1.6,'b',.45,'#1a1010')}
+/* the gate to the passage out to the stairs: a round-headed opening in the thick wall, open, its vault in shade, light far down it
+   (daylight by day, the glow of a lamp within at night); no bars, no leaf across it */
+function gateB19(g,r,v){const x=3,w=20,top=51,b=104,night=v==='night';
+  arch(g,x-2,top-2,w+4,b-top+2,'#8a7a66');
+  clipTo(g,()=>arch(g,x,top,w,b-top),()=>{g.fillStyle=lg(g,0,top,0,b,['#1a1214','#2a2020','#3a2e26']);g.fillRect(x,top,w,b-top);
+    if(night){R(g,x+7,84,7,20,'#6a4a2c');poly(g,[x+3,104,x+17,104,x+14,96,x+7,96],'rgba(255,170,90,.3)');pool(g,x+10.5,98,9,4,'#ffa850',.35,'screen')}
+    else{arch(g,x+7,82,7,22,v==='aft'?'#e8c8a0':'#e8dcc4');pool(g,x+10.5,96,8,6,'#fff0d0',.35,'screen');poly(g,[x+3,104,x+17,104,x+14,96,x+7,96],'rgba(200,184,150,.35)')}
+    ao(g,x,top,w,10,'t',.6,'#000');ao(g,x,top,4,b-top,'l',.5,'#000');ao(g,x+w-4,top,4,b-top,'r',.4,'#000')});
+  g.strokeStyle='rgba(255,240,214,.3)';g.lineWidth=.5;g.beginPath();g.arc(x+w/2,top+w/2,w/2+1.6,Math.PI*1.05,Math.PI*1.6);g.stroke()}
+/* a bay: a shallow recess in the wall, flat-headed, plastered inside, from x0 to x1 */
+function bayB19(g,x0,x1,r){const top=58,b=104;R(g,x0-1.6,top-2.4,x1-x0+3.2,2.6,'#b8a684');R(g,x0-1.6,top-2.4,x1-x0+3.2,.5,'#e8d8b8');
+  plaster(g,x0,top,x1-x0,b-top,'#b4a48e',r,{patch:0,cracks:0,t:.4,top:-.1,bot:-.04});ao(g,x0,top,x1-x0,6,'t',.45,'#2a2028');ao(g,x0,top,2.4,b-top,'l',.35,'#2a2028');ao(g,x1-2.4,top,2.4,b-top,'r',.25,'#2a2028')}
+/* the spears: n of them leaning against the plaster of the bay, all one way, the iron shank and its small point at the top, their feet in
+   a wooden trough at the floor; nothing runs across them (at night only two are left: the spearmen have the rest) */
+function spearsB19(g,r,n){const y0=101;
+  for(let i=0;i<n;i++){const j=n<7?[1,4][i]:i,fx=37+j*5.4,tx=fx+4.6,ty=61+(j%3)*1.2;
+    poly(g,[fx+1.4,y0,tx+1.6,ty+3,tx+2.4,ty+3,fx+2.4,y0],'rgba(40,30,40,.18)');
+    stroke(g,[fx,y0,tx,ty+5],'#6a4a2e',.8);stroke(g,[fx-.3,y0,tx-.3,ty+5],'#a07a4e',.4);
+    stroke(g,[tx,ty+5,tx+.5,ty],'#7a7a82',.6);poly(g,[tx+.1,ty+.6,tx+1.1,ty+.6,tx+.8,ty-1.6],'#c8ccd4')}
+  M19.shadow(g,55,104,22,1.2,.6);M19.board(g,34,y0-2.4,40,5.4,'#6a4a30',r);R(g,34,y0-2.4,40,.6,'#b08858');ao(g,34,y0+1.6,40,1.4,'b',.3,'#1a1010')}
+/* the gear in the second bay: three shields leaning on their long edges (plain leather faces, rims, no boss and no device) and a cloak
+   on a peg, far from the spears */
+function gearB19(g,r){
+  for(const[x,l]of[[234,.0],[244,.06],[254,-.04]]){const y=104,w=11,h=20,P=[x,y,x+w,y,x+w+1.6,y-h,x+1.6,y-h];
+    M19.shadow(g,x+w/2+1,y,w/2+1,1,.6);poly(g,P);g.fillStyle=lg(g,x,0,x+w+2,0,[tint('#8a3a2a',l+.12),tint('#7a3024',l),tint('#5a2018',l-.1)]);g.fill();
+    clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.4,x,y-h,w+2,h,'overlay',1);ao(g,x,y-h,w+2,h,'r',.3,'#1a0e0e')});
+    stroke(g,[x,y,x+1.6,y-h,x+w+1.6,y-h,x+w,y],'#b89a5a',.6)}
+  R(g,266.4,62,1.6,1,'#3a2a20');poly(g,[265,63,269,63,270.4,80,268,82,265.6,80,264,76],'#7a3a2c');poly(g,[265,63,267,63,266,80,264,76],'#9a4a38')}
+/* the bench of stone along the back wall: one long block on a solid base, no leg under it; n helmets set down on its end, each on its
+   rim, seen from the side */
+function benchB19(g,r,S,n){const x=100,w=120,y=90;
+  M19.shadow(g,x+w/2,104,w/2+2,1.6,.5);
+  R(g,x,y+2.6,w,104-y-2.6,tint(S,-.16));tex(g,'mott',.3,x,y+2.6,w,104-y-2.6,'overlay',1);ao(g,x,y+2.6,w,3,'t',.35,'#2a2030');
+  R(g,x-1.4,y,w+2.8,2.8,tint(S,.06));R(g,x-1.4,y,w+2.8,.6,tint(S,.32));R(g,x-1.4,y+2.4,w+2.8,.5,'rgba(50,36,50,.45)');tex(g,'mott',.3,x-1.4,y,w+2.8,2.8,'overlay',1);
+  for(const[hx,d]of[[105,1],[119.5,1]].slice(0,n)){const yb=y+.2,H=[hx-4*d,yb,hx-4.2*d,yb-3.4,hx-2.6*d,yb-5.6,hx+1*d,yb-6,hx+3.2*d,yb-4.6,hx+3.8*d,yb-2,hx+5.8*d,yb-.4,hx+5.6*d,yb+.2];
+    M19.shadow(g,hx+1*d,yb+.2,5,.8,.6);poly(g,H);g.fillStyle=lg(g,hx-4,0,hx+5,0,hx<110?['#d0d4da','#a4a8b0','#62666e']:['#c8b48a','#a08a5e','#6a5638']);g.fill();
+    clipTo(g,()=>poly(g,H),()=>ao(g,hx-6,yb-2,12,2,'b',.35,'#2a2a34'));R(g,Math.min(hx-4.4*d,hx-1*d),yb-1.4,3.4,.7,'#e2e6ea');R(g,hx-1.4,yb-5.6,2.6,.5,'#f2f4f6')}}
+/* the doorway to the commander's rooms: a lintel block over two jambs, a warm corridor inside, lit from a window out of sight (by day)
+   or a lamp out of sight (at night) */
+function doorB19(g,r,S,v){const x=288,w=26,top=58,b=104,night=v==='night';
+  R(g,x,top,w,b-top,'#1e1614');
+  clipTo(g,()=>{g.beginPath();g.rect(x,top,w,b-top)},()=>{g.fillStyle=lg(g,0,top,0,b,['#2a1c16','#4a3020','#6a4a30']);g.fillRect(x,top,w,b-top);
+    poly(g,[x+4,b,x+w-2,b,x+w-6,b-12,x+8,b-12],night?'rgba(255,170,90,.4)':'rgba(255,200,130,.25)');pool(g,x+w-4,b-22,10,16,'#ffc070',night?.45:.25,'screen');
+    ao(g,x,top,w,8,'t',.6,'#000');ao(g,x,top,4,b-top,'l',.45,'#000')});
+  for(const X of[x-3.6,x+w]){R(g,X,top,3.6,b-top,tint(S,-.06));R(g,X,top,.6,b-top,tint(S,.2));R(g,X+3,top,.6,b-top,tint(S,-.3));tex(g,'mott',.3,X,top,3.6,b-top,'overlay',1)}
+  R(g,x-4.4,top-4.6,w+8.8,4.8,tint(S,.04));R(g,x-4.4,top-4.6,w+8.8,.6,tint(S,.3));R(g,x-4.4,top-.2,w+8.8,.8,'rgba(40,28,40,.55)');tex(g,'mott',.3,x-4.4,top-4.6,w+8.8,4.8,'overlay',1);
+  R(g,x-3,b-.8,w+6,1.6,tint(S,.08))}
+/* a torch on the wall at its head x, y: an iron plate set in the wall, an arm that leans out and up from it to the right, a cup at its end,
+   and the torch's wooden shaft standing in the cup in the same line, its head of pitch-soaked rag; the arm and the shaft are one slanting
+   line and nothing crosses them. The soot of many nights rises above it, soft. The flame is drawn by ART.barracks19.draw. */
+function torchB19(g,x,y){const S='#d6c6a4',bx=x-10,by=47,bw=18,bh=19,q=rng(x*7+3);
+  /* the stone the iron is set in: one block two courses tall, its edges clear of the torch */
+  R(g,bx-.5,by,bw+1,bh,'#9a8a74');g.fillStyle=lg(g,0,by,0,by+bh,[tint(S,-.04),tint(S,-.12)]);g.fillRect(bx,by+.5,bw,bh-1);
+  tex(g,'mott',.35,bx,by,bw,bh,'overlay',1);R(g,bx,by+.5,bw,.5,tint(S,.12));R(g,bx,by+bh-1,bw,.5,tint(S,-.22));
+  for(let i=0;i<6;i++)R(g,bx+2+q()*(bw-4),by+2+q()*(bh-4),.5+q(),.5,'rgba(90,70,56,.25)');
+  comp(g,'multiply',.55,()=>{g.fillStyle=lg(g,0,by+1,0,y-3,['rgba(40,30,30,.15)','rgba(40,30,30,.6)']);poly(g,[x-.6,y-3,x+3.4,y-3,x+4.6,y-6,x+3.6,by+1,x+.6,by+1,x-.2,y-6])});
+  R(g,x-6.2,y+8,2.4,3.4,'#2a2624');R(g,x-6.2,y+8,2.4,.5,'#5a5450');
+  stroke(g,[x-4.4,y+9.4,x-1.6,y+4.4],'#2e2a28',1.1);stroke(g,[x-4.4,y+9,x-1.8,y+4.2],'#6a625a',.4);
+  poly(g,[x-2.6,y+4.4,x-.6,y+5.2,x+.4,y+3.4,x-1.4,y+2.4],'#3a3430');
+  stroke(g,[x-.9,y+3.6,x+1,y-.6],'#5a3a22',1.2);stroke(g,[x-1.1,y+3.4,x+.8,y-.8],'#8a6040',.4);
+  poly(g,[x+.2,y-.2,x+2.4,y+.6,x+3.2,y-1.8,x+2.8,y-3.6,x+.8,y-3.2,x-.2,y-1.8],'#3a2a1e');R(g,x+.8,y-3.2,1.6,.5,'#6a4a2a')}
+/* the light of the morning: the sun high at the right lies on the gallery; the court below in the shade of its walls, cooler toward the
+   left; a band of sun on the floor near us */
+function lightDayB19(g){
+  shade(g,[0,47,320,47,320,104,320,144,0,144,0,104],'#a29ec0',.58);
+  shade(g,[0,16,40,16,8,39,0,39],'#a6a2c2',.3);
+  comp(g,'soft-light',.55,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,220,170,.4)','rgba(255,214,160,1)']);g.fillRect(0,0,320,47)});
+  comp(g,'soft-light',.5,()=>{poly(g,[0,134,320,128,320,144,0,144]);g.fillStyle='rgba(255,214,160,1)';g.fill()});
+  pool(g,240,30,120,16,'#ffe0b0',.1,'screen');
+  comp(g,'multiply',.25,()=>{g.fillStyle=lg(g,0,0,320,0,['#8a86a8','#ffffff']);g.fillRect(0,47,320,97)});
+  ao(g,0,126,320,18,'b',.1,'#2a2050')}
+/* the light of the late afternoon: the sun low in the west, at the left. The left wall's shadow slants down across the back wall and
+   the floor; to the right of it the wall, the gallery and the floor near the doorway lie in warm, low light, and each column of the
+   gallery throws a long shadow to the right on the dark wall behind it */
+function lightAftB19(g){const E=[84,4,96,9,118,47,170,104,108,144];
+  for(const x of COLB19)if(x>80)comp(g,'multiply',.4,()=>poly(g,[x+2,18,x+5,18,x+15,38,x+12,38],'#4a3a50'));
+  shade(g,[0,4,...E,0,144],'#968ebc',.5);
+  comp(g,'soft-light',.5,()=>{poly(g,[...E,320,144,320,4]);g.fillStyle=lg(g,0,0,320,0,['rgba(255,190,120,1)','rgba(255,206,150,1)']);g.fill()});
+  comp(g,'multiply',.12,()=>{poly(g,[...E,320,144,320,4]);g.fillStyle='#ffd0a0';g.fill()});
+  /* the soft edge of the shadow: a little warmth spills over it */
+  for(const d of[1.5,3,4.5])comp(g,'soft-light',.14,()=>{poly(g,E.map((v,i)=>i%2?v:v-d).concat([E[8]+20,144,E[0]+20,4]));g.fillStyle='#ffc890';g.fill()});
+  ao(g,0,124,320,20,'b',.14,'#2a2050')}
+/* the light of the third hour: the court in the dark of the night, lit by the three torches on the back wall: each a warm wash down the
+   wall and over the floor before it, wider than high; the gallery above them in the dark */
+function lightNightB19(g){
+  lightmap(g,320,'#363656',l=>{for(const[x,y]of TORCH19){pool(l,x+1,y+4,64,30,'#d0782c',.7);pool(l,x+1,y+30,80,36,'#c06a28',.45);pool(l,x+1,y+4,20,12,'#ffb060',.4)}
+    pool(l,300,98,26,16,'#ff9a40',.5);pool(l,14,98,16,10,'#ff9a40',.4);
+    l.fillStyle='rgba(20,20,40,.0)'});
+  comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,0,0,0,40,['#202040','#ffffff']);g.fillRect(0,0,320,40)});
+  for(const[x,y]of TORCH19)pool(g,x+1.4,y-6,9,7,'#ffb060',.35,'screen');
+  ao(g,0,124,320,20,'b',.2,'#100c20')}
 /* ==== ART barracks19: end ==== */
 
 /* ==== ART door19: begin ==== */
