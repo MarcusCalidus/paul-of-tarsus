@@ -1722,8 +1722,8 @@ function say(a,text,o={}){const S=SHARED.scroll,white=!a&&!o.plain&&!!G.white,in
   if(o.thought)el.style.fontStyle='italic';
   /* whoever speaks and is not in the picture, as at a close view or from the deck outside it, is named before his words, since his
      colour alone does not tell who he is; whoever is played is not, nor is a thought. The name stands in a data attribute that CSS shows,
-     so the line's own text is still its words alone. */
-  if(a&&a!==PC()&&!o.thought&&(a.room!==G.room||G.scene))el.dataset.who=T('speaker_name',{name:T(storyName(a))});
+     so the line's own text is still its words alone. On a lane map the figures are too small to tell who speaks, so everyone is named there. */
+  if(a&&a!==PC()&&!o.thought&&(a.room!==G.room||G.scene||planOf(G.room)))el.dataset.who=T('speaker_name',{name:T(storyName(a))});
   const voiced=a&&!o.thought,choir=o.choir||[],dur=(o.dur||Math.max(2200,1400+text.length*65))*(G.speedAll>200?1:OPTS.spd),plan=voiced||choir.length?cadence(text,dur,o.sung):null;
   $('#speech').appendChild(el);if(ink)S.fit(el);if(voiced){a.talk=true;const k=o.act||acted(src);if(k)gesture(a,k,0,140)}choir.forEach(x=>x.talk=true);
   const blips=voiced&&!plan.sung?plan.ev.filter(e=>e.m>1).slice(0,Math.ceil(Math.min(9,text.length/5))).map(e=>setTimeout(()=>SFX.talk(a.pitch*2),e.t0)):[];

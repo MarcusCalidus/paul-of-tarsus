@@ -24,7 +24,7 @@ Where a line plainly says yes or no, its speaker says it with his head as well: 
 
 ![Eliab asks, with his head lifted, his brows raised and his hand open](screenshots/speak.png)
 
-A line stands over the head of whoever says it. When the speaker is not in the picture, as at a close view or in a painted scene, his name stands before his words, since his colour alone would not tell who he is; the one who is played is never named.
+A line stands over the head of whoever says it. When the speaker is not in the picture, as at a close view or in a painted scene, and on a lane map, where the figures are too small to tell, his name stands before his words, since his colour alone would not tell who he is; the one who is played is never named.
 
 ![At Luke's tablet of the watches, Sopater speaks from the deck, and his name stands before his words](screenshots/speaker-name.png)
 

@@ -3814,7 +3814,10 @@
   ok(said('lanes_no_asking_just_watching')&&BU.room==='tyrelanes17'&&MY.room==='tyrelanes17','the lanes of Tyre: the butcher and the two women at the stall');
   halt('lanes17');
   M.seeAll=1;await hints('hint_market_1','hint_market_2','in the lanes');
-  heard.length=0;await walkTo(X(240),Y(312));await until(()=>F.m1&&!G.busy,3000);
+  const whoSeen={},whoObs=new MutationObserver(()=>{for(const el of document.querySelectorAll('#speech .line'))whoSeen[el.textContent]=el.dataset.who||''});whoObs.observe($('#speech'),{childList:true});
+  heard.length=0;await walkTo(X(240),Y(312));await until(()=>F.m1&&!G.busy,3000);whoObs.disconnect();
+  ok(whoSeen[T('butcher_fresh_this_morning')]===T('speaker_name',{name:T(storyName(BU))})&&whoSeen[T('red_was_it_strangled')]===T('speaker_name',{name:T(storyName(MY))})&&whoSeen[T('both_asked_about_the_blood')]==='',
+    'on the lane map whoever speaks is named before his words, since the figures are too small to tell; whoever is played is not ['+whoSeen[T('butcher_fresh_this_morning')]+']');
   ok(['blue_killed_as_the_law_says','red_was_it_strangled','red_not_from_the_temple_not_anymore','both_asked_about_the_blood'].every(said),'at the meat stall both women ask about the blood; the Tyrian will not have temple meat');
   await until(()=>!A('blue17').room&&Math.hypot(MY.x-X(AT.redYard[0]),MY.y-Y(AT.redYard[1]))<4,3000);ok(!A('blue17').room&&MY.room==='tyrelanes17','each goes home by her own lane');
   await hints('hint_follow_1','hint_follow_2','after the meat stall');
