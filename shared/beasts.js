@@ -15,18 +15,24 @@
      sheepStill(g, x, y, dir, fr, look)       a sheep painted into a backdrop, with its contact shadow
      flock(n, seed)                           n sheep's {look, dir, fr}: their looks, ways and poses, a lamb for every three adults and at most one ram; the room
                                               places them, far enough apart that no head lies over another sheep's body
+     horse(g, x, y, dir, fr, tack, lit, z, rider)
+                                              a first-century cavalry horse, with its feet at x,y. dir 1 faces right, -1 left. fr: 0 stands, 4 to 19
+                                              the frames of its walk (frame.horse), 20 to 23 its voice (whinny and snort). tack: 0 bare, 1 bridle,
+                                              reins, breast-collar and Roman saddle cloth. lit: lightAt or null. z: optional depth override.
+                                              rider: optional look (paulLook(19), SHARED.cast.ROMAN.*) drawn astride via person()
+     horseman(g, x, y, dir, fr, look, lit)    a small horseman (~14 room pixels tall) for distant columns and route maps, hand-placed like lanes.js
    Walking: everybody covers ground at WALK_V, the animals too, so that a donkey keeps up with whoever leads it.
-     frame.donkey(dist, v), frame.mule(dist, v), frame.ox(dist, v), frame.sheep(dist, v, look)
+     frame.donkey(dist, v), frame.mule(dist, v), frame.ox(dist, v), frame.sheep(dist, v, look), frame.horse(dist, v)
                                               the frame of the walk after dist room pixels at v room pixels a second (WALK_V if none)
-   Its voice: an animal that is talked to brays or lows, and its head and mouth move with the sound.
-     speak(id, kind, look)                    plays the voice of kind ('donkey', 'mule', 'ox', 'sheep': a lamb's bleat is higher) and moves the animal that the room draws as
+   Its voice: an animal that is talked to brays, lows, bleats or whinnies, and its head and mouth move with the sound.
+     speak(id, kind, look)                    plays the voice of kind ('donkey', 'mule', 'ox', 'sheep', 'horse') and moves the animal that the room draws as
                                               id; resolves when the sound is over
      pose(id, fr)                             the frame to draw the animal id with: fr, or the frame of its voice while it speaks
    Shadows: each kind's span(fr) gives [sw, sx] in room pixels from the four hooves' spread in frame fr (just like walkSw() for people), so
    the contact oval centers under the hooves and breathes with the stride, while figShadow() projects cast and wall-bent shadows from the sprite.
    For the playtest:
-     paint.donkey, paint.mule, paint.ox, paint.sheep   the painters themselves, (g, 0, 0, dir, fr, ...) into a sprite
-     kinds.donkey, kinds.mule, kinds.ox, kinds.sheep   each kind's numbers: its gait, its voice, sw and span(fr) */
+     paint.donkey, paint.mule, paint.ox, paint.sheep, paint.horse   the painters themselves, (g, 0, 0, dir, fr, ...) into a sprite
+     kinds.donkey, kinds.mule, kinds.ox, kinds.sheep, kinds.horse   each kind's numbers: its gait, its voice, sw and span(fr) */
 SHARED.beasts=(()=>{
 
 /* ================================================================ the donkey ================================================================ */
@@ -847,13 +853,475 @@ const SHEEP=(()=>{
 /* =============================================================== end of the sheep ============================================================ */
 
 
+/* ================================================================= the horse ================================================================ */
+const HORSE=(()=>{
+  /* A first-century Roman cavalry horse, drawn after the maintainer's reference pictures: a sturdy, compact bay mount standing taller than the
+     pack mule, with a deep muscular chest, sloping shoulder, arched neck under a full dark flowing mane and forelock, rounded croup with a thick
+     flowing dark tail past the hocks, clean athletic legs dark from the knees and hocks down to unshod dark-horn hooves (first-century mounts
+     went unshod, and Roman cavalry rode without stirrups), and a noble head turned three-quarters toward us with short pointed equine ears, a
+     small pale blaze on the forehead, a dark eye and a dark-grey velvet muzzle.
+     Tack (tack=1): leather bridle with temple boss and curved reins, a bordered saddle cloth under a Roman four-horned leather saddle (no
+     stirrups, and no vertical girth crossing the cloth's border), and a curved breast-collar and rear breeching strap with bronze phalerae
+     (never crossed by a vertical strap).
+     Rider (optional look): drawn by person() in the low-on-reins pose (ges 6) with any cloak draping back over the croup, its bent near leg
+     slanting forward from hip to knee and back to the ankle/boot along the horse's flank (never straight down as a T), near hand brought low to
+     the reins, and any spear/pilum carried slanting forward-up clear of horse and rider. */
+  const HORSE_REACH=42,HORSE_STANCE=.625,HORSE_STRIDE=HORSE_REACH/HORSE_STANCE/2,HORSE_BEAT=.7;
+  const horseFr=(dist,v)=>{const c=Math.max(HORSE_STRIDE,Math.abs(v==null?WALK_V:v)*HORSE_BEAT);return 4+Math.floor((dist/c%1+1)%1*16)%16};
+  const COAT=['#b06e40','#945630','#784122','#582c16','#3a1b0e'],
+    PT=['#4a3022','#362218','#261812','#1a100c','#110a08'],
+    MUZ=['#6c625c','#564d48','#423a36','#2e2825','#1d1816'],
+    HOOF=['#58504c','#443d3a','#322c2a','#231e1c','#161211'],
+    HAIR=['#3e3e44','#2e2e34','#202026','#15151a','#0c0c10'],
+    LEATH=['#b4824c','#966638','#784e28','#58361a','#3a2210'],
+    CLOTH=['#b69062','#9a744c','#7e5b38','#604228','#422c1a'],
+    BRASS=['#f0d884','#d2ae54','#a68232','#74561e','#483412'],
+    BLAZE=['#ece4d4','#cfc4b2'],EYE='#120c0a',MOUTH='#3c1816',TEETH='#dcd2b8';
+  const HEADS={
+    0:{px:37.5,py:-88.5,al:63,jaw:0,ear:0},
+    20:{px:38.5,py:-92.0,al:46,jaw:0,ear:.65},
+    21:{px:39.5,py:-93.5,al:30,jaw:16,ear:.95},
+    22:{px:40.5,py:-94.0,al:20,jaw:28,ear:1},
+    23:{px:39.0,py:-90.5,al:54,jaw:7,ear:.3}};
+  const FW=FIG.W,FH=FIG.H,X0=FIG.OX,Y0=FIG.OY;
+  const SH=-25.5,SF=21.5;
+  const atPose=(W,ph,off,st)=>{if(!W)return{hx:st,lift:0,bend:0};const p=((ph-off)%1+1)%1,T=HORSE_REACH,B=HORSE_STANCE;if(p<B)return{hx:T/2-T*p/B,lift:0,bend:0};
+    const v=(p-B)/(1-B),q=Math.sin(Math.PI*v);return{hx:-T/2*Math.cos(Math.PI*v),lift:v?2+Math.round(6*q):0,bend:q}};
+  const shadowSpan=fr=>{const W=fr>0&&fr<20,k=fr>=4?(fr-4)%16:(fr-1)*4,ph=k/16,
+      xs=[SH+atPose(W,ph,.5,5.5).hx,SF+atPose(W,ph,.75,4.5).hx,SH+atPose(W,ph,0,-4.5).hx,SF+atPose(W,ph,.25,-2.0).hx],
+      x0=Math.min(...xs)-3,x1=Math.max(...xs)+3.5;return[(x1-x0)/4+1.8,(x0+x1)/4]};
+  const smooth=(P,n=4)=>{const R=[],N=P.length;for(let i=0;i<N;i++){const p0=P[(i+N-1)%N],p1=P[i],p2=P[(i+1)%N],p3=P[(i+2)%N];
+    for(let j=0;j<n;j++){const t=j/n,t2=t*t,t3=t2*t;R.push([0,1].map(c=>.5*(2*p1[c]+(p2[c]-p0[c])*t+(2*p0[c]-5*p1[c]+4*p2[c]-p3[c])*t2+(3*p1[c]-p0[c]-3*p2[c]+p3[c])*t3)))}}return R};
+  const[RC,rg]=mk(FW,FH);rg.imageSmoothingEnabled=false;
+
+  function horse(g,x,y,dir,fr,tack,rider){g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+    const W=fr>0&&fr<20,k=fr>=4?(fr-4)%16:(fr-1)*4,ph=k/16,o=W&&(k%8===4||k%8===5)?1:0,hd=W?[0,0,0,0,1,2,1,0][k%8]:0;
+    const Zb=new Float32Array(FW*FH).fill(-1e9),Cb=new Array(FW*FH),Pb=new Uint8Array(FW*FH);
+    const idx=(px,py)=>py>=0||py<-Y0||px<-X0||px>=FW-X0?-1:(py+Y0)*FW+px+X0;
+    const put=(px,py,z,col,part)=>{const i=idx(Math.floor(px),Math.floor(py));if(i>=0&&z>Zb[i]){Zb[i]=z;Cb[i]=col;Pb[i]=part}};
+    const partAt=(px,py)=>{const i=idx(Math.floor(px),Math.floor(py));return i<0?0:Pb[i]};
+    const set=(px,py,col)=>{const i=idx(Math.floor(px),Math.floor(py));if(i<0)return;Cb[i]=col;if(!Pb[i]){Pb[i]=9;Zb[i]=140}};
+    const tn=(nx,ny,nz,px,py,ex)=>{const s=nx*.36-ny*.80+nz*.46+((px+py)&1?.05:-.05);return Math.max(0,Math.min(4,(s>.86?0:s>.54?1:s>.14?2:s>-.20?3:4)+(ex||0)))};
+    const coat=(ex,R)=>(nx,ny,nz,px,py)=>(R||COAT)[tn(nx,ny,nz,px,py,ex)];
+
+    const ell=(cx,cy,cz,a,b,c,th,mat,part)=>{const co=Math.cos(th),si=Math.sin(th),R=Math.max(a,b)+1;
+      for(let py=Math.floor(cy-R);py<=cy+R;py++)for(let px=Math.floor(cx-R);px<=cx+R;px++){const X=px+.5-cx,Y=py+.5-cy,u=(X*co+Y*si)/a,v=(-X*si+Y*co)/b,q=1-u*u-v*v;if(q<0)continue;
+        const w=Math.sqrt(q),lx=u/a,ly=v/b,lz=w/c,nx=lx*co-ly*si,ny=lx*si+ly*co,l=Math.hypot(nx,ny,lz);put(px,py,cz+c*w,mat(nx/l,ny/l,lz/l,px,py),part)}};
+    const cap=(x0,y0,r0,x1,y1,r1,cz,mat,part)=>{const dx=x1-x0,dy=y1-y0,L2=dx*dx+dy*dy||1,R=Math.max(r0,r1)+1;
+      for(let py=Math.floor(Math.min(y0,y1)-R);py<=Math.max(y0,y1)+R;py++)for(let px=Math.floor(Math.min(x0,x1)-R);px<=Math.max(x0,x1)+R;px++){
+        const X=px+.5-x0,Y=py+.5-y0;let t=(X*dx+Y*dy)/L2;t=t<0?0:t>1?1:t;const ex=X-dx*t,ey=Y-dy*t,d=Math.hypot(ex,ey),r=r0+(r1-r0)*t;if(d>r)continue;
+        const kk=d/r,w=Math.sqrt(1-kk*kk);put(px,py,cz+r*w,mat(ex/r,ey/r,w,px,py,t),part)}};
+    const mass=(P,L,R,mat,part,soft=1)=>{let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(const[a,b]of P){x0=Math.min(x0,a);x1=Math.max(x1,a);y0=Math.min(y0,b);y1=Math.max(y1,b)}const N=P.length;
+      for(let py=Math.floor(y0);py<=y1;py++)for(let px=Math.floor(x0);px<=x1;px++){const cx=px+.5,cy=py+.5;let inn=false,best=1e9,ex=0,ey=0;
+        for(let i=0,j=N-1;i<N;j=i++){const[ax,ay]=P[j],[bx,by]=P[i];if((ay>cy)!==(by>cy)&&cx<(bx-ax)*(cy-ay)/(by-ay)+ax)inn=!inn;
+          const dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy||1;let t=((cx-ax)*dx+(cy-ay)*dy)/l2;t=t<0?0:t>1?1:t;const qx=ax+dx*t-cx,qy=ay+dy*t-cy,d2=qx*qx+qy*qy;if(d2<best){best=d2;ex=qx;ey=qy}}
+        if(!inn)continue;const d=Math.sqrt(best),q=Math.max(0,1-d/R)*soft,l=d||1,nz=Math.sqrt(1-q*q);put(px,py,L*100+R*nz,mat(ex/l*q,ey/l*q,nz,px,py),part)}};
+    const seg=(x0,y0,x1,y1,w,z,col,part)=>{const L=Math.max(1,Math.ceil(Math.hypot(x1-x0,y1-y0)*2));
+      for(let i=0;i<=L;i++){const t=i/L,px=x0+(x1-x0)*t,py=y0+(y1-y0)*t;
+        for(let dy=0;dy<w;dy++)for(let dx=0;dx<w;dx++)put(px+dx-w/2+.5,py+dy-w/2+.5,z,typeof col==='function'?col(t,dx,dy):col,part||9)}};
+
+    /* the four legs: athletic bay upper thigh/forearm fading cleanly into dark-black cannons, fetlocks, pasterns and dark-horn hooves */
+    const at=(off,st)=>atPose(W,ph,off,st);
+    const leg=(sx,P,near,hind)=>{const ex=near?0:2,cz=near?30:-14,sy=(hind?-46:-44)+o,b=P.bend,
+        pd0=.28*(1-b)-(hind?.44:.14)*b,pd1=(1-b)+(hind?.86:1)*b,pl=Math.hypot(pd0,pd1),ux=pd0/pl,uy=pd1/pl,
+        gy=(!W&&!near)?-2:0,hc=sx+P.hx,fx=hc-ux*7.2+.3,fy=gy-P.lift-uy*7.2-.2,dx=fx-sx,dy=fy-sy,L=Math.hypot(dx,dy)||1,nx=-dy/L,ny=dx/L,
+        f=hind?.55:.55,off=hind?-(2.8+3.6*b):.2+4.2*b,jx=sx+dx*f-nx*off,jy=sy+dy*f-ny*off,
+        up=(nx2,ny2,nz2,px,py,t)=>{const c2=(px+py)&1,tb=tn(nx2,ny2,nz2,px,py,ex+(near&&!hind&&nx2>.52&&py<-24?-1:nx2<-.42?1:0));
+          /* smooth bay-to-black point transition approaching knee/hock */
+          if(t>.78+(c2?.06:-.06))return PT[Math.min(4,tb)];
+          if(t>.64+(c2?.06:-.06))return COAT[Math.min(4,tb+1)];
+          return COAT[tb]},
+        lo=coat(ex,PT);
+      if(hind){
+        cap(sx+.6,sy-2.5,6.8,jx,jy,2.5,cz,up,4);cap(sx-3.4,sy-7,4.8,jx-.6,jy,2.1,cz-.5,up,4);
+        cap(jx,jy,2.1,jx+nx*1.3-dx/L*.8,jy+ny*1.3-dy/L*.8,1.15,cz+.4,lo,4)}
+      else{
+        cap(sx-.3,sy,4.4,jx,jy,2.15,cz,up,4);ell(jx,jy,cz+.4,2.25,2.15,2.1,0,lo,4)}
+      cap(jx,jy,1.9,fx,fy,1.6,cz,lo,4);ell(fx,fy,cz+.4,2.05,2.1,2.0,0,lo,4);
+      cap(fx+ux*1.4,fy+uy*1.4,1.6,fx+ux*3.3,fy+uy*3.3,1.75,cz,lo,4);
+      const vx=uy,vy=-ux;
+      for(let py=Math.floor(fy-2);py<=fy+10;py++)for(let px=Math.floor(fx-6);px<=fx+6;px++){const X=px+.5-fx,Y=py+.5-fy,a2=X*ux+Y*uy,c2=X*vx+Y*vy;
+        if(a2<3.3||a2>7.6)continue;const t=(a2-3.3)/4.3;if(c2<-2.1-t*.35||c2>1.7+t*1.35)continue;
+        put(px,py,cz+1.2,a2<4.3?HOOF[Math.min(4,1+ex)]:HOOF[Math.min(4,(c2>.85+t*1.2?0:c2>.1?1:c2<-1.2?3:2)+ex)],5)}};
+
+    leg(SH,at(.5,5.5),0,1);leg(SF,at(.75,4.5),0,0);
+
+    /* the flowing dark tail: thick, full hair arching out of the high rounded croup, hugging close past the hocks to wispy tips */
+    {const sw=W?1.8*Math.cos(6.2832*(ph-.05)):0;
+      cap(-33.5,-66.5+o,2.5,-37.4,-59.5+o,2.8,19,coat(1,HAIR),7);
+      for(let py=-60;py<=-13;py++){const s=(py+60)/47,cx=-37.4-Math.sin(s*1.85)*2.4-s*1.4+sw*s*s,
+          w=s<.62?4.6+s*3.4:6.7*(1-(s-.62)/.42);
+        for(let px=Math.floor(cx-w/2);px<=Math.ceil(cx+w/2);px++){const d2=Math.abs(px+.5-cx);if(d2>w/2)continue;
+          const e=(px+.5-cx)/Math.max(.6,w/2),strand=Math.sin((px*.95+s*4.5)*1.4);
+          if(s>.80&&strand<-(1-s)*4.2)continue;
+          put(px,py+o,-3,e>.38&&s<.72&&strand>0?HAIR[0]:strand>.35?HAIR[1]:e<-.45?HAIR[3]:HAIR[2],7)}}}
+
+    /* the muscular bay barrel, rounded croup and deep athletic chest/shoulder */
+    const B=P=>P.map(([a,b])=>[a,b+o]);
+    const bBot=px=>{const u=(px-1)/18.5;return-36.5-3.4*u*u-(px<-7?Math.pow((-7-px)/10,1.75)*3.0:0)};
+    const bodyMat=(nx,ny,nz,px,py)=>{const b=tn(nx,ny,nz,px,py),Y=py-o,yb=bBot(px),c=(px+py)&1;
+      if(px>-18&&px<17&&Y>=yb-4.2+(c?.45:-.45))return COAT[Math.min(4,Math.max(b,3)+(Y>yb-1.5?1:0))];
+      /* subtle warm muscular sheen on upper ribcage and flank */
+      if(px>-10&&px<14&&Y>-64&&Y<-50&&b===2&&((px+py)&3)===0)return COAT[1];
+      return COAT[b]};
+    mass(smooth(B([[13,-72.2],[4,-68.6],[-5,-67.8],[-14,-68.8],[-22,-71.4],[-29.5,-70.6],[-34.8,-66.2],[-37.2,-59.5],[-36.4,-51.0],
+      [-32.5,-44.2],[-22.5,-41.8],[-14.5,-39.0],[-6,-37.0],[3,-36.4],[12,-37.0],[19.5,-38.2],[26.2,-40.8],[30.8,-46.0],[32.2,-53.0],[29.8,-61.0],[22.8,-67.8]])),0,12.5,bodyMat,1);
+    /* sculpted near haunch/rump */
+    mass(smooth(B([[-16.5,-69.8],[-23,-71.6],[-29.8,-70.4],[-34.8,-66.0],[-37.0,-59.2],[-35.6,-50.8],[-32.2,-44.0],[-26.5,-42.2],[-21.5,-45.8],[-18.2,-53.0],[-15.8,-61.2]])),.20,8.0,
+      (nx,ny,nz,px,py)=>{const b=tn(nx,ny,nz,px,py,nx<-.45?1:0);return COAT[b]},1,.78);
+    /* sculpted near shoulder and deep chest muscle */
+    mass(smooth(B([[13.5,-66.0],[20.8,-66.8],[27.4,-62.0],[31.8,-55.0],[31.6,-47.2],[27.8,-41.2],[21.8,-38.8],[16.5,-42.0],[14.2,-49.8],[13.2,-58.2]])),.22,7.6,
+      (nx,ny,nz,px,py)=>{const Y=py-o,c=(px+py)&1;
+        /* diagonal shoulder ridge shading, angled cleanly away from vertical */
+        const diag=px-(Y+60)*.58;if(Y>-62&&Y<-46&&diag>16.5&&diag<19.4)return COAT[c?3:2];
+        const b=tn(Math.max(0,nx),ny,nx<0?Math.sqrt(1-ny*ny):nz,px,py);return COAT[b]},1,.82);
+
+    leg(SH,at(0,-4.5),1,1);leg(SF,at(.25,-2.0),1,0);
+
+    /* the arched, muscular equine neck */
+    const HP=HEADS[fr>=20?Math.min(23,fr):0],a=(HP.al+hd*1.8)*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),PX=HP.px+hd*.4,PY=HP.py+o+hd,
+      Wp=(u,v)=>[PX+u*ca-v*sa,PY+u*sa+v*ca],hm=coat(0);
+    const c0=[10.5,-72.0+o],c2=Wp(-1.8,-1.0),c1=[c0[0]+(c2[0]-c0[0])*.42+1.2,c0[1]+(c2[1]-c0[1])*.58-6.0],t1=Wp(12.2,8.4),t0=[34.2,-51.0+o];
+    const crest=s=>[(1-s)*(1-s)*c0[0]+2*s*(1-s)*c1[0]+s*s*c2[0],(1-s)*(1-s)*c0[1]+2*s*(1-s)*c1[1]+s*s*c2[1]],poly=[];
+    for(let i=0;i<=16;i++)poly.push(crest(i/16));poly.push(Wp(8.5,2.4),t1,t0,[25.5,-43.0+o],[10,-54+o]);
+    {const inPoly=(x2,y2)=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const[xi,yi]=poly[i],[xj,yj]=poly[j];if((yi>y2)!==(yj>y2)&&x2<(xj-xi)*(y2-yi)/(yj-yi)+xi)c=!c}return c};
+      const dSeg=(x2,y2,p,q)=>{const dx=q[0]-p[0],dy=q[1]-p[1],t=Math.max(0,Math.min(1,((x2-p[0])*dx+(y2-p[1])*dy)/(dx*dx+dy*dy))),ex=x2-p[0]-dx*t,ey=y2-p[1]-dy*t;return Math.hypot(ex,ey)};
+      const ax=t0[0]-c0[0]*.5-c2[0]*.5,ay=t0[1]-c0[1]*.5-c2[1]*.5,al=Math.hypot(ax,ay),acx=ax/al,acy=ay/al;
+      let x0=99,x1=-99,y0=99,y1=-99;for(const[p,q]of poly){x0=Math.min(x0,p);x1=Math.max(x1,p);y0=Math.min(y0,q);y1=Math.max(y1,q)}
+      for(let py=Math.floor(y0);py<=y1;py++)for(let px=Math.floor(x0);px<=x1;px++){const X=px+.5,Y=py+.5;if(!inPoly(X,Y))continue;
+        let dc=1e9;for(let i=0;i<16;i++)dc=Math.min(dc,dSeg(X,Y,poly[i],poly[i+1]));const s=dc/(dc+dSeg(X,Y,t1,t0)),
+          th=(s*2-1)*1.22,nz=Math.cos(th),sn=Math.sin(th);
+        let b=tn(acx*sn*1.15,acy*sn*.32-.25*Math.max(0,-sn),nz,px,py);
+        if(s<.18)b=Math.max(1,b-1);else if(s>.84&&s<.97)b=Math.max(1,b-1);else if(s>.52&&s<.76)b=Math.min(4,b+1);
+        put(px,py,22,COAT[b],2)}}
+
+    /* the flowing dark mane: cascading locks along the crest of the arched neck */
+    for(let i=0;i<=86;i++){const s=.02+i/86*.96,[mx,my]=crest(s),[nx2,ny2]=crest(Math.min(1,s+.02)),dx=nx2-mx,dy=ny2-my,l=Math.hypot(dx,dy)||1,ox=dy/l,oy=-dx/l;
+      const hUp=1.3+(((i*11)%7)<2?.45:0);
+      for(let j=-.5;j<=hUp;j+=.5)put(mx+ox*j,my+oy*j,40,j>hUp-.55&&((i*5)%7)<2?HAIR[0]:HAIR[2],8);
+      const lock=(i*7)%11,drop=(s<.12?2.8+s*44:s>.88?2.8+(1-s)*38:8.6)+Math.sin(i*.9)*2.2+(lock<3?1.8:0);
+      for(let dy2=0;dy2<=drop;dy2+=.65){const u2=dy2/Math.max(1,drop),lx=mx+ox*(-.4)-dy2*.22,ly=my+oy*(-.4)+dy2;
+        if(u2>.82&&lock>6)continue;
+        put(lx,ly,38,u2<.25&&((i*3)%5===0)?HAIR[0]:((i+Math.floor(dy2))%4===0)?HAIR[1]:u2>.75?HAIR[3]:HAIR[2],8)}}
+
+    /* the noble equine head: strong skull, rounded cheek jowl, straight/gently tapered bridge, dark velvet muzzle */
+    const lu=(px,py)=>(px+.5-PX)*ca+(py+.5-PY)*sa,lv=(px,py)=>-(px+.5-PX)*sa+(py+.5-PY)*ca;
+    const headMat=(nx,ny,nz,px,py)=>{const b=tn(nx,ny,nz,px,py),u=lu(px,py),v=lv(px,py),c=(px+py)&1;
+      const m=u+(v>0?.8:0)+(c?.5:-.5);
+      if(m<20.8)return COAT[b];
+      if(m<22.4)return c?MUZ[Math.min(4,b)]:COAT[Math.min(4,b+1)];
+      return MUZ[Math.max(0,Math.min(4,b))]};
+    {const[c0x,c0y]=Wp(3.0,.5);ell(c0x,c0y,44,6.0,6.8,6.4,a,hm,3)}
+    {const[c0x,c0y]=Wp(10.8,4.2);ell(c0x,c0y,45,7.9,5.8,5.6,a,(nx,ny,nz,px,py)=>{const b=tn(nx,ny,nz,px,py);return lv(px,py)>8.2?COAT[Math.min(4,b+1)]:COAT[b]},3)}
+    {const[ax0,ay0]=Wp(4.2,-2.0),[bx0,by0]=Wp(22.0,-.9);cap(ax0,ay0,4.5,bx0,by0,3.4,46,headMat,3)}
+    {const[c0x,c0y]=Wp(24.6,.6);ell(c0x,c0y,46.5,4.4,4.0,4.0,a,headMat,3)}
+    const ja=HP.jaw*Math.PI/180,hu=11.8,hv=7.0,rot=(u,v)=>[hu+(u-hu)*Math.cos(ja)-(v-hv)*Math.sin(ja),hv+(u-hu)*Math.sin(ja)+(v-hv)*Math.cos(ja)],Wr=(u,v)=>Wp(...rot(u,v));
+    {const[h0,h1]=Wp(hu,hv),[m0,m1]=Wr(22.8,4.5);cap(h0,h1,3.6,m0,m1,2.4,44.5,headMat,3);
+      const[c0x,c0y]=Wr(24.6,3.8);ell(c0x,c0y,45.2,2.9,2.2,2.3,a+ja,(nx,ny,nz,px,py)=>MUZ[Math.min(4,tn(nx,ny,nz,px,py)+1)],3)}
+    if(HP.jaw){
+      const Q=[Wp(17.5,4.2),Wp(28.0,2.2),Wr(26.6,3.2),Wr(17.5,4.6)];let x0=99,x1=-99,y0=99,y1=-99;for(const[p,q]of Q){x0=Math.min(x0,p);x1=Math.max(x1,p);y0=Math.min(y0,q);y1=Math.max(y1,q)}
+      for(let py=Math.floor(y0);py<=y1;py++)for(let px=Math.floor(x0);px<=x1;px++){let c=false;for(let i=0,j=3;i<4;j=i++){const[xi,yi]=Q[i],[xj,yj]=Q[j];if(yi>py+.5!==yj>py+.5&&px+.5<(xj-xi)*(py+.5-yi)/(yj-yi)+xi)c=!c}if(c)put(px,py,43.5,MOUTH,3)}
+      const tooth=(p,q,c)=>{const i=idx(Math.floor(p),Math.floor(q));if(i>=0&&Cb[i]===MOUTH)Cb[i]=c};
+      for(let u=20;u<=26.6;u+=.5){const[p,q]=Wp(u,3.6-(u-19)*.12);tooth(p,q,TEETH);const[r,s]=Wr(u,3.0);tooth(r,s,'#c4b89e')}}
+
+    /* short pointed equine ears (distinctly shorter than the mule's) + dark forelock */
+    const ear=(bx0,by0,ang,len,near)=>{const ex=Math.cos(ang),ey=Math.sin(ang),bx=bx0-ex*1.5,by=by0-ey*1.5,L=len+1.5,R=L+3;
+      for(let py=Math.floor(by-R);py<=by+R;py++)for(let px=Math.floor(bx-R);px<=bx+R;px++){const X=px+.5-bx,Y=py+.5-by,t=(X*ex+Y*ey)/L,s=-X*ey+Y*ex;if(t<0||t>1)continue;
+        const hw=(near?2.55:2.25)*Math.sin(Math.PI*(t*.78+.22));if(Math.abs(s)>hw)continue;const l=s/hw;let col;
+        if(t>.78)col=HAIR[3];else if(Math.abs(s)>hw-1.0)col=near&&l<0?HAIR[1]:HAIR[3];
+        else if(near&&t>.16&&Math.abs(s-.08)<hw-1.1)col=COAT[l<.1?2:3];
+        else col=COAT[tn(-ey*l*.7,ex*l*.7,.7,px,py,near?0:1)];
+        put(px,py,near?56:-6,col,6)}};
+    {const e=HP.ear,bk=-Math.PI+.52,nA=-1.34,fA=-.94,[f0,f1]=Wp(1.8,-4.2),[n0,n1]=Wp(-.2,1.3);
+      ear(f0,f1,fA+(bk+.15-fA)*e,9.6,0);ear(n0,n1,nA+(bk-nA)*e,10.8,1)}
+    /* forelock tuft between ears */
+    for(const[u,v,du,dv]of[[.4,-2.6,4.0,-1.8],[.8,-1.3,4.6,-.6],[.2,-.2,3.6,.8]]){const[r0,r1]=Wp(u,v),[e0,e1]=Wp(u+du,v+dv);cap(r0,r1,1.0,e0,e1,.68,58,()=>HAIR[2],8)}
+
+    /* forehead blaze, bright dark almond eye, dark nostril and closed mouth line */
+    for(const[u,v,c]of[[6.4,-2.8,BLAZE[0]],[7.6,-2.6,BLAZE[0]],[8.8,-2.4,BLAZE[1]],[10.0,-2.2,BLAZE[1]],[8.0,-1.8,BLAZE[0]],[9.2,-1.6,BLAZE[1]]]){
+      const[p,q]=Wp(u,v);if(partAt(p,q)===3)set(p,q,c)}
+    {const[e0,e1]=Wp(8.8,2.0),X=Math.floor(e0),Y=Math.floor(e1),sh=(x2,y2,c)=>{if(partAt(x2,y2)===3)set(x2,y2,c)};
+      for(const dx of[-1,0,1,2])sh(X+dx,Y-1,COAT[4]);
+      sh(X-2,Y,COAT[3]);sh(X+2,Y,COAT[1]);
+      for(const dx of[-1,0,1])sh(X+dx,Y,EYE);sh(X,Y,'#5e4c42');sh(X,Y+1,EYE);sh(X+1,Y+1,'#2a1e18');sh(X-1,Y+1,COAT[2]);sh(X,Y+2,COAT[2])}
+    for(const[u,v,c]of[[24.2,-1.2,MUZ[3]],[24.9,-.5,'#181210'],[25.5,.2,'#181210'],[25.4,.9,MUZ[3]]]){const[n0,n1]=Wp(u,v);if(partAt(n0,n1)===3)set(n0,n1,c)}
+    if(!HP.jaw)for(let u=21.5;u<=27.6;u+=.5){const[p,q]=Wp(u,2.9);if(partAt(p,q)===3)set(p,q,u>24.4?HAIR[2]:MUZ[4])}
+
+    const topAt=X=>{let Y=-Y0;while(Y<0&&![1,2].includes(partAt(X,Y)))Y++;return Y},botAt=X=>{let Y=-1;while(Y>-Y0&&partAt(X,Y)!==1)Y--;return Y};
+    const seatY=-68.5+o;
+
+    /* tack=1: Roman cavalry bridle, bordered saddle cloth, four-horned leather saddle, breast-collar & curved breeching with bronze phalerae.
+       Section 3: no stirrups, no vertical girth strap crossing the cloth border, and no vertical croup strap crossing the breeching. */
+    const bitPt=Wp(20.6,3.4);
+    if(tack){
+      /* bordered woolen/leather saddle cloth */
+      for(let X=-18;X<=10;X++){const tp=topAt(X)-1,u=(X+18.5)/29,n=21+(X>-15&&X<7?1:0);
+        for(let i=0;i<n;i++){const edge=i===0||i===n-1||X===-18||X===10,trim=i===n-3||X===-16||X===8;
+          let v=i===0?0:i>=n-2?4:u<.12?4:u<.32?3:u<.80?2:1;
+          if(trim&&!edge&&i<n-2&&X>-17&&X<9)v=i===n-3?0:1;
+          put(X,tp+i,125,edge?CLOTH[4]:CLOTH[v],9)}}
+      /* subtle girth cinch strictly BELOW the front corner of the saddle cloth (never crossing the cloth or its border) */
+      {const gx=4,yb=topAt(gx)+21,yb2=botAt(gx+1);
+        for(let Y=yb;Y<=yb2;Y++){const X=gx+Math.round((Y-yb)/Math.max(1,yb2-yb)*1.8);put(X,Y,124,LEATH[2],9);put(X+1,Y,124,LEATH[4],9)}}
+      /* Roman four-horned leather saddle (ephippium) with rounded front & rear horns and flap */
+      const horn=(cx,cy,rx2,ry2,hz)=>{for(let py=Math.floor(cy-ry2);py<=Math.ceil(cy+ry2);py++)for(let px=Math.floor(cx-rx2);px<=Math.ceil(cx+rx2);px++){
+        const u=(px+.5-cx)/rx2,v=(py+.5-cy)/ry2;if(u*u+v*v>1)continue;put(px,py,hz||132,v<-.35?LEATH[0]:v<.15?LEATH[1]:u<-.3?LEATH[3]:LEATH[2],9)}};
+      /* seat & rounded side flap */
+      for(let X=-13;X<=6;X++){const dip=Math.round(Math.pow((X+3.5)/9.5,2)*2.6),tp=seatY-1.5-dip,fl=14-Math.round(Math.pow((X+3.5)/10,2)*3);
+        for(let i=0;i<fl;i++){const edge=i===fl-1||X===-13||X===6;put(X,tp+i,130,edge?LEATH[4]:LEATH[i<2?1:i>fl-3?3:X<-8?3:X>3?1:2],9)}}
+      horn(-13.5,seatY-3.5,3.4,3.8,132);horn(6.2,seatY-4.2,3.4,4.0,rider?229:132);
+      /* far horns peeking softly behind the seat */
+      horn(-11.0,seatY-5.2,2.4,2.6,128);horn(4.5,seatY-5.8,2.4,2.6,128);
+
+      /* Roman bronze phalera helper (small solid 3x3 rounded boss, never a tiny hollow ring) */
+      const phalera=(cx,cy,z)=>{const X=Math.round(cx),Y=Math.round(cy);
+        for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)put(X+dx,Y+dy,z,dx===-1&&dy===-1?BRASS[0]:dx===0&&dy===0?BRASS[1]:dx===1||dy===1?BRASS[3]:BRASS[2],9);
+        /* small pendant tab hanging cleanly below the boss */
+        put(X,Y+2,z-.2,BRASS[2],9);put(X-1,Y+2,z-.2,BRASS[4],9);put(X,Y+3,z-.2,BRASS[3],9)};
+
+      /* curved diagonal breast-collar (peytrel) sweeping from saddle front across the chest, with bronze phalerae */
+      {const P0=[10,-59+o],P1=[21.5,-50+o],P2=[31.5,-47+o];
+        for(let i=0;i<=48;i++){const t=i/48,bx=(1-t)*(1-t)*P0[0]+2*t*(1-t)*P1[0]+t*t*P2[0],by=(1-t)*(1-t)*P0[1]+2*t*(1-t)*P1[1]+t*t*P2[1];
+          put(bx,by-1,134,LEATH[1],9);put(bx,by,134,LEATH[2],9);put(bx,by+1,134,LEATH[4],9)}
+        phalera(16,-54+o,138);phalera(23.5,-49.5+o,138);phalera(29.8,-47.5+o,138)}
+
+      /* single curved breeching strap from rear saddle corner around the haunch (no vertical crossing strap!) */
+      {const Q0=[-17,-58+o],Q1=[-27,-56+o],Q2=[-36,-53+o];
+        for(let i=0;i<=40;i++){const t=i/40,bx=(1-t)*(1-t)*Q0[0]+2*t*(1-t)*Q1[0]+t*t*Q2[0],by=(1-t)*(1-t)*Q0[1]+2*t*(1-t)*Q1[1]+t*t*Q2[1];
+          put(bx,by-1,133,LEATH[1],9);put(bx,by,133,LEATH[2],9);put(bx,by+1,133,LEATH[4],9)}
+        phalera(-26,-56.5+o,137)}
+
+      /* bridle: browband, cheekpiece, and upper noseband (terminating cleanly at bit boss, clear of lower jaw when whinnying) */
+      {const[p0,p1]=Wp(3.2,-2.8),[p2,p3]=Wp(5.6,3.8),[n0,n1]=Wp(19.0,-2.2),[n2,n3]=Wp(19.8,2.6);
+        seg(p0,p1,p2,p3,1.5,140,LEATH[2],9); /* brow/poll strap */
+        seg(p2,p3,bitPt[0],bitPt[1],1.6,141,(t)=>t<.5?LEATH[2]:LEATH[3],9); /* cheekpiece */
+        seg(n0,n1,n2,n3,1.5,141,LEATH[2],9); /* upper noseband */
+        /* temple bronze rosette and bit boss (solid 2x2 studs) */
+        const[bx,by]=Wp(5.0,3.0);
+        put(bx,by,143,BRASS[0],9);put(bx+1,by,143,BRASS[2],9);put(bx,by+1,143,BRASS[2],9);put(bx+1,by+1,143,BRASS[3],9);
+        put(bitPt[0],bitPt[1],143,BRASS[0],9);put(bitPt[0]+1,bitPt[1],143,BRASS[2],9);put(bitPt[0],bitPt[1]+1,143,BRASS[3],9);put(bitPt[0]+1,bitPt[1]+1,143,BRASS[4],9)}
+
+      /* slack reins when riderless: gentle catenary from bit to front saddle horn */
+      if(!rider){const R0=[bitPt[0],bitPt[1]+1],R1=[30,-64+o+hd],R2=[8,seatY-5];
+        for(let i=0;i<=60;i++){const t=i/60,rx2=(1-t)*(1-t)*R0[0]+2*t*(1-t)*R1[0]+t*t*R2[0],ry2=(1-t)*(1-t)*R0[1]+2*t*(1-t)*R1[1]+t*t*R2[1];
+          put(rx2,ry2,145,LEATH[2],9);put(rx2,ry2+1,145,LEATH[4],9)}}}
+
+    /* the rider: upper body rendered by person() (ges 6: far hand low on reins), near bent leg + low near arm + reins + slanting spear drawn over the horse */
+    if(rider){
+      const kid=rider.h?1:0,fem=!!(rider.veil||rider.fem),slim=rider.slim?1:0,nw=slim+(fem?1:0),
+        LEG=kid?19:23,SK=kid?13:16,TOR=kid?22:fem?24:26,yA=-4,yH=yA-LEG,yB=yH-SK,yS=yB-3-TOR,
+        rx=-4,ry=Math.round(seatY-10-yB),hasSpear=!!(rider.spear||rider.pilum),
+        clean=Object.assign({},rider,{spear:0,pilum:0});
+      /* render rider via person() at 1:1 drawing-unit resolution */
+      rg.setTransform(1,0,0,1,0,0);rg.clearRect(0,0,FW,FH);rg.setTransform(2,0,0,2,X0,Y0);
+      person(rg,0,0,clean,1,0,0,0,6,0,0);
+      const rd=rg.getImageData(0,0,FW,FH).data,pc=pal(rider),S=pc.sk,T=pc.tu,C=pc.cl,LE=pc.le,
+        boot=rider.caligae?ramp('#4b2b18'):null,
+        /* far fist position in horse coords (ges 6 in person()) */
+        farHandX=rx+15-nw+2,farHandY=ry+yS+25,
+        /* near hand position low on the reins right in front of the waist/belt (matches Reference Image 3) */
+        nearHandX=rx+6-nw,nearHandY=ry+yS+24,
+        hasMantle=!!(C&&!rider.cape&&!rider.offCloak),hasBackCloak=!!(C&&(rider.cape||rider.offCloak||hasMantle));
+
+      /* composite person()'s upper body, head, armor, far arm/fist, and back-draping cloak into the horse's Z-buffer */
+      for(let py0=0;py0<FH;py0++)for(let px0=0;px0<FW;px0++){const j=(py0*FW+px0)*4;if(rd[j+3]<128)continue;
+        const ux=px0-X0,uy=py0-Y0;
+        /* skip legs and skirt below hips; cloak/mantle drapes smoothly down-back over the croup behind the rider */
+        const backDrape=hasBackCloak&&ux<=-8&&uy<=yB+10;
+        if(uy>yB+6&&!backDrape)continue;
+        /* keep upper near arm down to the low elbow (yS+18); only strip the hanging lower forearm & hand below yS+18 */
+        if(!hasMantle&&ux<=-10+nw&&uy>=yS+18){
+          if(!rider.cape&&!rider.offCloak)continue;
+          if(ux<=-10&&uy<=yB+10){const hx=rx+ux,hy=ry+uy,fold=(ux===-13||ux===-16)?3:ux<-14?4:2;put(hx,hy,218,C[fold],11);continue}}
+        /* subtle rearward flare for the bottom of a back-draping cloak over the rear saddle horn */
+        const flare=backDrape&&uy>yB-2?Math.round((uy-(yB-2))*.32):0;
+        const hx=rx+ux-flare,hy=ry+uy,col=toHex(rd[j],rd[j+1],rd[j+2]);
+        /* far side of a cape below the saddle line stays behind the horse's neck/shoulder */
+        const z=rider.cape&&ux>=10&&hy>seatY-3?10:220;
+        put(hx,hy,z,col,11)}
+
+      /* rider's seated tunic lap / pteruges draping forward over the slanted near thigh */
+      {const hem=pc.tr||[T[3],T[3],T[3],T[4],T[4]],hipX=rx-2,hipY=ry+yB+4,knX=rx+8,knY=ry+yB+17;
+        for(let t=0;t<=1;t+=.04){const cx=hipX+(knX-hipX)*t*.72,cy=hipY+(knY-hipY)*t*.72,w=5.2-t*.8;
+          for(let dx=-w;dx<=w;dx++)for(let dy=-2.5;dy<=2.8;dy++){const u=(dx+w)/(2*w);
+            put(cx+dx,cy+dy,232,t>.88?hem[u<.35?4:2]:T[u<.18?4:u<.42?3:u<.78?2:1],11)}}
+        if(rider.armorStyle==='cuirass'){const PT2=pc.pt||ramp('#dfd4ba');
+          for(let s=-7;s<=5;s+=3)for(let dy=0;dy<6;dy++)put(rx+s+Math.floor(dy*.3),ry+yB+dy,234,PT2[dy>4?3:1],11)}
+
+        /* near leg: thigh slanting forward-down to bent knee, shin slanting down-back to ankle (never straight down as a T!) */
+        const ankX=rx+4,ankY=ry+yB+33;
+        const shinMat=(nx2,ny2,nz2,px,py,t)=>{const u=nx2;let v=u<-.35?4:u<.05?3:u<.55?2:1;
+          if(boot&&t>.40){const strap=Math.floor(t*14)%2===0;return boot[Math.min(4,v+(strap?0:1))]}
+          if(rider.long)return T[v];
+          return S[v]};
+        cap(hipX+4,hipY+5,3.6,knX,knY,3.0,231,(nx2)=>rider.long?T[nx2<-.2?3:nx2>.4?1:2]:S[nx2<-.2?3:nx2>.4?1:2],11);
+        cap(knX,knY,2.85,ankX,ankY,2.15,233,shinMat,11);
+        /* foot (caligae military boot, leather sandal with crisp dark sole & straps, or barefoot), hanging naturally without stirrups */
+        const fx=Math.round(ankX-2),fy=Math.round(ankY-1),R=S;
+        const fpx=(a2,b2,c2,w2,h2)=>{for(let j=0;j<(h2||1);j++)for(let i=0;i<(w2||1);i++)put(fx+a2+i,fy+b2+j,236,c2,11)};
+        if(rider.barefoot){fpx(0,0,R[3],2,2);fpx(2,0,R[2],5,2);fpx(1,2,R[2],7,2);fpx(7,2,R[1],2,1);fpx(1,4,R[3],7,1)}
+        else if(boot){fpx(0,-1,boot[3],2,2);fpx(2,-1,boot[2],4,2);fpx(5,-1,boot[1],2,1);
+          fpx(0,1,boot[4],2,2);fpx(2,1,boot[2],7,2);fpx(7,2,boot[1],3,1);fpx(3,1,R[2],2,1);fpx(-1,3,'#24140c',11,1);fpx(8,3,'#4a3020',2,1)}
+        else{fpx(1,0,R[2],5,1);fpx(0,1,R[2],8,2);fpx(7,2,R[1],2,1);fpx(0,1,R[3],2,2);fpx(-1,3,'#2c180e',11,2);fpx(8,3,'#5a3a22',2,1);
+          fpx(1,0,LE[3],5,1);fpx(5,1,LE[3],2,1);fpx(6,2,LE[4],2,1);fpx(2,1,LE[4],1,2)}}
+
+      /* near forearm bent forward from the low elbow (at waist height, never cutting across the chest) to hold the reins */
+      {const Rarm=rider.longSleeve?T:S;
+        if(!hasMantle){const ex0=rx-12+nw,ey0=ry+yS+19,ex1=nearHandX,ey1=nearHandY;
+          cap(ex0,ey0,2.2,ex1,ey1,1.75,238,(nx2,ny2)=>Rarm[ny2<-.3?1:ny2>.4?4:2],11)}
+        /* near closed fist gripping the reins low in front of the waist */
+        for(let j=0;j<4;j++)for(let i=0;i<5;i++)put(nearHandX-1+i,nearHandY-1+j,242,S[j===0?1:j===3?3:i===0?3:2],11)}
+
+      /* reins held by the rider: clean curve from the horse's bit up-back to the rider's low hands */
+      if(tack){
+        const rDraw=(hx,hy,z)=>{const P0=[bitPt[0],bitPt[1]+.5],P1=[(bitPt[0]+hx)*.52,Math.max(bitPt[1],hy)+4.5],P2=[hx+1,hy+1];
+          for(let i=0;i<=52;i++){const t=i/52,qx=(1-t)*(1-t)*P0[0]+2*t*(1-t)*P1[0]+t*t*P2[0],qy=(1-t)*(1-t)*P0[1]+2*t*(1-t)*P1[1]+t*t*P2[1];
+            put(qx,qy,z,LEATH[1],9);put(qx,qy+1,z,LEATH[4],9)}};
+        rDraw(farHandX,farHandY,215); /* far rein into far hand */
+        rDraw(nearHandX+1,nearHandY,240)} /* near rein into near hand */
+
+      /* cavalry spear / pilum (if rider look has spear or pilum): slanting diagonally forward-up from the far hand,
+         never upright beside the body, never level across the horse, and clear of both heads */
+      if(hasSpear){
+        const sx0=farHandX-4,sy0=farHandY+10,sx1=farHandX+20,sy1=farHandY-42,L=Math.ceil(Math.hypot(sx1-sx0,sy1-sy0)*2);
+        for(let i=0;i<=L;i++){const t=i/L,px2=sx0+(sx1-sx0)*t,py2=sy0+(sy1-sy0)*t;
+          const z=t<.18?16:216;
+          const iron=rider.pilum&&t>.58;
+          put(px2,py2,z,iron?'#b8bcc6':'#8a6238',11);put(px2+1,py2,z,iron?'#6a707c':'#5a3c20',11)}
+        const dx=sx1-sx0,dy=sy1-sy0,dl=Math.hypot(dx,dy),ux2=dx/dl,uy2=dy/dl,vx2=-uy2,vy2=ux2;
+        for(let s=0;s<=9;s+=.5){const w=s<3?1.2:s<6?2.0:2.0*(1-(s-6)/3.2);
+          for(let d2=-w;d2<=w;d2+=.5)put(sx1+ux2*s+vx2*d2,sy1+uy2*s+vy2*d2,218,d2<0?'#f4f4fc':d2<.8?'#c4c4d0':'#8a8a98',11)}}}
+
+    /* close any tiny 1-5px pinhole gaps between adjacent parts */
+    {const seen=new Uint8Array(FW*FH);for(let i=0;i<FW*FH;i++){if(Pb[i]||seen[i])continue;const st=[i],comp=[];let edge=false;seen[i]=1;
+      while(st.length){const kq=st.pop(),xx=kq%FW,yy=(kq-xx)/FW;comp.push(kq);if(!xx||!yy||xx===FW-1||yy===FH-1)edge=true;
+        for(const j of[kq-1,kq+1,kq-FW,kq+FW])if(j>=0&&j<FW*FH&&!seen[j]&&!Pb[j]&&Math.abs(j%FW-xx)<=1){seen[j]=1;st.push(j)}}
+      if(!edge&&comp.length<7)for(const kq of comp){const n=[kq-1,kq+1,kq-FW,kq+FW].find(j=>Pb[j]&&Pb[j]!==10);if(n!=null){Cb[kq]=Cb[n];Pb[kq]=10}}}}
+
+    for(let i=0;i<FW*FH;i++)if(Pb[i]){g.fillStyle=Cb[i];g.fillRect(i%FW-X0,Math.floor(i/FW)-Y0,1,1)}
+    g.restore()}
+
+  /* small horseman (~14 room pixels tall = 28 canvas pixels) for distant night columns and travel map routes, hand-placed like shared/lanes.js */
+  const MINI_CACHE=new Map();
+  const MINI_RIDER=[
+    '.....cccc.......',
+    '....cCCcc.......',
+    '....chhhh.......',
+    '....cssSs.......',
+    '...mTTTTmm......',
+    '...mTTTtmm......',
+    '...mTTTtss......',
+    '..mmTTTTt.......',
+    '..mmTTTTt.......'];
+  const MINI_HORSE=[
+    /* 0: stand (every leg connected solidly to the barrel, rider overlaps row 4) */
+    ['..................mm....',
+     '.................mmHh...',
+     '................mmHHhh..',
+     '...............mmHHHh...',
+     '.......bbbbbbbbmmHH.....',
+     '.....ttbbbbbbbbbbHH.....',
+     '....ttbbbbbbbbbbbb......',
+     '...ttbbbbbBbbbbbb.......',
+     '...ttbbbbbllbbbb........',
+     '...t.bb.b.ll.bbb........',
+     '...t.p..p.ff.p.p........',
+     '.....p..p....p.p........',
+     '.....p..p....p.p........',
+     '.....k..k....k.k........'],
+    /* 1: stride A */
+    ['..................mm....',
+     '.................mmHh...',
+     '................mmHHhh..',
+     '...............mmHHHh...',
+     '.......bbbbbbbbmmHH.....',
+     '.....ttbbbbbbbbbbHH.....',
+     '....ttbbbbbbbbbbbb......',
+     '...ttbbbbbBbbbbbb.......',
+     '...ttbbbbbllbbbb........',
+     '...t.bb.b.ll.bbb........',
+     '..t.p...p.ff..p.p.......',
+     '....p...p.....p..p......',
+     '...p....p.....p..p......',
+     '...k....k.....k..k......'],
+    /* 2: passing */
+    ['..................mm....',
+     '.................mmHh...',
+     '................mmHHhh..',
+     '...............mmHHHh...',
+     '.......bbbbbbbbmmHH.....',
+     '.....ttbbbbbbbbbbHH.....',
+     '....ttbbbbbbbbbbbb......',
+     '...ttbbbbbBbbbbbb.......',
+     '...ttbbbbbllbbbb........',
+     '...t..bbb.ll.bb.........',
+     '...t..pp..ff.pp.........',
+     '......pp.....pp.........',
+     '.....p.p....p.p.........',
+     '.....k.k....k.k.........'],
+    /* 3: stride B */
+    ['..................mm....',
+     '.................mmHh...',
+     '................mmHHhh..',
+     '...............mmHHHh...',
+     '.......bbbbbbbbmmHH.....',
+     '.....ttbbbbbbbbbbHH.....',
+     '....ttbbbbbbbbbbbb......',
+     '...ttbbbbbBbbbbbb.......',
+     '...ttbbbbbllbbbb........',
+     '...t..bbb.ll.bbb........',
+     '...t..p.p.ff.p..p.......',
+     '.....p..p...p...p.......',
+     '....p...p...p...p.......',
+     '....k...k...k...k.......']];
+  function miniCanvas(dir,fr,look){
+    const o=look||LOOK.paul,f=Math.abs(fr|0)%4,d=dir<0?-1:1,
+      key=d+'|'+f+'|'+(o.tunic||'')+(o.cloak||'')+(o.armor||'')+(o.helm||'')+(o.crest||'')+(o.spear?1:0)+(o.pilum?1:0);
+    let c=MINI_CACHE.get(key);if(c)return c;if(MINI_CACHE.size>120)MINI_CACHE.clear();
+    const MW=28,MH=28,[cv,mg]=mk(MW,MH),pc=pal(o),T=pc.ar||pc.tu,C=pc.cl||pc.tu,S=pc.sk,Hd=o.helm?pc.hd:pc.ha,Cr=pc.cr||C;
+    const L={b:COAT[2],B:COAT[1],H:COAT[1],h:COAT[3],m:HAIR[2],t:HAIR[2],p:PT[2],k:HOOF[2],
+      T:T[2],t2:T[3],m2:C[2],c:o.crest?Cr[2]:null,C:o.crest?Cr[1]:null,
+      h2:Hd[2],s:S[2],S:S[1],l:o.long?pc.tu[2]:S[2],f:o.caligae?'#4b2b18':S[3]};
+    const putMap=(M,ox,oy,map)=>{for(let j=0;j<M.length;j++)for(let i=0;i<M[j].length;i++){const ch=M[j][i],col=map[ch];if(col){mg.fillStyle=col;mg.fillRect(ox+i,oy+j,1,1)}}};
+    const rMap={c:L.c,C:L.C,h:L.h2,s:L.s,S:L.S,T:L.T,t:L.t2,m:L.m2};
+    putMap(MINI_HORSE[f],2,14,L);
+    putMap(MINI_RIDER,7,10,rMap);
+    /* optional slanting tiny lance connected to the rider's forward hand */
+    if(o.spear||o.pilum)for(let i=0;i<11;i++){mg.fillStyle=i>8?'#c8ccd6':'#7a5430';mg.fillRect(15+Math.floor(i*.4),16-i,1,1)}
+    /* shadow-edge darkening like lanes.js folk() */
+    const im=mg.getImageData(0,0,MW,MH),dd=im.data;
+    for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const i=(y*MW+x)*4;if(dd[i+3]&&(x===0||!dd[i-4+3])){dd[i]*=.68;dd[i+1]*=.68;dd[i+2]*=.72}}
+    mg.putImageData(im,0,0);
+    if(d<0){const[m,mg2]=mk(MW,MH);mg2.translate(MW,0);mg2.scale(-1,1);mg2.drawImage(cv,0,0);c=m}else c=cv;
+    MINI_CACHE.set(key,c);return c}
+  function horseman(g,x,y,dir,fr,look,lit){const c=miniCanvas(dir,fr,look),w=c.width/HR,h=c.height/HR,dx=hp(x-w/2),dy=hp(y-h);
+    g.fillStyle='rgba(20,16,30,.26)';g.fillRect(hp(x-5),hp(y-.5),10,.5);g.fillRect(hp(x-4),hp(y),8,.5);
+    if(!lit){g.drawImage(c,dx,dy,w,h);return}
+    const[m,mg]=mk(c.width,c.height);mg.drawImage(c,0,0);mg.globalCompositeOperation='multiply';mg.fillStyle=lit;mg.fillRect(0,0,c.width,c.height);
+    mg.globalCompositeOperation='destination-in';mg.drawImage(c,0,0);g.drawImage(m,dx,dy,w,h)}
+
+  /* voice: a short, spirited horse whinny descending into a breathy snort */
+  const sound=()=>{const t=now();
+    /* bright rising whinny peak and rapid undulating descent */
+    [[0,880,1080,.11],[.10,1060,820,.09],[.18,920,720,.09],[.26,840,600,.09],[.34,740,510,.10],[.43,640,420,.11],[.53,520,340,.13]]
+      .forEach(([d,f,to,h])=>{tone({f,to,t:t+d,d:h,type:'sawtooth',v:.034,a:.012,sus:1,vib:14,lp:[[2400,0],[1200,h]]});
+        tone({f:f*.5,to:to*.5,t:t+d,d:h,type:'triangle',v:.022,a:.012,sus:1,lp:[[1100,0]]})});
+    /* concluding equine snort / blow */
+    noise({t:t+.72,d:.26,v:.034,f:680,q:1.5,a:.025});
+    tone({f:190,to:130,t:t+.72,d:.22,type:'sawtooth',v:.018,a:.02,lp:[[480,0],[240,.22]]})};
+  const voice=[[0,20],[110,21],[220,22],[520,21],[720,23],[1020,20],[1150,0]];
+  return{paint:horse,mini:horseman,miniCanvas,frame:horseFr,reach:HORSE_REACH,stance:HORSE_STANCE,stride:HORSE_STRIDE,beat:HORSE_BEAT,voice,sound,sw:19.5,span:shadowSpan}})();
+/* ============================================================== end of the horse ============================================================= */
+
+
 /* --- common to all: placing with hoof-centered dynamic contact + cast shadows --- */
-const KINDS={donkey:DONKEY,mule:MULE,ox:OX,sheep:SHEEP},VOICE={};
+const KINDS={donkey:DONKEY,mule:MULE,ox:OX,sheep:SHEEP,horse:HORSE},VOICE={};
 const speak=(id,kind,lk)=>{const K=KINDS[kind];try{K.sound(lk)}catch(e){}VOICE[id]={K,t0:performance.now()};const end=K.voice[K.voice.length-1][0];
   return new Promise(res=>setTimeout(()=>{if(VOICE[id]&&VOICE[id].K===K)delete VOICE[id];res()},end))};
 const pose=(id,fr)=>{const v=VOICE[id];if(!v)return fr;const ms=performance.now()-v.t0,V=v.K.voice;if(ms>=V[V.length-1][0]){delete VOICE[id];return fr}
   let f=fr;for(const[t,q]of V)if(ms>=t)f=q;return f||fr};
 const place=(kind,K)=>(g,x,y,dir,fr,load,lit,z)=>{const[sw,sx]=K.span(fr);figure(g,x,y,lit,kind+dir+'|'+fr+'|'+load,s=>K.paint(s,0,0,dir,fr,load),sw,dir*sx,z)};
+const riderKey=r=>!r?'':'|'+[r.skin,r.tunic,r.cloak||'',r.armor||'',r.armorStyle||'',r.helm||'',r.helmStyle||'',r.crest||'',r.hair||'',r.beard||'',r.bald?1:0,r.cape?1:0,r.offCloak?1:0,r.spear?1:0,r.pilum?1:0,r.caligae?1:0,r.long?1:0].join(',');
 return{donkey:place('donkey',DONKEY),mule:place('mule',MULE),
   ox:(g,x,y,dir,fr,c,gar,lit,z)=>{const[sw,sx]=OX.span(fr);figure(g,x,y,lit,'ox'+dir+'|'+fr+'|'+c+(gar?'g':''),s=>OX.paint(s,0,0,dir,fr,c,gar),sw,dir*sx,z)},
   /* a sheep that stands in the room's depth queue (an actor, or one of a flock that a room's draw places), and one painted into a backdrop */
@@ -861,5 +1329,7 @@ return{donkey:place('donkey',DONKEY),mule:place('mule',MULE),
   sheepStill:(g,x,y,dir,fr,lk)=>{const[sw,sx]=SHEEP.span(fr,lk),cx=x+dir*sx;oval(g,cx,y-.4,sw,2,'rgba(24,18,32,.2)');oval(g,cx,y-.4,sw*.68,1.3,'rgba(24,18,32,.24)');SHEEP.paint(g,x,y,dir,fr,lk)},
   flock:(n,seed)=>{const r=rng(seed||7),ewes=[0,1,2,3,5],out=[];let hasRam=0;for(let i=0;i<n;i++){const lamb=i%4===3;let lk=lamb?6+(i>>2)%2:Math.floor(r()*6);
     if(!lamb&&lk===4){if(hasRam)lk=ewes[Math.floor(r()*ewes.length)];else hasRam=1}out.push({look:lk,dir:r()<.5?-1:1,fr:[0,24,25,0,22,24][Math.floor(r()*6)],ph:r()})}return out},
-  frame:{donkey:DONKEY.frame,mule:MULE.frame,ox:OX.frame,sheep:SHEEP.frame},paint:{donkey:DONKEY.paint,mule:MULE.paint,ox:OX.paint,sheep:SHEEP.paint},kinds:KINDS,speak,pose,
+  horse:(g,x,y,dir,fr,tack,lit,z,rider)=>{const[sw,sx]=HORSE.span(fr);figure(g,x,y,lit,'horse'+(dir<0?'-1':'1')+'|'+fr+'|'+(tack|0)+riderKey(rider),s=>HORSE.paint(s,0,0,dir,fr,tack,rider),sw,dir*sx,z)},
+  horseman:HORSE.mini,
+  frame:{donkey:DONKEY.frame,mule:MULE.frame,ox:OX.frame,sheep:SHEEP.frame,horse:HORSE.frame},paint:{donkey:DONKEY.paint,mule:MULE.paint,ox:OX.paint,sheep:SHEEP.paint,horse:HORSE.paint},kinds:KINDS,speak,pose,
   DONKEY_STRIDE:DONKEY.stride,DONKEY_BEAT:DONKEY.beat}})();

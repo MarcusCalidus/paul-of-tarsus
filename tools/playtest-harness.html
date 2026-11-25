@@ -182,7 +182,7 @@
   const C3=/^(tarsus|barnabas|tent|frame|meeting|court|antioch|potter|jar|quiz3|sealed|loaded|road|final3|map3)$/.test(stop),HUB=stop==='hubmap',
     C4=/^(sendoff|seleucia|kallias|shelter|jair|voyage|map4|salamis|synagogue|speech|hubmap4|paphos|tools|daniel|blind|name4|journey4|final4|deutsch4)$/.test(stop),
     C5=/^(voyage5|perga|parting|sandal|hubmap5|ford|splice|wade|line|pisidia|synp|speech5|week|greek|sabbath2|border|dust|journey5|final5)$/.test(stop),
-    C6=/^(beasts|mules|oxen|sheep|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house6|mend|derbe|oxtalk6|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
+    C6=/^(beasts|mules|oxen|sheep|horses|iconium|sew6|deliver|hubmap6|lystra|lame|crowd|bulls|speech6|down|outside|house6|mend|derbe|oxtalk6|hubmap6b|return|elders|journey6|final6)$/.test(stop);let n=0;
   const lang=(location.search.match(/[?&]lang=(\w+)/)||[])[1]||'en',toLang=async l=>{for(let i=0;i<150&&G.lang!==l;i++)await wait(30);await wait(60)};
   ok(G.lang===lang&&document.documentElement.lang===lang,'the game is in '+LANGS[lang].native+', as the address asks');fitVerbs();
   if(lang==='de')ok([...document.querySelectorAll('#verbs button')].slice(0,7).map(b=>b.textContent).join()==='Betrachte,Nimm,Benutze,Öffne,Rede mit,Gib,Zu Jehova beten'
@@ -5108,6 +5108,106 @@
       [[0,1,0],[1,-1,24],[2,1,20],[3,-1,8],[4,1,22],[5,-1,25],[6,1,0],[7,-1,12]].forEach(([lk,d,f],i)=>{const x=(i%4)*240,y=Math.floor(i/4)*216;g.fillStyle='#a8b0bc';g.fillRect(x+2,y+2,236,212);g.fillStyle='#6f7a6a';g.fillRect(x+2,y+196,236,18);
         g.drawImage(sp(f,d,lk),FIG.OX-40,FIG.OY-60,80,62,x+2,y+30,236,183);g.fillStyle='#101418';g.font='bold 12px monospace';g.fillText('look '+lk+', frame '+f,x+8,y+16)})})}
   /* --- end of the sheep --- */
+  /* --- the horse: its checks, and its own stop `horses` with its sheets (the horse's section of shared/beasts.js) --- */
+  /* A first-century Roman cavalry horse (shared/beasts.js, drawn after the maintainer's reference pictures): bare (tack=0), tacked (tack=1:
+     bridle, bordered saddle cloth, Roman four-horned saddle, breast-collar and curved breeching with bronze phalerae, no stirrups and no
+     horseshoes), and with a rider (paulLook(19), SHARED.cast.ROMAN.*). Every pose is one piece and lies inside the sprite box; two hooves or
+     more stand on the ground in every walk frame (fr 4..19); the body sinks a pixel as each fore hoof lands and never rises; frames 1, 2 and 3
+     are three moments of the walk; frame.horse carries the horse at WALK_V with zero slip; its voice runs through frames 20 to 23.
+     The stop `horses` hands over horses-walk.png (every frame of the walk and the voice three times enlarged, both ways, bare, tacked, and with
+     riders) and horses-sheet.png (2x integer enlarged contact sheet with bare, tacked, riders, night lighting, scale comparison and mini horsemen). */
+  {await need('cast');
+    const horse=SHARED.beasts.paint.horse,K=SHARED.beasts.kinds.horse,horseFr=SHARED.beasts.frame.horse,
+      P19=paulLook(19),R_AUX=SHARED.cast.ROMAN.auxiliary_mail,R_ESC=SHARED.cast.ROMAN.escort_cloak,R_CEN=SHARED.cast.ROMAN.centurion_crested,
+      pieces=c=>{const W=c.width,Hh=c.height,d=c.getContext('2d').getImageData(0,0,W,Hh).data,seen=new Uint8Array(W*Hh);let n=0;
+        for(let i=0;i<W*Hh;i++){if(!d[i*4+3]||seen[i])continue;n++;const st=[i];seen[i]=1;while(st.length){const k=st.pop(),x=k%W,y=(k-x)/W;
+          for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,j=Y*W+X;if(X>=0&&X<W&&Y>=0&&Y<Hh&&!seen[j]&&d[j*4+3]){seen[j]=1;st.push(j)}}}}return n},
+      hr=(fr,d,tk,rd,tag)=>sprite(['horse-test',d<0?'-1':'1',fr,tk,tag||''].join('|'),s=>horse(s,0,0,d,fr,tk,rd),d),
+      px=c=>c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data,
+      hooves=c=>{const d=px(c);let r=0,on=false;for(let x=0;x<FIG.W;x++){const v=d[((FIG.OY-1)*FIG.W+x)*4+3]>0;if(v&&!on)r++;on=v}return r},
+      edge=c=>{const d=px(c);for(let y=0;y<FIG.H;y++)for(let x=0;x<FIG.W;x++)if(d[(y*FIG.W+x)*4+3]&&(x<1||x>=FIG.W-1||y<1))return true;return false},
+      top=(c,dx)=>{const d=px(c);for(let y=0;y<FIG.H;y++)if(d[(y*FIG.W+FIG.OX+dx)*4+3])return y;return-1},
+      H=c=>{const d=px(c);for(let y=0;y<FIG.H;y++)for(let x=0;x<FIG.W;x++)if(d[(y*FIG.W+x)*4+3])return(FIG.OY-y)/2;return 0},
+      same=(a,b)=>a.toDataURL()===b.toDataURL(),
+      CFGS=[[0,null,'bare'],[1,null,'tack'],[1,P19,'paul'],[1,R_AUX,'aux'],[1,R_ESC,'esc'],[1,R_CEN,'cen']],
+      FR=[0,1,2,3,...[...Array(16)].map((_,k)=>4+k),20,21,22,23],ALL=[];
+    for(const[tk,rd,tag]of CFGS)for(const d of[1,-1])for(const fr of FR)ALL.push([tag,d,fr,hr(fr,d,tk,rd,tag)]);
+    const apart=ALL.filter(w=>pieces(w[3])!==1).map(w=>w.slice(0,3).join('/')),
+      out=ALL.filter(w=>edge(w[3])).map(w=>w.slice(0,3).join('/'));
+    ok(!apart.length&&!out.length,'the horse is one piece in every pose and lies inside the sprite box: '+ALL.length+' sprites (bare, tacked, Paul, Roman riders; stand, walk, voice; both ways)'+(apart.length?'. IN PIECES: '+apart.join(', '):'')+(out.length?'. AT THE EDGE: '+out.join(', '):''));
+    const walk=ALL.filter(w=>w[2]>=4&&w[2]<20),few=walk.filter(w=>hooves(w[3])<2).map(w=>w.slice(0,3).join('/')),
+      t0=top(hr(0,1,0,null,'bare'),-28),sink=[...Array(16)].map((_,k)=>top(hr(4+k,1,0,null,'bare'),-28)-t0);
+    ok(!few.length&&sink.every((v,k)=>v===(k%8===4||k%8===5?1:0)),'the horse: in every frame of its walk two hooves or more stand on the ground; the body sinks a pixel as each fore hoof lands (frames 4, 5, 12 and 13) and never rises: '+sink.join('')+(few.length?'. TOO FEW HOOVES: '+few.join(', '):''));
+    ok(same(hr(1,1,1,null,'tack'),hr(4,1,1,null,'tack'))&&same(hr(2,-1,1,P19,'paul'),hr(8,-1,1,P19,'paul'))&&same(hr(3,1,1,R_AUX,'aux'),hr(12,1,1,R_AUX,'aux'))&&
+      !same(hr(0,1,1,null,'tack'),hr(4,1,1,null,'tack'))&&new Set(walk.filter(w=>w[0]==='tack'&&w[1]===1).map(w=>w[3].toDataURL())).size===16,
+      'the horse: frames 1, 2 and 3 are three moments of its walk, and no two of its sixteen walking frames are the same picture');
+    const mu=SHARED.beasts.paint.mule,muleH=H(sprite('horse-test|mule',s=>mu(s,0,0,1,0,0),1)),
+      horseH=H(hr(0,1,0,null,'bare')),back=(FIG.OY-top(hr(0,1,0,null,'bare'),-8))/2;
+    ok(back>=33&&back<=37&&horseH>muleH,`the horse stands taller than the mule: its back ${back}, the tips of its ears ${horseH} room pixels high (the mule ${muleH})`);
+    const cyc=v=>Math.max(K.stride,v*K.beat),slip=v=>1-K.stride/cyc(v),
+      even=[...Array(16)].map((_,i)=>horseFr(cyc(WALK_V)*(i+.5)/16)),slow=[...Array(16)].map((_,i)=>horseFr(K.stride*(i+.5)/16,10)),fast=[...Array(16)].map((_,i)=>horseFr(90*K.beat*(i+.5)/16,90));
+    ok(even.every((f,i)=>f===4+i)&&slow.every((f,i)=>f===4+i)&&fast.every((f,i)=>f===4+i)&&horseFr(0)===4&&horseFr(-3,10)>=4&&horseFr(-3,10)<=19&&
+      Math.abs(K.stride-K.reach/K.stance/2)<1e-9&&slip(WALK_V)<=.04&&K.stride/WALK_V>=K.beat-1e-9,
+      `frame.horse: a cycle carries the horse ${K.stride.toFixed(1)} room pixels with its hooves planted (reach ${K.reach}, stance ${K.stance}); at WALK_V (${WALK_V}) a cycle takes ${(cyc(WALK_V)/WALK_V).toFixed(2)} s and the hooves slip by ${Math.round(slip(WALK_V)*100)} %`);
+    const V=K.voice,vf=V.map(v=>v[1]);
+    ok(V.every((v,i)=>!i||v[0]>V[i-1][0])&&V[0][0]===0&&vf[vf.length-1]===0&&[20,21,22,23].every(f=>vf.includes(f))&&V[V.length-1][0]<=1500&&typeof K.sound==='function'&&
+      new Set([20,21,22,23].map(f=>hr(f,1,1,null,'tack').toDataURL())).size===4&&!same(hr(0,1,1,null,'tack'),hr(20,1,1,null,'tack'))&&SHARED.beasts.pose('horse-test',0)===0,
+      'the horse whinnies and snorts: its voice runs '+V.map(v=>v[0]+':'+v[1]).join(' ')+', four frames of its own, over in '+V[V.length-1][0]+' ms');
+    /* small 14-rpx horseman check: one piece in every pose */
+    {const mb=[];for(const lk of[P19,R_AUX,R_CEN])for(const d of[1,-1])for(let f=0;f<4;f++)if(pieces(K.miniCanvas(d,f,lk))!==1)mb.push(d+'/'+f);
+      ok(!mb.length,'the small horseman (~14 room pixels tall) is one piece in every frame and both ways'+(mb.length?'. IN PIECES: '+mb.join(', '):''))}
+    halt('horses',()=>{
+      /* horses-walk.png: every frame of the walk (4..19) and voice (20..23), 3x enlarged, both ways, bare, tacked, and with riders */
+      {const Z=3,cw=152,chh=146,per=10,list=[];
+        for(const[tk,rd,tag]of[[0,null,'bare'],[1,null,'tack'],[1,P19,'paul'],[1,R_AUX,'aux']])for(const d of[1,-1])for(let fr=4;fr<24;fr++)list.push([tag,d,fr,hr(fr,d,tk,rd,tag)]);
+        const rows=Math.ceil(list.length/per),c=document.createElement('canvas');c.width=per*cw*Z;c.height=24+rows*(chh*Z+16);const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);
+        g.fillStyle='#f4f0e6';g.font='bold 15px Menlo,Consolas,monospace';g.fillText("The horse's walk (frames 4 to 19) and voice (20 to 23), three times enlarged, both ways, bare, tacked, with Paul and with Roman horseman",8,17);
+        list.forEach(([tag,d,fr,sp],i)=>{const x=(i%per)*cw*Z,y=24+Math.floor(i/per)*(chh*Z+16);g.fillStyle=(i+Math.floor(i/per))%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw*Z-2,chh*Z+14);g.fillStyle='#6f7a6a';g.fillRect(x+1,y+chh*Z-6,cw*Z-2,6);
+          g.drawImage(sp,FIG.OX-cw/2,FIG.OY-chh+2,cw,chh,x,y,cw*Z,chh*Z);g.fillStyle='#14100c';g.font='bold 11px Menlo,Consolas,monospace';g.fillText('frame '+fr+(fr===4||fr===20?' · '+tag+(d>0?', right':', left'):''),x+5,y+chh*Z+11)});
+        window.SHEETS=Object.assign(window.SHEETS||{},{'horses-walk':c.toDataURL()})}
+      /* horses-sheet.png: crisp 2x enlarged contact sheet for docs/screenshots/horses.png */
+      {const Z=2,cw=152,chh=148,cols=4,rows=2,c=document.createElement('canvas');c.width=cols*cw*Z;c.height=28+rows*(chh*Z+18);
+        const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#2a2c38';g.fillRect(0,0,c.width,c.height);
+        g.fillStyle='#f4f0e6';g.font='bold 14px Menlo,Consolas,monospace';g.fillText('Cavalry horse & riders (2x): bare, Roman tack, Paul (Ch. 19), Roman horsemen, scale beside mule & man, night march',10,19);
+        const manSp=sprite('horse-test|man',s=>person(s,0,0,P19,-1,0,0,0,0,0,0),-1),
+          muleSp=sprite('horse-test|mule2',s=>mu(s,0,0,1,0,0),1),
+          tintSp=(sp,col)=>{const[m,mg]=mk(FIG.W,FIG.H);mg.drawImage(sp,0,0);mg.globalCompositeOperation='multiply';mg.fillStyle=col;mg.fillRect(0,0,FIG.W,FIG.H);mg.globalCompositeOperation='destination-in';mg.drawImage(sp,0,0);return m},
+          cells=[['bare (standing)',hr(0,1,0,null,'bare'),'#b8c0cc'],['Roman tack (standing)',hr(0,1,1,null,'tack'),'#c4beb2'],
+            ['Paul (Ch. 19) riding',hr(8,1,1,P19,'paul'),'#b8c0cc'],['Roman horseman (spear)',hr(12,-1,1,R_AUX,'aux'),'#c4beb2'],
+            ['Centurion riding',hr(0,1,1,R_CEN,'cen'),'#c4beb2'],['Whinny (voice frame 22)',hr(22,1,1,null,'tack'),'#b8c0cc'],
+            ['Scale: horse, mule, man',null,'#c4beb2'],['Night march (moon + torch) & 14px horsemen',null,'#161b2c']];
+        cells.forEach(([label,sp,bgc],i)=>{const x=(i%cols)*cw*Z,y=28+Math.floor(i/cols)*(chh*Z+18),W=cw*Z,Hh=chh*Z;
+          g.fillStyle=bgc;g.fillRect(x+2,y+2,W-4,Hh+14);
+          g.fillStyle=i===7?'#232836':'#727c68';g.fillRect(x+2,y+Hh-12,W-4,12);
+          if(sp)g.drawImage(sp,FIG.OX-cw/2,FIG.OY-chh+6,cw,chh,x,y,W,Hh);
+          else if(i===6){
+            /* 1:1 aspect ratio on the same ground line (ground at y+Hh-12) */
+            const gy=y+Hh-12;
+            g.drawImage(hr(0,1,0,null,'bare'),FIG.OX-46,FIG.OY-120,114,120,x+14,gy-120,114,120);
+            g.drawImage(muleSp,FIG.OX-38,FIG.OY-120,98,120,x+140,gy-120,98,120);
+            g.drawImage(manSp,FIG.OX-18,FIG.OY-120,38,120,x+252,gy-120,38,120)}
+          else{
+            /* moonlit night sky with subtle warm torchlight on horse & Paul (2x), plus distant 14px horsemen (2x) */
+            const grd=g.createRadialGradient(x+W*.78,y+Hh*.45,8,x+W*.78,y+Hh*.45,145);
+            grd.addColorStop(0,'rgba(240,165,85,.28)');grd.addColorStop(1,'rgba(22,27,44,0)');
+            g.fillStyle=grd;g.fillRect(x+2,y+2,W-4,Hh-14);
+            const litSp=tintSp(hr(6,1,1,P19,'paul'),'#c4a892');
+            g.drawImage(litSp,FIG.OX-cw/2,FIG.OY-chh+6,cw,chh,x+14,y,W,Hh);
+            [R_AUX,P19].forEach((lk,j)=>{const mc=K.miniCanvas(1,j,lk);g.drawImage(mc,0,0,mc.width,mc.height,x+8+j*54,y+12,mc.width*2,mc.height*2)})}
+          g.fillStyle=i===7?'#e8e0cc':'#14100c';g.font='bold 11px Menlo,Consolas,monospace';g.fillText(label,x+8,y+Hh+11)});
+        window.SHEETS=Object.assign(window.SHEETS||{},{'horses-sheet':c.toDataURL()})}
+      /* on-screen #view showcase (960 x 432) */
+      const c=document.createElement('canvas');c.width=960;c.height=432;c.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;z-index:8';$('#view').appendChild(c);
+      const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,960,432);
+      const manSp=sprite('horse-test|man2',s=>person(s,0,0,P19,-1,0,0,0,0,0,0),-1),muleSp=sprite('horse-test|mule3',s=>mu(s,0,0,1,0,0),1);
+      [['bare',hr(0,1,0,null,'bare')],['tacked',hr(0,1,1,null,'tack')],['Paul (Ch. 19)',hr(8,1,1,P19,'paul')],['Roman horseman',hr(12,-1,1,R_AUX,'aux')],
+       ['centurion',hr(0,1,1,R_CEN,'cen')],['beside mule and man',null],['escort cloak',hr(4,1,1,R_ESC,'esc')],['voice 22',hr(22,1,1,null,'tack')]].forEach(([n,sp],i)=>{
+        const x=(i%4)*240,y=Math.floor(i/4)*216,gy=y+198;g.fillStyle='#a8b0bc';g.fillRect(x+2,y+2,236,212);g.fillStyle='#6f7a6a';g.fillRect(x+2,y+196,236,18);
+        if(sp)g.drawImage(sp,FIG.OX-74,FIG.OY-142,148,144,x+14,gy-192,197,192);
+        else{g.drawImage(hr(0,1,0,null,'bare'),FIG.OX-46,FIG.OY-110,114,110,x+2,gy-110,114,110);
+          g.drawImage(muleSp,FIG.OX-38,FIG.OY-110,96,110,x+100,gy-110,96,110);g.drawImage(manSp,FIG.OX-18,FIG.OY-110,38,110,x+198,gy-110,38,110)}
+        g.fillStyle='#101418';g.font='bold 12px monospace';g.fillText(n,x+8,y+16)})})}
+  /* --- end of the horse --- */
   if(lang==='de'){move(...hs('south_gate'));ok($('#status').textContent==='Gehe zu Südtor','German status line: Gehe zu Südtor');
     verb('use');item('knife');move(...hs('unfinished_cover'));ok($('#status').textContent==='Benutze Zeltmachermesser mit Wagenplane (unfertig)','German status line: Benutze Zeltmachermesser mit Wagenplane (unfertig)');verb('use');G.hover=null;status()}
   /* Iconium: nothing is left owing, and nothing unsaid */
