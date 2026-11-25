@@ -779,8 +779,8 @@ function lightPal19(g){
    long way, round a bed of dark wax; two small square holes in its left edge, where it is bound to its other leaf. Paul's six notes
    (NBOX19) are scratched into the wax: the stylus leaves the wax pale, with the shade of the groove under it. His stylus of bronze lies
    between the sheet and the tablet, along them, not across either. The marks the player sets (G.mk19) are drawn as he sets them, on
-   the tablet beside a note: the capital of the line it goes with, or a short slanting stroke for "not in the letter"; and beside one
-   line of the letter a small hollow diamond for "out of order", which is a mark of the view and not written on the governor's letter.
+   the tablet beside a note: the capital of the line it goes with, or a short slanting stroke where it is not in the letter; and beside
+   one line of the letter a small hollow diamond where it is out of order, which is a mark of the view and not written on the governor's letter.
    Nothing crosses. The words are translated as they are drawn and made to fit their boxes (G.caps19, checked by the playtest).
    Called from outside: ART.letter19. Reads G.mk19.
    Hotspots: each line of the letter (LBOX19), each note (NBOX19), back to the hall 0,136,120,8. Walk: none (a close view). */
@@ -811,7 +811,7 @@ function sheetLetter19(g,r,q){const E=[],j=(a,i)=>a*(Math.sin(i*.9)*.5+(q()-.5)*
     tex(g,'mott',.14,12,8,178,128,'overlay',.8);
     pool(g,150,120,16,6,'#a8844a',.08,'source-over');pool(g,40,20,10,4,'#a8844a',.06,'source-over');
     ao(g,12,8,178,6,'t',.12,'#6e4c1e');ao(g,12,128,178,8,'b',.16,'#6e4c1e');ao(g,184,8,6,128,'r',.14,'#6e4c1e')});
-  stroke(g,E.slice(0,E.length/4|0),'rgba(255,246,214,.7)',.5);stroke(g,E.slice(E.length*3/4|0),'rgba(255,246,214,.5)',.5)}
+  stroke(g,E.slice(0,E.length/4|0),'rgba(255,246,214,.7)',.5);stroke(g,E.slice(E.length*.75|0),'rgba(255,246,214,.5)',.5)}
 /* the tablet: a leaf of boxwood round a bed of dark wax; the frame a little higher than the wax, so that its upper and left inner sides
    throw a thin shade onto it; two square holes in the left edge */
 function tabletLetter19(g,q){const x=200,y=8,w=112,h=128,b=4,W='#b08c5c',wx=x+b,wy=y+b,ww=w-2*b,wh=h-2*b;
@@ -838,8 +838,8 @@ function fit19(g,s,w,h){for(const z of[4.6,4.2,3.8,3.4]){g.font=FONT19(z);const 
     if(L.length*lh<=h||z===3.4)return{z,lh,L}}}
 /* drawLetter19: the words, and the marks as they stand. On the sheet the ink is dark and a little brown; on the wax the letters are pale
    where the stylus has gone, with the shade of the groove under them. The marks: on the tablet, left of a note, the capital of its line
-   or a short slanting stroke ("not in the letter"), scratched like the notes; on the sheet, between a line's capital and its words, a
-   small hollow diamond ("out of order") */
+   or a short slanting stroke (not in the letter), scratched like the notes; on the sheet, between a line's capital and its words, a
+   small hollow diamond (out of order) */
 function drawLetter19(g){const mk=G.mk19||{n:{},o:null};G.caps19=G.caps19||[];
   const put=(s,b,col,groove)=>{const[x,y,w,h]=b,f=fit19(g,s,w,h);g.font=FONT19(f.z);g.textBaseline='top';
     if(groove){g.fillStyle=groove;f.L.forEach((l,i)=>g.fillText(l,x+.3,y+i*f.lh+.4))}
