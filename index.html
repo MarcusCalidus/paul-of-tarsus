@@ -870,14 +870,22 @@ function ashlar(g,x,y,w,h,c,r,o){o=o||{};const bw=o.bw||14,bh=o.bh||7,v=o.v==nul
         if(r()<.3)R(g,X+1+r()*(ww-4),Y+1+r()*(bh-3),1+r()*2,.5+r()*.5,tint(cc,-.2));
         if(r()<.12)R(g,X,Y,1+r()*1.5,1,m);i+=ww}}
     tex(g,'mott',o.t==null?.4:o.t,x,y,w,h);tex(g,'grain',.1,x,y,w,h,'overlay',.5)})}
-/* plaster: a plastered wall with mottling, hairline cracks and patches where the mud brick shows through. */
+/* plaster: a plastered wall with mottling, hairline cracks and patches where the mud brick shows through (rubble: where rough stones in
+   mortar show through, as in a city of limestone). */
 function plaster(g,x,y,w,h,c,r,o){o=o||{};
   inRect(g,x,y,w,h,()=>{g.fillStyle=lg(g,0,y,0,y+h,[tint(c,o.top==null?.05:o.top),c,tint(c,o.bot==null?-.16:o.bot)]);g.fillRect(x,y,w,h);
     tex(g,'mott',o.t==null?.5:o.t,x,y,w,h,'overlay',1);tex(g,'grain',.14,x,y,w,h,'overlay',.5);
     for(let k=0;k<(o.patch||0);k++){const px=x+r()*w,py=y+h*(.15+r()*.8),pw=6+r()*12,ph=4+r()*7,b=o.brick||tint(c,-.3),pts=[];
       for(let a=0;a<9;a++){const t=a/9*6.2832,q=.6+r()*.4;pts.push(px+Math.cos(t)*pw*q,py+Math.sin(t)*ph*q)}
       clipTo(g,()=>poly(g,pts),()=>{R(g,px-pw,py-ph,pw*2,ph*2,tint(b,-.35));
-        for(let j=0,row=0;j<ph*2;j+=2.5,row++)for(let i=-(row%2)*3;i<pw*2;i+=6)R(g,px-pw+i,py-ph+j,5.5,2,tint(b,(r()-.5)*.25))});
+        if(o.rubble){/* rubble of rough stones of every size in a bed of mortar, not courses of brick (the same draws from r, so that
+             the rest of the wall stays as it was) */
+          const v=[];for(let j=0,row=0;j<ph*2;j+=2.5,row++)for(let i=-(row%2)*3;i<pw*2;i+=6)v.push(r());const q=rng(1+Math.floor(v[0]*1e6));
+          R(g,px-pw,py-ph,pw*2,ph*2,tint(b,-.12));
+          for(let j=-1;j<ph*2;j+=1.6+q()*1.4)for(let i=-2-q()*2;i<pw*2;){const sw=1.6+q()*3.4,sh=1.2+q()*1.6,sx=px-pw+i,sy=py-ph+j+(q()-.5)*.8,cc=tint(b,(q()-.4)*.28);
+            const s=[sx,sy+sh*.3,sx+sw*.25,sy,sx+sw*.8,sy+q()*.3,sx+sw,sy+sh*.5,sx+sw*.75,sy+sh,sx+sw*.2,sy+sh-q()*.3];
+            poly(g,s,cc);stroke(g,[s[0],s[1],s[2],s[3],s[4],s[5]],tint(cc,.22),.4);stroke(g,[s[6],s[7],s[8],s[9],s[10],s[11]],tint(cc,-.3),.4);i+=sw+.5+q()*.6}}
+        else for(let j=0,row=0;j<ph*2;j+=2.5,row++)for(let i=-(row%2)*3;i<pw*2;i+=6)R(g,px-pw+i,py-ph+j,5.5,2,tint(b,(r()-.5)*.25))});
       stroke(g,pts.concat(pts.slice(0,2)),rgba('#000000',.25),.5)}
     for(let k=0;k<(o.cracks==null?3:o.cracks);k++){let qx=x+r()*w,qy=y+r()*h*.7;const p=[qx,qy];
       for(let s=0;s<5+r()*4;s++){qx+=(r()-.5)*5;qy+=1.5+r()*4;p.push(qx,qy)}stroke(g,p,rgba('#000000',.3),.5);stroke(g,p.map((v,i)=>i%2?v:v+.5),rgba('#ffffff',.12),.5)}})}
@@ -937,7 +945,7 @@ const sky=(g,w,h,st)=>{g.fillStyle=lg(g,0,0,0,h,st);g.fillRect(0,0,w,h)};
    o.side: width of a shaded side wall, to the right if positive, to the left if negative. */
 function house(g,x,y,w,h,c,r,o){o=o||{};const s=o.side||0;
   if(s)poly(g,s>0?[x+w,y-3.5,x+w+s,y-3.5+s*.5,x+w+s,y+h-s*.25,x+w,y+h]:[x,y-3.5,x+s,y-3.5-s*.5,x+s,y+h+s*.25,x,y+h],mix(tint(c,-.34),'#6a70a8',.3));
-  if(o.stone)ashlar(g,x,y,w,h,c,r,o.stone);else plaster(g,x,y,w,h,c,r,{patch:o.patch==null?3:o.patch,cracks:o.cracks==null?4:o.cracks,brick:o.brick||tint(c,-.28),t:o.t});
+  if(o.stone)ashlar(g,x,y,w,h,c,r,o.stone);else plaster(g,x,y,w,h,c,r,{patch:o.patch==null?3:o.patch,cracks:o.cracks==null?4:o.cracks,brick:o.brick||tint(c,-.28),rubble:o.rubble,t:o.t});
   R(g,x-1,y-3.5,w+2,4,tint(c,.14));R(g,x-1,y-3.5,w+2,.5,tint(c,.4));R(g,x-1,y+.5,w+2,1,tint(c,-.38));
   if(o.merlons)for(let i=x+1;i<x+w-4;i+=9){R(g,i,y-7,5.5,3.5,tint(c,.1));R(g,i,y-7,5.5,.5,tint(c,.4));R(g,i+5,y-7,.5,3.5,tint(c,-.3))}
   if(o.beams!==0)for(let i=x+6;i<x+w-4;i+=o.beams||12){R(g,i,y+4,2.5,2.5,'#6a4a2c');R(g,i,y+4,2.5,.5,'#a67c4a');poly(g,[i+.5,y+6.5,i+3,y+6.5,i+4.5,y+10,i+2,y+10],'rgba(50,40,90,.28)')}
@@ -1098,7 +1106,7 @@ const HEADS={
  wrap:["....aaaAAAAaaa...","..aaaAAAAAAaaaaa.",".aaAAAAaaaAAAaaaq","aaAAaaaaAAAaaaaqq","aAAaaaAAAaaaaaaqq","aaaaAAAaaaaaaaqqq","aaaAAaaaaaaaqqqqq","aaaaaaaaaaqqqqqq.",".qqaaaaaaqqqqqq..","aaaq.............","aaaq.............","aaq..............","aaq..............","aq...............",".q..............."],
  helm:["........yy.......","......aAAAAa.....","....aaAAAyAAaa...","..aaaAAAyAAAaaaa.",".aaAAAAyAAaaaaaq.",".aaAAAyAAaaaaaaq.",".aAAAAAaaaaaaaqq.",".aaaaaaaaaaaaqqqq",".aaa.............",".aaa.............",".aaq.............",".aaq.............",".aaq.............","aaq..............","qaq..............","..q.............."],
  galea:["......aAAAAa.....","....aaAAyyAAaa...","...aaAAAyyAAAaa..","..aaAAAAyAAAAaaa.","..aAAAAAyyAAAAaa.",".aaAAAAaaaaAAAAa.",".aAAAAAaaaaAAAAq.",".aaaaaaaaaaaaqqqq",".aaaq............",".aaq.............",".aaq.............",".aaq.............","aaaAq............","aaqaAq...........","qaqaaAq..........","....aaq.........."],
- crest:["...rRRRRRYYRRRRr...",".rrRRRRRRYYRRRRRRr.",".rRRRRRRRYYRRRRRRD.","..DDrrrrrrrrrrrrDD.","...DDggggggggggDD..",".....gggggggggg...."],
+ crest:[".......rYYRr.......",".....rYYRRRRRr.....","....rYRRrRRrRRD....","...rYRrRRRRRrRRD...","...rRrRRRRRRRrRD...","...DrRggggggggRD...",".....Dg......gD...."],
  plume:[".......rRRRYYr.....",".....rrRRRRYYRr....","....rRRRRRYYRRRD...","...rRRRRRRRRRRRD...","...rRRggggggggDD...","..rRRD.............","..rRD..............",".rRRD..............",".rRD...............",".rRD...............",".rD................"]};
 /* MV: how a figure carries its head and body beyond its pose, as a sum of these. dip, lift: the head a pixel down or up; fwd, back: a pixel
    forward or back; brow: the brows raised; glance: the eyes turned back; lean: everything above the belt a pixel forward. */
@@ -1478,7 +1486,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
   if(o.wrap)sh(HEADS.wrap,hx-1,hy-4);
   if(o.helm){const HS=o.helmStyle;
     if(HS==='crest'||HS==='plume'){if(!c.cr){L.r='#a62620';L.R='#cc4036';L.Y='#e86e5a';L.D='#641412';L.g='#c8a448'}
-      sh(HS==='crest'?HEADS.crest:HEADS.plume,HS==='crest'?hx-2:hx-3,HS==='crest'?hy-7:hy-7);sh(HEADS.galea,hx-1,hy-2)}
+      sh(HS==='crest'?HEADS.crest:HEADS.plume,HS==='crest'?hx-2:hx-3,HS==='crest'?hy-8:hy-7);sh(HEADS.galea,hx-1,hy-2)}
     else sh(HS==='galea'?HEADS.galea:HEADS.helm,hx-1,hy-2)}
   /* the far hand: holding a spear or Roman pilum, or raised in speech */
   if(o.spear||o.pilum){const sx=18;

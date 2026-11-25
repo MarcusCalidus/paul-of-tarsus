@@ -65,10 +65,10 @@ ART.jerusalem={w:480,fp:1.3,q:12,
   g.fillStyle=lg(g,0,60,0,104,['#30283a','#5a5068']);arch(g,15,50,28,54);g.fill();R(g,15,96,28,8,'#8a8296');poly(g,[13,48,19,54,19,104,13,104],'#4a4254');
   for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,29+Math.cos(a)*18-1,46+18+Math.sin(a)*18-1,.6,3,'#a89870')}
   /* house of the widows' neighbors, where the cart has stopped */
-  house(g,118,42,134,62,'#eadbb4',r,{side:7,patch:4,cracks:0,t:.36,brick:LIME2});skipCracks2(r,4);windowArt(g,140,52,10,12,'#eadbb4',{bars:2});windowArt(g,222,52,10,12,'#eadbb4',{bars:2});
+  house(g,118,42,134,62,'#eadbb4',r,{side:7,patch:4,cracks:0,t:.36,brick:LIME2,rubble:1});skipCracks2(r,4);windowArt(g,140,52,10,12,'#eadbb4',{bars:2});windowArt(g,222,52,10,12,'#eadbb4',{bars:2});
   for(let i=0;i<34;i++){const vx=119+r()*9,vy=60+r()*42;oval(g,vx,vy,1.6,1.1,r()<.5?'#5a7a44':'#74985a')}stroke(g,[121,104,123,80,121,62],'#5a4630',.6);
   /* the house where the disciples meet */
-  house(g,268,28,152,76,'#f0e2bc',r,{side:8,patch:5,cracks:0,t:.36,brick:LIME2});skipCracks2(r,6);
+  house(g,268,28,152,76,'#f0e2bc',r,{side:8,patch:5,cracks:0,t:.36,brick:LIME2,rubble:1});skipCracks2(r,6);
   /* the door: no iron band is laid across its planks (CONTRIBUTING section 3) */
   R(g,309,47,46,57,'#d8c8a0');R(g,309,47,46,2.5,'#f8eed2');doorArt(g,314,52,36,52,'#8a6a40',r,{pw:6,bands:[]});R(g,325.5,65.5,13,9,'#3a2a1a');R(g,326.5,66.5,11,7,'#1c140e');for(let i=0;i<4;i++)R(g,328+i*2.6,66.5,.7,7,'#6a4e2c');
   R(g,308,102,48,2.5,'#cfc198');R(g,308,102,48,.5,'#f4ead0');
@@ -80,7 +80,7 @@ ART.jerusalem={w:480,fp:1.3,q:12,
   shadow2(g,295,104.4,13,1.5,.34,'#322a5a');R(g,285.5,97,3,7,'#b8aa88');R(g,302,97,3,7,'#b8aa88');R(g,285.5,97,3,1.2,'rgba(60,50,90,.3)');R(g,302,97,3,1.2,'rgba(60,50,90,.3)');
   R(g,283.5,94,23,3.2,'#e0d4b2');inRect(g,283.5,94,23,3.2,()=>tex(g,'mott',.2,283.5,94,23,3.2));R(g,283.5,94,23,.6,'#fbf4dc');R(g,283.5,96.8,23,.6,'#8a7e62');
   vessel(g,360,104,4.5,11,'#a8562e','jar');
-  house(g,432,46,48,58,'#e2d4ac',r,{patch:2,cracks:0,t:.36,brick:LIME2});skipCracks2(r,4);windowArt(g,446,58,10,12,'#e2d4ac',{bars:2});
+  house(g,432,46,48,58,'#e2d4ac',r,{patch:2,cracks:0,t:.36,brick:LIME2,rubble:1});skipCracks2(r,4);windowArt(g,446,58,10,12,'#e2d4ac',{bars:2});
   /* the lane between the houses lies in shade */
   shade(g,[252,45,268,36,268,104,252,104],SH,.9);shade(g,[420,50,432,46,432,104,420,104],SH,.9);
   /* paving */
@@ -114,7 +114,7 @@ ART.jerusalem={w:480,fp:1.3,q:12,
 ART.upper={w:320,q:12,
  light:()=>({amb:'#cbbfb4',wallY:105,wall:[[7,230,105,13],[230,270,105,73],[270,313,105,13]],lamps:[[250,96,90,'#5a5038',105,52]]}),
  paint(g){const r=rng(83),W='#e6d4a8',T='#7a5632',rw=rng(87),RED=earth2('#a8503a',.14),BLUE=earth2('#3f6a8a',.3);
-  plaster(g,0,0,320,105,W,r,{patch:4,cracks:0,brick:LIME2,bot:-.12,t:.32});skipCracks2(r,6);
+  plaster(g,0,0,320,105,W,r,{patch:4,cracks:0,brick:LIME2,rubble:1,bot:-.12,t:.32});skipCracks2(r,6);
   /* cracks cut by hand, high on the wall under the ceiling, where they run to no head; rb: a seed of their own */
   {const rb=rng(831);for(const[x,y,n]of[[30,16,3],[152,15,4],[208,16,3],[296,16,4]])crack2(g,x,y,n,rb)}
   comp(g,'multiply',.5,()=>R(g,0,86,320,19,'#d6b890'));R(g,0,85.5,320,.5,'rgba(110,70,30,.4)');for(let i=0;i<320;i+=8){R(g,i,83,4,1.6,RED);R(g,i+4,83,4,1.6,BLUE)}

@@ -590,27 +590,27 @@ function benchElders18(g,cut){const[x0,x1,y]=BENCH18,t=y-9;
     while(x<x1-6){const w=16+q()*10;R(g,x+.5,t+1.8,w-1,y-t-2.6,rgba(q()<.5?'#c4b8a8':'#6a6070',.12));x+=w;if(x<x1-4)R(g,x,t+1.8,.5,y-t-2.6,'rgba(60,48,64,.45)')}});
   R(g,x0,t+1.2,x1-x0,.7,'rgba(50,40,60,.45)');R(g,x0,y-.6,x1-x0,.6,'rgba(40,32,48,.55)');
   R(g,x0,t-1.8,.6,y-t+1.8,'#c8bcb0');M18.shadow(g,(x0+x1)/2,y,(x1-x0)/2,1,.35)}
-/* the awning: goat hair, woven in long strips of a dark brown, one a shade lighter than the next, sewn together along it; stretched from
-   a pole fixed along the back wall (y 44) out over our heads. We see its underside: it sags between the pole and its far end out of the
-   picture, darkest where it hangs lowest, and the sun glows warm through its thinner places; soft folds of tension run from the corners.
+/* the awning: goat hair, woven in long strips of a warm brown, one a shade lighter than the next, sewn together along it; stretched from
+   a pole fixed along the back wall (y 44) out over our heads. We see its underside, a warm mid brown and never a dark mass over the
+   elders: it sags a little between the pole and its far end out of the picture, and the high sun behind it glows through its thinner places; soft folds of tension run from the corners.
    Its left hem is lit; one rope from its near corner runs up out of the picture. The tear: a ragged slit near its middle, a flap
    hanging from its lower lip, the coping of the parapet and the sky behind it. */
 function awningElders18(g){const y0=44,A=[178,y0,296,y0,320,38,320,0,198,0],q=rng(1827);
-  poly(g,A);g.fillStyle=lg(g,0,0,0,y0,['#5a4636','#3e2e26','#32261f','#3a2c24']);g.fill();
+  poly(g,A);g.fillStyle=lg(g,0,0,0,y0,['#9a7e62','#84694f','#735b46','#7c634c']);g.fill();
   clipTo(g,()=>poly(g,A),()=>{
     /* the strips, lighter and darker in turn, their seams faint, nearer together toward the back */
     const ys=[];for(let k=0;k<=9;k++)ys.push(y0-y0*Math.pow(k/9,.8));const sag=(x,k)=>Math.sin(Math.PI*clamp((x-178)/142,0,1))*(1.2+k*.5);
     for(let k=0;k<9;k++){const S=[];for(let x=176;x<=322;x+=2)S.push(x,ys[k+1]+sag(x,k+1));for(let x=322;x>=176;x-=2)S.push(x,ys[k]+sag(x,k));
-      if(k%2)poly(g,S,'rgba(130,98,66,.2)');const L=[];for(let x=176;x<=322;x+=2)L.push(x,ys[k]+sag(x,k)-.3);stroke(g,L,'rgba(20,14,10,.4)',.5)}
-    tex(g,'mott',.5,178,0,142,y0,'overlay',.6);tex(g,'grain',.2,178,0,142,y0,'overlay',.5);
-    /* the sag: darkest across the middle of its depth; the near part, thinner and nearer the sun, warmer */
-    g.fillStyle=lg(g,0,0,0,y0,['rgba(0,0,0,0)','rgba(16,10,8,.3)','rgba(0,0,0,0)']);g.fillRect(178,0,142,y0);
-    pool(g,226,4,46,10,'#b07c4a',.3,'screen');pool(g,300,14,40,12,'#9a6a42',.2,'screen');
+      if(k%2)poly(g,S,'rgba(206,168,122,.16)');const L=[];for(let x=176;x<=322;x+=2)L.push(x,ys[k]+sag(x,k)-.3);stroke(g,L,'rgba(62,44,30,.28)',.5)}
+    tex(g,'mott',.3,178,0,142,y0,'overlay',.5);tex(g,'grain',.2,178,0,142,y0,'overlay',.5);
+    /* the sag: a little darker across the middle of its depth; the high sun behind it glows warm through its thinner places */
+    g.fillStyle=lg(g,0,0,0,y0,['rgba(0,0,0,0)','rgba(40,26,18,.14)','rgba(0,0,0,0)']);g.fillRect(178,0,142,y0);
+    pool(g,226,6,60,14,'#e0a868',.3,'screen');pool(g,298,16,50,16,'#c89058',.22,'screen');pool(g,200,2,40,8,'#d8a46a',.18,'screen');
         /* the tear: the slit, with the coping of the parapet and the sky behind it, and a flap hanging from its lower lip */
     const T=[220,7.6,224,5.4,228,6.2,232,3.8,237,4.6,242,2.6,247,3.8,252,2,257,3.4,253,5.6,248,6.2,244,7.6,239,7.4,233,8.8,227,8.6];
     clipTo(g,()=>poly(g,T),()=>{sky(g,320,8,['#7a9cc8','#a8c0d8']);R(g,200,5.6,80,2,'#f0e4c8');R(g,200,5.6,80,.5,'#fffaec');R(g,200,7.6,80,6,'#e4d4b4')});
     stroke(g,T.slice(0,18),'#8a6a4c',.6);stroke(g,T.slice(16).concat(T.slice(0,2)),'#1a120e',.6);
-    poly(g,[239,7.4,244,7.6,242.4,10.6,240.2,10],'#6a5240');R(g,240,7.6,3,.5,'#9a7a5a');
+    poly(g,[239,7.4,244,7.6,242.4,10.6,240.2,10],'#8a6e54');R(g,240,7.6,3,.5,'#9a7a5a');
     for(let i=0;i<5;i++)R(g,221+q()*34,7+q()*2.4,.6,.5,'rgba(140,110,80,.5)')});
   /* the pole along the back wall, its shade on the wall under it, and the lit hem of the left edge */
   R(g,176,y0-.6,121,2,'#6a4a30');R(g,176,y0-.6,121,.5,'#a47a4c');ao(g,178,y0+1.4,118,4,'t',.3,'#2a2040');
