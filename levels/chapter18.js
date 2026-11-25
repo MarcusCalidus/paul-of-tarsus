@@ -1471,7 +1471,9 @@ async function arrest18(){AU.mood='tense';G.arr18=1;
   SFX.door();await tell('v30');crowd18(.7);
   /* the commander runs down from the fortress with soldiers and army officers; at the sight of them the beating stops (no blow is shown) */
   for(const[a,x,y]of[[CM,40,62],[OF,48,66],[OB,36,70],[S1,52,70],[S2,44,74],[S3,58,76],[S4,40,78]]){place(a,'court18',x,y,1);a.free=1}
-  await Promise.all([[CM,222,122],[OF,204,114],[OB,296,124],[S1,236,114],[S2,264,114],[S3,214,134],[S4,284,136]].map(([a,x,y])=>go18(a,x,y,90)));
+  /* down the flight first, along the stairs to their foot (about 116,112), and from there across the court to where each one stands */
+  await Promise.all([[CM,222,122,116,111],[OF,204,114,118,113],[OB,296,124,114,112],[S1,236,114,120,112],[S2,264,114,117,114],[S3,214,134,122,113],[S4,284,136,115,115]]
+    .map(async([a,x,y,fx,fy])=>{await go18(a,fx,fy,90);await go18(a,x,y,90)}));
   await tell('v31');
   await Promise.all(ASIA.map(a=>{a.free=1;return go18(a,a.x<250?a.x-26:a.x+30,a.y+8,90)}));
   /* two chains (21:33): a soldier on either side of him, a short chain from each of his wrists to the soldier's (shared/cast.js, custody) */
