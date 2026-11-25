@@ -337,61 +337,285 @@ function drawMnason18(g,t){depth(116,()=>SHARED.beasts.donkey(g,272,116,-1,0,0,l
 
 /* ==== ART street18: begin ==== */
 /* A street of the upper city of Jerusalem, in the morning (invented: the publications say nothing of the streets between Mnason's house,
-   James's house and the temple). Wide: 480 pixels, the view follows Paul. House fronts close the view along the back; the street is paved
-   with large flags. At the left end the way back to Mnason's house; at x 196..222 the door of the house where James and the elders meet;
-   the barber's stall at x 300..344, an awning of plain cloth on two poles, one at each end, over his stool; at the right end the street
-   climbs toward the temple mount, whose wall of great blocks closes the view there. No horizon: the houses close it.
+   James's house and the temple). Wide: 480 pixels, the view follows Paul. We look north: the houses along the back face south, and the
+   low morning sun stands in the east, at the right, so that the fronts are lit from the right and every shadow falls to the left. The
+   houses are of the pale limestone of the city, two storeys under flat roofs with low parapets: some of dressed blocks, some plastered
+   over rubble with dressed corners; small windows high up, shutters, the beam ends of the roofs. The street is paved with
+   large flags in courses that run back to the eyes of the people in it (HZStreet18). At x 196..222 the door of the house where James and
+   the elders meet, in a frame of dressed stone with a step before it. The barber's stall at x 296..348: an awning of plain linen sloping
+   out from the wall of his house, held at its two front corners by two poles, one at each end; under it his low table with a bowl of
+   water, a folded towel, a comb and a pair of spring shears (no razor: a haircut, never a beard); before it the stool for his customer
+   (a prop), with a few cut hairs on the paving. At the right end the street climbs: a broad flight of steps rises to the right, behind
+   the walk strip, toward the temple, and beyond it, far off across the valley and in the haze, the great wall of the temple mount closes
+   the view, its west face still in the shade of the morning. The sanctuary is not shown from here (it is seen from the courts:
+   court18). Doves sit on the parapet of James's house (ROOMS.street18.birds, y 18).
    Called from outside: ART.street18. Reads nothing. Hotspots (ROOMS.street18): way back to Mnason's 0,96,14,48 · James's door 194,56,30,48 ·
-   barber's stall 296,62,52,44 · the temple mount's wall 420,10,60,70 · way up to the temple 466,96,14,48. Walk strip 16..464, 108..138.
-   Actors (place18): the barber 330,114; the Jews from Asia (days) 396,116 and 410,122. The stool is a prop (foot 318,116,10,4). */
-ART.street18={w:480,q:12,paint(g){paintStreet18(g)},light:{amb:'#f4e6d2',sun:[.6,.3,.4]},draw(){},front(){},
+   barber's stall 296,62,52,44 · the temple mount's wall 420,4,60,76 · way up to the temple 466,96,14,48. Walk strip 16..464, 108..138.
+   Actors (place18): the barber 330,114; the Jews from Asia (days) 396,116 and 410,122. The stool is a prop (foot 316,116,12,4). */
+const HZStreet18=70;
+ART.street18={w:480,q:12,paint(g){paintStreet18(g)},light:{amb:'#f6ecdc',sun:[-.55,.3,.42]},draw(){},front(){},
   props:[{y:120,shape(g){stoolStreet18(g,1)},foot:[[316,116,12,4]]}]};
-function paintStreet18(g){const r=rng(1811),BK=104;sky18(g,480,40,'day');
-  const C=['#dccaa4','#d4c09a','#e2d2b0','#cdb894'];
-  house18(g,0,22,70,BK-22,C[0],r,{win:[[22,40]]});house18(g,70,34,64,BK-34,C[1],r,{win:[[90,48]]});
-  house18(g,134,18,110,BK-18,C[2],r,{win:[[148,34],[230,34]],door:[196,26,44],beams:14});
-  house18(g,244,30,92,BK-30,C[3],r,{win:[[262,44]]});house18(g,336,26,84,BK-26,C[0],r,{win:[[356,40],[396,40]]});
-  /* the wall of the temple mount at the right end, great blocks, closing the view where the street climbs */
-  ashlar(g,420,4,60,BK-4,'#d8c8a4',r,{bw:16,bh:7,v:.1});ao(g,420,4,6,BK-4,'l',.3,'#3a2c3c');
-  stepsUp18(g,436,480,BK+4,BK-8,4,'#cbb894');
-  /* the barber's stall: an awning of plain cloth on two poles, one at each end, and his table with a bowl and a towel */
-  for(const px of[298,344]){R(g,px,64,2,42,'#6a4a2e');R(g,px,64,.6,42,'#a07a4c');M18.shadow(g,px+1,106,2,.8,.5)}
-  poly(g,[296,62,348,62,350,70,294,70],'#c8b48a');R(g,296,62,52,.6,'#ecdcb4');stroke(g,[294,70,350,70],'#8a7454',.6);
-  R(g,334,98,12,2,'#7a5a3a');R(g,336,100,1.6,6,'#5a4028');R(g,342,100,1.6,6,'#5a4028');vessel(g,338,98,3,3,'#b07a4a','bowl',{noShadow:1});R(g,341,96.6,4,1.4,'#e8e0cc');
-  floor18(g,0,480,BK,144,'flags',r,'#cdb996');
+function paintStreet18(g){const r=rng(1811),BK=104;
+  skyStreet18(g);
+  mountStreet18(g);
+  lowStreet18(g);
+  climbStreet18(g);
+  /* behind the low house, the crown of a fig tree in its court; on the roof of the first, a small upper room set back from the parapet */
+  figStreet18(g);
+  roofRoomStreet18(g,rng(1823));
+  /* the houses, from the left: their tops, their kinds of wall, their windows and doors */
+  frontStreet18(g,-2,24,76,'#e4d6b6',rng(1813),{ledge:62,win:[[14,36,6,8,1],[44,36,6,8,0],[28,72,5,7,1]],door:[52,16,40]});
+  frontStreet18(g,74,32,62,'#d8c6a2',rng(1814),{ash:1,ledge:66,win:[[90,44,6,8,1],[116,44,6,8,1]]});
+  /* James's house stands a little forward of its neighbor: its shadow falls on the low house to its left */
+  shade(g,[127,32.6,136,32.6,136,104,123,104],'#9a9ac4',.42);
+  frontStreet18(g,136,18,122,'#ebdfc2',rng(1815),{ash:1,bw:13,ledge:52,win:[[150,30,6,9,1],[176,30,6,9,0],[236,30,6,9,1],[156,66,5,7,1],[238,66,5,7,1]],beams:1});
+  jamesDoorStreet18(g,rng(1816));
+  frontStreet18(g,258,28,94,'#dfcfac',rng(1817),{ledge:58,win:[[268,40,6,8,1],[330,40,6,8,1]]});
+  frontStreet18(g,352,22,54,'#e8dbbc',rng(1818),{ash:1,ledge:60,win:[[366,34,6,8,0],[388,34,6,8,1],[370,70,5,7,1]]});
+  shade(g,[346,28.6,352,28.6,352,104,343,104],'#9a9ac4',.32);
+  /* the street: large flags in courses, running back to the eyes of the people in it; a darker damp line at the foot of the walls */
+  pave(g,-2,BK,482,144,'#d6c6a2',r,{vx:250,vy:HZStreet18,rows:6,step:30,v:.1,t:.34});
+  ao(g,-2,BK,406,5,'t',.28,'#4a3a48');R(g,-2,BK,406,.7,'rgba(60,44,56,.4)');
+  /* where two fronts meet, a little shade in the corner; hairline cracks set by hand, high, where they run to no head; a storage jar
+     by the first door, at the foot of the wall */
+  for(const x of[74,136,258,352])ao(g,x-3,20,3,84,'r',.12,'#4a3c60');
+  for(const[x,y,n]of[[22,40,5],[288,34,4],[60,30,3]])M18.crack(g,x,y,n,rng(x*7+y),.7);
+  vessel(g,76,105,5,13,'#b87c50','pithos');
+  stallStreet18(g);
   stoolStreet18(g);
-  light18(g,480,1)}
-/* the barber's stool, low, three-legged in our eye as two legs at its ends; with cut, its outline */
-function stoolStreet18(g,cut){if(cut){R(g,316,111,12,9,'#000');return}M18.shadow(g,322,120,6,1,.5);R(g,316,111,12,2,'#8a6644');R(g,316,111,12,.5,'#b89060');R(g,317,113,2,7,'#5a4028');R(g,325,113,2,7,'#5a4028')}
+  lightStreet18(g)}
+/* the sky over the roofs, clear with a few long clouds, brighter toward the sun in the east, at the right */
+function skyStreet18(g){const q=rng(1812);sky(g,480,HZStreet18,['#5884bc','#80a6cc','#b4cada','#e4e2d4']);pool(g,500,-10,200,80,'#fff2d0',.45,'screen');
+  for(const[cx,cy,w,h]of[[40,9,70,2.6],[200,5,96,2.4],[318,12,64,2.2],[440,4,54,2]])cloud(g,cx,cy,w,h,q,'#fffaf0','#b4bcd6')}
+/* the wall of the temple mount, far off across the valley: great blocks in long courses (only the courses and a few joints read at this
+   distance), a deep cornice at its top and over it the low roof line of the colonnade that stands along it inside; its west face is
+   still in the shade of the morning, cool and hazed, lit only along the cornice */
+function mountStreet18(g){const q=rng(1819),x0=396,x1=482,top=14,c='#b4aaa8';
+  g.fillStyle=lg(g,0,top,0,90,[tint(c,.02),c,mix(c,'#d4d8e2',.4)]);g.fillRect(x0,top+4,x1-x0,90-top);
+  inRect(g,x0,top+4,x1-x0,90-top,()=>{tex(g,'mott',.25,x0,top,x1-x0,90,'overlay',1);
+    for(let y=top+4,k=0;y<90;y+=4.6,k++){R(g,x0,y,x1-x0,.5,rgba('#5a5470',.22));R(g,x0,y+.5,x1-x0,.5,rgba('#e4e0ec',.2));
+      let x=x0-q()*20;while(x<x1){const w=12+q()*14;R(g,x+.5,y+.5,w-.5,4.1,rgba(q()<.5?'#e8dcd0':'#6a6078',.06+q()*.06));x+=w;R(g,x,y+.5,.5,4.1,rgba('#5a5470',.16))}}});
+  R(g,x0,top+1,x1-x0,3.4,'#bcb6c4');R(g,x0,top+1,x1-x0,.6,'#f0dcc0');R(g,x0,top+4.4,x1-x0,1,'rgba(60,52,84,.35)');
+  R(g,x0,top-1.6,x1-x0,2.6,'#a49eb0');R(g,x0,top-1.6,x1-x0,.5,'#e8d4b8')}
+/* the roofs of the lower city in the valley under the wall, small and hazed, their parapets lit from the east */
+function lowStreet18(g){const q=rng(1824);let x=398;
+  while(x<482){const w=6+q()*9,t=73+q()*7,c=mix(tint('#d8c8a8',(q()-.5)*.14),'#c0c6d6',.4);R(g,x,t,w,20,c);R(g,x,t,w,.6,mix('#fff0d4','#c0c6d6',.25));
+    R(g,x,t+.6,1,20,rgba('#5a5478',.2));if(q()<.5)R(g,x+w*.5,t+3,1.2,1.6,'#76708a');x+=w+(q()<.3?1.5:0)}}
+/* where the street climbs toward the temple: between the last house and the corner of another at the edge, a broad flight of steps
+   rises straight away from the street, each riser lit by the morning sun and each tread a thin paler line; at its head a terrace with a
+   low parapet, and beyond it the valley and the wall. The flight stands behind the walk strip. */
+function climbStreet18(g){const q=rng(1820),c='#dccaa4',x0=405,x1=474,n=7,y0=104;let y=y0;
+  /* the terrace at the head of the flight, and its low parapet against the valley */
+  R(g,x0,82,x1-x0+8,4,tint(c,.06));R(g,x0,80,x1-x0+8,2.6,tint(c,-.02));R(g,x0,80,x1-x0+8,.5,tint(c,.3));
+  for(let i=0;i<n;i++){const rh=3.4-i*.25,tr=.9-i*.06;
+    R(g,x0,y-rh,x1-x0,rh,tint(c,-.04-i*.012));R(g,x0,y-rh,x1-x0,.8,rgba('#4a3a50',.42));R(g,x0,y-.5,x1-x0,.5,rgba('#5a4a50',.2));
+    R(g,x0,y-rh-tr,x1-x0,tr,tint(c,.2));R(g,x0,y-rh-.4,x1-x0,.4,'#fff4dc');y-=rh+tr}
+  inRect(g,x0,y,x1-x0,y0-y,()=>tex(g,'mott',.35,x0,y,x1-x0,y0-y,'overlay',1));
+  /* the corner of the house at the right edge, its quoins long and short in turn, its side toward the steps in shade */
+  const C='#e6d8b8';plaster(g,x1,26,10,78,C,q,{patch:0,cracks:0,t:.4});
+  for(let yy=31,k=0;yy<104;yy+=5,k++){const qw=k%2?4:7;R(g,x1,yy,qw,4.5,tint(C,.05));R(g,x1,yy,qw,.5,tint(C,.25));R(g,x1,yy+4.5,qw,.5,tint(C,-.3))}
+  R(g,x1-1,24,10,2,tint(C,.16));R(g,x1-1,24,10,.5,'#fff8e8');shade(g,[x1,26,x1+2.4,26,x1+2.4,104,x1,104],'#9a9ac4',.35);
+  /* the shade the last house throws across the foot of the steps */
+  shade(g,[x0,60,x0+10,60,x0+6,104,x0,104],'#9a9ac4',.3)}
+/* a fig tree in a court behind the low house: only its crown shows over the parapet, broad leaves lit from the right, darker below */
+function figStreet18(g){const q=rng(1825),L=[];for(let i=0;i<190;i++){const a=q()*Math.PI,d=Math.sqrt(q()),x=104+Math.cos(a)*d*24,y=33-Math.sin(a)*d*13;L.push([x,y,q(),q()])}
+  for(const[x,y]of L)pool(g,x-1.2,y+1,2.4,1.4,'#3a3a52',.1,'multiply');
+  L.sort((u,v)=>u[1]-v[1]);
+  for(const[x,y,c,s]of L){const lit=clamp(.45+(x-104)/50+(30-y)/26+(c-.5)*.5,0,1);oval(g,x,y,1+s*1.3,.8+s*.7,mix(mix('#2a3e24','#6a8636',lit),'#c4bc66',lit>.85?.35:0))}}
+/* a small upper room on the roof of the first house, set back from the parapet: plastered, with a low door */
+function roofRoomStreet18(g,r){const c='#dccdb0';plaster(g,18,14,34,12,c,r,{patch:0,cracks:0,t:.4,top:.06,bot:-.08});
+  R(g,17,12.4,36,1.8,tint(c,.16));R(g,17,12.4,36,.5,'#fff6e4');R(g,17,14.2,36,.6,tint(c,-.3));
+  R(g,40,17,5,9,'#3a2c2a');ao(g,40,17,5,3,'t',.5);shade(g,[17,14,20,14,20,26,17,26],'#9a9ac4',.4)}
+/* a house front of two storeys from x to x+w, the top of its parapet at y, its foot on the street. o.ash: dressed blocks; else plaster
+   over rubble with dressed corners, long and short in turn, each block stopping at its own course. o.ledge: the course between the
+   storeys. o.win: [x, y, w, h, shut]. o.door: [x, w, h]. o.beams: the ends of the roof beams. */
+function frontStreet18(g,x,y,w,c,r,o){const BK=104,P=5;
+  if(o.ash)ashlar(g,x,y+P,w,BK-y-P,c,r,{bw:o.bw||17,bh:6,v:.05,t:.3,m:tint(c,-.2)});
+  else{plaster(g,x,y+P,w,BK-y-P,c,r,{patch:0,cracks:0,t:.45,top:.06,bot:-.1});
+    for(const left of[1,0]){let k=0;for(let yy=y+P;yy<BK;yy+=5,k++){const qw=k%2?4:7,X=left?x:x+w-qw,cc=tint(c,.04+(r()-.5)*.08);
+      R(g,X,yy,qw,4.5,cc);R(g,X,yy,qw,.5,tint(cc,.25));R(g,X,yy+4.5,qw,.5,tint(cc,-.3));R(g,left?X+qw-.5:X,yy,.5,4.5,tint(cc,left?-.22:.18))}}}
+  /* the parapet over the roof: its coping, lit along the top, and the shade it throws on the wall below */
+  plaster(g,x,y+1.6,w,P-1.6,tint(c,.03),r,{patch:0,cracks:0,t:.35});R(g,x-1,y,w+2,1.8,tint(c,.16));R(g,x-1,y,w+2,.5,'#fff8e8');
+  R(g,x-1,y+1.8,w+2,.6,tint(c,-.3));ao(g,x,y+P,w,4,'t',.2,'#4a3c60');
+  if(o.beams)for(let i=x+5;i<x+w-4;i+=13){R(g,i,y+P+1,2.4,2.2,'#6a4a2e');R(g,i+1.6,y+P+1,.8,2.2,'#b08454');poly(g,[i,y+P+3.2,i+2.4,y+P+3.2,i+.4,y+P+6,i-1.8,y+P+6],'rgba(70,56,96,.25)')}
+  if(o.ledge){const L=o.ledge;R(g,x,L,w,1.8,tint(c,.12));R(g,x,L,w,.5,tint(c,.36));R(g,x,L+1.8,w,.7,'rgba(70,56,90,.38)')}
+  for(const[wx,wy,ww,wh,shut]of o.win||[])windowArt(g,wx,wy,ww,wh,c,{shut,wood:'#7a5a3a'});
+  if(o.door){const[dx,dw,dh]=o.door;doorArt(g,dx,BK-dh,dw,dh,'#6a4c30',r,{left:1});R(g,dx-2,BK-dh-2.4,dw+4,2.4,tint(c,.1));R(g,dx-2,BK-dh-2.4,dw+4,.5,tint(c,.35))}
+  /* grime and damp at the foot; the soft shade of the street's edge */
+  ao(g,x,BK-14,w,14,'b',.22,'#5a4838');
+  /* the light: warmer toward the sun at the right of each front, a touch cooler toward its left */
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,x,0,x+w,0,['rgba(150,150,200,1)','rgba(255,220,170,1)']);g.fillRect(x,y,w,BK-y)})}
+/* the door of the house where James and the elders meet: a frame of dressed stone, its lintel resting on the two jambs and reaching a
+   little past them; one leaf of upright planks, no band across it; a step of stone before it */
+function jamesDoorStreet18(g,r){const x=196,y=58,w=26,h=46,c='#efe4cc';
+  for(const jx of[x-1,x+w-3]){R(g,jx,y,4,h,tint(c,-.02));R(g,jx,y,.6,h,tint(c,.3));R(g,jx+3.4,y,.6,h,tint(c,-.3))}
+  R(g,x-3,y-5,w+6,5,c);R(g,x-3,y-5,w+6,.6,'#fffaf0');R(g,x-3,y-.6,w+6,.6,tint(c,-.4));inRect(g,x-3,y-5,w+6,5,()=>tex(g,'mott',.3,x-3,y-5,w+6,5,'overlay',1));
+  doorArt(g,x+3,y,w-6,h,'#6e4e30',r,{left:0,frame:'#4a3420',pw:4});
+  ao(g,x+3,y,w-6,6,'t',.35,'#1a1010');
+  /* the step: a slab before the threshold, lit along its edge */
+  R(g,x-5,103.2,w+10,2.4,'#d8caa8');R(g,x-5,103.2,w+10,.6,'#fff4dc');R(g,x-5,105.4,w+10,.6,'rgba(70,56,70,.5)')}
+/* the barber's stall: the awning of plain linen sloping out from the wall over his place, its underside in the shade, its front hem lit;
+   the two poles at its front corners; the shade it throws on the wall; his low table on two solid ends with a bowl of water, a folded
+   towel, a comb and a pair of spring shears lying aslant; a water jug at its end */
+function stallStreet18(g){const x0=296,x1=348,ya=60,yb=70,q=rng(1821);
+  /* the shade on the wall under the awning, falling to the left, away from the sun */
+  shade(g,[x0-6,ya,x1,ya,x1-2,ya+18,x0-10,ya+22],'#a8a8cc',.5);
+  /* the table against the wall, with what lies on it */
+  M18.shadow(g,307,104,10,1.2,.45);
+  for(const lx of[299,313]){R(g,lx,98,3,6,'#5a3e28');R(g,lx+2.4,98,.6,6,'#8a6a48')}
+  SHARED.materials.board(g,297,95.6,20,2.6,'#8a6644',q);R(g,297,95.6,20,.5,'#d8b07a');
+  vessel(g,301.5,95.6,3.2,2.6,'#a86e44','bowl',{noShadow:1});R(g,299.4,93.2,4.2,.6,'#b8d0d8');
+  R(g,306,94.2,5,1.4,'#ece4d2');R(g,306,94.2,5,.5,'#fffaf0');R(g,306,95.2,5,.4,'#b8ac98');
+  R(g,312,95,3,.6,'#5a4030');for(let i=0;i<5;i++)R(g,312.2+i*.6,94.4,.3,.6,'#5a4030');
+  /* the spring shears: two blades joined by a bent bow of iron at the back, lying aslant, nothing crossing */
+  stroke(g,[313.2,94.6,315.6,93.2,316.2,94],'#8a8e96',.5);stroke(g,[313.4,95.2,315.8,94.2],'#c8ccd4',.4);
+  vessel(g,320,104,3,7,'#b47a4c','jug');
+  /* the poles at the front corners, standing at the foot of the wall */
+  for(const px of[x0,x1-2]){M18.shadow(g,px+1,105,2.4,.8,.5);R(g,px,yb,2,35,'#6a4a2e');R(g,px+1.4,yb,.6,35,'#a87c4c');R(g,px,yb,.5,35,'#4a3020')}
+  /* the awning: tied along the wall at ya, out over the poles at yb; we see its underside, and its hem toward us */
+  const U=[x0-1,ya,x1+1,ya,x1+2,yb,x0-2,yb];poly(g,U);g.fillStyle=lg(g,0,ya,0,yb,['#b0a488','#c8bc9c']);g.fill();
+  clipTo(g,()=>poly(g,U),()=>tex(g,'mott',.3,x0-2,ya,x1-x0+4,yb-ya,'overlay',1));
+  R(g,x0-2,ya-.6,x1-x0+4,.8,'#8a7a60');
+  const H=[];for(let x=x0-2;x<=x1+2;x+=2)H.push(x,yb+Math.sin((x-x0)/52*Math.PI)*.8);for(let x=x1+2;x>=x0-2;x-=2)H.push(x,yb+2.6+Math.sin((x-x0)/52*Math.PI)*1.2);
+  poly(g,H);g.fillStyle=lg(g,x0,0,x1,0,['#e4d8bc','#f6eed8']);g.fill();stroke(g,H.slice(0,H.length/2),'#fffaf0',.5);
+  stroke(g,H.slice(H.length/2),'rgba(110,96,80,.6)',.5);
+  /* a few cut hairs on the paving under the stool */
+  for(let i=0;i<9;i++)R(g,314+q()*16,118+q()*3,.6+q()*.8,.4,'rgba(50,36,28,.55)')}
+/* the barber's stool, low: a seat of a thick plank on two splayed legs, one at each end; with cut, its outline */
+function stoolStreet18(g,cut){const L=[[317.4,113,316.4,120,318.6,120,319.6,113],[324.4,113,325.4,120,327.6,120,326.6,113]];
+  if(cut){R(g,316,110.6,12,2.8,'#000');for(const p of L)poly(g,p,'#000');return}
+  M18.shadow(g,322,120,7,1.1,.6);for(const p of L){poly(g,p,'#5a3e2a');stroke(g,[p[0]+.3,p[1],p[2]+.3,p[3]],'#9a7450',.5)}
+  SHARED.materials.board(g,316,110.6,12,2.6,'#8a6644',rng(1822));R(g,316,110.6,12,.5,'#e0b47a')}
+/* the morning light from the right over the whole street, cooler at its far left; the soft shade at the bottom of the picture */
+function lightStreet18(g){comp(g,'soft-light',.32,()=>{g.fillStyle=lg(g,480,0,0,0,['rgba(255,214,160,1)','rgba(232,214,196,.6)','rgba(176,178,214,.8)']);g.fillRect(0,0,480,144)});
+  ao(g,0,126,480,18,'b',.12,'#2a2050')}
 /* ==== ART street18: end ==== */
 
 /* ==== ART elders18: begin ==== */
-/* The court of the house where James and all the elders meet (invented: Acts 21:18 names no house), by day. A court of good stone; the
-   house at the back with its doorway; an awning of goat hair stretched over the court from wall to wall, tied at the corners, with a
-   long tear in it through which the sky shows (joke 3, before the meeting). The floor of stone flags. The chest of the gift stands by
-   Aristarchus at the left until it is set before James (variant 'g': then it stands at 196,124).
-   Called from outside: ART.elders18. Reads F.gift (variant). Hotspots (ROOMS.elders18): torn awning 40,0,240,24 · doorway 140,50,30,54 ·
-   chest (moves with the variant) · way out to the street 0,96,14,48. Walk strip 16..304, 110..138. Actors (place18): James 236,118 ·
-   elders 206,126, 262,124, 284,114, 180,114 · Luke 72,126 · Timothy 96,134 · Aristarchus 48,118 · Trophimus 120,120; Paul 140,128. */
-const CHEST18={'':[20,126],g:[196,128]};
-ART.elders18={w:320,q:12,variant:()=>F.gift?'g':'',paint(g,v){paintElders18(g,v)},light:{amb:'#f4e8d6',sun:[.5,.3,.4]},draw(){},front(){},
-  props:[{y:128,shape(g,v){const[x,y]=CHEST18[v||''];chest18(g,x,y,1)},foot:v=>{const[x,y]=CHEST18[v||''];return[[x,y-4,22,5]]}}]};
-function paintElders18(g,v){const r=rng(1821),W='#e2d4b4',BK=104,TP=8;sky18(g,320,TP+4,'day');
-  ashlar(g,24,TP,272,BK-TP,W,r,{bw:18,bh:8,v:.08,t:.3});
-  for(const x of[56,248])windowArt(g,x,34,8,10,W,{shut:1});
-  R(g,138,50.4,34,2.2,'#7a5a3a');g.fillStyle=lg(g,0,52.6,0,104,['#160f0c','#2a2018']);g.fillRect(140,52.6,30,51.4);ao(g,140,52.6,30,6,'t',.6);R(g,137,103,36,1.4,'#c8b490');
-  const LW=[0,0,24,TP,24,BK,0,132],RW=[296,TP,320,0,320,132,296,BK];
-  poly(g,LW);g.fillStyle=lg(g,0,0,24,0,['#b4aaa2','#c4b8a8']);g.fill();poly(g,RW);g.fillStyle=lg(g,296,0,320,0,['#e8dcbc','#f0e2c4']);g.fill();
-  const GATE=[0,70,12,76,12,121,0,134];poly(g,GATE);g.fillStyle=lg(g,0,70,0,134,['#e8d0a4','#c8ac88']);g.fill();
-  floor18(g,0,320,BK,144,'flags',r,'#d4c4a2');
-  /* the awning: dark goat hair, sagging between the walls, tied at the four corners; a long tear runs along it, and the sky shows */
-  const sag=x=>4+Math.sin(Math.PI*clamp((x-24)/272,0,1))*7,P=[];for(let x=24;x<=296;x+=2)P.push(x,sag(x));for(let x=296;x>=24;x-=2)P.push(x,sag(x)+10);
-  poly(g,P);g.fillStyle=lg(g,0,4,0,22,['#4a3c34','#3a2e28','#2a201c']);g.fill();clipTo(g,()=>poly(g,P),()=>tex(g,'mott',.4,24,0,272,24,'overlay',.6));
-  const T=[];for(let x=150;x<=226;x+=2)T.push(x,sag(x)+4+Math.sin(x/5)*.8);for(let x=226;x>=150;x-=2)T.push(x,sag(x)+6.4+Math.sin(x/4)*.6-(x>160&&x<216?1.4:0));
-  poly(g,T,'#9ab4d4');stroke(g,T.slice(0,T.length/2),'#6a5446',.5);
-  for(let x=24;x<=296;x+=2)R(g,x,sag(x)+9.6,2,.6,'rgba(20,14,10,.5)');
-  if(v!=='g')chest18(g,...CHEST18['']);else chest18(g,...CHEST18.g);
-  light18(g,320,1)}
+/* The court of the house where James and all the elders meet (invented: Acts 21:18 names no house), in the morning. A court of good
+   limestone: the house of two storeys along the back, of dressed blocks, its doorway in the middle; the side walls run back to it, and in
+   the left one, near us, the gate to the street. Against the back wall at the left an outside stair of the same stone climbs to the roof,
+   with a solid parapet along its open side and storage jars for water under its high end. Over the right part of the court an awning of
+   dark goat hair is stretched from a pole along the back wall, under the upper windows, out over our heads; its strips run along it, and
+   near its middle it is torn: a ragged slit through which the parapet and the sky show and the sun falls on the paving below (joke 3,
+   before the meeting). In its shade a bench of stone is built along the back wall, as high as a sitter needs (its top 9 px over his feet,
+   SEATG): James and the elders sit on it (place18). The chest of the gift stands by Aristarchus at the left until it is set before James
+   (variant 'g'). The sun stands at the upper left; shadows fall to the right. Sparrows sit on the parapet of the house over the stair
+   (ROOMS.elders18.birds, y 5.4).
+   Called from outside: ART.elders18. Reads F.gift (variant). Hotspots (ROOMS.elders18): torn awning 178,0,142,42 · doorway 140,50,30,54 ·
+   chest (moves with the variant) · way out to the street 0,96,14,48. Walk strip 16..304, 110..138. Actors (place18): James 186,110, at the
+   bench's end nearest the door · the elders 212,110, 238,110, 264,110, 290,110, all seated on the bench, facing the court · the four men 66,88,110,132 at y 110, by the
+   wall · Luke 76,132 · Timothy 104,136 · Aristarchus 48,126 · Trophimus 126,128; Paul 140,128. The bench is a prop (seat, foot
+   174,104.5,122,4.5); the chest's foot follows it (CHEST18). */
+const CHEST18={'':[20,126],g:[174,128]},BENCH18=[174,296,110];
+ART.elders18={w:320,q:12,variant:()=>F.gift?'g':'',paint(g,v){paintElders18(g,v)},
+  light:{amb:'#f4e8d6',sun:[.5,.3,.4],shade:[[186,340,'#c6c0d6']]},draw(){},front(){},
+  props:[{y:128,shape(g,v){const[x,y]=CHEST18[v||''];chest18(g,x,y,1)},foot:v=>{const[x,y]=CHEST18[v||''];return[[x,y-4,22,5]]}},
+    {y:110,shape(g){benchElders18(g,1)},foot:[[174,104.5,122,4.5]],seat:1}]};
+function paintElders18(g,v){const r=rng(1821),W='#e8dcc0',BK=104,TP=6;
+  skyElders18(g);
+  houseElders18(g,r,W,TP,BK);
+  stairElders18(g,rng(1823),W);
+  sideElders18(g,rng(1824));
+  pave(g,-2,BK,322,144,'#d8c8a6',r,{vx:160,vy:72,rows:6,step:28,v:.1,t:.34});
+  ao(g,24,BK,272,5,'t',.3,'#4a3a48');R(g,24,BK,272,.7,'rgba(60,44,56,.42)');
+  jarsElders18(g);
+  /* the shade of the awning over the right of the court: on the back wall under it, on the right wall, and on the paving, where the
+     sun through the tear lies as one long patch */
+  shade(g,[178,44,296,44,296,104,182,104],'#8e8cbc',.5);
+  shade(g,[296,40,320,34,320,132,296,104],'#8e8cbc',.42);
+  shade(g,[182,104,296,104,320,132,320,144,200,144,190,124],'#9896c4',.45);
+  benchElders18(g);
+  pool(g,252,121,15,3.2,'#fff0c8',.5,'screen');pool(g,252,121,9,2,'#fff6dc',.4,'screen');
+  awningElders18(g);
+  if(v==='g')chest18(g,...CHEST18.g);else chest18(g,...CHEST18['']);
+  lightElders18(g)}
+/* the sky over the parapet and over the left wall, clear, warm toward the sun at the upper left */
+function skyElders18(g){const q=rng(1825);sky(g,320,40,['#5c88c2','#88aad0','#c4d2dc']);pool(g,-20,-10,140,50,'#fff0cc',.4,'screen');
+  for(const[cx,cy,w,h]of[[90,3,60,2],[250,2,70,1.8]])cloud(g,cx,cy,w,h,q,'#fffaf0','#b4bcd6')}
+/* the house along the back: dressed blocks in courses, the coping of its parapet, a course between the storeys, small windows above
+   with their shutters, the beam ends of the roof; the doorway in the middle in a frame of dressed stone, dim inside, a lamp far in */
+function houseElders18(g,r,W,TP,BK){
+  ashlar(g,24,TP+4,272,BK-TP-4,W,r,{bw:18,bh:6,v:.05,t:.3,m:tint(W,-.2)});
+  R(g,23,TP,274,2,tint(W,.14));R(g,23,TP,274,.5,'#fffaec');R(g,23,TP+2,274,2,tint(W,.02));R(g,23,TP+4,274,.7,tint(W,-.32));ao(g,24,TP+4.7,272,4,'t',.2,'#4a3c60');
+  for(let x=30;x<292;x+=14){R(g,x,TP+5.6,2.4,2,'#6a4a2e');R(g,x,TP+5.6,.8,2,'#b08454');poly(g,[x+2.4,TP+6,x+4.2,TP+7,x+4.2,TP+9.6,x+2.4,TP+7.6],'rgba(70,56,96,.25)')}
+  R(g,24,54,272,1.8,tint(W,.12));R(g,24,54,272,.5,tint(W,.36));R(g,24,55.8,272,.7,'rgba(70,56,90,.38)');
+  for(const x of[104,150,206,248])windowArt(g,x,22,6,9,W,{shut:x!==150,wood:'#7a5a3a'});
+  for(const[x,y,n]of[[120,14,4],[228,16,3]])M18.crack(g,x,y,n,rng(x*5+y),.6);
+  /* the doorway */
+  const dx=140,dy=52.6,dw=30,dh=BK-dy;g.fillStyle=lg(g,0,dy,0,BK,['#140e0c','#2a2018']);g.fillRect(dx,dy,dw,dh);
+  inRect(g,dx,dy,dw,dh,()=>{pool(g,dx+20,BK-12,12,10,'#ffb860',.3,'screen');ao(g,dx,dy,dw,7,'t',.6,'#000');ao(g,dx,dy,4,dh,'l',.4,'#000')});
+  for(const jx of[dx-3,dx+dw]){R(g,jx,dy,3,dh,tint(W,.04));R(g,jx,dy,.6,dh,tint(W,.3));R(g,jx+2.4,dy,.6,dh,tint(W,-.3))}
+  R(g,dx-5,dy-4.6,dw+10,4.6,tint(W,.06));R(g,dx-5,dy-4.6,dw+10,.6,'#fffaf0');R(g,dx-5,dy-.6,dw+10,.6,tint(W,-.4));
+  R(g,dx-4,BK-.8,dw+8,1.8,'#cdb898');R(g,dx-4,BK-.8,dw+8,.5,'#f2e2c2');
+  ao(g,24,BK-14,272,14,'b',.2,'#5a4838')}
+/* the stair to the roof, against the back wall at the left: a solid flight of the house's own stone rising from beside the doorway to
+   the parapet at the left, its steps in profile along its top, each tread lit and each riser a shade darker; no rail and no post. It
+   throws its shadow on the wall to its right. Under its high end the dark of a small store. */
+function stairElders18(g,r,W){const xb=130,yb=104,xt=28,yt=11,n=24,c='#d4bf98';
+  const P=[xb,yb];for(let i=0;i<n;i++){const u0=i/n,u1=(i+1)/n,xa=xb+(xt-xb)*u0,xc=xb+(xt-xb)*u1,ya=yb+(yt-yb)*u1;P.push(xa,ya,xc,ya)}P.push(xt,yb);
+  /* its shadow on the wall, falling to the right */
+  shade(g,P.map((v,i)=>i%2?v-1.2:v+.8),'#8e8cbc',.45);
+  poly(g,P);g.fillStyle=lg(g,xt,0,xb,0,[tint(c,-.04),c]);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{plaster(g,xt,yt,xb-xt,yb-yt,c,r,{patch:0,cracks:0,t:.5,top:.04,bot:-.08});ao(g,xt,yt,xb-xt,yb-yt,'l',.12,'#5a4a60');g.fillStyle=lg(g,0,yt,0,yb,[rgba('#fff2d8',.14),rgba('#5a4a50',.12)]);g.fillRect(xt,yt,xb-xt,yb-yt)});
+  for(let i=0;i<n;i++){const u0=i/n,u1=(i+1)/n,xa=xb+(xt-xb)*u0,xc=xb+(xt-xb)*u1,ya=yb+(yt-yb)*u1,ya0=yb+(yt-yb)*u0;
+    R(g,xc,ya,xa-xc,.7,'#fff2d6');R(g,xa-.6,ya,.6,ya0-ya,rgba('#6a5a68',.35))}
+  /* the store under the high end */
+  R(g,34,72,15,32,'#2a2024');R(g,33,70.6,17,1.6,tint(c,.1));ao(g,34,72,15,8,'t',.5,'#000');ao(g,34,72,4,32,'l',.35,'#000')}
+/* the side walls: the left in the shade of the morning, with the gate to the street near us and the lit street beyond it; the right one
+   lit, until the awning's shade takes it */
+function sideElders18(g,r){const LW=[0,0,24,6,24,104,0,132],RW=[296,6,320,0,320,132,296,104];
+  poly(g,LW);g.fillStyle=lg(g,0,0,24,0,['#a69ea4','#b4aaa6']);g.fill();clipTo(g,()=>poly(g,LW),()=>{tex(g,'mott',.45,0,0,24,132,'overlay',.6);ao(g,0,0,24,132,'r',.15,'#3a3048')});
+  const GATE=[0,70,12,76,12,121,0,134];poly(g,GATE);g.fillStyle=lg(g,0,70,0,134,['#ecd4a8','#d8c09c','#c4a888']);g.fill();
+  clipTo(g,()=>poly(g,GATE),()=>{R(g,0,70,5,64,'#c8b498');ao(g,0,70,12,10,'t',.45,'#3a2c3c');for(let k=0;k<4;k++)R(g,0,104+k*7,12,.5,'rgba(90,70,70,.3)')});
+  stroke(g,[12,76,12,121],'#e8dcc4',.6);
+  poly(g,RW);g.fillStyle=lg(g,296,0,320,0,['#eadcbc','#f2e4c4']);g.fill();clipTo(g,()=>poly(g,RW),()=>tex(g,'mott',.45,296,0,24,132,'overlay',.6));
+  stroke(g,[296,6,296,104],'rgba(90,70,90,.35)',.6);stroke(g,[24,6,24,104],'rgba(255,246,226,.4)',.6)}
+/* water jars under the high end of the stair, in front of the store: a tall one and a smaller jug, outside the walk strip */
+function jarsElders18(g){vessel(g,40,105.5,6,15,'#b87c50','pithos');vessel(g,51,105.4,3.6,9,'#c48a5a','jug');vessel(g,60,105.2,4,6,'#a86e44','jar')}
+/* the bench along the back wall: a seat of dressed stone built against the wall, in the awning's shade, solid to the floor; its front is
+   one course of long blocks whose joints stop at its edges; its top 9 px over the feet of whoever sits on it (SEATG), its lit nosing
+   just there (cut: its outline) */
+function benchElders18(g,cut){const[x0,x1,y]=BENCH18,t=y-9;
+  if(cut){R(g,x0,t-1.8,x1-x0,y-t+1.6,'#000');return}
+  ao(g,x0,t-5,x1-x0,3.4,'b',.25,'#2a2040');
+  R(g,x0,t-1.8,x1-x0,1.8,'#b4aaa8');R(g,x0,t-1.8,x1-x0,.5,'#8a8090');
+  R(g,x0,t,x1-x0,1.2,'#d4c8b8');R(g,x0,t,x1-x0,.5,'#ece2d0');
+  const q=rng(1826);g.fillStyle=lg(g,0,t+1.2,0,y,['#a49890','#8e8486']);g.fillRect(x0,t+1.2,x1-x0,y-t-1.2);
+  inRect(g,x0,t+1.2,x1-x0,y-t-1.2,()=>{tex(g,'mott',.35,x0,t,x1-x0,10,'overlay',1);let x=x0+q()*8;
+    while(x<x1-6){const w=16+q()*10;R(g,x+.5,t+1.8,w-1,y-t-2.6,rgba(q()<.5?'#c4b8a8':'#6a6070',.12));x+=w;if(x<x1-4)R(g,x,t+1.8,.5,y-t-2.6,'rgba(60,48,64,.45)')}});
+  R(g,x0,t+1.2,x1-x0,.7,'rgba(50,40,60,.45)');R(g,x0,y-.6,x1-x0,.6,'rgba(40,32,48,.55)');
+  R(g,x0,t-1.8,.6,y-t+1.8,'#c8bcb0');M18.shadow(g,(x0+x1)/2,y,(x1-x0)/2,1,.35)}
+/* the awning: goat hair, woven in long strips of a dark brown, one a shade lighter than the next, sewn together along it; stretched from
+   a pole fixed along the back wall (y 44) out over our heads. We see its underside: it sags between the pole and its far end out of the
+   picture, darkest where it hangs lowest, and the sun glows warm through its thinner places; soft folds of tension run from the corners.
+   Its left hem is lit; one rope from its near corner runs up out of the picture. The tear: a ragged slit near its middle, a flap
+   hanging from its lower lip, the coping of the parapet and the sky behind it. */
+function awningElders18(g){const y0=44,A=[178,y0,296,y0,320,38,320,0,198,0],q=rng(1827);
+  poly(g,A);g.fillStyle=lg(g,0,0,0,y0,['#5a4636','#3e2e26','#32261f','#3a2c24']);g.fill();
+  clipTo(g,()=>poly(g,A),()=>{
+    /* the strips, lighter and darker in turn, their seams faint, nearer together toward the back */
+    const ys=[];for(let k=0;k<=9;k++)ys.push(y0-y0*Math.pow(k/9,.8));const sag=(x,k)=>Math.sin(Math.PI*clamp((x-178)/142,0,1))*(1.2+k*.5);
+    for(let k=0;k<9;k++){const S=[];for(let x=176;x<=322;x+=2)S.push(x,ys[k+1]+sag(x,k+1));for(let x=322;x>=176;x-=2)S.push(x,ys[k]+sag(x,k));
+      if(k%2)poly(g,S,'rgba(130,98,66,.2)');const L=[];for(let x=176;x<=322;x+=2)L.push(x,ys[k]+sag(x,k)-.3);stroke(g,L,'rgba(20,14,10,.4)',.5)}
+    tex(g,'mott',.5,178,0,142,y0,'overlay',.6);tex(g,'grain',.2,178,0,142,y0,'overlay',.5);
+    /* the sag: darkest across the middle of its depth; the near part, thinner and nearer the sun, warmer */
+    g.fillStyle=lg(g,0,0,0,y0,['rgba(0,0,0,0)','rgba(16,10,8,.3)','rgba(0,0,0,0)']);g.fillRect(178,0,142,y0);
+    pool(g,226,4,46,10,'#b07c4a',.3,'screen');pool(g,300,14,40,12,'#9a6a42',.2,'screen');
+        /* the tear: the slit, with the coping of the parapet and the sky behind it, and a flap hanging from its lower lip */
+    const T=[220,7.6,224,5.4,228,6.2,232,3.8,237,4.6,242,2.6,247,3.8,252,2,257,3.4,253,5.6,248,6.2,244,7.6,239,7.4,233,8.8,227,8.6];
+    clipTo(g,()=>poly(g,T),()=>{sky(g,320,8,['#7a9cc8','#a8c0d8']);R(g,200,5.6,80,2,'#f0e4c8');R(g,200,5.6,80,.5,'#fffaec');R(g,200,7.6,80,6,'#e4d4b4')});
+    stroke(g,T.slice(0,18),'#8a6a4c',.6);stroke(g,T.slice(16).concat(T.slice(0,2)),'#1a120e',.6);
+    poly(g,[239,7.4,244,7.6,242.4,10.6,240.2,10],'#6a5240');R(g,240,7.6,3,.5,'#9a7a5a');
+    for(let i=0;i<5;i++)R(g,221+q()*34,7+q()*2.4,.6,.5,'rgba(140,110,80,.5)')});
+  /* the pole along the back wall, its shade on the wall under it, and the lit hem of the left edge */
+  R(g,176,y0-.6,121,2,'#6a4a30');R(g,176,y0-.6,121,.5,'#a47a4c');ao(g,178,y0+1.4,118,4,'t',.3,'#2a2040');
+  {const H=[];for(let k=0;k<=12;k++){const u=k/12;H.push(178+20*u+Math.sin(u*Math.PI*3)*.7,y0-y0*u)}stroke(g,H,'#a88a66',1);stroke(g,H.map((v,i)=>i%2?v:v+1),'rgba(30,20,16,.55)',.5)}
+  /* the rope from the near corner, up and out of the picture to the left */
+  stroke(g,[198.5,.5,190,-4],'#8a7458',.6)}
+/* the morning light from the upper left over the court; the soft shade at the bottom of the picture */
+function lightElders18(g){comp(g,'soft-light',.38,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,214,160,1)','rgba(226,210,196,.6)','rgba(176,176,212,.8)']);g.fillRect(0,0,320,144)});
+  ao(g,0,126,320,18,'b',.12,'#2a2050')}
 /* ==== ART elders18: end ==== */
 
 /* ==== ART court18: begin ==== */
@@ -971,7 +1195,7 @@ ROOMS.street18={space:.5,walk:[16,464,108,138],mood:'city',amb:AMB.street18,hs:[
   {name:'way_back_to_mnasons',x:0,y:96,w:14,h:48,wx:20,wy:124,dir:-1,exit:()=>toMnason18(),look:'way_back_to_mnasons_look'},
   {name:'way_up_to_the_temple',x:466,y:96,w:14,h:48,wx:460,wy:124,dir:1,exit:()=>toTemple18(),look:'way_up_to_the_temple_look'}]};
 ROOMS.elders18={space:.6,walk:[16,304,110,138],mood:'elders',amb:AMB.elders18,hs:[
-  {name:'torn_awning',x:40,y:0,w:240,h:24,wx:160,wy:114,look:()=>say(P,F.james?'torn_awning_look':'somebody_should_mend_that')},
+  {name:'torn_awning',x:178,y:0,w:142,h:42,wx:160,wy:114,look:()=>say(P,F.james?'torn_awning_look':'somebody_should_mend_that')},
   {name:'doorway',x:140,y:50,w:30,h:54,wx:155,wy:114,look:'elders_doorway_look',open:'not_my_house'},
   {name:'chest',get x(){return CHEST18[F.gift?'g':''][0]-2},get y(){return CHEST18[F.gift?'g':''][1]-16},w:26,h:18,get wx(){return CHEST18[F.gift?'g':''][0]+(F.gift?-14:44)},wy:128,
     def:'use',look:'the_gifts_chest_look',use:()=>gift18(),pickup:()=>gift18()},
@@ -1065,7 +1289,10 @@ function place18(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   if(ph==='elders'){if(room==='street18')for(const[a,x,y,d]of[[AR,66,116,1],[LU,88,128,1],[TI,112,134,1],[TR,130,118,1]])pl(a,'street18',x,y,d);
     else for(const[a,x,y,d]of[[AR,48,126,1],[LU,76,132,1],[TI,104,136,1],[TR,126,128,1]])pl(a,'elders18',x,y,d);
     pl(BA,'street18',330,114,-1);
-    for(const[a,x,y,d]of[[JA,240,124,-1],[E1,206,110,-1],[E2,264,110,-1],[E3,290,114,-1],[E4,180,110,1],[V1,66,110,1],[V2,88,110,1],[V3,110,110,1],[V4,132,110,1]])pl(a,'elders18',x,y,d)}
+    for(const[a,x,y,d]of[[JA,186,110,-1],[E1,212,110,-1],[E2,238,110,-1],[E3,264,110,-1],[E4,290,110,-1],[V1,66,110,1],[V2,88,110,1],[V3,110,110,1],[V4,132,110,1]])pl(a,'elders18',x,y,d);
+    /* James and the elders sit on the bench along the back wall (ART.elders18), James at its end nearest the door, so that whoever comes to
+       speak with him has room to stand beside him */
+    for(const a of[JA,...ELD])a.seat=1}
   if(ph==='temple'){pl(BA,'street18',330,114,-1);pl(A1,'street18',396,116,-1);pl(A2,'street18',410,124,-1);
     if(room==='street18')for(const[a,x,y,d]of[[TR,62,126,1],[V1,78,116,1],[V2,98,132,1],[V3,22,116,1],[V4,124,122,1]])pl(a,'street18',x,y,d);
     else for(const[a,x,y,d]of[[V1,208,116,1],[V2,224,126,1],[V3,272,118,-1],[V4,288,128,-1],[TR,180,122,1],[CY,312,116,-1],[GR,336,124,-1],[LV,262,106,-1]])pl(a,'court18',x,y,d)}
