@@ -557,7 +557,7 @@ function paintAnti19(g){const CO=SHARED.country,HZ=HZAnti19;
   for(const[x,y,w]of[[30,22,70],[140,14,54],[236,26,60],[96,36,40]]){pool(g,x+w/2,y,w/2,1.4,'#f6d0c4',.5,'source-over');R(g,x+w*.2,y+.6,w*.6,.5,'rgba(255,214,190,.6)');R(g,x+w*.25,y-.7,w*.5,.5,'rgba(120,120,170,.3)')}
   /* the plain to the horizon, hazed toward it, and the trees here and there along its banks */
   CO.plain(g,0,320,HZ,104,1962,{vx:150,land:'#86a05e',haze:'#c8c0c8',kinds:['meadow','green','grain','meadow','fallow','green','meadow','orchard'],clouds:0});
-  for(const[x,y,h,k]of[[150,74.4,5,'poplar'],[156,74,4,'poplar'],[60,73,4,'plane'],[188,76,6,'plane'],[24,75.6,5,'plane'],[136,77,7,'willow']])CO.tree(g,x,y,h,null,{kind:k,seed:x*7+3});
+  for(const[x,y,h,k]of[[60,73,4,'plane'],[188,76,6,'plane'],[24,75.6,5,'plane'],[136,77,7,'willow']])CO.tree(g,x,y,h,null,{kind:k,seed:x*7+3});
   townAnti19(g);
   /* the nearer ground: meadow, wet and green, lit from behind us */
   CO.turf(g,0,100,320,144,'#7a9256',1963,{wind:.6,flowers:40,fc:['#f0ece0','#e8c84a','#d8a0c0'],scale:.9});
