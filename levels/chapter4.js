@@ -109,6 +109,8 @@ function ship(g,X,Y,t,o){o=o||{};const y=Y+Math.round(Math.sin(t/900)*2)/2,
 /* ---------- Seleucia: the harbor of Antioch, in the morning ---------- */
 function post4(g,x){g.fillStyle=lg(g,x-1,0,x+7,0,['#8a7a66','#5a4c40','#3a302c']);g.fillRect(x,96,6,8);R(g,x-1,94.6,8,2,'#6a5a4a');R(g,x-1,94.6,8,.6,'#e8d8b8')}
 ART.seleucia={w:480,fp:1.3,q:12,
+ /* the morning sun: shadows fall to the right and toward us, as those of the gate's wall, the posts and the jars on the quay */
+ light:{amb:'#ffffff',sun:[14,6,.4]},
  paint(g){const r=rng(211),ST='#d9cba6';
   sky(g,480,64,SKY4);cloud(g,330,12,64,9,r);cloud(g,190,22,40,6,r);cloud(g,440,26,34,5,r);
   /* the mountain above the town, falling steeply to the sea */
@@ -160,6 +162,8 @@ ART.seleucia={w:480,fp:1.3,q:12,
  front(){}};
 /* ---------- Salamis: the square between the harbor and the synagogue ---------- */
 ART.salamis={w:480,fp:1.3,q:12,
+ /* the sun high over the square: short shadows to the right and toward us, as the columns' */
+ light:{amb:'#ffffff',sun:[8,4,.4]},
  paint(g){const r=rng(233),LS='#e4d9bc',MB='#eee6d2',CU=['#c8743c','#b8632e','#d88a4a','#a85628'];
   sky(g,480,70,SKY4S);cloud(g,140,10,56,8,r);cloud(g,318,15,44,6,r);cloud(g,436,8,34,5,r);
   /* the harbor we landed in: the mole, and our ship at anchor with her sail furled. The low coast running away to the north lies on
@@ -270,7 +274,8 @@ ART.synagogue={w:320,q:12,
  front(){}};
 /* ---------- Paphos: the hall of the proconsul, open to the harbor ---------- */
 ART.paphos={w:400,fp:1.25,q:12,
- light:()=>({amb:'#f0e2d2',shade:[[0,96,'#d8c8c4'],[306,400,'#e0d0c8']]}),
+ /* the day comes in between the columns from the harbor: shadows fall to the right and toward us, as the columns' do */
+ light:()=>({amb:'#f0e2d2',sun:[12,12,.34],shade:[[0,96,'#d8c8c4'],[306,400,'#e0d0c8']]}),
  paint(g){const r=rng(271),MB='#f1eadb',RED=earth4('#a8402e',.08),rw=rng(2711);
   /* the view between the columns: the harbor of Paphos inside its two moles */
   sky(g,400,54,['#3a78c8','#6aa2dc','#a4c8e8','#dbe8ee'].map(c=>earth4(c,.14)));cloud(g,190,22,50,7,r);cloud(g,270,30,32,5,r);
