@@ -794,17 +794,10 @@ function cap11(g,s,x,y,w,col){s=T(s);let sz=4.8;const font=z=>`bold ${z}px "Luci
 /* A narrow, bare ridge of limestone below the Acropolis, with seats cut in the rock (Insight, "Areopagus"). The men who hear Paul
    sit on three of them and wear the Greek mantle over a tunic; no woman is on the rock. The path comes up from the left, and those
    who only stand and listen stay there, below the seats. Evening. */
-/* sitter: a man sitting, his mantle over his knees. The figure painter draws him standing; his body down to the waist is kept and set
-   lower, and under it are painted his lap, the fall of the mantle from his knees, the cloth hanging behind him, and his feet. */
-function sitter(g,x,y,id,dir,lit,lean){figure(g,x,y,lit,id+dir+'sit'+(lean?1:0),s=>{const o=LOOK[id],[c,t]=mk(FIG.W,FIG.H),CUT=FIG.OY-44,DROP=16;
-    t.setTransform(HR,0,0,HR,FIG.OX,FIG.OY);person(t,0,0,o,dir,0,0,lean,0,lean);
-    s.save();s.setTransform(1,0,0,1,0,0);s.drawImage(c,0,0,FIG.W,CUT,dir*(lean?1:0),DROP,FIG.W,CUT);s.restore();
-    s.save();s.scale(dir*FIG.K,FIG.K);const P=pal(o),C=P.cl||P.tu,TU=P.tu,S=P.sk,px=(a,b,col,w,h)=>{s.fillStyle=col;s.fillRect(a,b,w||1,h||1)};
-    for(let yy=-28;yy<=-8;yy++)for(let xx=-16;xx<=-10;xx++)px(xx,yy,C[xx<-14?4:(xx+yy)%4===0?4:3]);
-    for(let yy=-29;yy<=-19;yy++){const x1=yy<-27?20:22;for(let xx=-10;xx<=x1;xx++){const u=(xx+10)/32;px(xx,yy,C[yy===-29?0:yy===-28?1:yy>=-20?4:u<.1?4:u<.24?3:xx>=x1-1?1:(xx-yy*3)%11===0?3:(xx-yy*3)%11===1?1:2])}}
-    for(let yy=-18;yy<=-6;yy++)for(let xx=10;xx<=22;xx++){const u=(xx-10)/12,q=(xx*2+yy)%7;px(xx,yy,C[yy===-18?4:u<.2?4:u<.34?3:q===0?3:q===1?1:u>.84?1:2])}
-    for(let xx=11;xx<=21;xx++){px(xx,-5,TU[xx<13?4:3]);px(xx,-4,TU[xx<13?4:2])}
-    px(12,-3,S[2],8,2);px(19,-2,S[1],3);px(12,-3,S[3],2,2);px(11,-1,'#2a1810',12);px(21,-1,'#4a3020',3);s.restore()},8)}
+/* sitter: a man sitting on a seat of the rock, drawn by the figure painter as every seated figure is (SEATG): his mantle over his lap
+   and hanging from his knees, the near foot forward and the far heel behind. He is set 2.5 in front of the seat's foot (y), so that
+   his hips rest on the front edge of its top, 6.5 above that foot; lean bows his head as the speech holds him. */
+function sitter(g,x,y,id,dir,lit,lean){figure(g,x,y+2.5,lit,id+dir+'sit'+(lean?1:0),s=>person(s,0,0,LOOK[id],dir,-1,0,lean,0,lean),8)}
 const SEATS=[[230,113,74],[310,107,106],[420,113,74]];
 /* rockFace11: the face of the Acropolis seen from close by (on the hill of Ares): ledges of limestone that follow its bedding, each lit
    on its upper edge and with a soft shade under its lip; hollows where the rock has fallen away; and a few plants in the ledges. Soft

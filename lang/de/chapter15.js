@@ -356,7 +356,8 @@ TEXTS('de',15,{
   /* Names and lines kept from earlier chapters */
   "Timothy":["Timotheus","05hbuc5"],
   "Luke":["Lukas","0nmmdzm"],
-  "click_to_return_to_the_title":["Klicken, um zum Titelbild zurückzukehren","0qni08u"],
+  "click_to_continue_to_chapter_sixteen":["Klicken, um mit dem sechzehnten Kapitel weiterzumachen","1bjs6jn"],
+  "chapter_sixteen_code_code":["Code für das sechzehnte Kapitel: {code}","0hbohae"],
   "reed_pen":["Schreibrohr","06xy6v2"],
   "table":["Tisch","0kp9xpb"],
   "jars_of_oil":["Ölkrüge","1b1e464"],

@@ -596,9 +596,9 @@ function make(id,def){
     const z=G.zoom||1,x0=Math.max(0,Math.floor(G.cam/CS)),x1=Math.min(GW-1,Math.ceil((G.cam+VW/z)/CS)),y0=Math.max(0,Math.floor(G.camY/CS)),y1=Math.min(GH-1,Math.ceil((G.camY+VH/z)/CS));
     for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const i=y*GW+x;if(cell[i]&&!S[i]&&!M.cov[Math.min(def.h-1,y*CS+1)*def.w+Math.min(def.w-1,x*CS+1)])S[i]=1}}
   /* fades: a house fades while whoever is played walks behind it, and comes back when he is out from behind it */
-  function fades(dt){const pc=PC(),S=M.S[vNow()];if(!S)return;const k=Math.min(1,dt*10),inn=pc.room===id&&G.room===id;
-    for(const s of S){let to=1;if(inn&&pc.x+3>s.X0&&pc.x-3<s.X1+1&&pc.y>s.T&&pc.y<s.B+1)for(const st of s.strips)if(pc.y<st.front+.5&&pc.y>st.top&&pc.x+3>st.x0&&pc.x-3<st.x1+1){to=FADE;break}
-      s.alpha+=(to-s.alpha)*k;if(Math.abs(to-s.alpha)<.01)s.alpha=to}}
+  function fades(dt){const pc=PC(),S=M.S[vNow()];if(!S)return;const k=Math.min(1,dt*10),inn=pc.room===id&&G.room===id;M.over=[];
+    for(const s of S){let to=1,fr=-1;if(inn&&pc.x+3>s.X0&&pc.x-3<s.X1+1&&pc.y>s.T&&pc.y<s.B+1)for(const st of s.strips)if(pc.y<st.front+.5&&pc.y>st.top&&pc.x+3>st.x0&&pc.x-3<st.x1+1){to=FADE;fr=Math.max(fr,st.front)}
+      s.alpha+=(to-s.alpha)*k;if(Math.abs(to-s.alpha)<.01)s.alpha=to;if(s.alpha<1&&fr>=0)M.over.push([fr,s])}}
   M.tick=(dt,ts)=>{const v=vNow();if(M.warm!==v){M.reset();M.warm=v;sprites(M,v);M.dustOn=!!(crowdDef()&&crowdDef().dust);if(crowdDef()){for(let i=0;i<300;i++){M.t+=.1;step(.1)}}}
     M.t+=dt;step(dt);press(dt);steer();stopped();zones();look(dt);fades(dt)};
 
@@ -606,11 +606,17 @@ function make(id,def){
   const facingOf=o=>{if(o.walk&&!o.pushed&&o.mvx!=null){const x=o.mvx,y=o.mvy;return Math.abs(y)>Math.abs(x)*1.15?(y<0?'N':'S'):x<0?'W':'E'}
     if(o.pushed&&o.mvx!=null){const x=-o.mvx,y=-o.mvy;return Math.abs(y)>Math.abs(x)*1.15?(y<0?'N':'S'):x<0?'W':'E'}
     if(o.pface&&o.pfaceAt&&Math.abs(o.pfaceAt[0]-o.x)<1&&Math.abs(o.pfaceAt[1]-o.y)<1)return o.pface;return facing(o)<0?'W':'E'};
-  function drawFolk(gx,o,x,y,D,fr,run,talk){const c=folk(o,D,fr,armsOf(run,fr,D),talk),i=Math.floor(clamp(y,0,def.h-1))*def.w+Math.floor(clamp(x,0,def.w-1)),dark=M.sun&&M.sun[i];
-    foot(gx,x,y);gx.drawImage(dark?shaded(c):c,hp(x)-3,hp(y)-FH/2+.5,FW/2,FH/2)}
+  function drawFolk(gx,o,x,y,D,fr,run,talk,bare){const c=folk(o,D,fr,armsOf(run,fr,D),talk),i=Math.floor(clamp(y,0,def.h-1))*def.w+Math.floor(clamp(x,0,def.w-1)),dark=M.sun&&M.sun[i];
+    if(!bare)foot(gx,x,y);gx.drawImage(dark?shaded(c):c,hp(x)-3,hp(y)-FH/2+.5,FW/2,FH/2)}
   M.drawActor=(gx,o,ts)=>{const run=M.runs(o)&&!o.pushed,D=facingOf(o),w=o.walk,gone=o.gait?o.gait.gone:null,left=w?Math.hypot(w.x-o.x,w.y-o.y)+(w.rest||0):null,
-      fr=w&&!o.pushed?frameOf(run,gone,w.key?null:left,STRIDE[run?'run':'walk']):o.pushed?'p1':'stand';
-    drawFolk(gx,o.look,o.x,o.y,D,fr,run,o.talk&&Math.floor(ts/150)%2)};
+      fr=w&&!o.pushed?frameOf(run,gone,w.key?null:left,STRIDE[run?'run':'walk']):o.pushed?'p1':'stand',x=o.x,y=o.y,talk=o.talk&&Math.floor(ts/150)%2;
+    /* among the houses by the row he stands on, as the crowd is: drawn at once, every house strip would lie over him, and a wall just
+       north of him would hide his head and body */
+    depth(y,()=>drawFolk(gx,o.look,x,y,D,fr,run,talk));
+    /* behind a house that has faded, whoever is played is drawn again over it, as the house fades: at a third of its colour a pale
+       roof still lies over him and washes out his mantle, and he would be lost but for his head and his feet */
+    if(o===PC()&&M.over&&M.over.length){const[fr0,s]=M.over.reduce((a,b)=>b[0]>a[0]?b:a),k=clamp((1-s.alpha)/(1-FADE),0,1);
+      depth(fr0+.6,()=>{gx.globalAlpha=k;drawFolk(gx,o.look,x,y,D,fr,run,talk,1);gx.globalAlpha=1})}};
   M.draw=(gx,ts)=>{const z=G.zoom||1,cam=G.cam,cy=G.camY,vw=VW/z,vh=VH/z,cd=crowdDef(),run=cd&&(cd.pace||'run')==='run',v=vNow();
     for(const p of M.dust){const a=.32*(1-p.t/1.4);gx.fillStyle=`rgba(196,170,128,${a})`;gx.fillRect(hp(p.x),hp(p.y-1-p.t*2),1,1)}
     /* the way whoever is played walks after a click: a row of dots on the ground, and a small diamond where it ends, never a cross */

@@ -56,29 +56,14 @@ const _=null,SCALE=[0,2,3,5,7,9,10],
   {inst:'harp',moods:['harbor'],prog:'ABCD',len:5,oct:12,seq:SLOW,vol:.32}]};
 
 /* ---- the crowd's cry (Acts 19:28, 34): heard, never written ---- */
-/* A crowd of men shouting the same words, each a little off the beat and off the pitch of the next. Each voice is a buzz from the throat
-   through three resonances of the mouth that move with the vowel, and breath; the shout falls at the end of each syllable, as a shout
-   does. It has no consonants, so it sounds like a crowd and never like words. The vowels and their rhythm are those of what Acts says
-   the crowd shouted, in the player's language: the text gives them under the key cry14 (CONTRIBUTING section 8), each syllable as its
-   height (0 the lowest), a dot, its length in steps, and its vowel; "-.2" is a rest of two steps. */
-const VOW={a:[730,1090,2440],o:[570,840,2410],u:[320,800,2240],e:[530,1840,2480],i:[280,2250,2900],y:[290,1700,2200],'@':[500,1400,2450]};
-const parseCry=s=>T(s).split(' ').map(x=>{const m=/^(-?\d+|-)\.(\d+)(.?)$/.exec(x)||['','-','1',''];return[m[1]==='-'?null:+m[1],+m[2],m[3]||'a']});
-function shout(dest,t,d,f,vow,v,far){const c=AU.ctx,o=c.createOscillator(),src=c.createGain();o.type='sawtooth';
-  o.frequency.setValueAtTime(f*1.06,t);o.frequency.exponentialRampToValueAtTime(f,t+.05);o.frequency.exponentialRampToValueAtTime(f*.82,t+d);o.connect(src);
-  const nz=c.createBufferSource(),ng=c.createGain();nz.buffer=AU.nbuf;nz.loop=true;ng.gain.value=.5;nz.connect(ng);ng.connect(src);
-  const V=VOW[vow]||VOW.a,sum=c.createGain();
-  V.forEach((fr,i)=>{const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=fr*(.95+.1*Math.random());bp.Q.value=[6,8,9][i];const gg=c.createGain();gg.gain.value=[1,.6,.3][i];src.connect(bp);bp.connect(gg);gg.connect(sum)});
-  const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=far?520:2600;sum.connect(lp);
-  const env=c.createGain(),g=env.gain;g.setValueAtTime(.0001,t);g.linearRampToValueAtTime(v,t+.04);g.setValueAtTime(v,t+d*.6);g.linearRampToValueAtTime(.0001,t+d);lp.connect(env);
-  let out=env;if(c.createStereoPanner){const p=c.createStereoPanner();p.pan.value=Math.random()*1.6-.8;env.connect(p);out=p}out.connect(dest);
-  o.start(t);o.stop(t+d+.05);nz.start(t,Math.random()*.5);nz.stop(t+d+.05)}
-/* cry: the whole cry once, from t, by n voices. far: heard through walls and shutters. */
-function cry(dest,t,n,far){if(!AU.ctx)return 0;const L=parseCry('cry14'),STEP=.2;let len=0;for(const s of L)len+=s[1]*STEP;
-  for(let k=0;k<n;k++){let y=t+Math.random()*.06;const base=mtof(note(-7,0,MUSIC))*(.94+.12*Math.random());
-    for(const[h,l,vow]of L){const d=l*STEP;if(h!=null)shout(dest,y,d*.9,base*Math.pow(2,(h*2)/12),vow,(far?.012:.03)/Math.sqrt(n)*3,far);y+=d}}
-  return len}
+/* The cry is painted in sound by shared/crowd.js (see there): a crowd of men shouting the same words, no consonants, so that it sounds
+   like a crowd and never like words. Its vowels and their rhythm are those of what Acts says the crowd shouted, in the player's
+   language: the text gives them under the key cry14 (CONTRIBUTING section 8). Its keynote is the chapter's own, an octave down.
+   cry: the whole cry once, from t, by n voices. far: heard through walls and shutters. */
+const CR=SHARED.crowd,parseCry=s=>CR.parse(s);
+function cry(dest,t,n,far){return CR.cry(dest,t,{key:'cry14',n,far,base:mtof(note(-7,0,MUSIC))})}
 /* the roar of a crowd in the theater and the streets: low, with a slow swell (as in the lane map's demo) */
-const BEDS={roar14:{type:'lowpass',f:340,q:.6,lfo:.19,depth:.55,v:.55},roarfar14:{type:'lowpass',f:180,q:.5,lfo:.12,depth:.6,v:.45}};
+const BEDS={roar14:CR.ROAR,roarfar14:CR.ROARFAR};
 const CALLS={cry14:[3.5,7,(t,d)=>cry(d,t,9,0)],cryfar14:[5,9,(t,d)=>cry(d,t,7,1)],
   /* a silversmith's hammer on silver: light, quick, and now and then a pause */
   hammer14:[.5,1.6,(t,d)=>{const n=2+(Math.random()*4|0);for(let i=0;i<n;i++){tone({f:2400+Math.random()*500,to:1900,t:t+i*.21,d:.06,type:'triangle',v:.035,dest:d});noise({t:t+i*.21,d:.02,v:.04,f:5200,q:4,dest:d})}}]};
@@ -822,7 +807,7 @@ function paintDoor(g){const r=rng(1407),W='#d2c09a';
   for(let i=0;i<120;i++){const k=r(),y=104.5+k*39;R(g,r()*320,y,.5+k*1.6,.5+k*.4,r()<.5?'rgba(70,52,36,.28)':'rgba(255,236,200,.18)')}
   ao(g,0,104,320,6,'t',.45,'#2a2030');ao(g,0,96,320,8,'b',.3,'#3a2c28');
   /* the bench beside the door, and a jar with its lid on in the corner, both standing out on the floor */
-  benchDoor(g,178,96,48);shadow14(g,314,107.2,6.6,1.3,.6);vessel(g,312,107,5.6,15,'#9a5a36','pithos',{noShadow:1});oval(g,312,92.4,4.2,1.3,'#5e4428');R(g,308,91.4,8,.5,'#8a6a44');
+  benchDoor(g,178,101.5,48);shadow14(g,314,107.2,6.6,1.3,.6);vessel(g,312,107,5.6,15,'#9a5a36','pithos',{noShadow:1});oval(g,312,92.4,4.2,1.3,'#5e4428');R(g,308,91.4,8,.5,'#8a6a44');
   /* the light of the room: dim, brighter by the window and by the door, darker toward the ceiling and the corners */
   lightmap(g,320,'#665c62',l=>{pool(l,170,92,210,70,'#aa9e9a',.7);pool(l,81,58,34,30,'#e0d2b8',.55);pool(l,80,116,44,12,'#dccbaa',.55);
     pool(l,254,106,50,16,'#e8d6b4',.7);pool(l,254,80,30,34,'#c8b8a0',.4);pool(l,160,128,150,20,'#b0a498',.4);
@@ -879,8 +864,8 @@ function doorInDoor(g,r){const{x,y,w,h}=LEAFDoor,F='#7a5a3a',D='#5a3e26';
 function benchDoor(g,x,y,w){const c='#8a6a44';
   const q=rng(1445);
   /* its shadow on the wall behind, in three soft steps, and on the floor */
-  for(const[d,a]of[[0,.1],[1,.1],[2,.1]])R(g,x+2+d,y+4,w-2-d*2,6-d*1.4,rgba('#281e28',a));shadow14(g,x+w/2+1,y+14.2,w/2,1.6,.62);
-  for(const lx of[x+3,x+w-7]){board14(g,lx,y+4.4,4,9.6,tint(c,-.2),q,1);R(g,lx,y+4.4,4,.6,tint(c,-.45))}
+  for(const[d,a]of[[0,.1],[1,.1],[2,.1]])R(g,x+2+d,y+4,w-2-d*2,6-d*1.4,rgba('#281e28',a));shadow14(g,x+w/2+1,110.2,w/2,1.6,.62);
+  for(const lx of[x+3,x+w-7]){board14(g,lx,y+4.4,4,110-y-4.4,tint(c,-.2),q,1);R(g,lx,y+4.4,4,.6,tint(c,-.45))}
   board14(g,x,y,w,1.8,tint(c,.14),q);R(g,x,y,w,.5,tint(c,.4));plank14(g,x,y+1.8,w,2.6,tint(c,-.14),q);R(g,x,y+4,w,.4,tint(c,-.5))}
 /* doorDraw: the light of the day on the floor, through the slits of the hatch and of the shutters. It falls a little in front of them at
    first; while they wait (G.dl14 from 0 to 1) the sun goes lower and round, and the light lengthens and moves across the floor to the
@@ -1618,7 +1603,7 @@ async function holdBack(){if(PC()!==DA)return;if(F.plea)return say(P,'even_they_
 function knock(){if(!AU.ctx)return;const t=now()+.05;for(let i=0;i<3;i++){noise({t:t+i*.22,d:.06,v:.25,f:380,q:1.2,type:'lowpass'});tone({f:110,to:80,t:t+i*.22,d:.08,type:'triangle',v:.08})}}
 /* Paul's place and pose as he is held: at the door with his hand to the bolt; turned from it; without his mantle; on the bench */
 function posePaul(){const n=held();P.look=n>=2?LOOK.paul14b:LOOK.paul;P.wear=n>=2?'b':'';
-  if(n===0)place(P,'door14',226,120,1);else if(n===1)place(P,'door14',214,121,-1);else if(n===2)place(P,'door14',208,121,-1);else{place(P,'door14',200,113,-1);P.seat=1}}
+  if(n===0)place(P,'door14',226,120,1);else if(n===1)place(P,'door14',214,121,-1);else if(n===2)place(P,'door14',208,121,-1);else{place(P,'door14',200,110.5,-1);P.seat=1}}
 async function hatch(){if(PC()!==DA)return say(PC(),'hatch_the_size_of_a_face');if(held()<3)return say(DA,'not_today_nobody_opens');if(F.knock)return say(DA,'two_seals_on_the_knot_both_whole');
   return run14(async()=>{SFX.door();await say(RUN,'message_for_paul_sealed',{to:DA});await say(DA,'two_seals_on_the_knot_both_whole',{to:P});F.knock=1;addItem('plead14');codeBtn()})}
 async function givePlea(id){if(id!=='plead14')return false;if(held()<3)return say(P,'later_let_me_through_first');
