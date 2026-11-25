@@ -205,7 +205,7 @@ function drawCouncil19(g){BACK19.forEach(([x,y,d],i)=>man(g,x,y,'back19'+'abcdef
    Hotspots: the gate 0,40,24,64 · the doorway 286,44,30,60 · the bench 100,90,120,12 · at night the three horses (HORSES19).
    Walk: 30..300 by 112..138. Actors: 'day' Paul 160,124, soldiers 144,124 and 176,124, the commander 216,118 · 'aft' Paul 150,118 by the
    bench, the guard 184,120, the army officer 262,120, a soldier 60,116; the nephew comes in at 40,126 · 'night' the commander 150,112, the
-   officers 196,116 and 120,116, the horseman 306,118, spearmen 36,114 and 56,120, soldiers 86,114 and 102,122; Paul at 60,130; the
+   officers 190,116 and 118,116, the horseman 306,118, spearmen 36,114 and 56,120, soldiers 86,114 and 102,122; Paul at 128,134; the
    horses at HORSES19 (200,128 · 240,126 · 280,130, forty apart so that no head lies over another's body) (drawn, with footprints in ROOMS.barracks19.block). */
 const HORSES19=[[200,128,'fresh'],[240,126,'calm'],[280,130,'shy']];
 const varB19=()=>phase19()==='nephew'?'aft':phase19()==='yard'?'night':'day';
@@ -420,7 +420,7 @@ function paintAnti19(g){const r=rng(1961);
    Hotspots: the sea 0,24,320,34 · the sea wall with its gulls 0,80,190,14 · the dais 196,96,110,18 · the letter on the table 264,84,22,10.
    Walk: 30..300 by 114..138. Actors: Felix 238,100 seated on the dais (seat top 91); Paul 150,126; the horsemen's officer 122,124 beside
    him; a soldier 296,124. */
-ART.palace19={w:320,q:12,paint(g){paintPalace19(g)},light:{amb:'#f2e2cc',sun:[.5,.3,.3],wallY:96},draw(){},front(){}};
+ART.palace19={w:320,q:12,variant:()=>F.anti?'l':'',paint(g){paintPalace19(g)},light:{amb:'#f2e2cc',sun:[.5,.3,.3],wallY:96},draw(){},front(){}};
 function paintPalace19(g){const r=rng(1971),S='#e0d2b4';
   sky19(g,320,58,'day');
   g.fillStyle=lg(g,0,58,0,84,['#5a86a8','#3a6a90']);g.fillRect(0,58,320,26);for(let i=0;i<180;i++)R(g,r()*320,59+r()*24,1+r()*3,.5,r()<.5?'rgba(230,244,250,.3)':'rgba(20,40,70,.25)');
@@ -871,7 +871,7 @@ const TABLETS={
 
 /* ============ PLACING THE CAST, SETUP ============ */
 const LX=x=>X19(x),LY=y=>Y19(y);
-const ENT={council19:[150,130,1],get barracks19(){return varB19()==='aft'?[40,126,1]:varB19()==='night'?[60,130,1]:[160,124,1]},door19:[126,126,1],
+const ENT={council19:[150,130,1],get barracks19(){return varB19()==='aft'?[40,126,1]:varB19()==='night'?[128,134,1]:[160,124,1]},door19:[126,126,1],
   lanes19:[LX(AT19.start[0]),LY(AT19.start[1]),1],gate19:[50,126,1],cmd19:[70,126,1],antipatris19:[190,130,-1],palace19:[150,126,1],letter19:[160,236,1]};
 const EVERY=[NE,SI,AN,AT1,AT2,...MEM,C1,C2,CM,OF,OB,S1,S2,SE,GD,HM,SP1,SP2,FX,BS,O1,O2,EL,PM,OS];
 /* place19: everyone where the story has him, from the flags */
