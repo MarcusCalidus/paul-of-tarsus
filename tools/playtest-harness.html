@@ -910,8 +910,50 @@
       ok(!bad.length,`${id}: Paul walked round ${walks} footprint${walks===1?'':'s'}, and never into one`+(bad.length?'. BAD: '+bad.join(' | '):''))}
     {const id=rooms[0];if(id){setChapter(n||1);place(P,id,(ROOMS[id].walk[0]+ROOMS[id].walk[1])/2,ROOMS[id].walk[3]-4,1);enterRoom(id,P.x,P.y,1)}}
     halt(stop)}}
+  /* shadows<N> (CONTRIBUTING section 4): the rooms of a chapter with a strip to walk on, each with Paul standing at five places along the back
+     and the front of the strip, and a sixth in mid-stride, in the light the room has as the chapter opens. For each room a sheet,
+     shadows-<room>, at the size of the game (wide rooms whole) and a second, shadows-<room>-x4, of the front row four times enlarged, to check
+     that every cast shadow falls the way the painted light does and crosses no floor joint as a plus, an X or a T. It fails if a room does not
+     say what light it has (ART[id].light; null for a close view or a map seen by nobody standing in it), and on a sun given as a direction of
+     length about one: sun:[dx,dy,strength] is where the shadow's tip lies, in room pixels, from the feet of a figure 46 pixels tall. */
+  {const m=stop.match(/^shadows(\d+)$/);if(m){clearInterval(sk);G.speedAll=0;ov.className='';ov.onclick=null;G.splash=0;G.scene=null;
+    const n=+m[1];const before=new Set(n===1?[]:Object.keys(ROOMS));await loadLevel(n);setChapter(n);
+    for(const o of Object.values(ACT))o.room=null;
+    const rooms=Object.keys(ROOMS).filter(id=>!before.has(id)&&ROOMS[id].walk&&!planOf(id)&&ART[id]&&ROOMS[id].walk[0]<=ROOMS[id].walk[1]&&ROOMS[id].walk[2]<roomH(id));
+    window.SHEETS={};const look=paulLook(n);let k=0;
+    for(const id of rooms){const R=ROOMS[id],a=ART[id],w=R.walk,W=a.w||VW,Hh=roomH(id),K=2,c=document.createElement('canvas');c.width=W*K;c.height=Hh*K;const g=c.getContext('2d');
+      let L=a.light;try{if(typeof L==='function')L=L()}catch(e){L=undefined}
+      const sun=L&&(L.sun||L.dir),len=sun?Math.hypot(sun[0],sun[1]):0;
+      ok('light' in a,`${id}: says what light it has`+(!('light' in a)?' (NO light: give it amb, sun or lamps, or light:null for a close view or a map)':
+        ` (${!L?'none':[(L.lamps||[]).length?L.lamps.length+' lamp'+(L.lamps.length>1?'s':''):'',sun?'sun ['+sun.slice(0,2).join(',')+']':'','amb '+(L.amb||'#ffffff')].filter(Boolean).join(', ')})`));
+      if(sun)ok(len>=3,`${id}: its sun casts a shadow ${len.toFixed(1)} room pixels long, at least 3 (a direction of length one casts none)`);
+      g.setTransform(K,0,0,K,0,0);g.imageSmoothingEnabled=false;LID=id;g.drawImage(bg(id),0,0,W,Hh);
+      const q=DQ=[];SQ=[];try{a.draw(g,1000)}catch(e){}for(const p of props(id))q.push([p.y,()=>g.drawImage(p.c,p.x,p.t,p.w,p.h)]);
+      /* a room whose strip is a single spot (where a scene sets its people) is shown with them round that spot */
+      const pt=w[1]-w[0]<40,x0=pt?Math.max(8,w[0]-110):w[0]+8,x1=pt?Math.min(W-8,w[1]+110):w[1]-8,st=(x1-x0)/5,deep=w[3]-w[2]>=6,
+        xs=[0,1,2,3,4].map(i=>x0+st*(i+.25)),spots=[...(deep?xs.map(x=>[x+st/2,w[2]+1,1,0]):[]),...xs.map((x,i)=>[x,w[3]-1,i<2?1:-1,0]),[xs[1]+st/2,(w[2]+w[3])/2,1,3]];
+      for(const[x,y,dir,fr]of spots){const o={id:'shtest'+(k++%2),look,x,y,dir,fr,room:id,noTurn:1};drawActor(g,o,1000,id)}
+      const sq=SQ;DQ=SQ=null;for(const fn of sq)fn();q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());
+      const f=fg(id);if(f)g.drawImage(f,0,0,f.width/HR,VH);try{a.front(g,1000)}catch(e){}LID=null;
+      SHEETS['shadows-'+id]=c.toDataURL();
+      const y0=Math.max(0,w[3]-56),hh=Math.min(Hh,w[3]+10)-y0,z=c.width>1280?1280/W:4,c4=document.createElement('canvas');c4.width=Math.round(W*z);c4.height=Math.round(hh*z*(z<4?4/z:1));
+      const g4=c4.getContext('2d');g4.imageSmoothingEnabled=false;
+      if(z>=4)g4.drawImage(c,0,y0*K,W*K,hh*K,0,0,W*4,hh*4);
+      else{const half=Math.ceil(W/2);c4.width=half*4;c4.height=hh*8;g4.imageSmoothingEnabled=false;g4.drawImage(c,0,y0*K,half*K,hh*K,0,0,half*4,hh*4);g4.drawImage(c,half*K,y0*K,(W-half)*K,hh*K,0,hh*4,(W-half)*4,hh*4)}
+      SHEETS['shadows-'+id+'-x4']=c4.toDataURL()}
+    ok(rooms.length>0,`${rooms.length} rooms of chapter ${n} with a strip to walk on (sheets shadows-<room> and shadows-<room>-x4)`);
+    {const id=rooms[0];if(id){place(P,id,(ROOMS[id].walk[0]+ROOMS[id].walk[1])/2,ROOMS[id].walk[3]-4,1);enterRoom(id,P.x,P.y,1)}}
+    halt(stop)}}
   if(stop==='shadows'){clearInterval(sk);G.speedAll=0;ov.className='';ov.onclick=null;G.splash=0;G.scene=null;
     await loadPrologue();for(const n of[1,2,4,5,6,7,8,9,10,12,13,14,15])await loadLevel(n);
+    /* 0. Every room of every chapter where people stand says what light it has (light:null only for a close view or a map), and no sun is
+       a direction of length one, which casts no shadow: sun:[dx,dy,strength] puts the shadow's tip dx,dy room pixels from the feet */
+    {for(const n of Object.keys(CHAP))await loadLevel(n);const none=[],flat=[];
+      for(const id of Object.keys(ROOMS)){const R=ROOMS[id];if(!R.walk||planOf(id)||!ART[id]||R.walk[0]>R.walk[1]||R.walk[2]>=roomH(id))continue;
+        if(!('light' in ART[id])){none.push(id);continue}let L=ART[id].light;try{if(typeof L==='function')L=L()}catch(e){L=null}
+        const sn=L&&(L.sun||L.dir);if(sn&&Math.hypot(sn[0],sn[1])<3)flat.push(id)}
+      ok(!none.length,'every room where people stand says what light it has'+(none.length?'. NONE: '+none.join(', '):''));
+      ok(!flat.length,'every sun casts a shadow at least 3 room pixels long'+(flat.length?'. TOO SHORT: '+flat.join(', '):''))}
     const snapRoom=(id,ts,setup)=>{const w=VW*HR,h=VH*HR,[c,g]=mk(w,h);g.setTransform(HR,0,0,HR,0,0);g.imageSmoothingEnabled=false;
       for(const o of Object.values(ACT))o.room=null;if(setup)setup();
       const a=ART[id],cam=clamp((G.cam||0),0,Math.max(0,(a.w||VW)-VW));LID=null;backdrop(g,id,cam,0);g.save();g.translate(-cam,0);
