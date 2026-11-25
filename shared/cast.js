@@ -17,53 +17,53 @@ SHARED.cast=(()=>{
    plated belts (milBelt) and crossguard-free sheathed gladii. */
 const ROMAN={
   /* Foot soldiers (legionaries & auxiliaries: Jerusalem barracks, night escort, Caesarea, grain ship escort) */
-  legionary_pilum:{skin:'#c08e64',hair:'#342418',brow:'#281c12',crop:1,tunic:'#963028',helm:'#8c929c',helmStyle:'galea',
-    armor:'#9aa0aa',armorStyle:'seg',belt:'#4a2c16',milBelt:1,caligae:1,gladius:1,pilum:1,ph:400},
-  legionary_guard:{skin:'#b8845c',hair:'#2a1c12',brow:'#20140e',crop:1,tunic:'#92302a',helm:'#8a909a',helmStyle:'galea',
-    armor:'#969ca6',armorStyle:'seg',belt:'#4a2c16',milBelt:1,caligae:1,gladius:1,ph:900},
-  legionary_bare:{skin:'#c8966c',hair:'#4a3624',brow:'#342416',crop:1,tunic:'#98342c',
-    armor:'#969ca6',armorStyle:'seg',belt:'#4a2c16',milBelt:1,caligae:1,gladius:1,ph:1400},
-  auxiliary_mail:{skin:'#b07c54',hair:'#2a1a12',brow:'#20140e',crop:1,tunic:'#c6b494',helm:'#a88c52',helmStyle:'galea',
-    armor:'#7e848e',armorStyle:'mail',belt:'#422814',milBelt:1,caligae:1,gladius:1,spear:1,ph:1900},
-  escort_cloak:{skin:'#bc8a60',hair:'#5a4632',brow:'#3e2e20',crop:1,tunic:'#92322a',cloak:'#6e3a2c',cape:1,
-    armor:'#7e848e',armorStyle:'mail',belt:'#422814',milBelt:1,caligae:1,gladius:1,ph:2400},
+  legionary_pilum:{skin:'#c08e64',hair:'#342418',brow:'#281c12',crop:1,tunic:'#962a24',helm:'#949ca8',helmStyle:'galea',helmTrim:'#c8a44e',
+    armor:'#a0a8b4',armorStyle:'seg',belt:'#4a2c16',milBelt:1,caligae:1,gladius:1,pilum:1,ph:400},
+  legionary_guard:{skin:'#b8845c',hair:'#2a1c12',brow:'#20140e',crop:1,tunic:'#922824',helm:'#8e96a2',helmStyle:'galea',helmTrim:'#c4a04a',
+    armor:'#9ca4b0',armorStyle:'seg',belt:'#4a2c16',milBelt:1,caligae:1,gladius:1,ph:900},
+  legionary_bare:{skin:'#c8966c',hair:'#4a3624',brow:'#342416',crop:1,tunic:'#982c26',
+    armor:'#9ca4b0',armorStyle:'seg',belt:'#4a2c16',milBelt:1,caligae:1,gladius:1,ph:1400},
+  auxiliary_mail:{skin:'#b07c54',hair:'#2a1a12',brow:'#20140e',crop:1,tunic:'#d6cab2',helm:'#8e96a2',helmStyle:'galea',helmTrim:'#a4acb8',
+    armor:'#7e8692',armorStyle:'mail',belt:'#4a2e18',milBelt:1,caligae:1,gladius:1,spear:1,ph:1900},
+  escort_cloak:{skin:'#bc8a60',hair:'#5a4632',brow:'#3e2e20',crop:1,tunic:'#cec2aa',cloak:'#3e463a',cape:1,
+    armor:'#7c8490',armorStyle:'mail',belt:'#4a2e18',milBelt:1,caligae:1,gladius:1,ph:2400},
 
   /* Centurions / army officers (Jerusalem barracks, Claudius Lysias's officers, Julius of the band of Augustus) */
-  centurion_crested:{skin:'#be8a5e',hair:'#3e2e20',brow:'#2a1c12',crop:1,tunic:'#9a2c26',cloak:'#8e2220',offCloak:1,
-    helm:'#b8964e',helmStyle:'crest',crest:'#b82820',armor:'#b8964e',armorStyle:'cuirass',pteruges:'#e2d8be',
-    sash:'#8e2220',belt:'#4a2c16',milBelt:1,caligae:1,gladius:'left',ph:600},
-  centurion_julius:{skin:'#b8845a',hair:'#6e665c',grey:'#a0988e',brow:'#4a423a',crop:1,thin:1,tunic:'#962c26',cloak:'#8a2220',offCloak:1,
-    armor:'#b4924c',armorStyle:'cuirass',pteruges:'#ded4ba',sash:'#8a2220',belt:'#4a2c16',milBelt:1,caligae:1,gladius:'left',ph:1100},
-  centurion_veteran:{skin:'#c49268',hair:'#8a8278',grey:'#beb8ae',brow:'#605a52',crop:1,thin:1,tunic:'#8c2a24',cloak:'#7a1e20',cape:1,
-    helm:'#9ca2ac',helmStyle:'crest',crest:'#e4dcc4',armor:'#9aa0aa',armorStyle:'cuirass',pteruges:'#d8ceb4',
-    sash:'#7a1e20',belt:'#4a2c16',milBelt:1,caligae:1,gladius:'left',ph:1700},
+  centurion_crested:{skin:'#be8a5e',hair:'#3e2e20',brow:'#2a1c12',crop:1,tunic:'#962622',cloak:'#8e1e1e',offCloak:1,drape:1,
+    helm:'#c49844',helmStyle:'crest',helmTrim:'#e4c064',crest:'#a8201c',armor:'#c49844',armorStyle:'cuirass',pteruges:'#5a361e',
+    sash:'#8e1e1e',belt:'#4a2c16',milBelt:1,caligae:1,gladius:'left',ph:600},
+  centurion_julius:{skin:'#b8845a',hair:'#6e665c',grey:'#a0988e',brow:'#4a423a',crop:1,thin:1,tunic:'#922622',cloak:'#8a1e1e',offCloak:1,
+    armor:'#be9442',armorStyle:'cuirass',pteruges:'#5a361e',sash:'#8a1e1e',belt:'#4a2c16',milBelt:1,caligae:1,gladius:'left',ph:1100},
+  centurion_veteran:{skin:'#c49268',hair:'#8a8278',grey:'#beb8ae',brow:'#605a52',crop:1,thin:1,tunic:'#8c2622',cloak:'#7a1c1e',cape:1,
+    helm:'#9ea6b2',helmStyle:'crest',helmTrim:'#d8b454',crest:'#ebe4d4',armor:'#9ea6b2',armorStyle:'cuirass',cuirassTrim:'#d4ae4e',pteruges:'#4e301e',
+    sash:'#7a1c1e',belt:'#4a2c16',milBelt:1,caligae:1,gladius:'left',ph:1700},
 
   /* The commander of the garrison in Jerusalem (Acts 21:31-22:29), a military tribune: Greek by birth, middle-aged, clean-shaven, his hair
      cropped and greying at the temples. The signs of his rank (Insight on the Scriptures, "Military Commander"): the narrow purple stripe on
      his tunic (clavus) and a gold ring (ring, two pixels on a finger of the far hand). tribune: in the barracks, in his tunic, with a
      military cloak over the near shoulder, belt, boots and sword; tribune_armored: in a molded cuirass with its sash, bareheaded (as he
      runs down to the court, or on the stairs); tribune_helmet: the same with a plumed helmet. */
-  tribune:{skin:'#c69a6e',hair:'#44362a',grey:'#9a9186',brow:'#2e2218',crop:1,thin:1,tunic:'#e6dfcc',clavus:'#5c2458',cloak:'#7e2a26',offCloak:1,
-    belt:'#4a2c16',milBelt:1,caligae:1,gladius:'left',ring:1,ph:2900},
-  tribune_armored:{skin:'#c69a6e',hair:'#44362a',grey:'#9a9186',brow:'#2e2218',crop:1,thin:1,tunic:'#e6dfcc',clavus:'#5c2458',cloak:'#7e2a26',offCloak:1,
-    armor:'#c4a058',armorStyle:'cuirass',pteruges:'#e8dfc8',sash:'#7e2a26',belt:'#4a2c16',milBelt:1,caligae:1,gladius:'left',ring:1,ph:2900},
-  tribune_helmet:{skin:'#c69a6e',hair:'#44362a',grey:'#9a9186',brow:'#2e2218',crop:1,thin:1,tunic:'#e6dfcc',clavus:'#5c2458',cloak:'#7e2a26',offCloak:1,
-    helm:'#c4a058',helmStyle:'plume',crest:'#e6dccb',armor:'#c4a058',armorStyle:'cuirass',pteruges:'#e8dfc8',sash:'#7e2a26',belt:'#4a2c16',milBelt:1,caligae:1,gladius:'left',ring:1,ph:2900},
+  tribune:{skin:'#c69a6e',hair:'#44362a',grey:'#9a9186',brow:'#2e2218',crop:1,thin:1,tunic:'#ebe4d2',clavus:'#60226a',cloak:'#642474',offCloak:1,
+    belt:'#4a2c16',milBelt:1,caligae:1,highBoot:1,gladius:'left',ring:1,ph:2900},
+  tribune_armored:{skin:'#c69a6e',hair:'#44362a',grey:'#9a9186',brow:'#2e2218',crop:1,thin:1,tunic:'#ebe4d2',clavus:'#60226a',cloak:'#642474',offCloak:1,
+    armor:'#cfa646',armorStyle:'cuirass',pteruges:'#52321e',sash:'#5c2068',belt:'#4a2c16',milBelt:1,caligae:1,highBoot:1,gladius:'left',ring:1,ph:2900},
+  tribune_helmet:{skin:'#c69a6e',hair:'#44362a',grey:'#9a9186',brow:'#2e2218',crop:1,thin:1,tunic:'#ebe4d2',clavus:'#60226a',cloak:'#642474',offCloak:1,
+    helm:'#cfa646',helmStyle:'plume',helmTrim:'#f0d478',crest:'#ece6d8',armor:'#cfa646',armorStyle:'cuirass',pteruges:'#52321e',sash:'#5c2068',belt:'#4a2c16',milBelt:1,caligae:1,highBoot:1,gladius:'left',ring:1,ph:2900},
 
   /* Praetorian Guard in Rome (Acts 28:16; Philippians 1:13):
      Inside the city limits they wore civilian-style tunics and cloaks (or formal togas on palace/escort duty),
      recognizable by military belts, sandals (caligae) and side arms; outside/full dress in plumed armor. */
-  praetorian_watch:{skin:'#c29066',hair:'#342418',brow:'#261a10',crop:1,tunic:'#e4dcc8',cloak:'#78242c',offCloak:1,
+  praetorian_watch:{skin:'#c29066',hair:'#342418',brow:'#261a10',crop:1,tunic:'#7c2424',cloak:'#7a1e22',offCloak:1,drape:1,
     belt:'#4a2c16',milBelt:1,caligae:1,gladius:1,ph:500},
-  praetorian_watch_young:{skin:'#caa078',hair:'#5a4028',brow:'#3e2a18',crop:1,slim:1,tunic:'#d6ccb6',cloak:'#4a3852',offCloak:1,
+  praetorian_watch_young:{skin:'#caa078',hair:'#5a4028',brow:'#3e2a18',crop:1,slim:1,tunic:'#e2dac6',cloak:'#54265e',offCloak:1,
     belt:'#4a2c16',milBelt:1,caligae:1,gladius:1,ph:1200},
-  praetorian_watch_old:{skin:'#b4825a',hair:'#868078',grey:'#bab4ac',brow:'#5e5850',crop:1,thin:1,tunic:'#dcd2bc',cloak:'#6e2228',cape:1,
+  praetorian_watch_old:{skin:'#b4825a',hair:'#868078',grey:'#bab4ac',brow:'#5e5850',crop:1,thin:1,tunic:'#dfd6c0',cloak:'#6e2026',cape:1,
     belt:'#4a2c16',milBelt:1,caligae:1,gladius:1,ph:2100},
-  praetorian_toga:{skin:'#c4946a',hair:'#3e2c1e',brow:'#2a1c12',crop:1,tunic:'#ebe4d2',cloak:'#f0eadc',toga:1,long:1,
+  praetorian_toga:{skin:'#c4946a',hair:'#3e2c1e',brow:'#2a1c12',crop:1,tunic:'#f0eadc',cloak:'#f4efe2',toga:1,long:1,
     caligae:1,ph:800},
-  praetorian_armored:{skin:'#bc8a60',hair:'#2e2014',brow:'#20140e',crop:1,tunic:'#7c202a',cloak:'#681a24',cape:1,
-    helm:'#9ea4ae',helmStyle:'plume',crest:'#8a1e28',armor:'#b69450',armorStyle:'cuirass',pteruges:'#e6dec6',
-    sash:'#681a24',belt:'#4a2c16',milBelt:1,caligae:1,gladius:1,pilum:1,ph:1600},
+  praetorian_armored:{skin:'#bc8a60',hair:'#2e2014',brow:'#20140e',crop:1,tunic:'#7c202a',cloak:'#581e66',cape:1,
+    helm:'#969ea8',helmStyle:'plume',helmTrim:'#d8b454',crest:'#722482',armor:'#9ca4b0',armorStyle:'cuirass',cuirassTrim:'#d8b454',pteruges:'#662472',
+    sash:'#642070',belt:'#4a2c16',milBelt:1,caligae:1,greaves:'#9ea6b2',gladius:1,pilum:1,ph:1600},
 
   /* The escort of Acts 23:23-24 (Chapter Nineteen): 70 horsemen and 200 spearmen beside the foot soldiers. horseman: an auxiliary
      cavalryman in mail, helmet and cloak, with his sword and no spear (standing, or riding: a rider is drawn seated with his legs
@@ -71,15 +71,15 @@ const ROMAN={
      and leather belt with a helmet, carrying one simple spear with a wooden shaft and an iron head (the Study Edition's media "Roman
      Spears"), always slanting (spear:'slant'): the far hand holds it, its head leans forward well ahead of the face, and its shaft runs
      behind the body, never upright. */
-  horseman:{skin:'#b88458',hair:'#3a2a1c',brow:'#28190f',crop:1,tunic:'#b89a6a',cloak:'#5a4a3a',cape:1,helm:'#9a8a5a',helmStyle:'galea',
-    armor:'#7e848e',armorStyle:'mail',belt:'#422814',milBelt:1,caligae:1,gladius:1,ph:3100},
-  horseman_b:{skin:'#c49066',hair:'#5a4030',brow:'#3a2a1c',crop:1,tunic:'#a88c62',cloak:'#6a3a2c',cape:1,helm:'#8c929c',helmStyle:'galea',
-    armor:'#7a808a',armorStyle:'mail',belt:'#422814',milBelt:1,caligae:1,gladius:1,ph:3300},
-  spearman:{skin:'#b07c52',hair:'#2e1e14',brow:'#20140e',crop:1,tunic:'#a8946c',helm:'#8a8270',helmStyle:'galea',belt:'#4a2c16',milBelt:1,caligae:1,
+  horseman:{skin:'#b88458',hair:'#3a2a1c',brow:'#28190f',crop:1,tunic:'#cbbda2',cloak:'#464a3e',cape:1,helm:'#949ca8',helmStyle:'galea',helmTrim:'#c2a04e',
+    armor:'#7e8692',armorStyle:'mail',belt:'#422814',milBelt:1,caligae:1,gladius:1,ph:3100},
+  horseman_b:{skin:'#c49066',hair:'#5a4030',brow:'#3a2a1c',crop:1,tunic:'#c4b69a',cloak:'#5e3228',cape:1,helm:'#8e96a2',helmStyle:'galea',helmTrim:'#a4acb8',
+    armor:'#7a828e',armorStyle:'mail',belt:'#422814',milBelt:1,caligae:1,gladius:1,ph:3300},
+  spearman:{skin:'#b07c52',hair:'#2e1e14',brow:'#20140e',crop:1,tunic:'#b6a27c',helm:'#8e949c',helmStyle:'galea',helmTrim:'#b8a268',belt:'#4a2c16',milBelt:1,caligae:1,
     spear:'slant',ph:3500},
-  spearman_young:{skin:'#c09068',hair:'#4a3624',brow:'#342416',crop:1,slim:1,tunic:'#b4a07a',helm:'#948a74',helmStyle:'galea',belt:'#4a2c16',milBelt:1,caligae:1,
+  spearman_young:{skin:'#c09068',hair:'#4a3624',brow:'#342416',crop:1,slim:1,tunic:'#c0ae88',helm:'#94989e',helmStyle:'galea',helmTrim:'#bca66c',belt:'#4a2c16',milBelt:1,caligae:1,
     spear:'slant',ph:3700},
-  spearman_old:{skin:'#a8744c',hair:'#6a625a',grey:'#9a948c',brow:'#4a423a',crop:1,thin:1,tunic:'#9a8662',cloak:'#5a4a3a',cape:1,belt:'#4a2c16',milBelt:1,caligae:1,
+  spearman_old:{skin:'#a8744c',hair:'#6a625a',grey:'#9a948c',brow:'#4a423a',crop:1,thin:1,tunic:'#a89470',cloak:'#4a463c',cape:1,belt:'#4a2c16',milBelt:1,caligae:1,
     spear:'slant',ph:3900},
 
   /* Felix, governor of Judea (Acts 23:24-35): Antonius Felix, a freed slave of the imperial house made procurator (Insight on the
@@ -88,8 +88,8 @@ const ROMAN={
      band along the toga where it crosses the chest, slanting, never down the middle of the figure), over a white tunic; clean-shaven,
      his dark hair cut short, a small pendant at the neck (pendant: a square), red shoes (shoes) and a gold ring (ring: two pixels).
      Seated on his chair, person's fr -1. */
-  felix:{skin:'#c69a70',hair:'#2e2218',brow:'#22180f',crop:1,tunic:'#f0eadc',long:1,cloak:'#f2ecde',toga:1,edge:'#5c2458',
-    pendant:'#e0b850',shoes:'#9a2a24',ring:1,ph:4100}
+  felix:{skin:'#c69a70',hair:'#5e5852',grey:'#a29c94',brow:'#3a342e',crop:1,tunic:'#f2ece0',long:1,cloak:'#f4efe2',toga:1,edge:'#66246e',
+    pendant:'#e6be50',shoes:'#9e2624',ring:1,ph:4100}
 };
 
 /* shipwrecked(base, opts): derive a wet, torn shipwreck survivor look from any existing character look.
