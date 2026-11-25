@@ -239,24 +239,122 @@ function paintBarracks19(g,v){const r=rng(1911),S='#d6c6a4',BK=104,night=v==='ni
 
 /* ==== ART door19: begin ==== */
 /* The house of Paul's sister in the upper city of Jerusalem, in the late afternoon (Insight: she and her son lived in Jerusalem; nothing
-   else is known of the house). A plain house front of limewashed stone in a quiet lane, its door of upright boards in a frame of dressed
-   stone, a water jar by the door, a low bench along the wall. The sun is low at the left and warm; the lane runs off at the right into
-   the city. One horizon: the lane's paving runs back to the houses across it.
+   else is known of the house). A plain house of two storeys in a quiet lane: limewashed plaster over rubble of the pale limestone, where
+   it has fallen away the rubble shows; dressed blocks at its corners, long and short in turn; the ends of the roof beams under a low
+   parapet, on whose coping the sparrows sit (ROOMS.door19.birds, y 14.6). Its door, in a frame of dressed stone, stands open inward: one
+   leaf of upright boards, no band across it, and the dark of the house behind it, where she stands. By the door the water jar; along the
+   wall to the left a low bench of stone with a basket on it; small windows high up, with wooden shutters. At the left the neighbour's
+   house, lower and a step farther back; at the right the neighbour's house beside hers, of dressed blocks below and plaster above, its
+   own door shut. Beyond it the lane climbs away into the city by a few broad steps, between the neighbour's side wall in shade and a house
+   at its head, which closes the view in the sun. One horizon (HZDoor19): the paving, the steps and the lane's head run back to it. The sun
+   is low at the left: the upper fronts are warm, and the long shade of the houses across the lane, behind us, lies over the lower fronts
+   and the paving, a soft edge and never a line. Heads come at y 66..84: behind the sister lies the dark doorway, behind the nephew the
+   plaster and the bench; nothing round lies there.
    Called from outside: ART.door19. Reads nothing.
-   Hotspots: the house 40,20,200,80 · the door 152,58,24,46 · the water jar 184,86,10,18 · the lane into the city 304,96,16,48.
+   Hotspots: the house 30,14,214,40 · the door 152,58,24,46 · the water jar 184,86,10,18 · the lane into the city 304,96,16,48.
    Walk: 20..300 by 112..138. Actors: the sister 164,114 at her door; the nephew 126,126. */
-ART.door19={w:320,q:12,paint(g){paintDoor19(g)},light:{amb:'#f0d4b4',sun:[.5,.25,.3],wallY:104},draw(){},front(){}};
-function paintDoor19(g){const r=rng(1921),W='#e4d6b8';
-  sky19(g,320,40,'aft');
-  /* the neighbour's house at the left, its front a step back; houses across the lane at the right, far off; the lane going back */
-  plaster(g,0,26,32,78,'#d0c0a0',r,{patch:0,cracks:1,t:.4});R(g,0,24,32,2.4,'#dccca8');shade(g,[24,26,32,26,32,104,24,104],'#a89ab8',.4);
-  for(const[x,y,w,h,c]of[[244,34,46,70,'#d8c8a8'],[286,28,40,76,'#ccbc9c']])plaster(g,x,y,w,h,c,r,{patch:1,cracks:1,t:.4});
-  plaster(g,30,16,214,88,W,r,{patch:1,cracks:2,t:.4,top:.06,bot:-.06});R(g,28,14,218,3,tint(W,.1));R(g,28,14,218,.6,tint(W,.3));
-  for(const x of[62,112,204])R(g,x,40,8,7,'#3a2c24');
-  R(g,148,54,32,50,tint('#cbb894',-.05));R(g,152,58,24,46,'#6e4a2c');for(let i=1;i<6;i++)R(g,152+i*4,58.5,.5,45,'#4a3020');R(g,152,58,24,.8,'#9a7448');
-  vessel(g,189,104,5,15,'#b47c52','pithos');R(g,80,96,46,8,tint(W,-.15));R(g,80,96,46,1,tint(W,.2));
-  pave(g,-2,104,322,144,'#cdbb96',r,{vx:260,vy:70,rows:5,step:30,v:.08,t:.35});ao(g,0,104,320,6,'t',.25,'#3a2c3c');
-  light19(g,320,1,'rgba(255,196,130,1)',.5);ao(g,0,126,320,18,'b',.1,'#2a2050')}
+const HZDoor19=80;
+ART.door19={w:320,q:12,paint(g){paintDoor19(g)},light:{amb:'#f0d4b4',sun:[.5,.25,.3],wallY:104,wall:[[0,152,104,40],[176,292,104,40]]},draw(){},front(){}};
+function paintDoor19(g){const r=rng(1921),W='#ece0c4';
+  skyDoor19(g);
+  laneDoor19(g,rng(1922));
+  pave(g,-2,104,322,144,'#d4c29e',r,{vx:170,vy:HZDoor19,rows:6,step:30,v:.08,t:.34,rand:1});
+  leftDoor19(g,rng(1923));
+  rightDoor19(g,rng(1924));
+  houseDoor19(g,rng(1925),W);
+  ao(g,0,104,292,5,'t',.28,'#3a2c3c');R(g,0,103.6,292,.6,'rgba(60,44,50,.4)');
+  benchDoor19(g,rng(1926));
+  vessel(g,189,104,5,15,'#b87c52','pithos');R(g,186.6,89.2,4.8,.5,'#7a5a48');
+  lightDoor19(g)}
+/* the sky over the roofs: blue above, warm toward the low sun at the left, a long cloud lit from below */
+function skyDoor19(g){sky(g,320,40,['#6482b6','#9aa8c6','#ecc49c']);pool(g,-30,40,160,30,'#ffd4a0',.5,'screen');
+  const q=rng(1927);cloud(g,90,8,90,2.4,q,'#fbe4cc','#b8a6c0');cloud(g,250,4,60,1.8,q,'#f6e0cc','#b0a4c4')}
+/* quoins19: the dressed blocks at a corner, long and short in turn, from y0 to y1; side -1 on a left corner, 1 on a right one */
+function quoinsDoor19(g,x,y0,y1,c,side,r){let y=y0,k=0;while(y<y1-.2){const h=Math.min(y1-y,4.8),w=k%2?4.4:7.6,X=side<0?x:x-w,cc=tint(c,.04+(r()-.5)*.06);
+    R(g,X,y,w,h-.4,cc);R(g,X,y,w,.5,tint(cc,.22));R(g,X,y+h-.9,w,.5,tint(cc,-.26));R(g,side<0?X+w-.5:X,y,.5,h-.4,tint(cc,side<0?-.22:.16));y+=h;k++}}
+/* the lane up into the city, beyond the neighbour's house at the right: its side wall in shade going back, a few broad steps climbing to
+   the house at its head, which closes the view in the sun; the sky above */
+function laneDoor19(g,r){const x0=292,vx=308,vy=HZDoor19,head=83;
+  /* the house at the head of the lane, its front lit */
+  plaster(g,294,30,30,head-30,'#e8d6b2',r,{patch:0,cracks:0,t:.4,top:.06,bot:-.02});R(g,293,28.4,30,2,'#f4e6c8');R(g,293,28.4,30,.5,'#fff8e8');
+  R(g,310,44,4,5,'#4a3a34');R(g,309,49,6,.8,'#f0e0c0');ao(g,294,head-5,30,5,'b',.2,'#6a5040');
+  /* the steps: risers toward us lit by the low sun from the side, treads paler; each wider as it nears */
+  const n=6;for(let i=0;i<n;i++){const t0=i/n,t1=(i+1)/n,ya=104-(104-head)*t0,yb=104-(104-head)*t1,rh=(ya-yb)*.62;
+    R(g,x0-2,yb,30,ya-yb,tint('#d8c6a0',.1-i*.01));R(g,x0-2,yb+rh*.0,30,.5,'#fff2d6');R(g,x0-2,ya-rh,30,rh,tint('#c8b490',-.04+i*.01));R(g,x0-2,ya-.5,30,.5,'rgba(80,60,60,.35)')}
+  /* the neighbour's side wall along the lane, in shade, from its corner (x0) back toward the head of the lane */
+  const SW=[x0,22,x0,104,299,head,299,42];poly(g,SW,'#b8a48c');
+  clipTo(g,()=>poly(g,SW),()=>{tex(g,'mott',.5,x0,22,8,82,'overlay',1);g.fillStyle=lg(g,0,22,0,104,['rgba(110,90,120,.25)','rgba(70,56,90,.45)']);g.fillRect(x0,22,8,82)});
+  poly(g,[x0,20.6,299,40.8,299,42.4,x0,22.6],'#d8c8ac')}
+/* the neighbour's house at the left, lower and a step back: plaster over rubble, a shuttered window, its parapet catching the sun */
+function leftDoor19(g,r){const c='#e2d4b6';plaster(g,-2,34,32,68.4,c,r,{patch:1,rubble:1,cracks:0,t:.42,top:.06,bot:-.08,brick:'#d8c098'});
+  R(g,-2,32,33,2.4,tint(c,.14));R(g,-2,32,33,.6,'#fffaea');R(g,-2,34.4,33,.6,tint(c,-.3));ao(g,-2,35,32,4,'t',.18,'#5a4060');
+  windowArt(g,10,50,6,8,c,{shut:1,wood:'#7a5a3a'});
+  M19.crack(g,22,38,3,r,.6);ao(g,-2,88,32,14,'b',.22,'#5a4838');
+  R(g,0,102.2,30,.6,'rgba(60,44,50,.4)')}
+/* the neighbour's house beside hers: dressed blocks below, plaster above, its door shut (upright boards, no band) and a shuttered window */
+function rightDoor19(g,r){const x=244,w=48,c='#e6d8bc',top=24,mid=62;
+  plaster(g,x,top+3,w,mid-top-3,c,r,{patch:0,cracks:0,t:.4,top:.05,bot:-.04});
+  ashlar(g,x,mid,w,104-mid,tint(c,-.04),r,{bw:15,bh:7,v:.07,t:.3,m:tint(c,-.3)});
+  R(g,x-.5,top,w+1,3,tint(c,.14));R(g,x-.5,top,w+1,.6,'#fffaea');R(g,x-.5,top+3,w+1,.6,tint(c,-.3));ao(g,x,top+3.4,w,4,'t',.2,'#5a4060');
+  R(g,x,mid-1.6,w,1.6,tint(c,.1));R(g,x,mid-1.6,w,.5,tint(c,.3));R(g,x,mid,w,.6,'rgba(80,60,70,.4)');
+  windowArt(g,262,38,6,8,c,{shut:1,wood:'#7a5a3a'});
+  doorArt(g,272,76,15,28,'#6a4c30',r,{left:1,frame:'#5a3e28',pw:5});
+  R(g,270.6,73.4,17.8,2.6,tint(c,.06));R(g,270.6,73.4,17.8,.5,'#fff4dc');R(g,270.6,75.6,17.8,.5,'rgba(70,50,50,.5)');
+  quoinsDoor19(g,x+w,top+3,mid-1.6,c,1,r);
+  ao(g,x,90,w,14,'b',.2,'#5a4838');
+  /* where it meets her house, a little shade in the corner */
+  ao(g,x,top,3,104-top,'l',.18,'#4a3c60')}
+/* her house: plaster over rubble, the parapet with its coping (y 14.6), the beam ends, the windows, the quoins, the open door */
+function houseDoor19(g,r,W){const x=30,w=214,TP=14.6;
+  plaster(g,x,TP+5,w,104-TP-5,W,r,{patch:1,rubble:1,cracks:0,t:.42,top:.05,bot:-.08,brick:'#d8c098'});
+  /* the parapet: its face, its coping where the sparrows sit, the shade it throws */
+  plaster(g,x,TP+2.4,w,2.8,tint(W,.03),r,{patch:0,cracks:0,t:.3});
+  R(g,x-1.4,TP,w+2.8,2.6,tint(W,.12));R(g,x-1.4,TP,w+2.8,.6,'#fffaec');R(g,x-1.4,TP+2.6,w+2.8,.6,tint(W,-.32));ao(g,x,TP+5.2,w,5,'t',.2,'#5a4060');
+  /* the ends of the roof beams under the parapet, each with its small shadow falling to the right */
+  for(let bx=x+9;bx<x+w-6;bx+=16.5){R(g,bx,TP+6.4,2.4,2.2,'#6a4a30');R(g,bx,TP+6.4,2.4,.5,'#b08858');poly(g,[bx+2.4,TP+6.8,bx+4.6,TP+7.4,bx+4.6,TP+9.6,bx+2.4,TP+8.6],'rgba(90,60,80,.22)')}
+  quoinsDoor19(g,x,TP+5,104,W,-1,r);quoinsDoor19(g,x+w,TP+5,104,W,1,r);
+  /* the windows upstairs: small, with shutters; one stands open a little */
+  for(const[wx,open]of[[62,0],[112,1],[204,0]]){const wy=32;windowArt(g,wx,wy,7,9,W,{shut:!open,wood:'#7a5a3a'});
+    if(open){M19.board(g,wx-2.4,wy,2.2,9,'#7a5a3a',r,1);ao(g,wx,wy,7,4,'t',.6,'#000')}}
+  /* two hairline cracks set by hand, high, where they run to no head */
+  M19.crack(g,96,24,3,rng(1928),.6);M19.crack(g,226,26,4,rng(1929),.6);
+  /* the limewash: renewed here and there, older and greyer elsewhere; soft stains under the sills, never streaks */
+  {const q=rng(1930);for(let i=0;i<14;i++)pool(g,x+8+q()*(w-16),TP+14+q()*70,8+q()*16,3+q()*5,q()<.5?'#fff8ea':'#b8a490',.16,q()<.5?'screen':'multiply');
+    for(const wx of[62,112,204])pool(g,wx+3.5,TP+31,5,4,'#a08c78',.16,'multiply')}
+  doorwayDoor19(g,r,W);
+  ao(g,x,88,w,16,'b',.22,'#5a4838')}
+/* the doorway: jambs and a lintel of dressed stone, the lintel reaching a little past the jambs; inside, the dark of the house, its floor
+   a little lit near the threshold; the leaf of upright boards standing open inward at the left, seen at a slant; a step of stone */
+function doorwayDoor19(g,r,W){const x=152,y=58,w=24,h=46,c='#e4d6b8';
+  R(g,x,y,w,h,'#1e1612');
+  clipTo(g,()=>{g.beginPath();g.rect(x,y,w,h)},()=>{g.fillStyle=lg(g,0,y,0,y+h,['#140e0c','#22180f','#3a2a1c']);g.fillRect(x,y,w,h);
+    poly(g,[x,y+h,x+w,y+h,x+w-3,y+h-5,x+3,y+h-5],'#4a3622');g.fillStyle=lg(g,0,y+h-5,0,y+h,['rgba(255,210,150,0)','rgba(255,210,150,.3)']);g.fillRect(x,y+h-5,w,5);
+    /* the leaf, open inward against the left of the passage into the house: its boards upright, foreshortened */
+    const L=[x+1,y+1,x+6.4,y+4.6,x+6.4,y+h-3.6,x+1,y+h];poly(g,L,'#5e4430');
+    clipTo(g,()=>poly(g,L),()=>{g.fillStyle=lg(g,x,0,x+6.4,0,['#7a5a3c','#4a3422']);g.fillRect(x,y,7,h);for(const bx of[2.8,4.6])R(g,x+bx,y,.4,h,'rgba(30,20,12,.55)')});
+    R(g,x+6.2,y+4.6,.6,h-8.2,'#2a1c12');
+    ao(g,x,y,w,6,'t',.6,'#000')});
+  for(const jx of[x-3.4,x+w]){R(g,jx,y,3.4,h,tint(c,-.02));R(g,jx,y,.6,h,tint(c,.24));R(g,jx+2.8,y,.6,h,tint(c,-.28));inRect(g,jx,y,3.4,h,()=>tex(g,'mott',.3,jx,y,3.4,h,'overlay',1))}
+  R(g,x-5,y-5,w+10,5,c);R(g,x-5,y-5,w+10,.6,'#fffaf0');R(g,x-5,y-.6,w+10,.6,tint(c,-.42));inRect(g,x-5,y-5,w+10,5,()=>tex(g,'mott',.3,x-5,y-5,w+10,5,'overlay',1));
+  R(g,x-5,103.2,w+10,2.2,'#dccaa6');R(g,x-5,103.2,w+10,.6,'#fff4dc');R(g,x-5,105.2,w+10,.5,'rgba(70,56,70,.5)')}
+/* the bench of stone along the wall, low, on two solid ends (none under its middle); a round basket with a cloth over it at its end */
+function benchDoor19(g,r){const x=80,y=96,w=46,c='#dccbaa';M19.shadow(g,x+w/2,104.2,w/2+2,1.2,.45);
+  for(const ex of[x+1,x+w-6]){R(g,ex,y+2.4,5,7.6,tint(c,-.12));R(g,ex,y+2.4,.5,7.6,tint(c,.1));R(g,ex+4.5,y+2.4,.5,7.6,tint(c,-.3))}
+  R(g,x+6,y+2.4,w-12,7.6,'rgba(60,44,50,.35)');
+  R(g,x,y,w,2.6,c);R(g,x,y,w,.6,tint(c,.3));R(g,x,y+2.2,w,.5,tint(c,-.3));inRect(g,x,y,w,2.6,()=>tex(g,'mott',.4,x,y,w,2.6,'overlay',1));
+  /* the basket: woven in rows that run round it, one way only; a cloth folded over its top */
+  const bx=x+w-11,by=y;M19.shadow(g,bx+4,by+.2,5,.8,.5);
+  const B=[bx,by,bx-.6,by-4,bx+8.6,by-4,bx+8,by];poly(g,B,'#a8844e');clipTo(g,()=>poly(g,B),()=>{for(let k=0;k<4;k++)R(g,bx-1,by-4+k*1+.5,10,.5,'rgba(90,60,30,.45)');
+    g.fillStyle=lg(g,bx,0,bx+9,0,['rgba(255,230,180,.25)','rgba(60,40,30,.3)']);g.fillRect(bx-1,by-5,10,6)});
+  poly(g,[bx-.8,by-4,bx+1,by-5.6,bx+7.6,by-5.8,bx+8.8,by-4],'#d8ccb0');R(g,bx+1,by-5.6,6,.5,'#f8f0e0')}
+/* the late light: warm over the upper fronts and the parapets, the long cool shade of the houses across the lane over the lower fronts
+   and the paving, with a soft edge; the warm glow of the sky over all; the soft shade at the foot of the picture */
+function lightDoor19(g){
+  comp(g,'multiply',.4,()=>{poly(g,[-2,60,180,66,322,76,322,146,-2,146]);g.fillStyle=lg(g,0,58,0,80,['rgba(255,255,255,1)','rgba(176,160,198,1)']);g.fill()});
+  comp(g,'multiply',.22,()=>{poly(g,[-2,66,180,72,322,82,322,146,-2,146]);g.fillStyle='rgba(176,160,198,1)';g.fill()});
+  comp(g,'soft-light',.5,()=>{poly(g,[-2,0,322,0,322,76,180,66,-2,60]);g.fillStyle=lg(g,0,0,320,0,['rgba(255,190,120,1)','rgba(255,214,160,1)','rgba(240,200,170,1)']);g.fill()});
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,0,144,['rgba(255,200,150,1)','rgba(240,196,170,1)','rgba(160,146,196,1)']);g.fillRect(0,0,320,144)});
+  ao(g,0,124,320,20,'b',.12,'#2a2050')}
 /* ==== ART door19: end ==== */
 
 /* ==== ART lanes19: begin ==== */
