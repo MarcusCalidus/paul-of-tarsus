@@ -992,8 +992,9 @@ function cutGlyph18(g,ch,x,y,h){const G=GLYPH18[ch],P=(a,ox,oy)=>a.map((v,i)=>i%
    red-tiled roof of the Royal colonnade, its columns in shade, and the hills beyond the city; at the left, behind the sanctuary, the
    slope of the Mount of Olives. One horizon, y 58 (HZSt18), where the far side of the court meets the colonnade. No birds (a scene of
    suffering), no Roman standard. Paul's head comes in front of the crowd far below, not of a doorway or the gold.
-   No source describes the stairs: they are invented. During the outcry (22:23; G.out18) outer garments are thrown about over the crowd
-   and dust hangs in the air (drawn in draw); no stone, no blow.
+   No source describes the stairs: they are invented. During the outcry (22:22, 23; G.out18) men in the crowd wave their outer
+   garments a little above the heads and toss one up now and then, and dust rises in pale puffs (drawn in draw); nothing that could be
+   taken for a stone, no blow.
    Called from outside: ART.stairs18. Reads G.out18. Hotspots (ROOMS.stairs18): the crowd 0,56,196,88 · the temple 0,0,170,52 · the door
    of the soldiers' quarters 282,34,32,70. Walk: Paul stands at 224,120 and takes no step. Actors (place18): the commander 270,116 ·
    soldiers 208,122 and 240,124 (the chains) · soldiers 186,132 and 300,128 · an officer 290,110. */
@@ -1070,6 +1071,7 @@ function personSt18(g,x,y,s,r,M,H,K){const bw=2.5*s,bh=3.6*s,top=y-bh,hr=.92*s,h
   oval(g,hx,hy,hr,hr*1.05,H.v);oval(g,hx+.25*s,hy+.3*s,hr*.7,hr*.72,tint(K,-.18));R(g,hx+.05*s,hy+.1*s,hr*.9,.5,tint(K,-.4));
   if(!cloth&&r()<.6)oval(g,hx+.25*s,hy+.75*s,hr*.6,hr*.42,tint(H.v,.05));
   stroke(g,[hx-hr*.9,hy-hr*.2,hx-hr*.3,hy-hr*.95,hx+hr*.5,hy-hr*.9],tint(H.v,.45),.5)}
+let CRSt18=[];
 /* the crowd in the court: thickest at the foot of the stairs, thinning toward the barrier, nobody inside it; back to front */
 function crowdSt18(g,r){const MAN=['#8a6a4a','#6e6a72','#b8a07a','#5e6a52','#9a7a5a','#d0c4a8','#7a4e3e','#4e5a6a','#a8906a','#bcae92','#6a5a4a','#8a5a3e'],
   HD=[{v:'#2a1e18'},{v:'#3a2a20'},{v:'#4a3a2c'},{v:'#e4d8c0',c:1},{v:'#c8b890',c:1},{v:'#2a1e18'},{v:'#5a4634'},{v:'#8a7a62',c:1},{v:'#1e1612'}],
@@ -1079,7 +1081,8 @@ function crowdSt18(g,r){const MAN=['#8a6a4a','#6e6a72','#b8a07a','#5e6a52','#9a7
     const d=Math.hypot((x-150)/100,(y-144)/56);if(r()>1.15-d*.5)continue;P.push([x,y,.75+(y-74)/70*1.75])}
   /* and far off, in the court beyond the landing's parapet, more of them, small */
   for(let i=0;i<200;i++){const y=60+r()*28,x=176+r()*110;if(r()<.4)continue;P.push([x,y,.6+(y-60)/28*.5])}
-  P.sort((a,b)=>a[1]-b[1]);for(const[x,y,s]of P)personSt18(g,x,y,s,r,MAN[(r()*MAN.length)|0],HD[(r()*HD.length)|0],SK[(r()*SK.length)|0]);
+  /* each one is kept in CRSt18 (where he stands, his size, his mantle and skin), so that the outcry can raise a hand above his head */
+  CRSt18=[];P.sort((a,b)=>a[1]-b[1]);for(const[x,y,s]of P){const M=MAN[(r()*MAN.length)|0],H=HD[(r()*HD.length)|0],K=SK[(r()*SK.length)|0];personSt18(g,x,y,s,r,M,H,K);CRSt18.push([x,y,s,M,K])}
   /* dust raised by their feet, low over them */
   for(let i=0;i<10;i++)pool(g,20+r()*160,96+r()*40,30,5,'#e8dcc0',.1,'source-over')}
 /* the landing and the head of the flight, with the parapet and the fortress wall with the door at the right */
@@ -1102,15 +1105,49 @@ function landingSt18(g,r){const[ax,ay,cx,cy,ex,ey]=PARSt18,H=PHSt18;
   R(g,282,32.6,32,2.4,'#f2e4c4');R(g,282,32.6,32,.6,'#fffaf0');R(g,282,34.6,32,.6,'#8a7a62');
   g.fillStyle=lg(g,0,35,0,cy+8,['#100a0e','#1e161a','#2e2422']);g.fillRect(284,35,28,cy+8-35);R(g,284,35,1.4,cy+8-35,'#6a5446');ao(g,284,35,28,5,'t',.6,'#000');
   M18.shadow(g,240,cy+10,50,1.6,.25)}
-/* drawStairs18: the outcry (22:23; G.out18): outer garments thrown up and about over the crowd and falling again, and dust tossed into
-   the air, drifting; no stone, no blow */
-function drawStairs18(g,t){const o=G.out18;if(!o)return;const k=(t%2400)/2400,C=['#9a6a4a','#6a7a8a','#c8b88a','#7a4a3a','#d8ccb0','#5e6a52','#a8906a'];
-  /* dust tossed up, drifting and thinning as it rises */
-  for(let i=0;i<46;i++){const x=(i*29.3)%186+2,ph=(k*.5+i*.071)%1,y=120-(i%6)*6-ph*34;pool(g,x+ph*10,y,8+ph*8,3.4+ph*2.6,'#e8dcbc',.34*(1-ph),'source-over')}
-  /* outer garments thrown up and falling again, each a length of cloth that folds as it turns */
-  for(let i=0;i<16;i++){const x=(i*37.7)%176+8,ph=(k+i*.137)%1,a=Math.sin(ph*Math.PI),base=124-(i%4)*10,y=base-a*26,w=8+(i%3)*2,fl=Math.sin((ph*4+i*.7)*Math.PI)*2.4,c=C[i%C.length];
-    const q=[x-w/2,y,x+w/2,y-1.6+fl,x+w/2+1,y+3.4+fl*.6,x-w/2+.6,y+4.2];poly(g,q,c);poly(g,[x-w/2,y,x+w/2,y-1.6+fl,x+w/2+.4,y+.4+fl*.8,x-w/2+.2,y+1.6],tint(c,.25));
-    stroke(g,[x-w/2+.6,y+4.2,x+w/2+1,y+3.4+fl*.6],tint(c,-.3),.5)}}
+/* drawStairs18: the outcry (22:22, 23; G.out18). Here and there in the crowd a man holds up his outer garment by one end and waves it a
+   little above the heads: a soft length of cloth that flaps, its folds catching the sun and falling into shade as they run along it.
+   He raises one arm only, bent at the elbow, the forearm slanting outward, and the cloth always streams out on the far side of his hand
+   and never comes back under it, so that arm and cloth meet in a bend and never cross. Now and then a garment is tossed up a little and
+   comes down again, unfolding and swaying as it goes, never upright; never more than three at once. Dust thrown into the air rises from among them in
+   pale puffs that spread into a haze and thin out. No stone, no blow. The men are taken from the painted crowd (CRSt18). */
+/* who waves (x, y of a man in the painted crowd, and the side his garment streams to) and where garments are tossed (x, y, the phase,
+   the slant): chosen so that over a whole cycle no garment comes within reach of another one or of another man's raised arm, and none
+   reaches the parapet of the flight */
+const WAVESt18=[[81.07,128.72,-1],[100.8,138.58,1],[9.79,124.93,1],[28.9,104.84,-1],[118.06,105.26,-1],[83.55,112.45,-1],[42.48,115.95,1],[57.23,138.51,-1],[107.11,124.63,-1]],
+  TOSSSt18=[[136.4,130.4,0,.26],[40.1,104.7,.37,0],[88.3,104.1,.74,-.15]],DUSTSt18=[[22,112],[56,104],[80,124],[108,110],[132,124],[40,126],[66,128],[10,100],[118,142],[92,138]],
+  CLOSt18=['#5a78a2','#b05a3e','#e2d6b6','#5e7c52','#c49c52','#8a4a5a','#d8c8a0','#4e6a8a'];
+let WHOSt18=null,WHOFrom18=null;
+/* a length of cloth along the line P (x,y pairs), w0 wide where it starts and w1 at its end, its folds set by ph; the free end hangs
+   a corner a little lower */
+function clothSt18(g,P,w0,w1,c,ph){const n=P.length/2,T=[],B=[];
+  for(let j=0;j<n;j++){const a=Math.max(0,j-1),b=Math.min(n-1,j+1);let nx=-(P[b*2+1]-P[a*2+1]),ny=P[b*2]-P[a*2];const l=Math.hypot(nx,ny)||1;nx/=l;ny/=l;if(ny>0){nx=-nx;ny=-ny}
+    const w=(w0+(w1-w0)*j/(n-1))/2,x=P[j*2],y=P[j*2+1];T.push([x+nx*w,y+ny*w]);B.push([x-nx*w,y-ny*w])}
+  const e=n-1,dx=P[e*2]-P[e*2-2],dy=P[e*2+1]-P[e*2-1],dl=Math.hypot(dx,dy)||1,cn=[B[e][0]+dx/dl*.6+(B[e][0]-T[e][0])*.35,B[e][1]+dy/dl*.6+(B[e][1]-T[e][1])*.35];
+  const pts=[...T.flat(),...cn,...B.slice().reverse().flat()],st=[];for(let j=0;j<n;j++)st.push(tint(c,.3*Math.sin(ph-j*1.25+.8)));
+  poly(g,pts);g.fillStyle=lg(g,P[0],P[1],P[e*2],P[e*2+1],st);g.fill();
+  stroke(g,T.flat(),rgba(tint(c,.45),.7),.4);stroke(g,[...B.flat(),...cn],rgba(tint(c,-.4),.7),.4)}
+function drawStairs18(g,t){const o=G.out18;if(!o)return;
+  /* a haze of dust over the crowd, drifting */
+  for(let i=0;i<4;i++)pool(g,30+i*38+Math.sin(t/3100+i)*8,100+(i%2)*10,34,8,'#ece0c4',.22,'source-over');
+  /* who waves a garment: the man of the painted crowd who stands at each place */
+  if(WHOFrom18!==CRSt18){WHOFrom18=CRSt18;WHOSt18=[];
+    WAVESt18.forEach(([tx,ty,d],i)=>{const p=CRSt18.find(p=>Math.abs(p[0]-tx)<.05&&Math.abs(p[1]-ty)<.05);if(p)WHOSt18.push([p,d,i])})}
+  /* dust tossed up: pale puffs rising from among the heads, spreading and thinning */
+  DUSTSt18.forEach(([x,y],i)=>{const per=2300+i*170,ph=(t/per+i*.29)%1,yy=y-7-ph*18,rx=2.6+ph*8,a=Math.min(1,1.3*Math.pow(1-ph,.8))*Math.min(1,ph*6);
+    for(let k=0;k<4;k++)R(g,x-2+k*1.6+ph*(3+k*2),yy+1-k*.8-ph*k*1.4,.5,.5,rgba('#f4ead2',a*.8));
+    pool(g,x+ph*5,yy,rx,rx*.6,'#eadcba',a,'source-over');pool(g,x+ph*4-.5,yy+.4,rx*.55,rx*.36,'#f8f0dc',a*.9,'source-over');
+    pool(g,x+ph*7+1.5,yy-1.5-ph*3,rx*.4,rx*.3,'#f2e6c8',a*.7,'source-over')});
+  /* the garments held up and waved */
+  for(const[[x,y,s,M,K],d,i]of WHOSt18){const bw=2.5*s,top=y-3.6*s,sh=[x+d*bw*.6,top+.3*s],el=[x+d*bw*1.02,top-.95*s],hd=[x+d*bw*1.18,top-3.3*s];
+    stroke(g,[...sh,...el],tint(M,-.08),.55*s);stroke(g,[...el,...hd],K,.42*s);stroke(g,[el[0]-.18,el[1],hd[0]-.18,hd[1]],tint(K,.3),.22);
+    const c=CLOSt18[i%CLOSt18.length],ph=t/150+i*1.7,tb=-.05-.35*Math.sin(t/(380+i*23)+i*2.1),L=(5.4+(i%3)*.8)*s,sl=L/5,P=[hd[0],hd[1]];
+    for(let j=0;j<5;j++){const th=Math.max(-1.2,tb-.09*j+.45*(j/4)*Math.sin(ph-j*1.1));P.push(P[j*2]+d*sl*Math.cos(th),P[j*2+1]-sl*Math.sin(th))}
+    clothSt18(g,P,.6*s,1.8*s,c,ph);R(g,hd[0]-.35*s,hd[1]-.35*s,.7*s,.7*s,tint(K,.12))}
+  /* now and then one tossed up a little, turning and unfolding, and coming down again */
+  TOSSSt18.forEach(([x,y,off,sl],i)=>{const ph=(t/2600+off)%1,a=Math.sin(ph*Math.PI),cx=x+(ph-.5)*6,cy=y-9-a*8,L=6+5*a,rot=sl+.3*Math.sin(ph*6.283),c=CLOSt18[(i*3+2)%CLOSt18.length],P=[];
+    for(let j=0;j<5;j++){const u=(j/4-.5)*L,v=1.4*Math.sin(ph*9+j*1.4);P.push(cx+u*Math.cos(rot)-v*Math.sin(rot),cy+u*Math.sin(rot)+v*Math.cos(rot))}
+    comp(g,'source-over',Math.min(1,ph/.12,(1-ph)/.12),()=>clothSt18(g,P,1.3+1.3*a,2+1.5*a,c,ph*14+i))})}
 /* ==== ART stairs18: end ==== */
 
 /* ==== ART barracks18: begin ==== */
