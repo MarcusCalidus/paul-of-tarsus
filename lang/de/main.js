@@ -285,7 +285,6 @@ TEXTS('de','main',{
   "wool_of_miletus":["Die Wolle aus Milet","0kwix31"],
   "murex_shells_on_the_beach":["Purpurschnecken am Strand","0mz774a"],
   "the_far_end_of_solomons_colonnade":["Das hintere Ende von Salomos Säulenhalle","0o3p1jt"],
-  /*TODO de*/
   "the_spring_at_antipatris":["Die Quelle bei Antipatris","0gkprln"],
   "mule_in_a_sheepfold":["Ein Maultier im Schafstall","0m7jhub"],
   "not_another_basket":["Nicht noch ein Korb","0o3o1h1"],
