@@ -505,8 +505,8 @@ const READ18=[{id:'w1',p:[[0,0,0]],look:'stone_word_methena'},{id:'w2',p:[[0,1,1
  {id:'w6',p:[[2,3,3]],look:'stone_word_tryphaktos'},{id:'w7',p:[[2,4,4],[3,0,0]],look:'stone_word_and_the_enclosure'},
  {id:'w8',p:[[3,1,4],[4,0,0]],look:'stone_word_whoever_is_caught'},{id:'w9',p:[[4,1,3],[5,0,0]],look:'stone_word_himself_to_blame'},
  {id:'w10',p:[[5,1,3],[6,0,0]],look:'stone_word_that_follows'},{id:'w11',p:[[6,1,1]],look:'stone_word_thanatos'}];
-/* the two tongues: what Paul can say on the stairs; each line is offered in Greek and in Hebrew */
-const SAY18=['paul_a_word_with_you','paul_a_jew_of_tarsus','paul_men_brothers_and_fathers'];
+/* the two tongues: what Paul can say on the stairs, as the choice names it and as he says it; each is offered in Greek and in Hebrew */
+const SAY18=[['paul_a_word_with_you','paul_a_word_with_you'],['say_who_i_am','paul_a_jew_of_tarsus'],['paul_men_brothers_and_fathers','paul_men_brothers_and_fathers']];
 /* up the stairs: two moments, and where Paul may look in each; each sets the flag of what he saw */
 const LOOK18=[[['look_at_the_men_from_asia','the_men_from_asia_at_the_front','sawasia'],['look_at_trophimus_in_the_colonnade','trophimus_still_in_the_colonnade','sawtroph'],
    ['look_at_the_shut_doors','the_doors_shut_behind_me','sawdoors']],
@@ -625,7 +625,7 @@ async function opening18(){const ph=phase18();
   if(!G.read18)return say(P,'not_before_ive_read_the_stone',TH);
   const me=who18(),wait=GATE18.filter(g=>!me[g.k]);
   if(wait.length)return say(P,{troph:'trophimus_waits_for_my_word',cyrene:'the_man_from_cyrene_waits_for_my_word',greek:'the_greek_waits_for_my_word'}[wait[0].k],TH);
-  const bad=GATE18.find(g=>me[g.k]!==g.ok);
+  const bad=['troph','greek','cyrene'].map(k=>GATE18.find(g=>g.k===k)).find(g=>me[g.k]!==g.ok);
   if(bad){SFX.nope();if(bad.k==='troph')return say(P,'paul_no_trophimus_is_of_the_nations',TH);
     if(bad.k==='greek'){await say(LV,'levite_not_you_greek',{to:GR});return say(GR,'greek_then_ill_wait',{to:LV})}
     return say(CY,'cyrene_but_im_a_jew',{to:P})}
@@ -675,13 +675,13 @@ async function carry18(i){const L=LOOK18[i],k=await choose(L.map(x=>x[0]));const
 /* ---- the stairs: two tongues ---- */
 const tongue18=(k,h)=>T(h?'in_hebrew_line':'in_greek_line',{line:T(k)});
 async function speakTo18(target){const cmd=target==='cmd',opts=[],by=[];
-  for(const k of SAY18)for(const h of[0,1]){opts.push(tongue18(k,h));by.push((h?'hebrew ':'greek ')+k)}
+  for(const[k]of SAY18)for(const h of[0,1]){opts.push(tongue18(k,h));by.push((h?'hebrew ':'greek ')+k)}
   if(!cmd){opts.push('motion_to_them_with_my_hand');by.push('motion_to_them_with_my_hand')}
   opts.push('say_nothing_yet');by.push('say_nothing_yet');
   const i=await choose(opts,{by,keep:1}),key=by[i];if(key==='say_nothing_yet')return;
   if(key==='motion_to_them_with_my_hand')return motion18();
-  const hebrew=key.startsWith('hebrew '),line=key.slice(hebrew?7:6);
-  await say(P,opts[i],{to:cmd?CM:null});
+  const hebrew=key.startsWith('hebrew '),line=SAY18.find(x=>x[0]===key.slice(hebrew?7:6))[1];
+  await say(P,tongue18(line,hebrew),{to:cmd?CM:null});
   if(cmd){if(hebrew)return say(P,'the_commander_doesnt_understand_hebrew',TH);
     if(line==='paul_a_word_with_you'){if(F.greek)return say(CM,'commander_you_asked_now_answer',{to:P});
       await say(CM,'commander_can_you_speak_greek',{to:P});await say(CM,'commander_are_you_not_the_egyptian',{to:P});F.greek=1;codeBtn();return}
@@ -714,7 +714,7 @@ async function why18(){await say(OF,'officer_why_were_they_shouting',{to:P});
   const L=WHY18.filter(([,f])=>!f||F[f]).map(x=>x[0]),k=L[await choose(L)];await say(P,k,{to:OF});
   await say(OF,'officer_not_mine_to_weigh',{to:P});return hold18()}
 /* they stretch him out for the whipping: two soldiers hold him by the arms, bent at his sides. Then the moment is the player's, for a while */
-async function hold18(again){if(again)await say(OF,'officer_hold_him',{to:S1});SHARED.cast.custody.place('hold',P,S1,S2);G.held18=performance.now()+(fast()?2500:45000);codeBtn()}
+async function hold18(again){if(again)await say(OF,'officer_hold_him',{to:S1});SHARED.cast.custody.place('hold',P,S1,S2);G.held18=performance.now()+(fast()?9000:45000);codeBtn()}
 /* waited too long: a runner calls the officer to the gate; the soldiers let go and wait; he comes back, and the moment comes again */
 async function reset18(){G.held18=0;await say(S5,'runner_officer_youre_wanted_at_the_gate',{to:OF});await say(OF,'officer_let_go_and_wait',{to:S1});for(const a of[P,S1,S2])a.held=a.grips=0;
   await go18(OF,30,118);await fade(1,400);await tw(700);place(OF,'barracks18',216,118,-1);await fade(0,400);return hold18(1)}
@@ -857,7 +857,7 @@ function place18(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   if(ph==='stairs'){for(const[a,x,y,d]of[[CM,270,116,-1],[S3,186,132,1],[S4,300,128,-1],[OF,290,110,-1]])pl(a,'stairs18',x,y,d);if(room==='stairs18')custody18(room)}
   /* in the soldiers' quarters they hold him already, when a code brings the player back here; the moment runs from then (hold18) */
   if(ph==='barracks'){for(const[a,x,y,d]of[[OF,216,118,-1],[S3,92,120,1],[S5,252,126,-1]])pl(a,'barracks18',x,y,d);if(room==='barracks18')custody18(room);
-    G.held18=performance.now()+(fast()?2500:45000)}
+    G.held18=performance.now()+(fast()?9000:45000)}
   P.hs=null}
 function setup18(){P.called='Paul';G.obo18=G.who18=G.out18=null;G.read18=G.hush18=G.held18=G.c18=G.st18=G.arr18=0;G.ctroph=G.ccyrene=G.cgreek=0;G.caps18=[];
   G.invs={paul:['tablets','roman18']};G.inv=G.invs.paul;drawInv()}

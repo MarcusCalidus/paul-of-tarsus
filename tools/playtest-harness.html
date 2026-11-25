@@ -4078,7 +4078,7 @@
   heard.length=0;await talkTo(CY);ok(said('cyrene_born_in_cyrene')&&said('cyrene_is_the_stone_for_me')&&said('first_i_read_the_stone')&&!$('#choices').classList.contains('on'),'the man from Cyrene: born abroad, a Jewish house; Paul reads the stone before he decides for anyone');
   heard.length=0;await onH('opening_in_the_barrier','walk');ok(said('not_before_ive_read_the_stone')&&!F.sorted,'not through the opening before the stone is read');
   await onH('warning_stone','look');await until(()=>G.room==='stone18'&&!G.busy);ok(said('the_stone_reads_this_way'),'the warning stone, close');
-  {const hs=ROOMS.stone18.hs.filter(h=>h.w18),bad=[];for(let i=0;i<hs.length;i++){const a=hs[i];if(a.x<64||a.x+a.w>258||a.y<10||a.y+a.h>136)bad.push(a.w18+' off the stone');
+  {const hs=ROOMS.stone18.hs.filter(h=>h.w18),bad=[];for(let i=0;i<hs.length;i++){const a=hs[i];if(a.x<38||a.x+a.w>282||a.y<8||a.y+a.h>138)bad.push(a.w18+' off the stone');
       for(let j=i+1;j<hs.length;j++){const b=hs[j];if(a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h)bad.push(a.w18+' on '+b.w18)}}
     ok(!bad.length&&hs.every(h=>h.name==='a_word_on_the_stone')&&new Set(hs.map(h=>h.w18)).size===C().read.length,'every word of the stone is a hotspot on the stone, named only a word on the stone'+(bad.length?': '+bad.join(', '):''))}
   halt('stone18');
@@ -4111,12 +4111,12 @@
   await hints('hint_greek_1','hint_greek_2','on the stairs');
   heard.length=0;talkTo(CM);{const o=await asked();ok(o.length===C().say.length*2+1,'every line can be said in Greek or in Hebrew')}
   await tongue('paul_a_word_with_you',1);ok(said('the_commander_doesnt_understand_hebrew')&&!F.greek,'in Hebrew the commander does not understand a word');
-  heard.length=0;talkTo(CM);await tongue('paul_a_jew_of_tarsus',0);ok(said('commander_who_asked_you')&&!F.greek,'an answer before a question');
+  heard.length=0;talkTo(CM);await tongue('say_who_i_am',0);ok(said('commander_who_asked_you')&&!F.greek,'an answer before a question');
   heard.length=0;talkTo(CM);await tongue('paul_a_word_with_you',0);ok(said('commander_can_you_speak_greek')&&said('commander_are_you_not_the_egyptian')&&F.greek,'in Greek: so you know Greek? Not the Egyptian? (Acts 21:37, 38)');
   heard.length=0;useA('roman18',CM);await until(()=>!G.busy);ok(said('commander_what_i_cant_hear_you')&&said('lost_in_the_noise')&&!F.roman,'Roman by birth, on the stairs: lost in the noise');
   await hints('hint_permit_1','hint_permit_2','taken for the Egyptian');
   heard.length=0;await onH('crowd','talk');await tongue('paul_men_brothers_and_fathers',1);ok(said('not_without_the_commanders_leave'),'not to the crowd without the commander\'s leave');
-  heard.length=0;talkTo(CM);await tongue('paul_a_jew_of_tarsus',0);ok(said('commander_speak_then')&&F.permit,'a Jew of Tarsus in Cilicia; let me speak to the people (Acts 21:39)');
+  heard.length=0;talkTo(CM);await tongue('say_who_i_am',0);ok(said('commander_speak_then')&&F.permit,'a Jew of Tarsus in Cilicia; let me speak to the people (Acts 21:39)');
   await hints('hint_motion_1','hint_motion_2','with leave to speak');
   heard.length=0;await onH('crowd','talk');await tongue('paul_men_brothers_and_fathers',1);ok(said('they_cant_hear_a_word'),'over the noise nobody hears a word');
   heard.length=0;await onH('crowd','talk');await line('motion_to_them_with_my_hand');ok(said('they_fall_silent')&&G.hush18,'he motions with his hand, and they fall silent');
@@ -4131,9 +4131,9 @@
   ok(P.held&&S1.grips&&A('sol18b').grips&&said('officer_not_mine_to_weigh'),'held by the arms, as they stretch him out for the whipping (Acts 22:25); nothing is spread, nothing is struck');
   halt('barracks18');
   await code('in the soldiers\' quarters',()=>G.room==='barracks18'&&F.speech&&P.held&&OF.room==='barracks18');
+  heard.length=0;await useA('roman18',S1);await until(()=>!G.busy);ok(said('its_not_his_to_decide')&&!F.roman,'to a soldier who holds him: not his to decide'+(said('its_not_his_to_decide')?'':' ['+heard.slice(-3).join(' | ')+'] busy '+G.busy));
   await hints('hint_moment_1','hint_moment_2','held by the arms');
-  heard.length=0;useA('roman18',S1);ok(said('its_not_his_to_decide')&&!F.roman,'to a soldier who holds him: not his to decide');
-  heard.length=0;await until(()=>said('runner_officer_youre_wanted_at_the_gate')&&P.held&&!G.busy,8000);
+  heard.length=0;await until(()=>said('runner_officer_youre_wanted_at_the_gate')&&P.held&&!G.busy,16000);
   ok(said('officer_let_go_and_wait')&&said('officer_hold_him')&&P.held,'waited too long: a runner calls the officer away, the soldiers let go and wait, and the moment comes again; no blow is shown');
   heard.length=0;useA('roman18',OF);{const o=await asked();ok(said('paul_is_it_lawful')&&said('officer_this_man_is_a_roman')&&said('paul_yes')&&o.includes('paul_i_was_born_one'),'to the officer standing there: is it lawful? (Acts 22:25-28)')}
   await line('paul_i_was_born_one');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();

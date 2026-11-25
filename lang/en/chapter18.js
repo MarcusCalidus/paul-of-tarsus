@@ -295,6 +295,7 @@ TEXTS('en',18,{
   /* the stairs: two tongues */
   "in_greek_line":"In Greek: {line}",
   "in_hebrew_line":"In Hebrew: {line}",
+  "say_who_i_am":"Tell him who I am, and ask to speak to the people.",
   "paul_a_word_with_you":"Could I have a word with you?",
   "paul_a_jew_of_tarsus":"No, I'm a Jew from Tarsus in Cilicia. I'm a citizen of that city, and it's no obscure place. Please, let me speak to the people.",
   "paul_men_brothers_and_fathers":"Men, brothers and fathers: listen to what I have to say in my defense.",
@@ -338,9 +339,9 @@ TEXTS('en',18,{
   "barracks_bench_look":"A stone bench along the wall.",
   "commanders_doorway_look":"The doorway to the commander's rooms.",
   "officer_why_were_they_shouting":"The commander wants to know why they were shouting against you. Well?",
-  "they_shouted_when_i_said_nations":"They listened until I told them the Lord had sent me to the nations far away. Then they shouted.",
-  "men_from_asia_started_it":"Jews from the province of Asia started it in the temple. They shouted that I'd brought Greeks inside.",
-  "the_greek_they_meant_waited_outside":"The Greek they meant is my friend Trophimus. He waited outside the barrier every day. I saw him there in the colonnade myself.",
+  "they_shouted_when_i_said_nations":"They listened until I said the Lord had sent me to the nations far away.",
+  "men_from_asia_started_it":"Jews from Asia started it. They shouted that I'd brought Greeks into the temple.",
+  "the_greek_they_meant_waited_outside":"The Greek they meant is Trophimus. I saw him waiting outside the barrier.",
   "they_shut_the_doors_on_me":"They dragged me out of the temple, and the doors were shut behind me.",
   "not_all_of_them_shouted":"Not all of them shouted. I saw a woman draw her child back.",
   "your_commander_saw_it_all":"Your commander saw it all himself, on the stairs.",
@@ -429,7 +430,7 @@ TEXTS('en',18,{
   "note_greek_for_the_commander":"The commander speaks Greek. The crowd speaks Hebrew.",
 
   /* End */
-  "on_the_stairs_end":"In Jerusalem the brothers welcomed them gladly, and Mnason of Cyprus took them in. Paul told James and all the elders, one thing after another, what God had done among the nations. On the elders' counsel he went into the temple with four men under a vow. Near the end of the seven days Jews from the province of Asia seized him, supposing he had brought Trophimus in. The commander took him from the crowd in two chains; on the stairs Paul spoke to them in Hebrew. In the soldiers' quarters, before the whipping, he asked whether it was lawful to scourge a Roman who had not been condemned.",
-  "based_on_acts_21_17_22_29":"Based on Acts 21:17-22:29. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are from the Scriptures and are told here in paraphrase. Acts does not say who besides Trophimus was with Paul after the meeting with the elders; that the gift was handed over at that meeting (Paul speaks of the gifts he brought at Acts 24:17, and Bearing Thorough Witness says that he likely did); what the vow was, or what it cost; why seven days; how the two chains were fastened (Acts 12:6 tells how Peter was bound); where Paul looked as they carried him up the stairs; or what was said in Greek or in Hebrew beyond the account. The account does not name the commander here; it gives his name later (Acts 23:26). Mnason's house and the elders' house, Eleazar, Nahum, Ithiel and Shallum, the man from Cyrene, the Greek of the city, the Levite at the opening, the barber, and the brother and sister at Mnason's are invented.",
+  "on_the_stairs_end":"In Jerusalem the brothers welcomed them gladly. Paul told James and the elders what God had done among the nations, and on their counsel went into the temple with four men under a vow. Jews from Asia seized him there, and the commander took him away in two chains. On the stairs Paul spoke to the people in Hebrew; in the soldiers' quarters he asked whether it was lawful to scourge a Roman who had not been condemned.",
+  "based_on_acts_21_17_22_29":"Based on Acts 21:17-22:29. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are told here in paraphrase. Acts does not say who besides Trophimus was with Paul after the meeting with the elders, that the gift was handed over then (Acts 24:17; Bearing Thorough Witness: likely), what the vow was or what it cost, why seven days, how the two chains were fastened (compare Acts 12:6), where Paul looked on the stairs, or what was said beyond the account. It names the commander later (Acts 23:26). The warning stone follows the reading of the stone that survives. The houses of Mnason and of the elders, the names of the four men, the man from Cyrene, the Greek of the city, the Levite, the barber, and the brother and sister at Mnason's are invented.",
   "click_to_return_to_the_title":"Click to return to the title"
 });
