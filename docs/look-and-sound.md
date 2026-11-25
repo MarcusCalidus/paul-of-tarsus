@@ -116,6 +116,10 @@ Chapter Seventeen goes down the coast from Patara to Caesarea. The harbor of Pat
 
 ![Bound with a belt, as Agabus bound himself: seated, then bound facing both ways, enlarged](screenshots/bound.png)
 
+Chapter Eighteen's arrest is drawn in poses of its own. Bound with two chains (Acts 21:33), Paul stands with both arms down along his body and the hands a little forward, an iron cuff round each wrist, and a short chain hangs from each cuff to the wrist of a soldier on either side, link by link in small squares of iron; held by the arms before the whipping (22:25), two soldiers stand a little behind him and grip his upper arms, their fingers over his sleeves; carried up the stairs (21:35), he is seen head and shoulders above a tight knot of five soldiers who keep step with short steps. No arm is spread, nothing hangs from the middle of anything, and when he motions to the crowd (21:40) only his far forearm is raised, bent, with its chain. The commander of the garrison is a military tribune, in a tunic with the narrow purple stripe of his rank, a military cloak and a gold ring of two pixels; he is drawn bareheaded in his cuirass too, and with a plumed helmet.
+
+![Chained, held by the arms and carried among the soldiers, enlarged](screenshots/chained.png)
+
 Each chapter ends on a travel map of the eastern Mediterranean, painted the same way: coasts, shallows and mountain ranges, cities as dots, and no grid lines. The road travelled so far is shown, and the chapter's own leg draws itself as a dotted line from city to city, to a short sting on frame drum, harp and ney in the chapter's own key: Damascus to Jerusalem; Jerusalem to Caesarea and by sea to Tarsus; Tarsus to Antioch, where Paul's missionary journeys would begin. The routes never cross. Where the Scriptures do not say which way he went, the line takes a plausible one: by sea east of Cyprus, by road round the Gulf of Issus, and through the south of Cyprus.
 
 ![The travel map at the end of Chapter Three](screenshots/map.png)
