@@ -485,24 +485,122 @@ function lightNightB19(g){
 
 /* ==== ART door19: begin ==== */
 /* The house of Paul's sister in the upper city of Jerusalem, in the late afternoon (Insight: she and her son lived in Jerusalem; nothing
-   else is known of the house). A plain house front of limewashed stone in a quiet lane, its door of upright boards in a frame of dressed
-   stone, a water jar by the door, a low bench along the wall. The sun is low at the left and warm; the lane runs off at the right into
-   the city. One horizon: the lane's paving runs back to the houses across it.
+   else is known of the house). A plain house of two storeys in a quiet lane: limewashed plaster over rubble of the pale limestone, where
+   it has fallen away the rubble shows; dressed blocks at its corners, long and short in turn; the ends of the roof beams under a low
+   parapet, on whose coping the sparrows sit (ROOMS.door19.birds, y 14.6). Its door, in a frame of dressed stone, stands open inward: one
+   leaf of upright boards, no band across it, and the dark of the house behind it, where she stands. By the door the water jar; along the
+   wall to the left a low bench of stone with a basket on it; small windows high up, with wooden shutters. At the left the neighbour's
+   house, lower and a step farther back; at the right the neighbour's house beside hers, of dressed blocks below and plaster above, its
+   own door shut. Beyond it the lane climbs away into the city by a few broad steps, between the neighbour's side wall in shade and a house
+   at its head, which closes the view in the sun. One horizon (HZDoor19): the paving, the steps and the lane's head run back to it. The sun
+   is low at the left: the upper fronts are warm, and the long shade of the houses across the lane, behind us, lies over the lower fronts
+   and the paving, a soft edge and never a line. Heads come at y 66..84: behind the sister lies the dark doorway, behind the nephew the
+   plaster and the bench; nothing round lies there.
    Called from outside: ART.door19. Reads nothing.
-   Hotspots: the house 40,20,200,80 · the door 152,58,24,46 · the water jar 184,86,10,18 · the lane into the city 304,96,16,48.
+   Hotspots: the house 30,14,214,40 · the door 152,58,24,46 · the water jar 184,86,10,18 · the lane into the city 304,96,16,48.
    Walk: 20..300 by 112..138. Actors: the sister 164,114 at her door; the nephew 126,126. */
-ART.door19={w:320,q:12,paint(g){paintDoor19(g)},light:{amb:'#f0d4b4',sun:[.5,.25,.3],wallY:104},draw(){},front(){}};
-function paintDoor19(g){const r=rng(1921),W='#e4d6b8';
-  sky19(g,320,40,'aft');
-  /* the neighbour's house at the left, its front a step back; houses across the lane at the right, far off; the lane going back */
-  plaster(g,0,26,32,78,'#d0c0a0',r,{patch:0,cracks:1,t:.4});R(g,0,24,32,2.4,'#dccca8');shade(g,[24,26,32,26,32,104,24,104],'#a89ab8',.4);
-  for(const[x,y,w,h,c]of[[244,34,46,70,'#d8c8a8'],[286,28,40,76,'#ccbc9c']])plaster(g,x,y,w,h,c,r,{patch:1,cracks:1,t:.4});
-  plaster(g,30,16,214,88,W,r,{patch:1,cracks:2,t:.4,top:.06,bot:-.06});R(g,28,14,218,3,tint(W,.1));R(g,28,14,218,.6,tint(W,.3));
-  for(const x of[62,112,204])R(g,x,40,8,7,'#3a2c24');
-  R(g,148,54,32,50,tint('#cbb894',-.05));R(g,152,58,24,46,'#6e4a2c');for(let i=1;i<6;i++)R(g,152+i*4,58.5,.5,45,'#4a3020');R(g,152,58,24,.8,'#9a7448');
-  vessel(g,189,104,5,15,'#b47c52','pithos');R(g,80,96,46,8,tint(W,-.15));R(g,80,96,46,1,tint(W,.2));
-  pave(g,-2,104,322,144,'#cdbb96',r,{vx:260,vy:70,rows:5,step:30,v:.08,t:.35});ao(g,0,104,320,6,'t',.25,'#3a2c3c');
-  light19(g,320,1,'rgba(255,196,130,1)',.5);ao(g,0,126,320,18,'b',.1,'#2a2050')}
+const HZDoor19=80;
+ART.door19={w:320,q:12,paint(g){paintDoor19(g)},light:{amb:'#f0d4b4',sun:[.5,.25,.3],wallY:104,wall:[[0,152,104,40],[176,292,104,40]]},draw(){},front(){}};
+function paintDoor19(g){const r=rng(1921),W='#ece0c4';
+  skyDoor19(g);
+  laneDoor19(g,rng(1922));
+  pave(g,-2,104,322,144,'#d4c29e',r,{vx:170,vy:HZDoor19,rows:6,step:30,v:.08,t:.34,rand:1});
+  leftDoor19(g,rng(1923));
+  rightDoor19(g,rng(1924));
+  houseDoor19(g,rng(1925),W);
+  ao(g,0,104,292,5,'t',.28,'#3a2c3c');R(g,0,103.6,292,.6,'rgba(60,44,50,.4)');
+  benchDoor19(g,rng(1926));
+  vessel(g,189,104,5,15,'#b87c52','pithos');R(g,186.6,89.2,4.8,.5,'#7a5a48');
+  lightDoor19(g)}
+/* the sky over the roofs: blue above, warm toward the low sun at the left, a long cloud lit from below */
+function skyDoor19(g){sky(g,320,40,['#6482b6','#9aa8c6','#ecc49c']);pool(g,-30,40,160,30,'#ffd4a0',.5,'screen');
+  const q=rng(1927);cloud(g,90,8,90,2.4,q,'#fbe4cc','#b8a6c0');cloud(g,250,4,60,1.8,q,'#f6e0cc','#b0a4c4')}
+/* quoins19: the dressed blocks at a corner, long and short in turn, from y0 to y1; side -1 on a left corner, 1 on a right one */
+function quoinsDoor19(g,x,y0,y1,c,side,r){let y=y0,k=0;while(y<y1-.2){const h=Math.min(y1-y,4.8),w=k%2?4.4:7.6,X=side<0?x:x-w,cc=tint(c,.04+(r()-.5)*.06);
+    R(g,X,y,w,h-.4,cc);R(g,X,y,w,.5,tint(cc,.22));R(g,X,y+h-.9,w,.5,tint(cc,-.26));R(g,side<0?X+w-.5:X,y,.5,h-.4,tint(cc,side<0?-.22:.16));y+=h;k++}}
+/* the lane up into the city, beyond the neighbour's house at the right: its side wall in shade going back, a few broad steps climbing to
+   the house at its head, which closes the view in the sun; the sky above */
+function laneDoor19(g,r){const x0=292,vx=308,vy=HZDoor19,head=83;
+  /* the house at the head of the lane, its front lit */
+  plaster(g,294,30,30,head-30,'#e8d6b2',r,{patch:0,cracks:0,t:.4,top:.06,bot:-.02});R(g,293,28.4,30,2,'#f4e6c8');R(g,293,28.4,30,.5,'#fff8e8');
+  R(g,310,44,4,5,'#4a3a34');R(g,309,49,6,.8,'#f0e0c0');ao(g,294,head-5,30,5,'b',.2,'#6a5040');
+  /* the steps: risers toward us lit by the low sun from the side, treads paler; each wider as it nears */
+  const n=6;for(let i=0;i<n;i++){const t0=i/n,t1=(i+1)/n,ya=104-(104-head)*t0,yb=104-(104-head)*t1,rh=(ya-yb)*.62;
+    R(g,x0-2,yb,30,ya-yb,tint('#d8c6a0',.1-i*.01));R(g,x0-2,yb+rh*.0,30,.5,'#fff2d6');R(g,x0-2,ya-rh,30,rh,tint('#c8b490',-.04+i*.01));R(g,x0-2,ya-.5,30,.5,'rgba(80,60,60,.35)')}
+  /* the neighbour's side wall along the lane, in shade, from its corner (x0) back toward the head of the lane */
+  const SW=[x0,22,x0,104,299,head,299,42];poly(g,SW,'#b8a48c');
+  clipTo(g,()=>poly(g,SW),()=>{tex(g,'mott',.5,x0,22,8,82,'overlay',1);g.fillStyle=lg(g,0,22,0,104,['rgba(110,90,120,.25)','rgba(70,56,90,.45)']);g.fillRect(x0,22,8,82)});
+  poly(g,[x0,20.6,299,40.8,299,42.4,x0,22.6],'#d8c8ac')}
+/* the neighbour's house at the left, lower and a step back: plaster over rubble, a shuttered window, its parapet catching the sun */
+function leftDoor19(g,r){const c='#e2d4b6';plaster(g,-2,34,32,68.4,c,r,{patch:1,rubble:1,cracks:0,t:.42,top:.06,bot:-.08,brick:'#d8c098'});
+  R(g,-2,32,33,2.4,tint(c,.14));R(g,-2,32,33,.6,'#fffaea');R(g,-2,34.4,33,.6,tint(c,-.3));ao(g,-2,35,32,4,'t',.18,'#5a4060');
+  windowArt(g,10,50,6,8,c,{shut:1,wood:'#7a5a3a'});
+  M19.crack(g,22,38,3,r,.6);ao(g,-2,88,32,14,'b',.22,'#5a4838');
+  R(g,0,102.2,30,.6,'rgba(60,44,50,.4)')}
+/* the neighbour's house beside hers: dressed blocks below, plaster above, its door shut (upright boards, no band) and a shuttered window */
+function rightDoor19(g,r){const x=244,w=48,c='#e6d8bc',top=24,mid=62;
+  plaster(g,x,top+3,w,mid-top-3,c,r,{patch:0,cracks:0,t:.4,top:.05,bot:-.04});
+  ashlar(g,x,mid,w,104-mid,tint(c,-.04),r,{bw:15,bh:7,v:.07,t:.3,m:tint(c,-.3)});
+  R(g,x-.5,top,w+1,3,tint(c,.14));R(g,x-.5,top,w+1,.6,'#fffaea');R(g,x-.5,top+3,w+1,.6,tint(c,-.3));ao(g,x,top+3.4,w,4,'t',.2,'#5a4060');
+  R(g,x,mid-1.6,w,1.6,tint(c,.1));R(g,x,mid-1.6,w,.5,tint(c,.3));R(g,x,mid,w,.6,'rgba(80,60,70,.4)');
+  windowArt(g,262,38,6,8,c,{shut:1,wood:'#7a5a3a'});
+  doorArt(g,272,76,15,28,'#6a4c30',r,{left:1,frame:'#5a3e28',pw:5});
+  R(g,270.6,73.4,17.8,2.6,tint(c,.06));R(g,270.6,73.4,17.8,.5,'#fff4dc');R(g,270.6,75.6,17.8,.5,'rgba(70,50,50,.5)');
+  quoinsDoor19(g,x+w,top+3,mid-1.6,c,1,r);
+  ao(g,x,90,w,14,'b',.2,'#5a4838');
+  /* where it meets her house, a little shade in the corner */
+  ao(g,x,top,3,104-top,'l',.18,'#4a3c60')}
+/* her house: plaster over rubble, the parapet with its coping (y 14.6), the beam ends, the windows, the quoins, the open door */
+function houseDoor19(g,r,W){const x=30,w=214,TP=14.6;
+  plaster(g,x,TP+5,w,104-TP-5,W,r,{patch:1,rubble:1,cracks:0,t:.42,top:.05,bot:-.08,brick:'#d8c098'});
+  /* the parapet: its face, its coping where the sparrows sit, the shade it throws */
+  plaster(g,x,TP+2.4,w,2.8,tint(W,.03),r,{patch:0,cracks:0,t:.3});
+  R(g,x-1.4,TP,w+2.8,2.6,tint(W,.12));R(g,x-1.4,TP,w+2.8,.6,'#fffaec');R(g,x-1.4,TP+2.6,w+2.8,.6,tint(W,-.32));ao(g,x,TP+5.2,w,5,'t',.2,'#5a4060');
+  /* the ends of the roof beams under the parapet, each with its small shadow falling to the right */
+  for(let bx=x+9;bx<x+w-6;bx+=16.5){R(g,bx,TP+6.4,2.4,2.2,'#6a4a30');R(g,bx,TP+6.4,2.4,.5,'#b08858');poly(g,[bx+2.4,TP+6.8,bx+4.6,TP+7.4,bx+4.6,TP+9.6,bx+2.4,TP+8.6],'rgba(90,60,80,.22)')}
+  quoinsDoor19(g,x,TP+5,104,W,-1,r);quoinsDoor19(g,x+w,TP+5,104,W,1,r);
+  /* the windows upstairs: small, with shutters; one stands open a little */
+  for(const[wx,open]of[[62,0],[112,1],[204,0]]){const wy=32;windowArt(g,wx,wy,7,9,W,{shut:!open,wood:'#7a5a3a'});
+    if(open){M19.board(g,wx-2.4,wy,2.2,9,'#7a5a3a',r,1);ao(g,wx,wy,7,4,'t',.6,'#000')}}
+  /* two hairline cracks set by hand, high, where they run to no head */
+  M19.crack(g,96,24,3,rng(1928),.6);M19.crack(g,226,26,4,rng(1929),.6);
+  /* the limewash: renewed here and there, older and greyer elsewhere; soft stains under the sills, never streaks */
+  {const q=rng(1930);for(let i=0;i<14;i++)pool(g,x+8+q()*(w-16),TP+14+q()*70,8+q()*16,3+q()*5,q()<.5?'#fff8ea':'#b8a490',.16,q()<.5?'screen':'multiply');
+    for(const wx of[62,112,204])pool(g,wx+3.5,TP+31,5,4,'#a08c78',.16,'multiply')}
+  doorwayDoor19(g,r,W);
+  ao(g,x,88,w,16,'b',.22,'#5a4838')}
+/* the doorway: jambs and a lintel of dressed stone, the lintel reaching a little past the jambs; inside, the dark of the house, its floor
+   a little lit near the threshold; the leaf of upright boards standing open inward at the left, seen at a slant; a step of stone */
+function doorwayDoor19(g,r,W){const x=152,y=58,w=24,h=46,c='#e4d6b8';
+  R(g,x,y,w,h,'#1e1612');
+  clipTo(g,()=>{g.beginPath();g.rect(x,y,w,h)},()=>{g.fillStyle=lg(g,0,y,0,y+h,['#140e0c','#22180f','#3a2a1c']);g.fillRect(x,y,w,h);
+    poly(g,[x,y+h,x+w,y+h,x+w-3,y+h-5,x+3,y+h-5],'#4a3622');g.fillStyle=lg(g,0,y+h-5,0,y+h,['rgba(255,210,150,0)','rgba(255,210,150,.3)']);g.fillRect(x,y+h-5,w,5);
+    /* the leaf, open inward against the left of the passage into the house: its boards upright, foreshortened */
+    const L=[x+1,y+1,x+6.4,y+4.6,x+6.4,y+h-3.6,x+1,y+h];poly(g,L,'#5e4430');
+    clipTo(g,()=>poly(g,L),()=>{g.fillStyle=lg(g,x,0,x+6.4,0,['#7a5a3c','#4a3422']);g.fillRect(x,y,7,h);for(const bx of[2.8,4.6])R(g,x+bx,y,.4,h,'rgba(30,20,12,.55)')});
+    R(g,x+6.2,y+4.6,.6,h-8.2,'#2a1c12');
+    ao(g,x,y,w,6,'t',.6,'#000')});
+  for(const jx of[x-3.4,x+w]){R(g,jx,y,3.4,h,tint(c,-.02));R(g,jx,y,.6,h,tint(c,.24));R(g,jx+2.8,y,.6,h,tint(c,-.28));inRect(g,jx,y,3.4,h,()=>tex(g,'mott',.3,jx,y,3.4,h,'overlay',1))}
+  R(g,x-5,y-5,w+10,5,c);R(g,x-5,y-5,w+10,.6,'#fffaf0');R(g,x-5,y-.6,w+10,.6,tint(c,-.42));inRect(g,x-5,y-5,w+10,5,()=>tex(g,'mott',.3,x-5,y-5,w+10,5,'overlay',1));
+  R(g,x-5,103.2,w+10,2.2,'#dccaa6');R(g,x-5,103.2,w+10,.6,'#fff4dc');R(g,x-5,105.2,w+10,.5,'rgba(70,56,70,.5)')}
+/* the bench of stone along the wall, low, on two solid ends (none under its middle); a round basket with a cloth over it at its end */
+function benchDoor19(g,r){const x=80,y=96,w=46,c='#dccbaa';M19.shadow(g,x+w/2,104.2,w/2+2,1.2,.45);
+  for(const ex of[x+1,x+w-6]){R(g,ex,y+2.4,5,7.6,tint(c,-.12));R(g,ex,y+2.4,.5,7.6,tint(c,.1));R(g,ex+4.5,y+2.4,.5,7.6,tint(c,-.3))}
+  R(g,x+6,y+2.4,w-12,7.6,'rgba(60,44,50,.35)');
+  R(g,x,y,w,2.6,c);R(g,x,y,w,.6,tint(c,.3));R(g,x,y+2.2,w,.5,tint(c,-.3));inRect(g,x,y,w,2.6,()=>tex(g,'mott',.4,x,y,w,2.6,'overlay',1));
+  /* the basket: woven in rows that run round it, one way only; a cloth folded over its top */
+  const bx=x+w-11,by=y;M19.shadow(g,bx+4,by+.2,5,.8,.5);
+  const B=[bx,by,bx-.6,by-4,bx+8.6,by-4,bx+8,by];poly(g,B,'#a8844e');clipTo(g,()=>poly(g,B),()=>{for(let k=0;k<4;k++)R(g,bx-1,by-4+k*1+.5,10,.5,'rgba(90,60,30,.45)');
+    g.fillStyle=lg(g,bx,0,bx+9,0,['rgba(255,230,180,.25)','rgba(60,40,30,.3)']);g.fillRect(bx-1,by-5,10,6)});
+  poly(g,[bx-.8,by-4,bx+1,by-5.6,bx+7.6,by-5.8,bx+8.8,by-4],'#d8ccb0');R(g,bx+1,by-5.6,6,.5,'#f8f0e0')}
+/* the late light: warm over the upper fronts and the parapets, the long cool shade of the houses across the lane over the lower fronts
+   and the paving, with a soft edge; the warm glow of the sky over all; the soft shade at the foot of the picture */
+function lightDoor19(g){
+  comp(g,'multiply',.4,()=>{poly(g,[-2,60,180,66,322,76,322,146,-2,146]);g.fillStyle=lg(g,0,58,0,80,['rgba(255,255,255,1)','rgba(176,160,198,1)']);g.fill()});
+  comp(g,'multiply',.22,()=>{poly(g,[-2,66,180,72,322,82,322,146,-2,146]);g.fillStyle='rgba(176,160,198,1)';g.fill()});
+  comp(g,'soft-light',.5,()=>{poly(g,[-2,0,322,0,322,76,180,66,-2,60]);g.fillStyle=lg(g,0,0,320,0,['rgba(255,190,120,1)','rgba(255,214,160,1)','rgba(240,200,170,1)']);g.fill()});
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,0,144,['rgba(255,200,150,1)','rgba(240,196,170,1)','rgba(160,146,196,1)']);g.fillRect(0,0,320,144)});
+  ao(g,0,124,320,20,'b',.12,'#2a2050')}
 /* ==== ART door19: end ==== */
 
 /* ==== ART lanes19: begin ==== */
@@ -532,7 +630,7 @@ const WALL19=[0,0,420,0,420,36,0,36];
 const DOOR19=[38,236],FINE19=[380,168],FORT19=[298,30],STALLA19=[228,228,22,6],STALLO19=[272,70,22,6],DONKEY19=[214,186,12,10];
 const AT19={start:[40,256,1],seller:[236,241,1],oathA:[248,247,-1],oathB:[222,247,1],elder:[346,196,1],priests:[378,196,-1],oil:[283,80,1],gate:[298,50,1]};
 const lanes19=CITY19.map(l=>Object.assign({},l,{pts:pts19(l.pts),w:Math.round(l.w*SC19)}));
-const LM19=SHARED.lanes.make('lanes19',{w:LW19,h:LH19,seed:1919,lot:30,door:3,win:3,winH:3,doorH:8,flat:.7,ew:.7,
+const LM19=SHARED.lanes.make('lanes19',{w:LW19,h:LH19,seed:1919,lot:30,door:3,win:3,winH:3,doorH:8,flat:.8,ew:.7,
   lanes:lanes19,open:[{poly:pts19(OPEN19.market),kind:'square'},{poly:pts19(OPEN19.below),kind:'square'},{poly:pts19(OPEN19.home),kind:'earth'},{poly:pts19(OPEN19.fine),kind:'earth'}],
   keep:[{poly:pts19(WALL19)}],
   solid:[box19(STALLA19),box19(STALLO19),box19(DONKEY19)],
@@ -542,6 +640,7 @@ const LM19=SHARED.lanes.make('lanes19',{w:LW19,h:LH19,seed:1919,lot:30,door:3,wi
   marks:[[DOOR19,1],[FINE19,0]].map(([[x,y],k])=>({x:Math.round(X19(x)),y:Y19(y)-3,paint:(g,v,[top,foot])=>doorLanes19(g,Math.round(X19(x))-2,foot+1-7,k)})),
   zones:[{...zone19(OPEN19.market),enter:()=>halfA19()},{...zone19(OPEN19.fine),enter:()=>halfB19()}],
   paint:(g,v,M)=>paintLanes19(g),draw:(g,ts)=>drawLanes19(g,ts),
+  props:[{y:Y19(STALLA19[1]+STALLA19[3]),shape:g=>stallLanes19(g,STALLA19,0,0,1)},{y:Y19(STALLO19[1]+STALLO19[3]),shape:g=>stallLanes19(g,STALLO19,0,0,1)}],
   room:{floor:'stone',mood:'lanes',amb:AMB.lanes19,
     hs:[
       {name:'gate_of_the_fortress',x:290,y:22,w:16,h:16,wx:298,wy:44,dir:-1,exit:()=>toGate19(),look:'gate_of_the_fortress_look'},
@@ -553,52 +652,272 @@ const LM19=SHARED.lanes.make('lanes19',{w:LW19,h:LH19,seed:1919,lot:30,door:3,wi
       {name:'donkey',x:DONKEY19[0],y:DONKEY19[1]-4,w:DONKEY19[2],h:DONKEY19[3]+4,wx:220,wy:204,look:'donkey_in_the_lane_look',talk:'nephew_donkeys_dont_answer',pickup:'nephew_not_my_donkey'}]
       .map(h=>Object.assign(h,{x:X19(h.x),y:Y19(h.y),w:q19(h.w),h:q19(h.h),wx:X19(h.wx),wy:Y19(h.wy)}))}});
 function zone19(p){return{x:X19(p[0]),y:Y19(p[1]),w:q19(p[2]-p[0]),h:q19(p[5]-p[1])}}
-/* The look of the map, which the chapter paints itself (shared/lanes.js paints the houses and the paving): the wall of the fortress along
-   the top with its gate (no bars, no bands across its leaves: the leaves stand open against the wall), the two stalls, and the donkey
-   (drawn among the people, draw). Nothing round is smaller than two pixels, and no line crosses another. */
-function paintLanes19(g){const r=rng(1931),[wx,wy,ww,wh]=[0,0,LW19,Y19(36)];
-  /* the wall seen from above at a slant: its top walk lit, its face toward us in courses that run one way, its joints stopping in their course */
-  R(g,wx,wy,ww,wh-14,'#cdbb94');tex(g,'mott',.4,wx,wy,ww,wh-14,'overlay',.8);R(g,wx,wh-14,ww,1,'#efe2c0');
-  g.fillStyle=lg(g,0,wh-13,0,wh,['#b8a684','#9a8a6a']);g.fillRect(wx,wh-13,ww,13);
-  for(let y=wh-11,k=0;y<wh;y+=3.5,k++){R(g,0,y,ww,.5,'rgba(70,56,40,.35)');for(let x=(k%2)*9;x<ww;x+=18)R(g,x,y+.5,.5,3,'rgba(70,56,40,.25)')}
-  /* the gate: a dark round-headed opening in the face, its two leaves of boards standing open against the wall on either side */
-  {const gx=X19(FORT19[0]),gy=wh;arch(g,gx-6,gy-12,12,12,'#1e1612');R(g,gx-9.5,gy-11,3,10,'#6a4a2c');R(g,gx+6.5,gy-11,3,10,'#6a4a2c');R(g,gx-9.5,gy-11,3,.5,'#9a7448');R(g,gx+6.5,gy-11,3,.5,'#9a7448')}
-  ao(g,0,wh,ww,4,'t',.35,'#2a2030');
-  SHARED.lanes.stall(g,X19(STALLA19[0]),Y19(STALLA19[1]),q19(STALLA19[2]),q19(STALLA19[3]),'#7a5a3a','#e8d8b0');
-  {const x=X19(STALLA19[0]),y=Y19(STALLA19[1])+q19(STALLA19[3]),w=q19(STALLA19[2]);for(let i=0;i<5;i++){const cx=x+4+i*(w-8)/4;R(g,cx-1.2,y-1.2,2.4,1.6,'#c89a58');R(g,cx-1.2,y-1.2,2.4,.5,'#f0d09a')}
-    R(g,x+w-4,y-2.4,2.4,2.4,'#a86a44');R(g,x+w-4,y-2.4,2.4,.6,'#e0a070')}
-  SHARED.lanes.stall(g,X19(STALLO19[0]),Y19(STALLO19[1]),q19(STALLO19[2]),q19(STALLO19[3]),'#5a6a3a','#e4dcb4');
-  {const x=X19(STALLO19[0]),y=Y19(STALLO19[1])+q19(STALLO19[3]),w=q19(STALLO19[2]);for(let i=0;i<4;i++){const cx=x+4+i*(w-8)/3;R(g,cx-1.4,y-2.6,2.8,2.6,'#b87c50');R(g,cx-1.4,y-2.6,2.8,.6,'#e8b080')}}
+/* The look of the map, which the chapter paints itself (shared/lanes.js paints the houses and the paving; most of their roofs are flat, as
+   the roofs of Jerusalem were): the wall of the fortress along the top, seen at the slant of the map. Beyond it the flat roofs of the
+   fortress's own buildings; then the walk along the wall's top; the coping of its parapet, where the doves sit (ROOMS.lanes19.birds,
+   y WTOP19); its face of large dressed blocks in courses, warm in the late sun, every joint stopping in its own course, down to its foot
+   (Y19(36)). At each end a tower stands higher than the wall: at its end, never from its middle, its courses kept clear of the wall's
+   where they meet. The gate (FORT19): a round-headed opening in a ring of wedge-shaped stones, the dark of its passage, and its two leaves
+   of boards standing open inside it against the passage walls (no bars, no bands across them). The two stalls stand up from the ground
+   (props): an awning of plain linen on two posts at its front corners, the counter under it, the wares on the counter; the bread seller's
+   flat loaves and his water jars, the oil seller's jugs and two tall jars standing beside them. The donkey (drawn among the people, draw):
+   a small hand-placed sprite at the scale of the map's people, standing slantwise across the short lane with its head low and a sack over
+   its back; now and then it turns an ear out or flicks its tail; every pose is one piece (DONKEYMAP19). Nothing round is smaller than two pixels, and no line crosses another. */
+const WFOOT19=Y19(36),WTOP19=Y19(14),TOWERW19=22;
+function paintLanes19(g){const r=rng(1931),W=LW19;
+  /* the fortress's own buildings beyond the wall: flat roofs of plaster in the late light, their parapets along them, one way only */
+  g.fillStyle=lg(g,0,0,0,10,['#cdbd9c','#d8c8a6']);g.fillRect(0,0,W,10);
+  for(let x=-6;x<W;){const w=40+r()*70,t=1+r()*3;R(g,x,t,w-1.5,.8,'#efe2c2');R(g,x,t+.8,w-1.5,.5,'rgba(90,70,60,.35)');R(g,x+w-1.5,t,1.5,10-t,'rgba(100,80,70,.25)');x+=w}
+  inRect(g,0,0,W,10,()=>tex(g,'mott',.5,0,0,W,10,'overlay',1));ao(g,0,6,W,4,'b',.25,'#5a4048');
+  /* the walk along the wall's top: flags, each joint stopping at the edge of the walk */
+  R(g,0,10,W,WTOP19-1.6-10,'#d4c4a2');for(let x=-r()*6;x<W;x+=5+r()*4)R(g,x,10.4,.5,WTOP19-12.4,'rgba(110,90,70,.35)');
+  inRect(g,0,10,W,WTOP19-11.6,()=>tex(g,'mott',.4,0,10,W,8,'overlay',1));
+  /* the coping of the parapet, lit along its top, and the shade it throws on the face below */
+  R(g,0,WTOP19-1.6,W,2.6,'#eee0c0');R(g,0,WTOP19-1.6,W,.6,'#fff8e6');R(g,0,WTOP19+1,W,.6,'rgba(80,60,56,.5)');
+  /* the face: courses of large dressed blocks down to the foot */
+  const ys=[];for(let y=WTOP19+1.6;y<WFOOT19-.1;y+=3.6)ys.push(y);ys.push(WFOOT19);
+  faceLanes19(g,0,W,ys,'#dcc8a0',r,14);
+  ao(g,0,WTOP19+1.6,W,3,'t',.3,'#5a4048');
+  /* the two towers, one at each end, a little higher than the wall; their courses lie between the wall's */
+  for(const tx of[0,W-TOWERW19])towerLanes19(g,tx,ys,r);
+  gateLanes19(g,r);
+  /* the late sun: warm on the face toward the west, a little cooler to the east; the foot of the wall in a soft shade */
+  comp(g,'soft-light',.35,()=>{g.fillStyle=lg(g,0,0,W,0,['rgba(255,196,130,1)','rgba(240,210,180,1)','rgba(190,180,210,1)']);g.fillRect(0,0,W,WFOOT19)});
+  ao(g,0,WFOOT19-6,W,6,'b',.22,'#5a4038');ao(g,0,WFOOT19,W,3,'t',.3,'#3a2c3c');
+  stallLanes19(g,STALLA19,'#dccfae',bread19);stallLanes19(g,STALLO19,'#b4b08c',oil19);
   light19(g,LW19,1,'rgba(255,200,140,1)',.25)}
-/* a door on a house front, of upright boards; the sister's door with a water jar beside it (k 1) */
-function doorLanes19(g,X,yy,k){R(g,X-.5,yy-.5,6,7.5,'#5a3e28');R(g,X,yy,5,7,'#6e4a2c');for(let i=1;i<5;i+=1.5)R(g,X+i,yy+.5,.5,6.5,'#4a3020');R(g,X,yy,5,.5,'#9a7448');
-  if(k){R(g,X+6.4,yy+3,2.4,4,'#b47c52');R(g,X+6.4,yy+3,2.4,.6,'#e0a87a')}}
-/* the donkey in the lane, seen from above at a slant: its body along the lane, its head down, a load on its back; its shadow; at the depth
-   of its feet among the people. PLACEHOLDER for the art agents (a small hand-placed sprite, like the map's figures). */
-function drawLanes19(g,t){const[x,y,w,h]=box19(DONKEY19),cx=x+w/2;
-  depth(y+h,()=>{oval(g,cx+1,y+h-1,7,2.2,'rgba(20,16,30,.3)');
-    poly(g,[cx-3,y+h-1,cx-3,y+2,cx-2,y+1,cx+2,y+1,cx+3,y+2,cx+3,y+h-1],'#8a7a6a');poly(g,[cx-2,y+h-1,cx-1.6,y+h+2.4,cx+1.6,y+h+2.4,cx+2,y+h-1],'#6a5a4a');
-    R(g,cx-1,y-1.6,2,3,'#7a6a5a');R(g,cx-1,y-1.6,2,.6,'#a89888');R(g,cx-2.6,y+3,5.2,3,'#a8885a');R(g,cx-2.6,y+3,5.2,.6,'#d4b484')})}
+/* faceLanes19: courses of dressed blocks between x0 and x1 at the map's scale, the course lines at ys; each block lit along its top and
+   left, shaded along its right; a joint stops at the edge of its course, and none stands within two pixels of one in the course above */
+function faceLanes19(g,x0,x1,ys,c,r,bw){let prev=[];
+  R(g,x0,ys[0],x1-x0,ys[ys.length-1]-ys[0],tint(c,-.36));
+  for(let k=0;k+1<ys.length;k++){const y=ys[k],h=ys[k+1]-y,cur=[];let x=x0-r()*bw;
+    while(x<x1){let w=bw*(.6+r()*.8);for(let t=0;t<5;t++){if(prev.some(p=>Math.abs(p-(x+w))<2))w+=2.5;else break}
+      const cc=tint(c,(r()-.5)*.12);R(g,x+.5,y+.5,w-.5,h-.5,cc);R(g,x+.5,y+.5,w-.5,.5,tint(cc,.2));R(g,x+.5,y+.5,.5,h-.5,tint(cc,.1));R(g,x+w-.5,y+.5,.5,h-.5,tint(cc,-.16));
+      x+=w;cur.push(x)}
+    prev=cur}
+  inRect(g,x0,ys[0],x1-x0,ys[ys.length-1]-ys[0],()=>tex(g,'mott',.35,x0,ys[0],x1-x0,ys[ys.length-1]-ys[0],'overlay',1))}
+/* a tower at the end of the wall: its flat top with a coping round it, its face in courses that lie half a course from the wall's */
+function towerLanes19(g,x,ys,r){const w=TOWERW19,top=2.4,tys=[top+5.4];for(let y=top+5.4+3.6;y<WFOOT19-.1;y+=3.6)tys.push(y);tys.push(WFOOT19);
+  for(let i=1;i<tys.length-1;i++){const near=ys.find(v=>Math.abs(v-tys[i])<1.4);if(near!=null)tys[i]=near+1.8}
+  R(g,x,top,w,5.4,'#d8c8a4');R(g,x,top,w,.6,'#fff4dc');inRect(g,x,top,w,5.4,()=>tex(g,'mott',.4,x,top,w,5.4,'overlay',1));
+  R(g,x,top+5.4,w,.8,'#f0e2c2');faceLanes19(g,x,x+w,tys,'#e0cca4',r,10);
+  ao(g,x,top+5.4,w,2.4,'t',.3,'#5a4048');
+  R(g,x===0?w-.5:x,top,.5,WFOOT19-top,'rgba(80,58,56,.5)');
+  /* a narrow slit in the tower's face, inside one block */
+  const sy=tys[2]+.6;R(g,x+w/2-.4,sy,.8,2.6,'#2a1e1a')}
+/* the gate: the ring of wedge-shaped stones round the opening, the dark of the passage, its leaves standing open inside it */
+function gateLanes19(g,r){const cx=X19(FORT19[0]),w=12,x=cx-w/2,top=WFOOT19-19,sp=top+w/2,R0=w/2,R1=R0+1.8;
+  for(let i=0;i<7;i++){const a0=Math.PI+i*Math.PI/7,a1=Math.PI+(i+1)*Math.PI/7;
+    poly(g,[cx+Math.cos(a0)*R0,sp+Math.sin(a0)*R0,cx+Math.cos(a0)*R1,sp+Math.sin(a0)*R1,cx+Math.cos(a1)*R1,sp+Math.sin(a1)*R1,cx+Math.cos(a1)*R0,sp+Math.sin(a1)*R0],tint('#e4d2ac',(r()-.5)*.08+(i<4?.06:-.04)))}
+  for(const s of[-1,1]){const jx=s<0?x-1.8:x+w;R(g,jx,sp,1.8,WFOOT19-sp,tint('#e0cca4',s<0?.06:-.06));R(g,s<0?jx+1.3:jx,sp,.5,WFOOT19-sp,s<0?'rgba(70,50,50,.4)':'rgba(255,240,210,.4)')}
+  arch(g,x,top,w,WFOOT19-top);g.fillStyle=lg(g,0,top,0,WFOOT19,['#1a1214','#2a1e1a','#4a3a2c']);g.fill();
+  clipTo(g,()=>arch(g,x,top,w,WFOOT19-top),()=>{
+    /* the leaves, folded back against the passage walls: a narrow band of upright boards on each side, the near one lit by the low sun */
+    poly(g,[x,sp+1,x+2.4,sp+3,x+2.4,WFOOT19-2,x,WFOOT19],'#5a3e28');R(g,x+1.2,sp+2,.4,WFOOT19-sp-3.4,'rgba(30,20,12,.5)');
+    poly(g,[x+w,sp+1,x+w-2.4,sp+3,x+w-2.4,WFOOT19-2,x+w,WFOOT19],'#8a6440');R(g,x+w-1.4,sp+2,.4,WFOOT19-sp-3.4,'rgba(40,26,14,.45)');
+    /* the floor of the passage going in, a little light on it from the court beyond */
+    poly(g,[x+2.4,WFOOT19-2,x+w-2.4,WFOOT19-2,x+w,WFOOT19,x,WFOOT19],'#6a5640');
+    ao(g,x,top,w,3,'t',.6,'#000')});
+  R(g,x-2,WFOOT19-.6,w+4,1.2,'#dccaa4');R(g,x-2,WFOOT19-.6,w+4,.4,'#fff0d0')}
+/* a stall that stands up from the ground at its footprint b (units): the counter at its front with the wares on it, an awning of plain
+   linen over it on two posts at its front corners, one at each end; cut: its outline only (for the props) */
+const STALLH19=7;
+function stallLanes19(g,b,c,wares,cut){const[x,y,w,d]=box19(b),H=STALLH19,F=y+d,top=y-H+1,fr=F-H+.6,P=[x-1.2,top-.4,x+w+1.2,top-.4,x+w+1.4,fr+1.2,x+w+.6,F,x-.6,F,x-1.4,fr+1.2];
+  if(cut){poly(g,P,'#000');return}
+  /* its shadow on the ground, falling to the right of it, away from the low sun */
+  poly(g,[x+1,F,x+w+1,F,x+w+5,F-2.4,x+w+4,F-d+1,x+w,F-d+1],'rgba(30,20,40,.22)');
+  /* the dark under the awning, the counter's top with the wares, and the counter's front of boards laid along it */
+  g.fillStyle=lg(g,0,fr,0,F,['#3a2c26','#5a4636']);g.fillRect(x,fr,w,F-fr);
+  R(g,x+.5,F-4.4,w-1,1.6,'#8a6a48');R(g,x+.5,F-4.4,w-1,.5,'#c09a6a');
+  wares(g,x,F-4.4,w);
+  M19.board(g,x+.5,F-2.8,w-1,2.8,'#7a5a3a',rng(Math.round(x*3+y)));R(g,x+.5,F-.5,w-1,.5,'rgba(30,20,12,.5)');
+  /* the posts at the two front corners */
+  for(const px of[x,x+w-1]){R(g,px,fr,1,F-fr,'#5a3e28');R(g,px,fr,.5,F-fr,'#8a6a48')}
+  /* the awning: its top in the sun, soft folds running along it (one way only), its front hem hanging a little and lit */
+  const A=[x-1.2,top,x+w+1.2,top,x+w+1.4,fr,x-1.4,fr];poly(g,A);g.fillStyle=lg(g,0,top,0,fr,[tint(c,.12),c,tint(c,-.08)]);g.fill();
+  clipTo(g,()=>poly(g,A),()=>{for(let yy=top+1.4;yy<fr-.5;yy+=1.8)R(g,x-2,yy,w+4,.5,rgba(tint(c,-.3),.35));tex(g,'mott',.35,x-2,top,w+4,fr-top,'overlay',1)});
+  const hem=[];for(let i=0;i<=8;i++){const hx=x-1.4+(w+2.8)*i/8;hem.push(hx,fr+Math.sin(i/8*Math.PI)*.6)}for(let i=8;i>=0;i--){const hx=x-1.4+(w+2.8)*i/8;hem.push(hx,fr+1.3+Math.sin(i/8*Math.PI)*.7)}
+  poly(g,hem,tint(c,.04));stroke(g,hem.slice(0,18),tint(c,.3),.5)}
+/* the bread seller's wares: flat round loaves in a row, a basket, and two water jars standing at the counter's end (each rim a small
+   square, never a ring) */
+function bread19(g,x,y,w){for(let i=0;i<5;i++){const lx=x+2+i*3.2;R(g,lx,y-1,2.6,1.4,'#b88a50');R(g,lx+.4,y-1,1.8,.5,'#e8c088');R(g,lx,y+.2,2.6,.3,'rgba(60,30,10,.4)')}
+  R(g,x+w-9,y-1.8,3.6,2,'#9a7a44');R(g,x+w-9,y-1.8,3.6,.5,'#d8b878');
+  for(const jx of[x+w-4.6,x+w-2.4]){R(g,jx,y-2.6,2,2.8,'#b06c44');R(g,jx,y-2.6,.6,2.8,'#d89a6c');R(g,jx+.5,y-3.1,1,.6,'#6a3a22')}}
+/* the oil seller's wares: small jugs in a row on the counter, and two tall jars standing upright at its end */
+function oil19(g,x,y,w){for(let i=0;i<5;i++){const jx=x+2+i*3;R(g,jx,y-1.8,2,2,'#a87048');R(g,jx,y-1.8,.6,2,'#d8a070');R(g,jx+.5,y-2.4,1,.6,'#5a3a22')}
+  for(const jx of[x+w-5.4,x+w-2.8]){R(g,jx,y-3.6,2.2,3.8,'#c08458');R(g,jx,y-3.6,.7,3.8,'#e8b484');R(g,jx+.6,y-4.2,1,.6,'#6a4228')}}
+/* a door on a house front, of upright boards in a frame of dressed stone with its lintel over it; k 1: the sister's door, with the water
+   jar beside it at the foot of the wall; k 0: the fine house's door, wider, of two leaves, its frame finer and a step before it */
+function doorLanes19(g,X,yy,k){const w=k?5:7,x=k?X:X-1;
+  R(g,x-.8,yy-1.4,w+1.6,8.4,k?'#cdbb98':'#eadcbc');R(g,x-1.2,yy-1.8,w+2.4,1,k?'#e4d6b8':'#fff2d6');
+  R(g,x,yy,w,7,'#1e1410');R(g,x,yy,w/2,7,k?'#6e4a2c':'#5a3a24');R(g,x+w/2,yy,w/2,7,k?'#664428':'#52341e');
+  R(g,x+w/2-.25,yy,.5,7,'rgba(20,12,6,.6)');R(g,x,yy,w,.6,'rgba(20,12,6,.5)');
+  if(k){R(g,x+6.2,yy+3,2.4,4,'#b47c52');R(g,x+6.2,yy+3,.8,4,'#e0a87a');R(g,x+6.9,yy+2.4,1,.6,'#5a3a22')}
+  else{R(g,x-1.6,yy+7,w+3.2,.8,'#e8dcc0')}}
+/* the donkey: half-pixel maps, feet on the lowest rows. The lane is narrower than a donkey is long (its flanking houses would cut off the
+   head and the rump of one seen from the side), so it stands slanting across it, seen three-quarters from the front: its head low toward
+   the south-west, its rump toward the north-east, the front feet nearer to us than the hind. E ear, e its inside, H head, h its shade, M
+   muzzle, K eye and nostril, N mane, B body, b its shade, L belly, G near legs, g far legs, F hooves, T tail, t its tuft, Q P p the sack
+   over its back (no cord round it). No stripe is drawn across its shoulders, which with the stripe along its back would make a cross. */
+const DONKEYPAL19={E:'#7a6c60',e:'#d8ccba',H:'#a49482',h:'#7a6c5e',M:'#e2d8ca',K:'#1a1410',N:'#463a30',B:'#a89886',b:'#7c6e60',L:'#d4c8b6',
+  G:'#8a7c6e',g:'#62564c',F:'#2a2420',T:'#5e5248',t:'#2e2620',Q:'#e4d4aa',P:'#c4aa7a',p:'#94784e'};
+const DONKEYBODY19=["..EeEe....QQ...","..HHHN...QPPQ..",".HHHHHN.QPPPPB.",".HKHHHNBQPPPPB.",".HHHHHBBPPPPBB.",".HHHHhBBPPPPB..",
+  "MMHHhBBpPPPpB..","MKMhBBBBppppb..",".MM.bBBBBBBbb..","....bBBBBBbGg..","....bLLLLLbGg..","....gGLLLb.Gg..","....gG..gG.Gg..",
+  "....gG..gG.FF..","....gG..gG.....","....FF..FF....."];
+const DONKEYMAP19=(()=>{const ears={stand:["..E.E..........","..EeEe........."],ear:["....E..........",".EEeEe........."]},
+  tails={stand:[[5,13,'T'],[6,13,'T'],[7,13,'t'],[8,13,'t']],tail:[[5,13,'T'],[6,13,'T'],[6,14,'T'],[7,14,'t'],[8,14,'t']]},
+  make=(e,t)=>{const rows=[...ears[e],...DONKEYBODY19].map(s=>s.padEnd(15,'.').split(''));for(const[j,i,c]of tails[t])rows[j+2][i]=c;return rows.map(a=>a.join(''))};
+  return{stand:make('stand','stand'),ear:make('ear','stand'),tail:make('stand','tail')}})();
+const DONKEYC19={};
+function donkeySprite19(pose,dark){const k=pose+(dark?'d':'');if(DONKEYC19[k])return DONKEYC19[k];const m=DONKEYMAP19[pose],[c,g]=mk(15,m.length);
+  m.forEach((row,j)=>[...row].forEach((ch,i)=>{if(ch==='.')return;g.fillStyle=DONKEYPAL19[ch];g.fillRect(i,j,1,1)}));
+  if(dark){g.globalCompositeOperation='multiply';g.fillStyle='#8d90bc';g.fillRect(0,0,15,m.length);g.globalCompositeOperation='destination-in';g.drawImage(donkeySprite19(pose,0),0,0)}
+  return DONKEYC19[k]=c}
+/* the donkey in the lane, at the depth of its front feet among the people: still, but for an ear turned out now and then and a flick of
+   its tail; its shadow on the ground under it; lit by the sun or the shade of the houses as the map's people are */
+function drawLanes19(g,t){const[x,y,w,h]=box19(DONKEY19),cx=x+w/2,fy=Math.round((y+h-1)*2)/2,sx=Math.round((cx-3.5)*2)/2,
+    s=t/1000,pose=s%5.2>4.5?'ear':s%3.7>3.3?'tail':'stand',M=LM19,i=Math.floor(fy)*LW19+Math.floor(cx),dark=M.sun&&M.sun[i];
+  depth(y+h,()=>{g.fillStyle='rgba(20,16,30,.28)';g.fillRect(sx+1,fy-1.5,6,.5);g.fillRect(sx+.5,fy-1,7,.5);g.fillRect(sx+1,fy-.5,6,.5);g.fillRect(sx+1.5,fy,4,.5);
+    const c=donkeySprite19(pose,dark),hh=c.height/2;g.drawImage(c,sx,fy-hh+.5,7.5,hh)})}
 /* ==== ART lanes19: end ==== */
 
 /* ==== ART gate19: begin ==== */
-/* Outside the gate of the fortress of Antonia, in the late afternoon. The great wall of rough-dressed blocks runs across the picture; the
-   gate is a round-headed opening in it, its two leaves of boards standing open against the inside of the passage (no bars, no iron bands
-   across them). No tower rises from the middle of the wall. The street before it is paved and runs off at the left into the city. The
-   sun is low at the left: the wall is warm, the shadows long to the right.
+/* Outside the gate of the fortress of Antonia, in the late afternoon. The great wall runs across the picture, of large dressed blocks
+   laid in long courses, each block with a drafted margin round a flat boss; along its top a cornice and a plain parapet under its coping,
+   where the doves sit (ROOMS.gate19.birds, y 10.4). At the right end the corner tower stands forward of the wall and rises out of the
+   picture: it stands at the end of the wall, never from its middle, and its courses keep clear of the wall's where they meet its corner.
+   The gate is a round-headed opening in a ring of wedge-shaped stones, its jambs of long and short blocks in turn (no impost across them).
+   Through it we look down the vaulted passage: its two leaves of boards stand open against the passage walls (no bars, no iron bands
+   across them), and at its far end the court of the soldiers' quarters lies in the sun, its floor running back to the scene's one horizon
+   (HZGate19), closed by the far side of the court. A torch leans out from the wall left of the gate, unlit (torch19). The street before
+   the wall is paved in large flags; it runs off at the left into the city, where the houses across the street throw their long shadow
+   over its near corner. The sun is low at the left: the wall is warm, the tower's west face bright, the shadows long to the right.
+   Heads come at y 66..82: behind them lies the wall's ashlar, the dark of the passage and the leaves. At the far end of the passage only
+   the court's floor is bright, below the heads; the far side of the court above it lies in the deep shade of its gallery, so that the
+   far mouth of the passage never rings a head with light.
    Called from outside: ART.gate19. Reads nothing.
    Hotspots: the wall 0,0,320,96 · the gate 138,44,40,60 · the way back into the city 0,96,14,48. Walk: 20..300 by 112..138.
-   Actors: the sentry 192,116; the nephew comes in at 50,126. */
-ART.gate19={w:320,q:12,paint(g){paintGate19(g)},light:{amb:'#f0d0b0',sun:[.5,.25,.3],wallY:104},draw(){},front(){}};
-function paintGate19(g){const r=rng(1941),S='#d4c09a';
-  sky19(g,320,30,'aft');
-  ashlar(g,0,10,320,94,S,r,{bw:34,bh:11,v:.09,t:.32,m:'#8a7a62'});
-  for(let y=10;y<104;y+=11)R(g,0,y+1,320,.5,'rgba(255,240,214,.14)');
-  arch(g,136,42,44,64,tint(S,-.1));arch(g,140,46,36,60,'#1c1412');ao(g,140,46,36,12,'t',.6,'#000');
-  poly(g,[140,104,146,104,146,58,140,54],'#5a3e26');poly(g,[176,104,170,104,170,58,176,54],'#4a3220');
-  pool(g,158,96,10,6,'#e8c890',.25,'screen');
-  pave(g,-2,104,322,144,'#c8b48c',r,{vx:160,vy:70,rows:5,step:32,v:.08,t:.35});ao(g,0,104,320,6,'t',.3,'#3a2c3c');
-  light19(g,320,1,'rgba(255,196,130,1)',.5);shade(g,[180,104,320,104,320,130,200,124],'#a69ac0',.3)}
+   Actors: the sentry 192,116; the nephew comes in at 50,126. The tower's foot (x 266..320, y 104..108) lies behind the walk strip. */
+const HZGate19=80,OPENGate19={x:140,w:36,top:46,base:104},VPGate19=[158,80],FARGate19=.42;
+ART.gate19={w:320,q:12,paint(g){paintGate19(g)},light:{amb:'#f0d0b0',sun:[.5,.25,.3],wallY:104,wall:[[0,140,104,90],[176,266,104,90]]},draw(){},front(){}};
+function paintGate19(g){const r=rng(1941),S='#dcc49e';
+  skyGate19(g);
+  pave(g,-2,104,322,144,'#d0bc96',r,{vx:VPGate19[0],vy:HZGate19,rows:6,step:30,v:.08,t:.34});
+  wallGate19(g,rng(1942),S);
+  passageGate19(g,rng(1943));
+  ringGate19(g,rng(1944),S);
+  towerGate19(g,rng(1945),S);
+  R(g,123.4,62.6,2.6,4.4,'#3a2c24');R(g,123.4,62.6,2.6,.5,'#6a5a4a');torch19(g,126,60);
+  /* the sill of the gate: one long slab before the threshold, lit along its edge */
+  R(g,136,103.4,44,2,'#d8c6a0');R(g,136,103.4,44,.6,'#fff0d0');R(g,136,105.2,44,.5,'rgba(70,50,50,.45)');
+  ao(g,0,104,266,5,'t',.3,'#3a2c3c');R(g,0,103.6,266,.6,'rgba(60,44,50,.4)');
+  lightGate19(g)}
+/* the sky over the wall: a thin band, blue above and warm toward the low sun at the left, with a long lit cloud */
+function skyGate19(g){sky(g,320,16,['#6884b8','#a6aec8','#ecc8a0']);pool(g,-20,16,140,14,'#ffd0a0',.5,'screen');
+  const q=rng(1946);cloud(g,120,5,80,2.2,q,'#fbe6d0','#b8a8c0')}
+/* drafted19: courses of large dressed blocks between x0 and x1, the course lines at ys; each block has a drafted margin, a narrow band
+   sunk round its edge, and a flat boss inside it, lit along its top and left (the sun is at the left) and shaded along its right and its
+   foot. A joint stops at the edge of its own course, and no joint stands within four pixels of one in the course above it. */
+function drafted19(g,x0,x1,ys,c,r,o){o=o||{};let prev=[];
+  inRect(g,x0,ys[0],x1-x0,ys[ys.length-1]-ys[0],()=>{R(g,x0,ys[0],x1-x0,ys[ys.length-1]-ys[0],tint(c,-.42));
+    for(let k=0;k+1<ys.length;k++){const y=ys[k],h=ys[k+1]-y,cur=[];let x=x0-r()*(o.bw||40)*.6;
+      while(x<x1){let w=(o.bw||40)*(.62+r()*.7);for(let t=0;t<6;t++){const j=x+w;if(prev.some(p=>Math.abs(p-j)<4))w+=5;else break}
+        const cc=tint(c,(r()-.5)*.14+(r()<.12?-.08:0)+(o.fade||0)*k/ys.length),m=o.m||1.3;
+        R(g,x+.25,y+.25,w-.5,h-.5,tint(cc,-.08));
+        R(g,x+.25,y+.25,w-.5,.5,tint(cc,.12));R(g,x+.25,y+.25,.5,h-.5,tint(cc,.06));
+        const bx=x+m,by=y+m,bw=w-2*m-.25,bh=h-2*m-.25;
+        if(bw>2&&bh>2){g.fillStyle=lg(g,0,by,0,by+bh,[tint(cc,.06),cc,tint(cc,-.05)]);g.fillRect(bx,by,bw,bh);
+          R(g,bx,by,bw,.5,tint(cc,.26));R(g,bx,by,.5,bh,tint(cc,.16));R(g,bx+bw-.5,by,.5,bh,tint(cc,-.24));R(g,bx,by+bh-.5,bw,.5,tint(cc,-.2));
+          if(r()<.35)R(g,bx+2+r()*(bw-6),by+1.5+r()*(bh-3.5),1+r()*2.4,.5,tint(cc,-.14));
+          if(r()<.25){const px=bx+1+r()*(bw-3),py=by+1+r()*(bh-2.5);R(g,px,py,1,.5,tint(cc,.2))}}
+        x+=w;cur.push(x)}
+      prev=cur}
+    tex(g,'mott',o.t==null?.32:o.t,x0,ys[0],x1-x0,ys[ys.length-1]-ys[0],'overlay',1);tex(g,'grain',.12,x0,ys[0],x1-x0,ys[ys.length-1]-ys[0],'overlay',.5)})}
+/* the wall: its coping (y 10.4) and the shade under it, the plain parapet, the cornice, then the courses down to the street; two narrow
+   slits high in it, each inside one block; the arch of the gate is cut out of it afterwards by the passage and the ring */
+const COURSE19=[22.6,31.6,41.4,50.6,61.4,71.8,82,93,104];
+function wallGate19(g,r,S){
+  R(g,-2,10.4,270,2.4,tint(S,.14));R(g,-2,10.4,270,.6,'#fff4dc');R(g,-2,12.8,270,1,'rgba(90,60,60,.42)');
+  plaster(g,0,13.6,266,6,tint(S,.02),r,{patch:0,cracks:0,t:.32,top:.02,bot:-.06});ao(g,0,13.6,266,3,'t',.25,'#5a4050');
+  for(let x=-3;x<266;){const w=26+r()*22;R(g,x+w,13.6,.5,6,'rgba(90,64,60,.35)');x+=w}
+  R(g,-2,19.6,270,3,tint(S,.08));R(g,-2,19.6,270,.6,'#fff0d4');R(g,-2,22,270,.6,'rgba(70,50,56,.5)');
+  drafted19(g,0,266,COURSE19,S,r,{bw:42,fade:-.05});
+  ao(g,0,22.6,266,4,'t',.28,'#5a4050');
+  /* weathering: soft darker clouds on the stone, never streaks, which would cross the courses */
+  for(let i=0;i<16;i++){const x=r()*266,y=26+r()*70;pool(g,x,y,6+r()*12,2+r()*3,'#8a6a50',.12,'multiply')}
+  for(const x of[64,224]){const y=COURSE19[1]+1.6,h=6;R(g,x,y,1.6,h,'#2a1e1a');R(g,x-.5,y,.5,h,'rgba(255,240,210,.4)');R(g,x+1.6,y,.5,h,'rgba(70,50,50,.35)')}
+  /* the foot of the wall: grime, and a soft damp darkening along the paving (blotches, never upright streaks) */
+  ao(g,0,90,266,14,'b',.2,'#5a4030');for(let i=0;i<22;i++){const x=r()*266;pool(g,x,102.6,4+r()*8,1.6+r()*1.6,'#7a5a40',.14,'multiply')}}
+/* through the gate: the passage under its vault, in perspective toward VPGate19; its floor and walls in shade, the far end bright with the
+   court of the soldiers' quarters; the two leaves standing open against the passage walls; the low sun reaching in on the right wall */
+function passageGate19(g,r){const{x,w,top,base}=OPENGate19,sp=top+w/2,[vx,vy]=VPGate19,k=FARGate19;
+  const at=(px,py,s)=>[px+(vx-px)*(1-k)*s,py+(vy-py)*(1-k)*s];
+  const fx0=at(x,base,1)[0],fx1=at(x+w,base,1)[0],fy=at(x,base,1)[1],fsp=at(x,sp,1)[1];
+  clipTo(g,()=>arch(g,x,top,w,base-top),()=>{
+    g.fillStyle=lg(g,0,top,0,base,['#1a1214','#2a1e1c','#3a2a22']);g.fillRect(x,top,w,base-top);
+    /* the far end: the court in the sun, its far side closing the view, its floor running back to the horizon */
+    /* only what lies below the heads is bright: the foot of the far side, lit, and the court's floor; above it the passage's own dark goes
+       on unbroken, so that no edge of the far mouth is drawn round a head */
+    {const y0=HZGate19-2.6;g.fillStyle=lg(g,0,y0,0,y0+2.6,['rgba(120,84,60,.0)','#c8a47c']);g.fillRect(fx0,y0,fx1-fx0,2.6);
+      R(g,fx0,HZGate19,fx1-fx0,.6,'#fff0d0');g.fillStyle=lg(g,0,HZGate19+.6,0,fy,['#e6cea4','#f4e0bc']);g.fillRect(fx0,HZGate19+.6,fx1-fx0,fy-HZGate19-.6);
+      for(const yy of[HZGate19+3,HZGate19+6.4])R(g,fx0,yy,fx1-fx0,.5,'rgba(150,110,80,.3)')}
+    /* the floor of the passage: flags in courses going back, in shade */
+    const F=[x,base,x+w,base,fx1,fy,fx0,fy];poly(g,F,'#5a4636');
+    clipTo(g,()=>poly(g,F),()=>{for(let s=.08;s<1;s+=.16+s*.1){const[ax,ay]=at(x,base,s),[bx]=at(x+w,base,s);R(g,ax,ay,bx-ax,.5,'rgba(30,20,16,.5)');R(g,ax,ay+.5,bx-ax,.5,'rgba(150,120,90,.18)')}
+      g.fillStyle=lg(g,0,fy,0,base,['rgba(240,210,160,.28)','rgba(0,0,0,0)']);g.fillRect(x,fy,w,base-fy)});
+    /* the passage walls, left in shade, right with the low sun on it near the mouth */
+    const LW=[x,sp,x,base,fx0,fy,fx0,fsp],RW=[x+w,sp,x+w,base,fx1,fy,fx1,fsp];
+    poly(g,LW,'#3e302a');poly(g,RW,'#5a4434');
+    clipTo(g,()=>poly(g,RW),()=>{poly(g,[x+w,sp+4,x+w,base,x+w-3.4,base-1.4,x+w-3.4,sp+6.4],'rgba(255,200,140,.45)');
+      for(const s of[.25,.52,.78]){const[ax,ay]=at(x+w,sp,s),[,by]=at(x+w,base,s);R(g,ax-.25,ay,.5,by-ay,'rgba(30,20,16,.35)')}});
+    clipTo(g,()=>poly(g,LW),()=>{for(const s of[.25,.52,.78]){const[ax,ay]=at(x,sp,s),[,by]=at(x,base,s);R(g,ax-.25,ay,.5,by-ay,'rgba(20,14,12,.4)')}});
+    leafGate19(g,at,x,sp,base,.04,.5,-1,r);leafGate19(g,at,x+w,sp,base,.04,.5,1,r);
+    ao(g,x,top,w,10,'t',.6,'#000');ao(g,x,top,4,base-top,'l',.35,'#000')})}
+/* a leaf of the gate, of upright boards, standing open against a passage wall from depth s0 to s1 (its hinge at s0); side -1 left wall in
+   shade, 1 right wall in the sun. Its boards are upright, its top level with the arch's springing; no band crosses it. */
+function leafGate19(g,at,px,sp,base,s0,s1,side,r){const top=sp+2,[ax,ay]=at(px,top,s0),[,ab]=at(px,base,s0),[bx,by]=at(px,top,s1),[,bb]=at(px,base,s1),
+    c=side<0?'#4a3424':'#7a5434',Q=[ax,ay,bx,by,bx,bb,ax,ab];
+  poly(g,Q,c);clipTo(g,()=>poly(g,Q),()=>{g.fillStyle=lg(g,ax,0,bx,0,[tint(c,side<0?.12:.2),tint(c,-.18)]);g.fillRect(Math.min(ax,bx),ay-1,Math.abs(bx-ax),ab-ay+2);
+    tex(g,'vert',.3,Math.min(ax,bx),ay,Math.abs(bx-ax)+1,ab-ay,'overlay',.5);
+    for(let i=1;i<5;i++){const s=s0+(s1-s0)*i/5,[lx]=at(px,top,s);R(g,lx-.2,ay-1,.45,ab-ay+2,rgba(tint(c,-.5),.7))}
+    if(side>0)poly(g,[ax,ay,ax,ab,ax+(bx-ax)*.4,ab-(ab-bb)*.4,ax+(bx-ax)*.4,ay+(by-ay)*.4],'rgba(255,196,130,.3)')});
+  /* its free edge, the thickness of the boards, turned toward us */
+  R(g,bx-(side<0?0:.7),by,.7,bb-by,side<0?'#2a1c14':'#a07a50')}
+/* the ring of the arch: wedge-shaped stones round the opening, their joints running out from its centre; below the springing the jambs,
+   of long and short blocks in turn, run down to the sill. Nothing lies across the springing. */
+function ringGate19(g,r,S){const{x,w,top,base}=OPENGate19,cx=x+w/2,sp=top+w/2,R0=w/2,R1=R0+5.4,n=13;
+  for(let i=0;i<n;i++){const a0=Math.PI+i*Math.PI/n,a1=Math.PI+(i+1)*Math.PI/n,cc=tint(S,(r()-.5)*.08+.02),
+      Q=[cx+Math.cos(a0)*R0,sp+Math.sin(a0)*R0,cx+Math.cos(a0)*R1,sp+Math.sin(a0)*R1,cx+Math.cos(a1)*R1,sp+Math.sin(a1)*R1,cx+Math.cos(a1)*R0,sp+Math.sin(a1)*R0];
+    poly(g,Q,cc);const lit=Math.cos((a0+a1)/2)<0;stroke(g,[Q[0],Q[1],Q[2],Q[3]],tint(cc,lit?.24:-.1),.5);stroke(g,[Q[2],Q[3],Q[4],Q[5]],tint(cc,.18),.5);
+    stroke(g,[Q[4],Q[5],Q[6],Q[7]],'rgba(70,50,50,.55)',.5)}
+  /* the outer edge of the ring, in the shade of its own projection */
+  g.beginPath();g.arc(cx,sp,R1+.4,Math.PI,0);g.strokeStyle='rgba(80,56,56,.45)';g.lineWidth=.6;g.stroke();
+  for(const side of[-1,1]){const jx=side<0?x-5.4:x+w;let y=sp,k=0;
+    while(y<base-.1){const h=Math.min(base-y,k%2?6:8),jw=k%2?5.4:8.4,X=side<0?x-jw:x+w,cc=tint(S,(r()-.5)*.08+.03);
+      R(g,X,y,jw,h,cc);R(g,X,y,jw,.5,tint(cc,.22));R(g,X,y+h-.5,jw,.5,'rgba(70,50,50,.5)');
+      if(side<0)R(g,X,y,.5,h,'rgba(80,56,56,.4)');else R(g,X+jw-.5,y,.5,h,'rgba(80,56,56,.4)');
+      R(g,side<0?x-.6:x+w,y,.6,h,side<0?tint(cc,-.3):tint(cc,.3));y+=h;k++}}
+  tex(g,'mott',.3,x-10,top-6,w+20,base-top+6,'overlay',1)}
+/* the corner tower at the right end of the wall: it stands forward of the wall, its west face to the low sun, its front in the warm
+   grazing light; it rises out of the top of the picture. Its courses lie between the wall's, so that no line runs on across its corner. */
+function towerGate19(g,r,S){const x0=266,x1=272,F=108,ys=[-2,7,16.6,26.8,36.4,46.2,56.8,66.6,76.8,87.4,97.6,108];
+  M19.shadow(g,296,108.6,28,1.6,.5);
+  /* the west face, in the sun: from the corner with the wall (x0) to the front corner (x1) */
+  const SIDE=[x0,-2,x1,-2,x1,F,x0,104];poly(g,SIDE,tint(S,.2));
+  /* no course lines on this narrow face: they would meet the front's at the corner as a plus sign; only its mottled stone */
+  clipTo(g,()=>poly(g,SIDE),()=>{tex(g,'mott',.5,x0,-2,x1-x0,F+2,'overlay',1);ao(g,x0,-2,2,F+2,'l',.25,'#6a4a50');ao(g,x0,90,x1-x0,18,'b',.25,'#5a4030')});
+  R(g,x1-.5,-2,.6,F+2,'#fff0d2');
+  drafted19(g,x1,320,ys,tint(S,.03),r,{bw:30});
+  for(const[sx,sy]of[[294,ys[3]+1.8],[294,ys[6]+1.8]]){R(g,sx,sy,1.6,6,'#2a1e1a');R(g,sx-.5,sy,.5,6,'rgba(255,240,210,.4)')}
+  ao(g,x1,90,48,18,'b',.2,'#5a4030');
+  /* the shade of the tower's corner on the wall beside it: none, the sun is at the left; a fine dark line where they meet */
+  R(g,x0-.4,-2,.5,106,'rgba(80,56,60,.5)')}
+/* the late light: warm over the upper wall and the tower, cooler toward the street; the long shadow of the houses across the street over
+   the near left corner of the paving; the soft shade at the foot of the picture */
+function lightGate19(g){comp(g,'soft-light',.45,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,200,140,1)','rgba(240,206,170,.8)','rgba(190,180,210,.8)']);g.fillRect(0,0,320,144)});
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,0,144,['rgba(255,210,160,1)','rgba(230,200,180,.6)','rgba(150,140,190,1)']);g.fillRect(0,0,320,144)});
+  shade(g,[-2,112,40,104,104,104,30,144,-2,144],'#a8a0c4',.42);shade(g,[40,104,48,104,-2,118,-2,112],'#b8b0cc',.2);
+  ao(g,0,124,320,20,'b',.12,'#2a2050')}
 /* ==== ART gate19: end ==== */
 
 /* ==== ART cmd19: begin ==== */
@@ -1165,7 +1484,7 @@ function hint19(){const r=G.room,ph=phase19();
    dawn a lark over the plain and swallows over the young river; gulls over the sea at Caesarea and standing on the palace's sea wall.
    They change nothing in the story. */
 ROOMS.door19.birds={perch:[{k:'sparrow',y:14.6,x:[60,74,214],d:[1,-1,1]}]};
-ROOMS.lanes19.birds={perch:[{k:'dove',y:Y19(22),x:[X19(110),X19(124),X19(200)],d:[1,-1,1]}]};
+ROOMS.lanes19.birds={perch:[{k:'dove',y:WTOP19,x:[X19(110),X19(124),X19(200)],d:[1,-1,1]}]};
 ROOMS.gate19.birds={perch:[{k:'dove',y:10.4,x:[40,56,262],d:[1,-1,-1]}]};
 ROOMS.antipatris19.birds={lark:[250,112,40],swallows:[20,84,120,18]};
 ROOMS.palace19.birds={gulls:[40,4,240,30],stand:[[46,80.4,1],[92,80.4,-1]]};
