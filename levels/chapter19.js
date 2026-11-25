@@ -1757,7 +1757,7 @@ ROOMS.antipatris19={space:.4,walk:[80,300,116,138],mood:'dawn',amb:AMB.antipatri
   {name:'road_back_to_jerusalem',x:66,y:126,w:14,h:18,wx:84,wy:134,dir:-1,exit:()=>say(P,'paul_my_way_is_with_the_horsemen',TH),look:'road_back_to_jerusalem_look'},
   {name:'road_to_caesarea',x:304,y:96,w:16,h:48,wx:296,wy:128,dir:1,exit:()=>say(P,'paul_not_on_foot',TH),look:'road_to_caesarea_look'}]};
 ROOMS.palace19={space:.8,walk:[30,300,114,138],mood:'palace',amb:AMB.palace19,hs:[
-  {name:'sea',x:0,y:24,w:320,h:34,wx:150,wy:124,look:'sea_from_the_palace_look'},
+  {name:'sea',x:0,y:40,w:186,h:38,wx:150,wy:124,look:'sea_from_the_palace_look'},
   {name:'sea_wall',x:0,y:78,w:190,h:18,wx:120,wy:120,look:'the_gulls_sit_on_the_governors_wall'},
   {name:'dais',x:196,y:96,w:112,h:16,wx:190,wy:120,look:'dais_look'},
   {name:'letter',x:264,y:84,w:22,h:10,wx:250,wy:118,vis:()=>!!F.anti,def:'look',look:()=>toLetter19(),use:()=>toLetter19(),pickup:'paul_its_the_governors'}]};
