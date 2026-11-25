@@ -157,8 +157,12 @@ ART.council={w:320,q:12,
   {const rb=rng(7091);for(const[x,y,n]of[[36,14,3],[132,12,3],[226,15,3],[292,13,4]])crack7(g,x,y,n,rb,.9)}
   /* the ceiling at its edge, its joists running toward us, and the wall plate they rest on; the stone darkens under the plate */
   joists7(g,7.5,36,rng(7111));burn7(rw,8,38,7,7);board7(g,0,7,320,2.4,'#6a4e2c',rw);ao(g,0,9.4,320,12,'t',.4,'#2a2030');ao(g,0,9.4,320,3,'t',.25,'#1a1420');
-  /* three round-headed windows, high in the wall: the roofs of the city, and the sky over them */
-  for(const x of[60,150,240]){arch(g,x-2,22,24,36,tint(ST,-.25));g.save();arch(g,x,24,20,34);g.clip();sky(g,320,58,['#6aa2dc','#d8e8f0']);R(g,x,48,20,10,'#d8d0bc');R(g,x+11,43,9,5,'#e2dac4');R(g,x,46.6,20,1.4,'#b8a888');
+  /* three round-headed windows, high in the wall: the flat roofs of the city in its pale limestone, and the sky over them; through the
+     middle one, far off over the roofs, the temple on its mount, the gold along its tops in the sun (shared/temple.js) */
+  for(const x of[60,150,240]){arch(g,x-2,22,24,36,tint(ST,-.25));g.save();arch(g,x,24,20,34);g.clip();sky(g,320,58,['#6aa2dc','#d8e8f0']);
+    if(x===150)SHARED.temple.far(g,{x:158,base:47,s:.34,k:.4,sun:'left',haze:'#d8e4ee',a:.16,parts:{inner:1,wall:1},down:16,seed:7093});
+    SHARED.temple.roofs(g,{x0:x-2,x1:x+22,y:x===150?49:46,dy:2.5,down:14,w:[4,9],sun:'left',haze:'#d8e4ee',a:.14,seed:x+7});
+    SHARED.temple.roofs(g,{x0:x-2,x1:x+22,y:51,dy:1.5,down:10,w:[6,11],sun:'left',haze:'#d8e4ee',a:.06,seed:x+9});
     ao(g,x,24,20,7,'t',.4,'#2a2440');ao(g,x,24,4,34,'l',.35,'#2a2440');g.restore();R(g,x-3,58,26,1.8,tint(ST,.2));R(g,x-3,59.8,26,.6,tint(ST,-.4))}
   /* a lamp in a niche on either side of the middle window */
   for(const x of[108,200]){arch(g,x,42,13,18,tint(ST,-.3));arch(g,x+1,43,11,17,'#3a2c22');ao(g,x+1,43,11,6,'t',.4,'#0c0808');R(g,x-1,59.6,15,1.6,tint(ST,.15));R(g,x+3.6,57,6,2.4,'#b8733c');R(g,x+3.6,57,6,.6,'#e0a064')}

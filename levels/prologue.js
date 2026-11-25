@@ -11,6 +11,9 @@ const{plank,board,crack,skipCracks,shadow:softShadow,earth,joistAO}=SHARED.mater
 function softShade(g,wide,p,core,c,a){shade(g,wide,c,a*.34);shade(g,p,c,a*.44);shade(g,core,c,a*.3)}
 /* daylight over an open scene (shared/damascus.js, whose road picture shares it): the sky stays as it is, the land lies under a soft fall of light */
 const{dayLight,DAY}=SHARED.damascus;
+/* the pale weathered limestone of Jerusalem, as every chapter paints the city (shared/temple.js); LIME: the rubble of it that shows
+   where the plaster of a house has fallen away */
+const{stone}=SHARED.temple,LIME='#ccb486';
 
 /* ============ CAST: young Saul (LOOK.paul from Chapter One); Ananias and the men on the road are in shared/damascus.js ============ */
 
@@ -51,7 +54,7 @@ ART.pro_wall={w:320,q:12,
     /* the wall of Jerusalem on the left, with its corner tower at the left end (never in the middle) */
     const wall=[34,18,154,54,154,98,34,114];
     poly(g,wall,ST);clipTo(g,()=>poly(g,wall),()=>{
-      ashlar(g,34,18,120,96,ST,r,{bw:16,bh:8,v:.1,t:.3});
+      stone(g,34,18,120,96,r,{bw:16,bh:8,c:ST,v:.09,age:.5});
       /* hairline cracks in a few blocks, high on the wall, set by hand */
       for(const[x,y,n]of[[58,34.8,1],[96,42.8,1],[128,50.8,1]])crack(g,x,y,n,rb,.9);
       ao(g,34,88,120,26,'b',.35,'#4a3828');ao(g,34,18,18,96,'l',.28,'#3a3050');
@@ -59,7 +62,7 @@ ART.pro_wall={w:320,q:12,
       comp(g,'multiply',.22,()=>poly(g,[34,110,154,95,154,98,34,114],'#5a4838'))});
     /* its battlements stand on the sloping top of the wall: the foot of each follows the slope, so that no sky shows under its far corner */
     for(let i=0;i<7;i++){const x=38+i*16,top=v=>18+36*(v-34)/120;poly(g,[x,top(x)-4,x+8,top(x+8)-4,x+8,top(x+8)+.6,x,top(x)+.6],ST);poly(g,[x,top(x)-4,x+8,top(x+8)-4,x+8,top(x+8)-3.4,x,top(x)-3.4],'#f2e6c8')}
-    ashlar(g,0,6,36,110,'#cdbda0',r,{bw:18,bh:9,v:.1,t:.32});
+    stone(g,0,6,36,110,r,{bw:18,bh:9,c:'#d4c29e',v:.09,age:.5});
     crack(g,14,24.8,1,rb,.9);
     for(let i=2;i<34;i+=11){R(g,i,1.5,7,5,'#cdbda0');R(g,i,1.5,7,.6,'#efe2c4')}
     /* the corner where the tower meets the wall lies in shade, in two steps */
@@ -87,8 +90,8 @@ ART.pro_near={w:320,q:12,
     ridge(g,180,320,92,x=>10+4*Math.sin(x/19+2),['#98a68e','#b4be9e']);
     g.fillStyle=lg(g,0,92,0,144,['#d6c8a4','#c2ae86']);g.fillRect(0,92,320,52);
     tex(g,'mott',.3,0,92,320,52,'overlay',1);tex(g,'grain',.1,0,92,320,52,'overlay',.5);
-    /* the dressed stones of the wall behind him, nearer now: weathered, a few hairline cracks set by hand, high, where they run to no head */
-    ashlar(g,0,0,206,144,ST,r,{bw:28,bh:14,v:.1,t:.3});
+    /* the dressed stones of the wall behind him, nearer now: pale limestone, weathered, a few hairline cracks set by hand, high, where they run to no head */
+    stone(g,0,0,206,144,r,{bw:28,bh:14,c:ST,v:.09,age:.45});
     for(const[x,y,n]of[[34,16,2],[118,.8,2],[182,14.8,2]])crack(g,x,y,n,rb,.9);
     /* the end of the wall: its edge, and the shade that gathers along it and at its foot */
     R(g,205,0,1,144,'#8a7c66');ao(g,196,0,9,144,'r',.16,'#3a3050');ao(g,0,0,36,144,'l',.25,'#3a3050');ao(g,0,116,206,28,'b',.3,'#3a2c20');ao(g,0,136,206,8,'b',.2,'#2a2030');
@@ -103,11 +106,11 @@ ART.pro_door={w:320,q:12,
   paint(g){const r=rng(543),rb=rng(5431),rw=rng(5432),W='#d8c4a0',S='#c8b694';
     sky(g,320,42,['#283062','#54467c','#986274','#d89266'].map(c=>earth(c,.14)));
     /* house fronts closing the street */
-    ashlar(g,0,18,68,92,'#beae90',r,{bw:16,bh:8,v:.1,t:.3});R(g,0,14.5,69,4,'#d4c4a6');
-    plaster(g,68,8,184,102,W,r,{patch:5,cracks:0,brick:'#a67c54',t:.36});skipCracks(r,6);
+    stone(g,0,18,68,92,r,{bw:16,bh:8,c:'#cdb894',v:.09,age:.6});R(g,0,14.5,69,4,'#d4c4a6');
+    plaster(g,68,8,184,102,W,r,{patch:5,cracks:0,brick:LIME,t:.36});skipCracks(r,6);
     R(g,67,4.5,186,4,'#ead8b8');R(g,67,8,186,1,'#8a7658');
     for(let i=76;i<246;i+=14){R(g,i,12,3,3,'#6a4a2c');R(g,i,15,3,2.5,'rgba(0,0,0,.28)')}
-    plaster(g,252,16,68,94,'#cbb896',r,{patch:3,cracks:0,brick:'#9c724c',t:.36});skipCracks(r,4);R(g,251,12.5,69,4,'#dfd0b0');
+    plaster(g,252,16,68,94,'#cbb896',r,{patch:3,cracks:0,brick:LIME,t:.36});skipCracks(r,4);R(g,251,12.5,69,4,'#dfd0b0');
     /* cracks cut by hand, high under the eaves, and the shade under the cornices and where the house fronts meet */
     for(const[x,y,n]of[[96,18,2],[196,19,3],[240,18,3],[292,23,4]])crack(g,x,y,n,rb);
     ao(g,68,9,184,6,'t',.3,'#2a2030');ao(g,0,18,68,5,'t',.28,'#2a2030');ao(g,252,16.5,68,5,'t',.28,'#2a2030');
@@ -118,7 +121,7 @@ ART.pro_door={w:320,q:12,
     windowArt(g,212,34,16,18,W,{shut:1});
     windowArt(g,276,40,14,16,'#cbb896',{shut:1});
     /* the shut street door in a deep stone reveal: recessed horizontal panels, no iron bands crossing vertical planks (CONTRIBUTING section 3) */
-    ashlar(g,122,28,68,82,S,r,{bw:14,bh:7,v:.09,t:.3});
+    stone(g,122,28,68,82,r,{bw:14,bh:7,c:S,v:.08});
     R(g,130,36,52,74,'#18100c');
     /* the frame and the leaf: quiet grain that runs with each piece; the stiles up and down, the rails across between them, the panels
        sunk between rails and stiles. Nothing lies across a plank (CONTRIBUTING section 3). */

@@ -40,34 +40,35 @@ function cartArt(g){const rw=rng(19);shadow2(g,178,106,30,2.3,.34,'#28204a');
   wheelArt(g,190,98);if(F.wheelOn)wheelArt(g,160,98);
   if(F.cartFixed){R(g,159.6,95.6,1.8,5,'#e6cfa0');R(g,159.6,95.6,.6,5,'#fff0c8')}}
 /* ---------- Jerusalem: a street by day, the temple above the roofs ---------- */
+/* LIME2: the rubble of pale limestone that shows where the plaster of a house has fallen away (the city is built of it: shared/temple.js) */
+const LIME2='#d4bc8e';
 ART.jerusalem={w:480,fp:1.3,q:12,
  paint(g){const r=rng(71),ST='#ecdcb4',SH=earth2('#8f95c8',.16),rw=rng(77);
   /* the sky's blue is drawn a little toward grey (earth2), so that it sits with the limestone and plaster of the street */
   sky(g,480,80,['#3f7cc8','#6aa2de','#9cc4ea','#d2e2ee'].map(c=>earth2(c,.14)));cloud(g,96,16,60,10,r);cloud(g,346,22,76,11,r);cloud(g,236,9,36,6,r);
   /* the Mount of Olives, hazy in the east */
   ridge(g,0,480,78,x=>18+6*Math.sin(x/70+1)+3*Math.sin(x/19),['#a8b89a','#bcc8a8']);for(let i=0;i<90;i++){const tx=r()*480,ty=66+r()*10;oval(g,tx,ty,1.2+r(),.7,'#8ea27e')}
-  /* the temple on its mount */
-  ashlar(g,128,44,112,22,'#e2d6b6',r,{bw:10,bh:4.5,v:.06,t:.25});R(g,128,43,112,1.5,'#f6eed6');
-  R(g,144,30,74,3,'#f4ecd6');R(g,144,33,74,11,'#c9bd9e');for(let i=0;i<13;i++){R(g,146+i*5.6,33,2.4,11,'#f8f2e0');R(g,148+i*5.6,33,.6,11,'#d2c8ac')}R(g,144,29,74,1,'#d9a441');
-  g.fillStyle=lg(g,166,0,196,0,['#fffaea','#f6eed8','#dccfae']);g.fillRect(166,9,30,35);R(g,163,6,36,4,'#fffcf0');R(g,163,5.4,36,1,'#e0aa3c');R(g,163,10,36,1,'#e0aa3c');
-  R(g,176.5,21,9,23,'#7a5a2c');R(g,177.5,22,7,22,'#5a3e1c');R(g,176.5,20,9,1.2,'#e0aa3c');for(let i=0;i<4;i++)R(g,167.5+i*8.6,12,1.4,32,'rgba(190,170,130,.5)');
-  pool(g,181,12,50,24,'#fff6d8',.3,'screen');
-  /* roofs of the upper city, pale with distance */
-  for(const[hx,hy,hw,hh]of[[60,52,26,14],[92,48,22,18],[246,50,26,16],[420,46,30,20],[272,20,0,0]]){if(!hw)continue;R(g,hx,hy,hw,hh,'#d8cdb0');R(g,hx,hy,hw,1,'#efe6cc');R(g,hx+hw-3,hy,3,hh,'#b9b4b0');R(g,hx+4,hy+5,2.5,3.5,'#8a8478')}
+  /* the temple on its mount, across the valley to the east, as Chapter Eighteen paints it from its courts (shared/temple.js): we stand
+     in the city on the west, a little round to the south, so that we see the sanctuary's west end and its long south flank, its front
+     block rising behind at the east end with its gilded face turned away; the fortress of Antonia at the north-west corner (left), the
+     Royal colonnade with its red roof on the south (right). The houses of the street hide all but what stands above their roofs. */
+  SHARED.temple.far(g,{x:176,base:45,s:1,k:.4,sun:'left',haze:'#d8dce6',a:.08,seed:712});
+  /* roofs of the upper city, pale with distance, where the street opens between the houses */
+  for(const[x0,x1,y]of[[56,120,51],[244,272,49],[414,438,47]])SHARED.temple.roofs(g,{x0,x1,y,dy:3,down:20,w:[6,13],sun:'left',haze:'#c8d8ee',a:.22,seed:x0*3+7});
   comp(g,'screen',.35,()=>R(g,0,40,480,30,'#c8d8ee'));
   /* the city wall behind the street */
-  ashlar(g,0,64,480,40,'#d2c4a0',r,{bw:13,bh:6,v:.08,t:.35});for(let i=0;i<480;i+=9){R(g,i,60.5,5.5,3.5,'#d2c4a0');R(g,i,60.5,5.5,.5,'#f0e6c8')}
-  comp(g,'multiply',.5,()=>R(g,0,64,480,40,'#c0c4e0'));
+  SHARED.temple.stone(g,0,64,480,40,r,{bw:13,bh:6,c:'#d8c8a2',v:.08,age:.8});for(let i=0;i<480;i+=9){R(g,i,60.5,5.5,3.5,'#d2c4a0');R(g,i,60.5,5.5,.5,'#f0e6c8')}
+  comp(g,'multiply',.34,()=>R(g,0,64,480,40,'#c4c4dc'));
   /* the gate I came in by */
-  ashlar(g,0,22,58,82,ST,r,{bw:14,bh:7,v:.1});for(let i=0;i<58;i+=10){R(g,i,16.5,6,5.5,ST);R(g,i,16.5,6,.6,'#fff6da');R(g,i+5.4,16.5,.6,5.5,'#b0a078')}R(g,0,21.5,58,1,'#a89870');
+  SHARED.temple.stone(g,0,22,58,82,r,{bw:14,bh:7,c:'#e4d2aa',v:.08,age:.9});for(let i=0;i<58;i+=10){R(g,i,16.5,6,5.5,ST);R(g,i,16.5,6,.6,'#fff6da');R(g,i+5.4,16.5,.6,5.5,'#b0a078')}R(g,0,21.5,58,1,'#a89870');
   poly(g,[58,16.5,64,20,64,104,58,104],'#a8a0a8');arch(g,11,46,36,58,'#c9b98f');arch(g,13,48,32,56,'#2a2230');
   g.fillStyle=lg(g,0,60,0,104,['#30283a','#5a5068']);arch(g,15,50,28,54);g.fill();R(g,15,96,28,8,'#8a8296');poly(g,[13,48,19,54,19,104,13,104],'#4a4254');
   for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;R(g,29+Math.cos(a)*18-1,46+18+Math.sin(a)*18-1,.6,3,'#a89870')}
   /* house of the widows' neighbors, where the cart has stopped */
-  house(g,118,42,134,62,'#eadbb4',r,{side:7,patch:4,cracks:0,t:.36});skipCracks2(r,4);windowArt(g,140,52,10,12,'#eadbb4',{bars:2});windowArt(g,222,52,10,12,'#eadbb4',{bars:2});
+  house(g,118,42,134,62,'#eadbb4',r,{side:7,patch:4,cracks:0,t:.36,brick:LIME2});skipCracks2(r,4);windowArt(g,140,52,10,12,'#eadbb4',{bars:2});windowArt(g,222,52,10,12,'#eadbb4',{bars:2});
   for(let i=0;i<34;i++){const vx=119+r()*9,vy=60+r()*42;oval(g,vx,vy,1.6,1.1,r()<.5?'#5a7a44':'#74985a')}stroke(g,[121,104,123,80,121,62],'#5a4630',.6);
   /* the house where the disciples meet */
-  house(g,268,28,152,76,'#f0e2bc',r,{side:8,patch:5,cracks:0,t:.36});skipCracks2(r,6);
+  house(g,268,28,152,76,'#f0e2bc',r,{side:8,patch:5,cracks:0,t:.36,brick:LIME2});skipCracks2(r,6);
   /* the door: no iron band is laid across its planks (CONTRIBUTING section 3) */
   R(g,309,47,46,57,'#d8c8a0');R(g,309,47,46,2.5,'#f8eed2');doorArt(g,314,52,36,52,'#8a6a40',r,{pw:6,bands:[]});R(g,325.5,65.5,13,9,'#3a2a1a');R(g,326.5,66.5,11,7,'#1c140e');for(let i=0;i<4;i++)R(g,328+i*2.6,66.5,.7,7,'#6a4e2c');
   R(g,308,102,48,2.5,'#cfc198');R(g,308,102,48,.5,'#f4ead0');
@@ -79,7 +80,7 @@ ART.jerusalem={w:480,fp:1.3,q:12,
   shadow2(g,295,104.4,13,1.5,.34,'#322a5a');R(g,285.5,97,3,7,'#b8aa88');R(g,302,97,3,7,'#b8aa88');R(g,285.5,97,3,1.2,'rgba(60,50,90,.3)');R(g,302,97,3,1.2,'rgba(60,50,90,.3)');
   R(g,283.5,94,23,3.2,'#e0d4b2');inRect(g,283.5,94,23,3.2,()=>tex(g,'mott',.2,283.5,94,23,3.2));R(g,283.5,94,23,.6,'#fbf4dc');R(g,283.5,96.8,23,.6,'#8a7e62');
   vessel(g,360,104,4.5,11,'#a8562e','jar');
-  house(g,432,46,48,58,'#e2d4ac',r,{patch:2,cracks:0,t:.36});skipCracks2(r,4);windowArt(g,446,58,10,12,'#e2d4ac',{bars:2});
+  house(g,432,46,48,58,'#e2d4ac',r,{patch:2,cracks:0,t:.36,brick:LIME2});skipCracks2(r,4);windowArt(g,446,58,10,12,'#e2d4ac',{bars:2});
   /* the lane between the houses lies in shade */
   shade(g,[252,45,268,36,268,104,252,104],SH,.9);shade(g,[420,50,432,46,432,104,420,104],SH,.9);
   /* paving */
@@ -113,7 +114,7 @@ ART.jerusalem={w:480,fp:1.3,q:12,
 ART.upper={w:320,q:12,
  light:()=>({amb:'#cbbfb4',wallY:105,wall:[[7,230,105,13],[230,270,105,73],[270,313,105,13]],lamps:[[250,96,90,'#5a5038',105,52]]}),
  paint(g){const r=rng(83),W='#e6d4a8',T='#7a5632',rw=rng(87),RED=earth2('#a8503a',.14),BLUE=earth2('#3f6a8a',.3);
-  plaster(g,0,0,320,105,W,r,{patch:4,cracks:0,brick:'#c0a070',bot:-.12,t:.32});skipCracks2(r,6);
+  plaster(g,0,0,320,105,W,r,{patch:4,cracks:0,brick:LIME2,bot:-.12,t:.32});skipCracks2(r,6);
   /* cracks cut by hand, high on the wall under the ceiling, where they run to no head; rb: a seed of their own */
   {const rb=rng(831);for(const[x,y,n]of[[30,16,3],[152,15,4],[208,16,3],[296,16,4]])crack2(g,x,y,n,rb)}
   comp(g,'multiply',.5,()=>R(g,0,86,320,19,'#d6b890'));R(g,0,85.5,320,.5,'rgba(110,70,30,.4)');for(let i=0;i<320;i+=8){R(g,i,83,4,1.6,RED);R(g,i+4,83,4,1.6,BLUE)}
@@ -144,9 +145,14 @@ ART.upper={w:320,q:12,
   R(g,180,44,20,28,'#b8a47c');arch(g,182,46,16,26,'#8a7650');ao(g,182,46,16,8,'t',.4);vessel(g,190,72,5,13,'#a8562e','jug',{noShadow:1});R(g,180,72,20,1.6,'#f4e8c8');
   /* window on the temple */
   R(g,223,27,54,46,'#f4e6c0');R(g,226,30,48,40,'#a8946c');
-  inRect(g,230,34,40,32,()=>{sky(g,320,66,['#4a88d0','#8ebce6','#d6e6f0'].map(c=>earth2(c,.14)));R(g,230,58,40,8,'#cfc39a');for(let i=0;i<40;i+=5){R(g,230+i,54+((i*7)%3),4.4,12,i%10?'#dccfa8':'#c8ba92');R(g,230+i,54+((i*7)%3),4.4,.6,'#f4ecd4')}
-    R(g,236,49,28,6,'#e2d6b6');for(let i=0;i<7;i++)R(g,237+i*4,49.6,1.6,5,'#f8f2e0');g.fillStyle=lg(g,242,0,256,0,['#fffaea','#e6dab8']);g.fillRect(242,38,14,12);R(g,240.5,36.6,17,1.8,'#fffcf0');R(g,240.5,36.2,17,.6,'#e0aa3c');R(g,247,43,4,7,'#7a5a2c');
-    pool(g,250,40,30,20,'#fff6d8',.35,'screen')});
+  /* through it, to the east: the temple on its mount over the roofs of the city, in the morning sun that stands behind it over the Mount
+     of Olives (shared/temple.js). Its west end and the near wall lie in the shade of the morning; the sun is on its south flank and on
+     the gold along its tops. The sky is brightest low over the far ridge, in a long band, not round. */
+  inRect(g,230,34,40,32,()=>{sky(g,320,66,['#4a88d0','#8ebce6','#e4e6dc'].map(c=>earth2(c,.14)));pool(g,256,56,40,6,'#fff2d4',.4,'screen');
+    ridge(g,226,274,60,x=>5+2*Math.sin(x/9+1)+Math.sin(x/4),['#a8aeb8','#b8bcc0'].map(c=>earth2(c,.1)));
+    SHARED.temple.far(g,{x:248,base:56,s:.5,k:.4,sun:'back',haze:'#d8dce4',a:.12,parts:{inner:1,wall:1},down:20,seed:813});
+    SHARED.temple.roofs(g,{x0:228,x1:272,y:59,dy:2.5,down:10,w:[5,10],sun:'back',haze:'#d8dce4',a:.08,seed:831});
+    pool(g,250,36,30,4,'#fff6d8',.2,'screen')});
   ao(g,230,34,40,4,'t',.35);ao(g,230,34,4,32,'l',.3);boards(g,224,31,6,37,3,'#8a6238',r);boards(g,270,31,6,37,3,'#8a6238',r);R(g,221,70,58,3,'#f8eccc');R(g,221,73,58,1,'#8a7850');ao(g,221,74,58,5,'t',.25);
   /* low table: the scroll of Isaiah, a lamp, bread */
   /* the shade under the table: soft at the wall, darker where the top hangs over it, and a contact shadow at the foot of each leg */
