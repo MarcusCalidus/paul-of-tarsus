@@ -3671,18 +3671,26 @@
      halts nowhere. The stops that begin with "p" open one room at once, with the story's flags set for it, and say the safe-point code of
      their point (CODE): pquay16 · proad16 · ppass16, ppassb16 (the flock on the path, and off it) · passos16 (Paul waiting), passosl16
      (Luke waiting) · pdeck16 (moored at Troas), psail16 (under way), pmorn16 (off Mitylene), peve16 (off Chios, the evening), pmornt16
-     (the next morning) · pskya16, pskyb16, pskyc16 (the three rounds of the wind) · pwatch16 · pmiletus16 · plist16 · pshore16. */
+     (the next morning) · pskya16, pskyb16, pskyc16 (the three rounds of the wind) · pwatch16, pwho16 (a man named who speaks from outside the picture) · pmiletus16 · plist16 · pshore16. */
   const C16=/^(quay16|road16|pass16|deck16|sky16|assos16|watch16|miletus16|list16|shore16|final16|all16)$/.test(stop);
   if(!C16&&/^p[a-z]+16$/.test(stop)){await loadLevel(16);ov.className='';ov.onclick=null;const C=CHAP[16],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),LK=ACT.luke16,
       S={pquay16:[[],'quay16'],proad16:[upto('walk'),'road16',P,'deck16'],ppass16:[upto('asked'),'pass16',P,'deck16'],ppassb16:[upto('pass'),'pass16',P,'deck16'],
         passos16:[upto('pa'),'assos16',P,'deck16'],passosl16:[upto('la').filter(k=>k!=='pa'),'assos16',LK,'pass16'],
         pdeck16:[upto('walk'),'deck16',LK,'road16'],psail16:[upto('w1'),'deck16',LK,'road16'],pskya16:[upto('walk'),'sky16',LK,'road16'],
-        pmorn16:[upto('aboard'),'deck16'],pskyb16:[upto('aboard'),'sky16'],peve16:[upto('w2'),'deck16'],pwatch16:[upto('w2'),'watch16'],
+        pmorn16:[upto('aboard'),'deck16'],pskyb16:[upto('aboard'),'sky16'],peve16:[upto('w2'),'deck16'],pwatch16:[upto('w2'),'watch16'],pwho16:[upto('w2'),'watch16',ACT.luke16,'deck16'],
         pmornt16:[upto('watch'),'deck16'],pskyc16:[upto('watch'),'sky16'],pmiletus16:[upto('w3'),'miletus16'],plist16:[upto('fare'),'list16'],pshore16:[upto('spoke'),'shore16']}[stop];
     if(!S)throw new Error('no such stop '+stop);setChapter(16);for(const k of S[0])F[k]=1;
     const room=S[1];C.place(room);if(S[2]){const o=S[2]===P?LK:P;place(o,S[3],...C.ent[S[3]]);G.pc=S[2]}
     dealInv(room);G.scene=null;enterRoom(room,...C.ent[room]);
-    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+makeCode());await wait(1100);halt(stop)}
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+makeCode());await wait(1100);
+    /* pwho16: at the close view of the watches nobody stands in the picture: a man speaking from the deck is named before his words, and
+       whoever is played is not */
+    if(stop==='pwho16'){clearInterval(sk);const SO=ACT.sop16;{const r=LK.room;LK.room='deck16';L('CODE eve16 (Luke played, before the watches) '+makeCode());LK.room=r}say(LK,'luke_ill_take_the_first_myself',{dur:300});await wait(60);const mine=$('#speech .line');
+      ok(mine&&!mine.dataset.who,'whoever is played is not named before his words');await wait(400);
+      say(SO,'sopater_gaius_and_i_together',{dur:1e6});await wait(300);const el=$('#speech .line');
+      ok(el&&el.dataset.who===T('speaker_name',{name:T('Sopater')})&&el.textContent===T('sopater_gaius_and_i_together')&&getComputedStyle(el,'::before').content.includes('Sopater')&&getComputedStyle(el,'::first-letter').textTransform==='uppercase',
+        'a speaker who is not in the picture is named before his words, with a capital ("Man from the harbor:"), and the line\'s text is still his words alone ['+(el&&el.dataset.who)+']')}
+    halt(stop)}
   const ch16=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[16],told=k=>heard.includes(T(C().told[k])),
     until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
     onH=async(name,v)=>{const h=H(name);if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
@@ -3906,7 +3914,10 @@
   ok(said('lanes_no_asking_just_watching')&&BU.room==='tyrelanes17'&&MY.room==='tyrelanes17','the lanes of Tyre: the butcher and the two women at the stall');
   halt('lanes17');
   M.seeAll=1;await hints('hint_market_1','hint_market_2','in the lanes');
-  heard.length=0;await walkTo(X(240),Y(312));await until(()=>F.m1&&!G.busy,3000);
+  const whoSeen={},whoObs=new MutationObserver(()=>{for(const el of document.querySelectorAll('#speech .line'))whoSeen[el.textContent]=el.dataset.who||''});whoObs.observe($('#speech'),{childList:true});
+  heard.length=0;await walkTo(X(240),Y(312));await until(()=>F.m1&&!G.busy,3000);whoObs.disconnect();
+  ok(whoSeen[T('butcher_fresh_this_morning')]===T('speaker_name',{name:T(storyName(BU))})&&whoSeen[T('red_was_it_strangled')]===T('speaker_name',{name:T(storyName(MY))})&&whoSeen[T('both_asked_about_the_blood')]==='',
+    'on the lane map whoever speaks is named before his words, since the figures are too small to tell; whoever is played is not ['+whoSeen[T('butcher_fresh_this_morning')]+']');
   ok(['blue_killed_as_the_law_says','red_was_it_strangled','red_not_from_the_temple_not_anymore','both_asked_about_the_blood'].every(said),'at the meat stall both women ask about the blood; the Tyrian will not have temple meat');
   await until(()=>!A('blue17').room&&Math.hypot(MY.x-X(AT.redYard[0]),MY.y-Y(AT.redYard[1]))<4,3000);ok(!A('blue17').room&&MY.room==='tyrelanes17','each goes home by her own lane');
   await hints('hint_follow_1','hint_follow_2','after the meat stall');

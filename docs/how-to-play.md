@@ -7,6 +7,7 @@
 | Look at something | Right-click it, in the scene or in the inventory. Paul looks from where he stands. |
 | Leave a room at once | Double-click an exit to skip the walk to it |
 | Show what can be clicked | Hold `Tab`: everything in the room gets a dot and its name. On a touch screen, or to keep them on, tap **NAMES** in the top bar; tap it again to hide them. While they are on, a name stands for its thing: pointing at it, tapping it, a right-click and a double-click do what they would do on the thing itself. The names step aside while a scene plays or someone speaks. |
+| Tell who is speaking | A line stands over the head of whoever says it, in his own colour. When the speaker is not in the picture, as at a close view or from the deck outside it, or on a city map, where the figures are small, his name stands before his words. |
 | Combine things | **Use**, then an inventory item, then another item or something in the scene |
 | Play the other man | In Chapters Three, Four and Five, click **⇄ Barnabas** (or **⇄ Paul**) beside the prayer button, or press `C`. Each man has his own inventory, and in Chapter Three he can stand in a different room; the view follows the one you play. **Give** an item to the other when they share a room to hand it over (**Use** on him only shows it). |
 | Play Silas | In Chapter Seven the button reads **⇄ Silas**: he was sent out with the letter, and he has two hands. He leaves the tentmaker's crafts to Paul, as Barnabas did. |

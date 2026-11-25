@@ -19,6 +19,7 @@ TEXTS('en','main',{
   "Saul":"Saul",
   "pray_to_jehovah":"Pray to Jehovah",
   "play_as_name_c":"Play as {name} (C)",
+  "speaker_name":"{name}:",
   "take_this_name":"Take this, {name}.",
   "give_item_to_thing":"Give {item} to {thing}",
   "give_item_to":"Give {item} to",

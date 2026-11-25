@@ -22,6 +22,7 @@ TEXTS('de','main',{
   "Saul":["Saulus","0a112xk"],
   "pray_to_jehovah":["Zu Jehova beten","05egjqx"],
   "play_as_name_c":["Als {name} spielen (C)","0ynroom"],
+  "speaker_name":["{name}:","1vxb8dm"],
   "take_this_name":["Nimm das, {name}.","0362dh3"],
   "give_item_to_thing":["Gib {item} an {thing}","1e4szy4"],
   "give_item_to":["Gib {item} an","07jlo3a"],

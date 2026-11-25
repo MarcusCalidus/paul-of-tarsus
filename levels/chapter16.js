@@ -492,11 +492,12 @@ function troughPass16(g,v,cut){const P=[166.4,116.4,167,108.6,168,107.6,204,107.
   const W=[169,108.8,203,108.6,202.6,110.8,169.4,111];poly(g,W,v==='p'?'#4c6c7e':'#7a6e5e');
   if(v==='p'){R(g,170,109,31,.5,'#a8c4cc');R(g,176,110,8,.5,rgba('#e8f0f0',.5))}else{R(g,170,109,31,.5,'#5e5446');R(g,172,110.2,6,.5,'#9a8e78')}
   R(g,167.6,111.2,37,.5,'#c8bca2')}
-function drawPass16(g,t){if(SPass16)SPass16.draw(g,t);const B=SHARED.beasts;LOOKPass16=LOOKPass16||B.flock(8,1662);const ews=EWEPass16(),lit=lightAt('pass16',200,116);
-  FLOCKPass16().forEach(([x,y,d,p],i)=>{const o=LOOKPass16[i],fr=p===1?24+(Math.floor(t/(900+i*130)+o.ph*7)%2):p===2?22+(Math.floor(t/(300+i*20)+o.ph*5)%2):0;
+function drawPass16(g,t){if(SPass16)SPass16.draw(g,t);const B=SHARED.beasts;LOOKPass16=LOOKPass16||B.flock(8,1936);const ews=EWEPass16(),lit=lightAt('pass16',200,116);
+  FLOCKPass16().forEach(([x,y,d,p],i)=>{const o=LOOKPass16[i],base=p===1?24+(Math.floor(t/(900+i*130)+o.ph*7)%2):p===2?22+(Math.floor(t/(300+i*20)+o.ph*5)%2):0,
+    fr=i===0?B.pose('flock16',base):base;
     B.sheep(g,x,y,d,fr,o.look,lit)});
-  /* the ewe: she chews and looks at whoever comes up the path */
-  B.sheep(g,ews[0],ews[1],ews[2],22+(Math.floor(t/280)%2),{fl:'#ece2ca',face:'#7a5a40',k:1.06},lit);
+  /* the ewe: she chews and looks at whoever comes up the path, and bleats when spoken to */
+  B.sheep(g,ews[0],ews[1],ews[2],B.pose('ewe16',22+(Math.floor(t/280)%2)),{fl:'#ece2ca',face:'#7a5a40',k:1.06},lit);
   if(!F.pass)depth(121,()=>{poly(g,[207,121,212,117.6,222,118,224,121],'#8a5a34');R(g,210,118,10,.6,'#b88250');stroke(g,[213,118.4,217,120.6],'#3a2416',.5)})}
 /* ==== ART pass16: end ==== */
 
@@ -1232,7 +1233,7 @@ Object.assign(LOOK,{
   klea16:HIM('#c08c5c','#3a2a1a','#ece4d0','#5f4470',{ph:700}),
   damon16:{skin:'#b8845a',hair:'#4a3a2c',beard:'#4a3a2c',tunic:'#c8b490',cloak:'#5a6a4a',belt:'#3a2a1a',brow:'#2a1a12',ph:400},
   euph16:HIM('#b88a62','#5a4a3a','#e6dec8','#6a5a3a',{grey:'#9a9088',receding:1,ph:3200}),
-  polem16:HIM('#c49a72','#3a2a1c','#e2d8be','#4a5a6a',{shortBeard:1,ph:3400})});
+  polem16:HIM('#a8744c','#4a3a2c','#e2d8be','#8a4434',{grey:'#a09890',crop:1,fullBeard:1,ph:3400})});
 const LK=actor('luke16','Luke','#c8e8c0',126),TI=actor('tim16','Timothy','#b8e0b0',142),AR=actor('arist16','Aristarchus','#d0d8b8',112),
   TR=actor('troph16','Trophimus','#c8d8e8',124),MA=actor('master16','Pamphilos','#e0d0b0',96),BOY=actor('boy16','Simias','#f0e0b8',176),
   KE=actor('sailor16','Kerdon','#c8d8d0',108),FI=actor('fisher16','fisherman','#d8d0c0',88),SH=actor('shep16','shepherd','#d8c8a8',100),
@@ -1520,8 +1521,8 @@ ROOMS.pass16={space:.4,walk:[16,304,112,138],mood:'pass',amb:AMB.pass16,
   {name:'gulf_and_lesbos',x:40,y:24,w:220,h:26,wx:120,wy:114,look:'gulf_and_lesbos_look'},
   {name:'spring',x:196,y:78,w:26,h:16,wx:186,wy:122,look:'spring_up_in_the_rocks'},
   {name:'trough',x:166,y:104,w:40,h:14,wx:160,wy:124,look:()=>say(P,F.pass?'the_trough_is_full':'the_trough_is_dry')},
-  {name:'flock',get x(){return F.pass?20:256},y:82,w:60,get h(){return F.pass?28:34},wx:200,wy:132,look:()=>say(P,F.pass?'the_flock_off_the_path':'the_flock_on_the_path'),talk:'a_sheep_wont_answer'},
-  {name:'ewe',get x(){return EWEPass16()[0]-8},get y(){return EWEPass16()[1]-12},w:18,h:12,get wx(){return EWEPass16()[0]-22},wy:126,look:()=>say(P,F.pass?'the_ewe_has_had_her_drink':'ewe_chews_and_looks_at_me'),talk:'a_sheep_wont_answer'},
+  {name:'flock',get x(){return F.pass?20:256},y:82,w:60,get h(){return F.pass?28:34},wx:200,wy:132,look:()=>say(P,F.pass?'the_flock_off_the_path':'the_flock_on_the_path'),talk:async()=>{SHARED.beasts.speak('flock16','sheep',LOOKPass16&&LOOKPass16[0].look);await say(P,'a_sheep_wont_answer')}},
+  {name:'ewe',get x(){return EWEPass16()[0]-8},get y(){return EWEPass16()[1]-12},w:18,h:12,get wx(){return EWEPass16()[0]-22},wy:126,look:()=>say(P,F.pass?'the_ewe_has_had_her_drink':'ewe_chews_and_looks_at_me'),talk:async()=>{SHARED.beasts.speak('ewe16','sheep');await say(P,'a_sheep_wont_answer')}},
   {name:'water_skin',x:206,y:116,w:20,h:8,wx:196,wy:128,vis:()=>!F.pass,look:'the_water_skin_split_seam',useWith:onSkin,pickup:'it_is_the_shepherds'},
   {name:'way_down_to_assos',x:266,y:60,w:54,h:52,wx:296,wy:116,dir:1,exit:downToAssos,look:()=>say(P,F.pass?'the_short_way_down':'the_flock_fills_the_path_down')},
   {name:'way_back',x:0,y:60,w:16,h:80,wx:22,wy:126,dir:-1,exit:()=>goto16('road16',270,116,-1),look:'the_way_back_to_the_road'}].map(BOTH)};
