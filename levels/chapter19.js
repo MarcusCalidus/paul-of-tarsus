@@ -684,7 +684,7 @@ function paintLanes19(g){const r=rng(1931),W=LW19;
   /* the late sun: warm on the face toward the west, a little cooler to the east; the foot of the wall in a soft shade */
   comp(g,'soft-light',.35,()=>{g.fillStyle=lg(g,0,0,W,0,['rgba(255,196,130,1)','rgba(240,210,180,1)','rgba(190,180,210,1)']);g.fillRect(0,0,W,WFOOT19)});
   ao(g,0,WFOOT19-6,W,6,'b',.22,'#5a4038');ao(g,0,WFOOT19,W,3,'t',.3,'#3a2c3c');
-  stallLanes19(g,STALLA19,'#dccfae',bread19);stallLanes19(g,STALLO19,'#b4b08c',oil19);
+  stallLanes19(g,STALLA19,'#dccfae',breadWares19);stallLanes19(g,STALLO19,'#b4b08c',oilWares19);
   light19(g,LW19,1,'rgba(255,200,140,1)',.25)}
 /* faceLanes19: courses of dressed blocks between x0 and x1 at the map's scale, the course lines at ys; each block lit along its top and
    left, shaded along its right; a joint stops at the edge of its course, and none stands within two pixels of one in the course above */
@@ -740,11 +740,11 @@ function stallLanes19(g,b,c,wares,cut){const[x,y,w,d]=box19(b),H=STALLH19,F=y+d,
   poly(g,hem,tint(c,.04));stroke(g,hem.slice(0,18),tint(c,.3),.5)}
 /* the bread seller's wares: flat round loaves in a row, a basket, and two water jars standing at the counter's end (each rim a small
    square, never a ring) */
-function bread19(g,x,y,w){for(let i=0;i<5;i++){const lx=x+2+i*3.2;R(g,lx,y-1,2.6,1.4,'#b88a50');R(g,lx+.4,y-1,1.8,.5,'#e8c088');R(g,lx,y+.2,2.6,.3,'rgba(60,30,10,.4)')}
+function breadWares19(g,x,y,w){for(let i=0;i<5;i++){const lx=x+2+i*3.2;R(g,lx,y-1,2.6,1.4,'#b88a50');R(g,lx+.4,y-1,1.8,.5,'#e8c088');R(g,lx,y+.2,2.6,.3,'rgba(60,30,10,.4)')}
   R(g,x+w-9,y-1.8,3.6,2,'#9a7a44');R(g,x+w-9,y-1.8,3.6,.5,'#d8b878');
   for(const jx of[x+w-4.6,x+w-2.4]){R(g,jx,y-2.6,2,2.8,'#b06c44');R(g,jx,y-2.6,.6,2.8,'#d89a6c');R(g,jx+.5,y-3.1,1,.6,'#6a3a22')}}
 /* the oil seller's wares: small jugs in a row on the counter, and two tall jars standing upright at its end */
-function oil19(g,x,y,w){for(let i=0;i<5;i++){const jx=x+2+i*3;R(g,jx,y-1.8,2,2,'#a87048');R(g,jx,y-1.8,.6,2,'#d8a070');R(g,jx+.5,y-2.4,1,.6,'#5a3a22')}
+function oilWares19(g,x,y,w){for(let i=0;i<5;i++){const jx=x+2+i*3;R(g,jx,y-1.8,2,2,'#a87048');R(g,jx,y-1.8,.6,2,'#d8a070');R(g,jx+.5,y-2.4,1,.6,'#5a3a22')}
   for(const jx of[x+w-5.4,x+w-2.8]){R(g,jx,y-3.6,2.2,3.8,'#c08458');R(g,jx,y-3.6,.7,3.8,'#e8b484');R(g,jx+.6,y-4.2,1,.6,'#6a4228')}}
 /* a door on a house front, of upright boards in a frame of dressed stone with its lintel over it; k 1: the sister's door, with the water
    jar beside it at the foot of the wall; k 0: the fine house's door, wider, of two leaves, its frame finer and a step before it */
