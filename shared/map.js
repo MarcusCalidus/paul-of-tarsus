@@ -6,7 +6,11 @@
      journey(route, o)   between scenes: earlier legs are shown, the new ones draw themselves as dotted lines, city by city,
                          with a music sting. route: [[from, to, 'new sea'], ...]; 'new' legs animate, 'sea' legs follow waypoints.
      pick(ids, here, o)  for a hub chapter: the places as dots; resolves with the place the player clicks, or null (Esc).
-                         o.legs: the legs already travelled, [[from, to], ...], which are shown.
+                         o.legs: the legs already travelled, [[from, to], ...], which are shown. o.seen: places whose dots are lit
+                         although no leg reaches them. o.hint: the key of the line under the map (click_a_place_to_travel_there).
+                         It may be called again and again, with the same places: each call shows the map afresh and waits for one
+                         click. Chapter Eighteen's elders (Acts 21:19) use it on the view journeys with trail(picked) as its legs.
+     trail(ids)          the legs to draw for places picked in order (see WAYS)
      go(from, to)        draw one leg and arrive.
      where(id)           a place's position on the map, in view pixels.
    A place with hide:1 is a point on a road and nothing more: a leg may start or end there, and neither a dot nor a name is drawn.
@@ -32,11 +36,20 @@ const xy=(lon,lat)=>[(lon-LON0)*KX,(LAT0-lat)*KY];
    lines and the routes keep their places on the map, and the names, the dots and the strokes keep their size on the screen.
    caria: the coast from Miletus by Cos and Rhodes to Patara, three times as close, from about 25.4 to 31.2 degrees east and 35.8 to 38.0
    north, for the first days of Acts 21:1, where those places lie a few pixels apart. levant: the whole voyage of Acts 21:1-8, from Miletus
-   by Patara, south of Cyprus, to Tyre, Ptolemais and Caesarea, at the usual size, from about 24.3 to 41.6 degrees east and 31.4 to 37.9 north. */
-const VIEWS={north:[26,-41],aegean:[-40,-101],west:[-62,-101],ionia:[-6,-57,2.25],caria:[41,-11,3],levant:[20,-10]};
+   by Patara, south of Cyprus, to Tyre, Ptolemais and Caesarea, at the usual size, from about 24.3 to 41.6 degrees east and 31.4 to 37.9 north.
+   journeys: everything of the first two journeys and the start of the third, a little farther off than usual (four fifths of the usual
+   size), from about 19.8 to 39.9 degrees east and 34.2 to 41.8 north: Cyprus, Pamphylia and the cities of Pisidia and Lycaonia, Macedonia
+   and Achaia, and Ephesus, for Chapter Eighteen, where Paul tells the elders one by one what God had done among the nations (Acts 21:19).
+   Its names stand where JLAB puts them, unless a chapter gives its own. */
+const VIEWS={north:[26,-41],aegean:[-40,-101],west:[-62,-101],ionia:[-6,-57,2.25],caria:[41,-11,3],levant:[20,-10],journeys:[-62,-96,.86]};
 let OX=0,OY=0,ZM=1,VN='';
 /* where the name of the sea stands: in open water, clear of the routes and of the hint under it, in each view */
-const SEA={'0,0':[92,84],'26,-41':[60,65],'-40,-101':[95.7,35.4],'-62,-101':[95.7,35.4],'-6,-57':[8.6,-37.7],'41,-11':[46,30],'20,-10':[100,100]};
+const SEA={'-62,-96':[60,56],'0,0':[92,84],'26,-41':[60,65],'-40,-101':[95.7,35.4],'-62,-101':[95.7,35.4],'-6,-57':[8.6,-37.7],'41,-11':[46,30],'20,-10':[100,100]};
+/* where the hint under a map to pick from stands, in screen pixels from the top, where the usual place (H - 14) would cross a coast */
+const HINT={journeys:H-5};
+/* VLAB: where the names stand in a view that has names of its own (as a chapter gives journey and pick its labels), unless the chapter
+   gives others */
+const VLAB={journeys:{salamis:{lab:'r'},paphos:{lab:'l',dy:2},thessalonica:{lab:'l',dy:-4},corinth:{lab:'l',dy:2},athens:{lab:'r',dy:12}}};
 const inView=(x,y,m)=>{m/=ZM;return x>=OX-m&&x<=OX+W/ZM+m&&y>=OY-m&&y<=OY+H/ZM+m};
 /* Rz: a small square of the route, snapped to the canvas pixels of the view however close it is (R, at the usual size) */
 const Rz=(g,x,y,w,h,c)=>{const k=HR*ZM,s=v=>Math.round(v*k)/k;g.fillStyle=c;g.fillRect(s(x),s(y),s(w),s(h))};
@@ -128,13 +141,14 @@ const VIA={'caesarea-tarsus':[34.42,33.3,34.5,34.7,34.88,35.75],'tarsus-antioch'
 /* region names sit where no coast, lake or route runs through them. close: a name with its letters set closer together, for a region
    too small to hold a widely spaced one; north: a name shown only in the northern window and the Aegean one, where the mountains make
    room for it; west: a name shown only in the Aegean window */
-const REGIONS=[{name:'CILICIA',at:[32.7,36.72]},{name:'SYRIA',at:[37.6,35.2]},{name:'CYPRUS',at:[33.2,34.35],sea:1},
+const REGIONS=[{name:'CILICIA',at:[32.7,36.72],out:['journeys']},{name:'SYRIA',at:[37.6,35.2]},{name:'CYPRUS',at:[33.2,34.35],sea:1},
   {name:'PISIDIA',at:[29.62,37.68]},{name:'GALATIA',at:[33.6,38.75]},
   {name:'PAMPHYLIA',at:[32.015,37.02],close:1,north:1},
-  {name:'PHRYGIA',at:[29.6,38.9],west:1},{name:'ASIA',at:[27.75,38.8],west:1},{name:'MYSIA',at:[27.9,39.6],west:1},
-  {name:'BITHYNIA',at:[31.3,40.72],west:1},{name:'MACEDONIA',at:[22.75,41.5],west:1},{name:'ACHAIA',at:[22.2,38.62],west:1},
+  {name:'PHRYGIA',at:[29.6,38.9],west:1,out:['journeys']},{name:'ASIA',at:[27.75,38.8],west:1},{name:'MYSIA',at:[27.9,39.6],west:1},
+  {name:'BITHYNIA',at:[31.3,40.72],west:1},{name:'MACEDONIA',at:[22.75,41.5],west:1},{name:'ACHAIA',at:[22.2,38.62],west:1,out:['journeys']},
   /* Lycia, behind Patara, only in the close window of Chapter Seventeen (in: the views a name is shown in): in the wider ones the
-     strip of land between the Taurus and the sea holds Pamphylia and Cilicia already */
+     strip of land between the Taurus and the sea holds Pamphylia and Cilicia already. out: the views a name is not shown in (in the far
+   window of the journeys, Cilicia, Phrygia and Achaia would run into coasts, islands or each other) */
   {name:'LYCIA',at:[29.9,36.75],in:['caria']}];
 /* the coast of the mainland of Asia: along the Black Sea to the Bosporus, the Propontis and the Hellespont, round the Troad and down
    the Aegean shore, round Asia Minor, down the Syrian and Phoenician coast, and west along Egypt. The first three lines lie above the
@@ -252,7 +266,7 @@ function dot(g,x,y,lit){oval(g,x,y,1.9/ZM,1.9/ZM,'#1a0e08');oval(g,x,y,1.15/ZM,1
 function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];if(ST.night){g.fillStyle='rgba(6,10,38,.6)';g.fillRect(0,0,W,H)}const sea=T('great_sea').split('').join(' ');
   g.save();g.scale(ZM,ZM);g.translate(-OX,-OY);const Z=ZM;
   g.font=`italic bold ${5/Z}px "Lucida Console",Monaco,monospace`;g.textBaseline='middle';g.fillStyle='rgba(190,224,236,.55)';{const[sx,sy]=SEA[OX+','+OY]||SEA['0,0'];g.fillText(sea,sx,sy);box(g,sea,sx,sy,5/Z)}
-  for(const{name,at:[lon,lat],sea,close,north,west,in:vs}of REGIONS){if(north&&OY>=0||west&&OX>=0||vs&&!vs.includes(VN))continue;const[x,y]=xy(lon,lat),s=T(name),hw=s.length*(close?1.66:2.3)/Z;if(!inView(x-hw,y,-2)||!inView(x+hw,y,-2))continue;
+  for(const{name,at:[lon,lat],sea,close,north,west,in:vs,out:vo}of REGIONS){if(north&&OY>=0||west&&OX>=0||vs&&!vs.includes(VN)||vo&&vo.includes(VN))continue;const[x,y]=xy(lon,lat),s=T(name),hw=s.length*(close?1.66:2.3)/Z;if(!inView(x-hw,y,-2)||!inView(x+hw,y,-2))continue;
     g.font=`bold ${4.2/Z}px "Lucida Console",Monaco,monospace`;g.fillStyle=sea?'rgba(190,224,236,.55)':'rgba(70,46,20,.6)';
     if(close){/* letter by letter, a third of a letter apart */for(let i=0;i<s.length;i++)g.fillText(s[i],x-hw+i*3.32/Z,y);ST.boxes.push([x-hw,y-1.9/Z,x+hw,y+1.9/Z,s])}
     else{const sp=s.split('').join(' ');g.fillText(sp,x-hw,y);box(g,sp,x-hw,y,4.2/Z)}}
@@ -263,7 +277,7 @@ function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];if(ST.night){g.fillSty
   if(ST.pulse){const[x,y]=at(ST.pulse),k=(t/900)%1;g.strokeStyle=`rgba(255,226,150,${.9*(1-k)})`;g.lineWidth=.6/Z;g.beginPath();g.arc(x,y,(2.4+k*6)/Z,0,6.2832);g.stroke()}
   g.restore();
   if(ST.places){g.font='bold 4.4px "Lucida Console",Monaco,monospace';g.textBaseline='middle';g.fillStyle='rgba(244,228,184,.9)';/* the hint stands in open sea, clear of the coast of Egypt */
-    const s=T('click_a_place_to_travel_there');g.fillText(s,8,H-14);ST.boxes.push([8/ZM+OX,(H-14-1.98)/ZM+OY,(8+g.measureText(s).width)/ZM+OX,(H-14+1.98)/ZM+OY,s])}}
+    const s=T(ST.hint||'click_a_place_to_travel_there'),hy=HINT[VN]||H-14;g.fillText(s,8,hy);ST.boxes.push([8/ZM+OX,(hy-1.98)/ZM+OY,(8+g.measureText(s).width)/ZM+OX,(hy+1.98)/ZM+OY,s])}}
 /* the map's music, in the key of the chapter: each part is semitones above the tonic, and oct says which octave of the tonic, counting
    from the one nearest D4; the engine's tune() places and snaps it. The sting: two low drum strokes, a drone on the tonic, a harp rising
    through the third and fifth to the octave, and a ney phrase. The chime as a leg arrives: the fifth rising to the tonic. */
@@ -274,7 +288,7 @@ function sting(){const t=now()+.06;if(!AU.ctx)return;DRUMS.d(t,1.3);DRUMS.d(t+.3
 const arrive=()=>{const[a,b]=hz(CHIME);tone({f:a,d:.18,type:'sine',v:.05,echo:1});tone({f:b,t:now()+.08,d:.22,type:'sine',v:.035,echo:1})};
 function show(){G.scene=draw;setScore(null);AU.amb={wind:.25,waves:.25}}
 /* journey: between scenes. Fades to the map, shows the legs already travelled, then draws the new ones, city by city. */
-async function journey(route,o){o=o||{};setView(o.view);ST.places=null;ST.hover=null;ST.legs=[];ST.seen=new Set(o.seen||[]);ST.pulse=o.pulse||null;ST.over=o.labels||null;ST.night=!!o.night;
+async function journey(route,o){o=o||{};setView(o.view);ST.places=null;ST.hover=null;ST.legs=[];ST.seen=new Set(o.seen||[]);ST.pulse=o.pulse||null;ST.over=o.labels||VLAB[VN]||null;ST.night=!!o.night;
   for(const[a,b,kind]of route){const k=/new/.test(kind||'')?0:1;ST.legs.push({a,b,k,dots:path(a,b)});if(k){ST.seen.add(a);ST.seen.add(b)}}
   const first=ST.legs.find(L=>!L.k);if(first)ST.seen.add(first.a);
   if(o.instant){show();for(const L of ST.legs){L.k=1;ST.seen.add(L.a);ST.seen.add(L.b)}ST.pulse=o.pulse||(route.length?route[route.length-1][1]:null);return}
@@ -282,8 +296,8 @@ async function journey(route,o){o=o||{};setView(o.view);ST.places=null;ST.hover=
   for(const L of ST.legs)if(!L.k){ST.pulse=L.a;await tween(o.speed||1900,k=>{L.k=k});ST.seen.add(L.b);arrive();ST.pulse=L.b;await wait(350)}
   if(o.text)for(const s of[].concat(o.text))await narr(s,{dur:Math.max(3200,1600+s.length*60)})}
 /* pick: a hub chapter's places as dots; hovering lights a name, a click resolves with that place, Esc or right-click with null */
-function pick(ids,here,o){o=o||{};setView(o.view);ST.places=ids;ST.over=o.labels||null;ST.night=false;ST.legs=(o.legs||[]).map(([a,b])=>({a,b,k:1,dots:path(a,b)}));
-  ST.seen=new Set([here]);for(const L of ST.legs)for(const k of[L.a,L.b])if(ids.includes(k))ST.seen.add(k);ST.pulse=here;ST.hover=null;show();
+function pick(ids,here,o){o=o||{};setView(o.view);ST.places=ids;ST.over=o.labels||VLAB[VN]||null;ST.night=false;ST.hint=o.hint||null;ST.legs=(o.legs||[]).map(([a,b])=>({a,b,k:1,dots:path(a,b)}));
+  ST.seen=new Set([here,...(o.seen||[])]);for(const L of ST.legs)for(const k of[L.a,L.b])if(ids.includes(k))ST.seen.add(k);ST.pulse=here;ST.hover=null;show();
   const vp=$('#view'),pos=e=>framePos(e),
     /* a finger is less precise than a mouse: on a phone a place is found within twice the reach */
     near=e=>{const[x,y]=pos(e);let best=null,bd=PH.on?14:7;for(const k of ids){const[px,py]=where(k),d=Math.hypot(px-x,py-y);if(d<bd){bd=d;best=k}}return best};
@@ -291,6 +305,16 @@ function pick(ids,here,o){o=o||{};setView(o.view);ST.places=ids;ST.over=o.labels
     ck=e=>{e.stopImmediatePropagation();const k=near(e);if(k)end(k)},mv=e=>{ST.hover=near(e)},no=e=>{e.preventDefault();e.stopImmediatePropagation();end(null)},
     kd=e=>{if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();end(null)}};
     vp.addEventListener('click',ck,true);vp.addEventListener('mousemove',mv,true);vp.addEventListener('contextmenu',no,true);addEventListener('keydown',kd,true)})}
+/* WAYS: the roads of the journeys that a chapter may retell, in the order they were travelled, through the points between their cities.
+   The first journey from Salamis through Cyprus to Paphos, by sea to Perga, up to Antioch in Pisidia, to Iconium, Lystra and Derbe
+   (Acts 13:4-14:6); and from Philippi along the Egnatian Way to Thessalonica, to Beroea, by sea to Athens, to Corinth, and from Cenchreae
+   to Ephesus (Acts 17:1-18:19). trail(ids): for places picked one after another, the legs to draw: between two that follow each other on
+   one way, the road from the one to the other, through the points between; between any others, nothing. On the journeys view none of
+   these legs crosses another, and no name crosses any of them (the playtest's map18). */
+const WAYS=[['salamis','paphos','perga','antiochp','iconium','lystra','derbe'],
+  ['philippi','amphipolis','apollonia','thessalonica','beroea','seaward','athens','corinth','cenchreae','offsamos','ephesus']];
+function trail(ids){const out=[];for(let i=1;i<ids.length;i++){const a=ids[i-1],b=ids[i];for(const w of WAYS){const x=w.indexOf(a),y=w.indexOf(b);if(x<0||y<=x)continue;
+    for(let k=x;k<y;k++)out.push([w[k],w[k+1]]);break}}return out}
 /* go: draw one leg from a to b on the map that is showing, and arrive */
 async function go(a,b){const L={a,b,k:0,dots:path(a,b)};ST.legs.push(L);ST.seen.add(a);ST.pulse=a;show();await tween(1500,k=>{L.k=k});ST.seen.add(b);arrive();ST.pulse=b;await wait(500)}
 /* where: a place in the window that is showing */
@@ -298,5 +322,5 @@ const where=id=>{const[x,y]=at(id);return[(x-OX)*ZM,(y-OY)*ZM]};
 /* lines: every thin line on the map that a name must not cross: the coasts, the islands and the lakes, as lists of points */
 const lines=()=>[COAST,...ISLES.map(p=>p.concat(p.slice(0,2))),...LAKES.map(p=>p.concat(p.slice(0,2)))];
 /* window: where the window that is showing lies on the map, [left, top, width, height], so that a test can see whether a name runs out of it */
-return{journey,pick,go,where,lines,places:PLACES,state:ST,draw,sting,arrive,window:()=>[OX,OY,W/ZM,H/ZM]};
+return{journey,pick,go,where,lines,trail,ways:WAYS,labels:VLAB,places:PLACES,state:ST,draw,sting,arrive,window:()=>[OX,OY,W/ZM,H/ZM]};
 })();
