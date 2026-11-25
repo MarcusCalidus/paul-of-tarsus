@@ -7,20 +7,12 @@ ages ages
 agora agora11
 altars altar11
 antioch antioch
-assos passos16
-beach-prayer pprayer17
-birds birds
-birds-sheet birds birds-sheet
-bound bound17 cast-bound
-chained chained18 cast-chained
-caesarea-road pgate17
-coast-road proad16
-coast-sheet coast coast-sheet
-coast-wind coast coast-wind
 antioch12 pant12
 apollos psyn13
 areopagus speech11
+arrest18 parrest18
 asia pasiab13
+assos passos16
 athens quay10
 athens-map map11
 athens-road road11
@@ -28,17 +20,28 @@ athens-street way11
 awning pawnb12
 awning-rain pawnw12
 barnabas barnabas
+barracks pbarracks18
+beach-prayer pprayer17
 bench-dawn pshopm13
 beroea pber10
+birds birds
+birds-sheet birds birds-sheet
 bolt bolt10
+bound bound17 cast-bound
 boundary border
 brothers home9
 burning pstreetg13
+caesarea-road pgate17
 card card
+carried pknot18
 cast cast cast-main
 cast-closeup cast cast-closeup
 cenchreae pcenf12
 cenchreae15 cen15
+chained chained18 cast-chained
+coast-road proad16
+coast-sheet coast coast-sheet
+coast-wind coast coast-wind
 code code
 colonnade sift11
 conclusion concl8
@@ -82,6 +85,7 @@ iconium deliver
 inland-map mapb13
 isthmus pisth12
 jailer open9
+james-elders pgift18
 jar jar
 jerusalem jerusalem
 journeys18 map18
@@ -101,6 +105,7 @@ marketplace market9
 messenger-list plist16
 midnight midnight15
 miletus pmiletus16
+mnason-court pmnason18
 murex-beach pbeach17
 names names
 nations sabbath2
@@ -112,6 +117,8 @@ nightmap nightmap10
 north-wind pskyb16
 northmap hubmap5
 off-chios peve16
+on-the-stairs pstairs18
+one-by-one pone18
 options de:menu
 other-road map15
 paphos paphos
@@ -134,6 +141,7 @@ reading reading
 river river8
 road road
 romans romans cast-romans
+routes routes15 routes-cen15
 samothrace deck8
 sand-plan plan15
 saves saves
@@ -144,6 +152,7 @@ sealed-plea psealc14
 seamap seamap10
 secondjourney journey7
 seleucia kallias
+seven-days pdays18
 shadows shadows
 shipwreck shipwreck cast-shipwreck
 shortway hubmap6b
@@ -153,6 +162,7 @@ silent silent
 silversmiths pmarket14
 speak speak
 speech speech
+speech-road proad18
 splash splash
 stonecutter block11
 stride stride
@@ -162,6 +172,7 @@ synagogue10 sab10
 tablets tablets
 talk cast cast-talk
 tarsus tarsus
+temple-court pcourt18
 tentshop pshop12
 theater-colonnade pcolon14
 thessalonica yard10
@@ -180,6 +191,7 @@ tyre ptyre17
 tyre-court pcourt17
 tyre-lanes planes17
 under-way psail16
+upper-city pstreet18
 upper-room upper15
 verb-pointer verbpointer
 verbs defverb
@@ -187,10 +199,10 @@ voyage voyage
 voyage16 map16
 voyage17 map17
 walk cast cast-walk
+warning-stone pstone18
 westmap map10
 windward holdline
 withoutpaul tim10
 witness witness
 workshop workshop
 xfade xfade
-routes routes15 routes-cen15

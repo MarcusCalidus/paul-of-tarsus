@@ -3964,7 +3964,8 @@
      safe-point code of their point (CODE): pmnason18 · pstreet18 · pelders18 · pgift18 (the chest before James) · ptemple18 (the street
      with the four men, Trophimus and the Jews from Asia) · pcourt18 (at the barrier: the treasure's point) · pstone18 · pdays18 ·
      parrest18 (the court in the arrest, the chains) · pknot18 (the knot carrying him to the stairs) · pstairs18 · pspeech18 (the
-     outcry over the crowd) · pbarracks18 (held by the arms, 22:25). */
+     outcry over the crowd) · pbarracks18 (held by the arms, 22:25) · pone18 (one by one on the map, told as far as Derbe) · proad18 (the
+     speech told over the road to Damascus, 22:10, 11, after the light). */
   /* rooms18: every picture of Chapter Eighteen on one sheet at twice its size (rooms18.png), the court whole (rooms18-court.png): for the
      art agents, and the cross-shape check. */
   if(stop==='rooms18'){clearInterval(sk);sk=0;await loadLevel(18);setChapter(18);ov.className='';ov.onclick=null;const C=CHAP[18],ids=C.rooms,K=2;
@@ -3980,7 +3981,7 @@
       S={pmnason18:[[],'mnason18'],pstreet18:[upto('mnason').concat('morning'),'street18'],pelders18:[['mnason','morning'],'elders18'],pgift18:[['mnason','morning','james','gift'],'elders18'],
         ptemple18:[upto('agreed'),'street18'],pcourt18:[upto('agreed'),'court18'],pstone18:[upto('agreed'),'stone18'],pdays18:[upto('sorted'),'court18'],
         parrest18:[upto('sorted'),'court18'],pknot18:[upto('sorted'),'court18'],pstairs18:[upto('arrest'),'stairs18'],pspeech18:[upto('permit'),'stairs18'],
-        pbarracks18:[upto('speech'),'barracks18']}[stop];
+        pbarracks18:[upto('speech'),'barracks18'],pone18:[['mnason','morning','james','gift'],'elders18'],proad18:[upto('permit'),'stairs18']}[stop];
     if(!S)throw new Error('no such stop '+stop);setChapter(18);for(const k of S[0])F[k]=1;
     const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
     const A=id=>ACT[id],CU=SHARED.cast.custody;
@@ -3990,6 +3991,11 @@
       ACT.levite18.room=null;CU.place('chain',P,A('sol18a'),A('sol18b'));G.arr18=1;
       if(stop==='pknot18'){for(const id of['sol18a','sol18b'])A(id).room=null;P.chained=0;G.knot18={x:150,y:112,d:40,pdir:1};P.x=150;P.room=null}}
     if(stop==='pspeech18'){G.out18={};P.ges=1}
+    /* one by one on the map (21:19): the first journey told as far as Derbe, and its road drawn */
+    if(stop==='pone18'){const M=await need('map'),O=C.one,done=O.stops.slice(0,5);G.obo18={n:5};
+      M.pick([O.also[0],O.stops[0],...O.also.slice(1),...O.stops.slice(1)],null,{view:O.view,legs:M.trail(done),seen:done,hint:'which_place_came_next'})}
+    /* the speech over the road to Damascus (22:10, 11): after the light, the men lead him by the hand toward the city */
+    if(stop==='proad18')G.scene=SHARED.damascus.scene('road',{x:146,d:28,blind:1});
     G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(P.room?makeCode():'-'));await wait(1100);halt(stop)}
   const ch18=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[18],told=k=>heard.includes(T(C().told[k])),
     until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
