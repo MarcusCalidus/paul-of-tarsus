@@ -1,7 +1,10 @@
 /* Paul of Tarsus: reusable character looks shared across Chapters Eighteen to Twenty-Five (loaded on demand with need('cast')).
    - ROMAN: Roman foot soldiers (lorica segmentata & lorica hamata), centurions (molded cuirass, transverse crest, officer cloak), the
      commander of the Jerusalem garrison (a military tribune: tunic with the narrow purple stripe, cuirass, gold ring),
-     and Praetorian Guard (inside-Rome watch tunic + military belt/caligae/gladius, formal Roman toga + caligae, and full armored duty).
+     and Praetorian Guard (inside-Rome watch tunic + military belt/caligae/gladius, formal Roman toga + caligae, and full armored duty);
+     the horsemen and spearmen of the escort to Caesarea (Acts 23:23), and Felix, governor of Judea (Acts 23:24-35).
+   - SANHEDRIN: the high priest Ananias, Pharisees, Sadducees, clerks, attendants, an elder and a chief priest (Acts 22:30-23:15; 24:1).
+   - FAMILY: Paul's sister and her son in Jerusalem (Acts 23:16).
    - shipwrecked(look, opts): turns any look into wet, torn shipwreck survivor clothing for Acts 27-28 (Chapter Twenty-Three).
    - SHIPWRECK: ready-to-use shipwreck survivor looks (Paul, Luke, Aristarchus, Julius, escort soldier, sailor, fellow prisoner).
    - custody: the two chains of Acts 21:33, the soldiers who hold Paul by the arms (22:25), and the knot that carries him up the stairs
@@ -106,15 +109,18 @@ function shipwrecked(base,opts){
      ananias          the high priest Ananias, son of Nedebaeus: an older man in the rich dress of a wealthy priestly family, a fine
                       robe with long sleeves, a mantle with a band of gold along its edge, a white headcloth and a gold ring. Not the
                       high priest's vestments: this is a court day, not the service of the temple.
-     pharisee_1 .. 6  a scripture case on the forehead (phyl: a small square box of dark leather, never a ring, with no strap across
-                      anything and none on the arm) and long fringes at the corners of the mantle (fringe: their color, short slanting
-                      threads, never a vertical line over a band). Ages and beards differ; some wear a headcloth.
+     pharisee_1 .. 6  a broad scripture case on the forehead (phyl:1, a square box of leather, never a ring, with no strap across
+                      anything and none on the arm) and long fringes at the corners of the mantle (fringe: their color, fringeLong:1;
+                      short slanting threads, never a vertical line over a band). Ages and beards differ; some wear a headcloth.
      sadducee_1 .. 5  close to the priesthood and the wealthy (Insight, "Sadducees"): fine cloth, a band along the mantle, a ring here and
-                      there; no scripture case and no long fringes. Nothing else tells them apart, so in the council they sit mixed
-                      with the Pharisees, and the player must look.
+                      there; a small case (phyl:2) or none, and short fringes. Nothing else tells them apart, so in the council they sit
+                      mixed with the Pharisees, and the player must look.
+   Every Israelite man wore fringes, with a blue cord above them (Numbers 15:38; Insight, "Dress"), and Jewish men generally wore the cases
+   (study note on Matthew 23:5): so every man here in a mantle has short fringes, and what marks the Pharisees is that theirs are long
+   and their cases broad.
      clerk_1, clerk_2 the two clerks in front of the court, who wrote down what was said: each with a writing board (board: the color of
                       its wood), drawn on his knees when he sits (person's fr -1) and under his arm when he stands.
-     attendant_1, _2  the men who stood by the high priest (Acts 23:2): plain good dress, a headcloth, no case and no fringes.
+     attendant_1, _2  the men who stood by the high priest (Acts 23:2): plain good dress, a headcloth, no mantle and no case.
      elder_1, chief_priest_1   for the chief priests and elders whom the forty went to (23:14), and who came down with Ananias (24:1).
    Seated, every one of them sits as CONTRIBUTING section 4 says (the figure painter's one seated pose). */
 const SANHEDRIN={
