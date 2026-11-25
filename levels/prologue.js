@@ -107,10 +107,10 @@ ART.pro_door={w:320,q:12,
     sky(g,320,42,['#283062','#54467c','#986274','#d89266'].map(c=>earth(c,.14)));
     /* house fronts closing the street */
     stone(g,0,18,68,92,r,{bw:16,bh:8,c:'#cdb894',v:.09,age:.6});R(g,0,14.5,69,4,'#d4c4a6');
-    plaster(g,68,8,184,102,W,r,{patch:5,cracks:0,brick:LIME,t:.36});skipCracks(r,6);
+    plaster(g,68,8,184,102,W,r,{patch:5,cracks:0,brick:LIME,rubble:1,t:.36});skipCracks(r,6);
     R(g,67,4.5,186,4,'#ead8b8');R(g,67,8,186,1,'#8a7658');
     for(let i=76;i<246;i+=14){R(g,i,12,3,3,'#6a4a2c');R(g,i,15,3,2.5,'rgba(0,0,0,.28)')}
-    plaster(g,252,16,68,94,'#cbb896',r,{patch:3,cracks:0,brick:LIME,t:.36});skipCracks(r,4);R(g,251,12.5,69,4,'#dfd0b0');
+    plaster(g,252,16,68,94,'#cbb896',r,{patch:3,cracks:0,brick:LIME,rubble:1,t:.36});skipCracks(r,4);R(g,251,12.5,69,4,'#dfd0b0');
     /* cracks cut by hand, high under the eaves, and the shade under the cornices and where the house fronts meet */
     for(const[x,y,n]of[[96,18,2],[196,19,3],[240,18,3],[292,23,4]])crack(g,x,y,n,rb);
     ao(g,68,9,184,6,'t',.3,'#2a2030');ao(g,0,18,68,5,'t',.28,'#2a2030');ao(g,252,16.5,68,5,'t',.28,'#2a2030');
