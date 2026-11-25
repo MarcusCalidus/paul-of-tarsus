@@ -285,7 +285,8 @@ ART.road11={w:640,q:12,
   sunlight11(g,640,62,[[452,58,90,22,.5],[290,66,80,22,.5],[160,92,120,14,.55],[420,94,100,12,.45],[590,76,56,34,.45],[320,118,330,16,.55]],
     l=>{l.fillStyle='#ffffff';l.fillRect(0,56,540,16);comp(l,'multiply',1,()=>R(l,594,66,28,40,'#d4d0e2'))});
   pool(g,200,0,300,150,'#fff4d6',.1,'screen')},
- light:null,
+ /* the sun of sunlight11, high on the left and a little in front: shadows fall to the right and back, as the statues' do on the walls */
+ light:{amb:'#ffffff',sun:[11,-6,.4],wallY:105},
  /* while the slave rests by the road, what he carries lies on a stone beside him: a folded robe, and a covered dish */
  draw(g){if(SL.room!=='road11')return;depth(109,()=>{R(g,404,108,16,1.6,'rgba(40,30,60,.3)');poly(g,[402,108,420,108,418,100,405,99.4],'#a89e86');poly(g,[405,99.4,418,100,417,101.4,405.4,100.8],'#d2c8ae');
    g.fillStyle=lg(g,0,95,0,100,['#f0e6cc','#d8cdb0','#a89c80']);g.fillRect(404.6,95.4,7.4,4.2);for(let i=0;i<2;i++)R(g,404.6,96.8+i*1.4,7.4,.5,'rgba(90,76,56,.4)');
@@ -415,7 +416,8 @@ ART.street11={w:640,q:12,
      the lanes between the houses lie in shade, and the open way to the marketplace is bright */
   sunlight11(g,640,52,[[80,60,80,30,.5],[220,62,40,26,.45],[310,64,40,26,.45],[400,62,40,26,.45],[535,62,80,30,.5],[628,80,22,26,.55],[320,118,330,16,.55]],
     l=>comp(l,'multiply',1,()=>{for(const[x]of LANES)R(l,x,50,30,56,'#dcd8e6')}))},
- light:null,
+ /* the sun of sunlight11, high on the left and a little in front: shadows fall to the right and back, as the statues' do on the walls */
+ light:{amb:'#ffffff',sun:[11,-6,.4],wallY:104},
  draw(g,t){for(let i=0;i<3;i++){const k=((t/700+i*.33)%1);R(g,58.3,90+k*6,1.2,1.4,`rgba(230,246,250,${.7*(1-k)})`)}},
  front(){}};
 
@@ -458,7 +460,8 @@ ART.syn11={w:320,q:12,
     l.fillStyle=lg(l,0,0,0,24,['rgba(20,16,24,.3)','rgba(20,16,24,0)']);l.fillRect(0,0,320,24);
     l.fillStyle=lg(l,0,126,0,144,['rgba(20,16,24,0)','rgba(20,16,24,.22)']);l.fillRect(0,126,320,18)});
 },
- light:{amb:'#e6dcd8'},draw(){},front(){}};
+ /* the day from the two high windows falls in and down, a little to the right: weak shadows toward us */
+ light:{amb:'#e6dcd8',sun:[4,9,.2]},draw(){},front(){}};
 
 /* ---------- The marketplace ---------- */
 /* The square where the city traded, judged, argued and strolled, northwest of the Acropolis (study note on Acts 17:17). What The
@@ -579,7 +582,8 @@ ART.agora11={w:640,q:12,
   sunlight11(g,640,60,[[110,40,80,20,.45],[70,80,70,26,.5],[170,78,50,26,.45],[340,70,130,30,.5],[511,64,34,30,.5],[610,84,40,24,.45],[320,120,330,16,.55]],
     l=>comp(l,'multiply',1,()=>{R(l,CX,44,CW,56,'#d4d0e0');R(l,497,50,28,54,'#d4d0e0');R(l,538,42,34,62,'#e0dce8')}));
   pool(g,300,0,340,150,'#fff4d6',.1,'screen')},
- light:null,draw(g,t){cast(g,[['w11a',292,121,1],['w11maid',276,124,1],['w11b',584,118,-1]])},front(){}};
+ /* the sun of sunlight11, high on the left and a little in front: shadows fall to the right and back, as the statues' do on the walls */
+ light:{amb:'#ffffff',sun:[11,-6,.4],wallY:104},draw(g,t){cast(g,[['w11a',292,121,1],['w11maid',276,124,1],['w11b',584,118,-1]])},front(){}};
 
 /* marble11: a block of marble as it comes from the quarry, seen a little from above: its top in the full light of the sky, its front
    lit from the left and pocked by the point that squared it, its right side turned away; the edges chipped, a quarry mark of red ochre
@@ -669,7 +673,8 @@ ART.yard11={w:320,q:12,
   sunlight11(g,320,46,[[220,72,90,30,.5],[40,70,40,30,.4],[190,118,160,14,.5]],
     l=>comp(l,'multiply',1,()=>{R(l,63,55,78,49,'#dcd8e6');R(l,16,52,30,52,'#e4e0ea')}));
   pool(g,200,20,200,120,'#fff4d6',.1,'screen')},
- light:null,draw(){},front(){}};
+ /* the sun of sunlight11, high on the left and a little in front: shadows fall to the right and back, as the statues' do on the walls */
+ light:{amb:'#ffffff',sun:[11,-6,.4],wallY:104},draw(){},front(){}};
 
 /* ---------- The painted colonnade ---------- */
 /* The Stoics had their name from a painted colonnade in Athens, where the founder of the school taught (Insight, "Stoics"). Along
@@ -711,7 +716,9 @@ ART.stoa11={w:480,q:12,fp:1.2,
     for(const x of[72,177,303,409])pool(l,x,62,64,26,'#fff0d8',.3);
     l.fillStyle=lg(l,0,0,0,22,['rgba(20,16,24,.3)','rgba(20,16,24,0)']);l.fillRect(0,0,480,22)})},
  fore(g){const w=Math.round(VW+(480-VW)*1.2),ST='#b9b09a';for(let x=30;x<w;x+=118){g.fillStyle=lg(g,x,0,x+15,0,[tint(ST,-.5),tint(ST,-.1),tint(ST,-.26),tint(ST,-.62)]);g.fillRect(x,0,15,144);for(let i=1;i<4;i++)R(g,x+i*3.7,0,.6,144,'rgba(30,24,40,.25)');R(g,x-1.5,138,18,6,tint(ST,-.4));R(g,x-1.5,138,18,.8,tint(ST,-.1))}},
- light:{amb:'#d8d2de'},
+ /* the afternoon sun comes in from the open front behind us, high on the left: shadows fall back and to the right, and climb the
+    back wall, but not into the recess */
+ light:{amb:'#d8d2de',sun:[7,-9,.3],wallY:104,wall:[[0,224,104,22],[256,480,104,22]]},
  draw(g){const L='#d8d2de';cast(g,[['hl11a',118,124,-1],['hl11b',136,119,-1],['he11a',348,124,1],['he11b',364,119,1]],L);
   /* where Paul stands decides whom he hears, and which tune (the moods "stoic", "epic" and "both") */
   if(G.room==='stoa11'&&!G.busy&&!G.scene&&!P.walk&&PC()===P){const z=zone11();if(z!==G.z11){G.z11=z;AU.mood=z==='L'?'stoic':z==='R'?'epic':'both';if(F.shut&&!F.led)cut(()=>overhear(z))}}},
@@ -775,7 +782,7 @@ ART.bases11={w:320,q:12,
      their feet lies in their shade */
   sunlight11(g,320,18,[[120,70,180,50,.5],[260,80,120,40,.4],[160,128,200,12,.4]]);
   pool(g,120,30,260,120,'#fff4d6',.1,'screen')},
- light:{amb:'#ffffff'},
+ light:null,   /* a close view: nobody stands in it */
  /* the ivy over the second stone, until it is drawn aside: then it hangs at the stone's edge */
  draw(g){const st=G.b11||{},x=sx(1),y=bandY(STONES[1]),r=rng(1151);
   if(!st.ivy){for(let i=0;i<70;i++){const px=x+1+r()*(BW-2),py=y-6+r()*20,c=['#4f6a36','#5f7a40','#3f5a2e','#6f8a4a'][i%4];R(g,px,py,1.6+r()*1.6,1.2+r()*1.2,c)}stroke(g,[x+1,y-12,x+.4,y,x+1.2,y+18],'#3a4a26',.7)}
@@ -871,7 +878,9 @@ ART.hill11={w:560,q:12,
   lightmap(g,560,'#d8b8a8',l=>{pool(l,560,40,420,160,'#fff0c8',.9);pool(l,360,128,260,50,'#ffe8c0',.5);pool(l,40,120,160,60,'#a8a0c8',.3);
     pool(l,330,100,190,12,'#ffe8c4',.35);pool(l,130,92,150,12,'#ffe0bc',.25);
     l.fillStyle=lg(l,0,126,0,144,['rgba(60,50,90,0)','rgba(60,50,90,.16)']);l.fillRect(0,126,560,18)})},
- light:{amb:'#f0d8c4'},
+ /* the evening sun, low in the west, behind us and to the right: long shadows fall back and to the left. The rock is open ground
+    back to the seats, so shadows run there too (wallY) */
+ light:{amb:'#f0d8c4',sun:[-22,-7,.34],wallY:100},
  draw(g){const lit='#f0d8c4',st=G.sp11||{},up=!!F.spoke,lean=st.lean||0;
   /* the men on the seats. Before the speech breaks off they sit, and lean in as it holds; afterwards some are on their feet. */
   HEAR.forEach(([id,x,y,dir,grp,stand])=>{if(grp==='d'&&F.rose)return;if(up&&stand)cast(g,[[id,x,y+3,dir]],lit);else sitter(g,x,y,id,dir,lit,!up&&lean>=(grp==='e'?2:grp==='s'?4:1))});
