@@ -286,7 +286,10 @@ function paintElders18(g,v){const r=rng(1821),W='#e2d4b4',BK=104,TP=8;sky18(g,32
    278,128 · Trophimus 180,122 (in the colonnade, 424,118, once the days have begun) · the man from Cyrene 304,116 · the Greek of the city
    334,124 · the Levite at the opening 250,110; Paul comes in at 446,124. */
 const SOREG18={x0:100,x1:400,top:80,base:104,open:[236,264]};
-ART.court18={w:480,q:12,paint(g){paintCourt18(g)},light:{amb:'#f6eadc',sun:[.6,.3,.4]},draw(){},front(){}};
+ART.court18={w:480,q:12,paint(g){paintCourt18(g)},light:{amb:'#f6eadc',sun:[.6,.3,.4]},draw(g,t){drawCourt18(g,t)},front(){}};
+/* drawCourt18: in the arrest, the two chains between Paul and his keepers, and the knot of soldiers that carries him (G.knot18) */
+function drawCourt18(g,t){const C=SHARED.cast.custody;if(P.chained&&P.room==='court18')C.chains(g,P,ACT.sol18a,ACT.sol18b);
+  const k=G.knot18;if(k)C.knot(g,k.x,k.y,{room:'court18',dir:-1,pdir:k.pdir,d:k.d})}
 function paintCourt18(g){const r=rng(1831),S=SOREG18;sky18(g,480,60,'day');
   /* the sanctuary rising over the inner wall: white stone, a broad front with its shoulders, its great doorway dark */
   const SW='#eee6d2';g.fillStyle=lg(g,196,0,304,0,[tint(SW,.06),SW,tint(SW,-.14)]);g.fillRect(196,6,108,40);g.fillRect(220,0,60,8);
@@ -358,7 +361,7 @@ function paintStone18(g){const r=rng(1841);
    Called from outside: ART.stairs18. Reads G.out18. Hotspots (ROOMS.stairs18): the crowd 0,64,196,80 · the temple 0,0,170,60 · the door
    of the soldiers' quarters 282,34,32,70. Walk: Paul stands at 224,120 and takes no step. Actors (place18): the commander 270,116 ·
    soldiers 208,122 and 240,124 (the chains) · soldiers 186,132 and 300,128 · an officer 290,112. */
-ART.stairs18={w:320,q:12,paint(g){paintStairs18(g)},light:{amb:'#f0e2d0',sun:[.5,.3,.4]},draw(g,t){drawStairs18(g,t)},front(){}};
+ART.stairs18={w:320,q:12,paint(g){paintStairs18(g)},light:{amb:'#f0e2d0',sun:[.5,.3,.4]},draw(g,t){drawStairs18(g,t);if(P.chained)SHARED.cast.custody.chains(g,P,ACT.sol18a,ACT.sol18b)},front(){}};
 function paintStairs18(g){const r=rng(1851);sky18(g,320,40,'day');
   /* far off: the sanctuary and the inner wall */
   R(g,40,8,56,34,'#ece4d0');R(g,52,2,32,8,'#ece4d0');R(g,62,16,12,26,'#2a2018');ashlar(g,0,34,200,14,'#dccca8',r,{bw:10,bh:4,v:.08});
@@ -387,7 +390,7 @@ function drawStairs18(g,t){const o=G.out18;if(!o)return;const k=(t%1600)/1600;
    Called from outside: ART.barracks18. Reads nothing. Hotspots (ROOMS.barracks18): the gate 0,40,24,64 · the doorway 286,44,30,60 · the
    bench 100,90,120,12. Walk: Paul stands at 160,124 and takes no step. Actors (place18): soldiers holding him 144,124 and 176,124 · the
    army officer standing there 216,118 · soldiers 92,120, 252,126 · the commander comes in at 300,118. */
-ART.barracks18={w:320,q:12,paint(g){paintBarracks18(g)},light:{amb:'#e8dccc',sun:[.4,.3,.3]},draw(){},front(){}};
+ART.barracks18={w:320,q:12,paint(g){paintBarracks18(g)},light:{amb:'#e8dccc',sun:[.4,.3,.3]},draw(g){if(P.held)SHARED.cast.custody.grips(g,P,ACT.sol18a,ACT.sol18b)},front(){}};
 function paintBarracks18(g){const r=rng(1861),BK=104;sky18(g,320,14,'day');
   ashlar(g,0,10,320,BK-10,'#c4b08a',r,{bw:16,bh:7,v:.1});ao(g,0,10,320,8,'t',.3,'#3a2c3c');
   g.fillStyle=lg(g,0,40,0,104,['#2a2018','#16100c']);g.fillRect(2,40,20,64);g.fillRect(288,44,26,60);
@@ -442,8 +445,7 @@ Object.assign(LOOK,{
   crowd18a:{skin:'#b07a4c',wrap:'#d8cdb0',beard:'#3a2a1c',tunic:'#8a7a5a',belt:'#3a2414',ph:100},crowd18b:{skin:'#c09068',hair:'#3a2a1c',beard:'#3a2a1c',tunic:'#6a7a8a',cloak:'#5a4a3a',long:1,belt:'#3a2a1a',ph:600},
   crowd18c:{skin:'#a8744c',hair:'#2a1a12',beard:'#2a1a12',fullBeard:1,tunic:'#b89a6a',belt:'#4a3020',ph:1100},crowd18d:{skin:'#c49a72',veil:'#7a5a4a',tunic:'#9a8a70',long:1,belt:'#4a3a24',slim:1,longSleeve:1,ph:1700},
   crowd18e:{skin:'#bc8a60',wrap:'#a89070',beard:'#5a4a3a',fullBeard:1,tunic:'#7a4a3a',long:1,belt:'#3a2818',ph:2300},crowd18f:{skin:'#b8845a',hair:'#4a3624',tunic:'#a8b090',belt:'#3a2a1a',ph:2900},
-  commander18:RM.tribune||{skin:'#c4946a',hair:'#3e2e20',brow:'#2a1c12',crop:1,tunic:'#ece4d0',stripe:'#5a2050',cloak:'#8e2220',offCloak:1,armor:'#b8964e',armorStyle:'cuirass',
-    pteruges:'#e2d8be',sash:'#8e2220',belt:'#4a2c16',milBelt:1,caligae:1,gladius:'left',ph:800},
+  commander18:RM.tribune_armored,
   officer18:Object.assign({},RM.centurion_crested),officer18b:Object.assign({},RM.centurion_veteran),
   sol18a:Object.assign({},RM.legionary_guard),sol18b:Object.assign({},RM.legionary_bare),sol18c:Object.assign({},RM.legionary_guard,{ph:1500}),
   sol18d:Object.assign({},RM.legionary_bare,{ph:2100}),sol18e:Object.assign({},RM.escort_cloak)});
@@ -477,21 +479,18 @@ const tell=(k,ms,o)=>narr(TOLD[k],Object.assign({dur:ms||Math.max(6500,2200+T(TO
 const fast=()=>G.speedAll>200;   /* the playtest plays at speed */
 
 /* ============ WHAT IS PLAYED: the tables ============ */
-/* ONE18: the telling of 21:19 on the travel map, in two windows. stops: the places in the order the good news first came there through
-   Paul, each with what Paul says and what an elder answers (only what Chapters Four to Fourteen told); also: places that are not stops
-   of the telling, each with a true line of its own. */
-const ONE18=[
- {view:'north',here:'antioch',stops:['paphos','antiochp','iconium','lystra','derbe'],also:['salamis','perga','attalia','tarsus','antioch']},
- {view:'aegean',here:'troas',stops:['philippi','thessalonica','beroea','athens','corinth','ephesus'],also:['troas','neapolis','amphipolis','apollonia','miletus']}];
+/* ONE18: the telling of 21:19 on the travel map, in the window of the journeys (shared/map.js, view 'journeys'). stops: the places in
+   the order the good news first came there through Paul, each with what Paul says and what an elder answers (only what Chapters Four to
+   Fourteen told); also: places of the journeys that are not stops of the telling, each with a true line of its own. The roads between
+   places told one after the other are drawn as they are told (SHARED.map.trail). */
+const ONE18={view:'journeys',stops:['paphos','antiochp','iconium','lystra','derbe','philippi','thessalonica','beroea','athens','corinth','ephesus'],also:['salamis','perga']};
 const TELL18={paphos:['paul_at_paphos_the_proconsul','elder_a_proconsul_of_rome',E2],antiochp:['paul_at_antioch_in_pisidia','elder_with_joy',E1],
  iconium:['paul_at_iconium','elder_jews_and_greeks_together',E3],lystra:['paul_at_lystra','timothy_lystra_is_my_home',TI],derbe:['paul_at_derbe','elder_and_at_derbe_too',E4],
  philippi:['paul_at_philippi','elder_even_the_jailer',E1],thessalonica:['paul_at_thessalonica','elder_greeks_who_worshipped_god',E3],
  beroea:['paul_at_beroea','elder_every_day',E2],athens:['paul_at_athens','elder_even_in_athens',E4],corinth:['paul_at_corinth','elder_the_one_who_presided',E1],
  ephesus:['paul_at_ephesus','james_all_of_asia',JA]};
-const ASIDE18={salamis:'paul_salamis_synagogues',perga:'paul_perga_on_the_way_home',attalia:'paul_attalia_we_sailed_home',tarsus:'paul_tarsus_my_home_town',
- antioch:'paul_antioch_sent_us_out',troas:'paul_troas_we_crossed_from_there',neapolis:'paul_neapolis_where_we_landed',amphipolis:'paul_we_passed_through_there',
- apollonia:'paul_we_passed_through_there',miletus:'paul_miletus_at_the_very_end'};
-const ORDER18=ONE18.flatMap(p=>p.stops);
+const ASIDE18={salamis:'paul_salamis_synagogues',perga:'paul_perga_on_the_way_home'};
+const ORDER18=ONE18.stops;
 /* the barrier: the three whom Paul tells where to be, and where each belongs by the stone's word (in: may go in; out: of another people) */
 const GATE18=[{a:'troph18',k:'troph',ok:'out'},{a:'cyrene18',k:'cyrene',ok:'in'},{a:'greek18',k:'greek',ok:'out'}];
 /* the words of the stone, as hotspots: which run of words of which line they cover, and what Paul reads in them */
@@ -519,6 +518,9 @@ const run18=fn=>G.busy?fn():cut(fn);
    quarters) */
 const phase18=()=>!F.morning?'arrive':!F.agreed?'elders':!F.sorted?'temple':!F.arrest?'days':!F.speech?'stairs':'barracks';
 function show18(room,x,y,dir){place18(room);const e=ENT[room];enterRoom(room,x!=null?x:e[0],y!=null?y:e[1],dir||e[2]);codeBtn()}
+/* custody18: on the stairs Paul is chained between two soldiers; in the soldiers' quarters two soldiers hold him by the arms (22:25).
+   place18 stands him where the room is entered (ENT: enterRoom puts him on that very spot again, and a code is restored the same way) */
+function custody18(room){const C=SHARED.cast.custody,e=ENT[room];place(P,room,e[0],e[1],e[2]);C.place(room==='stairs18'?'chain':'hold',P,S1,S2)}
 async function goto18(room,x,y,dir){await fade(1,300);show18(room,x,y,dir);await fade(0,300)}
 const stop18=()=>{const p=PC();if(p.walk){p.walk.res(false);p.walk=null}};
 const tw=ms=>wait(fast()?Math.min(40,ms):ms);
@@ -574,23 +576,21 @@ async function gift18(){if(F.gift)return say(P,'the_gift_is_in_their_hands');if(
 /* one by one (21:19), on the travel map */
 const obo=()=>G.obo18||(G.obo18={n:0});
 async function oneByOne18(){let M=null;try{M=await need('map')}catch(e){}
-  if(!M){for(const k of ORDER18.slice(obo().n)){const[l,r,a]=TELL18[k];await say(P,l,{to:JA});await say(a,r,{to:P});obo().n++}return told18()}
+  if(!M||!M.trail){for(const k of ORDER18.slice(obo().n)){const[l,r,a]=TELL18[k];await say(P,l,{to:JA});await say(a,r,{to:P});obo().n++}return told18()}
   if(!obo().n)await tell('v19');
-  await fade(1,300);let first=1;
-  for(;;){const s=obo(),pi=s.n<ONE18[0].stops.length?0:1,part=ONE18[pi],done=ORDER18.slice(0,s.n),mine=done.filter(k=>part.stops.includes(k)),
-      ids=[...part.stops,...part.also],pr=M.pick(ids,mine.length?mine.at(-1):part.here,{view:part.view});
-    for(const k of mine)M.state.seen.add(k);
+  await fade(1,300);let first=1;const ids=[...ONE18.also.slice(0,1),...ORDER18.slice(0,1),...ONE18.also.slice(1),...ORDER18.slice(1)];
+  for(;;){const s=obo(),done=ORDER18.slice(0,s.n),pr=M.pick(ids,null,{view:ONE18.view,legs:M.trail(done),seen:done,hint:'which_place_came_next'});
     if(first){first=0;await fade(0,350)}
     const k=await pr;
-    if(!k){await fade(1,300);G.scene=null;viewOf(P);await fade(0,300);return say(JA,'james_go_on_when_youre_ready',{to:P})}
+    if(!k){await fade(1,300);G.scene=null;viewOf(P);setScore(MUSIC);await fade(0,300);return say(JA,'james_go_on_when_youre_ready',{to:P})}
     if(k===ORDER18[s.n]){const[l,r,a]=TELL18[k];SFX.good();await say(P,l,{low:1,to:JA});await say(a,r,{low:1,to:P});s.n++;
       if(s.n===ORDER18.length)break;
-      if(s.n===ONE18[0].stops.length){await say(P,'paul_then_across_the_sea',{low:1,to:JA})}
+      if(k==='derbe')await say(P,'paul_then_across_the_sea',{low:1,to:JA});
       continue}
     if(done.includes(k)){await say(P,'ive_told_them_that_already',{low:1,to:JA});continue}
     if(ORDER18.includes(k)){await say(P,'that_came_later',{low:1,to:JA});continue}
     await say(P,ASIDE18[k],{low:1,to:JA})}
-  await fade(1,400);G.scene=null;viewOf(P);await fade(0,400);return told18()}
+  await tw(600);await fade(1,400);G.scene=null;viewOf(P);setScore(MUSIC);await fade(0,400);return told18()}
 /* 21:20-25: they glorify God; the rumor; the counsel; the letter */
 async function told18(){F.told=1;await tell('v20');await say(JA,'james_listen_brother',{to:P});await tell('v22');await tell('v25');codeBtn();return counsel18()}
 async function counsel18(){
@@ -649,16 +649,22 @@ async function arrest18(){AU.mood='tense';G.arr18=1;
   await Promise.all([[CM,222,122],[OF,204,114],[OB,296,124],[S1,236,114],[S2,264,114],[S3,214,134],[S4,284,136]].map(([a,x,y])=>go18(a,x,y,90)));
   await tell('v31');
   await Promise.all(ASIA.map(a=>{a.free=1;return go18(a,a.x<250?a.x-26:a.x+30,a.y+8,90)}));
-  /* two chains: a soldier on either side of him, a short chain from each wrist to each (the shared pose: chained) */
-  P.chained=1;CM.dir=1;await tell('v33');crowd18(.8);
-  /* up the stairs: the soldiers carry him; where he looks is the player's */
-  await tell('v35');P.held=2;P.free=1;await carry18(0);await carry18(1);
-  await fade(1,500);P.held=0;P.free=false;F.arrest=1;show18('stairs18');crowd18(.8);await fade(0,600);
+  /* two chains (21:33): a soldier on either side of him, a short chain from each of his wrists to the soldier's (shared/cast.js, custody) */
+  P.dir=-1;SHARED.cast.custody.place('chain',P,S1,S2);CM.dir=1;await tell('v33');crowd18(.8);
+  /* up the stairs (21:35, 36): the soldiers carry him in a tight knot, Paul raised among them (custody.knot, drawn by the court's draw
+     while he stands in no room); where he looks is the player's */
+  await tell('v35');await fade(1,400);for(const a of[S1,S2])a.room=null;SHARED.cast.custody.place('chain',P,null,null);P.chained=0;
+  G.knot18={x:P.x,y:P.y,d:0,pdir:-1};P.room=null;await fade(0,400);
+  await carry18(0);await carry18(1);
+  await fade(1,500);G.knot18=null;F.arrest=1;show18('stairs18');crowd18(.8);await fade(0,600);
   await say(P,'at_the_top_of_the_stairs',TH);codeBtn()}
-/* carry18: one stretch of the stairs; first Paul looks where the player chooses, then they carry him on up (the commander ahead) */
-async function carry18(i){const L=LOOK18[i],k=await choose(L.map(x=>x[0]));const[,line,flag]=L[k];F[flag]=1;await say(P,line,TH);
-  const to=i?[70,80]:[104,106];for(const a of[CM,S1,S2])a.free=1;
-  await Promise.all([go18(P,...to,60),go18(S1,to[0]-14,to[1]+1,60),go18(S2,to[0]+14,to[1]+1,60),go18(CM,to[0]-24,to[1]-18,60)])}
+/* carry18: one stretch of the way; first Paul looks where the player chooses (the knot turns his head that way), then they carry him
+   on, the commander going ahead of them */
+async function carry18(i){const L=LOOK18[i],k=await choose(L.map(x=>x[0]));const[,line,flag]=L[k];F[flag]=1;
+  G.knot18.pdir=flag==='sawtroph'||flag==='sawdoors'?1:-1;await say(P,line,TH);G.knot18.pdir=-1;
+  const K0=G.knot18,x0=K0.x,y0=K0.y,to=i?[64,82]:[104,108],d0=K0.d,len=Math.hypot(to[0]-x0,to[1]-y0);CM.free=1;
+  const c=go18(CM,to[0]-26,to[1]-14,48);
+  await tween(fast()?60:len/40*1000,u=>{K0.x=x0+(to[0]-x0)*u;K0.y=y0+(to[1]-y0)*u;K0.d=d0+len*u;P.x=K0.x;P.y=K0.y});await c}
 
 /* ---- the stairs: two tongues ---- */
 const tongue18=(k,h)=>T(h?'in_hebrew_line':'in_greek_line',{line:T(k)});
@@ -702,10 +708,10 @@ async function why18(){await say(OF,'officer_why_were_they_shouting',{to:P});
   const L=WHY18.filter(([,f])=>!f||F[f]).map(x=>x[0]),k=L[await choose(L)];await say(P,k,{to:OF});
   await say(OF,'officer_not_mine_to_weigh',{to:P});return hold18()}
 /* they stretch him out for the whipping: two soldiers hold him by the arms, bent at his sides. Then the moment is the player's, for a while */
-async function hold18(){await say(OF,'officer_hold_him',{to:S1});P.held=1;G.held18=performance.now()+(fast()?2500:45000);codeBtn()}
+async function hold18(again){if(again)await say(OF,'officer_hold_him',{to:S1});SHARED.cast.custody.place('hold',P,S1,S2);G.held18=performance.now()+(fast()?2500:45000);codeBtn()}
 /* waited too long: a runner calls the officer to the gate; the soldiers let go and wait; he comes back, and the moment comes again */
-async function reset18(){G.held18=0;await say(S5,'runner_officer_youre_wanted_at_the_gate',{to:OF});await say(OF,'officer_let_go_and_wait',{to:S1});P.held=0;
-  await go18(OF,30,118);await fade(1,400);await tw(700);place(OF,'barracks18',216,118,-1);await fade(0,400);return hold18()}
+async function reset18(){G.held18=0;await say(S5,'runner_officer_youre_wanted_at_the_gate',{to:OF});await say(OF,'officer_let_go_and_wait',{to:S1});for(const a of[P,S1,S2])a.held=a.grips=0;
+  await go18(OF,30,118);await fade(1,400);await tw(700);place(OF,'barracks18',216,118,-1);await fade(0,400);return hold18(1)}
 async function useRoman18(a){const r=G.room;
   if(r==='barracks18'){if(a===OF){if(!G.held18)return say(P,'not_while_he_is_away',TH);return lawful18()}
     if(SOLD.includes(a))return say(P,'its_not_his_to_decide',TH);return false}
@@ -718,7 +724,7 @@ async function lawful18(){G.held18=0;await say(P,'paul_is_it_lawful',{to:OF});F.
   await say(CM,'commander_i_bought_it',{to:P});
   const opts=['paul_i_was_born_one','let_that_stand'],k=opts[await choose(opts)];
   if(k==='paul_i_was_born_one')await say(P,k,{to:CM});else await say(P,k,TH);
-  for(const a of[S1,S2])a.dir=a.x<P.x?-1:1;P.held=0;await Promise.all([go18(S1,P.x-34,P.y),go18(S2,P.x+34,P.y)]);
+  for(const a of[P,S1,S2])a.held=a.grips=0;for(const a of[S1,S2])a.dir=a.x<P.x?-1:1;await Promise.all([go18(S1,P.x-34,P.y),go18(S2,P.x+34,P.y)]);
   await tell('v29b');await tw(600);return end18()}
 async function end18(){await fade(1,700);
   endScreen({title:'on_the_stairs_2',text:'on_the_stairs_end',based:'based_on_acts_21_17_22_29',go:'click_to_return_to_the_title'});
@@ -828,7 +834,7 @@ const TABLETS={
 const ENT={mnason18:[140,128,1],street18:[40,124,1],elders18:[140,128,1],court18:[446,124,-1],stone18:[160,236,1],stairs18:[224,120,-1],barracks18:[160,124,1]};
 const EVERY=[LU,TI,AR,TR,MN,JB,JS,JA,...ELD,...VOW,CY,GR,LV,BA,...ASIA,CM,OF,OB,...SOLD,...K];
 /* place18: everyone where the story has him, from the flags. The four men are named once James has named them. */
-function place18(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a.ges=0;a.kneel=0;a.bound=0;a.bow=false;a.speed=0;a.chained=0;a.held=0;a.free=false}
+function place18(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a.ges=0;a.kneel=0;a.bound=0;a.bow=false;a.speed=0;a.chained=0;a.held=0;a.keeper=0;a.grips=0;a.lifted=0;a.free=false}
   for(const a of EVERY)a.room=null;if(AU.score!==MUSIC)setScore(MUSIC);
   VOW.forEach((a,i)=>{a.name=F.agreed?VOWNAMES[i]:'man_under_a_vow';a.hs.name=a.name});
   const ph=phase18(),pl=(a,r,x,y,d)=>place(a,r,x,y,d);
@@ -841,9 +847,10 @@ function place18(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
     if(room==='street18')for(const[a,x,y,d]of[[TR,62,126,1],[V1,78,116,1],[V2,98,132,1],[V3,22,116,1],[V4,124,122,1]])pl(a,'street18',x,y,d);
     else for(const[a,x,y,d]of[[V1,208,116,1],[V2,224,126,1],[V3,272,118,-1],[V4,288,128,-1],[TR,180,122,1],[CY,312,116,-1],[GR,336,124,-1],[LV,262,106,-1]])pl(a,'court18',x,y,d)}
   if(ph==='days'){pl(BA,'street18',330,114,-1);pl(A1,'street18',396,116,-1);pl(A2,'street18',410,124,-1);pl(TR,'court18',424,118,-1);pl(LV,'court18',262,106,-1)}
-  if(ph==='stairs'){for(const[a,x,y,d]of[[CM,270,116,-1],[S1,208,120,1],[S2,240,120,-1],[S3,186,132,1],[S4,300,128,-1],[OF,290,110,-1]])pl(a,'stairs18',x,y,d);P.chained=1}
+  /* on the stairs he stands chained between two soldiers (custody 'chain', placed once Paul is placed: see stairsChain18) */
+  if(ph==='stairs'){for(const[a,x,y,d]of[[CM,270,116,-1],[S3,186,132,1],[S4,300,128,-1],[OF,290,110,-1]])pl(a,'stairs18',x,y,d);if(room==='stairs18')custody18(room)}
   /* in the soldiers' quarters they hold him already, when a code brings the player back here; the moment runs from then (hold18) */
-  if(ph==='barracks'){for(const[a,x,y,d]of[[S1,145,124,1],[S2,175,124,-1],[OF,216,118,-1],[S3,92,120,1],[S5,252,126,-1]])pl(a,'barracks18',x,y,d);P.chained=1;P.held=1;
+  if(ph==='barracks'){for(const[a,x,y,d]of[[OF,216,118,-1],[S3,92,120,1],[S5,252,126,-1]])pl(a,'barracks18',x,y,d);if(room==='barracks18')custody18(room);
     G.held18=performance.now()+(fast()?2500:45000)}
   P.hs=null}
 function setup18(){P.called='Paul';G.obo18=G.who18=G.out18=null;G.read18=G.hush18=G.held18=G.c18=G.st18=G.arr18=0;G.ctroph=G.ccyrene=G.cgreek=0;G.caps18=[];

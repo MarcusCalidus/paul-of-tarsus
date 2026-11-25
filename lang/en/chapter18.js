@@ -201,15 +201,9 @@ TEXTS('en',18,{
   "james_all_of_asia":"All of Asia. God be thanked.",
   "paul_salamis_synagogues":"At Salamis we spoke in the synagogues of the Jews. I'm telling them what God did among the nations.",
   "paul_perga_on_the_way_home":"Perga we only passed through at first. We spoke the word there on our way home.",
-  "paul_attalia_we_sailed_home":"From Attalia we sailed home to Antioch.",
-  "paul_tarsus_my_home_town":"Tarsus is my home town. That's not part of this.",
-  "paul_antioch_sent_us_out":"Antioch is where we were sent out from.",
-  "paul_troas_we_crossed_from_there":"From Troas we crossed the sea to Macedonia.",
-  "paul_neapolis_where_we_landed":"We landed at Neapolis and went on to Philippi.",
-  "paul_we_passed_through_there":"We passed through there on the road to Thessalonica.",
-  "paul_miletus_at_the_very_end":"Miletus came at the very end: the elders of Ephesus came to meet me there.",
   "ive_told_them_that_already":"I've told them that already.",
   "that_came_later":"That came later.",
+  "which_place_came_next":"Click the place that came next. Esc to stop for now.",
 
   /* the Court of the Gentiles */
   "sanctuary":"sanctuary",
