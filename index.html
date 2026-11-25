@@ -91,6 +91,11 @@ body{display:flex;align-items:center;justify-content:center}
 #overlay.tight p{margin:calc(var(--s)*1.2px) 0;line-height:1.25}
 #overlay.tight .small{font-size:calc(var(--s)*4px)}
 #overlay.tight h2{margin:calc(var(--s)*1.5px) 0}
+/* and one that still runs over (Chapter Eighteen's long German note with the code that leads on to Nineteen) a step tighter again */
+#overlay.tighter p{margin:calc(var(--s)*.8px) 0;line-height:1.18;font-size:calc(var(--s)*5px)}
+#overlay.tighter .small{font-size:calc(var(--s)*3.7px)}
+#overlay.tighter .go{margin:calc(var(--s)*1.4px) 0}
+#overlay.tighter h1{margin:calc(var(--s)*1px) 0}
 #overlay .go{color:var(--hi);animation:bl 1.1s steps(2) infinite}
 #overlay .go,#overlay .pick{font-size:calc(var(--s)*6.2px);margin:calc(var(--s)*2.5px) 0}
 /* the title screen's chapters scroll in a box that takes whatever room the title leaves; an entry that runs past its top or bottom
@@ -2634,7 +2639,7 @@ function endScreen(o){const S=SHARED.scroll;if(S&&S.state!=='down'){S.down().the
     [o.time&&T('time_m_m_s_s',{m:Math.floor(s/60),s:s%60}),T('prayers_for_wisdom_n',{n:G.prays}),...(o.extra||[]).map(x=>T(x))].filter(Boolean).map(esc).join(' &middot; ')+'</p>'+
     '<p class="small">'+esc(T(o.based))+'</p><p class="go">'+esc(T(o.go))+'</p>'+(o.code?'<p class="small">'+esc(T(o.code[0],{code:o.code[1]}))+'</p>':'');
     const r=ov.getBoundingClientRect(),over=()=>[...ov.children].some(el=>{const q=el.getBoundingClientRect();return q.top<r.top-1||q.bottom>r.bottom+1});
-    ov.classList.remove('tight');if(over())ov.classList.add('tight')})}
+    ov.classList.remove('tight','tighter');if(over()){ov.classList.add('tight');if(over())ov.classList.add('tighter')}})}
 /* ============ SAFE-POINT CODES: chapter and game state packed into letters and numbers ============ */
 const A32='0123456789ABCDEFGHJKMNPQRSTVWXYZ',cb=$('#codebox');
 const chk=(b,s)=>{let h=Math.imul(b^s,0x9E3779B1)>>>0;h^=h>>>13;return h>>>4&511};
