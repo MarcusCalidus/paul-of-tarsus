@@ -36,15 +36,15 @@
       has it set before James: Use the chest (or ask Aristarchus) after James has greeted them. Its seals are whole; James thanks them in
       a quiet beat. Acts does not tell it here (24:17); Bearing Thorough Witness: likely.
    2. One by one (the elders' court, Acts 21:19; the travel map). James asks Paul to tell it all, one thing after another. The map opens
-      on the first journey ('north': Cyprus, Pamphylia, Galatia) and then on the lands round the Aegean ('aegean'), and the player sets out
-      the places of the ministry among the nations in the order they came, one click each: Paphos, Antioch in Pisidia, Iconium, Lystra,
-      Derbe (the first journey); Philippi, Thessalonica, Beroea, Athens, Corinth, Ephesus (the second and the third). Each right place
-      brings Paul's line of what God did there and an elder's brief answer (only what Chapters Four to Fourteen told, and checked). Every
-      place stays on offer: one already told is answered "I've told them that", one that came later "That came later", and the places
-      that are not stops of the telling have a true line of their own (Salamis: the synagogues, among the Jews; Perga and Attalia, Troas,
-      Neapolis, Amphipolis and Apollonia: we came through there; Tarsus: home; Antioch: where we were sent out from; Miletus: the elders
-      of Ephesus came there, at the end). Esc leaves the map; the telling goes on from where it stopped. So the order is found by knowing
-      the journeys, and is unique: the order in which each place first heard the good news from Paul.
+      in the window of the journeys ('journeys', shared/map.js) with the places of Chapters Four to Fourteen as dots, and the player sets
+      out the places of the ministry among the nations in the order they came, one click each: Paphos, Antioch in Pisidia, Iconium,
+      Lystra, Derbe (the first journey); Philippi, Thessalonica, Beroea, Athens, Corinth, Ephesus (the second and the third). Each right
+      place brings Paul's line of what God did there and an elder's brief answer (only what Chapters Four to Fourteen told, and checked),
+      and the road told so far is drawn (SHARED.map.trail). Every place stays on offer: one already told is answered "I've told them that",
+      one that came later "That came later", and the two places that are not stops of the telling have a true line of their own (Salamis:
+      the synagogues, among the Jews; Perga: passed through at first, the word spoken there on the way home). Esc leaves the map; the
+      telling goes on from where it stopped. So the order is found by knowing the journeys, and is unique: the order in which each place
+      first heard the good news from Paul.
    3. Outside the barrier (the Court of the Gentiles; the warning stone in a close view). Paul goes in with the four men to give notice
       (21:26). At the opening in the barrier stand, besides Paul and the four men, Trophimus, a man from Cyrene and a Greek of the city.
       The stone (stone18) is read word by word: each word is a hotspot that only says "a word on the stone", and Paul's look reads it.
@@ -54,8 +54,9 @@
         Trophimus: an Ephesian, of the nations (Insight "Trophimus"), a brother. A foreigner by the stone's word: outside.
         the man from Cyrene: born in Cyrene, Greek his only tongue, dressed as a Greek; a Jew, of a Jewish house. Not a foreigner: in.
         the Greek of the city: born in Jerusalem, speaks Aramaic, knows these courts; a Greek by his father's people. A foreigner: outside.
-      Then Paul goes to the opening. If anyone is placed wrong, the Levite at the opening (or the one wrongly kept out) says so truthfully,
-      and nothing is lost: the choices may be changed. Only one arrangement passes (out, in, out). The point it makes for 21:29: Paul
+      Then Paul goes to the opening. If anyone is placed wrong, it is said truthfully, in a fixed order: Trophimus by Paul himself at the
+      stone, the Greek by the Levite at the opening (everybody here knows him), the man from Cyrene by himself (a Jew, born abroad); and
+      nothing is lost: the choices may be changed. Only one arrangement passes (out, in, out). The point it makes for 21:29: Paul
       never took Trophimus in; he waited in the colonnade, in sight of the opening, every day.
    4. Up the stairs (no steering; Acts 21:35, 36). The soldiers carry him in a knot; at two moments the player chooses where Paul looks.
       Every choice is right; what he saw is kept (flags sawasia, sawtroph, sawdoors, sawchild, sawcmd) and gives him a true line in the
