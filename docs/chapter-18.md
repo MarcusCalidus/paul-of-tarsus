@@ -54,6 +54,11 @@ Seven places, one of them a close view, and Paul played throughout. Luke, Timoth
 
 **The speech.** Then Paul speaks, and the narrator tells it in parts (Acts 22:1-21). From 22:6 to 22:16 the telling passes over the Prologue's pictures: the road near Damascus at midday, where the screen goes plain white and comes back out of it, the men who lead him by the hand into the city, and the room in the house of Judas, where Ananias comes to him. At the words about the nations far away the crowd shouts him down, throwing their outer garments about and tossing dust into the air (22:22, 23), and the commander orders him taken inside to be examined under the whip.
 
+| |
+|---|
+| ![The outcry over the crowd below the stairs, garments waved and dust in the air](screenshots/outcry.png) |
+| The outcry: outer garments waved over the heads and dust tossed into the air |
+
 **The right moment.** From the start of the chapter Paul carries one true sentence in his inventory: Roman by birth. Given to anyone else it does nothing: on the stairs the commander cannot hear it over the crowd, to the crowd it means nothing, and to a soldier it is not his to decide. In the soldiers' quarters two soldiers hold Paul by the arms, bent at his sides; no post, no whip and no blow is shown, and no arm is spread. Then the officer standing there asks why they were shouting, and Paul answers with something he truly saw. Given to the army officer now, the sentence becomes Paul's question of 22:25, and it stops everything. If the player waits too long, a runner calls the officer to the gate, the soldiers let go and wait, and when he comes back the moment comes again. The officer goes to the commander, the commander asks whether Paul is a Roman, and he says yes; the commander says what his citizenship cost him, and the player may answer that Paul was born one or let it stand. Both are true. The chapter ends when those who were to examine him draw back and the commander is afraid (22:29).
 
 <details>

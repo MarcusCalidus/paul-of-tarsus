@@ -121,6 +121,7 @@ on-the-stairs pstairs18
 one-by-one pone18
 options de:menu
 other-road map15
+outcry pspeech18
 paphos paphos
 patara ppatara17
 perga perga
