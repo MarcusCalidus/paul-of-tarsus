@@ -1159,10 +1159,20 @@ const walkSw=(o,fr)=>fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1).shadow
    the knees (the shins and feet lie back along the ground). */
 /* Bound. An actor sits bound while a script sets a.bound (Agabus with Paul's belt, Acts 21:11): drawn with fr = -6, seated, the feet and
    the wrists wound round with the belt; he does not turn while others speak, moves no hand, and sits free again when a.bound is cleared. */
+/* Seated. A figure sits (fr -1, and bound, fr -6) with its hips on the seat and its thighs level, the knees forward and the near shin
+   straight down to a foot set flat on the floor, the far foot drawn back under the seat; bound, the feet stand side by side, tied. A short
+   tunic lies over the lap and the knees stand bare beyond its hem; a long robe covers the knees and hangs from them nearly to the floor,
+   the near foot showing forward under it and the far heel behind. SEATG gives the pose in figure units, facing right, feet at 0: the
+   thigh's top (t0, t1) and underside (b0, b1) from the hip (xh) to the knee (xk), the near knee (kc) and ankle (ka), the far ankle (fa).
+   The hips rest at the underside, b0: half of it in room pixels above the feet, 9 for a grown figure and 7.5 for a young one (seatH). A
+   seat is made that high where its top meets the hips, so that the cloth rests on it: the figure is never lifted or sunk onto a seat. */
+const SEATG={man:{xh:-4,xk:20,t0:-26,t1:-26,b0:-18,b1:-19,kc:17,ka:17,fa:4},kid:{xh:-4,xk:17,t0:-21,t1:-21,b0:-15,b1:-16,kc:14,ka:14,fa:3}},
+  seatH=o=>-SEATG[o.h?'kid':'man'].b0*FIG.K;
 const KNEEL={both:1,bothFolded:2,one:3,oneFolded:4},kneelX=(o,fr)=>fr<=-2&&fr>=-5?(fr>=-3?(o.h?-2.6:-3.2):(o.h?.2:.5)):0;
 /* person: one figure with its feet at x,y, one drawing unit per canvas pixel, facing right (dir -1 mirrors it).
-   fr is the walk: 0 stands; -1 the figure sits (the upper body lower, over a lap: bare shins under a short tunic, and under a long robe the cloth hanging from the knees to the feet);
+   fr is the walk: 0 stands; -1 the figure sits (see SEATG: its hips on the seat, the thighs level, the near shin straight down and the far foot drawn back under the seat; bare knees beyond the hem of a short tunic, and under a long robe the cloth hanging from the knees nearly to the floor);
    -2 to -5 it kneels (see KNEEL: on both knees or one, the arms down or the hands folded, the head bowed; the body lower by the length of a shin);
+   -7 it sits on a ledge above the floor, as in a window (a.seat 2): seated, its legs hanging and its feet pointed down;
    -6 it sits bound, as Agabus bound himself with Paul's belt (Acts 21:11): seated, the feet together and the wrists together low in front,
    each wound round with the belt (bond: its color, else Paul's belt), its loose end hanging a little way down from the wrists. From 4 up it is a moment of a stride, as update and walkFr give it: sixteen moments of a full step, then sixteen
    of a shorter one and sixteen of a half step (a walk begins and ends on these). 1, 2 and 3, the frames of the old walk, are three moments
@@ -1179,10 +1189,10 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
   const kn=fr<=-2&&fr>=-5?-1-fr:0,both=kn&&kn<=2,fold=kn&&kn%2===0;if(kn)bow=1;
   mv=o.stone||bow?0:mv|0;talk=o.stone?0:talk|0;if(o.stone&&ges===9)ges=0;
   /* bound (fr -6, a.bound): seated, the feet together and the hands held together low in front, both wound round with a belt (see wind) */
-  const tied=fr===-6,seat=fr===-1||tied;if(tied)ges=0;
+  const tied=fr===-6,hang=fr===-7,seat=fr===-1||tied||hang;if(tied)ges=0;
   const W=!seat&&fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):!seat&&!kn&&fr?gaitPose(o,[0,0,.25,.5][fr]||0,1):null,bob=W?W.bob:0;let SH=null;
   /* px: a run of pixels. While a foot is painted, SH lets each of its columns sit higher than the next: a heel that is up, or the toes */
-  const px=(a,b,col,w,h)=>{g.fillStyle=col;if(SH)for(let i=0;i<(w||1);i++)g.fillRect(a+i,b+SH(a+i),1,h||1);else g.fillRect(a,b,w||1,h||1)};
+  let CL=-999;const px=(a,b,col,w,h)=>{w=w||1;if(a<CL){w-=CL-a;a=CL;if(w<=0)return}g.fillStyle=col;if(SH)for(let i=0;i<(w||1);i++)g.fillRect(a+i,b+SH(a+i),1,h||1);else g.fillRect(a,b,w||1,h||1)};
   /* tearCut: natural 2-3px jagged cloth tongues along a ragged hem (max 2px notch, keeps every column connected to above) */
   const tearCut=(k,w)=>{if(!TORN)return 0;const p=[0,1,2,2,0,1,2,1,0,2,1,0],g=Math.floor((k+TORN*2)/2),c=p[(g+TORN*3)%p.length];
     return k<2||k>w-3?Math.min(1,c):c};
@@ -1205,7 +1215,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
     for(let i=0;i<n;i++){const e=i===0||i===n-1?1:0;for(let k=e;k<w-e;k++){const t=(k+.5)/w,q=(i+(t<.5?1:0))%turn;
       let v=t<.12?4:t<.3?3:t<.66?2:t<.9?1:2;if(q===0)v=Math.max(0,v-1);else if(q===turn-1)v=Math.min(4,v+1);px(x0+k,y0+i,B[v])}}};
   const kid=o.h?1:0,slim=o.slim?1:0,LEG=kid?19:23,SK=kid?13:16,TOR=kid?22:fem?24:26,AL=26;
-  const KD=kid?15:19,yA=-4,yH=yA-LEG+bob,yB=yH-SK+(seat?10:0)+(kn?KD:0),yS=yB-3-TOR,SL=o.longSleeve?AL-2:12;   /* ankle, hem, top of the skirt, shoulder line; AL: rows of an arm down to the wrist */
+  const SQ=seat?SEATG[kid?'kid':'man']:null,KD=kid?15:19,yA=-4,yH=yA-LEG+bob,yB=seat?SQ.b0-10:yH-SK+(kn?KD:0),yS=yB-3-TOR,SL=o.longSleeve?AL-2:12;   /* ankle, hem, top of the skirt, shoulder line; AL: rows of an arm down to the wrist */
   /* the sleeves are one garment with the body: PIT rows of shoulder yoke, then the arms part from the trunk */
   const PIT=8,nw=slim+(fem?1:0),aw=fem?4:5,ax=-10+nw-aw,fx=11-nw,fw=5,waist=Math.round(TOR*.6),tw=W&&!c.ar&&!ARM&&!ges&&!bow?W.twist:0;
   /* cape, behind everything (when torn: column-notched bottom so every pixel stays connected) */
@@ -1264,35 +1274,54 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv){
       const kt=kid?-13:-17,x0=(kid?6:9);for(let yy=yB+4;yy<=kt+3;yy++)px(-3,yy,S[3],x0+3);
       for(let yy=kt;yy<yA;yy++){const t=(yy-kt)/Math.max(1,yA-kt),w=t<.15?6:t<.5?5:4,xx=x0+(t<.15?0:t<.5?1:1);for(let q=0;q<w;q++)px(xx+q,yy,S[q===0?3:q===w-1?1:2])}
       footP(x0,{ax:0,kx:0,ly:0,p:0},S)}};
+  /* seatLegs: the legs of a seated figure (see SEATG): for each leg its shin from the knee to the ankle, its foot, and its thigh from the
+     hip to the round of the knee, lit from above; the far leg first, a tone darker, a pixel higher and four further back */
+  const thighY=(Q,x,b)=>{const u=(Math.min(x,Q.xk)-Q.xh)/(Q.xk-Q.xh);return b?Q.b0+(Q.b1-Q.b0)*u:Q.t0+(Q.t1-Q.t0)*u};
+  const seatLegs=Q=>{const Dk=[S[1],S[2],S[3],S[4],S[4]],Z={ax:0,kx:0,ly:0,p:0},
+      one=(dx,dy,R,ka)=>{const kc=Q.kc+dx,y0=Math.round(thighY(Q,Q.xk,1))-2+dy,y1=yA-1,sl=Math.abs(ka-kc)/Math.max(1,y1-y0);
+        for(let yy=y0;yy<=y1;yy++){const t=(yy-y0)/Math.max(1,y1-y0),cx=kc+(ka-kc)*t,w=(t<.25?6:t<.7?5:4)+(sl>.3?1:0),x0=Math.round(cx-w/2);
+          for(let k=0;k<w;k++){const u=(k+.5)/w;px(x0+k,yy,R[u<.18?4:u<.4?3:u<.76?2:1])}}
+        footP(Math.round(ka-2.5)+1,hang?{ax:0,kx:0,ly:0,p:-4}:Z,R);
+        for(let xx=Q.xh;xx<=Q.xk+2;xx++){const cap=Math.max(0,xx-Q.xk),tp=Math.round(thighY(Q,xx,0))+dy+cap,bt=Math.round(thighY(Q,xx,1))+dy-cap;
+          for(let yy=tp;yy<=bt;yy++){const t=(yy-tp)/Math.max(1,bt-tp);px(xx+dx,yy,R[t<.2?1:t<.6?2:t<.85?3:4])}}};
+    if(tied)one(-3,-1,Dk,Q.ka-3);else one(-4,-1,Dk,Q.fa);one(0,0,S,Q.ka)};
+  /* the outline of a seated figure's skirt, row by row: over the lap to the hem (a short tunic, xk-5) or over the knee (a long robe, xk+1);
+     under a long robe, below the seat, the cloth that hangs from the knees, its back edge slanting forward so that the far heel shows */
+  const seatX=(Q,yy,y1,d0,d1)=>{const xc=o.long?Q.xk+2:Q.xk-5;
+    if(yy>Q.b0){const t=(yy-Q.b0)/Math.max(1,y1-Q.b0);return[Q.xh+6+Math.round(6*t),Q.xk+2+Math.round(2*t)]}
+    let x1=d1;for(let x=xc;x>d1;x--)if(thighY(Q,x,0)<=yy+.5&&yy-1.5<=thighY(Q,x,1)){x1=x;break}return[d0,x1]};
   {const REST={ax:0,kx:0,ly:0,p:0},L0=W?W.legs[0]:REST,L1=W?W.legs[1]:REST;
     const ankle=(ax0,P,R)=>{if(!TORN&&!W)return;for(let j=1;j<=4;j++)for(let k=0;k<5;k++)px(ax0+1+k,yA-P.ly-j,R[k===0?4:k===1?3:k<4?2:1])};
     if(kn)kneel();
-    else if(tied){leg(3,REST,1);leg(-2,REST,0)}
-    else if(seat&&o.long){footP(9,REST,[S[1],S[2],S[3],S[4],S[4]]);footP(-2,REST,S)}else if(seat){leg(5,REST,1);leg(-2,REST,0)}
+    else if(seat)seatLegs(SQ);
     else if(o.long){const r0=[S[1],S[2],S[3],S[4],S[4]],f0=W?Math.round(-3+L0.ax)+1:3,n0=W?Math.round(-4+L1.ax)+1:-8;
       ankle(f0,L0,r0);footP(f0,L0,r0);ankle(n0,L1,S);footP(n0,L1,S)}
     else if(!W){leg(1,REST,1);leg(-9,REST,0)}else{leg(-4,L0,1);leg(-4,L1,0)}}
   /* skirt of a short tunic, or a robe to the ankles; a woman's robe widens over the hips. When torn: jagged ragged tongues & fabric rip. */
-  const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=o.long?(tied?yA-7:yA+1):kn?yB+SK+(TORN?4:3)-(kid?1:0):seat?yH+3:TORN?yH+2:yH+1,n=y1-yB+1,sl=seat&&!!o.long,fsh=W?W.foldShift:0;
+  const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=o.long?(tied?yA-7:yA+1):kn?yB+SK+(TORN?4:3)-(kid?1:0):seat?SQ.b0:TORN?yH+2:yH+1,n=y1-yB+1,fsh=W?W.foldShift:0;
   const skWet=WET?((k,w,i)=>i>n*(o.long?.42:.36)+Math.round(Math.sin(k*.7+TORN)*2.5)):null;
-  for(let i=0;i<n;i++){const t=i/(n-1),hw=(fem?8+Math.min(3,Math.round(i*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,
+  for(let i=0;i<n;i++){CL=seat&&yB+i>SQ.b0?seatX(SQ,yB+i,y1,0,0)[0]:-999;const t=i/(n-1),hw=(fem?8+Math.min(3,Math.round(i*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,
       flL=W?Math.round(W.skFlareL*t*t):0,flR=W?Math.round(W.skFlareR*t*t):0,
-      x0=-hw+sw-flL+(sl?Math.max(0,Math.min(4,i-7)):0)-(kn&&o.long?Math.max(0,Math.min(kid?5:7,Math.round((i-(n-9))*.9))):0),
-      x1=Math.min(hw+1+sw+flR+(sl?Math.min(6,Math.round(i*.9)):seat?Math.round(t*5):kn&&!both?Math.round(t*(o.long?6:5)):both?Math.max(0,Math.min(3,Math.round((i-(n-7))*.6))):0),kn&&!both&&!o.long&&yB+i>(kid?-12:-15)?(kid?6:9):99),yy=yB+i,w=x1-x0+1;
+      SX=seat?seatX(SQ,yB+i,y1,-hw,hw+1):null,x0=seat?-hw:-hw+sw-flL-(kn&&o.long?Math.max(0,Math.min(kid?5:7,Math.round((i-(n-9))*.9))):0),
+      x1=Math.min(seat?SX[1]:hw+1+sw+flR+(kn&&!both?Math.round(t*(o.long?6:5)):both?Math.max(0,Math.min(3,Math.round((i-(n-7))*.6))):0),kn&&!both&&!o.long&&yB+i>(kid?-12:-15)?(kid?6:9):99),yy=yB+i,w=x1-x0+1;
     if(TORN&&i>=n-3){for(let k=0;k<w;k++){const cut=tearCut(k,w);if(i>=n-cut)continue;const edge=i===n-cut-1,P=c.tuW||T,u=(k+.5)/w;
         px(x0+k,yy,edge?P[4]:P[u<.2?4:u<.45?3:u<.85?2:1])}}
     else if(i>=n-2){for(let xx=x0;xx<=x1;xx++){const u=(xx-x0+.5)/w;px(xx,yy,i===n-1?hem[u<.3?4:3]:hem[u<.2?4:u<.6?2:1])}}
     else if(HIM&&i<(TOGA?n-5:n-6)){const xc=TOGA?(i<=n-12?x1:x1-Math.round(w*(i-(n-12))/8)):(i<=n-14?x1:x1-Math.round(w*(i-(n-14))/8)),
         F=TOGA?[[.18+fsh*.5,2,.04],[.38+fsh,1,.05],[.58+fsh*.8,4,.04],[.78+fsh*.5,8,.03]]:[[.2+fsh*.5,3,.05],[.42+fsh,1,.06],[.63+fsh*.8,6,.05],[.84+fsh*.5,10,.04]];
       cloth(yy,x0,xc,C,i,F,null,[n-20,n-12],0,c.clW,skWet);if(xc<x1)cloth(yy,xc+1,x1,T,i,[[.5,9,.02]],SR,null,0,c.tuW,skWet)}
-    else cloth(yy,x0,x1,T,i,o.long?[[.16+fsh*.5,6,.03],[.33+fsh,2,-.02,n-9],[.5+fsh*.8,9,.02],[.66+fsh,3,.03],[.84+fsh*.5,12,.02]]:[[.22+fsh*.6,4,.03],[.47+fsh,1,0],[.72+fsh*.7,5,.03]],SR,o.long?[n-16,n-6]:null,0,c.tuW,skWet);
+    else cloth(yy,x0,x1,T,i,o.long?[[.16+fsh*.5,6,.03],[.33+fsh,2,-.02,n-9],[.5+fsh*.8,9,.02],[.66+fsh,3,.03],[.84+fsh*.5,12,.02]]:[[.22+fsh*.6,4,.03],[.47+fsh,1,0],[.72+fsh*.7,5,.03]],SR,o.long&&!seat?[n-16,n-6]:null,0,c.tuW,skWet);
+    if(CL>-999){px(CL,yy,T[4]);px(CL+1,yy,T[3])}
     /* a small jagged rip in the lower skirt when torn */
     if(TORN&&!HIM){const ry=n-8-(TORN%3)*2,rx=x0+Math.round(w*(TORN===2?.34:.68));
       if(i>=ry&&i<=ry+3){const rw=i===ry||i===ry+3?1:2,dx=i-ry>1?1:0;
         px(rx+dx-1,yy,T[4],rw+2);px(rx+dx,yy,o.long?T[4]:S[i===ry+1?2:3],rw)}}}
   /* the ankles of a bound figure, side by side, wound round with the belt above the feet: two turns of cloth that run with the legs, under
      the hem of a short tunic, or under a long robe drawn up a little; nothing of it stands out beyond the legs but the thickness of the cloth */
-  if(tied)wind(-2,10,yA-6,6);
+  CL=-999;
+  if(tied)wind(SQ.ka-6,SQ.ka+4,yA-6,6);
+  /* the hem of a short tunic along the underside of the lap */
+  if(seat&&!o.long)for(let x=12-slim;x<=SQ.xk-5;x++){const b=Math.min(y1,Math.round(thighY(SQ,x,1)));px(x,b,hem[3]);px(x,b-1,hem[1])}
   /* shoulders and trunk */
   const torWet=WET?((k,w,i)=>i<5+((k+TORN)%3)||i>TOR-6-((k*2+TORN)%3)):null;
   for(let i=0;i<TOR;i++){const yy=yS+i,twi=i<PIT?tw:Math.round(tw*(1-(i-PIT)/(TOR-PIT)));
@@ -2019,7 +2048,7 @@ function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
   const pr=G.room&&!G.scene&&planOf(G.room);if(pr)pr.tick(dt,ts);
   /* the walks begun since the last frame find their ways round what stands on the floor, all at once (see walk) */
   for(const a of Object.values(ACT))if(a.walk&&a.walk.pend)routeStart(a);
-  for(const a of Object.values(ACT)){const w=a.walk;if(!w){a.fr=a.bound?-6:a.seat?-1:a.kneel?-1-a.kneel:0;a.gait=null;continue}
+  for(const a of Object.values(ACT)){const w=a.walk;if(!w){a.fr=a.bound?-6:a.seat?(a.seat===2?-7:-1):a.kneel?-1-a.kneel:0;a.gait=null;continue}
     const pl=planOf(a.room),v0=a.speed||G.speedAll||(pl?pl.pace(a):WALK_V);let dx=w.x-a.x,dy=w.y-a.y,d=Math.hypot(dx,dy*(pl?1:2));
     const EASE=14,gone0=a.gait?a.gait.gone:0,near0=Math.min(gone0,d+(w.rest||0)),
       v=!pl&&!a.speed&&!G.speedAll&&near0<EASE?v0*(.58+.42*near0/EASE):v0,sp=v*dt;

@@ -339,7 +339,7 @@ const HZRoad16=58;
 const ORoad16={w:320,hz:HZRoad16,hour:'morning',cloud:.24,streak:.3,seed:1621,light:-1,swell:-.2};
 let SRoad16=null,CapeRoad16=null;
 ART.road16={w:320,q:12,paint(g){paintRoad16(g)},light:{amb:'#f8ecd8',sun:[.5,.3,.45]},draw(g,t){drawRoad16(g,t)},front(){},
-  props:[{y:117,shape(g){stoneRoad16(g,1)},foot:[[143,114,14,3]],seat:1}]};
+  props:[{y:117,shape(g){stoneRoad16(g,1)},foot:[[141.5,114,17,3]],seat:1}]};
 /* the hill at the left: its brow from the picture's edge down to the low ground by the sea */
 const hillRoad16=x=>x<0?30:x>210?999:30+Math.pow(x/210,1.5)*66+3*Math.sin(x/13)+1.6*Math.sin(x/4.7);
 /* the spur at the right that the upper path climbs: its top, falling to the road */
@@ -403,7 +403,7 @@ function paintRoad16(g){const K=SHARED.coast,CO=SHARED.country,O=ORoad16,HZ=HZRo
     for(let x=4;x<224;x+=5+((x*7)%5))CO.tuft(q,x,112.5+((x*3)%3),1.6+((x*13)%9)/4,'#a89a62',rng(x))});
   stoneRoad16(g)}
 /* the fisherman's stone beside the road, low and wide (cut: its outline only, for the prop) */
-function stoneRoad16(g,cut){SHARED.country.boulder(g,150,117,15,6.4,'#a69a84',1634,{light:-1,cut:!!cut})}
+function stoneRoad16(g,cut){SHARED.country.boulder(g,150,117,17.3,10.2,'#a69a84',1634,{light:-1,cut:!!cut})}
 /* the coaster far off, under the ridge of the cape: a dark hull, a small sail and her wake, in the haze of her distance */
 function shipRoad16(g,x,y,t){const H='#3e3640',S2='#f2ead8';poly(g,[x-4.6,y-1.2,x+4.4,y-1.8,x+3.6,y,x-3.8,y],H);R(g,x-4.2,y-1.4,8.4,.5,'#7a6e70');
   poly(g,[x-1.6,y-1.8,x+2,y-1.8,x+1.7,y-5.6,x-1.3,y-5.3],S2);poly(g,[x+.6,y-1.8,x+2,y-1.8,x+1.7,y-5.6,x+.8,y-5.5],'#c4bcae');
@@ -570,7 +570,7 @@ ART.deck16={w:320,q:12,variant:DECKV,paint(g,v){paintDeck16(g,v)},
 function paintDeck16(g,v){SHARED.ship.paint(g,DECKO16(v));
   if(v==='eve'||v==='mornt')tearDeck16(g,v);seatDeck16(g,v);catDeck16(g,v);if(v==='quay')plankDeck16(g,v)}
 /* the seat: a low bale of sacking at the shelter's mouth, its seam sewn along it, lit as the deck is */
-const SEAT16=[-.56,.04,4.35,4.56,.3];
+const SEAT16=[-.56,.04,4.35,4.56,.192];
 function seatDeck16(g,v,cut){const geo=SHARED.ship.deck.geo(DECKO16(v)),{P}=geo,[x0,x1,z0,z1,h]=SEAT16,L=geo.L,
     a=P(x0,0,z0),b=P(x1,0,z0),c=P(x1,h,z0),d=P(x0,h,z0),e=P(x1,0,z1),f=P(x1,h,z1),k=P(x0,h,z1),
     front=[a[0],a[1],b[0],b[1],c[0],c[1]+.4,(c[0]+d[0])/2,c[1]-.3,d[0],d[1]+.4],side=[...b,...e,...f,c[0],c[1]+.4],top=[d[0],d[1]+.4,(c[0]+d[0])/2,c[1]-.3,c[0],c[1]+.4,...f,...k];

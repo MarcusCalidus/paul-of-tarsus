@@ -228,7 +228,7 @@ const HZPatara17=62,EDGEPatara17=100;
 let OPatara17=null,SPatara17=null;
 const oPatara17=()=>OPatara17||(OPatara17={w:320,hz:HZPatara17,hour:'morning',sun:[-40,10],cloud:.2,wind:SHARED.weather.wind({from:'nw',force:2,view:'s'}),seed:1701,y1:EDGEPatara17});
 ART.patara17={w:320,q:12,paint(g){paintPatara17(g)},light:{amb:'#f6ead6',sun:[.6,.2,.4]},draw(g,t){if(SPatara17)SPatara17.draw(g,t)},front(){},
-  props:[{y:132,shape(g){chestPatara17(g,1)},foot:[[46,126,26,6]]},{y:119,shape(g){stonePatara17(g,1)},foot:[[144,116,16,4]],seat:1},
+  props:[{y:132,shape(g){chestPatara17(g,1)},foot:[[46,126,26,6]]},{y:119,shape(g){stonePatara17(g,1)},foot:[[143,116,18,4]],seat:1},
     {y:117,shape(g){jarsPatara17(g,1)},foot:[[206,112,22,5]]}]};
 /* curvePatara17: a ridge through control points [x,y], eased between them, with a little roughness of its own */
 const curvePatara17=(P,a,b,s)=>x=>{let i=0;while(i<P.length-2&&P[i+1][0]<x)i++;const[x0,y0]=P[i],[x1,y1]=P[i+1],k=clamp((x-x0)/((x1-x0)||1),0,1),e=(1-Math.cos(k*Math.PI))/2;
@@ -456,7 +456,7 @@ function chestPatara17(g,cut){const x=46,y=120,w=26,h=12;if(cut){R(g,x-.6,y-1.4,
   for(const cx of[x-.6,x+w-2])R(g,cx,y-1.4,2.6,h+1.4,'#3a3436');R(g,x-.6,y-1.4,.5,h+1.4,'#8a8686');R(g,x+w-.1,y-1.4,.5,h+1.4,'#2a2628');
   R(g,x+w/2-1.6,y+1.2,3.2,3,'#3a3436');R(g,x+w/2-1.6,y+1.2,3.2,.5,'#8a8686');R(g,x+w/2-.4,y+2.4,.8,1,'#141012')}
 /* the stone Sostratos sits on: a weathered block left on the quay, lit from the left */
-function stonePatara17(g,cut){SHARED.country.boulder(g,152,119.2,16,6.6,'#bcb096',1717,cut?{cut:1}:{light:-1})}
+function stonePatara17(g,cut){SHARED.country.boulder(g,152,119.2,18,10.2,'#bcb096',1717,cut?{cut:1}:{light:-1})}
 /* the water seller's jars: round-bellied water jars, dark with damp, standing on a wet patch of the paving */
 function jarsPatara17(g,cut){for(const[x,y,h]of[[209,117,8.6],[215,118,9.6],[221,117,8.8],[226,118,8]]){if(cut){R(g,x-3.2,y-h,6.4,h,'#000');continue}
   oval(g,x+1.4,y,4,1,'rgba(40,36,60,.3)');vessel(g,x,y,3.1,h,'#8a5034','jar',{noShadow:1,dark:'#2a1810'});
@@ -1294,10 +1294,10 @@ function vinePhilip17(g,r){const[a,b]=PPhilip17,[t0,t1]=BPhilip17,q=rng(1763);
   /* the dappled shade on the wall under the vine */
   for(let i=0;i<46;i++){const x=a+5+q()*(b-a),y=44+q()*56;pool(g,x,y,3+q()*5,1+q()*2,'#6a5a84',.16,'multiply')}}
 /* the bench under the vine: a plank seat on two solid ends, no leg under its middle (cut: its outline only, for the prop) */
-function benchPhilip17(g,cut){if(cut){R(g,200,98,56,4,'#000');R(g,202,101,5,10,'#000');R(g,249,101,5,10,'#000');return}
+function benchPhilip17(g,cut){if(cut){R(g,200,103,56,4,'#000');R(g,202,106,5,5,'#000');R(g,249,106,5,5,'#000');return}
   SHARED.materials.shadow(g,231,111,31,1.6,.8);
-  for(const x of[202,249]){wood(g,x,101.5,5,9.5,'#6a4a30',1,.4);R(g,x,101.5,1,9.5,'#a8805a');R(g,x+4,101.5,1,9.5,'#4a3022')}
-  SHARED.materials.board(g,200,98,56,3.6,'#8a6644',rng(1764));R(g,200,98,56,.6,'#e0b47a');R(g,200,101.6,56,.6,'#3e2a20')}
+  for(const x of[202,249]){wood(g,x,106.5,5,4.5,'#6a4a30',1,.4);R(g,x,106.5,1,4.5,'#a8805a');R(g,x+4,106.5,1,4.5,'#4a3022')}
+  SHARED.materials.board(g,200,103,56,3.6,'#8a6644',rng(1764));R(g,200,103,56,.6,'#e0b47a');R(g,200,106.6,56,.6,'#3e2a20')}
 /* the stool: a low seat on two splayed legs, one at each end (cut: its outline only, for the prop) */
 function stoolPhilip17(g,cut){const lg2=[[167,110.5,166,117,168.4,117,169.4,110.5],[176.6,110.5,177.6,117,180,117,179,110.5]];
   if(cut){R(g,166,108,14,2.8,'#000');for(const p of lg2)poly(g,p,'#000');return}

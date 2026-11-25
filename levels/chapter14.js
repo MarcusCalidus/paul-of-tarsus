@@ -822,7 +822,7 @@ function paintDoor(g){const r=rng(1407),W='#d2c09a';
   for(let i=0;i<120;i++){const k=r(),y=104.5+k*39;R(g,r()*320,y,.5+k*1.6,.5+k*.4,r()<.5?'rgba(70,52,36,.28)':'rgba(255,236,200,.18)')}
   ao(g,0,104,320,6,'t',.45,'#2a2030');ao(g,0,96,320,8,'b',.3,'#3a2c28');
   /* the bench beside the door, and a jar with its lid on in the corner, both standing out on the floor */
-  benchDoor(g,178,96,48);shadow14(g,314,107.2,6.6,1.3,.6);vessel(g,312,107,5.6,15,'#9a5a36','pithos',{noShadow:1});oval(g,312,92.4,4.2,1.3,'#5e4428');R(g,308,91.4,8,.5,'#8a6a44');
+  benchDoor(g,178,101.5,48);shadow14(g,314,107.2,6.6,1.3,.6);vessel(g,312,107,5.6,15,'#9a5a36','pithos',{noShadow:1});oval(g,312,92.4,4.2,1.3,'#5e4428');R(g,308,91.4,8,.5,'#8a6a44');
   /* the light of the room: dim, brighter by the window and by the door, darker toward the ceiling and the corners */
   lightmap(g,320,'#665c62',l=>{pool(l,170,92,210,70,'#aa9e9a',.7);pool(l,81,58,34,30,'#e0d2b8',.55);pool(l,80,116,44,12,'#dccbaa',.55);
     pool(l,254,106,50,16,'#e8d6b4',.7);pool(l,254,80,30,34,'#c8b8a0',.4);pool(l,160,128,150,20,'#b0a498',.4);
@@ -879,8 +879,8 @@ function doorInDoor(g,r){const{x,y,w,h}=LEAFDoor,F='#7a5a3a',D='#5a3e26';
 function benchDoor(g,x,y,w){const c='#8a6a44';
   const q=rng(1445);
   /* its shadow on the wall behind, in three soft steps, and on the floor */
-  for(const[d,a]of[[0,.1],[1,.1],[2,.1]])R(g,x+2+d,y+4,w-2-d*2,6-d*1.4,rgba('#281e28',a));shadow14(g,x+w/2+1,y+14.2,w/2,1.6,.62);
-  for(const lx of[x+3,x+w-7]){board14(g,lx,y+4.4,4,9.6,tint(c,-.2),q,1);R(g,lx,y+4.4,4,.6,tint(c,-.45))}
+  for(const[d,a]of[[0,.1],[1,.1],[2,.1]])R(g,x+2+d,y+4,w-2-d*2,6-d*1.4,rgba('#281e28',a));shadow14(g,x+w/2+1,110.2,w/2,1.6,.62);
+  for(const lx of[x+3,x+w-7]){board14(g,lx,y+4.4,4,110-y-4.4,tint(c,-.2),q,1);R(g,lx,y+4.4,4,.6,tint(c,-.45))}
   board14(g,x,y,w,1.8,tint(c,.14),q);R(g,x,y,w,.5,tint(c,.4));plank14(g,x,y+1.8,w,2.6,tint(c,-.14),q);R(g,x,y+4,w,.4,tint(c,-.5))}
 /* doorDraw: the light of the day on the floor, through the slits of the hatch and of the shutters. It falls a little in front of them at
    first; while they wait (G.dl14 from 0 to 1) the sun goes lower and round, and the light lengthens and moves across the floor to the
@@ -1618,7 +1618,7 @@ async function holdBack(){if(PC()!==DA)return;if(F.plea)return say(P,'even_they_
 function knock(){if(!AU.ctx)return;const t=now()+.05;for(let i=0;i<3;i++){noise({t:t+i*.22,d:.06,v:.25,f:380,q:1.2,type:'lowpass'});tone({f:110,to:80,t:t+i*.22,d:.08,type:'triangle',v:.08})}}
 /* Paul's place and pose as he is held: at the door with his hand to the bolt; turned from it; without his mantle; on the bench */
 function posePaul(){const n=held();P.look=n>=2?LOOK.paul14b:LOOK.paul;P.wear=n>=2?'b':'';
-  if(n===0)place(P,'door14',226,120,1);else if(n===1)place(P,'door14',214,121,-1);else if(n===2)place(P,'door14',208,121,-1);else{place(P,'door14',200,113,-1);P.seat=1}}
+  if(n===0)place(P,'door14',226,120,1);else if(n===1)place(P,'door14',214,121,-1);else if(n===2)place(P,'door14',208,121,-1);else{place(P,'door14',200,110.5,-1);P.seat=1}}
 async function hatch(){if(PC()!==DA)return say(PC(),'hatch_the_size_of_a_face');if(held()<3)return say(DA,'not_today_nobody_opens');if(F.knock)return say(DA,'two_seals_on_the_knot_both_whole');
   return run14(async()=>{SFX.door();await say(RUN,'message_for_paul_sealed',{to:DA});await say(DA,'two_seals_on_the_knot_both_whole',{to:P});F.knock=1;addItem('plead14');codeBtn()})}
 async function givePlea(id){if(id!=='plead14')return false;if(held()<3)return say(P,'later_let_me_through_first');
