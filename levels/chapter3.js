@@ -251,7 +251,10 @@ ART.antioch={w:480,fp:1.3,q:12,
   for(let i=0;i<4;i++){const k=((t/400+i*.25)%1);g.strokeStyle=`rgba(230,246,252,${.7*(1-k)})`;g.lineWidth=.5;g.beginPath();g.ellipse(267.1,94.5,1.5+k*9,.3+k*.7,0,0,6.2832);g.stroke()}},
  front(){}};
 /* ---------- The road south (ending) ---------- */
-ART.road={w:320,q:12,paint(g){const r=rng(167);
+ART.road={w:320,q:12,
+ /* the sun high on the left: the trees and the milestone throw short shadows to the right and a little toward us, as in the chapter's rooms */
+ light:{amb:'#ffffff',sun:[9,4,.4]},
+ paint(g){const r=rng(167);
   sky(g,320,96,SKY3(['#3f7ecc','#6ea6de','#a2c8ea','#dbe6ea','#dbe6ea']));cloud(g,222,13,62,9,r);cloud(g,146,25,40,6,r);cloud(g,60,10,30,5,r);
   ridge(g,0,320,80,x=>20+8*Math.sin(x/41+2)+4*Math.sin(x/13),['#9cacca','#b4c0d4']);comp(g,'screen',.3,()=>{g.fillStyle=lg(g,0,44,0,82,['rgba(208,220,238,0)','rgba(208,220,238,1)']);g.fillRect(0,44,320,38)});
   /* Antioch behind us, under its mountain */
