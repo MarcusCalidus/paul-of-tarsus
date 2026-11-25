@@ -4330,13 +4330,13 @@
   ok(said('nephew_the_upper_city_at_this_hour')&&A('seller19').room==='lanes19'&&A('elder19').room==='lanes19','the upper city in the late afternoon');
   halt('lanes19');
   M.seeAll=1;await hints('hint_the_lanes_1','hint_the_lanes_2','in the lanes');
-  heard.length=0;await onH('donkey','look');ok(said('donkey_in_the_lane_look')&&M.def.obstacles[''][0].say==='this_donkey_has_decided_the_lane_is_his','the donkey across the short lane, which he names when it stops him');
   const whoSeen={},whoObs=new MutationObserver(()=>{for(const el of document.querySelectorAll('#speech .line'))whoSeen[el.textContent]=el.dataset.who||''});whoObs.observe($('#speech'),{childList:true});
   heard.length=0;await walkTo(X(222),Y(250));await until(()=>F.halfA&&!G.busy,4000);whoObs.disconnect();
   ok(['oath_man_nothing_not_a_crumb','oath_man_we_are_under_a_curse','nephew_under_a_curse_until_a_man_is_dead'].every(said)&&has('oath19')&&whoSeen[T('oath_man_we_are_under_a_curse')]===T('speaker_name',{name:T('man_at_the_stall')}),
     'at the bread stall: men under a curse, nothing to eat or drink until a man is dead; whom, they do not say (the first half)');
   heard.length=0;await walkTo(X(364),Y(186));await until(()=>F.halfB&&!G.busy,4000);
   ok(['elder_bring_the_prisoner_down_tomorrow','nephew_a_prisoner_brought_down_tomorrow','nephew_two_things_ive_heard'].every(said)&&has('plan19'),'before the fine house: the prisoner brought down tomorrow, as if for a closer look (the second half)');
+  heard.length=0;await onH('donkey','look');ok(said('donkey_in_the_lane_look')&&M.def.obstacles[''][0].say==='this_donkey_has_decided_the_lane_is_his','the donkey across the short lane, which he names when it stops him');
   heard.length=0;await onH('gate_of_the_fortress','walk');ok(said('nephew_mothers_oil_first')&&G.room==='lanes19','nothing takes him into the fortress yet');
   await code('with both halves heard',()=>G.room==='lanes19'&&PC()===NE&&F.halfA&&F.halfB&&has('oath19')&&has('plan19')&&has('jug19'));M.seeAll=1;
   await hints('hint_two_halves_1','hint_two_halves_2','with both halves');
@@ -4345,7 +4345,7 @@
   heard.length=0;await both('oath19','plan19');ok(said('nephew_they_wait_for_the_prisoner')&&F.plot&&has('plot19')&&!has('oath19'),'the two halves together: men under a curse wait for the prisoner brought down tomorrow');
   await hints('hint_who_they_mean_1','hint_who_they_mean_2','with the halves together');
   heard.length=0;await both('plot19','uncle19');ok(said('nephew_they_mean_my_uncle')&&F.knew&&!has('uncle19'),'with his uncle in the fortress: they mean his uncle');
-  heard.length=0;await walkTo(X(288),Y(86));await talkTo(OS);ok(said('oil_seller_there_you_are')&&F.oil,'and the oil, below the fortress');
+  heard.length=0;await talkTo(OS);ok(said('oil_seller_there_you_are')&&F.oil,'and the oil, below the fortress');
   await hints('hint_to_the_fortress_1','hint_to_the_fortress_2','knowing');
   onH('gate_of_the_fortress','walk');await until(()=>G.room==='gate19'&&!G.busy,5000);M.seeAll=0;
   halt('gate19');

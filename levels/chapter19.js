@@ -282,7 +282,7 @@ const CITY19=[
 const OPEN19={home:[16,236,60,236,60,268,16,268],market:[190,226,252,226,252,268,190,268],fine:[338,168,392,168,392,200,338,200],below:[266,68,330,68,330,104,266,104]};
 const WALL19=[0,0,420,0,420,36,0,36];
 const DOOR19=[38,236],FINE19=[380,168],FORT19=[298,30],STALLA19=[228,228,22,6],STALLO19=[272,70,22,6],DONKEY19=[214,186,12,10];
-const AT19={start:[40,256,1],seller:[236,241,1],oathA:[248,247,-1],oathB:[222,247,1],elder:[352,182,1],priests:[370,188,-1],oil:[283,80,1],gate:[298,50,1]};
+const AT19={start:[40,256,1],seller:[236,241,1],oathA:[248,247,-1],oathB:[222,247,1],elder:[346,196,1],priests:[378,196,-1],oil:[283,80,1],gate:[298,50,1]};
 const lanes19=CITY19.map(l=>Object.assign({},l,{pts:pts19(l.pts),w:Math.round(l.w*SC19)}));
 const LM19=SHARED.lanes.make('lanes19',{w:LW19,h:LH19,seed:1919,lot:30,door:3,win:3,winH:3,doorH:8,flat:.7,ew:.7,
   lanes:lanes19,open:[{poly:pts19(OPEN19.market),kind:'square'},{poly:pts19(OPEN19.below),kind:'square'},{poly:pts19(OPEN19.home),kind:'earth'},{poly:pts19(OPEN19.fine),kind:'earth'}],
@@ -388,7 +388,7 @@ function paintCmd19(g){const r=rng(1951),W='#d8c4a0';
    Called from outside: ART.antipatris19. Reads nothing.
    Hotspots: the spring 6,100,64,22 (off the way: the hidden treasure) · the horses at the water 90,100,56,26 · the town 220,52,90,20 ·
    the plain 0,60,320,40 · the road to Caesarea 304,96,16,48. Walk: 80..300 by 116..138 (the spring lies beyond it).
-   Actors: the officers 214,122 and 246,120; foot soldiers 276,124 and 298,130; the horseman 160,120. The horses drink at HORSEA19. */
+   Actors: the officers 212,122 and 240,120; foot soldiers 262,124 and 280,132; the horseman 160,120. The horses drink at HORSEA19. */
 const HORSEA19=[[108,124,1],[136,122,1]];
 ART.antipatris19={w:320,q:12,paint(g){paintAnti19(g)},light:{amb:'#f4dcc0',sun:[.5,.2,.25]},
   draw(g){HORSEA19.forEach(([x,y],i)=>horse19(g,x,y,-1,i===0?1:0,1,lightAt('antipatris19',x,y)))},front(){}};
@@ -837,6 +837,9 @@ for(const a of[O1,O2])who(a,{look:()=>say(NE,F.halfA?'men_under_an_oath_look':'m
 who(EL,{look:'elder_look19',talk:()=>say(NE,'nephew_not_my_business',TN)});who(PM,{look:'priests_man_look',talk:()=>say(NE,'nephew_not_my_business',TN)});
 who(OS,{look:'oil_seller_look',talk:()=>oil19(),give:it=>it==='jug19'?oil19():false});
 /* Paul, when the nephew is played */
+/* on the lane map whoever is played stands a step off from the people there, so that neither hides the other while they speak */
+for(const[a,f]of[[BS,[236,252]],[O1,[262,250]],[O2,[208,252]],[EL,[346,186]],[PM,[378,186]],[OS,[300,88]]])
+  Object.defineProperties(a.hs,{wx:{get(){return G.room==='lanes19'?X19(f[0]):undefined},configurable:true},wy:{get(){return G.room==='lanes19'?Y19(f[1]):undefined},configurable:true}});
 const PAULHS={name:'Paul',actor:P,as:{nephew19:{look:'uncle_paul_look',talk:()=>uncle19()}}};
 NE.def={look:'nephew_nothing_to_see',pickup:'nephew_not_mine_to_take',use:'nephew_no_use_for_that',open:'nephew_not_mine_to_open',talk:'nephew_no_answer',give:'nephew_nothing_to_give'};
 NE.noCraft='nephew_those_dont_go_together';
@@ -883,7 +886,7 @@ function place19(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
     pl(P,'barracks19',150,118,1);for(const[a,x,y,d]of[[GD,184,120,-1],[OF,262,120,-1],[S1,70,116,1]])pl(a,'barracks19',x,y,d);
     pl(CM,'cmd19',254,118,-1)}
   if(ph==='yard')for(const[a,x,y,d]of[[CM,150,112,1],[OF,190,116,-1],[OB,118,116,1],[HM,298,120,-1],[SP1,36,114,1],[SP2,56,120,1],[S1,86,114,1],[S2,102,122,1]])pl(a,'barracks19',x,y,d);
-  if(ph==='antipatris')for(const[a,x,y,d]of[[OF,214,122,-1],[OB,246,120,-1],[S1,276,124,-1],[S2,298,130,-1],[HM,166,120,-1]])pl(a,'antipatris19',x,y,d);
+  if(ph==='antipatris')for(const[a,x,y,d]of[[OF,212,122,-1],[OB,240,120,-1],[S1,262,124,-1],[S2,280,132,-1],[HM,166,120,-1]])pl(a,'antipatris19',x,y,d);
   if(ph==='palace'){pl(FX,'palace19',238,100,-1);FX.seat=1;pl(OF,'palace19',122,124,1);pl(S1,'palace19',296,124,-1)}
   P.hs=nephewPlays()?PAULHS:null;P.party=NE.party=0}
 function setup19(){P.hs=null;P.called='Paul';NE.called='pauls_nephew';G.mk19=G.se19=G.of19=G.h19=null;G.rt19=G.l19=G.g19=G.lv19=0;G.caps19=[];
