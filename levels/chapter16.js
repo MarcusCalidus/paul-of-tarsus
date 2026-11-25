@@ -142,7 +142,7 @@ function cap16(g,s,x,y,w,o){o=o||{};s=T(s);let sz=o.sz||5;g.font=FONT16(sz);g.te
    open water and the plastered fronts, and nothing round. The chest is a prop (foot 126,113,26,4). Gulls (ROOMS.quay16.birds) stand on
    the edge at x 157..166, between the chest and the master, where nobody stands before them. */
 const HZQuay16=60,EDGEQuay16=100;
-ART.quay16={w:320,q:12,variant:()=>F.walk?'b':'',paint(g,v){paintQuay16(g,v)},light:{amb:'#f6e6d0',sun:[-.62,.14,.42]},draw(g,t){drawQuay16(g,t)},front(){},
+ART.quay16={w:320,q:12,variant:()=>F.walk?'b':'',paint(g,v){paintQuay16(g,v)},light:{amb:'#f6e6d0',sun:[-20,-6,.42],wallY:101},draw(g,t){drawQuay16(g,t)},front(){},
   props:[{y:118,shape(g,v){if(v==='')chestQuay16(g,1)},foot:v=>v===''?[[126,113,26,4]]:[]}]};
 /* OQuay16: the one light of the picture (shared/coast.js); PQuay16: what the painters return, for draw() */
 let OQuay16=null,PQuay16={};const SHIPQuay16=[];
@@ -338,7 +338,7 @@ const HZRoad16=58;
    ORoad16 is the one options object for the whole picture; the sea's motion (SRoad16) is kept from paint for draw. */
 const ORoad16={w:320,hz:HZRoad16,hour:'morning',cloud:.24,streak:.3,seed:1621,light:-1,swell:-.2};
 let SRoad16=null,CapeRoad16=null;
-ART.road16={w:320,q:12,paint(g){paintRoad16(g)},light:{amb:'#f8ecd8',sun:[.5,.3,.45]},draw(g,t){drawRoad16(g,t)},front(){},
+ART.road16={w:320,q:12,paint(g){paintRoad16(g)},light:{amb:'#f8ecd8',sun:[9,-14,.42],wallY:92},draw(g,t){drawRoad16(g,t)},front(){},
   props:[{y:117,shape(g){stoneRoad16(g,1)},foot:[[141.5,114,17,3]],seat:1}]};
 /* the hill at the left: its brow from the picture's edge down to the low ground by the sea */
 const hillRoad16=x=>x<0?30:x>210?999:30+Math.pow(x/210,1.5)*66+3*Math.sin(x/13)+1.6*Math.sin(x/4.7);
@@ -432,7 +432,7 @@ let SPass16=null;
 const FLOCKPass16=()=>F.pass?[[16,100,1,0],[52,99,-1,2],[94,101,1,1],[34,110,1,1],[72,110,-1,1]]:[[276,90,-1,0],[304,86,1,0],[294,104,1,1],[206,114,-1,1],[266,118,-1,0]];
 const EWEPass16=()=>F.pass?[122,106,-1]:[236,124,-1];
 let LOOKPass16=null;
-ART.pass16={w:320,q:12,variant:()=>F.pass?'p':'',paint(g,v){paintPass16(g,v)},light:{amb:'#fcf0dc',sun:[.45,.3,.5]},draw(g,t){drawPass16(g,t)},front(){},
+ART.pass16={w:320,q:12,variant:()=>F.pass?'p':'',paint(g,v){paintPass16(g,v)},light:{amb:'#fcf0dc',sun:[8,5,.45]},draw(g,t){drawPass16(g,t)},front(){},
   props:[{y:117,shape(g,v){troughPass16(g,v,1)},foot:[[167,112,38,4]]}]};
 /* the rock at the left, high where it leaves the picture; the rock at the right, with the saddle beyond it where the way goes down */
 const leftPass16=x=>x>172?999:12+Math.pow(x/150,1.3)*62+(x>136?Math.pow(x-136,2)*.03:0)+4*Math.sin(x/9)+2*Math.sin(x/3.7);
@@ -665,7 +665,7 @@ function drawDeck16(g,t){const v=DECKV(),C=coastDeck16(v),geo=SHARED.ship.deck.g
    Heads come at y 70..90: behind them lie rock, open water and the hull, and nothing round. Gulls (ROOMS.assos16.birds) stand on the
    quay's edge at x 150..164. */
 const HZAssos16=62,EDGEAssos16=100;
-ART.assos16={w:320,q:12,variant:()=>F.la?'s':'',paint(g,v){paintAssos16(g,v)},light:{amb:'#f8ecd8',sun:[-.42,.22,.45]},draw(g,t){drawAssos16(g,t)},front(){}};
+ART.assos16={w:320,q:12,variant:()=>F.la?'s':'',paint(g,v){paintAssos16(g,v)},light:{amb:'#f8ecd8',sun:[-9,5,.45]},draw(g,t){drawAssos16(g,t)},front(){}};
 let OAssos16=null,PAssos16={};
 const oAssos16=()=>OAssos16||(OAssos16={w:320,hz:HZAssos16,hour:'morning',sun:[360,-50],cloud:.18,wind:SHARED.weather.wind({from:'n',force:2,view:'s'}),seed:1621,y1:EDGEAssos16});
 function paintAssos16(g,v){const K=SHARED.coast,O=oAssos16(),L=K.light(O),r=rng(1605),P=PAssos16={};
@@ -1035,7 +1035,7 @@ function drawWatch16(g,t){
    and so is the awning on the paving. Heads come at y 64..90: behind them lie the warehouses' stone, open water and the hull; the
    theater stands well above them, small. Gulls (ROOMS.miletus16.birds) stand on the quay's edge at x 163..172, clear of Luke. */
 const HZMiletus16=60,EDGEMiletus16=100;
-ART.miletus16={w:320,q:12,variant:()=>F.mended?'m':'',paint(g,v){paintMiletus16(g,v)},light:{amb:'#f8ecd8',sun:[-.45,.22,.45]},draw(g,t){drawMiletus16(g,t)},front(){},
+ART.miletus16={w:320,q:12,variant:()=>F.mended?'m':'',paint(g,v){paintMiletus16(g,v)},light:{amb:'#f8ecd8',sun:[-9,5,.45]},draw(g,t){drawMiletus16(g,t)},front(){},
   props:[{y:117,shape(g){balesMiletus16(g,1)},foot:[[117,112,40,5]]},{y:119,shape(g){loneMiletus16(g,1)},foot:[[294,114,24,5]]},
     {y:133,shape(g,v){if(v==='')awningMiletus16(g,1)},foot:v=>v===''?[[148,122,84,12]]:[]}]};
 let OMiletus16=null,PMiletus16={};
@@ -1238,7 +1238,7 @@ const HZShore16=58;
    to us: her mast is short against that land, its top well under the ridge, and nothing of her stands across the open horizon. */
 const OShore16={w:320,hz:HZShore16,hour:'midday',cloud:.2,streak:.25,seed:1691,light:-1,sun:[-60,-40],swell:-.4};
 let SShore16=null;
-ART.shore16={w:320,q:12,paint(g){paintShore16(g)},light:{amb:'#fff4e2',shade:[[24,160,'#c4bcd4']],sun:[.4,.3,.4]},draw(g,t){drawShore16(g,t)},front(){}};
+ART.shore16={w:320,q:12,paint(g){paintShore16(g)},light:{amb:'#fff4e2',shade:[[24,160,'#c4bcd4']],sun:[8,6,.4]},draw(g,t){drawShore16(g,t)},front(){}};
 /* the wall's top, a little uneven, and the land of the town across the water */
 const wallTopShore16=x=>86+1.2*Math.sin(x/9)+.8*Math.sin(x/3.3)+(x>200?(x-200)*.25:0);
 function paintShore16(g){const K=SHARED.coast,CO=SHARED.country,O=OShore16,HZ=HZShore16;
