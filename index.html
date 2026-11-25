@@ -40,6 +40,9 @@ body{display:flex;align-items:center;justify-content:center}
 /* where the browser can paint a stroke behind the letters, the edge is that stroke, a room pixel wide outside every letter and even on
    its curves; eight shifted shadows leave steps there. A browser that cannot keeps the shadows above. */
 @supports (paint-order:stroke fill){.line{text-shadow:none;-webkit-text-stroke:calc(var(--s)*2px) #000;paint-order:stroke fill}}
+/* a speaker who is not in the picture is named before his words (say) */
+.line[data-who]::before{content:attr(data-who) " ";opacity:.75}
+.line[data-who]::first-letter{text-transform:uppercase}
 /* a line of narration told in the dark is read from the narrator's scroll (shared/scroll.js): it stands in ink in the middle of the open
    part of the roll, in a size that suits its length, and a reference in it is never divided over two lines */
 .line.ink{left:calc(var(--s)*170px);top:50%;transform:translate(-50%,-50%);max-width:calc(var(--s)*164px);text-align:left;text-wrap:balance;
@@ -1717,6 +1720,10 @@ function say(a,text,o={}){const S=SHARED.scroll,white=!a&&!o.plain&&!!G.white,in
   const src=text;text=T(text);return new Promise(res=>{
   const el=document.createElement('div');el.className='line';el.textContent=text;if(ink)el.classList.add('ink');else if(white)el.classList.add('white');else el.style.color=o.color||(a?a.color:'#e6d9ff');
   if(o.thought)el.style.fontStyle='italic';
+  /* whoever speaks and is not in the picture, as at a close view or from the deck outside it, is named before his words, since his
+     colour alone does not tell who he is; whoever is played is not, nor is a thought. The name stands in a data attribute that CSS shows,
+     so the line's own text is still its words alone. */
+  if(a&&a!==PC()&&!o.thought&&(a.room!==G.room||G.scene))el.dataset.who=T('speaker_name',{name:T(storyName(a))});
   const voiced=a&&!o.thought,choir=o.choir||[],dur=(o.dur||Math.max(2200,1400+text.length*65))*(G.speedAll>200?1:OPTS.spd),plan=voiced||choir.length?cadence(text,dur,o.sung):null;
   $('#speech').appendChild(el);if(ink)S.fit(el);if(voiced){a.talk=true;const k=o.act||acted(src);if(k)gesture(a,k,0,140)}choir.forEach(x=>x.talk=true);
   const blips=voiced&&!plan.sung?plan.ev.filter(e=>e.m>1).slice(0,Math.ceil(Math.min(9,text.length/5))).map(e=>setTimeout(()=>SFX.talk(a.pitch*2),e.t0)):[];

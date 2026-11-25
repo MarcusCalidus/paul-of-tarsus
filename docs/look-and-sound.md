@@ -24,6 +24,10 @@ Where a line plainly says yes or no, its speaker says it with his head as well: 
 
 ![Eliab asks, with his head lifted, his brows raised and his hand open](screenshots/speak.png)
 
+A line stands over the head of whoever says it. When the speaker is not in the picture, as at a close view or in a painted scene, his name stands before his words, since his colour alone would not tell who he is; the one who is played is never named.
+
+![At Luke's tablet of the watches, Sopater speaks from the deck, and his name stands before his words](screenshots/speaker-name.png)
+
 Where a line is sung, as the psalm is in Chapter Nine, each singer's mouth holds the vowel of every note for as long as the note, and everyone who answers sings along. The small blips of a speaking voice fall on the first syllables of its line. On the options screen, **Movement** can be set from lively to calm, which keeps the mouth and leaves head and hand still; a device that asks for less motion starts in calm.
 
 People walk as the ground passes under them. A stride has sixteen moments, and the painter works each of them out: both hips share a centered pivot so the legs open cleanly like a pair of compasses without crossing, the thigh angles smoothly from the hip through the knee to the ankle, a heel lands with the toes up, the foot rolls flat through a double-support overlap, the heel lifts and the toes push off, and the knee bends forward as the leg swings through. The arm opposite a leg swings smoothly along an arc and bends at the elbow; the body follows a four-beat weight curve—lowest on recoil after a heel lands, rising through passing to a slight lift on push-off—with the head lagging a frame behind, a subtle forward lean and shoulder counter-sway, and the hem, folds and hanging mantle responding to the step. The frame follows the distance covered and not a clock, so a foot that stands stays planted on the paving, a step is heard as each foot lands, and a walk eases in and out on shorter steps, as does a walk up or down the room, where a side view would stride on the spot.
