@@ -1822,7 +1822,7 @@ const narr=(t,o)=>say(null,t,o);
 function DARK(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}
 const inDark=()=>!G.white&&(+$('#dim').style.opacity>=1||G.scene===DARK);
 function posSpeech(){if(!cur||cur.ink||cur.white)return;if(PH.on)return posSpeechPh();const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
-  if(a&&a.room===G.room&&!G.scene){const z=zoomNow();el.style.left=clamp((a.x-G.cam)*z*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-G.camY-figBox(a.room)[1])*z+7,40,132)*s+'px';el.style.top=''}
+  if(a&&a.room===G.room&&!G.scene){const z=zoomNow();el.style.left=clamp((a.x-G.cam)*z*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-G.camY-figBox(a.room)[1])*z+7,40,Math.max(40,Math.min(132,VH-el.offsetHeight/s-2)))*s+'px';el.style.top=''}   /* a line of several rows over a speaker near the top of the view comes down far enough to stay inside it */
   else if(cur.low){el.style.left='50%';el.style.top='';el.style.bottom=7*s+'px'}   /* low: a line told over a map whose road runs along its upper edge stands at the foot of the view */
   else{el.style.left='50%';el.style.top=10*s+'px';el.style.bottom=''}}
 /* posSpeechPh: on a phone a line stands over its speaker where the field shows him, inside the field, and the narrator's lines at its top,

@@ -533,10 +533,10 @@ const MEM=[SA1,PH1,PH2,SA2,PH3,SA3],PHAR=[PH1,PH2,PH3];
 /* TOLD: Acts 22:30-23:35, told by the narrator in paraphrase, each line with its reference (CH19 told.md, written and checked by the
    chapter's verse agent against the Study Edition, English and German). None of it is put into a mouth as a quotation. The spoken lines
    of the account (told.md) are said in the scenes, in our own words, without quotation marks. */
-const TOLD={v22_30:'commander_had_him_untied_acts_22_30',v1:'a_clear_conscience_acts_23_1',v2:'struck_on_the_mouth_acts_23_2',v3:'whitewashed_wall_acts_23_3',
- v4:'didnt_know_he_was_high_priest_acts_23_4_5',v6:'a_pharisee_son_of_pharisees_acts_23_6',v7:'the_council_divided_acts_23_7_8',v9:'the_scribes_stood_up_acts_23_9',
+const TOLD={v22_30:'commander_had_him_untied_acts_22_30',v2:'struck_on_the_mouth_acts_23_2',
+ v7:'the_council_divided_acts_23_7_8',
  v10:'taken_out_by_force_acts_23_10',v11:'take_courage_acts_23_11',v12:'forty_men_under_a_curse_acts_23_12_13',v14:'the_plan_with_the_chief_priests_acts_23_14_15',
- v16:'the_sisters_son_heard_acts_23_16',v19:'took_him_by_the_hand_acts_23_19',v22:'tell_no_one_acts_23_22',v23:'ready_by_the_third_hour_acts_23_23_24',
+ v16:'the_sisters_son_heard_acts_23_16',v19:'took_him_by_the_hand_acts_23_19',
  v25:'the_letter_was_written_acts_23_25',v31:'to_antipatris_by_night_acts_23_31',v32:'the_horsemen_went_on_acts_23_32',v33:'felix_read_the_letter_acts_23_33_34',
  v35:'kept_in_herods_palace_acts_23_35'};
 const tell=(k,ms,o)=>narr(TOLD[k],Object.assign({dur:ms||Math.max(6500,2200+T(TOLD[k]).length*55)},o||{}));
@@ -616,10 +616,10 @@ async function talkMember19(a){return say(a,F.session?'member_answer_the_council
 async function presider19(){if(!F.session)return session19();return speak19()}
 /* the session (23:1-5): Paul's first words; the blow, cut away before anything happens; Paul's answer, the rebuke, the apology */
 async function session19(){AU.mood='tense';await go19(P,160,124);P.dir=1;
-  await tell('v1');await say(P,'paul_a_clear_conscience',{to:AN});
+  await say(P,'paul_a_clear_conscience',{to:AN});
   AT1.free=1;await go19(AT1,172,116,40);await fade(1,350);await tell('v2');place(AT1,'council19',182,99,-1);AT1.free=0;await fade(0,400);
-  await tell('v3');await say(P,'paul_god_will_strike_you',{to:AN});
-  await tell('v4');await say(AT2,'bystanders_you_insult_gods_high_priest',{to:P});await say(P,'paul_i_didnt_know_he_was_high_priest',{to:AT2});
+  await say(P,'paul_god_will_strike_you',{to:AN});
+  await say(AT2,'bystanders_you_insult_gods_high_priest',{to:P});await say(P,'paul_i_didnt_know_he_was_high_priest',{to:AT2});
   F.session=1;AN.name='high_priest_ananias';if(AN.hs)AN.hs.name=AN.name;AU.mood='council';
   await say(P,'paul_they_confer',TH);codeBtn()}
 /* the one sentence: Paul's true sentences, and 23:6 once he knows both sides */
@@ -628,9 +628,9 @@ async function speak19(){const opts=SAY19.map(x=>x[0]).concat(F.ph&&F.sad?[SAYKE
   if(k!==SAYKEY19){const[l,r,a]=SAY19.find(x=>x[0]===k);await say(P,l,{to:a});return say(a,r,{to:P})}
   return divided19()}
 /* 23:6-10: the council divided; the scribes stand up; the soldiers take him out. No blow, no weapon drawn */
-async function divided19(){AU.mood='tense';await tell('v6');await say(P,'paul_a_pharisee_son_of_pharisees',{to:null});
+async function divided19(){AU.mood='tense';await say(P,'paul_a_pharisee_son_of_pharisees',{to:null});
   await tell('v7');for(const a of PHAR)a.seat=0;await tw(500);
-  await tell('v9');await say(PH2,'scribes_we_find_nothing_wrong',{to:null});
+  await say(PH2,'scribes_we_find_nothing_wrong',{to:null});
   await tell('v10');S1.free=S2.free=1;await Promise.all([go19(S1,P.x-16,P.y,70),go19(S2,P.x+16,P.y+2,70)]);
   await Promise.all([go19(P,40,126,70),go19(S1,26,124,70),go19(S2,54,128,70)]);
   await fade(1,600);F.divided=1;return night19()}
@@ -678,7 +678,7 @@ const NOT19='nephew_theres_a_plot_against_him';
 /* ask19: the nephew's true lines to one listener; returns when the listener has heard both of his things, or the nephew holds back */
 async function sentry19(){if(F.sentry)return say(SE,'sentry_go_on_in',{to:NE});const me=lis19('se19');
   if(!me.met){me.met=1;await say(SE,'sentry_who_are_you_and_who_do_you_want',{to:NE})}
-  const opts=['nephew_im_the_son_of_pauls_sister','nephew_i_want_the_prisoner_paul','nephew_ive_got_oil_for_my_mother',NOT19,'nephew_ill_come_back'],k=opts[await choose(opts,{keep:1})];
+  const opts=['nephew_im_the_son_of_pauls_sister','nephew_i_want_the_prisoner_paul'].concat(F.oil?['nephew_ive_got_oil_for_my_mother']:[],[NOT19,'nephew_ill_come_back']),k=opts[await choose(opts,{keep:1})];
   if(k==='nephew_ill_come_back')return say(NE,k,{to:SE});
   if(k===NOT19)return say(NE,'nephew_not_to_him',TN);
   await say(NE,k,{to:SE});
@@ -718,12 +718,12 @@ async function cmd19(){await fade(1,400);show19('cmd19');place(OF,'cmd19',94,124
   const opts=['nephew_its_about_the_prisoner_paul_my_uncle','nephew_ill_tell_you_what_i_heard'],k=opts[await choose(opts)];
   await say(NE,k,{to:CM});if(k==='nephew_its_about_the_prisoner_paul_my_uncle')await say(CM,'commander_go_on',{to:NE});
   await say(NE,'nephew_they_will_ask_you_tomorrow',{to:CM});await say(NE,'nephew_over_forty_are_lying_in_wait',{to:CM});
-  await say(CM,'commander_tell_no_one',{to:NE});await tell('v22');
+  await say(CM,'commander_tell_no_one',{to:NE});
   await fade(1,600);F.cmd=1;return third19()}
 
 /* ---- the third hour ---- */
 async function third19(){playAs(P);show19('barracks19');await fade(0,700);AU.mood='march';
-  await tell('v23');await say(CM,'commander_at_the_third_hour_tonight',{to:OF});await say(CM,'commander_horses_for_paul',{to:OB});
+  await say(CM,'commander_at_the_third_hour_tonight',{to:OF});await say(CM,'commander_horses_for_paul',{to:OB});
   await say(OF,'officer_paul_take_one_of_the_horses',{to:P});codeBtn()}
 async function lookHorse19(k){await say(P,HORSE19[k].look);if(k==='calm')await say(P,'he_looks_me_over_like_a_customer')}
 async function mount19(k){if(F.horse)return;if(k!=='calm'){await say(P,'paul_this_one',{to:HM});return say(HM,HORSE19[k].no,{to:P})}
@@ -783,7 +783,7 @@ ROOMS.council19={space:1.4,walk:[36,288,118,138],get mood(){return F.session||F.
 ROOMS.barracks19={space:.6,walk:[30,300,112,138],get mood(){return nyard()?'march':'fortress'},get amb(){return nyard()?AMB.barracksNight19:naft()?AMB.barracksAft19:AMB.barracksDay19},
   block:v=>v==='night'?HORSES19.map(([x,y])=>[x-14,y-3,28,5]):[],hs:[
   {name:'gate_to_the_passage',x:0,y:40,w:24,h:64,wx:40,wy:126,dir:-1,exit:()=>say(PC(),nephewPlays()?'nephew_not_before_ive_told_him':'paul_not_mine_to_go',PC()===NE?TN:TH),look:'gate_to_the_passage_look'},
-  {name:'bench',x:100,y:90,w:120,h:12,wx:160,wy:124,look:'barracks_bench_look'},
+  {name:'bench',x:100,y:90,w:120,h:12,wx:160,wy:124,look:'long_stone_bench_look'},
   {name:'doorway',x:286,y:44,w:30,h:60,wx:280,wy:120,look:'commanders_doorway_look',open:()=>say(PC(),nephewPlays()?'nephew_not_without_the_officer':'paul_not_mine_to_go',PC()===NE?TN:TH)},
   ...HORSES19.map(([x,y,k])=>({name:'horse',x:x-16,y:y-28,w:34,h:30,wx:x+(k==='fresh'?-22:0),wy:y+8,vis:nyard,def:'use',look:()=>lookHorse19(k),use:()=>mount19(k),talk:'horses_dont_answer'}))]};
 ROOMS.door19={space:.5,walk:[20,300,112,138],mood:'lanes',amb:AMB.door19,hs:[
@@ -794,7 +794,7 @@ ROOMS.door19={space:.5,walk:[20,300,112,138],mood:'lanes',amb:AMB.door19,hs:[
 ROOMS.gate19={space:.5,walk:[20,300,112,138],mood:'fortress',amb:AMB.gate19,hs:[
   {name:'wall_of_the_fortress',x:0,y:0,w:320,h:96,wx:120,wy:124,look:'wall_of_the_fortress_look'},
   {name:'gate_of_the_fortress',x:138,y:44,w:40,h:60,wx:160,wy:114,dir:-1,exit:()=>intoGate19(),look:'gate_of_the_fortress_close_look'},
-  {name:'way_back_into_the_city',x:0,y:96,w:14,h:48,wx:24,wy:126,dir:-1,exit:()=>say(NE,'nephew_not_back_now',TN),look:'way_back_into_the_city_look'}]};
+  {name:'way_back_into_the_city',x:0,y:96,w:14,h:48,wx:24,wy:126,dir:-1,exit:()=>say(NE,'nephew_not_back_now',TN),look:'street_back_into_the_city_look'}]};
 ROOMS.cmd19={space:.6,walk:[30,300,114,138],mood:'cmd',amb:AMB.cmd19,hs:[
   {name:'opening_onto_the_city',x:196,y:30,w:114,h:62,wx:230,wy:118,look:'opening_onto_the_city_look'},
   {name:'hanging',x:18,y:24,w:40,h:64,wx:44,wy:120,look:'hanging_look'},
@@ -839,7 +839,7 @@ who(FX,{look:'felix_look',talk:()=>F.letter&&!F.province?province19():say(FX,'fe
 who(BS,{look:'bread_seller_look',talk:()=>say(BS,'bread_seller_bread_for_your_mother',{to:NE})});
 for(const a of[O1,O2])who(a,{look:()=>say(NE,F.halfA?'men_under_an_oath_look':'men_at_the_stall_look',TN),talk:()=>say(NE,'nephew_not_to_them',TN)});
 who(EL,{look:'elder_look19',talk:()=>say(NE,'nephew_not_my_business',TN)});who(PM,{look:'priests_man_look',talk:()=>say(NE,'nephew_not_my_business',TN)});
-who(OS,{look:'oil_seller_look',talk:()=>oil19(),give:it=>it==='jug19'?oil19():false});
+who(OS,{look:'oil_seller_below_the_fortress_look',talk:()=>oil19(),give:it=>it==='jug19'?oil19():false});
 /* Paul, when the nephew is played */
 /* on the lane map whoever is played stands a step off from the people there, so that neither hides the other while they speak */
 for(const[a,f]of[[BS,[236,252]],[O1,[262,250]],[O2,[208,252]],[EL,[346,186]],[PM,[378,186]],[OS,[300,88]]])

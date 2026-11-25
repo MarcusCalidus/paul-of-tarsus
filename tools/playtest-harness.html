@@ -4300,7 +4300,7 @@
   heard.length=0;await talkTo(SA);await settle();ok(said('member_the_session_hasnt_begun'),'the members wait for the session');
   heard.length=0;await talkTo(SA,'look');ok(said('the_one_who_denies_the_resurrection_look'),'the man in fine linen is a Sadducee');
   heard.length=0;onH('place_before_the_council','use');await until(()=>F.session&&!G.busy,6000);note();await settle();
-  ok(['v1','v2','v3','v4'].every(k=>seenTold.has(k))&&said('paul_a_clear_conscience')&&said('paul_god_will_strike_you')&&said('bystanders_you_insult_gods_high_priest')&&said('paul_i_didnt_know_he_was_high_priest')&&AN.name==='high_priest_ananias'&&A('att19a').x===182,
+  ok(['v2'].every(k=>seenTold.has(k))&&said('paul_a_clear_conscience')&&said('paul_god_will_strike_you')&&said('bystanders_you_insult_gods_high_priest')&&said('paul_i_didnt_know_he_was_high_priest')&&AN.name==='high_priest_ananias'&&A('att19a').x===182,
     'a clear conscience; the blow is told, never shown; the whitewashed wall; I did not know he was the high priest (Acts 23:1-5)');
   await code('in the pause',()=>G.room==='council19'&&F.session&&!F.divided&&AN.room==='council19'&&AN.seat);await settle();
   halt('session19');
@@ -4311,7 +4311,7 @@
   await hints('hint_the_one_sentence_1','hint_the_one_sentence_2','knowing both benches');
   heard.length=0;talkTo(AN);{const o=await asked();ok(o.includes(C().saykey),'now the one sentence is on offer')}
   await line(C().saykey);await until(()=>F.divided&&G.room==='door19'&&!G.busy,9000);note();
-  ok(['v6','v7','v9','v10','v11','v12','v14'].every(k=>seenTold.has(k))&&said('paul_a_pharisee_son_of_pharisees')&&said('scribes_we_find_nothing_wrong')&&PC()===NE&&srt()==='uncle19',
+  ok(['v7','v10','v11','v12','v14'].every(k=>seenTold.has(k))&&said('paul_a_pharisee_son_of_pharisees')&&said('scribes_we_find_nothing_wrong')&&PC()===NE&&srt()==='uncle19',
     'a Pharisee, a son of Pharisees; the council divided; the soldiers take him out; take courage; the forty and their plan (Acts 23:6-15); the nephew is played');
   /* the nephew */
   await code('at the sister\'s door',()=>G.room==='door19'&&PC()===NE&&P.room==='barracks19'&&SI.room==='door19'&&srt()==='uncle19');
@@ -4369,7 +4369,7 @@
   await line('nephew_theres_a_plot_against_him');ok(said('nephew_not_to_him'),'not to the officer either');
   await line('nephew_it_cant_wait');{const o=await asked();ok(said('officer_come_with_me')&&G.room==='cmd19'&&said('officer_the_prisoner_paul_called_me')&&said('commander_what_have_you_come_to_tell_me')&&o.length===2,'to the commander; by the hand, aside (Acts 23:18, 19)')}
   await line('nephew_its_about_the_prisoner_paul_my_uncle');await until(()=>F.cmd&&G.room==='barracks19'&&PC()===P&&!G.busy,9000);note();
-  ok(['v19','v22','v23'].every(k=>seenTold.has(k))&&said('nephew_they_will_ask_you_tomorrow')&&said('nephew_over_forty_are_lying_in_wait')&&said('commander_tell_no_one')&&said('commander_horses_for_paul')&&ART.barracks19.variant()==='night',
+  ok(['v19'].every(k=>seenTold.has(k))&&said('nephew_they_will_ask_you_tomorrow')&&said('nephew_over_forty_are_lying_in_wait')&&said('commander_tell_no_one')&&said('commander_at_the_third_hour_tonight')&&said('commander_horses_for_paul')&&ART.barracks19.variant()==='night',
     'he tells it; not a word to anyone (Acts 23:20-22); at the third hour the column forms (Acts 23:23, 24); Paul is played again');
   await code('in the yard',()=>G.room==='barracks19'&&PC()===P&&F.cmd&&!F.horse&&A('horseman19').room==='barracks19');
   halt('yard19');
