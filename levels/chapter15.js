@@ -411,7 +411,8 @@ function emberGaius15(g,t){const x=178;
    Geometry: beam pivot 160,36, half-length 70, tilt 6 degrees; pan middles 90,92 and 230,92 when level (the rim's middle lies 5
    lower); the board 96,116,128,22 with the weights at x 112, 144, 176, 208, their feet at y 133; the letter 8,100,62,40; the chest
    262,72,58,72; the men stand along the top, y 0..23. */
-ART.scale15={w:320,q:12,variant:()=>'r'+(F.s3?3:sc15().round),paint(g,v){paintScale15(g,+v.slice(1))},light:{amb:'#ffffff'},draw(g,t){drawScale15(g,t)},front(){}};
+/* a close view with nobody standing in it: the men along its top are painted, and cast nothing on the floor */
+ART.scale15={w:320,q:12,variant:()=>'r'+(F.s3?3:sc15().round),paint(g,v){paintScale15(g,+v.slice(1))},light:null,draw(g,t){drawScale15(g,t)},front(){}};
 const SCALE15={pivot:[160,36],half:70,drop:56,deg:6,foot:133,RX:30,RY:6.5,tray:{a:112,g:144,th:176,kz:208},size:{a:[10,9],g:[12,10],th:[14,12],kz:[19,13]},font:{a:5.8,g:6.2,th:6.8,kz:6.6},
   raw:{},work:null,key:null};
 /* tiltScale15: 1 the left pan, the bag's, is down; -1 the right pan is down; 0 the beam stands level */
@@ -788,7 +789,11 @@ function weightScale15(g,w,[x,y,ww,h],inPan){const ht=Math.max(2.4,h*.25),f=x+ww
    What stands inside the walk strip (y 112..138) is named once more in props, so that whoever walks behind it is hidden by it: the
    goat with her tether, the block Tychicus sits on, the chest, and the two boats on the sand (the nearer one is in front of everybody). */
 const HZCen15=62,SUNCen15=74,QYCen15=104.4;
-ART.cen15={w:320,q:12,paint(g){paintCen15(g)},light:{amb:'#f6f0e6'},draw(g,t){drawCen15(g,t)},front(){},
+/* the light: the low sun over the mouth of the harbor, which we look into. Its shadows fall toward us, each away from the point of the
+   horizon under the sun (tipCen15), as those of the goat, the block and the chest do: so it is given as a light far off at that point
+   (x 74, on the horizon), whose reach covers the whole quay, and the ambient is lowered by what it adds, so that the figures keep the
+   tint they had (#f6f0e6). */
+ART.cen15={w:320,q:12,paint(g){paintCen15(g)},light:{amb:'#928c86',lamps:[[SUNCen15,28,4000,'#6e6e6a',HZCen15,-118]]},draw(g,t){drawCen15(g,t)},front(){},
   props:[{y:118,shape(g){goatCen15(g)},foot:[56,114.5,25,3.5]},{y:119.6,shape(g){seatCen15(g)},foot:[251,115,14.5,4.6],seat:1},{y:120,shape(g){chestCen15(g)},foot:[227.5,114.5,24,5.5]},
     {y:128,shape(g){skiffCen15(g,0)},foot:[0,122,7,6]},{y:150,shape(g){skiffCen15(g,1)},foot:[0,130,17,14]}]};
 function paintCen15(g){const r=rng(1503),SX=SUNCen15,QY=QYCen15;
@@ -1060,7 +1065,8 @@ function drawCen15(g,t){for(const[x,y,w,ph,sp]of GLCen15){const k=Math.sin(t/sp+
    slanting, handle and blade in one line; its shadow leaves from its foot, as the second leg of a V, so that the two never make a cross.
    At the left the edge of a wavelet that is running back, with the weed and the grit it left; nothing there comes near a groove.
    Nothing is lettered. The only thing that moves is the glint of the sun on the water (drawSand15). */
-ART.sand15={w:320,q:12,variant:()=>(F.way?'w':'')+(F.shell?'s':'')+(F.awl?'a':''),paint(g,v){paintSand15(g,v)},light:{amb:'#ffffff'},draw(g,t){drawSand15(g,t)},front(){}};
+/* a close view from above, with nobody standing in it */
+ART.sand15={w:320,q:12,variant:()=>(F.way?'w':'')+(F.shell?'s':'')+(F.awl?'a':''),paint(g,v){paintSand15(g,v)},light:null,draw(g,t){drawSand15(g,t)},front(){}};
 /* the sun: the direction towards it in the picture, and the tangent of its height */
 const SUNSand15=[.883,.469,.45];
 /* the two strokes of the reed, as points the line is led through; the first begins below the picture */
@@ -1265,7 +1271,9 @@ function awlSand15(g,fx,fy){const[lx,ly]=SUNSand15,ux=.72,uy=-.69,nx=-uy,ny=ux,L
    strakes, a wall and the dark of the shop, and nothing round. The front row of jars stands inside the walk strip (y 112..138): it
    is named in props. */
 const HZQuay15=62;
-ART.quay15={w:320,q:12,paint(g){paintQuay15(g)},light:{amb:'#f2dcc2'},draw(g,t){drawQuay15(g,t)},front(){},props:[{y:114,shape(g){jarsQuay15(g,1)},foot:[[237,110,18,4],[264,110,14,4]]}]};
+/* the sun of the late afternoon, out of the picture at the left and a little before us: shadows run long to the right and a little
+   back, as those of the jars, the posts and the bales do */
+ART.quay15={w:320,q:12,paint(g){paintQuay15(g)},light:{amb:'#f2dcc2',sun:[28,-3,.38]},draw(g,t){drawQuay15(g,t)},front(){},props:[{y:114,shape(g){jarsQuay15(g,1)},foot:[[237,110,18,4],[264,110,14,4]]}]};
 function paintQuay15(g){const r=rng(1505);
   skyQuay15(g,r);seaQuay15(g,r);moleQuay15(g,r);shipQuay15(g,r);paveQuay15(g,r);laneQuay15(g,r);houseQuay15(g,r);standQuay15(g,r);thingsQuay15(g,r);
   jarsQuay15(g);lightQuay15(g)}
@@ -1849,7 +1857,9 @@ function risenUpper15(g,x,y,o){const d=o.d,l=o.l,G=o.g,sk=o.s,sh=y-31.6,wy=y-18,
    Luke comes in at 160,128. Whatever stands at the foot of the walls is low, so that nothing round comes behind a head.
    Only the two flames move (drawStreet15), and only by night. The storage jar at our own side of the street, in the left corner,
    stands in front of whoever walks behind it (props). */
-ART.street15={w:320,q:12,variant:()=>F.mid?'d':'n',paint(g,v){paintStreet15(g,v)},light:()=>F.mid?{amb:'#d6cad2'}:{amb:'#3a3a56'},draw(g,t){drawStreet15(g,t)},front(){},
+ART.street15={w:320,q:12,variant:()=>F.mid?'d':'n',paint(g,v){paintStreet15(g,v)},/* at daybreak the first light comes low from the right, from over the sea, and the street is still in the soft shade of the night:
+   long, faint shadows to the left, as those at the foot of the walls. By night the two lamps and the open door light it. */
+ light:()=>F.mid?{amb:'#d6cad2',sun:[-28,2,.22]}:{amb:'#3a3a56',lamps:[[193.6,79.4,70,'#7a4a1c',118,79.4],[221.6,119.2,56,'#7a4a1c',121,117],[135,90,90,'#6a4420',110,70]]},draw(g,t){drawStreet15(g,t)},front(){},
   props:[{y:143.6,shape(g){nearStreet15(g)},foot:[8.5,138,21,6]}]};
 /* HZStreet15: the level of the sea, which is the horizon of the whole picture. NIGHTStreet15: where the two flames stand */
 const HZStreet15=64,NIGHTStreet15=[[193.6,79.4],[221.6,119.2]];

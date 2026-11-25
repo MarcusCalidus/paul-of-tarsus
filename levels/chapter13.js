@@ -202,7 +202,9 @@ ART.shop13={w:320,q:12,variant:()=>SHOPV(),
   if(v==='n')lightmap(g,320,'#4a4460',l=>{pool(l,148,50,78,64,'#ffd9a0',1);pool(l,140,98,130,42,'#ffcf90',.7);pool(l,130,86,64,8,'#ffe0b0',.4);pool(l,206,92,30,18,'#ffcf90',.3);pool(l,264,70,40,50,'#7a84b8',.4);pool(l,14,70,40,70,'#6a6080',.5,'multiply')});
   else if(v==='m')lightmap(g,320,'#5a5470',l=>{pool(l,148,50,74,62,'#ffd9a0',1);pool(l,136,98,120,40,'#ffcf90',.7);pool(l,130,86,60,8,'#ffe0b0',.36);pool(l,264,74,54,64,'#c8c4d8',.75);pool(l,240,124,90,30,'#b8b4c8',.4);pool(l,14,70,40,70,'#7a7090',.5,'multiply')});
   else lightmap(g,320,'#b0a69c',l=>{pool(l,264,74,84,74,'#fff4d8',.95);pool(l,200,122,170,36,'#ffeecc',.6);pool(l,150,86,80,10,'#fff0d4',.3);pool(l,210,96,26,16,'#fff4d8',.3);pool(l,14,74,44,74,'#9a9098',.5,'multiply')})},
- light:()=>{const W=[[0,24,103,46],[24,232,103,12],[296,320,103,12]];return SHOPV()==='n'?{amb:'#8a84a8',wallY:103,wall:W,lamps:[[148,70,90,'#7a5a30',103,47]]}:SHOPV()==='m'?{amb:'#9a94b0',wallY:103,wall:W,lamps:[[148,70,90,'#6a4e2a',103,47]]}:{amb:'#e6dcd4',wallY:103}},
+ /* by day the light comes in at the door, at the back on the right, and lies across the floor towards us: shadows fall to the left and
+    toward us. Before sunrise and at night the lamp on the shelf, at the back, throws them toward us. */
+ light:()=>{const W=[[0,24,103,46],[24,232,103,12],[296,320,103,12]];return SHOPV()==='n'?{amb:'#8a84a8',wallY:103,wall:W,lamps:[[148,70,90,'#7a5a30',103,47]]}:SHOPV()==='m'?{amb:'#9a94b0',wallY:103,wall:W,lamps:[[148,70,90,'#6a4e2a',103,47]]}:{amb:'#e6dcd4',wallY:103,sun:[-16,7,.3]}},
  draw(g,t){benchTop13(g);if(SHOPV()!=='d')flame(g,152,47,t)},front(){}};
 
 /* ---------- The synagogue of Ephesus ---------- */
@@ -238,7 +240,8 @@ ART.syn13={w:320,q:12,
   /* light: the two windows on the wall below them and, long and low, on the floor; the recess keeps its shade, and so do the corners */
   lightmap(g,320,'#a8a0ac',l=>{for(const x of[91,229]){pool(l,x,66,44,70,'#eef0f4',.85);pool(l,x+6,118,46,9,'#f4f0e6',.3)}pool(l,160,118,190,44,'#f4eede',.45);
     pool(l,160,60,30,34,'#8a8498',.4,'multiply');pool(l,0,74,34,80,'#8a8498',.4,'multiply');pool(l,320,74,34,80,'#8a8498',.4,'multiply')})},
- light:{amb:'#dcd6d8'},draw(g){synCast(g)},front(){}};
+ /* the day from the two windows high in the back wall falls steeply and lies on the floor before us: short shadows toward us */
+ light:{amb:'#dcd6d8',wallY:103,sun:[3,9,.26]},draw(g){synCast(g)},front(){}};
 
 /* ---------- A street of Ephesus ---------- */
 /* One street, seen three times a day. From the left: the way down to the harbor; a colonnade of shops, the last of them a seller
@@ -315,7 +318,11 @@ ART.street13={w:640,q:12,variant:()=>STREETV(),
       ao(g,166,52,10,52,'l',.4,'#2a1a10');ao(g,214,52,10,52,'r',.4,'#2a1a10')});
     litLayer(g,640,'#6a5a68',l=>{for(const[x,h,c]of[[172,12,GOAT],[186,9,'#4a3e34'],[200,13,GOAT],[212,8,LIN]])clothRoll(l,x,103,9,h,c)},l=>pool(l,196,84,40,10,'#ffb868',.5));
     for(const[x,y,rx,ry,a]of[[195,100,60,34,.5],[508,96,34,30,.42],[564,96,30,28,.42],[617,96,34,30,.45],[133,96,26,26,.38]])pool(g,x,y,rx,ry,'#ffb868',a,'screen')}},
- light:()=>{const v=STREETV();return v==='e'?{amb:'#a89ac0',wallY:103,lamps:[[195,96,50,'#6a4a20',103,92],[508,96,30,'#5a4018',103,72],[564,96,28,'#5a4018',103,76],[617,96,30,'#5a4018',103,72],[133,96,26,'#4a3414',103,78]]}:v==='n'?null:{amb:'#f0e8dc',wallY:103}},
+ /* the light of the hour, as the street is painted in it. In the morning (and the morning of the fire) the sun is low behind the houses
+    at the right: their shade lies along the foot of the fronts, and shadows fall long to the left and toward us. At midday it stands
+    high behind them: the shade under the eaves is a thin band, and shadows are short, toward us. In the evening the sun has gone down
+    behind the houses and the street lies in the soft light after it; only the lamps in the doors and windows throw shadows. */
+ light:()=>{const v=STREETV();return v==='e'?{amb:'#a89ac0',wallY:103,lamps:[[195,96,50,'#6a4a20',103,92],[508,96,30,'#5a4018',103,72],[564,96,28,'#5a4018',103,76],[617,96,30,'#5a4018',103,72],[133,96,26,'#4a3414',103,78]]}:v==='n'?{amb:'#ffffff',wallY:103,sun:[1,7,.42]}:{amb:'#f0e8dc',wallY:103,sun:[-14,12,.34],lamps:v==='f'&&G.fire13?[[346,112,64,'#6a3814',124,110]]:[]}},
  draw(g,t){streetDraw(g,t)},front(){}};
 /* dialArt: the sundial on its pillar, in the street, its foot at x,y. A block of pale stone with a hollow like a quarter of a bowl cut into
    its face; three notches on the rim of the hollow (morning, midday, evening), and a bronze pointer leaded into its top that leans out
@@ -423,7 +430,8 @@ ART.road13={w:320,q:12,
   {const[,t]=mk(1,1);for(const[x,y,w]of[[21,46,22],[10,54,14],[29,56,15],[19,38,12]])foliage(t,x,y,w,5,'#4f6a3e',r,70)}
   pine(g,8,112,66,'#4f6a3e',{lean:.8,shade:false});
   pool(g,34,116,44,9,'#3a3458',.34,'multiply');pool(g,220,0,240,150,'#fff0cc',.1,'screen')},
- light:null,draw(){},front(){}};
+ /* the morning sun from the left: the rocks are lit on their left faces, and the pine's shadow lies to the right of its foot */
+ light:{amb:'#ffffff',sun:[18,5,.4]},draw(){},front(){}};
 
 /* ---------- The hall of Tyrannus ---------- */
 /* A school's hall for lectures (Acts 19:9), at midday: benches of stone along the wall, a platform with the teacher's chair and a
@@ -462,7 +470,8 @@ ART.hall13={w:320,q:12,
     for(const x of[100,158,216]){pool(l,x,62,30,60,'#f4f0e2',.6);pool(l,x+8,116,30,6,'#f6f0e0',.26)}pool(l,180,120,200,40,'#f0e8d8',.4);
     pool(l,146,99,92,5,'#8a8496',.5,'multiply');pool(l,318,70,46,80,'#8e889c',.45,'multiply')})},
  /* what was left under the bench: a pupil's tablet, small and square */
- light:{amb:'#d8d2d6'},draw(g,t){R(g,64,101.4,6,3.4,'#6a4424');R(g,64.8,102,4.4,2.2,'#2a1f16');hallCast(g)},front(){}};
+ /* the white street in the door at the left lights the hall: shadows fall to the right, a little toward us */
+ light:{amb:'#d8d2d6',wallY:103,sun:[16,6,.32]},draw(g,t){R(g,64,101.4,6,3.4,'#6a4424');R(g,64.8,102,4.4,2.2,'#2a1f16');hallCast(g)},front(){}};
 
 /* ---------- A house in the evening, with one wall taken away ---------- */
 /* A close view, and the game's first of a house: one room under a flat roof, seen from the street side as if the front wall were
@@ -522,6 +531,8 @@ ART.house13={w:320,q:12,
     g.save();g.setTransform(1,0,0,1,0,0);g.globalCompositeOperation='multiply';g.drawImage(lc,0,0);g.restore()}
   comp(g,'multiply',.55,()=>{R(g,HX[0]-8,0,HX[1]-HX[0]+60,HTOP-8,'#6a70a8');R(g,HX[1]+8,HTOP-8,60,HFL-HTOP+9,'#6a70a8');R(g,0,HFL+4,320,40,'#7a78a0')});
   pool(g,138.5,68.6,6,3,'#ffd9a0',.45,'screen')},
+ /* a close view, seen by whoever stands below it: only Kleandros stands in it, posed in the lamp's light (houseDraw) on a floor too
+    thin to take a shadow before the cut ground, so the room keeps its warm tint and no cast shadow */
  light:{amb:'#e8c8a0'},
  draw(g,t){flame(g,141,66,t);houseDraw(g,t)},front(g){houseFront(g)}};
 
@@ -574,7 +585,8 @@ ART.board13={w:320,q:12,
   oval(g,298,74,15,12,'rgba(20,12,8,.4)');oval(g,296,71,15,12,'#8a4a2a');oval(g,296,70,12.6,9.8,'#5a2e18');
   for(const[x,y,c]of[[291,68,'#d8d2c4'],[299,66,'#8a8a94'],[296,73,'#c4b8a0'],[303,71,'#e2dccc'],[289,73,'#9a9488'],[297,69,'#b8b0a0']])pebble(g,x,y,c);
   comp(g,'multiply',.4,()=>{g.fillStyle=rg(g,160,60,230,['#ffffff','#8a7a80']);g.fillRect(0,0,320,144)})},
- light:{amb:'#ffffff'},draw(g,t){boardDraw(g)},front(g){boardFront(g)}};
+ /* a close view from above, with nobody standing in it */
+ light:null,draw(g,t){boardDraw(g)},front(g){boardFront(g)}};
 /* pebble: a river pebble seen from above, with its shadow and a light on it */
 function pebble(g,x,y,c){oval(g,x+.6,y+.8,4.4,3.4,'rgba(30,20,12,.42)');oval(g,x,y,4.2,3.2,tint(c,-.14));oval(g,x-.4,y-.4,3.4,2.4,c);oval(g,x-1.2,y-1.1,1.6,1,tint(c,.4))}
 

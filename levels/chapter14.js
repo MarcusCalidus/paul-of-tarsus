@@ -87,19 +87,26 @@ function planks14(g,x,y,w,h,pw,c,r){const q=rng(Math.round(x*31+y*7+w));
    house of Damon and Theano stands at the back, with its door, a hatch in the door, a shuttered window; a fig tree, a water trough.
    Everything in it is invented. v: m in the morning (Timothy and Erastus leave), e in the late afternoon (the farewell). */
 ART.court14={w:320,q:12,variant:()=>F.plea?'e':'m',
- paint(g,v){paintCourt(g,v)},light:()=>F.plea?{amb:'#e8d8c8'}:{amb:'#f0e8dc'},draw(g,t){},front(){}};
+ paint(g,v){paintCourt(g,v)},
+ /* the sun lies only on the upper walls: the court below, where people stand, is in the shade of the roofs at both hours, lit by the
+    sky and by what the walls throw back, so it keeps the contact shadow alone */
+ light:()=>F.plea?{amb:'#e8d8c8'}:{amb:'#f0e8dc'},draw(g,t){},front(){}};
 /* ---------- The silversmiths' marketplace ---------- */
 /* Demetrius at his stall among other silversmiths; behind, a kiln where one of them works silver with a hammer. The stalls hold boxes,
    shrines wrapped in cloth, and a few small silvery figures without detail (the Ephesus exception, at its most restrained); a donkey
    waits at a stall. v: b busy (scene 1, the morning of the uproar); q quiet, after it (stalls shut, wares under cloths, the kiln cold). */
 ART.market14={w:480,q:12,variant:()=>F.plea?'q':'b',
- paint(g,v){paintMarket(g,v)},light:()=>F.plea?{amb:'#e8d8c8'}:{amb:'#f2ead8'},draw(g,t){marketDraw(g,t)},front(){}};
+ paint(g,v){paintMarket(g,v)},
+ /* as the stalls throw theirs: in the morning to the right and toward us; late in the afternoon long to the left and toward us */
+ light:()=>F.plea?{amb:'#e8d8c8',sun:[-24,7,.36]}:{amb:'#f2ead8',sun:[16,6.5,.4]},draw(g,t){marketDraw(g,t)},front(){}};
 /* ---------- The outer colonnade of the theater ---------- */
 /* The front of the theater's stage building, with its arches, where the crowd pushes in; a colonnade along it, a row of columns under a
    deep beam and a roof; at the left the square, and the harbor road beyond it. The theater stood in the hollow of Mount Pion and held
    about 25,000, where two main streets met, with the agora beside it (Insight, "Ephesus"; the Study Edition's media on Acts 19:29). */
 ART.colon14={w:480,q:12,
- paint(g){paintColon(g)},light:{amb:'#f2ead8'},draw(g,t){colonDraw(g,t)},front(){}};
+ paint(g){paintColon(g)},
+ /* the sun stands high on the left: short shadows to the right, as the crowd's at the arches */
+ light:{amb:'#f2ead8',sun:[10,3,.42]},draw(g,t){colonDraw(g,t)},front(){}};
 /* ---------- Inside the door ---------- */
 /* The entrance room of Damon and Theano's house: the door to the court with its bolt and a hatch, a bench beside it, a lamp in a niche,
    shutters with the day coming through their slats. The light through the hatch moves across the floor while they wait (dlight). */
@@ -110,7 +117,8 @@ ART.door14={w:320,q:12,
    edge; Aristokles's hand with his signet ring comes in from the right. The cord and the clay are in the runner's hands (the inventory).
    The cord goes through the holes and is knotted at the edge, and the clay sits on the knot: nothing is tied across the face of the
    tablet. */
-ART.seal14={w:320,q:12,paint(g){paintSealBack(g)},light:{amb:'#e8e0d0'},draw(g,t){sealDraw(g,t)},front(){}};
+/* a close view with nobody standing in it */
+ART.seal14={w:320,q:12,paint(g){paintSealBack(g)},light:null,draw(g,t){sealDraw(g,t)},front(){}};
 
 /* The court. The house of Damon and Theano stands at the back, the house over the passage at the left, a fig tree in the corner at the
    right. The houses face the sun, which comes in over the roofs behind the onlooker: from the right in the morning and from the left in
