@@ -452,7 +452,7 @@ function sanctuaryTp18(g,r){const b0=164,b1=258,bt=13,f0=250,f1=290,ft=4,foot=46
   castTp18(g,f0,bt-4.6,foot,7,.42);
   poly(g,[f0,ft+1,f0+3,ft,f0+3,foot,f0,foot],'#b8a88c');ao(g,f0,ft,3,foot-ft,'l',.3,'#4a4060');
   face(f0+3,f1,ft,'#f4ead6',1);
-  R(g,f0+3,ft+22,f1-f0-3,1,'#fffaee');R(g,f0+3,ft+23,f1-f0-3,.6,'#a89474');
+  R(g,f0+3,ft+19,f1-f0-3,1,'#fffaee');R(g,f0+3,ft+20,f1-f0-3,.6,'#a89474');
   for(const y of[ft+6,ft+14])for(let x=f0+7;x<f1-4;x+=8.5){R(g,x,y,3.4,2.2,'#3a2e30');R(g,x,y+2.2,3.4,.5,'#fff6e2')}
   cornice(f0+2,f1,ft+1.6);goldBand(f0,f1+1,ft-3.6,3);R(g,f0,ft-3.6,f1-f0+1,.5,G[0]);
   /* the edge of the gilded east face, in the full morning sun, and the glow off it */
