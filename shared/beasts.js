@@ -878,11 +878,11 @@ const HORSE=(()=>{
     BRASS=['#f0d884','#d2ae54','#a68232','#74561e','#483412'],
     BLAZE=['#ece4d4','#cfc4b2'],EYE='#120c0a',MOUTH='#3c1816',TEETH='#dcd2b8';
   const HEADS={
-    0:{px:37.5,py:-88.5,al:63,jaw:0,ear:0},
-    20:{px:38.5,py:-92.0,al:46,jaw:0,ear:.65},
-    21:{px:39.5,py:-93.5,al:30,jaw:16,ear:.95},
-    22:{px:40.5,py:-94.0,al:20,jaw:28,ear:1},
-    23:{px:39.0,py:-90.5,al:54,jaw:7,ear:.3}};
+    0:{px:37.5,py:-88.5,al:63,jaw:0,ear:0,flare:0},
+    20:{px:38.0,py:-91.5,al:48,jaw:0,ear:.55,flare:.4},
+    21:{px:38.5,py:-92.8,al:39,jaw:16,ear:.85,flare:.8},
+    22:{px:39.0,py:-93.6,al:33,jaw:25,ear:1,flare:1},
+    23:{px:38.2,py:-90.2,al:53,jaw:4,ear:.25,flare:1}};
   const FW=FIG.W,FH=FIG.H,X0=FIG.OX,Y0=FIG.OY;
   const SH=-25.5,SF=21.5;
   const atPose=(W,ph,off,st)=>{if(!W)return{hx:st,lift:0,bend:0};const p=((ph-off)%1+1)%1,T=HORSE_REACH,B=HORSE_STANCE;if(p<B)return{hx:T/2-T*p/B,lift:0,bend:0};
@@ -978,29 +978,37 @@ const HORSE=(()=>{
 
     leg(SH,at(0,-4.5),1,1);leg(SF,at(.25,-2.0),1,0);
 
-    /* the arched, muscular equine neck */
+    /* the arched, muscular equine neck: keeps full equine arch and smooth throatlatch as the head lifts to whinny */
     const HP=HEADS[fr>=20?Math.min(23,fr):0],a=(HP.al+hd*1.8)*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),PX=HP.px+hd*.4,PY=HP.py+o+hd,
-      Wp=(u,v)=>[PX+u*ca-v*sa,PY+u*sa+v*ca],hm=coat(0);
-    const c0=[10.5,-72.0+o],c2=Wp(-1.8,-1.0),c1=[c0[0]+(c2[0]-c0[0])*.42+1.2,c0[1]+(c2[1]-c0[1])*.58-6.0],t1=Wp(12.2,8.4),t0=[34.2,-51.0+o];
-    const crest=s=>[(1-s)*(1-s)*c0[0]+2*s*(1-s)*c1[0]+s*s*c2[0],(1-s)*(1-s)*c0[1]+2*s*(1-s)*c1[1]+s*s*c2[1]],poly=[];
-    for(let i=0;i<=16;i++)poly.push(crest(i/16));poly.push(Wp(8.5,2.4),t1,t0,[25.5,-43.0+o],[10,-54+o]);
+      Wp=(u,v)=>[PX+u*ca-v*sa,PY+u*sa+v*ca],hm=coat(0),lift=Math.max(0,(63-HP.al)/30);
+    const c0=[10.5,-72.0+o],c2=Wp(-1.0,-.9),arch=5.8-1.3*lift,
+      c1=[c0[0]+(c2[0]-c0[0])*.44+1.0-lift*.6,c0[1]+(c2[1]-c0[1])*.56-arch],
+      t1=Wp(10.0,8.2),t0=[33.4,-50.5+o],tm=[(t1[0]+t0[0])*.5-.6-lift*.4,(t1[1]+t0[1])*.5+.6];
+    const crest=s=>[(1-s)*(1-s)*c0[0]+2*s*(1-s)*c1[0]+s*s*c2[0],(1-s)*(1-s)*c0[1]+2*s*(1-s)*c1[1]+s*s*c2[1]],
+      throat=s=>[(1-s)*(1-s)*t1[0]+2*s*(1-s)*tm[0]+s*s*t0[0],(1-s)*(1-s)*t1[1]+2*s*(1-s)*tm[1]+s*s*t0[1]],
+      poly=[],thPts=[];
+    for(let i=0;i<=16;i++)poly.push(crest(i/16));
+    poly.push(Wp(8.5,2.4));
+    for(let i=0;i<=12;i++){const p=throat(i/12);thPts.push(p);poly.push(p)}
+    poly.push([25.5,-43.0+o],[10,-54+o]);
     {const inPoly=(x2,y2)=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const[xi,yi]=poly[i],[xj,yj]=poly[j];if((yi>y2)!==(yj>y2)&&x2<(xj-xi)*(y2-yi)/(yj-yi)+xi)c=!c}return c};
       const dSeg=(x2,y2,p,q)=>{const dx=q[0]-p[0],dy=q[1]-p[1],t=Math.max(0,Math.min(1,((x2-p[0])*dx+(y2-p[1])*dy)/(dx*dx+dy*dy))),ex=x2-p[0]-dx*t,ey=y2-p[1]-dy*t;return Math.hypot(ex,ey)};
       const ax=t0[0]-c0[0]*.5-c2[0]*.5,ay=t0[1]-c0[1]*.5-c2[1]*.5,al=Math.hypot(ax,ay),acx=ax/al,acy=ay/al;
       let x0=99,x1=-99,y0=99,y1=-99;for(const[p,q]of poly){x0=Math.min(x0,p);x1=Math.max(x1,p);y0=Math.min(y0,q);y1=Math.max(y1,q)}
       for(let py=Math.floor(y0);py<=y1;py++)for(let px=Math.floor(x0);px<=x1;px++){const X=px+.5,Y=py+.5;if(!inPoly(X,Y))continue;
-        let dc=1e9;for(let i=0;i<16;i++)dc=Math.min(dc,dSeg(X,Y,poly[i],poly[i+1]));const s=dc/(dc+dSeg(X,Y,t1,t0)),
-          th=(s*2-1)*1.22,nz=Math.cos(th),sn=Math.sin(th);
+        let dc=1e9,dt=1e9;for(let i=0;i<16;i++)dc=Math.min(dc,dSeg(X,Y,poly[i],poly[i+1]));
+        for(let i=0;i<12;i++)dt=Math.min(dt,dSeg(X,Y,thPts[i],thPts[i+1]));
+        const s=dc/(dc+dt),th=(s*2-1)*1.22,nz=Math.cos(th),sn=Math.sin(th);
         let b=tn(acx*sn*1.15,acy*sn*.32-.25*Math.max(0,-sn),nz,px,py);
         if(s<.18)b=Math.max(1,b-1);else if(s>.84&&s<.97)b=Math.max(1,b-1);else if(s>.52&&s<.76)b=Math.min(4,b+1);
         put(px,py,22,COAT[b],2)}}
 
-    /* the flowing dark mane: cascading locks along the crest of the arched neck */
-    for(let i=0;i<=86;i++){const s=.02+i/86*.96,[mx,my]=crest(s),[nx2,ny2]=crest(Math.min(1,s+.02)),dx=nx2-mx,dy=ny2-my,l=Math.hypot(dx,dy)||1,ox=dy/l,oy=-dx/l;
-      const hUp=1.3+(((i*11)%7)<2?.45:0);
+    /* the flowing dark mane: cascading locks along the crest seamlessly into the poll */
+    for(let i=0;i<=88;i++){const s=.02+i/88*.98,[mx,my]=crest(s),[nx2,ny2]=crest(Math.min(1,s+.02)),dx=nx2-mx,dy=ny2-my,l=Math.hypot(dx,dy)||1,ox=dy/l,oy=-dx/l;
+      const hUp=(1.2-lift*.15)+(((i*11)%7)<2?.45:0);
       for(let j=-.5;j<=hUp;j+=.5)put(mx+ox*j,my+oy*j,40,j>hUp-.55&&((i*5)%7)<2?HAIR[0]:HAIR[2],8);
-      const lock=(i*7)%11,drop=(s<.12?2.8+s*44:s>.88?2.8+(1-s)*38:8.6)+Math.sin(i*.9)*2.2+(lock<3?1.8:0);
-      for(let dy2=0;dy2<=drop;dy2+=.65){const u2=dy2/Math.max(1,drop),lx=mx+ox*(-.4)-dy2*.22,ly=my+oy*(-.4)+dy2;
+      const lock=(i*7)%11,drop=(s<.12?2.8+s*44:s>.88?2.6+(1-s)*36:8.2-lift*.5)+Math.sin(i*.9)*2.0+(lock<3?1.6:0);
+      for(let dy2=0;dy2<=drop;dy2+=.65){const u2=dy2/Math.max(1,drop),lx=mx+ox*(-.4)-dy2*(.22+lift*.10),ly=my+oy*(-.4)+dy2;
         if(u2>.82&&lock>6)continue;
         put(lx,ly,38,u2<.25&&((i*3)%5===0)?HAIR[0]:((i+Math.floor(dy2))%4===0)?HAIR[1]:u2>.75?HAIR[3]:HAIR[2],8)}}
 
@@ -1013,16 +1021,28 @@ const HORSE=(()=>{
       return MUZ[Math.max(0,Math.min(4,b))]};
     {const[c0x,c0y]=Wp(3.0,.5);ell(c0x,c0y,44,6.0,6.8,6.4,a,hm,3)}
     {const[c0x,c0y]=Wp(10.8,4.2);ell(c0x,c0y,45,7.9,5.8,5.6,a,(nx,ny,nz,px,py)=>{const b=tn(nx,ny,nz,px,py);return lv(px,py)>8.2?COAT[Math.min(4,b+1)]:COAT[b]},3)}
-    {const[ax0,ay0]=Wp(4.2,-2.0),[bx0,by0]=Wp(22.0,-.9);cap(ax0,ay0,4.5,bx0,by0,3.4,46,headMat,3)}
-    {const[c0x,c0y]=Wp(24.6,.6);ell(c0x,c0y,46.5,4.4,4.0,4.0,a,headMat,3)}
-    const ja=HP.jaw*Math.PI/180,hu=11.8,hv=7.0,rot=(u,v)=>[hu+(u-hu)*Math.cos(ja)-(v-hv)*Math.sin(ja),hv+(u-hu)*Math.sin(ja)+(v-hv)*Math.cos(ja)],Wr=(u,v)=>Wp(...rot(u,v));
-    {const[h0,h1]=Wp(hu,hv),[m0,m1]=Wr(22.8,4.5);cap(h0,h1,3.6,m0,m1,2.4,44.5,headMat,3);
-      const[c0x,c0y]=Wr(24.6,3.8);ell(c0x,c0y,45.2,2.9,2.2,2.3,a+ja,(nx,ny,nz,px,py)=>MUZ[Math.min(4,tn(nx,ny,nz,px,py)+1)],3)}
-    if(HP.jaw){
-      const Q=[Wp(17.5,4.2),Wp(28.0,2.2),Wr(26.6,3.2),Wr(17.5,4.6)];let x0=99,x1=-99,y0=99,y1=-99;for(const[p,q]of Q){x0=Math.min(x0,p);x1=Math.max(x1,p);y0=Math.min(y0,q);y1=Math.max(y1,q)}
-      for(let py=Math.floor(y0);py<=y1;py++)for(let px=Math.floor(x0);px<=x1;px++){let c=false;for(let i=0,j=3;i<4;j=i++){const[xi,yi]=Q[i],[xj,yj]=Q[j];if(yi>py+.5!==yj>py+.5&&px+.5<(xj-xi)*(py+.5-yi)/(yj-yi)+xi)c=!c}if(c)put(px,py,43.5,MOUTH,3)}
-      const tooth=(p,q,c)=>{const i=idx(Math.floor(p),Math.floor(q));if(i>=0&&Cb[i]===MOUTH)Cb[i]=c};
-      for(let u=20;u<=26.6;u+=.5){const[p,q]=Wp(u,3.6-(u-19)*.12);tooth(p,q,TEETH);const[r,s]=Wr(u,3.0);tooth(r,s,'#c4b89e')}}
+    {const[ax0,ay0]=Wp(4.2,-2.0),[bx0,by0]=Wp(22.0,-1.0);cap(ax0,ay0,4.5,bx0,by0,HP.jaw>=10?3.1:3.4,46,headMat,3)}
+    {const[c0x,c0y]=Wp(24.6,HP.jaw>=10?.1:.6);ell(c0x,c0y,46.5,4.2,HP.jaw>=10?3.1:3.9,3.9,a,headMat,3)}
+    const ja=HP.jaw*Math.PI/180,hu=12.4,hv=6.4,rot=(u,v)=>[hu+(u-hu)*Math.cos(ja)-(v-hv)*Math.sin(ja),hv+(u-hu)*Math.sin(ja)+(v-hv)*Math.cos(ja)],Wr=(u,v)=>Wp(...rot(u,v));
+    {const[h0,h1]=Wp(hu,hv),[m0,m1]=Wr(22.4,4.5);cap(h0,h1,3.5,m0,m1,2.2,44.5,headMat,3);
+      const[c0x,c0y]=Wr(24.0,4.4);ell(c0x,c0y,45.6,2.8,2.1,2.2,a+ja,(nx,ny,nz,px,py)=>MUZ[Math.min(4,tn(nx,ny,nz,px,py)+1)],3)}
+    if(HP.jaw>=10){
+      /* open equine mouth strictly forward of the lip corner/bit (u >= 20.0): dark mouth interior, subtle tongue, neat front incisors */
+      const Q=[Wp(20.0,3.1),Wp(26.4,2.3),Wr(24.8,3.6),Wr(20.0,4.3)];
+      let x0=99,x1=-99,y0=99,y1=-99;for(const[p,q]of Q){x0=Math.min(x0,p);x1=Math.max(x1,p);y0=Math.min(y0,q);y1=Math.max(y1,q)}
+      for(let py=Math.floor(y0);py<=y1;py++)for(let px=Math.floor(x0);px<=x1;px++){let c=false;
+        for(let i=0,j=3;i<4;j=i++){const[xi,yi]=Q[i],[xj,yj]=Q[j];if(yi>py+.5!==yj>py+.5&&px+.5<(xj-xi)*(py+.5-yi)/(yj-yi)+xi)c=!c}
+        if(!c)continue;
+        const u=lu(px,py),v=lv(px,py),col=u<21.8?'#200a0a':v>5.4&&u<24.2?'#763430':MOUTH;
+        put(px,py,48.5,col,3)}
+      /* neat upper and lower incisor teeth tucked inside the front lips */
+      for(let u=23.2;u<=25.8;u+=.5){const[p,q]=Wp(u,2.7);put(p,q,49.2,TEETH,3)}
+      for(let u=22.6;u<=24.6;u+=.5){const[r,s]=Wr(u,3.4);put(r,s,49.2,'#d4cab0',3)}
+      /* crisp dark lip rim framing the upper and lower lips */
+      for(let u=20.2;u<=26.4;u+=.5){const[p,q]=Wp(u,2.1);put(p,q,49.4,MUZ[4],3);const[r,s]=Wr(u,4.0);if(u<=24.8)put(r,s,49.4,MUZ[4],3)}}
+    else if(HP.jaw>0){
+      /* slight parted mouth for the concluding snort (frame 23) */
+      for(let u=21.0;u<=26.2;u+=.5){const[p,q]=Wp(u,2.9);put(p,q,48.5,'#261010',3);const[r,s]=Wr(u,3.5);put(r,s,48.5,MUZ[4],3)}}
 
     /* short pointed equine ears (distinctly shorter than the mule's) + dark forelock */
     const ear=(bx0,by0,ang,len,near)=>{const ex=Math.cos(ang),ey=Math.sin(ang),bx=bx0-ex*1.5,by=by0-ey*1.5,L=len+1.5,R=L+3;
@@ -1037,14 +1057,17 @@ const HORSE=(()=>{
     /* forelock tuft between ears */
     for(const[u,v,du,dv]of[[.4,-2.6,4.0,-1.8],[.8,-1.3,4.6,-.6],[.2,-.2,3.6,.8]]){const[r0,r1]=Wp(u,v),[e0,e1]=Wp(u+du,v+dv);cap(r0,r1,1.0,e0,e1,.68,58,()=>HAIR[2],8)}
 
-    /* forehead blaze, bright dark almond eye, dark nostril and closed mouth line */
+    /* forehead blaze, bright dark almond eye, flared/resting nostril and closed mouth line */
     for(const[u,v,c]of[[6.4,-2.8,BLAZE[0]],[7.6,-2.6,BLAZE[0]],[8.8,-2.4,BLAZE[1]],[10.0,-2.2,BLAZE[1]],[8.0,-1.8,BLAZE[0]],[9.2,-1.6,BLAZE[1]]]){
       const[p,q]=Wp(u,v);if(partAt(p,q)===3)set(p,q,c)}
     {const[e0,e1]=Wp(8.8,2.0),X=Math.floor(e0),Y=Math.floor(e1),sh=(x2,y2,c)=>{if(partAt(x2,y2)===3)set(x2,y2,c)};
       for(const dx of[-1,0,1,2])sh(X+dx,Y-1,COAT[4]);
       sh(X-2,Y,COAT[3]);sh(X+2,Y,COAT[1]);
       for(const dx of[-1,0,1])sh(X+dx,Y,EYE);sh(X,Y,'#5e4c42');sh(X,Y+1,EYE);sh(X+1,Y+1,'#2a1e18');sh(X-1,Y+1,COAT[2]);sh(X,Y+2,COAT[2])}
-    for(const[u,v,c]of[[24.2,-1.2,MUZ[3]],[24.9,-.5,'#181210'],[25.5,.2,'#181210'],[25.4,.9,MUZ[3]]]){const[n0,n1]=Wp(u,v);if(partAt(n0,n1)===3)set(n0,n1,c)}
+    if(HP.flare>=.7){
+      for(const[u,v,c]of[[23.6,-1.6,MUZ[1]],[24.6,-1.4,MUZ[1]],[24.0,-.8,'#140d0c'],[24.8,-.6,'#140d0c'],[25.6,-.2,'#140d0c'],[24.4,.2,'#221816'],[25.2,.5,MUZ[3]]]){
+        const[n0,n1]=Wp(u,v);if(partAt(n0,n1)===3)set(n0,n1,c)}}
+    else for(const[u,v,c]of[[24.2,-1.2,MUZ[3]],[24.9,-.5,'#181210'],[25.5,.2,'#181210'],[25.4,.9,MUZ[3]]]){const[n0,n1]=Wp(u,v);if(partAt(n0,n1)===3)set(n0,n1,c)}
     if(!HP.jaw)for(let u=21.5;u<=27.6;u+=.5){const[p,q]=Wp(u,2.9);if(partAt(p,q)===3)set(p,q,u>24.4?HAIR[2]:MUZ[4])}
 
     const topAt=X=>{let Y=-Y0;while(Y<0&&![1,2].includes(partAt(X,Y)))Y++;return Y},botAt=X=>{let Y=-1;while(Y>-Y0&&partAt(X,Y)!==1)Y--;return Y};
