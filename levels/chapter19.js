@@ -922,113 +922,498 @@ function lightGate19(g){comp(g,'soft-light',.45,()=>{g.fillStyle=lg(g,0,0,320,0,
 
 /* ==== ART cmd19: begin ==== */
 /* The commander's room in the fortress of Antonia, in the late afternoon (the maintainer's reference, described in our own words only;
-   nothing of its composition is copied). Warm low light comes in through a wide opening at the right, over a stone parapet, with the
-   sunlit roofs of the city beyond, ending at the one horizon. At the left a dark woven hanging, its pattern in bands that run one way
-   only; a bronze jar on a stand whose top is as wide as the jar and whose foot spreads. The opening is framed by thick piers at its two
-   ends (no column under a single beam). No lamp is lit.
+   nothing of its composition is copied). We look west, over the upper city: the sun stands low beyond the wall at the right, and its
+   light comes in through a wide opening over a stone parapet (OPCmd19) and lies as a long warm patch on the floor, slanting toward us
+   and to the left; the rest of the room is in the warm shade of its own walls, lit from the floor. Through the opening the sunlit roofs
+   of the city step back to the low hills, which end at the one horizon (y 64); the temple is not in view from this side. The opening is
+   cut through the thick wall: its right side and the lintel's underside show, its parapet's top catches the sun. The wall is limewashed
+   plaster under a deep entablature and a ceiling of beams; four fluted half-columns stand against it under the entablature, each on its
+   base, with a capital hardly wider than its shaft; two of them flank the opening. No band runs along the wall between them. At the left
+   a doorway, and a dark woven hanging on a rod, its pattern in bands that run one way only (zigzags, hollow lozenges apart from one
+   another, stripes) and a short slanting fringe; a bronze jar on a stone stand whose top is as wide as the jar and whose foot spreads;
+   in the second bay a plain wooden chest with a folded red cloak on it, against the wall. Nothing stands in the walk strip. No lamp is
+   lit. Heads come at y 74..92: behind them lie plaster, the columns and the city, nothing round.
    Called from outside: ART.cmd19. Reads nothing.
    Hotspots: the opening onto the city 196,30,114,62 · the hanging 18,24,40,64 · the bronze jar 72,78,12,26 · the door 0,56,16,58.
    Walk: 30..300 by 114..138. Actors: the commander 254,118 by the parapet; the officer and the nephew come in at the left (60,126). */
-ART.cmd19={w:320,q:12,paint(g){paintCmd19(g)},light:{amb:'#f0cca8',sun:[-.5,.25,.35],wallY:104},draw(){},front(){}};
-function paintCmd19(g){const r=rng(1951),W='#d8c4a0';
-  plaster(g,0,0,320,104,W,r,{patch:1,cracks:1,t:.4,top:-.08,bot:-.04});
-  /* the opening: sky, the city's roofs at the horizon (y 72), the parapet */
-  {const x0=196,x1=310,y0=30,y1=92;sky19(g,320,0,'aft');g.save();g.beginPath();g.rect(x0,y0,x1-x0,y1-y0);g.clip();sky19(g,320,92,'aft');
-    for(let i=0;i<14;i++){const x=x0+i*9-4,h=4+(i*7%5)*1.4;R(g,x,72-h,10,h+20,i%2?'#d8b890':'#caa880');R(g,x,72-h,10,.6,'#f4dcb0')}g.restore();
-    R(g,x0-8,y0-4,8,y1-y0+12,tint(W,.04));R(g,x1,y0-4,8,y1-y0+12,tint(W,-.04));R(g,x0-8,y0-6,x1-x0+16,6,tint(W,.08));
-    R(g,x0,82,x1-x0,22,tint(W,-.06));R(g,x0,82,x1-x0,1.2,tint(W,.3))}
-  /* the hanging, the jar on its stand */
-  R(g,18,24,40,64,'#3a2a3a');for(let y=30;y<84;y+=8)R(g,18,y,40,2,'#6a3a3a');R(g,18,24,40,1,'#5a4a5a');
-  R(g,72,94,12,10,'#6a5a48');R(g,70,102,16,2,'#5a4a38');R(g,72,94,12,1,'#8a7a62');vessel(g,78,94,5,14,'#a8743a','jar');
-  R(g,0,56,16,58,'#2a2018');
-  pave(g,-2,104,322,144,'#c2ae8a',r,{vx:160,vy:70,rows:5,step:34,v:.08,t:.35});ao(g,0,104,320,6,'t',.3,'#3a2c3c');
-  comp(g,'soft-light',.55,()=>{poly(g,[196,92,310,92,330,144,170,144]);g.fillStyle='rgba(255,200,130,1)';g.fill()});
-  light19(g,320,-1,'rgba(255,196,130,1)',.45)}
+const HZCmd19=64,OPCmd19=[196,30,310,84],RVCmd19=[300,32.7,82.4],COLCmd19=[106,148,189,316];
+ART.cmd19={w:320,q:12,paint(g){paintCmd19(g)},light:{amb:'#eccaa8',sun:[-.45,.3,.35],wallY:104},draw(){},front(){}};
+function paintCmd19(g){const r=rng(1951),W='#e0ccaa',BK=104,[ox0,oy0,ox1,oy1]=OPCmd19;
+  /* the back wall: limewashed plaster, a little worn, under the ceiling */
+  plaster(g,0,8,320,BK-8,W,r,{patch:0,cracks:0,t:.36,top:.02,bot:-.06});
+  SHARED.temple.age(g,0,8,320,BK-8,rng(1959),.45);
+  for(const[x,y,n]of[[128,27,3],[170,26,4],[236,25,2]])M19.crack(g,x,y,n,r,.5);
+  M19.ceiling(g,320,{U:8,x0:12,step:32,vx:160,vy:HZCmd19,r,boards:'#2e2018',joist:'#5e4428',plate:'#6e5032'});
+  pave(g,-2,BK,322,144,'#d2b88e',r,{vx:160,vy:HZCmd19,rows:5,step:36,v:.07,t:.3,rand:1});
+  doorCmd19(g,r,W);
+  hangingCmd19(g,r);
+  chestCmd19(g,r);
+  entablatureCmd19(g,r,W);
+  for(const x of COLCmd19)columnCmd19(g,x,W,r);
+  jarCmd19(g);
+  /* the room in its own warm shade: the sun is beyond the wall, and only the floor's patch of light lights the room from below */
+  shade(g,[0,0,320,0,320,144,0,144],'#b49ca4',.62);
+  comp(g,'multiply',.45,()=>{g.fillStyle=lg(g,0,0,320,0,['#7a6e94','#c8b8c4','#f4ece8']);g.fillRect(0,0,320,144)});
+  comp(g,'multiply',.4,()=>{g.fillStyle=lg(g,0,0,0,104,['#8a7a98','#e8dcd8','#ffffff']);g.fillRect(0,0,320,104)});
+  /* the opening: the city in the sun, the reveal and the lintel's underside, the parapet's top */
+  inRect(g,ox0,oy0,ox1-ox0,oy1-oy0,()=>viewCmd19(g));
+  openingCmd19(g,W);
+  lightCmd19(g)}
+/* viewCmd19: the view through the opening: the western sky warm low down, the sun's glow beyond the right edge, a few thin clouds, the
+   low hills at the horizon, and the city's flat roofs stepping back to them, lit from the right */
+function viewCmd19(g){const[ox0,oy0,ox1,oy1]=OPCmd19,HZ=HZCmd19,q=rng(1953);
+  g.fillStyle=lg(g,0,oy0,0,HZ,['#7e96c2','#a8b0c8','#dcc4b8','#f4d4a2']);g.fillRect(ox0,oy0,ox1-ox0,HZ-oy0+1);
+  pool(g,350,40,110,40,'#ffe8b8',.55,'screen');pool(g,330,58,70,14,'#fff0c8',.4,'screen');
+  for(const[x,y,w]of[[204,40,40],[236,47,52],[262,37,30]]){pool(g,x+w/2,y,w/2,1.1,'#f8dcc4',.55,'source-over');R(g,x+w*.25,y+.5,w*.55,.5,'rgba(255,196,140,.55)');R(g,x+w*.3,y-.6,w*.4,.5,'rgba(150,140,170,.25)')}
+  /* the hills far off, hazed, lit along their tops */
+  ridge(g,ox0-4,ox1+4,HZ,x=>2.4+1.4*Math.sin(x/19)+.9*Math.sin(x/7.3+1),['#c4aeb4','#ccb6ae']);
+  {const p=[];for(let x=ox0-4;x<=ox1+4;x+=.5)p.push(x,HZ-(2.4+1.4*Math.sin(x/19)+.9*Math.sin(x/7.3+1))+.3);stroke(g,p,'rgba(255,226,186,.5)',.5)}
+  /* the roofs of the upper city, far rows first, each nearer row larger, clearer and lower */
+  const T=SHARED.temple;
+  T.roofs(g,{x0:ox0-6,x1:ox1+6,y:HZ-1.2,dy:1,down:4,w:[2.5,5],sun:'right',haze:'#e4c4b8',a:.5,seed:1954});
+  T.roofs(g,{x0:ox0-6,x1:ox1+6,y:HZ+3,dy:1.6,down:6,w:[3.5,7],sun:'right',haze:'#e4c4b8',a:.3,seed:1955});
+  T.roofs(g,{x0:ox0-6,x1:ox1+6,y:HZ+8,dy:2,down:8,w:[5,10],sun:'right',haze:'#ecd4c0',a:.2,seed:1956});
+  T.roofs(g,{x0:ox0-6,x1:ox1+6,y:HZ+13.5,dy:2.4,down:10,w:[7,14],sun:'right',haze:'#ecd4c0',a:.1,seed:1957});
+  /* the warm air of the late afternoon over all of it: the sun gilds the faces turned to it, the shade between the houses goes violet */
+  comp(g,'multiply',.4,()=>{g.fillStyle=lg(g,0,HZ-6,0,oy1,['#f8dcc0','#e8b888']);g.fillRect(ox0,HZ-6,ox1-ox0,oy1-HZ+6)});
+  comp(g,'soft-light',.35,()=>{g.fillStyle=lg(g,ox0,0,ox1,0,['rgba(255,214,170,.4)','rgba(255,200,140,1)']);g.fillRect(ox0,oy0,ox1-ox0,oy1-oy0)});
+  for(let i=0;i<30;i++)R(g,ox0+q()*(ox1-ox0),HZ+q()*20,.5,.5,q()<.5?'rgba(90,70,80,.25)':'rgba(255,240,214,.3)')}
+/* openingCmd19: the depth of the wall round the opening: the right side of the opening, in its own shade; the lintel's underside; the
+   parapet's top, in the sun, with its lip toward us and the soft shade under it */
+function openingCmd19(g,W){const[ox0,oy0,ox1,oy1]=OPCmd19,[rx,ty,by]=RVCmd19;
+  poly(g,[rx,ty,ox1,oy0,ox1,oy1,rx,by]);g.fillStyle=lg(g,rx,0,ox1,0,[tint(W,-.22),tint(W,-.3)]);g.fill();
+  clipTo(g,()=>poly(g,[rx,ty,ox1,oy0,ox1,oy1,rx,by]),()=>{tex(g,'mott',.4,rx,oy0,ox1-rx,oy1-oy0,'overlay',1);ao(g,rx,oy0,4,oy1-oy0,'l',.25,'#3a2a3a');
+    pool(g,ox1-3,oy1-8,6,10,'#ffc890',.25,'screen')});
+  stroke(g,[rx+.25,ty,rx+.25,by],'rgba(255,230,190,.45)',.5);
+  poly(g,[ox0,oy0,ox1,oy0,rx,ty,ox0,ty],tint(W,-.36));R(g,ox0,ty-.5,rx-ox0,.5,'rgba(255,220,170,.35)');
+  /* the parapet's top: a long coping stone in the sun, its joints stopping inside it */
+  poly(g,[ox0,by,rx,by,ox1,oy1,ox0,oy1]);g.fillStyle=lg(g,0,by,0,oy1,['#f8e2b8','#ecd0a0']);g.fill();
+  for(const x of[226,262])stroke(g,[x,by+.3,x+.6,oy1-.3],'rgba(120,90,80,.4)',.5);
+  R(g,ox0-1,oy1,ox1-ox0+1,1.4,tint(W,.06));R(g,ox0-1,oy1,ox1-ox0+1,.5,'#fff0d0');ao(g,ox0,oy1+1.4,ox1-ox0,3,'t',.35,'#3a2a3a')}
+/* entablatureCmd19: the deep beam of dressed stone along the top of the wall, under the ceiling's plate: a cornice that catches the light
+   from below on its underside, a plain frieze, an architrave of two faces. It runs the whole width and rests on the columns and walls. */
+function entablatureCmd19(g,r,W){const S=tint(W,.02);
+  R(g,0,10.4,320,2.4,tint(S,.04));R(g,0,12.4,320,.8,tint(S,.24));R(g,0,10.4,320,.5,'rgba(40,28,30,.5)');
+  R(g,0,13.2,320,5.2,tint(S,-.02));tex(g,'mott',.3,0,13.2,320,5.2,'overlay',1);
+  R(g,0,18.4,320,.6,'rgba(60,44,50,.35)');R(g,0,19,320,2,tint(S,.03));R(g,0,21,320,.5,'rgba(70,52,56,.3)');R(g,0,21.5,320,1.9,tint(S,-.01));
+  R(g,0,23.4,320,.6,'rgba(60,44,50,.45)');ao(g,0,24,320,4,'t',.25,'#3a2a3a')}
+/* columnCmd19: a fluted half-column against the wall at x: a square plinth and a round moulding at its foot, the shaft with its flutes
+   catching the light from the floor in front, a capital of two plain mouldings hardly wider than the shaft under the architrave; its soft
+   shade on the wall at its left */
+function columnCmd19(g,x,W,r){const sw=4.3,top=24,bot=104,cap=4.6,base=5,S=tint(W,.04);
+  comp(g,'multiply',.25,()=>{g.fillStyle=lg(g,x-sw-5,0,x-sw,0,['rgba(120,100,120,0)','rgba(120,100,120,1)']);g.fillRect(x-sw-5,top,5,bot-top)});
+  const y0=top+cap,y1=bot-base;
+  g.fillStyle=lg(g,x-sw,0,x+sw,0,[tint(S,-.34),tint(S,-.12),tint(S,.08),tint(S,.18),tint(S,.04)]);g.fillRect(x-sw,y0,sw*2,y1-y0);
+  /* the flutes: soft hollows, each darker on its right and lit on its left, which narrow toward the edges of the shaft */
+  for(let k=-3;k<=3;k++){const u=k/3.6,fx=x+Math.sin(u*1.3)*sw*.92,fw=Math.max(.5,Math.cos(u*1.3)*1.1);
+    R(g,fx-fw/2,y0+.6,fw*.5,y1-y0-1.2,rgba(tint(S,-.4),.32));R(g,fx,y0+.6,.5,y1-y0-1.2,rgba(tint(S,.3),.25*Math.cos(u)))}
+  inRect(g,x-sw,y0,sw*2,y1-y0,()=>tex(g,'mott',.25,x-sw,y0,sw*2,y1-y0,'overlay',1));
+  /* the capital: a rounded moulding and a square slab above it, a little wider than the shaft */
+  g.fillStyle=lg(g,x-sw-.8,0,x+sw+.8,0,[tint(S,-.3),tint(S,.08),tint(S,.16)]);g.fillRect(x-sw-.6,y0-2.2,sw*2+1.2,2.2);R(g,x-sw-.6,y0-.5,sw*2+1.2,.5,'rgba(50,36,44,.4)');
+  R(g,x-sw-1,top,sw*2+2,2.4,tint(S,.02));R(g,x-sw-1,top+2,sw*2+2,.4,'rgba(255,236,200,.35)');
+  /* the base: a round moulding on a square plinth */
+  g.fillStyle=lg(g,x-sw-1.2,0,x+sw+1.2,0,[tint(S,-.3),tint(S,.06),tint(S,.18)]);g.fillRect(x-sw-.8,y1,sw*2+1.6,2);R(g,x-sw-.8,y1,sw*2+1.6,.5,'rgba(255,236,200,.35)');
+  R(g,x-sw-1.4,y1+2,sw*2+2.8,base-2,tint(S,-.06));R(g,x-sw-1.4,y1+2,sw*2+2.8,.5,tint(S,.2));
+  M19.shadow(g,x+.6,bot+.3,sw+2,1,.5)}
+/* doorCmd19: the doorway at the left edge: a lintel block over the jamb, a passage in shade, lit a little from far down it */
+function doorCmd19(g,r,W){const x=0,w=12,top=58,b=104;
+  clipTo(g,()=>{g.beginPath();g.rect(x,top,w,b-top)},()=>{g.fillStyle=lg(g,0,top,0,b,['#1e1614','#2e2220','#3e302a']);g.fillRect(x,top,w,b-top);
+    pool(g,4,b-12,8,10,'#d8b890',.18,'screen');poly(g,[0,b,w,b,w-3,b-8,0,b-8],'rgba(160,130,110,.25)');ao(g,x,top,w,8,'t',.6,'#000')});
+  R(g,w,top,3.4,b-top,tint(W,-.08));R(g,w,top,.6,b-top,tint(W,-.3));R(g,w+2.8,top,.6,b-top,tint(W,.16));tex(g,'mott',.3,w,top,3.4,b-top,'overlay',1);
+  R(g,0,top-4.4,w+4.4,4.4,tint(W,.04));R(g,0,top-4.4,w+4.4,.5,tint(W,.24));R(g,0,top-.4,w+4.4,.8,'rgba(40,28,36,.5)');tex(g,'mott',.3,0,top-4.4,w+4.4,4.4,'overlay',1);
+  R(g,0,b-.6,w+4,1.2,tint(W,.04))}
+/* hangingCmd19: the dark woven hanging, its top sewn round a wooden rod whose ends rest in the wall; broad soft folds, a weave whose
+   threads run across only; its pattern in bands that run across: a zigzag, a row of hollow lozenges set apart, stripes; at its foot a
+   short fringe of threads that slant, not hanging straight down from a band */
+function hangingCmd19(g,r){const x0=18,x1=58,y0=25,y1=87,G0='#3a2430',RED='#8a3a2c',OCH='#b8903e',BLU='#4a5a7e',CR='#d8c49a',
+    hem=x=>y1+.8*Math.sin((x-x0)/40*Math.PI*4.2);
+  M19.shadow(g,(x0+x1)/2+1,y1+14,(x1-x0)/2,1.2,.2);
+  const P=[x0,y0];for(let x=x0;x<=x1;x+=1)P.push(x,hem(x));P.push(x1,y0);
+  comp(g,'multiply',.3,()=>poly(g,P.map((v,i)=>i%2?v+1.4:v-1.2),'#5a4050'));
+  poly(g,P,G0);
+  clipTo(g,()=>poly(g,P),()=>{
+    /* the weave: fine threads across, lighter and darker */
+    for(let y=y0;y<y1+2;y+=.5)R(g,x0,y,x1-x0,.5,rgba(r()<.5?'#000000':'#ffffff',.03+r()*.04));
+    /* the bands of the pattern, from the top down */
+    const band=(y,c,h)=>R(g,x0,y,x1-x0,h,c);
+    const zig=(y,c,a)=>{const p=[];for(let x=x0-2,k=0;x<=x1+2;x+=2.5,k++)p.push(x,y+(k%2?a:0));stroke(g,p,c,.6)};
+    const loz=(y,c,s)=>{for(let x=x0+3.6;x<x1-2;x+=6.4){const q=[x,y-s,x+s*.9,y,x,y+s,x-s*.9,y,x,y-s];stroke(g,q,c,.55);R(g,x-.25,y-.25,.5,.5,c)}};
+    band(y0+2,RED,1.4);zig(y0+5,OCH,1.6);band(y0+8,RED,.8);
+    for(const yb of[y0+16,y0+36]){band(yb-4.6,BLU,.6);loz(yb,CR,2.6);band(yb+4.2,BLU,.6)}
+    band(y0+25,RED,1.6);zig(y0+27.6,OCH,1.4);band(y0+29.6,RED,.6);
+    band(y0+46,RED,1.4);zig(y0+49,OCH,1.6);band(y0+52,RED,.8);band(y1-4,RED,2.2);band(y1-1.6,OCH,.6);
+    /* the folds: broad and soft, shade and light across them, no line drawn down them */
+    for(let k=0;k<5;k++){const fx=x0+4+k*8.2;comp(g,'multiply',.5,()=>{g.fillStyle=lg(g,fx,0,fx+8.2,0,['rgba(255,255,255,0)','rgba(60,40,60,1)','rgba(255,255,255,0)']);g.fillRect(fx,y0,8.2,y1-y0+2)});
+      comp(g,'screen',.12,()=>{g.fillStyle=lg(g,fx-3,0,fx+2,0,['rgba(255,220,180,0)','rgba(255,220,180,1)','rgba(255,220,180,0)']);g.fillRect(fx-3,y0,5,y1-y0+2)})}
+    tex(g,'mott',.3,x0,y0,x1-x0,y1-y0+2,'overlay',.8);ao(g,x0,y0,x1-x0,5,'t',.4,'#000')});
+  /* the fringe: short threads that slant, in the hanging's own tones */
+  for(let x=x0+.6;x<x1;x+=1.1){const y=hem(x);stroke(g,[x,y,x-.8,y+2+r()*.8],r()<.5?'#5a3a3a':'#7a4a3a',.5)}
+  /* the rod, its two ends in the wall, the cloth sewn round it */
+  R(g,x0-3,y0-2.4,x1-x0+6,2.6,'#6a4a2c');R(g,x0-3,y0-2.4,x1-x0+6,.6,'#a8804e');R(g,x0-3,y0-.2,x1-x0+6,.4,'#2e1e14');
+  R(g,x0,y0-1.6,x1-x0,1.8,tint(G0,.08));for(const ex of[x0-3.4,x1+2.4])R(g,ex,y0-2.6,1,3,'#3a2a1c')}
+/* chestCmd19: a plain wooden chest against the wall in the second bay, its lid shut; a red cloak lies folded on it */
+function chestCmd19(g,r){const x=158,w=24,y=104.6,h=10;
+  M19.shadow(g,x+w/2,y,w/2+1.5,1.2,.55);
+  M19.plank(g,x,y-h,w,h,'#7a5634',r);R(g,x,y-h,w,.5,'#a8804e');R(g,x+w-.6,y-h,.6,h,'rgba(30,20,14,.4)');R(g,x,y-h+3.6,w,.5,'rgba(30,20,14,.45)');
+  R(g,x-.6,y-h-1.6,w+1.2,1.8,'#8a6440');R(g,x-.6,y-h-1.6,w+1.2,.5,'#c09a68');ao(g,x,y-3,w,3,'b',.3,'#1a1010');
+  /* the cloak, folded in a soft long bundle, its folds lying along it */
+  const c='#9a3428',P=[x+2,y-h-1.4,x+2.4,y-h-3.8,x+5,y-h-5,x+17,y-h-5.2,x+20.6,y-h-4.2,x+21,y-h-1.4];
+  poly(g,P);g.fillStyle=lg(g,0,y-h-5.2,0,y-h-1.4,[tint(c,.16),c,tint(c,-.28)]);g.fill();
+  stroke(g,[x+3,y-h-3.1,x+11,y-h-3.4,x+20,y-h-3],'rgba(60,20,16,.5)',.5);stroke(g,[x+5.4,y-h-4.8,x+16.6,y-h-5],'rgba(230,150,120,.5)',.5);
+  poly(g,[x+21,y-h-1.4,x+20.6,y-h-4.2,x+22,y-h-2.6,x+22.4,y-h-.4],tint(c,-.22))}
+/* jarCmd19: a bronze jar with two handles on a stone stand: the stand's top as wide as the jar's foot and shoulders, its foot spreading;
+   the bronze lit warm from the floor and the opening at the right, its rim a thin lit edge */
+function jarCmd19(g){const cx=78,sb=104,st=91.4,S='#cdb894';
+  M19.shadow(g,cx+.5,sb+.2,8,1.1,.6);
+  poly(g,[cx-5.6,st,cx+5.6,st,cx+5.2,st+1.6,cx+4.2,st+2.4,cx+4.2,sb-3,cx+6,sb-1.2,cx+6.2,sb,cx-6.2,sb,cx-6,sb-1.2,cx-4.2,sb-3,cx-4.2,st+2.4,cx-5.2,st+1.6]);
+  g.fillStyle=lg(g,cx-6,0,cx+6,0,[tint(S,-.3),tint(S,-.08),tint(S,.12),tint(S,.04)]);g.fill();
+  R(g,cx-5.6,st,11.2,.6,tint(S,.28));R(g,cx-4.2,st+2.4,8.4,.5,'rgba(40,30,30,.35)');R(g,cx-6,sb-1.2,12,.5,tint(S,.16));
+  const h=13,y0=st-h,hw=t=>t<.08?3.2-t*6:t<.18?2.8:t<.55?2.8+(t-.18)/.37*2.6:5.4-(t-.55)/.45*2.4,L=[],Rr=[];
+  for(let i=0;i<=26;i++){const t=i/26,w=hw(t);L.push(cx-w,y0+t*h);Rr.unshift(cx+w,y0+t*h)}
+  const B=L.concat(Rr);
+  /* the handles: two curved grips on the shoulders, each drawn as a solid bent band */
+  for(const d of[-1,1]){poly(g,[cx+d*4.6,y0+5.4,cx+d*6.8,y0+5,cx+d*7.4,y0+6.8,cx+d*6.6,y0+8.6,cx+d*5.4,y0+8.8,cx+d*6.2,y0+7.6,cx+d*6.2,y0+6.4,cx+d*4.8,y0+6.6],d>0?'#b07a3a':'#5a3a1e')}
+  poly(g,B);g.fillStyle=lg(g,cx-6,0,cx+6,0,['#4a2e16','#7a5228','#b4803e','#e8b670','#a06a30']);g.fill();
+  clipTo(g,()=>poly(g,B),()=>{tex(g,'mott',.3,cx-6,y0,12,h,'overlay',.8);
+    R(g,cx-6,y0+8.2,12,.5,'rgba(60,36,16,.5)');R(g,cx-6,y0+8.7,12,.5,'rgba(240,190,120,.3)');
+    pool(g,cx-2.6,y0+11,2,1.4,'#5a8a6a',.35,'source-over');pool(g,cx+1.6,y0+3,1.4,.8,'#5a8a6a',.25,'source-over');
+    R(g,cx+2.6,y0+3,.6,7,'rgba(255,236,190,.6)');ao(g,cx-6,y0+h-3,12,3,'b',.35,'#2a1a10')});
+  R(g,cx-3.4,y0-.4,6.8,.9,'#c89048');R(g,cx-3.4,y0-.4,6.8,.4,'#f4d090');R(g,cx-2.6,y0+.4,5.2,.5,'#2a1a0e')}
+/* lightCmd19: the low sun through the opening: a long warm patch on the floor, slanting to the left toward us, soft at its edges; the
+   faint shaft of it in the air; the warm light thrown back from the floor onto the lower wall and the columns; the shade gathering in
+   the far corners and at the wall's foot */
+function lightCmd19(g){const P=[190,111,293,111,262,146,156,146];
+  ao(g,0,104,320,7,'t',.32,'#3a2a3a');R(g,0,103.6,320,.8,'rgba(50,36,44,.4)');
+  comp(g,'screen',.07,()=>{poly(g,[196,32,300,33,262,146,156,146]);g.fillStyle=lg(g,0,30,0,144,['rgba(255,214,150,1)','rgba(255,214,150,.4)']);g.fill()});
+  {const q=rng(1958);for(let i=0;i<22;i++){const t=q(),y=88+t*22,x=192+(100-t*10)*q()-t*12;R(g,x,y,.5,.5,'rgba(255,236,200,.4)')}}
+  for(const[d,a]of[[3,.18],[1.6,.22],[0,.3]])comp(g,'soft-light',a*2,()=>poly(g,[P[0]-d,P[1]+d*.8,P[2]+d,P[3]+d*.8,P[4]+d,P[5],P[6]-d,P[7]],'rgba(255,200,130,1)'));
+  comp(g,'screen',.22,()=>poly(g,P,'rgba(255,196,130,1)'));
+  pool(g,228,128,80,14,'#ffc890',.14,'screen');
+  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,104,0,40,['rgba(255,190,120,1)','rgba(255,190,120,0)']);g.fillRect(120,40,200,64)});
+  pool(g,214,100,90,16,'#ffbc80',.1,'screen');
+  ao(g,0,0,60,144,'l',.25,'#2a1e30');ao(g,0,124,320,20,'b',.12,'#2a2050')}
 /* ==== ART cmd19: end ==== */
 
 /* ==== ART antipatris19: begin ==== */
-/* Antipatris at dawn, in the well-watered Plain of Sharon (Insight "Antipatris"; "Aphek" No. 3: at the source of the Yarkon). The plain
-   lies green and flat to one horizon (y 70); the town far off at the right, low walls and roofs (a tower only at the end of a wall). At
-   the left the spring wells up in a pool among reeds, and the young river runs away from it into the plain, narrowing as it goes, toward
-   the sea in the west (its mouth out of sight beyond the horizon). The road from the hills comes in at the left behind us; the road on to
-   Caesarea leaves at the right. The sky is pale and warm low in the east (behind us at the left).
+/* Antipatris at dawn, in the well-watered Plain of Sharon (Insight "Antipatris"; "Aphek" No. 3: at the source of the Yarkon). We look west,
+   toward the sea, which lies out of sight beyond the horizon (y 70): the sun is coming up behind us at the left, so the sky before us is
+   pale, with the pink band of dawn low over the cool shadow of the earth, and everything turned toward us is touched with warm light;
+   long shadows run away from us to the right. The plain lies green and flat to the horizon, its fields and meadows in perspective, with
+   mist lying low over the wet ground. At the left, off the road, the spring wells up in a pool among reeds and stones under a willow, and
+   the young river leaves the pool at its right, runs along under the horses' heads, where they drink, and then winds away from us into
+   the plain, narrowing until it is a thread at the horizon (CONTRIBUTING section 4: it does not stop short; its end in the sea is beyond
+   the horizon). At the right, on its low mound, the small walled town: a wall with a tower at its left end only, roofs behind it, trees
+   about it. The road from the hills comes in at the lower left, behind us, crosses before us and leaves at the right for Caesarea. No
+   post or mast stands across the horizon. Heads come at y 76..96: behind them lie the plain and the sky.
    Called from outside: ART.antipatris19. Reads nothing.
    Hotspots: the spring 6,100,64,22 (off the way: the hidden treasure) · the horses at the water 90,100,56,26 · the town 220,52,90,20 ·
    the plain 0,60,320,40 · the road to Caesarea 304,96,16,48. Walk: 80..300 by 116..138 (the spring lies beyond it).
    Actors: the officers 212,122 and 240,120; foot soldiers 262,124 and 280,132; the horseman 160,120. The horses drink at HORSEA19. */
-const HORSEA19=[[108,124,1],[136,122,1]];
-ART.antipatris19={w:320,q:12,paint(g){paintAnti19(g)},light:{amb:'#f4dcc0',sun:[.5,.2,.25]},
+const HORSEA19=[[108,124,1],[136,122,1]],HZAnti19=70,
+  /* the young river from the pool to the horizon: x, y and its width, from near to far */
+  RIVAnti19=[[60,112.6,5.6],[70,115.4,6],[80,117.6,6],[90,118.4,5.6],[99,116.4,5],[105,111.4,4.2],[107,105.6,3.6],[104,99.6,2.8],[107,94.4,2.2],
+    [114,89.6,1.8],[113,84.6,1.4],[108,80.6,1.1],[113,76.8,.9],[118,74,.7],[115,71.8,.5],[117,70.4,.4]];
+ART.antipatris19={w:320,q:12,paint(g){paintAnti19(g)},light:{amb:'#f6dcc8',sun:[.4,-.22,.35]},
   draw(g){HORSEA19.forEach(([x,y],i)=>horse19(g,x,y,-1,i===0?1:0,1,lightAt('antipatris19',x,y)))},front(){}};
-function paintAnti19(g){const r=rng(1961);
-  sky19(g,320,72,'dawn');pool(g,20,70,120,30,'#fff0c8',.35,'screen');
-  /* the town far off */
-  R(g,226,62,78,8,'#b8a48a');R(g,226,62,78,.6,'#e8d2b0');for(const x of[232,252,272,290])R(g,x,58,10,4,'#c4ae90');R(g,298,54,6,8,'#b09a80');
-  g.fillStyle=lg(g,0,70,0,144,['#8a9a5a','#6e8a46','#5a7a3a']);g.fillRect(0,70,320,74);tex(g,'mott',.35,0,70,320,74,'overlay',.8);
-  for(let i=0;i<400;i++)R(g,r()*320,72+r()*72,1,.5,r()<.5?'rgba(40,60,20,.3)':'rgba(200,220,140,.25)');
-  /* the young river: from the pool at the left, narrowing back toward the horizon */
-  /* it leaves the pool at its far side and winds away to the horizon, a thread at the last */
-  for(const[x0,y0,x1,y1,w]of[[42,106,52,96,5],[52,96,46,88,3.6],[46,88,58,80,2.4],[58,80,52,75,1.4],[52,75,62,71,.8]])stroke(g,[x0,y0,x1,y1],'#6a9ab0',w);
-  stroke(g,[46,100,50,94],'rgba(230,244,250,.45)',.5);
-  oval(g,40,112,30,8,'#5a8aa4');oval(g,40,111,24,5,'#7aaac0');pool(g,40,110,16,3,'#e8f4f8',.4,'screen');
-  for(let i=0;i<26;i++){const x=10+r()*64,y=104+r()*14;stroke(g,[x,y,x+.6,y-5-r()*4],'#4a6a2a',.5)}
-  /* the road on to Caesarea */
-  poly(g,[300,144,320,144,320,118,304,116],'#c8b48c');
-  light19(g,320,1,'rgba(255,210,160,1)',.4)}
+function paintAnti19(g){const CO=SHARED.country,HZ=HZAnti19;
+  /* the western sky at dawn: blue above, the pink band, and the cool shadow of the earth just over the horizon */
+  sky(g,320,HZ+1,['#5a6a9e','#8a94bc','#c4b4c4','#e6c0b4','#c8b0b8','#a8a4bc']);
+  pool(g,40,HZ-12,200,10,'#f4cab8',.22,'screen');
+  for(const[x,y,w]of[[30,22,70],[140,14,54],[236,26,60],[96,36,40]]){pool(g,x+w/2,y,w/2,1.4,'#f6d0c4',.5,'source-over');R(g,x+w*.2,y+.6,w*.6,.5,'rgba(255,214,190,.6)');R(g,x+w*.25,y-.7,w*.5,.5,'rgba(120,120,170,.3)')}
+  /* the plain to the horizon, hazed toward it, and the trees here and there along its banks */
+  CO.plain(g,0,320,HZ,104,1962,{vx:150,land:'#86a05e',haze:'#c8c0c8',kinds:['meadow','green','grain','meadow','fallow','green','meadow','orchard'],clouds:0});
+  for(const[x,y,h,k]of[[60,73,4,'plane'],[188,76,6,'plane'],[24,75.6,5,'plane'],[136,77,7,'willow']])CO.tree(g,x,y,h,null,{kind:k,seed:x*7+3});
+  townAnti19(g);
+  /* the nearer ground: meadow, wet and green, lit from behind us */
+  CO.turf(g,0,100,320,144,'#7a9256',1963,{wind:.6,flowers:40,fc:['#f0ece0','#e8c84a','#d8a0c0'],scale:.9});
+  roadAnti19(g);
+  riverAnti19(g);
+  springAnti19(g);
+  /* the mist that lies low over the wet ground at dawn, and over the river */
+  for(const[x,y,rx,ry,a]of[[80,80,90,3.4,.3],[200,84,110,3,.22],[110,92,40,4,.3],[30,96,40,4,.28],[260,94,70,3,.16]])pool(g,x,y,rx,ry,'#f4e8ec',a,'source-over');
+  /* the low sun behind us at the left: warm over the near ground and the faces turned to us, cooler toward the right and the distance */
+  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,200,150,1)','rgba(240,200,180,.7)','rgba(180,180,220,.8)']);g.fillRect(0,HZ,320,144-HZ)});
+  ao(g,0,124,320,20,'b',.14,'#2a2050')}
+/* the town far off at the right on its low mound: the mound in the plain's haze, the wall across its front with a tower at its left end
+   only, the flat roofs behind the wall, a few trees; all its faces turned to us catch the low sun, its sides in cool shade */
+function townAnti19(g){const r=rng(1964),HZ=HZAnti19,L='#f0c8a8',S='#a898ac';
+  const M=[206,HZ+.6,214,HZ-2,224,HZ-4.4,300,HZ-4.8,312,HZ-2.4,320,HZ-.6,320,HZ+.6];poly(g,M,'#9aa07a');
+  clipTo(g,()=>poly(g,M),()=>{g.fillStyle=lg(g,0,HZ-5,0,HZ+1,['#b4ae8a','#98a07a']);g.fillRect(206,HZ-5,114,6);tex(g,'mott',.3,206,HZ-5,114,6,'overlay',1)});
+  /* the roofs behind the wall, stepping up a little toward the middle of the mound */
+  for(let x=231;x<300;){const w=2.4+r()*5,t=HZ-10.4-r()*2.2-Math.max(0,2-Math.abs(x-262)/14),c=mix(tint(L,-.08),r()<.5?'#d8c8c0':'#c8b0a0',r()*.5);
+    R(g,x,t,w,HZ-4-t,c);R(g,x,t,w,.5,tint(c,.2));R(g,x+w-.8,t+.5,.8,HZ-4.5-t,rgba(S,.6));
+    if(w>4&&r()<.5)R(g,x+1+r()*(w-2.5),t+1.2,.8,.8,'rgba(70,56,70,.6)');x+=w+(r()<.3?.5:0)}
+  /* the wall across the front, its top level, and the tower at its left end */
+  R(g,228,HZ-9,74,5,tint(L,-.06));R(g,228,HZ-9,74,.6,'#fff0dc');R(g,228,HZ-4.5,74,.5,'rgba(90,70,90,.5)');
+  inRect(g,228,HZ-9,74,5,()=>{for(let j=0;j<2;j++)for(let i=228+(j%2)*2.4+r()*1.4;i<302;i+=4.4+r()*1.2)R(g,i,HZ-8.4+j*2.4,.5,2,'rgba(120,96,100,.25)')});
+  R(g,301.4,HZ-9,1.6,5,rgba(S,.8));R(g,258,HZ-7.4,3,3,'#5a4a5a');R(g,258,HZ-7.4,3,.5,'#3a2a3a');
+  R(g,222.4,HZ-15.4,6,11,L);R(g,222.4,HZ-15.4,6,.6,'#fff4e4');R(g,226.8,HZ-15,1.6,10.6,rgba(S,.7));R(g,224,HZ-12,1,1.6,'rgba(70,56,70,.7)');
+  /* trees beside the town, lit from behind us */
+  for(const[x,h]of[[214,7],[218,5],[306,6],[311,8]])SHARED.country.tree(g,x,HZ-1.2,h,null,{kind:'plane',seed:x});
+  /* the haze of the distance over the town */
+  comp(g,'source-over',.26,()=>{g.fillStyle='#dcc8d0';g.fillRect(206,HZ-17,114,18)})}
+/* the road: it comes in at the lower left from behind us, crosses before us and climbs gently away at the right toward Caesarea; dust
+   worn into two faint ruts that run along it and break off, stones, tufts at its ragged edges */
+function roadAnti19(g){const r=rng(1965),C=[[44,150,18],[80,136,15],[130,130.4,13],[190,128.4,12],[246,125.6,10.4],[284,120.6,8.4],[322,110,6]],
+    at=x=>{let i=0;while(i<C.length-2&&C[i+1][0]<x)i++;const[a,b,w]=C[i],[c,d,w2]=C[i+1],k=clamp((x-a)/(c-a),0,1),s=k*k*(3-2*k);return[b+(d-b)*s,w+(w2-w)*k]},
+    T=[],B=[];for(let x=44;x<=322;x+=1.5){const[y,w]=at(x),n1=Math.sin(x*.37)*.4+Math.sin(x*1.3)*.25,n2=Math.sin(x*.29+2)*.4+Math.sin(x*1.1+1)*.25;T.push(x,y-w/2+n1);B.unshift(x,y+w/2+n2)}
+  const P=T.concat(B);
+  poly(g,P.map((v,i)=>i%2?v+.6:v),'rgba(70,80,50,.35)');
+  poly(g,P);g.fillStyle=lg(g,0,108,0,146,['#b8a48c','#c2aa8a','#b49c7c']);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.5,40,100,282,46,'overlay',1);tex(g,'blotch',.3,40,100,282,46,'soft-light',1);
+    for(const k of[-.22,.2])for(let x0=50+r()*20;x0<320;){const len=14+r()*36,q=[];for(let x=x0;x<Math.min(322,x0+len);x+=2){const[y,w]=at(x);q.push(x,y+w*k+Math.sin(x/11)*.3)}
+      if(q.length>3){stroke(g,q,'rgba(120,96,80,.3)',.7);stroke(g,q.map((v,i)=>i%2?v+.7:v),'rgba(255,238,220,.2)',.5)}x0+=len+6+r()*20}
+    for(let i=0;i<160;i++){const x=46+r()*276,[y,w]=at(x),yy=y+(r()-.5)*w;R(g,x,yy,.5+r(),.5,r()<.5?'rgba(110,86,72,.3)':'rgba(255,242,224,.3)')}
+    for(let i=0;i<16;i++){const x=70+r()*240,[y,w]=at(x),yy=y+(r()-.5)*w*.7;R(g,x,yy,1.4,.8,'#a8927c');R(g,x,yy,1.4,.4,'#f0dcc4');R(g,x+.6,yy+.8,1.4,.5,'rgba(70,56,80,.3)')}});
+  for(let i=0;i<70;i++){const x=46+r()*276,[y,w]=at(x),up=r()<.5,yy=up?y-w/2+.6+r():y+w/2+.4;SHARED.country.tuft(g,x,yy,1.4+r()*2.4,r()<.5?'#7a9054':'#9a9e66',r)}}
+/* riverAnti19: the young river from the pool's right side along under the horses and away into the plain, in a ribbon that narrows as it
+   goes: the water the colour of the sky it mirrors (the cool blue overhead near us, the pink band far off), its far bank a little dark
+   over it, a lit ripple here and there; it ends at the horizon as a thread */
+function riverAnti19(g){const V=RIVAnti19,HZ=HZAnti19,S=[];
+  /* a smooth line through the points (Catmull-Rom), with the width at each */
+  for(let i=0;i<V.length-1;i++){const p0=V[Math.max(0,i-1)],p1=V[i],p2=V[i+1],p3=V[Math.min(V.length-1,i+2)];
+    for(let t=0;t<1;t+=.125){const t2=t*t,t3=t2*t,f=(a,b,c,d)=>.5*(2*b+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3);S.push([f(p0[0],p1[0],p2[0],p3[0]),f(p0[1],p1[1],p2[1],p3[1]),p1[2]+(p2[2]-p1[2])*t])}}
+  S.push(V[V.length-1]);
+  const Lf=[],Rt=[];for(let i=0;i<S.length;i++){const a=S[Math.max(0,i-1)],b=S[Math.min(S.length-1,i+1)],dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy)||1,nx=-dy/l,ny=dx/l,[x,y,w]=S[i];
+    Lf.push(x+nx*w*.5,y+ny*w*.32);Rt.unshift(x-nx*w*.5,y-ny*w*.32)}
+  const P=Lf.concat(Rt);
+  poly(g,P.map((v,i)=>i%2?v-.7:v),'rgba(52,70,40,.55)');
+  poly(g,P);g.fillStyle=lg(g,0,HZ,0,122,['#d8bcc0','#b4aac0','#8c94b0','#7a86a6']);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{const q=rng(1971);for(let i=0;i<60;i++){const s=S[Math.floor(q()*S.length)];if(s[2]<1.4)continue;R(g,s[0]-1+q()*2,s[1]+(q()-.5)*s[2]*.25,1+q()*2,.5,q()<.6?'rgba(255,238,232,.4)':'rgba(60,70,100,.3)')}
+    ao(g,56,108,60,14,'t',.15,'#2a3040')});
+  /* the near bank under the horses: wet earth where they stand to drink */
+  stroke(g,[64,117.4,76,120,90,121,100,119.2],'rgba(70,56,40,.4)',.7)}
+/* springAnti19: the pool where the spring rises, among reeds and stones, under a willow: the water wells up at its middle in soft rings
+   that break before they close; the sky lies in it; its rim of wet stones; reeds along its far side and at its right end */
+function springAnti19(g){const CO=SHARED.country,r=rng(1966),cx=36,cy=111.4,rx=28,ry=7.2,P=[];
+  CO.tree(g,16,104.6,34,null,{kind:'willow',seed:1967});
+  CO.reeds(g,8,62,105,9,1968,{wind:1.6,heads:1,c:'#6a8a48'});
+  for(let i=0;i<24;i++){const t=i/24*6.2832,q=1+.08*Math.sin(t*3+1)+(r()-.5)*.06;P.push(cx+Math.cos(t)*rx*q,cy+Math.sin(t)*ry*q*(Math.sin(t)>0?1.05:.9))}
+  M19.shadow(g,cx,cy+1,rx+2,ry,.25,'#2a3a2a');
+  poly(g,P.map((v,i)=>i%2?v+.6:v),'#3e5432');
+  poly(g,P);g.fillStyle=lg(g,0,cy-ry,0,cy+ry,['#d8bcc0','#b0aac0','#8a98b4']);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{
+    /* the willow and the reeds mirrored dark in the far part of the water */
+    pool(g,18,cy-3,14,3,'#4a5a48',.4,'source-over');for(let i=0;i<30;i++){const x=10+r()*52;R(g,x,cy-ry+.6,.5,1.2+r()*2,'rgba(60,80,50,.35)')}
+    /* where the spring wells up: a soft paler dome, and rings that break before they close */
+    pool(g,cx+2,cy+.4,6,2.2,'#f4e8ec',.5,'source-over');
+    g.lineWidth=.5;for(const[k,a0,a1,al]of[[3.2,.4,2.6,.5],[3.2,3.5,5.6,.45],[6.4,.2,2.2,.38],[6.4,3,4.6,.36],[9.6,.6,2.4,.28],[9.6,3.6,5.2,.25]]){
+      g.strokeStyle=`rgba(255,246,240,${al})`;g.beginPath();g.ellipse(cx+2,cy+.4,k,k*.3,0,a0,a1);g.stroke();
+      g.strokeStyle=`rgba(70,80,110,${al*.6})`;g.beginPath();g.ellipse(cx+2,cy+.9,k,k*.3,0,a0,a1);g.stroke()}
+    ao(g,cx-rx,cy-ry,rx*2,3,'t',.25,'#2a3040')});
+  /* the rim: wet stones round the pool, larger toward us, each lit on its top and dark at the water */
+  for(let i=0;i<26;i++){const t=.34+r()*5.3,x=cx+Math.cos(t)*rx*(.98+r()*.1),y=cy+Math.sin(t)*ry*(1+r()*.12);if(Math.sin(t)<-.4||r()<.3)continue;
+    const w=1.2+r()*2.4+(Math.sin(t)>0?r()*1.6:0);CO.boulder(g,x,y+.8,w,w*(.45+r()*.2),r()<.5?'#a8a090':'#988e80',1970+i,{light:-1})}
+  /* the river's mouth out of the pool at its right side: the rim opens for it */
+  CO.reeds(g,58,70,112.6,5,1969,{wind:1.6,c:'#6a8a48',n:10})}
 /* ==== ART antipatris19: end ==== */
 
 /* ==== ART palace19: begin ==== */
-/* Herod's palace at Caesarea, which reached out into the sea (Study Edition media "Caesarea"): a court of the palace open to the sea at
-   the back over a low sea wall, the sea running to one horizon (y 58), the sky above; at the right a dais of two broad stone steps with
-   the governor's wooden seat on it, a small table beside it for the letter. No temple anywhere (Caesarea is not one of section 3's four
-   cities); no standard. Gulls wheel over the water and stand on the sea wall (birds). Light from the left, late in the day.
+/* Herod's palace at Caesarea, which reached out into the sea (Study Edition media "Caesarea"): a court of the palace, paved in pale
+   stone, open at the back over a low sea wall to the sea, which runs to the one horizon (y 60, HZPal19); we look north along the coast,
+   and the sun of the late afternoon stands out of the picture at the left, over the sea: the sea wall's face, the columns and the dais
+   are lit from the left, their shadows fall to the right, and a faint road of light lies on the water at the left edge. Gulls wheel over
+   the water and stand on the coping of the sea wall (y 80.4). At the right the hall of the palace: a portico of four columns under a
+   deep beam and the eave of its roof, standing on a solid pier at its left end, which stands across nothing: the sea and its horizon
+   end at the pier. Above the beam the palace's upper storey goes on out of the picture: no roof or gable is seen against the sky. Behind the columns the hall's back wall in shade, painted in panels of imitation stone that stop short of the columns
+   (no band runs behind them). Before the portico a dais of two broad steps of white stone, the governor's wooden seat on it (its top
+   at y 91, where a seated figure's hips rest; legs at its two ends, curving a little, and a solid back), a small table beside it for the
+   letter, which lies on it once it has been read (F.anti). No temple anywhere (Caesarea is not one of section 3's four cities); no
+   standard, no image. Heads come at y 62..96: behind Felix's lies the back wall between two columns; behind the others the sea wall, the
+   sea and the sky; nothing round.
    Called from outside: ART.palace19. Reads F.anti (the letter lies on the table once it has been read).
    Hotspots: the sea 0,24,320,34 · the sea wall with its gulls 0,80,190,14 · the dais 196,96,110,18 · the letter on the table 264,84,22,10.
    Walk: 30..300 by 114..138. Actors: Felix 238,100 seated on the dais (seat top 91); Paul 150,126; the horsemen's officer 122,124 beside
    him; a soldier 296,124. */
-ART.palace19={w:320,q:12,variant:()=>F.anti?'l':'',paint(g){paintPalace19(g)},light:{amb:'#f2e2cc',sun:[.5,.3,.3],wallY:96},draw(){},front(){}};
-function paintPalace19(g){const r=rng(1971),S='#e0d2b4';
-  sky19(g,320,58,'day');
-  g.fillStyle=lg(g,0,58,0,84,['#5a86a8','#3a6a90']);g.fillRect(0,58,320,26);for(let i=0;i<180;i++)R(g,r()*320,59+r()*24,1+r()*3,.5,r()<.5?'rgba(230,244,250,.3)':'rgba(20,40,70,.25)');
-  R(g,0,80,320,16,tint(S,-.05));R(g,0,80,320,1.4,tint(S,.3));ashlar(g,0,82,320,14,S,r,{bw:24,bh:7,v:.06,t:.3});
-  pave(g,-2,96,322,144,'#d4c4a0',r,{vx:120,vy:60,rows:6,step:34,v:.07,t:.35});ao(g,0,96,320,6,'t',.25,'#3a2c3c');
-  /* the dais: two broad steps, the seat of wood, the table */
-  R(g,196,104,112,8,tint(S,-.02));R(g,196,104,112,1,tint(S,.32));R(g,204,98,100,6,tint(S,.04));R(g,204,98,100,1,tint(S,.34));
-  R(g,230,91,18,9,'#7a5432');R(g,230,91,18,1,'#b08050');R(g,232,78,14,13,'#6a4628');
-  R(g,264,92,20,2,'#7a5432');R(g,266,94,16,6,'#5a3a20');R(g,266,94,16,.6,'#9a7048');
-  if(F.anti){R(g,268,89.6,12,2.4,'#e8dcb4');R(g,268,89.6,12,.5,'#fff4d8')}
-  light19(g,320,1,null,.35)}
+const HZPal19=60,PIERPal19=[186,197],COLPal19=[224,256,288,318];
+let SPal19=null;
+const OPal19={w:320,hz:HZPal19,hour:'evening',sun:[-80,14],cloud:.16,streak:.35,seed:1972,y1:82};
+ART.palace19={w:320,q:12,variant:()=>F.anti?'l':'',paint(g){paintPalace19(g)},light:{amb:'#f6e0c8',sun:[.55,.12,.35],wallY:96},
+  draw(g,t){if(SPal19)SPal19.draw(g,t)},front(){}};
+function paintPalace19(g){const K=SHARED.coast,O=OPal19,HZ=HZPal19,r=rng(1971),S='#e6d8bc';K.light(O);
+  K.sky(g,O);
+  SPal19=K.sea(g,O);SPal19.open=(x,y)=>x<PIERPal19[0]-.5&&y>HZ+.5&&y<80;
+  /* the court's paving, toward us */
+  pave(g,-2,96,322,144,'#dccbab',r,{vx:150,vy:HZ,rows:6,step:34,v:.06,t:.3,rand:1});
+  seaWallPal19(g,r,S);
+  hallPal19(g,r,S);
+  daisPal19(g,r);
+  seatPal19(g);
+  tablePal19(g);
+  lightPal19(g)}
+/* the sea wall: a coping of long stones whose top (y 80.4) is where the gulls stand, its lip lit; under it the face of the wall in large
+   drafted blocks, half lit by the low sun from the left; the shade gathering at its foot */
+function seaWallPal19(g,r,S){const x1=PIERPal19[0],T=80.4;
+  SHARED.temple.stone(g,0,83,x1,13,r,{bh:6.5,bw:22,c:'#d6c6a4',v:.07,rough:1,age:.6});
+  g.fillStyle=lg(g,0,0,x1,0,['rgba(255,220,170,.22)','rgba(255,220,170,0)']);g.fillRect(0,83,x1,13);
+  R(g,0,T,x1,2.6,tint(S,.06));R(g,0,T,x1,.6,'#fff6e4');R(g,0,T+2.1,x1,.5,'rgba(90,70,80,.45)');
+  for(let x=18+r()*10;x<x1-4;x+=26+r()*14)R(g,x,T+.6,.5,1.6,'rgba(110,90,90,.4)');
+  R(g,0,T+2.6,x1,.8,'rgba(70,52,64,.35)');ao(g,0,90,x1,6,'b',.3,'#4a3848')}
+/* the hall: the pier at its left end, from the floor to the beam; the back wall in shade with its painted panels between the columns;
+   the columns with their bases and capitals; the deep beam over them and the eave of the roof */
+function hallPal19(g,r,S){const[p0,p1]=PIERPal19,B0=16,B1=27,F=96;
+  /* the back wall, deep in the portico's shade, and the strip of the hall's floor in front of it */
+  g.fillStyle=lg(g,0,B1,0,F,['#6a5a5c','#86726c','#9a8678']);g.fillRect(p1,B1,320-p1,F-B1);
+  inRect(g,p1,B1,320-p1,F-B1,()=>{tex(g,'mott',.3,p1,B1,320-p1,F-B1,'overlay',1);
+    /* the panels: deep red and ochre fields like veined stone, each framed by a pale line, all inside its own bay */
+    const bays=[p1].concat(COLPal19);for(let i=0;i<bays.length-1;i++){const a=bays[i]+(i?5:3),b=bays[i+1]-5,col=i%2?'#7a3a30':'#9a6a3a';if(b-a<6)continue;
+      for(const[y0,y1]of[[B1+8,B1+30],[B1+34,F-9]]){R(g,a,y0,b-a,y1-y0,col);inRect(g,a,y0,b-a,y1-y0,()=>{tex(g,'blotch',.45,a,y0,b-a,y1-y0,'soft-light',1);
+          for(let k=0;k<6;k++){let vx=a+r()*(b-a),vy=y0+r()*(y1-y0);const p=[vx,vy];for(let s=0;s<5;s++){vx+=(r()-.3)*3;vy+=(r()-.5)*2;p.push(vx,vy)}stroke(g,p,rgba(tint(col,.3),.35),.5)}});
+        R(g,a,y0,b-a,.5,'rgba(230,210,180,.35)');R(g,a,y1-.5,b-a,.5,'rgba(40,24,24,.4)')}}
+    R(g,p1,F-4,320-p1,4,'#8a7868');R(g,p1,F-4,320-p1,.5,'rgba(230,210,190,.3)');
+    ao(g,p1,B1,320-p1,12,'t',.55,'#1e1420')});
+  /* the pier: a solid block of the same stone, lit on its face, shaded on its right edge */
+  g.fillStyle=lg(g,p0,0,p1,0,[tint(S,.12),tint(S,.02),tint(S,-.2)]);g.fillRect(p0,B1,p1-p0,F-B1);
+  SHARED.temple.age(g,p0,B1,p1-p0,F-B1,rng(1973),.5);R(g,p0,B1,.6,F-B1,'#fff4e0');
+  R(g,p0-.8,F-4,p1-p0+1.6,4,tint(S,-.02));R(g,p0-.8,F-4,p1-p0+1.6,.5,'#fff0d8');R(g,p0-1,B1,p1-p0+2,2.2,tint(S,.08));R(g,p0-1,B1+2.2,p1-p0+2,.5,'rgba(80,60,70,.4)');
+  for(const x of COLPal19)columnPal19(g,x,S,B1,F);
+  /* the deep beam: an architrave of two faces, a frieze, a moulding; then the eave of the roof, its underside in shade, its edge lit */
+  const xb=p0-2;g.fillStyle=lg(g,0,B0,0,B1,[tint(S,.06),tint(S,-.04)]);g.fillRect(xb,B0,320-xb,B1-B0);
+  tex(g,'mott',.3,xb,B0,320-xb,B1-B0,'overlay',1);R(g,xb,B0,320-xb,.6,'#fff4e0');R(g,xb,B0+4,320-xb,.5,'rgba(90,70,80,.35)');R(g,xb,B0+4.5,320-xb,.5,'rgba(255,240,220,.4)');
+  R(g,xb,B1-3.6,320-xb,.5,'rgba(90,70,80,.35)');R(g,xb,B1-.6,320-xb,.6,'rgba(60,44,56,.6)');R(g,xb,B0,.6,B1-B0,'#fff6e8');
+  /* above the beam the upper storey of the palace, which goes on out of the picture: dressed stone, a moulding under it, two small
+     windows without bars, dark */
+  SHARED.temple.stone(g,xb,0,320-xb,B0-1.6,rng(1974),{bh:5.4,bw:18,c:'#dcccac',v:.07,age:.6});
+  g.fillStyle=lg(g,xb,0,320,0,['rgba(255,214,160,.25)','rgba(120,100,140,.25)']);g.fillRect(xb,0,320-xb,B0);
+  R(g,xb,0,.6,B0,'#fff4e0');
+  for(const wx of[236,284]){R(g,wx,2.4,6,8,'#2e2224');R(g,wx,2.4,6,1.2,'#1a1214');R(g,wx-.8,10.4,7.6,1,'#f0e2c4');R(g,wx-.8,11.4,7.6,.5,'rgba(70,50,60,.45)')}
+  R(g,xb-1.4,B0-1.6,322-xb,1.8,tint(S,.1));R(g,xb-1.4,B0-1.6,322-xb,.5,'#fff6e4');R(g,xb-1.4,B0,322-xb,.5,'rgba(70,52,64,.5)');
+  ao(g,p1,B1,320-p1,6,'t',.4,'#1a1018')}
+/* columnPal19: a column of the portico, standing on the hall's floor line: a square plinth and a round moulding, the shaft lit from the
+   left and fluted, a capital of two mouldings hardly wider than the shaft under the beam; its shade on the back wall to its right */
+function columnPal19(g,x,S,top,bot){const sw=3.4,cap=4,base=4.4,y0=top+cap,y1=bot-base;
+  comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,x+sw,0,x+sw+8,0,['rgba(90,70,100,1)','rgba(90,70,100,0)']);g.fillRect(x+sw,top,8,bot-top)});
+  g.fillStyle=lg(g,x-sw,0,x+sw,0,[tint(S,.06),tint(S,.2),tint(S,.04),tint(S,-.18),tint(S,-.34)]);g.fillRect(x-sw,y0,sw*2,y1-y0);
+  for(let k=-2;k<=2;k++){const u=k/2.8,fx=x+Math.sin(u*1.3)*sw*.9,fw=Math.max(.5,Math.cos(u*1.3)*.9);R(g,fx,y0+.6,fw*.5,y1-y0-1.2,rgba(tint(S,-.4),.3));R(g,fx-.5,y0+.6,.5,y1-y0-1.2,rgba('#fff8ec',.25*Math.cos(u)))}
+  inRect(g,x-sw,y0,sw*2,y1-y0,()=>tex(g,'mott',.25,x-sw,y0,sw*2,y1-y0,'overlay',1));
+  g.fillStyle=lg(g,x-sw-1,0,x+sw+1,0,[tint(S,.2),tint(S,.04),tint(S,-.3)]);g.fillRect(x-sw-.6,y0-2,sw*2+1.2,2);R(g,x-sw-.6,y0-.5,sw*2+1.2,.5,'rgba(60,44,56,.4)');
+  R(g,x-sw-1,top,sw*2+2,2,tint(S,.06));R(g,x-sw-1,top,sw*2+2,.5,'#fff4e0');
+  g.fillStyle=lg(g,x-sw-1.2,0,x+sw+1.2,0,[tint(S,.2),tint(S,.02),tint(S,-.3)]);g.fillRect(x-sw-.8,y1,sw*2+1.6,1.8);
+  R(g,x-sw-1.4,y1+1.8,sw*2+2.8,base-1.8,tint(S,-.06));R(g,x-sw-1.4,y1+1.8,sw*2+2.8,.5,'#fff0d8');
+  M19.shadow(g,x+2,bot+.2,sw+2,.9,.4)}
+/* the dais: two broad steps of white stone with grey veins, their treads lit, their faces half lit from the left, their left ends in the
+   sun; the shade they throw to the right on the paving */
+function daisPal19(g,r){const C='#ece4d4',steps=[[196,308,104,106.6,112],[204,300,98,100.6,104]];
+  comp(g,'multiply',.3,()=>poly(g,[308,112,316,112,312,104,306,104],'#6a5a7a'));
+  for(const[x0,x1,t,f,b]of steps){
+    g.fillStyle=lg(g,0,t,0,f,[tint(C,.08),tint(C,.02)]);g.fillRect(x0,t,x1-x0,f-t);
+    g.fillStyle=lg(g,x0,0,x1,0,[tint(C,-.04),tint(C,-.12),tint(C,-.2)]);g.fillRect(x0,f,x1-x0,b-f);
+    inRect(g,x0,t,x1-x0,b-t,()=>{tex(g,'mott',.25,x0,t,x1-x0,b-t,'overlay',1);
+      for(let k=0;k<5;k++){let vx=x0+r()*(x1-x0),vy=t+r()*(b-t);const p=[vx,vy];for(let s=0;s<6;s++){vx+=1+r()*3;vy+=(r()-.5)*1.4;p.push(vx,vy)}stroke(g,p,'rgba(120,116,130,.3)',.5)}});
+    R(g,x0,t,x1-x0,.5,'#fffcf4');R(g,x0,f-.4,x1-x0,.5,'rgba(255,255,250,.6)');R(g,x0,b-.5,x1-x0,.5,'rgba(70,60,80,.4)');
+    poly(g,[x0,t,x0+1.4,t,x0+1.4,b,x0,b],'#fffaf0');
+    for(let x=x0+28+r()*6;x<x1-10;x+=34+r()*8)R(g,x,f+.6,.5,b-f-1.2,'rgba(120,110,120,.35)')}
+  ao(g,196,112,112,3,'t',.2,'#4a3a4a')}
+/* the governor's seat: a chair of dark wood on the upper step, its seat's top at y 91 where the hips rest; a leg at each end, curving out
+   a little to its foot; a solid back, rising behind the sitter on the right, a little reclined, rounded at its top; no rail between the
+   legs. Lit from the left. */
+function seatPal19(g){const W='#6a4428',x0=229,x1=248,T=91,FL=100;
+  M19.shadow(g,(x0+x1)/2+2,FL+.2,11,1,.5);
+  for(const[x,d]of[[x0+1,-1],[x1-1.6,1]]){poly(g,[x,T+2,x+1.6,T+2,x+1.6+d*.4,FL-3,x+1.4+d*1.2,FL-.2,x+d*1.2,FL,x+d*.2,FL-3],d<0?'#8a5a34':'#4a2e1a');R(g,x+d*1.2-.4,FL-.6,2.2,.6,'#3a2414')}
+  /* the back: a solid curved panel behind the sitter */
+  poly(g,[x1-4.4,T,x1-1,T,x1+1.6,74,x1+1.4,71.6,x1,70.8,x1-1.8,71.4,x1-3.4,74]);g.fillStyle=lg(g,x1-4,0,x1+2,0,['#8a5a34',W,'#3e2616']);g.fill();
+  stroke(g,[x1-3.2,74,x1-1.8,71.6,x1,71],'#b08050',.5);
+  /* the seat: a thick board, its front edge lit */
+  R(g,x0,T,x1-x0,2.2,W);R(g,x0,T,x1-x0,.6,'#a87a4a');R(g,x0,T+1.8,x1-x0,.5,'#3a2414');
+  inRect(g,x0,T,x1-x0,2.2,()=>tex(g,'wood',.3,x0,T,x1-x0,2.2,'overlay',.5));
+  /* a cushion of purple wool along the back of the seat, behind the sitter */
+  R(g,x1-6,T-1.2,5,1.4,'#6a3a5a');R(g,x1-6,T-1.2,5,.5,'#9a6a8a')}
+/* the small table beside the seat: a top of the same wood on two legs at its ends; the letter lies on it once it has been read */
+function tablePal19(g){const W='#6e4a2c',x0=264,x1=284,T=89,FL=100;
+  M19.shadow(g,(x0+x1)/2+2,FL+.2,12,1,.5);
+  for(const[x,d]of[[x0+1.4,-1],[x1-2.4,1]])poly(g,[x,T+2,x+1,T+2,x+1+d*.3,FL-2,x+1+d*.9,FL,x+d*.6,FL,x+d*.1,FL-2],d<0?'#8a5e38':'#4a3020');
+  R(g,x0,T-1,x1-x0,1.2,'#9a7048');R(g,x0,T-1,x1-x0,.5,'#c89a68');R(g,x0,T+.2,x1-x0,1.8,W);R(g,x0,T+1.6,x1-x0,.5,'#3a2414');
+  if(F.anti){/* the sheet, unrolled flat, its ends curling up a little */
+    R(g,x0+4,T-1.8,12,1.2,'#eee2c0');R(g,x0+4,T-1.8,12,.5,'#fff6e0');R(g,x0+3.4,T-2.2,.8,1.2,'#d8c8a0');R(g,x0+15.8,T-2.2,.8,1.2,'#d8c8a0');
+    for(const yy of[T-1.3])R(g,x0+5.4,yy,8,.4,'rgba(70,50,40,.35)')}}
+/* the light of the late afternoon from the left: warm over the court and the near faces, the portico's depth cooler, the shade of the
+   pier and the dais falling to the right */
+function lightPal19(g){
+  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,206,150,1)','rgba(250,214,180,.7)','rgba(190,180,220,.8)']);g.fillRect(0,80,320,64)});
+  comp(g,'multiply',.25,()=>poly(g,[197,96,214,96,236,104,204,104],'#7a6a8a'));
+  pool(g,60,118,140,20,'#ffe0b0',.12,'screen');
+  ao(g,0,96,320,6,'t',.25,'#3a2c3c');ao(g,0,126,320,18,'b',.12,'#2a2050')}
 /* ==== ART palace19: end ==== */
 
 /* ==== ART letter19: begin ==== */
-/* The letter, close, as it lies on the table beside the governor's seat, and Paul's wax tablet beside it. The sheet of papyrus (its fibers
-   run one way) holds the six lines of the letter (Acts 23:26-30, in our own words, told.md), each in its own box (LBOX19), with a small
-   Greek capital in the margin (Α to Ζ) that names it; none of the six is shaped like a cross. The tablet (its wax dark, its wooden frame
-   plain) holds Paul's six notes (NBOX19). The marks the player sets (G.mk19) are drawn as he sets them: beside a note the capital of the
-   line it goes with, or a short level stroke for "not in the letter"; beside one line of the letter a small bent stroke for "out of
-   order". No ruled line meets a margin, and nothing crosses. The words are translated as they are drawn and made to fit their boxes
-   (G.caps19, checked by the playtest).
+/* The letter, close, as it lies on the table beside the governor's seat, and Paul's wax tablet beside it, in the light of the late
+   afternoon from the left (the close-view standard of Chapters Thirteen and Fourteen). The table's wood is fine-grained and quiet, its
+   grain running one way. The sheet of papyrus, its edges a little uneven and frayed, its fibers running across only, holds the six lines
+   of the letter (Acts 23:26-30, in our own words, told.md), each in its own box (LBOX19), with a small Greek capital in the margin (Α to
+   Ζ) that names it; none of the six is shaped like a cross, and no line is ruled. The tablet is a leaf of boxwood, its grain running the
+   long way, round a bed of dark wax; two small square holes in its left edge, where it is bound to its other leaf. Paul's six notes
+   (NBOX19) are scratched into the wax: the stylus leaves the wax pale, with the shade of the groove under it. His stylus of bronze lies
+   between the sheet and the tablet, along them, not across either. The marks the player sets (G.mk19) are drawn as he sets them, on
+   the tablet beside a note: the capital of the line it goes with, or a short slanting stroke where it is not in the letter; and beside
+   one line of the letter a small hollow diamond where it is out of order, which is a mark of the view and not written on the governor's letter.
+   Nothing crosses. The words are translated as they are drawn and made to fit their boxes (G.caps19, checked by the playtest).
    Called from outside: ART.letter19. Reads G.mk19.
    Hotspots: each line of the letter (LBOX19), each note (NBOX19), back to the hall 0,136,120,8. Walk: none (a close view). */
 const GREEK19=['Α','Β','Γ','Δ','Ε','Ζ'];
 const LBOX19=Array.from({length:6},(_,i)=>[30,16+i*19,148,18]),NBOX19=Array.from({length:6},(_,i)=>[212,16+i*19,94,18]);
 ART.letter19={w:320,q:12,paint(g){paintLetter19(g)},light:null,draw(g){drawLetter19(g)},front(){}};
-function paintLetter19(g){const r=rng(1981);
-  g.fillStyle=lg(g,0,0,0,144,['#5e4324','#6e502d','#4e361c']);g.fillRect(0,0,320,144);tex(g,'mott',.2,0,0,320,144,'overlay',.9);
-  for(let i=0;i<60;i++){const y=r()*144;R(g,r()*300,y,8+r()*40,.5,'rgba(30,18,8,.25)')}
-  for(const[d,a]of[[4,.1],[2,.18]]){g.fillStyle=`rgba(16,9,5,${a})`;g.fillRect(12-d+2,8-d+3,178+d*2,128+d*2);g.fillRect(200-d+2,8-d+3,112+d*2,128+d*2)}
-  g.fillStyle=lg(g,12,8,12,136,['#ebddb4','#e2d2a2','#d6c28e']);g.fillRect(12,8,178,128);for(let i=0;i<220;i++)R(g,12+r()*170,8+r()*128,4+r()*14,.5,'rgba(140,110,60,.12)');
-  R(g,200,8,112,128,'#7a5432');R(g,200,8,112,1,'#a8784a');R(g,204,12,104,120,'#2a2420');R(g,204,12,104,.8,'#1a1410');tex(g,'mott',.25,204,12,104,120,'overlay',.6)}
+function paintLetter19(g){const r=rng(1981),q=rng(1982);
+  /* the table: a broad board of a fine, quiet grain, its seams with the next boards only above and below the sheet and the tablet, where
+     they run along their edges and meet nothing */
+  for(const[y,h,c]of[[0,3.6,'#6e4a2a'],[3.6,136.6,'#664428'],[140.2,3.8,'#5e3e24']]){M19.plank(g,0,y,320,h,c,rng(1983+y),0);if(y){R(g,0,y,320,.8,'rgba(24,12,6,.55)');R(g,0,y+.8,320,.5,'rgba(220,170,110,.14)')}}
+  tex(g,'mott',.14,0,0,320,144,'overlay',.9);pool(g,250,140,120,10,'#c89060',.08,'source-over');
+  /* soft shadows of the sheet and the tablet on the table, falling a little to the right and down, away from the light */
+  for(const[d,a]of[[5,.08],[3,.13],[1.6,.2]]){g.fillStyle=`rgba(16,8,4,${a})`;g.fillRect(12-d+2.6,8-d+2.6,178+d*2,128+d*2);g.fillRect(200-d+2.6,8-d+2.6,112+d*2,128+d*2)}
+  sheetLetter19(g,r,q);
+  tabletLetter19(g,q);
+  stylusLetter19(g);
+  /* the light of the late afternoon from the left: warm on the near side, falling off to the right */
+  comp(g,'soft-light',.35,()=>{g.fillStyle=lg(g,0,0,320,144,['rgba(255,214,160,1)','rgba(255,214,160,.2)','rgba(150,140,190,.6)']);g.fillRect(0,0,320,144)});
+  comp(g,'multiply',.25,()=>{g.fillStyle=rg(g,90,60,300,['#ffffff','#f2e8e0','#a098b8']);g.fillRect(0,0,320,144)})}
+/* the sheet: an outline a little uneven, frayed where the fibers end; broad strips of the fibers' own tone and fine threads that stop and
+   start, all running across; a faint stain or two; the edge on the light side lit */
+function sheetLetter19(g,r,q){const E=[],j=(a,i)=>a*(Math.sin(i*.9)*.5+(q()-.5)*.6);
+  for(let x=12,i=0;x<=190;x+=2,i++)E.push(x,8+j(.5,i));for(let y=8,i=0;y<=136;y+=2,i++)E.push(190+j(.4,i),y);
+  for(let x=190,i=0;x>=12;x-=2,i++)E.push(x,136+j(.5,i));for(let y=136,i=0;y>=8;y-=2,i++)E.push(12+j(.4,i),y);
+  clipTo(g,()=>poly(g,E),()=>{g.fillStyle=lg(g,12,8,190,136,['#eee2bc','#e4d4a8','#d6c290']);g.fillRect(10,6,182,132);
+    for(let y=7;y<137;){const hh=1+r()*2.4;R(g,10,y,182,hh,r()<.5?'rgba(146,112,56,.07)':'rgba(255,248,220,.1)');y+=hh}
+    for(let i=0;i<320;i++){const y=8+q()*128,x=10+q()*170,l=6+q()*44;R(g,x,y,l,.5,q()<.55?'rgba(120,90,44,.12)':'rgba(255,250,228,.16)')}
+    tex(g,'mott',.14,12,8,178,128,'overlay',.8);
+    pool(g,150,120,16,6,'#a8844a',.08,'source-over');pool(g,40,20,10,4,'#a8844a',.06,'source-over');
+    ao(g,12,8,178,6,'t',.12,'#6e4c1e');ao(g,12,128,178,8,'b',.16,'#6e4c1e');ao(g,184,8,6,128,'r',.14,'#6e4c1e')});
+  stroke(g,E.slice(0,E.length/4|0),'rgba(255,246,214,.7)',.5);stroke(g,E.slice(E.length*.75|0),'rgba(255,246,214,.5)',.5)}
+/* the tablet: a leaf of boxwood round a bed of dark wax; the frame a little higher than the wax, so that its upper and left inner sides
+   throw a thin shade onto it; two square holes in the left edge */
+function tabletLetter19(g,q){const x=200,y=8,w=112,h=128,b=4,W='#b08c5c',wx=x+b,wy=y+b,ww=w-2*b,wh=h-2*b;
+  R(g,x,y,w,h,W);inRect(g,x,y,w,h,()=>{for(let yy=y-2;yy<y+h+2;yy+=.6+q()*1.1){const col=q()<.55?rgba(tint(W,-.3),.12+q()*.18):rgba(tint(W,.22),.1+q()*.16),p=[],f=.04+q()*.02,ph=q()*6;
+      for(let xx=x-1;xx<=x+w+2;xx+=2)p.push(xx,yy+.6*Math.sin(xx*f+ph));stroke(g,p,col,.5)}
+    tex(g,'mott',.2,x,y,w,h,'overlay',.8)});
+  R(g,x,y,w,.6,tint(W,.32));R(g,x,y,.6,h,tint(W,.2));R(g,x+w-.6,y,.6,h,tint(W,-.26));R(g,x,y+h-.6,w,.6,tint(W,-.18));
+  g.fillStyle=lg(g,wx,wy,wx+ww,wy+wh,['#2e2014','#38281a','#2a1c12']);g.fillRect(wx,wy,ww,wh);
+  inRect(g,wx,wy,ww,wh,()=>{tex(g,'mott',.22,wx,wy,ww,wh,'overlay',1);pool(g,wx+ww*.3,wy+wh*.3,ww*.5,wh*.25,'#f0e0c8',.07,'screen');
+    /* the wax smoothed and written over many times: faint pale traces of earlier writing, smoothed out */
+    for(let i=0;i<40;i++){const xx=wx+4+q()*(ww-14),yy=wy+4+q()*(wh-8);R(g,xx,yy,3+q()*10,.5,'rgba(200,170,120,.05)')}
+    R(g,wx,wy,ww,1,'rgba(10,6,4,.55)');R(g,wx,wy,1,wh,'rgba(10,6,4,.5)');R(g,wx+ww-.5,wy,.5,wh,'rgba(150,120,80,.25)');R(g,wx,wy+wh-.5,ww,.5,'rgba(150,120,80,.2)')});
+  for(const hy of[y+34,y+h-34]){R(g,x+1.2,hy-.75,1.5,1.5,'#140c06');R(g,x+1.2,hy-.75,1.5,.5,tint(W,-.5))}}
+/* the stylus: a bronze rod lying along the gap between the sheet and the tablet, its point toward us, its flat end for smoothing the wax
+   away from us; lit along its left side */
+function stylusLetter19(g){const x0=195.4,y0=58,x1=194.8,y1=100;
+  stroke(g,[x0+1.4,y0+2,x1+1.6,y1+1.6],'rgba(16,8,4,.35)',1.4);
+  poly(g,[x0-.9,y0+5,x0+.9,y0+5,x1+.7,y1-4,x1,y1,x1-.7,y1-4]);g.fillStyle=lg(g,x0-1,0,x0+1,0,['#e0b070','#a87434','#6a4420']);g.fill();
+  poly(g,[x0-1.4,y0,x0+1.4,y0,x0+1.2,y0+2.4,x0+.9,y0+5,x0-.9,y0+5,x0-1.2,y0+2.4]);g.fillStyle=lg(g,x0-1.4,0,x0+1.4,0,['#e8bc7c','#b07c3a','#704822']);g.fill();
+  stroke(g,[x0-.5,y0+6,x1-.3,y1-6],'rgba(255,230,180,.55)',.5)}
 /* fit19: the words of key into a box: the largest of four sizes whose lines all fit; returns the font size and the lines */
 function fit19(g,s,w,h){for(const z of[4.6,4.2,3.8,3.4]){g.font=FONT19(z);const lh=z*1.2,words=s.split(' '),L=[];let cur='';
     for(const wd of words){const t=cur?cur+' '+wd:wd;if(g.measureText(t).width>w&&cur){L.push(cur);cur=wd}else cur=t}if(cur)L.push(cur);
     if(L.length*lh<=h||z===3.4)return{z,lh,L}}}
+/* drawLetter19: the words, and the marks as they stand. On the sheet the ink is dark and a little brown; on the wax the letters are pale
+   where the stylus has gone, with the shade of the groove under them. The marks: on the tablet, left of a note, the capital of its line
+   or a short slanting stroke (not in the letter), scratched like the notes; on the sheet, between a line's capital and its words, a
+   small hollow diamond (out of order) */
 function drawLetter19(g){const mk=G.mk19||{n:{},o:null};G.caps19=G.caps19||[];
-  const put=(s,b,col)=>{const[x,y,w,h]=b,f=fit19(g,s,w,h);g.font=FONT19(f.z);g.fillStyle=col;g.textBaseline='top';
-    f.L.forEach((l,i)=>g.fillText(l,x,y+i*f.lh));const mw=Math.max(...f.L.map(l=>g.measureText(l).width));if(G.caps19.length<400)G.caps19.push({s,w:mw,max:w,h:f.L.length*f.lh,maxh:h})};
-  LETTER19.forEach((k,i)=>{const b=LBOX19[i];g.font=FONT19(5);g.fillStyle='#5a3a1a';g.textBaseline='top';g.fillText(GREEK19[i],16,b[1]);put(T(k),b,'#2a1a0c');
-    if(mk.o===k)stroke(g,[22,b[1]+8,24,b[1]+6.6,26,b[1]+8,28,b[1]+6.6],'#8a2a1a',.6)});
-  NOTES19.forEach((n,i)=>{const b=NBOX19[i];put(T(n.k),b,'#e8dcc0');const m=mk.n[n.k];
-    if(m==='none')R(g,205.4,b[1]+3,4,.8,'#e8c070');else if(m){g.font=FONT19(5);g.fillStyle='#e8c070';g.fillText(GREEK19[LETTER19.indexOf(m)],205.4,b[1])}})}
+  const put=(s,b,col,groove)=>{const[x,y,w,h]=b,f=fit19(g,s,w,h);g.font=FONT19(f.z);g.textBaseline='top';
+    if(groove){g.fillStyle=groove;f.L.forEach((l,i)=>g.fillText(l,x+.3,y+i*f.lh+.4))}
+    g.fillStyle=col;f.L.forEach((l,i)=>g.fillText(l,x,y+i*f.lh));const mw=Math.max(...f.L.map(l=>g.measureText(l).width));if(G.caps19.length<400)G.caps19.push({s,w:mw,max:w,h:f.L.length*f.lh,maxh:h})};
+  LETTER19.forEach((k,i)=>{const b=LBOX19[i];g.font=FONT19(5);g.fillStyle='#4a2e14';g.textBaseline='top';g.fillText(GREEK19[i],16,b[1]);put(T(k),b,'#2a1a0c');
+    if(mk.o===k){const cx=25.4,cy=b[1]+3.4,d=2.2;stroke(g,[cx,cy-d,cx+d,cy,cx,cy+d,cx-d,cy,cx,cy-d],'rgba(255,240,200,.6)',1.4);stroke(g,[cx,cy-d,cx+d,cy,cx,cy+d,cx-d,cy,cx,cy-d],'#a8341e',.7)}});
+  NOTES19.forEach((n,i)=>{const b=NBOX19[i];put(T(n.k),b,'#dccaa4','rgba(6,3,2,.7)');const m=mk.n[n.k];
+    if(m==='none'){stroke(g,[206.2,b[1]+5.6,209.2,b[1]+1.6],'rgba(6,3,2,.7)',.8);stroke(g,[205.8,b[1]+5.2,208.8,b[1]+1.2],'#e8c880',.7)}
+    else if(m){g.font=FONT19(5);g.textBaseline='top';const c=GREEK19[LETTER19.indexOf(m)];g.fillStyle='rgba(6,3,2,.7)';g.fillText(c,205.7,b[1]+.4);g.fillStyle='#e8c880';g.fillText(c,205.4,b[1])}})}
 /* ==== ART letter19: end ==== */
 
 /* ---- the inventory ---- */
@@ -1487,7 +1872,7 @@ ROOMS.door19.birds={perch:[{k:'sparrow',y:14.6,x:[60,74,214],d:[1,-1,1]}]};
 ROOMS.lanes19.birds={perch:[{k:'dove',y:WTOP19,x:[X19(110),X19(124),X19(200)],d:[1,-1,1]}]};
 ROOMS.gate19.birds={perch:[{k:'dove',y:10.4,x:[40,56,262],d:[1,-1,-1]}]};
 ROOMS.antipatris19.birds={lark:[250,112,40],swallows:[20,84,120,18]};
-ROOMS.palace19.birds={gulls:[40,4,240,30],stand:[[46,80.4,1],[92,80.4,-1]]};
+ROOMS.palace19.birds={gulls:[8,6,168,36],stand:[[46,80.4,1],[92,80.4,-1]]};
 /* every hotspot answers the nephew as it answers Paul (see act: another member uses h.as[his id]) */
 for(const id of['council19','barracks19','door19','lanes19','gate19','cmd19','antipatris19','palace19','letter19'])for(const h of ROOMS[id].hs)
   if(!h.as)h.as={nephew19:h};
