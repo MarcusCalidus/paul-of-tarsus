@@ -290,7 +290,10 @@ ART.court18={w:480,q:12,paint(g){paintCourt18(g)},light:{amb:'#f6eadc',sun:[.6,.
 /* drawCourt18: in the arrest, the two chains between Paul and his keepers, and the knot of soldiers that carries him (G.knot18) */
 function drawCourt18(g,t){const C=SHARED.cast.custody;if(P.chained&&P.room==='court18')C.chains(g,P,ACT.sol18a,ACT.sol18b);
   const k=G.knot18;if(k)C.knot(g,k.x,k.y,{room:'court18',dir:-1,pdir:k.pdir,d:k.d})}
-function paintCourt18(g){const r=rng(1831),S=SOREG18;sky18(g,480,60,'day');
+function paintCourt18(g){const r=rng(1831),S=SOREG18;sky18(g,480,62,'day');
+  /* the far pavement of the court, back to the horizon (y 62, about the figures' eyes): pale, its rows running across */
+  g.fillStyle=lg(g,0,62,0,104,['#e8dcc0','#ddcfae','#d4c4a0']);g.fillRect(0,62,480,42);
+  for(let y=63,k=1;y<104;y+=k,k*=1.18){R(g,0,y,480,.5,'rgba(150,130,100,.28)');for(let x=(y*7)%23;x<480;x+=14+k*6)R(g,x,y,.5,Math.min(k,104-y),'rgba(150,130,100,.22)')}
   /* the sanctuary rising over the inner wall: white stone, a broad front with its shoulders, its great doorway dark */
   const SW='#eee6d2';g.fillStyle=lg(g,196,0,304,0,[tint(SW,.06),SW,tint(SW,-.14)]);g.fillRect(196,6,108,40);g.fillRect(220,0,60,8);
   inRect(g,196,0,108,46,()=>tex(g,'mott',.3,196,0,108,46,'overlay',.4));R(g,196,6,108,.6,'#fffaf0');R(g,220,0,60,.6,'#fffaf0');
@@ -331,7 +334,7 @@ function paintCourt18(g){const r=rng(1831),S=SOREG18;sky18(g,480,60,'day');
 /* the words as they stand on the stone, line by line (no space is cut between them; the gaps here are ours, a quarter letter wide) */
 const WORDS18=[['ΜΗΘΕΝΑ','ΑΛΛΟΓΕΝΗ','ΕΙΣΠΟ'],['ΡΕΥΕΣΘΑΙ','ΕΝΤΟΣ','ΤΟΥ','ΠΕ'],['ΡΙ','ΤΟ','ΙΕΡΟΝ','ΤΡΥΦΑΚΤΟΥ','ΚΑΙ'],['ΠΕΡΙΒΟΛΟΥ','ΟΣ','Δ','ΑΝ','ΛΗ'],['ΦΘΗ','ΕΑΥΤΩΙ','ΑΙΤΙΟΣ','ΕΣ'],
   ['ΤΑΙ','ΔΙΑ','ΤΟ','ΕΞΑΚΟΛΟΥ'],['ΘΕΙΝ','ΘΑΝΑΤΟΝ']];
-const ST18={x:74,y:30,adv:7,gap:1.8,lh:14.4,h:9.6};
+const ST18={x:50,y:27,adv:9.6,gap:2.6,lh:17,h:11};
 /* where a run of words of one line stands: [x, y, w, h] */
 function wordBox18(line,a,b){const W=WORDS18[line];let x=ST18.x;for(let i=0;i<a;i++)x+=W[i].length*ST18.adv+ST18.gap;let w=0;for(let i=a;i<=b;i++)w+=W[i].length*ST18.adv+(i<b?ST18.gap:0);
   return[x-1,ST18.y+line*ST18.lh-ST18.h-1,w+2,ST18.h+3]}
@@ -342,14 +345,15 @@ function paintStone18(g){const r=rng(1841);
   for(let i=0;i<40;i++)pool(g,r()*320,90+r()*54,10+r()*18,3+r()*4,r()<.5?'#d8c8a4':'#a89470',.25,'source-over');
   R(g,0,58,320,10,'#d8cab0');R(g,0,58,320,1.4,'#f4ead4');
   /* the block, its face lit from the upper left, weathered at its edges */
-  const x0=64,y0=10,x1=258,y1=136;M18.shadow(g,(x0+x1)/2+3,y1,(x1-x0)/2+3,2.4,.5);
+  const x0=38,y0=8,x1=282,y1=138;M18.shadow(g,(x0+x1)/2+3,y1,(x1-x0)/2+3,2.4,.5);
   g.fillStyle=lg(g,x0,y0,x1,y1,['#f6eedc','#ebe0c6','#d8caa8','#c4b48e']);g.fillRect(x0,y0,x1-x0,y1-y0);
   inRect(g,x0,y0,x1-x0,y1-y0,()=>{tex(g,'mott',.45,x0,y0,x1-x0,y1-y0,'overlay',.8);for(let i=0;i<160;i++)R(g,x0+r()*(x1-x0),y0+r()*(y1-y0),.5+r()*2,.5,r()<.5?'rgba(90,72,50,.18)':'rgba(255,250,236,.3)');
     ao(g,x0,y1-10,x1-x0,10,'b',.2,'#4a3a30');ao(g,x1-6,y0,6,y1-y0,'r',.2,'#4a3a30')});
   R(g,x0,y0,x1-x0,.8,'#fffcf2');R(g,x0,y0,.8,y1-y0,'#fffaf0');
   /* the letters, cut: a dark groove with its lit lower edge, each line in its place */
-  g.font='bold 10px Georgia,"Times New Roman",serif';g.textBaseline='alphabetic';
-  WORDS18.forEach((W,j)=>{let x=ST18.x;const y=ST18.y+j*ST18.lh;for(const w of W){for(const ch of w){g.fillStyle='rgba(255,250,236,.7)';g.fillText(ch,x+.5,y+.6);g.fillStyle='#5a4632';g.fillText(ch,x,y);x+=ST18.adv}x+=ST18.gap}})}
+  g.font='12px Georgia,"Times New Roman",serif';g.textBaseline='alphabetic';g.textAlign='center';
+  WORDS18.forEach((W,j)=>{let x=ST18.x;const y=ST18.y+j*ST18.lh;for(const w of W){for(const ch of w){const cx=x+ST18.adv/2;g.fillStyle='rgba(255,250,236,.7)';g.fillText(ch,cx+.5,y+.6);g.fillStyle='#5a4632';g.fillText(ch,cx,y);x+=ST18.adv}x+=ST18.gap}});
+  g.textAlign='left'}
 /* ==== ART stone18: end ==== */
 
 /* ==== ART stairs18: begin ==== */
@@ -366,15 +370,17 @@ function paintStairs18(g){const r=rng(1851);sky18(g,320,40,'day');
   /* far off: the sanctuary and the inner wall */
   R(g,40,8,56,34,'#ece4d0');R(g,52,2,32,8,'#ece4d0');R(g,62,16,12,26,'#2a2018');ashlar(g,0,34,200,14,'#dccca8',r,{bw:10,bh:4,v:.08});
   /* the court far below, and the crowd on it: heads and mantles in many colors, thicker toward the stairs */
-  g.fillStyle=lg(g,0,48,0,110,['#d2c4a2','#c4b290']);g.fillRect(0,48,200,62);R(g,0,52,200,3,'#cfc0a0');
+  g.fillStyle=lg(g,0,48,0,144,['#d2c4a2','#c4b290','#b8a684']);g.fillRect(0,48,210,96);R(g,0,52,200,3,'#cfc0a0');
+  /* the wall of the fortress behind the landing, from the stairs' head to the right edge */
+  ashlar(g,196,0,124,98,'#c8b48e',r,{bw:14,bh:7,v:.1});ao(g,196,0,10,98,'l',.3,'#3a2c3c');
   const C=['#8a5a40','#6a6a7a','#b8a070','#5a6a52','#9a7a5a','#e2d8c0','#7a4a3a','#4a5a6a'];
-  for(let i=0;i<900;i++){const y=56+Math.pow(r(),.7)*54,x=r()*(200-(y-56)*.4);const s=.6+(y-56)/54*1.1;R(g,x,y,s*1.6,s*1.4,C[(r()*C.length)|0]);R(g,x+.3*s,y-.9*s,s,s*.9,r()<.6?'#2a1e16':'#5a4a3a')}
+  for(let i=0;i<1400;i++){const y=56+Math.pow(r(),.8)*88,x=r()*(200-(y-56)*.5);const s=.6+(y-56)/54*1.1;R(g,x,y,s*1.6,s*1.4,C[(r()*C.length)|0]);R(g,x+.3*s,y-.9*s,s,s*.9,r()<.6?'#2a1e16':'#5a4a3a')}
   /* the stairs and the landing: pale stone, the steps falling away to the left; the parapet along their outer edge */
   poly(g,[150,144,196,98,320,98,320,144],'#d8c8a4');clipTo(g,()=>poly(g,[150,144,196,98,320,98,320,144]),()=>{tex(g,'mott',.35,150,98,170,46,'overlay',.5);
     for(let i=0;i<6;i++){const y=110+i*6;R(g,150,y,60,.5,'rgba(255,246,224,.6)');R(g,150,y+3,60,.5,'rgba(70,56,40,.3)')}});
   poly(g,[140,144,192,94,200,94,150,144],'#c4b08a');stroke(g,[140,144,192,94],'#eadcb8',.8);
   /* the wall of the fortress at the right, and the door of the soldiers' quarters in it */
-  ashlar(g,276,0,44,98,'#c8b48e',r,{bw:14,bh:7,v:.1});g.fillStyle=lg(g,0,36,0,98,['#2a2018','#1a120c']);g.fillRect(284,36,28,62);ao(g,276,0,8,98,'l',.3,'#3a2c3c');
+  g.fillStyle=lg(g,0,36,0,98,['#2a2018','#1a120c']);g.fillRect(284,36,28,62);R(g,282,34,32,2,'#a89070');
   light18(g,320,1)}
 function drawStairs18(g,t){const o=G.out18;if(!o)return;const k=(t%1600)/1600;
   /* the outcry: outer garments thrown about over the crowd, and dust tossed into the air, drifting (22:23); no stone, no blow */
