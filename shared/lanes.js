@@ -609,8 +609,10 @@ function make(id,def){
   function drawFolk(gx,o,x,y,D,fr,run,talk){const c=folk(o,D,fr,armsOf(run,fr,D),talk),i=Math.floor(clamp(y,0,def.h-1))*def.w+Math.floor(clamp(x,0,def.w-1)),dark=M.sun&&M.sun[i];
     foot(gx,x,y);gx.drawImage(dark?shaded(c):c,hp(x)-3,hp(y)-FH/2+.5,FW/2,FH/2)}
   M.drawActor=(gx,o,ts)=>{const run=M.runs(o)&&!o.pushed,D=facingOf(o),w=o.walk,gone=o.gait?o.gait.gone:null,left=w?Math.hypot(w.x-o.x,w.y-o.y)+(w.rest||0):null,
-      fr=w&&!o.pushed?frameOf(run,gone,w.key?null:left,STRIDE[run?'run':'walk']):o.pushed?'p1':'stand';
-    drawFolk(gx,o.look,o.x,o.y,D,fr,run,o.talk&&Math.floor(ts/150)%2)};
+      fr=w&&!o.pushed?frameOf(run,gone,w.key?null:left,STRIDE[run?'run':'walk']):o.pushed?'p1':'stand',x=o.x,y=o.y,talk=o.talk&&Math.floor(ts/150)%2;
+    /* among the houses by the row he stands on, as the crowd is: drawn at once, every house strip would lie over him, and a wall just
+       north of him would hide his head and body */
+    depth(y,()=>drawFolk(gx,o.look,x,y,D,fr,run,talk))};
   M.draw=(gx,ts)=>{const z=G.zoom||1,cam=G.cam,cy=G.camY,vw=VW/z,vh=VH/z,cd=crowdDef(),run=cd&&(cd.pace||'run')==='run',v=vNow();
     for(const p of M.dust){const a=.32*(1-p.t/1.4);gx.fillStyle=`rgba(196,170,128,${a})`;gx.fillRect(hp(p.x),hp(p.y-1-p.t*2),1,1)}
     /* the way whoever is played walks after a click: a row of dots on the ground, and a small diamond where it ends, never a cross */
