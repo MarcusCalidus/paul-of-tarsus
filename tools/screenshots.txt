@@ -12,6 +12,7 @@ beach-prayer pprayer17
 birds birds
 birds-sheet birds birds-sheet
 bound bound17 cast-bound
+chained chained18 cast-chained
 caesarea-road pgate17
 coast-road proad16
 coast-sheet coast coast-sheet
@@ -83,6 +84,7 @@ isthmus pisth12
 jailer open9
 jar jar
 jerusalem jerusalem
+journeys18 map18
 judgment-seat pagorah12
 kleandros phouseb13
 lamplight mend
