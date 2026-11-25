@@ -771,35 +771,84 @@ function lightPal19(g){
 /* ==== ART palace19: end ==== */
 
 /* ==== ART letter19: begin ==== */
-/* The letter, close, as it lies on the table beside the governor's seat, and Paul's wax tablet beside it. The sheet of papyrus (its fibers
-   run one way) holds the six lines of the letter (Acts 23:26-30, in our own words, told.md), each in its own box (LBOX19), with a small
-   Greek capital in the margin (Α to Ζ) that names it; none of the six is shaped like a cross. The tablet (its wax dark, its wooden frame
-   plain) holds Paul's six notes (NBOX19). The marks the player sets (G.mk19) are drawn as he sets them: beside a note the capital of the
-   line it goes with, or a short level stroke for "not in the letter"; beside one line of the letter a small bent stroke for "out of
-   order". No ruled line meets a margin, and nothing crosses. The words are translated as they are drawn and made to fit their boxes
-   (G.caps19, checked by the playtest).
+/* The letter, close, as it lies on the table beside the governor's seat, and Paul's wax tablet beside it, in the light of the late
+   afternoon from the left (the close-view standard of Chapters Thirteen and Fourteen). The table's wood is fine-grained and quiet, its
+   grain running one way. The sheet of papyrus, its edges a little uneven and frayed, its fibers running across only, holds the six lines
+   of the letter (Acts 23:26-30, in our own words, told.md), each in its own box (LBOX19), with a small Greek capital in the margin (Α to
+   Ζ) that names it; none of the six is shaped like a cross, and no line is ruled. The tablet is a leaf of boxwood, its grain running the
+   long way, round a bed of dark wax; two small square holes in its left edge, where it is bound to its other leaf. Paul's six notes
+   (NBOX19) are scratched into the wax: the stylus leaves the wax pale, with the shade of the groove under it. His stylus of bronze lies
+   between the sheet and the tablet, along them, not across either. The marks the player sets (G.mk19) are drawn as he sets them, on
+   the tablet beside a note: the capital of the line it goes with, or a short slanting stroke for "not in the letter"; and beside one
+   line of the letter a small hollow diamond for "out of order", which is a mark of the view and not written on the governor's letter.
+   Nothing crosses. The words are translated as they are drawn and made to fit their boxes (G.caps19, checked by the playtest).
    Called from outside: ART.letter19. Reads G.mk19.
    Hotspots: each line of the letter (LBOX19), each note (NBOX19), back to the hall 0,136,120,8. Walk: none (a close view). */
 const GREEK19=['Α','Β','Γ','Δ','Ε','Ζ'];
 const LBOX19=Array.from({length:6},(_,i)=>[30,16+i*19,148,18]),NBOX19=Array.from({length:6},(_,i)=>[212,16+i*19,94,18]);
 ART.letter19={w:320,q:12,paint(g){paintLetter19(g)},light:null,draw(g){drawLetter19(g)},front(){}};
-function paintLetter19(g){const r=rng(1981);
-  g.fillStyle=lg(g,0,0,0,144,['#5e4324','#6e502d','#4e361c']);g.fillRect(0,0,320,144);tex(g,'mott',.2,0,0,320,144,'overlay',.9);
-  for(let i=0;i<60;i++){const y=r()*144;R(g,r()*300,y,8+r()*40,.5,'rgba(30,18,8,.25)')}
-  for(const[d,a]of[[4,.1],[2,.18]]){g.fillStyle=`rgba(16,9,5,${a})`;g.fillRect(12-d+2,8-d+3,178+d*2,128+d*2);g.fillRect(200-d+2,8-d+3,112+d*2,128+d*2)}
-  g.fillStyle=lg(g,12,8,12,136,['#ebddb4','#e2d2a2','#d6c28e']);g.fillRect(12,8,178,128);for(let i=0;i<220;i++)R(g,12+r()*170,8+r()*128,4+r()*14,.5,'rgba(140,110,60,.12)');
-  R(g,200,8,112,128,'#7a5432');R(g,200,8,112,1,'#a8784a');R(g,204,12,104,120,'#2a2420');R(g,204,12,104,.8,'#1a1410');tex(g,'mott',.25,204,12,104,120,'overlay',.6)}
+function paintLetter19(g){const r=rng(1981),q=rng(1982);
+  /* the table: a broad board of a fine, quiet grain, its seams with the next boards only above and below the sheet and the tablet, where
+     they run along their edges and meet nothing */
+  for(const[y,h,c]of[[0,3.6,'#6e4a2a'],[3.6,136.6,'#664428'],[140.2,3.8,'#5e3e24']]){M19.plank(g,0,y,320,h,c,rng(1983+y),0);if(y){R(g,0,y,320,.8,'rgba(24,12,6,.55)');R(g,0,y+.8,320,.5,'rgba(220,170,110,.14)')}}
+  tex(g,'mott',.14,0,0,320,144,'overlay',.9);pool(g,250,140,120,10,'#c89060',.08,'source-over');
+  /* soft shadows of the sheet and the tablet on the table, falling a little to the right and down, away from the light */
+  for(const[d,a]of[[5,.08],[3,.13],[1.6,.2]]){g.fillStyle=`rgba(16,8,4,${a})`;g.fillRect(12-d+2.6,8-d+2.6,178+d*2,128+d*2);g.fillRect(200-d+2.6,8-d+2.6,112+d*2,128+d*2)}
+  sheetLetter19(g,r,q);
+  tabletLetter19(g,q);
+  stylusLetter19(g);
+  /* the light of the late afternoon from the left: warm on the near side, falling off to the right */
+  comp(g,'soft-light',.35,()=>{g.fillStyle=lg(g,0,0,320,144,['rgba(255,214,160,1)','rgba(255,214,160,.2)','rgba(150,140,190,.6)']);g.fillRect(0,0,320,144)});
+  comp(g,'multiply',.25,()=>{g.fillStyle=rg(g,90,60,300,['#ffffff','#f2e8e0','#a098b8']);g.fillRect(0,0,320,144)})}
+/* the sheet: an outline a little uneven, frayed where the fibers end; broad strips of the fibers' own tone and fine threads that stop and
+   start, all running across; a faint stain or two; the edge on the light side lit */
+function sheetLetter19(g,r,q){const E=[],j=(a,i)=>a*(Math.sin(i*.9)*.5+(q()-.5)*.6);
+  for(let x=12,i=0;x<=190;x+=2,i++)E.push(x,8+j(.5,i));for(let y=8,i=0;y<=136;y+=2,i++)E.push(190+j(.4,i),y);
+  for(let x=190,i=0;x>=12;x-=2,i++)E.push(x,136+j(.5,i));for(let y=136,i=0;y>=8;y-=2,i++)E.push(12+j(.4,i),y);
+  clipTo(g,()=>poly(g,E),()=>{g.fillStyle=lg(g,12,8,190,136,['#eee2bc','#e4d4a8','#d6c290']);g.fillRect(10,6,182,132);
+    for(let y=7;y<137;){const hh=1+r()*2.4;R(g,10,y,182,hh,r()<.5?'rgba(146,112,56,.07)':'rgba(255,248,220,.1)');y+=hh}
+    for(let i=0;i<320;i++){const y=8+q()*128,x=10+q()*170,l=6+q()*44;R(g,x,y,l,.5,q()<.55?'rgba(120,90,44,.12)':'rgba(255,250,228,.16)')}
+    tex(g,'mott',.14,12,8,178,128,'overlay',.8);
+    pool(g,150,120,16,6,'#a8844a',.08,'source-over');pool(g,40,20,10,4,'#a8844a',.06,'source-over');
+    ao(g,12,8,178,6,'t',.12,'#6e4c1e');ao(g,12,128,178,8,'b',.16,'#6e4c1e');ao(g,184,8,6,128,'r',.14,'#6e4c1e')});
+  stroke(g,E.slice(0,E.length/4|0),'rgba(255,246,214,.7)',.5);stroke(g,E.slice(E.length*3/4|0),'rgba(255,246,214,.5)',.5)}
+/* the tablet: a leaf of boxwood round a bed of dark wax; the frame a little higher than the wax, so that its upper and left inner sides
+   throw a thin shade onto it; two square holes in the left edge */
+function tabletLetter19(g,q){const x=200,y=8,w=112,h=128,b=4,W='#b08c5c',wx=x+b,wy=y+b,ww=w-2*b,wh=h-2*b;
+  R(g,x,y,w,h,W);inRect(g,x,y,w,h,()=>{for(let yy=y-2;yy<y+h+2;yy+=.6+q()*1.1){const col=q()<.55?rgba(tint(W,-.3),.12+q()*.18):rgba(tint(W,.22),.1+q()*.16),p=[],f=.04+q()*.02,ph=q()*6;
+      for(let xx=x-1;xx<=x+w+2;xx+=2)p.push(xx,yy+.6*Math.sin(xx*f+ph));stroke(g,p,col,.5)}
+    tex(g,'mott',.2,x,y,w,h,'overlay',.8)});
+  R(g,x,y,w,.6,tint(W,.32));R(g,x,y,.6,h,tint(W,.2));R(g,x+w-.6,y,.6,h,tint(W,-.26));R(g,x,y+h-.6,w,.6,tint(W,-.18));
+  g.fillStyle=lg(g,wx,wy,wx+ww,wy+wh,['#2e2014','#38281a','#2a1c12']);g.fillRect(wx,wy,ww,wh);
+  inRect(g,wx,wy,ww,wh,()=>{tex(g,'mott',.22,wx,wy,ww,wh,'overlay',1);pool(g,wx+ww*.3,wy+wh*.3,ww*.5,wh*.25,'#f0e0c8',.07,'screen');
+    /* the wax smoothed and written over many times: faint pale traces of earlier writing, smoothed out */
+    for(let i=0;i<40;i++){const xx=wx+4+q()*(ww-14),yy=wy+4+q()*(wh-8);R(g,xx,yy,3+q()*10,.5,'rgba(200,170,120,.05)')}
+    R(g,wx,wy,ww,1,'rgba(10,6,4,.55)');R(g,wx,wy,1,wh,'rgba(10,6,4,.5)');R(g,wx+ww-.5,wy,.5,wh,'rgba(150,120,80,.25)');R(g,wx,wy+wh-.5,ww,.5,'rgba(150,120,80,.2)')});
+  for(const hy of[y+34,y+h-34]){R(g,x+1.2,hy-.75,1.5,1.5,'#140c06');R(g,x+1.2,hy-.75,1.5,.5,tint(W,-.5))}}
+/* the stylus: a bronze rod lying along the gap between the sheet and the tablet, its point toward us, its flat end for smoothing the wax
+   away from us; lit along its left side */
+function stylusLetter19(g){const x0=195.4,y0=58,x1=194.8,y1=100;
+  stroke(g,[x0+1.4,y0+2,x1+1.6,y1+1.6],'rgba(16,8,4,.35)',1.4);
+  poly(g,[x0-.9,y0+5,x0+.9,y0+5,x1+.7,y1-4,x1,y1,x1-.7,y1-4]);g.fillStyle=lg(g,x0-1,0,x0+1,0,['#e0b070','#a87434','#6a4420']);g.fill();
+  poly(g,[x0-1.4,y0,x0+1.4,y0,x0+1.2,y0+2.4,x0+.9,y0+5,x0-.9,y0+5,x0-1.2,y0+2.4]);g.fillStyle=lg(g,x0-1.4,0,x0+1.4,0,['#e8bc7c','#b07c3a','#704822']);g.fill();
+  stroke(g,[x0-.5,y0+6,x1-.3,y1-6],'rgba(255,230,180,.55)',.5)}
 /* fit19: the words of key into a box: the largest of four sizes whose lines all fit; returns the font size and the lines */
 function fit19(g,s,w,h){for(const z of[4.6,4.2,3.8,3.4]){g.font=FONT19(z);const lh=z*1.2,words=s.split(' '),L=[];let cur='';
     for(const wd of words){const t=cur?cur+' '+wd:wd;if(g.measureText(t).width>w&&cur){L.push(cur);cur=wd}else cur=t}if(cur)L.push(cur);
     if(L.length*lh<=h||z===3.4)return{z,lh,L}}}
+/* drawLetter19: the words, and the marks as they stand. On the sheet the ink is dark and a little brown; on the wax the letters are pale
+   where the stylus has gone, with the shade of the groove under them. The marks: on the tablet, left of a note, the capital of its line
+   or a short slanting stroke ("not in the letter"), scratched like the notes; on the sheet, between a line's capital and its words, a
+   small hollow diamond ("out of order") */
 function drawLetter19(g){const mk=G.mk19||{n:{},o:null};G.caps19=G.caps19||[];
-  const put=(s,b,col)=>{const[x,y,w,h]=b,f=fit19(g,s,w,h);g.font=FONT19(f.z);g.fillStyle=col;g.textBaseline='top';
-    f.L.forEach((l,i)=>g.fillText(l,x,y+i*f.lh));const mw=Math.max(...f.L.map(l=>g.measureText(l).width));if(G.caps19.length<400)G.caps19.push({s,w:mw,max:w,h:f.L.length*f.lh,maxh:h})};
-  LETTER19.forEach((k,i)=>{const b=LBOX19[i];g.font=FONT19(5);g.fillStyle='#5a3a1a';g.textBaseline='top';g.fillText(GREEK19[i],16,b[1]);put(T(k),b,'#2a1a0c');
-    if(mk.o===k)stroke(g,[22,b[1]+8,24,b[1]+6.6,26,b[1]+8,28,b[1]+6.6],'#8a2a1a',.6)});
-  NOTES19.forEach((n,i)=>{const b=NBOX19[i];put(T(n.k),b,'#e8dcc0');const m=mk.n[n.k];
-    if(m==='none')R(g,205.4,b[1]+3,4,.8,'#e8c070');else if(m){g.font=FONT19(5);g.fillStyle='#e8c070';g.fillText(GREEK19[LETTER19.indexOf(m)],205.4,b[1])}})}
+  const put=(s,b,col,groove)=>{const[x,y,w,h]=b,f=fit19(g,s,w,h);g.font=FONT19(f.z);g.textBaseline='top';
+    if(groove){g.fillStyle=groove;f.L.forEach((l,i)=>g.fillText(l,x+.3,y+i*f.lh+.4))}
+    g.fillStyle=col;f.L.forEach((l,i)=>g.fillText(l,x,y+i*f.lh));const mw=Math.max(...f.L.map(l=>g.measureText(l).width));if(G.caps19.length<400)G.caps19.push({s,w:mw,max:w,h:f.L.length*f.lh,maxh:h})};
+  LETTER19.forEach((k,i)=>{const b=LBOX19[i];g.font=FONT19(5);g.fillStyle='#4a2e14';g.textBaseline='top';g.fillText(GREEK19[i],16,b[1]);put(T(k),b,'#2a1a0c');
+    if(mk.o===k){const cx=25.4,cy=b[1]+3.4,d=2.2;stroke(g,[cx,cy-d,cx+d,cy,cx,cy+d,cx-d,cy,cx,cy-d],'rgba(255,240,200,.6)',1.4);stroke(g,[cx,cy-d,cx+d,cy,cx,cy+d,cx-d,cy,cx,cy-d],'#a8341e',.7)}});
+  NOTES19.forEach((n,i)=>{const b=NBOX19[i];put(T(n.k),b,'#dccaa4','rgba(6,3,2,.7)');const m=mk.n[n.k];
+    if(m==='none'){stroke(g,[206.2,b[1]+5.6,209.2,b[1]+1.6],'rgba(6,3,2,.7)',.8);stroke(g,[205.8,b[1]+5.2,208.8,b[1]+1.2],'#e8c880',.7)}
+    else if(m){g.font=FONT19(5);g.textBaseline='top';const c=GREEK19[LETTER19.indexOf(m)];g.fillStyle='rgba(6,3,2,.7)';g.fillText(c,205.7,b[1]+.4);g.fillStyle='#e8c880';g.fillText(c,205.4,b[1])}})}
 /* ==== ART letter19: end ==== */
 
 /* ---- the inventory ---- */
