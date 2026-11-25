@@ -218,7 +218,7 @@ function drawMnason18(g,t){depth(116,()=>SHARED.beasts.donkey(g,272,116,-1,0,0,l
    James's house and the temple). Wide: 480 pixels, the view follows Paul. We look north: the houses along the back face south, and the
    low morning sun stands in the east, at the right, so that the fronts are lit from the right and every shadow falls to the left. The
    houses are of the pale limestone of the city, two storeys under flat roofs with low parapets: some of dressed blocks, some plastered
-   over rubble with dressed corners; small windows high up, shutters, the beam ends of the roofs, a gutter spout. The street is paved with
+   over rubble with dressed corners; small windows high up, shutters, the beam ends of the roofs. The street is paved with
    large flags in courses that run back to the eyes of the people in it (HZStreet18). At x 196..222 the door of the house where James and
    the elders meet, in a frame of dressed stone with a step before it. The barber's stall at x 296..348: an awning of plain linen sloping
    out from the wall of his house, held at its two front corners by two poles, one at each end; under it his low table with a bowl of
@@ -242,18 +242,23 @@ function paintStreet18(g){const r=rng(1811),BK=104;
   figStreet18(g);
   roofRoomStreet18(g,rng(1823));
   /* the houses, from the left: their tops, their kinds of wall, their windows and doors */
-  frontStreet18(g,-2,24,76,'#e4d6b6',rng(1813),{ledge:62,win:[[14,36,6,8,1],[44,36,6,8,0],[28,72,5,7,1]],door:[52,16,40],spout:30});
-  frontStreet18(g,74,32,62,'#d8c6a2',rng(1814),{ash:1,ledge:66,win:[[90,44,6,8,1],[116,44,6,8,1]],spout:126});
+  frontStreet18(g,-2,24,76,'#e4d6b6',rng(1813),{ledge:62,win:[[14,36,6,8,1],[44,36,6,8,0],[28,72,5,7,1]],door:[52,16,40]});
+  frontStreet18(g,74,32,62,'#d8c6a2',rng(1814),{ash:1,ledge:66,win:[[90,44,6,8,1],[116,44,6,8,1]]});
   /* James's house stands a little forward of its neighbor: its shadow falls on the low house to its left */
   shade(g,[127,32.6,136,32.6,136,104,123,104],'#9a9ac4',.42);
   frontStreet18(g,136,18,122,'#ebdfc2',rng(1815),{ash:1,bw:13,ledge:52,win:[[150,30,6,9,1],[176,30,6,9,0],[236,30,6,9,1],[156,66,5,7,1],[238,66,5,7,1]],beams:1});
   jamesDoorStreet18(g,rng(1816));
-  frontStreet18(g,258,28,94,'#dfcfac',rng(1817),{ledge:58,win:[[268,40,6,8,1],[330,40,6,8,1]],spout:300});
+  frontStreet18(g,258,28,94,'#dfcfac',rng(1817),{ledge:58,win:[[268,40,6,8,1],[330,40,6,8,1]]});
   frontStreet18(g,352,22,54,'#e8dbbc',rng(1818),{ash:1,ledge:60,win:[[366,34,6,8,0],[388,34,6,8,1],[370,70,5,7,1]]});
   shade(g,[346,28.6,352,28.6,352,104,343,104],'#9a9ac4',.32);
   /* the street: large flags in courses, running back to the eyes of the people in it; a darker damp line at the foot of the walls */
   pave(g,-2,BK,482,144,'#d6c6a2',r,{vx:250,vy:HZStreet18,rows:6,step:30,v:.1,t:.34});
   ao(g,-2,BK,406,5,'t',.28,'#4a3a48');R(g,-2,BK,406,.7,'rgba(60,44,56,.4)');
+  /* where two fronts meet, a little shade in the corner; hairline cracks set by hand, high, where they run to no head; a storage jar
+     by the first door, at the foot of the wall */
+  for(const x of[74,136,258,352])ao(g,x-3,20,3,84,'r',.12,'#4a3c60');
+  for(const[x,y,n]of[[22,40,5],[288,34,4],[60,30,3]])M18.crack(g,x,y,n,rng(x*7+y),.7);
+  vessel(g,76,105,5,13,'#b87c50','pithos');
   stallStreet18(g);
   stoolStreet18(g);
   lightStreet18(g)}
@@ -301,7 +306,7 @@ function roofRoomStreet18(g,r){const c='#dccdb0';plaster(g,18,14,34,12,c,r,{patc
   R(g,40,17,5,9,'#3a2c2a');ao(g,40,17,5,3,'t',.5);shade(g,[17,14,20,14,20,26,17,26],'#9a9ac4',.4)}
 /* a house front of two storeys from x to x+w, the top of its parapet at y, its foot on the street. o.ash: dressed blocks; else plaster
    over rubble with dressed corners, long and short in turn, each block stopping at its own course. o.ledge: the course between the
-   storeys. o.win: [x, y, w, h, shut]. o.door: [x, w, h]. o.spout: a gutter spout under the parapet. o.beams: the ends of the roof beams. */
+   storeys. o.win: [x, y, w, h, shut]. o.door: [x, w, h]. o.beams: the ends of the roof beams. */
 function frontStreet18(g,x,y,w,c,r,o){const BK=104,P=5;
   if(o.ash)ashlar(g,x,y+P,w,BK-y-P,c,r,{bw:o.bw||17,bh:6,v:.05,t:.3,m:tint(c,-.2)});
   else{plaster(g,x,y+P,w,BK-y-P,c,r,{patch:0,cracks:0,t:.45,top:.06,bot:-.1});
@@ -311,8 +316,6 @@ function frontStreet18(g,x,y,w,c,r,o){const BK=104,P=5;
   plaster(g,x,y+1.6,w,P-1.6,tint(c,.03),r,{patch:0,cracks:0,t:.35});R(g,x-1,y,w+2,1.8,tint(c,.16));R(g,x-1,y,w+2,.5,'#fff8e8');
   R(g,x-1,y+1.8,w+2,.6,tint(c,-.3));ao(g,x,y+P,w,4,'t',.2,'#4a3c60');
   if(o.beams)for(let i=x+5;i<x+w-4;i+=13){R(g,i,y+P+1,2.4,2.2,'#6a4a2e');R(g,i+1.6,y+P+1,.8,2.2,'#b08454');poly(g,[i,y+P+3.2,i+2.4,y+P+3.2,i+.4,y+P+6,i-1.8,y+P+6],'rgba(70,56,96,.25)')}
-  if(o.spout){const sx=o.spout;R(g,sx,y+P,2.4,4,'#a89878');R(g,sx+1.6,y+P,.8,4,'#e4d4b0');R(g,sx,y+P+4,2.4,.6,'#5a4a40');
-    g.fillStyle=lg(g,0,y+P+4,0,y+P+40,[rgba('#6a5a50',.3),rgba('#6a5a50',0)]);g.fillRect(sx+.2,y+P+4.6,2,36)}
   if(o.ledge){const L=o.ledge;R(g,x,L,w,1.8,tint(c,.12));R(g,x,L,w,.5,tint(c,.36));R(g,x,L+1.8,w,.7,'rgba(70,56,90,.38)')}
   for(const[wx,wy,ww,wh,shut]of o.win||[])windowArt(g,wx,wy,ww,wh,c,{shut,wood:'#7a5a3a'});
   if(o.door){const[dx,dw,dh]=o.door;doorArt(g,dx,BK-dh,dw,dh,'#6a4c30',r,{left:1});R(g,dx-2,BK-dh-2.4,dw+4,2.4,tint(c,.1));R(g,dx-2,BK-dh-2.4,dw+4,.5,tint(c,.35))}
