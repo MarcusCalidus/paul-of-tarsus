@@ -518,7 +518,7 @@ function drawPass16(g,t){if(SPass16)SPass16.draw(g,t);const B=SHARED.beasts;LOOK
    stern 0,0,320,58 · the stern 128,16,52,56 · the steering oars 84,60,36,32 and 180,60,36,32 · the shelter 112,74,64,48 · the chest
    174,104,34,28 · the cargo, the bales 188,82,36,32 and the jars 68,82,36,30 · the cat 199,78,14,9 · the gangplank 258,90,62,40
    (moored at Troas only). Walk strip SHARED.ship.deck.walk (8..312, 102..140); the bulwarks are blocked (deck.block). Actors
-   (place16): the master by the tiller of the right steering oar 182,105 · his boy 204,139 · the sailor 240,126 · Timothy 106,134 ·
+   (place16): the master just behind the chest, so that it hides half his legs, 182,115 · his boy 204,139 · the sailor 240,126 · Timothy 106,134 ·
    Aristarchus 80,120 · Paul seated at the shelter's mouth 134,127 (from Assos on) · Luke comes in at 162,138 (ENT). Nobody is placed in
    the stern post's column (x 145..168) at the back of the strip, where the post would grow out of his head. The props are the deck's
    own (shelter, rack, bales, chest, coil) with their footprints, the seat, and the cat on the bales. */
@@ -1649,7 +1649,7 @@ function place16(room){for(const a of EVERY.concat([P,LK])){a.talk=false;a.seat=
   if(setScore&&AU.score!==MUSIC)setScore(MUSIC);
   const ph=phase16();
   if(ph==='A'){setPC16(P);place(LK,'quay16',66,121,1);place(TI,'quay16',98,129,1);place(AR,'quay16',116,114,1);place(MA,'quay16',176,118,-1);place(BOY,'quay16',198,113,-1);place(TR,'quay16',250,123,-1)}
-  if(ph==='B'||ph==='C'){place(MA,'deck16',182,105,-1);place(BOY,'deck16',204,139,-1);if(F.w1)place(KE,'deck16',240,126,-1);place(TI,'deck16',106,134,1);place(AR,'deck16',80,120,1)}
+  if(ph==='B'||ph==='C'){place(MA,'deck16',182,115,-1);place(BOY,'deck16',204,139,-1);if(F.w1)place(KE,'deck16',240,126,-1);place(TI,'deck16',106,134,1);place(AR,'deck16',80,120,1)}
   if(ph==='B'){place(FI,'road16',150,117,1);FI.seat=1;place(SH,'pass16',136,119,1)}
   if(ph==='C'){setPC16(LK);place(P,'deck16',134,127,1);P.seat=1}
   if(ph==='D'){setPC16(P);
