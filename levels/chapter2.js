@@ -43,6 +43,8 @@ function cartArt(g){const rw=rng(19);shadow2(g,178,106,30,2.3,.34,'#28204a');
 /* LIME2: the rubble of pale limestone that shows where the plaster of a house has fallen away (the city is built of it: shared/temple.js) */
 const LIME2='#d4bc8e';
 ART.jerusalem={w:480,fp:1.3,q:12,
+ /* the sun high on the left: short shadows fall to the right and a little toward us, as the house corners' do */
+ light:{amb:'#ffffff',sun:[10,3,.4]},
  paint(g){const r=rng(71),ST='#ecdcb4',SH=earth2('#8f95c8',.16),rw=rng(77);
   /* the sky's blue is drawn a little toward grey (earth2), so that it sits with the limestone and plaster of the street */
   sky(g,480,80,['#3f7cc8','#6aa2de','#9cc4ea','#d2e2ee'].map(c=>earth2(c,.14)));cloud(g,96,16,60,10,r);cloud(g,346,22,76,11,r);cloud(g,236,9,36,6,r);
@@ -212,7 +214,9 @@ function shipArt(g,X,t,st,sh){const y=Math.round(Math.sin(t/900)*2)/2,
   if(!X)SHARED.ship.gangplank(g,{x0:266,y0:82+y,x1:282,y1:104.5,w0:8,w1:10});
   else for(let i=0;i<7;i++)R(g,X+236-i*9-(t/60%9),98.5+(i%2),6-i*.5,.6,'#e6f2f4')}
 ART.harbor={w:480,fp:1.3,q:12,
- light:()=>({amb:'#f4dcc4'}),
+ /* the low sun stands over the water behind the quay: long shadows fall toward us. Painted ones spread from where it stands (x 150); a
+    figure's leans a little to the right, as they do over most of the quay */
+ light:()=>({amb:'#f4dcc4',sun:[10,22,.36]}),
  paint(g){const r=rng(97),SH=earth2('#8a86b8',.16);
   /* sky and sea: the sun is low over the water. Their blues are drawn a little toward grey (earth2), so that they sit with the stone of the quay */
   sky(g,480,62,['#2f62a8','#5a8cc4','#9ab4d0','#e4c8a4','#fbcf8c'].map((c,i)=>i<3?earth2(c,.14):c));pool(g,150,47,150,60,'#ffd890',.6,'screen');pool(g,150,47,40,26,'#fff0c0',.7,'screen');oval(g,150,47,8,8,'#fff6d0');
