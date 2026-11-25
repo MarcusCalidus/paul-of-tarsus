@@ -80,6 +80,8 @@ function flowers(g,x0,y0,w,h,r,n){const C=['#d84a3a','#e8c84a','#f0ece0','#b86ab
    the near side, so that the two never make a crossing. */
 const plat8=x=>13+6*Math.sin(x/71+.8)+4*Math.sin(x/23+2)+2*Math.sin(x/9);
 ART.fork={w:480,fp:1.25,q:12,
+ /* the sun full on the plain from the upper left, as the milestone throws its shade: shadows fall to the right and a little toward us */
+ light:{amb:'#ffffff',sun:[12,6,.4]},
  paint(g){const r=rng(811);
   sky(g,480,74,skyE(['#3b79c4','#74a6da','#b6d0e4','#ebe6d2']));cloud(g,96,12,60,7,r);cloud(g,250,22,46,5,r);cloud(g,408,10,56,6,r);
   /* far to the north: the mountains of the plateau, with the snow still on them in spring */
@@ -136,6 +138,9 @@ ART.fork={w:480,fp:1.25,q:12,
 const bith8=x=>15+6*Math.sin(x/83+1)+3*Math.sin(x/29)+1.4*Math.sin(x/7);
 const FERRY=[236,318];
 ART.ferry={w:480,fp:1.25,q:12,
+ /* the sun from the upper left, as the hut and the plane tree throw their shade: shadows fall to the right and toward us; the river
+    beyond the bank takes none */
+ light:{amb:'#ffffff',wallY:106,sun:[10,7,.4]},
  /* the two stones on the near bank lie a little way out on the ground */
  props:[{y:113,shape:g=>rock(g,96,113,12,6,'#948e80',1),foot:[90,110.5,12,2.5]},{y:114,shape:g=>rock(g,22,114,14,7,'#9a9486',1),foot:[15,111,14,3]}],
  paint(g){const r=rng(823);
@@ -270,7 +275,8 @@ ART.troas={w:480,fp:1.25,q:12,
     (the oil and the shards lie flat, and hide nobody), and the heap of sailcloth */
  props:[{y:113,shape:g=>vessel(g,170,113,4.6,15,'#9a4c28','amph',{noShadow:1}),foot:[167,110.5,6,2.5]},
    {y:118.6,shape:(g,v)=>{if(v!=='m')brokenJar(g,1)},foot:v=>v!=='m'?[264,112,25,6.5]:[]},{y:118,shape:g=>sailHeap(g,1),foot:[411,110,47,8]}],
- light:()=>F.vision?null:{amb:'#e6c2a8',wallY:104,wall:[[0,92,104,25],[92,104,104,31],[138,152,104,31],[186,196,104,31]],lamps:[[52,92,46,'#5a3c10',104,77]]},
+ /* at dusk the sun low over the sea before us, which throws long shadows toward us, and the lamp over the inn's door; in the morning the sun from the upper left, as the warehouse throws its shade: shadows to the right and toward us */
+ light:()=>F.vision?{amb:'#ffffff',wallY:104,sun:[10,6,.4]}:{amb:'#e6c2a8',wallY:104,wall:[[0,92,104,25],[92,104,104,31],[138,152,104,31],[186,196,104,31]],lamps:[[52,92,46,'#5a3c10',104,77]],sun:[-5,16,.24]},
  paint(g,v){const r=rng(829),eve=v!=='m',W=eve?'#d8c4a0':'#e6dcc0',ST='#cfc4a6';
   /* the sky over the sea: the sun going down into it, or the clear light of a morning with the wind in the south */
   if(eve){sky(g,480,64,['#283868','#585a92','#b86a80','#ee9858','#f8d084']);pool(g,372,62,90,38,'#ffe0a0',.7);pool(g,372,62,26,13,'#fff6d8',.9);
@@ -391,6 +397,8 @@ function hung(g,x,y,w,h,c){c=earthTone(c,.12);g.fillStyle=lg(g,x,0,x+w,0,[tint(c
   poly(g,[x,y+h,x+w,y+h,x+w-1,y+h+1.6,x+1,y+h+1.2],tint(c,-.38));ao(g,x,y,w,3,'t',.3)}
 const AWN=[152,244];
 ART.philippi={w:480,fp:1.3,q:12,
+ /* the sun from the upper left along the street, as the awnings and the trough throw their shade: shadows fall to the right and toward us */
+ light:{amb:'#ffffff',wallY:103,sun:[9,7,.4]},
  paint(g){const r=rng(853),W='#e4d6b6',W2='#d8c8a2',ST='#cfc4a8',rw=rng(8531),rb=rng(8532),SKY=skyE(['#3d7cc6','#76a8dc','#bcd4e6','#e8e8dc']);
   sky(g,480,60,SKY);cloud(g,150,10,56,6,r);cloud(g,318,20,44,5,r);cloud(g,440,8,40,5,r);
   /* over the roofs: the rock the city climbs, bare limestone with a wall along its top and one square tower */
@@ -481,6 +489,8 @@ ART.river={w:480,fp:1.3,q:12,
  /* the flat stones where the women sit stand a little up from the turf: whoever walks behind one is hidden by it */
  props:STONES.map(([x,y])=>({y:y+1,shape:g=>oval(g,x,y,10,2.8,'#000'),foot:[x-8,y-2,16,4],seat:1})),
  /* The sun stands to the right of the picture (o.light 1), so that the great plane tree throws its shade over the stones. */
+ /* the morning sun to the right and beyond: shadows fall long to the left and a little toward us, as the plane tree's does */
+ light:{amb:'#ffffff',sun:[-16,5,.4]},
  paint(g){const r=rng(859),S=SCRAP8,L=1;
   sky(g,480,70,skyE(['#3f80c8','#7aacdc','#c0d6e6','#ecead8']));cloud(g,90,14,54,6,r);cloud(g,236,8,60,6,r);cloud(g,386,22,40,4,r);
   /* far across the plain: a long mountain, blue with the morning, its slopes turned to the sun a little lighter */
