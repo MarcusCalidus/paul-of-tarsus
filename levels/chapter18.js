@@ -198,8 +198,9 @@ const FONT18=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;
    Luke 72,126 · Timothy 96,134 · Aristarchus 50,118 · Trophimus 120,120; Paul comes in at 140,128. The donkey stands at 272,116 facing left
    (block 254,111,34,5); the chest's foot is 20..42 at y 126. */
 const HZMnason18=79,LAMPMnason18=[124,54];
+/* the sun has gone down behind the left wall, so it throws no shadow on the floor: only the niche lamp by the door casts one */
 ART.mnason18={w:320,q:12,paint(g){paintMnason18(g)},
-  light:{amb:'#e6cfc0',sun:[.6,.2,.2],wallY:104,wall:[[24,140,104,48],[170,296,104,48]],lamps:[[LAMPMnason18[0],LAMPMnason18[1],40,'#5a3c14',104,LAMPMnason18[1]]]},
+  light:{amb:'#e6cfc0',wallY:104,wall:[[24,140,104,48],[170,296,104,48]],lamps:[[LAMPMnason18[0],LAMPMnason18[1],40,'#5a3c14',104,LAMPMnason18[1]]]},
   draw(g,t){drawMnason18(g,t)},front(){},
   props:[{y:126,shape(g){chest18(g,20,126,1)},foot:[[20,122,22,5]]}]};
 function paintMnason18(g){const r=rng(1801),S='#e6d8ba',BK=104,TP=14;
@@ -353,7 +354,7 @@ function drawMnason18(g,t){depth(116,()=>SHARED.beasts.donkey(g,272,116,-1,0,0,l
    barber's stall 296,62,52,44 · the temple mount's wall 420,4,60,76 · way up to the temple 466,96,14,48. Walk strip 16..464, 108..138.
    Actors (place18): the barber 330,114; the Jews from Asia (days) 396,116 and 410,122. The stool is a prop (foot 316,116,12,4). */
 const HZStreet18=70;
-ART.street18={w:480,q:12,paint(g){paintStreet18(g)},light:{amb:'#f6ecdc',sun:[-.55,.3,.42]},draw(){},front(){},
+ART.street18={w:480,q:12,paint(g){paintStreet18(g)},light:{amb:'#f6ecdc',sun:[-18,-7,.42],wallY:104},draw(){},front(){},
   props:[{y:120,shape(g){stoolStreet18(g,1)},foot:[[316,116,12,4]]}]};
 function paintStreet18(g){const r=rng(1811),BK=104;
   skyStreet18(g);
@@ -513,7 +514,7 @@ function lightStreet18(g){comp(g,'soft-light',.32,()=>{g.fillStyle=lg(g,480,0,0,
    174,104.5,122,4.5); the chest's foot follows it (CHEST18). */
 const CHEST18={'':[20,126],g:[174,128]},BENCH18=[174,296,110];
 ART.elders18={w:320,q:12,variant:()=>F.gift?'g':'',paint(g,v){paintElders18(g,v)},
-  light:{amb:'#f4e8d6',sun:[.5,.3,.4],shade:[[186,340,'#c6c0d6']]},draw(){},front(){},
+  light:{amb:'#f4e8d6',sun:[11,4,.4],shade:[[186,340,'#c6c0d6']]},draw(){},front(){},
   props:[{y:128,shape(g,v){const[x,y]=CHEST18[v||''];chest18(g,x,y,1)},foot:v=>{const[x,y]=CHEST18[v||''];return[[x,y-4,22,5]]}},
     {y:110,shape(g){benchElders18(g,1)},foot:[[174,104.5,122,4.5]],seat:1}]};
 function paintElders18(g,v){const r=rng(1821),W='#e8dcc0',BK=104,TP=6;
@@ -940,7 +941,8 @@ const GLYPH18={Α:{w:.8,s:[[0,1,.4,0,.8,1]],f:[[.27,.68,.53,.68]]},Β:{w:.62,s:[
 const adv18=ch=>GLYPH18[ch].w*ST18.h+ST18.sp+(ch==='Ι'?1.2:0),wlen18=w=>[...w].reduce((s,c)=>s+adv18(c),0)-ST18.sp;
 function wordBox18(line,a,b){const W=WORDS18[line];let x=ST18.x;for(let i=0;i<a;i++)x+=wlen18(W[i])+ST18.sp+ST18.gap;let w=0;for(let i=a;i<=b;i++)w+=wlen18(W[i])+(i<b?ST18.sp+ST18.gap:0);
   return[x-1.5,ST18.y+line*ST18.lh-2,w+3,ST18.h+4]}
-ART.stone18={w:320,q:12,paint(g){paintStone18(g)},light:{amb:'#f4ead8'},draw(){},front(){}};
+/* a close view: nobody stands in it, so it has no light for figures */
+ART.stone18={w:320,q:12,paint(g){paintStone18(g)},light:null,draw(){},front(){}};
 function paintStone18(g){const r=rng(1841),S=ST18,x0=S.x0,x1=S.x1,y0=S.y0,y1=S.y1,cop=10;
   /* beyond the barrier, out of focus: the pavement, the steps up to the terrace and the foot of the wall, all in the sun */
   g.fillStyle=lg(g,0,0,0,cop+4,['#e8dcc0','#f0e6d0','#d8c8a4']);g.fillRect(0,0,320,cop+4);
@@ -1173,7 +1175,9 @@ function drawStairs18(g,t){const o=G.out18;if(!o)return;
    bench 100,90,120,12. Walk: Paul stands at 160,124 and takes no step. Actors (place18): soldiers holding him 144,124 and 176,124 · the
    army officer standing there 216,118 · soldiers 92,120, 252,126 · the commander comes in at 300,118. */
 const COLBarracks18=Array.from({length:11},(_,i)=>30+i*26);
-ART.barracks18={w:320,q:12,paint(g){paintBarracks18(g)},light:{amb:'#d4ccd0',sun:[-.3,.3,.22],wallY:104},
+/* amb only: where people stand the court lies in the shade of its walls (the sun reaches only the gallery and a band of floor nearer
+   than anyone stands), so they keep the contact shadow alone */
+ART.barracks18={w:320,q:12,paint(g){paintBarracks18(g)},light:{amb:'#d4ccd0',wallY:104},
   draw(g){if(P.held)SHARED.cast.custody.grips(g,P,ACT.sol18a,ACT.sol18b)},front(){}};
 function paintBarracks18(g){const r=rng(1861),S='#d6c6a4',BK=104,SL=47;
   sky(g,320,8,['#7c9cc8','#b4c8dc']);

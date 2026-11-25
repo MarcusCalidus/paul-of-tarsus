@@ -192,7 +192,7 @@ const BACK19=[1,2].flatMap(k=>SIT19[k].map(([x,y,d],i)=>[x,y,d,'abcdef'[(i+k*3)%
 function seatTop19(k,x){let y=yArc19(k,x-160,9*k+9);
   for(const[sx,sy,d]of SIT19[k]){const lo=d>0?sx-7:sx-5,hi=d>0?sx+5:sx+7,o=x<lo?lo-x:x>hi?x-hi:0,w=clamp(1-o/4,0,1);if(w>0)y+=(sy-9-y)*w}
   return y}
-ART.council19={w:320,q:12,paint(g){paintCouncil19(g)},light:{amb:'#ddd0c2',sun:[-.4,.3,.2],wallY:WALLC19},
+ART.council19={w:320,q:12,paint(g){paintCouncil19(g)},light:{amb:'#ddd0c2',sun:[-10,8,.3],wallY:WALLC19},
   draw(g){drawCouncil19(g)},front(){}};
 function paintCouncil19(g){const r=rng(1901),S='#dccaa2';
   wallCouncil19(g,r,S);
@@ -350,7 +350,10 @@ const COLB19=Array.from({length:11},(_,i)=>30+i*26);
 const varB19=()=>phase19()==='nephew'?'aft':phase19()==='yard'?'night':'day';
 ART.barracks19={w:320,q:12,variant:varB19,paint(g,v){paintBarracks19(g,v)},
   light(){const v=varB19();return v==='night'?{amb:'#4a4664',wallY:104,lamps:TORCH19.map(([x,y])=>[x+1,y-2,96,'#ffa850',104,y])}:
-    v==='aft'?{amb:'#c8b4b0',sun:[.5,.22,.32],wallY:104}:{amb:'#d4ccd0',sun:[-.3,.3,.22],wallY:104}},
+    v==='aft'?{amb:'#c8b4b0',sun:[22,-8,.34],wallY:104,wall:[[24,286,104,47]]}:
+    /* by day the court lies in the shade of its walls where people stand (the sun reaches only the gallery and a band of floor nearer
+       than anyone stands): the contact shadow alone */
+    {amb:'#d4ccd0',wallY:104}},
   draw(g,t){const v=varB19();if(v==='night'){for(const[x,y]of TORCH19)flame(g,x+1.4,y-4.6,t+x*7,1);
       HORSES19.forEach(([x,y],i)=>horse19(g,x,y,-1,0,1,lightAt('barracks19',x,y)));
       /* the spearmen's spears: slanting, never upright, the iron to the upper right; held at the shoulder (placeholder until ROMAN.spearman) */
@@ -500,7 +503,8 @@ function lightNightB19(g){
    Hotspots: the house 30,14,214,40 · the door 152,58,24,46 · the water jar 184,86,10,18 · the lane into the city 304,96,16,48.
    Walk: 20..300 by 112..138. Actors: the sister 164,114 at her door; the nephew 126,126. */
 const HZDoor19=80;
-ART.door19={w:320,q:12,paint(g){paintDoor19(g)},light:{amb:'#f0d4b4',sun:[.5,.25,.3],wallY:104,wall:[[0,152,104,40],[176,292,104,40]]},draw(){},front(){}};
+/* amb only: the long shade of the houses across the lane, behind us, lies over the paving where people stand */
+ART.door19={w:320,q:12,paint(g){paintDoor19(g)},light:{amb:'#f0d4b4',wallY:104},draw(){},front(){}};
 function paintDoor19(g){const r=rng(1921),W='#ece0c4';
   skyDoor19(g);
   laneDoor19(g,rng(1922));
@@ -799,7 +803,7 @@ function drawLanes19(g,t){const[x,y,w,h]=box19(DONKEY19),cx=x+w/2,fy=Math.round(
    Hotspots: the wall 0,0,320,96 · the gate 138,44,40,60 · the way back into the city 0,96,14,48. Walk: 20..300 by 112..138.
    Actors: the sentry 192,116; the nephew comes in at 50,126. The tower's foot (x 266..320, y 104..108) lies behind the walk strip. */
 const HZGate19=80,OPENGate19={x:140,w:36,top:46,base:104},VPGate19=[158,80],FARGate19=.42;
-ART.gate19={w:320,q:12,paint(g){paintGate19(g)},light:{amb:'#f0d0b0',sun:[.5,.25,.3],wallY:104,wall:[[0,140,104,90],[176,266,104,90]]},draw(){},front(){}};
+ART.gate19={w:320,q:12,paint(g){paintGate19(g)},light:{amb:'#f0d0b0',sun:[24,-8,.34],wallY:104,wall:[[0,140,104,40],[176,266,104,40]]},draw(){},front(){}};
 function paintGate19(g){const r=rng(1941),S='#dcc49e';
   skyGate19(g);
   pave(g,-2,104,322,144,'#d0bc96',r,{vx:VPGate19[0],vy:HZGate19,rows:6,step:30,v:.08,t:.34});
@@ -937,7 +941,7 @@ function lightGate19(g){comp(g,'soft-light',.45,()=>{g.fillStyle=lg(g,0,0,320,0,
    Hotspots: the opening onto the city 196,30,114,62 · the hanging 18,24,40,64 · the bronze jar 72,78,12,26 · the door 0,56,16,58.
    Walk: 30..300 by 114..138. Actors: the commander 254,118 by the parapet; the officer and the nephew come in at the left (60,126). */
 const HZCmd19=64,OPCmd19=[196,30,310,84],RVCmd19=[300,32.7,82.4],COLCmd19=[106,148,189,316];
-ART.cmd19={w:320,q:12,paint(g){paintCmd19(g)},light:{amb:'#eccaa8',sun:[-.45,.3,.35],wallY:104},draw(){},front(){}};
+ART.cmd19={w:320,q:12,paint(g){paintCmd19(g)},light:{amb:'#eccaa8',sun:[-16,16,.36],wallY:104},draw(){},front(){}};
 function paintCmd19(g){const r=rng(1951),W='#e0ccaa',BK=104,[ox0,oy0,ox1,oy1]=OPCmd19;
   /* the back wall: limewashed plaster, a little worn, under the ceiling */
   plaster(g,0,8,320,BK-8,W,r,{patch:0,cracks:0,t:.36,top:.02,bot:-.06});
@@ -1113,7 +1117,7 @@ const HORSEA19=[[108,124,1],[136,122,1]],HZAnti19=70,
   /* the young river from the pool to the horizon: x, y and its width, from near to far */
   RIVAnti19=[[60,112.6,5.6],[70,115.4,6],[80,117.6,6],[90,118.4,5.6],[99,116.4,5],[105,111.4,4.2],[107,105.6,3.6],[104,99.6,2.8],[107,94.4,2.2],
     [114,89.6,1.8],[113,84.6,1.4],[108,80.6,1.1],[113,76.8,.9],[118,74,.7],[115,71.8,.5],[117,70.4,.4]];
-ART.antipatris19={w:320,q:12,paint(g){paintAnti19(g)},light:{amb:'#f6dcc8',sun:[.4,-.22,.35]},
+ART.antipatris19={w:320,q:12,paint(g){paintAnti19(g)},light:{amb:'#f6dcc8',sun:[14,-18,.35],wallY:94},
   draw(g){HORSEA19.forEach(([x,y],i)=>horse19(g,x,y,-1,i===0?1:0,1,lightAt('antipatris19',x,y)))},front(){}};
 function paintAnti19(g){const CO=SHARED.country,HZ=HZAnti19;
   /* the western sky at dawn: blue above, the pink band, and the cool shadow of the earth just over the horizon */
@@ -1228,7 +1232,7 @@ function springAnti19(g){const CO=SHARED.country,r=rng(1966),cx=36,cy=111.4,rx=2
 const HZPal19=60,PIERPal19=[186,197],COLPal19=[224,256,288,318];
 let SPal19=null;
 const OPal19={w:320,hz:HZPal19,hour:'evening',sun:[-80,14],cloud:.16,streak:.35,seed:1972,y1:82};
-ART.palace19={w:320,q:12,variant:()=>F.anti?'l':'',paint(g){paintPalace19(g)},light:{amb:'#f6e0c8',sun:[.55,.12,.35],wallY:96},
+ART.palace19={w:320,q:12,variant:()=>F.anti?'l':'',paint(g){paintPalace19(g)},light:{amb:'#f6e0c8',sun:[22,-6,.35],wallY:96},
   draw(g,t){if(SPal19)SPal19.draw(g,t)},front(){}};
 function paintPalace19(g){const K=SHARED.coast,O=OPal19,HZ=HZPal19,r=rng(1971),S='#e6d8bc';K.light(O);
   K.sky(g,O);
