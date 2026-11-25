@@ -381,15 +381,15 @@ function lightStreet18(g){comp(g,'soft-light',.32,()=>{g.fillStyle=lg(g,480,0,0,
    (variant 'g'). The sun stands at the upper left; shadows fall to the right. Sparrows sit on the parapet of the house over the stair
    (ROOMS.elders18.birds, y 5.4).
    Called from outside: ART.elders18. Reads F.gift (variant). Hotspots (ROOMS.elders18): torn awning 178,0,142,42 · doorway 140,50,30,54 ·
-   chest (moves with the variant) · way out to the street 0,96,14,48. Walk strip 16..304, 110..138. Actors (place18): James 236,110 ·
-   elders 180,110 (facing right), 206,110, 264,110, 290,110, all seated on the bench · the four men 66,88,110,132 at y 110, by the
+   chest (moves with the variant) · way out to the street 0,96,14,48. Walk strip 16..304, 110..138. Actors (place18): James 186,110, at the
+   bench's end nearest the door · the elders 212,110, 238,110, 264,110, 290,110, all seated on the bench, facing the court · the four men 66,88,110,132 at y 110, by the
    wall · Luke 76,132 · Timothy 104,136 · Aristarchus 48,126 · Trophimus 126,128; Paul 140,128. The bench is a prop (seat, foot
-   174,105,122,5); the chest's foot follows it (CHEST18). */
-const CHEST18={'':[20,126],g:[212,128]},BENCH18=[174,296,110];
+   174,104.5,122,4.5); the chest's foot follows it (CHEST18). */
+const CHEST18={'':[20,126],g:[174,128]},BENCH18=[174,296,110];
 ART.elders18={w:320,q:12,variant:()=>F.gift?'g':'',paint(g,v){paintElders18(g,v)},
   light:{amb:'#f4e8d6',sun:[.5,.3,.4],shade:[[186,340,'#c6c0d6']]},draw(){},front(){},
   props:[{y:128,shape(g,v){const[x,y]=CHEST18[v||''];chest18(g,x,y,1)},foot:v=>{const[x,y]=CHEST18[v||''];return[[x,y-4,22,5]]}},
-    {y:110,shape(g){benchElders18(g,1)},foot:[[174,105,122,5]],seat:1}]};
+    {y:110,shape(g){benchElders18(g,1)},foot:[[174,104.5,122,4.5]],seat:1}]};
 function paintElders18(g,v){const r=rng(1821),W='#e8dcc0',BK=104,TP=6;
   skyElders18(g);
   houseElders18(g,r,W,TP,BK);
@@ -1073,8 +1073,9 @@ function place18(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   if(ph==='elders'){if(room==='street18')for(const[a,x,y,d]of[[AR,66,116,1],[LU,88,128,1],[TI,112,134,1],[TR,130,118,1]])pl(a,'street18',x,y,d);
     else for(const[a,x,y,d]of[[AR,48,126,1],[LU,76,132,1],[TI,104,136,1],[TR,126,128,1]])pl(a,'elders18',x,y,d);
     pl(BA,'street18',330,114,-1);
-    for(const[a,x,y,d]of[[JA,236,110,-1],[E1,206,110,-1],[E2,264,110,-1],[E3,290,110,-1],[E4,180,110,1],[V1,66,110,1],[V2,88,110,1],[V3,110,110,1],[V4,132,110,1]])pl(a,'elders18',x,y,d);
-    /* James and the elders sit on the bench along the back wall (ART.elders18) */
+    for(const[a,x,y,d]of[[JA,186,110,-1],[E1,212,110,-1],[E2,238,110,-1],[E3,264,110,-1],[E4,290,110,-1],[V1,66,110,1],[V2,88,110,1],[V3,110,110,1],[V4,132,110,1]])pl(a,'elders18',x,y,d);
+    /* James and the elders sit on the bench along the back wall (ART.elders18), James at its end nearest the door, so that whoever comes to
+       speak with him has room to stand beside him */
     for(const a of[JA,...ELD])a.seat=1}
   if(ph==='temple'){pl(BA,'street18',330,114,-1);pl(A1,'street18',396,116,-1);pl(A2,'street18',410,124,-1);
     if(room==='street18')for(const[a,x,y,d]of[[TR,62,126,1],[V1,78,116,1],[V2,98,132,1],[V3,22,116,1],[V4,124,122,1]])pl(a,'street18',x,y,d);
