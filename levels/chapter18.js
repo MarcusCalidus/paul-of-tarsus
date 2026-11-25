@@ -284,12 +284,12 @@ function paintElders18(g,v){const r=rng(1821),W='#e2d4b4',BK=104,TP=8;sky18(g,32
    middle the barrier (the Soreg): a low solid wall of three courses with a plain coping, about chest high, with an opening and an end
    block at each side of it; warning stones set in it as slabs, wider than high, their tops a little proud of the coping, one beside the
    opening and others farther along. Behind it the steps up to the terrace and the inner wall, flat-topped, with its gatehouses (one
-   above the opening; the coping stops at each), the sanctuary rising high over it (its long flank at the left with a band of gold
+   above the opening; the coping stops at each), the sanctuary towering over it, the tallest thing on the mount (its long flank at the left with a band of gold
    along its top, its taller front block at the right, standing out toward us, with its gold turned east, away from us, so that only its
    edge blazes), the tall plain block of the gate between the inner courts, and the lower wall of the Court of Women at the east end. At
    the right Solomon's colonnade, on the east, a row of columns under a deep beam and a roof, running back from the right edge toward its
    far end, where it meets the north colonnade (the hidden treasure); the long hall behind it in shade, with its second row of columns.
-   The floor of great flags in rows across the picture, their joints staggered and running back to the horizon.
+   The floor of great flags in rows across the picture, their joints staggered and running back to the horizon. Every stone face is weathered (stoneTp18, ageTp18): blocks of varied tone, soft joints, stains, veins, grit.
    No altar is seen, no fire, no smoke; no Roman standard anywhere. Nothing crosses: the colonnades' columns stand under a deep beam and a
    roof, the towers stand at the corners, the wall's coping stops at each gatehouse, the barrier has no lattice and no post in the middle
    of a run, every joint stops in its own course, and the steps are drawn as bands.
@@ -298,14 +298,14 @@ function paintElders18(g,v){const r=rng(1821),W='#e2d4b4',BK=104,TP=8;sky18(g,32
    the gatehouses end above the heads of those who stand at the barrier.
    Called from outside: ART.court18 (its props: the parapet and substructure of Antonia's stairs, in four lengths, so that whoever stands
    on the stairs is hidden behind the parapet below the knees). Reads nothing (the crowd and the soldiers are actors). Hotspots
-   (ROOMS.court18): sanctuary 164,0,126,40 · gate of the inner courts 238,30,24,30 · fortress of Antonia 0,0,124,48 · stairs of Antonia
+   (ROOMS.court18): sanctuary 164,0,126,40 · gate of the inner courts 238,34,24,22 · fortress of Antonia 0,0,124,48 · stairs of Antonia
    0,48,112,58 · barrier 100,74,276,30 · warning stone 208,74,26,20 · opening in the barrier 236,74,28,34 · Solomon's colonnade
    400,0,66,106 · its far end 362,44,38,36 · way back to the city 466,96,14,48. Walk strip 16..464, 108..138; the foot of the stairs
    covers 82..114, 104..112 (a footprint).
    Actors (place18): the four men 208,116 · 224,126 · 262,118 · 278,128 · Trophimus 180,122 (in the colonnade's shade, 424,118, once
    the days have begun) · the man from Cyrene 304,116 · the Greek of the city 334,124 · the Levite at the opening 250,110; Paul comes in
    at 446,124. On the stairs (the arrest) the commander and his men come down from about 40,62; the knot that carries Paul goes up to
-   64,82. Doves sit on the coping of the Court of Women's wall (y 39). */
+   64,82. Doves sit on the coping of the Court of Women's wall (y 43.4). */
 const HZTp18=66,VXTp18=360,SOREG18={x0:100,x1:376,top:76,base:104,open:[236,264]};
 /* the stairs of Antonia: the line its people stand on (stairWTp18), the bottom of the parapet, and the floor under the flight */
 const stairWTp18=x=>64+(Math.max(x,30)-40)*.676,stairPTp18=x=>Math.min(stairWTp18(x)+5,109),STFTp18=109;
@@ -321,15 +321,32 @@ const GOLDTp18=['#fff0b0','#f2cc6a','#d4a03a','#9a6c24','#6a4a20'];
 function skyTp18(g,w,hz,seed){g.fillStyle=lg(g,0,0,0,hz,['#4a78ba','#6e98cc','#a2bed8','#dcdcd0']);g.fillRect(0,0,w,hz+2);
   const r=rng(seed);for(let i=0;i<6;i++){const x=r()*w,y=5+r()*24,ww=30+r()*60;for(let k=0;k<8;k++)pool(g,x+(r()-.5)*ww,y+(r()-.5)*3,ww*(.2+r()*.2),1.2+r()*1.6,'#ffffff',.16,'source-over')}
   pool(g,w*.85,hz,w*.6,30,'#fff2d8',.28,'source-over')}
-/* stoneTp18: a face of dressed stone in courses: each block its own tone, a lit top edge, joints that stop at the edge of their course.
-   o: {bh course height, bw block width, c tone, v variation, rough: drafted margins and a bossed face (Antonia)} */
-function stoneTp18(g,x,y,w,h,r,o){const bh=o.bh,bw=o.bw,c=o.c,v=o.v==null?.07:o.v;
-  inRect(g,x,y,w,h,()=>{R(g,x,y,w,h,tint(c,-.28));
-    for(let j=y,row=0;j<y+h;j+=bh,row++){let i=x-(row%2?bw*.5:0)-r()*bw*.3;
-      while(i<x+w){const ww=bw*(.7+r()*.6),cc=tint(c,(r()-.5)*v*2);R(g,i+.5,j+.5,ww-.5,bh-.5,cc);
-        if(o.rough&&bh>=2.5){R(g,i+1,j+1,ww-1.5,bh-1.5,tint(cc,.07));R(g,i+1,j+bh-.5,ww-1,.5,tint(cc,-.14))}
-        R(g,i+.5,j+.5,ww-.5,.5,tint(cc,.15));i+=ww}}
-    tex(g,'mott',.35,x,y,w,h,'overlay',.6);tex(g,'grain',.1,x,y,w,h,'overlay',.5)})}
+/* stoneTp18: a face of dressed stone in courses, weathered: each block its own tone between cream, honey and a cool grey, a soft fall of
+   light down it, a lit upper edge on most, a corner chipped here and there; joints that stop at the edge of their own course and never
+   line up with the joints of the course above (so that no joint runs on through a course line); then the weather over all of it
+   (ageTp18). o: {bh course height, bw block width, c tone, v variation, rough: drafted margins and a bossed face (Antonia), age} */
+function stoneTp18(g,x,y,w,h,r,o){const bh=o.bh,bw=o.bw,c=o.c,v=(o.v==null?.08:o.v)*1.4,HN=o.honey||'#dcbc84',GR=o.grey||'#bcb4b0';
+  inRect(g,x,y,w,h,()=>{R(g,x,y,w,h,tint(c,-.15));let prev=[];
+    for(let j=y,row=0;j<y+h;j+=bh,row++){let i=x-(row%2?bw*.5:0)-r()*bw*.3;const cur=[];
+      while(i<x+w){let ww=bw*(.7+r()*.6);for(let k=0;k<3&&prev.some(p=>Math.abs(p-(i+ww))<1.8);k++)ww+=1.8;
+        const cc=mix(tint(c,(r()-.5)*v*2),r()<.5?HN:GR,r()*.3);
+        g.fillStyle=lg(g,0,j,0,j+bh,[tint(cc,.07),cc,tint(cc,-.08)]);g.fillRect(hp(i+.5),hp(j+.5),hp(ww-.5),hp(bh-.5));
+        if(r()<.7)R(g,i+.5,j+.5,ww-.5,.5,rgba(tint(cc,.32),.4+r()*.4));
+        if(o.rough&&bh>=2.5){R(g,i+1,j+1,ww-1.5,bh-1.5,rgba(tint(cc,.12),.55));R(g,i+1,j+bh-.5,ww-1,.5,rgba(tint(cc,-.22),.55))}
+        if(r()<.22)R(g,(r()<.5?i+.5:i+ww-1.5),j+.5,1,1,rgba(tint(c,-.34),.55));
+        i+=ww;cur.push(i)}prev=cur}});
+  ageTp18(g,x,y,w,h,r,o.age==null?1:o.age)}
+/* ageTp18: the weather on a stone face, inside x, y, w, h (and the current clip): stains of age in warm honey and grey where the rain
+   has run and dried, soft and without edges, paler places the sun has bleached, fine pits and grit; k its strength (default 1) */
+function ageTp18(g,x,y,w,h,r,k){k=k==null?1:k;inRect(g,x,y,w,h,()=>{
+  tex(g,'blotch',.5*k,x,y,w,h,'soft-light',1.3);tex(g,'mott',.46*k,x,y,w,h,'overlay',.7);tex(g,'grain',.18*k,x,y,w,h,'overlay',.5);
+  /* stains: grey and honey where the rain has run and dried, longer than wide under an edge, soft, without outline */
+  for(let i=0;i<w*h/150*k;i++){const sx=x+r()*w,sy=y+r()*h,rx=1.5+r()*Math.min(9,w*.25),ry=1+r()*Math.min(5,h*.22),d=r()<.62,run=r()<.3;
+    pool(g,sx,sy+(run?ry:0),run?rx*.45:rx,run?ry*2:ry,d?(r()<.5?'#9a7c5c':'#867c8a'):'#fff2d2',(d?.26:.18)*k,d?'multiply':'screen')}
+  /* veins in the stone: short, faint, wandering */
+  for(let i=0;i<w*h/500*k;i++){let vx=x+r()*w,vy=y+r()*h;const p=[vx,vy],dx=r()<.5?1:-1;for(let s=0;s<4+r()*5;s++){vx+=dx*(1+r()*1.4);vy+=(r()-.5)*1.4;p.push(vx,vy)}
+    stroke(g,p,'rgba(150,128,100,.22)',.5);stroke(g,p.map((v,j)=>j%2?v+.5:v),'rgba(255,248,230,.16)',.5)}
+  for(let i=0;i<w*h/10*k;i++)R(g,x+r()*w,y+r()*h,.5,.5,r()<.55?'rgba(96,76,58,.22)':'rgba(255,248,230,.24)')})}
 /* crenelsTp18: square merlons along a level wall top at y, between x0 and x1; the gaps between them are sky */
 function crenelsTp18(g,x0,x1,y,mw,mh,c){for(let x=x0;x<=x1-mw+.01;x+=mw*2){R(g,x,y-mh,mw,mh,tint(c,.04));R(g,x,y-mh,mw,.5,tint(c,.3));R(g,x+mw-.5,y-mh,.5,mh,tint(c,-.25))}}
 /* hazeTp18: paint fn on a layer of its own, lay a haze of colour c over what it painted (and nothing else), and set it in the picture */
@@ -347,7 +364,7 @@ function paintCourt18(g){const r=rng(1831),HZ=HZTp18;
   comp(g,'source-over',1,()=>{g.fillStyle=lg(g,0,HZ,0,94,[rgba('#e6e2d8',.6),rgba('#e6e2d8',0)]);g.fillRect(-2,HZ,484,28)});
   for(let i=0;i<70;i++){const y=104+r()*40,x=r()*480;R(g,x,y,.5+r()*2.5,.5,r()<.5?'rgba(120,100,76,.18)':'rgba(255,248,232,.22)')}
   /* the flags worn paler where the feet go, toward the opening and along the colonnade; a few darker stains of age */
-  pool(g,250,118,90,12,'#fff6e0',.22,'screen');pool(g,400,124,70,10,'#fff6e0',.14,'screen');
+  inRect(g,-2,HZ+4,484,80,()=>{tex(g,'blotch',.22,-2,HZ+4,484,80,'soft-light',1.6)});pool(g,250,118,90,12,'#fff6e0',.22,'screen');pool(g,400,124,70,10,'#fff6e0',.14,'screen');
   for(let i=0;i<14;i++)pool(g=g,r()*480,108+r()*34,8+r()*16,1.6+r()*2,'#a89478',.18,'multiply');
   /* the colonnade's shade on the pavement before it, falling west in the morning; its edge runs back to the horizon as the joints do */
   comp(g,'multiply',.42,()=>poly(g,[VXTp18,HZ,VXTp18+40*78/42,144,484,144,484,HZ+42*124/120],'#a29ec8'));
@@ -356,23 +373,24 @@ function paintCourt18(g){const r=rng(1831),HZ=HZTp18;
   soregTp18(g,r);
   stairsTp18(g,r);
   /* light: warm from the right, where the sun is, cooler to the left; the floor near us a little darker */
-  comp(g,'soft-light',.34,()=>{g.fillStyle=lg(g,480,0,0,0,['rgba(255,212,156,1)','rgba(226,208,190,.6)','rgba(172,176,212,.7)']);g.fillRect(0,0,480,144)});
+  comp(g,'soft-light',.42,()=>{g.fillStyle=lg(g,480,0,0,0,['rgba(255,206,146,1)','rgba(236,210,180,.7)','rgba(176,178,212,.65)']);g.fillRect(0,0,480,144)});
+  pool(g,470,40,200,60,'#ffe2b0',.12,'screen');
   ao(g,0,124,480,20,'b',.14,'#2a2050')}
 /* the fortress of Antonia at the north-west corner, behind the north colonnade: its long south face of rough-dressed stone with rows of
    small windows; the south-east tower at the right end, nearest the courts, the tallest, its east face turned to the morning sun;
    merlons along every top. Its foot is hidden by the colonnade's roof; the bastion with the stairs' door stands in front of its left end
    (stairsTp18). A little haze lies over it, for it stands back across the court. */
 function antoniaTp18(g,r){const c='#d6c29a',base=50;
-  stoneTp18(g,20,18,74,base-18,r,{bh:3,bw:8,c,rough:1,v:.08});ao(g,20,18,74,7,'t',.14,'#3a3048');
-  crenelsTp18(g,20,93,18,3,3,c);
-  for(const[y,x0]of[[24,26],[32,31],[40,26]])for(let x=x0;x<90;x+=10){R(g,x,y,2,2.5,'#3a2e30');R(g,x,y+2.5,2,.5,tint(c,.22))}
-  castTp18(g,92,15,base,5,.4);
-  stoneTp18(g,92,4,24,base-4,r,{bh:3,bw:7,c:tint(c,.04),rough:1,v:.08});crenelsTp18(g,92,116,4,3,3,c);
+  stoneTp18(g,20,24,74,base-24,r,{bh:3,bw:8,c,rough:1,v:.1});ao(g,20,24,74,6,'t',.14,'#3a3048');
+  crenelsTp18(g,20,93,24,3,3,c);
+  for(const[y,x0]of[[29,26],[36,31],[43,26]])for(let x=x0;x<90;x+=10){R(g,x,y,2,2.5,'#3a2e30');R(g,x,y+2.5,2,.5,tint(c,.22))}
+  castTp18(g,92,21,base,5,.4);
+  stoneTp18(g,92,12,24,base-12,r,{bh:3,bw:7,c:tint(c,.04),rough:1,v:.1});crenelsTp18(g,92,116,12,3,3,c);
   /* its east face, a narrow strip turned toward us at the corner, full in the sun */
-  const ef=[116,4,121,5.8,121,base,116,base];poly(g,ef,'#f4e6c4');
-  clipTo(g,()=>poly(g,ef),()=>{for(let y=6;y<base;y+=3)R(g,116,y,5,.5,'rgba(160,134,100,.42)');tex(g,'mott',.3,116,4,5,base,'overlay',.6)});
-  poly(g,[116,1,119,1.8,119,4.8,116,4],'#f0e2c0');R(g,116,4,5,.5,'#fff8e4');
-  for(const[y,xs]of[[10,[103]],[19,[98,108]],[29,[103]],[38,[98,108]]])for(const x of xs){R(g,x,y,2,2.5,'#3a2e30');R(g,x,y+2.5,2,.5,'#f2e4c4')}
+  const ef=[116,12,121,13.8,121,base,116,base];poly(g,ef,'#f2e2c0');
+  clipTo(g,()=>poly(g,ef),()=>{for(let y=14;y<base;y+=3)R(g,116,y,5,.5,'rgba(160,134,100,.42)');ageTp18(g,116,12,5,base-12,r,.8)});
+  poly(g,[116,9,119,9.8,119,12.8,116,12],'#f0e2c0');R(g,116,12,5,.5,'#fff8e4');
+  for(const[y,xs]of[[17,[103]],[25,[98,108]],[33,[103]],[41,[98,108]]])for(const x of xs){R(g,x,y,2,2.5,'#3a2e30');R(g,x,y+2.5,2,.5,'#f2e4c4')}
   ao(g,92,4,3,base-4,'l',.22,'#3a3048');
 }
 /* the north colonnade at the back: a row of columns under a deep beam and the roof's edge, small with distance, the hall dark behind */
@@ -384,30 +402,30 @@ function northColTp18(g,x0,x1){const top=48,beam=54,base=HZTp18+2;
 }
 /* the inner courts on their terrace: the sanctuary rising behind, the steps up to the terrace, the inner wall with its gatehouses (the
    coping stops at each), the tall block of the gate between the courts, and the lower wall of the Court of Women at the east end */
-function innerCourtsTp18(g,r){const W0=124,W1=360,wt=38,wf=56,sb=68,cw=310;
+function innerCourtsTp18(g,r){const W0=124,W1=360,wt=42,wf=56,sb=68,cw=310,wt2=45;
   sanctuaryTp18(g,r);
   /* the gate between the Court of Women and the Court of Israel: a tall, plain block standing back behind the wall, a cornice on top */
-  stoneTp18(g,292,21,18,wt-19,r,{bh:2.6,bw:7,c:'#e6d6b0',v:.05});R(g,291.5,18.6,19,2.4,'#f4ead2');R(g,291.5,18.6,19,.5,'#fffaee');R(g,291.5,20.6,19,.5,'#a89878');
-  ao(g,292,21,4,18,'l',.25,'#4a4060');R(g,309,21,1,18,'#fbf0d8');
+  stoneTp18(g,292,22,18,wt-21,r,{bh:2.6,bw:7,c:'#e6d6b0',v:.06,age:.7});R(g,291.5,19.6,19,2.4,'#f4ead2');R(g,291.5,19.6,19,.5,'#fffaee');R(g,291.5,21.6,19,.5,'#a89878');
+  ao(g,292,22,4,wt-22,'l',.25,'#4a4060');R(g,309,22,1,wt-22,'#fbf0d8');
   /* the steps up to the terrace: risers seen from below, each a band with the shade of the nosing over it */
   for(let i=0;i<6;i++){const y=wf+i*2,x=W0-2-i*.8,w=W1-W0+4+i*1.6;g.fillStyle=lg(g,x,0,x+w,0,['#d4c4a2','#e8dabc','#f0e4c8']);g.fillRect(x,y,w,2);R(g,x,y,w,.5,'#b2a286');R(g,x,y+.5,w,.5,'#c8b898')}
   R(g,W0-7,sb-.5,W1-W0+14,1,'#bcac8c');
   /* the wall of the inner courts, and the lower wall of the Court of Women at the east end */
-  stoneTp18(g,W0,wt,cw-W0,wf-wt,r,{bh:3,bw:9,c:'#e4d4ae',v:.06});stoneTp18(g,cw,41,W1-cw,wf-41,r,{bh:3,bw:9,c:'#e2d2ac',v:.06});
+  stoneTp18(g,W0,wt,cw-W0,wf-wt,r,{bh:3.5,bw:10,c:'#e4d4ae',v:.08});stoneTp18(g,cw,wt2,W1-cw,wf-wt2,r,{bh:3.5,bw:10,c:'#e2d2ac',v:.08});
   ao(g,W0,wf-5,W1-W0,5,'b',.22,'#4a4060');
-  const gates=[[148,168,31],[239,261,29],[326,346,34]],cope=(a,b,y)=>{R(g,a,y-1.6,b-a,2,'#f4ead2');R(g,a,y-1.6,b-a,.5,'#fffaee');R(g,a,y+.4,b-a,.5,'#a89878')};
+  const gates=[[148,168,36],[239,261,35],[326,346,39]],cope=(a,b,y)=>{R(g,a,y-1.6,b-a,2,'#f4ead2');R(g,a,y-1.6,b-a,.5,'#fffaee');R(g,a,y+.4,b-a,.5,'#a89878')};
   /* the coping of the wall, in lengths between the gatehouses; where the high wall meets the low one, the high one's end is lit */
-  let a=W0;for(const[x0,x1]of gates.slice(0,2)){cope(a,x0,wt);a=x1}cope(a,cw,wt);cope(cw,gates[2][0],41);cope(gates[2][1],W1,41);
+  let a=W0;for(const[x0,x1]of gates.slice(0,2)){cope(a,x0,wt);a=x1}cope(a,cw,wt);cope(cw,gates[2][0],wt2);cope(gates[2][1],W1,wt2);
   R(g,cw-1,wt,1,3,'#fbf2dc');
   /* the corners of the block: its west end turned from the sun, its east end lit */
-  R(g,W0,wt-1.6,1.2,wf-wt+1.6,'#b4a488');R(g,W1-1,41-1.6,1,wf-41+1.6,'#fbf0d8');
+  R(g,W0,wt-1.6,1.2,wf-wt+1.6,'#b4a488');R(g,W1-1,wt2-1.6,1,wf-wt2+1.6,'#fbf0d8');
   for(const[x0,x1,top]of gates)gatehouseTp18(g,x0,x1,top,wf,r)}
 /* a gatehouse: a square block a little taller than the wall and standing a little proud of it, its shadow on the wall to its left; a
    tall dark doorway framed by a flat band with a cornice over it, the bronze leaves of the door folded back against the jambs; a plain
    cornice on top. The doorway ends above the heads of those at the barrier. */
-function gatehouseTp18(g,x0,x1,top,foot,r){const w=x1-x0,dw=7,dx=x0+(w-dw)/2,dt=top+10;
+function gatehouseTp18(g,x0,x1,top,foot,r){const w=x1-x0,dw=7,dx=x0+(w-dw)/2,dt=top+9;
   castTp18(g,x0,Math.max(top+1,foot-16),foot,3,.4);
-  stoneTp18(g,x0,top,w,foot-top,r,{bh:3,bw:8,c:'#ecdcb6',v:.05});
+  stoneTp18(g,x0,top,w,foot-top,r,{bh:3.5,bw:8,c:'#ecdcb6',v:.07});
   R(g,x0-.8,top-2,w+1.6,2.4,'#f6ecd4');R(g,x0-.8,top-2,w+1.6,.5,'#fffaf0');R(g,x0-.8,top+.4,w+1.6,.6,'#9a8a6c');
   ao(g,x0,top,1.6,foot-top,'l',.22,'#4a4060');R(g,x1-.6,top,.6,foot-top,'#fcf4e2');
   /* the frame: a flat band round the doorway, its cornice above, a little shadow under the cornice */
@@ -419,29 +437,27 @@ function gatehouseTp18(g,x0,x1,top,foot,r){const w=x1-x0,dw=7,dx=x0+(w-dw)/2,dt=
    it, a row of small high windows, a cornice and a band of gold along its top. At the right its front block, wider and taller, standing
    out toward us past the flank (its west side in shade, its shadow on the flank), its own cornice and gold; its gilded east face is
    turned away from us, and only its edge shows, blazing in the morning sun. The roof is flat. */
-function sanctuaryTp18(g,r){const b0=166,b1=262,bt=15,f0=256,f1=288,ft=2,foot=40,sc=bt+10,G=GOLDTp18;
-  const face=(x0,x1,y0,c0,c1)=>{g.fillStyle=lg(g,x0,0,x1,0,[c0,c1]);g.fillRect(x0,y0,x1-x0,foot-y0);
-    inRect(g,x0,y0,x1-x0,foot-y0,()=>{for(let y=y0+2.6,k=0;y<foot;y+=2.8,k++){R(g,x0,y,x1-x0,.5,'rgba(160,142,112,.3)');
-        for(let x=x0+(k%2?3:0)+r()*4;x<x1;x+=8+r()*5)R(g,x,y+.5,.5,2.3,'rgba(160,142,112,.24)')}
-      tex(g,'mott',.28,x0,y0,x1-x0,foot-y0,'overlay',.6);tex(g,'grain',.1,x0,y0,x1-x0,foot-y0,'overlay',.5)})};
+function sanctuaryTp18(g,r){const b0=164,b1=258,bt=13,f0=250,f1=290,ft=4,foot=46,G=GOLDTp18;
+  const face=(x0,x1,y0,c,lit)=>{stoneTp18(g,x0,y0,x1-x0,foot-y0,r,{bh:3,bw:11,c,v:.05,honey:'#ead6ae',grey:'#d4ccc4',age:.55});
+    comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,x0,0,x1,0,[lit?'rgba(255,236,200,.2)':'rgba(150,150,200,.5)','rgba(255,240,210,.7)']);g.fillRect(x0,y0,x1-x0,foot-y0)})};
   const goldBand=(x0,x1,y,h)=>{g.fillStyle=lg(g,0,y,0,y+h,[G[0],G[1],G[2],G[3]]);g.fillRect(x0,y,x1-x0,h);
-    for(let x=x0+r()*3;x<x1;x+=2+r()*4)R(g,x,y+.5,.5,.5,r()<.5?'#fffae0':G[3])};
-  const cornice=(x0,x1,y)=>{R(g,x0-1,y-1.8,x1-x0+2,1.8,'#fbf4e4');R(g,x0-1,y-1.8,x1-x0+2,.5,'#fffcf2');R(g,x0-1,y,x1-x0+2,.8,'#9a8a70');ao(g,x0,y+.8,x1-x0,2,'t',.25,'#4a4060')};
-  /* the long flank */
-  face(b0,b1,bt,'#e6dac0','#f6eedc');ao(g,b0,bt,30,foot-bt,'l',.14,'#6a6084');
-  R(g,b0,sc,b1-b0,1,'#fbf4e4');R(g,b0,sc+1,b1-b0,.6,'#a89474');
-  for(let x=b0+5;x<b1-8;x+=9.5){R(g,x,bt+5,3.4,2,'#3a2e30');R(g,x,bt+7,3.4,.5,'#fff6e2')}
+    for(let x=x0+r()*3;x<x1;x+=2+r()*4)R(g,x,y+.5,.5,.5,r()<.5?'#fffae0':G[3]);pool(g,x1-12,y+h/2,14,1.6,'#fff4c0',.4,'screen')};
+  const cornice=(x0,x1,y)=>{R(g,x0-1,y-1.8,x1-x0+2,1.8,'#fbf4e4');R(g,x0-1,y-1.8,x1-x0+2,.5,'#fffcf2');R(g,x0-1,y,x1-x0+2,.8,'#9a8a70');ao(g,x0,y+.8,x1-x0,2.4,'t',.28,'#4a4060')};
+  /* the long flank: high above the inner wall, with a band run along it below its windows */
+  face(b0,b1,bt,'#ece0c6',0);ao(g,b0,bt,30,foot-bt,'l',.14,'#6a6084');
+  R(g,b0,bt+14,b1-b0,1,'#fbf4e4');R(g,b0,bt+15,b1-b0,.6,'#a89474');
+  for(let x=b0+5;x<b1-8;x+=9.5){R(g,x,bt+5,3.4,2.2,'#3a2e30');R(g,x,bt+7.2,3.4,.5,'#fff6e2')}
   cornice(b0,b1,bt);goldBand(b0-1,b1+1,bt-4.6,2.8);R(g,b0-1,bt-4.6,b1-b0+2,.5,G[0]);
-  /* the front block: its shadow on the flank, its west side in shade, its lit south face, taller */
-  castTp18(g,f0,bt-4.6,foot,6,.42);
+  /* the front block: its shadow on the flank, its west side in shade, its lit south face, the tallest of all */
+  castTp18(g,f0,bt-4.6,foot,7,.42);
   poly(g,[f0,ft+1,f0+3,ft,f0+3,foot,f0,foot],'#b8a88c');ao(g,f0,ft,3,foot-ft,'l',.3,'#4a4060');
-  face(f0+3,f1,ft,'#f2e8d4','#fcf6e8');
-  R(g,f0+3,sc-7,f1-f0-3,1,'#fffaee');R(g,f0+3,sc-6,f1-f0-3,.6,'#a89474');
-  for(let x=f0+7;x<f1-4;x+=8.5){R(g,x,ft+6,3.4,2,'#3a2e30');R(g,x,ft+8,3.4,.5,'#fff6e2')}
+  face(f0+3,f1,ft,'#f4ead6',1);
+  R(g,f0+3,ft+22,f1-f0-3,1,'#fffaee');R(g,f0+3,ft+23,f1-f0-3,.6,'#a89474');
+  for(const y of[ft+6,ft+14])for(let x=f0+7;x<f1-4;x+=8.5){R(g,x,y,3.4,2.2,'#3a2e30');R(g,x,y+2.2,3.4,.5,'#fff6e2')}
   cornice(f0+2,f1,ft+1.6);goldBand(f0,f1+1,ft-3.6,3);R(g,f0,ft-3.6,f1-f0+1,.5,G[0]);
   /* the edge of the gilded east face, in the full morning sun, and the glow off it */
   g.fillStyle=lg(g,0,ft,0,foot,[G[0],G[1],G[2]]);g.fillRect(f1,ft-3.6,2,foot-ft+3.6);R(g,f1+1.4,ft-3.6,.6,foot-ft+3.6,'#fffbe6');
-  pool(g,f1+2,ft+14,5,16,'#fff0b0',.3,'screen')}
+  pool(g,f1+2,ft+16,5,20,'#fff0b0',.3,'screen')}
 /* Solomon's colonnade on the east: its row of columns runs from the right edge back to its far end, where it meets the north colonnade;
    each column stands under the deep beam, its capital hardly wider than its shaft, its base a plain step; behind them the long hall in
    shade: its ceiling, its floor catching a little light from the court, a second row of columns inside, and its back wall, the outer
@@ -463,7 +479,7 @@ function solomonTp18(g,r){const HZ=HZTp18,VX=VXTp18,X=(L,z)=>VX+L/z,Yb=z=>HZ+42/
       if(w>1.4)R(g,x-w/2-.4,t,w+.8,Math.max(.6,3/z),'#6a5e56')}
     ao(g,400,0,90,40,'t',.4,'#000')});
   /* the beam, deep, its face in shade turned to the court; the cornice over it and the edge of the roof */
-  const bm=band(Bt,Yt,'#cbbb9c');clipTo(g,()=>poly(g,bm),()=>{g.fillStyle=lg(g,VX,0,480,0,['#c8bca4','#dccdae','#e6d6b6']);g.fillRect(VX,-4,124,70);tex(g,'mott',.3,VX,-4,124,70,'overlay',.6)});
+  const bm=band(Bt,Yt,'#cbbb9c');clipTo(g,()=>poly(g,bm),()=>{g.fillStyle=lg(g,VX,0,480,0,['#c8bca4','#dccdae','#e6d6b6']);g.fillRect(VX,-4,124,70);ageTp18(g,VX,-4,124,70,r,.9)});
   band(z=>Bt(z)+1.6/z,z=>Bt(z)+2.1/z+.3,'rgba(255,248,230,.6)');band(z=>Yt(z)-1/z-.3,Yt,'#8a7a68');
   band(Rf,Bt,'#e4d6b8');band(z=>Rf(z),z=>Rf(z)+.6,'#fbf2de');band(z=>Bt(z)-.7,Bt,'#a09078');
   band(z=>Rf(z)-1.6/z-.5,Rf,'#b06a4a');band(z=>Rf(z)-1.6/z-.5,z=>Rf(z)-1.6/z,'#e09a70');
@@ -473,7 +489,7 @@ function solomonTp18(g,r){const HZ=HZTp18,VX=VXTp18,X=(L,z)=>VX+L/z,Yb=z=>HZ+42/
     if(w<1.4){g.fillStyle=lg(g,x-w/2,0,x+w/2,0,['#a89a88','#e4d6b8']);g.fillRect(x-w/2,t,w,b-t);continue}
     M18.shadow(g,x-1.5/z,b,w*.9,Math.max(.6,1.4/z),.32);
     g.fillStyle=lg(g,x-w/2,0,x+w/2,0,[[0,'#968a80'],[.3,'#c4b69c'],[.72,'#f4e8cc'],[1,'#d8caae']]);g.fillRect(x-w/2,t,w,b-t);
-    inRect(g,x-w/2,t,w,b-t,()=>{tex(g,'mott',.22,x-w/2,t,w,b-t,'overlay',.5);ao(g,x-w/2,t,w,10/z+2,'t',.3,'#3a3040')});
+    inRect(g,x-w/2,t,w,b-t,()=>{ageTp18(g,x-w/2,t,w,b-t,r,.7);ao(g,x-w/2,t,w,10/z+2,'t',.3,'#3a3040');ao(g,x-w/2,b-12/z,w,12/z,'b',.2,'#6a5a50')});
     const cw=w+2.4/z+.3,ch=Math.max(.8,4/z);R(g,x-cw/2,t,cw,ch,'#e6d8b8');R(g,x-cw/2,t+ch-.5,cw,.5,'#8a7a66');R(g,x-cw/2,t,cw,.5,'#fbf4e2');R(g,x+cw/2-.6,t,.6,ch,'#fffaf0');
     const bw2=w+3/z+.3,bh=Math.max(.8,3.4/z);R(g,x-bw2/2,b-bh,bw2,bh,'#e8dcc0');R(g,x-bw2/2,b-bh,bw2,.5,'#fbf4e2');R(g,x-bw2/2,b-.5,bw2,.5,'#9a8c78')}
   /* a cool haze over the far end, which lies a long way off; it ends at the roof's edge */
@@ -482,15 +498,12 @@ function solomonTp18(g,r){const HZ=HZTp18,VX=VXTp18,X=(L,z)=>VX+L/z,Yb=z=>HZ+42/
    opening and at each end of the run; warning stones set in it as slabs, wider than high, their tops a little proud of the coping */
 const STONESTp18=[[208,232],[140,162],[316,338]];
 function soregTp18(g,r){const S=SOREG18,cop=S.top+3;
-  const run=(a,b)=>{inRect(g,a,cop,b-a,S.base-cop,()=>{R(g,a,cop,b-a,S.base-cop,'#b4a284');
-      const h=(S.base-2-cop)/3;for(let k=0;k<3;k++){const y=cop+k*h;let x=a-(k%2?8:0)-r()*6;
-        while(x<b){const w=13+r()*9,c=tint('#e4d4b0',(r()-.5)*.08-k*.02);R(g,x+.5,y+.5,w-.5,h-.5,c);R(g,x+.5,y+.5,w-.5,.5,tint(c,.14));x+=w}}
-      R(g,a,S.base-2,b-a,2,'#d0c09c');R(g,a,S.base-2,b-a,.5,'#efe4c8');
-      tex(g,'mott',.35,a,cop,b-a,S.base-cop,'overlay',.6);tex(g,'grain',.1,a,cop,b-a,S.base-cop,'overlay',.5);ao(g,a,cop,b-a,3,'t',.25,'#4a4060')});
+  const run=(a,b)=>{stoneTp18(g,a,cop,b-a,S.base-2-cop,r,{bh:(S.base-2-cop)/3,bw:17,c:'#e2d0aa',v:.09});
+      inRect(g,a,cop,b-a,S.base-cop,()=>{R(g,a,S.base-2,b-a,2,'#d0c09c');R(g,a,S.base-2,b-a,.5,'#efe4c8');ao(g,a,cop,b-a,3,'t',.28,'#4a4060');ao(g,a,S.base-8,b-a,8,'b',.16,'#6a5848')});
     R(g,a-.5,S.top,b-a+1,3,'#f2e8d0');R(g,a-.5,S.top,b-a+1,.8,'#fffaec');R(g,a-.5,S.top+2.4,b-a+1,.6,'#9a8a6e');
     M18.shadow(g,(a+b)/2,S.base,(b-a)/2,1.4,.3)};
   const pier=(x,w)=>{castTp18(g,x,S.top,S.base,2,.35);R(g,x,S.top-.5,w,S.base-S.top+.5,'#efe3c6');R(g,x,S.top-.5,1,S.base-S.top+.5,'#c4b494');R(g,x+w-.5,S.top-.5,.5,S.base-S.top+.5,'#fbf4e2');
-    inRect(g,x,S.top,w,S.base-S.top,()=>tex(g,'mott',.3,x,S.top,w,S.base-S.top,'overlay',.6));R(g,x,S.base-2,w,.5,'#efe4c8');
+    ageTp18(g,x,S.top,w,S.base-S.top,r,.8);R(g,x,S.base-2,w,.5,'#efe4c8');
     R(g,x-.6,S.top-2.2,w+1.2,2.2,'#f4ead4');R(g,x-.6,S.top-2.2,w+1.2,.6,'#fffaf0');R(g,x-.6,S.top-.4,w+1.2,.6,'#9a8a6e')};
   run(S.x0,S.open[0]-4);run(S.open[1]+4,S.x1);
   pier(S.x0-4,5);pier(S.x1-1,5);pier(S.open[0]-4,4);pier(S.open[1],4);
@@ -501,7 +514,7 @@ function soregTp18(g,r){const S=SOREG18,cop=S.top+3;
 function warnStoneTp18(g,x0,x1,top,bot){const w=x1-x0,r=rng(x0*7+3);
   castTp18(g,x0,top+1,bot+1,1.6,.35);
   g.fillStyle=lg(g,x0,0,x1,0,['#e2d6bc','#f4ecdc','#fbf6ea']);g.fillRect(x0,top+.5,w,bot-top-.5);R(g,x0+.5,top,w-1,.5,'#fffcf4');
-  inRect(g,x0,top,w,bot-top,()=>{tex(g,'mott',.3,x0,top,w,bot-top,'overlay',.6);
+  ageTp18(g,x0,top,w,bot-top,r,.55);inRect(g,x0,top,w,bot-top,()=>{
     for(let j=0;j<7;j++){const y=top+2.4+j*1.9,n=j===6?w*.42:w-3.6-r()*1.2;for(let x=x0+1.8;x<x0+1.8+n;x+=.9+r()*.5)if(r()<.62)R(g,x,y,.5+(r()<.35?.5:0),.5,'rgba(96,78,58,.62)')}});
   R(g,x0,bot-.5,w,.5,'#a89878');R(g,x0+w-.5,top+.5,.5,bot-top-1,'#fffaf0');R(g,x0,top,.5,.5,'#c8b898');R(g,x1-.5,top,.5,.5,'#c8b898')}
 /* the stairs of Antonia. A bastion of the fortress comes forward to the court at the left, crenellated, with the door the stairs come
@@ -509,10 +522,10 @@ function warnStoneTp18(g,x0,x1,top,bot){const w=x1-x0,r=rng(x0*7+3);
    masonry, a solid parapet with a plain coping along its outer edge, and a block at its foot. Its treads are lit from above. */
 function stairsTp18(g,r){const W=stairWTp18,F=STFTp18,x1=104,c='#d4c09a';
   /* the bastion: its south face in the sun, its east side lit, its merlons, small windows; the door in it, dark, under a lintel */
-  stoneTp18(g,-4,12,38,F-12,r,{bh:3.4,bw:9,c,rough:1,v:.08});crenelsTp18(g,-4,33,12,3.4,3.4,c);
-  ao(g,-4,12,38,8,'t',.12,'#3a3048');ao(g,-4,80,38,F-80,'b',.22,'#3a3048');
-  const ef=[34,12,37,13.4,37,F,34,F];poly(g,ef,'#f4e6c6');clipTo(g,()=>poly(g,ef),()=>{for(let y=14;y<F;y+=3.4)R(g,34,y,3,.5,'rgba(160,134,100,.4)')});
-  for(const[x,y]of[[6,20],[22,20],[14,80],[26,88]]){R(g,x,y,2,3,'#3a2e30');R(g,x,y+3,2,.5,'#f2e4c4')}
+  stoneTp18(g,-4,18,38,F-18,r,{bh:3.4,bw:9,c,rough:1,v:.1});crenelsTp18(g,-4,33,18,3.4,3.4,c);
+  ao(g,-4,18,38,8,'t',.12,'#3a3048');ao(g,-4,80,38,F-80,'b',.22,'#3a3048');
+  const ef=[34,18,37,19.4,37,F,34,F];poly(g,ef,'#f2e2c0');clipTo(g,()=>poly(g,ef),()=>{for(let y=20;y<F;y+=3.4)R(g,34,y,3,.5,'rgba(160,134,100,.4)');ageTp18(g,34,18,3,F-18,r,.8)});
+  for(const[x,y]of[[6,23],[22,23],[14,80],[26,88]]){R(g,x,y,2,3,'#3a2e30');R(g,x,y+3,2,.5,'#f2e4c4')}
   R(g,6.6,29.6,17.8,2.4,'#f2e4c4');R(g,6.6,29.6,17.8,.6,'#fffaf0');R(g,6.6,31.6,17.8,.6,'#8a7a62');
   g.fillStyle=lg(g,0,32,0,56,['#120c10','#221a1e','#382c2a']);g.fillRect(8,32,15,W(30)-32);R(g,8,32,1.4,W(30)-32,'#5a4a40');ao(g,8,32,15,4,'t',.5,'#000');
   /* the substructure under the flight, its face toward us in the sun, a soft shade along its foot */
@@ -536,14 +549,14 @@ function parapetTp18(g,a,b,cut){const W=stairWTp18,top=x=>Math.min(W(x),105)-2,b
   stroke(g,(()=>{const q=[];for(let x=a;x<=b;x+=1)q.push(x,top(x)+1.6);return q})(),'rgba(120,104,84,.55)',.5);
   /* the block at its foot, standing on the floor */
   const bx=100,bt=W(100)-4;castTp18(g,bx,bt,STFTp18,2,.3);g.fillStyle=lg(g,bx,0,bx+9,0,['#d8c8a6','#efe2c6','#f8f0de']);g.fillRect(bx,bt,8,STFTp18-bt);
-  inRect(g,bx,bt,8,STFTp18-bt,()=>tex(g,'mott',.3,bx,bt,8,STFTp18-bt,'overlay',.6));R(g,bx-.6,bt-1.8,9.2,2,'#f6ecd6');R(g,bx-.6,bt-1.8,9.2,.6,'#fffaf0');R(g,bx-.6,bt,9.2,.5,'#9a8a6e');
+  ageTp18(g,bx,bt,8,STFTp18-bt,r,.9);R(g,bx-.6,bt-1.8,9.2,2,'#f6ecd6');R(g,bx-.6,bt-1.8,9.2,.6,'#fffaf0');R(g,bx-.6,bt,9.2,.5,'#9a8a6e');
   M18.shadow(g,bx+4,STFTp18,6,1.2,.35)}
 /* ==== ART court18: end ==== */
 
 /* ==== ART stone18: begin ==== */
 /* The warning stone, close: a slab of pale limestone set in the barrier, its top a finger's breadth proud of the coping, with its Greek
-   capitals cut in seven lines, as the stone read when it was new (CH18 temple.md, "DECIDED": the standard reading, whole, no gouges, no
-   paint in the letters). The letters are plain, even capitals without serifs, cut as narrow V-grooves and painted by hand stroke by
+   capitals cut in seven lines, in a slab veined and a little worn by hands and weather, as the stone read when it was new (CH18 temple.md, "DECIDED": the standard reading, whole, no gouges, no
+   paint in the letters). The letters are plain, even capitals without serifs, cut as narrow V-grooves with a shadowed edge and painted by hand stroke by
    stroke (GLYPH18, not a font): O, Θ and Ω full circles as tall as the rest, Θ with a dot at its centre, Σ with its outer bars splayed,
    Ξ three bars without an upright, Υ a V on a short stem, alpha with a faint short crossbar set low so that it can be told from lambda.
    Tau and the Φ are the letters they are (CONTRIBUTING section 3, the accepted exception). The sun stands to the right, behind the one
@@ -580,14 +593,13 @@ function paintStone18(g){const r=rng(1841),S=ST18,x0=S.x0,x1=S.x1,y0=S.y0,y1=S.y
   for(let i=0;i<5;i++)pool(g,30+i*64+r()*20,2+r()*6,26,1.4,i%2?'#fff6e2':'#c8b898',.4,'source-over');
   /* the barrier at either side of the slab: its coping, one block below it, and the course under the slab */
   const block=(x,y,w,h,c)=>{g.fillStyle=lg(g,x,y,x+w,y+h,[tint(c,.06),c,tint(c,-.08)]);g.fillRect(x,y,w,h);
-    inRect(g,x,y,w,h,()=>{tex(g,'mott',.4,x,y,w,h,'overlay',1);tex(g,'grain',.16,x,y,w,h,'overlay',.5);
-      for(let i=0;i<w*h*.05;i++)R(g,x+r()*w,y+r()*h,.5,.5,r()<.5?'rgba(110,90,66,.28)':'rgba(255,250,236,.32)')});
+    ageTp18(g,x,y,w,h,r,1.1);
     R(g,x,y,w,.6,tint(c,.22));R(g,x+w-.6,y,.6,h,tint(c,.12));R(g,x,y+h-.6,w,.6,tint(c,-.25));R(g,x,y,.6,h,tint(c,-.18))};
   block(-4,cop+6,x0+4,y1-cop-6,'#dccaa6');block(x1,cop+6,324-x1,y1-cop-6,'#dfcea9');
   block(-4,y1,32,14,'#d8c6a0');block(28,y1,262,14,'#dccaa4');block(290,y1,34,14,'#d6c49e');
   /* the coping: its upper face in the sun, its front, the little shade under its lip */
   for(const[a,b]of[[-4,x0],[x1,324]]){R(g,a,cop,b-a,6,'#f0e4c8');R(g,a,cop,b-a,1.4,'#fffaee');R(g,a,cop+5.2,b-a,.8,'#a8967a');ao(g,a,cop+6,b-a,4,'t',.25,'#4a4060');
-    inRect(g,a,cop,b-a,6,()=>tex(g,'mott',.35,a,cop,b-a,6,'overlay',1))}
+    ageTp18(g,a,cop,b-a,6,r,.9)}
   /* the slab's soft shadow on the barrier, to its lower left (the sun is to the right) */
   shade(g,[x0-1.4,y0+3,x0,y0+2,x0,y1,x0-1.4,y1+1.4],'#8a86b8',.5);shade(g,[x0-1.4,y1,x1-2,y1,x1-1,y1+1.6,x0-1.4,y1+1.6],'#8a86b8',.45);
   /* the slab: pale limestone, warm in the light, its face finely pitted and mottled, a vein or two, its arrises a little softened */
@@ -595,10 +607,17 @@ function paintStone18(g){const r=rng(1841),S=ST18,x0=S.x0,x1=S.x1,y0=S.y0,y1=S.y
   g.fillStyle=lg(g,x1,y0,x0,y1,['#f8f0de','#efe4cc','#e4d6b8','#d6c6a4']);g.fill();
   clipTo(g,()=>poly(g,sl),()=>{tex(g,'mott',.42,x0,y0,x1-x0,y1-y0,'overlay',1.2);tex(g,'blotch',.18,x0,y0,x1-x0,y1-y0,'soft-light',1);tex(g,'grain',.14,x0,y0,x1-x0,y1-y0,'overlay',.5);
     for(let i=0;i<900;i++){const x=x0+r()*(x1-x0),y=y0+r()*(y1-y0),d=r();R(g,x,y,.5,.5,d<.55?'rgba(120,98,70,.22)':'rgba(255,252,240,.38)');if(d<.06){R(g,x+.5,y,.5,.5,'rgba(110,88,62,.3)');R(g,x+.5,y+.5,.5,.5,'rgba(255,250,236,.4)')}}
-    for(const[vx,vy,n]of[[70,96,46],[196,20,34]]){const p=[vx,vy];let x=vx,y=vy;for(let k=0;k<n;k++){x+=1.6+r()*1.4;y+=(r()-.5)*1.2;p.push(x,y)}stroke(g,p,'rgba(196,176,142,.35)',.6)}
+    /* veins: long faint wandering lines of a warmer and a paler tone, as the bed of the stone runs */
+    for(let i=0;i<14;i++){let x=x0+r()*(x1-x0),y=y0+r()*(y1-y0);const p=[x,y],dx=r()<.5?1:-1,dy=(r()-.5)*.5;for(let k=0;k<12+r()*22;k++){x+=dx*(1.6+r()*1.8);y+=dy*2+(r()-.5)*1.6;p.push(x,y)}
+      stroke(g,p,rgba(r()<.5?'#a88a62':'#b8a6a0',.16+r()*.14),.5+r()*.5);stroke(g,p.map((v,j)=>j%2?v+.6:v),'rgba(255,250,236,.14)',.5)}
+    /* a little wear: paler where hands have touched it along the top, a few shallow pits, a soft stain near the foot */
+    pool(g,(x0+x1)/2,y0+6,110,6,'#fff8e8',.22,'screen');
+    for(let i=0;i<40;i++){const px=x0+r()*(x1-x0),py=y0+r()*(y1-y0),d=.5+r()*.8;R(g,px,py,d,d,'rgba(120,98,70,.32)');R(g,px+.5,py+d,d,.5,'rgba(255,250,236,.4)')}
+    for(let i=0;i<6;i++)pool(g,x0+r()*(x1-x0),y1-6-r()*20,10+r()*20,3+r()*5,r()<.5?'#a08466':'#8c8490',.16,'multiply');
     ao(g,x0,y0,8,y1-y0,'l',.12,'#6a5a70');ao(g,x0,y1-10,x1-x0,10,'b',.12,'#6a5a70');pool(g,x1-40,y0+20,90,50,'#fff6e0',.18,'screen')});
   /* its arrises: the top and right edges catch the sun, the left and the foot are a little darker */
-  R(g,x0+1,y0,x1-x0-2,.6,'#fffcf2');R(g,x1-.6,y0+1,.6,y1-y0-2,'#fffaf0');R(g,x0,y0+1,.6,y1-y0-2,'#c4b494');R(g,x0+1,y1-.6,x1-x0-2,.6,'#bcac8c');
+  clipTo(g,()=>poly(g,sl),()=>{ao(g,x0,y0,x1-x0,2.4,'t',.5,'#fffaf0');ao(g,x1-2.4,y0,2.4,y1-y0,'r',.45,'#fffaf0');ao(g,x0,y0,2.4,y1-y0,'l',.3,'#6a5a50');ao(g,x0,y1-2.4,x1-x0,2.4,'b',.32,'#6a5a50')});
+  for(let i=0;i<12;i++){const t=r(),side=(r()*4)|0,px=side<2?x0+t*(x1-x0):side===2?x0:x1-1,py=side===0?y0:side===1?y1-1:y0+t*(y1-y0);R(g,px,py,1,1,side<2&&side===0||side===3?'rgba(255,250,236,.6)':'rgba(110,92,72,.45)')}
   /* the letters, cut */
   WORDS18.forEach((W,j)=>{let x=S.x;const y=S.y+j*S.lh;for(const w of W){for(const ch of w){cutGlyph18(g,ch,x,y,S.h);x+=adv18(ch)}x+=S.gap}})}
 /* cutGlyph18: one capital cut into the stone at x (its left), y (its top), h high: the lit lower left wall of the groove, the dark upper
@@ -608,10 +627,10 @@ function cutGlyph18(g,ch,x,y,h){const G=GLYPH18[ch],P=(a,ox,oy)=>a.map((v,i)=>i%
     for(const s of G.s||[]){g.beginPath();const q=P(s,ox,oy);g.moveTo(q[0],q[1]);for(let i=2;i<q.length;i+=2)g.lineTo(q[i],q[i+1]);g.stroke()}
     if(G.o){const[cx,cy,rx,ry]=G.o;g.beginPath();g.ellipse(x+cx*h+ox,y+cy*h+oy,rx*h-.3,ry*h-.3,0,0,6.2832);g.stroke()}
     if(G.arc){const[cx,cy,rx,ry]=G.arc;g.beginPath();g.ellipse(x+cx*h+ox,y+cy*h+oy,rx*h-.3,ry*h-.3,0,G.arc[4],G.arc[5]);g.stroke()}
-    g.globalAlpha=al*.55;for(const s of G.f||[]){g.beginPath();const q=P(s,ox,oy);g.moveTo(q[0],q[1]);g.lineTo(q[2],q[3]);g.lineWidth=lw*.8;g.stroke()}
+    g.globalAlpha=al*.72;for(const s of G.f||[]){g.beginPath();const q=P(s,ox,oy);g.moveTo(q[0],q[1]);g.lineTo(q[2],q[3]);g.lineWidth=lw*.8;g.stroke()}
     if(G.dot){g.globalAlpha=al;g.fillStyle=c;const d=1.3;g.fillRect(x+.5*h+ox-d/2,y+.5*h+oy-d/2,d,d)}
     g.restore()};
-  pass('#fffaee',-.45,.5,1.3,.6);pass('#6e5a40',.35,-.35,1.25,.62);pass('#9a8462',0,0,.75,.55)}
+  pass('#5a4834',.2,-.1,2.1,.14);pass('#fffaee',-.5,.55,1.3,.72);pass('#5e4a34',.45,-.45,1.3,.72);pass('#8a7454',0,0,.8,.6)}
 /* ==== ART stone18: end ==== */
 
 /* ==== ART stairs18: begin ==== */
@@ -649,7 +668,7 @@ function paintStairs18(g){const r=rng(1851),HZ=HZSt18;
   pave(g,-2,HZ,322,146,'#d8c6a2',r,{vx:200,vy:HZ-1,rows:12,step:30,v:.06,p:1.7,far:.05,t:.3,joint:'#b4a282'});
   comp(g,'source-over',1,()=>{g.fillStyle=lg(g,0,HZ,0,80,[rgba('#e4e0d8',.55),rgba('#e4e0d8',0)]);g.fillRect(-2,HZ,324,22)});
   royalSt18(g,r);
-  innerSt18(g,r);
+  hazeTp18(g,320,'#c8d0e0',.1,q=>innerSt18(q,r));
   crowdSt18(g,r);
   landingSt18(g,r);
   comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,214,160,1)','rgba(226,208,190,.6)','rgba(176,178,212,.7)']);g.fillRect(0,0,320,144)})}
@@ -668,29 +687,31 @@ function royalSt18(g,r){const x0=150,x1=322,eave=51,mid=46,ridgeY=40,HZ=HZSt18;
    shade, the gold along their tops and the gilded edge of the front catching the sun; the north wall with its gatehouses (the coping
    stops at each), the terrace's steps, the west end of the block turned to us at the right; and the barrier on the pavement before
    them, its coping seen from above */
-function innerSt18(g,r){const HZ=HZSt18,G=GOLDTp18,wt=48,wf=70,W1=172,sb=76;
-  /* the sanctuary: the front block at the left, taller, its north face in shade, its edge to the left lit; the long flank */
-  const sh=(x0,x1,y0,y1,c0,c1)=>{g.fillStyle=lg(g,x0,0,x1,0,[c0,c1]);g.fillRect(x0,y0,x1-x0,y1-y0);inRect(g,x0,y0,x1-x0,y1-y0,()=>{for(let y=y0+2.4;y<y1;y+=2.6)R(g,x0,y,x1-x0,.5,'rgba(120,104,100,.25)');tex(g,'mott',.3,x0,y0,x1-x0,y1-y0,'overlay',.6)})};
-  sh(44,146,14,wt,'#cfc0aa','#c2b4a4');R(g,44,30,102,1,'#ddd0bc');R(g,44,31,102,.6,'#9a8c84');ao(g,44,wt-8,102,8,'b',.15,'#4a4060');sh(146,154,15,wt,'#b2a6a0','#a89c98');
-  for(let x=50;x<140;x+=8.5){R(g,x,19,2.6,1.6,'#4a3c3c');R(g,x,20.6,2.6,.5,'#e0d2bc')}
-  R(g,43,10.2,104,3,G[2]);R(g,43,10.2,104,.6,G[0]);R(g,43,12.6,104,.6,G[3]);R(g,43,13.2,104,1,'#ddd0bc');R(g,146,10.6,8,3,G[3]);
-  sh(14,44,2,wt,'#d4c6b0','#c8baa8');R(g,14,23,30,1,'#e2d6c2');R(g,14,24,30,.6,'#9a8c84');R(g,13,-1,32,3,G[2]);R(g,13,-1,32,.6,G[0]);R(g,13,1.4,32,.6,G[3]);R(g,13,2,32,1,'#e0d4c0');
-  for(let x=19;x<42;x+=8){R(g,x,8,2.6,1.6,'#4a3c3c');R(g,x,9.6,2.6,.5,'#e0d2bc')}
-  g.fillStyle=lg(g,11,0,14,0,[G[1],G[0],G[2]]);g.fillRect(11,-1,3,wt+1);comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,0,0,0,wt,['#ffffff','#c8a890']);g.fillRect(11,-1,3,wt+1)});pool(g,12,18,5,16,'#fff0b0',.3,'screen');
+function innerSt18(g,r){const HZ=HZSt18,G=GOLDTp18,wt=54,wf=72,W1=172,sb=78;
+  /* the sanctuary: the front block at the left, the tallest of all, its north face in a warm shade, its edge to the left lit; the long
+     flank, high above the inner wall; their faces of white stone, little weathered */
+  const sh=(x0,x1,y0,y1,c,k)=>{stoneTp18(g,x0,y0,x1-x0,y1-y0,r,{bh:3,bw:11,c,v:.05,honey:'#d8c4a2',grey:'#b8b0b4',age:.55});
+    comp(g,'multiply',k,()=>{g.fillStyle=lg(g,0,y0,0,y1,['#d4ccdc','#c8bcc8']);g.fillRect(x0,y0,x1-x0,y1-y0)});comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,y0,0,y1,['rgba(255,230,190,0)','rgba(255,222,170,.9)']);g.fillRect(x0,y0,x1-x0,y1-y0)})};
+  sh(44,146,12,wt,'#e2d6c2',.3);R(g,44,31,102,1,'#ddd0bc');R(g,44,32,102,.6,'#9a8c84');ao(g,44,wt-8,102,8,'b',.15,'#4a4060');sh(146,154,13,wt,'#d0c6be',.45);
+  for(let x=50;x<140;x+=8.5){R(g,x,17,2.6,1.8,'#4a3c3c');R(g,x,18.8,2.6,.5,'#e0d2bc')}
+  R(g,43,8.2,104,3,G[2]);R(g,43,8.2,104,.6,G[0]);R(g,43,10.6,104,.6,G[3]);R(g,43,11.2,104,1,'#ddd0bc');R(g,146,8.6,8,3,G[3]);
+  sh(14,44,5,wt,'#e6dac6',.28);R(g,14,24,30,1,'#e2d6c2');R(g,14,25,30,.6,'#9a8c84');R(g,13,2,32,3,G[2]);R(g,13,2,32,.6,G[0]);R(g,13,4.4,32,.6,G[3]);R(g,13,5,32,1,'#e0d4c0');
+  for(const y of[10,17])for(let x=19;x<42;x+=8){R(g,x,y,2.6,1.8,'#4a3c3c');R(g,x,y+1.8,2.6,.5,'#e0d2bc')}
+  g.fillStyle=lg(g,11,0,14,0,[G[1],G[0],G[2]]);g.fillRect(11,2,3,wt-2);comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,0,0,0,wt,['#ffffff','#c8a890']);g.fillRect(11,2,3,wt-2)});pool(g,12,20,5,18,'#fff0b0',.3,'screen');
   /* the steps of the terrace and the hel before the barrier, seen from above: treads lit, risers in shade */
   for(let i=0;i<4;i++){const y=wf+i*1.6;R(g,-4,y,W1+4+i*3,1,'#e4d6b8');R(g,-4,y+1,W1+4+i*3,.6,'#a89a88')}
   /* the north wall and its gatehouses, in a warm shade; the west end of the block turned to us and to the sun's side, lit */
-  stoneTp18(g,-4,wt,W1+4,wf-wt,r,{bh:2.6,bw:8,c:'#cbbca4',v:.05});ao(g,-4,wf-4,W1+4,4,'b',.2,'#4a4060');
-  const gates=[[18,34,44],[70,86,43],[122,138,44]],cope=(a,b)=>{R(g,a,wt-1.4,b-a,1.8,'#e8dcc4');R(g,a,wt-1.4,b-a,.5,'#fff6e2');R(g,a,wt+.4,b-a,.5,'#8a7c70')};
+  stoneTp18(g,-4,wt,W1+4,wf-wt,r,{bh:3,bw:9,c:'#cbbca4',v:.08});ao(g,-4,wf-4,W1+4,4,'b',.2,'#4a4060');
+  const gates=[[18,34,49],[70,86,48],[122,138,49]],cope=(a,b)=>{R(g,a,wt-1.4,b-a,1.8,'#e8dcc4');R(g,a,wt-1.4,b-a,.5,'#fff6e2');R(g,a,wt+.4,b-a,.5,'#8a7c70')};
   let a=-4;for(const[x0,x1]of gates){cope(a,x0);a=x1}cope(a,W1);
-  for(const[x0,x1,top]of gates){stoneTp18(g,x0,top,x1-x0,wf-top,r,{bh:2.6,bw:7,c:'#d2c4ac',v:.04});R(g,x0-.6,top-1.6,x1-x0+1.2,2,'#ece0c8');R(g,x0-.6,top-1.6,x1-x0+1.2,.5,'#fff8e6');
+  for(const[x0,x1,top]of gates){stoneTp18(g,x0,top,x1-x0,wf-top,r,{bh:3,bw:7,c:'#d2c4ac',v:.06});R(g,x0-.6,top-1.6,x1-x0+1.2,2,'#ece0c8');R(g,x0-.6,top-1.6,x1-x0+1.2,.5,'#fff8e6');
     R(g,x0,top,.6,wf-top,'#f4e8d0');const dx=x0+(x1-x0-5)/2;R(g,dx-1,top+7,7,wf-top-7,'#ddd0b8');g.fillStyle=lg(g,0,top+8,0,wf,['#140e12','#2a2022']);g.fillRect(dx,top+8,5,wf-top-8);R(g,dx,top+8,.8,wf-top-8,'#8a6a3a')}
   const we=[W1,wt-1.4,W1+12,wt+3,W1+12,wf+5,W1,wf];poly(g,we,'#b4a898');clipTo(g,()=>poly(g,we),()=>{for(let y=wt;y<wf+6;y+=2.6)stroke(g,[W1,y,W1+12,y+4.4],'rgba(110,96,90,.3)',.5)});
   /* the barrier on the pavement: its long north run, its coping lit from above, and its west run going away from us at the right */
   const by=84;R(g,-4,by,W1+22,3.2,'#d4c4a6');R(g,-4,by,W1+22,1.2,'#f4ead4');R(g,-4,by+3.2,W1+22,.8,'#9a8c7c');
   poly(g,[W1+18,by,W1+22,by,W1+31,by-10,W1+28,by-10],'#e8dcc2');poly(g,[W1+18,by+3.2,W1+22,by+3.2,W1+31,by-7.2,W1+31,by-10,W1+22,by,W1+18,by],'#c8b89c');
   for(const x of[24,84,140]){R(g,x,by-1,7,4.4,'#efe6d2');R(g,x,by-1,7,.6,'#fffaf0')}
-  comp(g,'source-over',.1,()=>R(g,-4,0,W1+40,by+4,'#c8d0e0'))}
+}
 /* personSt18: one of the crowd, seen from above and from in front, at x, y (his feet), s his size, turned up toward the stairs: a shadow
    falling toward us, the mantle over his shoulders in shade with its edge to the sun lit, his face turned to us in the shade of his
    head, his hair or his head cloth lit along the top. Small heads are squares, never rings. */
@@ -723,7 +744,7 @@ function landingSt18(g,r){const[ax,ay,cx,cy,ex,ey]=PARSt18,H=PHSt18;
   /* the landing: great flags in the sun */
   const ld=[cx+16,146,cx+40,cy+6,322,cy+6,322,146];poly(g,ld,'#e2d2b0');
   clipTo(g,()=>poly(g,ld),()=>{pave(g,cx,cy+6,322,146,'#e4d4b2',r,{vx:300,vy:60,rows:4,step:34,v:.06,p:1.3,t:.35,joint:'#b8a684'});
-    shade(g,[cx,cy+6,ex,cy+6,ex,cy+14,cx,cy+14],'#8a86b8',.35)});
+    shade(g,[cx,cy+6,ex,cy+6,ex,cy+14,cx,cy+14],'#8a86b8',.35);ageTp18(g,cx,cy+6,130,50,r,.6)});
   /* the parapet: a solid low wall, its outer face toward the court, its coping lit along its top; the corner where it turns is a bend */
   const cop=[ax,ay,cx,cy,ex,ey],F=[ax,ay+H,cx,cy+H,ex,ey+H];
   const wall=[ax,ay,cx,cy,ex,ey,ex,ey+H+2,cx+2,cy+H+2,ax+4,ay+H+4];poly(g,wall,'#a89c94');
@@ -1119,7 +1140,7 @@ ROOMS.elders18={space:.6,walk:[16,304,110,138],mood:'elders',amb:AMB.elders18,hs
   {name:'way_out_to_the_street',x:0,y:96,w:14,h:48,wx:20,wy:126,dir:-1,exit:()=>say(P,F.james?'not_before_the_elders_are_done':'weve_only_just_come'),look:'way_out_to_the_street_look'}]};
 ROOMS.court18={space:.5,walk:[16,464,108,138],get mood(){return phase18()==='days'||phase18()==='temple'?'court':'tense'},amb:AMB.court18,hs:[
   {name:'sanctuary',x:164,y:0,w:126,h:40,wx:250,wy:112,look:'sanctuary_look'},
-  {name:'gate_of_the_inner_courts',x:238,y:30,w:24,h:30,wx:250,wy:112,look:'gate_of_the_inner_courts_look'},
+  {name:'gate_of_the_inner_courts',x:238,y:34,w:24,h:22,wx:250,wy:112,look:'gate_of_the_inner_courts_look'},
   {name:'fortress_of_antonia',x:0,y:0,w:124,h:48,wx:60,wy:114,look:'fortress_of_antonia_look'},
   {name:'stairs_of_antonia',x:0,y:48,w:112,h:58,wx:100,wy:114,look:'stairs_of_antonia_look',use:'not_mine_to_climb'},
   {name:'barrier',x:100,y:74,w:276,h:30,wx:180,wy:112,look:'barrier_look'},
@@ -1240,7 +1261,7 @@ function hint18(){const r=G.room,ph=phase18();
 ROOMS.mnason18.birds={perch:[{k:'sparrow',y:11.4,x:[196,206,218],d:[1,-1,1]}]};
 ROOMS.street18.birds={perch:[{k:'dove',y:18,x:[150,166,250],d:[1,-1,1]}]};
 ROOMS.elders18.birds={perch:[{k:'sparrow',y:5.4,x:[30,44],d:[1,-1]}]};
-ROOMS.court18.birds=()=>G.arr18||F.arrest?null:{perch:[{k:'dove',y:39.4,x:[314,321,352],d:[1,-1,-1]}]};
+ROOMS.court18.birds=()=>G.arr18||F.arrest?null:{perch:[{k:'dove',y:43.4,x:[314,321,352],d:[1,-1,-1]}]};
 /* the crowd's cry of 21:36 (cry18) and of 22:22 (cry18b), heard and never written, and its roar: shared/crowd.js, when it is there */
 const CR=SHARED.crowd,CALLS=CR?{cry18:CR.call({key:'cry18',n:9,base:mtof(note(-7,0,MUSIC))},3.5,7),cry18b:CR.call({key:'cry18b',n:9,base:mtof(note(-7,0,MUSIC))},4,8)}:{},
   BEDS=CR?{roar18:CR.ROAR}:{};
