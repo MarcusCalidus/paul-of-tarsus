@@ -1833,8 +1833,8 @@ async function toGate17(){if(!F.will)return say(PC(),F.agabus?'not_while_this_is
   await fade(1,400);F.out=1;show17('gate17');await fade(0,500);await say(AU17,'aulus_mnason_expects_you',{to:P});await tell('v15');codeBtn()}
 async function upTheRoad17(){if(!F.out)return;
   await map17(LEGS17.road,'levant',[]);
-  endScreen({title:'the_belt_2',text:'the_belt_end',based:'based_on_acts_21_1_16',go:'click_to_return_to_the_title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+  endScreen({title:'the_belt_2',text:'the_belt_end',based:'based_on_acts_21_1_16',go:'click_to_continue_to_chapter_eighteen',code:['chapter_eighteen_code_code',codeOf(18,0)]});
+  await wait(1500);ov.onclick=()=>{ov.onclick=null;startChapter(18)};await new Promise(()=>{})}
 
 /* ============ ROOMS ============ */
 /* A room's hotspots are listed from the back to the front: where two overlap, the later one is meant. */

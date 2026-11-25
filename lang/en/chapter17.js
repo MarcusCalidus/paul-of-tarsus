@@ -442,7 +442,8 @@ TEXTS('en',17,{
   /* End screen */
   "the_belt_end":"From Miletus a ship carried them to Patara, and there they found a ship crossing to Phoenicia. At Tyre they found the disciples and stayed seven days, and on the beach they all knelt and prayed together. In Caesarea, in Philip's house, Agabus bound himself with Paul's belt. They begged Paul not to go up; when he would not be moved, they said: let Jehovah's will take place. Then they set out for Jerusalem.",
   "based_on_acts_21_1_16":"Based on Acts 21:1-16. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are from the Scriptures and are told here in paraphrase. Acts does not say how the ship at Patara was chosen, that the unloading at Tyre was planned or that Paul and the others helped with it, how the disciples at Tyre were found, the names and the words of Philip's daughters, or whether they went from Ptolemais to Caesarea by land or by sea. Mnason's home was in Jerusalem, where the next chapter begins. Akestor, Moschos, Kallikrates and Sostratos the masters, the water seller, the butcher, the coppersmith, the two women at the meat stall, Euanthe, Phanias, Myrto, Joezer, Melitta and Philinos of Tyre, and Aulus and Benaiah of Caesarea are invented. All that is said is invented.",
-  "click_to_return_to_the_title":"Click to return to the title",
+  "click_to_continue_to_chapter_eighteen":"Click to continue to Chapter Eighteen",
+  "chapter_eighteen_code_code":"Chapter Eighteen code: {code}",
   /* Defaults for Luke */
   "luke_nothing_to_look_at":"Nothing there that I'd write down.",
   "luke_no_use_for_that":"I have no use for that now.",
