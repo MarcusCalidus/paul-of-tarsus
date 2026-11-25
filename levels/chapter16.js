@@ -1233,7 +1233,7 @@ Object.assign(LOOK,{
   klea16:HIM('#c08c5c','#3a2a1a','#ece4d0','#5f4470',{ph:700}),
   damon16:{skin:'#b8845a',hair:'#4a3a2c',beard:'#4a3a2c',tunic:'#c8b490',cloak:'#5a6a4a',belt:'#3a2a1a',brow:'#2a1a12',ph:400},
   euph16:HIM('#b88a62','#5a4a3a','#e6dec8','#6a5a3a',{grey:'#9a9088',receding:1,ph:3200}),
-  polem16:HIM('#c49a72','#3a2a1c','#e2d8be','#4a5a6a',{shortBeard:1,ph:3400})});
+  polem16:HIM('#a8744c','#4a3a2c','#e2d8be','#8a4434',{grey:'#a09890',crop:1,fullBeard:1,ph:3400})});
 const LK=actor('luke16','Luke','#c8e8c0',126),TI=actor('tim16','Timothy','#b8e0b0',142),AR=actor('arist16','Aristarchus','#d0d8b8',112),
   TR=actor('troph16','Trophimus','#c8d8e8',124),MA=actor('master16','Pamphilos','#e0d0b0',96),BOY=actor('boy16','Simias','#f0e0b8',176),
   KE=actor('sailor16','Kerdon','#c8d8d0',108),FI=actor('fisher16','fisherman','#d8d0c0',88),SH=actor('shep16','shepherd','#d8c8a8',100),
