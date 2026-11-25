@@ -538,34 +538,77 @@ function parapetTp18(g,a,b,cut){const W=stairWTp18,top=x=>Math.min(W(x),105)-2,b
 /* ==== ART court18: end ==== */
 
 /* ==== ART stone18: begin ==== */
-/* The warning stone, close: a block of pale limestone set in the barrier, with its Greek letters cut in seven lines (CH18 temple.md gives
-   the letters; tau and chi are the accepted exception of CONTRIBUTING section 3). Behind it, out of focus, the top of the balustrade and
-   the paving of the court. No word on the picture translates it: Paul reads it, word by word (ROOMS.stone18: each word is a hotspot
-   named only "a word on the stone").
-   Called from outside: ART.stone18; LINES18 and wordBox18 (where each word stands, for its hotspot). */
-/* the words as they stand on the stone, line by line (no space is cut between them; the gaps here are ours, a quarter letter wide) */
+/* The warning stone, close: a slab of pale limestone set in the barrier, its top a finger's breadth proud of the coping, with its Greek
+   capitals cut in seven lines, as the stone read when it was new (CH18 temple.md, "DECIDED": the standard reading, whole, no gouges, no
+   paint in the letters). The letters are plain, even capitals without serifs, cut as narrow V-grooves and painted by hand stroke by
+   stroke (GLYPH18, not a font): O, Θ and Ω full circles as tall as the rest, Θ with a dot at its centre, Σ with its outer bars splayed,
+   Ξ three bars without an upright, Υ a V on a short stem, alpha with a faint short crossbar set low so that it can be told from lambda.
+   Tau and the Φ are the letters they are (CONTRIBUTING section 3, the accepted exception). The sun stands to the right, behind the one
+   who reads, as it does in the court: each groove is dark along its upper right wall and catches the light along its lower left one,
+   low in contrast, so that the letters never shout over the stone. Lines start flush at the left and end ragged; the last is short.
+   Around it: the coping of the barrier running past its top on either side, one block of the barrier at each side, a course of it
+   under the slab, the joints round the slab one outline, none running into it, and nothing ruled across it. Above the coping, out of
+   focus, the steps and the terrace in the sun. No word on the picture translates it: Paul reads it, word by word (ROOMS.stone18: each
+   word is a hotspot named only "a word on the stone").
+   Called from outside: ART.stone18; WORDS18 and wordBox18 (where each word stands, for its hotspot). */
+/* the words as they stand on the stone, line by line (no space is cut between them; the gaps here are ours, a fifth of a letter wide) */
 const WORDS18=[['ΜΗΘΕΝΑ','ΑΛΛΟΓΕΝΗ','ΕΙΣΠΟ'],['ΡΕΥΕΣΘΑΙ','ΕΝΤΟΣ','ΤΟΥ','ΠΕ'],['ΡΙ','ΤΟ','ΙΕΡΟΝ','ΤΡΥΦΑΚΤΟΥ','ΚΑΙ'],['ΠΕΡΙΒΟΛΟΥ','ΟΣ','Δ','ΑΝ','ΛΗ'],['ΦΘΗ','ΕΑΥΤΩΙ','ΑΙΤΙΟΣ','ΕΣ'],
   ['ΤΑΙ','ΔΙΑ','ΤΟ','ΕΞΑΚΟΛΟΥ'],['ΘΕΙΝ','ΘΑΝΑΤΟΝ']];
-const ST18={x:50,y:27,adv:9.6,gap:2.6,lh:17,h:11};
-/* where a run of words of one line stands: [x, y, w, h] */
-function wordBox18(line,a,b){const W=WORDS18[line];let x=ST18.x;for(let i=0;i<a;i++)x+=W[i].length*ST18.adv+ST18.gap;let w=0;for(let i=a;i<=b;i++)w+=W[i].length*ST18.adv+(i<b?ST18.gap:0);
-  return[x-1,ST18.y+line*ST18.lh-ST18.h-1,w+2,ST18.h+3]}
+/* the letters: x: the left of line one, y: the top of its capitals, lh: from line to line, h: the height of a capital, sp: between two
+   letters, gap: between two words; the slab x0..x1, y0..y1 */
+const ST18={x:57,y:21,lh:15.6,h:11,sp:3,gap:2.2,x0:38,x1:282,y0:8,y1:134};
+/* GLYPH18: each capital as strokes in a box one capital high (x from 0 to w, y from 0 at the top to 1 at the foot); o: a circle (its
+   centre and radii), dot: a small square at the centre (Θ), faint: a stroke cut lighter (alpha's crossbar) */
+const GLYPH18={Α:{w:.8,s:[[0,1,.4,0,.8,1]],f:[[.27,.68,.53,.68]]},Β:{w:.62,s:[[0,0,0,1],[0,0,.42,0,.56,.1,.56,.37,.42,.47,0,.47],[0,.47,.46,.47,.62,.59,.62,.88,.47,1,0,1]]},
+  Γ:{w:.56,s:[[0,1,0,0,.56,0]]},Δ:{w:.82,s:[[0,1,.41,0,.82,1,0,1]]},Ε:{w:.56,s:[[.56,0,0,0,0,1,.56,1],[0,.5,.48,.5]]},Η:{w:.68,s:[[0,0,0,1],[.68,0,.68,1],[0,.5,.68,.5]]},
+  Θ:{w:1,o:[.5,.5,.5,.5],dot:1},Ι:{w:0,s:[[0,0,0,1]]},Κ:{w:.6,s:[[0,0,0,1],[.58,0,0,.56],[.2,.4,.62,1]]},Λ:{w:.8,s:[[0,1,.4,0,.8,1]]},
+  Μ:{w:.9,s:[[0,1,.09,0,.45,.72,.81,0,.9,1]]},Ν:{w:.7,s:[[0,1,0,0,.7,1,.7,0]]},Ξ:{w:.64,s:[[.04,0,.6,0],[.12,.5,.52,.5],[0,1,.64,1]]},Ο:{w:1,o:[.5,.5,.5,.5]},
+  Π:{w:.72,s:[[0,1,0,0],[-.05,0,.77,0],[.72,0,.72,1]]},Ρ:{w:.58,s:[[0,1,0,0,.42,0,.58,.12,.58,.36,.42,.48,0,.48]]},Σ:{w:.66,s:[[.66,.06,.06,0,.38,.5,.06,1,.66,.94]]},
+  Τ:{w:.7,s:[[0,0,.7,0],[.35,0,.35,1]]},Υ:{w:.7,s:[[0,0,.35,.5,.7,0],[.35,.5,.35,1]]},Φ:{w:.86,o:[.43,.5,.43,.32],s:[[.43,0,.43,1]]},
+  Ω:{w:1,s:[[0,1,.25,1,.17,.84],[1,1,.75,1,.83,.84]],arc:[.5,.48,.48,.48,2.5,6.93]}};
+/* the advance of one capital; where a run of words of one line stands: [x, y, w, h] */
+const adv18=ch=>GLYPH18[ch].w*ST18.h+ST18.sp+(ch==='Ι'?1.2:0),wlen18=w=>[...w].reduce((s,c)=>s+adv18(c),0)-ST18.sp;
+function wordBox18(line,a,b){const W=WORDS18[line];let x=ST18.x;for(let i=0;i<a;i++)x+=wlen18(W[i])+ST18.sp+ST18.gap;let w=0;for(let i=a;i<=b;i++)w+=wlen18(W[i])+(i<b?ST18.sp+ST18.gap:0);
+  return[x-1.5,ST18.y+line*ST18.lh-2,w+3,ST18.h+4]}
 ART.stone18={w:320,q:12,paint(g){paintStone18(g)},light:{amb:'#f4ead8'},draw(){},front(){}};
-function paintStone18(g){const r=rng(1841);
-  /* the court behind, out of focus */
-  g.fillStyle=lg(g,0,0,0,144,['#c8d4dc','#e0d8c4','#cbb894','#b8a482']);g.fillRect(0,0,320,144);
-  for(let i=0;i<40;i++)pool(g,r()*320,90+r()*54,10+r()*18,3+r()*4,r()<.5?'#d8c8a4':'#a89470',.25,'source-over');
-  R(g,0,58,320,10,'#d8cab0');R(g,0,58,320,1.4,'#f4ead4');
-  /* the block, its face lit from the upper left, weathered at its edges */
-  const x0=38,y0=8,x1=282,y1=138;M18.shadow(g,(x0+x1)/2+3,y1,(x1-x0)/2+3,2.4,.5);
-  g.fillStyle=lg(g,x0,y0,x1,y1,['#f6eedc','#ebe0c6','#d8caa8','#c4b48e']);g.fillRect(x0,y0,x1-x0,y1-y0);
-  inRect(g,x0,y0,x1-x0,y1-y0,()=>{tex(g,'mott',.45,x0,y0,x1-x0,y1-y0,'overlay',.8);for(let i=0;i<160;i++)R(g,x0+r()*(x1-x0),y0+r()*(y1-y0),.5+r()*2,.5,r()<.5?'rgba(90,72,50,.18)':'rgba(255,250,236,.3)');
-    ao(g,x0,y1-10,x1-x0,10,'b',.2,'#4a3a30');ao(g,x1-6,y0,6,y1-y0,'r',.2,'#4a3a30')});
-  R(g,x0,y0,x1-x0,.8,'#fffcf2');R(g,x0,y0,.8,y1-y0,'#fffaf0');
-  /* the letters, cut: a dark groove with its lit lower edge, each line in its place */
-  g.font='12px Georgia,"Times New Roman",serif';g.textBaseline='alphabetic';g.textAlign='center';
-  WORDS18.forEach((W,j)=>{let x=ST18.x;const y=ST18.y+j*ST18.lh;for(const w of W){for(const ch of w){const cx=x+ST18.adv/2;g.fillStyle='rgba(255,250,236,.7)';g.fillText(ch,cx+.5,y+.6);g.fillStyle='#5a4632';g.fillText(ch,cx,y);x+=ST18.adv}x+=ST18.gap}});
-  g.textAlign='left'}
+function paintStone18(g){const r=rng(1841),S=ST18,x0=S.x0,x1=S.x1,y0=S.y0,y1=S.y1,cop=10;
+  /* beyond the barrier, out of focus: the pavement, the steps up to the terrace and the foot of the wall, all in the sun */
+  g.fillStyle=lg(g,0,0,0,cop+4,['#e8dcc0','#f0e6d0','#d8c8a4']);g.fillRect(0,0,320,cop+4);
+  for(let i=0;i<5;i++)pool(g,30+i*64+r()*20,2+r()*6,26,1.4,i%2?'#fff6e2':'#c8b898',.4,'source-over');
+  /* the barrier at either side of the slab: its coping, one block below it, and the course under the slab */
+  const block=(x,y,w,h,c)=>{g.fillStyle=lg(g,x,y,x+w,y+h,[tint(c,.06),c,tint(c,-.08)]);g.fillRect(x,y,w,h);
+    inRect(g,x,y,w,h,()=>{tex(g,'mott',.4,x,y,w,h,'overlay',1);tex(g,'grain',.16,x,y,w,h,'overlay',.5);
+      for(let i=0;i<w*h*.05;i++)R(g,x+r()*w,y+r()*h,.5,.5,r()<.5?'rgba(110,90,66,.28)':'rgba(255,250,236,.32)')});
+    R(g,x,y,w,.6,tint(c,.22));R(g,x+w-.6,y,.6,h,tint(c,.12));R(g,x,y+h-.6,w,.6,tint(c,-.25));R(g,x,y,.6,h,tint(c,-.18))};
+  block(-4,cop+6,x0+4,y1-cop-6,'#dccaa6');block(x1,cop+6,324-x1,y1-cop-6,'#dfcea9');
+  block(-4,y1,32,14,'#d8c6a0');block(28,y1,262,14,'#dccaa4');block(290,y1,34,14,'#d6c49e');
+  /* the coping: its upper face in the sun, its front, the little shade under its lip */
+  for(const[a,b]of[[-4,x0],[x1,324]]){R(g,a,cop,b-a,6,'#f0e4c8');R(g,a,cop,b-a,1.4,'#fffaee');R(g,a,cop+5.2,b-a,.8,'#a8967a');ao(g,a,cop+6,b-a,4,'t',.25,'#4a4060');
+    inRect(g,a,cop,b-a,6,()=>tex(g,'mott',.35,a,cop,b-a,6,'overlay',1))}
+  /* the slab's soft shadow on the barrier, to its lower left (the sun is to the right) */
+  shade(g,[x0-1.4,y0+3,x0,y0+2,x0,y1,x0-1.4,y1+1.4],'#8a86b8',.5);shade(g,[x0-1.4,y1,x1-2,y1,x1-1,y1+1.6,x0-1.4,y1+1.6],'#8a86b8',.45);
+  /* the slab: pale limestone, warm in the light, its face finely pitted and mottled, a vein or two, its arrises a little softened */
+  const sl=[x0+1,y0,x1-1,y0,x1,y0+1,x1,y1-1,x1-1,y1,x0+1,y1,x0,y1-1,x0,y0+1];poly(g,sl);
+  g.fillStyle=lg(g,x1,y0,x0,y1,['#f8f0de','#efe4cc','#e4d6b8','#d6c6a4']);g.fill();
+  clipTo(g,()=>poly(g,sl),()=>{tex(g,'mott',.42,x0,y0,x1-x0,y1-y0,'overlay',1.2);tex(g,'blotch',.18,x0,y0,x1-x0,y1-y0,'soft-light',1);tex(g,'grain',.14,x0,y0,x1-x0,y1-y0,'overlay',.5);
+    for(let i=0;i<900;i++){const x=x0+r()*(x1-x0),y=y0+r()*(y1-y0),d=r();R(g,x,y,.5,.5,d<.55?'rgba(120,98,70,.22)':'rgba(255,252,240,.38)');if(d<.06){R(g,x+.5,y,.5,.5,'rgba(110,88,62,.3)');R(g,x+.5,y+.5,.5,.5,'rgba(255,250,236,.4)')}}
+    for(const[vx,vy,n]of[[70,96,46],[196,20,34]]){const p=[vx,vy];let x=vx,y=vy;for(let k=0;k<n;k++){x+=1.6+r()*1.4;y+=(r()-.5)*1.2;p.push(x,y)}stroke(g,p,'rgba(196,176,142,.35)',.6)}
+    ao(g,x0,y0,8,y1-y0,'l',.12,'#6a5a70');ao(g,x0,y1-10,x1-x0,10,'b',.12,'#6a5a70');pool(g,x1-40,y0+20,90,50,'#fff6e0',.18,'screen')});
+  /* its arrises: the top and right edges catch the sun, the left and the foot are a little darker */
+  R(g,x0+1,y0,x1-x0-2,.6,'#fffcf2');R(g,x1-.6,y0+1,.6,y1-y0-2,'#fffaf0');R(g,x0,y0+1,.6,y1-y0-2,'#c4b494');R(g,x0+1,y1-.6,x1-x0-2,.6,'#bcac8c');
+  /* the letters, cut */
+  WORDS18.forEach((W,j)=>{let x=S.x;const y=S.y+j*S.lh;for(const w of W){for(const ch of w){cutGlyph18(g,ch,x,y,S.h);x+=adv18(ch)}x+=S.gap}})}
+/* cutGlyph18: one capital cut into the stone at x (its left), y (its top), h high: the lit lower left wall of the groove, the dark upper
+   right wall, and the groove's floor between them */
+function cutGlyph18(g,ch,x,y,h){const G=GLYPH18[ch],P=(a,ox,oy)=>a.map((v,i)=>i%2?y+v*h+oy:x+v*h+ox);
+  const pass=(c,ox,oy,lw,al)=>{g.save();g.globalAlpha=al;g.strokeStyle=c;g.lineWidth=lw;g.lineCap='round';g.lineJoin='round';
+    for(const s of G.s||[]){g.beginPath();const q=P(s,ox,oy);g.moveTo(q[0],q[1]);for(let i=2;i<q.length;i+=2)g.lineTo(q[i],q[i+1]);g.stroke()}
+    if(G.o){const[cx,cy,rx,ry]=G.o;g.beginPath();g.ellipse(x+cx*h+ox,y+cy*h+oy,rx*h-.3,ry*h-.3,0,0,6.2832);g.stroke()}
+    if(G.arc){const[cx,cy,rx,ry]=G.arc;g.beginPath();g.ellipse(x+cx*h+ox,y+cy*h+oy,rx*h-.3,ry*h-.3,0,G.arc[4],G.arc[5]);g.stroke()}
+    g.globalAlpha=al*.55;for(const s of G.f||[]){g.beginPath();const q=P(s,ox,oy);g.moveTo(q[0],q[1]);g.lineTo(q[2],q[3]);g.lineWidth=lw*.8;g.stroke()}
+    if(G.dot){g.globalAlpha=al;g.fillStyle=c;const d=1.3;g.fillRect(x+.5*h+ox-d/2,y+.5*h+oy-d/2,d,d)}
+    g.restore()};
+  pass('#fffaee',-.45,.5,1.3,.6);pass('#6e5a40',.35,-.35,1.25,.62);pass('#9a8462',0,0,.75,.55)}
 /* ==== ART stone18: end ==== */
 
 /* ==== ART stairs18: begin ==== */
