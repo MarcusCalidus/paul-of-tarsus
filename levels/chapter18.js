@@ -347,8 +347,8 @@ function drawMnason18(g,t){depth(116,()=>SHARED.beasts.donkey(g,272,116,-1,0,0,l
    water, a folded towel, a comb and a pair of spring shears (no razor: a haircut, never a beard); before it the stool for his customer
    (a prop), with a few cut hairs on the paving. At the right end the street climbs: a broad flight of steps rises to the right, behind
    the walk strip, toward the temple, and beyond it, far off across the valley and in the haze, the great wall of the temple mount closes
-   the view, its west face still in the shade of the morning. The sanctuary is not shown from here (it is seen from the courts:
-   court18). Doves sit on the parapet of James's house (ROOMS.street18.birds, y 18).
+   the view, its west face still in the shade of the morning. Over the wall's top, small and far, the top of the sanctuary catches the
+   morning sun (shared/temple.js; court18 shows it near by). Doves sit on the parapet of James's house (ROOMS.street18.birds, y 18).
    Called from outside: ART.street18. Reads nothing. Hotspots (ROOMS.street18): way back to Mnason's 0,96,14,48 · James's door 194,56,30,48 ·
    barber's stall 296,62,52,44 · the temple mount's wall 420,4,60,76 · way up to the temple 466,96,14,48. Walk strip 16..464, 108..138.
    Actors (place18): the barber 330,114; the Jews from Asia (days) 396,116 and 410,122. The stool is a prop (foot 316,116,12,4). */
@@ -357,6 +357,10 @@ ART.street18={w:480,q:12,paint(g){paintStreet18(g)},light:{amb:'#f6ecdc',sun:[-.
   props:[{y:120,shape(g){stoolStreet18(g,1)},foot:[[316,116,12,4]]}]};
 function paintStreet18(g){const r=rng(1811),BK=104;
   skyStreet18(g);
+  /* over the wall of the temple mount, far off across the valley, the top of the sanctuary (shared/temple.js): its west end and its long
+     south flank, and its front block rising behind at the east end; the morning sun stands behind it, so that its west faces are in
+     shade and the sun is on its south faces and on the gold along its tops. The rest of it lies below the wall's top. */
+  SHARED.temple.far(g,{x:431,base:18,s:.45,k:.5,sun:'back',haze:'#c4c8d6',a:.26,parts:{inner:1},down:6,seed:1826});
   mountStreet18(g);
   lowStreet18(g);
   climbStreet18(g);
