@@ -5,6 +5,8 @@
      the horsemen and spearmen of the escort to Caesarea (Acts 23:23), and Felix, governor of Judea (Acts 23:24-35).
    - SANHEDRIN: the high priest Ananias, Pharisees, Sadducees, clerks, attendants, an elder and a chief priest (Acts 22:30-23:15; 24:1).
    - FAMILY: Paul's sister and her son in Jerusalem (Acts 23:16).
+   - CAESAREA: Tertullus, Drusilla, Festus, King Agrippa and Bernice, the governor's clerk, Festus's advisers, the leading men of the city,
+     the military commanders, two brothers of Caesarea, and the shared looks of Luke, Philip and Aristarchus (Acts 24:1-26:32).
    - shipwrecked(look, opts): turns any look into wet, torn shipwreck survivor clothing for Acts 27-28 (Chapter Twenty-Three).
    - SHIPWRECK: ready-to-use shipwreck survivor looks (Paul, Luke, Aristarchus, Julius, escort soldier, sailor, fellow prisoner).
    - custody: the two chains of Acts 21:33, the soldiers who hold Paul by the arms (22:25), and the knot that carries him up the stairs
@@ -170,8 +172,68 @@ const FAMILY={
   pauls_sister:{skin:'#bc8c64',veil:'#6e4c3c',veilHair:'#8a837a',tunic:'#b8a888',long:1,slim:1,longSleeve:1,trim:'#5a4a3a',belt:'#6a4a2a',brow:'#7a7068',ph:8100}
 };
 
-const LUKE_LATE={skin:'#c4946a',hair:'#4e4238',beard:'#564a40',grey:'#8c847c',tunic:'#e4dec8',cloak:'#4f7a6a',belt:'#4a3a24',trim:'#3a5a4a',long:1,brow:'#342a22',ph:1100};
-const ARISTARCHUS={skin:'#bc8a60',hair:'#3a2a1c',beard:'#3a2a1c',tunic:'#96a488',cloak:'#5a4e3e',belt:'#3a2818',trim:'#6a765c',brow:'#2a1c12',ph:1500};
+/* Luke and Aristarchus as Chapters Fifteen to Eighteen paint them (luke15 .. luke18, arist15 .. arist18): the same looks as CAESAREA.luke
+   and CAESAREA.aristarchus below, so that they look the same from Chapter Twenty on, dry and in the shipwreck. */
+const LUKE_LATE={skin:'#c4946a',hair:'#4e3e30',beard:'#58483a',grey:'#8a8078',tunic:'#e4dec8',cloak:'#4f7a6a',belt:'#4a3a24',trim:'#3a5a4a',long:1,brow:'#2e2018',ph:1100};
+const ARISTARCHUS={skin:'#bc8a60',hair:'#3a2a1c',beard:'#3a2a1c',fullBeard:1,tunic:'#96a488',cloak:'#5a4e3e',belt:'#3a2818',trim:'#6a765c',brow:'#2a1c12',ph:1500};
+
+/* ---- Caesarea (Acts 24:1-26:32; Chapters Twenty and Twenty-One) ----
+   No source describes how any of these people dressed, so each is drawn as is plausible for the person and says no more than is known.
+   Every arm is down, bent or folded, no stripe runs down the middle of a mantle, and a pendant is a square (CONTRIBUTING section 3).
+     tertullus         the public speaker of 24:1, middle-aged. His nationality is not known, so nothing in his dress gives him one: a long
+                       tunic and the Greek mantle (himation), not a toga (which would make him a Roman) and no fringes or scripture case
+                       (which would make him a Jew); a short beard, his hair greying, a ring.
+     drusilla          the wife of Felix, a Jewess of about eighteen (24:24): a fine long robe with long sleeves and a band of gold at the
+                       hems, a mantle wrapped over it, her hair parted and bound up with a gold band; a little gold, a fine necklace and a
+                       small earring (necklace, earring: square pixels). Modest.
+     festus            Porcius Festus, governor after Felix (24:27): in the same public dress as Felix (a white toga with a purple border
+                       along it, never down the middle; red shoes, a ring), but another man: younger than Felix, ruddier, his dark hair
+                       cropped and thinning, and no pendant.
+     agrippa           King Agrippa (25:13), of the family of Herod, about thirty: a purple mantle over a long fine tunic with a band of gold,
+                       a plain gold diadem round his head (diadem: a band only, nothing that stands up or hangs), a short trimmed beard, a ring.
+     bernice           his sister (25:13), about thirty: a rich long robe with long sleeves and a gold band, a mantle wrapped over it, her hair
+                       bound up with a gold band, a fine necklace and small earrings. Modest and dignified; nothing in her dress hints at
+                       anything.
+     governors_clerk   an invented clerk of the governor, about forty-five: a plain tunic, his hair cropped and greying, clean-shaven, and a
+                       writing board (board) under his arm or on his knees. Seen in both chapters.
+     adviser_1, _2     the advisers of Festus (25:12), Roman civilians: one older in a plain white toga, one younger in a tunic and mantle.
+     leading_man_1..3  the leading men of the city (25:23), a city mostly of Gentiles: Greek mantles over long tunics, of different ages.
+     commander_a..c    military commanders (25:23), of the rank of the commander in Jerusalem (a tribune: the narrow purple stripe, a gold
+                       ring), varied from the tribune looks; bareheaded, since they sit in a hall: two in a cuirass, one in his tunic and cloak.
+     brother_1, _2     two invented brothers of Caesarea, plain working men, one older and one young.
+     luke, philip, aristarchus   the shared looks of these three from Chapter Twenty on: Luke and Aristarchus as Chapters Fifteen to
+                       Eighteen paint them, Philip the evangelist as Chapter Seventeen does (grey, receding, a full beard).
+   Seated, every one of them sits as CONTRIBUTING section 4 says (the figure painter's one seated pose). */
+const CAESAREA={
+  tertullus:{skin:'#c29464',hair:'#4a3a2c',beard:'#4e3e30',grey:'#9a9086',shortBeard:1,receding:1,brow:'#30241a',tunic:'#ddd2b8',long:1,
+    cloak:'#3e5466',himation:1,belt:'#4a3424',ring:1,ph:8300},
+  drusilla:{skin:'#d0a47c',hair:'#241610',fem:1,band:'#d8b04a',slim:1,brow:'#2a1a12',tunic:'#ece4d4',long:1,longSleeve:1,trim:'#c9a23a',
+    cloak:'#8a5664',himation:1,belt:'#c9a23a',necklace:'#e2bc54',earring:'#e2bc54',ring:1,ph:8500},
+  festus:{skin:'#cc9c72',hair:'#2e2218',brow:'#241a12',crop:1,thin:1,tunic:'#f2ece0',long:1,cloak:'#f4efe2',toga:1,edge:'#66246e',
+    shoes:'#9e2624',ring:1,ph:8700},
+  agrippa:{skin:'#c8966a',hair:'#2a1c14',beard:'#2a1c14',shortBeard:1,brow:'#20140e',diadem:'#d8b04a',tunic:'#ece4d2',long:1,longSleeve:1,
+    trim:'#c9a23a',cloak:'#5c2068',himation:1,belt:'#8a6a2a',ring:1,shoes:'#7a3a26',ph:8900},
+  bernice:{skin:'#c99c74',hair:'#2e1c14',fem:1,band:'#d8b04a',slim:1,brow:'#2a1a12',tunic:'#8a3038',long:1,longSleeve:1,trim:'#d0aa44',
+    cloak:'#e6dcc6',himation:1,belt:'#c9a23a',necklace:'#e2bc54',earring:'#e2bc54',ring:1,ph:9100},
+  governors_clerk:{skin:'#c08c5e',hair:'#52443a',grey:'#948a80',brow:'#3a2e24',crop:1,tunic:'#b4aa92',belt:'#4a3424',board:'#9a7448',ph:9300},
+  adviser_1:{skin:'#c69a72',hair:'#8a8278',grey:'#bcb6ac',brow:'#5e5850',crop:1,thin:1,tunic:'#eee8da',long:1,cloak:'#f2ede0',toga:1,ring:1,ph:9500},
+  adviser_2:{skin:'#bc8c62',hair:'#3a2a1e',brow:'#281c12',crop:1,tunic:'#e4dcc8',long:1,cloak:'#6a5a48',belt:'#4a3424',ring:1,ph:9700},
+  leading_man_1:{skin:'#c09064',hair:'#8e8880',beard:'#9a948c',grey:'#c6c0b8',receding:1,fullBeard:1,brow:'#6a645c',tunic:'#e2d8c2',long:1,
+    cloak:'#6e4a3a',himation:1,belt:'#4a3424',ring:1,ph:9900},
+  leading_man_2:{skin:'#c8986c',hair:'#3e2e20',beard:'#3e2e20',shortBeard:1,brow:'#2a1c12',tunic:'#d6ccb2',long:1,cloak:'#4e6248',himation:1,belt:'#4a3424',ph:10100},
+  leading_man_3:{skin:'#b8865a',hair:'#5a4a3c',grey:'#9a9086',brow:'#3a2e24',crop:1,tunic:'#e8e0cc',long:1,cloak:'#7a6a8a',himation:1,belt:'#4a3424',ring:1,ph:10300},
+  commander_a:{skin:'#c09066',hair:'#2e2016',brow:'#20140e',crop:1,tunic:'#ebe4d2',clavus:'#60226a',cloak:'#642474',offCloak:1,
+    armor:'#c4a04a',armorStyle:'cuirass',pteruges:'#52321e',sash:'#5c2068',belt:'#4a2c16',milBelt:1,caligae:1,highBoot:1,gladius:'left',ring:1,ph:10500},
+  commander_b:{skin:'#c8a078',hair:'#7e766c',grey:'#b4aea4',brow:'#58524a',crop:1,thin:1,tunic:'#ebe4d2',clavus:'#60226a',cloak:'#5a2a3a',offCloak:1,
+    belt:'#4a2c16',milBelt:1,caligae:1,highBoot:1,gladius:'left',ring:1,ph:10700},
+  commander_c:{skin:'#b4825a',hair:'#4a3626',brow:'#30221a',crop:1,tunic:'#ebe4d2',clavus:'#60226a',cloak:'#6a2030',offCloak:1,
+    armor:'#a4acb6',armorStyle:'cuirass',cuirassTrim:'#d4ae4e',pteruges:'#4e301e',sash:'#6a2030',belt:'#4a2c16',milBelt:1,caligae:1,highBoot:1,gladius:'left',ring:1,ph:10900},
+  brother_1:{skin:'#b48054',hair:'#7a7268',beard:'#867e74',grey:'#aaa298',receding:1,fullBeard:1,brow:'#4e4840',tunic:'#9a8464',cloak:'#5e4e3a',belt:'#3a2818',ph:11100},
+  brother_2:{skin:'#c08e60',hair:'#2e2016',beard:'#3a2a1c',shortBeard:1,brow:'#22160e',tunic:'#a89a76',belt:'#4a3020',ph:11300},
+  luke:LUKE_LATE,
+  philip:{skin:'#b88a60',hair:'#9a948c',beard:'#a8a29a',grey:'#c8c2ba',fullBeard:1,receding:1,tunic:'#e0d6bc',cloak:'#6a5a44',long:1,belt:'#4a3a24',brow:'#6e6860',ph:450},
+  aristarchus:ARISTARCHUS
+};
 const SAILOR_ALEX={skin:'#a67044',hair:'#2a1a12',beard:'#2a1a12',shortBeard:1,tunic:'#b69e74',belt:'#3e2816',brow:'#1e120c',ph:2000};
 const PRISONER={skin:'#b8865c',hair:'#4a3a2c',beard:'#4a3a2c',tunic:'#9c8e74',belt:'#3a2c1c',slim:1,brow:'#2e2016',ph:2700};
 
@@ -245,4 +307,4 @@ function knot(g,x,y,o){o=o||{};const d=o.dir||1,pd=o.pdir||d,men=o.men||CARRIERS
     const fr=o.d!=null?36+((walkFr(L,o.d*2,WALK_V)-4)&15):0;figure(g,mx,my,lit(mx,my),'knot|'+off+'|'+d+'|'+fr,q=>person(q,0,0,L,d,fr,0,0,0,0,0),walkSw(L,fr))}})}
 const custody={place,chains,grips,knot,cuffPt,CARRIERS};
 
-return{ROMAN,SANHEDRIN,FAMILY,SHIPWRECK,shipwrecked,custody}})();
+return{ROMAN,SANHEDRIN,FAMILY,CAESAREA,SHIPWRECK,shipwrecked,custody}})();

@@ -1562,6 +1562,10 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
   /* a small pendant at the neck (pendant: its color), in the opening of the tunic: a solid 3x3 square lit at top-right, never round, with a V-cord */
   if(o.pendant&&!c.ar&&!fem){const P=c.pd||(c.pd=ramp(o.pendant));px(tw,yS+1,P[3]);px(4+tw,yS+1,P[3]);
     px(1+tw,yS+2,P[1],3);px(3+tw,yS+2,P[0]);px(1+tw,yS+3,P[2],3);px(1+tw,yS+3,P[3]);px(1+tw,yS+4,P[3],3);px(3+tw,yS+4,P[2])}
+  /* a woman's necklace (necklace: its color): a fine string of small links, each a single square pixel, lying round the foot of the neck in
+     one curve, its ends at the sides of the neck and its middle a pixel lower at the front; no pendant hangs from it, so that nothing stands
+     down from its middle */
+  if(o.necklace&&fem&&!c.ar){const P=c.nk||(c.nk=ramp(o.necklace));px(-1+tw,yS-1,P[3]);px(tw,yS-1,P[2]);px(1+tw,yS,P[1]);px(2+tw,yS,P[2]);px(3+tw,yS,P[0]);px(4+tw,yS-1,P[1]);px(5+tw,yS-1,P[3])}
   const L={s:S[2],S:S[1],L:S[0],z:S[3],Z:S[4],n:S[3],w:fem?'#f6eedc':S[0],p:'#1a1018',b:brow,m:'#6a2a22',r:'#b04a44',c:mix(o.skin,'#d86a58',.4),h:H[2],H:Gr?Gr[2]:H[1],d:H[3],k:'#2a1a12',K:'#4a3020'};
   /* veilHair: the color of the hair that shows under a shawl, where it is not dark (an older woman's, greying) */
   if(o.veilHair){const V=c.vh||(c.vh=ramp(o.veilHair));L.k=V[3];L.K=V[1]}
@@ -1582,6 +1586,14 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
     else sh(o.bald?HEADS.bald:o.crop&&o.thin?HEADS.cropThin:o.crop?HEADS.crop:o.thin?HEADS.thin:o.receding?HEADS.receding:HEADS.hair,hx,hy);
     /* wet matted hair: clinging damp strands over brow & glossy wet highlight (only when hair covers the forehead) */
     if(WET&&!o.bald&&!o.thin&&!o.receding){px(hx+4,hy+5,H[3],2);px(hx+5,hy+6,H[4]);px(hx+9,hy+5,H[3],2);px(hx+7,hy+2,H[0],2)}}
+  /* a diadem (diadem: its color, gold for a king): a plain band, two rows deep, round a man's head at the hairline, lit along its top and
+     darkening toward the back of the head, where it goes round out of sight. A band only: nothing stands up from it, nothing hangs from it,
+     and it lies on the head, never round or behind it. It follows the outline of whatever hair the head has */
+  if(o.diadem&&!fem&&!o.veil&&!o.wrap&&!o.helm){const D=c.dd||(c.dd=ramp(o.diadem)),hm=o.hair?(o.bald?HEADS.bald:o.crop&&o.thin?HEADS.cropThin:o.crop?HEADS.crop:o.thin?HEADS.thin:o.receding?HEADS.receding:HEADS.hair):null;
+    for(const j of[4,5]){const s=[...HEADS.face[j]].map((ch,i)=>ch!=='.'||hm&&hm[j]&&hm[j][i]&&hm[j][i]!=='.'),a=s.indexOf(true),b=s.lastIndexOf(true);
+      for(let i=a;i<b;i++){const u=(i-a)/Math.max(1,b-a-1);px(hx+i,hy+j,D[j===4?(u<.2?3:u>.6&&u<.8?0:1):(u<.2?4:u>.92?3:2)])}}}
+  /* a woman's earring (earring: its color): a small drop under the near ear, two square pixels, light above and dark below; a mantle over the head hides it */
+  if(o.earring&&fem&&!o.veil){const E=c.er||(c.er=ramp(o.earring));px(hx+2,hy+13,E[0]);px(hx+2,hy+14,E[2])}
   /* a cloth bound round the forehead against the sweat (sweat: its color; study note on Acts 19:12): two rows under the hairline, and its knot behind */
   if(o.sweat&&!o.veil&&!o.wrap&&!o.helm){const B=c.sw||(c.sw=ramp(o.sweat));px(hx+2,hy+4,B[1],11);px(hx+1,hy+5,B[2],13);px(hx+2,hy+4,B[3],2);px(hx+1,hy+5,B[3],2);px(hx+11,hy+4,B[0],2);px(hx,hy+6,B[3],2);px(hx,hy+7,B[4])}
   /* a bearded mouth is a gap in the beard: the same four shapes, without the lower lip */
