@@ -125,7 +125,7 @@
   17:()=>act('look','heap_of_shells'), // Chapter Seventeen: on the beach outside Tyre, the heap of spent murex shells off the way
   18:()=>act('look','far_end_of_the_colonnade'), // Chapter Eighteen: in the Court of the Gentiles, the far end of Solomon's Colonnade
   19:()=>act('look','spring'), // Chapter Nineteen: at Antipatris at dawn, the spring off the way
-  20:()=>act('look','stub20_window'), // Chapter Twenty: STUB, the stub's window. LOGIC20: from treasure.at, the steps that see the storks over the harbor from window20
+  20:()=>act('look','sky_over_the_harbor'), // Chapter Twenty: the window in the second spring, the storks going north over the harbor
   21:()=>act('look','stub21_opening'), // Chapter Twenty-One: STUB, the stub's opening. LOGIC21: from treasure.at, the steps that look at the ox goad by the palace gate
  };
  (async()=>{try{
@@ -4566,50 +4566,176 @@
   /* ==== CHAPTER TWENTY: begin ==== Chapter Twenty's own stops: whoever builds the chapter extends this section, and nothing outside it but
      its line in TSTEPS, the chain of the full run (ch20 after ch19) and the title checks of the chapters before it. */
   /* Chapter Twenty stops start Chapter Twenty from the title screen; the full run calls its test when Chapter Nineteen has ended.
-     all20 halts nowhere. Its halts: STUB: stub20 (the stub's room) · final20. The stops that begin with "p" open one room at once, with the
-     story's flags set for it, and say the safe-point code of their point (CODE): STUB: pstub20. LOGIC20: replace every STUB name here with
-     the chapter's own halts and room stops, as Chapter Nineteen's section does. */
-  /* rooms20: every picture of Chapter Twenty on one sheet at twice its size (rooms20.png), for the art and the cross-shape check */
-  if(stop==='rooms20'){clearInterval(sk);sk=0;await loadLevel(20);setChapter(20);ov.className='';ov.onclick=null;const C=CHAP[20],ids=C.rooms,K=2;
-    const pic=(id,q,x,y)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
+     all20 halts nowhere. Its halts: court20 (the hearing, Felix's nod) · charges20 (the tablet of the charges) · room20 (the first summer,
+     his people in the room) · hall20 (Felix and Drusilla) · luke20 (the first winter, Luke's questions) · purse20 (the first spring, the
+     hall again) · summer20 (the second summer, the gull at the window) · final20. The stops that begin with "p" open one room at once,
+     with the story's flags set for it, and say the safe-point code of their point (CODE): pcourt20, pscroll20 (the opening on the
+     narrator's scroll), pcharges20 (all three marks set), proom20, ppouch20, pwindow20 (summer), phall20, pluke20, pwinter20 (the window
+     in winter), ppurse20, pspring20 (the window in spring), psummer20, pstorks20 (the window in the second spring, a little before the
+     hidden treasure; its code is the treasure's at). */
+  /* rooms20: every picture of Chapter Twenty on one sheet at twice its size (rooms20.png), with the variants: the room and the window in
+     each season, the hall with and without Drusilla's chair, the tablet with its marks */
+  if(stop==='rooms20'){clearInterval(sk);sk=0;await loadLevel(20);setChapter(20);ov.className='';ov.onclick=null;const C=CHAP[20],K=2,ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1);
+    const pic=(id,fl,q,x,y)=>{for(const k in F)delete F[k];fl.forEach(k=>F[k]=1);G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
       const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
       q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
-    const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
-    ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
+    G.mk20=Object.fromEntries(C.charges.map(c=>[c.k,c.ok]));
+    const S=[['court20',[]],['charges20',['courtesy']],['hall20',upto('s2')],['hall20',upto('s4')],
+      ...[[],upto('s2'),upto('s3'),upto('s4')].flatMap(f=>[['room20',upto('marks').concat(f)],['window20',upto('marks').concat(f)]])];
+    const[c,g]=mk(320*K*2+8,Math.ceil(S.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    S.forEach(([id,fl],i)=>pic(id,fl,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];G.mk20=null;
     window.SHEETS={rooms20:c.toDataURL()};halt('rooms20')}
-  const C20=/^(stub20|final20|all20)$/.test(stop);   /* STUB: stub20 */
+  const C20=/^(court20|charges20|room20|hall20|luke20|purse20|summer20|final20|all20)$/.test(stop);
   if(!C20&&/^p[a-z]+20$/.test(stop)){await loadLevel(20);ov.className='';ov.onclick=null;const C=CHAP[20],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
-      S={pstub20:[[],'stub20']}[stop];   /* STUB: pstub20; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
+      S={pcourt20:[[],'court20'],pscroll20:[[],'court20'],pcharges20:[['courtesy'],'charges20'],proom20:[upto('marks'),'room20'],ppouch20:[upto('things'),'room20'],
+        pwindow20:[upto('pouch'),'window20'],phall20:[upto('s2'),'hall20'],pluke20:[upto('s3'),'room20'],pwinter20:[upto('luke'),'window20'],
+        ppurse20:[upto('s4'),'hall20'],pspring20:[upto('purse'),'window20'],psummer20:[upto('s5'),'room20'],pstorks20:[upto('s8'),'window20']}[stop];
     if(!S)throw new Error('no such stop '+stop);setChapter(20);for(const k of S[0])F[k]=1;
     const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
+    if(stop==='pcharges20')G.mk20=Object.fromEntries(C.charges.map(c=>[c.k,c.ok]));
     G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    if(stop==='pscroll20'){G.scene=DARK;narr(C.told.v1,{dur:60000})}
     await wait(1100);halt(stop)}
-  const ch20=async()=>{const said=t=>heard.includes(T(t)),C=()=>CHAP[20],told=k=>heard.includes(T(C().told[k])),
+  const ch20=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[20],told=k=>heard.includes(T(C().told[k])),
     until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
     onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    clickHs=async(h,v)=>{verb(v||'use');clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    talkTo=async(a,v)=>{verb(v||'talk');clickView(a.x,a.y-10,a.hs);await idle()},
+    useA=async(id,a,v)=>{verb(v||'use');item(id);clickView(a.x,a.y-10,a.hs);await idle()},
+    useH=async(id,name)=>{const h=H(name);if(!h)throw new Error('no hs '+name+' in '+G.room);verb('use');item(id);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
     pray20=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
     hints=async(a,b,where)=>{heard.length=0;const p=await pray20(),first=said(a)&&!said(b),q=await pray20();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
-    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+    asked=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);return[...document.querySelectorAll('#choices button')].map(x=>x.dataset.src)},
+    pick=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await idle()},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)},
+    code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)},
+    /* a mark on the sill (from the room or from the window), and the next season as far as it goes by itself */
+    scratch=async(n,where)=>{heard.length=0;if(where==='window')useH('awl','sill');else useH('awl','window_over_the_harbor');
+      await until(()=>C().season()===n&&(!G.busy||$('#choices').classList.contains('on'))&&!(+$('#dim').style.opacity),9000);note()};
   heard.length=0;
   if(C20){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
     {const c=chs.find(c=>c.dataset.ch==='20');ok(c&&c.textContent.includes(T('chapter_twenty'))&&c.textContent.includes(T('some_other_time_2'))&&PLANNED[0].label==='chapter_twenty_two'&&plans.textContent.includes(T('twenty_two')),
       'the title lists Chapter Twenty, Some Other Time, and the chapters in preparation begin with the twenty-second')}}
   (C20?document.querySelector('#overlay [data-ch="20"]'):ov).click();
-  /* STUB: from here to halt('final20') the steps play the stub; LOGIC20 replaces them with the chapter's playthrough */
-  await until(()=>G.ch===20&&G.room==='stub20'&&!G.busy,6000);note();
-  ok(seenTold.has('stub_open')&&decode(makeCode()).ch===20,'STUB: the stub of Chapter Twenty opens in its room, and its first line is told: '+makeCode());
-  halt('stub20');
-  await hints('stub20_hint_1','stub20_hint_2','in the stub');
-  heard.length=0;await onH('stub20_door','use');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
-  ok(ov.classList.contains('end')&&ov.textContent.includes(T('some_other_time_2'))&&/24:1-27/.test(ov.textContent)&&ov.textContent.includes(T('click_to_continue_to_chapter_twenty_one'))
+  await until(()=>G.ch===20&&G.room==='court20'&&!G.busy,9000);note();
+  const FX=A('felix20'),DR=A('drusilla20'),TT=A('tertullus20'),AN=A('ananias20'),CK=A('clerk20'),SO=A('soldier20'),OF=A('officer20'),PH=A('philip20'),SI=A('simmias20'),KO=A('kosmas20'),LK=A('luke20');
+  ok(['v1','v2','v5a','v5b','v6','v8','v10'].every(k=>seenTold.has(k))&&said('paul_he_gives_me_leave_to_speak')&&srt()==='tablets'&&P.look.bald,
+    'five days later the accusers come; Tertullus praises Felix and brings three charges, the others join in; the governor nods (Acts 24:1-10)');
+  ok(FX.room==='court20'&&FX.seat&&CK.room==='court20'&&CK.seat&&TT.room==='court20'&&AN.room==='court20'&&P.chained&&SO.keeper&&SO.room==='court20'&&!G.scene,
+    'the court by morning: Felix on his seat, the clerk at his desk, the accusers at one side; Paul with a light chain to the soldier beside him');
+  ok(/^20(-[0-9A-Z]{3}){3,5}$/.test(makeCode())&&decode(makeCode()).ch===20,'chapter twenty has wide codes: '+makeCode());
+  ok(AU.score===C().music&&C().music.steps===6&&C().music.root===47&&C().music.group.join()==='3,3','the chapter\'s score, in B Dorian and in bars of six');
+  halt('court20');
+  /* the one true courtesy */
+  await hints('hint_the_first_words_1','hint_the_first_words_2','before the governor');
+  heard.length=0;talkTo(FX);{const o=await asked();ok(o.length===4&&o.includes('begin_with_his_years'),'four true things to begin with')}
+  await pick('begin_with_my_citizenship');ok(said('true_but_he_has_read_it')&&!F.courtesy,'that he is a Roman: true, and Felix has read it in the letter');
+  await pick('begin_with_cilicia');ok(said('true_but_he_asked_me_already')&&!F.courtesy,'Cilicia: true, and asked already');
+  await pick('begin_with_the_blow_in_the_council');ok(said('true_but_it_would_start_a_quarrel')&&!F.courtesy,'the blow in the council: true, and it would only start a quarrel');
+  ok(!heard.includes(T('begin_with_my_citizenship'))&&!heard.includes(T('begin_with_cilicia')),'none of them is said aloud');
+  await pick('begin_with_his_years');await until(()=>G.room==='charges20'&&!G.busy,6000);
+  ok(said('paul_judge_for_many_years')&&F.courtesy&&said('paul_three_charges_three_answers'),'the one courtesy: he has judged this nation for many years (Acts 24:10)');
+  await code('at the tablet of charges',()=>G.room==='charges20'&&F.courtesy&&!F.marks&&FX.room==='court20');
+  {const hs=ROOMS.charges20.hs.filter(h=>h.c20),bad=[];for(let i=0;i<hs.length;i++)for(let j=i+1;j<hs.length;j++){const a=hs[i],b=hs[j];if(a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h)bad.push(a.c20+' on '+b.c20)}
+    ok(!bad.length&&hs.length===3,'three charges on the tablet, each a hotspot of its own'+(bad.length?': '+bad.join(', '):''))}
+  halt('charges20');
+  /* what I admit */
+  await hints('hint_the_three_charges_1','hint_the_three_charges_2','at the tablet');
+  const ch=k=>ROOMS.charges20.hs.find(h=>h.c20===k),mark=async(k,m)=>{clickHs(ch(k),'use');await pick(m)};
+  {const W=[[['mark_not_proved','mark_not_proved','mark_not_proved'],'sect_it_needs_no_proof'],[['mark_not_proved','mark_i_admit_it','mark_not_proved'],'temple_none_of_them_saw_it'],
+      [['mark_not_proved','mark_i_admit_it','mark_i_admit_it'],'temple_i_never_did_it'],[['mark_the_witnesses_arent_here','mark_i_admit_it','mark_i_admit_it'],'revolt_they_say_it_themselves'],
+      [['mark_i_admit_it','mark_i_admit_it','mark_i_admit_it'],'revolt_there_was_none'],[['mark_not_proved','mark_the_witnesses_arent_here','mark_i_admit_it'],'sect_no_witness_is_needed']],K=C().charges.map(c=>c.k);
+    for(const[ms,why]of W){G.mk20=null;heard.length=0;for(let i=0;i<3;i++)await mark(K[i],ms[i]);
+      ok(said(why)&&!F.marks,'a wrong mark is answered truly, in the charges\' order, and never with the right one: '+why)}
+    G.mk20=null;heard.length=0;clickHs(ch(K[0]),'use');await pick('leave_it_as_it_is');ok(!G.mk20[K[0]],'a charge may be left as it is');
+    await mark(K[0],'mark_not_proved');await mark(K[1],'mark_i_admit_it');ok(!F.marks&&!said('paul_now_i_know_my_answers'),'nothing is read until all three are marked');
+    mark(K[2],'mark_the_witnesses_arent_here');await until(()=>F.marks&&G.room==='room20'&&!G.busy,12000);note()}
+  {const ix=C().defense.map(k=>heard.indexOf(T(k)));
+    ok(ix.every(i=>i>=0)&&ix.every((v,i)=>!i||v>ix[i-1]),'revolt not proved, the sect admitted, the temple\'s witnesses missing: Paul speaks his defense in the account\'s order (Acts 24:11-21)')}
+  ok(['v22','v23'].every(k=>seenTold.has(k))&&said('felix_when_lysias_comes_down'),'Felix knows the Way and puts them off until Lysias comes; the officer\'s orders (Acts 24:22, 23)');
+  ok(G.room==='room20'&&!P.chained&&said('a_room_by_the_sea')&&PH.room==='room20'&&SI.room==='room20'&&KO.room==='room20'&&said('philip_they_let_us_in'),'his room, no chain; his people come: Philip and two brothers');
+  {const bad=(G.caps20||[]).filter(c=>c.w>c.max+.5||c.h>c.maxh+.5);ok((G.caps20||[]).length>0&&!bad.length,'every word on the tablet fits its box'+(bad.length?': '+bad.slice(0,4).map(c=>c.s).join(' | '):''))}
+  await code('in his room, the first summer',()=>G.room==='room20'&&F.marks&&!F.things&&PH.room==='room20'&&!P.chained&&C().season()===1);
+  halt('room20');
+  /* the first summer */
+  await hints('hint_my_people_1','hint_my_people_2','with his visitors');
+  heard.length=0;await talkTo(PH);await until(()=>F.things&&!G.busy,6000);
+  ok(['philip_your_pouch_from_my_house','simmias_your_cloak','kosmas_a_few_coins','paul_its_more_than_enough'].every(said)&&has('pouch20')&&has('cloak20')&&has('purse20')&&!has('awl')&&PH.room===null,
+    'his pouch from Philip\'s house, his cloak, a few coins; and they go');
+  await hints('hint_my_tools_1','hint_my_tools_2','with the pouch');
+  heard.length=0;verb('open');item('pouch20');await idle();ok(said('paul_my_awl_and_my_needle')&&has('awl')&&!has('pouch20')&&F.pouch,'the pouch opens to his awl');
+  await hints('hint_the_seasons_1','hint_the_seasons_2','in the first summer');
+  heard.length=0;await onH('window_over_the_harbor','look');await until(()=>G.room==='window20'&&!G.busy);
+  ok(said('paul_the_harbor_from_my_window')&&C().kind()==='su','the window over the harbor, in summer');
+  heard.length=0;await onH('harbor_of_sebastos','look');ok(said('harbor_in_summer_look'),'the harbor full of ships');
+  heard.length=0;await onH('sky_over_the_harbor','look');ok(said('sky_over_the_harbor_look')&&!treasures().has(20),'no storks in the first summer');
+  heard.length=0;await onH('breakwater','look');ok(said('breakwater_look'),'the breakwater');
+  /* the first autumn: Felix and Drusilla */
+  await scratch(2,'window');
+  ok(said('paul_a_mark_for_each_season')&&heard.includes(T('autumn_came'))&&said('soldier_the_governor_sends_for_you')&&G.room==='hall20'&&FX.seat&&DR.seat&&DR.room==='hall20'&&P.chained&&SO.keeper,
+    'a mark on the sill, and autumn comes; the governor sends for him; the hall, with Drusilla; the chain again');
+  ok(seenTold.has('v24')&&said('drusilla_what_does_it_ask_of_a_person')&&ART.hall20.variant()==='d','Drusilla asks what the belief in Christ Jesus asks of a person (Acts 24:24)');
+  await code('before Felix and Drusilla',()=>G.room==='hall20'&&F.s2&&!F.fright&&DR.room==='hall20'&&P.chained);
+  halt('hall20');
+  await hints('hint_what_it_asks_1','hint_what_it_asks_2','before Felix and Drusilla');
+  heard.length=0;talkTo(FX);{const o=await asked();ok(o.length===7&&o.at(-1)==='paul_let_me_think_first','six true things to speak of')}
+  await pick('subject_the_hope_of_the_resurrection');ok(said('paul_on_the_hope')&&said('felix_i_see')&&said('paul_thats_what_it_gives')&&!F.rt,'the hope: heard politely, and nothing changes');
+  heard.length=0;talkTo(FX);await pick('subject_the_congregations');ok(said('felix_i_see')&&!F.fright,'the congregations: the same');
+  heard.length=0;talkTo(DR);await pick('subject_righteousness');ok(said('paul_on_righteousness')&&said('felix_go_on')&&F.rt,'righteousness');
+  heard.length=0;talkTo(FX);await pick('subject_righteousness');ok(said('paul_ive_said_that_already'),'said already: it stays on offer');
+  heard.length=0;talkTo(FX);await pick('subject_the_judgment_to_come');ok(F.jd&&!F.fright,'the judgment to come');
+  heard.length=0;talkTo(FX);pick('subject_self_control');await until(()=>F.fright&&G.room==='room20'&&!G.busy,9000);note();
+  ok(said('paul_on_self_control')&&seenTold.has('v25')&&said('felix_some_other_time')&&!P.chained,'self-control: Felix becomes frightened and sends him away, some other time (Acts 24:25)');
+  /* the first winter: Luke's questions */
+  await scratch(3);
+  ok(heard.includes(T('winter_came'))&&LK.room==='room20'&&said('luke_ive_come_with_questions')&&ART.room20.variant()==='wi','winter; Luke comes with questions');
+  await code('in the first winter',()=>G.room==='room20'&&F.s3&&!F.luke&&LK.room==='room20');
+  halt('luke20');
+  await hints('hint_lukes_questions_1','hint_lukes_questions_2','with Luke');
+  heard.length=0;await useH('awl','window_over_the_harbor');ok(said('paul_luke_is_waiting_for_me')&&!F.s4,'the season does not turn while Luke waits');
+  heard.length=0;talkTo(LK);{const o=await asked();ok(said('luke_where_ananias')&&o.length===6&&C().places.every(p=>o.includes(p)),'Ananias: five places on offer')}
+  await pick('Paphos');ok(heard.includes(T('paul_not_place',{place:T('Paphos')}))&&!F.q1,'a wrong place is Paul\'s own thought, not said');
+  {const o=await asked();ok(o.length===6,'every place stays on offer')}
+  await pick('Damascus');ok(heard.includes(T('paul_it_was_in_place',{place:T('Damascus')}))&&heard.includes(T('luke_place_youre_sure',{place:T('Damascus')}))&&said('luke_asks_about_every_name_twice')&&F.q1,'Damascus; Luke asks twice');
+  await pick('paul_let_me_think_about_that');ok(said('luke_take_your_time')&&F.q1&&!F.q2,'he may stop and come back to it');
+  await code('between Luke\'s questions',()=>F.q1&&!F.q2&&LK.room==='room20');
+  heard.length=0;talkTo(LK);for(const p of['Jerusalem','Antioch','Paphos'])await pick(p);pick('Lystra');await until(()=>F.luke&&!G.busy,6000);
+  ok(['luke_where_cephas','luke_where_lucius','luke_where_sergius_paulus','luke_where_timothy','luke_thats_everything'].every(said)&&LK.room===null,'Cephas, Lucius, Sergius Paulus, Timothy; Luke has what he needs');
+  heard.length=0;await onH('window_over_the_harbor','look');await until(()=>G.room==='window20'&&!G.busy);heard.length=0;await onH('harbor_of_sebastos','look');
+  ok(said('winter_even_the_ships')&&!ROOMS.window20.birds(),'winter at the window: no birds in the rain');
+  /* the first spring: the purse stays shut */
+  await scratch(4,'window');
+  ok(heard.includes(T('spring_came'))&&G.room==='hall20'&&DR.room!=='hall20'&&said('felix_you_have_friends_here'),'spring; Felix sends for him again');
+  {const o=await asked();ok(o.length===2,'two true answers')}await pick('paul_they_are_my_brothers');ok(F.f1&&!F.purse,'his brothers');
+  halt('purse20');
+  await hints('hint_felix_talks_round_it_1','hint_felix_talks_round_it_2','before Felix in spring');
+  {const was=JSON.stringify(F);heard.length=0;await useA('purse20',FX,'give');ok(said('paul_a_bribe_is_no_way_out')&&has('purse20')&&JSON.stringify(F)===was,'the purse to Felix: Paul refuses it himself, a bribe');
+    heard.length=0;await useA('purse20',FX,'use');ok(said('paul_a_bribe_is_no_way_out')&&has('purse20'),'and used on him, the same');
+    heard.length=0;await useA('purse20',SO,'give');ok(said('paul_a_bribe_is_no_way_out')&&has('purse20'),'nor to the soldier')}
+  heard.length=0;talkTo(FX);await pick('paul_the_gifts_came_from_the_congregations');ok(said('felix_the_gifts_for_your_nation')&&F.f2&&!F.purse,'the gifts for his nation');
+  heard.length=0;talkTo(FX);pick('paul_i_can_wait');await until(()=>F.purse&&G.room==='room20'&&!G.busy,9000);note();
+  ok(said('felix_friends_like_that_could_end_this')&&said('felix_thats_enough_for_today')&&seenTold.has('v26')&&has('purse20'),'friends like that could end the waiting; enough for today; he hoped for money (Acts 24:26); the purse stays shut');
+  /* the second year */
+  await scratch(5);ok(heard.includes(T('summer_came_again'))&&said('soldier_the_governor_wants_you_again')&&said('paul_another_talk_with_felix')&&G.room==='room20','summer again; Felix again');
+  heard.length=0;await onH('gull','look');ok(said('gull_at_the_window'),'the gull at the window');
+  await code('in the second summer',()=>G.room==='room20'&&F.s5&&C().season()===5);
+  halt('summer20');
+  await scratch(6);ok(heard.includes(T('another_autumn'))&&said('simmias_the_brothers_greet_you')&&said('kosmas_well_come_after_the_rains')&&SI.room===null,'another autumn; the brothers come');
+  await scratch(7);ok(heard.includes(T('another_winter'))&&said('paul_nobody_comes_in_this_weather'),'another winter; nobody comes');
+  await scratch(8);ok(heard.includes(T('a_second_spring'))&&said('paul_spring_again_here'),'a second spring');
+  heard.length=0;await onH('window_over_the_harbor','look');await until(()=>G.room==='window20'&&!G.busy);
+  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('sky_over_the_harbor','look');
+    ok(said('storks_going_north_look')&&treasures().has(20)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'storks over the harbor: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
+  /* two years */
+  heard.length=0;useH('awl','sill');for(let i=0;i<5000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
+  ok(ov.classList.contains('end')&&seenTold.has('v27')&&ov.textContent.includes(T('some_other_time_2'))&&/24:1-27/.test(ov.textContent)&&ov.textContent.includes(T('click_to_continue_to_chapter_twenty_one'))
     &&ov.textContent.includes(T('chapter_twenty_one_code_code',{code:codeOf(21,0)}))&&store('paul.save')===codeOf(21,0)&&inOv(),
-    'the end screen of Chapter Twenty leads on to Chapter Twenty-One with its first code');
+    'two years; Festus succeeds Felix, who leaves Paul in custody (Acts 24:27); the end screen says what is invented and leads on to Chapter Twenty-One with its first code');
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 24:1-27 was told'+(miss.length?' MISSING '+miss:''))}
   halt('final20')};
   if(C20){await ch20();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    /* STUB: LOGIC20 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
-    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ==== CHAPTER TWENTY: end ==== */
   /* ==== CHAPTER TWENTY-ONE: begin ==== Chapter Twenty-One's own stops: whoever builds the chapter extends this section, and nothing outside it but
      its line in TSTEPS, the chain of the full run (ch21 after ch20) and the title checks of the chapters before it. */
