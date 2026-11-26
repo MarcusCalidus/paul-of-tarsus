@@ -237,6 +237,7 @@ function paintRome24(g){const r=rng(2401),M=SHARED.materials,WY=ROME24.wallY,[dx
   g.restore();
   doorVibia24(g,D,r);
   nicheVibia24(g,70,44,12,10);
+  shelfVibia24(g,166,206,48,57,r);
   chestVibia24(g,4,28,91,106,r);
   benchVibia24(g,30,120,92,106,r);
   basketVibia24(g,104,107,r);
@@ -292,6 +293,12 @@ function nicheVibia24(g,x,y,w,h){const c='#e2cc9e';R(g,x,y,w,h,tint(c,-.42));ao(
   R(g,x-.6,y+h,w+1.2,1.2,tint(c,.04));R(g,x-.6,y+h,w+1.2,.5,'rgba(255,246,226,.5)');R(g,x-.6,y+h+1.2,w+1.2,.5,'rgba(60,44,50,.35)');
   const lx=x+w*.46,ly=y+h;poly(g,[lx-3.4,ly,lx+2.6,ly,lx+4.4,ly-1,lx+4.6,ly-1.8,lx+2.4,ly-1.6,lx+1.6,ly-2.4,lx-2.8,ly-2.4,lx-3.6,ly-1.4],'#9a5a36');
   R(g,lx-2.8,ly-2.4,4.4,.5,'#c88a5a');R(g,lx-.8,ly-2.2,1,.6,'#3a2014');R(g,lx+3.8,ly-1.9,.8,.5,'#2a1810')}
+/* a long low recess in the wall above head height, square-cornered, its floor a ledge of stone: a jug, a bowl and folded linen in it */
+function shelfVibia24(g,x0,x1,t,b,r){const c='#e2cc9e',w=x1-x0,h=b-t;R(g,x0,t,w,h,tint(c,-.4));ao(g,x0,t,w,4,'t',.45,'#1a1012');R(g,x0,t,1.4,h,tint(c,-.25));
+  R(g,x0-.6,b,w+1.2,1.2,tint(c,.04));R(g,x0-.6,b,w+1.2,.5,'rgba(255,246,226,.5)');R(g,x0-.6,b+1.2,w+1.2,.5,'rgba(60,44,50,.35)');
+  const jx=x0+6;poly(g,[jx-1.2,b-6,jx+1.2,b-6,jx+1,b-4.8,jx+2.6,b-2.6,jx+1.8,b,jx-1.8,b,jx-2.6,b-2.6,jx-1,b-4.8],'#a06440');R(g,jx-1.2,b-6.4,2.4,.6,'#c88a5a');R(g,jx-2.2,b-3,.6,2.2,'rgba(255,210,170,.3)');
+  const bx=x0+15;poly(g,[bx-3.4,b-2.6,bx+3.4,b-2.6,bx+2.4,b-.4,bx+1.4,b,bx-1.4,b,bx-2.4,b-.4],'#b8865a');R(g,bx-3.4,b-2.8,6.8,.5,'#e0b080');
+  for(let k=0;k<3;k++){const y0=b-1.6-k*1.5,lx=x0+24+k*.3;R(g,lx,y0,12-k*.6,1.5,tint('#d8ccb0',-k*.06));R(g,lx,y0,12-k*.6,.5,'rgba(255,250,236,.5)');R(g,lx,y0+1.1,12-k*.6,.4,'rgba(80,66,60,.3)')}}
 /* a chest of boards laid along its length, its lid a little proud; no band or strap across it; a jug on the lid */
 function chestVibia24(g,x0,x1,t,f,r){const M=SHARED.materials,W='#6a4a2e';castC24(g,x0,x1,f,f-t,.28);shC24(g,(x0+x1)/2,f-.6,(x1-x0)/2+1,1.3,.5);
   for(let k=0;k<3;k++)M.board(g,x0,t+2.2+k*(f-t-2.2)/3,x1-x0,(f-t-2.2)/3,tint(W,(r()-.5)*.14),r);
@@ -611,7 +618,7 @@ function winLane24(g,x,y,w,h,o,r){o=o||{};const M=SHARED.materials,wd=o.wood||'#
 /* a door with a stair that climbs inside it, from the right up to the left, lit from above (steep: the garret's, narrow and steeper) */
 function stairLane24(g,D,steep,r){const[x,y,w,h]=D,b=y+h,M=SHARED.materials,rise=steep?5.4:4.2,run=steep?2.4:4.4;
   inRect(g,x,y,w,h,()=>{g.fillStyle=lg(g,0,y,0,b,['#4a3c32','#2e2420','#1e1816']);g.fillRect(x,y,w,h);
-    pool(g,x+w*.3,y+2,w*.8,10,'#d8c4a0',.22,'screen');
+    pool(g,x+w*.3,y+2,w*.8,10,'#d8c4a0',.22,'screen');if(steep)pool(g,x+w*.5,y+h*.45,w,h*.5,'#c8b090',.2,'screen');
     const P=[x+w+1,b];let sx=x+w-1.4,sy=b;while(sx>x-run&&sy>y){sy-=rise;P.push(sx,sy);sx-=run;P.push(sx,sy)}P.push(x-1,sy,x-1,b);
     poly(g,P,'#4e4036');for(let i=2;i<P.length-4;i+=4)R(g,P[i+2],P[i+1],run,.6,'rgba(214,190,150,.5)');
     g.fillStyle=lg(g,0,y,0,b,['rgba(0,0,0,0)','rgba(10,6,6,.45)']);g.fillRect(x,y,w,h);ao(g,x,y,w,6,'t',.55,'#000')});
@@ -636,8 +643,8 @@ function paintLane24(g){const r=rng(2591),M=SHARED.materials,WY=LANE24.wallY,V=L
   /* the sky over the right house's roof, and above the street behind us */
   g.fillStyle=lg(g,0,0,0,V.eave+2,['#8eaed2','#b4c8de']);g.fillRect(0,0,320,V.eave+2);
   /* the two house fronts */
-  plaster(g,-2,-2,162,WY+2,'#d8b48a',r,{patch:1,cracks:0,t:.5,top:.04,bot:-.06,brick:'#a0603e'});SHARED.temple.age(g,0,0,160,WY,rng(2592),.55);
-  plaster(g,160,V.eave,162,WY-V.eave,'#d4a284',r,{patch:1,cracks:0,t:.5,top:.04,bot:-.06,brick:'#a0603e'});SHARED.temple.age(g,160,V.eave,160,WY-V.eave,rng(2593),.55);
+  plaster(g,-2,-2,162,WY+2,'#d8b48a',r,{patch:0,cracks:0,t:.5,top:.04,bot:-.06,brick:'#a0603e'});SHARED.temple.age(g,0,0,160,WY,rng(2592),.55);
+  plaster(g,160,V.eave,162,WY-V.eave,'#d4a284',r,{patch:0,cracks:0,t:.5,top:.04,bot:-.06,brick:'#a0603e'});SHARED.temple.age(g,160,V.eave,160,WY-V.eave,rng(2593),.55);
   /* the right house's ground floor, faced with brick in courses */
   SHARED.temple.stone(g,160,V.rband+2.4,160,WY-V.rband-2.4,rng(2594),{bh:1.6,bw:5,c:'#a86a50',v:.14,honey:'#c08a62',grey:'#7a5a50',age:.5});
   inRect(g,160,V.rband+2.4,160,WY-V.rband-2.4,()=>comp(g,'source-over',.3,()=>{g.fillStyle='#a86c52';g.fillRect(160,V.rband,160,WY)}));
@@ -646,11 +653,11 @@ function paintLane24(g){const r=rng(2591),M=SHARED.materials,WY=LANE24.wallY,V=L
     R(g,x0,y,x1-x0,.5,'rgba(255,226,196,.3)');R(g,x0,y+2.4,x1-x0,.6,'rgba(50,30,26,.4)')}
   /* where the two houses meet there is no drawn line, only the change of their plaster: their bands stand at different heights and
      each stops where its own house ends, so that nothing upright runs across a band */
-  /* the right house's eave: the ends of its tiles along its edge, the shade of it under it; its end at the left turned up toward the
-     taller house, so that the eave runs into no wall */
-  {const e=V.eave,P=[166,e,322,e,322,e+3.4,168,e+3.4,164,e+1.4];poly(g,P,'#9a5238');clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.5,160,e,162,4,'overlay',1);
-      for(let x=168;x<322;x+=3.2)R(g,x,e+1.6,1.6,1.6,'rgba(60,26,18,.5)')});R(g,166,e,156,.6,'#e8a078');
-    poly(g,[160.6,e-3.6,166,e,164,e+1.4,160.6,e-1.4],'#8a4a34');ao(g,164,e+3.4,158,4,'t',.4,'#3a2420')}
+  /* the right house's eave: the ends of its tiles along its edge, the shade of it under it; it ends against the taller house, the sky
+     above it, so that only a corner is made there */
+  {const e=V.eave,P=[160,e,322,e,322,e+3.4,160,e+3.4];poly(g,P,'#9a5238');clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.5,160,e,162,4,'overlay',1);
+      for(let x=163;x<322;x+=3.2)R(g,x,e+1.6,1.6,1.6,'rgba(60,26,18,.5)')});R(g,160,e,162,.6,'#e8a078');
+    ao(g,160,e+3.4,162,4,'t',.4,'#3a2420')}
   /* the left house's top: its eave just at the top of the picture */
   R(g,-2,0,162,1.6,'#9a5238');ao(g,-2,1.6,162,4,'t',.4,'#3a2420');
   /* the windows: storeys lower and windows smaller as they go up; each row set off from the one below it */
