@@ -554,14 +554,14 @@ function stairHead(g,D,lx,r){const LF=90,M=SHARED.materials;
   inRect(g,D.x0,D.top,D.x1-D.x0,WY-D.top,()=>{
     plaster(g,D.x0-2,D.top-2,D.x1-D.x0+4,WY-D.top+2,'#9a8a74',r,{patch:0,cracks:0,t:.45});
     /* the landing */
-    R(g,lx,LF,D.x1-lx+1,WY-LF,'#6a5640');tex(g,'wood',.3,lx,LF,D.x1-lx+1,WY-LF,'overlay',.5);R(g,lx,LF,D.x1-lx+1,.5,'rgba(255,230,190,.2)');
-    ao(g,lx,LF-4,D.x1-lx,4,'b',.3,'#2a1c20');
+    R(g,lx,LF,D.x1-lx+1,WY-LF,'#6a5640');tex(g,'wood',.3,lx,LF,D.x1-lx+1,WY-LF,'overlay',.5);
+    /* where the landing meets the far wall there is no hard line, so that the post stands on nothing that runs on past it */
+    g.fillStyle=lg(g,0,LF-3,0,LF+2,['rgba(106,86,64,0)','rgba(106,86,64,.8)','rgba(106,86,64,0)']);g.fillRect(lx,LF-3,D.x1-lx+1,5);
     /* the well: the far wall goes on down past the landing and darkens */
     comp(g,'multiply',.85,()=>{g.fillStyle=lg(g,0,LF-10,0,WY,['rgba(255,255,255,1)','#3a2e34']);g.fillRect(D.x0,LF-10,lx-D.x0,WY-LF+10)});
     /* the top steps, in profile against the far wall: each tread 2.4 deep and 2.2 lower than the last */
-    let x=lx,y=LF;const S=[x,y];for(let k=0;k<6;k++){y+=2.2;S.push(x,y);x-=2.4;S.push(x,y)}S.push(x,WY+2,lx,WY+2);
-    poly(g,S,'#3e2e22');for(let k=0,x=lx,y=LF;k<6;k++){y+=2.2;x-=2.4;R(g,x,y,2.4,.6,'#9a7a56');R(g,x+2.4-.5,y-2.2,.5,2.2,'#2a1c14')}
-    R(g,lx-.6,LF,.6,WY-LF,'#2a1c14');
+    let x=lx-1.2,y=LF;const S=[x,y];for(let k=0;k<6;k++){y+=2.2;S.push(x,y);x-=2.4;S.push(x,y)}S.push(x,WY+2,lx-1.2,WY+2);
+    poly(g,S,'#3e2e22');for(let k=0,x=lx-1.2,y=LF;k<6;k++){y+=2.2;x-=2.4;R(g,x,y,2.4,.6,'#9a7a56');R(g,x+2.4-.5,y-2.2,.5,2.2,'#2a1c14')}
     /* the rail: from the top of a post at the landing's edge down along the steps, at the slope of the stair */
     const pt=LF-15;R(g,lx-1,pt,2,LF-pt,'#5e4630');R(g,lx-1,pt,.5,LF-pt,'#8a6a48');
     stroke(g,[lx-1,pt+1.2,D.x0-6,pt+1.2+(lx-1-D.x0+6)*2.2/2.4],'#6e5236',1.2);stroke(g,[lx-1,pt+.8,D.x0-6,pt+.8+(lx-1-D.x0+6)*2.2/2.4],'rgba(200,160,110,.5)',.4);
