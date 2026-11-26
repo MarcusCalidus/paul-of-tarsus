@@ -619,7 +619,7 @@ function paintBeach23(g){const W=480,r=rng(2310),P=SHARED.storm.PAL.dawn,H=HZ_BE
     for(let i=0;i<260;i++){const x=90+r()*124,y0=bankB23(x),y=y0+Math.pow(r(),2)*30;R(g,x,y,1+r()*3,.5,rgba(mix(P.sand,P.wet,.35),.5+.4*r()))}});
   for(let x=0;x<214;x+=1){const y=bankB23(x);if(y>146)continue;R(g,x,y-.6,1,.6,r()<.5?'#7e7e58':'#5e6244');if(r()<.3)stroke(g,[x,y,x-.6,y-1.4-r()*1.6],'#6e7250',.5)}
   /* the rocks at the back of the beach: dark, wet, rounded by the sea, each its own stone, the wash at their feet */
-  for(const[x,y,w,h]of[[166,96,16,9],[182,92,22,13],[204,95,14,8],[214,98,18,6],[226,96,9,5]]){const Q=[x,y,x+w*.12,y-h*.6,x+w*.36,y-h,x+w*.7,y-h*.9,x+w*.92,y-h*.45,x+w,y];
+  for(const[x,y,w,h]of[[160,96,18,12],[176,93,26,19],[200,95,16,15],[214,97,20,9],[228,96,10,6]]){const Q=[x,y,x+w*.12,y-h*.6,x+w*.36,y-h,x+w*.7,y-h*.9,x+w*.92,y-h*.45,x+w,y];
     poly(g,Q);g.fillStyle=lg(g,0,y-h,0,y,['#6a6c68','#4a4c4a','#2e3030']);g.fill();clipTo(g,()=>poly(g,Q),()=>{tex(g,'mott',.5,x,y-h,w,h,'overlay',1);
       g.fillStyle=lg(g,x,0,x+w,0,['rgba(210,214,210,.18)','rgba(0,0,0,0)','rgba(10,12,14,.3)']);g.fillRect(x,y-h,w,h);R(g,x,y-1.6,w,1.6,'rgba(16,18,20,.35)')});
     stroke(g,[x+w*.12,y-h*.6,x+w*.36,y-h,x+w*.7,y-h*.9],'rgba(214,220,214,.35)',.5);comp(g,'multiply',.4,()=>poly(g,[x-1,y,x+w+3,y,x+w+1,y+1.4,x,y+1.2],'#30283a'))}
