@@ -3,7 +3,7 @@
 //   node tools/playtest.mjs                 full playthrough, prints one line per check
 //   node tools/playtest.mjs title street    stop at named points and save screenshots
 //   node tools/playtest.mjs de:title         the same in another language (screenshot de-title.png); the full run plays every language
-//   node tools/playtest.mjs titlescroll      the title screen with its chapter list scrolled to the end
+//   node tools/playtest.mjs titlescroll      the title of a returning player, its list open at the second journey (titlepart, titlelast: other parts open)
 //   node tools/playtest.mjs logo de:logo     the title's logo enlarged, in each language: look for crosses and for letters run together
 //   node tools/playtest.mjs pwa              the installable app: service worker, manifest, offline play (served over http; icon saved as pwa-icon.png)
 //   node tools/playtest.mjs continue         the title screen of a returning player (the game is reloaded; its autosave must bring them back)
