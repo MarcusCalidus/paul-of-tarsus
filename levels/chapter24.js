@@ -281,7 +281,7 @@ function hillsBack24(g,W){const hz=ROAD24.hz,RM=SHARED.rome,CO=SHARED.country,r=
   pool(g,-20,hz-6,120,26,'#fff2dc',.32,'screen');
   {const q=rng(2462);cloud(g,262,18,64,2.6,q,'#fbf6ee','#b4bed4');cloud(g,190,30,40,1.8,q,'#f6f2ea','#bec6d8')}
   /* the far mountains, blue with distance; the gap between the two hills where the sea is seen (x 96..126) */
-  const gap=x=>x<92?1:x<100?(100-x)/8:x<122?0:x<132?(x-122)/10:1;
+  const ss=(a,b,v)=>{const t=clamp((v-a)/(b-a),0,1);return t*t*(3-2*t)},gap=x=>1-ss(80,104,x)+ss(118,142,x);
   CO.range(g,-2,322,hz+.2,x=>gap(x)*(x<110?13+9*Math.sin((x+30)/46)+3*Math.sin(x/9):15+11*Math.sin((x-120)/64)+2.6*Math.sin(x/7.3))+.4,['#9eaccc','#b6bfd4'],{k:.35});
   /* the nearer hills, green-grey, their feet on the horizon, the sea between them */
   CO.range(g,-2,322,hz+.4,x=>gap(x)*(x<110?6+4*Math.sin((x+8)/22)+1.2*Math.sin(x/5):x<210?5+3*Math.sin((x-140)/26)+1.4*Math.sin(x/4.4):8+5*Math.sin((x-210)/30)+1*Math.sin(x/6)),['#7e9070','#90a07e'],{k:.5});
@@ -359,25 +359,26 @@ function marshBack24(g,W){const hz=ROAD24.hz,RM=SHARED.rome,CO=SHARED.country,r=
   g.fillStyle=lg(g,0,hz,0,96,['#b8c0b4','#98a27c','#808e5c','#76864e']);g.fillRect(-2,hz,324,34);
   tex(g,'mott',.45,0,hz,320,34,'overlay',1);
   R(g,-2,hz,324,.5,'rgba(255,250,236,.4)');
-  /* a line of trees far off on the horizon, low and blue, broken */
-  for(let x=-2;x<322;){const w=3+r()*14;if(r()<.6)for(let i=0;i<w;i+=1.2){const h=.6+r()*1.6;R(g,x+i,hz-h,1.2,h,mix('#7a8a7a','#b8c0c8',.55))}x+=w+r()*18}
-  /* the pools: long, low shapes of still water with the sky in them, rimmed with mud, each wider than it is tall by far */
-  const pools=[[34,70,26,1.4],[120,68,18,1.1],[196,72,30,1.8],[268,69,20,1.2],[84,77,34,2.4],[248,79,40,2.6],[156,81,24,2],[16,82,22,2.2]];
-  for(const[x,y,w,h]of pools){const P=[];for(let i=0;i<=16;i++){const a=i/16*Math.PI*2;P.push(x+Math.cos(a)*w*(1+.08*Math.sin(a*3+x)),y+Math.sin(a)*h*(1+.12*Math.cos(a*2+y)))}
-    poly(g,P,'#6a6a4e');poly(g,P.map((v,i)=>i%2?y+(v-y)*.72:x+(v-x)*.94));g.fillStyle=lg(g,0,y-h,0,y+h,['#b8cad8','#9cb4c8']);g.fill();
-    R(g,x-w*.5,y-h*.3,w*.6,.5,'rgba(255,255,248,.45)')}
-  /* reeds and rushes in clumps that lean together, the bigger ones nearer, standing behind the pools and on the dry ground */
-  for(let i=0;i<40;i++){const y=hz+3+Math.pow(r(),.8)*20,x=r()*320,k=(y-hz)/22,w=6+k*22;
-    if(pools.some(([px,py,pw,ph])=>Math.abs(x-px)<pw+w*.5&&y>py-ph-1&&y<py+ph+4))continue;
-    CO.reeds(g,x-w/2,x+w/2,y,2+k*7,2570+i,{c:mix('#7a8a4a','#b8c0b4',(1-k)*.5),wind:.8,n:w*1.4,heads:k>.5,dy:1.2})}
-  /* willows and bushes here and there */
-  for(const[x,y,h,s]of[[58,80,12,1],[226,76,9,2],[300,82,14,3],[140,74,7,4]])CO.tree(g,x,y,h,'#7f9466',{kind:'willow',seed:2580+s});
-  for(const[x,y,h,s]of[[100,84,4,1],[176,85,3.4,2],[30,86,3.6,3],[270,85,4,4]])CO.tree(g,x,y,h,'#647a48',{kind:'bush',seed:2590+s});
+  /* trees far off on the horizon, in low soft clumps, blue with distance */
+  for(let x=-4;x<324;x+=20+r()*46){const n=2+Math.floor(r()*4);for(let i=0;i<n;i++){const rx=1.6+r()*2.6;oval(g,x+i*rx*1.3,hz-.2-r()*.6,rx,1+r()*.6,mix(i%2?'#74846e':'#6a7a66','#b8c0c8',.5))}}
+  /* the marsh, row by row from the horizon toward the canal: pools of still water with the sky in them, long and low, each partly
+     hidden by the bed of reeds and rushes in front of it; the reeds lean together with the wind, and none stands in the water */
+  for(let y=hz+1.5;y<84;){const k=(y-hz)/22,fog=Math.max(0,1-k*1.6)*.55;
+    for(let x=-10;x<330;){const w=14+k*46+r()*(10+k*30);
+      if(r()<.42){/* a pool */const ry=Math.max(.8,.5+k*2.2),P=[];for(let i=0;i<=18;i++){const a=i/18*Math.PI*2,q=1+.18*Math.sin(a*3+x)+.1*Math.sin(a*5+y);P.push(x+w/2+Math.cos(a)*w/2*q,y+Math.sin(a)*ry*(Math.sin(a)>0?.8:1.1))}
+        poly(g,P,mix('#5e5e44','#b8c0c0',fog));poly(g,P.map((v,i)=>i%2?y+(v-y)*.7:x+w/2+(v-x-w/2)*.92));g.fillStyle=lg(g,0,y-ry,0,y+ry,[mix('#a6bccc','#c8d2d8',fog),mix('#88a2b6','#c0cad2',fog)]);g.fill();
+        if(ry>1.2)R(g,x+w*.2,y-ry*.2,w*.4,.5,'rgba(255,255,248,.4)')}
+      else{/* a bed of reeds: a low mass, its top a fringe of blades */const h=1.2+k*7,c=mix(['#7e8648','#8a8a52','#6e7c44'][Math.floor(r()*3)],'#b8c0bc',fog),P=[x,y+.6];
+        for(let xx=x;xx<=x+w;xx+=1.5)P.push(xx,y-h*(.55+.45*Math.sin(Math.PI*(xx-x)/w))*(.75+r()*.25));P.push(x+w,y+.6);poly(g,P,tint(c,-.12));
+        clipTo(g,()=>poly(g,P),()=>{g.fillStyle=lg(g,0,y-h,0,y,[rgba(tint(c,.18),.6),rgba(tint(c,-.3),.5)]);g.fillRect(x-1,y-h-1,w+2,h+2)});
+        CO.reeds(g,x+1,x+w-1,y-h*.5,h*.9+1,2570+Math.round(x*7+y),{c:tint(c,.06),wind:.8,n:w*(.5+k),heads:k>.8&&r()<.4,dy:h*.6})}
+      x+=w+r()*(6+k*10)}
+    y+=1.4+k*3.6}
   /* the far bank of the canal: a towpath of trodden earth, grass along its edge, and a few reeds standing on it, their feet in the grass */
   const N=CANAL24M.near,Fa=CANAL24M.far;
   {const P=[-2,Fa(-2)-2.4];for(let x=-2;x<=322;x+=4)P.push(x,Fa(x)-2.2-.3*Math.sin(x/9));P.push(322,Fa(322)+.2,-2,Fa(-2)+.2);poly(g,P,'#9a8e6c');
     clipTo(g,()=>poly(g,P),()=>tex(g,'mott',.5,0,80,320,12,'overlay',1));
-    for(let x=-2;x<322;x+=8+r()*20){const w=4+r()*10;CO.reeds(g,x,x+w,Fa(x+w/2)-2,5+r()*4,2600+Math.round(x),{c:'#6e8444',wind:.8,n:w*1.6,heads:1,dy:.6})}
+    for(let x=-2;x<322;x+=8+r()*20){const w=4+r()*10;CO.reeds(g,x,x+w,Fa(x+w/2)-2,5+r()*4,2600+Math.round(x),{c:'#6e8444',wind:.8,n:w*1.6,heads:r()<.25,dy:.6})}
     CO.turf(g,-2,Fa(160)-2.6,324,Fa(160)+.4,'#7a8c4c',2603,{wind:-.3,scale:.4,dense:.7})}
   /* the canal: the sky in it, darker under the banks, a few long level glints; it runs out of the picture at both edges */
   {const P=[];for(let x=-2;x<=322;x+=2)P.push(x,Fa(x));for(let x=322;x>=-2;x-=2)P.push(x,N(x));poly(g,P);g.fillStyle=lg(g,0,85.5,0,96.5,['#7c96a8','#a8c0d0','#94aec0','#6e8a9c']);g.fill();
