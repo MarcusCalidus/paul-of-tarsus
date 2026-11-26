@@ -44,7 +44,7 @@ ART.quay24={w:320,q:12,paint(g){
    a flat at the left, the wide door of a room at street level at the right), and the paving. No window bars, no joints in the walls. The
    street lies in the shade of its houses: soft light (amb only). */
 ART.lane24={w:320,q:12,paint(g){
-    R(g,0,0,320,18,'#c8d4dc');
+    R(g,0,0,320,26,'#c8d4dc');
     R(g,0,18,160,82,'#b88a64');R(g,0,18,160,3,'#9a7050');
     R(g,160,26,160,74,'#a87c5c');R(g,160,26,160,3,'#8e6648');
     R(g,72,52,26,48,'#4a3222');R(g,74,54,22,46,'#5a3e2a');
