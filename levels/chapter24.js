@@ -244,11 +244,14 @@ function paintCourt24(g){const{wallY:WY,hz,eave:E}=COURT24,r=rng(2451),M=SHARED.
   court24Gate(g,r);
   /* the two wings in perspective, plastered the same, their eaves running toward us */
   court24Wing(g,-1,r);court24Wing(g,1,r);
+  /* the shadow of the left wing: a steep narrow wedge down the back wall by the corner, and on the paving along the left edge */
+  shade(g,[10,22,12.6,22,24,102,10,102],'#8f95c4',.32);
   /* the eaves: the edge of the tiled roof along the top of the back wall, the soft shade the sun throws under it */
   court24Eave(g,10,310,E);
   /* the paving of the court, running back to the foot of the wall; a soft shade along the foot */
   pave(g,-2,WY,322,144,'#cdb994',r,{vx:160,vy:hz,rows:5,step:30,v:.07,t:.3,rand:1});
   ao(g,0,WY,320,4,'t',.3,'#4a3a40');
+  shade(g,[10,102,24,102,13,144,-2,144,-2,108],'#8f95c4',.3);
   /* the bench along the wall: a slab on two blocks set at its ends */
   court24Bench(g,60,160,r);
   /* a tall storage jar left of the gate and two pots of herbs by the vine's foot, all against the wall behind the walk */
@@ -550,7 +553,7 @@ function paintCanal24(g){const{hz}=CANAL24,r=rng(2481),CO=SHARED.country;
     for(let i=0;i<46;i++){const y=hz+1+Math.pow(r(),1.4)*14,k=(y-hz)/14,x=r()*320,w=(6+r()*22)*(.4+k),h=Math.max(.5,.4+k*1.2);if(x+w>226&&x<270||x<40)continue;
       g.fillStyle=lg(g,0,y,0,y+h,[x>200?'rgba(236,180,140,.55)':'rgba(170,150,176,.5)','rgba(120,110,140,.2)']);g.fillRect(x,y,w,h)}
     for(let i=0;i<300;i++){const y=hz+.5+Math.pow(r(),1.2)*14,k=(y-hz)/14,x=r()*320;R(g,x,y,.5+k,.5+k*.6,r()<.5?'rgba(40,46,34,.5)':'rgba(70,74,56,.45)')}});
-  for(const[x,y,h,k]of[[96,74,7,'willow'],[118,73.4,5,'willow'],[204,72.4,8,'poplar'],[214,72.6,6,'poplar'],[60,73,4,'bush']])CO.tree(g,x,y,h,'#3e4636',{kind:k,seed:2482+x,cast:false});
+  for(const[x,y,h,k]of[[96,74,7,'willow'],[118,73.4,5,'willow'],[206,72.6,6,'willow'],[176,72,4,'bush'],[60,73,4,'bush']])CO.tree(g,x,y,h,'#3e4636',{kind:k,seed:2482+x,cast:false});
   comp(g,'screen',.14,()=>{g.fillStyle=lg(g,0,hz-2,0,hz+10,['rgba(200,180,200,0)','rgba(200,180,200,1)','rgba(200,180,200,0)']);g.fillRect(-2,hz-2,324,12)});
   /* the near side: the marsh on the right of the bend, then the towpath and the damp ground toward us */
   g.fillStyle=lg(g,0,hz,0,144,['#4e5244','#4a503e','#40463a','#383c34']);
@@ -571,7 +574,7 @@ function canal24Water(g,r){const W=[];for(let x=-2;x<=306;x+=1)W.push(x,yFar24(x
     /* the reflection of the far bank: a dark band just under it, with a soft lower edge */
     for(let x=-2;x<306;x+=.5){const y=yFar24(x),d=2.4+Math.sin(x/5.3)*.8+Math.sin(x/1.9)*.4;g.fillStyle=lg(g,0,y,0,y+d,['rgba(30,34,30,.7)','rgba(30,34,30,0)']);g.fillRect(x,y,.5,d)}
     /* faint level glints of the sky, out in the open water only (none near the reeds, the barge or the mule) */
-    for(let i=0;i<70;i++){const x=70+r()*180,y=yFar24(x)+3+r()*(yNear24(x)-yFar24(x)-4),w=1.5+r()*5;if(x>140&&x<268&&y<99)continue;R(g,x,y,w,.5,r()<.6?'rgba(240,200,190,.25)':'rgba(170,160,200,.25)')}
+    for(let i=0;i<70;i++){const x=70+r()*180,y=yFar24(x)+3+r()*(yNear24(x)-yFar24(x)-4),w=1.5+r()*5;if(x>124&&x<272&&y<100)continue;R(g,x,y,w,.5,r()<.6?'rgba(240,200,190,.25)':'rgba(170,160,200,.25)')}
     tex(g,'mott',.25,-2,70,324,40,'overlay',1)});
   /* the far bank: a low ragged mass of grass and reed with a soft uneven top, never a row of strokes; by the basin a taller bed of reed,
      so that the near reeds stand against reed and no level line runs behind their stems */
@@ -618,8 +621,8 @@ function canal24Barge(g,r){const[x0,y0,w]=CANAL24.barge,x1=x0+w,wl=96.6,gun=x=>8
     R(g,cx0-1.4,ct-1.6,cx1-cx0+2.8,1.8,'#7a5c40');R(g,cx0-1.4,ct-1.6,cx1-cx0+2.8,.5,'#b89068');R(g,cx0+9,ct+3,5,4,'#1e1618')}
   /* bundles and a coil-less heap of sacks amidships, low */
   for(const[x,ww,hh,c]of[[x0+48,4.6,4,'#8a7a66'],[x0+56,5,4.4,'#7a6a5a'],[x0+64,4.2,3.6,'#8e7e6a']])sack(g,x,gun(x)+1.6,ww,hh,c);
-  /* the steering oar: from the stern down into the water, one slanting loom */
-  stroke(g,[x0+4,gun(x0+4)-3.4,x0-6,wl+2],'#5a4230',1.2);stroke(g,[x0+4,gun(x0+4)-3.4,x0-6,wl+2],'#8a6a4a',.4);
+  /* the steering oar: hung outside the stern, from its top corner down into the water, one slanting loom that crosses no part of the hull */
+  stroke(g,[x0-1.4,gun(x0)+1.4,x0-10,wl+2],'#5a4230',1.2);stroke(g,[x0-1.6,gun(x0)+1.4,x0-10.2,wl+2],'#8a6a4a',.4);
   /* the towing post near the bow: short, its top against the marsh below the horizon */
   const[px,py]=CANAL24.post;R(g,px-.8,py,1.6,gun(px)-py+.4,'#4e3a2a');R(g,px-.8,py,.5,gun(px)-py,'#8a6a48');R(g,px-.8,py,1.6,.5,'#9a7a56')}
 /* what moves: the mule on the towpath with its harness and the slack towrope; the reeds, which stir when the frogs set off; and the rings
