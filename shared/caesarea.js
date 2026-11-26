@@ -37,7 +37,9 @@
      O(hour)         the options of shared/coast.js for that hour (horizon, sun, cloud), for any other picture of this coast that
                      must stand in the same light
      light(hour)     ART[id].light for a room of the court: {amb, sun, wallY}
-     birds(hour)     ROOMS[id].birds: gulls over the water, two standing on the coping of the sea wall (fair weather by day)
+     birds(hour)     ROOMS[id].birds: gulls over the water, two standing on the coping of the sea wall (fair weather by day); in the
+                     morning both stand at the far left (x 22 and 48), clear of every head at the hearings of Chapters Twenty and
+                     Twenty-One
      HZ              the horizon, y 60
      WALK            the walk strip of the court, [30, 300, 114, 138], wholly in front of the dais and the desk: nothing painted
                      stands in it, so the court needs no props or footprints
@@ -72,7 +74,10 @@ const O=hour=>OPT[hour==='morning'?'morning':'evening'];
 /* the figures' light: sun:[dx, dy, strength] is the tip of the shadow of a figure 46 pixels tall, from its feet */
 const LIGHT={evening:{amb:'#f6e0c8',sun:[22,7,.35],wallY:WALLY},morning:{amb:'#f4eee4',sun:[-22,7,.35],wallY:WALLY}};
 const light=hour=>{const L=LIGHT[hour==='morning'?'morning':'evening'];return{amb:L.amb,sun:L.sun.slice(),wallY:L.wallY}};
-const birds=()=>({gulls:[8,6,168,36],stand:[[46,COPING,1],[92,COPING,-1]]});
+/* the gulls that stand on the coping, each hour its own: where no head comes at the hearings of that hour (Chapter Nineteen's palace
+   gives its own) */
+const STAND={evening:[[46,COPING,1],[92,COPING,-1]],morning:[[22,COPING,1],[48,COPING,-1]]};
+const birds=hour=>({gulls:[8,6,168,36],stand:STAND[hour==='morning'?'morning':'evening'].map(s=>s.slice())});
 const sh=(...a)=>SHARED.materials.shadow(...a);
 
 function court(g,o){o=o||{};const K=SHARED.coast,E=o.hour!=='morning',Op=O(o.hour),r=rng(1971),S='#e6d8bc';K.light(Op);

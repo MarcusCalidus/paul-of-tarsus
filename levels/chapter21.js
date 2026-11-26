@@ -112,8 +112,11 @@ const FONT21=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;
    Hotspots (ROOMS.court21): the sea 0,40,186,38 · the sea wall 0,78,186,18 · the governor's seat 226,78,26,24 · the dais 196,96,112,16 ·
    the desk 152,88,36,22 · the cart 4,110,42,28 · the ox goad 6,106,46,8 · the way to the writing room 304,96,16,48. Walk: 30..300 by
    114..138 (SHARED.caesarea.WALK); while Paul is played (chained) the walk is his own place. Actors: the clerk sits at the desk 162,110;
-   Festus on the seat 238,100; the advisers 270,101 and 292,101; Paul 210,128 and the soldier a step behind him on his left; the
-   accusers at 140,122 · 116,128 · 94,120 · 70,126; the officer 300,130. After the hearing Bernice 76,124 and King Agrippa 100,120 facing
+   Festus on the seat 238,100; the advisers 270,101 and 292,101; Paul 210,128 and the soldier beside him on his left (192,127.5); the
+   accusers round them (25:7, ROUND21), each a step off and facing Paul, arms down: at his right one between the governor's seat and the
+   first adviser (254,120) and one before him (250,137), at his left one behind the soldier (196,116) and one beyond the clerk's desk
+   (146,126). None of them stands before the desk, the seat, the advisers, Paul or the soldier, and no head comes under a gull (the
+   morning's gulls stand at the far left of the sea wall); the officer 300,130. After the hearing Bernice 76,124 and King Agrippa 100,120 facing
    right, Festus 128,120 facing left. Footprint: the cart 30,114,25,22 (the whole of it inside the strip, so that nobody stands behind
    it). */
 const CART21={x0:4,x1:50,top:108.8,foot:136};
@@ -467,6 +470,8 @@ const CL=actor('clerk21','governors_clerk','#e8dcc0',140),FS=actor('festus21','F
   CM1=actor('cmd21a','military_commander','#f0d8c0',92),CM2=actor('cmd21b','military_commander','#e8d0c0',100),CM3=actor('cmd21c','military_commander','#e0d0c0',106),
   LM1=actor('lead21a','leading_man_of_the_city','#e8e0d0',94),LM2=actor('lead21b','leading_man_of_the_city','#e0e0d0',110),LM3=actor('lead21c','leading_man_of_the_city','#d8e0d0',102);
 const ACCUSERS=[AC1,AC2,AC3,AC4],SEATED=[CM1,CM2,CM3,LM1,LM2,LM3];
+/* where the accusers stand round Paul and his soldier at the hearing before Festus (Acts 25:7): [x, y, facing] (see ART court21) */
+const ROUND21=[[254,120,-1],[250,137,-1],[196,116,1],[146,126,1]];
 
 /* ============ WHAT THE ACCOUNT SAYS ============ */
 /* TOLD: Acts 25:1-26:32, told by the narrator in paraphrase, each line with its reference (SP/ch21/told.md, written from the Study
@@ -745,7 +750,7 @@ function place21(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   CL.look=clerkPlays()?clerkFree21:LOOK.clerk21;CL.wear=clerkPlays()?'free':'';
   if(ph==='court')pl(CL,'court21',[286,126,-1]);
   if(ph==='hearing'){pl(FS,'court21',A.governor);FS.seat=1;pl(AD1,'court21',A.advisers[0]);pl(AD2,'court21',A.advisers[1]);
-    pl(CL,'court21',A.scribe);CL.seat=1;pl(OF,'court21',A.officer);ACCUSERS.forEach((a,i)=>pl(a,'court21',A.accusers[i]));
+    pl(CL,'court21',A.scribe);CL.seat=1;pl(OF,'court21',A.officer);ACCUSERS.forEach((a,i)=>pl(a,'court21',ROUND21[i]));
     pl(P,'court21',A.accused);chain21()}
   if(ph==='report'){pl(CL,'write21',[276,126,-1]);pl(BE,'court21',[76,124,1]);pl(AG,'court21',[100,120,1]);pl(FS,'court21',[128,120,-1])}
   if(ph==='hall'||ph==='listen'||ph==='bonds'||ph==='passage'){const S=HALL21.seats,B=HALL21.bench;
@@ -774,7 +779,7 @@ function hint21(){const ph=phase21();
 /* ============ CHAPTER DEFINITION ============ */
 /* Birds (shared/birds.js): gulls over the sea and on the sea wall of the court, by day in fair weather; one stands on the governor's seat
    until the clerk sends it off. None in the writing room, none in the audience chamber. They change nothing in the story. */
-ROOMS.court21.birds=()=>{const b=K21.birds();if(!F.gull)b.stand=b.stand.concat([[K21.SEAT.at[0]+1,K21.SEAT.top,-1]]);return b};
+ROOMS.court21.birds=()=>{const b=K21.birds('morning');if(!F.gull)b.stand=b.stand.concat([[K21.SEAT.at[0]+1,K21.SEAT.top,-1]]);return b};
 /* every hotspot answers the clerk as it answers Paul (see act: another member uses h.as[his id]) */
 for(const id of['court21','write21','report21','hall21'])for(const h of ROOMS[id].hs)if(!h.as)h.as={clerk21:h};
 for(const a of EVERY)if(a.hs&&!a.hs.as)a.hs.as={clerk21:a.hs};
