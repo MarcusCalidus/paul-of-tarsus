@@ -380,6 +380,8 @@ const BOARD24={road:[[150,8],[154,40],[148,70],[156,104],[152,140]],gate:[138,2,
   T:[210,48,104,28],M:[210,90,104,28],bench:[10,14,104,120]};
 const tokPos24=id=>{const st=G.tok24||{},at=st[id]||'',i=TOK24.filter(t=>(st[t.id]||'')===at).findIndex(t=>t.id===id);
   if(at){const B=BOARD24[at];return[B[0]+4+i*14,B[1]+5]}return[BOARD24.bench[0]+6+(i%4)*24,BOARD24.bench[1]+6+(i/4|0)*28]};
+/* a fine grain running across: many long thin streaks, lighter and darker, none strong, and no edge where a texture's tile would meet */
+function grainBoard24(g,x,y,w,h,r,a){for(let i=0;i<w*h/40;i++){const yy=y+r()*h,l=8+r()*40,xx=x-10+r()*(w+10);R(g,xx,yy,l,.5,r()<.55?`rgba(110,72,36,${a})`:`rgba(255,240,206,${a*1.2})`)}}
 /* a path with round corners (radius q) round a box */
 function rboxBoard24(g,x,y,w,h,q){g.beginPath();g.moveTo(x+q,y);g.lineTo(x+w-q,y);g.quadraticCurveTo(x+w,y,x+w,y+q);g.lineTo(x+w,y+h-q);g.quadraticCurveTo(x+w,y+h,x+w-q,y+h);
   g.lineTo(x+q,y+h);g.quadraticCurveTo(x,y+h,x,y+h-q);g.lineTo(x,y+q);g.quadraticCurveTo(x,y,x+q,y);g.closePath()}
@@ -402,7 +404,7 @@ function roadBoard24(){const P=BOARD24.road,o=[],q=rng(2433);
 function paintBoard24(g){const r=rng(2431),B=BOARD24;
   /* the board: pale wood, a fine quiet grain running across, darker toward its edges */
   g.fillStyle=lg(g,0,0,0,144,['#d4b684','#cdac78','#c09e6a']);g.fillRect(0,0,320,144);
-  tex(g,'wood',.14,0,0,320,144,'overlay',.5);tex(g,'mott',.1,0,0,320,144,'overlay',.7);
+  tex(g,'mott',.12,0,0,320,144,'overlay',.7);grainBoard24(g,0,0,320,144,r,.08);
   for(let i=0;i<44;i++)R(g,0,i*3.3+r()*1.6,320,.5,r()<.5?'rgba(110,78,40,.09)':'rgba(255,244,214,.12)');
   for(let i=0;i<40;i++){const y=r()*144,x=r()*300,l=6+r()*18;R(g,x,y,l,.5,'rgba(120,86,46,.1)')}
   comp(g,'multiply',.35,()=>{g.fillStyle=rg(g,170,70,240,['#ffffff','#f4ece0','#a08a7a']);g.fillRect(0,0,320,144)});
@@ -414,7 +416,7 @@ function paintBoard24(g){const r=rng(2431),B=BOARD24;
   pool(g,262,30,22,6,'#8a6a40',.08,'multiply');pool(g,64,118,30,7,'#fff4dc',.12,'screen');
   comp(g,'multiply',.32,()=>{rboxBoard24(g,bx+1.6,by+2,bw,bh,4);g.fillStyle='#6a5040';g.fill()});
   rboxBoard24(g,bx,by,bw,bh,4);g.fillStyle=lg(g,0,by,0,by+bh,['#b08654','#a47a4a','#966e42']);g.fill();
-  clipTo(g,()=>rboxBoard24(g,bx,by,bw,bh,4),()=>{tex(g,'wood',.22,bx,by,bw,bh,'overlay',.5);for(let i=0;i<24;i++)R(g,bx,by+1+i*2.6+r(),bw,.5,r()<.5?'rgba(60,36,18,.12)':'rgba(255,226,180,.1)');
+  clipTo(g,()=>rboxBoard24(g,bx,by,bw,bh,4),()=>{tex(g,'mott',.16,bx,by,bw,bh,'overlay',.7);grainBoard24(g,bx,by,bw,bh,r,.09);
     ao(g,bx,by+bh-3,bw,3,'b',.3,'#2a1810')});
   g.save();rboxBoard24(g,bx+.3,by+.3,bw-.6,bh-.6,3.7);g.strokeStyle='rgba(255,226,180,.45)';g.lineWidth=.5;g.stroke();g.restore();
   /* the two places: shallow hollows rubbed into the board, long, their ends round; darker on their upper edge, a pale lip below */
