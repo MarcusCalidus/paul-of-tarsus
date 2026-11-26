@@ -429,7 +429,7 @@ const ROME={
   trader:{skin:'#c49064',hair:'#3a2a1c',beard:'#3a2a1c',shortBeard:1,brow:'#2a1c12',tunic:'#3e5a7a',long:1,cloak:'#8a6a3a',hatBack:'#b8a070',belt:'#6a4a26',ring:1,shoes:'#6a4026',ph:20100},
   boatman:{skin:'#94603a',hair:'#2a1a10',beard:'#3a2a1a',shortBeard:1,brow:'#1e140c',tunic:'#7a6a50',belt:'#2e2016',bareArm:1,spear:'pole',barefoot:1,ph:20300},
   sailor:SAILOR_1,
-  innkeeper:{skin:'#c08a5a',hair:'#3a2a1c',beard:'#3a2a1c',fullBeard:1,receding:1,brow:'#2a1c12',tunic:'#9a6a46',apron:'#c8b48a',belt:'#4a3020',ph:20500},
+  innkeeper:{skin:'#c08a5a',hair:'#3a2a1c',beard:'#3a2a1c',fullBeard:1,receding:1,brow:'#2a1c12',tunic:'#5c6c7a',apron:'#c8b48a',belt:'#4a3020',ph:20500},
   landlady:{skin:'#c89a72',veil:'#8a4a3a',veilHair:'#8a837a',tunic:'#a89a76',long:1,longSleeve:1,trim:'#6a4a2a',belt:'#5a3a22',brow:'#5a524a',ph:20700},
   landlord:{skin:'#bc8a60',hair:'#5a5048',grey:'#8e867e',receding:1,brow:'#3a322a',tunic:'#d8ccb0',long:1,cloak:'#7a6a4a',himation:1,belt:'#5a4030',ring:1,ph:20900},
   freedman:{skin:'#c49a72',hair:'#3a2c20',crop:1,brow:'#2a1c12',tunic:'#e6dece',cloak:'#6e7a84',belt:'#5a4030',penCase:'#7a5a3a',ph:21100},

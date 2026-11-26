@@ -62,8 +62,8 @@
    (board24, a close view), the Appian Way in the hills (hills24) and through the marshes (marsh24), Three Taverns (taverns24), Rome from
    afar (far24, SHARED.rome.far), the Porta Capena (capena24, SHARED.rome.capena), the wall of the Praetorians' camp (camp24), a street of
    tenements (lane24) and the lodgings in it (look24, in four variants), and the travel map. Each picture is a section of its own between
-   "ART <room>: begin" and "ART <room>: end". ART-TODO: every picture but far24, capena24 and the two lodgings of shared/lodging.js is a
-   plain placeholder at its final geometry (SP/pair3/ROOMS-24.md), for the art agents. */
+   "ART <room>: begin" and "ART <room>: end". Rome from afar, the gate and the lodgings are painted by
+   shared/rome.js and shared/lodging.js, the ship by shared/grainship.js; every other picture is painted here. */
 LEVEL(24,()=>{
 "use strict";
 
@@ -123,15 +123,6 @@ const fast=()=>G.speedAll>200;   /* the playtest plays at speed */
 const tw=ms=>wait(fast()?Math.min(40,ms):ms);
 
 /* ============ ART ============ */
-/* ph24: a plain placeholder picture (ART-TODO): a sky to the horizon hz, the ground below it, and the things that have hotspots as plain
-   blocks. Nothing in it crosses anything else: no lines on the blocks, no posts across the horizon, nothing round. */
-const sky24=(g,y1,a,b)=>{g.fillStyle=lg(g,0,0,0,y1,[a,b]);g.fillRect(0,0,320,y1)};
-function ground24(g,y0,c){g.fillStyle=lg(g,0,y0,0,144,[tint(c,.12),c,tint(c,-.18)]);g.fillRect(0,y0,320,144-y0)}
-function blocks24(g,L){for(const[x,y,w,h,c]of L){R(g,x,y,w,h,c);R(g,x,y,w,1,tint(c,.18));R(g,x,y+h-1,w,1,tint(c,-.25))}}
-function stone24(g,x,y,n,o){o=o||{};const w=o.w||10,h=o.h||22;R(g,x-w/2,y-h,w,h,'#b8b2a4');R(g,x-w/2,y-h,w,2,'#d0cabc');R(g,x+w/2-2,y-h+2,2,h-2,'#8e887c');
-  R(g,x-w/2-1,y-1,w+2,1.5,'rgba(40,30,30,.35)');
-  /* the number, cut in strokes: placeholder letters, each a few short strokes (the painter cuts them as rome.milestone does) */
-  g.save();g.font='bold 5px monospace';g.fillStyle='#4a4440';g.textAlign='center';g.fillText(n,x,y-h+8);g.restore()}
 const LIGHT={soft:c=>({amb:c,wallY:110})};
 
 /* ==== ART quay24: begin ==== */
@@ -1111,8 +1102,7 @@ function walk24(g,t){const b=G.beat,S=SO;
   /* the dust where his foot came down: a few specks that rise a little and fade; square, and never two by two */
   if(p<.2){const k=p/.2,d=S.dir||1,a=.75*(1-k);
     for(let i=0;i<9;i++){const x=S.x+d*(-2+i*1.25+(i%3)*.3+(i<4?-k:k)*1.6),y=S.y-.2-k*(1.4+(i%2)*1.2)-(i%3)*.45,s=i%3===1?1:.5;R(g,x,y,s,.5,rgba(i%2?'#e4d8c0':'#cdbfa2',a))}}
-  /* his footfall, heard from the same clock */
-  const n=Math.floor((t-b.t0)/b.period);if(G.step24!==n){if(G.step24!=null)SFX.step();G.step24=n}
+  /* his footfall is heard from the same clock: the beat schedules it itself (shared/beat.js, kind 'step') */
   SHARED.beat.call(g,S.x,S.y-58,t)}
 /* ==== ART hills24: end ==== */
 
@@ -1505,14 +1495,6 @@ ART.look24={w:320,q:12,variant:lookKind,paint(g,v){const k=v||'flat';return othe
   light:()=>{const k=lookKind();return other24(k)?LG.light(k):LG.light(k,'noon')},draw(){},front(){},get props(){return LG.props(lookKind())}};
 /* ==== ART look24: end ==== */
 
-/* the soldier's step on the road (a placeholder mark for the painter: his foot lifted in the beat's pause, a little dust as it comes down),
-   and the footfall heard from the same clock */
-function foot24(g,t){const b=G.beat,S=SO;if(!b||!S||S.room!==G.room)return;const p=b.phase(t);
-  if(p>=b.from&&p<b.to)R(g,S.x+2*S.dir,S.y-4,3,2,'#4a3a2e');
-  if(p<.12)for(let i=0;i<4;i++)R(g,S.x-6+i*4,S.y-.5-(i%2)*.6,1,.6,'rgba(200,190,170,.6)');
-  const n=Math.floor((t-b.t0)/b.period);if(G.step24!==n){if(G.step24!=null)SFX.step();G.step24=n}
-  SHARED.beat.call(g,S.x,S.y-58,t)}
-
 /* ---- the inventory ---- */
 Object.assign(ICON,{
   /* Sextus's carrying pad: a folded pad of cloth */
@@ -1817,7 +1799,7 @@ ROOMS.canal24={space:.6,walk:CANAL24.walk,block:[[CANAL24.mule[0],CANAL24.mule[1
 ROOMS.appius24={space:.6,walk:APPIUS24.walk,get mood(){return phase24()==='dawn'?'dusk':'meet'},amb:AMB.appius24,hs:[
   {name:'canal',x:0,y:72,w:120,h:18,wx:80,wy:118,look:()=>think(phase24()==='dawn'?'canal_at_daybreak_look':'canal_by_day_look')},
   {name:'inns',x:124,y:40,w:140,h:62,wx:190,wy:116,look:()=>think(phase24()==='dawn'?'inns_asleep_look':'inns_by_day_look')},
-  {name:'milestone',x:256,y:86,w:14,h:26,wx:250,wy:118,look:()=>phase24()==='dawn'?stoneDawn24():think('xliii_forty_three_miles_to_rome',P)},
+  {name:'milestone',x:255,y:82,w:14,h:28,wx:250,wy:118,look:()=>phase24()==='dawn'?stoneDawn24():think('xliii_forty_three_miles_to_rome',P)},
   {name:'road_north',x:288,y:96,w:32,h:30,wx:300,wy:122,look:()=>think(PC()===P?'paul_the_road_on_to_rome':'road_north_look24'),
     exit:async()=>{if(phase24()==='dawn')return home24();const first=!F.taverns;F.taverns=1;await goto24('taverns24');if(first)return taverns24()}}]};
 ROOMS.rome24={space:.9,walk:ROME24.walk,block:[],mood:'house',amb:AMB.rome24,hs:[
@@ -1832,13 +1814,13 @@ ROOMS.board24={space:.6,walk:NOW,mood:'house',amb:AMB.board24,hs:[
   {name:'back_to_the_room',x:0,y:136,w:120,h:8,wx:160,wy:236,exit:()=>goto24('rome24'),look:'back_to_the_room_look24'}]};
 ROOMS.hills24={space:.5,get walk(){return onRoad()?[P.x,P.x,P.y,P.y]:ROAD24.walk.slice()},get mood(){return'walk'},amb:AMB.hills24,hs:[
   {name:'hills',x:0,y:30,w:320,h:34,wx:150,wy:118,look:()=>think(F.s1?'hills_look_weary':'hills_look24',P)},
-  {name:'milestone',x:238,y:86,w:14,h:26,wx:230,wy:120,look:()=>think('paul_a_stone_ahead',P)},
+  {name:'milestone',x:237,y:72,w:14,h:28,wx:230,wy:120,look:()=>think('paul_a_stone_ahead',P)},
   here({name:'paving',x:0,y:102,w:320,h:42,look:()=>think(F.s1?'paving_look_weary':'stone_fitted_to_stone_without_a_seam',P)}),
   here({name:'road_ahead',get x(){return P.x+12},y:100,w:60,h:40,def:'use',vis:onRoad,look:()=>think('the_road_ahead_look24',P),use:()=>step24()})]};
 ROOMS.marsh24={space:.5,get walk(){return onRoad()?[P.x,P.x,P.y,P.y]:ROAD24.walk.slice()},get mood(){return'weary'},amb:AMB.marsh24,hs:[
   {name:'marsh',x:0,y:40,w:320,h:44,wx:150,wy:118,look:()=>think('marsh_look24',P)},
   {name:'canal',x:0,y:84,w:320,h:12,wx:150,wy:118,look:()=>think('canal_beside_the_road_look',P)},
-  {name:'milestone',x:238,y:86,w:14,h:26,wx:230,wy:120,look:()=>think('paul_a_stone_ahead',P)},
+  {name:'milestone',x:237,y:72,w:14,h:28,wx:230,wy:120,look:()=>think('paul_a_stone_ahead',P)},
   here({name:'paving',x:0,y:102,w:320,h:42,look:()=>think('paving_look_weary',P)}),
   here({name:'road_ahead',get x(){return P.x+12},y:100,w:60,h:40,def:'use',vis:onRoad,look:()=>think('the_road_ahead_look24',P),use:()=>step24()})]};
 ROOMS.taverns24={space:.6,walk:TAVERNS24.walk,mood:'meet',amb:AMB.taverns24,hs:[
@@ -1962,8 +1944,8 @@ function place24(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   if(ph==='road'){const s=stretch24(),[x,y]=ROAD24.marks[0];pl(P,s.room,x,y,1);for(const[a,dx,dy,d]of COLUMN24())pl(a,s.room,x+dx,y+dy,d)}
   if(ph==='with'){pl(P,'appius24',60,126,1);pl(LK,'appius24',36,120,1);pl(AR,'appius24',22,130,1);pl(JU,'appius24',120,118,1);pl(SO,'appius24',84,132,1);
     pl(DE,'appius24',172,132,-1);pl(MI,'appius24',220,120,-1);pl(VI,'appius24',244,128,-1);pl(AE,'appius24',268,122,-1);
-    pl(PO,'taverns24',190,122,-1);pl(FI,'taverns24',220,128,-1);pl(TH,'taverns24',250,120,-1);pl(IK,'taverns24',134,114,1);
-    if(F.taverns){for(const[a,x,y]of[[LK,70,118],[AR,14,132],[SO,96,132],[JU,124,116],[DE,150,130],[MI,176,124],[VI,276,128],[AE,296,122]])pl(a,'taverns24',x,y,1)}}
+    pl(PO,'taverns24',202,124,-1);pl(FI,'taverns24',220,128,-1);pl(TH,'taverns24',250,120,-1);pl(IK,'taverns24',134,114,1);
+    if(F.taverns){for(const[a,x,y]of[[LK,70,118],[AR,14,132],[SO,96,132],[JU,110,116],[DE,150,130],[MI,176,124],[VI,276,128],[AE,296,122]])pl(a,'taverns24',x,y,1)}}
   if(ph==='city'){const r=F.gate?'capena24':'far24';for(const[a,x,y]of[[P,60,126],[LK,30,120],[AR,18,132],[JU,110,118],[SO,84,132],[DE,140,128],[MI,164,122]])pl(a,r,x,y,1);
     if(room==='camp24'){for(const[a,x,y,d]of[[P,110,124,1],[JU,140,120,-1],[SO,170,126,-1],[LK,60,122,1],[AR,40,130,1],[DE,80,132,1]])pl(a,'camp24',x,y,d)}}
   if(ph==='lane'){const lk=F.inlook?'look24':'lane24';
