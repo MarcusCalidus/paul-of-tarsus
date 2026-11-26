@@ -155,11 +155,12 @@ const _=null,
   21:{dt:.12,steps:20,group:[3,3,4,3,3,4],root:57,scale:[0,2,3,5,7,8,10],bars:1,src:{mood:'court',bar:0,tracks:[0,2]},tracks:[
    {inst:'lyre',lines:[[[0,0,3],[3,2,3],[6,4,4],[10,3,3],[13,2,3],[16,4,4]]],oct:12,vol:.52},
    {inst:'bass',lines:[[[0,0,20]]],vol:.26}]},
-  /* Chapter Twenty-Two, B-flat harmonic minor in eighteens that fall 4, 4, 4, 3, 3, mood "quay" (the harp rests in this bar): lyre, low
-     string (levels/chapter22.js:88, 90; TUNE :80, LOW :86) */
-  22:{dt:.2,steps:18,group:[4,4,4,3,3],root:46,scale:[0,2,3,5,7,8,11],bars:1,src:{mood:'quay',bar:0,tracks:[0,2]},tracks:[
-   {inst:'lyre',lines:[[[0,0,4],[4,2,4],[8,4,4],[12,3,3],[15,2,3]]],oct:24,vol:.48},
-   {inst:'bass',lines:[[[0,0,18]]],oct:12,vol:.24}]},
+  /* Chapter Twenty-Two, A harmonic major in twenty-ones that fall 6, 6, 9, a seventh of a second to the step, mood "quay" (the harp rests
+     in this bar): lyre, frame drum, low string (levels/chapter22.js:102, 104, 107; TUNE :88, LOWS :99) */
+  22:{dt:.14285714285714285,steps:21,group:[6,6,9],root:45,scale:[0,2,4,5,7,8,11],bars:1,src:{mood:'quay',bar:0,tracks:[0,2,5]},tracks:[
+   {inst:'lyre',lines:[[[0,0,2],[2,2,1],[3,4,3],[6,5,2],[8,4,1],[9,3,3],[12,2,6],[18,1,3]]],oct:24,vol:.5},
+   {drum:1,seq:{A:'d.....k.....d..k..k..'},vol:.2},
+   {inst:'bass',lines:[[[0,0,12],[12,-3,9]]],vol:.4}]},
   /* Chapter Twenty-Three, B-flat harmonic minor in eighteens that fall 4, 5, 4, 5, mood "night": the harp, and the low string's one note
      to the bar (levels/chapter23.js:92, 93; TUNE :85, LOW :90) */
   23:{dt:.15,steps:18,group:[4,5,4,5],root:46,scale:[0,2,3,5,7,8,11],bars:1,src:{mood:'night',bar:0,tracks:[0,1]},tracks:[
@@ -176,7 +177,7 @@ const _=null,
  /* the silence that follows a bar: a score with no tracks, in the bar's key (setScore keeps the key of the last score, see AU.key) */
  hush=b=>({dt:b.dt,steps:b.steps,root:b.root,scale:b.scale,bars:1,tracks:[]}),
  RMS={pro:-35.2,1:-20.2,2:-23.1,3:-27.9,4:-28.3,5:-28.2,6:-28.3,7:-28.6,8:-27.9,9:-23.9,10:-25.1,11:-30.2,12:-30.5,13:-30.7,14:-31.6,15:-34.6,16:-34.3,
-  17:-34.1,18:-35.7,19:-36,20:-37.5,21:-36.1,22:-38.8,23:-40.2,24:-44.3,25:-44.8},EVEN=-29,
+  17:-34.1,18:-35.7,19:-36,20:-37.5,21:-36.1,22:-35.5,23:-40.2,24:-44.3,25:-44.8},EVEN=-29,
  gain=n=>RMS[n]==null?1:Math.pow(10,clamp(EVEN-RMS[n],-8,8)/20),
  score=(n,then,o)=>{const b=BARS[n],k=o&&o.even?gain(n):1;
   return Object.assign({},b,{tracks:k===1?b.tracks:b.tracks.map(t=>Object.assign({},t,{vol:(t.vol==null?1:t.vol)*k})),then:then||hush(b)})};
