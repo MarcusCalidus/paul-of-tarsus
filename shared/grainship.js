@@ -363,8 +363,9 @@ const SIGNGLYPH={'Α':['.#.','#.#','###','#.#','#.#'],'Δ':['..#..','.#.#.','.#.
    the mantle down to the feet; the right arm (k) bare and hanging at the side. It widens from the shoulders to the hem and never narrows
    again, so that no row of it stands out as a bar; no arm stands out of it, and nothing on it is round. */
 const SIGNFIG=["..hhh..","..sss..","..sss..",".MMmtt.",".MMmttk","MMmmttk","MMmmmtk","MMmmmmk","MMmmmmn","MMmmmmn","MMmmmnn","MMmmmnn","Mmmmnnn","tttttTT","tttttTT",".f...f."];
-/* the same figure for a smaller board (s.size 'small'): ten high, the face one row, the mantle shorter */
-const SIGNFIG_S=["..hhh..","..sss..",".MMmtt.","MMmmttk","MMmmmtk","MMmmmmn","MMmmmnn","Mmmmnnn","tttttTT",".f...f."];
+/* the same figure for a smaller board (s.size 'small'): five pixels wide and ten high, the face one row, the bare arm the width of the
+   shoulder */
+const SIGNFIG_S=[".hhh.",".sss.","MMmtk","MMmtk","MMmmk","MMmmn","Mmmmn","Mmmnn","ttttT","f...f"];
 function sign(g,G,C,s){const{L,k,wl,D,sheer}=G,yb=wl+D,Y=(x,f)=>sheer(x)+(yb-sheer(x))*f,hp2=v=>Math.round(v*2)/2,
     FIG=s.size==='small'?SIGNFIG_S:SIGNFIG,two=s.figs===2,name=s.name||(two?'ΔΙΟΣΚΟΥΡΟΙ':'ΚΑΣΤΩΡ'),p=s.px||Math.max(.5,Math.round(k*.7*2)/2),
     GL=[...name].map(ch=>SIGNGLYPH[ch]).filter(Boolean),tw=GL.reduce((a,q)=>a+q[0].length,0)+GL.length-1,
@@ -383,8 +384,8 @@ function sign(g,G,C,s){const{L,k,wl,D,sheer}=G,yb=wl+D,Y=(x,f)=>sheer(x)+(yb-she
   /* the ground, limewashed and a little weathered, lit from the left like the rest of the hull */
   R(q,0,0,W,H,PAL.ground);q.fillStyle=lg(q,0,0,W,0,['rgba(255,246,220,.18)','rgba(90,80,110,0)','rgba(90,80,110,.22)']);q.fillRect(0,0,W,H);
   tex(q,'mott',.3,0,0,W,H,'overlay',.35);
-  /* its frame: a lath round the edge, one pixel of the sign wide, its top and its after edge lit */
-  for(let i=0;i<Wp;i++){px(i,0,i<1?PAL.frameHi:tint(PAL.frame,.1));px(i,Hp-1,tint(PAL.frame,-.25))}
+  /* its frame: a lath round the edge, one pixel of the sign wide, its top and its after edge lit, its foot and its forward edge in shade */
+  for(let i=0;i<Wp;i++){px(i,0,mix(PAL.frame,PAL.frameHi,.35));px(i,Hp-1,tint(PAL.frame,-.25))}
   for(let j=1;j<Hp-1;j++){px(0,j,tint(PAL.frame,.18));px(Wp-1,j,tint(PAL.frame,-.2))}
   /* the figure or the two figures, centered over the name */
   const fx0=Math.round((Wp-fsw)/2);
