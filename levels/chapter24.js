@@ -826,9 +826,9 @@ const HAND24=[
    say:['sextus_paul_who_wrote_us_that_letter','sextus_up_the_appian_way_on_foot','sextus_after_seven_days_in_puteoli','sextus_at_vibias_house_where_we_meet']}];
 /* the board: the seven who go out, each with the one true thing he says, and his color on the board */
 const TOK24=[{id:'sextus24',board:'sextus_i_know_the_boatmen',name:'Sextus',c:'#c89a3a',says:'sextus_i_know_the_boatmen'},{id:'mikon24',board:'sextus_on_the_board_mikon',name:'Mikon',c:'#7a5a3a',says:'mikon_paul_knows_my_face'},
-  {id:'vibia24',board:'sextus_on_the_board_vibia',name:'Vibia',c:'#8a5a2a',says:'vibia_bread_on_my_mule'},{id:'aemilia24',board:'sextus_on_the_board_aemilia',name:'Aemilia',c:'#4a6a5a',says:'aemilia_i_go_where_my_mother_goes'},
+  {id:'vibia24',board:'sextus_on_the_board_vibia',name:'Vibia',c:'#7a3a36',says:'vibia_bread_on_my_mule'},{id:'aemilia24',board:'sextus_on_the_board_aemilia',name:'Aemilia',c:'#4a6a5a',says:'aemilia_i_go_where_my_mother_goes'},
   {id:'postumus24',board:'sextus_on_the_board_postumus',name:'Postumus',c:'#a89a80',says:'postumus_vibia_says_thirty_five_miles'},{id:'firmus24',board:'sextus_on_the_board_firmus',name:'Firmus',c:'#e6dcc6',says:'firmus_my_oven_cant_spare_a_day'},
-  {id:'thallos24',board:'sextus_on_the_board_thallos',name:'Thallos',c:'#a49478',says:'thallos_as_far_as_the_fortieth_mile'}];
+  {id:'thallos24',board:'sextus_on_the_board_thallos',name:'Thallos',c:'#3e2a1c',says:'thallos_as_far_as_the_fortieth_mile'}];
 /* the wishes, tested in this order when every token is set: [who says it, the line, broken(st)]. st: id -> 'T' or 'M' */
 const CHECK24=[
   ['vibia24','vibia_nobody_waits_alone',st=>['T','M'].some(p=>TOK24.filter(t=>st[t.id]===p).length===1)],
