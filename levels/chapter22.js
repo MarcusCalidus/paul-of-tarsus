@@ -373,21 +373,21 @@ function drawStorm22(g,t){const v=ART.storm22.variant(),N=v==='n',e=e22(t),DS=ds
   clipTo(g,()=>{const W=wet22();g.beginPath();for(const q of W){g.moveTo(q[0],q[1]);for(let i=2;i<q.length;i+=2)g.lineTo(q[i],q[i+1]);g.closePath()}},
     ()=>DS.aboard(g,t,e,G.sway?sk22v(v):0));
   if(phase22()==='skiff')skiff22(g,t,e);
-  if(N){const[lx,ly]=lant22().p,f=.85+.15*Math.sin(t/90)+.08*Math.sin(t/37);R(g,lx-1,ly-.8,2,2.6,'#ffd27a');R(g,lx-.5,ly-.2,1,1.4,rgba('#fff4d0',f))}
+  if(N){const L=lant22(),[lx,ly]=L.p,f=.85+.15*Math.sin(t/90)+.08*Math.sin(t/37);depth(L.floor[1]+.5,()=>{R(g,lx-1,ly-.8,2,2.6,'#ffd27a');R(g,lx-.5,ly-.2,1,1.4,rgba('#fff4d0',f))})}
   if(phase22()==='skiff'&&G.pull22&&performance.now()-G.pull22<700)SHARED.beat.cap(g,'pull_22',LK.x,LK.y-56,{w:50});
   if(G.beat){const c=caller22();if(c&&c.room===G.room)SHARED.beat.call(g,c.x,c.y-56,t)}
   /* a bale going over the lee rail: up from his arms, over the rail and away to starboard */
   if(G.over22){const k=Math.min(1,(performance.now()-G.over22)/600);if(k<1){const[hx,hy]=STORM22.holds[3],x=hx+8+k*34,y=hy-22-Math.sin(k*Math.PI)*16+k*k*18;
     depth(hy+1,()=>{poly(g,[x-4,y-2.6,x+4,y-3,x+4.4,y+2.6,x-4,y+3],'#7a5c3a');R(g,x-4,y-2.6,8,.6,'#a88a62');R(g,x-4,y+2.4,8.4,.6,'#4a3420')})}}}
 /* the skiff (27:16), coming up over the port rail on the men's rope as they gain on her (G.sk22, 0..4), rising and falling with the sea.
-   She hangs alongside, a little outboard of the bulwark, her bow forward (toward us) and a little higher; we look down into her over
-   her near gunwale, and she is full of water: grey-green to the brim, with foam in it, spilling over her gunwale and falling away
-   outboard. Her near side is planked in strakes that run along her; no thwart and no oar across her. Only what is above the rail is
-   seen: the rest of her is outboard, behind it. The rope from her stem goes over the rail and to the men's fists, slanting. */
-const SKIFF22={z0:6.3,z1:10.2,off:.95,hb:.62,lift:[-.7,-.02,.28,.52,.7]};
+   She hangs alongside, a little outboard of the bulwark, her stem aft (away from us, as she was towed) and a little higher; she is full
+   of water: grey-green to the brim, with foam in it, spilling over her near gunwale and falling away outboard. Her near side is planked in strakes that run along her; no thwart and no oar across her. Only what is above the rail is
+   seen: the rest of her is outboard, behind it. The rope from her stem goes over the rail just beyond it, so that it crosses nothing of
+   her, and down to the men's fists, slanting. */
+const SKIFF22={z0:5.5,z1:9.3,off:.95,hb:.62,lift:[-.7,-.02,.28,.52,.7]};
 function skiff22(g,t,e){const D=gd22(),S=SKIFF22,n=G.sk22||0,ph=(((e%1)+1)%1),pause=Math.sin(Math.PI*clamp((ph-.24)/.5,0,1)),
     base=S.lift[Math.min(4,n)]+.07*pause+.04*Math.sin(t/700),xc=z=>-(D.b(z)+S.off),
-    hg=z=>D.s(z)+1.15+base+.16*Math.pow((S.z1-z)/(S.z1-S.z0),1.5)+.05*Math.pow((z-S.z0)/(S.z1-S.z0),2),
+    hg=z=>D.s(z)+1.15+base+.16*Math.pow((z-S.z0)/(S.z1-S.z0),1.5)+.05*Math.pow((S.z1-z)/(S.z1-S.z0),2),
     zs=[];for(let i=0;i<=12;i++)zs.push(S.z0+(S.z1-S.z0)*i/12);
   const sh=i=>Math.sin(Math.PI*i/12),near=zs.map((z,i)=>D.P(xc(z)+S.hb*(.25+.75*sh(i)),hg(z),z)).flat(),far=zs.map((z,i)=>D.P(xc(z)-S.hb*(.25+.75*sh(i)),hg(z),z)).flat(),
     bot=zs.map((z,i)=>D.P(xc(z)+S.hb*.6*sh(i),hg(z)-.55-.1*sh(i),z)).flat(),RP=portTop22();
@@ -406,9 +406,9 @@ function skiff22(g,t,e){const D=gd22(),S=SKIFF22,n=G.sk22||0,ph=(((e%1)+1)%1),pa
   /* the water spilling over her near gunwale amidships and falling away: short level dashes and small squares */
   const r=rng(2216+(Math.floor(t/110)%9));for(let i=0;i<30;i++){const j=3+Math.floor(r()*7),d=r()*9*(.5+.5*pause+(n?.3:0));
     R(g,near[2*j]+(r()-.5)*4,near[2*j+1]+1+d,r()<.4?1:.5,.5,`rgba(220,232,228,${(.8*(1-d/12)).toFixed(2)})`)}
-  const stem=D.P(xc(S.z0)+.05,hg(S.z0)+.04,S.z0);R(g,stem[0]-.6,stem[1]-.6,1.2,1.2,'#1a1410');g.restore();
+  const stem=D.P(xc(S.z1),hg(S.z1)+.04,S.z1);R(g,stem[0]-.6,stem[1]-.6,1.2,1.2,'#1a1410');g.restore();
   /* the rope: from her stem to the rail, then to the men's fists, front man first (each man's own piece the pose draws) */
-  const rz=6.7,rl=D.P(-D.b(rz),D.s(rz)+D.rx(-D.b(rz),rz)+.1,rz),pts=[stem[0],stem[1],rl[0],rl[1]-.3];
+  const rz=S.z1+.5,rl=D.P(-D.b(rz),D.s(rz)+D.rx(-D.b(rz),rz)+.1,rz),pts=[stem[0],stem[1],rl[0],rl[1]-.3];
   for(const h of HAUL22){const a=h.a;if(a.room!=='storm22')continue;const p=poseAt(a.look,'haul'+(a.pk||0));if(!p||!p.rope)continue;
     const[f,m]=p.rope,A=[a.x+f[0]*a.dir,a.y+f[1]],Z=[a.x+m[0]*a.dir,a.y+m[1]],first=A[0]<Z[0]?A:Z,last=A[0]<Z[0]?Z:A;pts.push(first[0],first[1]);stroke(g,pts,'#b8a07a',.7);pts.length=0;pts.push(last[0],last[1])}
   if(pts.length===4)stroke(g,pts,'#b8a07a',.7)}
@@ -543,7 +543,7 @@ const LK=actor('luke22','Luke','#d0e8e0',112),AR=actor('aris22','Aristarchus','#
   SC=actor('sail22c','sailor','#e0e0d0',124),SD=actor('sail22d','sailor','#d0d8e0',94),PI=actor('pilot22','pilot','#d8d8f0',88),OW=actor('owner22','shipowner','#e8d8f0',106);
 const PRISONERS=[PR1,PR2,PR3];
 /* the men on the skiff's rope, each with his place and his pose's own frame (see drawStorm22) */
-const HAUL22=[{a:SA,x:56,y:122},{a:LK,x:78,y:124},{a:AR,x:100,y:128},{a:SD,x:122,y:126}];
+const HAUL22=[{a:SA,x:106,y:122},{a:LK,x:126,y:124},{a:AR,x:146,y:128},{a:SD,x:166,y:126}];
 const PULLS22=4;
 /* the sailor who calls the moment, in the act that is being played */
 const caller22=()=>phase22()==='skiff'?SA:phase22()==='load'?SD:null;
@@ -908,7 +908,7 @@ const TABLETS={
 
 /* ============ PLACING THE CAST, SETUP ============ */
 const ENT={quay22:[150,128,-1],myra22:[100,126,1],get deck22(){return F.fh?[130,126,1]:[120,128,1]},
-  get storm22(){const ph=phase22();return ph==='skiff'?[78,124,-1]:ph==='load'?[...STORM22.holds[0],1]:ph==='tablet'?[120,126,-1]:[174,124,-1]},
+  get storm22(){const ph=phase22();return ph==='skiff'?[126,124,-1]:ph==='load'?[...STORM22.holds[0],1]:ph==='tablet'?[120,126,-1]:[174,124,-1]},
   tablet22:[160,236,1],girded22:[160,236,1]};
 const EVERY=[LK,AR,JU,GU,GU2,...PRISONERS,CS,SA,SB,SC,SD,PI,OW];
 /* place22: everyone where the story has him, from the flags */
