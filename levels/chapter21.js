@@ -194,41 +194,25 @@ function drawReport21(g){G.caps21=G.caps21||[];
 /* ==== ART report21: end ==== */
 
 /* ==== ART hall21: begin ==== */
-/* ART-TODO. The audience chamber (Acts 25:23), an inner hall of the palace, dressed for the day (the same hall as Chapter Twenty's hall20,
-   whose painter should become one with this one in shared/caesarea.js). We look across the hall: at the right a dais of two broad white
-   steps (lower 196..316, top 104, foot 112; upper 204..316, top 98) with three chairs on it, each a solid block with a back, no legs
-   under its middle (their tops 93, their feet 102): Festus at 222, King Agrippa at 248, Bernice at 274, all facing left. At the back
-   left a long bench of stone, solid to the floor (30..174, top 95, foot 104), where the military commanders sit at 44, 68, 92 and the
-   leading men of the city at 116, 140, 164, facing right. The door is an opening in the back wall at the left (6..30, 46..96). Two long,
-   low windows high in the back wall (60..120 and 140..200, 16..26) give the light, from the left. Two Roman standards stand at the back,
-   small, in the shade of the back wall, at 22 and 184 (their feet at 95.5, their tops no higher than 52): painted by
-   SHARED.caesarea.standard when it exists, never a hotspot (CONTRIBUTING section 3). The wall behind them has no course or band that a
-   pole would cross. No window, lamp or round thing lies behind a head.
-   Called from outside: ART.hall21. Reads nothing.
-   Hotspots (ROOMS.hall21): the dais 196,96,120,16 · the bench 30,86,144,18 · the windows 60,14,140,14 · the door 6,46,24,50. Walk:
+/* The audience chamber (Acts 25:23), painted by SHARED.caesarea.innerHall: the same hall, in the same geometry (SHARED.caesarea.IH), as
+   Chapter Twenty's hall20, here dressed for the great show. At the right the dais of white stone, a deep upper step and a lower one, with
+   three chairs on it, each with a leg at its two ends and a solid back at its right end (the sitters face left): Festus at 222, King
+   Agrippa at 248, Bernice at 274 (seat tops 93, feet 102). Behind them two hangings of purple wool, hung from a rod. At the back left two
+   benches of plain wood, each on two end pieces (seat tops 95, feet 104): the military commanders sit on the first at 51, 75, 99, the
+   leading men of the city on the second at 131, 155, 179, facing right. Two Roman standards stand at the back in the shade of the wall,
+   small, never a hotspot (CONTRIBUTING section 3): one between the doorway and the commanders' bench (x 34), one in the gap between the
+   benches (x 115), each before plain plaster between the painted panels, its top at y 53.5, below every band of the wall. The doorway to
+   the passage is an opening in the back wall at the left (4..26, 46..96). Two long, low windows high in the back wall (60..120 and
+   140..200, 14..29) give the light from behind at the left: their patches of sun lie on the floor before the benches, and the figures'
+   shadows fall the same way (SHARED.caesarea.hallLight('day')). Nothing stands in the walk strip.
+   Called from outside: ART.hall21, HALL21. Reads nothing.
+   Hotspots (ROOMS.hall21): the dais 196,96,120,16 · the benches 41,86,148,18 · the windows 58,12,144,19 · the door 4,46,22,50. Walk:
    24..300 by 116..138; while Paul is played (chained) the walk is his own place. Paul stands 150,126 facing right, the soldier a step
-   ahead of him on his right (168,126.5), chained by his near wrist; the clerk stands 300,124 facing left. Light: from the high windows at the left (sun [14,6,.22]). */
-const HALL21={wallY:96,dais:{lower:[196,316,104,112],upper:[204,316,98,104]},chair:{top:93,foot:102},
-  seats:{festus:222,agrippa:248,bernice:274},bench:{x0:30,x1:174,top:95,foot:104,at:[44,68,92,116,140,164]},
-  door:[6,46,24,50],windows:[[60,16,60,10],[140,16,60,10]],standards:[22,184],paul:[150,126,1],clerk:[300,124,-1]};
-ART.hall21={w:320,q:12,paint(g){paintHall21(g)},light:{amb:'#e6dccc',sun:[14,6,.22],wallY:96},draw(g){chains21(g)},front(){}};
-function paintHall21(g){const r=rng(2121),H=HALL21;
-  plaster(g,0,0,320,96,'#d6c8aa',r,{patch:0,cracks:0,t:.3});
-  /* panels of imitation stone on the back wall, each a block of its own, stopping short of one another */
-  for(const x of[36,96,156,216,276])R(g,x,34,48,50,'#b88a6a');
-  for(const[x,y,w,h]of H.windows){R(g,x,y,w,h,'#9ab8d0');R(g,x,y+h-1.6,w,1.6,'#efe2c6')}
-  {const[x,y,w,h]=H.door;R(g,x,y,w,h,'#3a3028');R(g,x+2,y+2,w-4,h-2,'#4e4236')}
-  pave(g,-2,96,322,144,'#cbbd9c',r,{vx:160,vy:58,rows:6,step:32,v:.06,t:.3});
-  /* the bench: a solid block of stone */
-  {const b=H.bench;M21.shadow(g,(b.x0+b.x1)/2,b.foot,(b.x1-b.x0)/2,2.4,.4);R(g,b.x0,b.top,b.x1-b.x0,b.foot-b.top,'#bcae92');R(g,b.x0,b.top,b.x1-b.x0,1.2,'#e4d8bc')}
-  /* the dais: two broad steps of white stone */
-  for(const[x0,x1,t,f]of[H.dais.lower,H.dais.upper]){R(g,x0,t,x1-x0,f-t,'#e6ded0');R(g,x0,t,x1-x0,1.2,'#f6f0e4');R(g,x0,f-1,x1-x0,1,'#b8ae9c')}
-  /* the chairs: solid blocks with backs, their tops where the hips rest */
-  for(const x of Object.values(H.seats)){R(g,x-9,H.chair.top,19,H.chair.foot-H.chair.top,'#6a4428');R(g,x+6,H.chair.top-12,4,12,'#5a3a22');R(g,x-9,H.chair.top,19,.8,'#9a6c42')}
-  /* the light from the high windows at the left */
-  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,222,176,1)','rgba(214,200,196,.6)','rgba(170,172,208,.7)']);g.fillRect(0,0,320,144)});
-  /* the standards, when shared/caesarea.js paints them (CONTRIBUTING section 3: at the back, small, never a hotspot) */
-  if(K21.standard)for(const x of H.standards)K21.standard(g,x,95.5,{})}
+   ahead of him on his right (168,126.5), chained by his near wrist; the clerk stands 300,124 facing left. */
+const HALL21=(()=>{const I=K21.IH;return{wallY:I.wallY,chair:{top:I.chair.top,foot:I.chair.foot},
+  seats:{festus:I.chairs[0],agrippa:I.chairs[1],bernice:I.chairs[2]},bench:{top:I.bench.top,foot:I.bench.foot,at:I.sitters.slice()},
+  door:I.door.slice(),windows:I.windows.map(w=>w.slice()),standards:I.standards.slice(),paul:[150,126,1],clerk:[300,124,-1]}})();
+ART.hall21={w:320,q:12,paint(g){K21.innerHall(g,{hour:'day',chairs:3,show:true})},light:K21.hallLight('day'),draw(g){chains21(g)},front(){}};
 /* ==== ART hall21: end ==== */
 
 /* ---- the inventory ---- */
@@ -495,10 +479,10 @@ ROOMS.report21={space:.6,walk:NOW,mood:'write',amb:AMB.report21,hs:[
   {name:'field_for_the_charge',x:FBOX21[0],y:FBOX21[1],w:FBOX21[2],h:FBOX21[3],wx:160,wy:236,look:()=>field21(),use:()=>field21()},
   {name:'back_to_the_table',x:0,y:136,w:120,h:8,wx:160,wy:236,exit:()=>goto21('write21'),look:'back_to_the_table_look'}]};
 ROOMS.hall21={space:1.3,get walk(){return PC()===P&&chainedNow()?[PAULH[0],PAULH[0],PAULH[1],PAULH[1]]:[24,300,116,138]},get mood(){return phase21()==='listen'?'tense':'hall'},amb:AMB.hall21,hs:[
-  {name:'windows',x:60,y:14,w:140,h:14,wx:130,wy:120,look:'hall_windows_look'},
-  {name:'bench',x:30,y:86,w:144,h:18,wx:100,wy:120,look:'hall_bench_look'},
+  {name:'windows',x:58,y:12,w:144,h:19,wx:130,wy:120,look:'hall_windows_look'},
+  {name:'bench',x:41,y:86,w:148,h:18,wx:100,wy:120,look:'hall_bench_look'},
   {name:'dais',x:196,y:96,w:120,h:16,wx:190,wy:120,look:'hall_dais_look'},
-  {name:'door_of_the_hall',x:6,y:46,w:24,h:50,wx:30,wy:122,dir:-1,exit:()=>PC()===CL&&phase21()==='passage'?passage21():say(PC(),PC()===CL?'clerk_my_place_is_here':'paul_not_mine_to_go',PC()===CL?TC:THP),look:'door_of_the_hall_look'}]};
+  {name:'door_of_the_hall',x:4,y:46,w:22,h:50,wx:30,wy:122,dir:-1,exit:()=>PC()===CL&&phase21()==='passage'?passage21():say(PC(),PC()===CL?'clerk_my_place_is_here':'paul_not_mine_to_go',PC()===CL?TC:THP),look:'door_of_the_hall_look'}]};
 
 /* ============ PEOPLE AS HOTSPOTS ============ */
 const who=(a,o)=>{a.hs=Object.assign({name:a.name,actor:a},o)};

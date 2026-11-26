@@ -208,7 +208,186 @@ function lightUp(g,E){
     pool(g,236,120,130,20,'#fff2d8',.12,'screen')}
   ao(g,0,96,320,6,'t',.25,'#3a2c3c');ao(g,0,126,320,18,'b',.12,'#2a2050')}
 
-return{court,O,light,birds,HZ,WALK,WALLY,COPING,PIER,COLS,DAIS,SEAT,TABLE,DESK,AT}})();
+/* ==== the inner hall (Chapter Twenty's hall20, Chapter Twenty-One's hall21) ==== */
+/* IH: the one geometry of the hall, which both chapters read (room pixels; [x0, x1, top, foot] for the steps, the top of an upper step
+   being its back edge at the wall):
+     wallY      the foot of the back wall
+     door       the doorway to the passage [x, y, w, h], an opening in the back wall at the left
+     windows    two long, low windows high in the back wall [x, y, w, h], above every head
+     dais       the dais at the right: a deep upper step whose tread reaches from the wall to y 102.8, where the chairs stand, and a lower
+                step before it; both run out of the picture at the right
+     chairs     where each chair's sitter sits (x; the chair spans x-9..x+10, its back at the right, the sitter faces left): the
+                governor's, the king's (or, in Chapter Twenty, Drusilla's), Bernice's
+     chair      {top, foot}: the seat's top edge, where the hips rest, and the line of the legs' feet (and the sitter's feet)
+     benches    the two benches of the great show [x0, x1], with bench {top, foot}; sitters: where each sitter on them sits (x), facing
+                right, the seat spanning x-10..x+9: three military commanders on the first, three leading men of the city on the second
+     standards  the two Roman standards of the great show (x of the pole), feet at y 95.5: one between the doorway and the commanders'
+                bench, one in the gap between the two benches; each stands before plain plaster, between the painted panels
+     bays       the painted panels of the back wall stand in these spans only [x0, x1] */
+const IH={wallY:96,door:[4,46,22,50],windows:[[60,14,60,15],[140,14,60,15]],
+  dais:{upper:[204,320,96,106],lower:[196,320,106,112],tread:102.8},
+  chairs:[222,248,274],chair:{top:93,foot:102},
+  benches:[[41,109],[121,189]],bench:{top:95,foot:104},sitters:[51,75,99,131,155,179],
+  standards:[34,115],bays:[[41,108],[122,190],[206,320]]};
+/* the light of the hall: daylight through the two high windows, which come from behind at the left and fall toward us; figures' shadows
+   fall to the right and toward us. 'afternoon' (Chapter Twenty: calm, warm, low, so the patches of sun lie in the walk strip) and 'day'
+   (Chapter Twenty-One, the great show: higher and brighter) */
+const HLIGHT={afternoon:{amb:'#eed8c2',sun:[12,14,.2],wallY:96},day:{amb:'#f0e4d2',sun:[10,12,.22],wallY:96}};
+const hallLight=hour=>{const L=HLIGHT[hour==='day'?'day':'afternoon'];return{amb:L.amb,sun:L.sun.slice(),wallY:L.wallY}};
+/* innerHall(g, o): paints the hall for a 320 by 144 room. o:
+     hour      'afternoon' (default) or 'day', as hallLight
+     chairs    how many of the chairs stand on the dais (1 to 3, from the left; default 1)
+     show      the great show of Acts 25:23: the hangings behind the dais, the two benches and the two standards
+   A tall room of the palace in the court's pale limestone: a ceiling of beams, a cornice of stone under it, the two high windows with
+   only the sky in them, plaster walls painted in panels of imitation stone, red below and ochre above, each panel inside its own bay
+   (no band runs the length of the wall, so nothing upright crosses one), the doorway to the passage at the left, a floor of pale flags.
+   Heads come at y 62..96: behind them lie plaster and panels, nothing round. */
+function innerHall(g,o){o=o||{};const r=rng(2101),W='#d6c09c',F=IH.wallY,L=hallLight(o.hour),show=!!o.show;
+  SHARED.materials.ceiling(g,320,{U:7,x0:14,step:36,vx:160,vy:58,r,boards:'#2e2018',joist:'#5e4428',plate:'#6e5032'});
+  /* the back wall: limewashed plaster, a little worn */
+  plaster(g,0,9.4,320,F-9.4,W,r,{patch:0,cracks:0,t:.3,top:.02,bot:-.05});
+  SHARED.temple.age(g,0,12,320,F-12,rng(2102),.6);
+  for(const[x,y,n]of[[146,36,3],[252,30,2]])SHARED.materials.crack(g,x,y,n,r,.45);
+  hallCornice(g,W);
+  for(const b of IH.bays)hallPanels(g,b,r);
+  for(const w of IH.windows)hallWindow(g,w,W);
+  hallDoor(g,W);
+  pave(g,-2,F,322,144,'#cdb894',rng(2103),{vx:160,vy:58,rows:6,step:32,v:.06,t:.3,rand:1});
+  ao(g,0,F,320,4,'t',.3,'#3a2c30');
+  if(show){hallHanging(g);for(const x of IH.standards)standard(g,x,95.5,{})}
+  hallDais(g,r);
+  if(show)for(const[x0,x1]of IH.benches)hallBench(g,x0,x1,r);
+  const n=o.chairs==null?1:o.chairs;IH.chairs.slice(0,n).forEach((x,i)=>hallChair(g,x,i));
+  hallLightUp(g,L,show)}
+/* the cornice under the ceiling's plate: a moulding of the court's pale stone, its lower lip catching the light from below */
+function hallCornice(g,W){const S=tint(W,.04);
+  R(g,0,9.4,320,2.2,tint(S,-.06));R(g,0,9.4,320,.5,'rgba(40,28,30,.5)');R(g,0,11.2,320,.6,tint(S,.2));
+  R(g,0,11.8,320,1.4,tint(S,.02));R(g,0,13.2,320,.5,'rgba(70,52,56,.35)');ao(g,0,13.7,320,3,'t',.2,'#3a2a3a')}
+const lt2=c=>tint(c,.18);
+/* the panels of one bay: an ochre panel above and a deep red one below, each like veined stone with a pale line at its top and a dark
+   one at its foot, both stopping inside the bay. The lower panel reaches down to y 93, where a seat's board hides its foot, so that no
+   edge runs across behind the back of a chair. */
+function hallPanels(g,[a,b],r){b=Math.min(b,318);
+  for(const[y0,y1,col]of[[34,57,'#a8783e'],[61,93,'#7e3a30']]){R(g,a,y0,b-a,y1-y0,col);
+    inRect(g,a,y0,b-a,y1-y0,()=>{tex(g,'blotch',.45,a,y0,b-a,y1-y0,'soft-light',1);
+      g.fillStyle=lg(g,0,y0,0,y1,[tint(col,.06),col,tint(col,-.12)]);g.fillRect(a,y0,b-a,y1-y0);tex(g,'blotch',.5,a,y0,b-a,y1-y0,'soft-light',1.4);
+      for(let k=0;k<(b-a)/5;k++){let vx=a+r()*(b-a),vy=y0+r()*(y1-y0);const p=[vx,vy],lt=r()<.6;for(let s=0;s<6;s++){vx+=1+r()*3.4;vy+=(r()-.5)*2.4;p.push(vx,vy)}
+        stroke(g,p,rgba(lt?tint(col,.36):tint(col,-.4),lt?.32:.28),.5)}
+      for(let k=0;k<(b-a)/14;k++)pool(g,a+r()*(b-a),y0+r()*(y1-y0),3+r()*5,1.5+r()*2,lt2(col),.18,'source-over');
+      /* a thin dark line inset round the field, and a pale one inside it, as on painted plaster */
+      const i=1.6;R(g,a+i,y0+i,b-a-2*i,.5,'rgba(30,14,14,.4)');R(g,a+i,y1-i-.5,b-a-2*i,.5,'rgba(30,14,14,.4)');R(g,a+i,y0+i,.5,y1-y0-2*i,'rgba(30,14,14,.4)');R(g,b-i-.5,y0+i,.5,y1-y0-2*i,'rgba(30,14,14,.4)');
+      R(g,a+i+.5,y0+i+.5,b-a-2*i-1,.5,'rgba(255,236,200,.18)');R(g,a+i+.5,y0+i+.5,.5,y1-y0-2*i-1,'rgba(255,236,200,.14)');
+      ao(g,a,y0,b-a,3,'t',.18,'#2a1418')});
+    R(g,a,y0,b-a,.5,'rgba(240,222,190,.4)');R(g,a,y1-.5,b-a,.5,'rgba(40,22,22,.4)');R(g,a,y0,.5,y1-y0,'rgba(240,222,190,.22)');R(g,b-.5,y0,.5,y1-y0,'rgba(40,22,22,.25)')}}
+/* a high window: a long, low opening through the thick wall with only the bright sky in it; we look up at it, so the underside of the
+   lintel shows as a band of shade at its top and the sill is not seen; no bars, nothing round. The light of the sky spills softly onto
+   the plaster round it. */
+function hallWindow(g,[x,y,w,h],W){
+  pool(g,x+w/2,y+h/2,w*.75,h*1.3,'#fff2dc',.16,'screen');
+  g.fillStyle=lg(g,0,y,0,y+h,['#c8dcea','#e0e8ec','#fbf2de']);g.fillRect(x,y,w,h);
+  pool(g,x+w*.2,y+h,w*.5,h*.6,'#fff8e8',.5,'screen');
+  /* the underside of the lintel, in shade, lit a little from the floor below */
+  poly(g,[x,y,x+w,y,x+w-1.6,y+3,x+1.6,y+3]);g.fillStyle=lg(g,0,y,0,y+3,[tint(W,-.4),tint(W,-.22)]);g.fill();
+  /* the sides of the opening, seen edge-on: thin and in shade */
+  poly(g,[x,y,x+1.6,y+3,x+1.6,y+h,x,y+h],tint(W,-.3));poly(g,[x+w,y,x+w-1.6,y+3,x+w-1.6,y+h,x+w,y+h],tint(W,-.24));
+  /* a plain frame of stone round it */
+  R(g,x-1.6,y-1.6,w+3.2,1.6,tint(W,.08));R(g,x-1.6,y-1.6,w+3.2,.5,tint(W,.24));
+  R(g,x-1.6,y,1.6,h,tint(W,.02));R(g,x+w,y,1.6,h,tint(W,-.06));
+  R(g,x-1.6,y+h,w+3.2,1.8,tint(W,.1));R(g,x-1.6,y+h+1.3,w+3.2,.5,'rgba(60,44,50,.45)');ao(g,x-1.6,y+h+1.8,w+3.2,3,'t',.25,'#3a2a3a')}
+/* the doorway: an opening in the back wall at the left, with a plain frame of stone, the passage beyond it in shade, lit a little from
+   far down it */
+function hallDoor(g,W){const[x,y,w,h]=IH.door,b=y+h;
+  clipTo(g,()=>{g.beginPath();g.rect(x,y,w,h)},()=>{g.fillStyle=lg(g,0,y,0,b,['#1e1614','#2a201e','#3a2e2a']);g.fillRect(x,y,w,h);
+    pool(g,x+w*.6,b-10,10,12,'#d8b890',.16,'screen');poly(g,[x,b,x+w,b,x+w-4,b-7,x+3,b-7],'rgba(150,124,104,.25)');
+    /* the left side of the opening, its depth seen from the room */
+    poly(g,[x,y,x+3,y+3,x+3,b-1.4,x,b],tint(W,-.42));ao(g,x,y,w,8,'t',.6,'#000')});
+  R(g,x-2.4,y-3,2.4,h+3,tint(W,.02));R(g,x+w,y-3,2.4,h+3,tint(W,-.04));R(g,x+w+1.9,y-3,.5,h+3,'rgba(50,36,40,.35)');R(g,x-2.4,y-3,.5,h+3,tint(W,.2));
+  R(g,x-3,y-4.6,w+6,2.2,tint(W,.08));R(g,x-3,y-4.6,w+6,.5,tint(W,.26));R(g,x-3,y-2.6,w+6,.5,'rgba(50,36,40,.4)');
+  tex(g,'mott',.3,x-3,y-4.6,w+6,h+4.6,'overlay',1)}
+/* the hangings of the great show: two lengths of purple wool behind the dais, side by side, sewn round a rod whose left end rests in the
+   wall; broad soft folds and no line drawn down them; a border of ochre at the top only, two bands with a zigzag between them, far above
+   every head; their feet reach the tread of the dais and are lost in the shade there, with no hem or fringe across the chairs' legs */
+function hallHanging(g){const y0=31,y1=IH.wallY,C='#5a2848',OCH='#b8903e',r=rng(2104);
+  for(const[x0,x1]of[[206,263],[263,322]]){
+    comp(g,'multiply',.3,()=>R(g,x0-1,y0+1,x1-x0+1,y1-y0,'#5a4050'));
+    R(g,x0,y0,x1-x0,y1-y0,C);
+    inRect(g,x0,y0,x1-x0,y1-y0,()=>{
+      for(let y=y0;y<y1;y+=.5)R(g,x0,y,x1-x0,.5,rgba(r()<.5?'#000000':'#ffffff',.008+r()*.014));
+      R(g,x0,y0+2,x1-x0,1,OCH);R(g,x0,y0+6.2,x1-x0,.8,OCH);
+      {const p=[];for(let x=x0-1,k=0;x<=x1+2;x+=2.2,k++)p.push(x,y0+3.6+(k%2?1.6:0));stroke(g,p,tint(OCH,.1),.5)}
+      for(let k=0;k<Math.ceil((x1-x0)/9);k++){const fx=x0+2+k*9+(r()-.5)*1.5,fw=7+r()*3;
+        comp(g,'multiply',.55,()=>{g.fillStyle=lg(g,fx,0,fx+fw,0,['rgba(255,255,255,0)','rgba(40,20,50,1)','rgba(255,255,255,0)']);g.fillRect(fx,y0+1,fw,y1-y0)});
+        comp(g,'screen',.14,()=>{g.fillStyle=lg(g,fx-3,0,fx+2,0,['rgba(255,200,220,0)','rgba(255,200,220,1)','rgba(255,200,220,0)']);g.fillRect(fx-3,y0+1,5,y1-y0)})}
+      tex(g,'mott',.3,x0,y0,x1-x0,y1-y0,'overlay',.8);ao(g,x0,y0,x1-x0,4,'t',.4,'#000');ao(g,x0,y1-14,x1-x0,14,'b',.45,'#1a0c18');
+      ao(g,x1-3,y0,3,y1-y0,'r',.3,'#1a0c18')})}
+  /* the rod, its left end resting in the wall; it runs on out of the picture at the right */
+  R(g,203,y0-2.2,120,2.4,'#6a4a2c');R(g,203,y0-2.2,120,.6,'#a8804e');R(g,203,y0,120,.4,'#2e1e14');R(g,202.2,y0-2.6,1.2,3.2,'#3a2a1c')}
+/* the dais: a deep upper step of white stone where the chairs stand, its tread reaching from the wall to y 102.8, and a lower step
+   before it; both run out of the picture at the right. Treads lit, faces half lit, the left ends in the light from the windows. */
+function hallDais(g,r){const C='#e2d8c6',D=IH.dais,steps=[[...D.upper.slice(0,3),D.tread,D.upper[3]],[...D.lower.slice(0,3),D.lower[2]+2.6,D.lower[3]]];
+  comp(g,'multiply',.25,()=>poly(g,[196,112,214,112,212,118,200,118],'#6a5a7a'));
+  for(const[x0,x1,t,f,b]of steps){
+    g.fillStyle=lg(g,0,t,0,f,[tint(C,-.06),tint(C,.06)]);g.fillRect(x0,t,x1-x0,f-t);
+    g.fillStyle=lg(g,x0,0,x1,0,[tint(C,-.06),tint(C,-.14),tint(C,-.2)]);g.fillRect(x0,f,x1-x0,b-f);
+    inRect(g,x0,t,x1-x0,b-t,()=>{tex(g,'mott',.25,x0,t,x1-x0,b-t,'overlay',1);
+      for(let k=0;k<5;k++){let vx=x0+r()*(x1-x0),vy=t+r()*(b-t);const p=[vx,vy];for(let s=0;s<6;s++){vx+=1+r()*3;vy+=(r()-.5)*1.2;p.push(vx,vy)}stroke(g,p,'rgba(120,116,130,.28)',.5)}});
+    R(g,x0,f-.5,x1-x0,.5,'rgba(255,255,250,.7)');R(g,x0,b-.5,x1-x0,.5,'rgba(70,60,80,.4)');
+    poly(g,[x0,t,x0+1.2,t,x0+1.2,b,x0,b],'#fffaf0');
+    for(let x=x0+30+r()*6;x<x1-8;x+=36+r()*8)R(g,x,f+.6,.5,b-f-1.2,'rgba(120,110,120,.3)')}
+  ao(g,204,96,116,2.4,'t',.3,'#3a2c3c');ao(g,196,112,124,3,'t',.2,'#4a3a4a')}
+/* a chair on the dais (i: 0 the governor's, 1 the king's or Drusilla's, 2 Bernice's): of dark wood, as the governor's seat in the court:
+   a leg at each end, curving out a little to its foot, no rail and no leg under its middle; a thick seat whose top edge is where the
+   hips rest; a solid back at the right end, behind the sitter, a little reclined and rounded at its top; a cushion along the back */
+function hallChair(g,cx,i){const W='#6a4428',T=IH.chair.top,FL=IH.chair.foot,x0=cx-9,x1=cx+10,cush=['#6a3a5a','#5a2a4a','#4a5a6a'][i];
+  sh(g,(x0+x1)/2+2,FL+.2,11,1,.5);
+  for(const[x,d]of[[x0+1,-1],[x1-1.6,1]]){poly(g,[x,T+2,x+1.6,T+2,x+1.6+d*.4,FL-3,x+1.4+d*1.2,FL-.2,x+d*1.2,FL,x+d*.2,FL-3],d<0?'#8a5a34':'#4a2e1a');R(g,x+d*1.2-.4,FL-.6,2.2,.6,'#3a2414')}
+  const bt=T-20;poly(g,[x1-4.4,T,x1-1,T,x1+1.6,bt+3,x1+1.4,bt+.6,x1,bt-.2,x1-1.8,bt+.4,x1-3.4,bt+3]);g.fillStyle=lg(g,x1-4,0,x1+2,0,['#8a5a34',W,'#3e2616']);g.fill();
+  stroke(g,[x1-3.2,bt+3,x1-1.8,bt+.6,x1,bt],'#b08050',.5);
+  R(g,x0,T,x1-x0,2.2,W);R(g,x0,T,x1-x0,.6,'#a87a4a');R(g,x0,T+1.8,x1-x0,.5,'#3a2414');
+  inRect(g,x0,T,x1-x0,2.2,()=>tex(g,'wood',.3,x0,T,x1-x0,2.2,'overlay',.5));
+  R(g,x1-6,T-1.2,5,1.4,cush);R(g,x1-6,T-1.2,5,.5,tint(cush,.3))}
+/* a bench of the great show: a thick board of plain wood on two solid end pieces, one at each end, no leg under its middle and no rail;
+   the board's top edge is where the hips rest */
+function hallBench(g,x0,x1,r){const B=IH.bench,T=B.top,FL=B.foot,W='#7a5434';
+  sh(g,(x0+x1)/2+2,FL+.2,(x1-x0)/2+1,1.2,.5);
+  for(const[x,lit]of[[x0+.6,1],[x1-3,0]]){SHARED.materials.board(g,x,T+2.4,2.4,FL-T-2.4,lit?'#8a6440':'#5a3e26',r,1);R(g,x,FL-.6,2.4,.6,'#2e1e14')}
+  ao(g,x0+3,T+2.4,x1-x0-6,3,'t',.35,'#1a1010');
+  SHARED.materials.board(g,x0,T,x1-x0,2.4,W,r);R(g,x0,T,x1-x0,.6,'#b08a5c');R(g,x0,T+2,x1-x0,.4,'#2e1e14')}
+/* standard(g, x, y, o): a Roman standard, as CONTRIBUTING section 3 allows it in the audience hall of Chapter Twenty-One only: small,
+   at the back, in the shade of the wall. A plain pole of dark wood from its foot (y) up; near its top a short stack of discs, drawn as
+   small squares of dull metal set one on another, narrower at the stack's two ends so that it swells out of the pole and back into it
+   (no block on a thinner post, no bar across it); above it a short neck and a plain point. No crossbar, no hanging cloth, no eagle,
+   animal or portrait. Its top stays at y-42. o: nothing yet. */
+function standard(g,x,y,o){const T=y-42,P='#3e2c20',M='#8a7c5e';
+  sh(g,x+1,y+.2,2.2,.6,.45);
+  /* the pole, lit faintly on its left from the windows, its foot a short iron spike, narrower */
+  R(g,x-.4,T+5,.8,y-T-7,P);R(g,x-.4,T+5,.3,y-T-7,'#6a5440');
+  poly(g,[x-.4,y-2,x+.4,y-2,x+.2,y,x-.2,y],'#2a2420');
+  /* the point: tapering from the pole's own width */
+  poly(g,[x-.6,T+5,x+.6,T+5,x+.5,T+3,x,T,x-.5,T+3],'#6e6656');R(g,x-.5,T+3,.4,2,'#9a907a');
+  /* the stack: a collar, four discs, a collar, from the top down; each disc a small square, lit at its top, dark at its foot */
+  const parts=[[1.4,1],[2.2,1.6],[2.8,2],[2.8,2],[2.8,2],[2.2,1.6],[1.4,1]];let yy=T+8;
+  for(const[w,h]of parts){R(g,x-w/2,yy,w,h,M);R(g,x-w/2,yy,w,.5,'#b4a47c');R(g,x-w/2,yy+h-.4,w,.4,'#3a3226');R(g,x-w/2,yy,.4,h,'#a49470');yy+=h}
+  /* the shade of the wall it stands in */
+  comp(g,'multiply',.18,()=>{g.fillStyle=lg(g,x-5,0,x+7,0,['rgba(110,96,120,0)','rgba(110,96,120,1)','rgba(110,96,120,0)']);g.fillRect(x-5,T+6,12,y-T-6)})}
+/* the light of the hall: the room in its own soft shade under the ceiling, lighter low down where the floor throws back the sun; the
+   patches of sun from the two high windows, cast forward and to the right along the hall's sun (so that the figures' shadows fall the
+   same way); the corners and the wall's foot in shade */
+function hallLightUp(g,L,show){const F=IH.wallY,[sx,sy]=L.sun;
+  shade(g,[0,0,320,0,320,144,0,144],'#c0aca8',show?.42:.5);
+  comp(g,'multiply',.6,()=>{g.fillStyle=lg(g,0,0,0,F,['#5e5070','#a89aa8','#d8c8c0','#ecdcd0']);g.fillRect(0,0,320,F)});
+  for(const[x,y,w,h]of IH.windows)comp(g,'screen',.55,()=>{g.fillStyle=lg(g,0,y+3,0,y+h,['#a8b8c4','#e8dcc4']);g.fillRect(x+1.6,y+3,w-3.2,h-3)});
+  comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,0,0,320,0,['#a89cb8','#ffffff','#ffffff','#b8a8bc']);g.fillRect(0,0,320,144)});
+  for(const[x,y,w]of IH.windows)comp(g,'screen',.1,()=>{g.fillStyle=lg(g,0,y-4,0,y+34,['rgba(255,236,210,1)','rgba(255,236,210,0)']);g.fillRect(x-14,y-4,w+28,38)});
+  comp(g,'soft-light',show?.4:.3,()=>{g.fillStyle=lg(g,0,0,320,0,show?['rgba(255,232,196,1)','rgba(255,240,214,.8)','rgba(214,206,220,.7)']:['rgba(255,214,170,1)','rgba(250,214,180,.8)','rgba(196,184,214,.8)']);g.fillRect(0,0,320,144)});
+  for(const[x,y,w,h]of IH.windows){const hb=F-(y+h),ht=F-y,P=[x+sx*hb/46,F+sy*hb/46,x+w+sx*hb/46,F+sy*hb/46,x+w+sx*ht/46,F+sy*ht/46,x+sx*ht/46,F+sy*ht/46];
+    for(const[d,a]of[[3,.16],[1.6,.2],[0,.28]])comp(g,'soft-light',a*2,()=>poly(g,[P[0]-d,P[1]-d*.5,P[2]+d,P[3]-d*.5,P[4]+d,P[5]+d*.5,P[6]-d,P[7]+d*.5],'rgba(255,214,150,1)'));
+    comp(g,'screen',show?.4:.36,()=>poly(g,P,'rgba(255,206,140,1)'));
+    pool(g,(P[0]+P[4])/2,(P[1]+P[5])/2,w*.7,8,'#ffd8a8',.1,'screen');
+    pool(g,x+w/2+sx*.8,F-6,w*.6,10,'#ffd8a8',.08,'screen')}
+  ao(g,0,0,40,144,'l',.25,'#2a1e30');ao(g,280,0,40,144,'r',.2,'#2a1e30');ao(g,0,F,320,6,'t',.22,'#3a2c3c');ao(g,0,124,320,20,'b',.12,'#2a2050')}
+
+return{court,O,light,birds,HZ,WALK,WALLY,COPING,PIER,COLS,DAIS,SEAT,TABLE,DESK,AT,IH,innerHall,hallLight,standard}})();
 
 /* ---------- Paul's room in the palace, and the harbor from its window ----------
    Chapter Twenty keeps Paul for two years in a room of the palace with one window over the harbor (invented: Acts says only that he
