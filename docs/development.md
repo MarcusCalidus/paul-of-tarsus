@@ -21,6 +21,7 @@ levels/chapter15.js   Until Daybreak
 levels/chapter16.js   These Hands
 levels/chapter17.js   The Belt
 levels/chapter18.js   On the Stairs
+levels/chapter19.js   The Sister's Son
 shared/tablets.js     Paul's wax tablets, used by every chapter
 shared/map.js         the travel map: the journeys between chapters, and travel for a hub chapter
 shared/logo.js        the title's logo: the game's name in gold capitals, in letters of its own
@@ -36,6 +37,7 @@ shared/coast.js       the sea and the coast: sky by hour and weather, the sea to
 shared/crowd.js       the cry of a crowd, heard and never written: shouted vowels and rhythm from a text key, and the roar beds (Chapters Fourteen and Eighteen)
 shared/damascus.js    two told pictures, the road to Damascus and the house of Judas, with the plain white light (the Prologue and Chapter Eighteen)
 shared/temple.js      Jehovah's temple in Jerusalem seen from afar, the city's far roofs, and its pale weathered limestone (the Prologue, Chapters Two, Seven and Eighteen)
+shared/caesarea.js    Herod's palace at Caesarea: its court by the sea, with the governor's seat on its dais, by evening or morning (Chapters Nineteen to Twenty-One)
 shared/materials.js   materials and light for backdrops: quiet wood grain, two-tone cracks, soft contact shadows, earth colors, joist shade, ceilings with joists in perspective
 lang/en/              the English text: main.js for the engine and shared files, prologue.js, chapterN.js for each chapter
 lang/de/              the German text, for the same keys, each line with the fingerprint of its English
