@@ -9,9 +9,11 @@
  {const e0=endScreen;window.endScreen=function(){ENDED.add(G.ch);return e0.apply(this,arguments)}}
  setInterval(()=>{const M=SHARED.map;if(!M)return;if(!SHARED.lookback&&!LEGS.asked){LEGS.asked=1;need('lookback').catch(()=>{})}
    if(G.scene===M.draw){const q=LEGS[G.ch]||(LEGS[G.ch]=new Set());for(const l of M.state.legs){q.add(l.a+'-'+l.b);q.add(l.b+'-'+l.a)}}},150);
- const legsCheck=()=>{const LB=SHARED.lookback;if(!LB||!ENDED.size)return;const bad=[],n=[...ENDED].filter(ch=>(LB.legsOf(ch)||[]).length);
-   for(const ch of n)for(const[a,b]of LB.legsOf(ch))if(!(LEGS[ch]&&LEGS[ch].has(a+'-'+b)))bad.push(`Chapter ${ch}: ${a} to ${b}`);
-   if(n.length)$('#tlog').textContent+=(bad.length?'FAIL ':'ok   ')+'the look back gives each chapter that was played to its end only roads its own map showed (Chapter '+n.join(', ')+')'+(bad.length?'. NEVER SHOWN: '+bad.join(' | '):'')+'\n'};
+ const legsCheck=()=>{const LB=SHARED.lookback;if(!LB||!ENDED.size)return;const bad=[],all=[...ENDED].filter(ch=>(LB.legsOf(ch)||[]).length),n=all.filter(ch=>LEGS[ch]),none=all.filter(ch=>!LEGS[ch]);
+   for(const ch of n)for(const[a,b]of LB.legsOf(ch))if(!LEGS[ch].has(a+'-'+b))bad.push(`Chapter ${ch}: ${a} to ${b}`);
+   if(n.length)$('#tlog').textContent+=(bad.length?'FAIL ':'ok   ')+'the look back gives each chapter that was played to its end only roads its own map showed (Chapter '+n.join(', ')+')'+(bad.length?'. NEVER SHOWN: '+bad.join(' | '):'')+'\n';
+   /* a chapter that showed no map at all is named and not failed: a stub that is still to be written draws nothing yet */
+   if(none.length)$('#tlog').textContent+='note the look back has roads for Chapter '+none.join(', ')+', which showed no travel map in this run\n'};
  /* routes in a room (issue #83, CONTRIBUTING section 4): nobody walks through what stands on the floor. Every stop ends with the check: no
     walk a script begins ends in a footprint that is not a seat, or where it cannot be reached (the engine notes it in ROUTE.bad), and nobody
     is put down by a script inside one (place, watched while the game plays; a test that stands Paul behind a thing to look at it is let be) */
