@@ -42,8 +42,9 @@
       before the king (25:14-22).
    3. Two listeners (the audience chamber, 26:24-29). After Festus breaks in, every sentence Paul can say is true, and the player chooses
       the sentence (a mixed choice, the same in every language) by choosing whom he speaks to: Talk to Festus or Talk to King Agrippa
-      offers the same four sentences (LISTEN21), and they stay on offer after use. What is plain to the king is strange to the governor,
-      and each answers a sentence that is not meant for him in his own way (an invented line that claims nothing about what he believed).
+      offers the same four sentences (LISTEN21), and they stay on offer after use. A sentence of the account names its listener, so it is
+      spoken in full only to him and in the account's order; to the other man, or too soon, Paul says only its short line, and the other
+      answers it plainly, without telling whom to address (an invented line that claims nothing about what he believed).
       The account fixes the way through: 26:25, then 26:26, to Festus; then 26:27 to the king. The narrator tells Agrippa's answer.
    4. These bonds (26:29). Paul uses the chain on his wrist (the item chain21) with the king: the far hand comes up, bent, and the chain
       with it, and he speaks the wish. The account does not say that he raised it; the end screen says so.
@@ -503,11 +504,13 @@ const REPORT21=[{k:'charge_revolt',paper:'record',ok:'never',no:'clerk_a_revolt_
   {k:'charge_many_and_serious',paper:'notes',ok:'never',also:'worship'}];
 const MARK21={never:'mark_never_proved',worship:'mark_a_dispute_about_their_own_worship'};
 const FIRST21={letter:'clerk_first_the_commanders_letter',record:'clerk_first_the_record_before_felix',notes:'clerk_first_my_notes'};
-/* the two listeners: each sentence, whether it is the one the account gives to that listener now, and what the other answers */
-/* c: the short line it stands as in the choice (the full sentence is what he says) */
-const LISTEN21=[{k:'paul_true_and_of_a_sound_mind',c:'say_what_i_say_is_true_and_sound',to:'festus',flag:'sound',other:['agrippa_the_governor_said_it',AG]},
-  {k:'paul_not_done_in_a_corner',c:'say_none_of_it_happened_in_a_corner',to:'festus',flag:'corner',need:'sound',early:['festus_answer_what_i_said',FS],other:['agrippa_tell_that_to_the_governor',AG]},
-  {k:'paul_do_you_believe_the_prophets',c:'say_do_you_believe_the_prophets',to:'agrippa',flag:'prophets',need:'corner',early:['agrippa_the_governor_spoke_to_you_first',AG],other:['festus_put_that_to_the_king',FS]},
+/* the two listeners: each sentence, the listener the account gives it to (to), and what the other answers when only its short line is
+   said to him (other). c: the short line it stands as in the choice. The full sentence of the account, which names its listener, is
+   spoken only to that listener and only in the account's order (need); said to the other man, or too soon, it is only the short line.
+   No answer tells the player whom to address. */
+const LISTEN21=[{k:'paul_true_and_of_a_sound_mind',c:'say_what_i_say_is_true_and_sound',to:'festus',flag:'sound',other:['go_on',AG]},
+  {k:'paul_not_done_in_a_corner',c:'say_none_of_it_happened_in_a_corner',to:'festus',flag:'corner',need:'sound',early:['festus_you_havent_answered_me',FS],other:['go_on',AG]},
+  {k:'paul_do_you_believe_the_prophets',c:'say_do_you_believe_the_prophets',to:'agrippa',flag:'prophets',need:'corner',early:['go_on',AG],other:['festus_that_means_nothing_to_me',FS]},
   {k:'paul_im_not_saying_this_to_save_myself',c:'say_im_not_saying_this_to_save_myself',to:null,festus:['festus_that_much_is_settled',FS],agrippa:['agrippa_so_i_have_heard',AG]}];
 /* the three roads on the travel map (Acts 25:9-12) */
 const ROADS21={jerusalem:'paul_thought_jerusalem',caesarea:'paul_thought_caesarea',torome:'paul_thought_rome'};
@@ -652,11 +655,14 @@ async function speakTo21(L){const lis=L===FS?'festus':'agrippa';if(PC()===CL)ret
   const opts=LISTEN21.map(s=>s.c).concat(['say_nothing_for_now']),i=await choose(opts,{keep:1});
   if(i===LISTEN21.length)return;const s=LISTEN21[i];
   if(s.to===lis&&F[s.flag])return say(P,'paul_ive_said_that_to_him_already',THP);
-  await say(P,s.k,{to:L});
-  if(!s.to){const[r,a]=s[lis];return say(a,r,{to:P})}
-  if(s.to!==lis){const[r,a]=s.other;return say(a,r,{to:P})}
-  if(s.need&&!F[s.need]){const[r,a]=s.early;return say(a,r,{to:P})}
-  F[s.flag]=1;SFX.good();
+  if(!s.to){await say(P,s.k,{to:L});const[r,a]=s[lis];return say(a,r,{to:P})}
+  /* to the other man: only the short line, and his answer */
+  if(s.to!==lis){await say(P,s.c,{to:L});const[r,a]=s.other;return say(a,r,{to:P})}
+  /* to its own listener, but before the account comes to it: before he has answered Festus at all, the question to the king is only a
+     thought; otherwise the short line, and the answer */
+  if(s.need&&!F[s.need]){if(s.flag==='prophets'&&!F.sound)return say(P,'paul_i_owe_an_answer_first',THP);
+    await say(P,s.c,{to:L});const[r,a]=s.early;return say(a,r,{to:P})}
+  await say(P,s.k,{to:L});F[s.flag]=1;SFX.good();
   if(s.flag==='prophets'){AU.mood='hall';await tell('h28');await say(P,'paul_one_more_thing_for_him',THP)}
   codeBtn()}
 /* These bonds (26:29): the far hand comes up, bent, with the chain; the wish; 26:30 they rise; then the clerk is played in the hall */
