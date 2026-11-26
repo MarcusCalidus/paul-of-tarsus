@@ -276,7 +276,8 @@ const top22q=x=>{const[x0,x1,top]=QUAY22.ship;return top-8*Math.pow(clamp((x-(x1
    Hotspots (ROOMS.myra22): the mountains 0,0,640,56 · the grain ship 60,30,410,76 · the coaster 474,52,166,54 · the gangplank 326,60,34,58.
    Walk: 20..620 by 112..138; nothing stands in it. Heads come at y 70..100, against the hulls and the quay: nothing round behind them.
    Light: the afternoon sun behind us at the left (shadows fall to the right). */
-const MYRA22={hz:70,edge:106,coaster:[478,628,89,108],ship:{x:100,y:108,len:360},plank:[334,350,116],walk:[20,620,112,138]};
+const MYRA22={hz:70,edge:106,coaster:[478,628,89,108],ship:{x:100,y:108,len:360},plank:[334,0,350,116],walk:[20,620,112,138]};
+/* plank: [x at her rail, (her rail's y comes from her sheer), x and y of its foot on the paving] */
 let SMyra22=null;
 const oMyra22={w:640,hz:MYRA22.hz,hour:'morning',cloud:.25,seed:22,light:-1};
 ART.myra22={w:640,q:12,paint(g){paintMyra22(g)},
@@ -324,7 +325,7 @@ function coasterMyra22(){if(SPR22.c)return SPR22.c;
       furledYard:{x0:551,x1:606,yardX0:550.8,yardX1:612,bays:5,th0:3.4,th1:2,belly:.6},
       rudders:[{loom:[487,86,489.4,86,481,104,478.6,104],blade:[478,100,481.8,100,480,107,476.4,107],hi:[488.4,86.4,480,104]}]})},12,140)}
 /* the grain ship's gangplank from her rail over the stone edge to the paving: two side stringers, cleats that stop inside them */
-function plankMyra22(g,bob){const G=SHARED.grainship.geo(MYRA22.ship),[a,c,d]=MYRA22.plank,w0=8,w1=11,x0=a-4,y0=G.sheer(a)+.6+bob,x1=c-5.5,y1=d,P=[x0,y0,x0+w0,y0,x1+w1,y1,x1,y1];
+function plankMyra22(g,bob){const G=SHARED.grainship.geo(MYRA22.ship),[a,,c,d]=MYRA22.plank,w0=8,w1=11,x0=a-4,y0=G.sheer(a)+.6+bob,x1=c-5.5,y1=d,P=[x0,y0,x0+w0,y0,x1+w1,y1,x1,y1];
   comp(g,'multiply',.36,()=>poly(g,[x1-1,y1+1.2,x1+w1+3,y1+1.2,x1+w1+1,y1-1.4,x1-2.4,y1-1],'#3a3048'));
   poly(g,P);g.fillStyle=lg(g,x0,y0,x1,y1,['#a07a4a','#8a6438','#76522c']);g.fill();
   clipTo(g,()=>poly(g,P),()=>{tex(g,'wood',.22,x0-2,y0-2,x1-x0+w1+4,y1-y0+4,'overlay',.5);
@@ -860,9 +861,9 @@ ROOMS.myra22={space:.8,walk:MYRA22.walk,mood:'myra',amb:AMB.myra22,hs:[
   {name:'coaster',x:474,y:52,w:166,h:54,wx:540,wy:116,look:'coaster_at_myra_look'},
   {name:'gangplank',x:326,y:60,w:34,h:58,wx:350,wy:120,def:'use',look:'grain_ship_gangplank_look',use:()=>aboard22()}]};
 ROOMS.deck22={space:.8,walk:DECK22.walk,get mood(){return F.fh?'havens':'deck'},get amb(){return F.fh?AMB.havens22:AMB.deck22},
-  /* the floor the room paints itself that blocks a walk: the coil of rope by the starboard rail, and the bulwarks' feet where the deck
-     narrows toward the strip's back corners */
-  block:[[201,103,18,4],[0,106,24,4],[0,110,8,4],[268,106,52,4],[279,110,41,4],[290,114,30,4],[301,118,19,4],[312,122,8,4]],hs:[
+  /* the floor the room paints itself that blocks a walk: the bulwarks' feet where the deck narrows toward the strip's back corners (the
+     coil of rope by the starboard rail lies behind the strip, 103..106.5) */
+  block:[[0,106,24,4],[0,110,8,4],[268,106,52,4],[279,110,41,4],[290,114,30,4],[301,118,19,4],[312,122,8,4]],hs:[
   {name:'harbor',x:0,y:0,w:320,h:58,wx:150,wy:118,look:()=>say(P,F.fh?'fair_havens_look':'myra_harbor_look',TH)},
   {name:'open_sea',x:0,y:62,w:88,h:22,wx:60,wy:118,vis:()=>!!F.fh,look:()=>know22('kWrecks','paul_three_times_shipwrecked')},
   {name:'deckhouse',x:118,y:60,w:64,h:30,wx:150,wy:110,look:'deckhouse_look22'},
