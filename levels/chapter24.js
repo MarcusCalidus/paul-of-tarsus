@@ -117,7 +117,7 @@ const AMB={quay24:{waves:.45,gulls:.55,wind:.15,creak:.2},court24:{wind:.08},cap
    trader to the boatman, at dusk) · dawn (the Marketplace at daybreak: the boatman to Proculus, then Proculus learns the stones) · rome
    (Vibia's house: the news, and the board) · road (Paul on the Appian Way: three stretches in step) · with (the Marketplace and Three
    Taverns, after 28:15) · city (Rome from afar, the gate, the camp) · lane (Luke and Proculus look for a lodging) */
-const phase24=()=>!F.sailed?'quay':!F.given1?'court':!F.given2?'capua':!F.given3?'canal':!F.numerals?'dawn':!F.planned?'rome':!F.s3?'road':
+const phase24=()=>!F.sailed?'quay':!F.given1?'court':!F.given2?'capua':!F.given3?'canal':!F.news?'dawn':!F.planned?'rome':!F.s3?'road':
   !F.far?'with':!F.camp?'city':'lane';
 const fast=()=>G.speedAll>200;   /* the playtest plays at speed */
 const tw=ms=>wait(fast()?Math.min(40,ms):ms);
@@ -514,12 +514,12 @@ async function teach24(){await say(DE,'proculus_how_do_you_read_the_stones',{to:
   codeBtn()}
 async function home24(){if(PC()!==DE||!F.given4)return think('boatman_thats_the_road_to_rome',BO);
   if(!F.numerals)return think('proculus_first_what_the_stone_says',DE);
-  await fade(1,700);show24('rome24');await fade(0,600);
+  await fade(1,700);F.news=1;show24('rome24');await fade(0,600);
   /* the news reaches Rome as it was given */
   for(const k of MSG24)await say(DE,k,{to:null});
   await say(VI,'vibia_then_we_go_out_to_meet_him',{to:DE});await say(MI,'mikon_i_know_paul_from_cenchreae',{to:DE});
   await say(VI,'vibia_proculus_you_know_the_road',{to:DE});
-  F.news=1;await think('proculus_ill_hear_each_of_them',DE);codeBtn()}
+  await think('proculus_ill_hear_each_of_them',DE);codeBtn()}
 
 /* ---- Vibia's house: the board ---- */
 /* G.tok24: where each token lies ('T', 'M' or nothing); G.sel24: the token in hand. Not in the code; only planned is. */
