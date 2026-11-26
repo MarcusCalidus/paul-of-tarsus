@@ -217,30 +217,49 @@ ART.lead23={w:320,q:12,paint(g){const r=rng(2302);band23(g,0,0,320,144,'#8a7050'
 /* ==== ART lead23: end ==== */
 
 /* ==== ART bow23: begin ==== */
-/* ART-TODO. The foredeck by night, the same night, by the light of one lantern hung by two cords from out of the picture. Beyond the
-   bulwark the black sea, no horizon. At the right the ship's skiff is being let down over the far side on two ropes that run slanting from
-   the deck over the bulwark (never hanging straight down from the middle of anything): we see its upper strake sink behind the rail as it
-   goes down, empty (G.skiff23 from 0 to 1). The sailors stand at the ropes. At the left of the middle, against the bulwark, the bow's
-   anchors lie under a cover of sailcloth, lashed as they lay: nothing of an anchor shows (decided: no anchor is seen in this chapter), and
-   the lashing runs along the cover, never across it. Julius and two soldiers stand at the left. When the soldier cuts the ropes (27:32) he
-   holds a short blade with his hand over its guard, the blade one slanting line (G.blade23), and the skiff drops away (G.drop23).
-   Called from outside: ART.bow23. Reads G.skiff23, G.blade23, G.drop23, F.ropes. Hotspots (ROOMS.bow23): the sea 0,40,320,44 · the skiff
-   196,66,100,24 (while it hangs) · the covered anchors 86,90,62,16 · the lantern 140,28,22,26. Walk: 20..296 by 114..138. Wall foot y 104.
-   Light: night, one lantern at 150,44. */
-const LAMP_BOW23=[150,44];
-ART.bow23={w:320,q:12,paint(g){const r=rng(2304);band23(g,0,0,320,84,'#06080e','#0e1420');bulwark23(g,84,104,'#3a2a1c');deck23(g,104,144,'#5e4630',r);
-    /* the covered anchors: a low heap under sailcloth against the bulwark; its lashing runs along it */
-    poly(g,[88,104,96,94,140,92,148,104],'#8a8068');stroke(g,[92,99,144,97],'#5a4a34',.6);
-    comp(g,'multiply',.5,()=>{g.fillStyle=rg(g,LAMP_BOW23[0],110,240,['#ffffff','#5a5a80']);g.fillRect(0,0,320,144)})},
-  light:{amb:'#4a4e6a',wallY:104,wall:[[0,320,104,84]],lamps:[[LAMP_BOW23[0],LAMP_BOW23[1],150,'#e8a860',104,LAMP_BOW23[1]]]},
-  draw(g,t){lantern23(g,LAMP_BOW23[0],LAMP_BOW23[1],t);
+/* The foredeck by night, the same night (27:30-32): SHARED.grainship.bowNight, from just forward of the hatch, a little to starboard,
+   looking forward: the deck narrowing to the round of the bow, the bow's anchors under their cover against the port bulwark (nothing of
+   an anchor shows), the foremast raked forward over the bow with the foresail furled along it (no yard), and one lantern hung by two
+   cords that part upward from the rigging out of the picture: the one light. Toward the bow the light dies into the night, and the rail
+   at the bow is no lighter than the night beyond it, so that the mast rising in front of the bow stands across no line. Behind her the
+   storm's night, as at the stern; she rolls as gently as at the stern, lying at her four anchors.
+   To starboard the skiff is being let down alongside on two ropes that come up from the sailors' fists, slant over the rail and run to
+   her two ends: her gunwale sinks slowly toward the rail as they pay out (G.skiffT, over two minutes, never below the rail's top). The
+   soldier cuts the after rope with a short blade, his hand over its guard, the blade one slanting line that meets the rope from below
+   (G.blade23); the skiff falls away, empty (G.drop23), and is gone (F.ropes).
+   Called from outside: ART.bow23, LAMP_BOW23. Reads G.skiffT, G.blade23, G.drop23, F.ropes. Hotspots (ROOMS.bow23): the sea 0,20,320,40 ·
+   the lantern round LAMP_BOW23 · the covered anchors 50,74,64,22 · the skiff 214,46,96,30 (while it hangs). Walk: 20..296 by 114..138.
+   Light: night, the lantern a lamp (behind the people: their shadows fall toward us). */
+const BOW23=GS23.bowGeo({}),LAMP_BOW23=BOW23.lamp.map(v=>Math.round(v*2)/2);
+/* the two ropes: each from the sailors' far fists on the deck, slanting up over the rail at z (metres forward), to a ring at one end of
+   the skiff: the forward one (to her bow) in the fist of sailor23b, the after one (to her stern) through the fists of sailor23c and
+   sailor23d. The soldier, behind sailor23b, cuts the forward one; the after one goes over the rail after her */
+const ROPES23=[{by:()=>[SA2],z:6.6,ring:1},{by:()=>[SA3,SA4],z:4.65,ring:0}];
+function fist23(a){const h=a.pose&&poseAt(a.look,a.pose+(a.pk||0));return h?[a.x+h.far[0]*a.dir,a.y+h.far[1]]:[a.x+9*a.dir,a.y-24]}
+ART.bow23={w:320,q:12,paint(g){GS23.bowNight(g,{})},
+  light:{amb:'#4a4e6a',wallY:100,lamps:[[LAMP_BOW23[0],LAMP_BOW23[1],150,'#e8a860',Math.round(BOW23.lampFloor),LAMP_BOW23[1]]]},
+  behind:night23,
+  sway:t=>ride23(t,.25),
+  air(g,t){SHARED.storm.rain(g,t,{pal:'night',density:.55,lamp:[LAMP_BOW23[0],LAMP_BOW23[1],34],seed:2317})},
+  draw(g,t){const[lx,ly]=LAMP_BOW23,f=Math.floor(t/110)%3;R(g,lx-.5,ly-.6+(f===1?-.5:0),1,1.6+(f===1?.5:0),f===2?'#ffe8b0':'#fff4d0');
     if(F.ropes&&!G.drop23)return;
-    /* the skiff, sinking behind the rail as it is let down, then dropping away; its two ropes slant from the deck over the bulwark */
-    const k=clamp(G.skiffT?(t-G.skiffT)/120000:.3,0,.8),dr=G.drop23||0,y=70+k*10+dr*30;
-    if(dr<1){g.save();g.beginPath();g.rect(0,0,320,84);g.clip();poly(g,[200,y,292,y,286,y+10,206,y+10],'#5a4028');R(g,200,y,92,1,'#8a6a44');g.restore()}
-    if(!dr)for(const x of[214,276]){stroke(g,[x-10,112,x,85],'#9a8058',.7);stroke(g,[x,85,x+2,Math.min(84,y+1)],'#9a8058',.6)}},
-  front(g){if(G.blade23&&SO2.room==='bow23'){const h=poseAt(SO2.look,'shake0'),fx=SO2.x+(h?h.far[0]:9)*SO2.dir,fy=SO2.y+(h?h.far[1]:-24);
-    R(g,fx-1,fy-1,2.4,2.4,LOOK.soldier23b.skin||'#c08a60');stroke(g,[fx+SO2.dir*1.2,fy-.6,fx+SO2.dir*6,fy-5],'#d8dce4',.6)}}};
+    const k=clamp(G.skiffT?(t-G.skiffT)/120000:.3,0,.8),dr=G.drop23||0,S=GS23.bowSkiff(g,BOW23,k,dr),cut=G.blade23||dr>0;
+    const seg=(x0,y0,x1,y1,sag)=>{const p=[];for(let j=0;j<=8;j++){const u=j/8;p.push(x0+(x1-x0)*u,y0+(y1-y0)*u+sag*Math.sin(Math.PI*u))}return p},
+      rope=p=>{stroke(g,p.map((v,j)=>j%2?v+.6:v+.3),'rgba(6,4,4,.5)',.8);stroke(g,p,lit23(p[0],p[1]),.55)},
+      lit23=(x,y)=>Math.hypot(x-LAMP_BOW23[0],(y-LAMP_BOW23[1])*1.6)<120?'#9a8058':'#6a5a40';
+    for(const[i,R0]of ROPES23.entries()){const by=R0.by().filter(a=>a.room==='bow23');if(!by.length)continue;const F0=by.map(fist23),rp=BOW23.rail(R0.z,1),ring=S.rings[R0.ring];
+      if(i===0&&dr){/* cut: the end in his fist hangs slack, slanting toward the rail; the rest went over the rail after her */
+        const[fx,fy]=F0[0];rope(seg(fx,fy,fx+5,fy+3+5*Math.min(1,dr*3),1.4));continue}
+      if(i===1&&dr>.5)continue;   /* the after rope runs out over the rail after her, out of their hands */
+      const pts=F0.concat([rp]);for(let j=1;j<pts.length;j++)rope(seg(pts[j-1][0],pts[j-1][1],pts[j][0],pts[j][1],.5));
+      clipTo(g,()=>poly(g,BOW23.outboard),()=>rope(seg(rp[0],rp[1],ring[0],ring[1],.4)))}},
+  /* the blade at 27:32: the soldier's far hand closed over the hilt, so that no guard shows, and the short blade one slanting line
+     that rises from his fist to meet the rope from below, at a narrow angle, never across it */
+  front(g){if(G.blade23&&SO2.room==='bow23'){const[fx,fy]=fist23(SO2),R0=ROPES23[0],fp=fist23(R0.by()[0]),rp=BOW23.rail(R0.z,1),
+      /* the point of the rope the blade meets: a little below and behind his fist along the rope */
+      u=clamp((fx-4.5-fp[0])/(rp[0]-fp[0]),0,1),tx=fp[0]+(rp[0]-fp[0])*u,ty=fp[1]+(rp[1]-fp[1])*u,sk=SO2.look&&SO2.look.skin||'#b07850';
+    stroke(g,[fx+.3,fy+.4,tx+.3,ty+.3],'#2e2e34',.9);stroke(g,[fx,fy+.2,tx,ty],'#d8dce4',.5);
+    R(g,fx-1.3,fy-1.6,2.6,2.6,tint(sk,-.15));R(g,fx-1.3,fy-1.6,2.6,.6,tint(sk,.15));R(g,fx-1.3+(SO2.dir>0?2:0),fy-1.4,.6,2.2,tint(sk,-.4))}}};
 /* ==== ART bow23: end ==== */
 
 /* ==== ART hold23: begin ==== */
@@ -638,7 +657,7 @@ async function julius23(){if(phase23()!=='bow')return say(JU,'not_now_paul_said'
   if(!seen23())return say(P,'paul_not_until_i_am_sure',TP);
   await say(P,'these_men_must_stay_on_the_ship',{to:JU});
   /* a soldier cuts the ropes with a short blade, his hand over its guard; the skiff drops away, empty */
-  await go23(SO2,212,116,40);SO2.dir=1;SO2.pose='shake';SO2.pk=0;G.blade23=1;await tw(600);G.drop23=0;SFX.cut();
+  await go23(SO2,236,112,40);SO2.dir=1;SO2.pose='shake';SO2.pk=0;G.blade23=1;await tw(600);G.drop23=0;SFX.cut();
   await Promise.all([tween(fast()?100:1200,k=>{G.drop23=k}),tw(300).then(()=>SFX.splash())]);G.blade23=0;SO2.pose=0;
   F.ropes=1;await tell('n32');G.drop23=0;
   for(const a of[SA1,SA2,SA3,SA4])a.pose=0;await say(P,'paul_now_they_stay',TP);
@@ -783,11 +802,11 @@ ROOMS.lead23={space:.6,walk:NOW,mood:'night',amb:AMB.lead23,hs:[
   {name:'the_lead',x:10,y:72,w:42,h:34,wx:160,wy:236,def:'look',look:()=>tallow23(),use:()=>lead23(),useWith:it=>it==='tablet23'?lead23():false},
   ...TAGS23.map((tg,i)=>({name:tg.name,x:TAGX23[i]-10,y:lineY23(TAGX23[i])+1,w:22,h:16,wx:160,wy:236,def:'use',look:tg.look,use:()=>tag23(i),useWith:it=>it==='tablet23'?tag23(i):false})),
   {name:'back_to_the_deck',x:0,y:128,w:96,h:16,wx:160,wy:236,exit:()=>goto23('stern23',138,126,-1),look:'back_to_the_deck_look'}]};
-ROOMS.bow23={space:.6,walk:[20,296,114,138],get mood(){return'tense'},amb:AMB.bow23,hs:[
-  {name:'dark_sea',x:0,y:40,w:320,h:44,wx:160,wy:120,look:'dark_sea_look'},
-  {name:'lantern',x:140,y:28,w:22,h:26,wx:150,wy:120,look:'lantern23_look'},
-  {name:'covered_anchors',x:86,y:90,w:62,h:16,wx:118,wy:120,look:()=>sawBow23('sawAnchors','covered_anchors_look'),use:'paul_not_mine_to_touch'},
-  {name:'skiff',x:196,y:64,w:100,h:26,wx:188,wy:122,vis:()=>!F.ropes,look:()=>sawBow23('sawSkiff','skiff_going_down_look'),use:'paul_not_mine_to_touch'}]};
+ROOMS.bow23={space:.6,walk:[20,296,114,138],block:[[286,114,10,3]],get mood(){return'tense'},amb:AMB.bow23,hs:[
+  {name:'dark_sea',x:0,y:20,w:320,h:40,wx:160,wy:120,look:'dark_sea_look'},
+  {name:'lantern',x:LAMP_BOW23[0]-10,y:LAMP_BOW23[1]-14,w:20,h:24,wx:LAMP_BOW23[0],wy:120,look:'lantern23_look'},
+  {name:'covered_anchors',x:52,y:72,w:58,h:18,wx:100,wy:120,look:()=>sawBow23('sawAnchors','covered_anchors_look'),use:'paul_not_mine_to_touch'},
+  {name:'skiff',x:222,y:44,w:98,h:36,wx:188,wy:122,vis:()=>!F.ropes,look:()=>sawBow23('sawSkiff','skiff_going_down_look'),use:'paul_not_mine_to_touch'}]};
 ROOMS.hold23={space:.8,get walk(){return PC()===P&&F.stood&&!F.bread?[SPOT23[0],SPOT23[0],SPOT23[1],SPOT23[1]]:[34,300,116,138]},mood:'hold',amb:AMB.hold23,hs:[
   {name:'wheat',x:232,y:52,w:84,h:40,wx:240,wy:120,look:'wheat_look'},
   {name:'hatch_and_stairs',x:4,y:18,w:40,h:98,wx:40,wy:122,look:'hatch_and_stairs_look',use:'paul_my_place_is_down_here'},
@@ -892,7 +911,7 @@ function place23(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   for(const a of EVERY.concat([P]))dress23(a,wet);
   setPC23(lukePlays()?LK:P);
   if(ph==='sound'){pl(P,'stern23',216,128,-1);pl(SA1,'stern23',100,118,-1);pl(PI,'stern23',252,126,-1)}
-  if(ph==='bow'){pl(JU,'bow23',40,124,1);pl(SO2,'bow23',24,132,1);pl(SA1,'bow23',196,126,-1);pl(SA2,'bow23',224,118,1,'payout');pl(SA3,'bow23',252,124,1,'payout');pl(SA4,'bow23',280,118,1,'hold')}
+  if(ph==='bow'){pl(JU,'bow23',40,124,1);pl(SO2,'bow23',24,132,1);pl(SA1,'bow23',196,126,-1);pl(SA2,'bow23',224,118,1,'payout');pl(SA3,'bow23',264,126,1,'payout');pl(SA4,'bow23',280,118,1,'hold')}
   if(ph==='hold'){const H='huddle';pl(PR1,'hold23',66,118,1,H);pl(PR2,'hold23',90,137,1,H);pl(LK,'hold23',112,118,1,H);pl(AR,'hold23',136,137,1,H);pl(ME,'hold23',160,118,1,H);
     pl(BOY,'hold23',186,137,1,H);pl(OLD,'hold23',252,118,-1,H);pl(SA3,'hold23',272,137,-1,H);pl(SO1,'hold23',290,118,-1,H);pl(JU,'hold23',306,127,-1)}
   if(ph==='planks'){pl(OLD,'wreck23',120,124,1);pl(SO1,'wreck23',158,128,-1);pl(BOY,'wreck23',196,120,-1);pl(ME,'wreck23',230,130,-1);pl(JU,'wreck23',286,120,-1);pl(SO2,'wreck23',266,132,-1)}

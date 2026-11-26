@@ -761,5 +761,110 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=o.cam!=null?o.cam:1
     clipTo(g,()=>{g.beginPath();g.ellipse(lx,ly+10,40,26,0,0,6.2832)},()=>SHARED.weather.rain(g,o.t||3000,320,{density:.9,len:4,col:'rgba(255,214,150,.4)',wind:-1.2,seed:2308}))}
   return{P,hz,lamp:[lx,ly]}}
 
-return{side,geo,anchor,wreckage,LIGHT,hawser:hawserS,deck,geoDeck,sternNight,nightGeo};
+/* ======== The foredeck by night, from aboard, looking forward (Chapter Twenty-Three, the skiff: 27:30-32) ========
+   bowNight(g, o) paints the fore part of her deck seen from just forward of the hatch, a little to starboard of her middle line, looking
+   forward on the same night: the deck narrowing to the round of the bow, the bulwarks on both sides planked in strakes with their rail
+   on top, the anchors of the bow lying against the port bulwark under a cover of sailcloth, lashed as they lie (nothing of an anchor
+   shows; the lashing runs along the cover, never across it), and the short foremast raked forward over the bow with the foresail furled
+   along its upper part (no yard is seen). One lantern, hung by two cords that part upward from the rigging out of the picture, lights the
+   near deck; toward the bow the light dies into the night, and at the bow the rail is no lighter than the night beyond it, so that the
+   mast, which rises in front of the bow, stands across no line (CONTRIBUTING section 3: a mast across a level line). The sky above the
+   rail is left transparent (o.sky false is the only way: the room paints the storm's night behind her).
+     o.lp      where the lantern hangs, [x, y, z] in metres (default [-.2, 2.55, 6.5])
+   bowGeo(o) gives the geometry without painting: P(x, y, z) to the screen, b(z) the half-breadth, s(z) the deck's rise, rh(z) the
+   bulwark's height, rail(z, side) the top of the rail on the screen, lamp [x, y], lampFloor y, and outboard (the outline of what lies
+   beyond the starboard rail, for a clip). bowSkiff(g, D, k, drop) paints the skiff alongside to starboard, being let down (k 0..1, its
+   gunwale going down from a little above the rail to the rail) or falling away (drop 0..1), clipped to what is seen beyond the rail, and
+   returns the rings at its two ends on the screen. */
+const BW={F:150,E:1.7,hz:62,cam:.8,ZS:13,B:5};
+function bowGeo(o){o=o||{};const{F,E,hz,ZS,B}=BW,cam=o.cam!=null?o.cam:BW.cam,
+    b=z=>z<=4?B:z>=ZS?0:B*Math.sqrt(Math.max(0,1-Math.pow((z-4)/(ZS-4),2.2))),
+    s=z=>z<=3?0:.9*Math.pow(Math.min(1,(z-3)/(ZS-3)),1.8),
+    rh=z=>1.05+.2*clamp((z-6)/(ZS-6),0,1),
+    P=(x,y,z)=>[160+F*(x-cam)/z,hz+F*(E-y)/z],
+    LP=o.lp||[-.2,2.55,6.5],
+    /* the bulwark's line round the deck, port aft to the bow and back to starboard aft, with its inward normals */
+    C=[];
+  for(let z=2.4;z<ZS-.6;z+=z<9?.4:.2)C.push([-b(z),z]);for(let i=0;i<=12;i++){const a=Math.PI*i/12,z0=ZS-.6;C.push([-b(z0)*Math.cos(a),z0+.6*Math.sin(a)*1])}
+  for(let z=ZS-.8;z>=2.4;z-=z<9?.4:.2)C.push([b(z),z]);
+  const N=C.map((p,i)=>{const a=C[Math.max(0,i-1)],c=C[Math.min(C.length-1,i+1)],tx=c[0]-a[0],tz=c[1]-a[1],l=Math.hypot(tx,tz)||1;return[tz/l,-tx/l]}),
+    rail=(z,sd)=>P(sd*b(z),s(z)+rh(z)+.1,z),
+    outboard=[];
+  {const st=C.filter(p=>p[0]>0||p[1]>ZS-.65);for(const[x,z]of st)outboard.push(...P(x,s(z)+rh(z)+.1,z));outboard.push(420,outboard[outboard.length-1],420,-60,P(0,0,ZS)[0],-60)}
+  return{F,E,hz,cam,ZS,b,s,rh,P,C,N,LP,lamp:P(...LP),lampFloor:P(LP[0],s(LP[2]),LP[2])[1],rail,outboard,
+    mast:{z:10.4,ang:.74,len:10},o}}
+/* the lantern's light on a face, by night: what little the night gives, the lamp's warm light by angle and distance, and beyond its
+   reach the night's own darkness, so that the far bow is lost in it */
+function bowLight(D,c,p,n){const L=D.LP,d=[L[0]-p[0],L[1]-p[1],L[2]-p[2]],l=Math.hypot(...d),q=Math.max(0,(n[0]*d[0]+n[1]*d[1]+n[2]*d[2])/l/(Math.hypot(...n)||1)),
+    f=q/(1+Math.pow(l/2.6,2)),h=hex(c),k=Math.max(clamp((l-4.6)/3.4,0,1)*.7,clamp((p[2]-10.6)/1.5,0,1)),nt=hex('#07080c'),
+    v=[h[0]*(.12+1.25*f),h[1]*(.13+1.0*f),h[2]*(.2+.6*f)];
+  return toHex(v[0]+(nt[0]-v[0])*k,v[1]+(nt[1]-v[1])*k,v[2]+(nt[2]-v[2])*k)}
+function bowNight(g,o){o=o||{};const D=bowGeo(o),{P,b,s,rh,C,N,ZS}=D,r=rng(23081),M=C.length-1,lt=(c,p,n)=>bowLight(D,c,p,n);
+  /* the deck: planks that run fore and aft and close in with the bow, each its own tone, butts staggered inside their planks */
+  const FL=C.map(([x,z])=>P(x,s(z),z)).flat();
+  clipTo(g,()=>poly(g,FL.concat([360,200,-40,200])),()=>{for(let k=-21;k<21;k++){const u0=k/21,u1=(k+1)/21,zs=[];for(let z=1.6;z<=ZS;z+=z<8?.4:.2)zs.push(z);
+      const W=z=>Math.max(b(z),.01),pa=zs.map(z=>P(u0*W(z),s(z),z)).flat(),pb=zs.map(z=>P(u1*W(z),s(z),z)).flat(),
+        zc=3+r()*6,c=lt(tint('#8a6a48',(r()-.5)*.14),[(u0+u1)/2*W(zc),s(zc),zc],[0,1,0]);
+      poly(g,pa.concat(ptsBackG(pb)),c);stroke(g,pa,'rgba(6,4,4,.5)',.5);
+      const z0=2+((k*.618+.31)%1+1)%1*5;for(let z=z0;z<ZS-1;z+=5.6){const a=P(u0*W(z)+.03,s(z),z),e=P(u1*W(z)-.03,s(z),z);if(e[0]-a[0]>2.2&&z<9)R(g,a[0],a[1]-.25,e[0]-a[0],.5,'rgba(8,6,4,.45)')}}
+    tex(g,'mott',.2,0,60,320,90,'overlay',.6);
+    comp(g,'lighter',.2,()=>{const c=P(D.LP[0],0,D.LP[2]-.6);pool(g,c[0],c[1]+6,80,13,'#ffb060',1)});
+    /* the shade along the foot of each bulwark */
+    for(const[d,a]of[[.05,.3],[.14,.16]])stroke(g,C.map(([x,z],i)=>P(x+N[i][0]*d,s(z),z+N[i][1]*d)).flat(),`rgba(6,4,6,${a})`,1.2)});
+  /* the bulwarks' inner faces, planked in three strakes that follow the sheer, butts inside their strakes; the rail on top */
+  const at=(i,f,d)=>{const[x,z]=C[i],[nx,nz]=N[i];return P(x+nx*(d||0),s(z)+f,z+nz*(d||0))},H=i=>rh(C[i][1]);
+  for(let i=0;i<M;i++){const[x,z]=C[i];poly(g,[...at(i,0),...at(i+1,0),...at(i+1,H(i+1)),...at(i,H(i))],lt('#7a5a3c',[x,.6,z],[N[i][0],0,N[i][1]]))}
+  clipTo(g,()=>{const p=[];for(let i=0;i<=M;i++)p.push(...at(i,0));for(let i=M;i>=0;i--)p.push(...at(i,H(i)));poly(g,p)},()=>{tex(g,'wood',.2,0,30,320,120,'overlay',.4);
+    for(const f of[.34,.67]){const p=[];for(let i=0;i<=M;i++){if(C[i][1]>ZS-2.2){if(p.length>2)stroke(g,p,'rgba(6,4,4,.4)',.5);p.length=0;continue}p.push(...at(i,H(i)*f))}if(p.length>2)stroke(g,p,'rgba(6,4,4,.4)',.5)}
+    for(let j=0;j<3;j++){const f0=[0,.34,.67][j],f1=[.34,.67,1][j];for(let i=2+j*4+(r()*3|0);i<M-2;i+=9+(r()*5|0)){if(C[i][1]>ZS-2.6)continue;const a=at(i,H(i)*f0+.05),e=at(i,H(i)*f1-.05);if(Math.abs(e[1]-a[1])>1.4)stroke(g,[a[0],a[1],e[0],e[1]],'rgba(6,4,4,.3)',.5)}}});
+  for(let i=0;i<M;i++){const[x,z]=C[i],h0=H(i),h1=H(i+1);poly(g,[...at(i,h0,.05),...at(i+1,h1,.05),...at(i+1,h1+.1,.05),...at(i,h0+.1,.05)],lt('#6a4a30',[x,h0,z],[N[i][0],.3,N[i][1]]))}
+  /* the scuppers: small dark squares low in the bulwark, near us only */
+  for(let i=3;i<M-3;i+=7){if(C[i][1]>8.5)continue;const a=at(i,.03),e=at(i+1,.03),hh=Math.max(.5,150*.07/C[i][1]);poly(g,[a[0],a[1],e[0],e[1],e[0],e[1]-hh,a[0],a[1]-hh],'#0a0606')}
+  /* the foremast: from its partners on the deck it rakes forward over the bow and runs out of the picture's top, the foresail furled
+     along its upper part (a roll a little wider than the spar, no tie across it); dark against the night, lit a little at its foot */
+  {const m=D.mast,f0=[0,s(m.z),m.z],dir=[0,Math.cos(m.ang),Math.sin(m.ang)],pt=t=>P(0,f0[1]+dir[1]*m.len*t,f0[2]+dir[2]*m.len*t),
+      wd=t=>.16*(1-.3*t),Q=[],Qb=[];
+    for(let i=0;i<=24;i++){const t=i/24,p=pt(t),z=f0[2]+dir[2]*m.len*t,w=D.F*wd(t)/z;Q.push(p[0]-w,p[1]);Qb.unshift(p[0]+w,p[1])}
+    const roll=[],rollB=[];for(let i=0;i<=20;i++){const t=.42+.46*i/20,p=pt(t),z=f0[2]+dir[2]*m.len*t,w=D.F*(.16+.22*Math.sin(Math.PI*i/20))/z;roll.push(p[0]-w*1.05,p[1]);rollB.unshift(p[0]+w*.9,p[1])}
+    poly(g,roll.concat(rollB),lt('#9a9078',[0,6,13],[0,0,-1]));
+    /* the spar in short lengths, each lit for where it is: its foot in the lantern's light, the rest lost in the night as the bow is */
+    for(let i=0;i<24;i++){const t=(i+.5)/24,w=[0,f0[1]+dir[1]*m.len*t,f0[2]+dir[2]*m.len*t];
+      poly(g,[Q[2*i],Q[2*i+1],Q[2*i+2],Q[2*i+3],Qb[46-2*i],Qb[47-2*i],Qb[48-2*i],Qb[49-2*i]],lt('#6a4a2c',w,[.2,0,-1]));
+      stroke(g,[Q[2*i],Q[2*i+1],Q[2*i+2],Q[2*i+3]],rgba(lt('#c89a68',w,[0,0,-1]),.7),.5)}
+    const pc=[...P(-.3,s(m.z),m.z-.3),...P(.3,s(m.z),m.z-.3),...P(.3,s(m.z)+.16,m.z-.3),...P(-.3,s(m.z)+.16,m.z-.3)];poly(g,pc,lt('#6e4e30',[0,.2,m.z],[0,.3,-1]))}
+  /* the anchors of the bow, under a cover of sailcloth against the port bulwark, lashed as they lie: a long low heap with two humps
+     where the stocks lie under it; the lashing runs along its top from end to end */
+  {const z0=7.1,z1=9.0,x=z=>-b(z)+.25,P2=(u,h,z)=>P(x(z)+u,s(z)+h,z),top=[],base=[];
+    for(let i=0;i<=16;i++){const z=z0+(z1-z0)*i/16,u=i/16,h=.18+.34*Math.sin(Math.PI*u)+.1*Math.exp(-Math.pow((u-.28)/.1,2))+.08*Math.exp(-Math.pow((u-.72)/.1,2));top.push(...P2(.75,h,z));base.push(...P2(1.35,0,z))}
+    const back=[];for(let i=16;i>=0;i--){const z=z0+(z1-z0)*i/16;back.push(...P2(0,.05,z))}
+    softShade(g,base.concat(ptsBackG(top)),.5);
+    poly(g,back.concat(top),lt('#8e8670',[x(8)+.4,.5,8],[.4,.8,-.4]));poly(g,top.concat(ptsBackG(base)),lt('#8a8068',[x(8)+1,.3,8],[.5,.2,-.8]));
+    clipTo(g,()=>{poly(g,back.concat(top));poly(g,top.concat(ptsBackG(base)))},()=>{tex(g,'mott',.4,0,60,200,40,'overlay',.7);
+      for(const u of[.2,.5,.8]){const z=z0+(z1-z0)*u,a=P2(.1,.05,z),m=P2(.75,.5,z),e=P2(1.3,0,z);stroke(g,[a[0],a[1],m[0],m[1],e[0],e[1]],'rgba(30,24,20,.28)',.45)}});
+    const lash=[];for(let i=0;i<=16;i++){const z=z0-.2+(z1-z0+.4)*i/16,u=i/16,h=.2+.36*Math.sin(Math.PI*clamp(u,0,1))+.02;lash.push(...P2(.78,h,z))}
+    stroke(g,lash,lt('#5a4a32',[x(8),.6,8],[0,1,-.3]),.6);const la=P2(.05,.5,z0-.25),lb=P2(.05,.5,z1+.25);stroke(g,[lash[0],lash[1],la[0],la[1]],lt('#5a4a32',[x(8),.6,7],[0,1,-.3]),.5);stroke(g,[lash[lash.length-2],lash[lash.length-1],lb[0],lb[1]],lt('#5a4a32',[x(8),.6,9],[0,1,-.3]),.5)}
+  /* the lantern: horn and clay, hung by two cords that part upward to the rigging out of the picture */
+  if(o.lantern!==false){const[lx,ly]=D.lamp;stroke(g,[lx-.6,ly-2,lx-9,-4],'#6a5a40',.5);stroke(g,[lx+.6,ly-2,lx+8,-4],'#6a5a40',.5);
+    comp(g,'lighter',.4,()=>{pool(g,lx,ly+3,20,7,'#ff9a40',.45);pool(g,lx,ly+1,7,3.6,'#ffc070',.55)});
+    poly(g,[lx-1.6,ly-2,lx+1.6,ly-2,lx+1.9,ly+2.6,lx-1.9,ly+2.6],'#5a3a22');R(g,lx-1,ly-1.2,2,3,'#ffd890');R(g,lx-.5,ly-.6,1,1.6,'#fff4d0');R(g,lx-1.9,ly+2.6,3.8,.6,'#3a2414')}
+  return D}
+/* a soft shade under a thing that lies on the deck */
+function softShade(g,p,a){comp(g,'multiply',a,()=>poly(g,p,'#3a3048'))}
+/* bowSkiff(g, D, k, drop): the skiff alongside to starboard, being let down or falling away (see bowNight) */
+function bowSkiff(g,D,k,drop){const{P,b,s,rh}=D,z0=4.4,z1=8.4,dr=drop||0,
+    gw=z=>s(z)+rh(z)+.1+.5-.55*clamp(k,0,1)+.35*Math.pow(Math.abs((z-(z0+z1)/2)/((z1-z0)/2)),2.4)-dr*dr*3.2,
+    xi=z=>b(z)+.45+.25*Math.sin(Math.PI*clamp((z-z0)/(z1-z0),0,1)),lt=(c,p,n)=>bowLight(D,c,p,n),
+    top=[],low=[];
+  for(let i=0;i<=14;i++){const z=z0+(z1-z0)*i/14;top.push(...P(xi(z),gw(z),z));low.push(...P(xi(z)+.12,gw(z)-.62,z))}
+  clipTo(g,()=>poly(g,D.outboard),()=>{
+    /* her port side, toward us: two strakes and a wale, the light dying toward her bow */
+    poly(g,top.concat(ptsBackG(low)),lt('#6a5038',[xi(8),gw(8),8],[-1,.2,-.4]));
+    clipTo(g,()=>poly(g,top.concat(ptsBackG(low))),()=>{const mid=[];for(let i=0;i<=14;i++){const z=z0+(z1-z0)*i/14;mid.push(...P(xi(z)+.06,gw(z)-.3,z))}stroke(g,mid,'rgba(8,6,4,.5)',.5);
+      tex(g,'wood',.25,200,40,120,50,'overlay',.4)});
+    stroke(g,top,lt('#b08a5c',[xi(8),gw(8),8],[-.5,1,-.5]),.7);
+    /* her stem and sternpost, short, rising a little above the gunwale at each end */
+    for(const z of[z0,z1]){const a=P(xi(z),gw(z),z),e=P(xi(z)+.05,gw(z)+.18,z+(z===z0?-.12:.12));stroke(g,[a[0],a[1],e[0],e[1]],lt('#6a5038',[xi(z),gw(z),z],[-1,.3,-.3]),1.1)}});
+  return{rings:[P(xi(z0+.15),gw(z0+.15)+.05,z0+.15),P(xi(z1-.15),gw(z1-.15)+.05,z1-.15)],z0,z1}}
+
+return{side,geo,anchor,wreckage,LIGHT,hawser:hawserS,deck,geoDeck,sternNight,nightGeo,bowGeo,bowNight,bowSkiff};
 })();
