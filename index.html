@@ -627,7 +627,9 @@ function tune(semis,oct,k){k=k||key();const ref=62+12*(oct||0),d=((ref-k.root)%1
 /* tone: one oscillator note. f Hz, t start, d seconds, v level, a attack (6 ms if not given), sus holds the level to 70% of d,
    to glides the pitch to that frequency over d, bend:[cents, seconds] starts the note that far off and slides it onto f, vib is vibrato depth in Hz (vibd: seconds it takes to come in), echo also feeds the echo.
    lp gives the note its own lowpass that moves through [[Hz, seconds after t], ...]: the first point is set, the next ones are reached
-   by exponential ramps (lpq sets its Q). */
+   by exponential ramps (lpq sets its Q).
+   The envelope's gain is 0 until its first event (a new gain is 1): a source that starts a hair after a sample frame is snapped back
+   to that frame, where the event at t has not taken hold yet, and its first sample would go out at full level, as a click. */
 function tone(o){const c=AU.ctx;if(!c)return;const t=o.t||c.currentTime,osc=c.createOscillator(),g=c.createGain(),v=o.v||.2;
   osc.type=o.type||'triangle';osc.frequency.setValueAtTime(o.f,t);
   if(o.to)osc.frequency.exponentialRampToValueAtTime(o.to,t+o.d);
@@ -637,15 +639,16 @@ function tone(o){const c=AU.ctx;if(!c)return;const t=o.t||c.currentTime,osc=c.cr
   if(o.vib){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=5.2;
     if(o.vibd){lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(o.vib,t+o.vibd)}else lg.gain.value=o.vib;
     l.connect(lg);lg.connect(osc.frequency);l.start(t);l.stop(t+o.d+.1)}
-  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+(o.a||.006));
+  g.gain.value=0;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+(o.a||.006));
   if(o.sus){g.gain.setValueAtTime(v,t+o.d*.7);g.gain.linearRampToValueAtTime(.0001,t+o.d)}
   else g.gain.exponentialRampToValueAtTime(.0001,t+o.d);
   src.connect(g);g.connect(o.dest||AU.fx);if(o.echo)g.connect(AU.toRoom);
   osc.start(t);osc.stop(t+o.d+.05)}
-/* noise: filtered noise that starts at v and dies away over d; with a it swells in over a seconds, and with sus it holds like tone() */
+/* noise: filtered noise that starts at v and dies away over d; with a it swells in over a seconds, and with sus it holds like tone().
+   Its gain is 0 until its first event, as tone()'s is, and for the same reason. */
 function noise(o){const c=AU.ctx;if(!c)return;const t=o.t||c.currentTime,s=c.createBufferSource(),g=c.createGain(),fl=c.createBiquadFilter(),v=o.v||.2;
   s.buffer=AU.nbuf;s.loop=true;fl.type=o.type||'bandpass';fl.frequency.value=o.f||1000;fl.Q.value=o.q||1;
-  g.gain.setValueAtTime(o.a?.0001:v,t);if(o.a)g.gain.linearRampToValueAtTime(v,t+o.a);
+  g.gain.value=0;g.gain.setValueAtTime(o.a?.0001:v,t);if(o.a)g.gain.linearRampToValueAtTime(v,t+o.a);
   if(o.sus){g.gain.setValueAtTime(v,t+o.d*.7);g.gain.linearRampToValueAtTime(.0001,t+o.d)}else g.gain.exponentialRampToValueAtTime(.0001,t+o.d);
   s.connect(fl);fl.connect(g);g.connect(o.dest||AU.fx);s.start(t,Math.random()*.5);s.stop(t+o.d+.05)}
 /* bite: the ear is most sensitive between 1 and 4 kHz, so a voice held at one level grows harsher as it climbs. bite(f) is the gain for a

@@ -5981,6 +5981,17 @@
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(!C3&&!C4&&!C5&&!C6&&!HUB){
+  /* The first sample of a sound (the engine's tone() and noise()): in a full run and at the stop click. A source that starts a hair after
+     a sample frame is snapped back to that frame, where the envelope's first event has not taken hold yet; until November 2026 the
+     envelope's gain was 1 there, and that one sample went out at full level, as a click. Rendered offline: a noise started exactly on a
+     frame still sounds on it, and one started a hair after it sends nothing out above its own envelope, with an attack or without. */
+  if(stop==='all'||stop==='click'){const SR=44100,n0=11025,first=async(off,o,fn)=>{const c=new OfflineAudioContext(1,SR,SR),keep=Object.assign({},AU);AU.ctx=c;audioGraph(c);
+      try{const d=c.createGain();d.connect(c.destination);(fn||noise)(Object.assign({t:(n0+off)/SR,d:.2,v:.06,f:3800,q:.5,type:'highpass',dest:d},o))}finally{for(const k in AU)AU[k]=keep[k]}
+      const x=(await c.startRendering()).getChannelData(0);let pk=0;for(let i=n0+3;i<n0+2205;i++)pk=Math.max(pk,Math.abs(x[i]));return[Math.abs(x[n0]),pk]};
+    const[a0,p0]=await first(0,{}),[a1,p1]=await first(1e-7,{}),[b1,q1]=await first(1e-7,{a:.03}),[c1,r1]=await first(1e-7,{f:440,v:.2,type:'square'},tone);
+    ok(a0>0&&p0>.01&&p1>.01&&q1>.01&&r1>.05,'a noise that starts exactly on a sample frame sounds from that frame on, and each test sound is heard (later peaks '+[p0,p1,q1,r1].map(v=>v.toFixed(3)).join(', ')+')');
+    ok(a1<=p1*1.5&&b1<.001&&c1<.01,'a sound that starts a hair after a sample frame sends no first sample out above its envelope: no click (noise '+a1.toFixed(4)+' under a later peak of '+p1.toFixed(4)+', with an attack '+b1.toFixed(5)+', a tone '+c1.toFixed(5)+')');
+    halt('click')}
   /* Prologue ("The Road to Damascus"): only when stop==='all' or stop==='prologue', test skipping the whole prologue with SKIP, then playing the
      whole prologue through into Chapter One. The 'prologue' stop plays only this and stops when Chapter One begins. */
   if(stop==='all'||stop==='prologue'){
