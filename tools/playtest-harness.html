@@ -157,7 +157,7 @@
     const[x,y]=M.where('tarsus'),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,clientX:r.left+x*r.width/VW,clientY:r.top+y*r.height/VH}));await wait(120);await idle()}, // Chapter Twenty-Two: from the quay at Caesarea, aboard; on the map of the voyage out, Tarsus is looked at while the leg off Cilicia is shown (nothing has changed until Myra is clicked)
   23:()=>act('look','stone_at_the_gate'), // Chapter Twenty-Three: at the estate of Publius, the stone at the gate with its one word
   24:()=>act('look','stub24_corner_of_the_quay'), // Chapter Twenty-Four: STUB, the stub's corner of the quay. LOGIC24: from treasure.at, the steps that touch the reeds by the canal at night
-  25:()=>act('look','stub25_roll'), // Chapter Twenty-Five: STUB, the stub's roll. LOGIC25: from treasure.at, the steps that look at Luke's roll in the watch where he sits writing
+  25:()=>act('look','lukes_roll'), // Chapter Twenty-Five: in the third watch, Luke's roll on the bench beside him
  };
  (async()=>{try{
   while(!G.ready)await wait(30);
@@ -6493,15 +6493,19 @@
      but its line in TSTEPS, the chain of the full run (ch25 after ch24) and the title checks of the chapters before it. */
   /* Chapter Twenty-Five stops start Chapter Twenty-Five from the title screen (nothing carried: it is played in the flat), as the title's
      entry would (FOR NOW by startChapter(25), as for Chapter Twenty-Four); in the full run its test follows Chapter Twenty-Four's, which has
-     opened it with the room at street level carried in. all25 halts nowhere. Its halts: STUB: lodging25 (the lodging, Paul chained to the
-     soldier) · final25 (the door opened, Acts 28:30, 31 told, and the hand-over to the finale; until shared/finale.js is merged, a screen
-     that returns to the title on a click). The stops that begin with "p" open one room at once, with the story's flags set for it, and say
-     the safe-point code of their point (CODE): STUB: plodging25 (the flat) · pstreet25 (the room at street level, carried in). carry25
-     plays Chapter Twenty-Four's end for each lodging and checks the code and the click, and the start from the title and from the plain
-     first code (the flat). rooms25 puts every picture on one sheet, each room in each of its views (CHAP[25].views); the generic stops
+     opened it with the room at street level carried in. all25 halts nowhere. Its halts, one at least for each watch: knock25 (the first
+     watch: the leading men at the door, the soldier by the window) · men25 (the leading men on the benches) · day25 (the day of 28:23, its
+     first hour) · night25 (the evening told, the soldier's question) · philippi25 (the third watch: Timothy with the pen, Luke writing) ·
+     philemon25 (the sheet for Philemon, close) · greet25 (the fifth watch: the six who greet) · three25 (the three letters, close) · map25
+     (the road up the Lycus) · morning25 (the last watch: the stool by the door) · final25 (the door opened, Acts 28:30, 31 told, and the
+     hand-over to the finale; until shared/finale.js is merged, a screen that returns to the title on a click). The stops that begin with
+     "p" open one point at once, with the story's flags set for it, and say its safe-point code (CODE): plodging25 (the flat) · pstreet25 (the
+     room at street level, carried in) · pmen25 · pday25 · pnight25 · pphilippi25 (the treasure's point) · pphilemon25 · psheet25 (the sheet,
+     close) · pgreet25 · pletters25 · pthree25 (the three letters, close) · pmorning25 (the last safe point: the morning goes on by itself).
+     carry25 plays Chapter Twenty-Four's end for each lodging and checks the code and the click, and the start from the title and from the
+     plain first code (the flat). rooms25 puts every picture on one sheet, each room in each of its views (CHAP[25].views); the generic stops
      card25, routes25 and shadows25 (above) run against the chapter's rooms, in each view. The checks that bind to the end: finished is
-     CHAP[25].flags[CHAP[25].done] and the last flag; and from the last safe point to the finale no flag is set (final25). LOGIC25: replace
-     every STUB name here with the chapter's own halts and room stops, one at least for each watch, and keep both end checks. */
+     CHAP[25].flags[CHAP[25].done] and the last flag; and from the last safe point to the finale no flag is set (final25). */
   /* rooms25: every picture of Chapter Twenty-Five on one sheet at twice its size, each room in each of its views (rooms25.png) */
   if(stop==='rooms25'){clearInterval(sk);sk=0;await loadLevel(25);setChapter(25);ov.className='';ov.onclick=null;const C=CHAP[25],K=2,
       ids=C.rooms.flatMap(id=>views(25,id).map(([vn,set])=>[id,set]));
@@ -6511,13 +6515,17 @@
     const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
     ids.forEach((e,i)=>pic(e,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
     window.SHEETS={rooms25:c.toDataURL()};halt('rooms25')}
-  const C25=/^(lodging25|final25|all25)$/.test(stop);   /* STUB: lodging25 */
-  if(!C25&&/^p[a-z]+25$/.test(stop)){await loadLevel(25);ov.className='';ov.onclick=null;const C=CHAP[25],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
-      S={plodging25:[[],'lodging25'],pstreet25:[['from24','street'],'lodging25']}[stop];   /* STUB: plodging25, pstreet25; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
+  const C25=/^(knock25|men25|day25|night25|philippi25|philemon25|greet25|three25|map25|morning25|final25|all25)$/.test(stop);
+  /* a point of the chapter opened at once (the p-stops): the chapter's own flags from FLAGS (after the carried ones) up to k */
+  const upto25=k=>{const A=CHAP[25].flags;return A.slice(CHAP[25].carry,A.indexOf(k)+1)};
+  if(!C25&&/^p[a-z]+25$/.test(stop)){await loadLevel(25);ov.className='';ov.onclick=null;const C=CHAP[25],
+      S={plodging25:[[],'lodging25'],pstreet25:[['from24','street'],'lodging25'],pmen25:[upto25('men'),'lodging25'],pday25:[upto25('q1'),'lodging25'],
+        pnight25:[upto25('h5'),'lodging25'],pphilippi25:[upto25('q2'),'lodging25'],pphilemon25:[upto25('q3'),'lodging25'],psheet25:[upto25('q3'),'sheet25'],
+        pgreet25:[upto25('q4'),'lodging25'],pletters25:[upto25('q5'),'lodging25'],pthree25:[upto25('q5'),'letters25'],pmorning25:[upto25('sent'),'lodging25']}[stop];
     if(!S)throw new Error('no such stop '+stop);setChapter(25);for(const k of S[0])F[k]=1;
     const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
     G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
-    await wait(1100);halt(stop)}
+    await wait(stop==='pmorning25'?4000:1100);halt(stop)}
   /* carry25 (CONTRIBUTING section 5): the lodging chosen in Chapter Twenty-Four is carried into Chapter Twenty-Five's first two flags, from24
      and street, only in the safe-point code. For each lodging: Chapter Twenty-Four's end screen prints codeOf(25, bits) and keeps it as the
      point to continue from and the farthest point; its click and that code, typed later, open the same room with the card. Started from
@@ -6544,38 +6552,191 @@
     shown=0;await restore(codeOf(25,0));await until(in25,6000);
     ok(!F.from24&&!F.street&&shown===25&&ART.lodging25.variant().startsWith('flat'),'so is its plain first code');
     window.showCard=sc;halt('carry25')}
-  const ch25=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[25],told=k=>heard.includes(T(C().told[k])),
+  const ch25=async()=>{const H25=new Set();new MutationObserver(m=>m.forEach(r=>r.addedNodes.forEach(n=>H25.add(n.textContent)))).observe($('#speech'),{childList:true});
+    const said=t=>heard.includes(T(t)),ever=t=>H25.has(T(t)),A=id=>ACT[id],C=()=>CHAP[25],
     until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
     onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
     pray25=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
     hints=async(a,b,where)=>{heard.length=0;const p=await pray25(),first=said(a)&&!said(b),q=await pray25();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
-    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+    asked=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);return[...document.querySelectorAll('#choices button')].map(x=>x.dataset.src)},
+    pickK=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const bs=[...document.querySelectorAll('#choices button')],b=bs.find(x=>x.dataset.src===k);
+      if(!b)throw new Error('no choice '+k+' among '+bs.map(x=>x.dataset.src).join(' | ')+' (heard: '+heard.slice(-3).join(' / ')+')');b.click();await wait(60);await idle()},
+    talkTo=async(a,v)=>{verb(v||'talk');clickView(a.x,a.y-10,a.hs);await idle()},
+    useA=async(id,a,v)=>{verb(v||'use');item(id);clickView(a.x,a.y-10,a.hs);await idle()},
+    code=async(what,fn)=>{const cd=makeCode();await enter(cd);await idle();ok(fn(),'a code '+what+': '+cd)},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(ever(C().told[k]))seenTold.add(k)},
+    door=()=>F.street?'doorway':'door',chs=()=>$('#choices').classList.contains('on'),
+    far=()=>said('paul_the_chain_doesnt_reach')||said('paul_the_chain_doesnt_reach_i_could_ask'),LB=()=>C().labels;
   heard.length=0;
-  /* FOR NOW, as for Chapter Twenty-Four: LOGIC25, when its entry leaves PLANNED, the usual check (the title lists Chapter Twenty-Five) */
+  /* FOR NOW, as for Chapter Twenty-Four: when its entry leaves PLANNED, the usual check (the title lists Chapter Twenty-Five) */
   if(C25){const l=ov.querySelector('.chs'),plans=l.querySelector('.plans');
     ok(!l.querySelector('[data-ch="25"]')&&building(25)&&plans&&plans.textContent.includes(T('twenty_five')),'FOR NOW: the title does not list Chapter Twenty-Five while the line of the chapters in preparation still names it')}
   if(C25){const e=document.querySelector('#overlay [data-ch="25"]');if(e)e.click();else startChapter(25)}
-  /* STUB: from here to halt('final25') the steps play the stub; LOGIC25 replaces them with the chapter's playthrough (keep the checks
-     of the end: finished at done, and no flag set from the last safe point to the finale) */
   await until(()=>G.ch===25&&G.room==='lodging25'&&!G.busy,9000);note();
-  {const v=ART.lodging25.variant(),c5=C(),SO=A('soldier25');
+  const FV=A('fulvius25'),FI=A('valens25'),BA=A('bassus25'),MA=A('macer25'),CE=A('celer25'),TM=A('timothy25'),LK=A('luke25'),SP=A('jew25b'),TY=A('tychicus25'),ON=A('onesimus25');
+  {const v=ART.lodging25.variant(),c5=C(),M=c5.music;
     ok(C25?!F.from24&&!F.street&&v.startsWith('flat'):!!F.from24&&!!F.street&&v.startsWith('street'),
       C25?'started from the title, nothing is carried: the lodging is the flat ('+v+')':'started from the end of Chapter Twenty-Four, the lodging is the one carried in: the room at street level ('+v+')');
     ok(c5.flags[c5.done]==='finished'&&c5.flags.at(-1)==='finished'&&!F.finished&&c5.carry===2&&c5.flags.slice(0,2).join()==='from24,street'&&c5.codeBits.flags>=c5.flags.length,
       'the flags: from24 and street first (carried), finished last, at done ('+c5.done+'), and not set');
     ok(c5.about&&c5.about.title==='without_hindrance_2'&&c5.about.text==='without_hindrance_about'&&c5.about.based==='based_on_acts_28_17_31'&&['without_hindrance_about','based_on_acts_28_17_31'].every(k=>textOf('en',k)),
       'the page about the chapter has its keys: '+(c5.about&&Object.values(c5.about).join(', ')));
-    ok(PC()===P&&P.chained&&P.chainTo===SO&&SO.room==='lodging25'&&SO.keeper&&/^25(-[0-9A-Z]{3}){3,6}$/.test(makeCode())&&decode(makeCode()).ch===25,
-      'STUB: Paul is played, chained by one wrist to the soldier of the watch; wide codes: '+makeCode());
-    if(C25)ok(seenTold.has('n17'),'STUB: Acts 28:17 from the scroll')}
-  halt('lodging25');
-  await hints('stub25_hint_1','stub25_hint_2','in the lodging');
-  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('stub25_roll','look');
-    ok(said('stub25_roll_look')&&treasures().has(25)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'STUB: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
+    ok(PC()===P&&P.chained&&P.chainTo===FV&&FV.room==='lodging25'&&FV.seat&&c5.seat()==='window'&&P.wrist==='right'&&P.tether>0&&P.look===SHARED.cast.ROME.paul_home&&/^25(-[0-9A-Z]{3}){3,6}$/.test(makeCode())&&decode(makeCode()).ch===25,
+      'Paul is played, without his mantle, chained by his right wrist on the long chain to Fulvius, who sits by the window; wide codes: '+makeCode());
+    ok(AU.score===M&&M.steps===17&&M.root===44&&M.group.join()==='4,4,4,5'&&M.scale.join()==='0,2,4,5,7,9,10'&&!M.tracks.some(t=>(t.moods||[]).includes('tense'))&&M.tracks.some(t=>(t.moods||[]).includes('home')),
+      'the chapter\'s score, in A-flat Mixolydian and in bars of seventeen; no tense mood, and a mood in which the tune comes home');
+    if(C25)ok(seenTold.has('n17')&&ever('paul_there_they_are'),'Acts 28:17 from the scroll; they knock'+(seenTold.has('n17')&&ever('paul_there_they_are')?'':' [n17 '+seenTold.has('n17')+', knock '+ever('paul_there_they_are')+'; '+[...H25].slice(0,4).join(' / ').slice(0,300)+']'))}
+  halt('knock25');
+  /* ---- the first watch: this chain (Acts 28:17-22) ---- */
+  await hints('hint_let_them_in_1','hint_let_them_in_2','at the knock');
+  heard.length=0;await onH('ceiling','look');ok(said('paul_a_tentmaker_under_a_roof'),'his first look round the room: the tentmaker\'s roof');
+  {heard.length=0;const b=C().box();await onH(door(),'open');
+    ok(said('paul_the_chain_doesnt_reach_i_could_ask')&&!F.men&&P.x<=b[1]+1.5&&P.x>=b[0]-1.5,'the door is out of reach: he goes as near as the chain lets him ('+P.x.toFixed(0)+'; the reach '+b[0]+'..'+b[1]+') and says that he could ask the soldier to sit elsewhere')}
+  heard.length=0;await talkTo(FV);{const o=await asked();
+    ok(said('fulvius_days_to_my_discharge')&&o.length===5&&o.at(-1)==='paul_never_mind'&&!o.includes('would_you_sit_by_the_window')&&['would_you_sit_by_the_door','would_you_sit_at_the_table','could_you_move_a_little','you_can_sit_wherever_you_like'].every(k=>o.includes(k)),
+      'Fulvius\'s own care; then what Paul may ask him: the two other seats, each with its reason, a vague plea, a true flattery, and never mind: '+o.join(' '))}
+  heard.length=0;await pickK('could_you_move_a_little');ok(said('soldier_move_where_and_what_for')&&C().seat()==='window','a vague plea does not move him');
+  heard.length=0;await talkTo(FV);await pickK('you_can_sit_wherever_you_like');ok(said('soldier_i_can_and_i_like_it_here')&&C().seat()==='window','nor does flattery, true as it is');
+  heard.length=0;await talkTo(FV);await pickK('would_you_sit_by_the_door');await until(()=>!FV.walk&&FV.seat,3000);
+  {const b=C().box();ok(said('soldier_since_you_ask_plainly')&&C().seat()==='door'&&FV.seat&&P.chainTo===FV&&Math.abs(FV.x-238)<1&&b[1]>=258,'a plain request with its reason: he sits by the door, and the chain reaches it ('+b.join(',')+')')}
+  await hints('hint_open_the_door_1','hint_open_the_door_2','with the soldier by the door');
+  heard.length=0;await onH(door(),'open');await until(()=>F.men&&!G.busy,6000);
+  ok(F.men&&said('paul_come_in_theres_room_on_the_benches')&&said('leading_man_we_came_as_you_asked')&&['jew25a','jew25b','jew25c','jew25d','jew25e','jew25f'].every(id=>A(id).room==='lodging25'&&A(id).seat),'the door opened: six leading men of the Jews come in and sit on the benches');
+  await code('with the leading men seated',()=>F.men&&!F.said&&C().seat()==='door'&&A('jew25b').seat&&P.chainTo===FV);
+  halt('men25');
+  await hints('hint_my_points_1','hint_my_points_2','with the leading men');
+  const PTS=C().spoken.points,PL=LB().points;
+  heard.length=0;await talkTo(SP);{const o=await asked();ok(o.length===5&&PL.every(k=>o.includes(k))&&o.at(-1)==='paul_let_me_think_first','four of his points on offer, all of them every time; the fifth is not: it is said with the chain')}
+  heard.length=0;await pickK(PL[2]);ok(said('paul_first_how_i_became_a_prisoner')&&!said(PTS[2]),'a point too early: something comes before it, his own thought');
+  heard.length=0;await pickK(PL[0]);ok(said(PTS[0]),'the first point, said');
+  heard.length=0;await pickK(PL[0]);ok(said('ive_told_them_that_already'),'one already said stays on offer, and is his thought');
+  await pickK('paul_let_me_think_first');
+  heard.length=0;await useA('chain25',SP);ok(said('paul_first_how_i_became_a_prisoner')&&!F.said,'the chain too early: something comes before it');
+  heard.length=0;await talkTo(SP);for(const k of PL.slice(1,4))await pickK(k);
+  ok(PTS.slice(1,4).every(said)&&said('paul_one_thing_more_they_can_see_it')&&!chs(),'the next three, in the account\'s order; one thing more, which they can see');
+  await hints('hint_the_chain_1','hint_the_chain_2','before the fifth point');
+  heard.length=0;useA('chain25',SP);await until(chs,9000);
+  ok(said(PTS[4])&&C().spoken.answer.every(said)&&F.said&&!A('jew25a').room&&said('soldier_one_thing_before_my_relief')&&said(C().q[1].q),'the fifth point, with the chain; their answer (Acts 28:21, 22); they go, and the soldier asks one thing before he is relieved');
+  {const o=await asked(),Q=C().q[1];ok(o.length===3&&[Q.fit,Q.long,Q.aside].every(k=>o.includes(k)),'three true answers to his question')}
+  heard.length=0;await pickK(C().q[1].aside);ok(said('soldier_thats_not_what_i_asked')&&said(C().q[1].q)&&!F.q1,'an answer to something else: that is not what he asked, and he asks again');
+  heard.length=0;await pickK(C().q[1].long);ok(said('paul_hes_looking_at_the_wall')&&!F.q1&&!chs(),'a longer one: he looks at the wall');
+  await hints('hint_his_question_1','hint_his_question_2','with his question open');
+  heard.length=0;talkTo(FV);await until(chs,3000);ok(said('soldier_let_me_ask_again'),'spoken to again, he asks again');
+  await pickK(C().q[1].fit);await until(()=>F.q1&&G.room==='lodging25'&&!G.busy,20000);note();
+  /* ---- the second watch: from morning to evening (Acts 28:23-28) ---- */
+  ok(ever(C().q[1].ack)&&F.q1&&C().watch()===2&&seenTold.has('n23a')&&seenTold.has('n23b')&&P.chainTo===FI&&C().seat()==='table'&&C().hour()==='early'&&ever('valens_so_you_are_paul'),
+    'the answer that fits: he is relieved. The day of 28:23, told; Valens at the table knows who Paul is; early morning');
+  ok(ever(C().obj[0].say)&&ever('paul_moses_or_the_prophets_will_answer_that'),'the first listener says what holds him back, and Paul thinks how to answer');
+  halt('day25');
+  await hints('hint_a_passage_1','hint_a_passage_2','at the first hour');
+  const lab=k=>T('ref_short',{ref:T(C().pass[k].ref),short:T(C().pass[k].short)}),HRS=['early','mid','noon','after','eve'];
+  heard.length=0;await talkTo(A(C().obj[1].a));ok(said('listener_answer_him_first')&&!chs(),'another listener: answer him first');
+  for(let n=0;n<5;n++){const o=C().obj[n],L=A(o.a),wrong=Object.keys(C().pass).find(k=>k!==o.fit);ok(C().hour()===HRS[n],'hour '+(n+1)+': '+C().hour());
+    heard.length=0;await talkTo(L);{const ops=await asked();if(n===0)ok(ops.length===6&&Object.keys(C().pass).every(k=>ops.includes(lab(k)))&&ops.at(-1)==='paul_let_me_think_first','five passages on offer, every time, as told before: '+ops.join(' | '))}
+    await pickK(lab(wrong));ok(said(o.no)&&!F['h'+(n+1)]&&C().hour()===HRS[n],'a passage that does not meet it ('+wrong+'): he says what he asked about, and the light stays');
+    heard.length=0;await talkTo(L);await pickK(lab(o.fit));
+    if(n<4){await until(()=>F['h'+(n+1)]&&!G.busy,6000);ok(said(o.yes)&&said(C().obj[n+1].say),'the passage that meets it ('+o.fit+'): his own answer; the light moves on, and the next says what holds him back')}}
+  await until(()=>F.h5&&chs(),20000);note();
+  ok(['n24','n25','isaiah','n27','n28'].every(k=>seenTold.has(k))&&C().hour()==='night'&&!A('jew25a').room&&ever(C().obj[4].yes)&&said(C().q[2].q),'by evening some believed and others did not; Isaiah; salvation to the nations (Acts 28:24-28, told); they go; night, and the soldier\'s question');
+  halt('night25');
+  heard.length=0;await pickK(C().q[2].fit);await until(()=>F.q2&&G.room==='lodging25'&&!G.busy,20000);note();
+  /* ---- the third watch: sent home (Philippians) ---- */
+  ok(ever(C().q[2].ack)&&seenTold.has('gift')&&ever('a_year_and_more_went_by')&&P.chainTo===BA&&TM.room==='lodging25'&&TM.pose==='write'&&LK.room==='lodging25'&&ever('epaphroditus_im_well_again'),
+    'a year and more (the narrator\'s own line); the gift from Philippi (Philippians 4:18, told); Bassus; Epaphroditus well again; Timothy with the pen; Luke writing');
+  await code('in the third watch',()=>C().watch()===3&&TM.pose==='write'&&LK.room==='lodging25'&&P.chainTo===BA);
+  halt('philippi25');
+  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('lukes_roll','look');
+    ok(said('luke_listen_here_is_where_you_come_in')&&said(C().first)&&treasures().has(25)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'Luke\'s roll: he reads what he has just set down, the first words the narrator ever told: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
+  heard.length=0;await talkTo(BA);ok(said('bassus_my_last_post_was_a_granary'),'Bassus: the granary');await pickK('paul_never_mind');
+  await hints('hint_dictate_1','hint_dictate_2','with Timothy at the pen');
+  const PHL=C().written.philippians;
+  heard.length=0;await talkTo(TM);await pickK(LB().phil[1]);ok(said('paul_first_that_im_sending_him')&&!said(PHL[1]),'a line too early is his own thought');
+  for(const[i,k]of PHL.entries()){heard.length=0;await talkTo(TM);await pickK(LB().phil[i]);ok(said(k),'dictated: '+k)}
+  await until(()=>F.dict&&A('anthus25').room==='lodging25'&&!G.busy,8000);
+  ok(ever('landlady_i_rented_to_one_quiet_man')&&ever('anthus_a_greeting_from_the_household')&&!A('landlady25').room,'the landlady brings Anthus of Caesar\'s household, and goes; he asks to add a greeting');
+  await hints('hint_a_greeting_from_the_household_1','hint_a_greeting_from_the_household_2','with Anthus');
+  heard.length=0;await onH('letter_for_philippi','use');{const o=await asked();ok(o.includes(LB().household),'the greeting from Caesar\'s household is on offer now')}
+  pickK(LB().household);await until(()=>F.house&&chs(),12000);
+  ok(F.house&&said(C().written.household)&&!A('epaphroditus25').room&&said(C().q[3].q),'Philippians 4:22 added; Epaphroditus leaves with the letter; the soldier asks');
+  heard.length=0;await pickK(C().q[3].fit);await until(()=>F.q3&&G.room==='lodging25'&&!G.busy,20000);note();
+  /* ---- the fourth watch: not as an order (Philemon) ---- */
+  ok(seenTold.has('child')&&ever('the_two_years_were_nearing_their_end')&&P.chainTo===MA&&C().seat()==='door'&&ever('epaphras_thats_all_the_news_from_colossae')&&ON.room==='lodging25'&&ever('macer_a_prisoner_is_a_prisoner'),
+    'toward the end of the two years: Macer by the door; Epaphras has given his news; Onesimus at home here (Philemon 10, 11, told)');
+  await hints('hint_sit_at_the_table_1','hint_sit_at_the_table_2','with Macer by the door');
+  heard.length=0;await onH('desk','use');ok(far()&&G.room==='lodging25','the desk is out of reach from the door');
+  await wait(200);heard.length=0;await onH('cat','look');ok(said('paul_the_cat_sleeps_on_the_chain'),'the cat asleep on the chain');
+  heard.length=0;await talkTo(MA);ok(said('macer_ive_guarded_worse'),'Macer\'s own word');await pickK('would_you_sit_at_the_table');await until(()=>!MA.walk&&MA.seat,3000);ok(C().seat()==='table'&&C().deskOk(),'asked plainly, he sits at the table');
+  await hints('hint_the_desk_1','hint_the_desk_2','with the desk in reach');
+  heard.length=0;await onH('desk','use');await until(()=>G.room==='sheet25'&&!G.busy,4000);ok(G.room==='sheet25','he sits at the desk: the sheet for Philemon, close');
+  halt('philemon25');
+  await hints('hint_ask_not_order_1','hint_ask_not_order_2','at the sheet');
+  const PM=C().written.philemon,DM=C().demand;
+  for(let i=0;i<4;i++){heard.length=0;await onH('letter_to_philemon','use');{const o=await asked();ok(o.length===3&&o.includes(DM[i].k)&&o.includes(LB().ask[i]),'line '+(i+1)+': what he could demand, or what he asks')}
+    await pickK(DM[i].k);ok(said(DM[i].why)&&!said(DM[i].k),'line '+(i+1)+': he could demand it; his own thought, and the line stays unwritten');
+    heard.length=0;await onH('letter_to_philemon','use');if(i<3){await pickK(LB().ask[i]);ok(said(PM[i])&&(i>0||said(C().written.heart)),'line '+(i+1)+' written: what he asks'+(i?'':'; then Philemon 12'))}else pickK(LB().ask[i])}
+  await until(()=>F.phm&&G.room==='lodging25'&&chs(),12000);
+  ok(ever(PM[3])&&ever(C().written.ready)&&ever('onesimus_ill_go_back_to_him')&&said(C().q[4].q),'the last line, and Philemon 22; back in the room Onesimus says himself that he will go; the soldier asks');
+  heard.length=0;await pickK(C().q[4].fit);await until(()=>F.q4&&G.room==='lodging25'&&!G.busy,20000);note();
+  /* ---- the fifth watch: those who greet you (Colossians 4:10-18) ---- */
+  ok(ever('in_the_same_weeks')&&P.chainTo===FI&&C().seat()==='table'&&ever('valens_again')&&ever('paul_only_the_greetings_are_left'),'the same weeks: Valens at the table; only the greetings are left');
+  await code('in the fifth watch',()=>C().watch()===5&&C().seat()==='table'&&A('aristarchus25').room==='lodging25');
+  halt('greet25');
+  await hints('hint_greetings_1','hint_greetings_2','with the six');
+  const G5=C().greet,gOf=id=>G5.find(g=>g.a===id),name=async(id,c)=>{heard.length=0;await talkTo(A(id));await pickK(c||gOf(id).c)};
+  for(const id of['aristarchus25','demas25','mark25','luke25']){heard.length=0;await talkTo(A(id));ok(far()&&!chs(),id+' is out of reach from the table')}
+  heard.length=0;await talkTo(A('justus25'));{const o=await asked();ok(o.length===7&&C().called.every(k=>o.includes(k)),'all six names on offer, every time')}
+  await pickK('the_cousin_of_barnabas');ok(said(gOf('justus25').no)&&!F.cj,'a name not his: he says so himself, truly');
+  await name('justus25');ok(F.cj&&said(C().written.colossians[2]),'Justus: the one called Justus (Colossians 4:11), dictated');
+  await name('epaphras25');ok(F.ce&&said(C().written.colossians[3]),'Epaphras: one of you (Colossians 4:12)');
+  heard.length=0;await talkTo(FI);await pickK('would_you_sit_by_the_window');await until(()=>!FI.walk&&FI.seat,3000);ok(C().seat()==='window','he sits by the window');
+  await name('aristarchus25');ok(F.ca&&said(C().written.colossians[0]),'Aristarchus: my fellow captive (Colossians 4:10)');
+  await name('demas25');ok(F.cd&&said('paul_luke_and_demas_go_in_one_line')&&!said(C().written.colossians[4]),'Demas: no more than his name; Luke and Demas go in one line');
+  heard.length=0;await talkTo(FI);await pickK('would_you_sit_by_the_door');await until(()=>!FI.walk&&FI.seat,3000);ok(C().seat()==='door','he sits by the door');
+  await name('mark25');ok(F.cm&&said(C().written.colossians[1]),'Mark: the cousin of Barnabas, to be welcomed (Colossians 4:10)');
+  await name('luke25');ok(F.cl&&said(C().written.colossians[4])&&said('paul_last_my_own_greeting'),'Luke: the beloved physician; Luke and Demas (Colossians 4:14); last, his own greeting');
+  await hints('hint_my_own_hand_1','hint_my_own_hand_2','with the six in the letter');
+  heard.length=0;await onH('desk','use');ok(far()&&!F.hand,'the desk is out of reach from the door');
+  heard.length=0;await talkTo(FI);await pickK('would_you_sit_at_the_table');await until(()=>!FI.walk&&FI.seat,3000);
+  heard.length=0;onH('desk','use');await until(()=>F.hand&&chs(),12000);
+  ok(F.hand&&said(C().written.hand)&&said(C().q[5].q),'in his own hand (Colossians 4:18); the soldier asks');
+  heard.length=0;await pickK(C().q[5].fit);await until(()=>F.q5&&G.room==='lodging25'&&!G.busy,20000);note();
+  /* ---- the sixth watch: three letters, one road ---- */
+  ok(ever('the_day_came_for_tychicus_and_onesimus_to_leave')&&P.chainTo===FV&&ever('fulvius_again')&&TY.room==='lodging25'&&ON.room==='lodging25','the day they leave: Fulvius again; Tychicus and Onesimus ready');
+  await hints('hint_three_letters_1','hint_three_letters_2','with the letters on the table');
+  heard.length=0;await onH('letters_on_the_table','use');await until(()=>G.room==='letters25'&&!G.busy,4000);
+  halt('three25');
+  for(const k of['eph','col','phm']){const L=C().letters[k];heard.length=0;await onH(L.name,'look');ok(said(L.look),'looked at: '+L.name);await onH(L.name,'pickup');ok(G.inv.includes(L.it),'taken: '+L.it)}
+  ok(ever('paul_each_to_the_man_who_carries_it'),'each letter to the man who will carry it');
+  await onH('back_to_the_room','walk');await until(()=>G.room==='lodging25'&&!G.busy,4000);
+  heard.length=0;await useA('letter_col25',ON,'give');ok(said('onesimus_tychicus_should_carry_this_one')&&G.inv.includes('letter_col25'),'Colossians to Onesimus: he says why Tychicus should carry it');
+  heard.length=0;await useA('letter_eph25',ON,'give');ok(said('onesimus_the_letter_for_ephesus_names_tychicus')&&G.inv.includes('letter_eph25'),'Ephesians to Onesimus: the letter names Tychicus');
+  heard.length=0;await useA('letter_eph25',TY,'give');ok(F.geph&&!G.inv.includes('letter_eph25'),'Ephesians to Tychicus, for Ephesus');
+  heard.length=0;await useA('letter_phm25',ON,'give');ok(F.gphm&&!G.inv.includes('letter_phm25'),'Philemon to Onesimus, for Philemon at Colossae');
+  heard.length=0;useA('letter_col25',TY,'give');{const o=await asked();ok(F.gcol&&said('tychicus_what_should_we_tell_them')&&o.length===7&&o.at(-1)==='paul_thats_all_for_now','Colossians to Tychicus; he asks what to tell by mouth: six true pieces of news')}
+  heard.length=0;await pickK('news_mark_is_with_me');ok(said('tychicus_thats_in_the_letters'),'what the letters say already: he says so');
+  heard.length=0;await pickK('news_one_soldier_at_a_time');ok(said('tychicus_ill_tell_them'),'what they leave out: he will tell it');
+  await pickK('paul_thats_all_for_now');
+  await hints('hint_by_mouth_1','hint_by_mouth_2','with Tychicus');
+  heard.length=0;await talkTo(TY);await pickK('news_one_soldier_at_a_time');ok(said('tychicus_you_told_me'),'once told, he has it');
+  await pickK('news_everyone_who_comes_is_welcome');
+  {const M=SHARED.map;pickK('news_the_soldiers_hear_everything');
+    for(let i=0;i<1500&&!(SHARED.map&&G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===2&&SHARED.map.state.legs.every(L=>L.k>=1));i++)await wait(30);note();
+    const S=SHARED.map&&SHARED.map.state;
+    ok(['tychicus','onesimus','ephesus'].every(k=>seenTold.has(k))&&S&&S.legs.map(L=>L.a+'-'+L.b).join()==='ephesus-laodicea,laodicea-colossae'&&['ephesus','laodicea','colossae'].every(p=>S.seen.has(p))&&!S.seen.has('rome'),
+      'Colossians 4:7-9 and Ephesians 6:21, 22, told; the map on the Lycus: Ephesus, Laodicea and Colossae, and the road up the valley; none from Rome')}
+  halt('map25');
+  await until(()=>F.sent&&G.w7&&!G.busy,20000);
+  /* ---- the last watch, and the door ---- */
+  ok(ever('one_morning_late_in_the_second_year')&&ever('celer_i_know_who_you_are')&&C().seat()==='door'&&CE.seat&&!CE.pose&&P.chainTo===CE&&C().box()[1]>=258,
+    'one morning late in the second year: Celer knows who Paul is; somebody knocks, and he carries his stool to the door unasked, so that the chain reaches it');
+  {const cd=makeCode();await enter(cd);await until(()=>G.w7&&!G.busy,9000);
+    ok(C().watch()===7&&G.w7&&C().seat()==='door'&&P.chainTo===CE&&!F.finished,'the last safe point restored: the morning goes on by itself, and the stool is carried to the door again ('+cd+')')}
+  halt('morning25');
+  await hints('hint_the_last_door_1','hint_the_last_door_2','on the last morning');
   /* the last safe point, and the door: from here to the finale no flag is set */
-  {const last=store('paul.save'),fl=()=>C().flags.filter(k=>F[k]).join();codeBtn();const f0=fl(),c0=makeCode();
+  {const fl=()=>C().flags.filter(k=>F[k]).join();codeBtn();const f0=fl(),c0=makeCode();
     ok(store('paul.save')===c0&&decode(c0).ch===25,'the last safe point, kept as the point to continue from: '+c0);
-    heard.length=0;onH('door','open');for(let i=0;i<4000&&!(ov.classList.contains('end')&&ov.onclick)&&!SHARED.finale;i++)await wait(30);await wait(120);note();
+    heard.length=0;onH(door(),'open');for(let i=0;i<4000&&!(ov.classList.contains('end')&&ov.onclick)&&!SHARED.finale;i++)await wait(30);await wait(120);note();
     ok(said('come_in_the_chain_is_on_me')&&seenTold.has('n3031')&&heard.indexOf(T('come_in_the_chain_is_on_me'))<heard.indexOf(T(C().told.n3031)),
       'the door is opened: come in, the chain is on me; then Acts 28:30, 31 from the narrator');
     ok(fl()===f0&&!F.finished&&makeCode()===c0&&store('paul.save')===c0,'from the last safe point to the finale no flag is set (finished is not): the code is still '+c0);
@@ -6584,11 +6745,13 @@
     if(SHARED.finale)await finaleTakesOver(c0);
     else ok(ov.classList.contains('end')&&!ov.querySelector('h2')&&ov.textContent.includes(T('click_to_return_to_the_title'))&&inOv(),
       'there is no end screen: until the finale is merged, a click returns to the title')}
+  {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of the narration was told'+(miss.length?' MISSING '+miss:''))}
+  {const W=C().written,all=[...W.philippians,W.household,...W.philemon,W.heart,W.ready,...W.colossians,W.hand,...C().spoken.points,...C().spoken.answer],miss=all.filter(k=>!ever(k));
+    ok(!miss.length,'every line of Acts 28:17-22 and of the letters was said or written'+(miss.length?' MISSING '+miss:''))}
   halt('final25')};
   if(C25){await ch25();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    /* STUB: LOGIC25 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
-    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ==== CHAPTER TWENTY-FIVE: end ==== */
   if(C19){await ch19();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
