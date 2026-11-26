@@ -569,8 +569,9 @@ function cuts(p,q,b){let t0=0,t1=1;const dx=q[0]-p[0],dy=q[1]-p[1];
   for(const[P_,Q_]of[[-dx,p[0]-b[0]],[dx,b[2]-p[0]],[-dy,p[1]-b[1]],[dy,b[3]-p[1]]]){if(P_===0){if(Q_<=0)return false;continue}const r=Q_/P_;if(P_<0){if(r>t1)return false;if(r>t0)t0=r}else{if(r<t0)return false;if(r<t1)t1=r}}
   return t1-t0>1e-6}
 const clearSeg=(B,p,q)=>!B.some(b=>cuts(p,q,b));
-/* the shortest way along the floor from a to b round the boxes, by their corners (the floor counts double in depth, as a walk does) */
-function route(B,a,b,yl){if(clearSeg(B,a,b))return[a,b];const N=[a,b];
+/* the shortest way along the floor from a to b round the boxes, by their corners (the floor counts double in depth, as a walk does); a box
+   that one of its ends lies in is left out, so that the chain leaves from under a seat by the shortest way */
+function route(B,a,b,yl){B=B.filter(r=>!inB([r],a[0],a[1])&&!inB([r],b[0],b[1]));if(clearSeg(B,a,b))return[a,b];const N=[a,b];
   for(const r of B)for(const c of[[r[0]-.5,r[1]-.5],[r[2]+.5,r[1]-.5],[r[0]-.5,r[3]+.5],[r[2]+.5,r[3]+.5]])if(c[1]>=yl[0]&&c[1]<=yl[1]&&!inB(B,c[0],c[1]))N.push(c);
   const D=N.map(()=>Infinity),from=N.map(()=>-1),done=N.map(()=>0);D[0]=0;
   for(;;){let i=-1;for(let k=0;k<N.length;k++)if(!done[k]&&D[k]<Infinity&&(i<0||D[k]<D[i]))i=k;if(i<0||i===1)break;done[i]=1;
