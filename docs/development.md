@@ -38,7 +38,7 @@ shared/cast.js        reusable looks: Roman soldiers, officers, the escort of Ac
 shared/lanes.js       the lane map: a city seen at a slant from above, its lanes, its standing houses, its crowd and the figures on it
 shared/beasts.js      the animals: the pack donkey, the mule, the ox or bull, and the sheep (ewes and lambs of a flock), their walks and their voices
 shared/birds.js       the birds of the open air: gulls over the harbors, birds of prey, swallows, larks and storks over open country, sparrows and doves on the roofs
-shared/beat.js        the slow beat of the sea: one clock for a crossing timed by the waves, its phase, hit or miss, the help that grows, and the sound of each sea; the same clock for the walk in step of Chapter Twenty-Four
+shared/beat.js        the slow beat of the sea: one clock for a crossing timed by the waves, its phase, hit or miss, the help that grows, and the sound of each sea; the same clock for the walk in step of Chapter Twenty-Four, with the sound of the soldier's step (kind `'step'`) in place of the sea
 shared/weather.js     rain, wet paving and puddles, and the wind with the signs it shows (pennant, smoke, whitecaps, cloud drift); the sound of the storm and the rain (sound)
 shared/grainship.js   the grain ship of Acts 27: from the side (moored, in the storm, as a wreck), her deck, the stern and the bow by night, the hold, the foredeck of the wreck, her anchors and her wreckage
 shared/storm.js       the storm at sea: the cloud, the great seas from the deck and from outside, the ship's motion, the rain, lightning far off, and the bay at daybreak, all on the beat's phase
