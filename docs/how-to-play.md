@@ -56,7 +56,6 @@
 | Ask about what you have learned | Once Paul learns something (a frayed basket, a torn sail, a famine), it appears as a new question when he talks to people in that chapter |
 | Skip a line of dialogue | Click the scene or press Space |
 | Choose a chapter | The title screen lists the chapters in six parts of the account, each with its span of Acts: **From Damascus to Antioch**, **The First Journey**, **The Second Journey**, **The Third Journey**, **Jerusalem and Caesarea** and **To Rome**. Click a part to open its chapters under it (the part that was open closes), and click a chapter to begin it. The part you would go on in is open when the title appears, with that chapter set off; on a first visit the first part is open. The arrow keys move from line to line, and Enter or Space does what a click does. |
-| See what is coming | Inside its part, the dimmed line **Chapters Twenty-Four to Twenty-Five · in preparation** names the chapters that are planned and not yet built. They cannot be played yet. |
 | Change the language | Click **English** or **Deutsch** on the title screen, or the **EN**/**DE** button in the top bar at any time |
 | Keyboard | `1`-`6` verbs, `P` pray, `M` mute, `Tab` names, `C` switch character, `Esc` options |
 | Options | Click **≡** in the top right or press `Esc` to set the music and effects volume, the text speed, how much the figures move (**Movement**: lively, or calm, which keeps the mouths and leaves the rest still, and keeps the ship from swaying in the storm; a device set to reduce motion starts in calm), **NAMES** and the language, to save and load games (see [Saved games](#saved-games)), to see the [hidden treasures](#hidden-treasures) you have found, or to go back to the title screen. It opens between scenes, not during a cutscene or a conversation. The options are kept in your browser apart from your safe point (`paul.opts`). |
@@ -126,7 +125,7 @@ Chapter Six, Seven, Eight and Nine codes are nine characters too (`6-XXX-XXX-XXX
 
 ![The title screen with the third journey opened](screenshots/title-part.png)
 
-![The last part of the account open on the title screen, with the chapters in preparation](screenshots/plans.png)
+![The last part of the account open on the title screen](screenshots/plans.png)
 
 ## Saved games
 
