@@ -401,7 +401,8 @@ return{court,O,light,birds,HZ,WALK,WALLY,COPING,PIER,COLS,DAIS,SEAT,TABLE,DESK,A
      su  summer: a high sun, a clear sky with a little haze, a light breeze; the sailing season
      au  autumn: the sun low and warm at the left, a road of light on the water at the left edge, a fresher wind
      wi  winter: an overcast sky, grey sea, a strong west wind and a heavy swell, rain; soft light without a cast shadow
-     sp  spring: a clear, fresh light, a light breeze
+     sp  spring: the afternoon sun beyond the window at the left as in summer, a little lower, so that the patch on the floor and the
+         figures' shadows are a little longer; a clear, fresh light, a light breeze (the coast's 'midday' sky: it has no afternoon)
 
    API (SHARED.caesarea):
      cell(g, o)          paints Paul's room for a 320 by 144 room. o: {k (the season), win:{x0, x1, top, sill} (the opening in the back
@@ -435,7 +436,7 @@ const SEASONS={
   su:{hour:'midday',az:-50,el:62,cloud:.1,streak:.45,force:1,amb:'#f2e6d6',sun:[14,9,.3],tone:null},
   au:{hour:'evening',az:-28,el:26,cloud:.28,streak:.55,force:2,amb:'#f4dcc0',sun:[24,12,.34],tone:['#ffcc90',.22]},
   wi:{hour:'midday',cloud:.97,streak:.2,force:3,amb:'#d6d4d8',sun:null,tone:['#8a90a8',.3]},
-  sp:{hour:'morning',az:-58,el:50,cloud:.2,streak:.4,force:1,amb:'#eeeae0',sun:[17,10,.3],tone:null}};
+  sp:{hour:'midday',az:-54,el:50,cloud:.2,streak:.4,force:1,amb:'#eeeae0',sun:[17,10,.3],tone:null}};
 const sea_=k=>SEASONS[k]||SEASONS.su,C='#e4d6b8',VX=160;
 /* one coast options object for each season and horizon, kept, so that the light worked out on it is kept too */
 const OS=new Map();
