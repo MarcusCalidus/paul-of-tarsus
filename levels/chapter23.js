@@ -565,7 +565,7 @@ ART.surf23={w:320,q:12,paint(g){if(SHARED.storm&&SHARED.grainship)paintSurf23(g)
    The long wait (28:6, G.lw23 from 0 to 1): the rain thins and the day grows a little lighter, while nothing else changes.
    Called from outside: ART.beach23, GROUPS23, FIRE23, STERNPIECE23. Reads F.found, F.malta, G.vip23, G.lw23. Hotspots: see ROOMS.beach23.
    Walk: 20..460 by 114..138. Light: overcast, and the fire a lamp at FIRE23. */
-const FIRE23=[104,120],STERNPIECE23=[376,408,98,132],HZ_BEACH23=62;
+const FIRE23=[104,120],STERNPIECE23=[362,418,92,128],HZ_BEACH23=62;
 /* the water's edge on the sand, x to y: farther at the left behind the grass bank, nearest where the officer stands, farther again at
    the foot of the slope */
 const shoreB23=x=>88+6*Math.exp(-Math.pow((x-280)/70,2))+1.4*Math.sin(x/31)+.8*Math.sin(x/11)-4*clamp((x-400)/60,0,1);
@@ -574,11 +574,13 @@ const bankB23=x=>x>214?999:94+56*Math.pow(clamp((x-96)/118,0,1),1.6)-10*clamp((6
   slopeB23=x=>x<392?999:96-44*Math.pow(clamp((x-392)/88,0,1),.85)+1.2*Math.sin(x/9);
 /* more of the people from the wreck, behind the groups' own figures (all behind the walk, so that nobody walks through them):
    [x, y, look, dir, pose]; pose 'seat' sits on a timber the room paints (its top at the hips, 9 above the feet) */
-const CROWD23=[[30,106,'c23_a',1,'huddle0'],[90,104,'c23_b',1,'warmSit0'],[122,103,'c23_d',-1,'warmSit0'],
-  [192,101,'c23_g',1,'huddle0'],[214,103,'c23_h',-1,'huddle0'],
-  [266,100,'c23_i',1,0],[290,102,'c23_k',-1,'huddle0'],
-  [340,104,'c23_l',1,'huddle0'],[352,103,'c23_e',1,'seat'],
-  [436,102,'c23_b',1,'huddle0']];
+/* Each group is a cluster of its own with empty sand between it and the next, so that the eye counts five; nobody stands behind
+   Paul's place at the fire (x 74..114), so that his head and his hand stand against the grass and the sea when the viper hangs from it. */
+const CROWD23=[[50,103,'c23_a',1,'huddle0'],[130,103,'c23_d',-1,'warmSit0'],
+  [190,102,'c23_g',1,'huddle0'],[206,101,'c23_h',-1,'huddle0'],
+  [270,101,'c23_i',1,0],[284,103,'c23_k',-1,'huddle0'],
+  [350,103,'c23_e',1,'seat'],
+  [438,102,'c23_b',1,'huddle0']];
 /* their looks: wet looks of SHARED.cast.SEA with another tunic, so that the groups are not all the same men */
 const CROWD_LOOKS23={a:['sailor_2_wet',{tunic:'#5e6a58',ph:16301}],b:['prisoner_2_wet',{tunic:'#8a7a5c',ph:16303}],c:['sailor_3_wet',{tunic:'#7a5442',ph:16305}],
   d:['prisoner_3_wet',{tunic:'#5a5e6e',ph:16307}],e:['sailor_4_wet',{tunic:'#9a8a68',ph:16309}],f:['prisoner_1_wet',{tunic:'#6e5040',ph:16311}],
@@ -587,7 +589,7 @@ const CROWD_LOOKS23={a:['sailor_2_wet',{tunic:'#5e6a58',ph:16301}],b:['prisoner_
 function crowdLook23(id){if(LOOK[id]||!/^c23_/.test(id))return;const[b,m]=CROWD_LOOKS23[id.slice(4)];LOOK[id]=Object.assign({},SHARED.cast.SEA[b],m)}
 /* the pieces of the wreck thrown up on the sand: [x, y (its foot), length, height, slant]; each alone; those that shelter someone are
    drawn at their own depth, in front of whoever sits behind them */
-const WRECKAGE23=[[324,108,22,3.4,-.04],[346,112,14,2.4,.05],[356,106,15,3.2,-.03],[142,95,12,1.8,.02],[226,104,10,1.8,-.06],[452,104,12,2,.03],[300,108,9,1.6,.04]];
+const WRECKAGE23=[[324,108,22,3.4,-.04],[346,112,14,2.4,.05],[160,95,12,1.8,.02],[236,98,10,1.8,-.06],[468,100,10,2,.03],[316,100,9,1.6,.04]];
 function paintBeach23(g){const W=480,r=rng(2310),P=SHARED.storm.PAL.dawn,H=HZ_BEACH23;
   /* the sky: a low deck of cloud, darker above, paler where the rain hangs over the sea */
   if(SHARED.storm){const S=SHARED.storm.sky({pal:'dawn',h:H+8,seed:2341,w:W,speed:0});S.draw(g,0)}
@@ -636,7 +638,7 @@ function paintBeach23(g){const W=480,r=rng(2310),P=SHARED.storm.PAL.dawn,H=HZ_BE
     for(let i=0;i<200;i++){const y=96+r()*52,x=392+(150-y)*.62+Math.pow(r(),2)*26;R(g,x,y,1+r()*3,.5,rgba(mix(P.sand,P.wet,.35),.5+.4*r()))}});
   for(let x=392;x<W;x+=1){const y=slopeB23(x);R(g,x,y-.5,1,.6,'#6e7454');if(r()<.25)stroke(g,[x,y,x-.5,y-1.2-r()*1.4],'#5e6446',.5)}
   /* pieces of the wreck lying where nobody shelters behind them (each alone) */
-  for(const pc of WRECKAGE23.slice(3))timberB23(g,...pc,rng(2360+pc[0]));
+  for(const pc of WRECKAGE23.slice(2))timberB23(g,...pc,rng(2360+pc[0]));
   /* the light: soft and grey from the whole sky, a little darker toward the foot of the picture */
   comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,0,0,0,144,['#ffffff','#f0f0f2','#c0c2cc']);g.fillRect(0,0,W,144)})}
 const fbmB23=x=>.5+.3*Math.sin(x*1.7)+.2*Math.sin(x*4.1+1);
@@ -647,44 +649,43 @@ function timberB23(g,x,y,len,h,sl,r){const dx=Math.cos(sl)*len,dy=Math.sin(sl)*l
   stroke(g,[x+.4,y-h+.3,x+dx-.4,y+dy-h+.3],'rgba(200,204,206,.5)',.5);R(g,x,y-h,.6,h,tint(c,-.25));
   poly(g,[x,y-h*.45,x+dx,y+dy-h*.45,x+dx,y+dy,x,y],rgba(tint(c,-.35),.6));
   if(len>12)for(const u of[.3,.7])R(g,x+dx*u,y+dy*u-h*.7,.8,.8,'#2a1e16')}
-/* the piece of the stern: a broken section of her planking where it turned round her stern, standing on its lower edge in the sand.
-   Its left edge is the round of the stern; its strakes sweep up toward it as they did toward the post; the wale runs across with them,
-   and the planks below it are dark with pitch. Its top and its right edge are broken, ragged, raw wood showing; sand is heaped against its
-   foot. Its inside is turned away. Tall enough to hide a man crouching behind it (it rises above the hotspot's top, STERNPIECE23[2]).
-   Nothing of the swan's neck is on it. */
-function sternPieceB23(g,r){const[x0,x1,,y1]=STERNPIECE23,w=x1-x0,yt=82,h=y1-yt,
-    left=y=>{const v=(y-yt)/h;return x0+1+2.6*Math.pow(1-v,1.6)-1*v},
-    top=x=>{const u=(x-x0)/w;return yt+2+7*u+1.6*Math.sin(x*1.3)+1.1*Math.sin(x*2.9)},
-    right=y=>x1+1.4*Math.sin(y*1.1)+.9*Math.sin(y*2.7)-(y<yt+22?(yt+22-y)*.35:0),
-    sweep=(k,x)=>{const u=(x1-x)/w;return y1-2.4-k*3.7-u*u*(1+k*.32)};
-  const E=[];for(let y=y1;y>=top(left(yt)+1);y-=1)E.push(left(y),y);for(let x=left(yt)+1;x<=right(top(x1)+1);x+=1)E.push(x,top(x));for(let y=top(x1)+1;y<=y1;y+=1)E.push(right(y),y);
-  comp(g,'multiply',.55,()=>poly(g,[x0-4,y1,x1+10,y1-.6,x1+6,y1+2.6,x0-2,y1+2.6],'#2e2638'));
-  poly(g,E);g.fillStyle=lg(g,x0,0,x1,0,['#7a6248','#5e4a36','#4a382a']);g.fill();
-  clipTo(g,()=>poly(g,E),()=>{
-    /* the pitched planks low down, dark */
-    {const Q=[];for(let x=x0-2;x<=x1+3;x+=1.5)Q.push(x,sweep(2.6,x));Q.push(x1+3,y1+2,x0-2,y1+2);poly(g,Q,'rgba(34,26,22,.75)')}
-    /* the wale: a thicker strake, red-brown */
-    {const Q=[];for(let x=x0-2;x<=x1+3;x+=1.5)Q.push(x,sweep(4.4,x));for(let x=x1+3;x>=x0-2;x-=1.5)Q.push(x,sweep(3.6,x));poly(g,Q,'#5a3426');stroke(g,Q.slice(0,Q.length/2),'rgba(220,170,130,.4)',.5)}
-    for(let k=0;k<13;k++){const P2=[];for(let x=x0-2;x<=x1+3;x+=1.5)P2.push(x,sweep(k,x));stroke(g,P2,'rgba(24,16,12,.4)',.5);stroke(g,P2.map((v,i)=>i%2?v+.5:v),'rgba(220,200,170,.12)',.5)}
-    tex(g,'wood',.3,x0-3,80,w+8,h+6,'overlay',.45);
-    /* the round of the stern: lighter where it turns toward the grey sky, darker at the far end */
-    g.fillStyle=lg(g,x0,0,x1,0,['rgba(214,218,220,.28)','rgba(0,0,0,0)','rgba(10,10,14,.35)']);g.fillRect(x0-3,80,w+8,h+6);
-    g.fillStyle=lg(g,0,y1-8,0,y1,['rgba(10,10,14,0)','rgba(10,10,14,.3)']);g.fillRect(x0-3,y1-8,w+8,8)});
-  /* the broken top and right edge: raw wood, splinters standing out of it */
-  const T=[];for(let x=left(yt)+1;x<=x1-1;x+=1)T.push(x,top(x));stroke(g,T,'#b8986e',.5);
-  for(let i=0;i<T.length-2;i+=4)if(r()<.6)stroke(g,[T[i],T[i+1],T[i]+(r()-.3),T[i+1]-1.2-r()*1.8],'#a08262',.5);
-  const Rt=[];for(let y=top(x1)+1;y<=y1-2;y+=1)Rt.push(right(y),y);stroke(g,Rt,'#9a7c58',.5);
-  for(let k=1;k<9;k++){const y=sweep(k,x1);if(y<top(x1)+2)break;stroke(g,[right(y),y,right(y)+1.4+r(),y-.4],'#a08262',.5)}
+/* the piece of the stern: a slab of her side, wider than it is tall, lying tilted on the sand against its own heap of sand, its outer
+   face toward us. Its strakes run along it, each broken off at its own length at both ends, ragged; at its right-hand break the heels
+   of three frames (ribs) stand out past the planking, slanting, each broken short; along its upper edge a length of the rail, broken off
+   before the end. The pitched planks low down are dark. Its inside is turned away. It hides a man crouching behind it (his head at
+   y 89 between x 381 and 399: the slab's upper edge lies above that); 56 wide, 40 high. Nothing of the swan's neck is on it. */
+function sternPieceB23(g,r){const[x0,x1,,y1]=STERNPIECE23,N=10,
+    /* the slab's frame: its foot along the sand, its upper edge, both rising a little to the right; u along it, v up it (0..1) */
+    foot=u=>[x0+u*(x1-x0-6),y1-u*4],up=[6,-40],at=(u,v)=>{const[a,b]=foot(u);return[a+up[0]*v,b+up[1]*v]},
+    /* where each strake ends, left and right: ragged */
+    L=[.02,0,.04,.01,.05,.02,.07,.03,.08,.05],Rr=[.98,1,.95,.99,.96,.93,.97,.94,.9,.95];
+  comp(g,'multiply',.55,()=>poly(g,[x0-6,y1+1,x1+8,y1-3,x1+4,y1+1.4,x0-2,y1+3],'#2e2638'));
+  /* the frames' heels at the right-hand break, behind the planking: slanting stubs, each broken short */
+  for(const[v,len]of[[.22,8],[.5,11],[.78,7]]){const[a,b]=at(Rr[Math.round(v*N)]-.06,v),ex=a+len*.95,ey=b-len*.45;
+    poly(g,[a,b-1.3,ex,ey-1.1,ex+.6,ey+.4,a,b+1.3],'#4a3626');stroke(g,[a,b-1.3,ex,ey-1.1],'rgba(214,180,140,.45)',.5);stroke(g,[ex,ey-1.1,ex+.6,ey+.4],'#b89a74',.5)}
+  for(let k=0;k<N;k++){const v0=k/N,v1=(k+1)/N,a=L[k],b=Rr[k],c=k<3?'#3e3028':k===5?'#4e2e24':tint('#6a543e',(r()-.5)*.14),
+      Q=[...at(a,v0),...at(b,v0),...at(b+.012,v0+.5/N),...at(b-.01,v1),...at(a+.01,v1),...at(a-.012,v0+.5/N)];
+    poly(g,Q,c);clipTo(g,()=>poly(g,Q),()=>{for(let q=0;q<3;q++){const vv=v0+(q+.5)/N/3;stroke(g,[...at(a,vv),...at(b,vv)],r()<.6?'rgba(30,20,14,.2)':'rgba(220,196,160,.14)',.5)}});
+    stroke(g,[...at(a,v1),...at(b-.01,v1)],k===5?'rgba(226,180,140,.45)':'rgba(224,206,176,.3)',.5);stroke(g,[...at(a,v0),...at(b,v0)],'rgba(16,10,8,.55)',.5);
+    /* the raw broken ends */
+    stroke(g,[...at(b,v0),...at(b+.012,v0+.5/N),...at(b-.01,v1)],'#b89a74',.5);stroke(g,[...at(a,v0),...at(a-.012,v0+.5/N),...at(a+.01,v1)],'#a88a64',.5)}
+  /* the rail along its upper edge, a deep timber, broken off before the right end */
+  {const p0=at(.2,1),p1=at(.66,1);poly(g,[p0[0],p0[1]-2.4,p1[0],p1[1]-2.4,p1[0]+1,p1[1]-.6,p1[0],p1[1]+.3,p0[0],p0[1]+.3],'#5a4634');
+    stroke(g,[p0[0],p0[1]-2.4,p1[0],p1[1]-2.4],'rgba(220,214,200,.6)',.5);stroke(g,[p1[0],p1[1]-2.4,p1[0]+1,p1[1]-.6,p1[0],p1[1]+.3],'#b89a74',.5)}
+  /* the grey light lies on it from above; darker toward its foot */
+  comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,0,y1-40,0,y1,['#ffffff','#a8a0b0']);poly(g,[...at(-.02,0),...at(1.02,0),...at(1.02,1.08),...at(-.02,1.08)]);g.fill()});
   /* sand heaped against its foot */
-  const S=[x0-4,y1+.6];for(let x=x0-4;x<=x1+4;x+=1)S.push(x,y1-1.4-1.6*Math.sin(Math.PI*(x-x0+4)/(w+8))-.5*Math.sin(x*2.3));S.push(x1+4,y1+.6);
-  poly(g,S,'#8a7c62');stroke(g,S.slice(2,S.length-2),'rgba(220,210,186,.4)',.5)}
+  const S=[];for(let u=-.08;u<=1.08;u+=.02){const[a,b]=foot(u);S.push(a,b-1-1.2*Math.sin(Math.PI*clamp(u,0,1))-.4*Math.sin(u*40))}for(let u=1.08;u>=-.08;u-=.04){const[a,b]=foot(u);S.push(a,b+2)}
+  poly(g,S,'#8a7c62');stroke(g,S.slice(0,S.length/2+1),'rgba(220,210,186,.4)',.5)}
 /* the fire of sticks: laid in a low heap, the sticks on each side leaning in toward the middle with their burning ends hidden under the
    flames, none across another; the flames are tongues that rise and sink by turns, the tallest in the middle, brighter at the root; how
    big it burns: k. Nothing flashes. */
 function fireB23(g,t,k){const[x,y]=FIRE23,r=rng(2371);
   oval(g,x,y+1.2,15,2.4,'rgba(30,22,22,.6)');
-  for(let i=0;i<10;i++){const sd=i<5?-1:1,j=i%5,sx=x+sd*(13-j*1.6+r()),sy=y+1.4-(j%2)*.8,ex=x+sd*(2.5+j*.7),ey=y-1.4-j*.35,c=['#3e2c1e','#4e3826','#5a4430'][i%3];
-    poly(g,[sx,sy,sx,sy+1,ex,ey+1,ex,ey],c);stroke(g,[sx,sy,ex,ey],'rgba(170,130,90,.5)',.5);R(g,sx+sd*.2-.5,sy,.8,1,'#2a1c12')}
+  /* three sticks on each side, each its own, leaning in toward the middle at its own slant, their outer ends on the sand */
+  for(const[sd,ox,oy,ix,iy,c]of[[-1,17,1.6,5,-5,'#5a4430'],[-1,13,2.4,3,-3,'#4a3626'],[-1,9.5,.6,2,-7,'#6a5038'],[1,16,2,4,-6,'#5a4430'],[1,12.5,.8,2.5,-4,'#4a3626'],[1,9,2.8,1.5,-2.4,'#6a5038']]){
+    const sx=x+sd*ox,sy=y+oy,ex=x+sd*ix,ey=y+iy;poly(g,[sx,sy-.6,ex,ey-.5,ex,ey+.6,sx,sy+.7],c);stroke(g,[sx,sy-.6,ex,ey-.5],'rgba(190,150,104,.6)',.5);
+    R(g,sx-.6,sy-.6,1.2,1.3,tint(c,-.3));R(g,sx+sd*-.2-.3,sy-.5,.6,.6,'rgba(210,180,140,.6)')}
   for(let i=0;i<9;i++){const ex=x-8+i*2,p=.6+.4*Math.sin(t/230+i*1.7);R(g,ex,y-.6+(i%3)*.4,1.6,.8,rgba('#ff8a30',.75*p))}
   const fl=(fx,h,w,ph,c)=>{const tip=fx+Math.sin(ph)*w*.7,P=[fx-w,y];for(let s=1;s<=8;s++){const u=s/8;P.push(fx-w*(1-u*u)+ (tip-fx)*u*u,y-h*u)}for(let s=7;s>=1;s--){const u=s/8;P.push(fx+w*(1-u)*(1+.3*u)+(tip-fx)*u*u,y-h*u*.92)}P.push(fx+w,y);poly(g,P,c)};
   const T=t/140;for(const[dx,hh,ww,o]of[[-7,6,2.4,1.3],[6.5,6.5,2.4,2.1],[-3.5,9,3,.4],[3,9.5,3,2.9],[0,12.5,3.6,0]]){const ph=Math.sin(T*.9+o*2.3)+.5*Math.sin(T*1.7+o),h=(hh+2*ph)*k;
@@ -715,7 +716,7 @@ ART.beach23={w:480,q:12,paint(g){if(SHARED.storm)paintBeach23(g)},
     const lit=(x,y)=>lightAt(room,x,y);
     for(const[x,y,id,d,ps]of CROWD23){crowdLook23(id);if(ps==='seat'){depth(y-.2,()=>timberB23(g,x-9*d-3,y,18,9,0,rng(2391)));man(g,x,y,id,d,-1,lit(x,y),0)}else man(g,x,y,id,d,0,lit(x,y),0,undefined,0,0,null,ps||undefined)}
     for(const G0 of GROUPS23)for(const[x,y,id,d,ps]of G0.figs)fig23(g,room,x,y,id,d,ps);
-    for(const pc of WRECKAGE23.slice(0,3))depth(pc[1]+.3,()=>timberB23(g,...pc,rng(2360+pc[0])));
+    for(const pc of WRECKAGE23.slice(0,2))depth(pc[1]+.3,()=>timberB23(g,...pc,rng(2360+pc[0])));
     depth(STERNPIECE23[3],()=>sternPieceB23(g,rng(2399)));
     SHARED.beasts&&SHARED.beasts.dog(g,DOG23[0],DOG23[1],-1,G.vip23?1:0,null,lightAt(room,DOG23[0],DOG23[1]));
     SHARED.beasts&&SHARED.beasts.goat(g,GOAT23[0],GOAT23[1],-1,((t/2600)|0)%3,null,lightAt(room,GOAT23[0],GOAT23[1]));
@@ -888,15 +889,15 @@ const FLOATS23=[{k:'plankA',name:'plank',cap:1,box:[20,112,80,14],at:[[60,111]]}
 /* the groups on the beach: how many each is (invented: no source counts them; together with the old prisoner they are the 276 of 27:37),
    the flag that is set when Luke has counted them, the line he says, and a few of them painted [x, y, look, dir, pose] */
 const GROUPS23=[{k:'g1',name:'people_at_the_fire',look:'people_at_the_fire_look',n:87,say:'luke_eighty_seven_at_the_fire',box:[40,84,112,30],w:[60,128],
-    figs:[[46,114,'prisoner23aw',1,'huddle0'],[62,112,'sailor23cw',1],[142,114,'prisoner23bw',-1,'huddle0'],[152,110,'shipowner23w',-1]]},
-  {k:'g2',name:'people_by_the_rocks',look:'people_by_the_rocks_look',n:64,say:'luke_sixty_four_by_the_rocks',box:[160,84,74,30],w:[196,128],
-    figs:[[168,112,'sailor23dw',1,'huddle0'],[184,114,'prisoner23cw',1,'huddle0'],[204,112,'pilot23w',-1],[222,114,'sailor23aw',-1,'huddle0']]},
-  {k:'g3',name:'people_at_the_waters_edge',look:'people_at_the_waters_edge_look',n:58,say:'luke_fifty_eight_at_the_waters_edge',box:[238,84,82,30],w:[280,132],
-    figs:[[244,112,'prisoner23aw',1],[300,112,'prisoner23bw',-1,'huddle0'],[314,114,'soldier23bw',-1]]},
-  {k:'g4',name:'people_behind_the_wreckage',look:'people_behind_the_wreckage_look',n:39,say:'luke_thirty_nine_behind_the_wreckage',box:[320,88,52,26],w:[346,130],
-    figs:[[330,110,'sailor23bw',1,'huddle0'],[358,112,'prisoner23cw',-1,'huddle0']]},
-  {k:'g5',name:'people_by_the_path',look:'people_by_the_path_look',n:27,say:'luke_twenty_seven_by_the_path',box:[414,84,62,30],w:[430,130],
-    figs:[[424,112,'sailor23cw',1,'huddle0'],[446,110,'merchant23w',-1],[462,114,'prisoner23aw',-1,'huddle0']]}];
+    figs:[[46,114,'prisoner23aw',1,'huddle0'],[58,110,'sailor23cw',1,'warm0'],[140,114,'prisoner23bw',-1,'huddle0'],[148,108,'shipowner23w',-1]]},
+  {k:'g2',name:'people_by_the_rocks',look:'people_by_the_rocks_look',n:64,say:'luke_sixty_four_by_the_rocks',box:[172,84,58,30],w:[196,128],
+    figs:[[182,114,'sailor23dw',1,'huddle0'],[198,112,'prisoner23cw',1,'huddle0'],[212,108,'pilot23w',-1],[222,114,'sailor23aw',-1,'huddle0']]},
+  {k:'g3',name:'people_at_the_waters_edge',look:'people_at_the_waters_edge_look',n:58,say:'luke_fifty_eight_at_the_waters_edge',box:[242,84,70,30],w:[280,132],
+    figs:[[256,110,'prisoner23aw',1],[294,112,'prisoner23bw',-1,'huddle0'],[302,108,'soldier23bw',-1]]},
+  {k:'g4',name:'people_behind_the_wreckage',look:'people_behind_the_wreckage_look',n:39,say:'luke_thirty_nine_behind_the_wreckage',box:[324,88,38,26],w:[346,130],
+    figs:[[332,110,'sailor23bw',1,'huddle0'],[358,112,'prisoner23cw',-1,'huddle0']]},
+  {k:'g5',name:'people_by_the_path',look:'people_by_the_path_look',n:27,say:'luke_twenty_seven_by_the_path',box:[424,84,52,30],w:[440,130],
+    figs:[[430,112,'sailor23cw',1,'huddle0'],[450,108,'merchant23w',-1],[466,114,'prisoner23aw',-1,'huddle0']]}];
 const DOG23=[104,134],GOAT23=[452,120];
 /* the talk in pictures: the five pictures Luke can answer with, and what each exchange asks (right), and how the islander answers a
    picture that does not fit (a true gesture or thing, nothing moves on) */
@@ -1042,7 +1043,7 @@ async function group23(g){if(F[g.k])return say(LK,'luke_counted_them_already',TL
   if(GROUPS23.every(q=>F[q.k])){await say(LK,'luke_two_hundred_seventy_five_one_short',TL)}codeBtn()}
 async function stern23piece(){if(F.found||!GROUPS23.every(q=>F[q.k]))return say(LK,'piece_of_the_stern_look',TL);
   await say(LK,'luke_someone_behind_it',TL);await say(OLD,'old_they_will_kill_us',{to:LK});await say(LK,'luke_the_officer_forbade_it',{to:OLD});
-  OLD.pose=0;await go23(OLD,418,128,36);OLD.dir=-1;await say(OLD,'old_forbade_it',{to:LK});F.found=1;SFX.good();
+  OLD.pose=0;await go23(OLD,422,130,36);OLD.dir=-1;await say(OLD,'old_forbade_it',{to:LK});F.found=1;SFX.good();
   await tell('n44');
   /* an islander comes down the path */
   place(EL,'beach23',476,118,-1);await go23(EL,Math.max(30,LK.x-28),LK.y-2,36);EL.dir=1;
