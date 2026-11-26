@@ -1402,8 +1402,12 @@ const wet23=()=>{const p=phase23();return p==='planks'||p==='surf'||p==='count'|
 /* the room Luke's tablet goes back to */
 const lukeRoom23=()=>{const p=phase23();return p==='sound'?'stern23':p==='estate'?'estate23':'beach23'};
 function setPC23(a){if(G.pc!==a){G.pc=a;G.inv=G.invs[a.id]||(G.invs[a.id]=[])}}
-function show23(room,x,y,dir){place23(room);dealInv(room);const e=ENT[room];enterRoom(room,x!=null?x:e[0],y!=null?y:e[1],dir||e[2]);drawInv();codeBtn()}
-async function goto23(room,x,y,dir){await fade(1,300);show23(room,x,y,dir);await fade(0,300)}
+/* a code is kept only at a point the script resumes from: never in a told picture (bay23, sick23), which has nothing to do, and never
+   where a script only passes through a room or changes it before the told line that belongs to it (quiet): there the code is kept after
+   the line (CONTRIBUTING section 5: a code is a promise, and a restored code never skips a verse) */
+const QUIET=1,TOLDPIC23=['bay23','sick23'];
+function show23(room,x,y,dir,quiet){place23(room);dealInv(room);const e=ENT[room];enterRoom(room,x!=null?x:e[0],y!=null?y:e[1],dir||e[2]);drawInv();if(!quiet&&!TOLDPIC23.includes(room))codeBtn()}
+async function goto23(room,x,y,dir,quiet){await fade(1,300);show23(room,x,y,dir,quiet);await fade(0,300)}
 const tw=ms=>wait(fast()?Math.min(40,ms):ms);
 async function go23(a,x,y,sp){a.speed=fast()?400:sp||0;a.free=1;await walk(a,x,y);a.speed=0;a.free=0}
 const TL={thought:1,color:'#d0e8e0'};   /* Luke's thoughts */
@@ -1441,14 +1445,14 @@ async function lead23(){const L=ld23(),s=SOUND23[L.n];if(L.bottom)return say(LK,
 async function tallow23(){const L=ld23();L.tallow=1;return say(LK,SOUND23[L.n].tallow,TL)}
 async function written23(){const L=ld23();if(!L.depth||!L.bottom)return;SFX.good();
   if(!L.n){F.lead1=1;G.ld23=null;await goto23('stern23',138,126,-1);await say(SA1,'leadsman_twenty_and_sand',{to:LK});await say(SA1,'leadsman_again_in_a_while',{to:LK});return codeBtn()}
-  F.lead2=1;G.ld23=null;await goto23('stern23',138,126,-1);
+  F.lead2=1;G.ld23=null;await goto23('stern23',138,126,-1,QUIET);
   await tell('n28');await say(SA1,'leadsman_fifteen_and_stones',{to:PI});await say(PI,'pilot_land_is_close',{to:SA1});
   /* 27:29: four cables run out over the stern; no anchor is seen. They long for day. */
   place(SA2,'stern23',196,117,-1);place(SA3,'stern23',78,124,1);SA2.pose=SA3.pose='payout';
   await Promise.all([tween(fast()?120:2600,k=>{G.cab23=k;SA2.pk=SA3.pk=((k*6)|0)%2}),tell('n29')]);G.cab23=0;
   return toBow23()}
 /* ---- an anchor from the bow (27:30-32): Paul ---- */
-async function toBow23(){await fade(1,600);F.anchors=1;G.skiffT=performance.now();show23('bow23');await fade(0,600);
+async function toBow23(){await fade(1,600);F.anchors=1;G.skiffT=performance.now();show23('bow23',null,null,null,QUIET);await fade(0,600);
   await tell('n30');await say(P,'paul_the_skiff_at_this_hour',TP);codeBtn()}
 const seen23=()=>F.sawSkiff&&F.sawMen&&F.sawAnchors;
 async function sawBow23(f,k){await say(P,k,TP);if(!F[f]){F[f]=1;codeBtn()}}
@@ -1462,7 +1466,7 @@ async function julius23(){if(phase23()!=='bow')return say(JU,'not_now_paul_said'
   for(const a of[SA1,SA2,SA3,SA4])a.pose=0;await say(P,'paul_now_they_stay',TP);
   return toHold23()}
 /* ---- before them all (27:33-38): Paul ---- */
-async function toHold23(){await fade(1,600);show23('hold23');await fade(0,600);await tell('n33');codeBtn()}
+async function toHold23(){await fade(1,600);show23('hold23',null,null,null,QUIET);await fade(0,600);await tell('n33');codeBtn()}
 const ONE23={prisoner23a:'prisoner_i_couldnt_keep_it_down',prisoner23b:'prisoner_what_for',merchant23:'merchant_what_good_is_food_now',boy23:'boy_nobody_else_is_eating',
   oldman23:'old_leave_me_be',soldier23a:'not_now18',julius23:'not_now_paul_said',luke23:'luke_later',aristarchus23:'aristarchus_in_a_while',sailor23c:'sailor_eat_down_here'};
 async function one23(a){if(F.stood&&!F.spoke)return speech23();if(F.spoke)return say(P,'paul_now_the_bread',TP);
@@ -1483,7 +1487,7 @@ async function meal23(){P.dir=-1;await tell('n35');await tell('n36');await tell(
   await tell('n39');await Promise.all([tween(fast()?100:3800,k=>{G.bay23=k*.35}),tell('n40')]);
   await Promise.all([tween(fast()?100:3800,k=>{G.bay23=.35+k*.65}),tell('n41')]);
   /* the wreck: 27:42, 43 told; the swimmers jump first and are gone */
-  await fade(1,600);F.bread=1;show23('wreck23');for(const a of[SA1,SA2,SA4])place(a,'wreck23',250+(a===SA2?18:a===SA4?36:0),118+(a===SA4?8:0),1);await fade(0,600);
+  await fade(1,600);F.bread=1;show23('wreck23',null,null,null,QUIET);for(const a of[SA1,SA2,SA4])place(a,'wreck23',250+(a===SA2?18:a===SA4?36:0),118+(a===SA4?8:0),1);await fade(0,600);
   await tell('n42');await Promise.all([tell('n43'),...[SA1,SA2,SA4].map((a,i)=>tw(400+i*500).then(()=>go23(a,340,a.y,48)))]);for(const a of[SA1,SA2,SA4])a.room=null;
   await say(P,'paul_four_here_cannot_swim',TP);codeBtn()}
 /* ---- everyone has a plank (27:44): Paul ---- */
@@ -1534,8 +1538,8 @@ async function talk23(){if(F.malta)return say(LK,'luke_one_word_and_no_more',TL)
     await say(EL,'malta_the_name',{to:LK});await say(LK,'malta_luke_says_it_after_him',{to:EL});G.ex23=0;return named23()}}
 async function named23(){await tell('m1');
   /* Luke scratches the name at the end of his line */
-  await fade(1,300);G.from23='beach23';show23('tablet23');G.scratch23=0;await fade(0,300);await tween(fast()?120:2400,k=>{G.scratch23=k});F.malta=1;G.scratch23=0;
-  await say(LK,'luke_the_name_on_my_tablet',TL);await goto23('beach23');await tell('m2');codeBtn()}
+  await fade(1,300);G.from23='beach23';show23('tablet23',null,null,null,QUIET);G.scratch23=0;await fade(0,300);await tween(fast()?120:2400,k=>{G.scratch23=k});F.malta=1;G.scratch23=0;
+  await say(LK,'luke_the_name_on_my_tablet',TL);await goto23('beach23',null,null,null,QUIET);await tell('m2');codeBtn()}
 /* ---- by the fire: the viper (28:3-6), a cutscene that is not played; Luke watches ---- */
 async function viper23scene(){if(phase23()!=='fire')return;
   /* Paul brings a bundle of sticks and lays it on the fire */
@@ -1552,7 +1556,7 @@ async function viper23scene(){if(phase23()!=='fire')return;
   P.pose='warm';P.pk=0;await tell('m5');
   /* 28:6: the long wait, the light going over; then they call him a god, and nothing is shown */
   await Promise.all([tween(fast()?100:5200,k=>{G.lw23=k}),tell('m6')]);
-  F.viper=1;await fade(1,800);G.lw23=0;P.pose=0;show23('estate23');await fade(0,700);await tell('m7');codeBtn()}
+  F.viper=1;await fade(1,800);G.lw23=0;P.pose=0;show23('estate23',null,null,null,QUIET);await fade(0,700);await tell('m7');codeBtn()}
 /* ---- the estate of Publius (28:7-10): Luke ---- */
 async function paul23(){const ph=phase23();
   if(ph==='sound')return say(P,'paul_land_or_no_land',{to:LK});
@@ -1564,7 +1568,7 @@ async function publius23(){if(F.healed)return say(PU,'publius_my_father_is_on_hi
   await say(PU,'publius_my_father_is_ill',{to:LK});await say(P,'paul_may_i_go_in_to_him',{to:PU});await say(PU,'publius_please',{to:P});
   /* 28:8, told over one picture of the room: the old man in bed, Paul's far hand laid on him; no light and no effect */
   await fade(1,600);G.scene=null;show23('sick23');await fade(0,600);await tell('m8');
-  await fade(1,600);F.healed=1;G.gifts23=0;show23('estate23');await fade(0,600);await say(FA,'father_i_am_up',{to:PU});
+  await fade(1,600);F.healed=1;G.gifts23=0;show23('estate23',null,null,null,QUIET);await fade(0,600);await say(FA,'father_i_am_up',{to:PU});
   /* 28:10: the gifts are brought into the court while it is told, a few at a time (ART.estate23 draws as many as G.gifts23 says) */
   await tell('m9');const gifts=tween(fast()?60:5200,k=>{G.gifts23=k});await tell('m10');await gifts;return end23()}
 /* the hidden treasure: the stone at the gate, with one word cut in it, which Luke copies */

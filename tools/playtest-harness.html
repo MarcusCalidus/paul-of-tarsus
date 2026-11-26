@@ -5425,7 +5425,8 @@
      (the treasure's point) · pmap22 (the voyage out on the map) · pmyra22 · pdeck22 · pshelter22 · phavens22 · pskiff22 · pgirded22 ·
      psyrtis22 · pload22 · pnight22 · ptablet22 · pmidst22. The timed acts, driven by the beat's exposed phase: beatskiff22 (the skiff:
      misses, the call, the carry, four pulls), beatdeck22 (a crossing: a hit, a miss back at the hold with no line, the call after three,
-     the carry after six), phonedeck22 (a crossing tapped on a phone held sideways). The generic stops card22, routes22, shadows22 (above)
+     the carry after six), phonedeck22 (a crossing tapped on a phone held sideways). codes22 plays the chapter as all22 does
+     and restores every safe-point code offered on the way (codeLog, codesCheck), and one while the voyage out waits on the map. The generic stops card22, routes22, shadows22 (above)
      run against whatever rooms the chapter has. The stop carry (after Chapter Twenty-Three's section) needs CHAP[22].marks (the twelve
      mark flags) and CHAP[22].end (the end screen, from wherever the story stands). */
   /* rooms22: every picture of Chapter Twenty-Two on one sheet at twice its size (rooms22.png), each of its variants with the flags that
@@ -5439,17 +5440,17 @@
     const[c,g]=mk(320*K*2+8,Math.ceil(V.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
     V.forEach(([id,fl],i)=>pic(id,fl,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];if(SHARED.beat)SHARED.beat.stop();
     window.SHEETS={rooms22:c.toDataURL()};halt('rooms22')}
-  const C22=/^(quay22|map22|myra22|deck22|shelter22|havens22|skiff22|girded22|syrtis22|load22|bales22|tablet22|marks22|midst22|final22|all22)$/.test(stop);
+  const C22=/^(quay22|map22|myra22|deck22|shelter22|havens22|skiff22|girded22|syrtis22|load22|bales22|tablet22|marks22|midst22|final22|all22|codes22)$/.test(stop);
   /* open22: Chapter Twenty-Two at one point at once, with the flags given, in the room given */
   const open22=async(fl,room)=>{await loadLevel(22);ov.className='';ov.onclick=null;const C=CHAP[22];setChapter(22);for(const k of fl)F[k]=1;
-    C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn()};
+    C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));G.busy=false;lock(false);drawInv();status();swapBtn();if(room!=='girded22')codeBtn()};
   const up22=k=>{const A=CHAP[22].flags;return A.slice(0,A.indexOf(k)+1)};
   if(!C22&&/^p[a-z]+22$/.test(stop)&&!/^phone/.test(stop)){await loadLevel(22);const C=CHAP[22],upto=up22,
       S={pscroll22:[[],'quay22'],pquay22:[[],'quay22'],pmap22:[[],'quay22'],pmyra22:[upto('out'),'myra22'],pdeck22:[upto('aboard'),'deck22'],
         pshelter22:[upto('shelter'),'deck22'],phavens22:[upto('fh'),'deck22'],pskiff22:[upto('advised'),'storm22'],pgirded22:[upto('skiff'),'girded22'],
         psyrtis22:[upto('skiff'),'storm22'],pload22:[upto('skiff'),'storm22'],pnight22:[upto('load3'),'storm22'],ptablet22:[upto('load3').concat(['t1','m1a','t2','m2b']),'tablet22'],
         pmidst22:[upto('t6'),'storm22']}[stop];
-    if(!S)throw new Error('no such stop '+stop);await open22(S[0],S[1]);L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    if(!S)throw new Error('no such stop '+stop);await open22(S[0],S[1]);L('CODE '+stop+' '+(G.room&&G.room!=='girded22'?makeCode():'-'));
     if(stop==='pscroll22'){G.scene=DARK;narr(C.told.v1,{dur:60000})}
     if(stop==='pmap22'){const M=await need('map');M.pick(C.out.ids,'myra',{view:'outward',legs:C.out.legs,hint:'click_myra_where_we_put_in'})}
     if(stop==='psyrtis22'){const M=await need('map');await M.journey([['myra','cnidus','sea'],['cnidus','salmone','sea'],['salmone','fairhavens','sea'],['fairhavens','cauda','sea']],{view:'adria',regions:['the_syrtis'],instant:1})}
@@ -5679,9 +5680,50 @@
       'cast ashore on some island (27:26); the end screen says what is invented and what the account leaves unsaid, and leads on to Chapter Twenty-Three with its first code, which carries the six marks: '+code)}
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 27:1-26 was told'+(miss.length?' MISSING '+miss:''))}
   halt('final22')};
-  if(C22){await ch22();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+  /* codes22 and codes23 (CONTRIBUTING section 5: a code is a promise): the chapter is played through as all22 (all23) plays it, from one
+     point of the story to the next, and every safe-point code that is offered on the way (codeBtn: the top bar and the autosave) is
+     recorded, with whether a cutscene was running when it was kept. A told verse that follows a code kept inside a cutscene, before the
+     player has acted again, is a verse that the code, restored, would skip (the game comes back idle, past it): codeLog counts those.
+     Then every code is restored in a fresh state (the chapter's own transient state cleared, as a page opened anew has it): the game must
+     be idle, with no menu, no choice and no scene up, whoever is played standing in the code's room, which has something to do in it,
+     and the code must be the same again. From the latest point the end screen must be reached (finish). */
+  const codeLog=()=>{const R={codes:[],bad:[],told:[],pend:null},cb0=window.codeBtn,say0=window.say,cut0=window.cut,
+      toldKeys=()=>new Set(Object.values((CHAP[G.ch]&&CHAP[G.ch].told)||{}));
+    window.codeBtn=function(){const r=cb0.apply(this,arguments);if(G.room&&!G.scene){const c=makeCode();R.codes.push({code:c,room:G.room,busy:!!G.busy});R.pend=G.busy?c+' in '+G.room:null}return r};
+    window.say=function(a,t){if(a==null&&toldKeys().has(t)){R.told.push(t);if(R.pend){R.bad.push(R.pend+' before '+t);R.pend=null}}return say0.apply(this,arguments)};
+    window.cut=async function(){try{return await cut0.apply(this,arguments)}finally{if(!G.busy)R.pend=null}};
+    R.off=()=>{window.codeBtn=cb0;window.say=say0;window.cut=cut0};return R};
+  const codesCheck=async(ch,R,finish)=>{R.off();
+    const fresh=()=>{for(const k of Object.keys(G))if(new RegExp(ch+'$').test(k)||/^(mailSaid|skiffT|pk23saw)$/.test(k))delete G[k]},
+      settle=async()=>{for(let i=0;i<60&&(G.busy||ov.classList.contains('on'));i++){if(G.skip)G.skip();await wait(50)}await idle();await wait(150)},
+      todo=()=>(ROOMS[G.room].hs||[]).some(h=>!h.vis||h.vis())||Object.values(ACT).some(a=>a!==PC()&&a.room===G.room&&a.hs),
+      uniq=[...new Map(R.codes.map(c=>[c.code,c])).values()],bad=[];
+    ok(!R.bad.length&&new Set(R.told).size===Object.keys(CHAP[ch].told).length,'no code is kept between a change in the story and the told line that belongs to it: each of the '+R.told.length+' told lines after a code comes only once the player has acted again, so a restored code never skips one'+(R.bad.length?'. SKIPPED: '+R.bad.join(' | '):''));
+    for(const c of uniq){fresh();const r=await restore(c.code,1);await settle();
+      const why=[r!==true&&'not restored',G.ch!==ch&&'chapter '+G.ch,G.room!==c.room&&'room '+G.room,PC().room!==G.room&&'not in the room',G.busy&&'busy',G.scene&&'a scene up',
+        $('#choices').classList.contains('on')&&'a choice open',mn.classList.contains('on')&&'the menu open',ov.classList.contains('on')&&'an overlay',!todo()&&'nothing to do',makeCode()!==c.code&&'another code '+makeCode()].filter(Boolean);
+      if(why.length)bad.push(c.room+' '+c.code+': '+why.join(', '))}
+    ok(!bad.length&&uniq.length>8,uniq.length+' codes offered on the way, each restored in a fresh state: the game idle, no menu, choice or scene up, whoever is played in the code\'s room with something to do there, and the same code again'+(bad.length?'. BAD: '+bad.slice(0,8).join(' | '):''));
+    const last=R.codes.at(-1);fresh();await restore(last.code,1);await settle();const ph=CHAP[ch].phase();await finish();
+    for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);
+    ok(ov.classList.contains('end'),'from the latest point ('+last.code+', '+last.room+', '+ph+') the end screen is reached');return uniq};
+  if(C22){const R22=stop==='codes22'?codeLog():null;await ch22();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
+    if(R22){const JU=ACT.julius22,SP=CHAP[22].speech,
+        choice=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await idle()};
+      /* from the latest point, in their midst: the parts not yet said, in the account's order */
+      const uniq=await codesCheck(22,R22,async()=>{for(let n=0;n<6&&!ov.classList.contains('end');n++){const i=SP.filter((x,j)=>F['p'+(j+1)]).length;if(i>=6)break;
+        verb('talk');clickView(JU.x,JU.y-10,JU.hs);await choice(SP[i].c)}});
+      /* a code restored while the voyage out waits on the map for Myra to be clicked (the map's pick is ended, commit c7b313d: no key is
+         pressed for it, so no menu opens) */
+      {const q=uniq.find(c=>c.room==='quay22'),my=uniq.find(c=>c.room==='myra22');for(const k of Object.keys(G))if(/22$/.test(k))delete G[k];
+        await restore(q.code,1);await idle();const h=ROOMS.quay22.hs.find(h=>h.name==='gangplank');verb('use');clickView(h.x+h.w/2,h.y+h.h/2,h);
+        for(let i=0;i<900&&!(SHARED.map&&SHARED.map.state.places&&G.scene===SHARED.map.draw&&!G.busy);i++)await wait(30);await wait(200);const M=SHARED.map,waited=!!(M&&M.state.places&&G.scene===M.draw);
+        await restore(my.code,1);await wait(800);await idle();
+        ok(waited&&G.room==='myra22'&&F.out&&!G.scene&&!G.busy&&!mn.classList.contains('on')&&!$('#choices').classList.contains('on')&&!ov.classList.contains('on')&&!M.state.places&&makeCode()===my.code,
+          'with the voyage out waiting on the map for Myra, a code restored ('+my.code+'): the map\'s wait ends, no menu or choice opens, and the game is idle at Myra')}}
+    L('DONE');throw 'halt'}
   /* ==== CHAPTER TWENTY-TWO: end ==== */
   /* ==== CHAPTER TWENTY-THREE: begin ==== Chapter Twenty-Three's own stops: whoever builds the chapter extends this section, and nothing outside it
      but its line in TSTEPS, the chain of the full run (ch23 after ch22) and the title checks of the chapters before it. */
@@ -5697,7 +5739,8 @@
      travel map after Malta) · pcarry23 (Luke's tablet carried in: south-west, west, north-west, only the day, west, north-west) · ptitle23
      (the tablet of a title start: the days only). Beside them: waves23 and phonewaves23 cross the surf by the beat's exposed phase (a hit,
      misses on the wave, the call, the sticky help, the carry), on the desktop and on a phone held sideways; pics23 opens the talk in
-     pictures and checks the pictures' order in English and in German. The generic stops card23, routes23 and shadows23 (above) run against
+     pictures and checks the pictures' order in English and in German; codes23 plays the chapter as all23 does and restores every
+     safe-point code offered on the way (codeLog and codesCheck, in Chapter Twenty-Two's section). The generic stops card23, routes23 and shadows23 (above) run against
      the chapter's rooms. */
   /* rooms23: every picture of Chapter Twenty-Three on one sheet at twice its size (rooms23.png), for the art and the cross-shape check */
   if(stop==='rooms23'){clearInterval(sk);sk=0;await loadLevel(23);setChapter(23);ov.className='';ov.onclick=null;const C=CHAP[23],ids=C.rooms,K=2;
@@ -5707,10 +5750,10 @@
     const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
     ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
     window.SHEETS={rooms23:c.toDataURL()};halt('rooms23')}
-  const C23=/^(stern23|lead23|bow23|hold23|bay23|wreck23|planks23|surf23|beach23|talk23|viper23|estate23|sick23|final23|all23)$/.test(stop);
+  const C23=/^(stern23|lead23|bow23|hold23|bay23|wreck23|planks23|surf23|beach23|talk23|viper23|estate23|sick23|final23|all23|codes23)$/.test(stop);
   /* a point of the chapter opened at once (the p-stops, waves23 and pics23 use it): flags from FLAGS after the carried ones, up to k */
   const open23=async(flags,room,carry)=>{await loadLevel(23);ov.className='';ov.onclick=null;const C=CHAP[23];setChapter(23);for(const k of(carry||[]).concat(flags))F[k]=1;
-    C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();return C};
+    C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));G.busy=false;lock(false);drawInv();status();swapBtn();if(!['bay23','sick23'].includes(room))codeBtn();return C};
   const upto23=k=>{const A=CHAP[23].flags;return A.slice(CHAP[23].carry,A.indexOf(k)+1)};
   /* pics23: the talk in pictures, the pictures in the order of their keys, the same in English and in German */
   if(stop==='pics23'){await loadLevel(23);const C=await open23(upto23('found'),'beach23');const EL=ACT.elder23,got=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);
@@ -5728,7 +5771,7 @@
         pplanks23:[upto23('bread'),'planks23'],psurf23:[upto23('planks'),'surf23'],pbeach23:[upto23('surf'),'beach23'],ptalk23:[upto23('found'),'beach23'],
         pfire23:[upto23('malta'),'beach23'],pestate23:[upto23('viper'),'estate23'],psick23:[upto23('viper'),'sick23'],pmap23:[upto23('malta'),'beach23'],
         pcarry23:[[],'tablet23',TAB],ptitle23:[[],'tablet23']}[stop];
-    if(!S)throw new Error('no such stop '+stop);const C=await open23(S[0],S[1],S[2]);L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    if(!S)throw new Error('no such stop '+stop);const C=await open23(S[0],S[1],S[2]);L('CODE '+stop+' '+(G.room&&!['bay23','sick23'].includes(G.room)?makeCode():'-'));
     if(stop==='pscroll23'){G.scene=DARK;narr(C.told.n27,{dur:60000})}
     if(stop==='pbay23')G.bay23=.7;
     if(stop==='psick23'){}
@@ -5906,9 +5949,12 @@
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 27:27-28:11 was told'+(miss.length?' MISSING '+miss:''))}
   halt('final23')};
   const phase23_=()=>CHAP[23].phase();
-  if(C23){await ch23();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+  if(C23){const R23=stop==='codes23'?codeLog():null;await ch23();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
+    /* from the latest point, at the estate: Publius, and his father healed (28:8-10) */
+    if(R23){const PU=ACT.publius23;await codesCheck(23,R23,async()=>{verb('talk');clickView(PU.x,PU.y-10,PU.hs);await idle()})}
+    L('DONE');throw 'halt'}
   /* ==== CHAPTER TWENTY-THREE: end ==== */
   /* carry (CONTRIBUTING section 5): a choice carried from one chapter into the next, only in the safe-point code. Chapter Twenty-Three's
      first CHAP[23].carry flags are carried in from Chapter Twenty-Two's end screen: from22, then the six marks of Luke's tablet. For four

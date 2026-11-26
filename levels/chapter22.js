@@ -862,9 +862,12 @@ const FLAGS=['out','aboard','pouch','pierced','threaded','mended','cord','shelte
 
 /* ============ HELPERS ============ */
 function setPC22(a){if(G.pc!==a){G.pc=a;G.inv=G.invs[a.id]||(G.invs[a.id]=[])}}
-/* a told picture (girded22) is never a point a code is kept at: it has nothing to do, and a code there would lead nowhere */
-function show22(room,x,y,dir){place22(room);const e=ENT[room];enterRoom(room,x!=null?x:e[0],y!=null?y:e[1],dir||e[2]);if(room!=='girded22')codeBtn()}
-async function goto22(room,x,y,dir){await fade(1,300);show22(room,x,y,dir);await fade(0,300)}
+/* a told picture (girded22) is never a point a code is kept at: it has nothing to do, and a code there would lead nowhere. quiet: a script
+   that changes the room before the told line that belongs to it keeps no code there either; it keeps one after the line (CONTRIBUTING
+   section 5: a restored code never skips a verse) */
+const QUIET=1;
+function show22(room,x,y,dir,quiet){place22(room);const e=ENT[room];enterRoom(room,x!=null?x:e[0],y!=null?y:e[1],dir||e[2]);if(room!=='girded22'&&!quiet)codeBtn()}
+async function goto22(room,x,y,dir,quiet){await fade(1,300);show22(room,x,y,dir,quiet);await fade(0,300)}
 async function go22(a,x,y,sp){a.speed=fast()?400:sp||0;a.free=1;await walk(a,x,y);a.speed=0;a.free=0}
 const spoke=(a,k)=>say(a,k,{to:PC()});
 /* the beat runs in the two timed acts, in storm22 (shared/beat.js): started by the room's draw when it is missing, so that a code restored
@@ -916,7 +919,7 @@ async function pickMyra22(){const M=SHARED.map,id=++PK22,gone=()=>PK22!==id||G.c
       await cut(async()=>{await say(P,OUT22.say[k],THL);if(k==='tarsus')treasure()})}}
   finally{clearInterval(watch)}}
 /* Myra: the brothers' bundle, the grain ship (27:6) */
-async function arriveMyra22(){F.out=1;await fade(1,500);G.scene=null;setScore(MUSIC);show22('myra22');
+async function arriveMyra22(){F.out=1;await fade(1,500);G.scene=null;setScore(MUSIC);show22('myra22',null,null,null,QUIET);
   for(const it of['bedding22','bread22','sail22'])addItem(it);
   await fade(0,600);await tell('v6');await say(P,'paul_the_brothers_bundle',TH);codeBtn()}
 /* aboard the grain ship: the evening at Myra */
@@ -960,7 +963,7 @@ async function sleep22(){if(!F.shelter)return;await say(P,'paul_time_to_rest',TH
   await tell('v7',0,{low:1});
   await M.go('salmone','fairhavens');
   await tell('v8',0,{low:1});
-  await fade(1,500);G.scene=null;setScore(MUSIC);F.fh=1;show22('deck22');await fade(0,600);
+  await fade(1,500);G.scene=null;setScore(MUSIC);F.fh=1;show22('deck22',null,null,null,QUIET);await fade(0,600);
   await tell('v9');await say(P,'paul_before_i_say_anything',TH);codeBtn()}
 
 /* ---- Fair Havens: not listened to ---- */
@@ -979,7 +982,7 @@ async function advise22(){if(known22()<4)return say(P,'paul_not_yet_julius',TH);
   const w=tween(fast()?200:5000,k=>{G.cable22=1-k});await tell('v13');await w;
   /* 27:14, 15: the wind comes down off the mountains; the deck in the storm */
   await tell('v14');
-  await fade(1,500);G.cable22=null;show22('storm22');await fade(0,500);
+  await fade(1,500);G.cable22=null;show22('storm22',null,null,null,QUIET);await fade(0,500);
   await tell('v15');await tell('v16');
   await say(LK,'luke_shes_full_of_water',TH);codeBtn()}
 
@@ -999,7 +1002,7 @@ async function skiffIn22(){F.skiff=1;G.sk22=0;G.pull22=0;if(SHARED.beat)SHARED.b
   const M=await need('map');
   await M.journey([...LEGS22.slice(2),['fairhavens','cauda','new sea']],{view:'adria',regions:['the_syrtis']});
   await say(LK,'luke_the_syrtis',THL);
-  await fade(1,500);G.scene=null;setScore(MUSIC);show22('storm22');await fade(0,500);
+  await fade(1,500);G.scene=null;setScore(MUSIC);show22('storm22',null,null,null,QUIET);await fade(0,500);
   await tell('v18');await say(P,'paul_whatever_is_in_these_bales',TH);codeBtn()}
 
 /* ---- the next day: between two waves (Paul) ---- */
@@ -1048,7 +1051,7 @@ async function mark22(){if(!lukePlays()||F.t6)return say(LK,'luke_six_days_six_s
   F['t'+n]=1;setMark(n,i);SFX.click();await say(LK,MARKSAY22[i],TH);
   if(n<6){await fade(1,500);show22('storm22');await fade(0,500);await say(LK,DAYSAY22[n],TH);codeBtn();return}
   /* the sixth day: 27:20, from the narrator's scroll; then Paul stands up among them (27:21) */
-  await tw(400);await fade(1,700);await tell('v20');G.scene=null;show22('storm22');await fade(0,700);
+  await tw(400);await fade(1,700);await tell('v20');G.scene=null;show22('storm22',null,null,null,QUIET);await fade(0,700);
   await tell('v21');await say(P,'paul_they_need_to_hear_it',TH);codeBtn()}
 
 /* ---- in their midst (Paul) ---- */
