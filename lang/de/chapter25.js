@@ -191,7 +191,7 @@ TEXTS('de',25,{
   "paul_the_chain_doesnt_reach_i_could_ask":["So weit reicht die Kette nicht. Ich könnte den Soldaten bitten, sich woandershin zu setzen.","0badmbj"],
   "paul_the_chain_doesnt_reach":["So weit reicht die Kette nicht.","0kljtlu"],
   "would_you_sit_by_the_door":["Setzt du dich an die Tür? Dann reicht die Kette bis dorthin.","0q0p0ff"],
-  "would_you_sit_at_the_table":["Setzt du dich an den Tisch? Dann reicht die Kette bis zu meinem Platz daran.","176nsi9"],
+  "would_you_sit_at_the_table":["Setzt du dich an den Tisch? Dann reicht die Kette bis zu meinem Platz am Tisch.","176nsi9"],
   "would_you_sit_by_the_window":["Setzt du dich ans Fenster? Dann erreiche ich diese Seite des Zimmers.","1gauohu"],
   "could_you_move_a_little":["Könntest du ein Stück rücken?","076omo0"],
   "you_can_sit_wherever_you_like":["Du bist ein Soldat der Garde. Du kannst sitzen, wo du willst.","0ol6voh"],
