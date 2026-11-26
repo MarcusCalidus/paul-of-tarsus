@@ -190,33 +190,163 @@ function cart21(g){const C=CRT21,{x0,x1,top,seam,bot,dx,dy}=C,r=rng(2131),[wx,wy
 /* ==== ART court21: end ==== */
 
 /* ==== ART write21: begin ==== */
-/* ART-TODO. The governor's clerk's writing room (invented), in the palace, by morning. A plain room: limewashed walls over a dado, a
-   window at the left (a deep square opening, its light falling into the room from the left), a long writing table against the back
-   wall, a door at the right to the court. On the table, from the left: the commander's letter (an unrolled sheet), the record of the
-   hearing before Felix (a sheet), the draft of the report (a sheet, the largest), the clerk's notes of the hearing before Festus (a wax
-   tablet) and a square ink pot with a reed pen lying beside it, along the table. The table's legs stand at its two ends, none under
-   its middle; nothing hangs on the walls.
+/* The governor's clerk's writing room (invented), in the palace, by morning. A plain working room under a ceiling of joists: limewashed
+   walls over a dado painted ochre, a floor of smooth red mortar (no joints, so that nothing runs behind the table's legs). At the left a
+   window, a deep square opening high in the back wall onto the morning sky (no bars): its left side and its lintel's underside show the
+   thickness of the wall, its sill catches the light, and the sun through it lies on the floor as one long soft patch, slanting toward us
+   and to the right, which is where the figures' shadows fall too. Between the window and the table, high on the wall above every head,
+   two shelves on brackets at their ends (no upright under the middle) hold the office's rolls, lying with one end toward us: each shows
+   that end as a face, its edge darker, without a stick or a tie, in one row to a shelf (never two by two). Against the back wall the
+   long writing table (WT21), its legs solid boards at its two ends, none under its middle; under it the clerk's stool, pushed in. On the
+   table, from the left: the commander's letter (an unrolled sheet), the record of the hearing before Felix (a sheet), the draft of the
+   report (the largest sheet, still bare below its first lines), the clerk's notes of the hearing before Festus (a wax tablet in its
+   wooden frame) and a square ink pot, with a reed pen lying along the table in front of it, across nothing. The writing on the sheets is
+   rows of small strokes that stop short of the margins; nothing is ruled. At the right the door to the court, open: through it the
+   court's paving in the sun and, across it, a sunlit wall that closes the view. Heads in the walk strip come at y 70..101: behind them
+   lie the plaster, the dado, the table and the door; nothing round (the rolls are higher, the ink pot is square).
    Called from outside: ART.write21. Reads nothing.
    Hotspots (ROOMS.write21): the window 24,24,40,42 · the commander's letter 154,78,24,14 · the record before Felix 178,78,26,14 · the
    report 204,76,30,16 · my notes 234,78,22,14 · the ink pot 256,74,12,18 · the door to the court 284,38,32,64. Walk: 24..296 by 116..138.
-   Wall foot y 100; the table 150..270, its top 88, its front 92..96, its feet 112 (behind the strip, no footprint). Light: from the
-   window at the left (sun [16,6,.28]). */
+   Wall foot y 100; the table 150..270, its top from 85 (back) to 92 (front), its front 92..96, its feet 112 (behind the strip, no
+   footprint). Light: from the window at the left (sun [16,6,.28]). */
 ART.write21={w:320,q:12,paint(g){paintWrite21(g)},light:{amb:'#e8dcc6',sun:[16,6,.28],wallY:100},draw(){},front(){}};
-function paintWrite21(g){const r=rng(2101);
-  plaster(g,0,0,320,100,'#dccfb4',r,{patch:0,cracks:0,t:.3});R(g,0,84,320,16,'#b8a482');R(g,0,84,320,.8,'#cbb894');
-  /* the window: a deep square opening onto the morning sky, its sill lit */
-  R(g,24,24,40,42,'#8a7a64');R(g,28,28,32,34,'#a9c4dc');R(g,28,52,32,10,'#c6d6e0');R(g,24,64,40,2.4,'#efe2c6');
-  /* the door at the right, open onto the court */
-  R(g,284,38,32,64,'#6a5844');R(g,288,42,24,58,'#d8c8a6');R(g,288,90,24,10,'#c8b694');
-  pave(g,-2,100,322,144,'#b4a07e',r,{vx:160,vy:60,rows:5,step:30,v:.06,t:.3});
-  /* the table: its top, its front, its two legs at its ends */
-  M21.shadow(g,210,112,62,3,.45);
-  R(g,150,88,120,4,'#8a6440');R(g,150,92,120,4,'#6a4a2e');R(g,152,96,4,16,'#5a3e26');R(g,264,96,4,16,'#5a3e26');R(g,150,88,120,.6,'#b08a5c');
-  /* the papers on it */
-  R(g,156,84,20,5,'#e8dcb8');R(g,181,83.6,22,5.4,'#e4d6b0');R(g,207,82,26,7,'#efe4c4');R(g,236,83.6,18,5.4,'#9a7448');R(g,238,84.4,14,3.8,'#3a2a1c');
-  R(g,259,80,5,8,'#3a3430');R(g,259,80,5,1,'#5a524a');R(g,240,87.6,24,.6,'#c8a86a');
-  /* the light from the window: warm on the left, falling off to the right */
-  comp(g,'soft-light',.35,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,220,170,1)','rgba(220,200,190,.5)','rgba(160,160,200,.7)']);g.fillRect(0,0,320,144)})}
+const WT21={x0:150,x1:270,back:85,top:92,front:96,foot:112,legs:[152,264],lw:4},WIN21=[24,24,64,66],DOOR21=[284,38,316,102],VY21=66,VX21=180;
+function paintWrite21(g){const r=rng(2101),W='#e2d4b8';
+  /* the back wall: limewashed plaster, a little worn, a crack or two high up where no head comes */
+  plaster(g,0,8,320,92,W,r,{patch:0,cracks:0,t:.34,top:.03,bot:-.05});
+  SHARED.temple.age(g,0,8,320,92,rng(2102),.35);
+  for(const[x,y,n]of[[112,14,3],[206,12,4]])M21.crack(g,x,y,n,r,.45);
+  /* the dado: an ochre band with a thin moulding along its top, stopping at the door */
+  const DY=78;g.fillStyle=lg(g,0,DY,0,100,['#9e5440','#8e4836','#7a3c2e']);g.fillRect(0,DY,DOOR21[0],100-DY);
+  inRect(g,0,DY,DOOR21[0],100-DY,()=>{tex(g,'mott',.4,0,DY,DOOR21[0],100-DY,'overlay',1);tex(g,'blotch',.2,0,DY,DOOR21[0],100-DY,'soft-light',1)});
+  R(g,0,DY-1.2,DOOR21[0],1.2,'#dcc8a4');R(g,0,DY-1.2,DOOR21[0],.5,'#f4e6c8');R(g,0,DY,DOOR21[0],.5,'rgba(60,40,24,.45)');
+  R(g,316,DY-1.2,4,1.2,'#d8c49c');g.fillStyle='#8e4836';g.fillRect(316,DY,4,100-DY);
+  ao(g,0,94,320,6,'b',.3,'#3a2418');
+  M21.ceiling(g,320,{U:8,x0:10,step:34,vx:VX21,vy:VY21,r,boards:'#3a2a1e',joist:'#6a4c30',plate:'#7a5a38'});
+  floorWrite21(g,r);
+  windowWrite21(g,W);
+  shelvesWrite21(g,r);
+  chestWrite21(g,r);
+  doorWrite21(g,W);
+  tableWrite21(g,r);
+  /* the morning light from the window: warm on the left, the room falling off into a cooler shade toward the right, where the door lets
+     in the court's light again */
+  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,222,170,1)','rgba(240,214,186,.6)','rgba(170,168,206,.7)','rgba(220,210,200,.6)']);g.fillRect(0,0,320,144)});
+  comp(g,'multiply',.3,()=>{g.fillStyle=rg(g,60,90,300,['#ffffff','#f0e6e0','#a89cb8']);g.fillRect(0,0,320,144)});
+  sunWrite21(g)}
+/* the floor: smooth red mortar with a few pale chips of stone in it, worn paler where people walk; no joints */
+function floorWrite21(g,r){const y0=100;g.fillStyle=lg(g,0,y0,0,144,['#86624a','#987056','#a67e62']);g.fillRect(0,y0,320,144-y0);
+  inRect(g,0,y0,320,144-y0,()=>{tex(g,'mott',.45,0,y0,320,144-y0,'overlay',1);tex(g,'blotch',.1,0,y0,320,144-y0,'soft-light',1);
+    pool(g,170,128,130,10,'#e8c0a0',.16,'source-over');
+    for(let i=0;i<260;i++){const y=y0+2+r()*42,x=r()*320,s=.5;R(g,x,y,s+(y-y0)*.006,s,r()<.6?'rgba(240,226,206,.35)':'rgba(70,40,30,.25)')}});
+  ao(g,0,y0,320,5,'t',.35,'#3a2418')}
+/* the window: the morning sky in a deep opening; its left side and its lintel's underside, in shade, show the wall's thickness; a stone
+   sill, lit along its top. No bars, nothing round. */
+function windowWrite21(g,W){const[x0,y0,x1,y1]=WIN21,k=.04,ix=x0+(VX21-x0)*k,iy=y0+(VY21-y0)*k;
+  g.fillStyle=lg(g,0,iy,0,y1,['#86a8d6','#a8c2de','#d6dce0','#f0e2c8']);g.fillRect(ix,iy,x1-ix,y1-iy);
+  pool(g,ix+6,y1-6,26,10,'#fff2d0',.5,'screen');
+  for(const[x,y,w]of[[ix+4,iy+9,16],[ix+14,iy+16,14]]){pool(g,x+w/2,y,w/2,1.2,'#ffffff',.45,'source-over');R(g,x+w*.2,y+.6,w*.6,.5,'rgba(160,170,200,.35)')}
+  /* the left side and the lintel's underside */
+  poly(g,[x0,y0,ix,iy,ix,y1,x0,y1]);g.fillStyle=lg(g,x0,0,ix,0,[tint(W,-.3),tint(W,-.2)]);g.fill();
+  poly(g,[x0,y0,x1,y0,x1,iy,ix,iy],tint(W,-.38));R(g,ix,iy-.5,x1-ix,.5,'rgba(255,230,190,.4)');
+  stroke(g,[ix+.25,iy,ix+.25,y1],'rgba(255,236,200,.5)',.5);
+  /* the sill */
+  R(g,x0-2,y1,x1-x0+4,1.6,tint(W,.08));R(g,x0-2,y1,x1-x0+4,.5,'#fff4dc');ao(g,x0-2,y1+1.6,x1-x0+4,4,'t',.3,'#3a2a24')}
+/* the shelves: two boards on brackets at their ends, high on the wall; on each a row of rolls lying with one end toward us. Each end is
+   a face of the roll's own pale tone, its rim a little darker and the turns of the sheet a faint curve inside it, lit from the window's
+   side; no stick, no tie. Their soft shade on the wall below and to the right. */
+function shelvesWrite21(g,r){const x0=82,x1=140,q=rng(2105);
+  for(const sy of[42,58]){
+    /* the rolls, one row, some lying a little deeper on the shelf than others; a few in cases of dark leather */
+    const rolls=[];for(let x=x0+2;x<x1-3;){const rr=2.1+q()*.7;if(x+rr*2>x1-1)break;rolls.push([x+rr,sy-rr,rr,q()<.22,q()*.5]);x+=rr*2+.2+q()*1.2}
+    comp(g,'multiply',.35,()=>{for(const[cx,cy,rr]of rolls)oval(g,cx+1.6,cy+1,rr,rr,'#6a5a6a');R(g,x0+1,sy+1.4,x1-x0,2.6,'#8a7a80')});
+    for(const[cx,cy0,rr,cased,back]of rolls){const cy=cy0-back*.3,c=cased?'#6e4a2e':q()<.35?'#d4bc8e':q()<.5?'#e2cea2':'#c8ae80';
+      /* the side of the roll, running back from its end toward the wall: a crescent of its own darker tone at the right and below */
+      for(let k=1.6;k>0;k-=.4)oval(g,cx+k,cy+k*.3,rr,rr,tint(c,-.3-k*.08));
+      /* its end, a face: a darker rim, the face itself lit from the left, the turns of the sheet a faint curve running inward */
+      oval(g,cx,cy,rr,rr,tint(c,-.24));oval(g,cx-.2,cy-.15,rr-.5,rr-.5,c);
+      if(!cased){g.strokeStyle=rgba(tint(c,-.3),.6);g.lineWidth=.4;g.beginPath();for(let a=0;a<9.4;a+=.3){const d=(rr-.7)*(1-a/11);g.lineTo(cx-.2+Math.cos(a+.8)*d,cy-.15+Math.sin(a+.8)*d)}g.stroke()}
+      else{oval(g,cx-.2,cy-.15,rr-1.1,rr-1.1,tint(c,.08))}
+      g.strokeStyle=cased?'rgba(200,150,100,.5)':'rgba(255,248,226,.6)';g.lineWidth=.4;g.beginPath();g.arc(cx-.2,cy-.15,rr-.7,2.7,4.3);g.stroke()}
+    /* the board, its front edge and the underside seen from below, and its brackets at the two ends */
+    M21.board(g,x0,sy,x1-x0,1.6,'#7a5636',r);R(g,x0,sy,x1-x0,.5,'#c09468');R(g,x0,sy+1.6,x1-x0,.6,'#4a3220');
+    for(const bx of[x0+1.5,x1-3.5]){poly(g,[bx,sy+2.2,bx+2,sy+2.2,bx+2,sy+5.4,bx+.6,sy+3.8],'#5e4228');R(g,bx,sy+2.2,.5,1.6,'#9a7448')}}}
+/* the chest under the shelves, against the wall: a plain box of boards that run along it, posts at its corners only, its lid shut; lit
+   from the window's side */
+function chestWrite21(g,r){const x0=88,x1=134,y0=88,y1=104,lid=2.2;
+  comp(g,'multiply',.35,()=>poly(g,[x0+2,y1,x1+2,y1,x1+7,y1+2.6,x0+7,y1+2.6],'#4a3a4a'));M21.shadow(g,(x0+x1)/2+3,y1+.4,24,1.4,.4);
+  M21.board(g,x0,y0+lid,x1-x0,(y1-y0-lid)/2,'#7e5a38',r);M21.board(g,x0,y0+lid+(y1-y0-lid)/2,x1-x0,(y1-y0-lid)/2,'#74522f',r);
+  comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,x0,0,x1,0,['#ffffff','#7a6a80']);g.fillRect(x0,y0,x1-x0,y1-y0)});
+  for(const px of[x0,x1-2])R(g,px,y0+lid,2,y1-y0-lid,'#5e4228');R(g,x0,y0+lid,.5,y1-y0-lid,'#b08860');
+  M21.board(g,x0-.6,y0,x1-x0+1.2,lid,'#8a6640',r);R(g,x0-.6,y0,x1-x0+1.2,.5,'#d0a878');R(g,x0-.6,y0+lid,x1-x0+1.2,.5,'rgba(30,18,10,.5)');
+  ao(g,x0,y1-3,x1-x0,3,'b',.3,'#1a1010')}
+/* the door to the court, open: a stone frame; the right side of the opening shows the wall's thickness; through it the court's paving
+   in the sun and a sunlit wall across the court that closes the view; a worn threshold */
+function doorWrite21(g,W){const[x0,y0,x1,y1]=DOOR21,k=.04,ix=x1+(VX21-x1)*k;
+  const FW=72;inRect(g,x0,y0,x1-x0,y1-y0,()=>{
+    /* the wall across the court, in the sun, its courses small with the distance; at its foot the court's paving runs toward us */
+    SHARED.temple.stone(g,x0,y0,x1-x0,FW-y0,rng(2106),{bh:3.4,bw:11,c:'#ead8b4',v:.06,age:.5});
+    g.fillStyle='rgba(255,232,190,.28)';g.fillRect(x0,y0,x1-x0,FW-y0);ao(g,x0,FW-5,x1-x0,5,'b',.25,'#6a5040');
+    pave(g,100,FW,340,y1,'#eadcbc',rng(2108),{vx:VX21,vy:VY21,rows:4,step:30,v:.05,t:.25});
+    g.fillStyle='rgba(255,240,210,.25)';g.fillRect(x0,FW,x1-x0,y1-FW);
+    pool(g,(x0+x1)/2,y1-8,24,10,'#fff4dc',.3,'screen')});
+  /* the right side of the opening, in shade */
+  poly(g,[ix,y0+1.6,x1,y0,x1,y1,ix,y1],tint(W,-.18));stroke(g,[ix+.25,y0+1.6,ix+.25,y1],'rgba(255,236,200,.35)',.5);
+  /* the frame: plain dressed stone, lit from the left */
+  R(g,x0-2.4,y0-2.4,x1-x0+4.8,2.4,tint(W,.04));R(g,x0-2.4,y0-2.4,x1-x0+4.8,.5,'#fff2d8');R(g,x0-2.4,y0,x1-x0+4.8,.5,'rgba(70,52,40,.45)');
+  R(g,x0-2.4,y0,2.4,y1-y0,tint(W,.06));R(g,x0-2.4,y0,.5,y1-y0,'#fff2d8');R(g,x0-.5,y0,.5,y1-y0,'rgba(70,52,40,.4)');
+  /* the threshold */
+  R(g,x0-2.4,y1-1.6,x1-x0+4.8,1.6,'#cdb898');R(g,x0-2.4,y1-1.6,x1-x0+4.8,.5,'#f0e0c0')}
+/* the writing table and the stool under it, and what lies on the table */
+function tableWrite21(g,r){const T=WT21,Wd='#94683e',q=rng(2107);
+  /* the table's shadow on the floor and on the dado, cast to the right and toward us */
+  comp(g,'multiply',.4,()=>{poly(g,[T.x0+6,T.foot,T.x1+4,T.foot,T.x1+10,T.foot+3,T.x0+12,T.foot+3],'#5a4a6a');poly(g,[T.x0+3,T.front,T.x1+3,T.front,T.x1+5,100,T.x0+5,100],'#7a6a80')});
+  M21.shadow(g,(T.x0+T.x1)/2+4,T.foot+.4,64,2.4,.4);
+  /* the stool, pushed in under the table: a thick board on two legs at its ends */
+  const sx0=212,sx1=226,st=101;comp(g,'multiply',.3,()=>oval(g,(sx0+sx1)/2+2,110.4,9,1.2,'#3a2a3a'));
+  for(const x of[sx0+.6,sx1-2.2])M21.board(g,x,st+1.2,1.6,110-st-1.2,'#4e3622',r,1);
+  M21.board(g,sx0,st,sx1-sx0,1.6,'#6a4a2e',r);
+  /* the legs: solid boards at the two ends, lit on the window's side */
+  for(const lx of T.legs){M21.board(g,lx,T.front,T.lw,T.foot-T.front,'#5e4028',r,1);R(g,lx,T.front,.6,T.foot-T.front,'#9a7048');ao(g,lx,T.foot-3,T.lw,3,'b',.3,'#1a1010')}
+  /* the top, seen from above: the boards run along it; its front edge lit; the apron in its own shade */
+  g.fillStyle=lg(g,0,T.back,0,T.top,[tint(Wd,-.08),Wd,tint(Wd,.1)]);g.fillRect(T.x0,T.back,T.x1-T.x0,T.top-T.back);
+  inRect(g,T.x0,T.back,T.x1-T.x0,T.top-T.back,()=>{M21.plank(g,T.x0,T.back,T.x1-T.x0,T.top-T.back,Wd,r);R(g,T.x0,T.back+3.4,T.x1-T.x0,.4,'rgba(40,24,14,.35)')});
+  R(g,T.x0,T.back,T.x1-T.x0,.5,'rgba(40,24,14,.5)');
+  M21.board(g,T.x0,T.top,T.x1-T.x0,T.front-T.top,'#5a3e26',r);R(g,T.x0,T.top,T.x1-T.x0,.6,'#c8a070');
+  /* the papers: each lies flat, its soft shade to the right and toward us */
+  const sheet=(x0,x1,y0,y1,c,rows,o)=>{o=o||{};comp(g,'multiply',.35,()=>poly(g,[x0+1,y0+.8,x1+1,y0+.8,x1+1.4,y1+.6,x0+1.4,y1+.6],'#4a3a3a'));
+    poly(g,[x0+.4,y0,x1-.4,y0,x1,y1,x0,y1]);g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.04),c,tint(c,.06)]);g.fill();
+    clipTo(g,()=>poly(g,[x0+.4,y0,x1-.4,y0,x1,y1,x0,y1]),()=>{for(let y=y0;y<y1;y+=.6+q()*.6)R(g,x0,y,x1-x0,.5,q()<.5?'rgba(140,110,60,.1)':'rgba(255,250,230,.12)')});
+    R(g,x0,y1-.5,x1-x0,.5,'rgba(255,250,232,.6)');
+    /* the writing: each row one run of ink whose strength wavers, with a word space or two; the spaces of one row stand well clear of
+       those of the next, so that no four strokes meet round a gap */
+    let prev=[];for(let i=0;i<rows;i++){const y=y0+1+i*1.3*(o.sp||1),xs=x0+1.6+(i?0:.4),end=x1-1.6-(i===rows-1&&o.short?(x1-x0)*.4:0),gaps=[];
+      for(let t=0;t<12&&gaps.length<2;t++){const gx=xs+2+q()*(end-xs-4);if(gaps.concat(prev).every(p=>Math.abs(p-gx)>2.6))gaps.push(gx)}
+      for(let x=xs;x<end;){const l=Math.min(end-x,.6+q()*1.4),gp=gaps.find(p=>p>=x&&p<x+l);
+        R(g,x,y,gp?gp-x:l,.5,rgba('#32200f',.38+q()*.3));x=gp?gp+.7:x+l}prev=gaps}};
+  sheet(156,176,86.2,90.6,'#e6d8b4',3);
+  sheet(181,203,86,90.8,'#e2d2aa',3);
+  sheet(207,233,85.6,91.2,'#efe4c4',2,{short:1,sp:1.1});
+  /* the wax tablet: a frame of boxwood round its dark wax, the notes scratched pale into it */
+  {const x0=236,x1=254,y0=86,y1=91;comp(g,'multiply',.35,()=>R(g,x0+1,y0+1,x1-x0,y1-y0,'#3a2a2a'));
+    R(g,x0,y0,x1-x0,y1-y0,'#b08c5c');R(g,x0,y0,x1-x0,.5,'#dcbc88');R(g,x0,y1-.5,x1-x0,.5,'#6e5232');
+    R(g,x0+1.2,y0+1,x1-x0-2.4,y1-y0-2,'#34261a');R(g,x0+1.2,y0+1,x1-x0-2.4,.5,'#140c08');
+    for(let i=0;i<2;i++){let x=x0+2;const y=y0+1.8+i*1.4;while(x<x1-3){const l=Math.min(x1-3-x,.8+q()*2);R(g,x,y,l,.5,'rgba(220,196,150,.6)');x+=l+.6+q()*.6}}}
+  /* the ink pot: a small square pot of dark glazed clay, lit on the window's side, its square mouth dark */
+  {const x0=259,x1=264,y0=82,y1=89;comp(g,'multiply',.4,()=>poly(g,[x0+1,y1,x1+1,y1,x1+3,y1+1.4,x0+2,y1+1.4],'#2a1a2a'));
+    g.fillStyle=lg(g,x0,0,x1,0,['#7a6a62','#4a3e3a','#2e2624']);g.fillRect(x0,y0+1,x1-x0,y1-y0-1);
+    R(g,x0,y0,x1-x0,1.2,'#5e524c');R(g,x0+1,y0+.2,x1-x0-2,.7,'#120c0a');R(g,x0,y0+1.2,.5,y1-y0-1.2,'#a8988c');R(g,x0,y1-.5,x1-x0,.5,'#1a1210')}
+  /* the reed pen, lying along the table in front of the pot, its cut point to the left */
+  stroke(g,[256.2,91.2,264.6,90.6],'rgba(40,24,14,.35)',.8);stroke(g,[256,90.8,264.4,90.2],'#c8b080',.6);stroke(g,[255.2,90.9,256.2,90.8],'#3a2a1a',.5)}
+/* the sun through the window: one long soft patch on the floor, slanting toward us and to the right, and its warm light on the wall under
+   the window */
+function sunWrite21(g){
+  /* the patch, in passes from a wide faint one to its bright core, so that its edges are soft */
+  for(const[d,a]of[[4,.07],[2.6,.08],[1.4,.1],[.4,.14]])comp(g,'screen',a,()=>{poly(g,[38-d,101,74+d,101,128+d*1.4,140,78-d*1.4,140]);
+    g.fillStyle=lg(g,0,101,0,140,['#ffe8c0','#ffd8a0']);g.fill()});
+  pool(g,92,122,44,12,'#ffd8a8',.1,'screen');
+  /* the window's light thrown back onto the wall under it and onto the dado */
+  pool(g,46,80,30,14,'#ffe8c0',.2,'screen')}
 /* ==== ART write21: end ==== */
 
 /* ==== ART report21: begin ==== */
