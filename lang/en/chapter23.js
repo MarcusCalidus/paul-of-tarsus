@@ -77,7 +77,7 @@ TEXTS('en',23,{
   "sounding_line":"sounding line",
   "sounding_line_look":"The sounding line, coiled at the leadsman's feet.",
   "luke_ask_the_leadsman":"The leadsman throws it. I'll ask him.",
-  "leadsman_look":"The leadsman, with his lead and his line.",
+  "leadsman_look":"The leadsman, with his lead and his line. The lead is a weight that tells how deep the water is.",
   "pilot_look23":"The pilot. He keeps looking up at a sky with nothing in it.",
   "pilot_no_bearing_tonight":"No stars, no moon. I can't take a bearing. All I can do is listen.",
   "luke_how_deep_is_it":"How deep is it here?",
@@ -121,7 +121,7 @@ TEXTS('en',23,{
   /* ---- the bow: Paul ---- */
   "paul_the_skiff_at_this_hour":"They're letting the skiff down over the side. At this hour?",
   "skiff":"skiff",
-  "skiff_going_down_look":"The ship's skiff, going down the side on its ropes. Nobody is in it yet.",
+  "skiff_going_down_look":"The skiff, the ship's small boat, going down the side on its ropes. Nobody is in it yet.",
   "sailors_at_the_skiff_look":"So many sailors, all here at the bow. Putting out an anchor doesn't take this many hands.",
   "covered_anchors":"anchors under cover",
   "covered_anchors_look":"The anchors here at the bow are still lying under their cover. Nobody has touched them.",
@@ -187,7 +187,7 @@ TEXTS('en',23,{
   "plank":"plank",
   "plank_look":"A plank, torn loose from the deck.",
   "hatch_cover":"hatch cover",
-  "hatch_cover_look":"A hatch cover, prised loose. Broad and heavy.",
+  "hatch_cover_look":"A hatch cover, pried loose. Broad and heavy.",
   "plank_person_oldman_look":"The old prisoner. He can't swim.",
   "plank_person_soldier_look":"One of the soldiers. He can't swim.",
   "plank_person_boy_look":"The ship's boy. He never learned to swim.",
@@ -249,6 +249,7 @@ TEXTS('en',23,{
   "old_they_will_kill_us":"Go away. They'll kill the prisoners. I heard them.",
   "luke_the_officer_forbade_it":"The officer has forbidden it. Come and get warm by the fire.",
   "old_forbade_it":"Forbidden it? Then I'll come.",
+  "old_ill_stay_by_the_fire":"I'm staying by the fire.",
   "luke_one_of_the_islanders":"One of the islanders is coming down to us.",
   "sea":"sea",
   "sea_from_the_beach_look":"Gray sea, and the surf still breaking.",
@@ -263,6 +264,7 @@ TEXTS('en',23,{
   "fire_on_the_beach_look":"A fire on the sand, kept going in spite of the rain.",
   "luke_warm_for_a_moment":"Warm, for a moment.",
   "julius_everyone_ashore":"Everyone's ashore. I'll see to my prisoners.",
+  "julius_my_prisoners_to_see_to":"I have my prisoners to see to.",
 
   /* ---- the islanders, and the talk in pictures ---- */
   "islander_elder_look":"An older man of the island, in a long tunic and a head cloth.",
@@ -284,7 +286,7 @@ TEXTS('en',23,{
   "luke_he_points_to_the_sea_and_to_me":"He points out to sea, then at me. A question.",
   "luke_he_looks_at_the_wreck_a_long_time":"He looks at the wreck for a long while. He understood that.",
   "luke_he_looks_at_the_marks_and_points_to_the_sea":"He looks at the marks, then out to sea again. That isn't what he asked.",
-  "luke_he_stamps_too_and_points_to_the_sea":"He stamps on the sand too, and points out to sea again.",
+  "luke_he_stamps_too_and_points_to_the_sea":"He looks down at the sand, and points out to sea again.",
   "luke_he_points_to_the_fire_already_lit":"He points at the fire: it's lit for us already.",
   "luke_he_calls_to_the_women_at_the_fire":"He calls something to the women at the fire. Food, I think.",
   "luke_he_waves_along_the_beach":"He waves along the beach, at all of us, and raises his brows.",
@@ -310,7 +312,7 @@ TEXTS('en',23,{
 
   /* ---- the estate ---- */
   "dry_since_crete":"A dry tunic. The first dry thing I've worn since Crete.",
-  "paul_three_days_here":"Three days as his guests. He's been more than generous.",
+  "paul_three_days_here":"We're his guests, and he's more than generous.",
   "wall":"wall",
   "estate_wall_look":"Walls of limestone, the stone of the island.",
   "gateway":"gateway",
@@ -327,13 +329,13 @@ TEXTS('en',23,{
   "publius_please":"Please. This way.",
   "father_i_am_up":"Look at me, son. On my feet again.",
   "publius_my_father_is_on_his_feet":"My father is on his feet. I don't know how to thank you.",
-  "father_of_publius_look":"The father of Publius, on his feet again.",
+  "father_of_publius_look":"The father of Publius, on his feet again. Dysentery, a severe sickness of the bowels, had kept him in bed with a fever.",
   "servant_look":"A servant of the house.",
   "servant_the_master_is_inside":"Speak to my master. He's right here.",
 
   /* ---- Luke's tablet ---- */
-  "lukes_tablet":"wax tablet",
-  "lukes_tablet_look":"My wax tablet, with the days of the storm on it.",
+  "lukes_tablet":"Luke's tablet",
+  "lukes_tablet_look23":"My wax tablet, with the days of the storm on it.",
   "strokes_of_the_days":"strokes of the days",
   "strokes_of_the_days_look":"One stroke for each day since the storm began.",
   "my_marks":"my marks",
@@ -383,11 +385,11 @@ TEXTS('en',23,{
   "hint_the_surf_2":"I should make for the next hold only in the calm between two waves.",
   "hint_count_them_1":"Are we all here? All two hundred and seventy-six?",
   "hint_count_them_2":"I should look at each group along the beach, and count them.",
-  "hint_one_short_1":"One short. Who would hide, and from whom?",
+  "hint_one_short_1":"One short. Who would hide, and who from?",
   "hint_one_short_2":"I should look behind the big piece of the stern.",
   "hint_the_islander_1":"He doesn't know my language, and I don't know his.",
   "hint_the_islander_2":"I should talk to the islander, and answer him with the picture that fits his question.",
-  "hint_by_the_fire_1":"The fire is burning low.",
+  "hint_by_the_fire_1":"A fire in the rain needs feeding.",
   "hint_by_the_fire_2":"I should see what Paul is doing, or tend the fire.",
   "hint_the_estate_1":"Our host looks worried.",
   "hint_the_estate_2":"I should talk to Publius.",
@@ -401,8 +403,8 @@ TEXTS('en',23,{
   "task23_to_the_beach":"Get through the surf to the beach.",
 
   /* ---- the end screen ---- */
-  "all_safe_to_land_end":"On the fourteenth night the sailors sensed land, and two soundings proved them right. When they tried to slip away in the skiff, Paul warned the officer, and the soldiers cut it loose. Before daybreak Paul urged them all to eat, and all 276 took food; at dawn the ship ran aground in a bay and broke up. The officer kept the soldiers from killing the prisoners, and every one of them came safe to land on Malta. There the islanders lit a fire for them, a viper fastened on Paul's hand and did him no harm, and Publius took them in. Paul healed his father, and the other sick of the island came and were cured.",
-  "based_on_acts_27_27_28_10":"Based on Acts 27:27-28:10. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are told here in paraphrase. Acts does not say how the soundings were read, what Paul saw at the bow, where the meal was eaten, who could swim, or that anyone counted the survivors on the beach; it does not say how they learned the island's name, nor what Paul answered when the islanders called him a god. The tags on the sounding line, the people on the foredeck and what floated, the count on the beach, the talk in pictures, the stone at the gate of the estate and Luke's tablet with its marks are invented. Bearing Thorough Witness About God's Kingdom says that the title Luke gives Publius is found on two inscriptions on Malta.",
+  "all_safe_to_land_end":"On the fourteenth night the sailors sensed land, and two soundings proved them right. When they tried to slip away in the skiff, Paul warned the officer, and the soldiers cut it loose. Before daybreak Paul urged them all to eat, and all 276 took food; at dawn the ship ran aground in a bay and broke up. The officer kept the soldiers from killing the prisoners, and every one of them came safe to land on Malta. There the islanders lit a fire for them, a viper fastened on Paul's hand and did him no harm, and Publius took Paul and his companions in. Paul healed Publius's father, and the other sick of the island came and were cured.",
+  "based_on_acts_27_27_28_10":"Based on Acts 27:27-28:10. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are told here in paraphrase. Acts does not say how the soundings were read, what Paul saw at the bow, where the meal was eaten, who could swim, or that anyone counted the survivors on the beach; it does not say how they learned the island's name, nor what Paul answered when the islanders called him a god. It names no lightning in the storm. The tags on the sounding line, the people on the foredeck and what floated, the count on the beach, the talk in pictures, the stone at the gate of the estate and Luke's tablet with its marks are invented. Bearing Thorough Witness About God's Kingdom says that the title Luke gives Publius is found on two inscriptions on Malta.",
   "all_safe_to_land_2":"All Safe to Land",
   "click_to_return_to_the_title":"Click to return to the title"
 });
