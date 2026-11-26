@@ -4742,7 +4742,7 @@
   for(let i=0;i<3000&&!(G.scene&&!G.white&&SHARED.damascus);i++)await wait(20);
   if(stop==='road21'){await wait(500);halt('road21')}
   for(let i=0;i<3000&&!G.white;i++)await wait(20);for(let i=0;i<600&&!white.size;i++)await wait(20);
-  if(stop==='white21'){await wait(300);halt('white21')}
+  if(stop==='white21')halt('white21');
   await until(()=>F.defense&&!G.busy,20000);wo.disconnect();note();
   ok(hand&&['h1','h4','h9','h12','h14','h15','h16','h17','h24'].every(k=>seenTold.has(k))&&said('paul_happy_before_agrippa')&&said('paul_i_followed_the_vision')&&said('paul_laid_hold_of_in_the_temple')
     &&said('paul_nothing_but_moses_and_the_prophets')&&said('festus_out_of_your_mind')&&said('paul_two_men_are_listening'),

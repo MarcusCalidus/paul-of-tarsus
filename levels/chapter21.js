@@ -114,7 +114,8 @@ const FONT21=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;
    the desk 152,88,36,22 · the cart 4,110,42,28 · the ox goad 6,106,46,8 · the way to the writing room 304,96,16,48. Walk: 30..300 by
    114..138 (SHARED.caesarea.WALK); while Paul is played (chained) the walk is his own place. Actors: the clerk sits at the desk 162,110;
    Festus on the seat 238,100; the advisers 270,101 and 292,101; Paul 210,128 and the soldier a step behind him on his left; the
-   accusers at 140,122 · 116,128 · 94,120 · 70,126; the officer 300,130. Footprint: the cart 30,126,16,10. */
+   accusers at 140,122 · 116,128 · 94,120 · 70,126; the officer 300,130. After the hearing Bernice 76,124 and King Agrippa 100,120 facing
+   right, Festus 128,120 facing left. Footprint: the cart 30,126,16,10. */
 const CART21={x0:4,x1:46,top:110,foot:136};
 let SC21=null;
 ART.court21={w:320,q:12,paint(g){SC21=K21.court(g,{hour:'morning',table:false,desk:1});cart21(g)},light:K21.light('morning'),
@@ -206,7 +207,7 @@ function drawReport21(g){G.caps21=G.caps21||[];
    Called from outside: ART.hall21. Reads nothing.
    Hotspots (ROOMS.hall21): the dais 196,96,120,16 · the bench 30,86,144,18 · the windows 60,14,140,14 · the door 6,46,24,50. Walk:
    24..300 by 116..138; while Paul is played (chained) the walk is his own place. Paul stands 150,126 facing right, the soldier a step
-   behind him on his left (132,125.5); the clerk stands 300,124 facing left. Light: from the high windows at the left (sun [14,6,.22]). */
+   ahead of him on his right (168,126.5), chained by his near wrist; the clerk stands 300,124 facing left. Light: from the high windows at the left (sun [14,6,.22]). */
 const HALL21={wallY:96,dais:{lower:[196,316,104,112],upper:[204,316,98,104]},chair:{top:93,foot:102},
   seats:{festus:222,agrippa:248,bernice:274},bench:{x0:30,x1:174,top:95,foot:104,at:[44,68,92,116,140,164]},
   door:[6,46,24,50],windows:[[60,16,60,10],[140,16,60,10]],standards:[22,184],paul:[150,126,1],clerk:[300,124,-1]};
@@ -313,9 +314,20 @@ const THP={thought:1,color:'#cfe2ff'};  /* Paul's */
 const mk21=()=>G.mk21||(G.mk21={});
 const markOf21=k=>F.report?REPORT21.find(c=>c.k===k).ok:mk21()[k];
 /* the chain: one soldier, chained by his wrist to Paul's, a step behind him on his left (shared/cast.js, custody, one keeper) */
-function chain21(){SHARED.cast.custody.place('chain',P,GU,null)}
+/* In the court the soldier stands a step behind Paul on his left; in the hall a step ahead of him on his right, between him and the dais, so
+   that when Paul raises his far hand (26:29) the chain goes up to it without crossing his body */
+const guardAhead21=()=>P.room==='hall21';
+function chain21(){const C=SHARED.cast.custody;if(guardAhead21())C.place('chain',P,null,GU);else C.place('chain',P,GU,null)}
 /* in a room's draw: the chain between them, link by link */
-function chains21(g){if(P.chained&&P.room===G.room&&GU.room===G.room)SHARED.cast.custody.chains(g,P,GU,null)}
+function chains21(g){if(!(P.chained&&P.room===G.room&&GU.room===G.room))return;
+  if(P.ges!==1)return guardAhead21()?SHARED.cast.custody.chains(g,P,null,GU):SHARED.cast.custody.chains(g,P,GU,null);
+  /* "these bonds" (26:29): the far hand is up, bent, and the chain goes up with it, from the soldier's wrist to Paul's raised one, hanging a
+     little, link by link as custody draws a chain (small squares of iron, light and dark in turn, in the room's light) */
+  const C=SHARED.cast.custody,p=C.cuffPt(P,'far'),q=C.cuffPt(GU,GU.keeper==='near'?'near':'far');if(!p||!q)return;
+  const lit=lightAt(P.room,P.x,P.y),mul=(c,l)=>{if(!l)return c;const a=hex(c),b=hex(l);return toHex(a[0]*b[0]/255,a[1]*b[1]/255,a[2]*b[2]/255)},
+    col=[mul(CUFF[1],lit),mul(CUFF[3],lit)],d=Math.hypot(q[0]-p[0],q[1]-p[1]),L=d*1.06+1,sag=Math.sqrt(Math.max(0,L*L-d*d))*.42,n=Math.max(2,Math.ceil(L*2));
+  depth(Math.max(P.y,GU.y)+.01,()=>{let last='';for(let i=0;i<=n;i++){const t=i/n,x=p[0]+(q[0]-p[0])*t,y=p[1]+(q[1]-p[1])*t+sag*4*t*(1-t),k=Math.round(x*2)+','+Math.round(y*2);
+    if(k===last)continue;last=k;g.fillStyle=col[i%2];g.fillRect(Math.round(x*2)/2,Math.round(y*2)/2,.5,.5)}})}
 /* the chain in Paul's inventory whenever he is played chained, and not otherwise */
 function chainItem21(){const L=G.invs.paul||(G.invs.paul=['tablets']),i=L.indexOf('chain21');if(chainedNow()&&i<0)L.push('chain21');else if(!chainedNow()&&i>=0)L.splice(i,1);drawInv()}
 
@@ -396,7 +408,7 @@ async function show21hall(){await fade(1,700);
   const S=HALL21.seats,walkIn=Promise.all([[FS,S.festus],[AG,S.agrippa],[BE,S.bernice]].map(async([a,x],i)=>{place(a,'hall21',-8-i*16,120,1);await tw(i*500);
     await go21(a,x,HALL21.chair.foot,40);a.dir=-1;a.seat=1}));
   await tell('v23');await walkIn;
-  place(P,'hall21',-10,126,1);place(GU,'hall21',-28,125.5,1);await Promise.all([go21(P,HALL21.paul[0],HALL21.paul[1],40),go21(GU,HALL21.paul[0]-18,HALL21.paul[1]-.5,40)]);
+  place(P,'hall21',-10,126,1);place(GU,'hall21',8,126.5,1);await Promise.all([go21(P,HALL21.paul[0],HALL21.paul[1],40),go21(GU,HALL21.paul[0]+18,HALL21.paul[1]+.5,40)]);
   chain21();AU.mood='hall';
   await say(FS,'festus_this_is_the_man',{to:null});await say(FS,'festus_nothing_certain_to_write',{to:AG});
   await say(AG,'agrippa_you_may_speak',{to:P});
@@ -530,7 +542,7 @@ function place21(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   if(ph==='hearing'){pl(FS,'court21',A.governor);FS.seat=1;pl(AD1,'court21',A.advisers[0]);pl(AD2,'court21',A.advisers[1]);
     pl(CL,'court21',A.scribe);CL.seat=1;pl(OF,'court21',A.officer);ACCUSERS.forEach((a,i)=>pl(a,'court21',A.accusers[i]));
     pl(P,'court21',A.accused);chain21()}
-  if(ph==='report'){pl(CL,'write21',[276,126,-1]);pl(FS,'court21',[110,120,1]);pl(AG,'court21',[134,120,-1]);pl(BE,'court21',[156,124,-1])}
+  if(ph==='report'){pl(CL,'write21',[276,126,-1]);pl(BE,'court21',[76,124,1]);pl(AG,'court21',[100,120,1]);pl(FS,'court21',[128,120,-1])}
   if(ph==='hall'||ph==='listen'||ph==='bonds'||ph==='passage'){const S=HALL21.seats,B=HALL21.bench;
     SEATED.forEach((a,i)=>{pl(a,'hall21',[B.at[i],B.foot,1]);a.seat=1});
     pl(CL,'hall21',HALL21.clerk);
