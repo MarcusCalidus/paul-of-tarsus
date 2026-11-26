@@ -267,14 +267,14 @@ function appiusBack24(g,W,dawn){const hz=APPIUS24.hz,RM=SHARED.rome,CO=SHARED.co
   for(const[x,y,w,h]of[[20,97,7,3.6],[26,97.4,6,3],[23,94.2,6,3]]){const c=dawn?'#8e867a':'#cdb994';oval(g,x,y-h/2,w/2,h/2,c);R(g,x-w/2+1,y-h+.3,w-2,.5,tint(c,.25));RM.weeds&&0}
   SHARED.materials.shadow(g,24,97.4,6,1,.4);
   /* the inns and the stalls along the back: the left house, the taller one, with its door and its upper windows; the right one lower, its
-     door at its left and a stall under a lean-to roof on two posts, one at each end of its beam, its counter of masonry along the wall */
+     door at its right and, left of the door, a stall under a lean-to roof on two posts, one at each end of its beam, its counter of masonry along the wall */
   const c1=dawn?'#9a8e86':'#dcc8a6',c2=dawn?'#948a84':'#d4bc98',ti=dawn?'#6a4a44':'#a85a3c',lit=dawn?0:1;
   front24(g,124,196,52,102,c1,{doors:[[150,70,20,32]],wins:[[132,58,8,6],[178,58,8,6,dawn?1:0]]},rng(2650));
   tiles24(g,122,198,40,52,ti,lit,rng(2651));
-  front24(g,196,264,60,102,c2,{doors:[[200,70,20,32]],wins:[[244,64,8,5]]},rng(2652));
+  front24(g,196,264,60,102,c2,{doors:[[238,70,18,32]],wins:[[212,63,8,5]]},rng(2652));
   tiles24(g,194,266,50,60,tint(ti,-.05),lit,rng(2653));
   /* the stall: its counter, the lean-to over it, its two posts; on the counter bread and baskets of greens */
-  {const sx0=226,sx1=262,cy=92;R(g,sx0,cy,sx1-sx0,10,tint(c2,-.08));R(g,sx0,cy,sx1-sx0,.8,tint(c2,.15));tex(g,'mott',.4,sx0,cy,sx1-sx0,10,'overlay',1);
+  {const sx0=203,sx1=231,cy=92;R(g,sx0,cy,sx1-sx0,10,tint(c2,-.08));R(g,sx0,cy,sx1-sx0,.8,tint(c2,.15));tex(g,'mott',.4,sx0,cy,sx1-sx0,10,'overlay',1);
     for(let x=sx0+2;x<sx1-3;x+=5.4){const k=Math.round(x)%3,c=k===0?(dawn?'#8a7458':'#c89a5a'):k===1?(dawn?'#5a6248':'#7a9a4a'):(dawn?'#7a6a5a':'#b08a5a');oval(g,x+2,cy-1.2,2.4,1.4,c);R(g,x+.8,cy-2.4,2.4,.5,tint(c,.3))}
     poly(g,[sx0-3,72,sx1+3,72,sx1+5,78,sx0-1,78],tint(ti,-.08));for(let x=sx0-2;x<sx1+4;x+=2.2)R(g,x,72,.8,6,rgba(tint(ti,.3),.3*lit+.1));R(g,sx0-1,78,sx1-sx0+6,.6,tint(ti,-.3));
     ao(g,sx0,78,sx1-sx0,8,'t',.4,'#2a1c18');
@@ -282,7 +282,7 @@ function appiusBack24(g,W,dawn){const hz=APPIUS24.hz,RM=SHARED.rome,CO=SHARED.co
       if(!dawn)comp(g,'multiply',.25,()=>poly(g,[px+2,101,px+2.6,101,px+9,97.6,px+8.4,97.6],'#5a4a66'));SHARED.materials.shadow(g,px+1,102,2,.6,.5)}}
   /* where the houses meet the ground: a seam of shade along their foot, weeds against it */
   for(const[dy,wd,a]of[[.4,1.6,.16],[.2,.7,.3]])stroke(g,[124,102+dy,264,102+dy],rgba('#2a2026',a),wd);
-  RM.weeds(g,126,102.3,148,102.4,30,2655,1.6);RM.weeds(g,222,102.3,262,102.4,40,2656,1.4);
+  RM.weeds(g,126,102.3,148,102.4,30,2655,1.6);RM.weeds(g,200,102.3,236,102.4,36,2656,1.4);
   /* beyond the houses at the right: the land, a few trees */
   for(const[x,y,h,k]of[[276,84,22,'oak'],[300,86,16,'olive'],[314,80,12,'poplar']])CO.tree(g,x,y,h,null,{kind:k,seed:2660+x,cast:!dawn});
   /* the verge before the houses, back to their foot: beaten earth and grass */
