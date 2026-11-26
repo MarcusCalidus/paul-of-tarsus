@@ -4752,29 +4752,29 @@
   halt('listen21');
   /* two listeners */
   await hints('hint_festus_broke_in_1','hint_festus_broke_in_2','after the outcry');
-  const L=C().listen.map(s=>s.k);
+  const LS=C().listen.map(s=>s.c),S=k=>C().listen.find(s=>s.k===k).c;
   heard.length=0;talkTo(FS);const oF=await asked();await line('say_nothing_for_now');
   talkTo(AG);const oA=await asked();
-  ok(L.every(k=>oF.includes(k))&&oF.at(-1)==='say_nothing_for_now'&&oF.join()===oA.join(),'to the governor or to the king, the same four true sentences, in the same mixed order');
-  await line('paul_true_and_of_a_sound_mind');ok(said('agrippa_the_governor_said_it')&&!F.sound,'to the king: it was the governor who said that');
-  heard.length=0;talkTo(FS);await line('paul_do_you_believe_the_prophets');ok(said('festus_put_that_to_the_king')&&!F.prophets,'the Prophets, to the governor: put that to the king');
-  heard.length=0;talkTo(FS);await line('paul_not_done_in_a_corner');ok(said('festus_answer_what_i_said')&&!F.corner,'the king knows, to the governor before the answer: answer what I said');
-  heard.length=0;talkTo(AG);await line('paul_im_not_saying_this_to_save_myself');ok(said('agrippa_so_i_have_heard')&&!F.sound,'a true sentence of his own, answered, and nothing changes');
-  heard.length=0;talkTo(FS);await line('paul_true_and_of_a_sound_mind');ok(F.sound&&!said('agrippa_the_governor_said_it'),'to Festus: what I say is true, and a sound mind says it (Acts 26:25)');
-  heard.length=0;talkTo(FS);await line('paul_true_and_of_a_sound_mind');ok(said('paul_ive_said_that_already'),'said already');
+  ok(LS.every(k=>oF.includes(k))&&oF.at(-1)==='say_nothing_for_now'&&oF.join()===oA.join(),'to the governor or to the king, the same four true sentences, in the same mixed order');
+  await line(S('paul_true_and_of_a_sound_mind'));ok(said('agrippa_the_governor_said_it')&&!F.sound,'to the king: it was the governor who said that');
+  heard.length=0;talkTo(FS);await line(S('paul_do_you_believe_the_prophets'));ok(said('festus_put_that_to_the_king')&&!F.prophets,'the Prophets, to the governor: put that to the king');
+  heard.length=0;talkTo(FS);await line(S('paul_not_done_in_a_corner'));ok(said('festus_answer_what_i_said')&&!F.corner,'the king knows, to the governor before the answer: answer what I said');
+  heard.length=0;talkTo(AG);await line(S('paul_im_not_saying_this_to_save_myself'));ok(said('agrippa_so_i_have_heard')&&!F.sound,'a true sentence of his own, answered, and nothing changes');
+  heard.length=0;talkTo(FS);await line(S('paul_true_and_of_a_sound_mind'));ok(F.sound&&!said('agrippa_the_governor_said_it'),'to Festus: what I say is true, and a sound mind says it (Acts 26:25)');
+  heard.length=0;talkTo(FS);await line(S('paul_true_and_of_a_sound_mind'));ok(said('paul_ive_said_that_already'),'said already');
   await hints('hint_the_king_knows_1','hint_the_king_knows_2','with the first answer given');
-  heard.length=0;talkTo(AG);await line('paul_do_you_believe_the_prophets');ok(said('agrippa_the_governor_spoke_to_you_first')&&!F.prophets,'to the king too soon: the governor spoke to you first');
-  heard.length=0;talkTo(AG);await line('paul_not_done_in_a_corner');ok(said('agrippa_tell_that_to_the_governor')&&!F.corner,'the king knows, said to the king: tell that to the governor');
-  heard.length=0;talkTo(FS);await line('paul_not_done_in_a_corner');ok(F.corner,'to Festus: none of it happened in a corner (Acts 26:26)');
+  heard.length=0;talkTo(AG);await line(S('paul_do_you_believe_the_prophets'));ok(said('agrippa_the_governor_spoke_to_you_first')&&!F.prophets,'to the king too soon: the governor spoke to you first');
+  heard.length=0;talkTo(AG);await line(S('paul_not_done_in_a_corner'));ok(said('agrippa_tell_that_to_the_governor')&&!F.corner,'the king knows, said to the king: tell that to the governor');
+  heard.length=0;talkTo(FS);await line(S('paul_not_done_in_a_corner'));ok(F.corner,'to Festus: none of it happened in a corner (Acts 26:26)');
   await hints('hint_the_prophets_1','hint_the_prophets_2','with Festus answered');
-  heard.length=0;talkTo(AG);await line('paul_do_you_believe_the_prophets');await until(()=>F.prophets&&!G.busy,6000);note();
+  heard.length=0;talkTo(AG);await line(S('paul_do_you_believe_the_prophets'));await until(()=>F.prophets&&!G.busy,6000);note();
   ok(seenTold.has('h28')&&said('paul_one_more_thing_for_him'),'to the king: do you believe the Prophets? (Acts 26:27); Agrippa\'s answer, told without a tone (26:28)');
   halt('bonds21');
   /* these bonds */
   await hints('hint_these_bonds_1','hint_these_bonds_2','after Agrippa\'s answer');
   heard.length=0;await useA('chain21',FS);ok(said('paul_its_the_king_im_answering')&&!F.bonds,'it\'s the king he answers');
-  let raised=0;const ro=setInterval(()=>{if(P.ges===1&&P.chained&&cur&&cur.a===P)raised=1},40);
-  heard.length=0;useA('chain21',AG);await until(()=>F.bonds&&PC()===CL&&!G.busy,9000);clearInterval(ro);note();
+  let raised=0;const ro=new MutationObserver(()=>{if(P.ges===1&&P.chained)raised=1});ro.observe($('#speech'),{childList:true,subtree:true,characterData:true});
+  heard.length=0;useA('chain21',AG);await until(()=>F.bonds&&PC()===CL&&!G.busy,9000);ro.disconnect();note();
   ok(raised&&said('paul_except_for_these_bonds')&&seenTold.has('h30')&&G.room==='hall21'&&PC()===CL&&!P.room&&FS.room==='hall21'&&AG.room==='hall21'&&!AG.seat&&!A('cmd21a').room&&said('clerk_back_to_my_table'),
     'the far hand comes up with the chain: except for these bonds (Acts 26:29); they rise (26:30); the clerk is played in the emptying hall');
   await code('in the passage',()=>G.room==='hall21'&&PC()===CL&&!P.room&&AG.room==='hall21'&&F.bonds&&!F.passage);

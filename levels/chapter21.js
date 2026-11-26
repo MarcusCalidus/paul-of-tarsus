@@ -288,10 +288,11 @@ const REPORT21=[{k:'charge_revolt',paper:'record',ok:'never',no:'clerk_a_revolt_
 const MARK21={never:'mark_never_proved',worship:'mark_a_dispute_about_their_own_worship'};
 const FIRST21={letter:'clerk_first_the_commanders_letter',record:'clerk_first_the_record_before_felix',notes:'clerk_first_my_notes'};
 /* the two listeners: each sentence, whether it is the one the account gives to that listener now, and what the other answers */
-const LISTEN21=[{k:'paul_true_and_of_a_sound_mind',to:'festus',flag:'sound',other:['agrippa_the_governor_said_it',AG]},
-  {k:'paul_not_done_in_a_corner',to:'festus',flag:'corner',need:'sound',early:['festus_answer_what_i_said',FS],other:['agrippa_tell_that_to_the_governor',AG]},
-  {k:'paul_do_you_believe_the_prophets',to:'agrippa',flag:'prophets',need:'corner',early:['agrippa_the_governor_spoke_to_you_first',AG],other:['festus_put_that_to_the_king',FS]},
-  {k:'paul_im_not_saying_this_to_save_myself',to:null,festus:['festus_that_much_is_settled',FS],agrippa:['agrippa_so_i_have_heard',AG]}];
+/* c: the short line it stands as in the choice (the full sentence is what he says) */
+const LISTEN21=[{k:'paul_true_and_of_a_sound_mind',c:'say_what_i_say_is_true_and_sound',to:'festus',flag:'sound',other:['agrippa_the_governor_said_it',AG]},
+  {k:'paul_not_done_in_a_corner',c:'say_none_of_it_happened_in_a_corner',to:'festus',flag:'corner',need:'sound',early:['festus_answer_what_i_said',FS],other:['agrippa_tell_that_to_the_governor',AG]},
+  {k:'paul_do_you_believe_the_prophets',c:'say_do_you_believe_the_prophets',to:'agrippa',flag:'prophets',need:'corner',early:['agrippa_the_governor_spoke_to_you_first',AG],other:['festus_put_that_to_the_king',FS]},
+  {k:'paul_im_not_saying_this_to_save_myself',c:'say_im_not_saying_this_to_save_myself',to:null,festus:['festus_that_much_is_settled',FS],agrippa:['agrippa_so_i_have_heard',AG]}];
 /* the three roads on the travel map (Acts 25:9-12) */
 const ROADS21={jerusalem:'paul_thought_jerusalem',caesarea:'paul_thought_caesarea',torome:'paul_thought_rome'};
 const FLAGS=['gull','ready','answer','appeal','readLetter','readRecord','readNotes','report','festus','defense','sound','corner','prophets','bonds','passage'];
@@ -423,7 +424,7 @@ async function speakTo21(L){const lis=L===FS?'festus':'agrippa';if(PC()===CL)ret
   if(phase21()==='hall'){if(L===AG)return defense21();return say(FS,'festus_the_king_has_given_you_leave',{to:P})}
   if(phase21()==='bonds')return say(P,L===AG?'paul_one_more_thing_for_him':'paul_its_the_king_im_answering',THP);
   if(phase21()!=='listen')return;
-  const opts=LISTEN21.map(s=>s.k).concat(['say_nothing_for_now']),i=await choose(opts,{keep:1});
+  const opts=LISTEN21.map(s=>s.c).concat(['say_nothing_for_now']),i=await choose(opts,{keep:1});
   if(i===LISTEN21.length)return;const s=LISTEN21[i];
   if(s.to===lis&&F[s.flag])return say(P,'paul_ive_said_that_already',THP);
   await say(P,s.k,{to:L});
