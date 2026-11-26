@@ -105,10 +105,10 @@ const SCALE=[0,2,3,5,7,8,11],ST=18,
   {inst:'ney',moods:['tense'],oct:12,loop:8,lines:[TUNE.A,TUNE.E,[],[],[],[],[],[]],vol:.2}]};
 
 /* ---- around you ----
-   The storm's sounds are shared with Chapter Twenty-Two in shared/weather.js (sound): the gale, its gusts, the wind in the rigging, rain
-   and its patter on the planks, rain on the beach. This chapter's own: the hull working below deck and the water running in the hold, the
-   surf on the beach (slower and deeper than the engine's waves) and its breakers, and a fire of sticks in the rain (the engine's crackle,
-   with the hiss of drops on the embers and the breath of the flames). In the surf no breaker is heard but the beat's own (shared/beat.js,
+   The sounds of the storm are shared with Chapter Twenty-Two in shared/weather.js (sound): the gale, its gusts, the wind in the rigging, rain
+   and its patter on the planks, rain on the beach. This chapter has its own: the hull working below deck and the water running in the hold, the
+   surf on the beach (slower and deeper than the waves of the engine) and its breakers, and a fire of sticks in the rain (the crackle of the engine,
+   with the hiss of drops on the embers and the breath of the flames). In the surf no breaker is heard but the one of the beat (shared/beat.js,
    kind 'surf'), so that each sea can be followed by ear. No gulls from the storm to the beach, and nothing thunders. */
 const BEDS23own={surf:{type:'lowpass',f:300,q:.6,lfo:.08,depth:.9,v:.55},bilge:{type:'bandpass',f:950,q:1.6,lfo:.53,depth:.7,v:.1},
    flame:{type:'bandpass',f:240,q:.6,lfo:1.3,depth:.5,v:.1}},
@@ -130,7 +130,7 @@ const BEDS23own={surf:{type:'lowpass',f:300,q:.6,lfo:.08,depth:.9,v:.55},bilge:{
   sizzle:[.7,2.6,(t,d)=>{t+=.001+Math.random()*.003;noise({t,d:.2+Math.random()*.35,a:.03,v:.03+Math.random()*.03,f:3800,q:.5,type:'highpass',dest:d});
     if(Math.random()<.25)noise({t:t+Math.random()*.2,d:.012,v:.05,f:1300,q:1,dest:d})}]},
  SND23=SHARED.weather&&SHARED.weather.sound||{beds:{},calls:{}},BEDS23=Object.assign({},SND23.beds,BEDS23own),CALLS23=Object.assign({},SND23.calls,CALLS23own),
- /* the night at sea: still the storm's wind, and no rain is told */
+ /* the night at sea: still the wind of the storm, and no rain is told */
  NIGHTAMB23={gale:.45,gust:.5,rigging:.55,wind:.3,waves:.35,creak:.5};
 const AMB={stern23:NIGHTAMB23,lead23:{gale:.3,gust:.35,rigging:.35,wind:.25,waves:.3,creak:.35},bow23:Object.assign({},NIGHTAMB23,{rigging:.5}),
   hold23:{groan:.7,creak:.4,bilge:.6,trickle:.6,waves:.35,wind:.15},
@@ -141,7 +141,7 @@ const AMB={stern23:NIGHTAMB23,lead23:{gale:.3,gust:.35,rigging:.35,wind:.25,wave
   /* the beach in rain; at the fire, the fire too */
   beach23:()=>phase23()==='fire'?{sandrain:.5,fire:.35,sizzle:.5,flame:.4,surf:.45,breaker:.4,wind:.3}:{sandrain:.6,surf:.55,breaker:.5,wind:.35},
   estate23:{wind:.15,birds:.35,waves:.08},sick23:{wind:.05},
-  /* the close view of the tablet: the room it is read in, more quietly */
+  /* the close view of the tablet: the room where it is read, more quietly */
   tablet23:()=>{const r=G.from23,a=r&&r!=='tablet23'&&AMB[r],o=typeof a==='function'?a():a||NIGHTAMB23,q={};for(const k in o)q[k]=o[k]*.55;return q}};
 /* ==== MUSIC: end ==== */
 

@@ -68,7 +68,7 @@ LEVEL(22,()=>{
 /* One tune for the voyage and the storm. It is in A, in the harmonic major (A, B, C sharp, D, E, F, G sharp): a major scale whose sixth
    is lowered, so that the fair days are bright and the lowered sixth leans on the fifth like a cloud coming up. Its bars have twenty-one
    steps that fall six, six, nine: a swell that comes in twice and the third time runs on. A step is a seventh of a second, so a bar
-   lasts three seconds and two bars are one sea of the storm's beat (shared/beat.js). No other chapter has this key, this mode or this bar,
+   lasts three seconds and two bars are one sea of the beat of the storm (shared/beat.js). No other chapter has this key, this mode or this bar,
    Chapter Twenty-Three included. The tune is four bars long: up the triad and down round the lowered sixth (A); up through the raised seventh
    to the octave (B); down from the octave, leaning on the lowered sixth (C); and its last bar, which on the voyage never comes home: it
    stops on the fifth (O). Only when Paul stands up among them ("midst") does the last bar go home, through the raised seventh below to
@@ -76,7 +76,7 @@ LEVEL(22,()=>{
    On the quay at Caesarea, on a fair morning ("quay"), the lyre has the tune and the harp answers it, over a low string and a light frame
    drum: a lilt, as the earlier sea chapters have. In the harbor of Myra ("myra") the harp has it first and the lyre answers. On deck at
    Myra in the evening ("deck") the harp has the tune alone over the low string. At Fair Havens ("havens") the ney has only its first bar
-   and the bar that leans on the lowered sixth, never the climb to the octave, over the harp's rocking figure: unease. In the storm
+   and the bar that leans on the lowered sixth, never the climb to the octave, over the rocking figure of the harp: unease. In the storm
    ("storm") the music moves and never holds: the low string plucks the keynote and leans on the note above it, a drum ticks with it and
    almost stops every fourth bar, and the ney begins the tune and breaks off on the raised seventh before it comes home; no louder than
    the rest. In the dark days ("night") the low string plucks one note to a bar under a few bars of the tune on the harp, far apart. In
@@ -113,7 +113,7 @@ const SCALE=[0,2,4,5,7,8,11],ST=21,
   {inst:'bass',moods:['storm'],loop:1,lines:[[[0,0,3],[3,1,3],[6,0,6],[12,0,3],[15,1,3],[18,0,3]]],vol:.36},
   {drum:1,moods:['storm'],prog:'AAAB',seq:{A:'t..t..t.....t..t..t..',B:'t....................'},vol:.16},
   {inst:'ney',moods:['storm'],oct:24,loop:8,lines:[TUNE.A,TUNE.E,[],[],[],[],[],[]],vol:.26},
-  /* the dark days: one low note plucked to a bar, and the tune's first bar and its leaning bar on the harp, far apart */
+  /* the dark days: one low note plucked to a bar, and the first bar of the tune and its leaning bar on the harp, far apart */
   {inst:'bass',moods:['night'],loop:4,lines:[[[0,0,21]],[[0,-2,21]],[[0,-4,21]],[[0,-3,21]]],vol:.26},
   {inst:'harp',moods:['night'],oct:12,loop:8,lines:bars22('A___C___'),vol:.32},
   /* in their midst: the whole tune, and home */
@@ -122,11 +122,11 @@ const SCALE=[0,2,4,5,7,8,11],ST=21,
   {inst:'bass',moods:['midst'],loop:4,lines:low22('ABCD'),vol:.36}]};
 
 /* ---- around you ----
-   In harbor and in fair weather (Caesarea, Myra, Fair Havens) the engine's sea, gulls, wind and a hull's creak. The storm's own sounds are
+   In harbor and in fair weather (Caesarea, Myra, Fair Havens) the sea, gulls and wind of the engine, and the creak of a hull. The sounds of the storm are
    shared with Chapter Twenty-Three in shared/weather.js (sound): the gale, its gusts, the wind in the rigging, rain and its patter on the
-   planks. Two are this chapter's own: the sail slatting before the gear is lowered (27:17), and the skiff knocking at the stern until it is
+   planks. Two belong to this chapter alone: the sail slatting before the gear is lowered (27:17), and the skiff knocking at the stern until it is
    hoisted aboard (27:16), gently at Fair Havens. In the storm and the rain there are no gulls, and nothing thunders. While the beat runs
-   (the skiff, the bales) the engine's waves are held low, so that each sea of the beat (shared/beat.js) can be followed by ear. */
+   (the skiff, the bales) the waves of the engine are held low, so that each sea of the beat (shared/beat.js) can be followed by ear. */
 const CALLS22={
   /* the sail slatting: three to seven heavy flaps of cloth at uneven gaps, each a dull thud with a crack in it */
   slat:[1.4,3.8,(t,d)=>{let u=t+.001+Math.random()*.003;const n=3+(Math.random()*5|0);for(let i=0;i<n;i++){const v=.48+Math.random()*.48;
@@ -137,9 +137,9 @@ const CALLS22={
       noise({t:u,d:.03,v:.15*v,f:850,q:2,dest:d})};k(t,1);if(Math.random()<.6)k(t+.2+Math.random()*.2,.55)}]},
  SND22=SHARED.weather&&SHARED.weather.sound||{beds:{},calls:{}},BEDS22=SND22.beds,ALLCALLS22=Object.assign({},SND22.calls,CALLS22),
  /* the deck in the storm, by day: the gale, its gusts and the rigging, rain on the planks, the hull working; the skiff and the slatting
-    sail until they are dealt with (27:16, 17); the engine's sea held low while the beat runs */
+    sail until they are dealt with (27:16, 17); the sea of the engine held low while the beat runs */
  STORMAMB22={gale:.6,gust:.65,rigging:.6,rain:.5,patter:.6,wind:.35,creak:.6,waves:.3};
-/* while the beat runs, the storm stands back a little, and the engine's sea further, so that each sea of the beat stands out */
+/* while the beat runs, the storm stands back a little, and the sea of the engine further, so that each sea of the beat stands out */
 const BEAT22AMB={gale:.4,gust:.4,rigging:.5,rain:.35,patter:.45,wind:.25,creak:.5,waves:.15};
 const AMB={quay22:{waves:.5,gulls:.5,wind:.15,creak:.15},myra22:{waves:.45,gulls:.5,wind:.15,creak:.25},
   deck22:{waves:.4,gulls:.3,wind:.2,creak:.4},havens22:{waves:.35,gulls:.25,wind:.3,creak:.35,skiff:.25},
