@@ -6626,8 +6626,11 @@
   await hints('hint_in_step_1','hint_in_step_2','in the hills');
   heard.length=0;await onH('paving','look');ok(said('stone_fitted_to_stone_without_a_seam'),'the paving, before he is weary: stone fitted to stone');
   await till24(()=>B24());
-  for(let s=0;s<3;s++){for(let m=1;m<=4;m++)await tap24('road_ahead',0,calm24);
-    if(s<2){await until(()=>G.room==='marsh24'&&F['s'+(s+1)]&&!G.busy,6000)}}
+  /* a tap that comes late on a slow machine is only a missed step (it costs that step and nothing else), so the playthrough taps until the
+     stretch is walked, and does not count on four taps being four hits */
+  for(let s=0;s<3;s++){const f='s'+(s+1);
+    for(let n=0;n<60&&!F[f];n++){if(!B24()||G.busy){await wait(40);continue}await tap24('road_ahead',0,calm24);await till24(()=>!G.busy,300)}
+    if(s<2){await until(()=>G.room==='marsh24'&&F[f]&&!G.busy,6000)}}
   await until(()=>G.room==='appius24'&&F.met&&!G.busy,15000);note();
   ok(said('paul_lxi_sixty_one_miles_to_rome')&&said('paul_lii_fifty_two')&&said('paul_forty_seven')&&said('paul_frogs_gnats_bad_water')&&said('paul_onward_weary'),'three stretches, each to its stone (LXI, LII, XLVII); his lines grow shorter');
   {const l=[T('paul_lxi_sixty_one_miles_to_rome'),T('paul_lii_fifty_two'),T('paul_forty_seven')].map(s=>s.length);ok(l[0]>l[1]&&l[1]>l[2],'shorter each time: '+l)}

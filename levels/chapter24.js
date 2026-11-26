@@ -629,7 +629,8 @@ function canal24Barge(g,r){const[x0,y0,w]=CANAL24.barge,x1=x0+w,wl=96.6,gun=x=>8
 /* what moves: the mule on the towpath with its harness and the slack towrope; the reeds, which stir when the frogs set off; and the rings
    they spread on the water */
 function drawCanal24(g,t){const B=SHARED.beasts,[mx,my,mw,mh]=CANAL24.mule,fx=mx+mw/2,fy=my+mh-1,k=G.frogs24?(performance.now()-G.frogs24)/4200:9;
-  if(k<1)for(let i=0;i<3;i++){const q=(k*3+i*.33)%1,rx=4+q*16,ry=Math.max(1.6,1+q*2.4);g.strokeStyle=`rgba(226,210,226,${.55*(1-q)})`;g.lineWidth=.6;g.beginPath();g.ellipse(30+i*14,93,rx,ry,0,0,Math.PI*2);g.stroke()}
+  /* three rings, fourteen pixels apart: none grows wide enough to cross its neighbor (two outlines that cross would make an X) */
+  if(k<1)for(let i=0;i<3;i++){const q=(k*3+i*.33)%1,rx=2.6+q*3.8,ry=Math.max(1.6,1.2+q*1.2);g.strokeStyle=`rgba(226,210,226,${.55*(1-q)})`;g.lineWidth=.6;g.beginPath();g.ellipse(30+i*14,93,rx,ry,0,0,Math.PI*2);g.stroke()}
   canal24Reeds(g,t,k);
   /* the towrope: from the post's top it sags down to the end of the trace behind the mule; drawn in the queue with the mule, just behind it */
   const sw=[fx-16.6,fy-19.6];
@@ -1393,7 +1394,7 @@ async function relay24(n){const H=HAND24[n],gv=ACT[H.giver],rc=ACT[H.to];if(F['g
 async function afterCourt24(){await say(CA,'carter_ill_tell_the_first_traveler',{to:LK});await go24(CA,COURT24.gate[0]+16,116,50);CA.room=null;
   await tw(400);await fade(1,600);show24('capua24');await fade(0,600);
   await think('carter_capua_who_goes_on_to_the_coast',CA)}
-async function afterCapua24(){await say(TR,'trader_i_ride_for_the_coast',{to:CA});await go24(TR,300,118,50);TR.room=null;
+async function afterCapua24(){await say(TR,'trader_i_ride_for_the_coast',{to:CA});await go24(TR,244,121,50);TR.dir=1;   /* to his mule's head; the picture fades with him there */
   await tw(400);await fade(1,600);show24('canal24');await fade(0,600);
   await think('trader_the_canal_they_go_up_by_night',TR)}
 async function afterCanal24(){await say(BO,'boatman_well_be_at_the_marketplace_by_daybreak',{to:TR});
@@ -1521,7 +1522,7 @@ ROOMS.capua24={space:.6,walk:CAPUA24.walk,block:[[CAPUA24.cart[0],CAPUA24.cart[1
   {name:'cart',x:22,y:94,w:52,h:24,wx:84,wy:124,look:'my_cart_look24'},
   {name:'mule',x:250,y:98,w:44,h:24,wx:240,wy:126,look:'traders_mule_look'}]};
 ROOMS.canal24={space:.6,walk:CANAL24.walk,block:[[CANAL24.mule[0],CANAL24.mule[1]+CANAL24.mule[3]-6,CANAL24.mule[2],8]],mood:'dusk',amb:AMB.canal24,hs:[
-  {name:'marsh',x:0,y:40,w:320,h:30,wx:150,wy:118,look:'marsh_at_dusk_look'},
+  {name:'marsh',x:0,y:58,w:320,h:26,wx:150,wy:118,look:'marsh_at_dusk_look'},
   {name:'canal',x:64,y:84,w:256,h:16,wx:150,wy:116,look:'canal_look24'},
   {name:'barge',x:150,y:80,w:110,h:18,wx:200,wy:116,look:'barge_look24'},
   {name:'mule',x:270,y:98,w:36,h:22,wx:258,wy:124,look:'barge_mule_look'},
@@ -1661,7 +1662,8 @@ function place24(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   const ph=phase24(),pl=(a,r,x,y,d)=>place(a,r,x,y,d);
   P.look=ph==='road'&&F.s1?RO.paul_weary:LOOK.paul;
   setPC24(pc24());G.mark24=0;G.sel24=null;
-  if(ph==='quay'){pl(LK,'quay24',120,126,1);pl(P,'quay24',168,128,-1);pl(AR,'quay24',88,130,1);pl(JU,'quay24',262,122,-1);pl(SO,'quay24',190,134,-1);
+  if(ph==='quay'){pl(LK,'quay24',120,126,1);pl(P,'quay24',168,128,-1);pl(AR,'quay24',88,130,1);pl(JU,'quay24',262,136,-1);   /* nearer us, so that his head is below the ship's sign and does not hide it */
+    pl(SO,'quay24',190,134,-1);
     pl(PR1,'quay24',292,126,-1);pl(SL,'quay24',240,118,-1)}
   if(ph==='court'){pl(LK,'court24',110,126,1);pl(P,'court24',60,124,1);pl(AR,'court24',40,132,1);pl(HE,'court24',160,122,-1);pl(PD,'court24',196,130,-1);
     pl(PS,'court24',84,118,1);pl(SO,'court24',24,118,1);pl(CA,'court24',236,124,-1)}
