@@ -5423,7 +5423,7 @@
      marks22 (the six marks set) · midst22 (Paul stands up among them) · final22. The stops that begin with "p" open one room at once, with
      the story's flags set for it, and say the safe-point code of their point (CODE): pscroll22 (27:1 on the narrator's scroll) · pquay22
      (the treasure's point) · pmap22 (the voyage out on the map) · pmyra22 · pdeck22 · pshelter22 · phavens22 · pskiff22 · pgirded22 ·
-     psyrtis22 · pload22 · pnight22 · ptablet22 · pmidst22. The timed acts, driven by the beat's exposed phase: beatskiff22 (the skiff:
+     psyrtis22 · pload22 · pbale22 (a bale at the cask) · pnight22 · ptablet22 · pmidst22. The timed acts, driven by the beat's exposed phase: beatskiff22 (the skiff:
      misses, the call, the carry, four pulls), beatdeck22 (a crossing: a hit, a miss back at the hold with no line, the call after three,
      the carry after six), phonedeck22 (a crossing tapped on a phone held sideways). The generic stops card22, routes22, shadows22 (above)
      run against whatever rooms the chapter has. The stop carry (after Chapter Twenty-Three's section) needs CHAP[22].marks (the twelve
@@ -5448,10 +5448,12 @@
       S={pscroll22:[[],'quay22'],pquay22:[[],'quay22'],pmap22:[[],'quay22'],pmyra22:[upto('out'),'myra22'],pdeck22:[upto('aboard'),'deck22'],
         pshelter22:[upto('shelter'),'deck22'],phavens22:[upto('fh'),'deck22'],pskiff22:[upto('advised'),'storm22'],pgirded22:[upto('skiff'),'girded22'],
         psyrtis22:[upto('skiff'),'storm22'],pload22:[upto('skiff'),'storm22'],pnight22:[upto('load3'),'storm22'],ptablet22:[upto('load3').concat(['t1','m1a','t2','m2b']),'tablet22'],
-        pmidst22:[upto('t6'),'storm22']}[stop];
+        pmidst22:[upto('t6'),'storm22'],pbale22:[upto('skiff'),'storm22']}[stop];
     if(!S)throw new Error('no such stop '+stop);await open22(S[0],S[1]);L('CODE '+stop+' '+(G.room?makeCode():'-'));
     if(stop==='pscroll22'){G.scene=DARK;narr(C.told.v1,{dur:60000})}
     if(stop==='pmap22'){const M=await need('map');M.pick(C.out.ids,'myra',{view:'outward',legs:C.out.legs,hint:'click_myra_where_we_put_in'})}
+    /* pbale22: the next day, Paul with a bale at the cask, waiting for the pause (the picture of the bales on the beat, docs/screenshots) */
+    if(stop==='pbale22'){const H=C.holds;G.bale22=1;G.hold22=1;P.pose='bundle';P.pk=0;P.x=H[1][0];P.y=H[1][1];P.dir=1}
     if(stop==='psyrtis22'){const M=await need('map');await M.journey([['myra','cnidus','sea'],['cnidus','salmone','sea'],['salmone','fairhavens','sea'],['fairhavens','cauda','sea']],{view:'adria',regions:['the_syrtis'],instant:1})}
     await wait(1100);halt(stop)}
   /* the timed acts, driven by the beat's exposed phase: the stops beatskiff22, beatdeck22 and phonedeck22 (and the playthrough) */
@@ -5695,7 +5697,8 @@
      scroll) · pstern23 · plead23 · psecond23 (the second sounding) · pbow23 · phold23 · pmeal23 (Paul under the lamp, his words said) ·
      pbay23 · pwreck23 · pplanks23 · psurf23 · pbeach23 · ptalk23 · pfire23 · pestate23 (the treasure's point) · psick23 · pmap23 (the
      travel map after Malta) · pcarry23 (Luke's tablet carried in: south-west, west, north-west, only the day, west, north-west) · ptitle23
-     (the tablet of a title start: the days only). Beside them: waves23 and phonewaves23 cross the surf by the beat's exposed phase (a hit,
+     (the tablet of a title start: the days only) · pcables23 (the four cables over the stern) · pname23 (the carried tablet with the island's
+     name). Beside them: waves23 and phonewaves23 cross the surf by the beat's exposed phase (a hit,
      misses on the wave, the call, the sticky help, the carry), on the desktop and on a phone held sideways; pics23 opens the talk in
      pictures and checks the pictures' order in English and in German. The generic stops card23, routes23 and shadows23 (above) run against
      the chapter's rooms. */
@@ -5727,10 +5730,13 @@
         phold23:[upto23('ropes'),'hold23'],pmeal23:[upto23('spoke'),'hold23'],pbay23:[upto23('spoke'),'bay23'],pwreck23:[upto23('bread'),'wreck23'],
         pplanks23:[upto23('bread'),'planks23'],psurf23:[upto23('planks'),'surf23'],pbeach23:[upto23('surf'),'beach23'],ptalk23:[upto23('found'),'beach23'],
         pfire23:[upto23('malta'),'beach23'],pestate23:[upto23('viper'),'estate23'],psick23:[upto23('viper'),'sick23'],pmap23:[upto23('malta'),'beach23'],
-        pcarry23:[[],'tablet23',TAB],ptitle23:[[],'tablet23']}[stop];
+        pcarry23:[[],'tablet23',TAB],ptitle23:[[],'tablet23'],pcables23:[upto23('lead2'),'stern23'],pname23:[upto23('malta'),'tablet23',TAB]}[stop];
     if(!S)throw new Error('no such stop '+stop);const C=await open23(S[0],S[1],S[2]);L('CODE '+stop+' '+(G.room?makeCode():'-'));
     if(stop==='pscroll23'){G.scene=DARK;narr(C.told.n27,{dur:60000})}
     if(stop==='pbay23')G.bay23=.7;
+    /* pcables23: the stern as the four cables have run out over it (27:29); pname23: the carried tablet with the name of the island at the end of
+       the line of Luke (the pictures of docs/screenshots) */
+    if(stop==='pcables23')G.cab23=1;
     if(stop==='psick23'){}
     if(stop==='pmap23'){const M=await need('map');M.pick(['malta'],'malta',{view:'adria',legs:[['myra','cnidus'],['cnidus','salmone'],['salmone','fairhavens'],['fairhavens','cauda'],['cauda','malta']],regions:['sea_of_adria'],hint:'the_line_from_cauda_to_malta'})}
     if(stop==='pcarry23'||stop==='ptitle23'){const pts=C.markLine();ok(stop==='pcarry23'?pts.length===7&&pts.slice(1).every((p,i)=>p[0]<pts[i][0])&&pts[4][2]===1&&pts[1][1]>pts[0][1]&&pts[3][1]<pts[2][1]:pts.length===1,
