@@ -209,7 +209,8 @@ Object.assign(ICON,{
    SHARED.cast.CAESAREA's. Paul's look is ROME.paul_home: his oldest, with the mantle laid aside (the cloak on the peg is his). */
 const cp=(o,x)=>Object.assign({},o,x||{});
 Object.assign(LOOK,{
-  fulvius25:cp(RM.praetorian_watch_old),valens25:cp(RM.praetorian_watch),bassus25:cp(RM.praetorian_watch_bald),macer25:cp(RM.praetorian_watch_ruddy),celer25:cp(RM.praetorian_watch_young),
+  fulvius25:cp(RM.praetorian_watch_old),valens25:cp(RM.praetorian_watch),bassus25:cp(RM.praetorian_watch_bald),macer25:cp(RM.praetorian_watch_ruddy),celer25:cp(RM.praetorian_watch_young,{cloak:'#6a5238'}),   /* a plain brown cloak: purple was not for a common soldier */
+  
   timothy25:cp(RO.timothy),luke25:cp(CZ.luke),aristarchus25:cp(CZ.aristarchus),mark25:cp(RO.mark),justus25:cp(RO.justus),epaphras25:cp(RO.epaphras),demas25:cp(RO.demas),
   tychicus25:cp(RO.tychicus),onesimus25:cp(RO.onesimus),epaphroditus25:cp(RO.epaphroditus),anthus25:cp(RO.freedman),landlady25:cp(RO.landlady),
   jew25a:cp(RO.jew_rome_1),jew25b:cp(RO.jew_rome_2),jew25c:cp(RO.jew_rome_3),jew25d:cp(RO.jew_rome_4),jew25e:cp(RO.jew_rome_5),jew25f:cp(RO.jew_rome_6),
