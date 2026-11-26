@@ -184,7 +184,7 @@ const ARISTARCHUS={skin:'#bc8a60',hair:'#3a2a1c',beard:'#3a2a1c',fullBeard:1,tun
                        tunic and the Greek mantle (himation), not a toga (which would make him a Roman) and no fringes or scripture case
                        (which would make him a Jew); a short beard, his hair greying, a ring.
      drusilla          the wife of Felix, a Jewess of about eighteen (24:24): a fine long robe with long sleeves and a band of blue at the
-                       hems, a mantle wrapped over it, her hair parted and bound up with a gold band; a little gold, a fine necklace and a
+                       hems, a mantle wrapped over it, her hair parted and bound up with a blue ribbon (only the king wears a band of gold); a little gold, a fine necklace and a
                        small earring (necklace, earring: square pixels). Modest.
      festus            Porcius Festus, governor after Felix (24:27): in the same public dress as Felix (a white toga with a purple border
                        along it, never down the middle; red shoes, a ring), but another man: younger than Felix, ruddier, his dark hair
@@ -192,7 +192,7 @@ const ARISTARCHUS={skin:'#bc8a60',hair:'#3a2a1c',beard:'#3a2a1c',fullBeard:1,tun
      agrippa           King Agrippa (25:13), of the family of Herod, about thirty: a purple mantle over a long fine tunic with a band of gold,
                        a plain gold diadem round his head (diadem: a band only, nothing that stands up or hangs), a short trimmed beard, a ring.
      bernice           his sister (25:13), about thirty: a rich long robe with long sleeves and a band of wine red, a wine-red mantle
-                       wrapped over it, her hair bound up with a gold band, a fine necklace and small earrings. Modest and dignified;
+                       wrapped over it, her hair bound up with a wine-red ribbon (only the king wears a band of gold), a fine necklace and small earrings. Modest and dignified;
                        nothing in her dress hints at anything.
      governors_clerk   an invented clerk of the governor, about forty-five: a plain tunic, his hair cropped and greying, clean-shaven, and a
                        writing board (board) under his arm or on his knees. Seen in both chapters.
@@ -207,13 +207,13 @@ const ARISTARCHUS={skin:'#bc8a60',hair:'#3a2a1c',beard:'#3a2a1c',fullBeard:1,tun
 const CAESAREA={
   tertullus:{skin:'#c29464',hair:'#4a3a2c',beard:'#4e3e30',grey:'#9a9086',shortBeard:1,receding:1,brow:'#30241a',tunic:'#ddd2b8',long:1,
     cloak:'#3e5466',himation:1,belt:'#4a3424',ring:1,ph:8300},
-  drusilla:{skin:'#d0a47c',hair:'#241610',fem:1,band:'#d8b04a',slim:1,brow:'#2a1a12',tunic:'#ece4d4',long:1,longSleeve:1,trim:'#3e5a80',
+  drusilla:{skin:'#d0a47c',hair:'#241610',fem:1,band:'#3e5a80',slim:1,brow:'#2a1a12',tunic:'#ece4d4',long:1,longSleeve:1,trim:'#3e5a80',
     cloak:'#4e6e96',himation:1,belt:'#c9a23a',necklace:'#e2bc54',earring:'#e2bc54',ring:1,ph:8500},
   festus:{skin:'#cc9c72',hair:'#2e2218',brow:'#241a12',crop:1,thin:1,tunic:'#f2ece0',long:1,cloak:'#f4efe2',toga:1,edge:'#66246e',
     shoes:'#9e2624',ring:1,ph:8700},
   agrippa:{skin:'#c8966a',hair:'#2a1c14',beard:'#2a1c14',shortBeard:1,brow:'#20140e',diadem:'#d8b04a',tunic:'#ece4d2',long:1,longSleeve:1,
     trim:'#c9a23a',cloak:'#5c2068',himation:1,belt:'#8a6a2a',ring:1,shoes:'#7a3a26',ph:8900},
-  bernice:{skin:'#c99c74',hair:'#2e1c14',fem:1,band:'#d8b04a',slim:1,brow:'#2a1a12',tunic:'#eadcc0',long:1,longSleeve:1,trim:'#7a2a36',
+  bernice:{skin:'#c99c74',hair:'#2e1c14',fem:1,band:'#7a2a36',slim:1,brow:'#2a1a12',tunic:'#eadcc0',long:1,longSleeve:1,trim:'#7a2a36',
     cloak:'#6a2430',himation:1,belt:'#c9a23a',necklace:'#e2bc54',earring:'#e2bc54',ring:1,ph:9100},
   governors_clerk:{skin:'#c08c5e',hair:'#52443a',grey:'#948a80',brow:'#3a2e24',crop:1,tunic:'#b4aa92',belt:'#4a3424',board:'#9a7448',ph:9300},
   adviser_1:{skin:'#c69a72',hair:'#8a8278',grey:'#bcb6ac',brow:'#5e5850',crop:1,thin:1,tunic:'#eee8da',long:1,cloak:'#f2ede0',toga:1,ring:1,ph:9500},
