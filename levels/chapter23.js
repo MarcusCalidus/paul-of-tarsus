@@ -695,7 +695,7 @@ async function viper23scene(){if(phase23()!=='fire')return;
   G.vip23={fr:0,x:FIRE23[0]-2,y:FIRE23[1]+1,dir:-1};await tw(400);
   /* 28:3: the heat drives it out; it fastens on his hand */
   const told3=tell('m3');G.vip23.fr=1;await tw(700);G.vip23.fr=2;G.vip23.x-=4;await tw(600);P.pose='shake';P.pk=0;G.vip23.fr=3;
-  const sway=setInterval(()=>{if(G.vip23&&(G.vip23.fr===3||G.vip23.fr===4))G.vip23.fr=G.vip23.fr===3?4:3},fast()?60:420);await told3;
+  const sway=setInterval(()=>{if(G.vip23&&(G.vip23.fr===3||G.vip23.fr===4))G.vip23.fr=G.vip23.fr===3?4:3},fast()?60:420);await wait(fast()?200:600);await told3;
   /* 28:4: what the islanders say to one another; Paul does not understand it and does not react */
   IS1.dir=1;IS5.dir=-1;await tell('m4');clearInterval(sway);
   /* 28:5: he shakes it off into the fire */
