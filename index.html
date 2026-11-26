@@ -3061,7 +3061,7 @@ function openPart(pt,user,shut){if(!pt)return;const l=pt.parentNode,open=!shut&&
 addEventListener('keydown',e=>{const k=e.key;if(!['ArrowUp','ArrowDown','Enter',' '].includes(k)||!ov.classList.contains('title')||ov.classList.contains('splash')
     ||cb.classList.contains('on')||$('#menu').classList.contains('on')||e.target&&e.target.tagName==='INPUT')return;
   const cur=ov.querySelector('.kf');if(k==='Enter'||k===' '){if(cur){e.preventDefault();cur.click()}return}
-  const all=[...ov.querySelectorAll('[data-cont],[data-far],.part>.grp,.part.open [data-pro],.part.open [data-ch],[data-tre]')];if(!all.length)return;e.preventDefault();
+  const all=[...ov.querySelectorAll('[data-cont],[data-far],.part>.grp,.part.open [data-pro],.part.open [data-ch],[data-fin],[data-tre]')];if(!all.length)return;e.preventDefault();
   let i=all.indexOf(cur);i=i<0?Math.max(0,all.indexOf(ov.querySelector('p.go'))):Math.max(0,Math.min(all.length-1,i+(k==='ArrowDown'?1:-1)));
   if(cur)cur.classList.remove('kf');all[i].classList.add('kf');all[i].scrollIntoView({block:'nearest'})});
 /* The game opens on its opening picture (shared/splash.js): the name over a tentmaker's bench by lamplight, once each time the game is
