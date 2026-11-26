@@ -159,6 +159,8 @@ Chapter Nineteen goes by night from Jerusalem to `antipatris` (Acts 23:31), rebu
 
 ![By night from Jerusalem to Antipatris (stop map19)](screenshots/antipatris.png)
 
+**A road that leaves the map.** A place with `edge:'l'` is the end of a road at the left edge of the window: whatever the view, it stands ten view pixels inside that edge, at the latitude its `at` gives, as a small dot in the red of the routes with its name beside it (no arrow and no marker), and a leg drawn to it goes on past the dot and out of the picture. For `pick` it is a place like any other: it lights when hovered and can be clicked. The one there is, `torome` (key `to_rome`, "to Rome" / „nach Rom“), is the way west to Caesar for Chapter Twenty-One, whose "three roads" (Acts 25:9-12) are `pick(['jerusalem','caesarea','torome'], 'caesarea', {view:'levant', legs:[['caesarea','torome']], hint})`. Its road (`VIA['caesarea-torome']`) runs out from the shore and due west over open water, well south of Cyprus and its name: a sign for the way, not the course of the voyage of Acts 27, which later chapters draw. The stop `map21` (and `de:map21`) clicks each of the three, checks that the road crosses nothing and no name crosses a coast, a route or another name, and hands over the road's end and Caesarea six times enlarged (`map21-zoom.png`).
+
 **A hub chapter** (Chapters Four, Five, Six and Seven) is a chapter whose rooms are places on the map that the player travels between by clicking. It declares them in its definition, by their ids in `shared/map.js`, each with the room it leads to and where Paul stands on arrival:
 
 ```js

@@ -259,6 +259,7 @@ TEXTS('de','main',{
   "Ptolemais":["Ptolemais","1wchpqn"],
   "LYCIA":["LYZIEN","1d2gvs9"],
   "antipatris":["Antipatris","16yy9xk"],
+  "to_rome":["nach Rom","1c32r4p"],
   "great_sea":["DAS GROSSE MEER","0rebn2q"],
   "click_a_place_to_travel_there":["Ort anklicken, um zu reisen. Esc: bleiben.","09yhrhf"],
   "hidden_treasures":["Verborgene Schätze","1an0kbb"],

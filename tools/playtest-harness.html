@@ -360,6 +360,37 @@
     halt('map19',()=>{const z=document.createElement('canvas'),Z=8,[x0,y0,w,h]=[196,100,60,34];z.width=w*2*Z;z.height=h*2*Z*2;const g=z.getContext('2d');g.imageSmoothingEnabled=false;
       g.drawImage(shots.n,x0*2,y0*2,w*2,h*2,0,0,w*2*Z,h*2*Z);g.drawImage(shots.d,x0*2,y0*2,w*2,h*2,0,h*2*Z,w*2*Z,h*2*Z);
       window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'map19-zoom']:z.toDataURL()})})}
+  /* map21: three roads on the travel map (shared/map.js), for Chapter Twenty-One (Acts 25:9-12): pick offers Jerusalem, Caesarea, and the
+     end of the road west to Rome, which leaves the map at the left edge of the window (a place with edge:'l', torome): a small dot just
+     inside the edge with its name beside it, and a dotted road from Caesarea that goes on past it out of the picture. In the window levant
+     each of the three can be clicked, again and again; the road crosses nothing, keeps well south of Cyprus and its name, no name crosses
+     a coast, an island, a lake or a route, no two names touch, and every name lies inside the window, in each language (de:map21). It
+     stops on the map and hands over map21-zoom.png (de-map21-zoom.png): the road's end at the edge and Caesarea, six times enlarged, for
+     the cross-shape check. It plays in the latest chapter there is, until Chapter Twenty-One is in the manifest. */
+  if(stop==='map21'){clearInterval(sk);sk=0;const n=CHAP[21]?21:CHAP[20]?20:19;await loadLevel(n);setChapter(n);await need('map');ov.className='';ov.onclick=null;G.busy=true;lock(true);status();
+    const M=SHARED.map,cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let k=0;
+        for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))k++;return k},
+      tidy=()=>{const[ox,oy,w,h]=M.window(),bx=M.state.boxes,bad=[];for(const b of bx)if(b[0]<ox-.5||b[2]>ox+w+.5||b[1]<oy-.5||b[3]>oy+h+.5)bad.push(b[4]+' (off the map)');
+        for(let i=0;i<bx.length;i++)for(let j=i+1;j<bx.length;j++){const a=bx[i],b=bx[j];if(a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3])bad.push(a[4]+' on '+b[4])}return bad},
+      inWin=id=>{const[x,y]=M.where(id);return x>6&&x<314&&y>6&&y<138},
+      say=(c,cl,td,out)=>(c?'. CROSSINGS: '+c:'')+(cl?'':'. CROSSES: '+[...mapClear.bad].join(', '))+(td.length?'. NAMES: '+td.join(', '):'')+(out.length?'. OUT: '+out.join(', '):'');
+    const IDS=['jerusalem','caesarea','torome'],LEGS=[['caesarea','torome']],P=M.places.torome;
+    ok(!!P&&P.edge==='l'&&!P.hide&&T('to_rome')!=='to_rome'&&T(P.name)===T('to_rome'),'the road west to Rome ends at the left edge of the map, as a place with a name ('+T('to_rome')+')');
+    const vp=$('#view'),clickAt=k=>{const[x,y]=M.where(k),r=vp.getBoundingClientRect(),W0=r.width/VW,H0=r.height/VH;vp.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,clientX:r.left+x*W0,clientY:r.top+y*H0}))};
+    let got=[];for(const[i,k]of['torome','jerusalem','caesarea','torome'].entries()){const p=M.pick(IDS,'caesarea',{view:'levant',legs:LEGS});await wait(60);
+      if(i===0){const c=cross(M.state.legs),cl=mapClear(),td=tidy(),out=IDS.filter(k=>!inWin(k)),[ox,oy]=M.window(),L=M.state.legs[0].dots,[ex]=M.where('torome'),
+          cy=M.where('paphos')[1]+oy,cyp=M.state.boxes.find(b=>b[4]===T('CYPRUS').split('').join(' '));
+        ok(!c&&cl&&!td.length&&!out.length&&M.state.legs.length===1,'map21, three roads (levant): Jerusalem, Caesarea and the road west are in the window, the road crosses nothing, and no name crosses a coast, a route or another name'+say(c,cl,td,out));
+        ok(ex>6&&ex<=12&&L.some(([x])=>x<ox)&&L[0][0]>ox+150,'the road runs from Caesarea out of the picture at the left, past its end, which stands just inside the edge ('+ex.toFixed(1)+')');
+        ok(L.every(([,y])=>y>cy+16)&&(!cyp||L.every(([,y])=>y>cyp[3]+8)),'the road keeps well south of Cyprus and of its name')}
+      clickAt(k);const v=await Promise.race([p,wait(800).then(()=>'none')]);got.push(v)}
+    ok(got.join()==='torome,jerusalem,caesarea,torome','each of the three can be clicked, and pick offers them again: '+got.join());
+    {const p=M.pick(IDS,'caesarea',{view:'levant',legs:LEGS});await wait(60);dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));ok(await p===null,'Esc leaves the map without a choice')}
+    M.pick(IDS,'caesarea',{view:'levant',legs:LEGS});await wait(60);
+    halt('map21',()=>{const k=document.createElement('canvas');k.width=640;k.height=288;const q=k.getContext('2d');q.scale(2,2);M.draw(q,G.t);
+      const z=document.createElement('canvas'),Z=6,parts=[[0,76,70,32],[150,90,70,50]];z.width=70*2*Z;z.height=parts.reduce((s,r)=>s+r[3]*2*Z,0);const g=z.getContext('2d');g.imageSmoothingEnabled=false;let y=0;
+      for(const[x0,y0,w,h]of parts){g.drawImage(k,x0*2,y0*2,w*2,h*2,0,y,w*2*Z,h*2*Z);y+=h*2*Z}
+      window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'map21-zoom']:z.toDataURL()})})}
   /* A figure bound with a belt (a.bound; person's fr -6): Agabus binds his own feet and hands with Paul's belt (Acts 21:11). For every look
      of Chapters Three, Sixteen and Seventeen (if it is there) and the usual kinds of dress, facing both ways: each pose is one piece, and
      a.bound seats an actor bound, keeps him from turning, and lets him go when it is cleared. cast-bound.png shows them three times
