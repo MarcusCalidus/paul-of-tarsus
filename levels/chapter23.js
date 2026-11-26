@@ -146,7 +146,8 @@ const fig23=(g,room,x,y,id,dir,ps)=>man(g,x,y,id,dir,0,lightAt(room,x,y),0,undef
    Called from outside: ART.stern23, LAMP_STERN23, SEA23N and ride23 (the bow by night has the same sea and the same motion). Reads F.lead2,
    F.anchors and G.cab23 (the cables run out). Hotspots (ROOMS.stern23): the sky 0,0,320,58 · the sea 0,58,320,26 · the lantern round
    LAMP_STERN23 · the starboard steering oar 236,42,30,52 · the stern rail 92,76,104,32 · the four cables 154,96,42,22 (once they run) ·
-   the sounding line 58,106,30,14. Walk: 30..270 by 113..138, its corners on the bulwarks and the place under the lantern blocked. Light:
+   the sounding line 58,106,30,14. Walk: 30..270 by 113..138, its corners on the bulwarks blocked, and the deck under the lantern
+   (140..176 by 113..126), so that nobody's head comes to stand in its glow. Light:
    night, the lantern a lamp (behind the people: their shadows fall toward us). */
 const GS23=SHARED.grainship,
   /* the storm's night, for the stern and the bow: the seas lower than in the storm (she lies near land), lightning far off */
@@ -228,7 +229,8 @@ ART.lead23={w:320,q:12,paint(g){const r=rng(2302);band23(g,0,0,320,144,'#8a7050'
    soldier cuts the after rope with a short blade, his hand over its guard, the blade one slanting line that meets the rope from below
    (G.blade23); the skiff falls away, empty (G.drop23), and is gone (F.ropes).
    Called from outside: ART.bow23, LAMP_BOW23. Reads G.skiffT, G.blade23, G.drop23, F.ropes. Hotspots (ROOMS.bow23): the sea 0,20,320,40 ·
-   the lantern round LAMP_BOW23 · the covered anchors 50,74,64,22 · the skiff 214,46,96,30 (while it hangs). Walk: 20..296 by 114..138.
+   the lantern round LAMP_BOW23 · the covered anchors 52,72,58,18 · the skiff 222,44,98,36 (while it hangs). Walk: 20..296 by 114..138,
+   its top right corner on the starboard bulwark blocked.
    Light: night, the lantern a lamp (behind the people: their shadows fall toward us). */
 const BOW23=GS23.bowGeo({}),LAMP_BOW23=BOW23.lamp.map(v=>Math.round(v*2)/2);
 /* the two ropes: each from the sailors' far fists on the deck, slanting up over the rail at z (metres forward), to a ring at one end of
@@ -316,7 +318,7 @@ const BAY23W=SHARED.storm.bay({seed:2331}),WG23=GS23.wreckGeo();
 /* the stern breaking up, astern of the picture's right edge: timbers standing up at slants beyond the rail, each alone, and the white
    water thrown up behind them on the beat of the surf */
 function stern23w(g,t){const C=GS23.LIGHT.dawn,e=(t/6000)%1;
-  for(const[x,len,a,w]of[[300,15,.42,2.2],[309,20,.16,2.6],[318,12,.62,1.8]]){const y=WG23.top(x)+2,ex=x+Math.sin(a)*len,ey=y-Math.cos(a)*len;
+  for(const[x,len,a,w]of[[300,9,.55,2.2],[309,11,.3,2.6],[318,7,.8,1.8]]){const y=WG23.top(x)+2,ex=x+Math.sin(a)*len,ey=y-Math.cos(a)*len;
     poly(g,[x-w/2,y,x+w/2,y,ex+w/2*.7,ey,ex-w/2*.7,ey],tint(C.hull[1],-.05));stroke(g,[x-w/2,y,ex-w/2*.7,ey],rgba(C.hi,.45),.5);
     poly(g,[ex-w/2*.7,ey,ex+w/2*.7,ey,ex+.4,ey-1.6],tint(C.hull[1],.1))}
   /* the surf bursting up behind the broken stern: white water that rises and falls back, never a flash */
@@ -791,7 +793,7 @@ async function closeTablet23(){await goto23(G.from23&&G.from23!=='tablet23'&&ROO
 /* A room's hotspots are listed from the back to the front: where two overlap, the later one is meant. */
 const NOW=[160,160,236,236];   /* a close view: whoever is played stands below the picture, and takes no step */
 const atP=o=>Object.defineProperties(o,{wx:{get(){return P.x},enumerable:true},wy:{get(){return P.y},enumerable:true}});   /* acted on where Paul is, with no step (the surf) */
-ROOMS.stern23={space:.6,walk:[30,270,113,138],mood:'night',amb:AMB.stern23,block:[[60,112,24,8],[30,113,18,5],[236,113,34,5],[250,118,20,6],[262,124,8,4],[140,113,36,8]],hs:[
+ROOMS.stern23={space:.6,walk:[30,270,113,138],mood:'night',amb:AMB.stern23,block:[[60,112,24,8],[30,113,18,5],[236,113,34,5],[250,118,20,6],[262,124,8,4],[140,113,36,13]],hs:[
   {name:'sky_without_stars',x:0,y:0,w:320,h:58,wx:150,wy:124,look:'sky_without_stars_look'},
   {name:'dark_sea',x:0,y:58,w:320,h:26,wx:160,wy:124,look:'dark_sea_look'},
   {name:'lantern',x:LAMP_STERN23[0]-10,y:LAMP_STERN23[1]-14,w:20,h:22,wx:LAMP_STERN23[0]-6,wy:124,look:'lantern23_look'},

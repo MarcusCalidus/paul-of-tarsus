@@ -918,7 +918,7 @@ function hold(g,o){o=o||{};const D=holdGeo(o),{P,W,H,ZF,side}=D,r=rng(23091),lt=
     comp(g,'multiply',.4,()=>oval(g,c[0]-cw*.15,c[1]+ch*.6,cw*.95,ch*.5,'#3a3048'));
     poly(g,[c[0]-cw,c[1]+ch*.5,c[0]-cw*.9,c[1]-ch*.6,c[0]-cw*.2,c[1]-ch,c[0]+cw*.7,c[1]-ch*.8,c[0]+cw,c[1]+ch*.2,c[0]+cw*.6,c[1]+ch,c[0]-cw*.6,c[1]+ch],col);
     stroke(g,[c[0]-cw*.85,c[1]-ch*.55,c[0]-cw*.2,c[1]-ch*.95,c[0]+cw*.6,c[1]-ch*.75],rgba(lt('#f0dcb0',[x-.3,y+.5,z],[-1,1,-.4]),.7),.5);
-    R(g,c[0]+cw*.55,c[1]-ch*.3,cw*.3,ch*.6,'rgba(30,20,16,.35)')}
+    comp(g,'multiply',.3,()=>poly(g,[c[0]+cw*.3,c[1]-ch*.7,c[0]+cw,c[1]+ch*.2,c[0]+cw*.6,c[1]+ch,c[0]+cw*.2,c[1]+ch*.8],'#5a4a50'))}
   /* the deck overhead, dark between its beams, its grain only (its seams would cross the beams) */
   {const pa=[],pb=[];for(let z=Z0;z<=ZF;z+=.4){pa.push(...P(-side(H),H,z));pb.push(...P(side(H),H,z))}poly(g,pa.concat(ptsBackG(pb)),lt('#4a3624',[0,H,6],[0,-1,0]));
     clipTo(g,()=>poly(g,pa.concat(ptsBackG(pb))),()=>tex(g,'wood',.3,0,-10,320,90,'overlay',.4))}
@@ -928,7 +928,7 @@ function hold(g,o){o=o||{};const D=holdGeo(o),{P,W,H,ZF,side}=D,r=rng(23091),lt=
   clipTo(g,()=>poly(g,HO),()=>{tex(g,'mott',.4,HO[6]-4,HO[5]-2,HO[2]-HO[6]+8,HO[1]-HO[5]+4,'overlay',.8);for(let i=0;i<10;i++){const x=HO[0]+r()*(HO[2]-HO[0]);R(g,x,HO[5]+r()*(HO[1]-HO[5]),.5,2,'rgba(220,226,232,.4)')}});
   /* the grey of the coming day falls through it on the stairs below, faint and without any edge or ray; and the water comes down */
   {const c=P((hc.x0+hc.x1)/2+.6,.15,(hc.z0+hc.z1)/2+.4);comp(g,'screen',.12,()=>pool(g,c[0],c[1],30,6,'#8a96a8',1,'source-over'));
-    for(let i=0;i<14;i++){const x=hc.x0+.3+r()*(hc.x1-hc.x0-.6),z=hc.z0+.2+r()*(hc.z1-hc.z0-.4),y0=H-.1-r()*.3,a=P(x,y0,z),e=P(x-.05,y0-.18-r()*.25,z);R(g,a[0],a[1],.5,e[1]-a[1],'rgba(190,206,216,.4)')}}
+}
   /* its coaming, the timber round the opening, edged with the grey light */
   for(const[a,b]of[[[hc.x0,hc.z1],[hc.x1,hc.z1]],[[hc.x1,hc.z0],[hc.x1,hc.z1]]]){const p=P(a[0],H-.04,a[1]),q=P(b[0],H-.04,b[1]);stroke(g,[p[0],p[1],q[0],q[1]],'#8a8a8e',.6)}
   /* the beams across, from side to side, lit from below near the lamps; each meets the side under the deck */
@@ -949,7 +949,7 @@ function hold(g,o){o=o||{};const D=holdGeo(o),{P,W,H,ZF,side}=D,r=rng(23091),lt=
         tr=[...P(xa,Y(t0+1/n),st.z0),...P(xb,Y(t0+1/n),st.z0),...P(xb,Y(t0+1/n),st.z1),...P(xa,Y(t0+1/n),st.z1)];
       poly(g,tr,lt('#8a6a46',[xb,Y(t1),st.z0],[0,1,0],.22));
       const w0=P(xa+.06,Y(t0+1/n)+.01,st.z0+.2),w1=P(xb-.06,Y(t0+1/n)+.01,st.z0+.4);stroke(g,[w0[0],w0[1],w1[0],w1[1]],'rgba(170,192,204,.5)',.5);
-      const rs=[...P(xb,Y(t1),st.z0),...P(xb,Y(t0),st.z0),...P(xb+.05,Y(t0),st.z0),...P(xb+.05,Y(t1),st.z0)];poly(g,rs,lt('#5e4430',[xb,Y(t1),st.z0],[1,0,-.6],.12))}
+      if(i){const rs=[...P(xb,Y(t1),st.z0),...P(xb,Y(t0),st.z0),...P(xb+.05,Y(t0),st.z0),...P(xb+.05,Y(t1),st.z0)];poly(g,rs,lt('#5e4430',[xb,Y(t1),st.z0],[1,0,-.6],.12))}}
     /* the stringer on their after side, under the steps: a slanting board, its lit top edge stepping with the treads */
     const SG=[];for(let i=0;i<n;i++){const t0=i/n,t1=(i+1)/n;SG.push(...P(X(t0),Y(t0+1/n)+.0,st.z0-.02),...P(X(t1),Y(t0+1/n),st.z0-.02))}
     const lowE=[...P(X(1)+.4,0,st.z0-.02),...P(X(0)+.35,Y(0)-.42,st.z0-.02)];
@@ -1003,7 +1003,7 @@ function wreckDeck(g,o){o=o||{};const W=wreckGeo(),C=LIGHT.dawn,r=rng(23101),{to
   for(const[j,f0,f1]of[[0,0,.34],[1,.34,.67],[2,.67,1]]){const c=tint('#4e3e34',-.04*j);
     for(let x0=-30;x0<350;){let x1=x0+2;while(x1<350&&(j>0||!inGap(x1)))x1+=2;if(j===0&&inGap(x0)){x0=x1;while(x0<350&&inGap(x0))x0+=2;continue}
       const f=face(x0,Math.min(x1,350),f0,f1);poly(g,f,c);clipTo(g,()=>poly(g,f),()=>{tex(g,'wood',.3,x0,60,x1-x0,60,'overlay',.45);
-        for(let x=x0+8+r()*40;x<x1-4;x+=50+r()*40){const a=top(x)+(foot(x)-top(x))*f0+.6,e=top(x)+(foot(x)-top(x))*f1-.6;R(g,x,a,.5,e-a,'rgba(24,18,16,.45)')}});
+        for(let x=x0+20+r()*60;x<x1-6;x+=100+r()*60){const a=top(x)+(foot(x)-top(x))*f0+.6,e=top(x)+(foot(x)-top(x))*f1-.6;R(g,x,a,.5,e-a,'rgba(24,18,16,.45)')}});
       if(j)stroke(g,face(x0,Math.min(x1,350),f0,f0).slice(0,Math.floor((Math.min(x1,350)-x0)/2+1)*2),'rgba(24,18,16,.5)',.5);
       x0=x1;if(j===0)while(x0<350&&inGap(x0))x0+=2}}
   /* where the rail is broken: the top strake's planks end raggedly, each splintered end standing alone */
@@ -1032,7 +1032,7 @@ function wreckSail(g,flap,body){const C=LIGHT.dawn,W=wreckGeo(),r=rng(23103);
     const P=[yl[0],yl[1]];
     /* the leech, bellying toward the bow, then the torn foot from the clew to the tack, ragged */
     for(let i=0;i<=10;i++){const t=i/10;P.push(yr[0]+(cl[0]-yr[0])*t-10*Math.sin(Math.PI*t),yr[1]+(cl[1]-yr[1])*t)}
-    for(const[t,d]of[[.08,2],[.16,-3],[.25,5],[.33,-1.5],[.42,3],[.5,-4],[.6,6.5],[.68,-2],[.78,2],[.88,-3.5],[.95,1.5]]){const x=cl[0]+(tk[0]-cl[0])*t,y=cl[1]+(tk[1]-cl[1])*t+3*Math.sin(Math.PI*t);P.push(x+(r()-.5)*1.4,y+d)}
+    for(const[t,d]of[[.05,1],[.11,-2.2],[.17,3.6],[.21,.4],[.3,-1.2],[.36,2.2],[.47,-3.4],[.53,1],[.6,7.2],[.64,4.6],[.7,-1.6],[.79,1.4],[.83,-.4],[.9,-3],[.96,1.2]]){const x=cl[0]+(tk[0]-cl[0])*t,y=cl[1]+(tk[1]-cl[1])*t+3*Math.sin(Math.PI*t);P.push(x+(r()-.5)*1.4,y+d)}
     P.push(tk[0],tk[1],-30,40,-30,-10);
     poly(g,P,C.sail[0]);
     clipTo(g,()=>poly(g,P),()=>{g.fillStyle=lg(g,-10,0,70,0,[rgba(C.sail[2],.55),rgba(C.sail[2],.2),'rgba(255,236,210,.14)',rgba(C.sail[2],.35)]);g.fillRect(-30,-20,110,90);
