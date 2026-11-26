@@ -68,7 +68,7 @@ const OPT={evening:{w:320,hz:HZ,hour:'evening',sun:[-80,14],cloud:.16,streak:.35
   morning:{w:320,hz:HZ,hour:'morning',sun:[400,18],cloud:.16,streak:.35,seed:1972,y1:82}};
 const O=hour=>OPT[hour==='morning'?'morning':'evening'];
 /* the figures' light: sun:[dx, dy, strength] is the tip of the shadow of a figure 46 pixels tall, from its feet */
-const LIGHT={evening:{amb:'#f6e0c8',sun:[22,-6,.35],wallY:WALLY},morning:{amb:'#f4eee4',sun:[-22,5,.35],wallY:WALLY}};
+const LIGHT={evening:{amb:'#f6e0c8',sun:[22,7,.35],wallY:WALLY},morning:{amb:'#f4eee4',sun:[-22,7,.35],wallY:WALLY}};
 const light=hour=>{const L=LIGHT[hour==='morning'?'morning':'evening'];return{amb:L.amb,sun:L.sun.slice(),wallY:L.wallY}};
 const birds=()=>({gulls:[8,6,168,36],stand:[[46,COPING,1],[92,COPING,-1]]});
 const sh=(...a)=>SHARED.materials.shadow(...a);

@@ -1223,7 +1223,7 @@ function springAnti19(g){const CO=SHARED.country,r=rng(1966),cx=36,cy=111.4,rx=2
    table 264,84,22,10. Walk: 30..300 by 114..138 (SHARED.caesarea.WALK). Actors: Felix 238,100 seated on the dais (seat top 91); Paul
    150,126; the horsemen's officer 122,124 beside him; a soldier 296,124. */
 let SPal19=null;
-ART.palace19={w:320,q:12,variant:()=>F.anti?'l':'',paint(g){SPal19=SHARED.caesarea.court(g,{hour:'evening',letter:F.anti})},light:{amb:'#f6e0c8',sun:[22,-6,.35],wallY:96},
+ART.palace19={w:320,q:12,variant:()=>F.anti?'l':'',paint(g){SPal19=SHARED.caesarea.court(g,{hour:'evening',letter:F.anti})},light:SHARED.caesarea.light('evening'),
   draw(g,t){if(SPal19)SPal19.draw(g,t)},front(){}};
 /* ==== ART palace19: end ==== */
 
