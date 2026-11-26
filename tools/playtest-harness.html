@@ -5448,7 +5448,7 @@
   if(!C22&&/^p[a-z]+22$/.test(stop)&&!/^phone/.test(stop)){await loadLevel(22);const C=CHAP[22],upto=up22,
       S={pscroll22:[[],'quay22'],pquay22:[[],'quay22'],pmap22:[[],'quay22'],pmyra22:[upto('out'),'myra22'],pdeck22:[upto('aboard'),'deck22'],
         pshelter22:[upto('shelter'),'deck22'],phavens22:[upto('fh'),'deck22'],pskiff22:[upto('advised'),'storm22'],pgirded22:[upto('skiff'),'girded22'],
-        psyrtis22:[upto('skiff'),'storm22'],pload22:[upto('skiff'),'storm22'],pnight22:[upto('load3'),'storm22'],ptablet22:[upto('load3').concat(['t1','m1a','t2','m2b']),'tablet22'],
+        psyrtis22:[upto('skiff'),'storm22'],pload22:[upto('skiff'),'storm22'],pnight22:[upto('load3').concat(['t1','t2']),'storm22'],ptablet22:[upto('load3').concat(['t1','m1a','t2','m2b']),'tablet22'],
         pmidst22:[upto('t6'),'storm22']}[stop];
     if(!S)throw new Error('no such stop '+stop);await open22(S[0],S[1]);L('CODE '+stop+' '+(G.room&&G.room!=='girded22'?makeCode():'-'));
     if(stop==='pscroll22'){G.scene=DARK;narr(C.told.v1,{dur:60000})}
@@ -5642,7 +5642,7 @@
   await till22(()=>B22());await tap22('hatch');{const b=B22();await tap22('cask',0,wave22);ok(G.hold22===0&&b.misses===1&&quiet22(),'a miss: back at the hatch, no line')}
   for(const nm of['cask','mast_step','lee_rail']){await tap22(nm,0,calm22)}
   await until(()=>F.load3&&C().phase()==='tablet'&&PC()===LK&&!G.busy,9000);note();
-  ok(seenTold.has('v19')&&said('luke_ill_keep_the_days')&&!G.beat&&ART.storm22.variant()==='n'&&ART.storm22.light.amb&&!ART.storm22.light.sun&&ART.storm22.light.lamps.length===1,'the third day the tackling (27:19); the dark days: Luke is played, one lantern, no beat');
+  ok(seenTold.has('v19')&&said('luke_ill_keep_the_days')&&!G.beat&&ART.storm22.variant()==='d'&&ART.storm22.light.amb&&!ART.storm22.light.sun&&!ART.storm22.light.lamps,'the third day the tackling (27:19); the dark days: Luke is played, no beat; the first day is a day, with no sun and no lantern');
   await code('in the dark days',()=>G.room==='storm22'&&PC()===LK&&F.load3&&!F.t1&&has('ltab22'));
   /* no sun, no stars */
   await hints('hint_the_tablet_1','hint_the_tablet_2','in the dark days');
@@ -5657,6 +5657,10 @@
     if(n===2){onH('todays_mark','use');const o=await asked();ok(MK.every(k=>o.includes(k))&&o.at(-1)==='leave_it_for_now','four marks to choose from, mixed by key, and a line that leaves');await line('leave_it_for_now');ok(!F.t2,'left for now')}
     heard.length=0;onH('todays_mark','use');await line(MK[want[n-1]]);
     if(n<6)await until(()=>G.room==='storm22'&&F['t'+n]&&!G.busy,3000);
+    /* the third and the sixth of his days are nights, with the lantern; by night the sky has no star, by day no sun */
+    if(n<6){const night=n+1===3||n+1===6;ok(ART.storm22.variant()===(night?'n':'d')&&(night?ART.storm22.light.lamps.length===1:!ART.storm22.light.lamps),'day '+(n+1)+(night?' is a night, with the lantern':' is a day, with no lantern'));
+      if(n===2){heard.length=0;await onH('clouds','look');ok(said('luke_no_star_anywhere'),'the sky of the third night: not one star')}
+      if(n===3){heard.length=0;await onH('clouds','look');ok(said('luke_cloud_and_more_cloud'),'the sky of the fourth day: cloud, and no sun')}}
     ok(F['t'+n]&&C().markOf(n)===want[n-1]&&said(C().marksay[want[n-1]]),'day '+n+': '+T(MK[want[n-1]])+', and Luke\'s own true line for it')}
   marks22=[1,2,3,4,5,6].map(C().markOf);
   halt('marks22');

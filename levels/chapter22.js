@@ -487,7 +487,7 @@ function drawDeck22(g,t){if(SDeck22)SDeck22.draw(g,t);pennantDeck22(g,t);if(F.fh
    mast, and the lee rail to starboard, past the mast. The sea comes over the port side, at the left (the rain slants down to the right).
    The sailor who calls stands aft by the lee rail, his hand on the mast, where every hold can be seen. In the lee of Cauda (27:16) the
    skiff comes up over the port rail at the left on the men's rope, full of water; the sea is a little lower there. By night (27:20) one
-   lantern hangs under the cabin's eave by two cords that part upward; its light lies long and low. Lightning far off (lightning:true),
+   lantern hangs under the cabin's eave by two cords that part upward (the third and the sixth of Luke's days are nights); its light lies long and low. Lightning far off (lightning:true),
    never over the swan's neck or the mast.
    Called from outside: ART.storm22, STORM22 (holds, way, walk). Reads phase22(), nightNow22(), G.beat, G.sk22 (0..4), G.pull22, G.over22. */
 const STORM22={walk:DECK22.walk.slice(),
@@ -498,7 +498,9 @@ const STORM22={walk:DECK22.walk.slice(),
      the mast; where
      he stands beside the one he walks across, at each hold */
   home:[284,116],gate:[232,120],side:[[14,4],[14,4],[14,3],[-16,8]]};
-const nightNow22=()=>phase22()==='tablet';
+/* Luke's six days (27:20): the third and the sixth are nights, the others days, so that what he says of the sky stands over the sky
+   that is painted (no sun by day, not one star by night); the lantern hangs there only by night */
+const nightNow22=()=>phase22()==='tablet'&&(today22()===3||today22()===6);
 /* the deck's geometry (shared/grainship.js), and the water cask: upright, its middle at x, z (metres), r its radius, h its height */
 let GD22=null;const gd22=()=>GD22||(GD22=SHARED.grainship.geoDeck({cabin:DECK22.cabin}));
 const CASK22={x:2.68,z:6,r:.38,h:1.15};
