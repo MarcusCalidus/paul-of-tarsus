@@ -135,7 +135,7 @@ function cry15(at){const c=AU.ctx;if(!c)return 0;const t0=at!=null?at:c.currentT
   {const d=.13,s=c.createBufferSource(),b1=c.createBiquadFilter(),b2=c.createBiquadFilter(),g1=c.createGain(),g2=c.createGain(),e=c.createGain(),w=c.createGain();
     s.buffer=AU.nbuf;s.loop=true;b1.type='bandpass';b1.Q.value=3.2;b1.frequency.setValueAtTime(1100*1.22,t0);b1.frequency.exponentialRampToValueAtTime(2400*1.22,t0+d*.85);
     b2.type='bandpass';b2.Q.value=5.5;b2.frequency.setValueAtTime(2100*1.22,t0);b2.frequency.exponentialRampToValueAtTime(3100*1.22,t0+d);
-    g1.gain.value=1;g2.gain.value=.45;e.gain.setValueAtTime(.0001,t0);e.gain.exponentialRampToValueAtTime(.04,t0+d*.65);e.gain.exponentialRampToValueAtTime(.0001,t0+d);
+    g1.gain.value=1;g2.gain.value=.45;e.gain.value=0;e.gain.setValueAtTime(.0001,t0);e.gain.exponentialRampToValueAtTime(.04,t0+d*.65);e.gain.exponentialRampToValueAtTime(.0001,t0+d);
     w.gain.value=.45*wmul;s.connect(b1);b1.connect(g1);g1.connect(e);s.connect(b2);b2.connect(g2);g2.connect(e);e.connect(w);w.connect(AU.send);
     s.start(t0,Math.random()*.5);s.stop(t0+d+.05)}
   /* startled female cry, placed across the room */
@@ -166,7 +166,7 @@ function cry15(at){const c=AU.ctx;if(!c)return 0;const t0=at!=null?at:c.currentT
     lp.Q.value=20*Math.log10(Math.max(1.2,fm/bw[i]));x.connect(lp);x=lp}
   const hp=c.createBiquadFilter(),lpO=c.createBiquadFilter(),env=c.createGain();
   hp.type='highpass';hp.frequency.value=280;lpO.type='lowpass';lpO.frequency.value=3600;lpO.Q.value=.6;
-  env.gain.setValueAtTime(.0001,t);env.gain.linearRampToValueAtTime(.024,t+.032);env.gain.linearRampToValueAtTime(.024*.85,t+d*.5);env.gain.exponentialRampToValueAtTime(.0001,end);
+  env.gain.value=0;env.gain.setValueAtTime(.0001,t);env.gain.linearRampToValueAtTime(.024,t+.032);env.gain.linearRampToValueAtTime(.024*.85,t+d*.5);env.gain.exponentialRampToValueAtTime(.0001,end);
   x.connect(hp);hp.connect(lpO);lpO.connect(env);
   let dry=env;if(c.createStereoPanner){const p=c.createStereoPanner();p.pan.value=.36;env.connect(p);dry=p}
   const dG=c.createGain(),wG=c.createGain();dG.gain.value=.45;wG.gain.value=1.45*wmul;

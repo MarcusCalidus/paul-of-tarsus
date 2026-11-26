@@ -53,5 +53,74 @@ function open(d){shown=d;draw(d);
     el.onclick=e=>{e.stopPropagation();if(closer)closer()};el.classList.add('on');for(const l of el.querySelectorAll('.leaf'))l.scrollTop=0})}
 /* redraw: the open tablets again, in another language */
 const redraw=()=>{if(shown)draw(shown)};
-return{open,redraw,el};
+/* ---------- Luke's marks (Chapters Twenty-Two and Twenty-Three) ----------
+   Luke keeps the dark days of the storm on a wax tablet of his own (Acts 27:20; the publications say Luke may well have kept notes; the
+   tablet and its marks are invented). Both chapters draw his marks with these two painters, so that the tablet that Chapter Twenty-Three
+   finds carried in is the one Chapter Twenty-Two wrote. They draw on any canvas, in room pixels, and change nothing else in this file.
+   A scratch in the wax is a thin pale line (the wax cut away shows the paler wax under it, catching the light) with its groove's dark
+   shade half a pixel below and to the right of it, a little uneven along its length (seeded, so it is the same each time).
+     scratch(g, pts, o)         a scratch along the polyline pts [x, y, ...]; o.seed, o.c (pale, #d2bf94), o.dk (shade, #140a04), o.a (1)
+     lukeMark(g, cx, cy, kind, o)   one day's mark, its middle at cx, cy: kind 0 only the day (nothing is drawn), 1 south-west, 2 west,
+                                3 north-west. A short line 14·k long with a small solid wedge at its western (left) end, pointing west
+                                along the line: the west end 5·k lower than the east end for south-west, level for west, 5·k higher for
+                                north-west. The wedge is a filled triangle, 3·k from its base to its point and 3·k across its base,
+                                never an arrowhead with a crossbar. o.k the scale (1), o.seed
+     lukeLine(g, x, y, kinds, o)    the line the marks make, from the point x, y (Cauda) westward, one piece for each day in order:
+                                south-west 30·k left and 7·k down, west 30·k left, north-west 30·k left and 7·k up; a day with only
+                                the day leaves a gap of 14·k in the line with a small square dot (1.5·k) in its middle. It only runs
+                                west, so it never crosses itself. A small square (2·k) marks the start. o.k the scale (1), o.seed.
+                                Returns the point where it ends, [x, y].
+   Chapter Twenty-Two draws the marks at k 1 in the columns of the days and the line at k .64 below them; Chapter Twenty-Three draws the
+   line at k 1.
+     lukeTablet(g)              the tablet itself, close, filling the picture (320 by 144), the same in both chapters: a frame of
+                                fine-grained wood, warm where the lantern falls on it from the upper right; the dark wax sunk into it
+                                (LUKE.wax: 16..304 by 12..130), smoothed many times; the stylus lying on the frame below the wax. */
+const LUKE={c:'#d2bf94',dk:'#140a04',wax:[16,12,304,130]};
+function scratch(g,pts,o){o=o||{};const r=rng(o.seed||2271),c=o.c||LUKE.c,dk=o.dk||LUKE.dk,a=o.a==null?1:o.a,q=[];
+  for(let i=0;i<pts.length-2;i+=2){const x0=pts[i],y0=pts[i+1],x1=pts[i+2],y1=pts[i+3],L=Math.hypot(x1-x0,y1-y0),n=Math.max(1,Math.round(L/3)),nx=-(y1-y0)/(L||1),ny=(x1-x0)/(L||1);
+    for(let j=i?1:0;j<=n;j++){const t=j/n,w=j&&j<n?(r()-.5)*.35:0;q.push(x0+(x1-x0)*t+nx*w,y0+(y1-y0)*t+ny*w)}}
+  g.save();g.globalAlpha=a*.6;stroke(g,q.map((v,i)=>v+.5),dk,.6);g.globalAlpha=a;stroke(g,q,c,.55);g.restore()}
+function lukeMark(g,cx,cy,kind,o){o=o||{};if(!kind)return;const k=o.k||1,d=kind===1?2.5*k:kind===3?-2.5*k:0,E=[cx+7*k,cy-d],W=[cx-7*k,cy+d],
+    L=Math.hypot(W[0]-E[0],W[1]-E[1]),ux=(W[0]-E[0])/L,uy=(W[1]-E[1])/L,nx=-uy,ny=ux,s=o.seed||2272+kind*7;
+  scratch(g,[E[0],E[1],W[0]+ux*.4,W[1]+uy*.4],{seed:s,a:o.a});
+  const tip=[W[0]+ux*3*k,W[1]+uy*3*k],b0=[W[0]+nx*1.5*k,W[1]+ny*1.5*k],b1=[W[0]-nx*1.5*k,W[1]-ny*1.5*k];
+  g.save();if(o.a!=null)g.globalAlpha=o.a;poly(g,[tip[0]+.5,tip[1]+.5,b0[0]+.5,b0[1]+.5,b1[0]+.5,b1[1]+.5],rgba(LUKE.dk,.6));poly(g,[tip[0],tip[1],b0[0],b0[1],b1[0],b1[1]],LUKE.c);g.restore()}
+function lukeLine(g,x,y,kinds,o){o=o||{};const k=o.k||1,s=o.seed||2280;let px=x,py=y,run=[px,py];
+  const dot=(x,y,w)=>{R(g,x-w/2+.5,y-w/2+.5,w,w,rgba(LUKE.dk,.6));R(g,x-w/2,y-w/2,w,w,LUKE.c)};
+  dot(px,py,2*k);
+  kinds.forEach((m,i)=>{if(!m){if(run.length>2)scratch(g,run,{seed:s+i});px-=14*k;dot(px+7*k,py,1.5*k);run=[px,py];return}
+    px-=30*k;py+=m===1?7*k:m===3?-7*k:0;run.push(px,py)});
+  if(run.length>2)scratch(g,run,{seed:s+99});return[px,py]}
+
+/* the tablet itself: board, wax and stylus (both chapters paint it with this, so that it is one tablet) */
+function lukeTablet(g){const r=rng(2205),[x0,y0,x1,y1]=LUKE.wax;
+  /* behind the tablet, the dark of the deck by night at the corners */
+  R(g,0,0,320,144,'#120e0c');
+  /* the frame: fine-grained wood, warm where the lantern falls on it (upper right), darker away from it; its corners rounded a little */
+  const F=[3,1,317,1,319,3,319,141,317,143,3,143,1,141,1,3];poly(g,F);g.fillStyle=lg(g,320,0,0,144,['#9a7450','#7a5838','#5a3e26']);g.fill();
+  /* one board, its grain running along it, fine and quiet: long hairlines that wander a little, a few darker, a few lighter */
+  clipTo(g,()=>poly(g,F),()=>{for(let i=0;i<260;i++){const y0=r()*144,x=r()*320-40,l=30+r()*120,ph=r()*6,q=[];for(let u=0;u<=l;u+=4)q.push(x+u,y0+.6*Math.sin(u/37+ph)+.3*Math.sin(u/11+ph*2));
+      stroke(g,q,r()<.6?`rgba(52,30,14,${(.08+r()*.12).toFixed(2)})`:`rgba(255,226,180,${(.04+r()*.07).toFixed(2)})`,.5)}
+    tex(g,'grain',.12,0,0,320,144,'overlay',.4);
+    /* worn paler along its outer edge, a soft darker band inside it */
+    R(g,1,1,318,.6,'rgba(255,226,180,.35)');R(g,1,1,.6,142,'rgba(255,226,180,.2)');R(g,1,142.4,318,.6,'rgba(20,10,4,.5)');R(g,318.4,1,.6,142,'rgba(20,10,4,.35)')});
+  /* the wax, sunk into the frame: the frame's inner edge lit where the light falls on it, its shadow lying on the wax at the top and left */
+  R(g,x0-1.2,y0-1.2,x1-x0+2.4,y1-y0+2.4,'#3a2616');R(g,x0-1.2,y1,x1-x0+2.4,1.2,'#b08a5c');R(g,x1,y0-1.2,1.2,y1-y0+2.4,'#a07c52');
+  g.fillStyle=lg(g,x1,y0,x0,y1,['#3a2c1e','#2a1f15','#1e160e']);g.fillRect(x0,y0,x1-x0,y1-y0);
+  clipTo(g,()=>{g.beginPath();g.rect(x0,y0,x1-x0,y1-y0)},()=>{tex(g,'mott',.5,x0,y0,x1-x0,y1-y0,'overlay',1);tex(g,'grain',.18,x0,y0,x1-x0,y1-y0,'overlay',.5);
+    /* where it has been smoothed again and again: soft patches a shade lighter or darker, long and low */
+    for(let i=0;i<14;i++)pool(g,x0+r()*(x1-x0),y0+r()*(y1-y0),30+r()*50,8+r()*10,r()<.5?'#5a4430':'#0e0906',.25+r()*.2,'source-over');
+    /* the lantern's light lying across the wax from the upper right, soft */
+    comp(g,'screen',.1,()=>{g.fillStyle=lg(g,x1,y0,x0+80,y1,['#ffc880','rgba(0,0,0,0)']);g.fillRect(x0,y0,x1-x0,y1-y0)});
+    ao(g,x0,y0,x1-x0,4,'t',.55,'#0a0604');ao(g,x0,y0,4,y1-y0,'l',.4,'#0a0604')});
+  /* the stylus on the frame below the wax: a slim bronze rod, its point to the left, its flat end for smoothing the wax to the right */
+  const Y=x=>136.4-(x-168)*.012,a=168,b=296;
+  comp(g,'multiply',.45,()=>poly(g,[a+3,Y(a)+2,b+1.5,Y(b)+2,b+1.5,Y(b)+3.4,a+3,Y(a)+3],'#2a1c14'));
+  /* the rod: a point at the left, a round shank, a swelling, the flat end */
+  poly(g,[a,Y(a)+.8,a+9,Y(a+9)-.1,b-9,Y(b-9)-.1,b-9,Y(b-9)+1.7,a+9,Y(a+9)+1.7],'#7a5c30');
+  R(g,a+9,Y(a+9)-.1,b-a-18,.6,'#e2c07e');R(g,a+9,Y(a+9)+1.2,b-a-18,.5,'#4a3418');
+  poly(g,[b-9,Y(b-9)-.6,b-6,Y(b-6)-.9,b-6,Y(b-6)+2.3,b-9,Y(b-9)+2],'#8a6a38');
+  poly(g,[b-6,Y(b-6)-1.4,b,Y(b)-1.6,b,Y(b)+2.6,b-6,Y(b-6)+2.8],'#7a5a30');R(g,b-6,Y(b-6)-1.4,6,.6,'#ecca88');R(g,b-6,Y(b-6)+2.3,6,.5,'#3a2814')}
+
+return{open,redraw,el,scratch,lukeMark,lukeLine,lukeTablet,wax:LUKE.wax};
 })();

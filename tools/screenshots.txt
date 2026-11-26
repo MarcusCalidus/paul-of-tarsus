@@ -14,33 +14,54 @@ apollos psyn13
 areopagus speech11
 arrest18 parrest18
 asia pasiab13
+ask25 pask25
 assos passos16
 athens quay10
 athens-map map11
 athens-road road11
 athens-street way11
+audience21 phall21
 awning pawnb12
 awning-rain pawnw12
+bales22 pbale22
 barnabas barnabas
 barracks pbarracks18
+bay23 pbay23
 beach-prayer pprayer17
 bench-dawn pshopm13
 beroea pber10
 birds birds
 birds-sheet birds birds-sheet
+board24 ppegs24
 bolt bolt10
+bonds21 pbonds21
 bound bound17 cast-bound
 boundary border
+bow23 pbow23
 brothers home9
 burning pstreetg13
+caesarea-cast caesarea cast-caesarea
 caesarea-road pgate17
+camp24 pcamp24
+canal24 pcanal24
+capena24 pcapena24
 card card
+card20 card20
+card21 card21
+card22 card22
+card23 card23
+card24 card24
+card25 card25
 carried pknot18
 cast cast cast-main
 cast-closeup cast cast-closeup
+cat25 pcat25
 cenchreae pcenf12
 cenchreae15 cen15
 chained chained18 cast-chained
+chained20 chained20 cast-chained20
+charges20 pcharges20
+closing-screen pclosing
 coast-road proad16
 coast-sheet coast coast-sheet
 coast-wind coast coast-wind
@@ -55,9 +76,12 @@ corinth-map map12
 corinth-winter pstreetw12
 council council
 council19 pcouncil19
+count23 pbeach23
 counting-board pboardb13
 court19 pcourt19
+court21 pcourt21
 damaris down11
+day25 pday25
 daybreak dawn15
 depth depth8
 derbe derbe
@@ -70,20 +94,33 @@ elders pshore16
 ephesus peph12
 ephesus-evening pstreete13
 ephesus-road proad13
+estate23 pestate23
 even-keel phold17
 every-true-reason pplead17
+far24 pfar24
+finished-title ptitlefin
+fire23 pfire23
+flat25 plodging25
 flock ppass16
 ford wade
 fuller-door pfuller13
 gaius gaius15
 garlands bulls
+garret24 pgarret24
 gate19 pgate19
 gates gates
+girded22 pgirded22
+greet25 pgreet25
 guard guard
 hall-tyrannus phallb13
+hall20 phall20
 harbor harbor
+havens22 phavens22
 heard cell9
+hearing20 pcourt20
+hearing21 phearing21
 held-back pdoorb14
+hold23 pmeal23
 homeward journey6
 horses horses horses-sheet
 hotspots tags
@@ -101,24 +138,38 @@ kleandros phouseb13
 lamplight mend
 lane-map lanes
 lane-map-harbor lanes2
+lane24 plane24
 lanes19 phalves19
 letter12 pletter12
 letter19 letter19
+letters-map pletters
+look-back plookback
+look-back-maps lookback lookback-maps
 lookback back12
+luke20 pluke20
+lycus25 plycus25
 lydia lydia8
 lydiahouse house9
 lystra lame
 magistrates mags9
+malta-map pmap23
+malta23 pname23
 map map3
 marketplace market9
+meet24 pmeet24
+men25 pmen25
 messenger-list plist16
 midnight midnight15
+midst22 pmidst22
 miletus pmiletus16
 mnason-court pmnason18
+morning25 pmorning25
 murex-beach pbeach17
+myra22 pmyra22
 names names
 nations sabbath2
 night-watch pwatch16
+night25 pnight25
 nightbench gift10
 nightcourt court9
 nighthouse night10
@@ -135,10 +186,14 @@ palace19 ppalace19
 paphos paphos
 patara ppatara17
 perga perga
+philemon25 psheet25
 philip-house pphilip17
 philippi philippi8
+philippi25 pphilippi25
 phone phone
+pictures23 pics23
 pisidia week
+planks23 pplanks23
 plans plans
 plateau closed8
 pointer pointer
@@ -147,11 +202,22 @@ pro-judas pro8b
 pro-wall pro1
 psalm psalm9
 pwa-icon pwa pwa-icon
+quay22 pquay22
+quay24 pquay24
 questions myron
 reading reading
+relay24 prelay24
+report21 preport21
 river river8
 road road
+road-to-rome map24 map24-sheet
+road21 proad21
+roads21 proads21
+roll-closed proll
 romans romans cast-romans
+rome-cast rome cast-rome
+rome24 prome24
+room20 proom20
 routes routes15 routes-cen15
 samothrace deck8
 sand-plan plan15
@@ -160,29 +226,40 @@ saves saves
 scale store15
 scroll scroll
 scrolltable row10
+sea-cast sea cast-sea
 sealed-plea psealc14
 seamap seamap10
 secondjourney journey7
 seleucia kallias
 seven-days pdays18
 shadows shadows
+shelter22 pshelter22
 shipwreck shipwreck cast-shipwreck
 shortway hubmap6b
 show show
+sick23 psick23
 sifted tableb10
 silent silent
 silversmiths pmarket14
 sisters-door pdoor19
+skiff22 pskiff22
+sounding23 plead23
 speak speak
 speaker-name pwho16
 speech speech
 speech-road proad18
 splash splash
+stern23 pcables23
 stonecutter block11
+stones24 pstones24
+storks20 pflight20
+street25 pstreet25
 stride stride
 sundial pdial13
+surf23 waves23
 synagogue synagogue
 synagogue10 sab10
+tablet22 ptablet22
 tablets tablets
 talk cast cast-talk
 tarsus tarsus
@@ -192,8 +269,10 @@ theater-colonnade pcolon14
 thessalonica yard10
 thought thought
 thought-de de:thought
+three25 pthree25
 timothy lystra7
 title title
+title-part titlepart
 titlescroll titlescroll
 topics topics
 travel hubmap4
@@ -212,12 +291,17 @@ verbs defverb
 voyage voyage
 voyage16 map16
 voyage17 map17
+voyage22 pmap22
 walk cast cast-walk
+walk24 pcall24
 warning-stone pstone18
 westmap map10
+window20 pwindow20
 windward holdline
+winter20 pwinter20
 withoutpaul tim10
 witness witness
 workshop workshop
+write21 pwrite21
 xfade xfade
 yard19 pyard19

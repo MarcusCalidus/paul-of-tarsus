@@ -20,6 +20,10 @@
                                               the frames of its walk (frame.horse), 20 to 23 its voice (whinny and snort). tack: 0 bare, 1 bridle,
                                               reins, breast-collar and Roman saddle cloth. lit: lightAt or null. z: optional depth override.
                                               rider: optional look (paulLook(19), SHARED.cast.ROMAN.*) drawn astride via person()
+     viper(g, x, y, dir, fr, lit, z)          a small viper (Acts 28:3-6): fr 0 coiled as among sticks, 1 and 2 coming out, 3 and 4 hanging from a hand
+                                              (x,y is then the point of the hand; viperHead(fr) gives the head's place from x,y), 5 and 6 falling
+     goat(g, x, y, dir, fr, coat, lit, z)     a nanny goat standing (0), grazing (1) or chewing (2); coat: her color
+     dog(g, x, y, dir, fr, coat, lit, z)      a dog lying by a fire, asleep (0) or with its head lifted (1)
      horseman(g, x, y, dir, fr, look, lit)    a small horseman (~14 room pixels tall) for distant columns and route maps, hand-placed like lanes.js
    Walking: everybody covers ground at WALK_V, the animals too, so that a donkey keeps up with whoever leads it.
      frame.donkey(dist, v), frame.mule(dist, v), frame.ox(dist, v), frame.sheep(dist, v, look), frame.horse(dist, v)
@@ -31,7 +35,7 @@
    Shadows: each kind's span(fr) gives [sw, sx] in room pixels from the four hooves' spread in frame fr (just like walkSw() for people), so
    the contact oval centers under the hooves and breathes with the stride, while figShadow() projects cast and wall-bent shadows from the sprite.
    For the playtest:
-     paint.donkey, paint.mule, paint.ox, paint.sheep, paint.horse   the painters themselves, (g, 0, 0, dir, fr, ...) into a sprite
+     paint.donkey, paint.mule, paint.ox, paint.sheep, paint.horse, paint.viper, paint.goat, paint.dog   the painters themselves, (g, 0, 0, dir, fr, ...) into a sprite
      kinds.donkey, kinds.mule, kinds.ox, kinds.sheep, kinds.horse   each kind's numbers: its gait, its voice, sw and span(fr) */
 SHARED.beasts=(()=>{
 
@@ -1337,6 +1341,112 @@ const HORSE=(()=>{
 /* ============================================================== end of the horse ============================================================= */
 
 
+/* ============================================================ the small animals of Malta ============================================================ */
+/* A viper, a goat and a dog (Chapter Twenty-Three, Acts 28:1-6). Each is modeled as the sheep is: rounded forms (cap, a tube from one point to
+   another; ell, an ellipsoid) laid into a depth buffer, each pixel toned by the way its surface faces the light (from above, in front and a
+   little to the right), in five flat bands; then the picture is laid down pixel by pixel. Every part is set on the one before it: a head on
+   its neck, a neck out of the shoulders, a tail at the rump, legs out of the body, so that each frame is one piece. */
+const SMALL=(()=>{
+  const FW=FIG.W,FH=FIG.H,X0=FIG.OX,Y0=FIG.OY;
+  const buf=()=>{const Z=new Float32Array(FW*FH).fill(-1e9),C=new Array(FW*FH);
+    const idx=(x,y)=>{x=Math.floor(x);y=Math.floor(y);return y>=FH-Y0||y<-Y0||x<-X0||x>=FW-X0?-1:(y+Y0)*FW+x+X0};
+    const put=(x,y,z,col)=>{const i=idx(x,y);if(i>=0&&z>Z[i]){Z[i]=z;C[i]=col}};
+    /* tone: the band of a surface facing (nx, ny, nz); ex darkens it by that many bands */
+    const tone=(nx,ny,nz,px,py,ex)=>{const s=nx*.34-ny*.84+nz*.42+((px+py)&1?.04:-.04);return Math.max(0,Math.min(4,(s>.84?0:s>.5?1:s>.1?2:s>-.24?3:4)+(ex||0)))};
+    /* cap: a tube from (x0,y0) to (x1,y1), r0 to r1 thick, its axis at depth cz; mat(nx,ny,nz,px,py,t) colors it */
+    const cap=(x0,y0,r0,x1,y1,r1,cz,mat)=>{const dx=x1-x0,dy=y1-y0,L2=dx*dx+dy*dy||1,R=Math.max(r0,r1)+1;
+      for(let py=Math.floor(Math.min(y0,y1)-R);py<=Math.max(y0,y1)+R;py++)for(let px=Math.floor(Math.min(x0,x1)-R);px<=Math.max(x0,x1)+R;px++){
+        const X=px+.5-x0,Y=py+.5-y0;let t=(X*dx+Y*dy)/L2;t=t<0?0:t>1?1:t;const ex=X-dx*t,ey=Y-dy*t,d=Math.hypot(ex,ey),r=r0+(r1-r0)*t;if(d>r)continue;
+        const k=d/r,w=Math.sqrt(1-k*k);put(px,py,cz+r*w,mat(ex/r,ey/r,w,px,py,t))}};
+    /* ell: an ellipsoid at (cx, cy), a wide and b high, its middle at depth cz */
+    const ell=(cx,cy,cz,a,b,mat)=>{const R=Math.max(a,b)+1;
+      for(let py=Math.floor(cy-R);py<=cy+R;py++)for(let px=Math.floor(cx-R);px<=cx+R;px++){const u=(px+.5-cx)/a,v=(py+.5-cy)/b,q=1-u*u-v*v;if(q<0)continue;
+        const w=Math.sqrt(q),l=Math.hypot(u,v,w);put(px,py,cz+Math.min(a,b)*w,mat(u/l,v/l,w/l,px,py,0))}};
+    const flush=g=>{for(let i=0;i<FW*FH;i++)if(C[i]){g.fillStyle=C[i];g.fillRect(i%FW-X0,Math.floor(i/FW)-Y0,1,1)}};
+    return{put,cap,ell,tone,flush}};
+  /* a smooth line through points [x, y, z] (Catmull-Rom), as n samples to each span */
+  const smooth=(P,n)=>{const R=[];for(let i=0;i<P.length-1;i++){const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(P.length-1,i+2)];
+    for(let j=0;j<n;j++){const t=j/n,t2=t*t,t3=t2*t;R.push([0,1,2].map(c=>.5*(2*p1[c]+(p2[c]-p0[c])*t+(2*p0[c]-5*p1[c]+4*p2[c]-p3[c])*t2+(3*p1[c]-p0[c]-3*p2[c]+p3[c])*t3)))}}
+    R.push(P[P.length-1]);return R};
+
+  /* ---------------- the viper (Acts 28:3-6) ----------------
+     A small snake, about eighteen room pixels long and a pixel and a half thick, grey-brown with a dark zigzag along its back and a pale belly,
+     its head a little wider than its neck, one dark eye. Its frames, each a line from the head to the tip of the tail ([x, y, depth], drawing
+     units, facing right):
+       0      lying coiled, as among the sticks: folded back and forth on itself in three rows that lie one behind another, the head on top at
+              the back; the rows run side by side and never cross
+       1, 2   coming out: the head and neck raised a little and going forward, the body behind it along the ground (two moments of its going)
+       3, 4   hanging from a hand by its fangs: the head up at the top, the body hanging down in a gentle curve that sways (3 and 4). The point
+              it is placed at is the hand (see viper)
+       5, 6   falling: the body in a loose curve in the air, a C and an arch, never crossing itself
+     It never lies across a forearm: hanging, it comes down from the hand and away from the arm. */
+  const VIPER=[
+    [[7,-10,-4],[4,-8.4,-6],[0,-7.6,-6],[-5,-7.2,-6],[-8.6,-6.2,-4],[-9.2,-4.8,-1],[-6,-4.2,0],[0,-4,0],[6,-3.8,0],[9.2,-3,2],[8.8,-2,5],[4,-1.9,6],[-2,-1.9,6],[-8,-1.7,6],[-12,-1.3,6]],
+    [[18,-6.5,0],[14,-5.2,0],[10,-3.2,0],[5,-2,1],[0,-1.9,2],[-5,-1.9,1],[-10,-1.9,-1],[-15,-1.7,-2],[-19,-1.2,-1]],
+    [[19,-5.5,0],[15,-4.6,0],[11,-2.9,0],[6,-2,-1],[1,-1.9,-2],[-4,-1.9,-1],[-9,-1.9,1],[-14,-1.7,2],[-18,-1.2,1]],
+    [[0,-37,0],[0,-33.6,0],[1.5,-29.5,0],[3,-23.5,0],[3,-17,0],[1.5,-11,0],[-1,-6,0],[-2.5,-2.2,0],[-1.6,-.6,0]],
+    [[0,-37,0],[.3,-33.6,0],[-1,-29.5,0],[-2,-23.5,0],[-1.5,-17,0],[.6,-11,0],[2.6,-6,0],[3,-2.2,0],[1.8,-.6,0]],
+    [[9,-3.5,0],[6.5,-8,0],[3,-11,0],[-1,-12.4,0],[-5,-11.8,0],[-8,-9.4,0],[-9.2,-6,0],[-8.4,-2.6,0]],
+    [[10,-2.6,0],[11,-5.8,0],[9,-8.8,0],[5,-10.2,0],[1,-9.8,0],[-3,-7.8,0],[-6,-4.8,0],[-7.2,-1.6,0]]];
+  const VB=ramp('#8a7c60'),VD=['#5e4e3a','#4c3e2e','#3c3024','#2e241a','#201810'],VP=ramp('#cdbd9a');
+  function viper(g,x,y,dir,fr){fr=Math.max(0,Math.min(6,fr|0));g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+    const B=buf(),S=smooth(VIPER[fr],10),N=S.length;let len=0;const at=[0];for(let i=1;i<N;i++){len+=Math.hypot(S[i][0]-S[i-1][0],S[i][1]-S[i-1][1]);at.push(len)}
+    const rad=t=>t<.05?2.3-4*t:t<.11?2.1-(t-.05)*12:t<.24?1.4+(t-.11)*3:t<.7?1.8:1.8-(t-.7)*4.4;
+    for(let i=0;i<N-1;i++){const t0=at[i]/len,t1=at[i+1]/len,[ax,ay,az]=S[i],[bx,by,bz]=S[i+1];
+      B.cap(ax,ay,rad(t0),bx,by,rad(t1),(az+bz)/2*2,(nx,ny,nz,px,py,u)=>{const t=t0+(t1-t0)*u,s=at[i]+(at[i+1]-at[i])*u,k=Math.floor(s/3.1)%2,b=B.tone(nx,ny,nz,px,py);
+        if(t>.09&&t<.93&&((k===0&&ny<-.2)||(k===1&&ny>-.25&&ny<.3)))return VD[b];if(ny>.55&&t>.06)return VP[Math.min(4,b+1)];return VB[b]})}
+    B.flush(g);
+    /* the eye: one dark pixel on the side of the head, a little behind the snout and above the line of the jaw */
+    const[hx,hy]=S[0],[nx2,ny2]=S[Math.min(N-1,8)],dl=Math.hypot(hx-nx2,hy-ny2)||1,ux=(hx-nx2)/dl,uy=(hy-ny2)/dl;
+    g.fillStyle='#161008';g.fillRect(Math.round(hx-ux*1.6+uy*.9),Math.round(hy-uy*1.6-ux*.9),1,1);
+    g.restore()}
+  /* where the viper's head lies in frame fr, in room pixels from the point it is placed at (x right as it faces right) */
+  const viperHead=fr=>{const p=VIPER[Math.max(0,Math.min(6,fr|0))][0];return[p[0]*FIG.K,p[1]*FIG.K]};
+
+  /* ---------------- the goat ----------------
+     A nanny goat of the island, standing (0), grazing with her head down to the ground (1), and chewing, her head up and the jaw dropped a
+     little (2): a deep body on four slim legs with dark hooves, the neck out of the shoulders, the head on it with a pale stripe down the nose,
+     two short horns that sweep back, an ear that slants back, a little beard, and a short tail carried up at the rump. coat: her color. */
+  const GOAT_HEAD=[[18,-36,40],[20,-10,80],[18,-36,47]];
+  function goat(g,x,y,dir,fr,coat){fr=Math.max(0,Math.min(2,fr|0));g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+    const B=buf(),C=ramp(coat||'#6e5038'),P=ramp('#d4c4a2'),HO=['#5a4c40','#463a30','#342a22','#241c16','#16100c'],HN=ramp('#b4a282');
+    const coatM=ex=>(nx,ny,nz,px,py)=>{const b=B.tone(nx,ny,nz,px,py,ex);return ny>.62&&ex===0?P[Math.min(4,b+1)]:C[b]};
+    const leg=(pts,ex,cz)=>{for(let i=0;i<pts.length-1;i++)B.cap(pts[i][0],pts[i][1],pts[i][2],pts[i+1][0],pts[i+1][1],pts[i+1][2],cz,coatM(ex));
+      const[fx,fy]=pts[pts.length-1];for(let yy=-3;yy<0;yy++)for(let xx=-1;xx<=1;xx++)B.put(fx+xx,yy,cz+3,HO[Math.min(4,(yy===-3?1:xx===1?1:xx===-1?3:2)+ex)])};
+    /* the far legs, a tone darker, then the body, then the near legs */
+    leg([[7.8,-18,1.8],[8.4,-10,1.1],[8,-3,.9]],1,-8);leg([[-11.6,-20,2.4],[-14.4,-10,1.1],[-13,-3,.9]],1,-8);
+    B.ell(-1,-23.4,0,16,7,coatM(0));
+    B.cap(-15.2,-27.6,1.3,-18,-32.4,.8,2,coatM(0));
+    leg([[11,-18,2],[11.8,-10,1.2],[11.4,-3,.95]],0,8);leg([[-9.6,-20,2.8],[-12.8,-10,1.2],[-10.8,-3,.95]],0,8);
+    /* the neck, out of the shoulders, and the head in its own frame: l along the muzzle, m up from it */
+    const[hx,hy,ad]=GOAT_HEAD[fr],a=ad*Math.PI/180,ux=Math.cos(a),uy=Math.sin(a),pt=(l,m)=>[hx+ux*l+uy*m,hy+uy*l-ux*m];
+    const nb=pt(-1.2,0);B.cap(11.6,-26,3.4,nb[0],nb[1],2.5,4,coatM(0));
+    const hd=pt(6,0);B.cap(hx,hy,2.8,hd[0],hd[1],1.7,7,(nx,ny,nz,px,py,t)=>{const b=B.tone(nx,ny,nz,px,py);return t>.25&&nz>.55&&Math.abs(nx*uy-ny*ux)<.35?P[b]:C[b]});
+    const h0=pt(-1,2.4),h1=pt(-5,4.4),h2=pt(-7.2,3.2),hm=(nx,ny,nz,px,py)=>HN[B.tone(nx,ny,nz,px,py)];B.cap(h0[0],h0[1],1.1,h1[0],h1[1],.7,9,hm);B.cap(h1[0],h1[1],.7,h2[0],h2[1],.5,9,hm);
+    const e0=pt(-1.4,.8),e1=pt(-4.6,-1.2);B.cap(e0[0],e0[1],1,e1[0],e1[1],.6,10,coatM(0));
+    const b0=pt(4.6,-1.6),bd=fr===2?1:0;B.cap(b0[0],b0[1],.8,b0[0]+.4,b0[1]+3.2+bd,.5,8,coatM(1));
+    B.flush(g);
+    const ey=pt(1.4,1.1),ns=pt(6.4,-.2);g.fillStyle='#140c08';g.fillRect(Math.round(ey[0]),Math.round(ey[1]),1,1);g.fillStyle='#2a1c14';g.fillRect(Math.round(ns[0]),Math.round(ns[1]),1,1);
+    if(bd){const mo=pt(5.6,-1.4);g.fillStyle='#3a1e16';g.fillRect(Math.round(mo[0]),Math.round(mo[1]),1,1)}
+    g.restore()}
+
+  /* ---------------- the dog ----------------
+     A dog lying by a fire: asleep with its head on its forepaws (0), and lifting its head, the eye open (1). It lies on its belly, the hind leg
+     folded under the haunch, the forelegs out in front along the ground, the tail laid round from the rump along the ground; an ear hangs. */
+  function dog(g,x,y,dir,fr,coat){fr=fr?1:0;g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+    const B=buf(),C=ramp(coat||'#a07a4a'),P=ramp('#dcc8a0'),cm=ex=>(nx,ny,nz,px,py)=>{const b=B.tone(nx,ny,nz,px,py,ex);return ny>.6&&!ex?P[Math.min(4,b+1)]:C[b]};
+    B.cap(8,-3.4,1.6,18,-2,1.1,-6,cm(1));
+    B.ell(-2,-6,0,14,5.4,cm(0));
+    B.cap(-15,-6.4,1.3,-17,-2.4,1,4,cm(0));B.cap(-17,-2.4,1,-10,-1,.7,6,cm(0));
+    B.ell(-9,-6,3,6.4,5,cm(0));B.cap(-6,-1.6,1.3,-1.5,-1.3,1.1,7,cm(0));
+    B.cap(9,-2.6,1.8,19.4,-1.4,1.3,8,cm(0));
+    if(!fr){B.cap(7,-7.5,3.6,14,-5.2,3.1,5,cm(0));B.cap(15,-4.8,3.2,22,-3.4,1.6,9,cm(0));B.cap(14.4,-7,1.4,12.2,-4.2,.9,11,cm(1))}
+    else{B.cap(7,-8,3.7,13,-13,3.1,5,cm(0));B.cap(13.2,-15,3.2,20.4,-14.2,1.6,9,cm(0));B.cap(12,-17.4,1.3,10.8,-14.4,.8,11,cm(1))}
+    B.flush(g);g.fillStyle='#1c120c';
+    if(!fr){g.fillRect(22,-4,1,1);g.fillStyle='#3e2a1a';g.fillRect(16,-6,2,1)}else{g.fillRect(20,-15,1,1);g.fillRect(16,-16,1,1)}
+    g.restore()}
+  return{viper,viperHead,goat,dog}})();
+
 /* --- common to all: placing with hoof-centered dynamic contact + cast shadows --- */
 const KINDS={donkey:DONKEY,mule:MULE,ox:OX,sheep:SHEEP,horse:HORSE},VOICE={};
 const speak=(id,kind,lk)=>{const K=KINDS[kind];try{K.sound(lk)}catch(e){}VOICE[id]={K,t0:performance.now()};const end=K.voice[K.voice.length-1][0];
@@ -1354,5 +1464,11 @@ return{donkey:place('donkey',DONKEY),mule:place('mule',MULE),
     if(!lamb&&lk===4){if(hasRam)lk=ewes[Math.floor(r()*ewes.length)];else hasRam=1}out.push({look:lk,dir:r()<.5?-1:1,fr:[0,24,25,0,22,24][Math.floor(r()*6)],ph:r()})}return out},
   horse:(g,x,y,dir,fr,tack,lit,z,rider)=>{const[sw,sx]=HORSE.span(fr);figure(g,x,y,lit,'horse'+(dir<0?'-1':'1')+'|'+fr+'|'+(tack|0)+riderKey(rider),s=>HORSE.paint(s,0,0,dir,fr,tack,rider),sw,dir*sx,z)},
   horseman:HORSE.mini,
-  frame:{donkey:DONKEY.frame,mule:MULE.frame,ox:OX.frame,sheep:SHEEP.frame,horse:HORSE.frame},paint:{donkey:DONKEY.paint,mule:MULE.paint,ox:OX.paint,sheep:SHEEP.paint,horse:HORSE.paint},kinds:KINDS,speak,pose,
+  /* the small animals of Malta (SMALL): the viper, the goat and the dog. A hanging viper (3, 4) is placed by the point of the hand it hangs from;
+     one in the air casts no shadow. z: depth, as for the others (a hanging viper takes the depth of the one whose hand it is on) */
+  viper:(g,x,y,dir,fr,lit,z)=>{const f=Math.max(0,Math.min(6,fr|0)),hang=f===3||f===4;figure(g,x,hang?y+37*FIG.K:y,lit,'viper'+(dir<0?'-1':'1')+'|'+f,s=>SMALL.viper(s,0,0,dir,f),f>=3?0:f?8:6,0,z==null&&hang?y:z)},
+  viperHead:SMALL.viperHead,
+  goat:(g,x,y,dir,fr,coat,lit,z)=>figure(g,x,y,lit,'goat'+(dir<0?'-1':'1')+'|'+(fr|0)+'|'+(coat||''),s=>SMALL.goat(s,0,0,dir,fr,coat),11,-dir*.5,z),
+  dog:(g,x,y,dir,fr,coat,lit,z)=>figure(g,x,y,lit,'dog'+(dir<0?'-1':'1')+'|'+(fr?1:0)+'|'+(coat||''),s=>SMALL.dog(s,0,0,dir,fr,coat),12,0,z),
+  frame:{donkey:DONKEY.frame,mule:MULE.frame,ox:OX.frame,sheep:SHEEP.frame,horse:HORSE.frame},paint:{donkey:DONKEY.paint,mule:MULE.paint,ox:OX.paint,sheep:SHEEP.paint,horse:HORSE.paint,viper:SMALL.viper,goat:SMALL.goat,dog:SMALL.dog},kinds:KINDS,speak,pose,
   DONKEY_STRIDE:DONKEY.stride,DONKEY_BEAT:DONKEY.beat}})();

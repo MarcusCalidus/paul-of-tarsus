@@ -39,7 +39,7 @@ export function literals(src){
   return out}
 
 /* strings with a space that are code, not text */
-const NOT_TEXT=new Set(['use strict','on end','on card','on long','on title','italic bold 5px "Lucida Console",Monaco,monospace','bold 4.2px "Lucida Console",Monaco,monospace',
+const NOT_TEXT=new Set(['use strict','on end','on card','on long','on title','on closing','on end behind','italic bold 5px "Lucida Console",Monaco,monospace','bold 4.2px "Lucida Console",Monaco,monospace',
   'bold 4.4px "Lucida Console",Monaco,monospace','new sea','#overlay [data-ch]','(prefers-reduced-motion: reduce)']);
 const looksCode=s=>/\{[^}]*:[^}]*;/.test(s)||/^[#.][\w-]+[\s.#\[]/.test(s)||/^[#.]?[\w-]+(\s*[,>]\s*|\s+)[#.\[]/.test(s)||/^(rgba?|calc|url)\(/.test(s)||/px\b.*(monospace|serif)/.test(s)||/^[\w-]+:\s*[\w#(]/.test(s)&&!/ /.test(s.split(':')[0])&&s.trim().split(/\s+/).length<5;
 const wordsOf=s=>/\p{L}{2,}/u.test(s);
@@ -89,7 +89,7 @@ const BOOKS='Genesis|Exodus|Leviticus|Numbers|Deuteronomy|Joshua|Judges|Kings|Ch
 /* what each language's text must not contain */
 const RULES={de:[[/"/,'a straight quotation mark (German uses „ and “)'],[/\bC\.E\.|B\.C\.E\./,'C.E. or B.C.E. (German uses u. Z. and v. u. Z.)']]};
 export function checkTexts(){
-  const parts={main:[engineSource(),...['tablets','map','birds'].map(n=>fs.readFileSync(path.join(ROOT,'shared',n+'.js'),'utf8'))]};
+  const parts={main:[engineSource(),...['tablets','map','birds','beat','lookback','finale'].map(n=>fs.readFileSync(path.join(ROOT,'shared',n+'.js'),'utf8'))]};
   for(const k of PARTS())if(k!=='main')parts[k]=[fs.readFileSync(path.join(ROOT,'levels',k==='prologue'?'prologue.js':'chapter'+k+'.js'),'utf8')];
   const lit={};for(const k in parts){lit[k]=new Set();for(const s of parts[k])for(const t of literals(s))lit[k].add(t.v)}
   const out=[];let failed=false;const ok=(c,m,list)=>{if(!c)failed=true;out.push((c?'ok   ':'FAIL ')+m+(c?'':'\n       '+list.slice(0,12).map(s=>JSON.stringify(s)).join('\n       ')+(list.length>12?`\n       ... ${list.length-12} more`:'')))};

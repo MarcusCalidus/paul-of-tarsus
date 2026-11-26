@@ -424,5 +424,6 @@ TEXTS('en',19,{
   /* The end */
   "the_sisters_son_end":"The commander brought Paul before the Sanhedrin. Paul said that he was a Pharisee, on trial over the hope of the resurrection, and the council was divided. When more than forty men swore to kill him, his sister's son heard of it and told Paul and the commander. By night the soldiers took Paul to Antipatris, and the horsemen brought him to Felix at Caesarea, where he was kept under guard in Herod's palace.",
   "based_on_acts_22_30_23_35":"Based on Acts 22:30-23:35. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are told here in paraphrase. Acts does not say where the Sanhedrin met (by tradition, a hall of hewn stone; the place is uncertain), why Paul did not know the high priest, how his sister's son heard of the plot, or anything about his sister beyond the relation (Insight on the Scriptures: she and her son lived in Jerusalem). It does not say what became of the forty or their oath, or why there were horses for Paul and not one horse. It says that Felix read the letter, not that he read it aloud. The commander is named in the letter: Claudius Lysias. The bread seller, the men at the stall, the elder, the oil seller, the sentry, the guard, the clerks and the horseman are invented.",
-  "click_to_return_to_the_title":"Click to return to the title"
+  "click_to_continue_to_chapter_twenty":"Click to continue to Chapter Twenty",
+  "chapter_twenty_code_code":"Chapter Twenty code: {code}"
 });

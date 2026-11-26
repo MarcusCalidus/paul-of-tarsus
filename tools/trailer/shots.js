@@ -50,7 +50,7 @@ const NUM={en:['','one','two','three','four','five','six','seven','eight','nine'
   'siebzehn','achtzehn','neunzehn','zwanzig','einundzwanzig','zweiundzwanzig','dreiundzwanzig','vierundzwanzig','fünfundzwanzig']};
 const cap=s=>s[0].toUpperCase()+s.slice(1),chapters=()=>Object.keys(CHAP).length;
 const CARD={
-  from:{en:'From Damascus to Ephesus',de:'Von Damaskus bis Ephesus'},
+  from:{en:'From Damascus to Rome',de:'Von Damaskus nach Rom'},
   three:{en:'His trade. His brothers. Prayer.',de:'Sein Handwerk. Seine Brüder. Gebet.'},
   puzzles:{en:'Puzzles made from the things of his time',de:'Rätsel aus den Dingen seiner Zeit'},
   /* counted from the game, so that it stays true as chapters are added */
@@ -150,27 +150,46 @@ const SHOTS=[
   /* the place of prayer by the river at Philippi, with Lydia and the women of her household (Chapter Eight) */
   {id:'river',bar:17,bars:1,view:'scene',
    async setup(){await room(8,'river',{upto:'awn'})}},
-  /* the height: the roads of the second journey draw themselves on the map (Chapter Twelve's look back, whose roads never cross) */
-  {id:'map',bar:18,bars:2,view:'scene',card:'chapters',
-   async setup(){await chapter(12);await need('map');const[legs,o]=CHAP[12].back[3],M=SHARED.map,S=M.state;
-     await M.journey(legs,Object.assign({},o,{instant:1}));for(const L of S.legs)L.k=0;S.seen=new Set(o.seen||[]);S.seen.add(S.legs[0].a);S.pulse=S.legs[0].a},
-   async play(){const S=SHARED.map.state,all=S.legs.reduce((n,L)=>n+L.dots.length,0);
-     for(const L of S.legs){S.pulse=L.a;await tween(5000*L.dots.length/all,k=>{L.k=k});S.seen.add(L.b)}S.pulse=S.legs.at(-1).b}},
-  {id:'hall',bar:20,bars:1,view:'scene',
+  /* once more: the hall of Tyrannus at Ephesus (Chapter Thirteen), and the gate of Lystra (Chapter Six) */
+  {id:'hall',bar:18,bars:1,view:'scene',
    async setup(){await room(13,'hall13',{upto:'m2',at:[236,116,1]})}},
-  {id:'lystra',bar:21,bars:1,view:'scene',
+  {id:'lystra',bar:19,bars:1,view:'scene',
    async setup(){await room(6,'lystra',{at:[262,126,-1]})}},
+  /* the last chapters (added 2026-11-26, the maintainer's choice of scenes). Jerusalem: Paul on the stairs above the crowd, the temple
+     courts behind him (Chapter Eighteen) */
+  {id:'stairs',bar:20,bars:1,view:'scene',
+   async setup(){await room(18,'stairs18',{upto:'arrest'})}},
+  /* the third hour of the night: the escort forms in the yard of the soldiers' quarters by torchlight, the horses ready (Chapter Nineteen) */
+  {id:'escort',bar:21,bars:1,view:'scene',
+   async setup(){await room(19,'barracks19',{upto:'cmd'})}},
+  /* the height: the hearing in the audience hall at Caesarea (Chapter Twenty-One) */
+  {id:'hearing',bar:22,bars:1,view:'scene',
+   async setup(){await room(21,'hall21',{upto:'festus'})}},
+  /* the storm: the deck of the grain ship, which moves with the sea (Chapter Twenty-Two) */
+  {id:'storm',bar:23,bars:1,view:'scene',
+   async setup(){await room(22,'storm22',{upto:'advised'})}},
+  /* the road to Rome draws itself on the map, from Malta by Syracuse, Rhegium and Puteoli: the last map of the game's look back
+     (shared/lookback.js, whose roads never cross), drawn as the finale draws it */
+  {id:'map',bar:24,bars:1,view:'scene',card:'chapters',
+   async setup(){await chapter(Math.max(...Object.keys(CHAP).map(Number)));const[M,L]=await Promise.all([need('map'),need('lookback')]);
+     this.i=L.JOURNEYS.length-1;await L.show(this.i,-1);G.cap=null},
+   async play(){const M=SHARED.map,L=SHARED.lookback,J=L.JOURNEYS[this.i];
+     for(const p of J.parts){for(const k of p.seen||[])M.light(k);if(p.legs.length)await M.trace(p.legs,2500/J.parts.filter(q=>q.legs.length).length,{dots:L.dots});M.light(p.at)}}},
+  /* Rome: the lodging, Paul chained by one wrist to a soldier of the watch, Timothy at the table with the pen (Chapter Twenty-Five; a
+     watch in the middle of the chapter, not its last scene). Its first flags are carried in from Chapter Twenty-Four and stay unset: the flat */
+  {id:'lodging',bar:25,bars:1,view:'scene',
+   async setup(){await chapter(25);const C=CHAP[25],A=C.flags;await room(25,'lodging25',{flags:A.slice(C.carry,A.indexOf('q2')+1),at:(C.ent&&C.ent.lodging25)||[160,126,1]})}},
   /* a breath */
-  {id:'breath',bar:22,bars:1,view:'black',card:'langs'},
+  {id:'breath',bar:26,bars:1,view:'black',card:'langs'},
   /* the last turn: the sundial again, from noon to evening (turnDial(1, 2)), so that a day has passed between its two shots; then the
      bench at dawn (Chapter Thirteen) */
-  {id:'dial2',bar:23,bars:1,view:'scene',
+  {id:'dial2',bar:27,bars:1,view:'scene',
    async setup(){await room(13,'street13',{upto:'m1'});G.scene=CHAP[13].scenes.dial;G.dial13={a:1,b:2,k:0}},
    async play(){await tween(2900,k=>{G.dial13.k=ease(k)})}},
-  {id:'bench',bar:24,bars:1,view:'scene',
+  {id:'bench',bar:28,bars:1,view:'scene',
    async setup(){await room(13,'shop13',{upto:'hall',at:[150,122,1]})}},
   /* the title: the opening picture, its name over the tentmaker's bench by lamplight, and where to play */
-  {id:'title',bar:25,bars:3,view:'title',card:'free',first:1}];
+  {id:'title',bar:29,bars:3,view:'title',card:'free',first:1}];
 
 /* During a shot the game says only the shot's own lines: a thought or a call that the game would say on its own, at a moment the cut
    does not show whole, is left unsaid (it ends at once, as if clicked away). A shot with free:1 lets the game say what it says. */

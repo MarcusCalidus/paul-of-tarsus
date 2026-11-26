@@ -8,7 +8,8 @@
 
      paint(name, sub)   the logo as a canvas, for a name and a subtitle already in the player's language. It is painted once and kept.
      can(text)          whether every letter of a text has a glyph here. A language whose title needs another letter adds it to GL;
-                        until then the title screen shows that language's title as plain text. */
+                        until then the title screen shows that language's title as plain text.
+     plain(text, pen, cap) the mask of a line written plainly, for the playtest (the stops card<N>). */
 SHARED.logo=(()=>{
 "use strict";
 /* The letters. The cap height is 1, y runs down and the baseline is at 1. s: the strokes, each a path (M move, L line, C curve,
@@ -42,16 +43,25 @@ const GL={
  X:{w:.84,s:[{p:['M',.06,0,'L',.76,1]},{p:['M',.74,0,'L',.08,1],h:1}],f:[[.06,0,'t'],[.76,1,'b'],[.74,0,'t',1],[.08,1,'b',1]]},
  Y:{w:.82,s:[{p:['M',.04,0,'L',.40,.52]},{p:['M',.78,0,'L',.40,.52],h:1},{p:['M',.40,.52,'L',.40,1]}],f:[[.04,0,'t'],[.78,0,'t',1],[.40,1,'b']]},
  Z:{w:.74,s:[{p:['M',.08,.035,'L',.66,.035],h:1},{p:['M',.66,.035,'L',.08,.965]},{p:['M',.08,.965,'L',.68,.965],h:1}],f:[[.08,.035,'d-'],[.68,.965,'u']]},
+ /* Q (EUROAQUILO): the bowl of the O, and a tail that leaves the foot of the bowl right of the middle and sweeps out to the right
+    below the line, thinning to a hairline. It grows out of the bowl's stroke and never crosses it, nor reaches into the counter, so that
+    nothing stands across anything else (CONTRIBUTING section 3). A line with a Q gets room below it for the tail (see paint). */
+ Q:{w:1,s:[{p:['E',.5,.5,.435,.525]},{p:['M',.53,1.03,'C',.65,1.08,.77,1.13,.92,1.17]},{p:['M',.92,1.17,'C',.99,1.19,1.05,1.19,1.11,1.17],h:1}],f:[]},
  '?':{w:.70,s:[{p:['M',.12,.22,'C',.14,-.04,.62,-.06,.62,.22,'C',.62,.42,.38,.46,.38,.68]},{p:['E',.38,.93,.05,.05]}],f:[]},
  /* the apostrophe (THE SISTER'S SON): a short tapering stroke of the broad pen that hangs from the top of the line, curving a little to the left as it falls, like a comma set high */
- "'":{w:.26,s:[{p:['M',.15,-.01,'C',.16,.08,.14,.16,.07,.27]}],f:[]}};
-/* letters with dots above them: the dots stand over the capital, and the line makes room for them (see paint) */
-for(const[u,b,xs]of[['Ä','A',[.28,.60]],['Ö','O',[.32,.68]],['Ü','U',[.25,.61]]])GL[u]={w:GL[b].w,s:GL[b].s.concat(xs.map(x=>({p:['E',x,-.2,.05,.05]}))),f:GL[b].f};
+ "'":{w:.26,s:[{p:['M',.15,-.01,'C',.16,.08,.14,.16,.07,.27]}],f:[]},
+ /* the hyphen (CHAPTER TWENTY-ONE): one short level stroke of the broad pen a little below the middle of the capitals, nothing across it */
+ '-':{w:.42,s:[{p:['M',.07,.58,'L',.35,.58]}],f:[]}};
+/* letters with dots above them: the dots stand over the capital, and the line makes room for them (see paint). Each dot is a small
+   square of whole pixels set by write, not a stroke of the broad pen: a round dot swept with the pen grows as wide as a stem, and the
+   two ran together into one bar (issue #96). dots: where their centres stand across the letter. */
+for(const[u,b,xs]of[['Ä','A',[.24,.64]],['Ö','O',[.30,.70]],['Ü','U',[.22,.64]]])GL[u]={w:GL[b].w,s:GL[b].s,f:GL[b].f,dots:xs};
 /* pairs of letters that stand closer together than their widths say */
-const KERN={PA:-.13,TA:-.15,AT:-.12,AV:-.16,VA:-.16,VO:-.07,OV:-.07,LT:-.1,LO:-.03,AU:-.03,UA:-.03,RS:-.01,AR:-.02,RO:-.03,OA:-.06,AD:-.02,FR:-.02,TR:-.02,ST:-.02,SS:.01,RA:-.06,TE:-.02,FT:-.04,LU:-.02};
+const KERN={PA:-.13,TA:-.15,AT:-.12,AV:-.16,VA:-.16,VO:-.07,OV:-.07,LT:-.1,LO:-.03,AU:-.03,UA:-.03,RS:-.01,AR:-.02,RO:-.03,OA:-.06,AD:-.02,FR:-.02,TR:-.02,ST:-.02,SS:.01,RA:-.06,TE:-.02,FT:-.04,LU:-.02,AQ:-.03,QU:.04};
 /* The pens: nib is the length of the pen's edge and ang its angle in degrees; thin is added all round; a hairline is written with
-   hair of the nib. All in cap heights. serif: how far a serif reaches to each side (sw), its slope (sh) and its foot (bt). */
-const NAME={nib:.19,ang:15,thin:.05,hair:.48,serif:{sw:.12,sh:.07,bt:.035}},SUB={nib:.08,ang:17,thin:.1,hair:1};
+   hair of the nib. All in cap heights. serif: how far a serif reaches to each side (sw), its slope (sh) and its foot (bt).
+   dot: the side of an umlaut's square dot (never under two pixels), and dy: the height of its centre above the capitals. */
+const NAME={nib:.19,ang:15,thin:.05,hair:.48,serif:{sw:.12,sh:.07,bt:.035},dot:.22,dy:-.27},SUB={nib:.08,ang:17,thin:.1,hair:1,dot:.19,dy:-.32};
 const can=text=>[...text].every(ch=>ch===' '||GL[ch]);
 /* points: a path as runs of points close enough together for the pen to be swept along them */
 function points(p){const out=[];let cur,x=0,y=0;
@@ -71,17 +81,19 @@ function lay(text,track,space){let x=0;const it=[];
 function write(g,text,o){const pen=o.pen,cap=o.cap,L=lay(text,o.track,o.space),W=L.w*cap,A=pen.ang*Math.PI/180,sin=Math.sin(A),cos=Math.cos(A);
   g.lineJoin=g.lineCap='round';
   for(const it of L.it){const at=(gx,gy)=>{const X=o.x+(it.x+gx)*cap,Y=o.y+gy*cap;return o.warp?o.warp(X,Y,(X-o.x)/W):[X,Y]};
-    for(const s of it.g.s){const k=s.h?pen.hair:1,hx=cos*pen.nib*cap*k/2,hy=-sin*pen.nib*cap*k/2;g.lineWidth=pen.thin*cap;
+    for(const s of o.part==='dots'?[]:it.g.s){const k=s.h?pen.hair:1,hx=cos*pen.nib*cap*k/2,hy=-sin*pen.nib*cap*k/2;g.lineWidth=pen.thin*cap;
       for(const run of points(s.p)){const q=run.map(p=>at(p[0],p[1]));
         for(let i=0;i<q.length-1;i++){const a=q[i],b=q[i+1];g.beginPath();g.moveTo(a[0]+hx,a[1]+hy);g.lineTo(b[0]+hx,b[1]+hy);g.lineTo(b[0]-hx,b[1]-hy);g.lineTo(a[0]-hx,a[1]-hy);g.closePath();g.fill();g.stroke()}}}
-    const sf=pen.serif;if(sf)for(const[x,y,kind,hairline]of it.g.f){const k=hairline?pen.hair:1;
+    const sf=o.part==='dots'?null:pen.serif;if(sf)for(const[x,y,kind,hairline]of it.g.f){const k=hairline?pen.hair:1;
       /* hw: half a stem's width; oy: how far the pen's slanted end reaches past a stem's end; ht and ox: the same for an arm */
       const hw=(pen.nib*k*cos+pen.thin)/2,oy=(pen.nib*k*sin+pen.thin)/2,ht=(pen.nib*pen.hair*sin+pen.thin)/2,ox=(pen.nib*pen.hair*cos+pen.thin)/2,sw=hw+sf.sw*(hairline?.8:1);let P;
       if(kind[0]==='b'||kind[0]==='t'){const s=kind[0]==='b'?1:-1,l=kind[1]!=='r'?sw:hw,r=kind[1]!=='l'?sw:hw,e=y+s*oy;
         P=[[x-l,e],[x-l,e-s*sf.bt],[x-hw,e-s*(sf.sh+sf.bt)],[x+hw,e-s*(sf.sh+sf.bt)],[x+r,e-s*sf.bt],[x+r,e]]}
       else{const m=kind.endsWith('-')?-1:1,up=kind.includes('u')?.16:ht,dn=kind.includes('d')?.16:ht,e=x+m*ox,back=sf.sh+sf.bt+.03;
         P=[[e,y-up],[e,y+dn],[e-m*sf.bt,y+dn],[e-m*back,y+ht],[e-m*back,y-ht],[e-m*sf.bt,y-up]]}
-      g.beginPath();P.forEach((p,i)=>{const q=at(p[0],p[1]);i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1])});g.closePath();g.fill()}}}
+      g.beginPath();P.forEach((p,i)=>{const q=at(p[0],p[1]);i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1])});g.closePath();g.fill()}
+    /* an umlaut's dots: two squares of whole pixels, set where the arch carries their centres, and as square under it as on the level */
+    if(it.g.dots&&o.part!=='letters'){const d=Math.max(2,Math.round(pen.dot*cap));for(const x of it.g.dots){const q=at(x,pen.dy);g.fillRect(Math.round(q[0]-d/2),Math.round(q[1]-d/2),d,d)}}}}
 const width=(text,o)=>lay(text,o.track,o.space).w*o.cap;
 /* masks: one byte for each pixel, set where the shape is */
 const blank=(w,h)=>Object.assign(new Uint8Array(w*h),{w,h});
@@ -98,15 +110,19 @@ function paint(name,sub){const key=name+'|'+sub;if(KEPT[key])return KEPT[key];
   /* the name: as tall as the room allows, standing on a level line, each letter stretched to the arch above it */
   const o1={pen:NAME,track:.13,space:.44},cap=Math.min(37,Math.floor(540/width(name,{cap:1,...o1}))),tw=Math.ceil(width(name,{cap,...o1}));
   /* the canvas is a whole number of room pixels each way, and a multiple of four across, so that it sits on whole screen pixels */
-  const W=Math.ceil((tw+(DEPTH+9)*2)/4)*4,pad=(W-tw)>>1,up=/[ÄÖÜ]/.test(name)?Math.round(cap*.34):0,base=3+up+Math.round(cap*(1+RISE)),o2={pen:SUB,track:.26,space:.8,cap:11},sw=Math.ceil(width(sub,o2)),sy=base+DEPTH+8,H=Math.ceil((sy+o2.cap+6)/2)*2;
+  const W=Math.ceil((tw+(DEPTH+9)*2)/4)*4,pad=(W-tw)>>1,up=/[ÄÖÜ]/.test(name)?Math.round(cap*.48):0,dn=/Q/.test(name)?Math.round(cap*.22):0,base=3+up+Math.round(cap*(1+RISE)),o2={pen:SUB,track:.26,space:.8,cap:11},sw=Math.ceil(width(sub,o2)),sy=base+DEPTH+8+dn+(/[ÄÖÜ]/.test(sub)?5:0),H=Math.ceil((sy+o2.cap+6)/2)*2;
   const arch=u=>1+RISE*Math.cos(Math.PI*(clamp(u,0,1)-.5));
-  const face=mask(W,H,g=>write(g,name,{x:pad,y:base-cap,cap,...o1,warp:(x,y,u)=>[x,base-(base-y)*arch(u)]}));
+  const wr=part=>mask(W,H,g=>write(g,name,{x:pad,y:base-cap,cap,...o1,part,warp:(x,y,u)=>[x,base-(base-y)*arch(u)]}));
+  /* an umlaut's dots are a mask of their own, so that their raised side can stop short of the letter under them (below) */
+  const letters=wr('letters'),pips=up?wr('dots'):null,face=pips?join(letters,pips):letters;
   /* the subtitle, and a rule on each side of it that thins away from it and stops short of it */
   const sx=Math.round((W-sw)/2),my=sy+Math.floor(o2.cap/2),len=Math.min(70,sx-12-DEPTH);
   const small=mask(W,H,g=>{write(g,sub,{x:sx,y:sy,...o2});
     if(len>=16)for(const s of[-1,1]){const x0=s<0?sx-10:sx+sw+10,bar=(dy,part)=>{const l=Math.round(len*part);g.fillRect(s<0?x0-l:x0,my+dy,l,1)};bar(-1,.36);bar(0,1);bar(1,.6)}});
   /* the raised side runs down and to the left, away from the light */
-  let side=shift(face,-1,1);for(let i=2;i<=DEPTH;i++)side=join(side,shift(face,-i,i));
+  const raise=m=>{let r=shift(m,-1,1);for(let i=2;i<=DEPTH;i++)r=join(r,shift(m,-i,i));return r};
+  /* a dot's side is as deep as a letter's, but where it would run into its letter it stops a pixel short, so that the outline parts them */
+  let side=raise(letters);if(pips)side=join(side,less(raise(pips),grow(join(letters,side))));
   const solid=join(face,side),dark=join(grow(solid),grow(small)),shadow=shift(dark,-2,3);
   const hi=less(face,shift(face,-1,1)),lo=less(face,shift(face,1,-1));
   const[c,g]=mk(W,H),im=g.createImageData(W,H),d=im.data,put=(i,q,a)=>{const j=i*4;d[j]=q[0];d[j+1]=q[1];d[j+2]=q[2];d[j+3]=a||255};
@@ -117,4 +133,8 @@ function paint(name,sub){const key=name+'|'+sub;if(KEPT[key])return KEPT[key];
     else if(dark[i])put(i,EDGE);
     else if(shadow[i])put(i,[4,3,10],128)}
   g.putImageData(im,0,0);c.className='logo';return KEPT[key]=c}
-return{paint,can}})();
+/* plain: the mask of a line written plainly, with the name's pen ('name') or the subtitle's, at a cap height, for the playtest to count
+   its pieces: the two dots of an umlaut stand apart from each other and from their letter */
+function plain(text,which,cap){const o=which==='name'?{pen:NAME,track:.13,space:.44}:{pen:SUB,track:.26,space:.8},w=Math.ceil(width(text,{cap,...o}))+cap,h=cap*2;
+  return mask(w,h,g=>write(g,text,{x:cap/2,y:Math.round(cap*.7),cap,...o}))}
+return{paint,can,plain}})();

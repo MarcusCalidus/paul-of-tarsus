@@ -2,7 +2,7 @@
 
 A browser point-and-click adventure in the style of early-1990s verb-and-inventory adventure games. You play Saul of Tarsus, later known as the apostle Paul, a tentmaker who gets out of tight spots with his trade, his brothers and prayer rather than with force.
 
-There are a prologue and nineteen chapters so far, in English and German. The game is a small engine in `index.html` plus one level file per chapter in `levels/`, loaded only when that chapter is played. There are no image or audio files: every backdrop, character and icon is painted in code on a canvas, and all music, ambience and sound effects are synthesized with the Web Audio API.
+There are a prologue and twenty-five chapters, in English and German, and the account is told to its end. The game is a small engine in `index.html` plus one level file per chapter in `levels/`, loaded only when that chapter is played. There are no image or audio files: every backdrop, character and icon is painted in code on a canvas, and all music, ambience and sound effects are synthesized with the Web Audio API.
 
 ![Title screen](docs/screenshots/title.png)
 
@@ -37,6 +37,12 @@ Each chapter has its own page with screenshots, a walkthrough, its music and map
 17. [Chapter Seventeen: The Belt](docs/chapter-17.md)
 18. [Chapter Eighteen: On the Stairs](docs/chapter-18.md)
 19. [Chapter Nineteen: The Sister's Son](docs/chapter-19.md)
+20. [Chapter Twenty: Some Other Time](docs/chapter-20.md)
+21. [Chapter Twenty-One: To Caesar](docs/chapter-21.md)
+22. [Chapter Twenty-Two: Euroaquilo](docs/chapter-22.md)
+23. [Chapter Twenty-Three: All Safe to Land](docs/chapter-23.md)
+24. [Chapter Twenty-Four: He Took Courage](docs/chapter-24.md)
+25. [Chapter Twenty-Five: Without Hindrance](docs/chapter-25.md)
 
 ## How to play
 
@@ -44,11 +50,15 @@ Point at something and click: its usual verb lights up. Use the verbs, the inven
 
 ![Pointing at Eliab lights Talk to](docs/screenshots/verbs.png)
 
+After the last chapter the game is watched and no longer played: a map of the letters written in Rome, the narrator's last line, a look back that draws every journey from Damascus to Rome, and the closing screen. A game played to its end is kept as a safe-point code like any other point, and its title screen has the line **From Damascus to Rome**, which shows the look back again.
+
 ## About the content
 
 The game follows the scriptural understanding of Jehovah's Witnesses and the New World Translation of the Holy Scriptures (Study Edition); the German version follows the German edition, the *Neue-Welt-Übersetzung der Heiligen Schrift (Studienausgabe)*. Verses are told in the game's own words with their references, and no text, artwork or other material of jw.org is reproduced. Historical details are checked by hand against jw.org and wol.jw.org. Paul is shown as a courageous, observant minister who relies on practical wisdom, cooperation with fellow believers and trust in Jehovah. There are no halos, crosses or mystical effects, and no puzzle is solved by a miracle or by violence.
 
-The events themselves are from the Scriptures. All dialogue is dramatization, including the words given to Ananias, Barnabas, Cephas, James, Agabus, Lucius, John Mark, Sergius Paulus, Bar-Jesus, Timothy, Eunice, Lois, Jason, Dionysius, Damaris, Aquila, Priscilla, Titius Justus, Crispus, Stephanas, Gaius, Apollos, Erastus, Tertius, Aristarchus, Trophimus, Eutychus, Luke, Sopater, Secundus, Philip, Mnason, the military commander in Jerusalem (Claudius Lysias), the high priest Ananias, Paul's nephew and his sister, Felix, the man who was lame and the priest of Zeus. Where a chapter shows somebody whom Acts does not name at that place or at that time (Stephanas and Gaius in Corinth, who are known from 1 Corinthians 1:14, 16; Timothy in the hall at Ephesus, where Acts 19:22 places him without telling when he came; Tertius and Gaius in the three months of Acts 20:3, whom Romans 16:22, 23 names and Acts does not; Timothy, Aristarchus and Trophimus on the voyage of Acts 21:1-16, which names only "we", though Acts 21:29 later places Trophimus in Jerusalem; Timothy and Aristarchus with Paul in Jerusalem, where Acts 21:17, 18 says only "we"; Paul's sister at her door in Jerusalem, whom Acts 23:16 mentions only as the young man's mother), its page and its end screen say so. The supporting characters are invented too. Each chapter's page has an "About the content" section that says what the account leaves unsaid, what is invented and which publications the details come from, and each chapter's end screen says so too:
+The events themselves are from the Scriptures. All dialogue is dramatization, including the words given to Ananias, Barnabas, Cephas, James, Agabus, Lucius, John Mark, Sergius Paulus, Bar-Jesus, Timothy, Eunice, Lois, Jason, Dionysius, Damaris, Aquila, Priscilla, Titius Justus, Crispus, Stephanas, Gaius, Apollos, Erastus, Tertius, Aristarchus, Trophimus, Eutychus, Luke, Sopater, Secundus, Philip, Mnason, the military commander in Jerusalem (Claudius Lysias), the high priest Ananias, Paul's nephew and his sister, Felix, Tertullus, Drusilla, Festus, King Agrippa, Julius, the pilot and the shipowner of the grain ship, Publius and his father, Epaphroditus, Epaphras, Tychicus, Onesimus, Demas, Jesus who is called Justus, the man who was lame and the priest of Zeus. Where a chapter shows somebody whom Acts does not name at that place or at that time (Stephanas and Gaius in Corinth, who are known from 1 Corinthians 1:14, 16; Timothy in the hall at Ephesus, where Acts 19:22 places him without telling when he came; Tertius and Gaius in the three months of Acts 20:3, whom Romans 16:22, 23 names and Acts does not; Timothy, Aristarchus and Trophimus on the voyage of Acts 21:1-16, which names only "we", though Acts 21:29 later places Trophimus in Jerusalem; Timothy and Aristarchus with Paul in Jerusalem, where Acts 21:17, 18 says only "we"; Paul's sister at her door in Jerusalem, whom Acts 23:16 mentions only as the young man's mother; Luke and Philip visiting Paul in custody at Caesarea, where Acts 24:23 names none of his people; Julius on the road from Puteoli and at the camp in Rome, where Acts 28 does not name him after Malta and the game lets him bring Paul in, as publications on wol.jw.org describe it; and the ten companions whom Paul's letters from Rome name, Timothy, Luke, Aristarchus, Mark, Jesus who is called Justus, Epaphras, Demas, Tychicus, Onesimus and Epaphroditus, in his lodging there, where the letters place them and Acts does not), its page and its end screen say so. The supporting characters are invented too. Each chapter's page has an "About the content" section that says what the account leaves unsaid, what is invented and which publications the details come from, and each chapter's end screen says so too:
+
+The game ends where Acts ends: in Rome, inside the two years of Acts 28:30, 31, with Paul still in custody and his door open. His release is not shown, because the Scriptures do not tell it; the closing screen says in one sentence that he was apparently set free about 61 C.E. and went on preaching, with the caution the publications on wol.jw.org keep too. His second imprisonment and his death are not part of the game.
 
 - [Chapter One: Escape from Damascus](docs/chapter-1.md#about-the-content)
 - [Chapter Two: A Friend in Jerusalem](docs/chapter-2.md#about-the-content)
@@ -69,6 +79,12 @@ The events themselves are from the Scriptures. All dialogue is dramatization, in
 - [Chapter Seventeen: The Belt](docs/chapter-17.md#about-the-content)
 - [Chapter Eighteen: On the Stairs](docs/chapter-18.md#about-the-content)
 - [Chapter Nineteen: The Sister's Son](docs/chapter-19.md#about-the-content)
+- [Chapter Twenty: Some Other Time](docs/chapter-20.md#about-the-content)
+- [Chapter Twenty-One: To Caesar](docs/chapter-21.md#about-the-content)
+- [Chapter Twenty-Two: Euroaquilo](docs/chapter-22.md#about-the-content)
+- [Chapter Twenty-Three: All Safe to Land](docs/chapter-23.md#about-the-content)
+- [Chapter Twenty-Four: He Took Courage](docs/chapter-24.md#about-the-content)
+- [Chapter Twenty-Five: Without Hindrance](docs/chapter-25.md#about-the-content)
 
 This is an independent, non-commercial fan project. It is not produced, endorsed or reviewed by Jehovah's Witnesses or the Watch Tower Bible and Tract Society, and it is not affiliated with jw.org. It contains no material from jw.org or its subdomains; it only refers to them as sources that its authors read. Their [Terms of Use](https://www.jw.org/en/terms-of-use/) apply to their content.
 
