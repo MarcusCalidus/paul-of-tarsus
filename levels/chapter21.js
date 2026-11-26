@@ -310,6 +310,9 @@ async function goto21(room,x,y,dir){await fade(1,300);show21(room,x,y,dir);await
 const tw=ms=>wait(fast()?Math.min(40,ms):ms);
 async function go21(a,x,y,sp){a.speed=fast()?400:sp||0;a.free=1;await walk(a,x,y);a.speed=0;a.free=0}
 const TC={thought:1,color:'#ece0c8'};   /* the clerk's thoughts */
+/* The clerk does not worship Jehovah, so he never prays: while he is played the hint button reads Think it over, and its hint is his own
+   thought, in his own colour (noPray, CONTRIBUTING section 2). */
+CL.noPray=1;CL.thought=TC;
 const THP={thought:1,color:'#cfe2ff'};  /* Paul's */
 const mk21=()=>G.mk21||(G.mk21={});
 const markOf21=k=>F.report?REPORT21.find(c=>c.k===k).ok:mk21()[k];

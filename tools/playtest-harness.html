@@ -4518,7 +4518,8 @@
   /* the nephew */
   await code('at the sister\'s door',()=>G.room==='door19'&&PC()===NE&&P.room==='barracks19'&&SI.room==='door19'&&srt()==='uncle19');
   halt('door19');
-  await hints('hint_mother_1','hint_mother_2','at the door');
+  {const n0=G.prays;await hints('hint_mother_1','hint_mother_2','at the door');
+    ok(PC()===NE&&!NE.noPray&&$('#pray').textContent===T('pray_to_jehovah')&&G.prays===n0+2,'Paul\'s nephew prays: the button reads Pray to Jehovah, and both prayers are counted')}
   heard.length=0;await onH('lane_into_the_city','walk');ok(said('nephew_first_what_mother_wants')&&G.room==='door19','first what his mother wants');
   heard.length=0;await talkTo(SI);ok(said('sister_take_the_jug_to_the_oil_seller')&&F.errand&&has('jug19'),'his mother sends him for lamp oil');
   await hints('hint_into_the_city_1','hint_into_the_city_2','with the jug');
@@ -4828,8 +4829,15 @@
     clickHs=async(h,v)=>{verb(v||'use');clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
     talkTo=async(a,v)=>{verb(v||'talk');clickView(a.x,a.y-10,a.hs);await idle()},
     useA=async(id,a,v)=>{verb(v||'use');item(id);clickView(a.x,a.y-10,a.hs);await idle()},
-    pray21=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
-    hints=async(a,b,where)=>{heard.length=0;const p=await pray21(),first=said(a)&&!said(b),q=await pray21();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
+    /* the clerk does not pray (noPray, CONTRIBUTING section 2): while he is played the button reads Think it over, and gives the hint as his
+       thought with no dimmed picture, no bowed head, no prayer line and no prayer counted; while Paul is played it reads Pray to Jehovah and counts */
+    pv={},pray21=async()=>{const h=heard.length,me=PC(),iv=setInterval(()=>{if(+$('#dim').style.opacity>0)pv.dim=1;if(me.bow)pv.bow=1},15);
+      await new Promise(r=>{pray();setTimeout(r,60)});await idle();clearInterval(iv);return heard.length>h},
+    hints=async(a,b,where)=>{heard.length=0;const me=PC(),np=!!me.noPray,lbl=$('#pray').textContent,n0=G.prays;pv.dim=pv.bow=0;
+      const p=await pray21(),first=said(a)&&!said(b),q=await pray21(),prayed=heard.some(h=>PRAYERS.concat(PRAYERS2).some(l=>h===T(l,{name:T(storyName(me))})));
+      ok(p&&q&&first&&said(b),(np?'two thoughts ':'two prayers ')+where+': a gentle hint, then a direct one ['+a+', '+b+']');
+      ok(np?me===CL&&lbl===T('think_it_over')&&!prayed&&!pv.dim&&!pv.bow&&G.prays===n0:me===P&&lbl===T('pray_to_jehovah')&&prayed&&pv.dim&&pv.bow&&G.prays===n0+2,
+        np?'the clerk does not pray: the button reads Think it over; no prayer line, no dimmed picture, no bowed head, no prayer counted':'Paul prays: the button reads Pray to Jehovah, and both prayers are counted')},
     asked=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);return[...document.querySelectorAll('#choices button')].map(x=>x.dataset.src)},
     line=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await idle()},
     seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)},

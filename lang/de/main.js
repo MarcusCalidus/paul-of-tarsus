@@ -21,6 +21,7 @@ TEXTS('de','main',{
   "Paul":["Paulus","1kzue9f"],
   "Saul":["Saulus","0a112xk"],
   "pray_to_jehovah":["Zu Jehova beten","05egjqx"],
+  "think_it_over":["Nachdenken","1cd24pa"],
   "play_as_name_c":["Als {name} spielen (C)","0ynroom"],
   "speaker_name":["{name}:","1vxb8dm"],
   "take_this_name":["Nimm das, {name}.","0362dh3"],

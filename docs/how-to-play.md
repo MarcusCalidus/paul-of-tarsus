@@ -92,7 +92,7 @@ The game plays in English and in German (Deutsch). It starts in your browser's l
 
 ## Pray to Jehovah
 
-The blue button is the hint system. Paul (Saul, as the account calls him until Acts 13:9) pauses, bows his head and prays for wisdom (James 1:5) and leaves his cares with Jehovah (1 Peter 5:7). Prayer never solves a puzzle or changes the game. It clears his mind, and he then has a thought that points toward the next practical step. Praying again at the same point gives a more direct thought.
+The blue button is the hint system. Paul (Saul, as the account calls him until Acts 13:9) pauses, bows his head and prays for wisdom (James 1:5) and leaves his cares with Jehovah (1 Peter 5:7). Prayer never solves a puzzle or changes the game. It clears his mind, and he then has a thought that points toward the next practical step. Praying again at the same point gives a more direct thought. While you play someone who does not worship Jehovah, such as the governor's clerk in Chapter Twenty-One, the button reads **Think it over** and gives the same hints as his own thoughts, with no prayer.
 
 ![Praying for wisdom](screenshots/pray.png)
 

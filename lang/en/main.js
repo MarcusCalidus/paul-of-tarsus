@@ -18,6 +18,7 @@ TEXTS('en','main',{
   "Paul":"Paul",
   "Saul":"Saul",
   "pray_to_jehovah":"Pray to Jehovah",
+  "think_it_over":"Think it over",
   "play_as_name_c":"Play as {name} (C)",
   "speaker_name":"{name}:",
   "take_this_name":"Take this, {name}.",
