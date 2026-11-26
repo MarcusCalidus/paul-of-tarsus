@@ -436,7 +436,7 @@ async function fetch20(n){SO.room='room20';place(SO,'room20',DOORIN20[0],DOORIN2
 /* ---- the mark on the sill ---- */
 async function mark20(){const o=owed20();
   if(o==='luke'){SFX.nope();return say(P,'paul_luke_is_waiting_for_me',TH)}
-  if(o){SFX.nope();return say(P,'paul_not_now',TH)}
+  if(o){SFX.nope();return say(P,'not_now18',TH)}
   SFX.click();const n=season20();if(n===1)await say(P,'paul_a_mark_for_each_season',TH);
   if(n===8)return end20();
   return turn20(n+1)}
@@ -459,7 +459,7 @@ async function subject20(){if(F.fright)return say(FX,'felix_some_other_time',{to
   if(s.f&&F[s.f])return say(P,'paul_ive_said_that_already',TH);
   await say(P,s.say,{to:FX});
   if(!s.f){await say(FX,'felix_i_see',{to:P});return say(P,'paul_thats_what_it_gives',TH)}
-  F[s.f]=1;codeBtn();if(!(F.rt&&F.sc&&F.jd))return say(FX,'felix_go_on',{to:P});
+  F[s.f]=1;codeBtn();if(!(F.rt&&F.sc&&F.jd))return say(FX,'go_on',{to:P});
   AU.mood='tense';await tell('v25');await say(FX,'felix_some_other_time',{to:P});
   await fade(1,600);F.fright=1;show20('room20');await fade(0,600);AU.mood='room';codeBtn()}
 
@@ -506,15 +506,15 @@ ROOMS.court20={space:.8,get walk(){return P.chained?[210,210,128,128]:CS.WALK.sl
   {name:'clerks_desk',x:150,y:92,w:40,h:20,wx:200,wy:118,look:'clerks_desk_look'},
   {name:'dais',x:196,y:96,w:112,h:16,wx:210,wy:118,look:'dais20_look'}]};
 ROOMS.room20={space:.6,walk:[24,300,112,138],get mood(){return winter20()?'winter':'room'},get amb(){return winter20()?AMB.roomWinter20:AMB.room20},hs:[
-  {name:'window_over_the_harbor',x:36,y:34,w:76,h:62,wx:74,wy:116,def:'look',look:()=>toWindow20(),useWith:awlOn,open:'paul_it_has_no_shutters'},
+  {name:'window',x:36,y:34,w:76,h:62,wx:74,wy:116,def:'look',look:()=>toWindow20(),useWith:awlOn,open:'paul_it_has_no_shutters'},
   {name:'bed',x:188,y:90,w:68,h:16,wx:220,wy:116,look:'bed20_look'},
-  {name:'water_jar',x:148,y:88,w:12,h:18,wx:154,wy:116,look:'water_jar20_look',pickup:'paul_the_jar_stays_here'},
+  {name:'water_jar',x:148,y:88,w:12,h:18,wx:154,wy:116,look:'water_jar20_look',pickup:'it_stays_where_it_is'},
   {name:'door',x:270,y:38,w:32,h:64,wx:286,wy:116,dir:1,exit:()=>say(P,'paul_a_soldier_keeps_that_door',TH),look:'door20_look'},
   {name:'gull',x:60,y:82,w:16,h:10,wx:74,wy:116,vis:()=>season20()===5,look:'gull_at_the_window'}]};
 ROOMS.window20={space:.8,walk:NOW,get mood(){return winter20()?'winter':'room'},get amb(){return winter20()?AMB.windowWinter20:AMB.window20},hs:[
   {name:'sky_over_the_harbor',x:24,y:10,w:272,h:40,wx:160,wy:236,look:()=>sky20()},
-  {name:'harbor_of_sebastos',x:24,y:54,w:272,h:50,wx:160,wy:236,look:()=>harbor20()},
-  {name:'breakwater',x:30,y:62,w:200,h:10,wx:160,wy:236,look:'breakwater_look'},
+  {name:'harbor',x:24,y:54,w:272,h:50,wx:160,wy:236,look:()=>harbor20()},
+  {name:'mole',x:30,y:62,w:200,h:10,wx:160,wy:236,look:'breakwater_look'},
   {name:'sill',x:24,y:112,w:272,h:14,wx:160,wy:236,look:'sill_look',useWith:awlOn},
   {name:'marks_on_the_sill',x:40,y:113,w:52,h:10,wx:160,wy:236,vis:()=>marks20()>0,look:()=>say(P,marks20()===1?'one_mark_on_the_sill_look':T('marks_on_the_sill_look',{n:marks20()}),TH),useWith:awlOn},
   {name:'back_to_the_room',x:0,y:134,w:120,h:10,wx:160,wy:236,exit:()=>goto20('room20'),look:'back_to_the_room_look'}]};
@@ -546,14 +546,14 @@ who(LK,{look:'luke20_look',talk:()=>luke20()});
 Object.assign(ITEMS,{
   pouch20:{name:'tool_pouch',def:'open',look:'my_pouch_from_philips_house',open:()=>openPouch20(),use:()=>openPouch20()},
   cloak20:{name:'my_cloak',look:'my_cloak20_look',use:'paul_ill_wear_it_tonight'},
-  purse20:{name:'a_few_coins',look:'a_few_coins_look',use:'paul_the_coins_are_for_bread'}});
+  purse20:{name:'coins_from_my_belt',look:'a_few_coins_look',use:'paul_the_coins_are_for_bread'}});
 
 /* ============ WAX TABLETS ============ */
 const TABLETS={
   people:[{name:'Felix',note:'note20_felix'},{name:'Tertullus',note:'note20_tertullus',if:()=>!F.marks},{name:'high_priest_ananias',note:'note20_ananias',if:()=>!F.marks},
-    {name:'Drusilla',note:'note20_drusilla',if:()=>!!F.pouch},{name:'Philip',note:'note20_philip',if:()=>!!F.things},{name:'Simmias',note:'note20_simmias',if:()=>!!F.things},
+    {name:'Drusilla',note:'note20_drusilla',if:()=>!!F.pouch},{name:'Philip',note:'note20_philip',if:()=>!!F.things},{name:'Simmias',note:'brother_from_jerusalem_look',if:()=>!!F.things},
     {name:'Phaidros',note:'note20_phaidros',if:()=>!!F.things},{name:'Luke',note:'note20_luke',if:()=>!!F.s3}],
-  tasks:[{t:'task20_answer_the_governor',if:()=>!F.courtesy},{t:'task20_answer_the_charges',if:()=>!!F.courtesy&&!F.marks},
+  tasks:[{t:'task19_before_felix',if:()=>!F.courtesy},{t:'task20_answer_the_charges',if:()=>!!F.courtesy&&!F.marks},
     {t:'task20_my_visitors',if:()=>!!F.marks&&!F.things},{t:'task20_open_my_pouch',if:()=>!!F.things&&!F.pouch},
     {t:'task20_before_felix',if:()=>owed20()==='felix'&&!!F.pouch},{t:'task20_lukes_questions',if:()=>owed20()==='luke'},
     {t:'task20_count_the_seasons',if:()=>!!F.pouch&&!owed20()}],
@@ -580,7 +580,7 @@ function setup20(){P.hs=null;P.called='Paul';G.mk20=null;G.cv20=G.wv20=G.st20=G.
 function hint20(){if(phase20()==='court'){if(!F.courtesy)return['first20',['hint_the_first_words_1','hint_the_first_words_2']];
     return['charges20',['hint_the_three_charges_1','hint_the_three_charges_2']]}
   const o=owed20();
-  if(o==='visitors')return['people20',['hint_my_people_1','hint_my_people_2']];
+  if(o==='visitors')return['people20',['hint_my_people_1','hint_philip_2']];
   if(!F.pouch)return['pouch20',['hint_my_tools_1','hint_my_tools_2']];
   if(o==='felix')return!F.fright?['asks20',['hint_what_it_asks_1','hint_what_it_asks_2']]:['purse20',['hint_felix_talks_round_it_1','hint_felix_talks_round_it_2']];
   if(o==='luke')return['luke20',['hint_lukes_questions_1','hint_lukes_questions_2']];

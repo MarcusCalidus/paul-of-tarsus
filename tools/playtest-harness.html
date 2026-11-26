@@ -4665,7 +4665,7 @@
     seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)},
     code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)},
     /* a mark on the sill (from the room or from the window), and the next season as far as it goes by itself */
-    scratch=async(n,where)=>{heard.length=0;if(where==='window')useH('awl','sill');else useH('awl','window_over_the_harbor');
+    scratch=async(n,where)=>{heard.length=0;if(where==='window')useH('awl','sill');else useH('awl','window');
       await until(()=>C().season()===n&&(!G.busy||$('#choices').classList.contains('on'))&&!(+$('#dim').style.opacity),9000);note()};
   heard.length=0;
   if(C20){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
@@ -4713,7 +4713,7 @@
   await code('in his room, the first summer',()=>G.room==='room20'&&F.marks&&!F.things&&PH.room==='room20'&&!P.chained&&C().season()===1);
   halt('room20');
   /* the first summer */
-  await hints('hint_my_people_1','hint_my_people_2','with his visitors');
+  await hints('hint_my_people_1','hint_philip_2','with his visitors');
   heard.length=0;await talkTo(PH);await until(()=>F.things&&!G.busy,6000);
   ok(['philip_your_pouch_from_my_house','simmias_your_cloak','phaidros_a_few_coins','paul_its_more_than_enough'].every(said)&&has('pouch20')&&has('cloak20')&&has('purse20')&&!has('awl')&&PH.room===null,
     'his pouch from Philip\'s house, his cloak, a few coins; and they go');
@@ -4730,17 +4730,17 @@
   heard.length=0;talkTo(FX);{const o=await asked();ok(o.length===7&&o.at(-1)==='paul_let_me_think_first','six true things to speak of')}
   await pick('subject_the_hope_of_the_resurrection');ok(said('paul_on_the_hope')&&said('felix_i_see')&&said('paul_thats_what_it_gives')&&!F.rt,'the hope: heard politely, and nothing changes');
   heard.length=0;talkTo(FX);await pick('subject_the_congregations');ok(said('felix_i_see')&&!F.fright,'the congregations: the same');
-  heard.length=0;talkTo(DR);await pick('subject_righteousness');ok(said('paul_on_righteousness')&&said('felix_go_on')&&F.rt,'righteousness');
+  heard.length=0;talkTo(DR);await pick('subject_righteousness');ok(said('paul_on_righteousness')&&said('go_on')&&F.rt,'righteousness');
   heard.length=0;talkTo(FX);await pick('subject_righteousness');ok(said('paul_ive_said_that_already'),'said already: it stays on offer');
   heard.length=0;talkTo(FX);await pick('subject_the_judgment_to_come');ok(F.jd&&!F.fright,'the judgment to come');
   heard.length=0;talkTo(FX);pick('subject_self_control');await until(()=>F.fright&&G.room==='room20'&&!G.busy,9000);note();
   ok(said('paul_on_self_control')&&seenTold.has('v25')&&said('felix_some_other_time')&&!P.chained&&C().season()===1,'self-control: Felix becomes frightened and sends him away, some other time (Acts 24:25)');
   await hints('hint_the_seasons_1','hint_the_seasons_2','in the first summer');
-  heard.length=0;await onH('window_over_the_harbor','look');await until(()=>G.room==='window20'&&!G.busy);
+  heard.length=0;await onH('window','look');await until(()=>G.room==='window20'&&!G.busy);
   ok(said('paul_the_harbor_from_my_window')&&C().kind()==='su','the window over the harbor, in summer');
-  heard.length=0;await onH('harbor_of_sebastos','look');ok(said('harbor_in_summer_look'),'the harbor full of ships');
+  heard.length=0;await onH('harbor','look');ok(said('harbor_in_summer_look'),'the harbor full of ships');
   heard.length=0;await onH('sky_over_the_harbor','look');ok(said('sky_over_the_harbor_look')&&!treasures().has(20),'no storks in the first summer');
-  heard.length=0;await onH('breakwater','look');ok(said('breakwater_look'),'the breakwater');
+  heard.length=0;await onH('mole','look');ok(said('breakwater_look'),'the breakwater');
   /* the first autumn: nothing is owed */
   await scratch(2,'window');
   ok(said('paul_a_mark_for_each_season')&&heard.includes(T('autumn_came'))&&said('paul_autumn_and_still_here')&&G.room==='room20'&&!P.chained&&!said('soldier_the_governor_sends_for_you')&&!C().owed(),
@@ -4751,7 +4751,7 @@
   await code('in the first winter',()=>G.room==='room20'&&F.s3&&!F.luke&&LK.room==='room20');
   halt('luke20');
   await hints('hint_lukes_questions_1','hint_lukes_questions_2','with Luke');
-  heard.length=0;await useH('awl','window_over_the_harbor');ok(said('paul_luke_is_waiting_for_me')&&!F.s4,'the season does not turn while Luke waits');
+  heard.length=0;await useH('awl','window');ok(said('paul_luke_is_waiting_for_me')&&!F.s4,'the season does not turn while Luke waits');
   heard.length=0;talkTo(LK);{const o=await asked();ok(said('luke_where_ananias')&&o.length===6&&C().places.every(p=>o.includes(p)),'Ananias: five places on offer')}
   await pick('Paphos');ok(heard.includes(T('paul_not_place',{place:T('Paphos')}))&&!F.q1,'a wrong place is Paul\'s own thought, not said');
   {const o=await asked();ok(o.length===6,'every place stays on offer')}
@@ -4760,7 +4760,7 @@
   await code('between Luke\'s questions',()=>F.q1&&!F.q2&&LK.room==='room20');
   heard.length=0;talkTo(LK);for(const p of['Jerusalem','Antioch','Paphos'])await pick(p);pick('Lystra');await until(()=>F.luke&&!G.busy,6000);
   ok(['luke_where_cephas','luke_where_lucius','luke_where_sergius_paulus','luke_where_timothy','luke_thats_everything'].every(said)&&LK.room===null,'Cephas, Lucius, Sergius Paulus, Timothy; Luke has what he needs');
-  heard.length=0;await onH('window_over_the_harbor','look');await until(()=>G.room==='window20'&&!G.busy);heard.length=0;await onH('harbor_of_sebastos','look');
+  heard.length=0;await onH('window','look');await until(()=>G.room==='window20'&&!G.busy);heard.length=0;await onH('harbor','look');
   {const b=ROOMS.window20.birds();ok(said('winter_even_the_ships')&&(!b||(!b.gulls&&b.huddle)),'winter at the window: no bird in the air in the rain, and the gull on the quay sits hunched')}
   /* the first spring: the purse stays shut */
   await scratch(4,'window');
@@ -4782,7 +4782,7 @@
   await scratch(6);ok(heard.includes(T('another_autumn'))&&said('simmias_the_brothers_greet_you')&&said('phaidros_well_come_after_the_rains')&&SI.room===null,'another autumn; the brothers come');
   await scratch(7);ok(heard.includes(T('another_winter'))&&said('paul_nobody_comes_in_this_weather'),'another winter; nobody comes');
   await scratch(8);ok(heard.includes(T('a_second_spring'))&&said('paul_spring_again_here'),'a second spring');
-  heard.length=0;await onH('window_over_the_harbor','look');await until(()=>G.room==='window20'&&!G.busy);
+  heard.length=0;await onH('window','look');await until(()=>G.room==='window20'&&!G.busy);
   {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('sky_over_the_harbor','look');
     ok(said('storks_going_north_look')&&treasures().has(20)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'storks over the harbor: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
   /* two years */

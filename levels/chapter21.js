@@ -684,7 +684,7 @@ async function goad21(){await say(PC(),'ox_goad_look');treasure()}
 const NOW=[160,160,236,236];   /* a close view: whoever is played stands below the picture, and takes no step */
 const ACC=K21.AT.accused,PAULH=HALL21.paul;
 ROOMS.court21={space:.8,get walk(){return PC()===P&&chainedNow()?[ACC[0],ACC[0],ACC[1],ACC[1]]:K21.WALK.slice()},get mood(){return phase21()==='hearing'?'tense':'court'},amb:AMB.court21,hs:[
-  {name:'sea',x:0,y:40,w:186,h:38,wx:150,wy:124,look:'sea_from_the_court_look'},
+  {name:'sea',x:0,y:40,w:186,h:38,wx:150,wy:124,look:'sea_by_morning_look'},
   {name:'sea_wall',x:0,y:78,w:186,h:18,wx:120,wy:120,look:'sea_wall_look21'},
   {name:'dais',x:196,y:96,w:112,h:16,wx:190,wy:120,look:'dais_look21',use:()=>PC()===P&&phase21()==='hearing'?answer21():say(PC(),'dais_look21')},
   {name:'governors_seat',x:226,y:78,w:26,h:24,wx:214,wy:118,def:'use',look:()=>say(PC(),F.gull?'governors_seat_look':'governors_seat_with_a_gull_look'),use:()=>PC()===CL?seat21():say(P,'not_my_seat',THP)},
@@ -715,7 +715,7 @@ const who=(a,o)=>{a.hs=Object.assign({name:a.name,actor:a},o)};
 const chainFestus21=()=>say(P,phase21()==='bonds'?'paul_its_the_king_im_answering':'paul_the_chain_stays_where_it_is',THP);
 const inRoom=r=>G.room===r;
 who(CL,{look:'governors_clerk_look',talk:()=>say(CL,'clerk_i_only_write_it_down',{to:P})});
-who(FS,{look:'festus_look',talk:()=>inRoom('hall21')?speakTo21(FS):phase21()==='hearing'?answer21():PC()===CL?festus21():say(FS,'festus_not_now',{to:PC()}),
+who(FS,{look:'festus_look',talk:()=>inRoom('hall21')?speakTo21(FS):phase21()==='hearing'?answer21():PC()===CL?festus21():say(FS,'not_now18',{to:PC()}),
   useWith:it=>it==='chain21'?chainFestus21():false,give:it=>it==='chain21'?chainFestus21():false});
 who(AG,{look:'agrippa_look',talk:()=>inRoom('hall21')?speakTo21(AG):say(AG,'agrippa_speak_to_the_governor',{to:PC()}),useWith:it=>it==='chain21'?bonds21():false,give:it=>it==='chain21'?bonds21():false});
 who(BE,{look:'bernice_look',talk:()=>say(PC(),PC()===CL?'clerk_not_my_place':'paul_its_the_king_im_answering',PC()===CL?TC:THP)});
@@ -727,8 +727,8 @@ for(const a of[CM1,CM2,CM3])who(a,{look:'military_commander_look',talk:()=>say(P
 for(const a of[LM1,LM2,LM3])who(a,{look:'leading_man_look',talk:()=>say(PC(),PC()===CL?'clerk_not_my_place':'paul_its_the_king_im_answering',PC()===CL?TC:THP)});
 /* Paul, when the clerk is played */
 const PAULHS={name:'Paul',actor:P,as:{clerk21:{look:'the_prisoner_paul_look',talk:()=>say(CL,'clerk_not_my_place',TC)}}};
-CL.def={look:'clerk_nothing_to_see',pickup:'clerk_not_mine_to_take',use:'clerk_no_use_for_that',open:'clerk_not_mine_to_open',talk:'clerk_no_answer',give:'clerk_nothing_to_give'};
-CL.noCraft='clerk_those_dont_go_together';
+CL.def={look:'clerk_nothing_to_see',pickup:'clerk_not_mine_to_take',use:'nephew_no_use_for_that',open:'clerk_not_mine_to_open',talk:'nephew_no_answer',give:'nephew_nothing_to_give'};
+CL.noCraft='those_do_not_go_together';
 
 /* ============ ITEMS ============ */
 Object.assign(ITEMS,{chain21:{name:'chain_on_my_wrist',look:'chain_on_my_wrist_look'}});
