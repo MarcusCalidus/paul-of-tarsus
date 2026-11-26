@@ -350,30 +350,70 @@ function sunWrite21(g){
 /* ==== ART write21: end ==== */
 
 /* ==== ART report21: begin ==== */
-/* ART-TODO. The report, close, as it lies on the clerk's table: one sheet of papyrus, its fibers running across, in the morning light from
-   the left (the close-view standard of Chapters Thirteen and Fourteen). At its head the line of address; then the charges ever brought,
-   one to a line (RBOX21), and beside each, at the right, the mark the clerk has set (MBOX21), written in a smaller hand; below them the
-   field for the charge on which the prisoner is sent (FBOX21), which stays empty. No line is ruled and nothing is struck through: a mark
-   is a word written beside its line, never a stroke across letters.
+/* The report, close, as it lies on the clerk's table, in the morning light from the window at the left (the close-view standard of
+   Chapters Thirteen and Fourteen). The table's wood is fine-grained and quiet, its grain running one way, its seams only above and below
+   the sheet, where they meet nothing. The sheet of papyrus, its edges a little uneven and frayed, its fibers running across only, a faint
+   stain or two. At its head the line of address (HBOX21); then the charges ever brought, one to a line (RBOX21), and beside each, at the
+   right, the mark the clerk has set (MBOX21), written in a smaller hand in a redder ink; below them the field for the charge on which the
+   prisoner is sent (FBOX21): its label, and under it nothing, a little paler where the sheet was smoothed for the writing that never
+   came. No line is ruled and nothing is struck through: a mark is a word beside its line, with its sign in the left margin, clear of
+   the letters: never proved, a short slanting stroke; a dispute about their own worship, a small hollow diamond. The clerk's reed pen
+   lies on the table below the sheet, along it, not across it.
    Called from outside: ART.report21. Reads G.mk21, F.report.
    Hotspots: each charge (RBOX21), each mark (MBOX21, the same as its charge), the field (FBOX21), back to the table 0,136,120,8. Walk:
    none (a close view). */
 const RBOX21=Array.from({length:5},(_,i)=>[28,36+i*15,190,13]),MBOX21=Array.from({length:5},(_,i)=>[224,36+i*15,72,13]),
   HBOX21=[28,10,264,14],CBOX21=[28,26,264,8],FBOX21=[28,114,264,16];
 ART.report21={w:320,q:12,paint(g){paintReport21(g)},light:null,draw(g){drawReport21(g)},front(){}};
-function paintReport21(g){
-  M21.plank(g,0,0,320,144,'#664428',rng(2111),0);tex(g,'mott',.14,0,0,320,144,'overlay',.9);
-  for(const[d,a]of[[5,.08],[3,.13],[1.6,.2]]){g.fillStyle=`rgba(16,8,4,${a})`;g.fillRect(16-d+2.6,4-d+2.6,288+d*2,132+d*2)}
-  g.fillStyle=lg(g,16,4,304,136,['#eee2bc','#e4d4a8','#d6c290']);g.fillRect(16,4,288,132);tex(g,'mott',.12,16,4,288,132,'overlay',.8);
-  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,220,170,1)','rgba(160,150,190,.6)']);g.fillRect(0,0,320,144)})}
+function paintReport21(g){const r=rng(2111),q=rng(2112);
+  /* the table: a broad board of a fine, quiet grain; its seams with the next boards only above and below the sheet */
+  for(const[y,h,c]of[[0,2.4,'#7a5434'],[2.4,136.8,'#70492c'],[139.2,4.8,'#6a4428']]){M21.plank(g,0,y,320,h,c,rng(2113+y),0);if(y){R(g,0,y,320,.8,'rgba(24,12,6,.55)');R(g,0,y+.8,320,.5,'rgba(230,180,120,.14)')}}
+  tex(g,'mott',.14,0,0,320,144,'overlay',.9);
+  /* the sheet's soft shadow on the table, falling a little to the right and down, away from the window */
+  for(const[d,a]of[[5,.08],[3,.13],[1.6,.2]]){g.fillStyle=`rgba(16,8,4,${a})`;g.fillRect(12-d+2.6,4-d+2.4,296+d*2,132+d*2)}
+  sheetReport21(g,r,q);
+  penReport21(g);
+  /* the morning light from the left: warm on the near side, falling off to the right */
+  comp(g,'soft-light',.32,()=>{g.fillStyle=lg(g,0,0,320,144,['rgba(255,222,170,1)','rgba(255,222,170,.25)','rgba(160,150,196,.6)']);g.fillRect(0,0,320,144)});
+  comp(g,'multiply',.22,()=>{g.fillStyle=rg(g,100,60,300,['#ffffff','#f2eae2','#a49cb8']);g.fillRect(0,0,320,144)})}
+/* the sheet: an outline a little uneven, frayed where the fibers end; broad strips of the fibers' own tone and fine threads that stop and
+   start, all running across; a faint stain or two; the field for the charge smoothed a little paler; the edge on the light side lit */
+function sheetReport21(g,r,q){const E=[],j=(a,i)=>a*(Math.sin(i*.9)*.5+(q()-.5)*.6),x0=12,x1=308,y0=4,y1=136;
+  for(let x=x0,i=0;x<=x1;x+=2,i++)E.push(x,y0+j(.5,i));for(let y=y0,i=0;y<=y1;y+=2,i++)E.push(x1+j(.4,i),y);
+  for(let x=x1,i=0;x>=x0;x-=2,i++)E.push(x,y1+j(.5,i));for(let y=y1,i=0;y>=y0;y-=2,i++)E.push(x0+j(.4,i),y);
+  clipTo(g,()=>poly(g,E),()=>{g.fillStyle=lg(g,x0,y0,x1,y1,['#f0e4c0','#e6d6ac','#d8c494']);g.fillRect(x0-2,y0-2,x1-x0+4,y1-y0+4);
+    for(let y=y0-1;y<y1+1;){const hh=1+r()*2.4;R(g,x0-2,y,x1-x0+4,hh,r()<.5?'rgba(146,112,56,.07)':'rgba(255,248,220,.1)');y+=hh}
+    for(let i=0;i<520;i++){const y=y0+q()*(y1-y0),x=x0-2+q()*(x1-x0-20),l=6+q()*46;R(g,x,y,l,.5,q()<.55?'rgba(120,90,44,.11)':'rgba(255,250,228,.15)')}
+    tex(g,'mott',.14,x0,y0,x1-x0,y1-y0,'overlay',.8);
+    pool(g,262,24,14,5,'#a8844a',.07,'source-over');pool(g,60,128,10,4,'#a8844a',.06,'source-over');
+    /* the field, smoothed for its writing: a soft paler wash with no edge */
+    pool(g,FBOX21[0]+FBOX21[2]/2,FBOX21[1]+10,FBOX21[2]*.55,7,'#fff6dc',.28,'source-over');
+    ao(g,x0,y0,x1-x0,6,'t',.12,'#6e4c1e');ao(g,x0,y1-8,x1-x0,8,'b',.16,'#6e4c1e');ao(g,x1-6,y0,6,y1-y0,'r',.14,'#6e4c1e')});
+  stroke(g,E.slice(0,E.length/4|0),'rgba(255,246,214,.7)',.5);stroke(g,E.slice(E.length*.75|0),'rgba(255,246,214,.5)',.5)}
+/* the reed pen: a thin reed lying along the table below the sheet, its cut point to the left, darkened with ink; lit along its top */
+function penReport21(g){const x0=196,x1=262,y=141.8;
+  stroke(g,[x0+1.4,y+1.2,x1+1.4,y+.8],'rgba(16,8,4,.35)',1.2);
+  poly(g,[x0,y,x0+4,y-.6,x1,y-.7,x1,y+.7,x0+4,y+.6]);g.fillStyle=lg(g,0,y-.7,0,y+.7,['#e8d4a0','#c4a46c','#8a6c40']);g.fill();
+  poly(g,[x0,y,x0+4,y-.6,x0+4,y+.6],'#3a2414');
+  R(g,x0+4,y-.7,x1-x0-4,.4,'rgba(255,246,214,.6)')}
+/* fit21: the words into a box: the largest of four sizes whose lines all fit; returns the font size and the lines */
 function fit21(g,s,w,h){for(const z of[4.6,4.2,3.8,3.4]){g.font=FONT21(z);const lh=z*1.2,words=s.split(' '),L=[];let cur='';
     for(const wd of words){const t=cur?cur+' '+wd:wd;if(g.measureText(t).width>w&&cur){L.push(cur);cur=wd}else cur=t}if(cur)L.push(cur);
     if(L.length*lh<=h||z===3.4)return{z,lh,L}}}
+/* drawReport21: the words and the marks as they stand. The clerk's hand is dark and a little brown; his marks are in a redder ink, the
+   word beside the line and its sign in the margin before it: a short slanting stroke (never proved) or a small hollow diamond (a dispute
+   about their own worship), each clear of every letter. */
 function drawReport21(g){G.caps21=G.caps21||[];
   const put=(s,b,col)=>{const[x,y,w,h]=b,f=fit21(g,s,w,h);g.font=FONT21(f.z);g.textBaseline='top';g.fillStyle=col;f.L.forEach((l,i)=>g.fillText(l,x,y+i*f.lh));
-    const mw=Math.max(...f.L.map(l=>g.measureText(l).width));if(G.caps21.length<400)G.caps21.push({s,w:mw,max:w,h:f.L.length*f.lh,maxh:h})};
+    const mw=Math.max(...f.L.map(l=>g.measureText(l).width));if(G.caps21.length<400)G.caps21.push({s,w:mw,max:w,h:f.L.length*f.lh,maxh:h});return f};
   put(T('report_heading'),HBOX21,'#2a1a0c');put(T('report_the_charges_brought'),CBOX21,'#4a2e14');
-  REPORT21.forEach((c,i)=>{put(T(c.k),RBOX21[i],'#2a1a0c');const m=markOf21(c.k);if(m)put(T(MARK21[m]),MBOX21[i],'#6a3a1a')});
+  const INK='#8a3a1e',HALO='rgba(255,246,222,.55)';
+  REPORT21.forEach((c,i)=>{const b=RBOX21[i],f=put(T(c.k),b,'#2a1a0c'),m=markOf21(c.k);if(!m)return;
+    put(T(MARK21[m]),MBOX21[i],INK);
+    /* the sign, in the margin, level with the middle of the line's first row of letters */
+    const cy=b[1]+f.z*.55,cx=20.6;
+    if(m==='never'){stroke(g,[cx-1.6,cy+2.2,cx+1.6,cy-2.2],HALO,1.4);stroke(g,[cx-1.6,cy+2.2,cx+1.6,cy-2.2],INK,.8)}
+    else{const d=2.2,P=[cx,cy-d,cx+d,cy,cx,cy+d,cx-d,cy,cx,cy-d];stroke(g,P,HALO,1.4);stroke(g,P,INK,.7)}});
   put(T('report_the_charge_he_is_sent_on'),[FBOX21[0],FBOX21[1],FBOX21[2],6],'#4a2e14')}
 /* ==== ART report21: end ==== */
 
