@@ -595,7 +595,7 @@
     window.SHEETS=SHEETS;halt('cast')}
   /* Shipwreck survivor clothing & reusable Roman military cast (shared/cast.js): standing, facing left, mid-stride, and enlarged close-ups.
      Both stops also verify that every look stays one connected piece across standing, talking, seated and all walking frames. */
-  if(stop==='shipwreck'||stop==='romans'||stop==='sanhedrin'){await need('cast');const SHEETS={},C=SHARED.cast,
+  if(stop==='shipwreck'||stop==='romans'||stop==='sanhedrin'||stop==='caesarea'){await need('cast');const SHEETS={},C=SHARED.cast,
       sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,w,h);return[c,g]},
       text=(g,t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},
       cut=(g,sp,x0,y0,w,h,dx,dy,z)=>g.drawImage(sp,FIG.OX+x0,FIG.OY+y0,w,h,dx,dy,w*z,h*z),
@@ -710,7 +710,66 @@
       HM.forEach(([nm,o,dir,fr],i)=>{const x=(i%4)*cw2,y=y2+Math.floor(i/4)*dh;field(gd,i+1,x,y,cw2,dh);const top=fr===-1?40:34;
         cut(gd,sprite(['sanh',i].join('|'),q=>person(q,0,0,o,dir,fr,0,0,0,0,0),dir),-28,-top,56,top+2,x,y,Math.min(ZD,Math.floor(cw2/56)));text(gd,nm,x+6,y+dh-8,11)});
       SHEETS['cast-sanhedrin-detail']=cd.toDataURL();
-      window.SHEETS=SHEETS;halt('sanhedrin')}}
+      window.SHEETS=SHEETS;halt('sanhedrin')}
+    /* Caesarea (Acts 24:1-26:32; Chapters Twenty and Twenty-One), shared/cast.js CAESAREA: every look one piece standing, speaking, seated
+       and walking; Tertullus with no mark of a nation (no toga, no fringes, no scripture case); King Agrippa with his diadem, Festus in the
+       governor's toga without Felix's pendant, the women with their bit of gold and no veil over it; the commanders bareheaded, with the
+       tribune's stripe and ring; Luke, Aristarchus and Philip as Chapters Fifteen to Eighteen paint them. cast-caesarea.png shows every
+       look standing, facing right and left, three times enlarged, and the rulers seated (docs/screenshots/caesarea-cast.png);
+       cast-caesarea-detail.png Agrippa's head eight times enlarged in every frame of speech, facing both ways, the diadem on every kind of
+       hair, and the women's necklaces and earrings, bareheaded and under a mantle. Look there for a band that stands up or reads as a ring
+       round the head, a chin or a beard that comes apart, and any jewel that is not a square. */
+    if(stop==='caesarea'){const K=C.CAESAREA,ids=Object.keys(K);checkSet(K,'caesarea');
+      ok(['tertullus','drusilla','festus','agrippa','bernice','governors_clerk','adviser_1','adviser_2','leading_man_1','leading_man_2','leading_man_3',
+        'commander_a','commander_b','commander_c','brother_1','brother_2','luke','philip','aristarchus'].every(k=>K[k]),'Caesarea: '+ids.length+' looks, every one the chapters ask for');
+      ok(K.tertullus.himation&&!K.tertullus.toga&&!K.tertullus.fringe&&!K.tertullus.phyl&&!K.tertullus.wrap,'Tertullus wears a tunic and a Greek mantle: no toga, no fringes, no scripture case');
+      ok(K.agrippa.diadem&&K.agrippa.himation&&K.agrippa.shortBeard&&!K.agrippa.helm&&ids.every(k=>k==='agrippa'||!K[k].diadem),'King Agrippa, and he alone, wears a diadem, with a mantle and a short beard');
+      ok(K.festus.toga&&K.festus.edge&&!K.festus.pendant&&K.festus.hair!==C.ROMAN.felix.hair&&K.festus.skin!==C.ROMAN.felix.skin,'Festus wears the governor\'s toga with its border, and is not Felix');
+      ok(['drusilla','bernice'].every(k=>K[k].fem&&K[k].necklace&&K[k].earring&&K[k].long&&K[k].himation&&!K[k].veil),'Drusilla and Bernice: a long robe and a mantle, the hair bound up, a necklace and earrings');
+      ok(['commander_a','commander_b','commander_c'].every(k=>K[k].clavus&&K[k].ring&&!K[k].helm),'the commanders have the tribune\'s stripe and ring, and sit bareheaded');
+      ok(K.governors_clerk.board&&!K.governors_clerk.fringe&&!K.governors_clerk.cloak,'the governor\'s clerk has his writing board, and a plain tunic');
+      {const was=new Set(Object.keys(LOOK));for(const n of[17,18])if(CHAP[n])await loadLevel(n);
+        const same=(a,b)=>a&&b&&JSON.stringify(Object.keys(a).filter(k=>k!=='p'&&k!=='gt').sort().map(k=>[k,a[k]]))===JSON.stringify(Object.keys(b).filter(k=>k!=='p'&&k!=='gt').sort().map(k=>[k,b[k]]));
+        ok(same(K.luke,LOOK.luke18)&&same(K.aristarchus,LOOK.arist18)&&same(K.philip,LOOK.philip17)&&same(C.SHIPWRECK.luke_dry,K.luke),
+          'Luke, Aristarchus and Philip look as Chapters Fifteen to Eighteen paint them, and the shipwreck\'s Luke is the same man');
+        for(const k of Object.keys(LOOK))if(!was.has(k))delete LOOK[k]}
+      const both=k=>[[k,K[k],1,0],[k+' (L)',K[k],-1,0]],
+        ROWS=[
+        ['Before Felix (Acts 24): the public speaker Tertullus, and Drusilla, the wife of Felix',[...both('tertullus'),...both('drusilla'),['tertullus speaking',K.tertullus,1,0,2,2],['drusilla walking',K.drusilla,1,10]]],
+        ['Festus, governor after Felix (24:27), and King Agrippa (25:13): a plain gold diadem, a purple mantle',[...both('festus'),...both('agrippa'),['festus walking',K.festus,1,10],['agrippa walking',K.agrippa,-1,8]]],
+        ['Bernice (25:13), and the governor\'s clerk with his writing board',[...both('bernice'),...both('governors_clerk'),['bernice walking',K.bernice,1,12],['clerk walking',K.governors_clerk,-1,10]]],
+        ['The advisers of Festus (25:12), and the leading men of the city (25:23), in Greek mantles',[...both('adviser_1'),...both('adviser_2'),...both('leading_man_1')]],
+        ['The leading men of the city, and the military commanders (25:23), bareheaded in the hall',[...both('leading_man_2'),...both('leading_man_3'),...both('commander_a')]],
+        ['Military commanders (25:23)',[...both('commander_b'),...both('commander_c'),['commander_a seated',K.commander_a,1,-1],['commander_b seated',K.commander_b,-1,-1]]],
+        ['Two brothers of Caesarea, and Luke',[...both('brother_1'),...both('brother_2'),...both('luke')]],
+        ['Philip the evangelist, and Aristarchus',[...both('philip'),...both('aristarchus'),['philip walking',K.philip,1,10],['aristarchus walking',K.aristarchus,-1,10]]],
+        ['Seated, as everyone sits: King Agrippa, Bernice, Drusilla, Festus and Felix',[['agrippa seated',K.agrippa,1,-1],['bernice seated',K.bernice,1,-1],['drusilla seated',K.drusilla,-1,-1],['festus seated',K.festus,1,-1],['felix seated',C.ROMAN.felix,-1,-1],['clerk seated',K.governors_clerk,1,-1],['agrippa (L) seated',K.agrippa,-1,-1],['bernice (L) seated',K.bernice,-1,-1]]]
+      ];
+      const Z=3,cw=156,chh=408,cols=8,hdr=30,[c,g]=sheet(cols*cw,36+ROWS.length*(hdr+chh));
+      text(g,'Caesarea (Acts 24:1-26:32): every look facing right and left, and the rulers seated, three times enlarged',12,24,16,'#f4f0e6');
+      ROWS.forEach(([title,items],r)=>{const ry=36+r*(hdr+chh);g.fillStyle='#4a5464';g.fillRect(0,ry,cols*cw,hdr);text(g,title,12,ry+20,12,'#f4f0e6');
+        items.forEach(([nm,o,dir,fr,talk,ge],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);
+          const sp=sprite(['cae',r,i].join('|'),q=>person(q,0,0,o,dir||1,fr||0,talk||0,0,ge||0,0),dir||1);
+          cut(g,sp,-24,-126,48,127,x+Math.floor((cw-48*Z)/2),y+chh-22-126*Z,Z);text(g,nm,x+6,y+chh-6,11)})});
+      SHEETS['cast-caesarea']=c.toDataURL();
+      /* eight times: Agrippa's head in every frame of speech (mouth, chin, head, brows, a glance, a bow, a blink), facing right and left; the
+         diadem on every kind of hair; the women's jewellery, bareheaded, speaking, facing left and under a mantle drawn over the head */
+      const TALK=[['shut',0,0,0],['parted',1,0,0],['open',2,0,0],['wide',3,0,0],['round',4,0,0],['dipped',2,MV.dip,0],['lifted, brows',2,MV.lift|MV.brow,0],['forward',3,MV.fwd,0],['back, glance',0,MV.back|MV.glance,0],
+          ['wide, dipped',3,MV.dip,0],['round, lifted',4,MV.lift|MV.brow,0],['bowed',0,0,1]],
+        man={skin:'#c08a5c',tunic:'#c4b08a',beard:'#34241c',brow:'#2a1a12',belt:'#3a2414',diadem:'#d8b04a',shortBeard:1},
+        HAIR=[['hair',{...man,hair:'#34241c'}],['crop',{...man,hair:'#34241c',crop:1}],['receding',{...man,hair:'#34241c',receding:1}],['thin',{...man,hair:'#6e6660',thin:1,grey:'#a8a098'}],
+          ['crop, thin',{...man,hair:'#34241c',crop:1,thin:1}],['bald',{...man,hair:'#969088',bald:1,beard:'#a49e96',fullBeard:1}]],
+        JEW=[['drusilla',K.drusilla,1,0],['drusilla speaking (L)',K.drusilla,-1,3],['bernice',K.bernice,1,0],['bernice speaking (L)',K.bernice,-1,2],
+          ['under a mantle',{...K.bernice,fem:0,veil:'#6a4a5a',hair:null,p:null,gt:null},1,0],['under a mantle (L)',{...K.drusilla,fem:0,veil:'#c8b8a0',hair:null,p:null,gt:null},-1,2]],
+        ZD=8,dw=208,dh=300,cols2=6,nT=TALK.length*2,[cd,gd]=sheet(cols2*dw,36+Math.ceil(nT/cols2)*dh+dh+dh);
+      text(gd,'Eight times: King Agrippa speaking, facing right and left (above); the diadem on every kind of hair; the women\'s gold',12,24,14,'#f4f0e6');
+      const head=(o,dir,t,m,bw,x,y,nm,i,key)=>{const f=o.veil||o.fem,top=4+23+16+3+(f?24:26)+20;field(gd,i,x,y,dw,dh);
+        cut(gd,sprite(['caeh',key].join('|'),q=>person(q,0,0,o,dir,0,t,bw,0,bw,m),dir),-13,-top-6,26,36,x,y,ZD);text(gd,nm,x+6,y+dh-8,11)};
+      [1,-1].forEach((dir,h)=>TALK.forEach(([nm,t,m,bw],i)=>{const k=h*TALK.length+i;head(K.agrippa,dir,t,m,bw,(k%cols2)*dw,36+Math.floor(k/cols2)*dh,nm+(dir<0?' (L)':''),k,'a'+k)}));
+      const y2=36+Math.ceil(nT/cols2)*dh;HAIR.forEach(([nm,o],i)=>head(o,i%2?-1:1,i%3?2:0,0,0,i*dw,y2,'diadem: '+nm,i+1,'d'+i));
+      JEW.forEach(([nm,o,dir,t],i)=>head(o,dir,t,0,0,i*dw,y2+dh,nm,i,'j'+i));
+      SHEETS['cast-caesarea-detail']=cd.toDataURL();
+      window.SHEETS=SHEETS;halt('caesarea')}}
   /* Dynamic cast & contact shadows in figure() (issue #81): floor skew, foreground-lamp back-wall bend, prop/actor ordering, pitch-dark
      zero shadow, multi-lamp steadiness across 110ms flame ticks, solid-wall clipping, and enlarged/gallery sheets across all 22 rooms. */
   /* deck (shared/ship.js, view 'deckAft'): the deck of a coaster seen from aboard, looking aft, in its three lights. It checks the one
