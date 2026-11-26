@@ -41,8 +41,13 @@
      curb(g, V, Q, o)                 a row of curbstones along the road: o {s0, s1 (its two edges across), h (its height), u0, u1, len
                                       (a stone's length), c, seed}
      milestone(g, x, y, o)            a milestone standing with its foot at x, y: o {w, h (pixels), n (its number in Roman letters, cut
-                                      into it as strokes: I, V, X and L), sun (-1 the light from the left, 1 from the right), seed}
+                                      into it as strokes: I, V, X and L), lw (how wide V, X and L are, 1 as they are; a long number
+                                      on a narrow stone needs less), gap (between two letters, 1.1), sun (-1 the light from the left, 1 from the right), seed}
      tomb(g, V, Q, o)                 a plain tomb of masonry beside the road: o {u, s, w, d, h (in world units), c, seed}
+     band(g, V, Q, s0, s1, c0, c1, seed, uMax)   a strip of packed earth and gravel along the road (a footpath)
+     verge(g, V, Q, s0, s1, seed)     the grass beside the road back to a low bank, with bushes on it
+     ditch(g, V, Q, s0, s1, r)        a dry ditch beside the road (r: an rng)
+     weeds(g, x0, y0, x1, y1, n, seed, h)  blades of grass along a line where something stands in the ground
      cypress(g, x, y, h, o)           a cypress with its foot at x, y, h tall: o {c, seed, sun}
      city(g, o)                       the city on its hills far off, between x0 and x1 below the horizon hz: o {hz, temples, aqueduct,
                                       mist, seed}
@@ -169,13 +174,14 @@ function milestone(g,x,y,o){o=o||{};const w=o.w||10,h=o.h||26,ry=o.ry||1.6,sun=o
   oval(g,x,y-h+ry,hw,ry,tint(c,.22));g.strokeStyle=rgba(tint(c,-.3),.6);g.lineWidth=.5;g.beginPath();g.ellipse(x,y-h+ry,hw-.25,ry-.25,0,0,Math.PI);g.stroke();
   R(g,x-hw*.4,y-h+ry-.6,hw*.8,.5,'rgba(255,250,236,.4)');
   /* the number, cut in strokes */
-  const n=o.n||'III',lh=o.lh||5,top=y-h+ry+(o.ny||5),sp=2.1;let wsum=0;const widths=[...n].map(ch=>ch==='I'?1:ch==='L'?2:2.6);wsum=widths.reduce((s,v)=>s+v,0)+(n.length-1)*1.1;
+  const n=o.n||'III',lh=o.lh||5,top=y-h+ry+(o.ny||5),sp=2.1;let wsum=0;const lw=o.lw||1,gp=o.gap||1.1,widths=[...n].map(ch=>ch==='I'?1:(ch==='L'?2.2:2.6)*lw);wsum=widths.reduce((s,v)=>s+v,0)+(n.length-1)*gp;
   let lx=x-wsum/2+sun*.3;
   const cut=(a,b,c2,d2)=>{stroke(g,[a,b,c2,d2],'rgba(40,36,44,.75)',.6);stroke(g,[a+sun*.5,b,c2+sun*.5,d2],'rgba(255,248,230,.45)',.5)};
   [...n].forEach((ch,i)=>{const wv=widths[i];if(ch==='I')cut(lx+.5,top,lx+.5,top+lh);else if(ch==='V'){cut(lx,top,lx+wv/2,top+lh);cut(lx+wv,top,lx+wv/2,top+lh)}
     else if(ch==='X'){cut(lx,top,lx+wv,top+lh);cut(lx+wv,top,lx,top+lh)}
     /* L: an upright, and a short foot that starts at the upright's foot and runs to the right: nothing stands out beyond the upright */
-    else if(ch==='L'){cut(lx+.5,top,lx+.5,top+lh);cut(lx+.5,top+lh-.25,lx+wv,top+lh-.25)}lx+=wv+1.1});
+    /* (its foot is a level groove: its lit lip lies under it, not beside it, so that the light does not cover it) */
+    else if(ch==='L'){cut(lx+.5,top,lx+.5,top+lh);stroke(g,[lx+.5,top+lh-.3,lx+wv,top+lh-.3],'rgba(40,36,44,.8)',.7);stroke(g,[lx+.9,top+lh+.4,lx+wv,top+lh+.4],'rgba(255,248,230,.4)',.5)}lx+=wv+gp});
   void sp;void B}
 
 /* ---------------------------------------------------------------- a cypress ---------------------------------------------------------------- */
@@ -672,5 +678,5 @@ function curbSide(g,V,Q,s0,s1,h,seed,lit,uMax){const r=rng(seed),Pt=(u,s,hh)=>{c
 function light(room){if(room==='capena')return{amb:'#f6eadc',sun:[-12,-13,.42],wallY:capenaWallY,wall:[[0,GATE.x-6,WTOP,104],[GATE.x+GATE.w+6,320,WTOP,104]]};
   return{amb:'#f6ecdc',sun:[-16,-11,.5],wallY:WALK.far[2]-2}}
 
-return{HZ,WALK,view,frame,road,curb,milestone,tomb,cypress,city,house,farTemple,palace,circus,aqueduct,far,capena,light,
+return{HZ,WALK,view,frame,road,curb,milestone,tomb,cypress,city,house,farTemple,palace,circus,aqueduct,far,capena,light,band,verge,ditch,weeds,
   GATE,CORNER,capenaWallY}})();

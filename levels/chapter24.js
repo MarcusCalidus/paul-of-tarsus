@@ -240,27 +240,162 @@ ART.board24={w:320,q:12,paint(g){g.fillStyle=lg(g,0,0,320,144,['#8a6a46','#7a5a3
 
 /* ==== ART hills24: begin ==== */
 /* The Appian Way in the hills, in the morning (HILLS24): the road of dark lava blocks running across from left (south) to right (north),
-   its curbs, a ditch, the hills of Campania behind, the sea seen far off at the left between two hills; the milestone LXI on the far verge
-   at the right. The soldier's foot (ART-TODO for the figure painter or the room: his step from G.beat.phase): lifted while the beat is in
-   its pause, down at the downbeat, with a little dust. Sun from the left, low: shadows to the right. A bird of prey high over the hills. */
+   its curbs, a footpath and a dry ditch beyond the far curb, the verge; the hills of Campania behind, the sea seen far off at the left
+   between two hills, lying at the one horizon (y 64); the milestone LXI on the footpath at the right. The soldier beside Paul marks the
+   beat with his foot (walk24, below): lifted in the beat's pause, set down on the downbeat with a little dust. Sun from the left, low:
+   shadows to the right and back. A bird of prey high over the hills (the engine's birds, in the open sky 40..280 by 6..36: no hill rises
+   into it). */
 const ROAD24={hz:64,road:[0,100,320,44],marks:[[80,124],[110,124],[140,124],[170,124],[200,124]],stone:[244,110],walk:[16,304,112,138]};
-function roadPaint24(g,o){sky24(g,ROAD24.hz,o.sky[0],o.sky[1]);ground24(g,ROAD24.hz,o.land);if(o.far)o.far(g);
-  R(g,0,98,320,4,'#8a8270');g.fillStyle=lg(g,0,102,0,144,['#55524e','#3e3c3a']);g.fillRect(0,102,320,42);R(g,0,102,320,1.5,'#9a948a');R(g,0,141,320,3,'#8a8270');
-  stone24(g,...ROAD24.stone,o.n)}
-ART.hills24={w:320,q:12,paint(g){roadPaint24(g,{sky:['#9cc0dc','#e8e2d2'],land:'#8a9a6a',n:'LXI',far:g=>{
-      poly(g,[0,64,40,46,90,58,140,40,200,54,260,36,320,50,320,64],'#7a8a64');R(g,96,58,30,6,'#6e98b0')}})},
-  light:{amb:'#f2eadc',sun:[17,-6,.42],wallY:100},draw(g,t){foot24(g,t)},front(){}};
+/* way24: the Appian Way across a room, as shared/rome.js paints it (its paving per pixel, its curbs, its footpath, ditch and verge), seen
+   from an eye 2.2 above the ground (so that a figure 46 pixels tall stands at its own size anywhere on the walk strip) looking straight
+   across the road. o.yF: where the paving's far edge lies on the screen; the near curb's top always ends at y 141. The road is about 5.9
+   wide, as in shared/rome.js's view from afar. What stands beyond the far curb is painted by the room before (o.back) and on the footpath by o.onPath, before the curb, so that
+   the curb's top lies in front of its foot. o.sun: where the light comes from on the ground [X, Z] (X to the right, Z away from us).
+   Returns the view, the frame, and Zy(y): how far away a point of the ground at screen row y lies. */
+function way24(g,o){const RM=SHARED.rome,hz=o.hz,H=2.2,yN=141,F=5.9/(H/(o.yF-hz)-(H-.14)/(yN-hz)),V=RM.view({hz,F,H,cx:160}),Q=RM.frame([1,0]),
+    Zy=y=>F*H/(y-hz),s0=F*(H-.14)/(yN-hz),s1=Zy(o.yF),c1=s1+.36,p1=c1+(o.path||1.1),r=rng(o.seed||2441);
+  const W={V,Q,Zy,F,s0,s1,c1,p1};
+  if(o.back)o.back(g,W);
+  /* the footpath of packed earth and gravel beyond the far curb */
+  RM.band(g,V,Q,c1-.05,p1,o.pathC||'#a49680',o.pathL||'#bcae94',(o.seed||2441)+1);
+  /* where the footpath meets the ditch or the bank beyond it: a soft seam of shade, a few blades of grass */
+  {const y=V.P(0,p1,0)[1];stroke(g,[-2,y+.2,322,y+.2],'rgba(70,60,50,.28)',.8);RM.weeds(g,-2,y+.4,322,y+.4,150,(o.seed||2441)+2,1.4)}
+  if(o.onPath)o.onPath(g,W);
+  /* the far curb (its face toward us), the paving, the near curb (its top only, along the foot of the picture) */
+  RM.curb(g,V,Q,{s0:s1,s1:c1,h:.14,u0:-30,u1:30,seed:(o.seed||2441)+3,c:o.curbC||'#a8a294',len:1.2});
+  RM.road(g,V,Q,{s0,s1,cell:o.cell||.55,seed:(o.seed||2441)+4,sun:o.sun,light:o.light,haze:o.haze,hz0:30,hz1:60,turn:o.turn});
+  RM.curb(g,V,Q,{s0:s0-.4,s1:s0,h:.14,u0:-12,u1:12,seed:(o.seed||2441)+5,c:o.curbN||'#a29c8e',near:1,len:1.1});
+  /* the shade along the foot of the far curb's face, where it meets the paving, and the light on its top edge */
+  {const y=V.P(0,s1,0)[1];for(const[dy,wd,a]of[[.4,1.4,.16],[.2,.6,.3]])stroke(g,[-2,y+dy,322,y+dy],rgba('#2a2430',a),wd)}
+  void r;return W}
+/* roadStone24: the milestone on the footpath at x (its number n in Roman letters): a short thick cylinder of grey stone standing in the
+   gravel, its cast shadow away from the sun (cast: where the shadow of a figure 46 tall would reach), weeds at its foot */
+function roadStone24(g,W,x,n,o){const RM=SHARED.rome,Z=W.c1+.5,[,y]=W.V.P(0,Z,0),h=o.h||26,w=o.w||14,c=o.cast||[0,0];
+  RM.milestone(g,x,y,{w,h,ry:1.7,n,sun:o.sun||-1,seed:o.seed||2451,cast:[c[0]*h/46*2,c[1]*h/46*2],lh:o.lh||4.4,ny:o.ny||4,lw:o.lw||.7,gap:o.gap||.75,c:o.c});
+  RM.weeds(g,x-w/2-1.4,y-.1,x-w/2+1.6,y+.3,8,(o.seed||2451)+1,1.8);RM.weeds(g,x+w/2-1.2,y-.1,x+w/2+1.8,y+.3,7,(o.seed||2451)+2,1.6);return y}
+/* hillsBack24: the land behind the road in the hills: the sky, the hills of Campania rising beyond the one horizon (y 64), the sea far off
+   between two of them, the fields of the valley, olives, stone pines and a cypress or two, a farm far off; then the verge with its bank
+   and the dry ditch down to the footpath */
+function hillsBack24(g,W){const hz=ROAD24.hz,RM=SHARED.rome,CO=SHARED.country,r=rng(2461);
+  sky(g,320,hz+1,['#7a9ccb','#9cb6d6','#c8d6e0','#e8e4d8']);
+  pool(g,-20,hz-6,120,26,'#fff2dc',.32,'screen');
+  {const q=rng(2462);cloud(g,262,18,64,2.6,q,'#fbf6ee','#b4bed4');cloud(g,190,30,40,1.8,q,'#f6f2ea','#bec6d8')}
+  /* the far mountains, blue with distance; the gap between the two hills where the sea is seen (x 96..126) */
+  const gap=x=>x<92?1:x<100?(100-x)/8:x<122?0:x<132?(x-122)/10:1;
+  CO.range(g,-2,322,hz+.2,x=>gap(x)*(x<110?13+9*Math.sin((x+30)/46)+3*Math.sin(x/9):15+11*Math.sin((x-120)/64)+2.6*Math.sin(x/7.3))+.4,['#9eaccc','#b6bfd4'],{k:.35});
+  /* the nearer hills, green-grey, their feet on the horizon, the sea between them */
+  CO.range(g,-2,322,hz+.4,x=>gap(x)*(x<110?6+4*Math.sin((x+8)/22)+1.2*Math.sin(x/5):x<210?5+3*Math.sin((x-140)/26)+1.4*Math.sin(x/4.4):8+5*Math.sin((x-210)/30)+1*Math.sin(x/6)),['#7e9070','#90a07e'],{k:.5});
+  CO.plain(g,-2,322,hz,96,2463,{vx:160,land:'#97a866',haze:'#c4ccd4',clouds:2});
+  /* the sea at the horizon: its far edge is the horizon itself; the land in front hides it a pixel or two lower */
+  {const P=[];for(let x=92;x<=134;x+=1)P.push(x,hz);for(let x=134;x>=92;x-=1){const e=Math.min(x-92,134-x);P.push(x,hz+Math.min(2.2,e*.14))}
+    poly(g,P);g.fillStyle=lg(g,0,hz,0,hz+2.4,['#a4bccc','#8eaabc']);g.fill();R(g,98,hz,30,.5,'rgba(255,250,236,.55)')}
+  /* the near slopes come down to the sea's edges, the valley floor in front of them */
+  CO.range(g,-2,322,hz+3.2,x=>Math.max(0,(x<106?3.4+1.6*Math.sin(x/11)-Math.max(0,x-88)*.18:x>118?3+1.4*Math.sin(x/8)-Math.max(0,132-x)*.2:0)),['#8a9a6c','#93a272'],{k:.4});
+  /* a farm far off on the right-hand slope, a row of stone pines along a lane, olives on the terraces */
+  RM.house(g,252,hz+5.2,7,3.4,{c:'#d8c49e',roof:'#a85a3c',side:1.2,haze:.2,rh:1.4});RM.house(g,260,hz+5.8,4,2.2,{c:'#ccb48e',roof:'#9a5236',side:1,haze:.2,rh:1.1});
+  for(let i=0;i<7;i++){const x=150+i*9+r()*3,y=hz+7+i*.3;pine(g,x,y,8+r()*2.4,'#4c6640')}
+  for(let i=0;i<22;i++){const x=r()*320,y=hz+4+r()*12;if(x>88&&x<138&&y<hz+8)continue;CO.tree(g,x,y,4+r()*4,'#7d876a',{kind:'olive',seed:2470+i,cast:false})}
+  /* nearer: two stone pines and a cypress on the far side of the valley, an olive grove at the left */
+  pine(g,44,86,30,'#46623e',{lean:.25});pine(g,286,84,24,'#4a663e',{lean:-.2});
+  RM.cypress(g,212,86,22,{c:'#3a5634',seed:2464,sun:-1,w:3.4});RM.cypress(g,219,87,16,{c:'#3e5836',seed:2465,sun:-1,w:2.8});
+  for(let i=0;i<6;i++)CO.tree(g,70+i*11+r()*4,88+r()*2,9+r()*3,'#7d876a',{kind:'olive',seed:2480+i});
+  /* the verge back to its bank, and the dry ditch before the footpath */
+  RM.verge(g,W.V,W.Q,W.p1+.9,W.p1+3.4,2466);
+  RM.ditch(g,W.V,W.Q,W.p1,W.p1+.9,rng(2467));
+  /* the morning light over the land: warm from the left, the right a little cooler */
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,214,170,1)','rgba(240,226,200,.8)','rgba(184,192,214,1)']);g.fillRect(0,0,320,100)})}
+/* roadPaint24: the whole picture of the road, for hills24 and marsh24: o.back paints what lies beyond the footpath, o.n is the number on
+   the milestone, o.sun the light on the ground, o.cast where a figure's shadow reaches (the room's light().sun) */
+function roadPaint24(g,o){const W=way24(g,{hz:ROAD24.hz,yF:102,seed:o.seed||2441,sun:o.sun,back:o.back,
+    onPath:(g,W)=>roadStone24(g,W,ROAD24.stone[0],o.n,{cast:o.cast,seed:o.seed+10})});
+  /* the light of the hour over the whole, and a little air at the foot of the picture */
+  comp(g,'soft-light',.22,()=>{g.fillStyle=lg(g,0,0,320,0,o.wash||['rgba(255,220,180,1)','rgba(244,230,206,.8)','rgba(190,198,220,1)']);g.fillRect(0,0,320,144)});
+  ao(g,0,128,320,16,'b',.1,'#2a2440');return W}
+ART.hills24={w:320,q:12,paint(g){roadPaint24(g,{n:'LXI',seed:2441,sun:[-.94,-.34],cast:[17,-6],back:hillsBack24})},
+  light:{amb:'#f2eadc',sun:[17,-6,.42],wallY:100},draw(g,t){walk24(g,t)},front(){}};
+/* The soldier's step on the beat (shared/beat.js; BEAT24: one bar, 3 s). He stands beside Paul and marks the time with his leading foot:
+   it comes up as the pause begins, is held up through the pause (from .55 to .95, the moment to step), and comes down on the downbeat
+   with a little dust. A pose of the figure painter's, its legs placed by hand for each moment (POSE, stance in index.html): the far leg,
+   which leads, is lifted forward of the near one, so that the two open like a pair of compasses from the hip and never cross; its foot
+   hangs with the toes a little down, its shin slanting, never level (no T with the other leg). No spear: the soldiers carry none on
+   the road. While a line is spoken, or while he walks, he stands as the engine has him (a pose does not turn to whom he speaks with).
+     Its name ends in no digit: the engine reads a pose's frame from the digits at the end of its name and its frame (a.pk).
+     frames: 0 standing, 1 the heel coming up, 2 the foot up, 3 coming down (the heel first), 4 just down, the knees a little soft. */
+POSE.stepBeat={n:5,legs:k=>stance(...[
+  [{ax:5,kx:2.5},{ax:-5,kx:-2.5},0],
+  [{ax:6,kx:5.5,ly:3,p:-2},{ax:-5,kx:-2.5},0],
+  [{ax:9,kx:9.5,ly:9,p:-2},{ax:-5,kx:-2},0],
+  [{ax:8,kx:6.5,ly:4,p:1},{ax:-5,kx:-2.5},0],
+  [{ax:5,kx:3.5},{ax:-5,kx:-1.5},1]][k])};
+const markFr24=(b,p)=>p<.1?4:p<b.from-.08?0:p<b.from?1:p<b.to?2:3;
+function walk24(g,t){const b=G.beat,S=SO;
+  const on=!!b&&S.room===G.room&&!S.walk&&!cur&&phase24()==='road';
+  if(!on){if(S.pose==='stepBeat'){S.pose=0;S.pk=0}return}
+  const p=b.phase(t);S.pose='stepBeat';S.pk=markFr24(b,p);
+  /* the dust where his foot came down: a few specks that rise a little and fade; square, and never two by two */
+  if(p<.18){const k=p/.18,d=S.dir||1,a=.55*(1-k);
+    for(let i=0;i<7;i++){const x=S.x+d*(-1.5+i*1.35+(i%3)*.3),y=S.y-.3-k*(1.2+(i%2)*1.1)-(i%3)*.4,s=i%3===1?1:.5;R(g,x,y,s,.5,rgba(i%2?'#d8ccb4':'#c4b498',a))}}
+  /* his footfall, heard from the same clock */
+  const n=Math.floor((t-b.t0)/b.period);if(G.step24!==n){if(G.step24!=null)SFX.step();G.step24=n}
+  SHARED.beat.call(g,S.x,S.y-58,t)}
 /* ==== ART hills24: end ==== */
 
 /* ==== ART marsh24: begin ==== */
-/* The Appian Way through the Pontine Marshes, by day (MARSH24): the road running straight across, the canal beside it behind the far curb
-   (it comes out of the distance at the left as a thread and runs on out of the picture at the right, toward the Marketplace), reeds and
-   pools to a low horizon, the milestone on the far verge at the right (LII for the second stretch, XLVII for the third: the variant).
-   Swallows skim the canal. Sun high from the left: shorter shadows to the right. ART-TODO. */
+/* The Appian Way through the Pontine Marshes, by day (MARSH24): the road running straight across, the canal beside it behind the far
+   curb and its footpath: it comes out of the distance at the left, narrow, and runs on alongside the road out of the picture at the
+   right, a little nearer and wider there (it runs on toward the Marketplace); a grassy bank between the footpath and the water. Beyond
+   it the marsh, flat to a low horizon (y 64): reeds in clumps that lean together, pools of still water as long low shapes, a few willows
+   and bushes. The milestone on the footpath at the right: LII for the second stretch, XLVII for the third (the variant). The reeds stand
+   only on the far bank and behind the pools, their feet in a fringe of grass, so that none crosses a water line. Swallows skim the canal
+   (the engine's birds). Sun high from the left: shorter shadows to the right. */
 const marshV=()=>F.s2?'b':'a';
-ART.marsh24={w:320,q:12,variant:marshV,paint(g,v){roadPaint24(g,{sky:['#b4c8d8','#e8e6dc'],land:'#6a7a58',n:v==='b'?'XLVII':'LII',far:g=>{
-      R(g,0,86,320,10,'#5a7286');R(g,0,86,320,1,'#8aa2b4');for(let i=0;i<5;i++)R(g,20+i*64,72,30,6,'#56685a')}})},
-  light:{amb:'#f4eee2',sun:[12,-5,.36],wallY:100},draw(g,t){foot24(g,t)},front(){}};
+/* the canal's two banks on the screen: the near one from y 91 at the left edge to 94.4 at the right, the far one from 88 to 86 */
+const CANAL24M={near:x=>91+3.4*x/320,far:x=>88-2*x/320};
+function marshBack24(g,W){const hz=ROAD24.hz,RM=SHARED.rome,CO=SHARED.country,r=rng(2561);
+  sky(g,320,hz+1,['#8aa6c8','#a8bed6','#cfdae0','#e8e6dc']);
+  pool(g,-10,hz-4,120,22,'#fff6e4',.3,'screen');
+  {const q=rng(2562);cloud(g,80,14,80,2.4,q,'#fbf8f0','#b8c2d6');cloud(g,236,24,54,1.8,q,'#f6f4ee','#c0c8da');cloud(g,150,40,36,1.2,q,'#f2f0ea','#c6ccdc')}
+  /* the flat marsh to the horizon: green-brown, paler and bluer as it goes */
+  g.fillStyle=lg(g,0,hz,0,96,['#b8c0b4','#98a27c','#808e5c','#76864e']);g.fillRect(-2,hz,324,34);
+  tex(g,'mott',.45,0,hz,320,34,'overlay',1);
+  R(g,-2,hz,324,.5,'rgba(255,250,236,.4)');
+  /* a line of trees far off on the horizon, low and blue, broken */
+  for(let x=-2;x<322;){const w=3+r()*14;if(r()<.6)for(let i=0;i<w;i+=1.2){const h=.6+r()*1.6;R(g,x+i,hz-h,1.2,h,mix('#7a8a7a','#b8c0c8',.55))}x+=w+r()*18}
+  /* the pools: long, low shapes of still water with the sky in them, rimmed with mud, each wider than it is tall by far */
+  const pools=[[34,70,26,1.4],[120,68,18,1.1],[196,72,30,1.8],[268,69,20,1.2],[84,77,34,2.4],[248,79,40,2.6],[156,81,24,2],[16,82,22,2.2]];
+  for(const[x,y,w,h]of pools){const P=[];for(let i=0;i<=16;i++){const a=i/16*Math.PI*2;P.push(x+Math.cos(a)*w*(1+.08*Math.sin(a*3+x)),y+Math.sin(a)*h*(1+.12*Math.cos(a*2+y)))}
+    poly(g,P,'#6a6a4e');poly(g,P.map((v,i)=>i%2?y+(v-y)*.72:x+(v-x)*.94));g.fillStyle=lg(g,0,y-h,0,y+h,['#b8cad8','#9cb4c8']);g.fill();
+    R(g,x-w*.5,y-h*.3,w*.6,.5,'rgba(255,255,248,.45)')}
+  /* reeds and rushes in clumps that lean together, the bigger ones nearer, standing behind the pools and on the dry ground */
+  for(let i=0;i<40;i++){const y=hz+3+Math.pow(r(),.8)*20,x=r()*320,k=(y-hz)/22,w=6+k*22;
+    if(pools.some(([px,py,pw,ph])=>Math.abs(x-px)<pw+w*.5&&y>py-ph-1&&y<py+ph+4))continue;
+    CO.reeds(g,x-w/2,x+w/2,y,2+k*7,2570+i,{c:mix('#7a8a4a','#b8c0b4',(1-k)*.5),wind:.8,n:w*1.4,heads:k>.5,dy:1.2})}
+  /* willows and bushes here and there */
+  for(const[x,y,h,s]of[[58,80,12,1],[226,76,9,2],[300,82,14,3],[140,74,7,4]])CO.tree(g,x,y,h,'#7f9466',{kind:'willow',seed:2580+s});
+  for(const[x,y,h,s]of[[100,84,4,1],[176,85,3.4,2],[30,86,3.6,3],[270,85,4,4]])CO.tree(g,x,y,h,'#647a48',{kind:'bush',seed:2590+s});
+  /* the far bank of the canal: a towpath of trodden earth, grass along its edge, and a few reeds standing on it, their feet in the grass */
+  const N=CANAL24M.near,Fa=CANAL24M.far;
+  {const P=[-2,Fa(-2)-2.4];for(let x=-2;x<=322;x+=4)P.push(x,Fa(x)-2.2-.3*Math.sin(x/9));P.push(322,Fa(322)+.2,-2,Fa(-2)+.2);poly(g,P,'#9a8e6c');
+    clipTo(g,()=>poly(g,P),()=>tex(g,'mott',.5,0,80,320,12,'overlay',1));
+    for(let x=-2;x<322;x+=8+r()*20){const w=4+r()*10;CO.reeds(g,x,x+w,Fa(x+w/2)-2,5+r()*4,2600+Math.round(x),{c:'#6e8444',wind:.8,n:w*1.6,heads:1,dy:.6})}
+    CO.turf(g,-2,Fa(160)-2.6,324,Fa(160)+.4,'#7a8c4c',2603,{wind:-.3,scale:.4,dense:.7})}
+  /* the canal: the sky in it, darker under the banks, a few long level glints; it runs out of the picture at both edges */
+  {const P=[];for(let x=-2;x<=322;x+=2)P.push(x,Fa(x));for(let x=322;x>=-2;x-=2)P.push(x,N(x));poly(g,P);g.fillStyle=lg(g,0,85.5,0,96.5,['#7c96a8','#a8c0d0','#94aec0','#6e8a9c']);g.fill();
+    clipTo(g,()=>poly(g,P),()=>{
+      /* the far bank and its reeds mirrored, dim and broken, under the far edge */
+      for(let x=-2;x<322;x+=1){const d=1+r()*1.6;R(g,x,Fa(x),1,d,rgba('#5a6a48',.35))}
+      for(let i=0;i<46;i++){const x=r()*320,y=Fa(x)+1.6+r()*(N(x)-Fa(x)-2.4),w=3+r()*10;R(g,x,y,w,.5,rgba(r()<.6?'#e8f0f4':'#5a7484',.3+r()*.25))}
+      ao(g,-2,88,324,9,'b',.25,'#2a3a48')});
+    /* the water's edge: a dark seam along the far bank, the light on the near one */
+    stroke(g,P.slice(0,P.length/2),'rgba(40,50,40,.45)',.5)}
+  /* the near bank: grass from the water up to the footpath, lit by the sun, its foot in the water soft */
+  {const P=[];for(let x=-2;x<=322;x+=2)P.push(x,N(x)-.2);const yp=W.V.P(0,W.p1,0)[1];P.push(322,yp,-2,yp);poly(g,P);g.fillStyle=lg(g,0,91,0,yp,['#8a9a58','#9aaa62']);g.fill();
+    clipTo(g,()=>poly(g,P),()=>{CO.turf(g,-2,91,324,yp,'#8c9c58',2604,{wind:-.4,scale:.55,flowers:30,dry:.2});
+      for(let x=-2;x<322;x+=1)R(g,x,N(x)-.2,1,.8,'rgba(60,70,60,.3)')})}
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,230,196,1)','rgba(244,236,214,.8)','rgba(196,206,222,1)']);g.fillRect(0,0,320,100)})}
+ART.marsh24={w:320,q:12,variant:marshV,paint(g,v){roadPaint24(g,{n:v==='b'?'XLVII':'LII',seed:2541,sun:[-.92,-.4],cast:[12,-5],back:marshBack24,
+    wash:['rgba(255,232,200,1)','rgba(246,238,218,.8)','rgba(200,208,224,1)']})},
+  light:{amb:'#f4eee2',sun:[12,-5,.36],wallY:100},draw(g,t){walk24(g,t)},front(){}};
 /* ==== ART marsh24: end ==== */
 
 /* ==== ART taverns24: begin ==== */
