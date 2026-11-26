@@ -160,7 +160,7 @@ function draw25(g,t){const S=SO25();
   if(watch25()===7&&!S.pose){LG.stoolCast(g,STOOL25[0],STOOL25[1],{hour:hour25()});CU.stool(g,STOOL25[0],STOOL25[1],{room:'lodging25'})}}
 /* Luke's roll (ART-TODO): a roll of papyrus lying on the bench beside him, its near end toward us as a face, nothing tied round it */
 function roll25(g){const x=ROLL25.x,y=ROLL25.y;depth(102.2,()=>{R(g,x,y,10,3,'#d8c89c');R(g,x,y,10,.8,'#f2e6c4');R(g,x,y+2.4,10,.6,'rgba(90,70,40,.4)');R(g,x+8.6,y,1.8,3,'#b8a478');R(g,x+9,y+.8,1,1.4,'#8a7650')})}
-const ROLL25={x:96,y:90.6};
+const ROLL25={x:114,y:90.6};
 const SEATP25=LG.POS.benches.map(b=>({y:b.foot,shape(){},foot:[b.x0,b.foot-4,b.x1-b.x0,5],seat:1}));
 /* ==== ART lodging25: end ==== */
 
@@ -353,7 +353,7 @@ const BENCH=102;
 const MEN25=[[JA,84,1],[JC,104,1],[JE,124,1],[JF,168,1],[JD,188,1],[JB,208,1]],SPOKES25=JB;
 const DAY25=[[JA,80,1],[JD,98,1],[JB,116,1],[JH,134,1],[JC,166,1],[JF,184,1],[JG,202,1],[JE,220,1]];
 /* the third watch's people, the fifth's six men and the two who travel, the sixth's two */
-const AT3={tim:LG.AT.desk.slice(),luke:[78,BENCH,1],eph:[206,124,-1]};
+const AT3={tim:LG.AT.desk.slice(),luke:[142,BENCH,-1],eph:[206,124,-1]};
 const AT5={aristarchus25:[46,108,1],demas25:[72,108,1],justus25:[198,132,-1],epaphras25:[226,110,-1],mark25:[300,122,-1],luke25:[274,134,-1],tychicus25:[246,107,-1],onesimus25:[262,111,-1]};
 const STOOL25=[];   /* the last watch: where the soldier's own stool stands (the table's, until he carries it to the door) */
 function place25(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a.ges=0;a.kneel=0;a.bound=0;a.bow=false;a.speed=0;a.chained=0;a.chainTo=0;a.held=0;a.keeper=0;a.grips=0;a.wrist=0;a.tether=0;a.free=false;a.pose=0;a.pk=0;a.noTurn=0}
