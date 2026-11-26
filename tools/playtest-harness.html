@@ -671,6 +671,65 @@
       HEAD.forEach((o,i)=>{const x=(i%4)*cw,y=Math.floor(i/4)*chh,f=o.veil||o.fem,top=4+(o.h?19:23)+(o.h?13:16)+3+(o.h?22:f?24:26)+20;field(g,i+Math.floor(i/4),x,y,cw,chh);cut(g,spr(o,'close'+i,1),-13,-top-6,26,39,x,y-6,Z)});
       SHEETS['cast-closeup']=c.toDataURL()}
     window.SHEETS=SHEETS;halt('cast')}
+  /* The working poses of the sea chapters (POSE, person's ps; Acts 27 and 28): hauling a rope, holding on, carrying a sack or a bundle, in
+     the water at a plank or swimming, lying and sitting up in bed, huddled and warming by a fire, a hand laid on someone, shaking something
+     off the hand, heaving the lead and paying out the line. Every frame of every pose is one piece, facing both ways, for every look of the
+     shipwreck (wet, torn, barefoot), Paul as he is in Caesarea, a man in a long robe and mantle, a veiled woman and a boy; a pose that walks
+     is one piece in every frame of the walk; poseAt gives hands that lie on the figure, and a rope for haul. An actor who is set in a pose does
+     not turn and stands in it; poseSw gives no contact shadow in the water or in bed. poses-sheet.png shows every pose for three looks (Paul,
+     a sailor, a wet survivor), three times enlarged and facing both ways; poses-hands.png the hands and what they hold, six times; and
+     poses-together.png the poses with what a room puts with them: the rope carried on from poseAt's ends, the viper hanging from the hand
+     that shakes it off, the bed under the one lying in it and the hand laid on him, the line from the lead. Look there for an arm stretched
+     out or two raised, for a rope or a line that makes a T with a level line, for a coil or a bundle with ties across it, and for anything
+     that reads as a cross (CONTRIBUTING section 3). */
+  if(stop==='poses'){await need('cast');await need('beasts');const SHEETS={},C=SHARED.cast,W=C.SHIPWRECK,
+      sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,w,h);return[c,g]},
+      text=(g,t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},
+      field=(g,i,x,y,w,h)=>{g.fillStyle=i%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,w-2,h-2)},
+      at=(o,key,dir,ps,fr)=>sprite(['pose',key,dir<0?'-1':'1',ps,fr||0].join('|'),q=>person(q,0,0,o,dir,fr||0,0,0,0,0,0,'',ps),dir),
+      ALLPS=Object.keys(POSE).flatMap(n=>[...Array(POSE[n].n)].map((_,k)=>POSE[n].n>1?n+k:n)),
+      SAIL={skin:'#a67044',hair:'#2a1a12',beard:'#2a1a12',shortBeard:1,tunic:'#b69e74',belt:'#3e2816',brow:'#1e120c',barefoot:1},
+      B0={skin:'#c08a5c',tunic:'#c4b08a',belt:'#3a2414'},
+      LOOKS=Object.assign({paul22:paulLook(22),sailor:SAIL,robe:{...B0,hair:'#969088',beard:'#a49e96',brow:'#78726c',grey:'#c8c2ba',bald:1,longBeard:1,long:1,cloak:'#6a5a7a'},
+        veiled:{skin:'#c8a078',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#6a2a5a',brow:'#3a2414',veil:'#6a2a5a'},boy:{...B0,hair:'#34241c',h:1}},W);
+    {const bad=[],walk=[];let n=0;
+      for(const[id,o]of Object.entries(LOOKS))for(const ps of ALLPS)for(const d of[1,-1]){n++;const p=parts(at(o,id,d,ps));if(p!==1)bad.push(id+' '+ps+(d<0?' left':'')+' ('+p+')');
+        if(POSE[ps.replace(/\d+$/,'')].walk&&d>0)for(let k=0;k<16;k+=3){n++;if(parts(at(o,id,1,ps,4+k))!==1)walk.push(id+' '+ps+' '+(4+k))}}
+      ok(!bad.length&&!walk.length,`working poses: ${ALLPS.length} frames of ${Object.keys(POSE).length} poses, for ${Object.keys(LOOKS).length} looks both ways and walking with a load, ${n} pictures, and none comes apart`+(bad.length?'. IN PIECES: '+bad.slice(0,10).join('; '):'')+(walk.length?'. WALKING: '+walk.slice(0,8).join('; '):''))}
+    {const bad=[];for(const[id,o]of Object.entries(LOOKS))for(const ps of ALLPS){const r=poseAt(o,ps),Q=POSE[ps.replace(/\d+$/,'')];if(Q.lie||Q.bed)continue;
+        if(Q.far&&!(r.far&&Math.abs(r.far[0])<20&&r.far[1]<4&&r.far[1]>-46))bad.push(id+' '+ps+' far');if(Q.near&&!(r.near&&Math.abs(r.near[0])<20))bad.push(id+' '+ps+' near');
+        if(Q.rope&&!(r.rope&&r.rope[0][0]<r.near[0]&&r.rope[1][0]>r.far[0]&&r.rope[1][1]>r.rope[0][1]))bad.push(id+' '+ps+' rope')}
+      ok(!bad.length,'poseAt: the hands of every pose lie on the figure, and the rope of haul slants down from the near fist past the far one'+(bad.length?'. NOT: '+bad.slice(0,8).join(', '):''))}
+    {const a=ACT[Object.keys(ACT)[0]],was=[a.pose,a.pk];a.walk=null;a.pose='haul';a.pk=2;await wait(80);const f=a.fr,st=!!still(a);a.pose='sack';const sw=!still(a);a.pose=was[0];a.pk=was[1];
+      ok(f===0&&st&&sw&&poseSw(paulLook(22),'plank0',0)===0&&poseSw(paulLook(22),'lie',0)===0&&poseSw(paulLook(22),'huddle',0)>8,'a.pose sets an actor in a pose: he does not turn meanwhile (but may, carrying a load); in the water and in bed he casts no contact shadow of his own')}
+    const SHOW=[['Paul',paulLook(22)],['a sailor',SAIL],['a wet survivor',W.prisoner_wet]];
+    {/* each pose in a field of its own width: those in bed are wider; the poses run in two rows to a look and a way it faces */
+      const Z=3,ch=124,wOf=ps=>/^(lie|sitUp)/.test(ps)?124:74,half=Math.ceil(ALLPS.length/2),ROWS=[ALLPS.slice(0,half),ALLPS.slice(half)],
+        W0=Math.max(...ROWS.map(r=>r.reduce((s,p)=>s+wOf(p),0))),[c,g]=sheet(W0*Z,34+SHOW.length*4*(ch*Z+4));
+      text(g,'The working poses, for Paul, a sailor and a wet survivor, facing right and left, three times enlarged',10,23,17,'#f4f0e6');
+      SHOW.forEach(([nm,o],r)=>ROWS.forEach((row,hf)=>[1,-1].forEach((d,dd)=>{let x=0;const y=34+((r*2+hf)*2+dd)*(ch*Z+4);row.forEach((ps,i)=>{const cw=wOf(ps),bed=cw>74;
+        field(g,i+r+dd+hf,x,y,cw*Z,ch*Z);g.fillStyle='rgba(60,48,40,.3)';g.fillRect(x+6,y+(ch-8)*Z,cw*Z-12,2);
+        g.drawImage(at(o,'show'+r,d,ps),FIG.OX-cw/2+(bed?d*-6:0),FIG.OY-ch+8,cw,ch,x,y,cw*Z,ch*Z);text(g,ps+(i?'':' · '+nm)+(d<0?' (left)':''),x+5,y+14,11);x+=cw*Z})})));
+      SHEETS['poses-sheet']=c.toDataURL()}
+    {const Z=6,HANDS=[['haul2',-8,-74,40,34],['hold0',-2,-70,30,26],['sack',-8,-92,34,32],['bundle',-14,-66,40,26],['heave0',-12,-60,40,32],['payout1',-12,-60,44,32],['shake0',2,-74,30,28],['shake1',2,-60,30,28],
+        ['lay0',2,-58,34,30],['warm',-14,-62,46,26],['huddle',-4,-42,32,30],['warmSit',-4,-42,36,30],['plank0',-16,-36,56,22],['swim0',-16,-28,48,20],['lie',-64,-26,60,28],['sitUp',-16,-36,56,30]],
+        cw=60*Z,chh=36*Z+20,per=4,[c,g]=sheet(per*cw,34+Math.ceil(HANDS.length*2/per)*chh);text(g,'The hands and what they hold, six times enlarged: a sailor and a wet survivor',10,23,17,'#f4f0e6');
+      HANDS.flatMap(h=>[[SAIL,'sailor',...h],[W.prisoner_wet,'wet',...h]]).forEach(([o,nm,ps,x0,y0,w,h],i)=>{const x=(i%per)*cw,y=34+Math.floor(i/per)*chh;field(g,i+Math.floor(i/per),x,y,cw,chh);
+        g.drawImage(at(o,'hand'+nm,1,ps),FIG.OX+x0,FIG.OY+y0,w,h,x+4,y+18,w*Z,h*Z);text(g,ps+' · '+nm,x+6,y+14,12)});
+      SHEETS['poses-hands']=c.toDataURL()}
+    {/* what a room puts with the poses, by poseAt and viperHead: three men on one rope, the viper hanging from the hand, the bed and the hand
+        laid on the one in it, the lead's line over a rail */
+      const Z=4,VW=320,VH=110,[c,g]=sheet(VW*Z,VH*Z+30),[v,vg]=sheet(VW*2,VH*2);vg.fillStyle='#9aa6b4';vg.fillRect(0,0,VW*2,VH*2);vg.setTransform(2,0,0,2,0,0);
+      const rope=(a,b)=>{vg.strokeStyle='#8c7246';vg.lineWidth=1;vg.beginPath();vg.moveTo(a[0],a[1]);vg.lineTo(b[0],b[1]);vg.stroke()},put=(o,x,y,d,ps)=>{vg.drawImage(at(o,'tog',d,ps),x-FIG.OX/HR,y-FIG.OY/HR,FIG.W/HR,FIG.H/HR)};
+      vg.fillStyle='#7a6450';vg.fillRect(0,60,130,4);
+      [[SAIL,20,'haul0'],[W.prisoner_wet,44,'haul1'],[paulLook(22),68,'haul2']].forEach(([o,x,ps])=>{put(o,x,60,1,ps);const r=poseAt(o,ps).rope;rope([x+r[0][0]-6,60+r[0][1]-6*(r[1][1]-r[0][1])/(r[1][0]-r[0][0])],[x+r[1][0]+10,60+r[1][1]+10*(r[1][1]-r[0][1])/(r[1][0]-r[0][0])])});
+      {const x=150,y=60,h=poseAt(paulLook(22),'shake0').far;put(paulLook(22),x,y,1,'shake0');SHARED.beasts.paint.viper(vg,x+h[0],y+h[1]+37*FIG.K,1,3)}
+      {const x=196,y=60;vg.fillStyle='#6a4a30';vg.fillRect(x-31,y-10,58,4);vg.fillRect(x-30,y-6,3,6);vg.fillRect(x+23,y-6,3,6);put(LOOKS.robe,x,y-10,1,'lie');
+        put(paulLook(22),x-1,y+2,1,'lay1')}
+      {const x=270,y=60;vg.fillStyle='#6a4a30';vg.fillRect(x+6,y-22,40,3);put(SAIL,x,y,1,'payout0');const h=poseAt(SAIL,'payout0').far;rope([x+h[0],y+h[1]],[x+h[0]+12,y+h[1]+30])}
+      g.drawImage(v,0,30,VW*Z,VH*Z);text(g,'With what the room draws: the rope from poseAt, the viper from viperHead, a bed and a rail (four times enlarged)',10,20,15,'#f4f0e6');
+      SHEETS['poses-together']=c.toDataURL()}
+    window.SHEETS=SHEETS;halt('poses')}
   /* Shipwreck survivor clothing & reusable Roman military cast (shared/cast.js): standing, facing left, mid-stride, and enlarged close-ups.
      Both stops also verify that every look stays one connected piece across standing, talking, seated and all walking frames. */
   if(stop==='shipwreck'||stop==='romans'||stop==='sanhedrin'||stop==='caesarea'){await need('cast');const SHEETS={},C=SHARED.cast,
@@ -5881,6 +5940,19 @@
       ok(!vb.length&&V.every((v,i)=>!i||v[0]>V[i-1][0])&&V[V.length-1][0]<=1500&&V.slice(0,-1).every(v=>v[1]>=20&&v[1]<=23)&&[20,21,22,23].every(f=>V.some(v=>v[1]===f))&&
           new Set(BRAY.filter(w=>w[0]===0&&w[1]===1).map(w=>w[3].toDataURL())).size===4&&BRAY.every(w=>!same(w[3],dk(0,w[1],w[0]))),
         'the donkey brays in four frames of its own (20 to 23), each one piece, facing both ways and with each load, and its voice list runs through them in '+V[V.length-1][0]+' ms'+(vb.length?'. IN PIECES: '+vb.join(', '):''))}
+    /* the small animals of Malta (shared/beasts.js, SMALL): the viper in its seven frames (coiled, coming out, hanging from a hand, falling), the
+       goat in three (standing, grazing, chewing) and the dog in two (asleep, its head lifted), each one piece facing both ways; a hanging viper's
+       head is at the point it is placed by. beasts-malta.png shows them all six times enlarged, both ways: look there for a snake that crosses
+       itself or lies across something as an X, for a horn or an ear that reads as a cross, and for a tail or a leg that has come apart. */
+    {const{viper,goat,dog}=SHARED.beasts.paint,M=[];for(const d of[1,-1]){for(let f=0;f<7;f++)M.push(['viper '+f,d,s=>viper(s,0,0,d,f),-26,-44,52,46]);for(let f=0;f<3;f++)M.push(['goat '+f,d,s=>goat(s,0,0,d,f),-30,-50,60,52]);
+        for(let f=0;f<2;f++)M.push(['dog '+f,d,s=>dog(s,0,0,d,f),-28,-22,56,24])}
+      const sp=M.map(([n,d,fn],i)=>sprite('malta-'+n+(d<0?'-1':'1'),fn,d)),apart=M.filter((m,i)=>pieces(sp[i])!==1).map(m=>m[0]+(m[1]<0?' left':'')),hd=SHARED.beasts.viperHead(3);
+      ok(!apart.length&&hd[0]===0&&Math.abs(hd[1]+37*FIG.K)<1e-9,'the viper, the goat and the dog: '+M.length+' frames, both ways, each one piece; a hanging viper hangs by its head from the point it is placed at'+(apart.length?'. IN PIECES: '+apart.join(', '):''));
+      if(stop==='beasts'){const Z=6,per=6,cw=60*Z,chh=52*Z+18,c=document.createElement('canvas');c.width=per*cw;c.height=24+Math.ceil(M.length/per)*chh;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);
+        g.fillStyle='#f4f0e6';g.font='bold 15px Menlo,Consolas,monospace';g.fillText('The viper, the goat and the dog of Malta, every frame, six times enlarged, facing right and left',8,17);
+        M.forEach(([n,d,,x0,y0,w,h],i)=>{const x=(i%per)*cw,y=24+Math.floor(i/per)*chh;g.fillStyle=(i+Math.floor(i/per))%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw-2,chh-2);
+          g.drawImage(sp[i],FIG.OX+(d>0?x0:-x0-w),FIG.OY+y0,w,h,x+2,y+16,w*Z,h*Z);g.fillStyle='#14100c';g.font='bold 11px Menlo,Consolas,monospace';g.fillText(n+(d>0?', right':', left'),x+5,y+12)});
+        window.SHEETS=Object.assign(window.SHEETS||{},{'beasts-malta':c.toDataURL()})}}
     halt('beasts',()=>{/* beasts-walk.png: the walk and the bray, frame by frame */
       {const ALL=[...WALK,...BRAY],Z=3,cw=92,chh=84,per=8,rows=Math.ceil(ALL.length/per),c=document.createElement('canvas');c.width=per*cw*Z;c.height=24+rows*(chh*Z+16);const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);
         g.fillStyle='#f4f0e6';g.font='bold 15px Menlo,Consolas,monospace';g.fillText("The donkey's walk (sixteen frames) and its bray (frames 20 to 23), three times enlarged, for each load and each way it faces",8,17);
