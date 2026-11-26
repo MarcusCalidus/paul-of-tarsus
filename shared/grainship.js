@@ -226,8 +226,8 @@ function gallery(g,G,C){const{k,sheer}=G,q=G.gallery,yP=sheer(G.post.x)+.5*k,x0=
    (at its foot about twice the loom of a steering oar) and stays full all the way round. A carved ornament of plain weathered wood: one
    piece, no outline, lit by its scene; no figurehead, no gilding, nothing set under it. */
 const SWAN={/* the neck's middle line, [u, v, thickness] */
-  line:[[0,0,.38],[-.1,.5,.37],[-.19,1.1,.36],[-.2,1.75,.35],[-.1,2.35,.34],[.12,2.82,.33],[.42,3.05,.32],[.7,2.96,.31],[.88,2.62,.3],[.93,2.2,.3],[.88,1.82,.29]],
-  head:{c:[.8,1.62],bill:[-.58,-.81],a:.24,b:.18,bl:.46},top:3.05};
+  line:[[0,0,.47],[-.1,.5,.46],[-.2,1.1,.44],[-.23,1.75,.42],[-.16,2.35,.39],[.02,2.8,.37],[.27,3.02,.35],[.5,2.95,.34],[.64,2.68,.33],[.68,2.32,.33],[.64,2.04,.32]],
+  head:{c:[.6,1.88],bill:[-.76,-.65],a:.34,b:.27,bl:.38},top:3.05};
 function cr(P,n){const out=[];for(let i=0;i<P.length-1;i++){const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(P.length-1,i+2)];
   for(let j=0;j<n;j++){const t=j/n,t2=t*t,t3=t2*t,f=(k)=>.5*((2*p1[k])+(-p0[k]+p2[k])*t+(2*p0[k]-5*p1[k]+4*p2[k]-p3[k])*t2+(-p0[k]+3*p1[k]-3*p2[k]+p3[k])*t3);out.push([f(0),f(1),f(2)])}}
   out.push(P[P.length-1].slice());return out}
@@ -248,17 +248,18 @@ function swanDraw(g,M,cols,Ld){const S=cr(SWAN.line,6),Q=S.map(([u,v,t])=>{const
     sg=(qx*(U(0,.1)[0]-hc[0])+qy*(U(0,.1)[1]-hc[1]))>.05*sc?1:-1;
   const skull=[];for(let i=0;i<20;i++){const th=i/20*6.2832,c=Math.cos(th),sn=Math.sin(th),l=c<0?along*1.05:along*.85;skull.push(hc[0]+bx*c*l+qx*sn*br,hc[1]+by*c*l+qy*sn*br)}
   const neck=Lx.concat(ptsBackG(Rx));
-  const sub=p=>{g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1]);g.closePath()},body=()=>{g.beginPath();sub(neck);sub(skull)};
+  /* both outlines wound the same way, so that where the neck runs into the skull the shape stays whole (no hole where they overlap) */
+  const area=p=>{let A=0;for(let i=0;i<p.length;i+=2){const j=(i+2)%p.length;A+=p[i]*p[j+1]-p[j]*p[i+1]}return A},wind=p=>area(p)<0?ptsBackG(p):p,
+    sub=p=>{p=wind(p);g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1]);g.closePath()},body=()=>{g.beginPath();sub(neck);sub(skull)};
   const lw=Math.max(...Q.map(q=>q[2]));
   clipTo(g,body,()=>{poly(g,neck,cols.mid);poly(g,skull,cols.mid);
     /* the shaded side and the lit side, each a band shifted across the timber from its middle line */
     const band=(k,c,f)=>{g.strokeStyle=c;g.lineCap='round';g.lineJoin='round';for(let i=1;i<n;i++){g.lineWidth=Math.max(.5,Q[i][2]*f);g.beginPath();g.moveTo(Q[i-1][0]+Ld[0]*Q[i][2]*k,Q[i-1][1]+Ld[1]*Q[i][2]*k);g.lineTo(Q[i][0]+Ld[0]*Q[i][2]*k,Q[i][1]+Ld[1]*Q[i][2]*k);g.stroke()}};
-    band(-.42,cols.sh,.55);band(.3,rgba(cols.lit,.55),.32);band(.42,rgba(cols.lit,.8),.12);
-    g.fillStyle=rg(g,hc[0]+Ld[0]*br*.5,hc[1]+Ld[1]*br*.5,br*1.6,[rgba(cols.lit,.55),rgba(cols.lit,0)]);poly(g,skull);g.fill();
-    tex(g,'wood',.15,Math.min(...Q.map(q=>q[0]))-lw,Math.min(...Q.map(q=>q[1]))-lw,Math.max(...Q.map(q=>q[0]))-Math.min(...Q.map(q=>q[0]))+2*lw,Math.max(...Q.map(q=>q[1]))-Math.min(...Q.map(q=>q[1]))+2*lw,'overlay',.45)});
+    band(-.4,mix(cols.mid,cols.sh,.85),.5);band(-.22,mix(cols.mid,cols.sh,.4),.3);band(.26,mix(cols.mid,cols.lit,.45),.36);band(.4,mix(cols.mid,cols.lit,.8),.12);
+    g.fillStyle=rg(g,hc[0]+Ld[0]*br*.5,hc[1]+Ld[1]*br*.5,br*1.6,[rgba(cols.lit,.55),rgba(cols.lit,0)]);poly(g,skull);g.fill()});
   /* the bill: from the front of the skull toward its tip, long and flattish, a little hooked at the end, in a warmer tone; a small knob
      on its root; the eye a small square on the skull, behind the root, toward the bill's top side */
-  const rx=hc[0]+bx*along*.75,ry=hc[1]+by*along*.75,tx=bt[0],ty=bt[1],w0=.085*sc,w1=.025*sc,L2=Math.hypot(tx-rx,ty-ry),
+  const rx=hc[0]+bx*along*.75,ry=hc[1]+by*along*.75,tx=bt[0],ty=bt[1],w0=.11*sc,w1=.035*sc,L2=Math.hypot(tx-rx,ty-ry),
     Bp=[rx+qx*w0*sg,ry+qy*w0*sg,rx+(tx-rx)*.55+qx*w0*.8*sg,ry+(ty-ry)*.55+qy*w0*.8*sg,tx+qx*w1*sg,ty+qy*w1*sg,tx-bx*Math.min(.6,L2*.05),ty-by*Math.min(.6,L2*.05),tx-qx*w1*sg*.6,ty-qy*w1*sg*.6,rx+(tx-rx)*.5-qx*w0*.65*sg,ry+(ty-ry)*.5-qy*w0*.65*sg,rx-qx*w0*.8*sg,ry-qy*w0*.8*sg];
   poly(g,Bp,cols.bill);stroke(g,[Bp[0],Bp[1],Bp[2],Bp[3],Bp[4],Bp[5]],rgba(cols.billLit,.8),.5);
   poly(g,[rx+qx*w0*sg-bx*.04*sc,ry+qy*w0*sg-by*.04*sc,rx+qx*w0*1.9*sg+bx*.04*sc,ry+qy*w0*1.9*sg+by*.04*sc,rx+qx*w0*sg+bx*.11*sc,ry+qy*w0*sg+by*.11*sc],cols.bill);
@@ -266,7 +267,7 @@ function swanDraw(g,M,cols,Ld){const S=cr(SWAN.line,6),Q=S.map(([u,v,t])=>{const
 
 /* the sternpost from the side: the swan's neck rising from the forward end of the gallery. kind 'curl' keeps the plain scroll that was
    shown as a choice before the maintainer chose the swan. */
-function sternpost(g,G,C,kind){const{k,sheer}=G,x=G.post.x,y=sheer(x)+1.5*k,s=12.6*k;
+function sternpost(g,G,C,kind){const{k,sheer}=G,x=G.post.x,y=sheer(x)+1.5*k,s=G.o.swan||12.6;
   if(kind!=='curl'){swanDraw(g,(u,v)=>[x+u*s,y-v*s,s],{mid:C.post,sh:tint(C.post,-.42),lit:C.postHi,bill:mix(C.post,'#c06a3a',.45),billLit:tint(mix(C.post,'#e0904e',.5),.3),eye:C.dark},[-.6,-.8]);return}
   const lit=C.postHi,mid=C.post,sh=tint(C.post,-.4),CL=[];
   for(let i=0;i<=16;i++){const t=i/16;CL.push([x-5*k*Math.sin(t*Math.PI*.8)+2*k*t*t,y-30*k*t,(5.2-2*t)*k])}
@@ -502,10 +503,10 @@ function deckBulwark(g,D,r){const{P,s,rh}=D,C=D.C,N=D.N,M=C.length-1,A='#8a6440'
    of that peak, so it ends each rail and stands on the middle of none; the cabin is lower than the peak, so the neck never stands on
    its roof. The gallery, beyond the
    stern and lower than the eye's line over it, is not seen from here (a rail behind the post would make a cross). */
-function deckStern(g,D,kind){const{P,s}=D,z=DG.ZS+.3,y0=s(DG.ZS)+D.rx(0,DG.ZS+.25),A='#7e5a36',SM=1;
+function deckStern(g,D,kind){const{P,s}=D,z=DG.ZS+.3,y0=s(DG.ZS)+D.rx(0,DG.ZS+.25),A='#7e5a36',SM=1.4;
   /* the swan's neck, seen from forward and a little below: the loop foreshortened, the head hanging bowed toward us in front of the
      neck, its bill pointing down */
-  swanDraw(g,(u,v)=>{const zz=z-u*SM*Math.cos(.28);return[...P(u*SM*Math.sin(.28),y0-.25+v*SM,zz),D.F*SM/zz]},{mid:lit(D,A,[0,.2,-1]),sh:lit(D,'#5a3e26',[-1,0,-.3]),lit:lit(D,'#f0d0a0',[1,.6,-.5]),
+  swanDraw(g,(u,v)=>{const zz=z-u*SM*Math.cos(.1);return[...P(u*SM*Math.sin(.1),y0-.25+v*SM,zz),D.F*SM/zz]},{mid:lit(D,A,[0,.2,-1]),sh:lit(D,'#5a3e26',[-1,0,-.3]),lit:lit(D,'#f0d0a0',[1,.6,-.5]),
     bill:lit(D,'#b86a3a',[0,.2,-1]),billLit:lit(D,'#f0a868',[.5,.6,-.6]),eye:'#1a100a'},[.6,-.8])}
 /* the steering oars at the quarters: the loom rising outboard past the rail, its squared head, and the tiller reaching forward and
    inboard; a lashing slanting from the loom down to the rail holds it up. Loom and tiller meet at a corner. */
