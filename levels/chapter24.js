@@ -691,7 +691,7 @@ function appiusBack24(g,W,dawn){const hz=APPIUS24.hz,RM=SHARED.rome,CO=SHARED.co
     {const q=rng(2643);cloud(g,240,20,70,2.6,q,'#fbf6ee','#b4bed4');cloud(g,80,30,44,1.8,q,'#f6f2ea','#bec6d8')}}
   /* hills far off at the right, low and blue; the flat land to the horizon */
   CO.range(g,180,322,hz+.2,x=>Math.max(0,4+3*Math.sin((x-200)/30)+1.2*Math.sin(x/7))*Math.min(1,(x-180)/30),dawn?['#6a6a88','#7a7890']:['#a2acc6','#b6bed2'],{k:.3});
-  CO.plain(g,-2,322,hz,104,2644,{vx:150,land:dawn?'#5c604e':'#98a868',haze:dawn?'#8a8296':'#c8ccd4',clouds:dawn?0:2,kinds:['meadow','green','fallow','meadow','grain']});
+  fields24(g,-2,322,hz,104,2644,{vx:150,land:dawn?'#5c604e':'#98a868',haze:dawn?'#8a8296':'#c8ccd4',clouds:dawn?0:2,kinds:['#94ac66','#86a458','#aeac7c','#94ac66','#9cb064'],hedge:dawn?'#3e463c':'#4e6a3e'});
   /* the canal: it comes in from the south, out of the picture at the left, between banks of squared stone, and ends here in the basin at
      the back left, closed by the quay at its end */
   const wa=dawn?['#a898a8','#7a7e9c','#5a6080']:['#b4c8d6','#9cb4c6','#7894aa'];
@@ -716,8 +716,9 @@ function appiusBack24(g,W,dawn){const hz=APPIUS24.hz,RM=SHARED.rome,CO=SHARED.co
   /* the tracks of carts and of feet across the landing, from the quay to the road */
   for(const[a,b2,c2,d]of[[104,91.2,74,104.5],[110,91.2,84,104.5],[40,91.2,22,104.5]]){const P=[];for(let t=0;t<=1;t+=.1)P.push(a+(c2-a)*t-4*Math.sin(t*Math.PI)*(a>60?1:-1),b2+(d-b2)*t);
     stroke(g,P,dawn?'rgba(40,34,36,.35)':'rgba(90,72,54,.35)',.7);stroke(g,P.map((v,i)=>i%2?v+.6:v+.3),dawn?'rgba(150,140,140,.15)':'rgba(230,214,180,.3)',.5)}
-  for(const[x,y,w,h]of[[20,97,7,3.6],[26,97.4,6,3],[23,94.2,6,3]]){const c=dawn?'#8e867a':'#cdb994';oval(g,x,y-h/2,w/2,h/2,c);R(g,x-w/2+1,y-h+.3,w-2,.5,tint(c,.25));RM.weeds&&0}
-  SHARED.materials.shadow(g,24,97.4,6,1,.4);
+  /* (one long low row of sacks against the quay, nothing round behind a head) */
+  for(let i=0;i<5;i++){const x=96+i*3.4,y=93.6,c=dawn?(i%2?'#86807a':'#8e867a'):(i%2?'#c4b08c':'#cdb994');R(g,x,y-2.6,3.6,2.6,c);R(g,x+.4,y-2.6,2.8,.5,tint(c,.25));R(g,x+3.1,y-2.4,.5,2.4,tint(c,-.2))}
+  SHARED.materials.shadow(g,104.5,93.6,10,.9,.4);
   /* the inns and the stalls along the back: the left house, the taller one, with its door and its upper windows; the right one lower, its
      door at its right and, left of the door, a stall under a lean-to roof on two posts, one at each end of its beam, its counter of masonry along the wall */
   const c1=dawn?'#9a8e86':'#dcc8a6',c2=dawn?'#948a84':'#d4bc98',ti=dawn?'#6a4a44':'#a85a3c',lit=dawn?0:1;
@@ -735,8 +736,9 @@ function appiusBack24(g,W,dawn){const hz=APPIUS24.hz,RM=SHARED.rome,CO=SHARED.co
   /* where the houses meet the ground: a seam of shade along their foot, weeds against it */
   for(const[dy,wd,a]of[[.4,1.6,.16],[.2,.7,.3]])stroke(g,[124,102+dy,264,102+dy],rgba('#2a2026',a),wd);
   RM.weeds(g,126,102.3,148,102.4,30,2655,1.6);RM.weeds(g,200,102.3,236,102.4,36,2656,1.4);
-  /* beyond the houses at the right: the land, a few trees */
-  for(const[x,y,h,k]of[[276,84,22,'oak'],[300,86,16,'olive'],[314,80,12,'poplar']])CO.tree(g,x,y,h,null,{kind:k,seed:2660+x,cast:!dawn});
+  /* beyond the houses at the right: the land, a grove, two cypresses */
+  /* (a grove as one long low band and two cypresses: nothing round where heads pass) */
+  grove24(g,268,322,84,3.6,2661,{c:dawn?'#5a6050':'#7d876a'});RM.cypress(g,282,86,24,{c:dawn?'#2e3a30':'#3a5634',seed:2662,sun:-1,w:3.6});RM.cypress(g,306,88,18,{c:dawn?'#2e3a30':'#3e5836',seed:2663,sun:-1,w:3})
   /* the verge before the houses, back to their foot: beaten earth and grass */
   {const y0=102.4,y1=W.V.P(0,W.p1,0)[1];g.fillStyle=lg(g,0,y0,0,y1,dawn?['#6a6458','#726a5c']:['#a89a7a','#b0a282']);g.fillRect(122,y0,322-122,y1-y0+.5);
     CO.turf(g,122,y0,200,y1,dawn?'#5e6650':'#8a9a5a',2657,{wind:-.3,scale:.4,dense:.5,dry:.3})}}
@@ -1040,9 +1042,43 @@ function way24(g,o){const RM=SHARED.rome,hz=o.hz,H=2.2,yN=141,F=5.9/(H/(o.yF-hz)
 function roadStone24(g,W,x,n,o){const RM=SHARED.rome,Z=W.c1+.5,[,y]=W.V.P(0,Z,0),h=o.h||26,w=o.w||14,c=o.cast||[0,0];
   RM.milestone(g,x,y,{w,h,ry:1.7,n,sun:o.sun||-1,seed:o.seed||2451,cast:o.cast?[c[0]*h/46*2,c[1]*h/46*2]:null,lh:o.lh||4.4,ny:o.ny||4,lw:o.lw||.7,gap:o.gap||.75,c:o.c});
   RM.weeds(g,x-w/2-1.4,y-.1,x-w/2+1.6,y+.3,8,(o.seed||2451)+1,1.8);RM.weeds(g,x+w/2-1.2,y-.1,x+w/2+1.8,y+.3,7,(o.seed||2451)+2,1.6);return y}
+/* Nothing round stands alone behind the walkers' heads (CONTRIBUTING section 3, a halo by accident): heads on the road pass through the
+   band y 68..100 from one edge to the other, so in that band the country is fields, hedges and groves painted as long low bands with
+   ragged tops, cypresses (tall and narrow), and the verge's bank without bushes; single trees stand only above it, small and far off. */
+/* fields24: the plots of the land from the horizon hz down to y1 in perspective toward vx, as SHARED.country.plain paints them, but the
+   banks between the rows are hedges in long low bands with ragged tops, never a row of round bushes, and there are no orchards */
+function fields24(g,x0,x1,hz,y1,seed,o){o=o||{};const r=rng(seed),vx=o.vx==null?160:o.vx,H=y1-hz,land=o.land||'#9cae6c',haze=o.haze||'#c8d2d4',
+    K=o.kinds||['#d6c07c','#9cb064','#86a458','#a8845e','#aeac7c','#94ac66','#86a458','#d6c07c'];
+  g.fillStyle=lg(g,0,hz,0,y1,[mix(land,haze,.5),land,tint(land,-.06)]);g.fillRect(x0,hz,x1-x0,H);
+  let s=1;const rows=[];while(H*s>.7){const s2=s*(.62+r()*.14);rows.push([s2,s]);s=s2}
+  for(const[sa,sb]of rows){const ya=hz+H*sa,yb=hz+H*sb,ub=(x1-vx)/sa+40;let u=(x0-vx)/sa-40-r()*60;
+    while(u<ub){const pw=36+r()*90,ki=Math.floor(r()*K.length),c=tint(K[ki],(r()-.5)*.12),fog=Math.min(.8,(1-sb)*.9),cc=mix(c,haze,fog*.6);
+      const P=[vx+u*sa,ya,vx+(u+pw)*sa,ya,vx+(u+pw)*sb,yb,vx+u*sb,yb];poly(g,P,cc);
+      clipTo(g,()=>poly(g,P),()=>{
+        /* furrows of ploughed land and rows of stubble, running toward the vanishing point */
+        const step=ki===3?3.2:ki===0||ki===7?4:0;
+        if(step&&sb>.45&&yb-ya>5)for(let v=u+step*.5;v<u+pw;v+=step)poly(g,[vx+v*sa,ya,vx+(v+step*.35)*sa,ya,vx+(v+step*.35)*sb,yb,vx+v*sb,yb],ki===3?rgba('#5a3a28',.12):rgba('#8a7440',.09));
+        for(let i=0;i<(yb-ya)*(P[2]-P[0])/4;i++){const px=P[6]+r()*(P[4]-P[6]),py=ya+r()*(yb-ya);R(g,px,py,.5+r()*1.2*sb,.5,rgba(r()<.5?tint(cc,.18):tint(cc,-.18),.5))}
+        ao(g,Math.min(P[0],P[6]),ya,Math.max(P[2],P[4])-Math.min(P[0],P[6]),(yb-ya)*.5,'t',.08,'#1e1a32')});
+      u+=pw}
+    /* a hedge along the far edge of the row, here and there: a long low band, its top ragged, lit along the top */
+    if(sb>.08){let x=x0-r()*40;while(x<x1){const w=20+r()*90;if(r()<.55){const t=Math.max(.6,sb*2.6),hc=mix(o.hedge||'#4e6a3e',haze,(1-sb)*.6),P=[x,ya+.4];
+        for(let xx=x;xx<=x+w;xx+=1)P.push(xx,ya-t*(.55+.3*Math.sin(xx*.9+x)+.15*Math.sin(xx*2.3))*Math.min(1,(xx-x)/3,(x+w-xx)/3+.2));P.push(x+w,ya+.4);
+        poly(g,P,hc);for(let xx=x+1;xx<x+w-1;xx+=1.5+r()*2)R(g,xx,ya-t*.7+r()*t*.3,.5,.5,rgba(tint(hc,.35),.6))}x+=w+10+r()*40}}}
+  tex(g,'mott',.4,x0,hz,x1-x0,H,'overlay',1);
+  for(let k=0;k<(o.clouds==null?2:o.clouds);k++){const px=x0+r()*(x1-x0),py=hz+H*(.25+r()*.6),rx=20+r()*50;pool(g,px,py,rx,rx*.12,'#4a5470',.14,'source-over')}
+  g.fillStyle=lg(g,0,hz,0,hz+H*.6,[rgba(haze,.5),rgba(haze,.14),rgba(haze,0)]);g.fillRect(x0,hz,x1-x0,H*.6)}
+/* grove24: a grove of olives seen across the fields, from x0 to x1 with its foot at y: one long low mass, its top ragged with the crowns
+   that run together, silver-green and lit from the side of the sun (L: -1 left, 1 right), a darker band of shade along its foot */
+function grove24(g,x0,x1,y,h,seed,o){o=o||{};const r=rng(seed),c=o.c||'#7d876a',L=o.L||-1,P=[x0,y];
+  for(let x=x0;x<=x1;x+=1){const e=Math.min(1,(x-x0)/4,(x1-x)/4);P.push(x,y-h*(.62+.22*Math.sin(x*.55+seed)+.16*Math.sin(x*1.7))*(.35+.65*e))}P.push(x1,y);
+  poly(g,P,tint(c,-.22));clipTo(g,()=>poly(g,P),()=>{g.fillStyle=lg(g,x0,0,x1,0,L<0?[tint(c,.08),tint(c,-.1)]:[tint(c,-.1),tint(c,.08)]);g.fillRect(x0,y-h-1,x1-x0,h+1);
+    for(let i=0;i<(x1-x0)*h*.5;i++){const x=x0+r()*(x1-x0),yy=y-h+r()*h;R(g,x,yy,.5+(r()<.3?.5:0),.5,rgba(r()<.55?tint(c,.32):tint(c,-.38),.55))}
+    g.fillStyle=lg(g,0,y-h*.4,0,y,['rgba(40,40,50,0)','rgba(40,40,50,.35)']);g.fillRect(x0,y-h,x1-x0,h)});
+  R(g,x0,y-.2,x1-x0,.6,'rgba(50,46,40,.3)')}
 /* hillsBack24: the land behind the road in the hills: the sky, the hills of Campania rising beyond the one horizon (y 64), the sea far off
-   between two of them, the fields of the valley, olives, stone pines and a cypress or two, a farm far off; then the verge with its bank
-   and the dry ditch down to the footpath */
+   between two of them, the fields of the valley with their hedges, groves of olives as long low bands, two cypresses, a farm far off and
+   small trees on the far slopes; then the verge with its bank (no bushes on it) and the dry ditch down to the footpath */
 function hillsBack24(g,W){const hz=ROAD24.hz,RM=SHARED.rome,CO=SHARED.country,r=rng(2461);
   sky(g,320,hz+1,['#7a9ccb','#9cb6d6','#c8d6e0','#e8e4d8']);
   pool(g,-20,hz-6,120,26,'#fff2dc',.32,'screen');
@@ -1052,22 +1088,22 @@ function hillsBack24(g,W){const hz=ROAD24.hz,RM=SHARED.rome,CO=SHARED.country,r=
   CO.range(g,-2,322,hz+.2,x=>gap(x)*(x<110?13+9*Math.sin((x+30)/46)+3*Math.sin(x/9):15+11*Math.sin((x-120)/64)+2.6*Math.sin(x/7.3))+.4,['#9eaccc','#b6bfd4'],{k:.35});
   /* the nearer hills, green-grey, their feet on the horizon, the sea between them */
   CO.range(g,-2,322,hz+.4,x=>gap(x)*(x<110?6+4*Math.sin((x+8)/22)+1.2*Math.sin(x/5):x<210?5+3*Math.sin((x-140)/26)+1.4*Math.sin(x/4.4):8+5*Math.sin((x-210)/30)+1*Math.sin(x/6)),['#7e9070','#90a07e'],{k:.5});
-  CO.plain(g,-2,322,hz,96,2463,{vx:160,land:'#97a866',haze:'#c4ccd4',clouds:2});
+  /* small olives and a row of stone pines far off on the slopes, all above the walkers' heads (their feet at y 66 at the lowest) */
+  for(let i=0;i<16;i++){const x=r()*320,y=hz-6+r()*7.6;if(x>88&&x<138)continue;CO.tree(g,x,y,2.6+r()*1.6,'#7d876a',{kind:'olive',seed:2470+i,cast:false})}
+  for(let i=0;i<7;i++){const x=150+i*9+r()*3,y=hz+1.6+i*.05;pine(g,x,y,5+r()*1.4,'#4c6640')}
+  fields24(g,-2,322,hz,96,2463,{land:'#97a866',haze:'#c4ccd4'});
   /* the sea at the horizon: its far edge is the horizon itself; the land in front hides it a pixel or two lower */
   {const P=[];for(let x=92;x<=134;x+=1)P.push(x,hz);for(let x=134;x>=92;x-=1){const e=Math.min(x-92,134-x);P.push(x,hz+Math.min(2.2,e*.14))}
     poly(g,P);g.fillStyle=lg(g,0,hz,0,hz+2.4,['#a4bccc','#8eaabc']);g.fill();R(g,98,hz,30,.5,'rgba(255,250,236,.55)')}
   /* the near slopes come down to the sea's edges, the valley floor in front of them */
   CO.range(g,-2,322,hz+3.2,x=>Math.max(0,(x<106?3.4+1.6*Math.sin(x/11)-Math.max(0,x-88)*.18:x>118?3+1.4*Math.sin(x/8)-Math.max(0,132-x)*.2:0)),['#8a9a6c','#93a272'],{k:.4});
-  /* a farm far off on the right-hand slope, a row of stone pines along a lane, olives on the terraces */
+  /* a farm far off on the right-hand slope */
   RM.house(g,252,hz+5.2,7,3.4,{c:'#d8c49e',roof:'#a85a3c',side:1.2,haze:.2,rh:1.4});RM.house(g,260,hz+5.8,4,2.2,{c:'#ccb48e',roof:'#9a5236',side:1,haze:.2,rh:1.1});
-  for(let i=0;i<7;i++){const x=150+i*9+r()*3,y=hz+7+i*.3;pine(g,x,y,8+r()*2.4,'#4c6640')}
-  for(let i=0;i<22;i++){const x=r()*320,y=hz+4+r()*12;if(x>88&&x<138&&y<hz+8)continue;CO.tree(g,x,y,4+r()*4,'#7d876a',{kind:'olive',seed:2470+i,cast:false})}
-  /* nearer: two stone pines and a cypress on the far side of the valley, an olive grove at the left */
-  pine(g,44,86,30,'#46623e',{lean:.25});pine(g,286,84,24,'#4a663e',{lean:-.2});
+  /* the olive groves across the valley, each one long low band, and two cypresses standing up out of the fields */
+  grove24(g,150,226,73.4,2.2,2481,{c:'#8a9278'});grove24(g,4,70,77,3,2482);grove24(g,236,318,79.6,3.4,2483);grove24(g,58,148,85.6,4.4,2484);
   RM.cypress(g,212,86,22,{c:'#3a5634',seed:2464,sun:-1,w:3.4});RM.cypress(g,219,87,16,{c:'#3e5836',seed:2465,sun:-1,w:2.8});
-  for(let i=0;i<6;i++)CO.tree(g,70+i*11+r()*4,88+r()*2,9+r()*3,'#7d876a',{kind:'olive',seed:2480+i});
-  /* the verge back to its bank, and the dry ditch before the footpath */
-  RM.verge(g,W.V,W.Q,W.p1+.9,W.p1+3.4,2466);
+  /* the verge back to its bank, without bushes, and the dry ditch before the footpath */
+  RM.verge(g,W.V,W.Q,W.p1+.9,W.p1+3.4,2466,0);
   RM.ditch(g,W.V,W.Q,W.p1,W.p1+.9,rng(2467));
   /* the morning light over the land: warm from the left, the right a little cooler */
   comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,214,170,1)','rgba(240,226,200,.8)','rgba(184,192,214,1)']);g.fillRect(0,0,320,100)})}
@@ -1183,9 +1219,12 @@ function tavernsBack24(g,W){const hz=TAVERNS24.hz,RM=SHARED.rome,CO=SHARED.count
   /* the hills at the right, where the road climbs on toward Rome; low hills far off at the left */
   CO.range(g,170,322,hz+.2,x=>Math.max(0,(12+6*Math.sin((x-200)/40)+1.4*Math.sin(x/7))*Math.min(1,(x-170)/50)),['#a4aec8','#b8c0d2'],{k:.35,light:1});
   CO.range(g,-2,150,hz+.3,x=>Math.max(0,3+2*Math.sin(x/26)+.8*Math.sin(x/6)),['#a8b2c6','#bcc2d0'],{k:.3,light:1});
-  CO.plain(g,-2,322,hz,104,2743,{vx:160,land:'#9aa866',haze:'#ccd0d8',clouds:2});
-  for(let i=0;i<14;i++){const x=r()*320,y=hz+3+r()*12;CO.tree(g,x,y,4+r()*4,'#7d876a',{kind:r()<.6?'olive':'oak',seed:2750+i,cast:false,light:1})}
-  pine(g,110,88,24,'#46623e',{lean:-.2});RM.cypress(g,214,90,26,{c:'#3a5634',seed:2744,sun:1,w:3.6});
+  /* small trees far off, above the walkers' heads; the fields with hedges and groves as long low bands; two cypresses between the inns:
+     nothing round stands where heads pass (y 68..100) */
+  for(let i=0;i<14;i++){const x=r()*320,y=hz-4+r()*6;CO.tree(g,x,y,2.6+r()*1.6,'#7d876a',{kind:'olive',seed:2750+i,cast:false,light:1})}
+  fields24(g,-2,322,hz,104,2743,{land:'#9aa866',haze:'#ccd0d8'});
+  grove24(g,-2,40,82,3,2745,{L:1});grove24(g,96,124,86,3.4,2746,{L:1});grove24(g,280,322,84,3,2747,{L:1});
+  RM.cypress(g,111,90,26,{c:'#3a5634',seed:2748,sun:1,w:3.4});RM.cypress(g,214,90,26,{c:'#3a5634',seed:2744,sun:1,w:3.6});
   /* the inns */
   const M=SHARED.materials,C=['#d8c4a2','#dcc8a8','#d2bc98'],ti='#a85a3c';
   const inn=(i,ye,o)=>{const[x,yt,w,h]=TAVERNS24.inns[i],x1=x+w,yb=yt+h;

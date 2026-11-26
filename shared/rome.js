@@ -45,7 +45,8 @@
                                       on a narrow stone needs less), gap (between two letters, 1.1), sun (-1 the light from the left, 1 from the right), seed}
      tomb(g, V, Q, o)                 a plain tomb of masonry beside the road: o {u, s, w, d, h (in world units), c, seed}
      band(g, V, Q, s0, s1, c0, c1, seed, uMax)   a strip of packed earth and gravel along the road (a footpath)
-     verge(g, V, Q, s0, s1, seed)     the grass beside the road back to a low bank, with bushes on it
+     verge(g, V, Q, s0, s1, seed, nb) the grass beside the road back to a low bank, with nb bushes on it (14; 0 where a bush would
+                                      stand round behind a walker's head)
      ditch(g, V, Q, s0, s1, r)        a dry ditch beside the road (r: an rng)
      weeds(g, x0, y0, x1, y1, n, seed, h)  blades of grass along a line where something stands in the ground
      cypress(g, x, y, h, o)           a cypress with its foot at x, y, h tall: o {c, seed, sun}
@@ -487,8 +488,8 @@ function band(g,V,Q,s0,s1,c0,c1,seed,uMax){const r=rng(seed),P=[],[ua,ub0]=uSpan
   clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.5,0,80,320,64,'overlay',1);tex(g,'grain',.25,0,80,320,64,'overlay',.5);
     for(let i=0;i<900;i++){const x=r()*320,y=80+r()*64;R(g,x,y,.5,.5,r()<.5?'rgba(80,70,60,.3)':'rgba(250,240,220,.3)')}})}
 /* verge: the grass beside the road from s0 back to about s1, its far edge a low bank that wanders a little, lit along its top, with a
-   few bushes on it; the blades of the grass in the perspective of the road (the turf of shared/country.js, clipped to it) */
-function verge(g,V,Q,s0,s1,seed){const q=rng(seed),P=(u,s)=>{const[X,Z]=Q.w(u,s);return V.P(X,Z,0)},[ua,ub]=uSpan(Q,s0,s1),A=[],B=[],E=[];
+   few bushes on it (nb, 14 unless given); the blades of the grass in the perspective of the road (the turf of shared/country.js, clipped to it) */
+function verge(g,V,Q,s0,s1,seed,nb){const q=rng(seed),P=(u,s)=>{const[X,Z]=Q.w(u,s);return V.P(X,Z,0)},[ua,ub]=uSpan(Q,s0,s1),A=[],B=[],E=[];
   for(let u=ua;u<=ub;u+=.5){A.push(...P(u,s0));const sb=s1+.9*Math.sin(u*.37+seed)+.45*Math.sin(u*1.3+seed*.3);const p=P(u,sb);B.unshift(...p);E.push(...p)}
   const G=A.concat(B);let top=1e9,bot=-1e9;for(let i=1;i<G.length;i+=2){top=Math.min(top,G[i]);bot=Math.max(bot,G[i])}
   poly(g,G);g.fillStyle=lg(g,0,top,0,bot,['#9aaa66','#8c9e56','#86984e']);g.fill();
@@ -496,7 +497,7 @@ function verge(g,V,Q,s0,s1,seed){const q=rng(seed),P=(u,s)=>{const[X,Z]=Q.w(u,s)
     g.fillStyle=lg(g,0,top,0,top+5,['rgba(60,70,50,.18)','rgba(60,70,50,0)']);g.fillRect(-2,top,324,5)});
   /* the bank: a fine line of light along its top, a soft shade under it on the near side, bushes here and there */
   stroke(g,E.map((v,i)=>i%2?v-.2:v),'rgba(240,236,200,.45)',.5);stroke(g,E.map((v,i)=>i%2?v+.6:v),'rgba(60,70,50,.3)',.6);
-  for(let i=0;i<14;i++){const u=ua+q()*(Math.min(ub,40)-ua),sb=s1+.9*Math.sin(u*.37+seed)+.45*Math.sin(u*1.3+seed*.3),[x,y]=P(u,sb);
+  for(let i=0;i<(nb==null?14:nb);i++){const u=ua+q()*(Math.min(ub,40)-ua),sb=s1+.9*Math.sin(u*.37+seed)+.45*Math.sin(u*1.3+seed*.3),[x,y]=P(u,sb);
     if(x<-4||x>324)continue;SHARED.country.tree(g,x,y+.3,3+q()*2.4,'#5a7442',{kind:'bush',seed:seed+i})}}
 /* ditch: the dry ditch beyond the footpath: its near bank in shade, its bed of earth, its far bank grassy and lit */
 function ditch(g,V,Q,s0,s1,r){const P=(u,s)=>{const[X,Z]=Q.w(u,s);return V.P(X,Z,0)},A=[],B=[];
