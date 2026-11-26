@@ -6881,8 +6881,8 @@
     {const c=chs.find(c=>c.dataset.ch==='25');ok(c&&chs.at(-1)===c&&c.textContent.includes(T('chapter_twenty_five'))&&c.textContent.includes(T('without_hindrance_2'))&&!PLANNED.length&&!plans,
       'the title lists Chapter Twenty-Five, Without Hindrance, as its last chapter, and no chapter is in preparation')}
     chLine(25).click()}
-  /* in the whole run Chapter Twenty-Four's end screen has already opened this chapter, before anything here listened: start it again, as from the title, so that its first narration is heard */
-  else{store('paul.save',null);store('paul.saves',null);startChapter(25);for(let i=0;i<300&&!G.busy&&!ov.classList.contains('card');i++)await wait(10)}
+  /* in the whole run Chapter Twenty-Four's end screen has already opened this chapter, before anything here listened: start it again with the same two flags carried in (from24, street), as its click does, so that its first narration is heard */
+  else{store('paul.save',null);store('paul.saves',null);startChapter(25,3);for(let i=0;i<300&&!G.busy&&!ov.classList.contains('card');i++)await wait(10)}
   await until(()=>G.ch===25&&G.room==='lodging25'&&!G.busy,9000);note();
   const FV=A('fulvius25'),FI=A('valens25'),BA=A('bassus25'),MA=A('macer25'),CE=A('celer25'),TM=A('timothy25'),LK=A('luke25'),SP=A('jew25b'),TY=A('tychicus25'),ON=A('onesimus25');
   {const v=ART.lodging25.variant(),c5=C(),M=c5.music;
