@@ -484,10 +484,13 @@
       window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'lookback-maps']:z.toDataURL()})})}
   /* The finale (shared/finale.js, issue #95): everything after the last chapter's open door. finale plays it whole at speed and checks
      it; the stops beginning with p are its pictures at the game's own pace: pletters (the map on which Paul does not move), plookback (a
-     road being drawn, with its chapter's name), pclosing (the closing screen), pabout (the page behind it), ptitlefin (the title of a
+     road being drawn, with its chapter's name), plook1 to plook12 (each map of the look back by itself, as its last road is drawn),
+     pclosing (the closing screen), pabout (the page behind it), ptitlefin (the title of a
      finished game). Until the last chapter is built, the newest chapter there is stands in for it: it is given the flag that says
      finished, its place in the manifest (done) and a page about itself, and is entered at a safe point of its own. */
-  if(/^(finale|pletters|plookback|pclosing|pabout|ptitlefin)$/.test(stop)){clearInterval(sk);sk=0;
+  if(/^(finale|pletters|plookback|plook\d+|pclosing|pabout|ptitlefin|phone(letters|lookback|closing|about))$/.test(stop)){clearInterval(sk);sk=0;
+    /* the same pictures on a phone held sideways: phoneletters, phonelookback, phoneclosing, phoneabout */
+    const is=k=>stop===k||stop==='phone'+k.slice(1),haltAs=k=>halt(is(k)?stop:k);
     const FN=await need('finale'),M=await need('map'),LB=await need('lookback'),TU=await need('tunes'),real=FN.last(),n=real||Math.max(...Object.keys(CHAP).map(Number));
     await loadLevel(n);const c=CHAP[n];
     if(!real){c.flags.push('finished');c.done=c.flags.length-1;c.about={title:c.title,text:null,based:Object.keys(DICT.en[n]).find(k=>/based_on/.test(k))||Object.keys(DICT.en[n])[0]}}
@@ -497,13 +500,22 @@
     window.say=function(a,t){if(!a)told.push({k:t,seen:[...M.state.seen],legs:M.state.legs.length,map:G.scene===M.draw,ink:inDark()});return say0.apply(this,arguments)};
     window.setScore=function(sc){if(sc&&sc.src)bars.push({cap:G.cap,sc});return set0.apply(this,arguments)};
     M.journey=function(r,o){views.push((o&&o.view)||'');return j0.apply(this,arguments)};
+    /* a line told over a map stands clear of the places on that map's roads: neither a lit dot nor its name lies under the line. Looked
+       at many times a second while the finale plays (a name of a land or a sea may lie under it) */
+    const cover=new Set(),watch=setInterval(()=>{const el=document.querySelector('#speech .line');if(!el||G.scene!==M.draw||!told.length||+$('#dim').style.opacity>.05)return;
+      const key=told[told.length-1].k,v=vp.getBoundingClientRect(),r=el.getBoundingClientRect(),q=v.width/320,x0=(r.left-v.left)/q,y0=(r.top-v.top)/q,x1=(r.right-v.left)/q,y1=(r.bottom-v.top)/q,[ox,oy,w]=M.window(),z=320/w,over=M.state.over||{};
+      for(const id of M.state.seen){const pl=M.places[id];if(!pl||pl.hide||pl.cape||(over[id]&&over[id].hide))continue;const[x,y]=M.where(id);
+        if(x>x0-2&&x<x1+2&&y>y0-2&&y<y1+2)cover.add(key+': the dot of '+id);
+        for(const b of M.state.boxes)if(b[4]===T(pl.name)&&(b[0]-ox)*z<x1&&(b[2]-ox)*z>x0&&(b[1]-oy)*z<y1&&(b[3]-oy)*z>y0)cover.add(key+': the name of '+id)}},25);
     /* every line is passed over as it comes, as a click would; the look back is not, so that all of it is played */
-    const lines=setInterval(()=>{if(G.skip&&G.skip.name!=='cut')G.skip()},30),pics=stop!=='finale',
+    const lines=setInterval(()=>{if(G.skip&&G.skip.name!=='cut')G.skip()},30),
       until=async(f,ms)=>{for(let i=0;i<(ms||60000)/30&&!f();i++)await wait(30);return f()},names=k=>told.map(t=>t.k).includes(k),
       capOf=ch=>ch==='pro'?T('Prologue')+' · '+T(PRO.title):CHAP[ch]?T(CHAP[ch].label)+' · '+T(CHAP[ch].title):'',
       PHIL=['paul_wrote_that_his_situation_helped_the_good_news','the_whole_guard_knew_why_he_was_in_bonds','his_bonds_gave_most_brothers_confidence_philippians_1_12_14'];
-    if(stop==='pletters'){G.speedAll=1;clearInterval(lines);FN.run();await until(()=>names(PHIL[0]));await wait(400);halt('pletters')}
-    if(stop==='plookback'){G.speedAll=1;clearInterval(lines);FN.again();await until(()=>G.cap===capOf(8),120000);halt('plookback')}
+    if(is('pletters')){G.speedAll=1;clearInterval(lines);FN.run();await until(()=>names(PHIL[0]));await wait(400);haltAs('pletters')}
+    if(is('plookback')){G.speedAll=1;clearInterval(lines);FN.again();await until(()=>G.cap===capOf(8),120000);haltAs('plookback')}
+    {const one=stop.match(/^plook(\d+)$/);if(one){G.speedAll=1;clearInterval(lines);const J=LB.JOURNEYS[+one[1]-1];LB.JOURNEYS.splice(0,LB.JOURNEYS.length,J);
+      FN.again();await until(()=>G.cap===capOf(J.parts[J.parts.length-1].ch),120000);halt(stop)}}
     if(stop==='finale'){const run=FN.run();
       ok($('#skip').style.display!=='none'&&typeof G.onSkip==='function'&&G.busy,'the finale begins: nothing is played any more, and SKIP stands in the top bar');
       await run;
@@ -540,11 +552,12 @@
       ok(G.ch===n&&!G.scene&&F.finished===1&&makeCode()===sv.code,'Continue leads into the chapter at that safe point, with the flag set');
       ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,8).join(' | '):'')+(RAWKEY.size?'. KEY: '+[...RAWKEY].slice(0,8).join(' | '):''));
       ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
-      clearInterval(lines);halt('finale')}
+      ok(!cover.size,'a line told over a map lies over no place of that map\'s roads, neither its dot nor its name'+(cover.size?'. COVERED: '+[...cover].join(' | '):''));
+      clearInterval(lines);clearInterval(watch);halt('finale')}
     /* the closing screen and what lies behind it, as pictures: a finished game, shown again from the title */
     {const run=FN.run();await wait(100);$('#skip').click();await run;await until(()=>!ov.classList.contains('wait'),4000);clearInterval(lines);
-      if(stop==='pclosing'){await wait(700);halt('pclosing')}
-      if(stop==='pabout'){ov.querySelector('[data-about]').click();await wait(200);halt('pabout')}
+      if(is('pclosing')){await wait(700);haltAs('pclosing')}
+      if(is('pabout')){ov.querySelector('[data-about]').click();await wait(200);haltAs('pabout')}
       ov.querySelector('.go').click();await until(()=>ov.classList.contains('title')&&!!ov.querySelector('[data-fin]'),8000);await wait(300);halt('ptitlefin')}}
   /* A figure bound with a belt (a.bound; person's fr -6): Agabus binds his own feet and hands with Paul's belt (Acts 21:11). For every look
      of Chapters Three, Sixteen and Seventeen (if it is there) and the usual kinds of dress, facing both ways: each pose is one piece, and

@@ -71,9 +71,10 @@ async function roll(){if(RUN.all)return;
   if(G.skip===cut)G.skip=null;RUN.cut=false;await S.down();if(S.open)S.open()}
 
 /* ---------- 3. the look back ---------- */
-/* POS: where each map's line stands: at the top of the map unless low, and at x across it with a width w (room pixels) where the roads
-   leave a side of the map free. Maps 1 to 5 are Chapter Twelve's look back and keep its places. */
-const POS={macedonia:{low:1},ephesus:{low:1},miletus:{x:66,w:112},jerusalem:{low:1,x:96,w:170},crete:{low:1,x:112,w:190},malta:{low:1},rome:{low:1,x:222,w:170}};
+/* POS: where each map's line stands, clear of the places on that map's roads (the stop finale checks it in every language): at the top
+   of the map unless low, and at x across it with a width w, in room pixels, where the roads leave a side of the map free */
+const POS={syria:{x:100,w:170},cyprus:{low:1,x:62,w:116},derbe:{low:1,x:62,w:116},macedonia:{low:1,x:150,w:150},home:{low:1,x:90,w:150},ephesus:{low:1,x:150,w:150},
+  miletus:{x:58,w:104},jerusalem:{low:1,x:84,w:150},crete:{low:1,x:112,w:190},malta:{low:1},rome:{low:1,x:222,w:170}};
 const capOf=ch=>ch==='pro'?T('Prologue')+' · '+T(PRO.title):CHAP[ch]?T(CHAP[ch].label)+' · '+T(CHAP[ch].title):'';
 async function lookBack(){if(RUN.all)return;const[M,L,TU]=await Promise.all([need('map'),need('lookback'),need('tunes')]);RUN.cut=false;
   for(let i=0;i<L.JOURNEYS.length&&!over();i++){const J=L.JOURNEYS[i];if(!L.ready(i))continue;
