@@ -522,8 +522,8 @@ function capua24Cart(g,cut){const r=rng(2473),wx=41,wy=108.4,wr=9.6,fy=118,bx0=2
    below the horizon, against the marsh. Its towrope runs slack from the post's top down to the mule on the towpath ahead (drawn in
    draw(): SHARED.beasts.mule, with its own place in the depth), and is made fast behind it to the trace that runs along its
    near side to its collar: the rope never lies across the mule's back and is never square to the barge.
-     The reeds stand along the basin at the left, in a dense bed at the edge and a smaller clump by the open water, as long blades that
-   lean together (drawn in draw(), so that they can stir); the far bank behind them is reed too, so that no level line runs behind
+     The reeds stand along the basin at the left, in a dense bed at the edge, as long blades that lean together, with low sedge along
+   the bank by the open water, under the line where the rings spread (drawn in draw(), so that they can stir; no stem crosses a ring); the far bank behind them is reed too, so that no level line runs behind
    their stems. The hidden treasure: while G.frogs24 runs (4.2 s), the reeds stir and three wide, low rings spread on the open water at
    x 30..58, y 93.
      After sunset the light is soft: no cast shadow, only the contact shade under things, and no birds. */
@@ -541,7 +541,7 @@ ART.canal24={w:320,q:12,paint(g){paintCanal24(g)},
 function paintCanal24(g){const{hz}=CANAL24,r=rng(2481),CO=SHARED.country;
   /* the sky of dusk, and the glow low at the right where the sun has gone down: long and low */
   sky(g,320,hz+1,['#3c4270','#56588a','#8a7a9e','#c49296','#e4ac86']);
-  comp(g,'screen',.5,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,170,110,0)','rgba(255,170,110,.25)','rgba(255,186,120,1)']);g.fillRect(0,hz-26,320,27)});
+  comp(g,'screen',.5,()=>{for(let x=0;x<320;x+=1){const k=.08+.92*Math.pow(x/320,2);g.fillStyle=lg(g,0,hz-30,0,hz+1,['rgba(255,180,116,0)',`rgba(255,182,118,${(k*.5).toFixed(3)})`,`rgba(255,186,120,${k.toFixed(3)})`]);g.fillRect(x,hz-30,1,31)}});
   pool(g,320,hz+2,200,16,'#ffc890',.35,'screen');
   /* thin clouds lit from below, drawn out level */
   for(const[x,y,w]of[[40,18,90],[190,30,120],[110,44,70],[270,40,60]]){for(let i=0;i<5;i++){const yy=y+i*.8+(r()-.5)*.6,ww=w*(1-i*.14);R(g,x-ww/2+r()*6,yy,ww,.6,rgba(i<2?'#e8b4a4':'#a888a4',.32))}}
@@ -577,9 +577,10 @@ function canal24Water(g,r){const W=[];for(let x=-2;x<=306;x+=1)W.push(x,yFar24(x
     for(let i=0;i<70;i++){const x=70+r()*180,y=yFar24(x)+3+r()*(yNear24(x)-yFar24(x)-4),w=1.5+r()*5;if(x>124&&x<272&&y<100)continue;R(g,x,y,w,.5,r()<.6?'rgba(240,200,190,.25)':'rgba(170,160,200,.25)')}
     tex(g,'mott',.25,-2,70,324,40,'overlay',1)});
   /* the far bank: a low ragged mass of grass and reed with a soft uneven top, never a row of strokes; by the basin a taller bed of reed,
-     so that the near reeds stand against reed and no level line runs behind their stems */
+     so that the near reeds stand against reed and no level line runs behind their stems; under it the basin's water runs on out of
+     the picture at the left */
   {const top=x=>{const k=clamp((306-x)/76,.25,1);return yFar24(x)-(1.4+.7*Math.sin(x/3.7)+.5*Math.sin(x/1.7+1)+(x<36?1.6+1.2*Math.sin(x/6)+(36-x)*.04:x<48?(48-x)*.14:0))*k};
-    const P=[];for(let x=-2;x<=306;x+=.5)P.push(x,top(x));for(let x=306;x>=-2;x-=.5)P.push(x,x<16?yNear24(x)-.4:x<26?yFar24(x)+(yNear24(x)-yFar24(x))*(1-(x-16)/10)**2:yFar24(x)+.4);
+    const P=[];for(let x=-2;x<=306;x+=.5)P.push(x,top(x));for(let x=306;x>=-2;x-=.5)P.push(x,x<14?yNear24(x)-3.4-1.2*Math.abs(Math.sin(x*1.7))-.8*Math.abs(Math.sin(x*.63)):x<21?yFar24(x)+(yNear24(x)-4.4-yFar24(x))*(1-(x-14)/7)**2:yFar24(x)+.4);
     poly(g,P);g.fillStyle=lg(g,0,74,0,88,['#4a5236','#3a4230','#2e3428']);g.fill();
     clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.45,-2,70,324,40,'overlay',1);for(let i=0;i<500;i++){const x=r()*306,y=top(x)+r()*(yFar24(x)-top(x));R(g,x,y,.5,.5+r(),r()<.5?'rgba(20,24,18,.4)':'rgba(110,110,80,.3)')}
       /* in the reed bed by the basin: blades that lean together, dark and a little lit at the tips */
@@ -598,7 +599,7 @@ function canal24Path(g,r){const P=[],Q=[];for(let x=-2;x<=306;x+=1){const y=yNea
   /* the ground toward us: grass in tufts that lean one way, puddles long and low */
   CO24t(g,-2,112,324,144,'#3e4634',2483);
   comp(g,'multiply',.45,()=>{g.fillStyle=lg(g,0,112,0,144,['#c8c0d0','#8a84a0']);g.fillRect(-2,112,324,32)});
-  for(const[x,y,w]of[[96,128,26],[170,136,34],[232,124,18],[40,140,22]]){poly(g,[x,y,x+w*.3,y-1.2,x+w*.8,y-1,x+w,y+.2,x+w*.7,y+1.4,x+w*.2,y+1.2],'#6e6a86');R(g,x+w*.25,y-.6,w*.4,.5,'rgba(230,190,170,.35)')}}
+  for(const[x,y,w]of[[66,135,24],[150,139,30],[234,133,16],[20,141,18]]){poly(g,[x,y,x+w*.3,y-1.2,x+w*.8,y-1,x+w,y+.2,x+w*.7,y+1.4,x+w*.2,y+1.2],'#6e6a86');R(g,x+w*.25,y-.6,w*.4,.5,'rgba(230,190,170,.35)')}}
 const CO24t=(g,x,y0,w,y1,c,seed)=>SHARED.country.turf(g,x,y0,w,y1,c,seed,{wind:.6,scale:.8,flowers:0,dry:0});
 /* the barge, bow to the right: a long low hull of curved strakes, a cabin of boards at the stern, the steering oar, the towing post near
    the bow; its reflection in the water under it */
@@ -644,8 +645,9 @@ function canal24Reeds(g,t,k){const stir=k<1?Math.sin(t/90)*1.4*(1-k):0,q=rng(248
   const bed=(x0,x1,n,base,hmin,hmax,lean)=>{for(let i=0;i<n;i++){const x=x0+q()*(x1-x0),b=base(x)+q()*1.2,h=hmin+q()*(hmax-hmin),l=lean*h*(.18+q()*.12)+stir*(i%2?1:-.6)*(h/20),
       c=q()<.3?'#2e3626':q()<.6?'#3e4a30':'#4e5a3a';stroke(g,[x,b,x+l*.4,b-h*.55,x+l,b-h],c,.7);if(q()<.25){R(g,x+l-.4,b-h-1.4,1,1.6,'#4a3a2a')}}};
   /* the dense bed along the left edge of the basin, then the clump by the open water */
-  bed(-2,28,70,x=>yNear24(x)-1-(28-x)*.12,12,24,.6);bed(-2,22,30,x=>yFar24(x)+6,10,15,.5);
-  bed(56,68,18,x=>yNear24(x)-.4,9,16,.45)}
+  bed(-2,19,80,x=>yNear24(x)-1-(19-x)*.12,12,24,.6);bed(-2,16,30,x=>yFar24(x)+6,10,15,.5);
+  /* along the near bank by the open water only low sedge, whose tips stay under the line where the rings spread */
+  bed(22,64,26,x=>yNear24(x)-.2,1.6,3.4,.5)}
 /* ==== ART canal24: end ==== */
 
 /* ==== ART appius24: begin ==== */
