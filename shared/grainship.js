@@ -62,7 +62,7 @@ SHARED.grainship=(()=>{
    the bow; the stern overhangs, the stem is blunt and nearly upright; below the water she is deep and round (D), which only the storm
    and the wreck show. */
 function geo(o){o=o||{};const L=o.len||360,k=L/360,x0=o.x!=null?o.x:20,x1=x0+L,wl=o.y!=null?o.y:108,
-    H=44*k,sR=34*k,sS=.34*L,bR=20*k,bS=.3*L,D=26*k,
+    H=42*k,sR=28*k,sS=.34*L,bR=20*k,bS=.3*L,D=26*k,
     sheer=x=>wl-H-sR*Math.pow(clamp((x0+sS-x)/sS,0,1),2)-bR*Math.pow(clamp((x-(x1-bS))/bS,0,1),2.2),
     bez=(p,t)=>{const u=1-t;return[u*u*u*p[0]+3*u*u*t*p[2]+3*u*t*t*p[4]+t*t*t*p[6],u*u*u*p[1]+3*u*u*t*p[3]+3*u*t*t*p[5]+t*t*t*p[7]]},
     /* the outer line of the stern, from the rail down round the counter to the keel, and of the stem, from the keel up to its head */
@@ -76,7 +76,7 @@ function geo(o){o=o||{};const L=o.len||360,k=L/360,x0=o.x!=null?o.x:20,x1=x0+L,w
     mast={x:x0+.53*L,w:5*k},
     fore={x:x1-.11*L,ang:.74,len:.27*L,w0:3*k,w1:1.8*k},
     post={x:x0+.035*L},
-    cabin={x:x0+.085*L,w:.13*L,h:10*k},
+    cabin={x:x0+.085*L,w:.11*L,h:10*k},
     gallery={x0:x0-.075*L,x1:post.x,depth:2.4*k,rail:6.4*k},
     oar={head:[x0+.085*L,0],w:2.2*k,blade:7*k};
   oar.head[1]=sheer(oar.head[0])+.6*k;
@@ -218,24 +218,61 @@ function gallery(g,G,C){const{k,sheer}=G,q=G.gallery,yP=sheer(G.post.x)+.5*k,x0=
   R(g,x0,yP,x1-x0,d,tint(C.rail,-.15));R(g,x0,yP,x1-x0,.5,rgba(C.hi,.7));R(g,x0,yP+d-.5,x1-x0,.5,'rgba(20,12,8,.5)');
   R(g,x0-.6*k,yt,1.6*k,yP+d-yt,tint(C.rail,-.1));R(g,x0-.6*k,yt,.5,yP+d-yt,rgba(C.hi,.6))}
 
-/* the sternpost: it rises from the forward end of the gallery and sweeps up and forward over the cabin. kind 'bird': it narrows into
-   a long neck that bends over and ends in a bird's head looking forward, its bill closed; 'curl': it turns over at its head into one
-   plain scroll. Drawn as a timber in three passes (its shade, its body, its lit arris), as the deck's post in shared/ship.js is. */
-function sternpost(g,G,C,kind,broken){const{k,sheer}=G,x=G.post.x,y=sheer(x)+1*k,lit=C.postHi,mid=C.post,sh=tint(C.post,-.4),CL=[];
-  /* the shaft: from the stern up and a little aft, then forward */
+/* ---------- the sternpost: a swan's neck (decided by the maintainer, 26 November 2026) ----------
+   One design, in its own measure (u forward toward the bow, v up, both in units of about a metre at the deck views), that every view
+   maps into its picture (swanDraw): the neck rises from the stern where the gallery meets the hull, leans a little aft, sweeps up in one
+   broad curve and over forward, and comes down again in front, so that the loop is nearly closed and the open sky inside it is a tall
+   narrow oval. The head hangs bowed at the end, its bill pointing down and back toward the neck, almost touching it. The timber is thick
+   (at its foot about twice the loom of a steering oar) and stays full all the way round. A carved ornament of plain weathered wood: one
+   piece, no outline, lit by its scene; no figurehead, no gilding, nothing set under it. */
+const SWAN={/* the neck's middle line, [u, v, thickness] */
+  line:[[0,0,.38],[-.1,.5,.37],[-.19,1.1,.36],[-.2,1.75,.35],[-.1,2.35,.34],[.12,2.82,.33],[.42,3.05,.32],[.7,2.96,.31],[.88,2.62,.3],[.93,2.2,.3],[.88,1.82,.29]],
+  head:{c:[.8,1.62],bill:[-.58,-.81],a:.24,b:.18,bl:.46},top:3.05};
+function cr(P,n){const out=[];for(let i=0;i<P.length-1;i++){const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(P.length-1,i+2)];
+  for(let j=0;j<n;j++){const t=j/n,t2=t*t,t3=t2*t,f=(k)=>.5*((2*p1[k])+(-p0[k]+p2[k])*t+(2*p0[k]-5*p1[k]+4*p2[k]-p3[k])*t2+(-p0[k]+3*p1[k]-3*p2[k]+p3[k])*t3);out.push([f(0),f(1),f(2)])}}
+  out.push(P[P.length-1].slice());return out}
+/* swanDraw(g, M, cols, Ld): M(u, v) gives [x, y, px per unit] in the picture; cols {mid, sh, lit, bill, billLit, eye}; Ld the
+   direction toward the light in the picture (unit vector). The neck is one filled outline; its lit and shaded sides are bands
+   clipped inside it, so it stays one piece with no outline; then the head: the skull a little wider than the neck, the long flattish
+   bill in a warmer tone with a small knob at its root, the eye a small square. */
+function swanDraw(g,M,cols,Ld){const S=cr(SWAN.line,6),Q=S.map(([u,v,t])=>{const[x,y,k]=M(u,v);return[x,y,t*k]}),n=Q.length,Lx=[],Rx=[];
+  for(let i=0;i<n;i++){const a=Q[Math.max(0,i-1)],c=Q[Math.min(n-1,i+1)],tx=c[0]-a[0],ty=c[1]-a[1],l=Math.hypot(tx,ty)||1,nx=-ty/l,ny=tx/l,w=Q[i][2]/2;
+    Lx.push(Q[i][0]+nx*w,Q[i][1]+ny*w);Rx.push(Q[i][0]-nx*w,Q[i][1]-ny*w)}
+  /* the head, built in the picture from where its middle and its bill fall, so that it keeps its breadth from any side: the skull a
+     rounded shape a little wider than the neck, drawn out along the bill's line as far as the view shows it, and at least as long as
+     it is broad */
+  const H=SWAN.head,bd=H.bill,pt=[-bd[1],bd[0]],top=pt[0]>0?pt:[-pt[0],-pt[1]],U=(a,b)=>M(H.c[0]+bd[0]*a+top[0]*b,H.c[1]+bd[1]*a+top[1]*b),U2=(a,b)=>U(a,b).slice(0,2);
+  const hc=U(0,0),sc=hc[2],r0=H.a*.75,bt=U(r0+H.bl,0),bv=[bt[0]-hc[0],bt[1]-hc[1]],bL=Math.hypot(...bv)||1,bx=bv[0]/bL,by=bv[1]/bL,qx=-by,qy=bx,
+    along=Math.max(bL/(r0+H.bl)*H.a,H.b*.85*sc),br=H.b*sc,
+    /* the side of the bill that was its top before the head bowed: toward the light's side in a front view, toward the top in the side view */
+    sg=(qx*(U(0,.1)[0]-hc[0])+qy*(U(0,.1)[1]-hc[1]))>.05*sc?1:-1;
+  const skull=[];for(let i=0;i<20;i++){const th=i/20*6.2832,c=Math.cos(th),sn=Math.sin(th),l=c<0?along*1.05:along*.85;skull.push(hc[0]+bx*c*l+qx*sn*br,hc[1]+by*c*l+qy*sn*br)}
+  const neck=Lx.concat(ptsBackG(Rx));
+  const sub=p=>{g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1]);g.closePath()},body=()=>{g.beginPath();sub(neck);sub(skull)};
+  const lw=Math.max(...Q.map(q=>q[2]));
+  clipTo(g,body,()=>{poly(g,neck,cols.mid);poly(g,skull,cols.mid);
+    /* the shaded side and the lit side, each a band shifted across the timber from its middle line */
+    const band=(k,c,f)=>{g.strokeStyle=c;g.lineCap='round';g.lineJoin='round';for(let i=1;i<n;i++){g.lineWidth=Math.max(.5,Q[i][2]*f);g.beginPath();g.moveTo(Q[i-1][0]+Ld[0]*Q[i][2]*k,Q[i-1][1]+Ld[1]*Q[i][2]*k);g.lineTo(Q[i][0]+Ld[0]*Q[i][2]*k,Q[i][1]+Ld[1]*Q[i][2]*k);g.stroke()}};
+    band(-.42,cols.sh,.55);band(.3,rgba(cols.lit,.55),.32);band(.42,rgba(cols.lit,.8),.12);
+    g.fillStyle=rg(g,hc[0]+Ld[0]*br*.5,hc[1]+Ld[1]*br*.5,br*1.6,[rgba(cols.lit,.55),rgba(cols.lit,0)]);poly(g,skull);g.fill();
+    tex(g,'wood',.15,Math.min(...Q.map(q=>q[0]))-lw,Math.min(...Q.map(q=>q[1]))-lw,Math.max(...Q.map(q=>q[0]))-Math.min(...Q.map(q=>q[0]))+2*lw,Math.max(...Q.map(q=>q[1]))-Math.min(...Q.map(q=>q[1]))+2*lw,'overlay',.45)});
+  /* the bill: from the front of the skull toward its tip, long and flattish, a little hooked at the end, in a warmer tone; a small knob
+     on its root; the eye a small square on the skull, behind the root, toward the bill's top side */
+  const rx=hc[0]+bx*along*.75,ry=hc[1]+by*along*.75,tx=bt[0],ty=bt[1],w0=.085*sc,w1=.025*sc,L2=Math.hypot(tx-rx,ty-ry),
+    Bp=[rx+qx*w0*sg,ry+qy*w0*sg,rx+(tx-rx)*.55+qx*w0*.8*sg,ry+(ty-ry)*.55+qy*w0*.8*sg,tx+qx*w1*sg,ty+qy*w1*sg,tx-bx*Math.min(.6,L2*.05),ty-by*Math.min(.6,L2*.05),tx-qx*w1*sg*.6,ty-qy*w1*sg*.6,rx+(tx-rx)*.5-qx*w0*.65*sg,ry+(ty-ry)*.5-qy*w0*.65*sg,rx-qx*w0*.8*sg,ry-qy*w0*.8*sg];
+  poly(g,Bp,cols.bill);stroke(g,[Bp[0],Bp[1],Bp[2],Bp[3],Bp[4],Bp[5]],rgba(cols.billLit,.8),.5);
+  poly(g,[rx+qx*w0*sg-bx*.04*sc,ry+qy*w0*sg-by*.04*sc,rx+qx*w0*1.9*sg+bx*.04*sc,ry+qy*w0*1.9*sg+by*.04*sc,rx+qx*w0*sg+bx*.11*sc,ry+qy*w0*sg+by*.11*sc],cols.bill);
+  const es=Math.max(.5,sc*.055),ex=hc[0]+bx*along*.1+qx*br*.4*sg,ey=hc[1]+by*along*.1+qy*br*.4*sg;R(g,ex-es/2,ey-es/2,es,es,cols.eye)}
+
+/* the sternpost from the side: the swan's neck rising from the forward end of the gallery. kind 'curl' keeps the plain scroll that was
+   shown as a choice before the maintainer chose the swan. */
+function sternpost(g,G,C,kind){const{k,sheer}=G,x=G.post.x,y=sheer(x)+1.5*k,s=12.6*k;
+  if(kind!=='curl'){swanDraw(g,(u,v)=>[x+u*s,y-v*s,s],{mid:C.post,sh:tint(C.post,-.42),lit:C.postHi,bill:mix(C.post,'#c06a3a',.45),billLit:tint(mix(C.post,'#e0904e',.5),.3),eye:C.dark},[-.6,-.8]);return}
+  const lit=C.postHi,mid=C.post,sh=tint(C.post,-.4),CL=[];
   for(let i=0;i<=16;i++){const t=i/16;CL.push([x-5*k*Math.sin(t*Math.PI*.8)+2*k*t*t,y-30*k*t,(5.2-2*t)*k])}
-  const[tx,ty]=CL[CL.length-1];
-  if(kind==='bird'){/* the neck bends forward and down in a hook, and the head looks forward */
-    for(let i=1;i<=20;i++){const t=i/20,a=Math.PI*(1-.9*t),R0=6.4*k;CL.push([tx+R0+R0*Math.cos(a),ty-R0*1.1*Math.sin(a),(3.4-1.2*t)*k])}}
-  else{const cx=tx+4.6*k,cy=ty;for(let i=1;i<=26;i++){const t=i/26,a=Math.PI*(1+2*t),R0=(4.6-3*t)*k;CL.push([cx+R0*Math.cos(a),cy+R0*Math.sin(a),(3.2-1.8*t)*k])}}
+  const[tx,ty]=CL[CL.length-1],cx=tx+4.6*k,cy=ty;for(let i=1;i<=26;i++){const t=i/26,a=Math.PI*(1+2*t),R0=(4.6-3*t)*k;CL.push([cx+R0*Math.cos(a),cy+R0*Math.sin(a),(3.2-1.8*t)*k])}
   const pass=(c,f,dx)=>{g.strokeStyle=c;g.lineCap='round';g.lineJoin='round';for(let i=1;i<CL.length;i++){g.lineWidth=Math.max(.5,CL[i][2]*f);g.beginPath();g.moveTo(CL[i-1][0]+dx,CL[i-1][1]);g.lineTo(CL[i][0]+dx,CL[i][1]);g.stroke()}g.lineCap='butt'};
-  pass(sh,1,0);pass(mid,.72,-.45*k);pass(rgba(lit,.8),.26,-1.1*k);
-  stroke(g,CL.slice(1,15).map(p=>[p[0]+.9*p[2]/5,p[1]]).flat(),rgba(tint(sh,-.3),.35),.4);
-  if(kind==='bird'){const[hx,hy]=CL[CL.length-1],[px,py]=CL[CL.length-3],tl=Math.hypot(hx-px,hy-py),dx=(hx-px)/tl+.9,dy=(hy-py)/tl,l=Math.hypot(dx,dy),ux=dx/l,uy=dy/l,nx=-uy,ny=ux,hs=2.2*k;
-    /* the head: a little fuller than the neck; the bill, a wedge forward; the eye, a small square */
-    poly(g,[hx-ux*hs+nx*hs*.8,hy-uy*hs+ny*hs*.8,hx+ux*hs*.6+nx*hs*.7,hy+uy*hs*.6+ny*hs*.7,hx+ux*hs*2.6,hy+uy*hs*2.6,hx+ux*hs*.6-nx*hs*.5,hy+uy*hs*.6-ny*hs*.5,hx-ux*hs-nx*hs*.6,hy-uy*hs-ny*hs*.6],mid);
-    stroke(g,[hx-ux*hs+nx*hs*.8,hy-uy*hs+ny*hs*.8,hx+ux*hs*.6+nx*hs*.7,hy+uy*hs*.6+ny*hs*.7,hx+ux*hs*2.6,hy+uy*hs*2.6],rgba(lit,.8),.5);
-    R(g,hx+nx*hs*.2-.25,hy+ny*hs*.2-.25,.5,.5,C.dark)}}
+  pass(sh,1,0);pass(mid,.72,-.45*k);pass(rgba(lit,.8),.26,-1.1*k)}
 
 /* ---------- the steering oar at the near quarter ---------- */
 /* the loom comes up to its head at the rail's top, where the tiller is set in (inboard, out of sight), and runs down and aft beyond
@@ -461,21 +498,15 @@ function deckBulwark(g,D,r){const{P,s,rh}=D,C=D.C,N=D.N,M=C.length-1,A='#8a6440'
   for(let i=0;i<M;i++){const y=s(C[i][1])+H(i)+.1;if(y>D.E-.05)continue;poly(g,[...at(i,H(i)+.1,.05),...at(i+1,H(i+1)+.1,.05),...at(i+1,H(i+1)+.1,-.12),...at(i,H(i)+.1,-.12)],lit(D,'#9a7448',[0,1,0]))}
   const top=[];for(let i=0;i<=M;i++){const y=s(C[i][1])+H(i)+.1;top.push(...at(i,H(i)+.1,y<D.E-.05?-.12:.05))}
   stroke(g,top,lit(D,'#e8c898',[0,1,0],1.1),.5)}
-/* the sternpost beyond the cabin: the stern's rail sweeps up from both quarters to a peak in the middle, and the post grows out of
-   that peak, so it ends each rail and stands on the middle of none; the cabin is lower than the peak, so the post never stands on its
-   roof. The gallery, beyond the
+/* the sternpost beyond the cabin: the stern's rail sweeps up from both quarters to a peak in the middle, and the swan's neck grows out
+   of that peak, so it ends each rail and stands on the middle of none; the cabin is lower than the peak, so the neck never stands on
+   its roof. The gallery, beyond the
    stern and lower than the eye's line over it, is not seen from here (a rail behind the post would make a cross). */
-function deckStern(g,D,kind){const{P,s}=D,z=DG.ZS+.3,y0=s(DG.ZS)+D.rx(0,DG.ZS+.25),A='#7e5a36';
-  /* the post: a tapered timber from the stern's middle; at its head it bends toward us, and ends ('bird') in a head whose bill points
-     down at the deck, or ('curl') in a scroll seen end-on */
-  const CL=[];for(let i=0;i<=14;i++){const t=i/14;CL.push([...P(0,y0-.2+2.2*t,z+.1-.2*t*t),(.32-.1*t)*D.F/z])}
-  const[tx,ty]=CL[CL.length-1];
-  const pass=(c,f,dx)=>{g.strokeStyle=c;g.lineCap='round';for(let i=1;i<CL.length;i++){g.lineWidth=Math.max(.5,CL[i][2]*f);g.beginPath();g.moveTo(CL[i-1][0]+dx,CL[i-1][1]);g.lineTo(CL[i][0]+dx,CL[i][1]);g.stroke()}g.lineCap='butt'};
-  pass(lit(D,A,[-1,0,-.4]),1,0);pass(lit(D,A,[.6,.3,-.8]),.6,.5);pass(rgba(lit(D,'#f0d0a0',[1,.6,-.5]),.7),.22,1.1);
-  /* the bend over toward us: a thicker knot of the timber, lit on top */
-  const kw=CL[CL.length-1][2]*1.3;poly(g,[tx-kw*.5,ty+1,tx-kw*.45,ty-2.4,tx+kw*.1,ty-3.4,tx+kw*.6,ty-2.2,tx+kw*.55,ty+1.6],lit(D,A,[0,.6,-.8]));stroke(g,[tx-kw*.45,ty-2.4,tx+kw*.1,ty-3.4,tx+kw*.6,ty-2.2],rgba(lit(D,'#f0d0a0',[0,1,0]),.8),.5);
-  if(kind==='bird')poly(g,[tx-.6,ty+1.2,tx+.9,ty+1.2,tx+.2,ty+3.6],lit(D,'#6a4a2c',[0,0,-1]));
-  else stroke(g,[tx+kw*.55,ty-1,tx+kw*.2,ty+.6,tx-kw*.2,ty-.2],rgba(lit(D,'#3a2416',[0,0,-1]),.8),.5)}
+function deckStern(g,D,kind){const{P,s}=D,z=DG.ZS+.3,y0=s(DG.ZS)+D.rx(0,DG.ZS+.25),A='#7e5a36',SM=1;
+  /* the swan's neck, seen from forward and a little below: the loop foreshortened, the head hanging bowed toward us in front of the
+     neck, its bill pointing down */
+  swanDraw(g,(u,v)=>{const zz=z-u*SM*Math.cos(.28);return[...P(u*SM*Math.sin(.28),y0-.25+v*SM,zz),D.F*SM/zz]},{mid:lit(D,A,[0,.2,-1]),sh:lit(D,'#5a3e26',[-1,0,-.3]),lit:lit(D,'#f0d0a0',[1,.6,-.5]),
+    bill:lit(D,'#b86a3a',[0,.2,-1]),billLit:lit(D,'#f0a868',[.5,.6,-.6]),eye:'#1a100a'},[.6,-.8])}
 /* the steering oars at the quarters: the loom rising outboard past the rail, its squared head, and the tiller reaching forward and
    inboard; a lashing slanting from the loom down to the rail holds it up. Loom and tiller meet at a corner. */
 function deckOars(g,D,part){const{P,s}=D;
@@ -634,7 +665,7 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=1.3,P=(x,y,z)=>[160
     b=z=>z<=2?3.7:z>=ZS?1.9:1.9+1.8*Math.sqrt(Math.max(0,1-Math.pow((z-2)/(ZS-2),2.2))),sz=x=>ZS+.2*(1-Math.pow(x/1.9,2)),rh=1.05,
     /* the rail: a little higher round the stern than at the quarters, a rail and nothing more */
     RH=(x,z)=>rh+.12*clamp((z-(ZS-1.5))/1.5,0,1),
-    LP=[.5,1.95,5.05],
+    LP=[.5,1.25,5.35],
     /* the lantern's light on a face: night ambient, and the lamp's warm light by angle and distance */
     lamp=(c,p,n)=>{const d=[LP[0]-p[0],LP[1]-p[1],LP[2]-p[2]],l=Math.hypot(...d),q=Math.max(0,(n[0]*d[0]+n[1]*d[1]+n[2]*d[2])/l/(Math.hypot(...n)||1)),f=q/(1+Math.pow(l/1.9,2)),h=hex(c);
       return toHex(h[0]*(.14+1.15*f),h[1]*(.16+.9*f),h[2]*(.24+.55*f))};
@@ -649,20 +680,12 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=1.3,P=(x,y,z)=>[160
   clipTo(g,()=>poly(g,FL.concat([340,190,-20,190])),()=>{for(let k=-18;k<18;k++){const u0=k*.24,u1=u0+.24,p0=[],p1=[];for(let z=1.6;z<=6;z+=.4){p0.push(...P(u0*(.4+.6*b(z)/3.7),0,z));p1.push(...P(u1*(.4+.6*b(z)/3.7),0,z))}
       const pc=[u0+.12,0,4],c=lamp(tint('#8a6a48',(r()-.5)*.14),pc,[0,1,0]);poly(g,p0.concat(ptsBackG(p1)),c);stroke(g,p0,'rgba(8,6,6,.5)',.5)}
     comp(g,'lighter',.22,()=>{const c=P(LP[0],0,LP[2]-.4);pool(g,c[0],c[1],70,14,'#ffb060',1)});tex(g,'mott',.2,0,90,320,60,'overlay',.6)});
-  /* the sternpost: the same bird's neck as from the side, seen from behind it and a little to one side: the shaft rising from behind
-     the stern's rail (painted before it, so the rail passes in front of its foot as a ship's rail passes in front of her mast), the neck bending over forward, toward us and down, and the head at its end looking forward, its bill closed */
-  const kind=o.post||'bird',CL=[],pf=RH(0,ZS+.2)-.3,Zs=ZS+.3,R0=.5,yt=pf+1.5;
-  for(let i=0;i<=12;i++){const t=i/12;CL.push([...P(-.04*Math.sin(t*2.5),pf+1.5*t,Zs),(.3-.08*t)*F/Zs])}
-  if(kind==='bird'){for(let i=1;i<=14;i++){const t=i/14,ph=Math.PI*(1-.9*t),z=Zs-R0-R0*Math.cos(ph);CL.push([...P(0,yt+1.1*R0*Math.sin(ph),z),(.21-.06*t)*F/z])}}
-  else{for(let i=1;i<=18;i++){const t=i/18,ph=Math.PI*(1+2*t),rr=R0*(1-.65*t),z=Zs-R0+rr*Math.cos(ph)*-1;CL.push([...P(0,yt-rr*Math.sin(ph),Zs-R0-rr*Math.cos(ph)),(.2-.1*t)*F/z])}}
-  const pass=(c,f,dx)=>{g.strokeStyle=c;g.lineCap='round';for(let i=1;i<CL.length;i++){g.lineWidth=Math.max(.5,CL[i][2]*f);g.beginPath();g.moveTo(CL[i-1][0]+dx,CL[i-1][1]);g.lineTo(CL[i][0]+dx,CL[i][1]);g.stroke()}g.lineCap='butt'};
-  pass(lamp('#5a4028',[0,2.4,5.6],[-1,0,-.3]),1,0);pass(lamp('#7e5a36',[0,2.4,5.6],[.8,0,-.6]),.55,.6);
-  if(kind==='bird'){const[hx,hy]=CL[CL.length-1],[px,py]=CL[CL.length-3],tl=Math.hypot(hx-px,hy-py),dx=(hx-px)/tl-.7,dy=(hy-py)/tl,l=Math.hypot(dx,dy),ux=dx/l,uy=dy/l,nx=-uy,ny=ux,hs=3,
-      hc=lamp('#7e5a36',[0,yt,Zs-2*R0],[.6,.3,-.8]);
-    /* the head, a little fuller than the neck, the bill a wedge forward, the eye a small square on the side turned to us */
-    poly(g,[hx-ux*hs+nx*hs*.8,hy-uy*hs+ny*hs*.8,hx+ux*hs*.6+nx*hs*.7,hy+uy*hs*.6+ny*hs*.7,hx+ux*hs*2.4,hy+uy*hs*2.4,hx+ux*hs*.6-nx*hs*.5,hy+uy*hs*.6-ny*hs*.5,hx-ux*hs-nx*hs*.6,hy-uy*hs-ny*hs*.6],hc);
-    stroke(g,[hx-ux*hs-nx*hs*.6,hy-uy*hs-ny*hs*.6,hx+ux*hs*.6-nx*hs*.5,hy+uy*hs*.6-ny*hs*.5,hx+ux*hs*2.4,hy+uy*hs*2.4],rgba(lamp('#f0c890',[0,yt,Zs-2*R0],[.6,-.3,-.8]),.7),.5);
-    R(g,hx-nx*hs*.2-.25,hy-ny*hs*.2-.25,.5,.5,'#120c08')}
+  /* the sternpost: the swan's neck, seen from forward and a little to one side and below: its loop foreshortened, the head hanging
+     bowed toward us in front of the neck. Painted before the stern's rail, so the rail passes in front of its foot as a ship's rail
+     passes in front of her mast. */
+  const pf=RH(0,ZS+.2)-.3,Zs=ZS+.3,SM=.82,YW=-.35,SW=(u,v)=>{const z=Zs-u*SM*Math.cos(YW);return[...P(u*SM*Math.sin(YW),pf+v*SM,z),F*SM/z]};
+  swanDraw(g,SW,{mid:lamp('#7e5a36',[0,pf+1.5,Zs-.5],[.3,0,-1]),sh:lamp('#4e3622',[0,pf+1.5,Zs],[-1,0,-.2]),lit:lamp('#f0c890',[0,pf+1.5,Zs-.5],[.6,-.2,-.8]),
+    bill:lamp('#b06838',[0,pf+1.3,Zs-.7],[.3,-.3,-1]),billLit:lamp('#f0b070',[0,pf+1.3,Zs-.7],[.5,-.3,-.8]),eye:'#120c08'},[.85,.5]);
   /* the bulwarks: their inner faces, the rail on top; the stern's face plain, its grain only, where the cables come to it */
   const at=(i,y,d)=>{const[x,z]=C[i],[nx,nz]=N[i];return P(x+nx*(d||0),y,z+nz*(d||0))},M=C.length-1;
   const H=i=>RH(C[i][0],C[i][1]);for(let i=0;i<M;i++){const[x,z]=C[i],c=lamp('#7a5a3c',[x,.5,z],[N[i][0],0,N[i][1]]);poly(g,[...at(i,0),...at(i+1,0),...at(i+1,H(i+1)),...at(i,H(i))],c)}
@@ -685,8 +708,9 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=1.3,P=(x,y,z)=>[160
 }
   /* the sternpost: up from the stern's middle, its head bent over toward us */
   /* the lantern: a little lantern of clay and horn, hung by two cords that part upward to the post's shaft and to its head */
-  const[lx,ly]=P(...LP),s1=P(.06,pf+.7,ZS+.25),s2=CL[CL.length-3];
-  stroke(g,[lx-.8,ly-2,s1[0]+1,s1[1]],'#6a5a40',.5);stroke(g,[lx+.6,ly-2,s2[0]+.6,s2[1]+1],'#6a5a40',.5);
+  /* its two cords part upward from the lantern: one to the rising neck behind it, one to the neck where it comes down in front */
+  const[lx,ly]=P(...LP),s1=SW(-.16,1.62),s2=SW(.9,2.05);
+  stroke(g,[lx-.6,ly-2,s1[0],s1[1]],'#6a5a40',.5);stroke(g,[lx+.6,ly-2,s2[0],s2[1]],'#6a5a40',.5);
   comp(g,'lighter',.4,()=>{pool(g,lx,ly+4,18,8,'#ff9a40',.45);pool(g,lx,ly+1,7,4,'#ffc070',.55)});
   poly(g,[lx-1.6,ly-2,lx+1.6,ly-2,lx+1.9,ly+2.6,lx-1.9,ly+2.6],'#5a3a22');R(g,lx-1,ly-1.2,2,3,'#ffd890');R(g,lx-.5,ly-.6,1,1.6,'#fff4d0');R(g,lx-1.9,ly+2.6,3.8,.6,'#3a2414');
   /* rain, faint, brighter where it falls through the lantern's light */
