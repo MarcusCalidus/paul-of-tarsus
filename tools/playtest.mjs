@@ -15,6 +15,8 @@
 //   node tools/playtest.mjs lookback de:lookback   the journeys of the look back (shared/lookback.js): every chapter once, no road crossing, no name across a line (saves lookback-maps.png)
 //   node tools/playtest.mjs finale de:finale   the end of the game (shared/finale.js): the map of the letters, the roll, the look back, the closing screen, the finished code
 //                                                 (pletters, plookback, pclosing, pabout and ptitlefin are its pictures)
+//   node tools/playtest.mjs later de:later     the map of the places of Paul's later letters, after the morning of his release (plater is its picture;
+//                                                 the morning itself is played by final25)
 // It first checks the translations against the English text (tools/strings.mjs), and that every picture in docs/screenshots is listed
 // with its stop in tools/screenshots.txt (tools/retake.mjs takes the pictures again from that list).
 // Screenshots go to tools/out/ (or $SHOTS). Set $CHROME to use another Chromium-based browser.

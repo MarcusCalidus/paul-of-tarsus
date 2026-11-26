@@ -1,6 +1,6 @@
 /* Paul of Tarsus: Rome about 59 C.E., as Chapters Twenty-Four and Twenty-Five see it from outside: the Appian Way in its last miles, with
    its paving of lava blocks, its curbs, a milestone and the tombs beside it; the city on its hills seen from the road; and the Porta Capena,
-   the gate by which the road enters the city. Loaded on demand with need('rome') (list 'rome' in the chapter's needs, with 'materials',
+   the gate by which the road enters the city. And the street before Paul's lodging, on the morning he walks out free (street()). Loaded on demand with need('rome') (list 'rome' in the chapter's needs, with 'materials',
    'country' and 'temple', which it paints with: it touches them only inside its functions) and registered in shared/pwa.js for offline
    play. Painted to the standard of Chapters Fifteen to Twenty-One: on the half-pixel canvas, light worked out per pixel where it matters
    (the paving), soft contact shadows, dithered once by the engine.
@@ -28,9 +28,17 @@
                       o: {temples: 0..3 (how many temple fronts are seen, default 2), aqueduct (default true), mist (default true)}
      capena(g, o)     the room "at the Porta Capena": the gate in the old wall, the street beyond it closed by a house front, the Circus
                       Maximus over the wall at the left, the Palatine over the gate (320 by 144). o: {temples (0 or 1, default 0)}
-     light(room)      ART[id].light for 'far' or 'capena': {amb, sun, wallY, wall}
-     WALK             the walk strip of each room: {far:[x0,x1,y0,y1], capena:[...]}
-     HZ               the horizon of each room: {far, capena}
+     street(g, o)     the room "a street of Rome in the early morning", the morning Paul is free to go (about 61 C.E.): the front of
+                      the tenement of his lodging, with the stair door of the 'flat' lodging and the shop doorway of the 'street' one, a
+                      small square with a fountain at the left (320 by 144). o: {kind: 'flat' or 'street', which says which door stands open}
+     light(room, kind)  ART[id].light for 'far', 'capena' or 'street' (kind: 'flat' or 'street', for the street's open doorway):
+                      {amb, sun, wallY, wall}
+     WALK             the walk strip of each room: {far:[x0,x1,y0,y1], capena:[...], street:[...]}
+     HZ               the horizon of each room: {far, capena, street}
+     STREET           the street's places: door {flat:[x, y], street:[x, y]} (a figure's feet in each doorway), exit [x, y] (off the
+                      left edge, where Paul and Luke walk away), foot (the footprints on its walk strip: none), perch (for ROOMS[id].birds:
+                      sparrows on the far house's eave, doves on the tenement's ledge); PERCH is the same list
+     streetWallY(x)   the foot of the street's walls under x, for ART[id].light
    The parts, each for a later painter to call with a view V = view({hz, F, H, cx}) and a road frame Q = frame(d):
      view(o)                          the projection of a picture: P(X, Z, h) gives the screen point of a world point (h: its height),
                                       at(x, y) the ground point under a screen point
@@ -57,8 +65,9 @@ SHARED.rome=(()=>{
 "use strict";
 /* HZ: the one horizon of each room. At the gate (78) it lies about at the eyes of the people on the walk strip. From afar (60) it lies
    higher than the walkers' eyes: the room is an accepted view from a rise, looking down a little on the road and the country, decided by
-   the maintainer on 26 November 2026 for this one room. */
-const HZ={far:60,capena:78},WALK={far:[16,304,114,138],capena:[16,304,112,138]};
+   the maintainer on 26 November 2026 for this one room. In the street (78) it lies about at the eyes of the people on the walk strip,
+   hidden behind the houses that close the view. */
+const HZ={far:60,capena:78,street:78},WALK={far:[16,304,114,138],capena:[16,304,112,138],street:[16,306,106,138]};
 const hash=(a,b,c)=>{let h=(a*374761393+b*668265263+(c||0)*2147483647)|0;h=Math.imul(h^h>>>13,1274126177);return((h^h>>>16)>>>0)/4294967296};
 const sm=(a,b,v)=>{const t=clamp((v-a)/(b-a),0,1);return t*t*(3-2*t)};
 const sh=(...a)=>SHARED.materials.shadow(...a);
@@ -673,11 +682,236 @@ function curbSide(g,V,Q,s0,s1,h,seed,lit,uMax){const r=rng(seed),Pt=(u,s,hh)=>{c
     const face=[...Pt(a,s0,h),...Pt(b,s0,h),...Pt(b,s0,0),...Pt(a,s0,0)],top=[...Pt(a,s0,h),...Pt(b,s0,h),...Pt(b,s1,h),...Pt(a,s1,h)];
     poly(g,face,tint(cc,lit?.02:-.28));poly(g,top,tint(cc,.14));stroke(g,[top[0],top[1],top[6],top[7]],'rgba(50,40,40,.5)',.5);u=b}}
 
-/* the figures' light: sun:[dx, dy, strength] is the tip of the shadow of a figure 46 pixels tall, from its feet. In both rooms the morning
-   sun is low behind us at the right, so the shadows fall away from us and to the left; at the gate they reach the foot of the wall and
-   bend up onto it, except across the opening of the gate. */
-function light(room){if(room==='capena')return{amb:'#f6eadc',sun:[-12,-13,.42],wallY:capenaWallY,wall:[[0,GATE.x-6,WTOP,104],[GATE.x+GATE.w+6,320,WTOP,104]]};
+/* ================================================================ the room: a street of Rome in the early morning ================================================================ */
+/* street: the street before Paul's lodging on the morning he is free to go, about 61 C.E. We stand in the paved street and look at the
+   front of the tenement he has lived in: brick and concrete under plaster, several storeys, its upper floor cut off by the top of the
+   picture. Its ground floor has two openings, both on the walk strip so that a figure can stand in either: the narrow door of the stair
+   that goes up to the flats (DOOR.flat, the 'flat' lodging's), and the wide doorway of a shop room with its living quarters (DOOR.street,
+   the 'street' lodging's), its threshold a long stone with a groove for the upright boards that shut it at night. One painting serves
+   both lodgings; o.kind decides only which stands open: for 'flat' the stair door stands open, the stair going up in the dark behind it,
+   and the shop beside it is only being opened (most of its boards still stand in the groove, three are taken out and stand aside); for
+   'street' the shop doorway is open, all its boards stacked against the wall at its right, and the stair door is shut.
+     Over the ground floor runs a shallow ledge of brick (a string course), where doves sit; above it the windows of the larger flats, each
+   with its two shutters of upright boards folded back flat against the wall. At the left the tenement's corner, and its flank running
+   back from us, full in the low sun; beyond the corner the street opens into a small square, closed at its far side by an older and
+   lower house: two storeys, a shop shut with boards, a door, windows with their shutters, a plain eave of tiles where sparrows sit; and
+   before it a public fountain's long, low basin of stone, fed from a spout in a block at its right end. Over that house, farther off and
+   paler in the morning air, the tops of taller tenements, and the sky.
+     The light: early morning, the sun low at the left (east) and a little behind us, warm. Every front turned to us takes it raking from
+   the left, the flank head on; each thing that stands out from a wall throws its shadow to its right, and the shadows on the paving fall
+   long to the right and a little back, as the figures' do (light('street')). No rays, no beams, no shafts of light.
+     The ground is the Appian Way's own paving of dark lava blocks (road()), run back to the vanishing point VS.cx on the one horizon (78),
+   which lies about at the eyes of the people on the walk strip; the flank's foot and courses run back to the same point. The horizon
+   itself is not seen: the houses close the view.
+     Section 3's shapes, as this painter keeps them: no balcony and no beam end anywhere; every opening is square, every shutter and door
+   a leaf of upright boards with no band across it; a window has no bars and no frame across its opening; a lintel or a threshold is
+   exactly as wide as the two jambs it lies on, so that nothing stands out past a post as a T; the ledge ends at the tenement's corner and
+   does not run on round it; the fountain's water falls from the tip of its spout in an arc that ends in the basin, never from the middle
+   of anything; the tiles of the eaves are a plain band, without the small round ends of the cover tiles; no rope, no line of washing;
+   nothing round anywhere along the strip where a head comes (heads come at about y 60..100, before the ground floors and the basin, which
+   is long and low). No temple, altar, statue, image, inscription or sign in this picture. */
+const VS={hz:78,F:160,H:1.7,cx:110},SWY=100,SFY=88,SCX=150,SBX=VS.cx+(SCX-VS.cx)*(SFY-VS.hz)/(SWY-VS.hz),
+  SDOOR={x0:164,x1:184,top:50},SSHOP={x0:222,x1:292,top:44},SLEDGE=36,SWINS=[174,214,254,296],SREV=.03,
+  BASIN={x0:56,x1:102,foot:93,h:5};
+/* STREET: where a figure stands in each doorway (its feet), the point off the left edge toward which Paul and Luke walk away, the
+   footprints of what stands on the walk strip (nothing: the strip is clear), and the birds' perches (ROOMS[id].birds = {perch}) */
+const STREET={door:{flat:[174,107],street:[257,107]},exit:[-24,121],foot:[],
+  perch:[{k:'sparrow',y:33.6,x:[30,40,52],d:[1,-1,1]},{k:'dove',y:SLEDGE,x:[198,214],d:[1,-1]}]};
+const streetWallY=x=>x<=SBX?SFY:x<SCX?SFY+(x-SBX)*(SWY-SFY)/(SCX-SBX):SWY;
+function street(g,o){o=o||{};const kind=o.kind==='street'?'street':'flat',V=view(VS),Q=frame([0,1]);
+  /* the sky, pale and warm low at the left where the sun is, a few soft clouds */
+  sky(g,320,SFY,['#84a2cc','#a6bad6','#d6d6d8','#f2dcc0']);
+  pool(g,-40,36,130,34,'#ffe2b8',.4,'screen');
+  {const q=rng(2602);cloud(g,70,10,64,2.6,q,'#fff6ea','#c8bcc8');cloud(g,16,22,44,1.8,q,'#fff2e2','#ccbcc4')}
+  streetDistant(g,rng(2603));
+  streetFar(g,rng(2604));
+  /* the paving of the square and the street: lava blocks, the light from the left and from our side */
+  road(g,V,Q,{s0:-40,s1:40,cell:.6,seed:2605,sun:[-.86,-.5],tones:[[92,90,98],[100,90,96],[108,98,90],[86,86,96],[116,108,102],[96,88,86],[80,78,86]],haze:'#d8ccc6',hz0:30,hz1:220,light:'#ffe8cc',y0:SFY-.5});
+  /* where the far house meets the paving: a soft seam */
+  for(const[dy,wd,al]of[[.6,1.6,.16],[.2,.6,.3]])stroke(g,[-2,SFY+dy,SBX,SFY+dy],rgba('#3a2e30',al),wd);
+  streetBasin(g);
+  streetNear(g,kind,rng(2606));
+  /* the morning over everything: warm from the left, a little cooler at the right; the foot of the picture a shade darker */
+  comp(g,'soft-light',.32,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,206,150,1)','rgba(250,226,196,.8)','rgba(200,196,214,1)']);g.fillRect(0,0,320,144)});
+  ao(g,0,128,320,16,'b',.12,'#2a2440')}
+/* the tops of taller tenements farther off, over the far house: flat fronts in the haze with rows of small windows (each row set over by
+   half a step from the one above, so that no four stand two by two), each block under a plain eave; the nearer block in front */
+function streetDistant(g,r){const hc='#cfc6cc';
+  for(const[x0,x1,top,c,hz]of[[-2,70,12,'#d8b896',.5],[46,SBX+2,19,'#e0c4a0',.36]]){const c2=mix(c,hc,hz);
+    R(g,x0,top,x1-x0,40-top,c2);inRect(g,x0,top,x1-x0,40-top,()=>{tex(g,'mott',.3,x0,top,x1-x0,40-top,'overlay',1);
+      /* the light from the left on its front, fading to the right */
+      g.fillStyle=lg(g,x0,0,x1,0,['rgba(255,226,186,.18)','rgba(255,226,186,0)']);g.fillRect(x0,top,x1-x0,40-top);
+      for(let y=top+3,k=0;y<38;y+=5,k++)for(let x=x0+2+(k%2)*2.4;x<x1-2;x+=4.8)if(hash(Math.round(x*2),Math.round(y*2),k)<.82)R(g,x,y,1,1.4,mix('#4a3a3a',hc,hz*.8))});
+    R(g,x0-.5,top-1.4,x1-x0+1,1.4,mix('#a4583c',hc,hz*.8));R(g,x0-.5,top-1.4,x1-x0+1,.5,mix('#d88c64',hc,hz*.7));R(g,x0,top,x1-x0,.8,rgba(mix('#4a3030',hc,hz),.4))}}
+/* the far house across the square: two storeys of plaster over brick, lit raking from the left; its eave a plain band of tiles; on the
+   ground floor a shop shut with its boards under a beam, a door, and plain wall behind the fountain; above, three windows, each with its
+   two shutters folded back flat. Its front is drawn at the square's far side, where things are a little under half the size of the
+   tenement's front (its foot at SFY) */
+function streetFar(g,r){const x0=-2,x1=SBX+.2,top=34,c='#dcc29c',M=SHARED.materials;
+  plaster(g,x0,top,x1-x0,SFY-top,c,r,{patch:0,cracks:0,t:.45,top:.06,bot:-.08,brick:'#a4643e'});
+  SHARED.temple.age(g,x0,top+2,x1-x0,SFY-top-2,rng(2611),.4);
+  /* the eave: a band of red tiles, lit along its top; under it the shade it throws on the wall */
+  R(g,x0,top-1.6,x1-x0,2.2,'#a4583c');R(g,x0,top-1.6,x1-x0,.5,'#dc9068');R(g,x0,top+.1,x1-x0,.5,'#6a3426');ao(g,x0,top+.6,x1-x0,3,'t',.35,'#5a3a40');
+  /* the ground floor: a shop shut with upright boards in their groove, under a beam exactly as wide as the opening and its jambs */
+  {const a=8,b=34,t=66;R(g,a-1.4,t-2.4,b-a+2.8,2.4,'#6a4a30');R(g,a-1.4,t-2.4,b-a+2.8,.5,'#a07850');
+    for(let x=a,i=0;x<b-.01;x+=3.25,i++){M.plank(g,x,t,Math.min(3.25,b-x),SFY-t,tint('#7a5838',(r()-.5)*.2),r,1);if(i)R(g,x,t,.5,SFY-t,'rgba(30,18,12,.5)')}
+    R(g,a,t,2,SFY-t,'rgba(40,24,20,.35)');R(g,a-1.4,t,1.4,SFY-t,tint(c,-.12));R(g,b,t,1.4,SFY-t,tint(c,.08))}
+  /* a door of upright boards, set back: its right side in the light, the left jamb's shade on the leaf */
+  {const a=42,b=51,t=66.5;R(g,a-1.2,t-1.6,b-a+2.4,1.6,'#cdb896');R(g,a-1.2,t-1.6,b-a+2.4,.5,'#f2e2c4');
+    for(let x=a,i=0;x<b-.01;x+=3,i++)M.plank(g,x,t,3,SFY-t,['#6a4a30','#624428','#6e4c2e'][i%3],r,1);
+    R(g,a,t,1.8,SFY-t,'rgba(30,18,16,.45)');R(g,b-.6,t,.6,SFY-t,'#d8b890');R(g,a+5.6,t+10,1,1,'#2a1e16');
+    /* its jambs of the same stone as the lintel, so that the lintel stands out past nothing */
+    R(g,a-1.2,t,1.2,SFY-t,'#c8b292');R(g,a-1.2,t,.5,SFY-t,'#ecdcbc');R(g,b,t,1.2,SFY-t,'#d4be9c')}
+  /* the windows of the upper floor: square, dark, a stone sill under each, the shutters flat on the wall at each side */
+  for(const wx of[14,58,98]){const a=wx-3.5,b=wx+3.5,t=42,s=51;R(g,a,t,b-a,s-t,'#2e2224');R(g,a,t,b-a,1.2,'#1e1416');R(g,b-.6,t,.6,s-t,'#a88a6a');
+    R(g,a-.4,s,b-a+.8,.9,'#ecdcc0');R(g,a-.4,s+.9,b-a+.8,.5,'rgba(70,50,50,.35)');
+    for(const[sx,sw]of[[a-4,3.4],[b+.6,3.4]]){M.plank(g,sx,t+.4,sw,s-t-.4,tint('#7a5838',(r()-.5)*.14),r,1);R(g,sx+sw*.5,t+.4,.4,s-t-.4,'rgba(30,18,12,.4)');
+      R(g,sx+sw,t+1,.6,s-t-.4,'rgba(60,40,44,.3)')}}
+  /* a ledge of brick between the storeys, as on the tenement; it runs to the corner, where the tenement's flank hides its end */
+  R(g,x0,60.6,x1-x0,1.4,'#b07a5a');R(g,x0,60.6,x1-x0,.5,'#ecc8a0');ao(g,x0,62,x1-x0,2,'t',.3,'#5a3a40');
+  /* damp along its foot, and the light from the left raking across it */
+  g.fillStyle=lg(g,0,SFY-9,0,SFY,['rgba(90,70,60,0)','rgba(90,70,60,.28)']);g.fillRect(x0,SFY-9,x1-x0,9);
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,x0,0,x1,0,['rgba(255,214,160,1)','rgba(255,234,204,.4)']);g.fillRect(x0,top-2,x1-x0,SFY-top+2)})}
+/* the fountain: a long, low basin of stone standing on the paving before the far house, its water seen over its near rim; at its right
+   end a block a little taller, with the spout in its left face. The water leaves the tip of the spout and falls in an arc into the
+   basin; where it meets the water a few lit dabs. Its shadow falls long to the right and a little back, as the figures' do */
+function streetBasin(g){const{x0,x1,foot,h}=BASIN,t=foot-h,k0=x1,k1=x1+6,kt=foot-10;
+  /* the shadow on the paving, to the right, and on the wall behind where it reaches it */
+  for(const[d,a]of[[1.2,.12],[.4,.16]])comp(g,'multiply',1,()=>poly(g,[x0+2,foot+d*.3,k1+d,foot+d*.3,k1+7+d,foot-1.6,x0+9,foot-1.4],rgba('#5a4a6a',a*2)));
+  /* the far rim and the water inside */
+  poly(g,[x0+1,t-1.2,x1-1,t-1.2,x1,t,x0,t],'#c8bca4');R(g,x0+1.4,t-1,x1-x0-2.8,.9,'#6a7c90');R(g,x0+1.4,t-1,x1-x0-2.8,.4,'#b8c8d8');
+  for(let x=x0+4;x<x1-3;x+=7)R(g,x,t-.6,2,.4,'rgba(230,240,250,.55)');
+  /* the face, lit from the left */
+  R(g,x0,t,x1-x0,h,'#bcae94');g.fillStyle=lg(g,x0,0,x1,0,['rgba(255,236,206,.35)','rgba(255,236,206,0)']);g.fillRect(x0,t,x1-x0,h);
+  R(g,x0,t,x1-x0,.5,'#efe2c8');tex(g,'mott',.45,x0,t,x1-x0,h,'overlay',1);R(g,x0,foot-.6,x1-x0,.6,'rgba(60,48,56,.4)');
+  /* the damp the water leaves on the stone below the rim */
+  g.fillStyle=lg(g,0,t+.5,0,t+3,['rgba(80,90,100,.25)','rgba(80,90,100,0)']);g.fillRect(x0+3,t+.5,x1-x0-6,2.5);
+  R(g,x0,t,.6,h,'#f4e6cc');
+  /* the block with the spout, its left face in the sun (a narrow strip), its front a little in shade */
+  R(g,k0,kt,k1-k0,foot-kt,'#b4a68c');R(g,k0,kt,k1-k0,.6,'#e8dcc0');R(g,k0,kt,.8,foot-kt,'#e6d6b8');tex(g,'mott',.4,k0,kt,k1-k0,foot-kt,'overlay',1);
+  R(g,k1-.6,kt,.6,foot-kt,'rgba(60,50,60,.35)');
+  /* the spout: a short square stub out of the block's left face; the water from its tip, in an arc, down into the basin */
+  R(g,k0-1.4,kt+2.2,1.4,.9,'#6a6458');R(g,k0-1.4,kt+2.2,1.4,.4,'#9a9488');
+  stroke(g,[k0-1.5,kt+2.7,k0-2.6,kt+3.3,k0-3.4,kt+4.6,k0-3.8,t-.8],'rgba(224,236,246,.8)',.5);
+  R(g,k0-4.8,t-1,1,.5,'rgba(240,248,255,.7)');R(g,k0-3,t-.7,.5,.5,'rgba(240,248,255,.6)')}
+/* the tenement: its flank, full in the low sun, and its front with the two doorways, the ledge, the windows of the flats */
+function streetNear(g,kind,r){const M=SHARED.materials,FR='#d8bf98',FL='#f2d6ac';
+  /* the flank, from the corner back to the far house: its foot and every level line on it run to the vanishing point */
+  const SP=[SBX,-2,SCX,-2,SCX,SWY,SBX,SFY];
+  poly(g,SP,FL);clipTo(g,()=>poly(g,SP),()=>{tex(g,'mott',.45,SBX,0,SCX-SBX,SWY,'overlay',1);tex(g,'grain',.14,SBX,0,SCX-SBX,SWY,'overlay',.5);
+    SHARED.temple.age(g,SBX,4,SCX-SBX,SWY-4,rng(2621),.35);
+    /* weather streaks running down it, and the damp along its foot */
+    for(let i=0;i<9;i++){const x=SBX+1+r()*(SCX-SBX-2),y=r()*60,l=6+r()*24;R(g,x,y,.5,l,'rgba(150,120,100,.16)')}
+    const P=[SBX,SFY-10,SCX,SWY-12,SCX,SWY,SBX,SFY];poly(g,P);g.fillStyle=lg(g,0,SFY-10,0,SWY,['rgba(120,90,70,0)','rgba(120,90,70,.3)']);g.fill();
+    /* the light falls on it nearly head on: warm, a little paler toward the corner */
+    g.fillStyle=lg(g,SBX,0,SCX,0,['rgba(255,236,200,.1)','rgba(255,240,214,.3)']);g.fillRect(SBX,-2,SCX-SBX,SWY+2)});
+  /* (the corner is only where the lit flank meets the front, with no line drawn down it: a line there would stand over the end of the
+     ledge) */
+  /* the front */
+  plaster(g,SCX,-2,172,SWY+2,FR,r,{patch:0,cracks:0,t:.45,top:.04,bot:-.1,brick:'#a4603e'});
+  SHARED.temple.age(g,SCX,2,170,SWY-2,rng(2622),.45);
+  /* the upper floor a warmer, fresher plaster than the ground floor, which is darker for the street's dust */
+  comp(g,'soft-light',.3,()=>R(g,SCX,-2,170,SLEDGE+2,'#f0b880'));
+  g.fillStyle=lg(g,0,62,0,SWY,['rgba(100,80,70,0)','rgba(100,80,70,.26)']);g.fillRect(SCX,62,170,SWY-62);
+  /* the raking light from the left over the whole front, a little stronger near the corner */
+  comp(g,'soft-light',.28,()=>{g.fillStyle=lg(g,SCX,0,320,0,['rgba(255,220,170,1)','rgba(255,232,200,.5)']);g.fillRect(SCX,-2,170,SWY+2)});
+  /* the windows of the flats */
+  for(const cx of SWINS)streetWindow(g,cx,r);
+  /* the ledge between the ground floor and the floor above: a course of brick standing out a little, its top lit, its face in the light,
+     the shade it throws on the wall under it falling a little to the right. It begins at the corner and ends at the right edge */
+  R(g,SCX,SLEDGE,170,.7,'#f6dcb4');R(g,SCX,SLEDGE+.7,170,2.2,'#b88466');
+  for(let x=SCX+2.2,j=0;x<320;x+=4.4,j++)R(g,x,SLEDGE+.9+(j%2)*1,.4,1,'rgba(90,50,36,.35)');
+  R(g,SCX,SLEDGE+2.9,170,.5,'rgba(70,40,40,.45)');ao(g,SCX+1,SLEDGE+3.4,170,3,'t',.3,'#5a3a40');
+  R(g,SCX,SLEDGE,.8,2.9,'#fae6c4');
+  /* the two openings of the ground floor */
+  streetStair(g,kind,r);
+  streetShop(g,kind,r);
+  /* the foot of the walls: grime, and the soft seam where they meet the paving */
+  for(const[dy,wd,al]of[[.6,1.8,.16],[.2,.6,.32]]){stroke(g,[SCX,SWY+dy,322,SWY+dy],rgba('#3a2e30',al),wd);stroke(g,[SBX,SFY+dy,SCX,SWY+dy],rgba('#3a2e30',al*.8),wd)}}
+/* a window of the flats: a square opening, dark inside, a stone sill under it; its right reveal lit by the sun, the left one's shade on
+   the dark; its two shutters of upright boards folded back flat on the wall, each a little off it, so that it throws a thin shade to
+   its right */
+function streetWindow(g,cx,r){const M=SHARED.materials,a=cx-6,b=cx+6,t=11,s=28,rv=(b-VS.cx)*SREV;
+  R(g,a,t,b-a,s-t,'#2c2022');g.fillStyle=lg(g,0,t,0,s,['rgba(10,6,8,.5)','rgba(60,44,40,.3)']);g.fillRect(a,t,b-a,s-t);
+  R(g,b-rv,t,rv,s-t,'#d4a478');R(g,b-rv,t,.5,s-t,'rgba(70,46,40,.5)');R(g,a,t,b-a-rv,1,'#3e2c28');
+  R(g,a-.6,s,b-a+1.2,1.3,'#ecdcbe');R(g,a-.6,s,b-a+1.2,.5,'#fff0d8');R(g,a-.6,s+1.3,b-a+1.2,.6,'rgba(70,46,46,.4)');
+  for(const sx of[a-6.4,b+.6]){const sw=5.8;comp(g,'multiply',.5,()=>R(g,sx+sw,t+.8,.9,s-t-.4,'#8a6a70'));
+    for(let i=0;i<2;i++){M.plank(g,sx+i*sw/2,t+.2,sw/2,s-t-.2,tint('#7a5636',(r()-.5)*.16),r,1);if(i)R(g,sx+i*sw/2,t+.2,.5,s-t-.2,'rgba(30,18,12,.45)')}
+    R(g,sx,t+.2,.5,s-t-.2,'rgba(255,226,186,.4)');R(g,sx,t+.2,sw,.5,'rgba(255,226,186,.3)')}}
+/* the stair door: jambs of dressed stone, a lintel of one stone exactly as wide as the two jambs, a threshold as wide; the leaf of
+   upright boards set back in the wall, its right reveal in the sun and the left jamb's shade across its left part. For 'flat' it stands
+   open: the leaf turned in against the left reveal, the stair going up into the dark, the first steps lit a little from the street */
+function streetStair(g,kind,r){const M=SHARED.materials,{x0,x1,top}=SDOOR,w=x1-x0,h=SWY-top,rv=(x1-VS.cx)*SREV,J=3,S='#d4c4a4';
+  SHARED.temple.stone(g,x0-J,top-5,w+2*J,5,rng(2631),{bh:5,bw:w+2*J,c:S,v:.05,age:.3});R(g,x0-J,top-5,w+2*J,.6,'#fff0d4');R(g,x0-J,top-.6,w+2*J,.6,'rgba(60,40,40,.45)');
+  for(const x of[x0-J,x1]){R(g,x,top,J,h,tint(S,-.02));tex(g,'mott',.35,x,top,J,h,'overlay',1);R(g,x,top,.5,h,'rgba(255,246,226,.45)');R(g,x+J-.5,top,.5,h,'rgba(60,44,50,.3)')}
+  const ix1=x1-rv;
+  if(kind==='flat'){
+    /* the dark of the stairwell; the steps going up away from us, each a riser in shade and a tread lit a little at its edge, inset
+       from the sides so that no level line runs into the jambs */
+    R(g,x0,top,w,h,'#241a1a');g.fillStyle=lg(g,0,top,0,SWY,['#140e10','#2a201e','#46362e']);g.fillRect(x0,top,ix1-x0,h);
+    for(const[y,k]of[[SWY-1.8,1],[SWY-6.2,.75],[SWY-10.6,.55],[SWY-15,.4],[SWY-19.4,.28]]){R(g,x0+4.4,y,ix1-x0-6,.6,rgba('#c49a72',.55*k));R(g,x0+4.4,y+.6,ix1-x0-6,1.6,rgba('#5a463a',.5*k))}
+    /* the leaf, turned in against the left side of the opening, seen nearly edge on */
+    M.plank(g,x0,top+1,3.6,h-1.4,'#4e3826',r,1);R(g,x0+3.6,top+1,.6,h-1.4,'rgba(20,12,10,.6)');
+    /* the light from the street on the lowest steps, at the right */
+    comp(g,'screen',.22,()=>poly(g,[x0+9,SWY,ix1,SWY,ix1,SWY-7,x0+13,SWY-5],'#ffd8a8'))}
+  else{for(let i=0;i<4;i++){const pw=(ix1-x0)/4;M.plank(g,x0+i*pw,top,pw,h,['#6e5034','#664a30','#6c4e32','#62462c'][i],r,1);if(i)R(g,x0+i*pw,top,.5,h,'rgba(30,18,12,.5)');R(g,x0+i*pw+.5,top,.5,h,'rgba(220,180,130,.16)')}
+    R(g,x0+3,top+h*.52,1.4,1.4,'#2a1e16');R(g,x0+3,top+h*.52,1.4,.5,'#9a7a58');
+    /* the left jamb's shade across the leaf, slanting a little with the sun */
+    comp(g,'multiply',.55,()=>poly(g,[x0,top,x0+5,top,x0+3.6,SWY,x0,SWY],'#6a5a7a'));ao(g,x0,top,ix1-x0,4,'t',.45,'#1a1012')}
+  /* the right reveal in the sun, and the lintel's underside in shade */
+  R(g,ix1,top,rv,h,'#e8c494');R(g,ix1,top,.5,h,'rgba(80,56,48,.4)');R(g,x0,top,w,.9,'rgba(40,28,30,.5)');
+  /* the threshold */
+  R(g,x0-J,SWY-1.2,w+2*J,1.8,'#c4b494');R(g,x0-J,SWY-1.2,w+2*J,.5,'#f0e2c4')}
+/* the shop doorway: jambs faced with brick in courses (each joint stops inside its course), a deep lintel of timber exactly as wide as the
+   jambs, the threshold a long stone of the same width with the groove for the boards. Inside, the shop room in its shade, its floor of
+   flags with a patch of the low sun on it. The boards: in 'flat' seven still stand in the groove and three are taken out and stand
+   against the wall at the doorway's right; in 'street' all ten stand there, stacked one before another */
+function streetShop(g,kind,r){const M=SHARED.materials,{x0,x1,top}=SSHOP,w=x1-x0,h=SWY-top,rv=(x1-VS.cx)*SREV,J=5,ix1=x1-rv,BW=7;
+  /* the room inside: its back wall dim, its floor of flags going back to the vanishing point, the sun's patch on it */
+  inRect(g,x0,top,w,h,()=>{R(g,x0,top,w,h,'#3a2c26');g.fillStyle=lg(g,0,top,0,96,['#1e1614','#46362c','#5e4a3c']);g.fillRect(x0,top,w,96-top);
+    tex(g,'mott',.3,x0,top,w,96-top,'overlay',1);
+    /* a long bench of plain boards against the back wall, low, in the shade */
+    R(g,x0+8,88,40,1.4,'#5a4030');R(g,x0+8,88,40,.5,'#7a5a40');R(g,x0+8,89.4,40,6.6,'#3a2a22');ao(g,x0+8,89.4,40,3,'t',.4,'#140c0a');
+    pave(g,x0,96,x1,SWY,'#8a7862',r,{vx:VS.cx,vy:VS.hz,rows:2,step:22,v:.06,t:.3});
+    /* the low sun comes in from the left past the left jamb: a patch on the floor toward the right, and a little on the back wall */
+    comp(g,'screen',.42,()=>poly(g,[x0+16,SWY,ix1-2,SWY,ix1-6,96,x0+20,96],'#ffcc94'));
+    comp(g,'screen',.16,()=>poly(g,[x0+20,96,ix1-6,96,ix1-6,80,x0+34,84],'#ffcc94'));
+    ao(g,x0,top,w,8,'t',.5,'#0e0808')});
+  /* the right reveal in the sun, the beam's underside in shade */
+  R(g,ix1,top,rv,h,'#dcb488');for(let y=top+1.6;y<SWY;y+=2.2)R(g,ix1,y,rv,.4,'rgba(110,64,44,.35)');R(g,ix1,top,.5,h,'rgba(80,56,48,.45)');
+  R(g,x0,top,w,1.2,'rgba(30,20,20,.6)');
+  /* the boards that still stand in the doorway ('flat'): upright, each its own tone, the left jamb's shade across the first */
+  const inPlace=kind==='flat'?7:0;
+  for(let i=0;i<inPlace;i++){const x=x0+i*BW;M.plank(g,x,top+.6,BW,SWY-top-1.2,tint('#6a4c32',(r()-.5)*.2),r,1);R(g,x,top+.6,.5,SWY-top-1.2,'rgba(20,12,8,.55)');R(g,x+.5,top+.6,.5,SWY-top-1.2,'rgba(220,180,130,.14)')}
+  if(inPlace){comp(g,'multiply',.5,()=>poly(g,[x0,top,x0+7,top,x0+5,SWY,x0,SWY],'#6a5a7a'));R(g,x0+inPlace*BW,top,.8,h,'rgba(20,12,8,.5)')}
+  /* the jambs of brick */
+  for(const[x,s]of[[x0-J,1],[x1,-1]])inRect(g,x,top,J,h,()=>{R(g,x,top,J,h,'#b08a68');tex(g,'mott',.4,x,top,J,h,'overlay',1);
+    for(let y=top+1.6,j=0;y<SWY;y+=2.2,j++){R(g,x,y,J,.4,'rgba(80,50,36,.45)');R(g,x+(j%2?1.4:3.2),y+.4,.4,1.8,'rgba(80,50,36,.4)')}
+    R(g,s>0?x:x+J-.5,top,.5,h,s>0?'rgba(255,240,220,.4)':'rgba(70,44,40,.3)')});
+  /* the lintel: a deep beam of timber over the opening and its jambs, exactly as wide */
+  M.board(g,x0-J,top-5,w+2*J,5,'#5e4430',r);R(g,x0-J,top-5,w+2*J,.5,'rgba(255,226,186,.35)');ao(g,x0-J,top,w+2*J,2.4,'t',.3,'#3a2228');
+  /* the threshold, with its groove */
+  R(g,x0-J,SWY-1.4,w+2*J,2,'#b8aa8e');R(g,x0-J,SWY-1.4,w+2*J,.5,'#ecdcbc');R(g,x0+.5,SWY-.6,w-1,.5,'rgba(50,40,36,.6)');
+  /* the boards taken out: stacked against the wall at the doorway's right, one before another, their feet a little out from the wall;
+     their shade on the wall to their right, widening toward the foot, and on the paving */
+  const n=kind==='flat'?3:10,sx=x1+J+1.2,bt=top+2,step=.9;
+  comp(g,'multiply',.45,()=>poly(g,[sx+BW+(n-1)*step,bt+1,sx+BW+(n-1)*step+1,bt+1,sx+BW+(n-1)*step+5,SWY+1,sx+BW+(n-1)*step+11,SWY+2.4,sx+BW,SWY+2.4],'#6e5a78'));
+  for(let i=n-1;i>=0;i--){const x=sx+i*step,cc=tint('#6a4c32',(hash(i,7,3)-.5)*.22+(i?-.12:0));
+    poly(g,[x,bt,x+BW,bt,x+BW+.3,SWY+1.4,x+.3,SWY+1.4],cc);
+    if(!i){M.plank(g,x,bt,BW,SWY+1.4-bt,cc,r,1);R(g,x,bt,.6,SWY+1.4-bt,'rgba(255,224,180,.4)')}
+    else R(g,x+BW-.5,bt,.5,SWY+1.4-bt,'rgba(30,18,12,.5)');
+    R(g,x,bt,BW,.5,'rgba(255,224,180,.35)')}}
+
+/* the figures' light: sun:[dx, dy, strength] is the tip of the shadow of a figure 46 pixels tall, from its feet. In both rooms outside
+   the city the morning sun is low behind us at the right, so the shadows fall away from us and to the left; at the gate they reach the
+   foot of the wall and bend up onto it, except across the opening of the gate. In the street the early sun is low at the left and a
+   little behind us: the shadows fall long to the right and a little back, and from the threshold they reach the tenement's foot and bend
+   up onto its wall, except across an open doorway (kind: 'flat' or 'street', which says which doorway is open; the shop doorway counts
+   as open in both, since in 'flat' its boards stand back in the shade of the opening). */
+function light(room,kind){if(room==='capena')return{amb:'#f6eadc',sun:[-12,-13,.42],wallY:capenaWallY,wall:[[0,GATE.x-6,WTOP,104],[GATE.x+GATE.w+6,320,WTOP,104]]};
+  if(room==='street'){const D=SDOOR,S=SSHOP,wall=kind==='street'?[[SCX,S.x0-5,0,SWY],[S.x1+5,320,0,SWY]]:[[SCX,D.x0-3,0,SWY],[D.x1+3,S.x0-5,0,SWY],[S.x1+5,320,0,SWY]];
+    return{amb:'#f6e2cc',sun:[38,-7,.46],wallY:streetWallY,wall:wall.concat([[-2,SBX,34,SFY]])}}
   return{amb:'#f6ecdc',sun:[-16,-11,.5],wallY:WALK.far[2]-2}}
 
-return{HZ,WALK,view,frame,road,curb,milestone,tomb,cypress,city,house,farTemple,palace,circus,aqueduct,far,capena,light,band,verge,ditch,weeds,
-  GATE,CORNER,capenaWallY}})();
+return{HZ,WALK,STREET,PERCH:STREET.perch,view,frame,road,curb,milestone,tomb,cypress,city,house,farTemple,palace,circus,aqueduct,far,capena,street,light,band,verge,ditch,weeds,
+  GATE,CORNER,capenaWallY,streetWallY}})();

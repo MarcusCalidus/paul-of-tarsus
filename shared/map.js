@@ -98,7 +98,10 @@ const VLAB={journeys:{salamis:{lab:'r'},paphos:{lab:'l',dy:2},thessalonica:{lab:
   lycus:{ephesus:{lab:'r',dy:-5},laodicea:{lab:'t',dy:-2},colossae:{lab:'r'}},
   /* on the letters window Laodicea would lie on Colossae: it is left out; the name of Ephesus stands a little higher, clear of the dot
      of Colossae beside it */
-  letters:{laodicea:{hide:1},ephesus:{lab:'r',dy:-5}}};
+  letters:{laodicea:{hide:1},ephesus:{lab:'r',dy:-5}},
+  /* later: not a window but the names for the letters window when it shows the places of the letters after Acts (shared/finale.js
+     passes them as labels). Colossae is not among them; Miletus below its dot, clear of Ephesus above it */
+  later:{laodicea:{hide:1},colossae:{hide:1},ephesus:{lab:'r',dy:-3},miletus:{lab:'r',dy:3.5}}};
 const inView=(x,y,m)=>{m/=ZM;return x>=OX-m&&x<=OX+W/ZM+m&&y>=OY-m&&y<=OY+H/ZM+m};
 /* Rz: a small square of the route, snapped to the canvas pixels of the view however close it is (R, at the usual size) */
 const Rz=(g,x,y,w,h,c)=>{const k=HR*ZM,s=v=>Math.round(v*k)/k;g.fillStyle=c;g.fillRect(s(x),s(y),s(w),s(h))};
@@ -177,7 +180,14 @@ const PLACES={
   rome:{name:'Rome',at:[12.48,41.9],lab:'t'},
   /* Laodicea and Colossae in the valley of the Lycus, inland of Ephesus, some 16 km apart: Colossae farther up the valley, to the
      east-south-east (the letters of Colossians 4:7-9, 16). Hierapolis, across the river, is not drawn. */
-  laodicea:{name:'Laodicea',at:[29.11,37.84],lab:'t'},colossae:{name:'Colossae',at:[29.28,37.78],lab:'r'}};
+  laodicea:{name:'Laodicea',at:[29.11,37.84],lab:'t'},colossae:{name:'Colossae',at:[29.28,37.78],lab:'r'},
+  /* after Acts, for the finale's map of the places Paul's later letters name (Titus 1:5; 3:12; 1 Timothy 1:3; 2 Timothy 4:13, 20): Crete,
+     a dot in the middle of the island with its name below it in the sea, for the letter names the island and no town; and Nicopolis,
+     the city of Epirus on the north side of the strait into the Gulf of Ambracia (the Study Edition's notes on Titus 3:12 and Acts 28:30
+     name Nikopolis in Greece). Spain is off this map, west of the window: like torome, the end of a way at the left edge, at the latitude
+     of its east coast, with no road to it; dim:1, for it is a perhaps (the note on Romans 15:24): its dot and its name are faint. */
+  crete:{name:'Crete',at:[24.9,35.25],lab:'b'},nicopolis:{name:'Nicopolis',at:[20.73,38.99],lab:'l'},
+  tospain:{name:'Spain',at:[0,40.6],lab:'r',dy:-4.6,edge:'l',dim:1}};
 /* waypoints for legs that do not run straight: by sea up the coast and east of Cyprus; by road round the Gulf of Issus; through
    the south of Cyprus, the way tradition has them go from Salamis to Paphos; by sea clear of the western cape of Cyprus; up the valley
    through the Taurus; along the foot of the mountains to Iconium; and home from Attalia by sea, between Cyprus and the coast of Cilicia */
@@ -487,7 +497,7 @@ function label(g,s,x,y,side,col,sz){sz=(sz||4.6)/ZM;g.font=`bold ${sz}px "Lucida
   edge(g,s,tx,ty);g.fillStyle=col;g.fillText(s,tx,ty)}
 function dot(g,x,y,lit){oval(g,x,y,1.9/ZM,1.9/ZM,'#1a0e08');oval(g,x,y,1.15/ZM,1.15/ZM,lit?'#f4dc8a':'#c8b48a')}
 /* end: the end of a road at the window's edge, a dot a little smaller than a city's, in the red of the route, lit when hovered */
-function end(g,x,y,lit){oval(g,x,y,1.6/ZM,1.6/ZM,'#1a0e08');oval(g,x,y,1/ZM,1/ZM,lit?'#ffe0a0':'#d84a32')}
+function end(g,x,y,lit,dim){if(dim){g.save();g.globalAlpha=.55}oval(g,x,y,1.6/ZM,1.6/ZM,'#1a0e08');oval(g,x,y,1/ZM,1/ZM,lit?'#ffe0a0':'#d84a32');if(dim)g.restore()}
 /* draw: the baked map, then everything that moves: the routes, the city dots and their names */
 function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];if(ST.night){g.fillStyle='rgba(6,10,38,.6)';g.fillRect(0,0,W,H)}const sea=T('great_sea').split('').join(' ');
   g.save();g.scale(ZM,ZM);g.translate(-OX,-OY);const Z=ZM;
@@ -498,8 +508,8 @@ function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];if(ST.night){g.fillSty
     else{const sp=s.split('').join(' ');g.fillText(sp,x-hw,y);box(g,sp,x-hw,y,4.2/Z)}}
   for(const L of ST.legs){const n=Math.floor(L.dots.length*L.k);for(let i=0;i<n;i++){const[x,y]=L.dots[i];Rz(g,x-.6/Z,y-.6/Z,1.2/Z,1.2/Z,'#5a140c');Rz(g,x-.35/Z,y-.35/Z,.7/Z,.7/Z,L.k<1&&i>n-4?'#ffe0a0':'#d84a32')}}
   const show=new Set(ST.places||Object.keys(PLACES).filter(k=>PLACES[k].minor||ST.seen.has(k)));
-  for(const k of show){const p=placeOf(k),[x,y]=at(k),main=!p.minor||ST.places||ST.seen.has(k);if(p.hide||!inView(x,y,-3))continue;if(p.edge)end(g,x,y,ST.hover===k);else if(!p.cape)dot(g,x,y,ST.seen.has(k)||ST.hover===k);
-    if(!p.quiet)label(g,T(p.name),x+(p.dx||0)/Z,y+(p.dy||0)/Z,p.lab,main?(ST.hover===k?'#ffffff':'#f4e4b8'):'rgba(232,220,190,.62)',main?p.sz||4.8:4)}
+  for(const k of show){const p=placeOf(k),[x,y]=at(k),main=!p.minor||ST.places||ST.seen.has(k);if(p.hide||!inView(x,y,-3))continue;if(p.edge)end(g,x,y,ST.hover===k,p.dim);else if(!p.cape)dot(g,x,y,ST.seen.has(k)||ST.hover===k);
+    if(!p.quiet)label(g,T(p.name),x+(p.dx||0)/Z,y+(p.dy||0)/Z,p.lab,p.dim?'rgba(232,220,190,.6)':main?(ST.hover===k?'#ffffff':'#f4e4b8'):'rgba(232,220,190,.62)',main?p.sz||4.8:4)}
   if(ST.pulse){const[x,y]=at(ST.pulse),k=(t/900)%1;g.strokeStyle=`rgba(255,226,150,${.9*(1-k)})`;g.lineWidth=.6/Z;g.beginPath();g.arc(x,y,(2.4+k*6)/Z,0,6.2832);g.stroke()}
   g.restore();
   if(ST.places){g.font='bold 4.4px "Lucida Console",Monaco,monospace';g.textBaseline='middle';g.fillStyle='rgba(244,228,184,.9)';/* the hint stands in open sea, clear of the coast of Egypt */

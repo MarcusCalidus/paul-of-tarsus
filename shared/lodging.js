@@ -33,7 +33,8 @@
    half-pixel canvas, light per pixel, soft contact shadows, dithered once by the engine. Registered in shared/pwa.js for offline play.
 
    API (SHARED.lodging):
-     room(g, o)        paints the room for a 320 by 144 room. o: {kind 'flat' or 'street', hour (HOURS key), stools (left out: every
+     room(g, o)        paints the room for a 320 by 144 room. o: {kind 'flat' or 'street', hour (HOURS key), cloak (false: the peg
+                       stands bare, for the morning after Acts when Paul has taken his cloak), stools (left out: every
                        stool; false: none; an array of names from STOOLS, such as ['desk','table']: only those)}. A stool that is not
                        painted has no cut-out and no footprint either (pass the same list to props and foot); the level draws one it
                        has moved with SHARED.cast.custody.stool(g, x, y, {room}), after stoolCast(g, x, y, {hour}) for its shadow: it is
@@ -114,7 +115,7 @@ function room(g,o){if(o.kind==='garret')return garret(g);if(o.kind==='small')ret
   table(g,POS.table,h,r);
   for(const k of ST)stoolShadow(g,POS.stools[k].x,POS.stools[k].y,h);
   jar(g,POS.jar,h);
-  cloak(g,POS.peg,r);
+  if(o.cloak===false)peg(g,POS.peg);else cloak(g,POS.peg,r);
   basket(g,POS.basket,h,r);
   shadeRoom(g,kind,h,A,D);
   if(!night)patch(g,kind,h,A,D);
@@ -461,7 +462,9 @@ function cloak(g,Pg,r){const{x,y}=Pg,c='#6e4a2e',P=[x-1.4,y,x+1.4,y,x+4.4,y+2.6,
   poly(g,P);g.fillStyle=lg(g,x-6,0,x+6,0,[tint(c,-.1),tint(c,.14),tint(c,-.05),tint(c,-.3)]);g.fill();
   clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.45,x-6,y,12,26,'overlay',1);for(const[fx,a]of[[-2.6,.35],[.4,.3],[2.8,.4]])stroke(g,[x+fx*.5,y+3,x+fx,y+14,x+fx*1.1,y+25],rgba(tint(c,-.5),a),.6);
     for(const fx of[-1.6,1.4])stroke(g,[x+fx*.5,y+3,x+fx,y+14,x+fx,y+24],rgba(tint(c,.35),.3),.5)});
-  R(g,x-1,y-1.2,2,1.4,'#4a3020');R(g,x-1,y-1.2,2,.5,'#8a6440')}
+  peg(g,Pg)}
+/* the peg alone, a small square block of wood, once the cloak has been taken from it (o.cloak false: the morning after Acts) */
+function peg(g,Pg){const{x,y}=Pg;R(g,x-1,y-1.2,2,1.4,'#4a3020');R(g,x-1,y-1.2,2,.5,'#8a6440')}
 /* a basket of wicker under the bench, upright, with rolls standing in it: their tops are small squares of pale papyrus */
 function basket(g,B,h,r){const{x,y}=B,w=6,hh=7;sh(g,x+.5,y-.3,w+1,1,.5);
   for(const[dx,dh]of[[-3.4,2.2],[-1,3.2],[1.4,2.6],[3.6,1.8]]){R(g,x+dx-.9,y-hh-dh,1.8,dh+1,'#d8c89c');R(g,x+dx-.9,y-hh-dh,1.8,.8,'#f4e8c4');R(g,x+dx+.5,y-hh-dh,.4,dh+1,'rgba(90,70,40,.35)')}
