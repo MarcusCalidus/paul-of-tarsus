@@ -72,7 +72,7 @@ const HINT={journeys:H-5,'':100};
 /* VLAB: where the names stand in a view that has names of its own (as a chapter gives journey and pick its labels), unless the chapter
    gives others */
 const VLAB={journeys:{salamis:{lab:'r'},paphos:{lab:'l',dy:2},thessalonica:{lab:'l',dy:-4},corinth:{lab:'l',dy:2},athens:{lab:'r',dy:12}},
-  outward:{cnidus:{lab:'l',dx:2.2,dy:.5,sz:4},fairhavens:{lab:'b',dy:3}},crete:{salmone:{lab:'l',dy:-9},lasea:{lab:'t',dx:2},fairhavens:{lab:'r',dy:6.2},cauda:{lab:'l',dy:-1}},
+  outward:{cnidus:{lab:'l',dx:2.2,dy:.5,sz:4},fairhavens:{lab:'b',dy:3}},crete:{salmone:{lab:'l',dy:-9},lasea:{lab:'r',dy:-4.5},fairhavens:{lab:'l',dy:10},cauda:{lab:'l',dy:-1}},
   adria:{myra:{quiet:1},cnidus:{quiet:1},salmone:{quiet:1},fairhavens:{quiet:1},cauda:{lab:'l',dy:-4},alexandria:{quiet:1}},italy:{}};
 const inView=(x,y,m)=>{m/=ZM;return x>=OX-m&&x<=OX+W/ZM+m&&y>=OY-m&&y<=OY+H/ZM+m};
 /* Rz: a small square of the route, snapped to the canvas pixels of the view however close it is (R, at the usual size) */
@@ -204,13 +204,14 @@ const VIA={'caesarea-tarsus':[34.42,33.3,34.5,34.7,34.88,35.75],'tarsus-antioch'
    too small to hold a widely spaced one; north: a name shown only in the northern window and the Aegean one, where the mountains make
    room for it; west: a name shown only in the Aegean window */
 const REGIONS=[{name:'CILICIA',at:[32.7,36.72],out:['journeys']},{name:'SYRIA',at:[37.6,35.2]},{name:'CYPRUS',at:[33.2,34.35],sea:1},
-  {name:'PISIDIA',at:[29.62,37.68]},{name:'GALATIA',at:[33.6,38.75]},
+  {name:'PISIDIA',at:[29.62,37.68],out:['adria']},{name:'GALATIA',at:[33.6,38.75]},
   {name:'PAMPHYLIA',at:[32.015,37.02],close:1,north:1},
-  {name:'PHRYGIA',at:[29.6,38.9],west:1,out:['journeys']},{name:'ASIA',at:[27.75,38.8],west:1},{name:'MYSIA',at:[27.9,39.6],west:1},
-  {name:'BITHYNIA',at:[31.3,40.72],west:1},{name:'MACEDONIA',at:[22.75,41.5],west:1},{name:'ACHAIA',at:[22.2,38.62],west:1,out:['journeys']},
+  {name:'PHRYGIA',at:[29.6,38.9],west:1,out:['journeys']},{name:'ASIA',at:[27.75,38.8],west:1,out:['italy']},{name:'MYSIA',at:[27.9,39.6],west:1,out:['italy']},
+  {name:'BITHYNIA',at:[31.3,40.72],west:1},{name:'MACEDONIA',at:[22.75,41.5],west:1,out:['italy']},{name:'ACHAIA',at:[22.2,38.62],west:1,out:['journeys','italy']},
   /* Lycia, behind Patara, only in the close window of Chapter Seventeen (in: the views a name is shown in): in the wider ones the
      strip of land between the Taurus and the sea holds Pamphylia and Cilicia already. out: the views a name is not shown in (in the far
-   window of the journeys, Cilicia, Phrygia and Achaia would run into coasts, islands or each other) */
+   window of the journeys, Cilicia, Phrygia and Achaia would run into coasts, islands or each other; the windows of the voyage of Acts 27
+   and 28 leave out the names of the earlier journeys that come into their corners) */
   {name:'LYCIA',at:[29.9,36.75],in:['caria']},
   /* the west, each name only in the windows that hold its land or its sea (in). Crete on its island in its close window; on the wider
      windows it stands in the sea north of the island, and Sicily in the sea south of its own, as Cyprus does, for the islands are too
