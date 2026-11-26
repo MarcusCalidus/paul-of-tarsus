@@ -174,6 +174,7 @@ TEXTS('de',20,{
   "kosmas_well_come_after_the_rains":["Nach der Regenzeit kommen wir wieder.","16f4miq"],
   "paul_nobody_comes_in_this_weather":["Bei so einem Wetter kommt niemand. Eine gute Zeit zum Beten.","1a6kxo9"],
   "paul_spring_again_here":["Wieder Frühling. Der zweite, seit ich hier bin.","0yruck0"],
+  "paul_autumn_and_still_here":["Schon Herbst. Felix hat gesagt: ein andermal. Und ich bin immer noch hier.","0wdggbr"],
 
   /* before Felix and Drusilla */
   "drusilla_what_does_it_ask_of_a_person":["Erzähl uns von diesem Glauben an Christus Jesus. Was verlangt er von einem Menschen?","0yc57x9"],

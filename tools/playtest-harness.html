@@ -4634,7 +4634,7 @@
       const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
       q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
     G.mk20=Object.fromEntries(C.charges.map(c=>[c.k,c.ok]));
-    const S=[['court20',[]],['charges20',['courtesy']],['hall20',upto('s2')],['hall20',upto('s4')],
+    const S=[['court20',[]],['charges20',['courtesy']],['hall20',upto('pouch')],['hall20',upto('s4')],
       ...[[],upto('s2'),upto('s3'),upto('s4')].flatMap(f=>[['room20',upto('marks').concat(f)],['window20',upto('marks').concat(f)]])];
     const[c,g]=mk(320*K*2+8,Math.ceil(S.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
     S.forEach(([id,fl],i)=>pic(id,fl,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];G.mk20=null;
@@ -4642,7 +4642,7 @@
   const C20=/^(court20|charges20|room20|hall20|luke20|purse20|summer20|final20|all20)$/.test(stop);
   if(!C20&&/^p[a-z]+20$/.test(stop)){await loadLevel(20);ov.className='';ov.onclick=null;const C=CHAP[20],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
       S={pcourt20:[[],'court20'],pscroll20:[[],'court20'],pcharges20:[['courtesy'],'charges20'],proom20:[upto('marks'),'room20'],ppouch20:[upto('things'),'room20'],
-        pwindow20:[upto('pouch'),'window20'],phall20:[upto('s2'),'hall20'],pluke20:[upto('s3'),'room20'],pwinter20:[upto('luke'),'window20'],
+        pwindow20:[upto('fright'),'window20'],phall20:[upto('pouch'),'hall20'],pluke20:[upto('s3'),'room20'],pwinter20:[upto('luke'),'window20'],
         ppurse20:[upto('s4'),'hall20'],pspring20:[upto('purse'),'window20'],psummer20:[upto('s5'),'room20'],pstorks20:[upto('s8'),'window20'],pflight20:[upto('s8'),'window20']}[stop];
     if(!S)throw new Error('no such stop '+stop);setChapter(20);for(const k of S[0])F[k]=1;
     const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
@@ -4718,19 +4718,13 @@
   ok(['philip_your_pouch_from_my_house','simmias_your_cloak','kosmas_a_few_coins','paul_its_more_than_enough'].every(said)&&has('pouch20')&&has('cloak20')&&has('purse20')&&!has('awl')&&PH.room===null,
     'his pouch from Philip\'s house, his cloak, a few coins; and they go');
   await hints('hint_my_tools_1','hint_my_tools_2','with the pouch');
-  heard.length=0;verb('open');item('pouch20');await idle();ok(said('paul_my_awl_and_my_needle')&&has('awl')&&!has('pouch20')&&F.pouch,'the pouch opens to his awl');
-  await hints('hint_the_seasons_1','hint_the_seasons_2','in the first summer');
-  heard.length=0;await onH('window_over_the_harbor','look');await until(()=>G.room==='window20'&&!G.busy);
-  ok(said('paul_the_harbor_from_my_window')&&C().kind()==='su','the window over the harbor, in summer');
-  heard.length=0;await onH('harbor_of_sebastos','look');ok(said('harbor_in_summer_look'),'the harbor full of ships');
-  heard.length=0;await onH('sky_over_the_harbor','look');ok(said('sky_over_the_harbor_look')&&!treasures().has(20),'no storks in the first summer');
-  heard.length=0;await onH('breakwater','look');ok(said('breakwater_look'),'the breakwater');
-  /* the first autumn: Felix and Drusilla */
-  await scratch(2,'window');
-  ok(said('paul_a_mark_for_each_season')&&heard.includes(T('autumn_came'))&&said('soldier_the_governor_sends_for_you')&&G.room==='hall20'&&FX.seat&&DR.seat&&DR.room==='hall20'&&P.chained&&SO.keeper,
-    'a mark on the sill, and autumn comes; the governor sends for him; the hall, with Drusilla; the chain again');
-  ok(seenTold.has('v24')&&said('drusilla_what_does_it_ask_of_a_person')&&ART.hall20.variant()==='d','Drusilla asks what the belief in Christ Jesus asks of a person (Acts 24:24)');
-  await code('before Felix and Drusilla',()=>G.room==='hall20'&&F.s2&&!F.fright&&DR.room==='hall20'&&P.chained);
+  heard.length=0;verb('open');item('pouch20');await until(()=>G.room==='hall20'&&!G.busy,9000);note();
+  ok(said('paul_my_awl_and_my_needle')&&has('awl')&&!has('pouch20')&&F.pouch,'the pouch opens to his awl');
+  /* the first summer, a few days after the hearing: Felix and Drusilla */
+  ok(said('soldier_the_governor_sends_for_you')&&G.room==='hall20'&&FX.seat&&DR.seat&&DR.room==='hall20'&&P.chained&&SO.keeper&&C().season()===1&&!F.s2,
+    'in the same summer the governor sends for him; the hall, with Drusilla; the chain again');
+  ok(seenTold.has('v24')&&said('drusilla_what_does_it_ask_of_a_person')&&ART.hall20.variant()==='d','a few days later: Drusilla asks what the belief in Christ Jesus asks of a person (Acts 24:24)');
+  await code('before Felix and Drusilla',()=>G.room==='hall20'&&F.pouch&&!F.fright&&!F.s2&&DR.room==='hall20'&&P.chained);
   halt('hall20');
   await hints('hint_what_it_asks_1','hint_what_it_asks_2','before Felix and Drusilla');
   heard.length=0;talkTo(FX);{const o=await asked();ok(o.length===7&&o.at(-1)==='paul_let_me_think_first','six true things to speak of')}
@@ -4740,7 +4734,17 @@
   heard.length=0;talkTo(FX);await pick('subject_righteousness');ok(said('paul_ive_said_that_already'),'said already: it stays on offer');
   heard.length=0;talkTo(FX);await pick('subject_the_judgment_to_come');ok(F.jd&&!F.fright,'the judgment to come');
   heard.length=0;talkTo(FX);pick('subject_self_control');await until(()=>F.fright&&G.room==='room20'&&!G.busy,9000);note();
-  ok(said('paul_on_self_control')&&seenTold.has('v25')&&said('felix_some_other_time')&&!P.chained,'self-control: Felix becomes frightened and sends him away, some other time (Acts 24:25)');
+  ok(said('paul_on_self_control')&&seenTold.has('v25')&&said('felix_some_other_time')&&!P.chained&&C().season()===1,'self-control: Felix becomes frightened and sends him away, some other time (Acts 24:25)');
+  await hints('hint_the_seasons_1','hint_the_seasons_2','in the first summer');
+  heard.length=0;await onH('window_over_the_harbor','look');await until(()=>G.room==='window20'&&!G.busy);
+  ok(said('paul_the_harbor_from_my_window')&&C().kind()==='su','the window over the harbor, in summer');
+  heard.length=0;await onH('harbor_of_sebastos','look');ok(said('harbor_in_summer_look'),'the harbor full of ships');
+  heard.length=0;await onH('sky_over_the_harbor','look');ok(said('sky_over_the_harbor_look')&&!treasures().has(20),'no storks in the first summer');
+  heard.length=0;await onH('breakwater','look');ok(said('breakwater_look'),'the breakwater');
+  /* the first autumn: nothing is owed */
+  await scratch(2,'window');
+  ok(said('paul_a_mark_for_each_season')&&heard.includes(T('autumn_came'))&&said('paul_autumn_and_still_here')&&G.room==='room20'&&!P.chained&&!said('soldier_the_governor_sends_for_you')&&!C().owed(),
+    'a mark on the sill, and autumn comes; nobody sends for him, and he is still here');
   /* the first winter: Luke's questions */
   await scratch(3);
   ok(heard.includes(T('winter_came'))&&LK.room==='room20'&&said('luke_ive_come_with_questions')&&ART.room20.variant()==='wi','winter; Luke comes with questions');

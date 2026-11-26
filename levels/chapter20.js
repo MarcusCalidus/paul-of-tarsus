@@ -41,9 +41,10 @@
    3. Two years at a window (room20 and the close view window20). The harbor is the calendar: eight seasons, from the first summer to the
       second spring. Paul scratches a mark on the sill with his awl (Use awl with sill, or with the window), and the mark moves the season
       on, but only when nothing is owed (owed20, after Chapter Twelve's turn): in the first summer his people are there (and his awl is in
-      the pouch they bring); in the first winter Luke waits for his answers. The autumn and the spring of the first year begin with Felix
-      sending for him, and he is brought back when the talk is over. The second spring's mark ends the chapter (24:27).
-   4. Not what he wants to hear (hall20, the first autumn). Drusilla asks what the belief in Christ Jesus asks of a person. Paul may speak
+      the pouch they bring), and when he has opened it Felix sends for him, a few days after the hearing (24:24); in the first winter
+      Luke waits for his answers. The spring of the first year begins with Felix sending for him again; each time he is brought back
+      when the talk is over. In the first autumn nothing is owed. The second spring's mark ends the chapter (24:27).
+   4. Not what he wants to hear (hall20, the first summer). Drusilla asks what the belief in Christ Jesus asks of a person. Paul may speak
       of six things, all true. Three tell what the belief gives or what has come of it (the hope of the resurrection, the Messiah of the
       Prophets, the congregations from Jerusalem to Macedonia): Felix hears them politely, and nothing changes. Three tell what it asks:
       righteousness, self-control, the judgment to come. When he has spoken of all three, in any order, the narrator tells that Felix
@@ -60,7 +61,7 @@
    over the harbor. It changes nothing.
 
    Rooms: the court of the palace by morning (court20, shared/caesarea.js), Paul's room (room20: four season variants), the window over
-   the harbor (window20, a close view: four season variants), the inner hall (hall20: with Drusilla in the first autumn, without her in
+   the harbor (window20, a close view: four season variants), the inner hall (hall20: with Drusilla in the first summer, without her in
    the first spring), and Paul's tablet with the charges (charges20, a close view).
    Each picture is a section of its own between "ART <room>: begin" and "ART <room>: end"; what the story reads from a section is named at
    its head. The court, Paul's room, the window view and the inner hall are painted by shared/caesarea.js, which Chapter Twenty-One shares. */
@@ -190,16 +191,16 @@ const marks20=()=>season20()-1+(G.end20?1:0);
    geometry (SHARED.caesarea.IH), as Chapter Twenty-One's audience chamber, here private and nearly empty. A tall room in the court's pale
    limestone, its plaster painted in panels of imitation stone, two long, low windows high in the back wall (above every head), the
    doorway to the passage at the left, a floor of pale flags; at the right a dais of white stone, a deep upper step and a lower one, with
-   the governor's chair on it and, in the first autumn, a second chair beside it for Drusilla. Calm afternoon light from the high windows:
+   the governor's chair on it and, in the first summer, a second chair beside it for Drusilla. Calm afternoon light from the high windows:
    their patches of sun lie on the floor in the walk strip, and the figures' shadows fall the same way, to the right and toward us
    (SHARED.caesarea.hallLight('afternoon')). Nothing stands in the walk strip.
-   Variants: 'd' (Drusilla's chair, the first autumn) and '' (the first spring).
+   Variants: 'd' (Drusilla's chair, the first summer, until Felix is frightened) and '' (the first spring).
    Called from outside: ART.hall20, HALL20. Draws the chain while Paul is chained.
    Hotspots: high windows 58,12,144,19 · doorway 4,46,22,50. Walk: 24..300 by 116..138; a single spot (190,124) while Paul is chained.
    Actors: Felix seated at 222,102 and Drusilla at 248,102, facing left (seat tops 93); Paul 190,124 facing them, the soldier 172,123.5
    chained to his near wrist. */
 const HALL20={felix:[CS.IH.chairs[0],CS.IH.chair.foot,-1],drusilla:[CS.IH.chairs[1],CS.IH.chair.foot,-1]};
-ART.hall20={w:320,q:12,variant:()=>F.s3?'':'d',paint(g,v){CS.innerHall(g,{hour:'afternoon',chairs:v==='d'?2:1})},light:CS.hallLight('afternoon'),
+ART.hall20={w:320,q:12,variant:()=>F.fright?'':'d',paint(g,v){CS.innerHall(g,{hour:'afternoon',chairs:v==='d'?2:1})},light:CS.hallLight('afternoon'),
   draw(g){if(P.chained&&P.room==='hall20')SHARED.cast.custody.chains(g,P,SO,null)},front(){}};
 /* ==== ART hall20: end ==== */
 
@@ -358,14 +359,17 @@ const ROUND20=[{f:'f1',felix:'felix_you_have_friends_here',paul:['paul_they_are_
   {f:'purse',felix:'felix_friends_like_that_could_end_this',paul:['paul_i_can_wait','paul_my_case_is_in_your_hands']}];
 /* the seasons: what the narrator says as each begins */
 const SEASON20={2:'autumn_came',3:'winter_came',4:'spring_came',5:'summer_came_again',6:'another_autumn',7:'another_winter',8:'a_second_spring'};
-const FLAGS=['courtesy','marks','things','pouch','s2','rt','sc','jd','fright','s3','q1','q2','q3','q4','q5','luke','s4','f1','f2','purse','s5','s6','s7','s8'];
+const FLAGS=['courtesy','marks','things','pouch','rt','sc','jd','fright','s2','s3','q1','q2','q3','q4','q5','luke','s4','f1','f2','purse','s5','s6','s7','s8'];
 
 /* ============ HELPERS ============ */
 /* phase20: court (the hearing, 24:1-23) or the two years (room, 24:23-27) */
 const phase20=()=>!F.marks?'court':'years';
 /* owed20: what must happen before the season may turn (null: nothing) */
-const owed20=()=>{const n=season20();return n===1&&!F.things?'visitors':n===2&&!F.fright||n===4&&!F.purse?'felix':n===3&&!F.luke?'luke':null};
-function show20(room,x,y,dir){place20(room);const e=ENT[room];enterRoom(room,x!=null?x:e[0],y!=null?y:e[1],dir||e[2]);codeBtn()}
+const owed20=()=>{const n=season20();return n===1&&!F.things?'visitors':n===1&&!F.fright||n===4&&!F.purse?'felix':n===3&&!F.luke?'luke':null};
+/* show20: the room, and its safe point; but the room is no safe point while the governor has sent for him (the soldier is on his way:
+   the next safe point is in the hall) */
+function show20(room,x,y,dir){place20(room);const e=ENT[room];enterRoom(room,x!=null?x:e[0],y!=null?y:e[1],dir||e[2]);
+  if(!(room==='room20'&&F.pouch&&owed20()==='felix'))codeBtn()}
 async function goto20(room,x,y,dir){await fade(1,300);show20(room,x,y,dir);await fade(0,300)}
 const tw=ms=>wait(fast()?Math.min(40,ms):ms);
 async function go20(a,x,y,sp){a.free=1;a.speed=fast()?400:sp||0;await walk(a,x,y);a.speed=0;a.free=false}
@@ -418,7 +422,16 @@ async function things20(){if(F.things)return;
   await say(P,'paul_its_more_than_enough',{to:KO});await say(PH,'philip_well_come_again',{to:P});
   await Promise.all([go20(PH,DOORIN20[0],DOORIN20[1],50),go20(SI,DOORIN20[0],DOORIN20[1]+4,50),go20(KO,DOORIN20[0],DOORIN20[1]-2,50)]);
   for(const a of[PH,SI,KO])a.room=null;F.things=1;codeBtn()}
-async function openPouch20(){await say(P,'paul_my_awl_and_my_needle',TH);delItem('pouch20');addItem('awl');F.pouch=1;codeBtn()}
+/* when he has opened it, the soldier comes for him: a few days after the hearing Felix sends for him, with Drusilla (24:24) */
+async function openPouch20(){await say(P,'paul_my_awl_and_my_needle',TH);delItem('pouch20');addItem('awl');F.pouch=1;
+  if(G.room!=='room20')await goto20('room20');return fetch20(1)}
+/* fetch20: the soldier comes to the door and takes him to the hall; n is the season (1: Felix and Drusilla, 4: the purse, 5: told only) */
+async function fetch20(n){SO.room='room20';place(SO,'room20',DOORIN20[0],DOORIN20[1],-1);await go20(SO,248,122,50);SO.dir=-1;P.dir=1;
+  await say(SO,n===5?'soldier_the_governor_wants_you_again':'soldier_the_governor_sends_for_you',{to:P});
+  if(n===5){await fade(1,500);show20('room20');await fade(0,600);await say(P,'paul_another_talk_with_felix',TH);return codeBtn()}
+  await fade(1,500);show20('hall20');await fade(0,600);AU.mood='hall';
+  if(n===1){await tell('v24');await say(DR,'drusilla_what_does_it_ask_of_a_person',{to:P});return codeBtn()}
+  return round20()}
 
 /* ---- the mark on the sill ---- */
 async function mark20(){const o=owed20();
@@ -429,12 +442,7 @@ async function mark20(){const o=owed20();
   return turn20(n+1)}
 /* turn20: the next season begins; the narrator says so, and whatever the season brings happens */
 async function turn20(n){await fade(1,500);F['s'+n]=1;show20('room20');await narr(SEASON20[n],{dur:4800});await fade(0,600);
-  if(n===2||n===4||n===5){SO.room='room20';place(SO,'room20',DOORIN20[0],DOORIN20[1],-1);await go20(SO,248,122,50);SO.dir=-1;P.dir=1;
-    await say(SO,n===5?'soldier_the_governor_wants_you_again':'soldier_the_governor_sends_for_you',{to:P});
-    if(n===5){await fade(1,500);show20('room20');await fade(0,600);await say(P,'paul_another_talk_with_felix',TH);return codeBtn()}
-    await fade(1,500);show20('hall20');await fade(0,600);AU.mood='hall';
-    if(n===2){await tell('v24');await say(DR,'drusilla_what_does_it_ask_of_a_person',{to:P});return codeBtn()}
-    return round20()}
+  if(n===4||n===5)return fetch20(n);
   if(n===3){place(LK,'room20',DOORIN20[0],DOORIN20[1],-1);await go20(LK,212,124,50);LK.dir=-1;P.dir=1;
     await say(LK,'luke_ive_come_with_questions',{to:P});await say(P,'paul_ask_whatever_you_like',{to:LK});return codeBtn()}
   if(n===6){place(SI,'room20',DOORIN20[0],DOORIN20[1],-1);place(KO,'room20',DOORIN20[0],DOORIN20[1]+6,-1);
@@ -442,7 +450,7 @@ async function turn20(n){await fade(1,500);F['s'+n]=1;show20('room20');await nar
     await say(SI,'simmias_the_brothers_greet_you',{to:P});await say(P,'paul_greet_them_all_for_me',{to:SI});
     await say(KO,'kosmas_well_come_after_the_rains',{to:P});
     await Promise.all([go20(SI,DOORIN20[0],DOORIN20[1],50),go20(KO,DOORIN20[0],DOORIN20[1]+4,50)]);SI.room=KO.room=null;return codeBtn()}
-  await say(P,n===7?'paul_nobody_comes_in_this_weather':'paul_spring_again_here',TH);codeBtn()}
+  await say(P,n===2?'paul_autumn_and_still_here':n===7?'paul_nobody_comes_in_this_weather':'paul_spring_again_here',TH);codeBtn()}
 
 /* ---- not what he wants to hear (24:24, 25) ---- */
 async function subject20(){if(F.fright)return say(FX,'felix_some_other_time',{to:P});
@@ -521,7 +529,7 @@ ROOMS.charges20={space:.8,walk:NOW,mood:'court',amb:AMB.charges20,hs:[
 const who=(a,o)=>{a.hs=Object.assign({name:a.name,actor:a},o)};
 const inRoom=r=>G.room===r;
 who(FX,{look:()=>say(P,inRoom('court20')?'felix20_look':'felix_in_the_hall_look'),give:bribe20,
-  talk:()=>inRoom('court20')?(F.marks?null:courtesy20()):!F.s3?subject20():!F.purse?round20():say(FX,'felix_thats_enough_for_today',{to:P})});
+  talk:()=>inRoom('court20')?(F.marks?null:courtesy20()):!F.fright?subject20():!F.purse?round20():say(FX,'felix_thats_enough_for_today',{to:P})});
 who(DR,{look:'drusilla_look',give:bribe20,talk:()=>subject20()});
 who(TT,{look:'tertullus_look',give:bribe20,talk:()=>say(P,'paul_i_answer_to_the_governor',TH)});
 who(AN,{look:'ananias20_look',give:bribe20,talk:()=>say(P,'paul_i_answer_to_the_governor',TH)});
@@ -543,11 +551,11 @@ Object.assign(ITEMS,{
 /* ============ WAX TABLETS ============ */
 const TABLETS={
   people:[{name:'Felix',note:'note20_felix'},{name:'Tertullus',note:'note20_tertullus',if:()=>!F.marks},{name:'high_priest_ananias',note:'note20_ananias',if:()=>!F.marks},
-    {name:'Drusilla',note:'note20_drusilla',if:()=>!!F.s2},{name:'Philip',note:'note20_philip',if:()=>!!F.things},{name:'Simmias',note:'note20_simmias',if:()=>!!F.things},
+    {name:'Drusilla',note:'note20_drusilla',if:()=>!!F.pouch},{name:'Philip',note:'note20_philip',if:()=>!!F.things},{name:'Simmias',note:'note20_simmias',if:()=>!!F.things},
     {name:'Kosmas',note:'note20_kosmas',if:()=>!!F.things},{name:'Luke',note:'note20_luke',if:()=>!!F.s3}],
   tasks:[{t:'task20_answer_the_governor',if:()=>!F.courtesy},{t:'task20_answer_the_charges',if:()=>!!F.courtesy&&!F.marks},
     {t:'task20_my_visitors',if:()=>!!F.marks&&!F.things},{t:'task20_open_my_pouch',if:()=>!!F.things&&!F.pouch},
-    {t:'task20_before_felix',if:()=>owed20()==='felix'},{t:'task20_lukes_questions',if:()=>owed20()==='luke'},
+    {t:'task20_before_felix',if:()=>owed20()==='felix'&&!!F.pouch},{t:'task20_lukes_questions',if:()=>owed20()==='luke'},
     {t:'task20_count_the_seasons',if:()=>!!F.pouch&&!owed20()}],
   scripture:[],
   notes:{title:()=>!F.marks?'noted_at_the_hearing':'noted_in_custody',none:'nothing_written_yet',
@@ -562,7 +570,7 @@ function place20(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   if(phase20()==='court'){pl(FX,'court20',A.governor);FX.seat=1;pl(CK,'court20',A.scribe);CK.seat=1;
     pl(TT,'court20',A.accusers[0]);pl(AN,'court20',A.accusers[1]);pl(EL1,'court20',A.accusers[2]);pl(EL2,'court20',A.accusers[3]);pl(OF,'court20',A.officer);
     place(SO,'court20',ENT.court20[0]-18,ENT.court20[1]-.5,1);SO.keeper='far';if(room==='court20'){P.chained=1;P.chainTo=SO}}
-  else if(room==='hall20'){pl(FX,'hall20',HALL20.felix);FX.seat=1;if(!F.s3){pl(DR,'hall20',HALL20.drusilla);DR.seat=1}
+  else if(room==='hall20'){pl(FX,'hall20',HALL20.felix);FX.seat=1;if(!F.fright){pl(DR,'hall20',HALL20.drusilla);DR.seat=1}
     place(SO,'hall20',ENT.hall20[0]-18,ENT.hall20[1]-.5,1);SO.keeper='far';P.chained=1;P.chainTo=SO}
   else{if(n===1&&!F.things){pl(PH,'room20',[210,122,-1]);pl(SI,'room20',[236,128,-1]);pl(KO,'room20',[258,120,-1])}
     if(n===3&&!F.luke)pl(LK,'room20',[212,124,-1])}}
@@ -574,7 +582,7 @@ function hint20(){if(phase20()==='court'){if(!F.courtesy)return['first20',['hint
   const o=owed20();
   if(o==='visitors')return['people20',['hint_my_people_1','hint_my_people_2']];
   if(!F.pouch)return['pouch20',['hint_my_tools_1','hint_my_tools_2']];
-  if(o==='felix')return season20()===2?['asks20',['hint_what_it_asks_1','hint_what_it_asks_2']]:['purse20',['hint_felix_talks_round_it_1','hint_felix_talks_round_it_2']];
+  if(o==='felix')return!F.fright?['asks20',['hint_what_it_asks_1','hint_what_it_asks_2']]:['purse20',['hint_felix_talks_round_it_1','hint_felix_talks_round_it_2']];
   if(o==='luke')return['luke20',['hint_lukes_questions_1','hint_lukes_questions_2']];
   return['seasons20',['hint_the_seasons_1','hint_the_seasons_2']]}
 

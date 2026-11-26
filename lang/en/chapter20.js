@@ -170,6 +170,7 @@ TEXTS('en',20,{
   "kosmas_well_come_after_the_rains":"We'll come again after the rains.",
   "paul_nobody_comes_in_this_weather":"Nobody comes in weather like this. A good time to pray.",
   "paul_spring_again_here":"Spring again. The second since I came here.",
+  "paul_autumn_and_still_here":"Autumn already. Felix said some other time, and I'm still here.",
 
   /* before Felix and Drusilla */
   "drusilla_what_does_it_ask_of_a_person":"Tell us about this belief in Christ Jesus. What does it ask of a person?",
