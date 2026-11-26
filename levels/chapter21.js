@@ -534,7 +534,7 @@ CL.noPray=1;CL.thought=TC;
 const THP={thought:1,color:'#cfe2ff'};  /* Paul's */
 const mk21=()=>G.mk21||(G.mk21={});
 const markOf21=k=>F.report?mk21()[k]||REPORT21.find(c=>c.k===k).ok:mk21()[k];
-const marked21=c=>{const m=mk21()[c.k];return m===c.ok||m===c.also};
+const marked21=c=>{const m=mk21()[c.k];return!!m&&(m===c.ok||m===c.also)};
 /* the chain: one light chain on one of Paul's wrists, to the one soldier beside him (shared/cast.js, custody 'one') */
 /* In the court the soldier stands a step behind Paul on his left, so the near wrist is the chained one. In the hall he stands a step ahead of
    him on his right, between him and the dais, so the far wrist is: when Paul raises that hand (26:29), bent, the chain goes up with it and
