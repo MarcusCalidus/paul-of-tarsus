@@ -63,12 +63,12 @@ const POS={
   bed:{x0:8,x1:64,top:90,foot:103},
   benches:[{x0:72,x1:148,top:93,foot:102},{x0:158,x1:226,top:93,foot:102}],
   table:{x0:106,x1:160,top:101,back:95,foot:118,bfoot:112},
-  stools:{desk:{x:98,y:121},table:{x:170,y:121},door:{x:238,y:114}},
+  stools:{desk:{x:94,y:121},table:{x:170,y:121},door:{x:238,y:114}},
   jar:{x0:304,x1:314,top:78,foot:103},
   peg:{x:166,y:52},                               /* a peg in the wall, a cloak hanging from it */
   basket:{x:86,y:102},
   shelf:{x0:14,x1:56,top:34,b:44}};               /* a long low recess in the wall above the bed, with a jug, a bowl and folded linen */                          /* a basket of rolls under the bench */
-const AT={door:[266,108,-1],seats:{door:[238,114],table:[170,121],window:[138,102]},desk:[98,121,1],stand:{paul:[198,124,1],visitor:[246,118,-1]}};
+const AT={door:[266,108,-1],seats:{door:[238,114],table:[170,121],window:[138,102]},desk:[94,121,1],stand:{paul:[198,124,1],visitor:[246,118,-1]}};
 const KINDS=['flat','street'];
 /* the hours: the sky of shared/coast.js, where the sun stands for it (room pixels, outside the picture), the figures' shadow tip, the
    room's light handed to the figures, and a tone laid over the room; lane: how far the shade of the houses across the square reaches
@@ -388,15 +388,16 @@ function table(g,T,h,r){const M=SHARED.materials,W='#7a5838',lit='#a47a50',ap=2.
   clipTo(g,()=>poly(g,top),()=>{tex(g,'wood',.3,f0,T.back,f1-f0,T.top-T.back,'overlay',.5);for(let i=0;i<14;i++){const y=T.back+r()*(T.top-T.back);R(g,f0+r()*(f1-f0-8),y,4+r()*10,.5,r()<.5?tint(W,-.1):tint(W,.3))}});
   M.board(g,f0,T.top,f1-f0,ap,W,r);R(g,f0,T.top,f1-f0,.5,lit);ao(g,f0,T.top+ap,f1-f0,3,'t',.35,'#1a1210');
   for(const x of[f0+.4,f1-2.6]){R(g,x,T.top+ap,2.2,ft-T.top-ap,tint(W,-.12));R(g,x,T.top+ap,.5,ft-T.top-ap,'rgba(255,220,170,.22)');R(g,x,ft-.5,2.2,.5,'#24160c');sh(g,x+1.1,ft,1.4,.5,.4)}
-  /* the papyrus: a sheet with its fibers running across, a little turned, a few lines written on its upper part */
-  const sx=f0+12,sy=T.back+1,S=[sx+.6,sy,sx+15,sy-.2,sx+15.8,T.top-1.2,sx,T.top-1];poly(g,S,'#e6d6a8');
+  /* the papyrus: a sheet with its fibers running across, a little turned, a few lines written on its upper part; at the table's left
+     end, where the writing hand of one seated on the desk stool lies on it */
+  const sx=f0+2,sy=T.back+1,S=[sx+.6,sy,sx+15,sy-.2,sx+15.8,T.top-1.2,sx,T.top-1];poly(g,S,'#e6d6a8');
   clipTo(g,()=>poly(g,S),()=>{for(let y=sy;y<T.top;y+=.5)R(g,sx-1,y,18,.5,(y*2|0)%2?'rgba(170,140,80,.18)':'rgba(255,248,220,.15)');
     for(let k=0;k<3;k++){let x=sx+2;const y=sy+1+k*1.3;while(x<sx+13-k*2){const l=1+r()*2.4;R(g,x,y,l,.5,'rgba(40,30,30,.55)');x+=l+.8}}});
   R(g,sx,T.top-1.2,15.8,.4,'rgba(80,60,40,.35)');
-  /* the reed pen, lying slanted beside the sheet, its cut point toward the sheet */
-  stroke(g,[sx+18,T.top-1.4,sx+27,sy+.6],'#b49a5a',.6);R(g,sx+17.6,T.top-1.6,.6,.6,'#2a2014');
-  /* the inkwell: squat, round in its body, its top flat with a small square hole */
-  const ix=f1-12,iy=T.top-2.2;poly(g,[ix-2.4,iy+1.6,ix-2.6,iy,ix-2,iy-1.2,ix+2,iy-1.2,ix+2.6,iy,ix+2.4,iy+1.6],'#6a3c26');
+  /* the reed pen, lying slanted beyond the inkwell, its cut point toward the sheet */
+  stroke(g,[sx+24.6,T.top-1.4,sx+32.6,sy+.6],'#b49a5a',.6);R(g,sx+24.2,T.top-1.6,.6,.6,'#2a2014');
+  /* the inkwell: squat, round in its body, its top flat with a small square hole; beside the sheet, in reach of the writing hand */
+  const ix=sx+19.4,iy=T.top-2.2;poly(g,[ix-2.4,iy+1.6,ix-2.6,iy,ix-2,iy-1.2,ix+2,iy-1.2,ix+2.6,iy,ix+2.4,iy+1.6],'#6a3c26');
   R(g,ix-2,iy-1.6,4,.8,'#8a5434');R(g,ix-.5,iy-1.6,1,.5,'#120a08');R(g,ix-2.4,iy-.2,1,1.2,'rgba(255,210,170,.3)');sh(g,ix+.6,iy+1.6,3,.6,.4)}
 /* a stool: a small square seat on four legs at its corners, as high as a seated man's hips (9 room pixels: SEATG). It is the stool that
    SHARED.cast.custody.stool draws for one the level moves, line for line: the same size, the same plain wood, and the same light, the
