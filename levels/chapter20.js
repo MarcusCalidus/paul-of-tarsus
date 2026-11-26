@@ -275,7 +275,7 @@ function paintCharges20(g){const r=rng(2031),q=rng(2032),{x,y,w,h}=TAB20;
 /* the mantle behind the tablet: brown wool out of focus, broad soft folds running from the upper left down to the lower right, each a
    lit ridge beside a shaded hollow; no crease meets another */
 function wool20(g,r){const C='#5e4029',k=.62;g.fillStyle=lg(g,0,0,320,144,[tint(C,.12),C,tint(C,-.16)]);g.fillRect(0,0,320,144);
-  for(let i=0;i<7;i++){const x0=-110+i*66+r()*16,wd=30+r()*16,ux=1/Math.hypot(1,k),uy=-k*ux;
+  for(let i=0;i<7;i++){const x0=-110+i*66+r()*16,wd=30+r()*16,ux=Math.cos(Math.atan(k)),uy=-k*ux;
     poly(g,[x0,0,x0+wd,0,x0+wd+144*k,144,x0+144*k,144]);
     g.fillStyle=lg(g,x0,0,x0+wd*ux*ux,wd*ux*uy,['rgba(30,18,10,0)','rgba(30,18,10,.2)','rgba(170,130,92,.14)','rgba(30,18,10,0)']);g.fill()}
   tex(g,'mott',.24,0,0,320,144,'overlay',.6)}

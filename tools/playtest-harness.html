@@ -463,6 +463,51 @@
     {const y=36+chh+2*(64*Z+30)+10,sp=at('sheet2',P18,1,'c',1,0),sq=at('sheet0',P18,1,'c',0,0);g.drawImage(sq,FIG.OX-20,FIG.OY-52,40,14,10,y,400,140);g.drawImage(sp,FIG.OX+8,FIG.OY-74,16,14,430,y,160,140);text('the cuffs, and the raised hand, ten times',10,y+170,12,'#f4f0e6')}
     for(const[a,r]of keep)a.room=r;
     halt('chained18',()=>{window.SHEETS=Object.assign(window.SHEETS||{},{'cast-chained':c.toDataURL()})})}
+  /* One chain on one wrist (Acts 24-26, for Chapters Twenty and Twenty-One): a prisoner chained to one keeper (a.chainTo) wears a cuff on
+     the wrist on the keeper's side only, the near one when the keeper stands behind him (pz 'n') and the far one when he stands ahead
+     (pz 'f'), so that it is the same hand whichever way he turns; the free far hand may be raised or half raised, and a chained far hand
+     may be raised with its cuff (ges 1), the chain following it. For every look and every Roman look, facing both ways, standing, raised
+     and walking: each is one piece, and each cuff is where cuffAt says (a soldier whose far hand holds a spear is never chained by it). Chapter Eighteen's two chains are not touched ('c' without
+     chainTo). cast-chained20.png shows Paul's poses three times enlarged, Paul and the soldier in the court and the hall of Chapter
+     Twenty four times, and the wrists and the chains ten times: look there for a chain that crosses a limb or a level line as a T or an X,
+     and an arm spread or raised to the side (CONTRIBUTING section 3). */
+  if(stop==='chained20'){clearInterval(sk);sk=0;await loadLevel(20);setChapter(20);await need('cast');
+    const C=SHARED.cast,CU=C.custody,R=C.ROMAN,looks=[...Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'&&!LOOK[k].stone).map(k=>[k,LOOK[k]]),...Object.entries(R).map(([k,o])=>['R.'+k,o])],
+      PZ=[['n',0,0],['n',1,0],['n',2,0],['n',0,8],['n',0,14],['n',0,40],['f',0,0],['f',1,0],['f',0,8],['f',0,14],['f',0,40]],bad=[],off=[],one=[];let n=0;
+    const at=(id,o,d,pz,ges,fr)=>sprite(['chain1',id,d,pz,ges,fr].join('|'),q=>person(q,0,0,o,d,fr,0,0,ges,0,0,pz),d);
+    for(const[id,o]of looks)for(const d of[1,-1])for(const[pz,ges,fr]of PZ){n++;const c=at(id,o,d,pz,ges,fr);if(parts(c)!==1)bad.push(id+' '+pz+ges+'/'+fr+(d<0?' left':''));
+      if(d>0&&fr===0&&!(pz==='f'&&(o.spear||o.pilum))){const k=cuffAt(o,pz,ges,fr),D=c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data;if(!!k.far===!!k.near)one.push(id+' '+pz+ges);
+        for(const w of['far','near']){const p=k[w];if(!p)continue;const i=((FIG.OY+p[1])*FIG.W+FIG.OX+p[0])*4,[r,g,b,a]=[D[i],D[i+1],D[i+2],D[i+3]];if(!a||Math.max(r,g,b)-Math.min(r,g,b)>30)off.push(id+' '+pz+ges+' '+w)}}}
+    ok(!bad.length,`one wrist: ${n} poses of ${looks.length} looks (by the near wrist with the free hand down, raised and half raised; by the far wrist, down and raised; walking), facing both ways, and none comes apart`+(bad.length?'. IN PIECES: '+bad.slice(0,12).join('; '):''));
+    ok(!off.length&&!one.length,'one wrist: one cuff only, of iron, where cuffAt says a chain is fastened'+(off.length?'. NOT: '+off.slice(0,10).join('; '):'')+(one.length?'. NOT ONE: '+one.slice(0,10).join('; '):''));
+    const P=ACT.paul,SO=ACT.soldier20,P20=paulLook(20),keep=Object.values(ACT).map(a=>[a,a.room,a.x,a.y,a.dir]);
+    {const f=()=>JSON.stringify([poseOf(P),poseOf(SO),!!still(P),!!still(SO)]);for(const a of Object.values(ACT))a.room=null;P.room='hall20';P.look=P20;P.x=190;P.y=124;P.walk=null;
+      P.dir=1;CU.place('one',P,SO,null);const a1=f(),g1=Math.hypot(...[0,1].map(i=>CU.cuffPt(P,'near')[i]-CU.cuffPt(SO,'far')[i]));
+      P.dir=-1;const a2=f(),g2=Math.hypot(...[0,1].map(i=>CU.cuffPt(P,'far')[i]-CU.cuffPt(SO,'far')[i]));
+      ok(a1===JSON.stringify(['n','k',false,true])&&a2===JSON.stringify(['f','k',false,true])&&SO.x<P.x&&SO.dir===1&&P.chainTo===SO&&g1>=1&&g1<=6&&g2>=.5&&g2<=6,
+        'one chain, the soldier behind: Paul chained by his near wrist, and by his far one when he turns to him (the same hand), the soldier by his far wrist; the chain is short ('+g1.toFixed(1)+', '+g2.toFixed(1)+' px) '+a1+' '+a2);
+      P.dir=1;CU.place('one',P,null,SO);const a3=f();ok(a3===JSON.stringify(['f','K',false,true])&&SO.x>P.x,'one chain, the soldier ahead: Paul chained by his far wrist, which may be raised with its chain; the soldier by his near one '+a3);
+      P.chainTo=0;const a4=poseOf(P);ok(a4==='c','without a keeper named, chained is still the two cuffs of Chapter Eighteen ('+a4+')')}
+    {P.chained=1;P.chainTo=SO;setChapter(20);ok(!P.chained&&!P.chainTo,'a new chapter clears the one chain too')}
+    /* the sheet */
+    const Z=3,cw=150,chh=330,SH=[];const[c,g]=(()=>{const c=document.createElement('canvas');c.width=12*cw;c.height=36+chh+(64*4+30)+2*(24*10+30)+20;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);return[c,g]})(),
+      text=(t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},
+      ROW=[['near wrist',1,'n',0,0],['near, left',-1,'n',0,0],['free hand up',1,'n',1,0],['half raised',1,'n',2,0],['near, walking',1,'n',0,8],['walking on',1,'n',0,14],
+        ['far wrist',1,'f',0,0],['far, left',-1,'f',0,0],['far hand up',1,'f',1,0],['up, left',-1,'f',1,0],['far, walking',1,'f',0,8],['half step',1,'f',0,40]];
+    text('One chain on one wrist (Acts 24-26): by the near wrist or the far one, standing, the hand raised, walking; three times enlarged. Below, Chapter Twenty four times; the wrists ten times',10,24,16,'#f4f0e6');
+    ROW.forEach(([nm,d,pz,ges,fr],i)=>{const x=i*cw,y=36;g.fillStyle=i%2?'#c9c2b2':'#b9c2cc';g.fillRect(x+1,y+1,cw-2,chh-2);
+      g.drawImage(at('sheet20'+i,P20,d,pz,ges,fr),FIG.OX-25,FIG.OY-104,50,106,x,y+8,50*Z,106*Z);text(nm,x+5,y+chh-6,11)});
+    const shot=(room,nm,fn)=>{for(const a of Object.values(ACT))a.room=null;P.room=room;G.room=room;P.walk=null;P.fr=0;P.ges=0;fn();
+      const k=document.createElement('canvas');k.width=VW*HR;k.height=VH*HR;const q=k.getContext('2d');q.setTransform(HR,0,0,HR,0,0);q.imageSmoothingEnabled=false;
+      backdrop(q,room,0,0);const Q=DQ=[];ART[room].draw(q,G.t);for(const o of Object.values(ACT))if(o.room===room)drawActor(q,o,G.t,room);DQ=null;Q.sort((a,b)=>a[0]-b[0]).forEach(e=>e[1]());SH.push([nm,k,P.x,P.y,P.chainTo.x])};
+    const put1=(room,x,y,d,side,ges)=>()=>{P.x=x;P.y=y;P.dir=d;CU.place('one',P,side<0?SO:null,side>0?SO:null);P.ges=ges||0};
+    shot('court20','court: facing the seat',put1('court20',210,128,1,-1));shot('court20','court: turned to the accusers',put1('court20',210,128,-1,-1));
+    shot('hall20','hall: the free hand raised',put1('hall20',190,124,1,-1,1));shot('hall20','hall: the soldier ahead',put1('hall20',190,124,1,1));
+    shot('hall20','hall: the chained hand raised',put1('hall20',190,124,1,1,1));shot('hall20','hall: facing left, raised',put1('hall20',190,124,-1,-1,1));
+    SH.forEach(([nm,k,x,y],i)=>{const W=70,H=64,X=(i%6)*(W*4+8),Y=36+chh+Math.floor(i/6)*(H*4+30);g.drawImage(k,(x-35)*HR,(y-58)*HR,W*HR,H*HR,X,Y,W*4,H*4);text(nm,X+5,Y+H*4+18,12,'#f4f0e6')});
+    SH.forEach(([nm,k,x,y,sx],i)=>{const W=26,H=24,cx=(x+sx)/2,X=(i%3)*(W*10+20),Y=36+chh+(64*4+30)+Math.floor(i/3)*(H*10+30);g.drawImage(k,(cx-W/2)*HR,(y-34)*HR,W*HR,H*HR,X,Y,W*10,H*10);text(nm+', ten times',X+5,Y+H*10+18,12,'#f4f0e6')});
+    for(const[a,r,x,y,d]of keep){a.room=r;a.x=x;a.y=y;a.dir=d}P.chained=0;P.chainTo=0;SO.keeper=0;
+    halt('chained20',()=>{window.SHEETS=Object.assign(window.SHEETS||{},{'cast-chained20':c.toDataURL()})})}
   if(stop==='scroll'||stop==='scrolllong'){clearInterval(sk);sk=0;let rustles=0;{const u0=SFX.unroll;SFX.unroll=function(){rustles++;return u0.apply(this,arguments)}}
    await loadLevel(5);await loadLevel(7);ov.className='';ov.onclick=null;setChapter(5);G.busy=true;lock(true);status();
     /* AT: the text of A, taken while Chapter Five (whose line it is) is loaded; the probes below run in Chapter Seven */
