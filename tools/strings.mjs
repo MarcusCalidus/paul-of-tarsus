@@ -89,7 +89,7 @@ const BOOKS='Genesis|Exodus|Leviticus|Numbers|Deuteronomy|Joshua|Judges|Kings|Ch
 /* what each language's text must not contain */
 const RULES={de:[[/"/,'a straight quotation mark (German uses „ and “)'],[/\bC\.E\.|B\.C\.E\./,'C.E. or B.C.E. (German uses u. Z. and v. u. Z.)']]};
 export function checkTexts(){
-  const parts={main:[engineSource(),...['tablets','map','birds'].map(n=>fs.readFileSync(path.join(ROOT,'shared',n+'.js'),'utf8'))]};
+  const parts={main:[engineSource(),...['tablets','map','birds','beat'].map(n=>fs.readFileSync(path.join(ROOT,'shared',n+'.js'),'utf8'))]};
   for(const k of PARTS())if(k!=='main')parts[k]=[fs.readFileSync(path.join(ROOT,'levels',k==='prologue'?'prologue.js':'chapter'+k+'.js'),'utf8')];
   const lit={};for(const k in parts){lit[k]=new Set();for(const s of parts[k])for(const t of literals(s))lit[k].add(t.v)}
   const out=[];let failed=false;const ok=(c,m,list)=>{if(!c)failed=true;out.push((c?'ok   ':'FAIL ')+m+(c?'':'\n       '+list.slice(0,12).map(s=>JSON.stringify(s)).join('\n       ')+(list.length>12?`\n       ... ${list.length-12} more`:'')))};
