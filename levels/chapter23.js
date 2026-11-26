@@ -460,7 +460,8 @@ ART.bay23={w:320,q:12,paint(g){},
    anywhere (27:42 is told). Rain in the air.
    Called from outside: ART.wreck23. Hotspots (ROOMS.wreck23): the shore 0,30,320,32 · the surf 0,62,320,22 · the stern breaking up
    272,30,48,62 · the planks and the hatch cover 22,92,108,18. Walk: 24..296 by 114..138. Light: overcast, soft. */
-const BAY23W=SHARED.storm.bay({seed:2331}),WG23=GS23.wreckGeo();
+/* the bay from the wreck's deck: its open sea's level line at the eyes of the people standing on the foredeck (CONTRIBUTING section 4) */
+const BAY23W=SHARED.storm.bay({seed:2331,dy:21}),WG23=GS23.wreckGeo();
 /* the stern breaking up, astern of the picture's right edge: timbers standing up at slants beyond the rail, each alone, and the white
    water thrown up behind them on the beat of the surf */
 function stern23w(g,t){const C=GS23.LIGHT.dawn,e=(t/6000)%1;

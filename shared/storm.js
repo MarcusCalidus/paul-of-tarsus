@@ -78,7 +78,9 @@
                                   and the wet sand. Needs SHARED.country. o.seed, o.shoal (true: a bar off to the left with the sea
                                   breaking on both sides of it); o.mid(g, t, f) (optional: a painter called between the far seas
                                   with the bar and the near ranks, unclipped, so that a ship on the bar stands behind the near surf;
-                                  f is the inner phase). Returns:
+                                  f is the inner phase); o.dy (pixels, default 0: a room that looks at the bay from higher, as from the
+                                  deck of the wreck, lets everything below the cloud down by dy, so that the level line of the open sea
+                                  lies at the eyes of the people who stand there, and the cloud reaches down to it). Returns:
                                     paint(g)          the whole still picture (for a backdrop or a told picture)
                                     draw(g, t, e)     the cloud, the land and everything that moves: the breakers, and on the beat a
                                                       set of greater seas whose white water runs through the shallows
@@ -511,7 +513,7 @@ function sideSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz
    y = HZ + (edge(x) - HZ) / (1 + d / 25)), pale green behind their white; they rise, curl, break and tumble in toward us, foam lies in the
    shallows, the wash runs up the sand and back over a wide wet sheen, and spray goes up where the seas meet the point. On the beat a greater
    sea does the same, and its white water fills the shallows from side to side. */
-function bay(o){o=o||{};const w=o.w||320,P=PAL.dawn,HZ=60,seed=o.seed||2301,CO=SHARED.country,SKY=sky({pal:'dawn',h:70,seed:seed+1,dx:-1,w,speed:3}),D=25;
+function bay(o){o=o||{};const w=o.w||320,P=PAL.dawn,HZ=60,seed=o.seed||2301,CO=SHARED.country,DY=o.dy||0,SKY=sky({pal:'dawn',h:70+DY,seed:seed+1,dx:-1,w,speed:3}),D=25;
   const edge=x=>121+2.4*Math.sin(x/41+1)+1.2*Math.sin(x/13)-37*Math.pow(smooth(170,326,x),1.15),
     far=x=>x<150?HZ:HZ+2+(x-150)*.13,
     yAt=(x,d)=>HZ+(edge(x)-HZ)/(1+d/D),
@@ -594,7 +596,7 @@ function bay(o){o=o||{};const w=o.w||320,P=PAL.dawn,HZ=60,seed=o.seed||2301,CO=S
   const setD=f=>f<.3?Infinity:f<.5?180-(f-.3)/.2*110:f<.58?70-(f-.5)/.08*30:f<.66?40-(f-.58)/.08*18:f<.82?22-(f-.66)/.16*22:0,
     setBr=f=>smooth(.56,.64,f),setA=f=>1.1+smooth(.3,.56,f)*1.6,
     wetAt=(x,y,e)=>{const f=fr(inner(e,o));if(f<.62||f>.92)return false;const d=setD(f),front=f<.82?yAt(x,d)+3:edge(x)+(f<.88?8:4);return y<=front&&y>=yAt(x,d+16)};
-  function draw(g,t,e){const b=inner(e,o),f=fr(b);SKY.draw(g,t);g.drawImage(land(),0,0,w,144);
+  function draw(g,t,e){const b=inner(e,o),f=fr(b);SKY.draw(g,t);if(DY){g.save();g.translate(0,DY)}g.drawImage(land(),0,0,w,144);
     g.save();g.clip(water);point(g,t);
     /* the ranks that keep coming between the sets, drawn far to near */
     /* (they spend themselves before they reach the near shallows, so that the way through the water is plainly clear between sets) */
@@ -603,9 +605,10 @@ function bay(o){o=o||{};const w=o.w||320,P=PAL.dawn,HZ=60,seed=o.seed||2301,CO=S
     rows.sort((p,q)=>q[0]-p[0]);for(const[d,a,br,id]of rows)if(d>=70)breaker(g,d,a,br,t,id);if(BAR)bar(g,t);if(o.mid){g.restore();o.mid(g,t,f);g.save();g.clip(water)}for(const[d,a,br,id]of rows)if(d<70)breaker(g,d,a,br,t,id);
     g.restore();
     for(let j=0;j<2;j++){const u=fr(t/3800+j*.5);wash(g,Math.sin(Math.PI*u)*.7,.7,j)}
-    if(f>.8){const u=clamp((f-.8)/.18,0,1);wash(g,Math.sin(Math.PI*u)*1.6,1,9)}}
+    if(f>.8){const u=clamp((f-.8)/.18,0,1);wash(g,Math.sin(Math.PI*u)*1.6,1,9)}
+    if(DY)g.restore()}
   function front(g,t,b){rain(g,t,{w,pal:'dawn',density:o.rain==null?.85:o.rain,splash:[104,142],seed:seed+3,slant:-.75})}
-  function paint(g){const T=skyTiles('dawn',70,seed+1);g.drawImage(T.deck,0,0,w,70);g.drawImage(T.scud,0,0,w,70);g.drawImage(land(),0,0,w,144)}
+  function paint(g){const T=skyTiles('dawn',70+DY,seed+1);g.drawImage(T.deck,0,0,w,70+DY);g.drawImage(T.scud,0,0,w,70+DY);g.drawImage(land(),0,DY,w,144)}
   return{paint,draw,front,edge,wetAt,yAt,setD,beat:e=>beat(e,o)}}
 
 /* ---------- placeholders, for mockups only: the ship's painter paints the real deck and hull ---------- */

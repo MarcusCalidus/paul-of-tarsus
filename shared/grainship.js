@@ -1074,15 +1074,20 @@ function wreckGeo(){const sl=.035,top0=x=>84+sl*(x-160)-14*Math.pow(clamp((64-x)
   return{top,foot,sl,gaps:[[150,175],[236,251]],planks:[[24,foot(24)-1.2,62,foot(62)-1.4],[68,foot(68)-1.6,104,foot(104)-1.8]],
     hatch:[106,foot(106)-.6,128,foot(128)-.8,125,foot(125)-8,104,foot(104)-7.6]}}
 function wreckDeck(g,o){o=o||{};const W=wreckGeo(),C=LIGHT.dawn,r=rng(23101),{top,foot,gaps}=W,inGap=x=>gaps.some(([a,b])=>x>a&&x<b);
-  /* the deck: planks along her length, slanting with her, wider apart as they come toward us; butts staggered inside each plank */
-  const pl=[0,2,4.4,7.2,10.6,14.6,19.4,25,31.6,39.4,48.6,60];
+  /* the deck: wet wooden planks along her length, slanting with her, wider as they come toward us: long strakes in a wood tone, the grain
+     running along each, the grey of the sky lying on them in streaks; butts staggered, each stopping inside its own plank */
+  let prevB=[];const pl=[0];for(let wd=1.3;pl[pl.length-1]<60;wd*=1.17)pl.push(Math.min(60,pl[pl.length-1]+wd));
   for(let i=0;i<pl.length-1;i++){const P0=[],P1=[];for(let x=-30;x<=350;x+=10){P0.push(x,foot(x)+pl[i]);P1.push(x,foot(x)+pl[i+1])}
-    const c=tint(mix('#6e6458','#82766a',i/pl.length),(r()-.5)*.1);poly(g,P0.concat(ptsBackG(P1)),c);
-    clipTo(g,()=>poly(g,P0.concat(ptsBackG(P1))),()=>{tex(g,'wood',.3,-20,60,360,90,'overlay',.45);
-      /* the deck is wet: the grey of the sky lies on it in long streaks */
-      for(let k=0;k<6;k++){const x=r()*320,w=20+r()*60;R(g,x,foot(x)+pl[i]+(pl[i+1]-pl[i])*(.3+.4*r()),w,.5,'rgba(214,222,230,.26)')}});
-    stroke(g,P0,'rgba(30,22,20,.5)',.5);
-    for(let x=-20+r()*60;x<340;x+=70+r()*50){const y0=foot(x)+pl[i]+.4,y1=foot(x)+pl[i+1]-.4;if(y1-y0>1.2)R(g,x,y0,.5,y1-y0,'rgba(30,22,20,.45)')}}
+    const c=tint(mix('#5a4434','#6e5642',i/pl.length),(r()-.5)*.12),hw=pl[i+1]-pl[i];poly(g,P0.concat(ptsBackG(P1)),c);
+    clipTo(g,()=>poly(g,P0.concat(ptsBackG(P1))),()=>{tex(g,'wood',.3,-20,60,360,90,'overlay',.5);
+      /* the grain: long fine lines along the plank, never across it */
+      for(let k=0;k<Math.max(1,Math.round(hw/2.5));k++){const u=(k+.5)/Math.max(1,Math.round(hw/2.5)),x0=-30+r()*200,x1=x0+80+r()*200,p=[];for(let x=x0;x<=x1;x+=10)p.push(x,foot(x)+pl[i]+hw*u+(r()-.5)*.3);stroke(g,p,'rgba(36,24,16,.22)',.5)}
+      /* wet: the grey of the sky lies on it in long streaks */
+      for(let k=0;k<6;k++){const x=r()*320,w=20+r()*60;R(g,x,foot(x)+pl[i]+hw*(.3+.4*r()),w,.5,'rgba(214,222,230,.22)')}});
+    /* the seam between two planks, dark, with the wet edge of the plank beyond it catching the light */
+    stroke(g,P0,'rgba(26,18,14,.6)',.5);if(hw>2.2)stroke(g,P0.map((v,j)=>j%2?v+.6:v),'rgba(196,184,166,.16)',.5);
+    /* the butts, staggered: none within six pixels of a butt in the plank before, so that no two meet across a seam */
+    const bt=[];for(let x=-20+r()*60;x<340;x+=50+r()*60){if(prevB.some(q=>Math.abs(q-x)<6))x+=8;bt.push(x);const y0=foot(x)+pl[i]+.5,y1=foot(x)+pl[i+1]-.5;if(y1-y0>1.2)R(g,x,y0,.5,y1-y0,'rgba(26,18,14,.5)')}prevB=bt}
   /* the shade along the foot of the bulwark */
   {const p=[];for(let x=-30;x<=350;x+=10)p.push(x,foot(x)+.8);stroke(g,p,'rgba(30,26,34,.35)',1.6)}
   /* the bulwark's inner face: three strakes, butts inside their strakes; broken away at the top in two places */
