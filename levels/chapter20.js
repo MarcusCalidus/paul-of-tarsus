@@ -535,14 +535,14 @@ const TABLETS={
 /* ============ PLACING THE CAST, SETUP ============ */
 const ENT={court20:[210,128,1],room20:[150,126,1],window20:[160,236,1],hall20:[190,124,1],charges20:[160,236,1]};
 /* place20: everyone where the story has him, from the flags; Paul is chained before the governor (court and hall), never in his room */
-function place20(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a.ges=0;a.kneel=0;a.bound=0;a.bow=false;a.speed=0;a.chained=0;a.held=0;a.keeper=0;a.grips=0;a.lifted=0;a.free=false}
+function place20(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a.ges=0;a.kneel=0;a.bound=0;a.bow=false;a.speed=0;a.chained=0;a.chainTo=0;a.held=0;a.keeper=0;a.grips=0;a.lifted=0;a.free=false}
   for(const a of EVERY)a.room=null;if(AU.score!==MUSIC)setScore(MUSIC);
   const pl=(a,r,[x,y,d])=>place(a,r,x,y,d),A=CS.AT,n=season20();
   if(phase20()==='court'){pl(FX,'court20',A.governor);FX.seat=1;pl(CK,'court20',A.scribe);CK.seat=1;
     pl(TT,'court20',A.accusers[0]);pl(AN,'court20',A.accusers[1]);pl(EL1,'court20',A.accusers[2]);pl(EL2,'court20',A.accusers[3]);pl(OF,'court20',A.officer);
-    place(SO,'court20',ENT.court20[0]-18,ENT.court20[1]-.5,1);SO.keeper='far';if(room==='court20')P.chained=1}
+    place(SO,'court20',ENT.court20[0]-18,ENT.court20[1]-.5,1);SO.keeper='far';if(room==='court20'){P.chained=1;P.chainTo=SO}}
   else if(room==='hall20'){pl(FX,'hall20',HALL20.felix);FX.seat=1;if(!F.s3){pl(DR,'hall20',HALL20.drusilla);DR.seat=1}
-    place(SO,'hall20',ENT.hall20[0]-18,ENT.hall20[1]-.5,1);SO.keeper='far';P.chained=1}
+    place(SO,'hall20',ENT.hall20[0]-18,ENT.hall20[1]-.5,1);SO.keeper='far';P.chained=1;P.chainTo=SO}
   else{if(n===1&&!F.things){pl(PH,'room20',[210,122,-1]);pl(SI,'room20',[236,128,-1]);pl(KO,'room20',[258,120,-1])}
     if(n===3&&!F.luke)pl(LK,'room20',[212,124,-1])}}
 function setup20(){P.hs=null;P.called='Paul';G.mk20=null;G.cv20=G.wv20=G.st20=G.end20=0;G.caps20=[];G.invs={paul:['tablets']};G.inv=G.invs.paul;drawInv()}

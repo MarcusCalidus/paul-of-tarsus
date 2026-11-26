@@ -1188,17 +1188,20 @@ const SEATG={man:{xh:-4,xk:20,t0:-26,t1:-26,b0:-18,b1:-19,kc:17,ka:17,fa:4},kid:
 /* Custody (Acts 21:33-22:29). An actor is chained while a script sets a.chained: he stands with both arms down along the body, the hands a
    little forward and an iron cuff round each wrist (person's pz 'c'); he may walk so, and may turn. a.held: the same pose while soldiers
    hold him by the arms (22:25); he does not turn. a.lifted: carried among soldiers (21:35), raised by LIFT room pixels and seen only down to
-   the hem (pz 'l'); he does not turn and casts no shadow of his own. A soldier chained to him by one wrist is a.keeper (pz 'k'; a.keeper='near' chains him by his near wrist, pz 'K'); one who
+   the hem (pz 'l'); he does not turn and casts no shadow of his own. Chained by one wrist (a.chainTo, the keeper): a cuff on the wrist on
+   the keeper's side only (pz 'n' near, 'f' far, see poseOf); he may walk and turn. A soldier chained to him by one wrist is a.keeper (pz 'k'; a.keeper='near' chains him by his near wrist, pz 'K'); one who
    holds his arm is a.grips (ges 10). Neither turns. The chains themselves, the fingers over the arm, the knot of soldiers who carry him
    and where everyone stands for it are drawn and set by shared/cast.js (SHARED.cast.custody). cuffAt(o, pz, ges, fr): where a figure's cuffs
    hang, in drawing units from its feet as it faces right ({far:[x,y], near:[x,y]}, either null): the point at the outer, lower corner of
    the cuff, where a chain is fastened. */
 const CUFF=ramp('#767a82'),LIFT=13;
-function cuffAt(o,pz,ges,fr){const ARM=!!(o.spear||o.pilum),CH=pz==='c'||pz==='l',KP=pz==='k'||pz==='K',KN=pz==='K'||KP&&ARM,fem=!!(o.veil||o.fem),kid=o.h?1:0,nw=(o.slim?1:0)+(fem?1:0),aw=fem?4:5,
+function cuffAt(o,pz,ges,fr){const ARM=!!(o.spear||o.pilum),CH=pz==='c'||pz==='l',ON=pz==='n',OF=pz==='f',KP=pz==='k'||pz==='K',KN=pz==='K'||KP&&ARM,fem=!!(o.veil||o.fem),kid=o.h?1:0,nw=(o.slim?1:0)+(fem?1:0),aw=fem?4:5,
     W=fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):null,yS=-4-(kid?19:23)+(W?W.bob:0)-(kid?13:16)-3-(kid?22:fem?24:26);
-  const far=ARM?null:CH&&ges===1?[20-nw,yS+7]:CH||KP&&!KN?[17-nw,yS+25]:null,near=CH||KN?[-10+nw-aw+2,yS+25]:null;return{far,near}}
-/* poseOf: an actor's pose of custody, as person's pz: 'l' lifted, 'c' chained or held, 'k' or 'K' a keeper (a.keeper 'near': by his near wrist) */
-const poseOf=o=>o.lifted?'l':o.chained||o.held?'c':o.keeper?(o.keeper==='near'?'K':'k'):'';
+  const far=ARM?null:(CH||OF)&&ges===1?[20-nw,yS+7]:CH||OF||KP&&!KN?[17-nw,yS+25]:null,near=CH||KN||ON?[-10+nw-aw+2,yS+25]:null;return{far,near}}
+/* poseOf: an actor's pose of custody, as person's pz: 'l' lifted, 'c' chained or held, 'k' or 'K' a keeper (a.keeper 'near': by his near wrist);
+   'n' or 'f' chained by one wrist to the one keeper a.chainTo (an actor): the wrist on the keeper's side, the near one when the keeper
+   stands behind him and the far one when the keeper stands ahead, so that it is the same hand whichever way he turns */
+const poseOf=o=>o.lifted?'l':o.chained&&o.chainTo&&!o.held?((o.chainTo.x-o.x)*facing(o)>0?'f':'n'):o.chained||o.held?'c':o.keeper?(o.keeper==='near'?'K':'k'):'';
 const KNEEL={both:1,bothFolded:2,one:3,oneFolded:4},kneelX=(o,fr)=>fr<=-2&&fr>=-5?(fr>=-3?(o.h?-2.6:-3.2):(o.h?.2:.5)):0;
 /* person: one figure with its feet at x,y, one drawing unit per canvas pixel, facing right (dir -1 mirrors it).
    fr is the walk: 0 stands; -1 the figure sits (see SEATG: its hips on the seat, the thighs level, the near shin straight down and the far foot drawn back under the seat; bare knees beyond the hem of a short tunic, and under a long robe the cloth hanging from the knees nearly to the floor);
@@ -1219,7 +1222,10 @@ const KNEEL={both:1,bothFolded:2,one:3,oneFolded:4},kneelX=(o,fr)=>fr<=-2&&fr>=-
    that pose while the legs walk, and only the far hand may be raised (ges 1, as when Paul motions to the crowd, Acts 21:40). 'l' lifted:
    chained, and seen only down to the hem, for a figure carried among soldiers whose bodies hide the rest (shared/cast.js, custody.knot). 'k' keeper:
    a soldier chained by one wrist to a prisoner beside him: that arm hangs still with its cuff, the far one ('K': the near one, and so
-   too if his far hand holds a spear). ges 10 grips another's arm above the elbow: the far forearm slants forward and a little up from the elbow to a closed
+   too if his far hand holds a spear). 'n' and 'f': chained by one wrist only, to one keeper (Acts 24-26, before the governor): 'n' by the
+   near wrist, that arm still and over the mantle with its cuff, the far hand free to hang, swing, or be raised; 'f' by the far wrist, that
+   arm still with its cuff and the near one free under the mantle; the far hand may be raised (ges 1) with its cuff, and the chain follows
+   it. ges 10 grips another's arm above the elbow: the far forearm slants forward and a little up from the elbow to a closed
    hand at the height of the other's upper arm (shared/cast.js, custody.grips, lays the fingers over that arm). No arm is ever spread or raised to the side. */
 function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
   const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=o.stone?c.sk:c.le,fem=!!(o.veil||o.fem),HIM=!!((o.himation||o.toga)&&C),TOGA=!!(o.toga&&C),WET=!!o.wet,TORN=o.torn|0,ARM=(o.spear||o.pilum)&&!(o.spear==='slant'&&fr<0);g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
@@ -1227,7 +1233,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
   const kn=fr<=-2&&fr>=-5?-1-fr:0,both=kn&&kn<=2,fold=kn&&kn%2===0;if(kn)bow=1;
   mv=o.stone||bow?0:mv|0;talk=o.stone?0:talk|0;if(o.stone&&ges===9)ges=0;
   /* custody (pz): chained or lifted, both arms are still and only the far hand may be raised; a keeper's chained arm is still */
-  pz=o.stone?'':pz||'';const CH=pz==='c'||pz==='l',KP=pz==='k'||pz==='K',KN=pz==='K'||KP&&!!(o.spear||o.pilum),LF=pz==='l';if(CH&&(ges!==1||ARM)||KP&&!KN)ges=0;if(pz)mv&=~MV.lean;
+  pz=o.stone?'':pz||'';const CH=pz==='c'||pz==='l',ON=pz==='n',OF=pz==='f',KP=pz==='k'||pz==='K',KN=pz==='K'||KP&&!!(o.spear||o.pilum),LF=pz==='l';if((CH||OF)&&(ges!==1||ARM)||KP&&!KN)ges=0;if(pz)mv&=~MV.lean;
   /* bound (fr -6, a.bound): seated, the feet together and the hands held together low in front, both wound round with a belt (see wind) */
   const tied=fr===-6,hang=fr===-7,seat=fr===-1||tied||hang,BD=!!o.board&&!kn&&!tied&&!hang&&!pz;if(tied||BD)ges=0;
   const W=!seat&&fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):!seat&&!kn&&fr?gaitPose(o,[0,0,.25,.5][fr]||0,1):null,bob=W?W.bob:0;let SH=null;
@@ -1259,7 +1265,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
   /* the sleeves are one garment with the body: PIT rows of shoulder yoke, then the arms part from the trunk */
   const PIT=8,nw=slim+(fem?1:0),aw=fem?4:5,ax=-10+nw-aw,fx=11-nw,fw=5,waist=Math.round(TOR*.6),tw=W&&!c.ar&&!ARM&&!ges&&!bow&&!pz?W.twist:0;
   /* custody: which arm hangs still (FA the far one, NA the near one), its hand a little forward (bend 2), and a cuff round its wrist */
-  const FA=(CH&&ges!==1||KP&&!KN||BD&&!seat)&&!ARM,NA=CH||KN;
+  const FA=((CH||OF)&&ges!==1||KP&&!KN||BD&&!seat)&&!ARM,NA=CH||KN||ON;
   /* a spear held slanting (spear:'slant', the light infantry of Acts 23:23): the far hand holds it at the side, the shaft leaning forward and
      up to its leaf-shaped iron head well ahead of the face, and running down and back behind the body, where the torso and the skirt hide
      its foot. It is painted first, before the cape, so that the body and a cape cover it: one slanting line and nothing laid across it (CONTRIBUTING section 3) */
@@ -1670,7 +1676,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
     px(hx0+1,hy0,S[1],5);px(hx0,hy0+1,S[2],7,3);px(hx0+5,hy0+1,S[1],2,2);px(hx0,hy0+1,S[3],1,3);px(hx0+1,hy0+4,S[3],5);px(hx0+3,hy0+2,S[3],1,2)}
   else if(ges&&ges!==4&&!bow&&!o.stub){for(let k=0;k<10;k++){const gx=12-nw+Math.round(k*.6),gy=yS+14-k,R=o.longSleeve?T:S;px(gx,gy,R[3]);px(gx+1,gy,R[2],2);px(gx+3,gy,R[1])}
     const q=17-nw;px(q,yS+1,S[2],5,5);px(q,yS+1,S[1],4);px(q,yS+5,S[3],5);px(q+4,yS,S[2],1,3);px(q+1,yS-1,S[1],1,2);px(q+3,yS-1,S[2],1,2);px(q-1,yS+4,S[3]);
-    if(CH)cuff(q-1,yS+6,5)}};
+    if(CH||OF)cuff(q-1,yS+6,5)}};
   /* leaning: the figure is painted twice, below the belt as it stands and above it a pixel forward (also subtle forward lean at full stride) */
   /* lifted: nothing below the hem is drawn; the soldiers who carry him hide where it would be */
   if(LF){g.beginPath();g.rect(-90,-220,180,220-4-(o.h?19:23)-1);g.clip()}
@@ -2706,7 +2712,7 @@ function decode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1'
   const c=v%512,b=Math.floor(v/512)^msk(c);return chk(b,CHAP[ch].salt)!==c||(b>>19&3)>2||b>>21?null:{ch,b}}
 function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];G.pc=P;G.invs={};P.hs=null;P.called=null;
   LOOK.paul=paulLook(ch);if(LOOK.barnabas)LOOK.barnabas=Object.assign({skin:'#b8844f',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},ch>2?{hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1}:{hair:'#3a2a1a',beard:'#3a2a1a'});
-  SPR.clear();Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;a.seat=0;a.kneel=0;a.bound=0;a.chained=a.held=a.lifted=a.keeper=a.grips=0;a.wear='';a.look=LOOK[a.id]});
+  SPR.clear();Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;a.seat=0;a.kneel=0;a.bound=0;a.chained=a.held=a.lifted=a.keeper=a.grips=a.chainTo=0;a.wear='';a.look=LOOK[a.id]});
   (CHAP[ch].party||[]).forEach(id=>ACT[id].party=1);
   $('#chname').textContent=T(CHAP[ch].name);G.ship=null;setScore(CHAP[ch].music);CHAP[ch].setup();swapBtn()}
 /* dealInv: rebuild the inventories from the story's flags (the level's inv). Each item goes to the member who carries it (own,
