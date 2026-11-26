@@ -46,6 +46,11 @@
                                  left)
                        flap      0..1, how the torn foresail stands at this moment (state 'wreck')
                        figs(g)   people on deck, drawn behind the rail
+                       sign      off by default (the ship of Chapters Twenty-Two and Twenty-Three has none). The ship of Acts 28:11
+                                 (Chapter Twenty-Four) carries the "Sons of Zeus" (see "The sign" below): {figs: 1 or 2, name (Greek
+                                 capitals, default ΚΑΣΤΩΡ for one figure, ΔΙΟΣΚΟΥΡΟΙ for two), px (the size of one of its pixels in room
+                                 pixels, default from len), size ('small': a shorter figure), lay ('skew' along the strakes, default, or
+                                 'level')}. With a sign the anchors at the bow are left out.
                      Returns the geometry (G below): sheer(x), wl, x0, x1, the mast, the stern, the oar, for a room's hotspots.
      geo(o)          that geometry without painting.
      anchor(g, a)    one anchor: a = {x, y (the ring), ang (radians from straight down, positive: the crown swings to the right),
@@ -127,7 +132,9 @@ function side(g,o){o=o||{};const G=geo(o),C=LIGHT[o.light]||LIGHT.day,st=o.state
   /* on the hull and beside it */
   if(st!=='wreck')gallery(g,G,C);
   if(st!=='wreck')sternpost(g,G,C,o.post||'bird');
-  if(st==='moored'&&o.anchors!==false)bowAnchors(g,G,C);
+  /* the sign of the ship of Acts 28:11, when she carries one; the anchors at the bow are shown at Myra only, so not beside it */
+  if(o.sign)G.signBox=sign(g,G,C,o.sign);
+  else if(st==='moored'&&o.anchors!==false)bowAnchors(g,G,C);
   if(st!=='moored')girding(g,G,C);
   yardOnDeck(g,G,C,st);
   if(st!=='wreck')oar(g,G,C,st);
@@ -335,6 +342,63 @@ function bowAnchors(g,G,C){const{L,k,sheer,x1}=G;
     hawserS(g,x-1*k,sheer(x)-.4,x,y,0,C,.7*k);
     comp(g,'multiply',.45,()=>anchor(g,{x:x+1.4*k,y:y+1.2*k,len:len*k,ang:-.12,C,mono:'#4a3a48'}));
     anchor(g,{x,y,len:len*k,ang:-.12,C})}}
+
+/* ---------- the sign of Acts 28:11 (a mockup for the maintainer: CONTRIBUTING section 3 is completed when it is built) ----------
+   The ship from Alexandria that had wintered at Malta had the Sons of Zeus as her figurehead (Acts 28:11): in the study note, the twins
+   Castor and Pollux. Insight ("Zeus, Sons of") says only that perhaps the image or symbol and the name of Castor were on one side of the
+   bow and those of Pollux on the other; no source shows one. Shown as the maintainer decided (26 November 2026): a small painted board
+   on the flank of the bow below the rail, forward but clear of the stem post, with a pale ground, a draped standing figure too small to
+   make out, its arms inside its mantle, and under it the name in Greek capitals. It is an image of pagan gods, so it stays small and plain:
+   no star, no cap, no horse, no spear, no glow, nothing unclothed, and nothing round. Everything on it is placed pixel by pixel on a
+   grid of its own (one pixel of it is s.px room pixels, at least a half-pixel), so that it stays crisp at the ship's own size and no
+   part of it rasterizes into a cross by accident; then the board is laid on the hull along the strakes, sheared to their slope at the
+   bow (s.lay 'skew', default) so that its uprights stay upright, or level (s.lay 'level'). */
+/* the Greek capitals, each on its own grid of five rows ('#' paint); Omega and Delta are five wide, Kappa four, Iota one, the rest three. No letter
+   has a free stroke across another: the only junctions are those of the letters themselves (tau is a letter, CONTRIBUTING section 3). */
+const SIGNGLYPH={'Α':['.#.','#.#','###','#.#','#.#'],'Δ':['..#..','.#.#.','.#.#.','#...#','#####'],'Ι':['#','#','#','#','#'],
+  'Κ':['#..#','#.#.','##..','#.#.','#..#'],'Ο':['.#.','#.#','#.#','#.#','.#.'],'Ρ':['##.','#.#','##.','#..','#..'],'Σ':['###','#..','.#.','#..','###'],
+  'Τ':['###','.#.','.#.','.#.','.#.'],'Υ':['#.#','#.#','.#.','.#.','.#.'],'Ω':['.###.','#...#','#...#','.#.#.','##.##']};
+/* one standing figure, seven pixels wide and sixteen high, as a painter of signs would set it down: dark hair over the face; a mantle
+   (M lit, m, n in shade) over the left shoulder and wrapped round the body to the knees; the tunic (t, T) at the right shoulder and below
+   the mantle down to the feet; the right arm (k) bare and hanging at the side. It widens from the shoulders to the hem and never narrows
+   again, so that no row of it stands out as a bar; no arm stands out of it, and nothing on it is round. */
+const SIGNFIG=["..hhh..","..sss..","..sss..",".MMmtt.",".MMmttk","MMmmttk","MMmmmtk","MMmmmmk","MMmmmmn","MMmmmmn","MMmmmnn","MMmmmnn","Mmmmnnn","tttttTT","tttttTT",".f...f."];
+/* the same figure for a smaller board (s.size 'small'): ten high, the face one row, the mantle shorter */
+const SIGNFIG_S=["..hhh..","..sss..",".MMmtt.","MMmmttk","MMmmmtk","MMmmmmn","MMmmmnn","Mmmmnnn","tttttTT",".f...f."];
+function sign(g,G,C,s){const{L,k,wl,D,sheer}=G,yb=wl+D,Y=(x,f)=>sheer(x)+(yb-sheer(x))*f,hp2=v=>Math.round(v*2)/2,
+    FIG=s.size==='small'?SIGNFIG_S:SIGNFIG,two=s.figs===2,name=s.name||(two?'ΔΙΟΣΚΟΥΡΟΙ':'ΚΑΣΤΩΡ'),p=s.px||Math.max(.5,Math.round(k*.7*2)/2),
+    GL=[...name].map(ch=>SIGNGLYPH[ch]).filter(Boolean),tw=GL.reduce((a,q)=>a+q[0].length,0)+GL.length-1,
+    fw=FIG[0].length,figs=two?2:1,fgap=2,fsw=figs*fw+(figs-1)*fgap,
+    m=2,Wp=Math.max(tw,fsw)+2*m+2,Hp=m+FIG.length+1+5+m,W=Wp*p,H=Hp*p,
+    /* where it lies: its forward edge a little aft of the stem's inner line, its top just under the upper wale */
+    yMid=Y(G.x1-.08*L,.28),xr=hp2(G.edgeAt(G.STEM,yMid)-2.6*k-4*k),x0=hp2(xr-W),y0=hp2(Y(x0,.175)+1.2*k),
+    /* lay 'skew' (default): the board lies along the strakes, sheared to their slope at the bow, its uprights upright; 'level': it hangs
+       level on the sloping planks */
+    slope=s.lay==='level'?0:(Y(x0+W,.28)-Y(x0,.28))/W,
+    PAL={ground:'#d8caa6',frame:tint(C.post,-.12),frameHi:C.postHi,ink:'#3a2018',h:'#3e2a20',s:'#b98260',
+      M:'#b0705a',m:'#8e4a36',n:'#663028',t:'#c4a466',T:'#987a46',k:'#a87252',f:'#4a3024'};
+  /* the board is painted flat on a canvas of its own, at the picture's own resolution, every pixel of it placed by hand */
+  const S=g.getTransform().a||2,[c,q]=mk(Math.round(W*S),Math.round(H*S));q.scale(S,S);
+  const px=(i,j,col)=>R(q,i*p,j*p,p,p,col);
+  /* the ground, limewashed and a little weathered, lit from the left like the rest of the hull */
+  R(q,0,0,W,H,PAL.ground);q.fillStyle=lg(q,0,0,W,0,['rgba(255,246,220,.18)','rgba(90,80,110,0)','rgba(90,80,110,.22)']);q.fillRect(0,0,W,H);
+  tex(q,'mott',.3,0,0,W,H,'overlay',.35);
+  /* its frame: a lath round the edge, one pixel of the sign wide, its top and its after edge lit */
+  for(let i=0;i<Wp;i++){px(i,0,i<1?PAL.frameHi:tint(PAL.frame,.1));px(i,Hp-1,tint(PAL.frame,-.25))}
+  for(let j=1;j<Hp-1;j++){px(0,j,tint(PAL.frame,.18));px(Wp-1,j,tint(PAL.frame,-.2))}
+  /* the figure or the two figures, centered over the name */
+  const fx0=Math.round((Wp-fsw)/2);
+  for(let n=0;n<figs;n++){const cx=fx0+n*(fw+fgap);FIG.forEach((row,j)=>[...row].forEach((ch,i)=>{if(ch!=='.')px(cx+i,m+j,PAL[ch])}))}
+  /* the name under it */
+  let cx=Math.round((Wp-tw)/2);const ly=m+FIG.length+1;
+  for(const gl of GL){gl.forEach((row,j)=>[...row].forEach((ch,i)=>{if(ch==='#')px(cx+i,ly+j,PAL.ink)}));cx+=gl[0].length+1}
+  /* on the hull: it stands a finger proud of the planking, so a soft shadow lies under its lower edge and beside its forward edge */
+  const B=[x0,y0,x0+W,y0+slope*W,x0+W,y0+slope*W+H,x0,y0+H];
+  comp(g,'multiply',.5,()=>{poly(g,[x0+.5,y0+H,x0+W+.5,y0+slope*W+H,x0+W+.5,y0+slope*W+H+.6,x0+.5,y0+H+.6],'#4a3a48');poly(g,[x0+W,y0+slope*W+.5,x0+W+.5,y0+slope*W+.5,x0+W+.5,y0+slope*W+H,x0+W,y0+slope*W+H],'#4a3a48')});
+  g.save();g.translate(x0,y0);g.transform(1,slope,0,1,0,0);g.imageSmoothingEnabled=true;g.drawImage(c,0,0,W,H);g.restore();
+  /* the bow's own shade lies over it as over the planks round it */
+  comp(g,'multiply',.22,()=>poly(g,B,C.shade));
+  const top=Math.min(y0,y0+slope*W);return{x:x0,y:top,w:W,h:H+Math.abs(slope*W)}}
 
 /* ---------- storm and wreck ---------- */
 /* the undergirding (27:17): ropes passed under her from side to side and hove tight on deck. Each comes over the rail and runs down the
