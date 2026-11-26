@@ -15,7 +15,8 @@
                        phase   the phase at the start (by default the end of the pause, so the first sea is seen rising);
                        call    misses in a row after which a sailor calls the moment (3); carry misses after which he takes him across (6);
                        sticky  the help, once given, stays until reset() (false: a hit clears the count, and the help with it);
-                       sound   schedule the sea's sound (true); vol its level (1); dest the bus it goes to (AU.fx);
+                       sound   schedule the sea's sound (true); kind 'deck' (a sea over a ship's side) or 'surf' (a breaker on a beach);
+                               vol its level (1); dest the bus it goes to (AU.fx);
                        room    the room it belongs to (G.room): it stops by itself when that room is no longer shown; null for none.
                      Under the playtest (fast()) period, pause and need are shortened to three tenths.
      stop()          stop the beat that is running: no more sound is scheduled, and what was scheduled ahead fades out at once.
@@ -47,22 +48,33 @@ SHARED.beat=(()=>{
 const fast=()=>G.speedAll>200;
 let B=null,timer=0;
 
-/* the sea's sound: the swell rising, the crash, the water running off the deck, in seconds from the crash. k scales them with the period. */
-function sea(B,n,crashMs){const c=AU.ctx;if(!c||!B.bus)return false;const k=clamp(B.period/6000,.3,1.4),v=B.vol,
+/* the sea's sound: the swell rising, the crash, the water running off, in seconds from the crash. k scales them with the period.
+   kind 'deck' (the default): a sea that breaks over a ship's side and runs off her planks; 'surf': a breaker on a beach, deeper and
+   slower, that draws back over the sand. The crash is a weight, not a bang: it swells in over a few hundredths of a second, its low
+   boom is soft, and its loudest moment stays below the game's own chimes (SFX.good, win and pray, measured offline); the swell
+   before it rises from the low notes up, so that the sea can be heard coming as it is seen. Nothing in it changes how a click is judged. */
+const SEA={
+  deck:{swell:1.7,bands:[[0,200,'lowpass',.7,.13],[.35,480,'bandpass',.8,.07],[.62,1000,'bandpass',.9,.04]],
+    crash:[[0,650,'bandpass',.5,.05,.21,1.3,.3],[0,300,'lowpass',.7,.04,.12,.9,0],[15,3000,'highpass',.6,.04,.04,.6,.15]],boom:[70,38,.03,.07,.5],
+    off:{at:280,f:1900,v:.055,d:1.5,a:.3},gurgle:6,fizz:0},
+  surf:{swell:2.2,bands:[[0,150,'lowpass',.7,.14],[.4,380,'bandpass',.7,.065],[.7,800,'bandpass',.8,.035]],
+    crash:[[0,480,'bandpass',.5,.09,.21,1.6,.4],[0,220,'lowpass',.7,.06,.12,1.2,0],[20,2800,'highpass',.6,.06,.035,.8,0]],boom:[55,36,.05,.06,.9],
+    off:{at:700,f:1800,v:.05,d:2.2,a:.45},gurgle:0,fizz:12}};
+function sea(B,n,crashMs){const c=AU.ctx;if(!c||!B.bus)return false;const k=clamp(B.period/6000,.3,1.4),v=B.vol,S=SEA[B.kind]||SEA.deck,
     nowMs=performance.now(),at=ms=>ctxAt(c,ms),soon=nowMs+20,
     rnd=(i=>()=>{i=Math.imul(i^i>>>15,2246822507)^Math.imul(i^i>>>13,3266489909);return((i^=i>>>16)>>>0)/4294967296})(n*7919+13),
-    dest=B.bus,swell=1.7*k*1000;
+    dest=B.bus,swell=S.swell*k*1000;
   /* the swell: three bands of noise that swell in together, each starting later and brighter, so that the sea seems to climb */
-  [[0,220,'lowpass',.7,.12],[.35,520,'bandpass',.8,.06],[.62,1150,'bandpass',.9,.035]].forEach(([dl,f,type,q,lv])=>{
+  S.bands.forEach(([dl,f,type,q,lv])=>{
     const s=Math.max(crashMs-swell*(1-dl),soon),d=(crashMs-s)/1000;if(d>.12)noise({t:at(s),d:d+.06,a:d,v:lv*v,f,type,q,dest})});
   if(crashMs<soon)return true;
-  /* the crash: a broad burst, the spray above it, and the thump of the water on the planks */
-  noise({t:at(crashMs),d:1.15*k+.25,v:.2*v,f:820,type:'bandpass',q:.45,dest});
-  noise({t:at(crashMs+15),d:.6*k+.15,v:.07*v,f:3200,type:'highpass',q:.6,dest});
-  tone({t:at(crashMs),d:.45,v:.15*v,f:72,to:36,type:'sine',dest});
-  /* the water running off: a hiss that swells and dies, and small gurgles at the scuppers */
-  const off=crashMs+280*k;noise({t:at(off),d:1.5*k+.2,a:.3*k,v:.065*v,f:1900,type:'highpass',q:.6,dest});
-  for(let i=0;i<6;i++){const t=off+(120+rnd()*1100)*k,f=520+rnd()*900;noise({t:at(t),d:.07+rnd()*.07,v:(.035-i*.004)*v,f,type:'bandpass',q:7,dest})}
+  /* the crash: a broad body of water, its low weight, the spray above it, and a soft boom under them */
+  for(const[ms,f,type,q,a,lv,d,dk]of S.crash)noise({t:at(crashMs+ms),d:d*k+dk,a,v:lv*v,f,type,q,dest});
+  {const[f,to,a,lv,d]=S.boom;tone({t:at(crashMs),d,a,v:lv*v,f,to,type:'sine',dest})}
+  /* the water running off: a hiss that swells and dies; on a deck small gurgles at the scuppers, on a beach the fizz of the sand */
+  const O=S.off,off=crashMs+O.at*k;noise({t:at(off),d:O.d*k+.2,a:O.a*k,v:O.v*v,f:O.f,type:'highpass',q:.6,dest});
+  for(let i=0;i<S.gurgle;i++){const t=off+(120+rnd()*1100)*k,f=520+rnd()*900;noise({t:at(t),d:.07+rnd()*.07,v:(.035-i*.004)*v,f,type:'bandpass',q:7,dest})}
+  for(let i=0;i<S.fizz;i++){const t=off+(200+rnd()*1800)*k;noise({t:at(t),d:.005,v:(.012+rnd()*.013)*v,f:5500,type:'highpass',q:.7,dest})}
   return true}
 /* ctxAt: the AudioContext's time at which a sound must start to be heard at the moment ms of the performance.now() clock. The output
    timestamp ties the two clocks where it is heard (so the device's latency is taken off); where the browser gives none, the context's
@@ -89,7 +101,7 @@ function stop(){clearInterval(timer);timer=0;const b=B;B=null;if(G.beat===b)G.be
 function start(o={}){stop();const k=fast()?.3:1,period=(o.period||6000)*k,pause=Math.min((o.pause!=null?o.pause:3000)*k,period*.9),
     from=o.at!=null?o.at:.24,to=from+pause/period,ph=o.phase!=null?o.phase:to%1,now=performance.now();
   const b={on:true,period,pause,from,to,need:(o.need||0)*k,t0:now-ph*period,misses:0,help:0,sounded:0,last:-1e9,
-    callAt:o.call||3,carryAt:o.carry||6,sticky:!!o.sticky,sound:o.sound!==false,vol:o.vol!=null?o.vol:1,dest:o.dest||null,bus:null,
+    callAt:o.call||3,carryAt:o.carry||6,sticky:!!o.sticky,sound:o.sound!==false,kind:o.kind||'deck',vol:o.vol!=null?o.vol:1,dest:o.dest||null,bus:null,
     room:o.room!==undefined?o.room:G.room,
     phase(t){return(((t??performance.now())-this.t0)/this.period%1+1)%1},
     inPause(t){const p=this.phase(t);return p>=this.from&&p<this.to},
@@ -115,4 +127,5 @@ function cap(g,key,x,y,o={}){const s=T(key),w=o.w||60;let sz=o.sz||6.4;g.save();
   cap.last={key,s,sz,w:tw,max:w,t:performance.now()}}
 function call(g,x,y,t){if(G.beat&&G.beat.calling(t))cap(g,'now',x,y)}
 
-return{start,stop,cap,call,fast,get beat(){return B}}})();
+/* voice: one sea's sound, scheduled on B (period, vol, kind, bus) to break at crashMs; for offline renders and the playtest */
+return{start,stop,cap,call,fast,voice:sea,get beat(){return B}}})();
