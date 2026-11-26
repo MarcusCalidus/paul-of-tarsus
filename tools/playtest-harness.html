@@ -1261,6 +1261,13 @@
      cannot write (as the apostrophe of THE SISTER'S SON was) would leave the card as plain text */
   if(/^card\d*$/.test(stop)){const n=+stop.slice(4)||1;await loadLevel(n);AU.key=CHAP[n].music;G.speedAll=0;clearInterval(sk);await need('logo');
     {const bad=Object.keys(CHAP).filter(k=>!SHARED.logo.can(T(CHAP[k].name)+T(CHAP[k].label).toUpperCase()));ok(!bad.length,"every chapter's title card is painted in the logo's letters, in "+LANGS[lang].native+(bad.length?': not '+bad.join(', '):''))}
+    /* the two dots of an umlaut are two small squares, apart from each other and from their letter, with either pen and at every size
+       a card writes them (issue #96): spaced apart, Ä Ö Ü are nine pieces */
+    {const pieces=m=>{const seen=new Uint8Array(m.length);let n=0;for(let i=0;i<m.length;i++)if(m[i]&&!seen[i]){n++;const st=[i];seen[i]=1;
+        while(st.length){const j=st.pop(),x=j%m.w,y=(j-x)/m.w;for(let b=-1;b<=1;b++)for(let a=-1;a<=1;a++){const X=x+a,Y=y+b,k=Y*m.w+X;if(X>=0&&Y>=0&&X<m.w&&Y<m.h&&m[k]&&!seen[k]){seen[k]=1;st.push(k)}}}}return n};
+      const bad=[];for(let cap=20;cap<=37;cap++){const p=pieces(SHARED.logo.plain('Ä Ö Ü','name',cap));if(p!==9)bad.push('name at '+cap+': '+p)}
+      {const p=pieces(SHARED.logo.plain('Ä Ö Ü','sub',11));if(p!==9)bad.push('subtitle: '+p)}
+      ok(!bad.length,'the two dots of an umlaut stand apart, from each other and from their letter, at every size a card writes them'+(bad.length?': not '+bad.join(', '):''))}
     showCard(n);await wait(300);halt(stop)}
   if(/^pro(card|1|2|3|4|5|7|8|8b|9)$/.test(stop)){await loadLevel(1);await loadPrologue();ov.className='';ov.onclick=null;setChapter(1);G.inPro=1;$('#chname').textContent=T(PRO.name);$('#skip').style.display='';G.busy=true;lock(true);status();clearInterval(sk);G.speedAll=0;
     if(stop==='procard'){showCard('prologue');await wait(300);halt('procard')}
