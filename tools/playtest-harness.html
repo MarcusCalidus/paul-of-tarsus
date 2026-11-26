@@ -740,6 +740,74 @@
       g.drawImage(v,0,30,VW*Z,VH*Z);text(g,'With what the room draws: the rope from poseAt, the viper from viperHead, a bed and a rail (four times enlarged)',10,20,15,'#f4f0e6');
       SHEETS['poses-together']=c.toDataURL()}
     window.SHEETS=SHEETS;halt('poses')}
+  /* tunes: one bar of each chapter's tune (shared/tunes.js), for the look back of the finale. Every chapter that exists, and the Prologue,
+     has its bar. For each in turn its level is loaded, and the copy is held to the chapter's own score: dt, steps, group, root and scale
+     are the score's, it has at most four tracks and none of them depends on the mood, and every note its tracks play, each instrument
+     and drum stroke, its step, pitch, length and level, is what the chapter's score plays in that bar and mood. Both are played through
+     the engine's own playStep with every voice replaced by one that notes what it is asked to play, and the first difference is named by
+     chapter, track (its index in the chapter's score) and step. A drone is the one thing let go sooner: the copy's ends with the bar.
+     Each bar is rendered offline on the game's own mixer: it sounds and does not clip, it is no louder than the chapter plays that same
+     bar, and it has died away (60 dB under its peak) well inside the four seconds after which the engine lets go of a score it has left
+     (mixFor). score(n, then) plays the bar once and hands over to then, or to silence in the bar's key. tunes-sheet.png
+     (de-tunes-sheet.png) is a piano roll of every bar, steps across and pitch up, one color to an instrument and the drum strokes under
+     it, with the chapter's name in the stop's language, its key and scale, its length, and where in the chapter's score it comes from. */
+  if(stop==='tunes'){await need('tunes');const TU=SHARED.tunes,IDS=['pro',...Object.keys(CHAP).map(Number)],J=JSON.stringify,miss=[],keys=[],notes=[],loud=[],rows=[];
+    /* evs: the notes playStep plays for steps from..from+n-1 of a score in a mood, counted from from; the track a note is played for is
+       the one whose gain playStep points AU.out at */
+    const evs=(sc,mood,from,n)=>{const I0=Object.assign({},INST),D0=Object.assign({},DRUMS),keep=Object.assign({},AU),got=[],T0=10,o=new OfflineAudioContext(1,2205,22050);
+        try{AU.ctx=o;audioGraph(o);AU.mix=null;const who=()=>AU.mix.tr.findIndex(x=>x.g===AU.out);
+          for(const k in I0){const f=(q,t,d,v,down)=>got.push([who(),k,t,q,d,v,!!down]);if(I0[k].hold)f.hold=(q,t,d,v)=>got.push([who(),k+' held',t,q,d,v,false]);INST[k]=f}
+          for(const k in D0)DRUMS[k]=(t,v)=>got.push([who(),'drum '+k,t,0,0,v,false]);
+          AU.score=sc;AU.mood=mood;for(let st=0;st<from+n;st++)playStep(st,T0+st*sc.dt)}
+        finally{Object.assign(INST,I0);Object.assign(DRUMS,D0);for(const k in AU)AU[k]=keep[k]}
+        return got.map(([j,inst,t,f,d,v,down])=>({j,inst,s:Math.round((t-T0)/sc.dt)-from,m:f?+(69+12*Math.log2(f/440)).toFixed(3):null,d:+d.toFixed(4),v:+v.toFixed(4),down})).filter(e=>e.s>=0&&e.s<n)},
+      say=e=>e?`${e.inst} at step ${e.s}${e.m!=null?', MIDI '+e.m:''}${e.d?', '+e.d+' s':''}, level ${e.v}${e.down?', downbeat':''}`:'nothing',
+      /* render: steps from..from+n-1 of a score in a mood, offline, with Math.random held to one sequence so that the same notes render the
+         same; the peak, the RMS over the bar, and how long after the bar's end the sound stays within 60 dB of its peak */
+      render=async(sc,mood,from,n)=>{const SR=22050,bar=n*sc.dt,o=new OfflineAudioContext(1,Math.ceil(SR*(bar+4)),SR),keep=Object.assign({},AU),R=Math.random;let z=7;
+        Math.random=()=>(z=z*16807%2147483647)/2147483647;
+        try{AU.ctx=o;audioGraph(o);AU.mix=null;AU.score=sc;AU.mood=mood;for(let st=from;st<from+n;st++)playStep(st,.05+(st-from)*sc.dt)}finally{Math.random=R;for(const k in AU)AU[k]=keep[k]}
+        const x=(await o.startRendering()).getChannelData(0),a=Math.round(SR*.05),e=Math.round(SR*(.05+bar)),w=Math.round(SR*.05);let pk=0,ss=0,tail=0;
+        for(let i=0;i<x.length;i++)pk=Math.max(pk,Math.abs(x[i]));for(let i=a;i<e;i++)ss+=x[i]*x[i];
+        for(let i=e;i+w<=x.length;i+=w){let s=0;for(let k=i;k<i+w;k++)s+=x[k]*x[k];if(Math.sqrt(s/w)>pk*1e-3)tail=(i+w-e)/SR}
+        return{pk,rms:Math.sqrt(ss/(e-a)),tail}},
+      db=v=>(20*Math.log10(v)).toFixed(1);
+    for(const id of IDS){const n=id==='pro'?1:id;if(!TU.has(id)){miss.push(id);continue}
+      await loadLevel(n);const sc=CHAP[n].music,b=TU.BARS[id],src=b.src,N=sc.steps||16,len=b.bars*N;
+      for(const[k,a,c]of[['dt',b.dt,sc.dt],['steps',b.steps,N],['group',J(b.group),J(sc.group)],['root',b.root,sc.root],['scale',J(b.scale),J(sc.scale)]])
+        if(a!==c)keys.push(`chapter ${id}: ${k} is ${a} here and ${c} in its score`);
+      if(b.tracks.length>4||b.tracks.length!==src.tracks.length||b.tracks.some(t=>t.moods||t.from!=null||t.loop!=null))keys.push(`chapter ${id}: more than four tracks, not one to each of src.tracks, or one with moods, from or loop`);
+      const A=evs(sc,src.mood,src.bar*N,len),B=evs(b,'none',0,len),hold=+(len*b.dt+.4).toFixed(4),key=e=>[e.s,e.inst,e.m,e.d,e.v].join(),by=(p,q)=>key(p)<key(q)?-1:1;
+      b.tracks.forEach((t,j)=>{const k=src.tracks[j],st=sc.tracks[k],nm=`chapter ${id}, track ${k} (${st.inst||(st.drum?'drum':'drone')})`,
+          a=A.filter(e=>e.j===k).map(e=>st.drone&&e.d>hold?{...e,d:hold}:e).sort(by),c=B.filter(e=>e.j===j).sort(by);
+        if(!a.length)notes.push(`${nm}: it plays nothing in bar ${src.bar} in the mood ${src.mood}`);
+        for(let i=0;i<Math.max(a.length,c.length);i++)if(J(a[i]&&{...a[i],j:0})!==J(c[i]&&{...c[i],j:0})){notes.push(`${nm}, step ${(a[i]||c[i]).s}: the chapter plays ${say(a[i])}, the copy ${say(c[i])}`);break}});
+      const r=await render(b,'none',0,len),f=await render(sc,src.mood,src.bar*N,len);
+      if(!(r.pk>.001&&r.pk<.9)||r.rms>f.rms*1.06||r.tail>3.5)loud.push(`chapter ${id}: peak ${db(r.pk)} dB, RMS ${db(r.rms)} dB against the chapter's ${db(f.rms)} dB, rings ${r.tail.toFixed(2)} s on`);
+      L(`     ${id}: ${b.bars} bar${b.bars>1?'s':''}, ${TU.len(id).toFixed(2)} s, ${b.tracks.length} tracks, ${B.length} notes; peak ${db(r.pk)} dB, RMS ${db(r.rms)} dB (the chapter in that bar ${db(f.pk)}, ${db(f.rms)} dB), rings ${r.tail.toFixed(2)} s on`);
+      rows.push({id,b,ev:B,name:id==='pro'?T('Prologue')+': '+T(PRO.title):T(CHAP[n].label)+': '+T(CHAP[n].title)})}
+    ok(!miss.length,`every chapter that exists has its bar in shared/tunes.js: ${IDS.length-miss.length} of ${IDS.length}`+(miss.length?'. MISSING: '+miss.join(', '):''));
+    ok(!keys.length,'each bar has its chapter\'s dt, steps, group, root and scale, and at most four tracks, none of which depends on the mood'+(keys.length?'. NOT: '+keys.join('; '):''));
+    ok(!notes.length,'each bar plays, track by track, the notes its chapter\'s score plays in that bar and mood: instrument, step, pitch, length and level'+(notes.length?'. DIFFERS: '+notes.join('; '):''));
+    ok(!loud.length,'each bar sounds unclipped, no louder than its chapter plays that bar, and dies away within 3.5 s of its end'+(loud.length?'. NOT: '+loud.join('; '):''));
+    {const s=TU.score(1),X={dt:.2,root:50,scale:[0],tracks:[]},keep=[AU.score,AU.step,AU.key];let over=false;
+      try{setScore(s);for(let i=0;i<loopOf(s);i++)stepOn(s);over=AU.score===s.then}finally{AU.score=keep[0];AU.step=keep[1];AU.key=keep[2]}
+      ok(over&&!s.then.tracks.length&&s.then.root===s.root&&s.then.scale===s.scale&&TU.score(1)!==s&&TU.score(1).then!==s.then&&TU.score(2,X).then===X&&Math.abs(TU.len(13)-TU.BARS[13].bars*9*.2)<1e-9,
+        'score(n, then) is a new score each call that plays its bar once and hands over to then, or to silence in the bar\'s key; len(n) is its length')}
+    /* the sheet: a row to a chapter, its name and where the bar comes from at the left, its notes at the right */
+    const COL={drone:'#8a8f98',oud:'#e08a3c',lyre:'#e8c547',harp:'#5cbf6a',ney:'#5aa6e8',aulos:'#e0524a',bass:'#a0663a',horn:'#c070d0'},NOTE=['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'],
+      SW=16,RH=86,LW=330,W=LW+20*SW+30,c=document.createElement('canvas');c.width=W;c.height=58+rows.length*RH;const g=c.getContext('2d');
+    g.fillStyle='#1c1a22';g.fillRect(0,0,W,c.height);g.font='bold 15px Menlo,Consolas,monospace';g.fillStyle='#f4f0e6';g.fillText('One bar of each chapter\'s tune (shared/tunes.js): steps across, pitch up',10,24);
+    {let x=10;g.font='12px Menlo,Consolas,monospace';for(const k of Object.keys(COL).concat('drum')){g.fillStyle=COL[k]||'#d8d0c0';g.fillRect(x,37,10,10);g.fillStyle='#d8d0c0';g.fillText(k,x+13,47);x+=g.measureText(k).width+26}}
+    rows.forEach((R,ri)=>{const y0=58+ri*RH,b=R.b,len=b.bars*b.steps,ms=R.ev.filter(e=>e.m!=null).map(e=>e.m),lo=Math.min(...ms),hi=Math.max(...ms),k=Math.min(4,(RH-22)/(hi-lo+1));
+      g.fillStyle=ri%2?'#24222c':'#2a2833';g.fillRect(0,y0,W,RH);g.fillStyle='#f4f0e6';g.font='bold 12px Menlo,Consolas,monospace';g.fillText(R.name,8,y0+18);
+      g.fillStyle='#b8b0a0';g.font='11px Menlo,Consolas,monospace';g.fillText(`${NOTE[b.root%12]} [${b.scale.join(' ')}]  ${b.steps} steps x ${b.bars}`,8,y0+36);
+      g.fillText(`${TU.len(R.id).toFixed(2)} s, mood ${b.src.mood}, bar ${b.src.bar}`,8,y0+52);g.fillText('tracks '+b.src.tracks.join(', '),8,y0+68);
+      g.fillStyle='#14121a';g.fillRect(LW,y0+4,len*SW,RH-8);for(let s=b.steps;s<len;s+=b.steps){g.fillStyle='#3a3644';g.fillRect(LW+s*SW,y0+4,1,RH-8)}
+      for(const e of R.ev){const t=b.tracks[e.j];if(e.m==null){const big=e.inst==='drum d';g.fillStyle='#d8d0c0';g.fillRect(LW+e.s*SW+3,y0+RH-(big?14:10),big?6:4,big?8:4);continue}
+        const n=Math.min(len-e.s,Math.max(1,Math.ceil(e.d/b.dt-1e-6))),y=y0+RH-16-(e.m-lo+1)*k;g.fillStyle=COL[t.drone?'drone':e.inst.replace(' held','')]||'#fff';
+        g.globalAlpha=e.inst.endsWith('held')?.45:1;g.fillRect(LW+e.s*SW+1,y,n*SW-2,Math.max(2,k-1));g.globalAlpha=1}});
+    window.SHEETS={[(lang==='en'?'':lang+'-')+'tunes-sheet']:c.toDataURL()};halt('tunes')}
   /* Shipwreck survivor clothing & reusable Roman military cast (shared/cast.js): standing, facing left, mid-stride, and enlarged close-ups.
      Both stops also verify that every look stays one connected piece across standing, talking, seated and all walking frames. */
   if(stop==='shipwreck'||stop==='romans'||stop==='sanhedrin'||stop==='caesarea'||stop==='sea'){await need('cast');const SHEETS={},C=SHARED.cast,
