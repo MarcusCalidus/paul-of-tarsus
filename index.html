@@ -1203,6 +1203,66 @@ function cuffAt(o,pz,ges,fr){const ARM=!!(o.spear||o.pilum),CH=pz==='c'||pz==='l
    stands behind him and the far one when the keeper stands ahead, so that it is the same hand whichever way he turns */
 const poseOf=o=>o.lifted?'l':o.chained&&o.chainTo&&!o.held?((o.chainTo.x-o.x)*facing(o)>0?'f':'n'):o.chained||o.held?'c':o.keeper?(o.keeper==='near'?'K':'k'):'';
 const KNEEL={both:1,bothFolded:2,one:3,oneFolded:4},kneelX=(o,fr)=>fr<=-2&&fr>=-5?(fr>=-3?(o.h?-2.6:-3.2):(o.h?.2:.5)):0;
+/* Working poses (Acts 27 and 28: the ship, the wreck and Malta). An actor takes one while a script sets a.pose to its name and a.pk to its
+   frame (person's ps is the two together, as 'haul2'); he does not turn meanwhile, and the pose ends when a.pose is cleared. Every frame is
+   placed by hand in the figure painter like the rest; the numbers below are in drawing units, facing right: x from the feet, and y from the
+   shoulder line (yS) for the hands. No arm is ever stretched out to the side and never are both raised: a forearm that moves is bent and
+   slanting, and only the far hand ever rises (CONTRIBUTING section 3).
+     haul 0-2    hauling on a rope: the take, the pull and the heave. Leaning back (lean: how far the head is carried back, in drawing units),
+                 the knees bent and the near foot braced forward; both fists low and before the body, the far one ahead, on a slanting rope that
+                 the figure draws between them (poseAt gives its ends, for the room to draw it on).
+     hold 0-1    holding on, on a pitching deck: the far fist forward at the height of the chest, on whatever the room puts there (a rail, a rope,
+                 the foot of the mast), the feet set apart and braced; braced back, and thrown forward
+     sack        carrying a sack on the far shoulder, the far hand up under its front end: walks (the frame is the walk's)
+     bundle      carrying a bundle low before the body in both hands: walks too
+     plank 0-1   in the water to the chest, the forearms laid forward along a plank, and the plank itself; it rides up a little in 1
+     swim 0-1    swimming, the head and one bent arm out of the water: the elbow up and the hand going in; the arm brought forward again
+     lie         lying in bed on the back, the head on a bolster, a cover to the chest and the near arm on it (feet at x 0, see lying)
+     sitUp       sitting up in the same bed, the cover over the lap and legs, the hands on it
+     huddle      sitting on the ground, wet and cold, the knees drawn up and the arms round them
+     warmSit     sitting on the ground so, the forearms on the knees and the hands open towards a fire, low
+     warm        standing, the forearms low and forward, the hands open towards a fire
+     lay 0-1     a hand laid on someone: the far forearm slanting down to an open hand, palm down; 0 standing and bent a little forward over
+                 a high bed, 1 on one knee beside a low one, the head bowed
+     shake 0-1   shaking something off the far hand: the hand lifted a little, then flicked down and open
+     heave 0-1   heaving the sounding lead: the far fist low with the line, then forward and low as it goes; the near fist holds the coil
+     payout 0-1  paying out the line over a rail: the far fist forward and low, the line running through it; the near fist holds the coil
+   far, near: where that fist or hand lies (its top left), [x, y from yS]; water: the line where the water stands, in drawing units below
+   the shoulder line (the figure is drawn with that line at its feet, and nothing under it); ground: sits on the ground; fr: the frame of the
+   body under the pose (-4 one knee, -1 seated). */
+const stance=(L0,L1,bob)=>{const P=[Object.assign({ly:0,p:0},L0),Object.assign({ly:0,p:0},L1)],maxF=Math.max(P[0].kx,P[1].kx,0),minB=Math.min(P[0].kx,P[1].kx,0);
+  return{legs:P,bob,headBob:0,lean:0,twist:0,fa:0,fb:0,na:0,nb:0,armLiftF:0,armLiftN:0,sk:0,skFlareL:Math.round(clamp(-minB*.3,0,2)),skFlareR:Math.round(clamp(maxF*.35,0,3)),
+    foldShift:0,mt:0,shadowW:8.2+1.4*Math.abs(P[0].ax-P[1].ax)/30}};
+const POSE={
+  haul:{n:3,lean:k=>[-4,-8,-12][k],legs:k=>stance({ax:-9,kx:[-2,-1,0][k]},{ax:[11,13,15][k],kx:[6,7,8][k]},[3,4,5][k]),far:k=>[[25,24],[23,26],[21,28]][k],near:k=>[[11,20],[9,22],[7,24]][k],elb:k=>[[-5,17],[-6,18],[-7,19]][k],rope:1},
+  hold:{n:2,lean:k=>[-3,2][k],legs:()=>stance({ax:-11,kx:-5},{ax:10,kx:5},1),far:()=>[18,8]},
+  sack:{n:1,walk:1,far:()=>[17,1]},
+  bundle:{n:1,walk:1,far:()=>[15,15],near:()=>[-6,16]},
+  plank:{n:2,water:k=>17-k,far:()=>[25,8],near:()=>[7,9]},
+  swim:{n:2,water:()=>3,far:k=>[[23,0],[19,-4]][k]},
+  lie:{n:1,lie:1},
+  sitUp:{n:1,fr:()=>-1,bed:1},
+  huddle:{n:1,ground:1,lean:()=>2,far:()=>[16,21],near:()=>[12,20]},
+  warmSit:{n:1,ground:1,lean:()=>2,far:()=>[23,16],near:()=>[12,20]},
+  warm:{n:1,far:()=>[21,17],near:()=>[-7,18]},
+  lay:{n:2,fr:k=>k?-4:0,lean:k=>k?0:3,far:k=>[[21,27],[20,24]][k]},
+  shake:{n:2,far:k=>[[19,5],[20,21]][k]},
+  heave:{n:2,far:k=>[[16,26],[23,19]][k],near:()=>[-5,19],coil:1},
+  payout:{n:2,far:k=>[[22,21],[21,24]][k],near:()=>[-5,19],coil:1}};
+/* poseOn: a pose worked out for a look: its entry and frame, the frame of the body (fr), the legs (W), the belt and shoulder lines, the
+   bands of a lean (off: how far a row is carried forward), and how far the figure is let down into the water (sink) */
+function poseOn(o,ps){const N=ps.replace(/\d+$/,''),Q=POSE[N];if(!Q)return null;const k=Math.min(Q.n-1,+(ps.slice(N.length)||0)),fr=Q.fr?Q.fr(k):0,W=Q.legs?Q.legs(k):null,
+    kid=o.h?1:0,fem=!!(o.veil||o.fem),LEG=kid?19:23,SK=kid?13:16,TOR=kid?22:fem?24:26,kn=fr<=-2&&fr>=-5,
+    yB=Q.ground?-14:fr===-1?SEATG[kid?'kid':'man'].b0-10:-4-LEG+(W?W.bob:0)-SK+(kn?(kid?15:19):0),yS=yB-3-TOR,L=Q.lean?Q.lean(k):0,piv=yB+4,top=yS-2,
+    off=y=>!L||y>=piv?0:y<top?L:Math.round(L*(piv-y)/(piv-top)),sink=Q.water?-(yS+Q.water(k)):0;
+  return{N,Q,k,fr,W,yB,yS,L,off,sink,nw:(o.slim?1:0)+(fem?1:0)}}
+/* poseAt: where the hands of a pose lie, in room pixels from the feet as the figure faces right (multiply x by its dir): far and near
+   ([x, y], the middle of each fist or hand), and for haul the two ends of the rope the figure holds (rope: [[x, y], [x, y]], the near end
+   first), for the room to carry the rope on from them along the same line. For a pose in the water y is from the water line. */
+function poseAt(o,ps){const p=poseOn(o,ps);if(!p)return null;const{Q,k,yS,off,sink,nw}=p,at=(h,w,d)=>{if(!h)return null;const x=h[0]-nw+w/2,y=yS+h[1]+d;return[(x+off(y))*FIG.K,(y+sink)*FIG.K]},
+    far=at(Q.far&&Q.far(k),5,2),near=at(Q.near&&Q.near(k),5,2),r={far,near};
+  if(Q.rope){const dx=far[0]-near[0],dy=far[1]-near[1],d=Math.hypot(dx,dy),e=5*FIG.K/d;r.rope=[[near[0]-dx*e,near[1]-dy*e],[far[0]+dx*e,far[1]+dy*e]]}
+  return r}
 /* person: one figure with its feet at x,y, one drawing unit per canvas pixel, facing right (dir -1 mirrors it).
    fr is the walk: 0 stands; -1 the figure sits (see SEATG: its hips on the seat, the thighs level, the near shin straight down and the far foot drawn back under the seat; bare knees beyond the hem of a short tunic, and under a long robe the cloth hanging from the knees nearly to the floor);
    -2 to -5 it kneels (see KNEEL: on both knees or one, the arms down or the hands folded, the head bowed; the body lower by the length of a shin);
@@ -1227,8 +1287,14 @@ const KNEEL={both:1,bothFolded:2,one:3,oneFolded:4},kneelX=(o,fr)=>fr<=-2&&fr>=-
    arm still with its cuff and the near one free under the mantle; the far hand may be raised (ges 1) with its cuff, and the chain follows
    it. ges 10 grips another's arm above the elbow: the far forearm slants forward and a little up from the elbow to a closed
    hand at the height of the other's upper arm (shared/cast.js, custody.grips, lays the fingers over that arm). No arm is ever spread or raised to the side. */
-function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
-  const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=o.stone?c.sk:c.le,fem=!!(o.veil||o.fem),HIM=!!((o.himation||o.toga)&&C),TOGA=!!(o.toga&&C),WET=!!o.wet,TORN=o.torn|0,ARM=(o.spear||o.pilum)&&!(o.spear==='slant'&&fr<0);g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz,ps){
+  /* a working pose (POSE): it takes both hands and the body, and leaves the mouth and the eyes; lying in bed is a picture of its own */
+  const PO=ps&&!o.stone?poseOn(o,ps):null,PQ=PO&&PO.Q,PK=PO?PO.k:0;if(PQ&&PQ.lie){lying(g,x,y,o,dir,talk,blink);return}
+  if(PO){if(!PQ.walk)fr=PO.fr;ges=0;pz='';if(PQ.ground||PQ.water)bow=0}
+  const GS=!!(PQ&&PQ.ground),BU=!!(PQ&&PQ.bed);
+  const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=o.stone?c.sk:c.le,fem=!!(o.veil||o.fem),HIM=!!((o.himation||o.toga)&&C),TOGA=!!(o.toga&&C),WET=!!o.wet,TORN=o.torn|0,ARM=(o.spear||o.pilum)&&!(o.spear==='slant'&&fr<0)&&!PO;g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+  /* sitting up in bed: the hips rest on the mattress at the feet line. In the water: nothing below the water line, and the figure let down to it */
+  if(BU)g.translate(0,-SEATG[o.h?'kid':'man'].b0);if(PO&&PQ.water){g.beginPath();g.rect(-90,-220,180,220);g.clip();g.translate(0,PO.sink)}
   /* kneeling (fr -2 to -5, see KNEEL): the head is bowed, and the figure moves nothing but its mouth */
   const kn=fr<=-2&&fr>=-5?-1-fr:0,both=kn&&kn<=2,fold=kn&&kn%2===0;if(kn)bow=1;
   mv=o.stone||bow?0:mv|0;talk=o.stone?0:talk|0;if(o.stone&&ges===9)ges=0;
@@ -1236,7 +1302,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
   pz=o.stone?'':pz||'';const CH=pz==='c'||pz==='l',ON=pz==='n',OF=pz==='f',KP=pz==='k'||pz==='K',KN=pz==='K'||KP&&!!(o.spear||o.pilum),LF=pz==='l';if((CH||OF)&&(ges!==1||ARM)||KP&&!KN)ges=0;if(pz)mv&=~MV.lean;
   /* bound (fr -6, a.bound): seated, the feet together and the hands held together low in front, both wound round with a belt (see wind) */
   const tied=fr===-6,hang=fr===-7,seat=fr===-1||tied||hang,BD=!!o.board&&!kn&&!tied&&!hang&&!pz;if(tied||BD)ges=0;
-  const W=!seat&&fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):!seat&&!kn&&fr?gaitPose(o,[0,0,.25,.5][fr]||0,1):null,bob=W?W.bob:0;let SH=null;
+  const W=PO&&PO.W?PO.W:!seat&&fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):!seat&&!kn&&fr?gaitPose(o,[0,0,.25,.5][fr]||0,1):null,bob=W?W.bob:0;let SH=null;
   /* px: a run of pixels. While a foot is painted, SH lets each of its columns sit higher than the next: a heel that is up, or the toes */
   let CL=-999;const px=(a,b,col,w,h)=>{w=w||1;if(a<CL){w-=CL-a;a=CL;if(w<=0)return}g.fillStyle=col;if(SH)for(let i=0;i<(w||1);i++)g.fillRect(a+i,b+SH(a+i),1,h||1);else g.fillRect(a,b,w||1,h||1)};
   /* tearCut: natural 2-3px jagged cloth tongues along a ragged hem (max 2px notch, keeps every column connected to above) */
@@ -1261,15 +1327,15 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
     for(let i=0;i<n;i++){const e=i===0||i===n-1?1:0;for(let k=e;k<w-e;k++){const t=(k+.5)/w,q=(i+(t<.5?1:0))%turn;
       let v=t<.12?4:t<.3?3:t<.66?2:t<.9?1:2;if(q===0)v=Math.max(0,v-1);else if(q===turn-1)v=Math.min(4,v+1);px(x0+k,y0+i,B[v])}}};
   const kid=o.h?1:0,slim=o.slim?1:0,LEG=kid?19:23,SK=kid?13:16,TOR=kid?22:fem?24:26,AL=26;
-  const SQ=seat?SEATG[kid?'kid':'man']:null,KD=kid?15:19,yA=-4,yH=yA-LEG+bob,yB=seat?SQ.b0-10:yH-SK+(kn?KD:0),yS=yB-3-TOR,SL=o.longSleeve?AL-2:12;   /* ankle, hem, top of the skirt, shoulder line; AL: rows of an arm down to the wrist */
+  const SQ=seat?SEATG[kid?'kid':'man']:null,KD=kid?15:19,yA=-4,yH=yA-LEG+bob,yB=seat?SQ.b0-10:GS?PO.yB:yH-SK+(kn?KD:0),yS=yB-3-TOR,SL=o.longSleeve?AL-2:12;   /* ankle, hem, top of the skirt, shoulder line; AL: rows of an arm down to the wrist */
   /* the sleeves are one garment with the body: PIT rows of shoulder yoke, then the arms part from the trunk */
-  const PIT=8,nw=slim+(fem?1:0),aw=fem?4:5,ax=-10+nw-aw,fx=11-nw,fw=5,waist=Math.round(TOR*.6),tw=W&&!c.ar&&!ARM&&!ges&&!bow&&!pz?W.twist:0;
+  const PIT=8,nw=slim+(fem?1:0),aw=fem?4:5,ax=-10+nw-aw,fx=11-nw,fw=5,waist=Math.round(TOR*.6),tw=W&&!c.ar&&!ARM&&!ges&&!bow&&!pz&&!PO?W.twist:0;
   /* custody: which arm hangs still (FA the far one, NA the near one), its hand a little forward (bend 2), and a cuff round its wrist */
   const FA=((CH||OF)&&ges!==1||KP&&!KN||BD&&!seat)&&!ARM,NA=CH||KN||ON;
   /* a spear held slanting (spear:'slant', the light infantry of Acts 23:23): the far hand holds it at the side, the shaft leaning forward and
      up to its leaf-shaped iron head well ahead of the face, and running down and back behind the body, where the torso and the skirt hide
      its foot. It is painted first, before the cape, so that the body and a cape cover it: one slanting line and nothing laid across it (CONTRIBUTING section 3) */
-  if(o.spear==='slant'&&!seat&&!kn){const sl=.55,hy0=yS+11,X=y=>18+(hy0-y)*sl;
+  if(o.spear==='slant'&&!seat&&!kn&&!PO){const sl=.55,hy0=yS+11,X=y=>18+(hy0-y)*sl;
     for(let y=yS-32;y<=yS+43;y++){const x=Math.round(X(y));px(x,y,'#8a6238');px(x+1,y,'#5a3c20')}
     [1,1,3,3,5,5,5,5,3,3,1,1].forEach((w,i)=>{const y=yS-44+i,x0=Math.round(X(y))-(w>>1)+(w>1?1:0);px(x0,y,'#c4c4d0',w);px(x0+(w>1?1:0),y,'#f4f4fc');if(w>2)px(x0+w-1,y,'#8a8a98')})}
   /* cape, behind everything (naturally flaring military cloak with deep vertical folds; column-notched when torn) */
@@ -1295,7 +1361,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
       for(let k=0;k<n;k++)px(x0+k,yS+len+j,S[Math.min(4,(j===4?3:k===0?3:k===n-1?1:j===3&&k===2?3:2)+(near?1:0))])});
     /* a gold ring (ring: 1) on a finger of the far hand: two pixels side by side, never a round shape */
     if(o.ring&&!near){px(hx+1,yS+len+3,'#f0d27a');px(hx+2,yS+len+3,'#b8902e')}};
-  arm(false,FA?0:W?W.fa:0,ARM||o.stub||fold||tied||(ges&&ges!==4&&!bow),FA?2:W?W.fb:0,FA?0:W?W.armLiftF:0);
+  arm(false,FA?0:W?W.fa:0,ARM||o.stub||fold||tied||(ges&&ges!==4&&!bow)||!!(PQ&&PQ.far),FA?2:W?W.fb:0,FA?0:W?W.armLiftF:0);
   /* legs and sandals (or barefoot, Roman military caligae, officer laced boots, shin greaves, or closed patrician shoes) */
   const boot=o.caligae?ramp(o.highBoot?'#56321c':'#4b2b18'):null,GRV=o.greaves?ramp(typeof o.greaves==='string'?o.greaves:'#a8b0bc'):null;
   const foot=(fx0,fy,R)=>{if(o.barefoot){px(fx0,fy,R[3]);px(fx0+1,fy,R[2],5);px(fx0,fy+1,R[2],7);px(fx0,fy+2,R[2],9);px(fx0+7,fy+2,R[1],2);px(fx0,fy+1,R[3]);px(fx0,fy+2,R[3],2);px(fx0,fy+3,R[3],9);px(fx0+1,fy+3,R[4],6);return}
@@ -1369,13 +1435,14 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
     let x1=d1;for(let x=xc;x>d1;x--)if(thighY(Q,x,0)<=yy+.5&&yy-1.5<=thighY(Q,x,1)){x1=x;break}return[d0,x1]};
   {const REST={ax:0,kx:0,ly:0,p:0},L0=W?W.legs[0]:REST,L1=W?W.legs[1]:REST;
     const ankle=(ax0,P,R)=>{if(!TORN&&!W)return;for(let j=1;j<=4;j++)for(let k=0;k<5;k++)px(ax0+1+k,yA-P.ly-j,R[k===0?4:k===1?3:k<4?2:1])};
-    if(kn)kneel();
+    if(GS||BU){}
+    else if(kn)kneel();
     else if(seat)seatLegs(SQ);
     else if(o.long){const r0=[S[1],S[2],S[3],S[4],S[4]],f0=W?Math.round(-3+L0.ax)+1:3,n0=W?Math.round(-4+L1.ax)+1:-8;
       ankle(f0,L0,r0);footP(f0,L0,r0);ankle(n0,L1,S);footP(n0,L1,S)}
     else if(!W){leg(1,REST,1);leg(-9,REST,0)}else{leg(-4,L0,1);leg(-4,L1,0)}}
   /* skirt of a short tunic, or a robe to the ankles; a woman's robe widens over the hips. When torn: jagged ragged tongues & fabric rip. */
-  const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=o.long?(tied?yA-7:TOGA?yA-1:yA+1):kn?yB+SK+(TORN?4:3)-(kid?1:0):seat?SQ.b0:TORN?yH+2:yH+1,n=y1-yB+1,fsh=W?W.foldShift:0;
+  const SR=c.st,hem=c.tr||[T[3],T[3],T[3],T[4],T[4]],y1=GS?-1:BU?SQ.b0:o.long?(tied?yA-7:TOGA?yA-1:yA+1):kn?yB+SK+(TORN?4:3)-(kid?1:0):seat?SQ.b0:TORN?yH+2:yH+1,n=y1-yB+1,fsh=W?W.foldShift:0;
   const skWet=WET?((k,w,i)=>i>n*(o.long?.42:.36)+Math.round(Math.sin(k*.7+TORN)*2.5)):null;
   for(let i=0;i<n;i++){CL=seat&&yB+i>SQ.b0?seatX(SQ,yB+i,y1,0,0)[0]:-999;const t=i/(n-1),hw=(fem?8+Math.min(3,Math.round(i*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,
       flL=W?Math.round(W.skFlareL*t*t):0,flR=W?Math.round(W.skFlareR*t*t):0,
@@ -1505,7 +1572,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
       if(j===13){px(gx+dx+1,yB-1+j,'#e8c866',1);continue}
       px(gx+dx,yB-1+j,band?'#c49e44':'#56241c',3);px(gx+dx+2,yB-1+j,band?'#f6de8a':'#8e3e32',1)}}
   /* a working apron (apron: its color): a length of stiff cloth tied round the waist, over the front of the skirt, as tradesmen wore it (Acts 19:12) */
-  if(o.apron&&!HIM&&!seat&&!kn){const A=c.ap||(c.ap=ramp(o.apron)),m=o.long?n-6:n-3;for(let i=-3;i<m;i++){const j=Math.max(0,i),t=j/(n-1),hw=(fem?8+Math.min(3,Math.round(j*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,x0=-hw+3+sw,x1=hw-2+sw;
+  if(o.apron&&!HIM&&!seat&&!kn&&!GS){const A=c.ap||(c.ap=ramp(o.apron)),m=o.long?n-6:n-3;for(let i=-3;i<m;i++){const j=Math.max(0,i),t=j/(n-1),hw=(fem?8+Math.min(3,Math.round(j*.6)):10-slim)+Math.round(t*(fem?2.2:o.long?3.2:2)),sw=W?Math.round(W.sk*t):0,x0=-hw+3+sw,x1=hw-2+sw;
       if(i<0)for(let xx=x0-1;xx<=x1+1;xx++)px(xx,yB+i,A[i===-3?1:i===-2?2:4]);else if(i===m-1)for(let xx=x0;xx<=x1;xx++)px(xx,yB+i,A[xx<x0+3?4:3]);else cloth(yB+i,x0,x1,A,i,[[.34,2,.02],[.68,4,-.01]])}}
   /* officer's cloak draped over the near shoulder (and optional high shoulder cowl with drape:1), flaring naturally down the side */
   if(C&&o.offCloak){const m1=yH+12,mn=m1-yS+2,wl=WET?((k,w,i)=>i>mn*.5+(k+TORN)%3):null;
@@ -1520,7 +1587,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
     else{for(let xx=-13;xx<=-4;xx++){px(xx,yS-1,C[1]);px(xx,yS,C[2]);px(xx,yS+1,C[3]);px(xx,yS+2,C[4])}
       px(-8,yS,'#f6de8a',3,2);px(-7,yS+1,'#b08a3c',2,1)}}
   /* mantle (or Roman toga): hanging from the near shoulder, and across the chest to the far hip */
-  else if(C&&!o.cape){const m1=o.long||TOGA?yA-6:yH+6,mn=m1-yS+2,ED=o.edge?ramp(o.edge):null,wl=WET?((k,w,i)=>i>mn*.48+(k+TORN)%3):null;
+  else if(C&&!o.cape){const m1=GS?-3:o.long||TOGA?yA-6:yH+6,mn=m1-yS+2,ED=o.edge?ramp(o.edge):null,wl=WET?((k,w,i)=>i>mn*.48+(k+TORN)%3):null;
     for(let yy=yS-1;yy<=m1;yy++){const i=yy-yS+1,t=i/(mn-1),bulge=t>.25&&t<.6?1:0,zig=yy>m1-3?(m1-yy<1?3:m1-yy<2?1:0):0;
       const ms=W?Math.round(W.mt*t*t):0,x0=-16+(i<3?3-i:0)-bulge+(TORN?0:zig)+ms+tw,x1=-9+(t>.45?1:0)-(TORN?0:zig>1?1:0)+ms+tw,w=x1-x0+1;
       if(TORN&&yy>m1-4){for(let k=0;k<w;k++){const cut=tearCut(k,w);if(yy>m1-cut)continue;const edge=yy===m1-cut,P=c.clW||C;px(x0+k,yy,edge?P[4]:P[k<2?4:k>w-3?1:2])}}
@@ -1554,8 +1621,88 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
     for(let xx=-15;xx<=14;xx++){if(xx>=-1&&xx<=4)continue;const u=(xx+15)/29,e=Math.abs(xx+.5)>13?1:0,sag=Math.round(Math.sin(u*Math.PI)*1.2);
       px(xx,yS-1+e+sag,C[1]);px(xx,yS+e+sag,C[xx<-7?3:2]);px(xx,yS+1+e+sag,C[xx<-7?4:3]);if(xx<-4||xx>6)px(xx,yS+2+e+sag,C[4])}
     px(7,yS+1,clCol,3,2);px(8,yS+2,clDk,2,1)}
+  /* ---- the working poses (POSE): poseBack paints what lies behind the near arm (the legs of one sitting on the ground, the cover over a lap
+     in bed, a sack on the shoulder), poseFront what lies before everything (the forearms and hands, the rope, the bundle, the coil, the plank,
+     the water). The near forearm of a figure in a mantle is the mantle's: it comes out of it in the mantle's cloth. ---- */
+  const openN=!C||o.cape||o.offCloak,RF=o.longSleeve?T:S,RN=openN?RF:C,DK=R=>[R[1],R[2],R[3],R[4],R[4]],ROPE=['#dcc496','#b89c6a','#8c7246','#5e4a2e','#3a2c1a'],
+    /* limb: a forearm four units thick from (x0,y0) to (x1,y1), given by its top left corner; it steps along its length and is lit on its
+       upper side (dk: a tone darker, on the shadow side of the figure) */
+    limb=(x0,y0,x1,y1,R,dk)=>{const Q=dk?DK(R):R,dx=x1-x0,dy=y1-y0;
+      if(Math.abs(dx)>=Math.abs(dy)){const n=Math.abs(dx);for(let k=0;k<=n;k++){const gx=x0+Math.sign(dx)*k,gy=y0+Math.round(k*dy/Math.max(1,n));px(gx,gy,Q[1]);px(gx,gy+1,Q[2],1,2);px(gx,gy+3,Q[3])}}
+      else{const n=Math.abs(dy);for(let k=0;k<=n;k++){const gy=y0+Math.sign(dy)*k,gx=x0+Math.round(k*dx/Math.max(1,n));px(gx,gy,Q[3]);px(gx+1,gy,Q[2],2);px(gx+3,gy,Q[1])}}},
+    /* a closed fist, five units by four; an open hand, palm down and the fingers forward; an open hand flung down, the fingers apart a little */
+    fist=(q,y,dk)=>{const Q=dk?DK(S):S;px(q,y,Q[2],5,4);px(q,y,Q[1],5);px(q,y+3,Q[3],5);px(q,y+1,Q[3],1,2);px(q+4,y+1,Q[1],1,2)},
+    flat=(q,y,dk)=>{const Q=dk?DK(S):S;px(q,y,Q[1],5);px(q,y+1,Q[2],7);px(q+5,y+1,Q[1]);px(q+1,y+2,Q[3],6)},
+    drop=(q,y)=>{px(q,y,S[2],5,3);px(q+3,y,S[1],2,3);px(q,y,S[3],1,3);px(q,y+3,S[2],2,2);px(q+3,y+3,S[1],2,2);px(q+1,y+5,S[3]);px(q+3,y+5,S[2])},
+    HP=f=>f&&[f[0]-nw,yS+f[1]],FH=HP(PQ&&PQ.far&&PQ.far(PK)),NH=HP(PQ&&PQ.near&&PQ.near(PK)),
+    /* the far forearm from the elbow to a hand at h (its top left): a hand lower than the elbow is met at its top, a raised one at its foot */
+    toFar=(h,R)=>{const[X,Y]=h,x0=12-nw,y0=yS+12,steep=Math.abs(Y-y0)>Math.abs(X-x0);limb(x0,y0,steep?X:X-1,steep?(Y>y0?Y-1:Y+3):Y,R||RF)},
+    toNear=(h,e)=>{const[X,Y]=h;let x0=ax+3,y0=yS+12;
+      if(e){const[ex,ey]=[e[0]-nw,yS+e[1]];limb(ax+1,yS+8,ex,ey,openN?S:C,1);if(openN)limb(ax+1,yS+8,ax+1+Math.round((ex-ax-1)*.35),yS+8+Math.round((ey-yS-8)*.35),T,1);x0=ex;y0=ey}
+      const steep=Math.abs(Y-y0)>Math.abs(X-x0);limb(x0,y0,steep?X:X-1,steep?Y-1:Y,RN,1)},
+    /* rope: a laid rope two units thick from a to b, its strands lit in turn along the top */
+    rope=(a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],n=Math.max(Math.abs(dx),Math.abs(dy),1);for(let i=0;i<=n;i++){const xx=Math.round(a[0]+dx*i/n),yy=Math.round(a[1]+dy*i/n);px(xx,yy,ROPE[(xx>>1)&1?1:2]);px(xx,yy+1,ROPE[3])}},
+    /* cap: a limb as a rounded tube from (x0,y0) to (x1,y1), r0 to r1 thick, lit from above and in front; R(t): its ramp at t (cloth or skin) */
+    cap=(x0,y0,x1,y1,r0,r1,R)=>{const dx=x1-x0,dy=y1-y0,L2=dx*dx+dy*dy||1,Rm=Math.max(r0,r1)+1;
+      for(let yy=Math.floor(Math.min(y0,y1)-Rm);yy<=Math.max(y0,y1)+Rm;yy++)for(let xx=Math.floor(Math.min(x0,x1)-Rm);xx<=Math.max(x0,x1)+Rm;xx++){
+        const X=xx+.5-x0,Y=yy+.5-y0;let t=(X*dx+Y*dy)/L2;t=t<0?0:t>1?1:t;const ex=X-dx*t,ey=Y-dy*t,d=Math.hypot(ex,ey),r=r0+(r1-r0)*t;if(d>r)continue;
+        const sh=(ex*.45-ey*.89)/r;px(xx,yy,R(t)[sh>.62?1:sh>-.1?2:sh>-.62?3:4])}},
+    /* the legs of one sitting on the ground, facing right: each thigh rises from the hip to the knee, drawn up before the body, and the shin
+       comes down to a foot set flat on the ground; a short tunic covers the thigh nearly to the knee, a long robe the whole leg to the ankle.
+       The far leg lies a little behind, a tone darker; neither crosses the other */
+    groundLegs=()=>{const TW=WET&&c.tuW?c.tuW:T;
+      for(const dk of[1,0]){const d=dk?-3:0,e=dk?-1:0,Sk=dk?DK(S):S,Cl=dk?DK(TW):TW,hx=1+d,hy=-8+e,kx=14+d,ky=-24+e,ax0=16+d,ay=-6+e;
+        /* the cloth that falls from the underside of the thigh to the ground, in shade: from the hip to short of the knee */
+        if(!dk)for(let xx=hx;xx<=kx-(o.long?0:5);xx++){const t=(xx-hx)/(kx-hx),yt=Math.round(hy+(ky-hy)*t+3.4),yb=-1-(o.long?0:Math.round(t*t*9));
+          for(let yy=yt;yy<=yb;yy++)px(xx,yy,Cl[yy===yb&&!o.long?4:xx>kx-(o.long?2:7)?4:3])}
+        if(o.long)cap(kx,ky,ax0+1,ay+3,4,4.4,()=>Cl);else cap(kx,ky,ax0,ay,3,2.5,()=>Sk);
+        foot(ax0-3,yA+e,Sk);
+        cap(hx,hy,kx,ky,4.4,3.7,t=>o.long||t<.74?Cl:Sk);
+        /* a fold along the top of the thigh, and the hem of a short tunic round it */
+        if(!dk){for(let t=.15;t<.6;t+=.04){const xx=Math.round(hx+(kx-hx)*t-1),yy=Math.round(hy+(ky-hy)*t-1);px(xx,yy,Cl[0])}
+          if(!o.long)for(let j=-3;j<=3;j++){const xx=Math.round(hx+(kx-hx)*.74+j*.78),yy=Math.round(hy+(ky-hy)*.74+j*.62);px(xx,yy,Cl[4])}}}},
+    /* the cover over the lap of one sitting up in bed: from the hips over the knees to the feet, and hanging a little over the bed's edge */
+    lapCover=()=>bedCover(px,[[-13,-19],[-12,-25],[-10,-29],[-6,-31],[-1,-30],[6,-29],[16,-29],[22,-30],[30,-27],[40,-26],[46,-28],[50,-28],[53,-24],[54,-20],[54,-18]],-18,ramp(o.cover||BED_COVER)),
+    /* the sack on the far shoulder, its gathered neck behind; lit from the front and above, a crease or two that run one way */
+    sack=()=>{const R=ramp('#b8a27c'),cx=9-nw,W=[4,6,8,9,9,10,10,10,10,9,9,8,6];
+      for(let i=0;i<W.length;i++){const yy=yS-11+i,x0=cx-W[i],x1=cx+W[i]+(i>6?1:0);for(let xx=x0;xx<=x1;xx++){const u=(xx-x0)/Math.max(1,x1-x0);
+        let v=i<2?1:u<.15?3:u>.7&&i<6?1:2;if(i>=W.length-2)v=Math.min(4,v+1);if((xx-yy*.5+40|0)%7===0&&i>2&&i<10&&u>.2&&u<.8)v=Math.min(4,v+1);px(xx,yy,R[v])}}
+      px(cx-13,yS-6,R[3],3,3);px(cx-14,yS-5,R[4]);px(cx-12,yS-6,R[2],2)},
+    /* the bundle carried low before the body: a cloth wrapped round things, its knot on top, the folds running one way */
+    bundle=()=>{const R=ramp('#8e7a5e'),x0=-3-nw,x1=17-nw,y0=yS+12,y1=yS+22;
+      for(let yy=y0;yy<=y1;yy++){const cut=yy===y0||yy===y1?2:yy===y0+1||yy===y1-1?1:0;for(let xx=x0+cut;xx<=x1-cut;xx++){const u=(xx-x0)/(x1-x0);
+        let v=yy===y0?1:yy>=y1-1?4:u<.12?3:u>.78?1:2;if((xx+yy*.6|0)%6===0&&yy>y0+1&&yy<y1-1)v=Math.min(4,v+1);px(xx,yy,R[v])}}
+      px(6-nw,y0-2,R[1],3,2);px(5-nw,y0-1,R[2]);px(9-nw,y0-1,R[3]);px(4-nw,y0-3,R[2],2);px(9-nw,y0-3,R[1],2)},
+    /* the coil of line hanging from the near fist: loops seen edge on, one lump with its strands slanting one way, never a ring */
+    coil=h=>{const[X,Y]=h;for(let j=0;j<9;j++){const w=j<1?4:j<7?6:4,x0=X+(j<1||j>6?1:0)-1;for(let i=0;i<w;i++){let v=i===0?3:i===w-1?1:2;if((i+j)%3===0)v=Math.min(4,v+1);if(j===8)v=4;px(x0+i,Y+4+j,ROPE[v])}}},
+    /* the water a figure stands in: short runs of foam where it meets the body, at the water line */
+    foam=(xs,wy)=>{for(const[a,b]of xs)for(let xx=a;xx<=b;xx++){const e=xx===a||xx===b;px(xx,wy-1,e?'#a8c0c8':'#c4d6dc');if(!e&&(xx>>1)&1)px(xx,wy-2,'#e2ecee')}};
+  /* poseBack: behind the near arm */
+  const poseBack=()=>{const n=PO.N;
+    if(n==='huddle'){toFar(FH);fist(FH[0],FH[1])}
+    if(GS)groundLegs();
+    if(BU)lapCover();
+    if(n==='sack')sack()};
+  /* poseFront: the forearms and hands, and what they hold */
+  const poseFront=()=>{const n=PO.N;
+    if(n==='haul'){toFar(FH);toNear(NH,PQ.elb(PK));const ax0=NH[0]+2,ay0=NH[1]+1,bx=FH[0]+2,by=FH[1]+1,dl=Math.hypot(bx-ax0,by-ay0)||1,ux=(bx-ax0)/dl,uy=(by-ay0)/dl;
+      rope([ax0-ux*5,ay0-uy*5],[bx+ux*5,by+uy*5]);fist(FH[0],FH[1]);fist(NH[0],NH[1],1)}
+    else if(n==='hold'){toFar(FH);fist(FH[0],FH[1])}
+    else if(n==='sack'){toFar(FH);fist(FH[0],FH[1])}
+    else if(n==='bundle'){toFar(FH);fist(FH[0],FH[1]);bundle();if(openN)toNear(NH);fist(NH[0],NH[1],1)}
+    else if(n==='plank'){const W0=yS+PQ.water(PK),R=ramp('#8a6a46'),x0=-8,x1=36-nw,yt=x=>yS+13-(x>14?1:0);
+      for(let xx=x0;xx<=x1;xx++){const t=yt(xx);px(xx,t,R[xx===x0?2:1]);px(xx,t+1,R[xx===x0?3:2]);px(xx,t+2,R[3],1,W0-t-2);if(xx%9===4)px(xx,t+1,R[3])}
+      limb(12-nw,yS+9,FH[0]-1,FH[1]+1,RF);flat(FH[0],FH[1]+1);limb(ax+3,yS+9,NH[0]-1,NH[1]+1,RN,1);flat(NH[0],NH[1]+1,1);foam([[-14,-8],[x1-2,x1+3]],W0)}
+    else if(n==='swim'){const W0=yS+PQ.water(PK),E=PK?[14-nw,yS-6]:[15-nw,yS-3];limb(11-nw,yS+3,E[0],E[1],RF);limb(E[0],E[1],FH[0]-1,FH[1],RF);
+      if(PK)fist(FH[0],FH[1]);else flat(FH[0],FH[1]);foam(PK?[[-17,-12],[12-nw,17-nw]]:[[-17,-12],[12-nw,17-nw],[FH[0]+4,FH[0]+9]],W0)}
+    else if(n==='lay'||n==='warm'){toFar(FH);flat(FH[0],FH[1]);if(NH){toNear(NH);flat(NH[0],NH[1],1)}}
+    else if(n==='warmSit'){toFar(FH);flat(FH[0],FH[1]);toNear(NH);fist(NH[0],NH[1],1)}
+    else if(n==='shake'){toFar(FH);if(PK)drop(FH[0],FH[1]);else fist(FH[0],FH[1])}
+    else if(n==='heave'||n==='payout'){toFar(FH);fist(FH[0],FH[1]);toNear(NH);coil(NH);fist(NH[0],NH[1],1)}
+    else if(n==='huddle'){toNear(NH);fist(NH[0],NH[1],1)}};
+  if(PO)poseBack();
   /* near arm (hidden when a mantle hangs over it, unless officer cloak, cape, or reaching back to lead by the hand) */
-  if(!C||o.cape||o.offCloak||ges===4||NA)arm(true,NA?0:W?W.na:0,!NA&&(ges===4||fold||tied||(ges===9&&!bow&&!o.stub)),NA?2:W?W.nb:0,NA?0:W?W.armLiftN:0);
+  if(!C||o.cape||o.offCloak||ges===4||NA)arm(true,NA?0:W?W.na:0,!NA&&(ges===4||fold||tied||(ges===9&&!bow&&!o.stub)||!!(PQ&&PQ.near)),NA?2:W?W.nb:0,NA?0:W?W.armLiftN:0);
   /* a cuff: an iron band round a wrist, two rows, a pixel wider than the wrist on each side, lit along its top and dark at its ends */
   const cuff=(x0,y0,w)=>{const I=CUFF;for(let k=0;k<w;k++){const e=k===0||k===w-1;px(x0+k,y0,I[e?3:k===w-2?0:1]);px(x0+k,y0+1,I[e?4:k===w-2?2:3])}};
   if(NA)cuff(ax+2+(fem?0:0),yS+AL-2,aw+1);if(FA&&!BD)cuff(fx+1,yS+AL-2,fw+1);
@@ -1619,6 +1766,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
     if(HS==='crest'||HS==='plume'){if(!c.cr){L.r='#a62620';L.R='#cc4036';L.Y='#e86e5a';L.D='#641412';L.g='#c8a448'}
       sh(HS==='crest'?HEADS.crest:HEADS.plume,HS==='crest'?hx-3:hx-3,HS==='crest'?hy-10:hy-8);sh(HEADS.galea,hx-1,hy-2)}
     else sh(HS==='galea'?HEADS.galea:HEADS.helm,hx-1,hy-2)}
+  if(PO)poseFront();
   /* the far hand: holding a spear or Roman pilum, or raised in speech */
   if(ARM){const sx=18;
     if(o.pilum){px(sx,yS-7,'#7a5430',1,7-yS);px(sx+1,yS-7,'#4e341c',1,7-yS);
@@ -1680,8 +1828,54 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz){
   /* leaning: the figure is painted twice, below the belt as it stands and above it a pixel forward (also subtle forward lean at full stride) */
   /* lifted: nothing below the hem is drawn; the soldiers who carry him hide where it would be */
   if(LF){g.beginPath();g.rect(-90,-220,180,220-4-(o.h?19:23)-1);g.clip()}
-  if((mv&MV.lean)||(W&&W.lean&&!ARM&&!c.ar&&!o.long&&!ges&&!bow&&!pz)){const yb=-7-(o.h?32:39)+bob;for(const up of[0,1]){g.save();g.beginPath();g.rect(-90,up?-220:yb,180,up?220+yb:220);g.clip();if(up)g.translate(1,0);body();g.restore()}}
+  /* a working pose that leans (POSE, poseOn): painted in bands, each carried forward (or back) a pixel more than the one under it from the
+     hips up, and the head with the last of them whole, so that no face is cut */
+  if(PO&&PO.L){for(let y0=-220;y0<20;){const v=PO.off(y0);let y1=y0+1;while(y1<20&&PO.off(y1)===v)y1++;g.save();g.beginPath();g.rect(-90,y0,180,y1-y0);g.clip();if(v)g.translate(v,0);body();g.restore();y0=y1}}
+  else if((mv&MV.lean)||(W&&W.lean&&!ARM&&!c.ar&&!o.long&&!ges&&!bow&&!pz)){const yb=-7-(o.h?32:39)+bob;for(const up of[0,1]){g.save();g.beginPath();g.rect(-90,up?-220:yb,180,up?220+yb:220);g.clip();if(up)g.translate(1,0);body();g.restore()}}
   else body();
+  g.restore()}
+/* A bed's cover (lying and sitUp): a woollen blanket whose top runs along the points P (left to right) down to the mattress at yb, and hangs
+   a few units over the bed's near edge; lit along its top and shaded low, its two ends rounding off. BED_COVER is its color, unless the
+   look gives one (cover). */
+const BED_COVER='#9a7650';
+function bedCover(px,P,yb,R){const x0=P[0][0],x1=P[P.length-1][0];for(let xx=x0;xx<=x1;xx++){let i=0;while(i<P.length-2&&P[i+1][0]<xx)i++;const[a,b]=[P[i],P[i+1]],
+    top=Math.round(a[1]+(b[1]-a[1])*(xx-a[0])/Math.max(1,b[0]-a[0])),edge=xx-x0<2||x1-xx<2;
+  for(let yy=top;yy<=yb;yy++){const d=yy-top,v=d===0?(edge?1:0):d<3?1:yb-yy<2?3:edge?3:2;px(xx,yy,R[v])}
+  for(let j=1;j<=4;j++){if(edge&&j>2)continue;px(xx,yb+j,R[j===4?4:3])}}}
+/* The head of one lying on his back, seen from the side: the crown to the left, the face turned up, the chin and throat to the right; drawn
+   by hand at its own size, never turned from the standing head (CONTRIBUTING section 4). Column 0 is x -60 of lying, row 0 y -21; the
+   legend is the standing head's (s S L z Z skin, b brow, w p eye, n nostril, m mouth, r lips; h H d hair; B V v beard). */
+const LIE={
+ face:["...........L........","..........sSs.......","....sSSb..sSz.......","...sSSSSzwpssSrr....","..zsSSSSssssssmrsz..",".zzsSSSssssssssssz..",
+   ".zsSSSsssssssssszz..","zzsSSssszzsssssszs..","zzssssszsszssszzss..","zzsssssszzssszzsss..","zzzssssssssszz.zss..",".zzzssssssszz...sss.",
+   "..zzzzsssszz....zss.","....zzzzzz.......zz."],
+ hair:["....................","...hhh..............",".hhHHh..............","hhHHhd..............","hHHhhd..............","hHhhhd..............",
+   "hhhhdd..............","hhhhd...............","hhhd................","hhhd................","hhhdd...............",".hhdd...............","..hddd..............","....dd.............."],
+ bald:["....................","....................","....................","...L................","..LL................","....................",
+   "....................","....................","hh..................","hhd.................","hhdd................",".hdd................","..hdd...............","....d..............."],
+ beard:["....................","....................","....................","....................","...............BB...","............vBBBVB..",
+   "...........vBBVBBBB.","..........vBBBBVBBBv","...........vBBVBBBv.","............vBBBBv..",".............vvvv..."]};
+/* lying: one in bed on his back (POSE.lie), his feet towards +x, his hips about x 0 and the mattress at the feet line; the head on a long, low
+   bolster (never round behind the head), the cover from the chest to the feet and a little over the bed's near edge, and the near arm laid
+   along his side with the hand on the cover. The bed itself is the room's: its mattress top at the feet line, from x -64 to x 50 in drawing units. */
+function lying(g,x,y,o,dir,talk,blink){const c=pal(o),S=c.sk,T=c.tu,Hr=c.ha,Bd=c.be,Gr=c.gr,LN=ramp('#d8ceb6'),CV=ramp(o.cover||BED_COVER);
+  g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);const px=(a,b,col,w,h)=>{g.fillStyle=col;g.fillRect(a,b,w||1,h||1)};
+  /* the bolster: its long side towards us, lit along the top */
+  for(let xx=-62;xx<=-34;xx++){const u=(xx+62)/28,top=Math.round(-6+2.4*Math.pow(2*u-1,4));for(let yy=top;yy<0;yy++){const d=yy-top;px(xx,yy,LN[xx===-62||xx===-34?3:d===0?0:d<2?1:yy>-2?3:2])}}
+  /* the shoulders and the chest under the chin, in the tunic, down to the mattress */
+  for(let xx=-43;xx<=-30;xx++){const top=xx<-37?-9-Math.round((xx+43)*.6):-13;for(let yy=top;yy<0;yy++){const d=yy-top;px(xx,yy,T[d===0?1:d<3?2:yy>-3?4:3])}}
+  /* the cover, from the chest to the feet */
+  bedCover(px,[[-32,-9],[-31,-13],[-28,-14],[-22,-14],[-12,-12],[0,-10],[10,-9],[20,-10],[30,-8],[37,-8],[40,-11],[44,-11],[47,-7],[48,-3],[48,0]],0,CV);
+  /* the head on the bolster */
+  const L={s:S[2],S:S[1],L:S[0],z:S[3],Z:S[4],n:S[3],w:S[0],p:'#1a1018',b:o.brow||o.hair||o.beard||'#2a1a12',m:'#6a2a22',r:'#8a3a30',h:Hr[2],H:Gr?Gr[2]:Hr[1],d:Hr[3]};
+  if(Bd){L.B=Bd[2];L.V=Gr?Gr[2]:Bd[1];L.v=Bd[3]}if(blink){L.w=S[3];L.p=S[3]}
+  const hx=-60,hy=-19;stamp(g,LIE.face,hx,hy,L);if(talk)px(hx+14,hy+4,'#3a0e0c',talk>1?2:1,talk>2?2:1);
+  if(o.hair)stamp(g,o.bald||o.thin?LIE.bald:LIE.hair,hx,hy,L);if(Bd)stamp(g,LIE.beard,hx,hy,L);
+  /* the near arm along his side: the sleeve and the upper arm slanting down from the shoulder to the elbow, the forearm up onto the cover
+     and the hand open on it */
+  const arm=(x0,y0,x1,y1,R)=>{const n=x1-x0;for(let k=0;k<=n;k++){const xx=x0+k,yy=y0+Math.round(k*(y1-y0)/n);px(xx,yy,R[1]);px(xx,yy+1,R[2],1,2);px(xx,yy+3,R[3])}};
+  arm(-33,-12,-19,-8,S);arm(-33,-12,-27,-10,o.longSleeve?S:T);if(o.longSleeve)arm(-27,-10,-19,-8,T);arm(-19,-8,-9,-13,o.longSleeve?T:S);
+  px(-9,-14,S[1],5);px(-9,-13,S[2],6);px(-8,-12,S[3],5);
   g.restore()}
 /* --- icon helpers: each icon is drawn on a 24-unit grid --- */
 const IH={
