@@ -66,7 +66,7 @@
  /* choose: the line that stands at place i of the choice as the level gives it (from the end if i<0), wherever it is shown */
  const choose=async i=>{const b=[...document.querySelectorAll('#choices button')],j=i<0?b.length+i:i;b.find(x=>+x.dataset.i===j).click();await idle()};
  /* a choice is mixed by its keys, never by a line put together in the player's language: that would mix it differently in each language */
- const unkeyed=new Set();{const c0=window.choose;window.choose=function(opts,o){if(!(o&&o.order))for(const k of(o&&o.by)||opts)if(MADE.has(k)&&textOf('en',k)==null)unkeyed.add(G.ch+': '+k);return c0.apply(this,arguments)}}
+ const unkeyed=new Set();{const c0=window.choose;window.choose=function(opts,o){if(!(o&&o.order))for(const k of(o&&o.by)||opts.map(x=>x&&typeof x==='object'?x.key:x))if(typeof k!=='string'||MADE.has(k)&&textOf('en',k)==null)unkeyed.add(G.ch+': '+k);return c0.apply(this,arguments)}}
  /* Pray to Jehovah is the hint system, and it never changes the game's state (CONTRIBUTING section 2). Every prayer of the playthrough is
     held to that: the flags, what everyone carries and the room are noted as a prayer begins, and compared at the check that follows it. */
  /* depth (CONTRIBUTING section 4): seen() stands Paul at a place in the room and returns a number for the picture inside a small box [x,y,w,h]; the
@@ -218,7 +218,10 @@
       ok(!SHARED.logo.can('PAUL & TARSUS')&&SHARED.logo.paint(T('paul_of_tarsus'),T('on_the_roads_of_rome'))===c,'a title with a letter the logo cannot write is left as text, and a logo is painted only once');
       halt('logo',()=>{const k=document.createElement('canvas'),W=innerWidth,Hh=innerHeight,Z=3,half=Math.ceil(c.width/2)+6;k.width=W;k.height=Hh;k.style.cssText='position:fixed;left:0;top:0;z-index:8';document.body.appendChild(k);
         const g=k.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#3a4474';g.fillRect(0,0,W,Hh);
-        for(let j=0;j<2;j++)g.drawImage(c,j*(c.width-half),0,half,c.height,Math.round((W-half*Z)/2),30+j*(c.height*Z+40),half*Z,c.height*Z)})}}
+        for(let j=0;j<2;j++)g.drawImage(c,j*(c.width-half),0,half,c.height,Math.round((W-half*Z)/2),30+j*(c.height*Z+40),half*Z,c.height*Z);
+        /* and the card of Chapter Twenty-Two, whose name has the only Q: logo-q.png, three times enlarged */
+        {const q=SHARED.logo.paint('EUROAQUILO',T('chapter_twenty_two').toUpperCase()),[s,sg]=mk(q.width*3+24,q.height*3+24);sg.imageSmoothingEnabled=false;sg.fillStyle='#1a1830';sg.fillRect(0,0,s.width,s.height);
+          sg.drawImage(q,12,12,q.width*3,q.height*3);window.SHEETS={[(lang==='en'?'':lang+'-')+'logo-q']:s.toDataURL()}}})}}
   /* The people of the account grow older with its years (issue #29). Paul's look is worked out for each chapter's point in Acts
      (paulLook), and those who return are given an older look by their chapter. The stop `ages` shows them side by side, enlarged:
      look there for a head that has come apart, and for crosses. */
@@ -1223,6 +1226,115 @@
      device pixels to the CSS pixel, touched and without a mouse (phoneportrait: held upright); emu=1 gives it the safe margins of a phone with
      its camera in the screen, as Safari reports them. Stops: phonetitle, phone (a line in the workshop), phonenames, phonezoom, phonechoice,
      phoneclose (a close view, fitted whole), phonemenu, phonescroll, phoneportrait; phoneall runs every check (part of the full run). */
+  /* The beat of the sea (shared/beat.js): beat on the desktop, phonebeat on a phone held sideways. A test scene of the harness's own, a
+     strip of deck with three holds in a row (no chapter's room), is crossed hold by hold as a level would: a click on the next hold is a
+     step, judged by the beat at the moment of the click (attempt, which reads G.actT), and the playtest waits for the pause by the phase
+     the beat exposes, or clicks on the wave to miss. Checked: the phase, a hit in the pause, a miss on the wave (back at the last hold,
+     and no line standing), the sailor's call after three misses and the carry after six, a hit that clears the count, the sea's sound
+     scheduled on the same clock and heard where the wave breaks, nothing thrown without sound, and no beat left running after a code is
+     restored. */
+  if(/^(phone)?beat$/.test(stop)){const ph=stop==='phonebeat';if(ph){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120)}
+    await need('beat');await loadLevel(1);ov.className='';ov.onclick=null;G.splash=0;setChapter(1);G.scene=null;
+    TEXTS('en','main',{beat_test_hold:'handhold'});TEXTS('de','main',{beat_test_hold:'Haltegriff'});
+    const X=[70,160,250],Y=124,K={at:0},BT=SHARED.beat,now=()=>performance.now();
+    /* the picture: an overcast sky, the sea to one horizon, a deck of planks running one way, three low cleats; the sea that comes over
+       the rail is drawn from the phase, and the sailor's call over the middle of the deck */
+    ART.beattest={w:320,light:{amb:'#c4c8d0'},   /* an overcast storm: soft light, no cast shadows */
+      paint(g){const sk=g.createLinearGradient(0,0,0,70);sk.addColorStop(0,'#4a5260');sk.addColorStop(1,'#7a828c');g.fillStyle=sk;g.fillRect(0,0,320,70);
+        g.fillStyle='#2e4250';g.fillRect(0,70,320,26);for(let i=0;i<40;i++){g.fillStyle='rgba(220,230,236,.35)';g.fillRect((i*53)%320,72+(i*7)%22,6,1)}
+        g.fillStyle='#5a3e26';g.fillRect(0,92,320,6);g.fillStyle='#7a5636';g.fillRect(0,92,320,1);
+        for(let j=0;j<5;j++){g.fillStyle=j%2?'#8a6640':'#7e5c38';g.fillRect(0,98+j*9.2,320,9.2);g.fillStyle='rgba(30,20,12,.5)';g.fillRect(0,98+j*9.2,320,.6)}
+        for(const x of X){g.fillStyle='#3a2a1c';g.fillRect(x-7,Y-5,14,4);g.fillStyle='#6a5034';g.fillRect(x-7,Y-5,14,1)}},
+      draw(g,t){const b=G.beat;if(!b)return;const p=b.phase(t),w=p<b.from?1-p/b.from:p>=b.to?(p-b.to)/(1-b.to):0;
+        if(w>0){g.fillStyle=`rgba(226,236,240,${(p<b.from?.55:.35)*w})`;g.fillRect(0,p<b.from?92:92-w*22,p<b.from?320:60+w*260,p<b.from?52*w:22*w+4)}
+        BT.call(g,160,40,t)},front(){}};
+    const hold=i=>({name:'beat_test_hold',i,x:X[i]-12,y:100,w:24,h:30,def:'use',get wx(){return P.x},get wy(){return P.y},use:h=>step(h)});
+    ROOMS.beattest={walk:[40,280,118,130],mood:'calm',amb:{},hs:[hold(1),hold(2)]};
+    const R={hits:0,miss:0,carry:0,last:null};
+    /* step: what a level does for a hold: only the next one counts; a hit walks there in the pause, a miss is washed back to the last
+       hold with no line, and the carry takes him to the end */
+    async function step(h){if(h.i!==K.at+1)return;const r=G.beat.attempt();R.last=r;
+      if(r.carry){R.carry++;await walk(P,X[2],Y);K.at=2;G.beat.reset();return}
+      if(r.hit){R.hits++;await walk(P,X[h.i],Y);K.at=h.i;return}
+      R.miss++;await walk(P,X[K.at]+(X[h.i]-X[K.at])*.12,Y);await walk(P,X[K.at],Y)}
+    const R0=el=>el.getBoundingClientRect(),touch=(type,x,y)=>cv.dispatchEvent(new PointerEvent(type,{pointerId:1,pointerType:'touch',isPrimary:true,clientX:x,clientY:y,bubbles:true,cancelable:true})),
+      gap=async()=>{if(ph)await wait(400)},   /* a phone holds back a second tap within 350 ms: a player's taps are never that close */
+      click=async i=>{const[x,y]=[X[i],Y-12];if(ph){const[cx2,cy2]=toClient(x,y);touch('pointerdown',cx2,cy2);touch('pointerup',cx2,cy2);vp.dispatchEvent(new MouseEvent('click',{clientX:cx2,clientY:cy2,bubbles:true}))}else view(x,y);await idle()},
+      till=async(fn,n)=>{for(let i=0;i<(n||600)&&!fn();i++)await wait(10);return!!fn()},
+      inPauseWithRoom=()=>G.beat.inPause()&&G.beat.next().to-now()>=G.beat.need+150,
+      onWave=()=>!G.beat.inPause()&&G.beat.phase()>.02&&G.beat.phase()<G.beat.from-.04,
+      quiet=()=>!G.skip&&!$('#speech').textContent.trim();
+    G.speedAll=500;place(P,'beattest',X[0],Y,1);enterRoom('beattest',X[0],Y,1);G.busy=false;lock(false);syncVerbs();drawInv();status();await wait(200);
+    const b=BT.start({need:1500});
+    ok(G.beat===b&&BT.beat===b&&b.on&&b.period===1800&&b.pause===900&&b.need===450&&b.room==='beattest','a beat is started and exposed on G.beat, shortened under the playtest: '+b.period+' ms from wave to wave, a pause of '+b.pause+', a step of '+b.need);
+    {const t=now(),p=b.phase(t),q=b.phase(t+7*b.period),n=b.next(t),c=b.crash(t);
+      ok(p>=0&&p<1&&Math.abs(p-q)<1e-9&&n.to-n.from===b.pause&&b.inPause(n.from+1)&&!b.inPause(n.to+1)&&Math.abs(b.phase(c))<1e-6&&c>t&&c-t<=b.period,
+        `the phase is exposed (${p.toFixed(3)} now), runs on the clock alone (the same seven waves later, so frames lost in a background tab change nothing), and says when the next pause begins and ends`)}
+    /* the moment of the click, not of the handler: a click noted inside a pause that has ended since is still a hit */
+    {await till(()=>b.inPause()&&b.next().to-now()>b.need+80);const t=now();G.actT=t;await till(()=>!b.inPause());const r=b.attempt();
+      ok(r.hit&&r.misses===0&&!b.inPause(),'a step is judged by the moment of the click (G.actT), not by when its handler runs')}
+    await gap();await till(inPauseWithRoom);await click(1);
+    ok(K.at===1&&Math.abs(P.x-X[1])<1&&R.hits===1&&b.misses===0&&b.help===0,'a click on the next hold in the pause between two seas is a step: he is at the second hold');
+    const actT=G.actT;ok(Math.abs(actT-now())<3000&&actT>0,'the click\'s moment is kept as it went down (G.actT)');
+    for(let n=1;n<=3;n++){await gap();await till(onWave);await click(2);
+      ok(K.at===1&&Math.abs(P.x-X[1])<1&&R.miss===n&&b.misses===n&&quiet()&&!G.busy,`a click on the wave is a miss (${n}): he is washed back to the last hold, and no line stands to be clicked away`)}
+    ok(b.help===1&&R.last&&R.last.help===1&&!R.last.carry,'after three misses in a row the sailor calls the moment');
+    {await till(()=>b.calling());BT.cap.last=null;await wait(80);const c=BT.cap.last;
+      ok(b.calling()&&c&&c.key==='now'&&c.s===T('now')&&c.w<=c.max&&c.s!=='now','he calls it in the pause, while a step still ends inside it: the caption '+(c&&c.s)+' fits its width')}
+    await gap();await till(inPauseWithRoom);await click(2);
+    ok(K.at===2&&R.hits===2&&b.misses===0&&b.help===0,'a hit clears the count, and the help with it: he is at the last hold');
+    place(P,'beattest',X[0],Y,1);K.at=0;
+    for(let n=1;n<=6;n++){await gap();await till(onWave);await click(1)}
+    ok(R.carry===1&&K.at===2&&Math.abs(P.x-X[2])<1&&R.last.carry&&R.last.help===2&&R.miss===8,'after three more misses the sailor takes him across: he is at the last hold, and nobody can get stuck');
+    /* sound: no running AudioContext (the playtest's is never started by a real press) and none at all: nothing is scheduled and nothing is thrown */
+    {const s0=b.sounded,c0=AU.ctx;let err=null;try{await wait(b.period+200);AU.ctx=null;await wait(b.period+200)}catch(e){err=e}finally{AU.ctx=c0}
+      ok(!err&&b.sounded===s0&&(s0===0||c0&&c0.state==='running'),'without sound (a context never started, or none at all) the beat runs on in silence and nothing is thrown')}
+    /* with sound on: an offline context stands in for a running one. The sea is scheduled from the same clock, through the beat's own
+       bus, and rendered: its crash is heard where the wave breaks in the picture, and the swell rises before it */
+    {BT.stop();const sr=22050,off=new OfflineAudioContext(1,sr*3,sr),c0=AU.ctx,calls=[];if(!AU.nbuf){const nb=off.createBuffer(1,sr,sr),d=nb.getChannelData(0);for(let i=0;i<sr;i++)d[i]=Math.random()*2-1;AU.nbuf=nb}
+      const n0=window.noise,t0=window.tone;window.noise=o=>{calls.push(['noise',o.dest]);return n0(o)};window.tone=o=>{calls.push(['tone',o.dest]);return t0(o)};
+      AU.ctx=new Proxy(off,{get(t,k){if(k==='state')return'running';const v=t[k];return typeof v==='function'?v.bind(t):v}});
+      /* the stand-in is the game's context only while start() schedules the first sea, which it does at once: no other sound of the engine runs meanwhile */
+      let s,crashAt,err=null;try{const k=BT.start({phase:.62,dest:off.destination,room:null});crashAt=(k.crash()-now())/1000;s=k.sounded;k.bus=null}catch(e){err=e}
+      finally{AU.ctx=c0;window.noise=n0;window.tone=t0;BT.stop()}
+      const buf=await off.startRendering(),d=buf.getChannelData(0),win=Math.round(sr*.04),rms=i=>{let e=0;for(let j=i;j<i+win&&j<d.length;j++)e+=d[j]*d[j];return Math.sqrt(e/win)};
+      let pk=0,pt=0;for(let i=0;i<d.length-win;i+=win/2){const r=rms(i);if(r>pk){pk=r;pt=i/sr}}
+      const before=rms(Math.max(0,Math.round((crashAt-.25)*sr))),early=rms(0);
+      ok(!err&&s===1&&calls.length>=10&&calls.every(c=>c[1]&&c[1]!==AU.fx)&&pk>.02&&Math.abs(pt-crashAt)<.15&&before>early*3,
+        `with sound on, the sea is scheduled on the beat's own bus (${calls.length} voices for one sea) and heard where the wave breaks: the loudest moment ${pt.toFixed(2)} s, the crash ${crashAt.toFixed(2)} s, and the swell rising before it`+(err?' ERR '+err.message:''))}
+    /* a code restored in the middle of a crossing: no beat is left running, and the room's own scripts would start one again */
+    {BT.start();ok(!!G.beat,'a beat runs again');applyState(decode(codeOf(1,0)));await wait(250);
+      ok(G.beat===null&&BT.beat===null&&G.room!=='beattest','a safe-point code restored in the middle of a crossing leaves no beat running')}
+    /* the beat stops by itself when its room is no longer shown */
+    {place(P,'beattest',X[0],Y,1);enterRoom('beattest',X[0],Y,1);const k=BT.start();enterRoom('workshop',160,128,1);await wait(250);ok(!k.on&&G.beat===null,'and it stops by itself when its room is left')}
+    /* the picture: the deck at the game's own pace, the sailor's call standing over it in the pause, with Paul at the second hold */
+    G.speedAll=0;clearInterval(sk);enterRoom('beattest',X[1],Y,1);{const k=BT.start({phase:b.from+.01});k.misses=3;k.help=1}await wait(300);
+    ok(G.beat.calling()&&G.beat.period===6000,'at the game\'s pace the beat is six seconds from wave to wave, and the call stands in the pause');halt(stop)}
+  /* Pictures as answers (choose with {icon, key}, Chapter Twenty-Three's islanders): picks on the desktop, phonepicks on a phone. Four
+     pictures and a last line that only leaves: the pictures stand in a row of squares, mixed by their keys, in the same order in English
+     and in German; each says its words to the status line and to a screen reader; a click answers with its place in the options. */
+  if(/^(phone)?picks$/.test(stop)){const ph=stop==='phonepicks';if(ph){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120)}
+    await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();clearInterval(sk);G.speedAll=0;place(P,'workshop',160,128,1);[G.cam,G.camY]=camAt('workshop',160,128);await wait(400);
+    TEXTS('en','main',{pick_test_awl:'Show the awl',pick_test_thread:'Show the thread',pick_test_knife:'Show the knife',pick_test_tablets:'Show the tablets',pick_test_leave:'Say goodbye'});
+    TEXTS('de','main',{pick_test_awl:'Die Ahle zeigen',pick_test_thread:'Den Faden zeigen',pick_test_knife:'Das Messer zeigen',pick_test_tablets:'Die Tafeln zeigen',pick_test_leave:'Sich verabschieden'});
+    const opts=[{icon:'awl',key:'pick_test_awl'},{icon:'thread',key:'pick_test_thread'},{icon:'knife',key:'pick_test_knife'},{icon:'tablets',key:'pick_test_tablets'},'pick_test_leave'],
+      R0=el=>el.getBoundingClientRect(),order=()=>[...document.querySelectorAll('#choices button')].map(b=>b.dataset.src),other=lang==='en'?'de':'en';
+    G.busy=true;lock(true);status();let pr=window.choose(opts,{keep:1});await wait(300);
+    const bs=[...document.querySelectorAll('#choices button')],pics=bs.filter(b=>b.classList.contains('pic')),o1=order(),
+      want=[0,1,2,3].sort((a,b)=>mixRank(opts[a].key)-mixRank(opts[b].key)||a-b).map(i=>opts[i].key).concat('pick_test_leave');
+    ok(pics.length===4&&o1.join()===want.join()&&bs[4]&&!bs[4].classList.contains('pic')&&bs[4].dataset.src==='pick_test_leave'&&!unkeyed.size,'the pictures are mixed by their keys, as every choice is, and the line that only leaves stays last: '+o1.join(', '));
+    {const rs=pics.map(R0),row=pics[0].parentNode,cr=R0($('#choices'));
+      ok(row.classList.contains('pics')&&rs.every(r=>Math.abs(r.top-rs[0].top)<1&&Math.abs(r.width-r.height)<1&&r.width>=(ph?44:24)&&r.left>=cr.left-1&&r.right<=cr.right+1)&&rs.every((r,i)=>!i||r.left>=rs[i-1].right)&&pics.every(b=>b.querySelector('canvas')),
+        `they stand in a row of squares, ${Math.round(rs[0].width)} pixels each${ph?', easy to hit with a finger':''}, each with its icon`);
+      ok(pics.every(b=>b.getAttribute('aria-label')===T(b.dataset.src)&&b.title===T(b.dataset.src)&&!b.textContent.trim()),'each has the words of its key for a screen reader and as its title, and shows no text: '+T(pics[0].dataset.src))}
+    if(!ph){pics[1].dispatchEvent(new MouseEvent('mouseenter'));await wait(50);ok($('#status').textContent===T(pics[1].dataset.src),'the status line names the picture under the pointer: '+$('#status').textContent);pics[1].dispatchEvent(new MouseEvent('mouseleave'))}
+    /* the same order in the other language, both in a choice that stands while the language changes and in one opened afresh */
+    await setLang(other);await wait(100);const o2=order(),lab=pics[0].getAttribute('aria-label');
+    $('#choices').classList.remove('on');pr=window.choose(opts,{keep:1});await wait(200);const o3=order();
+    ok(o2.join()===o1.join()&&o3.join()===o1.join()&&lab===T(pics[0].dataset.src)&&lab!==textOf(lang,pics[0].dataset.src),`in ${LANGS[other].native} the pictures stand in the same order, and say their words in it: ${lab}`);
+    await setLang(lang);await wait(100);$('#choices').classList.remove('on');pr=window.choose(opts,{keep:1});await wait(300);
+    fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,6).join(' | '):''));
+    halt(stop,()=>{window.SHEETS={[(lang==='en'?'':lang+'-')+stop+'-row']:(()=>{const p=[...document.querySelectorAll('#choices button.pic canvas')],z=6,[s,g]=mk(p.length*(48*z/2+12)+12,48*z/2+24);g.imageSmoothingEnabled=false;g.fillStyle='#120c08';g.fillRect(0,0,s.width,s.height);p.forEach((c,i)=>g.drawImage(c,12+i*(48*z/2+12),12,48*z/2,48*z/2));return s.toDataURL()})()}})}
   if(/^phone/.test(stop)){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120);
     const root=document.documentElement,R=el=>el.getBoundingClientRect(),W=innerWidth,Hh=innerHeight,
       touch=(type,id,x,y)=>cv.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:id===1,clientX:x,clientY:y,bubbles:true,cancelable:true})),
@@ -1313,6 +1425,11 @@
       const bad=[];for(let cap=20;cap<=37;cap++){const p=pieces(SHARED.logo.plain('Ä Ö Ü','name',cap));if(p!==9)bad.push('name at '+cap+': '+p)}
       {const p=pieces(SHARED.logo.plain('Ä Ö Ü','sub',11));if(p!==9)bad.push('subtitle: '+p)}
       ok(!bad.length,'the two dots of an umlaut stand apart, from each other and from their letter, at every size a card writes them'+(bad.length?': not '+bad.join(', '):''))}
+    /* the Q of EUROAQUILO: its tail grows out of the bowl, so the letter is one piece at every size a card writes it, and a card with it can be painted */
+    {const pieces=m=>{const seen=new Uint8Array(m.length);let n=0;for(let i=0;i<m.length;i++)if(m[i]&&!seen[i]){n++;const st=[i];seen[i]=1;
+        while(st.length){const j=st.pop(),x=j%m.w,y=(j-x)/m.w;for(let b=-1;b<=1;b++)for(let a=-1;a<=1;a++){const X=x+a,Y=y+b,k=Y*m.w+X;if(X>=0&&Y>=0&&X<m.w&&Y<m.h&&m[k]&&!seen[k]){seen[k]=1;st.push(k)}}}}return n};
+      const bad=[];for(let cap=20;cap<=37;cap++){const p=pieces(SHARED.logo.plain('Q','name',cap));if(p!==1)bad.push(cap+': '+p)}
+      ok(!bad.length&&SHARED.logo.can('EUROAQUILO'+T('chapter_twenty_two').toUpperCase()),'the logo writes a Q, one piece at every size a card writes it, and EUROAQUILO can be painted on a card'+(bad.length?': not '+bad.join(', '):''))}
     showCard(n);await wait(300);halt(stop)}
   if(/^pro(card|1|2|3|4|5|7|8|8b|9)$/.test(stop)){await loadLevel(1);await loadPrologue();ov.className='';ov.onclick=null;setChapter(1);G.inPro=1;$('#chname').textContent=T(PRO.name);$('#skip').style.display='';G.busy=true;lock(true);status();clearInterval(sk);G.speedAll=0;
     if(stop==='procard'){showCard('prologue');await wait(300);halt('procard')}

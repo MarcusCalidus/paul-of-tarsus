@@ -186,6 +186,11 @@ body{display:flex;align-items:center;justify-content:center}
 #choices.on{display:flex}
 #choices button{text-align:left;padding:0 calc(var(--s)*4px);flex:0 0 calc(var(--s)*7.2px);line-height:calc(var(--s)*7.2px);font-size:calc(var(--s)*5.4px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #choices button:hover{color:var(--hi);background:rgba(96,62,28,.6)}
+/* pictures as answers (choose with {icon, key}): a row of square buttons, the icon as large as in the inventory */
+#choices .pics{display:flex;flex:0 0 auto;flex-wrap:wrap;gap:calc(var(--s)*2px);padding:calc(var(--s)*1px) 0}
+#choices button.pic{flex:0 0 auto;width:calc(var(--s)*34px);height:calc(var(--s)*34px);line-height:0;padding:0;display:flex;align-items:center;justify-content:center}
+#choices button.pic canvas{width:calc(var(--s)*24px);height:calc(var(--s)*24px);image-rendering:pixelated;image-rendering:crisp-edges;pointer-events:none}
+#choices button.pic:hover,#choices button.pic:focus-visible{outline:calc(var(--s)*1px) solid var(--gold);outline-offset:calc(var(--s)*-1px)}
 #panel.locked #verbs,#panel.locked #inv{opacity:.35;pointer-events:none}
 #top button{margin-left:calc(var(--s)*2px)}
 #codebox{position:absolute;z-index:5;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--s)*3px);
@@ -310,6 +315,9 @@ html.phone #choices{--s:var(--ts);--px:calc(var(--s)*.5px);inset:auto var(--fr) 
   background:rgba(18,12,8,.95);box-shadow:inset 0 var(--px) 0 #000,inset 0 calc(var(--px)*2) 0 #6a4c24,0 calc(var(--s)*-1px) calc(var(--s)*4px) rgba(0,0,0,.55)}
 html.phone #choices button{flex:0 0 auto;white-space:normal;text-overflow:clip;line-height:1.3;font-size:calc(var(--s)*6px);
   padding:calc(var(--s)*4px) calc(var(--s)*3.5px);touch-action:manipulation}
+html.phone #choices .pics{justify-content:center;gap:calc(var(--s)*3px)}
+html.phone #choices button.pic{width:calc(var(--s)*40px);height:calc(var(--s)*40px);padding:0}
+html.phone #choices button.pic canvas{width:calc(var(--s)*28px);height:calc(var(--s)*28px)}
 html.phone #status{--s:var(--ts);--px:calc(var(--s)*.5px);position:absolute;left:var(--fl);right:var(--fr);top:0;height:auto;z-index:6;padding:env(safe-area-inset-top,0px) calc(var(--s)*3px) 0;
   line-height:calc(var(--s)*9px);font-size:calc(var(--s)*5.8px);text-overflow:ellipsis;background:rgba(10,6,4,.6);border:0;box-shadow:none;pointer-events:none;transition:opacity .25s}
 html.phone #status.none,html.phone #wrap.wide #status{opacity:0}
@@ -1950,13 +1958,25 @@ async function go(room,x,y,dir){SFX.door();tagEl.innerHTML='';tagSig='';const[sn
    one is right (CONTRIBUTING section 2), so the lines are shown in a mixed order: each is ranked by a hash of its key, the same every
    time and in every language, and when a line drops out of a choice the others keep their order. o.by: the keys to rank by, where
    opts are lines put together from parts; o.order: show them as given (a menu of questions); o.keep: so many lines at the end stay
-   there (one that only leaves, or only asks to hear more, and is never the answer). */
+   there (one that only leaves, or only asks to hear more, and is never the answer).
+   A picture as an answer: an option may be {icon, key}, where no sentence can be said (the islanders of Chapter Twenty-Three, whose
+   language nobody knows). It is shown as a square button with the icon (iconArt, as in the inventory), and its key's text is the button's
+   aria-label and title, and the status line's while the pointer is on it; the button keeps the key (data-src), as a line does. Such
+   options are mixed by their keys like any other and stand in a row of squares; the lines of text follow under them in their own order
+   (o.keep: a last line that only leaves). */
 const MIX=0xb37f464d,mixRank=k=>{k=String(k);let h=MIX;for(let i=0;i<k.length;i++)h=Math.imul(h^k.charCodeAt(i),16777619);return h>>>0};
+const isPic=x=>!!x&&typeof x==='object'&&!!x.icon,optKey=x=>x&&typeof x==='object'?x.key:x;
 function choose(opts,o={}){return new Promise(res=>{const c=$('#choices');c.innerHTML='';c.classList.add('on');
-  const by=o.by||opts,n=opts.length-(o.keep||0),ix=opts.map((s,i)=>i),
+  const by=o.by||opts.map(optKey),n=opts.length-(o.keep||0),ix=opts.map((s,i)=>i),
     show=o.order?ix:ix.slice(0,n).sort((a,b)=>mixRank(by[a])-mixRank(by[b])||a-b).concat(ix.slice(n));
-  show.forEach(i=>{const b=document.createElement('button');b.textContent='› '+T(opts[i]);b.dataset.src=opts[i];b.dataset.i=i;
-    b.onclick=()=>{SFX.click();c.classList.remove('on');res(i)};c.appendChild(b)})})}
+  let row=null;
+  show.forEach(i=>{const b=document.createElement('button'),p=opts[i];b.dataset.i=i;
+    if(isPic(p)){if(!row){row=document.createElement('div');row.className='pics';c.prepend(row)}
+      const[k,g]=mk(48,48);g.drawImage(iconArt(p.icon),0,0);b.appendChild(k);b.className='pic';b.dataset.src=p.key;picLabel(b);
+      b.onmouseenter=b.onfocus=()=>{const st=$('#status');st.textContent=b.title;st.classList.remove('none')};b.onmouseleave=b.onblur=()=>status();row.appendChild(b)}
+    else{b.textContent='› '+T(p);b.dataset.src=p;c.appendChild(b)}
+    b.onclick=()=>{SFX.click();c.classList.remove('on');status();res(i)}})})}
+function picLabel(b){const t=T(b.dataset.src);b.title=t;b.setAttribute('aria-label',t)}
 /* lines: what a person says in reply. A reply is one line, a list of lines, or a script. */
 async function lines(a,x,arg){if(typeof x==='function')return x(arg);for(const s of[].concat(x))await say(a,s)}
 /* talkTree: a menu of questions. Besides his own questions, a person can be asked about whatever Paul has learned in the chapter:
@@ -2056,10 +2076,13 @@ async function act(v,h,item){const who=PC(),o=who===P?h:(h.as&&h.as[who.id])||{}
   if((v==='use'||v==='open')&&o[v]==null&&h.exit)return h.exit();
   if(o[v]!=null)return run(o[v]);
   const d=(who.def||DEF)[v];return say(who,typeof d==='function'?d(h):d)}
-async function clickView(x,y,at){
+/* clickView: a click on the room. G.actPos is where it was, and G.actT when: the moment the button or the finger went down (t, from the
+   view's listener), not the moment the handler runs after the walk there, so that a step timed by the sea (shared/beat.js) is judged
+   by the moment the player chose. */
+async function clickView(x,y,at,t){
   if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
   if(G.busy||G.scene||!G.room)return;audioInit();
-  const h=at||hsAt(x,y),item=G.item;let v=G.verb;G.actPos=[(x-G.cam)*zoomNow(),(y-G.camY)*zoomNow()];
+  const h=at||hsAt(x,y),item=G.item;let v=G.verb;G.actPos=[(x-G.cam)*zoomNow(),(y-G.camY)*zoomNow()];G.actT=t||performance.now();
   const me=PC(),pl=planOf(G.room);
   if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(me,x,y,{click:1});return}
   if(v==='walk'){v=defVerb(h);if(v==='walk')v=h.exit?'exit':'look'}
@@ -2091,7 +2114,9 @@ vp.addEventListener('mousemove',e=>{if(G.busy||G.scene||!G.room)return;const h=h
 vp.addEventListener('mouseleave',()=>{G.hover=null;status()});
 /* A finger has no hover: as it touches the scene, the status line names what is under it and its verb lights up, as the mouse would show. */
 vp.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||G.busy||G.scene||!G.room)return;const h=hsOf(e);if(h!==G.hover){G.hover=h;status()}});
-vp.addEventListener('click',e=>{if(performance.now()-pinchT<350)return;const[x,y]=evPos(e);clickView(x,y)});
+/* downT: when a button or a finger last went down on the view; a click that follows it soon is taken at that moment (see clickView) */
+let downT=0;vp.addEventListener('pointerdown',()=>{downT=performance.now()},true);
+vp.addEventListener('click',e=>{const n=performance.now();if(n-pinchT<350)return;const[x,y]=evPos(e);clickView(x,y,null,n-downT<600?downT:n)});
 /* zoom: on a room seen from above the player zooms the view between three quarters and twice its size, with the mouse wheel, + and -, or
    two fingers; the view keeps the one who is played in it */
 function zoomBy(f){G.zoomTo=clamp(Math.round(G.zoomTo*f*100)/100,.75,2)}
@@ -2569,7 +2594,7 @@ function relang(){document.documentElement.lang=G.lang;document.title=T('paul_of
   $('#lang').title=LANGS[nx].native;$('#lang').style.display=ks.length>1?'':'none';
   buildVerbs();swapBtn();setMute(AU.muted);namesBtn();codeBtn();drawInv();status();
   for(const b of[$('#opts'),$('#optsT')]){b.title=T('Options');b.setAttribute('aria-label',T('Options'))}$('#rotate p').textContent=T('turn_phone_sideways');
-  for(const b of document.querySelectorAll('#choices button'))b.textContent='› '+T(b.dataset.src);
+  for(const b of document.querySelectorAll('#choices button'))if(b.classList.contains('pic'))picLabel(b);else b.textContent='› '+T(b.dataset.src);
   if(ov.classList.contains('on')&&ov.draw)ov.draw();if(cb.classList.contains('on')&&cb.draw)cb.draw();
   if($('#menu').classList.contains('on')&&$('#menu').draw)$('#menu').draw();
   if(SHARED.tablets)SHARED.tablets.redraw()}
@@ -2717,7 +2742,7 @@ function decode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1'
     const c=Number(x&511n),v=x>>9n^wideMask(c,t.length*5-9);return wideChk(v,CHAP[ch].salt,t.length)===c?{ch,w:v}:null}
   if(t.length!==6)return null;let v=0;for(const x of t){const i=A32.indexOf(x);if(i<0)return null;v=v*32+i}
   const c=v%512,b=Math.floor(v/512)^msk(c);return chk(b,CHAP[ch].salt)!==c||(b>>19&3)>2||b>>21?null:{ch,b}}
-function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];G.pc=P;G.invs={};P.hs=null;P.called=null;
+function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];if(SHARED.beat)SHARED.beat.stop();G.pc=P;G.invs={};P.hs=null;P.called=null;
   LOOK.paul=paulLook(ch);if(LOOK.barnabas)LOOK.barnabas=Object.assign({skin:'#b8844f',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},ch>2?{hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1}:{hair:'#3a2a1a',beard:'#3a2a1a'});
   SPR.clear();Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;a.seat=0;a.kneel=0;a.bound=0;a.chained=a.held=a.lifted=a.keeper=a.grips=a.chainTo=0;a.wear='';a.look=LOOK[a.id]});
   (CHAP[ch].party||[]).forEach(id=>ACT[id].party=1);
