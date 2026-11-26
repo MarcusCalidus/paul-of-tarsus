@@ -73,7 +73,9 @@
      bay(o)                       the bay at a grey daybreak in rain (Chapter Twenty-Three): low hills of the shore under cloud, a beach
                                   of sand that curves toward us at the right, rows of breakers running in to it, the wash on the sand,
                                   and the wet sand. Needs SHARED.country. o.seed, o.shoal (true: a bar off to the left with the sea
-                                  breaking on both sides of it). Returns:
+                                  breaking on both sides of it); o.mid(g, t, f) (optional: a painter called between the far seas
+                                  with the bar and the near ranks, unclipped, so that a ship on the bar stands behind the near surf;
+                                  f is the inner phase). Returns:
                                     paint(g)          the whole still picture (for a backdrop or a told picture)
                                     draw(g, t, e)     the cloud, the land and everything that moves: the breakers, and on the beat a
                                                       set of greater seas whose white water runs through the shallows
@@ -593,7 +595,7 @@ function bay(o){o=o||{};const w=o.w||320,P=PAL.dawn,HZ=60,seed=o.seed||2301,CO=S
     /* (they spend themselves before they reach the near shallows, so that the way through the water is plainly clear between sets) */
     const rows=[];for(let j=0;j<4;j++){const u=fr(t/7600+j/4),d=16+160*Math.pow(1-u,1.5),fade=smooth(16,34,d);if(fade<=0)continue;rows.push([d,(1.1+.3*((j*5)%3)/2)*(.35+.65*fade),smooth(.3,.5,u)*fade,j+1])}
     const d0=setD(f);if(isFinite(d0)&&f<.84)rows.push([d0,setA(f),setBr(f),90+(b|0)%7]);
-    rows.sort((p,q)=>q[0]-p[0]);for(const[d,a,br,id]of rows)if(d>=70)breaker(g,d,a,br,t,id);if(BAR)bar(g,t);for(const[d,a,br,id]of rows)if(d<70)breaker(g,d,a,br,t,id);
+    rows.sort((p,q)=>q[0]-p[0]);for(const[d,a,br,id]of rows)if(d>=70)breaker(g,d,a,br,t,id);if(BAR)bar(g,t);if(o.mid){g.restore();o.mid(g,t,f);g.save();g.clip(water)}for(const[d,a,br,id]of rows)if(d<70)breaker(g,d,a,br,t,id);
     g.restore();
     for(let j=0;j<2;j++){const u=fr(t/3800+j*.5);wash(g,Math.sin(Math.PI*u)*.7,.7,j)}
     if(f>.8){const u=clamp((f-.8)/.18,0,1);wash(g,Math.sin(Math.PI*u)*1.6,1,9)}}

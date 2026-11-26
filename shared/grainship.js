@@ -45,6 +45,10 @@
                        light     'day' (sun from the left, default), 'storm' (grey, no sun), 'dawn' (grey with a warm light low at the
                                  left)
                        flap      0..1, how the torn foresail stands at this moment (state 'wreck')
+                       For the run in to the beach (27:40; state 'storm', each optional, the picture as before when not given):
+                       fore      'set': the foresail hoisted to the wind, as at the wreck, and not furled along its mast
+                       oars      'down': the steering oars' lashings loosed, their blades in the water
+                       skiff     false: no skiff aboard (cut away, 27:32)
                        figs(g)   people on deck, drawn behind the rail
                      Returns the geometry (G below): sheer(x), wl, x0, x1, the mast, the stern, the oar, for a room's hotspots.
      geo(o)          that geometry without painting.
@@ -109,7 +113,7 @@ function side(g,o){o=o||{};const G=geo(o),C=LIGHT[o.light]||LIGHT.day,st=o.state
   /* behind the hull: the stays, the masts, the cabin, people on deck, and the skiff aboard */
   rigBehind(g,G,C,st);
   if(st!=='wreck')cabin(g,G,C);
-  if(st==='storm')skiffAboard(g,G,C);
+  if(st==='storm'&&o.skiff!==false)skiffAboard(g,G,C);
   if(o.figs)o.figs(g,G);
   /* the hull, planked in strakes that follow the sheer (shared/ship.js), cut out of the picture where the stern has broken up */
   const HP=hullPts(G);
@@ -131,7 +135,7 @@ function side(g,o){o=o||{};const G=geo(o),C=LIGHT[o.light]||LIGHT.day,st=o.state
   if(st!=='moored')girding(g,G,C);
   yardOnDeck(g,G,C,st);
   if(st!=='wreck')oar(g,G,C,st);
-  if(st==='wreck')foresail(g,G,C,o.flap||0);
+  if(st==='wreck'||o.fore==='set')foresail(g,G,C,o.flap||0);
   g.restore();
   return G}
 
@@ -173,7 +177,7 @@ function rigBehind(g,G,C,st){const{k,x0,sheer,mast:m,fore:f}=G,mc=C===LIGHT.day?
   stroke(g,[fx-nx*f.w0*.25,fy-ny*f.w0*.25,hx-nx*f.w1*.2,hy-ny*f.w1*.2],rgba(C.hi,.6),.5);
   R(g,hx-1*k,hy-1*k,2*k,1.4*k,mc[2]);
   /* at Myra the foresail is furled and lashed along its mast, a slim roll beside the spar's upper half */
-  if(st==='moored'||st==='storm'){const a=.36,b=.9,p=[];for(let i=0;i<=10;i++){const t=a+(b-a)*i/10,sw=(1.4+1.6*Math.sin(Math.PI*i/10))*G.k;p.push(fx+dx*t-nx*(f.w0*.4),fy+dy*t-ny*(f.w0*.4))}
+  if((st==='moored'||st==='storm')&&G.o.fore!=='set'){const a=.36,b=.9,p=[];for(let i=0;i<=10;i++){const t=a+(b-a)*i/10,sw=(1.4+1.6*Math.sin(Math.PI*i/10))*G.k;p.push(fx+dx*t-nx*(f.w0*.4),fy+dy*t-ny*(f.w0*.4))}
     const q=[];for(let i=10;i>=0;i--){const t=a+(b-a)*i/10,sw=(1.2+1.8*Math.sin(Math.PI*i/10))*G.k;q.push(fx+dx*t-nx*(f.w0*.4+sw),fy+dy*t-ny*(f.w0*.4+sw))}
     poly(g,p.concat(q),C.sail[1]);stroke(g,q,rgba(C.sail[2],.8),.5);stroke(g,p,rgba(C.sail[0],.8),.5)}}
 
@@ -311,7 +315,7 @@ function sternpost(g,G,C,kind){const{k,sheer}=G,x=G.post.x,y=sheer(x)+1.5*k,s=G.
 /* the loom comes up to its head at the rail's top, where the tiller is set in (inboard, out of sight), and runs down and aft beyond
    the curve of the stern to the broad blade; it ends at the rail and crosses no rail. Moored or in the storm it is lashed up: the blade hangs clear of the water, a lashing slanting from its neck up to the
    gallery. At the wreck the lashings have been loosed (27:40) and the blade is in the water. */
-function oar(g,G,C,st){const{k,wl,sheer}=G,[hx,hy]=G.oar.head,down=st==='wreck',bl=down?wl+8*k:wl-11*k,ang=down?.36:.42,
+function oar(g,G,C,st){const{k,wl,sheer}=G,[hx,hy]=G.oar.head,down=st==='wreck'||G.o.oars==='down',bl=down?wl+8*k:wl-11*k,ang=down?.36:.42,
     ux=-Math.sin(ang),uy=Math.cos(ang),len=(bl-hy)/uy,fx=hx+ux*len,fy=bl,nx=-uy,ny=ux,w=G.oar.w,b=G.oar.blade,bs=len*.68;
   const bx=hx+ux*bs,by=hy+uy*bs;
   /* the loom, and the blade widening from its neck */
