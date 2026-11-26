@@ -840,7 +840,7 @@ LK.def={look:'luke_nothing_to_look_at',pickup:'luke_not_mine_to_take',use:'luke_
 LK.noCraft='luke_not_those_two_together';
 
 /* ============ ITEMS ============ */
-Object.assign(ITEMS,{tablet23:{name:'lukes_tablet',look:'lukes_tablet_look',by:{luke23:'lukes_tablet_look'},def:'open',open:()=>openTablet23()},
+Object.assign(ITEMS,{tablet23:{name:'lukes_tablet',look:'lukes_tablet_look23',by:{luke23:'lukes_tablet_look23'},def:'open',open:()=>openTablet23()},
   bread23:{name:'piece_of_bread',look:'piece_of_bread_look'}});
 
 /* ============ WAX TABLETS ============ */
