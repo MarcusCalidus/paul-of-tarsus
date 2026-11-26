@@ -192,7 +192,7 @@ TEXTS('de',20,{
   "paul_on_the_messiah":["Der Messias, von dem die Propheten geschrieben haben, ist gekommen. Es ist Jesus aus Nazareth.","0t97gf6"],
   "paul_on_the_congregations":["Von Jerusalem bis Mazedonien gibt es jetzt Versammlungen, Juden und Griechen gemeinsam.","1suto2d"],
   "felix_i_see":["Ich verstehe.","1li6h1n"],
-  "paul_thats_what_it_gives":["Das ist, was er gibt. Sie hat gefragt, was er verlangt.","02o8npi"],
+  "paul_thats_what_it_gives":["Das gibt er einem. Gefragt hat sie aber, was er verlangt.","02o8npi"],
   "felix_go_on":["Sprich weiter.","0msqwvq"],
   "paul_ive_said_that_already":["Das habe ich schon gesagt. Was verlangt er noch?","16j28a9"],
   "high_windows":["Fenster (hoch oben)","07cm1f0"],
@@ -277,7 +277,7 @@ TEXTS('de',20,{
   "hint_the_seasons_2":["Ich sollte mit meiner Ahle eine Kerbe in den Fenstersims ritzen.","1j3rsfb"],
 
   /* the end screen */
-  "some_other_time_end":["Paulus blieb zwei Jahre lang in Cäsarea in Haft. Felix ließ ihn oft holen, weil er auf Geld hoffte, und Paulus bot ihm keins an. Als Festus das Amt übernahm, ließ Felix Paulus als Gefangenen zurück. Alles Gesagte ist nachgestellt, außer den Zeilen des Berichts, die mit eigenen Worten erzählt werden.","0h2b38q"],
+  "some_other_time_end":["Paulus blieb zwei Jahre lang in Cäsarea in Haft. Felix ließ ihn oft holen, weil er auf Geld hoffte, und Paulus bot ihm keins an. Als Festus das Amt übernahm, ließ Felix Paulus als Gefangenen zurück. Alles Gesagte ist für diese Darstellung erfunden, außer den Zeilen des Berichts, die mit eigenen Worten erzählt werden.","0h2b38q"],
   "based_on_acts_24_1_27":["Nach Apostelgeschichte 24:1-27. Die Apostelgeschichte sagt nicht, wo die Anhörung stattfand, wo Paulus festgehalten wurde, ob er gefesselt war, wer seine Leute waren und worum es in den späteren Gesprächen ging. Erfunden sind das Zimmer mit seinem Fenster, der Schreiber, die Brüder Simmias und Kosmas, der Werkzeugbeutel, der Mantel und die Münzen, der Ort der Anhörung und die Kette. Keinen seiner Besucher nennt sie beim Namen; nach „Einsichten über die Heilige Schrift“ schrieb Lukas sein Evangelium wahrscheinlich in diesen Jahren in Cäsarea, und Philippus ließ sich möglicherweise dort nieder.","1ha8tiz"],
   "click_to_continue_to_chapter_twenty_one":["Klicken, um mit dem einundzwanzigsten Kapitel weiterzumachen","0g7nnbp"],
   "chapter_twenty_one_code_code":["Code für das einundzwanzigste Kapitel: {code}","1q5augq"]
