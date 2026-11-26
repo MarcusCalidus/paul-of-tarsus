@@ -71,8 +71,11 @@ const redraw=()=>{if(shown)draw(shown)};
                                 west, so it never crosses itself. A small square (2·k) marks the start. o.k the scale (1), o.seed.
                                 Returns the point where it ends, [x, y].
    Chapter Twenty-Two draws the marks at k 1 in the columns of the days and the line at k .64 below them; Chapter Twenty-Three draws the
-   line at k 1. */
-const LUKE={c:'#d2bf94',dk:'#140a04'};
+   line at k 1.
+     lukeTablet(g)              the tablet itself, close, filling the picture (320 by 144), the same in both chapters: a frame of
+                                fine-grained wood, warm where the lantern falls on it from the upper right; the dark wax sunk into it
+                                (LUKE.wax: 16..304 by 12..130), smoothed many times; the stylus lying on the frame below the wax. */
+const LUKE={c:'#d2bf94',dk:'#140a04',wax:[16,12,304,130]};
 function scratch(g,pts,o){o=o||{};const r=rng(o.seed||2271),c=o.c||LUKE.c,dk=o.dk||LUKE.dk,a=o.a==null?1:o.a,q=[];
   for(let i=0;i<pts.length-2;i+=2){const x0=pts[i],y0=pts[i+1],x1=pts[i+2],y1=pts[i+3],L=Math.hypot(x1-x0,y1-y0),n=Math.max(1,Math.round(L/3)),nx=-(y1-y0)/(L||1),ny=(x1-x0)/(L||1);
     for(let j=i?1:0;j<=n;j++){const t=j/n,w=j&&j<n?(r()-.5)*.35:0;q.push(x0+(x1-x0)*t+nx*w,y0+(y1-y0)*t+ny*w)}}
@@ -89,5 +92,35 @@ function lukeLine(g,x,y,kinds,o){o=o||{};const k=o.k||1,s=o.seed||2280;let px=x,
     px-=30*k;py+=m===1?7*k:m===3?-7*k:0;run.push(px,py)});
   if(run.length>2)scratch(g,run,{seed:s+99});return[px,py]}
 
-return{open,redraw,el,scratch,lukeMark,lukeLine};
+/* the tablet itself: board, wax and stylus (both chapters paint it with this, so that it is one tablet) */
+function lukeTablet(g){const r=rng(2205),[x0,y0,x1,y1]=LUKE.wax;
+  /* behind the tablet, the dark of the deck by night at the corners */
+  R(g,0,0,320,144,'#120e0c');
+  /* the frame: fine-grained wood, warm where the lantern falls on it (upper right), darker away from it; its corners rounded a little */
+  const F=[3,1,317,1,319,3,319,141,317,143,3,143,1,141,1,3];poly(g,F);g.fillStyle=lg(g,320,0,0,144,['#9a7450','#7a5838','#5a3e26']);g.fill();
+  /* one board, its grain running along it, fine and quiet: long hairlines that wander a little, a few darker, a few lighter */
+  clipTo(g,()=>poly(g,F),()=>{for(let i=0;i<260;i++){const y0=r()*144,x=r()*320-40,l=30+r()*120,ph=r()*6,q=[];for(let u=0;u<=l;u+=4)q.push(x+u,y0+.6*Math.sin(u/37+ph)+.3*Math.sin(u/11+ph*2));
+      stroke(g,q,r()<.6?`rgba(52,30,14,${(.08+r()*.12).toFixed(2)})`:`rgba(255,226,180,${(.04+r()*.07).toFixed(2)})`,.5)}
+    tex(g,'grain',.12,0,0,320,144,'overlay',.4);
+    /* worn paler along its outer edge, a soft darker band inside it */
+    R(g,1,1,318,.6,'rgba(255,226,180,.35)');R(g,1,1,.6,142,'rgba(255,226,180,.2)');R(g,1,142.4,318,.6,'rgba(20,10,4,.5)');R(g,318.4,1,.6,142,'rgba(20,10,4,.35)')});
+  /* the wax, sunk into the frame: the frame's inner edge lit where the light falls on it, its shadow lying on the wax at the top and left */
+  R(g,x0-1.2,y0-1.2,x1-x0+2.4,y1-y0+2.4,'#3a2616');R(g,x0-1.2,y1,x1-x0+2.4,1.2,'#b08a5c');R(g,x1,y0-1.2,1.2,y1-y0+2.4,'#a07c52');
+  g.fillStyle=lg(g,x1,y0,x0,y1,['#3a2c1e','#2a1f15','#1e160e']);g.fillRect(x0,y0,x1-x0,y1-y0);
+  clipTo(g,()=>{g.beginPath();g.rect(x0,y0,x1-x0,y1-y0)},()=>{tex(g,'mott',.5,x0,y0,x1-x0,y1-y0,'overlay',1);tex(g,'grain',.18,x0,y0,x1-x0,y1-y0,'overlay',.5);
+    /* where it has been smoothed again and again: soft patches a shade lighter or darker, long and low */
+    for(let i=0;i<14;i++)pool(g,x0+r()*(x1-x0),y0+r()*(y1-y0),30+r()*50,8+r()*10,r()<.5?'#5a4430':'#0e0906',.25+r()*.2,'source-over');
+    /* the lantern's light lying across the wax from the upper right, soft */
+    comp(g,'screen',.1,()=>{g.fillStyle=lg(g,x1,y0,x0+80,y1,['#ffc880','rgba(0,0,0,0)']);g.fillRect(x0,y0,x1-x0,y1-y0)});
+    ao(g,x0,y0,x1-x0,4,'t',.55,'#0a0604');ao(g,x0,y0,4,y1-y0,'l',.4,'#0a0604')});
+  /* the stylus on the frame below the wax: a slim bronze rod, its point to the left, its flat end for smoothing the wax to the right */
+  const Y=x=>136.4-(x-168)*.012,a=168,b=296;
+  comp(g,'multiply',.45,()=>poly(g,[a+3,Y(a)+2,b+1.5,Y(b)+2,b+1.5,Y(b)+3.4,a+3,Y(a)+3],'#2a1c14'));
+  /* the rod: a point at the left, a round shank, a swelling, the flat end */
+  poly(g,[a,Y(a)+.8,a+9,Y(a+9)-.1,b-9,Y(b-9)-.1,b-9,Y(b-9)+1.7,a+9,Y(a+9)+1.7],'#7a5c30');
+  R(g,a+9,Y(a+9)-.1,b-a-18,.6,'#e2c07e');R(g,a+9,Y(a+9)+1.2,b-a-18,.5,'#4a3418');
+  poly(g,[b-9,Y(b-9)-.6,b-6,Y(b-6)-.9,b-6,Y(b-6)+2.3,b-9,Y(b-9)+2],'#8a6a38');
+  poly(g,[b-6,Y(b-6)-1.4,b,Y(b)-1.6,b,Y(b)+2.6,b-6,Y(b-6)+2.8],'#7a5a30');R(g,b-6,Y(b-6)-1.4,6,.6,'#ecca88');R(g,b-6,Y(b-6)+2.3,6,.5,'#3a2814')}
+
+return{open,redraw,el,scratch,lukeMark,lukeLine,lukeTablet,wax:LUKE.wax};
 })();

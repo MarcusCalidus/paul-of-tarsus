@@ -1152,9 +1152,8 @@ function stoolC23(g,x,foot,r){const M=SHARED.materials,W='#7a5a3a',top=foot-8;M.
 /* ==== ART tablet23: begin ==== */
 /* A close view of Luke's wax tablet, carried in from Chapter Twenty-Two, by the lantern's light from the upper right: the same tablet as
    tablet22 there, the same board of fine-grained wood, the same dark wax sunk into it (16..304 by 12..130) and the same stylus lying on
-   the frame below it (paintTabletC23 follows paintTablet22 of chapter22.js line for line, with its seed: keep the two in step). Everything
-   on it is scratched as Chapter Twenty-Two scratches it (SHARED.tablets.scratch and lukeLine; scratchTB23 stands in for them until
-   shared/tablets.js has them): a thin pale line with its groove's dark shade half a pixel below and to the right, a little uneven.
+   the frame below it (both chapters paint it with SHARED.tablets.lukeTablet). Everything
+   on it is scratched as Chapter Twenty-Two scratches it (SHARED.tablets.scratch and lukeLine): a thin pale line with its groove's dark shade half a pixel below and to the right, a little uneven.
    Along its head the strokes of the fourteen days, in two groups of seven, each alone, none crossing another and none laid across a group.
    Below, if the tablet was carried in with marks, Luke's line (markLine23, the same as SHARED.tablets.lukeLine at k 1 from 284,82): one
    piece for each of the six marks, only ever westward, a gap with a small square dot for a day with only the day, a small square where
@@ -1190,39 +1189,10 @@ ART.tablet23={w:320,q:12,paint(g){paintTabletC23(g)},
 function namePos23(){const pts=markLine23(),e=pts[pts.length-1],sc=1.2,w=wordW23(NAME23,sc),left=e[0]-8-w>20;
   return[left?e[0]-8-w:Math.max(20,e[0]-w/2),clamp(left?e[1]-3.5*sc:e[1]+6,40,118),w,7*sc]}
 function nameBox23(){const[x,y,w,h]=namePos23();return[Math.round(x-4),Math.round(y-4),Math.round(w+8),Math.round(h+8)]}
-/* the tablet itself: as paintTablet22 in chapter22.js (the same numbers and seed), so that the two chapters show one tablet */
-function paintTabletC23(g){const r=rng(2205),[x0,y0,x1,y1]=[16,12,304,130];
-  R(g,0,0,320,144,'#120e0c');
-  const F=[3,1,317,1,319,3,319,141,317,143,3,143,1,141,1,3];poly(g,F);g.fillStyle=lg(g,320,0,0,144,['#9a7450','#7a5838','#5a3e26']);g.fill();
-  clipTo(g,()=>poly(g,F),()=>{for(let i=0;i<260;i++){const y0=r()*144,x=r()*320-40,l=30+r()*120,ph=r()*6,q=[];for(let u=0;u<=l;u+=4)q.push(x+u,y0+.6*Math.sin(u/37+ph)+.3*Math.sin(u/11+ph*2));
-      stroke(g,q,r()<.6?`rgba(52,30,14,${(.08+r()*.12).toFixed(2)})`:`rgba(255,226,180,${(.04+r()*.07).toFixed(2)})`,.5)}
-    tex(g,'grain',.12,0,0,320,144,'overlay',.4);
-    R(g,1,1,318,.6,'rgba(255,226,180,.35)');R(g,1,1,.6,142,'rgba(255,226,180,.2)');R(g,1,142.4,318,.6,'rgba(20,10,4,.5)');R(g,318.4,1,.6,142,'rgba(20,10,4,.35)')});
-  R(g,x0-1.2,y0-1.2,x1-x0+2.4,y1-y0+2.4,'#3a2616');R(g,x0-1.2,y1,x1-x0+2.4,1.2,'#b08a5c');R(g,x1,y0-1.2,1.2,y1-y0+2.4,'#a07c52');
-  g.fillStyle=lg(g,x1,y0,x0,y1,['#3a2c1e','#2a1f15','#1e160e']);g.fillRect(x0,y0,x1-x0,y1-y0);
-  clipTo(g,()=>{g.beginPath();g.rect(x0,y0,x1-x0,y1-y0)},()=>{tex(g,'mott',.5,x0,y0,x1-x0,y1-y0,'overlay',1);tex(g,'grain',.18,x0,y0,x1-x0,y1-y0,'overlay',.5);
-    for(let i=0;i<14;i++)pool(g,x0+r()*(x1-x0),y0+r()*(y1-y0),30+r()*50,8+r()*10,r()<.5?'#5a4430':'#0e0906',.25+r()*.2,'source-over');
-    comp(g,'screen',.1,()=>{g.fillStyle=lg(g,x1,y0,x0+80,y1,['#ffc880','rgba(0,0,0,0)']);g.fillRect(x0,y0,x1-x0,y1-y0)});
-    ao(g,x0,y0,x1-x0,4,'t',.55,'#0a0604');ao(g,x0,y0,4,y1-y0,'l',.4,'#0a0604')});
-  const Y=x=>136.4-(x-168)*.012,a=168,b=296;
-  comp(g,'multiply',.45,()=>poly(g,[a+3,Y(a)+2,b+1.5,Y(b)+2,b+1.5,Y(b)+3.4,a+3,Y(a)+3],'#2a1c14'));
-  poly(g,[a,Y(a)+.8,a+9,Y(a+9)-.1,b-9,Y(b-9)-.1,b-9,Y(b-9)+1.7,a+9,Y(a+9)+1.7],'#7a5c30');
-  R(g,a+9,Y(a+9)-.1,b-a-18,.6,'#e2c07e');R(g,a+9,Y(a+9)+1.2,b-a-18,.5,'#4a3418');
-  poly(g,[b-9,Y(b-9)-.6,b-6,Y(b-6)-.9,b-6,Y(b-6)+2.3,b-9,Y(b-9)+2],'#8a6a38');
-  poly(g,[b-6,Y(b-6)-1.4,b,Y(b)-1.6,b,Y(b)+2.6,b-6,Y(b-6)+2.8],'#7a5a30');R(g,b-6,Y(b-6)-1.4,6,.6,'#ecca88');R(g,b-6,Y(b-6)+2.3,6,.5,'#3a2814')}
-/* Luke's scratches: SHARED.tablets (shared/tablets.js, Chapter Twenty-Two) once it has them; until then the same painters here */
-const LUKE23={c:'#d2bf94',dk:'#140a04'};
-function scratchTB23(g,pts,o){o=o||{};const r=rng(o.seed||2271),c=o.c||LUKE23.c,dk=o.dk||LUKE23.dk,a=o.a==null?1:o.a,q=[];
-  for(let i=0;i<pts.length-2;i+=2){const x0=pts[i],y0=pts[i+1],x1=pts[i+2],y1=pts[i+3],L=Math.hypot(x1-x0,y1-y0),n=Math.max(1,Math.round(L/3)),nx=-(y1-y0)/(L||1),ny=(x1-x0)/(L||1);
-    for(let j=i?1:0;j<=n;j++){const t=j/n,w=j&&j<n?(r()-.5)*.35:0;q.push(x0+(x1-x0)*t+nx*w,y0+(y1-y0)*t+ny*w)}}
-  g.save();g.globalAlpha=a*.6;stroke(g,q.map(v=>v+.5),dk,.6);g.globalAlpha=a;stroke(g,q,c,.55);g.restore()}
-function lukeLineTB23(g,x,y,kinds,o){o=o||{};const k=o.k||1,s=o.seed||2280;let px=x,py=y,run=[px,py];
-  const dot=(x,y,w)=>{R(g,x-w/2+.5,y-w/2+.5,w,w,rgba(LUKE23.dk,.6));R(g,x-w/2,y-w/2,w,w,LUKE23.c)};
-  dot(px,py,2*k);
-  kinds.forEach((m,i)=>{if(!m){if(run.length>2)scratchTB23(g,run,{seed:s+i});px-=14*k;dot(px+7*k,py,1.5*k);run=[px,py];return}
-    px-=30*k;py+=m===1?7*k:m===3?-7*k:0;run.push(px,py)});
-  if(run.length>2)scratchTB23(g,run,{seed:s+99});return[px,py]}
-const tabC23=()=>{const T=SHARED.tablets;return T&&T.lukeLine&&T.scratch?T:{scratch:scratchTB23,lukeLine:lukeLineTB23}};
+/* the tablet itself (board, wax and stylus) and Luke's scratches: SHARED.tablets, the same painters as Chapter Twenty-Two's, so that the two
+   chapters show one tablet */
+function paintTabletC23(g){SHARED.tablets.lukeTablet(g)}
+const tabC23=()=>SHARED.tablets;
 /* Greek capitals as Luke scratches them, one stroke at a time: each letter a few polylines in a box seven units high (a unit is sc room
    pixels); round letters are drawn as short straight pieces, the way a stylus goes in wax. The stigma (six) is a final sigma with a
    flat top, drawn here because a font may not have it. */
