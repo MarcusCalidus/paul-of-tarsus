@@ -1,4 +1,4 @@
-/* Paul of Tarsus: the German text (Deutsch) for the engine (index.html) and the shared files (shared/tablets.js, shared/map.js, shared/birds.js).
+/* Paul of Tarsus: the German text (Deutsch) for the engine (index.html) and the shared files (shared/tablets.js, shared/map.js, shared/birds.js, shared/beat.js, shared/lookback.js, shared/finale.js).
    Loaded on demand by index.html (see LANGUAGES there). Each entry is a key, as the code uses it, its German, and the fingerprint of
    the English line (lang/en/main.js) it was made from: when that English changes, the playtest fails until the German
    has been checked against it (node tools/strings.mjs --show de main --stale, then --confirm).
@@ -339,5 +339,30 @@ TEXTS('de','main',{
   "storks_flying_north":["Störche ziehen in einer langen Reihe nach Norden. Der Frühling ist da.","1t6b6z4"],
   "sparrows_on_the_roof":["Spatzen auf dem Dach. Sie schwatzen ohne Pause.","00t6cnv"],
   "doves_on_the_wall":["Tauben auf der Mauer gurren in der Sonne.","1mvudxd"],
-  "now":["Jetzt!","1sft85e"]
+  "now":["Jetzt!","1sft85e"],
+  "from_damascus_to_rome":["Von Damaskus nach Rom","115mq4u"],
+  "a_prologue_and_twenty_five_chapters":["Ein Prolog und fünfundzwanzig Kapitel","0kq71ra"],
+  "hidden_treasures_n_of_all":["Verborgene Schätze: {n} von {all}","0baxd2r"],
+  "look_for_the_others":["die anderen suchen","1dhk76h"],
+  "based_on_acts_and_on_letters_of_paul":["Nach der Apostelgeschichte und Briefen von Paulus. Alle Dialoge sind für diese Darstellung erfunden.","032vx1r"],
+  "acts_ends_here_paul_was_apparently_set_free":["Hier endet die Apostelgeschichte. Paulus kam anscheinend um 61 u. Z. frei und predigte weiter.","1b1uta4"],
+  "about_the_last_chapter":["Über das letzte Kapitel","111pv6u"],
+  "click_to_return_to_the_title":["Klicken, um zum Titel zurückzukehren","0qni08u"],
+  "click_to_go_back":["Klicken, um zurückzugehen","1o5r8fp"],
+  "paul_wrote_that_his_situation_helped_the_good_news":["Paulus schrieb nach Philippi, dass seine Lage die gute Botschaft sogar vorangebracht hatte.","08hspy7"],
+  "the_whole_guard_knew_why_he_was_in_bonds":["Die ganze Prätorianergarde und alle anderen wussten inzwischen, dass er wegen Christus in Fesseln war.","11tjcd1"],
+  "his_bonds_gave_most_brothers_confidence_philippians_1_12_14":["Und seine Fesseln hatten den meisten Brüdern im Herrn Zuversicht gegeben: Sie redeten mutiger als zuvor über das Wort Gottes, und ohne Furcht. (Philipper 1:12-14)","1vlms7b"],
+  "here_the_account_ends":["Hier endet der Bericht. Paulus war noch ein Gefangener. Die gute Botschaft war es nicht.","102ny08"],
+  "from_damascus_to_jerusalem":["Von Damaskus nach Jerusalem, nach Tarsus und nach Antiochia.","07tkcvk"],
+  "sent_out_from_antioch_across":["Von Antiochia ausgesandt: durch Zypern und durch Pamphylien hinauf nach Antiochia in Pisidien und Ikonion.","17r7c9s"],
+  "to_lystra_and_derbe_and_back":["Nach Lystra und Derbe und auf demselben Weg zurück; und von Attalia über das Meer nach Hause.","1378oaj"],
+  "through_galatia_to_troas":["Durch Galatien nach Troas, hinüber nach Mazedonien, hinab nach Athen und Korinth und hinüber nach Ephesus.","1i7wvk7"],
+  "home_caesarea_up_and_down_to_antioch":["Und nach Hause: Cäsarea, hinauf, und hinunter nach Antiochia.","1b44sx7"],
+  "through_galatia_and_phrygia_to_ephesus":["Wieder von Antiochia aus: durch Galatien und Phrygien nach Ephesus, weiter nach Mazedonien und Griechenland und zurück bis Troas.","0qq5w0v"],
+  "from_troas_down_the_coast_to_miletus":["Von Troas die Küste hinab: Assos, Mitylene, Chios, Samos, Milet.","1w5g1ml"],
+  "by_cos_rhodes_and_patara_to_tyre":["Über Kos, Rhodos und Patara hinüber nach Tyrus, weiter nach Cäsarea und hinauf nach Jerusalem.","1wbq8rq"],
+  "by_night_to_antipatris_and_on_to_caesarea":["Als Gefangener bei Nacht nach Antipatris und weiter nach Cäsarea. Dort zwei Jahre in Haft.","0jxtrll"],
+  "for_italy_by_sidon_and_myra_to_fair_havens":["Nach Italien: über Sidon und Myra nach Schönhafen auf Kreta. Dann der Sturm, an Kauda vorbei.","1bne3sy"],
+  "across_the_sea_of_adria_to_malta":["Über das Adriatische Meer getrieben, bis zur vierzehnten Nacht. Alle kamen sicher an Land, auf Malta.","1fsdiy6"],
+  "by_syracuse_rhegium_and_puteoli_to_rome":["Nach dem Winter: über Syrakus, Rhegion und Puteoli und schließlich nach Rom.","0622gn1"]
 });

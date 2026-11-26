@@ -10,8 +10,8 @@
      id, view, labels, seen, regions   as SHARED.map.journey takes them; the labels are laid over the window's own (VLAB in shared/map.js)
      old      roads an earlier chapter drew and this map shows from the start, because a chapter on it goes back along them (Chapter Six
               comes back from Derbe by Iconium and Antioch in Pisidia to Perga, on the roads that Chapter Five drew); none is any part's
-     line     the key of the map's narrated line. Maps 1 to 5 are Chapter Twelve's look back, and take its lines (chapter12.js in each language);
-              the keys of the others are placeholders for the finale's own lines, which have no text yet.
+     line     the key of the map's narrated line. Maps 1 to 5 are Chapter Twelve's look back, and take its lines, which stand in main.js too
+              (the look back is also shown from the title, where Chapter Twelve's text is not loaded); the others are the finale's own.
      parts    one per chapter, in order: ch, 'pro' or a chapter's number; legs, the legs that chapter itself drew on its travel map, with the
               same places and the same kind ('sea'), in the order travelled (a road drawn out and back the same way is one leg); seen,
               places it lights without a road; and at, where its light stands: the place where the chapter ended, or for a chapter that
@@ -70,31 +70,31 @@ const JOURNEYS=[
      with the names where Chapters Thirteen and Fifteen set them (LAB13, LAB15), except Philippi and Troas, which stand clear of the names
      of Macedonia and Mysia here */
   {id:'ephesus',view:'aegean',labels:{syriangates:{hide:1},tarsus:{hide:1},ciliciangates:{hide:1},derbe:{hide:1},lystra:{hide:1},iconium:{hide:1},antiochp:{hide:1},
-      antioch:{lab:'r'},ephesus:{lab:'r',dy:6},troas:{lab:'r',dy:-3},philippi:{lab:'t',dx:14},thessalonica:{lab:'t',dx:-14}},line:'look_back_ephesus',parts:[
+      antioch:{lab:'r'},ephesus:{lab:'r',dy:6},troas:{lab:'r',dy:-3},philippi:{lab:'t',dx:14},thessalonica:{lab:'t',dx:-14}},line:'through_galatia_and_phrygia_to_ephesus',parts:[
     {ch:13,legs:[['antioch','syriangates'],['syriangates','tarsus'],['tarsus','ciliciangates'],['ciliciangates','derbe'],['derbe','lystra'],['lystra','iconium'],['iconium','antiochp'],['antiochp','ephesus']],at:'ephesus'},
     {ch:14,legs:[],at:'ephesus'},
     {ch:15,legs:[['ephesus','troas'],['troas','samothrace'],['samothrace','neapolis'],['neapolis','philippi'],['philippi','thessalonica'],['thessalonica','beroea'],['beroea','corinth']],at:'troas'}]},
   /* down the coast to Miletus, where the elders of Ephesus come (Acts 20:13-38) */
-  {id:'miletus',view:'ionia',labels:{troas:{lab:'l',dy:-4}},line:'look_back_miletus',parts:[
+  {id:'miletus',view:'ionia',labels:{troas:{lab:'l',dy:-4}},line:'from_troas_down_the_coast_to_miletus',parts:[
     {ch:16,legs:[['troas','lectum','sea'],['lectum','assos','sea'],['troas','assos'],['assos','mitylene','sea'],['mitylene','chios','sea'],['chios','samos','sea'],['samos','miletus'],['miletus','ephesus']],at:'miletus'}]},
   /* by Cos, Rhodes, Patara and Tyre to Caesarea, and up to Jerusalem (Acts 21:1-22:29), as Chapter Seventeen set the names (LAB17) */
-  {id:'jerusalem',view:'levant',labels:{cos:{lab:'l',dx:-1.5,dy:-3},rhodes:{lab:'r',dx:-2,dy:7},patara:{lab:'r',dy:-4}},line:'look_back_jerusalem',parts:[
+  {id:'jerusalem',view:'levant',labels:{cos:{lab:'l',dx:-1.5,dy:-3},rhodes:{lab:'r',dx:-2,dy:7},patara:{lab:'r',dy:-4}},line:'by_cos_rhodes_and_patara_to_tyre',parts:[
     {ch:17,legs:[['miletus','cos','sea'],['cos','rhodes','sea'],['rhodes','patara','sea'],['patara','tyre','sea'],['tyre','ptolemais','sea'],['ptolemais','caesarea','sea'],['caesarea','tojerusalem']],at:'tojerusalem'},
     {ch:18,legs:[['tojerusalem','jerusalem']],at:'jerusalem'}]},
   /* as a prisoner by night to Antipatris and on to Caesarea, and the years there (Acts 22:30-26:32). A map of its own: on one map with the
      road up, the two roads between Caesarea and Jerusalem lie a pixel or two apart and read as one. */
-  {id:'caesarea',view:'levant',line:'look_back_caesarea',parts:[
+  {id:'caesarea',view:'levant',line:'by_night_to_antipatris_and_on_to_caesarea',parts:[
     {ch:19,legs:[['jerusalem','antipatris'],['antipatris','caesarea']],at:'caesarea'},
     {ch:20,legs:[],at:'caesarea'},
     {ch:21,legs:[],at:'caesarea'}]},
   /* the voyage out, to Fair Havens and into the storm (Acts 27:1-26) */
-  {id:'crete',view:'outward',line:'look_back_crete',parts:[
+  {id:'crete',view:'outward',line:'for_italy_by_sidon_and_myra_to_fair_havens',parts:[
     {ch:22,legs:[['caesarea','sidon','sea'],['sidon','myra','sea'],['myra','cnidus','sea'],['cnidus','salmone','sea'],['salmone','fairhavens','sea'],['fairhavens','cauda','sea']],at:'cauda'}]},
   /* fourteen nights on the Sea of Adria, and Malta (Acts 27:27-28:10) */
-  {id:'malta',view:'adria',regions:['sea_of_adria'],old:[['myra','cnidus'],['cnidus','salmone'],['salmone','fairhavens'],['fairhavens','cauda']],line:'look_back_malta',parts:[
+  {id:'malta',view:'adria',regions:['sea_of_adria'],old:[['myra','cnidus'],['cnidus','salmone'],['salmone','fairhavens'],['fairhavens','cauda']],line:'across_the_sea_of_adria_to_malta',parts:[
     {ch:23,legs:[['cauda','malta','sea']],at:'malta'}]},
   /* from Malta to Rome (Acts 28:11-31) */
-  {id:'rome',view:'italy',line:'look_back_rome',parts:[
+  {id:'rome',view:'italy',line:'by_syracuse_rhegium_and_puteoli_to_rome',parts:[
     {ch:24,legs:[['malta','syracuse','sea'],['syracuse','rhegium','sea'],['rhegium','puteoli','sea'],['puteoli','capua'],['capua','appius'],['appius','threetaverns'],['threetaverns','rome']],at:'rome'},
     {ch:25,legs:[],at:'rome'}]}];
 const M=()=>SHARED.map;

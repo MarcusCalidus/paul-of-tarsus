@@ -101,6 +101,8 @@
      for(const W of[S,T])if(W&&!W.still)for(const f of F)if(f!==W&&!f.still&&Math.abs(f.x-W.x)<10&&Math.abs(f.y-W.y)<10)talkBad.add(`hidden by ${who(f.k)}: ${line}`)}}
    catch(e){talkBad.add('ERR '+e.message)}return r}}
  const talked=()=>ok(talkN>40&&!talkBad.size,`${talkN} lines spoken in a room: each speaker faces the one he speaks to, who faces him, and neither stands where another hides him`+(talkBad.size?'. BAD: '+[...talkBad].slice(0,8).join(' | '):''));
+ /* inPartText: whether a text holds a line of another part than the one being played (the page about the last chapter, read from the title) */
+ const inPartText=(n,key,text)=>{const was=G.ch;G.ch=n;try{return text.includes(T(key))}finally{G.ch=was}};
  const ok=(c,m)=>{if(prayed!=null){if(snap()!==prayed)prayBad.push(m);prayed=null}L((c?'ok   ':'FAIL ')+m)};
  const halt=(name,fn)=>{if(stop===name){clearInterval(sk);L('STOP '+name+' room='+G.room+' inv='+G.inv.join(','));if(fn)fn();throw 'halt'}};
  addEventListener('error',e=>L('JSERR '+e.message));addEventListener('unhandledrejection',e=>{if(e.reason!=='halt')L('REJ '+(e.reason&&e.reason.message||e.reason))});
@@ -480,6 +482,70 @@
     halt('lookback',()=>{const z=document.createElement('canvas'),C=3,R=Math.ceil(shots.length/C);z.width=C*640+(C-1)*8;z.height=R*288+(R-1)*8;const g=z.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,z.width,z.height);
       shots.forEach((k,i)=>g.drawImage(k,(i%C)*648,Math.floor(i/C)*296));
       window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'lookback-maps']:z.toDataURL()})})}
+  /* The finale (shared/finale.js, issue #95): everything after the last chapter's open door. finale plays it whole at speed and checks
+     it; the stops beginning with p are its pictures at the game's own pace: pletters (the map on which Paul does not move), plookback (a
+     road being drawn, with its chapter's name), pclosing (the closing screen), pabout (the page behind it), ptitlefin (the title of a
+     finished game). Until the last chapter is built, the newest chapter there is stands in for it: it is given the flag that says
+     finished, its place in the manifest (done) and a page about itself, and is entered at a safe point of its own. */
+  if(/^(finale|pletters|plookback|pclosing|pabout|ptitlefin)$/.test(stop)){clearInterval(sk);sk=0;
+    const FN=await need('finale'),M=await need('map'),LB=await need('lookback'),TU=await need('tunes'),real=FN.last(),n=real||Math.max(...Object.keys(CHAP).map(Number));
+    await loadLevel(n);const c=CHAP[n];
+    if(!real){c.flags.push('finished');c.done=c.flags.length-1;c.about={title:c.title,text:null,based:Object.keys(DICT.en[n]).find(k=>/based_on/.test(k))||Object.keys(DICT.en[n])[0]}}
+    ok(c.flags[c.done]==='finished'&&!!c.about&&!!c.about.title&&!!c.about.based&&wide(c)===(c.done>=19||wide(c)),(real?'the last chapter':'a stand-in for the last chapter (Chapter '+n+')')+' names the flag that says finished by its place among its flags, and gives a page about itself');
+    ov.className='';ov.onclick=null;ov.innerHTML='';ok(await restore(c.treasure.at,1)===true&&G.ch===n&&!!G.room&&!F.finished&&!gameDone(),'it is entered at a safe point of its own, and the game is not finished yet');
+    const before=makeCode(),told=[],caps=[],bars=[],views=[],say0=say,set0=setScore,j0=M.journey;
+    window.say=function(a,t){if(!a)told.push({k:t,seen:[...M.state.seen],legs:M.state.legs.length,map:G.scene===M.draw,ink:inDark()});return say0.apply(this,arguments)};
+    window.setScore=function(sc){if(sc&&sc.src)bars.push({cap:G.cap,sc});return set0.apply(this,arguments)};
+    M.journey=function(r,o){views.push((o&&o.view)||'');return j0.apply(this,arguments)};
+    /* every line is passed over as it comes, as a click would; the look back is not, so that all of it is played */
+    const lines=setInterval(()=>{if(G.skip&&G.skip.name!=='cut')G.skip()},30),pics=stop!=='finale',
+      until=async(f,ms)=>{for(let i=0;i<(ms||60000)/30&&!f();i++)await wait(30);return f()},names=k=>told.map(t=>t.k).includes(k),
+      capOf=ch=>ch==='pro'?T('Prologue')+' · '+T(PRO.title):CHAP[ch]?T(CHAP[ch].label)+' · '+T(CHAP[ch].title):'',
+      PHIL=['paul_wrote_that_his_situation_helped_the_good_news','the_whole_guard_knew_why_he_was_in_bonds','his_bonds_gave_most_brothers_confidence_philippians_1_12_14'];
+    if(stop==='pletters'){G.speedAll=1;clearInterval(lines);FN.run();await until(()=>names(PHIL[0]));await wait(400);halt('pletters')}
+    if(stop==='plookback'){G.speedAll=1;clearInterval(lines);FN.again();await until(()=>G.cap===capOf(8),120000);halt('plookback')}
+    if(stop==='finale'){const run=FN.run();
+      ok($('#skip').style.display!=='none'&&typeof G.onSkip==='function'&&G.busy,'the finale begins: nothing is played any more, and SKIP stands in the top bar');
+      await run;
+      /* say calls itself again once the narrator's roll has come up, so a line read from it is noted more than once */
+      const ks=told.map(t=>t.k).filter((k,i,a)=>k!==a[i-1]),ph=told.find(t=>t.k===PHIL[0])||{seen:[]},maps=LB.JOURNEYS.filter((J,i)=>LB.ready(i)),end=told.find(t=>t.k==='here_the_account_ends')||{};
+      ok(views[0]==='letters'&&ph.map&&ph.legs===0&&['rome','philippi','ephesus','colossae'].every(k=>ph.seen.includes(k))&&ph.seen.length===4&&PHIL.every((k,i)=>ks[i]===k),
+        'first the map on which Paul does not move: Rome, then Philippi, Ephesus and Colossae lit, no road drawn, and Philippians 1:12-14 told in three lines');
+      ok(ks[3]==='here_the_account_ends'&&end.ink,'then the dark, and the narrator\'s last line read from the roll');
+      ok(JSON.stringify(ks.slice(4))===JSON.stringify(maps.map(J=>J.line))&&JSON.stringify(views.slice(1))===JSON.stringify(maps.map(J=>J.view||'')),'then the look back: '+maps.length+' maps in their order, each with its own line'+(JSON.stringify(ks.slice(4))===JSON.stringify(maps.map(J=>J.line))?'':'. LINES: '+ks.slice(4).join(' '))+(JSON.stringify(views.slice(1))===JSON.stringify(maps.map(J=>J.view||''))?'':'. WINDOWS: '+views.slice(1).join(' ')));
+      {const parts=maps.flatMap(J=>J.parts),want=parts.filter(p=>TU.has(p.ch)),bad=[];
+        want.forEach((p,i)=>{const b=bars[i];if(!b||b.cap!==capOf(p.ch)||b.sc.root!==TU.BARS[p.ch].root||b.sc.dt!==TU.BARS[p.ch].dt)bad.push(p.ch)});
+        ok(!bad.length&&bars.length===want.length&&want.length>=24,'as each chapter\'s road is drawn its name stands in the status line and a bar of its own tune is played: '+bars.length+' bars'+(bad.length?'. NOT: '+bad.join(', '):''))}
+      const sv=saved(),far=saves().far,kids=[...ov.children],r=ov.getBoundingClientRect(),inside=kids.every(el=>{const q=el.getBoundingClientRect();return q.top>=r.top-1&&q.bottom<=r.bottom+1&&q.left>=r.left-1&&q.right<=r.right+1});
+      await until(()=>!ov.classList.contains('wait'),4000);
+      ok(ov.classList.contains('closing')&&$('#wrap').classList.contains('title')&&$('#skip').style.display==='none'&&!G.onSkip&&!G.cap,'then the closing screen, over a picture as tall as the title\'s; SKIP is gone');
+      ok(ov.textContent.includes(T('from_damascus_to_rome'))&&ov.textContent.includes(T('hidden_treasures_n_of_all',{n:treasures().size,all:hidden().length}))&&ov.textContent.includes(T('acts_ends_here_paul_was_apparently_set_free'))&&ov.textContent.includes(T('based_on_acts_and_on_letters_of_paul'))&&!!ov.querySelector('[data-about]')&&!/\d+:\d\d|prayer/i.test(ov.textContent),
+        'it names the game, the hidden treasures found, what the game is based on and what Acts leaves open, and leads to the page about the last chapter; no time and no prayers');
+      ok(inside&&kids.every(el=>el.scrollWidth<=el.clientWidth+1),'its lines stand inside the screen, none cut off');
+      ok(!!sv&&sv.ch===n&&finishedCode(sv.code)&&!finishedCode(before)&&gameDone()&&F.finished===1&&!!far&&far.code===sv.code&&decode(sv.code).ch===n,'the game is kept as finished: the chapter\'s safe point with one more flag set, as a safe-point code ('+(sv&&sv.code)+'), and it is the farthest point');
+      ov.querySelector('[data-about]').click();await wait(60);
+      ok(ov.classList.contains('end')&&ov.textContent.includes(T(c.label))&&inPartText(n,c.about.based,ov.textContent),'a click on that line opens the page about the last chapter, in its own words');
+      ov.click();await wait(60);ok(ov.classList.contains('closing')&&!!ov.querySelector('[data-about]'),'and a click there comes back to the closing screen');
+      ov.querySelector('[data-tre]').click();await wait(80);ok($('#menu').classList.contains('on')&&$('#menu').textContent.includes(T('hidden_treasures_caps')),'a click on the hidden treasures opens their screen, with the way to those missed');
+      $('#tre-x').click();await wait(60);
+      ov.querySelector('.go').click();await until(()=>ov.classList.contains('title')&&!!ov.querySelector('.chs'),8000);
+      ok(ov.classList.contains('title')&&!!ov.querySelector('[data-fin]')&&ov.querySelector('[data-fin]').textContent.includes(T('from_damascus_to_rome'))&&!!ov.querySelector('[data-cont]'),'a click leads back to the title, which now has the line "From Damascus to Rome", and Continue');
+      told.length=0;views.length=0;bars.length=0;ov.querySelector('[data-fin]').click();
+      await until(()=>views.length>0&&G.scene===M.draw,8000);const first=views[0];await wait(200);$('#skip').click();
+      await until(()=>ov.classList.contains('closing')&&!ov.classList.contains('wait'),8000);
+      ok(first===(maps[0].view||'')&&!told.some(t=>PHIL.includes(t.k)||t.k==='here_the_account_ends')&&ov.classList.contains('closing')&&views.length<maps.length&&!!ov.querySelector('[data-about]')&&saved().code===sv.code,
+        'that line shows the look back and the closing screen again, without the map of the letters and the roll; SKIP brings the closing screen at once; nothing new is kept');
+      ov.querySelector('.go').click();await until(()=>ov.classList.contains('title')&&!!ov.querySelector('[data-cont]'),8000);
+      ov.querySelector('[data-cont]').click();await until(()=>!ov.classList.contains('on')&&G.ch===n&&!!G.room&&!G.busy,15000);
+      ok(G.ch===n&&!G.scene&&F.finished===1&&makeCode()===sv.code,'Continue leads into the chapter at that safe point, with the flag set');
+      ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,8).join(' | '):'')+(RAWKEY.size?'. KEY: '+[...RAWKEY].slice(0,8).join(' | '):''));
+      ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
+      clearInterval(lines);halt('finale')}
+    /* the closing screen and what lies behind it, as pictures: a finished game, shown again from the title */
+    {const run=FN.run();await wait(100);$('#skip').click();await run;await until(()=>!ov.classList.contains('wait'),4000);clearInterval(lines);
+      if(stop==='pclosing'){await wait(700);halt('pclosing')}
+      if(stop==='pabout'){ov.querySelector('[data-about]').click();await wait(200);halt('pabout')}
+      ov.querySelector('.go').click();await until(()=>ov.classList.contains('title')&&!!ov.querySelector('[data-fin]'),8000);await wait(300);halt('ptitlefin')}}
   /* A figure bound with a belt (a.bound; person's fr -6): Agabus binds his own feet and hands with Paul's belt (Acts 21:11). For every look
      of Chapters Three, Sixteen and Seventeen (if it is there) and the usual kinds of dress, facing both ways: each pose is one piece, and
      a.bound seats an actor bound, keeps him from turning, and lets him go when it is cleared. cast-bound.png shows them three times

@@ -13,6 +13,8 @@
 //   node tools/playtest.mjs tunes de:tunes   one bar of each chapter's tune (shared/tunes.js) held to the chapters' own scores, note for note (saves tunes-sheet)
 //   node tools/playtest.mjs map24 de:map24   the travel map's windows for the road to Rome and the letters (italy, appia, lycus, letters): map24-sheet.png and map24-zoom.png
 //   node tools/playtest.mjs lookback de:lookback   the journeys of the look back (shared/lookback.js): every chapter once, no road crossing, no name across a line (saves lookback-maps.png)
+//   node tools/playtest.mjs finale de:finale   the end of the game (shared/finale.js): the map of the letters, the roll, the look back, the closing screen, the finished code
+//                                                 (pletters, plookback, pclosing, pabout and ptitlefin are its pictures)
 // It first checks the translations against the English text (tools/strings.mjs), and that every picture in docs/screenshots is listed
 // with its stop in tools/screenshots.txt (tools/retake.mjs takes the pictures again from that list).
 // Screenshots go to tools/out/ (or $SHOTS). Set $CHROME to use another Chromium-based browser.
