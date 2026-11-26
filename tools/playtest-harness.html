@@ -404,11 +404,10 @@
       for(const[x0,y0,w,h]of parts){g.drawImage(k,x0*2,y0*2,w*2,h*2,0,y,w*2*Z,h*2*Z);y+=h*2*Z}
       window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'map21-zoom']:z.toDataURL()})})}
   /* lookback: the table of every journey of the game (shared/lookback.js), for the look back at its end. Every chapter from the Prologue
-     to Chapter Twenty-Five has exactly one part, in order; every place of every map is a place of the travel map; and every map, shown
+     to Chapter Twenty-Five has one part, in order, or two on maps that follow each other with the second marked more (Chapter Twelve); every place of every map is a place of the travel map; and every map, shown
      whole, in each language (de:lookback): no two roads on it cross, no name crosses a coast, an island, a lake or a road, no two names
      touch, every name and every lit place lies inside the window, and the light stands where its last part ended (shown up to each part
-     in turn, too). A map whose places or window are not on the travel map yet (the voyage on from Malta, the window east) is skipped and
-     named, so that the check tightens by itself when they come. It hands over lookback-maps.png (de-lookback-maps.png): every map at 2x, three
+     in turn, too). A map whose places are not on the travel map yet (the voyage on from Malta) is skipped and named, so that the check tightens by itself when they come. It hands over lookback-maps.png (de-lookback-maps.png): every map at 2x, three
      to a row, for the cross-shape check. */
   if(stop==='lookback'){clearInterval(sk);sk=0;await need('map');const LB=await need('lookback');ov.className='';ov.onclick=null;G.busy=true;lock(true);status();
     const M=SHARED.map,J=LB.JOURNEYS,cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let k=0;
@@ -417,16 +416,20 @@
         for(let i=0;i<bx.length;i++)for(let j=i+1;j<bx.length;j++){const a=bx[i],b=bx[j];if(a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3])bad.push(a[4]+' on '+b[4])}return bad},
       inWin=id=>{const[x,y]=M.where(id);return x>6&&x<314&&y>6&&y<138},
       say=(c,cl,td,out)=>(c?'. CROSSINGS: '+c:'')+(cl?'':'. CROSSES: '+[...mapClear.bad].join(', '))+(td.length?'. NAMES: '+td.join(', '):'')+(out.length?'. OUT: '+out.join(', '):'');
-    const order=J.flatMap(m=>m.parts.map(p=>p.ch)),want=['pro',...Array.from({length:25},(_,i)=>i+1)];
-    ok(order.join()===want.join()&&want.every(ch=>{const o=LB.partOf(ch);return o&&J[o.map].parts[o.part].legs===LB.legsOf(ch)}),'the look back has one part for every chapter from the Prologue to Chapter Twenty-Five, in order: '+order.join(' '));
+    /* the chapters in the order of the maps: a part marked more must follow its chapter's first part, as the first part of the next map */
+    const seq=J.flatMap((m,i)=>m.parts.map((p,k)=>({ch:p.ch,more:!!p.more,i,k}))),want=['pro',...Array.from({length:25},(_,i)=>i+1)],
+      firsts=seq.filter(p=>!p.more).map(p=>p.ch),mores=seq.filter(p=>p.more),
+      moreOk=mores.every(p=>{const j=seq.indexOf(p),a=seq[j-1];return a&&a.ch===p.ch&&!a.more&&p.k===0&&a.i===p.i-1&&a.k===J[a.i].parts.length-1}),
+      legsOk=want.every(ch=>{const o=LB.partOf(ch),all=seq.filter(p=>p.ch===ch).flatMap(p=>J[p.i].parts[p.k].legs);return o&&J[o.map].parts[o.part].ch===ch&&!J[o.map].parts[o.part].more&&JSON.stringify(LB.legsOf(ch))===JSON.stringify(all)});
+    ok(firsts.join()===want.join()&&moreOk&&legsOk,'the look back has a part for every chapter from the Prologue to Chapter Twenty-Five, in order, each once or twice on maps that follow each other: '+seq.map(p=>p.ch+(p.more?'+':'')).join(' '));
     const shots=[],skipped=[];
     for(let i=0;i<J.length;i++){const m=J[i],name=`map ${i+1} (${m.id}, ${m.view||'the usual window'})`;
-      if(!LB.ready(i)){const miss=[...new Set([...(m.old||[]),...m.parts.flatMap(p=>p.legs)].flatMap(l=>l.slice(0,2)).concat(m.parts.map(p=>p.at)))].filter(k=>!M.places[k]);
-        skipped.push(name+': '+(miss.length?'no place '+miss.join(', '):'no window '+m.view));continue}
-      let lit=1;for(let u=0;u<m.parts.length;u++){await LB.show(i,u);lit=lit&&M.state.pulse===m.parts[u].at&&M.state.seen.has(m.parts[u].at)}
+      if(!LB.ready(i)){const miss=[...new Set([...(m.old||[]),...m.parts.flatMap(p=>p.legs)].flatMap(l=>l.slice(0,2)).concat(m.seen||[],m.parts.flatMap(p=>[...(p.seen||[]),p.at])))].filter(k=>!M.places[k]);
+        skipped.push(name+': no place '+miss.join(', '));continue}
+      let lit=1;for(let u=0;u<m.parts.length;u++){await LB.show(i,u);lit=lit&&M.state.pulse===m.parts[u].at&&[m.parts[u].at,...(m.parts[u].seen||[])].every(k=>M.state.seen.has(k))}
       await LB.show(i);await wait(40);
       const c=cross(M.state.legs),cl=mapClear(),td=tidy(),out=[...M.state.seen].filter(k=>!M.places[k].hide&&!inWin(k)),n=[...(m.old||[]),...m.parts.flatMap(p=>p.legs)].length;
-      ok(!c&&cl&&!td.length&&!out.length&&lit&&M.state.legs.length===n,'lookback, '+name+', chapters '+m.parts.map(p=>p.ch).join(', ')+': '+n+' roads, none crosses another, no name crosses a coast, a road or another name, and the light stands where each part ends'+say(c,cl,td,out)+(lit?'':'. LIGHT in the wrong place'));
+      ok(!c&&cl&&!td.length&&!out.length&&lit&&M.state.legs.length===n,'lookback, '+name+', chapters '+m.parts.map(p=>p.ch+(p.more?' (more)':'')).join(', ')+': '+n+' roads, none crosses another, no name crosses a coast, a road or another name, and the light stands where each part ends'+say(c,cl,td,out)+(lit?'':'. LIGHT in the wrong place'));
       const k=document.createElement('canvas');k.width=640;k.height=288;const q=k.getContext('2d');q.scale(2,2);M.draw(q,G.t);shots.push(k)}
     L((skipped.length?'note ':'ok   ')+'lookback: '+(skipped.length?'skipped, until the travel map has them: '+skipped.join(' | '):'every map was shown'));
     halt('lookback',()=>{const z=document.createElement('canvas'),C=3,R=Math.ceil(shots.length/C);z.width=C*640+(C-1)*8;z.height=R*288+(R-1)*8;const g=z.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,z.width,z.height);
