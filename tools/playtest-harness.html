@@ -4697,9 +4697,9 @@
   /* what I admit */
   await hints('hint_the_three_charges_1','hint_the_three_charges_2','at the tablet');
   const ch=k=>ROOMS.charges20.hs.find(h=>h.c20===k),mark=async(k,m)=>{clickHs(ch(k),'use');await pick(m)};
-  {const W=[[['mark_not_proved','mark_not_proved','mark_not_proved'],'sect_it_needs_no_proof'],[['mark_not_proved','mark_i_admit_it','mark_not_proved'],'temple_none_of_them_saw_it'],
-      [['mark_not_proved','mark_i_admit_it','mark_i_admit_it'],'temple_i_never_did_it'],[['mark_the_witnesses_arent_here','mark_i_admit_it','mark_i_admit_it'],'revolt_they_say_it_themselves'],
-      [['mark_i_admit_it','mark_i_admit_it','mark_i_admit_it'],'revolt_there_was_none'],[['mark_not_proved','mark_the_witnesses_arent_here','mark_i_admit_it'],'sect_no_witness_is_needed']],K=C().charges.map(c=>c.k);
+  {const W=[[['mark_not_proved','mark_not_proved','mark_not_proved'],'sect_proof_isnt_the_question'],[['mark_not_proved','mark_i_admit_it','mark_not_proved'],'temple_theres_more_to_say'],
+      [['mark_not_proved','mark_i_admit_it','mark_i_admit_it'],'temple_i_never_did_it'],[['mark_the_witnesses_arent_here','mark_i_admit_it','mark_i_admit_it'],'revolt_witnesses_of_what'],
+      [['mark_i_admit_it','mark_i_admit_it','mark_i_admit_it'],'revolt_there_was_none'],[['mark_not_proved','mark_the_witnesses_arent_here','mark_i_admit_it'],'sect_it_hangs_on_no_witness']],K=C().charges.map(c=>c.k);
     for(const[ms,why]of W){G.mk20=null;heard.length=0;for(let i=0;i<3;i++)await mark(K[i],ms[i]);
       ok(said(why)&&!F.marks,'a wrong mark is answered truly, in the charges\' order, and never with the right one: '+why)}
     G.mk20=null;heard.length=0;clickHs(ch(K[0]),'use');await pick('leave_it_as_it_is');ok(!(G.mk20||{})[K[0]],'a charge may be left as it is');

@@ -340,9 +340,9 @@ const BEGIN20=[['begin_with_his_years',null],['begin_with_my_citizenship','true_
 /* the three charges (told.md; the same keys on the clerk's report in Chapter Twenty-One), the mark each takes, and why each other mark
    will not do */
 const MARKS20=['mark_not_proved','mark_the_witnesses_arent_here','mark_i_admit_it'];
-const CHARGES20=[{k:'charge_revolt',ok:'mark_not_proved',no:{mark_the_witnesses_arent_here:'revolt_they_say_it_themselves',mark_i_admit_it:'revolt_there_was_none'}},
-  {k:'charge_sect',ok:'mark_i_admit_it',no:{mark_not_proved:'sect_it_needs_no_proof',mark_the_witnesses_arent_here:'sect_no_witness_is_needed'}},
-  {k:'charge_temple',ok:'mark_the_witnesses_arent_here',no:{mark_not_proved:'temple_none_of_them_saw_it',mark_i_admit_it:'temple_i_never_did_it'}}];
+const CHARGES20=[{k:'charge_revolt',ok:'mark_not_proved',no:{mark_the_witnesses_arent_here:'revolt_witnesses_of_what',mark_i_admit_it:'revolt_there_was_none'}},
+  {k:'charge_sect',ok:'mark_i_admit_it',no:{mark_not_proved:'sect_proof_isnt_the_question',mark_the_witnesses_arent_here:'sect_it_hangs_on_no_witness'}},
+  {k:'charge_temple',ok:'mark_the_witnesses_arent_here',no:{mark_not_proved:'temple_theres_more_to_say',mark_i_admit_it:'temple_i_never_did_it'}}];
 /* the defense, in the account's order (24:11-21) */
 const DEFENSE20=['paul_twelve_days','paul_no_crowd_no_proof','paul_what_i_admit','paul_the_hope','paul_gifts_and_temple','paul_the_men_from_asia','paul_the_one_thing_i_called_out'];
 /* before Felix and Drusilla: what Paul may speak of; ask: what the belief asks of a person (the three of 24:25, each with its flag) */
