@@ -5433,8 +5433,8 @@
   if(stop==='rooms22'){clearInterval(sk);sk=0;await loadLevel(22);setChapter(22);ov.className='';ov.onclick=null;const C=CHAP[22],K=2,ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1);
     const V=[['quay22',[]],['myra22',upto('out')],['deck22',upto('cord')],['deck22',upto('shelter')],['deck22',upto('fh')],['storm22',upto('advised')],
       ['storm22',upto('skiff')],['storm22',upto('load3')],['storm22',upto('t6')],['tablet22',upto('load3').concat(['t1','t2','t3','m1a','m2b','m3a','m3b'])],['girded22',upto('skiff')]];
-    const pic=(id,fl,q,x,y)=>{for(const k in F)delete F[k];for(const k of fl)F[k]=1;G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
-      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
+    const pic=(id,fl,q,x,y)=>{for(const k in F)delete F[k];for(const k of fl)F[k]=1;G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');if(ART[id].behind)ART[id].behind(g,1000);g.drawImage(bg(id),0,0,W,144);
+      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000);ART[id].air&&ART[id].air(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
       q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
     const[c,g]=mk(320*K*2+8,Math.ceil(V.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
     V.forEach(([id,fl],i)=>pic(id,fl,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];if(SHARED.beat)SHARED.beat.stop();
@@ -5489,19 +5489,19 @@
     await open22(up22('skiff'),'storm22');await till22(()=>B22());const b=B22(),C=CHAP[22],H=C.holds,SD=ACT.sail22d;
     ok(G.room==='storm22'&&PC()===P&&b&&b.room==='storm22'&&b.sticky&&b.need===420&&C.phase()==='load'&&Math.abs(P.x-H[0][0])<1,
       'the next day: Paul at the hatch, and the beat runs from the room ('+b.period+' ms, a pause of '+b.pause+', a step of '+b.need+')');
-    await tap22('mast_step',ph);ok(!G.bale22&&Math.abs(P.x-H[0][0])<1&&quiet22(),'without a bale he does not cross');
+    await tap22('cask',ph);ok(!G.bale22&&Math.abs(P.x-H[0][0])<1&&quiet22(),'without a bale he does not cross');
     await tap22('hatch',ph);ok(G.bale22===1&&P.pose==='bundle','a bale from the hatch, carried low before him');
     const W=ROOMS.storm22.walk;ok(W[0]===W[1]&&W[2]===W[3],'during the crossing the floor is his own place: only the next hold moves him');
-    await tap22('mast_step',ph,calm22);ok(G.hold22===1&&Math.abs(P.x-H[1][0])<1&&b.misses===0,'a step to the mast in the pause between two seas');
-    for(let n=1;n<=3;n++){await tap22('cask',ph,wave22);
-      ok(G.hold22===1&&Math.abs(P.x-H[1][0])<1&&b.misses===n&&quiet22()&&!G.busy&&P.pose==='bundle',`a step on the wave is a miss (${n}): back at the mast, the bale still in his arms, and no line stands to be clicked away`)}
+    await tap22('cask',ph,calm22);ok(G.hold22===1&&Math.abs(P.x-H[1][0])<1&&b.misses===0,'a step to the cask in the pause between two seas');
+    for(let n=1;n<=3;n++){await tap22('mast_step',ph,wave22);
+      ok(G.hold22===1&&Math.abs(P.x-H[1][0])<1&&b.misses===n&&quiet22()&&!G.busy&&P.pose==='bundle',`a step on the wave is a miss (${n}): back at the cask, the bale still in his arms, and no line stands to be clicked away`)}
     ok(b.help===1,'after three misses the sailor at the rail calls the moment');
     {await till22(()=>b.calling());SHARED.beat.cap.last=null;await wait(80);const c=SHARED.beat.cap.last;
       ok(b.calling()&&c&&c.key==='now'&&c.w<=c.max&&Math.abs(SD.x-H[3][0])<40,'he calls it in the pause, at the rail: '+(c&&c.s))}
-    for(let n=4;n<=6;n++){const p=tap22('cask',ph,wave22);if(n<6)await p}
+    for(let n=4;n<=6;n++){const p=tap22('mast_step',ph,wave22);if(n<6)await p}
     await till22(()=>F.load1&&!G.busy,1500);
-    ok(F.load1&&b.help===0&&b.misses===0&&G.hold22===0&&Math.abs(P.x-H[0][0])<2&&!G.bale22&&Math.abs(SD.x-302)<2,'after six misses the sailor walks him across: the bale goes over the lee rail, nobody goes overboard; back at the hatch, and the next crossing starts afresh');
-    await tap22('hatch',ph);for(const[i,n]of[[1,'mast_step'],[2,'cask'],[3,'lee_rail']]){await tap22(n,ph,calm22)}
+    ok(F.load1&&b.help===0&&b.misses===0&&G.hold22===0&&Math.abs(P.x-H[0][0])<2&&!G.bale22&&Math.abs(SD.x-284)<2&&Math.abs(SD.y-116)<2,'after six misses the sailor walks him across: the bale goes over the lee rail, nobody goes overboard; back at the hatch, and the next crossing starts afresh');
+    await tap22('hatch',ph);for(const[i,n]of[[1,'cask'],[2,'mast_step'],[3,'lee_rail']]){await tap22(n,ph,calm22)}
     await till22(()=>F.load2&&!G.busy,1500);ok(F.load2&&G.hold22===0,'the second bale across in three steps, each in a pause');
     halt(stop)}
   /* marks22: the marks that Chapter Twenty-Two's playthrough set on Luke's tablet, for Chapter Twenty-Three's to find carried in the full run */
@@ -5628,14 +5628,14 @@
   await hints('hint_the_bales_1','hint_the_bales_2','with the bales');
   await till22(()=>B22());
   for(let n=1;n<=2;n++){await tap22('hatch');ok(G.bale22===1,'a bale from the hatch ('+n+')');
-    for(const nm of['mast_step','cask','lee_rail']){await tap22(nm,0,calm22)}
+    for(const nm of['cask','mast_step','lee_rail']){await tap22(nm,0,calm22)}
     await until(()=>F['load'+n]&&G.hold22===0&&!G.busy,3000);ok(F['load'+n],'the bale over the lee rail ('+n+')')}
   await code('between the bales',()=>G.room==='storm22'&&PC()===P&&F.load2&&!F.load3&&Math.abs(P.x-C().holds[0][0])<1);
   halt('bales22');
-  await till22(()=>B22());await tap22('hatch');{const b=B22();await tap22('mast_step',0,wave22);ok(G.hold22===0&&b.misses===1&&quiet22(),'a miss: back at the hatch, no line')}
-  for(const nm of['mast_step','cask','lee_rail']){await tap22(nm,0,calm22)}
+  await till22(()=>B22());await tap22('hatch');{const b=B22();await tap22('cask',0,wave22);ok(G.hold22===0&&b.misses===1&&quiet22(),'a miss: back at the hatch, no line')}
+  for(const nm of['cask','mast_step','lee_rail']){await tap22(nm,0,calm22)}
   await until(()=>F.load3&&C().phase()==='tablet'&&PC()===LK&&!G.busy,9000);note();
-  ok(seenTold.has('v19')&&said('luke_ill_keep_the_days')&&!G.beat&&ART.storm22.variant()==='n'&&ART.storm22.light.amb&&!ART.storm22.light.sun,'the third day the tackling (27:19); the dark days: Luke is played, no lamp, no beat');
+  ok(seenTold.has('v19')&&said('luke_ill_keep_the_days')&&!G.beat&&ART.storm22.variant()==='n'&&ART.storm22.light.amb&&!ART.storm22.light.sun&&ART.storm22.light.lamps.length===1,'the third day the tackling (27:19); the dark days: Luke is played, one lantern, no beat');
   await code('in the dark days',()=>G.room==='storm22'&&PC()===LK&&F.load3&&!F.t1&&has('ltab22'));
   /* no sun, no stars */
   await hints('hint_the_tablet_1','hint_the_tablet_2','in the dark days');
