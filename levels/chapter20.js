@@ -63,8 +63,7 @@
    the harbor (window20, a close view: four season variants), the inner hall (hall20: with Drusilla in the first autumn, without her in
    the first spring), and Paul's tablet with the charges (charges20, a close view).
    Each picture is a section of its own between "ART <room>: begin" and "ART <room>: end"; what the story reads from a section is named at
-   its head. Every picture but the court is a placeholder marked ART-TODO, plain but in its final geometry (see ROOMS-20.md of the build),
-   to be painted anew at the coordinates it gives. */
+   its head. The court, Paul's room, the window view and the inner hall are painted by shared/caesarea.js, which Chapter Twenty-One shares. */
 LEVEL(20,()=>{
 "use strict";
 
@@ -118,8 +117,7 @@ const season20=()=>{let n=1;for(const k of SEAS20)if(F[k])n++;return n};
 const KIND20=['su','au','wi','sp'],kind20=()=>KIND20[(season20()-1)%4],winter20=()=>kind20()==='wi';
 
 /* ============ ART ============ */
-/* The court is real art (shared/caesarea.js). Every other picture is a placeholder (ART-TODO): plain, but in its final geometry, so
-   that the hotspots, walk strips, seats, footprints and lights below are final. */
+/* The court, the room, the window view and the inner hall come from shared/caesarea.js; the tablet with the charges is painted here. */
 const CS=SHARED.caesarea,M20=SHARED.materials;
 const FONT20=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;
 

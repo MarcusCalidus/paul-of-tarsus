@@ -53,8 +53,8 @@
 
    Rooms: the court of the palace by morning (court21, SHARED.caesarea.court), the clerk's writing room (write21), the report (report21, a
    close view), and the audience chamber (hall21). Each picture is a section of its own between "ART <room>: begin" and "ART <room>: end";
-   what the story reads from a section is named at its head. write21, report21 and hall21 are tidy placeholders (ART-TODO) at their final
-   geometry (SP/pair1/ROOMS-21.md), to be painted anew; so is the cart in the court. */
+   what the story reads from a section is named at its head. The court and the inner hall are painted by shared/caesarea.js; the writing
+   room, the report and the cart with the ox goad are painted here. */
 LEVEL(21,()=>{
 "use strict";
 
