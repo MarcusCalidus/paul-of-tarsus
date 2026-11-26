@@ -293,8 +293,6 @@ TEXTS('en',24,{
   "thallos_i_wanted_to_see_you":"I wanted to see you with my own eyes, Paul.",
   "three_inns":"three inns",
   "three_inns_look":"Three inns along the road. Travelers rest and eat here.",
-  "road_back":"road back",
-  "road_back_to_the_marketplace_look":"The road back to the Marketplace of Appius.",
   "task24_on_to_three_taverns":"Go on with the brothers to Three Taverns.",
   "task24_on_to_rome":"Go on to Rome.",
   "note24_julius":"The army officer who has brought us from Caesarea.",

@@ -224,9 +224,9 @@ ART.rome24={w:320,q:12,paint(g){R(g,0,0,320,ROME24.wallY,'#c8b494');R(g,0,0,320,
    never across it, and the places are boxes that touch nothing. ART-TODO: the wood, the scratched road. No light (a close view). */
 const BOARD24={road:[[150,8],[154,40],[148,70],[156,104],[152,140]],gate:[138,2,24,8],
   stones:[['III',14],['X',30],['XX',46],['XXXIII',64],['XLIII',104]],
-  T:[176,50,132,28],M:[176,90,132,28],bench:[10,14,104,120]};
+  T:[210,48,104,28],M:[210,90,104,28],bench:[10,14,104,120]};
 const tokPos24=id=>{const st=G.tok24||{},at=st[id]||'',i=TOK24.filter(t=>(st[t.id]||'')===at).findIndex(t=>t.id===id);
-  if(at){const B=BOARD24[at];return[B[0]+6+i*18,B[1]+5]}return[BOARD24.bench[0]+6+(i%4)*24,BOARD24.bench[1]+6+(i/4|0)*28]};
+  if(at){const B=BOARD24[at];return[B[0]+4+i*14,B[1]+5]}return[BOARD24.bench[0]+6+(i%4)*24,BOARD24.bench[1]+6+(i/4|0)*28]};
 ART.board24={w:320,q:12,paint(g){g.fillStyle=lg(g,0,0,320,144,['#8a6a46','#7a5a3a']);g.fillRect(0,0,320,144);
     for(let i=1;i<BOARD24.road.length;i++)stroke(g,[...BOARD24.road[i-1],...BOARD24.road[i]],'#4a3420',3);
     blocks24(g,[[...BOARD24.gate,'#5a4430']]);
@@ -243,7 +243,7 @@ ART.board24={w:320,q:12,paint(g){g.fillStyle=lg(g,0,0,320,144,['#8a6a46','#7a5a3
    its curbs, a ditch, the hills of Campania behind, the sea seen far off at the left between two hills; the milestone LXI on the far verge
    at the right. The soldier's foot (ART-TODO for the figure painter or the room: his step from G.beat.phase): lifted while the beat is in
    its pause, down at the downbeat, with a little dust. Sun from the left, low: shadows to the right. A bird of prey high over the hills. */
-const ROAD24={hz:64,road:[0,100,320,44],marks:[[40,124],[80,124],[120,124],[160,124],[200,124]],stone:[244,110],walk:[16,304,112,138]};
+const ROAD24={hz:64,road:[0,100,320,44],marks:[[80,124],[110,124],[140,124],[170,124],[200,124]],stone:[244,110],walk:[16,304,112,138]};
 function roadPaint24(g,o){sky24(g,ROAD24.hz,o.sky[0],o.sky[1]);ground24(g,ROAD24.hz,o.land);if(o.far)o.far(g);
   R(g,0,98,320,4,'#8a8270');g.fillStyle=lg(g,0,102,0,144,['#55524e','#3e3c3a']);g.fillRect(0,102,320,42);R(g,0,102,320,1.5,'#9a948a');R(g,0,141,320,3,'#8a8270');
   stone24(g,...ROAD24.stone,o.n)}
@@ -570,7 +570,7 @@ async function meet24(){await tw(400);await fade(1,700);show24('appius24');await
   F.met=1;codeBtn()}
 
 /* ---- with the brothers: on to Three Taverns, and Rome ---- */
-async function taverns24(){if(F.taverns)return;F.taverns=1;
+async function taverns24(){
   await say(PO,'postumus_we_waited_here_since_yesterday',{to:P});await say(P,'paul_thank_you_for_coming_out_so_far',{to:null});codeBtn()}
 async function onToRome24(){if(!F.taverns)return think('paul_the_others_wait_at_three_taverns',P);
   await fade(1,600);const M=await need('map');
@@ -637,7 +637,7 @@ ROOMS.appius24={space:.6,walk:APPIUS24.walk,get mood(){return phase24()==='dawn'
   {name:'inns',x:124,y:40,w:140,h:62,wx:190,wy:116,look:()=>think(phase24()==='dawn'?'inns_asleep_look':'inns_by_day_look')},
   {name:'milestone',x:256,y:86,w:14,h:26,wx:250,wy:118,look:()=>phase24()==='dawn'?stoneDawn24():think('xliii_forty_three_miles_to_rome',P)},
   {name:'road_north',x:288,y:96,w:32,h:30,wx:300,wy:122,look:()=>think(PC()===P?'paul_the_road_on_to_rome':'road_north_look24'),
-    exit:async()=>{if(phase24()==='dawn')return home24();await goto24('taverns24');return taverns24()}}]};
+    exit:async()=>{if(phase24()==='dawn')return home24();const first=!F.taverns;F.taverns=1;await goto24('taverns24');if(first)return taverns24()}}]};
 ROOMS.rome24={space:.9,walk:ROME24.walk,block:[],mood:'house',amb:AMB.rome24,hs:[
   {name:'doorway',x:276,y:40,w:32,h:64,wx:280,wy:118,look:'doorway_to_the_court_look'},
   {name:'board',x:138,y:88,w:56,h:16,wx:170,wy:124,def:'use',look:'board_look24',use:()=>F.news?goto24('board24'):think('proculus_first_the_news')}]};
@@ -661,7 +661,6 @@ ROOMS.marsh24={space:.5,get walk(){return onRoad()?[P.x,P.x,P.y,P.y]:ROAD24.walk
   here({name:'road_ahead',get x(){return P.x+12},y:100,w:60,h:40,def:'use',vis:onRoad,look:()=>think('the_road_ahead_look24',P),use:()=>step24()})]};
 ROOMS.taverns24={space:.6,walk:TAVERNS24.walk,mood:'meet',amb:AMB.taverns24,hs:[
   {name:'three_inns',x:20,y:40,w:284,h:62,wx:160,wy:116,look:()=>think('three_inns_look',P)},
-  {name:'road_back',x:0,y:96,w:24,h:30,wx:20,wy:122,look:()=>think('road_back_to_the_marketplace_look',P),exit:()=>goto24('appius24',280,122,-1)},
   {name:'road_north',x:296,y:96,w:24,h:30,wx:300,wy:122,look:()=>think('paul_the_road_on_to_rome',P),exit:()=>onToRome24()}]};
 ROOMS.far24={space:.5,walk:SHARED.rome.WALK.far,mood:'meet',amb:AMB.far24,hs:[
   {name:'Rome',x:60,y:20,w:260,h:42,wx:180,wy:120,look:()=>think('rome_from_afar_look',P)},
@@ -780,7 +779,7 @@ function place24(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   if(ph==='with'){pl(P,'appius24',60,126,1);pl(LK,'appius24',36,120,1);pl(AR,'appius24',22,130,1);pl(JU,'appius24',120,118,1);pl(SO,'appius24',84,132,1);
     pl(DE,'appius24',172,132,-1);pl(MI,'appius24',220,120,-1);pl(VI,'appius24',244,128,-1);pl(AE,'appius24',268,122,-1);
     pl(PO,'taverns24',190,122,-1);pl(FI,'taverns24',220,128,-1);pl(TH,'taverns24',250,120,-1);pl(IK,'taverns24',162,114,1);
-    if(F.taverns){for(const[a,x,y]of[[LK,64,120],[AR,30,130],[JU,110,118],[SO,84,132],[DE,130,128],[MI,104,124],[VI,276,128],[AE,296,122]])pl(a,'taverns24',x,y,1)}}
+    if(F.taverns){for(const[a,x,y]of[[LK,70,118],[AR,14,132],[SO,96,132],[JU,124,116],[DE,150,130],[MI,176,124],[VI,276,128],[AE,296,122]])pl(a,'taverns24',x,y,1)}}
   if(ph==='city'){const r=F.gate?'capena24':'far24';for(const[a,x,y]of[[P,60,126],[LK,30,120],[AR,18,132],[JU,110,118],[SO,84,132],[DE,140,128],[MI,164,122]])pl(a,r,x,y,1);
     if(room==='camp24'){for(const[a,x,y,d]of[[P,110,124,1],[JU,140,120,-1],[SO,170,126,-1],[LK,60,122,1],[AR,40,130,1],[DE,80,132,1]])pl(a,'camp24',x,y,d)}}
   if(ph==='lane'){const lk=F.inlook?'look24':'lane24';
