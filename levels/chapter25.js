@@ -147,7 +147,9 @@ const MOT25={};
 ART.lodging25={w:320,q:12,variant:()=>kind25()+'_'+hour25()+(watch25()===7?'_7':''),
   paint(g,v){const[k,h,s]=(v||'flat_early').split('_');LG.room(g,{kind:k,hour:h,stools:s?['desk']:undefined})},
   get light(){return LG.light(kind25(),hour25())},
-  get props(){return LG.props(kind25(),stools25())},
+  /* the table and the stools (the stools are seats); the benches and, in the last watch, the soldier's own stool are seats too, with no
+     cut-out of their own (the benches stand at the back wall, behind everyone) */
+  get props(){return LG.props(kind25(),stools25()).map(p=>p.stool?Object.assign({},p,{seat:1}):p).concat(SEATP25,watch25()===7&&STOOL25.length?[{y:STOOL25[1],shape(){},foot:[STOOL25[0]-5,STOOL25[1]-3,10,4],seat:1}]:[])},
   draw(g,t){const k=kind25()+'_'+hour25();(MOT25[k]||(MOT25[k]=LG.motion({kind:kind25(),hour:hour25()}))).draw(g,t);draw25(g,t)},front(){}};
 /* the chain; the cat on it; Luke's roll; the moved stool */
 function draw25(g,t){const S=SO25();
@@ -158,7 +160,8 @@ function draw25(g,t){const S=SO25();
   if(watch25()===7&&!S.pose){LG.stoolCast(g,STOOL25[0],STOOL25[1],{hour:hour25()});CU.stool(g,STOOL25[0],STOOL25[1],{room:'lodging25'})}}
 /* Luke's roll (ART-TODO): a roll of papyrus lying on the bench beside him, its near end toward us as a face, nothing tied round it */
 function roll25(g){const x=ROLL25.x,y=ROLL25.y;depth(102.2,()=>{R(g,x,y,10,3,'#d8c89c');R(g,x,y,10,.8,'#f2e6c4');R(g,x,y+2.4,10,.6,'rgba(90,70,40,.4)');R(g,x+8.6,y,1.8,3,'#b8a478');R(g,x+9,y+.8,1,1.4,'#8a7650')})}
-const ROLL25={x:88,y:90.6};
+const ROLL25={x:96,y:90.6};
+const SEATP25=LG.POS.benches.map(b=>({y:b.foot,shape(){},foot:[b.x0,b.foot-4,b.x1-b.x0,5],seat:1}));
 /* ==== ART lodging25: end ==== */
 
 /* ==== ART sheet25: begin ==== */
@@ -263,6 +266,12 @@ const knock25=()=>{try{for(let i=0;i<3;i++)noise({t:now()+i*.18,d:.07,v:.32,f:22
 
 /* ============ WHAT IS PLAYED: the tables ============ */
 /* This chain: what Paul thinks when a point is chosen too early (something comes before it); the fifth is the chain's */
+/* the points as they stand in the choice (one short line each); the account's line is what Paul says */
+const PLAB25=['point_nothing_against_our_people','point_all_the_same_a_prisoner','point_the_romans_wanted_to_let_me_go','point_i_had_to_appeal_to_caesar'];
+/* the lines of the letter to Philippi as they stand in the choice, and the greeting of Caesar's household */
+const PHLAB25=['line_im_sending_epaphroditus_back','line_he_longs_to_see_you','line_so_welcome_him_gladly'],HHLAB25='line_greetings_from_caesars_household';
+/* what Paul asks of Philemon, as it stands in the choice */
+const ASK25=['ask_i_appeal_to_you_for_loves_sake','ask_nothing_without_your_consent','ask_welcome_him_as_you_would_me','ask_put_it_on_my_account'];
 const EARLY25=['','paul_first_that_ive_done_nothing_against_them','paul_first_how_i_became_a_prisoner','paul_first_that_the_romans_wanted_to_let_me_go',
   'paul_first_how_i_came_to_appeal_to_caesar'];
 /* From morning to evening: the five passages (told before, with the keys and wording of Chapters Five and Ten: reference, text, short
@@ -303,11 +312,11 @@ const NEWS25=[{k:'news_everyone_who_comes_is_welcome',give:1},{k:'news_one_soldi
   {k:'news_mark_is_with_me'},{k:'news_epaphras_prays_for_you'},{k:'news_i_am_a_prisoner'}];
 /* The watch: the question each soldier asks before he is relieved, the answer that fits, a longer one, one about something else, and his
    word when he has his answer */
-const Q25={1:{q:'fulvius_why_did_you_call_them_first',fit:'paul_they_should_hear_my_side_first',long:'paul_wherever_ive_gone_the_synagogue_first',aside:'paul_they_had_no_letter_about_me',ack:'fulvius_a_reason_i_understand'},
-  2:{q:'firmus_why_read_them_their_own_books',fit:'paul_they_trust_those_books',long:'paul_i_grew_up_on_those_books',aside:'paul_some_of_them_believed',ack:'firmus_their_own_books'},
-  3:{q:'bassus_what_is_a_man_from_the_palace_doing_here',fit:'paul_hes_one_of_the_brothers',long:'paul_brothers_in_every_trade',aside:'paul_his_name_is_anthus',ack:'bassus_one_of_the_brothers_in_the_palace'},
-  4:{q:'macer_nobody_ordered_him_back',fit:'paul_because_he_wants_to_go',long:'paul_he_has_been_a_help_to_me_every_day',aside:'paul_his_master_lives_in_colossae',ack:'macer_not_what_i_expected'},
-  5:{q:'firmus_why_send_greetings_from_everyone',fit:'paul_so_they_know_whos_here_with_me',long:'paul_each_of_them_has_a_story',aside:'paul_timothy_wrote_it_down',ack:'firmus_fair_enough'}};
+const Q25={1:{q:'fulvius_why_did_you_call_them_first',fit:'paul_they_should_hear_my_side_first',long:'paul_wherever_ive_gone_my_people_first',say:'paul_wherever_ive_gone_the_synagogue_first',aside:'paul_they_had_no_letter_about_me',ack:'fulvius_a_reason_i_understand'},
+  2:{q:'firmus_why_read_them_their_own_books',fit:'paul_they_trust_those_books',long:'paul_those_books_are_theirs_and_mine',say:'paul_i_grew_up_on_those_books',aside:'paul_some_of_them_believed',ack:'firmus_their_own_books'},
+  3:{q:'bassus_what_is_a_man_from_the_palace_doing_here',fit:'paul_hes_one_of_the_brothers',long:'paul_the_brothers_here_are_all_kinds',say:'paul_brothers_in_every_trade',aside:'paul_his_name_is_anthus',ack:'bassus_one_of_the_brothers_in_the_palace'},
+  4:{q:'macer_nobody_ordered_him_back',fit:'paul_because_he_wants_to_go',long:'paul_hes_been_a_help_to_me',say:'paul_he_has_been_a_help_to_me_every_day',aside:'paul_his_master_lives_in_colossae',ack:'macer_not_what_i_expected'},
+  5:{q:'firmus_why_send_greetings_from_everyone',fit:'paul_so_they_know_whos_here_with_me',long:'paul_each_of_them_matters_to_me',say:'paul_each_of_them_has_a_story',aside:'paul_timothy_wrote_it_down',ack:'firmus_fair_enough'}};
 /* what the soldier says as he comes on (he knows whose prisoner this is), and his own care, said when Paul first speaks to him */
 const ON25={2:'firmus_so_you_are_paul',3:'bassus_youre_the_one_with_company',4:'macer_a_prisoner_is_a_prisoner',5:'firmus_again',6:'fulvius_again',7:'celer_i_know_who_you_are'};
 const CARE25={1:'fulvius_days_to_my_discharge',2:'firmus_my_girl_has_a_fever',3:'bassus_my_last_post_was_a_granary',4:'macer_ive_guarded_worse',5:'firmus_her_fever_is_gone',6:'fulvius_twenty_six_days',7:'celer_its_quiet_here'};
@@ -344,7 +353,7 @@ const BENCH=102;
 const MEN25=[[JA,84,1],[JC,104,1],[JE,124,1],[JF,168,1],[JD,188,1],[JB,208,1]],SPOKES25=JB;
 const DAY25=[[JA,80,1],[JD,98,1],[JB,116,1],[JH,134,1],[JC,166,1],[JF,184,1],[JG,202,1],[JE,220,1]];
 /* the third watch's people, the fifth's six men and the two who travel, the sixth's two */
-const AT3={tim:[98,121,1],luke:[78,BENCH,1],eph:[206,124,-1]};
+const AT3={tim:LG.AT.desk.slice(),luke:[78,BENCH,1],eph:[206,124,-1]};
 const AT5={aristarchus25:[46,108,1],demas25:[72,108,1],justus25:[198,132,-1],epaphras25:[226,110,-1],mark25:[300,122,-1],luke25:[274,134,-1],tychicus25:[246,107,-1],onesimus25:[262,111,-1]};
 const STOOL25=[];   /* the last watch: where the soldier's own stool stands (the table's, until he carries it to the door) */
 function place25(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a.ges=0;a.kneel=0;a.bound=0;a.bow=false;a.speed=0;a.chained=0;a.chainTo=0;a.held=0;a.keeper=0;a.grips=0;a.wrist=0;a.tether=0;a.free=false;a.pose=0;a.pk=0;a.noTurn=0}
@@ -389,9 +398,8 @@ async function door25(){const w=watch25();
   if(w===7)return G.w7?final25():say(P,'paul_hes_getting_up',TP);
   if(w===1&&!F.men)return men25();
   return say(P,'paul_ill_open_it_when_someone_knocks',TP)}
-async function men25(){SFX.door();const D=LG.AT.door;
+async function men25(){SFX.door();const D=LG.AT.door;await say(P,'paul_come_in_theres_room_on_the_benches',{to:null});
   for(const[a]of MEN25)place(a,'lodging25',D[0],D[1],-1);
-  await say(P,'paul_come_in_theres_room_on_the_benches',{to:SPOKES25});
   await Promise.all(MEN25.map(([a,x],i)=>tw(i*260).then(()=>go25(a,x,BENCH))));
   for(const[a,,d]of MEN25){a.seat=1;a.dir=d}
   F.men=1;codeBtn();await say(SPOKES25,'leading_man_we_came_as_you_asked',{to:P});await say(P,'paul_one_thing_after_another',TP)}
@@ -399,7 +407,7 @@ async function men25(){SFX.door();const D=LG.AT.door;
 async function speech25(){const w=watch25();if(w!==1||!F.men)return;
   if(F.said)return say(SPOKES25,'leading_man_we_will_come_back',{to:P});
   G.pt25=G.pt25||0;
-  for(;;){const opts=SPOKEN25.points.slice(0,4).concat(['paul_let_me_think_first']),i=await choose(opts,{keep:1});if(i===4)return;
+  for(;;){const opts=PLAB25.concat(['paul_let_me_think_first']),i=await choose(opts,{keep:1});if(i===4)return;
     if(i<G.pt25){await say(P,'ive_told_them_that_already',TP);continue}
     if(i>G.pt25){SFX.nope();await say(P,EARLY25[i],TP);continue}
     await say(P,SPOKEN25.points[i],{to:SPOKES25});G.pt25++;
@@ -416,7 +424,7 @@ async function chainMen25(){if(watch25()!==1||!F.men||F.said)return say(P,'paul_
 /* ---- the watch: the soldier's question, and the relief ---- */
 async function question25(){const w=watch25(),Q=Q25[w],S=S_();if(!Q||F['q'+w])return;
   if(G.asked25===w)await say(S,'soldier_let_me_ask_again',{to:P});else{G.asked25=w;await say(S,'soldier_one_thing_before_my_relief',{to:P})}
-  for(;;){await say(S,Q.q,{to:P});const opts=[Q.fit,Q.long,Q.aside],k=opts[await choose(opts)];await say(P,k,{to:S});
+  for(;;){await say(S,Q.q,{to:P});const opts=[Q.fit,Q.long,Q.aside],k=opts[await choose(opts)];await say(P,k===Q.long?Q.say:k,{to:S});
     if(k===Q.aside){await say(S,'soldier_thats_not_what_i_asked',{to:P});continue}
     if(k===Q.long){G.wall25=w;return say(P,'paul_hes_looking_at_the_wall',TP)}
     break}
@@ -452,8 +460,8 @@ async function begin3(){G.scene=DARK;await own(PASSED25[3]);await tell('gift');G
   await say(TM,'timothy_im_ready',{to:P});codeBtn()}
 async function dict25(){if(watch25()!==3)return say(TM,'nothing_to_write_just_now',{to:P});
   if(F.house)return say(TM,'timothy_the_letter_is_gone',{to:P});
-  const lines=WRITTEN25.philippians,opts=lines.concat(F.dict?[WRITTEN25.household]:[],['paul_let_me_think_first']),
-    i=await choose(opts,{keep:1});if(i===opts.length-1)return;const k=opts[i];G.ph25=G.ph25||0;
+  const opts=PHLAB25.concat(F.dict?[HHLAB25]:[],['paul_let_me_think_first']),i=await choose(opts,{keep:1});if(i===opts.length-1)return;
+  const k=opts[i]===HHLAB25?WRITTEN25.household:WRITTEN25.philippians[i];G.ph25=G.ph25||0;
   if(k===WRITTEN25.household){if(!F.dict)return;await say(P,k,{to:TM});await write25(TM);return send25()}
   if(F.dict||i<G.ph25)return say(P,'paul_ive_told_him_that_already',TP);
   if(i>G.ph25){SFX.nope();return say(P,EARLY25P[i],TP)}
@@ -485,7 +493,7 @@ async function sit25(){P.free=1;await walk(P,LG.AT.desk[0]+6,LG.AT.desk[1]+3);P.
 function sheetLines25(){const W=WRITTEN25.philemon,n=F.phm?4:Math.min(4,G.pm25||0),ks=[];
   for(let i=0;i<n;i++){ks.push(W[i]);if(i===0)ks.push(WRITTEN25.heart)}if(F.phm||(G.pm25||0)>4)ks.push(WRITTEN25.ready);return ks}
 async function sheet25(){if(watch25()!==4||F.phm)return say(P,'paul_the_letter_is_written',TP);
-  const n=G.pm25||0,d=DEMAND25[n],opts=[d.k,WRITTEN25.philemon[n],'paul_let_me_think_first'],i=await choose(opts,{keep:1});if(i===2)return;
+  const n=G.pm25||0,d=DEMAND25[n],opts=[d.k,ASK25[n],'paul_let_me_think_first'],i=await choose(opts,{keep:1});if(i===2)return;
   if(i===0){SFX.nope();return say(P,d.why,TP)}
   await say(P,WRITTEN25.philemon[n],{to:null});G.pm25=n+1;SFX.click();
   if(n===0){await tw(300);await say(P,WRITTEN25.heart,{to:null})}
@@ -646,7 +654,9 @@ for(const S of SOLDIERS)who(S,{free25:1,look:()=>say(P,SLOOK25[S.id],TP),talk:()
 for(const a of JEWS){who(a,{free25:1,
   look:()=>say(P,watch25()===1?(a===SPOKES25?'leading_man_who_speaks_look':'leading_man25_look'):'listener_look',TP),
   talk:()=>watch25()===1?speech25():answer25(a),useWith:chainOn(()=>chainMen25()),give:it=>it==='chain25'?chainMen25():false});
-  Object.defineProperty(a.hs,'name',{get(){return a.name},enumerable:true})}
+  Object.defineProperty(a.hs,'name',{get(){return a.name},enumerable:true});
+  /* spoken to from where Paul stands: nobody walks up to men seated along the wall, and stands before them */
+  Object.defineProperty(a.hs,'wx',{get(){return P.x},enumerable:true});Object.defineProperty(a.hs,'wy',{get(){return P.y},enumerable:true})}
 who(TM,{look:()=>say(P,'timothy25_look',TP),talk:()=>watch25()===3?dict25():watch25()===5?say(TM,'timothy_im_writing',{to:P}):say(TM,'nothing_to_write_just_now',{to:P})});
 who(LK,{look:()=>say(P,watch25()===3?'luke_writing_look':'luke25_look',TP),talk:()=>watch25()===5?greet25(LK):say(LK,'luke_im_writing_too',{to:P})});
 who(AR,{look:'aristarchus25_look',talk:()=>greet25(AR)});
@@ -702,7 +712,7 @@ function hint25(){const o=owed25()||'question';return[o+watch25(),HINT25[o]]}
 /* No birds: the chapter is played indoors (the roofs through the flat's window are far off and small). */
 return{rooms:['lodging25','sheet25','letters25'],setup:setup25,start:start25,hint:hint25,music:MUSIC,topics:[],tablets:TABLETS,
   /* for the playtest: what is told, said and written, the tables of the puzzles, the watches, the reach, the door, the way to the finale */
-  told:TOLD,spoken:SPOKEN25,written:WRITTEN25,called:CALLED25,first:FIRST25,pass:PASS25,obj:OBJ25,demand:DEMAND25,greet:GREET25,letters:LETTERS25,news:NEWS25,q:Q25,
+  told:TOLD,spoken:SPOKEN25,labels:{points:PLAB25,phil:PHLAB25,household:HHLAB25,ask:ASK25},written:WRITTEN25,called:CALLED25,first:FIRST25,pass:PASS25,obj:OBJ25,demand:DEMAND25,greet:GREET25,letters:LETTERS25,news:NEWS25,q:Q25,
   watch:watch25,hour:hour25,owed:owed25,seat:seat25,box:box25,deskOk:deskOk25,road:ROAD25,soldier:S_,door:door25,toFinale,
   /* the generic stops (routes25, shadows25) look at the room in each of its variants: each entry sets the flags for one */
   views:{lodging25:{flat:()=>{F.street=0},street:()=>{F.street=1}}},

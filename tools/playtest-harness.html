@@ -6456,7 +6456,8 @@
     useA=async(id,a,v)=>{verb(v||'use');item(id);clickView(a.x,a.y-10,a.hs);await idle()},
     code=async(what,fn)=>{const cd=makeCode();await enter(cd);await idle();ok(fn(),'a code '+what+': '+cd)},
     seenTold=new Set(),note=()=>{for(const k in C().told)if(ever(C().told[k]))seenTold.add(k)},
-    door=()=>F.street?'doorway':'door',chs=()=>$('#choices').classList.contains('on');
+    door=()=>F.street?'doorway':'door',chs=()=>$('#choices').classList.contains('on'),
+    far=()=>said('paul_the_chain_doesnt_reach')||said('paul_the_chain_doesnt_reach_i_could_ask'),LB=()=>C().labels;
   heard.length=0;
   /* FOR NOW, as for Chapter Twenty-Four: when its entry leaves PLANNED, the usual check (the title lists Chapter Twenty-Five) */
   if(C25){const l=ov.querySelector('.chs'),plans=l.querySelector('.plans');
@@ -6495,14 +6496,14 @@
   await code('with the leading men seated',()=>F.men&&!F.said&&C().seat()==='door'&&A('jew25b').seat&&P.chainTo===FV);
   halt('men25');
   await hints('hint_my_points_1','hint_my_points_2','with the leading men');
-  const PTS=C().spoken.points;
-  heard.length=0;await talkTo(SP);{const o=await asked();ok(o.length===5&&PTS.slice(0,4).every(k=>o.includes(k))&&o.at(-1)==='paul_let_me_think_first'&&!o.includes(PTS[4]),'four of his points on offer, all of them every time; the fifth is not: it is said with the chain')}
-  heard.length=0;await pickK(PTS[2]);ok(said('paul_first_how_i_became_a_prisoner')&&!said(PTS[2]),'a point too early: something comes before it, his own thought');
-  heard.length=0;await pickK(PTS[0]);ok(said(PTS[0]),'the first point, said');
-  heard.length=0;await pickK(PTS[0]);ok(said('ive_told_them_that_already'),'one already said stays on offer, and is his thought');
+  const PTS=C().spoken.points,PL=LB().points;
+  heard.length=0;await talkTo(SP);{const o=await asked();ok(o.length===5&&PL.every(k=>o.includes(k))&&o.at(-1)==='paul_let_me_think_first','four of his points on offer, all of them every time; the fifth is not: it is said with the chain')}
+  heard.length=0;await pickK(PL[2]);ok(said('paul_first_how_i_became_a_prisoner')&&!said(PTS[2]),'a point too early: something comes before it, his own thought');
+  heard.length=0;await pickK(PL[0]);ok(said(PTS[0]),'the first point, said');
+  heard.length=0;await pickK(PL[0]);ok(said('ive_told_them_that_already'),'one already said stays on offer, and is his thought');
   await pickK('paul_let_me_think_first');
   heard.length=0;await useA('chain25',SP);ok(said('paul_first_how_i_became_a_prisoner')&&!F.said,'the chain too early: something comes before it');
-  heard.length=0;await talkTo(SP);for(const k of PTS.slice(1,4))await pickK(k);
+  heard.length=0;await talkTo(SP);for(const k of PL.slice(1,4))await pickK(k);
   ok(PTS.slice(1,4).every(said)&&said('paul_one_thing_more_they_can_see_it')&&!chs(),'the next three, in the account\'s order; one thing more, which they can see');
   await hints('hint_the_chain_1','hint_the_chain_2','before the fifth point');
   heard.length=0;useA('chain25',SP);await until(chs,9000);
@@ -6540,20 +6541,20 @@
   heard.length=0;await talkTo(BA);ok(said('bassus_my_last_post_was_a_granary'),'Bassus: the granary');await pickK('paul_never_mind');
   await hints('hint_dictate_1','hint_dictate_2','with Timothy at the pen');
   const PHL=C().written.philippians;
-  heard.length=0;await talkTo(TM);await pickK(PHL[1]);ok(said('paul_first_that_im_sending_him')&&!said(PHL[1]),'a line too early is his own thought');
-  for(const k of PHL){heard.length=0;await talkTo(TM);await pickK(k);ok(said(k),'dictated: '+k)}
+  heard.length=0;await talkTo(TM);await pickK(LB().phil[1]);ok(said('paul_first_that_im_sending_him')&&!said(PHL[1]),'a line too early is his own thought');
+  for(const[i,k]of PHL.entries()){heard.length=0;await talkTo(TM);await pickK(LB().phil[i]);ok(said(k),'dictated: '+k)}
   await until(()=>F.dict&&A('anthus25').room==='lodging25'&&!G.busy,8000);
   ok(ever('landlady_i_rented_to_one_quiet_man')&&ever('anthus_a_greeting_from_the_household')&&!A('landlady25').room,'the landlady brings Anthus of Caesar\'s household, and goes; he asks to add a greeting');
   await hints('hint_a_greeting_from_the_household_1','hint_a_greeting_from_the_household_2','with Anthus');
-  heard.length=0;await onH('letter_for_philippi','use');{const o=await asked();ok(o.includes(C().written.household),'the greeting from Caesar\'s household is on offer now')}
-  pickK(C().written.household);await until(()=>F.house&&chs(),12000);
+  heard.length=0;await onH('letter_for_philippi','use');{const o=await asked();ok(o.includes(LB().household),'the greeting from Caesar\'s household is on offer now')}
+  pickK(LB().household);await until(()=>F.house&&chs(),12000);
   ok(F.house&&said(C().written.household)&&!A('epaphroditus25').room&&said(C().q[3].q),'Philippians 4:22 added; Epaphroditus leaves with the letter; the soldier asks');
   heard.length=0;await pickK(C().q[3].fit);await until(()=>F.q3&&G.room==='lodging25'&&!G.busy,20000);note();
   /* ---- the fourth watch: not as an order (Philemon) ---- */
   ok(seenTold.has('child')&&ever('the_two_years_were_nearing_their_end')&&P.chainTo===MA&&C().seat()==='door'&&ever('epaphras_thats_all_the_news_from_colossae')&&ON.room==='lodging25'&&ever('macer_a_prisoner_is_a_prisoner'),
     'toward the end of the two years: Macer by the door; Epaphras has given his news; Onesimus at home here (Philemon 10, 11, told)');
   await hints('hint_sit_at_the_table_1','hint_sit_at_the_table_2','with Macer by the door');
-  heard.length=0;await onH('desk','use');ok(said('paul_the_chain_doesnt_reach')&&G.room==='lodging25','the desk is out of reach from the door');
+  heard.length=0;await onH('desk','use');ok(far()&&G.room==='lodging25','the desk is out of reach from the door');
   await wait(200);heard.length=0;await onH('cat','look');ok(said('paul_the_cat_sleeps_on_the_chain'),'the cat asleep on the chain');
   heard.length=0;await talkTo(MA);ok(said('macer_ive_guarded_worse'),'Macer\'s own word');await pickK('would_you_sit_at_the_table');await until(()=>!MA.walk&&MA.seat,3000);ok(C().seat()==='table'&&C().deskOk(),'asked plainly, he sits at the table');
   await hints('hint_the_desk_1','hint_the_desk_2','with the desk in reach');
@@ -6561,9 +6562,9 @@
   halt('philemon25');
   await hints('hint_ask_not_order_1','hint_ask_not_order_2','at the sheet');
   const PM=C().written.philemon,DM=C().demand;
-  for(let i=0;i<4;i++){heard.length=0;await onH('letter_to_philemon','use');{const o=await asked();ok(o.length===3&&o.includes(DM[i].k)&&o.includes(PM[i]),'line '+(i+1)+': what he could demand, or what he asks')}
+  for(let i=0;i<4;i++){heard.length=0;await onH('letter_to_philemon','use');{const o=await asked();ok(o.length===3&&o.includes(DM[i].k)&&o.includes(LB().ask[i]),'line '+(i+1)+': what he could demand, or what he asks')}
     await pickK(DM[i].k);ok(said(DM[i].why)&&!said(DM[i].k),'line '+(i+1)+': he could demand it; his own thought, and the line stays unwritten');
-    heard.length=0;await onH('letter_to_philemon','use');if(i<3){await pickK(PM[i]);ok(said(PM[i])&&(i>0||said(C().written.heart)),'line '+(i+1)+' written: what he asks'+(i?'':'; then Philemon 12'))}else pickK(PM[i])}
+    heard.length=0;await onH('letter_to_philemon','use');if(i<3){await pickK(LB().ask[i]);ok(said(PM[i])&&(i>0||said(C().written.heart)),'line '+(i+1)+' written: what he asks'+(i?'':'; then Philemon 12'))}else pickK(LB().ask[i])}
   await until(()=>F.phm&&G.room==='lodging25'&&chs(),12000);
   ok(ever(PM[3])&&ever(C().written.ready)&&ever('onesimus_ill_go_back_to_him')&&said(C().q[4].q),'the last line, and Philemon 22; back in the room Onesimus says himself that he will go; the soldier asks');
   heard.length=0;await pickK(C().q[4].fit);await until(()=>F.q4&&G.room==='lodging25'&&!G.busy,20000);note();
@@ -6573,7 +6574,7 @@
   halt('greet25');
   await hints('hint_greetings_1','hint_greetings_2','with the six');
   const G5=C().greet,gOf=id=>G5.find(g=>g.a===id),name=async(id,c)=>{heard.length=0;await talkTo(A(id));await pickK(c||gOf(id).c)};
-  for(const id of['aristarchus25','demas25','mark25','luke25']){heard.length=0;await talkTo(A(id));ok(said('paul_the_chain_doesnt_reach')&&!chs(),id+' is out of reach from the table')}
+  for(const id of['aristarchus25','demas25','mark25','luke25']){heard.length=0;await talkTo(A(id));ok(far()&&!chs(),id+' is out of reach from the table')}
   heard.length=0;await talkTo(A('justus25'));{const o=await asked();ok(o.length===7&&C().called.every(k=>o.includes(k)),'all six names on offer, every time')}
   await pickK('the_cousin_of_barnabas');ok(said(gOf('justus25').no)&&!F.cj,'a name not his: he says so himself, truly');
   await name('justus25');ok(F.cj&&said(C().written.colossians[2]),'Justus: the one called Justus (Colossians 4:11), dictated');
@@ -6585,7 +6586,7 @@
   await name('mark25');ok(F.cm&&said(C().written.colossians[1]),'Mark: the cousin of Barnabas, to be welcomed (Colossians 4:10)');
   await name('luke25');ok(F.cl&&said(C().written.colossians[4])&&said('paul_last_my_own_greeting'),'Luke: the beloved physician; Luke and Demas (Colossians 4:14); last, his own greeting');
   await hints('hint_my_own_hand_1','hint_my_own_hand_2','with the six in the letter');
-  heard.length=0;await onH('desk','use');ok(said('paul_the_chain_doesnt_reach')&&!F.hand,'the desk is out of reach from the door');
+  heard.length=0;await onH('desk','use');ok(far()&&!F.hand,'the desk is out of reach from the door');
   heard.length=0;await talkTo(FI);await pickK('would_you_sit_at_the_table');await until(()=>!FI.walk&&FI.seat,3000);
   heard.length=0;onH('desk','use');await until(()=>F.hand&&chs(),12000);
   ok(F.hand&&said(C().written.hand)&&said(C().q[5].q),'in his own hand (Colossians 4:18); the soldier asks');
