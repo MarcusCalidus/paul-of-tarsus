@@ -306,22 +306,18 @@ ART.lane24={w:320,q:12,paint(g){sky24(g,14,'#b8c8d8','#d8dee2');R(g,0,10,160,LAN
 /* ==== ART lane24: end ==== */
 
 /* ==== ART look24: begin ==== */
-/* The lodgings looked at (look24), one variant for each: 'flat' and 'street' are shared/lodging.js at midday (approved, the two that can
-   be chosen and carried into Chapter Twenty-Five); 'garret' (a room under the roof, up three flights) and 'small' (a room too small for
-   more than four) are the lodging painter's two more kinds: SHARED.lodging.room(g,{kind:'garret',hour:'noon'}) and
-   SHARED.lodging.room(g,{kind:'small',hour:'noon'}). ART-TODO: until those land, the two are plain placeholders with the same table and
-   stools in the same places (the props and footprints are the flat's). Light: the hour's. */
+/* The lodgings looked at (look24), one variant for each, all painted by shared/lodging.js: 'flat' and 'street' at midday (approved, the two
+   that can be chosen and carried into Chapter Twenty-Five), and the two that do not fit: 'garret' (a room under the roof, three steep flights
+   up: rafters, a small window, a pallet, the stair's head at the door) and 'small' (a clean room at street level, too small for more than
+   four). Each kind has its own walk, footprints, props, door and places (LG.PLACES for the two that do not fit). Light: the room's own. */
 const LG=SHARED.lodging;
 const lookKind=()=>['flat','street','garret','small'][(F.lka?1:0)|(F.lkb?2:0)];
-const lodgingPainted=k=>k==='flat'||k==='street'||(LG.KINDS||[]).includes(k);
-ART.look24={w:320,q:12,variant:lookKind,paint(g,v){const k=v||'flat';
-    if(lodgingPainted(k))return LG.room(g,{kind:k,hour:'noon'});
-    /* ART-TODO placeholder for SHARED.lodging.room(g,{kind:k,hour:'noon'}) */
-    const small=k==='small',P=LG.POS;R(g,0,0,320,LG.WY,small?'#c4b496':'#d0bea0');ground24(g,LG.WY,'#9a8468');
-    if(!small)poly(g,[0,0,320,0,320,20,0,34],'#8a6a4a');else{R(g,0,0,60,144,'#6a5a48');R(g,236,0,84,144,'#6a5a48')}
-    blocks24(g,[[P.door.x0,P.door.top,P.door.x1-P.door.x0,P.door.b-P.door.top,'#5a4030'],[P.table.x0,P.table.top,P.table.x1-P.table.x0,P.table.foot-P.table.top,'#7a5a3e']]);
-    for(const s of Object.values(P.stools))R(g,s.x-5,s.y-10.6,10,10.6,'#8a6a4a')},
-  light:()=>LG.light(lodgingPainted(lookKind())?lookKind():'flat','noon'),draw(){},front(){},props:LG.props()};
+const other24=k=>(LG.OTHER||[]).includes(k);
+/* LP24(k): the walk, the doorway and the places of a lodging: luke, brother (Proculus), door (the landlord, facing in), watch (the soldier) */
+const LP24=k=>{if(other24(k)){const Q=LG.PLACES[k];return{walk:Q.WALK,door:Q.POS.door,luke:Q.AT.luke,brother:Q.AT.brother,landlord:Q.AT.door,watch:null}}
+  return{walk:LG.WALK,door:k==='street'?LG.POS.wide:LG.POS.door,luke:[240,118,-1],brother:[214,128,-1],landlord:LG.AT.door,watch:[290,126,-1]}};
+ART.look24={w:320,q:12,variant:lookKind,paint(g,v){const k=v||'flat';return other24(k)?LG.room(g,{kind:k}):LG.room(g,{kind:k,hour:'noon'})},
+  light:()=>{const k=lookKind();return other24(k)?LG.light(k):LG.light(k,'noon')},draw(){},front(){},get props(){return LG.props(lookKind())}};
 /* ==== ART look24: end ==== */
 
 /* the soldier's step on the road (a placeholder mark for the painter: his foot lifted in the beat's pause, a little dust as it comes down),
@@ -678,9 +674,10 @@ ROOMS.lane24={space:.7,walk:LANE24.walk,mood:'house',amb:AMB.lane24,hs:[
   {name:'tenements',x:0,y:10,w:320,h:44,wx:150,wy:118,look:'tenements_look'},
   ...KIND24.map(k=>{const[x,y,w,h]=DOORS24[k];return{name:LODGE24[k].door,x,y,w,h,wx:x+w/2,wy:116,def:'open',look:LODGE24[k].doorLook,open:()=>door24(k),use:()=>door24(k)}})]};
 const LANE_AT24={flat:[42,118,1],street:[120,118,1],garret:[193,118,1],small:[261,118,-1]};
-ROOMS.look24={space:.8,walk:LG.WALK,block:LG.foot(),mood:'house',amb:AMB.look24,hs:[
-  {name:'this_room',x:20,y:10,w:280,h:80,wx:200,wy:124,def:'use',look:()=>say(LK,LODGE24[lookKind()].look),use:()=>take24()},
-  {name:'back_to_the_street',x:LG.POS.door.x0,y:LG.POS.door.top,w:LG.POS.door.x1-LG.POS.door.x0,h:LG.POS.door.b-LG.POS.door.top,wx:266,wy:110,
+ROOMS.look24={space:.8,get walk(){return LP24(lookKind()).walk},block:v=>LG.foot(v||lookKind()),mood:'house',amb:AMB.look24,hs:[
+  here({name:'this_room',x:20,y:10,w:280,h:80,def:'use',look:()=>say(LK,LODGE24[lookKind()].look),use:()=>take24()}),
+  {name:'back_to_the_street',get x(){return LP24(lookKind()).door.x0},get y(){return LP24(lookKind()).door.top},get w(){const D=LP24(lookKind()).door;return D.x1-D.x0},
+    get h(){const D=LP24(lookKind()).door;return D.b-D.top},get wx(){const D=LP24(lookKind()).door;return D.x0-8},wy:116,
     look:'back_to_the_street_look',exit:()=>backToLane24()}]};
 
 /* ============ PEOPLE AS HOTSPOTS ============ */
@@ -750,7 +747,7 @@ const LUKETAB24={people:[],
 /* ============ PLACING THE CAST, SETUP ============ */
 const ENT={quay24:[120,126,1],court24:[110,126,1],capua24:[100,126,1],canal24:[110,126,1],get appius24(){return phase24()==='dawn'?(PC()===DE?[196,126,-1]:[150,124,1]):[60,126,1]},
   rome24:[70,126,1],board24:[160,236,1],get hills24(){return[...ROAD24.marks[0],1]},get marsh24(){return[...ROAD24.marks[0],1]},taverns24:[40,124,1],
-  far24:[40,126,1],capena24:[60,124,1],camp24:[110,124,1],get lane24(){return F.inlook?[160,124,1]:[160,124,1]},look24:[250,118,-1]};
+  far24:[40,126,1],capena24:[60,124,1],camp24:[110,124,1],get lane24(){return F.inlook?[160,124,1]:[160,124,1]},get look24(){return LP24(lookKind()).luke}};
 const EVERY=[LK,AR,JU,SO,SO2,PR1,PR2,SL,HE,PD,PS,CA,TR,BO,DE,MI,VI,AE,PO,FI,TH,IK,GW,LL];
 /* who is played in each phase, and who of the party stands in no room (away) */
 const pc24=()=>{const ph=phase24();return ph==='quay'||ph==='court'||ph==='lane'?LK:ph==='capua'?CA:ph==='canal'?TR:ph==='dawn'?(F.given4?DE:BO):ph==='rome'?DE:P};
@@ -784,7 +781,7 @@ function place24(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
     if(room==='camp24'){for(const[a,x,y,d]of[[P,110,124,1],[JU,140,120,-1],[SO,170,126,-1],[LK,60,122,1],[AR,40,130,1],[DE,80,132,1]])pl(a,'camp24',x,y,d)}}
   if(ph==='lane'){const lk=F.inlook?'look24':'lane24';
     if(lk==='lane24'){pl(LK,'lane24',160,124,1);pl(DE,'lane24',186,128,-1);pl(GW,'lane24',214,120,-1);pl(LL,'lane24',240,124,-1)}
-    else{pl(LK,'look24',250,118,-1);pl(DE,'look24',214,128,-1);pl(GW,'look24',282,124,-1)}}
+    else{const Q=LP24(lookKind());pl(LK,'look24',...Q.luke);pl(DE,'look24',...Q.brother);pl(LL,'look24',...Q.landlord);if(Q.watch)pl(GW,'look24',...Q.watch)}}
   P.hs=PC()!==P&&P.room?PAULHS:null}
 function setup24(){P.hs=null;P.called='Paul';LK.called='Luke';G.asked24=null;G.thought24=0;G.tok24={};G.sel24=null;G.mark24=0;G.frogs24=0;G.knees24=G.inn24=0;
   G.invs={paul:['tablets'],luke24:['ltab24'],proculus24:['pad24']};G.inv=G.invs.paul;drawInv()}
