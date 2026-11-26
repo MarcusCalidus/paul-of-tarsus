@@ -456,7 +456,7 @@ function viper23(g){const v=G.vip23;if(!v||v.fr==null||P.room!=='beach23')return
    estate is a shrine, a statue, an altar or an image. After the healing (variant 'g') the gifts of 28:10 stand by the house wall:
    jars upright, a basket, folded cloth. The stone at the gate stands free of the wall, and nothing else stands on it or by it. */
 const WALL_C23='#dcc8a0',HOUSE_C23='#e6d4ae';
-ART.estate23={w:320,q:12,variant:()=>F.healed?'g':'',paint(g,v){const r=rng(2311),HZ=84,SUN=[-15/46,-4/46];
+ART.estate23={w:320,q:12,paint(g){const r=rng(2311),HZ=84,SUN=[-15/46,-4/46];
     /* the sky: pale and clean after the rain, a few soft clouds going away */
     sky(g,320,110,['#9fb8d2','#c4d2de','#e6e6e0']);
     for(const[x,y,w,h]of[[60,14,70,7],[200,8,90,8],[300,22,50,5]])cloud(g,x,y,w,h,r,'#f8f6f0','#b8c4d2');
@@ -480,7 +480,6 @@ ART.estate23={w:320,q:12,variant:()=>F.healed?'g':'',paint(g,v){const r=rng(2311
     ao(g,0,108,320,4,'t',.3,'#4a3a40');
     /* the bench and the trough along the wall */
     est23bench(g,98,146,r);est23trough(g,160,206,r);
-    if(v==='g')est23gifts(g,r);
     /* the stone at the gate, with its one word (the hidden treasure) */
     est23stone(g,r);
     /* the house's shadow on the court wall and the paving beside it: the sun from the right and a little in front */
@@ -491,7 +490,9 @@ ART.estate23={w:320,q:12,variant:()=>F.healed?'g':'',paint(g,v){const r=rng(2311
     comp(g,'multiply',.25,()=>{g.fillStyle=lg(g,0,40,0,108,['#ffffff','#fff4e4','#e8d8c0']);g.fillRect(0,40,320,68)});
     comp(g,'multiply',.12,()=>{g.fillStyle=lg(g,0,0,0,144,['#ffffff','#e8e4ec','#b8b4c8']);g.fillRect(0,0,320,144)})},
   light:{amb:'#f2e8d8',sun:[-15,-4,.38],wallY:108,wall:[[0,34,108,48],[76,242,108,48]]},
-  draw(){},front(){}};
+  /* the gifts of 28:10, brought in one after another while it is told (G.gifts23 0..1); all of them once the father is up and the telling
+     is over, or when a code restores the court after the healing */
+  draw(g){if(F.healed)est23gifts(g,G.gifts23==null?1:G.gifts23)},front(){}};
 /* a tree behind the wall, only its crown seen over the coping: clusters of leaf in dabs, dark within and lit on the side toward the sun
    at the right, with sky showing between them. An olive is grey-green with silver undersides and small narrow leaves; a fig is a deeper
    green with broad leaves. Its boughs fan out from below the wall and never cross. */
@@ -564,15 +565,16 @@ function est23trough(g,x0,x1,r){const C=tint(WALL_C23,-.02),top=97;
   ao(g,x0,top+2.2,x1-x0,2,'t',.25,'#3a3040');R(g,x0+3,top+5.5,x1-x0-6,.5,tint(C,-.2));
   ao(g,x0,104,x1-x0,4,'b',.25,'#5a4a3a');sh23c(g,(x0+x1)/2,108,(x1-x0)/2+1,1.2,.35)}
 /* the gifts of 28:10, set down by the house wall: two jars standing, a basket of bread and fruit, a stack of folded cloth */
-function est23gifts(g,r){jarC23(g,83,110,4.4,11,'#b07850');jarC23(g,92.5,109,3.6,9,'#a06a46');
+function est23gifts(g,k){const n=Math.floor(k*6+.001);if(!n)return;
+  if(n>0)jarC23(g,83,110,4.4,11,'#b07850');if(n>1)jarC23(g,92.5,109,3.6,9,'#a06a46');
   /* the basket on the bench: woven in rows that run one way, with a thick rim; bread and fruit in it */
-  const bx=101,by=98.6;sh23c(g,bx+6,by,7.5,.8,.4);poly(g,[bx,by-6,bx+12,by-6,bx+11,by,bx+1,by],'#9a7840');
-  clipTo(g,()=>poly(g,[bx,by-6,bx+12,by-6,bx+11,by,bx+1,by]),()=>{for(let y=by-6;y<by;y+=1)R(g,bx,y,13,.5,(y*2|0)%2?'#c8a460':'#7a5a2c');ao(g,bx,by-6,13,6,'b',.3,'#3a2810')});
-  R(g,bx-.4,by-7,12.8,1.4,'#7a5a2c');R(g,bx-.4,by-7,12.8,.5,'#d0ac68');
-  for(const[x,c]of[[1.4,'#d8a860'],[5,'#c89048'],[8.6,'#8a6a8a']])R(g,bx+x,by-8.6,3,1.8,c);
-  /* the folded cloth on the bench: three layers of wool, each a little darker underneath */
-  for(let j=0;j<3;j++){const y=92.4+j*2.1,c=['#c8b898','#a86848','#d8ccb0'][j];R(g,132,y,11,2.1,c);R(g,132,y,11,.5,tint(c,.3));R(g,132,y+1.6,11,.5,tint(c,-.3))}
-  sh23c(g,137.5,98.6,6.5,.8,.35)}
+  const bx=101,by=98.6;if(n>2){sh23c(g,bx+6,by,7.5,.8,.4);poly(g,[bx,by-6,bx+12,by-6,bx+11,by,bx+1,by],'#9a7840');
+    clipTo(g,()=>poly(g,[bx,by-6,bx+12,by-6,bx+11,by,bx+1,by]),()=>{for(let y=by-6;y<by;y+=1)R(g,bx,y,13,.5,(y*2|0)%2?'#c8a460':'#7a5a2c');ao(g,bx,by-6,13,6,'b',.3,'#3a2810')});
+    R(g,bx-.4,by-7,12.8,1.4,'#7a5a2c');R(g,bx-.4,by-7,12.8,.5,'#d0ac68');
+    for(const[x,c]of[[1.4,'#d8a860'],[5,'#c89048'],[8.6,'#8a6a8a']])R(g,bx+x,by-8.6,3,1.8,c)}
+  /* the folded cloth on the bench: layers of wool, each a little darker underneath, one more with each gift */
+  for(let j=0;j<Math.min(3,n-3);j++){const y=96.6-j*2.1,c=['#d8ccb0','#a86848','#c8b898'][j];R(g,132,y,11,2.1,c);R(g,132,y,11,.5,tint(c,.3));R(g,132,y+1.6,11,.5,tint(c,-.3))}
+  if(n>3)sh23c(g,137.5,98.6,6.5,.8,.35)}
 /* a jar standing on the ground: its body swells below a short neck; the mouth a small square rim seen a little from above */
 function jarC23(g,cx,foot,hw,h,c){sh23c(g,cx-1,foot,hw*1.2,1,.45);
   const wf=t=>t<.14?1.5:t<.24?1.5+(t-.14)/.1*1.2:t<.62?2.7+Math.sin((t-.24)/.38*Math.PI*.5)*(hw-2.7):hw-(t-.62)/.38*(hw-1.8),L=[],Q=[];
@@ -598,47 +600,66 @@ function crackC23(g,x,y,n,r){const p=[x,y];for(let i=0;i<n+2;i++){x+=(r()-.5)*2.
 /* ==== ART estate23: end ==== */
 
 /* ==== ART sick23: begin ==== */
-/* A told picture (28:8): the room of Publius's father, by the soft light of one small window at the left. The old man lies in bed
+/* A told picture (28:8): the room of Publius's father, seen through its open door, by the soft light of one small window. The old man lies in bed
    (pose lie), the bed's frame against the back wall, its mattress top at the hips (BED23, a high bed); Paul stands beside it, bent a
    little forward, his far hand laid on him, the forearm bent (pose lay 0). No light, glow or effect of any kind. Light: soft, the contact
    shadow alone. Called from outside: ART.sick23, BED23. Reads nothing. Hotspots: none (nothing is played here). */
 const BED23=[150,102];
-/* The picture. A plain room of the house, lime-washed stone, a ceiling of boards on joists, a floor of worn flags. One small window high in
-   the left wall-end lets in the grey-white light of the day: it is the only light, soft and without an edge, brightest on the wall
-   round the window and on the floor below it, and falling off toward the right where the bed stands; nothing shines on the old man or
-   on Paul but that. The bed stands along the back wall: a frame of wood with a low board at its head, on four legs, two at each end
-   and none under its middle; a straw mattress in a linen tick; the cover is the lying figure's own. Beside its head a low stool with a
-   water jug and a cup. Nothing hangs on the wall. */
+/* The picture. We look in through the open door of the room, from the dim passage outside it: the thickness of the wall stands dark in
+   the foreground, its two jambs running the whole height at the left and the right and a deep beam over the opening as its lintel (the
+   jambs end under the beam's lower edge, so nothing makes a T), the reveals in shade, the door leaf folded back flat against the left
+   reveal, upright planks with nothing across them, and a worn stone threshold along the foot. The opening takes about the middle half
+   of the picture, and through it only what matters: the back wall of a plain lime-washed room on a flagged floor, the bed along it with
+   the old man, Paul beside him with his hand laid on him, the stool with the jug at the bed's foot and a basin by it, and above them, to one
+   side of both heads, one small window. It is the only light: soft, brightest round the window and falling off to the left; no glow,
+   ray or effect. The bed stands on four legs at its ends, none under its middle. Nothing hangs on the wall. */
 const WY_SICK23=108;
 ART.sick23={w:320,q:12,paint(g){const r=rng(2321),M=SHARED.materials,C='#d8ccb0',WY=WY_SICK23;
-    plaster(g,0,0,320,WY,C,r,{patch:0,cracks:3,t:.18,top:.02,bot:-.08});tex(g,'mott',.12,0,0,320,WY,'overlay',.5);
-    for(const[x,y,n]of[[214,30,3],[286,22,4],[96,40,2]])M.crack(g,x,y,n,r,.5);
-    M.ceiling(g,320,{U:10,x0:18,step:38,vx:150,vy:80,r,boards:'#3a2a1e',joist:'#6a5034',plate:'#7a5a38'});
-    /* the window: a small square opening deep in the thick wall, the reveal lit by the sky, a stone sill */
-    const wx=52,wt=32,ww=15,wh=14;R(g,wx-2,wt-2,ww+4,wh+4,tint(C,-.08));
+    /* the room beyond the door */
+    plaster(g,0,0,320,WY,C,r,{patch:0,cracks:2,t:.18,top:.02,bot:-.08});tex(g,'mott',.12,0,0,320,WY,'overlay',.5);
+    for(const[x,y,n]of[[176,34,3],[112,44,2]])M.crack(g,x,y,n,r,.5);
+    M.ceiling(g,320,{U:30,x0:96,step:38,vx:160,vy:80,r,boards:'#3a2a1e',joist:'#6a5034',plate:'#7a5a38'});
+    /* the window: a small square opening deep in the thick wall, its reveal lit by the sky, a stone sill */
+    const wx=192,wt=40,ww=14,wh=13;R(g,wx-2,wt-2,ww+4,wh+4,tint(C,-.08));
     poly(g,[wx,wt,wx+ww,wt,wx+ww-3,wt+3,wx+3,wt+3],tint(C,-.3));poly(g,[wx,wt,wx+3,wt+3,wx+3,wt+wh,wx,wt+wh],tint(C,.1));
     poly(g,[wx+ww,wt,wx+ww,wt+wh,wx+ww-3,wt+wh,wx+ww-3,wt+3],tint(C,-.12));
     g.fillStyle=lg(g,0,wt+3,0,wt+wh,['#dfe6ee','#c8d2dc','#d8dcd8']);g.fillRect(wx+3,wt+3,ww-6,wh-3);
     R(g,wx-2.5,wt+wh,ww+5,2,tint(C,.16));R(g,wx-2.5,wt+wh,ww+5,.5,'#fffaf0');R(g,wx-2.5,wt+wh+2,ww+5,.6,tint(C,-.4));
-    /* the floor: flags in perspective, worn and a little uneven */
-    pave(g,-2,WY,322,144,'#b4a486',r,{vx:150,vy:80,rows:5,step:30,v:.08,t:.35,rand:1});
+    pave(g,-2,WY,322,144,'#b4a486',r,{vx:160,vy:80,rows:5,step:24,v:.08,t:.35,rand:1});
     ao(g,0,WY,320,5,'t',.35,'#3a2c30');R(g,0,WY-.4,320,.8,'rgba(60,44,50,.35)');
-    /* the end wall at the left, running toward us, in the shade of its own window's light */
-    const LW=[0,-4,24,10.5,24,WY,0,WY+5.4];poly(g,LW,tint(C,-.12));clipTo(g,()=>poly(g,LW),()=>{tex(g,'mott',.25,0,-4,24,WY+10,'overlay',1);
-      g.fillStyle=lg(g,0,0,24,0,['rgba(70,60,90,.35)','rgba(70,60,90,.12)']);g.fillRect(0,-4,24,WY+10)});
-    stroke(g,[24,10.5,24,WY],'rgba(60,50,70,.5)',.6);stroke(g,[24.6,10.5,24.6,WY],'rgba(255,246,230,.25)',.5);
-    poly(g,[0,WY+5.4,24,WY,24,WY+.8,0,WY+6.4],'rgba(60,44,50,.4)');
-    /* a small niche in the wall at the right with an unlit clay lamp in it; under it a chest of plain boards, its lid shut */
-    const nx=272,nt=50;R(g,nx,nt,12,9,tint(C,-.42));ao(g,nx,nt,12,3,'t',.45,'#1a1012');R(g,nx-.6,nt+9,13.2,1.2,tint(C,.05));R(g,nx-.6,nt+9,13.2,.5,'rgba(255,246,226,.4)');
-    poly(g,[nx+3,nt+9,nx+8.6,nt+9,nx+10.2,nt+8,nx+8.4,nt+7.6,nx+7.6,nt+6.8,nx+3.4,nt+6.8,nx+2.6,nt+7.8],'#8a5a3a');R(g,nx+3.4,nt+6.8,4.2,.5,'#b07a50');
-    chestC23(g,250,112,r);
-    /* the light of the window: on the wall round it and down onto the floor below, soft, falling off to the right */
-    pool(g,wx+ww/2,wt+wh+8,46,30,'#fff6e8',.22,'screen');pool(g,wx+ww/2+14,124,58,12,'#f4f0e8',.16,'screen');
-    comp(g,'multiply',.7,()=>{g.fillStyle=lg(g,0,0,320,0,[[0,'#f4f0ec'],[.2,'#fffaf4'],[.42,'#d4ccc8'],[.7,'#9e94a6'],[1,'#6e6684']]);g.fillRect(0,0,320,144)});
-    comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,0,0,0,144,['#9a8ea8','#ffffff','#ffffff','#c8bcc8']);g.fillRect(0,0,320,144)});
-    stoolC23(g,92,114,r);basinC23(g,104,118);bedC23(g,r)},
+    /* the window's light: round it on the wall and down onto the floor below it, falling off to the left */
+    pool(g,wx+ww/2,wt+wh+10,40,28,'#fff6e8',.22,'screen');pool(g,wx-6,124,50,10,'#f4f0e8',.14,'screen');
+    comp(g,'multiply',.6,()=>{g.fillStyle=lg(g,320,0,0,0,[[0,'#f4f0ec'],[.3,'#fffaf4'],[.55,'#ddd4cc'],[.8,'#aaa0b0'],[1,'#7e7690']]);g.fillRect(0,0,320,144)});
+    comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,0,0,0,144,['#9a8ea8','#ffffff','#ffffff','#c8bcc8']);g.fillRect(0,0,320,144)});
+    stoolC23(g,181,114,r);basinC23(g,200,122);bedC23(g,r);
+    doorC23(g,r)},
   light:{amb:'#d8ccb8'},   /* soft daylight from one small window: no sun comes in, the contact shadow alone */
   draw(){},front(){}};
+/* the doorway we look through: the near face of the wall dark in the passage's dimness, the reveals receding to the room's side of the
+   wall, the deep lintel beam over all, the leaf folded back against the left reveal, the threshold */
+function doorC23(g,r){const M=SHARED.materials,F='#7a6c60',x0=92,x1=228,bx0=101,bx1=219,ly=20,lb=27,th=137;
+  /* the near face of the wall at the left and the right, plastered, in shade */
+  for(const[a,b]of[[0,x0],[x1,320]]){plaster(g,a,ly,b-a,144-ly,F,r,{patch:0,cracks:1,t:.25,top:.04,bot:-.12});
+    comp(g,'multiply',.55,()=>{g.fillStyle=lg(g,a<x0?0:320,0,a<x0?x0:x1,0,['#3a3040','#8a8090']);g.fillRect(a,ly,b-a,144-ly)})}
+  /* the reveals: the thickness of the wall, from the near face back to the room's side */
+  const RL=[x0,ly,bx0,lb,bx0,WY_SICK23+3,x0,144],RR=[x1,ly,bx1,lb,bx1,WY_SICK23+3,x1,144];
+  poly(g,RL,'#5e5450');clipTo(g,()=>poly(g,RL),()=>tex(g,'mott',.3,x0,ly,bx0-x0,144-ly,'overlay',1));
+  poly(g,RR,'#7a6e66');clipTo(g,()=>poly(g,RR),()=>{tex(g,'mott',.3,bx1,ly,x1-bx1,144-ly,'overlay',1);g.fillStyle=lg(g,bx1,0,x1,0,['rgba(255,240,220,.18)','rgba(255,240,220,0)']);g.fillRect(bx1,ly,x1-bx1,144-ly)});
+  /* the leaf, folded back flat against the left reveal: upright planks, nothing laid across them */
+  const LF=[x0+1.6,ly+5,bx0-.6,lb+4,bx0-.6,WY_SICK23+1,x0+1.6,138];poly(g,LF,'#5a4028');
+  clipTo(g,()=>poly(g,LF),()=>{for(let k=0;k<4;k++){const t=(k+1)/4,xa=x0+1.6+(bx0-x0-2.2)*t;stroke(g,[xa,ly+5+(lb-ly-1)*t,xa,138-(138-WY_SICK23-1)*t],'#2a1a10',.5)}
+    tex(g,'vert',.25,x0,ly,bx0-x0,144-ly,'overlay',.5);g.fillStyle=lg(g,x0,0,bx0,0,['rgba(20,12,10,.35)','rgba(255,220,170,.12)']);g.fillRect(x0,ly,bx0-x0,144-ly)});
+  /* the edges where the near face turns into the reveals */
+  stroke(g,[x0,ly,x0,144],'#1e181c',.8);stroke(g,[x1,ly,x1,144],'#2a2228',.8);stroke(g,[x1-.6,ly,x1-.6,144],'rgba(255,240,220,.18)',.5);
+  /* the lintel: one deep beam across the whole width, its underside over the opening in shade */
+  poly(g,[x0,ly,x1,ly,bx1,lb,bx0,lb],'#3a2a20');ao(g,bx0,ly,bx1-bx0,lb-ly,'b',.4,'#120c0a');
+  M.board(g,0,0,320,ly,'#5a4030',r);g.fillStyle=lg(g,0,0,0,ly,['rgba(20,14,12,.45)','rgba(20,14,12,.1)','rgba(20,14,12,.35)']);g.fillRect(0,0,320,ly);
+  R(g,0,ly-.6,320,.6,'#1a120e');
+  /* the threshold: one worn stone along the foot of the opening */
+  poly(g,[x0-2,th,x1+2,th,x1+2,144,x0-2,144],'#6e645e');R(g,x0-2,th,x1-x0+4,.6,'#9a8e84');tex(g,'mott',.35,x0-2,th,x1-x0+4,8,'overlay',1);
+  comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,0,th,0,144,['#ffffff','#6a5e70']);g.fillRect(x0-2,th,x1-x0+4,8)});
+  /* the passage we stand in is dim: everything on our side a shade darker toward the edges */
+  comp(g,'multiply',.5,()=>{g.fillStyle=lg(g,0,0,320,0,['#40384a','#a098a8',[.24,'#ffffff'],[.76,'#ffffff'],'#a098a8','#40384a']);g.fillRect(0,0,x0,144);g.fillRect(x1,0,320-x1,144);g.fillRect(0,0,320,ly)})}
 /* the bed along the back wall: its back legs at the wall's foot, the near ones a step in front; mattress top at BED23 (under the hips of
    the lying figure), the frame from x 118 to 175; a low board at the head (the left); legs at the ends only */
 function bedC23(g,r){const M=SHARED.materials,x0=118,x1=176,mt=BED23[1],W='#6a4c30',lit='#8e6a44',rl=mt+1.2,rb=rl+3,nf=115,bf=WY_SICK23+.5;
@@ -657,11 +678,6 @@ function basinC23(g,x,foot){SHARED.materials.shadow(g,x,foot-.3,8,1.5,.5);const 
   oval(g,x,foot-4.2,7,1.8,'#c48c60');oval(g,x,foot-4.1,5.8,1.3,'#5e6e78');R(g,x-3.6,foot-4.8,4,.5,'#a8b6bc');
   /* the cloth folded over the rim at the right */
   poly(g,[x+2.4,foot-5.6,x+6.6,foot-5.2,x+7.6,foot-3.8,x+7.2,foot-1.4,x+5.4,foot-1.2,x+5.4,foot-3.8,x+2.2,foot-4.4],'#e0d6c0');R(g,x+5.4,foot-3.8,1.8,.5,'#b8ac94')}
-/* a chest of plain boards with a lid, standing by the wall: the boards run along it, nothing is laid across them */
-function chestC23(g,x,foot,r){const M=SHARED.materials,W='#6e5034',w=30,h=13;M.shadow(g,x+w/2,foot-.3,w/2+2,1.8,.55);
-  for(let j=0;j<3;j++)M.board(g,x,foot-h+3+j*(h-3)/3,w,(h-3)/3,tint(W,(j%2?-.06:.02)),r);
-  M.board(g,x-.6,foot-h,w+1.2,3,tint(W,.08),r);R(g,x-.6,foot-h,w+1.2,.6,'#a07a50');R(g,x-.6,foot-h+2.4,w+1.2,.6,'#2a1a10');
-  poly(g,[x+w,foot-h+3,x+w+2.4,foot-h+1.2,x+w+2.4,foot-1.6,x+w,foot],tint(W,-.35));R(g,x+w/2-1,foot-h+3.2,2,1.6,'#2a1c10');ao(g,x,foot-4,w,4,'b',.3,'#1a1008')}
 /* a low stool of three boards: a seat on two upright ends; a water jug and a cup on it */
 function stoolC23(g,x,foot,r){const M=SHARED.materials,W='#7a5a3a',top=foot-8;M.shadow(g,x+6,foot-.4,8,1.4,.5);
   for(const xx of[x+1,x+9.6])M.board(g,xx,top+1.4,1.6,foot-top-1.4,tint(W,-.1),r,1);
@@ -703,8 +719,14 @@ ART.tablet23={w:320,q:12,paint(g){paintTabletC23(g)},
     if(F.lead2){wordC23(g,'ΙΕ',219,34,1,2342);for(let i=0;i<5;i++){const x=233+i*4.6,y=35.6+(i%2)*1.2;R(g,x+.5,y+.5,1.5,1.5,'rgba(20,10,4,.6)');R(g,x,y,1.5,1.5,'#d2bf94')}}
     if(F.bread)wordC23(g,NUM276,219,48,1,2344);
     const n=F.malta?NAME23.length:Math.floor((G.scratch23||0)*NAME23.length+.001);
-    if(n){const sc=1.2,w=wordW23(NAME23,sc),left=e[0]-8-w>20,x=left?e[0]-8-w:Math.max(20,e[0]-w/2),y=left?e[1]-3.5*sc:e[1]+6;wordC23(g,NAME23.slice(0,n),x,y,sc,2350)}},
+    if(n){const[x,y]=namePos23();wordC23(g,NAME23.slice(0,n),x,y,1.2,2350)}},
   front(){}};
+/* where the island's name is scratched: just west of where the line ends (markLine23, the same point lukeLine returns), at the line's
+   height, kept clear of the strokes above and the frame below; if there is no room west of it, below its end. namePos23 gives its top left, nameBox23 the hotspot round it, so that the name
+   is inside its box whatever marks were carried, and on a title start too (ROOMS.tablet23 reads it) */
+function namePos23(){const pts=markLine23(),e=pts[pts.length-1],sc=1.2,w=wordW23(NAME23,sc),left=e[0]-8-w>20;
+  return[left?e[0]-8-w:Math.max(20,e[0]-w/2),clamp(left?e[1]-3.5*sc:e[1]+6,40,118),w,7*sc]}
+function nameBox23(){const[x,y,w,h]=namePos23();return[Math.round(x-4),Math.round(y-4),Math.round(w+8),Math.round(h+8)]}
 /* the tablet itself: as paintTablet22 in chapter22.js (the same numbers and seed), so that the two chapters show one tablet */
 function paintTabletC23(g){const r=rng(2205),[x0,y0,x1,y1]=[16,12,304,130];
   R(g,0,0,320,144,'#120e0c');
@@ -1080,8 +1102,9 @@ async function publius23(){if(F.healed)return say(PU,'publius_my_father_is_on_hi
   await say(PU,'publius_my_father_is_ill',{to:LK});await say(P,'paul_may_i_go_in_to_him',{to:PU});await say(PU,'publius_please',{to:P});
   /* 28:8, told over one picture of the room: the old man in bed, Paul's far hand laid on him; no light and no effect */
   await fade(1,600);G.scene=null;show23('sick23');await fade(0,600);await tell('m8');
-  await fade(1,600);F.healed=1;show23('estate23');await fade(0,600);await say(FA,'father_i_am_up',{to:PU});
-  await tell('m9');await tell('m10');return end23()}
+  await fade(1,600);F.healed=1;G.gifts23=0;show23('estate23');await fade(0,600);await say(FA,'father_i_am_up',{to:PU});
+  /* 28:10: the gifts are brought into the court while it is told, a few at a time (ART.estate23 draws as many as G.gifts23 says) */
+  await tell('m9');const gifts=tween(fast()?60:5200,k=>{G.gifts23=k});await tell('m10');await gifts;return end23()}
 /* the hidden treasure: the stone at the gate, with one word cut in it, which Luke copies */
 async function stone23(){await say(LK,'the_stone_at_the_gate_look',TL);treasure()}
 /* what comes next (28:11), from the narrator's scroll as the picture goes; then the end screen, which returns to the title until
@@ -1167,7 +1190,7 @@ ROOMS.tablet23={space:.6,walk:NOW,get mood(){return phase23()==='sound'?'night':
   {name:'strokes_of_the_days',x:18,y:12,w:196,h:24,wx:160,wy:236,look:'strokes_of_the_days_look'},
   {name:'my_marks',x:60,y:40,w:236,h:84,wx:160,wy:236,look:()=>say(LK,tabletKey23(),TL)},
   {name:'my_notes',x:212,y:16,w:96,h:44,wx:160,wy:236,vis:()=>!!F.lead1,look:()=>say(LK,F.bread?'my_notes_with_the_number_look':F.lead2?'my_notes_two_soundings_look':'my_notes_one_sounding_look',TL)},
-  {name:'name_of_the_island',x:14,y:56,w:110,h:70,wx:160,wy:236,vis:()=>!!F.malta,look:'name_of_the_island_look'},
+  {name:'name_of_the_island',get x(){return nameBox23()[0]},get y(){return nameBox23()[1]},get w(){return nameBox23()[2]},get h(){return nameBox23()[3]},wx:160,wy:236,vis:()=>!!F.malta,look:'name_of_the_island_look'},
   {name:'put_the_tablet_away',x:0,y:128,w:110,h:16,wx:160,wy:236,exit:()=>closeTablet23(),look:'put_the_tablet_away_look'}]};
 
 /* ============ PEOPLE AS HOTSPOTS ============ */
