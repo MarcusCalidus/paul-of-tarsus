@@ -4634,7 +4634,7 @@
       const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
       q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
     G.mk20=Object.fromEntries(C.charges.map(c=>[c.k,c.ok]));
-    const S=[['court20',[]],['charges20',['courtesy']],['hall20',upto('s2')],['hall20',upto('s4')],
+    const S=[['court20',[]],['charges20',['courtesy']],['hall20',upto('pouch')],['hall20',upto('s4')],
       ...[[],upto('s2'),upto('s3'),upto('s4')].flatMap(f=>[['room20',upto('marks').concat(f)],['window20',upto('marks').concat(f)]])];
     const[c,g]=mk(320*K*2+8,Math.ceil(S.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
     S.forEach(([id,fl],i)=>pic(id,fl,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];G.mk20=null;
@@ -4642,7 +4642,7 @@
   const C20=/^(court20|charges20|room20|hall20|luke20|purse20|summer20|final20|all20)$/.test(stop);
   if(!C20&&/^p[a-z]+20$/.test(stop)){await loadLevel(20);ov.className='';ov.onclick=null;const C=CHAP[20],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
       S={pcourt20:[[],'court20'],pscroll20:[[],'court20'],pcharges20:[['courtesy'],'charges20'],proom20:[upto('marks'),'room20'],ppouch20:[upto('things'),'room20'],
-        pwindow20:[upto('pouch'),'window20'],phall20:[upto('s2'),'hall20'],pluke20:[upto('s3'),'room20'],pwinter20:[upto('luke'),'window20'],
+        pwindow20:[upto('fright'),'window20'],phall20:[upto('pouch'),'hall20'],pluke20:[upto('s3'),'room20'],pwinter20:[upto('luke'),'window20'],
         ppurse20:[upto('s4'),'hall20'],pspring20:[upto('purse'),'window20'],psummer20:[upto('s5'),'room20'],pstorks20:[upto('s8'),'window20'],pflight20:[upto('s8'),'window20']}[stop];
     if(!S)throw new Error('no such stop '+stop);setChapter(20);for(const k of S[0])F[k]=1;
     const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
@@ -4665,7 +4665,7 @@
     seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)},
     code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)},
     /* a mark on the sill (from the room or from the window), and the next season as far as it goes by itself */
-    scratch=async(n,where)=>{heard.length=0;if(where==='window')useH('awl','sill');else useH('awl','window_over_the_harbor');
+    scratch=async(n,where)=>{heard.length=0;if(where==='window')useH('awl','sill');else useH('awl','window');
       await until(()=>C().season()===n&&(!G.busy||$('#choices').classList.contains('on'))&&!(+$('#dim').style.opacity),9000);note()};
   heard.length=0;
   if(C20){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
@@ -4673,7 +4673,7 @@
       'the title lists Chapter Twenty, Some Other Time, and the chapters in preparation begin with the twenty-second')}}
   (C20?document.querySelector('#overlay [data-ch="20"]'):ov).click();
   await until(()=>G.ch===20&&G.room==='court20'&&!G.busy,9000);note();
-  const FX=A('felix20'),DR=A('drusilla20'),TT=A('tertullus20'),AN=A('ananias20'),CK=A('clerk20'),SO=A('soldier20'),OF=A('officer20'),PH=A('philip20'),SI=A('simmias20'),KO=A('kosmas20'),LK=A('luke20');
+  const FX=A('felix20'),DR=A('drusilla20'),TT=A('tertullus20'),AN=A('ananias20'),CK=A('clerk20'),SO=A('soldier20'),OF=A('officer20'),PH=A('philip20'),SI=A('simmias20'),PD=A('phaidros20'),LK=A('luke20');
   ok(['v1','v2','v5a','v5b','v6','v8','v10'].every(k=>seenTold.has(k))&&said('paul_he_gives_me_leave_to_speak')&&srt()==='tablets'&&P.look.bald,
     'five days later the accusers come; Tertullus praises Felix and brings three charges, the others join in; the governor nods (Acts 24:1-10)');
   ok(FX.room==='court20'&&FX.seat&&CK.room==='court20'&&CK.seat&&TT.room==='court20'&&AN.room==='court20'&&P.chained&&SO.keeper&&SO.room==='court20'&&!G.scene,
@@ -4697,9 +4697,9 @@
   /* what I admit */
   await hints('hint_the_three_charges_1','hint_the_three_charges_2','at the tablet');
   const ch=k=>ROOMS.charges20.hs.find(h=>h.c20===k),mark=async(k,m)=>{clickHs(ch(k),'use');await pick(m)};
-  {const W=[[['mark_not_proved','mark_not_proved','mark_not_proved'],'sect_it_needs_no_proof'],[['mark_not_proved','mark_i_admit_it','mark_not_proved'],'temple_none_of_them_saw_it'],
-      [['mark_not_proved','mark_i_admit_it','mark_i_admit_it'],'temple_i_never_did_it'],[['mark_the_witnesses_arent_here','mark_i_admit_it','mark_i_admit_it'],'revolt_they_say_it_themselves'],
-      [['mark_i_admit_it','mark_i_admit_it','mark_i_admit_it'],'revolt_there_was_none'],[['mark_not_proved','mark_the_witnesses_arent_here','mark_i_admit_it'],'sect_no_witness_is_needed']],K=C().charges.map(c=>c.k);
+  {const W=[[['mark_not_proved','mark_not_proved','mark_not_proved'],'sect_proof_isnt_the_question'],[['mark_not_proved','mark_i_admit_it','mark_not_proved'],'temple_theres_more_to_say'],
+      [['mark_not_proved','mark_i_admit_it','mark_i_admit_it'],'temple_i_never_did_it'],[['mark_the_witnesses_arent_here','mark_i_admit_it','mark_i_admit_it'],'revolt_witnesses_of_what'],
+      [['mark_i_admit_it','mark_i_admit_it','mark_i_admit_it'],'revolt_there_was_none'],[['mark_not_proved','mark_the_witnesses_arent_here','mark_i_admit_it'],'sect_it_hangs_on_no_witness']],K=C().charges.map(c=>c.k);
     for(const[ms,why]of W){G.mk20=null;heard.length=0;for(let i=0;i<3;i++)await mark(K[i],ms[i]);
       ok(said(why)&&!F.marks,'a wrong mark is answered truly, in the charges\' order, and never with the right one: '+why)}
     G.mk20=null;heard.length=0;clickHs(ch(K[0]),'use');await pick('leave_it_as_it_is');ok(!(G.mk20||{})[K[0]],'a charge may be left as it is');
@@ -4708,46 +4708,50 @@
   {const ix=C().defense.map(k=>heard.indexOf(T(k)));
     ok(ix.every(i=>i>=0)&&ix.every((v,i)=>!i||v>ix[i-1]),'revolt not proved, the sect admitted, the temple\'s witnesses missing: Paul speaks his defense in the account\'s order (Acts 24:11-21)')}
   ok(['v22','v23'].every(k=>seenTold.has(k))&&said('felix_when_lysias_comes_down'),'Felix knows the Way and puts them off until Lysias comes; the officer\'s orders (Acts 24:22, 23)');
-  ok(G.room==='room20'&&!P.chained&&said('a_room_by_the_sea')&&PH.room==='room20'&&SI.room==='room20'&&KO.room==='room20'&&said('philip_they_let_us_in'),'his room, no chain; his people come: Philip and two brothers');
+  ok(G.room==='room20'&&!P.chained&&said('a_room_by_the_sea')&&PH.room==='room20'&&SI.room==='room20'&&PD.room==='room20'&&said('philip_they_let_us_in'),'his room, no chain; his people come: Philip and two brothers');
   {const bad=(G.caps20||[]).filter(c=>c.w>c.max+.5||c.h>c.maxh+.5);ok((G.caps20||[]).length>0&&!bad.length,'every word on the tablet fits its box'+(bad.length?': '+bad.slice(0,4).map(c=>c.s).join(' | '):''))}
   await code('in his room, the first summer',()=>G.room==='room20'&&F.marks&&!F.things&&PH.room==='room20'&&!P.chained&&C().season()===1);
   halt('room20');
   /* the first summer */
-  await hints('hint_my_people_1','hint_my_people_2','with his visitors');
+  await hints('hint_my_people_1','hint_philip_2','with his visitors');
   heard.length=0;await talkTo(PH);await until(()=>F.things&&!G.busy,6000);
-  ok(['philip_your_pouch_from_my_house','simmias_your_cloak','kosmas_a_few_coins','paul_its_more_than_enough'].every(said)&&has('pouch20')&&has('cloak20')&&has('purse20')&&!has('awl')&&PH.room===null,
+  ok(['philip_your_pouch_from_my_house','simmias_your_cloak','phaidros_a_few_coins','paul_its_more_than_enough'].every(said)&&has('pouch20')&&has('cloak20')&&has('purse20')&&!has('awl')&&PH.room===null,
     'his pouch from Philip\'s house, his cloak, a few coins; and they go');
   await hints('hint_my_tools_1','hint_my_tools_2','with the pouch');
-  heard.length=0;verb('open');item('pouch20');await idle();ok(said('paul_my_awl_and_my_needle')&&has('awl')&&!has('pouch20')&&F.pouch,'the pouch opens to his awl');
-  await hints('hint_the_seasons_1','hint_the_seasons_2','in the first summer');
-  heard.length=0;await onH('window_over_the_harbor','look');await until(()=>G.room==='window20'&&!G.busy);
-  ok(said('paul_the_harbor_from_my_window')&&C().kind()==='su','the window over the harbor, in summer');
-  heard.length=0;await onH('harbor_of_sebastos','look');ok(said('harbor_in_summer_look'),'the harbor full of ships');
-  heard.length=0;await onH('sky_over_the_harbor','look');ok(said('sky_over_the_harbor_look')&&!treasures().has(20),'no storks in the first summer');
-  heard.length=0;await onH('breakwater','look');ok(said('breakwater_look'),'the breakwater');
-  /* the first autumn: Felix and Drusilla */
-  await scratch(2,'window');
-  ok(said('paul_a_mark_for_each_season')&&heard.includes(T('autumn_came'))&&said('soldier_the_governor_sends_for_you')&&G.room==='hall20'&&FX.seat&&DR.seat&&DR.room==='hall20'&&P.chained&&SO.keeper,
-    'a mark on the sill, and autumn comes; the governor sends for him; the hall, with Drusilla; the chain again');
-  ok(seenTold.has('v24')&&said('drusilla_what_does_it_ask_of_a_person')&&ART.hall20.variant()==='d','Drusilla asks what the belief in Christ Jesus asks of a person (Acts 24:24)');
-  await code('before Felix and Drusilla',()=>G.room==='hall20'&&F.s2&&!F.fright&&DR.room==='hall20'&&P.chained);
+  heard.length=0;verb('open');item('pouch20');await until(()=>G.room==='hall20'&&!G.busy,9000);note();
+  ok(said('paul_my_awl_and_my_needle')&&has('awl')&&!has('pouch20')&&F.pouch,'the pouch opens to his awl');
+  /* the first summer, a few days after the hearing: Felix and Drusilla */
+  ok(said('soldier_the_governor_sends_for_you')&&G.room==='hall20'&&FX.seat&&DR.seat&&DR.room==='hall20'&&P.chained&&SO.keeper&&C().season()===1&&!F.s2,
+    'in the same summer the governor sends for him; the hall, with Drusilla; the chain again');
+  ok(seenTold.has('v24')&&said('drusilla_what_does_it_ask_of_a_person')&&ART.hall20.variant()==='d','a few days later: Drusilla asks what the belief in Christ Jesus asks of a person (Acts 24:24)');
+  await code('before Felix and Drusilla',()=>G.room==='hall20'&&F.pouch&&!F.fright&&!F.s2&&DR.room==='hall20'&&P.chained);
   halt('hall20');
   await hints('hint_what_it_asks_1','hint_what_it_asks_2','before Felix and Drusilla');
   heard.length=0;talkTo(FX);{const o=await asked();ok(o.length===7&&o.at(-1)==='paul_let_me_think_first','six true things to speak of')}
   await pick('subject_the_hope_of_the_resurrection');ok(said('paul_on_the_hope')&&said('felix_i_see')&&said('paul_thats_what_it_gives')&&!F.rt,'the hope: heard politely, and nothing changes');
   heard.length=0;talkTo(FX);await pick('subject_the_congregations');ok(said('felix_i_see')&&!F.fright,'the congregations: the same');
-  heard.length=0;talkTo(DR);await pick('subject_righteousness');ok(said('paul_on_righteousness')&&said('felix_go_on')&&F.rt,'righteousness');
+  heard.length=0;talkTo(DR);await pick('subject_righteousness');ok(said('paul_on_righteousness')&&said('go_on')&&F.rt,'righteousness');
   heard.length=0;talkTo(FX);await pick('subject_righteousness');ok(said('paul_ive_said_that_already'),'said already: it stays on offer');
   heard.length=0;talkTo(FX);await pick('subject_the_judgment_to_come');ok(F.jd&&!F.fright,'the judgment to come');
   heard.length=0;talkTo(FX);pick('subject_self_control');await until(()=>F.fright&&G.room==='room20'&&!G.busy,9000);note();
-  ok(said('paul_on_self_control')&&seenTold.has('v25')&&said('felix_some_other_time')&&!P.chained,'self-control: Felix becomes frightened and sends him away, some other time (Acts 24:25)');
+  ok(said('paul_on_self_control')&&seenTold.has('v25')&&said('felix_some_other_time')&&!P.chained&&C().season()===1,'self-control: Felix becomes frightened and sends him away, some other time (Acts 24:25)');
+  await hints('hint_the_seasons_1','hint_the_seasons_2','in the first summer');
+  heard.length=0;await onH('window','look');await until(()=>G.room==='window20'&&!G.busy);
+  ok(said('paul_the_harbor_from_my_window')&&C().kind()==='su','the window over the harbor, in summer');
+  heard.length=0;await onH('harbor','look');ok(said('harbor_in_summer_look'),'the harbor full of ships');
+  heard.length=0;await onH('sky_over_the_harbor','look');ok(said('sky_over_the_harbor_look')&&!treasures().has(20),'no storks in the first summer');
+  heard.length=0;await onH('mole','look');ok(said('breakwater_look'),'the breakwater');
+  /* the first autumn: nothing is owed */
+  await scratch(2,'window');
+  ok(said('paul_a_mark_for_each_season')&&heard.includes(T('autumn_came'))&&said('paul_autumn_and_still_here')&&G.room==='room20'&&!P.chained&&!said('soldier_the_governor_sends_for_you')&&!C().owed(),
+    'a mark on the sill, and autumn comes; nobody sends for him, and he is still here');
   /* the first winter: Luke's questions */
   await scratch(3);
   ok(heard.includes(T('winter_came'))&&LK.room==='room20'&&said('luke_ive_come_with_questions')&&ART.room20.variant()==='wi','winter; Luke comes with questions');
   await code('in the first winter',()=>G.room==='room20'&&F.s3&&!F.luke&&LK.room==='room20');
   halt('luke20');
   await hints('hint_lukes_questions_1','hint_lukes_questions_2','with Luke');
-  heard.length=0;await useH('awl','window_over_the_harbor');ok(said('paul_luke_is_waiting_for_me')&&!F.s4,'the season does not turn while Luke waits');
+  heard.length=0;await useH('awl','window');ok(said('paul_luke_is_waiting_for_me')&&!F.s4,'the season does not turn while Luke waits');
   heard.length=0;talkTo(LK);{const o=await asked();ok(said('luke_where_ananias')&&o.length===6&&C().places.every(p=>o.includes(p)),'Ananias: five places on offer')}
   await pick('Paphos');ok(heard.includes(T('paul_not_place',{place:T('Paphos')}))&&!F.q1,'a wrong place is Paul\'s own thought, not said');
   {const o=await asked();ok(o.length===6,'every place stays on offer')}
@@ -4756,7 +4760,7 @@
   await code('between Luke\'s questions',()=>F.q1&&!F.q2&&LK.room==='room20');
   heard.length=0;talkTo(LK);for(const p of['Jerusalem','Antioch','Paphos'])await pick(p);pick('Lystra');await until(()=>F.luke&&!G.busy,6000);
   ok(['luke_where_cephas','luke_where_lucius','luke_where_sergius_paulus','luke_where_timothy','luke_thats_everything'].every(said)&&LK.room===null,'Cephas, Lucius, Sergius Paulus, Timothy; Luke has what he needs');
-  heard.length=0;await onH('window_over_the_harbor','look');await until(()=>G.room==='window20'&&!G.busy);heard.length=0;await onH('harbor_of_sebastos','look');
+  heard.length=0;await onH('window','look');await until(()=>G.room==='window20'&&!G.busy);heard.length=0;await onH('harbor','look');
   {const b=ROOMS.window20.birds();ok(said('winter_even_the_ships')&&(!b||(!b.gulls&&b.huddle)),'winter at the window: no bird in the air in the rain, and the gull on the quay sits hunched')}
   /* the first spring: the purse stays shut */
   await scratch(4,'window');
@@ -4775,10 +4779,10 @@
   heard.length=0;await onH('gull','look',-1);ok(said('gull_at_the_window'),'the gull at the window');
   await code('in the second summer',()=>G.room==='room20'&&F.s5&&C().season()===5);
   halt('summer20');
-  await scratch(6);ok(heard.includes(T('another_autumn'))&&said('simmias_the_brothers_greet_you')&&said('kosmas_well_come_after_the_rains')&&SI.room===null,'another autumn; the brothers come');
+  await scratch(6);ok(heard.includes(T('another_autumn'))&&said('simmias_the_brothers_greet_you')&&said('phaidros_well_come_after_the_rains')&&SI.room===null,'another autumn; the brothers come');
   await scratch(7);ok(heard.includes(T('another_winter'))&&said('paul_nobody_comes_in_this_weather'),'another winter; nobody comes');
   await scratch(8);ok(heard.includes(T('a_second_spring'))&&said('paul_spring_again_here'),'a second spring');
-  heard.length=0;await onH('window_over_the_harbor','look');await until(()=>G.room==='window20'&&!G.busy);
+  heard.length=0;await onH('window','look');await until(()=>G.room==='window20'&&!G.busy);
   {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('sky_over_the_harbor','look');
     ok(said('storks_going_north_look')&&treasures().has(20)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'storks over the harbor: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
   /* two years */
@@ -4901,9 +4905,11 @@
   onH('back_to_the_table','walk');await until(()=>G.room==='write21'&&!G.busy,3000);
   for(const[h,f]of[['the_commanders_letter','readLetter'],['the_record_before_felix','readRecord'],['my_notes_before_festus','readNotes']]){heard.length=0;await onH(h,'look');ok(F[f]&&C().papers[{readLetter:'letter',readRecord:'record',readNotes:'notes'}[f]].read.every(said),'he reads the '+h.replace(/_/g,' '))}
   onH('the_report','use');await until(()=>G.room==='report21'&&!G.busy,3000);
-  {const w={never:'worship',worship:'never'};for(const c of R){heard.length=0;await mark(c.k,w[c.ok]);ok(said(c.no)&&!(G.mk21||{})[c.k],'a wrong mark on '+c.k+' is answered with the true reason, and not set')}}
+  {const w={never:'worship',worship:'never'};for(const c of R){if(c.also)continue;heard.length=0;await mark(c.k,w[c.ok]);ok(said(c.no)&&!(G.mk21||{})[c.k],'a wrong mark on '+c.k+' is answered with the true reason, and not set')}}
+  {const c=R.find(c=>c.also);ok(c&&c.k==='charge_many_and_serious'&&R.filter(x=>x.also).length===1,'one line takes either mark: the many serious charges before Festus');
+    for(const m of[c.ok,c.also]){heard.length=0;await mark(c.k,m);ok((G.mk21||{})[c.k]===m&&!F.report,'the many serious charges may be marked '+MK[m]+' (Acts 25:7; 25:18, 19)')}}
   heard.length=0;clickHs(rh(R[0].k),'use');{const o=await asked();ok(o.length===3&&o.at(-1)==='leave_it_as_it_is','two marks, and leave it as it is')}await line('leave_it_as_it_is');
-  for(const c of R){heard.length=0;await mark(c.k,c.ok)}
+  for(const c of R){if(c.also)continue;heard.length=0;await mark(c.k,c.ok)}
   ok(F.report&&said('clerk_and_the_field_stays_empty')&&said('clerk_the_governor_must_see_this'),'revolt, the temple and the many serious charges never proved; the sect and their own Law a dispute about their own worship: the field for the charge stays empty');
   heard.length=0;await clickHs(ROOMS.report21.hs.find(h=>h.name==='field_for_the_charge'),'look');ok(said('clerk_the_empty_letter'),'the empty letter');
   {const bad=(G.caps21||[]).filter(c=>c.w>c.max+.5||c.h>c.maxh+.5);ok((G.caps21||[]).length>0&&!bad.length,'every word written on the report fits its place'+(bad.length?': '+bad.slice(0,4).map(c=>c.s).join(' | '):''))}
@@ -4944,15 +4950,17 @@
   heard.length=0;talkTo(FS);const oF=await asked();await line('say_nothing_for_now');
   talkTo(AG);const oA=await asked();
   ok(LS.every(k=>oF.includes(k))&&oF.at(-1)==='say_nothing_for_now'&&oF.join()===oA.join(),'to the governor or to the king, the same four true sentences, in the same mixed order');
-  await line(S('paul_true_and_of_a_sound_mind'));ok(said('agrippa_the_governor_said_it')&&!F.sound,'to the king: it was the governor who said that');
-  heard.length=0;talkTo(FS);await line(S('paul_do_you_believe_the_prophets'));ok(said('festus_put_that_to_the_king')&&!F.prophets,'the Prophets, to the governor: put that to the king');
-  heard.length=0;talkTo(FS);await line(S('paul_not_done_in_a_corner'));ok(said('festus_answer_what_i_said')&&!F.corner,'the king knows, to the governor before the answer: answer what I said');
-  heard.length=0;talkTo(AG);await line(S('paul_im_not_saying_this_to_save_myself'));ok(said('agrippa_so_i_have_heard')&&!F.sound,'a true sentence of his own, answered, and nothing changes');
-  heard.length=0;talkTo(FS);await line(S('paul_true_and_of_a_sound_mind'));ok(F.sound&&!said('agrippa_the_governor_said_it'),'to Festus: what I say is true, and a sound mind says it (Acts 26:25)');
+  const only=(k,r)=>said(S(k))&&!said(k)&&said(r);
+  await line(S('paul_true_and_of_a_sound_mind'));ok(only('paul_true_and_of_a_sound_mind','go_on')&&!F.sound,'to the king: only the short line, never the sentence that names Festus; he says: go on');
+  heard.length=0;talkTo(AG);await line(S('paul_do_you_believe_the_prophets'));ok(said('paul_i_owe_an_answer_first')&&!said(S('paul_do_you_believe_the_prophets'))&&!said('paul_do_you_believe_the_prophets')&&!F.prophets,'the Prophets, to the king before Festus is answered: only a thought, not yet');
+  heard.length=0;talkTo(FS);await line(S('paul_do_you_believe_the_prophets'));ok(only('paul_do_you_believe_the_prophets','festus_that_means_nothing_to_me')&&!F.prophets,'the Prophets, to the governor: only the short line; prophets mean nothing to him');
+  heard.length=0;talkTo(FS);await line(S('paul_not_done_in_a_corner'));ok(only('paul_not_done_in_a_corner','festus_you_havent_answered_me')&&!F.corner,'the king knows, to the governor before the answer: only the short line; you haven\'t answered me');
+  heard.length=0;talkTo(AG);await line(S('paul_im_not_saying_this_to_save_myself'));ok(said('paul_im_not_saying_this_to_save_myself')&&said('agrippa_so_i_have_heard')&&!F.sound,'a true sentence of his own, answered, and nothing changes');
+  heard.length=0;talkTo(FS);await line(S('paul_true_and_of_a_sound_mind'));ok(F.sound&&said('paul_true_and_of_a_sound_mind'),'to Festus: what I say is true, and a sound mind says it (Acts 26:25)');
   heard.length=0;talkTo(FS);await line(S('paul_true_and_of_a_sound_mind'));ok(said('paul_ive_said_that_to_him_already'),'said already');
   await hints('hint_the_king_knows_1','hint_the_king_knows_2','with the first answer given');
-  heard.length=0;talkTo(AG);await line(S('paul_do_you_believe_the_prophets'));ok(said('agrippa_the_governor_spoke_to_you_first')&&!F.prophets,'to the king too soon: the governor spoke to you first');
-  heard.length=0;talkTo(AG);await line(S('paul_not_done_in_a_corner'));ok(said('agrippa_tell_that_to_the_governor')&&!F.corner,'the king knows, said to the king: tell that to the governor');
+  heard.length=0;talkTo(AG);await line(S('paul_do_you_believe_the_prophets'));ok(only('paul_do_you_believe_the_prophets','go_on')&&!F.prophets,'to the king too soon: only the short line; go on');
+  heard.length=0;talkTo(AG);await line(S('paul_not_done_in_a_corner'));ok(only('paul_not_done_in_a_corner','go_on')&&!F.corner,'the king knows, said to the king: only the short line; go on');
   heard.length=0;talkTo(FS);await line(S('paul_not_done_in_a_corner'));ok(F.corner,'to Festus: none of it happened in a corner (Acts 26:26)');
   await hints('hint_the_prophets_1','hint_the_prophets_2','with Festus answered');
   heard.length=0;talkTo(AG);await line(S('paul_do_you_believe_the_prophets'));await until(()=>F.prophets&&!G.busy,6000);note();

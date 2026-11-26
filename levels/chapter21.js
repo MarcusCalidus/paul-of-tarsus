@@ -36,14 +36,15 @@
       On the report every charge ever brought is a line (REPORT21): the three of Felix's hearing, the commander's "questions of their own
       Law", and the many serious charges before Festus. Each takes one of two marks, never proved or a dispute about their own worship
       (25:18, 19: what Festus himself found), and a line can be marked only when the paper that settles it has been read (each line names
-      its paper). The wrong mark is answered at once with the true reason and is not set, so the one arrangement is the only one that
-      stands: revolt, the temple and the many serious charges never proved; the sect and the questions of their own Law a dispute about
-      their own worship. When all five stand, the field for the charge is still empty; the clerk takes it to Festus, who lays the case
+      its paper). The wrong mark is answered at once with the true reason and is not set: revolt and the temple never proved; the sect
+      and the questions of their own Law a dispute about their own worship; the many serious charges before Festus take either mark,
+      since they were never proved (25:7) and Festus himself found them a dispute about their own worship (25:18, 19). When all five stand, the field for the charge is still empty; the clerk takes it to Festus, who lays the case
       before the king (25:14-22).
    3. Two listeners (the audience chamber, 26:24-29). After Festus breaks in, every sentence Paul can say is true, and the player chooses
       the sentence (a mixed choice, the same in every language) by choosing whom he speaks to: Talk to Festus or Talk to King Agrippa
-      offers the same four sentences (LISTEN21), and they stay on offer after use. What is plain to the king is strange to the governor,
-      and each answers a sentence that is not meant for him in his own way (an invented line that claims nothing about what he believed).
+      offers the same four sentences (LISTEN21), and they stay on offer after use. A sentence of the account names its listener, so it is
+      spoken in full only to him and in the account's order; to the other man, or too soon, Paul says only its short line, and the other
+      answers it plainly, without telling whom to address (an invented line that claims nothing about what he believed).
       The account fixes the way through: 26:25, then 26:26, to Festus; then 26:27 to the king. The narrator tells Agrippa's answer.
    4. These bonds (26:29). Paul uses the chain on his wrist (the item chain21) with the king: the far hand comes up, bent, and the chain
       with it, and he speaks the wish. The account does not say that he raised it; the end screen says so.
@@ -112,8 +113,11 @@ const FONT21=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;
    Hotspots (ROOMS.court21): the sea 0,40,186,38 · the sea wall 0,78,186,18 · the governor's seat 226,78,26,24 · the dais 196,96,112,16 ·
    the desk 152,88,36,22 · the cart 4,110,42,28 · the ox goad 6,106,46,8 · the way to the writing room 304,96,16,48. Walk: 30..300 by
    114..138 (SHARED.caesarea.WALK); while Paul is played (chained) the walk is his own place. Actors: the clerk sits at the desk 162,110;
-   Festus on the seat 238,100; the advisers 270,101 and 292,101; Paul 210,128 and the soldier a step behind him on his left; the
-   accusers at 140,122 · 116,128 · 94,120 · 70,126; the officer 300,130. After the hearing Bernice 76,124 and King Agrippa 100,120 facing
+   Festus on the seat 238,100; the advisers 270,101 and 292,101; Paul 210,128 and the soldier beside him on his left (192,127.5); the
+   accusers round them (25:7, ROUND21), each a step off and facing Paul, arms down: at his right one between the governor's seat and the
+   first adviser (254,120) and one before him (250,137), at his left one behind the soldier (196,116) and one beyond the clerk's desk
+   (146,126). None of them stands before the desk, the seat, the advisers, Paul or the soldier, and no head comes under a gull (the
+   morning's gulls stand at the far left of the sea wall); the officer 300,130. After the hearing Bernice 76,124 and King Agrippa 100,120 facing
    right, Festus 128,120 facing left. Footprint: the cart 30,114,25,22 (the whole of it inside the strip, so that nobody stands behind
    it). */
 const CART21={x0:4,x1:50,top:108.8,foot:136};
@@ -467,6 +471,8 @@ const CL=actor('clerk21','governors_clerk','#e8dcc0',140),FS=actor('festus21','F
   CM1=actor('cmd21a','military_commander','#f0d8c0',92),CM2=actor('cmd21b','military_commander','#e8d0c0',100),CM3=actor('cmd21c','military_commander','#e0d0c0',106),
   LM1=actor('lead21a','leading_man_of_the_city','#e8e0d0',94),LM2=actor('lead21b','leading_man_of_the_city','#e0e0d0',110),LM3=actor('lead21c','leading_man_of_the_city','#d8e0d0',102);
 const ACCUSERS=[AC1,AC2,AC3,AC4],SEATED=[CM1,CM2,CM3,LM1,LM2,LM3];
+/* where the accusers stand round Paul and his soldier at the hearing before Festus (Acts 25:7): [x, y, facing] (see ART court21) */
+const ROUND21=[[254,120,-1],[250,137,-1],[196,116,1],[146,126,1]];
 
 /* ============ WHAT THE ACCOUNT SAYS ============ */
 /* TOLD: Acts 25:1-26:32, told by the narrator in paraphrase, each line with its reference (SP/ch21/told.md, written from the Study
@@ -488,19 +494,23 @@ const fast=()=>G.speedAll>200;   /* the playtest plays at speed */
 const PAPERS21={letter:{name:'the_commanders_letter',flag:'readLetter',read:['letter_greeting','letter_i_rescued_him_as_a_roman','letter_i_took_him_to_their_sanhedrin','letter_nothing_deserving_death_or_chains','letter_a_plot_so_i_send_him','letter_his_accusers_will_speak_before_you']},
   record:{name:'the_record_before_felix',flag:'readRecord',read:['charge_revolt','paul_no_crowd_no_proof','charge_sect','paul_what_i_admit','charge_temple','paul_the_men_from_asia']},
   notes:{name:'my_notes_before_festus',flag:'readNotes',read:['notes21_many_charges_none_proved','paul_no_sin_against_law_temple_caesar']}};
-/* the report: every charge ever brought, the paper that settles it, the one mark that stands, and the true reason the other will not */
+/* the report: every charge ever brought, the paper that settles it, the mark that stands, and the true reason the other will not; the
+   many serious charges before Festus take either mark (also): they were never proved (25:7), and Festus himself found them a dispute about
+   their own worship (25:18, 19) */
 const REPORT21=[{k:'charge_revolt',paper:'record',ok:'never',no:'clerk_a_revolt_is_no_question_of_worship'},
   {k:'charge_sect',paper:'record',ok:'worship',no:'clerk_he_admitted_that_one_himself'},
   {k:'charge_temple',paper:'record',ok:'never',no:'clerk_profaning_the_temple_would_be_a_crime'},
   {k:'charge_questions_of_their_own_law',paper:'letter',ok:'worship',no:'clerk_the_commander_named_it_himself'},
-  {k:'charge_many_and_serious',paper:'notes',ok:'never',no:'clerk_they_called_them_crimes'}];
+  {k:'charge_many_and_serious',paper:'notes',ok:'never',also:'worship'}];
 const MARK21={never:'mark_never_proved',worship:'mark_a_dispute_about_their_own_worship'};
 const FIRST21={letter:'clerk_first_the_commanders_letter',record:'clerk_first_the_record_before_felix',notes:'clerk_first_my_notes'};
-/* the two listeners: each sentence, whether it is the one the account gives to that listener now, and what the other answers */
-/* c: the short line it stands as in the choice (the full sentence is what he says) */
-const LISTEN21=[{k:'paul_true_and_of_a_sound_mind',c:'say_what_i_say_is_true_and_sound',to:'festus',flag:'sound',other:['agrippa_the_governor_said_it',AG]},
-  {k:'paul_not_done_in_a_corner',c:'say_none_of_it_happened_in_a_corner',to:'festus',flag:'corner',need:'sound',early:['festus_answer_what_i_said',FS],other:['agrippa_tell_that_to_the_governor',AG]},
-  {k:'paul_do_you_believe_the_prophets',c:'say_do_you_believe_the_prophets',to:'agrippa',flag:'prophets',need:'corner',early:['agrippa_the_governor_spoke_to_you_first',AG],other:['festus_put_that_to_the_king',FS]},
+/* the two listeners: each sentence, the listener the account gives it to (to), and what the other answers when only its short line is
+   said to him (other). c: the short line it stands as in the choice. The full sentence of the account, which names its listener, is
+   spoken only to that listener and only in the account's order (need); said to the other man, or too soon, it is only the short line.
+   No answer tells the player whom to address. */
+const LISTEN21=[{k:'paul_true_and_of_a_sound_mind',c:'say_what_i_say_is_true_and_sound',to:'festus',flag:'sound',other:['go_on',AG]},
+  {k:'paul_not_done_in_a_corner',c:'say_none_of_it_happened_in_a_corner',to:'festus',flag:'corner',need:'sound',early:['festus_you_havent_answered_me',FS],other:['go_on',AG]},
+  {k:'paul_do_you_believe_the_prophets',c:'say_do_you_believe_the_prophets',to:'agrippa',flag:'prophets',need:'corner',early:['go_on',AG],other:['festus_that_means_nothing_to_me',FS]},
   {k:'paul_im_not_saying_this_to_save_myself',c:'say_im_not_saying_this_to_save_myself',to:null,festus:['festus_that_much_is_settled',FS],agrippa:['agrippa_so_i_have_heard',AG]}];
 /* the three roads on the travel map (Acts 25:9-12) */
 const ROADS21={jerusalem:'paul_thought_jerusalem',caesarea:'paul_thought_caesarea',torome:'paul_thought_rome'};
@@ -523,7 +533,8 @@ const TC={thought:1,color:'#ece0c8'};   /* the clerk's thoughts */
 CL.noPray=1;CL.thought=TC;
 const THP={thought:1,color:'#cfe2ff'};  /* Paul's */
 const mk21=()=>G.mk21||(G.mk21={});
-const markOf21=k=>F.report?REPORT21.find(c=>c.k===k).ok:mk21()[k];
+const markOf21=k=>F.report?mk21()[k]||REPORT21.find(c=>c.k===k).ok:mk21()[k];
+const marked21=c=>{const m=mk21()[c.k];return!!m&&(m===c.ok||m===c.also)};
 /* the chain: one light chain on one of Paul's wrists, to the one soldier beside him (shared/cast.js, custody 'one') */
 /* In the court the soldier stands a step behind Paul on his left, so the near wrist is the chained one. In the hall he stands a step ahead of
    him on his right, between him and the dais, so the far wrist is: when Paul raises that hand (26:29), bent, the chain goes up with it and
@@ -595,9 +606,9 @@ async function markLine21(c){if(F.report)return say(CL,'clerk_every_line_has_its
   if(!F[PAPERS21[c.paper].flag])return say(CL,FIRST21[c.paper],TC);
   const opts=['mark_never_proved','mark_a_dispute_about_their_own_worship','leave_it_as_it_is'],i=await choose(opts,{keep:1});
   if(i===2)return;const m=i?'worship':'never';
-  if(m!==c.ok){SFX.nope();return say(CL,c.no,TC)}
+  if(m!==c.ok&&m!==c.also){SFX.nope();return say(CL,c.no,TC)}
   mk21()[c.k]=m;SFX.click();
-  if(REPORT21.every(x=>mk21()[x.k]===x.ok)){F.report=1;SFX.good();await say(CL,'clerk_and_the_field_stays_empty',TC);await say(CL,'clerk_the_governor_must_see_this',TC);codeBtn()}}
+  if(REPORT21.every(marked21)){F.report=1;SFX.good();await say(CL,'clerk_and_the_field_stays_empty',TC);await say(CL,'clerk_the_governor_must_see_this',TC);codeBtn()}}
 async function field21(){return say(CL,F.report?'clerk_the_empty_letter':'the_field_for_the_charge_look',TC)}
 /* in the court: Festus, with the king and his sister; the report taken to him (25:14-22); and the next day the audience */
 async function festus21(){if(!F.report){await say(FS,'festus_is_the_report_ready',{to:CL});return say(CL,'clerk_not_yet_your_excellency',{to:FS})}
@@ -644,11 +655,14 @@ async function speakTo21(L){const lis=L===FS?'festus':'agrippa';if(PC()===CL)ret
   const opts=LISTEN21.map(s=>s.c).concat(['say_nothing_for_now']),i=await choose(opts,{keep:1});
   if(i===LISTEN21.length)return;const s=LISTEN21[i];
   if(s.to===lis&&F[s.flag])return say(P,'paul_ive_said_that_to_him_already',THP);
-  await say(P,s.k,{to:L});
-  if(!s.to){const[r,a]=s[lis];return say(a,r,{to:P})}
-  if(s.to!==lis){const[r,a]=s.other;return say(a,r,{to:P})}
-  if(s.need&&!F[s.need]){const[r,a]=s.early;return say(a,r,{to:P})}
-  F[s.flag]=1;SFX.good();
+  if(!s.to){await say(P,s.k,{to:L});const[r,a]=s[lis];return say(a,r,{to:P})}
+  /* to the other man: only the short line, and his answer */
+  if(s.to!==lis){await say(P,s.c,{to:L});const[r,a]=s.other;return say(a,r,{to:P})}
+  /* to its own listener, but before the account comes to it: before he has answered Festus at all, the question to the king is only a
+     thought; otherwise the short line, and the answer */
+  if(s.need&&!F[s.need]){if(s.flag==='prophets'&&!F.sound)return say(P,'paul_i_owe_an_answer_first',THP);
+    await say(P,s.c,{to:L});const[r,a]=s.early;return say(a,r,{to:P})}
+  await say(P,s.k,{to:L});F[s.flag]=1;SFX.good();
   if(s.flag==='prophets'){AU.mood='hall';await tell('h28');await say(P,'paul_one_more_thing_for_him',THP)}
   codeBtn()}
 /* These bonds (26:29): the far hand comes up, bent, with the chain; the wish; 26:30 they rise; then the clerk is played in the hall */
@@ -676,7 +690,7 @@ async function goad21(){await say(PC(),'ox_goad_look');treasure()}
 const NOW=[160,160,236,236];   /* a close view: whoever is played stands below the picture, and takes no step */
 const ACC=K21.AT.accused,PAULH=HALL21.paul;
 ROOMS.court21={space:.8,get walk(){return PC()===P&&chainedNow()?[ACC[0],ACC[0],ACC[1],ACC[1]]:K21.WALK.slice()},get mood(){return phase21()==='hearing'?'tense':'court'},amb:AMB.court21,hs:[
-  {name:'sea',x:0,y:40,w:186,h:38,wx:150,wy:124,look:'sea_from_the_court_look'},
+  {name:'sea',x:0,y:40,w:186,h:38,wx:150,wy:124,look:'sea_by_morning_look'},
   {name:'sea_wall',x:0,y:78,w:186,h:18,wx:120,wy:120,look:'sea_wall_look21'},
   {name:'dais',x:196,y:96,w:112,h:16,wx:190,wy:120,look:'dais_look21',use:()=>PC()===P&&phase21()==='hearing'?answer21():say(PC(),'dais_look21')},
   {name:'governors_seat',x:226,y:78,w:26,h:24,wx:214,wy:118,def:'use',look:()=>say(PC(),F.gull?'governors_seat_look':'governors_seat_with_a_gull_look'),use:()=>PC()===CL?seat21():say(P,'not_my_seat',THP)},
@@ -707,7 +721,7 @@ const who=(a,o)=>{a.hs=Object.assign({name:a.name,actor:a},o)};
 const chainFestus21=()=>say(P,phase21()==='bonds'?'paul_its_the_king_im_answering':'paul_the_chain_stays_where_it_is',THP);
 const inRoom=r=>G.room===r;
 who(CL,{look:'governors_clerk_look',talk:()=>say(CL,'clerk_i_only_write_it_down',{to:P})});
-who(FS,{look:'festus_look',talk:()=>inRoom('hall21')?speakTo21(FS):phase21()==='hearing'?answer21():PC()===CL?festus21():say(FS,'festus_not_now',{to:PC()}),
+who(FS,{look:'festus_look',talk:()=>inRoom('hall21')?speakTo21(FS):phase21()==='hearing'?answer21():PC()===CL?festus21():say(FS,'not_now18',{to:PC()}),
   useWith:it=>it==='chain21'?chainFestus21():false,give:it=>it==='chain21'?chainFestus21():false});
 who(AG,{look:'agrippa_look',talk:()=>inRoom('hall21')?speakTo21(AG):say(AG,'agrippa_speak_to_the_governor',{to:PC()}),useWith:it=>it==='chain21'?bonds21():false,give:it=>it==='chain21'?bonds21():false});
 who(BE,{look:'bernice_look',talk:()=>say(PC(),PC()===CL?'clerk_not_my_place':'paul_its_the_king_im_answering',PC()===CL?TC:THP)});
@@ -719,8 +733,8 @@ for(const a of[CM1,CM2,CM3])who(a,{look:'military_commander_look',talk:()=>say(P
 for(const a of[LM1,LM2,LM3])who(a,{look:'leading_man_look',talk:()=>say(PC(),PC()===CL?'clerk_not_my_place':'paul_its_the_king_im_answering',PC()===CL?TC:THP)});
 /* Paul, when the clerk is played */
 const PAULHS={name:'Paul',actor:P,as:{clerk21:{look:'the_prisoner_paul_look',talk:()=>say(CL,'clerk_not_my_place',TC)}}};
-CL.def={look:'clerk_nothing_to_see',pickup:'clerk_not_mine_to_take',use:'clerk_no_use_for_that',open:'clerk_not_mine_to_open',talk:'clerk_no_answer',give:'clerk_nothing_to_give'};
-CL.noCraft='clerk_those_dont_go_together';
+CL.def={look:'clerk_nothing_to_see',pickup:'clerk_not_mine_to_take',use:'nephew_no_use_for_that',open:'clerk_not_mine_to_open',talk:'nephew_no_answer',give:'nephew_nothing_to_give'};
+CL.noCraft='those_do_not_go_together';
 
 /* ============ ITEMS ============ */
 Object.assign(ITEMS,{chain21:{name:'chain_on_my_wrist',look:'chain_on_my_wrist_look'}});
@@ -745,7 +759,7 @@ function place21(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   CL.look=clerkPlays()?clerkFree21:LOOK.clerk21;CL.wear=clerkPlays()?'free':'';
   if(ph==='court')pl(CL,'court21',[286,126,-1]);
   if(ph==='hearing'){pl(FS,'court21',A.governor);FS.seat=1;pl(AD1,'court21',A.advisers[0]);pl(AD2,'court21',A.advisers[1]);
-    pl(CL,'court21',A.scribe);CL.seat=1;pl(OF,'court21',A.officer);ACCUSERS.forEach((a,i)=>pl(a,'court21',A.accusers[i]));
+    pl(CL,'court21',A.scribe);CL.seat=1;pl(OF,'court21',A.officer);ACCUSERS.forEach((a,i)=>pl(a,'court21',ROUND21[i]));
     pl(P,'court21',A.accused);chain21()}
   if(ph==='report'){pl(CL,'write21',[276,126,-1]);pl(BE,'court21',[76,124,1]);pl(AG,'court21',[100,120,1]);pl(FS,'court21',[128,120,-1])}
   if(ph==='hall'||ph==='listen'||ph==='bonds'||ph==='passage'){const S=HALL21.seats,B=HALL21.bench;
@@ -774,7 +788,7 @@ function hint21(){const ph=phase21();
 /* ============ CHAPTER DEFINITION ============ */
 /* Birds (shared/birds.js): gulls over the sea and on the sea wall of the court, by day in fair weather; one stands on the governor's seat
    until the clerk sends it off. None in the writing room, none in the audience chamber. They change nothing in the story. */
-ROOMS.court21.birds=()=>{const b=K21.birds();if(!F.gull)b.stand=b.stand.concat([[K21.SEAT.at[0]+1,K21.SEAT.top,-1]]);return b};
+ROOMS.court21.birds=()=>{const b=K21.birds('morning');if(!F.gull)b.stand=b.stand.concat([[K21.SEAT.at[0]+1,K21.SEAT.top,-1]]);return b};
 /* every hotspot answers the clerk as it answers Paul (see act: another member uses h.as[his id]) */
 for(const id of['court21','write21','report21','hall21'])for(const h of ROOMS[id].hs)if(!h.as)h.as={clerk21:h};
 for(const a of EVERY)if(a.hs&&!a.hs.as)a.hs.as={clerk21:a.hs};

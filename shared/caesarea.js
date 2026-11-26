@@ -37,7 +37,9 @@
      O(hour)         the options of shared/coast.js for that hour (horizon, sun, cloud), for any other picture of this coast that
                      must stand in the same light
      light(hour)     ART[id].light for a room of the court: {amb, sun, wallY}
-     birds(hour)     ROOMS[id].birds: gulls over the water, two standing on the coping of the sea wall (fair weather by day)
+     birds(hour)     ROOMS[id].birds: gulls over the water, two standing on the coping of the sea wall (fair weather by day); in the
+                     morning both stand at the far left (x 22 and 48), clear of every head at the hearings of Chapters Twenty and
+                     Twenty-One
      HZ              the horizon, y 60
      WALK            the walk strip of the court, [30, 300, 114, 138], wholly in front of the dais and the desk: nothing painted
                      stands in it, so the court needs no props or footprints
@@ -72,7 +74,10 @@ const O=hour=>OPT[hour==='morning'?'morning':'evening'];
 /* the figures' light: sun:[dx, dy, strength] is the tip of the shadow of a figure 46 pixels tall, from its feet */
 const LIGHT={evening:{amb:'#f6e0c8',sun:[22,7,.35],wallY:WALLY},morning:{amb:'#f4eee4',sun:[-22,7,.35],wallY:WALLY}};
 const light=hour=>{const L=LIGHT[hour==='morning'?'morning':'evening'];return{amb:L.amb,sun:L.sun.slice(),wallY:L.wallY}};
-const birds=()=>({gulls:[8,6,168,36],stand:[[46,COPING,1],[92,COPING,-1]]});
+/* the gulls that stand on the coping, each hour its own: where no head comes at the hearings of that hour (Chapter Nineteen's palace
+   gives its own) */
+const STAND={evening:[[46,COPING,1],[92,COPING,-1]],morning:[[22,COPING,1],[48,COPING,-1]]};
+const birds=hour=>({gulls:[8,6,168,36],stand:STAND[hour==='morning'?'morning':'evening'].map(s=>s.slice())});
 const sh=(...a)=>SHARED.materials.shadow(...a);
 
 function court(g,o){o=o||{};const K=SHARED.coast,E=o.hour!=='morning',Op=O(o.hour),r=rng(1971),S='#e6d8bc';K.light(Op);
@@ -401,7 +406,8 @@ return{court,O,light,birds,HZ,WALK,WALLY,COPING,PIER,COLS,DAIS,SEAT,TABLE,DESK,A
      su  summer: a high sun, a clear sky with a little haze, a light breeze; the sailing season
      au  autumn: the sun low and warm at the left, a road of light on the water at the left edge, a fresher wind
      wi  winter: an overcast sky, grey sea, a strong west wind and a heavy swell, rain; soft light without a cast shadow
-     sp  spring: a clear, fresh light, a light breeze
+     sp  spring: the afternoon sun beyond the window at the left as in summer, a little lower, so that the patch on the floor and the
+         figures' shadows are a little longer; a clear, fresh light, a light breeze (the coast's 'midday' sky: it has no afternoon)
 
    API (SHARED.caesarea):
      cell(g, o)          paints Paul's room for a 320 by 144 room. o: {k (the season), win:{x0, x1, top, sill} (the opening in the back
@@ -435,7 +441,7 @@ const SEASONS={
   su:{hour:'midday',az:-50,el:62,cloud:.1,streak:.45,force:1,amb:'#f2e6d6',sun:[14,9,.3],tone:null},
   au:{hour:'evening',az:-28,el:26,cloud:.28,streak:.55,force:2,amb:'#f4dcc0',sun:[24,12,.34],tone:['#ffcc90',.22]},
   wi:{hour:'midday',cloud:.97,streak:.2,force:3,amb:'#d6d4d8',sun:null,tone:['#8a90a8',.3]},
-  sp:{hour:'morning',az:-58,el:50,cloud:.2,streak:.4,force:1,amb:'#eeeae0',sun:[17,10,.3],tone:null}};
+  sp:{hour:'midday',az:-54,el:50,cloud:.2,streak:.4,force:1,amb:'#eeeae0',sun:[17,10,.3],tone:null}};
 const sea_=k=>SEASONS[k]||SEASONS.su,C='#e4d6b8',VX=160;
 /* one coast options object for each season and horizon, kept, so that the light worked out on it is kept too */
 const OS=new Map();
