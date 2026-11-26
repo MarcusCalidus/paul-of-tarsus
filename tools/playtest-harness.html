@@ -5,6 +5,18 @@
  /* the look back at the end of the game (shared/lookback.js) holds, for each chapter, the roads that chapter drew on its travel map. While a
     chapter is played every leg its map shows is noted, however it was drawn; a chapter that is played to its end screen must have shown
     every leg the table gives it. So a road that a chapter changes, or one the table has wrong, fails here, in that chapter's own run. */
+ /* finaleTakesOver: the last chapter's section calls this when the door has been opened and the finale (shared/finale.js) is loaded: c0 is
+    the code of the chapter's last safe point. The finale runs from there by itself; SKIP is pressed, and the closing screen stands where a
+    chapter's end screen would. The finale's own stops (finale and its pictures) check everything between. */
+ async function finaleTakesOver(c0){const til=async(f,ms)=>{for(let i=0;i<(ms||20000)/30&&!f();i++)await wait(30);return f()},n=G.ch,c=CHAP[n];
+   const up=await til(()=>(typeof G.onSkip==='function'&&$('#skip').style.display!=='none')||ov.classList.contains('closing'),8000);
+   ok(up&&G.busy&&!F.finished&&!ov.classList.contains('end'),'the finale takes over from the open door: nothing is played any more, SKIP stands in the top bar, and the chapter has no end screen');
+   if(G.onSkip)$('#skip').click();await til(()=>ov.classList.contains('closing')&&!ov.classList.contains('wait'),30000);
+   const sv=saved(),far=saves().far,b0=decode(c0),b1=sv&&decode(sv.code);
+   ok(ov.classList.contains('closing')&&$('#skip').style.display==='none'&&!G.onSkip&&ov.textContent.includes(T('from_damascus_to_rome'))&&!!ov.querySelector('[data-about]'),
+     'SKIP brings the closing screen, with the line that opens the page about the chapter');
+   ok(!!sv&&sv.ch===n&&sv.code!==c0&&!finishedCode(c0)&&finishedCode(sv.code)&&gameDone()&&F.finished===1&&c.flags.filter(k=>F[k]&&k!=='finished').join()===c.flags.filter((k,i)=>k!=='finished'&&(b0.w!=null?b0.w>>BigInt(i)&1n:b0.b>>i&1)).join()&&!!b1&&b1.ch===n&&!!far&&far.code===sv.code,
+     'the game is kept as finished: the last safe point with the one flag more, as a safe-point code ('+(sv&&sv.code)+'), and it is the farthest point')}
  const LEGS={},ENDED=new Set();
  {const e0=endScreen;window.endScreen=function(){ENDED.add(G.ch);return e0.apply(this,arguments)}}
  setInterval(()=>{const M=SHARED.map;if(!M)return;if(!SHARED.lookback&&!LEGS.asked){LEGS.asked=1;need('lookback').catch(()=>{})}
@@ -504,7 +516,7 @@
      it; the stops beginning with p are its pictures at the game's own pace: pletters (the map on which Paul does not move), proll (the roll closed in the hands), plookback (a
      road being drawn, with its chapter's name), plook1 to plook12 (each map of the look back by itself, as its last road is drawn),
      pclosing (the closing screen), pabout (the page behind it), ptitlefin (the title of a
-     finished game). Until the last chapter is built, the newest chapter there is stands in for it: it is given the flag that says
+     finished game). The last chapter is the one whose line of CHAP names done. Where there is none yet (a branch without it), the newest chapter there is stands in for it: it is given the flag that says
      finished, its place in the manifest (done) and a page about itself, and is entered at a safe point of its own. */
   if(/^(finale|pletters|proll|plookback|plook\d+|pclosing|pabout|ptitlefin|phone(letters|lookback|closing|about))$/.test(stop)){clearInterval(sk);sk=0;
     /* the same pictures on a phone held sideways: phoneletters, phonelookback, phoneclosing, phoneabout */
@@ -6458,9 +6470,10 @@
     ok(said('come_in_the_chain_is_on_me')&&seenTold.has('n3031')&&heard.indexOf(T('come_in_the_chain_is_on_me'))<heard.indexOf(T(C().told.n3031)),
       'the door is opened: come in, the chain is on me; then Acts 28:30, 31 from the narrator');
     ok(fl()===f0&&!F.finished&&makeCode()===c0&&store('paul.save')===c0,'from the last safe point to the finale no flag is set (finished is not): the code is still '+c0);
-    /* FOR NOW, until shared/finale.js is merged: no end screen; a plain screen whose click returns to the title. LOGIC25: once the finale
-       is merged, this check is the finale's to change (its run() takes over here). */
-    if(!SHARED.finale)ok(ov.classList.contains('end')&&!ov.querySelector('h2')&&ov.textContent.includes(T('click_to_return_to_the_title'))&&inOv(),
+    /* the finale takes over here (finaleTakesOver, at the head of this file: the finale's own check). Only where shared/finale.js is not
+       there, as on a branch without it: no end screen; a plain screen whose click returns to the title. */
+    if(SHARED.finale)await finaleTakesOver(c0);
+    else ok(ov.classList.contains('end')&&!ov.querySelector('h2')&&ov.textContent.includes(T('click_to_return_to_the_title'))&&inOv(),
       'there is no end screen: until the finale is merged, a click returns to the title')}
   halt('final25')};
   if(C25){await ch25();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));

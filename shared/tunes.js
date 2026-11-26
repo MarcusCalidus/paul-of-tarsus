@@ -15,7 +15,7 @@
    Where the tune's first bar is short (under two seconds) and its first phrase plainly runs over two bars, two are taken (bars:2):
    Chapters Thirteen, Fourteen, Nineteen and Twenty. The Prologue plays on Chapter One's score by moods of its own; its road plays nothing
    (mood "none"), so its bar is the harp of the house of Judas in Damascus (mood "harp"), where that road ends, and not Chapter One's.
-   Chapters Twenty-Two and Twenty-Three are stubs for now: their bars are the stubs' few notes, to be taken again when they are built.
+   Chapters Twenty-Four and Twenty-Five are stubs for now: their bars are the stubs' few notes, to be taken again when they are built.
 
      BARS          {pro, 1, 2, ...}: per chapter {dt, steps, group, root, scale, bars, src, tracks}, a score without its then. src: where the
                    bar comes from, {mood, bar, tracks}: the mood, the bar counted from 0 as the chapter's score counts it, and the indices
@@ -155,18 +155,28 @@ const _=null,
   21:{dt:.12,steps:20,group:[3,3,4,3,3,4],root:57,scale:[0,2,3,5,7,8,10],bars:1,src:{mood:'court',bar:0,tracks:[0,2]},tracks:[
    {inst:'lyre',lines:[[[0,0,3],[3,2,3],[6,4,4],[10,3,3],[13,2,3],[16,4,4]]],oct:12,vol:.52},
    {inst:'bass',lines:[[[0,0,20]]],vol:.26}]},
-  /* Chapter Twenty-Two, STUB: the stub's lyre (levels/chapter22.js:21); to be taken again when the chapter is built */
-  22:{dt:.2,steps:16,root:50,scale:[0,2,3,5,7,9,10],bars:1,src:{mood:'stub22',bar:0,tracks:[0]},tracks:[
-   {inst:'lyre',lines:[[[0,0,4],[4,2,4],[8,4,8]]],oct:12,vol:.4}]},
-  /* Chapter Twenty-Three, STUB: the stub's lyre (levels/chapter23.js:23); to be taken again when the chapter is built */
-  23:{dt:.2,steps:16,root:52,scale:[0,2,4,5,7,9,11],bars:1,src:{mood:'stub23',bar:0,tracks:[0]},tracks:[
-   {inst:'lyre',lines:[[[0,0,4],[4,4,4],[8,2,8]]],oct:12,vol:.4}]}},
+  /* Chapter Twenty-Two, B-flat harmonic minor in eighteens that fall 4, 4, 4, 3, 3, mood "quay" (the harp rests in this bar): lyre, low
+     string (levels/chapter22.js:88, 90; TUNE :80, LOW :86) */
+  22:{dt:.2,steps:18,group:[4,4,4,3,3],root:46,scale:[0,2,3,5,7,8,11],bars:1,src:{mood:'quay',bar:0,tracks:[0,2]},tracks:[
+   {inst:'lyre',lines:[[[0,0,4],[4,2,4],[8,4,4],[12,3,3],[15,2,3]]],oct:24,vol:.48},
+   {inst:'bass',lines:[[[0,0,18]]],oct:12,vol:.24}]},
+  /* Chapter Twenty-Three, B-flat harmonic minor in eighteens that fall 4, 5, 4, 5, mood "night": the harp, and the low string's one note
+     to the bar (levels/chapter23.js:92, 93; TUNE :85, LOW :90) */
+  23:{dt:.15,steps:18,group:[4,5,4,5],root:46,scale:[0,2,3,5,7,8,11],bars:1,src:{mood:'night',bar:0,tracks:[0,1]},tracks:[
+   {inst:'harp',lines:[[[0,0,4],[4,2,5],[9,4,4],[13,3,5]]],oct:12,vol:.34},
+   {inst:'bass',lines:[[[0,0,18]]],oct:0,vol:.2}]},
+  /* Chapter Twenty-Four, STUB: the stub's lyre (levels/chapter24.js:24); to be taken again when the chapter is built */
+  24:{dt:.2,steps:15,group:[5,5,5],root:60,scale:[0,2,4,5,7,9,11],bars:1,src:{mood:'stub24',bar:0,tracks:[0]},tracks:[
+   {inst:'lyre',lines:[[[0,0,5],[5,2,5],[10,4,5]]],oct:0,vol:.4}]},
+  /* Chapter Twenty-Five, STUB: the stub's lyre (levels/chapter25.js:31); to be taken again when the chapter is built */
+  25:{dt:.19,steps:17,group:[4,4,4,5],root:44,scale:[0,2,4,5,7,9,10],bars:1,src:{mood:'stub25',bar:0,tracks:[0]},tracks:[
+   {inst:'lyre',lines:[[[0,0,4],[4,2,4],[8,4,4],[12,7,5]]],oct:12,vol:.4}]}},
  has=n=>Object.prototype.hasOwnProperty.call(BARS,n),
  len=n=>{const b=BARS[n];return b.bars*b.steps*b.dt},
  /* the silence that follows a bar: a score with no tracks, in the bar's key (setScore keeps the key of the last score, see AU.key) */
  hush=b=>({dt:b.dt,steps:b.steps,root:b.root,scale:b.scale,bars:1,tracks:[]}),
  RMS={pro:-35.2,1:-20.2,2:-23.1,3:-27.9,4:-28.3,5:-28.2,6:-28.3,7:-28.6,8:-27.9,9:-23.9,10:-25.1,11:-30.2,12:-30.5,13:-30.7,14:-31.6,15:-34.6,16:-34.3,
-  17:-34.1,18:-35.7,19:-36,20:-37.5,21:-36.1,22:-44.6,23:-43.4},EVEN=-29,
+  17:-34.1,18:-35.7,19:-36,20:-37.5,21:-36.1,22:-38.8,23:-40.2,24:-44.3,25:-44.8},EVEN=-29,
  gain=n=>RMS[n]==null?1:Math.pow(10,clamp(EVEN-RMS[n],-8,8)/20),
  score=(n,then,o)=>{const b=BARS[n],k=o&&o.even?gain(n):1;
   return Object.assign({},b,{tracks:k===1?b.tracks:b.tracks.map(t=>Object.assign({},t,{vol:(t.vol==null?1:t.vol)*k})),then:then||hush(b)})};
