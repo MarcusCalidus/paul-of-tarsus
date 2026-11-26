@@ -6,6 +6,8 @@
      journey(route, o)   between scenes: earlier legs are shown, the new ones draw themselves as dotted lines, city by city,
                          with a music sting. route: [[from, to, 'new sea'], ...]; 'new' legs animate, 'sea' legs follow waypoints.
      pick(ids, here, o)  for a hub chapter: the places as dots; resolves with the place the player clicks, or null (Esc).
+     cancel()            ends a pick that is waiting, as Esc would (it resolves with null): for a level whose map waits outside a
+                         cutscene and has to go when a code is restored. It presses no key, so nothing else hears of it.
                          o.legs: the legs already travelled, [[from, to], ...], which are shown. o.seen: places whose dots are lit
                          although no leg reaches them. o.hint: the key of the line under the map (click_a_place_to_travel_there).
                          It may be called again and again, with the same places: each call shows the map afresh and waits for one
@@ -455,10 +457,11 @@ function pick(ids,here,o){o=o||{};setView(o.view);ST.places=ids;ST.over=o.labels
   const vp=$('#view'),pos=e=>framePos(e),
     /* a finger is less precise than a mouse: on a phone a place is found within twice the reach */
     near=e=>{const[x,y]=pos(e);let best=null,bd=PH.on?14:7;for(const k of ids){const[px,py]=where(k),d=Math.hypot(px-x,py-y);if(d<bd){bd=d;best=k}}return best};
-  return new Promise(res=>{const end=v=>{vp.removeEventListener('click',ck,true);vp.removeEventListener('mousemove',mv,true);vp.removeEventListener('contextmenu',no,true);removeEventListener('keydown',kd,true);ST.places=null;res(v)},
+  return new Promise(res=>{const end=v=>{vp.removeEventListener('click',ck,true);vp.removeEventListener('mousemove',mv,true);vp.removeEventListener('contextmenu',no,true);removeEventListener('keydown',kd,true);ST.places=null;if(ENDPICK===end)ENDPICK=null;res(v)},
     ck=e=>{e.stopImmediatePropagation();const k=near(e);if(k)end(k)},mv=e=>{ST.hover=near(e)},no=e=>{e.preventDefault();e.stopImmediatePropagation();end(null)},
     kd=e=>{if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();end(null)}};
-    vp.addEventListener('click',ck,true);vp.addEventListener('mousemove',mv,true);vp.addEventListener('contextmenu',no,true);addEventListener('keydown',kd,true)})}
+    ENDPICK=end;vp.addEventListener('click',ck,true);vp.addEventListener('mousemove',mv,true);vp.addEventListener('contextmenu',no,true);addEventListener('keydown',kd,true)})}
+let ENDPICK=null;const cancel=()=>{if(ENDPICK)ENDPICK(null)};
 /* WAYS: the roads of the journeys that a chapter may retell, in the order they were travelled, through the points between their cities.
    The first journey from Salamis through Cyprus to Paphos, by sea to Perga, up to Antioch in Pisidia, to Iconium, Lystra and Derbe
    (Acts 13:4-14:6); and from Philippi along the Egnatian Way to Thessalonica, to Beroea, by sea to Athens, to Corinth, and from Cenchreae
@@ -476,5 +479,5 @@ const where=id=>{const[x,y]=at(id);return[(x-OX)*ZM,(y-OY)*ZM]};
 /* lines: every thin line on the map that a name must not cross: the coasts, the islands and the lakes, as lists of points */
 const lines=()=>[COAST,AFRICA,...isl().concat(WEST_ISLES).map(p=>p.concat(p.slice(0,2))),...LAKES.map(p=>p.concat(p.slice(0,2)))];
 /* window: where the window that is showing lies on the map, [left, top, width, height], so that a test can see whether a name runs out of it */
-return{journey,pick,go,where,lines,trail,ways:WAYS,labels:VLAB,places:PLACES,state:ST,draw,sting,arrive,window:()=>[OX,OY,W/ZM,H/ZM]};
+return{journey,pick,cancel,go,where,lines,trail,ways:WAYS,labels:VLAB,places:PLACES,state:ST,draw,sting,arrive,window:()=>[OX,OY,W/ZM,H/ZM]};
 })();

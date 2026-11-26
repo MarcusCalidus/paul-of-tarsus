@@ -451,8 +451,23 @@ function wreckage(g,o){const C=LIGHT[o.light]||LIGHT.dawn,sl=o.slant||-.06,r=rng
      o.anchor        true (default): the spare anchor lying on the deck by the starboard rail (the exception of 26 November 2026)
      o.figs          [[y, fn(g)], ...]: people, each drawn at the depth of its feet among the things on deck
      o.floor(g, D)   paints on the bare planks, after the deck and before the bulwarks and everything on it (Chapter Twenty-Two: wet)
-     o.light         'day' (default), 'storm' (no sun: the grey of the cloud from above), 'night' (no moon, no star: almost dark; the
-                     room lights it with its own lantern)
+     o.light         'day' (default); 'storm' (no sun: the grey of the cloud from above); 'night' (no moon, no star: almost
+                     dark; the room lights it with its own lantern); or 'evening': the low sun of the evening at the port side, behind us (Chapter Twenty-Two at
+                     Myra): faces turned to port are lit, and the shadows of the things on deck run long to starboard and away
+     o.cabin         [x0, x1, z0, z1, h]: the cabin's place and size in metres, if a room needs it otherwise than the default
+                     [-2.6, 2.6, 11.3, 14.2, 1.75] (Chapter Twenty-Two narrows it to [-1.8, 1.8, ...], so that a staff at the end of its
+                     roof stands clear of the steering oars' tillers)
+     o.bare          [[x0, x1], ...] in metres across the deck: the planks under these strips keep no butt joints (where a room lays a
+                     rope along a plank, so that no joint crosses it)
+     o.staff         true: a short staff at the port end of the cabin's roof, at the very corner of its eave, for a pennant that the
+                     room draws (staffOf(D) gives its foot and its head); never from the middle of the roof
+     o.shelter       true: Paul's shelter of mended sailcloth (Chapter Twenty-Two) in the lee of the cabin, between its port wall and
+                     the port rail: its upper edge made fast under the cabin's eave, its lower edge along the rail, each corner tied
+                     with a short slanting cord; under it his bedding, the brothers' bundle (knotted on top, no tie across it) and a
+                     loaf. No pole under it, nothing hanging from the middle of anything. shelterOf(D) gives where the bundle is.
+   deckCut(g, o, key) paints the silhouette of one thing on deck ('mast', 'anchor', 'bed') in solid black, in the same geometry as
+                     deck(g, o), for a room's props (the engine cuts the thing out of the backdrop by it). staffOf(D), shelterOf(D)
+                     as above.
    What it promises (CONTRIBUTING sections 3 and 4): the deck planks run fore and aft and their butts are staggered, each inside its own
    plank; the bulwarks are planked in strakes with no post on their rails; the hatch's ladder shows only its two rails standing out of
    the hatch, its rungs inside stopping short of the rails; the windlass's drum lies between two cheeks as high as itself, with no post
@@ -474,14 +489,18 @@ function geoDeck(o){o=o||{};const hz=o.hz!=null?o.hz:DG.hz,F=DG.F,E=DG.E,cx=DG.c
     zOfY=Y=>F*E/(Y-hz),
     things={mast:[3.3,3.9,4.0,4.6,9],hatch:[-1.5,1.5,6.8,9.2,.45],windlass:[.6,2.8,10.4,11.0,.72],cabin:[-2.6,2.6,11.3,14.2,1.75],
       anchor:[1.0,2.9,4.9,5.7,.8],lean:[-5.2,-3.2,5.6,8.4,1.05],bed:[-4.9,-3.9,6.0,7.4,.4],jar:[-4.9,-4.4,8.9,9.4,.7],coil:[2.5,3.1,6.3,6.9,.18],coil2:[-1.9,-1.2,9.8,10.4,.18]},
+    _c=o.cabin?(things.cabin=o.cabin.slice()):0,
     footOf=([x0,x1,z0,z1])=>{const a=P(x0,0,z0),c=P(x1,0,z0),d=P(x0,0,z1),e=P(x1,0,z1),X0=Math.min(a[0],d[0]),X1=Math.max(c[0],e[0]);return[+X0.toFixed(1),+d[1].toFixed(1),+(X1-X0).toFixed(1),+(a[1]-d[1]).toFixed(1)]},
     foot={};for(const k in things)foot[k]=footOf(things[k]);
   const L=DLIGHT[o.light]||DLIGHT.day;
   return{hz,F,E,cam,P,b,s,rh,rx,C,N,zOfY,things,foot,walk:[8,312,102,140],L,o,edge:(Y,sd)=>{const z=zOfY(Y);return P(sd*b(z),0,z)[0]}}}
 const DLIGHT={day:{amb:[.6,.6,.68],sun:[.62,.58,.5],d:[.42,.78,-.46]},
+  /* the evening at Myra: the sun low at the port side and a little behind us, warm; the sky's light cooler and dimmer */
+  evening:{amb:[.5,.44,.52],sun:[.86,.6,.38],d:[-.86,.36,-.2]},
   /* the storm (Chapter Twenty-Two): no sun, only the grey of the cloud from above, a little stronger on what faces up and aft, where the
      sky is lightest; by night, no moon and no star: almost nothing but the ambient grey (the room adds its lantern) */
   storm:{amb:[.4,.42,.47],sun:[.3,.32,.36],d:[.05,1,.35]},night:{amb:[.15,.16,.22],sun:[.06,.065,.09],d:[.05,1,.35]}};
+
 /* the light on a face of albedo c whose outward normal is n */
 function lit(D,c,n,k){const L=D.L,l=Math.hypot(...L.d),q=Math.max(0,(n[0]*L.d[0]+n[1]*L.d[1]+n[2]*L.d[2])/l/(Math.hypot(...n)||1))*(k==null?1:k),h=hex(c);
   return toHex(h[0]*(L.amb[0]+L.sun[0]*q)*1.12,h[1]*(L.amb[1]+L.sun[1]*q)*1.12,h[2]*(L.amb[2]+L.sun[2]*q)*1.12)}
@@ -515,7 +534,8 @@ function deckFloor(g,D,r){const{P,s,b}=D,FL=D.C.map(([x,z])=>P(x,s(z),z)).flat()
       poly(g,pl,c);
       clipTo(g,()=>poly(g,pl),()=>{for(let i=0;i<4;i++){const u=u0+(u1-u0)*(.2+r()*.6),za=2+r()*8,zb=za+1.5+r()*4,q=[];for(let z=za;z<zb;z+=.4)q.push(...P(u*W(z),s(z),z));if(q.length>3)stroke(g,q,r()<.5?rgba(tint(c,-.22),.45):rgba(tint(c,.14),.4),.5)}});
       const sm=zs.map(z=>P(u0*W(z),s(z),z)).flat();stroke(g,sm,'rgba(30,18,10,.5)',.5);
-      const z0=2+((k*.618+.31)%1+1)%1*5;for(let z=z0;z<DG.ZS;z+=5.6){const a=P(u0*W(z)+.03,s(z),z),e=P(u1*W(z)-.03,s(z),z);if(e[0]-a[0]>2.2){R(g,a[0],a[1]-.25,e[0]-a[0],.5,'rgba(30,18,10,.45)');R(g,a[0],a[1]+.25,e[0]-a[0],.4,rgba(tint(c,.24),.3))}}}
+      const bare=(D.o.bare||[]).some(([a,b])=>a<(k+1)*du&&b>k*du);
+      const z0=2+((k*.618+.31)%1+1)%1*5;if(!bare)for(let z=z0;z<DG.ZS;z+=5.6){const a=P(u0*W(z)+.03,s(z),z),e=P(u1*W(z)-.03,s(z),z);if(e[0]-a[0]>2.2){R(g,a[0],a[1]-.25,e[0]-a[0],.5,'rgba(30,18,10,.45)');R(g,a[0],a[1]+.25,e[0]-a[0],.4,rgba(tint(c,.24),.3))}}}
     tex(g,'mott',.25,0,40,320,110,'overlay',.7);
     comp(g,'soft-light',.28,()=>poly(g,[...P(-1.2,0,2.4),...P(1.2,0,2.4),...P(.8,0,11),...P(-.8,0,11)],'#fff4d8'));
     for(const[d,a]of[[.04,.3],[.12,.18],[.24,.1]])stroke(g,D.C.map(([x,z],i)=>P(x+D.N[i][0]*d,s(z),z+D.N[i][1]*d)).flat(),`rgba(20,12,16,${a})`,1.2)})}
@@ -567,7 +587,14 @@ function deckCabin(g,D,r){const B=D.things.cabin,f=boxD(D,B),W='#7a5634',{P,s}=D
   const d0=P(-.45,y0,z0),d1=P(.45,y0+1.65,z0);R(g,d0[0],d1[1],d1[0]-d0[0],d0[1]-d1[1],'#1c120c');R(g,d0[0],d1[1],1,d0[1]-d1[1],lit(D,'#6a4a2c',[1,0,0]));
   for(const wx of[-1.7,1.1]){const a=P(wx,y0+1.1,z0),e=P(wx+.6,y0+1.55,z0);R(g,a[0],e[1],e[0]-a[0],a[1]-e[1],'#1c120c');R(g,a[0],a[1],e[0]-a[0],.5,lit(D,'#e0b880',[0,1,0]))}
   ao(g,f.front[0],f.front[1]-3,f.front[2]-f.front[0],3,'b',.3,'#0c0808');
-  stroke(g,[f.front[0],f.front[1],f.front[6],f.front[7]],lit(D,'#f0d0a0',[-1,0,-.3]),.5)}
+  stroke(g,[f.front[0],f.front[1],f.front[6],f.front[7]],lit(D,'#f0d0a0',[-1,0,-.3]),.5);
+  if(D.o.staff)deckStaff(g,D)}
+/* the staff for a pennant: at the port end of the cabin's roof, on the very corner of its eave, so that it ends the eave and stands on
+   the middle of nothing; round, its lit side toward the light */
+function staffOf(D){const[x0,,z0,,h]=D.things.cabin,x=x0-.13,z=z0-.13,y=D.s(z0)+h+.12;return{x,z,foot:D.P(x,y,z),head:D.P(x,y+1.4,z)}}
+function deckStaff(g,D){const S=staffOf(D),[fx,fy]=S.foot,[,hy]=S.head,w=Math.max(1,D.F*.06/S.z);
+  R(g,fx-w/2,hy,w,fy-hy+.4,lit(D,'#6a4a2c',[0,0,-1]));R(g,D.L.d[0]<0?fx-w/2:fx+w/2-.5,hy,.5,fy-hy,lit(D,'#d8b07a',[D.L.d[0]<0?-1:1,.2,-.4]));
+  R(g,fx-w/2-.2,hy-.6,w+.4,.8,lit(D,'#5a3e24',[0,1,0]))}
 /* the hatch: a coaming of heavy timber round the opening, its lit top; the hold dark below; the ladder's two rails stand out of it at
    its after edge, leaning; its rungs, inside, stop short of the rails */
 function deckHatch(g,D,r){const B=D.things.hatch,f=boxD(D,B),{P,s}=D,[x0,x1,z0,z1,h]=B,cw=.22;
@@ -640,6 +667,53 @@ function deckLean(g,D,r){const[x0,x1,z0,z1,h]=D.things.lean,{P,s,b,rh}=D,c='#a09
   stroke(g,[ta[0],ta[1],...mid(z0,.12),la[0],la[1]],rgba(lit(D,'#f4ead0',[0,.8,-.6]),.9),.6);stroke(g,B,lit(D,'#8a8070',[0,1,0]),.6);
   /* the cords at the lower corners, slanting out to pegs in the deck */
   for(const[p,z]of[[la,z0-.4],[lb,z1+.4]]){const q=P(x1+.55,0,z);stroke(g,[p[0],p[1],q[0],q[1]],lit(D,'#c8ac78',[0,1,-.3]),.5);R(g,q[0]-.5,q[1]-.5,1,1,'#3a2a1a')}}
+/* Paul's shelter in the lee of the cabin (o.shelter): mended sailcloth from under the cabin's eave on its port side down to the port
+   rail, sagging a little between; we see its underside, in shade, and under it the nook: the bulwark's face and the deck in its shadow,
+   his bedding laid out, the brothers' bundle knotted at its top and a loaf beside it. The seam of the mended tear runs down the slope of
+   the cloth, its stitches along it. A short cord at each near corner slants to a cleat (on the bulwark, on the cabin's front). */
+function shelterOf(D){const[x0,,z0]=D.things.cabin,z=z0+.25;return{bundle:D.P(x0-1.05,D.s(z)+.36,z),zf:z0-.08,zb:D.things.cabin[3]-.3}}
+function deckShelter(g,D,r){const{P,s,b,rh}=D,[cx0,,cz0]=D.things.cabin,S=shelterOf(D),zf=S.zf,zb=S.zb,c='#b4a688',
+    hi=z=>P(cx0-.03,s(z)+1.55,z),lo=z=>P(-b(z)+.07,s(z)+rh(z)+.03,z),mid=(z,k)=>{const a=hi(z),e=lo(z);return[(a[0]+e[0])/2,(a[1]+e[1])/2+k*D.F/z*.09]};
+  /* the nook under it, in its shade: the bulwark's face and the deck */
+  const nook=[...hi(zf),...P(cx0,s(zf),zf),...P(-b(zf)+.02,s(zf),zf),...lo(zf),...lo(zb),...hi(zb)];
+  comp(g,'multiply',.42,()=>poly(g,nook,'#5a4a66'));comp(g,'multiply',.22,()=>poly(g,[...lo(zf),...lo(zb),...P(-b(zb),s(zb),zb),...P(-b(zf),s(zf),zf)],'#3a3050'));
+  /* the bedding laid out on the deck, a blanket of brown wool, its near end folded back */
+  const bz0=zf+.15,bz1=zb-.2,bx0=-b(bz0)+.35,bx1=cx0-.35,bed=[...P(bx0,s(bz0)+.06,bz0),...P(bx1,s(bz0)+.06,bz0),...P(bx1,s(bz1)+.06,bz1),...P(bx0+.25,s(bz1)+.06,bz1)];
+  poly(g,bed,lit(D,'#7a4e3a',[0,1,0],.5));R(g,bed[0],bed[1]-.6,bed[2]-bed[0],.8,lit(D,'#a87458',[0,.6,-.8],.6));
+  clipTo(g,()=>poly(g,bed),()=>tex(g,'mott',.35,bed[0]-2,bed[5]-2,bed[2]-bed[0]+4,bed[1]-bed[5]+4,'overlay',.8));
+  /* the loaf beside the bundle, round, seen from a little above */
+  {const[lx,ly]=P(cx0-1.65,s(zf+.4)+.08,zf+.4),u=D.F/(zf+.4);oval(g,lx,ly,.16*u,.09*u,lit(D,'#8a5a2a',[0,1,-.3],.6));oval(g,lx-.2,ly-.4,.12*u,.06*u,lit(D,'#c48a4a',[0,1,-.3],.7))}
+  /* the brothers' bundle: a cloth gathered and knotted at its top, sitting on the bedding */
+  {const z=zf+.33,[bx,by]=S.bundle,u=D.F/z,w=.24*u,h=.34*u,ft=by+h,B=[bx-w,ft,bx-w*1.1,ft-h*.45,bx-w*.7,ft-h*.85,bx-w*.18,ft-h*.92,bx-w*.1,ft-h,bx+w*.2,ft-h*1.02,bx+w*.24,ft-h*.9,bx+w*.8,ft-h*.8,bx+w*1.1,ft-h*.4,bx+w,ft];
+    comp(g,'multiply',.4,()=>oval(g,bx+.6,ft+.2,w*1.3,.18*u,'#3a3050'));
+    poly(g,B,lit(D,'#9a8a62',[0,.3,-1],.7));poly(g,[bx-w,ft,bx-w*1.1,ft-h*.45,bx-w*.5,ft-h*.6,bx-w*.3,ft],lit(D,'#9a8a62',[-1,.2,-.3],.8));
+    R(g,bx-w*.22,ft-h*1.02,w*.44,h*.16,lit(D,'#7a6a48',[0,1,0],.7))}
+  /* the cloth's underside, in shade: from the front edge back to the far one */
+  const n=8,FR=[],BK=[];for(let i=0;i<=n;i++){const k=i/n,sag=Math.sin(Math.PI*k);const a=hi(zf),e=lo(zf),a2=hi(zb),e2=lo(zb);
+    FR.push(a[0]+(e[0]-a[0])*k,a[1]+(e[1]-a[1])*k+sag*D.F/zf*.09);BK.push(a2[0]+(e2[0]-a2[0])*k,a2[1]+(e2[1]-a2[1])*k+sag*D.F/zb*.09)}
+  const cloth=FR.concat(ptsBackG(BK));
+  /* old linen sailcloth is thin enough for the day's light to come through it: its underside glows a little in the light that falls on
+     its top, more where the sun is low and warm */
+  const tl=lit(D,c,[-.4,.9,0]);poly(g,cloth);g.fillStyle=lg(g,FR[0],0,FR[FR.length-2],0,[mix(tl,'#6a5a50',.42),mix(tl,'#6a5a50',.25)]);g.fill();
+  clipTo(g,()=>poly(g,cloth),()=>{tex(g,'mott',.4,FR[FR.length-2]-2,BK[1]-3,FR[0]-FR[FR.length-2]+12,20,'overlay',.8);tex(g,'grain',.3,FR[FR.length-2]-2,BK[1]-3,FR[0]-FR[FR.length-2]+12,20,'overlay',.4);
+    /* the mended seam, down the slope of the cloth, its stitches along it */
+    const zs=zf+(zb-zf)*.45,a=hi(zs),m=mid(zs,1),e=lo(zs);stroke(g,[a[0],a[1],m[0],m[1],e[0],e[1]],'rgba(70,58,44,.55)',.5);
+    for(let t=.12;t<.9;t+=.11){const x=a[0]+(e[0]-a[0])*t,y=a[1]+(e[1]-a[1])*t+Math.sin(Math.PI*t)*(m[1]-(a[1]+e[1])/2);R(g,x-.25,y-.25,.5,.5,'rgba(230,214,180,.6)')}});
+  /* its near edge, a hem catching the light; its lower edge along the rail */
+  stroke(g,FR,lit(D,'#f2e4c0',[-.4,.6,-.7],1.1),.6);
+  /* the cords at the near corners, short and slanting: from the low corner to a cleat on the bulwark's face, from the high corner to a
+     cleat on the cabin's front */
+  const lf=lo(zf),cl=P(-b(zf-.5)+.05,s(zf-.5)+.72,zf-.5),hf=hi(zf),ch=P(cx0+.18,s(cz0)+1.2,cz0-.02),cc=lit(D,'#c8ac78',[0,1,-.3]);
+  stroke(g,[lf[0],lf[1],cl[0],cl[1]],cc,.5);R(g,cl[0]-.5,cl[1]-.4,1,.8,'#3a2a1a');
+  stroke(g,[hf[0],hf[1],ch[0],ch[1]],cc,.5);R(g,ch[0]-.5,ch[1]-.4,1,.8,'#3a2a1a')}
+/* deckCut(g, o, key): the silhouette of one thing on deck, in solid black, for a room's props */
+function deckCut(g,o,key){const D=geoDeck(o),{P}=D,T=D.things;g.fillStyle='#000';
+  if(key==='mast'){const[x0,x1,z0,z1]=T.mast,xm=(x0+x1)/2,zm=(z0+z1)/2,f0=P(xm-.3,0,zm-.3),f1=P(xm+.3,0,zm-.3);R(g,f0[0]-.2,-2,f1[0]-f0[0]+.4,f0[1]+2,'#000');
+    const pc=boxD(D,[x0-.08,x1+.08,z0-.08,z1+.08,.16]);for(const q of[pc.front,pc.top,pc.side])if(q)poly(g,q,'#000')}
+  if(key==='anchor'){const[x0,x1,z0,z1]=T.anchor,xh=x0+.15,z=(z0+z1)/2,yh=.18,L=1.8,th=.29,R0=P(xh,yh,z),C0=P(xh+L*Math.cos(th),yh+L*Math.sin(th),z),
+      len=Math.hypot(C0[0]-R0[0],C0[1]-R0[1]),ang=Math.atan2(C0[0]-R0[0],C0[1]-R0[1]);
+    for(const[dx,dy]of[[0,0],[.5,0],[-.5,0],[0,.5],[0,-.5]])anchor(g,{x:R0[0]+dx,y:R0[1]+dy,len,ang,C:{lead:'#000',leadHi:'#000',dark:'#000'},mono:'#000'})}
+  if(key==='bed'){const[x0,x1,z0,z1]=T.bed,f=boxD(D,[x0-.05,x1+.05,z0-.05,z1,.46]);for(const q of[f.front,f.top,f.side])if(q)poly(g,q,'#000')}}
 /* the mainmast's foot, in the right foreground: the round mast standing in its partners (a low square collar of timber, no wider
    than it must be), running out of the top of the picture */
 function deckMast(g,D){const[x0,x1,z0,z1]=D.things.mast,{P}=D,xm=(x0+x1)/2,zm=(z0+z1)/2,r=.3,f0=P(xm-r,0,zm-r),f1=P(xm+r,0,zm-r),w=f1[0]-f0[0];
@@ -662,6 +736,7 @@ function deck(g,o){o=o||{};const D=geoDeck(o),r=rng(22061);
   items.push([dep('jar'),()=>deckBed(g,D,r)]);
   items.push([dep('hatch'),()=>{boxShadow(g,D,T.hatch,.8);deckHatch(g,D,r)}]);
   if(o.lean)items.push([dep('lean'),()=>deckLean(g,D,r)]);
+  if(o.shelter)items.push([D.P(0,D.s(shelterOf(D).zf),shelterOf(D).zf)[1]+.1,()=>deckShelter(g,D,r)]);
   if(o.anchor!==false)items.push([dep('anchor'),()=>deckAnchor(g,D)]);
   items.push([dep('coil'),()=>deckCoil(g,D,'coil')]);
   items.push([dep('mast'),()=>deckMast(g,D)]);
@@ -756,5 +831,5 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=1.3,P=(x,y,z)=>[160
     clipTo(g,()=>{g.beginPath();g.ellipse(lx,ly+10,40,26,0,0,6.2832)},()=>SHARED.weather.rain(g,o.t||3000,320,{density:.9,len:4,col:'rgba(255,214,150,.4)',wind:-1.2,seed:2308}))}
   return{P,hz,lamp:[lx,ly]}}
 
-return{side,geo,anchor,wreckage,LIGHT,hawser:hawserS,deck,geoDeck,sternNight};
+return{side,geo,anchor,wreckage,LIGHT,hawser:hawserS,deck,geoDeck,deckCut,staffOf,shelterOf,sternNight};
 })();

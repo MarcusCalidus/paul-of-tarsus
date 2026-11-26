@@ -174,7 +174,7 @@ TEXTS('en',22,{
   /* ---- the storm: the skiff ---- */
   "luke_shes_full_of_water":"The skiff's taking on water. We have to get her in.",
   "skiff_rope":"rope to the skiff",
-  "skiff_rope_look":"The skiff, at the end of her rope. When the stern goes down, the rope goes slack.",
+  "skiff_rope_look":"The skiff, the ship's small boat, at the end of her rope. When the stern goes down, the rope goes slack.",
   "pull_22":"Pull!",
   "luke_shes_aboard":"She's aboard.",
   "luke_the_syrtis":"The Syrtis: shifting sands off the coast of Africa. That's where this wind could drive us.",
