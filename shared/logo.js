@@ -43,6 +43,10 @@ const GL={
  X:{w:.84,s:[{p:['M',.06,0,'L',.76,1]},{p:['M',.74,0,'L',.08,1],h:1}],f:[[.06,0,'t'],[.76,1,'b'],[.74,0,'t',1],[.08,1,'b',1]]},
  Y:{w:.82,s:[{p:['M',.04,0,'L',.40,.52]},{p:['M',.78,0,'L',.40,.52],h:1},{p:['M',.40,.52,'L',.40,1]}],f:[[.04,0,'t'],[.78,0,'t',1],[.40,1,'b']]},
  Z:{w:.74,s:[{p:['M',.08,.035,'L',.66,.035],h:1},{p:['M',.66,.035,'L',.08,.965]},{p:['M',.08,.965,'L',.68,.965],h:1}],f:[[.08,.035,'d-'],[.68,.965,'u']]},
+ /* Q (EUROAQUILO): the bowl of the O, and a tail that leaves the foot of the bowl right of the middle and sweeps out to the right
+    below the line, thinning to a hairline. It grows out of the bowl's stroke and never crosses it, nor reaches into the counter, so that
+    nothing stands across anything else (CONTRIBUTING section 3). A line with a Q gets room below it for the tail (see paint). */
+ Q:{w:1,s:[{p:['E',.5,.5,.435,.525]},{p:['M',.53,1.03,'C',.65,1.08,.77,1.13,.92,1.17]},{p:['M',.92,1.17,'C',.99,1.19,1.05,1.19,1.11,1.17],h:1}],f:[]},
  '?':{w:.70,s:[{p:['M',.12,.22,'C',.14,-.04,.62,-.06,.62,.22,'C',.62,.42,.38,.46,.38,.68]},{p:['E',.38,.93,.05,.05]}],f:[]},
  /* the apostrophe (THE SISTER'S SON): a short tapering stroke of the broad pen that hangs from the top of the line, curving a little to the left as it falls, like a comma set high */
  "'":{w:.26,s:[{p:['M',.15,-.01,'C',.16,.08,.14,.16,.07,.27]}],f:[]},
@@ -53,7 +57,7 @@ const GL={
    two ran together into one bar (issue #96). dots: where their centres stand across the letter. */
 for(const[u,b,xs]of[['Ä','A',[.24,.64]],['Ö','O',[.30,.70]],['Ü','U',[.22,.64]]])GL[u]={w:GL[b].w,s:GL[b].s,f:GL[b].f,dots:xs};
 /* pairs of letters that stand closer together than their widths say */
-const KERN={PA:-.13,TA:-.15,AT:-.12,AV:-.16,VA:-.16,VO:-.07,OV:-.07,LT:-.1,LO:-.03,AU:-.03,UA:-.03,RS:-.01,AR:-.02,RO:-.03,OA:-.06,AD:-.02,FR:-.02,TR:-.02,ST:-.02,SS:.01,RA:-.06,TE:-.02,FT:-.04,LU:-.02};
+const KERN={PA:-.13,TA:-.15,AT:-.12,AV:-.16,VA:-.16,VO:-.07,OV:-.07,LT:-.1,LO:-.03,AU:-.03,UA:-.03,RS:-.01,AR:-.02,RO:-.03,OA:-.06,AD:-.02,FR:-.02,TR:-.02,ST:-.02,SS:.01,RA:-.06,TE:-.02,FT:-.04,LU:-.02,AQ:-.03,QU:.04};
 /* The pens: nib is the length of the pen's edge and ang its angle in degrees; thin is added all round; a hairline is written with
    hair of the nib. All in cap heights. serif: how far a serif reaches to each side (sw), its slope (sh) and its foot (bt).
    dot: the side of an umlaut's square dot (never under two pixels), and dy: the height of its centre above the capitals. */
@@ -106,7 +110,7 @@ function paint(name,sub){const key=name+'|'+sub;if(KEPT[key])return KEPT[key];
   /* the name: as tall as the room allows, standing on a level line, each letter stretched to the arch above it */
   const o1={pen:NAME,track:.13,space:.44},cap=Math.min(37,Math.floor(540/width(name,{cap:1,...o1}))),tw=Math.ceil(width(name,{cap,...o1}));
   /* the canvas is a whole number of room pixels each way, and a multiple of four across, so that it sits on whole screen pixels */
-  const W=Math.ceil((tw+(DEPTH+9)*2)/4)*4,pad=(W-tw)>>1,up=/[ÄÖÜ]/.test(name)?Math.round(cap*.48):0,base=3+up+Math.round(cap*(1+RISE)),o2={pen:SUB,track:.26,space:.8,cap:11},sw=Math.ceil(width(sub,o2)),sy=base+DEPTH+8+(/[ÄÖÜ]/.test(sub)?5:0),H=Math.ceil((sy+o2.cap+6)/2)*2;
+  const W=Math.ceil((tw+(DEPTH+9)*2)/4)*4,pad=(W-tw)>>1,up=/[ÄÖÜ]/.test(name)?Math.round(cap*.48):0,dn=/Q/.test(name)?Math.round(cap*.22):0,base=3+up+Math.round(cap*(1+RISE)),o2={pen:SUB,track:.26,space:.8,cap:11},sw=Math.ceil(width(sub,o2)),sy=base+DEPTH+8+dn+(/[ÄÖÜ]/.test(sub)?5:0),H=Math.ceil((sy+o2.cap+6)/2)*2;
   const arch=u=>1+RISE*Math.cos(Math.PI*(clamp(u,0,1)-.5));
   const wr=part=>mask(W,H,g=>write(g,name,{x:pad,y:base-cap,cap,...o1,part,warp:(x,y,u)=>[x,base-(base-y)*arch(u)]}));
   /* an umlaut's dots are a mask of their own, so that their raised side can stop short of the letter under them (below) */

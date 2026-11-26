@@ -314,5 +314,6 @@ TEXTS('de','main',{
   "lark_climbing_and_singing":["Eine Lerche steigt singend auf. Sie ist so klein, dass ich sie kaum sehe.","1e6brlf"],
   "storks_flying_north":["Störche ziehen in einer langen Reihe nach Norden. Der Frühling ist da.","1t6b6z4"],
   "sparrows_on_the_roof":["Spatzen auf dem Dach. Sie schwatzen ohne Pause.","00t6cnv"],
-  "doves_on_the_wall":["Tauben auf der Mauer gurren in der Sonne.","1mvudxd"]
+  "doves_on_the_wall":["Tauben auf der Mauer gurren in der Sonne.","1mvudxd"],
+  "now":["Jetzt!","1sft85e"]
 });

@@ -311,5 +311,6 @@ TEXTS('en','main',{
   "lark_climbing_and_singing":"A lark, singing as it climbs. It's so small I can hardly see it.",
   "storks_flying_north":"Storks, flying north in a long line. Spring is here.",
   "sparrows_on_the_roof":"Sparrows on the roof, chattering away.",
-  "doves_on_the_wall":"Doves on the wall, cooing in the sun."
+  "doves_on_the_wall":"Doves on the wall, cooing in the sun.",
+  "now":"Now!"
 });
