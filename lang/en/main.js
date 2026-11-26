@@ -256,6 +256,7 @@ TEXTS('en','main',{
   "Ptolemais":"Ptolemais",
   "LYCIA":"LYCIA",
   "antipatris":"Antipatris",
+  "to_rome":"to Rome",
   "great_sea":"THE GREAT SEA",
   "click_a_place_to_travel_there":"Click a place to travel there. Esc to stay.",
   "hidden_treasures":"Hidden treasures",

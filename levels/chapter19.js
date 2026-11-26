@@ -1216,130 +1216,15 @@ function springAnti19(g){const CO=SHARED.country,r=rng(1966),cx=36,cy=111.4,rx=2
 /* ==== ART antipatris19: end ==== */
 
 /* ==== ART palace19: begin ==== */
-/* Herod's palace at Caesarea, which reached out into the sea (Study Edition media "Caesarea"): a court of the palace, paved in pale
-   stone, open at the back over a low sea wall to the sea, which runs to the one horizon (y 60, HZPal19); we look north along the coast,
-   and the sun of the late afternoon stands out of the picture at the left, over the sea: the sea wall's face, the columns and the dais
-   are lit from the left, their shadows fall to the right, and a faint road of light lies on the water at the left edge. Gulls wheel over
-   the water and stand on the coping of the sea wall (y 80.4). At the right the hall of the palace: a portico of four columns under a
-   deep beam and the eave of its roof, standing on a solid pier at its left end, which stands across nothing: the sea and its horizon
-   end at the pier. Above the beam the palace's upper storey goes on out of the picture: no roof or gable is seen against the sky. Behind the columns the hall's back wall in shade, painted in panels of imitation stone that stop short of the columns
-   (no band runs behind them). Before the portico a dais of two broad steps of white stone, the governor's wooden seat on it (its top
-   at y 91, where a seated figure's hips rest; legs at its two ends, curving a little, and a solid back), a small table beside it for the
-   letter, which lies on it once it has been read (F.anti). No temple anywhere (Caesarea is not one of section 3's four cities); no
-   standard, no image. Heads come at y 62..96: behind Felix's lies the back wall between two columns; behind the others the sea wall, the
-   sea and the sky; nothing round.
+/* Herod's palace at Caesarea (Acts 23:33-35): the court of the palace in the light of the late afternoon, painted by shared/caesarea.js
+   (SHARED.caesarea.court, whose header describes it), the court where Chapters Twenty and Twenty-One hold their hearings too.
    Called from outside: ART.palace19. Reads F.anti (the letter lies on the table once it has been read).
-   Hotspots: the sea 0,24,320,34 · the sea wall with its gulls 0,80,190,14 · the dais 196,96,110,18 · the letter on the table 264,84,22,10.
-   Walk: 30..300 by 114..138. Actors: Felix 238,100 seated on the dais (seat top 91); Paul 150,126; the horsemen's officer 122,124 beside
-   him; a soldier 296,124. */
-const HZPal19=60,PIERPal19=[186,197],COLPal19=[224,256,288,318];
+   Hotspots (ROOMS.palace19): the sea 0,40,186,38 · the sea wall with its gulls 0,78,190,18 · the dais 196,96,112,16 · the letter on the
+   table 264,84,22,10. Walk: 30..300 by 114..138 (SHARED.caesarea.WALK). Actors: Felix 238,100 seated on the dais (seat top 91); Paul
+   150,126; the horsemen's officer 122,124 beside him; a soldier 296,124. */
 let SPal19=null;
-const OPal19={w:320,hz:HZPal19,hour:'evening',sun:[-80,14],cloud:.16,streak:.35,seed:1972,y1:82};
-ART.palace19={w:320,q:12,variant:()=>F.anti?'l':'',paint(g){paintPalace19(g)},light:{amb:'#f6e0c8',sun:[22,-6,.35],wallY:96},
+ART.palace19={w:320,q:12,variant:()=>F.anti?'l':'',paint(g){SPal19=SHARED.caesarea.court(g,{hour:'evening',letter:F.anti})},light:SHARED.caesarea.light('evening'),
   draw(g,t){if(SPal19)SPal19.draw(g,t)},front(){}};
-function paintPalace19(g){const K=SHARED.coast,O=OPal19,HZ=HZPal19,r=rng(1971),S='#e6d8bc';K.light(O);
-  K.sky(g,O);
-  SPal19=K.sea(g,O);SPal19.open=(x,y)=>x<PIERPal19[0]-.5&&y>HZ+.5&&y<80;
-  /* the court's paving, toward us */
-  pave(g,-2,96,322,144,'#dccbab',r,{vx:150,vy:HZ,rows:6,step:34,v:.06,t:.3,rand:1});
-  seaWallPal19(g,r,S);
-  hallPal19(g,r,S);
-  daisPal19(g,r);
-  seatPal19(g);
-  tablePal19(g);
-  lightPal19(g)}
-/* the sea wall: a coping of long stones whose top (y 80.4) is where the gulls stand, its lip lit; under it the face of the wall in large
-   drafted blocks, half lit by the low sun from the left; the shade gathering at its foot */
-function seaWallPal19(g,r,S){const x1=PIERPal19[0],T=80.4;
-  SHARED.temple.stone(g,0,83,x1,13,r,{bh:6.5,bw:22,c:'#d6c6a4',v:.07,rough:1,age:.6});
-  g.fillStyle=lg(g,0,0,x1,0,['rgba(255,220,170,.22)','rgba(255,220,170,0)']);g.fillRect(0,83,x1,13);
-  R(g,0,T,x1,2.6,tint(S,.06));R(g,0,T,x1,.6,'#fff6e4');R(g,0,T+2.1,x1,.5,'rgba(90,70,80,.45)');
-  for(let x=18+r()*10;x<x1-4;x+=26+r()*14)R(g,x,T+.6,.5,1.6,'rgba(110,90,90,.4)');
-  R(g,0,T+2.6,x1,.8,'rgba(70,52,64,.35)');ao(g,0,90,x1,6,'b',.3,'#4a3848')}
-/* the hall: the pier at its left end, from the floor to the beam; the back wall in shade with its painted panels between the columns;
-   the columns with their bases and capitals; the deep beam over them and the eave of the roof */
-function hallPal19(g,r,S){const[p0,p1]=PIERPal19,B0=16,B1=27,F=96;
-  /* the back wall, deep in the portico's shade, and the strip of the hall's floor in front of it */
-  g.fillStyle=lg(g,0,B1,0,F,['#6a5a5c','#86726c','#9a8678']);g.fillRect(p1,B1,320-p1,F-B1);
-  inRect(g,p1,B1,320-p1,F-B1,()=>{tex(g,'mott',.3,p1,B1,320-p1,F-B1,'overlay',1);
-    /* the panels: deep red and ochre fields like veined stone, each framed by a pale line, all inside its own bay */
-    const bays=[p1].concat(COLPal19);for(let i=0;i<bays.length-1;i++){const a=bays[i]+(i?5:3),b=bays[i+1]-5,col=i%2?'#7a3a30':'#9a6a3a';if(b-a<6)continue;
-      for(const[y0,y1]of[[B1+8,B1+30],[B1+34,F-9]]){R(g,a,y0,b-a,y1-y0,col);inRect(g,a,y0,b-a,y1-y0,()=>{tex(g,'blotch',.45,a,y0,b-a,y1-y0,'soft-light',1);
-          for(let k=0;k<6;k++){let vx=a+r()*(b-a),vy=y0+r()*(y1-y0);const p=[vx,vy];for(let s=0;s<5;s++){vx+=(r()-.3)*3;vy+=(r()-.5)*2;p.push(vx,vy)}stroke(g,p,rgba(tint(col,.3),.35),.5)}});
-        R(g,a,y0,b-a,.5,'rgba(230,210,180,.35)');R(g,a,y1-.5,b-a,.5,'rgba(40,24,24,.4)')}}
-    R(g,p1,F-4,320-p1,4,'#8a7868');R(g,p1,F-4,320-p1,.5,'rgba(230,210,190,.3)');
-    ao(g,p1,B1,320-p1,12,'t',.55,'#1e1420')});
-  /* the pier: a solid block of the same stone, lit on its face, shaded on its right edge */
-  g.fillStyle=lg(g,p0,0,p1,0,[tint(S,.12),tint(S,.02),tint(S,-.2)]);g.fillRect(p0,B1,p1-p0,F-B1);
-  SHARED.temple.age(g,p0,B1,p1-p0,F-B1,rng(1973),.5);R(g,p0,B1,.6,F-B1,'#fff4e0');
-  R(g,p0-.8,F-4,p1-p0+1.6,4,tint(S,-.02));R(g,p0-.8,F-4,p1-p0+1.6,.5,'#fff0d8');R(g,p0-1,B1,p1-p0+2,2.2,tint(S,.08));R(g,p0-1,B1+2.2,p1-p0+2,.5,'rgba(80,60,70,.4)');
-  for(const x of COLPal19)columnPal19(g,x,S,B1,F);
-  /* the deep beam: an architrave of two faces, a frieze, a moulding; then the eave of the roof, its underside in shade, its edge lit */
-  const xb=p0-2;g.fillStyle=lg(g,0,B0,0,B1,[tint(S,.06),tint(S,-.04)]);g.fillRect(xb,B0,320-xb,B1-B0);
-  tex(g,'mott',.3,xb,B0,320-xb,B1-B0,'overlay',1);R(g,xb,B0,320-xb,.6,'#fff4e0');R(g,xb,B0+4,320-xb,.5,'rgba(90,70,80,.35)');R(g,xb,B0+4.5,320-xb,.5,'rgba(255,240,220,.4)');
-  R(g,xb,B1-3.6,320-xb,.5,'rgba(90,70,80,.35)');R(g,xb,B1-.6,320-xb,.6,'rgba(60,44,56,.6)');R(g,xb,B0,.6,B1-B0,'#fff6e8');
-  /* above the beam the upper storey of the palace, which goes on out of the picture: dressed stone, a moulding under it, two small
-     windows without bars, dark */
-  SHARED.temple.stone(g,xb,0,320-xb,B0-1.6,rng(1974),{bh:5.4,bw:18,c:'#dcccac',v:.07,age:.6});
-  g.fillStyle=lg(g,xb,0,320,0,['rgba(255,214,160,.25)','rgba(120,100,140,.25)']);g.fillRect(xb,0,320-xb,B0);
-  R(g,xb,0,.6,B0,'#fff4e0');
-  for(const wx of[236,284]){R(g,wx,2.4,6,8,'#2e2224');R(g,wx,2.4,6,1.2,'#1a1214');R(g,wx-.8,10.4,7.6,1,'#f0e2c4');R(g,wx-.8,11.4,7.6,.5,'rgba(70,50,60,.45)')}
-  R(g,xb-1.4,B0-1.6,322-xb,1.8,tint(S,.1));R(g,xb-1.4,B0-1.6,322-xb,.5,'#fff6e4');R(g,xb-1.4,B0,322-xb,.5,'rgba(70,52,64,.5)');
-  ao(g,p1,B1,320-p1,6,'t',.4,'#1a1018')}
-/* columnPal19: a column of the portico, standing on the hall's floor line: a square plinth and a round moulding, the shaft lit from the
-   left and fluted, a capital of two mouldings hardly wider than the shaft under the beam; its shade on the back wall to its right */
-function columnPal19(g,x,S,top,bot){const sw=3.4,cap=4,base=4.4,y0=top+cap,y1=bot-base;
-  comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,x+sw,0,x+sw+8,0,['rgba(90,70,100,1)','rgba(90,70,100,0)']);g.fillRect(x+sw,top,8,bot-top)});
-  g.fillStyle=lg(g,x-sw,0,x+sw,0,[tint(S,.06),tint(S,.2),tint(S,.04),tint(S,-.18),tint(S,-.34)]);g.fillRect(x-sw,y0,sw*2,y1-y0);
-  for(let k=-2;k<=2;k++){const u=k/2.8,fx=x+Math.sin(u*1.3)*sw*.9,fw=Math.max(.5,Math.cos(u*1.3)*.9);R(g,fx,y0+.6,fw*.5,y1-y0-1.2,rgba(tint(S,-.4),.3));R(g,fx-.5,y0+.6,.5,y1-y0-1.2,rgba('#fff8ec',.25*Math.cos(u)))}
-  inRect(g,x-sw,y0,sw*2,y1-y0,()=>tex(g,'mott',.25,x-sw,y0,sw*2,y1-y0,'overlay',1));
-  g.fillStyle=lg(g,x-sw-1,0,x+sw+1,0,[tint(S,.2),tint(S,.04),tint(S,-.3)]);g.fillRect(x-sw-.6,y0-2,sw*2+1.2,2);R(g,x-sw-.6,y0-.5,sw*2+1.2,.5,'rgba(60,44,56,.4)');
-  R(g,x-sw-1,top,sw*2+2,2,tint(S,.06));R(g,x-sw-1,top,sw*2+2,.5,'#fff4e0');
-  g.fillStyle=lg(g,x-sw-1.2,0,x+sw+1.2,0,[tint(S,.2),tint(S,.02),tint(S,-.3)]);g.fillRect(x-sw-.8,y1,sw*2+1.6,1.8);
-  R(g,x-sw-1.4,y1+1.8,sw*2+2.8,base-1.8,tint(S,-.06));R(g,x-sw-1.4,y1+1.8,sw*2+2.8,.5,'#fff0d8');
-  M19.shadow(g,x+2,bot+.2,sw+2,.9,.4)}
-/* the dais: two broad steps of white stone with grey veins, their treads lit, their faces half lit from the left, their left ends in the
-   sun; the shade they throw to the right on the paving */
-function daisPal19(g,r){const C='#ece4d4',steps=[[196,308,104,106.6,112],[204,300,98,100.6,104]];
-  comp(g,'multiply',.3,()=>poly(g,[308,112,316,112,312,104,306,104],'#6a5a7a'));
-  for(const[x0,x1,t,f,b]of steps){
-    g.fillStyle=lg(g,0,t,0,f,[tint(C,.08),tint(C,.02)]);g.fillRect(x0,t,x1-x0,f-t);
-    g.fillStyle=lg(g,x0,0,x1,0,[tint(C,-.04),tint(C,-.12),tint(C,-.2)]);g.fillRect(x0,f,x1-x0,b-f);
-    inRect(g,x0,t,x1-x0,b-t,()=>{tex(g,'mott',.25,x0,t,x1-x0,b-t,'overlay',1);
-      for(let k=0;k<5;k++){let vx=x0+r()*(x1-x0),vy=t+r()*(b-t);const p=[vx,vy];for(let s=0;s<6;s++){vx+=1+r()*3;vy+=(r()-.5)*1.4;p.push(vx,vy)}stroke(g,p,'rgba(120,116,130,.3)',.5)}});
-    R(g,x0,t,x1-x0,.5,'#fffcf4');R(g,x0,f-.4,x1-x0,.5,'rgba(255,255,250,.6)');R(g,x0,b-.5,x1-x0,.5,'rgba(70,60,80,.4)');
-    poly(g,[x0,t,x0+1.4,t,x0+1.4,b,x0,b],'#fffaf0');
-    for(let x=x0+28+r()*6;x<x1-10;x+=34+r()*8)R(g,x,f+.6,.5,b-f-1.2,'rgba(120,110,120,.35)')}
-  ao(g,196,112,112,3,'t',.2,'#4a3a4a')}
-/* the governor's seat: a chair of dark wood on the upper step, its seat's top at y 91 where the hips rest; a leg at each end, curving out
-   a little to its foot; a solid back, rising behind the sitter on the right, a little reclined, rounded at its top; no rail between the
-   legs. Lit from the left. */
-function seatPal19(g){const W='#6a4428',x0=229,x1=248,T=91,FL=100;
-  M19.shadow(g,(x0+x1)/2+2,FL+.2,11,1,.5);
-  for(const[x,d]of[[x0+1,-1],[x1-1.6,1]]){poly(g,[x,T+2,x+1.6,T+2,x+1.6+d*.4,FL-3,x+1.4+d*1.2,FL-.2,x+d*1.2,FL,x+d*.2,FL-3],d<0?'#8a5a34':'#4a2e1a');R(g,x+d*1.2-.4,FL-.6,2.2,.6,'#3a2414')}
-  /* the back: a solid curved panel behind the sitter */
-  poly(g,[x1-4.4,T,x1-1,T,x1+1.6,74,x1+1.4,71.6,x1,70.8,x1-1.8,71.4,x1-3.4,74]);g.fillStyle=lg(g,x1-4,0,x1+2,0,['#8a5a34',W,'#3e2616']);g.fill();
-  stroke(g,[x1-3.2,74,x1-1.8,71.6,x1,71],'#b08050',.5);
-  /* the seat: a thick board, its front edge lit */
-  R(g,x0,T,x1-x0,2.2,W);R(g,x0,T,x1-x0,.6,'#a87a4a');R(g,x0,T+1.8,x1-x0,.5,'#3a2414');
-  inRect(g,x0,T,x1-x0,2.2,()=>tex(g,'wood',.3,x0,T,x1-x0,2.2,'overlay',.5));
-  /* a cushion of purple wool along the back of the seat, behind the sitter */
-  R(g,x1-6,T-1.2,5,1.4,'#6a3a5a');R(g,x1-6,T-1.2,5,.5,'#9a6a8a')}
-/* the small table beside the seat: a top of the same wood on two legs at its ends; the letter lies on it once it has been read */
-function tablePal19(g){const W='#6e4a2c',x0=264,x1=284,T=89,FL=100;
-  M19.shadow(g,(x0+x1)/2+2,FL+.2,12,1,.5);
-  for(const[x,d]of[[x0+1.4,-1],[x1-2.4,1]])poly(g,[x,T+2,x+1,T+2,x+1+d*.3,FL-2,x+1+d*.9,FL,x+d*.6,FL,x+d*.1,FL-2],d<0?'#8a5e38':'#4a3020');
-  R(g,x0,T-1,x1-x0,1.2,'#9a7048');R(g,x0,T-1,x1-x0,.5,'#c89a68');R(g,x0,T+.2,x1-x0,1.8,W);R(g,x0,T+1.6,x1-x0,.5,'#3a2414');
-  if(F.anti){/* the sheet, unrolled flat, its ends curling up a little */
-    R(g,x0+4,T-1.8,12,1.2,'#eee2c0');R(g,x0+4,T-1.8,12,.5,'#fff6e0');R(g,x0+3.4,T-2.2,.8,1.2,'#d8c8a0');R(g,x0+15.8,T-2.2,.8,1.2,'#d8c8a0');
-    for(const yy of[T-1.3])R(g,x0+5.4,yy,8,.4,'rgba(70,50,40,.35)')}}
-/* the light of the late afternoon from the left: warm over the court and the near faces, the portico's depth cooler, the shade of the
-   pier and the dais falling to the right */
-function lightPal19(g){
-  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,206,150,1)','rgba(250,214,180,.7)','rgba(190,180,220,.8)']);g.fillRect(0,80,320,64)});
-  comp(g,'multiply',.25,()=>poly(g,[197,96,214,96,236,104,204,104],'#7a6a8a'));
-  pool(g,60,118,140,20,'#ffe0b0',.12,'screen');
-  ao(g,0,96,320,6,'t',.25,'#3a2c3c');ao(g,0,126,320,18,'b',.12,'#2a2050')}
 /* ==== ART palace19: end ==== */
 
 /* ==== ART letter19: begin ==== */

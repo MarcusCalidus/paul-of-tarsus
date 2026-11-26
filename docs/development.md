@@ -21,6 +21,7 @@ levels/chapter15.js   Until Daybreak
 levels/chapter16.js   These Hands
 levels/chapter17.js   The Belt
 levels/chapter18.js   On the Stairs
+levels/chapter19.js   The Sister's Son
 shared/tablets.js     Paul's wax tablets, used by every chapter
 shared/map.js         the travel map: the journeys between chapters, and travel for a hub chapter
 shared/logo.js        the title's logo: the game's name in gold capitals, in letters of its own
@@ -36,6 +37,7 @@ shared/coast.js       the sea and the coast: sky by hour and weather, the sea to
 shared/crowd.js       the cry of a crowd, heard and never written: shouted vowels and rhythm from a text key, and the roar beds (Chapters Fourteen and Eighteen)
 shared/damascus.js    two told pictures, the road to Damascus and the house of Judas, with the plain white light (the Prologue and Chapter Eighteen)
 shared/temple.js      Jehovah's temple in Jerusalem seen from afar, the city's far roofs, and its pale weathered limestone (the Prologue, Chapters Two, Seven and Eighteen)
+shared/caesarea.js    Herod's palace at Caesarea: its court by the sea, with the governor's seat on its dais, by evening or morning (Chapters Nineteen to Twenty-One)
 shared/materials.js   materials and light for backdrops: quiet wood grain, two-tone cracks, soft contact shadows, earth colors, joist shade, ceilings with joists in perspective
 lang/en/              the English text: main.js for the engine and shared files, prologue.js, chapterN.js for each chapter
 lang/de/              the German text, for the same keys, each line with the fingerprint of its English
@@ -159,6 +161,8 @@ Chapter Eighteen begins with the last of the way up, `[['tojerusalem','jerusalem
 Chapter Nineteen goes by night from Jerusalem to `antipatris` (Acts 23:31), rebuilt by Herod the Great at the source of the Yarkon in the Plain of Sharon (its name, key `antipatris`, stands to the right of its dot), and by day on to Caesarea: `journey([['jerusalem','antipatris','new']], {night:1})`, then `journey([['jerusalem','antipatris'],['antipatris','caesarea','new']])`. Both work in the usual window and in `view:'levant'`; the stop `map19` (and `de:map19`) checks that no route crosses another and no name crosses a coast, a route or another name, and hands over the land between Caesarea and Jerusalem eight times enlarged, by night and by day (`map19-zoom.png`).
 
 ![By night from Jerusalem to Antipatris (stop map19)](screenshots/antipatris.png)
+
+**A road that leaves the map.** A place with `edge:'l'` is the end of a road at the left edge of the window: whatever the view, it stands ten view pixels inside that edge, at the latitude its `at` gives, as a small dot in the red of the routes with its name beside it (no arrow and no marker), and a leg drawn to it goes on past the dot and out of the picture. For `pick` it is a place like any other: it lights when hovered and can be clicked. The one there is, `torome` (key `to_rome`, "to Rome" / „nach Rom“), is the way west to Caesar for Chapter Twenty-One, whose "three roads" (Acts 25:9-12) are `pick(['jerusalem','caesarea','torome'], 'caesarea', {view:'levant', legs:[['caesarea','torome']], hint})`. Its road (`VIA['caesarea-torome']`) runs out from the shore and due west over open water, well south of Cyprus and its name: a sign for the way, not the course of the voyage of Acts 27, which later chapters draw. The stop `map21` (and `de:map21`) clicks each of the three, checks that the road crosses nothing and no name crosses a coast, a route or another name, and hands over the road's end and Caesarea six times enlarged (`map21-zoom.png`).
 
 **A hub chapter** (Chapters Four, Five, Six and Seven) is a chapter whose rooms are places on the map that the player travels between by clicking. It declares them in its definition, by their ids in `shared/map.js`, each with the room it leads to and where Paul stands on arrival:
 

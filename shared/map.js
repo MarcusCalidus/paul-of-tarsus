@@ -15,6 +15,12 @@
      where(id)           a place's position on the map, in view pixels.
    A place with hide:1 is a point on a road and nothing more: a leg may start or end there, and neither a dot nor a name is drawn.
    A place with cape:1 is a cape: its name is drawn and no dot, and a sea leg may run round it (Cape Lectum).
+   A place with edge:'l' is the end of a road that leaves the map at the left edge of the window: whatever the view, it stands just
+   inside that edge (EDGE view pixels), at its own latitude, as a small dot with its name beside it and nothing else (no arrow, no
+   marker), and a leg drawn to it goes on past the dot and out of the picture. It is a place like any other for pick: it lights when hovered and can be
+   clicked. The one there is, torome ("to Rome"), is the sign for the way west to Caesar (Acts 25:11, 12), off this map, for Chapter
+   Twenty-One: SHARED.map.pick(['jerusalem','caesarea','torome'], 'caesarea', {view:'levant', legs:[['caesarea','torome']], hint}).
+   Its leg is not the course of the voyage of Acts 27, which later chapters draw.
    journey and pick take o.labels: where a place's name goes on this chapter's map, {id:{lab, dx, dy, sz}}, when its usual side would
    lie across one of the chapter's routes; and o.view: the window a chapter looks through (see VIEWS), when its road leaves the usual one.
    journey takes o.night: the window is darkened, for a road travelled by night; the route and the names stay bright; o.seen: places that
@@ -101,7 +107,10 @@ const PLACES={
   ptolemais:{name:'Ptolemais',at:[35.07,32.92],lab:'r',dy:-2.4},tojerusalem:{name:'',at:[35.02,32.22],hide:1},
   /* Antipatris (Acts 23:31), rebuilt by Herod the Great at the source of the Yarkon, in the well-watered Plain of Sharon (Insight on the
      Scriptures, "Antipatris" and "Aphek" No. 3), where the military roads from Jerusalem and from Lydda met on the way to Caesarea */
-  antipatris:{name:'antipatris',at:[34.93,32.10],lab:'r',dy:-1.2}};
+  antipatris:{name:'antipatris',at:[34.93,32.10],lab:'r',dy:-1.2},
+  /* the way west to Rome, which is not on this map: the end of a road at the left edge of the window (edge), at the latitude of open
+     sea well south of Crete; only its latitude is used. Its name stands above the dot, clear of the road that comes in from the east. */
+  torome:{name:'to_rome',at:[0,33.62],lab:'r',dy:-4.6,edge:'l'}};
 /* waypoints for legs that do not run straight: by sea up the coast and east of Cyprus; by road round the Gulf of Issus; through
    the south of Cyprus, the way tradition has them go from Salamis to Paphos; by sea clear of the western cape of Cyprus; up the valley
    through the Taurus; along the foot of the mountains to Iconium; and home from Attalia by sea, between Cyprus and the coast of Cilicia */
@@ -140,7 +149,10 @@ const VIA={'caesarea-tarsus':[34.42,33.3,34.5,34.7,34.88,35.75],'tarsus-antioch'
      and does not say whether the last leg went by land or by sea: the lines keep to the coast. */
   'miletus-cos':[27.12,37.4,27.1,37.15,27.22,36.98],'cos-rhodes':[27.375,36.76,27.37,36.66,27.75,36.56,28.05,36.49],'rhodes-patara':[28.6,36.48,29.05,36.38],
   'patara-tyre':[29.6,35.95,30.5,34.9,31.6,34.35,32.6,34.1,33.6,33.95,34.4,33.6,34.9,33.33],'tyre-ptolemais':[35.13,33.2,35.05,33.02],
-  'ptolemais-caesarea':[35.0,32.92,34.9,32.82,34.88,32.66]};
+  'ptolemais-caesarea':[35.0,32.92,34.9,32.82,34.88,32.66],
+  /* west from Caesarea to the edge of the map, toward Rome: out from the shore, then due west over open water, well south of Cyprus and
+     of its name and north of the coast of Egypt; a sign for the way, not a course */
+  'caesarea-torome':[34.56,32.84,33.6,33.26,31.6,33.56,29.6,33.62]};
 /* region names sit where no coast, lake or route runs through them. close: a name with its letters set closer together, for a region
    too small to hold a widely spaced one; north: a name shown only in the northern window and the Aegean one, where the mountains make
    room for it; west: a name shown only in the Aegean window */
@@ -245,12 +257,17 @@ const baked={},art=()=>{const k=OX+','+OY+','+ZM;return baked[k]||(baked[k]=bake
 /* setView: the window a chapter looks through; a name that is not a view gives the usual one */
 function setView(v){[OX,OY,ZM=1]=VIEWS[v]||[0,0];VN=VIEWS[v]?v:''}
 /* a leg as a path of points, through its waypoints, then sampled every couple of pixels for the dotted line */
-const at=id=>xy(...PLACES[id].at);
+/* EDGE: how far inside the window's edge a road's end (edge) stands, in view pixels */
+const EDGE=10;
+const at=id=>{const p=PLACES[id];if(p.edge==='l')return[OX+EDGE/ZM,xy(0,p.at[1])[1]];return xy(...p.at)};
 function path(a,b){const v=VIA[a+'-'+b]||VIA[b+'-'+a],raw=[at(a)];if(v){const q=pts(v);if(VIA[a+'-'+b])for(let i=0;i<q.length;i+=2)raw.push([q[i],q[i+1]]);
     else for(let i=q.length-2;i>=0;i-=2)raw.push([q[i],q[i+1]])}raw.push(at(b));
   const out=[];for(let i=0;i<raw.length-1;i++){const[x0,y0]=raw[i],[x1,y1]=raw[i+1],p0=raw[i-1]||raw[i],p3=raw[i+2]||raw[i+1];
     for(let k=0;k<12;k++){const t=k/12,t2=t*t,t3=t2*t,c=(u0,u1,u2,u3)=>.5*(2*u1+(-u0+u2)*t+(2*u0-5*u1+4*u2-u3)*t2+(-u0+3*u1-3*u2+u3)*t3);out.push([c(p0[0],x0,x1,p3[0]),c(p0[1],y0,y1,p3[1])])}}
-  out.push(at(b));const dots=[];let s=0;
+  out.push(at(b));
+  /* a road to the end at the window's edge goes on past its dot and out of the picture */
+  if(PLACES[b].edge==='l')out.push([OX-2/ZM,at(b)[1]]);if(PLACES[a].edge==='l')out.unshift([OX-2/ZM,at(a)[1]]);
+  const dots=[];let s=0;
   for(let i=1;i<out.length;i++){const[x0,y0]=out[i-1],[x1,y1]=out[i],d=Math.hypot(x1-x0,y1-y0);for(;s<=d;s+=2.6/ZM)dots.push([x0+(x1-x0)*(d?s/d:0),y0+(y1-y0)*(d?s/d:0)]);s-=d}
   return dots}
 const ST={legs:[],seen:new Set(),pulse:null,places:null,hover:null,boxes:[],over:null};
@@ -265,6 +282,8 @@ function label(g,s,x,y,side,col,sz){sz=(sz||4.6)/ZM;g.font=`bold ${sz}px "Lucida
   const w=g.measureText(s).width,o=3.2/ZM,tx=side==='r'?x+o:side==='l'?x-o-w:x-w/2,ty=side==='t'?y-5/ZM:side==='b'?y+5/ZM:y;box(g,s,tx,ty,sz);
   edge(g,s,tx,ty);g.fillStyle=col;g.fillText(s,tx,ty)}
 function dot(g,x,y,lit){oval(g,x,y,1.9/ZM,1.9/ZM,'#1a0e08');oval(g,x,y,1.15/ZM,1.15/ZM,lit?'#f4dc8a':'#c8b48a')}
+/* end: the end of a road at the window's edge, a dot a little smaller than a city's, in the red of the route, lit when hovered */
+function end(g,x,y,lit){oval(g,x,y,1.6/ZM,1.6/ZM,'#1a0e08');oval(g,x,y,1/ZM,1/ZM,lit?'#ffe0a0':'#d84a32')}
 /* draw: the baked map, then everything that moves: the routes, the city dots and their names */
 function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];if(ST.night){g.fillStyle='rgba(6,10,38,.6)';g.fillRect(0,0,W,H)}const sea=T('great_sea').split('').join(' ');
   g.save();g.scale(ZM,ZM);g.translate(-OX,-OY);const Z=ZM;
@@ -275,7 +294,7 @@ function draw(g,t){g.drawImage(art(),0,0,W,H);ST.boxes=[];if(ST.night){g.fillSty
     else{const sp=s.split('').join(' ');g.fillText(sp,x-hw,y);box(g,sp,x-hw,y,4.2/Z)}}
   for(const L of ST.legs){const n=Math.floor(L.dots.length*L.k);for(let i=0;i<n;i++){const[x,y]=L.dots[i];Rz(g,x-.6/Z,y-.6/Z,1.2/Z,1.2/Z,'#5a140c');Rz(g,x-.35/Z,y-.35/Z,.7/Z,.7/Z,L.k<1&&i>n-4?'#ffe0a0':'#d84a32')}}
   const show=new Set(ST.places||Object.keys(PLACES).filter(k=>PLACES[k].minor||ST.seen.has(k)));
-  for(const k of show){const p=placeOf(k),[x,y]=at(k),main=!p.minor||ST.places||ST.seen.has(k);if(p.hide||!inView(x,y,-3))continue;if(!p.cape)dot(g,x,y,ST.seen.has(k)||ST.hover===k);
+  for(const k of show){const p=placeOf(k),[x,y]=at(k),main=!p.minor||ST.places||ST.seen.has(k);if(p.hide||!inView(x,y,-3))continue;if(p.edge)end(g,x,y,ST.hover===k);else if(!p.cape)dot(g,x,y,ST.seen.has(k)||ST.hover===k);
     label(g,T(p.name),x+(p.dx||0)/Z,y+(p.dy||0)/Z,p.lab,main?(ST.hover===k?'#ffffff':'#f4e4b8'):'rgba(232,220,190,.62)',main?p.sz||4.8:4)}
   if(ST.pulse){const[x,y]=at(ST.pulse),k=(t/900)%1;g.strokeStyle=`rgba(255,226,150,${.9*(1-k)})`;g.lineWidth=.6/Z;g.beginPath();g.arc(x,y,(2.4+k*6)/Z,0,6.2832);g.stroke()}
   g.restore();
