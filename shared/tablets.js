@@ -53,5 +53,41 @@ function open(d){shown=d;draw(d);
     el.onclick=e=>{e.stopPropagation();if(closer)closer()};el.classList.add('on');for(const l of el.querySelectorAll('.leaf'))l.scrollTop=0})}
 /* redraw: the open tablets again, in another language */
 const redraw=()=>{if(shown)draw(shown)};
-return{open,redraw,el};
+/* ---------- Luke's marks (Chapters Twenty-Two and Twenty-Three) ----------
+   Luke keeps the dark days of the storm on a wax tablet of his own (Acts 27:20; the publications say Luke may well have kept notes; the
+   tablet and its marks are invented). Both chapters draw his marks with these two painters, so that the tablet that Chapter Twenty-Three
+   finds carried in is the one Chapter Twenty-Two wrote. They draw on any canvas, in room pixels, and change nothing else in this file.
+   A scratch in the wax is a thin pale line (the wax cut away shows the paler wax under it, catching the light) with its groove's dark
+   shade half a pixel below and to the right of it, a little uneven along its length (seeded, so it is the same each time).
+     scratch(g, pts, o)         a scratch along the polyline pts [x, y, ...]; o.seed, o.c (pale, #d2bf94), o.dk (shade, #140a04), o.a (1)
+     lukeMark(g, cx, cy, kind, o)   one day's mark, its middle at cx, cy: kind 0 only the day (nothing is drawn), 1 south-west, 2 west,
+                                3 north-west. A short line 14·k long with a small solid wedge at its western (left) end, pointing west
+                                along the line: the west end 5·k lower than the east end for south-west, level for west, 5·k higher for
+                                north-west. The wedge is a filled triangle, 3·k from its base to its point and 3·k across its base,
+                                never an arrowhead with a crossbar. o.k the scale (1), o.seed
+     lukeLine(g, x, y, kinds, o)    the line the marks make, from the point x, y (Cauda) westward, one piece for each day in order:
+                                south-west 30·k left and 7·k down, west 30·k left, north-west 30·k left and 7·k up; a day with only
+                                the day leaves a gap of 14·k in the line with a small square dot (1.5·k) in its middle. It only runs
+                                west, so it never crosses itself. A small square (2·k) marks the start. o.k the scale (1), o.seed.
+                                Returns the point where it ends, [x, y].
+   Chapter Twenty-Two draws the marks at k 1 in the columns of the days and the line at k .64 below them; Chapter Twenty-Three draws the
+   line at k 1. */
+const LUKE={c:'#d2bf94',dk:'#140a04'};
+function scratch(g,pts,o){o=o||{};const r=rng(o.seed||2271),c=o.c||LUKE.c,dk=o.dk||LUKE.dk,a=o.a==null?1:o.a,q=[];
+  for(let i=0;i<pts.length-2;i+=2){const x0=pts[i],y0=pts[i+1],x1=pts[i+2],y1=pts[i+3],L=Math.hypot(x1-x0,y1-y0),n=Math.max(1,Math.round(L/3)),nx=-(y1-y0)/(L||1),ny=(x1-x0)/(L||1);
+    for(let j=i?1:0;j<=n;j++){const t=j/n,w=j&&j<n?(r()-.5)*.35:0;q.push(x0+(x1-x0)*t+nx*w,y0+(y1-y0)*t+ny*w)}}
+  g.save();g.globalAlpha=a*.6;stroke(g,q.map((v,i)=>v+.5),dk,.6);g.globalAlpha=a;stroke(g,q,c,.55);g.restore()}
+function lukeMark(g,cx,cy,kind,o){o=o||{};if(!kind)return;const k=o.k||1,d=kind===1?2.5*k:kind===3?-2.5*k:0,E=[cx+7*k,cy-d],W=[cx-7*k,cy+d],
+    L=Math.hypot(W[0]-E[0],W[1]-E[1]),ux=(W[0]-E[0])/L,uy=(W[1]-E[1])/L,nx=-uy,ny=ux,s=o.seed||2272+kind*7;
+  scratch(g,[E[0],E[1],W[0]+ux*.4,W[1]+uy*.4],{seed:s,a:o.a});
+  const tip=[W[0]+ux*3*k,W[1]+uy*3*k],b0=[W[0]+nx*1.5*k,W[1]+ny*1.5*k],b1=[W[0]-nx*1.5*k,W[1]-ny*1.5*k];
+  g.save();if(o.a!=null)g.globalAlpha=o.a;poly(g,[tip[0]+.5,tip[1]+.5,b0[0]+.5,b0[1]+.5,b1[0]+.5,b1[1]+.5],rgba(LUKE.dk,.6));poly(g,[tip[0],tip[1],b0[0],b0[1],b1[0],b1[1]],LUKE.c);g.restore()}
+function lukeLine(g,x,y,kinds,o){o=o||{};const k=o.k||1,s=o.seed||2280;let px=x,py=y,run=[px,py];
+  const dot=(x,y,w)=>{R(g,x-w/2+.5,y-w/2+.5,w,w,rgba(LUKE.dk,.6));R(g,x-w/2,y-w/2,w,w,LUKE.c)};
+  dot(px,py,2*k);
+  kinds.forEach((m,i)=>{if(!m){if(run.length>2)scratch(g,run,{seed:s+i});px-=14*k;dot(px+7*k,py,1.5*k);run=[px,py];return}
+    px-=30*k;py+=m===1?7*k:m===3?-7*k:0;run.push(px,py)});
+  if(run.length>2)scratch(g,run,{seed:s+99});return[px,py]}
+
+return{open,redraw,el,scratch,lukeMark,lukeLine};
 })();

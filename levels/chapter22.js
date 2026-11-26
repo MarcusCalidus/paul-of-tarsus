@@ -315,7 +315,7 @@ function paintStorm22(g,v){const N=v==='n',GS=SHARED.grainship,r=rng(2204);
   caskDraw22(g,null,0,N);
   if(N){const L=lant22(),[lx,ly]=L.p;
     /* the lantern's light: on the cabin's front about it, and a long low pool on the deck before it; nothing round */
-    comp(g,'lighter',.22,()=>{g.save();g.beginPath();g.rect(110,58,84,30);g.clip();pool(g,lx,ly+4,26,7,'#ff9a48',1,'source-over');g.restore()});
+    comp(g,'lighter',.22,()=>{g.save();g.beginPath();g.rect(110,58,84,30);g.clip();pool(g,lx,ly-1,22,5,'#ff9a48',1,'source-over');g.restore()});
     comp(g,'lighter',.13,()=>pool(g,lx,L.floor[1]+3,40,4,'#ffa050',1,'source-over'));
     /* the cords, parting upward to the eave, and the lantern: clay and horn, small; the flame is drawn in draw */
     stroke(g,[lx-.7,ly-1.6,L.a[0],L.a[1]],'#4a3a28',.5);stroke(g,[lx+.7,ly-1.6,L.b[0],L.b[1]],'#4a3a28',.5);
@@ -402,40 +402,95 @@ function skiff22(g,t,e){const D=gd22(),S=SKIFF22,n=G.sk22||0,ph=(((e%1)+1)%1),pa
 /* ==== ART storm22: end ==== */
 
 /* ==== ART tablet22: begin ==== */
-/* ART-TODO. Luke's wax tablet, close, by what little light there is: a wooden frame (fine-grained, quiet), the dark wax, and on it six
-   days in six columns (DAYS22): at the top of each a short upright stroke for the day, standing alone and never struck through; below it,
-   apart from the stroke, the day's mark if it has one: a short slanting line with a small wedge at its western end, pointing south-west,
-   west or north-west (the marks only run westward); for only the day, nothing below the stroke. The columns stand apart: no line runs
-   between them, nothing is ruled. Close-view standard of Chapters Thirteen and Fourteen. light:null, walk NOW.
-   Called from outside: ART.tablet22, DAYS22. Reads the flags t1..t6 and m1a..m6b.
-   Hotspots: today's column (the first day without a stroke) · the days written (look) · back to the deck 0,136,120,8. */
+/* Luke's wax tablet, close (27:20), by what little light there is: the lantern's, warm, from the upper right. A frame of fine-grained wood,
+   quiet, worn pale along its edges; the dark wax set into it (16..304 by 12..130), smoothed many times, faint level traces of old writing
+   in it. Scratched at its head, as Luke wrote them on the way, the names of the voyage down to Cauda, in the player's language (the map's
+   own keys). Below them six days in six columns (DAYS22: x 44 + 46·i, the stroke's top at y 26): at the top of each a short upright stroke
+   for the day, 16 long, standing alone and never struck through; below it, apart (its middle at y 58), the day's mark if it has one
+   (SHARED.tablets.lukeMark: a short line with a small solid wedge at its western end, the west end lower for south-west, level for west,
+   higher for north-west; nothing for only the day). Below the columns the line the marks make, from Cauda only westward
+   (SHARED.tablets.lukeLine at k .7, from 286, 100, with Cauda scratched small above its start; Chapter Twenty-Three draws the same line at k 1). The column of today, while Luke
+   is played, has a soft lighter wash where the mark will go, not a ruled box. Nothing is ruled, no line runs between the columns, no mark
+   meets a stroke or a column's edge. The stylus lies on the frame below the wax, a slim rod with its point to the left and its flat end to
+   the right. A scratch is pale with a dark shade, thin and a little uneven.
+   light:null, walk NOW (Luke stands below the picture).
+   Called from outside: ART.tablet22, DAYS22. Reads the flags t1..t6 and m1a..m6b. */
 const DAYS22=Array.from({length:6},(_,i)=>[44+i*46,26]);
-ART.tablet22={w:320,q:12,paint(g){const r=rng(2205);g.fillStyle=lg(g,0,0,320,144,['#7a5434','#6a4628']);g.fillRect(0,0,320,144);
-    for(let y=0;y<144;y+=2)R(g,0,y,320,.5,rgba(r()<.5?'#2a1a0c':'#c49a6a',.12));
-    R(g,16,12,288,118,'#2a2018');R(g,16,12,288,1,'#120c08');R(g,16,129,288,1,'#5a4a3a')},
-  light:null,
-  draw(g){for(let n=1;n<=6;n++){const[cx,cy]=DAYS22[n-1];if(!F['t'+n])continue;
-      R(g,cx-.5,cy,1.2,16,'#c8b48c');
-      const m=markOf(n);if(!m)continue;const dy=m===1?5:m===2?0:-5,y=cy+40;
-      /* the mark: from the east end down (or up, or level) to the west end, where a small wedge stands */
-      stroke(g,[cx+8,y-dy,cx-6,y+dy],'#c8b48c',1.1);poly(g,[cx-9,y+dy*1.2,cx-4,y+dy-2.4,cx-4,y+dy+2.4],'#c8b48c')}
-    const n=today22();if(n<=6&&lukePlays()){const[cx,cy]=DAYS22[n-1];g.strokeStyle='rgba(200,180,140,.25)';g.lineWidth=.5;g.strokeRect(cx-18,cy-6,36,70)}},
+const TAB22={wax:[16,12,304,130],mark:32,line:[286,100],k:.7,names:['Caesarea','Sidon','Myra','Cnidus','fair_havens','Cauda']};
+ART.tablet22={w:320,q:12,paint(g){paintTablet22(g)},light:null,
+  draw(g){const TB=SHARED.tablets,[cx0]=DAYS22[0];
+    /* today's column: a soft wash where the mark will go */
+    const n=today22();if(n<=6&&lukePlays()){const[cx,cy]=DAYS22[n-1];comp(g,'screen',.1,()=>{for(const[d,a]of[[0,.5],[2,.35],[4,.2]]){g.globalAlpha=a;poly(g,[cx-18+d,cy-6,cx+18-d,cy-6,cx+18,cy-6+d,cx+18,cy+42-d,cx+18-d,cy+42,cx-18+d,cy+42,cx-18,cy+42-d,cx-18,cy-6+d],'#e8d4a8')}})}
+    names22(g);
+    const kinds=[];
+    for(let n=1;n<=6;n++){const[cx,cy]=DAYS22[n-1];if(!F['t'+n])continue;
+      /* the day's stroke: upright, a little uneven, alone */
+      TB.scratch(g,[cx+.2,cy,cx-.1,cy+8,cx+.3,cy+16],{seed:2290+n});
+      const m=markOf(n);kinds.push(m);TB.lukeMark(g,cx,cy+TAB22.mark,m,{seed:2300+n})}
+    if(kinds.length){TB.lukeLine(g,...TAB22.line,kinds,{k:TAB22.k});
+      /* where the line begins: Cauda, scratched small above its start */
+      g.save();g.font=FONT22(4.2);g.textAlign='right';g.textBaseline='middle';const t=T('Cauda'),x=300,y=TAB22.line[1]-8;g.fillStyle='rgba(20,10,4,.6)';g.fillText(t,x+.5,y+.5);g.fillStyle='#cdb98e';g.fillText(t,x,y);g.restore()}},
   front(){}};
+/* the names of the voyage, scratched letter by letter along the head of the wax, a small square between two names */
+function names22(g){const TB=SHARED.tablets,r=rng(2295),L=TAB22.names.map(k=>T(k)),y=19.5;g.save();g.font=FONT22(5.2);g.textBaseline='middle';
+  const gap=7,w=L.reduce((s,t)=>s+g.measureText(t).width,0)+gap*(L.length-1);let x=160-w/2;
+  L.forEach((t,i)=>{for(const ch of t){const dy=(r()-.5)*.5;g.fillStyle='rgba(20,10,4,.6)';g.fillText(ch,x+.5,y+dy+.5);g.fillStyle='#cdb98e';g.fillText(ch,x,y+dy);x+=g.measureText(ch).width}
+    if(i<L.length-1){R(g,x+gap/2-.5,y-.2,1,1,'#b8a47c');x+=gap}});g.restore()}
+function paintTablet22(g){const r=rng(2205),[x0,y0,x1,y1]=TAB22.wax;
+  /* behind the tablet, the dark of the deck by night at the corners */
+  R(g,0,0,320,144,'#120e0c');
+  /* the frame: fine-grained wood, warm where the lantern falls on it (upper right), darker away from it; its corners rounded a little */
+  const F=[3,1,317,1,319,3,319,141,317,143,3,143,1,141,1,3];poly(g,F);g.fillStyle=lg(g,320,0,0,144,['#9a7450','#7a5838','#5a3e26']);g.fill();
+  /* one board, its grain running along it, fine and quiet: long hairlines that wander a little, a few darker, a few lighter */
+  clipTo(g,()=>poly(g,F),()=>{for(let i=0;i<260;i++){const y0=r()*144,x=r()*320-40,l=30+r()*120,ph=r()*6,q=[];for(let u=0;u<=l;u+=4)q.push(x+u,y0+.6*Math.sin(u/37+ph)+.3*Math.sin(u/11+ph*2));
+      stroke(g,q,r()<.6?`rgba(52,30,14,${(.08+r()*.12).toFixed(2)})`:`rgba(255,226,180,${(.04+r()*.07).toFixed(2)})`,.5)}
+    tex(g,'grain',.12,0,0,320,144,'overlay',.4);
+    /* worn paler along its outer edge, a soft darker band inside it */
+    R(g,1,1,318,.6,'rgba(255,226,180,.35)');R(g,1,1,.6,142,'rgba(255,226,180,.2)');R(g,1,142.4,318,.6,'rgba(20,10,4,.5)');R(g,318.4,1,.6,142,'rgba(20,10,4,.35)')});
+  /* the wax, sunk into the frame: the frame's inner edge lit where the light falls on it, its shadow lying on the wax at the top and left */
+  R(g,x0-1.2,y0-1.2,x1-x0+2.4,y1-y0+2.4,'#3a2616');R(g,x0-1.2,y1,x1-x0+2.4,1.2,'#b08a5c');R(g,x1,y0-1.2,1.2,y1-y0+2.4,'#a07c52');
+  g.fillStyle=lg(g,x1,y0,x0,y1,['#3a2c1e','#2a1f15','#1e160e']);g.fillRect(x0,y0,x1-x0,y1-y0);
+  clipTo(g,()=>R(g,x0,y0,x1-x0,y1-y0),()=>{tex(g,'mott',.5,x0,y0,x1-x0,y1-y0,'overlay',1);tex(g,'grain',.18,x0,y0,x1-x0,y1-y0,'overlay',.5);
+    /* where it has been smoothed again and again: soft patches a shade lighter or darker, long and low */
+    for(let i=0;i<14;i++)pool(g,x0+r()*(x1-x0),y0+r()*(y1-y0),30+r()*50,8+r()*10,r()<.5?'#5a4430':'#0e0906',.25+r()*.2,'source-over');
+    /* faint level traces of old writing smoothed away, all one way */
+    for(let i=0;i<70;i++)R(g,x0+r()*(x1-x0-20),y0+3+r()*(y1-y0-6),3+r()*16,.5,`rgba(${r()<.5?'255,232,190':'0,0,0'},${(.03+r()*.05).toFixed(3)})`);
+    /* the lantern's light lying across the wax from the upper right, soft */
+    comp(g,'screen',.1,()=>{g.fillStyle=lg(g,x1,y0,x0+80,y1,['#ffc880','rgba(0,0,0,0)']);g.fillRect(x0,y0,x1-x0,y1-y0)});
+    ao(g,x0,y0,x1-x0,4,'t',.55,'#0a0604');ao(g,x0,y0,4,y1-y0,'l',.4,'#0a0604')});
+  /* the stylus on the frame below the wax: a slim bronze rod, its point to the left, its flat end for smoothing the wax to the right */
+  const Y=x=>136.4-(x-168)*.012,a=168,b=296;
+  comp(g,'multiply',.45,()=>poly(g,[a+3,Y(a)+2,b+1.5,Y(b)+2,b+1.5,Y(b)+3.4,a+3,Y(a)+3],'#2a1c14'));
+  /* the rod: a point at the left, a round shank, a swelling, the flat end */
+  poly(g,[a,Y(a)+.8,a+9,Y(a+9)-.1,b-9,Y(b-9)-.1,b-9,Y(b-9)+1.7,a+9,Y(a+9)+1.7],'#7a5c30');
+  R(g,a+9,Y(a+9)-.1,b-a-18,.6,'#e2c07e');R(g,a+9,Y(a+9)+1.2,b-a-18,.5,'#4a3418');
+  poly(g,[b-9,Y(b-9)-.6,b-6,Y(b-6)-.9,b-6,Y(b-6)+2.3,b-9,Y(b-9)+2],'#8a6a38');
+  poly(g,[b-6,Y(b-6)-1.4,b,Y(b)-1.6,b,Y(b)+2.6,b-6,Y(b-6)+2.8],'#7a5a30');R(g,b-6,Y(b-6)-1.4,6,.6,'#ecca88');R(g,b-6,Y(b-6)+2.3,6,.5,'#3a2814')}
 /* ==== ART tablet22: end ==== */
 
 /* ==== ART girded22: begin ==== */
-/* ART-TODO. A told picture (27:17): the grain ship from the side in the storm, with the ropes passed round her hull from one side to the
-   other under her keel and made fast on deck (CONTRIBUTING section 3, the undergirding): three or four of them, drawn slanting and curved
-   with the hull, never square to the planks; her sail is down (the gear lowered: what it was is not shown, and nothing says so); the sea
-   high round her, no horizon. light:null, walk NOW. No mast across a level line, no figurehead.
+/* A told picture (27:17): the grain ship from the side in the storm (SHARED.grainship.side, state 'storm'), bow to the right: her mainsail
+   and its yard down on deck and the mast bare (the gear lowered: what it was is not shown, and nothing says so), the skiff aboard, her
+   steering oars lashed up, and round her hull the ropes passed under her from side to side and made fast on deck, slanting and curving
+   with the belly of the hull (the exception of 26 November 2026, CONTRIBUTING section 3). She rides the seas: the storm's sea from the side
+   (SHARED.storm.sideSea) lifts her and drops her and tilts her as the seas pass under her; her hull is cut at the water where she floats,
+   and the seas between her and us hide the foot of her hull, never more than a third of it. No horizon: the far seas are lost in the
+   rain. Lightning far off, never over her masts or her sternpost. Painted once (the ship, baked whole with room above her for her mast)
+   and laid on the sea every frame at the angle the sea gives her.
+   light:null (a told picture nobody stands in), walk NOW.
    Called from outside: ART.girded22. Reads nothing. */
-ART.girded22={w:320,q:12,paint(g){const r=rng(2206);g.fillStyle=lg(g,0,0,0,144,['#3a424e','#5a626c','#3a5060']);g.fillRect(0,0,320,144);
-    for(let i=0;i<50;i++)R(g,r()*320,r()*80,20+r()*40,1,'rgba(160,170,180,.2)');
-    hull22(g,40,280,70,104,'#4a3422',1);
-    /* the ropes round her hull, slanting and curving with it */
-    for(const x of[100,150,200])stroke(g,[x,68,x+6,80,x+14,96,x+20,104],'#c8b48a',1);
-    g.fillStyle=lg(g,0,96,0,144,['#2e4a5c','#1e3442']);g.fillRect(0,100,320,44);for(let i=0;i<80;i++)R(g,r()*320,100+r()*44,4+r()*10,.6,'rgba(220,230,236,.3)')},
-  light:null,draw(){},front(){}};
+const GIRD22={xa:22,len:280,top:40};
+let GSHIP22=null,GSEA22=null;
+const gsea22=()=>GSEA22||(GSEA22=SHARED.storm.sideSea({pal:'day',seed:2215,lightning:true,clear:[0,GIRD22.xa+GIRD22.len*.53+34]}));
+/* the ship, baked once, her waterline at y = top + 100 of a canvas top + 144 high */
+const gship22=()=>GSHIP22||(GSHIP22=bake(320,g=>SHARED.grainship.side(g,{x:GIRD22.xa,y:GIRD22.top+100,len:GIRD22.len,state:'storm',light:'storm',post:'bird'}),12,144+GIRD22.top));
+ART.girded22={w:320,q:12,paint(g){gsea22().far(g,0)},light:null,
+  draw(g,t){const S=gsea22(),{xa,len,top}=GIRD22,xb=xa+len,r=S.ride(t,xa,xb),cx=xa+len/2;S.far(g,t);
+    /* the hull is cut at the water where she floats (the sea in front is not opaque everywhere) */
+    g.save();g.beginPath();g.moveTo(-10,-10);g.lineTo(330,-10);g.lineTo(330,r.yb+(r.yb-r.ya)/len*(330-xb)+3);g.lineTo(-10,r.ya-(r.yb-r.ya)/len*(xa+10)+3);g.closePath();g.clip();
+    g.translate(cx,r.y-3);g.rotate(r.a);g.translate(-cx,-100);g.drawImage(gship22(),0,-top,320,144+top);g.restore();
+    S.near(g,t);S.front(g,t)},
+  front(){}};
 /* ==== ART girded22: end ==== */
 
 /* ---- the inventory ---- */
