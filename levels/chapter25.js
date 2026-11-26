@@ -76,7 +76,7 @@
 
    Rooms: the lodging (lodging25, SHARED.lodging: the flat on the second floor, or the room at street level carried in from Chapter
    Twenty-Four, at the hour of the watch), the sheet on the table (sheet25, a close view: Philemon), and the three letters (letters25, a
-   close view); the travel map's window lycus. sheet25 and letters25 and Luke's roll are placeholders (ART-TODO: SP pair3 ROOMS-25.md). */
+   close view); the travel map's window lycus. */
 LEVEL(25,()=>{
 "use strict";
 const LG=SHARED.lodging,CU=SHARED.cast.custody,RM=SHARED.cast.ROMAN,RO=SHARED.cast.ROME,CZ=SHARED.cast.CAESAREA;
@@ -658,8 +658,10 @@ async function begin2(){G.scene=DARK;await tell('n23a');await tell('n23b');G.sce
 async function object25(first){const o=OBJ25[hours2()],L=ACT[o.a];G.obj25=hours2();await say(L,o.say,{to:P});
   if(first)await say(P,'paul_moses_or_the_prophets_will_answer_that',TP)}
 async function answer25(a){const n=hours2(),o=OBJ25[n];if(watch25()!==2||F.h5)return;
-  if(!o||o.a!==a.id)return say(a,'listener_answer_him_first',{to:P});
-  if(G.obj25!==n)await object25(false);
+  if(!o)return;
+  /* after a code is restored nobody has spoken yet: whoever is addressed, the listener of the hour first says again what holds him back */
+  if(G.obj25!==n){await object25(false);if(o.a!==a.id)return}
+  if(o.a!==a.id)return say(a,'listener_answer_him_first',{to:P});
   const opts=PASSK25.map(k=>T('ref_short',{ref:T(PASS25[k].ref),short:T(PASS25[k].short)})).concat(['paul_let_me_think_first']),
     i=await choose(opts,{by:PASSK25.concat(['paul_let_me_think_first']),keep:1});if(i===PASSK25.length)return;
   const p=PASS25[PASSK25[i]];await say(P,T('text_ref',{text:T(p.text),ref:T(p.ref)}),{to:a});
@@ -695,8 +697,10 @@ async function send25(){F.house=1;await say(TM,'timothy_its_done',{to:P});TM.pos
   const D=LG.AT.door;await Promise.all([go25(ED,D[0],D[1]),tw(300).then(()=>go25(AN,D[0],D[1]+3))]);ED.room=AN.room=null;codeBtn();return question25()}
 
 /* ---- watch 4: not as an order (Philemon) ---- */
-async function begin4(){G.scene=DARK;await own(PASSED25[4]);G.scene=null;show25('lodging25');await fade(0,700);
-  await onWatch25(4);await say(EP,'epaphras_thats_all_the_news_from_colossae',{to:P});await tell('child');
+/* Philemon 10, 11 is told from the scroll before the room is shown, as the third watch tells its verse: show25 keeps a safe point, and a
+   verse told after it would be skipped by a reload */
+async function begin4(){G.scene=DARK;await own(PASSED25[4]);await tell('child');G.scene=null;show25('lodging25');await fade(0,700);
+  await onWatch25(4);await say(EP,'epaphras_thats_all_the_news_from_colossae',{to:P});
   await say(P,'paul_this_letter_i_write_myself',TP);codeBtn()}
 /* the desk: Paul sits down to write (watch 4), or writes his own greeting (watch 5) */
 async function desk25(){const w=watch25();
@@ -717,7 +721,7 @@ async function sheet25(){if(watch25()!==4||F.phm)return say(P,'paul_the_letter_i
   await tw(300);await say(P,WRITTEN25.ready,{to:null});G.pm25=5;F.phm=1;G.seat25='table';
   await tw(400);await goto25('lodging25');G.desk25=0;P.seat=0;P.pose=0;{const b=box25();place(P,'lodging25',clamp(112,b[0]+2,b[1]-2),clamp(126,b[2]+1,b[3]-1),1)}chain25();
   await say(ON,'onesimus_ill_go_back_to_him',{to:P});await say(P,'paul_i_know',{to:ON});codeBtn();return question25()}
-async function leaveSheet25(){await goto25('lodging25');G.desk25=0;P.seat=0;P.pose=0;place(P,'lodging25',112,126,1);chain25()}
+async function leaveSheet25(){await goto25('lodging25');G.desk25=0;P.seat=0;P.pose=0;{const b=box25();place(P,'lodging25',clamp(112,b[0]+2,b[1]-2),clamp(126,b[2]+1,b[3]-1),1)}chain25()}
 
 /* ---- watch 5: those who greet you (Colossians 4:10-18) ---- */
 async function begin5(){G.scene=DARK;await own(PASSED25[5]);G.scene=null;show25('lodging25');await fade(0,700);
@@ -779,9 +783,8 @@ async function final25(){if(G.door25)return;G.door25=1;const D=LG.AT.door,st=LG.
   await go25(VA,st.visitor[0]-10,st.visitor[1]+4);place(VB,'lodging25',D[0]+(F.street?24:18),D[1]-(F.street?2:6),-1);
   await tell('n3031');
   return toFinale()}
-/* toFinale: the one way out of the chapter, into the finale (shared/finale.js, built on the finale's branch): its run() takes over from
-   the open door to the closing screen. Until that file is merged need('finale') finds nothing, and the chapter returns to the title after
-   a click, so that it can be tested alone. */
+/* toFinale: the one way out of the chapter, into the finale (shared/finale.js): its run() takes over from the open door to the closing
+   screen. Should that file ever fail to load, the chapter returns to the title after a click instead of standing still. */
 async function toFinale(){let fin=null;try{fin=await need('finale')}catch(e){fin=null}
   if(fin&&fin.run)return fin.run();
   await fade(1,700);overlay('on end',()=>{ov.innerHTML='<p class="go">'+esc(T('click_to_return_to_the_title'))+'</p>'});
@@ -793,8 +796,8 @@ async function soldier25(){const w=watch25(),S=S_();
   if(w===7)return say(S,CARE25[7],{to:P});
   if(G.care25!==w){G.care25=w;await say(S,CARE25[w],{to:P})}
   const s=seat25(),req=['would_you_sit_by_the_door','would_you_sit_at_the_table','would_you_sit_by_the_window'],to=['door','table','window'],
-    opts=req.filter((k,i)=>to[i]!==s).concat(['could_you_move_a_little','you_can_sit_wherever_you_like','paul_never_mind']),i=await choose(opts,{keep:1});
-  const k=opts[i];if(k==='paul_never_mind')return;await say(P,k,{to:S});
+    opts=req.filter((k,i)=>to[i]!==s).concat(['could_you_move_a_little','you_can_sit_wherever_you_like','never_mind']),i=await choose(opts,{keep:1});
+  const k=opts[i];if(k==='never_mind')return;await say(P,k,{to:S});
   if(k==='could_you_move_a_little')return say(S,'soldier_move_where_and_what_for',{to:P});
   if(k==='you_can_sit_wherever_you_like')return say(S,'soldier_i_can_and_i_like_it_here',{to:P});
   await say(S,'soldier_since_you_ask_plainly',{to:P});await move25(to[req.indexOf(k)]);codeBtn()}

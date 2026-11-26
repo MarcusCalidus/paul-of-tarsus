@@ -105,8 +105,8 @@ const SCALE=[0,2,4,5,7,9,11],ST=15,
 const FROGS24=[...TUNE.A,...TUNE.D.map(([s,d,l])=>[s+ST,d,l])];
 
 /* ---- around you ----
-   What the engine has: waves, wind, gulls, crickets and the hull's creak. Missing, for the art-and-sound pass: frogs in the marsh, gnats,
-   the barge's towrope and the mule's harness, a market's voices at the Marketplace, the street noise of Rome. */
+   What the engine has: waves, wind, gulls, crickets and the hull's creak. The marsh's frogs are heard only where the hidden treasure sets
+   them off; a market's voices and the street noise of Rome are not made. */
 const AMB={quay24:{waves:.45,gulls:.55,wind:.15,creak:.2},court24:{wind:.08},capua24:{wind:.2},canal24:{wind:.12,crickets:.4},
   appius24:{wind:.12},rome24:{wind:.05},board24:{wind:.04},hills24:{wind:.3},marsh24:{wind:.15,crickets:.3},taverns24:{wind:.12},
   far24:{wind:.25},capena24:{wind:.1},camp24:{wind:.1},lane24:{wind:.06},look24:{wind:.04}};
@@ -1600,7 +1600,9 @@ const TOK24=[{id:'sextus24',board:'sextus_i_know_the_boatmen',name:'Sextus',c:'#
   {id:'thallos24',board:'sextus_on_the_board_thallos',name:'Thallos',c:'#3e2a1c',says:'thallos_as_far_as_the_fortieth_mile'}];
 /* the wishes, tested in this order when every token is set: [who says it, the line, broken(st)]. st: id -> 'T' or 'M' */
 const CHECK24=[
-  ['vibia24','vibia_nobody_waits_alone',st=>['T','M'].some(p=>TOK24.filter(t=>st[t.id]===p).length===1)],
+  /* nobody waits alone: Vibia says it, and the peg that comes back is the lonely one's (the fourth entry names it) */
+  ['vibia24','vibia_nobody_waits_alone',st=>['T','M'].some(p=>TOK24.filter(t=>st[t.id]===p).length===1),
+    st=>['T','M'].map(p=>TOK24.filter(t=>st[t.id]===p)).find(l=>l.length===1)[0].id],
   ['postumus24','postumus_vibia_wont_hear_of_it',st=>st.postumus24==='M'],
   ['thallos24','thallos_past_my_masters_leave',st=>st.thallos24==='M'],
   ['firmus24','firmus_thats_the_farther_place',st=>st.firmus24==='M'],
@@ -1633,7 +1635,7 @@ const carry25=()=>CARRY25.reduce((b,k,i)=>b|(i===0||F[k]?1:0)<<i,0);
 /* ============ HELPERS ============ */
 function setPC24(a){if(G.pc!==a){G.pc=a;G.inv=G.invs[a.id]||(G.invs[a.id]=[])}}
 /* a close view or a picture in a told moment is never a point a code is kept at (codeBtn in cut still runs; see show24) */
-function show24(room,x,y,dir){place24(room);const e=ENT[room];enterRoom(room,x!=null?x:e[0],y!=null?y:e[1],dir||e[2]);codeBtn()}
+function show24(room,x,y,dir,quiet){place24(room);const e=ENT[room];enterRoom(room,x!=null?x:e[0],y!=null?y:e[1],dir||e[2]);if(!quiet)codeBtn()}
 async function goto24(room,x,y,dir){await fade(1,300);show24(room,x,y,dir);await fade(0,300)}
 async function go24(a,x,y,sp){a.speed=fast()?400:sp||0;a.free=1;await walk(a,x,y);a.speed=0;a.free=0}
 const spoke=(a,k)=>say(a,k,{to:PC()});
@@ -1736,8 +1738,8 @@ async function place24at(p){if(F.planned)return think('sextus_its_settled',DE);i
   (G.tok24=G.tok24||{})[G.sel24]=p;G.sel24=null;SFX.click();
   if(TOK24.every(t=>G.tok24[t.id]))await check24()}
 async function check24(){const st=G.tok24;
-  for(const[who,line,broken]of CHECK24)if(broken(st)){const a=ACT[who];
-    if(a===DE)await think(line,DE);else await say(a,line,{to:DE});delete st[who];SFX.nope();return}
+  for(const[who,line,broken,back]of CHECK24)if(broken(st)){const a=ACT[who],gone=back?back(st):who;
+    if(a===DE)await think(line,DE);else await say(a,line,{to:DE});delete st[gone];SFX.nope();return}
   SFX.good();await think('sextus_four_to_the_marketplace_three_to_three_taverns',DE);
   await fade(1,500);show24('rome24');await fade(0,500);
   await say(VI,'vibia_then_its_settled_we_leave_at_dawn',{to:null});F.planned=1;
@@ -1752,19 +1754,21 @@ async function check24(){const st=G.tok24;
 /* G.mark24: the mark Paul stands at in this stretch (0 to 4). A step is judged at the moment of the click (shared/beat.js). */
 async function step24(){if(phase24()!=='road'||!G.beat)return;const s=stretch24();if(!s||G.room!==s.room)return;
   const b=G.beat,r=b.attempt(),m=G.mark24||0;
-  if(r.carry){await moveCol24(m+1,1);b.reset();return arrived24(m+1)}
-  if(r.hit){await moveCol24(m+1);return arrived24(m+1)}
+  /* a hit, or the soldier brings him along: once that help is given it stays for the rest of the stretch (the beat is sticky; each
+     stretch starts a new one), so that nobody has to miss six times for every step */
+  if(r.hit||r.carry){await moveCol24(m+1);return arrived24(m+1)}
   /* a miss: he has stepped too late or too soon; the soldier waits, nothing else; no line */
   await tw(380)}
-async function moveCol24(m,held){const[x,y]=ROAD24.marks[m],L=COLUMN24();
-  await Promise.all([go24(P,x,y),...L.map(([a,dx,dy])=>go24(a,x+dx,y+dy))]);P.dir=1;for(const[a,,,d]of L)a.dir=d;void held}
+async function moveCol24(m){const[x,y]=ROAD24.marks[m],L=COLUMN24();
+  await Promise.all([go24(P,x,y),...L.map(([a,dx,dy])=>go24(a,x+dx,y+dy))]);P.dir=1;for(const[a,,,d]of L)a.dir=d}
 async function arrived24(m){G.mark24=m;if(m<4)return;const s=stretch24();
   await think(s.read,P);F[s.f]=1;G.mark24=0;if(SHARED.beat)SHARED.beat.stop();
   if(s.f==='s1'){P.look=RO.paul_weary;await tw(300);await fade(1,600);show24('marsh24');await fade(0,600);await think('paul_frogs_gnats_bad_water',P);codeBtn();return}
   if(s.f==='s2'){await tw(300);await fade(1,600);show24('marsh24');await fade(0,600);await think('paul_onward_weary',P);codeBtn();return}
   return meet24()}
 /* 28:15: the Marketplace of Appius by day */
-async function meet24(){await tw(400);await fade(1,700);show24('appius24');await fade(0,700);
+/* the meeting keeps no safe point before its verse is told: a code kept here would skip 28:15, the chapter's own verse, for good */
+async function meet24(){await tw(400);await fade(1,700);show24('appius24',null,null,null,1);await fade(0,700);
   await tell('n15a');await tell('n15b');
   P.look=LOOK.paul;AU.mood='meet';
   await go24(P,MI.x-20,MI.y,40);P.dir=1;MI.dir=-1;P.ges=MI.ges=11;
@@ -1906,17 +1910,18 @@ who(DE,{look:'sextus_look24',talk:()=>phase24()==='dawn'&&PC()===BO?relay24(3):p
 who(MI,{look:'mikon_look24',talk:()=>phase24()==='rome'?spoke(MI,TOK24[1].says):spoke(MI,'mikon_like_the_old_days')});
 who(VI,{look:'vibia_look24',talk:()=>phase24()==='rome'?spoke(VI,TOK24[2].says):spoke(VI,'vibia_welcome_to_rome')});
 who(AE,{look:'aemilia_look24',talk:()=>phase24()==='rome'?spoke(AE,TOK24[3].says):spoke(AE,'aemilia_we_came_all_the_way')});
-who(PO,{look:'postumus_look24',talk:()=>phase24()==='rome'?spoke(PO,TOK24[4].says):knees24()});
+who(PO,{look:'postumus_look24',talk:()=>phase24()==='rome'?knees24():spoke(PO,'postumus_go_on_paul')});
 who(FI,{look:'firmus_look24',talk:()=>phase24()==='rome'?spoke(FI,TOK24[5].says):spoke(FI,'firmus_bread_for_the_road')});
 who(TH,{look:'thallos_look24',talk:()=>phase24()==='rome'?spoke(TH,TOK24[6].says):spoke(TH,'thallos_i_wanted_to_see_you')});
 who(IK,{look:'innkeeper_look24',talk:()=>innkeeper24()});
 who(GW,{look:'watch_look24',talk:()=>spoke(GW,'watch_im_on_with_him_tomorrow')});
 who(LL,{look:'landlord_look24',talk:()=>spoke(LL,'landlord_four_rooms_free_in_this_street')});
 /* the jokes: each once (the approved four), where a curious player finds them */
-async function knees24(){if(!G.knees24){G.knees24=1;return spoke(PO,'postumus_nobody_asked_my_knees')}return spoke(PO,'postumus_go_on_paul')}
+/* his knees: in Vibia's house, once his peg stands at Three Taverns; never at the meeting of 28:15, where he only greets */
+async function knees24(){if((G.tok24||{}).postumus24==='T'&&!G.knees24){G.knees24=1;return spoke(PO,'postumus_nobody_asked_my_knees')}return spoke(PO,TOK24[4].says)}
 async function innkeeper24(){if(!G.inn24){G.inn24=1;return spoke(IK,'innkeeper_three_taverns_two_are_mine')}return spoke(IK,'innkeeper_water_for_the_road')}
-async function boatTalk24(){const i=await choose(['trader_who_pulls_the_barge','trader_i_have_a_message_for_rome','trader_never_mind'],{order:1,keep:1});
-  if(i===2)return;if(i===0){await say(TR,'trader_who_pulls_the_barge',{to:BO});return spoke(BO,'boatman_the_mule_pulls_the_boat_follows')}
+async function boatTalk24(){const O=(G.pull24?[]:['trader_who_pulls_the_barge']).concat(['trader_i_have_a_message_for_rome','never_mind']),k=O[await choose(O,{order:1,keep:1})];
+  if(k==='never_mind')return;if(k==='trader_who_pulls_the_barge'){G.pull24=1;await say(TR,k,{to:BO});return spoke(BO,'boatman_the_mule_pulls_the_boat_follows')}
   return relay24(2)}
 /* Paul, when he is not played */
 const PAULHS={name:'Paul',actor:P,look:'paul_look24',talk:()=>spoke(P,phase24()==='court'?'paul_send_it_luke':'paul_write_it_well_luke')};
@@ -1991,7 +1996,7 @@ function place24(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
     if(lk==='lane24'){pl(LK,'lane24',160,124,1);pl(DE,'lane24',186,128,-1);pl(GW,'lane24',214,120,-1);pl(LL,'lane24',240,124,-1)}
     else{const Q=LP24(lookKind());pl(LK,'look24',...Q.luke);pl(DE,'look24',...Q.brother);pl(LL,'look24',...Q.landlord);if(Q.watch)pl(GW,'look24',...Q.watch)}}
   P.hs=PC()!==P&&P.room?PAULHS:null}
-function setup24(){P.hs=null;P.called='Paul';LK.called='Luke';G.asked24=null;G.thought24=0;G.tok24={};G.sel24=null;G.mark24=0;G.frogs24=0;G.knees24=G.inn24=0;
+function setup24(){P.hs=null;P.called='Paul';LK.called='Luke';G.asked24=null;G.thought24=0;G.tok24={};G.sel24=null;G.mark24=0;G.frogs24=0;G.knees24=G.inn24=G.pull24=0;
   G.invs={paul:['tablets'],luke24:['ltab24'],sextus24:['pad24']};G.inv=G.invs.paul;drawInv()}
 
 /* ============ PRAYER HINTS ============ */
@@ -2014,8 +2019,12 @@ function hint24(){const ph=phase24();
 ROOMS.quay24.birds={gulls:[0,6,320,36],stand:[[12,96,1],[300,96,-1]]};
 ROOMS.hills24.birds={prey:[40,6,240,30]};
 ROOMS.marsh24.birds={swallows:[0,76,320,14]};
-ROOMS.appius24.birds=()=>phase24()==='dawn'?{}:{swallows:[0,64,120,14]};
+ROOMS.appius24.birds=()=>phase24()==='dawn'?{}:{swallows:[0,64,120,14],perch:[{k:'sparrow',y:39.3,x:[150,160,172],d:[1,1,-1]}]};
 ROOMS.lane24.birds={perch:[{k:'sparrow',y:10,x:[200,214,230],d:[-1,1,-1]}]};
+/* sparrows and doves on the roofs of the towns by day. None at the gate of Rome and at the camp, whose walls are kept bare, and none at dusk or before sunrise. */
+ROOMS.court24.birds={perch:[{k:'sparrow',y:16,x:[118,128,212],d:[1,-1,-1]}]};
+ROOMS.capua24.birds={perch:[{k:'dove',y:31.5,x:[150,161,206],d:[1,-1,1]}]};
+ROOMS.taverns24.birds={perch:[{k:'sparrow',y:39,x:[140,150],d:[-1,1]},{k:'dove',y:45.5,x:[262],d:[-1]}]};
 /* every hotspot answers whoever is played as it answers Paul (act: another member uses h.as[his id]) */
 const ASALL=h=>{const o={};for(const a of PLAYED)o[a.id]=h;return o};
 for(const id of['quay24','court24','capua24','canal24','appius24','rome24','board24','hills24','marsh24','taverns24','far24','capena24','camp24','lane24','look24'])

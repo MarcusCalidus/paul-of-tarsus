@@ -6498,8 +6498,10 @@
     {await till24(()=>b.calling());SHARED.beat.cap.last=null;await wait(80);const c=SHARED.beat.cap.last;ok(b.calling()&&c&&c.key==='now'&&c.w<=c.max,'he calls it while his foot is up: '+(c&&c.s))}
     for(let n=4;n<=6;n++)await tap24('road_ahead',ph,wave24);
     await till24(()=>G.mark24===2&&!G.busy,1500);
-    ok(G.mark24===2&&Math.abs(P.x-MK[2][0])<1&&b.help===0&&b.misses===0,'after six misses the soldier takes his arm and brings him along: nobody can get stuck');
-    for(let m=3;m<=4;m++)await tap24('road_ahead',ph,calm24);
+    ok(G.mark24===2&&Math.abs(P.x-MK[2][0])<1&&b.help===2,'after six misses the soldier brings him along: nobody can get stuck');
+    await tap24('road_ahead',ph,wave24);await till24(()=>G.mark24===3&&!G.busy,1500);
+    ok(G.mark24===3&&Math.abs(P.x-MK[3][0])<1&&b.help===2,'and that help stays for the rest of the stretch: the next step is taken though it is out of time (CONTRIBUTING section 2: he takes the player across)');
+    await tap24('road_ahead',ph,calm24);
     await till24(()=>G.room==='marsh24'&&!G.busy,3000);
     ok(F.s1&&G.room==='marsh24'&&P.look===SHARED.cast.ROME.paul_weary&&ART.marsh24.variant()==='a','the stone at the end of the stretch is read (LXI); the marsh, and Paul is weary');
     halt(stop)}
@@ -6583,8 +6585,9 @@
   await code('by the canal at dusk',()=>G.room==='canal24'&&PC()===TR&&F.given2&&!F.given3&&!P.room);
   halt('canal24');
   await thinks('think_the_boatman_1','think_the_boatman_2','by the canal');
-  heard.length=0;talkTo(BO);{const o=await asked();ok(o.join()==='trader_who_pulls_the_barge,trader_i_have_a_message_for_rome,trader_never_mind','a menu: who pulls the barge, the message, never mind')}
+  heard.length=0;talkTo(BO);{const o=await asked();ok(o.join()==='trader_who_pulls_the_barge,trader_i_have_a_message_for_rome,never_mind','a menu: who pulls the barge, the message, never mind')}
   await line('trader_who_pulls_the_barge');ok(said('boatman_the_mule_pulls_the_boat_follows'),'the boatman\'s one joke');
+  heard.length=0;talkTo(BO);{const o=await asked();ok(o.join()==='trader_i_have_a_message_for_rome,never_mind','and only once: asked, the question leaves the menu')}await line('never_mind');
   {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('reeds','use');
     ok(said('trader_the_whole_marsh_sings')&&G.frogs24&&treasures().has(24)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'the reeds touched: the frogs croak the chapter\'s tune, the reeds stir and rings spread (the hidden treasure); nothing has changed ('+cd+')')}
   heard.length=0;talkTo(BO);await line('trader_i_have_a_message_for_rome');for(let i=0;i<3;i++)await line('let_it_stand');
@@ -6615,7 +6618,16 @@
   heard.length=0;await onH('board','use');await until(()=>G.room==='board24'&&!G.busy,3000);ok(G.room==='board24'&&ART.board24.light===null,'the board, close');
   halt('board24');
   const put=async(id,p)=>{const t=C().tok.find(t=>t.id===id);await onH(t.name,'use');await onH(p==='T'?'three_taverns':'marketplace_of_appius','use')};
-  heard.length=0;for(const[id,p]of[['sextus24','M'],['mikon24','M'],['vibia24','M'],['aemilia24','M'],['postumus24','M'],['firmus24','T'],['thallos24','T']])await put(id,p);
+  /* his knees (an approved joke): with his peg at Three Taverns, back in the room, once */
+  await put('postumus24','T');await onH('back_to_the_room','walk');await until(()=>G.room==='rome24'&&!G.busy,3000);
+  heard.length=0;await talkTo(PO);ok(said('postumus_nobody_asked_my_knees'),'the old brother\'s knees, once his peg stands at Three Taverns');
+  heard.length=0;await talkTo(PO);ok(said('postumus_vibia_says_thirty_five_miles')&&!said('postumus_nobody_asked_my_knees'),'and only once');
+  await onH('board','use');await until(()=>G.room==='board24'&&!G.busy,3000);
+  /* nobody waits alone: Vibia says it, and the peg that comes back is the lonely one's, not hers */
+  heard.length=0;for(const[id,p]of[['sextus24','T'],['vibia24','T'],['aemilia24','T'],['firmus24','T'],['thallos24','T'],['mikon24','M']])await put(id,p);
+  ok(said('vibia_nobody_waits_alone')&&!G.tok24.mikon24&&G.tok24.vibia24==='T'&&!F.planned,'one alone at a place: Vibia says that nobody should wait alone, and the lonely peg comes back, not hers');
+  /* then all seven, with Postumus too far out (Mikon's peg, which came back, is set last: the words are tested only when all are set) */
+  heard.length=0;for(const[id,p]of[['postumus24','M'],['sextus24','M'],['vibia24','M'],['aemilia24','M'],['firmus24','T'],['thallos24','T'],['mikon24','M']])await put(id,p);
   ok(said('postumus_vibia_wont_hear_of_it')&&!G.tok24.postumus24&&!F.planned,'all set: the first wish broken is said by the one it concerns (Postumus, his knees), and his peg comes back');
   heard.length=0;await put('postumus24','T');await until(()=>G.room==='hills24'&&!G.busy,15000);note();
   ok(F.planned&&said('sextus_four_to_the_marketplace_three_to_three_taverns')&&said('vibia_then_its_settled_we_leave_at_dawn')&&seenTold.has('n14b')&&ROADS24.slice(3).join()==='puteoli-capua,capua-appius',
@@ -6643,7 +6655,7 @@
   heard.length=0;onH('road_north','walk');await until(()=>G.room==='taverns24'&&!G.busy,6000);
   ok(F.taverns&&said('postumus_we_waited_here_since_yesterday')&&[PO,FI,TH,IK,MI,LK].every(a=>a.room==='taverns24'),'Three Taverns: the others are waiting; the group that goes on is large');
   heard.length=0;await talkTo(IK);ok(said('innkeeper_three_taverns_two_are_mine'),'the innkeeper\'s joke');heard.length=0;await talkTo(IK);ok(said('innkeeper_water_for_the_road'),'and only once');
-  heard.length=0;await talkTo(PO);ok(said('postumus_nobody_asked_my_knees'),'the old brother\'s knees');heard.length=0;await talkTo(PO);ok(said('postumus_go_on_paul'),'and only once');
+  heard.length=0;await talkTo(PO);ok(said('postumus_go_on_paul')&&!said('postumus_nobody_asked_my_knees'),'at Three Taverns Postumus only greets: no joke at the meeting of 28:15');
   halt('taverns24');
   heard.length=0;onH('road_north','walk');await until(()=>G.room==='far24'&&!G.busy,15000);
   ok(F.far&&ROADS24.slice(5).join()==='appius-threetaverns,threetaverns-rome'&&heard.every(h=>!C().told||true),'Three Taverns to Rome on the map');
@@ -6797,7 +6809,7 @@
   {heard.length=0;const b=C().box();await onH(door(),'open');
     ok(said('paul_the_chain_doesnt_reach_i_could_ask')&&!F.men&&P.x<=b[1]+1.5&&P.x>=b[0]-1.5,'the door is out of reach: he goes as near as the chain lets him ('+P.x.toFixed(0)+'; the reach '+b[0]+'..'+b[1]+') and says that he could ask the soldier to sit elsewhere')}
   heard.length=0;await talkTo(FV);{const o=await asked();
-    ok(said('fulvius_days_to_my_discharge')&&o.length===5&&o.at(-1)==='paul_never_mind'&&!o.includes('would_you_sit_by_the_window')&&['would_you_sit_by_the_door','would_you_sit_at_the_table','could_you_move_a_little','you_can_sit_wherever_you_like'].every(k=>o.includes(k)),
+    ok(said('fulvius_days_to_my_discharge')&&o.length===5&&o.at(-1)==='never_mind'&&!o.includes('would_you_sit_by_the_window')&&['would_you_sit_by_the_door','would_you_sit_at_the_table','could_you_move_a_little','you_can_sit_wherever_you_like'].every(k=>o.includes(k)),
       'Fulvius\'s own care; then what Paul may ask him: the two other seats, each with its reason, a vague plea, a true flattery, and never mind: '+o.join(' '))}
   heard.length=0;await pickK('could_you_move_a_little');ok(said('soldier_move_where_and_what_for')&&C().seat()==='window','a vague plea does not move him');
   heard.length=0;await talkTo(FV);await pickK('you_can_sit_wherever_you_like');ok(said('soldier_i_can_and_i_like_it_here')&&C().seat()==='window','nor does flattery, true as it is');
@@ -6851,7 +6863,7 @@
   halt('philippi25');
   {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('lukes_roll','look');
     ok(said('luke_listen_here_is_where_you_come_in')&&said(C().first)&&treasures().has(25)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'Luke\'s roll: he reads what he has just set down, the first words the narrator ever told: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
-  heard.length=0;await talkTo(BA);ok(said('bassus_my_last_post_was_a_granary'),'Bassus: the granary');await pickK('paul_never_mind');
+  heard.length=0;await talkTo(BA);ok(said('bassus_my_last_post_was_a_granary'),'Bassus: the granary');await pickK('never_mind');
   await hints('hint_dictate_1','hint_dictate_2','with Timothy at the pen');
   const PHL=C().written.philippians;
   heard.length=0;await talkTo(TM);await pickK(LB().phil[1]);ok(said('paul_first_that_im_sending_him')&&!said(PHL[1]),'a line too early is his own thought');

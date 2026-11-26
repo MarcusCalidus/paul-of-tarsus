@@ -149,7 +149,7 @@ TEXTS('de',24,{
   "canal":["Kanal","1qe6bfk"],
   "canal_look24":["Der Kanal läuft neben der Straße nach Norden, bis zum Marktplatz des Appius.","056no7i"],
   "barge":["Kahn","11guyva"],
-  "barge_look24":["Ein flacher Kahn. Nachts bringt er Reisende den Kanal hinauf.","1wgpzrd"],
+  "barge_look24":["Ein flacher Kahn. Es heißt, er bringt nachts Reisende den Kanal hinauf.","12j08pc"],
   "barge_mule_look":["Das Maultier, das den Kahn zieht. Es wartet auf dem Treidelpfad.","1t92l0w"],
   "reeds":["Schilfrohre","02vbyiu"],
   "reeds_look24":["Hohes Schilf am Ufer.","0qn9huv"],
@@ -159,7 +159,7 @@ TEXTS('de',24,{
   "trader_who_pulls_the_barge":["Wer zieht den Kahn?","1qin7cm"],
   "boatman_the_mule_pulls_the_boat_follows":["Das Maultier zieht, das Boot folgt, und ich rufe. Das Rufen ist die schwere Arbeit.","1vq8d5a"],
   "trader_i_have_a_message_for_rome":["Ich habe eine Nachricht für Rom.","07f1uok"],
-  "trader_never_mind":["Schon gut.","14krqgf"],
+  "never_mind":["Schon gut.","14krqgf"],
   "boatman_pauls_the_name_under_guard":["Paulus heißt er. Er hat den Brüdern in Rom geschrieben, und jetzt kommt er unter Bewachung.","1fnl35s"],
   "boatman_he_walks_the_appian_way_north":["Er läuft die Via Appia nach Norden.","1x8hkge"],
   "boatman_when_his_seven_days_are_up":["Er verlässt Puteoli, wenn seine sieben Tage um sind.","1fwhz37"],
@@ -422,7 +422,7 @@ TEXTS('de',24,{
   "hint_a_room_with_a_door_2":["Ich sollte hinter jede der vier Türen schauen und ein Zimmer nehmen, das alle drei Dinge hat.","0maxhr6"],
   /* ---- the end screen: the lead's lines ---- */
   "he_took_courage_end":["Nach drei Monaten auf Malta stachen sie mit einem Schiff aus Alexandria in See, das die Söhne von Zeus als Galionsfigur trug. Drei Tage lag es in Syrakus im Hafen, dann fuhr es weiter bis Rhegion; Südwind kam auf, und am zweiten Tag waren sie in Puteoli. Dort trafen sie auf Brüder, die sie eindringlich baten, sieben Tage zu bleiben, und danach ging es weiter nach Rom. Die Brüder in Rom hatten von ihnen gehört und kamen ihnen entgegen: am Marktplatz des Appius, und wieder bei den Drei Schenken. Bei ihrem Anblick dankte Paulus Gott und bekam neuen Mut. In Rom durfte er für sich bleiben, bewacht von einem Soldaten.","0oum1vh"],
-  "based_on_acts_28_11_16":["Nach Apostelgeschichte 28:11-16, mit Römer 1:11, 12. Nebenfiguren, Dialoge und Rätsel sind für diese Darstellung erfunden; die Ereignisse des Berichts werden hier mit eigenen Worten erzählt. Die Apostelgeschichte sagt nicht, wie die Brüder in Puteoli gefunden wurden, wie die Nachricht nach Rom kam, wer Paulus entgegenging und warum an zwei Orte, ob er unterwegs angekettet war und wer ihn nach Rom hineinbrachte: Julius wird nach Malta nicht mehr genannt. Laut „Legt gründlich Zeugnis ab für Gottes Königreich“ gingen einige Brüder bis zum Marktplatz des Appius, während die anderen bei den Drei Schenken warteten. Wie die Galionsfigur aussah, zeigt keine Quelle; das Spiel folgt dem, was „Einsichten über die Heilige Schrift“ vermutet. Die Zahlen auf den Meilensteinen hat das Spiel selbst errechnet, und keine Quelle sagt, wie die Unterkunft von Paulus aussah.","1mvln3p"],
+  "based_on_acts_28_11_16":["Nach Apostelgeschichte 28:11-16, mit Römer 1:11, 12. Nebenfiguren, Dialoge und Rätsel sind für diese Darstellung erfunden; die Ereignisse des Berichts werden hier mit eigenen Worten erzählt. Die Apostelgeschichte sagt nicht, wie die Brüder in Puteoli gefunden wurden, wer die sieben Tage erlaubte, wie die Nachricht nach Rom kam, wer Paulus entgegenging und warum an zwei Orte, ob er unterwegs angekettet war und wer ihn nach Rom hineinbrachte: Julius wird nach Malta nicht mehr genannt. Laut „Legt gründlich Zeugnis ab für Gottes Königreich“ gingen einige Brüder bis zum Marktplatz des Appius, während die anderen bei den Drei Schenken warteten. Wie die Galionsfigur aussah, zeigt keine Quelle; das Spiel folgt dem, was „Einsichten über die Heilige Schrift“ vermutet. Die Zahlen auf den Meilensteinen hat das Spiel selbst errechnet, und keine Quelle sagt, wie die Unterkunft von Paulus aussah.","1d1w5g2"],
   /* ---- names, and the hand-over to Chapter Twenty-Five ---- */
   "Luke":["Lukas","0nmmdzm"],
   "click_to_continue_to_chapter_twenty_five":["Klicken, um mit dem fünfundzwanzigsten Kapitel weiterzumachen","0x3y9bb"],

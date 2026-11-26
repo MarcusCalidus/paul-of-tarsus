@@ -145,7 +145,7 @@ TEXTS('en',24,{
   "canal":"canal",
   "canal_look24":"The canal runs north beside the road, all the way to the Marketplace of Appius.",
   "barge":"barge",
-  "barge_look24":"A flat barge. It takes travelers up the canal by night.",
+  "barge_look24":"A flat barge. They say it takes travelers up the canal by night.",
   "barge_mule_look":"The mule that pulls the barge, waiting on the towpath.",
   "reeds":"reeds",
   "reeds_look24":"Tall reeds at the water's edge.",
@@ -155,7 +155,7 @@ TEXTS('en',24,{
   "trader_who_pulls_the_barge":"Who pulls the barge?",
   "boatman_the_mule_pulls_the_boat_follows":"The mule pulls, the boat follows, and I do the shouting. The shouting is the hard part.",
   "trader_i_have_a_message_for_rome":"I have a message for Rome.",
-  "trader_never_mind":"Never mind.",
+  "never_mind":"Never mind.",
   "boatman_pauls_the_name_under_guard":"Paul's the name. He wrote to the brothers in Rome, and now he comes under guard.",
   "boatman_he_walks_the_appian_way_north":"He walks the Appian Way north.",
   "boatman_when_his_seven_days_are_up":"He leaves Puteoli when his seven days are up.",
@@ -418,7 +418,7 @@ TEXTS('en',24,{
   "hint_a_room_with_a_door_2":"I should look behind each of the four doors, and take a room that has all three.",
   /* ---- the end screen: the lead's lines ---- */
   "he_took_courage_end":"After three months on Malta they put to sea in a ship from Alexandria whose figurehead was the Sons of Zeus. She lay three days in port at Syracuse and went along to Rhegium; a south wind got up, and on the second day they were at Puteoli. There they came upon brothers, who urged them to stay seven days, and then they went on toward Rome. The brothers in Rome had heard about them and came out to meet them: at the Marketplace of Appius, and again at Three Taverns. At the sight of them Paul gave thanks to God and took courage. In Rome he was given leave to stay by himself, with a soldier to guard him.",
-  "based_on_acts_28_11_16":"Based on Acts 28:11-16, with Romans 1:11, 12. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are told here in paraphrase. Acts does not say how the brothers at Puteoli were found, how the news reached Rome, who came out to meet Paul or why to two places, whether he was chained on the road, or who brought him into Rome: Julius is not named after Malta. Bearing Thorough Witness About God's Kingdom says that some brothers went on to the Marketplace of Appius while the others waited at Three Taverns. No source shows the ship's figurehead; the game follows what Insight on the Scriptures supposes. The numbers on the milestones are the game's own reckoning, and no source says what Paul's lodging was like.",
+  "based_on_acts_28_11_16":"Based on Acts 28:11-16, with Romans 1:11, 12. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are told here in paraphrase. Acts does not say how the brothers at Puteoli were found, who allowed the seven days, how the news reached Rome, who came out to meet Paul or why to two places, whether he was chained on the road, or who brought him into Rome: Julius is not named after Malta. Bearing Thorough Witness About God's Kingdom says that some brothers went on to the Marketplace of Appius while the others waited at Three Taverns. No source shows the ship's figurehead; the game follows what Insight on the Scriptures supposes. The numbers on the milestones are the game's own reckoning, and no source says what Paul's lodging was like.",
   /* ---- names, and the hand-over to Chapter Twenty-Five ---- */
   "Luke":"Luke",
   "click_to_continue_to_chapter_twenty_five":"Click to continue to Chapter Twenty-Five",
