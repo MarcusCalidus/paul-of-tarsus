@@ -127,18 +127,24 @@ body{display:flex;align-items:center;justify-content:center}
 #overlay.card h1{font-size:calc(var(--s)*12px);margin:0;padding:calc(var(--s)*2px) calc(var(--s)*8px);border-top:var(--px) solid var(--dim);border-bottom:var(--px) solid var(--dim)}
 #overlay.card h1.art{font-size:0;padding:0;border:0}
 /* The closing screen of the whole game (shared/finale.js), over the bench by day, which is painted as tall as the title's picture. The
-   name and the lines stand on the upper wall, in a soft shade that falls from the ceiling; the bench below stays clear and in daylight,
-   and the line that leads back to the title stands on the bench's dark front edge. */
-#overlay.closing{justify-content:flex-start;padding-top:calc(var(--s)*5px);padding-bottom:calc(var(--s)*4px);
-  background:linear-gradient(to bottom,rgba(30,20,16,.62) 0,rgba(30,20,16,.5) 38%,rgba(30,20,16,0) 56%)}
-#overlay.closing h2{margin:calc(var(--s)*2.5px) 0 calc(var(--s)*1px);letter-spacing:.14em;color:#f6ead0}
-#overlay.closing p{margin:calc(var(--s)*1.4px) 0;color:#f0e6d2;text-wrap:balance}
-#overlay.closing .small{color:#d8c8a8}
-#overlay.closing .pick{font-size:inherit;margin:0;cursor:pointer}
-#overlay.closing p.pick{margin:calc(var(--s)*1.4px) 0;font-size:calc(var(--s)*4.4px)}
-#overlay.closing .go{margin-top:auto;margin-bottom:0}
+   name and the lines stand on the upper wall, in a warm, light shade that is gone before the bench; the bench stays clear and in
+   daylight, and the line that leads back to the title stands on its dark front edge. Each line takes half a course of the wall (7.75
+   room pixels) and the line under the name a whole course, and the name with its margins takes three (46.5), so that every line
+   stands inside a course and no joint of the wall runs along through it. */
+#overlay.closing{justify-content:flex-start;padding:0 calc(var(--s)*8px);
+  background:linear-gradient(to bottom,rgba(46,28,12,.4) 0,rgba(46,28,12,.34) 34%,rgba(46,28,12,.22) 46%,rgba(46,28,12,0) 52%)}
+#overlay.closing h1{margin:calc(var(--s)*4px) 0 calc(var(--s)*3.5px)}
+#overlay.closing p{margin:0;line-height:calc(var(--s)*7.75px);color:#f6ecd8;text-wrap:balance;text-shadow:calc(var(--s)*1px) calc(var(--s)*1px) #1a0e06}
+#overlay.closing .head{font-size:calc(var(--s)*7px);line-height:calc(var(--s)*15.5px);color:#fff4dc;letter-spacing:.12em}
+#overlay.closing .small{color:#f0e0c0;max-width:calc(var(--s)*300px)}
+#overlay.closing .pick{color:#ffd36a;font-size:inherit;margin:0;cursor:pointer}
+#overlay.closing p.pick{font-size:calc(var(--s)*5.4px)}
+#overlay.closing .pick:hover{color:#fff}
+#overlay.closing .go{position:absolute;left:0;right:0;bottom:calc(var(--s)*.5px);margin:0 auto;color:#fff3b8}
 #overlay.closing>*{transition:opacity 1.2s ease-in-out}
 #overlay.closing.wait>*{opacity:0;animation:none}
+html.phone #overlay.closing{padding-top:env(safe-area-inset-top,0px)}
+html.phone #overlay.closing .small{font-size:calc(var(--s)*4.6px)}
 /* full: a menu, the safe point or an end screen owns the screen. The status line and the panel slide down out of sight and keep their
    place, so that the picture does not move, and slide back when play goes on. */
 #wrap{overflow:hidden;background:#3a2a1c var(--wood);background-size:calc(var(--s)*128px) calc(var(--s)*32px);background-blend-mode:multiply;image-rendering:pixelated}

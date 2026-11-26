@@ -493,12 +493,12 @@
       shots.forEach((k,i)=>g.drawImage(k,(i%C)*648,Math.floor(i/C)*296));
       window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'lookback-maps']:z.toDataURL()})})}
   /* The finale (shared/finale.js, issue #95): everything after the last chapter's open door. finale plays it whole at speed and checks
-     it; the stops beginning with p are its pictures at the game's own pace: pletters (the map on which Paul does not move), plookback (a
+     it; the stops beginning with p are its pictures at the game's own pace: pletters (the map on which Paul does not move), proll (the roll closed in the hands), plookback (a
      road being drawn, with its chapter's name), plook1 to plook12 (each map of the look back by itself, as its last road is drawn),
      pclosing (the closing screen), pabout (the page behind it), ptitlefin (the title of a
      finished game). Until the last chapter is built, the newest chapter there is stands in for it: it is given the flag that says
      finished, its place in the manifest (done) and a page about itself, and is entered at a safe point of its own. */
-  if(/^(finale|pletters|plookback|plook\d+|pclosing|pabout|ptitlefin|phone(letters|lookback|closing|about))$/.test(stop)){clearInterval(sk);sk=0;
+  if(/^(finale|pletters|proll|plookback|plook\d+|pclosing|pabout|ptitlefin|phone(letters|lookback|closing|about))$/.test(stop)){clearInterval(sk);sk=0;
     /* the same pictures on a phone held sideways: phoneletters, phonelookback, phoneclosing, phoneabout */
     const is=k=>stop===k||stop==='phone'+k.slice(1),haltAs=k=>halt(is(k)?stop:k);
     const FN=await need('finale'),M=await need('map'),LB=await need('lookback'),TU=await need('tunes'),real=FN.last(),n=real||Math.max(...Object.keys(CHAP).map(Number));
@@ -512,7 +512,8 @@
     M.journey=function(r,o){views.push((o&&o.view)||'');return j0.apply(this,arguments)};
     /* a line told over a map stands clear of the places on that map's roads: neither a lit dot nor its name lies under the line. Looked
        at many times a second while the finale plays (a name of a land or a sea may lie under it) */
-    const cover=new Set(),watch=setInterval(()=>{const el=document.querySelector('#speech .line');if(!el||G.scene!==M.draw||!told.length||+$('#dim').style.opacity>.05)return;
+    let rolled=0;
+    const cover=new Set(),watch=setInterval(()=>{if(SHARED.scroll&&SHARED.scroll.frame>rolled)rolled=SHARED.scroll.frame;const el=document.querySelector('#speech .line');if(!el||G.scene!==M.draw||!told.length||+$('#dim').style.opacity>.05)return;
       const key=told[told.length-1].k,v=vp.getBoundingClientRect(),r=el.getBoundingClientRect(),q=v.width/320,x0=(r.left-v.left)/q,y0=(r.top-v.top)/q,x1=(r.right-v.left)/q,y1=(r.bottom-v.top)/q,[ox,oy,w]=M.window(),z=320/w,over=M.state.over||{};
       for(const id of M.state.seen){const pl=M.places[id];if(!pl||pl.hide||pl.cape||(over[id]&&over[id].hide))continue;const[x,y]=M.where(id);
         if(x>x0-2&&x<x1+2&&y>y0-2&&y<y1+2)cover.add(key+': the dot of '+id);
@@ -523,6 +524,9 @@
       capOf=ch=>ch==='pro'?T('Prologue')+' · '+T(PRO.title):CHAP[ch]?T(CHAP[ch].label)+' · '+T(CHAP[ch].title):'',
       PHIL=['paul_wrote_that_his_situation_helped_the_good_news','the_whole_guard_knew_why_he_was_in_bonds','his_bonds_gave_most_brothers_confidence_philippians_1_12_14'];
     if(is('pletters')){G.speedAll=1;clearInterval(lines);FN.run();await until(()=>names(PHIL[0]));await wait(400);haltAs('pletters')}
+    /* the roll, closed: the lines before it are passed over, the closing plays at its own pace, and the picture is taken as it is held */
+    if(stop==='proll'){G.speedAll=1;FN.run();await until(()=>names('here_the_account_ends'),120000);await wait(300);clearInterval(lines);if(G.skip&&G.skip.name!=='cut')G.skip();
+      await until(()=>SHARED.scroll&&SHARED.scroll.frame>=SHARED.scroll.frames.length-3,60000);halt('proll')}
     if(is('plookback')){G.speedAll=1;clearInterval(lines);FN.again();await until(()=>G.cap===capOf(8),120000);haltAs('plookback')}
     {const one=stop.match(/^plook(\d+)$/);if(one){G.speedAll=1;clearInterval(lines);const J=LB.JOURNEYS[+one[1]-1];LB.JOURNEYS.splice(0,LB.JOURNEYS.length,J);
       FN.again();await until(()=>G.cap===capOf(J.parts[J.parts.length-1].ch),120000);halt(stop)}}
@@ -534,6 +538,7 @@
       ok(views[0]==='letters'&&ph.map&&ph.legs===0&&['rome','philippi','ephesus','colossae'].every(k=>ph.seen.includes(k))&&ph.seen.length===4&&PHIL.every((k,i)=>ks[i]===k),
         'first the map on which Paul does not move: Rome, then Philippi, Ephesus and Colossae lit, no road drawn, and Philippians 1:12-14 told in three lines');
       ok(ks[3]==='here_the_account_ends'&&end.ink,'then the dark, and the narrator\'s last line read from the roll');
+      {const S=SHARED.scroll;ok(!!S&&rolled===S.frames.length-1&&S.frame===0&&S.state==='down'&&!S.over.length,'then the hands close the roll, frame by frame to the last ('+rolled+'), and it stands open again for the next line told in the dark')}
       ok(JSON.stringify(ks.slice(4))===JSON.stringify(maps.map(J=>J.line))&&JSON.stringify(views.slice(1))===JSON.stringify(maps.map(J=>J.view||'')),'then the look back: '+maps.length+' maps in their order, each with its own line'+(JSON.stringify(ks.slice(4))===JSON.stringify(maps.map(J=>J.line))?'':'. LINES: '+ks.slice(4).join(' '))+(JSON.stringify(views.slice(1))===JSON.stringify(maps.map(J=>J.view||''))?'':'. WINDOWS: '+views.slice(1).join(' ')));
       {const parts=maps.flatMap(J=>J.parts),want=parts.filter(p=>TU.has(p.ch)),bad=[];
         want.forEach((p,i)=>{const b=bars[i];if(!b||b.cap!==capOf(p.ch)||b.sc.root!==TU.BARS[p.ch].root||b.sc.dt!==TU.BARS[p.ch].dt)bad.push(p.ch)});

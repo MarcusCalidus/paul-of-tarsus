@@ -4,7 +4,7 @@
    The game ends where Acts ends: inside the two years in Rome, with the door open (Acts 28:30, 31). The last chapter plays its last scene
    in the room and then hands over here with one call, in place of an end screen:
 
-     run()     everything after the open door, in this order:
+     run(o)    everything after the open door (o.mood: the mood of the chapter's score for it), in this order:
                1. the map on which Paul does not move: Rome, and Philippi, Ephesus and Colossae lighting up, where the letters written in
                   that room went, while Philippians 1:12-14 is told. No road is drawn: no source gives one.
                2. the narrator's roll: the last line of the game, and then the hands close the roll (shared/scroll.js).
@@ -62,13 +62,17 @@ async function letters(){if(RUN.all)return;const M=await need('map');
   for(const k of PHIL)await tell(k,{low:1})}
 
 /* ---------- 2. the narrator's roll, and the hands that close it ---------- */
+/* The one time anything but the flames moves in that picture (CONTRIBUTING section 4): after the game's last line the reader's hands
+   roll both ends in to the middle, and the closed roll is held between the two lamps (SHARED.scroll.close). */
 async function roll(){if(RUN.all)return;
   await fade(1,ms(800));   /* in the dark the narrator's line is read from the roll (say) */
   await tell('here_the_account_ends',{dur:9000});
   const S=SHARED.scroll;if(!S||RUN.all||!S.close)return;
   await S.up();RUN.cut=false;G.skip=cut;G.lineT=performance.now();   /* up: the roll stays, though its line has ended */
   await pause(500);await until(S.close());await pause(1300);
-  if(G.skip===cut)G.skip=null;RUN.cut=false;await S.down();if(S.open)S.open()}
+  /* passed over: the roll is gone at once (off also stops the closing and shows the roll open the next time) */
+  if(G.skip===cut)G.skip=null;if(over()){S.off();RUN.cut=false;return}
+  await S.down();S.open()}
 
 /* ---------- 3. the look back ---------- */
 /* POS: where each map's line stands, clear of the places on that map's roads (the stop finale checks it in every language): at the top
@@ -111,10 +115,10 @@ async function closing(o){o=o||{};const[sp,logo]=await Promise.all([need('splash
   if(sp){sp.score.then={dt:sp.score.dt,steps:16,root:sp.score.root,scale:sp.score.scale,bars:1,tracks:[]};setScore(sp.score);AU.step=0;kick()}else setScore(null);
   const page=()=>overlay('on closing',()=>{const name=T('paul_of_tarsus'),sub=T('on_the_roads_of_rome'),art=logo&&logo.can(name+sub)?logo.paint(name,sub):null,got=treasures().size,all=hidden().length;
       ov.innerHTML=(art?'<h1 class="art"></h1>':'<h1>'+esc(name)+'</h1><h2>'+esc(sub)+'</h2>')+
-        '<h2>'+esc(T('from_damascus_to_rome'))+'</h2><p class="small">'+esc(T('a_prologue_and_twenty_five_chapters'))+'</p>'+
+        '<p class="head">'+esc(T('from_damascus_to_rome'))+'</p><p class="small">'+esc(T('a_prologue_and_twenty_five_chapters'))+'</p>'+
         '<p data-tre="1">'+esc(T('hidden_treasures_n_of_all',{n:got,all}))+(got<all?' &middot; <span class="pick" data-tre="1">'+esc(T('look_for_the_others'))+'</span>':'')+'</p>'+
         '<p class="small">'+esc(T('based_on_acts_and_on_letters_of_paul'))+'</p><p>'+esc(T('acts_ends_here_paul_was_apparently_set_free'))+'</p>'+
-        (about?'<p class="pick" data-about="1">&#9656; '+esc(T('about_the_last_chapter'))+'</p>':'')+
+        (about?'<p class="pick" data-about="1">'+esc(T('about_the_last_chapter'))+'</p>':'')+
         '<p class="go">'+esc(T('click_to_return_to_the_title'))+'</p>';
       if(art){art.textContent=name+' '+sub;art.setAttribute('role','img');art.setAttribute('aria-label',T('paul_of_tarsus_on_the_roads'));
         art.style.width='calc(var(--s)*'+art.width/HR+'px)';art.style.height='calc(var(--s)*'+art.height/HR+'px)';ov.querySelector('h1').appendChild(art)}
@@ -130,7 +134,9 @@ async function closing(o){o=o||{};const[sp,logo]=await Promise.all([need('splash
   /* the picture comes first, out of the dark; then the words on its wall */
   page();ov.classList.add('wait');await fade(0,quick()?40:1300);await wait(quick()?20:500);ov.classList.remove('wait');shown=true}
 
-async function run(){begin();
+async function run(o){begin();
+  /* the page about the last chapter is what its level returns as about; one given with the call is kept for this sitting */
+  if(o&&o.about&&!CHAP[G.ch].about)CHAP[G.ch].about=o.about;if(o&&o.mood)AU.mood=o.mood;
   for(const part of[letters,roll,lookBack])try{await part()}catch(e){console.error(e)}
   if(G.skip===cut)G.skip=null;
   return closing({keep:1})}

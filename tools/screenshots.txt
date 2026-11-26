@@ -48,6 +48,7 @@ cenchreae15 cen15
 chained chained18 cast-chained
 chained20 chained20 cast-chained20
 charges20 pcharges20
+closing-screen pclosing
 coast-road proad16
 coast-sheet coast coast-sheet
 coast-wind coast coast-wind
@@ -171,6 +172,7 @@ road road
 road-to-rome map24 map24-sheet
 road21 proad21
 roads21 proads21
+roll-closed proll
 romans romans cast-romans
 room20 proom20
 routes routes15 routes-cen15
