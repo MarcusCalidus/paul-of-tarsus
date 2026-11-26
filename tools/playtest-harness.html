@@ -4755,7 +4755,7 @@
   heard.length=0;talkTo(LK);for(const p of['Jerusalem','Antioch','Paphos'])await pick(p);pick('Lystra');await until(()=>F.luke&&!G.busy,6000);
   ok(['luke_where_cephas','luke_where_lucius','luke_where_sergius_paulus','luke_where_timothy','luke_thats_everything'].every(said)&&LK.room===null,'Cephas, Lucius, Sergius Paulus, Timothy; Luke has what he needs');
   heard.length=0;await onH('window_over_the_harbor','look');await until(()=>G.room==='window20'&&!G.busy);heard.length=0;await onH('harbor_of_sebastos','look');
-  ok(said('winter_even_the_ships')&&!ROOMS.window20.birds(),'winter at the window: no birds in the rain');
+  {const b=ROOMS.window20.birds();ok(said('winter_even_the_ships')&&(!b||(!b.gulls&&b.huddle)),'winter at the window: no bird in the air in the rain, and the gull on the quay sits hunched')}
   /* the first spring: the purse stays shut */
   await scratch(4,'window');
   ok(heard.includes(T('spring_came'))&&G.room==='hall20'&&DR.room!=='hall20'&&said('felix_you_have_friends_here'),'spring; Felix sends for him again');
