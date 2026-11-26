@@ -105,34 +105,88 @@ const FONT21=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;
 /* ==== ART court21: begin ==== */
 /* The court of the palace by morning, painted by shared/caesarea.js (SHARED.caesarea.court, whose header describes it), with the scribe's
    desk at the back left of the dais (desk) and no small table beside the seat (table:false: the advisers stand there at the hearing).
-   ART-TODO (the cart): at the left edge, a carter's two-wheeled cart stands unhitched in front of the sea wall, by the gate of the palace
-   (out of the picture at the left), its ox goad lying along its bed. The placeholder below is plain, at its final place; its wheel is a
-   solid disc, with no spokes. The goad lies along the bed and crosses neither the cart's rails, the coping of the sea wall nor the
-   horizon; whoever paints it leaning must keep it so (SP/pair1/ROOMS-21.md).
+   At the left edge, a carter's two-wheeled cart stands unhitched in front of the sea wall, by the gate of the palace (out of the picture
+   at the left), its ox goad lying along its bed (CRT21, cart21 below). Its wheels are solid discs, with no spokes. The goad lies along
+   the bed and crosses neither the cart's rails, the coping of the sea wall nor the horizon.
    Called from outside: ART.court21. Reads F.gull (a gull stands on the governor's seat until the clerk sends it off; see the birds).
    Hotspots (ROOMS.court21): the sea 0,40,186,38 · the sea wall 0,78,186,18 · the governor's seat 226,78,26,24 · the dais 196,96,112,16 ·
    the desk 152,88,36,22 · the cart 4,110,42,28 · the ox goad 6,106,46,8 · the way to the writing room 304,96,16,48. Walk: 30..300 by
    114..138 (SHARED.caesarea.WALK); while Paul is played (chained) the walk is his own place. Actors: the clerk sits at the desk 162,110;
    Festus on the seat 238,100; the advisers 270,101 and 292,101; Paul 210,128 and the soldier a step behind him on his left; the
    accusers at 140,122 · 116,128 · 94,120 · 70,126; the officer 300,130. After the hearing Bernice 76,124 and King Agrippa 100,120 facing
-   right, Festus 128,120 facing left. Footprint: the cart 30,126,16,10. */
-const CART21={x0:4,x1:46,top:110,foot:136};
+   right, Festus 128,120 facing left. Footprint: the cart 30,114,25,22 (the whole of it inside the strip, so that nobody stands behind
+   it). */
+const CART21={x0:4,x1:50,top:108.8,foot:136};
 let SC21=null;
 ART.court21={w:320,q:12,paint(g){SC21=K21.court(g,{hour:'morning',table:false,desk:1});cart21(g)},light:K21.light('morning'),
   draw(g,t){if(SC21)SC21.draw(g,t);chains21(g)},front(){},
-  props:[{y:136,shape(g){cartShape21(g,'#000')},foot:[30,126,16,10]}]};
-/* the cart (ART-TODO): a plain box of a bed on a solid wheel, its shaft resting on the paving toward us, and the goad along its bed */
-function cartShape21(g,c){poly(g,[4,114,44,114,46,124,6,124],c);R(g,18,118,18,18,c);poly(g,[40,122,46,122,48,134,44,136],c)}
-function cart21(g){M21.shadow(g,26,136,22,2.6,.5);
-  /* the bed, its boards running along it; lit from the right */
-  poly(g,[4,114,44,114,46,124,6,124],'#7a5a3a');R(g,6,114,38,1.2,'#a07a52');R(g,6,119,38,.6,'rgba(30,18,10,.35)');R(g,6,123,40,1,'#4e3824');
-  /* the goad along the bed: a long plain rod, a little point of metal at the left end and a small blade at the right */
-  R(g,2,111,46,1.1,'#8a6a44');R(g,2,111,46,.4,'#c09a6a');R(g,0.5,111.2,2,.8,'#a8a8a8');R(g,48,110.6,2.4,1.6,'#9a9a9c');
-  /* the wheel: a solid disc of planks, its hub a small square */
-  g.fillStyle='#5e4430';g.beginPath();g.arc(27,127,9,0,6.2832);g.fill();g.fillStyle='#7a5a3e';g.beginPath();g.arc(26,126,7.6,0,6.2832);g.fill();
-  R(g,25,125,2.4,2.4,'#3a281a');
-  /* the shaft, resting on the paving */
-  poly(g,[40,122,46,122,48,134,44,136],'#6a4c30')}
+  /* the cart covers the floor from the sea wall's side to the front of its wheel and the foot of its pole: nobody stands behind it,
+     where the goad on its bed would run across his legs */
+  props:[{y:136,shape(g){cartShape21(g,'#000')},foot:[30,114,25,22]}]};
+/* The cart: a carter's farm cart on two solid wheels, standing unhitched, seen from its near side and a little from above, its front
+   toward the hall. Its bed is a box of boards: the near side two planks one above the other (their seam runs the length of the bed and
+   meets nothing), the inside of the bed in the shade of the near side, the far side's rail lit along its top, and the outer face of the
+   front end turned to the low sun at the right. The near wheel stands outside the bed: a solid disc of three planks whose seams run one
+   way only and stop at the rim, its tread lit on the sun's side, and a small square hub; of the far wheel only a curve shows under the
+   bed. The pole comes out under the front corner of the bed and runs toward us down to the paving, where its end rests; it lies wholly
+   on one paving stone (between the joints at y 121.6 and 132.2 and the slanting joints on either side) and crosses no joint. Along the
+   bed lies the ox goad: a plain rod a little longer than the bed, resting on its two ends, a small iron point at its left end and a
+   small flat iron blade at its right, a little wider than the rod and running the same way (never across it); the rod crosses nothing
+   but the slanting tops of the cart's two ends. The cart casts its shadow to the left, away from the sun. Nothing round lies where a
+   head comes. */
+const CRT21={top:113.4,seam:117.4,bot:121.6,x0:4,x1:44,dx:6,dy:4.6,wheel:[27,127,9],far:[33.4,122.6,8.6],
+  pole:[44,121.6,46.6,121.6,40.4,131.6,37,131.4],goad:[1.4,110.6,51.6,112.5]};
+function cartShape21(g,c){const C=CRT21,{x0,x1,top,bot,dx,dy}=C,[gx0,gy0,gx1,gy1]=C.goad;
+  poly(g,[x0,top,x0+dx,top-dy,x1+dx,top-dy,x1+dx,bot-dy-1,x1,bot,x0,bot],c);poly(g,C.pole,c);
+  g.fillStyle=c;g.beginPath();g.arc(C.wheel[0],C.wheel[1],C.wheel[2]+.8,0,6.2832);g.fill();g.beginPath();g.arc(C.far[0],C.far[1],C.far[2],0,6.2832);g.fill();
+  poly(g,[gx0-.4,gy0-.8,gx1+.8,gy1-1.2,gx1+.8,gy1+1.2,gx0-.4,gy0+.9],c)}
+function cart21(g){const C=CRT21,{x0,x1,top,seam,bot,dx,dy}=C,r=rng(2131),[wx,wy,wr]=C.wheel,[fx,fy,fr]=C.far;
+  /* the shadow, cast to the left and a little toward us by the low sun at the right, and the shade under the bed */
+  comp(g,'multiply',.5,()=>{poly(g,[-8,124,x1+dx-4,124,x1+2,131.6,36,137.2,-10,137.2]);g.fillStyle=lg(g,0,124,0,138,['rgba(120,104,140,.5)','rgba(96,80,120,1)']);g.fill()});
+  M21.shadow(g,wx-4,136.2,10,1.6,.6);M21.shadow(g,C.pole[6]-.6,131.8,2.6,.8,.5);
+  /* the far wheel, in the shade under the bed: only its lower curve shows between the near wheel and the pole */
+  g.fillStyle='#3e2c1e';g.beginPath();g.arc(fx,fy,fr,0,6.2832);g.fill();
+  g.strokeStyle='rgba(150,112,72,.55)';g.lineWidth=.5;g.beginPath();g.arc(fx,fy,fr-.4,-.5,1.1);g.stroke();
+  /* the inside of the bed: the inner face of the far side and of the left end, deep in the shade of the near side */
+  const IN=[x0,top,x0+dx,top-dy,x1+dx,top-dy,x1,top];poly(g,IN);g.fillStyle=lg(g,0,top-dy,0,top,['#6e5236','#4a3422','#3a2818']);g.fill();
+  clipTo(g,()=>poly(g,IN),()=>{tex(g,'wood',.3,x0,top-dy,x1+dx-x0,dy,'overlay',.6);
+    /* the left end's inner face, turned to the sun */
+    poly(g,[x0,top,x0+dx,top-dy,x0+dx+2.2,top-dy,x0+2.2,top],'#8e6c48');
+    R(g,x0,top-dy,x1+dx,.6,'#b48c5c')});
+  /* the far side's rail, lit along its top */
+  R(g,x0+dx,top-dy-.2,x1-x0,.5,'#a8845a');
+  /* the front end, its outer face in the sun: two planks, their seam slanting with the top */
+  const FR=[x1,top,x1+dx,top-dy,x1+dx,bot-dy-1,x1,bot];poly(g,FR);g.fillStyle=lg(g,x1,0,x1+dx,0,['#b88e5e','#d2a874']);g.fill();
+  clipTo(g,()=>poly(g,FR),()=>{tex(g,'wood',.35,x1,top-dy,dx,bot-top+dy,'overlay',.6);stroke(g,[x1,seam,x1+dx,seam-dy],'rgba(70,46,26,.6)',.5);
+    stroke(g,[x1,seam+.5,x1+dx,seam-dy+.5],'rgba(255,226,170,.35)',.5)});
+  stroke(g,[x1+.2,top,x1+dx+.2,top-dy],'#f0cc94',.5);
+  /* the near side: two long boards, the upper one's top a rail catching the light; the side in the shade of its own bed */
+  M21.board(g,x0,top,x1-x0,seam-top,'#7e5e3e',r);M21.board(g,x0,seam,x1-x0,bot-seam,'#6e5034',r);
+  comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,x0,0,x1,0,['#5a4a6a','#ffffff']);g.fillRect(x0,top,x1-x0,bot-top)});
+  R(g,x0,top,x1-x0,.6,'#d4aa76');R(g,x0,bot-.6,x1-x0,.6,'#2e2016');R(g,x1-.6,top,.6,bot-top,'#c89a66');
+  /* the pole, coming out under the front corner and running toward us to the paving, widening as it nears; lit on the sun's side */
+  const PL=C.pole;poly(g,PL);g.fillStyle=lg(g,PL[6],0,PL[4],0,['#4e3624','#6e4e30','#9a7246']);g.fill();
+  stroke(g,[PL[2]-.3,PL[3]+.4,PL[4]-.3,PL[5]-.2],'#c49a68',.5);R(g,PL[0],PL[1],PL[2]-PL[0],.5,'rgba(30,20,12,.4)');
+  /* the near wheel: a solid disc of three planks, the seams upright and stopping at its rim; its tread, lit by the sun at the right, a
+     crescent on that side; a small square hub */
+  g.fillStyle='#8c6a44';g.beginPath();g.arc(wx+.7,wy,wr,0,6.2832);g.fill();
+  g.fillStyle=lg(g,wx-wr,wy-wr,wx+wr,wy+wr,['#7a5a3a','#6a4c30','#4a3422']);g.beginPath();g.arc(wx,wy,wr,0,6.2832);g.fill();
+  clipTo(g,()=>{g.beginPath();g.arc(wx,wy,wr-.4,0,6.2832)},()=>{tex(g,'vert',.35,wx-wr,wy-wr,wr*2,wr*2,'overlay',.6);
+    for(const sx of[wx-3.6,wx+2.6]){R(g,sx,wy-wr,.5,wr*2,'rgba(36,24,14,.55)');R(g,sx+.5,wy-wr,.5,wr*2,'rgba(220,176,120,.22)')}
+    pool(g,wx+3,wy-3,6,5,'#f8d8a8',.18,'screen')});
+  g.strokeStyle='rgba(40,26,16,.7)';g.lineWidth=.8;g.beginPath();g.arc(wx,wy,wr-.6,0,6.2832);g.stroke();
+  g.strokeStyle='rgba(255,220,160,.5)';g.lineWidth=.5;g.beginPath();g.arc(wx+.5,wy,wr+.1,-1.1,1.1);g.stroke();
+  R(g,wx-1.6,wy-1.6,3.2,3.2,'#3a281a');R(g,wx+1.1,wy-1.6,.5,3.2,'#b08a5e');R(g,wx-1.6,wy-1.6,3.2,.5,'#6a4c30');
+  /* the goad, along the bed: a plain rod of pale wood, lit along its top; at its left end a small iron point, at its right a small flat
+     blade a little wider than the rod, running the same way */
+  const[gx0,gy0,gx1,gy1]=C.goad,ang=Math.atan2(gy1-gy0,gx1-gx0),L=Math.hypot(gx1-gx0,gy1-gy0);
+  g.save();g.translate(gx0,gy0);g.rotate(ang);
+  comp(g,'multiply',.45,()=>{g.fillStyle='#3a2a3a';g.fillRect(2,.7,L-4,.8)});
+  g.fillStyle=lg(g,0,-.7,0,.7,['#f4dcaa','#c8a474','#86683e']);g.fillRect(2.2,-.7,L-5,1.4);
+  poly(g,[-.2,0,2.4,-.55,2.4,.55]);g.fillStyle=lg(g,0,-.6,0,.6,['#d8dce0','#8a8e96','#4a4c54']);g.fill();
+  poly(g,[L-3,-.6,L+.2,-.95,L+.2,.95,L-3,.6]);g.fillStyle=lg(g,0,-1,0,1,['#e4e6ea','#9a9ea6','#50525a']);g.fill();
+  g.fillStyle='#f4f2ec';g.fillRect(L-.3,-.95,.5,1.9);
+  g.restore()}
 /* ==== ART court21: end ==== */
 
 /* ==== ART write21: begin ==== */
