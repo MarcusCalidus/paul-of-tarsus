@@ -226,45 +226,76 @@ function gallery(g,G,C){const{k,sheer}=G,q=G.gallery,yP=sheer(G.post.x)+.5*k,x0=
    bowed there, its bill pointing toward the bow and down, toward the neck, almost touching it. The timber is thick (at its foot about
    twice the loom of a steering oar) and stays full all the way round. A carved ornament of plain weathered wood: one piece, no outline,
    lit by its scene; no figurehead, no gilding, nothing set under it. */
-const SWAN={/* the neck's middle line, [u, v, thickness] */
-  line:[[0,0,.47],[.1,.5,.46],[.2,1.1,.44],[.23,1.75,.42],[.16,2.35,.39],[-.02,2.8,.37],[-.27,3.02,.35],[-.5,2.95,.34],[-.64,2.68,.33],[-.68,2.32,.33],[-.64,2.04,.32]],
-  head:{c:[-.6,1.88],bill:[.76,-.65],a:.34,b:.27,bl:.38},top:3.05};
+const SWAN={/* the neck's middle line, [u, v, thickness]; broad heavy timber all the way round, tall narrow sky oval inside, swelling smoothly into the rounded skull */
+  line:[[0,0,.88],[.15,.48,.78],[.35,1.05,.70],[.46,1.68,.66],[.42,2.28,.64],[.21,2.75,.62],[-.14,2.94,.60],[-.45,2.78,.56],[-.58,2.44,.51],[-.60,2.12,.42],[-.57,1.84,.55],[-.50,1.63,.58],[-.40,1.46,.34]],
+  head:{c:[-.51,1.66],bill:[.49,-.872],a:.30,b:.29,bl:.52},athwart:.54,top:3.24};
 function cr(P,n){const out=[];for(let i=0;i<P.length-1;i++){const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(P.length-1,i+2)];
   for(let j=0;j<n;j++){const t=j/n,t2=t*t,t3=t2*t,f=(k)=>.5*((2*p1[k])+(-p0[k]+p2[k])*t+(2*p0[k]-5*p1[k]+4*p2[k]-p3[k])*t2+(-p0[k]+3*p1[k]-3*p2[k]+p3[k])*t3);out.push([f(0),f(1),f(2)])}}
   out.push(P[P.length-1].slice());return out}
-/* swanDraw(g, M, cols, Ld): M(u, v) gives [x, y, px per unit] in the picture; cols {mid, sh, lit, bill, billLit, eye}; Ld the
-   direction toward the light in the picture (unit vector). The neck is one filled outline; its lit and shaded sides are bands
-   clipped inside it, so it stays one piece with no outline; then the head: the skull a little wider than the neck, the long flattish
-   bill in a warmer tone with a small knob at its root, the eye a small square. */
-function swanDraw(g,M,cols,Ld){const S=cr(SWAN.line,6),Q=S.map(([u,v,t])=>{const[x,y,k]=M(u,v);return[x,y,t*k]}),n=Q.length,Lx=[],Rx=[];
-  for(let i=0;i<n;i++){const a=Q[Math.max(0,i-1)],c=Q[Math.min(n-1,i+1)],tx=c[0]-a[0],ty=c[1]-a[1],l=Math.hypot(tx,ty)||1,nx=-ty/l,ny=tx/l,w=Q[i][2]/2;
-    Lx.push(Q[i][0]+nx*w,Q[i][1]+ny*w);Rx.push(Q[i][0]-nx*w,Q[i][1]-ny*w)}
-  /* the head, built in the picture from where its middle and its bill fall, so that it keeps its breadth from any side: the skull a
-     rounded shape a little wider than the neck, drawn out along the bill's line as far as the view shows it, and at least as long as
-     it is broad */
-  const H=SWAN.head,bd=H.bill,pt=[-bd[1],bd[0]],top=pt[0]>0?pt:[-pt[0],-pt[1]],U=(a,b)=>M(H.c[0]+bd[0]*a+top[0]*b,H.c[1]+bd[1]*a+top[1]*b),U2=(a,b)=>U(a,b).slice(0,2);
-  const hc=U(0,0),sc=hc[2],r0=H.a*.75,bt=U(r0+H.bl,0),bv=[bt[0]-hc[0],bt[1]-hc[1]],bL=Math.hypot(...bv)||1,bx=bv[0]/bL,by=bv[1]/bL,qx=-by,qy=bx,
-    along=Math.max(bL/(r0+H.bl)*H.a,H.b*.85*sc),br=H.b*sc,
-    /* the side of the bill that was its top before the head bowed: toward the light's side in a front view, toward the top in the side view */
-    sg=(qx*(U(0,.1)[0]-hc[0])+qy*(U(0,.1)[1]-hc[1]))>.05*sc?1:-1;
-  const skull=[];for(let i=0;i<20;i++){const th=i/20*6.2832,c=Math.cos(th),sn=Math.sin(th),l=c<0?along*1.05:along*.85;skull.push(hc[0]+bx*c*l+qx*sn*br,hc[1]+by*c*l+qy*sn*br)}
-  const neck=Lx.concat(ptsBackG(Rx));
-  /* both outlines wound the same way, so that where the neck runs into the skull the shape stays whole (no hole where they overlap) */
+/* swanDraw(g, M, cols, Ld, opt): M(u, v) gives [x, y, px per unit] in the picture; cols {mid, sh, lit, bill, billLit, eye}; Ld the
+   direction toward the light in the picture (unit vector); opt {fs, fc} the foreshortening (|sin|, |cos| of yaw; side view 1, 0).
+   The neck and rounded skull form one continuous carved silhouette with true 3D elliptical cross-section projection; its lit and shaded
+   sides are flat bands clipped inside it, so it stays one piece with no outline, no seam and no hole; then the bill in a warmer tone,
+   long and flattish with a small basal knob, and the eye as a small square. */
+function swanDraw(g,M,cols,Ld,opt){opt=opt||{};const fs=opt.fs!=null?opt.fs:1,fc=opt.fc!=null?opt.fc:0,aw=SWAN.athwart;
+  const S=cr(SWAN.line,8),n=S.length,Q=[];
+  for(let i=0;i<n;i++){const a=S[Math.max(0,i-1)],c=S[Math.min(n-1,i+1)],du=c[0]-a[0],dv=c[1]-a[1],dl=Math.hypot(du,dv)||1,tu=du/dl,tv=dv/dl,
+      l2=Math.hypot(tu*fs,tv)||1,t=S[i][2],tw=t*aw,tEff=Math.hypot(t*fs,tw*Math.abs(tv)*fc)/l2,[x,y,k]=M(S[i][0],S[i][1]);
+    Q.push([x,y,tEff*k])}
+  /* build a ribbon from a centerline P, untangling any inner-bend fold so tight foreshortened arches never notch */
+  const ribOf=(P,scale,off)=>{const m=P.length,Lo=[],Ro=[];
+    for(let i=0;i<m;i++){const a=P[Math.max(0,i-1)],c=P[Math.min(m-1,i+1)],tx=c[0]-a[0],ty=c[1]-a[1],l=Math.hypot(tx,ty)||1,nx=-ty/l,ny=tx/l,
+        w=P[i][2]*scale/2,ox=Ld[0]*P[i][2]*off,oy=Ld[1]*P[i][2]*off;
+      Lo.push([P[i][0]+ox+nx*w,P[i][1]+oy+ny*w]);Ro.push([P[i][0]+ox-nx*w,P[i][1]+oy-ny*w])}
+    for(const E of[Lo,Ro])for(let pass=0;pass<3;pass++)for(let i=1;i<m;i++){
+      const tx=P[i][0]-P[i-1][0],ty=P[i][1]-P[i-1][1];
+      if((E[i][0]-E[i-1][0])*tx+(E[i][1]-E[i-1][1])*ty<0){const mx=(E[i][0]+E[i-1][0])/2,my=(E[i][1]+E[i-1][1])/2;E[i-1]=[mx,my];E[i]=[mx,my]}}
+    const Lx=[],Rx=[];for(let i=0;i<m;i++){Lx.push(Lo[i][0],Lo[i][1]);Rx.push(Ro[i][0],Ro[i][1])}
+    return Lx.concat(ptsBackG(Rx))};
+  const neck=ribOf(Q,1,0);
+  /* the head frame, built from where its middle and bill fall: the rounded skull is part of the continuous curve, with a subtle
+     cranium fill so the crown and cheek stay full at any angle */
+  const H=SWAN.head,bd=H.bill,pt=[-bd[1],bd[0]],top=pt[0]>0?pt:[-pt[0],-pt[1]],U=(a,b)=>M(H.c[0]+bd[0]*a+top[0]*b,H.c[1]+bd[1]*a+top[1]*b);
+  const hc=U(0,0),sc=hc[2],r0=H.a*.76,bt=U(r0+H.bl,0),bv=[bt[0]-hc[0],bt[1]-hc[1]],bL=Math.hypot(...bv)||1,bx=bv[0]/bL,by=bv[1]/bL,qx=-by,qy=bx,
+    along=Math.max(bL/(r0+H.bl)*H.a,H.b*.92*sc),
+    br=H.b*Math.hypot(fs,aw*fc)*sc,
+    /* the forehead / upper-culmen side of the bill: toward the inner oval and top */
+    sg=(qx*(U(0,.1)[0]-hc[0])+qy*(U(0,.1)[1]-hc[1]))>=0?1:-1;
+  const skull=[];for(let i=0;i<24;i++){const th=i/24*6.2832,c=Math.cos(th),sn=Math.sin(th),
+      l=c<0?along*1.04:along*.88,w=sn*sg>0?br*.98:br*.96;
+    skull.push(hc[0]+bx*c*l+qx*sn*w,hc[1]+by*c*l+qy*sn*w)}
+  /* extended centerline for shading bands only: extends past both ends (below the foot and past the bill root) so every flat band
+     flows seamlessly from foot through arch and skull without stopping short or making a cap */
+  const d0x=Q[1][0]-Q[0][0],d0y=Q[1][1]-Q[0][1],d0l=Math.hypot(d0x,d0y)||1,qn=Q[n-1],
+    Qsh=[[Q[0][0]-d0x/d0l*Q[0][2],Q[0][1]-d0y/d0l*Q[0][2],Q[0][2]],...Q,[qn[0]+bx*br*1.6,qn[1]+by*br*1.6,qn[2]]];
+  /* both outlines wound the same way, so where the neck runs into the skull the shape stays whole (no hole where they overlap) */
   const area=p=>{let A=0;for(let i=0;i<p.length;i+=2){const j=(i+2)%p.length;A+=p[i]*p[j+1]-p[j]*p[i+1]}return A},wind=p=>area(p)<0?ptsBackG(p):p,
     sub=p=>{p=wind(p);g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1]);g.closePath()},body=()=>{g.beginPath();sub(neck);sub(skull)};
-  const lw=Math.max(...Q.map(q=>q[2]));
   clipTo(g,body,()=>{poly(g,neck,cols.mid);poly(g,skull,cols.mid);
-    /* the shaded side and the lit side, each a band shifted across the timber from its middle line */
-    const band=(k,c,f)=>{g.strokeStyle=c;g.lineCap='round';g.lineJoin='round';for(let i=1;i<n;i++){g.lineWidth=Math.max(.5,Q[i][2]*f);g.beginPath();g.moveTo(Q[i-1][0]+Ld[0]*Q[i][2]*k,Q[i-1][1]+Ld[1]*Q[i][2]*k);g.lineTo(Q[i][0]+Ld[0]*Q[i][2]*k,Q[i][1]+Ld[1]*Q[i][2]*k);g.stroke()}};
-    band(-.4,mix(cols.mid,cols.sh,.85),.5);band(-.22,mix(cols.mid,cols.sh,.4),.3);band(.26,mix(cols.mid,cols.lit,.45),.36);band(.4,mix(cols.mid,cols.lit,.8),.12);
-    g.fillStyle=rg(g,hc[0]+Ld[0]*br*.5,hc[1]+Ld[1]*br*.5,br*1.6,[rgba(cols.lit,.55),rgba(cols.lit,0)]);poly(g,skull);g.fill()});
-  /* the bill: from the front of the skull toward its tip, long and flattish, a little hooked at the end, in a warmer tone; a small knob
-     on its root; the eye a small square on the skull, behind the root, toward the bill's top side */
-  const rx=hc[0]+bx*along*.75,ry=hc[1]+by*along*.75,tx=bt[0],ty=bt[1],w0=.11*sc,w1=.035*sc,L2=Math.hypot(tx-rx,ty-ry),
-    Bp=[rx+qx*w0*sg,ry+qy*w0*sg,rx+(tx-rx)*.55+qx*w0*.8*sg,ry+(ty-ry)*.55+qy*w0*.8*sg,tx+qx*w1*sg,ty+qy*w1*sg,tx-bx*Math.min(.6,L2*.05),ty-by*Math.min(.6,L2*.05),tx-qx*w1*sg*.6,ty-qy*w1*sg*.6,rx+(tx-rx)*.5-qx*w0*.65*sg,ry+(ty-ry)*.5-qy*w0*.65*sg,rx-qx*w0*.8*sg,ry-qy*w0*.8*sg];
-  poly(g,Bp,cols.bill);stroke(g,[Bp[0],Bp[1],Bp[2],Bp[3],Bp[4],Bp[5]],rgba(cols.billLit,.8),.5);
-  poly(g,[rx+qx*w0*sg-bx*.04*sc,ry+qy*w0*sg-by*.04*sc,rx+qx*w0*1.9*sg+bx*.04*sc,ry+qy*w0*1.9*sg+by*.04*sc,rx+qx*w0*sg+bx*.11*sc,ry+qy*w0*sg+by*.11*sc],cols.bill);
-  const es=Math.max(.5,sc*.055),ex=hc[0]+bx*along*.1+qx*br*.4*sg,ey=hc[1]+by*along*.1+qy*br*.4*sg;R(g,ex-es/2,ey-es/2,es,es,cols.eye)}
+    /* one unified set of flat bands of light and shadow along the whole carved piece, reaching both edges cleanly with no outline */
+    const band=(off,scW,col)=>poly(g,ribOf(Qsh,scW,off),col);
+    band(-.38,.56,mix(cols.mid,cols.sh,.45));
+    band(-.48,.42,cols.sh);
+    band(.38,.56,mix(cols.mid,cols.lit,.38));
+    band(.48,.32,mix(cols.mid,cols.lit,.68))});
+  /* the bill: long and flattish, nearly parallel-sided to a bluntly rounded tip, with a small rounded knob at its root; warmer wood
+     with flat lit and shaded bands and no outline */
+  const rx=hc[0]+bx*along*.74,ry=hc[1]+by*along*.74,tx=bt[0],ty=bt[1],dx=tx-rx,dy=ty-ry,
+    Bpt=(t,w)=>[rx+dx*t+qx*w*sc*sg,ry+dy*t+qy*w*sc*sg],
+    Bp=[...Bpt(-.04,.13),...Bpt(.03,.168),...Bpt(.12,.166),...Bpt(.22,.112),...Bpt(.60,.102),...Bpt(.85,.088),...Bpt(.95,.055),...Bpt(1.0,.005),
+      ...Bpt(.97,-.055),...Bpt(.85,-.075),...Bpt(.46,-.092),...Bpt(-.04,-.108)];
+  const bSh=mix(cols.bill,cols.sh,.48),bKnob=mix(cols.bill,cols.sh,.64);
+  poly(g,Bp,cols.bill);
+  clipTo(g,()=>poly(g,Bp),()=>{
+    /* shaded underside and lit upper bridge of the bill */
+    const lo=[...Bpt(-.06,-.02),...Bpt(.98,-.01),...Bpt(1.04,-.16),...Bpt(-.06,-.18)];
+    const hi=[...Bpt(.16,.16),...Bpt(1.02,.15),...Bpt(.98,.032),...Bpt(.20,.048)];
+    poly(g,lo,bSh);poly(g,hi,cols.billLit);
+    /* small dark-warm basal knob tucked against the forehead */
+    poly(g,[...Bpt(-.05,.20),...Bpt(.16,.20),...Bpt(.21,.10),...Bpt(.08,.075),...Bpt(-.05,.08)],bKnob)});
+  /* the eye: a small square behind the bill root, toward the forehead side */
+  const es=sc>10?1:.5,ex=Math.round((hc[0]+bx*along*.18+qx*br*.24*sg)*2)/2,ey=Math.round((hc[1]+by*along*.18+qy*br*.24*sg)*2)/2;
+  R(g,ex-es/2,ey-es/2,es,es,cols.eye)}
 
 /* the sternpost from the side: the swan's neck rising from the forward end of the gallery. kind 'curl' keeps the plain scroll that was
    shown as a choice before the maintainer chose the swan. */
@@ -504,11 +535,11 @@ function deckBulwark(g,D,r){const{P,s,rh}=D,C=D.C,N=D.N,M=C.length-1,A='#8a6440'
    of that peak, so it ends each rail and stands on the middle of none; the cabin is lower than the peak, so the neck never stands on
    its roof. The gallery, beyond the
    stern and lower than the eye's line over it, is not seen from here (a rail behind the post would make a cross). */
-function deckStern(g,D,kind){const{P,s}=D,z=DG.ZS+.3,y0=s(DG.ZS)+D.rx(0,DG.ZS+.25),A='#7e5a36',SM=1.4;
-  /* the swan's neck, seen from forward and a little below: the loop foreshortened, the head hanging bowed toward us in front of the
-     neck, its bill pointing down */
-  swanDraw(g,(u,v)=>{const zz=z-u*SM*Math.cos(.1);return[...P(u*SM*Math.sin(.1),y0-.25+v*SM,zz),D.F*SM/zz]},{mid:lit(D,A,[0,.2,-1]),sh:lit(D,'#5a3e26',[-1,0,-.3]),lit:lit(D,'#f0d0a0',[1,.6,-.5]),
-    bill:lit(D,'#b86a3a',[0,.2,-1]),billLit:lit(D,'#f0a868',[.5,.6,-.6]),eye:'#1a100a'},[.6,-.8])}
+function deckStern(g,D,kind){const{P,s}=D,z=DG.ZS+.3,y0=s(DG.ZS)+D.rx(0,DG.ZS+.25),A='#7e5a36',SM=1.48,YW=-.82;
+  /* the swan's neck, seen from forward and a little below: the loop foreshortened, the head hanging bowed toward us, its bill pointing
+     down and toward the rising neck */
+  swanDraw(g,(u,v)=>{const zz=z-u*SM*Math.cos(YW);return[...P(u*SM*Math.sin(YW),y0-.54+v*SM,zz),D.F*SM/zz]},{mid:lit(D,A,[0,.2,-1]),sh:lit(D,'#4c3420',[-1,0,-.3]),lit:lit(D,'#dfb886',[1,.6,-.5]),
+    bill:lit(D,'#bc6c3c',[0,.2,-1]),billLit:lit(D,'#eea868',[.5,.6,-.6]),eye:'#1a100a'},[.6,-.8],{fs:Math.abs(Math.sin(YW)),fc:Math.abs(Math.cos(YW))})}
 /* the steering oars at the quarters: the loom rising outboard past the rail, its squared head, and the tiller reaching forward and
    inboard; a lashing slanting from the loom down to the rail holds it up. Loom and tiller meet at a corner. */
 function deckOars(g,D,part){const{P,s}=D;
@@ -685,9 +716,9 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=1.3,P=(x,y,z)=>[160
   /* the sternpost: the swan's neck, seen from forward and a little to one side and below: its loop foreshortened, the head hanging
      bowed toward us in front of the neck. Painted before the stern's rail, so the rail passes in front of its foot as a ship's rail
      passes in front of her mast. */
-  const pf=RH(0,ZS+.2)-.3,Zs=ZS+.3,SM=.82,YW=-.5,SW=(u,v)=>{const z=Zs-u*SM*Math.cos(YW);return[...P(u*SM*Math.sin(YW),pf+v*SM,z),F*SM/z]};
-  swanDraw(g,SW,{mid:lamp('#7e5a36',[0,pf+1.5,Zs-.5],[.3,0,-1]),sh:lamp('#4e3622',[0,pf+1.5,Zs],[-1,0,-.2]),lit:lamp('#f0c890',[0,pf+1.5,Zs-.5],[.6,-.2,-.8]),
-    bill:lamp('#b06838',[0,pf+1.3,Zs-.7],[.3,-.3,-1]),billLit:lamp('#f0b070',[0,pf+1.3,Zs-.7],[.5,-.3,-.8]),eye:'#120c08'},[.85,.5]);
+  const pf=RH(0,ZS+.2)-.3,Zs=ZS+.3,SM=.82,YW=-.88,SW=(u,v)=>{const z=Zs-u*SM*Math.cos(YW);return[...P(u*SM*Math.sin(YW),pf+v*SM,z),F*SM/z]};
+  swanDraw(g,SW,{mid:lamp('#7e5a36',[0,pf+1.5,Zs-.5],[.3,0,-1]),sh:lamp('#4a321e',[0,pf+1.5,Zs],[-1,0,-.2]),lit:lamp('#f0c890',[0,pf+1.5,Zs-.5],[.6,-.2,-.8]),
+    bill:lamp('#b46a3a',[0,pf+1.3,Zs-.7],[.3,-.3,-1]),billLit:lamp('#f0b070',[0,pf+1.3,Zs-.7],[.5,-.3,-.8]),eye:'#120c08'},[.85,.5],{fs:Math.abs(Math.sin(YW)),fc:Math.abs(Math.cos(YW))});
   /* the bulwarks: their inner faces, the rail on top; the stern's face plain, its grain only, where the cables come to it */
   const at=(i,y,d)=>{const[x,z]=C[i],[nx,nz]=N[i];return P(x+nx*(d||0),y,z+nz*(d||0))},M=C.length-1;
   const H=i=>RH(C[i][0],C[i][1]);for(let i=0;i<M;i++){const[x,z]=C[i],c=lamp('#7a5a3c',[x,.5,z],[N[i][0],0,N[i][1]]);poly(g,[...at(i,0),...at(i+1,0),...at(i+1,H(i+1)),...at(i,H(i))],c)}
@@ -710,8 +741,8 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=1.3,P=(x,y,z)=>[160
 }
   /* the sternpost: up from the stern's middle, its head bent over toward us */
   /* the lantern: a little lantern of clay and horn, hung by two cords that part upward to the post's shaft and to its head */
-  /* its two cords part upward from the lantern: one to the rising limb of the neck nearest us, one to the limb that comes down beyond it */
-  const[lx,ly]=P(...LP),s1=SW(.22,1.35),s2=SW(-.67,2.3);
+  /* its two cords part upward from the lantern: one to the rising limb of the neck nearest us, one to the outer back of the descending limb clear of the head */
+  const[lx,ly]=P(...LP),s1=SW(.35,1.05),s2=SW(-.78,2.28);
   stroke(g,[lx-.6,ly-2,s1[0],s1[1]],'#6a5a40',.5);stroke(g,[lx+.6,ly-2,s2[0],s2[1]],'#6a5a40',.5);
   comp(g,'lighter',.4,()=>{pool(g,lx,ly+4,18,8,'#ff9a40',.45);pool(g,lx,ly+1,7,4,'#ffc070',.55)});
   poly(g,[lx-1.6,ly-2,lx+1.6,ly-2,lx+1.9,ly+2.6,lx-1.9,ly+2.6],'#5a3a22');R(g,lx-1,ly-1.2,2,3,'#ffd890');R(g,lx-.5,ly-.6,1,1.6,'#fff4d0');R(g,lx-1.9,ly+2.6,3.8,.6,'#3a2414');
