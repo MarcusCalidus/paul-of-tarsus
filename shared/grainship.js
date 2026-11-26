@@ -573,15 +573,15 @@ function deckLean(g,D,r){const[x0,x1,z0,z1,h]=D.things.lean,{P,s,b,rh}=D,c='#a09
   stroke(g,[ta[0],ta[1],...mid(z0,.12),la[0],la[1]],rgba(lit(D,'#f4ead0',[0,.8,-.6]),.9),.6);stroke(g,B,lit(D,'#8a8070',[0,1,0]),.6);
   /* the cords at the lower corners, slanting out to pegs in the deck */
   for(const[p,z]of[[la,z0-.4],[lb,z1+.4]]){const q=P(x1+.55,0,z);stroke(g,[p[0],p[1],q[0],q[1]],lit(D,'#c8ac78',[0,1,-.3]),.5);R(g,q[0]-.5,q[1]-.5,1,1,'#3a2a1a')}}
-/* the mainmast's foot, in the right foreground: the round mast standing in its partners (a square collar of timber), wedged, and
-   running out of the top of the picture */
+/* the mainmast's foot, in the right foreground: the round mast standing in its partners (a low square collar of timber, no wider
+   than it must be), running out of the top of the picture */
 function deckMast(g,D){const[x0,x1,z0,z1]=D.things.mast,{P}=D,xm=(x0+x1)/2,zm=(z0+z1)/2,r=.3,f0=P(xm-r,0,zm-r),f1=P(xm+r,0,zm-r),w=f1[0]-f0[0];
   boxShadow(g,D,[x0-.2,x1+.2,z0-.2,z1+.2,1.2],.5);
   g.fillStyle=lg(g,f0[0],0,f1[0],0,[lit(D,'#7a5a38',[-1,0,-.3]),lit(D,'#8a6a44',[0,0,-1]),lit(D,'#b08a5a',[.7,.2,-.6]),lit(D,'#6a4a2c',[1,0,.2])]);g.fillRect(f0[0],-2,w,f0[1]+2);
   for(let i=0;i<6;i++){const x=f0[0]+w*(.15+.7*i/6);stroke(g,[x,-2,x+.2,f0[1]-3],'rgba(40,26,14,.18)',.5)}
-  const pc=boxD(D,[x0-.14,x1+.14,z0-.14,z1+.14,.2]);poly(g,pc.side||pc.front,lit(D,'#6e4e30',[-1,0,0]));poly(g,pc.top,lit(D,'#9a7448',[0,1,0]));poly(g,pc.front,lit(D,'#7a5634',[0,0,-1]));
+  const pc=boxD(D,[x0-.08,x1+.08,z0-.08,z1+.08,.16]);poly(g,pc.side||pc.front,lit(D,'#6e4e30',[-1,0,0]));poly(g,pc.top,lit(D,'#9a7448',[0,1,0]));poly(g,pc.front,lit(D,'#7a5634',[0,0,-1]));
   stroke(g,[pc.front[6],pc.front[7],pc.front[4],pc.front[5]],lit(D,'#f0d0a0',[0,1,-.3]),.5);
-  for(const u of[.2,.8]){const x=f0[0]+w*u;R(g,x-1,pc.front[7]-2.4,2,2.4,lit(D,'#8a6a44',[0,.4,-1]))}}
+}
 
 /* deck(g, o): the whole picture: what lies beyond, the ship, and the things on deck with the people among them, from far to near */
 function deck(g,o){o=o||{};const D=geoDeck(o),r=rng(22061);
@@ -649,7 +649,7 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=.4,P=(x,y,z)=>[160+
     poly(g,[f[0]+nx*w,f[1]+ny*w,h[0]+nx*w*.8,h[1]+ny*w*.8,h[0]-nx*w*.8,h[1]-ny*w*.8,f[0]-nx*w,f[1]-ny*w],lamp('#5a3e26',[xr,1.5,z],[-sd,.2,-.6]));
     poly(g,[h[0]-2,h[1]-1.8,h[0]+2,h[1]-1.8,h[0]+2,h[1]+1.6,h[0]-2,h[1]+1.6],lamp('#4a3220',[xr,1.9,z],[-sd,.5,-.6]));
     const t=P(xr-sd*.25,rh+.55,z-1.2);stroke(g,[h[0],h[1],t[0],t[1]],lamp('#6a4a2c',[xr,1.6,z-.6],[-sd,.6,-.4]),2.2);
-    const cl=P(xr-sd*.08,rh+.12,z+.9),m=P(xr+sd*.4,rh+.35,z+.15);stroke(g,[m[0],m[1],cl[0],cl[1]],lamp('#b8a070',[xr,1.2,z+.5],[-sd,.5,-.5]),.6)}
+    const cl=P(xr-sd*.25,.12,z-.55),m=P(xr+sd*.42,rh+.45,z+.18);stroke(g,[m[0],m[1],cl[0],cl[1]],lamp('#b8a070',[xr,1.2,z+.5],[-sd,.5,-.5]),.6)}
   /* the four cables: from the deck at our feet aft along the planks, rising to the stern rail, over it and away (each ends at the
      rail's top, where it bends down out of sight) */
   const n=o.cables||4;for(let i=0;i<n;i++){const x0=[-1.45,-.8,.8,1.45][i]||0,x1=x0*.86,z1=sz(x1)+.02,ye=RH(x1,z1)+.12,p=[];
