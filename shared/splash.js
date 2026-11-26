@@ -536,14 +536,14 @@ const PATCH=[4,30,76,40,82,104,8,108],FLOOR=[22,117,62,117,112,166,58,166];
 function dayLight(g,o){const[c,l]=mk(VW*HR,VT*HR),side=o.window!=='wall',soft=(fn)=>{for(const[ox,oy]of[[0,0],[-1.6,-.9],[1.6,.9],[-.9,1.6],[.9,-1.6]])fn(ox,oy)};
   l.scale(HR,HR);
   /* the room's shade: cool, and lighter toward the window */
-  l.fillStyle='#6a6470';l.fillRect(0,0,VW,VT);
-  comp(l,'lighter',1,()=>{l.fillStyle=lg(l,0,0,VW,0,[[0,'rgba(196,182,168,.9)'],[.4,'rgba(170,158,150,.55)'],[1,'rgba(120,112,120,.16)'],]);l.fillRect(0,0,VW,VT)});
+  l.fillStyle='#6c6670';l.fillRect(0,0,VW,VT);
+  comp(l,'lighter',1,()=>{l.fillStyle=lg(l,0,0,VW,0,[[0,'rgba(200,184,166,.66)'],[.4,'rgba(174,160,150,.5)'],[1,'rgba(120,112,122,.16)']]);l.fillRect(0,0,VW,VT)});
   /* the bench takes more of the light than the wall, warmest and brightest at its left */
   comp(l,'lighter',1,()=>{l.fillStyle=lg(l,0,0,VW,0,[[0,'rgba(255,232,200,.62)'],[.45,'rgba(240,214,184,.34)'],[1,'rgba(200,184,172,.08)']]);l.fillRect(0,WALL,VW,VT-WALL)});
   if(side){
     /* the sun through the window: a slanting patch on the back wall, the window's shape, with soft edges (laid on five times a
        little apart), and a broad warm stretch on the left of the bench */
-    soft((ox,oy)=>comp(l,'lighter',.15,()=>poly(l,PATCH.map((v,i)=>v+(i%2?oy:ox)),'#ffe8c4')));
+    soft((ox,oy)=>comp(l,'lighter',.3,()=>poly(l,PATCH.map((v,i)=>v+(i%2?oy:ox)),'#ffe8c4')));
     pool(l,36,156,170,64,'#ffe2b8',.36)}
   else{
     /* the sun through the window in the back wall falls on the bench in front of it, slanting to the right and toward us */
@@ -555,7 +555,7 @@ function dayLight(g,o){const[c,l]=mk(VW*HR,VT*HR),side=o.window!=='wall',soft=(f
     ao(l,VW-80,0,80,VT,'r',.3,'#1a1626')});
   g.save();g.setTransform(1,0,0,1,0,0);g.globalCompositeOperation='multiply';g.drawImage(c,0,0);g.restore();
   /* where the sun lies, the stone and the wood are lifted a little above their own colour */
-  soft((ox,oy)=>comp(g,'soft-light',.09,()=>poly(g,(side?PATCH:FLOOR).map((v,i)=>v+(i%2?oy:ox)),'#fff4e0')));
+  soft((ox,oy)=>comp(g,'soft-light',.2,()=>poly(g,(side?PATCH:FLOOR).map((v,i)=>v+(i%2?oy:ox)),'#fff4e0')));
   /* the window's own opening keeps the brightness of the sky */
   if(!side){g.save();g.beginPath();g.rect(WIN.x0+WIN.d,WIN.top+3,WIN.x1-WIN.x0-WIN.d,WIN.sill-WIN.top-3);g.clip();
     g.globalCompositeOperation='screen';g.globalAlpha=.55;g.fillStyle='#e8eef4';g.fillRect(0,0,VW,VT);g.restore()}}
