@@ -160,7 +160,7 @@ TEXTS('de',21,{
   "paul_one_more_thing_for_him":["Eins möchte ich dem König noch sagen.","0kk4zhc"],
   "paul_its_the_king_im_answering":["Ich antworte jetzt dem König.","1u2yu0p"],
   "say_what_i_say_is_true_and_sound":["Was ich sage, ist wahr und vernünftig.","0zhri6j"],
-  "say_none_of_it_happened_in_a_corner":["Der König weiß es. Nichts ist im Verborgenen geschehen.","1732pqr"],
+  "say_none_of_it_happened_in_a_corner":["Der König weiß es. Nichts davon war geheim.","1732pqr"],
   "say_do_you_believe_the_prophets":["Glaubst du den Propheten?","1rpqli0"],
   "say_im_not_saying_this_to_save_myself":["Ich sage das nicht, um mich zu retten.","0fr3hcq"],
   "say_nothing_for_now":["Vorerst nichts sagen","1hv3gfc"],
