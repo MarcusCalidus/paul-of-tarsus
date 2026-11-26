@@ -137,7 +137,7 @@ function planks(g,r){const n=8,y1=144,ys=[];for(let k=0;k<=n;k++)ys.push(WY+(y1-
   /* worn paler where people walk: from the door to the table */
   pool(g,214,122,90,14,'#e8d0a8',.12,'screen')}
 /* the street room's floor: flags of grey stone in courses, worn */
-function flags(g,r){pave(g,-2,WY,322,144,'#c4b89e',r,{vx:VX,vy:HZ,rows:5,step:40,v:.07,t:.34,rand:1});
+function flags(g,r){pave(g,-2,WY,322,144,'#c4b89e',r,{vx:VX,vy:HZ,rows:5,step:40,v:.07,t:.34,rand:0});
   pool(g,250,112,70,12,'#e8dcc4',.1,'screen')}
 /* the niche: a small square recess above head height, its floor a ledge of stone; a clay lamp in it, its nozzle to the right */
 function niche(g,N,kind){const c=C[kind],w=N.x1-N.x0,h=N.b-N.top;
@@ -263,7 +263,7 @@ function lane(g,h,D){const K=SHARED.coast,O=viewO(h),L=K.light(O),H=H_(h),night=
     /* the shade: the front faces north, so it is in shade at every hour, lit only by the sky and the paving */
     comp(g,'multiply',.32,()=>{g.fillStyle='#7a86b0';g.fillRect(x0,top,x1-x0,F-top)});
     /* the paving of the square, in perspective to the one horizon */
-    pave(g,x0-2,F,x1+2,WY+.4,'#c8bca2',r,{vx:VX,vy:HZ,rows:3,step:36,v:.06,t:.34,rand:1});
+    pave(g,x0-2,F,x1+2,WY+.4,'#c8bca2',r,{vx:VX,vy:HZ,rows:3,step:36,v:.06,t:.34,rand:0});
     ao(g,x0,F,x1-x0,3,'t',.3,'#3a3048');
     /* the fountain: a long low basin of stone standing on the paving before the front, its water seen over its near rim; at its
        right end a block as wide as the basin is deep, with the spout in its face; the water runs from the spout into the basin */
@@ -283,15 +283,21 @@ function lane(g,h,D){const K=SHARED.coast,O=viewO(h),L=K.light(O),H=H_(h),night=
    times the shadow's tip away from the wall's foot), soft at its edges, a faint glow in the air over it, and the light thrown back
    from the floor onto the wall's foot. In the street room also the doorway's patch, where the sun reaches it */
 function patch(g,kind,h,A,D){const H=H_(h),[dx,dy]=H.sun,ux=dx/46,uy=dy/46,warm=h==='eve'||h==='early'?'rgba(255,200,140,1)':'rgba(255,238,204,1)';
-  const one=(x0,x1,top,sill,k)=>{const P=(x,q)=>[x+q*ux,WY+q*uy],hs=WY-sill,ht=WY-top,Q=[...P(x0,hs),...P(x1,hs),...P(x1,ht),...P(x0,ht)];
+  /* the patch on a level surface z above the floor: a point of the opening q above the floor lands (q - z) times the shadow's tip
+     from the wall's foot, and the surface lies z higher in the picture */
+  const one=(x0,x1,top,sill,k,z,air)=>{const P=(x,q)=>[x+(q-z)*ux,WY+(q-z)*uy-z],hs=WY-sill,ht=WY-top,Q=[...P(x0,hs),...P(x1,hs),...P(x1,ht),...P(x0,ht)];
     for(const[d,a]of[[3,.18],[1.6,.22],[0,.3]])comp(g,'soft-light',a*2*k,()=>poly(g,[Q[0]-d,Q[1]-d*.4,Q[2]+d,Q[3]-d*.4,Q[4]+d,Q[5]+d*.6,Q[6]-d,Q[7]+d*.6],warm));
     comp(g,'screen',.42*k,()=>poly(g,Q,warm));
+    if(!air)return;
     comp(g,'screen',.05*k,()=>{poly(g,[x0,top,x1,top,Q[4],Q[5],Q[6],Q[7]]);g.fillStyle=lg(g,0,top,0,Q[5],[warm,'rgba(255,236,200,.1)']);g.fill()});
     pool(g,(Q[0]+Q[4])/2,(Q[1]+Q[5])/2,(x1-x0)*.8,8,'#fff0d8',.07*k,'screen')};
-  g.save();g.beginPath();g.rect(-4,WY,328,60);front(g);g.clip('evenodd');
-  one(A.x0,A.x1,A.top,A.sill,kind==='flat'?1:.8);
-  if(D&&H.lane<1)one(D.x0,D.x1,D.top,WY,1-H.lane*.6);
-  g.restore();
+  const all=(z,air)=>{one(A.x0,A.x1,A.top,A.sill,kind==='flat'?1:.8,z,air);if(D&&H.lane<1)one(D.x0,D.x1,D.top,WY,1-H.lane*.6,z,air)};
+  /* on the floor, but not on what stands in front of it */
+  g.save();g.beginPath();g.rect(-4,WY,328,60);front(g);g.clip('evenodd');all(0,1);g.restore();
+  /* on the table's top, the benches' and the stools' seats, where the light reaches them at their own height */
+  const T=POS.table;clipTo(g,()=>poly(g,[T.x0+3,T.back,T.x1-3,T.back,T.x1,T.top,T.x0,T.top]),()=>all(T.foot-T.top,0));
+  for(const B of POS.benches)inRect(g,B.x0,B.top-1.2,B.x1-B.x0,1.4,()=>all(B.foot-B.top,0));
+  for(const k in POS.stools){const S=POS.stools[k];inRect(g,S.x-5,S.y-10.6,10,1.8,()=>all(9,0))}
   comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,WY,0,WY-24,[warm,'rgba(255,220,170,0)']);g.fillRect(kind==='flat'?A.x0-20:D.x0-20,WY-24,90,24)})}
 /* the outlines of what stands out on the floor in front of the patch of sun (the table, the stools, the basket), added to the path
    being built, so that the patch is left off them */
@@ -361,7 +367,7 @@ function bench(g,B,h,r){const M=SHARED.materials,W='#6e5034',t=B.top,th=2.2;
 function table(g,T,h,r){const M=SHARED.materials,W='#7a5838',lit='#a47a50',ap=2.2,ft=T.foot,bf=T.bfoot,f0=T.x0,f1=T.x1,b0=T.x0+3,b1=T.x1-3;
   cast(g,f0,f1,ft,ft-T.top,h,1.5);sh(g,(f0+f1)/2,ft-2,(f1-f0)/2+2,3,.42);
   /* the floor under it, in its shade */
-  comp(g,'multiply',.4,()=>{g.fillStyle=lg(g,0,T.back,0,ft,['#6a5a70','#8a7a88']);poly(g,[b0,T.back,b1,T.back,f1,ft-.5,f0,ft-.5])});
+  comp(g,'multiply',.6,()=>{g.fillStyle=lg(g,0,T.back,0,ft,['#5a4a62','#8a7a88']);poly(g,[b0,T.back,b1,T.back,f1,ft-.5,f0,ft-.5]);g.fill()});
   /* the far legs, then the near legs */
   for(const x of[b0+.6,b1-2])R(g,x,T.back+1,1.6,bf-T.back-1,tint(W,-.4));
   const top=[b0,T.back,b1,T.back,f1,T.top,f0,T.top];poly(g,top);g.fillStyle=lg(g,0,T.back,0,T.top,[tint(W,.12),tint(W,.24)]);g.fill();
