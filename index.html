@@ -2786,10 +2786,9 @@ const CHAP={
   20:{name:'some_other_time',label:'chapter_twenty',title:'some_other_time_2',salt:0x5CA5,src:'levels/chapter20.js',needs:['materials','birds','cast','coast','temple','caesarea','weather'],treasure:{name:'storks_over_the_harbor',at:'20-TA3-NJT-BEA-P7J'}},
   /* Chapter Twenty-One's line. treasure.at is the code of the court before the hearing, where the ox goad is (pcourt21). */
   21:{name:'to_caesar',label:'chapter_twenty_one',title:'to_caesar_2',salt:0x6DC7,src:'levels/chapter21.js',needs:['materials','birds','cast','coast','temple','caesarea','damascus','map'],treasure:{name:'the_ox_goad',at:'21-BE2-P7X-KJR-ES7'}},
-  /* LOGIC22: Chapter Twenty-Two's line. STUB: needs are what the sea chapters are likely to load (add or drop what the chapter uses);
-     treasure.at is the stub's first code, codeOf(22,0): replace it with the CODE that the p-stop of the point a little before Tarsus prints
-     (CONTRIBUTING section 2), and the treasure's name if the chapter calls it otherwise. */
-  22:{name:'euroaquilo',label:'chapter_twenty_two',title:'euroaquilo_2',salt:0x7EE9,src:'levels/chapter22.js',needs:['materials','birds','cast','coast','weather','ship','beat','map'],treasure:{name:'tarsus_from_the_sea',at:'22-6GM-QSG'}},
+  /* LOGIC22: Chapter Twenty-Two's line. needs: what its placeholder rooms load today (the art agents add what their painters use);
+     treasure.at: the quay at Caesarea before the voyage out (pquay22), from which the gangplank leads onto the map where Tarsus is seen. */
+  22:{name:'euroaquilo',label:'chapter_twenty_two',title:'euroaquilo_2',salt:0x7EE9,src:'levels/chapter22.js',needs:['materials','birds','cast','weather','beat','map'],treasure:{name:'tarsus_from_the_sea',at:'22-313-DE5-06C-GSP-Z08'}},
   /* LOGIC23: Chapter Twenty-Three's line. carry: its first thirteen flags (from22, then the six marks of Luke's tablet, two bits each) are
      carried in from Chapter Twenty-Two's end screen (see startChapter and setChapter). STUB: needs and treasure.at as for Twenty-Two: at is
      codeOf(23,0), to be replaced with the CODE of the point a little before the stone at the gate. */
