@@ -220,14 +220,15 @@ function gallery(g,G,C){const{k,sheer}=G,q=G.gallery,yP=sheer(G.post.x)+.5*k,x0=
 
 /* ---------- the sternpost: a swan's neck (decided by the maintainer, 26 November 2026) ----------
    One design, in its own measure (u forward toward the bow, v up, both in units of about a metre at the deck views), that every view
-   maps into its picture (swanDraw): the neck rises from the stern where the gallery meets the hull, leans a little aft, sweeps up in one
-   broad curve and over forward, and comes down again in front, so that the loop is nearly closed and the open sky inside it is a tall
-   narrow oval. The head hangs bowed at the end, its bill pointing down and back toward the neck, almost touching it. The timber is thick
-   (at its foot about twice the loom of a steering oar) and stays full all the way round. A carved ornament of plain weathered wood: one
-   piece, no outline, lit by its scene; no figurehead, no gilding, nothing set under it. */
+   maps into its picture (swanDraw). A swan swimming the way the ship sails: the neck rises from where the gallery meets the hull on the
+   bow side of its loop, leaning a little forward, turns over at the top toward the stern and comes down on the stern side, over the
+   gallery (clear above its rail), so that the loop is nearly closed and the open sky inside it is a tall narrow oval. The head hangs
+   bowed there, its bill pointing toward the bow and down, toward the neck, almost touching it. The timber is thick (at its foot about
+   twice the loom of a steering oar) and stays full all the way round. A carved ornament of plain weathered wood: one piece, no outline,
+   lit by its scene; no figurehead, no gilding, nothing set under it. */
 const SWAN={/* the neck's middle line, [u, v, thickness] */
-  line:[[0,0,.47],[-.1,.5,.46],[-.2,1.1,.44],[-.23,1.75,.42],[-.16,2.35,.39],[.02,2.8,.37],[.27,3.02,.35],[.5,2.95,.34],[.64,2.68,.33],[.68,2.32,.33],[.64,2.04,.32]],
-  head:{c:[.6,1.88],bill:[-.76,-.65],a:.34,b:.27,bl:.38},top:3.05};
+  line:[[0,0,.47],[.1,.5,.46],[.2,1.1,.44],[.23,1.75,.42],[.16,2.35,.39],[-.02,2.8,.37],[-.27,3.02,.35],[-.5,2.95,.34],[-.64,2.68,.33],[-.68,2.32,.33],[-.64,2.04,.32]],
+  head:{c:[-.6,1.88],bill:[.76,-.65],a:.34,b:.27,bl:.38},top:3.05};
 function cr(P,n){const out=[];for(let i=0;i<P.length-1;i++){const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(P.length-1,i+2)];
   for(let j=0;j<n;j++){const t=j/n,t2=t*t,t3=t2*t,f=(k)=>.5*((2*p1[k])+(-p0[k]+p2[k])*t+(2*p0[k]-5*p1[k]+4*p2[k]-p3[k])*t2+(-p0[k]+3*p1[k]-3*p2[k]+p3[k])*t3);out.push([f(0),f(1),f(2)])}}
   out.push(P[P.length-1].slice());return out}
@@ -684,7 +685,7 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=1.3,P=(x,y,z)=>[160
   /* the sternpost: the swan's neck, seen from forward and a little to one side and below: its loop foreshortened, the head hanging
      bowed toward us in front of the neck. Painted before the stern's rail, so the rail passes in front of its foot as a ship's rail
      passes in front of her mast. */
-  const pf=RH(0,ZS+.2)-.3,Zs=ZS+.3,SM=.82,YW=-.35,SW=(u,v)=>{const z=Zs-u*SM*Math.cos(YW);return[...P(u*SM*Math.sin(YW),pf+v*SM,z),F*SM/z]};
+  const pf=RH(0,ZS+.2)-.3,Zs=ZS+.3,SM=.82,YW=-.5,SW=(u,v)=>{const z=Zs-u*SM*Math.cos(YW);return[...P(u*SM*Math.sin(YW),pf+v*SM,z),F*SM/z]};
   swanDraw(g,SW,{mid:lamp('#7e5a36',[0,pf+1.5,Zs-.5],[.3,0,-1]),sh:lamp('#4e3622',[0,pf+1.5,Zs],[-1,0,-.2]),lit:lamp('#f0c890',[0,pf+1.5,Zs-.5],[.6,-.2,-.8]),
     bill:lamp('#b06838',[0,pf+1.3,Zs-.7],[.3,-.3,-1]),billLit:lamp('#f0b070',[0,pf+1.3,Zs-.7],[.5,-.3,-.8]),eye:'#120c08'},[.85,.5]);
   /* the bulwarks: their inner faces, the rail on top; the stern's face plain, its grain only, where the cables come to it */
@@ -709,8 +710,8 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=1.3,P=(x,y,z)=>[160
 }
   /* the sternpost: up from the stern's middle, its head bent over toward us */
   /* the lantern: a little lantern of clay and horn, hung by two cords that part upward to the post's shaft and to its head */
-  /* its two cords part upward from the lantern: one to the rising neck behind it, one to the neck where it comes down in front */
-  const[lx,ly]=P(...LP),s1=SW(-.16,1.62),s2=SW(.9,2.05);
+  /* its two cords part upward from the lantern: one to the rising limb of the neck nearest us, one to the limb that comes down beyond it */
+  const[lx,ly]=P(...LP),s1=SW(.22,1.35),s2=SW(-.67,2.3);
   stroke(g,[lx-.6,ly-2,s1[0],s1[1]],'#6a5a40',.5);stroke(g,[lx+.6,ly-2,s2[0],s2[1]],'#6a5a40',.5);
   comp(g,'lighter',.4,()=>{pool(g,lx,ly+4,18,8,'#ff9a40',.45);pool(g,lx,ly+1,7,4,'#ffc070',.55)});
   poly(g,[lx-1.6,ly-2,lx+1.6,ly-2,lx+1.9,ly+2.6,lx-1.9,ly+2.6],'#5a3a22');R(g,lx-1,ly-1.2,2,3,'#ffd890');R(g,lx-.5,ly-.6,1,1.6,'#fff4d0');R(g,lx-1.9,ly+2.6,3.8,.6,'#3a2414');
