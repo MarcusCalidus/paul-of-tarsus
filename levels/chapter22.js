@@ -632,7 +632,7 @@ function pennant22(g,t,N){const[hx,hy]=SHARED.grainship.staffOf(gd22()).head,n=9
    of water: grey-green to the brim, with foam in it, spilling over her near gunwale and falling away outboard. Her near side is planked in strakes that run along her; no thwart and no oar across her. Only what is above the rail is
    seen: the rest of her is outboard, behind it. The rope from her stem goes over the rail just beyond it, so that it crosses nothing of
    her, and down to the men's fists, slanting. */
-const SKIFF22={z0:5.5,z1:9.3,off:.95,hb:.62,lift:[-.7,-.02,.28,.52,.7]};
+const SKIFF22={z0:5.5,z1:9.3,off:.95,hb:.62,lift:[-.12,-.02,.28,.52,.7]};
 function skiff22(g,t,e){const D=gd22(),S=SKIFF22,n=G.sk22||0,ph=(((e%1)+1)%1),pause=Math.sin(Math.PI*clamp((ph-.24)/.5,0,1)),
     base=S.lift[Math.min(4,n)]+.07*pause+.04*Math.sin(t/700),xc=z=>-(D.b(z)+S.off),
     hg=z=>D.s(z)+1.15+base+.16*Math.pow((z-S.z0)/(S.z1-S.z0),1.5)+.05*Math.pow((S.z1-z)/(S.z1-S.z0),2),
