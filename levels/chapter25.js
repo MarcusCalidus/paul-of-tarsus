@@ -155,7 +155,7 @@ function draw25(g,t){const S=SO25();
   G.cat25=null;
   if(watch25()===4&&P.room==='lodging25'&&P.chained){const pa=CU.path(P,S),f=pa&&pa.floor;if(f&&f.length>8){const q=f[Math.floor(f.length*.45)];G.cat25=[q[0],q[1]+.4];SHARED.cast.cat(g,q[0],q[1]+.4,{room:'lodging25'})}}
   if(watch25()===3&&LK.room==='lodging25')roll25(g);
-  if(watch25()===7&&!S.pose)CU.stool(g,STOOL25[0],STOOL25[1],{room:'lodging25'})}
+  if(watch25()===7&&!S.pose){LG.stoolCast(g,STOOL25[0],STOOL25[1],{hour:hour25()});CU.stool(g,STOOL25[0],STOOL25[1],{room:'lodging25'})}}
 /* Luke's roll (ART-TODO): a roll of papyrus lying on the bench beside him, its near end toward us as a face, nothing tied round it */
 function roll25(g){const x=ROLL25.x,y=ROLL25.y;depth(102.2,()=>{R(g,x,y,10,3,'#d8c89c');R(g,x,y,10,.8,'#f2e6c4');R(g,x,y+2.4,10,.6,'rgba(90,70,40,.4)');R(g,x+8.6,y,1.8,3,'#b8a478');R(g,x+9,y+.8,1,1.4,'#8a7650')})}
 const ROLL25={x:88,y:90.6};
