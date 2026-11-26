@@ -312,7 +312,7 @@ TEXTS('en',24,{
   "circus_maximus":"Circus Maximus",
   "circus_maximus_look":"The Circus Maximus. They say it holds more than a hundred and fifty thousand people.",
   "palatine":"Palatine",
-  "palatine_look":"The Palatine hill, where the emperor's palace stands.",
+  "palatine_look":"The Palatine hill, where Caesar's palace stands.",
   "porta_capena":"Porta Capena",
   "porta_capena_look":"The Porta Capena. Here the Appian Way comes into the city.",
   "camp_wall":"camp wall",
