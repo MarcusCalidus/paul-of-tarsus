@@ -36,7 +36,7 @@ TEXTS('de',20,{
 
   /* the three charges (told.md; the same keys on the clerk's report in Chapter Twenty-One) */
   "charge_revolt":["Aufstände unter den Juden, überall","1kkees9"],
-  "charge_sect":["Anführer der Sekte der Nazarener","1nkxusn"],
+  "charge_sect":["Die Sekte der Nazarener","1oz5ise"],
   "charge_temple":["Ein Versuch, den Tempel zu entweihen","1e5mp8l"],
 
   /* the spoken lines of the account (told.md) */

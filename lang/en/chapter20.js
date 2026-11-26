@@ -32,7 +32,7 @@ TEXTS('en',20,{
 
   /* the three charges (told.md; the same keys on the clerk's report in Chapter Twenty-One) */
   "charge_revolt":"Revolt among the Jews, everywhere",
-  "charge_sect":"A leader of the sect of the Nazarenes",
+  "charge_sect":"The sect of the Nazarenes",
   "charge_temple":"An attempt to profane the temple",
 
   /* the spoken lines of the account (told.md) */
