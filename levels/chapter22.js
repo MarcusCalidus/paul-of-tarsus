@@ -472,7 +472,7 @@ async function board22(){if(phase22()!=='quay')return;
    map waits; if the map is taken away (a code typed, a chapter restored) the wait ends and nothing happens. */
 let PK22=0;
 async function pickMyra22(){const M=SHARED.map,id=++PK22,gone=()=>PK22!==id||G.ch!==22||G.scene!==M.draw;
-  const watch=setInterval(()=>{if(gone()){clearInterval(watch);if(M.state.places)dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}))}},250);
+  const watch=setInterval(()=>{if(gone()){clearInterval(watch);M.cancel()}},250);
   try{for(;;){const k=await M.pick(OUT22.ids,'myra',{view:'outward',legs:OUT22.legs,hint:'click_myra_where_we_put_in'});
       if(gone())return;if(!k)continue;
       if(k==='myra'){await cut(arriveMyra22);return}
