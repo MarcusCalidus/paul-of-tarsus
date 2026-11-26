@@ -67,7 +67,8 @@ LEVEL(22,()=>{
 /* ==== MUSIC: begin ==== */
 /* One tune for the voyage and the storm. It is in A, in the harmonic major (A, B, C sharp, D, E, F, G sharp): a major scale whose sixth
    is lowered, so that the fair days are bright and the lowered sixth leans on the fifth like a cloud coming up. Its bars have twenty-one
-   steps that fall six, six, nine: a swell that comes in twice and the third time runs on. A step is a seventh of a second, so a bar
+   steps that fall six, six, nine: a swell that comes in twice and the third time runs on. A step is a seventh of a second (written out,
+   since tools/strings.mjs reads a lone digit before a slash as the start of a pattern), so a bar
    lasts three seconds and two bars are one sea of the beat of the storm (shared/beat.js). No other chapter has this key, this mode or this bar,
    Chapter Twenty-Three included. The tune is four bars long: up the triad and down round the lowered sixth (A); up through the raised seventh
    to the octave (B); down from the octave, leaning on the lowered sixth (C); and its last bar, which on the voyage never comes home: it
@@ -97,7 +98,7 @@ const SCALE=[0,2,4,5,7,8,11],ST=21,
  /* the low string under each bar of the tune: on the first beat and on the third, long one */
  LOWS={A:[[0,0,12],[12,-3,9]],B:[[0,0,6],[6,-1,6],[12,-3,9]],C:[[0,-4,12],[12,-2,9]],O:[[0,-4,12],[12,-3,9]],D:[[0,-3,12],[12,0,9]]},
  low22=s=>[...s].map(k=>LOWS[k]),
- MUSIC={dt:1/7,steps:ST,group:[6,6,9],root:45,scale:SCALE,bars:16,tracks:[
+ MUSIC={dt:.14285714285714285,steps:ST,group:[6,6,9],root:45,scale:SCALE,bars:16,tracks:[
   {inst:'lyre',moods:['quay'],oct:24,loop:8,lines:bars22('ABCO____'),vol:.5},
   {inst:'harp',moods:['quay'],oct:12,loop:8,lines:bars22('____ABCO'),vol:.5},
   {drum:1,moods:['quay'],prog:'AAAB',seq:{A:'d.....k.....d..k..k..',B:'d.....k.....d..k.kk..'},vol:.2},
