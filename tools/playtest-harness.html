@@ -183,10 +183,11 @@
   /* The game opens on its opening picture (shared/splash.js), on every visit: the name over a tentmaker's bench by lamplight, silent, with
      one line that asks for a click. That click starts the overture and nothing else; a second click, or the end of the melody, brings the
      chapters, and the title's music follows the overture by itself. Every run passes through it here. The stop `splash` shows it. */
-  {const sp=SHARED.splash,cls=ov.classList,seen=e=>!!e&&+getComputedStyle(e).opacity>.9,own=CHAP[1].scenes.title;
-    ok(sp&&G.splash===1&&G.scene===sp.scene&&cls.contains('splash')&&cls.contains('title')&&!AU.score&&!AU.amb&&!G.room&&ov.querySelector('.begin').textContent===T('click_to_begin'),
+  /* the title's list: on a phone its menu of buttons (phoneMenuHTML), elsewhere the list in the parts of the account */
+  {const sp=SHARED.splash,cls=ov.classList,seen=e=>{for(;e&&e!==ov;e=e.parentElement)if(+getComputedStyle(e).opacity<=.9)return false;return!!e},own=CHAP[1].scenes.title,LIST=()=>ov.querySelector(PH.on?'.pm':'.chs');
+    ok(sp&&G.splash===1&&G.scene===sp.scene&&cls.contains('splash')&&cls.contains('title')&&!AU.score&&!AU.amb&&!G.room&&ov.querySelector('.begin').textContent===T(PH.on?'tap_to_begin':'click_to_begin'),
       'the game opens on its opening picture: the name over the bench, silent, waiting for a click');
-    ok(seen(ov.querySelector('.begin'))&&seen(ov.querySelector('.lede'))&&seen(ov.querySelector('h1'))&&!seen(ov.querySelector('.chs'))&&!seen(ov.querySelector('.langs'))
+    ok(seen(ov.querySelector('.begin'))&&seen(ov.querySelector('.lede'))&&seen(ov.querySelector('h1'))&&!seen(LIST())&&!seen(ov.querySelector('.langs'))
       &&[...ov.children].filter(e=>!e.matches('h1,.lede,.begin')).every(e=>{const c=getComputedStyle(e);return c.opacity==='0'&&c.animationName==='none'}),'the name, the line under it and "Click to begin" are seen; nothing else is yet, and Continue does not blink through');
     {const b=ov.querySelector('.begin').getBoundingClientRect(),v=ov.getBoundingClientRect();if(b.left<v.left||b.right>v.right||b.bottom>v.bottom)tight.add('Click to begin')}
     /* the picture: painted down to the foot of the window, brightest round the lamp, dark behind the name, and it does not flicker as a whole */
@@ -202,7 +203,7 @@
     /* that click is the press that wakes the sound. The sound itself is tested further down, from silence: here the call is only counted */
     const wake=audioInit;let woke=0;window.audioInit=()=>{woke++};
     ov.click();ok(woke>0&&G.splash===2&&AU.mood==='calm'&&TITLE.mood===CHAP[1].music.overture&&AU.score===sp.score&&sp.score.then===CHAP[1].music&&cls.contains('playing')&&cls.contains('splash')&&!G.room&&G.scene===sp.scene,'a click wakes the sound, starts the overture, and starts nothing else; the title\'s music will follow it quiet, without an overture of its own');
-    await wait(560);ok(!seen(ov.querySelector('.begin'))&&!seen(ov.querySelector('.chs')),'"Click to begin" goes, and the name stays alone over the picture while the overture plays');
+    await wait(560);ok(!seen(ov.querySelector('.begin'))&&!seen(LIST()),'"Click to begin" goes, and the name stays alone over the picture while the overture plays');
     /* the sequencer: a score that names another is played once, and that one follows it */
     {const st=AU.step;AU.step=loopOf(sp.score)-2;stepOn(sp.score);const mid=AU.score===sp.score&&AU.step===loopOf(sp.score)-1;stepOn(sp.score);
       ok(mid&&AU.score===CHAP[1].music&&AU.step===0&&AU.key===CHAP[1].music,'when the overture ends the title\'s music follows it, from its first bar');
@@ -213,7 +214,7 @@
     await wait(120);ok(G.scene===own&&sp.out&&Math.abs(ov.querySelector('h1').getBoundingClientRect().top-h0)<.5,'the picture has passed into the title\'s own, and the name has not moved');
     /* from here on the title is tested as it stands, without waiting for its lines to fade in */
     {const st=document.createElement('style');st.textContent='#overlay.title>*{transition:none!important}';document.head.appendChild(st)}
-    window.audioInit=wake;setScore(CHAP[1].music);ok(ov.onclick&&seen(ov.querySelector('.chs')),'the chapters are there to be clicked')}
+    window.audioInit=wake;setScore(CHAP[1].music);ok(ov.onclick&&seen(LIST()),'the chapters are there to be clicked')}
   const srt=()=>G.inv.slice().sort().join(),nq=()=>document.querySelectorAll('#choices button').length;
   /* a choice is found by its English text (the button keeps its key, whose English is looked up), or, for a line the level puts together,
      by the translation of a part of it */
@@ -246,7 +247,8 @@
   /* listed: the chapters the title lists: every chapter, unless one is still named in PLANNED (building, index.html) */
   const listed=()=>Object.keys(CHAP).filter(n=>!building(n));
   /* chLine: a chapter's line in the title's list (0: the Prologue), with its part of the account opened first, as a player would open it */
-  const chLine=n=>{const el=ov.querySelector(n?`[data-ch="${n}"]`:'[data-pro="1"]'),pt=el&&el.closest('.part');if(pt&&!pt.classList.contains('open'))pt.querySelector('.grp').click();return el};
+  const chLine=n=>{const el=ov.querySelector(n?`[data-ch="${n}"]`:'[data-pro="1"]'),pt=el&&el.closest('.part'),gl=el&&el.closest('.pm .gl');if(pt&&!pt.classList.contains('open'))pt.querySelector('.grp').click();
+    if(gl&&!gl.classList.contains('on'))ov.querySelector(`.pm .grp[data-pt="${gl.dataset.gl}"]`).click();return el};
   ok(inOv()&&ov.querySelector('[data-pro="1"]')&&ov.querySelectorAll('[data-ch]').length===listed().length,'the title screen holds the prologue and every chapter that is not in preparation: '+listed().length);
   /* The title screen alone uses the whole height: the status line and the panel give up their place, the view runs down to the foot of the
      window, and the title's picture is painted that tall. Its upper part is the wall's backdrop pixel for pixel, so that nothing moves
@@ -261,7 +263,10 @@
     ok(G.scene===CHAP[1].scenes.title&&same&&lit>foot.length/4*.9,'its picture is painted down to the foot of the window, and its upper part is the backdrop of the wall, pixel for pixel');
     /* the list stands in the parts of the account (PARTS): a line for each, and under the open one its chapters. On a first visit the
        first part is open, with the Prologue at its head, and the whole list stands in its box without scrolling */
-    if(!/[?&]keep=1/.test(location.search)){const ps=[...l.querySelectorAll('.part')],op=ps.filter(p=>p.classList.contains('open'));
+    if(!/[?&]keep=1/.test(location.search)&&PH.on){const m=ov.querySelector('.pm'),gs=[...m.querySelectorAll('.grp')],on=gs.filter(g=>g.classList.contains('on')),gl=m.querySelector('.gl.on'),cols=[...m.children];
+      ok(gs.length===PARTS.length&&on.length===1&&on[0]===gs[0]&&gl&&gl.dataset.gl===on[0].dataset.pt&&gl.querySelector('[data-pro="1"]')&&m.querySelectorAll('.gl.on').length===1&&cols.every(c=>c.scrollHeight<=c.clientHeight+1),
+        'on a phone, on a first visit, the first of the '+gs.length+' parts of the account is chosen, its chapters stand beside it with the Prologue at their head, and no column has to scroll')}
+    else if(!/[?&]keep=1/.test(location.search)){const ps=[...l.querySelectorAll('.part')],op=ps.filter(p=>p.classList.contains('open'));
       ok(ps.length===PARTS.length&&op.length===1&&op[0]===ps[0]&&op[0].contains(l.querySelector('[data-pro="1"]'))&&l.scrollHeight<=l.clientHeight+1&&l.scrollTop<=1&&!l.classList.contains('up')&&!l.classList.contains('down'),
         'on a first visit the first of the '+ps.length+' parts of the account is open, with the Prologue at its head, and the whole list stands in its box without scrolling')}}
   /* the title's name is a painting (shared/logo.js): it stands in this language and keeps the words, it is shown at the size of its
@@ -269,7 +274,8 @@
      look there for crosses and for letters that have run together, in every language (`de:logo`). */
   {const c=ov.querySelector('h1.art canvas.logo'),words=T('paul_of_tarsus')+' '+T('on_the_roads_of_rome');
     ok(c&&SHARED.logo.can(words)&&c.textContent===words&&!ov.querySelector('h2')&&c.getAttribute('aria-label')===T('paul_of_tarsus_on_the_roads'),'the title is the painted logo, in '+LANGS[lang].native+', and it keeps the words: '+(c&&c.textContent));
-    if(c){const r=c.getBoundingClientRect(),v=ov.getBoundingClientRect(),sc=PH.on?PH.kT:vp.getBoundingClientRect().width/320,d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+    /* on a phone the name is shown a little smaller (--lz), to leave room for the menu's buttons */
+    if(c){const r=c.getBoundingClientRect(),v=ov.getBoundingClientRect(),sc=(PH.on?PH.kT:vp.getBoundingClientRect().width/320)*(+getComputedStyle(c).getPropertyValue('--lz')||1),d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
       ok(Math.abs(r.width-c.width/HR*sc)<1&&Math.abs(r.height-c.height/HR*sc)<1&&r.left>=v.left&&r.right<=v.right,'the logo is shown at the size of its pixels, inside the view: '+c.width/HR+' by '+c.height/HR+' room pixels');
       let n=0,soft=0;for(let i=3;i<d.length;i+=4){if(d[i]===255)n++;else if(d[i]&&d[i]!==128)soft++}
       ok(n>c.width*c.height*.2&&!soft,'the logo is painted in whole pixels: '+n+' of them, none blurred');
@@ -607,7 +613,7 @@
       ov.click();await wait(60);ok(ov.classList.contains('closing')&&!!ov.querySelector('[data-about]'),'and a click there comes back to the closing screen');
       ov.querySelector('[data-tre]').click();await wait(80);ok($('#menu').classList.contains('on')&&$('#menu').textContent.includes(T('hidden_treasures_caps')),'a click on the hidden treasures opens their screen, with the way to those missed');
       $('#tre-x').click();await wait(60);
-      ov.querySelector('.go').click();await until(()=>ov.classList.contains('title')&&!!ov.querySelector('.chs'),8000);
+      ov.querySelector('.go').click();await until(()=>ov.classList.contains('title')&&!!ov.querySelector('.chs,.pm'),8000);
       ok(ov.classList.contains('title')&&!!ov.querySelector('[data-fin]')&&ov.querySelector('[data-fin]').textContent.includes(T('from_damascus_to_rome'))&&!!ov.querySelector('[data-cont]'),'a click leads back to the title, which now has the line "From Damascus to Rome", and Continue');
       told.length=0;views.length=0;bars.length=0;ov.querySelector('[data-fin]').click();
       await until(()=>views.length>0&&G.scene===M.draw,8000);const first=views[0];await wait(200);$('#skip').click();
@@ -1783,7 +1789,7 @@
   halt('title',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
   /* the phone layout (fit and lensTick in index.html). playtest.mjs shows these stops on a phone held sideways, 852 by 393 CSS pixels at three
      device pixels to the CSS pixel, touched and without a mouse (phoneportrait: held upright); emu=1 gives it the safe margins of a phone with
-     its camera in the screen, as Safari reports them. Stops: phonetitle, phone (a line in the workshop), phonenames, phonezoom, phonechoice,
+     its camera in the screen, as Safari reports them. Stops: phonetitle, phonereturn (the title of a returning player), phone (a line in the workshop), phonenames, phonezoom, phonechoice,
      phoneclose (a close view, fitted whole), phonemenu, phonescroll, phoneportrait; phoneall runs every check (part of the full run). */
   /* The beat of the sea (shared/beat.js): beat on the desktop, phonebeat on a phone held sideways. A test scene of the harness's own, a
      strip of deck with three holds in a row (no chapter's room), is crossed hold by hold as a level would: a click on the next hold is a
@@ -2059,7 +2065,28 @@
       ok(PH.mode==='title'&&PH.wide&&(Math.abs(c.width-(W-2*PH.ci-144))<2||Math.abs(c.height-Hh)<2)&&c.left>=PH.ci+71&&c.right<=W-PH.ci-71&&c.top>=-1&&c.bottom<=Hh+1,'the title\'s picture fits the screen, with a strip of timber at each side');
       const cb2=R($('#code'));ok(getComputedStyle($('#ttop')).display!=='none'&&$('#ttop').contains($('#code'))&&$('#code').textContent===T('enter_code')&&cb2.width>0&&cb2.top>=0&&cb2.left>=c.right&&o.left>=c.right&&o.right<=W-PH.ci&&$('#code').scrollWidth<=$('#code').clientWidth+1&&h.top>=0&&h.bottom<=Hh,'on the title ENTER CODE and the menu button stand in its upper right corner, where its last line says, beside the picture and not over it');
       /* the list in its parts: the whole of it stands on the phone, and a line is tall enough for a finger to find (at least 17 points) */
-      {const l=ov.querySelector('.chs'),ln=R(ov.querySelector('.part.open>.grp'));ok(l.scrollHeight<=l.clientHeight+1&&ln.height>=17,'the whole list stands on the phone\'s title in its parts, each line '+ln.height.toFixed(1)+' points tall')}
+      /* the menu of buttons (phoneMenuHTML): three columns as wide as the picture and no wider, which need no scrolling; every button is
+         tall enough for a finger (at least 32 points) and its words fit in it, in each language; a tap on a part brings its chapters
+         beside it and keeps it chosen when it is tapped again; a tap beside the buttons does nothing */
+      {const m=ov.querySelector('.pm'),cols=[...m.children],bs=[...m.querySelectorAll('.pb')].filter(b=>b.offsetParent),hs=bs.map(b=>R(b).height),mr=R(m),fo=R(ov.querySelector('.foot')),
+          over=bs.filter(b=>b.scrollWidth>b.clientWidth+1||b.scrollHeight>b.clientHeight+1).map(b=>b.textContent);
+        ok(cols.length===3&&cols.every(c=>c.scrollHeight<=c.clientHeight+1)&&mr.left>=c.left-1&&mr.right<=c.right+1&&fo.bottom<=Hh+1&&Math.min(...hs)>=32&&!over.length,
+          'the phone\'s title is a menu of buttons in three columns inside the picture, none of which scrolls; the smallest button is '+Math.min(...hs).toFixed(1)+' points tall'+(over.length?'. WORDS RUN OVER: '+over.join(' | '):''));
+        const g=[...m.querySelectorAll('.grp')],gl=()=>m.querySelector('.gl.on'),pick=ov.onclick;
+        g[2].click();const two=gl()&&gl().dataset.gl==='2'&&g[2].classList.contains('on')&&!g[0].classList.contains('on')&&[...gl().querySelectorAll('[data-ch]')].every(b=>partOf(+b.dataset.ch)===2);
+        g[2].click();const kept=gl()&&gl().dataset.gl==='2'&&partOpen===2;
+        ov.querySelector('.lede').click();m.click();ok(two&&kept&&ov.classList.contains('title')&&ov.onclick===pick,'a tap on a part brings its chapters beside it, and a second tap keeps it chosen; a tap beside the buttons starts nothing');
+        g[0].click();
+        /* a returning player (phonereturn): Continue lit at the head of the left column, the farthest point and the hidden treasures
+           under it, the part of Continue chosen with its chapter set off, and still nothing to scroll and no button too small */
+        store('paul.save',CHAP[22].treasure.at);keepSaves({far:{code:CHAP[23].treasure.at,t:1}});keepTreasures([1,2,3,5,8,13,21]);partOpen=null;ov.draw();await wait(150);
+        {const m=ov.querySelector('.pm'),a=[...m.querySelectorAll('.acts>p')],on=m.querySelector('.grp.on'),h=m.querySelector('.gl.on .here'),bs=[...m.querySelectorAll('.pb')].filter(b=>b.offsetParent),
+            over=bs.filter(b=>b.scrollWidth>b.clientWidth+1||b.scrollHeight>b.clientHeight+1).map(b=>b.textContent);
+          ok(a.length===3&&a[0].matches('.main[data-cont]')&&a[1].matches('[data-far]:not(.main)')&&a[2].matches('[data-tre]')&&on&&on.dataset.pt==='5'&&h&&h.dataset.ch==='22'
+            &&[...m.children].every(c=>c.scrollHeight<=c.clientHeight+1)&&Math.min(...bs.map(b=>R(b).height))>=32&&!over.length,
+            'a returning player on a phone finds Continue lit at the head of the menu, the farthest point and the hidden treasures under it, and the last part chosen with Chapter Twenty-Two set off'+(over.length?'. WORDS RUN OVER: '+over.join(' | '):''));
+          halt('phonereturn')}
+        store('paul.save',null);store('paul.saves',null);store('paul.treasures',null);partOpen=null;ov.draw();await wait(60)}
       halt('phonetitle',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'})}
     await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();G.speedAll=0;place(P,'workshop',160,128,1);[G.cam,G.camY]=camAt('workshop',160,128);await wait(700);
     const F=LENS.F,cw=PH.cw;let lc=R($('#lcol')),rc=R($('#rcol'));

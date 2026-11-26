@@ -8,7 +8,7 @@
 //   node tools/playtest.mjs pwa              the installable app: service worker, manifest, offline play (served over http; icon saved as pwa-icon.png)
 //   node tools/playtest.mjs continue         the title screen of a returning player (the game is reloaded; its autosave must bring them back)
 //   node tools/playtest.mjs lanesall         the lane map (shared/lanes.js) on Chapter Fourteen's Ephesus; lanes, lanes2, lanesfolk and lanesmap are its pictures
-//   node tools/playtest.mjs phoneall         the phone layout, on a phone held sideways (phone, phonetitle, phonezoom, phonechoice, phoneclose, phonemenu ... are its pictures)
+//   node tools/playtest.mjs phoneall         the phone layout, on a phone held sideways (phone, phonetitle, phonereturn, phonezoom, phonechoice, phoneclose, phonemenu ... are its pictures)
 //   node tools/playtest.mjs shadows          cast & contact shadows across single-lamp, multi-lamp, pitch-dark and wall-crease rooms (saves cast-shadows and room sheets)
 //   node tools/playtest.mjs tunes de:tunes   one bar of each chapter's tune (shared/tunes.js) held to the chapters' own scores, note for note (saves tunes-sheet)
 //   node tools/playtest.mjs map24 de:map24   the travel map's windows for the road to Rome and the letters (italy, appia, lycus, letters): map24-sheet.png and map24-zoom.png
