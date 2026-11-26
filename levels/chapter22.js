@@ -545,9 +545,10 @@ ART.storm22={w:320,q:12,variant:()=>nightNow22()?'n':phase22()==='skiff'?'s':'d'
     {y:112,shape(g){caskDraw22(g,'#000',1)},foot:()=>[caskFoot22()]},
     ...['hatch','cabin','windlass'].map(k=>({get y(){const D=gd22();return D.P(0,D.s(D.things[k][2]),D.things[k][2])[1]},shape(g){thingShape22(g,k)}}))]};
 /* the backdrop: the deck in the storm's light, with nothing beyond her (the sea is `behind`), wet; the cask; by night the lantern's glow */
-/* the deck's options: deck22's deck (its narrowed cabin, the staff at the port end of the cabin's roof), in the storm's light, with nothing
-   beyond her, no anchor on deck, no shelter */
-const stormO22=(N,floor)=>({beyond:()=>{},anchor:false,light:N?'night':'storm',cabin:DECK22.cabin,staff:true,floor});
+/* the deck's options: deck22's deck (its narrowed cabin), in the storm's light, with nothing beyond her, no anchor on deck, no shelter,
+   and no pennant: its staff is struck for the storm, so that no thin upright stands across the white crest of a sea behind it
+   (CONTRIBUTING section 3) */
+const stormO22=(N,floor)=>({beyond:()=>{},anchor:false,light:N?'night':'storm',cabin:DECK22.cabin,staff:false,floor});
 function paintStorm22(g,v){const N=v==='n',GS=SHARED.grainship,r=rng(2204);
   /* the deck is wet: the bare planks darker and cooler, the grey of the sky lying in them, strongest far aft where we look along them;
      streaks of water along the planks, running toward the vanishing point as the planks do; long low pools where it lies. Painted on the
@@ -613,20 +614,12 @@ function drawStorm22(g,t){const v=ART.storm22.variant(),N=v==='n',e=e22(t),DS=ds
   clipTo(g,()=>{const W=wet22();g.beginPath();for(const q of W){g.moveTo(q[0],q[1]);for(let i=2;i<q.length;i+=2)g.lineTo(q[i],q[i+1]);g.closePath()}},
     ()=>DS.aboard(g,t,e,G.sway?sk22v(v):0));
   if(phase22()==='skiff')skiff22(g,t,e);
-  pennant22(g,t,N);
   if(N){const L=lant22(),[lx,ly]=L.p,f=.85+.15*Math.sin(t/90)+.08*Math.sin(t/37);depth(L.floor[1]+.5,()=>{R(g,lx-1,ly-.8,2,2.6,'#ffd27a');R(g,lx-.5,ly-.2,1,1.4,rgba('#fff4d0',f))})}
   if(phase22()==='skiff'&&G.pull22&&performance.now()-G.pull22<700)SHARED.beat.cap(g,'pull_22',LK.x,LK.y-56,{w:50});
   if(G.beat){const c=caller22();if(c&&c.room===G.room)SHARED.beat.call(g,c.x,c.y-56,t)}
   /* a bale going over the lee rail: up from his arms, over the rail and away to starboard */
   if(G.over22){const k=Math.min(1,(performance.now()-G.over22)/600);if(k<1){const[hx,hy]=STORM22.holds[3],x=hx+8+k*34,y=hy-22-Math.sin(k*Math.PI)*16+k*k*18;
     depth(hy+1,()=>{poly(g,[x-4,y-2.6,x+4,y-3,x+4.4,y+2.6,x-4,y+3],'#7a5c3a');R(g,x-4,y-2.6,8,.6,'#a88a62');R(g,x-4,y+2.4,8.4,.6,'#4a3420')})}}}
-/* the pennant on deck22's staff, in the storm: torn short, its ragged end beating hard and streaming to starboard with the wind that
-   drives the rain; a narrow cloth that tapers, never a flag across the staff */
-function pennant22(g,t,N){const[hx,hy]=SHARED.grainship.staffOf(gd22()).head,n=9,L=10,up=[],dn=[];
-  for(let i=0;i<=n;i++){const k=i/n,x=hx+.6+k*L,w=Math.sin(t/70-k*6)*1.3*k+Math.sin(t/150-k*3)*.6*k,yc=hy+1.2+k*1.4+w,hw=1.4*(1-k*.45)*(i===n?.4:1);up.push(x,yc-hw);dn.unshift(x,yc+hw)}
-  /* the torn end: a ragged edge of three short points */
-  const e=up.length-2;up.splice(e,0,up[e]-1.5,up[e+1]+.7);
-  const P=up.concat(dn);poly(g,P,N?'#3a1a18':'#7a2a22');clipTo(g,()=>poly(g,P),()=>R(g,hx,hy-2,L+3,1.4,N?'rgba(120,80,70,.25)':'rgba(220,170,150,.25)'))}
 /* the skiff (27:16), coming up over the port rail on the men's rope as they gain on her (G.sk22, 0..4), rising and falling with the sea.
    She hangs alongside, a little outboard of the bulwark, her stem aft (away from us, as she was towed) and a little higher; she is full
    of water: grey-green to the brim, with foam in it, spilling over her near gunwale and falling away outboard. Her near side is planked in strakes that run along her; no thwart and no oar across her. Only what is above the rail is
