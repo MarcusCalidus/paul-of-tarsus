@@ -455,6 +455,8 @@ function wreckage(g,o){const C=LIGHT[o.light]||LIGHT.dawn,sl=o.slant||-.06,r=rng
      o.cabin         [x0, x1, z0, z1, h]: the cabin's place and size in metres, if a room needs it otherwise than the default
                      [-2.6, 2.6, 11.3, 14.2, 1.75] (Chapter Twenty-Two narrows it to [-1.8, 1.8, ...], so that a staff at the end of its
                      roof stands clear of the steering oars' tillers)
+     o.bare          [[x0, x1], ...] in metres across the deck: the planks under these strips keep no butt joints (where a room lays a
+                     rope along a plank, so that no joint crosses it)
      o.staff         true: a short staff at the port end of the cabin's roof, at the very corner of its eave, for a pennant that the
                      room draws (staffOf(D) gives its foot and its head); never from the middle of the roof
      o.shelter       true: Paul's shelter of mended sailcloth (Chapter Twenty-Two) in the lee of the cabin, between its port wall and
@@ -526,7 +528,8 @@ function deckFloor(g,D,r){const{P,s,b}=D,FL=D.C.map(([x,z])=>P(x,s(z),z)).flat()
       poly(g,pl,c);
       clipTo(g,()=>poly(g,pl),()=>{for(let i=0;i<4;i++){const u=u0+(u1-u0)*(.2+r()*.6),za=2+r()*8,zb=za+1.5+r()*4,q=[];for(let z=za;z<zb;z+=.4)q.push(...P(u*W(z),s(z),z));if(q.length>3)stroke(g,q,r()<.5?rgba(tint(c,-.22),.45):rgba(tint(c,.14),.4),.5)}});
       const sm=zs.map(z=>P(u0*W(z),s(z),z)).flat();stroke(g,sm,'rgba(30,18,10,.5)',.5);
-      const z0=2+((k*.618+.31)%1+1)%1*5;for(let z=z0;z<DG.ZS;z+=5.6){const a=P(u0*W(z)+.03,s(z),z),e=P(u1*W(z)-.03,s(z),z);if(e[0]-a[0]>2.2){R(g,a[0],a[1]-.25,e[0]-a[0],.5,'rgba(30,18,10,.45)');R(g,a[0],a[1]+.25,e[0]-a[0],.4,rgba(tint(c,.24),.3))}}}
+      const bare=(D.o.bare||[]).some(([a,b])=>a<(k+1)*du&&b>k*du);
+      const z0=2+((k*.618+.31)%1+1)%1*5;if(!bare)for(let z=z0;z<DG.ZS;z+=5.6){const a=P(u0*W(z)+.03,s(z),z),e=P(u1*W(z)-.03,s(z),z);if(e[0]-a[0]>2.2){R(g,a[0],a[1]-.25,e[0]-a[0],.5,'rgba(30,18,10,.45)');R(g,a[0],a[1]+.25,e[0]-a[0],.4,rgba(tint(c,.24),.3))}}}
     tex(g,'mott',.25,0,40,320,110,'overlay',.7);
     comp(g,'soft-light',.28,()=>poly(g,[...P(-1.2,0,2.4),...P(1.2,0,2.4),...P(.8,0,11),...P(-.8,0,11)],'#fff4d8'));
     for(const[d,a]of[[.04,.3],[.12,.18],[.24,.1]])stroke(g,D.C.map(([x,z],i)=>P(x+D.N[i][0]*d,s(z),z+D.N[i][1]*d)).flat(),`rgba(20,12,16,${a})`,1.2)})}

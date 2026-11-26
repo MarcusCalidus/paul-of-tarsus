@@ -370,7 +370,7 @@ function drawMyra22(g,t){const{edge}=MYRA22,b1=Math.round(Math.sin(t/2100)*1)/2,
    Havens) 172,78,44,30. Walk: 20..300 by 106..138, round the mast's foot, the anchor (Myra), the bedding and a coil of rope.
    Light: Myra in the evening, the low sun at the left (long shadows to the right); Fair Havens by day, the sun high at the right. */
 const DECK22={cabin:[-1.8,1.8,11.3,14.2,1.75],walk:[20,300,106,138]};
-const deckO22=v=>({place:v[0]==='h'?'fairhavens':'myra',light:v[0]==='h'?'day':'evening',cabin:DECK22.cabin,staff:true,shelter:v==='ms',anchor:v[0]!=='h',beyond:v[0]==='h'?havensBeyond22:myraBeyond22});
+const deckO22=v=>({place:v[0]==='h'?'fairhavens':'myra',light:v[0]==='h'?'day':'evening',cabin:DECK22.cabin,staff:true,shelter:v==='ms',anchor:v[0]!=='h',bare:v[0]==='h'?[[1.74,1.86]]:[],beyond:v[0]==='h'?havensBeyond22:myraBeyond22});
 let SDeck22=null;
 ART.deck22={w:320,q:12,variant:()=>(F.fh?'h':'m')+(F.shelter&&!F.fh?'s':''),
   paint(g,v){SDeck22=null;SHARED.grainship.deck(g,deckO22(v))},
@@ -424,8 +424,9 @@ function pennantDeck22(g,t){const S=SHARED.grainship.staffOf(SHARED.grainship.ge
 /* the anchor cable at Fair Havens: from forward (out of the picture at the foot) aft along the deck and up to the windlass's drum; it
    comes in as 27:13 is told (k from 1 to 0): its strands run aft toward the drum, and at the end it is all wound and nothing is seen
    of the anchor. Drawn by depth, piece by piece, so that whoever stands nearer covers it. */
-function cableDeck22(g,t,k){if(k<=0)return;const D=SHARED.grainship.geoDeck({cabin:DECK22.cabin}),{P,s}=D,x=1.68,run=(1-k)*6,pts=[];
-  for(let z=2.9;z<=10.62;z+=.18){const lift=z<8.4?.07:.07+(.66-.07)*Math.pow((z-8.4)/2.22,1.6);pts.push([z,...P(x,s(z)+lift,z),...P(x,s(z),z)])}
+function cableDeck22(g,t,k){if(k<=0)return;const D=SHARED.grainship.geoDeck({cabin:DECK22.cabin}),{P,s}=D,x=1.8,run=(1-k)*6,pts=[];
+  /* it lies along the middle of one plank, which keeps no butt joint (o.bare), and rises to the drum's lower front, where it winds on */
+  for(let z=2.9;z<=10.56;z+=.18){const lift=z<8.4?.07:.07+(.27-.07)*Math.pow((z-8.4)/2.16,1.4);pts.push([z,...P(x,s(z)+lift,z),...P(x,s(z),z)])}
   for(let i=1;i<pts.length;i++){const[z0,ax,ay,,fy]=pts[i-1],[z1,bx,by]=pts[i],w=Math.max(.6,D.F*.07/z0);
     depth(Math.min(fy,138.5),()=>{if(z0<8.4)comp(g,'multiply',.35,()=>stroke(g,[ax+.6,ay+w*.6,bx+.6,by+w*.6],'#3a3050',w*1.4));
       stroke(g,[ax,ay,bx,by],'#6a5232',w);stroke(g,[ax,ay-w*.3,bx,by-w*.3],'rgba(220,190,130,.55)',Math.max(.4,w*.3));
