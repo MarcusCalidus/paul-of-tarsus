@@ -113,13 +113,17 @@ ROOMS.lane24={space:.8,walk:[24,300,112,138],mood:'stub24',amb:AMB.lane24,hs:[
   {name:'stub24_stair_door',x:70,y:50,w:30,h:52,wx:86,wy:118,def:'open',look:'stub24_stair_door_look',open:()=>choose24(0),use:()=>choose24(0)},
   {name:'stub24_door_at_street_level',x:196,y:58,w:44,h:44,wx:218,wy:118,def:'open',look:'stub24_door_at_street_level_look',open:()=>choose24(1),use:()=>choose24(1)}]};
 
+/* Luke is played here: a hotspot does for him what it says (as Chapters Twenty-One and Twenty-Three do for whoever is played who is not
+   Paul); a hotspot that is to answer him otherwise gives its own as. */
+for(const id of['quay24','lane24'])for(const h of ROOMS[id].hs)if(!h.as)h.as={luke24:h};
+
 /* ============ WAX TABLETS ============ */
 const TABLETS={people:[],tasks:[{t:'stub24_task',if:()=>!F.chosen}],scripture:[]};   /* STUB */
 
 /* ============ PLACING THE CAST, SETUP, PRAYER ============ */
 /* Luke is played in both rooms of the stub; Paul stands on the quay, and is away in the street (he is at the camp) */
 function place24(room){for(const a of[P,LK]){a.seat=a.ges=a.kneel=a.bound=a.chained=a.held=0;a.room=null;a.noTurn=0}if(AU.score!==MUSIC)setScore(MUSIC);
-  if(room==='quay24'){place(P,room,212,124,-1);P.hs={name:'Paul',actor:P,look:'stub24_paul_look',talk:()=>say(P,'stub24_paul_on_the_quay',{to:LK})}}
+  if(room==='quay24'){place(P,room,212,124,-1);P.hs={name:'Paul',actor:P,as:{luke24:{look:'stub24_paul_look',talk:()=>say(P,'stub24_paul_on_the_quay',{to:LK})}}}}
   else P.hs=null;
   if(G.pc!==LK){G.pc=LK;G.inv=G.invs.luke24||(G.invs.luke24=[])}}
 function setup24(){P.hs=null;P.called='Paul';LK.called='Luke';G.invs={paul:['tablets'],luke24:[]};G.inv=G.invs.paul;drawInv()}

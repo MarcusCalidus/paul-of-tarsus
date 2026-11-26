@@ -130,6 +130,8 @@
   22:async()=>{await act('use','gangplank');const M=SHARED.map;for(let i=0;i<900&&!(M.state.places&&G.scene===M.draw&&!G.busy);i++)await wait(30);await wait(60);
     const[x,y]=M.where('tarsus'),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,clientX:r.left+x*r.width/VW,clientY:r.top+y*r.height/VH}));await wait(120);await idle()}, // Chapter Twenty-Two: from the quay at Caesarea, aboard; on the map of the voyage out, Tarsus is looked at while the leg off Cilicia is shown (nothing has changed until Myra is clicked)
   23:()=>act('look','stone_at_the_gate'), // Chapter Twenty-Three: at the estate of Publius, the stone at the gate with its one word
+  24:()=>act('look','stub24_corner_of_the_quay'), // Chapter Twenty-Four: STUB, the stub's corner of the quay. LOGIC24: from treasure.at, the steps that touch the reeds by the canal at night
+  25:()=>act('look','stub25_roll'), // Chapter Twenty-Five: STUB, the stub's roll. LOGIC25: from treasure.at, the steps that look at Luke's roll in the watch where he sits writing
  };
  (async()=>{try{
   while(!G.ready)await wait(30);
@@ -196,7 +198,10 @@
   if(!/[?&]keep=1/.test(location.search))ok(store('paul.save')===null&&!ov.querySelector('[data-cont]')&&ov.querySelector('[data-pro="1"]').classList.contains('go'),'a first visit has nothing to continue: the Prologue leads the list');
   /* the title screen holds its whole list: nothing on it lies above or below the view, with eight chapters or more */
   const inOv=()=>{const r=ov.getBoundingClientRect();return[...ov.children].every(el=>{const q=el.getBoundingClientRect();return q.top>=r.top-1&&q.bottom<=r.bottom+1})};
-  ok(inOv()&&ov.querySelector('[data-pro="1"]')&&ov.querySelectorAll('[data-ch]').length===Object.keys(CHAP).length,'the title screen holds the prologue and every chapter: '+Object.keys(CHAP).length);
+  /* listed: the chapters the title lists. FOR NOW, while Chapters Twenty-Four and Twenty-Five are built, a chapter still named in PLANNED
+     is in CHAP but not on the list (building, index.html); when PLANNED is emptied this is every chapter again. */
+  const listed=()=>Object.keys(CHAP).filter(n=>!building(n));
+  ok(inOv()&&ov.querySelector('[data-pro="1"]')&&ov.querySelectorAll('[data-ch]').length===listed().length,'the title screen holds the prologue and every chapter that is not in preparation: '+listed().length);
   /* The title screen alone uses the whole height: the status line and the panel give up their place, the view runs down to the foot of the
      window, and the title's picture is painted that tall. Its upper part is the wall's backdrop pixel for pixel, so that nothing moves
      when the title is left. */
@@ -1166,6 +1171,10 @@
     {const[c,dr]=made[0],[w,wg]=mk(640,288);wg.setTransform(HR,0,0,HR,0,0);const t0=performance.now();for(let k=0;k<60;k++)dr(wg,k*16);const ms=(performance.now()-t0)/60;
       ok(ms<4,`coast: the moving sea and its smoke cost ${ms.toFixed(2)} ms a frame`)}
     const[c0,dr0]=made[0];G.scene=(g,t)=>{g.drawImage(c0,0,0,320,144);dr0(g,t)};await wait(1200);halt('coast')}
+  /* views: the variants of a room that the generic stops (routes<N>, shadows<N>) look at, one after another: a chapter names them in its
+     definition (views:{room:{name:()=>set its flags}}), as Chapter Twenty-Five does for the flat and the room at street level of its one
+     lodging; each gets its own sheets (routes-<room>-<name>). A room without views is looked at as it stands. */
+  const views=(n,id)=>{const v=n&&CHAP[n]&&CHAP[n].views&&CHAP[n].views[id];return v?Object.entries(v):[['',null]]};
   /* routes<N> (routespro for the Prologue): the rooms of a chapter with what stands on their floors. For each room a sheet, routes-<room>, three
      times enlarged: the walk strip, each footprint (solid) with the margin that keeps a figure's feet off it, the place each hotspot and exit is
      walked to (a small diamond, green if it can be reached, red if not), and the ways from every exit to every one of them. It fails if a
@@ -1176,7 +1185,7 @@
     for(const o of Object.values(ACT))o.room=null;
     const rooms=Object.keys(ROOMS).filter(id=>!before.has(id)&&ROOMS[id].walk&&!planOf(id)&&ART[id]&&ROOMS[id].walk[0]<ROOMS[id].walk[1]&&ROOMS[id].walk[2]<roomH(id));
     window.SHEETS={};let nf=0;
-    for(const id of rooms){const R=ROOMS[id],a=ART[id],w=R.walk,W=a.w,Hh=roomH(id),K=3,c=document.createElement('canvas');c.width=W*K;c.height=Hh*K;const g=c.getContext('2d');
+    for(const id of rooms)for(const[vn,vset]of views(n,id)){if(vset)vset();const sid=id+(vn?'-'+vn:''),R=ROOMS[id],a=ART[id],w=R.walk,W=a.w,Hh=roomH(id),K=3,c=document.createElement('canvas');c.width=W*K;c.height=Hh*K;const g=c.getContext('2d');
       g.setTransform(K,0,0,K,0,0);g.imageSmoothingEnabled=false;g.drawImage(bg(id),0,0,W,Hh);
       /* the room as it is drawn with the view at its left end: what its draw paints (beasts, bystanders, stalls), the props, the foreground
          (fore, front), all at their depths, but nobody of the cast */
@@ -1187,7 +1196,7 @@
       props(id).forEach((p,i)=>{const d=p.c.getContext('2d').getImageData(0,0,p.c.width,p.c.height).data,cw=p.c.width,ch=p.c.height;let yb=-1;
         for(let y=ch-1;y>=0&&yb<0;y--)for(let x=0;x<cw;x++)if(d[(y*cw+x)*4+3]){yb=y;break}let x0=cw,x1=-1;
         for(let y=Math.max(0,yb-2*HR);y<=yb;y++)for(let x=0;x<cw;x++)if(d[(y*cw+x)*4+3]){x0=Math.min(x0,x);x1=Math.max(x1,x)}
-        const f=a.props[i].foot;L(`     ${id} prop ${i} (y ${p.y}): ${p.x.toFixed(1)}..${(p.x+p.w).toFixed(1)} across, ${p.t.toFixed(1)}..${(p.t+p.h).toFixed(1)} down; at the floor ${(p.x+x0/HR).toFixed(1)}..${(p.x+(x1+1)/HR).toFixed(1)}`+(f?' foot '+JSON.stringify(typeof f==='function'?f(a.variant?a.variant():''):f):' NO FOOT'))});
+        const f=a.props[i].foot;L(`     ${sid} prop ${i} (y ${p.y}): ${p.x.toFixed(1)}..${(p.x+p.w).toFixed(1)} across, ${p.t.toFixed(1)}..${(p.t+p.h).toFixed(1)} down; at the floor ${(p.x+x0/HR).toFixed(1)}..${(p.x+(x1+1)/HR).toFixed(1)}`+(f?' foot '+JSON.stringify(typeof f==='function'?f(a.variant?a.variant():''):f):' NO FOOT'))});
       g.lineWidth=1/K;g.strokeStyle='rgba(255,230,120,.9)';g.strokeRect(w[0],w[2],w[1]-w[0],w[3]-w[2]);
       for(const f of F){const[x0,y0,x1,y1]=f.b;g.fillStyle=f.seat?'rgba(80,160,255,.38)':'rgba(255,40,40,.38)';g.fillRect(x0,y0,x1-x0,y1-y0);
         g.strokeStyle='rgba(255,140,190,.9)';g.strokeRect(x0-FOOT_M[0],y0-FOOT_M[1],x1-x0+2*FOOT_M[0],y1-y0+2*FOOT_M[1])}
@@ -1200,12 +1209,12 @@
           g.strokeStyle='rgba(90,230,255,.85)';g.lineWidth=1/K;g.beginPath();g.moveTo(s0[0],s0[1]);for(const q of r.pts)g.lineTo(q[0],q[1]);g.stroke()}
         if(!reach)bad.push(T(h.name));
         g.strokeStyle=reach?'#40ff60':'#ff3030';g.lineWidth=1.5/K;g.beginPath();g.moveTo(t[0],t[1]-2);g.lineTo(t[0]+2,t[1]);g.lineTo(t[0],t[1]+2);g.lineTo(t[0]-2,t[1]);g.closePath();g.stroke()}
-      SHEETS['routes-'+id]=c.toDataURL();
-      ok(!bad.length,`${id}: ${F.length} footprint${F.length===1?'':'s'}; every exit and hotspot (${hs.length}) is reached from every exit`+(bad.length?'. NOT REACHED: '+bad.join(', '):''))}
+      SHEETS['routes-'+sid]=c.toDataURL();
+      ok(!bad.length,`${sid}: ${F.length} footprint${F.length===1?'':'s'}; every exit and hotspot (${hs.length}) is reached from every exit`+(bad.length?'. NOT REACHED: '+bad.join(', '):''))}
     ok(rooms.length>0||!n,`${rooms.length} rooms of ${n?'chapter '+n:'the Prologue'} with a strip to walk on, ${nf} footprints in all (sheets routes-<room>)`);
     /* and walked: Paul crosses every footprint that has floor on both sides of it, from one side to the other at its middle depth, at a
        brisk pace; he never steps into it (nor into any other), he gets there, and on the curve he turns at most twice */
-    for(const id of rooms){const w=ROOMS[id].walk,F=roomFeet(id).filter(f=>!f.seat),bad=[];let walks=0;
+    for(const id of rooms)for(const[vn,vset]of views(n,id)){if(vset)vset();const sid=id+(vn?'-'+vn:''),w=ROOMS[id].walk,F=roomFeet(id).filter(f=>!f.seat),bad=[];let walks=0;
       for(const o of Object.values(ACT))o.room=null;enterRoom(id,(w[0]+w[1])/2,w[3]-2,1);
       for(const f of F){const ym=clamp((f.b[1]+f.b[3])/2,w[2]+1,w[3]-1);let L=f.b[0]-FOOT_M[0]-2,R=f.b[2]+FOOT_M[0]+2;while(L>w[0]&&floorHit(id,L,ym))L-=2;while(R<w[1]&&floorHit(id,R,ym))R+=2;
         if(L<w[0]||R>w[1]||floorHit(id,L,ym)||floorHit(id,R,ym))continue;walks++;
@@ -1217,7 +1226,7 @@
         if(film){clearInterval(ft);const cols=4,W0=fr[0].width,H0=fr[0].height,c=document.createElement('canvas');c.width=W0*cols;c.height=H0*Math.ceil(fr.length/cols);const g=c.getContext('2d');
           fr.forEach((f,i)=>g.drawImage(f,(i%cols)*W0,((i/cols)|0)*H0));SHEETS['routes-walk']=c.toDataURL()}
         if(!r||Math.hypot(P.x-R,P.y-ym)>1||inside||turns>2)bad.push(`[${f.b.map(v=>Math.round(v)).join(',')}] ${!r?'not reached':''}${inside?' stepped in '+inside:''}${turns>2?' turned '+turns:''}`)}
-      ok(!bad.length,`${id}: Paul walked round ${walks} footprint${walks===1?'':'s'}, and never into one`+(bad.length?'. BAD: '+bad.join(' | '):''))}
+      ok(!bad.length,`${sid}: Paul walked round ${walks} footprint${walks===1?'':'s'}, and never into one`+(bad.length?'. BAD: '+bad.join(' | '):''))}
     {const id=rooms[0];if(id){setChapter(n||1);place(P,id,(ROOMS[id].walk[0]+ROOMS[id].walk[1])/2,ROOMS[id].walk[3]-4,1);enterRoom(id,P.x,P.y,1)}}
     halt(stop)}}
   /* shadows<N> (CONTRIBUTING section 4): the rooms of a chapter with a strip to walk on, each with Paul standing at five places along the back
@@ -1231,12 +1240,12 @@
     for(const o of Object.values(ACT))o.room=null;
     const rooms=Object.keys(ROOMS).filter(id=>!before.has(id)&&ROOMS[id].walk&&!planOf(id)&&ART[id]&&ROOMS[id].walk[0]<=ROOMS[id].walk[1]&&ROOMS[id].walk[2]<roomH(id));
     window.SHEETS={};const look=paulLook(n);let k=0;
-    for(const id of rooms){const R=ROOMS[id],a=ART[id],w=R.walk,W=a.w||VW,Hh=roomH(id),K=2,c=document.createElement('canvas');c.width=W*K;c.height=Hh*K;const g=c.getContext('2d');
+    for(const id of rooms)for(const[vn,vset]of views(n,id)){if(vset)vset();const sid=id+(vn?'-'+vn:''),R=ROOMS[id],a=ART[id],w=R.walk,W=a.w||VW,Hh=roomH(id),K=2,c=document.createElement('canvas');c.width=W*K;c.height=Hh*K;const g=c.getContext('2d');
       let L=a.light;try{if(typeof L==='function')L=L()}catch(e){L=undefined}
       const sun=L&&(L.sun||L.dir),len=sun?Math.hypot(sun[0],sun[1]):0;
-      ok('light' in a,`${id}: says what light it has`+(!('light' in a)?' (NO light: give it amb, sun or lamps, or light:null for a close view or a map)':
+      ok('light' in a,`${sid}: says what light it has`+(!('light' in a)?' (NO light: give it amb, sun or lamps, or light:null for a close view or a map)':
         ` (${!L?'none':[(L.lamps||[]).length?L.lamps.length+' lamp'+(L.lamps.length>1?'s':''):'',sun?'sun ['+sun.slice(0,2).join(',')+']':'','amb '+(L.amb||'#ffffff')].filter(Boolean).join(', ')})`));
-      if(sun)ok(len>=3,`${id}: its sun casts a shadow ${len.toFixed(1)} room pixels long, at least 3 (a direction of length one casts none)`);
+      if(sun)ok(len>=3,`${sid}: its sun casts a shadow ${len.toFixed(1)} room pixels long, at least 3 (a direction of length one casts none)`);
       g.setTransform(K,0,0,K,0,0);g.imageSmoothingEnabled=false;LID=id;g.drawImage(bg(id),0,0,W,Hh);
       const q=DQ=[];SQ=[];try{a.draw(g,1000)}catch(e){}for(const p of props(id))q.push([p.y,()=>g.drawImage(p.c,p.x,p.t,p.w,p.h)]);
       /* a room whose strip is a single spot (where a scene sets its people) is shown with them round that spot */
@@ -1245,12 +1254,12 @@
       for(const[x,y,dir,fr]of spots){const o={id:'shtest'+(k++%2),look,x,y,dir,fr,room:id,noTurn:1};drawActor(g,o,1000,id)}
       const sq=SQ;DQ=SQ=null;for(const fn of sq)fn();q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());
       const f=fg(id);if(f)g.drawImage(f,0,0,f.width/HR,VH);try{a.front(g,1000)}catch(e){}LID=null;
-      SHEETS['shadows-'+id]=c.toDataURL();
+      SHEETS['shadows-'+sid]=c.toDataURL();
       const y0=Math.max(0,w[3]-56),hh=Math.min(Hh,w[3]+10)-y0,z=c.width>1280?1280/W:4,c4=document.createElement('canvas');c4.width=Math.round(W*z);c4.height=Math.round(hh*z*(z<4?4/z:1));
       const g4=c4.getContext('2d');g4.imageSmoothingEnabled=false;
       if(z>=4)g4.drawImage(c,0,y0*K,W*K,hh*K,0,0,W*4,hh*4);
       else{const half=Math.ceil(W/2);c4.width=half*4;c4.height=hh*8;g4.imageSmoothingEnabled=false;g4.drawImage(c,0,y0*K,half*K,hh*K,0,0,half*4,hh*4);g4.drawImage(c,half*K,y0*K,(W-half)*K,hh*K,0,hh*4,(W-half)*4,hh*4)}
-      SHEETS['shadows-'+id+'-x4']=c4.toDataURL()}
+      SHEETS['shadows-'+sid+'-x4']=c4.toDataURL()}
     ok(rooms.length>0,`${rooms.length} rooms of chapter ${n} with a strip to walk on (sheets shadows-<room> and shadows-<room>-x4)`);
     {const id=rooms[0];if(id){place(P,id,(ROOMS[id].walk[0]+ROOMS[id].walk[1])/2,ROOMS[id].walk[3]-4,1);enterRoom(id,P.x,P.y,1)}}
     halt(stop)}}
@@ -2040,7 +2049,7 @@
      Continue and the farthest point, and then the box scrolls: its far edge fades while more lies beyond it, and a click between entries
      starts nothing. The stop `titlescroll` shows that title, scrolled to its end. */
   {const fade=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))),l0=ov.querySelector('.chs');
-    ok(l0&&[...l0.children].every(p=>p.dataset.ch||p.dataset.pro||p.classList.contains('plans')||p.classList.contains('plan'))&&l0.querySelectorAll('[data-ch],[data-pro]').length===Object.keys(CHAP).length+1,'the prologue and the chapters sit in a list of their own, with the planned ones at its foot');
+    ok(l0&&[...l0.children].every(p=>p.dataset.ch||p.dataset.pro||p.classList.contains('plans')||p.classList.contains('plan'))&&l0.querySelectorAll('[data-ch],[data-pro]').length===listed().length+1,'the prologue and the chapters sit in a list of their own, with the planned ones at its foot');
     if(!/[?&]keep=1/.test(location.search)){
     /* FOR NOW (see the title checks above): on a first visit the list may scroll; the chosen layout replaces this check */
     await fade();ok(!l0.classList.contains('up')&&l0.classList.contains('down')===(l0.scrollHeight>l0.clientHeight+1),'on a first visit the list stands at its head: its top edge does not fade, and its bottom edge fades only while more lies below it');
@@ -2238,7 +2247,7 @@
     ok(!G.room&&ov.classList.contains('on')&&store('paul.save')===c,'a new visit starts on the title screen, and the save is still there');
     ok(cont&&ov.querySelector('p.go,p.pick')===cont&&ov.querySelector('p.go')===cont&&!ov.querySelector('[data-ch].go,[data-pro].go')&&cont.textContent.includes(T('Continue'))&&cont.textContent.includes(T('chapter_one'))&&cont.textContent.includes(T('escape_from_damascus_2')),
       'the title offers Continue first, and names the chapter');fitVerbs();{const r=cont.getBoundingClientRect(),v=ov.getBoundingClientRect();if(cont.scrollWidth>cont.clientWidth+1||r.left<v.left||r.right>v.right)tight.add('Continue: '+cont.textContent)}
-    ok(ov.querySelectorAll('[data-ch]').length===Object.keys(CHAP).length,'every chapter is still listed');
+    ok(ov.querySelectorAll('[data-ch]').length===listed().length,'every chapter is still listed');
     ok(inOv(),'and the list still fits the screen, with the line that offers to continue');
     halt('continue',()=>{cont.style.animation='none'});
     cont.click();await idle();
@@ -5949,6 +5958,180 @@
         if(exp!==got||G.ch!==n||F.from22)bad.push(n+' flags')}
       ok(!bad.length,'the codes of the twenty-one earlier chapters (each treasure\'s point) decode and restore as before'+(bad.length?': NOT '+bad.join(', '):''))}
     window.showCard=sc;halt('carry')}
+  /* ==== CHAPTER TWENTY-FOUR: begin ==== Chapter Twenty-Four's own stops: whoever builds the chapter extends this section, and nothing outside it
+     but its line in TSTEPS, the chain of the full run (ch24 after ch23) and the title checks of the chapters before it. */
+  /* Chapter Twenty-Four stops start Chapter Twenty-Four from the title screen. FOR NOW, while PLANNED still names it and the title does not
+     list it (building, index.html), they start it as the title's entry would, with startChapter(24); once it is listed, its entry is
+     clicked. The full run is to call its test when Chapter Twenty-Three has ended: LOGIC24, once Chapter Twenty-Three's end screen leads
+     on to Chapter Twenty-Four, chain ch24() and ch25() after ch23() in the full run. all24 halts nowhere. Its halts: STUB: quay24 (the
+     quay, Luke played) · lane24 (the street with two lodgings) · final24 (the end screen with Chapter Twenty-Five's code). After final24 the
+     end screen is clicked: Chapter Twenty-Five opens with from24 and street carried, in the room chosen, and the printed code, typed, gives
+     the same room (the stop carry25, in Chapter Twenty-Five's section, does it for both lodgings). The stops that begin with "p" open one
+     room at once, with the story's flags set for it, and say the safe-point code of their point (CODE): STUB: pquay24 · plane24. rooms24
+     puts every picture on one sheet. The generic stops card24, routes24 and shadows24 (above) run against the chapter's rooms. LOGIC24:
+     replace every STUB name here with the chapter's own halts and room stops, as Chapter Twenty-Three's section does, and add the stops that
+     drive the beat by its exposed phase, on the desktop and on a phone held sideways (Chapter Twenty-Two's waves and phonedeck stops are
+     the model). Keep CHAP[24].end and CHAP[24].carry25 in the chapter's definition: the carry checks play them. */
+  /* rooms24: every picture of Chapter Twenty-Four on one sheet at twice its size (rooms24.png), for the art and the cross-shape check */
+  if(stop==='rooms24'){clearInterval(sk);sk=0;await loadLevel(24);setChapter(24);ov.className='';ov.onclick=null;const C=CHAP[24],ids=C.rooms,K=2;
+    const pic=(id,q,x,y)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
+      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
+      q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
+    const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
+    window.SHEETS={rooms24:c.toDataURL()};halt('rooms24')}
+  const C24=/^(quay24|lane24|final24|all24)$/.test(stop);   /* STUB: quay24, lane24 */
+  if(!C24&&/^p[a-z]+24$/.test(stop)){await loadLevel(24);ov.className='';ov.onclick=null;const C=CHAP[24],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      S={pquay24:[[],'quay24'],plane24:[upto('sailed'),'lane24']}[stop];   /* STUB: pquay24, plane24; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
+    if(!S)throw new Error('no such stop '+stop);setChapter(24);for(const k of S[0])F[k]=1;
+    const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    await wait(1100);halt(stop)}
+  const ch24=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[24],told=k=>heard.includes(T(C().told[k])),
+    until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    pray24=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
+    hints=async(a,b,where)=>{heard.length=0;const p=await pray24(),first=said(a)&&!said(b),q=await pray24();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+  heard.length=0;
+  /* FOR NOW: while the line "in preparation" still names Chapter Twenty-Four, the title does not list it; LOGIC24: when its entry leaves
+     PLANNED at the end, this check becomes the usual one (the title lists Chapter Twenty-Four, He Took Courage) */
+  if(C24){const l=ov.querySelector('.chs'),plans=l.querySelector('.plans');
+    ok(!l.querySelector('[data-ch="24"]')&&building(24)&&plans&&plans.textContent.includes(T('twenty_four')),'FOR NOW: the title does not list Chapter Twenty-Four while the line of the chapters in preparation still names it')}
+  if(C24){const e=document.querySelector('#overlay [data-ch="24"]');if(e)e.click();else startChapter(24)}else ov.click();
+  /* STUB: from here to halt('final24') the steps play the stub; LOGIC24 replaces them with the chapter's playthrough */
+  await until(()=>G.ch===24&&G.room==='quay24'&&!G.busy,6000);note();
+  ok(seenTold.has('n11')&&said('stub24_luke_at_the_quay')&&decode(makeCode()).ch===24&&PC()===A('luke24')&&P.room==='quay24'&&C().party.join()==='paul,luke24'&&C().swap===false,
+    'STUB: the stub of Chapter Twenty-Four opens with Acts 28:11 from the scroll, on the quay, Luke played and Paul by him: '+makeCode());
+  halt('quay24');
+  await hints('stub24_hint_1','stub24_hint_2','on the quay');
+  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('stub24_corner_of_the_quay','look');
+    ok(said('stub24_corner_of_the_quay_look')&&treasures().has(24)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'STUB: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
+  heard.length=0;onH('stub24_gangplank','use');await until(()=>F.sailed&&G.room==='lane24'&&!G.busy,9000);note();
+  ok(seenTold.has('n16')&&said('stub24_two_lodgings')&&!P.room&&PC()===A('luke24'),'STUB: Acts 28:16 from the scroll; Luke in a street of Rome, and Paul away');
+  {const cd=makeCode();await enter(cd);ok(G.ch===24&&G.room==='lane24'&&F.sailed&&!F.chosen&&PC()===A('luke24')&&!P.room,'a code in the street gives the street again: '+cd)}
+  halt('lane24');
+  await hints('stub24_hint_lodging_1','stub24_hint_lodging_2','in the street');
+  heard.length=0;onH('stub24_door_at_street_level','open');for(let i=0;i<4000&&!(ov.classList.contains('end')&&ov.onclick);i++)await wait(30);await wait(120);note();
+  {const bits=3,code=codeOf(25,bits),far=saves().far;
+    ok(said('stub24_the_room_at_street_level')&&F.street&&ov.classList.contains('end')&&ov.textContent.includes(T('he_took_courage_2'))&&/28:11-16/.test(ov.textContent)
+      &&ov.textContent.includes(T('click_to_continue_to_chapter_twenty_five'))&&ov.textContent.includes(T('chapter_twenty_five_code_code',{code}))&&store('paul.save')===code&&far&&far.code===code&&C().carry25()===bits&&inOv(),
+      'the end screen of Chapter Twenty-Four leads on to Chapter Twenty-Five with its first code, which carries the lodging (the room at street level): '+code);
+    halt('final24');
+    /* the carry: the end screen's click opens Chapter Twenty-Five with the card, from24 and street set, in the room at street level; the
+       printed code, typed later, gives the same room */
+    let shown=0;const sc=showCard;window.showCard=n=>{shown=n;return sc(n)};
+    const in25=()=>G.ch===25&&G.room==='lodging25'&&!G.busy&&!ov.classList.contains('card');
+    ov.click();await until(in25,9000);const v=ART.lodging25.variant();
+    ok(shown===25&&F.from24&&F.street&&v.startsWith('street')&&CHAP[25].flags.slice(0,CHAP[25].carry).join()==='from24,street','its click opens Chapter Twenty-Five with the card, from24 and street carried in: the room at street level ('+v+')');
+    shown=0;await restore(code);await until(in25,6000);
+    ok(shown===25&&F.from24&&F.street&&ART.lodging25.variant()===v&&atStart(decode(code)),'the printed code, typed later, gives the same room, and opens with the card: '+code);
+    window.showCard=sc}};
+  if(C24){await ch24();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    /* STUB: LOGIC24 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+  /* ==== CHAPTER TWENTY-FOUR: end ==== */
+  /* ==== CHAPTER TWENTY-FIVE: begin ==== Chapter Twenty-Five's own stops: whoever builds the chapter extends this section, and nothing outside it
+     but its line in TSTEPS, the chain of the full run (ch25 after ch24) and the title checks of the chapters before it. */
+  /* Chapter Twenty-Five stops start Chapter Twenty-Five from the title screen (nothing carried: it is played in the flat), as the title's
+     entry would (FOR NOW by startChapter(25), as for Chapter Twenty-Four); in the full run its test follows Chapter Twenty-Four's, which has
+     opened it with the room at street level carried in. all25 halts nowhere. Its halts: STUB: lodging25 (the lodging, Paul chained to the
+     soldier) · final25 (the door opened, Acts 28:30, 31 told, and the hand-over to the finale; until shared/finale.js is merged, a screen
+     that returns to the title on a click). The stops that begin with "p" open one room at once, with the story's flags set for it, and say
+     the safe-point code of their point (CODE): STUB: plodging25 (the flat) · pstreet25 (the room at street level, carried in). carry25
+     plays Chapter Twenty-Four's end for each lodging and checks the code and the click, and the start from the title and from the plain
+     first code (the flat). rooms25 puts every picture on one sheet, each room in each of its views (CHAP[25].views); the generic stops
+     card25, routes25 and shadows25 (above) run against the chapter's rooms, in each view. The checks that bind to the end: finished is
+     CHAP[25].flags[CHAP[25].done] and the last flag; and from the last safe point to the finale no flag is set (final25). LOGIC25: replace
+     every STUB name here with the chapter's own halts and room stops, one at least for each watch, and keep both end checks. */
+  /* rooms25: every picture of Chapter Twenty-Five on one sheet at twice its size, each room in each of its views (rooms25.png) */
+  if(stop==='rooms25'){clearInterval(sk);sk=0;await loadLevel(25);setChapter(25);ov.className='';ov.onclick=null;const C=CHAP[25],K=2,
+      ids=C.rooms.flatMap(id=>views(25,id).map(([vn,set])=>[id,set]));
+    const pic=([id,set],q,x,y)=>{if(set)set();G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
+      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
+      q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
+    const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    ids.forEach((e,i)=>pic(e,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
+    window.SHEETS={rooms25:c.toDataURL()};halt('rooms25')}
+  const C25=/^(lodging25|final25|all25)$/.test(stop);   /* STUB: lodging25 */
+  if(!C25&&/^p[a-z]+25$/.test(stop)){await loadLevel(25);ov.className='';ov.onclick=null;const C=CHAP[25],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      S={plodging25:[[],'lodging25'],pstreet25:[['from24','street'],'lodging25']}[stop];   /* STUB: plodging25, pstreet25; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
+    if(!S)throw new Error('no such stop '+stop);setChapter(25);for(const k of S[0])F[k]=1;
+    const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    await wait(1100);halt(stop)}
+  /* carry25 (CONTRIBUTING section 5): the lodging chosen in Chapter Twenty-Four is carried into Chapter Twenty-Five's first two flags, from24
+     and street, only in the safe-point code. For each lodging: Chapter Twenty-Four's end screen prints codeOf(25, bits) and keeps it as the
+     point to continue from and the farthest point; its click and that code, typed later, open the same room with the card. Started from
+     the title, or from the plain first code, nothing is carried, and the chapter is played in the flat. It plays the chapters' own end
+     (CHAP[24].end) and start, so it holds for the stubs and for the chapters alike. */
+  if(stop==='carry25'){await loadLevel(24);await loadLevel(25);
+    const CH24=CHAP[24],CH25=CHAP[25],K=CH25.carry,until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
+      in25=()=>G.ch===25&&G.room==='lodging25'&&!G.busy&&!ov.classList.contains('card');
+    let shown=0;const sc=showCard;window.showCard=n=>{shown=n;return sc(n)};
+    ok(K===2&&CH25.flags.slice(0,K).join()==='from24,street'&&CH24.flags.includes('street')&&typeof CH24.end==='function'&&typeof CH24.carry25==='function'&&CH25.flags[CH25.done]==='finished'&&CH25.flags.at(-1)==='finished',
+      'Chapter Twenty-Five carries two flags, from24 and street, which Chapter Twenty-Four sets from its own flag street; finished is its last flag, at done ('+CH25.done+')');
+    for(const street of[0,1]){const kind=street?'street':'flat',bits=1|street<<1,code=codeOf(25,bits);
+      store('paul.save',null);store('paul.saves',null);applyState(decode(codeOf(24,0)));await idle();if(street)F.street=1;
+      CH24.end();for(let i=0;i<4000&&!(ov.classList.contains('end')&&ov.onclick);i++)await wait(30);await wait(60);
+      const printed=(ov.textContent.match(/\b25-[0-9A-Z]{3}-[0-9A-Z]{3}\b/)||[])[0],far=saves().far;
+      ok(printed===code&&ov.textContent.includes(T('chapter_twenty_five_code_code',{code}))&&store('paul.save')===code&&far&&far.code===code,
+        `${kind}: the end screen prints codeOf(25, ${bits}) = ${printed}, and keeps it as the point to continue from and the farthest point`);
+      shown=0;ov.click();await until(in25,9000);
+      ok(shown===25&&!!F.from24&&!!F.street===!!street&&ART.lodging25.variant().startsWith(kind),`its click opens Chapter Twenty-Five with the card, in the ${kind} (${ART.lodging25.variant()})`);
+      shown=0;await restore(code);await until(in25,6000);
+      ok(shown===25&&!!F.from24&&!!F.street===!!street&&ART.lodging25.variant().startsWith(kind)&&atStart(decode(code)),`the printed code, typed later, gives the same room: ${code}`)}
+    store('paul.save',null);store('paul.saves',null);shown=0;startChapter(25);await until(in25,9000);
+    ok(!F.from24&&!F.street&&shown===25&&G.carry==null&&ART.lodging25.variant().startsWith('flat'),'started from the title, Chapter Twenty-Five has nothing carried, and is played in the flat');
+    shown=0;await restore(codeOf(25,0));await until(in25,6000);
+    ok(!F.from24&&!F.street&&shown===25&&ART.lodging25.variant().startsWith('flat'),'so is its plain first code');
+    window.showCard=sc;halt('carry25')}
+  const ch25=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[25],told=k=>heard.includes(T(C().told[k])),
+    until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    pray25=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
+    hints=async(a,b,where)=>{heard.length=0;const p=await pray25(),first=said(a)&&!said(b),q=await pray25();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+  heard.length=0;
+  /* FOR NOW, as for Chapter Twenty-Four: LOGIC25, when its entry leaves PLANNED, the usual check (the title lists Chapter Twenty-Five) */
+  if(C25){const l=ov.querySelector('.chs'),plans=l.querySelector('.plans');
+    ok(!l.querySelector('[data-ch="25"]')&&building(25)&&plans&&plans.textContent.includes(T('twenty_five')),'FOR NOW: the title does not list Chapter Twenty-Five while the line of the chapters in preparation still names it')}
+  if(C25){const e=document.querySelector('#overlay [data-ch="25"]');if(e)e.click();else startChapter(25)}
+  /* STUB: from here to halt('final25') the steps play the stub; LOGIC25 replaces them with the chapter's playthrough (keep the checks
+     of the end: finished at done, and no flag set from the last safe point to the finale) */
+  await until(()=>G.ch===25&&G.room==='lodging25'&&!G.busy,9000);note();
+  {const v=ART.lodging25.variant(),c5=C(),SO=A('soldier25');
+    ok(C25?!F.from24&&!F.street&&v.startsWith('flat'):!!F.from24&&!!F.street&&v.startsWith('street'),
+      C25?'started from the title, nothing is carried: the lodging is the flat ('+v+')':'started from the end of Chapter Twenty-Four, the lodging is the one carried in: the room at street level ('+v+')');
+    ok(c5.flags[c5.done]==='finished'&&c5.flags.at(-1)==='finished'&&!F.finished&&c5.carry===2&&c5.flags.slice(0,2).join()==='from24,street'&&c5.codeBits.flags>=c5.flags.length,
+      'the flags: from24 and street first (carried), finished last, at done ('+c5.done+'), and not set');
+    ok(c5.about&&c5.about.title==='without_hindrance_2'&&c5.about.text==='without_hindrance_about'&&c5.about.based==='based_on_acts_28_17_31'&&['without_hindrance_about','based_on_acts_28_17_31'].every(k=>textOf('en',k)),
+      'the page about the chapter has its keys: '+(c5.about&&Object.values(c5.about).join(', ')));
+    ok(PC()===P&&P.chained&&P.chainTo===SO&&SO.room==='lodging25'&&SO.keeper&&/^25(-[0-9A-Z]{3}){3,6}$/.test(makeCode())&&decode(makeCode()).ch===25,
+      'STUB: Paul is played, chained by one wrist to the soldier of the watch; wide codes: '+makeCode());
+    if(C25)ok(seenTold.has('n17'),'STUB: Acts 28:17 from the scroll')}
+  halt('lodging25');
+  await hints('stub25_hint_1','stub25_hint_2','in the lodging');
+  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('stub25_roll','look');
+    ok(said('stub25_roll_look')&&treasures().has(25)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'STUB: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
+  /* the last safe point, and the door: from here to the finale no flag is set */
+  {const last=store('paul.save'),fl=()=>C().flags.filter(k=>F[k]).join();codeBtn();const f0=fl(),c0=makeCode();
+    ok(store('paul.save')===c0&&decode(c0).ch===25,'the last safe point, kept as the point to continue from: '+c0);
+    heard.length=0;onH('door','open');for(let i=0;i<4000&&!(ov.classList.contains('end')&&ov.onclick)&&!SHARED.finale;i++)await wait(30);await wait(120);note();
+    ok(said('come_in_the_chain_is_on_me')&&seenTold.has('n3031')&&heard.indexOf(T('come_in_the_chain_is_on_me'))<heard.indexOf(T(C().told.n3031)),
+      'the door is opened: come in, the chain is on me; then Acts 28:30, 31 from the narrator');
+    ok(fl()===f0&&!F.finished&&makeCode()===c0&&store('paul.save')===c0,'from the last safe point to the finale no flag is set (finished is not): the code is still '+c0);
+    /* FOR NOW, until shared/finale.js is merged: no end screen; a plain screen whose click returns to the title. LOGIC25: once the finale
+       is merged, this check is the finale's to change (its run() takes over here). */
+    if(!SHARED.finale)ok(ov.classList.contains('end')&&!ov.querySelector('h2')&&ov.textContent.includes(T('click_to_return_to_the_title'))&&inOv(),
+      'there is no end screen: until the finale is merged, a click returns to the title')}
+  halt('final25')};
+  if(C25){await ch25();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    /* STUB: LOGIC25 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+  /* ==== CHAPTER TWENTY-FIVE: end ==== */
   if(C19){await ch19();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}

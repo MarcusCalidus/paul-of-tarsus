@@ -145,6 +145,7 @@ return{rooms:['lodging25'],setup:setup25,start:start25,hint:hint25,music:MUSIC,t
   /* the page about the chapter, behind the closing screen (the lead's keys; their text is a STUB in lang/ until he writes it) */
   about:{title:'without_hindrance_2',text:'without_hindrance_about',based:'based_on_acts_28_17_31'},
   flags:FLAGS,
-  /* STUB: one room and three flags today; the code keeps room for sixteen rooms and forty flags. Paul alone is played. */
-  codeBits:{flags:40,rooms:4},ent:ENT,home:{},away:()=>false,inv:()=>['tablets'],place:place25}
+  /* STUB: one room and three flags today; the code keeps room for sixteen rooms and forty flags. Paul alone is played (party:['paul'],
+     so that its codes are wide from the start, as the chapter's forty flags will need).  */
+  codeBits:{flags:40,rooms:4},party:['paul'],swap:false,ent:ENT,home:{},away:()=>false,inv:()=>['tablets'],place:place25}
 });
