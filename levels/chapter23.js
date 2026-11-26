@@ -263,30 +263,21 @@ ART.bow23={w:320,q:12,paint(g){GS23.bowNight(g,{})},
 /* ==== ART bow23: end ==== */
 
 /* ==== ART hold23: begin ==== */
-/* ART-TODO. The hold, close to daybreak (27:33): the curve of the hull in plank strakes (no ribs drawn across them), the deck beams above
-   running across the picture, and two lamps, each hung from a beam by two cords that part upward, never one cord from a beam's middle. At
-   the left the open hatch with steep wooden stairs up to it (no ladder: its rungs and rails would make crosses), sea water running down the
-   stairs and pooling at their foot. At the back right the cargo of wheat, sacks heaped against the hull. The people sit close together on
-   the floor (pose huddle), wet and worn. The lamp at the right hangs over a clear patch of floor (216, 122), where whoever stands is seen by
-   all: nothing round lies behind a standing head there (the lamp's glow is long and low, not a ring round his head).
-   Called from outside: ART.hold23, SPOT23. Reads nothing. Hotspots (ROOMS.hold23): the hatch and stairs 4,18,40,98 · the water at the
-   stairs' foot 8,108,40,10 · the lamp at the left 98,26,24,26 · the lamp at the right 204,26,24,26 · the place under the lamp 200,104,34,22 ·
-   the wheat 232,52,84,40 · everyone in the hold 40,70,180,30. Walk: 34..300 by 116..138; while Paul stands to speak, the spot SPOT23.
-   Wall foot y 108. Light: two lamps. */
-const SPOT23=[216,127],LAMPS_HOLD23=[[110,40],[216,40]];
-ART.hold23={w:320,q:12,paint(g){const r=rng(2305);band23(g,0,0,320,108,'#2a1e16','#3a2a1e');
-    for(let y=16;y<108;y+=7.2){R(g,0,y,320,.5,'rgba(10,6,4,.5)');for(let x=(r()*80)|0;x<320;x+=90+((r()*50)|0))R(g,x,y+.6,.5,6,'rgba(10,6,4,.35)')}
-    for(const x of[0,96,200,300])R(g,x,8,20,6,'#4a3624');R(g,0,8,320,2,'#5a4430');
-    deck23(g,108,144,'#4a3828',r);
-    /* the stairs to the hatch: steep treads, slanting, no ladder */
-    for(let i=0;i<9;i++)R(g,10+i*2.6,24+i*10,16,2.4,'#6a5034');poly(g,[2,8,30,8,30,18,2,18],'#0a0c14');
-    pool(g,26,112,18,4,'#8aa0b0',.25);
-    /* the wheat: sacks heaped against the hull at the back right */
-    for(let i=0;i<10;i++){const x=236+(i%5)*16,y=62+((i/5)|0)*16;oval(g,x+8,y+8,9,7,'#b09868')}
-    comp(g,'multiply',.5,()=>{g.fillStyle=lg(g,0,0,320,0,['#40406a','#ffffff','#ffffff','#50506e']);g.fillRect(0,0,320,144)})},
-  light:{amb:'#5a4c5a',wallY:108,wall:[[30,320,108,16]],lamps:LAMPS_HOLD23.map(([x,y])=>[x,y,120,'#e8a860',114,y])},
-  draw(g,t){for(const[x,y]of LAMPS_HOLD23){stroke(g,[x-1.6,y-5,x-6,12],'#2a2018',.5);stroke(g,[x+1.6,y-5,x+6,12],'#2a2018',.5);
-      R(g,x-3,y-5,6,1.4,'#4a3a26');R(g,x-2.6,y-3.6,5.2,7,'#f4c070');R(g,x-3,y+3.4,6,1.4,'#4a3a26');flame(g,x-.5,y+2.2,t)}},
+/* The hold, close to daybreak (27:33-38): SHARED.grainship.hold, looking forward along her from aft: the deck close overhead on its beams,
+   which run across the picture, the sides of the hull in plank strakes running away from us (no rib across them), the floor laid over
+   the cargo, the wheat in sacks filling the hold forward and heaped against the starboard side, and at the left the hatch, grey with the
+   coming day, with steep stairs down along the port side (no ladder) and the sea water running down them into a pool at their foot. Two
+   lamps hang from a beam, each by two cords that part upward to it: the right one over the place where Paul stands to be seen by all
+   (SPOT23), its light long and low on the beam above and the floor below; the lamps are above every head, and nothing round lies behind
+   one. The hold does not roll in the picture: below deck there is nothing to see her move against.
+   Called from outside: ART.hold23, SPOT23, LAMPS_HOLD23. Hotspots (ROOMS.hold23): the hatch and stairs 0,0,76,104 · the water at the
+   stairs' foot 54,104,56,12 · the lamps round LAMPS_HOLD23 · the place under the lamp 200,104,34,22 · the wheat 200,58,100,46 · everyone
+   in the hold 40,70,180,30. Walk: 34..300 by 116..138; while Paul stands to speak, the spot SPOT23. Light: two lamps; wall foot y 92 (the
+   sacks at the far end). */
+const SPOT23=[216,127],HOLD23=GS23.holdGeo({}),LAMPS_HOLD23=HOLD23.lampsScreen.map(([x,y])=>[Math.round(x*2)/2,Math.round(y*2)/2]);
+ART.hold23={w:320,q:12,paint(g){GS23.hold(g,{})},
+  light:{amb:'#5a4c5a',wallY:92,wall:[[60,260,92,52]],lamps:LAMPS_HOLD23.map(([x,y],i)=>[x,y,120,'#e8a860',Math.round(HOLD23.lampFloor[i]),y])},
+  draw(g,t){for(const[x,y]of LAMPS_HOLD23)flame(g,x-.5,y-1.6,t)},
   front(){}};
 /* ==== ART hold23: end ==== */
 
@@ -311,21 +302,33 @@ ART.bay23={w:320,q:12,paint(g){const r=rng(2306);band23(g,0,0,320,58,'#7a8088','
 /* ==== ART bay23: end ==== */
 
 /* ==== ART wreck23: begin ==== */
-/* ART-TODO. The foredeck of the wreck at a grey daybreak in rain (27:41-43): the bow stuck fast in the shoal, the deck tilting a little,
-   the bulwark broken in places, the surf running white below it; beyond, across the breakers, the land: a pale beach, rocks and a slope
-   (the horizon behind the land: the foremast and the foresail are at the bow, out of the picture at the right, so that no upright stands
-   across the sea's level). At the right the spray of the stern breaking up. Lying against the bulwark at the back left: two planks and a
-   hatch cover prised loose, each lying alone, none laid across another or across the hull. Everyone is wet and torn. Rain (shared/weather.js).
-   Called from outside: ART.wreck23. Reads nothing. Hotspots (ROOMS.wreck23): the shore 0,30,320,32 · the surf 0,62,320,22 · the planks and
-   the hatch cover 22,92,100,18 · the stern breaking up 286,36,34,60. Walk: 24..296 by 114..138. Wall foot y 104. Light: overcast, soft. */
-ART.wreck23={w:320,q:12,paint(g){const r=rng(2307);band23(g,0,0,320,40,'#7a8088','#a0a6ac');
-    poly(g,[0,52,60,40,140,44,200,50,320,44,320,62,0,62],'#5c6258');R(g,40,56,200,4,'#c4b48e');
-    band23(g,0,62,320,24,'#5a6a72','#3e4c54');for(let i=0;i<70;i++)R(g,r()*320,64+r()*20,3+r()*6,.5,'rgba(236,240,242,.45)');
-    bulwark23(g,86,104,'#4a3a2c');deck23(g,104,144,'#6a5a48',r);
-    /* two planks and a hatch cover against the bulwark, each alone */
-    R(g,26,100,40,3,'#8a6e4c');R(g,72,98,30,3,'#8a6e4c');poly(g,[104,104,108,96,124,96,122,104],'#6e5638')},
+/* The foredeck of the wreck at a grey daybreak in rain (27:41-43): SHARED.grainship.wreckDeck, from aboard looking across her to
+   starboard, toward the land: her bow at the left, fast on the shoal, her deck slanting a little down toward the stern, the bulwark
+   broken in two places, the foresail set and torn at the top left with its mast hidden behind it, and two planks and a hatch cover
+   lying loose against the bulwark at the left, each alone. Beyond the rail the bay at daybreak (SHARED.storm.bay, mirrored so that the
+   land with its beach lies ahead of her bow, at the left, and the open sea astern, at the right): its breakers moving, no lightning. At
+   the right, astern and out of the picture, the stern is breaking up: broken timbers stand up beyond the rail, each alone and slanting,
+   below the sea's level line, and the white water bursts up behind them. She sits fast and does not roll; only the surf moves. No blade
+   anywhere (27:42 is told). Rain in the air.
+   Called from outside: ART.wreck23. Hotspots (ROOMS.wreck23): the shore 0,30,320,32 · the surf 0,62,320,22 · the stern breaking up
+   272,30,48,62 · the planks and the hatch cover 22,92,108,18. Walk: 24..296 by 114..138. Light: overcast, soft. */
+const BAY23W=SHARED.storm.bay({seed:2331}),WG23=GS23.wreckGeo();
+/* the stern breaking up, astern of the picture's right edge: timbers standing up at slants beyond the rail, each alone, and the white
+   water thrown up behind them on the beat of the surf */
+function stern23w(g,t){const C=GS23.LIGHT.dawn,e=(t/6000)%1;
+  for(const[x,len,a,w]of[[300,15,.42,2.2],[309,20,.16,2.6],[318,12,.62,1.8]]){const y=WG23.top(x)+2,ex=x+Math.sin(a)*len,ey=y-Math.cos(a)*len;
+    poly(g,[x-w/2,y,x+w/2,y,ex+w/2*.7,ey,ex-w/2*.7,ey],tint(C.hull[1],-.05));stroke(g,[x-w/2,y,ex-w/2*.7,ey],rgba(C.hi,.45),.5);
+    poly(g,[ex-w/2*.7,ey,ex+w/2*.7,ey,ex+.4,ey-1.6],tint(C.hull[1],.1))}
+  /* the surf bursting up behind the broken stern: white water that rises and falls back, never a flash */
+  const u=Math.sin(Math.PI*clamp((e-.05)/.5,0,1));if(u>0){const r=rng(2333+Math.floor(t/6000)%7);
+    for(let i=0;i<46;i++){const x=270+r()*56,h=(8+r()*26)*u,y=WG23.top(x)-h*(.3+.7*r()),s=.5+r()*1.2;R(g,x,y,s,s,`rgba(240,244,240,${(.35+.4*r())*u})`)}
+    comp(g,'screen',.25*u,()=>pool(g,300,WG23.top(300)-8,26,12,'#e8eef0',1,'source-over'))}}
+ART.wreck23={w:320,q:12,paint(g){GS23.wreckDeck(g,{})},
   light:{amb:'#bcc0c8'},   /* an overcast daybreak in rain: soft light, the contact shadow alone */
-  draw(g,t){if(SHARED.weather)SHARED.weather.rain(g,t,320,{density:.3})},
+  /* the bay behind her, mirrored: the land ahead of her bow at the left, the open sea astern at the right */
+  behind(g,t){g.save();g.translate(320,0);g.scale(-1,1);BAY23W.draw(g,t,(t/6000)%1);g.restore()},
+  air(g,t){BAY23W.front(g,t,(t/6000)%1)},
+  draw(g,t){stern23w(g,t);GS23.wreckSail(g,(t/1400)%1,false)},
   front(){}};
 /* ==== ART wreck23: end ==== */
 
@@ -808,19 +811,19 @@ ROOMS.bow23={space:.6,walk:[20,296,114,138],block:[[286,114,10,3]],get mood(){re
   {name:'covered_anchors',x:52,y:72,w:58,h:18,wx:100,wy:120,look:()=>sawBow23('sawAnchors','covered_anchors_look'),use:'paul_not_mine_to_touch'},
   {name:'skiff',x:222,y:44,w:98,h:36,wx:188,wy:122,vis:()=>!F.ropes,look:()=>sawBow23('sawSkiff','skiff_going_down_look'),use:'paul_not_mine_to_touch'}]};
 ROOMS.hold23={space:.8,get walk(){return PC()===P&&F.stood&&!F.bread?[SPOT23[0],SPOT23[0],SPOT23[1],SPOT23[1]]:[34,300,116,138]},mood:'hold',amb:AMB.hold23,hs:[
-  {name:'wheat',x:232,y:52,w:84,h:40,wx:240,wy:120,look:'wheat_look'},
-  {name:'hatch_and_stairs',x:4,y:18,w:40,h:98,wx:40,wy:122,look:'hatch_and_stairs_look',use:'paul_my_place_is_down_here'},
-  {name:'water_at_the_stairs',x:8,y:106,w:40,h:10,wx:42,wy:124,look:'water_at_the_stairs_look'},
-  {name:'hanging_lamp',x:98,y:26,w:24,h:26,wx:110,wy:122,look:'hanging_lamp_look'},
-  {name:'hanging_lamp',x:204,y:26,w:24,h:26,wx:SPOT23[0],wy:SPOT23[1],def:'use',look:'hanging_lamp_look',use:()=>stand23()},
+  {name:'wheat',x:200,y:58,w:100,h:46,wx:240,wy:120,look:'wheat_look'},
+  {name:'hatch_and_stairs',x:0,y:0,w:76,h:104,wx:40,wy:122,look:'hatch_and_stairs_look',use:'paul_my_place_is_down_here'},
+  {name:'water_at_the_stairs',x:54,y:104,w:56,h:12,wx:70,wy:122,look:'water_at_the_stairs_look'},
+  {name:'hanging_lamp',x:LAMPS_HOLD23[0][0]-12,y:LAMPS_HOLD23[0][1]-16,w:24,h:24,wx:110,wy:122,look:'hanging_lamp_look'},
+  {name:'hanging_lamp',x:LAMPS_HOLD23[1][0]-12,y:LAMPS_HOLD23[1][1]-16,w:24,h:24,wx:SPOT23[0],wy:SPOT23[1],def:'use',look:'hanging_lamp_look',use:()=>stand23()},
   {name:'everyone_in_the_hold',x:40,y:70,w:180,h:30,wx:SPOT23[0],wy:SPOT23[1],def:'talk',look:'everyone_in_the_hold_look',talk:()=>all23(),useWith:it=>it==='bread23'?bread23('all'):false},
   {name:'place_under_the_lamp',x:200,y:104,w:34,h:22,wx:SPOT23[0],wy:SPOT23[1],def:'use',look:'place_under_the_lamp_look',use:()=>stand23(),useWith:it=>it==='bread23'?bread23('all'):false}]};
 ROOMS.bay23={space:1,walk:NOW,mood:'told',amb:AMB.bay23,hs:[]};
 ROOMS.wreck23={space:.6,walk:[24,296,114,138],mood:'tense',amb:AMB.wreck23,hs:[
   {name:'the_shore',x:0,y:30,w:320,h:32,wx:160,wy:118,look:'the_shore_look'},
   {name:'surf',x:0,y:62,w:320,h:22,wx:160,wy:118,look:'surf_from_the_wreck_look'},
-  {name:'stern',x:286,y:36,w:34,h:60,wx:284,wy:120,look:'stern_breaking_up_look'},
-  {name:'planks_and_hatch_cover',x:22,y:92,w:100,h:18,wx:76,wy:120,def:'use',look:'planks_and_hatch_cover_look',use:()=>planks23open(),pickup:()=>planks23open()}]};
+  {name:'stern',x:272,y:30,w:48,h:62,wx:280,wy:120,look:'stern_breaking_up_look'},
+  {name:'planks_and_hatch_cover',x:22,y:92,w:108,h:18,wx:76,wy:120,def:'use',look:'planks_and_hatch_cover_look',use:()=>planks23open(),pickup:()=>planks23open()}]};
 ROOMS.planks23={space:.6,walk:NOW,mood:'tense',amb:AMB.planks23,hs:[
   ...FLOATS23.map(f=>({name:f.name,x:f.box[0],y:f.box[1],w:f.box[2],h:f.box[3],wx:160,wy:236,def:'use',look:f.k==='hatch'?'hatch_cover_look':'plank_look',use:()=>float23(f)})),
   ...PEOPLE23.map(p=>({name:p.a().name,pk:p.k,get x(){return at23(p.k)[0]-10},get y(){return at23(p.k)[1]-46},w:20,h:46,wx:160,wy:236,def:'use',

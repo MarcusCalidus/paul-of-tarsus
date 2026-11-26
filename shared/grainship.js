@@ -866,5 +866,187 @@ function bowSkiff(g,D,k,drop){const{P,b,s,rh}=D,z0=4.4,z1=8.4,dr=drop||0,
     for(const z of[z0,z1]){const a=P(xi(z),gw(z),z),e=P(xi(z)+.05,gw(z)+.18,z+(z===z0?-.12:.12));stroke(g,[a[0],a[1],e[0],e[1]],lt('#6a5038',[xi(z),gw(z),z],[-1,.3,-.3]),1.1)}});
   return{rings:[P(xi(z0+.15),gw(z0+.15)+.05,z0+.15),P(xi(z1-.15),gw(z1-.15)+.05,z1-.15)],z0,z1}}
 
-return{side,geo,anchor,wreckage,LIGHT,hawser:hawserS,deck,geoDeck,sternNight,nightGeo,bowGeo,bowNight,bowSkiff};
+/* ======== The hold by lamplight, looking forward along her (Chapter Twenty-Three, the meal: 27:33-38) ========
+   hold(g, o) paints the hold close to daybreak, as the publications picture the meal below deck (looked at for form only): low and
+   crowded, the deck close overhead on its beams, two lamps hanging from the beams, sea water coming in at the hatch. We look forward
+   along her from aft, so that the deck beams run across the picture, each a heavy timber from one side to the other, and the sides of
+   the hull run away from us in plank strakes, their butts staggered, each inside its own strake, with no rib drawn across them (a rib
+   across the strakes would make a grid: CONTRIBUTING section 3). The floor is laid over the cargo in planks that run fore and aft.
+   Forward, the wheat in sacks fills the hold from side to side, and more sacks lie heaped against the starboard side (the account names
+   only the wheat, 27:38; the sacks are invented). At the left the hatch opens in the deck between two beams, grey with the coming day,
+   and steep stairs come down from it along the port side (stairs, not a ladder, whose rungs and rails would make crosses), seen from the
+   side as a row of steps on a slanting stringer; sea water runs down them and spreads on the floor at their foot. Each lamp hangs from a
+   beam by two cords that part upward to the beam, never by one from its middle (CONTRIBUTING section 3); its light lies in warm pools,
+   long and low, on the beams above it and on the floor below it, with deep shade between, and no round glow behind a head.
+     o.lamps   [[x, y, z], ...] where the lamps hang, in metres (x across, + to starboard; y up from the floor; z forward)
+   holdGeo(o) gives the geometry without painting: P(x, y, z), the lamps on the screen, and each lamp's floor (lz) for the room's light. */
+const HD={F:150,E:1.3,hz:77,W:5,H:2.15};
+function holdGeo(o){o=o||{};const{F,E,hz,W,H}=HD,P=(x,y,z)=>[160+F*x/z,hz+F*(E-y)/z],L=o.lamps||[[-1.35,1.62,4.4],[1.67,1.62,4.4]],
+    /* the side of the hull at a height y above the floor: a little fuller at mid-height than at the floor and under the deck */
+    side=y=>W+.35*Math.sin(Math.PI*clamp(y/H,0,1))-.1*y/H;
+  return{F,E,hz,W,H,P,side,lamps:L,lampsScreen:L.map(l=>P(...l)),lampFloor:L.map(l=>P(l[0],0,l[2])[1]),beams:[2.0,3.1,4.2,5.3,6.4,7.5,8.6],ZF:9.4,
+    hatch:{x0:-4.6,x1:-2.5,z0:4.6,z1:6.3},stairs:{xTop:-4.3,xFoot:-1.9,z0:5.6,z1:6.25,n:8}}}
+/* the light of the lamps on a face: what little comes down the hatch, and each lamp's warm light by angle and distance */
+function holdLight(D,c,p,n,amb){const h=hex(c);let r=.16,gg=.14,bb=.17;if(amb){r+=amb;gg+=amb;bb+=amb*1.1}
+  for(const L of D.lamps){const d=[L[0]-p[0],L[1]-p[1],L[2]-p[2]],l=Math.hypot(...d)||1,q=n?.35+.65*Math.max(0,(n[0]*d[0]+n[1]*d[1]+n[2]*d[2])/l/(Math.hypot(...n)||1)):.6,f=q/(1+Math.pow(l/1.9,2));
+    r+=1.25*f;gg+=.95*f;bb+=.5*f}
+  return toHex(h[0]*r,h[1]*gg,h[2]*bb)}
+function hold(g,o){o=o||{};const D=holdGeo(o),{P,W,H,ZF,side}=D,r=rng(23091),lt=(c,p,n,a)=>holdLight(D,c,p,n,a),Z0=1.4;
+  const ys=[0,.42,.84,1.26,1.68,2.1,H];
+  /* the far end: the wheat in sacks from side to side, up to the deck; in deep shade */
+  {const a=P(-side(1),0,ZF),e=P(side(1),H,ZF);R(g,a[0]-2,e[1]-2,e[0]-a[0]+4,a[1]-e[1]+4,'#1a1410');
+    for(let row=0;row<5;row++)for(let i=0;i<14;i++){const x=-side(1)+(i+(row%2)*.5+(r()-.5)*.3)*(2*side(1)/13.5),y=row*.42+(r()-.5)*.06,c=P(x,y+.22,ZF-(r()*.3)),w=(.38+r()*.1)*D.F/ZF,hh=(.19+r()*.05)*D.F/ZF,
+        col=lt(tint('#b09868',(r()-.5)*.18),[x,y+.3,ZF-.3],[0,.3,-1]);
+      oval(g,c[0],c[1],w,hh,col);stroke(g,[c[0]-w*.7,c[1]-hh*.7,c[0]+w*.5,c[1]-hh*.8],rgba(tint(col,.25),.6),.5)}}
+  /* the sides of the hull: strakes that run away from us, each its own tone, the butts staggered inside each strake */
+  for(const sd of[-1,1]){for(let j=0;j<ys.length-1;j++){const y0=ys[j],y1=ys[j+1],pa=[],pb=[];for(let z=Z0;z<=ZF;z+=.4){pa.push(...P(sd*side(y0),y0,z));pb.push(...P(sd*side(y1),y1,z))}
+      const zc=4+r()*3,c=lt(tint('#6e5034',(r()-.5)*.14),[sd*side((y0+y1)/2),(y0+y1)/2,zc],[-sd,0,0]);poly(g,pa.concat(ptsBackG(pb)),c);
+      clipTo(g,()=>poly(g,pa.concat(ptsBackG(pb))),()=>{tex(g,'wood',.25,sd<0?-40:160,0,200,150,'overlay',.4);
+        for(let z=Z0+.6+r()*2.4;z<ZF-.5;z+=2.6+r()*1.8){const a=P(sd*side(y0+.03),y0+.03,z),e=P(sd*side(y1-.03),y1-.03,z);if(Math.abs(e[1]-a[1])>1.2)stroke(g,[a[0],a[1],e[0],e[1]],'rgba(10,6,4,.4)',.5)}});
+      stroke(g,pa,'rgba(10,6,4,.5)',.5)}}
+  /* the floor, planked fore and aft, its butts staggered, worn darker where the water has run */
+  {const zs=[];for(let z=Z0;z<=ZF;z+=.3)zs.push(z);
+    for(let k=-14;k<14;k++){const u0=k/14*W,u1=(k+1)/14*W,pa=zs.map(z=>P(u0,0,z)).flat(),pb=zs.map(z=>P(u1,0,z)).flat(),zc=3+r()*4;
+      poly(g,pa.concat(ptsBackG(pb)),lt(tint('#7a5e40',(r()-.5)*.12),[(u0+u1)/2,0,zc],[0,1,0]));stroke(g,pa,'rgba(10,6,4,.5)',.5);
+      const z0=Z0+((k*.618+.2)%1+1)%1*4;for(let z=z0;z<ZF;z+=4.6){const a=P(u0+.03,0,z),e=P(u1-.03,0,z);if(e[0]-a[0]>2)R(g,a[0],a[1]-.25,e[0]-a[0],.5,'rgba(10,6,4,.45)')}}
+    tex(g,'mott',.25,0,76,320,70,'overlay',.6)}
+  /* the shade where the sides meet the floor and the deck */
+  for(const sd of[-1,1]){const p=[],q=[];for(let z=Z0;z<=ZF;z+=.4){p.push(...P(sd*(side(0)-.05),0,z));q.push(...P(sd*(side(H)-.05),H-.05,z))}stroke(g,p,'rgba(8,4,6,.4)',1.4);stroke(g,q,'rgba(8,4,6,.5)',1.6)}
+  /* the sacks heaped against the starboard side, forward: two rows, the upper set back on the lower, each sack its own plump shape */
+  for(let row=0;row<3;row++)for(let i=6;i>=0;i--){const z=5.7+i*.62+(row%2)*.31,x=side(.3)-.45-row*.16,y=row*.46,c=P(x,y+.26,z),cw=.52*D.F/z,ch=.27*D.F/z;
+    if(z>ZF-.4)continue;const col=lt(tint('#b4a070',(r()-.5)*.16),[x-.3,y+.3,z],[-1,.4,-.4]);
+    comp(g,'multiply',.4,()=>oval(g,c[0]-cw*.15,c[1]+ch*.6,cw*.95,ch*.5,'#3a3048'));
+    poly(g,[c[0]-cw,c[1]+ch*.5,c[0]-cw*.9,c[1]-ch*.6,c[0]-cw*.2,c[1]-ch,c[0]+cw*.7,c[1]-ch*.8,c[0]+cw,c[1]+ch*.2,c[0]+cw*.6,c[1]+ch,c[0]-cw*.6,c[1]+ch],col);
+    stroke(g,[c[0]-cw*.85,c[1]-ch*.55,c[0]-cw*.2,c[1]-ch*.95,c[0]+cw*.6,c[1]-ch*.75],rgba(lt('#f0dcb0',[x-.3,y+.5,z],[-1,1,-.4]),.7),.5);
+    R(g,c[0]+cw*.55,c[1]-ch*.3,cw*.3,ch*.6,'rgba(30,20,16,.35)')}
+  /* the deck overhead, dark between its beams, its grain only (its seams would cross the beams) */
+  {const pa=[],pb=[];for(let z=Z0;z<=ZF;z+=.4){pa.push(...P(-side(H),H,z));pb.push(...P(side(H),H,z))}poly(g,pa.concat(ptsBackG(pb)),lt('#4a3624',[0,H,6],[0,-1,0]));
+    clipTo(g,()=>poly(g,pa.concat(ptsBackG(pb))),()=>tex(g,'wood',.3,0,-10,320,90,'overlay',.4))}
+  /* the hatch between two beams at the left: grey with the coming day, rain and spray blowing in */
+  const hc=D.hatch,HO=[...P(hc.x0,H,hc.z0),...P(hc.x1,H,hc.z0),...P(hc.x1,H,hc.z1),...P(hc.x0,H,hc.z1)];
+  poly(g,HO);g.fillStyle=lg(g,0,HO[5],0,HO[1],['#4a5058','#6a7076']);g.fill();
+  clipTo(g,()=>poly(g,HO),()=>{tex(g,'mott',.4,HO[6]-4,HO[5]-2,HO[2]-HO[6]+8,HO[1]-HO[5]+4,'overlay',.8);for(let i=0;i<10;i++){const x=HO[0]+r()*(HO[2]-HO[0]);R(g,x,HO[5]+r()*(HO[1]-HO[5]),.5,2,'rgba(220,226,232,.4)')}});
+  /* the grey of the coming day falls through it on the stairs below, faint and without any edge or ray; and the water comes down */
+  {const c=P((hc.x0+hc.x1)/2+.6,.15,(hc.z0+hc.z1)/2+.4);comp(g,'screen',.12,()=>pool(g,c[0],c[1],30,6,'#8a96a8',1,'source-over'));
+    for(let i=0;i<14;i++){const x=hc.x0+.3+r()*(hc.x1-hc.x0-.6),z=hc.z0+.2+r()*(hc.z1-hc.z0-.4),y0=H-.1-r()*.3,a=P(x,y0,z),e=P(x-.05,y0-.18-r()*.25,z);R(g,a[0],a[1],.5,e[1]-a[1],'rgba(190,206,216,.4)')}}
+  /* its coaming, the timber round the opening, edged with the grey light */
+  for(const[a,b]of[[[hc.x0,hc.z1],[hc.x1,hc.z1]],[[hc.x1,hc.z0],[hc.x1,hc.z1]]]){const p=P(a[0],H-.04,a[1]),q=P(b[0],H-.04,b[1]);stroke(g,[p[0],p[1],q[0],q[1]],'#8a8a8e',.6)}
+  /* the beams across, from side to side, lit from below near the lamps; each meets the side under the deck */
+  for(const z of D.beams.slice().reverse()){const bl=[],tl=[];for(let i=0;i<=16;i++){const x=-side(H)+2*side(H)*i/16;bl.push(...P(x,H-.26,z));tl.push(...P(x,H,z))}
+    const fr=[];for(let i=0;i<=16;i++){const x=-side(H)+2*side(H)*i/16;fr.push(...P(x,H-.26,z-.22))}
+    /* its underside (seen from below), then its after face toward us */
+    poly(g,fr.concat(ptsBackG(bl)),lt('#7a5a3a',[0,H-.3,z],[0,-1,0],.08));
+    clipTo(g,()=>poly(g,fr.concat(ptsBackG(bl))),()=>{for(const L of D.lamps){if(Math.abs(L[2]-z)>2.2)continue;const c=P(L[0],H-.26,z-.11);pool(g,c[0],c[1],60/z*3,6/z*3,'#ffb060',.5,'lighter')}});
+    const ff=[];for(let i=0;i<=16;i++){const x=-side(H)+2*side(H)*i/16;ff.push(...P(x,H,z-.22))}
+    poly(g,ff.concat(ptsBackG(fr)),lt('#6a4c30',[0,H-.13,z-.22],[0,-.2,-1],.04));
+    stroke(g,fr,rgba(lt('#e0b080',[0,H-.26,z-.22],[0,-1,-1]),.5),.5)}
+  /* the stairs from the hatch down toward the middle of the hold, steep, seen from their after side: a stringer slanting from the
+     hatch to the floor, and the steps on it, each a level tread on its riser, so that their edge is a row of steps and nothing crosses;
+     the sea water running down the treads, and a pool at their foot, long and low on the floor */
+  {const st=D.stairs,n=st.n,X=t=>st.xTop+(st.xFoot-st.xTop)*t,Y=t=>H*(1-t);
+    /* the treads, seen a little from above where they lie below the eye, each with the water on it; then the risers' after ends */
+    for(let i=n-1;i>=0;i--){const t0=i/n,t1=(i+1)/n,yy=Y(t1)+(H/n)*.0,xa=X(t0),xb=X(t1),
+        tr=[...P(xa,Y(t0+1/n),st.z0),...P(xb,Y(t0+1/n),st.z0),...P(xb,Y(t0+1/n),st.z1),...P(xa,Y(t0+1/n),st.z1)];
+      poly(g,tr,lt('#8a6a46',[xb,Y(t1),st.z0],[0,1,0],.22));
+      const w0=P(xa+.06,Y(t0+1/n)+.01,st.z0+.2),w1=P(xb-.06,Y(t0+1/n)+.01,st.z0+.4);stroke(g,[w0[0],w0[1],w1[0],w1[1]],'rgba(170,192,204,.5)',.5);
+      const rs=[...P(xb,Y(t1),st.z0),...P(xb,Y(t0),st.z0),...P(xb+.05,Y(t0),st.z0),...P(xb+.05,Y(t1),st.z0)];poly(g,rs,lt('#5e4430',[xb,Y(t1),st.z0],[1,0,-.6],.12))}
+    /* the stringer on their after side, under the steps: a slanting board, its lit top edge stepping with the treads */
+    const SG=[];for(let i=0;i<n;i++){const t0=i/n,t1=(i+1)/n;SG.push(...P(X(t0),Y(t0+1/n)+.0,st.z0-.02),...P(X(t1),Y(t0+1/n),st.z0-.02))}
+    const lowE=[...P(X(1)+.4,0,st.z0-.02),...P(X(0)+.35,Y(0)-.42,st.z0-.02)];
+    poly(g,SG.concat(lowE),lt('#6a4e34',[X(.5),Y(.5),st.z0],[0,.1,-1],.16));
+    clipTo(g,()=>poly(g,SG.concat(lowE)),()=>tex(g,'wood',.3,0,30,200,100,'overlay',.5));
+    stroke(g,SG,rgba(lt('#d8b080',[X(.5),Y(.5),st.z0],[0,1,-1],.08),.7),.5);
+    /* the pool at their foot */
+    const pc=P(X(1)+.6,0,(st.z0+st.z1)/2);comp(g,'multiply',.55,()=>oval(g,pc[0],pc[1],24,2.8,'#4a5868'));
+    for(let i=0;i<7;i++){const x=pc[0]-18+r()*34,y=pc[1]-1.6+r()*3;R(g,x,y,1.5+r()*4,.5,i%3?'rgba(150,170,184,.35)':'rgba(255,200,140,.4)')}}
+  /* the lamps: each hangs from the beam above it by two cords that part upward to the beam; a small clay lamp in a hanger, its flame
+     (the room animates it); the warm pool of its light long and low on the floor below it */
+  D.lampsScreen.forEach((c,i)=>{const L=D.lamps[i],bz=D.beams.reduce((a,b)=>Math.abs(b-L[2])<Math.abs(a-L[2])?b:a),
+      a1=P(L[0]-.35,H-.26,bz),a2=P(L[0]+.35,H-.26,bz),fl=P(L[0],0,L[2]);
+    comp(g,'lighter',.22,()=>pool(g,fl[0],fl[1],70,9,'#ffb060',1));
+    stroke(g,[c[0]-.8,c[1]-2.2,a1[0],a1[1]],'#a8825a',.5);stroke(g,[c[0]+.8,c[1]-2.2,a2[0],a2[1]],'#a8825a',.5);
+    comp(g,'lighter',.35,()=>pool(g,c[0],c[1],16,6,'#ff9a40',.5));
+    poly(g,[c[0]-2.4,c[1]-2.2,c[0]+2.4,c[1]-2.2,c[0]+1.8,c[1]+1.4,c[0]-1.8,c[1]+1.4],'#6a3e22');R(g,c[0]-2.4,c[1]-2.2,4.8,.6,'#9a6a40');R(g,c[0]-1.2,c[1]-1.4,2.4,1.2,'#2a1608')});
+  return D}
+
+/* ======== The foredeck of the wreck at daybreak, from aboard (Chapter Twenty-Three: 27:41-44) ========
+   wreckDeck(g, o) paints her foredeck after she has struck, seen from aboard looking across her to starboard, toward the land: her bow
+   at the left, fast on the shoal, her stern to the right, out of the picture, breaking up in the surf. She sits fast and does not roll;
+   her deck slants a little, down toward the stern. The starboard bulwark runs across the picture, its rail broken away in two places,
+   where the surf shows through; toward the bow it rises with her sheer. Against it at the left lie two planks and a hatch cover prised
+   loose, each lying alone (CONTRIBUTING section 3: nothing across another or across the hull). The foresail (27:40) is set and torn: it
+   comes into the picture at the top left from beyond its edge, full of the wind from astern and bellying toward the bow, its yard
+   askew along its head; the mast stands behind it, hidden, so that the yard ends no mast and the mast crosses nothing; its sheets slant
+   from its foot to the bow's rail. Everything beyond the rail is left transparent: the room paints the bay behind her (shared/storm.js).
+   The light is a grey daybreak in rain, soft, with no sun.
+     o.flap    0..1, how the torn foresail stands at this moment (the room animates its loose strip with wreckSail)
+   wreckGeo() gives the lines of the picture: top(x) the top of the rail, foot(x) the foot of the bulwark on the deck, gaps [[x0, x1], ...]
+   where the rail is broken, planks [[x0, y0, x1, y1], ...] and hatch [four corners] where the loose pieces lie, and sail (its outline). */
+function wreckGeo(){const sl=.035,top0=x=>84+sl*(x-160)-14*Math.pow(clamp((64-x)/64,0,1),2),
+    top=x=>top0(x),foot=x=>top0(x)+19+3*Math.pow(clamp((64-x)/64,0,1),2);
+  return{top,foot,sl,gaps:[[150,175],[236,251]],planks:[[24,foot(24)-1.2,62,foot(62)-1.4],[68,foot(68)-1.6,104,foot(104)-1.8]],
+    hatch:[106,foot(106)-.6,128,foot(128)-.8,125,foot(125)-8,104,foot(104)-7.6]}}
+function wreckDeck(g,o){o=o||{};const W=wreckGeo(),C=LIGHT.dawn,r=rng(23101),{top,foot,gaps}=W,inGap=x=>gaps.some(([a,b])=>x>a&&x<b);
+  /* the deck: planks along her length, slanting with her, wider apart as they come toward us; butts staggered inside each plank */
+  const pl=[0,2,4.4,7.2,10.6,14.6,19.4,25,31.6,39.4,48.6,60];
+  for(let i=0;i<pl.length-1;i++){const P0=[],P1=[];for(let x=-30;x<=350;x+=10){P0.push(x,foot(x)+pl[i]);P1.push(x,foot(x)+pl[i+1])}
+    const c=tint(mix('#6e6458','#82766a',i/pl.length),(r()-.5)*.1);poly(g,P0.concat(ptsBackG(P1)),c);
+    clipTo(g,()=>poly(g,P0.concat(ptsBackG(P1))),()=>{tex(g,'wood',.3,-20,60,360,90,'overlay',.45);
+      /* the deck is wet: the grey of the sky lies on it in long streaks */
+      for(let k=0;k<6;k++){const x=r()*320,w=20+r()*60;R(g,x,foot(x)+pl[i]+(pl[i+1]-pl[i])*(.3+.4*r()),w,.5,'rgba(214,222,230,.26)')}});
+    stroke(g,P0,'rgba(30,22,20,.5)',.5);
+    for(let x=-20+r()*60;x<340;x+=70+r()*50){const y0=foot(x)+pl[i]+.4,y1=foot(x)+pl[i+1]-.4;if(y1-y0>1.2)R(g,x,y0,.5,y1-y0,'rgba(30,22,20,.45)')}}
+  /* the shade along the foot of the bulwark */
+  {const p=[];for(let x=-30;x<=350;x+=10)p.push(x,foot(x)+.8);stroke(g,p,'rgba(30,26,34,.35)',1.6)}
+  /* the bulwark's inner face: three strakes, butts inside their strakes; broken away at the top in two places */
+  const face=(x0,x1,f0,f1)=>{const p=[];for(let x=x0;x<=x1;x+=2)p.push(x,top(x)+(foot(x)-top(x))*f0);for(let x=x1;x>=x0;x-=2)p.push(x,top(x)+(foot(x)-top(x))*f1);return p};
+  for(const[j,f0,f1]of[[0,0,.34],[1,.34,.67],[2,.67,1]]){const c=tint('#4e3e34',-.04*j);
+    for(let x0=-30;x0<350;){let x1=x0+2;while(x1<350&&(j>0||!inGap(x1)))x1+=2;if(j===0&&inGap(x0)){x0=x1;while(x0<350&&inGap(x0))x0+=2;continue}
+      const f=face(x0,Math.min(x1,350),f0,f1);poly(g,f,c);clipTo(g,()=>poly(g,f),()=>{tex(g,'wood',.3,x0,60,x1-x0,60,'overlay',.45);
+        for(let x=x0+8+r()*40;x<x1-4;x+=50+r()*40){const a=top(x)+(foot(x)-top(x))*f0+.6,e=top(x)+(foot(x)-top(x))*f1-.6;R(g,x,a,.5,e-a,'rgba(24,18,16,.45)')}});
+      if(j)stroke(g,face(x0,Math.min(x1,350),f0,f0).slice(0,Math.floor((Math.min(x1,350)-x0)/2+1)*2),'rgba(24,18,16,.5)',.5);
+      x0=x1;if(j===0)while(x0<350&&inGap(x0))x0+=2}}
+  /* where the rail is broken: the top strake's planks end raggedly, each splintered end standing alone */
+  for(const[a,b]of gaps)for(const[x,d]of[[a,1],[b,-1]]){const y=top(x)+(foot(x)-top(x))*.34;poly(g,[x,top(x),x+d*2.4,top(x)+2,x+d*.8,y-2.6,x+d*3.2,y,x,y],tint(C.hull[1],.14));
+    stroke(g,[x,top(x),x+d*2.4,top(x)+2],rgba(C.hi,.5),.5)}
+  /* the rail on top, lit from the grey sky, where it still stands */
+  for(let x0=-30;x0<350;){if(inGap(x0)){x0+=2;continue}let x1=x0;while(x1<350&&!inGap(x1+2))x1+=2;
+    const p=[],q=[];for(let x=x0;x<=x1;x+=2){p.push(x,top(x)-1.6);q.push(x,top(x)+.4)}poly(g,p.concat(ptsBackG(q)),C.rail);stroke(g,p,rgba(C.hi,.8),.5);stroke(g,q,'rgba(24,18,16,.5)',.5);x0=x1+2}
+  /* the loose planks, each lying alone along the foot of the bulwark, and the hatch cover lying flat beside them: its planks run one
+     way, inside a plain frame that nothing crosses */
+  for(const[x0,y0,x1,y1]of W.planks){comp(g,'multiply',.4,()=>poly(g,[x0,y0+1.4,x1,y1+1.4,x1+1,y1+2.6,x0+1,y0+2.6],'#4a4458'));
+    poly(g,[x0,y0-1.4,x1,y1-1.4,x1,y1+1.2,x0,y0+1.2],'#8a6a4e');poly(g,[x0,y0-1.4,x1,y1-1.4,x1,y1-.6,x0,y0-.6],'#c8a880');
+    stroke(g,[x0,y0+1.2,x1,y1+1.2],'rgba(24,18,16,.6)',.5);R(g,x1-.6,y1-1.4,.6,2.6,'rgba(24,18,16,.5)')}
+  {const h=W.hatch;comp(g,'multiply',.4,()=>poly(g,[h[0],h[1]+1.4,h[2],h[3]+1.4,h[2]+1,h[3]+2.4,h[0]+1,h[1]+2.4],'#4a4458'));
+    poly(g,h,'#7a5c42');const fr=1.6,ix=[h[0]+fr,h[1]-1.1,h[2]-fr,h[3]-1.1,h[4]-fr*.8,h[5]+1,h[6]+fr*.8,h[7]+1];poly(g,ix,'#9a7a58');
+    clipTo(g,()=>poly(g,ix),()=>{for(let i=1;i<4;i++){const u=i/4,a=[ix[0]+(ix[2]-ix[0])*u,ix[1]+(ix[3]-ix[1])*u],e=[ix[6]+(ix[4]-ix[6])*u,ix[7]+(ix[5]-ix[7])*u];stroke(g,[a[0],a[1],e[0],e[1]],'rgba(24,18,16,.45)',.5)}tex(g,'wood',.3,h[6],h[5],24,10,'overlay',.4)});
+    stroke(g,[h[6],h[7],h[4],h[5]],rgba(C.hi,.6),.5)}
+  /* the foresail, set and torn, from beyond the top left (its mast behind it, hidden); its sheets slanting down to the bow's rail */
+  wreckSail(g,o.flap||0,true);
+  return W}
+/* wreckSail(g, flap, body): the foresail; body false paints only the strip torn loose from its foot, which streams in the wind */
+function wreckSail(g,flap,body){const C=LIGHT.dawn,W=wreckGeo(),r=rng(23103);
+  const yl=[-14,-6],yr=[58,-14],cl=[64,46],tk=[-6,56];
+  if(body){/* the sheets: from the clew and the tack down to the rail at the bow, each slanting, neither crossing the other */
+    for(const[a,x]of[[cl,78],[tk,18]])stroke(g,[a[0],a[1],x,W.top(x)-1],C.rope,.6);
+    const P=[yl[0],yl[1]];
+    /* the leech, bellying toward the bow, then the torn foot from the clew to the tack, ragged */
+    for(let i=0;i<=10;i++){const t=i/10;P.push(yr[0]+(cl[0]-yr[0])*t-10*Math.sin(Math.PI*t),yr[1]+(cl[1]-yr[1])*t)}
+    for(const[t,d]of[[.08,2],[.16,-3],[.25,5],[.33,-1.5],[.42,3],[.5,-4],[.6,6.5],[.68,-2],[.78,2],[.88,-3.5],[.95,1.5]]){const x=cl[0]+(tk[0]-cl[0])*t,y=cl[1]+(tk[1]-cl[1])*t+3*Math.sin(Math.PI*t);P.push(x+(r()-.5)*1.4,y+d)}
+    P.push(tk[0],tk[1],-30,40,-30,-10);
+    poly(g,P,C.sail[0]);
+    clipTo(g,()=>poly(g,P),()=>{g.fillStyle=lg(g,-10,0,70,0,[rgba(C.sail[2],.55),rgba(C.sail[2],.2),'rgba(255,236,210,.14)',rgba(C.sail[2],.35)]);g.fillRect(-30,-20,110,90);
+      /* its seams run one way, down from the yard, curving with the belly */
+      for(let i=1;i<6;i++){const u=i/6,tx=yl[0]+(yr[0]-yl[0])*u,ty=yl[1]+(yr[1]-yl[1])*u+1,bx=tk[0]+(cl[0]-tk[0])*u,by=tk[1]+(cl[1]-tk[1])*u+3*Math.sin(Math.PI*u);
+        g.strokeStyle=rgba(C.sail[2],.5);g.lineWidth=.45;g.beginPath();g.moveTo(tx,ty);g.quadraticCurveTo((tx+bx)/2-9*Math.sin(Math.PI*u)-3,(ty+by)/2,bx,by);g.stroke()}
+      tex(g,'mott',.3,-30,-20,110,90,'overlay',.55);
+      /* a long rent from the foot up into the cloth */
+      poly(g,[30,44,33,26,35,27,34,46],rgba(C.sail[2],.75))});
+    /* the yard along its head, askew, running out of the picture at the top left */
+    poly(g,[yl[0]-20,yl[1]+5,yr[0]+3,yr[1]-.4,yr[0]+3,yr[1]+2.2,yl[0]-20,yl[1]+7.6],C.wood);stroke(g,[yl[0]-20,yl[1]+5,yr[0]+3,yr[1]-.4],rgba(C.woodHi,.7),.5)}
+  /* the strip torn loose from the foot near the clew, streaming forward and down in the wind */
+  const s0=[cl[0]-10,cl[1]+1],sw=1.6,L2=15,ang=2.3+.25*Math.sin(flap*Math.PI*2),ex=s0[0]+Math.cos(ang)*L2,ey=s0[1]+Math.sin(ang)*L2;
+  poly(g,[s0[0]-sw,s0[1],s0[0]+sw,s0[1]-.4,(s0[0]+ex)/2+sw,(s0[1]+ey)/2+1.6,ex+.6,ey,ex-.8,ey+.6,(s0[0]+ex)/2-sw,(s0[1]+ey)/2+2.2],tint(C.sail[1],-.04))}
+
+return{side,geo,anchor,wreckage,LIGHT,hawser:hawserS,deck,geoDeck,sternNight,nightGeo,bowGeo,bowNight,bowSkiff,holdGeo,hold,wreckGeo,wreckDeck,wreckSail};
 })();
