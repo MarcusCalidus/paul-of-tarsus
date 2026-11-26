@@ -19,7 +19,7 @@
    Paul and why he ran away (nothing is said of theft), and what Philemon did; how Mark came to Rome; who wrote the dictated letters down
    (the game gives the pen to Timothy) and how a letter was closed (none is tied or sealed here); the way from Rome to Asia (no road is drawn
    from Rome); and the release, which Paul only hopes for (Philemon 22). Hebrews is not written, named or shown.
-   Invented: the five soldiers of the watch and what each asks (Fulvius, who counts the days to his discharge; Firmus, whose little girl
+   Invented: the five soldiers of the watch and what each asks (Fulvius, who counts the days to his discharge; Valens, whose mother
    has a fever; Bassus, who is bored; Macer, who thinks little of prisoners; Celer, who has never stood watch here), the leading men's faces,
    the listeners of 28:23 and what holds each back, Anthus the freedman of Caesar's household, the landlady and the cat, Timothy with the
    pen, where each man stands, that the letters for Asia are handed over on one day, and all dialogue but the lines of the account and the
@@ -40,7 +40,7 @@
       every time; the next in the account's order is said, one already said is Paul's thought, and one too early is answered by his own
       thought that something comes before it. The fifth is said by using the chain on his wrist with the leading men, and only after the
       fourth. One of them answers for all, in the account's two lines.
-   2. From morning to evening (28:23-28; Firmus at the table). The light crosses the room in five hours. At each, one listener says what
+   2. From morning to evening (28:23-28; Valens at the table). The light crosses the room in five hours. At each, one listener says what
       holds him back (OBJ25), and talking to him the player answers with one of five passages the game has told before (PASS25: Chapter
       Ten's Exodus 12:46 from the Law; Chapter Five's Habakkuk 1:5 and Isaiah 49:6, Chapter Ten's Isaiah 53:3 and 53:9 from the Prophets),
       all on offer every time. The one that meets what he said moves the light on; any other is answered by the listener with what he
@@ -55,7 +55,7 @@
       true) or what he asks (the letter's lines): the letter takes what he asks; a demand is Paul's own thought, that he could, and the line
       stays unwritten. Philemon 12 is written after the first line and Philemon 22 at the end, in the letter's order. Onesimus says himself
       that he will go back.
-   5. Those who greet you (Colossians 4:10-18; the same weeks; Firmus at the table). Six men stand about the room. Going to each, the player
+   5. Those who greet you (Colossians 4:10-18; the same weeks; Valens at the table). Six men stand about the room. Going to each, the player
       chooses what the letter calls him (CALLED25, all six on offer every time); a wrong one is answered by the man himself, truly, and
       the right one is dictated to Timothy (Luke and Demas share one line). From the table the chain reaches the men in the middle; two
       stand at the left (the window) and two at the right (the door). Last Paul writes Colossians 4:18 at the desk in his own hand.
@@ -209,13 +209,13 @@ Object.assign(ICON,{
    SHARED.cast.CAESAREA's. Paul's look is ROME.paul_home: his oldest, with the mantle laid aside (the cloak on the peg is his). */
 const cp=(o,x)=>Object.assign({},o,x||{});
 Object.assign(LOOK,{
-  fulvius25:cp(RM.praetorian_watch_old),firmus25:cp(RM.praetorian_watch),bassus25:cp(RM.praetorian_watch_bald),macer25:cp(RM.praetorian_watch_ruddy),celer25:cp(RM.praetorian_watch_young),
+  fulvius25:cp(RM.praetorian_watch_old),valens25:cp(RM.praetorian_watch),bassus25:cp(RM.praetorian_watch_bald),macer25:cp(RM.praetorian_watch_ruddy),celer25:cp(RM.praetorian_watch_young),
   timothy25:cp(RO.timothy),luke25:cp(CZ.luke),aristarchus25:cp(CZ.aristarchus),mark25:cp(RO.mark),justus25:cp(RO.justus),epaphras25:cp(RO.epaphras),demas25:cp(RO.demas),
   tychicus25:cp(RO.tychicus),onesimus25:cp(RO.onesimus),epaphroditus25:cp(RO.epaphroditus),anthus25:cp(RO.freedman),landlady25:cp(RO.landlady),
   jew25a:cp(RO.jew_rome_1),jew25b:cp(RO.jew_rome_2),jew25c:cp(RO.jew_rome_3),jew25d:cp(RO.jew_rome_4),jew25e:cp(RO.jew_rome_5),jew25f:cp(RO.jew_rome_6),
   jew25g:cp(RO.jew_rome_3,{wrap:'#4a5a6a',cloak:'#4a5a6a',tunic:'#d0c4a6',ph:22500}),jew25h:cp(RO.jew_rome_5,{cloak:'#6a4a3a',tunic:'#c8bc9c',hair:'#2a2018',beard:'#2a2018',grey:'#5a5048',ph:22700}),
   visitor25a:cp(RO.rome_old),visitor25b:cp(RO.rome_sister_a)});
-const FV=actor('fulvius25','Fulvius','#e4d2c0',96),FI=actor('firmus25','Firmus','#e0d8c8',104),BA=actor('bassus25','Bassus','#d8d0c0',92),
+const FV=actor('fulvius25','Fulvius','#e4d2c0',96),FI=actor('valens25','Valens','#e0d8c8',104),BA=actor('bassus25','Bassus','#d8d0c0',92),
   MA=actor('macer25','Macer','#e8c8b8',100),CE=actor('celer25','Celer','#d8e0d0',118),
   TM=actor('timothy25','Timothy','#d8e8c8',130),LK=actor('luke25','Luke','#d0e8e0',112),AR=actor('aristarchus25','Aristarchus','#e0d8c0',102),
   MK=actor('mark25','Mark','#d0e0c8',110),JU=actor('justus25','Justus','#e0e0c8',106),EP=actor('epaphras25','Epaphras','#e0c8d8',98),DE=actor('demas25','Demas','#d8d8e0',120),
@@ -313,13 +313,13 @@ const NEWS25=[{k:'news_everyone_who_comes_is_welcome',give:1},{k:'news_one_soldi
 /* The watch: the question each soldier asks before he is relieved, the answer that fits, a longer one, one about something else, and his
    word when he has his answer */
 const Q25={1:{q:'fulvius_why_did_you_call_them_first',fit:'paul_they_should_hear_my_side_first',long:'paul_wherever_ive_gone_my_people_first',say:'paul_wherever_ive_gone_the_synagogue_first',aside:'paul_they_had_no_letter_about_me',ack:'fulvius_a_reason_i_understand'},
-  2:{q:'firmus_why_read_them_their_own_books',fit:'paul_they_trust_those_books',long:'paul_those_books_are_theirs_and_mine',say:'paul_i_grew_up_on_those_books',aside:'paul_some_of_them_believed',ack:'firmus_their_own_books'},
+  2:{q:'valens_why_read_them_their_own_books',fit:'paul_they_trust_those_books',long:'paul_those_books_are_theirs_and_mine',say:'paul_i_grew_up_on_those_books',aside:'paul_some_of_them_believed',ack:'valens_their_own_books'},
   3:{q:'bassus_what_is_a_man_from_the_palace_doing_here',fit:'paul_hes_one_of_the_brothers',long:'paul_the_brothers_here_are_all_kinds',say:'paul_brothers_in_every_trade',aside:'paul_his_name_is_anthus',ack:'bassus_one_of_the_brothers_in_the_palace'},
   4:{q:'macer_nobody_ordered_him_back',fit:'paul_because_he_wants_to_go',long:'paul_hes_been_a_help_to_me',say:'paul_he_has_been_a_help_to_me_every_day',aside:'paul_his_master_lives_in_colossae',ack:'macer_not_what_i_expected'},
-  5:{q:'firmus_why_send_greetings_from_everyone',fit:'paul_so_they_know_whos_here_with_me',long:'paul_each_of_them_matters_to_me',say:'paul_each_of_them_has_a_story',aside:'paul_timothy_wrote_it_down',ack:'firmus_fair_enough'}};
+  5:{q:'valens_why_send_greetings_from_everyone',fit:'paul_so_they_know_whos_here_with_me',long:'paul_each_of_them_matters_to_me',say:'paul_each_of_them_has_a_story',aside:'paul_timothy_wrote_it_down',ack:'valens_fair_enough'}};
 /* what the soldier says as he comes on (he knows whose prisoner this is), and his own care, said when Paul first speaks to him */
-const ON25={2:'firmus_so_you_are_paul',3:'bassus_youre_the_one_with_company',4:'macer_a_prisoner_is_a_prisoner',5:'firmus_again',6:'fulvius_again',7:'celer_i_know_who_you_are'};
-const CARE25={1:'fulvius_days_to_my_discharge',2:'firmus_my_girl_has_a_fever',3:'bassus_my_last_post_was_a_granary',4:'macer_ive_guarded_worse',5:'firmus_her_fever_is_gone',6:'fulvius_twenty_six_days',7:'celer_its_quiet_here'};
+const ON25={2:'valens_so_you_are_paul',3:'bassus_youre_the_one_with_company',4:'macer_a_prisoner_is_a_prisoner',5:'valens_again',6:'fulvius_again',7:'celer_i_know_who_you_are'};
+const CARE25={1:'fulvius_days_to_my_discharge',2:'valens_my_mother_has_a_fever',3:'bassus_my_last_post_was_a_granary',4:'macer_ive_guarded_worse',5:'valens_her_fever_is_long_gone',6:'fulvius_twenty_six_days',7:'celer_its_quiet_here'};
 /* the narrator's own lines between the watches (no reference: they tell only that time has passed) */
 const PASSED25={3:'a_year_and_more_went_by',4:'the_two_years_were_nearing_their_end',5:'in_the_same_weeks',6:'the_day_came_for_tychicus_and_onesimus_to_leave',7:'one_morning_late_in_the_second_year'};
 /* FLAGS: from24 and street come first and stay first (carried in from Chapter Twenty-Four, CHAP[25].carry); finished stays last
@@ -647,7 +647,7 @@ ROOMS.letters25={space:.8,walk:NOW,mood:'close',amb:AMB.close,hs:[
 /* ============ PEOPLE AS HOTSPOTS ============ */
 const who=(a,o)=>{a.hs=Object.assign({name:a.name,actor:a},o)};
 const chainOn=fn=>it=>it==='chain25'?fn():false;
-const SLOOK25={fulvius25:'fulvius25_look',firmus25:'firmus25_look',bassus25:'bassus25_look',macer25:'macer25_look',celer25:'celer25_look'};
+const SLOOK25={fulvius25:'fulvius25_look',valens25:'valens25_look',bassus25:'bassus25_look',macer25:'macer25_look',celer25:'celer25_look'};
 for(const S of SOLDIERS)who(S,{free25:1,look:()=>say(P,SLOOK25[S.id],TP),talk:()=>soldier25(),useWith:chainOn(()=>say(P,'paul_he_has_the_other_end',TP)),give:it=>it==='chain25'?say(P,'paul_he_has_the_other_end',TP):false,
   show:{'*':'soldier_keep_it_its_yours'}});
 /* the men of the Jews of Rome: leading men on the first day, listeners on the day of 28:23 (place25 names them for the watch) */
@@ -716,7 +716,7 @@ return{rooms:['lodging25','sheet25','letters25'],setup:setup25,start:start25,hin
   watch:watch25,hour:hour25,owed:owed25,seat:seat25,box:box25,deskOk:deskOk25,road:ROAD25,soldier:S_,door:door25,toFinale,
   /* the generic stops (routes25, shadows25) look at the room in each of its variants: each entry sets the flags for one */
   views:{lodging25:{flat:()=>{F.street=0},street:()=>{F.street=1}}},
-  /* the page about the chapter, behind the closing screen (the lead's keys; their text is a STUB in lang/ until he writes it) */
+  /* the page about the chapter, behind the closing screen (the lead's keys and text) */
   about:{title:'without_hindrance_2',text:'without_hindrance_about',based:'based_on_acts_28_17_31'},
   flags:FLAGS,
   /* three rooms and twenty-nine flags; the code keeps room for sixteen rooms and forty flags. Paul alone is played (party:['paul'], so

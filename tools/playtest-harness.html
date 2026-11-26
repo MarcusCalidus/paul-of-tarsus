@@ -6572,7 +6572,7 @@
     ok(!l.querySelector('[data-ch="25"]')&&building(25)&&plans&&plans.textContent.includes(T('twenty_five')),'FOR NOW: the title does not list Chapter Twenty-Five while the line of the chapters in preparation still names it')}
   if(C25){const e=document.querySelector('#overlay [data-ch="25"]');if(e)e.click();else startChapter(25)}
   await until(()=>G.ch===25&&G.room==='lodging25'&&!G.busy,9000);note();
-  const FV=A('fulvius25'),FI=A('firmus25'),BA=A('bassus25'),MA=A('macer25'),CE=A('celer25'),TM=A('timothy25'),LK=A('luke25'),SP=A('jew25b'),TY=A('tychicus25'),ON=A('onesimus25');
+  const FV=A('fulvius25'),FI=A('valens25'),BA=A('bassus25'),MA=A('macer25'),CE=A('celer25'),TM=A('timothy25'),LK=A('luke25'),SP=A('jew25b'),TY=A('tychicus25'),ON=A('onesimus25');
   {const v=ART.lodging25.variant(),c5=C(),M=c5.music;
     ok(C25?!F.from24&&!F.street&&v.startsWith('flat'):!!F.from24&&!!F.street&&v.startsWith('street'),
       C25?'started from the title, nothing is carried: the lodging is the flat ('+v+')':'started from the end of Chapter Twenty-Four, the lodging is the one carried in: the room at street level ('+v+')');
@@ -6623,8 +6623,8 @@
   heard.length=0;talkTo(FV);await until(chs,3000);ok(said('soldier_let_me_ask_again'),'spoken to again, he asks again');
   await pickK(C().q[1].fit);await until(()=>F.q1&&G.room==='lodging25'&&!G.busy,20000);note();
   /* ---- the second watch: from morning to evening (Acts 28:23-28) ---- */
-  ok(ever(C().q[1].ack)&&F.q1&&C().watch()===2&&seenTold.has('n23a')&&seenTold.has('n23b')&&P.chainTo===FI&&C().seat()==='table'&&C().hour()==='early'&&ever('firmus_so_you_are_paul'),
-    'the answer that fits: he is relieved. The day of 28:23, told; Firmus at the table knows who Paul is; early morning');
+  ok(ever(C().q[1].ack)&&F.q1&&C().watch()===2&&seenTold.has('n23a')&&seenTold.has('n23b')&&P.chainTo===FI&&C().seat()==='table'&&C().hour()==='early'&&ever('valens_so_you_are_paul'),
+    'the answer that fits: he is relieved. The day of 28:23, told; Valens at the table knows who Paul is; early morning');
   ok(ever(C().obj[0].say)&&ever('paul_moses_or_the_prophets_will_answer_that'),'the first listener says what holds him back, and Paul thinks how to answer');
   halt('day25');
   await hints('hint_a_passage_1','hint_a_passage_2','at the first hour');
@@ -6677,7 +6677,7 @@
   ok(ever(PM[3])&&ever(C().written.ready)&&ever('onesimus_ill_go_back_to_him')&&said(C().q[4].q),'the last line, and Philemon 22; back in the room Onesimus says himself that he will go; the soldier asks');
   heard.length=0;await pickK(C().q[4].fit);await until(()=>F.q4&&G.room==='lodging25'&&!G.busy,20000);note();
   /* ---- the fifth watch: those who greet you (Colossians 4:10-18) ---- */
-  ok(ever('in_the_same_weeks')&&P.chainTo===FI&&C().seat()==='table'&&ever('firmus_again')&&ever('paul_only_the_greetings_are_left'),'the same weeks: Firmus at the table; only the greetings are left');
+  ok(ever('in_the_same_weeks')&&P.chainTo===FI&&C().seat()==='table'&&ever('valens_again')&&ever('paul_only_the_greetings_are_left'),'the same weeks: Valens at the table; only the greetings are left');
   await code('in the fifth watch',()=>C().watch()===5&&C().seat()==='table'&&A('aristarchus25').room==='lodging25');
   halt('greet25');
   await hints('hint_greetings_1','hint_greetings_2','with the six');
