@@ -67,8 +67,8 @@ const SEA={'-62,-96':[60,56],'0,0':[92,84],'26,-41':[60,65],'-40,-101':[95.7,35.
   '-30,-14':[52,88],'2,37':[20,63],'-234,-19':null,'-245,-110':null};
 /* where the hint under a map to pick from stands, in screen pixels from the top, where the usual place (H - 14) would cross a coast.
    In the usual window ('') the coast of Marmarica comes into the lower left corner, so the hint stands higher, in the open sea between
-   Crete and Africa. */
-const HINT={journeys:H-5,'':100};
+   Crete and Africa; in the levant window, where a corner of Marmarica comes in below its left end, a few pixels higher than usual. */
+const HINT={journeys:H-5,'':100,levant:H-18};
 /* VLAB: where the names stand in a view that has names of its own (as a chapter gives journey and pick its labels), unless the chapter
    gives others */
 const VLAB={journeys:{salamis:{lab:'r'},paphos:{lab:'l',dy:2},thessalonica:{lab:'l',dy:-4},corinth:{lab:'l',dy:2},athens:{lab:'r',dy:12}},
@@ -193,7 +193,7 @@ const VIA={'caesarea-tarsus':[34.42,33.3,34.5,34.7,34.88,35.75],'tarsus-antioch'
      coast toward Phoenix and then driven south-west, past the east and south of Cauda into its lee; and from there across the open sea
      west-north-west to Malta, first dipping a little south. None of these legs crosses another, Chapter Twenty-One's road west (torome,
      south of Cyprus) is never shown with them, and no name crosses them on the windows outward, crete and adria (the playtest's map22, map23). */
-  'caesarea-sidon':[34.78,32.8,34.92,33.1,35.08,33.38],
+  'caesarea-sidon':[34.76,32.8,34.88,33.08,34.98,33.3,35.12,33.48],
   'sidon-myra':[35.2,33.85,35.25,34.4,35.15,35.0,34.95,35.55,34.75,35.86,34.35,35.92,33.8,35.8,33.1,35.72,32.4,35.72,31.7,36.0,31.0,36.12,30.45,36.06,30.15,36.1],
   'myra-cnidus':[29.75,36.03,29.35,36.1,29.0,36.45,28.6,36.6,28.2,36.62,27.75,36.62],
   'cnidus-salmone':[27.42,36.45,27.3,36.25,27.0,36.0,26.68,35.62,26.47,35.4],
