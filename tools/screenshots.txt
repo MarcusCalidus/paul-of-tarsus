@@ -33,6 +33,7 @@ bound bound17 cast-bound
 boundary border
 brothers home9
 burning pstreetg13
+caesarea-cast caesarea cast-caesarea
 caesarea-road pgate17
 card card
 carried pknot18
