@@ -26,7 +26,19 @@
                                        a hanging streamer across the level line of the sea is a cross (CONTRIBUTING section 3)
      smoke(g, t, x, y, W, o)           the smoke of a hearth or a fire at x, y: puffs that rise, bend with W.smoke and thin away, each
                                        a soft cluster of half pixels. o.h its height (24), o.c its color, o.a its strength, o.n puffs
-     calm                              the wind of a still day: wind({force:0}) */
+     calm                              the wind of a still day: wind({force:0})
+
+   The sound of the weather (Chapters Twenty-Two and Twenty-Three; everything is synthesized, as the engine's beds and calls are):
+     sound                             {beds, calls}, made as index.html's BEDS and CALLS and named unlike them. A level that wants them
+                                       returns them as its own (beds: sound.beds, calls: sound.calls, or merged with its own), and a room
+                                       asks for each by name and level in its amb. They are heard only in that chapter, as its own are.
+                                       Nothing changes the engine's wind, waves or rain of Chapters Twelve and Twenty, and nothing thunders.
+       gale    bed    the roar of a gale, higher and rougher than the engine's wind, which lies under it
+       gust    call   a gust that swells and dies over two to four and a half seconds, its pitch rising with it; they overlap
+       rigging call   the wind in the stays: one or two thin howls that climb with a gust and fall back
+       rain    bed    rain on a deck or on open water: a broad hiss
+       patter  call   drops on wooden planks: small taps in a scatter, now and then a heavier one
+       sandrain bed   rain on a beach: softer and duller than on a deck, and no taps */
 SHARED.weather=(()=>{
 "use strict";
 function puddles(w,y0,y1,n,seed){const r=rng(seed||1279),out=[];
@@ -111,4 +123,25 @@ function smoke(g,t,x,y,W,o){o=o||{};const S=W&&W.smoke||W||calm.smoke,h=o.h||24,
     /* each puff: a shaded body and a lit side, built of a few soft blocks of half pixels */
     for(let k=0;k<5;k++){const ox=(r()-.5)*s*1.2,oy=(r()-.5)*s*.8,w=Math.max(.5,s*(.55+r()*.4)),hh=Math.max(.5,s*(.4+r()*.3));
       R(g,px+j+ox-w/2,py+oy-hh/2+hh*.25,w,hh*.75,rgba(sh,al*.5));R(g,px+j+ox-w/2+L*w*.18,py+oy-hh/2,w*.8,hh*.6,rgba(c,al*.6))}}}
-return{puddles,wetGround,rain,wind,calm,pennant,smoke,PTS}})();
+/* ---- the sound of the weather (see the head of this file) ----
+   A call is fn(t, dest): it starts at t on the context's clock and writes to dest, the call's own gain, which the room's level sets.
+   Each call starts a few thousandths of a second after t (jit): the engine hands a call a time that falls exactly on a sample, and a
+   noise started exactly on a sample lets one loud sample through before its gain takes hold (measured offline: a click). */
+const jit=t=>t+.001+Math.random()*.003;
+const sweep=(t,d,o)=>{const c=AU.ctx;if(!c||!AU.nbuf)return;const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain(),L=o.len;
+  s.buffer=AU.nbuf;s.loop=true;f.type=o.type||'bandpass';f.Q.value=o.q||1;
+  f.frequency.setValueAtTime(o.f[0],t);f.frequency.linearRampToValueAtTime(o.f[1],t+L*o.top);f.frequency.linearRampToValueAtTime(o.f[2],t+L);
+  g.gain.value=0;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(o.v,t+L*o.top);g.gain.linearRampToValueAtTime(.0001,t+L);
+  s.connect(f);f.connect(g);g.connect(d);s.start(t,Math.random()*.9);s.stop(t+L+.05)};
+const sound={
+  beds:{gale:{type:'bandpass',f:640,q:.45,lfo:.19,depth:.6,v:.15},
+    rain:{type:'bandpass',f:2800,q:.45,lfo:.23,depth:.3,v:.07},
+    sandrain:{type:'bandpass',f:1700,q:.35,lfo:.17,depth:.3,v:.08}},
+  calls:{
+    gust:[1.3,3.4,(t,d)=>{t=jit(t);const L=2+Math.random()*2.5,f0=320+Math.random()*220;sweep(t,d,{len:L,top:.35+Math.random()*.25,f:[f0,f0*(1.8+Math.random()*.7),f0*1.05],q:.8,v:.16+Math.random()*.14})}],
+    rigging:[2.5,6,(t,d)=>{t=jit(t);const L=1.8+Math.random()*2.4,f0=520+Math.random()*420,n=Math.random()<.4?2:1;
+      for(let i=0;i<n;i++){const r=i?1.34:1;sweep(t+i*.15,d,{len:L,top:.4+Math.random()*.2,f:[f0*r,f0*r*1.22,f0*r*.94],q:22,v:.8})}}],
+    patter:[.06,.14,(t,d)=>{t=jit(t);const n=1+(Math.random()*3|0);
+      for(let i=0;i<n;i++){const u=t+Math.random()*.09;noise({t:u,d:.008+Math.random()*.012,v:.3+Math.random()*.36,f:1800+Math.random()*2600,q:2.5,dest:d});
+        if(Math.random()<.12){noise({t:u,d:.025,v:.4,f:650+Math.random()*250,q:3,dest:d});tone({f:880+Math.random()*500,t:u,d:.03,type:'sine',v:.07,dest:d})}}}]}};
+return{puddles,wetGround,rain,wind,calm,pennant,smoke,PTS,sound}})();
