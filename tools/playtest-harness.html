@@ -127,6 +127,8 @@
   19:()=>act('look','spring'), // Chapter Nineteen: at Antipatris at dawn, the spring off the way
   20:()=>act('look','sky_over_the_harbor'), // Chapter Twenty: the window in the second spring, the storks going north over the harbor
   21:()=>act('look','ox_goad'), // Chapter Twenty-One: in the court before the hearing, the carter's ox goad by the cart at the side
+  22:()=>act('look','stub22_coast'), // Chapter Twenty-Two: STUB, the stub's coast. LOGIC22: from treasure.at, the steps that look at Tarsus while the leg off Cilicia is on the map
+  23:()=>act('look','stub23_stone'), // Chapter Twenty-Three: STUB, the stub's stone. LOGIC23: from treasure.at, the steps that look at the stone at the gate of Publius's estate
  };
  (async()=>{try{
   while(!G.ready)await wait(30);
@@ -205,7 +207,12 @@
     const da=ga.getImageData(0,0,VW*HR,VH*HR).data,db=gb.getImageData(0,0,VW*HR,VH*HR).data,foot=gb.getImageData(0,VH*HR,VW*HR,(VT-VH)*HR).data;let same=true,lit=0;
     for(let i=0;i<da.length;i++)if(da[i]!==db[i]){same=false;break}for(let i=0;i<foot.length;i+=4)if(foot[i]+foot[i+1]+foot[i+2]>0)lit++;
     ok(G.scene===CHAP[1].scenes.title&&same&&lit>foot.length/4*.9,'its picture is painted down to the foot of the window, and its upper part is the backdrop of the wall, pixel for pixel');
-    if(!/[?&]keep=1/.test(location.search))ok(l.scrollHeight<=l.clientHeight+1,'with that height all '+l.children.length+' chapters stand on a first visit, without scrolling')}
+    /* FOR NOW: with twenty-three chapters the list scrolls on a first visit too. The maintainer is choosing a new layout for it from two
+       mockups (another branch); until then this checks only what holds for both: every chapter is listed and the overlay's parts lie inside
+       it (above), and on a first visit the Prologue and Chapter One stand in view at the head of the list. The chosen layout replaces this. */
+    if(!/[?&]keep=1/.test(location.search)){const r=l.getBoundingClientRect(),o=ov.getBoundingClientRect(),
+        inV=el=>{const q=el&&el.getBoundingClientRect();return!!q&&q.height>0&&q.top>=Math.max(r.top,o.top)-1&&q.bottom<=Math.min(r.bottom,o.bottom)+1};
+      ok(l.scrollTop<=1&&inV(l.querySelector('[data-pro="1"]'))&&inV(l.querySelector('[data-ch="1"]')),'on a first visit the Prologue and Chapter One stand in view at the head of the list of all '+l.querySelectorAll('[data-ch]').length+' chapters')}}
   /* the title's name is a painting (shared/logo.js): it stands in this language and keeps the words, it is shown at the size of its
      pixels and inside the view, and nothing of it is left unpainted. The stop `logo` shows it enlarged three times, in two halves:
      look there for crosses and for letters that have run together, in every language (`de:logo`). */
@@ -1847,7 +1854,8 @@
   {const fade=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))),l0=ov.querySelector('.chs');
     ok(l0&&[...l0.children].every(p=>p.dataset.ch||p.dataset.pro||p.classList.contains('plans')||p.classList.contains('plan'))&&l0.querySelectorAll('[data-ch],[data-pro]').length===Object.keys(CHAP).length+1,'the prologue and the chapters sit in a list of their own, with the planned ones at its foot');
     if(!/[?&]keep=1/.test(location.search)){
-    await fade();ok(!l0.classList.contains('up')&&!l0.classList.contains('down'),'on a first visit neither edge of the list fades: there is nothing beyond it');
+    /* FOR NOW (see the title checks above): on a first visit the list may scroll; the chosen layout replaces this check */
+    await fade();ok(!l0.classList.contains('up')&&l0.classList.contains('down')===(l0.scrollHeight>l0.clientHeight+1),'on a first visit the list stands at its head: its top edge does not fade, and its bottom edge fades only while more lies below it');
     store('paul.save',codeOf(2,0));keepSaves({far:{code:codeOf(3,0),t:1}});ov.draw();await fade();
     {const l=ov.querySelector('.chs');
       ok(ov.querySelector('[data-cont]')&&ov.querySelector('[data-far]')&&l.scrollHeight>l.clientHeight+1&&!l.classList.contains('up')&&l.classList.contains('down')&&inOv(),'with Continue and the farthest point above it the list scrolls: at the top, only its bottom edge fades');
@@ -4372,8 +4380,8 @@
     walkTo=async(x,y)=>{const p=PC();walk(p,x,y);for(let i=0;i<900&&(p.walk||!G.busy&&false);i++)await wait(25);await idle()};
   heard.length=0;
   if(C17){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
-    const c17=chs.find(c=>c.dataset.ch==='17');ok(c17&&c17.textContent.includes(T('chapter_seventeen'))&&c17.textContent.includes(T('the_belt_2'))&&PLANNED[0].label==='chapter_twenty_two'&&plans.textContent.includes(T('twenty_two')),
-      'the title lists Chapter Seventeen, The Belt, and the chapters in preparation begin with the twenty-second')}
+    const c17=chs.find(c=>c.dataset.ch==='17');ok(c17&&c17.textContent.includes(T('chapter_seventeen'))&&c17.textContent.includes(T('the_belt_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
+      'the title lists Chapter Seventeen, The Belt, and the chapters in preparation begin with the twenty-fourth')}
   (C17?document.querySelector('#overlay [data-ch="17"]'):ov).click();
   await until(()=>G.ch===17&&G.room==='patara17'&&!G.busy,4000);note();
   const LK=A('luke17'),AK=A('akestor17'),MO=A('moschos17'),KA=A('kallikrates17'),SO=A('sostratos17'),BU=A('butcher17'),MY=A('myrto17'),PN=A('phanias17'),JO=A('joezer17'),
@@ -4538,8 +4546,8 @@
     code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
   if(C18){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
-    {const c18=chs.find(c=>c.dataset.ch==='18');ok(c18&&c18.textContent.includes(T('chapter_eighteen'))&&c18.textContent.includes(T('on_the_stairs_2'))&&PLANNED[0].label==='chapter_twenty_two'&&plans.textContent.includes(T('twenty_two')),
-      'the title lists Chapter Eighteen, On the Stairs, and the chapters in preparation begin with the twenty-second')}}
+    {const c18=chs.find(c=>c.dataset.ch==='18');ok(c18&&c18.textContent.includes(T('chapter_eighteen'))&&c18.textContent.includes(T('on_the_stairs_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
+      'the title lists Chapter Eighteen, On the Stairs, and the chapters in preparation begin with the twenty-fourth')}}
   (C18?document.querySelector('#overlay [data-ch="18"]'):ov).click();
   await until(()=>G.ch===18&&G.room==='mnason18'&&!G.busy,4000);note();
   const MN=A('mnason_18'),JA=A('james18'),TR=A('troph18'),CY=A('cyrene18'),GR=A('greek18'),LV=A('levite18'),CM=A('commander18'),OF=A('officer18'),S1=A('sol18a'),BA=A('barber18');
@@ -4717,8 +4725,8 @@
     code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
   if(C19){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
-    {const c19=chs.find(c=>c.dataset.ch==='19');ok(c19&&c19.textContent.includes(T('chapter_nineteen'))&&c19.textContent.includes(T('the_sisters_son_2'))&&PLANNED[0].label==='chapter_twenty_two'&&plans.textContent.includes(T('twenty_two')),
-      'the title lists Chapter Nineteen, The Sister\'s Son, and the chapters in preparation begin with the twenty-second')}}
+    {const c19=chs.find(c=>c.dataset.ch==='19');ok(c19&&c19.textContent.includes(T('chapter_nineteen'))&&c19.textContent.includes(T('the_sisters_son_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
+      'the title lists Chapter Nineteen, The Sister\'s Son, and the chapters in preparation begin with the twenty-fourth')}}
   (C19?document.querySelector('#overlay [data-ch="19"]'):ov).click();
   await until(()=>G.ch===19&&G.room==='council19'&&!G.busy,6000);note();
   const NE=A('nephew19'),SI=A('sister19'),AN=A('ananias19'),PH=A('phar19b'),SA=A('sad19a'),SE=A('sentry19'),GD=A('guard19'),OS=A('oil19'),FX=A('felix19'),M=C().map,X=C().X,Y=C().Y;
@@ -4903,8 +4911,8 @@
       await until(()=>C().season()===n&&(!G.busy||$('#choices').classList.contains('on'))&&!(+$('#dim').style.opacity),9000);note()};
   heard.length=0;
   if(C20){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
-    {const c=chs.find(c=>c.dataset.ch==='20');ok(c&&c.textContent.includes(T('chapter_twenty'))&&c.textContent.includes(T('some_other_time_2'))&&PLANNED[0].label==='chapter_twenty_two'&&plans.textContent.includes(T('twenty_two')),
-      'the title lists Chapter Twenty, Some Other Time, and the chapters in preparation begin with the twenty-second')}}
+    {const c=chs.find(c=>c.dataset.ch==='20');ok(c&&c.textContent.includes(T('chapter_twenty'))&&c.textContent.includes(T('some_other_time_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
+      'the title lists Chapter Twenty, Some Other Time, and the chapters in preparation begin with the twenty-fourth')}}
   (C20?document.querySelector('#overlay [data-ch="20"]'):ov).click();
   await until(()=>G.ch===20&&G.room==='court20'&&!G.busy,9000);note();
   const FX=A('felix20'),DR=A('drusilla20'),TT=A('tertullus20'),AN=A('ananias20'),CK=A('clerk20'),SO=A('soldier20'),OF=A('officer20'),PH=A('philip20'),SI=A('simmias20'),PD=A('phaidros20'),LK=A('luke20');
@@ -5087,8 +5095,8 @@
     code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
   if(C21){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
-    {const c=chs.find(c=>c.dataset.ch==='21');ok(c&&c.textContent.includes(T('chapter_twenty_one'))&&c.textContent.includes(T('to_caesar_2'))&&PLANNED[0].label==='chapter_twenty_two'&&plans.textContent.includes(T('twenty_two')),
-      'the title lists Chapter Twenty-One, To Caesar, and the chapters in preparation begin with the twenty-second')}}
+    {const c=chs.find(c=>c.dataset.ch==='21');ok(c&&c.textContent.includes(T('chapter_twenty_one'))&&c.textContent.includes(T('to_caesar_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
+      'the title lists Chapter Twenty-One, To Caesar, and the chapters in preparation begin with the twenty-fourth')}}
   (C21?document.querySelector('#overlay [data-ch="21"]'):ov).click();
   await until(()=>G.ch===21&&G.room==='court21'&&!G.busy,6000);note();
   const CL=A('clerk21'),FS=A('festus21'),AG=A('agrippa21'),BE=A('bernice21'),GU=A('guard21'),R=C().report,MK=C().marks;
@@ -5218,14 +5226,176 @@
   heard.length=0;await onH('door_to_the_court','walk');ok(said('clerk_the_report_first')&&G.room==='write21','the report first');
   heard.length=0;onH('the_report','use');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
   ok(ov.classList.contains('end')&&said('clerk_the_field_is_still_empty')&&seenTold.has('n27')&&ov.textContent.includes(T('to_caesar_2'))&&ov.textContent.includes(T('to_caesar_end'))&&/25:1-26:32/.test(ov.textContent)
-    &&ov.textContent.includes(T('click_to_return_to_the_title'))&&store('paul.save')===null&&inOv(),
-    'the field is still empty; what comes next (Acts 27:1); the end screen says what the account leaves unsaid and returns to the title (until Chapter Twenty-Two is built)');
+    &&ov.textContent.includes(T('click_to_continue_to_chapter_twenty_two'))&&ov.textContent.includes(T('chapter_twenty_two_code_code',{code:codeOf(22,0)}))&&store('paul.save')===codeOf(22,0)&&inOv(),
+    'the field is still empty; what comes next (Acts 27:1); the end screen says what the account leaves unsaid and leads on to Chapter Twenty-Two with its first code');
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 25:1-26:32 was told'+(miss.length?' MISSING '+miss:''))}
   halt('final21')};
   if(C21){await ch21();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ==== CHAPTER TWENTY-ONE: end ==== */
+  /* ==== CHAPTER TWENTY-TWO: begin ==== Chapter Twenty-Two's own stops: whoever builds the chapter extends this section, and nothing outside it but
+     its line in TSTEPS, the chain of the full run (ch22 after ch21) and the title checks of the chapters before it. */
+  /* Chapter Twenty-Two stops start Chapter Twenty-Two from the title screen; the full run calls its test when Chapter Twenty-One has ended.
+     all22 halts nowhere. Its halts: STUB: stub22 (the stub's room) · marks22 (the six marks set) · final22. The stops that begin with "p" open
+     one room at once, with the story's flags set for it, and say the safe-point code of their point (CODE): STUB: pstub22. The generic stops
+     card22, routes22 and shadows22 (above) run against whatever rooms the chapter has. LOGIC22: replace every STUB name here with the chapter's
+     own halts and room stops, as Chapter Twenty-One's section does, and add the stops that drive the beat by its exposed phase (on the phone too).
+     The stop carry (after Chapter Twenty-Three's section) needs CHAP[22].marks (the twelve mark flags) and CHAP[22].end (the end screen, from
+     wherever the story stands): keep both in the chapter's definition. */
+  /* rooms22: every picture of Chapter Twenty-Two on one sheet at twice its size (rooms22.png), for the art and the cross-shape check */
+  if(stop==='rooms22'){clearInterval(sk);sk=0;await loadLevel(22);setChapter(22);ov.className='';ov.onclick=null;const C=CHAP[22],ids=C.rooms,K=2;
+    const pic=(id,q,x,y)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
+      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
+      q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
+    const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
+    window.SHEETS={rooms22:c.toDataURL()};halt('rooms22')}
+  const C22=/^(stub22|marks22|final22|all22)$/.test(stop);   /* STUB: stub22, marks22 */
+  if(!C22&&/^p[a-z]+22$/.test(stop)){await loadLevel(22);ov.className='';ov.onclick=null;const C=CHAP[22],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      S={pstub22:[[],'stub22']}[stop];   /* STUB: pstub22; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
+    if(!S)throw new Error('no such stop '+stop);setChapter(22);for(const k of S[0])F[k]=1;
+    const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    await wait(1100);halt(stop)}
+  /* marks22: the marks that Chapter Twenty-Two's playthrough set on Luke's tablet, for Chapter Twenty-Three's to find carried in the full run */
+  let marks22=null;
+  const ch22=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[22],told=k=>heard.includes(T(C().told[k])),
+    until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    pray22=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
+    hints=async(a,b,where)=>{heard.length=0;const p=await pray22(),first=said(a)&&!said(b),q=await pray22();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
+    line=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await wait(60)},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+  heard.length=0;
+  if(C22){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
+    {const c=chs.find(c=>c.dataset.ch==='22');ok(c&&c.textContent.includes(T('chapter_twenty_two'))&&c.textContent.includes(T('euroaquilo_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
+      'the title lists Chapter Twenty-Two, Euroaquilo, and the chapters in preparation begin with the twenty-fourth')}}
+  (C22?document.querySelector('#overlay [data-ch="22"]'):ov).click();
+  /* STUB: from here to halt('final22') the steps play the stub; LOGIC22 replaces them with the chapter's playthrough */
+  await until(()=>G.ch===22&&G.room==='stub22'&&!G.busy,6000);note();
+  ok(seenTold.has('stub_open')&&decode(makeCode()).ch===22&&PC()===P&&A('luke22').room==='stub22'&&C().party.join()==='paul,luke22'&&C().swap===false,
+    'STUB: the stub of Chapter Twenty-Two opens in its room, Paul played and Luke with him, and its first line is told: '+makeCode());
+  halt('stub22');
+  await hints('stub22_hint_1','stub22_hint_2','in the stub');
+  /* STUB: the placeholder choice sets the six marks (south-west, west, north-west, only the day, west, north-west); the chapter's tablet22 replaces it */
+  {const want=[1,2,3,0,2,3],K=['stub22_mark_only_the_day','stub22_mark_south_west','stub22_mark_west','stub22_mark_north_west'];heard.length=0;onH('stub22_tablet','use');
+    for(const v of want)await line(K[v]);await until(()=>F.marked&&!G.busy);marks22=[1,2,3,4,5,6].map(C().markOf);
+    ok(marks22.join()===want.join()&&said('stub22_six_marks'),'STUB: six marks on Luke\'s tablet: '+marks22)}
+  halt('marks22');
+  await hints('stub22_hint_hatch_1','stub22_hint_hatch_2','after the marks');
+  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('stub22_coast','look');
+    ok(said('stub22_coast_look')&&treasures().has(22)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'STUB: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
+  heard.length=0;await onH('stub22_hatch','use');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
+  {const bits=marks22.reduce((b,v,i)=>b|v<<(2*i+1),1),code=codeOf(23,bits);
+    ok(ov.classList.contains('end')&&ov.textContent.includes(T('euroaquilo_2'))&&/27:1-26/.test(ov.textContent)&&ov.textContent.includes(T('click_to_continue_to_chapter_twenty_three'))
+      &&ov.textContent.includes(T('chapter_twenty_three_code_code',{code}))&&store('paul.save')===code&&C().carry23()===bits&&inOv(),
+      'the end screen of Chapter Twenty-Two leads on to Chapter Twenty-Three with its first code, which carries the six marks: '+code)}
+  {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 27:1-26 was told'+(miss.length?' MISSING '+miss:''))}
+  halt('final22')};
+  if(C22){await ch22();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    /* STUB: LOGIC22 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+  /* ==== CHAPTER TWENTY-TWO: end ==== */
+  /* ==== CHAPTER TWENTY-THREE: begin ==== Chapter Twenty-Three's own stops: whoever builds the chapter extends this section, and nothing outside it
+     but its line in TSTEPS, the chain of the full run (ch23 after ch22) and the title checks of the chapters before it. */
+  /* Chapter Twenty-Three stops start Chapter Twenty-Three from the title screen (nothing carried: the tablet has only the strokes of the
+     days); the full run calls its test when Chapter Twenty-Two has ended, and the chapter opens with the marks that Chapter Twenty-Two's test
+     set (marks22). all23 halts nowhere. Its halts: STUB: stub23 (the stub's room) · final23. The stops that begin with "p" open one room at
+     once, with the story's flags set for it, and say the safe-point code of their point (CODE): STUB: pstub23, and pcarry23 (the same room
+     with a carried tablet: from22 and south-west, west, north-west, only the day, west, north-west). The generic stops card23, routes23 and
+     shadows23 (above) run against whatever rooms the chapter has. LOGIC23: replace every STUB name here with the chapter's own halts and room
+     stops, as Chapter Twenty-One's section does, and add the stops that drive the beat by its exposed phase (on the phone too). */
+  /* rooms23: every picture of Chapter Twenty-Three on one sheet at twice its size (rooms23.png), for the art and the cross-shape check */
+  if(stop==='rooms23'){clearInterval(sk);sk=0;await loadLevel(23);setChapter(23);ov.className='';ov.onclick=null;const C=CHAP[23],ids=C.rooms,K=2;
+    const pic=(id,q,x,y)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
+      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
+      q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
+    const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
+    window.SHEETS={rooms23:c.toDataURL()};halt('rooms23')}
+  const C23=/^(stub23|final23|all23)$/.test(stop);   /* STUB: stub23 */
+  if(!C23&&/^p[a-z]+23$/.test(stop)){await loadLevel(23);ov.className='';ov.onclick=null;const C=CHAP[23],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      /* a carried tablet: from22 and the marks 1, 2, 3, 0, 2, 3 (the flags that are set of the first thirteen) */
+      TAB=ALL.slice(0,C.carry).filter((k,i)=>(1|[1,2,3,0,2,3].reduce((b,v,j)=>b|v<<(2*j+1),0))>>i&1),
+      S={pstub23:[[],'stub23'],pcarry23:[TAB,'stub23']}[stop];   /* STUB: pstub23, pcarry23; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
+    if(!S)throw new Error('no such stop '+stop);setChapter(23);for(const k of S[0])F[k]=1;
+    const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    await wait(1100);halt(stop)}
+  const ch23=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[23],told=k=>heard.includes(T(C().told[k])),
+    until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    pray23=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
+    hints=async(a,b,where)=>{heard.length=0;const p=await pray23(),first=said(a)&&!said(b),q=await pray23();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+  heard.length=0;
+  if(C23){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
+    {const c=chs.find(c=>c.dataset.ch==='23');ok(c&&c.textContent.includes(T('chapter_twenty_three'))&&c.textContent.includes(T('all_safe_to_land_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
+      'the title lists Chapter Twenty-Three, All Safe to Land, and the chapters in preparation begin with the twenty-fourth')}}
+  (C23?document.querySelector('#overlay [data-ch="23"]'):ov).click();
+  /* STUB: from here to halt('final23') the steps play the stub; LOGIC23 replaces them with the chapter's playthrough */
+  await until(()=>G.ch===23&&G.room==='stub23'&&!G.busy,6000);note();
+  {const m=[1,2,3,4,5,6].map(C().markOf);
+    ok(C23?!F.from22&&m.every(v=>!v)&&said('stub23_tablet_only_the_days'):!!F.from22&&marks22&&m.join()===marks22.join()&&heard.includes(T('stub23_tablet_carried',{n:m.filter(Boolean).length})),
+      C23?'started from the title, nothing is carried: Luke\'s tablet has only the strokes of the days':'started from the end of Chapter Twenty-Two, Luke\'s tablet is carried in with its marks: '+m)}
+  ok(seenTold.has('stub_open')&&decode(makeCode()).ch===23&&PC()===P&&A('luke23').room==='stub23'&&C().party.join()==='paul,luke23'&&C().swap===false,
+    'STUB: the stub of Chapter Twenty-Three opens in its room, Paul played and Luke with him, and its first line is told: '+makeCode());
+  halt('stub23');
+  await hints('stub23_hint_1','stub23_hint_2','in the stub');
+  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('stub23_stone','look');
+    ok(said('stub23_stone_look')&&treasures().has(23)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'STUB: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
+  heard.length=0;await onH('stub23_path','use');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
+  ok(ov.classList.contains('end')&&ov.textContent.includes(T('all_safe_to_land_2'))&&/27:27-28:10/.test(ov.textContent)&&ov.textContent.includes(T('click_to_return_to_the_title'))&&store('paul.save')===null&&inOv(),
+    'the end screen of Chapter Twenty-Three returns to the title (until Chapter Twenty-Four is built), and keeps no code to continue from');
+  {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 27:27-28:10 was told'+(miss.length?' MISSING '+miss:''))}
+  halt('final23')};
+  if(C23){await ch23();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    /* STUB: LOGIC23 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+  /* ==== CHAPTER TWENTY-THREE: end ==== */
+  /* carry (CONTRIBUTING section 5): a choice carried from one chapter into the next, only in the safe-point code. Chapter Twenty-Three's
+     first CHAP[23].carry flags are carried in from Chapter Twenty-Two's end screen: from22, then the six marks of Luke's tablet. For four
+     sets of marks: the end screen prints codeOf(23, bits) and keeps it as the point to continue from and the farthest point; its click and
+     that code, restored later, give the same flags, and both open with the card; a code made later inside the chapter still holds them.
+     Started from the title, or from a bare first code, nothing is carried. Old codes of every earlier chapter (each treasure's point) decode
+     and restore as before. It plays the chapters' own end (CHAP[22].end) and start, so it holds for the stubs and for the chapters alike. */
+  if(stop==='carry'){await loadLevel(22);await loadLevel(23);
+    const C22=CHAP[22],C23=CHAP[23],K=C23.carry,names=C23.flags.slice(0,K),fl=()=>names.filter(k=>F[k]).join(),
+      from=b=>names.filter((k,i)=>b>>i&1).join(),until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
+      in23=()=>G.ch===23&&!!G.room&&!G.busy&&!ov.classList.contains('card');
+    let shown=0;const sc=showCard;window.showCard=n=>{shown=n;return sc(n)};
+    ok(K===13&&names.join()===['from22'].concat(C22.marks).join()&&C22.marks.every(k=>C22.flags.includes(k))&&typeof C22.end==='function',
+      'Chapter Twenty-Three carries thirteen flags, from22 and the twelve marks, which Chapter Twenty-Two holds under the same names: '+names.join(' '));
+    for(const set of[[1,2,3,0,2,3],[0,0,0,0,0,0],[3,3,1,1,2,0],[2,2,2,2,2,2]]){
+      store('paul.save',null);store('paul.saves',null);applyState(decode(codeOf(22,0)));await idle();
+      set.forEach((v,i)=>{F['m'+(i+1)+'a']=v&1?1:0;F['m'+(i+1)+'b']=v&2?1:0});
+      const bits=set.reduce((b,v,i)=>b|v<<(2*i+1),1),code=codeOf(23,bits),want=from(bits);
+      C22.end();for(let i=0;i<4000&&!(ov.classList.contains('end')&&ov.onclick);i++)await wait(30);await wait(60);
+      const printed=(ov.textContent.match(/\b23-[0-9A-Z]{3}-[0-9A-Z]{3}\b/)||[])[0],far=saves().far;
+      ok(printed===code&&ov.textContent.includes(T('chapter_twenty_three_code_code',{code}))&&store('paul.save')===code&&far&&far.code===code,
+        `marks ${set}: the end screen prints codeOf(23, ${bits}) = ${printed}, and keeps it as the point to continue from and the farthest point`);
+      shown=0;ov.click();await until(in23,6000);const byClick=fl();
+      ok(byClick===want&&shown===23&&saves().far.code===code,`its click opens Chapter Twenty-Three with the card and the carried flags (${byClick||'none'}); the farthest point is still that code`);
+      {F[C23.flags[K]]=1;const w=makeCode(),u=unpackWide(C23,decode(w).w);await restore(w,true);
+        ok(u&&u.flags.filter(k=>names.includes(k)).join()===want&&fl()===want&&F[C23.flags[K]]&&!atStart(decode(w)),`a code made later inside the chapter still holds them: ${w}`)}
+      shown=0;await restore(code);await until(in23,4000);
+      ok(fl()===want&&shown===23&&G.ch===23&&G.room===C23.rooms[0]&&atStart(decode(code))&&G.ch===23,`the printed code, typed later, gives the same flags (${fl()||'none'}), in the chapter's first room, and opens with the card`)}
+    ok(!atStart(decode(codeOf(23,1|1<<K)))&&!atStart(decode(codeOf(22,1)))&&atStart(decode(codeOf(22,0)))&&atStart(decode(codeOf(23,0))),
+      'a code with a flag beyond the carried ones set is not a start, and in a chapter that carries nothing only a bare code is');
+    store('paul.save',null);store('paul.saves',null);shown=0;startChapter(23);await until(in23,6000);
+    ok(!F.from22&&!fl()&&shown===23&&G.carry==null,'started from the title, Chapter Twenty-Three has nothing carried: from22 is unset, and so is every mark');
+    shown=0;await restore(codeOf(23,0));await until(in23,4000);ok(!fl()&&shown===23,'a bare first code (Continue at the start) has nothing carried either');
+    /* old codes: the point of each earlier chapter's hidden treasure decodes to its chapter and restores the flags it holds, as before */
+    {const bad=[];for(let n=1;n<=21;n++){const at=CHAP[n].treasure.at,b=decode(at);if(!b||b.ch!==n){bad.push(n+' decode');continue}
+        if(atStart(b)!==(b.w==null&&b.b===0))bad.push(n+' start');
+        if(await restore(at,true)!==true){bad.push(n+' restore');continue}const c=CHAP[n],u=b.w!=null?unpackWide(c,b.w):null,
+          exp=(u?u.flags:c.flags.filter((k,i)=>i<19&&b.b>>i&1)).slice().sort().join(),got=c.flags.filter(k=>F[k]).sort().join();
+        if(exp!==got||G.ch!==n||F.from22)bad.push(n+' flags')}
+      ok(!bad.length,'the codes of the twenty-one earlier chapters (each treasure\'s point) decode and restore as before'+(bad.length?': NOT '+bad.join(', '):''))}
+    window.showCard=sc;halt('carry')}
   if(C19){await ch19();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
@@ -6461,7 +6631,7 @@
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('journey6',()=>{ov.className=''});halt('final6');await wait(1700)}
-  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13();await wait(1700);await ch14();await wait(1700);await ch15();await wait(1700);await ch16();await wait(1700);await ch17();await wait(1700);await ch18();await wait(1700);await ch19();await wait(1700);await ch20();await wait(1700);await ch21()}
+  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13();await wait(1700);await ch14();await wait(1700);await ch15();await wait(1700);await ch16();await wait(1700);await ch17();await wait(1700);await ch18();await wait(1700);await ch19();await wait(1700);await ch20();await wait(1700);await ch21();await wait(1700);await ch22();await wait(1700);await ch23()}
   ok(!MISSING.size&&!RAWKEY.size,'every line shown in the game had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);

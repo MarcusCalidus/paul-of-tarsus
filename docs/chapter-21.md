@@ -47,7 +47,7 @@ At the back of the hall, in the shade of the wall behind the seated commanders, 
 
 **These bonds.** While Paul is chained, the chain on his wrist is in his inventory. **Use** it with the king and his far hand comes up, bent, the chain with it, and he speaks the wish (26:29). The account does not say that he raised his chain; the end screen says so. Then the king rises, and the governor, Bernice and all who sat with them (26:30).
 
-**In the passage.** The clerk is played once more, in the emptying hall. On his way out by the door of the hall he hears what they say to one another, and what the king says to the governor (26:31, 32). Back at his table, the field for the charge is still empty. The narrator tells, in one sentence from the scroll, that from the voyage to Italy on the one who tells the account is among the travellers again (27:1), and the chapter ends.
+**In the passage.** The clerk is played once more, in the emptying hall. On his way out by the door of the hall he hears what they say to one another, and what the king says to the governor (26:31, 32). Back at his table, the field for the charge is still empty. The narrator tells, in one sentence from the scroll, that from the voyage to Italy on the one who tells the account is among the travellers again (27:1), and the end screen leads on to Chapter Twenty-Two with its first code.
 
 <details>
 <summary>Walkthrough (spoilers)</summary>

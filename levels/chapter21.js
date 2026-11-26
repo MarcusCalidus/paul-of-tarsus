@@ -678,10 +678,11 @@ async function passage21(){if(F.passage)return goto21('write21');
   await goto21('write21');codeBtn()}
 /* back at his table: the field is still empty; the end */
 async function last21(){await say(CL,'clerk_the_field_is_still_empty',TC);return end21()}
-/* what comes next (27:1), from the narrator's scroll as the picture goes; then the end screen */
+/* what comes next (27:1), from the narrator's scroll as the picture goes; then the end screen, which leads on to Chapter Twenty-Two */
 async function end21(){await fade(1,700);await tell('n27');
-  endScreen({title:'to_caesar_2',text:'to_caesar_end',based:'based_on_acts_25_1_26_32',go:'click_to_return_to_the_title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+  endScreen({title:'to_caesar_2',text:'to_caesar_end',based:'based_on_acts_25_1_26_32',go:'click_to_continue_to_chapter_twenty_two',
+             code:['chapter_twenty_two_code_code',codeOf(22,0)]});
+  await wait(1500);ov.onclick=()=>{ov.onclick=null;startChapter(22)};await new Promise(()=>{})}
 /* the hidden treasure: the carter's ox goad, at the side of the court */
 async function goad21(){await say(PC(),'ox_goad_look');treasure()}
 
