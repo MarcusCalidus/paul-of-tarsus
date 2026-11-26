@@ -5397,8 +5397,8 @@
   if(stop==='rooms22'){clearInterval(sk);sk=0;await loadLevel(22);setChapter(22);ov.className='';ov.onclick=null;const C=CHAP[22],K=2,ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1);
     const V=[['quay22',[]],['myra22',upto('out')],['deck22',upto('cord')],['deck22',upto('shelter')],['deck22',upto('fh')],['storm22',upto('advised')],
       ['storm22',upto('skiff')],['storm22',upto('load3')],['storm22',upto('t6')],['tablet22',upto('load3').concat(['t1','t2','t3','m1a','m2b','m3a','m3b'])],['girded22',upto('skiff')]];
-    const pic=(id,fl,q,x,y)=>{for(const k in F)delete F[k];for(const k of fl)F[k]=1;G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
-      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
+    const pic=(id,fl,q,x,y)=>{for(const k in F)delete F[k];for(const k of fl)F[k]=1;G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');if(ART[id].behind)ART[id].behind(g,1000);g.drawImage(bg(id),0,0,W,144);
+      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000);ART[id].air&&ART[id].air(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
       q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
     const[c,g]=mk(320*K*2+8,Math.ceil(V.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
     V.forEach(([id,fl],i)=>pic(id,fl,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];if(SHARED.beat)SHARED.beat.stop();
