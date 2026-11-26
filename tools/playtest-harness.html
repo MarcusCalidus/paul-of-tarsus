@@ -777,7 +777,7 @@
       for(const[k,a,c]of[['dt',b.dt,sc.dt],['steps',b.steps,N],['group',J(b.group),J(sc.group)],['root',b.root,sc.root],['scale',J(b.scale),J(sc.scale)]])
         if(a!==c)keys.push(`chapter ${id}: ${k} is ${a} here and ${c} in its score`);
       if(b.tracks.length>4||b.tracks.length!==src.tracks.length||b.tracks.some(t=>t.moods||t.from!=null||t.loop!=null))keys.push(`chapter ${id}: more than four tracks, not one to each of src.tracks, or one with moods, from or loop`);
-      const A=evs(sc,src.mood,src.bar*N,len),B=evs(b,'none',0,len),hold=+(len*b.dt+.4).toFixed(4),key=e=>[e.s,e.inst,e.m,e.d,e.v].join(),by=(p,q)=>key(p)<key(q)?-1:1;
+      const A=evs(sc,src.mood,src.bar*N,len),B=evs(b,'none',0,len),hold=+(len*b.dt+.4).toFixed(4),key=e=>[e.s,e.inst,e.m,e.d,e.v].join(),by=(p,q)=>p.s-q.s||key(p).localeCompare(key(q));
       b.tracks.forEach((t,j)=>{const k=src.tracks[j],st=sc.tracks[k],nm=`chapter ${id}, track ${k} (${st.inst||(st.drum?'drum':'drone')})`,
           a=A.filter(e=>e.j===k).map(e=>st.drone&&e.d>hold?{...e,d:hold}:e).sort(by),c=B.filter(e=>e.j===j).sort(by);
         if(!a.length)notes.push(`${nm}: it plays nothing in bar ${src.bar} in the mood ${src.mood}`);
@@ -796,7 +796,7 @@
         'score(n, then) is a new score each call that plays its bar once and hands over to then, or to silence in the bar\'s key; len(n) is its length')}
     /* the sheet: a row to a chapter, its name and where the bar comes from at the left, its notes at the right */
     const COL={drone:'#8a8f98',oud:'#e08a3c',lyre:'#e8c547',harp:'#5cbf6a',ney:'#5aa6e8',aulos:'#e0524a',bass:'#a0663a',horn:'#c070d0'},NOTE=['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'],
-      SW=16,RH=86,LW=330,W=LW+20*SW+30,c=document.createElement('canvas');c.width=W;c.height=58+rows.length*RH;const g=c.getContext('2d');
+      SW=16,RH=86,LW=420,W=LW+20*SW+30,c=document.createElement('canvas');c.width=W;c.height=58+rows.length*RH;const g=c.getContext('2d');
     g.fillStyle='#1c1a22';g.fillRect(0,0,W,c.height);g.font='bold 15px Menlo,Consolas,monospace';g.fillStyle='#f4f0e6';g.fillText('One bar of each chapter\'s tune (shared/tunes.js): steps across, pitch up',10,24);
     {let x=10;g.font='12px Menlo,Consolas,monospace';for(const k of Object.keys(COL).concat('drum')){g.fillStyle=COL[k]||'#d8d0c0';g.fillRect(x,37,10,10);g.fillStyle='#d8d0c0';g.fillText(k,x+13,47);x+=g.measureText(k).width+26}}
     rows.forEach((R,ri)=>{const y0=58+ri*RH,b=R.b,len=b.bars*b.steps,ms=R.ev.filter(e=>e.m!=null).map(e=>e.m),lo=Math.min(...ms),hi=Math.max(...ms),k=Math.min(4,(RH-22)/(hi-lo+1));
