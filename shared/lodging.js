@@ -50,7 +50,10 @@
                        where the soldier can sit: door, table, window), desk (Paul's stool at the table), stand (where Paul stands
                        to talk with a visitor, and where a visitor stands before him)
      WALK              the walk strip [x0, x1, y0, y1]
-     HOURS, KINDS      the hours and the two kinds */
+     HOURS, KINDS      the hours and the two kinds
+     PLACES, OTHER     two lodgings that do not fit, for the search in Chapter Twenty-Four: room(g, {kind:'garret'}) and room(g,
+                       {kind:'small'}), at midday only, with light(kind), props(kind) and foot(kind) as above; PLACES[kind] holds each
+                       one's WALK, POS and AT (door: the landlord at the door, facing in; luke and brother: the two visitors before him) */
 SHARED.lodging=(()=>{
 "use strict";
 const WY=98,VX=168,HZ=76,WALK=[14,306,106,138];
@@ -90,7 +93,7 @@ function viewO(h){return OS[h]||(OS[h]={w:320,hz:HZ,hour:H_(h).sky,sun:H_(h).sp,
 function opening(W,f){f=f||.06;return{x0:W.x0,x1:W.x1,top:W.top,sill:W.sill!=null?W.sill:W.b,ox0:W.x0+(VX-W.x0)*f,ox1:W.x1+(VX-W.x1)*f,otop:W.top+(HZ-W.top)*f,osill:(W.sill!=null?W.sill:W.b)+(HZ-(W.sill!=null?W.sill:W.b))*f}}
 
 /* ---- the room ---- */
-function room(g,o){const kind=o.kind==='street'?'street':'flat',h=o.hour||'noon',night=h==='night',r=rng(2501),M=SHARED.materials,ST=stoolsOf(o.stools);
+function room(g,o){if(o.kind==='garret')return garret(g);if(o.kind==='small')return small(g);const kind=o.kind==='street'?'street':'flat',h=o.hour||'noon',night=h==='night',r=rng(2501),M=SHARED.materials,ST=stoolsOf(o.stools);
   const A=kind==='flat'?opening(POS.win):opening(POS.high),D=kind==='street'?opening(POS.wide,.04):null;
   /* the view beyond the openings, painted over the whole picture; the room is painted round it */
   if(kind==='flat')roofs(g,h,A);else{highSky(g,h,A);lane(g,h,D)}
@@ -134,14 +137,14 @@ function walls(g,kind,r,night){const M=SHARED.materials,c=C[kind];
   for(const[x,y,n]of kind==='flat'?[[30,14,3],[226,13,4]]:[[30,14,4],[160,12,3],[214,14,3]])M.crack(g,x,y,n,r,.45)}
 /* the flat's floor: planks laid across the room on the joists below, in courses that widen toward us; each board ends in a joint that
    stops inside its own course, and the joints of one course never meet those of the next */
-function planks(g,r){const n=8,y1=144,ys=[];for(let k=0;k<=n;k++)ys.push(WY+(y1-WY)*Math.pow(k/n,1.45));
+function planks(g,r,wood){const n=8,y1=144,ys=[];for(let k=0;k<=n;k++)ys.push(WY+(y1-WY)*Math.pow(k/n,1.45));
   const X=(u,y)=>VX+u*(y-HZ)/(y1-HZ);
   R(g,-2,WY,324,y1-WY,'#3a2818');
   let prev=[];
   for(let k=0;k<n;k++){const a=ys[k],b=ys[k+1],gap=Math.min(.5,.2+(b-a)*.04),cur=[],near=6*(144-HZ)/(a-HZ);let u=-600-r()*60;
     while(X(u,a)<330){let len=90+r()*80;
       /* a joint never comes within a few pixels of a joint of the course behind it */
-      for(let t=0;t<6&&prev.some(p=>Math.abs(p-(u+len))<near);t++)len+=near*1.2;cur.push(u+len);const c=tint('#8a6440',(r()-.5)*.22),P=[X(u,a)+gap,a+gap,X(u+len,a),a+gap,X(u+len,b),b,X(u,b)+gap,b];
+      for(let t=0;t<6&&prev.some(p=>Math.abs(p-(u+len))<near);t++)len+=near*1.2;cur.push(u+len);const c=tint(wood||'#8a6440',(r()-.5)*.22),P=[X(u,a)+gap,a+gap,X(u+len,a),a+gap,X(u+len,b),b,X(u,b)+gap,b];
       poly(g,P);g.fillStyle=lg(g,0,a,0,b,[tint(c,.1),c,tint(c,-.14)]);g.fill();
       clipTo(g,()=>poly(g,P),()=>{tex(g,'wood',.22,X(u,a)-4,a,X(u+len,b)-X(u,a)+8,b-a,'overlay',.5);
         for(let i=0;i<(b-a)*1.2;i++){const t=r(),yy=a+gap+t*(b-a-gap),x0=X(u+r()*len,yy),l=4+r()*18;R(g,x0,yy,l,.5,r()<.5?tint(c,-.18):tint(c,.12))}
@@ -352,7 +355,7 @@ function nightLight(g,kind,A){const N=POS.niche,nx=(N.x0+N.x1)/2,ny=N.b;
     poly(l,[A.ox0,A.otop,A.x1,A.otop,A.x1,A.osill,A.ox0,A.osill],'#d8dcf0');pool(l,(A.x0+A.x1)/2,(A.top+A.sill)/2,60,24,'#5a66a0',.3);
     l.fillStyle=lg(l,0,0,0,18,['rgba(10,8,16,.5)','rgba(10,8,16,0)']);l.fillRect(0,0,320,18);
     ao(l,0,0,40,144,'l',.35,'#0a0810');ao(l,280,0,40,144,'r',.3,'#0a0810')})}
-function light(kind,h){const H=H_(h);
+function light(kind,h){const H=H_(h);if(LIGHT2[kind])return Object.assign({},LIGHT2[kind],{sun:LIGHT2[kind].sun.slice()});
   if(h==='night'){const N=POS.niche,nx=(N.x0+N.x1)/2,
       wall=kind==='flat'?[[0,POS.win.x0-3,WY,10],[POS.win.x1+3,POS.door.x0-4,WY,10],[POS.door.x1+4,320,WY,10]]:[[0,320,WY,10]];
     return{amb:H.amb,wallY:WY,wall,lamps:[[nx,92,120,'#7a5220',WY,POS.niche.b-1]]}}
@@ -466,15 +469,205 @@ function basket(g,B,h,r){const{x,y}=B,w=6,hh=7;sh(g,x+.5,y-.3,w+1,1,.5);
   clipTo(g,()=>poly(g,P),()=>{for(let yy=y-hh+.6;yy<y;yy+=1.1)R(g,x-w,yy,w*2,.5,'rgba(60,40,20,.35)');tex(g,'mott',.4,x-w,y-hh,w*2,hh,'overlay',1);
     g.fillStyle=lg(g,x-w,0,x+w,0,['rgba(255,230,180,.2)','rgba(0,0,0,0)','rgba(30,20,20,.3)']);g.fillRect(x-w,y-hh,w*2,hh)});
   R(g,x-w-.3,y-hh-.4,w*2+.6,.9,'#b8945a')}
+/* ---- two lodgings that do not fit (Chapter Twenty-Four: the search) ---- */
+/* Luke and a brother of Rome look at four lodgings: the two above fit, and these two do not. They are smaller, plainer pictures in the
+   same manner and from the same viewpoint (the same horizon, vanishing point and foot of the back wall), at midday only:
+     'garret'  a room under the roof, three flights up: the roof comes down to the left over it, its rafters running with the slope, one
+               way only, and a low wall at the left where the pallet lies on the bare boards; one small square window with sky; at the
+               right a doorway without its leaf (it stands open outward) on the head of a steep stair: the landing, the well going
+               down beside it with its top steps, and the rail on its post. It is roomy enough: what is wrong with it is the stairs
+     'small'   a clean, decent room at street level, simply too small: the side walls close in on either hand; one short bench, a
+               stool, a small table, a small window high in the wall and the door to the street, its leaf standing open into the room.
+               No more than four could sit in it
+   Each has its own table of places (PLACES[kind]: WALK, POS, AT with door, where the landlord stands at the door facing in, and luke
+   and brother, where the two visitors stand before him); room(), light(), props() and foot() take the kind as for the other two. */
+const GCL=x=>66-.1875*x;                          /* the garret: where the underside of its roof meets the back wall */
+const BOX={x0:92,x1:228,top:30};                  /* the small room: its back wall; its side walls and ceiling run from these edges toward us */
+const PLACES={
+  garret:{WALK:[44,300,106,138],
+    POS:{door:{x0:270,x1:294,top:48,b:WY},win:{x0:186,x1:200,top:44,sill:58},pallet:{x0:14,x1:72,top:101,foot:109},jug:{x:84,y:103},landing:282},
+    AT:{door:[262,108,-1],luke:[234,116,1],brother:[212,124,1]}},
+  small:{WALK:[72,242,106,136],
+    POS:{door:{x0:194,x1:218,top:46,b:WY},high:{x0:122,x1:144,top:38,sill:50},bench:{x0:98,x1:140,top:93,foot:102},
+      table:{x0:96,x1:122,top:110,back:105,foot:122,bfoot:117},stool:{x:134,y:126},leaf:{x:218,near:233}},
+    AT:{door:[206,108,-1],luke:[180,116,1],brother:[158,124,1]}}};
+const LIGHT2={garret:{amb:'#eadfd4',sun:[3,7,.3],wallY:WY},small:{amb:'#f2e8dc',sun:[3,7,.34],wallY:WY}};
+/* the room's own light by day: indoors, lighter round the opening that lets the most in, darker toward the corners and the ceiling */
+function shadeAround(g,lx,rad,a,holes){g.save();g.beginPath();g.rect(-4,-4,328,152);for(const h of holes)g.rect(...h);g.clip('evenodd');
+  shade(g,[0,0,320,0,320,144,0,144],'#b4a4a8',.48);
+  comp(g,'multiply',a,()=>{g.fillStyle=rg(g,lx,92,rad,['#ffffff','#e4d6d2','#9c8aa8','#6e6080']);g.fillRect(0,0,320,144)});
+  comp(g,'screen',.12,()=>{g.fillStyle=rg(g,lx,WY+6,80,['#fff0dc','rgba(255,240,220,0)']);g.fillRect(0,0,320,144)});
+  comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,0,0,0,WY,['#8a7a98','#e8dcd8','#ffffff']);g.fillRect(0,0,320,WY)});g.restore()}
+/* the patch of midday sun that an opening throws on the floor (as patch above), and a faint shaft of it in the air */
+function sunIn(g,ops,front){const[dx,dy]=H_('noon').sun,ux=dx/46,uy=dy/46,warm='rgba(255,238,204,1)';
+  for(const[x0,x1,top,sill,k]of ops){const P=(x,q)=>[x+q*ux,WY+q*uy],Q=[...P(x0,WY-sill),...P(x1,WY-sill),...P(x1,WY-top),...P(x0,WY-top)];
+    g.save();g.beginPath();g.rect(-4,WY,328,60);if(front)front(g);g.clip('evenodd');
+    for(const[d,a]of[[3,.18],[1.6,.22],[0,.3]])comp(g,'soft-light',a*2*k,()=>poly(g,[Q[0]-d,Q[1]-d*.4,Q[2]+d,Q[3]-d*.4,Q[4]+d,Q[5]+d*.6,Q[6]-d,Q[7]+d*.6],warm));
+    comp(g,'screen',.42*k,()=>poly(g,Q,warm));g.restore();
+    comp(g,'screen',.05*k,()=>{poly(g,[x0,top,x1,top,Q[4],Q[5],Q[6],Q[7]]);g.fillStyle=lg(g,0,top,0,Q[5],[warm,'rgba(255,236,200,.1)']);g.fill()})}}
+
+/* the garret */
+function garret(g){const r=rng(2561),M=SHARED.materials,P=PLACES.garret.POS,D=P.door,A=opening(P.win,.08);
+  const O=Object.assign({},viewO('noon'),{seed:2563,y1:A.osill+1});O.L=null;SHARED.coast.light(O);SHARED.coast.sky(g,O);
+  stairHead(g,D,P.landing,r);
+  g.save();g.beginPath();g.rect(-4,-4,328,152);g.rect(A.ox0,A.otop,A.x1-A.ox0,A.osill-A.otop);g.rect(D.x0,D.top,D.x1-D.x0,WY-D.top);g.clip('evenodd');
+  /* the back wall: old limewash, plain, stained under the roof */
+  plaster(g,0,0,320,WY,'#d6c6a8',r,{patch:0,cracks:0,t:.45,top:.02,bot:-.06,brick:'#a0603e',rubble:0});
+  SHARED.temple.age(g,0,4,320,WY-4,rng(2566),.5);
+  g.fillStyle=lg(g,0,WY-14,0,WY,['rgba(110,90,70,0)','rgba(110,90,70,.18)']);g.fillRect(0,WY-14,320,14);
+  for(const[x,y,n]of[[40,62,3],[236,30,4],[120,50,3]])M.crack(g,x,y,n,r,.45);
+  roof(g,r);
+  planks(g,r,'#7e6a52');
+  ao(g,0,WY,320,5,'t',.3,'#3a2c30');R(g,0,WY-.4,320,.8,'rgba(60,44,50,.35)');
+  g.restore();
+  windowFrame(g,A,'noon',0);
+  doorFrame(g,D,r);
+  pallet(g,P.pallet,r);
+  vessel(g,P.jug.x,P.jug.y,3,6.4,'#9a5a36','jug',{noShadow:1});sh(g,P.jug.x+.5,P.jug.y,3.4,.8,.55);cast(g,P.jug.x-2,P.jug.x+2,P.jug.y,6,'noon');
+  shadeAround(g,(A.x0+A.x1)/2,230,.6,[[A.ox0,A.otop,A.x1-A.ox0,A.osill-A.otop],[D.x0,D.top,D.x1-D.x0,WY-D.top]]);
+  /* darker under the low end of the roof */
+  comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,0,0,120,0,['#6e6080','rgba(255,255,255,0)']);poly(g,[0,0,120,0,120,144,0,144]);g.fill()});
+  sunIn(g,[[A.x0,A.x1,A.top,A.sill,.9]],q=>{const B=P.pallet;q.rect(B.x0,B.top-3,B.x1-B.x0,B.foot-B.top+3)})}
+/* the underside of the roof: boards that run with the slope, the wall plate along the top of the back wall, and the rafters, each a beam
+   whose face toward us shows below the boards; they lie parallel to the picture, so that they run as parallel bands, spaced wider as they
+   come nearer, and nothing crosses them */
+function roof(g,r){const M=SHARED.materials,P=[-4,-4,324,-4,324,GCL(324),-4,GCL(-4)],H=HZ-GCL(VX),k=-.1875;
+  poly(g,P,'#3e2e20');clipTo(g,()=>poly(g,P),()=>{
+    for(let o=0;o<90;o+=2.6){const c=tint('#3e2e22',(r()-.5)*.2),y0=GCL(-4)-o;poly(g,[-4,y0-2.6,324,y0-2.6+k*328,324,y0+k*328,-4,y0],c);
+      for(let i=0;i<8;i++){const x=r()*320,l=6+r()*24;stroke(g,[x,y0-1.3+k*(x+4),x+l,y0-1.3+k*(x+l+4)],rgba(tint(c,r()<.5?-.25:.2),.5),.5)}}
+    for(const s of[1.18,1.42,1.74,2.16,2.8]){const off=(s-1)*H,t=2.4*s,b=1.1*s,yb=x=>GCL(x)-off;
+      comp(g,'multiply',.35,()=>poly(g,[-4,yb(-4)+b,324,yb(324)+b,324,yb(324)+b+1.6*s,-4,yb(-4)+b+1.6*s],'#2a1a14'));
+      const F=[-4,yb(-4)-t,324,yb(324)-t,324,yb(324),-4,yb(-4)];poly(g,F,'#7a5a3a');clipTo(g,()=>poly(g,F),()=>tex(g,'wood',.25,-4,yb(324)-t,328,yb(-4)-yb(324)+t,'overlay',.5));
+      poly(g,[-4,yb(-4),324,yb(324),324,yb(324)+b,-4,yb(-4)+b],'#8a6a48');stroke(g,[-4,yb(-4)-t+.25,324,yb(324)-t+.25],'rgba(30,20,14,.5)',.5)}});
+  /* the wall plate on top of the back wall, and the shade it throws on the wall under it */
+  const pl=[-4,GCL(-4)-2.6,324,GCL(324)-2.6,324,GCL(324)+.4,-4,GCL(-4)+.4];poly(g,pl,'#5e4630');stroke(g,[-4,GCL(-4)+.15,324,GCL(324)+.15],'#8a6a48',.5);
+  comp(g,'multiply',.4,()=>{poly(g,[-4,GCL(-4)+.4,324,GCL(324)+.4,324,GCL(324)+5,-4,GCL(-4)+5]);g.fillStyle=lg(g,0,GCL(160),0,GCL(160)+5,['#3a2a30','rgba(255,255,255,0)']);g.fill()})}
+/* the doorway of the garret: rough jambs and a lintel of timber, a worn threshold board; no leaf (it opens outward onto the landing) */
+function doorFrame(g,D,r){const M=SHARED.materials,w=D.x1-D.x0,h=WY-D.top;
+  M.board(g,D.x0-4,D.top-4,w+8,4,'#5e4630',r);R(g,D.x0-4,D.top-4,w+8,.5,'rgba(255,230,190,.3)');R(g,D.x0-4,D.top-.5,w+8,.5,'rgba(30,20,14,.5)');
+  for(const[x,s]of[[D.x0-4,1],[D.x1,-1]]){M.plank(g,x,D.top,4,h,'#6a4e34',r,1);R(g,s>0?x:x+3.5,D.top,.5,h,'rgba(255,230,190,.3)');R(g,s>0?x+3.5:x,D.top,.5,h,'rgba(30,20,14,.45)')}
+  R(g,D.x0-4,WY-1.2,w+8,1.8,'#7a6046');R(g,D.x0-4,WY-1.2,w+8,.5,'#a88a64')}
+/* beyond the doorway: the landing at the right, its boards, and at the left the well of the stair going down along the far wall, so
+   steep that each step drops nearly as far as it goes: its two top steps in profile, the dark below them, and the rail that follows
+   them down from a post at the landing's edge. Lit only from the stair below and from our room */
+function stairHead(g,D,lx,r){const LF=90,M=SHARED.materials;
+  inRect(g,D.x0,D.top,D.x1-D.x0,WY-D.top,()=>{
+    plaster(g,D.x0-2,D.top-2,D.x1-D.x0+4,WY-D.top+2,'#9a8a74',r,{patch:0,cracks:0,t:.45});
+    /* the landing */
+    R(g,lx,LF,D.x1-lx+1,WY-LF,'#6a5640');tex(g,'wood',.3,lx,LF,D.x1-lx+1,WY-LF,'overlay',.5);R(g,lx,LF,D.x1-lx+1,.5,'rgba(255,230,190,.2)');
+    ao(g,lx,LF-4,D.x1-lx,4,'b',.3,'#2a1c20');
+    /* the well: the far wall goes on down past the landing and darkens */
+    comp(g,'multiply',.85,()=>{g.fillStyle=lg(g,0,LF-10,0,WY,['rgba(255,255,255,1)','#3a2e34']);g.fillRect(D.x0,LF-10,lx-D.x0,WY-LF+10)});
+    /* the top steps, in profile against the far wall: each tread 2.4 deep and 2.2 lower than the last */
+    let x=lx,y=LF;const S=[x,y];for(let k=0;k<6;k++){y+=2.2;S.push(x,y);x-=2.4;S.push(x,y)}S.push(x,WY+2,lx,WY+2);
+    poly(g,S,'#3e2e22');for(let k=0,x=lx,y=LF;k<6;k++){y+=2.2;x-=2.4;R(g,x,y,2.4,.6,'#9a7a56');R(g,x+2.4-.5,y-2.2,.5,2.2,'#2a1c14')}
+    R(g,lx-.6,LF,.6,WY-LF,'#2a1c14');
+    /* the rail: from the top of a post at the landing's edge down along the steps, at the slope of the stair */
+    const pt=LF-15;R(g,lx-1,pt,2,LF-pt,'#5e4630');R(g,lx-1,pt,.5,LF-pt,'#8a6a48');
+    stroke(g,[lx-1,pt+1.2,D.x0-6,pt+1.2+(lx-1-D.x0+6)*2.2/2.4],'#6e5236',1.2);stroke(g,[lx-1,pt+.8,D.x0-6,pt+.8+(lx-1-D.x0+6)*2.2/2.4],'rgba(200,160,110,.5)',.4);
+    /* the doorway's own shade over all of it: dim beside the bright room */
+    comp(g,'multiply',.45,()=>{g.fillStyle='#7a7090';g.fillRect(D.x0,D.top,D.x1-D.x0,WY-D.top)})})}
+/* the pallet: a thick mat of straw in a ticking of coarse linen, low on the boards under the slope of the roof, a folded blanket at its
+   foot */
+function pallet(g,B,r){const len=B.x1-B.x0,mid=B.top+3.6;
+  cast(g,B.x0+1,B.x1,B.foot-.4,4,'noon');sh(g,(B.x0+B.x1)/2+1,B.foot-.6,len/2+1,1.4,.55);
+  const top=x=>B.top+.4*Math.sin((x-B.x0)/7)+.3*Math.sin((x-B.x0)/2.9),P=[B.x0+.6,B.foot,B.x0,mid,B.x0+1.6,B.top+.6];
+  for(let x=B.x0+3;x<=B.x1-3;x+=1)P.push(x,top(x));P.push(B.x1-1.4,B.top+.6,B.x1,mid,B.x1-.6,B.foot);
+  poly(g,P);g.fillStyle=lg(g,0,B.top,0,B.foot,['#d8c8a0','#c4b088','#8e7c5c']);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.45,B.x0,B.top-1,len,B.foot-B.top+1,'overlay',1);
+    for(let y=mid+.6;y<B.foot;y+=1.1)R(g,B.x0,y,len,.4,'rgba(110,90,60,.3)');
+    for(let i=0;i<30;i++)R(g,B.x0+r()*len,B.top+.6+r()*3,1+r()*2,.5,r()<.5?'rgba(120,100,60,.35)':'rgba(255,246,214,.3)');
+    R(g,B.x0,mid-.3,len,.6,'rgba(90,70,50,.35)')});
+  const b0=B.x1-20,b1=B.x1-2,c0='#7a5a44';
+  for(let j=2;j>=0;j--){const y0=B.top-1.4+j*1.5,y1=y0+1.8,Q=[b0+j*.4,y1,b0+j*.4-.2,y0+.6,b0+j*.4+.8,y0];for(let x=b0+3;x<=b1-2;x+=2)Q.push(x,y0+.15*Math.sin(x/2.3+j));Q.push(b1+.2,y0+.5,b1+.4,y1);
+    poly(g,Q);g.fillStyle=lg(g,0,y0,0,y1,[tint(c0,.12-j*.06),tint(c0,-.1-j*.06)]);g.fill();R(g,b0+j*.4+.4,y0,b1-b0-1,.5,rgba(tint(c0,.4),.5))}}
+
+/* the small room */
+function small(g){const r=rng(2571),M=SHARED.materials,P=PLACES.small.POS,D=P.door,A=opening(P.high,.08),B=BOX,f=(HZ-B.top);
+  const LW=[B.x0,B.top,VX+(B.x0-VX)*HZ/f,0,-4,0,-4,HZ+(WY-HZ)*(-4-VX)/(B.x0-VX),B.x0,WY],RW=[B.x1,B.top,VX+(B.x1-VX)*HZ/f,0,324,0,324,HZ+(WY-HZ)*(324-VX)/(B.x1-VX),B.x1,WY],
+    CE=[B.x0,B.top,B.x1,B.top,RW[2],0,LW[2],0],FL=[B.x0,WY,B.x1,WY,324,RW[7],324,150,-4,150,-4,LW[7]];
+  const O=Object.assign({},viewO('noon'),{seed:2573,y1:A.osill+1});O.L=null;SHARED.coast.light(O);SHARED.coast.sky(g,O);
+  street(g,D,r);
+  g.save();g.beginPath();g.rect(-4,-4,328,152);g.rect(A.ox0,A.otop,A.x1-A.ox0,A.osill-A.otop);g.rect(D.x0,D.top,D.x1-D.x0,WY-D.top);g.clip('evenodd');
+  /* the walls: clean limewash with a socle of red ochre, the back wall and both side walls; the side walls in perspective */
+  const c='#e2d6be',sock=86,sl=(x,y,bx)=>HZ+(y-HZ)*(x-VX)/(bx-VX);
+  plaster(g,-4,-4,328,WY+4,c,r,{patch:0,cracks:0,t:.3,top:.03,bot:-.04,brick:'#a0603e',rubble:0});SHARED.temple.age(g,0,8,320,WY,rng(2576),.25);
+  R(g,B.x0,sock,B.x1-B.x0,WY-sock,OCHRE);
+  for(const[W,bx,x1]of[[LW,B.x0,-4],[RW,B.x1,324]]){clipTo(g,()=>poly(g,W),()=>{plaster(g,-4,-4,328,150,c,r,{patch:0,cracks:0,t:.35});poly(g,[bx,sock,x1,sl(x1,sock,bx),x1,sl(x1,WY,bx),bx,WY],OCHRE)})}
+  /* the socle's lit top edge, on the back wall and along each side wall */
+  R(g,B.x0,sock-.6,B.x1-B.x0,.8,'#6a3424');for(const[bx,x1]of[[B.x0,-4],[B.x1,324]])stroke(g,[bx,sock-.2,x1,sl(x1,sock,bx)-.2],'#6a3424',.8);
+  clipTo(g,()=>{poly(g,[B.x0,sock,B.x1,sock,B.x1,WY,B.x0,WY]);poly(g,[B.x0,sock,-4,sl(-4,sock,B.x0),-4,sl(-4,WY,B.x0),B.x0,WY]);poly(g,[B.x1,sock,324,sl(324,sock,B.x1),324,sl(324,WY,B.x1),B.x1,WY])},()=>tex(g,'mott',.45,-4,40,328,110,'overlay',1));
+  /* the ceiling: boards, three joists running toward us, the plate along the top of the back wall */
+  clipTo(g,()=>poly(g,CE),()=>{R(g,-4,-4,328,B.top+4,'#3e2e20');tex(g,'wood',.25,-4,0,328,B.top,'overlay',.5);
+    for(const a of[116,150,184]){const k=HZ/f,J=[a,B.top,a+5,B.top,VX+(a+5-VX)*k,0,VX+(a-VX)*k,0];poly(g,J,'#62482e');poly(g,[a,B.top,a+1.4,B.top,VX+(a+1.4-VX)*k,0,VX+(a-VX)*k,0],'#3a2a1e')}
+    M.board(g,B.x0,B.top-2.4,B.x1-B.x0,2.4,'#6a4e2c',r)});
+  /* the corners where the walls meet: a soft shade along each */
+  for(const W of[LW,RW])comp(g,'multiply',.5,()=>poly(g,W,W===LW?'#c4b8c4':'#a89cb0'));
+  for(const x of[B.x0,B.x1])R(g,x-.4,B.top,.8,WY-B.top,'rgba(60,44,50,.35)');
+  for(const[x,y]of[[150,34],[110,60]])M.crack(g,x,y,3,r,.35);
+  /* the floor: stone flags, swept */
+  clipTo(g,()=>poly(g,FL),()=>{pave(g,-4,WY,324,150,'#cabea6',r,{vx:VX,vy:HZ,rows:5,step:30,v:.06,t:.3,rand:0});pool(g,200,112,60,10,'#ece0c8',.1,'screen')});
+  ao(g,B.x0,WY,B.x1-B.x0,4,'t',.3,'#3a2c30');for(const[bx,x1]of[[B.x0,-4],[B.x1,324]])stroke(g,[bx,WY,x1,sl(x1,WY,bx)],'rgba(60,44,50,.45)',.8);
+  g.restore();
+  windowFrame(g,A,'noon',0);
+  smallDoor(g,D,P.leaf,r);
+  bench(g,P.bench,'noon',r);
+  smallTable(g,P.table,r);
+  stoolShadow(g,P.stool.x,P.stool.y,'noon');
+  shadeAround(g,(D.x0+D.x1)/2,210,.55,[[A.ox0,A.otop,A.x1-A.ox0,A.osill-A.otop],[D.x0,D.top,D.x1-D.x0,WY-D.top]]);
+  sunIn(g,[[A.x0,A.x1,A.top,A.sill,.8],[D.x0,D.x1,D.top,WY,.8]],q=>{const T=P.table;q.rect(T.x0,T.back,T.x1-T.x0,T.foot-T.back)});
+  stool(g,P.stool,'small','noon')}
+/* the small room's door to the street: a frame of dressed stone, the leaf of upright planks standing open into the room against the
+   right hand, hinged at the doorway's right side and seen in perspective, its near edge toward us */
+function smallDoor(g,D,L,r){const M=SHARED.materials,c='#e2d6be',w=D.x1-D.x0,h=WY-D.top;
+  SHARED.temple.stone(g,D.x0-4,D.top-5,w+8,5,rng(2578),{bh:5,bw:w+8,c:tint(c,.02),v:.05,age:.3});R(g,D.x0-4,D.top-5,w+8,.5,'rgba(255,246,226,.5)');R(g,D.x0-4,D.top-.5,w+8,.6,'rgba(50,36,40,.45)');
+  for(const x of[D.x0-4,D.x1+1]){R(g,x,D.top,3,h,tint(c,-.02));tex(g,'mott',.35,x,D.top,3,h,'overlay',1);R(g,x,D.top,.5,h,'rgba(255,246,226,.4)');R(g,x+2.5,D.top,.5,h,'rgba(60,44,50,.3)')}
+  R(g,D.x0-1,WY-1,w+2,1.4,tint(c,-.08));R(g,D.x0-1,WY-1,w+2,.5,'rgba(255,246,226,.4)');
+  /* the leaf: its far edge at the hinge, its near edge nearer and so taller; its boards upright, their joints upright too */
+  const s=(L.near-VX)/(L.x-VX),x0=L.x+1,top0=D.top,b0=WY,x1=L.near,top1=HZ-(HZ-D.top)*s,b1=HZ+(WY-HZ)*s,F=[x0,top0,x1,top1,x1,b1,x0,b0];
+  comp(g,'multiply',.3,()=>poly(g,[x0,b0,x1,b1,x1+3,b1+.6,x0+2,b0+.2],'#3a2c40'));
+  poly(g,F,'#6a4c32');clipTo(g,()=>poly(g,F),()=>{for(let i=0;i<4;i++){const t0=i/4,t1=(i+1)/4,xa=x0+(x1-x0)*t0,xb=x0+(x1-x0)*t1;
+      poly(g,[xa,top0+(top1-top0)*t0,xb,top0+(top1-top0)*t1,xb,b0+(b1-b0)*t1,xa,b0+(b1-b0)*t0],tint('#6a4c32',[-.02,.06,-.05,.03][i]));if(i)stroke(g,[xa,top0+(top1-top0)*t0,xa,b0+(b1-b0)*t0],'rgba(30,18,12,.5)',.5)}
+    tex(g,'wood',.3,x0,top1,x1-x0,b1-top1,'overlay',.5);g.fillStyle=lg(g,x0,0,x1,0,['rgba(30,20,20,.35)','rgba(255,230,190,.1)']);g.fillRect(x0,top1,x1-x0,b1-top1)});
+  R(g,x1-.6,top1,.6,b1-top1,'#3a2618');R(g,x1-1.2,top1,.5,b1-top1,'rgba(255,230,190,.3)');sh(g,(x0+x1)/2+1,(b0+b1)/2+.4,(x1-x0)/2+1,1,.45)}
+/* through the door: the lane outside, the house front opposite in its own shade, a shuttered window and a door in it, and the paving
+   between, the midday sun on it from our threshold to the shade of the houses */
+function street(g,D,r){const F=84;
+  inRect(g,D.x0,D.top,D.x1-D.x0,WY-D.top,()=>{const x0=D.x0,x1=D.x1;
+    plaster(g,x0-2,D.top-2,x1-x0+4,F-D.top+2,'#d2b692',r,{patch:0,cracks:0,t:.45,brick:'#a0603e'});
+    R(g,x0-2,60,x1-x0+4,2.4,'#a85e40');R(g,x0-2,60,x1-x0+4,.5,'rgba(255,220,190,.3)');
+    R(g,x0+4,48,7,8,'#3a2c2a');R(g,x0+11,48,3.4,8,'#7a5a3a');R(g,x0+4,56,7,.8,'#c8b090');
+    R(g,x0+15,68,7,F-68,'#4a3424');R(g,x0+15,68,7,.6,'#2a1c14');
+    comp(g,'multiply',.32,()=>{g.fillStyle='#7a86b0';g.fillRect(x0,D.top,x1-x0,F-D.top)});
+    pave(g,x0-2,F,x1+2,WY+.4,'#c8bca2',r,{vx:VX,vy:HZ,rows:3,step:36,v:.06,t:.34,rand:0});ao(g,x0,F,x1-x0,3,'t',.3,'#3a3048');
+    const ys=F+(WY-F)*.3;comp(g,'multiply',.4,()=>{g.fillStyle='#8a90b4';g.fillRect(x0,F,x1-x0,ys-F)});
+    comp(g,'screen',.22,()=>{g.fillStyle='#fff4e0';g.fillRect(x0,ys,x1-x0,WY-ys)});R(g,x0,ys,x1-x0,.5,'rgba(255,240,210,.25)')})}
+/* the small table: a plain top on four legs at its corners, bare */
+function smallTable(g,T,r){const M=SHARED.materials,W='#7a5838',lit='#a47a50',ap=2,ft=T.foot,bf=T.bfoot,f0=T.x0,f1=T.x1,b0=T.x0+2,b1=T.x1-2;
+  cast(g,f0,f1,ft,ft-T.top,'noon',1.5);sh(g,(f0+f1)/2,ft-2,(f1-f0)/2+2,3,.42);
+  comp(g,'multiply',.6,()=>{g.fillStyle=lg(g,0,T.back,0,ft,['#5a4a62','#8a7a88']);poly(g,[b0,T.back,b1,T.back,f1,ft-.5,f0,ft-.5]);g.fill()});
+  for(const x of[b0+.6,b1-2])R(g,x,T.back+1,1.4,bf-T.back-1,tint(W,-.4));
+  const top=[b0,T.back,b1,T.back,f1,T.top,f0,T.top];poly(g,top);g.fillStyle=lg(g,0,T.back,0,T.top,[tint(W,.12),tint(W,.24)]);g.fill();
+  clipTo(g,()=>poly(g,top),()=>tex(g,'wood',.3,f0,T.back,f1-f0,T.top-T.back,'overlay',.5));
+  M.board(g,f0,T.top,f1-f0,ap,W,r);R(g,f0,T.top,f1-f0,.5,lit);ao(g,f0,T.top+ap,f1-f0,3,'t',.35,'#1a1210');
+  for(const x of[f0+.4,f1-2.4]){R(g,x,T.top+ap,2,ft-T.top-ap,tint(W,-.12));R(g,x,T.top+ap,.5,ft-T.top-ap,'rgba(255,220,170,.22)');R(g,x,ft-.5,2,.5,'#24160c');sh(g,x+1,ft,1.4,.5,.4)}}
+
 /* ---- for the chapter ---- */
 /* the things that stand in the walk strip, cut out of the backdrop (ART[id].props), each with its footprint */
-function props(kind,stools){const T=POS.table,S=POS.stools,P=[];
+function props(kind,stools){if(kind==='garret'){const B=PLACES.garret.POS.pallet;
+    return[{y:B.foot,shape(g){R(g,B.x0,B.top-3,B.x1-B.x0,B.foot-B.top+3,'#000')},foot:[B.x0,B.foot-4,B.x1-B.x0,5]}]}
+  if(kind==='small'){const T=PLACES.small.POS.table,s=PLACES.small.POS.stool;
+    return[{y:T.foot,shape(g){poly(g,[T.x0+2,T.back,T.x1-2,T.back,T.x1,T.top,T.x1,T.foot,T.x0,T.foot,T.x0,T.top],'#000')},foot:[T.x0-1,T.bfoot-1,T.x1-T.x0+2,T.foot-T.bfoot+2]},
+      {stool:'small',y:s.y,shape(g){R(g,s.x-5,s.y-10.6,10,10.6,'#000')},foot:[s.x-5,s.y-3,10,4]}]}
+  const T=POS.table,S=POS.stools,P=[];
   P.push({y:T.foot,shape(g){poly(g,[T.x0+3,T.back,T.x1-3,T.back,T.x1,T.top,T.x1,T.foot,T.x0,T.foot,T.x0,T.top],'#000')},foot:[T.x0-1,T.bfoot-1,T.x1-T.x0+2,T.foot-T.bfoot+2]});
   for(const k of stoolsOf(stools)){const s=S[k];P.push({stool:k,y:s.y,shape(g){R(g,s.x-5,s.y-10.6,10,10.6,'#000')},foot:[s.x-5,s.y-3,10,4]})}
   return P}
-function foot(kind,stools){const B=POS.bed,J=POS.jar,out=[[B.x0,B.foot-4,B.x1-B.x0,5],[J.x0-1,J.foot-3,J.x1-J.x0+2,4]];
+function foot(kind,stools){if(kind==='small'){const b=PLACES.small.POS.bench;return[[b.x0,b.foot-4,b.x1-b.x0,5]].concat(props(kind).map(p=>p.foot))}
+  if(kind==='garret')return props(kind).map(p=>p.foot);
+  const B=POS.bed,J=POS.jar,out=[[B.x0,B.foot-4,B.x1-B.x0,5],[J.x0-1,J.foot-3,J.x1-J.x0+2,4]];
   for(const b of POS.benches)out.push([b.x0,b.foot-4,b.x1-b.x0,5]);return out.concat(props(kind,stools).map(p=>p.foot))}
 function motion(o){const night=o.hour==='night',N=POS.niche;
   return{draw(g,t){if(night)flame(g,N.x0+(N.x1-N.x0)*.46+3.8,N.b-2.4,t)}}}
 
-return{room,light,motion,props,foot,stoolCast,POS,AT,WALK,HOURS,KINDS,STOOLS,WY,HZ,VX}})();
+return{room,light,motion,props,foot,stoolCast,POS,AT,WALK,HOURS,KINDS,STOOLS,PLACES,OTHER:['garret','small'],WY,HZ,VX}})();
