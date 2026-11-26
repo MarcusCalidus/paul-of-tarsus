@@ -408,7 +408,7 @@
      whole, in each language (de:lookback): no two roads on it cross, no name crosses a coast, an island, a lake or a road, no two names
      touch, every name and every lit place lies inside the window, and the light stands where its last part ended (shown up to each part
      in turn, too). A map whose places or window are not on the travel map yet (the voyage on from Malta, the window east) is skipped and
-     named, so that the check tightens by itself when they come. It hands over lookback.png (de-lookback.png): every map at 2x, three
+     named, so that the check tightens by itself when they come. It hands over lookback-maps.png (de-lookback-maps.png): every map at 2x, three
      to a row, for the cross-shape check. */
   if(stop==='lookback'){clearInterval(sk);sk=0;await need('map');const LB=await need('lookback');ov.className='';ov.onclick=null;G.busy=true;lock(true);status();
     const M=SHARED.map,J=LB.JOURNEYS,cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let k=0;
@@ -431,7 +431,7 @@
     L((skipped.length?'note ':'ok   ')+'lookback: '+(skipped.length?'skipped, until the travel map has them: '+skipped.join(' | '):'every map was shown'));
     halt('lookback',()=>{const z=document.createElement('canvas'),C=3,R=Math.ceil(shots.length/C);z.width=C*640+(C-1)*8;z.height=R*288+(R-1)*8;const g=z.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,z.width,z.height);
       shots.forEach((k,i)=>g.drawImage(k,(i%C)*648,Math.floor(i/C)*296));
-      window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'lookback']:z.toDataURL()})})}
+      window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'lookback-maps']:z.toDataURL()})})}
   /* A figure bound with a belt (a.bound; person's fr -6): Agabus binds his own feet and hands with Paul's belt (Acts 21:11). For every look
      of Chapters Three, Sixteen and Seventeen (if it is there) and the usual kinds of dress, facing both ways: each pose is one piece, and
      a.bound seats an actor bound, keeps him from turning, and lets him go when it is cleared. cast-bound.png shows them three times

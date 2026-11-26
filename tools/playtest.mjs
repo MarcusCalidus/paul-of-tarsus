@@ -10,7 +10,7 @@
 //   node tools/playtest.mjs lanesall         the lane map (shared/lanes.js) on Chapter Fourteen's Ephesus; lanes, lanes2, lanesfolk and lanesmap are its pictures
 //   node tools/playtest.mjs phoneall         the phone layout, on a phone held sideways (phone, phonetitle, phonezoom, phonechoice, phoneclose, phonemenu ... are its pictures)
 //   node tools/playtest.mjs shadows          cast & contact shadows across single-lamp, multi-lamp, pitch-dark and wall-crease rooms (saves cast-shadows and room sheets)
-//   node tools/playtest.mjs lookback de:lookback   the journeys of the look back (shared/lookback.js): every chapter once, no road crossing, no name across a line (saves lookback.png)
+//   node tools/playtest.mjs lookback de:lookback   the journeys of the look back (shared/lookback.js): every chapter once, no road crossing, no name across a line (saves lookback-maps.png)
 // It first checks the translations against the English text (tools/strings.mjs), and that every picture in docs/screenshots is listed
 // with its stop in tools/screenshots.txt (tools/retake.mjs takes the pictures again from that list).
 // Screenshots go to tools/out/ (or $SHOTS). Set $CHROME to use another Chromium-based browser.
