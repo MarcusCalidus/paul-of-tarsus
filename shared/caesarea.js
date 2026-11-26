@@ -325,32 +325,34 @@ function door(g,D,r){const M=SHARED.materials,w=D.x1-D.x0,h=D.b-D.top,n=4,pw=w/n
   R(g,D.x1-2,D.top,2,h,'rgba(30,20,20,.4)');ao(g,D.x0,D.top,w,6,'t',.45,'#1a1012');
   R(g,D.x0+pw*2.6,D.top+h*.5,1.6,1.6,'#2a1e16');R(g,D.x0+pw*2.6,D.top+h*.5,1.6,.5,'#8a6a48');
   R(g,D.x0-1,D.b-1,w+2,1.4,tint(C,-.08));R(g,D.x0-1,D.b-1,w+2,.5,'rgba(255,246,226,.4)')}
-/* the bed along the back wall: a frame of wood with a low board at its head (the end by the window), on four legs, two at each end and
-   none under its middle; a thick straw mattress and a blanket of brown wool folded at its foot */
+/* the bed along the back wall: a frame of wood on four legs, two at each end and none under its middle, nothing rising above it at
+   either end; a thick straw mattress and a blanket of brown wool with a dark stripe, folded at its foot */
 function bed(g,B,k,r){const S=sea_(k),wi=!S.sun,M=SHARED.materials,mb=B.top+5.2,rl=mb,rb=rl+3,W=wi?'#5a4636':'#6a4a2e',lit=wi?'#7a6450':'#9a6e44',len=B.x1-B.x0;
   const[ux,uy]=S.sun?[S.sun[0]/46,S.sun[1]/46]:[.1,.05],hh=B.foot-B.top;
   /* its shadow: under it, and thrown to the right and toward us, soft */
   comp(g,'multiply',wi?.2:.3,()=>poly(g,[B.x0+1,B.foot-1,B.x1,B.foot-1,B.x1+hh*ux,B.foot-1+hh*uy*.6,B.x0+1+hh*ux,B.foot-1+hh*uy*.6],'#5a4a66'));
   sh(g,(B.x0+B.x1)/2+2,B.foot-.8,len/2,1.6,.5);
-  /* the far legs, up and to the right of the near ones; the head board; the near legs: only at the two ends */
+  /* the far legs, up and to the right of the near ones; the near legs: only at the two ends */
   for(const x of[B.x0+2.6,B.x1-1.2])R(g,x,rb,1.6,B.foot-2.6-rb,tint(W,-.35));
-  M.board(g,B.x0,B.top-5,2.4,rb-B.top+5,W,r,1);R(g,B.x0,B.top-5,2.4,.6,lit);R(g,B.x0,B.top-5,.5,rb-B.top+5,lit);
   for(const[x,d]of[[B.x0+.2,-1],[B.x1-2.4,1]]){R(g,x,rb,2.2,B.foot-rb,d<0?lit:tint(W,-.15));R(g,x,rb,.5,B.foot-rb,d<0?'rgba(255,220,170,.35)':'rgba(255,220,170,.12)');R(g,x,B.foot-.6,2.2,.6,'#24160c');sh(g,x+1.1,B.foot,2,.6,.5)}
-  M.board(g,B.x0+2.4,rl,len-2.4,rb-rl,W,r);R(g,B.x0+2.4,rl,len-2.4,.5,lit);
+  M.board(g,B.x0,rl,len,rb-rl,W,r);R(g,B.x0,rl,len,.5,lit);R(g,B.x0,rl,.5,rb-rl,lit)
   /* the mattress: straw in a linen tick, thick, soft and a little uneven, its rounded ends; lit from the window at the left */
-  const mt=x=>B.top+.4*Math.sin((x-B.x0)/9)+.3*Math.sin((x-B.x0)/3.7),a=B.x0+2.6,b=B.x1-.6,P=[a,mb,a-.2,B.top+1.4,a+.8,B.top+.2];
+  const mt=x=>B.top+.4*Math.sin((x-B.x0)/9)+.3*Math.sin((x-B.x0)/3.7),a=B.x0+.8,b=B.x1-.6,P=[a,mb,a-.2,B.top+1.4,a+.8,B.top+.2];
   for(let x=a+2;x<=b-2;x+=1)P.push(x,mt(x));P.push(b-.6,B.top+.4,b+.2,B.top+1.6,b,mb);
   poly(g,P);g.fillStyle=lg(g,0,B.top,0,mb,wi?['#c8c0b0','#a89e8a','#8a8070']:['#eadcb8','#cdb88e','#a89064']);g.fill();
   clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.4,a,B.top-1,len,7,'overlay',1);
     for(let i=0;i<20;i++)R(g,a+r()*(b-a),B.top+1+r()*3.4,1+r()*2,.5,r()<.5?'rgba(140,110,60,.3)':'rgba(255,246,214,.28)');
     g.fillStyle=lg(g,a,0,b,0,['rgba(255,240,210,.25)','rgba(255,240,210,0)','rgba(60,40,50,.18)']);g.fillRect(a,B.top-1,b-a,7);
     R(g,a,mb-1.2,b-a,1.2,'rgba(70,50,40,.25)')});
-  /* the blanket, folded in three at the foot of the bed: soft layers, each a little darker underneath */
-  const b0=B.x1-27,b1=B.x1-1.2,c0=wi?'#6a5448':'#8a5e42';
-  for(let j=2;j>=0;j--){const y0=B.top-1.6+j*1.6,y1=y0+1.9,P2=[b0+j*.4,y1,b0+j*.4-.2,y0+.6,b0+j*.4+.8,y0];for(let x=b0+3;x<=b1-2;x+=2)P2.push(x,y0+.15*Math.sin(x/2.3+j));P2.push(b1+.2,y0+.5,b1+.4,y1);
-    poly(g,P2);g.fillStyle=lg(g,0,y0,0,y1,[tint(c0,.12-j*.06),tint(c0,-.1-j*.06)]);g.fill();clipTo(g,()=>poly(g,P2),()=>tex(g,'mott',.35,b0,y0-1,b1-b0+1,4,'overlay',1));
-    R(g,b0+j*.4+.4,y0,b1-b0-1,.5,rgba(tint(c0,.4),.5))}
-  R(g,b0+.4,mb-.6,b1-b0,.6,'rgba(40,24,20,.35)')}
+  /* the blanket, folded at the foot of the bed: a soft thick fold with rounded edges, a dark stripe woven along it, darker underneath */
+  const b0=B.x1-26,b1=B.x1-1,c0=wi?'#6e5a4c':'#8e6446',t0=B.top-2.4,BP=[b0,mb-.2,b0-.6,B.top+1.4,b0+.2,t0+1,b0+1.6,t0];
+  for(let x=b0+3;x<=b1-2;x+=1.5)BP.push(x,t0+.25*Math.sin(x/2.1)+.15*Math.sin(x/.9));BP.push(b1-.6,t0+.3,b1+.4,t0+1.4,b1+.6,mb-.2);
+  poly(g,BP);g.fillStyle=lg(g,0,t0,0,mb,[tint(c0,.18),c0,tint(c0,-.22)]);g.fill();
+  clipTo(g,()=>poly(g,BP),()=>{tex(g,'mott',.4,b0-1,t0-1,b1-b0+2,8,'overlay',1);
+    R(g,b0-1,t0+2.2,b1-b0+2,.9,wi?'#3e322e':'#4a2e22');R(g,b0-1,t0+3.1,b1-b0+2,.5,rgba(tint(c0,.3),.4));
+    g.fillStyle=lg(g,b0,0,b1,0,['rgba(255,226,190,.22)','rgba(255,226,190,0)','rgba(30,20,30,.2)']);g.fillRect(b0-1,t0-1,b1-b0+2,8);
+    R(g,b0-1,mb-1,b1-b0+2,1,'rgba(30,18,14,.3)')});
+  R(g,b0+1.4,t0,b1-b0-2.4,.5,rgba(tint(c0,.45),.6))}
 /* the water jar: plain red clay, its body swelling below a short neck, its mouth a small square seen a little from above; standing on
    the floor in front of the wall, lit from the window at the left */
 function jar(g,J,k){const S=sea_(k),wi=!S.sun,cx=(J.x0+J.x1)/2,hw=(J.x1-J.x0)/2,h=J.foot-J.top,[ux,uy]=S.sun?[S.sun[0]/46,S.sun[1]/46]:[.1,.05];
@@ -469,18 +471,19 @@ function boat(g,L,[x,y,n,d,sail],hz){const h=Math.max(.8,n*.14),X=u=>x+u*d*n/2,s
   const sx=X(-1),sy=shr(-1);stroke(g,[sx,sy+.4,sx-d*.5,sy-h*.5,sx-d*.2,sy-h*1.1,sx+d*.6,sy-h*1.2],dark,.6);stroke(g,[sx-d*.3,sy-h*.4,sx,sy-h*1.05],rgba(lit,.6),.4)}
 /* the reflection and shadow of a ship on the water, under it */
 function boatWater(g,[x,y,n,d,sail]){const h=Math.max(.8,n*.14);
-  comp(g,'multiply',.45,()=>{for(let i=0;i<Math.max(2,h*2.6);i++){const yy=y+.2+i*.5,w=n*(.88-i*.05);if(w<1)break;R(g,x-w/2+((i*3)%2)*.4,yy,w,.5,'#40445e')}});
+  const nr=Math.max(2,Math.round(h*2.6));for(let i=0;i<nr;i++){const yy=y+.2+i*.5,w=n*(.86-i*.05)*(i%2?.92:1);if(w<1)break;
+    comp(g,'multiply',.5*(1-i/nr*.7),()=>R(g,x-w/2+(i%3)*.3,yy,w,.5,'#3a3e58'))}
   if(!sail)R(g,x-n*.4,y-.1,n*.8,.5,'rgba(240,244,240,.3)');else for(let i=0;i<3;i++)R(g,x-d*(n*.6+i*1.4),y-.1,1.2,.5,'rgba(244,246,244,.5)')}
 /* the frame of the deep window: the lintel's underside and the two sides seen from inside it, the broad sill */
 function frame(g,o,k){const SL=o.sill||112,S=sea_(k),wi=!S.sun,r=rng(2018),
     LS=[0,0,320,0,296,10,24,10],LV=[0,0,24,10,24,SL,0,126],RV=[320,0,296,10,296,SL,320,126],TP=[24,SL,296,SL,320,126,0,126];
   /* the lintel's underside, in shade, lit a little from the sill below */
-  poly(g,LS);g.fillStyle=lg(g,0,0,0,10,[tint(C,-.42),tint(C,-.3)]);g.fill();clipTo(g,()=>poly(g,LS),()=>{tex(g,'mott',.4,0,0,320,10,'overlay',1);SHARED.temple.age(g,0,0,320,10,rng(2019),.05)});
+  poly(g,LS);g.fillStyle=lg(g,0,0,0,10,[tint(C,-.42),tint(C,-.3)]);g.fill();clipTo(g,()=>poly(g,LS),()=>{tex(g,'mott',.22,0,0,320,10,'overlay',1);tex(g,'grain',.2,0,0,320,10,'overlay',.5);SHARED.temple.age(g,0,0,320,10,rng(2019),.05)});
   R(g,24,9.4,272,.6,'rgba(255,240,216,.35)');
   /* the left side, away from the sun, in shade; the right side in the sun (in winter both in the same grey light) */
   poly(g,LV);g.fillStyle=lg(g,0,0,24,0,[tint(C,-.3),tint(C,-.22)]);g.fill();
   poly(g,RV);g.fillStyle=lg(g,296,0,320,0,wi?[tint(C,-.2),tint(C,-.26)]:[tint(C,.08),tint(C,-.02)]);g.fill();
-  for(const[P,x0]of[[LV,0],[RV,296]])clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.4,x0,0,24,126,'overlay',1);SHARED.temple.age(g,x0,0,24,126,rng(2020+x0),.05);g.fillStyle=lg(g,0,0,0,126,['rgba(40,30,40,.12)','rgba(40,30,40,0)','rgba(255,240,220,.1)']);g.fillRect(x0,0,24,126);
+  for(const[P,x0]of[[LV,0],[RV,296]])clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.22,x0,0,24,126,'overlay',1);tex(g,'grain',.2,x0,0,24,126,'overlay',.5);SHARED.temple.age(g,x0,0,24,126,rng(2020+x0),.05);g.fillStyle=lg(g,0,0,0,126,['rgba(40,30,40,.12)','rgba(40,30,40,0)','rgba(255,240,220,.1)']);g.fillRect(x0,0,24,126);
     /* the courses of the side, running back to the opening's edge */
     for(const y of[30,58,86]){stroke(g,x0?[296,y,320,y+(y-50)*.18]:[0,y+(y-50)*.18,24,y],'rgba(70,56,56,.3)',.5)}
     ao(g,x0,0,24,8,'t',.35,'#2a1e28')});
@@ -498,7 +501,7 @@ function frame(g,o,k){const SL=o.sill||112,S=sea_(k),wi=!S.sun,r=rng(2018),
   /* the crease where the left side meets the sill */
   stroke(g,[0,126,24,SL],'rgba(60,46,54,.35)',.5);
   /* the front of the sill, toward the room, in shade, its upper edge rounded and lit */
-  g.fillStyle=lg(g,0,126,0,144,[tint(C,-.16),tint(C,-.32)]);g.fillRect(0,126,320,18);tex(g,'mott',.4,0,126,320,18,'overlay',1);
+  g.fillStyle=lg(g,0,126,0,144,[tint(C,-.16),tint(C,-.32)]);g.fillRect(0,126,320,18);tex(g,'mott',.22,0,126,320,18,'overlay',1);tex(g,'grain',.2,0,126,320,18,'overlay',.5);
   R(g,0,126,320,.6,wi?'#e4e0d8':'#fff4dc');R(g,0,126.6,320,.8,'rgba(255,240,214,.3)');ao(g,0,126,320,3,'t',.12,'#2a1e28');
   for(const x of[94,170,262])stroke(g,[x,127.4,x+.3,144],'rgba(80,64,64,.3)',.5);
   tone(g,k,0,0,320,10);tone(g,k,0,0,24,144);tone(g,k,296,0,24,144);tone(g,k,0,SL,320,32)}
