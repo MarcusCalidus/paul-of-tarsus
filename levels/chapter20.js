@@ -137,85 +137,53 @@ ART.court20={w:320,q:12,paint(g){SCourt20=CS.court(g,{hour:'morning',desk:true})
 /* ==== ART court20: end ==== */
 
 /* ==== ART room20: begin ==== */
-/* ART-TODO. Paul's room in the palace: limewashed walls, a floor of stone flags, one window in the back wall at the left with the sea and
-   the sky in it (no bars; the horizon at y 80, the eyes of a figure standing at y 124), its sill a deep ledge of stone; a wooden bed along
-   the back wall, a water jar with a square mouth, a plain door of upright planks at the right (no iron bands across them). Light from the
-   window: by day it falls into the room from the back left, so shadows fall to the right and toward us (sun [14,9]); in winter the sky is
-   grey and the light soft (amb only). Variants: the season (su, au, wi, sp): the sky and the sea in the window, and the light.
-   Called from outside: ART.room20, WIN20 (the window). Draws nothing that moves but the birds (a gull on the sill in the second summer).
+/* Paul's room in the palace (SHARED.caesarea.cell, whose header describes it): limewashed walls of the palace's pale stone under a
+   ceiling of beams, a floor of stone flags, one deep window in the back wall at the left with only sky and sea in it (no bars; the
+   horizon at y 80, the eyes of a figure standing at y 124), its sill a ledge of stone; a wooden bed along the back wall on legs at its
+   two ends, a water jar with a square mouth, a plain door of upright planks at the right without any band across them. The window faces
+   west: the afternoon sun is beyond it at the left, so its light comes in from the back left, lies in a patch on the floor, and the
+   shadows fall to the right and toward us (short in summer, long in autumn); in winter the sky is grey, it rains beyond the window, and
+   the soft light gives no cast shadow (cellLight). Variants: the season (su, au, wi, sp).
+   Called from outside: ART.room20, WIN20 (the window). Draws the sea and, in winter, the rain in the window; the birds (a gull on the
+   sill in the second summer) are the engine's.
    Hotspots (ROOMS.room20): window 36,34,76,62 · bed 188,90,68,16 · water jar 148,88,12,18 · door 270,38,32,64 · the gull on the sill
    (season 5) 60,82,16,10. Walk: 24..300 by 112..138; nothing painted stands in it. Actors: Paul enters at 150,126; Philip 210,122,
-   Simmias 236,128, Kosmas 258,120 (first summer); Luke 212,124 (first winter); the soldier who fetches him 248,122; all face left. */
+   Simmias 236,128, Kosmas 258,120 (first summer); Luke 212,124 (first winter); the soldier who fetches him 248,122; all face left.
+   Heads come at y 66..92: behind them lie plaster, the plain rectangle of the window, the door; nothing round. */
 const WIN20={x0:40,x1:108,top:34,sill:90},HZRoom20=80,DOOR20={x0:272,x1:300,top:40,b:100},BED20={x0:188,x1:256,top:92,foot:106},JAR20={x0:150,x1:158,top:90,foot:104};
-const SKY20={su:['#5a88c6','#9cc0e0','#e8e8dc'],au:['#6a7ea8','#a8b4c8','#e0d4c0'],wi:['#5e646e','#80868e','#a2a6aa'],sp:['#5c8cc8','#a4c6e4','#eceee0']};
-const SEA20={su:'#3a6a8c',au:'#40607a',wi:'#4a5862',sp:'#3a6e90'};
-ART.room20={w:320,q:12,variant:()=>kind20(),paint(g,v){paintRoom20(g,v||'su')},
-  light:()=>winter20()?{amb:'#d6d4d8',wallY:100}:{amb:'#f2e6d6',sun:[14,9,.3],wallY:100},draw(){},front(){}};
-function paintRoom20(g,v){const r=rng(2001),W=WIN20,wd=W.x1-W.x0;
-  plaster(g,0,0,320,100,'#dccbaa',r,{patch:0,cracks:0,t:.3});
-  /* the window: sky above the one horizon, sea below it, the reveal in shade, the sill a deep ledge */
-  g.fillStyle=lg(g,0,W.top,0,HZRoom20,SKY20[v]);g.fillRect(W.x0,W.top,wd,HZRoom20-W.top);
-  g.fillStyle=lg(g,0,HZRoom20,0,W.sill,[tint(SEA20[v],.18),SEA20[v]]);g.fillRect(W.x0,HZRoom20,wd,W.sill-HZRoom20);
-  R(g,W.x0,HZRoom20,wd,.5,'rgba(255,255,255,.35)');
-  R(g,W.x0,W.top,3,W.sill-W.top,'rgba(90,70,60,.4)');R(g,W.x0,W.top,wd,2.5,'rgba(90,70,60,.45)');
-  R(g,W.x0-3,W.sill,wd+6,5,'#cbb894');R(g,W.x0-3,W.sill,wd+6,.6,'#f2e6cc');R(g,W.x0-3,W.sill+4.5,wd+6,.6,'rgba(70,52,40,.45)');
-  /* the door: upright planks in a dark frame, no band across them */
-  const D=DOOR20;R(g,D.x0-2,D.top-2,D.x1-D.x0+4,D.b-D.top+2,'#8a7458');
-  for(let x=D.x0;x<D.x1;x+=7)M20.board(g,x,D.top,7,D.b-D.top,'#6e5236',r,1);
-  R(g,D.x1-6,D.top+30,2,2,'#2a2018');
-  /* the floor */
-  pave(g,0,100,320,144,'#b8a482',r,{rows:5,step:30});ao(g,0,100,320,5,'t',.3,'#3a2c30');
-  /* the bed: a frame on legs at its ends, a straw mattress, a blanket */
-  const B=BED20;M20.shadow(g,(B.x0+B.x1)/2,B.foot,36,2,.4);
-  for(const x of[B.x0+1,B.x1-3])R(g,x,B.top+5,2,B.foot-B.top-5,'#5a3e26');
-  R(g,B.x0,B.top+3,B.x1-B.x0,3,'#7a5634');R(g,B.x0,B.top+3,B.x1-B.x0,.6,'#a87a4c');
-  R(g,B.x0+1,B.top,B.x1-B.x0-2,3.4,'#c8b07a');R(g,B.x0+20,B.top-.4,B.x1-B.x0-22,3.6,'#7a6a58');
-  /* the water jar: a body that swells and narrows, its mouth a small square */
-  const J=JAR20,cx=(J.x0+J.x1)/2;M20.shadow(g,cx,J.foot,5,1.2,.45);
-  poly(g,[cx-2,J.top+2,cx+2,J.top+2,J.x1,J.top+7,J.x1-.6,J.foot-2,cx+2,J.foot,cx-2,J.foot,J.x0+.6,J.foot-2,J.x0,J.top+7],'#b07a4e');
-  R(g,cx-1.5,J.top,3,2.2,'#8a5a38');R(g,cx-1,J.top+.3,2,.8,'#2a1a10');R(g,J.x0+1.2,J.top+6,1,6,'rgba(255,220,180,.4)');
-  /* the light of the window */
-  if(v!=='wi'){comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,40,0,320,0,['rgba(255,236,200,1)','rgba(200,190,200,.6)']);g.fillRect(0,0,320,144)});
-    pool(g,110,120,90,16,'#fff0d8',.1,'screen')}
-  else comp(g,'multiply',.2,()=>{g.fillStyle='#8a8aa0';g.fillRect(0,0,320,144)})}
+const OPRoom20=v=>({k:v,win:WIN20,hz:HZRoom20,wallY:100,door:DOOR20,bed:BED20,jar:JAR20}),MRoom20={};
+ART.room20={w:320,q:12,variant:()=>kind20(),paint(g,v){CS.cell(g,OPRoom20(v||'su'))},
+  light:()=>CS.cellLight(kind20()),draw(g,t){const k=kind20();(MRoom20[k]||(MRoom20[k]=CS.cellMotion(OPRoom20(k)))).draw(g,t)},front(){}};
 /* ==== ART room20: end ==== */
 
 /* ==== ART window20: begin ==== */
-/* ART-TODO. The window, close (a close view): its stone jambs at the left and right, its lintel above, its sill below, broad and deep,
-   where Paul scratches his marks; through it the harbor of Sebastos from above, the breakwater a long low arm of stone across the water,
-   the open sea beyond it to a high horizon (y 50, above every mast), the sky. No temple, no tower, no bars. The ships are hulls in the
-   basin, their masts (when painted) ending well below the horizon: summer five, autumn two, winter none (rain and a grey sea), spring
-   three. The marks on the sill (season - 1 of them) are short slanting strokes side by side on the sill's top face, each stopping inside
-   it, never crossing its edge or another mark. In the second spring, when Paul looks at the sky, a loose line of six storks crosses it,
-   flying north (to the right), for about nine seconds (G.st20): drawn with the stork of shared/birds.js.
+/* The window, close (a close view; SHARED.caesarea.harbor, whose header describes it): the deep stone frame, its lintel's underside
+   above, its two sides (the left in shade, the right in the sun), its sill below, broad and deep, where Paul scratches his marks;
+   through it the harbor of Sebastos from above: the near quay with its mooring stones, the basin, the breakwater running out from the
+   left as a long low arm of stone with a square tower at its end by the harbor's mouth, the end of the shorter mole across the mouth,
+   the open sea beyond to a high horizon (y 50, above every mast and the tower's top), a low coast far off at the right, the sky. No
+   temple, no statue, no bars. The ships (SHIPS20: [x, waterline, length, dir, under sail]): summer five (three at anchor in the basin,
+   two under sail at sea), autumn two, winter none (grey sea, a heavy swell breaking on the breakwater, rain), spring three; every mast
+   ends below the breakwater behind it. The marks on the sill (season - 1 of them) are short slanting strokes side by side on the
+   sill's top face, each stopping inside it, never crossing its edge or another mark. In the second spring, when Paul looks at the sky,
+   a loose line of six storks crosses it, flying north (to the right), for about nine seconds (G.st20): drawn with the stork of
+   shared/birds.js, in the open sky above the tower and the horizon.
    Called from outside: ART.window20. Reads the season, G.st20 (the storks), the marks (from the season).
    Hotspots: sky 24,10,272,40 · harbor 24,54,272,50 · breakwater 30,62,200,10 · sill 24,112,272,14 · marks 40,113,52,10 (once there are
    any) · back to the room 0,134,120,10. Walk: none (a close view). */
 const HZW20=50,SILLW20=112;
-const SHIPS20={su:[[60,84],[118,92],[176,80],[226,96],[262,86]],au:[[96,88],[210,94]],wi:[],sp:[[80,90],[160,82],[240,94]]};
-ART.window20={w:320,q:12,variant:()=>kind20(),paint(g,v){paintWindow20(g,v||'su')},light:null,draw(g,t){drawWindow20(g,t)},front(){}};
-function paintWindow20(g,v){const r=rng(2011);
-  sky(g,320,HZW20,SKY20[v]);
-  g.fillStyle=lg(g,0,HZW20,0,SILLW20,[tint(SEA20[v],.2),SEA20[v],tint(SEA20[v],-.12)]);g.fillRect(0,HZW20,320,SILLW20-HZW20);
-  R(g,0,HZW20,320,.5,'rgba(255,255,255,.4)');
-  /* the breakwater: a long low arm of stone, curving across the water inside the horizon */
-  poly(g,[22,72,80,67,150,64,232,66,236,68.6,150,67,80,70,22,75],'#b8a888');stroke(g,[22,72,80,67,150,64,232,66],'#e8dcc0',.5);
-  /* the ships: hulls only (ART-TODO: masts, if any, end below the horizon) */
-  for(const[x,y]of SHIPS20[v]){poly(g,[x-8,y,x+8,y,x+6,y+3,x-6,y+3],'#4a3424');R(g,x-8,y,16,.6,'#8a6a48')}
-  /* the near quay below the window */
-  R(g,0,100,320,12,'#a89878');R(g,0,100,320,.6,'#d8c8a8');
-  /* the jambs, the lintel and the sill */
-  for(const x of[0,296]){M20.board(g,x,0,24,SILLW20,'#cbb894',r);R(g,x?x:23.4,0,.6,SILLW20,'rgba(60,44,36,.45)')}
-  R(g,0,0,320,10,'#c4b08c');R(g,0,9.4,320,.6,'rgba(60,44,36,.5)');
-  R(g,0,SILLW20,320,14,'#d4c29e');R(g,0,SILLW20,320,.6,'#f4e8d0');R(g,0,SILLW20+14,320,18,'#b8a482');R(g,0,SILLW20+14,320,.6,'rgba(60,44,36,.5)');
-  if(v==='wi')comp(g,'multiply',.18,()=>{g.fillStyle='#7a7a90';g.fillRect(24,10,272,102)})}
-/* drawWindow20: the rain of winter (ART-TODO: shared/weather.js), the marks on the sill, the storks of the hidden treasure */
-function drawWindow20(g,t){const k=kind20();
-  if(k==='wi'){g.fillStyle='rgba(220,226,236,.5)';for(let i=0;i<90;i++){const x=24+((i*53+t*.09)%272),y=10+((i*37+t*.22)%96);g.fillRect(hp(x),hp(y),.5,1.5)}}
+const SHIPS20={su:[[66,96,30,1,0],[152,89,22,-1,0],[206,84,16,1,0],[112,58.6,5,1,1],[252,60,6,-1,1]],au:[[120,93,26,-1,0],[60,57,5,1,1]],wi:[],
+  sp:[[88,95,28,1,0],[198,86,17,-1,0],[251,61.4,7,-1,1]]};
+const OPWin20=v=>({k:v,hz:HZW20,quay:100,sill:SILLW20,ships:SHIPS20[v]}),MWin20={};
+ART.window20={w:320,q:12,variant:()=>kind20(),paint(g,v){CS.harbor(g,OPWin20(v||'su'))},light:null,draw(g,t){drawWindow20(g,t)},front(){}};
+/* drawWindow20: the sea's motion (and in winter the rain and the spray on the breakwater), the marks on the sill, the storks of the
+   hidden treasure: they glide with their wings bowed (the down stroke of the sheet's stork, a curved line) and beat now and then through
+   the up stroke, never in the level middle frame, which reads as a level bar at this size */
+function drawWindow20(g,t){const k=kind20();(MWin20[k]||(MWin20[k]=CS.harborMotion(OPWin20(k)))).draw(g,t);
   const n=marks20();for(let i=0;i<n;i++){const x=44+i*6;stroke(g,[x,121.5,x+1.6,115.5],'rgba(60,44,30,.7)',.6);stroke(g,[x+.4,121.5,x+2,115.5],'rgba(255,246,226,.35)',.5)}
   if(G.st20&&t-G.st20<9000&&SHARED.birds){const B=SHARED.birds.sheet,u=(t-G.st20)/9000;
     inRect(g,24,10,272,HZW20-12,()=>{for(let i=0;i<6;i++){const bx=hp(-20+u*360-i*16-(i%2)*5),by=hp(20+i*2.2+Math.sin(t/900+i)*1.2),f=Math.floor(t/400+i*1.7)%12;
-      B.glyph(g,B.STORK[f<3?[0,1,2][f]:1],bx,by,{K:'#26242a',W:'#e4e0d6'})}})}}
+      B.glyph(g,B.STORK[f<3?f:2],bx,by,{K:'#26242a',W:'#e4e0d6'})}})}}
 const marks20=()=>season20()-1+(G.end20?1:0);
 /* ==== ART window20: end ==== */
 
@@ -623,10 +591,11 @@ function hint20(){if(phase20()==='court'){if(!F.courtesy)return['first20',['hint
 
 /* ============ CHAPTER DEFINITION ============ */
 /* Birds (shared/birds.js): gulls over the sea at the court and on its sea wall; from the window gulls over the harbor except in winter
-   (rain); in the second summer a gull standing on the sill of Paul's window, seen from the room; none in the hall or in a close view of
-   the tablet. The storks of the hidden treasure are the window's own (drawWindow20). They change nothing in the story. */
+   (rain), and one standing on the near quay below (hunched against the rain in winter); in the second summer a gull standing on the
+   sill of Paul's window, seen from the room; none in the hall or in a close view of the tablet. The storks of the hidden treasure are
+   the window's own (drawWindow20). They change nothing in the story. */
 ROOMS.court20.birds=CS.birds('morning');
-ROOMS.window20.birds=()=>winter20()?null:{gulls:[40,14,240,30]};
+ROOMS.window20.birds=()=>winter20()?{stand:[[234,108,-1]],huddle:true}:{gulls:[40,14,240,30],stand:[[234,108,-1]]};
 ROOMS.room20.birds=()=>season20()===5?{stand:[[68,WIN20.sill,-1]]}:null;
 
 return{rooms:['court20','room20','window20','hall20','charges20'],setup:setup20,start:start20,hint:hint20,music:MUSIC,topics:[],tablets:TABLETS,beds:BEDS,
