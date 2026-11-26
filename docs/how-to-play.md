@@ -111,6 +111,8 @@ Chapter Six, Seven, Eight and Nine codes are nine characters too (`6-XXX-XXX-XXX
 
 ![Returning: the title screen offers to continue](screenshots/continue.png)
 
+![The title screen with the third journey opened](screenshots/title-part.png)
+
 ![The last part of the account open on the title screen, with the chapters in preparation](screenshots/plans.png)
 
 ## Saved games
