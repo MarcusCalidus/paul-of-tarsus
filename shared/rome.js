@@ -49,6 +49,9 @@
      gate(g, o)                       the Porta Capena (see capena) */
 SHARED.rome=(()=>{
 "use strict";
+/* HZ: the one horizon of each room. At the gate (78) it lies about at the eyes of the people on the walk strip. From afar (60) it lies
+   higher than the walkers' eyes: the room is an accepted view from a rise, looking down a little on the road and the country, decided by
+   the maintainer on 26 November 2026 for this one room. */
 const HZ={far:60,capena:78},WALK={far:[16,304,114,138],capena:[16,304,112,138]};
 const hash=(a,b,c)=>{let h=(a*374761393+b*668265263+(c||0)*2147483647)|0;h=Math.imul(h^h>>>13,1274126177);return((h^h>>>16)>>>0)/4294967296};
 const sm=(a,b,v)=>{const t=clamp((v-a)/(b-a),0,1);return t*t*(3-2*t)};
@@ -103,8 +106,9 @@ function road(g,V,Q,o){const cv=g.canvas,W=cv.width,Hh=cv.height,x0=Math.max(0,M
         vu=(va*ct-vb*st)/vl,vs=(va*st+vb*ct)/vl,rr=Math.min(1,vl/(c*.55)),dome=(vu*Lu+vs*Ls)*Math.pow(rr,1.4)*.28,
         edge=1-sm(0,1.6,ed),cr=1-((s-mid)/half)**2,
         n=(hash(px,py,seed)-.5)*.09;
-      let k=1+tv+dome*vis-edge*.34*vis+cr*.08+n;
-      let r=T[0]*k,gg=T[1]*k,bb=T[2]*k;
+      /* where the blocks are too small to be told apart, their tones melt together, so that no stripes appear */
+      const tvv=tv*(.25+.75*vis);let k=1+tvv+dome*vis-edge*.34*vis+cr*.08+n*(.5+.5*vis);
+      const TT=vis<1?[T[0]*vis+78*(1-vis),T[1]*vis+74*(1-vis),T[2]*vis+74*(1-vis)]:T;let r=TT[0]*k,gg=TT[1]*k,bb=TT[2]*k;
       /* the sheen of the worn tops in the morning light, on the side toward the sun */
       const sheen=Math.max(0,dome)*vis*1.8;r+=sheen*70;gg+=sheen*64;bb+=sheen*56;
       /* the joint: earth, darker at its heart */
@@ -135,6 +139,13 @@ function curb(g,V,Q,o){const r=rng(o.seed||5),c=o.c||'#a8a294',len=o.len||1.1,h=
     if(ua>o.u0){stroke(g,[top[0],top[1],top[6],top[7]],'rgba(50,40,40,.55)',.5);if(!near)stroke(g,[face[0],face[1],face[6],face[7]],'rgba(50,40,40,.5)',.5)}
     u=ub}}
 
+/* weeds: blades of grass and weeds growing up along the line from (x0, y0) to (x1, y1), where something stands in the ground: n blades,
+   each a short stroke leaning a little with the wind (to the left, as the verge's), lit at its tip; no fill, so the stone shows between
+   them. h: their height */
+function weeds(g,x0,y0,x1,y1,n,seed,h){const q=rng(seed);h=h||2.2;
+  for(let i=0;i<n;i++){const t=q(),x=x0+(x1-x0)*t+(q()-.5)*1.2,y=y0+(y1-y0)*t+q()*1.1,hh=h*(.4+q()*.8),ln=-(.1+q()*.25)*hh,k=q(),
+      c=k<.25?'#5a6a3c':k<.6?'#7a8c4c':k<.85?'#98a862':'#b4a070';
+    stroke(g,[x,y,x+ln,y-hh],c,.5);if(k>.7)R(g,x+ln,y-hh,.5,.5,'#c8d08a')}}
 /* ---------------------------------------------------------------- the milestone ---------------------------------------------------------------- */
 /* milestone: a short, thick cylinder of grey stone standing on its own foot in the verge, with no wider base (an upright on a plinth would
    be an upright on a level band). Its top is seen a little from above, an ellipse more than a pixel high; its side is round, lit from
@@ -171,7 +182,7 @@ function milestone(g,x,y,o){o=o||{};const w=o.w||10,h=o.h||26,ry=o.ry||1.6,sun=o
 function cypress(g,x,y,h,o){o=o||{};const c=o.c||'#3a5236',r=rng(o.seed!=null?o.seed:Math.round(x*97+y*31+h*7)),sun=o.sun==null?1:o.sun,w=o.w||h*.16,
     bend=(r()-.5)*h*.06,hazeK=o.haze||0,hc=o.hazeC||'#b8bcc4',C=k=>mix(tint(c,k),hc,hazeK);
   const wAt=t=>w*(t<.12?.55+t*3:t<.35?.9+(t-.12)*.45:1-(t-.35)*1.35)*(t>.9?.6:1),cxAt=t=>x+bend*t*t;
-  if(h>=10){R(g,x-.6,y-h*.08,1.3,h*.08,'#3a2a20');R(g,x-.6,y-h*.08,.5,h*.08,'#5a4232')}
+  if(h>=10){sh(g,x+.4,y,w*.8,1,.5);R(g,x-.6,y-h*.08,1.3,h*.08,'#3a2a20');R(g,x-.6,y-h*.08,.5,h*.08,'#5a4232')}
   const L=[],Rr=[];for(let i=0;i<=24;i++){const t=.05+i/24*.95,yy=y-t*h,ww=Math.max(.5,wAt(t)*(.92+r()*.16));L.push(cxAt(t)-ww,yy);Rr.unshift(cxAt(t)+ww,yy)}
   const P=L.concat(Rr);poly(g,P,C(-.3));
   clipTo(g,()=>poly(g,P),()=>{g.fillStyle=lg(g,x-w,0,x+w,0,sun>0?[C(-.42),C(-.18),C(.02)]:[C(.02),C(-.18),C(-.42)]);g.fillRect(x-w-2,y-h,w*2+4,h)});
@@ -206,13 +217,20 @@ function tomb(g,V,Q,o){const r=rng(o.seed||41),c=o.c||'#d8ceb6',st=o.step||'#a8a
   /* the shadow it throws, away from the light, on the ground: soft */
   {const k=o.castK||1.2;const sx=-sun[0]*h*k,sz=-sun[1]*h*k,G=[...Pt(u0,s0,0),...Pt(u0+w,s0,0)],[X1,Z1]=Q.w(u0+w,s0+dd),[X0,Z0]=Q.w(u0,s0+dd);
     const T1=V.P(X1+sx,Z1+sz,0),T0=V.P(X0+sx,Z0+sz,0),Ln=[...G,...V.P(...Q.w(u0+w,s0+dd),0),...T1,...T0,...V.P(...Q.w(u0,s0+dd),0)];
-    for(const a of[.12,.14])comp(g,'multiply',a,()=>poly(g,Ln,'#58506e'))}
-  /* the two steps */
-  box(u0-.35,u0+w+.35,s0-.35,s0+dd+.35,0,.22,st,(F)=>{clipTo(g,()=>poly(g,F),()=>tex(g,'mott',.4,F[6]-2,F[1]-2,F[2]-F[6]+4,F[5]-F[1]+4,'overlay',1))});
-  box(u0-.18,u0+w+.18,s0-.18,s0+dd+.18,.22,.42,tint(st,.06),(F)=>{clipTo(g,()=>poly(g,F),()=>tex(g,'mott',.4,F[6]-2,F[1]-2,F[2]-F[6]+4,F[5]-F[1]+4,'overlay',1))});
+    for(const a of[.16,.2,.22])comp(g,'multiply',a,()=>poly(g,Ln,'#58506e'))}
+  /* the two steps, each a plain riser under a top we look down on a little; each a single stone all round, so no joint runs from one
+     to the other. They stand out only a hand's breadth beyond the body, and the lower one sits on the ground along its whole foot: its
+     front and its end both run back to the road's own vanishing points (they are projected, not drawn) */
+  const S1=.24,S2=.12,H1=.24,H2=.46,step=(e,h0,h1,col)=>box(u0-e,u0+w+e,s0-e,s0+dd+e,h0,h1,col,(F,Sd)=>{for(const P of[F,Sd])clipTo(g,()=>poly(g,P),()=>tex(g,'mott',.35,Math.min(P[0],P[6])-2,Math.min(P[1],P[3])-2,Math.abs(P[2]-P[0])+6,Math.abs(P[5]-P[1])+6,'overlay',1))});
+  step(S1,0,H1,st);step(S2,H1,H2,tint(st,.06));
+  /* the tops of the steps, seen a little from above: a lit edge along the front and the end of each */
+  for(const[e,hh]of[[S1,H1],[S2,H2]]){const a=Pt(u0+w+e,s0-e,hh),b=Pt(u0-e,s0-e,hh),c2=Pt(u0-e,s0+dd+e,hh);stroke(g,[a[0],a[1]+.25,b[0],b[1]+.25,c2[0],c2[1]+.25],'rgba(250,246,232,.85)',.5)}
+  /* where stone meets earth: a soft dark seam along the lower step's foot, in front and along its end */
+  {const a=Pt(u0+w+S1,s0-S1,0),b=Pt(u0-S1,s0-S1,0),c2=Pt(u0-S1,s0+dd+S1,0);
+    for(const[wd,al]of[[2.2,.12],[1.2,.18],[.6,.28]])comp(g,'multiply',1,()=>{stroke(g,[a[0],a[1]+wd*.25,b[0],b[1]+wd*.25,c2[0],c2[1]+wd*.25],rgba('#3a3040',al),wd)})}
   /* the body, in courses */
   const hb=h*.78,courses=Math.max(3,Math.round(hb/.55));
-  box(u0,u0+w,s0,s0+dd,.42,hb,c,(F,S,fl,sl)=>{
+  box(u0,u0+w,s0,s0+dd,H2,hb,c,(F,S,fl,sl)=>{
     for(const[Fc,lk]of[[F,fl],[S,sl]]){clipTo(g,()=>poly(g,Fc),()=>{
       const x0=Math.min(Fc[0],Fc[6])-1,x1=Math.max(Fc[2],Fc[4])+1,yA=Math.min(Fc[1],Fc[3])-1,yB=Math.max(Fc[5],Fc[7])+1;
       tex(g,'mott',.45,x0,yA,x1-x0,yB-yA,'overlay',1);tex(g,'grain',.12,x0,yA,x1-x0,yB-yA,'overlay',.5);
@@ -233,12 +251,15 @@ function tomb(g,V,Q,o){const r=rng(o.seed||41),c=o.c||'#d8ceb6',st=o.step||'#a8a
     const lines=4;for(let i=0;i<lines;i++){const fh=ph1-(i+1)*(ph1-ph0)/(lines+1);let fu=pa+.05+r()*.03;
       while(fu<pb-.08){const L=.04+r()*.08,[xa,ya]=Q4(fu,fh),[xb,yb]=Q4(Math.min(pb-.05,fu+L),fh);stroke(g,[xa,ya,xb,yb],'rgba(80,70,72,.6)',.5);fu+=L+.03}}});
   /* the cornice: a broader course that stands out, lit along its top, its underside in shade */
-  const cr=box(u0-.12,u0+w+.12,s0-.12,s0+dd+.12,hb,hb+.22,tint(c,.08));
+  const cr=box(u0-.12,u0+w+.12,s0-.12,s0+dd+.12,hb,hb+.22,tint(c,.08));void S2;
   stroke(g,[cr.front[0],cr.front[1],cr.front[2],cr.front[3]],'rgba(255,250,236,.7)',.5);stroke(g,[cr.front[6],cr.front[7],cr.front[4],cr.front[5]],'rgba(70,56,60,.55)',.5);
   /* the low roof of stepped stone */
   box(u0+.12,u0+w-.12,s0+.12,s0+dd-.12,hb+.22,hb+.4,tint(c,-.04));
   box(u0+.3,u0+w-.3,s0+.3,s0+dd-.3,hb+.4,hb+.56,tint(c,-.08));
-  ao(g,Math.min(ft[0],ft[0])-2,ft[1]-6,(w+1)*pxPerM+4,6,'b',.15,'#3a3040');
+  /* grass and weeds grow up before its foot and along its end, over the seam a little */
+  {const a=Pt(u0+w+S1,s0-S1,0),b=Pt(u0-S1,s0-S1,0),c2=Pt(u0-S1,s0+dd+S1,0);
+    weeds(g,a[0],a[1],b[0],b[1],46,(o.seed||41)+9,2.4);weeds(g,b[0],b[1],c2[0],c2[1],14,(o.seed||41)+10,2)}
+  void pxPerM;
   return{foot:ft}}
 
 /* ---------------------------------------------------------------- the city far off ---------------------------------------------------------------- */
@@ -307,7 +328,9 @@ function aqueduct(g,xa,ya,xb,yb,ha,hb,o){o=o||{};const hz=o.haze||0,hc=o.hc||'#c
   /* the inner side of each opening, in shade at its left (the light is behind us at the right) */
   for(const[l,,ym,sp]of holes)R(g,l,sp,.5,ym-sp,rgba(tint(c,-.35),.8));
   /* the channel: its lit top edge and the shade under its lip */
-  stroke(g,[xa,ya-ha,xb,yb-hb],rgba(tint(c,.3),.9),.5);stroke(g,[xa,ya-ha*.86,xb,yb-hb*.86],rgba(tint(c,-.25),.45),.5)}
+  stroke(g,[xa,ya-ha,xb,yb-hb],rgba(tint(c,.3),.9),.5);stroke(g,[xa,ya-ha*.86,xb,yb-hb*.86],rgba(tint(c,-.25),.45),.5);
+  /* where its piers stand in the ground: a faint seam of shade along its foot */
+  stroke(g,[xa,ya+.2,xb,yb+.2],rgba(mix('#4a4a50',hc,hz),.35),.6)}
 /* city: Rome on its hills far off, from x0 to x1, below the horizon hz, as the morning shows it from the Appian Way with the sun behind
    us: the far ridge beyond the river at the horizon; the hills of the city, the Aventine at the left, the Palatine at the right of the
    Circus with the palace on it, the Capitoline farther off between them, the Caelian nearest at the right; the valleys full of roofs and
@@ -370,12 +393,19 @@ function city(g,o){const hz=o.hz,r=rng(o.seed||81),hc='#c4c6d2',T=o.temples==nul
    right far off; the city on its hills below the horizon in the morning haze (city()); the open country between, its fields green in the
    spring, the road going on across it straight toward the city between tombs and cypresses until it reaches the gate in the old wall.
      In front: the road itself, crossing the picture and running away to the left, paved per pixel in lava blocks (road()), held by its
-   curbs; a footpath of packed gravel beyond the far curb and a dry ditch beyond it, the verge with spring grass. On the verge: the milestone
-   with III cut into it (x 128), a plain tomb at the left (its foot at about y 100), a pair of cypresses beside it, and an umbrella pine at
-   the right (the engine's pine). Nothing stands in the walk strip (WALK.far), so the room needs no props.
-     Heads on the walk strip come at about y 64..94: behind them lie the city's roofs and hills, the country and the road; nothing round. */
+   curbs; a footpath of packed gravel beyond the far curb and a dry ditch beyond it, the verge with spring grass. By the curb: the milestone
+   with III cut into it (x 248); on the verge a plain tomb at the left on two steps (its foot at about y 96), a pair of cypresses beside it, and the engine's pine
+   behind it at the left edge; all of them stand on the verge (verge()), which runs back to a low bank where the plain begins. Nothing stands in the walk strip (WALK.far), so the room needs no props.
+     Heads on the walk strip come at about y 64..94: behind them lie the city's roofs and hills, the country and the road; nothing round.
+     The horizon (y 60) lies higher than the walkers' eyes: this room is an accepted view from a rise, looking down a little on the road,
+   the verge and the country, decided by the maintainer on 26 November 2026 for this one room (HZ). Everything on the ground is projected
+   from that eye (VF: 2.4 over the road), so the road, its curbs, the tomb's steps and the verge all run back to the same vanishing points.
+     Defaults (decided 26 November 2026): two temple fronts (the Capitoline and the Aventine), the aqueduct, the mist. */
 const VF={hz:60,F:320,H:2.4,cx:160},DF=[-.985,.17];
-function far(g,o){o=o||{};const V=view(VF),Q=frame(DF),hz=VF.hz,r=rng(2401),sun=[.55,-.84],cast=[-16,-11];
+/* the light on the ground: the sun low behind us and a little to the right. sun: the way it comes from on the ground, matched to the
+   figures' shadows (light().sun puts the tip of a 46-pixel figure's shadow 16 left and 11 up: in this view about 0.35 to the left and 1.45
+   back for every 1.7 of height), so that the tomb's shadow falls where a figure's would: almost straight back, behind it */
+function far(g,o){o=o||{};const V=view(VF),Q=frame(DF),hz=VF.hz,r=rng(2401),sun=[.23,-.97],cast=[-16,-11];
   /* the sky */
   sky(g,320,hz+2,['#7e9cc6','#a4b8d4','#cfd6dc','#e8e0d2']);
   pool(g,330,hz,140,22,'#fff0d8',.35,'screen');
@@ -389,7 +419,7 @@ function far(g,o){o=o||{};const V=view(VF),Q=frame(DF),hz=VF.hz,r=rng(2401),sun=
   /* the city */
   const C=city(g,{hz,temples:o.temples,aqueduct:o.aqueduct,mist:o.mist,gx:150});
   /* the road going on to the city: straight across the country, paler and narrower as it goes, between its tombs and cypresses */
-  const ga=C.gate,gb=[64,103];
+  const ga=C.gate,gb=[34,87.4];
   {const P=[];for(let i=0;i<=16;i++){const t=i/16,x=ga[0]+(gb[0]-ga[0])*t,y=ga[1]+(gb[1]-ga[1])*t,hw=.5+t*3.4;P.push(x+hw*.25,y-hw*.18)}
     for(let i=16;i>=0;i--){const t=i/16,x=ga[0]+(gb[0]-ga[0])*t,y=ga[1]+(gb[1]-ga[1])*t,hw=.5+t*3.4;P.push(x-hw*.25,y+hw*.6)}
     poly(g,P);g.fillStyle=lg(g,gb[0],gb[1],ga[0],ga[1],['#8a8478','#a8a49a','#bab8b4']);g.fill();
@@ -402,16 +432,22 @@ function far(g,o){o=o||{};const V=view(VF),Q=frame(DF),hz=VF.hz,r=rng(2401),sun=
   for(let i=0;i<5;i++){const x=180+i*11+r()*4,y=92-i*1.4;pine(g,x,y,7+r()*2,'#4a6440')}
   /* tombs and cypresses along it, smaller as they go */
   for(let i=0;i<14;i++){const t=.08+i/14*.86,x=ga[0]+(gb[0]-ga[0])*t,y=ga[1]+(gb[1]-ga[1])*t,k=.3+t*.9,side=i%2?1:-1,ox=side*(2+t*7)+(r()-.5)*2,oy=side*-1.2*t;
+    if(i%3<2)R(g,x+ox-(1.6*k+1.2),y+oy-.3,(3.2*k+2.4),.6,rgba('#5a5650',.35-t*.15));
     if(i%3===0){const w=2.4*k+1,h=2.6*k+1.2,X=x+ox-w/2,Y=y+oy;R(g,X,Y-h,w,h,mix('#e0d6c0','#c4c6d2',.4-t*.3));R(g,X,Y-h,w,.5,'rgba(255,250,236,.5)');R(g,X+w-.5,Y-h,.5,h,'rgba(80,70,80,.3)');R(g,X-.3,Y-h-.6,w+.6,.6,mix('#d8ccb4','#c4c6d2',.4-t*.3))}
     else if(i%3===1){const w=3*k+1,h=1.8*k+1,X=x+ox-w/2,Y=y+oy;R(g,X,Y-h,w,h,mix('#d4c8ae','#c4c6d2',.4-t*.3));R(g,X,Y-h,w,.5,'rgba(255,250,236,.45)');R(g,X,Y-h*.55,w,.5,'rgba(90,80,80,.25)')}
     cypress(g,x-ox*.7+side*1.5,y+.6,3+t*9,{c:'#3a5034',haze:.45-t*.35,hazeC:'#c4c6d2',seed:300+i})}
-  /* the near verge beyond the road: spring grass, a little dry along the footpath; then the dry ditch */
-  SHARED.country.turf(g,-2,96,324,110,'#8a9c58',2404,{wind:-.4,scale:.6,flowers:30,dry:.25});
-  /* the tomb at the left, its pair of cypresses, and the pine at the right */
+  /* the near verge beyond the road, the ground the tomb, the trees and the milestone stand on: spring grass from the ditch back to a low
+     bank (about 25 away), where the fields of the plain begin; then the dry ditch */
+  verge(g,V,Q,17.1,25.5,2404);
+  /* the pine and the cypresses at the left, each with its foot in the grass; the tomb before them, on a strip of trodden earth */
+  /* (the engine's pine sets its foot in rock with a dark wedge beside it; here it grows out of grass, so its foot is cut at the ground) */
+  inRect(g,-20,-20,120,113.6,()=>pine(g,8,93,(o.pineH||80),'#46623e',{lean:o.pineLean==null?.3:o.pineLean,shade:false}));
+  sh(g,9,93.4,4,1.1,.5);weeds(g,2,93.6,16,93.8,22,2414,2.8);
   cypress(g,54,95,40,{c:'#34502f',seed:2405,cast});cypress(g,63,96,31,{c:'#3a5634',seed:2406,cast});
-  pine(g,8,93,(o.pineH||80),'#46623e',{lean:o.pineLean==null?.3:o.pineLean,shade:false});
-  SHARED.country.turf(g,-2,90,30,101,'#8a9c58',2414,{wind:-.4,scale:.7,dry:.2});
-  tomb(g,V,Q,{u:12.6,s:22,w:2.4,d:2.2,h:3.3,seed:2407,sun});
+  weeds(g,50,95.4,58,95.6,12,2415,2.6);weeds(g,59,96.4,67,96.6,12,2417,2.4);
+  {const TU=12.6,TS=22,TW=2.4,P=(u,s2)=>V.P(...Q.w(u,s2),0),E=[...P(TU-.5,TS-1.1),...P(TU+TW+.6,TS-1.1),...P(TU+TW+.6,TS-.1),...P(TU-.5,TS-.1)];
+    poly(g,E,'rgba(168,148,112,.55)');clipTo(g,()=>poly(g,E),()=>{tex(g,'mott',.5,0,85,80,14,'overlay',1);tex(g,'grain',.3,0,85,80,14,'overlay',.5)});
+    tomb(g,V,Q,{u:TU,s:TS,w:TW,d:2.2,h:3.3,seed:2407,sun,castK:.88})}
   /* the ditch: a shallow dry trough under the verge, grass on its far bank, its bed in shade */
   ditch(g,V,Q,16.2,17.1,r);
   /* the footpath of packed gravel between the curb and the ditch */
@@ -422,19 +458,32 @@ function far(g,o){o=o||{};const V=view(VF),Q=frame(DF),hz=VF.hz,r=rng(2401),sun=
   curb(g,V,Q,{s0:14.3,s1:14.65,h:.14,u0:-40,u1:40,seed:2410,c:'#a8a294'});
   curb(g,V,Q,{s0:8.05,s1:8.4,h:.14,u0:-40,u1:40,seed:2411,c:'#a29c8e',near:1});
   band(g,V,Q,6.4,8.05,'#a49680','#b4a68c',2412);
-  /* the milestone, at the edge of the footpath by the curb */
-  {const[X,Z]=Q.w(-1.5,15.5),[mx,my]=V.P(X,Z,0),k=V.k(Z);milestone(g,mx,my,{w:.7*k,h:1.3*k,ry:1.5,n:'III',sun:1,seed:2413,cast,lh:5.2,ny:5.4})}
+  /* the milestone, at the edge of the footpath by the curb, a few weeds at its foot */
+  {const[X,Z]=Q.w(-1.5,15.5),[mx,my]=V.P(X,Z,0),k=V.k(Z);milestone(g,mx,my,{w:.7*k,h:1.3*k,ry:1.5,n:'III',sun:1,seed:2413,cast,lh:5.2,ny:5.4});
+    weeds(g,mx-.4*k,my-.2,mx-.2*k,my,5,2416,1.8);weeds(g,mx+.2*k,my-.2,mx+.42*k,my,4,2418,1.6)}
   /* the light of the morning over the whole: warm from the right and from behind us, the far left a little cooler */
   comp(g,'soft-light',.35,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(180,186,214,1)','rgba(240,222,196,.8)','rgba(255,214,170,1)']);g.fillRect(0,0,320,144)});
   ao(g,0,128,320,16,'b',.12,'#2a2440')}
 /* uSpan: the stretch of a road, along it, that lies before us (at least 0.6 away) between the edges s0 and s1, out to 80 */
 const uSpan=(Q,s0,s1)=>{const z=.6,lo=Q.dz>0?Math.max((z-s0*Q.ez)/Q.dz,(z-s1*Q.ez)/Q.dz):-80;return[Math.max(-80,lo),80]};
-/* band: a strip of ground along the road between s0 and s1 across it: packed earth and gravel, small stones */
-function band(g,V,Q,s0,s1,c0,c1,seed){const r=rng(seed),P=[],[ua,ub]=uSpan(Q,s0,s1);for(let u=ua;u<=ub;u+=.5){const[X,Z]=Q.w(u,s0);P.push(...V.P(X,Z,0))}
+/* band: a strip of ground along the road between s0 and s1 across it: packed earth and gravel, small stones; uMax: where it ends (at a wall) */
+function band(g,V,Q,s0,s1,c0,c1,seed,uMax){const r=rng(seed),P=[],[ua,ub0]=uSpan(Q,s0,s1),ub=uMax==null?ub0:Math.min(ub0,uMax);for(let u=ua;u<=ub;u+=.5){const[X,Z]=Q.w(u,s0);P.push(...V.P(X,Z,0))}
   for(let u=ub;u>=ua;u-=.5){const[X,Z]=Q.w(u,s1);P.push(...V.P(X,Z,0))}
   poly(g,P);g.fillStyle=lg(g,0,90,0,144,[c1,c0]);g.fill();
   clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.5,0,80,320,64,'overlay',1);tex(g,'grain',.25,0,80,320,64,'overlay',.5);
     for(let i=0;i<900;i++){const x=r()*320,y=80+r()*64;R(g,x,y,.5,.5,r()<.5?'rgba(80,70,60,.3)':'rgba(250,240,220,.3)')}})}
+/* verge: the grass beside the road from s0 back to about s1, its far edge a low bank that wanders a little, lit along its top, with a
+   few bushes on it; the blades of the grass in the perspective of the road (the turf of shared/country.js, clipped to it) */
+function verge(g,V,Q,s0,s1,seed){const q=rng(seed),P=(u,s)=>{const[X,Z]=Q.w(u,s);return V.P(X,Z,0)},[ua,ub]=uSpan(Q,s0,s1),A=[],B=[],E=[];
+  for(let u=ua;u<=ub;u+=.5){A.push(...P(u,s0));const sb=s1+.9*Math.sin(u*.37+seed)+.45*Math.sin(u*1.3+seed*.3);const p=P(u,sb);B.unshift(...p);E.push(...p)}
+  const G=A.concat(B);let top=1e9,bot=-1e9;for(let i=1;i<G.length;i+=2){top=Math.min(top,G[i]);bot=Math.max(bot,G[i])}
+  poly(g,G);g.fillStyle=lg(g,0,top,0,bot,['#9aaa66','#8c9e56','#86984e']);g.fill();
+  clipTo(g,()=>poly(g,G),()=>{SHARED.country.turf(g,-2,top-1,324,bot+1,'#8a9c58',seed,{wind:-.4,scale:.6,flowers:40,dry:.25});
+    g.fillStyle=lg(g,0,top,0,top+5,['rgba(60,70,50,.18)','rgba(60,70,50,0)']);g.fillRect(-2,top,324,5)});
+  /* the bank: a fine line of light along its top, a soft shade under it on the near side, bushes here and there */
+  stroke(g,E.map((v,i)=>i%2?v-.2:v),'rgba(240,236,200,.45)',.5);stroke(g,E.map((v,i)=>i%2?v+.6:v),'rgba(60,70,50,.3)',.6);
+  for(let i=0;i<14;i++){const u=ua+q()*(Math.min(ub,40)-ua),sb=s1+.9*Math.sin(u*.37+seed)+.45*Math.sin(u*1.3+seed*.3),[x,y]=P(u,sb);
+    if(x<-4||x>324)continue;SHARED.country.tree(g,x,y+.3,3+q()*2.4,'#5a7442',{kind:'bush',seed:seed+i})}}
 /* ditch: the dry ditch beyond the footpath: its near bank in shade, its bed of earth, its far bank grassy and lit */
 function ditch(g,V,Q,s0,s1,r){const P=(u,s)=>{const[X,Z]=Q.w(u,s);return V.P(X,Z,0)},A=[],B=[];
   const[ua,ub]=uSpan(Q,s0,s1);for(let u=ua;u<=ub;u+=.5){A.push(...P(u,s0));B.unshift(...P(u,s1))}
@@ -460,6 +509,7 @@ function ditch(g,V,Q,s0,s1,r){const P=(u,s)=>{const[X,Z]=Q.w(u,s);return V.P(X,Z
 const VC={hz:78,F:320,H:1.7,cx:190},GATE={x:172,w:36,top:30,base:104},CORNER=114,WTOP=22,VPL=[-150,78];
 function capena(g,o){o=o||{};const V=view(VC),Q=frame([0,1]),hz=VC.hz,r=rng(2501),sun=[.5,-.86];
   sky(g,320,60,['#7898c4','#a2b4d0','#d4d8dc']);
+  /* (defaults, decided 26 November 2026: no temple front over the gate) */
   {const q=rng(2502);cloud(g,240,8,70,2.4,q,'#fbf6ee','#b8c0d4')}
   /* far off over the gate: the Palatine, its slope and gardens, the palace on top */
   const hc='#c8ccd8';
@@ -481,23 +531,28 @@ function capena(g,o){o=o||{};const V=view(VC),Q=frame([0,1]),hz=VC.hz,r=rng(2501
     for(let i=0;i<500;i++){const x=r()*320,y=92+r()*52;R(g,x,y,.5,.5,r()<.5?'rgba(80,66,54,.3)':'rgba(250,240,220,.3)')}
     /* the ground trodden darker where people and beasts go to the gate, and stones and tufts here and there */
     pool(g,120,124,90,10,'#8a7458',.22,'multiply');pool(g,260,128,70,9,'#8a7458',.18,'multiply');
-    SHARED.country.ground(g,0,108,320,144,'#b4a486',2513,{n:60,size:.7,tufts:0})}
+    SHARED.country.ground(g,-2,88,324,144,'#b4a486',2513,{n:70,size:.7,tufts:0})}
   /* the wall: the part that runs back at the left, then the front with the gate */
   wallBack(g,rng(2504));
   wallFront(g,rng(2505));
   passage(g,rng(2506));
   ring(g,rng(2507));
   /* the road up to the gate: footpaths, curbs, paving */
-  band(g,V,Q,-3.4,-1.75,'#a49680','#b6a88c',2508);band(g,V,Q,1.75,3.4,'#a49680','#b6a88c',2509);
+  /* (all of it ends at the foot of the wall, ZW in front of us) */
+  const ZW=VC.F*VC.H/(104-hz);
+  band(g,V,Q,-3.4,-1.75,'#a49680','#b6a88c',2508,ZW);band(g,V,Q,1.75,3.4,'#a49680','#b6a88c',2509,ZW);
   road(g,V,Q,{s0:-1.4,s1:1.4,cell:.5,seed:2510,sun,haze:'#c8c6cc',hz0:12,hz1:60,y0:104});
-  curbSide(g,V,Q,-1.4,-1.75,.12,2511,1);
-  curbSide(g,V,Q,1.4,1.75,.12,2512);
+  curbSide(g,V,Q,-1.4,-1.75,.12,2511,1,ZW);
+  curbSide(g,V,Q,1.4,1.75,.12,2512,0,ZW);
   /* the sill of the gate: one long slab across the threshold */
   R(g,GATE.x-2,103.2,GATE.w+4,1.6,'#c8bca0');R(g,GATE.x-2,103.2,GATE.w+4,.5,'#f4e8cc');R(g,GATE.x-2,104.6,GATE.w+4,.5,'rgba(60,46,50,.45)');
   /* the foot of the wall: grime, the soft shade where the wall meets the ground, and weeds along it (never at the threshold) */
-  ao(g,0,96,320,9,'b',.16,'#4a3a30');
-  {const q=rng(2514);for(let i=0;i<26;i++){const x=q()*300,w=3+q()*12;if(x+w>GATE.x-14&&x<GATE.x+GATE.w+14)continue;const y=capenaWallY(x)+.8;
-    SHARED.country.turf(g,x,y-2-q()*1.5,w,y+q()*1.2,'#8e9460',2515+i,{wind:-.3,scale:.4+q()*.3,dry:.5})}}
+  /* (the shade follows the foot, which rises toward the left where the wall runs back: the grime on the wall just above it, and a soft
+     seam on the ground just below it) */
+  {const P=[];for(let x=-2;x<=322;x+=2)P.push(x,capenaWallY(x));
+    for(const[dy,wd,al]of[[-3,6,.08],[-1.2,2.4,.14],[.5,1.4,.2],[.2,.6,.32]])stroke(g,P.map((v,i)=>i%2?v+dy:v),rgba('#4a3a30',al),wd)}
+  {const q=rng(2514);for(let i=0;i<30;i++){const x=q()*310,w=3+q()*12;if(x+w>GATE.x-14&&x<GATE.x+GATE.w+14)continue;
+    weeds(g,x,capenaWallY(x)+.3,x+w,capenaWallY(x+w)+.3,Math.round(w*2.2),2515+i,1.6+q()*1.6)}}
   comp(g,'soft-light',.35,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(190,190,214,1)','rgba(244,224,196,.8)','rgba(255,214,170,1)']);g.fillRect(0,0,320,144)});
   ao(g,0,126,320,18,'b',.12,'#2a2440')}
 /* wallY of the gate's room: the foot of the wall, level in front, rising toward the left where the wall runs back */
@@ -548,8 +603,8 @@ function passage(g,r){const{x,w,top,base}=GATE,sp=top+w/2,vx=VC.cx,vy=VC.hz,k=.4
       g.fillStyle=lg(g,0,hy,0,fy,['#c8b494','#e2cea8']);g.fillRect(fx0-2,hy,fx1-fx0+4,fy-hy);R(g,fx0-2,hy,fx1-fx0+4,.5,'rgba(60,44,40,.45)');
       for(const yy of[hy+2,hy+4.4])R(g,fx0-2,yy,fx1-fx0+4,.5,'rgba(140,110,90,.25)')});
     /* the floor of the passage, in shade, flags in courses going back */
-    const F=[x,base,x+w,base,fx1,fy,fx0,fy];poly(g,F,'#5e4c3a');
-    clipTo(g,()=>poly(g,F),()=>{for(let s=.1;s<1;s+=.16+s*.08){const[ax,ay]=at(x,base,s),[bx]=at(x+w,base,s);R(g,ax,ay,bx-ax,.5,'rgba(30,20,16,.45)')}
+    const F=[x,base,x+w,base,fx1,fy,fx0,fy];poly(g,F,'#76624c');
+    clipTo(g,()=>poly(g,F),()=>{tex(g,'mott',.4,x,fy,w,base-fy,'overlay',1);for(let s=.18;s<1;s+=.2+s*.1){const[ax,ay]=at(x,base,s),[bx]=at(x+w,base,s);R(g,ax,ay,bx-ax,.5,'rgba(40,28,22,.2)')}
       g.fillStyle=lg(g,0,fy,0,base,['rgba(240,214,170,.3)','rgba(0,0,0,0)']);g.fillRect(x,fy,w,base-fy)});
     /* the passage walls: the left one, turned to the right, has the low sun on it near the mouth; the right one in shade */
     const LW=[x,sp,x,base,fx0,fy,fx0,fsp],RW=[x+w,sp,x+w,base,fx1,fy,fx1,fsp];
@@ -598,8 +653,8 @@ function circusSide(g,r){const S='#e2d4b4',xa=-2,xb=150,ta=6,tb=40,fa=70,fb=74,t
   void r}
 /* curbSide: a curb beside a road that runs away from us: we see its top and its inner face (at s0) turned to the road; lit: that face is
    turned to the light (the left curb, the light being at the right), else in shade */
-function curbSide(g,V,Q,s0,s1,h,seed,lit){const r=rng(seed),Pt=(u,s,hh)=>{const[X,Z]=Q.w(u,s);return V.P(X,Z,hh)};
-  for(let u=Math.max(.6,uSpan(Q,s0,s1)[0])+r()*.5;u<60;){const L=.9+r()*.5,a=u,b=u+L,cc=tint('#a8a294',(r()-.5)*.14);
+function curbSide(g,V,Q,s0,s1,h,seed,lit,uMax){const r=rng(seed),Pt=(u,s,hh)=>{const[X,Z]=Q.w(u,s);return V.P(X,Z,hh)};
+  for(let u=Math.max(.6,uSpan(Q,s0,s1)[0])+r()*.5;u<(uMax||60);){const L=.9+r()*.5,a=u,b=Math.min(u+L,uMax||1e9),cc=tint('#a8a294',(r()-.5)*.14);
     const face=[...Pt(a,s0,h),...Pt(b,s0,h),...Pt(b,s0,0),...Pt(a,s0,0)],top=[...Pt(a,s0,h),...Pt(b,s0,h),...Pt(b,s1,h),...Pt(a,s1,h)];
     poly(g,face,tint(cc,lit?.02:-.28));poly(g,top,tint(cc,.14));stroke(g,[top[0],top[1],top[6],top[7]],'rgba(50,40,40,.5)',.5);u=b}}
 
