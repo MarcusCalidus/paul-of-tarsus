@@ -2914,7 +2914,7 @@ async function title(){lock(true);if(SHARED.scroll)SHARED.scroll.off();await set
     (PLANNED.length?'<p class="plans" data-plans="1"><span>&#9656;</span> '+T('chapters_from_to_to',{from:T(PLANNED[0].short),to:T(PLANNED.at(-1).short)})+' &middot; '+T('in_preparation')+'</p>'+
       PLANNED.map(c=>`<p class="plan">${T(c.label)} &middot; ${T(c.ref)}</p>`).join(''):'')+'</div>'+
     /* the hidden treasures, once one has been found (see TREASURES) */
-    (treasures().size?`<p class="pick tre" data-tre="1">&#9656; ${T('hidden_treasures')} &middot; ${T('{n} of {all}',{n:treasures().size,all:hidden().length})}</p>`:'')+
+    (treasures().size?`<p class="pick tre" data-tre="1">&#9656; ${T('hidden_treasures')} &middot; ${T('n_of_all',{n:treasures().size,all:hidden().length})}</p>`:'')+
     '<p class="small">'+T('click_a_chapter_to_begin')+'</p>'+
     (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'')+
     (G.splash?'<p class="begin"><span class="go">'+T('click_to_begin')+'</span></p>':'');
