@@ -565,7 +565,7 @@ ART.surf23={w:320,q:12,paint(g){if(SHARED.storm&&SHARED.grainship)paintSurf23(g)
    The long wait (28:6, G.lw23 from 0 to 1): the rain thins and the day grows a little lighter, while nothing else changes.
    Called from outside: ART.beach23, GROUPS23, FIRE23, STERNPIECE23. Reads F.found, F.malta, G.vip23, G.lw23. Hotspots: see ROOMS.beach23.
    Walk: 20..460 by 114..138. Light: overcast, and the fire a lamp at FIRE23. */
-const FIRE23=[104,120],STERNPIECE23=[362,418,92,128],HZ_BEACH23=62;
+const FIRE23=[104,120],STERNPIECE23=[362,418,92,132],HZ_BEACH23=62;
 /* the water's edge on the sand, x to y: farther at the left behind the grass bank, nearest where the officer stands, farther again at
    the foot of the slope */
 const shoreB23=x=>88+6*Math.exp(-Math.pow((x-280)/70,2))+1.4*Math.sin(x/31)+.8*Math.sin(x/11)-4*clamp((x-400)/60,0,1);
@@ -653,10 +653,10 @@ function timberB23(g,x,y,len,h,sl,r){const dx=Math.cos(sl)*len,dy=Math.sin(sl)*l
    face toward us. Its strakes run along it, each broken off at its own length at both ends, ragged; at its right-hand break the heels
    of three frames (ribs) stand out past the planking, slanting, each broken short; along its upper edge a length of the rail, broken off
    before the end. The pitched planks low down are dark. Its inside is turned away. It hides a man crouching behind it (his head at
-   y 89 between x 381 and 399: the slab's upper edge lies above that); 56 wide, 40 high. Nothing of the swan's neck is on it. */
+   y 89 between x 381 and 399: the slab's upper edge lies above that); 56 wide, 43 high; its footprint starts at his feet (y 120), so he is not put down inside it. Nothing of the swan's neck is on it. */
 function sternPieceB23(g,r){const[x0,x1,,y1]=STERNPIECE23,N=10,
     /* the slab's frame: its foot along the sand, its upper edge, both rising a little to the right; u along it, v up it (0..1) */
-    foot=u=>[x0+u*(x1-x0-6),y1-u*4],up=[6,-40],at=(u,v)=>{const[a,b]=foot(u);return[a+up[0]*v,b+up[1]*v]},
+    foot=u=>[x0+u*(x1-x0-6),y1-u*4],up=[6,-43],at=(u,v)=>{const[a,b]=foot(u);return[a+up[0]*v,b+up[1]*v]},
     /* where each strake ends, left and right: ragged */
     L=[.02,0,.04,.01,.05,.02,.07,.03,.08,.05],Rr=[.98,1,.95,.99,.96,.93,.97,.94,.9,.95];
   comp(g,'multiply',.55,()=>poly(g,[x0-6,y1+1,x1+8,y1-3,x1+4,y1+1.4,x0-2,y1+3],'#2e2638'));
