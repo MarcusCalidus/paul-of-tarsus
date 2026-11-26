@@ -1434,6 +1434,110 @@
     /* the picture: the deck at the game's own pace, the sailor's call standing over it in the pause, with Paul at the second hold */
     G.speedAll=0;clearInterval(sk);enterRoom('beattest',X[1],Y,1);{const k=BT.start({phase:b.from+.01});k.misses=3;k.help=1}await wait(300);
     ok(G.beat.calling()&&G.beat.period===6000,'at the game\'s pace the beat is six seconds from wave to wave, and the call stands in the pause');halt(stop)}
+  /* A room whose ship moves with the sea (ART[id].sway, see swayOf in index.html): sway on the desktop, phonesway on a phone held sideways.
+     A test scene of the harness's own (no chapter's room): a strip of deck in five planks of five colors under a plain sky and sea,
+     Paul and Eliab standing on it, a dark cask and a light chest as its hotspots, swaying four degrees with a heave of three pixels so
+     that faults show, and rain in the air. The checks read the picture itself (the canvas) wherever they can, with the sway held at one
+     phase (SW.ph) and the frame painted at one moment (frame), and find a figure by the pixels it changes (seen). Checked: the feet stay
+     on their plank through a whole sway; a click or a tap lands on what is seen at the greatest tilt, and one where the cask would be
+     without the sway hits only where the cask is seen; the harness's own clicks, given in the room's coordinates, still mean them; a walk
+     to a seen spot ends there; a line stands level by its speaker; the world behind and the air do not move; no gap opens at a corner;
+     on the phone the field lies as it would without the sway; with reduced motion asked for, or calm movement chosen, nothing sways; a
+     sway of nothing paints the very same picture as no sway, and a room without one is not touched. Hands over sway-strip.png (six
+     frames across one sway) and sway-feet.png (the feet on the planks at both tilts and level, enlarged six times). */
+  if(/^(phone)?sway$/.test(stop)){const ph=stop==='phonesway';if(ph){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120)}
+    await loadLevel(1);ov.className='';ov.onclick=null;G.splash=0;setChapter(1);G.scene=null;
+    TEXTS('en','main',{sway_test_cask:'cask',sway_test_chest:'chest',sway_test_line:'Hold on to the rail!'});
+    TEXTS('de','main',{sway_test_cask:'Fass',sway_test_chest:'Kiste',sway_test_line:'Halt dich an der Reling fest!'});
+    const PL=['#c03020','#30a040','#3050c0','#c0b020','#a030b0'],PY=94,SKY='#8a96a8',SEA='#2e4a5c',RAIN=[232,238,244],
+      SW={ph:null,A:4*Math.PI/180,H:3,period:2400},R={looked:0,chest:0},E=ACT.eliab,SHEETS={};
+    /* the picture: the world behind (sky and sea) painted every frame; the backdrop only the rail and the deck, open above the rail */
+    ART.swaytest={w:320,light:{amb:'#c8ccd4'},   /* an overcast storm: soft light, no cast shadows */
+      behind(g){g.fillStyle=SKY;g.fillRect(0,0,320,72);g.fillStyle='#b8c0cc';g.fillRect(30,20,60,6);g.fillStyle=SEA;g.fillRect(0,72,320,72)},
+      paint(g){g.fillStyle='#5a3e26';g.fillRect(0,88,320,PY-88);g.fillStyle='#7a5636';g.fillRect(0,88,320,1);
+        PL.forEach((c,j)=>{g.fillStyle=c;g.fillRect(0,PY+j*10,320,10)});
+        g.fillStyle='#181818';g.fillRect(285,98,12,12);   /* the cask: small, and far from the pivot, so that the sway moves it more than its size */
+        g.fillStyle='#f4f0e0';g.fillRect(200,100,14,10)},
+      sway(t){const p=SW.ph!=null?SW.ph:(t%SW.period)/SW.period,s=Math.sin(2*Math.PI*p);return{a:SW.A*s,dy:SW.H*s,cx:160,cy:144}},
+      air(g){g.fillStyle=`rgb(${RAIN})`;for(const[x,y]of[[30,14],[110,30],[200,8],[262,40],[30,100]])g.fillRect(x,y,1,6)},
+      draw(){},front(){}};
+    ROOMS.swaytest={walk:[20,300,118,140],mood:'calm',amb:{},hs:[
+      {name:'sway_test_chest',x:200,y:100,w:14,h:10,look:()=>{R.chest++}},
+      {name:'sway_test_cask',x:285,y:98,w:12,h:12,look:()=>{R.looked++}}]};
+    const cask=ROOMS.swaytest.hs[1],W=cv.width,
+      /* frame: paint the room at the moment T, as render does each frame, and read the picture (the room's rows of the canvas) */
+      frame=T=>{const raf=window.requestAnimationFrame;window.requestAnimationFrame=()=>0;try{lastT=T-16;render(T)}finally{window.requestAnimationFrame=raf}return cv.getContext('2d').getImageData(0,0,W,VH*HR)},
+      pix=(D,x,y)=>{const i=(Math.floor(y*HR)*W+Math.floor(x*HR))*4;return[D.data[i],D.data[i+1],D.data[i+2]]},
+      near=(c,list)=>{let b=-1,bd=1e9;list.forEach((p,j)=>{const q=typeof p==='string'?hex(p):p,d=(q[0]-c[0])**2+(q[1]-c[1])**2+(q[2]-c[2])**2;if(d<bd){bd=d;b=j}});return b},
+      plank=c=>near(c,[...PL,SEA,SKY]),   /* 0..4 a plank, 5 the sea, 6 the sky */
+      /* seen: where a figure is seen, from the pixels it changes: its lowest row (the foot of its contact shadow), its top, and the middle of each */
+      seen=(a,T)=>{const D1=frame(T),r=a.room;a.room=null;const D0=frame(T);a.room=r;
+        const x0=Math.max(0,Math.floor((a.x-36)*HR)),x1=Math.min(W,Math.ceil((a.x+36)*HR)),rows=[];
+        for(let y=40*HR;y<VH*HR;y++){let n=0,s=0;for(let x=x0;x<x1;x++){const i=(y*W+x)*4;if(Math.abs(D1.data[i]-D0.data[i])+Math.abs(D1.data[i+1]-D0.data[i+1])+Math.abs(D1.data[i+2]-D0.data[i+2])>24){n++;s+=x}}if(n)rows.push([y,s/n])}
+        if(!rows.length)return null;const lo=rows[rows.length-1],hi=rows[0];return{D:D1,fx:lo[1]/HR,fy:lo[0]/HR,hx:hi[1]/HR,hy:hi[0]/HR}},
+      /* scr: where a point of the picture is on the screen, worked out without the sway (as the picture lies in the view, or in the phone's field) */
+      scr=(vx,vy)=>{const r=vp.getBoundingClientRect();if(PH.on){const q=vpq()[1];return[r.left+(LENS.tx+vx*LENS.k)*q,r.top+(LENS.ty+vy*LENS.k)*q]}return[r.left+vx/VW*r.width,r.top+vy/VH*r.height]},
+      touch=(type,x,y)=>cv.dispatchEvent(new PointerEvent(type,{pointerId:1,pointerType:'touch',isPrimary:true,clientX:x,clientY:y,bubbles:true,cancelable:true})),
+      /* point: what lies under the pointer at a point of the picture, through the game's own input (a mouse moved there, or a finger put down) */
+      point=async(vx,vy)=>{const[X,Y]=scr(vx,vy);G.hover=undefined;if(ph){touch('pointerdown',X,Y);touch('pointerup',X,Y);await wait(400)}else vp.dispatchEvent(new MouseEvent('mousemove',{clientX:X,clientY:Y,bubbles:true}));return G.hover},
+      tapAt=async(vx,vy)=>{const[X,Y]=scr(vx,vy);if(ph){touch('pointerdown',X,Y);touch('pointerup',X,Y)}vp.dispatchEvent(new MouseEvent('click',{clientX:X,clientY:Y,bubbles:true}));await idle();if(ph)await wait(400)},
+      same=(A,B,x0,y0,x1,y1)=>{for(let y=Math.floor(y0*HR);y<Math.ceil(y1*HR);y++)for(let x=Math.floor(x0*HR);x<Math.ceil(x1*HR);x++){const i=(y*W+x)*4;if(A.data[i]!==B.data[i]||A.data[i+1]!==B.data[i+1]||A.data[i+2]!==B.data[i+2])return false}return true},
+      T0=Math.round(performance.now())+1000,AY=129;   /* the feet on the fourth plank (124 to 134), in the middle of it */
+    G.speedAll=500;enterRoom('swaytest',70,AY,1);place(E,'swaytest',250,AY,-1);G.busy=false;lock(false);syncVerbs();drawInv();status();await wait(ph?700:200);
+    /* the feet on their plank: through a whole sway each stands on the fourth plank, where he is seen, while he is seen to move */
+    {const bad=[],ys=[];for(let k=0;k<12;k++){SW.ph=k/12;for(const a of[P,E]){const s=seen(a,T0+k);if(!s){bad.push(a.id+' not seen');continue}
+        const c=plank(pix(s.D,s.fx,s.fy+1));if(c!==3)bad.push(`${a.id} at ${k}/12 on ${c}`);ys.push([a.id,s.fy])}}
+      SW.ph=.25;const D=frame(T0),off=plank(pix(D,E.x,AY+2.5)),ey=ys.filter(y=>y[0]===E.id).map(y=>y[1]),rg=Math.max(...ey)-Math.min(...ey);
+      ok(!bad.length&&rg>10&&off!==3,`the feet stay on their plank through a whole sway (Eliab's feet are seen ${rg.toFixed(1)} pixels higher and lower, and where they would stand without the sway lies another plank)`+(bad.length?'. BAD: '+bad.join(', '):''))}
+    /* the cask as it is seen at the greatest tilt: its dark pixels in the picture */
+    SW.ph=.25;await wait(60);
+    {const D=frame(T0),dk=[];for(let y=70;y<140;y+=.5)for(let x=268;x<320;x+=.5){const c=pix(D,x,y);if(c[0]<44&&c[1]<44&&c[2]<44)dk.push([x,y])}
+      const cxs=dk.reduce((s,p)=>s+p[0],0)/dk.length,cys=dk.reduce((s,p)=>s+p[1],0)/dk.length,c0=[291,104],dark=c=>c[0]<44&&c[1]<44&&c[2]<44;
+      const hitSeen=await point(cxs,cys),hitOld=await point(...c0),oldDark=dark(pix(frame(T0),...c0)),ring=[];
+      for(let k=0;k<12;k++){const t=k/12*2*Math.PI;for(const[r,inside]of[[3.5,1],[11,0]]){const x=cxs+r*Math.cos(t),y=cys+r*Math.sin(t),h=await point(x,y);if((h===cask)!==!!inside||(h===cask)!==dark(pix(frame(T0),x,y)))ring.push(`${r}@${k}`)}}
+      ok(dk.length>100&&Math.hypot(cxs-c0[0],cys-c0[1])>9&&hitSeen===cask,`at the greatest tilt a ${ph?'tap':'pointer'} on the cask where it is seen (${cxs.toFixed(1)}, ${cys.toFixed(1)}, ${Math.hypot(cxs-c0[0],cys-c0[1]).toFixed(1)} pixels from its place in the room) finds it`);
+      ok(hitOld!==cask&&!oldDark&&!ring.length,'where the cask would be without the sway nothing is found, and round the seen cask a point finds it exactly where the picture shows it'+(hitOld===cask||oldDark||ring.length?`. BAD: old ${hitOld&&hitOld.name} ${oldDark}, ring ${ring.join(',')}`:''));
+      verb('look');await tapAt(cxs,cys);ok(R.looked===1,`a ${ph?'tap':'click'} on the cask as it is seen looks at it`);
+      verb('look');view(cask.x+cask.w/2,cask.y+cask.h/2);await idle();if(ph)await wait(400);
+      ok(R.looked===2,"the harness's own clicks, given in the room's coordinates, still mean them (toClient finds the place where it is seen)")}
+    /* a walk to a seen spot ends there */
+    {enterRoom('swaytest',70,AY,1);place(E,'swaytest',250,AY,-1);await wait(ph?700:150);const tx=120,ty=131;
+      await tapAt(tx,ty);const s=seen(P,T0),[bx,by]=swayBack(tx,ty);
+      ok(Math.abs(P.x-bx)<1&&Math.abs(P.y-by)<1&&s&&Math.abs(s.fx-tx)<3&&Math.abs(s.fy-1.6-ty)<2.5,`a walk to a seen spot ends there: Paul stands at ${P.x.toFixed(1)}, ${P.y.toFixed(1)} in the room and is seen with his feet at ${s&&s.fx.toFixed(1)}, ${s&&(s.fy-1.6).toFixed(1)}, where the ${ph?'tap':'click'} was (${tx}, ${ty})`)}
+    /* a line stands level, over the place where its speaker's head is seen */
+    {clearInterval(sk);const s=seen(E,T0),pr=say(E,'sway_test_line');await wait(150);const el=cur&&cur.el,r=el&&el.getBoundingClientRect(),[hx,hy]=scr(s.hx,s.hy),
+        tf=el&&getComputedStyle(el).transform,u=ph?LENS.k:vp.getBoundingClientRect().width/VW,[ux]=scr(E.x,E.y-49),[sx]=scr(...swayPt(E.x,E.y-49)),mid=r&&(r.left+r.right)/2;
+      ok(el&&(tf==='none'||/^matrix\(1, 0, 0, 1,/.test(tf))&&Math.abs(mid-sx)<1.5&&Math.abs(mid-hx)<4*u&&Math.abs(sx-ux)>2*u&&r.bottom<=hy+2*u&&r.bottom>hy-24*u,`a line stands level (${tf}) over its speaker's head where it is seen: its middle at ${mid.toFixed(0)} px, the head seen at ${hx.toFixed(0)} px, where it would be without the sway ${ux.toFixed(0)} px`);
+      if(G.skip)G.skip();await pr;sk=setInterval(()=>{if(G.skip)G.skip()},30)}
+    /* the world behind and the air stay where they are while the ship heels the one way and the other */
+    {SW.ph=.25;const A=frame(T0);SW.ph=.75;const B=frame(T0);
+      ok(same(A,B,0,0,320,56)&&same(A,B,30,100,31,106)&&pix(A,30.2,103).join()===RAIN.join()&&!same(A,B,0,96,320,144),'the sky, the sea and the rain in the air stay where they are while the deck heels the one way and the other')}
+    /* no gap at a corner: where the ship heels up, the deck is seen to its edge (its backdrop reaches past the room, mirrored out of its own planks) */
+    {const gap=b=>{ART.swaytest.bleed=b;let n=0;for(const[ph2,x0]of[[.25,0],[.75,310]]){SW.ph=ph2;const D=frame(T0);for(let y=136;y<144;y+=.5)for(let x=x0;x<x0+10;x+=.5)if(plank(pix(D,x,y))>4)n++}delete ART.swaytest.bleed;return n};
+      const g0=gap(0),g24=gap();ok(g24===0&&g0>40,`no gap opens at a lower corner as the deck heels up (without the margin ${g0} points of the sea would show there)`)}
+    /* on the phone the field lies as it would without the sway: the lens follows whoever is played, not the heel of the ship */
+    if(ph){SW.ph=.25;await wait(700);frame(T0);const a=[LENS.k,LENS.tx,LENS.ty];const sw=ART.swaytest.sway;delete ART.swaytest.sway;frame(T0+16);const b=[LENS.k,LENS.tx,LENS.ty];ART.swaytest.sway=sw;
+      ok(a.every((v,i)=>Math.abs(v-b[i])<.5),'on the phone the field lies where it would without the sway: the lens follows whoever is played, not the heel of the ship ('+a.map(v=>v.toFixed(2)).join(', ')+')')}
+    /* reduced motion, or calm movement chosen: nothing sways, and the pointer is not mapped */
+    {const mm=window.matchMedia,sw=ART.swaytest.sway;SW.ph=.25;
+      window.matchMedia=q=>/reduced-motion/.test(q)?{matches:true,media:q,onchange:null,addListener(){},removeListener(){},addEventListener(){},removeEventListener(){},dispatchEvent(){return false}}:mm.call(window,q);
+      let A,h;try{A=frame(T0);await wait(60);h=await point(cask.x+cask.w/2,cask.y+cask.h/2)}finally{window.matchMedia=mm}const s1=G.sway;
+      delete ART.swaytest.sway;const B=frame(T0);ART.swaytest.sway=sw;
+      const m0=OPTS.mov;OPTS.mov=0;frame(T0);const s2=G.sway;OPTS.mov=m0;
+      ok(s1===null&&s2===null&&same(A,B,0,0,320,144)&&h===cask,'with reduced motion asked for, or calm movement chosen in the options, nothing sways: the picture is the one without a sway, and a pointer finds the cask in its place')}
+    /* a sway of nothing paints the very same picture as no sway; a room without one is not touched */
+    {const A0=SW.A,H0=SW.H;SW.A=0;SW.H=0;const A=frame(T0),s=G.sway;const sw=ART.swaytest.sway;delete ART.swaytest.sway;const B=frame(T0);ART.swaytest.sway=sw;SW.A=A0;SW.H=H0;
+      enterRoom('workshop',160,128,1);await wait(100);frame(T0);const[x,y]=toClient(100,100),[rx,ry]=evPos({clientX:x,clientY:y});
+      ok(!!s&&same(A,B,0,0,320,144)&&G.sway===null&&Math.abs(rx-100)<.01&&Math.abs(ry-100)<.01,'a sway of nothing paints the very same picture as no sway, and in a room without a sway nothing is turned or mapped')}
+    /* the pictures for the lead: six frames across one sway, and the feet on the planks, enlarged */
+    {enterRoom('swaytest',70,AY,1);place(E,'swaytest',250,AY,-1);await wait(ph?700:150);
+      const[c,g]=mk(W*3+16,VH*HR*2+8);g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+      for(let k=0;k<6;k++){SW.ph=k/6;frame(T0+k);g.drawImage(cv,0,0,W,VH*HR,(k%3)*(W+8),Math.floor(k/3)*(VH*HR+8),W,VH*HR)}
+      SHEETS[(ph?'phone':'')+'sway-strip']=c.toDataURL();
+      const Z=6,cw=56*HR,ch=40*HR,[f,fg2]=mk((cw*Z+8)*3,ch*Z);fg2.imageSmoothingEnabled=false;
+      [.25,0,.75].forEach((p,i)=>{SW.ph=p;frame(T0);fg2.drawImage(cv,(P.x-28)*HR,(AY-28)*HR,cw,ch,i*(cw*Z+8),0,cw*Z,ch*Z)});
+      SHEETS[(ph?'phone':'')+'sway-feet']=f.toDataURL()}
+    window.SHEETS=SHEETS;SW.ph=.25;G.speedAll=0;await wait(300);halt(stop)}
   /* Pictures as answers (choose with {icon, key}, Chapter Twenty-Three's islanders): picks on the desktop, phonepicks on a phone. Four
      pictures and a last line that only leaves: the pictures stand in a row of squares, mixed by their keys, in the same order in English
      and in German; each says its words to the status line and to a screen reader; a click answers with its place in the options. */
