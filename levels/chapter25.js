@@ -489,7 +489,7 @@ async function sheet25(){if(watch25()!==4||F.phm)return say(P,'paul_the_letter_i
   if(n===0){await tw(300);await say(P,WRITTEN25.heart,{to:null})}
   if(G.pm25<4)return;
   await tw(300);await say(P,WRITTEN25.ready,{to:null});G.pm25=5;F.phm=1;G.seat25='table';
-  await tw(400);await goto25('lodging25');G.desk25=0;P.seat=0;P.pose=0;place(P,'lodging25',112,126,1);chain25();
+  await tw(400);await goto25('lodging25');G.desk25=0;P.seat=0;P.pose=0;{const b=box25();place(P,'lodging25',clamp(112,b[0]+2,b[1]-2),clamp(126,b[2]+1,b[3]-1),1)}chain25();
   await say(ON,'onesimus_ill_go_back_to_him',{to:P});await say(P,'paul_i_know',{to:ON});codeBtn();return question25()}
 async function leaveSheet25(){await goto25('lodging25');G.desk25=0;P.seat=0;P.pose=0;place(P,'lodging25',112,126,1);chain25()}
 
@@ -506,7 +506,7 @@ async function greet25(a){const g=GREET25.find(x=>x.a===a.id);if(!g||watch25()!=
   codeBtn();if(GREET25.every(x=>F[x.f]))await say(P,'paul_last_my_own_greeting',TP)}
 async function hand25(){TM.pose=0;TM.seat=0;await go25(TM,76,130);TM.dir=1;await sit25();
   await say(P,WRITTEN25.hand,{to:null});await write25(P);F.hand=1;codeBtn();
-  P.seat=0;P.pose=0;G.desk25=0;P.free=1;await walk(P,124,128);P.free=false;return question25()}
+  P.seat=0;P.pose=0;G.desk25=0;{const b=box25();P.free=1;await walk(P,clamp(124,b[0]+2,b[1]-2),clamp(128,b[2]+1,b[3]-1));P.free=false}return question25()}
 
 /* ---- watch 6: three letters, one road ---- */
 async function begin6(){G.scene=DARK;await own(PASSED25[6]);G.scene=null;show25('lodging25');await fade(0,700);
@@ -596,7 +596,9 @@ ROOMS.lodging25={space:.7,
   /* the reach: looking needs none, nor speaking to those who sit along the walls (free25); the desk is reached from the table and the
      window; everything else where the chain reaches */
   reach:(x,y,v,h)=>{if(v==='look'||!P.chained||P.room!=='lodging25')return true;if(h&&(h.free25||h.actor&&h.actor.hs&&h.actor.hs.free25))return true;
-    if(h&&h.desk25)return deskOk25();return inBox25(box25(),x,y)},
+    if(h&&h.desk25)return deskOk25();
+    /* a thing is reached where it is walked to (clickView has already brought x, y inside the walk, which is the reach) */
+    const tx=h&&!h.actor&&h.wx!=null?h.wx:x,ty=h&&!h.actor&&h.wy!=null?h.wy:y;return inBox25(box25(),tx,ty)},
   unreached:async(h,v,item)=>{SFX.nope();if(!said25){said25=1;return say(P,'paul_the_chain_doesnt_reach_i_could_ask',TP)}return say(P,'paul_the_chain_doesnt_reach',TP)},
   hs:[
   {name:'ceiling',x:0,y:0,w:320,h:18,wx:160,wy:124,look:()=>say(P,watch25()===1&&!F.men&&!G.roof25?(G.roof25=1,'paul_a_tentmaker_under_a_roof'):'ceiling_look',TP)},
