@@ -51,8 +51,14 @@ function room(g){const r=rng(4711),[[ax,ay],[bx,by]]=LAMPS;
   pool(g,ax,ay,13,10,'#ff9c40',.4);pool(g,bx,by,14,10,'#ff9c40',.4)}
 
 /* ---------- the open part of the roll: papyrus, its fibers running across, its upper and lower edge worn ---------- */
+/* SH is the stretch of papyrus that lies open in the reader's hands, ROLLS where its two rolled-up ends stand. They are the open picture's;
+   a picture of the roll being closed passes its own (see FRAMES) */
 const SH={x0:66,x1:274,y0:7,y1:137},ROLLS=[60,263],ROLL_W=17;
-function sheet(g){const r=rng(31337),e=rng(90210),{x0,x1,y0,y1}=SH,w=x1-x0,h=y1-y0,P=[],nick=(v,at,wd,d)=>{const k=Math.abs(v-at)/wd;return k<1?d*(1-k*k):0};
+/* sh: the stretch that lies open when the roll is open; from: where it now goes into the left-hand roll, as the roll is closed. The
+   papyrus that is still open stays where it lay, so it is painted whole and cut at from: its fibers and stains do not move */
+function sheet(g,sh=SH,from=sh.x0){const r=rng(31337),e=rng(90210),{x0,x1,y0,y1}=sh,w=x1-x0,h=y1-y0,P=[],nick=(v,at,wd,d)=>{const k=Math.abs(v-at)/wd;return k<1?d*(1-k*k):0};
+  if(from>=x1)return;
+  const cut=from>x0;if(cut){g.save();g.beginPath();g.rect(from,y0-4,x1-from+4,h+8);g.clip()}
   for(let x=x0;x<=x1;x+=1.5+e()*4)P.push(x,y0+(e()-.5)*.9+nick(x,131,4,1.6)+nick(x,208,3,1.2)+.5*Math.sin(x/9.3));
   for(let x=x1;x>=x0;x-=1.5+e()*4)P.push(x,y1+(e()-.5)*.9-nick(x,226,4,1.6)-nick(x,118,3,1.2)-.5*Math.sin(x/8.1));
   clipTo(g,()=>poly(g,P),()=>{g.fillStyle=lg(g,0,y0,0,y1,['#ecdcae','#e2cd9a','#d6bd86']);g.fillRect(x0-3,y0-3,w+6,h+6);
@@ -65,16 +71,19 @@ function sheet(g){const r=rng(31337),e=rng(90210),{x0,x1,y0,y1}=SH,w=x1-x0,h=y1-
     pool(g,246,124,24,13,'#a8823e',.3,'multiply');pool(g,96,16,20,9,'#a8823e',.22,'multiply');pool(g,232,18,13,6,'#a8823e',.16,'multiply');
     /* the reader's own light, above the middle */
     comp(g,'multiply',1,()=>{g.fillStyle=rg(g,170,36,190,['#ffffff','#fff6e2','#c8ac86']);g.fillRect(x0-3,y0-3,w+6,h+6)})});
-  g.save();poly(g,P);g.strokeStyle=rgba('#4e3410',.5);g.lineWidth=.5;g.stroke();g.restore()}
+  g.save();poly(g,P);g.strokeStyle=rgba('#4e3410',.5);g.lineWidth=.5;g.stroke();g.restore();
+  if(cut)g.restore()}
 /* a rolled-up end, standing upright. Its upper end shows the turns of the roll and, as the dark middle, the end of the stick it is wound
-   on: the stick does not stand out of it. flip: the right-hand roll, lit from the other side */
-function roll(g,x,flip){const w=ROLL_W,y0=SH.y0-2.5,y1=SH.y1+1.5,h=y1-y0,cx=x+w/2,r=rng(Math.round(x)*31+7),
+   on: the stick does not stand out of it. flip: the right-hand roll, lit from the other side. o.lit: the side its light comes from, when
+   that is not its own (0 the left lamp, 1 the right); o.bare: no open papyrus beside it to throw its shadow on */
+function roll(g,x,flip,sh=SH,o={}){const w=ROLL_W,y0=sh.y0-2.5,y1=sh.y1+1.5,h=y1-y0,cx=x+w/2,r=rng(Math.round(x)*31+7),lit=o.lit==null?flip:o.lit,
     st=[[0,'#8e6e3c'],[.13,'#c4a86e'],[.36,'#f3e4b8'],[.6,'#dfc993'],[.85,'#b3935a'],[1,'#7e6034']];
-  ao(g,flip?x-9:x+w,y0+4,9,h-7,flip?'r':'l',.42,'#5a3c14');   /* its shadow on the open part */
-  clipTo(g,()=>{g.beginPath();g.rect(x,y0,w,h);g.ellipse(cx,y1,w/2,2.6,0,0,6.2832)},()=>{g.fillStyle=lg(g,flip?x+w:x,0,flip?x:x+w,0,st);g.fillRect(x-1,y0-1,w+2,h+6);
+  if(!o.bare)ao(g,flip?x-9:x+w,y0+4,9,h-7,flip?'r':'l',.42,'#5a3c14');   /* its shadow on the open part */
+  clipTo(g,()=>{g.beginPath();g.rect(x,y0,w,h);g.ellipse(cx,y1,w/2,2.6,0,0,6.2832)},()=>{g.fillStyle=lg(g,lit?x+w:x,0,lit?x:x+w,0,st);g.fillRect(x-1,y0-1,w+2,h+6);
     for(let y=y0;y<y1+3;){const hh=1+r()*2.6;R(g,x-1,y,w+2,hh,r()<.5?rgba('#8a6830',.04+r()*.08):rgba('#fff6d2',.04+r()*.08));y+=hh}
-    tex(g,'wood',.42,x-1,y0-1,w+2,h+6,'overlay',.5);ao(g,x,y0,w,8,'t',.3,'#6e4c1e');ao(g,x,y1-7,w,10,'b',.34,'#6e4c1e')});
-  oval(g,cx,y0,w/2,2.6,'#6e5228');oval(g,cx+(flip?.8:-.8),y0+.2,w/2-2.2,1.7,'#a88a52');oval(g,cx+(flip?1.4:-1.4),y0+.3,w/2-4.6,1.1,'#5e4420')}
+    tex(g,'wood',.42,x-1,y0-1,w+2,h+6,'overlay',.5);ao(g,x,y0,w,8,'t',.3,'#6e4c1e');ao(g,x,y1-7,w,10,'b',.34,'#6e4c1e');
+    if(o.seam)ao(g,o.seam>0?x+w-4:x,y0,4,h+3,o.seam>0?'r':'l',.4,'#4a3010')});   /* where it stands against the other roll */
+  oval(g,cx,y0,w/2,2.6,'#6e5228');oval(g,cx+(lit?.8:-.8),y0+.2,w/2-2.2,1.7,'#a88a52');oval(g,cx+(lit?1.4:-1.4),y0+.3,w/2-4.6,1.1,'#5e4420')}
 
 /* ---------- the hands ---------- */
 /* tones: set a layer that was painted in greys into a scale of colors, darkest first, with the ordered dither of finish(): one dither
@@ -85,64 +94,92 @@ function tones(c,g,pal){const w=c.width,h=c.height,im=g.getImageData(0,0,w,h),d=
   for(let y=0,i=0;y<h;y++)for(let x=0;x<w;x++,i+=4){if(d[i+3]<128){d[i+3]=0;continue}d[i+3]=255;
     const v=(d[i]*.3+d[i+1]*.59+d[i+2]*.11)/255*n,t=(BAYER[((y>>1)&3)*4+((x>>1)&3)]+.5)/16,p=P[clamp(Math.floor(v+t),0,n)];d[i]=p[0];d[i+1]=p[1];d[i+2]=p[2]}
   g.putImageData(im,0,0)}
-/* The left hand is drawn for a roll whose outer edge stands at x=76: HAND is the back of the hand with the forefinger, THUMB the thumb.
-   at() shifts it to its roll, and mirrors it for the right hand, which is then lit from its own side, by its own lamp. */
-const HAND=[30,106,33,101,36.4,96.5,40.5,90.6,44.6,82.4,47.2,74.8,49.6,66.5,52.5,60.6,56.5,56,61,52.2,65.5,49.2,70,46.3,74,44,78,42.6,80.5,45,80.5,60,80.5,100,77,104,73,108.5,68,114,61.5,119,54,123.5,44,125,34,117],
-  THUMB=[66.2,65,69,61.6,72.6,58.2,75.6,55,78,52,80.6,48.8,83.8,46.6,87.6,46.2,90.9,48.2,92.5,52,92.1,56.4,90.5,60.2,88.3,63.8,85.3,67.4,81.9,71.2,78.4,75.2,75.6,79.2,72,81.4,67,80,63.5,74.5,63.6,68.5],
-  HX=ROLLS[0]-76,at=(g,fn,flip)=>{g.save();if(flip){g.translate(340,6);g.scale(-1,1)}g.translate(HX,0);fn(g,flip?1:0);g.restore()},both=(g,fn)=>{at(g,fn);at(g,fn,1)};
-function hand(g,flip){
-  blob(g,HAND,GV(flip?.6:.56));
-  clipTo(g,()=>blob(g,HAND),()=>{
-    /* asymmetric lighting: the left lamp sits recessed in its niche; the right lamp stands open and higher on the shelf */
-    g.fillStyle=lg(g,flip?44:40,flip?56:64,flip?80:76,112,[[0,W_(flip?.36:.27)],[.45,W_(0)],[.56,K_(0)],[1,K_(flip?.38:.44)]]);g.fillRect(20,36,70,96);
-    pool(g,flip?52:54.5,flip?82:86,12,17,'#ffffff',flip?.34:.26,'source-over');pool(g,49,flip?72:75,7,9,'#ffffff',flip?.24:.18,'source-over');pool(g,43.5,99,5,7,'#ffffff',flip?.22:.28,'source-over');
-    ao(g,64,56,17,56,'r',flip?.34:.4);pool(g,68,114,18,13,'#000000',flip?.42:.48,'source-over');pool(g,57,70.5,5,3.6,'#000000',.22,'source-over');
-    /* the forefinger: round, lit along its upper side, dark along the side toward the thumb */
-    sline(g,[56.5,59,61.5,54.6,66.5,51,71,48,76,45.2],W_(flip?.46:.38),2.8);sline(g,[61,63.5,65,60,69,56.6,73,53.4,77,50.6],K_(.32),2.8);pool(g,55.5,63.5,5,4.4,'#ffffff',flip?.32:.26,'source-over');
-    /* softer knuckle creases, thumb-root folds, wrist lines, and subtle asymmetric sinews */
-    for(const p of[[64.4,52.6,66.6,55,69.4,57.6],[66.6,51.2,68.8,53.4,71.2,55.8],[58.4,58.2,61.6,61,65.2,63.8],[56.8,60.6,59.6,63.4,62.8,65.8]]){sline(g,p,GV(.38),.55);sline(g,p.map((v,i)=>i%2?v+.7:v-.3),W_(.14),.55)}
-    for(const p of[[62,80.4,66.6,81.4,71.6,81],[63.6,83.6,67.8,84.4,72,83.8],[61,77,65,78,69,77.2]])sline(g,p,GV(.42),.5);
-    for(const p of[[48,106.5,53.5,112,60,116],[51,104.5,57,110,63.5,113.5]])sline(g,p,GV(.42),.55);
-    sline(g,[47,98,51+(flip?.8:0),88,56,78,60,70],K_(.1),1.3);sline(g,[52,102,57,92-(flip?1:0),62,84],K_(.08),1.1);sline(g,[45.6,97.6,49.6+(flip?.8:0),87.6,54.6,77.6,58.6,69.6],W_(.13),.8);
-    tex(g,'mott',.18,20,36,70,96,'overlay',.5);
-    /* where it comes out of the sleeve it lies in the sleeve's shade */
-    sline(g,[31,99,37,104,42.6,110.4,48,116.4,53,121.6,58,125],K_(.32),5)});
+/* A hand is drawn in the hand's own space, for a roll whose outer edge stands at x=76; at() shifts it to its roll (HX, and the pose's own
+   dx), and mirrors the right hand, which is then lit from its own side, by its own lamp. A pose holds every shape and every stroke of a
+   hand, its thumb and its sleeve, each placed by hand: OPEN(f) is the open picture's (f=1 the right hand), CLOSING the left hand's as it
+   brings its roll over to the right one. No pose is made from another by scaling or turning it. */
+const HX=ROLLS[0]-76,at=(g,fn,P)=>{g.save();if(P.flip){g.translate(340,6);g.scale(-1,1)}g.translate(HX+(P.dx||0),0);fn(g,P);g.restore()};
+/* the open picture: the back of the hand with the forefinger, the thumb, and the sleeve */
+const OPEN=flip=>({flip,dx:0,
+  hand:[30,106,33,101,36.4,96.5,40.5,90.6,44.6,82.4,47.2,74.8,49.6,66.5,52.5,60.6,56.5,56,61,52.2,65.5,49.2,70,46.3,74,44,78,42.6,80.5,45,80.5,60,80.5,100,77,104,73,108.5,68,114,61.5,119,54,123.5,44,125,34,117],
+  tone:flip?.6:.56,box:[20,36,70,96],
+  /* asymmetric lighting: the left lamp sits recessed in its niche; the right lamp stands open and higher on the shelf */
+  grad:[flip?44:40,flip?56:64,flip?80:76,112,flip?.36:.27,flip?.38:.44],
+  hi:[[flip?52:54.5,flip?82:86,12,17,flip?.34:.26],[49,flip?72:75,7,9,flip?.24:.18],[43.5,99,5,7,flip?.22:.28]],
+  ao:[64,56,17,56,'r',flip?.34:.4],lo:[[68,114,18,13,flip?.42:.48],[57,70.5,5,3.6,.22]],
+  /* the forefinger: round, lit along its upper side, dark along the side toward the thumb */
+  finger:[[56.5,59,61.5,54.6,66.5,51,71,48,76,45.2],flip?.46:.38,[61,63.5,65,60,69,56.6,73,53.4,77,50.6],.32,[55.5,63.5,5,4.4,flip?.32:.26]],
+  /* softer knuckle creases, thumb-root folds, wrist lines, and subtle asymmetric sinews */
+  creases:[[64.4,52.6,66.6,55,69.4,57.6],[66.6,51.2,68.8,53.4,71.2,55.8],[58.4,58.2,61.6,61,65.2,63.8],[56.8,60.6,59.6,63.4,62.8,65.8]],
+  folds:[[62,80.4,66.6,81.4,71.6,81],[63.6,83.6,67.8,84.4,72,83.8],[61,77,65,78,69,77.2]],
+  wrist:[[48,106.5,53.5,112,60,116],[51,104.5,57,110,63.5,113.5]],
+  sinews:[[[47,98,51+(flip?.8:0),88,56,78,60,70],K_(.1),1.3],[[52,102,57,92-(flip?1:0),62,84],K_(.08),1.1],[[45.6,97.6,49.6+(flip?.8:0),87.6,54.6,77.6,58.6,69.6],W_(.13),.8]],
+  /* where it comes out of the sleeve it lies in the sleeve's shade */
+  cuff:[31,99,37,104,42.6,110.4,48,116.4,53,121.6,58,125],
   /* the dark between forefinger and thumb, where the roll goes in */
-  blob(g,[76.5,52,72.5,55.2,68.8,59.2,66,63.4,66.4,65.2,69.6,62.6,73,59.4,76.5,56.6],GV(.08))}
-function sleeve(g,flip){const S=[-12,132,3,122.4,8.8,116.5,18,105.6,27.2,101,33,101.4,38,106,43.5,112,49,118,53.8,123.2,57.2,134.8,58.6,150,-12,150];
-  blob(g,S,GV(flip?.52:.49));
-  clipTo(g,()=>blob(g,S),()=>{g.fillStyle=lg(g,14,100,44,150,[[0,W_(flip?.44:.36)],[.35,W_(0)],[.5,K_(0)],[1,K_(.5)]]);g.fillRect(-14,96,80,56);
-    /* folds running down from the hem, shifted slightly between left and right sleeves */
-    const dx=flip?2.2:0;
-    blob(g,[20+dx,112,27+dx,108,33+dx,112,35+dx,124,33+dx,150,22+dx,150,21+dx,128],K_(.3));blob(g,[41-dx*.5,116,46-dx*.5,119,49-dx*.5,130,50-dx*.5,150,43-dx*.5,150,42-dx*.5,132],K_(.34));blob(g,[-12,134,2,128,10,132,12,150,-12,150],K_(.36));blob(g,[8+dx,118,14+dx,111,19+dx,110,16+dx,122,12+dx,134,6+dx,132],W_(.16));
-    sline(g,[27.6,102,33,102.6,37.6,107,43,113,48.4,119,53,124],W_(.48),1.6);sline(g,[26,104.8,31.6,105.6,36,109.6,41.4,115.6,46.6,121.4,51,126.2],K_(.38),.9);
-    sline(g,[4,123.4,9.6,117.4,18.6,106.6,26,102.6],W_(.2),1.2);tex(g,'mott',.4,-14,96,80,56,'overlay',.5);tex(g,'grain',.1,-14,96,80,56,'overlay',.5)})}
-function thumb(g,flip){
-  blob(g,THUMB,GV(flip?.62:.59));
-  clipTo(g,()=>blob(g,THUMB),()=>{
-    /* round across: lit on the side toward each hand's lamp, dark on the other */
-    g.fillStyle=lg(g,flip?73:71,flip?53:56,84,64.4,[[0,W_(flip?.4:.32)],[.42,W_(0)],[.58,K_(0)],[1,K_(flip?.46:.52)]]);g.fillRect(56,40,44,48);
-    sline(g,[71,66,75,61,79,56.4,82.4,52.4],W_(flip?.3:.24),1.8);pool(g,69,73.5,5,4.5,'#ffffff',.14,'source-over');
-    /* the nail, and softer folds of the joint */
-    blob(g,[85.2,47.6,88.2,48.2,90.3,51.2,88.6,54.6,86,56.8,83.2,55.6,81.2,53,82.8,49.6],GV(.88));blob(g,[85,49,87.6,49.6,88.6,51.6,86,52.4,84,51.2],GV(1));
-    sline(g,[81.2,53.2,83.3,55.7,86,56.9,88.5,54.8],GV(.42),.6);sline(g,[81.1,53,82.7,49.5,85.2,47.5],GV(.52),.45);
-    for(const p of[[75.2,58.4,79,59.4,83,61.2],[74,61,78,62.2,81.6,64],[73.2,63.8,76.6,65,79.6,66.6]]){sline(g,p,GV(.38),.55);sline(g,p.map((v,i)=>i%2?v+.7:v),W_(.14),.55)}
-    tex(g,'mott',.16,56,40,44,48,'overlay',.5)})}
-const thumbShadow=(g,flip)=>comp(g,'multiply',flip?.54:.62,()=>{g.save();g.translate(flip?2.2:3,flip?2.8:2.4);blob(g,THUMB,'#8a6a44');g.restore()});
+  crotch:[76.5,52,72.5,55.2,68.8,59.2,66,63.4,66.4,65.2,69.6,62.6,73,59.4,76.5,56.6],
+  thumb:[66.2,65,69,61.6,72.6,58.2,75.6,55,78,52,80.6,48.8,83.8,46.6,87.6,46.2,90.9,48.2,92.5,52,92.1,56.4,90.5,60.2,88.3,63.8,85.3,67.4,81.9,71.2,78.4,75.2,75.6,79.2,72,81.4,67,80,63.5,74.5,63.6,68.5],
+  ttone:flip?.62:.59,tbox:[56,40,44,48],
+  /* round across: lit on the side toward each hand's lamp, dark on the other */
+  tgrad:[flip?73:71,flip?53:56,84,64.4,flip?.4:.32,flip?.46:.52],
+  tlit:[[71,66,75,61,79,56.4,82.4,52.4],flip?.3:.24],tpool:[69,73.5,5,4.5,.14],
+  /* the nail, and softer folds of the joint */
+  nail:[85.2,47.6,88.2,48.2,90.3,51.2,88.6,54.6,86,56.8,83.2,55.6,81.2,53,82.8,49.6],nailhi:[85,49,87.6,49.6,88.6,51.6,86,52.4,84,51.2],
+  nailrim:[[81.2,53.2,83.3,55.7,86,56.9,88.5,54.8],[81.1,53,82.7,49.5,85.2,47.5]],
+  joint:[[75.2,58.4,79,59.4,83,61.2],[74,61,78,62.2,81.6,64],[73.2,63.8,76.6,65,79.6,66.6]],
+  tshadow:[flip?2.2:3,flip?2.8:2.4,flip?.54:.62],
+  sleeve:[-12,132,3,122.4,8.8,116.5,18,105.6,27.2,101,33,101.4,38,106,43.5,112,49,118,53.8,123.2,57.2,134.8,58.6,150,-12,150],
+  stone:flip?.52:.49,sbox:[-14,96,80,56],sgrad:[14,100,44,150,flip?.44:.36,.5],
+  /* folds running down from the hem, shifted slightly between left and right sleeves */
+  sfolds:(dx=>[[[20+dx,112,27+dx,108,33+dx,112,35+dx,124,33+dx,150,22+dx,150,21+dx,128],K_(.3)],[[41-dx*.5,116,46-dx*.5,119,49-dx*.5,130,50-dx*.5,150,43-dx*.5,150,42-dx*.5,132],K_(.34)],[[-12,134,2,128,10,132,12,150,-12,150],K_(.36)],[[8+dx,118,14+dx,111,19+dx,110,16+dx,122,12+dx,134,6+dx,132],W_(.16)]])(flip?2.2:0),
+  slines:[[[27.6,102,33,102.6,37.6,107,43,113,48.4,119,53,124],W_(.48),1.6],[[26,104.8,31.6,105.6,36,109.6,41.4,115.6,46.6,121.4,51,126.2],K_(.38),.9],[[4,123.4,9.6,117.4,18.6,106.6,26,102.6],W_(.2),1.2]]});
+function hand(g,P){const[gx0,gy0,gx1,gy1,gw,gk]=P.grad,[fl,fla,fd,fda,ft]=P.finger;
+  blob(g,P.hand,GV(P.tone));
+  clipTo(g,()=>blob(g,P.hand),()=>{
+    g.fillStyle=lg(g,gx0,gy0,gx1,gy1,[[0,W_(gw)],[.45,W_(0)],[.56,K_(0)],[1,K_(gk)]]);g.fillRect(...P.box);
+    for(const[x,y,rx,ry,a]of P.hi)pool(g,x,y,rx,ry,'#ffffff',a,'source-over');
+    ao(g,...P.ao);for(const[x,y,rx,ry,a]of P.lo)pool(g,x,y,rx,ry,'#000000',a,'source-over');
+    sline(g,fl,W_(fla),2.8);sline(g,fd,K_(fda),2.8);pool(g,ft[0],ft[1],ft[2],ft[3],'#ffffff',ft[4],'source-over');
+    for(const p of P.creases){sline(g,p,GV(.38),.55);sline(g,p.map((v,i)=>i%2?v+.7:v-.3),W_(.14),.55)}
+    for(const p of P.folds)sline(g,p,GV(.42),.5);
+    for(const p of P.wrist)sline(g,p,GV(.42),.55);
+    for(const[p,c,w]of P.sinews)sline(g,p,c,w);
+    tex(g,'mott',.18,...P.box,'overlay',.5);
+    sline(g,P.cuff,K_(.32),5)});
+  blob(g,P.crotch,GV(.08))}
+function sleeve(g,P){const[gx0,gy0,gx1,gy1,gw,gk]=P.sgrad;
+  blob(g,P.sleeve,GV(P.stone));
+  clipTo(g,()=>blob(g,P.sleeve),()=>{g.fillStyle=lg(g,gx0,gy0,gx1,gy1,[[0,W_(gw)],[.35,W_(0)],[.5,K_(0)],[1,K_(gk)]]);g.fillRect(...P.sbox);
+    for(const[p,c]of P.sfolds)blob(g,p,c);
+    for(const[p,c,w]of P.slines)sline(g,p,c,w);
+    tex(g,'mott',.4,...P.sbox,'overlay',.5);tex(g,'grain',.1,...P.sbox,'overlay',.5)})}
+function thumb(g,P){const[gx0,gy0,gx1,gy1,gw,gk]=P.tgrad,[tl,tla]=P.tlit,tp=P.tpool;
+  blob(g,P.thumb,GV(P.ttone));
+  clipTo(g,()=>blob(g,P.thumb),()=>{
+    g.fillStyle=lg(g,gx0,gy0,gx1,gy1,[[0,W_(gw)],[.42,W_(0)],[.58,K_(0)],[1,K_(gk)]]);g.fillRect(...P.tbox);
+    sline(g,tl,W_(tla),1.8);pool(g,tp[0],tp[1],tp[2],tp[3],'#ffffff',tp[4],'source-over');
+    blob(g,P.nail,GV(.88));blob(g,P.nailhi,GV(1));
+    sline(g,P.nailrim[0],GV(.42),.6);sline(g,P.nailrim[1],GV(.52),.45);
+    for(const p of P.joint){sline(g,p,GV(.38),.55);sline(g,p.map((v,i)=>i%2?v+.7:v),W_(.14),.55)}
+    tex(g,'mott',.16,...P.tbox,'overlay',.5)})}
+const thumbShadow=(g,P)=>comp(g,'multiply',P.tshadow[2],()=>{g.save();g.translate(P.tshadow[0],P.tshadow[1]);blob(g,P.thumb,'#8a6a44');g.restore()});
 
-/* ---------- the picture: put together once from layers, each set in its own tones ---------- */
-let BG=null;
-function build(){const[c,g]=mk(VW*HR,VH*HR),fin=(lc,l)=>finish(lc,l,12),
-    L=(fn,post)=>{const[lc,l]=mk(VW*HR,VH*HR);l.scale(HR,HR);fn(l);l.setTransform(1,0,0,1,0,0);post(lc,l);g.drawImage(lc,0,0)};
+/* ---------- the pictures: each put together once from layers, each layer set in its own tones ---------- */
+/* A frame: from, where the open papyrus now goes into the left roll; rolls, each [x, flip, options of roll()]; hands, their poses */
+const FRAMES=[{from:SH.x0,rolls:[[ROLLS[0],0],[ROLLS[1],1]],hands:[OPEN(0),OPEN(1)]}];
+function build(F=FRAMES[0]){const[c,g]=mk(VW*HR,VH*HR),fin=(lc,l)=>finish(lc,l,12),
+    L=(fn,post)=>{const[lc,l]=mk(VW*HR,VH*HR);l.scale(HR,HR);fn(l);l.setTransform(1,0,0,1,0,0);post(lc,l);g.drawImage(lc,0,0)},
+    each=(l,fn)=>{for(const P of F.hands)at(l,fn,P)};
   L(room,fin);
-  L(l=>both(l,hand),(lc,l)=>tones(lc,l,SKIN));
-  L(l=>both(l,sleeve),(lc,l)=>tones(lc,l,WOOL));
-  L(l=>{sheet(l);roll(l,ROLLS[0]);roll(l,ROLLS[1],1);both(l,thumbShadow)},fin);
-  L(l=>both(l,thumb),(lc,l)=>tones(lc,l,SKIN));
+  L(l=>each(l,hand),(lc,l)=>tones(lc,l,SKIN));
+  L(l=>each(l,sleeve),(lc,l)=>tones(lc,l,WOOL));
+  L(l=>{sheet(l,SH,F.from);for(const[x,flip,o]of F.rolls)roll(l,x,flip,SH,o);each(l,thumbShadow)},fin);
+  L(l=>each(l,thumb),(lc,l)=>tones(lc,l,SKIN));
   return c}
 /* its own canvas, over the darkened view and under the words: the room that is being entered behind it is not disturbed */
+const BG=[];
 const[cv,cg]=mk(VW*HR,VH*HR);cv.id='scroll';$('#dim').after(cv);
-function draw(ts){cg.setTransform(1,0,0,1,0,0);cg.drawImage(BG||(BG=build()),0,0);cg.setTransform(HR,0,0,HR,0,0);
+function draw(ts){cg.setTransform(1,0,0,1,0,0);cg.drawImage(BG[0]||(BG[0]=build()),0,0);cg.setTransform(HR,0,0,HR,0,0);
   for(const[x,y]of LAMPS){flame(cg,x,y,ts+x*7);pool(cg,x,y-3,15+Math.sin(ts/190+x)*.8,11,'#ff9838',.15+.015*Math.sin(ts/83+x))}}
 
 /* ---------- coming and going ---------- */
