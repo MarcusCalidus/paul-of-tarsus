@@ -8184,7 +8184,7 @@
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('journey6',()=>{ov.className=''});halt('final6');await wait(1700)}
-  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13();await wait(1700);await ch14();await wait(1700);await ch15();await wait(1700);await ch16();await wait(1700);await ch17();await wait(1700);await ch18();await wait(1700);await ch19();await wait(1700);await ch20();await wait(1700);await ch21();await wait(1700);await ch22();await wait(1700);await ch23()}
+  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13();await wait(1700);await ch14();await wait(1700);await ch15();await wait(1700);await ch16();await wait(1700);await ch17();await wait(1700);await ch18();await wait(1700);await ch19();await wait(1700);await ch20();await wait(1700);await ch21();await wait(1700);await ch22();await wait(1700);await ch23();await wait(1700);await ch24();await wait(1700);await ch25()}
   ok(!MISSING.size&&!RAWKEY.size,'every line shown in the game had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);
