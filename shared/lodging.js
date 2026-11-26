@@ -33,12 +33,18 @@
    half-pixel canvas, light per pixel, soft contact shadows, dithered once by the engine. Registered in shared/pwa.js for offline play.
 
    API (SHARED.lodging):
-     room(g, o)        paints the room for a 320 by 144 room. o: {kind 'flat' or 'street', hour (HOURS key)}
+     room(g, o)        paints the room for a 320 by 144 room. o: {kind 'flat' or 'street', hour (HOURS key), stools (left out: every
+                       stool; false: none; an array of names from STOOLS, such as ['desk','table']: only those)}. A stool that is not
+                       painted has no cut-out and no footprint either (pass the same list to props and foot); the level draws one it
+                       has moved with SHARED.cast.custody.stool(g, x, y, {room}), after stoolCast(g, x, y, {hour}) for its shadow: it is
+                       the same stool as the painted one, in the same light
      light(kind, hour) ART[id].light: the sun of the hour (its shadow tip for a figure 46 tall), or at night the lamp in its niche
      motion(o)         {draw(g, t)} for the room's draw: the lamp's flame at night, the fountain's spout by day in the street room
-     props(kind)       ART[id].props: the table and the stools that stand in the walk strip, cut out of the backdrop so that whoever
-                       stands behind them is hidden; each with its footprint
-     foot(kind)        every footprint of the room's own things, [x, y, w, h] (ROOMS[id].block)
+     props(kind, stools)  ART[id].props: the table and the stools that stand in the walk strip, cut out of the backdrop so that whoever
+                       stands behind them is hidden; each with its footprint (a stool's entry says which: stool 'desk')
+     foot(kind, stools)   every footprint of the room's own things, [x, y, w, h] (ROOMS[id].block)
+     stoolCast(g, x, y, o)  the shadow a stool at x, y casts in the light of o.hour, for a stool the level draws
+     STOOLS            the stools' names, ['desk', 'table', 'door']; their places are POS.stools
      POS               the one table of places, read by both variants (room pixels; feet at y)
      AT                where people stand or sit: door (the door's foot, where a visitor appears, facing left), seats (the three places
                        where the soldier can sit: door, table, window), desk (Paul's stool at the table), stand (where Paul stands
@@ -84,7 +90,7 @@ function viewO(h){return OS[h]||(OS[h]={w:320,hz:HZ,hour:H_(h).sky,sun:H_(h).sp,
 function opening(W,f){f=f||.06;return{x0:W.x0,x1:W.x1,top:W.top,sill:W.sill!=null?W.sill:W.b,ox0:W.x0+(VX-W.x0)*f,ox1:W.x1+(VX-W.x1)*f,otop:W.top+(HZ-W.top)*f,osill:(W.sill!=null?W.sill:W.b)+(HZ-(W.sill!=null?W.sill:W.b))*f}}
 
 /* ---- the room ---- */
-function room(g,o){const kind=o.kind==='street'?'street':'flat',h=o.hour||'noon',night=h==='night',r=rng(2501),M=SHARED.materials;
+function room(g,o){const kind=o.kind==='street'?'street':'flat',h=o.hour||'noon',night=h==='night',r=rng(2501),M=SHARED.materials,ST=stoolsOf(o.stools);
   const A=kind==='flat'?opening(POS.win):opening(POS.high),D=kind==='street'?opening(POS.wide,.04):null;
   /* the view beyond the openings, painted over the whole picture; the room is painted round it */
   if(kind==='flat')roofs(g,h,A);else{highSky(g,h,A);lane(g,h,D)}
@@ -102,13 +108,18 @@ function room(g,o){const kind=o.kind==='street'?'street':'flat',h=o.hour||'noon'
   bed(g,POS.bed,h,r);
   for(const B of POS.benches)bench(g,B,h,r);
   table(g,POS.table,h,r);
-  for(const k in POS.stools)stool(g,POS.stools[k],h,r);
+  for(const k of ST)stoolShadow(g,POS.stools[k].x,POS.stools[k].y,h);
   jar(g,POS.jar,h);
   cloak(g,POS.peg,r);
   basket(g,POS.basket,h,r);
   shadeRoom(g,kind,h,A,D);
   if(!night)patch(g,kind,h,A,D);
-  if(night)nightLight(g,kind,A)}
+  if(night)nightLight(g,kind,A);
+  /* the stools last, in the light a figure standing there is given, so that each is the very stool custody.stool draws */
+  for(const k of ST)stool(g,POS.stools[k],kind,h)}
+/* which stools stand in the room: o.stools left out, all; false, none; an array of their names, those */
+const STOOLS=['desk','table','door'];
+function stoolsOf(s){return s==null||s===true?STOOLS:s===false?[]:STOOLS.filter(k=>s.indexOf(k)>=0)}
 
 /* the walls: limewashed plaster; in the flat a socle of red ochre below the window's ledge, as the better rooms had it; in the street
    room older, rougher plaster, and damp along the foot */
@@ -297,15 +308,15 @@ function patch(g,kind,h,A,D){const H=H_(h),[dx,dy]=H.sun,ux=dx/46,uy=dy/46,warm=
   const all=(z,air)=>{one(A.x0,A.x1,A.top,A.sill,kind==='flat'?1:.8,z,air);if(D&&H.lane<1)one(D.x0,D.x1,D.top,WY,1-H.lane*.6,z,air)};
   /* on the floor, but not on what stands in front of it */
   g.save();g.beginPath();g.rect(-4,WY,328,60);front(g);g.clip('evenodd');all(0,1);g.restore();
-  /* on the table's top, the benches' and the stools' seats, where the light reaches them at their own height */
+  /* on the table's top and the benches' seats, where the light reaches them at their own height (the stools are painted after, in the
+     light of a figure standing there: see stool) */
   const T=POS.table;clipTo(g,()=>poly(g,[T.x0+3,T.back,T.x1-3,T.back,T.x1,T.top,T.x0,T.top]),()=>all(T.foot-T.top,0));
   for(const B of POS.benches)inRect(g,B.x0,B.top-1.2,B.x1-B.x0,1.4,()=>all(B.foot-B.top,0));
-  for(const k in POS.stools){const S=POS.stools[k];inRect(g,S.x-5,S.y-10.6,10,1.8,()=>all(9,0))}
   comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,WY,0,WY-24,[warm,'rgba(255,220,170,0)']);g.fillRect(kind==='flat'?A.x0-20:D.x0-20,WY-24,90,24)})}
-/* the outlines of what stands out on the floor in front of the patch of sun (the table, the stools, the basket), added to the path
-   being built, so that the patch is left off them */
+/* the outlines of what stands out on the floor in front of the patch of sun (the table, the basket), added to the path being built, so
+   that the patch is left off them (the stools are painted after the patch: see stool) */
 function front(g){const T=POS.table;g.moveTo(T.x0+3,T.back);g.lineTo(T.x1-3,T.back);g.lineTo(T.x1,T.top);g.lineTo(T.x1,T.foot);g.lineTo(T.x0,T.foot);g.lineTo(T.x0,T.top);g.closePath();
-  for(const k in POS.stools){const s=POS.stools[k];g.rect(s.x-5,s.y-10.6,10,10.6)}const B=POS.basket;g.rect(B.x-6.4,B.y-12,12.8,12)}
+  const B=POS.basket;g.rect(B.x-6.4,B.y-12,12.8,12)}
 /* the room's own light by day: indoors, darker than the day outside; lighter on the side of the opening that lets the most in (the
    flat's window, the street room's doorway), darker toward the corners and the ceiling; the hour's tone over all. Not over what is
    seen through the openings */
@@ -387,12 +398,27 @@ function table(g,T,h,r){const M=SHARED.materials,W='#7a5838',lit='#a47a50',ap=2.
   /* the inkwell: squat, round in its body, its top flat with a small square hole */
   const ix=f1-12,iy=T.top-2.2;poly(g,[ix-2.4,iy+1.6,ix-2.6,iy,ix-2,iy-1.2,ix+2,iy-1.2,ix+2.6,iy,ix+2.4,iy+1.6],'#6a3c26');
   R(g,ix-2,iy-1.6,4,.8,'#8a5434');R(g,ix-.5,iy-1.6,1,.5,'#120a08');R(g,ix-2.4,iy-.2,1,1.2,'rgba(255,210,170,.3)');sh(g,ix+.6,iy+1.6,3,.6,.4)}
-/* a stool: a small square seat on four legs at its corners, as high as a seated man's hips (9 room pixels: SEATG) */
-function stool(g,S,h,r){const W='#6a4c30',x=S.x,y=S.y,hw=5,t=y-9;
-  cast(g,x-hw,x+hw,y,9,h,.4);sh(g,x,y-.6,hw+1,1.2,.45);
-  for(const lx of[x-hw+1.6,x+hw-2.6])R(g,lx,t+1,1,y-2-t,tint(W,-.45));
-  poly(g,[x-hw+1,t-1.6,x+hw-1,t-1.6,x+hw,t,x-hw,t],tint(W,.22));SHARED.materials.board(g,x-hw,t,hw*2,1.6,W,r);
-  for(const lx of[x-hw+.2,x+hw-1.8]){R(g,lx,t+1.6,1.6,y-t-1.6,tint(W,-.12));R(g,lx,y-.5,1.6,.5,'#24160c')}}
+/* a stool: a small square seat on four legs at its corners, as high as a seated man's hips (9 room pixels: SEATG). It is the stool that
+   SHARED.cast.custody.stool draws for one the level moves, line for line: the same size, the same plain wood, and the same light, the
+   light the engine gives a figure standing there (lightAt over this room's light()), so that nobody sees a difference when the level
+   takes one out of the backdrop (room's o.stools) and draws it elsewhere. Keep the two alike. Its shadows are painted on the floor
+   under the room's own light, before it (stoolShadow) */
+function stool(g,S,kind,h){const Wd='#6a4c30',x=S.x,y=S.y,hw=5,t=y-9,lit=litAt(kind,h,x,y),col=c=>unfinish(lit2(c,lit));
+  for(const lx of[x-hw+1.6,x+hw-2.6])R(g,lx,t+1,1,y-2-t,col(tint(Wd,-.45)));
+  poly(g,[x-hw+1,t-1.6,x+hw-1,t-1.6,x+hw,t,x-hw,t],col(tint(Wd,.22)));R(g,x-hw,t,hw*2,1.6,col(Wd));R(g,x-hw,t,hw*2,.5,col(tint(Wd,.12)));
+  for(const lx of[x-hw+.2,x+hw-1.8]){R(g,lx,t+1.6,1.6,y-t-1.6,col(tint(Wd,-.12)));R(g,lx,y-.5,1.6,.5,unfinish('#24160c'))}}
+/* the engine finishes every backdrop (index.html finish): a little more color and contrast, and the dither. A drawn stool is not
+   finished, so the painted one is given the color that comes out of finish as the drawn one's */
+function unfinish(c){const[r,g,b]=hex(c),mT=r*.3+g*.59+b*.11,m=(mT-128)/1.07+128;return toHex(...[r,g,b].map(T=>m+((T-128)/1.07+128-m)/1.14))}
+/* a stool's shadows on the floor: the one it casts in the light of the hour, and its contact shadow. A level that draws a moved stool
+   with custody.stool (which gives it its contact shadow) calls stoolCast for the cast one, in its draw, before the stool */
+function stoolShadow(g,x,y,h){cast(g,x-5,x+5,y,9,h,.4);sh(g,x,y-.6,6,1.2,.45)}
+function stoolCast(g,x,y,o){cast(g,x-5,x+5,y,9,(o&&o.hour)||'noon',.4)}
+/* the light the engine gives a figure at x, y in this room (index.html lightAt, over light(kind, hour)), and a color in it */
+function litAt(kind,h,x,y){const L=light(kind,h);let[r,g,b]=hex(L.amb||'#ffffff');
+  for(const[lx,ly,lr,c]of L.lamps||[]){const d=Math.hypot(x-lx,(y-22-ly)*1.5)/lr;if(d<1){const k=(1-d)*(1-d),q=hex(c);r+=q[0]*k;g+=q[1]*k;b+=q[2]*k}}
+  return r>=254&&g>=254&&b>=254?null:toHex(r,g,b)}
+const lit2=(c,l)=>{if(!l)return c;const a=hex(c),b=hex(l);return toHex(a[0]*b[0]/255,a[1]*b[1]/255,a[2]*b[2]/255)};
 /* the water jar: plain red clay, its body swelling below a short neck, its mouth a small square */
 function jar(g,J,h){const cx=(J.x0+J.x1)/2,hw=(J.x1-J.x0)/2,hh=J.foot-J.top;
   cast(g,cx-2.6,cx+2.6,J.foot,hh,h);sh(g,cx+.6,J.foot,hw*.9,.9,.55);
@@ -427,13 +453,13 @@ function basket(g,B,h,r){const{x,y}=B,w=6,hh=7;sh(g,x+.5,y-.3,w+1,1,.5);
   R(g,x-w-.3,y-hh-.4,w*2+.6,.9,'#b8945a')}
 /* ---- for the chapter ---- */
 /* the things that stand in the walk strip, cut out of the backdrop (ART[id].props), each with its footprint */
-function props(){const T=POS.table,S=POS.stools,P=[];
+function props(kind,stools){const T=POS.table,S=POS.stools,P=[];
   P.push({y:T.foot,shape(g){poly(g,[T.x0+3,T.back,T.x1-3,T.back,T.x1,T.top,T.x1,T.foot,T.x0,T.foot,T.x0,T.top],'#000')},foot:[T.x0-1,T.bfoot-1,T.x1-T.x0+2,T.foot-T.bfoot+2]});
-  for(const k in S){const s=S[k];P.push({y:s.y,shape(g){R(g,s.x-5,s.y-10.6,10,10.6,'#000')},foot:[s.x-5,s.y-3,10,4]})}
+  for(const k of stoolsOf(stools)){const s=S[k];P.push({stool:k,y:s.y,shape(g){R(g,s.x-5,s.y-10.6,10,10.6,'#000')},foot:[s.x-5,s.y-3,10,4]})}
   return P}
-function foot(){const B=POS.bed,J=POS.jar,out=[[B.x0,B.foot-4,B.x1-B.x0,5],[J.x0-1,J.foot-3,J.x1-J.x0+2,4]];
-  for(const b of POS.benches)out.push([b.x0,b.foot-4,b.x1-b.x0,5]);return out.concat(props().map(p=>p.foot))}
+function foot(kind,stools){const B=POS.bed,J=POS.jar,out=[[B.x0,B.foot-4,B.x1-B.x0,5],[J.x0-1,J.foot-3,J.x1-J.x0+2,4]];
+  for(const b of POS.benches)out.push([b.x0,b.foot-4,b.x1-b.x0,5]);return out.concat(props(kind,stools).map(p=>p.foot))}
 function motion(o){const night=o.hour==='night',N=POS.niche;
   return{draw(g,t){if(night)flame(g,N.x0+(N.x1-N.x0)*.46+3.8,N.b-2.4,t)}}}
 
-return{room,light,motion,props,foot,POS,AT,WALK,HOURS,KINDS,WY,HZ,VX}})();
+return{room,light,motion,props,foot,stoolCast,POS,AT,WALK,HOURS,KINDS,STOOLS,WY,HZ,VX}})();
