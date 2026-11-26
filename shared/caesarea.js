@@ -51,18 +51,20 @@
      DESK            the scribe's writing table and stool: {x0, x1, top, foot, stool:{x0, x1, top, foot}, at:[x, y, 1]} (at: where the
                      scribe sits, facing the governor, seat flag set)
      AT              where people stand for a hearing (room pixels of the feet, and the way each faces): governor, scribe, accused,
-                     guard (beside the accused, on his left, for the chain), officer, accusers (a list, nearest the governor first;
-                     they face the seat too, and stand round the accused when the level spreads them so), advisers (two, on the upper
-                     step at either side of the seat) */
+                     guard (a step behind the accused on his left, near enough for the chain, and clear of the
+                     desk), officer, accusers (a list, nearest the governor first; they face the seat too, and stand round the accused
+                     when the level spreads them so), advisers (two, standing on the upper step at the right of the seat, where the
+                     small table stands: paint the court with table:false when they are there). Nobody stands in front of the desk
+                     (x 150..190) while the scribe sits at it. */
 SHARED.caesarea=(()=>{
 "use strict";
 const HZ=60,PIER=[186,197],COLS=[224,256,288,318],WALK=[30,300,114,138],WALLY=96,COPING=80.4,
   DAIS={lower:[196,308,104,112],upper:[204,300,98,104]},
   SEAT={x0:229,x1:248,top:91,foot:100,at:[238,100,-1]},
   TABLE={x0:264,x1:284,top:89,foot:100},
-  DESK={x0:178,x1:193,top:97,foot:110,stool:{x0:164,x1:176,top:101,foot:110},at:[170,110,1]},
-  AT={governor:[238,100,-1],scribe:[170,110,1],accused:[188,126,1],guard:[166,130,1],officer:[284,126,-1],
-    accusers:[[136,122,1],[112,128,1],[90,120,1],[66,126,1]],advisers:[[214,101,1],[292,101,-1]]};
+  DESK={x0:170,x1:185,top:97,foot:110,stool:{x0:156,x1:168,top:101,foot:110},at:[162,110,1]},
+  AT={governor:[238,100,-1],scribe:[162,110,1],accused:[210,128,1],guard:[194,121,1],officer:[300,130,-1],
+    accusers:[[140,122,1],[116,128,1],[94,120,1],[70,126,1]],advisers:[[270,101,-1],[292,101,-1]]};
 /* the coast's options for each hour; one object per hour, kept, so that shared/coast.js keeps its light on it (O.L) */
 const OPT={evening:{w:320,hz:HZ,hour:'evening',sun:[-80,14],cloud:.16,streak:.35,seed:1972,y1:82},
   morning:{w:320,hz:HZ,hour:'morning',sun:[400,18],cloud:.16,streak:.35,seed:1972,y1:82}};
