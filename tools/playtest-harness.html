@@ -1,7 +1,17 @@
 <!-- Test driver injected into a temporary copy of index.html by tools/playtest.mjs. It plays the game through the real UI. -->
 <pre id="tlog" style="position:fixed;left:0;top:0;margin:0;font:11px monospace;color:#0f0;background:rgba(0,0,0,.75);max-width:100%;white-space:pre-wrap;z-index:9"></pre>
 <script>
-(()=>{const stop=(location.href.match(/stop=(\w+)/)||[])[1]||'final';const L=m=>{if(/^(STOP|DONE)/.test(m))routeCheck();$('#tlog').textContent+=m+'\n'};
+(()=>{const stop=(location.href.match(/stop=(\w+)/)||[])[1]||'final';const L=m=>{if(/^(STOP|DONE)/.test(m)){routeCheck();legsCheck()}$('#tlog').textContent+=m+'\n'};
+ /* the look back at the end of the game (shared/lookback.js) holds, for each chapter, the roads that chapter drew on its travel map. While a
+    chapter is played every leg its map shows is noted, however it was drawn; a chapter that is played to its end screen must have shown
+    every leg the table gives it. So a road that a chapter changes, or one the table has wrong, fails here, in that chapter's own run. */
+ const LEGS={},ENDED=new Set();
+ {const e0=endScreen;window.endScreen=function(){ENDED.add(G.ch);return e0.apply(this,arguments)}}
+ setInterval(()=>{const M=SHARED.map;if(!M)return;if(!SHARED.lookback&&!LEGS.asked){LEGS.asked=1;need('lookback').catch(()=>{})}
+   if(G.scene===M.draw){const q=LEGS[G.ch]||(LEGS[G.ch]=new Set());for(const l of M.state.legs){q.add(l.a+'-'+l.b);q.add(l.b+'-'+l.a)}}},150);
+ const legsCheck=()=>{const LB=SHARED.lookback;if(!LB||!ENDED.size)return;const bad=[],n=[...ENDED].filter(ch=>(LB.legsOf(ch)||[]).length);
+   for(const ch of n)for(const[a,b]of LB.legsOf(ch))if(!(LEGS[ch]&&LEGS[ch].has(a+'-'+b)))bad.push(`Chapter ${ch}: ${a} to ${b}`);
+   if(n.length)$('#tlog').textContent+=(bad.length?'FAIL ':'ok   ')+'the look back gives each chapter that was played to its end only roads its own map showed (Chapter '+n.join(', ')+')'+(bad.length?'. NEVER SHOWN: '+bad.join(' | '):'')+'\n'};
  /* routes in a room (issue #83, CONTRIBUTING section 4): nobody walks through what stands on the floor. Every stop ends with the check: no
     walk a script begins ends in a footprint that is not a seat, or where it cannot be reached (the engine notes it in ROUTE.bad), and nobody
     is put down by a script inside one (place, watched while the game plays; a test that stands Paul behind a thing to look at it is let be) */
