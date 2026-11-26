@@ -33,7 +33,9 @@
                                   torn off them, and no horizon (the far seas run into the rain). The sea that comes stands up highest at
                                   the windward end and comes over there first. o.pal, o.rail (the top of the rail, 82), o.deck0 (the foot
                                   of the bulwark on the deck, 97), o.height (the seas' height, 1), o.lamp [x, y, r] (a low warm light that
-                                  lights the water and the rain near it), o.from, o.to, o.seed. Returns, in the order a room draws them:
+                                  lights the water and the rain near it), o.from, o.to, o.seed; o.lightning (true: strokes far off in its
+                                  sky), o.clear [x0, x1] (where no stroke falls: the masts; default the middle third), o.period (the
+                                  beat's period, 6000). Returns, in the order a room draws them:
                                     draw(g, t, e)     the sky and the seas, over the whole picture. Not swayed
                                     sway(e, k)        the ship's motion now, k its strength (0 still, 1 as sketched): {a (radians), dx,
                                                       dy (room pixels), sy (vertical scale: she heels toward us), px, py (the pivot, low
@@ -57,7 +59,7 @@
                                   rain to the bottom of the picture, with the ship at o.zShip among them. o.pal, o.hz (the eyes' level,
                                   never drawn: the far seas are lost in rain and spindrift, with no level edge), o.eye, o.height, o.period
                                   (how long one sea takes to pass, 6000), o.hullH (her height from the waterline to the rail on the
-                                  screen, 24), o.seed. In this order:
+                                  screen, 24), o.seed; o.lightning and o.clear as for deckSea. In this order:
                                     far(g, t)         the sky and the seas beyond her
                                     ride(t, xa, xb)   where she floats: {y, a, ya, yb}, the waterline under her stern (xa) and her bow
                                                       (xb) and the angle between them, as the seas lift and drop her. Call it every frame
