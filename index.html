@@ -126,6 +126,25 @@ body{display:flex;align-items:center;justify-content:center}
 #overlay.card h2{margin:0 0 calc(var(--s)*2px)}
 #overlay.card h1{font-size:calc(var(--s)*12px);margin:0;padding:calc(var(--s)*2px) calc(var(--s)*8px);border-top:var(--px) solid var(--dim);border-bottom:var(--px) solid var(--dim)}
 #overlay.card h1.art{font-size:0;padding:0;border:0}
+/* The closing screen of the whole game (shared/finale.js), over the bench by day, which is painted as tall as the title's picture. The
+   name and the lines stand on the upper wall, in a warm, light shade that is gone before the bench; the bench stays clear and in
+   daylight, and the line that leads back to the title stands on its dark front edge. Each line takes half a course of the wall (7.75
+   room pixels) and the line under the name a whole course, and the name with its margins takes three (46.5), so that every line
+   stands inside a course and no joint of the wall runs along through it. */
+#overlay.closing{justify-content:flex-start;padding:0 calc(var(--s)*8px);
+  background:linear-gradient(to bottom,rgba(46,28,12,.4) 0,rgba(46,28,12,.34) 34%,rgba(46,28,12,.22) 46%,rgba(46,28,12,0) 52%)}
+#overlay.closing h1{margin:calc(var(--s)*4px) 0 calc(var(--s)*3.5px)}
+#overlay.closing p{margin:0;line-height:calc(var(--s)*7.75px);color:#f6ecd8;text-wrap:balance;text-shadow:calc(var(--s)*1px) calc(var(--s)*1px) #1a0e06}
+#overlay.closing .head{font-size:calc(var(--s)*7px);line-height:calc(var(--s)*15.5px);color:#fff4dc;letter-spacing:.12em}
+#overlay.closing .small{color:#f0e0c0;max-width:calc(var(--s)*300px)}
+#overlay.closing .pick{color:#ffd36a;font-size:inherit;margin:0;cursor:pointer}
+#overlay.closing p.pick{font-size:calc(var(--s)*5.4px)}
+#overlay.closing .pick:hover{color:#fff}
+#overlay.closing .go{position:absolute;left:0;right:0;bottom:calc(var(--s)*.5px);margin:0 auto;color:#fff3b8}
+#overlay.closing>*{transition:opacity 1.2s ease-in-out}
+#overlay.closing.wait>*{opacity:0;animation:none}
+html.phone #overlay.closing{padding-top:env(safe-area-inset-top,0px)}
+html.phone #overlay.closing .small{font-size:calc(var(--s)*4.6px)}
 /* full: a menu, the safe point or an end screen owns the screen. The status line and the panel slide down out of sight and keep their
    place, so that the picture does not move, and slide back when play goes on. */
 #wrap{overflow:hidden;background:#3a2a1c var(--wood);background-size:calc(var(--s)*128px) calc(var(--s)*32px);background-blend-mode:multiply;image-rendering:pixelated}
@@ -2199,6 +2218,9 @@ function say(a,text,o={}){const S=SHARED.scroll,white=!a&&!o.plain&&!!G.white,in
   const src=text;text=T(text);return new Promise(res=>{
   const el=document.createElement('div');el.className='line';el.textContent=text;if(ink)el.classList.add('ink');else if(white)el.classList.add('white');else el.style.color=o.color||(a?a.color:'#e6d9ff');
   if(o.thought)el.style.fontStyle='italic';
+  /* a narrator's line may be given a place of its own across the view and a width (o.x, o.w, in room pixels), to stand beside a road
+     on the map instead of over it: the look back at the end of the game (shared/finale.js) */
+  if(o.w&&!a&&!ink&&!white)el.style.maxWidth=`calc(var(--s)*${o.w}px)`;
   /* whoever speaks and is not in the picture, as at a close view or from the deck outside it, is named before his words, since his
      colour alone does not tell who he is; whoever is played is not, nor is a thought. The name stands in a data attribute that CSS shows,
      so the line's own text is still its words alone. On a lane map the figures are too small to tell who speaks, so everyone is named there. */
@@ -2208,7 +2230,7 @@ function say(a,text,o={}){const S=SHARED.scroll,white=!a&&!o.plain&&!!G.white,in
   const blips=voiced&&!plan.sung?plan.ev.filter(e=>e.m>1).slice(0,Math.ceil(Math.min(9,text.length/5))).map(e=>setTimeout(()=>SFX.talk(a.pitch*2),e.t0)):[];
   const done=()=>{clearTimeout(tm);blips.forEach(clearTimeout);el.remove();if(a)a.talk=false;choir.forEach(x=>x.talk=false);if(G.skip===done)G.skip=null;cur=null;if(ink)S.rest();res()};
   const tm=setTimeout(done,dur),me=PC(),to=voiced&&!o.sung?spokenTo(a,o,me):null;if(to)turnTo(a,to);else if(voiced&&o.to===null)G.turn.delete(a);
-  G.skip=done;G.lineT=performance.now();cur={el,a,ink,white,low:o.low,plan,t0:G.lineT,choir,to};posSpeech()})}
+  G.skip=done;G.lineT=performance.now();cur={el,a,ink,white,low:o.low,x:a?null:o.x,plan,t0:G.lineT,choir,to};posSpeech()})}
 const narr=(t,o)=>say(null,t,o);
 /* The narrator's scroll (shared/scroll.js). A line of narration told in the dark, that is, while the view is faded out or the scene is DARK,
    is not set on a black screen: it is read from an open roll of papyrus, held in two hands by lamplight. The scroll comes up out of the dark
@@ -2220,15 +2242,15 @@ const inDark=()=>!G.white&&(+$('#dim').style.opacity>=1||G.scene===DARK);
 /* posSpeech: a line stands over its speaker; in a room that sways, level, over the place where his head is seen (swayPt) */
 function posSpeech(){if(!cur||cur.ink||cur.white)return;if(PH.on)return posSpeechPh();const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
   if(a&&a.room===G.room&&!G.scene){const z=zoomNow(),[ax,ay]=swayPt(a.x,a.y-figBox(a.room)[1]);el.style.left=clamp((ax-G.cam)*z*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(ay-G.camY)*z+7,40,Math.max(40,Math.min(132,VH-el.offsetHeight/s-2)))*s+'px';el.style.top=''}   /* a line of several rows over a speaker near the top of the view comes down far enough to stay inside it */
-  else if(cur.low){el.style.left='50%';el.style.top='';el.style.bottom=7*s+'px'}   /* low: a line told over a map whose road runs along its upper edge stands at the foot of the view */
-  else{el.style.left='50%';el.style.top=10*s+'px';el.style.bottom=''}}
+  else if(cur.low){el.style.left=(cur.x!=null?cur.x/VW*100:50)+'%';el.style.top='';el.style.bottom=7*s+'px'}   /* low: a line told over a map whose road runs along its upper edge stands at the foot of the view */
+  else{el.style.left=(cur.x!=null?cur.x/VW*100:50)+'%';el.style.top=10*s+'px';el.style.bottom=''}}
 /* posSpeechPh: on a phone a line stands over its speaker where the field shows him, inside the field, and the narrator's lines at its top,
    below the status line. The words keep their size when the field is zoomed. */
 function posSpeechPh(){const{el,a}=cur,L=LENS,F=L.F,ts=PH.ts,hw=el.offsetWidth/2+4*ts,H=PH.H,eh=el.offsetHeight;
   if(a&&a.room===G.room&&!G.scene){const z=zoomNow(),[ax,ay]=swayPt(a.x,a.y-figBox(a.room)[1]),X=L.tx+(ax-G.cam)*z*L.k,Y=L.ty+(ay-G.camY)*z*L.k;
     el.style.left=clamp(X,F.l+hw,F.l+F.w-hw)+'px';el.style.bottom=clamp(H-Y+5*ts,H*.22,H-eh-3*ts-(PH.it||0))+'px';el.style.top=''}
-  else if(cur.low){el.style.left=(F.l+F.w/2)+'px';el.style.top='';el.style.bottom=7*ts+'px'}
-  else{el.style.left=(F.l+F.w/2)+'px';el.style.top=12*ts+(PH.it||0)+'px';el.style.bottom=''}}
+  else if(cur.low){el.style.left=(F.l+F.w*(cur.x!=null?cur.x/VW:.5))+'px';el.style.top='';el.style.bottom=7*ts+'px'}
+  else{el.style.left=(F.l+F.w*(cur.x!=null?cur.x/VW:.5))+'px';el.style.top=12*ts+(PH.it||0)+'px';el.style.bottom=''}}
 function lock(b){$('#panel').classList.toggle('locked',b);$('#wrap').classList.toggle('locked',b)}
 async function cut(fn,force){if(G.busy&&!force)return;G.busy=true;lock(true);status();
   try{await fn()}catch(e){console.error(e)}
@@ -2326,8 +2348,10 @@ function drawInv(){const el=$('#inv');el.innerHTML='';for(let i=0;i<10;i++){cons
 /* status: the sentence being built, such as "Use awl with torn awning". Each language words it through the templates in it. */
 /* On a phone the status line lies over the field, and is seen only while it says more than Walk to: while something is touched, or a verb
    or an item is chosen. */
-function status(){statusText();const el=$('#status');el.classList.toggle('none',G.busy||!G.hover&&!G.item&&G.verb==='walk')}
-function statusText(){const el=$('#status');litVerb();pointer(ptrScale,pointerKind(G.hover));if(G.busy){el.textContent='\u00a0';return}
+/* G.cap: a caption for what is being shown and not played, set in the status line while the game is busy: the look back at the end of
+   the game names each chapter there while its road is drawn (shared/finale.js). */
+function status(){statusText();const el=$('#status');el.classList.toggle('none',G.busy?!G.cap:!G.hover&&!G.item&&G.verb==='walk')}
+function statusText(){const el=$('#status');litVerb();pointer(ptrScale,pointerKind(G.hover));if(G.busy){el.textContent=G.cap||'\u00a0';return}
   const h=G.hover,hn=h?T(h.item?ITEMS[h.item].name:h.name):'',v=VNAME[G.verb==='walk'&&h&&!G.item?(h.item?itemVerb(h.item):defVerb(h)):G.verb];
   if(G.item){const on=hn&&!(h&&h.item===G.item),item=T(ITEMS[G.item].name);
     el.textContent=G.verb==='give'?(on?T('give_item_to_thing',{item,thing:hn}):T('give_item_to',{item})):(on?T('use_item_with_thing',{item,thing:hn}):T('use_item_with',{item}))}
@@ -2997,6 +3021,8 @@ async function title(){lock(true);if(SHARED.scroll)SHARED.scroll.off();await set
     /* the planned chapters: one line, and under it, once it is clicked, each of them by its reference. None of them can be started. */
     (PLANNED.length?'<p class="plans" data-plans="1"><span>&#9656;</span> '+T('chapters_from_to_to',{from:T(PLANNED[0].short),to:T(PLANNED.at(-1).short)})+' &middot; '+T('in_preparation')+'</p>'+
       PLANNED.map(c=>`<p class="plan">${T(c.label)} &middot; ${T(c.ref)}</p>`).join(''):'')+'</div>'+
+    /* a game played to its end: the look back and the closing screen once more (see THE END OF THE GAME) */
+    (gameDone()?`<p class="pick fin" data-fin="1">&#9656; ${T('from_damascus_to_rome')}</p>`:'')+
     /* the hidden treasures, once one has been found (see TREASURES) */
     (treasures().size?`<p class="pick tre" data-tre="1">&#9656; ${T('hidden_treasures')} &middot; ${T('{n} of {all}',{n:treasures().size,all:hidden().length})}</p>`:'')+
     '<p class="small">'+T('click_a_chapter_to_begin')+'</p>'+
@@ -3009,7 +3035,7 @@ async function title(){lock(true);if(SHARED.scroll)SHARED.scroll.off();await set
     if(e.target.closest('.langs'))return;
     const pl=e.target.closest('.plans,.plan');if(pl){if(pl.classList.contains('plans')){SFX.click();const l=ov.querySelector('.chs'),open=l.classList.toggle('open');
       pl.firstChild.textContent=open?'\u25BE':'\u25B8';if(open)l.querySelector('.plan:last-child').scrollIntoView({block:'nearest',behavior:'smooth'});chsFade(l)}return}
-    if(d.tre)return openMenu('treasures');if(d.cont)return resume();if(d.far)return resumeFar();if(d.pro)return startPrologue();startChapter(+d.ch||1)};
+    if(d.tre)return openMenu('treasures');if(d.fin)return lookAgain();if(d.cont)return resume();if(d.far)return resumeFar();if(d.pro)return startPrologue();startChapter(+d.ch||1)};
   /* leave: the splash is over. The picture passes into the title's own (at once in a playthrough at speed), and the chapters come in */
   const leave=()=>{if(!G.splash||!ov.classList.contains('splash'))return;G.splash=0;clearTimeout(tm);splashGo=null;sp.leave(own,G.speedAll>200?1:1800);
       AU.amb=TITLE.amb;ov.classList.remove('splash','playing');ov.onclick=pick},
@@ -3137,6 +3163,17 @@ function reached(code){if(G.typing)G.typed=code;const s=saves(),t=Date.now();let
   if(!s.last||s.last.code!==code){s.last={code,t};ch=true}
   if(code!==G.typed&&(!s.far||farther(code,s.far.code))){s.far={code,t};ch=true}
   if(code!==G.typed)G.typed=null;if(ch)keepSaves(s)}
+/* ============ THE END OF THE GAME: finished, kept as a safe-point code ============ */
+/* The game ends with its last chapter's last scene and the finale that follows it (shared/finale.js). That it has been played to its end
+   is kept as every other point is: as a safe-point code and nothing else (CONTRIBUTING section 5). It is the last chapter's last safe
+   point, the morning of the last scene, with one more flag set, which the finale sets as its closing screen comes. The chapter's line of
+   the manifest says where that flag stands among the chapter's flags (done, counted from 0): in a code the flags are the lowest bits, so
+   the title can tell a finished game without loading the level. Continue leads to that morning like any other kept point; the title's
+   line "From Damascus to Rome" shows the look back and the closing screen again. A chapter with no done can never be finished. */
+const finishedCode=code=>{const b=decode(code),d=b&&CHAP[b.ch]&&CHAP[b.ch].done;return d!=null&&(b.w!=null?!!(b.w>>BigInt(d)&1n):d<19&&!!(b.b>>d&1))};
+const gameDone=()=>{const s=saves(),sv=saved();return[sv,s.far,s.last,...s.slots].some(e=>e&&finishedCode(e.code))};
+/* lookAgain: the title's line of a finished game */
+async function lookAgain(){audioInit();ov.onclick=null;try{const F=await need('finale');return F.again()}catch(e){return loadFail(e)}}
 /* ============ HIDDEN TREASURES: one in each chapter, kept apart from every saved game ============ */
 /* Every chapter hides one small thing that its story does not need (CONTRIBUTING section 2): CHAP[n].treasure gives its name, shown once it
    is found, and at, a safe-point code a little before it, where the screen of treasures takes a player back to look for it. The chapter calls
@@ -3298,7 +3335,7 @@ function rotateIcon(){const c=$('#rotate canvas'),g=c.getContext('2d'),P=(x,y,w,
   for(let y=0;y<48;y++)for(let x=0;x<48;x++)if(inTri(x,y)||inTri(x-1,y)||inTri(x+1,y)||inTri(x,y-1)||inTri(x,y+1))P(x,y,1,1,'#0a0604');
   for(const[x,y]of arc)P(x,y,2,2,'#e2b24c');
   for(let y=0;y<48;y++)for(let x=0;x<48;x++)if(inTri(x,y))P(x,y,1,1,'#e2b24c')}
-const syncFull=()=>{const w=$('#wrap').classList;w.toggle('full',ov.classList.contains('on')||cb.classList.contains('on')||mn.classList.contains('on'));w.toggle('title',ov.classList.contains('title'))};
+const syncFull=()=>{const w=$('#wrap').classList;w.toggle('full',ov.classList.contains('on')||cb.classList.contains('on')||mn.classList.contains('on'));w.toggle('title',['title','closing','behind'].some(k=>ov.classList.contains(k)))};
 for(const el of[ov,cb,mn])new MutationObserver(syncFull).observe(el,{attributes:true,attributeFilter:['class']});
 /* the engine's English comes first: nothing is shown before it is there */
 oneLang('en','main').then(()=>{loadOpts();fit();skin();rotateIcon();buildVerbs();requestAnimationFrame(render);title()});
