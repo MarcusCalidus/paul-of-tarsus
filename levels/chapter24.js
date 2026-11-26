@@ -661,7 +661,7 @@ ROOMS.taverns24={space:.6,walk:TAVERNS24.walk,mood:'meet',amb:AMB.taverns24,hs:[
 ROOMS.far24={space:.5,walk:SHARED.rome.WALK.far,mood:'meet',amb:AMB.far24,hs:[
   {name:'Rome',x:60,y:20,w:260,h:42,wx:180,wy:120,look:()=>think('rome_from_afar_look',P)},
   {name:'tombs',x:0,y:50,w:70,h:52,wx:60,wy:120,look:()=>think('tombs_by_the_road_look',P)},
-  {name:'milestone',x:96,y:70,w:16,h:30,wx:104,wy:118,look:()=>think('paul_iii_three_miles_more',P)},
+  {name:'milestone',x:240,y:83,w:16,h:28,wx:236,wy:120,look:()=>think('paul_iii_three_miles_more',P)},
   {name:'road_on',x:290,y:96,w:30,h:30,wx:300,wy:122,look:()=>think('paul_the_road_on_to_rome',P),exit:()=>gate24()}]};
 ROOMS.capena24={space:.7,walk:SHARED.rome.WALK.capena,mood:'meet',amb:AMB.capena24,hs:[
   {name:'circus_maximus',x:0,y:10,w:150,h:40,wx:80,wy:118,look:()=>think('circus_maximus_look',P)},
@@ -775,7 +775,7 @@ function place24(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   if(ph==='road'){const s=stretch24(),[x,y]=ROAD24.marks[0];pl(P,s.room,x,y,1);for(const[a,dx,dy,d]of COLUMN24())pl(a,s.room,x+dx,y+dy,d)}
   if(ph==='with'){pl(P,'appius24',60,126,1);pl(LK,'appius24',36,120,1);pl(AR,'appius24',22,130,1);pl(JU,'appius24',120,118,1);pl(SO,'appius24',84,132,1);
     pl(DE,'appius24',172,132,-1);pl(MI,'appius24',220,120,-1);pl(VI,'appius24',244,128,-1);pl(AE,'appius24',268,122,-1);
-    pl(PO,'taverns24',190,122,-1);pl(FI,'taverns24',220,128,-1);pl(TH,'taverns24',250,120,-1);pl(IK,'taverns24',162,114,1);
+    pl(PO,'taverns24',190,122,-1);pl(FI,'taverns24',220,128,-1);pl(TH,'taverns24',250,120,-1);pl(IK,'taverns24',134,114,1);
     if(F.taverns){for(const[a,x,y]of[[LK,70,118],[AR,14,132],[SO,96,132],[JU,124,116],[DE,150,130],[MI,176,124],[VI,276,128],[AE,296,122]])pl(a,'taverns24',x,y,1)}}
   if(ph==='city'){const r=F.gate?'capena24':'far24';for(const[a,x,y]of[[P,60,126],[LK,30,120],[AR,18,132],[JU,110,118],[SO,84,132],[DE,140,128],[MI,164,122]])pl(a,r,x,y,1);
     if(room==='camp24'){for(const[a,x,y,d]of[[P,110,124,1],[JU,140,120,-1],[SO,170,126,-1],[LK,60,122,1],[AR,40,130,1],[DE,80,132,1]])pl(a,'camp24',x,y,d)}}
