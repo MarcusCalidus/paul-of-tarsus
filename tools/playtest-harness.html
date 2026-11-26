@@ -4647,7 +4647,7 @@
       [['mark_i_admit_it','mark_i_admit_it','mark_i_admit_it'],'revolt_there_was_none'],[['mark_not_proved','mark_the_witnesses_arent_here','mark_i_admit_it'],'sect_no_witness_is_needed']],K=C().charges.map(c=>c.k);
     for(const[ms,why]of W){G.mk20=null;heard.length=0;for(let i=0;i<3;i++)await mark(K[i],ms[i]);
       ok(said(why)&&!F.marks,'a wrong mark is answered truly, in the charges\' order, and never with the right one: '+why)}
-    G.mk20=null;heard.length=0;clickHs(ch(K[0]),'use');await pick('leave_it_as_it_is');ok(!G.mk20[K[0]],'a charge may be left as it is');
+    G.mk20=null;heard.length=0;clickHs(ch(K[0]),'use');await pick('leave_it_as_it_is');ok(!(G.mk20||{})[K[0]],'a charge may be left as it is');
     await mark(K[0],'mark_not_proved');await mark(K[1],'mark_i_admit_it');ok(!F.marks&&!said('paul_now_i_know_my_answers'),'nothing is read until all three are marked');
     mark(K[2],'mark_the_witnesses_arent_here');await until(()=>F.marks&&G.room==='room20'&&!G.busy,12000);note()}
   {const ix=C().defense.map(k=>heard.indexOf(T(k)));
@@ -4717,7 +4717,7 @@
   ok(said('felix_friends_like_that_could_end_this')&&said('felix_thats_enough_for_today')&&seenTold.has('v26')&&has('purse20'),'friends like that could end the waiting; enough for today; he hoped for money (Acts 24:26); the purse stays shut');
   /* the second year */
   await scratch(5);ok(heard.includes(T('summer_came_again'))&&said('soldier_the_governor_wants_you_again')&&said('paul_another_talk_with_felix')&&G.room==='room20','summer again; Felix again');
-  heard.length=0;await onH('gull','look');ok(said('gull_at_the_window'),'the gull at the window');
+  heard.length=0;await onH('gull','look',-1);ok(said('gull_at_the_window'),'the gull at the window');
   await code('in the second summer',()=>G.room==='room20'&&F.s5&&C().season()===5);
   halt('summer20');
   await scratch(6);ok(heard.includes(T('another_autumn'))&&said('simmias_the_brothers_greet_you')&&said('kosmas_well_come_after_the_rains')&&SI.room===null,'another autumn; the brothers come');
