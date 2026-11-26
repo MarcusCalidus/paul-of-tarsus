@@ -470,8 +470,9 @@ function stern23w(g,t){const C=GS23.LIGHT.dawn,e=(t/6000)%1;
     poly(g,[ex-w/2*.7,ey,ex+w/2*.7,ey,ex+.4,ey-1.6],tint(C.hull[1],.1))}
   /* the surf bursting up behind the broken stern: white water that rises and falls back, never a flash */
   const u=Math.sin(Math.PI*clamp((e-.05)/.5,0,1));if(u>0){const r=rng(2333+Math.floor(t/6000)%7);
-    for(let i=0;i<46;i++){const x=270+r()*56,h=(8+r()*26)*u,y=WG23.top(x)-h*(.3+.7*r()),s=.5+r()*1.2;R(g,x,y,s,s,`rgba(240,244,240,${(.35+.4*r())*u})`)}
-    comp(g,'screen',.25*u,()=>pool(g,300,WG23.top(300)-8,26,12,'#e8eef0',1,'source-over'))}}
+    /* all of it astern of the walking strip (which ends at x 296), so that neither the white water nor its soft light lies behind a head */
+    for(let i=0;i<46;i++){const x=304+r()*26,h=(8+r()*26)*u,y=WG23.top(x)-h*(.3+.7*r()),s=.5+r()*1.2;R(g,x,y,s,s,`rgba(240,244,240,${(.35+.4*r())*u})`)}
+    comp(g,'screen',.25*u,()=>pool(g,321,WG23.top(318)-8,15,10,'#e8eef0',1,'source-over'))}}
 ART.wreck23={w:320,q:12,paint(g){GS23.wreckDeck(g,{})},
   light:{amb:'#bcc0c8'},   /* an overcast daybreak in rain: soft light, the contact shadow alone */
   /* the bay behind her, mirrored: the land ahead of her bow at the left, the open sea astern at the right */
