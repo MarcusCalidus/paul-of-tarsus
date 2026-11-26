@@ -65,53 +65,90 @@ LEVEL(22,()=>{
 "use strict";
 
 /* ==== MUSIC: begin ==== */
-/* One tune for the voyage and the storm. It is in B flat, in the harmonic minor (B flat, C, D flat, E flat, F, G flat, A), in bars of
-   eighteen steps that fall four, four, four, three, three, like a swell that comes in long and breaks short: no earlier chapter has this
-   key or this bar. The tune is four bars long (A B C D): up the triad, round the fourth; up through the raised seventh to the octave; down
-   from the octave; home by the second. In harbor ("quay", "myra") lyre and harp take turns over a low string. On deck at Myra in the
-   evening ("deck") the harp has the tune alone over the low string. At Fair Havens ("havens") the ney has it, slower in feeling, over the
-   harp's rocking figure and the low string. In the storm ("storm") the music moves and never holds: the low string plucks the keynote and
-   leans on the note above, a drum ticks with it and almost stops every fourth bar, the ney begins the tune and breaks off before it comes
-   home, and the harp rocks low under it, no louder than the rest. In the dark days ("night") a low note lies quietly under a sparse harp.
-   When Paul stands up among them ("midst") lyre and harp have the whole tune again over the low string. Nothing is claimed about how
-   music was played then. */
-const SCALE=[0,2,3,5,7,8,11],ST=18,
- /* the tune, a bar to a letter: [step, degree of the scale, length in steps]; E is D broken off before it comes home */
- TUNE={A:[[0,0,4],[4,2,4],[8,4,4],[12,3,3],[15,2,3]],B:[[0,4,4],[4,5,4],[8,4,4],[12,6,3],[15,7,3]],
-   C:[[0,7,6],[6,5,3],[9,4,3],[12,3,3],[15,2,3]],D:[[0,3,4],[4,1,4],[8,0,10]],E:[[0,3,4],[4,1,14]],_:[]},
+/* One tune for the voyage and the storm. It is in A, in the harmonic major (A, B, C sharp, D, E, F, G sharp): a major scale whose sixth
+   is lowered, so that the fair days are bright and the lowered sixth leans on the fifth like a cloud coming up. Its bars have twenty-one
+   steps that fall six, six, nine: a swell that comes in twice and the third time runs on. A step is a seventh of a second, so a bar
+   lasts three seconds and two bars are one sea of the storm's beat (shared/beat.js). No other chapter has this key, this mode or this bar,
+   Chapter Twenty-Three included. The tune is four bars long: up the triad and down round the lowered sixth (A); up through the raised seventh
+   to the octave (B); down from the octave, leaning on the lowered sixth (C); and its last bar, which on the voyage never comes home: it
+   stops on the fifth (O). Only when Paul stands up among them ("midst") does the last bar go home, through the raised seventh below to
+   the keynote (D), for the first time in the chapter.
+   On the quay at Caesarea, on a fair morning ("quay"), the lyre has the tune and the harp answers it, over a low string and a light frame
+   drum: a lilt, as the earlier sea chapters have. In the harbor of Myra ("myra") the harp has it first and the lyre answers. On deck at
+   Myra in the evening ("deck") the harp has the tune alone over the low string. At Fair Havens ("havens") the ney has only its first bar
+   and the bar that leans on the lowered sixth, never the climb to the octave, over the harp's rocking figure: unease. In the storm
+   ("storm") the music moves and never holds: the low string plucks the keynote and leans on the note above it, a drum ticks with it and
+   almost stops every fourth bar, and the ney begins the tune and breaks off on the raised seventh before it comes home; no louder than
+   the rest. In the dark days ("night") the low string plucks one note to a bar under a few bars of the tune on the harp, far apart. In
+   their midst ("midst") lyre and harp have the whole tune, and it comes home. Nothing is claimed about how music was played then. */
+const SCALE=[0,2,4,5,7,8,11],ST=21,
+ /* the tune, a bar to a letter: [step, degree of the scale, length in steps]. O is the last bar left on the fifth; D is the same bar
+    come home; E is it broken off on the raised seventh, for the ney in the storm */
+ TUNE={A:[[0,0,2],[2,2,1],[3,4,3],[6,5,2],[8,4,1],[9,3,3],[12,2,6],[18,1,3]],
+   B:[[0,2,2],[2,4,1],[3,7,3],[6,6,2],[8,7,1],[9,8,3],[12,7,6],[18,6,3]],
+   C:[[0,7,2],[2,8,1],[3,7,3],[6,5,2],[8,4,1],[9,5,3],[12,4,6],[18,3,3]],
+   O:[[0,3,2],[2,2,1],[3,1,3],[6,2,6],[12,4,9]],
+   D:[[0,3,2],[2,2,1],[3,1,3],[6,-1,6],[12,0,9]],
+   E:[[0,3,2],[2,2,1],[3,1,3],[6,-1,15]],_:[]},
  bars22=s=>[...s].map(k=>TUNE[k]),
- ROCK={A:[[0,0,4],[4,4,4],[8,2,4],[12,4,3],[15,2,3]],B:[[0,-2,4],[4,2,4],[8,0,4],[12,2,3],[15,0,3]],
-   C:[[0,-3,4],[4,1,4],[8,-1,4],[12,1,3],[15,-1,3]],D:[[0,-1,4],[4,1,4],[8,0,10]]},
- rock22=s=>[...s].map(k=>ROCK[k]),
- LOW=[[[0,0,18]],[[0,-3,18]],[[0,-2,18]],[[0,0,9],[9,-3,9]]],
- MUSIC={dt:.2,steps:ST,group:[4,4,4,3,3],root:46,scale:SCALE,bars:16,tracks:[
-  {inst:'lyre',moods:['quay','myra'],oct:24,loop:8,lines:bars22('ABCD____'),vol:.48},
-  {inst:'harp',moods:['quay','myra'],oct:24,loop:8,lines:bars22('____ABCD'),vol:.42},
-  {inst:'bass',moods:['quay','myra','deck','havens'],oct:12,loop:4,lines:LOW,vol:.24},
-  {inst:'harp',moods:['deck'],oct:24,loop:8,lines:bars22('ABCD____'),vol:.4},
-  {inst:'ney',moods:['havens'],oct:24,loop:8,lines:bars22('ABCD____'),vol:.28},
-  {inst:'harp',moods:['havens'],oct:12,loop:4,lines:rock22('ABCD'),vol:.26},
-  /* the storm: the keynote plucked, leaning on the step above; the drum ticks and almost stops every fourth bar; the ney breaks off;
-     the harp rocks low beneath */
-  {inst:'bass',moods:['storm'],oct:12,loop:1,lines:[[[0,0,4],[4,1,4],[8,0,4],[12,0,3],[15,1,3]]],vol:.36},
-  {drum:1,moods:['storm'],prog:'AAAB',seq:{A:'t...t...t...t..t..',B:'t.................'},vol:.17},
-  {inst:'ney',moods:['storm'],oct:24,loop:8,lines:[TUNE.A,TUNE.E,[],[],[],[],[],[]],vol:.24},
-  {inst:'harp',moods:['storm'],oct:12,loop:4,lines:rock22('ABCD'),vol:.18},
-  /* the dark days: a low note held quietly, and a sparse harp */
-  {inst:'bass',moods:['night'],oct:12,loop:4,lines:LOW,vol:.18},
-  {inst:'harp',moods:['night'],oct:12,loop:8,lines:rock22('A_C_A_D_'),vol:.16},
-  /* in their midst */
-  {inst:'lyre',moods:['midst'],oct:24,loop:8,lines:bars22('ABCDABCD'),vol:.4},
-  {inst:'harp',moods:['midst'],oct:12,loop:4,lines:rock22('ABCD'),vol:.26},
-  {inst:'bass',moods:['midst'],oct:12,loop:4,lines:LOW,vol:.22}]};
+ /* what rocks under it: a note on each beat of three, seven to the bar, on the chord of each half bar */
+ ROCK={A:[0,4,2,4,-1,1,4],B:[0,4,-1,4,-3,1,-1],C:[-4,0,-2,0,-2,3,0],O:[-4,0,-2,0,-3,1,-1],D:[-3,1,-1,1,0,4,2]},
+ rock22=s=>[...s].map(k=>k==='_'?[]:ROCK[k].map((n,i)=>[i*3,n,3])),
+ /* the low string under each bar of the tune: on the first beat and on the third, long one */
+ LOWS={A:[[0,0,12],[12,-3,9]],B:[[0,0,6],[6,-1,6],[12,-3,9]],C:[[0,-4,12],[12,-2,9]],O:[[0,-4,12],[12,-3,9]],D:[[0,-3,12],[12,0,9]]},
+ low22=s=>[...s].map(k=>LOWS[k]),
+ MUSIC={dt:1/7,steps:ST,group:[6,6,9],root:45,scale:SCALE,bars:16,tracks:[
+  {inst:'lyre',moods:['quay'],oct:24,loop:8,lines:bars22('ABCO____'),vol:.5},
+  {inst:'harp',moods:['quay'],oct:12,loop:8,lines:bars22('____ABCO'),vol:.5},
+  {drum:1,moods:['quay'],prog:'AAAB',seq:{A:'d.....k.....d..k..k..',B:'d.....k.....d..k.kk..'},vol:.2},
+  {inst:'harp',moods:['myra'],oct:12,loop:8,lines:bars22('ABCO____'),vol:.5},
+  {inst:'lyre',moods:['myra'],oct:24,loop:8,lines:bars22('____ABCO'),vol:.46},
+  {inst:'bass',moods:['quay','myra','deck'],loop:4,lines:low22('ABCO'),vol:.4},
+  {inst:'harp',moods:['deck'],oct:12,loop:8,lines:bars22('ABCO____'),vol:.46},
+  {inst:'ney',moods:['havens'],oct:24,loop:8,lines:bars22('A_C_A_C_'),vol:.3},
+  {inst:'harp',moods:['havens'],oct:12,loop:4,lines:rock22('ACCO'),vol:.34},
+  {inst:'bass',moods:['havens'],loop:4,lines:low22('ACCO'),vol:.36},
+  /* the storm: the keynote plucked, leaning on the step above; the drum ticks with it and almost stops every fourth bar; the ney begins
+     the tune and breaks off */
+  {inst:'bass',moods:['storm'],loop:1,lines:[[[0,0,3],[3,1,3],[6,0,6],[12,0,3],[15,1,3],[18,0,3]]],vol:.36},
+  {drum:1,moods:['storm'],prog:'AAAB',seq:{A:'t..t..t.....t..t..t..',B:'t....................'},vol:.16},
+  {inst:'ney',moods:['storm'],oct:24,loop:8,lines:[TUNE.A,TUNE.E,[],[],[],[],[],[]],vol:.26},
+  /* the dark days: one low note plucked to a bar, and the tune's first bar and its leaning bar on the harp, far apart */
+  {inst:'bass',moods:['night'],loop:4,lines:[[[0,0,21]],[[0,-2,21]],[[0,-4,21]],[[0,-3,21]]],vol:.26},
+  {inst:'harp',moods:['night'],oct:12,loop:8,lines:bars22('A___C___'),vol:.32},
+  /* in their midst: the whole tune, and home */
+  {inst:'lyre',moods:['midst'],oct:24,loop:8,lines:bars22('ABCDABCD'),vol:.44},
+  {inst:'harp',moods:['midst'],oct:12,loop:4,lines:rock22('ABCD'),vol:.28},
+  {inst:'bass',moods:['midst'],loop:4,lines:low22('ABCD'),vol:.36}]};
 
 /* ---- around you ----
-   What the engine has: waves, wind, gulls and the hull's creak. Missing, for the art-and-sound pass: a storm wind that gusts and howls,
-   the rigging and a slatting sail, rain on the deck, the water running off the planks between the seas (the beat's own run-off covers
-   part of it), a skiff knocking at the stern. */
+   In harbor and in fair weather (Caesarea, Myra, Fair Havens) the engine's sea, gulls, wind and a hull's creak. The storm's own sounds are
+   shared with Chapter Twenty-Three in shared/weather.js (sound): the gale, its gusts, the wind in the rigging, rain and its patter on the
+   planks. Two are this chapter's own: the sail slatting before the gear is lowered (27:17), and the skiff knocking at the stern until it is
+   hoisted aboard (27:16), gently at Fair Havens. In the storm and the rain there are no gulls, and nothing thunders. While the beat runs
+   (the skiff, the bales) the engine's waves are held low, so that each sea of the beat (shared/beat.js) can be followed by ear. */
+const CALLS22={
+  /* the sail slatting: three to seven heavy flaps of cloth at uneven gaps, each a dull thud with a crack in it */
+  slat:[1.4,3.8,(t,d)=>{let u=t+.001+Math.random()*.003;const n=3+(Math.random()*5|0);for(let i=0;i<n;i++){const v=.48+Math.random()*.48;
+    noise({t:u,d:.08+Math.random()*.06,a:.006,v,f:420+Math.random()*380,q:.8,type:'lowpass',dest:d});noise({t:u+.004,d:.014,v:v*.45,f:2400+Math.random()*1200,q:1.2,dest:d});
+    u+=.11+Math.random()*.22}}],
+  /* the skiff knocking at the stern: a hollow knock of wood on wood, often twice */
+  skiff:[2,5.5,(t,d)=>{t+=.001+Math.random()*.003;const k=(u,v)=>{tone({f:150+Math.random()*30,to:112,t:u,d:.14,type:'sine',v:.2*v,dest:d});tone({f:330+Math.random()*60,t:u,d:.05,type:'triangle',v:.045*v,dest:d});
+      noise({t:u,d:.03,v:.15*v,f:850,q:2,dest:d})};k(t,1);if(Math.random()<.6)k(t+.2+Math.random()*.2,.55)}]},
+ SND22=SHARED.weather&&SHARED.weather.sound||{beds:{},calls:{}},BEDS22=SND22.beds,ALLCALLS22=Object.assign({},SND22.calls,CALLS22),
+ /* the deck in the storm, by day: the gale, its gusts and the rigging, rain on the planks, the hull working; the skiff and the slatting
+    sail until they are dealt with (27:16, 17); the engine's sea held low while the beat runs */
+ STORMAMB22={gale:.6,gust:.65,rigging:.6,rain:.5,patter:.6,wind:.35,creak:.6,waves:.3};
+/* while the beat runs, the storm stands back a little, and the engine's sea further, so that each sea of the beat stands out */
+const BEAT22AMB={gale:.4,gust:.4,rigging:.5,rain:.35,patter:.45,wind:.25,creak:.5,waves:.15};
 const AMB={quay22:{waves:.5,gulls:.5,wind:.15,creak:.15},myra22:{waves:.45,gulls:.5,wind:.15,creak:.25},
-  deck22:{waves:.4,gulls:.3,wind:.2,creak:.4},havens22:{waves:.35,gulls:.25,wind:.3,creak:.35},
-  storm22:{waves:1,wind:1,creak:.7},night22:{waves:.8,wind:.9,creak:.6},tablet22:{waves:.35,wind:.4,creak:.3},girded22:{waves:.9,wind:.9,creak:.5}};
+  deck22:{waves:.4,gulls:.3,wind:.2,creak:.4},havens22:{waves:.35,gulls:.25,wind:.3,creak:.35,skiff:.25},
+  storm22:()=>{const ph=phase22();return Object.assign({},STORMAMB22,ph==='skiff'?Object.assign({},BEAT22AMB,{slat:.7,skiff:.8}):ph==='load'?BEAT22AMB:ph==='midst'?{gust:.55,rigging:.5}:{})},
+  /* the dark days, by night: no less wind, the rain a little less */
+  night22:Object.assign({},STORMAMB22,{rain:.45,patter:.45}),
+  tablet22:{gale:.3,gust:.35,rigging:.3,rain:.3,patter:.35,waves:.2,wind:.2,creak:.3},
+  /* the ship from the side: the gale and the sea, rain on the water, no planks to patter on */
+  girded22:{gale:.6,gust:.7,rigging:.4,rain:.5,waves:.6,wind:.45}};
 /* ==== MUSIC: end ==== */
 
 /* ============ HOW THE STORY STANDS ============ */
@@ -785,7 +822,7 @@ ROOMS.deck22.birds=()=>F.fh?{gulls:[0,6,200,30]}:F.shelter?{gulls:[0,6,320,30],s
 for(const id of['quay22','myra22','deck22','storm22','tablet22','girded22'])for(const h of ROOMS[id].hs)if(!h.as)h.as={luke22:h};
 for(const a of EVERY)if(a!==LK&&a.hs&&!a.hs.as)a.hs.as={luke22:a.hs};
 
-return{rooms:['quay22','myra22','deck22','storm22','tablet22','girded22'],setup:setup22,start:start22,hint:hint22,music:MUSIC,topics:[],tablets:TABLETS,
+return{rooms:['quay22','myra22','deck22','storm22','tablet22','girded22'],setup:setup22,start:start22,hint:hint22,music:MUSIC,beds:BEDS22,calls:ALLCALLS22,topics:[],tablets:TABLETS,
   /* for the playtest: what is told, the phase, the tables, the marks and the carry */
   told:TOLD,phase:phase22,out:OUT22,know:KNOW22,speech:SPEECH22,marksay:MARKSAY22,markKeys:MARK22,holds:STORM22.holds,haul:HAUL22,pulls:PULLS22,days:DAYS22,
   marks:MARKS,markOf,setMark,carry23,end:end22,

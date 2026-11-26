@@ -1558,8 +1558,8 @@
       wave=()=>!G.beat.inPause()&&G.beat.phase()>.02&&G.beat.phase()<G.beat.from-.04,
       quiet=()=>!G.skip&&!$('#speech').textContent.trim(),X=C.holds;
     await till(()=>G.beat&&G.beat.on,600);const b=G.beat;
-    ok(b&&b.on&&b.sticky&&b.room==='surf23'&&b.period===1800&&b.pause===900&&b.need===450&&P.pose==='plank'&&Math.abs(P.x-X[0])<1&&PC()===P,
-      'the surf: the beat starts with the room, sticky, its phase exposed ('+(b&&b.phase().toFixed(3))+'); Paul in the water on his plank at the wreck');
+    ok(b&&b.on&&b.sticky&&b.room==='surf23'&&b.period===1800&&b.pause===900&&b.need===450&&b.kind==='surf'&&P.pose==='plank'&&Math.abs(P.x-X[0])<1&&PC()===P,
+      'the surf: the beat starts with the room, sticky, its phase exposed ('+(b&&b.phase().toFixed(3))+'), its sea a breaker on a beach; Paul in the water on his plank at the wreck');
     await gap();await till(room);await click(1);
     ok(Math.abs(P.x-X[1])<1&&G.at23===1&&b.misses===0,'a click on the floating spar in the pause between two seas: he is there');
     for(let n=1;n<=3;n++){await gap();await till(wave);await click(2);
@@ -5497,7 +5497,13 @@
     &&A('pris22a').room==='quay22'&&C().party.join()==='paul,luke22'&&C().swap===false&&has('pouch22'),
     'Julius takes charge of Paul and some other prisoners, for Italy (Acts 27:1), from the scroll; the quay at Caesarea: Julius in his cuirass, soldiers, prisoners, Luke and Aristarchus; Paul is played');
   ok(/^22(-[0-9A-Z]{3}){2,5}$/.test(makeCode())&&decode(makeCode()).ch===22,'a code of Chapter Twenty-Two: '+makeCode());
-  ok(AU.score===C().music&&C().music.steps===18&&C().music.root===46&&C().music.group.join()==='4,4,4,3,3'&&C().music.scale.join()==='0,2,3,5,7,8,11','the chapter\'s score, in B flat harmonic minor and in bars of eighteen');
+  {const m=C().music,st=[m.steps,m.root,m.scale.join()].join('|'),kin=Object.keys(CHAP).filter(n=>+n!==22&&CHAP[n].music).filter(n=>{const o=CHAP[n].music;return(o.steps||16)===m.steps||o.root===m.root&&o.scale.join()===m.scale.join()});
+    ok(AU.score===m&&m.steps===21&&m.root===45&&m.group.join()==='6,6,9'&&m.scale.join()==='0,2,4,5,7,8,11'&&Math.abs(m.steps*m.dt-3)<1e-9&&!kin.length,
+      'the chapter\'s score, in A harmonic major and in bars of twenty-one that last three seconds (two to a sea of the beat): no chapter loaded beside it has its key or its bar'+(kin.length?' SHARED WITH '+kin:''))}
+  /* the storm's sounds: shared with Chapter Twenty-Three (shared/weather.js), and none of them a gull or thunder */
+  {const B=C().beds||{},K=C().calls||{},has=['gale','rain','sandrain'].every(k=>B[k])&&['gust','rigging','patter','slat','skiff'].every(k=>typeof(K[k]&&K[k][2])==='function'),
+     F0=Object.assign({},F);Object.assign(F,{out:1,aboard:1,fh:1,advised:1});const a=ROOMS.storm22.amb,sk=typeof a==='function'?a():a;for(const k in F)delete F[k];Object.assign(F,F0);
+    ok(has&&sk.slat&&sk.skiff&&sk.gale&&sk.rain&&!sk.gulls&&!Object.keys(B).concat(Object.keys(K)).some(k=>/thunder/.test(k)),'the storm is heard: gale, gusts, rigging, rain on the planks, the sail slatting and the skiff knocking in the lee of Cauda; no gull and no thunder')}
   ok(ART.quay22.light.sun&&ROOMS.quay22.birds.gulls,'the quay by day: the sun casts shadows, gulls over the harbor');
   halt('quay22');
   await hints('hint_aboard_the_coaster_1','hint_aboard_the_coaster_2','on the quay');
@@ -5721,6 +5727,10 @@
   ok(seenTold.has('n27')&&PC()===LK&&P.room==='stern23'&&C().party.join()==='paul,luke23'&&C().swap===false&&/^23(-[0-9A-Z]{3}){3,6}$/.test(makeCode())&&decode(makeCode()).ch===23,
     'the fourteenth night (Acts 27:27), from the scroll; the stern by night, Luke played, Paul with him; wide codes: '+makeCode());
   ok(AU.score===C().music&&C().music.steps===18&&C().music.root===46&&C().music.group.join()==='4,5,4,5'&&C().music.scale.join()==='0,2,3,5,7,8,11','the chapter\'s score, in B-flat harmonic minor and in bars of eighteen');
+  {const B=C().beds||{},K=C().calls||{},am=r=>{const a=ROOMS[r].amb;return typeof a==='function'?a():a},all=C().rooms.map(r=>[r,am(r)]);
+    ok(['gale','rain','sandrain','surf','bilge','flame'].every(k=>B[k])&&['gust','rigging','patter','breaker','groan','trickle','sizzle'].every(k=>typeof(K[k]&&K[k][2])==='function')
+      &&am('hold23').groan&&am('hold23').trickle&&am('stern23').gale&&am('beach23').sandrain&&!am('surf23').breaker&&!all.some(([r,a])=>a.gulls)&&!Object.keys(B).concat(Object.keys(K)).some(k=>/thunder/.test(k)),
+      'the last night and the island are heard: the gale in the rigging, the hull working and water in the hold, the surf and its breakers (none in the surf but the beat\'s own), rain on the beach; no gull and no thunder')}
   ok(ART.stern23.light.lamps.length===1&&!ROOMS.stern23.birds,'the stern by night: one lantern, no birds');
   halt('stern23');
   /* Luke's tablet, the map button until the island has its name */

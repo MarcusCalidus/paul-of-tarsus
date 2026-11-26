@@ -71,7 +71,7 @@ LEVEL(23,()=>{
 /* ==== MUSIC: begin ==== */
 /* One tune for the last night at sea and the island. It is in B-flat, in the harmonic minor (B-flat, C, D-flat, E-flat, F, G-flat, A), in
    bars of eighteen steps that fall four, five, four, five, a long uneven swell: no earlier chapter has this key, this mode or this bar
-   (SP/pair2/SCORES.md, so that Chapter Twenty-Two takes another). The tune is four bars long (A B C D): up the triad to the fourth, up to
+   (Chapter Twenty-Two takes another). The tune is four bars long (A B C D): up the triad to the fourth, up to
    the raised seventh and the octave, down from the octave, and home through the raised seventh below. It grows from night and storm to
    the grey morning and the quiet of the estate. On the night deck ("night") the harp alone plays the tune, slowly, over a low string that
    plucks one note to the bar (a low note under a night scene, never a held drone). At the bow, in the wreck and in the surf ("tense") the
@@ -100,16 +100,49 @@ const SCALE=[0,2,3,5,7,8,11],ST=18,
   {inst:'harp',moods:['estate'],oct:12,loop:8,lines:bars23('ABCD____'),vol:.42},
   {inst:'lyre',moods:['estate'],oct:12,loop:8,lines:bars23('____ABCD'),vol:.36},
   /* tension: the keynote plucked, leaning on the step above; the drum ticks and almost stops every fourth bar; the ney breaks off */
-  {inst:'bass',moods:['tense'],oct:0,loop:1,lines:[[[0,0,4],[4,1,5],[9,0,4],[13,1,5]]],vol:.36},
-  {drum:1,moods:['tense'],prog:'AAAB',seq:{A:'t...t....t...t....',B:'t.................'},vol:.16},
-  {inst:'ney',moods:['tense'],oct:12,loop:8,lines:[TUNE.A,TUNE.E,[],[],[],[],[],[]],vol:.24}]};
+  {inst:'bass',moods:['tense'],oct:0,loop:1,lines:[[[0,0,4],[4,1,5],[9,0,4],[13,1,5]]],vol:.24},
+  {drum:1,moods:['tense'],prog:'AAAB',seq:{A:'t...t....t...t....',B:'t.................'},vol:.13},
+  {inst:'ney',moods:['tense'],oct:12,loop:8,lines:[TUNE.A,TUNE.E,[],[],[],[],[],[]],vol:.2}]};
 
 /* ---- around you ----
-   From what the engine has: waves, wind, the hull's creak, the fire's crackle, birds. Missing, for the art-and-sound pass: heavy seas and
-   breakers on a beach (surf23, beach23, wreck23), rain (wreck23, surf23, beach23), the storm's wind in the rigging (stern23, bow23). */
-const AMB={stern23:{waves:.7,wind:.55,creak:.5},lead23:{waves:.55,wind:.45,creak:.4},bow23:{waves:.7,wind:.55,creak:.45},hold23:{creak:.6,waves:.35,wind:.15},
-  bay23:{waves:.8,wind:.5},wreck23:{waves:.9,wind:.6,creak:.35},planks23:{waves:.85,wind:.55},surf23:{waves:.9,wind:.5},
-  beach23:{waves:.6,wind:.4,fire:.5},estate23:{wind:.15,birds:.35},sick23:{wind:.05},tablet23:{waves:.4,wind:.3}};
+   The storm's sounds are shared with Chapter Twenty-Two in shared/weather.js (sound): the gale, its gusts, the wind in the rigging, rain
+   and its patter on the planks, rain on the beach. This chapter's own: the hull working below deck and the water running in the hold, the
+   surf on the beach (slower and deeper than the engine's waves) and its breakers, and a fire of sticks in the rain (the engine's crackle,
+   with the hiss of drops on the embers and the breath of the flames). In the surf no breaker is heard but the beat's own (shared/beat.js,
+   kind 'surf'), so that each sea can be followed by ear. No gulls from the storm to the beach, and nothing thunders. */
+const BEDS23own={surf:{type:'lowpass',f:300,q:.6,lfo:.08,depth:.9,v:.55},bilge:{type:'bandpass',f:950,q:1.6,lfo:.53,depth:.7,v:.1},
+   flame:{type:'bandpass',f:240,q:.6,lfo:1.3,depth:.5,v:.1}},
+ CALLS23own={
+  /* a breaker on the beach: the sea rises, breaks with a weight and a low boom, and draws back over the sand with a fizz */
+  breaker:[6.5,11,(t,d)=>{t+=.001+Math.random()*.003;noise({t,d:1.6,a:1.5,v:.1,f:260,type:'lowpass',q:.7,dest:d});noise({t:t+.3,d:1.3,a:1.2,v:.05,f:620,q:.7,dest:d});
+    const c=t+1.5;noise({t:c,d:1.9,a:.08,v:.1,f:520,q:.5,dest:d});tone({f:58,to:40,t:c,d:1.1,a:.07,type:'sine',v:.045,dest:d});
+    noise({t:c+.03,d:.9,a:.05,v:.04,f:3000,q:.6,type:'highpass',dest:d});
+    const w=c+.9;noise({t:w,d:2.8,a:.5,v:.05,f:2000,q:.5,type:'highpass',dest:d});
+    for(let i=0;i<14;i++)noise({t:w+.3+Math.random()*2.4,d:.005,v:.015+Math.random()*.015,f:5500,q:.7,type:'highpass',dest:d})}],
+  /* the hull working, heard below deck: a long low groan of timber, and a tick or two of the joints */
+  groan:[3.5,9,(t,d)=>{t+=.001+Math.random()*.003;const f=50+Math.random()*10;tone({f,to:66,t,d:1.1,a:.25,type:'sawtooth',v:.05,lp:[[380,0],[220,1]],dest:d});
+    tone({f:66,to:48,t:t+1.05,d:1.3,a:.2,type:'sawtooth',v:.04,lp:[[340,0],[200,1.2]],dest:d});
+    for(let i=0;i<2;i++)noise({t:t+.3+Math.random()*1.8,d:.02,v:.035,f:1700,q:4,dest:d})}],
+  /* water running in the hold: small bubbles that rise in pitch */
+  trickle:[.15,.55,(t,d)=>{t+=.001+Math.random()*.003;const n=1+(Math.random()*3|0);for(let i=0;i<n;i++){const f=380+Math.random()*520,u=t+Math.random()*.12;
+    tone({f,to:f*1.7,t:u,d:.035+Math.random()*.025,a:.004,type:'sine',v:.025+Math.random()*.02,dest:d})}}],
+  /* drops on the embers: a short hiss, and now and then a pop of wet wood */
+  sizzle:[.7,2.6,(t,d)=>{t+=.001+Math.random()*.003;noise({t,d:.2+Math.random()*.35,a:.03,v:.03+Math.random()*.03,f:3800,q:.5,type:'highpass',dest:d});
+    if(Math.random()<.25)noise({t:t+Math.random()*.2,d:.012,v:.05,f:1300,q:1,dest:d})}]},
+ SND23=SHARED.weather&&SHARED.weather.sound||{beds:{},calls:{}},BEDS23=Object.assign({},SND23.beds,BEDS23own),CALLS23=Object.assign({},SND23.calls,CALLS23own),
+ /* the night at sea: still the storm's wind, and no rain is told */
+ NIGHTAMB23={gale:.45,gust:.5,rigging:.55,wind:.3,waves:.35,creak:.5};
+const AMB={stern23:NIGHTAMB23,lead23:{gale:.3,gust:.35,rigging:.35,wind:.25,waves:.3,creak:.35},bow23:Object.assign({},NIGHTAMB23,{rigging:.5}),
+  hold23:{groan:.7,creak:.4,bilge:.6,trickle:.6,waves:.35,wind:.15},
+  bay23:{surf:.6,breaker:.7,gale:.35,gust:.35,rain:.4,wind:.3,waves:.3},
+  wreck23:{surf:.6,breaker:.75,rain:.5,patter:.55,gale:.35,gust:.35,groan:.5,creak:.5,wind:.3,waves:.25},
+  planks23:{surf:.55,breaker:.55,rain:.45,patter:.45,gust:.25,groan:.35,wind:.3},
+  surf23:{surf:.4,rain:.35,wind:.3,waves:.15},
+  /* the beach in rain; at the fire, the fire too */
+  beach23:()=>phase23()==='fire'?{sandrain:.5,fire:.35,sizzle:.5,flame:.4,surf:.45,breaker:.4,wind:.3}:{sandrain:.6,surf:.55,breaker:.5,wind:.35},
+  estate23:{wind:.15,birds:.35,waves:.08},sick23:{wind:.05},
+  /* the close view of the tablet: the room it is read in, more quietly */
+  tablet23:()=>{const r=G.from23,a=r&&r!=='tablet23'&&AMB[r],o=typeof a==='function'?a():a||NIGHTAMB23,q={};for(const k in o)q[k]=o[k]*.55;return q}};
 /* ==== MUSIC: end ==== */
 
 /* ============ ART ============ */
@@ -656,7 +689,7 @@ async function mail23(){if(F.mailOff)return say(SO1,'soldier_lighter_now',{to:P}
 async function launch23(){await say(P,'paul_hold_on_and_kick',{to:null});F.planks=1;SFX.good();
   await fade(1,600);G.pk23=null;G.at23=0;show23('surf23');await fade(0,600);codeBtn()}
 /* ---- through the surf: the beat of the sea, sticky help ---- */
-function beat23(){const B=SHARED.beat;if(!B||B.beat&&B.beat.on)return;B.start({need:1500,sticky:true,room:'surf23'})}
+function beat23(){const B=SHARED.beat;if(!B||B.beat&&B.beat.on)return;B.start({need:1500,sticky:true,room:'surf23',kind:'surf'})}
 const swim23=x=>{const x0=P.x;return tween(fast()?240:1100,k=>{P.x=x0+(x-x0)*(k*k*(3-2*k));P.pk=k>.3&&k<.7?1:0})};
 async function hold23(i){const at=G.at23||0;if(i!==at+1||!G.beat)return;const r=G.beat.attempt();
   if(r.carry){/* six misses in a row: the sailor wades out and brings him in */
@@ -902,7 +935,7 @@ for(const id of['stern23','lead23','bow23','hold23','bay23','wreck23','planks23'
 for(const a of EVERY)if(a.hs&&!a.hs.as)a.hs.as={luke23:a.hs};
 
 return{rooms:['stern23','lead23','bow23','hold23','bay23','wreck23','planks23','surf23','beach23','estate23','sick23','tablet23'],
-  setup:setup23,start:start23,hint:hint23,music:MUSIC,topics:[],tablets:TABLETS,
+  setup:setup23,start:start23,hint:hint23,music:MUSIC,beds:BEDS23,calls:CALLS23,topics:[],tablets:TABLETS,
   /* for the playtest: what is told, the carried marks, the tables, the phase, the tablet's line */
   told:TOLD,marks:MARKS,markOf,tabletKey:tabletKey23,sound:SOUND23,tags:TAGS23,people:PEOPLE23,floats:FLOATS23,groups:GROUPS23,pics:PICS23,talk:TALK23,
   phase:phase23,count:count23,holds:HOLDX23,water:WATER23,spot:SPOT23,markLine:markLine23,
