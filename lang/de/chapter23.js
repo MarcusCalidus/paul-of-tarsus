@@ -129,7 +129,7 @@ TEXTS('de',23,{
   "sailors_at_the_skiff_look":["So viele Seeleute, alle hier am Bug. Um einen Anker auszubringen, braucht man nicht so viele Hände.","1nkkovb"],
   "covered_anchors":["Anker (abgedeckt)","1vu3q5o"],
   "covered_anchors_look":["Die Anker hier am Bug liegen noch unter ihrer Plane. Niemand hat sie angerührt.","0ttz2ex"],
-  "paul_not_mine_to_touch":["Das gehört mir nicht. Ich fasse es nicht an.","1mbpopm"],
+  "paul_not_mine_to_touch":["Daran habe ich nichts zu suchen.","1mbpopm"],
   "paul_whats_the_skiff_for":["Wozu das Beiboot, um diese Zeit?","1hxjp9s"],
   "sailor_anchors_from_the_bow":["Anker vom Bug aus. Damit das Schiff ruhig liegt, bis es hell wird.","04ftzp9"],
   "paul_not_until_i_am_sure":["Noch nicht. Erst will ich sicher sein, was ich da sehe.","0wrt0fl"],
@@ -191,7 +191,7 @@ TEXTS('de',23,{
   "plank":["Planke","1ldlit7"],
   "plank_look":["Eine Planke, vom Deck losgerissen.","09nfy9j"],
   "hatch_cover":["Lukendeckel","0iscml6"],
-  "hatch_cover_look":["Ein Lukendeckel, losgebrochen. Breit und schwer.","134jxm6"],
+  "hatch_cover_look":["Ein Lukendeckel, losgebrochen. Breit und schwer.","0zsj9kz"],
   "plank_person_oldman_look":["Der alte Gefangene. Er kann nicht schwimmen.","1mfmct1"],
   "plank_person_soldier_look":["Einer der Soldaten. Er kann nicht schwimmen.","07g0kqw"],
   "plank_person_boy_look":["Der Schiffsjunge. Er hat nie schwimmen gelernt.","1stebeh"],
@@ -253,6 +253,7 @@ TEXTS('de',23,{
   "old_they_will_kill_us":["Geh weg. Sie bringen die Gefangenen um. Ich habe es gehört.","0iyhlhb"],
   "luke_the_officer_forbade_it":["Der Offizier hat es verboten. Komm und wärm dich am Feuer.","1ht8ox8"],
   "old_forbade_it":["Verboten? Dann komme ich.","1v7ndun"],
+  "old_ill_stay_by_the_fire":["Ich bleibe am Feuer.","0wfpsbd"],
   "luke_one_of_the_islanders":["Einer der Inselbewohner kommt zu uns herunter.","0jfy2qw"],
   "sea":["Meer","1fdflak"],
   "sea_from_the_beach_look":["Graues Meer, und noch immer bricht sich die Brandung.","1d3mu7o"],
@@ -267,6 +268,7 @@ TEXTS('de',23,{
   "fire_on_the_beach_look":["Ein Feuer auf dem Sand. Trotz des Regens hält man es in Gang.","1xdq08i"],
   "luke_warm_for_a_moment":["Warm, für einen Moment.","0rxymue"],
   "julius_everyone_ashore":["Alle sind an Land. Ich kümmere mich um meine Gefangenen.","0s4i8p3"],
+  "julius_my_prisoners_to_see_to":["Ich muss nach meinen Gefangenen sehen.","1f0voxw"],
 
   /* ---- the islanders, and the talk in pictures ---- */
   "islander_elder_look":["Ein älterer Mann von der Insel, in einer langen Tunika und mit einem Kopftuch.","11axp1y"],
@@ -288,7 +290,7 @@ TEXTS('de',23,{
   "luke_he_points_to_the_sea_and_to_me":["Er zeigt aufs Meer hinaus, dann auf mich. Eine Frage.","01pw0xy"],
   "luke_he_looks_at_the_wreck_a_long_time":["Er sieht lange zum Wrack hinüber. Das hat er verstanden.","1c5g6vk"],
   "luke_he_looks_at_the_marks_and_points_to_the_sea":["Er sieht sich die Zeichen an, dann wieder aufs Meer hinaus. Danach hat er nicht gefragt.","0nux3i8"],
-  "luke_he_stamps_too_and_points_to_the_sea":["Auch er stampft auf den Sand und zeigt wieder aufs Meer hinaus.","0oh02jw"],
+  "luke_he_stamps_too_and_points_to_the_sea":["Er sieht auf den Sand hinunter und zeigt wieder aufs Meer hinaus.","0786szm"],
   "luke_he_points_to_the_fire_already_lit":["Er zeigt auf das Feuer: Es brennt schon für uns.","1lzmktu"],
   "luke_he_calls_to_the_women_at_the_fire":["Er ruft den Frauen am Feuer etwas zu. Essen, glaube ich.","0nestuu"],
   "luke_he_waves_along_the_beach":["Er deutet mit der Hand den Strand entlang, auf uns alle, und zieht die Brauen hoch.","1ai3ueh"],
@@ -314,7 +316,7 @@ TEXTS('de',23,{
 
   /* ---- the estate ---- */
   "dry_since_crete":["Ein trockenes Gewand. Das erste trockene Stück seit Kreta.","1k64i2e"],
-  "paul_three_days_here":["Drei Tage sind wir seine Gäste. Er ist mehr als großzügig.","1pokc9i"],
+  "paul_three_days_here":["Wir sind seine Gäste, und er ist mehr als großzügig.","0vhsnem"],
   "wall":["Mauer","1adlted"],
   "estate_wall_look":["Mauern aus Kalkstein, dem Stein der Insel.","1dt12lg"],
   "gateway":["Tor","1sbab5l"],
@@ -387,11 +389,11 @@ TEXTS('de',23,{
   "hint_the_surf_2":["Ich sollte erst in der Ruhe zwischen zwei Wellen zum nächsten Halt schwimmen.","0x480gc"],
   "hint_count_them_1":["Sind wir alle hier? Alle zweihundertsechsundsiebzig?","17jm2z1"],
   "hint_count_them_2":["Ich sollte mir jede Gruppe am Strand ansehen und sie zählen.","0t9ula8"],
-  "hint_one_short_1":["Einer fehlt. Wer würde sich verstecken, und vor wem?","1ir1257"],
+  "hint_one_short_1":["Einer fehlt. Wer würde sich verstecken, und vor wem?","1oba100"],
   "hint_one_short_2":["Ich sollte hinter das große Heckteil schauen.","0bzbv37"],
   "hint_the_islander_1":["Er kennt meine Sprache nicht, und ich seine nicht.","0vg1mdm"],
   "hint_the_islander_2":["Ich sollte mit dem Inselbewohner reden und ihm mit dem Bild antworten, das zu seiner Frage passt.","1qik3as"],
-  "hint_by_the_fire_1":["Das Feuer brennt herunter.","0edqyw1"],
+  "hint_by_the_fire_1":["Ein Feuer im Regen braucht Nachschub.","14ensan"],
   "hint_by_the_fire_2":["Ich sollte nachsehen, was Paulus macht, oder mich um das Feuer kümmern.","145byxy"],
   "hint_the_estate_1":["Unser Gastgeber sieht besorgt aus.","02kokox"],
   "hint_the_estate_2":["Ich sollte mit Publius reden.","0i2e84q"],
@@ -405,8 +407,8 @@ TEXTS('de',23,{
   "task23_to_the_beach":["Durch die Brandung an den Strand kommen.","1ib06tu"],
 
   /* ---- the end screen ---- */
-  "all_safe_to_land_end":["In der vierzehnten Nacht vermuteten die Seeleute Land, und zwei Lotungen gaben ihnen recht. Als sie sich mit dem Beiboot davonmachen wollten, warnte Paulus den Offizier, und die Soldaten schnitten es los. Kurz vor Tagesanbruch redete Paulus allen zu, etwas zu essen, und alle 276 aßen; als es hell wurde, lief das Schiff in einer Bucht auf Grund und brach auseinander. Der Offizier hielt die Soldaten davon ab, die Gefangenen zu töten, und alle kamen sicher an Land, auf Malta. Dort machten die Inselbewohner ihnen ein Feuer, eine Otter biss sich an der Hand von Paulus fest, ohne ihm zu schaden, und Publius nahm sie auf. Paulus heilte den Vater von Publius, und die übrigen Kranken der Insel kamen und wurden gesund.","0hmsj23"],
-  "based_on_acts_27_27_28_10":["Nach Apostelgeschichte 27:27-28:10. Nebenfiguren, Dialoge und Rätsel sind für diese Darstellung erfunden; die Ereignisse des Berichts werden hier mit eigenen Worten erzählt. Die Apostelgeschichte sagt nicht, wie die Lotungen abgelesen wurden, was Paulus am Bug sah, wo gegessen wurde, wer schwimmen konnte und dass jemand die Geretteten am Strand zählte; sie sagt auch nicht, wie sie den Namen der Insel erfuhren und was Paulus antwortete, als die Inselbewohner ihn einen Gott nannten. Erfunden sind die Marken an der Lotleine, die Menschen auf dem Vorschiff und die Dinge, die trieben, die Zählung am Strand, das Gespräch in Bildern, der Stein am Tor des Landguts und die Tafel von Lukas mit ihren Zeichen. Laut „Legt gründlich Zeugnis ab für Gottes Königreich“ steht der Titel, den Lukas Publius gibt, auf zwei Inschriften auf Malta.","0401lcq"],
+  "all_safe_to_land_end":["In der vierzehnten Nacht vermuteten die Seeleute Land, und zwei Lotungen gaben ihnen recht. Als sie sich mit dem Beiboot davonmachen wollten, warnte Paulus den Offizier, und die Soldaten schnitten es los. Kurz vor Tagesanbruch redete Paulus allen zu, etwas zu essen, und alle 276 aßen; als es hell wurde, lief das Schiff in einer Bucht auf Grund und brach auseinander. Der Offizier hielt die Soldaten davon ab, die Gefangenen zu töten, und alle kamen sicher an Land, auf Malta. Dort machten die Inselbewohner ihnen ein Feuer, eine Otter biss sich an der Hand von Paulus fest, ohne ihm zu schaden, und Publius nahm Paulus und seine Begleiter auf. Paulus heilte den Vater von Publius, und die übrigen Kranken der Insel kamen und wurden gesund.","1elrl8r"],
+  "based_on_acts_27_27_28_10":["Nach Apostelgeschichte 27:27-28:10. Nebenfiguren, Dialoge und Rätsel sind für diese Darstellung erfunden; die Ereignisse des Berichts werden hier mit eigenen Worten erzählt. Die Apostelgeschichte sagt nicht, wie die Lotungen abgelesen wurden, was Paulus am Bug sah, wo gegessen wurde, wer schwimmen konnte und dass jemand die Geretteten am Strand zählte; sie sagt auch nicht, wie sie den Namen der Insel erfuhren und was Paulus antwortete, als die Inselbewohner ihn einen Gott nannten. Von Blitzen im Sturm berichtet sie nichts. Erfunden sind die Marken an der Lotleine, die Menschen auf dem Vorschiff und die Dinge, die trieben, die Zählung am Strand, das Gespräch in Bildern, der Stein am Tor des Landguts und die Tafel von Lukas mit ihren Zeichen. Laut „Legt gründlich Zeugnis ab für Gottes Königreich“ steht der Titel, den Lukas Publius gibt, auf zwei Inschriften auf Malta.","1n5ehlx"],
   "all_safe_to_land_2":["Alle sicher an Land","1py1twr"],
   "click_to_return_to_the_title":["Klicken, um zum Titelbildschirm zurückzukehren","0qni08u"]
 });

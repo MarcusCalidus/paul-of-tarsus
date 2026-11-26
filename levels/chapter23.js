@@ -1662,7 +1662,7 @@ const inRoom=r=>G.room===r;
 const FOREIGN23={'*':()=>say(PC(),'luke_he_looks_at_it_and_hands_it_back',TH())};
 who(LK,{look:'luke_look23',talk:()=>inRoom('hold23')?one23(LK):say(LK,'luke_later',{to:P}),useWith:it=>it==='bread23'?bread23('all'):false,give:it=>it==='bread23'?bread23(LK):false});
 who(AR,{look:'aristarchus_look23',talk:()=>inRoom('hold23')?one23(AR):say(AR,inRoom('estate23')?'aristarchus_a_roof_and_dry_clothes':'aristarchus_im_all_right',{to:PC()}),useWith:it=>it==='bread23'?bread23('all'):false,give:it=>it==='bread23'?bread23(AR):false});
-who(JU,{look:'julius_look23',talk:()=>inRoom('bow23')?julius23():inRoom('hold23')?one23(JU):say(JU,inRoom('beach23')?'julius_everyone_ashore':'not_now_paul_said',{to:PC()}),useWith:it=>it==='bread23'?bread23('all'):false,give:it=>it==='bread23'?bread23(JU):false});
+who(JU,{look:'julius_look23',talk:()=>inRoom('bow23')?julius23():inRoom('hold23')?one23(JU):say(JU,inRoom('beach23')?(F.found?'julius_everyone_ashore':'julius_my_prisoners_to_see_to'):'not_now_paul_said',{to:PC()}),useWith:it=>it==='bread23'?bread23('all'):false,give:it=>it==='bread23'?bread23(JU):false});
 who(SO1,{look:()=>say(PC(),F.mailOff?'soldier_without_his_mail_look':'soldier_in_mail_look',TH()),talk:()=>inRoom('hold23')?one23(SO1):inRoom('wreck23')||inRoom('planks23')?mail23():say(SO1,'not_now18',{to:PC()}),useWith:it=>it==='bread23'?bread23('all'):false,give:it=>it==='bread23'?bread23(SO1):false});
 who(SO2,{look:'soldier_look23',talk:()=>say(SO2,inRoom('bow23')?'soldier_ask_the_officer':'not_now18',{to:PC()})});
 for(const a of[SA1,SA2,SA3,SA4])who(a,{look:()=>inRoom('bow23')?sawBow23('sawMen','sailors_at_the_skiff_look'):say(PC(),a===SA1&&inRoom('stern23')?'leadsman_look':'sailor_look23',TH()),
@@ -1670,7 +1670,7 @@ for(const a of[SA1,SA2,SA3,SA4])who(a,{look:()=>inRoom('bow23')?sawBow23('sawMen
 async function pretext23(a){await say(P,'paul_whats_the_skiff_for',{to:a});await say(a,'sailor_anchors_from_the_bow',{to:P})}
 who(PI,{look:'pilot_look23',talk:()=>say(PI,'pilot_no_bearing_tonight',{to:PC()})});
 for(const a of[PR1,PR2,ME,BOY,OLD])who(a,{look:a===OLD?'old_prisoner_look':a===BOY?'ship_boy_look':a===ME?'merchant_look':'prisoner_look23',
-  talk:()=>inRoom('hold23')?one23(a):inRoom('wreck23')?say(a,PEOPLE23.find(p=>p.a()===a).says,{to:P}):a===OLD&&inRoom('beach23')?say(OLD,'old_forbade_it',{to:PC()}):say(a,'not_now18',{to:PC()}),
+  talk:()=>inRoom('hold23')?one23(a):inRoom('wreck23')?say(a,PEOPLE23.find(p=>p.a()===a).says,{to:P}):a===OLD&&inRoom('beach23')?say(OLD,F.found?'old_ill_stay_by_the_fire':'old_forbade_it',{to:PC()}):say(a,'not_now18',{to:PC()}),
   useWith:it=>it==='bread23'?bread23('all'):false,give:it=>it==='bread23'?bread23(a):false});
 const OLDHS=OLD.hs;
 who(EL,{look:'islander_elder_look',talk:()=>talk23(),show:FOREIGN23});

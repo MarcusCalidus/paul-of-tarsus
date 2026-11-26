@@ -95,7 +95,7 @@ TEXTS('en',22,{
   "pennant":"pennant",
   "pennant_look22":"The pennant streams out to the left. So the wind comes from the right.",
   "deckhouse":"deckhouse",
-  "deckhouse_look22":"A small deckhouse against the rail, for the ship's own people.",
+  "deckhouse_look22":"A small deckhouse aft, for the ship's own people.",
   "lee_of_the_deckhouse":"deck left of the deckhouse",
   "free_deck_left_look":"Free deck to the left of the deckhouse. There's room here for a shelter.",
   "beside_the_deckhouse":"deck right of the deckhouse",
@@ -154,7 +154,7 @@ TEXTS('en',22,{
   "paul_before_i_say_anything":"Before I say anything, I want to be sure of what I've seen.",
   "fair_havens_look":"Fair Havens: a small bay, sheltered by islands.",
   "open_sea":"open sea",
-  "paul_three_times_shipwrecked":"Three times I've been shipwrecked. I know what the sea can do this late in the year.",
+  "paul_three_times_shipwrecked":"Three times I've been shipwrecked. I know what the sea can do.",
   "paul_the_wind_against_us_since_sidon":"The wind's against us again, the way it's been ever since Sidon.",
   "luke_weve_lost_weeks":"By my tablet, we've lost weeks. It took many days just to reach Cnidus.",
   "sailor_late_in_the_year":"It's late in the year. From now on, nobody sails who doesn't have to.",
@@ -194,7 +194,7 @@ TEXTS('en',22,{
   "mast_step":"mast",
   "mast_look22":"The mast. Something to hold on to.",
   "cask":"cask",
-  "cask_look22":"A cask, lashed down. It's not going anywhere.",
+  "cask_look22":"A cask, lashed down fast.",
   "lee_rail":"lee rail",
   "lee_rail_look22":"The rail on the side away from the wind. Over it, the bales go into the sea.",
   "hatch_look22":"The cargo hatch. The bales come up from here.",
@@ -228,7 +228,7 @@ TEXTS('en',22,{
   "mark_west":"West",
   "mark_north_west":"Northwest",
   "leave_it_for_now":"Leave it for now.",
-  "luke_only_the_day":"Only the stroke for the day. I won't write what I don't know.",
+  "luke_only_the_day":"Only the stroke for the day. Today I can't even guess.",
   "luke_south_west_then":"Southwest. That's where this wind would push us, if it held.",
   "luke_west_as_near_as_i_can":"West. That's as near as I can guess it.",
   "luke_north_west_a_guess":"Northwest. Maybe she lies closer to the wind than I think. It's a guess.",
@@ -305,7 +305,7 @@ TEXTS('en',22,{
 
   /* ---- the end screen ---- */
   "euroaquilo_end":"Paul sailed for Italy under guard, with Luke and Aristarchus. At Fair Havens he warned that the voyage would bring damage and great loss, but the army officer went by the pilot and the shipowner. Then the wind called Euroaquilo came down on the ship, and for many days it drove her on, without sun or stars. When hope was fading, Paul stood up among them: only the ship would be lost, because God had granted him everyone who sailed with him. An island lay ahead, where they would be driven ashore.",
-  "based_on_acts_27_1_26":"Based on Acts 27:1-26. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are told here in paraphrase. The shelter on deck and that Paul made it, the deckhouse, what the brothers at Sidon gave him, the reasons the pilot and the shipowner give, the bales Paul carries when the ship is made lighter, and Luke's tablet with its marks are invented; Bearing Thorough Witness About God's Kingdom says that Luke may well have kept notes on the way. Acts does not say how Paul was guarded on board, how Luke and Aristarchus came to sail with him, why Fair Havens was unsuitable for wintering, or what the gear was that they lowered.",
+  "based_on_acts_27_1_26":"Based on Acts 27:1-26. Supporting characters, dialogue and puzzles are invented for this dramatization; the events of the account are told here in paraphrase. The shelter on deck and that Paul made it, the deckhouse, what the brothers at Sidon gave him, the reasons the pilot and the shipowner give, the bales Paul carries when the ship is made lighter, and Luke's tablet with its marks are invented; Bearing Thorough Witness About God's Kingdom says that Luke may well have kept notes on the way. Acts does not say how Paul was guarded on board, how Luke and Aristarchus came to sail with him, why Fair Havens was unsuitable for wintering, or what the gear was that they lowered, and it names no lightning in the storm.",
   "click_to_continue_to_chapter_twenty_three":"Click to continue to Chapter Twenty-Three",
   "chapter_twenty_three_code_code":"Chapter Twenty-Three code: {code}"
 });
