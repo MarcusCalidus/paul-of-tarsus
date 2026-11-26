@@ -126,7 +126,7 @@
   18:()=>act('look','far_end_of_the_colonnade'), // Chapter Eighteen: in the Court of the Gentiles, the far end of Solomon's Colonnade
   19:()=>act('look','spring'), // Chapter Nineteen: at Antipatris at dawn, the spring off the way
   20:()=>act('look','stub20_window'), // Chapter Twenty: STUB, the stub's window. LOGIC20: from treasure.at, the steps that see the storks over the harbor from window20
-  21:()=>act('look','stub21_opening'), // Chapter Twenty-One: STUB, the stub's opening. LOGIC21: from treasure.at, the steps that look at the ox goad by the palace gate
+  21:()=>act('look','ox_goad'), // Chapter Twenty-One: in the court before the hearing, the carter's ox goad by the cart at the side
  };
  (async()=>{try{
   while(!G.ready)await wait(30);
@@ -4614,9 +4614,14 @@
   /* ==== CHAPTER TWENTY-ONE: begin ==== Chapter Twenty-One's own stops: whoever builds the chapter extends this section, and nothing outside it but
      its line in TSTEPS, the chain of the full run (ch21 after ch20) and the title checks of the chapters before it. */
   /* Chapter Twenty-One stops start Chapter Twenty-One from the title screen; the full run calls its test when Chapter Twenty has ended.
-     all21 halts nowhere. Its halts: STUB: stub21 (the stub's room) · final21. The stops that begin with "p" open one room at once, with the
-     story's flags set for it, and say the safe-point code of their point (CODE): STUB: pstub21. LOGIC21: replace every STUB name here with
-     the chapter's own halts and room stops, as Chapter Nineteen's section does. */
+     all21 halts nowhere. Its halts: court21 (the clerk readies the court) · hearing21 (Paul before Festus, 25:7) · roads21 (the map of the
+     three roads open) · write21 (the clerk's writing room) · report21 (the report, every line marked) · festus21 (Festus, the king and Bernice
+     in the court) · hall21 (the audience, the king has given leave) · road21 (the road at midday, told) · white21 (the voice, told on the
+     plain white screen) · listen21 (Festus has broken in) · bonds21 (the wish, the chain raised) · passage21 (the clerk in the emptying
+     hall) · final21. The stops that begin with "p" open one room at once, with the story's flags set for it, and say the safe-point code of
+     their point (CODE): pscroll21 (25:1 on the narrator's scroll) · pcourt21 (the treasure's point) · phearing21 · proads21 (the map open) ·
+     pwrite21 · preport21 (every line marked) · pfestus21 · phall21 · proad21 (the road at midday) · plisten21 · pbonds21 (the chain raised) ·
+     ppassage21. The stop map21 (the travel map's three roads) belongs to shared/map.js. */
   /* rooms21: every picture of Chapter Twenty-One on one sheet at twice its size (rooms21.png), for the art and the cross-shape check */
   if(stop==='rooms21'){clearInterval(sk);sk=0;await loadLevel(21);setChapter(21);ov.className='';ov.onclick=null;const C=CHAP[21],ids=C.rooms,K=2;
     const pic=(id,q,x,y)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
@@ -4625,38 +4630,171 @@
     const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
     ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
     window.SHEETS={rooms21:c.toDataURL()};halt('rooms21')}
-  const C21=/^(stub21|final21|all21)$/.test(stop);   /* STUB: stub21 */
+  const C21=/^(court21|hearing21|roads21|write21|report21|festus21|hall21|road21|white21|listen21|bonds21|passage21|final21|all21)$/.test(stop);
   if(!C21&&/^p[a-z]+21$/.test(stop)){await loadLevel(21);ov.className='';ov.onclick=null;const C=CHAP[21],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
-      S={pstub21:[[],'stub21']}[stop];   /* STUB: pstub21; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
+      S={pscroll21:[[],'court21'],pcourt21:[[],'court21'],phearing21:[upto('ready'),'court21'],proads21:[upto('answer'),'court21'],pwrite21:[upto('appeal'),'write21'],
+        preport21:[upto('readNotes'),'report21'],pfestus21:[upto('report'),'court21'],phall21:[upto('festus'),'hall21'],proad21:[upto('festus'),'hall21'],
+        plisten21:[upto('defense'),'hall21'],pbonds21:[upto('prophets'),'hall21'],ppassage21:[upto('bonds'),'hall21']}[stop];
     if(!S)throw new Error('no such stop '+stop);setChapter(21);for(const k of S[0])F[k]=1;
     const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
+    if(stop==='preport21')G.mk21=Object.fromEntries(C.report.map(c=>[c.k,c.ok]));
+    if(stop==='pbonds21')P.ges=1;
     G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    if(stop==='pscroll21'){G.scene=DARK;narr(C.told.v1,{dur:60000})}
+    if(stop==='proads21'){const M=await need('map');M.pick(['jerusalem','caesarea','torome'],'caesarea',{view:'levant',legs:[['caesarea','torome']],hint:'where_should_my_case_be_heard'})}
+    if(stop==='proad21')G.scene=SHARED.damascus.scene('road',{x:118,d:22});
     await wait(1100);halt(stop)}
-  const ch21=async()=>{const said=t=>heard.includes(T(t)),C=()=>CHAP[21],told=k=>heard.includes(T(C().told[k])),
+  const ch21=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[21],told=k=>heard.includes(T(C().told[k])),
     until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
     onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    clickHs=async(h,v)=>{verb(v||'use');clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    talkTo=async(a,v)=>{verb(v||'talk');clickView(a.x,a.y-10,a.hs);await idle()},
+    useA=async(id,a,v)=>{verb(v||'use');item(id);clickView(a.x,a.y-10,a.hs);await idle()},
     pray21=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
     hints=async(a,b,where)=>{heard.length=0;const p=await pray21(),first=said(a)&&!said(b),q=await pray21();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
-    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+    asked=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);return[...document.querySelectorAll('#choices button')].map(x=>x.dataset.src)},
+    line=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await idle()},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)},
+    M=()=>SHARED.map,mapUp=async()=>{for(let i=0;i<600&&!(M()&&M().state.places&&G.scene===M().draw);i++)await wait(30);await wait(60)},
+    clickAt=k=>{const[x,y]=M().where(k),vp=$('#view'),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,clientX:r.left+x*r.width/VW,clientY:r.top+y*r.height/VH}))},
+    pickPlace=async k=>{clickAt(k);for(let i=0;i<100&&M().state.places;i++)await wait(20);await mapUp()},
+    code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
   if(C21){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
     {const c=chs.find(c=>c.dataset.ch==='21');ok(c&&c.textContent.includes(T('chapter_twenty_one'))&&c.textContent.includes(T('to_caesar_2'))&&PLANNED[0].label==='chapter_twenty_two'&&plans.textContent.includes(T('twenty_two')),
       'the title lists Chapter Twenty-One, To Caesar, and the chapters in preparation begin with the twenty-second')}}
   (C21?document.querySelector('#overlay [data-ch="21"]'):ov).click();
-  /* STUB: from here to halt('final21') the steps play the stub; LOGIC21 replaces them with the chapter's playthrough */
-  await until(()=>G.ch===21&&G.room==='stub21'&&!G.busy,6000);note();
-  ok(seenTold.has('stub_open')&&decode(makeCode()).ch===21,'STUB: the stub of Chapter Twenty-One opens in its room, and its first line is told: '+makeCode());
-  halt('stub21');
-  await hints('stub21_hint_1','stub21_hint_2','in the stub');
-  heard.length=0;await onH('stub21_door','use');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
-  ok(ov.classList.contains('end')&&ov.textContent.includes(T('to_caesar_2'))&&/25:1-26:32/.test(ov.textContent)&&ov.textContent.includes(T('click_to_return_to_the_title'))&&store('paul.save')===null&&inOv(),
-    'the end screen of Chapter Twenty-One returns to the title (until Chapter Twenty-Two is built), and keeps no code to continue from');
+  await until(()=>G.ch===21&&G.room==='court21'&&!G.busy,6000);note();
+  const CL=A('clerk21'),FS=A('festus21'),AG=A('agrippa21'),BE=A('bernice21'),GU=A('guard21'),R=C().report,MK=C().marks;
+  ok(G.room==='court21'&&PC()===CL&&['v1','v2','v4'].every(k=>seenTold.has(k))&&said('clerk_the_new_governor_sits_today')&&!P.room&&!CL.look.board,
+    'Festus goes up to Jerusalem; their favor and their ambush; Paul stays at Caesarea (Acts 25:1-5), from the scroll; the court by morning, and the governor\'s clerk is played, his board laid down');
+  ok(/^21(-[0-9A-Z]{3}){3,5}$/.test(makeCode())&&decode(makeCode()).ch===21,'chapter twenty-one has wide codes: '+makeCode());
+  ok(AU.score===C().music&&C().music.steps===20&&C().music.root===57&&C().music.group.join()==='3,3,4,3,3,4'&&C().music.scale.join()==='0,2,3,5,7,8,10','the chapter\'s score, in A Aeolian and in bars of twenty');
+  ok(ART.court21.light.sun[0]<0&&ROOMS.court21.birds().stand.some(([x,y])=>y===SHARED.caesarea.SEAT.top),'the court in the morning light; a gull stands on the governor\'s seat');
+  halt('court21');
+  /* the court made ready */
+  await hints('hint_ready_the_court_1','hint_ready_the_court_2','before the hearing');
+  heard.length=0;await onH('way_to_the_writing_room','walk');ok(said('clerk_the_court_first')&&G.room==='court21','the court first');
+  heard.length=0;await onH('my_writing_desk','use');ok(said('clerk_not_with_a_gull_on_the_seat')&&!F.ready,'not with a gull on the governor\'s seat');
+  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('ox_goad','look');
+    ok(said('ox_goad_look')&&treasures().has(21)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'the carter\'s ox goad by the cart: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
+  heard.length=0;await onH('governors_seat','use');ok(said('clerk_off_the_governors_seat')&&F.gull&&!ROOMS.court21.birds().stand.some(([x,y])=>y===SHARED.caesarea.SEAT.top),'off the governor\'s seat, gull');
+  heard.length=0;onH('my_writing_desk','use');await until(()=>F.ready&&!G.busy,6000);note();
+  ok(seenTold.has('v6')&&seenTold.has('v7')&&PC()===P&&P.chained&&GU.keeper&&GU.room==='court21'&&FS.seat&&CL.seat&&CL.look.board&&has('chain21')&&A('accuser21a').room==='court21'&&said('paul_many_charges_and_none_proved'),
+    'Festus on the judgment seat; the Jews from Jerusalem round Paul with charges they cannot prove (Acts 25:6, 7); Paul is played, a light chain from his wrist to the soldier\'s; the clerk writes at his desk');
+  await code('at the hearing',()=>G.room==='court21'&&PC()===P&&P.chained&&GU.keeper&&FS.room==='court21'&&CL.seat&&has('chain21')&&ROOMS.court21.walk[0]===ROOMS.court21.walk[1]);
+  halt('hearing21');
+  /* three roads */
+  await hints('hint_answer_festus_1','hint_answer_festus_2','at the hearing');
+  heard.length=0;await useA('chain21',FS);ok(said('paul_the_chain_stays_where_it_is'),'the chain stays where it is');
+  heard.length=0;talkTo(FS);await mapUp();note();
+  ok(said('paul_no_sin_against_law_temple_caesar')&&seenTold.has('v9')&&said('festus_will_you_go_up')&&F.answer&&M().state.places.join()==='jerusalem,caesarea,torome'&&M().state.legs.length===1&&M().state.pulse==='caesarea',
+    'no sin against the Law, the temple or Caesar (Acts 25:8); Festus asks (25:9); the map opens with three roads');
+  halt('roads21');
+  heard.length=0;await pickPlace('jerusalem');ok(said('paul_thought_jerusalem')&&M().state.places&&!F.appeal,'Jerusalem: more than forty men swore there, and his accusers would be his judges; the map stays open');
+  heard.length=0;await pickPlace('caesarea');ok(said('paul_thought_caesarea')&&M().state.places&&!F.appeal,'Caesarea: two years, and no judge has decided anything');
+  dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));await until(()=>!G.busy&&G.room==='court21'&&!G.scene,3000);
+  ok(said('paul_he_is_waiting_for_my_answer')&&!F.appeal,'Esc leaves the map; Festus waits');
+  await hints('hint_three_roads_1','hint_three_roads_2','with the question asked');
+  heard.length=0;talkTo(FS);await mapUp();ok(said('festus_well_jerusalem_or_not'),'asked again');
+  clickAt('torome');await until(()=>F.appeal&&G.room==='write21'&&!G.busy,9000);note();
+  ok(said('paul_thought_rome')&&said('paul_caesars_judgment_seat')&&said('paul_i_do_not_ask_to_be_spared')&&said('paul_i_appeal_to_caesar')&&seenTold.has('v12')&&said('festus_to_caesar_you_will_go')&&seenTold.has('v13')&&PC()===CL&&!has('chain21')&&!P.room,
+    'the road west: Rome; Caesar\'s judgment seat, and the appeal (Acts 25:10, 11); Festus and his advisers: to Caesar he will go (25:12); King Agrippa and Bernice come (25:13); the clerk is played');
+  /* nothing to write */
+  ok(said('clerk_a_report_goes_with_him')&&G.room==='write21','a report has to go with him');
+  await code('in the writing room',()=>G.room==='write21'&&PC()===CL&&!P.room&&FS.room==='court21'&&AG.room==='court21');
+  halt('write21');
+  await hints('hint_the_papers_1','hint_the_papers_2','in the writing room');
+  heard.length=0;await onH('ink_pot','look');ok(said('clerk_ink_left_over'),'ink left over');
+  const rh=k=>ROOMS.report21.hs.find(h=>h.r21===k),mark=async(k,m)=>{clickHs(rh(k),'use');await line(MK[m])};
+  heard.length=0;onH('the_report','use');await until(()=>G.room==='report21'&&!G.busy,3000);ok(said('clerk_every_charge_ever_brought'),'the report, close: every charge ever brought, one to a line');
+  heard.length=0;await clickHs(rh('charge_revolt'),'use');ok(said('clerk_first_the_record_before_felix')&&!$('#choices').classList.contains('on'),'a line is marked only when the paper that settles it has been read');
+  heard.length=0;await clickHs(ROOMS.report21.hs.find(h=>h.name==='field_for_the_charge'),'look');ok(said('the_field_for_the_charge_look'),'the field for the charge');
+  onH('back_to_the_table','walk');await until(()=>G.room==='write21'&&!G.busy,3000);
+  for(const[h,f]of[['the_commanders_letter','readLetter'],['the_record_before_felix','readRecord'],['my_notes_before_festus','readNotes']]){heard.length=0;await onH(h,'look');ok(F[f]&&C().papers[{readLetter:'letter',readRecord:'record',readNotes:'notes'}[f]].read.every(said),'he reads the '+h.replace(/_/g,' '))}
+  onH('the_report','use');await until(()=>G.room==='report21'&&!G.busy,3000);
+  {const w={never:'worship',worship:'never'};for(const c of R){heard.length=0;await mark(c.k,w[c.ok]);ok(said(c.no)&&!(G.mk21||{})[c.k],'a wrong mark on '+c.k+' is answered with the true reason, and not set')}}
+  heard.length=0;clickHs(rh(R[0].k),'use');{const o=await asked();ok(o.length===3&&o.at(-1)==='leave_it_as_it_is','two marks, and leave it as it is')}await line('leave_it_as_it_is');
+  for(const c of R){heard.length=0;await mark(c.k,c.ok)}
+  ok(F.report&&said('clerk_and_the_field_stays_empty')&&said('clerk_the_governor_must_see_this'),'revolt, the temple and the many serious charges never proved; the sect and their own Law a dispute about their own worship: the field for the charge stays empty');
+  heard.length=0;await clickHs(ROOMS.report21.hs.find(h=>h.name==='field_for_the_charge'),'look');ok(said('clerk_the_empty_letter'),'the empty letter');
+  {const bad=(G.caps21||[]).filter(c=>c.w>c.max+.5||c.h>c.maxh+.5);ok((G.caps21||[]).length>0&&!bad.length,'every word written on the report fits its place'+(bad.length?': '+bad.slice(0,4).map(c=>c.s).join(' | '):''))}
+  halt('report21');
+  await hints('hint_to_festus_1','hint_to_festus_2','with the report done');
+  onH('back_to_the_table','walk');await until(()=>G.room==='write21'&&!G.busy,3000);
+  onH('door_to_the_court','walk');await until(()=>G.room==='court21'&&!G.busy,3000);
+  ok(FS.room==='court21'&&AG.room==='court21'&&BE.room==='court21'&&PC()===CL&&!FS.seat,'Festus, the king and Bernice in the court');
+  heard.length=0;await talkTo(AG);ok(said('agrippa_speak_to_the_governor'),'the king sends him to the governor');
+  halt('festus21');
+  heard.length=0;talkTo(FS);await until(()=>F.festus&&G.room==='hall21'&&PC()===P&&!G.busy,12000);note();
+  ok(said('clerk_ive_been_through_every_charge')&&said('festus_nothing_left')&&said('festus_the_king_knows_their_customs')&&['v14','v22','v23'].every(k=>seenTold.has(k))&&said('clerk_no_chair_for_the_clerk')
+    &&said('festus_this_is_the_man')&&said('festus_nothing_certain_to_write')&&said('agrippa_you_may_speak')&&FS.seat&&AG.seat&&BE.seat&&A('cmd21a').seat&&A('lead21c').seat&&P.chained&&GU.keeper&&has('chain21')&&CL.room==='hall21'&&!CL.seat,
+    'nothing left for the report; the case laid before the king (Acts 25:14-22); the great show (25:23); no chair for the clerk; Festus presents him: nothing certain to write (25:24-27); You may speak for yourself (26:1)');
+  await code('in the audience chamber',()=>G.room==='hall21'&&PC()===P&&P.chained&&GU.keeper&&AG.seat&&has('chain21')&&ROOMS.hall21.walk[0]===ROOMS.hall21.walk[1]);
+  halt('hall21');
+  /* the defense */
+  await hints('hint_the_king_gave_leave_1','hint_the_king_gave_leave_2','with leave to speak');
+  heard.length=0;await talkTo(FS);ok(said('festus_the_king_has_given_you_leave')&&!F.defense,'the king has given him leave');
+  heard.length=0;await useA('chain21',AG);ok(said('paul_the_chain_stays_where_it_is')&&!F.defense,'not the chain yet');
+  let white=new Set(),hand=0;const wo=new MutationObserver(()=>{if(G.white)for(const el of document.querySelectorAll('#speech .line.white'))white.add(el.textContent);if(P.ges===1&&P.chained)hand=1});
+  wo.observe($('#speech'),{childList:true,subtree:true,characterData:true});
+  heard.length=0;talkTo(AG);
+  for(let i=0;i<3000&&!(G.scene&&!G.white&&SHARED.damascus);i++)await wait(20);
+  if(stop==='road21'){await wait(500);halt('road21')}
+  for(let i=0;i<3000&&!G.white;i++)await wait(20);for(let i=0;i<600&&!white.size;i++)await wait(20);
+  if(stop==='white21'){await wait(300);halt('white21')}
+  await until(()=>F.defense&&!G.busy,20000);wo.disconnect();note();
+  ok(hand&&['h1','h4','h9','h12','h14','h15','h16','h17','h24'].every(k=>seenTold.has(k))&&said('paul_happy_before_agrippa')&&said('paul_i_followed_the_vision')&&said('paul_laid_hold_of_in_the_temple')
+    &&said('paul_nothing_but_moses_and_the_prophets')&&said('festus_out_of_your_mind')&&said('paul_two_men_are_listening'),
+    'his hand goes out (Acts 26:1); the courtesy to the king (26:2, 3); his youth, the hope, his vote (26:4-11, told); the road at midday (26:12-18, told); the vision obeyed (26:19-23); Festus breaks in (26:24)');
+  ok([...white].some(s=>s.includes(T(C().told.h14)))&&[...white].some(s=>s.includes(T(C().told.h15)))&&![...white].some(s=>s.includes(T(C().told.h12))),'all of them fell, and the voice in Hebrew, are told on the plain white screen; the road at midday over its picture');
+  await code('with Festus broken in',()=>G.room==='hall21'&&PC()===P&&F.defense&&!F.sound&&P.chained);
+  halt('listen21');
+  /* two listeners */
+  await hints('hint_festus_broke_in_1','hint_festus_broke_in_2','after the outcry');
+  const L=C().listen.map(s=>s.k);
+  heard.length=0;talkTo(FS);const oF=await asked();await line('say_nothing_for_now');
+  talkTo(AG);const oA=await asked();
+  ok(L.every(k=>oF.includes(k))&&oF.at(-1)==='say_nothing_for_now'&&oF.join()===oA.join(),'to the governor or to the king, the same four true sentences, in the same mixed order');
+  await line('paul_true_and_of_a_sound_mind');ok(said('agrippa_the_governor_said_it')&&!F.sound,'to the king: it was the governor who said that');
+  heard.length=0;talkTo(FS);await line('paul_do_you_believe_the_prophets');ok(said('festus_put_that_to_the_king')&&!F.prophets,'the Prophets, to the governor: put that to the king');
+  heard.length=0;talkTo(FS);await line('paul_not_done_in_a_corner');ok(said('festus_answer_what_i_said')&&!F.corner,'the king knows, to the governor before the answer: answer what I said');
+  heard.length=0;talkTo(AG);await line('paul_im_not_saying_this_to_save_myself');ok(said('agrippa_so_i_have_heard')&&!F.sound,'a true sentence of his own, answered, and nothing changes');
+  heard.length=0;talkTo(FS);await line('paul_true_and_of_a_sound_mind');ok(F.sound&&!said('agrippa_the_governor_said_it'),'to Festus: what I say is true, and a sound mind says it (Acts 26:25)');
+  heard.length=0;talkTo(FS);await line('paul_true_and_of_a_sound_mind');ok(said('paul_ive_said_that_already'),'said already');
+  await hints('hint_the_king_knows_1','hint_the_king_knows_2','with the first answer given');
+  heard.length=0;talkTo(AG);await line('paul_do_you_believe_the_prophets');ok(said('agrippa_the_governor_spoke_to_you_first')&&!F.prophets,'to the king too soon: the governor spoke to you first');
+  heard.length=0;talkTo(AG);await line('paul_not_done_in_a_corner');ok(said('agrippa_tell_that_to_the_governor')&&!F.corner,'the king knows, said to the king: tell that to the governor');
+  heard.length=0;talkTo(FS);await line('paul_not_done_in_a_corner');ok(F.corner,'to Festus: none of it happened in a corner (Acts 26:26)');
+  await hints('hint_the_prophets_1','hint_the_prophets_2','with Festus answered');
+  heard.length=0;talkTo(AG);await line('paul_do_you_believe_the_prophets');await until(()=>F.prophets&&!G.busy,6000);note();
+  ok(seenTold.has('h28')&&said('paul_one_more_thing_for_him'),'to the king: do you believe the Prophets? (Acts 26:27); Agrippa\'s answer, told without a tone (26:28)');
+  halt('bonds21');
+  /* these bonds */
+  await hints('hint_these_bonds_1','hint_these_bonds_2','after Agrippa\'s answer');
+  heard.length=0;await useA('chain21',FS);ok(said('paul_its_the_king_im_answering')&&!F.bonds,'it\'s the king he answers');
+  let raised=0;const ro=setInterval(()=>{if(P.ges===1&&P.chained&&cur&&cur.a===P)raised=1},40);
+  heard.length=0;useA('chain21',AG);await until(()=>F.bonds&&PC()===CL&&!G.busy,9000);clearInterval(ro);note();
+  ok(raised&&said('paul_except_for_these_bonds')&&seenTold.has('h30')&&G.room==='hall21'&&PC()===CL&&!P.room&&FS.room==='hall21'&&AG.room==='hall21'&&!AG.seat&&!A('cmd21a').room&&said('clerk_back_to_my_table'),
+    'the far hand comes up with the chain: except for these bonds (Acts 26:29); they rise (26:30); the clerk is played in the emptying hall');
+  await code('in the passage',()=>G.room==='hall21'&&PC()===CL&&!P.room&&AG.room==='hall21'&&F.bonds&&!F.passage);
+  halt('passage21');
+  /* in the passage */
+  await hints('hint_the_passage_1','hint_the_passage_2','in the emptying hall');
+  heard.length=0;await talkTo(AG);ok(said('clerk_not_my_place'),'not his place to speak to the king');
+  heard.length=0;onH('door_of_the_hall','walk');await until(()=>F.passage&&G.room==='write21'&&!G.busy,9000);note();
+  ok(seenTold.has('h31')&&said('agrippa_he_could_have_been_set_free')&&said('clerk_and_still_nothing_for_the_field'),'on their way out: nothing deserving death or bonds (Acts 26:31); the king to the governor: he could have been set free (26:32)');
+  await hints('hint_my_table_1','hint_my_table_2','back at the table');
+  heard.length=0;await onH('door_to_the_court','walk');ok(said('clerk_the_report_first')&&G.room==='write21','the report first');
+  heard.length=0;onH('the_report','use');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
+  ok(ov.classList.contains('end')&&said('clerk_the_field_is_still_empty')&&seenTold.has('n27')&&ov.textContent.includes(T('to_caesar_2'))&&ov.textContent.includes(T('to_caesar_end'))&&/25:1-26:32/.test(ov.textContent)
+    &&ov.textContent.includes(T('click_to_return_to_the_title'))&&store('paul.save')===null&&inOv(),
+    'the field is still empty; what comes next (Acts 27:1); the end screen says what the account leaves unsaid and returns to the title (until Chapter Twenty-Two is built)');
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 25:1-26:32 was told'+(miss.length?' MISSING '+miss:''))}
   halt('final21')};
   if(C21){await ch21();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    /* STUB: LOGIC21 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
-    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ==== CHAPTER TWENTY-ONE: end ==== */
   if(C19){await ch19();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));

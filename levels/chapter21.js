@@ -486,10 +486,11 @@ ROOMS.hall21={space:1.3,get walk(){return PC()===P&&chainedNow()?[PAULH[0],PAULH
 
 /* ============ PEOPLE AS HOTSPOTS ============ */
 const who=(a,o)=>{a.hs=Object.assign({name:a.name,actor:a},o)};
+const chainFestus21=()=>say(P,phase21()==='bonds'?'paul_its_the_king_im_answering':'paul_the_chain_stays_where_it_is',THP);
 const inRoom=r=>G.room===r;
 who(CL,{look:'governors_clerk_look',talk:()=>say(CL,'clerk_i_only_write_it_down',{to:P})});
 who(FS,{look:'festus_look',talk:()=>inRoom('hall21')?speakTo21(FS):phase21()==='hearing'?answer21():PC()===CL?festus21():say(FS,'festus_not_now',{to:PC()}),
-  useWith:it=>it==='chain21'?say(P,'paul_its_the_king_im_answering',THP):false,give:it=>it==='chain21'?say(P,'paul_its_the_king_im_answering',THP):false});
+  useWith:it=>it==='chain21'?chainFestus21():false,give:it=>it==='chain21'?chainFestus21():false});
 who(AG,{look:'agrippa_look',talk:()=>inRoom('hall21')?speakTo21(AG):say(AG,'agrippa_speak_to_the_governor',{to:PC()}),useWith:it=>it==='chain21'?bonds21():false,give:it=>it==='chain21'?bonds21():false});
 who(BE,{look:'bernice_look',talk:()=>say(PC(),PC()===CL?'clerk_not_my_place':'paul_its_the_king_im_answering',PC()===CL?TC:THP)});
 for(const a of[AD1,AD2])who(a,{look:'adviser_look',talk:()=>say(PC(),'not_his_to_decide',PC()===CL?TC:THP)});
