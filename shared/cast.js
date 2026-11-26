@@ -260,9 +260,15 @@ const SHIPWRECK={
                                    'hold':   both stand a little behind P (y - 1.5) and grip his arms above the elbow, the one on his
                                              back side facing the way he faces, the other facing him; P is held (Acts 22:25: never spread,
                                              no post, nothing raised).
+                                   'one':    one chain, on one wrist (Acts 24-26, before the governor): the one soldier given (A on P's left,
+                                             or B on his right) a pace off on that side, facing the way P faces, a keeper by the wrist toward
+                                             P; P is chained to him (P.chainTo) by the wrist on his side, and wears no cuff on the other: his
+                                             near wrist when the soldier stands behind him, his far one when the soldier stands ahead, so that
+                                             it is the same hand whichever way P turns (poseOf, pz 'n' or 'f'). Only that far hand, when it is
+                                             the chained one, may be raised with its chain (ges 1); a free far hand may do anything.
                                    Chained or held, P stands still where he is; a script that walks them walks all three alike.
      custody.chains(g, P, A, B, o) in a room's draw(g, t): a short chain from each of P's cuffs to the cuff of the keeper on that side,
-                                   hanging a little between them, drawn link by link as small squares of iron, light and dark in turn, at
+                                   hanging a little between them (chained by one wrist: only to P.chainTo, a light chain that hangs in a curve, slack 1.6), drawn link by link as small squares of iron, light and dark in turn, at
                                    the depth of the nearer of the two; o.slack: how much longer than the gap a chain is (1.3).
      custody.grips(g, P, A, B)     in a room's draw(g, t): the fingers of each soldier who grips (a.grips) over P's upper arm on his side,
                                    in the soldier's skin and the room's light, drawn over P.
@@ -277,7 +283,8 @@ const CARRIERS=[ROMAN.legionary_guard,ROMAN.legionary_bare,ROMAN.escort_cloak,RO
 const lit2=(c,l)=>{if(!l)return c;const a=hex(c),b=hex(l);return toHex(a[0]*b[0]/255,a[1]*b[1]/255,a[2]*b[2]/255)};
 /* where a cuff of actor a is, in room pixels: which: 'far' or 'near' */
 function cuffPt(a,which){const d=facing(a),p=cuffAt(a.look,poseOf(a),a.ges||0,a.fr)[which];if(!p)return null;const ly=poseOf(a)==='l'?LIFT:0;return[hp(a.x)+d*p[0]*FIG.K,hp(a.y)-ly+p[1]*FIG.K]}
-function place(kind,P,A,B){const d=P.dir||1;for(const a of[P,A,B])if(a){a.chained=a.held=a.keeper=a.grips=0;a.walk=null}
+function place(kind,P,A,B){const d=P.dir||1;for(const a of[P,A,B])if(a){a.chained=a.held=a.keeper=a.grips=a.chainTo=0;a.walk=null}
+  if(kind==='one'){const S=A||B,side=A?-1:1;if(!S)return;P.chained=1;P.chainTo=S;S.room=P.room;S.dir=d;S.keeper=side===-d?'far':'near';S.x=P.x+side*18;S.y=P.y+(side===-d?-.5:.5);return}
   if(kind==='chain'){P.chained=1;const back=d>0?A:B,ahead=d>0?B:A;
     if(back){back.room=P.room;back.dir=d;back.keeper='far';back.x=P.x-d*18;back.y=P.y-.5}
     if(ahead){ahead.room=P.room;ahead.dir=d;ahead.keeper='near';ahead.x=P.x+d*18;ahead.y=P.y+.5}}
@@ -289,10 +296,17 @@ function span(g,p,q,slack,lit){const d=Math.hypot(q[0]-p[0],q[1]-p[1]),L=d*(slac
     C=[lit2(CUFF[1],lit),lit2(CUFF[3],lit)];let last='';
   for(let i=0;i<=n;i++){const t=i/n,x=p[0]+(q[0]-p[0])*t,y=p[1]+(q[1]-p[1])*t+sag*4*t*(1-t),k=Math.round(x*2)+','+Math.round(y*2);if(k===last)continue;last=k;
     g.fillStyle=C[i%2];g.fillRect(Math.round(x*2)/2,Math.round(y*2)/2,.5,.5)}}
-function chains(g,P,A,B,o){o=o||{};for(const S of[A,B]){if(!S||S.room!==P.room||!poseOf(S))continue;
+/* a light chain on one wrist (P.chainTo): longer than the chains of Acts 21:33, so that it hangs in a light curve; its middle sags away
+   from the straight line on the side that faces down, so that a chain that falls steeply from a raised hand bows a little instead of
+   overshooting its lower end; the steeper it falls, the less it sags. Links every half pixel, light and dark in turn */
+function hang(g,p,q,slack,lit){const dx=q[0]-p[0],dy=q[1]-p[1],d=Math.hypot(dx,dy)||1,L=d*slack+1,cs=Math.abs(dx)/d,s=Math.sqrt(Math.max(0,L*L-d*d))*.42*(.3+.7*cs),
+    nx=-dy/d,ny=dx/d,f=ny<0||ny===0&&nx<0?-1:1,n=Math.max(2,Math.ceil(L*2)),C=[lit2(CUFF[1],lit),lit2(CUFF[3],lit)];let last='',j=0;
+  for(let i=0;i<=n;i++){const t=i/n,b=s*4*t*(1-t)*f,x=p[0]+dx*t+nx*b,y=p[1]+dy*t+ny*b,k=Math.round(x*2)+','+Math.round(y*2);if(k===last)continue;last=k;
+    g.fillStyle=C[j++%2];g.fillRect(Math.round(x*2)/2,Math.round(y*2)/2,.5,.5)}}
+function chains(g,P,A,B,o){o=o||{};for(const S of[A,B]){if(!S||S.room!==P.room||!poseOf(S)||P.chainTo&&S!==P.chainTo)continue;
   const sp=cuffPt(S,'far')||cuffPt(S,'near'),pf=cuffPt(P,'far'),pn=cuffPt(P,'near');if(!sp||!pf&&!pn)continue;
   const pp=!pn||pf&&Math.abs(pf[0]-sp[0])<Math.abs(pn[0]-sp[0])?pf:pn,z=Math.max(P.y,S.y)+.01,lit=lightAt(P.room,P.x,P.y);
-  depth(z,()=>span(g,pp,sp,o.slack,lit))}}
+  depth(z,()=>P.chainTo?hang(g,pp,sp,o.slack||1.6,lit):span(g,pp,sp,o.slack,lit))}}
 /* the fingers over the prisoner's upper arm: four rows across the arm from the soldier's side, lit along the knuckles */
 function grips(g,P,A,B){for(const S of[A,B]){if(!S||!S.grips||S.room!==P.room)continue;const d=facing(P),back=(S.x-P.x)*d<0,o=P.look,fem=!!(o.veil||o.fem),nw=(o.slim?1:0)+(fem?1:0),
     yS=-4-(o.h?19:23)-(o.h?13:16)-3-(o.h?22:fem?24:26),x0=back?-10+nw-(fem?4:5):11-nw,K=ramp(S.look.skin),lit=lightAt(P.room,P.x,P.y),
