@@ -113,11 +113,21 @@ body{display:flex;align-items:center;justify-content:center}
 #overlay h1,#overlay h2,#overlay p{flex-shrink:0}
 #overlay .pick{color:var(--gold)}
 #overlay .pick:hover{color:#fff}
-/* the planned chapters (PLANNED): a muted line that opens them, and the chapters themselves, dimmed, which cannot be clicked */
-#overlay .plans{color:#a99cc0;cursor:pointer}
-#overlay .plans:hover{color:#fff}
-#overlay .plan{display:none;color:#8a7ea0;cursor:default}
-#overlay .chs.open .plan{display:block}
+/* the parts of the account (PARTS): a line for each, which opens its chapters in place under it, one part at a time. The open part's
+   chapters stand on a faint dark band that fades out at both ends; the chapters of it still in preparation (PLANNED) follow them as
+   one dimmed line, which cannot be clicked. .here: the chapter the player would go on with, set off quietly by a lighter line on a
+   faint band; .kf: the line the keys have reached (see titleKeys), lit as a line under the pointer is. */
+#overlay .part>.grp{color:#f0e2c0;cursor:pointer}
+#overlay .part>.grp:hover{color:#fff}
+#overlay .part>.grp i{font-style:normal;color:#a99cc0}
+#overlay .part>.gl{display:none;margin:0 calc(var(--s)*-4px);padding:calc(var(--s)*.5px) 0 calc(var(--s)*1.5px);
+  background:linear-gradient(90deg,transparent,rgba(6,4,14,.5) 15%,rgba(6,4,14,.5) 85%,transparent)}
+#overlay .part.open>.gl{display:block}
+#overlay .plans{color:#8a7ea0;cursor:default}
+#overlay .chs p.here{width:fit-content;max-width:none;padding:0 calc(var(--s)*7px);color:#f8ecc8;
+  background:linear-gradient(90deg,transparent,rgba(226,178,76,.2) 22%,rgba(226,178,76,.2) 78%,transparent)}
+#overlay p.kf,#overlay .chs p.kf,#overlay .part>p.grp.kf{width:fit-content;max-width:none;padding:0 calc(var(--s)*7px);color:#fff;animation:none;
+  background:linear-gradient(90deg,transparent,rgba(240,226,192,.16) 22%,rgba(240,226,192,.16) 78%,transparent)}
 #overlay .langs span{cursor:pointer;padding:0 calc(var(--s)*1.5px)}
 #overlay .langs span:hover{color:#fff}
 #overlay .langs span.on{color:var(--gold)}
@@ -137,13 +147,14 @@ body{display:flex;align-items:center;justify-content:center}
    the upper part of the picture has not moved. A menu or the code box opened over the title covers all of it. */
 #wrap.title #view{height:calc(var(--s)*210px)}
 #wrap.title #status,#wrap.title #panel{display:none}
-/* with that height the title held its prologue, twenty-one chapters and the line of the planned ones without scrolling (the lines stand
-   a little closer and smaller than they did for nineteen, and the small lines above and below the list a little closer to it). From the
-   twenty-third chapter on the list scrolls on a first visit too, as it does for a returning player and when the planned chapters are
-   opened: its bottom edge fades while more lies below. FOR NOW: the layout the maintainer chooses for the longer list (two mockups, on
-   another branch) replaces this. */
+/* with that height the title holds its list in the parts of the account (see PARTS): six lines, and under the open one its chapters.
+   The box takes all the room the title leaves, whatever stands in it, so that opening a part never moves the name or the lines below
+   it. Its lines are those of the other choices on the title (6.2), and stand as far apart as the box allows when the longest part is
+   open (--lh, set by partsFit), never closer than 1.55 and never farther than 2.1, so that a finger finds them on a phone. When Continue,
+   the farthest point and the hidden treasures leave less room than that, the box scrolls and fades its edges as before. */
 #overlay.title{padding-top:calc(var(--s)*5px);padding-bottom:calc(var(--s)*5px)}
-#overlay.title .chs p{margin:0 auto;font-size:calc(var(--s)*5.4px);line-height:1}
+#overlay.title .chs{flex:1 1 0}
+#overlay.title .chs p{margin:0 auto;font-size:calc(var(--s)*6.2px);line-height:var(--lh,1.55)}
 #overlay.title>p.small{margin:calc(var(--s)*1px) 0}
 /* splash: the opening picture (shared/splash.js). The title is laid out as it always is, so that its name does not move when the chapters
    appear, but only the name and the line under it are seen; the rest comes in when the splash is left. begin: the one line that asks for a click,
@@ -2795,12 +2806,26 @@ const CHAP={
   23:{name:'all_safe_to_land',label:'chapter_twenty_three',title:'all_safe_to_land_2',salt:0x900B,carry:13,src:'levels/chapter23.js',needs:['cast','weather','beat','map','beasts'],treasure:{name:'the_stone_at_the_gate',at:'23-8NY-Y1F-KRP-YZW-XRJ'}}};
 const TITLE={level:1,scene:'title',mood:'ancient',amb:{crickets:.5,wind:.35,owl:.4}};
 const PRO={name:'road_to_damascus',label:'Prologue',title:'the_road_to_damascus',src:'levels/prologue.js',needs:['materials','birds','damascus','temple']};
-/* PLANNED: the chapters that are planned and not built (issue #47). The title lists them, dimmed, under one line that opens them in place.
-   Each is named by the part of Acts it will tell, not by a working title, which may still change; the title it is given replaces that
-   reference when the chapter is built and moves into CHAP. Nothing else reads this list: these chapters have no file, no salt and no codes. */
+/* PLANNED: the chapters that are planned and not built (issue #47), in their order after the last chapter in CHAP. The title shows them
+   as one dimmed line in their part of the account ("Chapters Twenty-Four to Twenty-Five · in preparation"), which cannot be clicked.
+   A chapter leaves this list and moves into CHAP when it is built. Nothing else reads it: these chapters have no file, no salt and no codes. */
 const PLANNED=[
-  {label:'chapter_twenty_four',short:'twenty_four',ref:'acts_28_11_16'},
-  {label:'chapter_twenty_five',short:'twenty_five',ref:'acts_28_16_31'}];
+  {label:'chapter_twenty_four',short:'twenty_four'},
+  {label:'chapter_twenty_five',short:'twenty_five'}];
+/* PARTS: the parts of the account into which the title groups the chapters, each named as the game names the journeys ("on his second
+   journey"), with its span of Acts from the "Based on Acts" lines of its chapters. A part holds the chapters from its `from` (0 is the
+   Prologue) up to the next part's; the last part holds every chapter after it, built or planned, so that a chapter built later falls
+   into its part without another change. Chapter Seven opens the second journey (Acts 15:36-16:5), as its map and Chapter Twelve's look
+   back show it. */
+const PARTS=[
+  {name:'from_damascus_to_antioch',span:'acts_9_12',from:0},
+  {name:'the_first_journey',span:'acts_13_14',from:4},
+  {name:'the_second_journey',span:'acts_15_1_18_22',from:7},
+  {name:'the_third_journey',span:'acts_18_23_21_16',from:13},
+  {name:'jerusalem_and_caesarea',span:'acts_21_17_26_32',from:18},
+  {name:'to_rome_part',span:'acts_27_28',from:22}];
+/* partOf: the index in PARTS of a chapter (0: the Prologue), built or planned */
+const partOf=n=>PARTS.findLastIndex(p=>n>=p.from);
 /* A level file calls LEVEL(n, init). init() registers its art, cast, items and rooms, and returns the chapter definition. */
 function LEVEL(n,init){LOOK.paul=paulLook(n);Object.assign(CHAP[n],init(),{ready:1});LOOK.paul=paulLook(G.ch)}
 function PROLOGUE(init){LOOK.paul=paulLook(1);Object.assign(PRO,init(),{ready:1});LOOK.paul=paulLook(G.ch)}
@@ -2886,7 +2911,45 @@ async function startPrologue(){ov.onclick=null;try{await Promise.all([loadLevel(
   return CHAP[1].start(true)}
 /* chsFade: fades the chapter list's top edge while entries are scrolled away above it, and its bottom edge while more wait below */
 function chsFade(l){l.classList.toggle('up',l.scrollTop>1);l.classList.toggle('down',l.scrollTop+l.clientHeight<l.scrollHeight-1)}
-addEventListener('resize',()=>{const l=ov.querySelector('.chs');if(l)chsFade(l)});
+addEventListener('resize',()=>{const l=ov.querySelector('.chs');if(l){if(l.querySelector('.part'))partsFit(l);chsFade(l)}});
+/* --- the title's list, in the parts of the account (PARTS) --- */
+/* partOpen: the part the player has opened on this visit to the title (-1: he has closed it), kept when the title is drawn again in
+   another language; null until he chooses, when the part of the chapter he would go on with is open */
+let partOpen=null;
+/* partsHTML: the list's box. sv, far: Continue's point and the farthest point, as title() has them. The chapter the player would go on
+   with (Continue's, else the farthest point's) is set off (.here); on a first visit the Prologue leads (.go). A part holds its built
+   chapters and, as one line, those still in preparation: "Chapters Twenty-Four to Twenty-Five", or the one chapter's own name. */
+function partsHTML(sv,far){const here=sv?sv.ch:far||-1,ns=Object.keys(CHAP).map(Number),next=Math.max(...ns)+1,
+    line=n=>n===0?`<p class="${sv||far?'pick':'go'}" data-pro="1">&#9656; ${T('Prologue')} &middot; ${T(PRO.title)}</p>`
+      :`<p class="pick${n===here?' here':''}" data-ch="${n}">&#9656; ${T(CHAP[n].label)} &middot; ${T(CHAP[n].title)}</p>`;
+  return'<div class="chs">'+PARTS.map((p,i)=>{const own=[0,...ns].filter(n=>partOf(n)===i),pl=PLANNED.filter((c,k)=>partOf(next+k)===i);
+    if(!own.length&&!pl.length)return'';
+    return`<div class="part" data-part="${i}"><p class="grp"><span>&#9656;</span> ${T(p.name)} <i>&middot; ${T(p.span)}</i></p><div class="gl">`+own.map(line).join('')+
+      (pl.length?'<p class="plans">'+(pl.length>1?T('chapters_from_to_to',{from:T(pl[0].short),to:T(pl.at(-1).short)}):T(pl[0].label))+' &middot; '+T('in_preparation')+'</p>':'')+
+      '</div></div>'}).join('')+'</div>'}
+/* partsFit: the lines stand as far apart as the box allows with its longest part open (so that opening another moves nothing), at least
+   1.55 and at most 2.1 times their size (--lh); with less room than that the box scrolls */
+function partsFit(l){const s=parseFloat(getComputedStyle(l).getPropertyValue('--s'))||1,parts=[...l.querySelectorAll('.part')],
+    most=Math.max(0,...parts.map(p=>p.querySelector('.gl').children.length)),rows=parts.length+most,room=l.clientHeight/s-2.5;
+  l.style.setProperty('--lh',Math.max(1.55,Math.min(2.1,room/rows/6.2)).toFixed(3))}
+/* openPart: opens a part of the list and closes the others; a click on the open part closes it (user: a click, which is kept for the
+   next drawing of the title, and the opened part glides into view). shut: the player has closed every part. */
+function openPart(pt,user,shut){if(!pt)return;const l=pt.parentNode,open=!shut&&!(user&&pt.classList.contains('open'));
+  for(const x of l.querySelectorAll('.part')){const on=open&&x===pt;x.classList.toggle('open',on);x.querySelector('.grp span').textContent=on?'\u25BE':'\u25B8'}
+  if(user)partOpen=open?+pt.dataset.part:-1;
+  if(open){const a=l.getBoundingClientRect(),r=pt.getBoundingClientRect(),pad=(parseFloat(getComputedStyle(l).getPropertyValue('--s'))||2)*7,more=l.scrollHeight>l.clientHeight+1;
+    let d=0;if(r.bottom>a.bottom-(more?pad:0))d=r.bottom-a.bottom+(more?pad:0);if(r.top+d<a.top+(more?pad:0))d=r.top-a.top-(more?pad:0);
+    if(d)l.scrollBy({top:d,behavior:user?'smooth':'instant'})}
+  chsFade(l)}
+/* the list by the keys, once the opening picture is over: the arrows move from line to line (Continue, the farthest point, the parts, the
+   chapters of the open part, the hidden treasures), lit as under the pointer; Enter or Space does what a click on that line does. Tab
+   stays what it is in the game (the names of things), and a key that has reached no line yet does nothing but reach one. */
+addEventListener('keydown',e=>{const k=e.key;if(!['ArrowUp','ArrowDown','Enter',' '].includes(k)||!ov.classList.contains('title')||ov.classList.contains('splash')
+    ||cb.classList.contains('on')||$('#menu').classList.contains('on')||e.target&&e.target.tagName==='INPUT')return;
+  const cur=ov.querySelector('.kf');if(k==='Enter'||k===' '){if(cur){e.preventDefault();cur.click()}return}
+  const all=[...ov.querySelectorAll('[data-cont],[data-far],.part>.grp,.part.open [data-pro],.part.open [data-ch],[data-tre]')];if(!all.length)return;e.preventDefault();
+  let i=all.indexOf(cur);i=i<0?Math.max(0,all.indexOf(ov.querySelector('p.go'))):Math.max(0,Math.min(all.length-1,i+(k==='ArrowDown'?1:-1)));
+  if(cur)cur.classList.remove('kf');all[i].classList.add('kf');all[i].scrollIntoView({block:'nearest'})});
 /* The game opens on its opening picture (shared/splash.js): the name over a tentmaker's bench by lamplight, once each time the game is
    opened. It waits, silent, because a browser lets a page sound only after a click or a key. That click starts the overture; when its
    melody has been heard, or on a second click, the picture passes into the title's own and the chapters appear, and the title's music
@@ -2895,7 +2958,7 @@ addEventListener('resize',()=>{const l=ov.querySelector('.chs');if(l)chsFade(l)}
 /* The title's own music opens with an overture too (TITLE.mood). After the opening picture, whose overture has just been heard, the title's
    music begins quiet instead; a later return to the title plays its own. */
 let splashGo=null;   /* while the opening picture is up: what a click on it does, for Space and Enter to do too */
-async function title(){lock(true);if(SHARED.scroll)SHARED.scroll.off();await setLang(firstLang());try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
+async function title(){lock(true);partOpen=null;if(SHARED.scroll)SHARED.scroll.off();await setLang(firstLang());try{await loadLevel(TITLE.level)}catch(e){return loadFail(e)}
   const sp=G.splash===undefined?await need('splash').catch(e=>{console.error(e);return null}):null,own=CHAP[TITLE.level].scenes[TITLE.scene];let tm=0;
   setChapter(TITLE.level);G.scene=sp?sp.scene:own;G.end={};AU.step=0;AU.mood=sp?'calm':TITLE.mood;AU.amb=sp?null:TITLE.amb;G.splash=sp?1:0;if(sp)setScore(null);
   /* The name and the subtitle are painted as a logo (shared/logo.js). If its file is missing, or a language's title has a letter the
@@ -2909,22 +2972,21 @@ async function title(){lock(true);if(SHARED.scroll)SHARED.scroll.off();await set
     (sv?'<p class="go" data-cont="1">&#9656; '+T('Continue')+' &middot; '+T(CHAP[sv.ch].label)+' &middot; '+T(CHAP[sv.ch].title)+'</p>':'')+
     /* the farthest point, when it is not where Continue goes: someone who went back to try an earlier chapter finds the way forward again */
     (far?`<p class="${sv?'pick':'go'}" data-far="1">&#9656; ${T('farthest_point')} &middot; ${T(CHAP[far].label)} &middot; ${T(CHAP[far].title)}</p>`:'')+
-    '<div class="chs">'+`<p class="${sv||far?'pick':'go'}" data-pro="1">&#9656; ${T('Prologue')} &middot; ${T(PRO.title)}</p>`+Object.keys(CHAP).map(n=>`<p class="pick" data-ch="${n}">&#9656; ${T(CHAP[n].label)} &middot; ${T(CHAP[n].title)}</p>`).join('')+
-    /* the planned chapters: one line, and under it, once it is clicked, each of them by its reference. None of them can be started. */
-    (PLANNED.length?'<p class="plans" data-plans="1"><span>&#9656;</span> '+T('chapters_from_to_to',{from:T(PLANNED[0].short),to:T(PLANNED.at(-1).short)})+' &middot; '+T('in_preparation')+'</p>'+
-      PLANNED.map(c=>`<p class="plan">${T(c.label)} &middot; ${T(c.ref)}</p>`).join(''):'')+'</div>'+
+    /* the chapters, in the parts of the account (see partsHTML); the chapters in preparation stand in their part as one dimmed line */
+    partsHTML(sv,far)+
     /* the hidden treasures, once one has been found (see TREASURES) */
-    (treasures().size?`<p class="pick tre" data-tre="1">&#9656; ${T('hidden_treasures')} &middot; ${T('{n} of {all}',{n:treasures().size,all:hidden().length})}</p>`:'')+
+    (treasures().size?`<p class="pick tre" data-tre="1">&#9656; ${T('hidden_treasures')} &middot; ${T('n_of_all',{n:treasures().size,all:hidden().length})}</p>`:'')+
     '<p class="small">'+T('click_a_chapter_to_begin')+'</p>'+
     (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'')+
     (G.splash?'<p class="begin"><span class="go">'+T('click_to_begin')+'</span></p>':'');
     if(art){art.textContent=name+' '+sub;art.setAttribute('role','img');art.setAttribute('aria-label',T('paul_of_tarsus_on_the_roads'));
       art.style.width='calc(var(--s)*'+art.width/HR+'px)';art.style.height='calc(var(--s)*'+art.height/HR+'px)';ov.querySelector('h1').appendChild(art)}
-    const l=ov.querySelector('.chs');l.onscroll=()=>chsFade(l);requestAnimationFrame(()=>chsFade(l))});
+    const l=ov.querySelector('.chs');l.onscroll=()=>chsFade(l);requestAnimationFrame(()=>{partsFit(l);const h=l.querySelector('.here');
+      openPart(l.querySelector(`.part[data-part="${partOpen!=null?partOpen:h?partOf(+h.dataset.ch||0):0}"]`)||l.querySelector('.part'),false,partOpen===-1)})});
   const pick=e=>{const d=e.target.dataset||{};if(d.lang){SFX.click();return setLang(d.lang,1)}if(e.target.classList.contains('chs'))return;
     if(e.target.closest('.langs'))return;
-    const pl=e.target.closest('.plans,.plan');if(pl){if(pl.classList.contains('plans')){SFX.click();const l=ov.querySelector('.chs'),open=l.classList.toggle('open');
-      pl.firstChild.textContent=open?'\u25BE':'\u25B8';if(open)l.querySelector('.plan:last-child').scrollIntoView({block:'nearest',behavior:'smooth'});chsFade(l)}return}
+    /* a part's line opens it (and closes the one that was open), or closes it if it is open; the line of the chapters in preparation does nothing */
+    const gp=e.target.closest('.grp');if(gp){SFX.click();return openPart(gp.parentNode,true)}if(e.target.closest('.plans')||e.target.matches('.gl,.part'))return;
     if(d.tre)return openMenu('treasures');if(d.cont)return resume();if(d.far)return resumeFar();if(d.pro)return startPrologue();startChapter(+d.ch||1)};
   /* leave: the splash is over. The picture passes into the title's own (at once in a playthrough at speed), and the chapters come in */
   const leave=()=>{if(!G.splash||!ov.classList.contains('splash'))return;G.splash=0;clearTimeout(tm);splashGo=null;sp.leave(own,G.speedAll>200?1:1800);
