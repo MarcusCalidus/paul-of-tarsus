@@ -281,18 +281,18 @@ const SHIPWRECK={
    soldier_mail, soldier_unmailed   a soldier of the guard aboard, in mail and his belt with its sword, bareheaded at sea; and the same man
                        with his mail off, in his tunic, belt and boots: the one who cannot swim in it (Chapter Twenty-Three's planks).
    The islanders of Malta (28:1, 2): of Phoenician descent under Roman rule, with a language of their own. Country people, dry, in long
-     tunics, some woven with a stripe, in the earth colors of undyed and plant-dyed wool, the men with a head cloth, the women with a veil,
+     tunics, in the earth colors of undyed and plant-dyed wool, the men with a head cloth, the women with a veil,
      so that they are plainly another people than the ship's company in its short tunics.
-     islander_elder    the older man who talks with Luke: a long white beard, a pale head cloth, a striped brown tunic and an umber mantle.
-     islander_1, _2    men: a striped wheat-colored tunic and a rust head cloth with a full black beard; a dark tunic, an ochre mantle and a
-                       pale head cloth with a young beard.
+     islander_elder    the older man who talks with Luke: a long white beard, a pale head cloth, a brown tunic and an umber mantle.
+     islander_1, _2    men: a wheat-colored tunic and a rust head cloth with a full black beard; a dark tunic, an ochre mantle and a
+                       dun head cloth with a young beard.
      islander_3, _4    women: a veil of dark umber over an ochre tunic; an older woman, her hair greying under a rust veil.
-     islander_5        a young man, beardless, a striped tunic and a sand-colored head cloth (he brings the sticks).
+     islander_5        a young man, beardless, a tawny tunic and a sand-colored head cloth (he brings the sticks).
    Publius and his house (28:7-10):
      publius           "the principal man of the island", probably the leading Roman officer there and a man of lands (Insight on the
                        Scriptures, "Publius"): a Roman of standing at home, clean-shaven, his dark hair cropped and greying, a clean white
                        long tunic and a mantle of fine undyed wool wrapped over it, good shoes and a ring. No toga, no purple, no wreath.
-     publius_father    his father, an old man, clean-shaven, his white hair thin and cropped, in a plain long tunic without a belt: in bed
+     publius_father    his father, an old man, clean-shaven, his white hair thin and cropped, in a plain long tunic girded with a pale cord: in bed
                        with fever and dysentery (28:8), and later on his feet.
      household_1, _2   people of his household: a manservant in a short tunic, and a woman of the house in a long tunic, her hair bound up. */
 const SAILOR_1=Object.assign({},SAILOR_ALEX,{barefoot:1,ph:11500});
@@ -314,14 +314,14 @@ const SEA_DRY={
   merchant:{skin:'#bc8a60',hair:'#4a3626',beard:'#4a3626',fullBeard:1,brow:'#30221a',tunic:'#c8a462',long:1,trim:'#6a3e22',cloak:'#6a4434',belt:'#5a3a1e',ring:1,shoes:'#5a3a22',ph:13900},
   soldier_mail:{skin:'#b07c54',hair:'#2a1a12',brow:'#20140e',crop:1,tunic:'#d6cab2',armor:'#7e8692',armorStyle:'mail',belt:'#4a2e18',milBelt:1,caligae:1,gladius:1,ph:14100},
   soldier_unmailed:{skin:'#b07c54',hair:'#2a1a12',brow:'#20140e',crop:1,tunic:'#d6cab2',belt:'#4a2e18',caligae:1,ph:14100},
-  islander_elder:{skin:'#9e6a42',wrap:'#d2c4a4',beard:'#b4aea4',grey:'#dcd6cc',longBeard:1,brow:'#8a847a',tunic:'#866446',long:1,stripe:'#5a3e26',cloak:'#5e4a30',belt:'#3a2818',ph:14300},
-  islander_1:{skin:'#a8703f',wrap:'#8a4a2a',beard:'#22160e',fullBeard:1,brow:'#1e140c',tunic:'#c4b088',long:1,stripe:'#8e5a32',belt:'#4a3020',ph:14500},
-  islander_2:{skin:'#b07a48',wrap:'#ddd2b8',beard:'#2e2016',shortBeard:1,brow:'#22160e',tunic:'#6e5238',long:1,cloak:'#a8783e',belt:'#3a2818',ph:14700},
+  islander_elder:{skin:'#9e6a42',wrap:'#d2c4a4',beard:'#b4aea4',grey:'#dcd6cc',longBeard:1,brow:'#8a847a',tunic:'#866446',long:1,cloak:'#5e4a30',belt:'#3a2818',ph:14300},
+  islander_1:{skin:'#a8703f',wrap:'#8a4a2a',beard:'#22160e',fullBeard:1,brow:'#1e140c',tunic:'#c4b088',long:1,belt:'#4a3020',ph:14500},
+  islander_2:{skin:'#b07a48',wrap:'#9a8460',beard:'#2e2016',shortBeard:1,brow:'#22160e',tunic:'#6e5238',long:1,cloak:'#a8783e',belt:'#3a2818',ph:14700},
   islander_3:{skin:'#b88458',veil:'#8a7a58',tunic:'#ae8a58',long:1,longSleeve:1,trim:'#6a3e22',slim:1,belt:'#6a4a2a',ph:14900},
   islander_4:{skin:'#a87850',veil:'#8e5432',veilHair:'#9a948c',tunic:'#6a5e46',long:1,longSleeve:1,slim:1,belt:'#4a3424',brow:'#6e665e',ph:15100},
-  islander_5:{skin:'#a8703f',wrap:'#bea676',brow:'#1e140c',slim:1,tunic:'#9a7a52',long:1,stripe:'#664628',belt:'#3a2818',ph:15300},
+  islander_5:{skin:'#a8703f',wrap:'#bea676',brow:'#1e140c',slim:1,tunic:'#9a7a52',long:1,belt:'#3a2818',ph:15300},
   publius:{skin:'#c69c72',hair:'#3e3228',grey:'#8e867e',brow:'#2a2018',crop:1,tunic:'#f0eadc',long:1,cloak:'#b4a684',himation:1,belt:'#5a4030',ring:1,shoes:'#6a3a22',ph:15500},
-  publius_father:{skin:'#c4a07c',hair:'#d2cec8',grey:'#eeeae4',brow:'#aaa69e',crop:1,thin:1,tunic:'#e2dac8',long:1,ph:15700},
+  publius_father:{skin:'#c4a07c',hair:'#d2cec8',grey:'#eeeae4',brow:'#aaa69e',crop:1,thin:1,tunic:'#e2dac8',long:1,belt:'#9a8e78',ph:15700},
   household_1:{skin:'#a8744a',hair:'#2e2016',brow:'#22160e',crop:1,tunic:'#bcae90',belt:'#4a3424',ph:15900},
   household_2:{skin:'#bc8a60',hair:'#2a1c14',fem:1,band:'#8a6a4a',slim:1,brow:'#22160e',tunic:'#c8b896',long:1,longSleeve:1,trim:'#7a5a3a',belt:'#6a4a2a',ph:16100}
 };

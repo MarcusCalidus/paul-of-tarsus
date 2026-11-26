@@ -853,7 +853,7 @@
        islanders dry in long tunics with a head cloth or a veil, and Publius a Roman at home with no toga, purple or wreath. cast-sea.png
        shows each look dry beside wet, and the islanders and Publius's house, three times enlarged, with Paul, Luke, Aristarchus and Julius as
        SHIPWRECK paints them for comparison; cast-sea-detail.png every head eight times enlarged, and hems and feet six times. Look there for
-       a head cloth that reads as a ring round the head, a beard that comes apart, and a cross in a stripe, a tear or a belt. */
+       a head cloth that reads as a ring round the head, a beard that comes apart, and a cross in a tear or a belt. */
     if(stop==='sea'){const S=C.SEA,W=C.SHIPWRECK,K=C.CAESAREA,ids=Object.keys(S),dry=ids.filter(k=>!/_wet$/.test(k)),wet=ids.filter(k=>/_wet$/.test(k));checkSet(S,'sea');
       const crew=['pilot','sailor_1','sailor_2','sailor_3','sailor_4','ship_boy','coaster_sailor_1','coaster_sailor_2'],isl=dry.filter(k=>/^islander_/.test(k));
       ok(['pilot','shipowner','sailor_1','sailor_2','sailor_3','sailor_4','ship_boy','coaster_sailor_1','coaster_sailor_2','prisoner_1','prisoner_2','prisoner_3','prisoner_old',
@@ -865,7 +865,7 @@
       ok(isl.length>=5&&isl.every(k=>S[k].long&&(S[k].wrap||S[k].veil))&&!crew.some(k=>S[k].long)&&isl.filter(k=>S[k].veil).length>=2,'the islanders wear long tunics, the men a head cloth and the women a veil');
       ok(!S.publius.toga&&!S.publius.clavus&&!S.publius.edge&&!S.publius.diadem&&S.publius.himation&&S.publius.ring&&!S.publius.beard&&ids.every(k=>!S[k].diadem&&!S[k].toga&&!S[k].clavus&&!S[k].edge),
         'Publius is a Roman at home in a tunic and mantle, with no toga, purple or wreath, and nobody here wears a sign of office');
-      ok(S.publius_father.long&&!S.publius_father.cloak&&!S.publius_father.belt&&S.soldier_mail_wet.armor&&!S.soldier_unmailed.armor&&!S.soldier_unmailed_wet.armor&&!S.soldier_unmailed_wet.barefoot&&!S.soldier_mail_wet.gladius,
+      ok(S.publius_father.long&&!S.publius_father.cloak&&S.soldier_mail_wet.armor&&!S.soldier_unmailed.armor&&!S.soldier_unmailed_wet.armor&&!S.soldier_unmailed_wet.barefoot&&!S.soldier_mail_wet.gladius,
         'his father in a plain long tunic; the soldier in his mail and with it off, in his boots, his sword lost');
       {const same=(a,b)=>JSON.stringify(Object.keys(a).filter(k=>!/^(p|gt|ph|barefoot)$/.test(k)).sort().map(k=>[k,a[k]]))===JSON.stringify(Object.keys(b).filter(k=>!/^(p|gt|ph|barefoot)$/.test(k)).sort().map(k=>[k,b[k]]));
         ok(same(S.sailor_1_wet,W.sailor_wet)&&same(S.prisoner_1_wet,W.prisoner_wet)&&same(W.luke_dry,K.luke),'the sailor and the prisoner of the shipwreck sheet are the same men here, and Luke is the same man')}
@@ -891,7 +891,7 @@
       /* eight times: every head of the group speaking (the wet ones beside the dry), facing right; then hems, belts and feet six times */
       const HD=dry.flatMap(k=>S[k+'_wet']?[k,k+'_wet']:[k]),
         HM=[['pilot wet',S.pilot_wet,1,0],['sailor_2 walking',S.sailor_2,1,10],['sailor_4 wet',S.sailor_4_wet,1,0],['ship_boy wet',S.ship_boy_wet,-1,0],['prisoner_old wet',S.prisoner_old_wet,1,0],
-          ['soldier_mail wet',S.soldier_mail_wet,1,0],['soldier_unmailed wet',S.soldier_unmailed_wet,-1,10],['islander_1 (stripe)',S.islander_1,1,0],['islander_elder walking',S.islander_elder,1,12],['publius_father',S.publius_father,1,0]],
+          ['soldier_mail wet',S.soldier_mail_wet,1,0],['soldier_unmailed wet',S.soldier_unmailed_wet,-1,10],['islander_1',S.islander_1,1,0],['islander_elder walking',S.islander_elder,1,12],['publius_father',S.publius_father,1,0]],
         ZD=8,dw=208,dh=300,cols2=8,cw2=dw*cols2/5,[cd,gd]=sheet(cols2*dw,36+Math.ceil(HD.length/cols2)*dh+Math.ceil(HM.length/5)*dh);
       text(gd,'Eight times: every head of the sea, dry and wet (above); six times: hems, belts and feet (below)',12,24,14,'#f4f0e6');
       HD.forEach((k,i)=>{const o=S[k],x=(i%cols2)*dw,y=36+Math.floor(i/cols2)*dh,f=o.veil||o.fem,kid=o.h?1:0,top=4+(kid?19:23)+(kid?13:16)+3+(kid?22:f?24:26)+20;field(gd,i,x,y,dw,dh);
