@@ -559,8 +559,8 @@ async function morning25(){if(G.w7run)return;G.w7run=1;const S=CE,D=LG.AT.door,t
   await walk(S,to[0]+1,to[1]+2);S.free=false;S.speed=0;S.pose=0;STOOL25.splice(0,2,...to);place(S,'lodging25',to[0],to[1],SDIR.door);chain25();G.w7=1}
 /* the door opened: the last thing done in the game. No flag is set; the finale takes over. */
 async function final25(){if(G.door25)return;G.door25=1;const D=LG.AT.door,st=LG.AT.stand;SFX.door();
-  place(VA,'lodging25',D[0],D[1],-1);await say(P,SPOKEN25.door,{to:VA});AU.mood='home';
-  await go25(VA,st.visitor[0]-10,st.visitor[1]+4);place(VB,'lodging25',D[0]+(F.street?14:4),D[1]-(F.street?0:4),-1);
+  place(VA,'lodging25',D[0]+14,D[1]-4,-1);await say(P,SPOKEN25.door,{to:VA});AU.mood='home';
+  await go25(VA,st.visitor[0]-10,st.visitor[1]+4);place(VB,'lodging25',D[0]+(F.street?24:18),D[1]-(F.street?2:6),-1);
   await tell('n3031');
   return toFinale()}
 /* toFinale: the one way out of the chapter, into the finale (shared/finale.js, built on the finale's branch): its run() takes over from
