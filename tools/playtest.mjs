@@ -13,6 +13,8 @@
 // It first checks the translations against the English text (tools/strings.mjs), and that every picture in docs/screenshots is listed
 // with its stop in tools/screenshots.txt (tools/retake.mjs takes the pictures again from that list).
 // Screenshots go to tools/out/ (or $SHOTS). Set $CHROME to use another Chromium-based browser.
+// Each stop may run for up to ninety minutes (the whole game in one language, `all`, takes about forty), and the time each stop took is
+// printed after what it said ("     all took 38 min 12 s"), so that the next estimate is measured.
 import {spawn} from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -55,22 +57,24 @@ try{
   const ev=async x=>(await send('Runtime.evaluate',{expression:x,returnByValue:true,awaitPromise:true})).result?.result?.value;
   await send('Page.enable');
   await send('Emulation.setDeviceMetricsOverride',{width:960,height:669,deviceScaleFactor:1,mobile:false});
-  for(const name of stops){if(name==='pwa'){const r=await checkPwa({send,ev,sleep,root,out});console.log('=== pwa\n'+r.log.join('\n'));if(r.failed)failed=true;continue}
-    const[lang,stop]=name.includes(':')?name.split(':'):['en',name];
+  /* how long a stop took, on a line of its own after what it said (the line under "=== stop" stays the stop's own, which retake.mjs reads) */
+  const took=(name,t0)=>{const s=Math.round((Date.now()-t0)/1000);console.log(`     ${name} took ${Math.floor(s/60)} min ${s%60} s`)};
+  for(const name of stops){if(name==='pwa'){const t0=Date.now(),r=await checkPwa({send,ev,sleep,root,out});console.log('=== pwa\n'+r.log.join('\n'));took(name,t0);if(r.failed)failed=true;continue}
+    const t0=Date.now(),[lang,stop]=name.includes(':')?name.split(':'):['en',name];
     /* the phone stops are seen on a phone: held sideways (852 by 393, as an iPhone of 2023 shows a page), or held upright, touched and with no mouse */
     const phone=/^phone/.test(stop),up=stop==='phoneportrait';
     await send('Emulation.setDeviceMetricsOverride',phone?{width:up?393:852,height:up?852:393,deviceScaleFactor:3,mobile:true,screenWidth:up?393:852,screenHeight:up?852:393}:{width:960,height:669,deviceScaleFactor:1,mobile:false});
     await send('Emulation.setTouchEmulationEnabled',{enabled:phone,maxTouchPoints:phone?5:1});
     await send('Emulation.setEmitTouchEventsForMouse',{enabled:phone});
     await send('Page.navigate',{url:`file://${path.join(tmp,'test.html')}?stop=${stop}&lang=${lang}${phone?'&emu=1':''}`});
-    // ten chapters take a while (about twenty minutes): wait up to forty-five minutes for a run to say STOP or DONE
-    let log='';for(let i=0;i<10800;i++){await sleep(250);log=await ev("(document.querySelector('#tlog')||{}).textContent||''");if(/STOP|DONE|ERR|JSERR|REJ/.test(log))break}
+    // the whole game takes a while (about forty minutes for `all`): wait up to ninety minutes for a run to say STOP or DONE
+    let log='';for(let i=0;i<21600;i++){await sleep(250);log=await ev("(document.querySelector('#tlog')||{}).textContent||''");if(/STOP|DONE|ERR|JSERR|REJ/.test(log))break}
     await sleep(1600);await ev("document.querySelector('#tlog').style.display='none'");await sleep(100);
     const shot=await send('Page.captureScreenshot',{format:'png'});
     fs.writeFileSync(path.join(out,`${lang==='en'?'':lang+'-'}${stop}.png`),Buffer.from(shot.result.data,'base64'));
     /* a stop may hand over pictures of its own, at their own size (window.SHEETS: name -> PNG data URL): they are saved beside the screenshot */
     for(const[k,v]of Object.entries(JSON.parse(await ev("JSON.stringify(window.SHEETS||{})")||'{}')))fs.writeFileSync(path.join(out,k+'.png'),Buffer.from(v.split(',')[1],'base64'));
-    console.log(`=== ${name}\n${log}`);
+    console.log(`=== ${name}\n${log}`);took(name,t0);
     if(/FAIL|ERR|JSERR|REJ/.test(log)||!/STOP|DONE/.test(log))failed=true;
   }
   ws.close();

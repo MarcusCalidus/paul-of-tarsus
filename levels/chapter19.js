@@ -1609,8 +1609,9 @@ async function province19(){await say(FX,'felix_which_province_are_you_from',{to
   F.province=1;await tell('v33');await say(FX,'felix_ill_hear_you_when_your_accusers_come',{to:P});await say(FX,'felix_guard_him_in_herods_palace',{to:OF});
   await tell('v35');return end19()}
 async function end19(){await fade(1,700);
-  endScreen({title:'the_sisters_son_2',text:'the_sisters_son_end',based:'based_on_acts_22_30_23_35',go:'click_to_return_to_the_title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+  endScreen({title:'the_sisters_son_2',text:'the_sisters_son_end',based:'based_on_acts_22_30_23_35',go:'click_to_continue_to_chapter_twenty',
+             code:['chapter_twenty_code_code',codeOf(20,0)]});
+  await wait(1500);ov.onclick=()=>{ov.onclick=null;startChapter(20)};await new Promise(()=>{})}
 
 /* ============ ROOMS ============ */
 /* A room's hotspots are listed from the back to the front: where two overlap, the later one is meant. */

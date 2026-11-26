@@ -37,6 +37,8 @@ Each chapter has its own page with screenshots, a walkthrough, its music and map
 17. [Chapter Seventeen: The Belt](docs/chapter-17.md)
 18. [Chapter Eighteen: On the Stairs](docs/chapter-18.md)
 19. [Chapter Nineteen: The Sister's Son](docs/chapter-19.md)
+20. [Chapter Twenty: Some Other Time](docs/chapter-20.md) (STUB: the page is still to be written)
+21. [Chapter Twenty-One: To Caesar](docs/chapter-21.md) (STUB: the page is still to be written)
 
 ## How to play
 
@@ -69,6 +71,8 @@ The events themselves are from the Scriptures. All dialogue is dramatization, in
 - [Chapter Seventeen: The Belt](docs/chapter-17.md#about-the-content)
 - [Chapter Eighteen: On the Stairs](docs/chapter-18.md#about-the-content)
 - [Chapter Nineteen: The Sister's Son](docs/chapter-19.md#about-the-content)
+- [Chapter Twenty: Some Other Time](docs/chapter-20.md#about-the-content) (STUB: the page is still to be written)
+- [Chapter Twenty-One: To Caesar](docs/chapter-21.md#about-the-content) (STUB: the page is still to be written)
 
 This is an independent, non-commercial fan project. It is not produced, endorsed or reviewed by Jehovah's Witnesses or the Watch Tower Bible and Tract Society, and it is not affiliated with jw.org. It contains no material from jw.org or its subdomains; it only refers to them as sources that its authors read. Their [Terms of Use](https://www.jw.org/en/terms-of-use/) apply to their content.
 
