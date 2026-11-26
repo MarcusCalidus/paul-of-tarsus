@@ -104,45 +104,46 @@ const gust=(t,s)=>clamp(.56+.26*Math.sin(t/1900+(s||0))+.18*Math.sin(t/730+2.1*(
 
 /* ---------- palettes ---------- */
 const PAL={
-  /* by day: no sun anywhere; the sky a heavy grey, the seas dark green-grey with pale glassy lips, the foam the lightest thing */
-  day:{zen:'#363b44',mid:'#4f5660',haze:'#79828a',cl:'#6c747e',cd:'#2a2f37',scud:'#23272e',scudL:'#3e444d',
-    face:'#253634',deep:'#15201e',glass:'#4f6c62',crest:'#7e988e',foam:'#e4ebe8',foamS:'#a4b4b0',water:'#3b5650',rain:'#c4ccd2',amb:'#8a929c'},
-  /* at night: no star, no moon; only the foam and the breaking water show, grey */
-  night:{zen:'#07090c',mid:'#0c0f14',haze:'#161b21',cl:'#151a20',cd:'#06080b',scud:'#040507',scudL:'#0d1015',
-    face:'#0b1213',deep:'#050809',glass:'#18231f',crest:'#28362f',foam:'#7a8688',foamS:'#465255',water:'#142220',rain:'#5c656c',amb:'#2a3040'},
+  /* by day: no sun anywhere; a heavy sky, darkest in the cloud base low down over a paler veil of rain; the seas green-black in their
+     faces, lighter grey-green on their backs; the foam the lightest thing */
+  day:{zen:'#4c525c',mid:'#3a4048',low:'#262b31',haze:'#5d666c',cl:'#737b85',cd:'#1d2228',scud:'#181c21',scudL:'#5a646e',
+    back:'#3c5c54',face:'#213b36',deep:'#0c1a18',glass:'#4f8a74',crest:'#96bcaa',foam:'#eef3f0',foamS:'#9db2ab',water:'#2b453f',rain:'#c4ccd2',amb:'#8a929c'},
+  /* at night: no star, no moon; the foam and the breaking water show grey, nothing else */
+  night:{zen:'#0d1015',mid:'#090b0f',low:'#050608',haze:'#161b20',cl:'#1c222a',cd:'#040506',scud:'#030304',scudL:'#191e25',
+    back:'#16241f',face:'#0a1614',deep:'#030807',glass:'#1a3028',crest:'#334a40',foam:'#808c8e',foamS:'#4a5658',water:'#0f1b19',rain:'#5c656c',amb:'#2a3040'},
   /* a darker night still, to compare */
-  black:{zen:'#030405',mid:'#050608',haze:'#0b0d11',cl:'#0a0c10',cd:'#020304',scud:'#010102',scudL:'#06080a',
-    face:'#05090a',deep:'#020304',glass:'#0c1412',crest:'#16201c',foam:'#4c5658',foamS:'#2c3436',water:'#0a1412',rain:'#384046',amb:'#181c26'},
-  /* the bay at a grey daybreak in rain: a little light in the cloud, the shallows green over sand, the foam white */
-  dawn:{zen:'#4e535c',mid:'#6b7179',haze:'#9a9d9e',cl:'#8c9196',cd:'#464b54',scud:'#3c4048',scudL:'#5e636b',
-    face:'#3a4e48',deep:'#283834',glass:'#6a8678',crest:'#9ab2a6',foam:'#eef1ec',foamS:'#b6c4bc',water:'#557066',rain:'#d2d8da',amb:'#a4a8ac',
+  black:{zen:'#07080b',mid:'#040506',low:'#020203',haze:'#0b0d10',cl:'#0f1216',cd:'#020203',scud:'#010101',scudL:'#0b0d10',
+    back:'#0d1513',face:'#030707',deep:'#010303',glass:'#0c1612',crest:'#18221d',foam:'#4e585a',foamS:'#2c3436',water:'#0a1412',rain:'#384046',amb:'#181c26'},
+  /* the bay at a grey daybreak in rain: a little light in the cloud, the breakers pale green behind the white, the foam white */
+  dawn:{zen:'#666b74',mid:'#565c64',low:'#454a52',haze:'#8e9496',cl:'#8e939a',cd:'#3c4149',scud:'#33373f',scudL:'#70767e',
+    back:'#6a8076',face:'#33463e',deep:'#20302a',glass:'#7fa491',crest:'#aac8b8',foam:'#f0f3ee',foamS:'#b2c2b9',water:'#4c665c',rain:'#d2d8da',amb:'#a4a8ac',
     sand:'#a49478',wet:'#5c574e',land:'#56604c'}};
 
 /* ---------- the sky ---------- */
-/* two strips that tile across (TW room pixels wide): the cloud deck, opaque, lit softly from above with the haze of the rain toward its
-   foot; and the scud, ragged and darker, driving lower and faster, with stippled edges */
+/* two strips that tile across (TW room pixels wide): the cloud deck, opaque, its billows lit a little from above and darkest in the
+   heavy base low down, over a paler veil of rain at its foot; and the scud, torn low cloud with ragged lit edges, that drives faster
+   than the deck above it */
 const SKYC=new Map();
 function skyTiles(pal,h,seed){const key=pal+'|'+h+'|'+seed;if(SKYC.has(key))return SKYC.get(key);
-  const P=PAL[pal],TW=640,k=HR,Wd=TW*k,Hd=Math.ceil(h*k),zen=hx(P.zen),mid=hx(P.mid),haze=hx(P.haze),cl=hx(P.cl),cd=hx(P.cd),sc=hx(P.scud),scl=hx(P.scudL);
+  const P=PAL[pal],TW=640,k=HR,Wd=TW*k,Hd=Math.ceil(h*k),zen=hx(P.zen),mid=hx(P.mid),low=hx(P.low),haze=hx(P.haze),cl=hx(P.cl),cd=hx(P.cd),sc=hx(P.scud),scl=hx(P.scudL);
   const[dc,dg]=mk(Wd,Hd),[sc_,sg]=mk(Wd,Hd),D=dg.createImageData(Wd,Hd),S=sg.createImageData(Wd,Hd);
-  /* the cloud seen in perspective: a cell is wide and flat low down and larger overhead */
-  const vOf=y=>Math.log(1+y/14)*3.1;
-  for(let Y=0;Y<Hd;Y++){const y=(Y+.5)/k,e=y/h,v=vOf(y),v2=vOf(Math.max(0,y-2.2)),sq=1+e*1.6;
-    let base=L3(zen,mid,smooth(0,.55,e));base=L3(base,haze,smooth(.45,1,e));
-    for(let X=0;X<Wd;X++){const x=(X+.5)/k,u=x/TW*8,i=(Y*Wd+X)*4;
-      const w0=fbm(u*sq+.7*fbm(u*.5,v*.5,seed+3,2,4),v,seed,5,8),w1=fbm(u*sq+.7*fbm(u*.5,v2*.5,seed+3,2,4),v2,seed,5,8),
-        m=smooth(.38,.72,w0),lit=clamp((w0-w1)*7,-1,1);
-      let c=L3(base,cd,m*.55*(1-e*.6));c=L3(c,cl,clamp(lit,0,1)*.55*(1-e*.5));c=L3(c,haze,smooth(.7,1,e)*.7);
+  /* the cloud in perspective: cells a little flatter low down, never ruled */
+  const vOf=y=>-Math.log(1-y/(h*1.18))*3.2;
+  for(let Y=0;Y<Hd;Y++){const y=(Y+.5)/k,e=y/h,v=vOf(y),v2=vOf(Math.max(0,y-2.5)),sv=vOf(y)*2.3,sv2=vOf(Math.max(0,y-1.5))*2.3;
+    const base=e<.5?L3(zen,mid,e/.5):e<.84?L3(mid,low,smooth(.5,.84,e)):L3(low,haze,smooth(.84,1,e)),foot=smooth(.84,1,e);
+    for(let X=0;X<Wd;X++){const x=(X+.5)/k,u=x/TW*8,i=(Y*Wd+X)*4,warp=fbm(u*.5,v*.5,seed+3,2,4);
+      const w0=fbm(u+.9*warp,v,seed,5,8),w1=fbm(u+.9*warp,v2,seed,5,8),m=smooth(.34,.7,w0),lit=clamp((w0-w1)*9,-1,1);
+      let c=L3(base,cd,m*.62*(1-foot));c=L3(c,cl,Math.max(0,lit)*.62*(1-e*.35)*(1-foot));c=L3(c,cd,Math.max(0,-lit)*.3*(1-foot));
       D.data[i]=c[0];D.data[i+1]=c[1];D.data[i+2]=c[2];D.data[i+3]=255;
-      /* scud: torn and drawn out along the wind, in a band low in the sky */
-      const sv=vOf(y)*2.2,n=fbm(u*1.1+.6*fbm(u*.6,sv*.5,seed+9,2,8),sv,seed+11,4,8),band=smooth(.1,.45,e)*(1-smooth(.85,1,e)),a=smooth(.55,.72,n)*band*.8;
-      if(a>0){const n2=fbm(u*1.1+.6*fbm(u*.6,(sv-.35)*.5,seed+9,2,8),sv-.35,seed+11,4,8),l=clamp((n-n2)*5,0,1),q=L3(L3(base,sc,.55),scl,l*.7);
+      /* scud: torn fragments in the lower sky, dark, with ragged lit tops */
+      const wp=fbm(u,sv*.6,seed+9,2,8),n=fbm(u*2+1.4*wp,sv*1.5,seed+11,4,16)+.1*(vn(u*16,sv*5,seed+13,128)-.5),band=smooth(.25,.5,e)*(1-smooth(.9,1,e)),a=smooth(.5,.62,n)*band;
+      if(a>0){const n2=fbm(u*2+1.4*wp,sv2*1.5,seed+11,4,16),l=clamp((n-n2)*4,0,1),q=L3(L3(base,sc,.75),scl,l*.55);
         S.data[i]=q[0];S.data[i+1]=q[1];S.data[i+2]=q[2];S.data[i+3]=a*255}}}
   dg.putImageData(D,0,0);sg.putImageData(S,0,0);finishA(dc,dg,12);finishA(sc_,sg,12,1);
   const T={deck:dc,scud:sc_,TW,h};if(SKYC.size>6)SKYC.delete(SKYC.keys().next().value);SKYC.set(key,T);return T}
-function sky(o){o=o||{};const pal=o.pal||'day',h=o.h||100,seed=o.seed||2207,dx=o.dx==null?-1:o.dx,sp=o.speed==null?5:o.speed;let T=null;
+function sky(o){o=o||{};const pal=o.pal||'day',h=o.h||100,seed=o.seed||2207,dx=o.dx==null?-1:o.dx,sp=o.speed==null?4:o.speed;let T=null;
   const put=(g,c,off)=>{const W=T.TW,x=hp(-(fr(off/W))*W);g.drawImage(c,0,0,c.width,c.height,x,0,W,T.h);g.drawImage(c,0,0,c.width,c.height,x+W,0,W,T.h)};
-  return{h,draw(g,t){if(!T)T=skyTiles(pal,h,seed);put(g,T.deck,-t/1000*sp*dx);put(g,T.scud,-t/1000*sp*3.2*dx)}}}
+  return{h,draw(g,t){if(!T)T=skyTiles(pal,h,seed);put(g,T.deck,-t/1000*sp*dx);put(g,T.scud,-t/1000*sp*4*dx)}}}
 
 /* ---------- the rain ---------- */
 function rain(g,t,o){o=o||{};const w=o.w||320,y0=o.y0||0,y1=o.y1||144,H=y1-y0,P=PAL[o.pal||'day'],sl=o.slant==null?-.9:o.slant,dir=sl<0?-1:1,
@@ -166,171 +167,211 @@ function rain(g,t,o){o=o||{};const w=o.w||320,y0=o.y0||0,y1=o.y1||144,H=y1-y0,P=
   g.restore()}
 
 /* ---------- foam, spray and spindrift: the shapes every sea here is made of ---------- */
-/* a run of foam along a crest: a filled band from the crest down by th(x), then rows that spill down the face, each a little shorter;
-   all level, nothing upright */
-function foamRun(g,pts,i0,i1,th,P,a,warmAt){if(i1-i0<1)return;const p=[];
-  for(let i=i0;i<=i1;i++)p.push(pts[2*i],pts[2*i+1]-.3);
-  for(let i=i1;i>=i0;i--)p.push(pts[2*i],pts[2*i+1]+th(i));
-  poly(g,p,cs(warmAt?mixc(P.foam,'#ffd6a0',warmAt):P.foam,a));
-  /* the shade on the foam's lower edge and the rows spilling down the face */
-  for(let i=i0;i<i1;i++){const x=pts[2*i],y=pts[2*i+1]+th(i),wd=pts[2*i+2]-x;R(g,x,y-.5,wd,.5,cs(P.foamS,a*.8))}
-}
 /* spray: small squares and level dashes flung out from (x, y) toward (vx, vy) and falling; u 0..1 how far they have gone */
 function spray(g,x,y,vx,vy,u,n,seed,col,a,sz){const r=rng(seed);for(let i=0;i<n;i++){const s=.4+r()*.8,d=u*s,px=x+vx*d+(r()-.5)*sz,py=y+vy*d+20*d*d+(r()-.5)*sz*.4,q=r()<.5?.5:1;
   const al=a*(1-u)*(.5+r()*.5);if(al<.02)continue;R(g,px,py,q+(r()<.4?1:0),.5,cs(col,al));if(q>.5&&r()<.5)R(g,px,py+.5,q,.5,cs(col,al*.6))}}
 /* spindrift: a stair of level dashes torn off a crest down the wind */
 function drift(g,x,y,dx,dy,len,a,col,u){const n=Math.max(2,Math.round(len/1.6));for(let i=0;i<n;i++){const k=(i+u)/n,al=a*(1-k)*Math.min(1,k*4+.2);if(al<.03)continue;
-  R(g,x+dx*k*len,y+dy*k*len,1.5-k*.8,.5,cs(col,al))}}
+  R(g,x+dx*k*len,y+dy*k*len,1.6-k*.9,.5,cs(col,al))}}
+/* lace: a strand of foam running down a face, a stair of short level dashes that wanders as the water does; strands never cross */
+function lace(g,x,y,n,dx,col,a,r,yMax){let px=x,py=y;for(let i=0;i<n;i++){if(yMax&&py>yMax)break;const l=1+r()*2.4;R(g,px,py,l,.5,cs(col,a*(1-i/n*.75)));px+=dx+(r()-.5)*1.2;py+=.5+(r()<.45?.5:0)}}
+/* streak: a long thin level streak of foam, broken into pieces */
+function streak(g,x,y,len,col,a,r){let xx=x;while(xx<x+len){const l=1+r()*Math.min(6,len*.4);R(g,xx,y,l,.5,cs(col,a*(.6+.4*r())));xx+=l+.5+r()*2.5}}
+
+/* strip: a vertical gradient baked once into a canvas one pixel wide (stops as [offset, color] pairs), so that a painter can hang it
+   from a curved line column by column with drawImage, which is far cheaper than a gradient per column */
+const STRIPC=new Map();
+function strip(key,stops){let c=STRIPC.get(key);if(c)return c;const[cv,q]=mk(1,64);const gr=q.createLinearGradient(0,0,0,64);for(const[o,col]of stops)gr.addColorStop(o,col);
+  q.fillStyle=gr;q.fillRect(0,0,1,64);STRIPC.set(key,cv);return cv}
+
+/* hang: draw a strip c from the line pts (x, y pairs every 2 px) column by column, st room pixels wide, each column at the line's own
+   height there (interpolated), dy below it (negative: above), L long; i0..i1 limits it to a run of the line */
+function hang(g,c,pts,st,dy,L,i0,i1){const n=pts.length/2;i0=i0||0;i1=i1==null?n-1:i1;
+  for(let x=pts[2*i0];x<pts[2*i1];x+=st){const u=(x+st/2-pts[0])/2,i=Math.min(n-2,Math.floor(u)),f=u-i,y=pts[2*i+1]+(pts[2*i+3]-pts[2*i+1])*f;g.drawImage(c,x,y+(typeof dy==='function'?dy(i):dy),st+.02,L)}}
 
 /* ---------- one sea, seen from in front ---------- */
 /* pk: a crest that is sharp at its top and broad in its trough, as a sea in a gale is */
-const pk=u=>Math.exp(2.4*(Math.cos(TAU*u)-1));
-/* the face texture: level streaks of lighter and darker water and of old foam, baked once for a palette, dithered, and laid on every sea
-   (moved with it) so that no face is a flat fill */
-const FACEC=new Map();
-function faceTex(pal){if(FACEC.has(pal))return FACEC.get(pal);const P=PAL[pal],TW=256,TH=56,[c,q]=mk(TW*HR,TH*HR),r=rng(4111);q.scale(HR,HR);
-  /* long level dashes: lighter water near the crest, darker lower down, and old foam in broken strands; each wraps across the tile's edge */
-  const dash=(x,y,l,col,a)=>{R(q,x,y,l,.5,cs(col,a));if(x+l>TW)R(q,x-TW,y,l,.5,cs(col,a))};
-  for(let i=0;i<520;i++){const y=Math.pow(r(),1.3)*TH,x=r()*TW,e=y/TH,l=3+r()*18*(1-e*.5);
-    if(r()<.55-e*.4)dash(x,y,l,P.glass,(.22+.3*r())*(1-e));else dash(x,y,l,P.deep,(.15+.3*r())*(.3+e))}
-  for(let i=0;i<140;i++){const y=2+Math.pow(r(),1.6)*TH*.8,x=r()*TW;let xx=x;for(let k=0;k<2+r()*4;k++){const l=1.5+r()*5;dash(xx,y+(k%2)*.5,l,P.foamS,.35+.35*r());xx+=l+1+r()*3}}
-  finishA(c,q,12,1);const T={c,TW,TH};FACEC.set(pal,T);return T}
-/* the white water's own texture: churned foam in blotches and veins, white, grey and the green of the water between, drawn out a little
-   along the level; it tiles both ways, so a painter can move it with the water */
-const FOAMC=new Map();
-function foamTex(pal){if(FOAMC.has(pal))return FOAMC.get(pal);const P=PAL[pal],TW=192,TH=96,W2=TW*HR,H2=TH*HR,[c,q]=mk(W2,H2),im=q.createImageData(W2,H2),d=im.data,
-    fo=hx(P.foam),fs=hx(P.foamS),gl=hx(P.glass),wa=hx(P.water);
-  for(let Y=0;Y<H2;Y++)for(let X=0;X<W2;X++){const u=X/W2*8,v=Y/H2*8,i=(Y*W2+X)*4,
-      wv=fbmp(u*.5,v*.5,61,2,4,4),n=fbmp(u+wv*1.6,v*2+wv*.8,63,4,8,16),m=fbmp(u*2,v*4,67,3,16,32);
-    let col=n>.5?L3(fs,fo,smooth(.5,.6,n)):n>.4?L3(gl,fs,smooth(.4,.5,n)):L3(wa,gl,smooth(.28,.4,n));
-    if(m>.62&&n>.45)col=L3(col,fo,(m-.62)*2);d[i]=col[0];d[i+1]=col[1];d[i+2]=col[2];d[i+3]=255}
-  q.putImageData(im,0,0);finishA(c,q,12);const T={c,TW,TH,pat:null};FOAMC.set(pal,T);return T}
-/* fill the current path (or a polygon p) with the foam texture, moved by ox, oy */
-function foamFill(g,p,pal,ox,oy,a){const T=foamTex(pal);if(!T.pat)T.pat=g.createPattern(T.c,'repeat');T.pat.setTransform(new DOMMatrix().translate(ox,oy).scale(1/HR));
-  g.save();g.globalAlpha=a;g.fillStyle=T.pat;poly(g,p);g.fill();g.restore()}
-/* seaRidge: paint one sea from its crest line. S = {pts: x, y pairs every 2 px, sh: its shape 0..1 at each, z: its distance, fade: the
-   rain's haze 0..1, sc: room pixels to the metre there (perspective), ox: how far its pattern has drifted in pixels, k: who it is,
-   thr: from what shape up its top breaks, brk: 0..1 how much of its whole crest breaks, warm(x, y): 0..1 lamplight there}; o carries the
-   palette P, the seed, the wind dx and the time t. Its body runs down to the foot of the picture; the nearer seas are painted over it. */
-function seaRidge(g,S,o){const{pts,sh,z,fade,sc,ox,k}=S,P=o.P,haze=hx(P.haze),w=pts[pts.length-2],t=o.t,dxW=o.dxW,fo=1-fade*.92;
-  let top=1e9;for(let i=1;i<pts.length;i+=2)top=Math.min(top,pts[i]);const body=[...pts,w,160,pts[0],160];
-  poly(g,body,cs(P.face,1));
-  g.fillStyle=lg(g,0,top+1.5*sc,0,top+26*sc+10,[cs(P.face,0),cs(P.deep,.9)]);poly(g,body);g.fill();
+const pk=u=>Math.exp(2.4*(Math.cos(TAU*u)-1)),pkb=u=>Math.exp(1.4*(Math.cos(TAU*u)-1));
+/* rank: paint one great sea from its crest line, as a painter of those games would: a face dark and steep toward us, darkest low down,
+   with laces of foam running down it from where it breaks; where we see over its crest, its back, lighter, the grey of the sky in it,
+   streaked down the wind; the glassy lip under the crest; the haze of the rain the farther it is; and on its highest parts a bright
+   lip of foam that curls over a shadow, with spray thrown up above it and spindrift blown off it.
+   Q = {pts: x, y pairs every 2 px, sh: its shape 0..1 at each, bk: how far down the back we see above each point (px, or null), z: its
+   distance, fade: the rain's haze 0..1, sc: room pixels to the metre there, ox: how far it has drifted (px), k: who it is, thr: from what
+   shape up its top breaks, brk: 0..1 how much of the whole crest breaks, warm(x, y): lamplight 0..1}; o = {P, t, dxW (-1: the wind
+   blows to the left), seed}. Its body runs to the foot of the picture; nearer seas are painted over it. */
+function rank(g,Q,o){const{pts,sh,z,fade,sc,k,thr}=Q,brk=Q.brk||0,ox=Q.ox||0,bk=Q.bk,P=o.P,t=o.t,dxW=o.dxW,n=sh.length,w=pts[2*n-2],fo=1-fade*.92,det=fade<.5,
+    s1=clamp(sc*.35,.4,2.2);
+  const T=[];let top=1e9;for(let i=0;i<n;i++){const y=pts[2*i+1]-(bk?bk[i]:0);T.push(y);top=Math.min(top,y)}
+  const body=[];for(let i=0;i<n;i++)body.push(pts[2*i],T[i]);body.push(w,160,pts[0],160);
+  poly(g,body,cs(P.face,1));g.fillStyle=lg(g,0,top+3,0,top+Math.max(12,sc*7),[cs(P.face,0),cs(P.deep,.95)]);poly(g,body);g.fill();
+  /* the back, over the crest: lighter, with the wind's streaks running down it toward the crest */
+  if(bk){const p=[];for(let i=0;i<n;i++)p.push(pts[2*i],T[i]);for(let i=n-1;i>=0;i--)p.push(pts[2*i],pts[2*i+1]+.2);
+    poly(g,p,cs(P.back,1));
+    {const L=10,c=strip(o.pal+'back',[[0,cs(P.face,.45)],[.5,cs(P.back,0)],[1,cs(P.crest,.35)]]);clipTo(g,()=>poly(g,p),()=>{
+      hang(g,c,pts,2,-L,L)})}
+    if(det){const r=rng(k*977+5),ns=Math.min(50,Math.round(46*clamp(sc/4,.4,1.5))),span=w+40;
+      for(let i=0;i<ns;i++){const xs=fr((r()*span+ox)/span)*span-20,j=clamp(Math.round((xs+6)/2),0,n-1),gap=bk[j];if(gap<2.5){r();r();continue}
+        let x=xs,y=T[j]+r()*gap*.6;const a=(.3+.35*r())*fo,L=Math.round(4+r()*gap);
+        for(let q=0;q<L;q++){const jj=clamp(Math.round((x+6)/2),0,n-1);if(y>pts[2*jj+1]-1||y<T[jj])break;R(g,x,y,1.4+r()*2,.5,cs(P.foamS,a*(1-q/L*.5)));x+=dxW*(.9+r()*.6);y+=.5}}}}
   /* the face's own streaks, carried with the sea */
-  if(fade<.6){const T=faceTex(o.pal);clipTo(g,()=>poly(g,body),()=>{g.globalAlpha=(1-fade)*.9;const x0=-fr(ox/T.TW)*T.TW;
-    for(let x=x0-T.TW;x<w+T.TW;x+=T.TW)g.drawImage(T.c,x,top-1,T.TW,T.TH);g.globalAlpha=1})}
+  if(det&&o.tex){const F=faceTex(o.pal);clipTo(g,()=>{const p=[...pts,w,160,pts[0],160];poly(g,p)},()=>{g.globalAlpha=(1-fade)*.55;const x0=-fr(ox/F.TW)*F.TW;
+    for(let x=x0-F.TW;x<w+F.TW;x+=F.TW)g.drawImage(F.c,x,top+2,F.TW,F.TH);g.globalAlpha=1})}
   /* the lip: the water under the crest is thin and lets the light through */
-  for(const[d,c,a]of fade>.6?[[1.1,P.glass,.5],[.3,P.crest,.85]]:[[3.4,P.glass,.3],[2.1,P.glass,.55],[1.1,P.crest,.55],[.3,P.crest,.85]]){g.beginPath();for(let i=0;i<pts.length;i+=2)g[i?'lineTo':'moveTo'](pts[i],pts[i+1]+d*clamp(sc,.3,1.6));
-    g.strokeStyle=cs(c,a*(1-fade*.85));g.lineWidth=Math.max(.5,Math.min(1.6,sc*.9));g.stroke()}
-  /* the rain's haze between us and it, thicker the farther it is */
-  if(fade>.02){poly(g,body);g.fillStyle=lg(g,0,top-2,0,top+30,[cs(haze,fade*.97),cs(haze,fade*.85)]);g.fill()}
-  /* where it breaks: the foam on its peaks, the rows spilling down its face, and spindrift torn off the top toward us */
-  const thr=S.thr,brk=S.brk||0,n=sh.length,th=i=>(sh[i]-thr)/(1-thr+1e-6)*(.8+Math.min(5,sc*.45))*(1+brk*1.6)+.5;let i0=-1;
+  if(det){/* column by column, a gradient that hangs from the crest: glassy green under it, darkening down the face */
+    const L=clamp(11*s1,6,30),c=strip(o.pal+'lip',[[0,cs(P.glass,.62)],[.5,cs(P.glass,.3)],[1,cs(P.glass,0)]]);g.globalAlpha=1-fade;
+    hang(g,c,pts,2,0,L);g.globalAlpha=1}
+  for(const[d,c,a]of det?[[.4,P.crest,.55]]:[[1.1,P.glass,.5],[.35,P.crest,.7]]){g.beginPath();for(let i=0;i<n;i++)g[i?'lineTo':'moveTo'](pts[2*i],pts[2*i+1]+d*s1);
+    g.strokeStyle=cs(c,a*(1-fade*.85));g.lineWidth=Math.max(.5,Math.min(1.2,s1*.7));g.stroke()}
+  /* old foam lying all over the near faces: long thin level strands, broken, carried with the sea */
+  if(det){const r=rng(k*577+3),deep=clamp((150-top)/20,1,5),ns=Math.min(80,Math.round(45*clamp(sc/4,.3,1.6)*deep)),span=w+60;
+    for(let i=0;i<ns;i++){const x=fr((r()*span+ox)/span)*span-30,j=clamp(Math.round((x+6)/2),0,n-1),y=pts[2*j+1]+(2+Math.pow(r(),.9)*Math.max(30*s1,(150-pts[2*j+1])*.9));streak(g,x,y,(4+r()*16)*s1,r()<.7?P.foamS:P.foam,(.18+.3*r())*fo,r)}}
+  /* laces of foam running down the face below the places where it breaks or has broken */
+  if(det){const r=rng(k*131+11),nl=Math.min(48,Math.round((22+30*brk)*clamp(sc/4,.4,1.6)));
+    for(let i=0;i<nl;i++){const j=Math.floor(r()*n);if(sh[j]<thr-.4-brk*.4){r();continue}const x=pts[2*j]+(r()-.5)*2,y=pts[2*j+1]+(1.5+r()*3)*s1;
+      lace(g,x,y,Math.round((5+r()*12)*clamp(sc/5,.5,1.8)),dxW*(1.3+r()*.9),P.foamS,(.3+.35*r())*fo,r)}}
+  /* the rain's haze between us and it */
+  if(fade>.02){poly(g,body);g.fillStyle=lg(g,0,top-2,0,top+30,[cs(P.haze,fade*.97),cs(P.haze,fade*.85)]);g.fill()}
+  /* where it breaks: a bright lip of foam over the shadow of its curl, spray thrown up above it and blown down the wind, spindrift */
+  const th=i=>((sh[i]-thr)/(1-thr+1e-6)*(.8+Math.min(6,sc*.55))*(1+brk*1.4)+.5)*(.55+.9*vn(i/5+k*7.3,t/900,k+17));let i0=-1;
   for(let i=0;i<=n;i++){const on=i<n&&sh[i]>thr;if(on&&i0<0)i0=i;if(!on&&i0>=0){const i1=i-1;
-      if(i1>i0){foamRun(g,pts,i0,i1,th,P,.94*fo,S.warm?S.warm(pts[2*i0],pts[2*i0+1]):0);
-        const rr=rng(k*31+i0*7+(o.seed|0));for(let j=i0;j<i1;j+=1+Math.floor(rr()*2)){const yb=pts[2*j+1]+th(j);const ss=Math.min(2.2,Math.max(.5,sc*.25));for(let q=1;q<=4;q++)if(rr()<.55)R(g,pts[2*j]+(rr()-.3)*ss*2,yb+q*ss*.9,(1.5+rr()*4)*ss,.5,cs(P.foam,(.55-q*.1)*fo))}
-        if(z<90&&i1-i0>2){const m=Math.floor((i0+i1)/2),u=fr(t/620+h2(k,i0,5)),len=(6+7*rr())*Math.min(1.8,Math.max(.5,sc*.3));drift(g,pts[2*m],pts[2*m+1]-.5,dxW*.95,.42,len,.65*fo,P.foam,u)}}
+      if(i1>i0){const wa=Q.warm?Q.warm(pts[2*i0],pts[2*i0+1]):0,col=wa?toHex(...mixc(P.foam,'#ffd6a0',wa)):P.foam;
+        g.beginPath();for(let j=i0;j<=i1;j++)g[j>i0?'lineTo':'moveTo'](pts[2*j],pts[2*j+1]+th(j)+.6);g.strokeStyle=cs(P.deep,.55*fo);g.lineWidth=Math.max(.5,s1*.8);g.stroke();
+        const p=[];for(let j=i0;j<=i1;j++)p.push(pts[2*j],pts[2*j+1]-.4);for(let j=i1;j>=i0;j--)p.push(pts[2*j],pts[2*j+1]+th(j));
+        poly(g,p,cs(col,.96*fo));
+        g.beginPath();for(let j=i0;j<=i1;j++)g[j>i0?'lineTo':'moveTo'](pts[2*j],pts[2*j+1]-.2);g.strokeStyle=cs('#ffffff',.6*fo);g.lineWidth=.5;g.stroke();
+        for(let j=i0;j<i1;j++)R(g,pts[2*j],pts[2*j+1]+th(j)-.5,2,.5,cs(P.foamS,.75*fo));
+        /* under the lip, the inside of the curl, green where the light comes through */
+        if(det){const L=clamp(6*s1,3,14),c=strip(o.pal+'curl',[[0,cs(P.glass,.55)],[1,cs(P.glass,0)]]);g.globalAlpha=fo;
+          hang(g,c,pts,1,j=>th(j)+.6,L,i0,i1);g.globalAlpha=1}
+        const rr=rng(k*31+i0*7+(o.seed|0)),m=Math.floor((i0+i1)/2),wd=pts[2*i1]-pts[2*i0];
+        if(det&&wd>3){for(let q=0;q<Math.max(1,Math.round(wd/22));q++){const jj=Math.round(i0+(i1-i0)*(q+.5)/Math.max(1,Math.round(wd/22))),u=fr(t/700+h2(k,i0+q,5));
+            spray(g,pts[2*jj],pts[2*jj+1]-1,dxW*(6+sc*1.2),-(2+sc*.9),u,Math.round(8+Math.min(wd,22)*.6),k*13+i0+q*7,col,.8*fo,Math.min(wd,22)*.8)}
+          const len=(6+8*rr())*Math.min(2,Math.max(.6,sc*.3));drift(g,pts[2*m],pts[2*m+1]-.5,dxW,.12,len*1.6,.6*fo,col,fr(t/520+h2(k,i0,7)))}}
       i0=-1}}
   return top}
+/* the face texture: level streaks of lighter and darker water and broken strands of old foam, baked once for a palette, dithered, and
+   laid on every near face (moved with it) so that no face is a flat fill */
+const FACEC=new Map();
+function faceTex(pal){if(FACEC.has(pal))return FACEC.get(pal);const P=PAL[pal],TW=256,TH=64,[c,q]=mk(TW*HR,TH*HR),r=rng(4111);q.scale(HR,HR);
+  const dash=(x,y,l,col,a)=>{R(q,x,y,l,.5,cs(col,a));if(x+l>TW)R(q,x-TW,y,l,.5,cs(col,a))};
+  for(let i=0;i<420;i++){const y=Math.pow(r(),1.3)*TH,x=r()*TW,e=y/TH,l=3+r()*16*(1-e*.5);
+    if(r()<.55-e*.4)dash(x,y,l,P.glass,(.2+.25*r())*(1-e));else dash(x,y,l,P.deep,(.15+.3*r())*(.3+e))}
+  finishA(c,q,12,1);const T={c,TW,TH};FACEC.set(pal,T);return T}
 
 /* ---------- the seas from the deck ---------- */
-/* Seen from the deck across the beam to windward. The seas come toward us one by one; sea k is at z = Z0 + (k - s) DZ metres, s = b - .6,
-   so that a sea reaches the ship (Z0) at phase .6 of every beat, in the middle of 'over'. The eye is E metres above the mean level of the
-   sea: the ship rides high in the pause and drops into the trough as the sea arrives. A crest of height H at X across is seen at
-   y = hz + F (E - H) / z. Nothing of the horizon is drawn: the far seas fade into the rain's haze, which is the color of the sky's foot. */
+/* Seen from the deck across the beam to windward. The great seas come toward us one by one, a wave length DZ apart; sea k is at
+   z = Z0 + (k - s) DZ metres, s = b - .6, so that a sea reaches the ship at phase .6 of every beat, in the middle of 'over'. The eye is
+   E metres above the mean level of the sea: she rides high in the pause and drops into the trough as the sea comes. A crest of height
+   H at X across is seen at y = hz + F (E - H) / z. In the pause the next sea stands across the picture, its peaks well above the rail
+   and its saddles sinking below it, with the ranks beyond it dissolving into the rain; the lower parts show their backs, where we see
+   over them. The sea that comes stands up highest at the windward end (the right: the rain slants down to the left) and its shoulder
+   runs along the rail to the other end. No horizon is drawn: the farthest seas fade into the rain, the color of the sky's foot. */
 function deckSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz==null?56:o.hz,F=o.F||150,cx=w/2,RAIL=o.rail||82,D0=o.deck0||97,
-    ht=o.height==null?1:o.height,seed=o.seed||2209,Z0=13,DZ=24,N=9,lamp=o.lamp,dxW=o.dx==null?-1:o.dx,
+    ht=o.height==null?1:o.height,seed=o.seed||2209,Z0=24,DZ=60,N=4,lamp=o.lamp,dxW=o.dx==null?-1:o.dx,
     SKY=sky({pal,h:RAIL+4,seed:seed+1,dx:dxW,w});
-  const bump=s=>{const q=fr(s+.5)-.5;return Math.exp(-(q/.14)*(q/.14))},
-    E=s=>5.6+2.6*(1-2*bump(s)),
+  const bump=s=>{const q=fr(s+.5)-.5;return Math.exp(-(q/.15)*(q/.15))},
+    E=s=>5.5-2.5*bump(s),
     roll=b=>{const s=(b||0)-.6;return .045*Math.sin(TAU*s+.9)},
     rk=k=>h2(k,7,seed),
-    lampK=(x,y)=>lamp?Math.pow(clamp(1-Math.hypot((x-lamp[0])/2.2,y-lamp[1])/lamp[2],0,1),1.4):0;
-  /* the shape of sea k along X (metres across): three trains of peaks that drift with the wind, the shortest choppy */
-  const shapeOf=(k,X,t)=>{const dr=t/1000*1.5*dxW;return .5*pk(X/34+rk(k+99)*3+dr/34)+.32*pk(X/14+rk(k+51)*3+dr*1.6/14)+.18*pk(X/5.5+rk(k+23)*3+dr*2.2/5.5)};
-  function sea(g,k,s,t,b){const z=Z0+(k-s)*DZ,near=k-s;if(near<-.09)return;const e=E(s),tl=Math.tan(roll(b)),
-      a=ht*(7.6+2*(rk(k)-.5))*(.62+.38*smooth(70,Z0,z)),pts=[],sh=[];
-    for(let x=-6;x<=w+6;x+=2){const X=(x-cx)*z/F,q=shapeOf(k,X,t);pts.push(x,hz+F*(e-a*(.55+.45*q))/z+tl*(x-cx));sh.push(q)}
-    const brk=clamp(1-(near+.06)/.2,0,1);if(near>-.1&&near<.35)NEAR={b,pts};
-    seaRidge(g,{pts,sh,z,fade:1-Math.exp(-Math.max(0,z-Z0-6)/110),sc:F/z,ox:t/1000*1.5*dxW*F/z*.8,k,thr:.68-.6*brk,brk,warm:lamp?lampK:0},{P,pal,t,dxW,seed})}
+    lampK=(x,y)=>lamp?Math.pow(clamp(1-Math.hypot((x-lamp[0])/2.2,y-lamp[1])/lamp[2],0,1),1.4):0,
+    /* where the shoulder of the coming sea is along the rail: from beyond the windward end to beyond the other */
+    xsh=f=>{const u=f<.545?-(.545-f)*2000/w:(f-.545)/.045;return dxW<0?w*(1-u):w*u},
+    /* when the sea comes over the rail at x: first at the windward end */
+    t0=x=>.565+.045*(dxW<0?1-x/w:x/w);
+  /* the shape of sea k along X (metres across): three trains of peaks that drift with the wind */
+  const shapeOf=(k,X,t)=>{const dr=t/1000*1.6*dxW;return .6*pkb(X/58+rk(k+99)*3+dr/58)+.3*pkb(X/23+rk(k+51)*3+dr*1.5/23)+.1*pk(X/9+rk(k+23)*3+dr*2.2/9)};
   let NEAR=null;
+  function sea(g,k,s,t,b){const near=k-s;if(near<-.1)return;const z=Z0+near*DZ,e=E(s),f=fr(b),tl=Math.tan(roll(b)),
+      a=ht*(14+2.4*(rk(k)-.5))*(.72+.28*smooth(150,Z0,z)),be=near<.5?smooth(.5,.08,near):0,xs=xsh(f),pts=[],sh=[],bk=[];
+    for(let x=-6;x<=w+6;x+=2){const X=(x-cx)*z/F,q=shapeOf(k,X,t),m=Math.exp(-((x-xs)/130)*((x-xs)/130)),
+        H=a*(-.3+1.3*q)*(1-be*.45)+be*a*(.1+.26*m),y=hz+F*(e-H)/z+tl*(x-cx);
+      pts.push(x,y);sh.push(clamp(q*(1-be*.5)+be*m,0,1));bk.push(clamp((e-H)/z*F*.5,0,16))}
+    const brk=clamp(1-(near+.04)/.22,0,1);if(near>-.12&&near<.4)NEAR={b,pts};
+    rank(g,{pts,sh,bk,z,fade:1-Math.exp(-Math.max(0,z-Z0-14)/150),sc:F/z,ox:t/1000*1.6*dxW*F/z,k,thr:.74-.5*brk,brk,warm:lamp?lampK:0},{P,pal,t,dxW,seed})}
   const draw=(g,t,b)=>{b=b||0;const s=b-.6;NEAR=null;SKY.draw(g,t);
     g.save();g.beginPath();g.rect(-8,-8,w+16,RAIL+6);g.clip();
-    for(let k=Math.ceil(s-.09)+N-1;k>=Math.ceil(s-.09);k--)sea(g,k,s,t,b);
+    for(let k=Math.ceil(s-.1)+N-1;k>=Math.ceil(s-.1);k--)sea(g,k,s,t,b);
     g.restore()};
-  /* the sea that comes aboard: white water over the rail, then green water running across the deck toward us, then draining away */
-  const sheetEdge=(x,f,t)=>{const run=smooth(.6,.8,f),lob=Math.sin(x/23+1.3)*4+Math.sin(x/9.5+t/300)*1.6+Math.sin(x/51)*5;
-    return D0+(152-D0)*Math.pow(run,.8)+lob*run*(1-run*.3)};
-  const wetAt=(x,y,b)=>{const f=fr(b||0);return f>.6&&f<.86&&y>=D0&&y<=sheetEdge(x,f,0)-1};
-  /* the broken crest as it comes down on her: heads of white water, rounded, along the whole rail */
-  const head=(x,L,ph)=>{const u=fr(x/L+ph)*2-1;return Math.sqrt(Math.max(0,1-u*u))},mass=(x,lift,drop)=>{const q=.45*(.5+.5*Math.cos(TAU*(x/90+.2)))+.35*head(x,23,.3)+.2*head(x,9,.7);return[RAIL-1-lift*(.35+.65*q),RAIL+drop*(.97+.08*(vn(x/4,drop*.25,91)-.5))+1]};
-  function aboard(g,t,b){b=b||0;const f=fr(b);if(f<.55)return;const Wd=w;
-    const ov=f<.62?1:1-smooth(.68,.75,f),grow=smooth(.555,.625,f);
-    if(ov>0&&grow>0){const fall=smooth(.6,.72,f),drop=smooth(.59,.66,f)*(D0-RAIL+6),C=NEAR&&NEAR.b===b?NEAR.pts:null,
-        cy=x=>{if(!C)return RAIL-26*ht;const j=clamp(Math.round((x+6)/2),0,C.length/2-1);return Math.min(RAIL,C[2*j+1])},
-        tp=(x,dy,L)=>{const y=cy(x);return y+(RAIL-y)*fall*.92-head(x,L,dy*.1+.3)*(1.5+5*fall)+dy+(1-ov)*3},
-        bt=x=>{const y=cy(x),yb=mass(x,0,drop)[1];return y+(yb-y)*Math.min(1,grow*1.15)};
-      /* the white comes down the sea's face from its crest, then the crest falls onto the rail and over it: two layers, the shade behind
-         and the white heads, then level rows of shade in the white and the green of the water showing through low down */
-      let face=null;
-      for(const[dy,c,L]of[[-1.6,P.foamS,17],[0,P.foam,23]]){const p=[];
-        for(let x=-6;x<=Wd+6;x+=2)p.push(x,tp(x,dy,L));for(let x=Wd+6;x>=-6;x-=2)p.push(x,Math.max(tp(x,dy,L),bt(x)));
-        poly(g,p,cs(c,.97*ov));face=p}
-      clipTo(g,()=>poly(g,face),()=>{
-        g.fillStyle=lg(g,0,RAIL-34,0,D0+6,[cs(P.glass,0),cs(P.glass,.14*ov),cs(P.glass,.5*ov)]);g.fillRect(-6,-4,Wd+12,D0+12);
-        const mv=(f-.56)*60;foamFill(g,face,pal,dxW*mv*.4,mv*.9+t/1000*6,.9*ov);g.fillStyle=lg(g,0,-4,0,40,[cs(P.foam,.5*ov),cs(P.foam,0)]);g.fillRect(-6,-4,Wd+12,46);
-        const rr=rng(seed+78);for(let i=0;i<140;i++){const x=rr()*(Wd+12)-6,y=cy(x)+rr()*(D0+4-cy(x))+mv*rr(),ln=2+rr()*9;R(g,x,y,ln,.5,cs(rr()<.4?P.glass:P.foamS,(.3+.35*rr())*ov))}});
-      if(lamp)glowOn(g,face,lamp,ov)}
-    /* on the deck: the sheet of water running toward us, a band of white at its leading edge, and foam marbling behind it */
-    const run=smooth(.6,.64,f)*(1-smooth(.8,.97,f));
-    if(run>0){const pts=[];for(let x=-6;x<=Wd+6;x+=2)pts.push(x,sheetEdge(x,f,t));
-      const p=[-6,D0-1,Wd+6,D0-1];for(let i=pts.length-2;i>=0;i-=2)p.push(pts[i],pts[i+1]);
-      const dr=smooth(.8,.97,f);
-      poly(g,p,cs(P.water,.9*run));
-      clipTo(g,()=>poly(g,p),()=>{g.fillStyle=lg(g,0,D0,0,152,[cs(P.glass,.55*run),cs(P.water,0)]);g.fillRect(-6,D0-1,Wd+12,60);
-        foamFill(g,p,pal,dxW*t/200,(f-.6)*90,.55*run*(1-dr*.7));
-        /* the foam on it: level streaks that the water carries toward us and spreads as it goes */
-        const rr=rng(seed+303),mv=(f-.6)*70;for(let i=0;i<170;i++){const x=rr()*(Wd+20)-10,y0=D0+rr()*50,y=y0+mv*(.4+rr()*.6),s=clamp((y-D0)/40,.3,1.6),ln=(2+rr()*10)*s;
-          if(rr()<dr*1.1)continue;R(g,x,y,ln,.5,cs(P.foam,(.3+.5*rr())*run));if(ln>5)R(g,x+ln*.25,y+.5,ln*.5,.5,cs(P.foam,.25*run))}});
-      /* the leading edge: a band of white that thins as the water spreads, heads of foam tumbling along it */
-      for(let i=0;i<pts.length-2;i+=2){const x=pts[i],y=pts[i+1],s=clamp((y-D0)/30,.4,1.8),th=(1.5+2.8*s)*(1-dr*.8);
-        R(g,x,y-th,2,th,cs(P.foam,.96*run));R(g,x,y-th-.5,2,.5,cs(P.foamS,.6*run))}
-      /* broken strands of foam tumbling just behind the edge */
-      {const rr=rng(seed+91+((t/120)|0));for(let i=0;i<90;i++){const x=rr()*(Wd+8)-4,y=sheetEdge(x,f,t),s=clamp((y-D0)/30,.4,1.8),yy=y-s*(2.5+rr()*5);R(g,x,yy,(1.5+rr()*5)*s,.5,cs(rr()<.6?P.foam:P.foamS,(.5+.4*rr())*run*(1-dr)))}}
-      if(lamp)glowOn(g,p,lamp,run)}
-    /* as it drains: the last of the foam in level strands, slipping toward us and away under the lee rail, and a film of water */
-    const dn=smooth(.8,.86,f)*(1-smooth(.93,1,f));
-    if(dn>0){const rr=rng(seed+505),mv=(f-.8)*120;for(let i=0;i<110;i++){const x=rr()*Wd,y=D0+2+rr()*44+mv*(.5+rr()*.5),s=clamp((y-D0)/40,.3,1.6),ln=(2+rr()*7)*s;if(y>150)continue;
-        R(g,x,y,ln,.5,cs(P.foam,(.2+.35*rr())*dn))}
-      comp(g,'screen',.16*dn,()=>{g.fillStyle=lg(g,0,D0,0,144,[cs(P.haze,1),cs(P.haze,.2)]);g.fillRect(-6,D0,Wd+12,48)})}}
+  /* the water on the deck: its leading edge at x, running toward us and down the wind, from where it came over first */
+  const runAt=(x,f)=>smooth(t0(x)+.035,t0(x)+.22,f),
+    sheetEdge=(x,f,t)=>{const p=runAt(x,f),lob=Math.sin(x/23+1.3)*3+Math.sin(x/9.5+t/300)*1.2+Math.sin(x/51)*4;return D0+(152-D0)*Math.pow(p,.85)+lob*p*(1-p*.3)};
+  const wetAt=(x,y,b)=>{const f=fr(b||0);return f>t0(x)+.035&&f<.86&&y>=D0&&y<=sheetEdge(x,f,0)-1};
+  /* the sea that comes aboard: its crest falls on her, highest and first at the windward end and then all along the rail; white water
+     pours over the rail, churns brightest where it lands, and runs across the deck toward us in streaks down the flow, a thin bright
+     edge in front; then it drains away and the planks show through */
+  function aboard(g,t,b){b=b||0;const f=fr(b);if(f<.55)return;const C=NEAR&&NEAR.b===b?NEAR.pts:null,xs=xsh(f),
+      cy=x=>{if(!C)return RAIL-26*ht;const j=clamp(Math.round((x+6)/2),0,C.length/2-1);return Math.min(RAIL,C[2*j+1])};
+    /* the falling crest and the white water over the rail */
+    const top=[],bot=[];let any=0;
+    for(let x=-6;x<=w+6;x+=2){const s0=t0(x),fall=smooth(s0-.01,s0+.09,f),gone=smooth(s0+.1,s0+.16,f),y=cy(x);
+      const gr=smooth(s0-.04,s0+.02,f);if(gr<=0){top.push(x,y);bot.push(x,y);continue}any=1;
+      const m=Math.exp(-((x-xs)/110)*((x-xs)/110)),yt=y+(RAIL-y)*fall*(.9-.25*m)+gone*(D0-RAIL)*.5,yf=RAIL+(D0+1-RAIL)*smooth(s0+.01,s0+.06,f),yb=y+(Math.max(yf,y)-y)*gr;
+      top.push(x,Math.min(yt,yb-.5));bot.push(x,yb)}
+    const MA=1-smooth(.68,.75,f);if(any&&MA>0){g.save();g.globalAlpha=MA;const p=top.slice();for(let i=bot.length-2;i>=0;i-=2)p.push(bot[i],bot[i+1]);
+      let mn=1e9;for(let i=1;i<top.length;i+=2)mn=Math.min(mn,top[i]);
+      poly(g,p);g.fillStyle=lg(g,0,mn,0,D0+2,[cs('#ffffff',.97),cs(mix(P.foam,P.glass,.22),.94),cs(mix(P.foam,P.glass,.32),.92),cs(P.foam,.98)]);g.fill();
+      clipTo(g,()=>poly(g,p),()=>{const r=rng(seed+78),mv=(f-.56)*80;
+        /* thin level streaks in the white, carried down with it; strands of the green water showing through */
+        for(let i=0;i<260;i++){const x=r()*(w+12)-6,y=mn+r()*(D0+4-mn)+mv*r(),ln=2+r()*10,c=r()<.35?P.glass:r()<.6?P.foamS:'#ffffff';R(g,x,y,ln,.5,cs(c,.25+.35*r()))}
+        g.fillStyle=lg(g,0,D0-5,0,D0+2,[cs('#ffffff',0),cs('#ffffff',.6)]);g.fillRect(-6,D0-5,w+12,8)});
+      /* the top: a bright edge, and spray thrown up off it, blown down the wind */
+      for(let i=0;i<top.length-2;i+=2)if(top[i+1]<RAIL)R(g,top[i],top[i+1]-.3,2,.5,cs('#ffffff',.85));
+      for(let j=0;j<6;j++){const x=xs+(j-2.5)*34;if(x<-10||x>w+10)continue;const u=clamp((f-t0(clamp(x,0,w)))/.12,0,1);if(u<=0||u>=1)continue;
+        spray(g,x,cy(clamp(x,0,w))-2,dxW*30,-28,u,40,seed+j*17+((b|0)%5)*101,P.foam,.9,24)}
+      if(lamp)glowOn(g,p,lamp,1);g.restore()}
+    /* on the deck */
+    const dr=smooth(.8,.97,f);if(f<.6||dr>=1)return;
+    const pts=[];for(let x=-6;x<=w+6;x+=2)pts.push(x,sheetEdge(x,f,t));
+    const p=[-6,D0-1,w+6,D0-1];for(let i=pts.length-2;i>=0;i-=2)p.push(pts[i],pts[i+1]);
+    /* green water, clear enough that the deck shows through, more so as it drains */
+    poly(g,p);g.fillStyle=lg(g,0,D0,0,150,[cs(P.water,.85*(1-dr*.6)),cs(P.water,.65*(1-dr*.8))]);g.fill();
+    clipTo(g,()=>poly(g,p),()=>{
+      /* the churn where it lands: brightest along the foot of the bulwark, thinning toward us */
+      const land=1-smooth(.64,.8,f);g.fillStyle=lg(g,0,D0-1,0,D0+22,[cs(P.foam,.95*land),cs(P.foam,.5*land),cs(P.foam,0)]);g.fillRect(-6,D0-1,w+12,24);
+      /* streaks of foam along the flow, toward us and down the wind: stairs of level strands that never cross */
+      const r=rng(seed+303),mv=(f-.6)*80;
+      for(let i=0;i<120;i++){const x0=r()*(w+60)-30,y0=D0+r()*30+mv*(.5+.5*r()),a=(.35+.4*r())*(1-dr),n2=Math.round(5+r()*14);
+        lace(g,x0,y0,n2,dxW*(1+r()*.6),r()<.7?P.foam:P.foamS,a,r,150)}});
+    /* the leading edge: a thin bright line */
+    for(let i=0;i<pts.length-2;i+=2){const x=pts[i],y=pts[i+1],s=clamp((y-D0)/30,.4,1.6);if(runAt(x,f)<=0)continue;
+      R(g,x,y-.8*s,2,.8*s+.5,cs('#ffffff',.9*(1-dr)));R(g,x,y-1.3*s-.5,2,.5,cs(P.foamS,.6*(1-dr)))}
+    if(lamp)glowOn(g,p,lamp,1-dr)}
   /* a lamp's light on the water: warm, long and low */
   function glowOn(g,p,L,a){clipTo(g,()=>poly(g,p),()=>pool(g,L[0],L[1]+6,L[2]*1.4,L[2]*.45,'#ffb868',.55*a,'screen'))}
-  /* in front of everything: the spray as the sea strikes, flung over the rail toward us; a thin veil of it that comes up and goes over a
-     third of a second and more (never a flash); the rain */
-  function front(g,t,b){b=b||0;const f=fr(b);
-    if(f>.56&&f<.78){const u=(f-.56)/.22,ve=Math.sin(Math.PI*clamp((f-.57)/.19,0,1));
-      if(ve>0){g.fillStyle=lg(g,0,RAIL-30,0,144,[cs(P.foamS,.2*ve),cs(P.foamS,.05*ve)]);g.fillRect(-6,0,w+12,144)}
-      for(let j=0;j<7;j++){const x=12+j*48+(j%2)*13;spray(g,x,RAIL-8,dxW*26,60,u,52,seed+j*17+((b|0)%5)*101,P.foam,.9,12)}}
+  /* in front of everything: the spray flung over the rail toward us where the sea strikes, a thin veil of it that comes up and goes
+     over a third of a second and more (never a flash), and the rain */
+  function front(g,t,b){b=b||0;const f=fr(b),xs=xsh(f);
+    if(f>.56&&f<.8){const ve=Math.sin(Math.PI*clamp((f-.57)/.21,0,1));
+      if(ve>0){g.fillStyle=lg(g,0,RAIL-30,0,144,[cs(P.foamS,.16*ve),cs(P.foamS,.04*ve)]);g.fillRect(-6,0,w+12,144)}
+      for(let j=0;j<7;j++){const x=12+j*48+(j%2)*13,u=clamp((f-t0(x))/.18,0,1);if(u<=0||u>=1)continue;spray(g,x,RAIL-8,dxW*26,60,u,46,seed+j*17+((b|0)%5)*101,P.foam,.85,12)}}
     rain(g,t,{w,pal,density:o.rain==null?1:o.rain,lamp,splash:[D0+4,140],seed:seed+3})}
   return{draw,aboard,front,wetAt,roll,E,sky:SKY,rail:RAIL,deck0:D0,pal:P,beat}}
 
 /* ---------- the sea from outside, a ship among the seas ---------- */
-/* The seas run toward us, a crest every DZ metres, one passing every o.period ms; the ship lies at ZS among them, so the seas beyond her
-   are drawn before her hull and those between her and us after it. Her waterline is the surface at ZS under her stern and her bow. */
-function sideSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz==null?30:o.hz,F=o.F||300,E=o.eye||14,cx=w/2,ZS=o.zShip||46,DZ=o.spacing||24,Z0=6,
-    ht=o.height==null?1:o.height,per=o.period||6000,seed=o.seed||2215,dxW=o.dx==null?-1:o.dx,rk=k=>h2(k,3,seed),N=11;
-  const SKY=sky({pal,h:hz+34,seed:seed+1,dx:dxW,w});
-  const amp=k=>ht*(4.4+1.3*(rk(k)-.5)),
-    shape=(k,X,t)=>{const dr=t/1000*1.4*dxW;return .5*pk(X/40+rk(k+9)*3+dr/40)+.32*pk(X/15+rk(k+5)*3+dr*1.5/15)+.18*pk(X/6+rk(k+2)*3+dr*2/6)},
-    zOf=(k,t)=>Z0+(k-t/per)*DZ;
-  function ridge(g,k,t){const z=zOf(k,t);if(z<Z0*.4||z>Z0+N*DZ)return;const pts=[],sh=[];
-    for(let x=-6;x<=w+6;x+=2){const X=(x-cx)*z/F,q=shape(k,X,t);pts.push(x,hz+F*(E-amp(k)*(.55+.45*q))/z);sh.push(q)}
-    seaRidge(g,{pts,sh,z,fade:1-Math.exp(-Math.max(0,z-20)/150),sc:F/z/4,ox:t/1000*1.4*dxW*F/z*.8,k,thr:.5},{P,pal,t,dxW,seed})}
-  const ks=t=>{const s=t/per,out=[];for(let k=Math.floor(s+N);k>=Math.ceil(s-.6);k--)out.push(k);return out};
-  /* the surface at x where she lies: high under a crest that is passing her, low between */
-  function heightAt(x,t){const u=(ZS-Z0)/DZ+t/per,k=Math.floor(u),q=u-k,X=(x-cx)*ZS/F,c=v=>Math.exp(-v*v/.12);
-    return amp(k)*(.55+.45*shape(k,X,t))*c(q)+amp(k+1)*(.55+.45*shape(k+1,X,t))*c(1-q)-ht*1.4}
-  const ride=(t,xa,xb)=>{const ya=hz+F*(E-heightAt(xa,t))/ZS,yb=hz+F*(E-heightAt(xb,t))/ZS;return{ya,yb,y:(ya+yb)/2,a:Math.atan2(yb-ya,xb-xa)}};
+/* The great seas run toward us, a crest every DZ metres, one passing every o.period ms; the ship lies at ZS among them, so the seas
+   beyond her are drawn before her hull and those between her and us after it. Her waterline is the surface at ZS under her stern and
+   her bow. A sea between her and us may stand over the foot of her hull, never over more than a third of it (o.hullH, her height on the
+   screen from the waterline to the rail), so that she stays in sight. The nearest sea, at the foot of the picture, breaks. */
+function sideSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz==null?42:o.hz,F=o.F||300,E=o.eye||10,cx=w/2,ZS=o.zShip||60,DZ=o.spacing||50,Z0=10,
+    ht=o.height==null?1:o.height,per=o.period||6000,seed=o.seed||2215,dxW=o.dx==null?-1:o.dx,rk=k=>h2(k,3,seed),N=6,HH=o.hullH||24;
+  const SKY=sky({pal,h:hz+30,seed:seed+1,dx:dxW,w});
+  const amp=k=>ht*(9+2*(rk(k)-.5)),
+    shape=(k,X,t)=>{const dr=t/1000*1.5*dxW;return .62*pkb(X/56+rk(k+9)*3+dr/56)+.28*pk(X/20+rk(k+5)*3+dr*1.5/20)+.1*pk(X/8+rk(k+2)*3+dr*2/8)},
+    zOf=(k,t)=>Z0+(k-t/per)*DZ,H=(k,X,t)=>amp(k)*(.25+.75*shape(k,X,t));
+  /* the surface where she lies: high under a crest that is passing her, low between */
+  function heightAt(x,t){const u=(ZS-Z0)/DZ+t/per,k=Math.floor(u),q=u-k,X=(x-cx)*ZS/F,c=v=>Math.exp(-v*v/.06);
+    return (H(k,X,t)*c(q)+H(k+1,X,t)*c(1-q))*.5-ht}
+  const wl=(x,t)=>hz+F*(E-heightAt(x,t))/ZS;
+  let span=null;
+  function ridge(g,k,t){const z=zOf(k,t);if(z<Z0*.5||z>Z0+N*DZ)return;const pts=[],sh=[],bk=[],guard=z<=ZS&&span;
+    for(let x=-6;x<=w+6;x+=2){const X=(x-cx)*z/F,q=shape(k,X,t),h=H(k,X,t);let y=hz+F*(E-h)/z;
+      let m=0;if(guard){const[xa,xb]=span;m=smooth(xa-70,xa+20,x)*smooth(xb+70,xb-20,x);if(m>0)y=Math.max(y,y+(wl(clamp(x,xa,xb),t)-HH/3-y)*m)}
+      pts.push(x,y);sh.push(q);bk.push(clamp((E-h)/z*F*.5,0,14)*(1-m))}
+    const near=z<Z0+DZ*.6;
+    rank(g,{pts,sh,bk,z,fade:1-Math.exp(-Math.max(0,z-24)/170),sc:F/z/2.2,ox:t/1000*1.5*dxW*F/z,k,thr:near?.42:.68,brk:near?.5:0},{P,pal,t,dxW,seed})}
+  const ks=t=>{const s=t/per,out=[];for(let k=Math.floor(s+N);k>=Math.ceil(s-.5);k--)out.push(k);return out};
+  const ride=(t,xa,xb)=>{span=[Math.min(xa,xb),Math.max(xa,xb)];const ya=wl(xa,t),yb=wl(xb,t);return{ya,yb,y:(ya+yb)/2,a:Math.atan2(yb-ya,xb-xa)}};
   return{sky:SKY,
     far(g,t){SKY.draw(g,t);for(const k of ks(t))if(zOf(k,t)>ZS)ridge(g,k,t)},
     near(g,t){for(const k of ks(t))if(zOf(k,t)<=ZS)ridge(g,k,t)},
@@ -339,34 +380,36 @@ function sideSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz
       for(let x=xa;x<=xb;x+=1){const y=R0.ya+(R0.yb-R0.ya)*(x-xa)/(xb-xa),q=Math.sin(x/7+t/400)*.6+Math.sin(x/3.1-t/260)*.4;
         R(g,x,y-1.5+q*.5,1,3,cs(P.face,.95));R(g,x,y-1.6+q*.5,1,.5,cs(P.foam,clamp(.35+q*.5,0,1)))}
       /* white water thrown up at her bow as she drops into a sea */
-      const dip=(R0.yb-R0.ya)*Math.sign(xb-xa);if(dip>1){const u=fr(t/520);spray(g,xb,R0.yb-3,-dxW*10*Math.sign(xb-xa),-24,u,34,seed+((t/520)|0),P.foam,clamp((dip-1)/5,0,1),6)}},
+      const dip=(R0.yb-R0.ya)*Math.sign(xb-xa);if(dip>.5){const u=fr(t/520);spray(g,xb,R0.yb-3,-dxW*10*Math.sign(xb-xa),-26,u,40,seed+((t/520)|0),P.foam,clamp((dip-.5)/4,0,1),8)}},
     front(g,t){rain(g,t,{w,pal,density:o.rain==null?1:o.rain,seed:seed+3})}}}
 
 /* ---------- the bay at daybreak ---------- */
 /* We stand on the beach and look out over the bay. At the right the low hills of the shore come down to it and the beach curves round
    toward us; at the left the bay opens to the sea, which is lost in the rain (no horizon is drawn: the water fades into the haze, the color
-   of the sky's foot). Far out at the left the seas break on a bar, white on both sides of it. The rows of breakers lie along the beach as
-   its waterline does: a row d metres out lies at y = HZ + (edge(x) - HZ) / (1 + d / 25). They come in toward us, rise, break, and run
-   through the shallows as white water, up the sand and back. On the beat a greater sea does the same, and its white water fills the
-   shallows from side to side. */
-function bay(o){o=o||{};const w=o.w||320,P=PAL.dawn,HZ=60,seed=o.seed||2301,CO=SHARED.country,SKY=sky({pal:'dawn',h:70,seed:seed+1,dx:-1,w,speed:4}),D=25;
+   of the sky's foot). Far out at the left the seas break on the bar (27:41), a line of white in open water. After fourteen days of storm
+   the surf is heavy: ranks of thick breakers lie along the beach as its waterline does (a rank d metres out lies at
+   y = HZ + (edge(x) - HZ) / (1 + d / 25)), pale green behind their white; they rise, curl, break and tumble in toward us, foam lies in the
+   shallows, the wash runs up the sand and back over a wide wet sheen, and spray goes up where the seas meet the point. On the beat a greater
+   sea does the same, and its white water fills the shallows from side to side. */
+function bay(o){o=o||{};const w=o.w||320,P=PAL.dawn,HZ=60,seed=o.seed||2301,CO=SHARED.country,SKY=sky({pal:'dawn',h:70,seed:seed+1,dx:-1,w,speed:3}),D=25;
   const edge=x=>121+2.4*Math.sin(x/41+1)+1.2*Math.sin(x/13)-37*Math.pow(smooth(170,326,x),1.15),
     far=x=>x<150?HZ:HZ+2+(x-150)*.13,
     yAt=(x,d)=>HZ+(edge(x)-HZ)/(1+d/D),
     hills=x=>{const u=clamp((x-128)/40,0,1);return far(x)-u*(15+8*Math.sin(x/47+.6)+4*Math.sin(x/19+2)+1.4*Math.sin(x/7.3))-2*u},
-    water=new Path2D();
+    water=new Path2D(),BARY=x=>HZ+6.5+x*.018;
   water.moveTo(-6,HZ-1);for(let x=-6;x<=w+6;x+=2)water.lineTo(x,far(x)-.5);for(let x=w+6;x>=-6;x-=2)water.lineTo(x,edge(x)+.5);water.closePath();
   let LAND=null;
   /* everything below the cloud, baked once with the sky left out */
   function land(){if(LAND)return LAND;const[c,q]=mk(w*HR,144*HR);q.scale(HR,HR);const r=rng(seed+5);
-    /* the sea far out: the color of the haze where it meets the sky, darker toward us */
-    q.fillStyle=lg(q,0,HZ-1,0,124,[P.haze,mix(P.water,P.haze,.55),P.water,P.face]);q.fill(water);
-    clipTo(q,()=>q.clip(water),()=>{q.fillStyle=lg(q,0,0,w,0,['rgba(26,38,36,.25)','rgba(26,38,36,0)','rgba(150,140,110,.2)']);q.fillRect(-6,HZ,w+12,70);
-      tex(q,'mott',.25,-6,HZ,w+12,70,'overlay',1);
-      for(let i=0;i<380;i++){const x=r()*w,d=Math.pow(r(),1.3)*220,y=yAt(x,d),s=(y-HZ)/40;if(y>edge(x)-1)continue;R(q,x,y,(2+r()*9)*s+.5,.5,cs(P.foamS,(.12+.25*r())*clamp(s*2,0,1)))}
-      });
+    /* the sea: the color of the haze far out, darker green toward us, paler in the shallows over sand */
+    q.fillStyle=lg(q,0,HZ-1,0,124,[P.haze,mix(P.water,P.haze,.5),P.water,mix(P.water,P.glass,.35)]);q.fill(water);
+    clipTo(q,()=>q.clip(water),()=>{q.fillStyle=lg(q,0,0,w,0,['rgba(22,34,30,.3)','rgba(22,34,30,0)','rgba(150,140,110,.18)']);q.fillRect(-6,HZ,w+12,70);
+      /* darker water on both sides of the bar */
+      for(let x=-6;x<120;x+=1){const y=BARY(x),k=smooth(-6,20,x)*smooth(124,96,x);R(q,x,y-2.5,1,2,cs(P.deep,.35*k));R(q,x,y+1,1,2.5,cs(P.deep,.3*k))}
+      /* foam lying on the water, thickest in the shallows: long level strands, broken */
+      for(let i=0;i<900;i++){const x=r()*w,d=Math.pow(r(),2.2)*200,y=yAt(x,d),s=clamp((y-HZ)/40,.1,2);if(y>edge(x)-.5)continue;streak(q,x,y,(3+r()*14)*s,r()<.5?P.foamS:P.foam,(.25+.4*r())*clamp(s*1.5,0,1),r)}});
     /* a far point of land at the left, in the rain */
-    const FP=[-6,HZ];for(let x=-6;x<=34;x+=1)FP.push(x,HZ-3.5*smooth(34,0,x)-.8*Math.sin(x/3));FP.push(34,HZ);poly(q,FP,cs(mix(P.land,P.haze,.75),1));
+    const FP=[-6,HZ];for(let x=-6;x<=34;x+=1)FP.push(x,HZ-3.5*smooth(34,0,x)-.8*Math.sin(x/3));FP.push(34,HZ);poly(q,FP,cs(mix(P.land,P.haze,.72),1));
     /* the hills of the shore: low, rounded, scrub and trees on them, grey in the rain */
     const HP=[120,far(120)+.5];for(let x=120;x<=w+6;x+=1)HP.push(x,hills(x));HP.push(w+6,far(w+6)+1);
     poly(q,HP);q.fillStyle=lg(q,0,HZ-24,0,HZ+24,['#5c6454','#4a5244']);q.fill();
@@ -378,52 +421,70 @@ function bay(o){o=o||{};const w=o.w||320,P=PAL.dawn,HZ=60,seed=o.seed||2301,CO=S
     poly(q,HP);q.fillStyle=lg(q,0,HZ-24,0,HZ+24,[cs(P.haze,.6),cs(P.haze,.4)]);q.fill();
     /* the far beach at the hills' foot, a pale line that widens toward us */
     for(let x=128;x<=w+6;x+=1){const y=far(x),bw=.6+(x-128)*.022;R(q,x,y-bw,1,bw+.5,cs(mix(P.sand,P.haze,.5),1))}
-    /* the beach we stand on: wet sand along the water with the grey sky lying in it, then the dry sand, darkened by the rain */
+    /* the beach we stand on: a wide wet sheen along the water where the wash runs back, with the grey sky lying in it, then the sand,
+       darkened by the rain */
     const BP=[-6,152];for(let x=-6;x<=w+6;x+=1)BP.push(x,edge(x));BP.push(w+6,far(w+6),w+6,152);
-    poly(q,BP);q.fillStyle=lg(q,0,95,0,150,[mix(P.sand,P.wet,.4),mix(P.sand,P.wet,.3),P.sand]);q.fill();
+    poly(q,BP);q.fillStyle=lg(q,0,95,0,150,[mix(P.sand,P.wet,.45),mix(P.sand,P.wet,.3),P.sand]);q.fill();
     clipTo(q,()=>poly(q,BP),()=>{tex(q,'mott',.35,-6,80,w+12,72,'overlay',1);tex(q,'grain',.2,-6,80,w+12,72,'overlay',.5);
-      for(let x=-6;x<w+6;x+=.5){const e=edge(x),s=clamp((e-HZ)/40,.3,1.6),wb=(4+s*9)*(.7+.5*fbm(x/11,0,seed,2));q.fillStyle=lg(q,0,e,0,e+wb,[cs(P.wet,.8),cs(P.wet,.5),cs(P.wet,0)]);q.fillRect(x,e,.5,wb)}
-      for(let i=0;i<90;i++){const x=r()*w,e=edge(x),s=clamp((e-HZ)/40,.3,1.6),y=e+1+r()*s*7;R(q,x,y,(3+r()*10)*s,.5,cs(P.haze,.3+r()*.2))}
-      /* ripples the backwash left, long and low, and strands of weed along the line of the last high wash */
-      for(let i=0;i<160;i++){const x=r()*w,e=edge(x),y=e+6+Math.pow(r(),.8)*(150-e-6),s=clamp((y-HZ)/50,.3,1.8);R(q,x,y,(2+r()*7)*s,.5,cs(r()<.5?'#4a4438':'#d8ccb0',.12+.1*r()))}
-      for(let i=0;i<40;i++){const x=r()*w,e=edge(x),s=clamp((e-HZ)/40,.3,1.6),y=e+(9+r()*5)*s;R(q,x,y,(1+r()*3)*s,.5,'rgba(52,58,40,.6)')}});
+      for(let x=-6;x<w+6;x+=.5){const e=edge(x),s=clamp((e-HZ)/40,.3,1.6),wb=(9+s*15)*(.75+.4*fbm(x/13,0,seed,2));
+        q.fillStyle=lg(q,0,e,0,e+wb,[cs(P.wet,.85),cs(P.wet,.6),cs(P.wet,0)]);q.fillRect(x,e,.5,wb);
+        q.fillStyle=lg(q,0,e,0,e+wb*.8,[cs(P.haze,.45),cs(P.haze,.18),cs(P.haze,0)]);q.fillRect(x,e,.5,wb*.8)}
+      for(let i=0;i<150;i++){const x=r()*w,e=edge(x),s=clamp((e-HZ)/40,.3,1.6),y=e+1+r()*s*14;R(q,x,y,(3+r()*12)*s,.5,cs(r()<.6?P.haze:'#ffffff',.2+r()*.25))}
+      /* ripples the backwash left, long and low, and strands of weed along the line of the highest wash */
+      for(let i=0;i<160;i++){const x=r()*w,e=edge(x),y=e+10+Math.pow(r(),.8)*(150-e-10),s=clamp((y-HZ)/50,.3,1.8);R(q,x,y,(2+r()*7)*s,.5,cs(r()<.5?'#4a4438':'#d8ccb0',.12+.1*r()))}
+      for(let i=0;i<40;i++){const x=r()*w,e=edge(x),s=clamp((e-HZ)/40,.3,1.6),y=e+(18+r()*6)*s;R(q,x,y,(1+r()*3)*s,.5,'rgba(52,58,40,.6)')}});
     finishA(c,q,12);return LAND=c}
-  /* one row at d metres out, of size a: unbroken, a dark face under a pale lip; breaking (br 0..1), white comes down its face; broken,
-     a band of white water rolling in, its front ragged, foam trailing behind it */
-  function row(g,d,a,br,t,id){const pts=[];for(let x=-6;x<=w+6;x+=2)pts.push(x,yAt(x,d));
-    const hb=x=>{const s=clamp((yAt(x,d)-HZ)/40,.1,2);return(.6+3.2*s)*a*(.75+.25*Math.sin(x/17+id)+.1*Math.sin(x/6.3+id*2))};
-    const face=[];for(let i=0;i<pts.length;i+=2)face.push(pts[i],pts[i+1]);for(let i=pts.length-2;i>=0;i-=2)face.push(pts[i],pts[i+1]+hb(pts[i]));
-    poly(g,face,cs(P.face,.85*Math.pow(1-br,2)));
-    g.beginPath();for(let i=0;i<pts.length;i+=2)g[i?'lineTo':'moveTo'](pts[i],pts[i+1]+.3);g.strokeStyle=cs(P.crest,.8*(1-br*.4));g.lineWidth=.6;g.stroke();
-    g.beginPath();for(let i=0;i<pts.length;i+=2)g[i?'lineTo':'moveTo'](pts[i],pts[i+1]+1.1);g.strokeStyle=cs(P.glass,.6*(1-br*.5));g.lineWidth=.7;g.stroke();
-    if(br>0){const wf=[];for(let i=0;i<pts.length;i+=2){const x=pts[i];wf.push(x,pts[i+1]-.4-br*hb(x)*.25)}
-      for(let i=pts.length-2;i>=0;i-=2){const x=pts[i],j=Math.sin(x/5.1+id+t/300)*.6+Math.sin(x/2.3+id*3)*.4;wf.push(x,pts[i+1]+hb(x)*(.3+.9*br)+j*br*hb(x)*.25)}
-      poly(g,wf,cs(P.foam,.95*Math.min(1,br*2)));
-      if(br>.5&&a>1)foamFill(g,wf,'dawn',t/1000*-3,-d*1.5,.85*Math.min(1,(br-.5)*3)*Math.min(1,a-.6));
-      /* the shade in the white, low down, and the foam trailing behind it, toward the sea */
-      for(let i=0;i<pts.length;i+=2){const x=pts[i];R(g,x,pts[i+1]+hb(x)*(.3+.9*br)-.6,2,.5,cs(P.foamS,.7*br))}
-      const r=rng(id*131+7);for(let i=0;i<140;i++){const x=r()*w,dd=d+r()*22*br,y=yAt(x,dd),s=clamp((y-HZ)/40,.1,2);R(g,x,y-.5,(2+r()*8)*s,.5,cs(P.foam,(.25+.5*r())*br*Math.min(1,a)))}}}
-  /* the wash on the sand: a thin sheet of water running up by u (0..1) and back, its edge a lace of foam */
-  function wash(g,u,a,id){for(let x=-6;x<=w+6;x+=2){const e=edge(x),s=clamp((e-HZ)/40,.3,1.6),up=u*(3+7*s)*(.75+.15*Math.sin(x/13+id)+.1*Math.sin(x/4.7+id*2));if(up<.3)continue;
-    R(g,x,e,2,up,cs(P.glass,.3*a));if(h2(x|0,id,7)<.75)R(g,x,e+up-.5,2,.5,cs(P.foam,.85*a));if(h2(x|0,id,9)<.3)R(g,x+.5,e+up*.6,1.5,.5,cs(P.foam,.4*a))}}
+  /* one rank of surf at d metres out, of size a: unbroken, a pale green face under a glassy lip; breaking (br 0..1), its lip curls over
+     and spray goes up from it; broken, a thick band of tumbling white, brightest on top, its front ragged, foam trailing behind it */
+  function breaker(g,d,a,br,t,id){const pts=[];for(let x=-6;x<=w+6;x+=2)pts.push(x,yAt(x,d));const n=pts.length/2,r=rng(id*131+7);
+    const S=x=>clamp((yAt(x,d)-HZ)/40,.08,2.2),hb=(x,i)=>(1+5.5*S(x))*a*(.9+.08*Math.sin(x/17+id)+.05*Math.sin(x/6.3+id*2)),hd=x=>{const u=fr(x/(9+5*S(x))+id*.37)*2-1;return Math.sqrt(Math.max(0,1-u*u))};
+    /* the face, pale green where the light comes through it, darker at its foot */
+    const face=[];for(let i=0;i<n;i++)face.push(pts[2*i],pts[2*i+1]-br*hb(pts[2*i])*.3);for(let i=n-1;i>=0;i--)face.push(pts[2*i],pts[2*i+1]+hb(pts[2*i])*(1-br*.5));
+    poly(g,face,cs(P.glass,.85*(1-br*.55)));
+    for(const[dd,c,al]of[[.75,P.water,.5],[.95,P.face,.45]]){g.beginPath();for(let i=0;i<n;i++)g[i?'lineTo':'moveTo'](pts[2*i],pts[2*i+1]+hb(pts[2*i])*dd*(1-br*.5));g.strokeStyle=cs(c,al*(1-br*.5));g.lineWidth=Math.max(.5,a*.8);g.stroke()}
+    g.beginPath();for(let i=0;i<n;i++)g[i?'lineTo':'moveTo'](pts[2*i],pts[2*i+1]-br*hb(pts[2*i])*.3+.3);g.strokeStyle=cs(P.crest,.85);g.lineWidth=.6;g.stroke();
+    if(br>0){const wf=[],lo=[];for(let i=0;i<n;i++){const x=pts[2*i];wf.push(x,pts[2*i+1]-.4-br*hb(x)*.45-br*hd(x)*S(x)*1.6)}
+      for(let i=n-1;i>=0;i--){const x=pts[2*i],j=.6*Math.sin(x/5.1+id+t/300)+.4*Math.sin(x/2.3+id*3);const y=pts[2*i+1]+hb(x)*(.25+.85*br)+j*br*S(x)*1.2;wf.push(x,y);lo.push(x,y)}
+      poly(g,wf);let mn=1e9;for(let i=1;i<wf.length;i+=2)mn=Math.min(mn,wf[i]);
+      const op=Math.min(1,br*2);g.fillStyle=cs(P.foam,.96*op);g.fill();
+      /* the white is brightest on top, greyer and greener low down where it tumbles */
+      {const c=strip('dawnwhite',[[0,cs('#ffffff',.5)],[.5,cs(P.foamS,0)],[1,cs(P.foamS,.55)]]);g.globalAlpha=op;clipTo(g,()=>poly(g,wf),()=>{
+        for(let i=0;i<n-1;i+=2){const y0=Math.min(wf[2*i+1],wf[2*i+3]),y1=Math.max(wf[wf.length-1-2*i],wf[wf.length-3-2*i]);if(y1-y0>=1)g.drawImage(c,pts[2*i],y0,4.05,y1-y0)}});g.globalAlpha=1}
+      clipTo(g,()=>poly(g,wf),()=>{/* tumbling: thin level streaks of shade and of the green showing through, more low down */
+        for(let i=0;i<Math.round(60+90*a);i++){const x=r()*(w+8)-4,y0=yAt(x,d),h=hb(x),y=y0-br*h*.4+r()*h*(.7+.85*br),c=r()<.3?P.glass:P.foamS;R(g,x+((t/60)%4)*dxs,y,(1.5+r()*7)*S(x),.5,cs(c,(.25+.35*r())*op*(.4+.6*(y-y0+h*.4)/(h*1.4))))}});
+      /* the bright top and the shade along the front */
+      g.beginPath();for(let i=0;i<n;i++)g[i?'lineTo':'moveTo'](wf[2*i],wf[2*i+1]+.2);g.strokeStyle=cs('#ffffff',.8*op);g.lineWidth=.5;g.stroke();
+      for(let i=0;i<lo.length;i+=2)R(g,lo[i],lo[i+1]-.6,2,.5,cs(P.foamS,.8*op));
+      /* spray thrown up as it curls over, blown down the wind */
+      if(br>.1&&a>.6){const u=fr(t/650+id*.37);for(let j=0;j<9;j++){const x=r()*w,y=yAt(x,d)-hb(x)*.6;if(y<edge(x)-1)spray(g,x,y,-14*S(x),-7*S(x),fr(u+j*.13),Math.round(12*a),id*19+j,P.foam,.8*Math.sin(Math.PI*Math.min(1,br*1.2)),8*S(x))}}
+      /* foam trailing behind it, toward the sea */
+      for(let i=0;i<Math.round(90*a);i++){const x=r()*w,dd=d+r()*26*br,y=yAt(x,dd),s=S(x);if(y<edge(x)||y>150){r();continue}streak(g,x,y-.5,(3+r()*12)*s,r()<.5?P.foam:P.foamS,(.25+.45*r())*br*Math.min(1,a),r)}}}
+  const dxs=-.5;
+  /* the wash on the sand: a sheet of water running up by u (0..1) and back, its edge a lace of foam, a glassy film behind it */
+  function wash(g,u,a,id){for(let x=-6;x<=w+6;x+=2){const e=edge(x),s=clamp((e-HZ)/40,.3,1.6),up=u*(5+12*s)*(.75+.15*Math.sin(x/13+id)+.1*Math.sin(x/4.7+id*2));if(up<.3)continue;
+    R(g,x,e,2,up,cs(P.glass,.32*a));R(g,x,e,2,up*.6,cs(P.haze,.18*a));if(h2(x|0,id,7)<.8)R(g,x,e+up-.5,2,.5,cs(P.foam,.9*a));if(h2(x|0,id,9)<.35)R(g,x+.5,e+up*.55,1.5,.5,cs(P.foam,.45*a))}}
+  /* the bar far out where the seas break on both sides of it: a line of white water in open water, its foam coming and going */
+  const BAR=o.shoal===false?null:(()=>{const r=rng(seed+9),a=[];for(let i=0;i<300;i++){const x=2+r()*112,k=smooth(0,16,x)*smooth(114,88,x);if(r()>k)continue;
+    a.push([x,BARY(x)+(r()-.5)*1.4*k,.8+r()*3.4,r()*6.28,.55+.45*r()])}return a})();
+  function bar(g,t){for(const[x,y,l,ph,a]of BAR){const q=.55+.45*Math.sin(t/800+ph);R(g,x,y,l,.5,cs(P.foam,a*q))}
+    for(let j=0;j<4;j++){const u=fr(t/1700+j*.27),x=12+j*26+((t/1700+j*.27)|0)%3*5;spray(g,x,BARY(x)-.5,-8,-4,u,10,j*7+((t/1700+j*.27)|0),P.foam,.7,5)}}
+  /* spray where the seas meet the point at the left */
+  function point(g,t){for(let j=0;j<2;j++){const u=fr(t/2300+j*.5),x=24+j*7;spray(g,x,HZ-.5,-6,-7,u,14,j*11+((t/2300+j*.5)|0),P.foam,.65,6)}}
   /* the beat's sea: where it is (d) and how far it has broken, by phase */
   const setD=f=>f<.3?Infinity:f<.5?180-(f-.3)/.2*110:f<.58?70-(f-.5)/.08*30:f<.66?40-(f-.58)/.08*18:f<.82?22-(f-.66)/.16*22:0,
-    setBr=f=>smooth(.56,.64,f),setA=f=>1+smooth(.3,.56,f)*2,
+    setBr=f=>smooth(.56,.64,f),setA=f=>1.1+smooth(.3,.56,f)*1.6,
     wetAt=(x,y,b)=>{const f=fr(b||0);if(f<.62||f>.92)return false;const d=setD(f),front=f<.82?yAt(x,d)+3:edge(x)+(f<.88?8:4);return y<=front&&y>=yAt(x,d+16)};
   function draw(g,t,b){b=b||0;const f=fr(b);SKY.draw(g,t);g.drawImage(land(),0,0,w,144);
-    g.save();g.clip(water);
-    /* the rows that keep coming between the sets, smaller; drawn far to near */
-    const rows=[];for(let j=0;j<4;j++){const u=fr(t/7200+j/4),d=180*Math.pow(1-u,1.6);rows.push([d,.42+.12*(j%3),smooth(.45,.6,u)*(1-smooth(.96,1,u)),j+1])}
+    g.save();g.clip(water);point(g,t);
+    /* the ranks that keep coming between the sets, drawn far to near */
+    /* (they spend themselves before they reach the near shallows, so that the way through the water is plainly clear between sets) */
+    const rows=[];for(let j=0;j<4;j++){const u=fr(t/7600+j/4),d=16+160*Math.pow(1-u,1.5),fade=smooth(16,34,d);if(fade<=0)continue;rows.push([d,(1.1+.3*((j*5)%3)/2)*(.35+.65*fade),smooth(.3,.5,u)*fade,j+1])}
     const d0=setD(f);if(isFinite(d0)&&f<.84)rows.push([d0,setA(f),setBr(f),90+(b|0)%7]);
-    rows.sort((p,q)=>q[0]-p[0]);for(const[d,a,br,id]of rows)if(d>=60)row(g,d,a,br,t,id);if(BAR)bar(g,t);for(const[d,a,br,id]of rows)if(d<60)row(g,d,a,br,t,id);
+    rows.sort((p,q)=>q[0]-p[0]);for(const[d,a,br,id]of rows)if(d>=70)breaker(g,d,a,br,t,id);if(BAR)bar(g,t);for(const[d,a,br,id]of rows)if(d<70)breaker(g,d,a,br,t,id);
     g.restore();
-    for(let j=0;j<2;j++){const u=fr(t/3600+j*.5);wash(g,Math.sin(Math.PI*u)*.6,.6,j)}
-    if(f>.8){const u=clamp((f-.8)/.18,0,1);wash(g,Math.sin(Math.PI*u)*1.7,1,9)}}
-  /* the bar far out at the left where the seas break, white along it, with open water on both sides; its foam comes and goes */
-  const BAR=o.shoal===false?null:(()=>{const r=rng(seed+9),a=[];for(let i=0;i<240;i++){const x=4+r()*104,k=smooth(0,20,x)*smooth(108,80,x);if(r()>k)continue;
-    a.push([x,HZ+7+x*.02+(r()-.5)*1.8*k,.5+r()*3,r()*6.28,.45+.5*r()])}return a})();
-  function bar(g,t){for(const[x,y,l,ph,a]of BAR){const q=.55+.45*Math.sin(t/900+ph);R(g,x,y,l,.5,cs(P.foam,a*q))}}
-  function front(g,t,b){rain(g,t,{w,pal:'dawn',density:o.rain==null?.8:o.rain,splash:[104,142],seed:seed+3,slant:-.7})}
+    for(let j=0;j<2;j++){const u=fr(t/3800+j*.5);wash(g,Math.sin(Math.PI*u)*.7,.7,j)}
+    if(f>.8){const u=clamp((f-.8)/.18,0,1);wash(g,Math.sin(Math.PI*u)*1.6,1,9)}}
+  function front(g,t,b){rain(g,t,{w,pal:'dawn',density:o.rain==null?.85:o.rain,splash:[104,142],seed:seed+3,slant:-.75})}
   function paint(g){const T=skyTiles('dawn',70,seed+1);g.drawImage(T.deck,0,0,w,70);g.drawImage(T.scud,0,0,w,70);g.drawImage(land(),0,0,w,144)}
   return{paint,draw,front,edge,wetAt,yAt,setD}}
 
