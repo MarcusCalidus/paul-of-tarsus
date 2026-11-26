@@ -137,11 +137,12 @@ body{display:flex;align-items:center;justify-content:center}
    the upper part of the picture has not moved. A menu or the code box opened over the title covers all of it. */
 #wrap.title #view{height:calc(var(--s)*210px)}
 #wrap.title #status,#wrap.title #panel{display:none}
-/* with that height the title holds its prologue, sixteen chapters and the line of the planned ones without scrolling (the lines stand
-   a little closer than they did for fifteen); the list still scrolls when there are more lines than room, as it does when the planned
-   chapters are opened */
+/* with that height the title holds its prologue, twenty-one chapters and the line of the planned ones without scrolling (the lines stand
+   a little closer and smaller than they did for nineteen, and the small lines above and below the list a little closer to it); the list
+   still scrolls when there are more lines than room, as it does when the planned chapters are opened */
 #overlay.title{padding-top:calc(var(--s)*5px);padding-bottom:calc(var(--s)*5px)}
-#overlay.title .chs p{margin:0 auto;font-size:calc(var(--s)*5.6px);line-height:1.1}
+#overlay.title .chs p{margin:0 auto;font-size:calc(var(--s)*5.4px);line-height:1}
+#overlay.title>p.small{margin:calc(var(--s)*1px) 0}
 /* splash: the opening picture (shared/splash.js). The title is laid out as it always is, so that its name does not move when the chapters
    appear, but only the name and the line under it are seen; the rest comes in when the splash is left. begin: the one line that asks for a click,
    seen until the overture starts. */
