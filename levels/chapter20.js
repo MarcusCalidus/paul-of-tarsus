@@ -247,32 +247,96 @@ function chair20(g,x0,x1,T,FL){M20.shadow(g,(x0+x1)/2,FL+.2,10,1,.45);
 /* ==== ART hall20: end ==== */
 
 /* ==== ART charges20: begin ==== */
-/* ART-TODO. Paul's wax tablet, close, on his knee or in his hand (the close-view standard of Chapters Thirteen and Fourteen: fine-grained
-   wood, the wax dark and smoothed, the letters pale where the stylus went, with the shade of the groove under them). One leaf of boxwood
-   round a bed of dark wax; on it the three charges as Paul wrote them while Tertullus spoke (CHARGES20, each in its box, LB20), and beside
-   each, in its own box (MB20), the mark Paul sets: the words of the mark, scratched as the charges are. No ruled line, no line that meets a
-   margin, nothing that crosses. The words are translated as they are drawn and made to fit their boxes (G.caps20, checked by the playtest).
+/* Paul's wax tablet, close, as he holds it in the court by morning (the close-view standard of Chapters Thirteen, Fourteen and Nineteen).
+   It lies in his left hand, which holds it by its lower left corner: the side of the hand shows outside it, and the thumb lies up along
+   the left side of the frame, its nail toward us (thumb20); behind it, out of focus, the brown wool of his mantle, its soft folds running one way.
+   The tablet is one leaf of boxwood, its grain running the long way, quiet, round a bed of dark wax; the frame a little higher than the
+   wax, so that its upper and left inner sides throw a thin shade onto it; two small square holes in its left side, where it is bound to
+   its other leaf. His stylus of bronze lies along the top of the frame, not across anything. On the wax the three charges as he wrote them
+   while Tertullus spoke (CHARGES20, each in its box, LB20), the letters pale where the stylus went, with the shade of the groove under
+   them; beside each, in its own box (MB20), the mark he sets, scratched the same way a little fresher: a sign, and the words of the mark.
+   The three signs (SIGN20) are told apart at a glance and none is a letter: not proved, a short slanting stroke; the witnesses aren't
+   here, a small hollow diamond; I admit it, a small hollow square. No ruled line, no line that meets a margin, nothing that crosses.
+   The words are translated as they are drawn and made to fit their boxes (G.caps20, checked by the playtest).
    Called from outside: ART.charges20, LB20, MB20. Reads G.mk20.
-   Hotspots: each charge with its mark, 30,18+34i,264,30 · back to the court 0,134,120,10. Walk: none (a close view). */
+   Hotspots: each charge with its mark, 30,20+34i,264,30 · back to the court 0,134,120,10. Walk: none (a close view). */
 const LB20=[0,1,2].map(i=>[40,22+i*34,150,26]),MB20=[0,1,2].map(i=>[204,22+i*34,84,26]);
+const SIGN20={mark_not_proved:'slant',mark_the_witnesses_arent_here:'diamond',mark_i_admit_it:'square'};
 ART.charges20={w:320,q:12,paint(g){paintCharges20(g)},light:null,draw(g){drawCharges20(g)},front(){}};
-function paintCharges20(g){const r=rng(2031),q=rng(2032);
-  M20.plank(g,0,0,320,144,'#5e3e24',r,0);tex(g,'mott',.14,0,0,320,144,'overlay',.9);
-  for(const[d,a]of[[5,.08],[3,.13],[1.6,.2]]){g.fillStyle=`rgba(16,8,4,${a})`;g.fillRect(24-d+2.6,12-d+2.6,272+d*2,116+d*2)}
-  const x=24,y=12,w=272,h=116,b=5,W='#b08c5c';R(g,x,y,w,h,W);
-  inRect(g,x,y,w,h,()=>{for(let yy=y-2;yy<y+h+2;yy+=.6+q()*1.1)R(g,x,yy,w,.5,q()<.55?rgba(tint(W,-.3),.15):rgba(tint(W,.22),.12));tex(g,'mott',.2,x,y,w,h,'overlay',.8)});
-  R(g,x,y,w,.6,tint(W,.32));R(g,x,y+h-.6,w,.6,tint(W,-.2));
-  g.fillStyle=lg(g,x+b,y+b,x+w-b,y+h-b,['#2e2014','#38281a','#2a1c12']);g.fillRect(x+b,y+b,w-2*b,h-2*b);
-  inRect(g,x+b,y+b,w-2*b,h-2*b,()=>{tex(g,'mott',.22,x+b,y+b,w-2*b,h-2*b,'overlay',1);R(g,x+b,y+b,w-2*b,1,'rgba(10,6,4,.55)')})}
+const TAB20={x:24,y:12,w:272,h:116,b:5,W:'#b8945e'};
+function paintCharges20(g){const r=rng(2031),q=rng(2032),{x,y,w,h}=TAB20;
+  wool20(g,r);
+  /* the soft shadow of the tablet on the wool, falling a little to the right and down, away from the morning light */
+  for(const[d,a]of[[7,.08],[4.4,.13],[2.4,.2],[1,.24]]){g.fillStyle=`rgba(18,8,4,${a})`;g.fillRect(x-d+3.4,y-d+3.8,w+d*2,h+d*2)}
+  tablet20(g,q);stylus20(g);thumb20(g);
+  /* the light of the morning from the upper left: warm on the near side, falling off to the right and down */
+  comp(g,'soft-light',.32,()=>{g.fillStyle=lg(g,0,0,320,144,['rgba(255,222,176,1)','rgba(255,222,176,.25)','rgba(150,140,186,.6)']);g.fillRect(0,0,320,144)});
+  comp(g,'multiply',.22,()=>{g.fillStyle=rg(g,110,50,300,['#ffffff','#f2e8e0','#9c94b2']);g.fillRect(0,0,320,144)})}
+/* the mantle behind the tablet: brown wool out of focus, broad soft folds running from the upper left down to the lower right, each a
+   lit ridge beside a shaded hollow; no crease meets another */
+function wool20(g,r){const C='#5e4029',k=.62;g.fillStyle=lg(g,0,0,320,144,[tint(C,.12),C,tint(C,-.16)]);g.fillRect(0,0,320,144);
+  for(let i=0;i<7;i++){const x0=-110+i*66+r()*16,wd=30+r()*16,ux=1/Math.hypot(1,k),uy=-k*ux;
+    poly(g,[x0,0,x0+wd,0,x0+wd+144*k,144,x0+144*k,144]);
+    g.fillStyle=lg(g,x0,0,x0+wd*ux*ux,wd*ux*uy,['rgba(30,18,10,0)','rgba(30,18,10,.2)','rgba(170,130,92,.14)','rgba(30,18,10,0)']);g.fill()}
+  tex(g,'mott',.24,0,0,320,144,'overlay',.6)}
+/* the tablet: a leaf of boxwood, its grain running the long way in fine waves that never cross; the bed of wax dark and smoothed, written
+   over many times; the frame's inner sides shade the wax at the top and the left and catch the light at the bottom and the right */
+function tablet20(g,q){const{x,y,w,h,b,W}=TAB20,wx=x+b,wy=y+b,ww=w-2*b,wh=h-2*b;
+  R(g,x,y,w,h,W);
+  inRect(g,x,y,w,h,()=>{for(let yy=y-2;yy<y+h+2;yy+=.6+q()*1.1){const col=q()<.55?rgba(tint(W,-.3),.1+q()*.14):rgba(tint(W,.22),.08+q()*.14),p=[],f=.03+q()*.02,ph=q()*6;
+      for(let xx=x-1;xx<=x+w+2;xx+=2)p.push(xx,yy+.6*Math.sin(xx*f+ph));stroke(g,p,col,.5)}
+    tex(g,'mott',.18,x,y,w,h,'overlay',.8);pool(g,x+40,y+20,70,24,'#fff4dc',.08,'screen')});
+  R(g,x,y,w,.6,tint(W,.34));R(g,x,y,.6,h,tint(W,.22));R(g,x+w-.6,y,.6,h,tint(W,-.28));R(g,x,y+h-.6,w,.6,tint(W,-.22));
+  g.fillStyle=lg(g,wx,wy,wx+ww,wy+wh,['#30221a','#3a2a1c','#2a1c12']);g.fillRect(wx,wy,ww,wh);
+  inRect(g,wx,wy,ww,wh,()=>{tex(g,'mott',.22,wx,wy,ww,wh,'overlay',1);pool(g,wx+ww*.28,wy+wh*.3,ww*.42,wh*.3,'#f0e0c8',.06,'screen');
+    /* faint pale traces of earlier writing, smoothed out: short, scattered, never in rows */
+    for(let i=0;i<70;i++){const xx=wx+6+q()*(ww-20),yy=wy+4+q()*(wh-8);R(g,xx,yy,2+q()*8,.5,'rgba(206,176,126,.045)')}
+    R(g,wx,wy,ww,1.2,'rgba(10,6,4,.55)');R(g,wx,wy,1.2,wh,'rgba(10,6,4,.5)');R(g,wx,wy+1.2,ww,.6,'rgba(10,6,4,.2)');
+    R(g,wx+ww-.5,wy,.5,wh,'rgba(160,128,86,.25)');R(g,wx,wy+wh-.5,ww,.5,'rgba(160,128,86,.22)')});
+  for(const hy of[y+26,y+58]){R(g,x+1.5,hy-.75,1.5,1.5,'#140c06');R(g,x+1.5,hy-.75,1.5,.5,tint(W,-.5))}}
+/* the stylus: a bronze rod lying along the top of the frame, its point to the right, the flat end for smoothing the wax to the left, lit
+   along its upper side, its shadow on the frame just under it */
+function stylus20(g){const x0=168,x1=284,yc=14.6;
+  R(g,x0+1,yc+1.2,x1-x0-2,1,'rgba(40,20,8,.32)');R(g,x0-1,yc+1.6,8,1,'rgba(40,20,8,.28)');
+  poly(g,[x0+6,yc-.8,x1-7,yc-.6,x1,yc,x1-7,yc+.7,x0+6,yc+.8]);g.fillStyle=lg(g,0,yc-.8,0,yc+.8,['#e6b878','#a87434','#6a4420']);g.fill();
+  poly(g,[x0-1,yc-1.4,x0+5,yc-1.2,x0+6.4,yc-.8,x0+6.4,yc+.8,x0+5,yc+1.2,x0-1,yc+1.4]);g.fillStyle=lg(g,0,yc-1.4,0,yc+1.4,['#ecc084','#b07c3a','#704822']);g.fill();
+  R(g,x0+8,yc-.6,x1-x0-18,.4,'rgba(255,232,186,.5)')}
+/* the hand: he holds the tablet in his left hand by its lower left corner, the palm and fingers under it. The side of the hand is seen
+   outside the tablet, at its left and under its lower edge; the thumb comes up from it and lies along the left side of the frame, on it
+   and parallel to it, pointing up and at none of the charges; seen from above, round across, lit on its left side, the nail toward us,
+   and two soft folds of its joint */
+const HAND20=[-4,92,6,93.4,15,97,21,102,24,107,24,128,38,128,40,132,36,138,26,142,10,144,-4,144],
+  THUMB20=[22.4,131,21.6,112,21.4,100,21.8,92,22.8,87.4,24.6,84.6,26.6,83.8,28.6,84.8,29.8,87.6,30.2,92,30,100,29.6,112,29.8,124,31,131];
+function thumb20(g){const K=ramp(P.look&&P.look.skin||PAUL_BASE.skin);
+  /* the thumb is drawn at its length: shorter and a little broader than the shape it is laid out in, about its root at the corner */
+  const th=fn=>{g.save();g.translate(25.8,128);g.scale(1.1,.74);g.translate(-25.8,-128);fn();g.restore()};
+  th(()=>comp(g,'multiply',.5,()=>{g.save();g.translate(2.2,3.4);poly(g,THUMB20,'#7a5a3c');g.restore()}));
+  clipTo(g,()=>poly(g,HAND20),()=>{g.fillStyle=lg(g,0,96,30,140,[K[1],K[2],K[3],K[4]]);g.fillRect(-6,88,50,58);
+    stroke(g,[-4,94.6,6,95.8,15,99.4,21,104.4],rgba('#f8dcb8',.32),1.4);ao(g,18,100,6,30,'r',.3,'#2a1408');ao(g,24,128,18,5,'t',.35,'#2a1408');
+    tex(g,'mott',.16,-6,88,50,58,'overlay',.5)});
+  th(()=>clipTo(g,()=>poly(g,THUMB20),()=>{g.fillStyle=lg(g,21,0,30.4,0,[K[0],K[1],K[2],K[3]]);g.fillRect(20,82,12,46);
+    stroke(g,[22.6,124,22.4,108,22.6,94,23.6,88.6],rgba('#f8dcb8',.45),1.2);
+    stroke(g,[29,124,29.2,108,29.2,94,28.8,89],rgba('#3a2014',.3),1.2);
+    /* the nail */
+    poly(g,[23.4,88.6,24.6,85.6,26.4,84.8,28.2,85.8,29,88.6,28.6,92.4,26.2,93.2,23.8,92.4],tint(K[1],.12));poly(g,[24.4,88.4,25.4,86.4,26.6,86,27.8,86.8,27.8,89.4,25,89.6],rgba('#fff0dc',.45));
+    stroke(g,[23.6,92.6,26.2,93.6,28.8,92.6],rgba('#5a3020',.4),.5);
+    /* two soft folds of the joint, short and curved */
+    for(const yy of[101,103.4])stroke(g,[22.6,yy-.6,25.6,yy+.6,28.8,yy-.4],rgba('#5a3020',.24),.5);
+    tex(g,'mott',.14,20,82,12,46,'overlay',.5)}))}
 /* fit20: the words into a box: the largest of four sizes whose lines all fit */
 function fit20(g,s,w,h){for(const z of[5.4,4.8,4.2,3.6]){g.font=FONT20(z);const lh=z*1.2,words=s.split(' '),L=[];let cur='';
     for(const wd of words){const t=cur?cur+' '+wd:wd;if(g.measureText(t).width>w&&cur){L.push(cur);cur=wd}else cur=t}if(cur)L.push(cur);
     if(L.length*lh<=h||z===3.6)return{z,lh,L}}}
+/* sign20: a mark's sign, scratched into the wax left of its words, centred on cx, cy: the shade of the groove first, then the pale stroke */
+function sign20(g,kind,cx,cy){const lines=kind==='slant'?[[cx-1.6,cy+2.8,cx+1.6,cy-2.8]]:kind==='diamond'?[[cx,cy-3,cx+2.6,cy,cx,cy+3,cx-2.6,cy,cx,cy-3]]:null;
+  for(const[col,dx,dy]of[['rgba(6,3,2,.7)',.3,.4],['#ecdcb2',0,0]]){
+    if(lines)for(const l of lines)stroke(g,l.map((v,i)=>v+(i%2?dy:dx)),col,.9);
+    else{const s=4.6,x=cx-s/2+dx,y=cy-s/2+dy,t=.9;g.fillStyle=col;g.fillRect(x,y,s,t);g.fillRect(x,y+s-t,s,t);g.fillRect(x,y+t,t,s-2*t);g.fillRect(x+s-t,y+t,t,s-2*t)}}}
 function drawCharges20(g){const mk=G.mk20||{};G.caps20=G.caps20||[];
-  const put=(s,bx)=>{const[x,y,w,h]=bx,f=fit20(g,s,w,h);g.font=FONT20(f.z);g.textBaseline='top';const y0=y+(h-f.L.length*f.lh)/2;
-    g.fillStyle='rgba(6,3,2,.7)';f.L.forEach((l,i)=>g.fillText(l,x+.3,y0+i*f.lh+.4));g.fillStyle='#dccaa4';f.L.forEach((l,i)=>g.fillText(l,x,y0+i*f.lh));
+  const put=(s,bx,col)=>{const[x,y,w,h]=bx,f=fit20(g,s,w,h);g.font=FONT20(f.z);g.textBaseline='top';const y0=y+(h-f.L.length*f.lh)/2;
+    g.fillStyle='rgba(6,3,2,.7)';f.L.forEach((l,i)=>g.fillText(l,x+.3,y0+i*f.lh+.4));g.fillStyle=col;f.L.forEach((l,i)=>g.fillText(l,x,y0+i*f.lh));
     const mw=Math.max(...f.L.map(l=>g.measureText(l).width));if(G.caps20.length<400)G.caps20.push({s,w:mw,max:w,h:f.L.length*f.lh,maxh:h})};
-  CHARGES20.forEach((c,i)=>{put(T(c.k),LB20[i]);if(mk[c.k])put(T(mk[c.k]),MB20[i])})}
+  CHARGES20.forEach((c,i)=>{put(T(c.k),LB20[i],'#dccaa4');const m=mk[c.k];if(!m)return;const b=MB20[i];sign20(g,SIGN20[m],b[0]-6,b[1]+b[3]/2);put(T(m),b,'#ecdcb2')})}
 /* ==== ART charges20: end ==== */
 
 /* ---- the inventory ---- */
