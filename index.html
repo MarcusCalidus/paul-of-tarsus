@@ -373,6 +373,45 @@ html.phone #wrap.title #ttop{display:flex;flex-direction:column;gap:calc(var(--s
 html.phone #ttop button{min-height:calc(var(--s)*13px);width:100%;white-space:normal;line-height:1.2;font-size:calc(var(--s)*5.2px);padding:calc(var(--s)*1.5px) calc(var(--s)*.5px)}
 html.phone #ttop #optsT{padding:0;font-size:calc(var(--s)*9px);line-height:1}
 html.phone #wrap.title.splash #ttop{display:none}
+/* the title's menu on a phone (phoneMenuHTML): the name a little smaller, and under it three columns of buttons as wide as the picture,
+   which share the height that the name and the foot line leave: what leads into a game, the parts of the account, and the chapters of
+   the chosen part. A button holds a line in the gold of the title and, in small type, a line that says more. Nothing blinks: the
+   button to begin with is lit, the chosen part is lit in its own way, and the chapter to go on with has a gold rim. The foot line
+   holds the hint and the languages, which are buttons too. */
+html.phone #overlay.title{justify-content:flex-start;padding-bottom:calc(var(--s)*3px + env(safe-area-inset-bottom,0px));cursor:default}
+html.phone #overlay.title h1.art{--lz:.72}
+html.phone #overlay.title .lede{margin:calc(var(--s)*.5px) 0 calc(var(--s)*2.5px)}
+html.phone #overlay .pm{flex:1 1 0;min-height:0;width:calc(var(--s)*306px);display:flex;gap:calc(var(--s)*3px)}
+html.phone #overlay .pm>div{display:flex;flex-direction:column;gap:calc(var(--s)*2.5px);min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;touch-action:pan-y}
+html.phone #overlay .pm>div::-webkit-scrollbar{display:none}
+html.phone #overlay .pm .acts{flex:0 0 29%}
+html.phone #overlay .pm .parts{flex:0 0 32%}
+html.phone #overlay .pm .gls{flex:1 1 0;padding:calc(var(--s)*2px);border:var(--px,1px) solid var(--dim);background:rgba(6,4,14,.5)}
+/* the buttons of the left column are taller than the others and the chapters stand in a panel of their own, so that the gaps between
+   the buttons of two columns never meet in a line, where they would make a plus sign (CONTRIBUTING, section 3) */
+html.phone #overlay .pm .acts .pb{max-height:calc(var(--s)*34px);min-height:calc(var(--s)*20px)}
+html.phone #overlay .pm .gl{display:none;flex:1 1 auto;flex-direction:column;gap:calc(var(--s)*2.5px)}
+html.phone #overlay .pm .gl.on{display:flex}
+html.phone #overlay .pm p{margin:0;max-width:none;line-height:1.15}
+html.phone #overlay .pb{flex:1 1 0;min-height:calc(var(--s)*17px);max-height:calc(var(--s)*25px);display:flex;flex-direction:column;justify-content:center;align-items:center;
+  gap:calc(var(--s)*.6px);padding:calc(var(--s)*1px) calc(var(--s)*2.5px);font-size:calc(var(--s)*5.4px);color:var(--gold);cursor:pointer;touch-action:manipulation;
+  background:rgba(10,6,4,.66);border:var(--px,1px) solid var(--dim);text-shadow:var(--px,1px) var(--px,1px) 0 #000;animation:none;-webkit-tap-highlight-color:transparent}
+html.phone #overlay .pb b{font-weight:normal;overflow-wrap:anywhere}
+html.phone #overlay .pb span{font-size:calc(var(--s)*4.1px);color:#b4a8c8;overflow-wrap:anywhere}
+html.phone #overlay .pb:active{background:rgba(120,72,24,.8);color:#fff}
+html.phone #overlay .pb.main{color:#fff8e0;border-color:var(--gold);background:rgba(168,98,30,.72)}
+html.phone #overlay .pb.main span{color:#f0dcb4}
+html.phone #overlay .pb.grp.on{color:#fff;border-color:#f0e2c0;background:rgba(70,52,92,.82)}
+html.phone #overlay .pb.grp.on span{color:#d8cfe8}
+html.phone #overlay .pb.here{color:#f8ecc8;border-color:var(--gold);box-shadow:inset 0 0 0 var(--px,1px) rgba(226,178,76,.55)}
+html.phone #overlay .pb.kf{color:#fff;border-color:#fff}
+html.phone #overlay .pm .plans{flex:0 0 auto;padding:calc(var(--s)*1.5px) 0;font-size:calc(var(--s)*4.4px)}
+html.phone #overlay .foot{flex:0 0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:calc(var(--s)*5px);row-gap:calc(var(--s)*1px);
+  margin-top:calc(var(--s)*2.5px);width:calc(var(--s)*306px)}
+html.phone #overlay .foot p{margin:0;max-width:none}
+html.phone #overlay .foot .langs{display:flex;gap:calc(var(--s)*2px)}
+html.phone #overlay .foot .langs span{padding:calc(var(--s)*1.5px) calc(var(--s)*3.5px);border:var(--px,1px) solid var(--dim);background:rgba(10,6,4,.66);touch-action:manipulation}
+html.phone #overlay .foot .langs span.on{border-color:var(--gold)}
 </style>
 </head>
 <body>
@@ -535,7 +574,9 @@ function fit(){const root=document.documentElement,ph=phoneWanted(),[it,ir,ib,il
     root.style.setProperty('--vh',full>de.clientHeight?full+'px':'100%')}
   if(ph!==PH.on){PH.on=ph;root.classList.toggle('phone',ph);dock(ph);PH.k=0;
     /* the page itself is never zoomed on a phone (the field is, see lensTick); off the phone the browser's own zoom is left alone */
-    $('meta[name=viewport]').content='width=device-width, initial-scale=1, viewport-fit=cover'+(ph?', maximum-scale=1, user-scalable=no':'')}
+    $('meta[name=viewport]').content='width=device-width, initial-scale=1, viewport-fit=cover'+(ph?', maximum-scale=1, user-scalable=no':'');
+    /* the title has a menu of its own on a phone (see phoneMenuHTML): it is drawn again for the layout it now has */
+    {const o=$('#overlay');if(o.classList.contains('title')&&o.classList.contains('on')&&o.draw)o.draw()}}
   if(!ph){const top=10,st=13,pn=53,tot=144+top+st+pn;
     const d=window.devicePixelRatio||1,s=Math.min((innerWidth-il-ir)/320,(innerHeight-it-ib)/tot),k=Math.floor(s*d)/d,sc=k>=1?k:Math.max(.5,s);
     root.style.setProperty('--s',sc.toFixed(3));pointer(sc,pointerKind(G.hover));LENS.k=sc;LENS.tx=LENS.ty=0;LENS.F={l:0,t:0,w:sc*VW,h:sc*VH};return}
@@ -2536,7 +2577,7 @@ for(const t of['pointerup','pointercancel'])vp.addEventListener(t,e=>{if(!PH.on|
    A second tap on the field soon after the first is held back too, or Safari zooms the page on it. */
 for(const t of['gesturestart','gesturechange','gestureend'])document.addEventListener(t,e=>{if(PH.on)e.preventDefault()},{passive:false});
 document.addEventListener('touchstart',e=>{if(PH.on&&e.touches.length>1)e.preventDefault()},{passive:false});
-document.addEventListener('touchmove',e=>{if(PH.on&&e.cancelable&&(e.touches.length>1||!(e.target.closest&&e.target.closest('.chs,#choices,#menu,#codebox,#tablets'))))e.preventDefault()},{passive:false});
+document.addEventListener('touchmove',e=>{if(PH.on&&e.cancelable&&(e.touches.length>1||!(e.target.closest&&e.target.closest('.chs,.pm,#choices,#menu,#codebox,#tablets'))))e.preventDefault()},{passive:false});
 let lastTouchEnd=0;document.addEventListener('touchend',e=>{if(!PH.on)return;const now=performance.now();
   if(e.cancelable&&e.target===cv&&now-lastTouchEnd<350)e.preventDefault();lastTouchEnd=now},{passive:false});
 /* Right-click looks at whatever is under the pointer, from where Paul stands; on empty ground it puts the chosen verb down. */
@@ -3038,6 +3079,38 @@ function partsHTML(sv,far){const here=sv?sv.ch:far||-1,ns=Object.keys(CHAP).map(
     return`<div class="part" data-part="${i}"><p class="grp"><span>&#9656;</span> ${T(p.name)} <i>&middot; ${T(p.span)}</i></p><div class="gl">`+own.map(line).join('')+
       (pl.length?'<p class="plans">'+(pl.length>1?T('chapters_from_to_to',{from:T(pl[0].short),to:T(pl.at(-1).short)}):T(pl[0].label))+' &middot; '+T('in_preparation')+'</p>':'')+
       '</div></div>'}).join('')+'</div>'}
+/* langsHTML: the title's line of languages, when there is more than one (sep: what stands between them; on a phone they are buttons) */
+const langsHTML=(sep=' &middot; ')=>Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(sep)+'</p>':'';
+/* phoneMenuHTML: the title's choices on a phone (PH.on), as buttons a finger can find, in three columns under the name. On the left
+   what leads into a game: Continue (on a first visit Begin, which starts the Prologue), the farthest point, the look back and the
+   hidden treasures, the first of them lit. In the middle the parts of the account, one of them chosen (.on); on the right the
+   chapters of the chosen part, in a panel, each with its number over its name, the chapter the player would go on with set off (.here), and
+   those still in preparation as one dimmed line. The buttons share the height of the column, so that the whole menu stands on the
+   screen; a column that still runs over scrolls. sv, far: Continue's point and the farthest point, as title() has them. */
+function phoneMenuHTML(sv,far){const here=sv?sv.ch:far||-1,ns=Object.keys(CHAP).map(Number).filter(n=>!building(n)),next=Math.max(...ns)+1,
+    b=(cls,data,head,sub)=>`<p class="pb ${cls}" ${data}><b>${head}</b>${sub?'<span>'+sub+'</span>':''}</p>`,
+    ch=n=>n===0?`<p class="pb pick${here<0?' here':''}" data-pro="1"><span>${T('Prologue')}</span><b>${T(PRO.title)}</b></p>`
+      :`<p class="pb pick${n===here?' here':''}" data-ch="${n}"><span>${T(CHAP[n].label)}</span><b>${T(CHAP[n].title)}</b></p>`,
+    ps=PARTS.map((p,i)=>({p,i,own:[0,...ns].filter(n=>partOf(n)===i),pl:PLANNED.filter((c,k)=>partOf(next+k)===i)})).filter(x=>x.own.length||x.pl.length),
+    want=partOpen!=null&&partOpen>=0?partOpen:partOf(here<0?0:here),open=ps.some(x=>x.i===want)?want:ps[0].i;
+  const acts=(sv?b('go main','data-cont="1"',T('Continue'),T(CHAP[sv.ch].label)+' &middot; '+T(CHAP[sv.ch].title)):'')+
+    (far?b(sv?'pick':'go main','data-far="1"',T('farthest_point'),T(CHAP[far].label)+' &middot; '+T(CHAP[far].title)):'')+
+    (!sv&&!far?b('go main','data-pro="1"',T('begin_the_game'),T('Prologue')+' &middot; '+T(PRO.title)):'')+
+    (gameDone()?b('pick fin','data-fin="1"',T('from_damascus_to_rome'),''):'')+
+    (treasures().size?b('pick tre','data-tre="1"',T('hidden_treasures'),T('n_of_all',{n:treasures().size,all:hidden().length})):'');
+  return'<div class="pm"><div class="acts">'+acts+'</div><div class="parts">'+
+    ps.map(x=>`<p class="pb grp${x.i===open?' on':''}" data-pt="${x.i}"><b>${T(x.p.name)}</b><span>${T(x.p.span)}</span></p>`).join('')+'</div><div class="gls">'+
+    ps.map(x=>`<div class="gl${x.i===open?' on':''}" data-gl="${x.i}">`+x.own.map(ch).join('')+
+      (x.pl.length?'<p class="plans">'+(x.pl.length>1?T('chapters_from_to_to',{from:T(x.pl[0].short),to:T(x.pl.at(-1).short)}):T(x.pl[0].label))+' &middot; '+T('in_preparation')+'</p>':'')+'</div>').join('')+
+    '</div></div>'}
+/* phPart: on a phone, choose a part of the account: its button is lit and its chapters stand in the right column. A part stays chosen
+   when it is tapped again, so that the column is never empty. The choice is kept as partOpen, as a click on the list keeps it. */
+function phPart(i){partOpen=i;for(const x of ov.querySelectorAll('.pm .grp'))x.classList.toggle('on',+x.dataset.pt===i);
+  for(const x of ov.querySelectorAll('.pm .gl'))x.classList.toggle('on',+x.dataset.gl===i);const g=ov.querySelector('.pm .gls');if(g)g.scrollTop=0}
+/* pickPhone: a tap on the phone's title. Only a button does something: a tap beside the buttons, on the name or on the picture, does nothing. */
+function pickPhone(e){const t=e.target.closest&&e.target.closest('[data-lang],[data-pt],[data-tre],[data-fin],[data-cont],[data-far],[data-pro],[data-ch]');if(!t)return;
+  const d=t.dataset;if(d.lang){SFX.click();return setLang(d.lang,1)}if(d.pt!=null){SFX.click();return phPart(+d.pt)}
+  if(d.tre)return openMenu('treasures');if(d.fin)return lookAgain();if(d.cont)return resume();if(d.far)return resumeFar();if(d.pro)return startPrologue();startChapter(+d.ch)}
 /* partsFit: the lines stand as far apart as the box allows with its longest part open (so that opening another moves nothing), at least
    1.55 and at most 2.1 times their size (--lh); with less room than that the box scrolls */
 function partsFit(l){const s=parseFloat(getComputedStyle(l).getPropertyValue('--s'))||1,parts=[...l.querySelectorAll('.part')],
@@ -3058,7 +3131,7 @@ function openPart(pt,user,shut){if(!pt)return;const l=pt.parentNode,open=!shut&&
 addEventListener('keydown',e=>{const k=e.key;if(!['ArrowUp','ArrowDown','Enter',' '].includes(k)||!ov.classList.contains('title')||ov.classList.contains('splash')
     ||cb.classList.contains('on')||$('#menu').classList.contains('on')||e.target&&e.target.tagName==='INPUT')return;
   const cur=ov.querySelector('.kf');if(k==='Enter'||k===' '){if(cur){e.preventDefault();cur.click()}return}
-  const all=[...ov.querySelectorAll('[data-cont],[data-far],.part>.grp,.part.open [data-pro],.part.open [data-ch],[data-fin],[data-tre]')];if(!all.length)return;e.preventDefault();
+  const all=[...ov.querySelectorAll('[data-cont],[data-far],.part>.grp,.part.open [data-pro],.part.open [data-ch],[data-fin],[data-tre],.pm .acts>p,.pm .grp,.pm .gl.on>p.pb')];if(!all.length)return;e.preventDefault();
   let i=all.indexOf(cur);i=i<0?Math.max(0,all.indexOf(ov.querySelector('p.go'))):Math.max(0,Math.min(all.length-1,i+(k==='ArrowDown'?1:-1)));
   if(cur)cur.classList.remove('kf');all[i].classList.add('kf');all[i].scrollIntoView({block:'nearest'})});
 /* The game opens on its opening picture (shared/splash.js): the name over a tentmaker's bench by lamplight, once each time the game is
@@ -3089,14 +3162,16 @@ async function title(){lock(true);partOpen=null;if(SHARED.scroll)SHARED.scroll.o
     (gameDone()?`<p class="pick fin" data-fin="1">&#9656; ${T('from_damascus_to_rome')}</p>`:'')+
     /* the hidden treasures, once one has been found (see TREASURES) */
     (treasures().size?`<p class="pick tre" data-tre="1">&#9656; ${T('hidden_treasures')} &middot; ${T('n_of_all',{n:treasures().size,all:hidden().length})}</p>`:'')+
-    '<p class="small">'+T('click_a_chapter_to_begin')+'</p>'+
-    (Object.keys(LANGS).length>1?'<p class="small langs">'+Object.keys(LANGS).map(l=>`<span data-lang="${l}"${l===G.lang?' class="on"':''}>${LANGS[l].native}</span>`).join(' &middot; ')+'</p>':'')+
-    (G.splash?'<p class="begin"><span class="go">'+T('click_to_begin')+'</span></p>':'');
+    '<p class="small">'+T('click_a_chapter_to_begin')+'</p>'+langsHTML();
+    /* on a phone the same choices stand as buttons in columns (see phoneMenuHTML) */
+    if(PH.on)ov.innerHTML=(art?'<h1 class="art"></h1>':'<h1>'+name+'</h1><h2>'+sub+'</h2>')+'<p class="small lede">'+T('point_and_click_adventure')+'</p>'+
+      phoneMenuHTML(sv,far)+'<div class="foot"><p class="small">'+T('tap_a_chapter_to_begin')+'</p>'+langsHTML('')+'</div>';
+    ov.innerHTML+=G.splash?'<p class="begin"><span class="go">'+T(PH.on?'tap_to_begin':'click_to_begin')+'</span></p>':'';
     if(art){art.textContent=name+' '+sub;art.setAttribute('role','img');art.setAttribute('aria-label',T('paul_of_tarsus_on_the_roads'));
-      art.style.width='calc(var(--s)*'+art.width/HR+'px)';art.style.height='calc(var(--s)*'+art.height/HR+'px)';ov.querySelector('h1').appendChild(art)}
-    const l=ov.querySelector('.chs');l.onscroll=()=>chsFade(l);requestAnimationFrame(()=>{partsFit(l);const h=l.querySelector('.here');
-      openPart(l.querySelector(`.part[data-part="${partOpen!=null?partOpen:h?partOf(+h.dataset.ch||0):0}"]`)||l.querySelector('.part'),false,partOpen===-1)})});
-  const pick=e=>{const d=e.target.dataset||{};if(d.lang){SFX.click();return setLang(d.lang,1)}if(e.target.classList.contains('chs'))return;
+      art.style.width='calc(var(--s)*var(--lz,1)*'+art.width/HR+'px)';art.style.height='calc(var(--s)*var(--lz,1)*'+art.height/HR+'px)';ov.querySelector('h1').appendChild(art)}
+    const l=ov.querySelector('.chs');if(l){l.onscroll=()=>chsFade(l);requestAnimationFrame(()=>{partsFit(l);const h=l.querySelector('.here');
+      openPart(l.querySelector(`.part[data-part="${partOpen!=null?partOpen:h?partOf(+h.dataset.ch||0):0}"]`)||l.querySelector('.part'),false,partOpen===-1)})}});
+  const pick=e=>{if(ov.querySelector('.pm'))return pickPhone(e);const d=e.target.dataset||{};if(d.lang){SFX.click();return setLang(d.lang,1)}if(e.target.classList.contains('chs'))return;
     if(e.target.closest('.langs'))return;
     /* a part's line opens it (and closes the one that was open), or closes it if it is open; the line of the chapters in preparation does nothing */
     const gp=e.target.closest('.grp');if(gp){SFX.click();return openPart(gp.parentNode,true)}if(e.target.closest('.plans')||e.target.matches('.gl,.part'))return;
