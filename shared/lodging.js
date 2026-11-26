@@ -125,14 +125,17 @@ function walls(g,kind,r,night){const M=SHARED.materials,c=C[kind];
 function planks(g,r){const n=8,y1=144,ys=[];for(let k=0;k<=n;k++)ys.push(WY+(y1-WY)*Math.pow(k/n,1.45));
   const X=(u,y)=>VX+u*(y-HZ)/(y1-HZ);
   R(g,-2,WY,324,y1-WY,'#3a2818');
-  for(let k=0;k<n;k++){const a=ys[k],b=ys[k+1],gap=Math.min(.5,.2+(b-a)*.04);let u=-600-r()*60;
-    while(X(u,a)<330){const len=90+r()*80,c=tint('#8a6440',(r()-.5)*.22),P=[X(u,a)+gap,a+gap,X(u+len,a),a+gap,X(u+len,b),b,X(u,b)+gap,b];
+  let prev=[];
+  for(let k=0;k<n;k++){const a=ys[k],b=ys[k+1],gap=Math.min(.5,.2+(b-a)*.04),cur=[],near=6*(144-HZ)/(a-HZ);let u=-600-r()*60;
+    while(X(u,a)<330){let len=90+r()*80;
+      /* a joint never comes within a few pixels of a joint of the course behind it */
+      for(let t=0;t<6&&prev.some(p=>Math.abs(p-(u+len))<near);t++)len+=near*1.2;cur.push(u+len);const c=tint('#8a6440',(r()-.5)*.22),P=[X(u,a)+gap,a+gap,X(u+len,a),a+gap,X(u+len,b),b,X(u,b)+gap,b];
       poly(g,P);g.fillStyle=lg(g,0,a,0,b,[tint(c,.1),c,tint(c,-.14)]);g.fill();
       clipTo(g,()=>poly(g,P),()=>{tex(g,'wood',.22,X(u,a)-4,a,X(u+len,b)-X(u,a)+8,b-a,'overlay',.5);
         for(let i=0;i<(b-a)*1.2;i++){const t=r(),yy=a+gap+t*(b-a-gap),x0=X(u+r()*len,yy),l=4+r()*18;R(g,x0,yy,l,.5,r()<.5?tint(c,-.18):tint(c,.12))}
         if(r()<.3){const t=r(),yy=a+(b-a)*(.3+t*.4),xx=X(u+len*(.2+r()*.6),yy);R(g,xx,yy-.3,1.2,.8,tint(c,-.35))}});
       R(g,X(u,a)+gap,a+gap,X(u+len,a)-X(u,a)-gap,.5,'rgba(255,230,190,.16)');
-      u+=len}}
+      u+=len}prev=cur}
   tex(g,'mott',.3,0,WY,320,y1-WY,'overlay',1);
   /* worn paler where people walk: from the door to the table */
   pool(g,214,122,90,14,'#e8d0a8',.12,'screen')}
