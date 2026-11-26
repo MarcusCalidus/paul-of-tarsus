@@ -652,16 +652,119 @@ function canal24Reeds(g,t,k){const stir=k<1?Math.sin(t/90)*1.4*(1-k):0,q=rng(248
 /* ==== ART canal24: end ==== */
 
 /* ==== ART appius24: begin ==== */
-/* The Marketplace of Appius (APPIUS24), the post station at the northern end of the canal: the canal and its barges at the back left, a
-   row of inns and stalls at the back, the Appian Way running across from left (south) to right (north), and the milestone XLIII on the
-   verge at the right. Two variants: 'dawn' (before sunrise, soft light: the boatman and Sextus) and 'day' (the meeting of 28:15: sun
-   from the left, shadows to the right). ART-TODO. The stone's X is a letter in an inscription. */
+/* The Marketplace of Appius (APPIUS24), the post station at the northern end of the canal: the canal comes out of the distance at the
+   left and ends in the basin at the back left, where barges lie tied up along its quay (no mast on any of them, and their poles lie
+   along their decks); a row of inns and stalls at the back, plastered, under tiled roofs, two doors of upright boards; the Appian Way
+   across, from left (south) to right (north), its footpath and verge before the inns; the milestone XLIII on the footpath at the right
+   (its foot at y 109, just behind the walk strip). Two variants: 'dawn' (before sunrise: no sun, no cast shadow, no birds; a lamp already
+   lit behind one shutter) and 'day' (the meeting of 28:15: the sun low from the left, the shadows to the right and back). Heads on the
+   walk strip come at y 66..92 in front of the plastered walls and the doors: nothing round behind them. The stone's X is a letter. */
 const APPIUS24={hz:64,stone:[262,110],canal:[0,74,120,14],inns:[124,40,140,62],walk:[16,304,112,138]};
 const appiusV=()=>phase24()==='dawn'?'dawn':'day';
-ART.appius24={w:320,q:12,variant:appiusV,paint(g,v){const dawn=v==='dawn';sky24(g,APPIUS24.hz,dawn?'#5a6488':'#a2c4de',dawn?'#e8b890':'#e8e4d6');
-    ground24(g,APPIUS24.hz,dawn?'#7a7462':'#aaa080');g.fillStyle=dawn?'#4a5068':'#5a7e92';g.fillRect(...APPIUS24.canal);
-    blocks24(g,[[...APPIUS24.inns,dawn?'#8a7a66':'#c4ac88'],[150,70,20,32,'#4a3626'],[200,70,20,32,'#4a3626'],[30,66,46,10,'#5a4230']]);
-    R(g,0,104,320,8,dawn?'#5a5650':'#7e7a72');stone24(g,...APPIUS24.stone,'XLIII')},
+/* tiles24: a roof of red tiles seen from below its eave, from x0 to x1, its ridge at yt and its eave at ye: the rows of cover tiles run
+   down the slope as soft stripes of light and shade (one way only, no course across them), and under the eave a band of shade on the wall */
+function tiles24(g,x0,x1,yt,ye,c,lit,r){const P=[x0-1.5,ye,x0+1,yt,x1-1,yt,x1+1.5,ye];poly(g,P,c);
+  clipTo(g,()=>poly(g,P),()=>{g.fillStyle=lg(g,0,yt,0,ye,[tint(c,-.18),tint(c,.06)]);g.fillRect(x0-2,yt,x1-x0+4,ye-yt);
+    for(let x=x0;x<x1+1;x+=2.2){R(g,x,yt,.9,ye-yt,rgba(tint(c,.28),.35*lit+.12));R(g,x+1.1,yt,.6,ye-yt,rgba(tint(c,-.4),.3))}
+    tex(g,'mott',.4,x0-2,yt,x1-x0+4,ye-yt,'overlay',1);for(let i=0;i<(x1-x0)*.4;i++)R(g,x0+r()*(x1-x0),yt+r()*(ye-yt),.5,.5,rgba(r()<.5?'#5a3a2a':'#f0c8a0',.3))});
+  R(g,x0+1,yt-.6,x1-x0-2,.8,tint(c,.12*lit));R(g,x0-1.5,ye-.6,x1-x0+3,.6,tint(c,-.25))}
+/* front24: a plastered house front from x0 to x1 between its eave ye and its foot yb: plaster with its patches and damp, a door of upright
+   boards set back in its frame (no band across the boards), shuttered windows (the boards of a shutter run one way only) */
+function front24(g,x0,x1,ye,yb,c,o,r){plaster(g,x0,ye,x1-x0,yb-ye,c,r,{patch:o.patch||0,cracks:0,t:.45,top:.02,bot:-.1});
+  /* damp along the foot, grime under the eave */
+  g.fillStyle=lg(g,0,yb-10,0,yb,['rgba(110,96,80,0)','rgba(110,96,80,.22)']);g.fillRect(x0,yb-10,x1-x0,10);ao(g,x0,ye,x1-x0,6,'t',.35,'#3a2a2a');
+  for(const D of o.doors||[]){const[dx,dy,dw,dh]=D,M=SHARED.materials;R(g,dx-1.6,dy-1.6,dw+3.2,dh+1.6,tint(c,-.14));R(g,dx-1.6,dy-1.6,dw+3.2,.6,tint(c,.12));
+    for(let i=0;i<4;i++)M.plank(g,dx+i*dw/4,dy,dw/4,dh,['#6a4c32','#62462e','#684a30','#5e442c'][i],r,1);for(let i=1;i<4;i++)R(g,dx+i*dw/4,dy,.5,dh,'rgba(30,18,12,.5)');
+    ao(g,dx,dy,dw,5,'t',.5,'#1a1010');R(g,dx+dw-1.6,dy,1.6,dh,'rgba(30,20,16,.35)');R(g,dx+dw*.7,dy+dh*.52,1.2,1.2,'#2a1e16');
+    R(g,dx-1.6,dy+dh-.6,dw+3.2,1,tint(c,-.2))}
+  for(const Wn of o.wins||[]){const[wx,wy,ww,wh,lamp]=Wn;R(g,wx-.8,wy-.8,ww+1.6,wh+1.6,tint(c,-.12));R(g,wx,wy,ww,wh,lamp?'#ffc878':'#2a1e1a');
+    /* the shutter, half open: its boards upright, a narrow dark gap beside it (or, at dawn, the lamp's light in it) */
+    const sw=ww*.62;for(let i=0;i<3;i++)R(g,wx+i*sw/3,wy,sw/3,wh,['#7a5a3a','#72543a','#6e5034'][i]);for(let i=1;i<3;i++)R(g,wx+i*sw/3,wy,.5,wh,'rgba(30,20,14,.5)');
+    R(g,wx+sw,wy,.5,wh,'rgba(20,14,10,.6)');R(g,wx-.8,wy+wh+.8,ww+1.6,.8,tint(c,.1))}}
+/* barge24: a canal barge lying along the quay, seen from the side: a long low hull of dark planks in strakes, flat-ended, its gunwale lit,
+   sacks and baskets on its deck, its pole lying along the deck; no mast. x, y: the left end at the waterline; len, h */
+function barge24(g,x,y,len,h,dawn,r){const W=dawn?'#3a3236':'#4a3a2e',L=dawn?'#5a4e4a':'#7a6044',P=[x,y-h,x+len,y-h,x+len-2.4,y,x+2,y];
+  poly(g,P,W);clipTo(g,()=>poly(g,P),()=>{for(let k=1;k<3;k++)R(g,x,y-h+k*h/3,len,.5,'rgba(20,14,10,.4)');
+    for(let k=0;k<3;k++){let u=r()*10;while(u<len){const jx=x+u;R(g,jx,y-h+k*h/3+.4,.5,h/3-.8,'rgba(20,14,10,.35)');u+=12+r()*10}}tex(g,'wood',.3,x,y-h,len,h,'overlay',1)});
+  R(g,x-.4,y-h-.6,len+.8,.8,L);R(g,x-.4,y-h-.6,len+.8,.3,dawn?'#7a6e6a':'#b08a5e');
+  /* the cargo: sacks and covered baskets, low, and the pole along the deck */
+  for(let u=4;u<len-6;u+=5+r()*4){const w=3+r()*2.6,hh=1.6+r()*1.6,c=r()<.5?(dawn?'#7a746c':'#a89a80'):r()<.5?(dawn?'#6a5c50':'#8a6c4a'):(dawn?'#5e5a54':'#7e7466');oval(g,x+u+w/2,y-h-.6-hh/2,w/2,hh/2+.2,c);R(g,x+u+.6,y-h-hh-.4,w-1.2,.5,tint(c,.2))}
+  stroke(g,[x+3,y-h-1.2,x+len-2,y-h-1.8],dawn?'#6a5a4a':'#a08058',.6);
+  /* its reflection, dim and broken, and the shade of the water against it */
+  for(let i=0;i<len;i+=1.5)R(g,x+i+1,y,1.5,.6+r()*1.6,rgba(W,.4));R(g,x+2,y-.3,len-4.4,.6,'rgba(20,16,20,.5)')}
+function appiusBack24(g,W,dawn){const hz=APPIUS24.hz,RM=SHARED.rome,CO=SHARED.country,r=rng(2641);
+  /* the sky: before sunrise deep blue overhead and warm low in the east, at the left, where the sun will rise; by day the morning */
+  if(dawn){sky(g,320,hz+1,['#3e4a74','#5e6a8e','#9a8ea0','#e0b098']);pool(g,30,hz,150,20,'#ffd0a0',.4,'screen');
+    {const q=rng(2642);for(const[x,y,w]of[[70,46,70],[210,30,60],[150,54,50]])cloud(g,x,y,w,1.8,q,'#e8b8a8','#4a5070')}}
+  else{sky(g,320,hz+1,['#7c9ecb','#9cb8d6','#cad8e0','#ece6d8']);pool(g,20,hz-8,130,26,'#fff2dc',.3,'screen');
+    {const q=rng(2643);cloud(g,240,20,70,2.6,q,'#fbf6ee','#b4bed4');cloud(g,80,30,44,1.8,q,'#f6f2ea','#bec6d8')}}
+  /* hills far off at the right, low and blue; the flat land to the horizon */
+  CO.range(g,180,322,hz+.2,x=>Math.max(0,4+3*Math.sin((x-200)/30)+1.2*Math.sin(x/7))*Math.min(1,(x-180)/30),dawn?['#6a6a88','#7a7890']:['#a2acc6','#b6bed2'],{k:.3});
+  CO.plain(g,-2,322,hz,104,2644,{vx:150,land:dawn?'#5c604e':'#98a868',haze:dawn?'#8a8296':'#c8ccd4',clouds:dawn?0:2,kinds:['meadow','green','fallow','meadow','grain']});
+  /* the canal: it comes in from the south, out of the picture at the left, between banks of squared stone, and ends here in the basin at
+     the back left, closed by the quay at its end */
+  const wa=dawn?['#a898a8','#7a7e9c','#5a6080']:['#b4c8d6','#9cb4c6','#7894aa'];
+  const B=[-2,74,108,74,116,76,118,88,-2,88];poly(g,B);g.fillStyle=lg(g,0,74,0,88,wa);g.fill();
+  clipTo(g,()=>poly(g,B),()=>{for(let i=0;i<40;i++){const y=75+r()*12,x=r()*116,w=3+r()*12;R(g,x,y,w,.5,rgba(dawn?'#e8c0b0':'#f0f6f8',.3))}
+    ao(g,-2,74,122,3,'t',.35,'#2a2a3a')});
+  R(g,-2,72.6,110,1.6,dawn?'#7a7670':'#b4aa96');R(g,-2,72.6,110,.5,dawn?'#9a948a':'#e0d6c0');
+  for(let x=4;x<108;x+=7+r()*5)R(g,x,72.8,.5,1.2,'rgba(50,40,40,.4)');
+  /* the barges, two along the far quay and one at the near side */
+  barge24(g,6,79,44,3.2,dawn,rng(2645));barge24(g,58,78.6,38,3,dawn,rng(2646));barge24(g,30,86.6,56,3.8,dawn,rng(2647));
+  /* the quay along the near side of the basin and round its end: squared stones, their joints stopping at the edge of the course */
+  {const Q=[-2,88,118,88,118,76,121,75,121,90.6,-2,90.6];poly(g,Q,dawn?'#7a746c':'#b8ae98');clipTo(g,()=>poly(g,Q),()=>{tex(g,'mott',.5,-2,74,124,18,'overlay',1);
+      for(let x=2;x<118;x+=6+r()*5)R(g,x,88.6,.5,2,'rgba(50,40,40,.4)')});
+    R(g,-2,88,120,.6,dawn?'#a49c90':'#e8dcc4');R(g,118,76,.6,12,dawn?'#9a9288':'#dcd0b8');R(g,-2,90.6,123,.6,'rgba(40,30,30,.4)')}
+  /* the landing between the quay and the road: beaten earth, a stack of sacks and two baskets by the quay */
+  {g.fillStyle=lg(g,0,90,0,106,dawn?['#6e665a','#7a7064']:['#b4a484','#a8987a']);const yl=W.V.P(0,W.p1,0)[1]+.4;g.fillRect(-2,90.6,126,yl-90.6);tex(g,'mott',.5,-2,90,126,yl-90,'overlay',1);
+    CO.ground(g,-2,91,126,106,dawn?'#7a7064':'#ac9c7e',2648,{n:30,size:.5,tufts:0,light:-1});
+    /* the ground trodden darker where carts and porters go between the quay and the road, and grass along the edges */
+    pool(g,60,99,50,5,dawn?'#4a4440':'#7a6a52',.25,'multiply');pool(g,96,95,26,3,dawn?'#4a4440':'#7a6a52',.2,'multiply');
+    CO.turf(g,-2,100,40,106,dawn?'#5a6050':'#8a9a5a',2649,{wind:-.3,scale:.45,dense:.6,dry:.3});CO.turf(g,84,91,38,96,dawn?'#5a6050':'#8a9a5a',2654,{wind:-.3,scale:.35,dense:.5,dry:.3})}
+  /* low trees along the far bank of the canal and on the horizon behind it */
+  /* the tracks of carts and of feet across the landing, from the quay to the road */
+  for(const[a,b2,c2,d]of[[104,91.2,74,104.5],[110,91.2,84,104.5],[40,91.2,22,104.5]]){const P=[];for(let t=0;t<=1;t+=.1)P.push(a+(c2-a)*t-4*Math.sin(t*Math.PI)*(a>60?1:-1),b2+(d-b2)*t);
+    stroke(g,P,dawn?'rgba(40,34,36,.35)':'rgba(90,72,54,.35)',.7);stroke(g,P.map((v,i)=>i%2?v+.6:v+.3),dawn?'rgba(150,140,140,.15)':'rgba(230,214,180,.3)',.5)}
+  for(const[x,y,w,h]of[[20,97,7,3.6],[26,97.4,6,3],[23,94.2,6,3]]){const c=dawn?'#8e867a':'#cdb994';oval(g,x,y-h/2,w/2,h/2,c);R(g,x-w/2+1,y-h+.3,w-2,.5,tint(c,.25));RM.weeds&&0}
+  SHARED.materials.shadow(g,24,97.4,6,1,.4);
+  /* the inns and the stalls along the back: the left house, the taller one, with its door and its upper windows; the right one lower, its
+     door at its right and, left of the door, a stall under a lean-to roof on two posts, one at each end of its beam, its counter of masonry along the wall */
+  const c1=dawn?'#9a8e86':'#dcc8a6',c2=dawn?'#948a84':'#d4bc98',ti=dawn?'#6a4a44':'#a85a3c',lit=dawn?0:1;
+  front24(g,124,196,52,102,c1,{doors:[[150,70,20,32]],wins:[[132,58,8,6],[178,58,8,6,dawn?1:0]]},rng(2650));
+  tiles24(g,122,198,40,52,ti,lit,rng(2651));
+  front24(g,196,264,60,102,c2,{doors:[[238,70,18,32]],wins:[[212,63,8,5]]},rng(2652));
+  tiles24(g,194,266,50,60,tint(ti,-.05),lit,rng(2653));
+  /* the stall: its counter, the lean-to over it, its two posts; on the counter bread and baskets of greens */
+  {const sx0=203,sx1=231,cy=92;R(g,sx0,cy,sx1-sx0,10,tint(c2,-.08));R(g,sx0,cy,sx1-sx0,.8,tint(c2,.15));tex(g,'mott',.4,sx0,cy,sx1-sx0,10,'overlay',1);
+    for(let x=sx0+2;x<sx1-3;x+=5.4){const k=Math.round(x)%3,c=k===0?(dawn?'#8a7458':'#c89a5a'):k===1?(dawn?'#5a6248':'#7a9a4a'):(dawn?'#7a6a5a':'#b08a5a');oval(g,x+2,cy-1.2,2.4,1.4,c);R(g,x+.8,cy-2.4,2.4,.5,tint(c,.3))}
+    poly(g,[sx0-3,72,sx1+3,72,sx1+5,78,sx0-1,78],tint(ti,-.08));for(let x=sx0-2;x<sx1+4;x+=2.2)R(g,x,72,.8,6,rgba(tint(ti,.3),.3*lit+.1));R(g,sx0-1,78,sx1-sx0+6,.6,tint(ti,-.3));
+    ao(g,sx0,78,sx1-sx0,8,'t',.4,'#2a1c18');
+    for(const px of[sx0-1.6,sx1+2.6]){const pc=dawn?'#5a4a40':'#7a5a3a';R(g,px,78,2,24,pc);R(g,px,78,.6,24,tint(pc,dawn?.1:.3));R(g,px+1.5,78,.5,24,tint(pc,-.35));
+      if(!dawn)comp(g,'multiply',.25,()=>poly(g,[px+2,101,px+2.6,101,px+9,97.6,px+8.4,97.6],'#5a4a66'));SHARED.materials.shadow(g,px+1,102,2,.6,.5)}}
+  /* where the houses meet the ground: a seam of shade along their foot, weeds against it */
+  for(const[dy,wd,a]of[[.4,1.6,.16],[.2,.7,.3]])stroke(g,[124,102+dy,264,102+dy],rgba('#2a2026',a),wd);
+  RM.weeds(g,126,102.3,148,102.4,30,2655,1.6);RM.weeds(g,200,102.3,236,102.4,36,2656,1.4);
+  /* beyond the houses at the right: the land, a few trees */
+  for(const[x,y,h,k]of[[276,84,22,'oak'],[300,86,16,'olive'],[314,80,12,'poplar']])CO.tree(g,x,y,h,null,{kind:k,seed:2660+x,cast:!dawn});
+  /* the verge before the houses, back to their foot: beaten earth and grass */
+  {const y0=102.4,y1=W.V.P(0,W.p1,0)[1];g.fillStyle=lg(g,0,y0,0,y1,dawn?['#6a6458','#726a5c']:['#a89a7a','#b0a282']);g.fillRect(122,y0,322-122,y1-y0+.5);
+    CO.turf(g,122,y0,200,y1,dawn?'#5e6650':'#8a9a5a',2657,{wind:-.3,scale:.4,dense:.5,dry:.3})}}
+function appiusPaint24(g,dawn){const sun=dawn?[-.6,-.8]:[-.9,-.44],c=dawn?[0,0]:[16,-8];
+  way24(g,{hz:APPIUS24.hz,yF:112,seed:2631,sun,light:dawn?'#a8a4c0':'#fff0dc',back:(g,W)=>appiusBack24(g,W,dawn),
+    pathC:dawn?'#7a7064':'#a49680',pathL:dawn?'#8a8074':'#bcae94',curbC:dawn?'#8a8890':'#a8a294',curbN:dawn?'#84828a':'#a29c8e',
+    onPath:(g,W)=>roadStone24(g,W,APPIUS24.stone[0],'XLIII',{cast:dawn?null:c,seed:2671,c:dawn?'#9a98a2':null})});
+  if(dawn){/* before sunrise: everything below the sky cool and dim (the houses up to their roofs), a little warmer toward the east at the left */
+    const below=()=>{g.beginPath();g.rect(-2,hz24(),324,82);const T=(x0,x1,yt,ye)=>{g.moveTo(x0-1.5,ye+.5);g.lineTo(x0+1,yt);g.lineTo(x1-1,yt);g.lineTo(x1+1.5,ye+.5);g.closePath()};
+      T(122,198,40,52);T(194,266,50,60);g.rect(120.5,52,79,13);g.rect(192.5,60,75,5)};
+    clipTo(g,below,()=>{comp(g,'saturation',.45,()=>{g.fillStyle='#808080';g.fillRect(-2,30,324,114)});
+      comp(g,'multiply',1,()=>{g.fillStyle=lg(g,0,0,320,0,['#b8aab8','#a09ab4','#9692ae']);g.fillRect(-2,30,324,114)})});
+    comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,200,170,1)','rgba(170,170,210,1)']);g.fillRect(0,0,320,144)})}
+  /* the lamp behind the half-open shutter, its light on the sill and the plaster under it */
+  if(dawn){R(g,178+8*.62+.5,58,8*.38-.5,6,'#ffcf80');comp(g,'screen',.18,()=>{g.fillStyle=lg(g,0,64,0,68,['rgba(255,190,110,.6)','rgba(255,190,110,0)']);g.fillRect(177,64,10,6)})}
+  else comp(g,'soft-light',.22,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,220,180,1)','rgba(244,230,206,.8)','rgba(190,198,220,1)']);g.fillRect(0,0,320,144)});
+  ao(g,0,128,320,16,'b',.1,'#2a2440')}
+const hz24=()=>APPIUS24.hz;
+ART.appius24={w:320,q:12,variant:appiusV,paint(g,v){appiusPaint24(g,v==='dawn')},
   light:()=>appiusV()==='dawn'?{amb:'#c8bcc4',wallY:104}:{amb:'#f2eadc',sun:[16,-8,.38],wallY:104},draw(){},front(){}};
 /* ==== ART appius24: end ==== */
 
@@ -913,36 +1016,220 @@ ART.board24={w:320,q:12,paint(g){paintBoard24(g)},
 
 /* ==== ART hills24: begin ==== */
 /* The Appian Way in the hills, in the morning (HILLS24): the road of dark lava blocks running across from left (south) to right (north),
-   its curbs, a ditch, the hills of Campania behind, the sea seen far off at the left between two hills; the milestone LXI on the far verge
-   at the right. The soldier's foot (ART-TODO for the figure painter or the room: his step from G.beat.phase): lifted while the beat is in
-   its pause, down at the downbeat, with a little dust. Sun from the left, low: shadows to the right. A bird of prey high over the hills. */
+   its curbs, a footpath and a dry ditch beyond the far curb, the verge; the hills of Campania behind, the sea seen far off at the left
+   between two hills, lying at the one horizon (y 64); the milestone LXI on the footpath at the right. The soldier beside Paul marks the
+   beat with his foot (walk24, below): lifted in the beat's pause, set down on the downbeat with a little dust. Sun from the left, low:
+   shadows to the right and back. A bird of prey high over the hills (the engine's birds, in the open sky 40..280 by 6..36: no hill rises
+   into it). */
 const ROAD24={hz:64,road:[0,100,320,44],marks:[[80,124],[110,124],[140,124],[170,124],[200,124]],stone:[244,110],walk:[16,304,112,138]};
-function roadPaint24(g,o){sky24(g,ROAD24.hz,o.sky[0],o.sky[1]);ground24(g,ROAD24.hz,o.land);if(o.far)o.far(g);
-  R(g,0,98,320,4,'#8a8270');g.fillStyle=lg(g,0,102,0,144,['#55524e','#3e3c3a']);g.fillRect(0,102,320,42);R(g,0,102,320,1.5,'#9a948a');R(g,0,141,320,3,'#8a8270');
-  stone24(g,...ROAD24.stone,o.n)}
-ART.hills24={w:320,q:12,paint(g){roadPaint24(g,{sky:['#9cc0dc','#e8e2d2'],land:'#8a9a6a',n:'LXI',far:g=>{
-      poly(g,[0,64,40,46,90,58,140,40,200,54,260,36,320,50,320,64],'#7a8a64');R(g,96,58,30,6,'#6e98b0')}})},
-  light:{amb:'#f2eadc',sun:[17,-6,.42],wallY:100},draw(g,t){foot24(g,t)},front(){}};
+/* way24: the Appian Way across a room, as shared/rome.js paints it (its paving per pixel, its curbs, its footpath, ditch and verge), seen
+   from an eye 2.2 above the ground (so that a figure 46 pixels tall stands at its own size anywhere on the walk strip) looking straight
+   across the road. o.yF: where the paving's far edge lies on the screen; the near curb's top always ends at y 141. The road is about 5.9
+   wide, as in shared/rome.js's view from afar. What stands beyond the far curb is painted by the room before (o.back) and on the footpath by o.onPath, before the curb, so that
+   the curb's top lies in front of its foot. o.sun: where the light comes from on the ground [X, Z] (X to the right, Z away from us).
+   Returns the view, the frame, and Zy(y): how far away a point of the ground at screen row y lies. */
+function way24(g,o){const RM=SHARED.rome,hz=o.hz,H=2.2,yN=141,F=5.9/(H/(o.yF-hz)-(H-.14)/(yN-hz)),V=RM.view({hz,F,H,cx:160}),Q=RM.frame([1,0]),
+    Zy=y=>F*H/(y-hz),s0=F*(H-.14)/(yN-hz),s1=Zy(o.yF),c1=s1+.36,p1=c1+(o.path||1.1),r=rng(o.seed||2441);
+  const W={V,Q,Zy,F,s0,s1,c1,p1};
+  if(o.back)o.back(g,W);
+  /* the footpath of packed earth and gravel beyond the far curb */
+  RM.band(g,V,Q,c1-.05,p1,o.pathC||'#a49680',o.pathL||'#bcae94',(o.seed||2441)+1);
+  /* where the footpath meets the ditch or the bank beyond it: a soft seam of shade, a few blades of grass */
+  {const y=V.P(0,p1,0)[1];stroke(g,[-2,y+.2,322,y+.2],'rgba(70,60,50,.28)',.8);RM.weeds(g,-2,y+.4,322,y+.4,150,(o.seed||2441)+2,1.4)}
+  if(o.onPath)o.onPath(g,W);
+  /* the far curb (its face toward us), the paving, the near curb (its top only, along the foot of the picture) */
+  RM.curb(g,V,Q,{s0:s1,s1:c1,h:.14,u0:-30,u1:30,seed:(o.seed||2441)+3,c:o.curbC||'#a8a294',len:1.2});
+  RM.road(g,V,Q,{s0,s1,cell:o.cell||.55,seed:(o.seed||2441)+4,sun:o.sun,light:o.light,haze:o.haze,hz0:30,hz1:60,turn:o.turn});
+  RM.curb(g,V,Q,{s0:s0-.4,s1:s0,h:.14,u0:-12,u1:12,seed:(o.seed||2441)+5,c:o.curbN||'#a29c8e',near:1,len:1.1});
+  /* the shade along the foot of the far curb's face, where it meets the paving, and the light on its top edge */
+  {const y=V.P(0,s1,0)[1];for(const[dy,wd,a]of[[.4,1.4,.16],[.2,.6,.3]])stroke(g,[-2,y+dy,322,y+dy],rgba('#2a2430',a),wd)}
+  void r;return W}
+/* roadStone24: the milestone on the footpath at x (its number n in Roman letters): a short thick cylinder of grey stone standing in the
+   gravel, its cast shadow away from the sun (cast: where the shadow of a figure 46 tall would reach), weeds at its foot */
+function roadStone24(g,W,x,n,o){const RM=SHARED.rome,Z=W.c1+.5,[,y]=W.V.P(0,Z,0),h=o.h||26,w=o.w||14,c=o.cast||[0,0];
+  RM.milestone(g,x,y,{w,h,ry:1.7,n,sun:o.sun||-1,seed:o.seed||2451,cast:o.cast?[c[0]*h/46*2,c[1]*h/46*2]:null,lh:o.lh||4.4,ny:o.ny||4,lw:o.lw||.7,gap:o.gap||.75,c:o.c});
+  RM.weeds(g,x-w/2-1.4,y-.1,x-w/2+1.6,y+.3,8,(o.seed||2451)+1,1.8);RM.weeds(g,x+w/2-1.2,y-.1,x+w/2+1.8,y+.3,7,(o.seed||2451)+2,1.6);return y}
+/* hillsBack24: the land behind the road in the hills: the sky, the hills of Campania rising beyond the one horizon (y 64), the sea far off
+   between two of them, the fields of the valley, olives, stone pines and a cypress or two, a farm far off; then the verge with its bank
+   and the dry ditch down to the footpath */
+function hillsBack24(g,W){const hz=ROAD24.hz,RM=SHARED.rome,CO=SHARED.country,r=rng(2461);
+  sky(g,320,hz+1,['#7a9ccb','#9cb6d6','#c8d6e0','#e8e4d8']);
+  pool(g,-20,hz-6,120,26,'#fff2dc',.32,'screen');
+  {const q=rng(2462);cloud(g,262,18,64,2.6,q,'#fbf6ee','#b4bed4');cloud(g,190,30,40,1.8,q,'#f6f2ea','#bec6d8')}
+  /* the far mountains, blue with distance; the gap between the two hills where the sea is seen (x 96..126) */
+  const ss=(a,b,v)=>{const t=clamp((v-a)/(b-a),0,1);return t*t*(3-2*t)},gap=x=>1-ss(80,104,x)+ss(118,142,x);
+  CO.range(g,-2,322,hz+.2,x=>gap(x)*(x<110?13+9*Math.sin((x+30)/46)+3*Math.sin(x/9):15+11*Math.sin((x-120)/64)+2.6*Math.sin(x/7.3))+.4,['#9eaccc','#b6bfd4'],{k:.35});
+  /* the nearer hills, green-grey, their feet on the horizon, the sea between them */
+  CO.range(g,-2,322,hz+.4,x=>gap(x)*(x<110?6+4*Math.sin((x+8)/22)+1.2*Math.sin(x/5):x<210?5+3*Math.sin((x-140)/26)+1.4*Math.sin(x/4.4):8+5*Math.sin((x-210)/30)+1*Math.sin(x/6)),['#7e9070','#90a07e'],{k:.5});
+  CO.plain(g,-2,322,hz,96,2463,{vx:160,land:'#97a866',haze:'#c4ccd4',clouds:2});
+  /* the sea at the horizon: its far edge is the horizon itself; the land in front hides it a pixel or two lower */
+  {const P=[];for(let x=92;x<=134;x+=1)P.push(x,hz);for(let x=134;x>=92;x-=1){const e=Math.min(x-92,134-x);P.push(x,hz+Math.min(2.2,e*.14))}
+    poly(g,P);g.fillStyle=lg(g,0,hz,0,hz+2.4,['#a4bccc','#8eaabc']);g.fill();R(g,98,hz,30,.5,'rgba(255,250,236,.55)')}
+  /* the near slopes come down to the sea's edges, the valley floor in front of them */
+  CO.range(g,-2,322,hz+3.2,x=>Math.max(0,(x<106?3.4+1.6*Math.sin(x/11)-Math.max(0,x-88)*.18:x>118?3+1.4*Math.sin(x/8)-Math.max(0,132-x)*.2:0)),['#8a9a6c','#93a272'],{k:.4});
+  /* a farm far off on the right-hand slope, a row of stone pines along a lane, olives on the terraces */
+  RM.house(g,252,hz+5.2,7,3.4,{c:'#d8c49e',roof:'#a85a3c',side:1.2,haze:.2,rh:1.4});RM.house(g,260,hz+5.8,4,2.2,{c:'#ccb48e',roof:'#9a5236',side:1,haze:.2,rh:1.1});
+  for(let i=0;i<7;i++){const x=150+i*9+r()*3,y=hz+7+i*.3;pine(g,x,y,8+r()*2.4,'#4c6640')}
+  for(let i=0;i<22;i++){const x=r()*320,y=hz+4+r()*12;if(x>88&&x<138&&y<hz+8)continue;CO.tree(g,x,y,4+r()*4,'#7d876a',{kind:'olive',seed:2470+i,cast:false})}
+  /* nearer: two stone pines and a cypress on the far side of the valley, an olive grove at the left */
+  pine(g,44,86,30,'#46623e',{lean:.25});pine(g,286,84,24,'#4a663e',{lean:-.2});
+  RM.cypress(g,212,86,22,{c:'#3a5634',seed:2464,sun:-1,w:3.4});RM.cypress(g,219,87,16,{c:'#3e5836',seed:2465,sun:-1,w:2.8});
+  for(let i=0;i<6;i++)CO.tree(g,70+i*11+r()*4,88+r()*2,9+r()*3,'#7d876a',{kind:'olive',seed:2480+i});
+  /* the verge back to its bank, and the dry ditch before the footpath */
+  RM.verge(g,W.V,W.Q,W.p1+.9,W.p1+3.4,2466);
+  RM.ditch(g,W.V,W.Q,W.p1,W.p1+.9,rng(2467));
+  /* the morning light over the land: warm from the left, the right a little cooler */
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,214,170,1)','rgba(240,226,200,.8)','rgba(184,192,214,1)']);g.fillRect(0,0,320,100)})}
+/* roadPaint24: the whole picture of the road, for hills24 and marsh24: o.back paints what lies beyond the footpath, o.n is the number on
+   the milestone, o.sun the light on the ground, o.cast where a figure's shadow reaches (the room's light().sun) */
+function roadPaint24(g,o){const W=way24(g,{hz:ROAD24.hz,yF:102,seed:o.seed||2441,sun:o.sun,back:o.back,
+    onPath:(g,W)=>roadStone24(g,W,ROAD24.stone[0],o.n,{cast:o.cast,seed:o.seed+10})});
+  /* the light of the hour over the whole, and a little air at the foot of the picture */
+  comp(g,'soft-light',.22,()=>{g.fillStyle=lg(g,0,0,320,0,o.wash||['rgba(255,220,180,1)','rgba(244,230,206,.8)','rgba(190,198,220,1)']);g.fillRect(0,0,320,144)});
+  ao(g,0,128,320,16,'b',.1,'#2a2440');return W}
+ART.hills24={w:320,q:12,paint(g){roadPaint24(g,{n:'LXI',seed:2441,sun:[-.94,-.34],cast:[17,-6],back:hillsBack24})},
+  light:{amb:'#f2eadc',sun:[17,-6,.42],wallY:100},draw(g,t){walk24(g,t)},front(){}};
+/* The soldier's step on the beat (shared/beat.js; BEAT24: one bar, 3 s). He stands beside Paul and marks the time with his leading foot:
+   it comes up as the pause begins, is held up through the pause (from .55 to .95, the moment to step), and comes down on the downbeat
+   with a little dust. A pose of the figure painter's, its legs placed by hand for each moment (POSE, stance in index.html): the far leg,
+   which leads, is lifted forward of the near one, so that the two open like a pair of compasses from the hip and never cross; its foot
+   hangs with the toes a little down, its shin slanting, never level (no T with the other leg). No spear: the soldiers carry none on
+   the road. While a line is spoken, or while he walks, he stands as the engine has him (a pose does not turn to whom he speaks with).
+     Its name ends in no digit: the engine reads a pose's frame from the digits at the end of its name and its frame (a.pk).
+     frames: 0 standing, 1 the heel coming up, 2 the foot up, 3 coming down (the heel first), 4 just down, the knees a little soft. */
+POSE.stepBeat={n:5,legs:k=>stance(...[
+  [{ax:5,kx:2.5},{ax:-5,kx:-2.5},0],
+  [{ax:6,kx:5.5,ly:3,p:-2},{ax:-5,kx:-2.5},0],
+  [{ax:9,kx:9.5,ly:9,p:-2},{ax:-5,kx:-2},0],
+  [{ax:8,kx:6.5,ly:4,p:1},{ax:-5,kx:-2.5},0],
+  [{ax:5,kx:3.5},{ax:-5,kx:-1.5},1]][k])};
+const markFr24=(b,p)=>p<.1?4:p<b.from-.08?0:p<b.from?1:p<b.to?2:3;
+function walk24(g,t){const b=G.beat,S=SO;
+  const on=!!b&&S.room===G.room&&!S.walk&&!cur&&phase24()==='road';
+  if(!on){if(S.pose==='stepBeat'){S.pose=0;S.pk=0}return}
+  const p=b.phase(t);S.pose='stepBeat';S.pk=markFr24(b,p);
+  /* the dust where his foot came down: a few specks that rise a little and fade; square, and never two by two */
+  if(p<.2){const k=p/.2,d=S.dir||1,a=.75*(1-k);
+    for(let i=0;i<9;i++){const x=S.x+d*(-2+i*1.25+(i%3)*.3+(i<4?-k:k)*1.6),y=S.y-.2-k*(1.4+(i%2)*1.2)-(i%3)*.45,s=i%3===1?1:.5;R(g,x,y,s,.5,rgba(i%2?'#e4d8c0':'#cdbfa2',a))}}
+  /* his footfall, heard from the same clock */
+  const n=Math.floor((t-b.t0)/b.period);if(G.step24!==n){if(G.step24!=null)SFX.step();G.step24=n}
+  SHARED.beat.call(g,S.x,S.y-58,t)}
 /* ==== ART hills24: end ==== */
 
 /* ==== ART marsh24: begin ==== */
-/* The Appian Way through the Pontine Marshes, by day (MARSH24): the road running straight across, the canal beside it behind the far curb
-   (it comes out of the distance at the left as a thread and runs on out of the picture at the right, toward the Marketplace), reeds and
-   pools to a low horizon, the milestone on the far verge at the right (LII for the second stretch, XLVII for the third: the variant).
-   Swallows skim the canal. Sun high from the left: shorter shadows to the right. ART-TODO. */
+/* The Appian Way through the Pontine Marshes, by day (MARSH24): the road running straight across, the canal beside it behind the far
+   curb and its footpath: it comes out of the distance at the left, narrow, and runs on alongside the road out of the picture at the
+   right, a little nearer and wider there (it runs on toward the Marketplace); a grassy bank between the footpath and the water. Beyond
+   it the marsh, flat to a low horizon (y 64): reeds in clumps that lean together, pools of still water as long low shapes, a few willows
+   and bushes. The milestone on the footpath at the right: LII for the second stretch, XLVII for the third (the variant). The reeds stand
+   only on the far bank and behind the pools, their feet in a fringe of grass, so that none crosses a water line. Swallows skim the canal
+   (the engine's birds). Sun high from the left: shorter shadows to the right. */
 const marshV=()=>F.s2?'b':'a';
-ART.marsh24={w:320,q:12,variant:marshV,paint(g,v){roadPaint24(g,{sky:['#b4c8d8','#e8e6dc'],land:'#6a7a58',n:v==='b'?'XLVII':'LII',far:g=>{
-      R(g,0,86,320,10,'#5a7286');R(g,0,86,320,1,'#8aa2b4');for(let i=0;i<5;i++)R(g,20+i*64,72,30,6,'#56685a')}})},
-  light:{amb:'#f4eee2',sun:[12,-5,.36],wallY:100},draw(g,t){foot24(g,t)},front(){}};
+/* the canal's two banks on the screen: the near one from y 91 at the left edge to 94.4 at the right, the far one from 88 to 86 */
+const CANAL24M={near:x=>91+3.4*x/320,far:x=>88-2*x/320};
+function marshBack24(g,W){const hz=ROAD24.hz,RM=SHARED.rome,CO=SHARED.country,r=rng(2561);
+  sky(g,320,hz+1,['#8aa6c8','#a8bed6','#cfdae0','#e8e6dc']);
+  pool(g,-10,hz-4,120,22,'#fff6e4',.3,'screen');
+  {const q=rng(2562);cloud(g,80,14,80,2.4,q,'#fbf8f0','#b8c2d6');cloud(g,236,24,54,1.8,q,'#f6f4ee','#c0c8da');cloud(g,150,40,36,1.2,q,'#f2f0ea','#c6ccdc')}
+  /* the flat marsh to the horizon: green-brown, paler and bluer as it goes */
+  g.fillStyle=lg(g,0,hz,0,96,['#b8c0b4','#98a27c','#808e5c','#76864e']);g.fillRect(-2,hz,324,34);
+  tex(g,'mott',.45,0,hz,320,34,'overlay',1);
+  R(g,-2,hz,324,.5,'rgba(255,250,236,.4)');
+  /* trees far off on the horizon, in low soft clumps, blue with distance */
+  for(let x=-4;x<324;x+=20+r()*46){const n=2+Math.floor(r()*4);for(let i=0;i<n;i++){const rx=1.6+r()*2.6;oval(g,x+i*rx*1.3,hz-.2-r()*.6,rx,1+r()*.6,mix(i%2?'#74846e':'#6a7a66','#b8c0c8',.5))}}
+  /* the marsh, row by row from the horizon toward the canal: pools of still water with the sky in them, long and low, each partly
+     hidden by the bed of reeds and rushes in front of it; the reeds lean together with the wind, and none stands in the water */
+  const PO=[];   /* the pools painted so far: [x0, x1, the row of their near edge]; a bed in front of one never reaches up over it */
+  for(let y=hz+1.5;y<84;){const k=(y-hz)/22,fog=Math.max(0,1-k*1.6)*.55;
+    for(let x=-10;x<330;){const w=14+k*46+r()*(10+k*30);
+      if(r()<.26){/* a pool */const ry=Math.max(.8,.5+k*2.2),P=[];for(let i=0;i<=18;i++){const a=i/18*Math.PI*2,q=1+.18*Math.sin(a*3+x)+.1*Math.sin(a*5+y);P.push(x+w/2+Math.cos(a)*w/2*q,y+Math.sin(a)*ry*(Math.sin(a)>0?.8:1.1))}
+        poly(g,P,mix('#5e5e44','#b8c0c0',fog));poly(g,P.map((v,i)=>i%2?y+(v-y)*.7:x+w/2+(v-x-w/2)*.92));g.fillStyle=lg(g,0,y-ry,0,y+ry,[mix('#a6bccc','#c8d2d8',fog),mix('#88a2b6','#c0cad2',fog)]);g.fill();
+        if(ry>1.2)R(g,x+w*.2,y-ry*.2,w*.4,.5,'rgba(255,255,248,.4)');PO.push([x-1,x+w+1,y+ry*.8+.6])}
+      else{/* a bed of reeds: a low mass, its top a fringe of blades, kept below the near edge of any pool behind it */
+        const lim=PO.reduce((m,[a,b2,py])=>a<x+w&&b2>x&&py<y?Math.min(m,y-py):m,99),h=Math.min(1.2+k*7,lim*.95),c=mix(['#7e8648','#8a8a52','#6e7c44'][Math.floor(r()*3)],'#b8c0bc',fog),P=[x,y+.6];
+        for(let xx=x;xx<=x+w;xx+=1.5)P.push(xx,y-h*(.55+.45*Math.sin(Math.PI*(xx-x)/w))*(.75+r()*.25));P.push(x+w,y+.6);poly(g,P,tint(c,-.12));
+        clipTo(g,()=>poly(g,P),()=>{g.fillStyle=lg(g,0,y-h,0,y,[rgba(tint(c,.18),.6),rgba(tint(c,-.3),.5)]);g.fillRect(x-1,y-h-1,w+2,h+2)});
+        const hb=Math.min(h*.9+1,(lim-h*.5-h*.3)/1.1);if(hb>.8&&k>.3)CO.reeds(g,x+1,x+w-1,y-h*.5,hb,2570+Math.round(x*7+y),{c:tint(c,.06),wind:.8,n:w*(.5+k),heads:k>.8&&r()<.4&&lim>20,dy:h*.6})}
+      x+=w+r()*(6+k*10)}
+    y+=1.4+k*3.6}
+  /* the far bank of the canal: a towpath of trodden earth, grass along its edge, and a few reeds standing on it, their feet in the grass */
+  const N=CANAL24M.near,Fa=CANAL24M.far;
+  {const P=[-2,Fa(-2)-2.4];for(let x=-2;x<=322;x+=4)P.push(x,Fa(x)-2.2-.3*Math.sin(x/9));P.push(322,Fa(322)+.2,-2,Fa(-2)+.2);poly(g,P,'#9a8e6c');
+    clipTo(g,()=>poly(g,P),()=>tex(g,'mott',.5,0,80,320,12,'overlay',1));
+    for(let x=-2;x<322;x+=8+r()*20){const w=4+r()*10,yb=Fa(x+w/2)-2,lim=PO.reduce((m,[a,b2,py])=>a<x+w&&b2>x&&py<yb?Math.min(m,yb-py):m,99),hb=Math.min(5+r()*4,(lim-.6)/1.1);
+      if(hb>1)CO.reeds(g,x,x+w,yb,hb,2600+Math.round(x),{c:'#6e8444',wind:.8,n:w*1.6,heads:lim>12&&r()<.25,dy:.6})}
+    CO.turf(g,-2,Fa(160)-2.6,324,Fa(160)+.4,'#7a8c4c',2603,{wind:-.3,scale:.4,dense:.7})}
+  /* the canal: the sky in it, darker under the banks, a few long level glints; it runs out of the picture at both edges */
+  {const P=[];for(let x=-2;x<=322;x+=2)P.push(x,Fa(x));for(let x=322;x>=-2;x-=2)P.push(x,N(x));poly(g,P);g.fillStyle=lg(g,0,85.5,0,96.5,['#7c96a8','#a8c0d0','#94aec0','#6e8a9c']);g.fill();
+    clipTo(g,()=>poly(g,P),()=>{
+      /* the far bank and its reeds mirrored, dim and broken, under the far edge */
+      for(let x=-2;x<322;x+=1){const d=1+r()*1.6;R(g,x,Fa(x),1,d,rgba('#5a6a48',.35))}
+      for(let i=0;i<46;i++){const x=r()*320,y=Fa(x)+1.6+r()*(N(x)-Fa(x)-2.4),w=3+r()*10;R(g,x,y,w,.5,rgba(r()<.6?'#e8f0f4':'#5a7484',.3+r()*.25))}
+      ao(g,-2,88,324,9,'b',.25,'#2a3a48')});
+    /* the water's edge: a dark seam along the far bank, the light on the near one */
+    stroke(g,P.slice(0,P.length/2),'rgba(40,50,40,.45)',.5)}
+  /* the near bank: grass from the water up to the footpath, lit by the sun, its foot in the water soft */
+  {const P=[];for(let x=-2;x<=322;x+=2)P.push(x,N(x)-.2);const yp=W.V.P(0,W.p1,0)[1];P.push(322,yp,-2,yp);poly(g,P);g.fillStyle=lg(g,0,91,0,yp,['#8a9a58','#9aaa62']);g.fill();
+    clipTo(g,()=>poly(g,P),()=>{CO.turf(g,-2,91,324,yp,'#8c9c58',2604,{wind:-.4,scale:.55,flowers:30,dry:.2});
+      for(let x=-2;x<322;x+=1)R(g,x,N(x)-.2,1,.8,'rgba(60,70,60,.3)')})}
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,230,196,1)','rgba(244,236,214,.8)','rgba(196,206,222,1)']);g.fillRect(0,0,320,100)})}
+ART.marsh24={w:320,q:12,variant:marshV,paint(g,v){roadPaint24(g,{n:v==='b'?'XLVII':'LII',seed:2541,sun:[-.92,-.4],cast:[12,-5],back:marshBack24,
+    wash:['rgba(255,232,200,1)','rgba(246,238,218,.8)','rgba(200,208,224,1)']})},
+  light:{amb:'#f4eee2',sun:[12,-5,.36],wallY:100},draw(g,t){walk24(g,t)},front(){}};
 /* ==== ART marsh24: end ==== */
 
 /* ==== ART taverns24: begin ==== */
-/* Three Taverns, the rest stop (TAVERNS24), in the afternoon: three inn fronts along the back, each with its door, the road across, a
-   trough by the middle inn (against the wall, outside the walk strip). ART-TODO. Sun from the right: shadows to the left. No sign of
-   drunkenness anywhere. */
+/* Three Taverns, the rest stop (TAVERNS24), in the afternoon: three inn fronts along the back, each plastered under its tiled roof with its
+   door of upright boards; between them the country, and the hills at the right where the road climbs on toward Rome; the road across, its
+   footpath and verge before the inns (its far edge at y 110). The inn at the left shows its right side and the one at the right its left,
+   as they stand on either side of us. A stone trough against the middle inn's wall beside its door, a bench under its window, outside the
+   walk strip. No sign of drunkenness anywhere: no jars of wine, no cups. Sun from the right: the sides turned to it lit, the shadows of
+   the trough, the bench and the eaves falling to the left and back. Heads on the walk strip come at y 68..92 in front of the plastered
+   walls and the doors (their tops are square): nothing round behind them. */
 const TAVERNS24={hz:62,inns:[[20,44,80,58],[120,40,84,62],[224,46,80,56]],doors:[[52,74,16,28],[154,72,16,30],[256,76,16,26]],walk:[16,304,112,138]};
-ART.taverns24={w:320,q:12,paint(g){sky24(g,TAVERNS24.hz,'#a6c4dc','#ece4d4');ground24(g,TAVERNS24.hz,'#a49a7e');
-    blocks24(g,TAVERNS24.inns.map(b=>[...b,'#c6ae8c']).concat(TAVERNS24.doors.map(b=>[...b,'#4a3424'])));R(g,0,102,320,8,'#7e7a72')},
+function tavernsBack24(g,W){const hz=TAVERNS24.hz,RM=SHARED.rome,CO=SHARED.country,r=rng(2741),Z0=W.Zy(102);
+  sky(g,320,hz+1,['#7c9cc8','#9cb6d4','#cad6de','#efe2cc']);pool(g,330,hz-10,150,30,'#ffe8c8',.35,'screen');
+  {const q=rng(2742);cloud(g,70,16,80,2.6,q,'#fbf6ee','#b4bed4');cloud(g,210,34,50,1.8,q,'#f8f2ea','#bec6d8')}
+  /* the hills at the right, where the road climbs on toward Rome; low hills far off at the left */
+  CO.range(g,170,322,hz+.2,x=>Math.max(0,(12+6*Math.sin((x-200)/40)+1.4*Math.sin(x/7))*Math.min(1,(x-170)/50)),['#a4aec8','#b8c0d2'],{k:.35,light:1});
+  CO.range(g,-2,150,hz+.3,x=>Math.max(0,3+2*Math.sin(x/26)+.8*Math.sin(x/6)),['#a8b2c6','#bcc2d0'],{k:.3,light:1});
+  CO.plain(g,-2,322,hz,104,2743,{vx:160,land:'#9aa866',haze:'#ccd0d8',clouds:2});
+  for(let i=0;i<14;i++){const x=r()*320,y=hz+3+r()*12;CO.tree(g,x,y,4+r()*4,'#7d876a',{kind:r()<.6?'olive':'oak',seed:2750+i,cast:false,light:1})}
+  pine(g,110,88,24,'#46623e',{lean:-.2});RM.cypress(g,214,90,26,{c:'#3a5634',seed:2744,sun:1,w:3.6});
+  /* the inns */
+  const M=SHARED.materials,C=['#d8c4a2','#dcc8a8','#d2bc98'],ti='#a85a3c';
+  const inn=(i,ye,o)=>{const[x,yt,w,h]=TAVERNS24.inns[i],x1=x+w,yb=yt+h;
+    /* the side we see, toward the middle of the picture, and its roof */
+    if(o.side){const sx=o.side>0?x1:x,k=Z0/(Z0+3.4),bx=160+(sx-160)*k,by=v=>hz+(v-hz)*k,P=[sx,ye,bx,by(ye),bx,by(yb),sx,yb];
+      clipTo(g,()=>poly(g,P),()=>{plaster(g,Math.min(sx,bx)-1,yt,Math.abs(bx-sx)+2,yb-yt+1,tint(C[i],o.side>0?.12:-.22),r,{patch:0,cracks:0,t:.4});
+        g.fillStyle=lg(g,sx,0,bx,0,o.side>0?['rgba(255,236,200,.25)','rgba(60,50,60,.15)']:['rgba(40,30,40,.25)','rgba(40,30,40,.1)']);g.fillRect(Math.min(sx,bx)-1,yt,Math.abs(bx-sx)+2,yb-yt+1);
+        ao(g,Math.min(sx,bx)-1,ye-1,Math.abs(bx-sx)+2,5,'t',.4,'#3a2a2a')});
+      const e=o.side>0?1.5:-1.5;poly(g,[sx+e,ye,sx+(o.side>0?-1:1),yt,bx+(o.side>0?-1:1)*k,by(yt),bx+e*k,by(ye)],tint(ti,o.side>0?-.05:-.25));
+      poly(g,[sx,yb-.5,bx,by(yb)-.5,bx,by(yb)+.6,sx,yb+.6],'rgba(40,30,30,.3)')}
+    front24(g,x,x1,ye,yb,C[i],{doors:[TAVERNS24.doors[i]],wins:o.wins},rng(2760+i));
+    tiles24(g,x-2,x1+2,yt,ye,ti,1,rng(2770+i));
+    /* the corner where the front meets the side: a fine edge of light (the side in the sun) or of shade */
+    if(o.side){const sx=o.side>0?x1:x;R(g,sx-(o.side>0?.6:0),ye,.6,yb-ye,o.side>0?'rgba(255,244,220,.55)':'rgba(50,36,40,.45)')}
+    /* the sun from the right: the shade of the eave on the front, deeper toward the left */
+    comp(g,'multiply',.35,()=>poly(g,[x,ye,x1,ye,x1,ye+2,x,ye+5],'#6a5a6e'))};
+  inn(0,56,{side:1,wins:[[28,62,8,6],[80,62,8,6]]});
+  inn(2,58,{side:-1,wins:[[232,64,8,6],[286,64,8,6]]});
+  inn(1,52,{wins:[[128,58,8,6],[184,58,8,6],[134,76,10,7]]});
+  /* the trough against the middle inn's wall, right of its door: a long block of stone, the water in it a band seen a little from above;
+     its shadow falls to the left and back. The bench under the window at the left of the door: a plank on two blocks, one at each end */
+  {const x0=176,x1=200,yb=102,yt=95;comp(g,'multiply',.3,()=>poly(g,[x0,yb,x0-6,yb-2.6,x1-6,yb-2.6,x1,yb],'#5a4a66'));
+    R(g,x0,yt,x1-x0,yb-yt,'#b8b0a0');tex(g,'mott',.5,x0,yt,x1-x0,yb-yt,'overlay',1);R(g,x0,yt,x1-x0,.8,'#e4dccc');R(g,x0+1,yt+.8,x1-x0-2,1.2,'#7a94a4');R(g,x0+1,yt+.8,x1-x0-2,.5,'#b8ccd6');
+    R(g,x1-1,yt,1,yb-yt,'#d8d0c0');R(g,x0,yb-1,x1-x0,1,'rgba(50,40,40,.35)');M.shadow(g,(x0+x1)/2,yb,13,1,.4)}
+  {const x0=126,x1=148,y=95.6;comp(g,'multiply',.25,()=>poly(g,[x0,102,x0-5,99.8,x1-5,99.8,x1,102],'#5a4a66'));
+    for(const bx of[x0+1,x1-4])R(g,bx,y+1.4,3,102-y-1.4,'#a89e8c');M.board(g,x0,y,x1-x0,1.6,'#8a6a46',r);M.shadow(g,x0+2.5,102,2.6,.6,.45);M.shadow(g,x1-2.5,102,2.6,.6,.45)}
+  /* where the houses meet the ground: a seam of shade along their foot, weeds against it */
+  for(const[a,b]of[[20,100],[120,204],[224,304]]){for(const[dy,wd,al]of[[.4,1.6,.16],[.2,.7,.3]])stroke(g,[a,102+dy,b,102+dy],rgba('#2a2026',al),wd);RM.weeds(g,a+2,102.3,b-2,102.4,Math.round((b-a)*.6),2780+a,1.5)}
+  /* the verge before the inns: beaten earth and grass */
+  {const y0=102.3,y1=W.V.P(0,W.p1,0)[1];g.fillStyle=lg(g,0,y0,0,y1,['#ac9c7c','#b4a684']);g.fillRect(-2,y0,324,y1-y0+.5);
+    CO.turf(g,-2,y0,324,y1,'#8a9a5a',2790,{wind:-.3,scale:.4,dense:.5,dry:.35})}}
+ART.taverns24={w:320,q:12,paint(g){way24(g,{hz:TAVERNS24.hz,yF:110,seed:2731,sun:[.9,-.42],light:'#fff0d8',back:tavernsBack24});
+    comp(g,'soft-light',.25,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(190,198,222,1)','rgba(244,230,206,.8)','rgba(255,214,170,1)']);g.fillRect(0,0,320,144)});
+    ao(g,0,128,320,16,'b',.1,'#2a2440')},
   light:{amb:'#f2e8d8',sun:[-16,-7,.38],wallY:102},draw(){},front(){}};
 /* ==== ART taverns24: end ==== */
 
