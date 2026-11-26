@@ -1,4 +1,4 @@
-/* Paul of Tarsus: the English text for the engine (index.html) and the shared files (shared/tablets.js, shared/map.js, shared/birds.js).
+/* Paul of Tarsus: the English text for the engine (index.html) and the shared files (shared/tablets.js, shared/map.js, shared/birds.js, shared/beat.js, shared/lookback.js, shared/finale.js).
    Loaded by index.html before anything is shown (see LANGUAGES there). Each entry is a key, as the code uses it, and the English line.
    English is the language every other one is translated from: a change here makes the translations of that line stale until they are
    checked (node tools/strings.mjs --show de main). Bible verses are told in the game's own words, never copied (CONTRIBUTING section 1) */
@@ -342,5 +342,30 @@ TEXTS('en','main',{
   "storks_flying_north":"Storks, flying north in a long line. Spring is here.",
   "sparrows_on_the_roof":"Sparrows on the roof, chattering away.",
   "doves_on_the_wall":"Doves on the wall, cooing in the sun.",
-  "now":"Now!"
+  "now":"Now!",
+  "from_damascus_to_rome":"From Damascus to Rome",
+  "a_prologue_and_twenty_five_chapters":"A prologue and twenty-five chapters",
+  "hidden_treasures_n_of_all":"Hidden treasures: {n} of {all}",
+  "look_for_the_others":"look for the others",
+  "based_on_acts_and_on_letters_of_paul":"Based on the book of Acts and on letters of Paul. All dialogue is dramatization.",
+  "acts_ends_here_paul_was_apparently_set_free":"Acts ends here. Paul was apparently set free about 61 C.E. and went on preaching.",
+  "about_the_last_chapter":"About the last chapter",
+  "click_to_return_to_the_title":"Click to return to the title",
+  "click_to_go_back":"Click to go back",
+  "paul_wrote_that_his_situation_helped_the_good_news":"Paul wrote to Philippi that his situation had in fact helped the good news forward.",
+  "the_whole_guard_knew_why_he_was_in_bonds":"The whole Praetorian Guard, and everyone else, had learned that it was for Christ that he was in bonds.",
+  "his_bonds_gave_most_brothers_confidence_philippians_1_12_14":"And his bonds had given most brothers in the Lord confidence: they spoke the word of God with more courage than before, and without fear. (Philippians 1:12-14)",
+  "here_the_account_ends":"Here the account ends. Paul was still a prisoner. The good news was not.",
+  "from_damascus_to_jerusalem":"From Damascus to Jerusalem, to Tarsus, and to Antioch.",
+  "sent_out_from_antioch_across":"Sent out from Antioch: across Cyprus, and up through Pamphylia to Antioch in Pisidia and Iconium.",
+  "to_lystra_and_derbe_and_back":"To Lystra and Derbe, and back the same way; and home by sea from Attalia.",
+  "through_galatia_to_troas":"Through Galatia to Troas, over to Macedonia, down to Athens and Corinth, and across to Ephesus.",
+  "home_caesarea_up_and_down_to_antioch":"And home: Caesarea, up, and down to Antioch.",
+  "through_galatia_and_phrygia_to_ephesus":"Out again from Antioch: through Galatia and Phrygia to Ephesus, on to Macedonia and Greece, and back as far as Troas.",
+  "from_troas_down_the_coast_to_miletus":"From Troas down the coast: Assos, Mitylene, Chios, Samos, Miletus.",
+  "by_cos_rhodes_and_patara_to_tyre":"By Cos, Rhodes and Patara across to Tyre, on to Caesarea, and up to Jerusalem.",
+  "by_night_to_antipatris_and_on_to_caesarea":"As a prisoner, by night to Antipatris and on to Caesarea. Two years in custody there.",
+  "for_italy_by_sidon_and_myra_to_fair_havens":"For Italy: by Sidon and Myra to Fair Havens on Crete. Then the storm, past Cauda.",
+  "across_the_sea_of_adria_to_malta":"Driven across the Sea of Adria until the fourteenth night. All came safely to land, on Malta.",
+  "by_syracuse_rhegium_and_puteoli_to_rome":"After the winter: by Syracuse, Rhegium and Puteoli, and at last to Rome."
 });
