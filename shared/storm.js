@@ -217,10 +217,10 @@ function seaRidge(g,S,o){const{pts,sh,z,fade,sc,ox,k}=S,P=o.P,haze=hx(P.haze),w=
   poly(g,body,cs(P.face,1));
   g.fillStyle=lg(g,0,top+1.5*sc,0,top+26*sc+10,[cs(P.face,0),cs(P.deep,.9)]);poly(g,body);g.fill();
   /* the face's own streaks, carried with the sea */
-  if(fade<.9){const T=faceTex(o.pal);clipTo(g,()=>poly(g,body),()=>{g.globalAlpha=(1-fade)*.9;const x0=-fr(ox/T.TW)*T.TW;
+  if(fade<.6){const T=faceTex(o.pal);clipTo(g,()=>poly(g,body),()=>{g.globalAlpha=(1-fade)*.9;const x0=-fr(ox/T.TW)*T.TW;
     for(let x=x0-T.TW;x<w+T.TW;x+=T.TW)g.drawImage(T.c,x,top-1,T.TW,T.TH);g.globalAlpha=1})}
   /* the lip: the water under the crest is thin and lets the light through */
-  for(const[d,c,a]of[[3.4,P.glass,.3],[2.1,P.glass,.55],[1.1,P.crest,.55],[.3,P.crest,.85]]){g.beginPath();for(let i=0;i<pts.length;i+=2)g[i?'lineTo':'moveTo'](pts[i],pts[i+1]+d*clamp(sc,.3,1.6));
+  for(const[d,c,a]of fade>.6?[[1.1,P.glass,.5],[.3,P.crest,.85]]:[[3.4,P.glass,.3],[2.1,P.glass,.55],[1.1,P.crest,.55],[.3,P.crest,.85]]){g.beginPath();for(let i=0;i<pts.length;i+=2)g[i?'lineTo':'moveTo'](pts[i],pts[i+1]+d*clamp(sc,.3,1.6));
     g.strokeStyle=cs(c,a*(1-fade*.85));g.lineWidth=Math.max(.5,Math.min(1.6,sc*.9));g.stroke()}
   /* the rain's haze between us and it, thicker the farther it is */
   if(fade>.02){poly(g,body);g.fillStyle=lg(g,0,top-2,0,top+30,[cs(haze,fade*.97),cs(haze,fade*.85)]);g.fill()}
@@ -318,7 +318,7 @@ function deckSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz
 /* The seas run toward us, a crest every DZ metres, one passing every o.period ms; the ship lies at ZS among them, so the seas beyond her
    are drawn before her hull and those between her and us after it. Her waterline is the surface at ZS under her stern and her bow. */
 function sideSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz==null?30:o.hz,F=o.F||300,E=o.eye||14,cx=w/2,ZS=o.zShip||46,DZ=o.spacing||24,Z0=6,
-    ht=o.height==null?1:o.height,per=o.period||6000,seed=o.seed||2215,dxW=o.dx==null?-1:o.dx,rk=k=>h2(k,3,seed),N=14;
+    ht=o.height==null?1:o.height,per=o.period||6000,seed=o.seed||2215,dxW=o.dx==null?-1:o.dx,rk=k=>h2(k,3,seed),N=11;
   const SKY=sky({pal,h:hz+34,seed:seed+1,dx:dxW,w});
   const amp=k=>ht*(4.4+1.3*(rk(k)-.5)),
     shape=(k,X,t)=>{const dr=t/1000*1.4*dxW;return .5*pk(X/40+rk(k+9)*3+dr/40)+.32*pk(X/15+rk(k+5)*3+dr*1.5/15)+.18*pk(X/6+rk(k+2)*3+dr*2/6)},
