@@ -44,7 +44,9 @@ const GL={
  Z:{w:.74,s:[{p:['M',.08,.035,'L',.66,.035],h:1},{p:['M',.66,.035,'L',.08,.965]},{p:['M',.08,.965,'L',.68,.965],h:1}],f:[[.08,.035,'d-'],[.68,.965,'u']]},
  '?':{w:.70,s:[{p:['M',.12,.22,'C',.14,-.04,.62,-.06,.62,.22,'C',.62,.42,.38,.46,.38,.68]},{p:['E',.38,.93,.05,.05]}],f:[]},
  /* the apostrophe (THE SISTER'S SON): a short tapering stroke of the broad pen that hangs from the top of the line, curving a little to the left as it falls, like a comma set high */
- "'":{w:.26,s:[{p:['M',.15,-.01,'C',.16,.08,.14,.16,.07,.27]}],f:[]}};
+ "'":{w:.26,s:[{p:['M',.15,-.01,'C',.16,.08,.14,.16,.07,.27]}],f:[]},
+ /* the hyphen (CHAPTER TWENTY-ONE): one short level stroke of the broad pen a little below the middle of the capitals, nothing across it */
+ '-':{w:.42,s:[{p:['M',.07,.58,'L',.35,.58]}],f:[]}};
 /* letters with dots above them: the dots stand over the capital, and the line makes room for them (see paint) */
 for(const[u,b,xs]of[['Ä','A',[.28,.60]],['Ö','O',[.32,.68]],['Ü','U',[.25,.61]]])GL[u]={w:GL[b].w,s:GL[b].s.concat(xs.map(x=>({p:['E',x,-.2,.05,.05]}))),f:GL[b].f};
 /* pairs of letters that stand closer together than their widths say */

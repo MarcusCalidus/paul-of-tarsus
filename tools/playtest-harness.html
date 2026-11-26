@@ -125,6 +125,8 @@
   17:()=>act('look','heap_of_shells'), // Chapter Seventeen: on the beach outside Tyre, the heap of spent murex shells off the way
   18:()=>act('look','far_end_of_the_colonnade'), // Chapter Eighteen: in the Court of the Gentiles, the far end of Solomon's Colonnade
   19:()=>act('look','spring'), // Chapter Nineteen: at Antipatris at dawn, the spring off the way
+  20:()=>act('look','stub20_window'), // Chapter Twenty: STUB, the stub's window. LOGIC20: from treasure.at, the steps that see the storks over the harbor from window20
+  21:()=>act('look','stub21_opening'), // Chapter Twenty-One: STUB, the stub's opening. LOGIC21: from treasure.at, the steps that look at the ox goad by the palace gate
  };
  (async()=>{try{
   while(!G.ready)await wait(30);
@@ -3994,8 +3996,8 @@
     walkTo=async(x,y)=>{const p=PC();walk(p,x,y);for(let i=0;i<900&&(p.walk||!G.busy&&false);i++)await wait(25);await idle()};
   heard.length=0;
   if(C17){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
-    const c17=chs.find(c=>c.dataset.ch==='17');ok(c17&&c17.textContent.includes(T('chapter_seventeen'))&&c17.textContent.includes(T('the_belt_2'))&&PLANNED[0].label==='chapter_twenty'&&plans.textContent.includes(T('Twenty')),
-      'the title lists Chapter Seventeen, The Belt, and the chapters in preparation begin with the twentieth')}
+    const c17=chs.find(c=>c.dataset.ch==='17');ok(c17&&c17.textContent.includes(T('chapter_seventeen'))&&c17.textContent.includes(T('the_belt_2'))&&PLANNED[0].label==='chapter_twenty_two'&&plans.textContent.includes(T('twenty_two')),
+      'the title lists Chapter Seventeen, The Belt, and the chapters in preparation begin with the twenty-second')}
   (C17?document.querySelector('#overlay [data-ch="17"]'):ov).click();
   await until(()=>G.ch===17&&G.room==='patara17'&&!G.busy,4000);note();
   const LK=A('luke17'),AK=A('akestor17'),MO=A('moschos17'),KA=A('kallikrates17'),SO=A('sostratos17'),BU=A('butcher17'),MY=A('myrto17'),PN=A('phanias17'),JO=A('joezer17'),
@@ -4160,8 +4162,8 @@
     code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
   if(C18){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
-    {const c18=chs.find(c=>c.dataset.ch==='18');ok(c18&&c18.textContent.includes(T('chapter_eighteen'))&&c18.textContent.includes(T('on_the_stairs_2'))&&PLANNED[0].label==='chapter_twenty'&&plans.textContent.includes(T('Twenty')),
-      'the title lists Chapter Eighteen, On the Stairs, and the chapters in preparation begin with the twentieth')}}
+    {const c18=chs.find(c=>c.dataset.ch==='18');ok(c18&&c18.textContent.includes(T('chapter_eighteen'))&&c18.textContent.includes(T('on_the_stairs_2'))&&PLANNED[0].label==='chapter_twenty_two'&&plans.textContent.includes(T('twenty_two')),
+      'the title lists Chapter Eighteen, On the Stairs, and the chapters in preparation begin with the twenty-second')}}
   (C18?document.querySelector('#overlay [data-ch="18"]'):ov).click();
   await until(()=>G.ch===18&&G.room==='mnason18'&&!G.busy,4000);note();
   const MN=A('mnason_18'),JA=A('james18'),TR=A('troph18'),CY=A('cyrene18'),GR=A('greek18'),LV=A('levite18'),CM=A('commander18'),OF=A('officer18'),S1=A('sol18a'),BA=A('barber18');
@@ -4339,8 +4341,8 @@
     code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
   if(C19){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
-    ok(chs.length===19&&last.dataset.ch==='19'&&last.textContent.includes(T('chapter_nineteen'))&&last.textContent.includes(T('the_sisters_son_2'))&&PLANNED.length===6&&PLANNED[0].label==='chapter_twenty'&&plans.textContent.includes(T('Twenty')),
-      'the title lists nineteen chapters, the last of them The Sister\'s Son, and the chapters in preparation begin with the twentieth')}
+    {const c19=chs.find(c=>c.dataset.ch==='19');ok(c19&&c19.textContent.includes(T('chapter_nineteen'))&&c19.textContent.includes(T('the_sisters_son_2'))&&PLANNED[0].label==='chapter_twenty_two'&&plans.textContent.includes(T('twenty_two')),
+      'the title lists Chapter Nineteen, The Sister\'s Son, and the chapters in preparation begin with the twenty-second')}}
   (C19?document.querySelector('#overlay [data-ch="19"]'):ov).click();
   await until(()=>G.ch===19&&G.room==='council19'&&!G.busy,6000);note();
   const NE=A('nephew19'),SI=A('sister19'),AN=A('ananias19'),PH=A('phar19b'),SA=A('sad19a'),SE=A('sentry19'),GD=A('guard19'),OS=A('oil19'),FX=A('felix19'),M=C().map,X=C().X,Y=C().Y;
@@ -4465,11 +4467,107 @@
   heard.length=0;await line('paul_i_was_brought_up_in_jerusalem');ok(said('felix_i_asked_your_province'),'brought up in Jerusalem: not what he asked');
   heard.length=0;await line('paul_im_a_roman_citizen');ok(said('felix_ive_read_that_your_province'),'a Roman citizen: he has read that');
   await line('paul_from_cilicia');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
-  ok(ov.classList.contains('end')&&seenTold.has('v33')&&seenTold.has('v35')&&ov.textContent.includes(T('the_sisters_son_2'))&&/22:30-23:35/.test(ov.textContent)&&ov.textContent.includes(T('click_to_return_to_the_title'))&&inOv(),
-    'Cilicia (Acts 23:34); a hearing when the accusers come, kept in Herod\'s palace (Acts 23:35); the end screen says what the account leaves unsaid');
+  ok(ov.classList.contains('end')&&seenTold.has('v33')&&seenTold.has('v35')&&ov.textContent.includes(T('the_sisters_son_2'))&&/22:30-23:35/.test(ov.textContent)&&ov.textContent.includes(T('click_to_continue_to_chapter_twenty'))
+    &&ov.textContent.includes(T('chapter_twenty_code_code',{code:codeOf(20,0)}))&&store('paul.save')===codeOf(20,0)&&inOv(),
+    'Cilicia (Acts 23:34); a hearing when the accusers come, kept in Herod\'s palace (Acts 23:35); the end screen says what the account leaves unsaid and leads on to Chapter Twenty with its first code');
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 22:30-23:35 was told'+(miss.length?' MISSING '+miss:''))}
   {const bad=(G.caps19||[]).filter(c=>c.w>c.max+.5||c.h>c.maxh+.5);ok((G.caps19||[]).length>0&&!bad.length,'every word painted on the letter and the tablet fits its box'+(bad.length?': '+bad.slice(0,4).map(c=>c.s).join(' | '):''))}
   halt('final19')};
+  /* ==== CHAPTER TWENTY: begin ==== Chapter Twenty's own stops: whoever builds the chapter extends this section, and nothing outside it but
+     its line in TSTEPS, the chain of the full run (ch20 after ch19) and the title checks of the chapters before it. */
+  /* Chapter Twenty stops start Chapter Twenty from the title screen; the full run calls its test when Chapter Nineteen has ended.
+     all20 halts nowhere. Its halts: STUB: stub20 (the stub's room) · final20. The stops that begin with "p" open one room at once, with the
+     story's flags set for it, and say the safe-point code of their point (CODE): STUB: pstub20. LOGIC20: replace every STUB name here with
+     the chapter's own halts and room stops, as Chapter Nineteen's section does. */
+  /* rooms20: every picture of Chapter Twenty on one sheet at twice its size (rooms20.png), for the art and the cross-shape check */
+  if(stop==='rooms20'){clearInterval(sk);sk=0;await loadLevel(20);setChapter(20);ov.className='';ov.onclick=null;const C=CHAP[20],ids=C.rooms,K=2;
+    const pic=(id,q,x,y)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
+      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
+      q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
+    const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
+    window.SHEETS={rooms20:c.toDataURL()};halt('rooms20')}
+  const C20=/^(stub20|final20|all20)$/.test(stop);   /* STUB: stub20 */
+  if(!C20&&/^p[a-z]+20$/.test(stop)){await loadLevel(20);ov.className='';ov.onclick=null;const C=CHAP[20],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      S={pstub20:[[],'stub20']}[stop];   /* STUB: pstub20; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
+    if(!S)throw new Error('no such stop '+stop);setChapter(20);for(const k of S[0])F[k]=1;
+    const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    await wait(1100);halt(stop)}
+  const ch20=async()=>{const said=t=>heard.includes(T(t)),C=()=>CHAP[20],told=k=>heard.includes(T(C().told[k])),
+    until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    pray20=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
+    hints=async(a,b,where)=>{heard.length=0;const p=await pray20(),first=said(a)&&!said(b),q=await pray20();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+  heard.length=0;
+  if(C20){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
+    {const c=chs.find(c=>c.dataset.ch==='20');ok(c&&c.textContent.includes(T('chapter_twenty'))&&c.textContent.includes(T('some_other_time_2'))&&PLANNED[0].label==='chapter_twenty_two'&&plans.textContent.includes(T('twenty_two')),
+      'the title lists Chapter Twenty, Some Other Time, and the chapters in preparation begin with the twenty-second')}}
+  (C20?document.querySelector('#overlay [data-ch="20"]'):ov).click();
+  /* STUB: from here to halt('final20') the steps play the stub; LOGIC20 replaces them with the chapter's playthrough */
+  await until(()=>G.ch===20&&G.room==='stub20'&&!G.busy,6000);note();
+  ok(seenTold.has('stub_open')&&decode(makeCode()).ch===20,'STUB: the stub of Chapter Twenty opens in its room, and its first line is told: '+makeCode());
+  halt('stub20');
+  await hints('stub20_hint_1','stub20_hint_2','in the stub');
+  heard.length=0;await onH('stub20_door','use');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
+  ok(ov.classList.contains('end')&&ov.textContent.includes(T('some_other_time_2'))&&/24:1-27/.test(ov.textContent)&&ov.textContent.includes(T('click_to_continue_to_chapter_twenty_one'))
+    &&ov.textContent.includes(T('chapter_twenty_one_code_code',{code:codeOf(21,0)}))&&store('paul.save')===codeOf(21,0)&&inOv(),
+    'the end screen of Chapter Twenty leads on to Chapter Twenty-One with its first code');
+  {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 24:1-27 was told'+(miss.length?' MISSING '+miss:''))}
+  halt('final20')};
+  if(C20){await ch20();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    /* STUB: LOGIC20 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+  /* ==== CHAPTER TWENTY: end ==== */
+  /* ==== CHAPTER TWENTY-ONE: begin ==== Chapter Twenty-One's own stops: whoever builds the chapter extends this section, and nothing outside it but
+     its line in TSTEPS, the chain of the full run (ch21 after ch20) and the title checks of the chapters before it. */
+  /* Chapter Twenty-One stops start Chapter Twenty-One from the title screen; the full run calls its test when Chapter Twenty has ended.
+     all21 halts nowhere. Its halts: STUB: stub21 (the stub's room) · final21. The stops that begin with "p" open one room at once, with the
+     story's flags set for it, and say the safe-point code of their point (CODE): STUB: pstub21. LOGIC21: replace every STUB name here with
+     the chapter's own halts and room stops, as Chapter Nineteen's section does. */
+  /* rooms21: every picture of Chapter Twenty-One on one sheet at twice its size (rooms21.png), for the art and the cross-shape check */
+  if(stop==='rooms21'){clearInterval(sk);sk=0;await loadLevel(21);setChapter(21);ov.className='';ov.onclick=null;const C=CHAP[21],ids=C.rooms,K=2;
+    const pic=(id,q,x,y)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
+      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
+      q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
+    const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
+    window.SHEETS={rooms21:c.toDataURL()};halt('rooms21')}
+  const C21=/^(stub21|final21|all21)$/.test(stop);   /* STUB: stub21 */
+  if(!C21&&/^p[a-z]+21$/.test(stop)){await loadLevel(21);ov.className='';ov.onclick=null;const C=CHAP[21],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      S={pstub21:[[],'stub21']}[stop];   /* STUB: pstub21; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
+    if(!S)throw new Error('no such stop '+stop);setChapter(21);for(const k of S[0])F[k]=1;
+    const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    await wait(1100);halt(stop)}
+  const ch21=async()=>{const said=t=>heard.includes(T(t)),C=()=>CHAP[21],told=k=>heard.includes(T(C().told[k])),
+    until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    pray21=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
+    hints=async(a,b,where)=>{heard.length=0;const p=await pray21(),first=said(a)&&!said(b),q=await pray21();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+  heard.length=0;
+  if(C21){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
+    {const c=chs.find(c=>c.dataset.ch==='21');ok(c&&c.textContent.includes(T('chapter_twenty_one'))&&c.textContent.includes(T('to_caesar_2'))&&PLANNED[0].label==='chapter_twenty_two'&&plans.textContent.includes(T('twenty_two')),
+      'the title lists Chapter Twenty-One, To Caesar, and the chapters in preparation begin with the twenty-second')}}
+  (C21?document.querySelector('#overlay [data-ch="21"]'):ov).click();
+  /* STUB: from here to halt('final21') the steps play the stub; LOGIC21 replaces them with the chapter's playthrough */
+  await until(()=>G.ch===21&&G.room==='stub21'&&!G.busy,6000);note();
+  ok(seenTold.has('stub_open')&&decode(makeCode()).ch===21,'STUB: the stub of Chapter Twenty-One opens in its room, and its first line is told: '+makeCode());
+  halt('stub21');
+  await hints('stub21_hint_1','stub21_hint_2','in the stub');
+  heard.length=0;await onH('stub21_door','use');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
+  ok(ov.classList.contains('end')&&ov.textContent.includes(T('to_caesar_2'))&&/25:1-26:32/.test(ov.textContent)&&ov.textContent.includes(T('click_to_return_to_the_title'))&&store('paul.save')===null&&inOv(),
+    'the end screen of Chapter Twenty-One returns to the title (until Chapter Twenty-Two is built), and keeps no code to continue from');
+  {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 25:1-26:32 was told'+(miss.length?' MISSING '+miss:''))}
+  halt('final21')};
+  if(C21){await ch21();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    /* STUB: LOGIC21 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+  /* ==== CHAPTER TWENTY-ONE: end ==== */
   if(C19){await ch19();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
@@ -5692,7 +5790,7 @@
     ok(crossings(L)===0,'no two routes cross');
     ok(mapClear(),'no name on the map crosses a coast, a lake or a route ('+M.state.boxes.length+' names)'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
   halt('journey6',()=>{ov.className=''});halt('final6');await wait(1700)}
-  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13();await wait(1700);await ch14();await wait(1700);await ch15();await wait(1700);await ch16();await wait(1700);await ch17();await wait(1700);await ch18();await wait(1700);await ch19()}
+  if(!HUB){await ch7();await wait(1700);await ch8();await wait(1700);await ch9();await wait(1700);await ch10();await wait(1700);await ch11();await wait(1700);await ch12();await wait(1700);await ch13();await wait(1700);await ch14();await wait(1700);await ch15();await wait(1700);await ch16();await wait(1700);await ch17();await wait(1700);await ch18();await wait(1700);await ch19();await wait(1700);await ch20();await wait(1700);await ch21()}
   ok(!MISSING.size&&!RAWKEY.size,'every line shown in the game had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
   /* a hub chapter in general: places on the map, six rooms, and wide codes that hold a room past the fourth */
   await loadLevel(1);await loadLevel(3);
