@@ -80,6 +80,7 @@ ephesus-evening pstreete13
 ephesus-road proad13
 even-keel phold17
 every-true-reason pplead17
+finished-title ptitlefin
 flock ppass16
 ford wade
 fuller-door pfuller13
@@ -115,6 +116,9 @@ lane-map-harbor lanes2
 lanes19 phalves19
 letter12 pletter12
 letter19 letter19
+letters-map pletters
+look-back plookback
+look-back-maps lookback lookback-maps
 lookback back12
 luke20 pluke20
 lydia lydia8
@@ -164,6 +168,7 @@ reading reading
 report21 preport21
 river river8
 road road
+road-to-rome map24 map24-sheet
 road21 proad21
 roads21 proads21
 romans romans cast-romans
@@ -176,6 +181,7 @@ saves saves
 scale store15
 scroll scroll
 scrolltable row10
+sea-cast sea cast-sea
 sealed-plea psealc14
 seamap seamap10
 secondjourney journey7
@@ -183,7 +189,6 @@ seleucia kallias
 seven-days pdays18
 shadows shadows
 shipwreck shipwreck cast-shipwreck
-sea-cast sea cast-sea
 shortway hubmap6b
 show show
 sifted tableb10
