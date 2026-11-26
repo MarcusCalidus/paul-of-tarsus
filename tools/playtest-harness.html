@@ -5525,10 +5525,10 @@
   heard.length=0;await talkTo(JU);ok(said('paul_not_yet_julius')&&!F.advised,'not yet: first what he has seen');
   heard.length=0;await talkTo(PI);ok(said('pilot_the_officer_decides'),'the pilot: the officer has the last word');
   heard.length=0;await talkTo(LK);ok(F.kWeeks&&said('luke_weve_lost_weeks'),'Luke: weeks lost');
-  heard.length=0;await talkTo(SC);ok(F.kSeason&&said('sailor_the_fast_is_behind_us'),'a sailor: the fast is behind us');
+  heard.length=0;await talkTo(SC);ok(F.kSeason&&said('sailor_late_in_the_year'),'a sailor: it is late in the year');
   heard.length=0;await onH('pennant','look');ok(F.kWind&&said('paul_the_wind_against_us_since_sidon'),'the pennant: the wind against them since Sidon');
   await code('with three things seen',()=>G.room==='deck22'&&F.fh&&F.kWeeks&&F.kSeason&&F.kWind&&!F.kWrecks);
-  heard.length=0;await onH('open_sea','look');ok(F.kWrecks&&said('paul_three_times_a_ship_has_gone_down')&&said('paul_i_have_seen_enough'),'the open sea: three shipwrecks of his own; enough');
+  heard.length=0;await onH('open_sea','look');ok(F.kWrecks&&said('paul_three_times_shipwrecked')&&said('paul_i_have_seen_enough'),'the open sea: three shipwrecks of his own; enough');
   await hints('hint_speak_to_julius_1','hint_speak_to_julius_2','with everything seen');
   heard.length=0;talkTo(JU);await until(()=>G.room==='storm22'&&PC()===LK&&!G.busy,12000);note();
   ok(said('i_can_see_how_this_voyage_ends')&&said('pilot_this_bay_is_no_place_to_winter')&&said('owner_phoenix_is_a_day_west')&&seenTold.has('v11')&&seenTold.has('v12')&&said('paul_i_said_it_as_plainly_as_i_could'),

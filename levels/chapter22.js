@@ -399,7 +399,7 @@ const ASK22={pilot:['pilot_no_sun_no_bearing','pilot_by_the_sea_we_go_west','pil
   clouds:['luke_cloud_and_more_cloud','luke_not_even_a_lighter_patch','luke_no_star_anywhere'],
   wind:['luke_the_wind_from_behind_my_shoulder','luke_the_wind_veers_and_comes_back','luke_too_much_spray_to_tell']};
 const MARK22=['mark_only_the_day','mark_south_west','mark_west','mark_north_west'];
-const MARKSAY22=['luke_only_the_day','luke_south_west_then','luke_west_as_near_as_i_can','luke_north_west_if_it_backed'];
+const MARKSAY22=['luke_only_the_day','luke_south_west_then','luke_west_as_near_as_i_can','luke_north_west_a_guess'];
 const DAYSAY22=['','luke_the_second_day','luke_the_third_day','luke_the_fourth_day','luke_the_fifth_day','luke_the_sixth_day'];
 /* In their midst: the six parts of 27:21-26 in the account's order (told.md), each with the short line it stands as in the choice */
 const SPEECH22=[{k:'you_should_have_followed_my_advice',c:'say_my_advice_at_crete'},{k:'only_the_ship_will_be_lost',c:'say_only_the_ship_will_be_lost'},
@@ -646,7 +646,7 @@ ROOMS.myra22={space:.8,walk:MYRA22.walk,mood:'myra',amb:AMB.myra22,hs:[
   {name:'gangplank',x:232,y:68,w:30,h:46,wx:250,wy:118,def:'use',look:'grain_ship_gangplank_look',use:()=>aboard22()}]};
 ROOMS.deck22={space:.8,walk:DECK22.walk,get mood(){return F.fh?'havens':'deck'},get amb(){return F.fh?AMB.havens22:AMB.deck22},hs:[
   {name:'harbor',x:0,y:0,w:320,h:62,wx:150,wy:118,look:()=>say(P,F.fh?'fair_havens_look':'myra_harbor_look',TH)},
-  {name:'open_sea',x:0,y:40,w:96,h:22,wx:60,wy:118,vis:()=>!!F.fh,look:()=>know22('kWrecks','paul_three_times_a_ship_has_gone_down')},
+  {name:'open_sea',x:0,y:40,w:96,h:22,wx:60,wy:118,vis:()=>!!F.fh,look:()=>know22('kWrecks','paul_three_times_shipwrecked')},
   {name:'pennant',x:206,y:42,w:30,h:30,wx:220,wy:118,look:()=>F.fh?know22('kWind','paul_the_wind_against_us_since_sidon'):say(P,'pennant_look22',TH)},
   {name:'deckhouse',x:176,y:70,w:60,h:34,wx:206,wy:118,look:'deckhouse_look22'},
   {name:'lee_of_the_deckhouse',x:128,y:80,w:46,h:30,wx:150,wy:116,vis:()=>!F.shelter&&!F.fh,look:'free_deck_left_look',use:'free_deck_left_look',useWith:it=>rig22(it,'lee')},
@@ -687,7 +687,7 @@ for(const a of PRISONERS)who(a,{look:'prisoner_look22',talk:()=>phase22()==='mid
 who(CS,{look:'coaster_sailor_look',talk:()=>spoke(CS,'coaster_sailor_cargo_first')});
 who(SA,{look:'sailor_look22',talk:()=>phase22()==='myra'?spoke(SA,'we_supply_the_water'):phase22()==='skiff'?pull22():phase22()==='midst'?speech22():spoke(SA,'sailor_hold_on')});
 who(SB,{look:'sailor_look22',talk:()=>cord22()});
-who(SC,{look:'sailor_look22',talk:()=>phase22()==='havens'?know22('kSeason','sailor_the_fast_is_behind_us',SC):phase22()==='midst'?speech22():spoke(SC,'sailor_hold_on')});
+who(SC,{look:'sailor_look22',talk:()=>phase22()==='havens'?know22('kSeason','sailor_late_in_the_year',SC):phase22()==='midst'?speech22():spoke(SC,'sailor_hold_on')});
 who(SD,{look:'sailor_look22',talk:()=>phase22()==='skiff'?pull22():phase22()==='midst'?speech22():spoke(SD,'sailor_hold_on')});
 who(PI,{look:'pilot_look22',talk:()=>phase22()==='tablet'?ask22('pilot'):phase22()==='midst'?speech22():spoke(PI,'pilot_the_officer_decides')});
 who(OW,{look:'shipowner_look22',talk:()=>phase22()==='midst'?speech22():spoke(OW,'owner_the_officer_decides')});
