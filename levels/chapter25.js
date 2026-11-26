@@ -340,7 +340,8 @@ function tones25(c,g,pal){const w=c.width,h=c.height,im=g.getImageData(0,0,w,h),
   g.putImageData(im,0,0)}
 /* the lines on the sheet: the largest of four sizes at which every line fits the sheet */
 function fit25(g,lines,w,h){for(const z of[5.2,4.6,4,3.4]){g.font=FONT25(z);const lh=z*1.25,out=[];
-    for(const s of lines){let cur='';for(const wd of s.split(' ')){const t=cur?cur+' '+wd:wd;if(g.measureText(t).width>w&&cur){out.push(cur);cur=wd}else cur=t}if(cur)out.push(cur);out.push('')}
+    /* a reference stays in one piece: "(Philemon 18, 19)" is never broken after its comma */
+    for(const s0 of lines){const s=s0.replace(/\(([^()]*\d[^()]*)\)$/,m=>m.replace(/ /g,'\u00a0'));let cur='';for(const wd of s.split(' ')){const t=cur?cur+' '+wd:wd;if(g.measureText(t).width>w&&cur){out.push(cur);cur=wd}else cur=t}if(cur)out.push(cur);out.push('')}
     if(out.length*lh<=h||z===3.4)return{z,lh,out}}}
 function drawSheet25(g){const ks=sheetLines25();if(!ks.length)return;const f=fit25(g,ks.map(k=>T(k)),176,118);g.font=FONT25(f.z);g.textBaseline='top';g.fillStyle='#2a1a10';
   f.out.forEach((l,i)=>g.fillText(l,72,13+i*f.lh));G.caps25={n:f.out.length,lh:f.lh,h:118}}
