@@ -509,8 +509,13 @@ const LANT22={x:1.25,y:1.45,z:11.15,c0:1.0,c1:1.5};
 const lant22=()=>{const D=gd22(),y0=D.s(11.3);return{p:D.P(LANT22.x,y0+LANT22.y,LANT22.z),a:D.P(LANT22.c0,y0+1.87,LANT22.z),b:D.P(LANT22.c1,y0+1.87,LANT22.z),floor:D.P(LANT22.x,y0,11.3)}};
 /* the storm sea for each picture: by day, a little lower in the lee of Cauda; by night, the dark one, the lantern's light in its rain */
 const DS22={};
+/* the uprights that stand against the sea, on the screen: the swan's neck and the mast, [middle, half width with a margin for the sway,
+   how far the seas' outline falls across it] */
+const POSTS22=[[152,11,7],[271,16,9]];
 const ds22=v=>DS22[v]||(DS22[v]=SHARED.storm.deckSea({pal:v==='n'?'night':'day',dx:1,slant:.9,rail:70,deck0:82,height:v==='s'?.72:1,seed:2209,
-  lightning:true,clear:[132,300],lamp:v==='n'?[lant22().p[0],lant22().p[1]+4,34]:undefined}));
+  lightning:true,clear:[132,300],lamp:v==='n'?[lant22().p[0],lant22().p[1]+4,34]:undefined,
+  /* the swan's neck and the mast stand against the seas: there every outline runs down a flank, never level behind them */
+  posts:POSTS22}));
 /* the moment in the sea: the beat's own phase when it runs here (its whole part counts the seas, so that each is a little different), else
    a clock of six seconds */
 const e22=t=>{const b=G.beat;return b&&b.room==='storm22'?(t-b.t0)/b.period:t/6000};
