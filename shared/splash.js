@@ -511,13 +511,13 @@ function light(g){const[lx,ly]=LAMP,[c,l]=mk(VW*HR,VT*HR);l.scale(HR,HR);
 
 /* ---------- daylight: the room in the morning, lit from a window in the left wall, out of the picture ----------
    A warm light: the stone toward cream and ochre where the sun lies, a warm brown-grey in the shade, nothing violet. The sun comes in
-   low and lies on the left of the bench and on the foot of the wall above it (SUN), no higher than about a third of the wall, so that the
+   low and lies on the left of the bench and on the foot of the wall above it (SUN), no higher than a fifth of the wall, so that the
    upper wall is in even, soft shade, where the closing screen's words stand. Its edges are soft (it is laid on several times a little
    apart), and it is a patch of light on the stone and the wood, not a ray: no beam, no shaft and no dust in the air (CONTRIBUTING
    section 3). */
 /* SUN: the patches of sun, one on the foot of the wall and one on the bench. Their edges bend where the wall meets the bench, as the
    edge of a patch of light does where it passes from one face to another, and they do not run on as one slanting band. */
-const SUN=[[0,82,60,84,84,WALL,0,WALL],[0,WALL,84,WALL,44,180,0,186]],SOFT=[[0,0],[-2.4,-1.2],[2.4,1.2],[-1.2,2.4],[1.2,-2.4],[-3.6,0],[3.6,0],[0,-3.2],[0,3.2]];
+const SUN=[[0,90,56,91,80,WALL,0,WALL],[0,WALL,80,WALL,42,180,0,186]],SOFT=[[0,0],[-2.4,-1.2],[2.4,1.2],[-1.2,2.4],[1.2,-2.4],[-3.6,0],[3.6,0],[0,-3.2],[0,3.2]];
 function dayLight(g){const[c,l]=mk(VW*HR,VT*HR),soft=fn=>{for(const P of SUN)for(const[ox,oy]of SOFT)fn(P.map((v,i)=>v+(i%2?oy:ox)))};
   l.scale(HR,HR);
   /* the room's shade: a warm brown-grey, a little lighter toward the window and on the bench, which faces the light */
