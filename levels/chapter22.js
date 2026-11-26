@@ -314,8 +314,9 @@ function paintStorm22(g,v){const N=v==='n',GS=SHARED.grainship,r=rng(2204);
   comp(g,'source-atop',1,()=>comp(g,'multiply',N?.3:.24,()=>{g.fillStyle=N?'#3a4060':'#6a7488';g.fillRect(-30,-30,380,200)}));
   caskDraw22(g,null,0,N);
   if(N){const L=lant22(),[lx,ly]=L.p;
-    /* the lantern's light: on the cabin's front about it, and a long low pool on the deck before it; nothing round */
-    comp(g,'lighter',.22,()=>{g.save();g.beginPath();g.rect(110,58,84,30);g.clip();pool(g,lx,ly-1,22,5,'#ff9a48',1,'source-over');g.restore()});
+    /* the lantern's light: the eave above it keeps it from the roof, so it falls outward and down the cabin's front, widening, in soft
+       steps; and a long low pool on the deck before it. Nothing round, nothing above the lantern */
+    clipTo(g,()=>{g.beginPath();g.rect(110,ly-1,84,89-ly)},()=>{for(const[w,a]of[[26,.05],[18,.07],[11,.09]])comp(g,'lighter',a,()=>{poly(g,[lx-3,ly,lx+3,ly,lx+w,88,lx-w,88]);g.fillStyle=lg(g,0,ly,0,88,['#ffb060','#a05a20']);g.fill()})});
     comp(g,'lighter',.13,()=>pool(g,lx,L.floor[1]+3,40,4,'#ffa050',1,'source-over'));
     /* the cords, parting upward to the eave, and the lantern: clay and horn, small; the flame is drawn in draw */
     stroke(g,[lx-.7,ly-1.6,L.a[0],L.a[1]],'#4a3a28',.5);stroke(g,[lx+.7,ly-1.6,L.b[0],L.b[1]],'#4a3a28',.5);
@@ -450,7 +451,7 @@ function paintTablet22(g){const r=rng(2205),[x0,y0,x1,y1]=TAB22.wax;
   /* the wax, sunk into the frame: the frame's inner edge lit where the light falls on it, its shadow lying on the wax at the top and left */
   R(g,x0-1.2,y0-1.2,x1-x0+2.4,y1-y0+2.4,'#3a2616');R(g,x0-1.2,y1,x1-x0+2.4,1.2,'#b08a5c');R(g,x1,y0-1.2,1.2,y1-y0+2.4,'#a07c52');
   g.fillStyle=lg(g,x1,y0,x0,y1,['#3a2c1e','#2a1f15','#1e160e']);g.fillRect(x0,y0,x1-x0,y1-y0);
-  clipTo(g,()=>R(g,x0,y0,x1-x0,y1-y0),()=>{tex(g,'mott',.5,x0,y0,x1-x0,y1-y0,'overlay',1);tex(g,'grain',.18,x0,y0,x1-x0,y1-y0,'overlay',.5);
+  clipTo(g,()=>{g.beginPath();g.rect(x0,y0,x1-x0,y1-y0)},()=>{tex(g,'mott',.5,x0,y0,x1-x0,y1-y0,'overlay',1);tex(g,'grain',.18,x0,y0,x1-x0,y1-y0,'overlay',.5);
     /* where it has been smoothed again and again: soft patches a shade lighter or darker, long and low */
     for(let i=0;i<14;i++)pool(g,x0+r()*(x1-x0),y0+r()*(y1-y0),30+r()*50,8+r()*10,r()<.5?'#5a4430':'#0e0906',.25+r()*.2,'source-over');
     /* faint level traces of old writing smoothed away, all one way */
