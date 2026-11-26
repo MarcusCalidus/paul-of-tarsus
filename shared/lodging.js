@@ -99,6 +99,7 @@ function room(g,o){const kind=o.kind==='street'?'street':'flat',h=o.hour||'noon'
   walls(g,kind,r,night);
   M.ceiling(g,320,{U:8,x0:16,step:36,vx:VX,vy:HZ,r,boards:'#3a2a1e',joist:kind==='flat'?'#6e5232':'#5e4430',plate:'#7e5e3a'});
   if(kind==='flat')planks(g,r);else flags(g,r);
+  quiet(g);
   ao(g,0,WY,320,5,'t',.3,'#3a2c30');R(g,0,WY-.4,320,.8,'rgba(60,44,50,.35)');
   g.restore();
   niche(g,POS.niche,kind);
@@ -150,6 +151,19 @@ function planks(g,r){const n=8,y1=144,ys=[];for(let k=0;k<=n;k++)ys.push(WY+(y1-
   tex(g,'mott',.3,0,WY,320,y1-WY,'overlay',1);
   /* worn paler where people walk: from the door to the table */
   pool(g,214,122,90,14,'#e8d0a8',.12,'screen')}
+/* where the soldier's long chain hangs from his hand to the floor at the seats by the door and at the table (custody.sit, facing either
+   way), the level lines of the floor behind it (the joints between the courses of planks or flags) are softened, so that the chain does
+   not stand across them as an upright over a level band (CONTRIBUTING section 3): the floor there is smoothed upward and downward,
+   fading out to each side. By the window the chain falls behind his legs and the table hides it */
+function quiet(g){const T=g.getTransform(),sx=T.a,sy=T.d;
+  for(const k of['door','table'])for(const d of[-1,1]){const[x,y]=AT.seats[k],a=d<0?x-15.5:x+9,b=a+6.5,y0=Math.max(WY+1,y-16),y1=y+2.5;
+    const X0=Math.round(sx*a+T.e),X1=Math.round(sx*b+T.e),Y0=Math.round(sy*y0+T.f),Y1=Math.round(sy*y1+T.f),w=X1-X0,h=Y1-Y0;if(w<2||h<4)continue;
+    const im=g.getImageData(X0,Y0,w,h),D=im.data,O=D.slice(),K=Math.max(1,Math.round(sy*1.2));
+    for(let i=0;i<w;i++){const u=Math.min(1,Math.min(i+.5,w-i-.5)/(w*.3));
+      for(let j=0;j<h;j++){const v=Math.min(1,Math.min(j+.5,h-j-.5)/(sy*1.5)),f=u*v;if(f<=0)continue;let r=0,g2=0,b2=0,n=0;
+        for(let t=-K;t<=K;t++){const jj=Math.min(h-1,Math.max(0,j+t)),q=(jj*w+i)*4;r+=O[q];g2+=O[q+1];b2+=O[q+2];n++}
+        const q=(j*w+i)*4;D[q]=O[q]+(r/n-O[q])*f;D[q+1]=O[q+1]+(g2/n-O[q+1])*f;D[q+2]=O[q+2]+(b2/n-O[q+2])*f}}
+    g.putImageData(im,X0,Y0)}}
 /* the street room's floor: flags of grey stone in courses, worn */
 function flags(g,r){pave(g,-2,WY,322,144,'#c4b89e',r,{vx:VX,vy:HZ,rows:5,step:40,v:.07,t:.34,rand:0});
   pool(g,250,112,70,12,'#e8dcc4',.1,'screen')}
