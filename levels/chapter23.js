@@ -450,6 +450,7 @@ const SURF23={sky:null,
   at(p,b){const from=b?b.from:.24,to=b?b.to:.74,run=p<from?1-p/from:0,rush=p<from?clamp(p/(from*.42),0,1):1,rise=p>=to?(p-to)/(1-to):0;
     return{run,rush,rise,pause:p>=from&&p<to,front:p<from?60+262*(1-Math.pow(1-rush,2)):-99,lvl:WATER23+1.4-1.8*run-2.6*rise*rise+(p>=from&&p<to?.8:0)}}};
 function paintSurf23(g){const P=SHARED.storm.PAL.dawn,r=rng(2309),W=320;
+  g.fillStyle=lg(g,0,0,0,60,[P.mid,P.low,P.haze]);g.fillRect(0,0,W,60);
   /* the far water, lost in the rain: the haze at its top, darker and greener toward us */
   g.fillStyle=lg(g,0,59,0,144,[P.haze,mix(P.water,P.haze,.55),P.water,mix(P.water,P.deep,.45)]);g.fillRect(0,59,W,85);
   /* long level streaks of foam and of the grey sky lying in the water, longer and wider apart toward us; and rows of broken white
@@ -471,6 +472,7 @@ function paintSurf23(g){const P=SHARED.storm.PAL.dawn,r=rng(2309),W=320;
     for(let i=0;i<50;i++){const x=266+r()*54,y=SURF23.edge(x)+4+r()*30;R(g,x,y,1.5+r()*4,.5,r()<.5?'rgba(70,64,52,.3)':'rgba(230,224,206,.25)')}});
   /* the bow of the wreck at the left edge, from the side, cut off at her rail: nothing of her masts or her sail is painted */
   const L=330,x1=30,wl=110,G0=SHARED.grainship.geo({x:x1-L,y:wl,len:L}),tl=.03,cx=(G0.x0+G0.x1)/2,top=x=>G0.sheer(x)-(x>x1-8?5:.6);
+  SURF23.wt=x=>x>x1+1.5?99:top(x)-(x-cx)*Math.sin(tl)-1;
   clipTo(g,()=>{g.save();g.translate(cx,wl);g.rotate(-tl);g.translate(-cx,-wl);g.beginPath();g.moveTo(x1+12,wl+.5);g.lineTo(G0.x0-20,wl+.5);
       for(let x=G0.x0-20;x<=x1+12;x+=2)g.lineTo(x,top(clamp(x,G0.x0,x1)));g.closePath();g.restore()},
     ()=>SHARED.grainship.side(g,{x:x1-L,y:wl,len:L,state:'wreck',light:'dawn',tilt:tl,post:'bird',seed:22031,swan:12.6*L/360}));
@@ -500,7 +502,7 @@ function barSurf23(g,x,y,cov){const P=SHARED.storm.PAL.dawn,Q=[x-17,y+2,x-11,y-1
 function drawSurf23(g,t){const b=G.beat,p=b?b.phase(t):.5,S=SURF23.at(p,b),P=SHARED.storm.PAL.dawn,W=320,y0=S.lvl;
   if(!SURF23.sky)SURF23.sky=SHARED.storm.sky({pal:'dawn',h:70,seed:2302,w:W,speed:3});
   /* the sky, its cloud driving; it stops at the hills and at the haze where the far water begins */
-  g.save();g.beginPath();g.moveTo(0,0);g.lineTo(W,0);for(let i=SURF23.hp.length-4;i>=0;i-=2)g.lineTo(SURF23.hp[i],SURF23.hp[i+1]);g.lineTo(0,59.5);g.closePath();g.clip();SURF23.sky.draw(g,t);g.restore();
+  g.save();g.beginPath();g.moveTo(0,0);g.lineTo(W,0);for(let i=SURF23.hp.length-4;i>=0;i-=2)g.lineTo(SURF23.hp[i],SURF23.hp[i+1]);g.lineTo(40,59.5);if(SURF23.wt)for(let x=40;x>=-1;x-=1)g.lineTo(x,Math.min(59.5,SURF23.wt(x)));else g.lineTo(0,59.5);g.closePath();g.clip();SURF23.sky.draw(g,t);g.restore();
   /* the water about the holds: its level, a little lower in the pause, swelling as the next sea comes */
   const lvl=x=>y0+.5*Math.sin(x/23+t/700),hump=x=>{if(!S.rise)return 0;const c=-30+S.rise*110,d=(x-c)/(24+26*S.rise);return S.rise*(6+12*S.rise)*Math.exp(-d*d)};
   /* the rising sea: its face glassy green, darkening down, a lip that whitens as it nears the break */
@@ -519,7 +521,7 @@ function drawSurf23(g,t){const b=G.beat,p=b?b.phase(t):.5,S=SURF23.at(p,b),P=SHA
   if(SHARED.grainship)SHARED.grainship.wreckage(g,{light:'dawn',slant:-.05,seed:23052,pieces:[[58,lvl(58)+9-hump(58),9],[140,lvl(140)+12-hump(140),12,'beam'],[214,lvl(214)+7-hump(214),8],[150,lvl(150)-7,7],[232,lvl(232)-9,6]]});
   /* the white water of the sea that has broken: rushing in over everything, then thinning to lace and draining away */
   if(S.run>0){const x1=Math.min(S.front,W+4),a=Math.min(1,S.run*1.6);
-    const top=x=>lvl(x)-2-12*S.run*(.62+.18*Math.sin(x/7.3+t/180)+.12*Math.sin(x/2.9+t/90)+.16*h2s23(x>>1,7))+(x>x1-16?(x-(x1-16))*.5:0),bot=x=>lvl(x)+8+6*S.run;
+    const top=x=>lvl(x)-2-12*S.run*(.62+.18*Math.sin(x/7.3+t/180)+.12*Math.sin(x/2.9+t/90)+.16*h2s23(x>>1,7))*nose(x),bot=x=>lvl(x)+3+(5+6*S.run)*nose(x),nose=x=>x1>=W?1:Math.sqrt(clamp((x1-x)/18,0,1));
     const FP=[];for(let x=-2;x<=x1;x+=2)FP.push(x,Math.min(top(x),SURF23.edge(x)-1));for(let x=x1;x>=-2;x-=2)FP.push(x,Math.min(bot(x),SURF23.edge(x)+2));
     poly(g,FP);g.fillStyle=lg(g,0,y0-12,0,y0+12,[rgba(P.foam,.95*a),rgba(P.foamS,.85*a),rgba(P.glass,.4*a)]);g.fill();
     clipTo(g,()=>poly(g,FP),()=>{for(let i=0;i<220;i++){const q=rng(2400+i+((t/150)|0)%2),x=q()*x1,y=y0-12+q()*24;R(g,x,y,1.5+q()*6,.5,rgba(q()<.4?P.glass:P.foamS,(.2+.35*q())*a))}});
@@ -622,7 +624,7 @@ function paintBeach23(g){const W=480,r=rng(2310),P=SHARED.storm.PAL.dawn,H=HZ_BE
       g.fillStyle=lg(g,x,0,x+w,0,['rgba(210,214,210,.18)','rgba(0,0,0,0)','rgba(10,12,14,.3)']);g.fillRect(x,y-h,w,h);R(g,x,y-1.6,w,1.6,'rgba(16,18,20,.35)')});
     stroke(g,[x+w*.12,y-h*.6,x+w*.36,y-h,x+w*.7,y-h*.9],'rgba(214,220,214,.35)',.5);comp(g,'multiply',.4,()=>poly(g,[x-1,y,x+w+3,y,x+w+1,y+1.4,x,y+1.2],'#30283a'))}
   /* the slope at the right: rough grass and scrub over stone, with the path worn up it from the beach, pale and bare */
-  const SL=[392,150];for(let x=392;x<=W+2;x+=1)SL.push(x,slopeB23(x));SL.push(W+2,150);
+  const SL=[];for(let x=392;x<=W+2;x+=1)SL.push(x,slopeB23(x));SL.push(W+2,150);for(let y=150;y>=slopeB23(392);y-=2)SL.push(392+(150-y)*.62+1.6*Math.sin(y/3.1),y);
   poly(g,SL);g.fillStyle=lg(g,0,52,0,144,['#606650','#565c46','#4e5240']);g.fill();
   clipTo(g,()=>poly(g,SL),()=>{tex(g,'mott',.45,390,50,92,96,'overlay',1);
     for(let i=0;i<700;i++){const x=392+r()*90,y0=slopeB23(x),y=y0+1+Math.pow(r(),.8)*(146-y0);if(y>146)continue;const h=1+r()*2.2;stroke(g,[x,y,x-.6*h,y-h],r()<.5?'#767a54':r()<.5?'#464a32':'#8a865c',.5)}
@@ -630,7 +632,8 @@ function paintBeach23(g){const W=480,r=rng(2310),P=SHARED.storm.PAL.dawn,H=HZ_BE
     /* the path: a pale worn way from the beach at x 414 up and to the right, bending once; its edges soft */
     const PA=[];for(let i=0;i<=24;i++){const u=i/24,x=410+66*u+5*Math.sin(u*3.3),y=118-58*Math.pow(u,.9);PA.push([x,y,(3.4-2.2*u)])}
     for(const[x,y,w]of PA){g.fillStyle=lg(g,x-w,0,x+w,0,[rgba('#b4a688',0),rgba('#b4a688',.75),rgba('#a49678',.7),rgba('#b4a688',0)]);g.fillRect(x-w,y-1.6,w*2,3.2)}
-    for(let i=0;i<30;i++){const[x,y]=PA[(r()*24)|0];R(g,x-1+r()*2,y-1+r()*2,1,.5,'rgba(90,80,60,.5)')}});
+    for(let i=0;i<30;i++){const[x,y]=PA[(r()*24)|0];R(g,x-1+r()*2,y-1+r()*2,1,.5,'rgba(90,80,60,.5)')}
+    for(let i=0;i<200;i++){const y=96+r()*52,x=392+(150-y)*.62+Math.pow(r(),2)*26;R(g,x,y,1+r()*3,.5,rgba(mix(P.sand,P.wet,.35),.5+.4*r()))}});
   for(let x=392;x<W;x+=1){const y=slopeB23(x);R(g,x,y-.5,1,.6,'#6e7454');if(r()<.25)stroke(g,[x,y,x-.5,y-1.2-r()*1.4],'#5e6446',.5)}
   /* pieces of the wreck lying where nobody shelters behind them (each alone) */
   for(const pc of WRECKAGE23.slice(3))timberB23(g,...pc,rng(2360+pc[0]));
@@ -689,7 +692,6 @@ function fireB23(g,t,k){const[x,y]=FIRE23,r=rng(2371);
 /* the bundle of sticks Paul carries before him in both hands (pose bundle): dry sticks and brushwood gathered up, lying along one
    another, of every length, their ends ragged and a few twigs standing out; nothing tied across them. It covers the hands' hold. */
 function bundleB23(g,a){const h=poseAt(a.look,'bundle0');if(!h)return;const d=a.dir,x=a.x+(h.near[0]+h.far[0])/2*d,y=a.y+(h.near[1]+h.far[1])/2,r=rng(2381);
-  comp(g,'multiply',.5,()=>poly(g,[x-10*d,y-4.6,x+11*d,y-5,x+11*d,y+2.8,x-10*d,y+3],'#3a2a20'));
   for(let i=0;i<14;i++){const yy=y-4.6+i*.56+(r()-.5)*.4,x0=x-(8+r()*5)*d,x1=x+(8+r()*5)*d,sl=(r()-.5)*.9,c=['#5a4028','#7a5a3a','#4a3420','#6a4c30','#8a6a46'][(r()*5)|0];
     stroke(g,[x0,yy+sl,x1,yy-sl],c,.5+r()*.5);R(g,(d>0?x1:x0)-.5,yy-sl-.4,1,1,tint(c,.25));
     if(r()<.35){const s=r()<.5?x0:x1;stroke(g,[s,yy,s+(r()<.5?1:-1)*1.6,yy-1.2-r()*1.2],c,.5)}}
@@ -702,8 +704,8 @@ ART.beach23={w:480,q:12,paint(g){if(SHARED.storm)paintBeach23(g)},
   draw(g,t){const room='beach23',P0=SHARED.storm?SHARED.storm.PAL.dawn:null,lw=G.lw23||0;
     if(P0){/* the rows of surf running in, breaking and spending themselves, and the wash on the sand, running up and back */
       for(let j=0;j<3;j++){const u=fr23(t/7000+j/3),y=HZ_BEACH23+6+Math.pow(u,1.6)*24,br=clamp((u-.55)/.25,0,1),a=Math.sin(Math.PI*Math.min(1,u*1.1));
-        for(let x=0;x<480;x+=2){const e=shoreB23(x);if(y>e-1)continue;const q=h2s23(x,j*7+((t/7000+j/3)|0));if(q<.25+.5*(1-br))continue;R(g,x,y+.6*Math.sin(x/19+j),2,.5+br*1.2,rgba(P0.foam,(.4+.5*br)*a))}}
-      for(let j=0;j<2;j++){const u=fr23(t/4200+j*.5),k=Math.sin(Math.PI*u);for(let x=0;x<480;x+=2){const e=shoreB23(x),up=k*(2.5+2*Math.sin(x/13+j*3));if(up<.3||x<180&&bankB23(x)<e+up)continue;
+        for(let x=0;x<480;x+=2){const e=shoreB23(x),yy=y+.6*Math.sin(x/19+j);if(yy>e-1||yy>bankB23(x)-.5||yy>slopeB23(x)-.5)continue;const q=h2s23(x,j*7+((t/7000+j/3)|0));if(q<.25+.5*(1-br))continue;R(g,x,yy,2,.5+br*1.2,rgba(P0.foam,(.4+.5*br)*a))}}
+      for(let j=0;j<2;j++){const u=fr23(t/4200+j*.5),k=Math.sin(Math.PI*u);for(let x=0;x<480;x+=2){const e=shoreB23(x),up=k*(2.5+2*Math.sin(x/13+j*3));if(up<.3||bankB23(x)<e+up||slopeB23(x)<e+up)continue;
         R(g,x,e,2,up,rgba(P0.glass,.3));if(h2s23(x,j+9)<.8)R(g,x,e+up-.5,2,.5,rgba(P0.foam,.8))}}}
     /* the fire, at its depth; it burns up when kindled for all (28:2) and again with Paul's sticks */
     const kf=(F.malta?1:.8)+(G.vip23?.15+.06*Math.sin(t/300):0);
