@@ -241,55 +241,164 @@ ART.deck22={w:320,q:12,variant:()=>(F.fh?'h':'m')+(F.shelter&&!F.fh?'s':''),
 /* ==== ART deck22: end ==== */
 
 /* ==== ART storm22: begin ==== */
-/* ART-TODO. The deck in the storm, amidships, the stern at the left: no horizon is seen (rain and spray hide where the sea meets the sky).
-   The stern rail and the sternpost at the left edge (0..40, rail top 92); beyond it, at the left, the skiff on its tow rope (the lee of
-   Cauda only), rising and falling. The deck from 100 toward us, planks one way. The holds of the crossing stand at the back of the walk
-   strip: the cargo hatch 56..100 by 104..116, the mast (its foot 128..146 at 116, rising out of the top of the picture), a cask lashed to
-   the deck 192..212 by 100..116, and the lee rail at the right, 244..320, its top at 92, where the deck runs down to it. The sea that comes
-   over the weather side is drawn from the beat's phase (G.beat.phase): it rises in the back, breaks over the deck at 0, runs off, and the
-   pause is calm water on the planks. By night (the dark days) the deck is nearly black under the clouds and the rain; no lamp burns.
-   The tow rope runs from the stern rail (24, 96) down to the hands of the men on it (poseAt 'haul'). Girding ropes are not seen here.
-   Called from outside: ART.storm22, STORM22. Reads phase22(), G.beat, G.sk22 (the skiff hauled in, 0..4), G.bale22.
-   Hotspots (ROOMS.storm22): the skiff and its rope 0,70,60,42 · the hatch 56,96,44,20 · the mast 126,30,22,86 · the cask 188,94,28,22 · the
-   lee rail 244,84,56,30 · the sky 60,0,200,28 · the wind 280,40,40,40. Walk: 16..304 by 118..138, during a timed act his own place.
-   Light: the storm by day, an overcast sky and rain (amb only: no sun, no cast shadow); by night darker still, with no lamp lit. */
-const STORM22={rail:92,stern:[0,40],hatch:[56,100,104,116],mast:[128,146],cask:[192,212,100,116],lee:[244,320],walk:[16,304,118,138],
-  /* where whoever crosses stands at each hold: the hatch, the mast, the cask, the lee rail */
-  holds:[[78,124],[140,124],[214,124],[268,124]],rope:[24,96]};
+/* The deck in the storm: the grain ship's own deck (SHARED.grainship.deck), the same picture as deck22 at Myra, looking aft from just
+   forward of her mainmast: the hatch in the middle, the cabin across the after deck with the swan's neck of her sternpost beyond it, the
+   mast's foot in the right foreground, bare (the gear is lowered, 27:17: whatever it was lies forward of the mast, behind us, and is not
+   seen), her bulwarks round her. Nothing of hers stands above her rails but the mast and the post: the sky is left open, and the storm's
+   sea and sky (SHARED.storm.deckSea) lie behind her in `behind`, not swayed: great seas running up astern and on both quarters, with no
+   horizon. The storm's light on her (no sun: the grey of the cloud), her planks dark with water and a grey sheen of the sky in them.
+   She moves (the maintainer, 26 November 2026): `sway` is the storm's own sway for the beat's phase, so that she heels with the very sea
+   the player times his step by; `draw` lays the sea that comes aboard on her deck (in her frame), `air` the spray and the rain (not swayed).
+   The crossing with the bales (27:18), from hold to hold, each a thing he is plainly seen to hold on to, with clear deck between them: the
+   hatch (his far hand on the top of its ladder), a great water cask lashed to the deck between the hatch and the mast (invented), the
+   mast, and the lee rail to starboard, past the mast. The sea comes over the port side, at the left (the rain slants down to the right).
+   The sailor who calls stands aft by the lee rail, his hand on the mast, where every hold can be seen. In the lee of Cauda (27:16) the
+   skiff comes up over the port rail at the left on the men's rope, full of water; the sea is a little lower there. By night (27:20) one
+   lantern hangs under the cabin's eave by two cords that part upward; its light lies long and low. Lightning far off (lightning:true),
+   never over the swan's neck or the mast.
+   Called from outside: ART.storm22, STORM22 (holds, way, walk). Reads phase22(), nightNow22(), G.beat, G.sk22 (0..4), G.pull22, G.over22. */
+const STORM22={walk:[16,304,118,138],
+  /* where whoever crosses stands at each hold, in the order of the crossing: the hatch, the cask, the mast, the lee rail. Each is where
+     the far hand of the pose 'hold' (facing right) lies on the thing: the top of the ladder, the rim of the cask, the mast, the rail */
+  holds:[[135,110],[194,113],[252,137],[306,126]],
+  /* the calling sailor: his place by the lee rail just aft of the mast, his hand on the rail; the way he comes forward clear of the cask and
+     the mast; where
+     he stands beside the one he walks across, at each hold */
+  home:[286,114],gate:[232,120],side:[[14,4],[14,4],[14,3],[-16,8]]};
 const nightNow22=()=>phase22()==='tablet';
-ART.storm22={w:320,q:12,variant:()=>nightNow22()?'n':phase22()==='skiff'?'s':'d',
-  paint(g,v){const r=rng(2204),N=v==='n',S=STORM22;
-    /* cloud and rain down to the rail: no horizon */
-    g.fillStyle=lg(g,0,0,0,S.rail,N?['#0e1220','#1a2232']:['#4a5260','#6a727c']);g.fillRect(0,0,320,S.rail);
-    for(let i=0;i<60;i++)R(g,r()*320,10+r()*70,10+r()*30,1,rgba(N?'#2a3446':'#8a929c',.3));
-    /* the stern rail and post at the left; the lee rail at the right */
-    R(g,0,S.rail,S.stern[1],8,N?'#1e160e':'#5a4028');R(g,S.lee[0],S.rail,S.lee[1]-S.lee[0],8,N?'#1e160e':'#5a4028');
-    /* between the two rails no rail is seen (spray), and the deck at the back of the strip, where the holds stand, is one wet sheen with no
-       seams: nothing level runs behind the mast, so that it crosses nothing */
-    g.fillStyle=lg(g,0,S.rail,0,116,N?['#0e1220','#1a1610']:['#6a727c','#6a5a46']);g.fillRect(S.stern[1],S.rail,S.lee[0]-S.stern[1],8);
-    g.fillStyle=N?'#1e1810':'#6a5640';g.fillRect(0,100,320,16);
-    planks22(g,116,144,N?'#2e2418':'#7a6044');
-    R(g,S.hatch[0],S.hatch[2],S.hatch[1]-S.hatch[0],S.hatch[3]-S.hatch[2],N?'#120c08':'#3a2818');
-    R(g,S.mast[0],0,S.mast[1]-S.mast[0],116,N?'#1a120c':'#5e4428');
-    R(g,S.cask[0],S.cask[2],S.cask[1]-S.cask[0],S.cask[3]-S.cask[2],N?'#22180e':'#7a5a34')},
-  get light(){/* the storm: an overcast sky and rain, so no sun casts a shadow; by night no lamp burns in this wind */return nightNow22()?{amb:'#4a5068'}:{amb:'#9aa0ac'}},
+/* the deck's geometry (shared/grainship.js), and the water cask: upright, its middle at x, z (metres), r its radius, h its height */
+let GD22=null;const gd22=()=>GD22||(GD22=SHARED.grainship.geoDeck({}));
+const CASK22={x:2.68,z:6,r:.38,h:1.15};
+/* the lantern under the cabin's eave, to starboard of the door: [x, y, z] in metres; its two cords go up to the eave at x0 and x1 */
+const LANT22={x:1.25,y:1.45,z:11.15,c0:1.0,c1:1.5};
+const lant22=()=>{const D=gd22(),y0=D.s(11.3);return{p:D.P(LANT22.x,y0+LANT22.y,LANT22.z),a:D.P(LANT22.c0,y0+1.87,LANT22.z),b:D.P(LANT22.c1,y0+1.87,LANT22.z),floor:D.P(LANT22.x,y0,11.3)}};
+/* the storm sea for each picture: by day, a little lower in the lee of Cauda; by night, the dark one, the lantern's light in its rain */
+const DS22={};
+const ds22=v=>DS22[v]||(DS22[v]=SHARED.storm.deckSea({pal:v==='n'?'night':'day',dx:1,slant:.9,rail:84,deck0:101,height:v==='s'?.72:1,seed:2209,
+  lightning:true,clear:[132,300],lamp:v==='n'?[lant22().p[0],lant22().p[1]+4,34]:undefined}));
+/* the moment in the sea: the beat's own phase when it runs here (its whole part counts the seas, so that each is a little different), else
+   a clock of six seconds */
+const e22=t=>{const b=G.beat;return b&&b.room==='storm22'?(t-b.t0)/b.period:t/6000};
+/* how strongly she moves: less in the lee of Cauda and in the dark days, when the sea is not timed */
+const sk22v=v=>v==='s'?.75:phase22()==='load'?1:.8;
+/* where the sea that comes aboard is seen: the deck, and the inner face of the port bulwark, over which it comes (the weather side) */
+let WET22=null;
+function wet22(){if(WET22)return WET22;const D=gd22(),FL=D.C.map(([x,z])=>D.P(x,D.s(z),z)).flat().concat([340,190,-20,190]),T=[],B=[];
+  for(let z=2.2;z<=13;z+=.25){const x=-D.b(z);T.push(...D.P(x,D.s(z)+D.rx(x,z)+.1,z));B.push(...D.P(x,D.s(z),z))}
+  return WET22=[FL,T.concat(rev22(B))]}
+/* the port rail's top, outboard of which the skiff is seen: the line over the rail, and the region above it */
+function portTop22(){const D=gd22(),p=[];for(let z=4;z<=12.6;z+=.25){const x=-D.b(z);p.push(...D.P(x,D.s(z)+D.rx(x,z)+.1,z))}return p}
+ART.storm22={w:320,q:12,variant:()=>nightNow22()?'n':phase22()==='skiff'?'s':'d',bleed:28,
+  paint(g,v){paintStorm22(g,v)},
+  /* the storm: an overcast sky and rain, a soft light from everywhere, so no sun casts a shadow; by night the lantern under the cabin's
+     eave is the one light, and it lies low and far back */
+  get light(){if(!nightNow22())return{amb:'#9aa0ac'};const L=lant22();return{amb:'#4a5068',lamps:[[L.p[0],L.p[1],96,'#7a5636',L.floor[1],L.p[1]]]}},
+  behind(g,t){const v=ART.storm22.variant();ds22(v).draw(g,t,e22(t))},
+  sway(t){const v=ART.storm22.variant(),s=ds22(v).sway(e22(t),sk22v(v));return{a:s.a,dx:s.dx,dy:s.dy,cx:s.px,cy:s.py}},
   draw(g,t){drawStorm22(g,t)},
-  front(g,t){if(SHARED.weather)SHARED.weather.rain(g,t,320,{density:.5,wind:-1.6,col:nightNow22()?'rgba(150,160,190,.35)':undefined})}};
-/* the sea from the beat's phase (or a clock of its own when no beat runs): rising at the back, breaking at 0, running off over the deck */
-function drawStorm22(g,t){const b=G.beat,p=b?b.phase(t):((t/6000)%1),fr=b?b.from:.24,to=b?b.to:.74,N=nightNow22();
-  const rise=p>=to?(p-to)/(1-to):0,off=p<fr?1-p/fr:0;
-  if(rise>0){g.fillStyle=rgba(N?'#8090a8':'#dce6ec',.25+.35*rise);g.fillRect(0,92-rise*40,320,rise*40+4)}
-  if(off>0){g.fillStyle=rgba(N?'#7080a0':'#e2ecf0',.45*off);g.fillRect(0,100,320,44*off)}
-  if(phase22()==='skiff'){const k=(G.sk22||0)/PULLS22,bob=Math.sin(p*6.2832)*5,bx=-6+k*14;
-    /* the skiff, beyond the stern rail at the left, rising and falling; no thwart or oar across her */
-    poly(g,[bx-14,84+bob,bx+20,84+bob,bx+16,92+bob,bx-10,92+bob],N?'#1a120a':'#4a3220');
-    /* the tow rope, from the stern rail down to the men's hands */
-    const last=HAUL22[HAUL22.length-1],a=last.a;if(a.room==='storm22'){const pa=poseAt(a.look,'haul'+(a.pk||0)),hx=a.x+pa.near[0]*a.dir,hy=a.y+pa.near[1];
-      stroke(g,[STORM22.rope[0],STORM22.rope[1],hx,hy],'#c8b088',.8)}
-    if(G.pull22&&performance.now()-G.pull22<700)SHARED.beat.cap(g,'pull_22',LK.x,LK.y-56,{w:50})}
+  air(g,t){const v=ART.storm22.variant();ds22(v).front(g,t,e22(t))},
+  front(){},
+  props:[{y:131,shape(g){mastShape22(g)},foot:()=>[gd22().foot.mast]},{y:112,shape(g){caskDraw22(g,'#000',1)},foot:()=>[caskFoot22()]}]};
+/* the backdrop: the deck in the storm's light, with nothing beyond her (the sea is `behind`), wet; the cask; by night the lantern's glow */
+function paintStorm22(g,v){const N=v==='n',GS=SHARED.grainship,r=rng(2204);
+  /* the deck is wet: the bare planks darker and cooler, the grey of the sky lying in them, strongest far aft where we look along them;
+     streaks of water along the planks, running toward the vanishing point as the planks do; long low pools where it lies. Painted on the
+     planks before anything that stands on them; then all of her a little darker in the wet */
+  const wet=(g,D)=>{const FL=D.C.map(([x,z])=>D.P(x,D.s(z),z)).flat().concat([340,190,-20,190]);clipTo(g,()=>poly(g,FL),()=>{
+    comp(g,'multiply',N?.3:.24,()=>{g.fillStyle=N?'#3a4060':'#6a7488';g.fillRect(-20,40,360,110)});
+    comp(g,'screen',N?.05:.16,()=>{g.fillStyle=lg(g,0,80,0,144,['#c8d0d8','#8a94a0','rgba(0,0,0,0)']);g.fillRect(-20,60,360,90)});
+    for(let i=0;i<150;i++){const u=-1.1+r()*2.2,z0=2.4+r()*7,z1=z0+.4+r()*1.6,a=D.P(u*D.b(z0)*.95,D.s(z0),z0),b=D.P(u*D.b(z1)*.95,D.s(z1),z1);
+      stroke(g,[a[0],a[1],b[0],b[1]],r()<.6?`rgba(200,210,220,${N?.05:.14})`:`rgba(20,24,34,${N?.2:.18})`,.5)}
+    for(let i=0;i<9;i++){const x=-3.5+r()*7,z=3+r()*6,c=D.P(x,D.s(z),z),w=(6+r()*10)*4/z;comp(g,'screen',N?.04:.12,()=>poly(g,[c[0]-w,c[1],c[0]-w*.4,c[1]-.6,c[0]+w*.5,c[1]-.5,c[0]+w,c[1],c[0]+w*.3,c[1]+.6,c[0]-w*.5,c[1]+.5],'#c0c8d4'))}})};
+  GS.deck(g,{beyond:()=>{},anchor:false,light:N?'night':'storm',floor:wet});
+  comp(g,'source-atop',1,()=>comp(g,'multiply',N?.3:.24,()=>{g.fillStyle=N?'#3a4060':'#6a7488';g.fillRect(-30,-30,380,200)}));
+  caskDraw22(g,null,0,N);
+  if(N){const L=lant22(),[lx,ly]=L.p;
+    /* the lantern's light: on the cabin's front about it, and a long low pool on the deck before it; nothing round */
+    comp(g,'lighter',.22,()=>{g.save();g.beginPath();g.rect(110,58,84,30);g.clip();pool(g,lx,ly+4,26,7,'#ff9a48',1,'source-over');g.restore()});
+    comp(g,'lighter',.13,()=>pool(g,lx,L.floor[1]+3,40,4,'#ffa050',1,'source-over'));
+    /* the cords, parting upward to the eave, and the lantern: clay and horn, small; the flame is drawn in draw */
+    stroke(g,[lx-.7,ly-1.6,L.a[0],L.a[1]],'#4a3a28',.5);stroke(g,[lx+.7,ly-1.6,L.b[0],L.b[1]],'#4a3a28',.5);
+    poly(g,[lx-1.6,ly-1.6,lx+1.6,ly-1.6,lx+1.9,ly+2.6,lx-1.9,ly+2.6],'#4a3220');R(g,lx-1.9,ly+2.6,3.8,.6,'#2a1a10');R(g,lx-1.6,ly-1.6,3.2,.5,'#7a5a38')}}
+/* a line of x, y pairs, the other way round */
+const rev22=p=>{const o=[];for(let i=p.length-2;i>=0;i-=2)o.push(p[i],p[i+1]);return o};
+/* the cask's footprint on the floor, [x, y, w, h] */
+function caskFoot22(){const D=gd22(),{x,z,r}=CASK22,a=D.P(x-r,0,z-r),b=D.P(x+r,0,z+r);return[+a[0].toFixed(1),+b[1].toFixed(1),+(b[0]-a[0]).toFixed(1),+(a[1]-b[1]).toFixed(1)]}
+/* the water cask, standing on its end, lashed to the deck: a broad body of staves (no seams drawn down it, so that nothing upright crosses
+   its hoops), three iron hoops round it that follow its curve, its head seen a little from above; two lashings slant from its upper hoop
+   out and down to ring bolts in the deck on either side, outside its body, so that no rope crosses it. As a prop (mono) only its outline. */
+function caskDraw22(g,mono,cut,N){const D=gd22(),{x,z,r,h}=CASK22,y0=D.s(z),fz=z-r,c=D.P(x,y0,z),cf=D.P(x,y0,fz),k=D.F/z,R0=r*k,
+    yb=cf[1],yt=D.P(x,y0+h,fz)[1],bul=t=>1+.08*Math.sin(Math.PI*t),top=D.P(x,y0+h,z)[1],eh=Math.max(1.4,(yt-top)*1.6);
+  const side=[];for(let i=0;i<=12;i++){const t=i/12;side.push(c[0]-R0*bul(t),yt+(yb-yt)*t)}for(let i=12;i>=0;i--){const t=i/12;side.push(c[0]+R0*bul(t),yt+(yb-yt)*t+(i===12?0:0))}
+  const head=[];for(let i=0;i<=16;i++){const a=Math.PI*i/16;head.push(c[0]-R0*Math.cos(a),yt-eh*Math.sin(a)*.5)}for(let i=16;i>=0;i--){const a=Math.PI*i/16;head.push(c[0]-R0*Math.cos(a),yt+eh*Math.sin(a)*.5)}
+  if(mono){poly(g,side,mono);poly(g,head,mono);return}
+  const W=N?'#3a2c22':'#6e5238';
+  /* its shadow: soft, under it, no sun */
+  comp(g,'multiply',.45,()=>poly(g,[c[0]-R0*1.25,yb+.4,c[0]+R0*1.3,yb+.4,c[0]+R0*1.2,yb-2.2,c[0]-R0*1.1,yb-2.2],'#4a4658'));
+  /* the lashings, behind the body where they go down to the deck */
+  for(const sd of[-1,1]){const p=[c[0]+sd*R0*1.04,yt+(yb-yt)*.22],q=D.P(x+sd*(r+.55),y0,z+.1);stroke(g,[p[0],p[1],(p[0]+q[0])/2+sd*.4,(p[1]+q[1])/2+.8,q[0],q[1]],N?'#5a4c36':'#a89068',.6);
+    R(g,q[0]-.6,q[1]-.5,1.2,1,N?'#1a1410':'#3a2c20')}
+  poly(g,side);g.fillStyle=lg(g,c[0]-R0,0,c[0]+R0,0,N?['#2a2018','#3e3024','#4a3a2a','#2e2218','#1e160e']:[tint(W,-.3),tint(W,.05),tint(W,.22),tint(W,-.08),tint(W,-.38)]);g.fill();
+  clipTo(g,()=>poly(g,side),()=>{tex(g,'wood',.3,c[0]-R0-1,yt-1,R0*2+2,yb-yt+2,'overlay',.45);
+    /* wet: the grey of the sky down its lit side, in soft vertical bands of light (not lines), and drips */
+    g.fillStyle=lg(g,c[0]-R0,0,c[0]+R0,0,['rgba(190,200,210,0)','rgba(190,200,210,'+(N?.04:.16)+')','rgba(190,200,210,0)']);g.fillRect(c[0]-R0,yt,R0*2,yb-yt);
+    /* the hoops: near the head, at the bilge, near the foot, each bending with the curve of the cask */
+    for(const t of[.1,.5,.9]){const y=yt+(yb-yt)*t,p=[],q=[];for(let i=0;i<=12;i++){const u=-1+2*i/12,xx=c[0]+u*R0*bul(t),yy=y+eh*.5*Math.sqrt(1-u*u)*.9;p.push(xx,yy);q.push(xx,yy+1.3)}
+      poly(g,p.concat(rev22(q)),N?'#262a30':'#4a4e56');stroke(g,p,N?'#4a5058':'#9aa2ac',.5)}
+    ao(g,c[0]-R0,yb-3,R0*2,3,'b',.35,'#1a1410')});
+  /* the head: the lid seen a little from above, its chime a lit rim; wet, it holds the sky's grey */
+  poly(g,head,N?'#2e241a':tint(W,.12));stroke(g,head.slice(0,34),N?'#4a3c2c':'#c8b090',.5);
+  comp(g,'screen',N?.04:.18,()=>poly(g,head,'#b8c0cc'))}
+/* the mast's outline, for the prop that lays it over whoever stands behind it: its shaft up out of the picture and its collar */
+function mastShape22(g){const D=gd22(),[x0,x1,z0,z1]=D.things.mast,xm=(x0+x1)/2,zm=(z0+z1)/2,f0=D.P(xm-.3,0,zm-.3),f1=D.P(xm+.3,0,zm-.3);
+  R(g,f0[0],-30,f1[0]-f0[0],f0[1]+30,'#000');
+  const P=D.P,a=x0-.08,b=x1+.08,c=z0-.08,d=z1+.08,h=.16,pts=[P(a,0,c),P(b,0,c),P(b,h,c),P(a,h,c),P(a,h,d),P(b,h,d),P(b,0,d),P(a,0,d)];
+  const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);poly(g,[Math.min(...xs),Math.max(...ys),Math.max(...xs),Math.max(...ys),Math.max(...xs),Math.min(...ys),Math.min(...xs),Math.min(...ys)],'#000')}
+/* what moves on her: the sea that comes aboard, the skiff, the bale going over, the lantern's flame, the captions */
+function drawStorm22(g,t){const v=ART.storm22.variant(),N=v==='n',e=e22(t),DS=ds22(v);
+  /* the sea on her deck, in her own frame: pass how strongly she sways now, so that its white water meets the sea's crest */
+  clipTo(g,()=>{const W=wet22();g.beginPath();for(const q of W){g.moveTo(q[0],q[1]);for(let i=2;i<q.length;i+=2)g.lineTo(q[i],q[i+1]);g.closePath()}},
+    ()=>DS.aboard(g,t,e,G.sway?sk22v(v):0));
+  if(phase22()==='skiff')skiff22(g,t,e);
+  if(N){const[lx,ly]=lant22().p,f=.85+.15*Math.sin(t/90)+.08*Math.sin(t/37);R(g,lx-1,ly-.8,2,2.6,'#ffd27a');R(g,lx-.5,ly-.2,1,1.4,rgba('#fff4d0',f))}
+  if(phase22()==='skiff'&&G.pull22&&performance.now()-G.pull22<700)SHARED.beat.cap(g,'pull_22',LK.x,LK.y-56,{w:50});
   if(G.beat){const c=caller22();if(c&&c.room===G.room)SHARED.beat.call(g,c.x,c.y-56,t)}
-  /* a bale on its way over the lee rail */
-  if(G.over22){const k=Math.min(1,(performance.now()-G.over22)/600);if(k<1){const x=268+k*40,y=100-Math.sin(k*3.1416)*14+k*10;R(g,x-4,y-3,8,6,'#8a6a42')}}}
+  /* a bale going over the lee rail: up from his arms, over the rail and away to starboard */
+  if(G.over22){const k=Math.min(1,(performance.now()-G.over22)/600);if(k<1){const[hx,hy]=STORM22.holds[3],x=hx+8+k*34,y=hy-22-Math.sin(k*Math.PI)*16+k*k*18;
+    depth(hy+1,()=>{poly(g,[x-4,y-2.6,x+4,y-3,x+4.4,y+2.6,x-4,y+3],'#7a5c3a');R(g,x-4,y-2.6,8,.6,'#a88a62');R(g,x-4,y+2.4,8.4,.6,'#4a3420')})}}}
+/* the skiff (27:16), coming up over the port rail on the men's rope as they gain on her (G.sk22, 0..4), rising and falling with the sea.
+   She hangs alongside, a little outboard of the bulwark, her bow forward (toward us) and a little higher; we look down into her over
+   her near gunwale, and she is full of water: grey-green to the brim, with foam in it, spilling over her gunwale and falling away
+   outboard. Her near side is planked in strakes that run along her; no thwart and no oar across her. Only what is above the rail is
+   seen: the rest of her is outboard, behind it. The rope from her stem goes over the rail and to the men's fists, slanting. */
+const SKIFF22={z0:6.3,z1:10.2,off:.95,hb:.62,lift:[-.7,-.02,.28,.52,.7]};
+function skiff22(g,t,e){const D=gd22(),S=SKIFF22,n=G.sk22||0,ph=(((e%1)+1)%1),pause=Math.sin(Math.PI*clamp((ph-.24)/.5,0,1)),
+    base=S.lift[Math.min(4,n)]+.07*pause+.04*Math.sin(t/700),xc=z=>-(D.b(z)+S.off),
+    hg=z=>D.s(z)+1.15+base+.16*Math.pow((S.z1-z)/(S.z1-S.z0),1.5)+.05*Math.pow((z-S.z0)/(S.z1-S.z0),2),
+    zs=[];for(let i=0;i<=12;i++)zs.push(S.z0+(S.z1-S.z0)*i/12);
+  const sh=i=>Math.sin(Math.PI*i/12),near=zs.map((z,i)=>D.P(xc(z)+S.hb*(.25+.75*sh(i)),hg(z),z)).flat(),far=zs.map((z,i)=>D.P(xc(z)-S.hb*(.25+.75*sh(i)),hg(z),z)).flat(),
+    bot=zs.map((z,i)=>D.P(xc(z)+S.hb*.6*sh(i),hg(z)-.55-.1*sh(i),z)).flat(),RP=portTop22();
+  g.save();g.beginPath();g.moveTo(RP[0],-30);for(let i=0;i<RP.length;i+=2)g.lineTo(RP[i],RP[i+1]);g.lineTo(RP[RP.length-2],-30);g.closePath();g.clip();
+  /* her near side, from the gunwale down: dark wet planking in strakes along her */
+  const side=near.concat(rev22(bot));poly(g,side,'#3e2e22');
+  clipTo(g,()=>poly(g,side),()=>{for(const f of[.3,.55,.8]){const q=[];for(let i=0;i<=12;i++)q.push(near[2*i]+(bot[2*i]-near[2*i])*f,near[2*i+1]+(bot[2*i+1]-near[2*i+1])*f);
+      stroke(g,q,'rgba(14,10,8,.65)',.5);stroke(g,q.map((v,j)=>j%2?v+.5:v),'rgba(180,170,150,.16)',.5)}
+    tex(g,'wood',.3,Math.min(...near.filter((_,j)=>j%2===0))-2,Math.min(...near.filter((_,j)=>j%2))-2,80,30,'overlay',.45)});
+  /* the water in her, to the brim: the grey of the sky in it, foam lying on it in level strands */
+  const W=far.concat(rev22(near));poly(g,W,'#3e5650');
+  clipTo(g,()=>poly(g,W),()=>{const r=rng(2217+(Math.floor(t/400)%5));for(let i=0;i<26;i++){const j=Math.floor(r()*12),u=r(),x=far[2*j]+(near[2*j]-far[2*j])*u,y=far[2*j+1]+(near[2*j+1]-far[2*j+1])*u;
+    R(g,x,y,1+r()*3,.5,`rgba(210,222,218,${(.3+.4*r()).toFixed(2)})`)}});
+  /* her gunwales: the far one a thin lit line, the near one a wale */
+  stroke(g,far,'#7a6a52',.5);stroke(g,near,'#8a7656',.8);stroke(g,near.map((v,j)=>j%2?v+.7:v),'#2a1e14',.5);
+  /* the water spilling over her near gunwale amidships and falling away: short level dashes and small squares */
+  const r=rng(2216+(Math.floor(t/110)%9));for(let i=0;i<30;i++){const j=3+Math.floor(r()*7),d=r()*9*(.5+.5*pause+(n?.3:0));
+    R(g,near[2*j]+(r()-.5)*4,near[2*j+1]+1+d,r()<.4?1:.5,.5,`rgba(220,232,228,${(.8*(1-d/12)).toFixed(2)})`)}
+  const stem=D.P(xc(S.z0)+.05,hg(S.z0)+.04,S.z0);R(g,stem[0]-.6,stem[1]-.6,1.2,1.2,'#1a1410');g.restore();
+  /* the rope: from her stem to the rail, then to the men's fists, front man first (each man's own piece the pose draws) */
+  const rz=6.7,rl=D.P(-D.b(rz),D.s(rz)+D.rx(-D.b(rz),rz)+.1,rz),pts=[stem[0],stem[1],rl[0],rl[1]-.3];
+  for(const h of HAUL22){const a=h.a;if(a.room!=='storm22')continue;const p=poseAt(a.look,'haul'+(a.pk||0));if(!p||!p.rope)continue;
+    const[f,m]=p.rope,A=[a.x+f[0]*a.dir,a.y+f[1]],Z=[a.x+m[0]*a.dir,a.y+m[1]],first=A[0]<Z[0]?A:Z,last=A[0]<Z[0]?Z:A;pts.push(first[0],first[1]);stroke(g,pts,'#b8a07a',.7);pts.length=0;pts.push(last[0],last[1])}
+  if(pts.length===4)stroke(g,pts,'#b8a07a',.7)}
 /* ==== ART storm22: end ==== */
 
 /* ==== ART tablet22: begin ==== */
@@ -566,32 +675,35 @@ async function skiffIn22(){F.skiff=1;G.sk22=0;G.pull22=0;if(SHARED.beat)SHARED.b
   await tell('v18');await say(P,'paul_whatever_is_in_these_bales',TH);codeBtn()}
 
 /* ---- the next day: between two waves (Paul) ---- */
-/* G.hold22: the hold he is at (0 the hatch, 1 the mast, 2 the cask, 3 the rail); G.bale22: he carries a bale */
+/* G.hold22: the hold he is at (0 the hatch, 1 the cask, 2 the mast, 3 the rail); G.bale22: he carries a bale */
 const loadsDone22=()=>['load1','load2','load3'].filter(k=>F[k]).length;
 async function hatch22(){if(phase22()!=='load')return say(PC(),'hatch_look22');
   if(G.bale22)return say(P,'paul_one_at_a_time',TH);
   if((G.hold22||0)!==0)return;G.bale22=1;P.pose='bundle';P.pk=0;SFX.pick();G.beat&&G.beat.reset()}
 /* a step to hold i: only the next one counts; a hit walks there while the pause lasts; a miss is thrown back to the hold he left, with no
    line; after six misses in this crossing the sailor takes him across to the rail */
-async function step22(i){if(phase22()!=='load')return say(PC(),['hatch_look22','mast_look22','cask_look22','lee_rail_look22'][i]);
+async function step22(i){if(phase22()!=='load')return say(PC(),['hatch_look22','cask_look22','mast_look22','lee_rail_look22'][i]);
   const at=G.hold22||0;if(!G.bale22){if(i===0)return hatch22();return say(P,'paul_a_bale_first',TH)}
   if(i!==at+1)return;
   const b=G.beat;if(!b)return;const r=b.attempt(),H=STORM22.holds;
   if(r.carry){await carried22();return}
   if(r.hit){await go22(P,H[i][0],H[i][1],fast()?0:60);G.hold22=i;if(i===3)return over22();return}
   /* a miss: a short step out, and back to the hold, braced */
-  const[x0]=H[at],x=x0+(H[i][0]-x0)*.12;P.pose=0;await go22(P,x,H[at][1],70);P.pose='hold';P.pk=1;await go22(P,x0,H[at][1],70);
+  const[x0,y0]=H[at],x=x0+(H[i][0]-x0)*.12,y=y0+(H[i][1]-y0)*.12;P.pose=0;await go22(P,x,y,70);P.pose='hold';P.pk=1;await go22(P,x0,y0,70);P.dir=1;
   await wait(fast()?40:380);P.pose='bundle'}
-/* the sailor at the rail comes for him and walks him across */
-async function carried22(){const H=STORM22.holds,s=SD,home=[s.x,s.y];P.pose='bundle';
-  await go22(s,P.x+14,P.y+2,60);await Promise.all([go22(P,H[3][0],H[3][1],50),go22(s,H[3][0]+16,H[3][1]+2,50)]);
-  G.hold22=3;await over22();await go22(s,home[0],home[1],60);s.dir=-1}
+/* the sailor by the lee rail comes for him and walks him across, hold by hold (the straight way would run through the cask or the mast),
+   and goes back to his place by the same way */
+async function carried22(){const H=STORM22.holds,S=STORM22,s=SD,at=G.hold22||0,by=i=>[H[i][0]+S.side[i][0],H[i][1]+S.side[i][1]];P.pose='bundle';s.pose=0;
+  await go22(s,...S.gate,60);await go22(s,...by(at),60);
+  for(let i=at+1;i<=3;i++){await Promise.all([go22(P,H[i][0],H[i][1],50),go22(s,...by(i),50)]);G.hold22=i}
+  await over22();await go22(s,...by(2),60);await go22(s,...S.gate,60);await go22(s,...S.home,60);s.dir=1;s.pose='hold';s.pk=0}
 /* at the rail: the bale goes over; then back to the hatch for the next, in the next pause */
 async function over22(){P.pose=0;G.bale22=0;G.over22=performance.now();SFX.splash();
   const n=loadsDone22()+1;F['load'+n]=1;G.beat&&G.beat.reset();
   if(n>=3)return lightened22();
   await wait(fast()?60:700);const b=G.beat;if(b&&!fast()){const w=b.next();if(w.from>performance.now())await wait(w.from-performance.now())}
-  await go22(P,STORM22.holds[0][0],STORM22.holds[0][1],fast()?0:80);G.hold22=0;P.dir=1;codeBtn()}
+  /* back to the hatch in front of the mast and the cask */
+  const H=STORM22.holds;await go22(P,H[2][0],H[2][1],fast()?0:80);await go22(P,H[0][0],H[0][1],fast()?0:80);G.hold22=0;P.dir=1;codeBtn()}
 /* 27:19, then the dark days: Luke and his tablet */
 async function lightened22(){await tw(500);if(SHARED.beat)SHARED.beat.stop();
   await tell('v19');
@@ -660,12 +772,12 @@ ROOMS.deck22={space:.8,walk:DECK22.walk,get mood(){return F.fh?'havens':'deck'},
 ROOMS.storm22={space:.7,get walk(){const ph=phase22(),a=PC();return ph==='skiff'||ph==='load'||ph==='midst'?[a.x,a.x,a.y,a.y]:STORM22.walk.slice()},
   get mood(){const ph=phase22();return ph==='tablet'?'night':ph==='midst'?'midst':'storm'},get amb(){return nightNow22()?AMB.night22:AMB.storm22},hs:[
   here({name:'clouds',x:60,y:0,w:200,h:28,look:()=>phase22()==='tablet'?ask22('clouds'):say(PC(),'storm_sky_look',TH)}),
-  here({name:'the_wind',x:280,y:40,w:40,h:40,look:()=>phase22()==='tablet'?ask22('wind'):say(PC(),'the_wind_look',TH),use:()=>phase22()==='tablet'?ask22('wind'):say(PC(),'the_wind_look',TH)}),
-  here({name:'skiff_rope',x:0,y:70,w:60,h:42,def:'use',vis:()=>phase22()==='skiff',look:'skiff_rope_look',use:()=>pull22(),pickup:()=>pull22()}),
-  here({name:'hatch',x:56,y:96,w:44,h:20,def:'use',look:()=>say(PC(),'hatch_look22'),use:()=>step22(0)}),
-  here({name:'mast_step',x:126,y:30,w:22,h:86,def:'use',look:()=>say(PC(),'mast_look22'),use:()=>step22(1)}),
-  here({name:'cask',x:188,y:94,w:28,h:22,def:'use',look:()=>say(PC(),'cask_look22'),use:()=>step22(2)}),
-  here({name:'lee_rail',x:244,y:84,w:56,h:30,def:'use',look:()=>say(PC(),'lee_rail_look22'),use:()=>step22(3)})]};
+  here({name:'the_wind',x:290,y:28,w:30,h:46,look:()=>phase22()==='tablet'?ask22('wind'):say(PC(),'the_wind_look',TH),use:()=>phase22()==='tablet'?ask22('wind'):say(PC(),'the_wind_look',TH)}),
+  here({name:'skiff_rope',x:0,y:52,w:72,h:44,def:'use',vis:()=>phase22()==='skiff',look:'skiff_rope_look',use:()=>pull22(),pickup:()=>pull22()}),
+  here({name:'hatch',x:114,y:76,w:66,h:28,def:'use',look:()=>say(PC(),'hatch_look22'),use:()=>step22(0)}),
+  here({name:'cask',x:198,y:76,w:28,h:38,def:'use',look:()=>say(PC(),'cask_look22'),use:()=>step22(1)}),
+  here({name:'mast_step',x:258,y:14,w:32,h:118,def:'use',look:()=>say(PC(),'mast_look22'),use:()=>step22(2)}),
+  here({name:'lee_rail',x:290,y:76,w:30,h:48,def:'use',look:()=>say(PC(),'lee_rail_look22'),use:()=>step22(3)})]};
 ROOMS.tablet22={space:.6,walk:NOW,mood:'night',amb:AMB.tablet22,hs:[
   {name:'tablet',x:20,y:16,w:280,h:100,wx:160,wy:236,look:()=>say(LK,'the_days_written_look',TH)},
   ...DAYS22.map(([cx,cy],i)=>({name:'todays_mark',x:cx-20,y:cy-8,w:40,h:76,wx:160,wy:236,def:'use',vis:()=>lukePlays()&&today22()===i+1,
@@ -730,7 +842,7 @@ const TABLETS={
 
 /* ============ PLACING THE CAST, SETUP ============ */
 const ENT={quay22:[150,128,-1],myra22:[100,126,1],get deck22(){return F.fh?[130,126,1]:[120,128,1]},
-  get storm22(){const ph=phase22();return ph==='skiff'?[78,124,-1]:ph==='load'?[...STORM22.holds[0],1]:ph==='tablet'?[120,126,-1]:[160,124,-1]},
+  get storm22(){const ph=phase22();return ph==='skiff'?[78,124,-1]:ph==='load'?[...STORM22.holds[0],1]:ph==='tablet'?[120,126,-1]:[174,124,-1]},
   tablet22:[160,236,1],girded22:[160,236,1]};
 const EVERY=[LK,AR,JU,GU,GU2,...PRISONERS,CS,SA,SB,SC,SD,PI,OW];
 /* place22: everyone where the story has him, from the flags */
@@ -747,13 +859,14 @@ function place22(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   if(ph==='shelter'){pl(P,'deck22',120,128,1);pl(LK,'deck22',60,122,1);pl(AR,'deck22',36,128,1);pl(GU,'deck22',96,134,1);pl(SB,'deck22',292,124,-1);pl(PR2,'deck22',214,118,-1)}
   if(ph==='havens'){pl(P,'deck22',130,126,1);pl(LK,'deck22',30,128,1);pl(AR,'deck22',186,132,-1);pl(GU,'deck22',104,132,1);pl(SC,'deck22',58,120,1);
     pl(JU,'deck22',232,122,-1);pl(PI,'deck22',258,118,-1);pl(OW,'deck22',284,128,-1)}
-  if(ph==='skiff'){for(const h of HAUL22)pl(h.a,'storm22',h.x,h.y,-1,'haul',0);pl(P,'storm22',216,126,-1,'hold',0);pl(GU,'storm22',240,130,-1,'hold',0)}
-  if(ph==='load'){pl(P,'storm22',...STORM22.holds[0],1,'',0);pl(LK,'storm22',22,124,1,'hold',0);pl(AR,'storm22',34,134,1,'hold',0);pl(GU,'storm22',46,130,1,'hold',1);
-    pl(SD,'storm22',302,128,-1,'hold',0)}
-  if(ph==='tablet'){pl(LK,'storm22',120,126,-1);pl(PI,'storm22',40,122,-1,'hold',0);pl(P,'storm22',204,130,-1,'huddle',0);pl(AR,'storm22',226,132,-1,'huddle',0);pl(GU,'storm22',254,128,-1,'hold',0)}
-  if(ph==='midst'){pl(P,'storm22',160,124,-1);pl(PI,'storm22',58,124,1,'huddle',0);pl(OW,'storm22',86,130,1,'huddle',0);pl(SA,'storm22',110,120,1,'huddle',0);
-    pl(AR,'storm22',134,134,1,'huddle',0);pl(LK,'storm22',186,134,-1,'huddle',0);pl(JU,'storm22',212,122,-1);pl(GU,'storm22',238,128,-1);
-    pl(PR1,'storm22',264,122,-1,'huddle',0);pl(PR2,'storm22',288,130,-1,'huddle',0)}
+  /* in the storm (storm22): whoever holds on has his far hand on a thing of the ship (STORM22: the holds of the crossing, the port rail) */
+  if(ph==='skiff'){for(const h of HAUL22)pl(h.a,'storm22',h.x,h.y,-1,'haul',0);pl(P,'storm22',...STORM22.holds[1],1,'hold',0);pl(GU,'storm22',...STORM22.holds[2],1,'hold',0)}
+  if(ph==='load'){pl(P,'storm22',...STORM22.holds[0],1,'',0);pl(LK,'storm22',24,114,-1,'hold',0);pl(AR,'storm22',58,128,-1,'huddle',0);pl(GU,'storm22',40,122,-1,'hold',1);
+    pl(SD,'storm22',...STORM22.home,1,'hold',0)}
+  if(ph==='tablet'){pl(LK,'storm22',120,126,-1);pl(PI,'storm22',24,114,-1,'hold',0);pl(P,'storm22',204,130,-1,'huddle',0);pl(AR,'storm22',226,132,-1,'huddle',0);pl(GU,'storm22',...STORM22.holds[2],1,'hold',0)}
+  if(ph==='midst'){pl(P,'storm22',174,124,-1);pl(PI,'storm22',58,124,1,'huddle',0);pl(OW,'storm22',86,130,1,'huddle',0);pl(SA,'storm22',110,120,1,'huddle',0);
+    pl(AR,'storm22',134,134,1,'huddle',0);pl(LK,'storm22',198,136,-1,'huddle',0);pl(JU,'storm22',222,122,-1);pl(GU,'storm22',238,128,-1);
+    pl(PR1,'storm22',296,128,-1,'huddle',0);pl(PR2,'storm22',280,140,-1,'huddle',0)}
   P.hs=lukePlays()?PAULHS:null;P.party=LK.party=0}
 function setup22(){P.hs=null;P.called='Paul';LK.called='Luke';G.cable22=null;G.off22=0;soon22=0;
   G.invs={paul:['tablets','pouch22'],luke22:[]};G.inv=G.invs.paul;drawInv()}

@@ -30,7 +30,7 @@
                                   perspective, each lifting as it nears, dark faces and lighter backs, the foam on their tops, spindrift
                                   torn off them, and no horizon (the far seas run into the rain). The sea that comes stands up highest at
                                   the windward end and comes over there first. o.pal, o.rail (the top of the rail, 82), o.deck0 (the foot
-                                  of the bulwark on the deck, 97), o.height (the seas' height, 1), o.lamp [x, y, r] (a low warm light that
+                                  of the bulwark on the deck, 97), o.height (the seas' height, 1), o.slant (the rain's, as rain's), o.lamp [x, y, r] (a low warm light that
                                   lights the water and the rain near it), o.from, o.to, o.seed. Returns, in the order a room draws them:
                                     draw(g, t, e)     the sky and the seas, over the whole picture. Not swayed
                                     sway(e, k)        the ship's motion now, k its strength (0 still, 1 as sketched): {a (radians), dx,
@@ -376,7 +376,7 @@ function deckSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz
     if(f>.56&&f<.8){const ve=Math.sin(Math.PI*clamp((f-.57)/.21,0,1));
       if(ve>0){g.fillStyle=lg(g,0,RAIL-30,0,144,[cs(P.foamS,.16*ve),cs(P.foamS,.04*ve)]);g.fillRect(-6,0,w+12,144)}
       for(let j=0;j<7;j++){const x=12+j*48+(j%2)*13,u=clamp((f-t0(x))/.18,0,1);if(u<=0||u>=1)continue;spray(g,x,RAIL-8,dxW*26,60,u,46,seed+j*17+((b|0)%5)*101,P.foam,.85,12)}}
-    rain(g,t,{w,pal,density:o.rain==null?1:o.rain,lamp,splash:[D0+4,140],seed:seed+3})}
+    rain(g,t,{w,pal,density:o.rain==null?1:o.rain,lamp,splash:[D0+4,140],seed:seed+3,slant:o.slant})}
   /* sway(e, k): the transform under which a room draws everything that belongs to the ship (the deck, the rail, what stands on them,
      the people and aboard), with k the strength (0 still, 1 as sketched): {a: radians, dx, dy: room pixels, sy: the near deck dropping as
      she heels (a vertical scale, 1 when upright), px, py: the pivot, low and amidships}. Apply it as

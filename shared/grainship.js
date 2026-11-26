@@ -450,7 +450,9 @@ function wreckage(g,o){const C=LIGHT[o.light]||LIGHT.dawn,sl=o.slant||-.06,r=rng
                      under it and nothing hanging from the middle of anything.
      o.anchor        true (default): the spare anchor lying on the deck by the starboard rail (the exception of 26 November 2026)
      o.figs          [[y, fn(g)], ...]: people, each drawn at the depth of its feet among the things on deck
-     o.light         'day' (default)
+     o.floor(g, D)   paints on the bare planks, after the deck and before the bulwarks and everything on it (Chapter Twenty-Two: wet)
+     o.light         'day' (default), 'storm' (no sun: the grey of the cloud from above), 'night' (no moon, no star: almost dark; the
+                     room lights it with its own lantern)
    What it promises (CONTRIBUTING sections 3 and 4): the deck planks run fore and aft and their butts are staggered, each inside its own
    plank; the bulwarks are planked in strakes with no post on their rails; the hatch's ladder shows only its two rails standing out of
    the hatch, its rungs inside stopping short of the rails; the windlass's drum lies between two cheeks as high as itself, with no post
@@ -476,7 +478,10 @@ function geoDeck(o){o=o||{};const hz=o.hz!=null?o.hz:DG.hz,F=DG.F,E=DG.E,cx=DG.c
     foot={};for(const k in things)foot[k]=footOf(things[k]);
   const L=DLIGHT[o.light]||DLIGHT.day;
   return{hz,F,E,cam,P,b,s,rh,rx,C,N,zOfY,things,foot,walk:[8,312,102,140],L,o,edge:(Y,sd)=>{const z=zOfY(Y);return P(sd*b(z),0,z)[0]}}}
-const DLIGHT={day:{amb:[.6,.6,.68],sun:[.62,.58,.5],d:[.42,.78,-.46]}};
+const DLIGHT={day:{amb:[.6,.6,.68],sun:[.62,.58,.5],d:[.42,.78,-.46]},
+  /* the storm (Chapter Twenty-Two): no sun, only the grey of the cloud from above, a little stronger on what faces up and aft, where the
+     sky is lightest; by night, no moon and no star: almost nothing but the ambient grey (the room adds its lantern) */
+  storm:{amb:[.4,.42,.47],sun:[.3,.32,.36],d:[.05,1,.35]},night:{amb:[.15,.16,.22],sun:[.06,.065,.09],d:[.05,1,.35]}};
 /* the light on a face of albedo c whose outward normal is n */
 function lit(D,c,n,k){const L=D.L,l=Math.hypot(...L.d),q=Math.max(0,(n[0]*L.d[0]+n[1]*L.d[1]+n[2]*L.d[2])/l/(Math.hypot(...n)||1))*(k==null?1:k),h=hex(c);
   return toHex(h[0]*(L.amb[0]+L.sun[0]*q)*1.12,h[1]*(L.amb[1]+L.sun[1]*q)*1.12,h[2]*(L.amb[2]+L.sun[2]*q)*1.12)}
@@ -649,7 +654,7 @@ function deckMast(g,D){const[x0,x1,z0,z1]=D.things.mast,{P}=D,xm=(x0+x1)/2,zm=(z
 function deck(g,o){o=o||{};const D=geoDeck(o),r=rng(22061);
   (o.beyond||deckBeyond)(g,D);
   deckStern(g,D,o.post||'bird');deckOars(g,D,'loom');
-  deckFloor(g,D,r);deckBulwark(g,D,r);deckOars(g,D,'tiller');
+  deckFloor(g,D,r);if(o.floor)o.floor(g,D);deckBulwark(g,D,r);deckOars(g,D,'tiller');
   const T=D.things,dep=k=>D.P(0,D.s(T[k][2]),T[k][2])[1],items=[];
   items.push([dep('cabin'),()=>{boxShadow(g,D,T.cabin,.8);deckCabin(g,D,r)}]);
   items.push([dep('windlass'),()=>{boxShadow(g,D,T.windlass,.8);deckWindlass(g,D,r)}]);
