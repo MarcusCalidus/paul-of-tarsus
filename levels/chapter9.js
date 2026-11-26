@@ -87,13 +87,13 @@ function sing(dest,o){const c=AU.ctx,w=o.who,t=o.t,d=o.d,leg=o.from,rough=o.roug
   for(let i=0;i<5;i++){const lp=c.createBiquadFilter(),a=Math.min(ny,(i<4?V0[i]:F5)*w.scale),z=Math.min(ny,(i<4?V[i]:F5)*w.scale);lp.type='lowpass';
     lp.frequency.setValueAtTime(a,t);if(a!==z)lp.frequency.exponentialRampToValueAtTime(z,t+.07);lp.Q.value=20*Math.log10(Math.max(1,z/BW[i]));x.connect(lp);x=lp}
   const env=c.createGain(),v=(o.v||1)*LEVEL*(GAIN[o.vow]||1)*(1-.25*rough),a=leg?.045:.08,g=env.gain,rel=o.tie?.09:.2;x.connect(env);
-  g.setValueAtTime(leg?v*.4:.0001,t);g.linearRampToValueAtTime(v,t+a);g.setValueAtTime(v,Math.max(t+a,end-rel));g.linearRampToValueAtTime(.0001,end);
+  g.value=0;g.setValueAtTime(leg?v*.4:.0001,t);g.linearRampToValueAtTime(v,t+a);g.setValueAtTime(v,Math.max(t+a,end-rel));g.linearRampToValueAtTime(.0001,end);
   let out=env;if(c.createStereoPanner){const p=c.createStereoPanner();p.pan.value=w.pan;env.connect(p);out=p}
   out.connect(dest);osc.start(t);osc.stop(end+.05);nz.start(t,Math.random()*.5);nz.stop(end+.05)}
 /* inhale: the singer draws breath before a line */
 function inhale(dest,t,w,v){const c=AU.ctx,s=c.createBufferSource(),fl=c.createBiquadFilter(),g=c.createGain();s.buffer=AU.nbuf;s.loop=true;fl.type='bandpass';fl.Q.value=.9;
   fl.frequency.setValueAtTime(900*w.scale,t);fl.frequency.exponentialRampToValueAtTime(1700*w.scale,t+.3);
-  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.2);g.gain.exponentialRampToValueAtTime(.0001,t+.34);
+  g.gain.value=0;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.2);g.gain.exponentialRampToValueAtTime(.0001,t+.34);
   s.connect(fl);fl.connect(g);g.connect(dest);s.start(t,Math.random()*.5);s.stop(t+.4)}
 /* The lines of the psalm as they are sung: each syllable is the degree of the scale, a dot, its length in steps, and its vowel; "-.1" is
    a rest of one step. The vowels and the rhythm are those of the line that stands on the screen, so each language has its own: these are

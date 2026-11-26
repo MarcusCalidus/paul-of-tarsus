@@ -37,7 +37,7 @@ function shout(dest,t,d,f,vow,v,far){const c=AU.ctx,o=c.createOscillator(),src=c
   const V=VOW[vow]||VOW.a,sum=c.createGain();
   V.forEach((fr,i)=>{const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=fr*(.95+.1*Math.random());bp.Q.value=[6,8,9][i];const gg=c.createGain();gg.gain.value=[1,.6,.3][i];src.connect(bp);bp.connect(gg);gg.connect(sum)});
   const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=far>1?far:far?520:2600;sum.connect(lp);
-  const env=c.createGain(),g=env.gain;g.setValueAtTime(.0001,t);g.linearRampToValueAtTime(v,t+.04);g.setValueAtTime(v,t+d*.6);g.linearRampToValueAtTime(.0001,t+d);lp.connect(env);
+  const env=c.createGain(),g=env.gain;g.value=0;g.setValueAtTime(.0001,t);g.linearRampToValueAtTime(v,t+.04);g.setValueAtTime(v,t+d*.6);g.linearRampToValueAtTime(.0001,t+d);lp.connect(env);
   let out=env;if(c.createStereoPanner){const p=c.createStereoPanner();p.pan.value=Math.random()*1.6-.8;env.connect(p);out=p}out.connect(dest);
   o.start(t);o.stop(t+d+.05);nz.start(t,Math.random()*.5);nz.stop(t+d+.05)}
 function cry(dest,t,o){if(!AU.ctx)return 0;const L=parse(o.key),STEP=o.step||.2,n=o.n||9,far=o.far||0,iv=o.interval||2,

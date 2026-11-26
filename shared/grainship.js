@@ -45,6 +45,10 @@
                        light     'day' (sun from the left, default), 'storm' (grey, no sun), 'dawn' (grey with a warm light low at the
                                  left)
                        flap      0..1, how the torn foresail stands at this moment (state 'wreck')
+                       For the run in to the beach (27:40; state 'storm', each optional, the picture as before when not given):
+                       fore      'set': the foresail hoisted to the wind, as at the wreck, and not furled along its mast
+                       oars      'down': the steering oars' lashings loosed, their blades in the water
+                       skiff     false: no skiff aboard (cut away, 27:32)
                        figs(g)   people on deck, drawn behind the rail
                        sign      off by default (the ship of Chapters Twenty-Two and Twenty-Three has none). The ship of Acts 28:11
                                  (Chapter Twenty-Four) carries the "Sons of Zeus" (see "The sign" below): {figs: 1 or 2, name (Greek
@@ -114,7 +118,7 @@ function side(g,o){o=o||{};const G=geo(o),C=LIGHT[o.light]||LIGHT.day,st=o.state
   /* behind the hull: the stays, the masts, the cabin, people on deck, and the skiff aboard */
   rigBehind(g,G,C,st);
   if(st!=='wreck')cabin(g,G,C);
-  if(st==='storm')skiffAboard(g,G,C);
+  if(st==='storm'&&o.skiff!==false)skiffAboard(g,G,C);
   if(o.figs)o.figs(g,G);
   /* the hull, planked in strakes that follow the sheer (shared/ship.js), cut out of the picture where the stern has broken up */
   const HP=hullPts(G);
@@ -138,7 +142,7 @@ function side(g,o){o=o||{};const G=geo(o),C=LIGHT[o.light]||LIGHT.day,st=o.state
   if(st!=='moored')girding(g,G,C);
   yardOnDeck(g,G,C,st);
   if(st!=='wreck')oar(g,G,C,st);
-  if(st==='wreck')foresail(g,G,C,o.flap||0);
+  if(st==='wreck'||o.fore==='set')foresail(g,G,C,o.flap||0);
   g.restore();
   return G}
 
@@ -180,7 +184,7 @@ function rigBehind(g,G,C,st){const{k,x0,sheer,mast:m,fore:f}=G,mc=C===LIGHT.day?
   stroke(g,[fx-nx*f.w0*.25,fy-ny*f.w0*.25,hx-nx*f.w1*.2,hy-ny*f.w1*.2],rgba(C.hi,.6),.5);
   R(g,hx-1*k,hy-1*k,2*k,1.4*k,mc[2]);
   /* at Myra the foresail is furled and lashed along its mast, a slim roll beside the spar's upper half */
-  if(st==='moored'||st==='storm'){const a=.36,b=.9,p=[];for(let i=0;i<=10;i++){const t=a+(b-a)*i/10,sw=(1.4+1.6*Math.sin(Math.PI*i/10))*G.k;p.push(fx+dx*t-nx*(f.w0*.4),fy+dy*t-ny*(f.w0*.4))}
+  if((st==='moored'||st==='storm')&&G.o.fore!=='set'){const a=.36,b=.9,p=[];for(let i=0;i<=10;i++){const t=a+(b-a)*i/10,sw=(1.4+1.6*Math.sin(Math.PI*i/10))*G.k;p.push(fx+dx*t-nx*(f.w0*.4),fy+dy*t-ny*(f.w0*.4))}
     const q=[];for(let i=10;i>=0;i--){const t=a+(b-a)*i/10,sw=(1.2+1.8*Math.sin(Math.PI*i/10))*G.k;q.push(fx+dx*t-nx*(f.w0*.4+sw),fy+dy*t-ny*(f.w0*.4+sw))}
     poly(g,p.concat(q),C.sail[1]);stroke(g,q,rgba(C.sail[2],.8),.5);stroke(g,p,rgba(C.sail[0],.8),.5)}}
 
@@ -318,7 +322,7 @@ function sternpost(g,G,C,kind){const{k,sheer}=G,x=G.post.x,y=sheer(x)+1.5*k,s=G.
 /* the loom comes up to its head at the rail's top, where the tiller is set in (inboard, out of sight), and runs down and aft beyond
    the curve of the stern to the broad blade; it ends at the rail and crosses no rail. Moored or in the storm it is lashed up: the blade hangs clear of the water, a lashing slanting from its neck up to the
    gallery. At the wreck the lashings have been loosed (27:40) and the blade is in the water. */
-function oar(g,G,C,st){const{k,wl,sheer}=G,[hx,hy]=G.oar.head,down=st==='wreck',bl=down?wl+8*k:wl-11*k,ang=down?.36:.42,
+function oar(g,G,C,st){const{k,wl,sheer}=G,[hx,hy]=G.oar.head,down=st==='wreck'||G.o.oars==='down',bl=down?wl+8*k:wl-11*k,ang=down?.36:.42,
     ux=-Math.sin(ang),uy=Math.cos(ang),len=(bl-hy)/uy,fx=hx+ux*len,fy=bl,nx=-uy,ny=ux,w=G.oar.w,b=G.oar.blade,bs=len*.68;
   const bx=hx+ux*bs,by=hy+uy*bs;
   /* the loom, and the blade widening from its neck */
@@ -515,7 +519,24 @@ function wreckage(g,o){const C=LIGHT[o.light]||LIGHT.dawn,sl=o.slant||-.06,r=rng
                      under it and nothing hanging from the middle of anything.
      o.anchor        true (default): the spare anchor lying on the deck by the starboard rail (the exception of 26 November 2026)
      o.figs          [[y, fn(g)], ...]: people, each drawn at the depth of its feet among the things on deck
-     o.light         'day' (default)
+     o.floor(g, D)   paints on the bare planks, after the deck and before the bulwarks and everything on it (Chapter Twenty-Two: wet)
+     o.light         'day' (default); 'storm' (no sun: the grey of the cloud from above); 'night' (no moon, no star: almost
+                     dark; the room lights it with its own lantern); or 'evening': the low sun of the evening at the port side, behind us (Chapter Twenty-Two at
+                     Myra): faces turned to port are lit, and the shadows of the things on deck run long to starboard and away
+     o.cabin         [x0, x1, z0, z1, h]: the cabin's place and size in metres, if a room needs it otherwise than the default
+                     [-2.6, 2.6, 11.3, 14.2, 1.75] (Chapter Twenty-Two narrows it to [-1.8, 1.8, ...], so that a staff at the end of its
+                     roof stands clear of the steering oars' tillers)
+     o.bare          [[x0, x1], ...] in metres across the deck: the planks under these strips keep no butt joints (where a room lays a
+                     rope along a plank, so that no joint crosses it)
+     o.staff         true: a short staff at the port end of the cabin's roof, at the very corner of its eave, for a pennant that the
+                     room draws (staffOf(D) gives its foot and its head); never from the middle of the roof
+     o.shelter       true: Paul's shelter of mended sailcloth (Chapter Twenty-Two) in the lee of the cabin, between its port wall and
+                     the port rail: its upper edge made fast under the cabin's eave, its lower edge along the rail, each corner tied
+                     with a short slanting cord; under it his bedding, the brothers' bundle (knotted on top, no tie across it) and a
+                     loaf. No pole under it, nothing hanging from the middle of anything. shelterOf(D) gives where the bundle is.
+   deckCut(g, o, key) paints the silhouette of one thing on deck ('mast', 'anchor', 'bed') in solid black, in the same geometry as
+                     deck(g, o), for a room's props (the engine cuts the thing out of the backdrop by it). staffOf(D), shelterOf(D)
+                     as above.
    What it promises (CONTRIBUTING sections 3 and 4): the deck planks run fore and aft and their butts are staggered, each inside its own
    plank; the bulwarks are planked in strakes with no post on their rails; the hatch's ladder shows only its two rails standing out of
    the hatch, its rungs inside stopping short of the rails; the windlass's drum lies between two cheeks as high as itself, with no post
@@ -537,11 +558,18 @@ function geoDeck(o){o=o||{};const hz=o.hz!=null?o.hz:DG.hz,F=DG.F,E=DG.E,cx=DG.c
     zOfY=Y=>F*E/(Y-hz),
     things={mast:[3.3,3.9,4.0,4.6,9],hatch:[-1.5,1.5,6.8,9.2,.45],windlass:[.6,2.8,10.4,11.0,.72],cabin:[-2.6,2.6,11.3,14.2,1.75],
       anchor:[1.0,2.9,4.9,5.7,.8],lean:[-5.2,-3.2,5.6,8.4,1.05],bed:[-4.9,-3.9,6.0,7.4,.4],jar:[-4.9,-4.4,8.9,9.4,.7],coil:[2.5,3.1,6.3,6.9,.18],coil2:[-1.9,-1.2,9.8,10.4,.18]},
+    _c=o.cabin?(things.cabin=o.cabin.slice()):0,
     footOf=([x0,x1,z0,z1])=>{const a=P(x0,0,z0),c=P(x1,0,z0),d=P(x0,0,z1),e=P(x1,0,z1),X0=Math.min(a[0],d[0]),X1=Math.max(c[0],e[0]);return[+X0.toFixed(1),+d[1].toFixed(1),+(X1-X0).toFixed(1),+(a[1]-d[1]).toFixed(1)]},
     foot={};for(const k in things)foot[k]=footOf(things[k]);
   const L=DLIGHT[o.light]||DLIGHT.day;
   return{hz,F,E,cam,P,b,s,rh,rx,C,N,zOfY,things,foot,walk:[8,312,102,140],L,o,edge:(Y,sd)=>{const z=zOfY(Y);return P(sd*b(z),0,z)[0]}}}
-const DLIGHT={day:{amb:[.6,.6,.68],sun:[.62,.58,.5],d:[.42,.78,-.46]}};
+const DLIGHT={day:{amb:[.6,.6,.68],sun:[.62,.58,.5],d:[.42,.78,-.46]},
+  /* the evening at Myra: the sun low at the port side and a little behind us, warm; the sky's light cooler and dimmer */
+  evening:{amb:[.5,.44,.52],sun:[.86,.6,.38],d:[-.86,.36,-.2]},
+  /* the storm (Chapter Twenty-Two): no sun, only the grey of the cloud from above, a little stronger on what faces up and aft, where the
+     sky is lightest; by night, no moon and no star: almost nothing but the ambient grey (the room adds its lantern) */
+  storm:{amb:[.4,.42,.47],sun:[.3,.32,.36],d:[.05,1,.35]},night:{amb:[.15,.16,.22],sun:[.06,.065,.09],d:[.05,1,.35]}};
+
 /* the light on a face of albedo c whose outward normal is n */
 function lit(D,c,n,k){const L=D.L,l=Math.hypot(...L.d),q=Math.max(0,(n[0]*L.d[0]+n[1]*L.d[1]+n[2]*L.d[2])/l/(Math.hypot(...n)||1))*(k==null?1:k),h=hex(c);
   return toHex(h[0]*(L.amb[0]+L.sun[0]*q)*1.12,h[1]*(L.amb[1]+L.sun[1]*q)*1.12,h[2]*(L.amb[2]+L.sun[2]*q)*1.12)}
@@ -575,7 +603,8 @@ function deckFloor(g,D,r){const{P,s,b}=D,FL=D.C.map(([x,z])=>P(x,s(z),z)).flat()
       poly(g,pl,c);
       clipTo(g,()=>poly(g,pl),()=>{for(let i=0;i<4;i++){const u=u0+(u1-u0)*(.2+r()*.6),za=2+r()*8,zb=za+1.5+r()*4,q=[];for(let z=za;z<zb;z+=.4)q.push(...P(u*W(z),s(z),z));if(q.length>3)stroke(g,q,r()<.5?rgba(tint(c,-.22),.45):rgba(tint(c,.14),.4),.5)}});
       const sm=zs.map(z=>P(u0*W(z),s(z),z)).flat();stroke(g,sm,'rgba(30,18,10,.5)',.5);
-      const z0=2+((k*.618+.31)%1+1)%1*5;for(let z=z0;z<DG.ZS;z+=5.6){const a=P(u0*W(z)+.03,s(z),z),e=P(u1*W(z)-.03,s(z),z);if(e[0]-a[0]>2.2){R(g,a[0],a[1]-.25,e[0]-a[0],.5,'rgba(30,18,10,.45)');R(g,a[0],a[1]+.25,e[0]-a[0],.4,rgba(tint(c,.24),.3))}}}
+      const bare=(D.o.bare||[]).some(([a,b])=>a<(k+1)*du&&b>k*du);
+      const z0=2+((k*.618+.31)%1+1)%1*5;if(!bare)for(let z=z0;z<DG.ZS;z+=5.6){const a=P(u0*W(z)+.03,s(z),z),e=P(u1*W(z)-.03,s(z),z);if(e[0]-a[0]>2.2){R(g,a[0],a[1]-.25,e[0]-a[0],.5,'rgba(30,18,10,.45)');R(g,a[0],a[1]+.25,e[0]-a[0],.4,rgba(tint(c,.24),.3))}}}
     tex(g,'mott',.25,0,40,320,110,'overlay',.7);
     comp(g,'soft-light',.28,()=>poly(g,[...P(-1.2,0,2.4),...P(1.2,0,2.4),...P(.8,0,11),...P(-.8,0,11)],'#fff4d8'));
     for(const[d,a]of[[.04,.3],[.12,.18],[.24,.1]])stroke(g,D.C.map(([x,z],i)=>P(x+D.N[i][0]*d,s(z),z+D.N[i][1]*d)).flat(),`rgba(20,12,16,${a})`,1.2)})}
@@ -627,7 +656,14 @@ function deckCabin(g,D,r){const B=D.things.cabin,f=boxD(D,B),W='#7a5634',{P,s}=D
   const d0=P(-.45,y0,z0),d1=P(.45,y0+1.65,z0);R(g,d0[0],d1[1],d1[0]-d0[0],d0[1]-d1[1],'#1c120c');R(g,d0[0],d1[1],1,d0[1]-d1[1],lit(D,'#6a4a2c',[1,0,0]));
   for(const wx of[-1.7,1.1]){const a=P(wx,y0+1.1,z0),e=P(wx+.6,y0+1.55,z0);R(g,a[0],e[1],e[0]-a[0],a[1]-e[1],'#1c120c');R(g,a[0],a[1],e[0]-a[0],.5,lit(D,'#e0b880',[0,1,0]))}
   ao(g,f.front[0],f.front[1]-3,f.front[2]-f.front[0],3,'b',.3,'#0c0808');
-  stroke(g,[f.front[0],f.front[1],f.front[6],f.front[7]],lit(D,'#f0d0a0',[-1,0,-.3]),.5)}
+  stroke(g,[f.front[0],f.front[1],f.front[6],f.front[7]],lit(D,'#f0d0a0',[-1,0,-.3]),.5);
+  if(D.o.staff)deckStaff(g,D)}
+/* the staff for a pennant: at the port end of the cabin's roof, on the very corner of its eave, so that it ends the eave and stands on
+   the middle of nothing; round, its lit side toward the light */
+function staffOf(D){const[x0,,z0,,h]=D.things.cabin,x=x0-.13,z=z0-.13,y=D.s(z0)+h+.12;return{x,z,foot:D.P(x,y,z),head:D.P(x,y+1.4,z)}}
+function deckStaff(g,D){const S=staffOf(D),[fx,fy]=S.foot,[,hy]=S.head,w=Math.max(1,D.F*.06/S.z);
+  R(g,fx-w/2,hy,w,fy-hy+.4,lit(D,'#6a4a2c',[0,0,-1]));R(g,D.L.d[0]<0?fx-w/2:fx+w/2-.5,hy,.5,fy-hy,lit(D,'#d8b07a',[D.L.d[0]<0?-1:1,.2,-.4]));
+  R(g,fx-w/2-.2,hy-.6,w+.4,.8,lit(D,'#5a3e24',[0,1,0]))}
 /* the hatch: a coaming of heavy timber round the opening, its lit top; the hold dark below; the ladder's two rails stand out of it at
    its after edge, leaning; its rungs, inside, stop short of the rails */
 function deckHatch(g,D,r){const B=D.things.hatch,f=boxD(D,B),{P,s}=D,[x0,x1,z0,z1,h]=B,cw=.22;
@@ -700,6 +736,53 @@ function deckLean(g,D,r){const[x0,x1,z0,z1,h]=D.things.lean,{P,s,b,rh}=D,c='#a09
   stroke(g,[ta[0],ta[1],...mid(z0,.12),la[0],la[1]],rgba(lit(D,'#f4ead0',[0,.8,-.6]),.9),.6);stroke(g,B,lit(D,'#8a8070',[0,1,0]),.6);
   /* the cords at the lower corners, slanting out to pegs in the deck */
   for(const[p,z]of[[la,z0-.4],[lb,z1+.4]]){const q=P(x1+.55,0,z);stroke(g,[p[0],p[1],q[0],q[1]],lit(D,'#c8ac78',[0,1,-.3]),.5);R(g,q[0]-.5,q[1]-.5,1,1,'#3a2a1a')}}
+/* Paul's shelter in the lee of the cabin (o.shelter): mended sailcloth from under the cabin's eave on its port side down to the port
+   rail, sagging a little between; we see its underside, in shade, and under it the nook: the bulwark's face and the deck in its shadow,
+   his bedding laid out, the brothers' bundle knotted at its top and a loaf beside it. The seam of the mended tear runs down the slope of
+   the cloth, its stitches along it. A short cord at each near corner slants to a cleat (on the bulwark, on the cabin's front). */
+function shelterOf(D){const[x0,,z0]=D.things.cabin,z=z0+.25;return{bundle:D.P(x0-1.05,D.s(z)+.36,z),zf:z0-.08,zb:D.things.cabin[3]-.3}}
+function deckShelter(g,D,r){const{P,s,b,rh}=D,[cx0,,cz0]=D.things.cabin,S=shelterOf(D),zf=S.zf,zb=S.zb,c='#b4a688',
+    hi=z=>P(cx0-.03,s(z)+1.55,z),lo=z=>P(-b(z)+.07,s(z)+rh(z)+.03,z),mid=(z,k)=>{const a=hi(z),e=lo(z);return[(a[0]+e[0])/2,(a[1]+e[1])/2+k*D.F/z*.09]};
+  /* the nook under it, in its shade: the bulwark's face and the deck */
+  const nook=[...hi(zf),...P(cx0,s(zf),zf),...P(-b(zf)+.02,s(zf),zf),...lo(zf),...lo(zb),...hi(zb)];
+  comp(g,'multiply',.42,()=>poly(g,nook,'#5a4a66'));comp(g,'multiply',.22,()=>poly(g,[...lo(zf),...lo(zb),...P(-b(zb),s(zb),zb),...P(-b(zf),s(zf),zf)],'#3a3050'));
+  /* the bedding laid out on the deck, a blanket of brown wool, its near end folded back */
+  const bz0=zf+.15,bz1=zb-.2,bx0=-b(bz0)+.35,bx1=cx0-.35,bed=[...P(bx0,s(bz0)+.06,bz0),...P(bx1,s(bz0)+.06,bz0),...P(bx1,s(bz1)+.06,bz1),...P(bx0+.25,s(bz1)+.06,bz1)];
+  poly(g,bed,lit(D,'#7a4e3a',[0,1,0],.5));R(g,bed[0],bed[1]-.6,bed[2]-bed[0],.8,lit(D,'#a87458',[0,.6,-.8],.6));
+  clipTo(g,()=>poly(g,bed),()=>tex(g,'mott',.35,bed[0]-2,bed[5]-2,bed[2]-bed[0]+4,bed[1]-bed[5]+4,'overlay',.8));
+  /* the loaf beside the bundle, round, seen from a little above */
+  {const[lx,ly]=P(cx0-1.65,s(zf+.4)+.08,zf+.4),u=D.F/(zf+.4);oval(g,lx,ly,.16*u,.09*u,lit(D,'#8a5a2a',[0,1,-.3],.6));oval(g,lx-.2,ly-.4,.12*u,.06*u,lit(D,'#c48a4a',[0,1,-.3],.7))}
+  /* the brothers' bundle: a cloth gathered and knotted at its top, sitting on the bedding */
+  {const z=zf+.33,[bx,by]=S.bundle,u=D.F/z,w=.24*u,h=.34*u,ft=by+h,B=[bx-w,ft,bx-w*1.1,ft-h*.45,bx-w*.7,ft-h*.85,bx-w*.18,ft-h*.92,bx-w*.1,ft-h,bx+w*.2,ft-h*1.02,bx+w*.24,ft-h*.9,bx+w*.8,ft-h*.8,bx+w*1.1,ft-h*.4,bx+w,ft];
+    comp(g,'multiply',.4,()=>oval(g,bx+.6,ft+.2,w*1.3,.18*u,'#3a3050'));
+    poly(g,B,lit(D,'#9a8a62',[0,.3,-1],.7));poly(g,[bx-w,ft,bx-w*1.1,ft-h*.45,bx-w*.5,ft-h*.6,bx-w*.3,ft],lit(D,'#9a8a62',[-1,.2,-.3],.8));
+    R(g,bx-w*.22,ft-h*1.02,w*.44,h*.16,lit(D,'#7a6a48',[0,1,0],.7))}
+  /* the cloth's underside, in shade: from the front edge back to the far one */
+  const n=8,FR=[],BK=[];for(let i=0;i<=n;i++){const k=i/n,sag=Math.sin(Math.PI*k);const a=hi(zf),e=lo(zf),a2=hi(zb),e2=lo(zb);
+    FR.push(a[0]+(e[0]-a[0])*k,a[1]+(e[1]-a[1])*k+sag*D.F/zf*.09);BK.push(a2[0]+(e2[0]-a2[0])*k,a2[1]+(e2[1]-a2[1])*k+sag*D.F/zb*.09)}
+  const cloth=FR.concat(ptsBackG(BK));
+  /* old linen sailcloth is thin enough for the day's light to come through it: its underside glows a little in the light that falls on
+     its top, more where the sun is low and warm */
+  const tl=lit(D,c,[-.4,.9,0]);poly(g,cloth);g.fillStyle=lg(g,FR[0],0,FR[FR.length-2],0,[mix(tl,'#6a5a50',.42),mix(tl,'#6a5a50',.25)]);g.fill();
+  clipTo(g,()=>poly(g,cloth),()=>{tex(g,'mott',.4,FR[FR.length-2]-2,BK[1]-3,FR[0]-FR[FR.length-2]+12,20,'overlay',.8);tex(g,'grain',.3,FR[FR.length-2]-2,BK[1]-3,FR[0]-FR[FR.length-2]+12,20,'overlay',.4);
+    /* the mended seam, down the slope of the cloth, its stitches along it */
+    const zs=zf+(zb-zf)*.45,a=hi(zs),m=mid(zs,1),e=lo(zs);stroke(g,[a[0],a[1],m[0],m[1],e[0],e[1]],'rgba(70,58,44,.55)',.5);
+    for(let t=.12;t<.9;t+=.11){const x=a[0]+(e[0]-a[0])*t,y=a[1]+(e[1]-a[1])*t+Math.sin(Math.PI*t)*(m[1]-(a[1]+e[1])/2);R(g,x-.25,y-.25,.5,.5,'rgba(230,214,180,.6)')}});
+  /* its near edge, a hem catching the light; its lower edge along the rail */
+  stroke(g,FR,lit(D,'#f2e4c0',[-.4,.6,-.7],1.1),.6);
+  /* the cords at the near corners, short and slanting: from the low corner to a cleat on the bulwark's face, from the high corner to a
+     cleat on the cabin's front */
+  const lf=lo(zf),cl=P(-b(zf-.5)+.05,s(zf-.5)+.72,zf-.5),hf=hi(zf),ch=P(cx0+.18,s(cz0)+1.2,cz0-.02),cc=lit(D,'#c8ac78',[0,1,-.3]);
+  stroke(g,[lf[0],lf[1],cl[0],cl[1]],cc,.5);R(g,cl[0]-.5,cl[1]-.4,1,.8,'#3a2a1a');
+  stroke(g,[hf[0],hf[1],ch[0],ch[1]],cc,.5);R(g,ch[0]-.5,ch[1]-.4,1,.8,'#3a2a1a')}
+/* deckCut(g, o, key): the silhouette of one thing on deck, in solid black, for a room's props */
+function deckCut(g,o,key){const D=geoDeck(o),{P}=D,T=D.things;g.fillStyle='#000';
+  if(key==='mast'){const[x0,x1,z0,z1]=T.mast,xm=(x0+x1)/2,zm=(z0+z1)/2,f0=P(xm-.3,0,zm-.3),f1=P(xm+.3,0,zm-.3);R(g,f0[0]-.2,-2,f1[0]-f0[0]+.4,f0[1]+2,'#000');
+    const pc=boxD(D,[x0-.08,x1+.08,z0-.08,z1+.08,.16]);for(const q of[pc.front,pc.top,pc.side])if(q)poly(g,q,'#000')}
+  if(key==='anchor'){const[x0,x1,z0,z1]=T.anchor,xh=x0+.15,z=(z0+z1)/2,yh=.18,L=1.8,th=.29,R0=P(xh,yh,z),C0=P(xh+L*Math.cos(th),yh+L*Math.sin(th),z),
+      len=Math.hypot(C0[0]-R0[0],C0[1]-R0[1]),ang=Math.atan2(C0[0]-R0[0],C0[1]-R0[1]);
+    for(const[dx,dy]of[[0,0],[.5,0],[-.5,0],[0,.5],[0,-.5]])anchor(g,{x:R0[0]+dx,y:R0[1]+dy,len,ang,C:{lead:'#000',leadHi:'#000',dark:'#000'},mono:'#000'})}
+  if(key==='bed'){const[x0,x1,z0,z1]=T.bed,f=boxD(D,[x0-.05,x1+.05,z0-.05,z1,.46]);for(const q of[f.front,f.top,f.side])if(q)poly(g,q,'#000')}}
 /* the mainmast's foot, in the right foreground: the round mast standing in its partners (a low square collar of timber, no wider
    than it must be), running out of the top of the picture */
 function deckMast(g,D){const[x0,x1,z0,z1]=D.things.mast,{P}=D,xm=(x0+x1)/2,zm=(z0+z1)/2,r=.3,f0=P(xm-r,0,zm-r),f1=P(xm+r,0,zm-r),w=f1[0]-f0[0];
@@ -714,7 +797,7 @@ function deckMast(g,D){const[x0,x1,z0,z1]=D.things.mast,{P}=D,xm=(x0+x1)/2,zm=(z
 function deck(g,o){o=o||{};const D=geoDeck(o),r=rng(22061);
   (o.beyond||deckBeyond)(g,D);
   deckStern(g,D,o.post||'bird');deckOars(g,D,'loom');
-  deckFloor(g,D,r);deckBulwark(g,D,r);deckOars(g,D,'tiller');
+  deckFloor(g,D,r);if(o.floor)o.floor(g,D);deckBulwark(g,D,r);deckOars(g,D,'tiller');
   const T=D.things,dep=k=>D.P(0,D.s(T[k][2]),T[k][2])[1],items=[];
   items.push([dep('cabin'),()=>{boxShadow(g,D,T.cabin,.8);deckCabin(g,D,r)}]);
   items.push([dep('windlass'),()=>{boxShadow(g,D,T.windlass,.8);deckWindlass(g,D,r)}]);
@@ -722,6 +805,7 @@ function deck(g,o){o=o||{};const D=geoDeck(o),r=rng(22061);
   items.push([dep('jar'),()=>deckBed(g,D,r)]);
   items.push([dep('hatch'),()=>{boxShadow(g,D,T.hatch,.8);deckHatch(g,D,r)}]);
   if(o.lean)items.push([dep('lean'),()=>deckLean(g,D,r)]);
+  if(o.shelter)items.push([D.P(0,D.s(shelterOf(D).zf),shelterOf(D).zf)[1]+.1,()=>deckShelter(g,D,r)]);
   if(o.anchor!==false)items.push([dep('anchor'),()=>deckAnchor(g,D)]);
   items.push([dep('coil'),()=>deckCoil(g,D,'coil')]);
   items.push([dep('mast'),()=>deckMast(g,D)]);
@@ -751,26 +835,38 @@ function deckBeyond(g,D){const place=D.o.place||'myra',my=place==='myra',K=SHARE
 
 /* ======== The stern by night, from aboard (Chapter Twenty-Three, the soundings: 27:27-29) ========
    sternNight(g, o) paints the after deck seen from just aft of the cabin, looking aft, on the fourteenth night: no moon and no star
-   (27:20), the sea and the sky one darkness with no line between them, rain. One lantern hangs beside the sternpost, from it, by two
-   cords that part upward (one to the post's shaft, one to its bent head), and is the only light: a small low glow, warm on the post, the
-   rail and the deck. We stand a little to starboard of the middle, so the sternpost (the same bird's neck as from the side) is seen
+   (27:20), the sea and the sky one darkness with no line between them, rain. One lantern hangs well to starboard of the sternpost, above
+   the head of anyone who stands on the deck, by two cords that part upward to the rigging out of the picture (nothing of it touches the
+   swan's neck, and neither it nor its glow lies under the head or inside the loop), and is the only light: a soft glow round it without an
+   edge, its light long and low on the deck under it, warm on the post, the rail and the deck. We stand a little to starboard of the middle, so the sternpost (the same bird's neck as from the side) is seen
    from behind and a little from the side, and it rises where the stern's rail turns round toward us; the rail is a plain rail. The steering oars stand lashed up at both quarters, their lashings slanting to the rail. Four cables come aft
    along the deck side by side, two each side of the post, rise to the stern rail and go over it and down into the dark: none crosses
    another, the post or a plank of the stern, whose inner face is left without seams where they pass. No anchor is seen.
-     o.post    'bird' | 'curl'      o.cables   how many (default 4)      o.t   the time, for the flame
-   Returns the geometry {P, hz, lamp:[x, y]} for the room. */
-function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=1.3,P=(x,y,z)=>[160+F*(x-cam)/z,hz+F*(E-y)/z],ZS=5.5,
+     o.post    'bird' | 'curl'      o.cables   how many (default 4; 0 for none)      o.t   the time, for the flame
+   For a room built on this picture (Chapter Twenty-Three's stern23), all optional and all leaving the picture as it was when not given:
+     o.cam     how far to starboard of her middle line we stand (metres, default 1.3)
+     o.lp      where the lantern hangs, [x, y, z] in metres (default [1.4, 2.2, 5.35]: to starboard of the post, clear of the loop, above
+               every head); its cords run up out of the top of the picture, as at the bow
+     o.sky     false leaves the sky and the sea out, transparent, for a room that paints the storm's night behind the ship
+     o.rain    false leaves the rain out, for a room that lets it fall in its own air
+   Returns the geometry {P, hz, lamp:[x, y]} for the room (nightGeo gives the same without painting). */
+function nightGeo(o){o=o||{};const F=150,E=1.7,hz=62,cam=o.cam!=null?o.cam:1.3,P=(x,y,z)=>[160+F*(x-cam)/z,hz+F*(E-y)/z],ZS=5.5,
+    b=z=>z<=2?3.7:z>=ZS?1.9:1.9+1.8*Math.sqrt(Math.max(0,1-Math.pow((z-2)/(ZS-2),2.2))),LP=o.lp||[1.4,2.2,5.35],zOf=Y=>F*E/(Y-hz);
+  /* the deck's edges at a height Y on the screen (the foot of each bulwark), and the foot of the stern's face */
+  return{F,E,hz,cam,P,b,ZS,lamp:P(...LP),lampFloor:P(LP[0],0,LP[2]),
+    edge:(Y,sd)=>{const z=zOf(Y);return P(sd*b(z),0,z)[0]},sternFoot:P(0,0,ZS)[1],sternTop:P(0,1.17,ZS)[1]}}
+function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=o.cam!=null?o.cam:1.3,P=(x,y,z)=>[160+F*(x-cam)/z,hz+F*(E-y)/z],ZS=5.5,
     b=z=>z<=2?3.7:z>=ZS?1.9:1.9+1.8*Math.sqrt(Math.max(0,1-Math.pow((z-2)/(ZS-2),2.2))),sz=x=>ZS+.2*(1-Math.pow(x/1.9,2)),rh=1.05,
     /* the rail: a little higher round the stern than at the quarters, a rail and nothing more */
     RH=(x,z)=>rh+.12*clamp((z-(ZS-1.5))/1.5,0,1),
-    LP=[.5,1.25,5.35],
+    LP=o.lp||[1.4,2.2,5.35],
     /* the lantern's light on a face: night ambient, and the lamp's warm light by angle and distance */
     lamp=(c,p,n)=>{const d=[LP[0]-p[0],LP[1]-p[1],LP[2]-p[2]],l=Math.hypot(...d),q=Math.max(0,(n[0]*d[0]+n[1]*d[1]+n[2]*d[2])/l/(Math.hypot(...n)||1)),f=q/(1+Math.pow(l/1.9,2)),h=hex(c);
       return toHex(h[0]*(.14+1.15*f),h[1]*(.16+.9*f),h[2]*(.24+.55*f))};
   /* the sky and the sea: one darkness, a little lighter low down where the sea's foam catches what light there is; no line between */
-  sky(g,320,144,[[0,'#04060a'],[.35,'#0a0e16'],[.5,'#10161e'],[.7,'#0c1218'],[1,'#080c10']]);
+  if(o.sky!==false){sky(g,320,144,[[0,'#04060a'],[.35,'#0a0e16'],[.5,'#10161e'],[.7,'#0c1218'],[1,'#080c10']]);
   for(let i=0;i<16;i++){const r=rng(500+i);pool(g,r()*320,8+r()*40,40+r()*50,5+r()*6,'#161c28',.5,'source-over')}
-  for(let i=0;i<70;i++){const r=rng(800+i),y=66+Math.pow(r(),1.4)*30;R(g,r()*320,y,1+r()*4,.5,`rgba(150,170,180,${(.05+.1*r()).toFixed(2)})`)}
+  for(let i=0;i<70;i++){const r=rng(800+i),y=66+Math.pow(r(),1.4)*30;R(g,r()*320,y,1+r()*4,.5,`rgba(150,170,180,${(.05+.1*r()).toFixed(2)})`)}}
   /* the deck: planks running aft, converging; the lantern's pool on it */
   const C=[];for(let z=2;z<ZS;z+=.25)C.push([-b(z),z]);for(let i=0;i<=10;i++){const x=-1.9+3.8*i/10;C.push([x,sz(x)])}for(let z=ZS-.25;z>=2;z-=.25)C.push([b(z),z]);
   const N=C.map((p,i)=>{const a=C[Math.max(0,i-1)],c=C[Math.min(C.length-1,i+1)],tx=c[0]-a[0],tz=c[1]-a[1],l=Math.hypot(tx,tz)||1;return[tz/l,-tx/l]});
@@ -800,21 +896,314 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=1.3,P=(x,y,z)=>[160
     const cl=P(xr-sd*.25,.12,z-.55),m=P(xr+sd*.42,rh+.45,z+.18);stroke(g,[m[0],m[1],cl[0],cl[1]],lamp('#b8a070',[xr,1.2,z+.5],[-sd,.5,-.5]),.6)}
   /* the four cables: from the deck at our feet aft along the planks, rising to the stern rail, over it and away (each ends at the
      rail's top, where it bends down out of sight) */
-  const n=o.cables||4;for(let i=0;i<n;i++){const x0=[-1.45,-.8,.8,1.45][i]||0,x1=x0*.86,z1=sz(x1)+.02,ye=RH(x1,z1)+.12,p=[];
+  const n=o.cables!=null?o.cables:4;for(let i=0;i<n;i++){const x0=[-1.45,-.8,.8,1.45][i]||0,x1=x0*.86,z1=sz(x1)+.02,ye=RH(x1,z1)+.12,p=[];
     for(let j=0;j<=16;j++){const t=j/16,z=1.9+(z1-1.9)*t,y=.1+(ye-.1)*Math.pow(t,2.2);p.push(...P(x0+(x1-x0)*t,y,z))}
     const w0=150*.06/1.9,w1=150*.06/z1;for(let j=2;j<p.length;j+=2){const t=j/(p.length-2),w=w0+(w1-w0)*t,zz=1.9+(z1-1.9)*t,c=lamp('#9a8058',[x0,.5,zz],[0,1,-.3]);stroke(g,[p[j-2]+w*.25,p[j-1]+w*.3,p[j]+w*.25,p[j+1]+w*.3],'rgba(4,3,3,.6)',w);stroke(g,[p[j-2],p[j-1],p[j],p[j+1]],c,w*.8);stroke(g,[p[j-2]-w*.2,p[j-1]-w*.2,p[j]-w*.2,p[j+1]-w*.2],rgba(lamp('#e8c898',[x0,.5,zz],[0,1,-.3]),.6),Math.max(.4,w*.25))}
 }
-  /* the sternpost: up from the stern's middle, its head bent over toward us */
-  /* the lantern: a little lantern of clay and horn, hung by two cords that part upward to the post's shaft and to its head */
-  /* its two cords part upward from the lantern: one to the rising limb of the neck nearest us, one to the outer back of the descending limb clear of the head */
-  const[lx,ly]=P(...LP),s1=SW(.35,1.05),s2=SW(-.78,2.28);
-  stroke(g,[lx-.6,ly-2,s1[0],s1[1]],'#6a5a40',.5);stroke(g,[lx+.6,ly-2,s2[0],s2[1]],'#6a5a40',.5);
-  comp(g,'lighter',.4,()=>{pool(g,lx,ly+4,18,8,'#ff9a40',.45);pool(g,lx,ly+1,7,4,'#ffc070',.55)});
+  /* the lantern: a little lantern of clay and horn, hung by two cords that part upward to the rigging out of the picture, well clear of
+     the swan's neck; round it a soft glow without an edge (round, never a flat ellipse on its body: that reads as a plus sign) */
+  const[lx,ly]=P(...LP);
+  stroke(g,[lx-.6,ly-2,lx-9,-4],'#6a5a40',.5);stroke(g,[lx+.6,ly-2,lx+8,-4],'#6a5a40',.5);
+  comp(g,'lighter',.4,()=>{pool(g,lx,ly+1,11,11,'#ff9a40',.3);pool(g,lx,ly+.5,5,5,'#ffc070',.35)});
   poly(g,[lx-1.6,ly-2,lx+1.6,ly-2,lx+1.9,ly+2.6,lx-1.9,ly+2.6],'#5a3a22');R(g,lx-1,ly-1.2,2,3,'#ffd890');R(g,lx-.5,ly-.6,1,1.6,'#fff4d0');R(g,lx-1.9,ly+2.6,3.8,.6,'#3a2414');
   /* rain, faint, brighter where it falls through the lantern's light */
-  if(SHARED.weather){SHARED.weather.rain(g,o.t||3000,320,{density:.5,len:4,col:'rgba(150,160,180,.22)',wind:-1.2,seed:2307});
+  if(SHARED.weather&&o.rain!==false){SHARED.weather.rain(g,o.t||3000,320,{density:.5,len:4,col:'rgba(150,160,180,.22)',wind:-1.2,seed:2307});
     clipTo(g,()=>{g.beginPath();g.ellipse(lx,ly+10,40,26,0,0,6.2832)},()=>SHARED.weather.rain(g,o.t||3000,320,{density:.9,len:4,col:'rgba(255,214,150,.4)',wind:-1.2,seed:2308}))}
   return{P,hz,lamp:[lx,ly]}}
 
-return{side,geo,anchor,wreckage,LIGHT,hawser:hawserS,deck,geoDeck,sternNight};
+/* ======== The foredeck by night, from aboard, looking forward (Chapter Twenty-Three, the skiff: 27:30-32) ========
+   bowNight(g, o) paints the fore part of her deck seen from just forward of the hatch, a little to starboard of her middle line, looking
+   forward on the same night: the deck narrowing to the round of the bow, the bulwarks on both sides planked in strakes with their rail
+   on top, the anchors of the bow lying against the port bulwark under a cover of sailcloth, lashed as they lie (nothing of an anchor
+   shows; the lashing runs along the cover, never across it), and the short foremast raked forward over the bow with the foresail furled
+   along its upper part (no yard is seen). One lantern, hung by two cords that part upward from the rigging out of the picture, lights the
+   near deck; toward the bow the light dies into the night, and at the bow the rail is no lighter than the night beyond it, so that the
+   mast, which rises in front of the bow, stands across no line (CONTRIBUTING section 3: a mast across a level line). The sky above the
+   rail is left transparent (o.sky false is the only way: the room paints the storm's night behind her).
+     o.lp      where the lantern hangs, [x, y, z] in metres (default [-.2, 2.55, 6.5])
+   bowGeo(o) gives the geometry without painting: P(x, y, z) to the screen, b(z) the half-breadth, s(z) the deck's rise, rh(z) the
+   bulwark's height, rail(z, side) the top of the rail on the screen, lamp [x, y], lampFloor y, and outboard (the outline of what lies
+   beyond the starboard rail, for a clip). bowSkiff(g, D, k, drop) paints the skiff alongside to starboard, being let down (k 0..1, its
+   gunwale going down from a little above the rail to the rail) or falling away (drop 0..1), clipped to what is seen beyond the rail, and
+   returns the rings at its two ends on the screen. */
+const BW={F:150,E:1.7,hz:62,cam:.8,ZS:13,B:5};
+function bowGeo(o){o=o||{};const{F,E,hz,ZS,B}=BW,cam=o.cam!=null?o.cam:BW.cam,
+    b=z=>z<=4?B:z>=ZS?0:B*Math.sqrt(Math.max(0,1-Math.pow((z-4)/(ZS-4),2.2))),
+    s=z=>z<=3?0:.9*Math.pow(Math.min(1,(z-3)/(ZS-3)),1.8),
+    rh=z=>1.05+.2*clamp((z-6)/(ZS-6),0,1),
+    P=(x,y,z)=>[160+F*(x-cam)/z,hz+F*(E-y)/z],
+    LP=o.lp||[-.2,2.55,6.5],
+    /* the bulwark's line round the deck, port aft to the bow and back to starboard aft, with its inward normals */
+    C=[];
+  for(let z=2.4;z<ZS-.6;z+=z<9?.4:.2)C.push([-b(z),z]);for(let i=0;i<=12;i++){const a=Math.PI*i/12,z0=ZS-.6;C.push([-b(z0)*Math.cos(a),z0+.6*Math.sin(a)*1])}
+  for(let z=ZS-.8;z>=2.4;z-=z<9?.4:.2)C.push([b(z),z]);
+  const N=C.map((p,i)=>{const a=C[Math.max(0,i-1)],c=C[Math.min(C.length-1,i+1)],tx=c[0]-a[0],tz=c[1]-a[1],l=Math.hypot(tx,tz)||1;return[tz/l,-tx/l]}),
+    rail=(z,sd)=>P(sd*b(z),s(z)+rh(z)+.1,z),
+    outboard=[];
+  {const st=C.filter(p=>p[0]>0||p[1]>ZS-.65);for(const[x,z]of st)outboard.push(...P(x,s(z)+rh(z)+.1,z));outboard.push(420,outboard[outboard.length-1],420,-60,P(0,0,ZS)[0],-60)}
+  return{F,E,hz,cam,ZS,b,s,rh,P,C,N,LP,lamp:P(...LP),lampFloor:P(LP[0],s(LP[2]),LP[2])[1],rail,outboard,
+    mast:{z:10.4,ang:.74,len:10},o}}
+/* the lantern's light on a face, by night: what little the night gives, the lamp's warm light by angle and distance, and beyond its
+   reach the night's own darkness, so that the far bow is lost in it */
+function bowLight(D,c,p,n){const L=D.LP,d=[L[0]-p[0],L[1]-p[1],L[2]-p[2]],l=Math.hypot(...d),q=Math.max(0,(n[0]*d[0]+n[1]*d[1]+n[2]*d[2])/l/(Math.hypot(...n)||1)),
+    f=q/(1+Math.pow(l/2.6,2)),h=hex(c),k=Math.max(clamp((l-4.6)/3.4,0,1)*.7,clamp((p[2]-10.6)/1.5,0,1)),nt=hex('#07080c'),
+    v=[h[0]*(.12+1.25*f),h[1]*(.13+1.0*f),h[2]*(.2+.6*f)];
+  return toHex(v[0]+(nt[0]-v[0])*k,v[1]+(nt[1]-v[1])*k,v[2]+(nt[2]-v[2])*k)}
+function bowNight(g,o){o=o||{};const D=bowGeo(o),{P,b,s,rh,C,N,ZS}=D,r=rng(23081),M=C.length-1,lt=(c,p,n)=>bowLight(D,c,p,n);
+  /* the deck: planks that run fore and aft and close in with the bow, each its own tone, butts staggered inside their planks */
+  const FL=C.map(([x,z])=>P(x,s(z),z)).flat();
+  clipTo(g,()=>poly(g,FL.concat([360,200,-40,200])),()=>{for(let k=-21;k<21;k++){const u0=k/21,u1=(k+1)/21,zs=[];for(let z=1.6;z<=ZS;z+=z<8?.4:.2)zs.push(z);
+      const W=z=>Math.max(b(z),.01),pa=zs.map(z=>P(u0*W(z),s(z),z)).flat(),pb=zs.map(z=>P(u1*W(z),s(z),z)).flat(),
+        zc=3+r()*6,c=lt(tint('#8a6a48',(r()-.5)*.14),[(u0+u1)/2*W(zc),s(zc),zc],[0,1,0]);
+      poly(g,pa.concat(ptsBackG(pb)),c);stroke(g,pa,'rgba(6,4,4,.5)',.5);
+      const z0=2+((k*.618+.31)%1+1)%1*5;for(let z=z0;z<ZS-1;z+=5.6){const a=P(u0*W(z)+.03,s(z),z),e=P(u1*W(z)-.03,s(z),z);if(e[0]-a[0]>2.2&&z<9)R(g,a[0],a[1]-.25,e[0]-a[0],.5,'rgba(8,6,4,.45)')}}
+    tex(g,'mott',.2,0,60,320,90,'overlay',.6);
+    comp(g,'lighter',.2,()=>{const c=P(D.LP[0],0,D.LP[2]-.6);pool(g,c[0],c[1]+6,80,13,'#ffb060',1)});
+    /* the shade along the foot of each bulwark */
+    for(const[d,a]of[[.05,.3],[.14,.16]])stroke(g,C.map(([x,z],i)=>P(x+N[i][0]*d,s(z),z+N[i][1]*d)).flat(),`rgba(6,4,6,${a})`,1.2)});
+  /* the bulwarks' inner faces, planked in three strakes that follow the sheer, butts inside their strakes; the rail on top */
+  const at=(i,f,d)=>{const[x,z]=C[i],[nx,nz]=N[i];return P(x+nx*(d||0),s(z)+f,z+nz*(d||0))},H=i=>rh(C[i][1]);
+  for(let i=0;i<M;i++){const[x,z]=C[i];poly(g,[...at(i,0),...at(i+1,0),...at(i+1,H(i+1)),...at(i,H(i))],lt('#7a5a3c',[x,.6,z],[N[i][0],0,N[i][1]]))}
+  clipTo(g,()=>{const p=[];for(let i=0;i<=M;i++)p.push(...at(i,0));for(let i=M;i>=0;i--)p.push(...at(i,H(i)));poly(g,p)},()=>{tex(g,'wood',.2,0,30,320,120,'overlay',.4);
+    for(const f of[.34,.67]){const p=[];for(let i=0;i<=M;i++){if(C[i][1]>ZS-2.2){if(p.length>2)stroke(g,p,'rgba(6,4,4,.4)',.5);p.length=0;continue}p.push(...at(i,H(i)*f))}if(p.length>2)stroke(g,p,'rgba(6,4,4,.4)',.5)}
+    for(let j=0;j<3;j++){const f0=[0,.34,.67][j],f1=[.34,.67,1][j];for(let i=2+j*4+(r()*3|0);i<M-2;i+=9+(r()*5|0)){if(C[i][1]>ZS-2.6)continue;const a=at(i,H(i)*f0+.05),e=at(i,H(i)*f1-.05);if(Math.abs(e[1]-a[1])>1.4)stroke(g,[a[0],a[1],e[0],e[1]],'rgba(6,4,4,.3)',.5)}}});
+  for(let i=0;i<M;i++){const[x,z]=C[i],h0=H(i),h1=H(i+1);poly(g,[...at(i,h0,.05),...at(i+1,h1,.05),...at(i+1,h1+.1,.05),...at(i,h0+.1,.05)],lt('#6a4a30',[x,h0,z],[N[i][0],.3,N[i][1]]))}
+  /* the scuppers: small dark squares low in the bulwark, near us only */
+  for(let i=3;i<M-3;i+=7){if(C[i][1]>8.5)continue;const a=at(i,.03),e=at(i+1,.03),hh=Math.max(.5,150*.07/C[i][1]);poly(g,[a[0],a[1],e[0],e[1],e[0],e[1]-hh,a[0],a[1]-hh],'#0a0606')}
+  /* the foremast: from its partners on the deck it rakes forward over the bow and runs out of the picture's top, the foresail furled
+     along its upper part (a roll a little wider than the spar, no tie across it); dark against the night, lit a little at its foot */
+  {const m=D.mast,f0=[0,s(m.z),m.z],dir=[0,Math.cos(m.ang),Math.sin(m.ang)],pt=t=>P(0,f0[1]+dir[1]*m.len*t,f0[2]+dir[2]*m.len*t),
+      wd=t=>.16*(1-.3*t),Q=[],Qb=[];
+    for(let i=0;i<=24;i++){const t=i/24,p=pt(t),z=f0[2]+dir[2]*m.len*t,w=D.F*wd(t)/z;Q.push(p[0]-w,p[1]);Qb.unshift(p[0]+w,p[1])}
+    const roll=[],rollB=[];for(let i=0;i<=20;i++){const t=.42+.46*i/20,p=pt(t),z=f0[2]+dir[2]*m.len*t,w=D.F*(.16+.22*Math.sin(Math.PI*i/20))/z;roll.push(p[0]-w*1.05,p[1]);rollB.unshift(p[0]+w*.9,p[1])}
+    poly(g,roll.concat(rollB),lt('#9a9078',[0,6,13],[0,0,-1]));
+    /* the spar in short lengths, each lit for where it is: its foot in the lantern's light, the rest lost in the night as the bow is */
+    for(let i=0;i<24;i++){const t=(i+.5)/24,w=[0,f0[1]+dir[1]*m.len*t,f0[2]+dir[2]*m.len*t];
+      poly(g,[Q[2*i],Q[2*i+1],Q[2*i+2],Q[2*i+3],Qb[46-2*i],Qb[47-2*i],Qb[48-2*i],Qb[49-2*i]],lt('#6a4a2c',w,[.2,0,-1]));
+      stroke(g,[Q[2*i],Q[2*i+1],Q[2*i+2],Q[2*i+3]],rgba(lt('#c89a68',w,[0,0,-1]),.7),.5)}
+    const pc=[...P(-.3,s(m.z),m.z-.3),...P(.3,s(m.z),m.z-.3),...P(.3,s(m.z)+.16,m.z-.3),...P(-.3,s(m.z)+.16,m.z-.3)];poly(g,pc,lt('#6e4e30',[0,.2,m.z],[0,.3,-1]))}
+  /* the anchors of the bow, under a cover of sailcloth against the port bulwark, lashed as they lie: a long low heap with two humps
+     where the stocks lie under it; the lashing runs along its top from end to end */
+  {const z0=7.1,z1=9.0,x=z=>-b(z)+.25,P2=(u,h,z)=>P(x(z)+u,s(z)+h,z),top=[],base=[];
+    for(let i=0;i<=16;i++){const z=z0+(z1-z0)*i/16,u=i/16,h=.18+.34*Math.sin(Math.PI*u)+.1*Math.exp(-Math.pow((u-.28)/.1,2))+.08*Math.exp(-Math.pow((u-.72)/.1,2));top.push(...P2(.75,h,z));base.push(...P2(1.35,0,z))}
+    const back=[];for(let i=16;i>=0;i--){const z=z0+(z1-z0)*i/16;back.push(...P2(0,.05,z))}
+    softShade(g,base.concat(ptsBackG(top)),.5);
+    poly(g,back.concat(top),lt('#8e8670',[x(8)+.4,.5,8],[.4,.8,-.4]));poly(g,top.concat(ptsBackG(base)),lt('#8a8068',[x(8)+1,.3,8],[.5,.2,-.8]));
+    clipTo(g,()=>{poly(g,back.concat(top));poly(g,top.concat(ptsBackG(base)))},()=>{tex(g,'mott',.4,0,60,200,40,'overlay',.7);
+      for(const u of[.2,.5,.8]){const z=z0+(z1-z0)*u,a=P2(.1,.05,z),m=P2(.75,.5,z),e=P2(1.3,0,z);stroke(g,[a[0],a[1],m[0],m[1],e[0],e[1]],'rgba(30,24,20,.28)',.45)}});
+    const lash=[];for(let i=0;i<=16;i++){const z=z0-.2+(z1-z0+.4)*i/16,u=i/16,h=.2+.36*Math.sin(Math.PI*clamp(u,0,1))+.02;lash.push(...P2(.78,h,z))}
+    stroke(g,lash,lt('#5a4a32',[x(8),.6,8],[0,1,-.3]),.6);const la=P2(.05,.5,z0-.25),lb=P2(.05,.5,z1+.25);stroke(g,[lash[0],lash[1],la[0],la[1]],lt('#5a4a32',[x(8),.6,7],[0,1,-.3]),.5);stroke(g,[lash[lash.length-2],lash[lash.length-1],lb[0],lb[1]],lt('#5a4a32',[x(8),.6,9],[0,1,-.3]),.5)}
+  /* the lantern: horn and clay, hung by two cords that part upward to the rigging out of the picture */
+  if(o.lantern!==false){const[lx,ly]=D.lamp;stroke(g,[lx-.6,ly-2,lx-9,-4],'#6a5a40',.5);stroke(g,[lx+.6,ly-2,lx+8,-4],'#6a5a40',.5);
+    /* round it a soft glow without an edge (round, never a flat ellipse on its body: that reads as a plus sign); its light lies long and
+       low on the deck under it */
+    comp(g,'lighter',.4,()=>{pool(g,lx,ly+1,11,11,'#ff9a40',.3);pool(g,lx,ly+.5,5,5,'#ffc070',.35)});
+    poly(g,[lx-1.6,ly-2,lx+1.6,ly-2,lx+1.9,ly+2.6,lx-1.9,ly+2.6],'#5a3a22');R(g,lx-1,ly-1.2,2,3,'#ffd890');R(g,lx-.5,ly-.6,1,1.6,'#fff4d0');R(g,lx-1.9,ly+2.6,3.8,.6,'#3a2414')}
+  return D}
+/* a soft shade under a thing that lies on the deck */
+function softShade(g,p,a){comp(g,'multiply',a,()=>poly(g,p,'#3a3048'))}
+/* bowSkiff(g, D, k, drop): the skiff alongside to starboard, being let down or falling away (see bowNight) */
+function bowSkiff(g,D,k,drop){const{P,b,s,rh}=D,z0=4.4,z1=8.4,dr=drop||0,
+    gw=z=>s(z)+rh(z)+.1+.5-.55*clamp(k,0,1)+.35*Math.pow(Math.abs((z-(z0+z1)/2)/((z1-z0)/2)),2.4)-dr*dr*3.2,
+    xi=z=>b(z)+.45+.25*Math.sin(Math.PI*clamp((z-z0)/(z1-z0),0,1)),lt=(c,p,n)=>bowLight(D,c,p,n),
+    top=[],low=[];
+  for(let i=0;i<=14;i++){const z=z0+(z1-z0)*i/14;top.push(...P(xi(z),gw(z),z));low.push(...P(xi(z)+.12,gw(z)-.62,z))}
+  clipTo(g,()=>poly(g,D.outboard),()=>{
+    /* her port side, toward us: two strakes and a wale, the light dying toward her bow */
+    poly(g,top.concat(ptsBackG(low)),lt('#6a5038',[xi(8),gw(8),8],[-1,.2,-.4]));
+    clipTo(g,()=>poly(g,top.concat(ptsBackG(low))),()=>{const mid=[];for(let i=0;i<=14;i++){const z=z0+(z1-z0)*i/14;mid.push(...P(xi(z)+.06,gw(z)-.3,z))}stroke(g,mid,'rgba(8,6,4,.5)',.5);
+      tex(g,'wood',.25,200,40,120,50,'overlay',.4)});
+    stroke(g,top,lt('#b08a5c',[xi(8),gw(8),8],[-.5,1,-.5]),.7);
+    /* her stem and sternpost, short, rising a little above the gunwale at each end */
+    for(const z of[z0,z1]){const a=P(xi(z),gw(z),z),e=P(xi(z)+.05,gw(z)+.18,z+(z===z0?-.12:.12));stroke(g,[a[0],a[1],e[0],e[1]],lt('#6a5038',[xi(z),gw(z),z],[-1,.3,-.3]),1.1)}});
+  return{rings:[P(xi(z0+.15),gw(z0+.15)+.05,z0+.15),P(xi(z1-.15),gw(z1-.15)+.05,z1-.15)],z0,z1}}
+
+/* ======== The hold by lamplight, looking forward along her (Chapter Twenty-Three, the meal: 27:33-38) ========
+   hold(g, o) paints the hold close to daybreak, as the publications picture the meal below deck (looked at for form only): low and
+   crowded, the deck close overhead on its beams, two lamps hanging from the beams, sea water coming in at the hatch. We look forward
+   along her from aft, so that the deck beams run across the picture, each a heavy timber from one side to the other, and the sides of
+   the hull run away from us in plank strakes, their butts staggered, each inside its own strake, with no rib drawn across them (a rib
+   across the strakes would make a grid: CONTRIBUTING section 3). The floor is laid over the cargo in planks that run fore and aft.
+   Forward, the wheat in sacks fills the hold from side to side, and more sacks lie heaped against the starboard side (the account names
+   only the wheat, 27:38; the sacks are invented). At the left the hatch opens in the deck between two beams, grey with the coming day,
+   and steep stairs come down from it along the port side (stairs, not a ladder, whose rungs and rails would make crosses), seen from the
+   side as a row of steps on a slanting stringer; sea water runs down them and spreads on the floor at their foot. Each lamp hangs from a
+   beam by two cords that part upward to the beam, never by one from its middle (CONTRIBUTING section 3); its light lies in warm pools,
+   long and low, on the beams above it and on the floor below it, with deep shade between, and no round glow behind a head.
+     o.lamps   [[x, y, z], ...] where the lamps hang, in metres (x across, + to starboard; y up from the floor; z forward)
+   holdGeo(o) gives the geometry without painting: P(x, y, z), the lamps on the screen, and each lamp's floor (lz) for the room's light. */
+const HD={F:150,E:1.3,hz:77,W:5,H:2.15};
+function holdGeo(o){o=o||{};const{F,E,hz,W,H}=HD,P=(x,y,z)=>[160+F*x/z,hz+F*(E-y)/z],L=o.lamps||[[-1.35,1.62,4.4],[1.67,1.62,4.4]],
+    /* the side of the hull at a height y above the floor: a little fuller at mid-height than at the floor and under the deck */
+    side=y=>W+.35*Math.sin(Math.PI*clamp(y/H,0,1))-.1*y/H;
+  return{F,E,hz,W,H,P,side,lamps:L,lampsScreen:L.map(l=>P(...l)),lampFloor:L.map(l=>P(l[0],0,l[2])[1]),beams:[2.0,3.1,4.2,5.3,6.4,7.5,8.6],ZF:9.4,
+    hatch:{x0:-4.6,x1:-2.5,z0:4.6,z1:6.3},stairs:{xTop:-4.3,xFoot:-1.9,z0:5.6,z1:6.25,n:8}}}
+/* the light of the lamps on a face: what little comes down the hatch, and each lamp's warm light by angle and distance */
+function holdLight(D,c,p,n,amb){const h=hex(c);let r=.16,gg=.14,bb=.17;if(amb){r+=amb;gg+=amb;bb+=amb*1.1}
+  for(const L of D.lamps){const d=[L[0]-p[0],L[1]-p[1],L[2]-p[2]],l=Math.hypot(...d)||1,q=n?.35+.65*Math.max(0,(n[0]*d[0]+n[1]*d[1]+n[2]*d[2])/l/(Math.hypot(...n)||1)):.6,f=q/(1+Math.pow(l/1.9,2));
+    r+=1.25*f;gg+=.95*f;bb+=.5*f}
+  return toHex(h[0]*r,h[1]*gg,h[2]*bb)}
+function hold(g,o){o=o||{};const D=holdGeo(o),{P,W,H,ZF,side}=D,r=rng(23091),lt=(c,p,n,a)=>holdLight(D,c,p,n,a),Z0=1.4;
+  const ys=[0,.42,.84,1.26,1.68,2.1,H];
+  /* the far end: the wheat in sacks from side to side, up to the deck; in deep shade */
+  {const a=P(-side(1),0,ZF),e=P(side(1),H,ZF);R(g,a[0]-2,e[1]-2,e[0]-a[0]+4,a[1]-e[1]+4,'#1a1410');
+    for(let row=0;row<5;row++)for(let i=0;i<14;i++){const x=-side(1)+(i+(row%2)*.5+(r()-.5)*.3)*(2*side(1)/13.5),y=row*.42+(r()-.5)*.06,c=P(x,y+.22,ZF-(r()*.3)),w=(.38+r()*.1)*D.F/ZF,hh=(.19+r()*.05)*D.F/ZF,
+        col=lt(tint('#b09868',(r()-.5)*.18),[x,y+.3,ZF-.3],[0,.3,-1]);
+      oval(g,c[0],c[1],w,hh,col);stroke(g,[c[0]-w*.7,c[1]-hh*.7,c[0]+w*.5,c[1]-hh*.8],rgba(tint(col,.25),.6),.5)}}
+  /* the sides of the hull: strakes that run away from us, each its own tone, the butts staggered inside each strake */
+  for(const sd of[-1,1]){for(let j=0;j<ys.length-1;j++){const y0=ys[j],y1=ys[j+1],pa=[],pb=[];for(let z=Z0;z<=ZF;z+=.4){pa.push(...P(sd*side(y0),y0,z));pb.push(...P(sd*side(y1),y1,z))}
+      const zc=4+r()*3,c=lt(tint('#6e5034',(r()-.5)*.14),[sd*side((y0+y1)/2),(y0+y1)/2,zc],[-sd,0,0]);poly(g,pa.concat(ptsBackG(pb)),c);
+      clipTo(g,()=>poly(g,pa.concat(ptsBackG(pb))),()=>{tex(g,'wood',.25,sd<0?-40:160,0,200,150,'overlay',.4);
+        for(let z=Z0+.6+r()*2.4;z<ZF-.5;z+=2.6+r()*1.8){const a=P(sd*side(y0+.03),y0+.03,z),e=P(sd*side(y1-.03),y1-.03,z);if(Math.abs(e[1]-a[1])>1.2)stroke(g,[a[0],a[1],e[0],e[1]],'rgba(10,6,4,.4)',.5)}});
+      stroke(g,pa,'rgba(10,6,4,.5)',.5)}}
+  /* the floor, planked fore and aft, its butts staggered, worn darker where the water has run */
+  {const zs=[];for(let z=Z0;z<=ZF;z+=.3)zs.push(z);
+    for(let k=-14;k<14;k++){const u0=k/14*W,u1=(k+1)/14*W,pa=zs.map(z=>P(u0,0,z)).flat(),pb=zs.map(z=>P(u1,0,z)).flat(),zc=3+r()*4;
+      poly(g,pa.concat(ptsBackG(pb)),lt(tint('#7a5e40',(r()-.5)*.12),[(u0+u1)/2,0,zc],[0,1,0]));stroke(g,pa,'rgba(10,6,4,.5)',.5);
+      const z0=Z0+((k*.618+.2)%1+1)%1*4;for(let z=z0;z<ZF;z+=4.6){const a=P(u0+.03,0,z),e=P(u1-.03,0,z);if(e[0]-a[0]>2)R(g,a[0],a[1]-.25,e[0]-a[0],.5,'rgba(10,6,4,.45)')}}
+    tex(g,'mott',.25,0,76,320,70,'overlay',.6)}
+  /* the shade where the sides meet the floor and the deck */
+  for(const sd of[-1,1]){const p=[],q=[];for(let z=Z0;z<=ZF;z+=.4){p.push(...P(sd*(side(0)-.05),0,z));q.push(...P(sd*(side(H)-.05),H-.05,z))}stroke(g,p,'rgba(8,4,6,.4)',1.4);stroke(g,q,'rgba(8,4,6,.5)',1.6)}
+  /* the sacks heaped against the starboard side, forward: two rows, the upper set back on the lower, each sack its own plump shape */
+  for(let row=0;row<3;row++)for(let i=6;i>=0;i--){const z=5.7+i*.62+(row%2)*.31,x=side(.3)-.45-row*.16,y=row*.46,c=P(x,y+.26,z),cw=.52*D.F/z,ch=.27*D.F/z;
+    if(z>ZF-.4)continue;const col=lt(tint('#b4a070',(r()-.5)*.16),[x-.3,y+.3,z],[-1,.4,-.4]);
+    comp(g,'multiply',.4,()=>oval(g,c[0]-cw*.15,c[1]+ch*.6,cw*.95,ch*.5,'#3a3048'));
+    poly(g,[c[0]-cw,c[1]+ch*.5,c[0]-cw*.9,c[1]-ch*.6,c[0]-cw*.2,c[1]-ch,c[0]+cw*.7,c[1]-ch*.8,c[0]+cw,c[1]+ch*.2,c[0]+cw*.6,c[1]+ch,c[0]-cw*.6,c[1]+ch],col);
+    stroke(g,[c[0]-cw*.85,c[1]-ch*.55,c[0]-cw*.2,c[1]-ch*.95,c[0]+cw*.6,c[1]-ch*.75],rgba(lt('#f0dcb0',[x-.3,y+.5,z],[-1,1,-.4]),.7),.5);
+    comp(g,'multiply',.3,()=>poly(g,[c[0]+cw*.3,c[1]-ch*.7,c[0]+cw,c[1]+ch*.2,c[0]+cw*.6,c[1]+ch,c[0]+cw*.2,c[1]+ch*.8],'#5a4a50'))}
+  /* the deck overhead, dark between its beams, its grain only (its seams would cross the beams) */
+  {const pa=[],pb=[];for(let z=Z0;z<=ZF;z+=.4){pa.push(...P(-side(H),H,z));pb.push(...P(side(H),H,z))}poly(g,pa.concat(ptsBackG(pb)),lt('#4a3624',[0,H,6],[0,-1,0]));
+    clipTo(g,()=>poly(g,pa.concat(ptsBackG(pb))),()=>tex(g,'wood',.3,0,-10,320,90,'overlay',.4))}
+  /* the hatch between two beams at the left: grey with the coming day, rain and spray blowing in */
+  const hc=D.hatch,HO=[...P(hc.x0,H,hc.z0),...P(hc.x1,H,hc.z0),...P(hc.x1,H,hc.z1),...P(hc.x0,H,hc.z1)];
+  poly(g,HO);g.fillStyle=lg(g,0,HO[5],0,HO[1],['#4a5058','#6a7076']);g.fill();
+  clipTo(g,()=>poly(g,HO),()=>{tex(g,'mott',.4,HO[6]-4,HO[5]-2,HO[2]-HO[6]+8,HO[1]-HO[5]+4,'overlay',.8);for(let i=0;i<10;i++){const x=HO[0]+r()*(HO[2]-HO[0]);R(g,x,HO[5]+r()*(HO[1]-HO[5]),.5,2,'rgba(220,226,232,.4)')}});
+  /* the grey of the coming day falls through it on the stairs below, faint and without any edge or ray; and the water comes down */
+  {const c=P((hc.x0+hc.x1)/2+.6,.15,(hc.z0+hc.z1)/2+.4);comp(g,'screen',.12,()=>pool(g,c[0],c[1],30,6,'#8a96a8',1,'source-over'));
+}
+  /* its coaming, the timber round the opening, edged with the grey light */
+  for(const[a,b]of[[[hc.x0,hc.z1],[hc.x1,hc.z1]],[[hc.x1,hc.z0],[hc.x1,hc.z1]]]){const p=P(a[0],H-.04,a[1]),q=P(b[0],H-.04,b[1]);stroke(g,[p[0],p[1],q[0],q[1]],'#8a8a8e',.6)}
+  /* the beams across, from side to side, lit from below near the lamps; each meets the side under the deck */
+  for(const z of D.beams.slice().reverse()){const bl=[],tl=[];for(let i=0;i<=16;i++){const x=-side(H)+2*side(H)*i/16;bl.push(...P(x,H-.26,z));tl.push(...P(x,H,z))}
+    const fr=[];for(let i=0;i<=16;i++){const x=-side(H)+2*side(H)*i/16;fr.push(...P(x,H-.26,z-.22))}
+    /* its underside (seen from below), then its after face toward us */
+    poly(g,fr.concat(ptsBackG(bl)),lt('#7a5a3a',[0,H-.3,z],[0,-1,0],.08));
+    clipTo(g,()=>poly(g,fr.concat(ptsBackG(bl))),()=>{for(const L of D.lamps){if(Math.abs(L[2]-z)>2.2)continue;const c=P(L[0],H-.26,z-.11);pool(g,c[0],c[1],60/z*3,6/z*3,'#ffb060',.5,'lighter')}});
+    const ff=[];for(let i=0;i<=16;i++){const x=-side(H)+2*side(H)*i/16;ff.push(...P(x,H,z-.22))}
+    poly(g,ff.concat(ptsBackG(fr)),lt('#6a4c30',[0,H-.13,z-.22],[0,-.2,-1],.04));
+    stroke(g,fr,rgba(lt('#e0b080',[0,H-.26,z-.22],[0,-1,-1]),.5),.5)}
+  /* the stairs from the hatch down toward the middle of the hold, steep, seen from their after side: a stringer slanting from the
+     hatch to the floor, and the steps on it, each a level tread on its riser, so that their edge is a row of steps and nothing crosses;
+     the sea water running down the treads, and a pool at their foot, long and low on the floor */
+  {const st=D.stairs,n=st.n,X=t=>st.xTop+(st.xFoot-st.xTop)*t,Y=t=>H*(1-t);
+    /* the treads, seen a little from above where they lie below the eye, each with the water on it; then the risers' after ends */
+    for(let i=n-1;i>=0;i--){const t0=i/n,t1=(i+1)/n,yy=Y(t1)+(H/n)*.0,xa=X(t0),xb=X(t1),
+        tr=[...P(xa,Y(t0+1/n),st.z0),...P(xb,Y(t0+1/n),st.z0),...P(xb,Y(t0+1/n),st.z1),...P(xa,Y(t0+1/n),st.z1)];
+      poly(g,tr,lt('#8a6a46',[xb,Y(t1),st.z0],[0,1,0],.22));
+      const w0=P(xa+.06,Y(t0+1/n)+.01,st.z0+.2),w1=P(xb-.06,Y(t0+1/n)+.01,st.z0+.4);stroke(g,[w0[0],w0[1],w1[0],w1[1]],'rgba(170,192,204,.5)',.5);
+      if(i){const rs=[...P(xb,Y(t1),st.z0),...P(xb,Y(t0),st.z0),...P(xb+.05,Y(t0),st.z0),...P(xb+.05,Y(t1),st.z0)];poly(g,rs,lt('#5e4430',[xb,Y(t1),st.z0],[1,0,-.6],.12))}}
+    /* the stringer on their after side, under the steps: a slanting board, its lit top edge stepping with the treads */
+    const SG=[];for(let i=0;i<n;i++){const t0=i/n,t1=(i+1)/n;SG.push(...P(X(t0),Y(t0+1/n)+.0,st.z0-.02),...P(X(t1),Y(t0+1/n),st.z0-.02))}
+    const lowE=[...P(X(1)+.4,0,st.z0-.02),...P(X(0)+.35,Y(0)-.42,st.z0-.02)];
+    poly(g,SG.concat(lowE),lt('#6a4e34',[X(.5),Y(.5),st.z0],[0,.1,-1],.16));
+    clipTo(g,()=>poly(g,SG.concat(lowE)),()=>tex(g,'wood',.3,0,30,200,100,'overlay',.5));
+    stroke(g,SG,rgba(lt('#d8b080',[X(.5),Y(.5),st.z0],[0,1,-1],.08),.7),.5);
+    /* the pool at their foot */
+    const pc=P(X(1)+.6,0,(st.z0+st.z1)/2);comp(g,'multiply',.55,()=>oval(g,pc[0],pc[1],24,2.8,'#4a5868'));
+    for(let i=0;i<7;i++){const x=pc[0]-18+r()*34,y=pc[1]-1.6+r()*3;R(g,x,y,1.5+r()*4,.5,i%3?'rgba(150,170,184,.35)':'rgba(255,200,140,.4)')}}
+  /* the lamps: each hangs from the beam above it by two cords that part upward to the beam; a small clay lamp in a hanger, its flame
+     (the room animates it); the warm pool of its light long and low on the floor below it */
+  D.lampsScreen.forEach((c,i)=>{const L=D.lamps[i],bz=D.beams.reduce((a,b)=>Math.abs(b-L[2])<Math.abs(a-L[2])?b:a),
+      a1=P(L[0]-.35,H-.26,bz),a2=P(L[0]+.35,H-.26,bz),fl=P(L[0],0,L[2]);
+    comp(g,'lighter',.22,()=>pool(g,fl[0],fl[1],70,9,'#ffb060',1));
+    stroke(g,[c[0]-.8,c[1]-2.2,a1[0],a1[1]],'#a8825a',.5);stroke(g,[c[0]+.8,c[1]-2.2,a2[0],a2[1]],'#a8825a',.5);
+    comp(g,'lighter',.35,()=>pool(g,c[0],c[1],16,6,'#ff9a40',.5));
+    poly(g,[c[0]-2.4,c[1]-2.2,c[0]+2.4,c[1]-2.2,c[0]+1.8,c[1]+1.4,c[0]-1.8,c[1]+1.4],'#6a3e22');R(g,c[0]-2.4,c[1]-2.2,4.8,.6,'#9a6a40');R(g,c[0]-1.2,c[1]-1.4,2.4,1.2,'#2a1608')});
+  return D}
+
+/* ======== The foredeck of the wreck at daybreak, from aboard (Chapter Twenty-Three: 27:41-44) ========
+   wreckDeck(g, o) paints her foredeck after she has struck, seen from aboard looking across her to starboard, toward the land: her bow
+   at the left, fast on the shoal, her stern to the right, out of the picture, breaking up in the surf. She sits fast and does not roll;
+   her deck slants a little, down toward the stern. The starboard bulwark runs across the picture, its rail broken away in two places,
+   where the surf shows through; toward the bow it rises with her sheer. Against it at the left lie two planks and a hatch cover prised
+   loose, each lying alone (CONTRIBUTING section 3: nothing across another or across the hull). The foresail (27:40) is set and torn: it
+   comes into the picture at the top left from beyond its edge, full of the wind from astern and bellying toward the bow, its yard
+   askew along its head; the mast stands behind it, hidden, so that the yard ends no mast and the mast crosses nothing; its sheets slant
+   from its foot to the bow's rail. Everything beyond the rail is left transparent: the room paints the bay behind her (shared/storm.js).
+   The light is a grey daybreak in rain, soft, with no sun.
+     o.flap    0..1, how the torn foresail stands at this moment (the room animates its loose strip with wreckSail)
+   wreckGeo() gives the lines of the picture: top(x) the top of the rail, foot(x) the foot of the bulwark on the deck, gaps [[x0, x1], ...]
+   where the rail is broken, planks [[x0, y0, x1, y1], ...] and hatch [four corners] where the loose pieces lie, and sail (its outline). */
+function wreckGeo(){const sl=.035,top0=x=>84+sl*(x-160)-14*Math.pow(clamp((64-x)/64,0,1),2),
+    top=x=>top0(x),foot=x=>top0(x)+19+3*Math.pow(clamp((64-x)/64,0,1),2);
+  return{top,foot,sl,gaps:[[150,175],[236,251]],planks:[[24,foot(24)-1.2,62,foot(62)-1.4],[68,foot(68)-1.6,104,foot(104)-1.8]],
+    hatch:[106,foot(106)-.6,128,foot(128)-.8,125,foot(125)-8,104,foot(104)-7.6]}}
+function wreckDeck(g,o){o=o||{};const W=wreckGeo(),C=LIGHT.dawn,r=rng(23101),{top,foot,gaps}=W,inGap=x=>gaps.some(([a,b])=>x>a&&x<b);
+  /* the deck: wet wooden planks along her length, slanting with her, wider as they come toward us: long strakes in a wood tone, the grain
+     running along each, the grey of the sky lying on them in streaks; butts staggered, each stopping inside its own plank */
+  let prevB=[];const pl=[0];for(let wd=1.3;pl[pl.length-1]<60;wd*=1.17)pl.push(Math.min(60,pl[pl.length-1]+wd));
+  for(let i=0;i<pl.length-1;i++){const P0=[],P1=[];for(let x=-30;x<=350;x+=10){P0.push(x,foot(x)+pl[i]);P1.push(x,foot(x)+pl[i+1])}
+    const c=tint(mix('#5a4434','#6e5642',i/pl.length),(r()-.5)*.12),hw=pl[i+1]-pl[i];poly(g,P0.concat(ptsBackG(P1)),c);
+    clipTo(g,()=>poly(g,P0.concat(ptsBackG(P1))),()=>{tex(g,'wood',.3,-20,60,360,90,'overlay',.5);
+      /* the grain: long fine lines along the plank, never across it */
+      for(let k=0;k<Math.max(1,Math.round(hw/2.5));k++){const u=(k+.5)/Math.max(1,Math.round(hw/2.5)),x0=-30+r()*200,x1=x0+80+r()*200,p=[];for(let x=x0;x<=x1;x+=10)p.push(x,foot(x)+pl[i]+hw*u+(r()-.5)*.3);stroke(g,p,'rgba(36,24,16,.22)',.5)}
+      /* wet: the grey of the sky lies on it in long streaks */
+      for(let k=0;k<6;k++){const x=r()*320,w=20+r()*60;R(g,x,foot(x)+pl[i]+hw*(.3+.4*r()),w,.5,'rgba(214,222,230,.22)')}});
+    /* the seam between two planks, dark, with the wet edge of the plank beyond it catching the light */
+    stroke(g,P0,'rgba(26,18,14,.6)',.5);if(hw>2.2)stroke(g,P0.map((v,j)=>j%2?v+.6:v),'rgba(196,184,166,.16)',.5);
+    /* the butts, staggered: none within six pixels of a butt in the plank before, so that no two meet across a seam */
+    const bt=[];for(let x=-20+r()*60;x<340;x+=50+r()*60){if(prevB.some(q=>Math.abs(q-x)<6))x+=8;bt.push(x);const y0=foot(x)+pl[i]+.5,y1=foot(x)+pl[i+1]-.5;if(y1-y0>1.2)R(g,x,y0,.5,y1-y0,'rgba(26,18,14,.5)')}prevB=bt}
+  /* the shade along the foot of the bulwark */
+  {const p=[];for(let x=-30;x<=350;x+=10)p.push(x,foot(x)+.8);stroke(g,p,'rgba(30,26,34,.35)',1.6)}
+  /* the bulwark's inner face: three strakes, butts inside their strakes; broken away at the top in two places */
+  const face=(x0,x1,f0,f1)=>{const p=[];for(let x=x0;x<=x1;x+=2)p.push(x,top(x)+(foot(x)-top(x))*f0);for(let x=x1;x>=x0;x-=2)p.push(x,top(x)+(foot(x)-top(x))*f1);return p};
+  for(const[j,f0,f1]of[[0,0,.34],[1,.34,.67],[2,.67,1]]){const c=tint('#4e3e34',-.04*j);
+    for(let x0=-30;x0<350;){let x1=x0+2;while(x1<350&&(j>0||!inGap(x1)))x1+=2;if(j===0&&inGap(x0)){x0=x1;while(x0<350&&inGap(x0))x0+=2;continue}
+      const f=face(x0,Math.min(x1,350),f0,f1);poly(g,f,c);clipTo(g,()=>poly(g,f),()=>{tex(g,'wood',.3,x0,60,x1-x0,60,'overlay',.45);
+        for(let x=x0+20+r()*60;x<x1-6;x+=100+r()*60){const a=top(x)+(foot(x)-top(x))*f0+.6,e=top(x)+(foot(x)-top(x))*f1-.6;R(g,x,a,.5,e-a,'rgba(24,18,16,.45)')}});
+      if(j)stroke(g,face(x0,Math.min(x1,350),f0,f0).slice(0,Math.floor((Math.min(x1,350)-x0)/2+1)*2),'rgba(24,18,16,.5)',.5);
+      x0=x1;if(j===0)while(x0<350&&inGap(x0))x0+=2}}
+  /* where the rail is broken: the top strake's planks end raggedly, each splintered end standing alone */
+  for(const[a,b]of gaps)for(const[x,d]of[[a,1],[b,-1]]){const y=top(x)+(foot(x)-top(x))*.34;poly(g,[x,top(x),x+d*2.4,top(x)+2,x+d*.8,y-2.6,x+d*3.2,y,x,y],tint(C.hull[1],.14));
+    stroke(g,[x,top(x),x+d*2.4,top(x)+2],rgba(C.hi,.5),.5)}
+  /* the rail on top, lit from the grey sky, where it still stands */
+  for(let x0=-30;x0<350;){if(inGap(x0)){x0+=2;continue}let x1=x0;while(x1<350&&!inGap(x1+2))x1+=2;
+    const p=[],q=[];for(let x=x0;x<=x1;x+=2){p.push(x,top(x)-1.6);q.push(x,top(x)+.4)}poly(g,p.concat(ptsBackG(q)),C.rail);stroke(g,p,rgba(C.hi,.8),.5);stroke(g,q,'rgba(24,18,16,.5)',.5);x0=x1+2}
+  /* the loose planks, each lying alone along the foot of the bulwark, and the hatch cover lying flat beside them: its planks run one
+     way, inside a plain frame that nothing crosses */
+  for(const[x0,y0,x1,y1]of W.planks){comp(g,'multiply',.4,()=>poly(g,[x0,y0+1.4,x1,y1+1.4,x1+1,y1+2.6,x0+1,y0+2.6],'#4a4458'));
+    poly(g,[x0,y0-1.4,x1,y1-1.4,x1,y1+1.2,x0,y0+1.2],'#8a6a4e');poly(g,[x0,y0-1.4,x1,y1-1.4,x1,y1-.6,x0,y0-.6],'#c8a880');
+    stroke(g,[x0,y0+1.2,x1,y1+1.2],'rgba(24,18,16,.6)',.5);R(g,x1-.6,y1-1.4,.6,2.6,'rgba(24,18,16,.5)')}
+  {const h=W.hatch;comp(g,'multiply',.4,()=>poly(g,[h[0],h[1]+1.4,h[2],h[3]+1.4,h[2]+1,h[3]+2.4,h[0]+1,h[1]+2.4],'#4a4458'));
+    poly(g,h,'#7a5c42');const fr=1.6,ix=[h[0]+fr,h[1]-1.1,h[2]-fr,h[3]-1.1,h[4]-fr*.8,h[5]+1,h[6]+fr*.8,h[7]+1];poly(g,ix,'#9a7a58');
+    clipTo(g,()=>poly(g,ix),()=>{for(let i=1;i<4;i++){const u=i/4,a=[ix[0]+(ix[2]-ix[0])*u,ix[1]+(ix[3]-ix[1])*u],e=[ix[6]+(ix[4]-ix[6])*u,ix[7]+(ix[5]-ix[7])*u];stroke(g,[a[0],a[1],e[0],e[1]],'rgba(24,18,16,.45)',.5)}tex(g,'wood',.3,h[6],h[5],24,10,'overlay',.4)});
+    stroke(g,[h[6],h[7],h[4],h[5]],rgba(C.hi,.6),.5)}
+  /* the foresail, set and torn, from beyond the top left (its mast behind it, hidden); its sheets slanting down to the bow's rail */
+  wreckSail(g,o.flap||0,true);
+  return W}
+/* wreckSail(g, flap, body): the foresail; body false paints only the strip torn loose from its foot, which streams in the wind */
+function wreckSail(g,flap,body){const C=LIGHT.dawn,W=wreckGeo(),r=rng(23103);
+  const yl=[-14,-6],yr=[58,-14],cl=[64,46],tk=[-6,56];
+  if(body){/* the sheets: from the clew and the tack down to the rail at the bow, each slanting, neither crossing the other */
+    for(const[a,x]of[[cl,78],[tk,18]])stroke(g,[a[0],a[1],x,W.top(x)-1],C.rope,.6);
+    const P=[yl[0],yl[1]];
+    /* the leech, bellying toward the bow, then the torn foot from the clew to the tack, ragged */
+    for(let i=0;i<=10;i++){const t=i/10;P.push(yr[0]+(cl[0]-yr[0])*t-10*Math.sin(Math.PI*t),yr[1]+(cl[1]-yr[1])*t)}
+    for(const[t,d]of[[.05,1],[.11,-2.2],[.17,3.6],[.21,.4],[.3,-1.2],[.36,2.2],[.47,-3.4],[.53,1],[.6,7.2],[.64,4.6],[.7,-1.6],[.79,1.4],[.83,-.4],[.9,-3],[.96,1.2]]){const x=cl[0]+(tk[0]-cl[0])*t,y=cl[1]+(tk[1]-cl[1])*t+3*Math.sin(Math.PI*t);P.push(x+(r()-.5)*1.4,y+d)}
+    P.push(tk[0],tk[1],-30,40,-30,-10);
+    poly(g,P,C.sail[0]);
+    clipTo(g,()=>poly(g,P),()=>{g.fillStyle=lg(g,-10,0,70,0,[rgba(C.sail[2],.55),rgba(C.sail[2],.2),'rgba(255,236,210,.14)',rgba(C.sail[2],.35)]);g.fillRect(-30,-20,110,90);
+      /* its seams run one way, down from the yard, curving with the belly */
+      for(let i=1;i<6;i++){const u=i/6,tx=yl[0]+(yr[0]-yl[0])*u,ty=yl[1]+(yr[1]-yl[1])*u+1,bx=tk[0]+(cl[0]-tk[0])*u,by=tk[1]+(cl[1]-tk[1])*u+3*Math.sin(Math.PI*u);
+        g.strokeStyle=rgba(C.sail[2],.5);g.lineWidth=.45;g.beginPath();g.moveTo(tx,ty);g.quadraticCurveTo((tx+bx)/2-9*Math.sin(Math.PI*u)-3,(ty+by)/2,bx,by);g.stroke()}
+      tex(g,'mott',.3,-30,-20,110,90,'overlay',.55);
+      /* a long rent from the foot up into the cloth */
+      poly(g,[30,44,33,26,35,27,34,46],rgba(C.sail[2],.75))});
+    /* the yard along its head, askew, running out of the picture at the top left */
+    poly(g,[yl[0]-20,yl[1]+5,yr[0]+3,yr[1]-.4,yr[0]+3,yr[1]+2.2,yl[0]-20,yl[1]+7.6],C.wood);stroke(g,[yl[0]-20,yl[1]+5,yr[0]+3,yr[1]-.4],rgba(C.woodHi,.7),.5)}
+  /* the strip torn loose from the foot near the clew, streaming forward and down in the wind */
+  const s0=[cl[0]-10,cl[1]+1],sw=1.6,L2=15,ang=2.3+.25*Math.sin(flap*Math.PI*2),ex=s0[0]+Math.cos(ang)*L2,ey=s0[1]+Math.sin(ang)*L2;
+  poly(g,[s0[0]-sw,s0[1],s0[0]+sw,s0[1]-.4,(s0[0]+ex)/2+sw,(s0[1]+ey)/2+1.6,ex+.6,ey,ex-.8,ey+.6,(s0[0]+ex)/2-sw,(s0[1]+ey)/2+2.2],tint(C.sail[1],-.04))}
+
+return{side,geo,anchor,wreckage,LIGHT,hawser:hawserS,deck,geoDeck,deckCut,staffOf,shelterOf,sternNight,nightGeo,bowGeo,bowNight,bowSkiff,holdGeo,hold,wreckGeo,wreckDeck,wreckSail};
 })();

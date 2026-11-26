@@ -227,6 +227,8 @@
   /* listed: the chapters the title lists. FOR NOW, while Chapters Twenty-Four and Twenty-Five are built, a chapter still named in PLANNED
      is in CHAP but not on the list (building, index.html); when PLANNED is emptied this is every chapter again. */
   const listed=()=>Object.keys(CHAP).filter(n=>!building(n));
+  /* chLine: a chapter's line in the title's list (0: the Prologue), with its part of the account opened first, as a player would open it */
+  const chLine=n=>{const el=ov.querySelector(n?`[data-ch="${n}"]`:'[data-pro="1"]'),pt=el&&el.closest('.part');if(pt&&!pt.classList.contains('open'))pt.querySelector('.grp').click();return el};
   ok(inOv()&&ov.querySelector('[data-pro="1"]')&&ov.querySelectorAll('[data-ch]').length===listed().length,'the title screen holds the prologue and every chapter that is not in preparation: '+listed().length);
   /* The title screen alone uses the whole height: the status line and the panel give up their place, the view runs down to the foot of the
      window, and the title's picture is painted that tall. Its upper part is the wall's backdrop pixel for pixel, so that nothing moves
@@ -239,12 +241,11 @@
     const da=ga.getImageData(0,0,VW*HR,VH*HR).data,db=gb.getImageData(0,0,VW*HR,VH*HR).data,foot=gb.getImageData(0,VH*HR,VW*HR,(VT-VH)*HR).data;let same=true,lit=0;
     for(let i=0;i<da.length;i++)if(da[i]!==db[i]){same=false;break}for(let i=0;i<foot.length;i+=4)if(foot[i]+foot[i+1]+foot[i+2]>0)lit++;
     ok(G.scene===CHAP[1].scenes.title&&same&&lit>foot.length/4*.9,'its picture is painted down to the foot of the window, and its upper part is the backdrop of the wall, pixel for pixel');
-    /* FOR NOW: with twenty-three chapters the list scrolls on a first visit too. The maintainer is choosing a new layout for it from two
-       mockups (another branch); until then this checks only what holds for both: every chapter is listed and the overlay's parts lie inside
-       it (above), and on a first visit the Prologue and Chapter One stand in view at the head of the list. The chosen layout replaces this. */
-    if(!/[?&]keep=1/.test(location.search)){const r=l.getBoundingClientRect(),o=ov.getBoundingClientRect(),
-        inV=el=>{const q=el&&el.getBoundingClientRect();return!!q&&q.height>0&&q.top>=Math.max(r.top,o.top)-1&&q.bottom<=Math.min(r.bottom,o.bottom)+1};
-      ok(l.scrollTop<=1&&inV(l.querySelector('[data-pro="1"]'))&&inV(l.querySelector('[data-ch="1"]')),'on a first visit the Prologue and Chapter One stand in view at the head of the list of all '+l.querySelectorAll('[data-ch]').length+' chapters')}}
+    /* the list stands in the parts of the account (PARTS): a line for each, and under the open one its chapters. On a first visit the
+       first part is open, with the Prologue at its head, and the whole list stands in its box without scrolling */
+    if(!/[?&]keep=1/.test(location.search)){const ps=[...l.querySelectorAll('.part')],op=ps.filter(p=>p.classList.contains('open'));
+      ok(ps.length===PARTS.length&&op.length===1&&op[0]===ps[0]&&op[0].contains(l.querySelector('[data-pro="1"]'))&&l.scrollHeight<=l.clientHeight+1&&l.scrollTop<=1&&!l.classList.contains('up')&&!l.classList.contains('down'),
+        'on a first visit the first of the '+ps.length+' parts of the account is open, with the Prologue at its head, and the whole list stands in its box without scrolling')}}
   /* the title's name is a painting (shared/logo.js): it stands in this language and keeps the words, it is shown at the size of its
      pixels and inside the view, and nothing of it is left unpainted. The stop `logo` shows it enlarged three times, in two halves:
      look there for crosses and for letters that have run together, in every language (`de:logo`). */
@@ -1960,8 +1961,8 @@
       wave=()=>!G.beat.inPause()&&G.beat.phase()>.02&&G.beat.phase()<G.beat.from-.04,
       quiet=()=>!G.skip&&!$('#speech').textContent.trim(),X=C.holds;
     await till(()=>G.beat&&G.beat.on,600);const b=G.beat;
-    ok(b&&b.on&&b.sticky&&b.room==='surf23'&&b.period===1800&&b.pause===900&&b.need===450&&P.pose==='plank'&&Math.abs(P.x-X[0])<1&&PC()===P,
-      'the surf: the beat starts with the room, sticky, its phase exposed ('+(b&&b.phase().toFixed(3))+'); Paul in the water on his plank at the wreck');
+    ok(b&&b.on&&b.sticky&&b.room==='surf23'&&b.period===1800&&b.pause===900&&b.need===450&&b.kind==='surf'&&P.pose==='plank'&&Math.abs(P.x-X[0])<1&&PC()===P,
+      'the surf: the beat starts with the room, sticky, its phase exposed ('+(b&&b.phase().toFixed(3))+'), its sea a breaker on a beach; Paul in the water on his plank at the wreck');
     await gap();await till(room);await click(1);
     ok(Math.abs(P.x-X[1])<1&&G.at23===1&&b.misses===0,'a click on the floating spar in the pause between two seas: he is there');
     for(let n=1;n<=3;n++){await gap();await till(wave);await click(2);
@@ -2015,6 +2016,8 @@
     {G.splash=0;ov.classList.remove('splash','playing');await wait(150);const c=R(cv),o=R($('#optsT')),h=R(ov.querySelector('h1'));
       ok(PH.mode==='title'&&PH.wide&&(Math.abs(c.width-(W-2*PH.ci-144))<2||Math.abs(c.height-Hh)<2)&&c.left>=PH.ci+71&&c.right<=W-PH.ci-71&&c.top>=-1&&c.bottom<=Hh+1,'the title\'s picture fits the screen, with a strip of timber at each side');
       const cb2=R($('#code'));ok(getComputedStyle($('#ttop')).display!=='none'&&$('#ttop').contains($('#code'))&&$('#code').textContent===T('enter_code')&&cb2.width>0&&cb2.top>=0&&cb2.left>=c.right&&o.left>=c.right&&o.right<=W-PH.ci&&$('#code').scrollWidth<=$('#code').clientWidth+1&&h.top>=0&&h.bottom<=Hh,'on the title ENTER CODE and the menu button stand in its upper right corner, where its last line says, beside the picture and not over it');
+      /* the list in its parts: the whole of it stands on the phone, and a line is tall enough for a finger to find (at least 17 points) */
+      {const l=ov.querySelector('.chs'),ln=R(ov.querySelector('.part.open>.grp'));ok(l.scrollHeight<=l.clientHeight+1&&ln.height>=17,'the whole list stands on the phone\'s title in its parts, each line '+ln.height.toFixed(1)+' points tall')}
       halt('phonetitle',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'})}
     await loadLevel(1);applyState(decode(codeOf(1,0)));await idle();G.speedAll=0;place(P,'workshop',160,128,1);[G.cam,G.camY]=camAt('workshop',160,128);await wait(700);
     const F=LENS.F,cw=PH.cw;let lc=R($('#lcol')),rc=R($('#rcol'));
@@ -2393,33 +2396,66 @@
     ok(ms>1000&&ms<3200&&w.length>12&&order&&amp(w[0])===2&&amp(w[w.length-1])===2&&w.some(f=>amp(f)===0)&&rest[0]===0&&rest[1]===null,`sixty room pixels are walked in ${Math.round(ms)} ms: the frames follow in order, the walk begins and ends on a half step, and Paul stands when he is there`);
     ok(steps>=4&&steps<=7,'a step is heard as each foot lands: '+steps+' over sixty room pixels and twelve up the room');
     ok(up.filter(f=>f>3).length>3&&up.filter(f=>f>3).every(f=>amp(f)===2),'up and down the room he takes half steps')}
-  /* the chapters stand in a box of their own. On a first visit it holds them all. A returning player's title has two more lines above it,
-     Continue and the farthest point, and then the box scrolls: its far edge fades while more lies beyond it, and a click between entries
-     starts nothing. The stop `titlescroll` shows that title, scrolled to its end. */
-  {const fade=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))),l0=ov.querySelector('.chs');
-    ok(l0&&[...l0.children].every(p=>p.dataset.ch||p.dataset.pro||p.classList.contains('plans')||p.classList.contains('plan'))&&l0.querySelectorAll('[data-ch],[data-pro]').length===listed().length+1,'the prologue and the chapters sit in a list of their own, with the planned ones at its foot');
+  /* The chapters stand in a box of their own, in the parts of the account (PARTS): a line for each part, and under the open one its
+     chapters, with those of it still in preparation as one dimmed line. Every chapter is in its own part, in order, and each part names
+     its span of Acts. A click on a part opens it and closes the other; a click on the open one closes it; the name above the list and the
+     lines below it never move. The keys reach every line. The stops: `title` (a first visit, the first part open), `titlepart` (the third
+     journey opened), `titlescroll` (a returning player in the second journey, the longest part), `titlelast` (a returning player in the
+     last part, with the hidden treasures too: all of it fits), `plans` (the line of the chapters in preparation, its part open). */
+  {const fade=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))),seen=el=>!!el&&el.getClientRects().length>0,R=el=>el.getBoundingClientRect(),
+      L0=()=>ov.querySelector('.chs'),parts=()=>[...L0().querySelectorAll('.part')],openOf=()=>parts().filter(p=>p.classList.contains('open')),
+      still=()=>[R(ov.querySelector('h1')).top,R(ov.querySelector('p.small:not(.lede)')).top].map(Math.round).join(),
+      inBox=el=>{const a=R(L0()),q=R(el);return q.height>0&&q.top>=a.top-1&&q.bottom<=a.bottom+1},
+      redraw=async()=>{partOpen=null;ov.draw();await fade();await wait(60)},noBlink=()=>ov.querySelectorAll('.go').forEach(g=>g.style.animation='none');
+    {const l0=L0(),ps=parts(),ns=[0,...listed().map(Number)];
+      ok(ps.length===PARTS.length&&[...l0.children].every(p=>p.classList.contains('part'))&&ps.every((p,i)=>p.querySelector('.grp').textContent.includes(T(PARTS[i].name))&&p.querySelector('.grp').textContent.includes(T(PARTS[i].span)))
+        &&ns.every(n=>{const el=l0.querySelector(n?`[data-ch="${n}"]`:'[data-pro="1"]');return el&&el.closest('.part')===ps[partOf(n)]})
+        &&ps.every(p=>{const c=[...p.querySelectorAll('[data-ch]')].map(e=>+e.dataset.ch);return c.every((x,i)=>!i||x===c[i-1]+1)})&&l0.querySelectorAll('[data-ch],[data-pro]').length===ns.length,
+        'the list stands in '+ps.length+' parts of the account, each named with its span of Acts, and every chapter is in its own part, in order: '+ps.map(p=>p.querySelectorAll('[data-ch],[data-pro]').length).join(', '))}
     if(!/[?&]keep=1/.test(location.search)){
-    /* FOR NOW (see the title checks above): on a first visit the list may scroll; the chosen layout replaces this check */
-    await fade();ok(!l0.classList.contains('up')&&l0.classList.contains('down')===(l0.scrollHeight>l0.clientHeight+1),'on a first visit the list stands at its head: its top edge does not fade, and its bottom edge fades only while more lies below it');
-    store('paul.save',codeOf(2,0));keepSaves({far:{code:codeOf(3,0),t:1}});ov.draw();await fade();
-    {const l=ov.querySelector('.chs');
-      ok(ov.querySelector('[data-cont]')&&ov.querySelector('[data-far]')&&l.scrollHeight>l.clientHeight+1&&!l.classList.contains('up')&&l.classList.contains('down')&&inOv(),'with Continue and the farthest point above it the list scrolls: at the top, only its bottom edge fades');
-      l.scrollTop=l.scrollHeight;l.dispatchEvent(new Event('scroll'));
-      ok(l.classList.contains('up')&&!l.classList.contains('down'),'scrolled to the end, the top edge fades and the bottom does not');
-      l.click();await wait(60);ok(ov.classList.contains('on')&&!G.room,'a click on the list between entries starts no chapter');
-      halt('titlescroll',()=>{ov.querySelectorAll('.go').forEach(g=>g.style.animation='none')})}
-    store('paul.save',null);store('paul.saves',null);ov.draw();await fade();
-    ok(!ov.querySelector('[data-cont]')&&!ov.querySelector('[data-far]')&&store('paul.save')===null,'and the title of a first visit is as it was')}
-    /* The planned chapters (PLANNED, issue #47) wait under one line at the foot of the list, closed. A click opens them in place, each named
-     by its part of Acts; a click on one of them starts nothing, and a second click on the line closes them. The stop `plans` shows them open. */
-  {const l=ov.querySelector('.chs'),pl=l.querySelector('.plans'),items=[...l.querySelectorAll('.plan')],seen=el=>el.getClientRects().length>0;
-    ok(pl&&items.length===PLANNED.length&&!items.some(seen)&&!l.querySelector('.plan[data-ch],.plans[data-ch]')&&pl.textContent.includes(T('in_preparation')),'the planned chapters wait under one line: '+(pl&&pl.textContent.trim()));
-    pl.click();await wait(500);
-    ok(l.classList.contains('open')&&items.every(seen)&&items.every((p,i)=>p.textContent===T(PLANNED[i].label)+' \u00b7 '+T(PLANNED[i].ref))&&inOv(),'a click opens them, each by its reference: '+items[0].textContent+' ... '+items.at(-1).textContent);
-    items[0].click();await wait(400);
-    ok(ov.classList.contains('title')&&G.ch===1&&!G.room&&l.classList.contains('open'),'a planned chapter cannot be started');
-    halt('plans',()=>{const g=ov.querySelector('.go');if(g)g.style.animation='none'});
-    pl.click();await wait(200);l.scrollTop=0;chsFade(l);ok(!l.classList.contains('open')&&!items.some(seen),'a second click closes them')}
+      {const ps=parts(),s0=still(),g3=ps[3].querySelector('.grp');g3.click();await wait(500);
+        ok(openOf().length===1&&openOf()[0]===ps[3]&&!seen(ps[0].querySelector('[data-ch="1"]'))&&[...ps[3].querySelectorAll('p')].every(inBox)&&still()===s0&&inOv(),
+          'a click opens the third journey in place and closes the first: its chapters stand in the box, and the name above the list and the lines below it have not moved');
+        halt('titlepart',noBlink);
+        g3.click();await wait(200);ok(!openOf().length&&still()===s0,'a click on the open part closes it, and nothing else moves');
+        ps[3].click();ps[3].querySelector('.gl').click();L0().click();await wait(60);ok(ov.classList.contains('on')&&!G.room&&!openOf().length,'a click between the lines starts nothing')}
+      /* the keys: the arrows reach the lines one by one (with no part open, the parts), and Enter or Space does what a click does */
+      {const k=x=>dispatchEvent(new KeyboardEvent('keydown',{key:x,bubbles:true,cancelable:true})),kf=()=>ov.querySelector('.kf'),sc=window.startChapter,ps=parts();let st=null;
+        k('ArrowDown');const a=kf();k('ArrowDown');const b=kf();k('Enter');await wait(300);
+        ok(a===ps[0].querySelector('.grp')&&b===ps[1].querySelector('.grp')&&openOf()[0]===ps[1]&&getComputedStyle(b).color==='rgb(255, 255, 255)','the arrows reach the parts one by one, lit, and Enter opens the one they have reached');
+        k('ArrowDown');const c=kf();window.startChapter=n=>{st=n};k('Enter');await wait(100);window.startChapter=sc;
+        ok(c&&c.dataset.ch===String(PARTS[1].from)&&st===PARTS[1].from&&ov.classList.contains('title'),'the next line down is its first chapter, and Enter starts it');
+        k('ArrowUp');k(' ');await wait(200);ok(!openOf().length&&kf()===b,'Space on the open part closes it')}
+      /* a returning player in the second journey, the longest part: it is open, Continue's chapter is set off and in view */
+      store('paul.save',codeOf(9,0));keepSaves({far:{code:codeOf(10,0),t:1}});await redraw();
+      {const l=L0(),h=l.querySelector('.here'),op=openOf();
+        ok(ov.querySelector('[data-cont]')&&ov.querySelector('[data-far]')&&op.length===1&&op[0]===parts()[2]&&h&&h.dataset.ch==='9'&&[...op[0].querySelectorAll('p')].every(inBox)&&inOv(),
+          'a returning player finds the part of Continue open, the second journey, with Chapter Nine set off and the whole part in the box');
+        ok(l.classList.contains('down')===(l.scrollTop+l.clientHeight<l.scrollHeight-1)&&l.classList.contains('up')===(l.scrollTop>1),'its edges fade only where more of the list lies beyond them'+(l.scrollHeight>l.clientHeight+1?' (it scrolls: '+Math.round(l.scrollHeight-l.clientHeight)+' pixels)':' (it does not scroll)'));
+        halt('titlescroll',noBlink);
+        l.scrollTop=l.scrollHeight;l.dispatchEvent(new Event('scroll'));ok(!l.classList.contains('down'),'scrolled to its end, the bottom edge does not fade')}
+      /* a returning player in the last part, with the farthest point and the hidden treasures too: everything fits without scrolling */
+      store('paul.save',CHAP[22].treasure.at);keepSaves({far:{code:CHAP[23].treasure.at,t:1}});keepTreasures([1,2,3,5,8,13,21]);await redraw();
+      {const l=L0(),last=parts().at(-1),h=l.querySelector('.here');
+        ok(openOf()[0]===last&&h&&h.dataset.ch==='22'&&ov.querySelector('[data-far]')&&ov.querySelector('[data-tre]')&&l.scrollHeight<=l.clientHeight+1&&[...last.querySelectorAll('p')].every(inBox)&&inOv(),
+          'a returning player in Chapter Twenty-Two finds the last part open, with Continue, the farthest point and the hidden treasures above and below, and the whole list fits without scrolling');
+        halt('titlelast',noBlink)}
+      store('paul.save',null);store('paul.saves',null);store('paul.treasures',null);await redraw();
+      ok(!ov.querySelector('[data-cont]')&&!ov.querySelector('[data-far]')&&!ov.querySelector('[data-tre]')&&openOf()[0]===parts()[0],'and the title of a first visit is as it was')}
+    /* The chapters in preparation (PLANNED) stand in their part as one dimmed line, which a click neither starts nor closes: "Chapters
+       Twenty-Four to Twenty-Five · in preparation"; with one left it names that chapter, and with none it is gone. The stop `plans`. */
+    {const pl=()=>[...ov.querySelectorAll('.chs .plans')],last=()=>parts().at(-1),next=Math.max(...Object.keys(CHAP).map(Number))+1,
+        want=PLANNED.length>1?T('chapters_from_to_to',{from:T(PLANNED[0].short),to:T(PLANNED.at(-1).short)}):T(PLANNED[0].label);
+      ok(pl().length===1&&last().contains(pl()[0])&&pl()[0].textContent===want+' · '+T('in_preparation')&&PLANNED.every((c,k)=>partOf(next+k)===PARTS.length-1),'the chapters in preparation stand in the last part as one line: '+(pl()[0]&&pl()[0].textContent));
+      {const gone=PLANNED.splice(0,PLANNED.length-1);ov.draw();await fade();
+        ok(pl().length===1&&pl()[0].textContent===T(PLANNED[0].label)+' \u00b7 '+T('in_preparation'),'with one chapter left in preparation the line names it: '+(pl()[0]&&pl()[0].textContent));
+        const rest=PLANNED.splice(0);ov.draw();await fade();ok(!pl().length,'with none left the line is gone');
+        PLANNED.push(...gone,...rest);await redraw()}
+      last().querySelector('.grp').click();await wait(400);const p=pl()[0];
+      ok(seen(p)&&inBox(p)&&getComputedStyle(p).cursor==='default','its part open, the line is seen, and it is not offered as a choice');
+      p.click();await wait(300);ok(ov.classList.contains('title')&&!G.room&&last().classList.contains('open'),'a click on it starts nothing and closes nothing');
+      halt('plans',noBlink);
+      partOpen=null;ov.draw();await fade()}
   }
   /* the voices, rendered offline on the game's own mixer (audioGraph): every instrument and drum stroke sounds, stays finite and does not clip */
   {const SR=22050,offline=async(fn,dur)=>{const off=new OfflineAudioContext(1,Math.ceil(SR*dur),SR),keep=Object.assign({},AU);AU.ctx=off;audioGraph(off);
@@ -2571,8 +2607,8 @@
     {const c=ov.querySelector('h1.art canvas.logo');ok(c&&c.textContent==='PAULUS VON TARSUS AUF ROMS STRASSEN'&&c!==SHARED.logo.paint('PAUL OF TARSUS','ON THE ROADS OF ROME'),'and its logo is painted again in German')}
     fitVerbs();document.querySelector('#overlay [data-lang="en"]').click();await toLang('en');
     ok(ov.textContent.includes('PAUL OF TARSUS')&&store('paul.lang')==='en'&&$('#verbs button').textContent==='Look at','and back to English')}
-  if(stop==='title2'){document.querySelector('#overlay [data-ch="2"]').click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy,'title starts chapter two');halt('title2')}
-  if(stop==='title3'){document.querySelector('#overlay [data-ch="3"]').click();await idle();ok(G.ch===3&&G.room==='tarsus'&&!G.busy&&ACT.barnabas.x>100,'title starts chapter three');halt('title3')}
+  if(stop==='title2'){chLine(2).click();await idle();ok(G.ch===2&&G.room==='jerusalem'&&!G.busy,'title starts chapter two');halt('title2')}
+  if(stop==='title3'){chLine(3).click();await idle();ok(G.ch===3&&G.room==='tarsus'&&!G.busy&&ACT.barnabas.x>100,'title starts chapter three');halt('title3')}
   if(stop==='titlecode'){Object.assign(F,{gotAwl:1,gotThread:1,gotKnife:1,gotCloth:1,gotRope:1,gotSkin:1,gotBasket:1,cutCloth:1,longRope:1});G.room='street';
     const c=makeCode();for(const k in F)delete F[k];G.room=null;
     ok($('#code').textContent===T('enter_code'),'title shows ENTER CODE');$('#code').click();
@@ -2676,7 +2712,7 @@
     ok(G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===2&&inWin('antioch')&&inWin('syriangates')&&inWin('tarsus'),'the chapter opens on the map: from Antioch by the Syrian Gates to Tarsus');
     ok(mapClear(),'no name on the opening map crosses a coast, a lake or a route'+clear());ok(cross(SHARED.map.state.legs)===0,'no two routes cross');
     narr('his_way_led_through_acts_15_41',{dur:9000});halt('map7')}
-  let sawMap=0;heard.length=0;(C7?document.querySelector('#overlay [data-ch="7"]'):ov).click();
+  let sawMap=0;heard.length=0;(C7?chLine(7):ov).click();
   for(let i=0;i<4000&&!(G.ch===7&&G.room==='tarsus7'&&!G.scene&&!G.busy);i++){if(SHARED.map&&G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===2)sawMap=1;await wait(30)}
   await idle();SI=ACT.silas;
   ok(G.ch===7&&G.room==='tarsus7'&&!G.scene&&!G.busy&&srt()==='awl,knife,letter,tablets,thread'&&SI.room==='tarsus7'&&A('reuben').room==='tarsus7'&&A('agathon').room==='tarsus7'&&A('eirene').room==='tarsus7'&&T(P.hs.name)===T('Paul')&&sawMap&&
@@ -2907,7 +2943,7 @@
     ok(G.scene===SHARED.map.draw&&inWin('iconium')&&inWin('antiochp')&&(stop==='map8'||inWin('troas')&&inWin('samothrace')&&inWin('neapolis')&&inWin('philippi')),'the map looks through its Aegean window: from Iconium to Philippi');
     ok(mapClear(),'no name on the map crosses a coast, an island or a route ('+SHARED.map.state.boxes.length+' names)'+clear());ok(cross(SHARED.map.state.legs)===0,'no two routes cross');ok(!apart(),'no two names overlap'+apart());
     narr(stop==='map8'?'about_50_c_e_acts_16_4_5':'we_left_troas_acts_16_11',{dur:9000});halt(stop)}
-  let sawMap=0;heard.length=0;(C8?document.querySelector('#overlay [data-ch="8"]'):ov).click();
+  let sawMap=0;heard.length=0;(C8?chLine(8):ov).click();
   for(let i=0;i<4000&&!(G.ch===8&&G.room==='fork'&&!G.scene&&!G.busy);i++){if(SHARED.map&&G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===2)sawMap=1;await wait(30)}
   await idle();LU=ACT.luke;const SI=A('silas8'),TI=A('timothy8');
   ok(G.ch===8&&G.room==='fork'&&!G.scene&&!G.busy&&srt()==='awl,knife,tablets,thread'&&SI.room==='fork'&&TI.room==='fork'&&!LU.room&&A('attalos').room==='fork'&&sawMap&&
@@ -3116,7 +3152,7 @@
   const sungAs=[];{const say0=say;window.say=function(a,t,o){if(o&&o.sung)sungAs.push({a:a&&a.id,n:o.sung.length,choir:(o.choir||[]).map(x=>x.id)});return say0.apply(this,arguments)}}
   const ch9=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[9],told=k=>heard.includes(T(C().told[k])),pickL=k=>pickQ(C().psalm[k].gist),
     until=async(fn,n)=>{for(let i=0;i<(n||6000)&&!fn();i++)await wait(30);await idle()},on=async name=>{clickView(...hs(name),H(name));await idle()},stones=()=>on('flat_stones');let n9=0;   /* on: a thing is clicked itself, whoever stands in front of it */
-  heard.length=0;(C9?document.querySelector('#overlay [data-ch="9"]'):ov).click();
+  heard.length=0;(C9?chLine(9):ov).click();
   await until(()=>G.ch===9&&G.room==='lydia9'&&!G.scene&&!G.busy);
   const SI=A('silas9'),TI=A('timothy9'),LU=A('luke'),LK=A('luke9'),LY=A('lydia9'),PH=A('phila9'),EL=A('elpis9'),GI=A('girl9'),MA=A('master91'),JA=A('jailer9'),MG=A('mag91'),CO=A('lic91'),PR=['pr91','pr92','pr93'].map(A);
   ok(G.ch===9&&G.room==='lydia9'&&srt()==='awl,knife,tablets,thread'&&[SI,TI,LU,LY].every(a=>a.room==='lydia9')&&said('that_one'),"chapter nine starts in Lydia's house, with the four men and Lydia ["+[G.ch,G.room,srt(),heard.length].join()+']');
@@ -3285,7 +3321,7 @@
     B=()=>C().bolt,cell=(cx,cy)=>[B().x+cx*B().cell+7,B().y+cy*B().cell+7],take=async id=>{const p=C().pieces.find(p=>p.id===id);await on(p.name)},
     putP=async(id,cx,cy,turn)=>{if(G.bolt10.at[id]){await take(id)}else if(G.bolt10.sel!==id)await take(id);if(!!G.bolt10.turn[id]!==!!turn)await take(id);heard.length=0;view(...cell(cx,cy));await idle()};
   let n10=0;
-  heard.length=0;(C10?document.querySelector('#overlay [data-ch="10"]'):ov).click();
+  heard.length=0;(C10?chLine(10):ov).click();
   await mapOK(3,['philippi','amphipolis','apollonia','thessalonica'],'chapter ten opens on the map, through its western window: from Philippi through Amphipolis and Apollonia to Thessalonica');
   halt('map10');
   await until(()=>G.ch===10&&G.room==='yard10'&&!G.scene&&!G.busy);
@@ -3479,7 +3515,7 @@
     spk=async()=>{heard.length=0;await act(null,'men_on_the_seats')},capsFit=n=>G.caps11.length>=n&&G.caps11.every(c=>c.w<=c.max+.5&&c.sz>=3.2),
     walkTo=async(x,y)=>{view(x,y);await idle();await wait(160);await idle()},seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
   let n11=0;
-  heard.length=0;(C11?document.querySelector('#overlay [data-ch="11"]'):ov).click();
+  heard.length=0;(C11?chLine(11):ov).click();
   /* the map: Athens, and Beroea far to the north; nobody travels. The line told over it stays while the map is looked at. */
   for(let i=0;i<9000&&!(SHARED.map&&G.scene===SHARED.map.draw);i++)await wait(30);clearInterval(sk);await wait(900);
   {const M=SHARED.map,L=M.state.legs,inWin=id=>{const[x,y]=M.where(id);return x>6&&x<314&&y>6&&y<138};
@@ -3730,7 +3766,7 @@
       for(let i=0;i<3&&o.p!=null&&N.awn().p!==o.p;i++)await onH('linen_cloth');for(let i=0;i<4&&o.q!=null&&N.awn().n===3&&N.awn().q!==o.q;i++)await onH('new_cloth')},
     swapTo=async a=>{for(let i=0;i<3&&PC()!==a;i++){key('c');await idle();await wait(250);await idle()}};
   let n12=0;
-  heard.length=0;(C12?document.querySelector('#overlay [data-ch="12"]'):ov).click();
+  heard.length=0;(C12?chLine(12):ov).click();
   /* the map: Athens and Corinth, and no road between them: the account names none */
   await mapUp();clearInterval(sk);await wait(900);
   {const M=SHARED.map;ok(G.scene===M.draw&&M.state.legs.length===0&&M.state.seen.has('athens')&&M.state.seen.has('corinth')&&inWin('athens')&&inWin('corinth'),'chapter twelve opens on the map: Athens and Corinth, and no road drawn between them');
@@ -4027,7 +4063,7 @@
   let n13=0;
   /* in the full run Chapter Twelve ends on a map of its own, which may still be up while Chapter Thirteen loads: wait for the new journey */
   const was13=SHARED.map&&SHARED.map.state.legs;
-  heard.length=0;(C13?document.querySelector('#overlay [data-ch="13"]'):ov).click();
+  heard.length=0;(C13?chLine(13):ov).click();
   /* the map: the road out of Antioch, through Galatia and Phrygia. The account names no town on it, and the map names none. */
   await mapUp();for(let i=0;i<9000&&SHARED.map.state.legs===was13;i++)await wait(30);clearInterval(sk);for(let i=0;i<900&&!SHARED.map.state.legs.every(l=>l.k===1);i++)await wait(30);await wait(300);
   {const M=SHARED.map,names=M.state.boxes.map(b=>b[4]);ok(G.scene===M.draw&&M.state.legs.length===7&&inWin('antioch')&&inWin('antiochp')&&names.includes(T('Antioch'))&&!names.includes(T('Derbe'))&&!names.includes(T('Iconium'))&&!names.includes(T('Tarsus')),'chapter thirteen opens on the map: out of Antioch, through Galatia and Phrygia, and no town on that road is named ['+names.join()+']');
@@ -4311,7 +4347,7 @@
     /* a walk on the map by a script: every lane may be taken (see route), and the walk ends where the lanes come nearest */
     mapWalk=async(a,x,y)=>{const M=C().map,D=M.def,cr=D.crowd;D.crowd={};M.crowd.length=0;M.pushT=0;a.pushed=0;M.seeAll=1;const r=walk(a,x,y);for(let i=0;i<4000&&a.walk;i++)await wait(30);await r;M.seeAll=0;D.crowd=cr;await idle()},
     seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
-  heard.length=0;(C14?document.querySelector('#overlay [data-ch="14"]'):ov).click();
+  heard.length=0;(C14?chLine(14):ov).click();
   if(stop==='open14'){await until(()=>G.ch===14&&G.room==='court14'&&!!A('timothy14').room,9000);halt('open14')}
   if(stop==='market14'){for(let i=0;i<6000&&!(G.ch===14&&G.room==='market14');i++)await wait(30);halt('market14')}
   await until(()=>G.ch===14&&G.room==='colon14'&&!G.busy,12000);note();
@@ -4440,8 +4476,8 @@
   window.say=function(a,t,o){if(!a&&typeof t==='string'&&!(o&&o.plain))toldN[t]=(toldN[t]||0)+1;return say0.apply(this,arguments)};
   heard.length=0;
   if(C15){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans'),plan=l.querySelector('.plan');
-    ok(chs.length>=15&&chs[14].dataset.ch==='15'&&chs[14].textContent.includes(T('chapter_fifteen'))&&chs[14].textContent.includes(T('until_daybreak_2'))&&!!plans&&!!plan,'the title lists Until Daybreak as the fifteenth chapter, and the chapters in preparation after the last one built')}
-  (C15?document.querySelector('#overlay [data-ch="15"]'):ov).click();
+    ok(chs.length>=15&&chs[14].dataset.ch==='15'&&chs[14].textContent.includes(T('chapter_fifteen'))&&chs[14].textContent.includes(T('until_daybreak_2'))&&!!plans&&!plan,'the title lists Until Daybreak as the fifteenth chapter, and the chapters in preparation after the last one built')}
+  (C15?chLine(15):ov).click();
   await when(()=>G.ch===15&&SHARED.map&&G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===7&&SHARED.map.state.legs.every(l=>l.k===1),3000);
   ok(G.ch===15&&G.scene===SHARED.map.draw,'chapter fifteen opens on the map: from Ephesus to Macedonia and on to Greece (Acts 20:1-3)');road(7,'the road of the opening');halt('open15');
   await until(()=>G.ch===15&&G.room==='gaius15'&&!G.busy,3000);note();
@@ -4772,7 +4808,7 @@
   heard.length=0;
   if(C16){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
     {const c16=l.querySelector('[data-ch="16"]');ok(chs.length>=16&&c16&&c16.textContent.includes(T('chapter_sixteen'))&&c16.textContent.includes(T('these_hands_2')),'the title lists Chapter Sixteen, These Hands')}}
-  (C16?document.querySelector('#overlay [data-ch="16"]'):ov).click();
+  (C16?chLine(16):ov).click();
   await until(()=>G.ch===16&&G.room==='quay16'&&!G.busy,3000);note();
   const LK=A('luke16'),MA=A('master16'),BOY=A('boy16'),KE=A('sailor16'),FI=A('fisher16'),SH=A('shep16'),LY=A('menon16'),AR=A('arist16');
   ok(G.room==='quay16'&&PC()===P&&LK.room==='quay16'&&said('troas_the_morning_after')&&said('timothy_the_master_asks_for_you')&&srt()==='awl,knife,pbag16,tablets,thread16','Troas at daybreak: the coaster for Assos, and Paul is played ['+srt()+']');
@@ -4927,7 +4963,7 @@
   if(C17){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
     const c17=chs.find(c=>c.dataset.ch==='17');ok(c17&&c17.textContent.includes(T('chapter_seventeen'))&&c17.textContent.includes(T('the_belt_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
       'the title lists Chapter Seventeen, The Belt, and the chapters in preparation begin with the twenty-fourth')}
-  (C17?document.querySelector('#overlay [data-ch="17"]'):ov).click();
+  (C17?chLine(17):ov).click();
   await until(()=>G.ch===17&&G.room==='patara17'&&!G.busy,4000);note();
   const LK=A('luke17'),AK=A('akestor17'),MO=A('moschos17'),KA=A('kallikrates17'),SO=A('sostratos17'),BU=A('butcher17'),MY=A('myrto17'),PN=A('phanias17'),JO=A('joezer17'),
     PH=A('philip17'),AG=A('agabus17'),X=C().X,Y=C().Y,AT=C().at,M=C().map;
@@ -5093,7 +5129,7 @@
   if(C18){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
     {const c18=chs.find(c=>c.dataset.ch==='18');ok(c18&&c18.textContent.includes(T('chapter_eighteen'))&&c18.textContent.includes(T('on_the_stairs_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
       'the title lists Chapter Eighteen, On the Stairs, and the chapters in preparation begin with the twenty-fourth')}}
-  (C18?document.querySelector('#overlay [data-ch="18"]'):ov).click();
+  (C18?chLine(18):ov).click();
   await until(()=>G.ch===18&&G.room==='mnason18'&&!G.busy,4000);note();
   const MN=A('mnason_18'),JA=A('james18'),TR=A('troph18'),CY=A('cyrene18'),GR=A('greek18'),LV=A('levite18'),CM=A('commander18'),OF=A('officer18'),S1=A('sol18a'),BA=A('barber18');
   ok(G.room==='mnason18'&&PC()===P&&seenTold.has('v17')&&said('mnason_come_in_all_of_you')&&said('trophimus_so_this_is_jerusalem')&&srt()==='roman18,tablets',
@@ -5272,7 +5308,7 @@
   if(C19){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
     {const c19=chs.find(c=>c.dataset.ch==='19');ok(c19&&c19.textContent.includes(T('chapter_nineteen'))&&c19.textContent.includes(T('the_sisters_son_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
       'the title lists Chapter Nineteen, The Sister\'s Son, and the chapters in preparation begin with the twenty-fourth')}}
-  (C19?document.querySelector('#overlay [data-ch="19"]'):ov).click();
+  (C19?chLine(19):ov).click();
   await until(()=>G.ch===19&&G.room==='council19'&&!G.busy,6000);note();
   const NE=A('nephew19'),SI=A('sister19'),AN=A('ananias19'),PH=A('phar19b'),SA=A('sad19a'),SE=A('sentry19'),GD=A('guard19'),OS=A('oil19'),FX=A('felix19'),M=C().map,X=C().X,Y=C().Y;
   ok(G.room==='council19'&&PC()===P&&seenTold.has('v22_30')&&said('paul_the_council_gathers')&&srt()==='tablets'&&P.look.bald,'the next day the commander has him untied and brought down to the council (Acts 22:30); Paul is bald now ['+srt()+']');
@@ -5458,7 +5494,7 @@
   if(C20){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
     {const c=chs.find(c=>c.dataset.ch==='20');ok(c&&c.textContent.includes(T('chapter_twenty'))&&c.textContent.includes(T('some_other_time_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
       'the title lists Chapter Twenty, Some Other Time, and the chapters in preparation begin with the twenty-fourth')}}
-  (C20?document.querySelector('#overlay [data-ch="20"]'):ov).click();
+  (C20?chLine(20):ov).click();
   await until(()=>G.ch===20&&G.room==='court20'&&!G.busy,9000);note();
   const FX=A('felix20'),DR=A('drusilla20'),TT=A('tertullus20'),AN=A('ananias20'),CK=A('clerk20'),SO=A('soldier20'),OF=A('officer20'),PH=A('philip20'),SI=A('simmias20'),PD=A('phaidros20'),LK=A('luke20');
   ok(['v1','v2','v5a','v5b','v6','v8','v10'].every(k=>seenTold.has(k))&&said('paul_he_gives_me_leave_to_speak')&&srt()==='tablets'&&P.look.bald,
@@ -5642,7 +5678,7 @@
   if(C21){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
     {const c=chs.find(c=>c.dataset.ch==='21');ok(c&&c.textContent.includes(T('chapter_twenty_one'))&&c.textContent.includes(T('to_caesar_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
       'the title lists Chapter Twenty-One, To Caesar, and the chapters in preparation begin with the twenty-fourth')}}
-  (C21?document.querySelector('#overlay [data-ch="21"]'):ov).click();
+  (C21?chLine(21):ov).click();
   await until(()=>G.ch===21&&G.room==='court21'&&!G.busy,6000);note();
   const CL=A('clerk21'),FS=A('festus21'),AG=A('agrippa21'),BE=A('bernice21'),GU=A('guard21'),R=C().report,MK=C().marks;
   ok(G.room==='court21'&&PC()===CL&&['v1','v2','v4'].every(k=>seenTold.has(k))&&said('clerk_the_new_governor_sits_today')&&!P.room&&!CL.look.board,
@@ -5789,9 +5825,10 @@
      marks22 (the six marks set) · midst22 (Paul stands up among them) · final22. The stops that begin with "p" open one room at once, with
      the story's flags set for it, and say the safe-point code of their point (CODE): pscroll22 (27:1 on the narrator's scroll) · pquay22
      (the treasure's point) · pmap22 (the voyage out on the map) · pmyra22 · pdeck22 · pshelter22 · phavens22 · pskiff22 · pgirded22 ·
-     psyrtis22 · pload22 · pnight22 · ptablet22 · pmidst22. The timed acts, driven by the beat's exposed phase: beatskiff22 (the skiff:
+     psyrtis22 · pload22 · pbale22 (a bale at the cask) · pnight22 · ptablet22 · pmidst22. The timed acts, driven by the beat's exposed phase: beatskiff22 (the skiff:
      misses, the call, the carry, four pulls), beatdeck22 (a crossing: a hit, a miss back at the hold with no line, the call after three,
-     the carry after six), phonedeck22 (a crossing tapped on a phone held sideways). The generic stops card22, routes22, shadows22 (above)
+     the carry after six), phonedeck22 (a crossing tapped on a phone held sideways). codes22 plays the chapter as all22 does
+     and restores every safe-point code offered on the way (codeLog, codesCheck), and one while the voyage out waits on the map. The generic stops card22, routes22, shadows22 (above)
      run against whatever rooms the chapter has. The stop carry (after Chapter Twenty-Three's section) needs CHAP[22].marks (the twelve
      mark flags) and CHAP[22].end (the end screen, from wherever the story stands). */
   /* rooms22: every picture of Chapter Twenty-Two on one sheet at twice its size (rooms22.png), each of its variants with the flags that
@@ -5799,25 +5836,27 @@
   if(stop==='rooms22'){clearInterval(sk);sk=0;await loadLevel(22);setChapter(22);ov.className='';ov.onclick=null;const C=CHAP[22],K=2,ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1);
     const V=[['quay22',[]],['myra22',upto('out')],['deck22',upto('cord')],['deck22',upto('shelter')],['deck22',upto('fh')],['storm22',upto('advised')],
       ['storm22',upto('skiff')],['storm22',upto('load3')],['storm22',upto('t6')],['tablet22',upto('load3').concat(['t1','t2','t3','m1a','m2b','m3a','m3b'])],['girded22',upto('skiff')]];
-    const pic=(id,fl,q,x,y)=>{for(const k in F)delete F[k];for(const k of fl)F[k]=1;G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
-      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
+    const pic=(id,fl,q,x,y)=>{for(const k in F)delete F[k];for(const k of fl)F[k]=1;G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');if(ART[id].behind)ART[id].behind(g,1000);g.drawImage(bg(id),0,0,W,144);
+      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000);ART[id].air&&ART[id].air(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
       q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
     const[c,g]=mk(320*K*2+8,Math.ceil(V.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
     V.forEach(([id,fl],i)=>pic(id,fl,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];if(SHARED.beat)SHARED.beat.stop();
     window.SHEETS={rooms22:c.toDataURL()};halt('rooms22')}
-  const C22=/^(quay22|map22|myra22|deck22|shelter22|havens22|skiff22|girded22|syrtis22|load22|bales22|tablet22|marks22|midst22|final22|all22)$/.test(stop);
+  const C22=/^(quay22|map22|myra22|deck22|shelter22|havens22|skiff22|girded22|syrtis22|load22|bales22|tablet22|marks22|midst22|final22|all22|codes22)$/.test(stop);
   /* open22: Chapter Twenty-Two at one point at once, with the flags given, in the room given */
   const open22=async(fl,room)=>{await loadLevel(22);ov.className='';ov.onclick=null;const C=CHAP[22];setChapter(22);for(const k of fl)F[k]=1;
-    C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn()};
+    C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));G.busy=false;lock(false);drawInv();status();swapBtn();if(room!=='girded22')codeBtn()};
   const up22=k=>{const A=CHAP[22].flags;return A.slice(0,A.indexOf(k)+1)};
   if(!C22&&/^p[a-z]+22$/.test(stop)&&!/^phone/.test(stop)){await loadLevel(22);const C=CHAP[22],upto=up22,
       S={pscroll22:[[],'quay22'],pquay22:[[],'quay22'],pmap22:[[],'quay22'],pmyra22:[upto('out'),'myra22'],pdeck22:[upto('aboard'),'deck22'],
         pshelter22:[upto('shelter'),'deck22'],phavens22:[upto('fh'),'deck22'],pskiff22:[upto('advised'),'storm22'],pgirded22:[upto('skiff'),'girded22'],
-        psyrtis22:[upto('skiff'),'storm22'],pload22:[upto('skiff'),'storm22'],pnight22:[upto('load3'),'storm22'],ptablet22:[upto('load3').concat(['t1','m1a','t2','m2b']),'tablet22'],
-        pmidst22:[upto('t6'),'storm22']}[stop];
-    if(!S)throw new Error('no such stop '+stop);await open22(S[0],S[1]);L('CODE '+stop+' '+(G.room?makeCode():'-'));
+        psyrtis22:[upto('skiff'),'storm22'],pload22:[upto('skiff'),'storm22'],pnight22:[upto('load3').concat(['t1','t2']),'storm22'],ptablet22:[upto('load3').concat(['t1','m1a','t2','m2b']),'tablet22'],
+        pmidst22:[upto('t6'),'storm22'],pbale22:[upto('skiff'),'storm22']}[stop];
+    if(!S)throw new Error('no such stop '+stop);await open22(S[0],S[1]);L('CODE '+stop+' '+(G.room&&G.room!=='girded22'?makeCode():'-'));
     if(stop==='pscroll22'){G.scene=DARK;narr(C.told.v1,{dur:60000})}
     if(stop==='pmap22'){const M=await need('map');M.pick(C.out.ids,'myra',{view:'outward',legs:C.out.legs,hint:'click_myra_where_we_put_in'})}
+    /* pbale22: the next day, Paul with a bale at the cask, waiting for the pause (the picture of the bales on the beat, docs/screenshots) */
+    if(stop==='pbale22'){const H=C.holds;G.bale22=1;G.hold22=1;P.pose='bundle';P.pk=0;P.x=H[1][0];P.y=H[1][1];P.dir=1}
     if(stop==='psyrtis22'){const M=await need('map');await M.journey([['myra','cnidus','sea'],['cnidus','salmone','sea'],['salmone','fairhavens','sea'],['fairhavens','cauda','sea']],{view:'adria',regions:['the_syrtis'],instant:1})}
     await wait(1100);halt(stop)}
   /* the timed acts, driven by the beat's exposed phase: the stops beatskiff22, beatdeck22 and phonedeck22 (and the playthrough) */
@@ -5855,19 +5894,19 @@
     await open22(up22('skiff'),'storm22');await till22(()=>B22());const b=B22(),C=CHAP[22],H=C.holds,SD=ACT.sail22d;
     ok(G.room==='storm22'&&PC()===P&&b&&b.room==='storm22'&&b.sticky&&b.need===420&&C.phase()==='load'&&Math.abs(P.x-H[0][0])<1,
       'the next day: Paul at the hatch, and the beat runs from the room ('+b.period+' ms, a pause of '+b.pause+', a step of '+b.need+')');
-    await tap22('mast_step',ph);ok(!G.bale22&&Math.abs(P.x-H[0][0])<1&&quiet22(),'without a bale he does not cross');
+    await tap22('cask',ph);ok(!G.bale22&&Math.abs(P.x-H[0][0])<1&&quiet22(),'without a bale he does not cross');
     await tap22('hatch',ph);ok(G.bale22===1&&P.pose==='bundle','a bale from the hatch, carried low before him');
     const W=ROOMS.storm22.walk;ok(W[0]===W[1]&&W[2]===W[3],'during the crossing the floor is his own place: only the next hold moves him');
-    await tap22('mast_step',ph,calm22);ok(G.hold22===1&&Math.abs(P.x-H[1][0])<1&&b.misses===0,'a step to the mast in the pause between two seas');
-    for(let n=1;n<=3;n++){await tap22('cask',ph,wave22);
-      ok(G.hold22===1&&Math.abs(P.x-H[1][0])<1&&b.misses===n&&quiet22()&&!G.busy&&P.pose==='bundle',`a step on the wave is a miss (${n}): back at the mast, the bale still in his arms, and no line stands to be clicked away`)}
+    await tap22('cask',ph,calm22);ok(G.hold22===1&&Math.abs(P.x-H[1][0])<1&&b.misses===0,'a step to the cask in the pause between two seas');
+    for(let n=1;n<=3;n++){await tap22('mast_step',ph,wave22);
+      ok(G.hold22===1&&Math.abs(P.x-H[1][0])<1&&b.misses===n&&quiet22()&&!G.busy&&P.pose==='bundle',`a step on the wave is a miss (${n}): back at the cask, the bale still in his arms, and no line stands to be clicked away`)}
     ok(b.help===1,'after three misses the sailor at the rail calls the moment');
     {await till22(()=>b.calling());SHARED.beat.cap.last=null;await wait(80);const c=SHARED.beat.cap.last;
       ok(b.calling()&&c&&c.key==='now'&&c.w<=c.max&&Math.abs(SD.x-H[3][0])<40,'he calls it in the pause, at the rail: '+(c&&c.s))}
-    for(let n=4;n<=6;n++){const p=tap22('cask',ph,wave22);if(n<6)await p}
+    for(let n=4;n<=6;n++){const p=tap22('mast_step',ph,wave22);if(n<6)await p}
     await till22(()=>F.load1&&!G.busy,1500);
-    ok(F.load1&&b.help===0&&b.misses===0&&G.hold22===0&&Math.abs(P.x-H[0][0])<2&&!G.bale22&&Math.abs(SD.x-302)<2,'after six misses the sailor walks him across: the bale goes over the lee rail, nobody goes overboard; back at the hatch, and the next crossing starts afresh');
-    await tap22('hatch',ph);for(const[i,n]of[[1,'mast_step'],[2,'cask'],[3,'lee_rail']]){await tap22(n,ph,calm22)}
+    ok(F.load1&&b.help===0&&b.misses===0&&G.hold22===0&&Math.abs(P.x-H[0][0])<2&&!G.bale22&&Math.abs(SD.x-284)<2&&Math.abs(SD.y-116)<2,'after six misses the sailor walks him across: the bale goes over the lee rail, nobody goes overboard; back at the hatch, and the next crossing starts afresh');
+    await tap22('hatch',ph);for(const[i,n]of[[1,'cask'],[2,'mast_step'],[3,'lee_rail']]){await tap22(n,ph,calm22)}
     await till22(()=>F.load2&&!G.busy,1500);ok(F.load2&&G.hold22===0,'the second bale across in three steps, each in a pause');
     halt(stop)}
   /* marks22: the marks that Chapter Twenty-Two's playthrough set on Luke's tablet, for Chapter Twenty-Three's to find carried in the full run */
@@ -5892,14 +5931,20 @@
   if(C22){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
     {const c=chs.find(c=>c.dataset.ch==='22');ok(c&&c.textContent.includes(T('chapter_twenty_two'))&&c.textContent.includes(T('euroaquilo_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
       'the title lists Chapter Twenty-Two, Euroaquilo, and the chapters in preparation begin with the twenty-fourth')}}
-  (C22?document.querySelector('#overlay [data-ch="22"]'):ov).click();
+  (C22?chLine(22):ov).click();
   await until(()=>G.ch===22&&G.room==='quay22'&&!G.busy,6000);note();
   const LK=A('luke22'),AR=A('aris22'),JU=A('julius22'),GU=A('guard22'),SA=A('sail22a'),SB=A('sail22b'),SC=A('sail22c'),SD=A('sail22d'),PI=A('pilot22'),OW=A('owner22');
   ok(seenTold.has('v1')&&said('paul_two_years_and_now_the_sea')&&PC()===P&&LK.room==='quay22'&&AR.room==='quay22'&&JU.room==='quay22'&&JU.look===LOOK.julius22&&GU.room==='quay22'
     &&A('pris22a').room==='quay22'&&C().party.join()==='paul,luke22'&&C().swap===false&&has('pouch22'),
     'Julius takes charge of Paul and some other prisoners, for Italy (Acts 27:1), from the scroll; the quay at Caesarea: Julius in his cuirass, soldiers, prisoners, Luke and Aristarchus; Paul is played');
   ok(/^22(-[0-9A-Z]{3}){2,5}$/.test(makeCode())&&decode(makeCode()).ch===22,'a code of Chapter Twenty-Two: '+makeCode());
-  ok(AU.score===C().music&&C().music.steps===18&&C().music.root===46&&C().music.group.join()==='4,4,4,3,3'&&C().music.scale.join()==='0,2,3,5,7,8,11','the chapter\'s score, in B flat harmonic minor and in bars of eighteen');
+  {const m=C().music,st=[m.steps,m.root,m.scale.join()].join('|'),kin=Object.keys(CHAP).filter(n=>+n!==22&&CHAP[n].music).filter(n=>{const o=CHAP[n].music;return(o.steps||16)===m.steps||o.root===m.root&&o.scale.join()===m.scale.join()});
+    ok(AU.score===m&&m.steps===21&&m.root===45&&m.group.join()==='6,6,9'&&m.scale.join()==='0,2,4,5,7,8,11'&&Math.abs(m.steps*m.dt-3)<1e-9&&!kin.length,
+      'the chapter\'s score, in A harmonic major and in bars of twenty-one that last three seconds (two to a sea of the beat): no chapter loaded beside it has its key or its bar'+(kin.length?' SHARED WITH '+kin:''))}
+  /* the storm's sounds: shared with Chapter Twenty-Three (shared/weather.js), and none of them a gull or thunder */
+  {const B=C().beds||{},K=C().calls||{},has=['gale','rain','sandrain'].every(k=>B[k])&&['gust','rigging','patter','slat','skiff'].every(k=>typeof(K[k]&&K[k][2])==='function'),
+     F0=Object.assign({},F);Object.assign(F,{out:1,aboard:1,fh:1,advised:1});const a=ROOMS.storm22.amb,sk=typeof a==='function'?a():a;for(const k in F)delete F[k];Object.assign(F,F0);
+    ok(has&&sk.slat&&sk.skiff&&sk.gale&&sk.rain&&!sk.gulls&&!Object.keys(B).concat(Object.keys(K)).some(k=>/thunder/.test(k)),'the storm is heard: gale, gusts, rigging, rain on the planks, the sail slatting and the skiff knocking in the lee of Cauda; no gull and no thunder')}
   ok(ART.quay22.light.sun&&ROOMS.quay22.birds.gulls,'the quay by day: the sun casts shadows, gulls over the harbor');
   halt('quay22');
   await hints('hint_aboard_the_coaster_1','hint_aboard_the_coaster_2','on the quay');
@@ -5994,14 +6039,14 @@
   await hints('hint_the_bales_1','hint_the_bales_2','with the bales');
   await till22(()=>B22());
   for(let n=1;n<=2;n++){await tap22('hatch');ok(G.bale22===1,'a bale from the hatch ('+n+')');
-    for(const nm of['mast_step','cask','lee_rail']){await tap22(nm,0,calm22)}
+    for(const nm of['cask','mast_step','lee_rail']){await tap22(nm,0,calm22)}
     await until(()=>F['load'+n]&&G.hold22===0&&!G.busy,3000);ok(F['load'+n],'the bale over the lee rail ('+n+')')}
   await code('between the bales',()=>G.room==='storm22'&&PC()===P&&F.load2&&!F.load3&&Math.abs(P.x-C().holds[0][0])<1);
   halt('bales22');
-  await till22(()=>B22());await tap22('hatch');{const b=B22();await tap22('mast_step',0,wave22);ok(G.hold22===0&&b.misses===1&&quiet22(),'a miss: back at the hatch, no line')}
-  for(const nm of['mast_step','cask','lee_rail']){await tap22(nm,0,calm22)}
+  await till22(()=>B22());await tap22('hatch');{const b=B22();await tap22('cask',0,wave22);ok(G.hold22===0&&b.misses===1&&quiet22(),'a miss: back at the hatch, no line')}
+  for(const nm of['cask','mast_step','lee_rail']){await tap22(nm,0,calm22)}
   await until(()=>F.load3&&C().phase()==='tablet'&&PC()===LK&&!G.busy,9000);note();
-  ok(seenTold.has('v19')&&said('luke_ill_keep_the_days')&&!G.beat&&ART.storm22.variant()==='n'&&ART.storm22.light.amb&&!ART.storm22.light.sun,'the third day the tackling (27:19); the dark days: Luke is played, no lamp, no beat');
+  ok(seenTold.has('v19')&&said('luke_ill_keep_the_days')&&!G.beat&&ART.storm22.variant()==='d'&&ART.storm22.light.amb&&!ART.storm22.light.sun&&!ART.storm22.light.lamps,'the third day the tackling (27:19); the dark days: Luke is played, no beat; the first day is a day, with no sun and no lantern');
   await code('in the dark days',()=>G.room==='storm22'&&PC()===LK&&F.load3&&!F.t1&&has('ltab22'));
   /* no sun, no stars */
   await hints('hint_the_tablet_1','hint_the_tablet_2','in the dark days');
@@ -6016,7 +6061,11 @@
     if(n===2){onH('todays_mark','use');const o=await asked();ok(MK.every(k=>o.includes(k))&&o.at(-1)==='leave_it_for_now','four marks to choose from, mixed by key, and a line that leaves');await line('leave_it_for_now');ok(!F.t2,'left for now')}
     heard.length=0;onH('todays_mark','use');await line(MK[want[n-1]]);
     if(n<6)await until(()=>G.room==='storm22'&&F['t'+n]&&!G.busy,3000);
-    ok(F['t'+n]&&C().markOf(n)===want[n-1]&&said(C().marksay[want[n-1]]),'day '+n+': '+T(MK[want[n-1]])+', and Luke\'s own true line for it')}
+    ok(F['t'+n]&&C().markOf(n)===want[n-1]&&said(C().marksay[want[n-1]]),'day '+n+': '+T(MK[want[n-1]])+', and Luke\'s own true line for it')
+    /* the third and the sixth of his days are nights, with the lantern; by night the sky has no star, by day no sun */
+    if(n<6){const night=n+1===3||n+1===6;ok(ART.storm22.variant()===(night?'n':'d')&&(night?ART.storm22.light.lamps.length===1:!ART.storm22.light.lamps),'day '+(n+1)+(night?' is a night, with the lantern':' is a day, with no lantern'));
+      if(n===2){heard.length=0;await onH('clouds','look');ok(said('luke_no_star_anywhere'),'the sky of the third night: not one star')}
+      if(n===3){heard.length=0;await onH('clouds','look');ok(said('luke_cloud_and_more_cloud'),'the sky of the fourth day: cloud, and no sun')}}}
   marks22=[1,2,3,4,5,6].map(C().markOf);
   halt('marks22');
   await until(()=>C().phase()==='midst'&&G.room==='storm22'&&PC()===P&&!G.busy,9000);note();
@@ -6039,9 +6088,56 @@
       'cast ashore on some island (27:26); the end screen says what is invented and what the account leaves unsaid, and leads on to Chapter Twenty-Three with its first code, which carries the six marks: '+code)}
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 27:1-26 was told'+(miss.length?' MISSING '+miss:''))}
   halt('final22')};
-  if(C22){await ch22();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+  /* codes22 and codes23 (CONTRIBUTING section 5: a code is a promise): the chapter is played through as all22 (all23) plays it, from one
+     point of the story to the next, and every safe-point code that is offered on the way (codeBtn: the top bar and the autosave) is
+     recorded, with whether a cutscene was running when it was kept. A told verse that follows a code kept inside a cutscene, before the
+     player has acted again, is a verse that the code, restored, would skip (the game comes back idle, past it): codeLog counts those.
+     Then every code is restored in a fresh state (the chapter's own transient state cleared, as a page opened anew has it): the game must
+     be idle, with no menu, no choice and no scene up, whoever is played standing in the code's room, which has something to do in it,
+     and the code must be the same again. From the latest point the end screen must be reached (finish). */
+  const codeLog=()=>{const R={codes:[],bad:[],told:[],pend:null},cb0=window.codeBtn,say0=window.say,cut0=window.cut,
+      toldKeys=()=>new Set(Object.values((CHAP[G.ch]&&CHAP[G.ch].told)||{}));
+    window.codeBtn=function(){const r=cb0.apply(this,arguments);if(G.room&&!G.scene){const c=makeCode();R.codes.push({code:c,room:G.room,busy:!!G.busy});R.pend=G.busy?c+' in '+G.room:null}return r};
+    window.say=function(a,t){if(a==null&&toldKeys().has(t)){R.told.push(t);if(R.pend){R.bad.push(R.pend+' before '+t);R.pend=null}}return say0.apply(this,arguments)};
+    window.cut=async function(){try{return await cut0.apply(this,arguments)}finally{if(!G.busy)R.pend=null}};
+    R.off=()=>{window.codeBtn=cb0;window.say=say0;window.cut=cut0};return R};
+  const codesCheck=async(ch,R,finish)=>{R.off();
+    const fresh=()=>{for(const k of Object.keys(G))if(k.endsWith(String(ch))||/^(mailSaid|skiffT|pk23saw)$/.test(k))delete G[k]},
+      settle=async()=>{for(let i=0;i<80&&(G.busy||ov.classList.contains('on')||P.walk||PC().walk);i++){if(G.skip)G.skip();await wait(50)}await wait(150)},
+      /* a restore that does not come back in eight seconds is a fault of its own, not a wait */
+      rest=c=>Promise.race([restore(c,1),wait(8000).then(()=>'timeout')]),
+      todo=()=>(ROOMS[G.room].hs||[]).some(h=>!h.vis||h.vis())||Object.values(ACT).some(a=>a!==PC()&&a.room===G.room&&a.hs),
+      uniq=[...new Map(R.codes.map(c=>[c.code,c])).values()],bad=[];
+    ok(!R.bad.length&&new Set(R.told).size===Object.keys(CHAP[ch].told).length,'no code is kept between a change in the story and the told line that belongs to it: each of the '+R.told.length+' told lines after a code comes only once the player has acted again, so a restored code never skips one'+(R.bad.length?'. SKIPPED: '+R.bad.join(' | '):''));
+    const t0=performance.now();
+    for(const c of uniq){fresh();const r=await rest(c.code);await settle();
+      /* a close view (whoever is played stands below the picture) may come back in the room it is opened from, with that room's code */
+      const W0=ROOMS[c.room]&&ROOMS[c.room].walk,close=!!W0&&W0[0]===W0[1]&&W0[2]>144&&G.room!==c.room;
+      const why=[r!==true&&'not restored',G.ch!==ch&&'chapter '+G.ch,G.room!==c.room&&!close&&'room '+G.room,PC().room!==G.room&&'not in the room',G.busy&&'busy',G.scene&&'a scene up',
+        $('#choices').classList.contains('on')&&'a choice open',mn.classList.contains('on')&&'the menu open',ov.classList.contains('on')&&'an overlay',!todo()&&'nothing to do',makeCode()!==c.code&&!close&&'another code '+makeCode()].filter(Boolean);
+      if(why.length)bad.push(c.room+' '+c.code+': '+why.join(', '))}
+    L('     '+uniq.length+' codes restored in '+Math.round((performance.now()-t0)/1000)+' s');
+    ok(!bad.length&&uniq.length>8,uniq.length+' codes offered on the way, each restored in a fresh state: the game idle, no menu, choice or scene up, whoever is played in the code\'s room (or, for a close view, the room it is opened from) with something to do there, and the same code again'+(bad.length?'. BAD: '+bad.slice(0,8).join(' | '):''));
+    const last=R.codes.at(-1);fresh();await rest(last.code);await settle();const ph=CHAP[ch].phase();await finish();
+    for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);
+    ok(ov.classList.contains('end'),'from the latest point ('+last.code+', '+last.room+', '+ph+') the end screen is reached');return uniq};
+  if(C22){const R22=stop==='codes22'?codeLog():null;await ch22();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
+    if(R22){const JU=ACT.julius22,SP=CHAP[22].speech,
+        choice=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await idle()};
+      /* from the latest point, in their midst: the parts not yet said, in the account's order */
+      const uniq=await codesCheck(22,R22,async()=>{for(let n=0;n<6&&!ov.classList.contains('end');n++){const i=SP.filter((x,j)=>F['p'+(j+1)]).length;if(i>=6)break;
+        verb('talk');clickView(JU.x,JU.y-10,JU.hs);await choice(SP[i].c)}});
+      /* a code restored while the voyage out waits on the map for Myra to be clicked (the map's pick is ended, commit c7b313d: no key is
+         pressed for it, so no menu opens) */
+      {const q=uniq.find(c=>c.room==='quay22'),my=uniq.find(c=>c.room==='myra22');for(const k of Object.keys(G))if(/22$/.test(k))delete G[k];
+        await restore(q.code,1);for(let i=0;i<80&&G.busy;i++){if(G.skip)G.skip();await wait(50)}const h=ROOMS.quay22.hs.find(h=>h.name==='gangplank');verb('use');clickView(h.x+h.w/2,h.y+h.h/2,h);
+        for(let i=0;i<900&&!(SHARED.map&&SHARED.map.state.places&&G.scene===SHARED.map.draw&&!G.busy);i++)await wait(30);await wait(200);const M=SHARED.map,waited=!!(M&&M.state.places&&G.scene===M.draw);
+        await Promise.race([restore(my.code,1),wait(8000)]);await wait(800);
+        ok(waited&&G.room==='myra22'&&F.out&&!G.scene&&!G.busy&&!mn.classList.contains('on')&&!$('#choices').classList.contains('on')&&!ov.classList.contains('on')&&!M.state.places&&makeCode()===my.code,
+          'with the voyage out waiting on the map for Myra, a code restored ('+my.code+'): the map\'s wait ends, no menu or choice opens, and the game is idle at Myra')}}
+    L('DONE');throw 'halt'}
   /* ==== CHAPTER TWENTY-TWO: end ==== */
   /* ==== CHAPTER TWENTY-THREE: begin ==== Chapter Twenty-Three's own stops: whoever builds the chapter extends this section, and nothing outside it
      but its line in TSTEPS, the chain of the full run (ch23 after ch22) and the title checks of the chapters before it. */
@@ -6055,9 +6151,11 @@
      scroll) · pstern23 · plead23 · psecond23 (the second sounding) · pbow23 · phold23 · pmeal23 (Paul under the lamp, his words said) ·
      pbay23 · pwreck23 · pplanks23 · psurf23 · pbeach23 · ptalk23 · pfire23 · pestate23 (the treasure's point) · psick23 · pmap23 (the
      travel map after Malta) · pcarry23 (Luke's tablet carried in: south-west, west, north-west, only the day, west, north-west) · ptitle23
-     (the tablet of a title start: the days only). Beside them: waves23 and phonewaves23 cross the surf by the beat's exposed phase (a hit,
+     (the tablet of a title start: the days only) · pcables23 (the four cables over the stern) · pname23 (the carried tablet with the island's
+     name). Beside them: waves23 and phonewaves23 cross the surf by the beat's exposed phase (a hit,
      misses on the wave, the call, the sticky help, the carry), on the desktop and on a phone held sideways; pics23 opens the talk in
-     pictures and checks the pictures' order in English and in German. The generic stops card23, routes23 and shadows23 (above) run against
+     pictures and checks the pictures' order in English and in German; codes23 plays the chapter as all23 does and restores every
+     safe-point code offered on the way (codeLog and codesCheck, in Chapter Twenty-Two's section). The generic stops card23, routes23 and shadows23 (above) run against
      the chapter's rooms. */
   /* rooms23: every picture of Chapter Twenty-Three on one sheet at twice its size (rooms23.png), for the art and the cross-shape check */
   if(stop==='rooms23'){clearInterval(sk);sk=0;await loadLevel(23);setChapter(23);ov.className='';ov.onclick=null;const C=CHAP[23],ids=C.rooms,K=2;
@@ -6067,10 +6165,10 @@
     const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
     ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
     window.SHEETS={rooms23:c.toDataURL()};halt('rooms23')}
-  const C23=/^(stern23|lead23|bow23|hold23|bay23|wreck23|planks23|surf23|beach23|talk23|viper23|estate23|sick23|final23|all23)$/.test(stop);
+  const C23=/^(stern23|lead23|bow23|hold23|bay23|wreck23|planks23|surf23|beach23|talk23|viper23|estate23|sick23|final23|all23|codes23)$/.test(stop);
   /* a point of the chapter opened at once (the p-stops, waves23 and pics23 use it): flags from FLAGS after the carried ones, up to k */
   const open23=async(flags,room,carry)=>{await loadLevel(23);ov.className='';ov.onclick=null;const C=CHAP[23];setChapter(23);for(const k of(carry||[]).concat(flags))F[k]=1;
-    C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();return C};
+    C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));G.busy=false;lock(false);drawInv();status();swapBtn();if(!['bay23','sick23'].includes(room))codeBtn();return C};
   const upto23=k=>{const A=CHAP[23].flags;return A.slice(CHAP[23].carry,A.indexOf(k)+1)};
   /* pics23: the talk in pictures, the pictures in the order of their keys, the same in English and in German */
   if(stop==='pics23'){await loadLevel(23);const C=await open23(upto23('found'),'beach23');const EL=ACT.elder23,got=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);
@@ -6087,10 +6185,13 @@
         phold23:[upto23('ropes'),'hold23'],pmeal23:[upto23('spoke'),'hold23'],pbay23:[upto23('spoke'),'bay23'],pwreck23:[upto23('bread'),'wreck23'],
         pplanks23:[upto23('bread'),'planks23'],psurf23:[upto23('planks'),'surf23'],pbeach23:[upto23('surf'),'beach23'],ptalk23:[upto23('found'),'beach23'],
         pfire23:[upto23('malta'),'beach23'],pestate23:[upto23('viper'),'estate23'],psick23:[upto23('viper'),'sick23'],pmap23:[upto23('malta'),'beach23'],
-        pcarry23:[[],'tablet23',TAB],ptitle23:[[],'tablet23']}[stop];
-    if(!S)throw new Error('no such stop '+stop);const C=await open23(S[0],S[1],S[2]);L('CODE '+stop+' '+(G.room?makeCode():'-'));
+        pcarry23:[[],'tablet23',TAB],ptitle23:[[],'tablet23'],pcables23:[upto23('lead2'),'stern23'],pname23:[upto23('malta'),'tablet23',TAB]}[stop];
+    if(!S)throw new Error('no such stop '+stop);const C=await open23(S[0],S[1],S[2]);L('CODE '+stop+' '+(G.room&&!['bay23','sick23'].includes(G.room)?makeCode():'-'));
     if(stop==='pscroll23'){G.scene=DARK;narr(C.told.n27,{dur:60000})}
     if(stop==='pbay23')G.bay23=.7;
+    /* pcables23: the stern as the four cables have run out over it (27:29); pname23: the carried tablet with the name of the island at the end of
+       the line of Luke (the pictures of docs/screenshots) */
+    if(stop==='pcables23')G.cab23=1;
     if(stop==='psick23'){}
     if(stop==='pmap23'){const M=await need('map');M.pick(['malta'],'malta',{view:'adria',legs:[['myra','cnidus'],['cnidus','salmone'],['salmone','fairhavens'],['fairhavens','cauda'],['cauda','malta']],regions:['sea_of_adria'],hint:'the_line_from_cauda_to_malta'})}
     if(stop==='pcarry23'||stop==='ptitle23'){const pts=C.markLine();ok(stop==='pcarry23'?pts.length===7&&pts.slice(1).every((p,i)=>p[0]<pts[i][0])&&pts[4][2]===1&&pts[1][1]>pts[0][1]&&pts[3][1]<pts[2][1]:pts.length===1,
@@ -6114,7 +6215,7 @@
   if(C23){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
     {const c=chs.find(c=>c.dataset.ch==='23');ok(c&&c.textContent.includes(T('chapter_twenty_three'))&&c.textContent.includes(T('all_safe_to_land_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
       'the title lists Chapter Twenty-Three, All Safe to Land, and the chapters in preparation begin with the twenty-fourth')}}
-  (C23?document.querySelector('#overlay [data-ch="23"]'):ov).click();
+  (C23?chLine(23):ov).click();
   await until(()=>G.ch===23&&G.room==='stern23'&&!G.busy,6000);note();
   const LK=A('luke23'),SA1=A('sailor23a'),JU=A('julius23'),OLD=A('oldman23'),EL=A('elder23'),PU=A('publius23'),FA=A('father23'),IS4=A('islander23c');
   {const m=[1,2,3,4,5,6].map(C().markOf);
@@ -6123,6 +6224,10 @@
   ok(seenTold.has('n27')&&PC()===LK&&P.room==='stern23'&&C().party.join()==='paul,luke23'&&C().swap===false&&/^23(-[0-9A-Z]{3}){3,6}$/.test(makeCode())&&decode(makeCode()).ch===23,
     'the fourteenth night (Acts 27:27), from the scroll; the stern by night, Luke played, Paul with him; wide codes: '+makeCode());
   ok(AU.score===C().music&&C().music.steps===18&&C().music.root===46&&C().music.group.join()==='4,5,4,5'&&C().music.scale.join()==='0,2,3,5,7,8,11','the chapter\'s score, in B-flat harmonic minor and in bars of eighteen');
+  {const B=C().beds||{},K=C().calls||{},am=r=>{const a=ROOMS[r].amb;return typeof a==='function'?a():a},all=C().rooms.map(r=>[r,am(r)]);
+    ok(['gale','rain','sandrain','surf','bilge','flame'].every(k=>B[k])&&['gust','rigging','patter','breaker','groan','trickle','sizzle'].every(k=>typeof(K[k]&&K[k][2])==='function')
+      &&am('hold23').groan&&am('hold23').trickle&&am('stern23').gale&&am('beach23').sandrain&&!am('surf23').breaker&&!all.some(([r,a])=>a.gulls)&&!Object.keys(B).concat(Object.keys(K)).some(k=>/thunder/.test(k)),
+      'the last night and the island are heard: the gale in the rigging, the hull working and water in the hold, the surf and its breakers (none in the surf but the beat\'s own), rain on the beach; no gull and no thunder')}
   ok(ART.stern23.light.lamps.length===1&&!ROOMS.stern23.birds,'the stern by night: one lantern, no birds');
   halt('stern23');
   /* Luke's tablet, the map button until the island has its name */
@@ -6262,9 +6367,12 @@
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 27:27-28:11 was told'+(miss.length?' MISSING '+miss:''))}
   halt('final23')};
   const phase23_=()=>CHAP[23].phase();
-  if(C23){await ch23();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+  if(C23){const R23=stop==='codes23'?codeLog():null;await ch23();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));
+    /* from the latest point, at the estate: Publius, and his father healed (28:8-10) */
+    if(R23){const PU=ACT.publius23;await codesCheck(23,R23,async()=>{verb('talk');clickView(PU.x,PU.y-10,PU.hs);await idle()})}
+    L('DONE');throw 'halt'}
   /* ==== CHAPTER TWENTY-THREE: end ==== */
   /* carry (CONTRIBUTING section 5): a choice carried from one chapter into the next, only in the safe-point code. Chapter Twenty-Three's
      first CHAP[23].carry flags are carried in from Chapter Twenty-Two's end screen: from22, then the six marks of Luke's tablet. For four
@@ -6506,6 +6614,17 @@
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   if(!C3&&!C4&&!C5&&!C6&&!HUB){
+  /* The first sample of a sound (the engine's tone() and noise()): in a full run and at the stop click. A source that starts a hair after
+     a sample frame is snapped back to that frame, where the envelope's first event has not taken hold yet; until November 2026 the
+     envelope's gain was 1 there, and that one sample went out at full level, as a click. Rendered offline: a noise started exactly on a
+     frame still sounds on it, and one started a hair after it sends nothing out above its own envelope, with an attack or without. */
+  if(stop==='all'||stop==='click'){const SR=44100,n0=11025,first=async(off,o,fn)=>{const c=new OfflineAudioContext(1,SR,SR),keep=Object.assign({},AU);AU.ctx=c;audioGraph(c);
+      try{const d=c.createGain();d.connect(c.destination);(fn||noise)(Object.assign({t:(n0+off)/SR,d:.2,v:.06,f:3800,q:.5,type:'highpass',dest:d},o))}finally{for(const k in AU)AU[k]=keep[k]}
+      const x=(await c.startRendering()).getChannelData(0);let pk=0;for(let i=n0+3;i<n0+2205;i++)pk=Math.max(pk,Math.abs(x[i]));return[Math.abs(x[n0]),pk]};
+    const[a0,p0]=await first(0,{}),[a1,p1]=await first(1e-7,{}),[b1,q1]=await first(1e-7,{a:.03}),[c1,r1]=await first(1e-7,{f:440,v:.2,type:'square'},tone);
+    ok(a0>0&&p0>.01&&p1>.01&&q1>.01&&r1>.05,'a noise that starts exactly on a sample frame sounds from that frame on, and each test sound is heard (later peaks '+[p0,p1,q1,r1].map(v=>v.toFixed(3)).join(', ')+')');
+    ok(a1<=p1*1.5&&b1<.001&&c1<.01,'a sound that starts a hair after a sample frame sends no first sample out above its envelope: no click (noise '+a1.toFixed(4)+' under a later peak of '+p1.toFixed(4)+', with an attack '+b1.toFixed(5)+', a tone '+c1.toFixed(5)+')');
+    halt('click')}
   /* Prologue ("The Road to Damascus"): only when stop==='all' or stop==='prologue', test skipping the whole prologue with SKIP, then playing the
      whole prologue through into Chapter One. The 'prologue' stop plays only this and stops when Chapter One begins. */
   if(stop==='all'||stop==='prologue'){
@@ -6516,7 +6635,7 @@
       AU.score=sc0;AU.mood=m0;AU.step=st0;
       ok(before==='ancient'&&after==='calm'&&cutM==='none'&&cutOn,'opening theme: ancient overture cross-fades to calm at bar 11, and silenceNow cuts all tracks at once')}
     /* 2. Starting the Prologue and skipping it as a whole via the top-bar SKIP button */
-    heard.length=0;document.querySelector('#overlay [data-pro="1"]').click();
+    heard.length=0;chLine(0).click();
     for(let i=0;i<200&&!(G.inPro&&PRO.scenes&&G.scene===PRO.scenes.stones);i++)await wait(20);
     const inPro1=G.inPro&&$('#skip').style.display!=='none'&&$('#skip').textContent===T('SKIP')&&$('#chname').textContent===T(PRO.name)&&AU.mood==='stones';
     $('#skip').click();await idle();
@@ -6529,7 +6648,7 @@
     let sawWhite=0,scrollOnWhite=0;const moods=new Set();
     const obs=new MutationObserver(()=>{if(G.white&&$('#speech .line.white')){sawWhite++;if(SHARED.scroll&&SHARED.scroll.state!=='down')scrollOnWhite++}if(G.inPro&&AU.mood)moods.add(AU.mood)});
     obs.observe($('#speech'),{childList:true});
-    heard.length=0;document.querySelector('#overlay [data-pro="1"]').click();await idle();obs.disconnect();
+    heard.length=0;chLine(0).click();await idle();obs.disconnect();
     ok(G.room==='workshop'&&!G.busy&&!G.inPro&&$('#skip').style.display==='none'&&sawWhite===3&&!scrollOnWhite&&
       ['stones','tense','none','harp','ancient'].every(m=>moods.has(m))&&
       heard.includes(T('outside_jerusalem_stephen_acts_7_58_60'))&&
@@ -6797,7 +6916,7 @@
   halt('final2');await wait(1700)}
   /* ---------------- Chapter Three ---------------- */
   if(!C4&&!C5&&!C6&&!HUB){
-  (C3?document.querySelector('#overlay [data-ch="3"]'):ov).click();await idle();ok(G.ch===3&&G.room==='tarsus'&&!G.busy&&srt()==='awl,knife,tablets,thread','chapter three starts in Tarsus');
+  (C3?chLine(3):ov).click();await idle();ok(G.ch===3&&G.room==='tarsus'&&!G.busy&&srt()==='awl,knife,tablets,thread','chapter three starts in Tarsus');
   halt('tarsus',()=>{say(ACT.barnabas,'i_have_asked_for_you_along')});
   ok(/^3-[0-9A-Z]{3}-[0-9A-Z]{3}-[0-9A-Z]{3}$/.test(makeCode())&&decode(makeCode()).ch===3,'chapter three code format (wide) '+makeCode());
   await act(null,'east_gate');ok(G.room==='tarsus'&&!F.sold&&!G.busy,'no leaving before the promise is kept');
@@ -6910,7 +7029,7 @@
   if(!C5&&!C6&&!HUB){let BN;
   if(stop==='sendoff'){await loadLevel(4);ov.className='';ov.onclick=null;setChapter(4);G.send={lay:1};G.scene=CHAP[4].scenes.sendoff;G.busy=true;lock(true);status();
     halt('sendoff',()=>{narr('they_fasted_and_prayed_acts_13_3',{dur:9000})})}
-  (C4?document.querySelector('#overlay [data-ch="4"]'):ov).click();
+  (C4?chLine(4):ov).click();
   for(let i=0;i<200&&!(G.ch===4&&G.scene&&CHAP[4].scenes&&G.scene===CHAP[4].scenes.sendoff);i++)await wait(30);
   ok(G.ch===4&&G.scene===CHAP[4].scenes.sendoff,'chapter four opens in Antioch, with the laying on of hands');
   BN=ACT.barnabas;
@@ -7037,7 +7156,7 @@
   halt('journey4',()=>{ov.className=''});halt('final4');await wait(1700)}
   /* ---------------- Chapter Five ---------------- */
   if(!HUB&&!C6){let BN;const S5=i=>T(CHAP[5].tablets.scripture[i].ref),said=t=>heard.includes(T(t));
-  (C5?document.querySelector('#overlay [data-ch="5"]'):ov).click();
+  (C5?chLine(5):ov).click();
   for(let i=0;i<300&&!(G.ch===5&&SHARED.map&&G.scene===SHARED.map.draw);i++)await wait(30);
   ok(G.ch===5&&G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===4&&SHARED.map.state.legs[3].a==='paphos','chapter five opens on the map: by sea from Paphos to Perga');
   if(stop==='voyage5'){await wait(2600);ok(mapClear(),'no name on the opening map crosses a coast, a lake or a route'+(mapClear.bad.size?': '+[...mapClear.bad].join(', '):''))}
@@ -7211,7 +7330,7 @@
   halt('journey5',()=>{ov.className=''});halt('final5');await wait(1700)}
   /* ---------------- Chapter Six ---------------- */
   if(!HUB){let BN;const S6=i=>T(CHAP[6].tablets.scripture[i].ref),P6=i=>T(CHAP[6].tablets.scripture[i].gist),said=t=>heard.includes(T(t)),quoted=i=>heard.some(h=>h.includes(P6(i))),A=id=>ACT[id];
-  heard.length=0;(C6?document.querySelector('#overlay [data-ch="6"]'):ov).click();
+  heard.length=0;(C6?chLine(6):ov).click();
   for(let i=0;i<300&&!(G.ch===6&&G.room==='iconium');i++)await wait(30);
   await idle();BN=ACT.barnabas;
   ok(G.ch===6&&G.room==='iconium'&&!G.scene&&!G.busy&&srt()==='awl,knife,tablets,thread'&&BN.room==='iconium'&&A('nathan').room==='iconium'&&A('tatia').room==='iconium'&&A('xanthos').room==='iconium'&&T(P.hs.name)===T('Paul')&&
