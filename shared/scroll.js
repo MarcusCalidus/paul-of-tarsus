@@ -4,7 +4,7 @@
    A line told while the picture is dark (the view faded out, or the scene DARK) is not set on a black screen: it is read from an open
    roll of papyrus, held in two hands by lamplight. The picture is one painting, made in code like every other: a stone wall with a clay
    lamp in a niche and another on a shelf, the open part of the roll with its two rolled-up ends, and a hand on each. Only the two flames
-   move, and the small glow round each, as in the game's rooms.
+   move, and the small glow round each, as in the game's rooms; once, after the game's last line, the hands close the roll (close()).
 
    What it shows, and why it is drawn as it is:
    - A roll, not a single sheet: what the narrator tells is for the most part Luke's account, a book, and a book was a roll.
@@ -21,6 +21,8 @@
      fit(el)   set a line of narration on the open part, in ink: a short line is written larger, a long one smaller, and a
                reference such as (Acts 13:14) is never divided over two lines. A line that does not fit even in the smallest
                writing is noted in over (the playtest checks that it stays empty)
+     close(o)  the game's last line has been read: the hands close the roll (o.lay: and lay it down below the lamp); see below
+     open()    the roll stands open again
      draw(ts)  called for every frame by render() while the scroll is not down
      state     'down', 'up' or 'moving' */
 SHARED.scroll=(()=>{
@@ -164,22 +166,146 @@ function thumb(g,P){const[gx0,gy0,gx1,gy1,gw,gk]=P.tgrad,[tl,tla]=P.tlit,tp=P.tp
     tex(g,'mott',.16,...P.tbox,'overlay',.5)})}
 const thumbShadow=(g,P)=>comp(g,'multiply',P.tshadow[2],()=>{g.save();g.translate(P.tshadow[0],P.tshadow[1]);blob(g,P.thumb,'#8a6a44');g.restore()});
 
+/* The left hand as it closes the roll. It keeps its grip: the thumb on its roll, the forefinger gone behind it. What changes from one
+   pose to the next is placed by hand: the elbow comes in toward the body, so the forearm stands steeper and the sleeve falls away from
+   the lower left edge of the picture; the wrist turns a little with it; and the light on the hand passes from the lamp in the niche to
+   the lamp on the shelf, first through the reader's own light from the front. dx: how far its roll has come from where it stood open */
+const CLOSING=(O=>[
+  /* 1: the roll has come a little way in; still in the light of the niche */
+  {...O,dx:18,
+    hand:[30.5,106.9,33.3,101.6,36.5,96.8,40.5,90.7,44.6,82.4,47.2,74.8,49.6,66.5,52.5,60.6,56.5,56,61,52.2,65.5,49.2,70,46.3,74,44,78,42.6,80.5,45,80.5,60,80.7,99.9,77.4,103.9,73.6,108.5,68.8,114.1,62.4,119.3,55,124,45.1,125.8,34.9,118],
+    grad:[40,64,76,112,.26,.44],hi:[[54.5,86,12,17,.25],[49,75,7,9,.18],[43.7,99.4,5,7,.26]],lo:[[68.8,114.1,18,13,.48],[57,70.5,5,3.6,.22]],
+    wrist:[[48.5,107.1,54.2,112.5,60.8,116.4],[51.4,104.9,57.6,110.4,64.3,113.8]],
+    sinews:[[[47.1,98.3,51,88,56,78,60,70],K_(.1),1.3],[[52.3,102.3,57,92.1,62,84],K_(.08),1.1],[[45.7,97.9,49.6,87.6,54.6,77.6,58.6,69.6],W_(.13),.8]],
+    cuff:[31.2,99.5,37.4,104.7,43.3,111.2,48.9,117.1,54,122.1,59.1,125.4],
+    sleeve:[27.5,101.7,33.3,102,38.5,106.8,44.2,112.8,49.9,118.6,54.8,123.7,58,135.3,59.4,152,-70,152,-44,152,-20.5,140.3,-.5,123.6,16.8,110.7],
+    sgrad:[16,100,44,150,.34,.5],
+    sfolds:[[[20.5,113,27.4,109,33.4,113,35.4,125,33.4,152,22.5,152,21.5,129],K_(.3)],[[41.6,117,46.6,120,49.6,131,50.6,152,43.6,152,42.6,133],K_(.34)],
+      [[-30,152,-14,139,-2,131,6,138,8,152],K_(.36)],[[9,119,15,112,19.6,111,16.6,123,12.6,135,6.6,133],W_(.16)]],
+    slines:[[[27.9,102.7,33.3,103.3,38.1,107.8,43.8,113.8,49.3,119.7,54.1,124.5],W_(.48),1.6],[[26.4,105.7,32.1,106.5,36.6,110.5,42.2,116.4,47.6,122.1,52.1,126.8],K_(.38),.9],
+      [[-.5,123.6,8.6,116.8,16.8,110.7,26.4,102.8],W_(.2),1.2]]},
+  /* 2: a third of the way: the niche's lamp is behind it now, and the reader's light falls on it from the front */
+  {...O,dx:64,
+    hand:[31,107.8,33.5,102.2,36.6,97.1,40.5,90.7,44.6,82.4,47.2,74.8,49.6,66.5,52.5,60.6,56.5,56,61,52.2,65.5,49.2,70,46.3,74,44,78,42.6,80.5,45,80.5,60,80.9,99.8,77.7,103.9,74.2,108.5,69.6,114.3,63.3,119.6,56.1,124.5,46.2,126.5,35.8,119],
+    grad:[44,60,72,116,.22,.42],hi:[[55.5,85,12,16,.2],[50,73,7,9,.16],[44.4,99.7,5,7,.2]],ao:[64,56,17,56,'r',.37],lo:[[69.6,114.3,18,13,.46],[57,70.5,5,3.6,.22]],
+    finger:[[56.5,59,61.5,54.6,66.5,51,71,48,76,45.2],.38,[61,63.5,65,60,69,56.6,73,53.4,77,50.6],.3,[55.5,63.5,5,4.4,.24]],
+    wrist:[[49,107.6,55,113,61.7,116.7],[51.8,105.4,58.3,110.8,65.1,114]],
+    sinews:[[[47.3,98.6,51.2,88,56,78,60,70],K_(.1),1.3],[[52.6,102.7,57,92.1,62,84],K_(.08),1.1],[[45.9,98.2,49.8,87.6,54.6,77.6,58.6,69.6],W_(.12),.8]],
+    cuff:[31.4,100,37.8,105.4,44,111.9,49.7,117.7,55,122.6,60.2,125.8],
+    tgrad:[72,55,84,64.4,.28,.48],tshadow:[2.4,2.6,.6],
+    sleeve:[27.7,102.3,33.5,102.6,39,107.5,45,113.5,50.8,119.3,55.9,124.2,59.1,135.8,60.5,152,-64,152,-40.1,152,-18.2,143.2,.8,125.5,17.5,111.8],
+    sgrad:[22,98,40,150,.32,.5],
+    sfolds:[[[21,113.6,27.8,109.6,33.8,113.6,35.8,126,33.8,152,23,152,22,130],K_(.3)],[[42.2,117.6,47.2,120.6,50.2,131.6,51.2,152,44.2,152,43.2,133.6],K_(.34)],
+      [[-26,152,-12,141,0,133,8,140,10,152],K_(.36)],[[9.6,120,15.6,113,20.2,112,17.2,124,13.2,136,7.2,134],W_(.15)]],
+    slines:[[[28.2,103.5,33.6,104,38.7,108.6,44.6,114.6,50.3,120.3,55.1,125],W_(.46),1.6],[[26.9,106.7,32.5,107.3,37.3,111.4,43.1,117.3,48.6,122.8,53.2,127.3],K_(.38),.9],
+      [[.8,125.5,9.4,118.4,17.5,111.8,26.8,103.6],W_(.2),1.2]]},
+  /* 3: past the middle: lit from above, the shelf's lamp nearer than the niche's */
+  {...O,dx:122,
+    hand:[31.5,108.7,33.8,102.8,36.7,97.4,40.5,90.8,44.6,82.4,47.2,74.8,49.6,66.5,52.5,60.6,56.5,56,61,52.2,65.5,49.2,70,46.3,74,44,78,42.6,80.5,45,80.5,60,81.1,99.7,78.1,103.8,74.7,108.5,70.4,114.4,64.3,119.9,57.2,124.9,47.3,127.2,36.7,120],
+    grad:[60,46,50,122,.24,.44],hi:[[58,80,12,15,.2],[53,68,7,9,.18],[46,100.1,5,7,.15]],ao:[64,56,17,56,'r',.33],lo:[[70.4,114.4,18,13,.46],[57,70.5,5,3.6,.22]],
+    finger:[[56.5,59,61.5,54.6,66.5,51,71,48,76,45.2],.42,[61,63.5,65,60,69,56.6,73,53.4,77,50.6],.3,[56,63,5,4.4,.26]],
+    wrist:[[49.5,108.1,55.7,113.5,62.6,117],[52.2,105.8,59,111.2,65.8,114.2]],
+    sinews:[[[47.4,98.8,51.4,88,56.2,78,60,70],K_(.1),1.3],[[52.9,103,57.1,92.2,62,84],K_(.09),1.1],[[46,98.4,50,87.6,54.8,77.6,58.6,69.6],W_(.12),.8]],
+    cuff:[31.6,100.5,38.2,106,44.7,112.7,50.6,118.3,56,123.1,61.3,126.1],
+    tgrad:[77,51,79,67,.3,.46],tlit:[[72,65,76,60,80,55.6,83.4,51.6],.26],tshadow:[2,2.6,.56],
+    sleeve:[28,103,33.8,103.2,39.5,108.2,45.8,114.3,51.7,119.9,56.9,124.7,60.1,136.3,61.5,152,-60,152,-36.5,152,-15.7,146.2,2.4,127.5,18.3,113.1],
+    sgrad:[30,96,30,150,.32,.5],
+    sfolds:[[[21.6,114.3,28.4,110.3,34.4,114.3,36.4,127,34.4,152,23.6,152,22.6,131],K_(.3)],[[42.8,118.3,47.8,121.3,50.8,132.3,51.8,152,44.8,152,43.8,134.3],K_(.34)],
+      [[-22,152,-10,143,2,135,9,142,11,152],K_(.36)],[[10.2,121,16.2,114,20.8,113,17.8,125,13.8,137,7.8,135],W_(.15)]],
+    slines:[[[28.5,104.2,34,104.6,39.2,109.4,45.4,115.3,51.2,120.9,56.2,125.5],W_(.46),1.6],[[27.3,107.6,33,108.2,38,112.3,44,118.1,49.6,123.4,54.4,127.9],K_(.38),.9],
+      [[2.4,127.5,10.4,120,18.3,113.1,27.4,104.4],W_(.22),1.2]]},
+  /* 4: nearly there: lit from the shelf, on the side of the roll, and its shadows fall to the left */
+  {...O,dx:168,
+    hand:[31.8,109.3,34,103.2,36.8,97.6,40.5,90.8,44.6,82.4,47.2,74.8,49.6,66.5,52.5,60.6,56.5,56,61,52.2,65.5,49.2,70,46.3,74,44,78,42.6,80.5,45,80.5,60,81.3,99.7,78.4,103.7,75.1,108.5,70.9,114.4,64.9,120,57.9,125.2,48.1,127.7,37.3,120.7],
+    grad:[78,52,40,114,.27,.46],hi:[[63,80,12,16,.24],[57,67,7,9,.2],[52,103,5,6,.12]],ao:[64,56,17,56,'r',.26],lo:[[70.9,114.4,18,13,.42],[57,70.5,5,3.6,.24]],
+    finger:[[56.5,59,61.5,54.6,66.5,51,71,48,76,45.2],.46,[61,63.5,65,60,69,56.6,73,53.4,77,50.6],.28,[57,62.5,5,4.4,.28]],
+    wrist:[[49.9,108.5,56.2,113.8,63.1,117.2],[52.5,106.1,59.4,111.4,66.4,114.4]],
+    sinews:[[[47.5,99,51.6,88,56.4,78,60,70],K_(.11),1.3],[[53.1,103.2,57.1,92.2,62,84],K_(.1),1.1],[[48.4,99.6,52.8,88.6,57.4,78.6,61,70.4],W_(.14),.8]],
+    cuff:[31.7,100.8,38.4,106.5,45.1,113.2,51.2,118.7,56.7,123.4,62,126.3],
+    tgrad:[84,64.4,71,56,.3,.48],tlit:[[74,69,78,64.4,82,59.6,85.4,55.4],.24],tpool:[78,70,5,4.5,.14],tshadow:[1.2,2.6,.5],
+    sleeve:[28.2,103.5,34,103.6,39.8,108.7,46.3,114.8,52.4,120.2,57.7,125,60.9,136.6,62.3,152,-58,152,-34,152,-13.9,148.1,3.4,128.8,18.8,113.9],
+    sgrad:[56,100,16,150,.3,.5],
+    sfolds:[[[21.8,114.8,28.6,110.8,34.6,114.8,36.6,127.6,34.6,152,23.8,152,22.8,131.6],K_(.32)],[[43.2,118.8,48.2,121.8,51.2,132.8,52.2,152,45.2,152,44.2,134.8],K_(.28)],
+      [[-20,152,-9,144,3,136,10,143,12,152],K_(.38)],[[38,116,44,118.8,47.6,128,48.6,146,45,142,42,128],W_(.14)]],
+    slines:[[[28.7,104.7,34.2,105.1,39.6,109.9,45.9,115.8,51.9,121.3,56.9,125.8],W_(.5),1.6],[[27.6,108.2,33.3,108.7,38.4,112.9,44.6,118.6,50.3,123.9,55.2,128.2],K_(.36),.9],
+      [[3.4,128.8,11,121.4,18.8,113.9,27.8,105],W_(.16),1.2]]},
+  /* 5: closed: the two rolls stand together in both hands, under the lamp on the shelf */
+  {...O,dx:186,
+    hand:[32,109.6,34.1,103.3,36.8,97.7,40.6,90.9,44.6,82.4,47.2,74.8,49.6,66.5,52.5,60.6,56.5,56,61,52.2,65.5,49.2,70,46.3,74,44,78,42.6,80.5,45,80.5,60,81.3,99.6,78.5,103.7,75.3,108.5,71.2,114.5,65.2,120.1,58.2,125.4,48.5,127.9,37.7,121],
+    grad:[80,50,38,114,.3,.46],hi:[[65,81,12,16,.27],[59,67,7,9,.21],[53,103.5,5,6,.12]],ao:[64,56,17,56,'r',.24],lo:[[71.2,114.5,18,13,.42],[57,70.5,5,3.6,.24]],
+    finger:[[56.5,59,61.5,54.6,66.5,51,71,48,76,45.2],.48,[61,63.5,65,60,69,56.6,73,53.4,77,50.6],.28,[57.5,62.5,5,4.4,.3]],
+    wrist:[[50,108.7,56.5,114,63.4,117.3],[52.6,106.2,59.7,111.6,66.6,114.4]],
+    sinews:[[[47.6,99.1,51.8,88,56.6,78,60,70],K_(.11),1.3],[[53.2,103.4,57.1,92.2,62,84],K_(.1),1.1],[[48.6,99.8,53,88.8,57.6,78.8,61.2,70.6],W_(.15),.8]],
+    cuff:[31.7,101,38.6,106.7,45.4,113.4,51.5,118.9,57,123.6,62.4,126.4],
+    tgrad:[84,64.4,71,56,.34,.5],tlit:[[74.4,69.4,78.4,64.8,82.4,60,85.8,55.8],.26],tpool:[78.5,70,5,4.5,.15],tshadow:[.8,2.6,.48],
+    sleeve:[28.3,103.7,34.1,103.8,40,108.9,46.5,115,52.7,120.4,58,125.1,61.2,136.7,62.6,152,-56,152,-32.7,152,-13.1,149,4,129.4,19.1,114.3],
+    sgrad:[58,100,14,150,.34,.5],
+    sfolds:[[[22,115,28.8,111,34.8,115,36.8,128,34.8,152,24,152,23,132],K_(.32)],[[43.4,119,48.4,122,51.4,133,52.4,152,45.4,152,44.4,135],K_(.26)],
+      [[-19,152,-8,145,4,137,11,144,13,152],K_(.4)],[[38.4,116.4,44.4,119.2,48,128.4,49,147,45.4,143,42.4,128.4],W_(.16)]],
+    slines:[[[28.8,104.9,34.3,105.3,39.8,110.1,46.2,116.1,52.2,121.5,57.3,126],W_(.52),1.6],[[27.8,108.5,33.5,109,38.7,113.2,44.9,118.8,50.7,124.1,55.5,128.4],K_(.36),.9],
+      [[4,129.4,11.6,121.8,19.1,114.3,28,105.2],W_(.14),1.2]]}
+])(OPEN(0));
+
+/* ---------- the roll laid down: the last still, the hands gone ---------- */
+/* a table stands against the wall below the lamp on the shelf; the closed roll lies on it, its two rolled ends side by side. It lies a
+   little askew, its right end turned toward us: that end shows its turns, the far one only its outline (CONTRIBUTING section 4). The turns
+   end in the stick's dark end, a small square, and nothing stands out of it or is tied round it */
+function table(g){const r=rng(2026),T=111,E=137;   /* T: where its top meets the wall; E: its front edge */
+  wood(g,0,T,320,E-T,'#6a4a2c',0,.5);R(g,0,E,320,VH-E,'#3e2a18');tex(g,'wood',.4,0,E,320,VH-E,'overlay',.5);
+  for(let k=0;k<8;k++){const x=r()*300,w=20+r()*60;R(g,x,T+2+r()*(E-T-4),w,.5,rgba('#2a180c',.18+r()*.12))}   /* the grain, long and level */
+  R(g,0,E-.6,320,.8,rgba('#e8c48a',.4));ao(g,0,E+.2,320,4,'t',.4,'#120a06');
+  ao(g,0,T-.4,320,4,'t',.5,'#140c10')}   /* where it meets the wall */
+function lyingRoll(g,x,y,len,rad,ang,seed){const r=rng(seed),C='#dfc993',   /* the tones of the rolls in the hands, lit from above */
+    st=[[0,'#b3935a'],[.14,'#dfc993'],[.34,'#f3e4b8'],[.6,'#c4a86e'],[.86,'#8e6e3c'],[1,'#6e5228']];
+  g.save();g.translate(x,y);g.rotate(ang);
+  clipTo(g,()=>{g.beginPath();g.rect(0,-rad,len,rad*2);g.ellipse(0,0,rad*.42,rad,0,0,6.2832)},()=>{
+    g.fillStyle=lg(g,0,-rad,0,rad,st);g.fillRect(-rad,-rad-1,len+rad*2,rad*2+2);
+    /* the strips of the papyrus run round the roll, so across it here: tones, not lines */
+    for(let u=-rad;u<len;){const w=1+r()*2.6;R(g,u,-rad,w,rad*2,r()<.5?rgba('#8a6830',.05+r()*.09):rgba('#fff6d2',.05+r()*.09));u+=w}
+    tex(g,'vert',.16,-rad,-rad-1,len+rad*2,rad*2+2,'overlay',.5);tex(g,'mott',.2,-rad,-rad-1,len+rad*2,rad*2+2,'overlay',.75);
+    ao(g,len-18,-rad,18,rad*2,'r',.14,'#fff0c8');ao(g,-rad,-rad,26,rad*2,'l',.32,'#4a3010')});   /* nearer the lamp on the right */
+  /* its near end: the turns, lit from above on the right; the stick's end is a small dark square */
+  const rx=rad*.42;oval(g,len,0,rx,rad,tint(C,-.46));
+  for(const[k,c]of[[.86,tint(C,-.02)],[.72,tint(C,-.38)],[.58,tint(C,.06)],[.44,tint(C,-.4)],[.3,tint(C,.02)]])oval(g,len+(1-k)*.4,(1-k)*.5,rx*k,rad*k,c);
+  R(g,len-.3,-.3,1.4,1.8,'#2a1a0c');
+  g.strokeStyle=rgba('#fff0c2',.42);g.lineWidth=.5;g.beginPath();g.ellipse(len,0,rx*.92,rad*.92,0,-1.5,.2);g.stroke();
+  g.restore()}
+function laid(g){const len=118,rad=8.4,ang=.045,x0=178,y0=113.6;
+  /* its shadow on the table: close under it, and a little to the left, away from the lamp above on the right */
+  pool(g,x0+len/2,y0+rad*2.1+3.4,len*.56,3.6,'#2a1810',.8,'multiply');pool(g,x0+len/2-10,y0+rad*2.1+5.4,len*.6,3.4,'#2a1810',.45,'multiply');
+  lyingRoll(g,x0-1.8,y0,len,rad,ang,77);            /* the far one, half hidden */
+  comp(g,'multiply',.5,()=>{g.save();g.translate(x0,y0+rad*1.1);g.rotate(ang);ao(g,0,-rad-2.4,len,3,'b',.8,'#3a2410');g.restore()});   /* the near one shades it */
+  lyingRoll(g,x0+.6,y0+rad*1.1,len,rad,ang,91);     /* the near one */
+  /* the light: the lamp on the shelf above, and the room's dark to the left and below */
+  comp(g,'source-atop',1,()=>{g.fillStyle=lg(g,0,0,320,0,[[0,rgba('#0e0812',.8)],[.45,rgba('#1a1018',.45)],[.8,rgba('#1a1018',0)]]);g.fillRect(0,100,320,44);
+    ao(g,0,130,320,14,'b',.45,'#100810')})}
+
 /* ---------- the pictures: each put together once from layers, each layer set in its own tones ---------- */
 /* A frame: from, where the open papyrus now goes into the left roll; rolls, each [x, flip, options of roll()]; hands, their poses */
-const FRAMES=[{from:SH.x0,rolls:[[ROLLS[0],0],[ROLLS[1],1]],hands:[OPEN(0),OPEN(1)]}];
+const FRAMES=[{from:SH.x0,rolls:[[ROLLS[0],0],[ROLLS[1],1]],hands:[OPEN(0),OPEN(1)]},
+  /* closing: the left roll comes over to the right one; the papyrus it has taken up is wound on it, the rest still lies open */
+  ...CLOSING.map((P,i)=>{const x=ROLLS[0]+P.dx;return{from:x+(SH.x0-ROLLS[0]),rolls:[[x,0,i>1?{lit:1}:{}],[ROLLS[1],1]],hands:[P,OPEN(1)]}})];
+FRAMES[FRAMES.length-1].rolls[0][2]={lit:1,bare:1};   /* closed: no open papyrus is left beside the left roll; the right one shades it */
+/* and the last still, which may follow: the closed roll laid down below the lamp, the hands gone */
+FRAMES.push({laid:1});
 function build(F=FRAMES[0]){const[c,g]=mk(VW*HR,VH*HR),fin=(lc,l)=>finish(lc,l,12),
     L=(fn,post)=>{const[lc,l]=mk(VW*HR,VH*HR);l.scale(HR,HR);fn(l);l.setTransform(1,0,0,1,0,0);post(lc,l);g.drawImage(lc,0,0)},
     each=(l,fn)=>{for(const P of F.hands)at(l,fn,P)};
   L(room,fin);
+  if(F.laid){L(l=>{table(l);laid(l)},fin);return c}
   L(l=>each(l,hand),(lc,l)=>tones(lc,l,SKIN));
   L(l=>each(l,sleeve),(lc,l)=>tones(lc,l,WOOL));
   L(l=>{sheet(l,SH,F.from);for(const[x,flip,o]of F.rolls)roll(l,x,flip,SH,o);each(l,thumbShadow)},fin);
   L(l=>each(l,thumb),(lc,l)=>tones(lc,l,SKIN));
   return c}
 /* its own canvas, over the darkened view and under the words: the room that is being entered behind it is not disturbed */
-const BG=[];
+const BG=[],picture=i=>BG[i]||(BG[i]=build(FRAMES[i]));
 const[cv,cg]=mk(VW*HR,VH*HR);cv.id='scroll';$('#dim').after(cv);
-function draw(ts){cg.setTransform(1,0,0,1,0,0);cg.drawImage(BG[0]||(BG[0]=build()),0,0);cg.setTransform(HR,0,0,HR,0,0);
+/* shown: the frame that stands; mix: a frame that is passing into it ({to, t0, n}), when the roll is laid down */
+let shown=0,mix=null;
+function draw(ts){cg.setTransform(1,0,0,1,0,0);cg.drawImage(picture(shown),0,0);
+  if(mix){const k=clamp((performance.now()-mix.t0)/mix.n,0,1),e=k*k*(3-2*k);cg.globalAlpha=e;cg.drawImage(picture(mix.to),0,0);cg.globalAlpha=1;if(k>=1){shown=mix.to;mix=null}}
+  cg.setTransform(HR,0,0,HR,0,0);
   for(const[x,y]of LAMPS){flame(cg,x,y,ts+x*7);pool(cg,x,y-3,15+Math.sin(ts/190+x)*.8,11,'#ff9838',.15+.015*Math.sin(ts/83+x))}}
 
 /* ---------- coming and going ---------- */
@@ -191,8 +317,23 @@ const to=(v,n)=>{cv.style.transition=`opacity ${n}ms ease-in-out`;cv.style.opaci
 const move=(want,v,n)=>{clearTimeout(idle);const k=gen;return chain=chain.then(async()=>{if(k!==gen||state===want)return;state='moving';
   try{if(v){draw(G.t||0);SFX.unroll()}}catch(e){console.error(e)}await to(v,ms(n));if(k===gen)state=want})};
 const up=()=>move('up',1,520),down=()=>move('down',0,420);
-function off(){clearTimeout(idle);gen++;chain=Promise.resolve();cv.style.transition='';cv.style.opacity=0;state='down'}
+function off(){clearTimeout(idle);gen++;chain=Promise.resolve();cv.style.transition='';cv.style.opacity=0;state='down';shown=0;mix=null}
 function rest(){clearTimeout(idle);idle=setTimeout(down,700)}
+
+/* ---------- the roll closed, once, for the game's last line ---------- */
+/* The one exception to "only the flames move" (CONTRIBUTING section 4): after the last line the reader's hands close the roll. The
+   frames are cut one after the other, as in the games of those years, with no blending between them: they are placed so that the
+   left roll comes slowly, then faster, then slowly again (eased), and a frame stands STEP ms. Nothing brightens or darkens the whole
+   picture, and the flames go on moving. With lay, the closed roll is then laid down below the lamp: the only blend, a slow one.
+     close(o)  the roll closes (o.lay: and is laid down); resolves when it stands closed, or lies. The scroll stays up until down()
+     open()    the roll stands open again at once, as it always does (a player who watches the ending again sees it open) */
+const STEP=600,HOLD=900,LAY=1400,CLOSED=FRAMES.length-2,LAID=FRAMES.length-1;
+function close(o={}){clearTimeout(idle);const k=gen;return chain=chain.then(async()=>{
+  for(let i=1;i<=(o.lay?LAID:CLOSED);i++){picture(i);await wait(0)}   /* every frame painted before the first moves */
+  if(k!==gen)return;if(state!=='up'){state='moving';draw(G.t||0);await to(1,ms(520));if(k===gen)state='up'}
+  for(let i=1;i<=CLOSED&&k===gen;i++){shown=i;await wait(ms(STEP))}
+  if(o.lay&&k===gen){await wait(ms(HOLD));if(k!==gen)return;mix={to:LAID,t0:performance.now(),n:ms(LAY)};await wait(ms(LAY)+40)}})}
+function open(){clearTimeout(idle);mix=null;shown=0}
 
 /* ---------- the words, in ink ---------- */
 const SIZES=[8.6,7.6,6.8,6.2],TALL=100,over=[];   /* room pixels: the heights of the letters, and how tall the writing may stand */
@@ -202,5 +343,5 @@ function fit(el){clearTimeout(idle);const text=el.textContent,s=PH.on?Math.min(L
   el.textContent='';let i=0;for(const m of text.matchAll(/\([^()]*\d+:\d+[^()]*\)/g)){el.append(text.slice(i,m.index));const sp=document.createElement('span');sp.textContent=m[0];el.append(sp);i=m.index+m[0].length}
   el.append(text.slice(i));
   if(!size()){el.textContent=text;if(!size())over.push(text)}}
-return{up,down,off,rest,fit,draw,over,get state(){return state},el:cv,lamps:LAMPS,sheet:SH};
+return{up,down,off,rest,fit,draw,close,open,over,get state(){return state},get frame(){return shown},el:cv,lamps:LAMPS,sheet:SH,frames:FRAMES,picture,STEP,HOLD,LAY};
 })();
