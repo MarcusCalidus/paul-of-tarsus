@@ -19,6 +19,7 @@ athens quay10
 athens-map map11
 athens-road road11
 athens-street way11
+audience21 phall21
 awning pawnb12
 awning-rain pawnw12
 barnabas barnabas
@@ -29,6 +30,7 @@ beroea pber10
 birds birds
 birds-sheet birds birds-sheet
 bolt bolt10
+bonds21 pbonds21
 bound bound17 cast-bound
 boundary border
 brothers home9
@@ -36,12 +38,16 @@ burning pstreetg13
 caesarea-cast caesarea cast-caesarea
 caesarea-road pgate17
 card card
+card20 card20
+card21 card21
 carried pknot18
 cast cast cast-main
 cast-closeup cast cast-closeup
 cenchreae pcenf12
 cenchreae15 cen15
 chained chained18 cast-chained
+chained20 chained20 cast-chained20
+charges20 pcharges20
 coast-road proad16
 coast-sheet coast coast-sheet
 coast-wind coast coast-wind
@@ -58,6 +64,7 @@ council council
 council19 pcouncil19
 counting-board pboardb13
 court19 pcourt19
+court21 pcourt21
 damaris down11
 daybreak dawn15
 depth depth8
@@ -82,8 +89,11 @@ gate19 pgate19
 gates gates
 guard guard
 hall-tyrannus phallb13
+hall20 phall20
 harbor harbor
 heard cell9
+hearing20 pcourt20
+hearing21 phearing21
 held-back pdoorb14
 homeward journey6
 horses horses horses-sheet
@@ -106,6 +116,7 @@ lanes19 phalves19
 letter12 pletter12
 letter19 letter19
 lookback back12
+luke20 pluke20
 lydia lydia8
 lydiahouse house9
 lystra lame
@@ -150,9 +161,13 @@ psalm psalm9
 pwa-icon pwa pwa-icon
 questions myron
 reading reading
+report21 preport21
 river river8
 road road
+road21 proad21
+roads21 proads21
 romans romans cast-romans
+room20 proom20
 routes routes15 routes-cen15
 samothrace deck8
 sand-plan plan15
@@ -180,6 +195,7 @@ speech speech
 speech-road proad18
 splash splash
 stonecutter block11
+storks20 pflight20
 stride stride
 sundial pdial13
 synagogue synagogue
@@ -216,9 +232,12 @@ voyage17 map17
 walk cast cast-walk
 warning-stone pstone18
 westmap map10
+window20 pwindow20
 windward holdline
+winter20 pwinter20
 withoutpaul tim10
 witness witness
 workshop workshop
+write21 pwrite21
 xfade xfade
 yard19 pyard19
