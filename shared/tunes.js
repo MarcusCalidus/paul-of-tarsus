@@ -21,10 +21,16 @@
                    bar comes from, {mood, bar, tracks}: the mood, the bar counted from 0 as the chapter's score counts it, and the indices
                    of the chapter score's tracks that were taken, in the order they stand here
      has(n)        whether chapter n ('pro', or a number) has its bar here
-     score(n,then) a fresh score for setScore that plays the bar once and then hands over to then (a score); with no then it hands over
+     score(n,then,o) a fresh score for setScore that plays the bar once and then hands over to then (a score); with no then it hands over
                    to a score of silence in the bar's key, because the engine plays a score round and round unless it names another
-                   (stepOn). A new object each call, since then is state that a score keeps
-     len(n)        the bar's length in seconds (one bar, or two) */
+                   (stepOn). A new object each call, since then is state that a score keeps. o.even: at the look back's one level
+                   (see RMS below) and not at the chapter's own
+     len(n)        the bar's length in seconds (one bar, or two)
+
+   Heard one after another, the bars are far from equally loud: where Chapter One's tune begins a drone and a drum sound under it, and
+   where Chapter Twenty's begins there is a lyre and a bass. RMS is how loud each bar is by itself, in dB, as the stop `tunes` measures
+   it offline (it fails when a bar has moved more than 2 dB from the number here). With o.even a bar is brought toward EVEN through the
+   levels of its tracks, by 8 dB at most either way, so that the last chapters are not lost after the first; the notes are untouched. */
 SHARED.tunes=(()=>{
 "use strict";
 const _=null,
@@ -159,5 +165,9 @@ const _=null,
  len=n=>{const b=BARS[n];return b.bars*b.steps*b.dt},
  /* the silence that follows a bar: a score with no tracks, in the bar's key (setScore keeps the key of the last score, see AU.key) */
  hush=b=>({dt:b.dt,steps:b.steps,root:b.root,scale:b.scale,bars:1,tracks:[]}),
- score=(n,then)=>{const b=BARS[n];return Object.assign({},b,{then:then||hush(b)})};
-return{BARS,has,score,len}})();
+ RMS={pro:-35.2,1:-20.2,2:-23.1,3:-27.9,4:-28.3,5:-28.2,6:-28.3,7:-28.6,8:-27.9,9:-23.9,10:-25.1,11:-30.2,12:-30.5,13:-30.7,14:-31.6,15:-34.6,16:-34.3,
+  17:-34.1,18:-35.7,19:-36,20:-37.5,21:-36.1,22:-44.6,23:-43.4},EVEN=-29,
+ gain=n=>RMS[n]==null?1:Math.pow(10,clamp(EVEN-RMS[n],-8,8)/20),
+ score=(n,then,o)=>{const b=BARS[n],k=o&&o.even?gain(n):1;
+  return Object.assign({},b,{tracks:k===1?b.tracks:b.tracks.map(t=>Object.assign({},t,{vol:(t.vol==null?1:t.vol)*k})),then:then||hush(b)})};
+return{BARS,RMS,EVEN,has,score,len,gain}})();

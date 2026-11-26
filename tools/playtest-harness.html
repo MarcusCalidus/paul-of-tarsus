@@ -751,7 +751,7 @@
      (mixFor). score(n, then) plays the bar once and hands over to then, or to silence in the bar's key. tunes-sheet.png
      (de-tunes-sheet.png) is a piano roll of every bar, steps across and pitch up, one color to an instrument and the drum strokes under
      it, with the chapter's name in the stop's language, its key and scale, its length, and where in the chapter's score it comes from. */
-  if(stop==='tunes'){await need('tunes');const TU=SHARED.tunes,IDS=['pro',...Object.keys(CHAP).map(Number)],J=JSON.stringify,miss=[],keys=[],notes=[],loud=[],rows=[];
+  if(stop==='tunes'){await need('tunes');const TU=SHARED.tunes,IDS=['pro',...Object.keys(CHAP).map(Number)],J=JSON.stringify,miss=[],keys=[],notes=[],loud=[],even=[],lev=[],rows=[];
     /* evs: the notes playStep plays for steps from..from+n-1 of a score in a mood, counted from from; the track a note is played for is
        the one whose gain playStep points AU.out at */
     const evs=(sc,mood,from,n)=>{const I0=Object.assign({},INST),D0=Object.assign({},DRUMS),keep=Object.assign({},AU),got=[],T0=10,o=new OfflineAudioContext(1,2205,22050);
@@ -783,6 +783,11 @@
         if(!a.length)notes.push(`${nm}: it plays nothing in bar ${src.bar} in the mood ${src.mood}`);
         for(let i=0;i<Math.max(a.length,c.length);i++)if(J(a[i]&&{...a[i],j:0})!==J(c[i]&&{...c[i],j:0})){notes.push(`${nm}, step ${(a[i]||c[i]).s}: the chapter plays ${say(a[i])}, the copy ${say(c[i])}`);break}});
       const r=await render(b,'none',0,len),f=await render(sc,src.mood,src.bar*N,len);
+      /* the level noted for the look back (TU.RMS) is the bar's own, and evened out the bar neither clips nor leaves the level by much */
+      {const want=TU.RMS[id],got=20*Math.log10(r.rms),e=await render(TU.score(id,null,{even:1}),'none',0,len),eg=20*Math.log10(e.rms);
+        if(want==null||Math.abs(got-want)>2)even.push(`chapter ${id}: its bar measures ${got.toFixed(1)} dB and shared/tunes.js notes ${want==null?'nothing':want+' dB'}`);
+        else if(!(e.pk<.7)||Math.abs(eg-TU.EVEN)>8.5||Math.abs(eg-got-20*Math.log10(TU.gain(id)))>1)even.push(`chapter ${id}: evened out it measures ${eg.toFixed(1)} dB, peak ${db(e.pk)} dB`);
+        lev.push(eg)}
       if(!(r.pk>.001&&r.pk<.9)||r.rms>f.rms*1.06||r.tail>3.5)loud.push(`chapter ${id}: peak ${db(r.pk)} dB, RMS ${db(r.rms)} dB against the chapter's ${db(f.rms)} dB, rings ${r.tail.toFixed(2)} s on`);
       L(`     ${id}: ${b.bars} bar${b.bars>1?'s':''}, ${TU.len(id).toFixed(2)} s, ${b.tracks.length} tracks, ${B.length} notes; peak ${db(r.pk)} dB, RMS ${db(r.rms)} dB (the chapter in that bar ${db(f.pk)}, ${db(f.rms)} dB), rings ${r.tail.toFixed(2)} s on`);
       rows.push({id,b,ev:B,name:id==='pro'?T('Prologue')+': '+T(PRO.title):T(CHAP[n].label)+': '+T(CHAP[n].title)})}
@@ -790,6 +795,7 @@
     ok(!keys.length,'each bar has its chapter\'s dt, steps, group, root and scale, and at most four tracks, none of which depends on the mood'+(keys.length?'. NOT: '+keys.join('; '):''));
     ok(!notes.length,'each bar plays, track by track, the notes its chapter\'s score plays in that bar and mood: instrument, step, pitch, length and level'+(notes.length?'. DIFFERS: '+notes.join('; '):''));
     ok(!loud.length,'each bar sounds unclipped, no louder than its chapter plays that bar, and dies away within 3.5 s of its end'+(loud.length?'. NOT: '+loud.join('; '):''));
+    ok(!even.length,`for the look back each bar's own level is noted, and evened out the bars lie between ${Math.min(...lev).toFixed(1)} and ${Math.max(...lev).toFixed(1)} dB, none clipped`+(even.length?'. NOT: '+even.join('; '):''));
     {const s=TU.score(1),X={dt:.2,root:50,scale:[0],tracks:[]},keep=[AU.score,AU.step,AU.key];let over=false;
       try{setScore(s);for(let i=0;i<loopOf(s);i++)stepOn(s);over=AU.score===s.then}finally{AU.score=keep[0];AU.step=keep[1];AU.key=keep[2]}
       ok(over&&!s.then.tracks.length&&s.then.root===s.root&&s.then.scale===s.scale&&TU.score(1)!==s&&TU.score(1).then!==s.then&&TU.score(2,X).then===X&&Math.abs(TU.len(13)-TU.BARS[13].bars*9*.2)<1e-9,
