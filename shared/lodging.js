@@ -58,8 +58,8 @@ const POS={
   benches:[{x0:72,x1:148,top:93,foot:102},{x0:158,x1:226,top:93,foot:102}],
   table:{x0:106,x1:160,top:101,back:95,foot:118,bfoot:112},
   stools:{desk:{x:98,y:121},table:{x:170,y:121},door:{x:238,y:114}},
-  jar:{x0:304,x1:314,top:84,foot:103},
-  peg:{x:296,y:52},                               /* a peg in the wall, a cloak hanging from it */
+  jar:{x0:304,x1:314,top:78,foot:103},
+  peg:{x:166,y:52},                               /* a peg in the wall, a cloak hanging from it */
   basket:{x:86,y:102},
   shelf:{x0:14,x1:56,top:34,b:44}};               /* a long low recess in the wall above the bed, with a jug, a bowl and folded linen */                          /* a basket of rolls under the bench */
 const AT={door:[266,108,-1],seats:{door:[238,114],table:[170,121],window:[138,102]},desk:[98,121,1],stand:{paul:[198,124,1],visitor:[246,118,-1]}};
@@ -360,6 +360,8 @@ function bench(g,B,h,r){const M=SHARED.materials,W='#6e5034',t=B.top,th=2.2;
    square hole */
 function table(g,T,h,r){const M=SHARED.materials,W='#7a5838',lit='#a47a50',ap=2.2,ft=T.foot,bf=T.bfoot,f0=T.x0,f1=T.x1,b0=T.x0+3,b1=T.x1-3;
   cast(g,f0,f1,ft,ft-T.top,h,1.5);sh(g,(f0+f1)/2,ft-2,(f1-f0)/2+2,3,.42);
+  /* the floor under it, in its shade */
+  comp(g,'multiply',.4,()=>{g.fillStyle=lg(g,0,T.back,0,ft,['#6a5a70','#8a7a88']);poly(g,[b0,T.back,b1,T.back,f1,ft-.5,f0,ft-.5])});
   /* the far legs, then the near legs */
   for(const x of[b0+.6,b1-2])R(g,x,T.back+1,1.6,bf-T.back-1,tint(W,-.4));
   const top=[b0,T.back,b1,T.back,f1,T.top,f0,T.top];poly(g,top);g.fillStyle=lg(g,0,T.back,0,T.top,[tint(W,.12),tint(W,.24)]);g.fill();
@@ -400,8 +402,8 @@ function shelf(g,S,kind,r){const c=C[kind],w=S.x1-S.x0,h=S.b-S.top;
   poly(g,[S.x0+15,S.b-2.6,S.x0+24,S.b-2.6,S.x0+22.6,S.b,S.x0+16.4,S.b],'#b07a4a');R(g,S.x0+15,S.b-2.6,9,.8,'#d8a070');R(g,S.x0+16,S.b-2.2,7,.5,'#5a3020');
   /* the folded cloth: three soft layers of linen */
   for(let j=0;j<3;j++){const y=S.b-1.4-j*1.3;R(g,S.x0+28+j*.3,y,12-j*.6,1.3,tint('#d8ccb0',-j*.06));R(g,S.x0+28+j*.3,y,12-j*.6,.4,'rgba(255,250,236,.4)')}}
-/* a cloak of brown wool hanging from a square peg in the wall: folded over it, falling in a few folds, its hem a little uneven */
-function cloak(g,Pg,r){const{x,y}=Pg,c='#6e4a2e',P=[x-1.6,y,x+1.6,y,x+4.2,y+5,x+5.4,y+16,x+4.6,y+24,x+2,y+25.2,x-1.2,y+24.4,x-4.4,y+25,x-5.6,y+17,x-4.4,y+6];
+/* a cloak of brown wool hanging from a square peg in the wall: gathered over it, falling straight in a few folds, its hem a little uneven */
+function cloak(g,Pg,r){const{x,y}=Pg,c='#6e4a2e',P=[x-1.4,y,x+1.4,y,x+4.4,y+2.6,x+5,y+12,x+5.8,y+24.2,x+3.2,y+25,x+.6,y+24.2,x-2.2,y+25.2,x-5.2,y+24.6,x-5.2,y+12,x-4.6,y+2.8];
   comp(g,'multiply',.25,()=>poly(g,P.map((v,i)=>i%2?v+.6:v+1.4),'#4a3a50'));
   poly(g,P);g.fillStyle=lg(g,x-6,0,x+6,0,[tint(c,-.1),tint(c,.14),tint(c,-.05),tint(c,-.3)]);g.fill();
   clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.45,x-6,y,12,26,'overlay',1);for(const[fx,a]of[[-2.6,.35],[.4,.3],[2.8,.4]])stroke(g,[x+fx*.5,y+3,x+fx,y+14,x+fx*1.1,y+25],rgba(tint(c,-.5),a),.6);
