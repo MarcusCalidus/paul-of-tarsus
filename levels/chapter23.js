@@ -255,13 +255,16 @@ ART.bow23={w:320,q:12,paint(g){GS23.bowNight(g,{})},
       if(i===1&&dr>.5)continue;   /* the after rope runs out over the rail after her, out of their hands */
       const pts=F0.concat([rp]);for(let j=1;j<pts.length;j++)rope(seg(pts[j-1][0],pts[j-1][1],pts[j][0],pts[j][1],.5));
       clipTo(g,()=>poly(g,BOW23.outboard),()=>rope(seg(rp[0],rp[1],ring[0],ring[1],.4)))}},
-  /* the blade at 27:32: the soldier's far hand closed over the hilt, so that no guard shows, and the short blade one slanting line
-     that rises from his fist to meet the rope from below, at a narrow angle, never across it */
-  front(g){if(G.blade23&&SO2.room==='bow23'){const[fx,fy]=fist23(SO2),R0=ROPES23[0],fp=fist23(R0.by()[0]),rp=BOW23.rail(R0.z,1),
-      /* the point of the rope the blade meets: a little below and behind his fist along the rope */
-      u=clamp((fx-4.5-fp[0])/(rp[0]-fp[0]),0,1),tx=fp[0]+(rp[0]-fp[0])*u,ty=fp[1]+(rp[1]-fp[1])*u,sk=SO2.look&&SO2.look.skin||'#b07850';
+  /* the blade at 27:32: the soldier stands behind the forward rope, which runs before him from the sailor's fist up to the rail; his far
+     hand is closed over the hilt, so that no guard shows, and the short blade is one slanting line that comes down from his fist to
+     meet the rope at a narrow angle, never across it */
+  front(g){if(!G.blade23||SO2.room!=='bow23')return;const[fx,fy]=fist23(SO2),R0=ROPES23[0],fp=fist23(R0.by()[0]),rp=BOW23.rail(R0.z,1),
+      u=clamp((fy+5-fp[1])/(rp[1]-fp[1]),0,1),tx=fp[0]+(rp[0]-fp[0])*u,ty=fp[1]+(rp[1]-fp[1])*u,sk=SO2.look&&SO2.look.skin||'#b07850';
+    if(Math.hypot(tx-fx,ty-fy)>12)return;
+    const p=[];for(let j=0;j<=8;j++){const v=j/8;p.push(fp[0]+(rp[0]-fp[0])*v,fp[1]+(rp[1]-fp[1])*v+.5*Math.sin(Math.PI*v))}
+    stroke(g,p.map((v,j)=>j%2?v+.6:v+.3),'rgba(6,4,4,.5)',.8);stroke(g,p,'#9a8058',.55);
     stroke(g,[fx+.3,fy+.4,tx+.3,ty+.3],'#2e2e34',.9);stroke(g,[fx,fy+.2,tx,ty],'#d8dce4',.5);
-    R(g,fx-1.3,fy-1.6,2.6,2.6,tint(sk,-.15));R(g,fx-1.3,fy-1.6,2.6,.6,tint(sk,.15));R(g,fx-1.3+(SO2.dir>0?2:0),fy-1.4,.6,2.2,tint(sk,-.4))}}};
+    R(g,fx-1.3,fy-1.6,2.6,2.6,tint(sk,-.15));R(g,fx-1.3,fy-1.6,2.6,.6,tint(sk,.15));R(g,fx-1.3+(SO2.dir>0?2:0),fy-1.4,.6,2.2,tint(sk,-.4))}};
 /* ==== ART bow23: end ==== */
 
 /* ==== ART hold23: begin ==== */
