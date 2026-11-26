@@ -159,7 +159,7 @@ ART.stern23={w:320,q:12,paint(g){const r=rng(2301);band23(g,0,0,320,86,'#06080e'
 /* ==== ART stern23: end ==== */
 
 /* ==== ART lead23: begin ==== */
-/* ART-TODO. A close view: the sounding line laid along the deck planks by the lantern's light, the lead at its left end turned so that its
+/* A close view: the sounding line laid along the deck planks by the lantern's light, the lead at its left end turned so that its
    underside, with the tallow on it, is toward us. The lead: a heavy bell-shaped weight of grey lead, its eye at the narrow end where the line
    is tied; on the flat underside the tallow, a pale greasy layer, with what it brought up pressed into it: in the first sounding fine sand,
    in the second small stones (each a small square of pixels, never a round dot under a pixel: a plus sign). The line runs from the lead in a
@@ -440,14 +440,14 @@ function viper23(g){const v=G.vip23;if(!v||v.fr==null||P.room!=='beach23')return
 /* ==== ART beach23: end ==== */
 
 /* ==== ART estate23: begin ==== */
-/* ART-TODO. The court before the house of Publius on his lands near the beach (28:7), on a fair day after the rain: limestone walls, a
+/* The court before the house of Publius on his lands near the beach (28:7), on a fair day after the rain: limestone walls, a
    paved court, the house door at the right, and at the left the gateway from the road, with a squared stone beside it in which one word
    is cut in Greek capitals, PROTOS (the hidden treasure: Luke copies it). The letters are letters (CONTRIBUTING section 3); look at them
    enlarged. No shrine, statue, altar or image anywhere on the estate (decided). The sun from the right; the figures' shadows fall left.
    Called from outside: ART.estate23. Reads F.healed. Hotspots (ROOMS.estate23): the stone at the gate 6,78,30,30 · the gateway 36,44,36,64
-   · the house door 262,54,42,58 · the wall 80,30,170,60. Walk: 36..292 by 114..136. Wall foot y 108. Light: sun [-14,5] (low from the
-   right, shadows to the left). */
-/* The picture. A pale winter sun, low in the south-west at the right and a little in front of the court, three days after the rain: it
+   · the house door 262,54,42,58 · the wall 80,30,170,60. Walk: 36..292 by 114..136. Wall foot y 108. Light: sun [-15,-4] (low from the
+   right and a little in front, shadows to the left and a little back). */
+/* The picture. A pale winter sun, low at the right and a little in front of the court, three days after the rain: it
    lights the faces of the walls that are turned to us and throws every shadow to the left and a little back, the figures' too (light.sun).
    The court wall and the house are of the island's pale limestone in dressed courses; the house stands a little forward of the wall, so
    that its left side is in shade and its shadow lies on the wall beside it. Behind the wall an olive and a fig against the sky; the
@@ -598,7 +598,7 @@ function crackC23(g,x,y,n,r){const p=[x,y];for(let i=0;i<n+2;i++){x+=(r()-.5)*2.
 /* ==== ART estate23: end ==== */
 
 /* ==== ART sick23: begin ==== */
-/* ART-TODO. A told picture (28:8): the room of Publius's father, by the soft light of a doorway at the left. The old man lies in bed
+/* A told picture (28:8): the room of Publius's father, by the soft light of one small window at the left. The old man lies in bed
    (pose lie), the bed's frame against the back wall, its mattress top at the hips (BED23, a high bed); Paul stands beside it, bent a
    little forward, his far hand laid on him, the forearm bent (pose lay 0). No light, glow or effect of any kind. Light: soft, the contact
    shadow alone. Called from outside: ART.sick23, BED23. Reads nothing. Hotspots: none (nothing is played here). */
@@ -671,38 +671,84 @@ function stoolC23(g,x,foot,r){const M=SHARED.materials,W='#7a5a3a',top=foot-8;M.
 /* ==== ART sick23: end ==== */
 
 /* ==== ART tablet23: begin ==== */
-/* ART-TODO. A close view of Luke's wax tablet (carried in from Chapter Twenty-Two): a wooden frame round dark wax. Along its top, the
-   strokes of the days: fourteen short slanting strokes in two groups, none crossing another and no stroke laid across a group (a cross).
-   Below, if the tablet was carried in with marks, Luke's line: from the right, one short stroke for each of the six marks, every one of them
-   running westward, south-west down to the left, west level, north-west up to the left, and for a day with only the day marked a small
-   square dot where the line pauses (MARKLINE23). At the top right his notes: the two soundings (K and fine dots for sand, IE and small
-   squares for stones) and, after the meal, the number 276 in Greek number letters (Sigma, Omicron, Stigma). After the talk in pictures the
-   island's name is scratched at the end of the line, in Greek capitals: MELITE (G.scratch23 writes it letter by letter). Every letter is a
-   letter (CONTRIBUTING section 3), and nothing is ruled: no line meets a margin. Called from outside: ART.tablet23, markLine23. Reads the
-   carried flags, F.lead1, F.lead2, F.bread, F.malta, G.scratch23. Hotspots (ROOMS.tablet23): the strokes 18,12,196,24 · the line
-   60,40,236,84 · the notes 212,16,96,48 (once written) · the name (once scratched) · put the tablet away 0,128,110,16. Light: null. */
+/* A close view of Luke's wax tablet, carried in from Chapter Twenty-Two, by the lantern's light from the upper right: the same tablet as
+   tablet22 there, the same board of fine-grained wood, the same dark wax sunk into it (16..304 by 12..130) and the same stylus lying on
+   the frame below it (paintTabletC23 follows paintTablet22 of chapter22.js line for line, with its seed: keep the two in step). Everything
+   on it is scratched as Chapter Twenty-Two scratches it (SHARED.tablets.scratch and lukeLine; scratchTB23 stands in for them until
+   shared/tablets.js has them): a thin pale line with its groove's dark shade half a pixel below and to the right, a little uneven.
+   Along its head the strokes of the fourteen days, in two groups of seven, each alone, none crossing another and none laid across a group.
+   Below, if the tablet was carried in with marks, Luke's line (markLine23, the same as SHARED.tablets.lukeLine at k 1 from 284,82): one
+   piece for each of the six marks, only ever westward, a gap with a small square dot for a day with only the day, a small square where
+   it starts. Started from the title, the strokes alone. At the top right his notes as he writes them: K with fine dots for sand, IE with
+   small squares for stones, and after the meal the number 276 in Greek number letters (sigma, omicron, stigma: the stigma drawn by hand,
+   never a font's missing-glyph box). Once the island's name is learned, MELITE at the west end of the line (G.scratch23 writes it
+   letter by letter). Every letter is drawn as strokes by hand (SGLYPH23) and is a letter (CONTRIBUTING section 3); nothing is ruled, no
+   line meets a margin, no stroke is struck through.
+   Called from outside: ART.tablet23, markLine23. Reads the carried flags, F.lead1, F.lead2, F.bread, F.malta, G.scratch23. Hotspots
+   (ROOMS.tablet23): the strokes 18,12,196,24 · the line 60,40,236,84 · the notes 212,16,96,48 (once written) · the name (once
+   scratched) · put the tablet away 0,128,110,16. Light: null. */
 const NAME23='ΜΕΛΙΤΗ',NUM276='ΣΟϚ';
 /* the line of marks: from the right, westward; [x, y] of each point, and whether the segment before it is a pause (a day with only the day) */
 function markLine23(){const pts=[[284,82,0]];if(!F.from22)return pts;for(let i=1;i<=6;i++){const m=markOf(i),[x,y]=pts[pts.length-1];
     pts.push(m===0?[x-14,y,1]:[x-30,y+(m===1?7:m===3?-7:0),0])}return pts}
-ART.tablet23={w:320,q:12,paint(g){R(g,0,0,320,144,'#3a2a1c');R(g,6,6,308,132,'#7a5a3a');R(g,12,12,296,120,'#2a2620');
-    comp(g,'overlay',.25,()=>{g.fillStyle=lg(g,0,12,0,132,['#ffffff','#000000']);g.fillRect(12,12,296,120)})},
+ART.tablet23={w:320,q:12,paint(g){paintTabletC23(g)},
   light:null,
-  draw(g){const ink='#d8c8a0';
-    /* the strokes of the days: fourteen, in two groups of seven */
-    for(let i=0;i<14;i++){const x=24+i*12+(i>6?10:0);stroke(g,[x,32,x+4,18],ink,.9)}
-    /* the line of the marks */
-    const pts=markLine23();for(let i=1;i<pts.length;i++){const[a,b]=pts[i-1],[c,d,pause]=pts[i];if(pause){R(g,c+6,d-.7,1.4,1.4,ink)}else stroke(g,[a,b,c,d],ink,.9)}
-    const e=pts[pts.length-1];
-    /* the notes: the soundings, the number */
-    g.save();g.font=GFONT23(7);g.textBaseline='middle';g.fillStyle=ink;
-    if(F.lead1){g.fillText('Κ',216,24);const q=rng(2312);for(let i=0;i<14;i++)R(g,228+q()*24,22+q()*4,.6,.6,ink)}
-    if(F.lead2){g.fillText('ΙΕ',216,38);for(let i=0;i<5;i++)R(g,234+i*5,36.4,1.6,1.6,ink)}
-    if(F.bread)g.fillText(NUM276,216,52);
-    /* the island's name at the end of the line */
-    const n=F.malta?NAME23.length:Math.floor((G.scratch23||0)*NAME23.length+.001);if(n){const s=NAME23.slice(0,n);g.font=GFONT23(7.4);g.fillText(s,Math.max(16,e[0]-6-g.measureText(NAME23).width),e[1]+12)}
-    g.restore()},
+  draw(g){const TB=tabC23(),r=rng(2313);
+    /* the strokes of the days: fourteen, in two groups of seven, each slanting a little and standing alone */
+    for(let i=0;i<14;i++){const x=26+i*11+(i>6?18:0),dx=(r()-.5)*.6;TB.scratch(g,[x+2.6+dx,19,x+1.2,25.4+(r()-.5)*.6,x,32],{seed:2330+i})}
+    /* the line of the marks, westward from where it starts; the name at its west end */
+    let e=[284,82];if(F.from22)e=TB.lukeLine(g,284,82,[1,2,3,4,5,6].map(markOf),{k:1});
+    /* the notes: the first sounding and its sand, the second and its stones, then the number */
+    if(F.lead1){wordC23(g,'Κ',219,20,1,2340);const q=rng(2312);for(let i=0;i<16;i++){const x=hp(229+q()*22),y=hp(21.4+q()*4.6);R(g,x+.5,y+.5,.5,.5,'rgba(20,10,4,.6)');R(g,x,y,.5,.5,'#d2bf94')}}
+    if(F.lead2){wordC23(g,'ΙΕ',219,34,1,2342);for(let i=0;i<5;i++){const x=233+i*4.6,y=35.6+(i%2)*1.2;R(g,x+.5,y+.5,1.5,1.5,'rgba(20,10,4,.6)');R(g,x,y,1.5,1.5,'#d2bf94')}}
+    if(F.bread)wordC23(g,NUM276,219,48,1,2344);
+    const n=F.malta?NAME23.length:Math.floor((G.scratch23||0)*NAME23.length+.001);
+    if(n){const sc=1.2,w=wordW23(NAME23,sc),left=e[0]-8-w>20,x=left?e[0]-8-w:Math.max(20,e[0]-w/2),y=left?e[1]-3.5*sc:e[1]+6;wordC23(g,NAME23.slice(0,n),x,y,sc,2350)}},
   front(){}};
+/* the tablet itself: as paintTablet22 in chapter22.js (the same numbers and seed), so that the two chapters show one tablet */
+function paintTabletC23(g){const r=rng(2205),[x0,y0,x1,y1]=[16,12,304,130];
+  R(g,0,0,320,144,'#120e0c');
+  const F=[3,1,317,1,319,3,319,141,317,143,3,143,1,141,1,3];poly(g,F);g.fillStyle=lg(g,320,0,0,144,['#9a7450','#7a5838','#5a3e26']);g.fill();
+  clipTo(g,()=>poly(g,F),()=>{for(let i=0;i<260;i++){const y0=r()*144,x=r()*320-40,l=30+r()*120,ph=r()*6,q=[];for(let u=0;u<=l;u+=4)q.push(x+u,y0+.6*Math.sin(u/37+ph)+.3*Math.sin(u/11+ph*2));
+      stroke(g,q,r()<.6?`rgba(52,30,14,${(.08+r()*.12).toFixed(2)})`:`rgba(255,226,180,${(.04+r()*.07).toFixed(2)})`,.5)}
+    tex(g,'grain',.12,0,0,320,144,'overlay',.4);
+    R(g,1,1,318,.6,'rgba(255,226,180,.35)');R(g,1,1,.6,142,'rgba(255,226,180,.2)');R(g,1,142.4,318,.6,'rgba(20,10,4,.5)');R(g,318.4,1,.6,142,'rgba(20,10,4,.35)')});
+  R(g,x0-1.2,y0-1.2,x1-x0+2.4,y1-y0+2.4,'#3a2616');R(g,x0-1.2,y1,x1-x0+2.4,1.2,'#b08a5c');R(g,x1,y0-1.2,1.2,y1-y0+2.4,'#a07c52');
+  g.fillStyle=lg(g,x1,y0,x0,y1,['#3a2c1e','#2a1f15','#1e160e']);g.fillRect(x0,y0,x1-x0,y1-y0);
+  clipTo(g,()=>{g.beginPath();g.rect(x0,y0,x1-x0,y1-y0)},()=>{tex(g,'mott',.5,x0,y0,x1-x0,y1-y0,'overlay',1);tex(g,'grain',.18,x0,y0,x1-x0,y1-y0,'overlay',.5);
+    for(let i=0;i<14;i++)pool(g,x0+r()*(x1-x0),y0+r()*(y1-y0),30+r()*50,8+r()*10,r()<.5?'#5a4430':'#0e0906',.25+r()*.2,'source-over');
+    comp(g,'screen',.1,()=>{g.fillStyle=lg(g,x1,y0,x0+80,y1,['#ffc880','rgba(0,0,0,0)']);g.fillRect(x0,y0,x1-x0,y1-y0)});
+    ao(g,x0,y0,x1-x0,4,'t',.55,'#0a0604');ao(g,x0,y0,4,y1-y0,'l',.4,'#0a0604')});
+  const Y=x=>136.4-(x-168)*.012,a=168,b=296;
+  comp(g,'multiply',.45,()=>poly(g,[a+3,Y(a)+2,b+1.5,Y(b)+2,b+1.5,Y(b)+3.4,a+3,Y(a)+3],'#2a1c14'));
+  poly(g,[a,Y(a)+.8,a+9,Y(a+9)-.1,b-9,Y(b-9)-.1,b-9,Y(b-9)+1.7,a+9,Y(a+9)+1.7],'#7a5c30');
+  R(g,a+9,Y(a+9)-.1,b-a-18,.6,'#e2c07e');R(g,a+9,Y(a+9)+1.2,b-a-18,.5,'#4a3418');
+  poly(g,[b-9,Y(b-9)-.6,b-6,Y(b-6)-.9,b-6,Y(b-6)+2.3,b-9,Y(b-9)+2],'#8a6a38');
+  poly(g,[b-6,Y(b-6)-1.4,b,Y(b)-1.6,b,Y(b)+2.6,b-6,Y(b-6)+2.8],'#7a5a30');R(g,b-6,Y(b-6)-1.4,6,.6,'#ecca88');R(g,b-6,Y(b-6)+2.3,6,.5,'#3a2814')}
+/* Luke's scratches: SHARED.tablets (shared/tablets.js, Chapter Twenty-Two) once it has them; until then the same painters here */
+const LUKE23={c:'#d2bf94',dk:'#140a04'};
+function scratchTB23(g,pts,o){o=o||{};const r=rng(o.seed||2271),c=o.c||LUKE23.c,dk=o.dk||LUKE23.dk,a=o.a==null?1:o.a,q=[];
+  for(let i=0;i<pts.length-2;i+=2){const x0=pts[i],y0=pts[i+1],x1=pts[i+2],y1=pts[i+3],L=Math.hypot(x1-x0,y1-y0),n=Math.max(1,Math.round(L/3)),nx=-(y1-y0)/(L||1),ny=(x1-x0)/(L||1);
+    for(let j=i?1:0;j<=n;j++){const t=j/n,w=j&&j<n?(r()-.5)*.35:0;q.push(x0+(x1-x0)*t+nx*w,y0+(y1-y0)*t+ny*w)}}
+  g.save();g.globalAlpha=a*.6;stroke(g,q.map(v=>v+.5),dk,.6);g.globalAlpha=a;stroke(g,q,c,.55);g.restore()}
+function lukeLineTB23(g,x,y,kinds,o){o=o||{};const k=o.k||1,s=o.seed||2280;let px=x,py=y,run=[px,py];
+  const dot=(x,y,w)=>{R(g,x-w/2+.5,y-w/2+.5,w,w,rgba(LUKE23.dk,.6));R(g,x-w/2,y-w/2,w,w,LUKE23.c)};
+  dot(px,py,2*k);
+  kinds.forEach((m,i)=>{if(!m){if(run.length>2)scratchTB23(g,run,{seed:s+i});px-=14*k;dot(px+7*k,py,1.5*k);run=[px,py];return}
+    px-=30*k;py+=m===1?7*k:m===3?-7*k:0;run.push(px,py)});
+  if(run.length>2)scratchTB23(g,run,{seed:s+99});return[px,py]}
+const tabC23=()=>{const T=SHARED.tablets;return T&&T.lukeLine&&T.scratch?T:{scratch:scratchTB23,lukeLine:lukeLineTB23}};
+/* Greek capitals as Luke scratches them, one stroke at a time: each letter a few polylines in a box seven units high (a unit is sc room
+   pixels); round letters are drawn as short straight pieces, the way a stylus goes in wax. The stigma (six) is a final sigma with a
+   flat top, drawn here because a font may not have it. */
+const SGLYPH23={'Κ':[4,[[0,0,0,7],[4,0,.2,3.8],[1.4,2.8,4,7]]],'Ι':[0,[[0,0,0,7]]],'Ε':[3.6,[[3.6,0,0,0,0,7,3.6,7],[0,3.4,2.8,3.4]]],
+  'Σ':[4,[[4,.2,0,0,2.2,3.5,0,7,4,6.8]]],'Ο':[4,[[1.2,0,2.8,0,4,1.4,4,5.6,2.8,7,1.2,7,0,5.6,0,1.4,1.2,0]]],
+  'Ϛ':[4,[[4.2,0,1.4,0,0,1.4,0,3.6,1,4.6,2.8,4.6,3.8,5.6,3.6,6.8,2.6,7.6,1.8,7.4]]],'Μ':[4.6,[[0,7,0,0,2.3,4.2,4.6,0,4.6,7]]],
+  'Λ':[4.2,[[0,7,2.1,0,4.2,7]]],'Τ':[4,[[0,0,4,0],[2,0,2,7]]],'Η':[4,[[0,0,0,7],[4,0,4,7],[0,3.5,4,3.5]]]};
+const wordW23=(w,sc)=>[...w].reduce((a,ch)=>a+(SGLYPH23[ch]||SGLYPH23['Ο'])[0]*sc+2.2*sc,-2.2*sc);
+/* wordC23: a word scratched with its top left at x, y */
+function wordC23(g,word,x,y,sc,seed){const TB=tabC23();let px=x;[...word].forEach((ch,i)=>{const[w,ps]=SGLYPH23[ch]||SGLYPH23['Ο'];
+    ps.forEach((p,j)=>TB.scratch(g,p.map((v,k)=>k%2?y+v*sc:px+v*sc),{seed:seed+i*7+j}));px+=w*sc+2.2*sc})}
 /* ==== ART tablet23: end ==== */
 
 /* ---- the inventory and the pictures of the talk ----
@@ -1213,8 +1259,9 @@ function hint23(){const ph=phase23();
   return['estate23',['hint_the_estate_1','hint_the_estate_2']]}
 
 /* ============ CHAPTER DEFINITION ============ */
-/* Birds: none from the storm to the beach, and none in the rain (CONTRIBUTING section 4). The estate on a fair day could have sparrows on
-   its wall: ART-TODO for the art pass (ROOMS.estate23.birds). */
+/* Birds: none from the storm to the beach, and none in the rain (CONTRIBUTING section 4). The estate on a fair day after the rain:
+   sparrows on the coping of the court wall, doves on the cornice of the house (shared/birds.js; they fly up when Luke comes near). */
+ROOMS.estate23.birds={perch:[{k:'sparrow',y:44.5,x:[154,163,175]},{k:'dove',y:9,x:[292,308],d:[-1,1]}]};
 /* every hotspot answers Luke as it answers Paul (see act: another member uses h.as[his id]) */
 for(const id of['stern23','lead23','bow23','hold23','bay23','wreck23','planks23','surf23','beach23','estate23','sick23','tablet23'])for(const h of ROOMS[id].hs)if(!h.as)h.as={luke23:h};
 for(const a of EVERY)if(a.hs&&!a.hs.as)a.hs.as={luke23:a.hs};
