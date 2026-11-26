@@ -16,12 +16,17 @@
    What the trailer leaves out on purpose: the light on the road to Damascus (a cut would make it flash; CONTRIBUTING section 3), the
    hidden treasures, and the answers to the puzzles: a puzzle is worked a move or two and never to its end. Every rule of CONTRIBUTING
    holds for what it shows, as in the game. A shot with live:1 (and the gameplay beat) is the player's: the recorder moves the mouse to
-   ptr and clicks there, and the game answers as it answers a player. */
+   ptr and clicks there, and the game answers as it answers a player.
+
+   The same shots make more than one film (CUTS, below, chosen by ?cut= in the page's address): "trailer", the film described above, and
+   "status", an upright film of 1080 x 1920 for a phone's status, 57 seconds on the short cut of the score. An upright film shows a part
+   of the wide picture, large (see UPRIGHT). */
 const TRAILER=(()=>{
 "use strict";
-const FPS=30,BAR=3,T0=.25,TAIL=5;
+const FPS=30,BAR=3,T0=.25;
 const at=b=>T0+b*BAR;
 const root=document.documentElement;
+const CUTNAME=new URLSearchParams(location.search).get('cut')||'trailer';
 /* ---------- the trailer's own layer over the game: cards, the pointer of the gameplay beat, and the fade ---------- */
 const css=document.createElement('style');css.textContent=`
 html.tr #top{display:none}
@@ -36,12 +41,69 @@ html.tr *{transition:none!important}
 #trcard.mid{top:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:52px;line-height:1.35}
 #trcard.end{bottom:40px;font-size:34px;line-height:1.5}
 #trptr{position:fixed;z-index:55;pointer-events:none;display:none;image-rendering:pixelated}
-#trfade{position:fixed;inset:0;z-index:60;background:#000;opacity:0;pointer-events:none}`;
+#trfade{position:fixed;inset:0;z-index:60;background:#000;opacity:0;pointer-events:none}
+/* UPRIGHT: the picture is a window on the view, --vx to the side, between a band of timber above it (to --py) and one below it (from --pb) */
+#trtopb,#trbotb,#trname,#trkeep{display:none}
+html.up body{display:block;background:#000}
+html.up #wrap{position:absolute;left:0;top:var(--py,0px)}
+html.up #view{translate:var(--vx,0px) 0}
+html.up #trtopb,html.up #trbotb{display:block;position:fixed;left:0;right:0;z-index:45;pointer-events:none;
+  background:#1c130c var(--wood);background-size:768px 192px;image-rendering:pixelated}
+html.up #trtopb{top:0;height:var(--py,0px);box-shadow:inset 0 -4px 0 #000,inset 0 -8px 0 #6a4c24}
+html.up #trbotb{top:var(--pb,100%);bottom:0;box-shadow:inset 0 4px 0 #000,inset 0 8px 0 #6a4c24}
+html.up #trname{display:flex;position:fixed;left:0;right:0;top:0;height:192px;z-index:46;align-items:center;justify-content:center;pointer-events:none}
+html.up #trkeep{display:block}
+html.up #trkeep canvas{position:fixed;left:0;z-index:47;filter:brightness(.72);box-shadow:0 4px 0 #000}
+html.up #trname canvas{image-rendering:pixelated;image-rendering:crisp-edges}
+html.up.v-title #trname,html.up.v-black #trname{display:none}
+html.up.v-ui #status{width:1080px;box-sizing:border-box}
+html.up .line{--s:7.5;max-width:980px;text-wrap:balance}
+html.up.v-title #overlay{left:calc(var(--vx,0px)*-1);right:auto;width:1080px;--s:var(--ls,4);--px:calc(var(--s)*.5px);padding-top:150px;justify-content:flex-start}
+html.up.v-title #overlay .lede{font-size:34px;line-height:1.35;max-width:900px;margin:20px 0 0;text-wrap:balance}
+html.up #trcard{left:40px;right:40px;text-wrap:balance;-webkit-text-stroke:10px #000}
+html.up #trcard.low{bottom:auto;top:calc(var(--pb) + 40px);height:auto;display:block;font-size:42px;line-height:1.4}
+html.up #trcard.mid{font-size:56px}
+html.up #trcard.end{bottom:auto;top:calc(var(--py) + 520px);font-size:39px;line-height:1.5}
+html.up #trcard.end b{display:block;font-size:64px;line-height:1.22;margin-bottom:26px;color:#fff3b8}`;
 document.head.appendChild(css);
 const el=(id,tag)=>{const e=document.createElement(tag||'div');e.id=id;document.body.appendChild(e);return e};
-const card=el('trcard'),ptrEl=el('trptr','img'),fadeEl=el('trfade');
+const card=el('trcard'),ptrEl=el('trptr','img'),fadeEl=el('trfade'),nameEl=el('trname'),keepEl=el('trkeep');el('trtopb');el('trbotb');
 const SCALE={scene:6,ui:5,title:5,black:6};
-function view(v){root.classList.add('tr');for(const k in SCALE)root.classList.toggle('v-'+k,k===v);root.style.setProperty('--s',SCALE[v])}
+/* UPRIGHT. An upright film is 1080 wide and the view 320, so it shows a window on the picture: s screen pixels to a room pixel (10 unless
+   the shot says otherwise: the backdrops are painted two pixels to a room pixel, so an even s keeps every one of them the same size)
+   and 1080 / s room pixels wide, 108 at 10, about a third of the picture. A shot says where the window stands in up: {s, x}: x is the
+   room pixel at its middle, [from, to] to move it evenly through the shot, or a function of the shot's progress (0 to 1) to follow
+   something. The frame from top to bottom: a band of timber 192 high with the game's name, small, painted by the title's own logo
+   painter; the picture, 1440 high; a band of timber with the card. A close view, where a puzzle must be seen whole, takes s: 4 and is
+   then a strip 576 high, so three of them fill the frame under the name: a shot with up.stack (0, 1 or 2) stands in that place, and when
+   it is over its last picture stays there, a little darker, while the next is worked under it (the shots of a stack are filmed one
+   after another; a shot without stack clears it). up.cardY sets the card somewhere else than under the picture. The gameplay beat
+   ('ui') keeps the status line and the verbs under its window, and the title's picture stands nearly as tall as the frame. What the
+   wide trailer never shows in close view stays out of the window (see the shots of the cut). */
+const UPS={scene:10,ui:6,title:8,black:10},UPH={scene:144,ui:208,title:210,black:144},UPTOP=192,UPPIC=1440;
+let UP=false,W=1920,H=1080;
+const upS=s=>(s.up&&s.up.s)||UPS[s.view];
+function aimWindow(s,k){const u=s.up||{},S=upS(s),x=typeof u.x==='function'?u.x.call(s,k):Array.isArray(u.x)?u.x[0]+(u.x[1]-u.x[0])*k:u.x==null?VW/2:u.x,
+    half=W/2/S,c=VW*S<=W?VW/2:clamp(x,half,VW-half);root.style.setProperty('--vx',Math.round(W/2-c*S)+'px')}
+/* keepLines: a line of the game stands over its speaker, who may be near the window's edge, and the narrator's in the middle of the view:
+   each is moved sideways until it stands inside the frame, the narrator's to its middle. The frame is narrow and the letters large, so
+   a line runs over more rows than in the game: a reference at its end is kept in one piece, as the game keeps it on the narrator's scroll */
+function keepLines(){for(const e of document.querySelectorAll('#speech .line')){
+  if(!e.dataset.tr){e.dataset.tr=1;const t=e.textContent,m=t.match(/\([^()]*\d+:\d+[^()]*\)\s*$/);
+    if(m){e.textContent=t.slice(0,m.index);const sp=document.createElement('span');sp.style.whiteSpace='nowrap';sp.textContent=m[0];e.appendChild(sp)}}
+  e.style.translate='';const r=e.getBoundingClientRect(),m=28;
+  const dx=/%$/.test(e.style.left)||!e.style.left?W/2-(r.left+r.width/2):r.left<m?m-r.left:r.right>W-m?W-m-r.right:0;if(dx)e.style.translate=Math.round(dx)+'px 0'}}
+function view(s){const v=s.view;root.classList.add('tr');root.classList.toggle('up',UP);for(const k in SCALE)root.classList.toggle('v-'+k,k===v);
+  if(!UP){root.style.setProperty('--s',SCALE[v]);return}
+  const S=upS(s),h=UPH[v]*S,st=s.up&&s.up.stack,py=v==='title'?Math.round((H-h)/2):st!=null?UPTOP+st*h:v==='ui'?UPTOP:Math.round(UPTOP+Math.max(0,UPPIC-h)/2);
+  if(!st)keepEl.textContent='';card.style.top=s.up&&s.up.cardY?s.up.cardY+'px':'';
+  root.style.setProperty('--s',S);root.style.setProperty('--py',py+'px');root.style.setProperty('--pb',(py+h)+'px');
+  /* the name above the picture, and how large the title's logo may stand in a frame this narrow: a whole or a half number of pixels */
+  const L=SHARED.logo,name=T('paul_of_tarsus'),sub=T('on_the_roads_of_rome');
+  if(L&&L.can(name+sub)){const a=L.paint(name,sub);root.style.setProperty('--ls',Math.min(4.5,Math.floor((W-120)/(a.width/2)*2)/2));
+    if(!nameEl.firstChild){const c=document.createElement('canvas');c.width=a.width;c.height=a.height;c.getContext('2d').drawImage(a,0,0);
+      const z=Math.min(3,Math.floor((W-160)/(a.width/2)*2)/2);c.style.width=a.width/2*z+'px';c.style.height=a.height/2*z+'px';nameEl.appendChild(c)}}
+  try{aimWindow(s,0)}catch(e){}}
 
 /* ---------- the cards ---------- */
 const NUM={en:['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen',
@@ -56,8 +118,16 @@ const CARD={
   /* counted from the game, so that it stays true as chapters are added */
   chapters:{en:()=>cap(NUM.en[chapters()])+' chapters and a prologue',de:()=>cap(NUM.de[chapters()])+' Kapitel und ein Prolog'},
   langs:{en:'In English and German',de:'Auf Englisch und Deutsch'},
+  /* the release, for the upright film (the maintainer's choice, 2026-11-26): it says what the chapters' own card says, so that one goes */
+  now:{en:()=>'Now complete:\nall '+chapters()+' chapters',de:()=>'Jetzt vollständig:\nalle '+chapters()+' Kapitel'},
   free:{en:'Free · no ads · plays in your browser\npaul-of-tarsus.theunknownones.net',de:'Kostenlos · ohne Werbung · im Browser spielbar\npaul-of-tarsus.theunknownones.net'}};
 const cardText=k=>{const c=CARD[k],v=c[G.lang]||c.en;return typeof v==='function'?v():v};
+/* a shot's card is one of them, or two: then the first stands large over the second */
+const cardKey=s=>s.card?String(s.card):'';
+/* in an upright film a line too long for the frame is divided at its last dot */
+const cardLines=k=>UP?cardText(k).split('\n').map(l=>l.length>38&&l.includes(' \u00b7 ')?l.slice(0,l.lastIndexOf(' \u00b7 '))+'\n'+l.slice(l.lastIndexOf(' \u00b7 ')+3):l).join('\n'):cardText(k);
+function cardShow(s){if(!Array.isArray(s.card)){card.textContent=cardLines(s.card);return}
+  card.textContent='';s.card.forEach((k,i)=>{const e=document.createElement(i?'span':'b');e.textContent=cardLines(k);card.appendChild(e)})}
 
 /* ---------- helpers for the shots ---------- */
 /* room: open a room of a chapter at a point in its story: the flags up to and with one of the chapter's flags (upto), and any others
@@ -91,7 +161,7 @@ const roomAt=(x,y)=>{const r=$('#view').getBoundingClientRect(),s=r.width/VW;ret
 const click=async ms=>{ptr.click=1;await wait(ms||0)};
 /* live: the game is the player's during the shot (the pointer works it), as in the gameplay beat */
 function live(x,y){G.busy=false;lock(false);drawInv();status();const r=$('#view').getBoundingClientRect();ptr={x:r.left+r.width*x,y:r.top+r.height*y,click:0}}
-const SHOTS=[
+const TRAILER_SHOTS=[
   /* the harp: the sea at sunset, the ship bound for Cyprus (Chapter Four) */
   {id:'voyage',bar:0,bars:2,view:'scene',card:'from',
    async setup(){await scene(4,'voyage');G.sea={k:.04}},
@@ -191,6 +261,46 @@ const SHOTS=[
   /* the title: the opening picture, its name over the tentmaker's bench by lamplight, and where to play */
   {id:'title',bar:29,bars:3,view:'title',card:'free',first:1}];
 
+/* ---------- the cuts ---------- */
+/* take: a shot of the trailer in another cut: the bar where it begins there and how many it lasts, its card there (none unless it is
+   given), its window in an upright film (up), and anything else that differs */
+const BY=Object.fromEntries(TRAILER_SHOTS.map(s=>[s.id,s]));
+const take=(id,bar,bars,o)=>Object.assign({},BY[id],{bar,bars,card:null},o);
+/* w, h: the size of the film; tail: seconds after the last bar (the score's own tail); fade: seconds of the fade from black at the
+   beginning, how long before the end the fade to black begins, and how long it takes; up: an upright film (see UPRIGHT) */
+const CUTS={
+  trailer:{w:1920,h:1080,tail:5,fade:[1.4,2.2,1.8],shots:TRAILER_SHOTS},
+  /* The film for a phone's status (2026-11-26; the maintainer chose its length, the window on the picture, the release line and "more
+     puzzles, fewer places"): 57 seconds on the short cut of the score (tools/trailer/score.js), whose bars it follows. It does not fade
+     in, because a phone shows a film's first frame as its picture in a list. The ney: the voyage, the basket with its narration (the
+     window comes from the moon along the wall to the basket), the sundial; the climb: the gameplay beat; the impact and the theme a step
+     higher: the Areopagus, and the three puzzles, each seen whole; the height: the donkey on the road (the window walks with it), the
+     stairs in Jerusalem, the storm, the road to Rome on the map; the last turn: the lodging in Rome and the bench; the title, with
+     the release. What the game keeps small and far stays out of the windows: the image on the Acropolis (the window ends left of it),
+     the standards of the hall at Caesarea (that shot is left out) and the swan's neck of the ship's stern (the window stands right of
+     it), CONTRIBUTING section 3. */
+  status:{w:1080,h:1920,tail:3,up:1,fade:[0,1.3,1.1],shots:[
+    take('voyage',0,1,{card:'from',up:{x:[212,222]}}),
+    take('wall',1,2,{up:{x:k=>248-140*ease(clamp((k-.05)/.42,0,1))}}),
+    take('dial',3,1,{card:'three',up:{x:157}}),
+    take('play',4,2,{card:'three',up:{x:184}}),
+    take('areopagus',6,1,{up:{x:[184,194]}}),
+    /* the three puzzles fill the frame one under the other; their card stands in the timber where the third will come, and goes with it */
+    take('board',7,1,{card:'puzzles',up:{s:4,stack:0,cardY:1575}}),
+    take('bolt',8,1,{card:'puzzles',up:{s:4,stack:1,cardY:1575}}),
+    take('scrolls',9,1,{up:{s:4,stack:2}}),
+    /* a little farther along the road than in the trailer, so that the window, which walks with the donkey, has the hills and the sea
+       behind the three and not the edge of the picture */
+    take('road',10,1,{up:{x(){return -42+420*G.trek.k}},
+      async setup(){await scene(3,'road');G.trek={k:.33}},async play(){await tween(3000,k=>{G.trek.k=.33+k*3/17})}}),
+    take('stairs',11,1,{up:{x:[224,228]}}),
+    take('storm',12,1,{up:{x:218}}),
+    take('map',13,1,{up:{x:80}}),
+    take('lodging',14,1,{up:{x:[130,136]}}),
+    take('bench',15,1,{card:'langs',up:{x:[176,184]}}),
+    take('title',16,2,{card:['now','free'],up:{x:165}})]}};
+const CUT=CUTS[CUTNAME]||CUTS.trailer,SHOTS=CUT.shots;UP=!!CUT.up;W=CUT.w;H=CUT.h;
+
 /* During a shot the game says only the shot's own lines: a thought or a call that the game would say on its own, at a moment the cut
    does not show whole, is left unsaid (it ends at once, as if clicked away). A shot with free:1 lets the game say what it says. */
 let cur=null;
@@ -200,34 +310,40 @@ say=function(a,text,o){if(cur&&!cur.free&&!(cur.says||[]).some(x=>x[1]===text))r
 function quiet(){for(let n=0;n<20&&G.skip;n++)G.skip();$('#speech').innerHTML=''}
 
 /* ---------- what the recorder calls ---------- */
-const LEN=at(SHOTS.at(-1).bar+SHOTS.at(-1).bars)+TAIL;
+const LEN=at(SHOTS.at(-1).bar+SHOTS.at(-1).bars)+CUT.tail;
 const startOf=s=>s===SHOTS[0]?0:at(s.bar),endOf=s=>s===SHOTS.at(-1)?LEN:at(s.bar+s.bars);
 return{
   ready:()=>typeof G!=='undefined'&&G.splash===1&&!!SHARED.splash&&!!ov.querySelector('h1'),
   plan:()=>{const gaps=[];SHOTS.forEach((s,i)=>{if(i&&s.bar!==SHOTS[i-1].bar+SHOTS[i-1].bars)gaps.push(s.id)});
-    return{fps:FPS,length:LEN,gaps,shots:SHOTS.map(s=>({id:s.id,at:startOf(s),len:endOf(s)-startOf(s),first:!!s.first,ui:s.view==='ui',look:s.look||[]}))}},
+    return{cut:CUTS[CUTNAME]?CUTNAME:'trailer',cuts:Object.keys(CUTS),w:W,h:H,fps:FPS,length:LEN,gaps,shots:SHOTS.map(s=>({id:s.id,at:startOf(s),len:endOf(s)-startOf(s),first:!!s.first,ui:s.view==='ui',look:s.look||[]}))}},
   /* every line the shots say, for the recorder to find in the game's files */
   lines:()=>SHOTS.flatMap(s=>(s.says||[]).map(x=>({shot:s.id,text:x[1]}))),
-  async prepare(i){const s=SHOTS[i];cur=s;__clock.run();ptr=null;ptrEl.style.display='none';view(s.view);card.className='';card.textContent='';fadeEl.style.opacity=0;
-    if(s.setup)await s.setup();await new Promise(r=>setTimeout(r,150));quiet();
+  async prepare(i){const s=SHOTS[i];cur=s;__clock.run();ptr=null;ptrEl.style.display='none';view(s);card.className='';card.textContent='';fadeEl.style.opacity=0;
+    if(s.setup)await s.setup();if(UP)aimWindow(s,0);await new Promise(r=>setTimeout(r,150));quiet();
     /* the shot's lines must have their translation in this language */
     return(s.says||[]).filter(x=>G.lang!=='en'&&T.peek(x[1])==null).map(x=>x[1])},
   start(i){const s=SHOTS[i];__clock.stop();if(s.play)s.play.call(s).catch(e=>console.error('play '+s.id+': '+(e.stack||e)))},
   /* frame: the trailer's layer at time t of the film: the shot's card, faded in and out, the fade from and to black; and where the
      pointer is, if the shot has one, for the recorder to move the mouse there */
-  frame(i,t){const s=SHOTS[i],k=s.card;let i0=i,i1=i;while(k&&i0>0&&SHOTS[i0-1].card===k)i0--;while(k&&i1<SHOTS.length-1&&SHOTS[i1+1].card===k)i1++;
-    const a=startOf(SHOTS[i0]),e=endOf(SHOTS[i1]);
+  frame(i,t){const s=SHOTS[i],k=cardKey(s);let i0=i,i1=i;while(k&&i0>0&&cardKey(SHOTS[i0-1])===k)i0--;while(k&&i1<SHOTS.length-1&&cardKey(SHOTS[i1+1])===k)i1++;
+    const a=startOf(SHOTS[i0]),e=endOf(SHOTS[i1]),[f0,f1,f2]=CUT.fade;
     /* a scene stays a scene: no script that ends during it hands the game to the player, so nothing that waits for the player is drawn */
     if(s.view!=='ui'&&!s.live){G.busy=true;G.hover=null}
-    if(k){card.className=s.view==='black'?'mid':s.view==='title'?'end':'low';card.textContent=cardText(k);
-      const u=s.view==='title'?Math.min(t-a-2.5,e-1.8-t):Math.min(t-a-.25,e-.25-t);card.style.opacity=Math.max(0,Math.min(1,u/.45))}
+    /* an upright film: where the window stands now, and the game's lines inside the frame */
+    if(UP){aimWindow(s,clamp((t-startOf(s))/(endOf(s)-startOf(s)),0,1));keepLines()}
+    if(k){card.className=s.view==='black'?'mid':s.view==='title'?'end':'low';cardShow(s);
+      const u=s.view==='title'?Math.min(t-a-(UP?1:2.5),e-(UP?1.5:1.8)-t):Math.min(t-a-.25,e-.25-t);card.style.opacity=Math.max(0,Math.min(1,u/.45))}
     else card.style.opacity=0;
-    fadeEl.style.opacity=t<1.4?1-t/1.4:t>LEN-2.2?Math.min(1,(t-(LEN-2.2))/1.8):0;
+    fadeEl.style.opacity=t<f0?1-t/f0:t>LEN-f1?Math.min(1,(t-(LEN-f1))/f2):0;
     if(!ptr)return null;const r={x:Math.round(ptr.x),y:Math.round(ptr.y),click:ptr.click};ptr.click=0;return r},
   /* cursor: paint the game's pointer where the mouse is, as the game would show it there */
   cursor(x,y){const inView=document.elementFromPoint(x,y)?.closest('#view'),kind=inView?pointerKind(G.hover):'default',
-    c=pointerArt(3,kind),s=1;ptrEl.src=c.toDataURL();ptrEl.style.width=c.width*s+'px';ptrEl.style.left=(x-c.hx*3*s)+'px';ptrEl.style.top=(y-c.hy*3*s)+'px';ptrEl.style.display='block'},
-  end(){cur=null;__clock.run();ptrEl.style.display='none'},
+    u=UP&&cur?Math.max(3,Math.round(upS(cur)/2)):3,c=pointerArt(u,kind);ptrEl.src=c.toDataURL();ptrEl.style.width=c.width+'px';ptrEl.style.left=(x-c.hx*u)+'px';ptrEl.style.top=(y-c.hy*u)+'px';ptrEl.style.display='block'},
+  /* end: a shot of a stack leaves its last picture where it stood (see UPRIGHT): the part of the game's canvas that its window showed */
+  end(i){const s=SHOTS[i];if(UP&&s&&s.up&&s.up.stack!=null){const S=upS(s),c=document.createElement('canvas'),g=c.getContext('2d'),q=cv.width/VW,
+      x=-parseFloat(root.style.getPropertyValue('--vx'))/S;c.width=W;c.height=VH*S;g.imageSmoothingEnabled=false;
+    g.drawImage(cv,x*q,0,W/S*q,VH*q,0,0,W,VH*S);c.style.top=root.style.getPropertyValue('--py');keepEl.appendChild(c)}
+    cur=null;__clock.run();ptrEl.style.display='none'},
   info:async ch=>{await loadLevel(ch);setChapter(ch);const C=CHAP[ch],out={rooms:C.rooms,flags:C.flags,ent:C.ent,cast:{}};
     for(const r of C.rooms){const who=st=>{setChapter(ch);for(const k of st)F[k]=1;try{if(C.place)C.place(r)}catch(e){return'place failed'}
       return Object.values(ACT).filter(a=>a.room===r).map(a=>a.id+'@'+Math.round(a.x)+','+Math.round(a.y))};
