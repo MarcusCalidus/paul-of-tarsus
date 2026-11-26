@@ -166,7 +166,7 @@ TEXTS('de',22,{
   "pilot_the_officer_decides":["Rede mit dem Offizier. Auf diesem Schiff hat er das letzte Wort.","1nvhn0c"],
   "shipowner_look22":["Der Schiffseigentümer, ein wohlhabender Mann aus Alexandria. Das Schiff und seine Fracht gehören ihm.","1vdkx5h"],
   "owner_the_officer_decides":["Der Offizier entscheidet, wo wir überwintern.","0qdarsh"],
-  "pilot_this_bay_is_no_place_to_winter":["Die Bucht liegt offen, wenn im Winter die schwere See kommt. Hier sitzt man keinen Winter aus.","1pcaeks"],
+  "pilot_this_bay_is_no_place_to_winter":["Gegen die schwere See im Winter bietet die Bucht keinen Schutz. Hier sitzt man keinen Winter aus.","1pcaeks"],
   "owner_phoenix_is_a_day_west":["Phönix liegt etwa eine Tagesfahrt westlich. Ein besserer Hafen. Das schaffen wir.","16r2zti"],
   "paul_i_said_it_as_plainly_as_i_could":["Ich habe es so klar gesagt, wie ich konnte. Die Entscheidung lag nie bei mir.","177ewzu"],
   "julius_keep_near_my_men":["Bleib in der Nähe meiner Männer.","0zk5ob6"],
