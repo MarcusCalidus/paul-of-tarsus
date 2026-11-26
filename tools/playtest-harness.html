@@ -673,7 +673,7 @@
     window.SHEETS=SHEETS;halt('cast')}
   /* Shipwreck survivor clothing & reusable Roman military cast (shared/cast.js): standing, facing left, mid-stride, and enlarged close-ups.
      Both stops also verify that every look stays one connected piece across standing, talking, seated and all walking frames. */
-  if(stop==='shipwreck'||stop==='romans'||stop==='sanhedrin'||stop==='caesarea'){await need('cast');const SHEETS={},C=SHARED.cast,
+  if(stop==='shipwreck'||stop==='romans'||stop==='sanhedrin'||stop==='caesarea'||stop==='sea'){await need('cast');const SHEETS={},C=SHARED.cast,
       sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,w,h);return[c,g]},
       text=(g,t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},
       cut=(g,sp,x0,y0,w,h,dx,dy,z)=>g.drawImage(sp,FIG.OX+x0,FIG.OY+y0,w,h,dx,dy,w*z,h*z),
@@ -847,7 +847,60 @@
       const y2=36+Math.ceil(nT/cols2)*dh;HAIR.forEach(([nm,o],i)=>head(o,i%2?-1:1,i%3?2:0,0,0,i*dw,y2,'diadem: '+nm,i+1,'d'+i));
       JEW.forEach(([nm,o,dir,t],i)=>head(o,dir,t,0,0,i*dw,y2+dh,nm,i,'j'+i));
       SHEETS['cast-caesarea-detail']=cd.toDataURL();
-      window.SHEETS=SHEETS;halt('caesarea')}}
+      window.SHEETS=SHEETS;halt('caesarea')}
+    /* The sea (Acts 27:1-28:10; Chapters Twenty-Two and Twenty-Three), shared/cast.js SEA: every look one piece standing, speaking, seated
+       and walking; the ship's company in short tunics and barefoot, everyone from the wreck wet and torn and made from his own dry look, the
+       islanders dry in long tunics with a head cloth or a veil, and Publius a Roman at home with no toga, purple or wreath. cast-sea.png
+       shows each look dry beside wet, and the islanders and Publius's house, three times enlarged, with Paul, Luke, Aristarchus and Julius as
+       SHIPWRECK paints them for comparison; cast-sea-detail.png every head eight times enlarged, and hems and feet six times. Look there for
+       a head cloth that reads as a ring round the head, a beard that comes apart, and a cross in a stripe, a tear or a belt. */
+    if(stop==='sea'){const S=C.SEA,W=C.SHIPWRECK,K=C.CAESAREA,ids=Object.keys(S),dry=ids.filter(k=>!/_wet$/.test(k)),wet=ids.filter(k=>/_wet$/.test(k));checkSet(S,'sea');
+      const crew=['pilot','sailor_1','sailor_2','sailor_3','sailor_4','ship_boy','coaster_sailor_1','coaster_sailor_2'],isl=dry.filter(k=>/^islander_/.test(k));
+      ok(['pilot','shipowner','sailor_1','sailor_2','sailor_3','sailor_4','ship_boy','coaster_sailor_1','coaster_sailor_2','prisoner_1','prisoner_2','prisoner_3','prisoner_old',
+        'merchant','soldier_mail','soldier_unmailed','islander_elder','islander_1','islander_2','islander_3','islander_4','islander_5','publius','publius_father','household_1','household_2'].every(k=>S[k]),
+        'the sea: '+dry.length+' looks dry and '+wet.length+' wet, every one the chapters ask for');
+      ok(wet.every(k=>S[k].wet&&S[k].torn&&S[k.replace(/_wet$/,'')]&&S[k].skin===S[k.replace(/_wet$/,'')].skin)&&dry.every(k=>!S[k].wet&&!S[k].torn),
+        'everyone from the wreck is wet and torn, each made from his own dry look; nobody dry is wet');
+      ok(crew.every(k=>!S[k].long&&!S[k].cloak&&S[k].barefoot)&&crew.filter(k=>S[k+'_wet']).every(k=>S[k+'_wet'].barefoot),'the sailors and the pilot are barefoot in short tunics');
+      ok(isl.length>=5&&isl.every(k=>S[k].long&&(S[k].wrap||S[k].veil))&&!crew.some(k=>S[k].long)&&isl.filter(k=>S[k].veil).length>=2,'the islanders wear long tunics, the men a head cloth and the women a veil');
+      ok(!S.publius.toga&&!S.publius.clavus&&!S.publius.edge&&!S.publius.diadem&&S.publius.himation&&S.publius.ring&&!S.publius.beard&&ids.every(k=>!S[k].diadem&&!S[k].toga&&!S[k].clavus&&!S[k].edge),
+        'Publius is a Roman at home in a tunic and mantle, with no toga, purple or wreath, and nobody here wears a sign of office');
+      ok(S.publius_father.long&&!S.publius_father.cloak&&!S.publius_father.belt&&S.soldier_mail_wet.armor&&!S.soldier_unmailed.armor&&!S.soldier_unmailed_wet.armor&&!S.soldier_unmailed_wet.barefoot&&!S.soldier_mail_wet.gladius,
+        'his father in a plain long tunic; the soldier in his mail and with it off, in his boots, his sword lost');
+      {const same=(a,b)=>JSON.stringify(Object.keys(a).filter(k=>!/^(p|gt|ph|barefoot)$/.test(k)).sort().map(k=>[k,a[k]]))===JSON.stringify(Object.keys(b).filter(k=>!/^(p|gt|ph|barefoot)$/.test(k)).sort().map(k=>[k,b[k]]));
+        ok(same(S.sailor_1_wet,W.sailor_wet)&&same(S.prisoner_1_wet,W.prisoner_wet)&&same(W.luke_dry,K.luke),'the sailor and the prisoner of the shipwreck sheet are the same men here, and Luke is the same man')}
+      const PAIR=k=>[[k,S[k]],[k+' wet',S[k+'_wet']]],
+        ROWS=[
+        ['The grain ship of Alexandria (27:6, 11): the pilot and the shipowner, dry and after the wreck',[...PAIR('pilot'),...PAIR('shipowner'),['pilot walking',S.pilot,1,10],['pilot speaking (L)',S.pilot,-1,0,2,2],['shipowner walking',S.shipowner,-1,8],['shipowner seated',S.shipowner,1,-1]]],
+        ['Sailors of the grain ship, barefoot in short tunics, told apart on a crowded deck, dry and after the wreck',[...PAIR('sailor_1'),...PAIR('sailor_2'),...PAIR('sailor_3'),...PAIR('sailor_4')]],
+        ['The ship\'s boy, and the two sailors of the coaster of Adramyttium (27:2)',[...PAIR('ship_boy'),['boy walking',S.ship_boy,1,8],['boy seated',S.ship_boy,-1,-1],['coaster_sailor_1',S.coaster_sailor_1],['coaster_sailor_2',S.coaster_sailor_2,-1,0],['coaster 1 walking',S.coaster_sailor_1,1,12],['coaster 2 speaking',S.coaster_sailor_2,1,0,3,2]]],
+        ['The other prisoners (27:1): plain and worn, one of them old',[...PAIR('prisoner_1'),...PAIR('prisoner_2'),...PAIR('prisoner_3'),...PAIR('prisoner_old')]],
+        ['A merchant who travels as a passenger, and a soldier of the guard in his mail and with it off (27:42-44)',[...PAIR('merchant'),...PAIR('soldier_mail'),...PAIR('soldier_unmailed'),['old prisoner wet walking',S.prisoner_old_wet,1,10],['merchant wet seated',S.merchant_wet,-1,-1]]],
+        ['For comparison, as SHIPWRECK paints them: Paul, Luke, Aristarchus and Julius',[['Paul',W.paul_dry],['Paul wet',W.paul_wet],['Luke',W.luke_dry],['Luke wet',W.luke_wet],['Aristarchus',K.aristarchus],['Aristarchus wet',W.aristarchus_wet],['Julius',W.julius_dry],['Julius wet',W.julius_wet]]],
+        ['The islanders of Malta (28:1, 2), dry: long tunics, a head cloth or a veil, the earth colors of country people',[['islander_elder',S.islander_elder],['elder speaking (L)',S.islander_elder,-1,0,2,2],['islander_1',S.islander_1],['islander_2',S.islander_2,-1,0],['islander_3',S.islander_3],['islander_4',S.islander_4,-1,0],['islander_5',S.islander_5],['islander_5 walking',S.islander_5,-1,10]]],
+        ['Publius, the principal man of the island (28:7), his father (28:8), and people of his household',[['publius',S.publius],['publius (L)',S.publius,-1,0],['publius walking',S.publius,1,10],['publius_father',S.publius_father],['father walking',S.publius_father,-1,10],['father seated',S.publius_father,1,-1],['household_1',S.household_1],['household_2',S.household_2,-1,0]]],
+        ['On the beach (28:2): the islanders dry beside the shipwrecked; seated, as everyone sits',[['elder (L)',S.islander_elder,-1,0,1,2],['Luke wet',W.luke_wet,1,0],['islander_3 (L)',S.islander_3,-1,0],['sailor_2 wet',S.sailor_2_wet,1,0],['islander_1 seated',S.islander_1,1,-1],['islander_4 seated',S.islander_4,-1,-1],['old prisoner wet seated',S.prisoner_old_wet,1,-1],['boy wet seated',S.ship_boy_wet,-1,-1]]]
+      ];
+      const Z=3,cw=156,chh=408,cols=8,hdr=30,[c,g]=sheet(cols*cw,36+ROWS.length*(hdr+chh));
+      text(g,'The sea (Acts 27:1-28:10): the ship\'s company dry and after the wreck, the islanders of Malta and the house of Publius, three times enlarged',12,24,15,'#f4f0e6');
+      ROWS.forEach(([title,items],r)=>{const ry=36+r*(hdr+chh);g.fillStyle='#4a5464';g.fillRect(0,ry,cols*cw,hdr);text(g,title,12,ry+20,12,'#f4f0e6');
+        items.forEach(([nm,o,dir,fr,talk,ge],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);
+          const sp=sprite(['sea',r,i].join('|'),q=>person(q,0,0,o,dir||1,fr||0,talk||0,0,ge||0,0),dir||1);
+          cut(g,sp,-24,-126,48,127,x+Math.floor((cw-48*Z)/2),y+chh-22-126*Z,Z);text(g,nm,x+6,y+chh-6,11)})});
+      SHEETS['cast-sea']=c.toDataURL();
+      /* eight times: every head of the group speaking (the wet ones beside the dry), facing right; then hems, belts and feet six times */
+      const HD=dry.flatMap(k=>S[k+'_wet']?[k,k+'_wet']:[k]),
+        HM=[['pilot wet',S.pilot_wet,1,0],['sailor_2 walking',S.sailor_2,1,10],['sailor_4 wet',S.sailor_4_wet,1,0],['ship_boy wet',S.ship_boy_wet,-1,0],['prisoner_old wet',S.prisoner_old_wet,1,0],
+          ['soldier_mail wet',S.soldier_mail_wet,1,0],['soldier_unmailed wet',S.soldier_unmailed_wet,-1,10],['islander_1 (stripe)',S.islander_1,1,0],['islander_elder walking',S.islander_elder,1,12],['publius_father',S.publius_father,1,0]],
+        ZD=8,dw=208,dh=300,cols2=8,cw2=dw*cols2/5,[cd,gd]=sheet(cols2*dw,36+Math.ceil(HD.length/cols2)*dh+Math.ceil(HM.length/5)*dh);
+      text(gd,'Eight times: every head of the sea, dry and wet (above); six times: hems, belts and feet (below)',12,24,14,'#f4f0e6');
+      HD.forEach((k,i)=>{const o=S[k],x=(i%cols2)*dw,y=36+Math.floor(i/cols2)*dh,f=o.veil||o.fem,kid=o.h?1:0,top=4+(kid?19:23)+(kid?13:16)+3+(kid?22:f?24:26)+20;field(gd,i,x,y,dw,dh);
+        cut(gd,sprite(['seah',k].join('|'),q=>person(q,0,0,o,1,0,2,0,0,0,0),1),-13,-top-6,26,36,x,y,ZD);text(gd,k,x+6,y+dh-8,11)});
+      const y2=36+Math.ceil(HD.length/cols2)*dh;
+      HM.forEach(([nm,o,dir,fr],i)=>{const x=(i%5)*cw2,y=y2+Math.floor(i/5)*dh;field(gd,i+1,x,y,cw2,dh);
+        cut(gd,sprite(['seam',i].join('|'),q=>person(q,0,0,o,dir,fr,0,0,0,0,0),dir),-26,-46,52,48,x+Math.floor((cw2-52*6)/2),y,6);text(gd,nm,x+6,y+dh-8,11)});
+      SHEETS['cast-sea-detail']=cd.toDataURL();
+      window.SHEETS=SHEETS;halt('sea')}}
   /* Dynamic cast & contact shadows in figure() (issue #81): floor skew, foreground-lamp back-wall bend, prop/actor ordering, pitch-dark
      zero shadow, multi-lamp steadiness across 110ms flame ticks, solid-wall clipping, and enlarged/gallery sheets across all 22 rooms. */
   /* deck (shared/ship.js, view 'deckAft'): the deck of a coaster seen from aboard, looking aft, in its three lights. It checks the one

@@ -9,6 +9,9 @@
      the military commanders, two brothers of Caesarea, and the shared looks of Luke, Philip and Aristarchus (Acts 24:1-26:32).
    - shipwrecked(look, opts): turns any look into wet, torn shipwreck survivor clothing for Acts 27-28 (Chapter Twenty-Three).
    - SHIPWRECK: ready-to-use shipwreck survivor looks (Paul, Luke, Aristarchus, Julius, escort soldier, sailor, fellow prisoner).
+   - SEA: the people of the voyage and of Malta (Acts 27:1-28:10; Chapters Twenty-Two and Twenty-Three): the pilot, the shipowner, the
+     sailors of the grain ship and of the coaster, the other prisoners, a merchant, a soldier with and without his mail, dry and wet;
+     the islanders of Malta, Publius, his father and his household.
    - custody: the two chains of Acts 21:33, the soldiers who hold Paul by the arms (22:25), and the knot that carries him up the stairs
      (21:35), for Chapter Eighteen (see below; the poses are the figure painter's, index.html CUFF).
    Historical dress follows wol.jw.org (Insight on the Scriptures, The Watchtower on Ephesians 6 armor, centurions, and the Praetorian Guard). */
@@ -250,6 +253,98 @@ const SHIPWRECK={
   prisoner_wet:shipwrecked(PRISONER,{torn:2,barefoot:1})
 };
 
+/* ---- the sea (Acts 27:1-28:10; Chapters Twenty-Two and Twenty-Three) ----
+   No source describes how anyone on the ship or on the island was dressed (see the chapters' facts), so every look here is invented, as is
+   plausible for 58 C.E. and as the earlier chapters dress seamen and country people. Nobody here has a name but Publius (Acts 28:7); Luke,
+   Aristarchus, Julius and the soldiers are the looks above (CAESAREA.luke, CAESAREA.aristarchus, ROMAN, and SHIPWRECK for them wet).
+   Every arm is down, bent or folded; nobody wears a strap across the body or a knife in his belt (a belt is the engine's, as
+   every figure in the game wears it), and a head cloth is the engine's wrap, which lies close round the head (CONTRIBUTING section 3). Every look ending in _wet is the look before it after the
+   wreck, made by shipwrecked(): soaked, torn, its mantle lost; the islanders, Publius and his house are dry.
+   The grain ship of Alexandria (27:6):
+     pilot             the steersman (27:11): an old hand of the sea, weathered dark, his beard grey, a dark blue head cloth against the sun
+                       and the spray, a short brown tunic, barefoot.
+     shipowner         the owner of the ship and her cargo (27:11), a man of means from Alexandria: a long fine tunic with long sleeves and a
+                       band of blue at the hems, a sea-green mantle wrapped over it (himation), sandals, one ring; his beard close and his
+                       hair receding. Nothing on him is the sign of a god.
+     sailor_1 .. _4    sailors, barefoot in short tunics, each told apart at a glance on a crowded deck: sailor_1 the sailor of the earlier
+                       sheets (SHIPWRECK.sailor_wet), short beard, a sand-colored tunic; sailor_2 young, dark, his hair cropped, a cloth bound
+                       round his forehead and a madder-red tunic; sailor_3 bald, with a grey full beard and a slate-blue tunic; sailor_4 a
+                       faded yellow head cloth, a young beard and an olive tunic.
+     ship_boy          a boy of the crew, barefoot, in an undyed tunic.
+   The coaster of Adramyttium (27:2): coaster_sailor_1, a burly man with a full beard in a grey-green tunic, and coaster_sailor_2, an olive
+     head cloth and a short beard, in a brown tunic; both barefoot.
+   The other prisoners (27:1), plain and worn, in drab short tunics: prisoner_1 the prisoner of the earlier sheets (SHIPWRECK.prisoner_wet),
+     slim; prisoner_2 with a full black beard, in a brown tunic; prisoner_3 young, his hair receding early, a brown beard, barefoot; prisoner_old
+     an old man with a long white beard in a long tunic, who walks with short steps.
+   merchant            a passenger traveling on his own business: a long saffron tunic with a brown band at the hem, a traveling mantle
+                       over his shoulders, a full beard, a ring and good shoes.
+   soldier_mail, soldier_unmailed   a soldier of the guard aboard, in mail and his belt with its sword, bareheaded at sea; and the same man
+                       with his mail off, in his tunic, belt and boots: the one who cannot swim in it (Chapter Twenty-Three's planks).
+   The islanders of Malta (28:1, 2): of Phoenician descent under Roman rule, with a language of their own. Country people, dry, in long
+     tunics, some woven with a stripe, in the earth colors of undyed and plant-dyed wool, the men with a head cloth, the women with a veil,
+     so that they are plainly another people than the ship's company in its short tunics.
+     islander_elder    the older man who talks with Luke: a long white beard, a pale head cloth, a striped brown tunic and an umber mantle.
+     islander_1, _2    men: a striped wheat-colored tunic and a rust head cloth with a full black beard; a dark tunic, an ochre mantle and a
+                       pale head cloth with a young beard.
+     islander_3, _4    women: a veil of dark umber over an ochre tunic; an older woman, her hair greying under a rust veil.
+     islander_5        a young man, beardless, a striped tunic and a sand-colored head cloth (he brings the sticks).
+   Publius and his house (28:7-10):
+     publius           "the principal man of the island", probably the leading Roman officer there and a man of lands (Insight on the
+                       Scriptures, "Publius"): a Roman of standing at home, clean-shaven, his dark hair cropped and greying, a clean white
+                       long tunic and a mantle of fine undyed wool wrapped over it, good shoes and a ring. No toga, no purple, no wreath.
+     publius_father    his father, an old man, clean-shaven, his white hair thin and cropped, in a plain long tunic without a belt: in bed
+                       with fever and dysentery (28:8), and later on his feet.
+     household_1, _2   people of his household: a manservant in a short tunic, and a woman of the house in a long tunic, her hair bound up. */
+const SAILOR_1=Object.assign({},SAILOR_ALEX,{barefoot:1,ph:11500});
+const SEA_DRY={
+  pilot:{skin:'#94603a',hair:'#6a625a',beard:'#8a847a',grey:'#b4aea4',fullBeard:1,brow:'#5a524a',wrap:'#3e4e62',tunic:'#7a6450',belt:'#2e2016',barefoot:1,ph:11700},
+  shipowner:{skin:'#ac784c',hair:'#2e2420',grey:'#7e766e',beard:'#3a2e26',shortBeard:1,receding:1,brow:'#241a12',tunic:'#ece6d6',long:1,longSleeve:1,trim:'#2e5a72',
+    cloak:'#2e5a56',himation:1,belt:'#6a4a26',ring:1,shoes:'#6a4026',ph:11900},
+  sailor_1:SAILOR_1,
+  sailor_2:{skin:'#8a5632',hair:'#1e1410',brow:'#1a100a',crop:1,slim:1,tunic:'#8e3c2c',belt:'#2e2016',sweat:'#d8ccb0',barefoot:1,ph:12100},
+  sailor_3:{skin:'#a06a40',hair:'#7a746c',beard:'#8a847c',grey:'#b8b2aa',bald:1,fullBeard:1,brow:'#5a544e',tunic:'#5a6a76',belt:'#2a2018',barefoot:1,ph:12300},
+  sailor_4:{skin:'#b07a4c',wrap:'#c4a040',beard:'#3a2a1a',shortBeard:1,brow:'#1e140c',tunic:'#6c7650',belt:'#3a2a1a',barefoot:1,ph:12500},
+  ship_boy:{skin:'#a8703f',hair:'#2a1a10',brow:'#1e120c',h:1,tunic:'#cabb94',belt:'#5a4030',barefoot:1,ph:12700},
+  coaster_sailor_1:{skin:'#a06a3e',hair:'#3a2a1a',beard:'#3e2e20',fullBeard:1,brow:'#2a1c12',tunic:'#66766a',belt:'#2e2016',barefoot:1,ph:12900},
+  coaster_sailor_2:{skin:'#b47e52',wrap:'#6a6238',beard:'#4a3a2a',shortBeard:1,brow:'#2e2016',tunic:'#946446',belt:'#2e2016',barefoot:1,ph:13100},
+  prisoner_1:PRISONER,
+  prisoner_2:{skin:'#b07a50',hair:'#241812',beard:'#2a1c14',fullBeard:1,brow:'#1e140c',tunic:'#7a5e48',belt:'#3a2c1c',ph:13300},
+  prisoner_3:{skin:'#c49470',hair:'#6a4a30',beard:'#6e5034',receding:1,brow:'#4a3220',slim:1,tunic:'#6a6e5e',belt:'#3a2c1c',barefoot:1,ph:13500},
+  prisoner_old:{skin:'#b4805a',hair:'#b0aaa2',beard:'#bcb6ae',grey:'#dad4cc',thin:1,longBeard:1,brow:'#8e8880',tunic:'#958b76',long:1,belt:'#3a2c1c',ph:13700},
+  merchant:{skin:'#bc8a60',hair:'#4a3626',beard:'#4a3626',fullBeard:1,brow:'#30221a',tunic:'#c8a462',long:1,trim:'#6a3e22',cloak:'#6a4434',belt:'#5a3a1e',ring:1,shoes:'#5a3a22',ph:13900},
+  soldier_mail:{skin:'#b07c54',hair:'#2a1a12',brow:'#20140e',crop:1,tunic:'#d6cab2',armor:'#7e8692',armorStyle:'mail',belt:'#4a2e18',milBelt:1,caligae:1,gladius:1,ph:14100},
+  soldier_unmailed:{skin:'#b07c54',hair:'#2a1a12',brow:'#20140e',crop:1,tunic:'#d6cab2',belt:'#4a2e18',caligae:1,ph:14100},
+  islander_elder:{skin:'#9e6a42',wrap:'#d2c4a4',beard:'#b4aea4',grey:'#dcd6cc',longBeard:1,brow:'#8a847a',tunic:'#866446',long:1,stripe:'#5a3e26',cloak:'#5e4a30',belt:'#3a2818',ph:14300},
+  islander_1:{skin:'#a8703f',wrap:'#8a4a2a',beard:'#22160e',fullBeard:1,brow:'#1e140c',tunic:'#c4b088',long:1,stripe:'#8e5a32',belt:'#4a3020',ph:14500},
+  islander_2:{skin:'#b07a48',wrap:'#ddd2b8',beard:'#2e2016',shortBeard:1,brow:'#22160e',tunic:'#6e5238',long:1,cloak:'#a8783e',belt:'#3a2818',ph:14700},
+  islander_3:{skin:'#b88458',veil:'#8a7a58',tunic:'#ae8a58',long:1,longSleeve:1,trim:'#6a3e22',slim:1,belt:'#6a4a2a',ph:14900},
+  islander_4:{skin:'#a87850',veil:'#8e5432',veilHair:'#9a948c',tunic:'#6a5e46',long:1,longSleeve:1,slim:1,belt:'#4a3424',brow:'#6e665e',ph:15100},
+  islander_5:{skin:'#a8703f',wrap:'#bea676',brow:'#1e140c',slim:1,tunic:'#9a7a52',long:1,stripe:'#664628',belt:'#3a2818',ph:15300},
+  publius:{skin:'#c69c72',hair:'#3e3228',grey:'#8e867e',brow:'#2a2018',crop:1,tunic:'#f0eadc',long:1,cloak:'#b4a684',himation:1,belt:'#5a4030',ring:1,shoes:'#6a3a22',ph:15500},
+  publius_father:{skin:'#c4a07c',hair:'#d2cec8',grey:'#eeeae4',brow:'#aaa69e',crop:1,thin:1,tunic:'#e2dac8',long:1,ph:15700},
+  household_1:{skin:'#a8744a',hair:'#2e2016',brow:'#22160e',crop:1,tunic:'#bcae90',belt:'#4a3424',ph:15900},
+  household_2:{skin:'#bc8a60',hair:'#2a1c14',fem:1,band:'#8a6a4a',slim:1,brow:'#22160e',tunic:'#c8b896',long:1,longSleeve:1,trim:'#7a5a3a',belt:'#6a4a2a',ph:16100}
+};
+/* the wreck (27:41-44): everyone from the ship, wet and torn; sailors and the boy were barefoot before, the others lose their sandals,
+   and the soldiers keep their boots. The soldier who keeps his mail keeps it here too (keepArmor), and loses his sword. */
+const SEA_WET={
+  pilot_wet:shipwrecked(SEA_DRY.pilot,{torn:2}),
+  shipowner_wet:shipwrecked(SEA_DRY.shipowner,{torn:2,barefoot:1}),
+  sailor_1_wet:shipwrecked(SAILOR_1,{torn:3}),
+  sailor_2_wet:shipwrecked(SEA_DRY.sailor_2,{torn:2}),
+  sailor_3_wet:shipwrecked(SEA_DRY.sailor_3,{torn:1}),
+  sailor_4_wet:shipwrecked(SEA_DRY.sailor_4,{torn:3}),
+  ship_boy_wet:shipwrecked(SEA_DRY.ship_boy,{torn:1}),
+  prisoner_1_wet:shipwrecked(PRISONER,{torn:2,barefoot:1}),
+  prisoner_2_wet:shipwrecked(SEA_DRY.prisoner_2,{torn:3,barefoot:1}),
+  prisoner_3_wet:shipwrecked(SEA_DRY.prisoner_3,{torn:1,barefoot:1}),
+  prisoner_old_wet:shipwrecked(SEA_DRY.prisoner_old,{torn:2,barefoot:1}),
+  merchant_wet:shipwrecked(SEA_DRY.merchant,{torn:1,barefoot:1}),
+  soldier_mail_wet:shipwrecked(SEA_DRY.soldier_mail,{torn:1,keepArmor:1,barefoot:0}),
+  soldier_unmailed_wet:shipwrecked(SEA_DRY.soldier_unmailed,{torn:2,barefoot:0})
+};
+const SEA=Object.assign({},SEA_DRY,SEA_WET);
+
 /* ---- custody (Acts 21:33-22:29): two chains, the soldiers who hold a prisoner by the arms, and the knot that carries him ----
    The poses themselves are the figure painter's (index.html, CUFF and person's pz); here is what lies between two figures, and where they
    stand for it. Every function takes actors (ACT entries: x, y, dir, look and the custody flags); P is the prisoner, A the soldier on his
@@ -321,4 +416,4 @@ function knot(g,x,y,o){o=o||{};const d=o.dir||1,pd=o.pdir||d,men=o.men||CARRIERS
     const fr=o.d!=null?36+((walkFr(L,o.d*2,WALK_V)-4)&15):0;figure(g,mx,my,lit(mx,my),'knot|'+off+'|'+d+'|'+fr,q=>person(q,0,0,L,d,fr,0,0,0,0,0),walkSw(L,fr))}})}
 const custody={place,chains,grips,knot,cuffPt,CARRIERS};
 
-return{ROMAN,SANHEDRIN,FAMILY,CAESAREA,SHIPWRECK,shipwrecked,custody}})();
+return{ROMAN,SANHEDRIN,FAMILY,CAESAREA,SHIPWRECK,SEA,shipwrecked,custody}})();
