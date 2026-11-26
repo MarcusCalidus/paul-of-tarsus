@@ -464,22 +464,25 @@ function marshBack24(g,W){const hz=ROAD24.hz,RM=SHARED.rome,CO=SHARED.country,r=
   for(let x=-4;x<324;x+=20+r()*46){const n=2+Math.floor(r()*4);for(let i=0;i<n;i++){const rx=1.6+r()*2.6;oval(g,x+i*rx*1.3,hz-.2-r()*.6,rx,1+r()*.6,mix(i%2?'#74846e':'#6a7a66','#b8c0c8',.5))}}
   /* the marsh, row by row from the horizon toward the canal: pools of still water with the sky in them, long and low, each partly
      hidden by the bed of reeds and rushes in front of it; the reeds lean together with the wind, and none stands in the water */
+  const PO=[];   /* the pools painted so far: [x0, x1, the row of their near edge]; a bed in front of one never reaches up over it */
   for(let y=hz+1.5;y<84;){const k=(y-hz)/22,fog=Math.max(0,1-k*1.6)*.55;
     for(let x=-10;x<330;){const w=14+k*46+r()*(10+k*30);
-      if(r()<.42){/* a pool */const ry=Math.max(.8,.5+k*2.2),P=[];for(let i=0;i<=18;i++){const a=i/18*Math.PI*2,q=1+.18*Math.sin(a*3+x)+.1*Math.sin(a*5+y);P.push(x+w/2+Math.cos(a)*w/2*q,y+Math.sin(a)*ry*(Math.sin(a)>0?.8:1.1))}
+      if(r()<.26){/* a pool */const ry=Math.max(.8,.5+k*2.2),P=[];for(let i=0;i<=18;i++){const a=i/18*Math.PI*2,q=1+.18*Math.sin(a*3+x)+.1*Math.sin(a*5+y);P.push(x+w/2+Math.cos(a)*w/2*q,y+Math.sin(a)*ry*(Math.sin(a)>0?.8:1.1))}
         poly(g,P,mix('#5e5e44','#b8c0c0',fog));poly(g,P.map((v,i)=>i%2?y+(v-y)*.7:x+w/2+(v-x-w/2)*.92));g.fillStyle=lg(g,0,y-ry,0,y+ry,[mix('#a6bccc','#c8d2d8',fog),mix('#88a2b6','#c0cad2',fog)]);g.fill();
-        if(ry>1.2)R(g,x+w*.2,y-ry*.2,w*.4,.5,'rgba(255,255,248,.4)')}
-      else{/* a bed of reeds: a low mass, its top a fringe of blades */const h=1.2+k*7,c=mix(['#7e8648','#8a8a52','#6e7c44'][Math.floor(r()*3)],'#b8c0bc',fog),P=[x,y+.6];
+        if(ry>1.2)R(g,x+w*.2,y-ry*.2,w*.4,.5,'rgba(255,255,248,.4)');PO.push([x-1,x+w+1,y+ry*.8+.6])}
+      else{/* a bed of reeds: a low mass, its top a fringe of blades, kept below the near edge of any pool behind it */
+        const lim=PO.reduce((m,[a,b2,py])=>a<x+w&&b2>x&&py<y?Math.min(m,y-py):m,99),h=Math.min(1.2+k*7,lim*.95),c=mix(['#7e8648','#8a8a52','#6e7c44'][Math.floor(r()*3)],'#b8c0bc',fog),P=[x,y+.6];
         for(let xx=x;xx<=x+w;xx+=1.5)P.push(xx,y-h*(.55+.45*Math.sin(Math.PI*(xx-x)/w))*(.75+r()*.25));P.push(x+w,y+.6);poly(g,P,tint(c,-.12));
         clipTo(g,()=>poly(g,P),()=>{g.fillStyle=lg(g,0,y-h,0,y,[rgba(tint(c,.18),.6),rgba(tint(c,-.3),.5)]);g.fillRect(x-1,y-h-1,w+2,h+2)});
-        CO.reeds(g,x+1,x+w-1,y-h*.5,h*.9+1,2570+Math.round(x*7+y),{c:tint(c,.06),wind:.8,n:w*(.5+k),heads:k>.8&&r()<.4,dy:h*.6})}
+        const hb=Math.min(h*.9+1,(lim-h*.5-h*.3)/1.1);if(hb>.8&&k>.3)CO.reeds(g,x+1,x+w-1,y-h*.5,hb,2570+Math.round(x*7+y),{c:tint(c,.06),wind:.8,n:w*(.5+k),heads:k>.8&&r()<.4&&lim>20,dy:h*.6})}
       x+=w+r()*(6+k*10)}
     y+=1.4+k*3.6}
   /* the far bank of the canal: a towpath of trodden earth, grass along its edge, and a few reeds standing on it, their feet in the grass */
   const N=CANAL24M.near,Fa=CANAL24M.far;
   {const P=[-2,Fa(-2)-2.4];for(let x=-2;x<=322;x+=4)P.push(x,Fa(x)-2.2-.3*Math.sin(x/9));P.push(322,Fa(322)+.2,-2,Fa(-2)+.2);poly(g,P,'#9a8e6c');
     clipTo(g,()=>poly(g,P),()=>tex(g,'mott',.5,0,80,320,12,'overlay',1));
-    for(let x=-2;x<322;x+=8+r()*20){const w=4+r()*10;CO.reeds(g,x,x+w,Fa(x+w/2)-2,5+r()*4,2600+Math.round(x),{c:'#6e8444',wind:.8,n:w*1.6,heads:r()<.25,dy:.6})}
+    for(let x=-2;x<322;x+=8+r()*20){const w=4+r()*10,yb=Fa(x+w/2)-2,lim=PO.reduce((m,[a,b2,py])=>a<x+w&&b2>x&&py<yb?Math.min(m,yb-py):m,99),hb=Math.min(5+r()*4,(lim-.6)/1.1);
+      if(hb>1)CO.reeds(g,x,x+w,yb,hb,2600+Math.round(x),{c:'#6e8444',wind:.8,n:w*1.6,heads:lim>12&&r()<.25,dy:.6})}
     CO.turf(g,-2,Fa(160)-2.6,324,Fa(160)+.4,'#7a8c4c',2603,{wind:-.3,scale:.4,dense:.7})}
   /* the canal: the sky in it, darker under the banks, a few long level glints; it runs out of the picture at both edges */
   {const P=[];for(let x=-2;x<=322;x+=2)P.push(x,Fa(x));for(let x=322;x>=-2;x-=2)P.push(x,N(x));poly(g,P);g.fillStyle=lg(g,0,85.5,0,96.5,['#7c96a8','#a8c0d0','#94aec0','#6e8a9c']);g.fill();
@@ -523,13 +526,15 @@ function tavernsBack24(g,W){const hz=TAVERNS24.hz,RM=SHARED.rome,CO=SHARED.count
   const inn=(i,ye,o)=>{const[x,yt,w,h]=TAVERNS24.inns[i],x1=x+w,yb=yt+h;
     /* the side we see, toward the middle of the picture, and its roof */
     if(o.side){const sx=o.side>0?x1:x,k=Z0/(Z0+3.4),bx=160+(sx-160)*k,by=v=>hz+(v-hz)*k,P=[sx,ye,bx,by(ye),bx,by(yb),sx,yb];
-      clipTo(g,()=>poly(g,P),()=>{plaster(g,Math.min(sx,bx)-1,yt,Math.abs(bx-sx)+2,yb-yt+1,tint(C[i],o.side>0?.04:-.22),r,{patch:0,cracks:0,t:.4});
+      clipTo(g,()=>poly(g,P),()=>{plaster(g,Math.min(sx,bx)-1,yt,Math.abs(bx-sx)+2,yb-yt+1,tint(C[i],o.side>0?.12:-.22),r,{patch:0,cracks:0,t:.4});
         g.fillStyle=lg(g,sx,0,bx,0,o.side>0?['rgba(255,236,200,.25)','rgba(60,50,60,.15)']:['rgba(40,30,40,.25)','rgba(40,30,40,.1)']);g.fillRect(Math.min(sx,bx)-1,yt,Math.abs(bx-sx)+2,yb-yt+1);
         ao(g,Math.min(sx,bx)-1,ye-1,Math.abs(bx-sx)+2,5,'t',.4,'#3a2a2a')});
       const e=o.side>0?1.5:-1.5;poly(g,[sx+e,ye,sx+(o.side>0?-1:1),yt,bx+(o.side>0?-1:1)*k,by(yt),bx+e*k,by(ye)],tint(ti,o.side>0?-.05:-.25));
       poly(g,[sx,yb-.5,bx,by(yb)-.5,bx,by(yb)+.6,sx,yb+.6],'rgba(40,30,30,.3)')}
     front24(g,x,x1,ye,yb,C[i],{doors:[TAVERNS24.doors[i]],wins:o.wins},rng(2760+i));
     tiles24(g,x-2,x1+2,yt,ye,ti,1,rng(2770+i));
+    /* the corner where the front meets the side: a fine edge of light (the side in the sun) or of shade */
+    if(o.side){const sx=o.side>0?x1:x;R(g,sx-(o.side>0?.6:0),ye,.6,yb-ye,o.side>0?'rgba(255,244,220,.55)':'rgba(50,36,40,.45)')}
     /* the sun from the right: the shade of the eave on the front, deeper toward the left */
     comp(g,'multiply',.35,()=>poly(g,[x,ye,x1,ye,x1,ye+2,x,ye+5],'#6a5a6e'))};
   inn(0,56,{side:1,wins:[[28,62,8,6],[80,62,8,6]]});
