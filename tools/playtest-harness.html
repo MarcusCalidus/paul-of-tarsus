@@ -6445,7 +6445,10 @@
      street carried, in the room chosen, and the printed code, typed, gives the same room. The stops that begin with "p" open one point at
      once, with the story's flags set for it, and say its safe-point code (CODE): pscroll24 · pquay24 · pcourt24 · pcapua24 · pcanal24 (the
      treasure's point) · pdawn24 · pstones24 · prome24 · pboard24 · phills24 · pmarsh24 · pmarsh24b · pmeet24 · ptaverns24 · pfar24 · pcapena24
-     · pcamp24 · plane24 · pflat24 · pstreet24 · pgarret24 · psmall24. The timed walk, driven by the beat's exposed phase: beatwalk24 (a hit,
+     · pcamp24 · plane24 · pflat24 · pstreet24 · pgarret24 · psmall24; and three that go one step further, for the pictures of the
+     chapter's page: prelay24 (the carter has given the message, the trader has said its first two parts back, and the choice stands),
+     ppegs24 (four pegs on the board, Vibia's in hand) and pcall24 (the road in the hills, the soldier's call standing for a long pause).
+     The timed walk, driven by the beat's exposed phase: beatwalk24 (a hit,
      a miss with no line, the call after three, the carry after six, a stretch walked to its stone) and phonewalk24 (the same tapped on a phone
      held sideways). rooms24 puts every picture and variant on one sheet. The generic stops card24, routes24 and shadows24 run against the
      chapter's rooms. Keep CHAP[24].end and CHAP[24].carry25: the carry checks play them. */
@@ -6472,9 +6475,18 @@
         phills24:[upto('onroad'),'hills24'],pmarsh24:[upto('s1'),'marsh24'],pmarsh24b:[upto('s2'),'marsh24'],pmeet24:[upto('met'),'appius24'],
         ptaverns24:[upto('taverns'),'taverns24'],pfar24:[upto('far'),'far24'],pcapena24:[upto('gate'),'capena24'],pcamp24:[upto('gate'),'camp24'],
         plane24:[upto('camp'),'lane24'],pflat24:[L4(['inlook']),'look24'],pstreet24:[L4(['lka','inlook']),'look24'],pgarret24:[L4(['lkb','inlook']),'look24'],
-        psmall24:[L4(['lka','lkb','inlook']),'look24']}[stop];
+        psmall24:[L4(['lka','lkb','inlook']),'look24'],prelay24:[upto('given1'),'capua24'],ppegs24:[upto('news'),'board24'],pcall24:[upto('onroad'),'hills24']}[stop];
     if(!S)throw new Error('no such stop '+stop);await open24(S[0],S[1]);L('CODE '+stop+' '+(G.room?makeCode():'-'));
     if(stop==='pscroll24'){G.scene=DARK;narr(CHAP[24].told.n11,{dur:60000})}
+    /* the pictures that go one step further: lines are skipped until the choice stands; the board with pegs laid; the call standing over
+       the soldier, at the game's pace, for a long pause (a step that takes no time) */
+    const choices24=async()=>{for(let i=0;i<600&&!$('#choices').classList.contains('on');i++){if(G.skip)G.skip();await wait(40)}await wait(200)};
+    if(stop==='prelay24'){const TR=ACT.trader24;verb('talk');clickView(TR.x,TR.y-10,TR.hs);await choices24();
+      const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src==='let_it_stand');if(!b)throw new Error('no choice let_it_stand');b.click();
+      await wait(300);await choices24();ok($('#choices').classList.contains('on')&&[...document.querySelectorAll('#choices button')].some(x=>x.dataset.src===CHAP[24].msg[1]),'the trader has said the road back, and the choice stands: let it stand, or say it again')}
+    if(stop==='ppegs24'){G.tok24={sextus24:'M',mikon24:'M',postumus24:'T',thallos24:'T'};G.sel24='vibia24';await wait(300)}
+    if(stop==='pcall24'){for(let i=0;i<300&&!G.beat;i++)await wait(20);const k=SHARED.beat.start(Object.assign({sticky:true,room:'hills24',sound:false},CHAP[24].beat,{pause:2600,at:.1,need:0,phase:.11}));
+      k.st24='s1';k.misses=3;k.help=1;for(let i=0;i<200&&!k.calling();i++)await wait(20);ok(k.calling(),'the soldier calls the step while his foot is up')}
     await wait(1100);halt(stop)}
   /* the timed walk, driven by the beat's exposed phase: the stops beatwalk24 and phonewalk24 (and the playthrough) */
   const B24=()=>G.beat,now24=()=>performance.now(),
@@ -6717,7 +6729,10 @@
      hand-over to the finale; until shared/finale.js is merged, a screen that returns to the title on a click). The stops that begin with
      "p" open one point at once, with the story's flags set for it, and say its safe-point code (CODE): plodging25 (the flat) · pstreet25 (the
      room at street level, carried in) · pmen25 · pday25 · pnight25 · pphilippi25 (the treasure's point) · pphilemon25 · psheet25 (the sheet,
-     close) · pgreet25 · pletters25 · pthree25 (the three letters, close) · pmorning25 (the last safe point: the morning goes on by itself).
+     close) · pgreet25 · pletters25 · pthree25 (the three letters, close) · pmorning25 (the last safe point: the morning goes on by itself);
+     and two that go one step further, for the pictures of the chapter's page: pask25 (the flat, Paul has spoken to Fulvius and the
+     requests stand), plycus25 (the sixth watch, the map on the Lycus with its road drawn) and pcat25 (the fourth watch, Paul at the far
+     end of his reach from Macer by the door, so that the chain lies long on the floor with the cat asleep on it).
      carry25 plays Chapter Twenty-Four's end for each lodging and checks the code and the click, and the start from the title and from the
      plain first code (the flat). rooms25 puts every picture on one sheet, each room in each of its views (CHAP[25].views); the generic stops
      card25, routes25 and shadows25 (above) run against the chapter's rooms, in each view. The checks that bind to the end: finished is
@@ -6737,10 +6752,20 @@
   if(!C25&&/^p[a-z]+25$/.test(stop)){await loadLevel(25);ov.className='';ov.onclick=null;const C=CHAP[25],
       S={plodging25:[[],'lodging25'],pstreet25:[['from24','street'],'lodging25'],pmen25:[upto25('men'),'lodging25'],pday25:[upto25('q1'),'lodging25'],
         pnight25:[upto25('h5'),'lodging25'],pphilippi25:[upto25('q2'),'lodging25'],pphilemon25:[upto25('q3'),'lodging25'],psheet25:[upto25('q3'),'sheet25'],
-        pgreet25:[upto25('q4'),'lodging25'],pletters25:[upto25('q5'),'lodging25'],pthree25:[upto25('q5'),'letters25'],pmorning25:[upto25('sent'),'lodging25']}[stop];
+        pgreet25:[upto25('q4'),'lodging25'],pletters25:[upto25('q5'),'lodging25'],pthree25:[upto25('q5'),'letters25'],pmorning25:[upto25('sent'),'lodging25'],
+        pask25:[[],'lodging25'],plycus25:[upto25('q5'),'lodging25'],pcat25:[upto25('q3'),'lodging25']}[stop];
     if(!S)throw new Error('no such stop '+stop);setChapter(25);for(const k of S[0])F[k]=1;
     const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
     G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    /* the pictures that go one step further: the requests to the soldier standing; the map on the Lycus with its road drawn */
+    if(stop==='pask25'){const S=C.soldier();verb('talk');clickView(S.x,S.y-10,S.hs);
+      for(let i=0;i<600&&!$('#choices').classList.contains('on');i++){if(G.skip)G.skip();await wait(40)}
+      ok([...document.querySelectorAll('#choices button')].some(x=>x.dataset.src==='would_you_sit_by_the_door'),'Paul may ask the soldier to sit elsewhere, with the reason')}
+    if(stop==='pcat25'){const b=C.box();place(P,'lodging25',b[0]+3,b[3]-2,1);G.cat25=null;for(let i=0;i<200&&!G.cat25;i++)await wait(20);
+      ok(!!G.cat25,'Paul at the far end of his reach, the chain long on the floor, and the cat asleep on it')}
+    if(stop==='plycus25'){await need('map');SHARED.map.journey(C.road,{view:'lycus',speed:200});
+      for(let i=0;i<1500&&!(G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===2&&SHARED.map.state.legs.every(L=>L.k>=1));i++)await wait(30);
+      ok(SHARED.map.state.legs.map(L=>L.a+'-'+L.b).join()==='ephesus-laodicea,laodicea-colossae','the map on the Lycus: the road from Ephesus to Laodicea and Colossae')}
     await wait(stop==='pmorning25'?4000:1100);halt(stop)}
   /* carry25 (CONTRIBUTING section 5): the lodging chosen in Chapter Twenty-Four is carried into Chapter Twenty-Five's first two flags, from24
      and street, only in the safe-point code. For each lodging: Chapter Twenty-Four's end screen prints codeOf(25, bits) and keeps it as the
