@@ -88,6 +88,12 @@ The [Terms of Use](https://www.jw.org/en/terms-of-use/) of jw.org (which cover i
   - Paul never admires one, and the player never uses one as a tool, a key or a hiding place. The one use the game makes of any of them is the one Paul made of the altar in Acts 17:23.
   - Every other rule of this section holds for them.
 - Jehovah's temple in Jerusalem is drawn as it was, for historical accuracy (decided for Chapter Eighteen, 2026-11-25): the Court of the Gentiles with its colonnades, the barrier with its warning stones, the gates and inner courts, and the sanctuary seen from the courts. Its layout and proportions are checked against the Study Edition's media and the publications on wol.jw.org, and painted in our own way: nothing of their artwork is copied (section 1). No sacrifice, fire, smoke or rite is shown on its altar, and no Roman standard is seen in the city.
+- A Roman military standard and a ship's figurehead are images too, and the publications call the standards objects of worship (*Insight on the Scriptures*, "Army"; the Study Edition's note on Matthew 24:15). They are shown in two places, for historical accuracy (decided 2026-11-26): the standards of the garrison in the audience chamber at Caesarea (Chapter Twenty-One, Acts 25:23), and the figurehead of the ship of Acts 28:11 (Chapter Twenty-Four). Wherever this exception is used:
+  - A standard stands at the back of the picture, small, and is never seen in close view. What it carries cannot be made out.
+  - Nobody honors or salutes one, nobody speaks of one, Paul never looks at one with interest, and the player never looks at, uses or touches one.
+  - A standard is a pole with discs, drawn as small squares. It has no crossbar and no cloth hanging from one, which would make a T, and its pole crosses no band or course of the wall behind it.
+  - How the figurehead is shown is decided with Chapter Twenty-Four. Until then none is painted.
+  - Every other rule of this section holds for them, and no standard is seen in Jerusalem.
 - Look at screenshots of every changed scene before committing.
 
 ## 4. Look and sound
