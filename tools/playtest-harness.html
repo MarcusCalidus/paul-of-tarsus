@@ -141,8 +141,11 @@
   19:()=>act('look','spring'), // Chapter Nineteen: at Antipatris at dawn, the spring off the way
   20:()=>act('look','sky_over_the_harbor'), // Chapter Twenty: the window in the second spring, the storks going north over the harbor
   21:()=>act('look','ox_goad'), // Chapter Twenty-One: in the court before the hearing, the carter's ox goad by the cart at the side
-  22:()=>act('look','stub22_coast'), // Chapter Twenty-Two: STUB, the stub's coast. LOGIC22: from treasure.at, the steps that look at Tarsus while the leg off Cilicia is on the map
-  23:()=>act('look','stub23_stone'), // Chapter Twenty-Three: STUB, the stub's stone. LOGIC23: from treasure.at, the steps that look at the stone at the gate of Publius's estate
+  22:async()=>{await act('use','gangplank');const M=SHARED.map;for(let i=0;i<900&&!(M.state.places&&G.scene===M.draw&&!G.busy);i++)await wait(30);await wait(60);
+    const[x,y]=M.where('tarsus'),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,clientX:r.left+x*r.width/VW,clientY:r.top+y*r.height/VH}));await wait(120);await idle()}, // Chapter Twenty-Two: from the quay at Caesarea, aboard; on the map of the voyage out, Tarsus is looked at while the leg off Cilicia is shown (nothing has changed until Myra is clicked)
+  23:()=>act('look','stone_at_the_gate'), // Chapter Twenty-Three: at the estate of Publius, the stone at the gate with its one word
+  24:()=>act('look','stub24_corner_of_the_quay'), // Chapter Twenty-Four: STUB, the stub's corner of the quay. LOGIC24: from treasure.at, the steps that touch the reeds by the canal at night
+  25:()=>act('look','stub25_roll'), // Chapter Twenty-Five: STUB, the stub's roll. LOGIC25: from treasure.at, the steps that look at Luke's roll in the watch where he sits writing
  };
  (async()=>{try{
   while(!G.ready)await wait(30);
@@ -209,7 +212,10 @@
   if(!/[?&]keep=1/.test(location.search))ok(store('paul.save')===null&&!ov.querySelector('[data-cont]')&&ov.querySelector('[data-pro="1"]').classList.contains('go'),'a first visit has nothing to continue: the Prologue leads the list');
   /* the title screen holds its whole list: nothing on it lies above or below the view, with eight chapters or more */
   const inOv=()=>{const r=ov.getBoundingClientRect();return[...ov.children].every(el=>{const q=el.getBoundingClientRect();return q.top>=r.top-1&&q.bottom<=r.bottom+1})};
-  ok(inOv()&&ov.querySelector('[data-pro="1"]')&&ov.querySelectorAll('[data-ch]').length===Object.keys(CHAP).length,'the title screen holds the prologue and every chapter: '+Object.keys(CHAP).length);
+  /* listed: the chapters the title lists. FOR NOW, while Chapters Twenty-Four and Twenty-Five are built, a chapter still named in PLANNED
+     is in CHAP but not on the list (building, index.html); when PLANNED is emptied this is every chapter again. */
+  const listed=()=>Object.keys(CHAP).filter(n=>!building(n));
+  ok(inOv()&&ov.querySelector('[data-pro="1"]')&&ov.querySelectorAll('[data-ch]').length===listed().length,'the title screen holds the prologue and every chapter that is not in preparation: '+listed().length);
   /* The title screen alone uses the whole height: the status line and the panel give up their place, the view runs down to the foot of the
      window, and the title's picture is painted that tall. Its upper part is the wall's backdrop pixel for pixel, so that nothing moves
      when the title is left. */
@@ -691,6 +697,70 @@
     SH.forEach(([nm,k,x,y,sx],i)=>{const W=26,H=24,cx=(x+sx)/2,X=(i%3)*(W*10+20),Y=36+chh+(64*4+30)+Math.floor(i/3)*(H*10+30);g.drawImage(k,(cx-W/2)*HR,(y-34)*HR,W*HR,H*HR,X,Y,W*10,H*10);text(nm+', ten times',X+5,Y+H*10+18,12,'#f4f0e6')});
     for(const[a,r,x,y,d]of keep){a.room=r;a.x=x;a.y=y;a.dir=d}P.chained=0;P.chainTo=0;SO.keeper=0;
     halt('chained20',()=>{window.SHEETS=Object.assign(window.SHEETS||{},{'cast-chained20':c.toDataURL()})})}
+  /* The long chain of the lodging in Rome (Acts 28:16, 30; Chapter Twenty-Five): Paul's right wrist to the soldier's, who sits by the door,
+     at the table or by the window (SHARED.lodging.AT.seats) with the cuffed hand on his knee; the chain over his knee, along the floor in a
+     loose curve or two round whatever stands there, and up to Paul, standing, walking, seated on a bench or writing at the table. For each
+     seat: the room's walk while Paul is chained is the reach of the chain (custody.reach), and everywhere in it some chain is to spare; the
+     chain is one piece, lies on the floor between them and never inside a footprint, and so never over the edge of a bench or the table;
+     a click on something out of reach walks him as near as he may and lets the room say why, and acts on nothing (ROOMS[id].reach and
+     unreached, clickView). The soldier carries his stool and sets it down (the pose 'stool'), and the cat sleeps on the chain.
+     cast-chained25.png shows the room at midday four times and the chain, the cuffs and the seated soldier's hand ten times: look there for a
+     chain that crosses an edge as a T, a loop that closes into a ring, and a link that floats (CONTRIBUTING section 3). */
+  if(stop==='chained25'){clearInterval(sk);sk=0;await loadLevel(20);setChapter(20);for(const n of['materials','coast','temple','cast','weather','lodging'])await need(n);
+    const LG=SHARED.lodging,C=SHARED.cast,CU=C.custody,P=ACT.paul,keep=Object.values(ACT).map(a=>[a,a.room,a.x,a.y,a.dir,a.look]);
+    LOOK.c25_s=C.ROMAN.praetorian_watch;const S=window.actor('c25_s','c25_s','#fff',100);S.look=LOOK.c25_s;P.look=C.ROME.paul_home;
+    let CUR={kind:'flat',hour:'noon'},said=[],acted=[];
+    ART.c25room={w:320,q:12,variant:()=>CUR.kind+'_'+CUR.hour,paint(g,v){const[k,h]=v.split('_');LG.room(g,{kind:k,hour:h})},get light(){return LG.light(CUR.kind,CUR.hour)},
+      props:LG.props().map(p=>({y:p.y,shape:p.shape,foot:p.foot})),draw(g,t){CU.chains(g,P,S,null);if(CUR.stool)CU.stool(g,CUR.stool[0],CUR.stool[1],{room:'c25room'});
+        if(CUR.cat){const f=CU.path(P,S).floor,q=f[Math.floor(f.length*.45)];C.cat(g,q[0],q[1]+.4,{room:'c25room'})}},front(){}};
+    let SEAT=LG.AT.seats.door,SDIR=-1;
+    ROOMS.c25room={get walk(){return P.chained?CU.reach('c25room',SEAT,{dir:SDIR}):LG.WALK},hs:[],block:LG.foot(),
+      reach:(x,y,v)=>v==='look'||!P.chained||(()=>{const b=CU.reach('c25room',SEAT,{dir:SDIR});return x>=b[0]&&x<=b[1]&&y>=b[2]-2&&y<=b[3]+2})(),
+      unreached:async(h,v)=>{said.push(h.id+':'+v)}};
+    for(const a of Object.values(ACT))a.room=null;G.room='c25room';G.scene=null;P.room='c25room';
+    const seat=(at,dir,px,py,pd,o)=>{SEAT=at;SDIR=dir;P.seat=0;P.pose=0;P.walk=null;P.room='c25room';CU.sit(P,S,at,{dir});S.fr=-1;P.x=px;P.y=py;P.dir=pd;P.fr=0;Object.assign(P,o||{});if(P.seat||P.pose)P.fr=-1};
+    /* the chain alone, drawn on a clear canvas: its links, in how many pieces, and its floor points against the footprints */
+    const alone=()=>{const k=document.createElement('canvas');k.width=640;k.height=288;const q=k.getContext('2d');q.setTransform(2,0,0,2,0,0);const Q=DQ=[];CU.tether(q,P,S);DQ=null;Q.forEach(e=>e[1]());return k};
+    const feet=roomFeet('c25room').map(f=>f.b),inFoot=([x,y])=>feet.some(b=>x>b[0]+.5&&x<b[2]-.5&&y>b[1]+.3&&y<b[3]-.3&&!(Math.abs(x-S.x)<7&&Math.abs(y-S.y)<4)&&!((P.seat||P.pose)&&Math.abs(x-P.x)<7&&Math.abs(y-P.y)<4));
+    const bad=[],box={},nPts=[];
+    for(const[k,at]of Object.entries(LG.AT.seats))for(const dir of[1,-1]){SEAT=at;SDIR=dir;const b=CU.reach('c25room',at,{dir});box[k+dir]=b;
+      for(let i=0;i<=6;i++)for(let j=0;j<=3;j++){const x=b[0]+(b[1]-b[0])*i/6,y=b[2]+(b[3]-b[2])*j/3;if(floorHit('c25room',x,y))continue;seat(at,dir,x,y,x<at[0]?1:-1);
+        const pa=CU.path(P,S);nPts.push(pa.pts.length);if(!(pa.slack>0))bad.push(k+dir+' slack '+pa.slack.toFixed(1)+' at '+x.toFixed(0)+','+y.toFixed(0));
+        if(pa.floor.some(inFoot))bad.push(k+dir+' floor in a footprint at '+x.toFixed(0)+','+y.toFixed(0));
+        if(i===0||i===6){const n=parts(alone());if(n!==1)bad.push(k+dir+' in '+n+' pieces at '+x.toFixed(0)+','+y.toFixed(0))}}}
+    ok(!bad.length,'at each of the three seats, facing either way, Paul can go anywhere in the reach of the chain and some is always to spare; the chain is one piece and lies on the floor outside every footprint'+(bad.length?'. BAD: '+bad.slice(0,6).join('; '):''));
+    seat(LG.AT.seats.table,-1,...LG.AT.desk,{pose:'write',pk:0});const desk=CU.path(P,S).slack;
+    ok(desk>0&&box.door1[1]>=LG.AT.door[0]-14&&Object.values(box).every(b=>b[1]-b[0]<LG.WALK[1]-LG.WALK[0]),'the chain reaches the desk from the table (to spare: '+desk.toFixed(0)+' px) and the door from the seat by the door, and from no seat the whole room: '+Object.entries(box).map(([k,b])=>k+' '+b.slice(0,2).join('-')).join(', '));
+    /* poses: the soldier keeps it in the hand on his knee, Paul by the right wrist whichever way he turns */
+    seat(LG.AT.seats.table,-1,140,128,1);const p1=[poseOf(P),poseOf(S)];P.dir=-1;const p2=[poseOf(P),poseOf(S)];
+    ok(p1.join()==='n,k'&&p2.join()==='f,k'&&still(S)&&!still(P),'on the long chain Paul keeps his right wrist whichever way he turns (near, then far), and the soldier the hand on his knee, and does not turn: '+p1+' '+p2);
+    {const k=cuffAt(LOOK.c25_s,'k',0,-1),f=cuffAt(C.ROME.paul_home,'f',0,-1),n=cuffAt(C.ROME.paul_home,'n',0,-1),w=cuffAt(C.ROME.paul_home,'n',0,-1,'write0');
+      const sp=[['k',LOOK.c25_s,'k',''],['f',C.ROME.paul_home,'f',''],['n',C.ROME.paul_home,'n',''],['w',C.ROME.paul_home,'n','write0']].map(([nm,o,pz,ps])=>{const c=sprite('c25|'+nm,q=>person(q,0,0,o,1,-1,0,0,0,0,0,pz,ps),1);
+        const p=cuffAt(o,pz,0,-1,ps),pt=p.far||p.near,D=c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data,i=((FIG.OY+pt[1])*FIG.W+FIG.OX+pt[0])*4;return[nm,parts(c),D[i+3]&&Math.max(D[i],D[i+1],D[i+2])-Math.min(D[i],D[i+1],D[i+2])<=30]});
+      ok(k.far&&!k.near&&f.far&&!f.near&&n.near&&!n.far&&w.near&&sp.every(([,n,i])=>n===1&&i),'seated, each cuffed hand rests on the thigh, and writing the cuff stays on the hand with the pen; each pose one piece, each cuff of iron where cuffAt says: '+sp.map(([a,b,c])=>a+b+(c?'':'!')).join(' '))}
+    /* a click out of reach: he walks as near as the chain lets him, and the room says why */
+    {seat(LG.AT.seats.door,-1,230,126,-1);G.busy=false;G.verb='use';G.item=null;const h={id:'c25far',x:20,y:80,w:30,h:20,wx:40,wy:110,use:()=>{acted.push('use')},look:()=>{acted.push('look')}};
+      await clickView(40,100,h);for(let i=0;i<200&&P.walk;i++)await wait(20);await wait(80);const b=box['door-1'],nearOk=P.x>=b[0]-1&&P.x<=b[1]+1;
+      G.verb='look';await clickView(40,100,h);for(let i=0;i<200&&P.walk;i++)await wait(20);await wait(80);
+      ok(said.join()==='c25far:use'&&acted.join()==='look'&&nearOk,'a click on something out of reach walks him as near as the chain allows ('+P.x.toFixed(0)+') and lets the room say so; looking needs no reach: '+said.join()+' / '+acted.join())}
+    /* the sheet: four scenes four times, the cuffs and the hand ten times */
+    const shot=(nm,o)=>{const k=document.createElement('canvas');k.width=640;k.height=288;const q=k.getContext('2d');q.setTransform(2,0,0,2,0,0);q.imageSmoothingEnabled=false;
+      backdrop(q,'c25room',0,0);const Q=DQ=[],sq=SQ=LID?[]:null;ART.c25room.draw(q,G.t);for(const p of props('c25room'))Q.push([p.y,()=>q.drawImage(p.c,p.x,p.t,p.w,p.h)]);
+      for(const a of Object.values(ACT))if(a.room==='c25room')drawActor(q,a,G.t,'c25room');DQ=SQ=null;if(sq)for(const fn of sq)fn();Q.sort((a,b)=>a[0]-b[0]).forEach(e=>e[1]());return[nm,k,o]};
+    const T=LG.AT.seats,SH=[];
+    seat(T.door,-1,150,130,1);SH.push(shot('by the door; Paul at the far end of the chain',[204,88,52,26]));
+    seat(T.table,-1,...LG.AT.desk,{pose:'write',pk:0});SH.push(shot('at the table; Paul writing at the desk',[84,90,52,26]));
+    seat(T.window,1,190,128,-1);CUR.cat=1;SH.push(shot('by the window; the cat asleep on the chain',[150,104,52,26]));CUR.cat=0;
+    seat(T.door,-1,LG.AT.door[0]-4,LG.AT.door[1]+4,1);SH.push(shot('the door: Paul standing at it, the soldier by it',[230,84,52,26]));
+    seat(T.table,1,200,102,-1,{seat:1});SH.push(shot('Paul seated on the bench, the soldier at the table',[164,78,52,26]));
+    {seat(T.table,-1,140,124,1);S.seat=0;S.fr=12;S.pose='stool';S.x=200;S.y=118;S.dir=1;CUR.stool=[150,124];SH.push(shot('the last watch: the soldier carries his stool, the chain follows',[188,86,52,26]));S.pose=0;CUR.stool=null}
+    const Z=4,cw=320,[c,g]=(()=>{const c=document.createElement('canvas');c.width=1640;c.height=36+3*(144*Z/2+30)+2*(260+30);const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);return[c,g]})(),
+      text=(t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)};
+    text('The long chain in the lodging (Acts 28:16, 30): flat, midday; twice enlarged, and the chain, the cuffs and the seated soldier\'s hand ten times',10,24,15,'#f4f0e6');
+    SH.forEach(([nm,k],i)=>{const x=(i%2)*(cw*2+10),y=36+Math.floor(i/2)*(144*2+30);g.drawImage(k,0,0,640,288,x,y,640,288);text(nm,x+5,y+288+18,12,'#f4f0e6')});
+    const y3=36+3*(144*2+30);SH.forEach(([nm,k,[x,y,w,h]],i)=>{const X=(i%3)*(w*10+20),Y=y3+Math.floor(i/3)*(h*10+30);g.drawImage(k,x*2,y*2,w*2,h*2,X,Y,w*10,h*10);text(nm+', ten times',X+5,Y+h*10+18,11,'#f4f0e6')});
+    for(const[a,r,x,y,d,l]of keep){a.room=r;a.x=x;a.y=y;a.dir=d;a.look=l}P.chained=0;P.chainTo=0;P.wrist=0;P.tether=0;S.keeper=0;
+    halt('chained25',()=>{window.SHEETS=Object.assign(window.SHEETS||{},{'cast-chained25':c.toDataURL()})})}
   if(stop==='scroll'||stop==='scrolllong'){clearInterval(sk);sk=0;let rustles=0;{const u0=SFX.unroll;SFX.unroll=function(){rustles++;return u0.apply(this,arguments)}}
    await loadLevel(5);await loadLevel(7);ov.className='';ov.onclick=null;setChapter(5);G.busy=true;lock(true);status();
     /* AT: the text of A, taken while Chapter Five (whose line it is) is loaded; the probes below run in Chapter Seven */
@@ -989,7 +1059,7 @@
     window.SHEETS={[(lang==='en'?'':lang+'-')+'tunes-sheet']:c.toDataURL()};halt('tunes')}
   /* Shipwreck survivor clothing & reusable Roman military cast (shared/cast.js): standing, facing left, mid-stride, and enlarged close-ups.
      Both stops also verify that every look stays one connected piece across standing, talking, seated and all walking frames. */
-  if(stop==='shipwreck'||stop==='romans'||stop==='sanhedrin'||stop==='caesarea'||stop==='sea'){await need('cast');const SHEETS={},C=SHARED.cast,
+  if(stop==='shipwreck'||stop==='romans'||stop==='sanhedrin'||stop==='caesarea'||stop==='sea'||stop==='rome'){await need('cast');const SHEETS={},C=SHARED.cast,
       sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,w,h);return[c,g]},
       text=(g,t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},
       cut=(g,sp,x0,y0,w,h,dx,dy,z)=>g.drawImage(sp,FIG.OX+x0,FIG.OY+y0,w,h,dx,dy,w*z,h*z),
@@ -1221,7 +1291,77 @@
       HM.forEach(([nm,o,dir,fr],i)=>{const x=(i%5)*cw2,y=y2+Math.floor(i/5)*dh;field(gd,i+1,x,y,cw2,dh);
         cut(gd,sprite(['seam',i].join('|'),q=>person(q,0,0,o,dir,fr,0,0,0,0,0),dir),-26,-46,52,48,x+Math.floor((cw2-52*6)/2),y,6);text(gd,nm,x+6,y+dh-8,11)});
       SHEETS['cast-sea-detail']=cd.toDataURL();
-      window.SHEETS=SHEETS;halt('sea')}}
+      window.SHEETS=SHEETS;halt('sea')}
+    /* Rome (Acts 28:11-31; Chapters Twenty-Four and Twenty-Five), shared/cast.js ROME: every look one piece standing, speaking, seated and
+       walking, each with a voice (ph) of its own and no two alike; Timothy, Tychicus and Mikon as their chapters paint them, Mark the same man
+       older; the leading men of the Jews of Rome in the dress of the Dispersion, two with the mantle over the head; five soldiers of the watch
+       in a tunic, belt, sandals and a sword, with no armor, helmet, shield, standard or spear; Paul's oldest look in both chapters, at home
+       without his mantle, and weary on the road at everyone's pace; the cat asleep and awake; two who greet each other by the forearm.
+       cast-rome.png (docs/screenshots/rome-cast.png) shows them three times enlarged; cast-rome-detail.png every head eight times, the clasp,
+       the weary stride and the cat. Look there for a head cloth that reads as a ring, a hat behind a head, a pole or a whip laid across
+       something, and an arm stretched out to the side. */
+    if(stop==='rome'){const K=C.ROME,R=C.ROMAN,ids=Object.keys(K);checkSet(K,'rome');
+      const want=['timothy','tychicus','mikon','mark','onesimus','epaphroditus','epaphras','demas','justus','carrier','rome_old','rome_baker','rome_slave','rome_brother_a','rome_brother_b',
+        'rome_lady','rome_sister_a','rome_sister_b','puteoli_host','puteoli_dock','puteoli_young','puteoli_sister','carter','trader','boatman','sailor','innkeeper','landlady','landlord','freedman',
+        'jew_rome_1','jew_rome_2','jew_rome_3','jew_rome_4','jew_rome_5','jew_rome_6','traveler_1','traveler_2','paul_home','paul_weary'];
+      ok(want.every(k=>K[k]),'Rome: '+ids.length+' looks, every one the chapters ask for'+(want.filter(k=>!K[k]).length?'. MISSING: '+want.filter(k=>!K[k]).join(', '):''));
+      {const own=ids.filter(k=>!['timothy','tychicus','mikon','mark','sailor','paul_home','paul_weary'].includes(k)),ph=own.map(k=>K[k].ph),
+          other=new Set([...Object.values(R),...Object.values(C.SANHEDRIN),...Object.values(C.FAMILY),...Object.values(C.CAESAREA),...Object.values(C.SEA)].map(o=>o.ph)),
+          key=o=>JSON.stringify(Object.keys(o).filter(k=>!/^(p|gt|ph)$/.test(k)).sort().map(k=>[k,o[k]])),keys=ids.map(k=>key(K[k]));
+        ok(new Set(ph).size===ph.length&&ph.every(v=>!other.has(v))&&new Set(keys).size===keys.length,'every invented look of Rome has a voice of its own, and no two looks are alike')}
+      {const was=new Set(Object.keys(LOOK));for(const n of[4,7,15,18])if(CHAP[n])await loadLevel(n);
+        const same=(a,b)=>a&&b&&JSON.stringify(Object.keys(a).filter(k=>k!=='p'&&k!=='gt').sort().map(k=>[k,a[k]]))===JSON.stringify(Object.keys(b).filter(k=>k!=='p'&&k!=='gt').sort().map(k=>[k,b[k]]));
+        ok(same(K.timothy,LOOK.tim18)&&same(K.tychicus,LOOK.tych15)&&same(K.mikon,LOOK.mikon15),'Timothy, Tychicus and Mikon look as Chapters Eighteen and Fifteen paint them');
+        const m7=LOOK.mark7;ok(m7&&['skin','hair','tunic','trim','belt','brow','ph'].every(k=>K.mark[k]===m7[k])&&K.mark.fullBeard&&K.mark.cloak&&!K.mark.slim&&m7.slim&&!m7.fullBeard,
+          'Mark is the same man as in Chapter Seven, older: his coloring and his green tunic, a full short beard, a little heavier, a mantle');
+        for(const k of Object.keys(LOOK))if(!was.has(k))delete LOOK[k]}
+      const JW=ids.filter(k=>/^jew_rome_/.test(k));
+      ok(JW.length===6&&JW.every(k=>K[k].long&&K[k].cloak&&K[k].fringe&&!K[k].phyl&&!K[k].edge&&!K[k].ring&&!K[k].trim)&&JW.filter(k=>K[k].wrap===K[k].cloak).length===2&&JW.filter(k=>K[k].wrap).length===2,
+        'six leading men of the Jews of Rome in long tunics and mantles with fringes, two with the mantle over the head, none in the scripture case or the gold of the Sanhedrin');
+      const W5=['praetorian_watch','praetorian_watch_young','praetorian_watch_old','praetorian_watch_bald','praetorian_watch_ruddy'].map(k=>R[k]),
+        head=o=>[o.hair,o.bald,o.crop,o.thin,o.receding,o.beard].join();
+      ok(W5.every(o=>o&&!o.armor&&!o.helm&&!o.spear&&!o.pilum&&!o.shield&&!o.standard&&o.gladius&&o.milBelt&&o.caligae&&o.belt)&&new Set(W5.map(head)).size===5&&new Set(W5.map(o=>o.tunic+o.cloak)).size===5,
+        'five soldiers of the watch, each with a head and colors of his own, in a tunic, belt, sandals and a sword: no armor, helmet, shield, standard or spear');
+      {const P19=paulLook(19);ok(['hair','beard','bald','fullBeard','grey'].every(k=>paulLook(24)[k]===P19[k]&&paulLook(25)[k]===P19[k])&&!K.paul_home.cloak&&K.paul_home.bald&&K.paul_weary.weary&&K.paul_weary.cloak,
+        'Paul has his oldest look in both chapters; at home his mantle is laid aside, and on the road he is weary')}
+      {const a=gaitOf(Object.assign({},paulLook(24),{gt:null})),w=gaitOf(Object.assign({},K.paul_weary,{gt:null})),slip=q=>1-q.S/(2*q.stance)/Math.max(q.S/(2*q.stance),WALK_V*q.T);
+        ok(w.S<a.S&&slip(w)<.06&&WALK_V===48,'weary, Paul steps shorter and more often, at the pace everyone walks (stride '+strideOf(K.paul_weary).toFixed(1)+' px, the foot slips '+(slip(w)*100).toFixed(1)+' %)')}
+      ok(K.boatman.spear==='pole'&&K.boatman.bareArm&&K.carter.whip&&K.trader.hatBack&&K.carrier.pad&&K.freedman.penCase&&!K.freedman.ring&&!K.freedman.clavus&&K.epaphras.edge&&K.justus.fringe&&K.onesimus.crop&&!K.onesimus.long,
+        'the carrier\'s pad, the carter\'s whip, the trader\'s hat, the boatman\'s pole and bare arms, the freedman\'s writing case and nothing of rank, the border of Colossae, Justus\'s fringes, Onesimus\'s cropped hair');
+      {const pcs=[];for(const awake of[0,1])for(const dir of[1,-1]){const c=document.createElement('canvas');c.width=40;c.height=30;const g=c.getContext('2d');g.setTransform(2,0,0,2,0,0);C.cat(g,10,12,{awake,dir});pcs.push(parts(c))}
+        ok(pcs.every(n=>n===1),'the cat, asleep and awake, facing both ways, is one piece ('+pcs.join(',')+')')}
+      {const a=sprite('clasp|a',q=>person(q,0,0,K.paul_weary,1,0,0,0,11,0,0),1),b=sprite('clasp|b',q=>person(q,0,0,K.mikon,-1,0,0,0,11,0,0),-1);
+        ok(parts(a)===1&&parts(b)===1,'two who greet clasp each other\'s forearm: the forearm bent forward, nothing raised or stretched out, each one piece')}
+      const both=k=>[[k,K[k],1,0],[k+' (L)',K[k],-1,0]],RW=k=>[[k.replace('praetorian_',''),R[k],1,0],[k.replace('praetorian_','')+' (L)',R[k],-1,0]],
+        ROWS=[
+        ['Named in the letters: Timothy and Tychicus (as their chapters paint them), Mark older, Onesimus, Epaphroditus',[...both('timothy'),...both('tychicus'),...both('mark'),['onesimus',K.onesimus],['epaphroditus',K.epaphroditus,-1,0]]],
+        ['Epaphras of Colossae (the border of its wool), Demas, Jesus called Justus; Luke and Aristarchus are CAESAREA\'s',[...both('epaphras'),...both('demas'),...both('justus'),['luke',C.CAESAREA.luke],['aristarchus',C.CAESAREA.aristarchus,-1,0]]],
+        ['The congregation in Rome: the young carrier, Mikon of Cenchreae, the old brother, the baker, a slave, two more brothers',[...both('carrier'),['mikon',K.mikon],['rome_old',K.rome_old,-1,0],['rome_baker',K.rome_baker],['rome_slave',K.rome_slave,-1,0],['rome_brother_a',K.rome_brother_a],['rome_brother_b',K.rome_brother_b,-1,0]]],
+        ['Sisters of Rome, and the brothers and the sister of Puteoli',[['rome_lady',K.rome_lady],['rome_lady (L)',K.rome_lady,-1,0],['rome_sister_a',K.rome_sister_a],['rome_sister_b',K.rome_sister_b,-1,0],['puteoli_host',K.puteoli_host],['puteoli_dock',K.puteoli_dock,-1,0],['puteoli_young',K.puteoli_young],['puteoli_sister',K.puteoli_sister,-1,0]]],
+        ['The three who carry the news: the carter, the trader, the boatman of the canal, standing and walking',[...both('carter'),...both('trader'),...both('boatman'),['trader walking',K.trader,1,10],['boatman walking',K.boatman,-1,10]]],
+        ['The sailor, the innkeeper, the landlady and the landlord, the freedman of Caesar\'s household',[['sailor',K.sailor],['innkeeper',K.innkeeper,-1,0],...both('landlady'),['landlord',K.landlord],['landlord (L)',K.landlord,-1,0],...both('freedman')]],
+        ['The leading men of the Jews of Rome (28:17), two with the mantle over the head',[['jew_rome_1',K.jew_rome_1],['jew_rome_2',K.jew_rome_2,-1,0],['jew_rome_3',K.jew_rome_3],['jew_rome_4',K.jew_rome_4,-1,0],['jew_rome_5',K.jew_rome_5],['jew_rome_6',K.jew_rome_6,-1,0],['jew_rome_1 seated',K.jew_rome_1,1,-1],['jew_rome_4 seated',K.jew_rome_4,-1,-1]]],
+        ['Five soldiers of the watch: a tunic, a belt, sandals and a sword; seated, the chain\'s hand on his knee',[...RW('praetorian_watch_bald'),...RW('praetorian_watch_ruddy'),['watch',R.praetorian_watch],['watch_young',R.praetorian_watch_young,-1,0],['watch_old',R.praetorian_watch_old],['bald seated',R.praetorian_watch_bald,-1,-1,0,0,'k']]],
+        ['Travelers; Paul at home without his mantle and weary on the road, standing and walking',[['traveler_1',K.traveler_1],['traveler_2',K.traveler_2,-1,0],...both('paul_home'),['paul_weary',K.paul_weary],['weary walking',K.paul_weary,1,10],['weary walking on',K.paul_weary,1,16],['weary (L)',K.paul_weary,-1,12]]]
+      ];
+      const Z=3,cw=156,chh=408,cols=8,hdr=30,[c,g]=sheet(cols*cw,36+ROWS.length*(hdr+chh));
+      text(g,'Rome (Acts 28:11-31): the people of Chapters Twenty-Four and Twenty-Five, three times enlarged',12,24,14,'#f4f0e6');
+      ROWS.forEach(([title,items],r)=>{const ry=36+r*(hdr+chh);g.fillStyle='#4a5464';g.fillRect(0,ry,cols*cw,hdr);text(g,title,12,ry+20,12,'#f4f0e6');
+        items.forEach(([nm,o,dir,fr,talk,ge,pz],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);
+          const sp=sprite(['rome',r,i].join('|'),q=>person(q,0,0,o,dir||1,fr||0,talk||0,0,ge||0,0,0,pz||''),dir||1);
+          cut(g,sp,-24,-126,48,127,x+Math.floor((cw-48*Z)/2),y+chh-22-126*Z,Z);text(g,nm,x+6,y+chh-6,11)})});
+      SHEETS['cast-rome']=c.toDataURL();
+      /* eight times: every head; then the clasp, the weary stride and the cat */
+      const HD=ids.filter(k=>!/^paul_/.test(k)),ZD=8,dw=208,dh=300,cols2=8,[cd,gd]=sheet(cols2*dw,36+Math.ceil(HD.length/cols2)*dh+120*3.4+40);
+      text(gd,'Eight times: every head of Rome (above); the clasp of greeting, the weary stride and the cat (below)',12,24,14,'#f4f0e6');
+      HD.forEach((k,i)=>{const o=K[k],x=(i%cols2)*dw,y=36+Math.floor(i/cols2)*dh,f=o.veil||o.fem,top=4+23+16+3+(f?24:26)+20;field(gd,i,x,y,dw,dh);
+        cut(gd,sprite(['romeh',k].join('|'),q=>person(q,0,0,o,1,0,2,0,0,0,0),1),-13,-top-6,26,36,x,y,ZD);text(gd,k,x+6,y+dh-8,11)});
+      {const y2=36+Math.ceil(HD.length/cols2)*dh,k=document.createElement('canvas');k.width=240;k.height=120;const q=k.getContext('2d');q.imageSmoothingEnabled=false;q.fillStyle='#b9c2cc';q.fillRect(0,0,240,120);q.scale(2,2);
+        q.save();q.translate(40,56);person(q,0,0,K.paul_weary,1,0,0,0,11,0,0);q.restore();q.save();q.translate(60,56.5);q.scale(-1,1);person(q,0,0,K.mikon,1,0,0,0,11,0,0);q.restore();
+        q.save();q.translate(92,56);person(q,0,0,K.paul_weary,1,20,0,0,0,0,0);q.restore();C.cat(q,10,56,{});C.cat(q,112,56,{awake:1,dir:-1});
+        gd.drawImage(k,0,0,240,120,0,y2,240*3.4,120*3.4);text(gd,'the clasp (Paul, weary, and Mikon, 20 pixels apart), a weary step, the cat asleep and awake: seven times',8,y2+120*3.4+16,12,'#f4f0e6')}
+      SHEETS['cast-rome-detail']=cd.toDataURL();
+      window.SHEETS=SHEETS;halt('rome')}}
   /* Dynamic cast & contact shadows in figure() (issue #81): floor skew, foreground-lamp back-wall bend, prop/actor ordering, pitch-dark
      zero shadow, multi-lamp steadiness across 110ms flame ticks, solid-wall clipping, and enlarged/gallery sheets across all 22 rooms. */
   /* deck (shared/ship.js, view 'deckAft'): the deck of a coaster seen from aboard, looking aft, in its three lights. It checks the one
@@ -1367,6 +1507,10 @@
     {const[c,dr]=made[0],[w,wg]=mk(640,288);wg.setTransform(HR,0,0,HR,0,0);const t0=performance.now();for(let k=0;k<60;k++)dr(wg,k*16);const ms=(performance.now()-t0)/60;
       ok(ms<4,`coast: the moving sea and its smoke cost ${ms.toFixed(2)} ms a frame`)}
     const[c0,dr0]=made[0];G.scene=(g,t)=>{g.drawImage(c0,0,0,320,144);dr0(g,t)};await wait(1200);halt('coast')}
+  /* views: the variants of a room that the generic stops (routes<N>, shadows<N>) look at, one after another: a chapter names them in its
+     definition (views:{room:{name:()=>set its flags}}), as Chapter Twenty-Five does for the flat and the room at street level of its one
+     lodging; each gets its own sheets (routes-<room>-<name>). A room without views is looked at as it stands. */
+  const views=(n,id)=>{const v=n&&CHAP[n]&&CHAP[n].views&&CHAP[n].views[id];return v?Object.entries(v):[['',null]]};
   /* routes<N> (routespro for the Prologue): the rooms of a chapter with what stands on their floors. For each room a sheet, routes-<room>, three
      times enlarged: the walk strip, each footprint (solid) with the margin that keeps a figure's feet off it, the place each hotspot and exit is
      walked to (a small diamond, green if it can be reached, red if not), and the ways from every exit to every one of them. It fails if a
@@ -1377,7 +1521,7 @@
     for(const o of Object.values(ACT))o.room=null;
     const rooms=Object.keys(ROOMS).filter(id=>!before.has(id)&&ROOMS[id].walk&&!planOf(id)&&ART[id]&&ROOMS[id].walk[0]<ROOMS[id].walk[1]&&ROOMS[id].walk[2]<roomH(id));
     window.SHEETS={};let nf=0;
-    for(const id of rooms){const R=ROOMS[id],a=ART[id],w=R.walk,W=a.w,Hh=roomH(id),K=3,c=document.createElement('canvas');c.width=W*K;c.height=Hh*K;const g=c.getContext('2d');
+    for(const id of rooms)for(const[vn,vset]of views(n,id)){if(vset)vset();const sid=id+(vn?'-'+vn:''),R=ROOMS[id],a=ART[id],w=R.walk,W=a.w,Hh=roomH(id),K=3,c=document.createElement('canvas');c.width=W*K;c.height=Hh*K;const g=c.getContext('2d');
       g.setTransform(K,0,0,K,0,0);g.imageSmoothingEnabled=false;g.drawImage(bg(id),0,0,W,Hh);
       /* the room as it is drawn with the view at its left end: what its draw paints (beasts, bystanders, stalls), the props, the foreground
          (fore, front), all at their depths, but nobody of the cast */
@@ -1388,7 +1532,7 @@
       props(id).forEach((p,i)=>{const d=p.c.getContext('2d').getImageData(0,0,p.c.width,p.c.height).data,cw=p.c.width,ch=p.c.height;let yb=-1;
         for(let y=ch-1;y>=0&&yb<0;y--)for(let x=0;x<cw;x++)if(d[(y*cw+x)*4+3]){yb=y;break}let x0=cw,x1=-1;
         for(let y=Math.max(0,yb-2*HR);y<=yb;y++)for(let x=0;x<cw;x++)if(d[(y*cw+x)*4+3]){x0=Math.min(x0,x);x1=Math.max(x1,x)}
-        const f=a.props[i].foot;L(`     ${id} prop ${i} (y ${p.y}): ${p.x.toFixed(1)}..${(p.x+p.w).toFixed(1)} across, ${p.t.toFixed(1)}..${(p.t+p.h).toFixed(1)} down; at the floor ${(p.x+x0/HR).toFixed(1)}..${(p.x+(x1+1)/HR).toFixed(1)}`+(f?' foot '+JSON.stringify(typeof f==='function'?f(a.variant?a.variant():''):f):' NO FOOT'))});
+        const f=a.props[i].foot;L(`     ${sid} prop ${i} (y ${p.y}): ${p.x.toFixed(1)}..${(p.x+p.w).toFixed(1)} across, ${p.t.toFixed(1)}..${(p.t+p.h).toFixed(1)} down; at the floor ${(p.x+x0/HR).toFixed(1)}..${(p.x+(x1+1)/HR).toFixed(1)}`+(f?' foot '+JSON.stringify(typeof f==='function'?f(a.variant?a.variant():''):f):' NO FOOT'))});
       g.lineWidth=1/K;g.strokeStyle='rgba(255,230,120,.9)';g.strokeRect(w[0],w[2],w[1]-w[0],w[3]-w[2]);
       for(const f of F){const[x0,y0,x1,y1]=f.b;g.fillStyle=f.seat?'rgba(80,160,255,.38)':'rgba(255,40,40,.38)';g.fillRect(x0,y0,x1-x0,y1-y0);
         g.strokeStyle='rgba(255,140,190,.9)';g.strokeRect(x0-FOOT_M[0],y0-FOOT_M[1],x1-x0+2*FOOT_M[0],y1-y0+2*FOOT_M[1])}
@@ -1401,12 +1545,12 @@
           g.strokeStyle='rgba(90,230,255,.85)';g.lineWidth=1/K;g.beginPath();g.moveTo(s0[0],s0[1]);for(const q of r.pts)g.lineTo(q[0],q[1]);g.stroke()}
         if(!reach)bad.push(T(h.name));
         g.strokeStyle=reach?'#40ff60':'#ff3030';g.lineWidth=1.5/K;g.beginPath();g.moveTo(t[0],t[1]-2);g.lineTo(t[0]+2,t[1]);g.lineTo(t[0],t[1]+2);g.lineTo(t[0]-2,t[1]);g.closePath();g.stroke()}
-      SHEETS['routes-'+id]=c.toDataURL();
-      ok(!bad.length,`${id}: ${F.length} footprint${F.length===1?'':'s'}; every exit and hotspot (${hs.length}) is reached from every exit`+(bad.length?'. NOT REACHED: '+bad.join(', '):''))}
+      SHEETS['routes-'+sid]=c.toDataURL();
+      ok(!bad.length,`${sid}: ${F.length} footprint${F.length===1?'':'s'}; every exit and hotspot (${hs.length}) is reached from every exit`+(bad.length?'. NOT REACHED: '+bad.join(', '):''))}
     ok(rooms.length>0||!n,`${rooms.length} rooms of ${n?'chapter '+n:'the Prologue'} with a strip to walk on, ${nf} footprints in all (sheets routes-<room>)`);
     /* and walked: Paul crosses every footprint that has floor on both sides of it, from one side to the other at its middle depth, at a
        brisk pace; he never steps into it (nor into any other), he gets there, and on the curve he turns at most twice */
-    for(const id of rooms){const w=ROOMS[id].walk,F=roomFeet(id).filter(f=>!f.seat),bad=[];let walks=0;
+    for(const id of rooms)for(const[vn,vset]of views(n,id)){if(vset)vset();const sid=id+(vn?'-'+vn:''),w=ROOMS[id].walk,F=roomFeet(id).filter(f=>!f.seat),bad=[];let walks=0;
       for(const o of Object.values(ACT))o.room=null;enterRoom(id,(w[0]+w[1])/2,w[3]-2,1);
       for(const f of F){const ym=clamp((f.b[1]+f.b[3])/2,w[2]+1,w[3]-1);let L=f.b[0]-FOOT_M[0]-2,R=f.b[2]+FOOT_M[0]+2;while(L>w[0]&&floorHit(id,L,ym))L-=2;while(R<w[1]&&floorHit(id,R,ym))R+=2;
         if(L<w[0]||R>w[1]||floorHit(id,L,ym)||floorHit(id,R,ym))continue;walks++;
@@ -1418,7 +1562,7 @@
         if(film){clearInterval(ft);const cols=4,W0=fr[0].width,H0=fr[0].height,c=document.createElement('canvas');c.width=W0*cols;c.height=H0*Math.ceil(fr.length/cols);const g=c.getContext('2d');
           fr.forEach((f,i)=>g.drawImage(f,(i%cols)*W0,((i/cols)|0)*H0));SHEETS['routes-walk']=c.toDataURL()}
         if(!r||Math.hypot(P.x-R,P.y-ym)>1||inside||turns>2)bad.push(`[${f.b.map(v=>Math.round(v)).join(',')}] ${!r?'not reached':''}${inside?' stepped in '+inside:''}${turns>2?' turned '+turns:''}`)}
-      ok(!bad.length,`${id}: Paul walked round ${walks} footprint${walks===1?'':'s'}, and never into one`+(bad.length?'. BAD: '+bad.join(' | '):''))}
+      ok(!bad.length,`${sid}: Paul walked round ${walks} footprint${walks===1?'':'s'}, and never into one`+(bad.length?'. BAD: '+bad.join(' | '):''))}
     {const id=rooms[0];if(id){setChapter(n||1);place(P,id,(ROOMS[id].walk[0]+ROOMS[id].walk[1])/2,ROOMS[id].walk[3]-4,1);enterRoom(id,P.x,P.y,1)}}
     halt(stop)}}
   /* shadows<N> (CONTRIBUTING section 4): the rooms of a chapter with a strip to walk on, each with Paul standing at five places along the back
@@ -1432,12 +1576,12 @@
     for(const o of Object.values(ACT))o.room=null;
     const rooms=Object.keys(ROOMS).filter(id=>!before.has(id)&&ROOMS[id].walk&&!planOf(id)&&ART[id]&&ROOMS[id].walk[0]<=ROOMS[id].walk[1]&&ROOMS[id].walk[2]<roomH(id));
     window.SHEETS={};const look=paulLook(n);let k=0;
-    for(const id of rooms){const R=ROOMS[id],a=ART[id],w=R.walk,W=a.w||VW,Hh=roomH(id),K=2,c=document.createElement('canvas');c.width=W*K;c.height=Hh*K;const g=c.getContext('2d');
+    for(const id of rooms)for(const[vn,vset]of views(n,id)){if(vset)vset();const sid=id+(vn?'-'+vn:''),R=ROOMS[id],a=ART[id],w=R.walk,W=a.w||VW,Hh=roomH(id),K=2,c=document.createElement('canvas');c.width=W*K;c.height=Hh*K;const g=c.getContext('2d');
       let L=a.light;try{if(typeof L==='function')L=L()}catch(e){L=undefined}
       const sun=L&&(L.sun||L.dir),len=sun?Math.hypot(sun[0],sun[1]):0;
-      ok('light' in a,`${id}: says what light it has`+(!('light' in a)?' (NO light: give it amb, sun or lamps, or light:null for a close view or a map)':
+      ok('light' in a,`${sid}: says what light it has`+(!('light' in a)?' (NO light: give it amb, sun or lamps, or light:null for a close view or a map)':
         ` (${!L?'none':[(L.lamps||[]).length?L.lamps.length+' lamp'+(L.lamps.length>1?'s':''):'',sun?'sun ['+sun.slice(0,2).join(',')+']':'','amb '+(L.amb||'#ffffff')].filter(Boolean).join(', ')})`));
-      if(sun)ok(len>=3,`${id}: its sun casts a shadow ${len.toFixed(1)} room pixels long, at least 3 (a direction of length one casts none)`);
+      if(sun)ok(len>=3,`${sid}: its sun casts a shadow ${len.toFixed(1)} room pixels long, at least 3 (a direction of length one casts none)`);
       g.setTransform(K,0,0,K,0,0);g.imageSmoothingEnabled=false;LID=id;g.drawImage(bg(id),0,0,W,Hh);
       const q=DQ=[];SQ=[];try{a.draw(g,1000)}catch(e){}for(const p of props(id))q.push([p.y,()=>g.drawImage(p.c,p.x,p.t,p.w,p.h)]);
       /* a room whose strip is a single spot (where a scene sets its people) is shown with them round that spot */
@@ -1446,12 +1590,12 @@
       for(const[x,y,dir,fr]of spots){const o={id:'shtest'+(k++%2),look,x,y,dir,fr,room:id,noTurn:1};drawActor(g,o,1000,id)}
       const sq=SQ;DQ=SQ=null;for(const fn of sq)fn();q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());
       const f=fg(id);if(f)g.drawImage(f,0,0,f.width/HR,VH);try{a.front(g,1000)}catch(e){}LID=null;
-      SHEETS['shadows-'+id]=c.toDataURL();
+      SHEETS['shadows-'+sid]=c.toDataURL();
       const y0=Math.max(0,w[3]-56),hh=Math.min(Hh,w[3]+10)-y0,z=c.width>1280?1280/W:4,c4=document.createElement('canvas');c4.width=Math.round(W*z);c4.height=Math.round(hh*z*(z<4?4/z:1));
       const g4=c4.getContext('2d');g4.imageSmoothingEnabled=false;
       if(z>=4)g4.drawImage(c,0,y0*K,W*K,hh*K,0,0,W*4,hh*4);
       else{const half=Math.ceil(W/2);c4.width=half*4;c4.height=hh*8;g4.imageSmoothingEnabled=false;g4.drawImage(c,0,y0*K,half*K,hh*K,0,0,half*4,hh*4);g4.drawImage(c,half*K,y0*K,(W-half)*K,hh*K,0,hh*4,(W-half)*4,hh*4)}
-      SHEETS['shadows-'+id+'-x4']=c4.toDataURL()}
+      SHEETS['shadows-'+sid+'-x4']=c4.toDataURL()}
     ok(rooms.length>0,`${rooms.length} rooms of chapter ${n} with a strip to walk on (sheets shadows-<room> and shadows-<room>-x4)`);
     {const id=rooms[0];if(id){place(P,id,(ROOMS[id].walk[0]+ROOMS[id].walk[1])/2,ROOMS[id].walk[3]-4,1);enterRoom(id,P.x,P.y,1)}}
     halt(stop)}}
@@ -1681,6 +1825,146 @@
     /* the picture: the deck at the game's own pace, the sailor's call standing over it in the pause, with Paul at the second hold */
     G.speedAll=0;clearInterval(sk);enterRoom('beattest',X[1],Y,1);{const k=BT.start({phase:b.from+.01});k.misses=3;k.help=1}await wait(300);
     ok(G.beat.calling()&&G.beat.period===6000,'at the game\'s pace the beat is six seconds from wave to wave, and the call stands in the pause');halt(stop)}
+  /* A room whose ship moves with the sea (ART[id].sway, see swayOf in index.html): sway on the desktop, phonesway on a phone held sideways.
+     A test scene of the harness's own (no chapter's room): a strip of deck in five planks of five colors under a plain sky and sea,
+     Paul and Eliab standing on it, a dark cask and a light chest as its hotspots, swaying four degrees with a heave of three pixels so
+     that faults show, and rain in the air. The checks read the picture itself (the canvas) wherever they can, with the sway held at one
+     phase (SW.ph) and the frame painted at one moment (frame), and find a figure by the pixels it changes (seen). Checked: the feet stay
+     on their plank through a whole sway; a click or a tap lands on what is seen at the greatest tilt, and one where the cask would be
+     without the sway hits only where the cask is seen; the harness's own clicks, given in the room's coordinates, still mean them; a walk
+     to a seen spot ends there; a line stands level by its speaker; the world behind and the air do not move; no gap opens at a corner;
+     on the phone the field lies as it would without the sway; with reduced motion asked for, or calm movement chosen, nothing sways; a
+     sway of nothing paints the very same picture as no sway, and a room without one is not touched. Hands over sway-strip.png (six
+     frames across one sway) and sway-feet.png (the feet on the planks at both tilts and level, enlarged six times). */
+  if(/^(phone)?sway$/.test(stop)){const ph=stop==='phonesway';if(ph){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120)}
+    await loadLevel(1);ov.className='';ov.onclick=null;G.splash=0;setChapter(1);G.scene=null;
+    TEXTS('en','main',{sway_test_cask:'cask',sway_test_chest:'chest',sway_test_line:'Hold on to the rail!'});
+    TEXTS('de','main',{sway_test_cask:'Fass',sway_test_chest:'Kiste',sway_test_line:'Halt dich an der Reling fest!'});
+    const PL=['#c03020','#30a040','#3050c0','#c0b020','#a030b0'],PY=94,SKY='#8a96a8',SEA='#2e4a5c',RAIN=[232,238,244],
+      SW={ph:null,A:4*Math.PI/180,H:3,period:2400},R={looked:0,chest:0},E=ACT.eliab,SHEETS={};
+    /* the picture: the world behind (sky and sea) painted every frame; the backdrop only the rail and the deck, open above the rail */
+    ART.swaytest={w:320,light:{amb:'#c8ccd4'},   /* an overcast storm: soft light, no cast shadows */
+      behind(g){g.fillStyle=SKY;g.fillRect(0,0,320,72);g.fillStyle='#b8c0cc';g.fillRect(30,20,60,6);g.fillStyle=SEA;g.fillRect(0,72,320,72)},
+      paint(g){g.fillStyle='#5a3e26';g.fillRect(0,88,320,PY-88);g.fillStyle='#7a5636';g.fillRect(0,88,320,1);
+        PL.forEach((c,j)=>{g.fillStyle=c;g.fillRect(0,PY+j*10,320,10)});
+        g.fillStyle='#181818';g.fillRect(285,98,12,12);   /* the cask: small, and far from the pivot, so that the sway moves it more than its size */
+        g.fillStyle='#f4f0e0';g.fillRect(200,100,14,10)},
+      sway(t){const p=SW.ph!=null?SW.ph:(t%SW.period)/SW.period,s=Math.sin(2*Math.PI*p);return{a:SW.A*s,dy:SW.H*s,cx:160,cy:144}},
+      air(g){g.fillStyle=`rgb(${RAIN})`;for(const[x,y]of[[30,14],[110,30],[200,8],[262,40],[30,100]])g.fillRect(x,y,1,6)},
+      draw(){},front(){}};
+    ROOMS.swaytest={walk:[20,300,118,140],mood:'calm',amb:{},hs:[
+      {name:'sway_test_chest',x:200,y:100,w:14,h:10,look:()=>{R.chest++}},
+      {name:'sway_test_cask',x:285,y:98,w:12,h:12,look:()=>{R.looked++}}]};
+    const cask=ROOMS.swaytest.hs[1],W=cv.width,
+      /* frame: paint the room at the moment T, as render does each frame, and read the picture (the room's rows of the canvas) */
+      frame=T=>{const raf=window.requestAnimationFrame;window.requestAnimationFrame=()=>0;try{lastT=T-16;render(T)}finally{window.requestAnimationFrame=raf}return cv.getContext('2d').getImageData(0,0,W,VH*HR)},
+      pix=(D,x,y)=>{const i=(Math.floor(y*HR)*W+Math.floor(x*HR))*4;return[D.data[i],D.data[i+1],D.data[i+2]]},
+      near=(c,list)=>{let b=-1,bd=1e9;list.forEach((p,j)=>{const q=typeof p==='string'?hex(p):p,d=(q[0]-c[0])**2+(q[1]-c[1])**2+(q[2]-c[2])**2;if(d<bd){bd=d;b=j}});return b},
+      plank=c=>near(c,[...PL,SEA,SKY]),   /* 0..4 a plank, 5 the sea, 6 the sky */
+      /* seen: where a figure is seen, from the pixels it changes: its lowest row (the foot of its contact shadow), its top, and the middle of each */
+      seen=(a,T)=>{const D1=frame(T),r=a.room;a.room=null;const D0=frame(T);a.room=r;
+        const x0=Math.max(0,Math.floor((a.x-36)*HR)),x1=Math.min(W,Math.ceil((a.x+36)*HR)),rows=[];
+        for(let y=40*HR;y<VH*HR;y++){let n=0,s=0;for(let x=x0;x<x1;x++){const i=(y*W+x)*4;if(Math.abs(D1.data[i]-D0.data[i])+Math.abs(D1.data[i+1]-D0.data[i+1])+Math.abs(D1.data[i+2]-D0.data[i+2])>24){n++;s+=x}}if(n)rows.push([y,s/n])}
+        if(!rows.length)return null;const lo=rows[rows.length-1],hi=rows[0];return{D:D1,fx:lo[1]/HR,fy:lo[0]/HR,hx:hi[1]/HR,hy:hi[0]/HR}},
+      /* scr: where a point of the picture is on the screen, worked out without the sway (as the picture lies in the view, or in the phone's field) */
+      scr=(vx,vy)=>{const r=vp.getBoundingClientRect();if(PH.on){const q=vpq()[1];return[r.left+(LENS.tx+vx*LENS.k)*q,r.top+(LENS.ty+vy*LENS.k)*q]}return[r.left+vx/VW*r.width,r.top+vy/VH*r.height]},
+      touch=(type,x,y)=>cv.dispatchEvent(new PointerEvent(type,{pointerId:1,pointerType:'touch',isPrimary:true,clientX:x,clientY:y,bubbles:true,cancelable:true})),
+      /* point: what lies under the pointer at a point of the picture, through the game's own input (a mouse moved there, or a finger put down) */
+      point=async(vx,vy)=>{const[X,Y]=scr(vx,vy);G.hover=undefined;if(ph){touch('pointerdown',X,Y);touch('pointerup',X,Y);await wait(400)}else vp.dispatchEvent(new MouseEvent('mousemove',{clientX:X,clientY:Y,bubbles:true}));return G.hover},
+      tapAt=async(vx,vy)=>{const[X,Y]=scr(vx,vy);if(ph){touch('pointerdown',X,Y);touch('pointerup',X,Y)}vp.dispatchEvent(new MouseEvent('click',{clientX:X,clientY:Y,bubbles:true}));await idle();if(ph)await wait(400)},
+      same=(A,B,x0,y0,x1,y1)=>{for(let y=Math.floor(y0*HR);y<Math.ceil(y1*HR);y++)for(let x=Math.floor(x0*HR);x<Math.ceil(x1*HR);x++){const i=(y*W+x)*4;if(A.data[i]!==B.data[i]||A.data[i+1]!==B.data[i+1]||A.data[i+2]!==B.data[i+2])return false}return true},
+      T0=Math.round(performance.now())+1000,AY=129;   /* the feet on the fourth plank (124 to 134), in the middle of it */
+    G.speedAll=500;enterRoom('swaytest',70,AY,1);place(E,'swaytest',250,AY,-1);G.busy=false;lock(false);syncVerbs();drawInv();status();await wait(ph?700:200);
+    /* the feet on their plank: through a whole sway each stands on the fourth plank, where he is seen, while he is seen to move */
+    {const bad=[],ys=[];for(let k=0;k<12;k++){SW.ph=k/12;for(const a of[P,E]){const s=seen(a,T0+k);if(!s){bad.push(a.id+' not seen');continue}
+        const c=plank(pix(s.D,s.fx,s.fy+1));if(c!==3)bad.push(`${a.id} at ${k}/12 on ${c}`);ys.push([a.id,s.fy])}}
+      SW.ph=.25;const D=frame(T0),off=plank(pix(D,E.x,AY+2.5)),ey=ys.filter(y=>y[0]===E.id).map(y=>y[1]),rg=Math.max(...ey)-Math.min(...ey);
+      ok(!bad.length&&rg>10&&off!==3,`the feet stay on their plank through a whole sway (Eliab's feet are seen ${rg.toFixed(1)} pixels higher and lower, and where they would stand without the sway lies another plank)`+(bad.length?'. BAD: '+bad.join(', '):''))}
+    /* the cask as it is seen at the greatest tilt: its dark pixels in the picture */
+    SW.ph=.25;await wait(60);
+    {const D=frame(T0),dk=[];for(let y=70;y<140;y+=.5)for(let x=268;x<320;x+=.5){const c=pix(D,x,y);if(c[0]<44&&c[1]<44&&c[2]<44)dk.push([x,y])}
+      const cxs=dk.reduce((s,p)=>s+p[0],0)/dk.length,cys=dk.reduce((s,p)=>s+p[1],0)/dk.length,c0=[291,104],dark=c=>c[0]<44&&c[1]<44&&c[2]<44;
+      const hitSeen=await point(cxs,cys),hitOld=await point(...c0),oldDark=dark(pix(frame(T0),...c0)),ring=[];
+      for(let k=0;k<12;k++){const t=k/12*2*Math.PI;for(const[r,inside]of[[3.5,1],[11,0]]){const x=cxs+r*Math.cos(t),y=cys+r*Math.sin(t),h=await point(x,y);if((h===cask)!==!!inside||(h===cask)!==dark(pix(frame(T0),x,y)))ring.push(`${r}@${k}`)}}
+      ok(dk.length>100&&Math.hypot(cxs-c0[0],cys-c0[1])>9&&hitSeen===cask,`at the greatest tilt a ${ph?'tap':'pointer'} on the cask where it is seen (${cxs.toFixed(1)}, ${cys.toFixed(1)}, ${Math.hypot(cxs-c0[0],cys-c0[1]).toFixed(1)} pixels from its place in the room) finds it`);
+      ok(hitOld!==cask&&!oldDark&&!ring.length,'where the cask would be without the sway nothing is found, and round the seen cask a point finds it exactly where the picture shows it'+(hitOld===cask||oldDark||ring.length?`. BAD: old ${hitOld&&hitOld.name} ${oldDark}, ring ${ring.join(',')}`:''));
+      verb('look');await tapAt(cxs,cys);ok(R.looked===1,`a ${ph?'tap':'click'} on the cask as it is seen looks at it`);
+      verb('look');view(cask.x+cask.w/2,cask.y+cask.h/2);await idle();if(ph)await wait(400);
+      ok(R.looked===2,"the harness's own clicks, given in the room's coordinates, still mean them (toClient finds the place where it is seen)")}
+    /* a walk to a seen spot ends there */
+    {enterRoom('swaytest',70,AY,1);place(E,'swaytest',250,AY,-1);await wait(ph?700:150);const tx=120,ty=131;
+      await tapAt(tx,ty);const s=seen(P,T0),[bx,by]=swayBack(tx,ty);
+      ok(Math.abs(P.x-bx)<1&&Math.abs(P.y-by)<1&&s&&Math.abs(s.fx-tx)<3&&Math.abs(s.fy-1.6-ty)<2.5,`a walk to a seen spot ends there: Paul stands at ${P.x.toFixed(1)}, ${P.y.toFixed(1)} in the room and is seen with his feet at ${s&&s.fx.toFixed(1)}, ${s&&(s.fy-1.6).toFixed(1)}, where the ${ph?'tap':'click'} was (${tx}, ${ty})`)}
+    /* a line stands level, over the place where its speaker's head is seen */
+    {clearInterval(sk);const s=seen(E,T0),pr=say(E,'sway_test_line');await wait(150);const el=cur&&cur.el,r=el&&el.getBoundingClientRect(),[hx,hy]=scr(s.hx,s.hy),
+        tf=el&&getComputedStyle(el).transform,u=ph?LENS.k:vp.getBoundingClientRect().width/VW,[ux]=scr(E.x,E.y-49),[sx]=scr(...swayPt(E.x,E.y-49)),mid=r&&(r.left+r.right)/2;
+      ok(el&&(tf==='none'||/^matrix\(1, 0, 0, 1,/.test(tf))&&Math.abs(mid-sx)<1.5&&Math.abs(mid-hx)<4*u&&Math.abs(sx-ux)>2*u&&r.bottom<=hy+2*u&&r.bottom>hy-24*u,`a line stands level (${tf}) over its speaker's head where it is seen: its middle at ${mid.toFixed(0)} px, the head seen at ${hx.toFixed(0)} px, where it would be without the sway ${ux.toFixed(0)} px`);
+      if(G.skip)G.skip();await pr;sk=setInterval(()=>{if(G.skip)G.skip()},30)}
+    /* the world behind and the air stay where they are while the ship heels the one way and the other */
+    {SW.ph=.25;const A=frame(T0);SW.ph=.75;const B=frame(T0);
+      ok(same(A,B,0,0,320,56)&&same(A,B,30,100,31,106)&&pix(A,30.2,103).join()===RAIN.join()&&!same(A,B,0,96,320,144),'the sky, the sea and the rain in the air stay where they are while the deck heels the one way and the other')}
+    /* no gap at a corner: where the ship heels up, the deck is seen to its edge (its backdrop reaches past the room, mirrored out of its own planks) */
+    {const gap=b=>{ART.swaytest.bleed=b;let n=0;for(const[ph2,x0]of[[.25,0],[.75,310]]){SW.ph=ph2;const D=frame(T0);for(let y=136;y<144;y+=.5)for(let x=x0;x<x0+10;x+=.5)if(plank(pix(D,x,y))>4)n++}delete ART.swaytest.bleed;return n};
+      const g0=gap(0),g24=gap();ok(g24===0&&g0>40,`no gap opens at a lower corner as the deck heels up (without the margin ${g0} points of the sea would show there)`)}
+    /* on the phone the field lies as it would without the sway: the lens follows whoever is played, not the heel of the ship */
+    if(ph){SW.ph=.25;await wait(700);frame(T0);const a=[LENS.k,LENS.tx,LENS.ty];const sw=ART.swaytest.sway;delete ART.swaytest.sway;frame(T0+16);const b=[LENS.k,LENS.tx,LENS.ty];ART.swaytest.sway=sw;
+      ok(a.every((v,i)=>Math.abs(v-b[i])<.5),'on the phone the field lies where it would without the sway: the lens follows whoever is played, not the heel of the ship ('+a.map(v=>v.toFixed(2)).join(', ')+')')}
+    /* reduced motion, or calm movement chosen: nothing sways, and the pointer is not mapped */
+    {const mm=window.matchMedia,sw=ART.swaytest.sway;SW.ph=.25;
+      window.matchMedia=q=>/reduced-motion/.test(q)?{matches:true,media:q,onchange:null,addListener(){},removeListener(){},addEventListener(){},removeEventListener(){},dispatchEvent(){return false}}:mm.call(window,q);
+      let A,h;try{A=frame(T0);await wait(60);h=await point(cask.x+cask.w/2,cask.y+cask.h/2)}finally{window.matchMedia=mm}const s1=G.sway;
+      delete ART.swaytest.sway;const B=frame(T0);ART.swaytest.sway=sw;
+      const m0=OPTS.mov;OPTS.mov=0;frame(T0);const s2=G.sway;OPTS.mov=m0;
+      ok(s1===null&&s2===null&&same(A,B,0,0,320,144)&&h===cask,'with reduced motion asked for, or calm movement chosen in the options, nothing sways: the picture is the one without a sway, and a pointer finds the cask in its place')}
+    /* a sway of nothing paints the very same picture as no sway; a room without one is not touched */
+    {const A0=SW.A,H0=SW.H;SW.A=0;SW.H=0;const A=frame(T0),s=G.sway;const sw=ART.swaytest.sway;delete ART.swaytest.sway;const B=frame(T0);ART.swaytest.sway=sw;SW.A=A0;SW.H=H0;
+      enterRoom('workshop',160,128,1);await wait(100);frame(T0);const[x,y]=toClient(100,100),[rx,ry]=evPos({clientX:x,clientY:y});
+      ok(!!s&&same(A,B,0,0,320,144)&&G.sway===null&&Math.abs(rx-100)<.01&&Math.abs(ry-100)<.01,'a sway of nothing paints the very same picture as no sway, and in a room without a sway nothing is turned or mapped')}
+    /* the pictures for the lead: six frames across one sway, and the feet on the planks, enlarged */
+    {enterRoom('swaytest',70,AY,1);place(E,'swaytest',250,AY,-1);await wait(ph?700:150);
+      const[c,g]=mk(W*3+16,VH*HR*2+8);g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+      for(let k=0;k<6;k++){SW.ph=k/6;frame(T0+k);g.drawImage(cv,0,0,W,VH*HR,(k%3)*(W+8),Math.floor(k/3)*(VH*HR+8),W,VH*HR)}
+      SHEETS[(ph?'phone':'')+'sway-strip']=c.toDataURL();
+      const Z=6,cw=56*HR,ch=40*HR,[f,fg2]=mk((cw*Z+8)*3,ch*Z);fg2.imageSmoothingEnabled=false;
+      [.25,0,.75].forEach((p,i)=>{SW.ph=p;frame(T0);fg2.drawImage(cv,(P.x-28)*HR,(AY-28)*HR,cw,ch,i*(cw*Z+8),0,cw*Z,ch*Z)});
+      SHEETS[(ph?'phone':'')+'sway-feet']=f.toDataURL()}
+    window.SHEETS=SHEETS;SW.ph=.25;G.speedAll=0;await wait(300);halt(stop)}
+  /* Chapter Twenty-Three (its section is further down; these two stand here, beside the beat's own stops, because a phone stop must run
+     before the checks of the desktop below). waves23, phonewaves23: the surf crossed by the beat's exposed phase. A click on the next hold is judged at the moment of the click; the
+     test waits for the pause before it clicks, or clicks on the wave to miss. A hit; three misses on the wave (back at the last hold, no
+     line standing) and the sailor's call; a hit, after which the call stays (sticky); three more misses, and he wades out and brings Paul
+     in: on the beach, the beat stopped, Luke played. */
+  if(/^(phone)?waves23$/.test(stop)){const ph=stop==='phonewaves23';if(ph){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120)}
+    await loadLevel(23);G.speedAll=500;
+    const upto23=k=>{const A=CHAP[23].flags;return A.slice(CHAP[23].carry,A.indexOf(k)+1)},open23=async(flags,room)=>{const C=CHAP[23];setChapter(23);ov.className='';ov.onclick=null;G.splash=0;for(const k of flags)F[k]=1;
+      C.place(room);dealInv(room);G.scene=null;enterRoom(room,...C.ent[room]);G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();return C};
+    const C=await open23(upto23('planks'),'surf23');
+    const now=()=>performance.now(),till=async(fn,n)=>{for(let i=0;i<(n||800)&&!fn();i++)await wait(10);return!!fn()},
+      touch=(type,x,y)=>cv.dispatchEvent(new PointerEvent(type,{pointerId:1,pointerType:'touch',isPrimary:true,clientX:x,clientY:y,bubbles:true,cancelable:true})),
+      gap=async()=>{if(ph)await wait(400)},HN=['','floating_spar','rock_in_the_surf','sandbar','the_beach'],
+      click=async i=>{const h=ROOMS.surf23.hs.find(h=>h.name===HN[i]),x=h.x+h.w/2,y=h.y+h.h/2;
+        if(ph){const[cx2,cy2]=toClient(x,y);touch('pointerdown',cx2,cy2);touch('pointerup',cx2,cy2);vp.dispatchEvent(new MouseEvent('click',{clientX:cx2,clientY:cy2,bubbles:true}))}else view(x,y);await idle()},
+      room=()=>G.beat.inPause()&&G.beat.next().to-now()>=G.beat.need+150,
+      wave=()=>!G.beat.inPause()&&G.beat.phase()>.02&&G.beat.phase()<G.beat.from-.04,
+      quiet=()=>!G.skip&&!$('#speech').textContent.trim(),X=C.holds;
+    await till(()=>G.beat&&G.beat.on,600);const b=G.beat;
+    ok(b&&b.on&&b.sticky&&b.room==='surf23'&&b.period===1800&&b.pause===900&&b.need===450&&P.pose==='plank'&&Math.abs(P.x-X[0])<1&&PC()===P,
+      'the surf: the beat starts with the room, sticky, its phase exposed ('+(b&&b.phase().toFixed(3))+'); Paul in the water on his plank at the wreck');
+    await gap();await till(room);await click(1);
+    ok(Math.abs(P.x-X[1])<1&&G.at23===1&&b.misses===0,'a click on the floating spar in the pause between two seas: he is there');
+    for(let n=1;n<=3;n++){await gap();await till(wave);await click(2);
+      ok(Math.abs(P.x-X[1])<1&&G.at23===1&&b.misses===n&&quiet()&&!G.busy,`a click on the wave is a miss (${n}): back at the spar, and no line stands to be clicked away`)}
+    {await till(()=>b.calling(),900);SHARED.beat.cap.last=null;await wait(80);const c=SHARED.beat.cap.last;
+      ok(b.help===1&&b.calling()&&c&&c.key==='now'&&c.s===T('now')&&c.w<=c.max,'after three misses the sailor in the shallows calls the moment: '+(c&&c.s))}
+    if(stop==='phonewaves23'||stop==='waves23'){await gap();await till(room);await click(2)}
+    ok(Math.abs(P.x-X[2])<1&&G.at23===2&&b.help===1&&b.misses===3,'a hit takes him to the rock, and the call stays (sticky)');
+    for(let n=1;n<=3;n++){await gap();await till(wave);await click(3)}
+    await till(()=>F.surf&&G.room==='beach23'&&!G.busy,900);
+    ok(F.surf&&G.room==='beach23'&&PC()===ACT.luke23&&!G.beat,'after three more misses the sailor wades out and brings him in: on the beach, the beat stopped, Luke played');
+    G.speedAll=0;clearInterval(sk);await open23(upto23('planks'),'surf23');await till(()=>G.beat&&G.beat.on,600);
+    /* the picture: at the game's pace, the call standing over the sailor for the whole pause (a step that takes no time) */
+    {const k=SHARED.beat.start({need:0,sticky:true,room:'surf23',phase:G.beat.from+.01});k.misses=3;k.help=1}
+    await till(()=>G.beat.calling(),2400);ok(G.beat.period===6000,'at the game\'s pace the sea comes every six seconds, and the call stands in the pause');await wait(100);halt(stop)}
   /* Pictures as answers (choose with {icon, key}, Chapter Twenty-Three's islanders): picks on the desktop, phonepicks on a phone. Four
      pictures and a last line that only leaves: the pictures stand in a row of squares, mixed by their keys, in the same order in English
      and in German; each says its words to the status line and to a screen reader; a click answers with its place in the options. */
@@ -1706,7 +1990,8 @@
     await setLang(lang);await wait(100);$('#choices').classList.remove('on');pr=window.choose(opts,{keep:1});await wait(300);
     fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,6).join(' | '):''));
     halt(stop,()=>{window.SHEETS={[(lang==='en'?'':lang+'-')+stop+'-row']:(()=>{const p=[...document.querySelectorAll('#choices button.pic canvas')],z=6,[s,g]=mk(p.length*(48*z/2+12)+12,48*z/2+24);g.imageSmoothingEnabled=false;g.fillStyle='#120c08';g.fillRect(0,0,s.width,s.height);p.forEach((c,i)=>g.drawImage(c,12+i*(48*z/2+12),12,48*z/2,48*z/2));return s.toDataURL()})()}})}
-  if(/^phone/.test(stop)){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120);
+  /* a chapter's own phone stop (phonedeck22: a crossing of Chapter Twenty-Two tapped on a phone) is the chapter's, in its own section */
+  if(/^phone/.test(stop)&&!/^phone[a-z]+2\d$/.test(stop)){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120);
     const root=document.documentElement,R=el=>el.getBoundingClientRect(),W=innerWidth,Hh=innerHeight,
       touch=(type,id,x,y)=>cv.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:id===1,clientX:x,clientY:y,bubbles:true,cancelable:true})),
       tap=(x,y)=>{touch('pointerdown',1,x,y);touch('pointerup',1,x,y);vp.dispatchEvent(new MouseEvent('click',{clientX:x,clientY:y,bubbles:true}))},
@@ -2008,7 +2293,8 @@
     }
   /* sound: the first press anywhere starts it; a press wakes sound that iOS interrupted; on iPhone and iPad a note says where Silent Mode is */
   {const hushOn=()=>$('#hush').classList.contains('on'),dev=AU.apple;
-    ok(!dev,'desktop Chrome is not taken for an iPhone or iPad');ok(!AU.ctx,'no sound before the first press');
+    /* a chapter's own phone stop reaches this point on an emulated phone, which is taken for an iPhone: the two desktop checks are not for it */
+    const onPhone=/^phone/.test(stop);ok(!dev||onPhone,'desktop Chrome is not taken for an iPhone or iPad');ok(!AU.ctx,'no sound before the first press');
     AU.apple='iPad';dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
     ok(AU.ctx&&hushOn()&&$('#hush').textContent.includes(T('no_music_said')),'the first press starts the sound; on an iPad it mentions Silent Mode');
     {const r=$('#hush').getBoundingClientRect(),v=vp.getBoundingClientRect();if(r.top<v.top-1||r.bottom>v.bottom+1||r.left<v.left-1||r.right>v.right+1)tight.add('Silent Mode note: '+$('#hush').textContent)}
@@ -2016,7 +2302,7 @@
     await wait(450);dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));ok(!hushOn(),'the next press puts the note away');
     $('#mute').click();ok(AU.muted&&!hushOn(),'sound off: no note');$('#mute').click();ok(!AU.muted&&hushOn(),'sound on again: the note comes back');
     await wait(450);key('Shift');ok(!hushOn(),'a key puts the note away');
-    AU.apple=dev;$('#mute').click();$('#mute').click();ok(!AU.muted&&!hushOn(),'no note on a desktop');
+    AU.apple=dev;$('#mute').click();$('#mute').click();ok(!AU.muted&&(!hushOn()||onPhone),'no note on a desktop');
     const real=AU.ctx;let n=0;const fake=st=>({state:st,resume(){n++;return Promise.resolve()},createBuffer(){return{}},createBufferSource(){return{connect(){},start(){}}},destination:{}});
     AU.ctx=fake('interrupted');dispatchEvent(new PointerEvent('pointerup',{bubbles:true}));ok(n===1,'a tap wakes sound that iOS interrupted');
     AU.ctx=fake('suspended');key('Shift');ok(n===2,'a key wakes sound the browser held back');
@@ -2099,7 +2385,7 @@
      Continue and the farthest point, and then the box scrolls: its far edge fades while more lies beyond it, and a click between entries
      starts nothing. The stop `titlescroll` shows that title, scrolled to its end. */
   {const fade=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))),l0=ov.querySelector('.chs');
-    ok(l0&&[...l0.children].every(p=>p.dataset.ch||p.dataset.pro||p.classList.contains('plans')||p.classList.contains('plan'))&&l0.querySelectorAll('[data-ch],[data-pro]').length===Object.keys(CHAP).length+1,'the prologue and the chapters sit in a list of their own, with the planned ones at its foot');
+    ok(l0&&[...l0.children].every(p=>p.dataset.ch||p.dataset.pro||p.classList.contains('plans')||p.classList.contains('plan'))&&l0.querySelectorAll('[data-ch],[data-pro]').length===listed().length+1,'the prologue and the chapters sit in a list of their own, with the planned ones at its foot');
     if(!/[?&]keep=1/.test(location.search)){
     /* FOR NOW (see the title checks above): on a first visit the list may scroll; the chosen layout replaces this check */
     await fade();ok(!l0.classList.contains('up')&&l0.classList.contains('down')===(l0.scrollHeight>l0.clientHeight+1),'on a first visit the list stands at its head: its top edge does not fade, and its bottom edge fades only while more lies below it');
@@ -2297,7 +2583,7 @@
     ok(!G.room&&ov.classList.contains('on')&&store('paul.save')===c,'a new visit starts on the title screen, and the save is still there');
     ok(cont&&ov.querySelector('p.go,p.pick')===cont&&ov.querySelector('p.go')===cont&&!ov.querySelector('[data-ch].go,[data-pro].go')&&cont.textContent.includes(T('Continue'))&&cont.textContent.includes(T('chapter_one'))&&cont.textContent.includes(T('escape_from_damascus_2')),
       'the title offers Continue first, and names the chapter');fitVerbs();{const r=cont.getBoundingClientRect(),v=ov.getBoundingClientRect();if(cont.scrollWidth>cont.clientWidth+1||r.left<v.left||r.right>v.right)tight.add('Continue: '+cont.textContent)}
-    ok(ov.querySelectorAll('[data-ch]').length===Object.keys(CHAP).length,'every chapter is still listed');
+    ok(ov.querySelectorAll('[data-ch]').length===listed().length,'every chapter is still listed');
     ok(inOv(),'and the list still fits the screen, with the line that offers to continue');
     halt('continue',()=>{cont.style.animation='none'});
     cont.click();await idle();
@@ -5484,76 +5770,283 @@
   /* ==== CHAPTER TWENTY-TWO: begin ==== Chapter Twenty-Two's own stops: whoever builds the chapter extends this section, and nothing outside it but
      its line in TSTEPS, the chain of the full run (ch22 after ch21) and the title checks of the chapters before it. */
   /* Chapter Twenty-Two stops start Chapter Twenty-Two from the title screen; the full run calls its test when Chapter Twenty-One has ended.
-     all22 halts nowhere. Its halts: STUB: stub22 (the stub's room) · marks22 (the six marks set) · final22. The stops that begin with "p" open
-     one room at once, with the story's flags set for it, and say the safe-point code of their point (CODE): STUB: pstub22. The generic stops
-     card22, routes22 and shadows22 (above) run against whatever rooms the chapter has. LOGIC22: replace every STUB name here with the chapter's
-     own halts and room stops, as Chapter Twenty-One's section does, and add the stops that drive the beat by its exposed phase (on the phone too).
-     The stop carry (after Chapter Twenty-Three's section) needs CHAP[22].marks (the twelve mark flags) and CHAP[22].end (the end screen, from
-     wherever the story stands): keep both in the chapter's definition. */
-  /* rooms22: every picture of Chapter Twenty-Two on one sheet at twice its size (rooms22.png), for the art and the cross-shape check */
-  if(stop==='rooms22'){clearInterval(sk);sk=0;await loadLevel(22);setChapter(22);ov.className='';ov.onclick=null;const C=CHAP[22],ids=C.rooms,K=2;
-    const pic=(id,q,x,y)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
+     all22 halts nowhere. Its halts: quay22 (the quay at Caesarea, 27:1) · map22 (the voyage out on the map, Myra to be clicked, Tarsus
+     to be seen) · myra22 (the harbor of Myra, 27:6) · deck22 (the evening on the grain ship's deck) · shelter22 (the shelter made) ·
+     havens22 (Fair Havens, 27:9) · skiff22 (the lee of Cauda, Luke at the rope) · girded22 (27:17 over the ship girded) · syrtis22 (the
+     map with the Syrtis) · load22 (the next day, the bales) · bales22 (the second bale carried across) · tablet22 (Luke's tablet open) ·
+     marks22 (the six marks set) · midst22 (Paul stands up among them) · final22. The stops that begin with "p" open one room at once, with
+     the story's flags set for it, and say the safe-point code of their point (CODE): pscroll22 (27:1 on the narrator's scroll) · pquay22
+     (the treasure's point) · pmap22 (the voyage out on the map) · pmyra22 · pdeck22 · pshelter22 · phavens22 · pskiff22 · pgirded22 ·
+     psyrtis22 · pload22 · pnight22 · ptablet22 · pmidst22. The timed acts, driven by the beat's exposed phase: beatskiff22 (the skiff:
+     misses, the call, the carry, four pulls), beatdeck22 (a crossing: a hit, a miss back at the hold with no line, the call after three,
+     the carry after six), phonedeck22 (a crossing tapped on a phone held sideways). The generic stops card22, routes22, shadows22 (above)
+     run against whatever rooms the chapter has. The stop carry (after Chapter Twenty-Three's section) needs CHAP[22].marks (the twelve
+     mark flags) and CHAP[22].end (the end screen, from wherever the story stands). */
+  /* rooms22: every picture of Chapter Twenty-Two on one sheet at twice its size (rooms22.png), each of its variants with the flags that
+     call for it, for the art and the cross-shape check */
+  if(stop==='rooms22'){clearInterval(sk);sk=0;await loadLevel(22);setChapter(22);ov.className='';ov.onclick=null;const C=CHAP[22],K=2,ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1);
+    const V=[['quay22',[]],['myra22',upto('out')],['deck22',upto('cord')],['deck22',upto('shelter')],['deck22',upto('fh')],['storm22',upto('advised')],
+      ['storm22',upto('skiff')],['storm22',upto('load3')],['storm22',upto('t6')],['tablet22',upto('load3').concat(['t1','t2','t3','m1a','m2b','m3a','m3b'])],['girded22',upto('skiff')]];
+    const pic=(id,fl,q,x,y)=>{for(const k in F)delete F[k];for(const k of fl)F[k]=1;G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
       const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
       q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
-    const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
-    ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
+    const[c,g]=mk(320*K*2+8,Math.ceil(V.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    V.forEach(([id,fl],i)=>pic(id,fl,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];if(SHARED.beat)SHARED.beat.stop();
     window.SHEETS={rooms22:c.toDataURL()};halt('rooms22')}
-  const C22=/^(stub22|marks22|final22|all22)$/.test(stop);   /* STUB: stub22, marks22 */
-  if(!C22&&/^p[a-z]+22$/.test(stop)){await loadLevel(22);ov.className='';ov.onclick=null;const C=CHAP[22],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
-      S={pstub22:[[],'stub22']}[stop];   /* STUB: pstub22; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
-    if(!S)throw new Error('no such stop '+stop);setChapter(22);for(const k of S[0])F[k]=1;
-    const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
-    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+  const C22=/^(quay22|map22|myra22|deck22|shelter22|havens22|skiff22|girded22|syrtis22|load22|bales22|tablet22|marks22|midst22|final22|all22)$/.test(stop);
+  /* open22: Chapter Twenty-Two at one point at once, with the flags given, in the room given */
+  const open22=async(fl,room)=>{await loadLevel(22);ov.className='';ov.onclick=null;const C=CHAP[22];setChapter(22);for(const k of fl)F[k]=1;
+    C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn()};
+  const up22=k=>{const A=CHAP[22].flags;return A.slice(0,A.indexOf(k)+1)};
+  if(!C22&&/^p[a-z]+22$/.test(stop)&&!/^phone/.test(stop)){await loadLevel(22);const C=CHAP[22],upto=up22,
+      S={pscroll22:[[],'quay22'],pquay22:[[],'quay22'],pmap22:[[],'quay22'],pmyra22:[upto('out'),'myra22'],pdeck22:[upto('aboard'),'deck22'],
+        pshelter22:[upto('shelter'),'deck22'],phavens22:[upto('fh'),'deck22'],pskiff22:[upto('advised'),'storm22'],pgirded22:[upto('skiff'),'girded22'],
+        psyrtis22:[upto('skiff'),'storm22'],pload22:[upto('skiff'),'storm22'],pnight22:[upto('load3'),'storm22'],ptablet22:[upto('load3').concat(['t1','m1a','t2','m2b']),'tablet22'],
+        pmidst22:[upto('t6'),'storm22']}[stop];
+    if(!S)throw new Error('no such stop '+stop);await open22(S[0],S[1]);L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    if(stop==='pscroll22'){G.scene=DARK;narr(C.told.v1,{dur:60000})}
+    if(stop==='pmap22'){const M=await need('map');M.pick(C.out.ids,'myra',{view:'outward',legs:C.out.legs,hint:'click_myra_where_we_put_in'})}
+    if(stop==='psyrtis22'){const M=await need('map');await M.journey([['myra','cnidus','sea'],['cnidus','salmone','sea'],['salmone','fairhavens','sea'],['fairhavens','cauda','sea']],{view:'adria',regions:['the_syrtis'],instant:1})}
     await wait(1100);halt(stop)}
+  /* the timed acts, driven by the beat's exposed phase: the stops beatskiff22, beatdeck22 and phonedeck22 (and the playthrough) */
+  /* cross22: how many times two routes of the map cross each other */
+  const cross22=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
+    for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;return n};
+  const B22=()=>G.beat,now22=()=>performance.now(),
+    till22=async(fn,n)=>{for(let i=0;i<(n||900)&&!fn();i++)await wait(10);return!!fn()},
+    calm22=()=>B22()&&B22().inPause()&&B22().next().to-now22()>=B22().need+150,
+    wave22=()=>B22()&&!B22().inPause()&&B22().phase()>.02&&B22().phase()<B22().from-.04,
+    quiet22=()=>!G.skip&&!$('#speech').textContent.trim(),
+    /* a click on a hotspot of the room, as the player makes it: on a phone a tap (pointer down and up, then the click), kept apart from
+       the last one, since a phone holds back a second tap within 350 ms */
+    tap22=async(name,ph,cond)=>{if(ph)await wait(400);if(cond)await till22(cond);const h=ROOMS[G.room].hs.find(h=>h.name===name&&(!h.vis||h.vis()));if(!h)throw new Error('no hs '+name);const x=h.x+h.w/2,y=h.y+h.h/2;
+      if(ph){const[cx,cy]=toClient(x,y),pe=t=>cv.dispatchEvent(new PointerEvent(t,{pointerId:1,pointerType:'touch',isPrimary:true,clientX:cx,clientY:cy,bubbles:true,cancelable:true}));
+        pe('pointerdown');pe('pointerup');vp.dispatchEvent(new MouseEvent('click',{clientX:cx,clientY:cy,bubbles:true}))}else view(x,y);await idle()};
+  if(/^(beatskiff22|beatdeck22|phonedeck22)$/.test(stop)){const ph=stop==='phonedeck22';await loadLevel(22);if(ph){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120)}
+    G.speedAll=500;
+    if(stop==='beatskiff22'){await open22(up22('advised'),'storm22');await till22(()=>B22());const b=B22(),C=CHAP[22],LK=ACT.luke22;
+      ok(G.room==='storm22'&&PC()===LK&&b&&b.room==='storm22'&&b.sticky&&b.period===1800&&b.pause===900&&b.need===270&&C.phase()==='skiff',
+        'the skiff in the lee of Cauda: Luke is played, and the beat runs from the room itself, shortened under the playtest ('+b.period+' ms, a pause of '+b.pause+', a pull of '+b.need+')');
+      await tap22('skiff_rope',0,wave22);ok((G.sk22||0)===0&&b.misses===1&&quiet22()&&!G.busy,'a pull on the wave (the stern up) gains nothing, and no line stands to be clicked away');
+      await tap22('skiff_rope',0,calm22);ok(G.sk22===1&&b.misses===1,'a pull while the stern is down brings her in a little (one of '+C.pulls+'); the call, once due, would stay (sticky)');
+      for(let n=2;n<=3;n++){await tap22('skiff_rope',0,wave22)}
+      ok(b.misses===3&&b.help===1&&G.sk22===1,'after three misses the sailor calls the moment');
+      {await till22(()=>b.calling());SHARED.beat.cap.last=null;await wait(80);const c=SHARED.beat.cap.last;
+        ok(b.calling()&&c&&c.key==='now'&&c.w<=c.max,'he calls it in the pause, over his head: '+(c&&c.s))}
+      await tap22('skiff_rope',0,calm22);ok(G.sk22===2&&b.help===1,'a pull on the call gains; the call goes on (sticky)');
+      for(let n=4;n<=5;n++){await tap22('skiff_rope',0,wave22)}
+      ok(b.help===1&&G.sk22===2,'five misses: the call, and nothing gained on the wave');
+      await tap22('skiff_rope',0,wave22);ok(b.help===2&&G.sk22===3,'at the sixth miss the sailors take it in hand: the pull counts even on the wave, and nobody can get stuck');
+      tap22('skiff_rope',0,calm22);await till22(()=>C.flags&&F.skiff,900);
+      ok(F.skiff&&(!G.beat||G.beat.act22==='load'),'four pulls bring her aboard, and the skiff\'s beat stops');halt(stop)}
+    /* a crossing with a bale: the hatch, the mast, the cask, the lee rail */
+    await open22(up22('skiff'),'storm22');await till22(()=>B22());const b=B22(),C=CHAP[22],H=C.holds,SD=ACT.sail22d;
+    ok(G.room==='storm22'&&PC()===P&&b&&b.room==='storm22'&&b.sticky&&b.need===420&&C.phase()==='load'&&Math.abs(P.x-H[0][0])<1,
+      'the next day: Paul at the hatch, and the beat runs from the room ('+b.period+' ms, a pause of '+b.pause+', a step of '+b.need+')');
+    await tap22('mast_step',ph);ok(!G.bale22&&Math.abs(P.x-H[0][0])<1&&quiet22(),'without a bale he does not cross');
+    await tap22('hatch',ph);ok(G.bale22===1&&P.pose==='bundle','a bale from the hatch, carried low before him');
+    const W=ROOMS.storm22.walk;ok(W[0]===W[1]&&W[2]===W[3],'during the crossing the floor is his own place: only the next hold moves him');
+    await tap22('mast_step',ph,calm22);ok(G.hold22===1&&Math.abs(P.x-H[1][0])<1&&b.misses===0,'a step to the mast in the pause between two seas');
+    for(let n=1;n<=3;n++){await tap22('cask',ph,wave22);
+      ok(G.hold22===1&&Math.abs(P.x-H[1][0])<1&&b.misses===n&&quiet22()&&!G.busy&&P.pose==='bundle',`a step on the wave is a miss (${n}): back at the mast, the bale still in his arms, and no line stands to be clicked away`)}
+    ok(b.help===1,'after three misses the sailor at the rail calls the moment');
+    {await till22(()=>b.calling());SHARED.beat.cap.last=null;await wait(80);const c=SHARED.beat.cap.last;
+      ok(b.calling()&&c&&c.key==='now'&&c.w<=c.max&&Math.abs(SD.x-H[3][0])<40,'he calls it in the pause, at the rail: '+(c&&c.s))}
+    for(let n=4;n<=6;n++){const p=tap22('cask',ph,wave22);if(n<6)await p}
+    await till22(()=>F.load1&&!G.busy,1500);
+    ok(F.load1&&b.help===0&&b.misses===0&&G.hold22===0&&Math.abs(P.x-H[0][0])<2&&!G.bale22&&Math.abs(SD.x-302)<2,'after six misses the sailor walks him across: the bale goes over the lee rail, nobody goes overboard; back at the hatch, and the next crossing starts afresh');
+    await tap22('hatch',ph);for(const[i,n]of[[1,'mast_step'],[2,'cask'],[3,'lee_rail']]){await tap22(n,ph,calm22)}
+    await till22(()=>F.load2&&!G.busy,1500);ok(F.load2&&G.hold22===0,'the second bale across in three steps, each in a pause');
+    halt(stop)}
   /* marks22: the marks that Chapter Twenty-Two's playthrough set on Luke's tablet, for Chapter Twenty-Three's to find carried in the full run */
   let marks22=null;
   const ch22=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[22],told=k=>heard.includes(T(C().told[k])),
     until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
     onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    talkTo=async(a,v)=>{verb(v||'talk');clickView(a.x,a.y-10,a.hs);await idle()},
+    useOnH=async(id,name)=>{verb('use');item(id);const h=ROOMS[G.room].hs.find(h=>h.name===name&&(!h.vis||h.vis()));clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
     pray22=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
-    hints=async(a,b,where)=>{heard.length=0;const p=await pray22(),first=said(a)&&!said(b),q=await pray22();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
-    line=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await wait(60)},
-    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+    hints=async(a,b,where)=>{heard.length=0;const me=PC(),n0=G.prays,p=await pray22(),first=said(a)&&!said(b),q=await pray22(),
+        prayed=heard.some(h=>PRAYERS.concat(PRAYERS2).some(l=>h===T(l,{name:T(storyName(me))})));
+      ok(p&&q&&first&&said(b)&&prayed&&G.prays===n0+2,'two prayers '+where+' ('+T(storyName(me))+'): a gentle hint, then a direct one ['+a+', '+b+']')},
+    asked=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);return[...document.querySelectorAll('#choices button')].map(x=>x.dataset.src)},
+    line=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await idle()},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)},
+    M=()=>SHARED.map,mapUp=async()=>{for(let i=0;i<900&&!(M()&&M().state.places&&G.scene===M().draw&&!G.busy);i++)await wait(30);await wait(60)},
+    clickAt=k=>{const[x,y]=M().where(k),vp=$('#view'),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,clientX:r.left+x*r.width/VW,clientY:r.top+y*r.height/VH}))},
+    pickPlace=async k=>{clickAt(k);await wait(120);await mapUp()},
+    code=async(what,fn)=>{const cd=makeCode();await enter(cd);for(let i=0;i<40&&(G.busy||ov.classList.contains('on'));i++){if(G.skip)G.skip();await wait(50)}await idle();ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
   if(C22){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
     {const c=chs.find(c=>c.dataset.ch==='22');ok(c&&c.textContent.includes(T('chapter_twenty_two'))&&c.textContent.includes(T('euroaquilo_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
       'the title lists Chapter Twenty-Two, Euroaquilo, and the chapters in preparation begin with the twenty-fourth')}}
   (C22?document.querySelector('#overlay [data-ch="22"]'):ov).click();
-  /* STUB: from here to halt('final22') the steps play the stub; LOGIC22 replaces them with the chapter's playthrough */
-  await until(()=>G.ch===22&&G.room==='stub22'&&!G.busy,6000);note();
-  ok(seenTold.has('stub_open')&&decode(makeCode()).ch===22&&PC()===P&&A('luke22').room==='stub22'&&C().party.join()==='paul,luke22'&&C().swap===false,
-    'STUB: the stub of Chapter Twenty-Two opens in its room, Paul played and Luke with him, and its first line is told: '+makeCode());
-  halt('stub22');
-  await hints('stub22_hint_1','stub22_hint_2','in the stub');
-  /* STUB: the placeholder choice sets the six marks (south-west, west, north-west, only the day, west, north-west); the chapter's tablet22 replaces it */
-  {const want=[1,2,3,0,2,3],K=['stub22_mark_only_the_day','stub22_mark_south_west','stub22_mark_west','stub22_mark_north_west'];heard.length=0;onH('stub22_tablet','use');
-    for(const v of want)await line(K[v]);await until(()=>F.marked&&!G.busy);marks22=[1,2,3,4,5,6].map(C().markOf);
-    ok(marks22.join()===want.join()&&said('stub22_six_marks'),'STUB: six marks on Luke\'s tablet: '+marks22)}
+  await until(()=>G.ch===22&&G.room==='quay22'&&!G.busy,6000);note();
+  const LK=A('luke22'),AR=A('aris22'),JU=A('julius22'),GU=A('guard22'),SA=A('sail22a'),SB=A('sail22b'),SC=A('sail22c'),SD=A('sail22d'),PI=A('pilot22'),OW=A('owner22');
+  ok(seenTold.has('v1')&&said('paul_two_years_and_now_the_sea')&&PC()===P&&LK.room==='quay22'&&AR.room==='quay22'&&JU.room==='quay22'&&JU.look===LOOK.julius22&&GU.room==='quay22'
+    &&A('pris22a').room==='quay22'&&C().party.join()==='paul,luke22'&&C().swap===false&&has('pouch22'),
+    'Julius takes charge of Paul and some other prisoners, for Italy (Acts 27:1), from the scroll; the quay at Caesarea: Julius in his cuirass, soldiers, prisoners, Luke and Aristarchus; Paul is played');
+  ok(/^22(-[0-9A-Z]{3}){2,5}$/.test(makeCode())&&decode(makeCode()).ch===22,'a code of Chapter Twenty-Two: '+makeCode());
+  ok(AU.score===C().music&&C().music.steps===18&&C().music.root===46&&C().music.group.join()==='4,4,4,3,3'&&C().music.scale.join()==='0,2,3,5,7,8,11','the chapter\'s score, in B flat harmonic minor and in bars of eighteen');
+  ok(ART.quay22.light.sun&&ROOMS.quay22.birds.gulls,'the quay by day: the sun casts shadows, gulls over the harbor');
+  halt('quay22');
+  await hints('hint_aboard_the_coaster_1','hint_aboard_the_coaster_2','on the quay');
+  heard.length=0;await talkTo(JU);ok(said('julius_we_sail_with_the_coaster'),'Julius: this coaster as far as she takes us');
+  /* aboard, and the voyage out on the map: nothing changes in the story until Myra is clicked */
+  {const was=JSON.stringify([F,G.invs]);heard.length=0;onH('gangplank','use');await mapUp();note();
+    ok(said('julius_aboard_all_of_you')&&seenTold.has('v2')&&seenTold.has('v3')&&said('paul_the_brothers_have_packed_a_bundle')&&seenTold.has('v4')&&M().state.places.join()===C().out.ids.join()
+      &&M().state.legs.length===2&&M().state.pulse==='myra'&&!G.busy&&JSON.stringify([F,G.invs])===was,
+      'a ship of Adramyttium; Aristarchus with us (Acts 27:2); Sidon (27:3); the shelter of Cyprus, Cilicia and Pamphylia, Myra (27:4, 5): the map waits, the game idle, nothing in the story changed')}
+  {const cl=mapClear(),cr=cross22(M().state.legs);ok(cl&&!cr,'on the map of the voyage out no name crosses a coast or a route, and no route crosses another'+(cl?'':': '+[...mapClear.bad].join(', ')))}
+  halt('map22');
+  heard.length=0;await pickPlace('caesarea');ok(said('paul_caesarea_behind_us')&&M().state.places,'Caesarea, behind us; the map stays');
+  heard.length=0;await pickPlace('sidon');ok(said('paul_the_brothers_at_sidon')&&M().state.places,'Sidon, the brothers; the map stays');
+  {const was=JSON.stringify([F,G.invs]);heard.length=0;await pickPlace('tarsus');
+    ok(said('paul_tarsus_from_the_sea')&&treasures().has(22)&&JSON.stringify([F,G.invs])===was&&M().state.places,'Tarsus, his own town, passed without a stop: the chapter\'s hidden treasure; nothing has changed, and the map stays')}
+  dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));await wait(200);await mapUp();ok(M().state.places&&G.scene===M().draw,'Esc: the voyage stays on the map');
+  heard.length=0;clickAt('myra');await until(()=>G.room==='myra22'&&!G.busy,6000);note();
+  ok(F.out&&seenTold.has('v6')&&said('paul_the_brothers_bundle')&&has('bedding22')&&has('bread22')&&has('sail22')&&JU.look!==LOOK.julius22&&SA.room==='myra22'&&!G.scene,
+    'Myra: a ship of Alexandria bound for Italy (Acts 27:6); the brothers\' bundle (bedding, bread, sailcloth); Julius at sea in his tunic');
+  await code('at Myra',()=>G.room==='myra22'&&F.out&&has('sail22')&&has('pouch22'));
+  halt('myra22');
+  await hints('hint_aboard_the_grain_ship_1','hint_aboard_the_grain_ship_2','at Myra');
+  heard.length=0;await talkTo(SA);ok(said('we_supply_the_water'),'a sailor of the grain ship: we supply the water');
+  heard.length=0;onH('gangplank','use');await until(()=>G.room==='deck22'&&F.aboard&&!G.busy,6000);
+  ok(said('paul_a_roof_for_the_night')&&ART.deck22.variant()==='m'&&ART.deck22.light.sun[0]>0&&SB.room==='deck22'&&GU.room==='deck22','aboard the grain ship: the evening at Myra, the low sun at the left; a soldier near Paul');
+  halt('deck22');
+  /* a roof for the night */
+  await hints('hint_my_pouch_1','hint_my_pouch_2','with the pouch shut');
+  verb('open');item('pouch22');await idle();ok(F.pouch&&has('awl')&&has('needle22')&&has('thread')&&said('paul_awl_needle_and_thread'),'the tool pouch: awl, needle and thread');
+  await hints('hint_mend_the_sailcloth_1','hint_mend_the_sailcloth_2','with the sailcloth torn');
+  heard.length=0;await useOnH('sail22','lee_of_the_deckhouse');ok(said('paul_not_with_that_tear')&&!F.shelter,'not with that tear in it');
+  heard.length=0;await use('needle22','sail22');ok(said('paul_the_needle_needs_thread'),'the needle needs thread');
+  heard.length=0;await use('thread','needle22');ok(F.threaded&&has('tneedle22')&&!has('needle22')&&!has('thread'),'the needle threaded');
+  heard.length=0;await use('tneedle22','sail22');ok(said('paul_holes_first')&&!F.mended,'sailcloth that heavy needs the awl first');
+  heard.length=0;await use('awl','sail22');ok(F.pierced&&said('paul_i_pierce_along_the_tear'),'the awl pierces along the tear');
+  heard.length=0;await use('tneedle22','sail22');ok(F.mended&&has('msail22')&&has('needle22')&&has('thread')&&!has('sail22'),'the tear sewn: mended sailcloth');
+  await hints('hint_cord_1','hint_cord_2','with no cord');
+  heard.length=0;await useOnH('msail22','lee_of_the_deckhouse');ok(said('paul_it_needs_cord')&&!F.shelter,'it needs cord');
+  heard.length=0;await onH('pennant','look');ok(said('pennant_look22'),'the pennant streams out to the left: the wind comes from the right');
+  heard.length=0;await talkTo(SB);ok(F.cord&&has('cord22')&&said('sailor_old_cord_take_it'),'a sailor spares old cord');
+  await hints('hint_out_of_the_wind_1','hint_out_of_the_wind_2','with cloth and cord');
+  heard.length=0;await useOnH('msail22','beside_the_deckhouse');ok(said('paul_the_wind_would_fill_it')&&!F.shelter,'on the weather side: the wind would fill it like a sail, the true reason');
+  heard.length=0;await useOnH('cord22','lee_of_the_deckhouse');
+  ok(F.shelter&&!has('msail22')&&!has('cord22')&&!has('bedding22')&&!has('bread22')&&said('paul_the_shelter_stands')&&ROOMS.deck22.birds().stand.length,'in the lee of the deckhouse the shelter stands, the bedding and the bread under it; a gull comes to the bundle');
+  heard.length=0;await onH('shelter','look');ok(said('a_good_tent_on_a_ship'),'low and crooked: a good tent, on a ship');
+  heard.length=0;await onH('gull','look',-1);ok(said('my_first_guest_under_the_new_roof'),'the first guest');
+  heard.length=0;await talkTo(GU);ok(said('soldier_a_flap_of_sailcloth_is_new'),'the soldier: a flap of sailcloth is new');
+  heard.length=0;await onH('anchor','look');ok(said('anchor_look22'),'the anchor on deck, as it was');
+  await code('with the shelter made',()=>G.room==='deck22'&&F.shelter&&!F.fh&&ART.deck22.variant()==='ms');
+  halt('shelter22');
+  await hints('hint_shelter_rest_1','hint_shelter_rest_2','under the shelter');
+  /* the night; slowly to Cnidus, past Salmone, to Fair Havens; Fair Havens */
+  heard.length=0;onH('shelter','use');
+  for(let i=0;i<600&&!(M().state.legs.length>=5&&G.scene===M().draw);i++)await wait(30);
+  {const cl=mapClear(),cr=cross22(M().state.legs);ok(cl&&!cr,'Myra to Fair Havens on the map: no name crosses a line, no route another'+(cl?'':': '+[...mapClear.bad].join(', ')))}
+  await until(()=>G.room==='deck22'&&F.fh&&!G.busy,9000);note();
+  ok(seenTold.has('v7')&&seenTold.has('v8')&&seenTold.has('v9')&&said('paul_before_i_say_anything')&&ART.deck22.variant()==='h'&&JU.room==='deck22'&&PI.room==='deck22'&&OW.room==='deck22',
+    'slowly to Cnidus, past Salmone, in the shelter of Crete (Acts 27:7); Fair Havens near Lasea (27:8); the fast of Atonement Day behind them (27:9)');
+  halt('havens22');
+  /* not listened to */
+  await hints('hint_what_i_have_seen_1','hint_what_i_have_seen_2','at Fair Havens');
+  heard.length=0;await talkTo(JU);ok(said('paul_not_yet_julius')&&!F.advised,'not yet: first what he has seen');
+  heard.length=0;await talkTo(PI);ok(said('pilot_the_officer_decides'),'the pilot: the officer has the last word');
+  heard.length=0;await talkTo(LK);ok(F.kWeeks&&said('luke_weve_lost_weeks'),'Luke: weeks lost');
+  heard.length=0;await talkTo(SC);ok(F.kSeason&&said('sailor_late_in_the_year'),'a sailor: it is late in the year');
+  heard.length=0;await onH('pennant','look');ok(F.kWind&&said('paul_the_wind_against_us_since_sidon'),'the pennant: the wind against them since Sidon');
+  await code('with three things seen',()=>G.room==='deck22'&&F.fh&&F.kWeeks&&F.kSeason&&F.kWind&&!F.kWrecks);
+  heard.length=0;await onH('open_sea','look');ok(F.kWrecks&&said('paul_three_times_shipwrecked')&&said('paul_i_have_seen_enough'),'the open sea: three shipwrecks of his own; enough');
+  await hints('hint_speak_to_julius_1','hint_speak_to_julius_2','with everything seen');
+  heard.length=0;talkTo(JU);await until(()=>G.room==='storm22'&&PC()===LK&&!G.busy,12000);note();
+  ok(said('i_can_see_how_this_voyage_ends')&&said('pilot_this_bay_is_no_place_to_winter')&&said('owner_phoenix_is_a_day_west')&&seenTold.has('v11')&&seenTold.has('v12')&&said('paul_i_said_it_as_plainly_as_i_could'),
+    'the recommendation (Acts 27:10); the pilot and the shipowner answer; the officer goes by them (27:11); most for Phoenix (27:12); Paul: the choice was never his');
+  ok(seenTold.has('v13')&&seenTold.has('v14')&&seenTold.has('v15')&&seenTold.has('v16')&&said('luke_shes_full_of_water')&&!ROOMS.storm22.birds&&!ART.storm22.light.sun&&C().haul.every(h=>h.a.room==='storm22'&&h.a.pose==='haul'),
+    'a soft south wind (27:13); Euroaquilo (27:14); driven (27:15); the skiff under Cauda (27:16): Luke is played on the rope; no birds, no sun');
+  await code('at the skiff',()=>G.room==='storm22'&&PC()===LK&&C().phase()==='skiff'&&!!G.beat);
+  halt('skiff22');
+  /* the skiff, on the beat */
+  await hints('hint_the_skiff_1','hint_the_skiff_2','at the skiff');
+  await till22(()=>B22());await tap22('skiff_rope',0,wave22);ok(!G.sk22&&quiet22(),'a pull on the wave gains nothing');
+  for(let n=0;n<C().pulls-1;n++){await tap22('skiff_rope',0,calm22)}
+  ok(G.sk22===C().pulls-1,'three good pulls, each while the stern is down');
+  tap22('skiff_rope',0,calm22);await until(()=>G.room==='girded22',6000);note();
+  ok(said('luke_shes_aboard')&&F.skiff,'she\'s aboard');
+  halt('girded22');
+  for(let i=0;i<900&&!(G.scene===M().draw&&M().state.regions.has('the_syrtis'));i++)await wait(30);note();
+  ok(seenTold.has('v17')&&M().state.regions.has('the_syrtis'),'girded, the Syrtis feared, the gear lowered (27:17); the map shows where the Syrtis lies');
+  halt('syrtis22');
+  await until(()=>G.room==='storm22'&&PC()===P&&!G.busy,9000);note();
+  ok(seenTold.has('v18')&&said('paul_whatever_is_in_these_bales')&&C().phase()==='load'&&Math.abs(P.x-C().holds[0][0])<1,'the next day they start to make the ship lighter (27:18): Paul at the hatch');
+  halt('load22');
+  /* between two waves */
+  await hints('hint_the_bales_1','hint_the_bales_2','with the bales');
+  await till22(()=>B22());
+  for(let n=1;n<=2;n++){await tap22('hatch');ok(G.bale22===1,'a bale from the hatch ('+n+')');
+    for(const nm of['mast_step','cask','lee_rail']){await tap22(nm,0,calm22)}
+    await until(()=>F['load'+n]&&G.hold22===0&&!G.busy,3000);ok(F['load'+n],'the bale over the lee rail ('+n+')')}
+  await code('between the bales',()=>G.room==='storm22'&&PC()===P&&F.load2&&!F.load3&&Math.abs(P.x-C().holds[0][0])<1);
+  halt('bales22');
+  await till22(()=>B22());await tap22('hatch');{const b=B22();await tap22('mast_step',0,wave22);ok(G.hold22===0&&b.misses===1&&quiet22(),'a miss: back at the hatch, no line')}
+  for(const nm of['mast_step','cask','lee_rail']){await tap22(nm,0,calm22)}
+  await until(()=>F.load3&&C().phase()==='tablet'&&PC()===LK&&!G.busy,9000);note();
+  ok(seenTold.has('v19')&&said('luke_ill_keep_the_days')&&!G.beat&&ART.storm22.variant()==='n'&&ART.storm22.light.amb&&!ART.storm22.light.sun,'the third day the tackling (27:19); the dark days: Luke is played, no lamp, no beat');
+  await code('in the dark days',()=>G.room==='storm22'&&PC()===LK&&F.load3&&!F.t1&&has('ltab22'));
+  /* no sun, no stars */
+  await hints('hint_the_tablet_1','hint_the_tablet_2','in the dark days');
+  heard.length=0;await talkTo(PI);ok(said('luke_where_are_we_heading')&&said('pilot_no_sun_no_bearing'),'the pilot: no sun, no stars, no bearing');
+  heard.length=0;await onH('clouds','look');ok(said('luke_cloud_and_more_cloud'),'the sky: cloud and more cloud');
+  heard.length=0;await onH('the_wind','look');ok(said('luke_the_wind_from_behind_my_shoulder'),'the wind: felt for a moment, then gone');
+  verb('open');item('ltab22');await until(()=>G.room==='tablet22'&&!G.busy,3000);
+  ok(G.room==='tablet22'&&ART.tablet22.light===null,'Luke\'s tablet, close');
+  halt('tablet22');
+  const want=[1,2,3,0,2,3],MK=C().markKeys;
+  for(let n=1;n<=6;n++){if(G.room!=='tablet22'){verb('open');item('ltab22');await until(()=>G.room==='tablet22'&&!G.busy,3000)}
+    if(n===2){onH('todays_mark','use');const o=await asked();ok(MK.every(k=>o.includes(k))&&o.at(-1)==='leave_it_for_now','four marks to choose from, mixed by key, and a line that leaves');await line('leave_it_for_now');ok(!F.t2,'left for now')}
+    heard.length=0;onH('todays_mark','use');await line(MK[want[n-1]]);
+    if(n<6)await until(()=>G.room==='storm22'&&F['t'+n]&&!G.busy,3000);
+    ok(F['t'+n]&&C().markOf(n)===want[n-1]&&said(C().marksay[want[n-1]]),'day '+n+': '+T(MK[want[n-1]])+', and Luke\'s own true line for it')}
+  marks22=[1,2,3,4,5,6].map(C().markOf);
   halt('marks22');
-  await hints('stub22_hint_hatch_1','stub22_hint_hatch_2','after the marks');
-  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('stub22_coast','look');
-    ok(said('stub22_coast_look')&&treasures().has(22)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'STUB: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
-  heard.length=0;await onH('stub22_hatch','use');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
+  await until(()=>C().phase()==='midst'&&G.room==='storm22'&&PC()===P&&!G.busy,9000);note();
+  ok(seenTold.has('v20')&&seenTold.has('v21')&&said('paul_they_need_to_hear_it')&&ART.storm22.variant()==='d','neither sun nor stars, hope fading (Acts 27:20); Paul stands up among them (27:21)');
+  await code('in their midst',()=>G.room==='storm22'&&PC()===P&&F.t6&&!F.p1);
+  halt('midst22');
+  /* in their midst */
+  await hints('hint_in_their_midst_1','hint_in_their_midst_2','in their midst');
+  const SP=C().speech;
+  heard.length=0;talkTo(JU);const o1=await asked();ok(SP.every(s=>o1.includes(s.c))&&o1.at(-1)==='say_nothing_yet','six parts to say, mixed by key, and a line that leaves');
+  await line(SP[2].c);ok(said('paul_first_what_they_need_to_hear_first')&&!said(SP[2].k)&&!F.p1,'a part out of order: a true thought, and nothing said');
+  heard.length=0;talkTo(PI);await line(SP[0].c);ok(F.p1&&said(SP[0].k),'his advice at Crete (Acts 27:21)');
+  heard.length=0;talkTo(PI);await line(SP[0].c);ok(said('paul_ive_said_that_part'),'said already: it stays on offer');
+  heard.length=0;talkTo(A('pris22a'));const o2=await asked();ok(o2.join()===o1.join(),'the used parts stay on offer, in the same order');await line(SP[5].c);ok(said('paul_not_that_yet')&&!F.p2,'another part too soon: another true thought');
+  for(let i=1;i<6;i++){heard.length=0;talkTo(JU);await line(SP[i].c);if(i<5)ok(F['p'+(i+1)]&&said(SP[i].k),'part '+(i+1)+' (Acts 27:'+(21+i)+')')}
+  for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
   {const bits=marks22.reduce((b,v,i)=>b|v<<(2*i+1),1),code=codeOf(23,bits);
-    ok(ov.classList.contains('end')&&ov.textContent.includes(T('euroaquilo_2'))&&/27:1-26/.test(ov.textContent)&&ov.textContent.includes(T('click_to_continue_to_chapter_twenty_three'))
+    ok(ov.classList.contains('end')&&said(SP[5].k)&&ov.textContent.includes(T('euroaquilo_2'))&&ov.textContent.includes(T('euroaquilo_end'))&&/27:1-26/.test(ov.textContent)&&ov.textContent.includes(T('click_to_continue_to_chapter_twenty_three'))
       &&ov.textContent.includes(T('chapter_twenty_three_code_code',{code}))&&store('paul.save')===code&&C().carry23()===bits&&inOv(),
-      'the end screen of Chapter Twenty-Two leads on to Chapter Twenty-Three with its first code, which carries the six marks: '+code)}
+      'cast ashore on some island (27:26); the end screen says what is invented and what the account leaves unsaid, and leads on to Chapter Twenty-Three with its first code, which carries the six marks: '+code)}
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 27:1-26 was told'+(miss.length?' MISSING '+miss:''))}
   halt('final22')};
   if(C22){await ch22();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    /* STUB: LOGIC22 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
-    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ==== CHAPTER TWENTY-TWO: end ==== */
   /* ==== CHAPTER TWENTY-THREE: begin ==== Chapter Twenty-Three's own stops: whoever builds the chapter extends this section, and nothing outside it
      but its line in TSTEPS, the chain of the full run (ch23 after ch22) and the title checks of the chapters before it. */
   /* Chapter Twenty-Three stops start Chapter Twenty-Three from the title screen (nothing carried: the tablet has only the strokes of the
      days); the full run calls its test when Chapter Twenty-Two has ended, and the chapter opens with the marks that Chapter Twenty-Two's test
-     set (marks22). all23 halts nowhere. Its halts: STUB: stub23 (the stub's room) · final23. The stops that begin with "p" open one room at
-     once, with the story's flags set for it, and say the safe-point code of their point (CODE): STUB: pstub23, and pcarry23 (the same room
-     with a carried tablet: from22 and south-west, west, north-west, only the day, west, north-west). The generic stops card23, routes23 and
-     shadows23 (above) run against whatever rooms the chapter has. LOGIC23: replace every STUB name here with the chapter's own halts and room
-     stops, as Chapter Twenty-One's section does, and add the stops that drive the beat by its exposed phase (on the phone too). */
+     set (marks22). all23 halts nowhere. Its halts: stern23 (Luke at the stern, 27:27) · lead23 (the line laid out, the first sounding) ·
+     bow23 (Paul at the bow, 27:30) · hold23 (the hold, 27:33) · bay23 (the bay told, 27:40) · wreck23 (the foredeck of the wreck) · planks23
+     (the planks, close) · surf23 (the surf on the beat) · beach23 (Luke on the beach) · talk23 (the count full, the islander come down) ·
+     viper23 (the viper on Paul's hand, 28:3) · estate23 (the estate, 28:7) · sick23 (28:8 told) · final23. The stops that begin with "p"
+     open one room at once, with the story's flags set for it, and say the safe-point code of their point (CODE): pscroll23 (27:27 on the
+     scroll) · pstern23 · plead23 · psecond23 (the second sounding) · pbow23 · phold23 · pmeal23 (Paul under the lamp, his words said) ·
+     pbay23 · pwreck23 · pplanks23 · psurf23 · pbeach23 · ptalk23 · pfire23 · pestate23 (the treasure's point) · psick23 · pmap23 (the
+     travel map after Malta) · pcarry23 (Luke's tablet carried in: south-west, west, north-west, only the day, west, north-west) · ptitle23
+     (the tablet of a title start: the days only). Beside them: waves23 and phonewaves23 cross the surf by the beat's exposed phase (a hit,
+     misses on the wave, the call, the sticky help, the carry), on the desktop and on a phone held sideways; pics23 opens the talk in
+     pictures and checks the pictures' order in English and in German. The generic stops card23, routes23 and shadows23 (above) run against
+     the chapter's rooms. */
   /* rooms23: every picture of Chapter Twenty-Three on one sheet at twice its size (rooms23.png), for the art and the cross-shape check */
   if(stop==='rooms23'){clearInterval(sk);sk=0;await loadLevel(23);setChapter(23);ov.className='';ov.onclick=null;const C=CHAP[23],ids=C.rooms,K=2;
     const pic=(id,q,x,y)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
@@ -5562,46 +6055,204 @@
     const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
     ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
     window.SHEETS={rooms23:c.toDataURL()};halt('rooms23')}
-  const C23=/^(stub23|final23|all23)$/.test(stop);   /* STUB: stub23 */
-  if(!C23&&/^p[a-z]+23$/.test(stop)){await loadLevel(23);ov.className='';ov.onclick=null;const C=CHAP[23],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+  const C23=/^(stern23|lead23|bow23|hold23|bay23|wreck23|planks23|surf23|beach23|talk23|viper23|estate23|sick23|final23|all23)$/.test(stop);
+  /* a point of the chapter opened at once (the p-stops, waves23 and pics23 use it): flags from FLAGS after the carried ones, up to k */
+  const open23=async(flags,room,carry)=>{await loadLevel(23);ov.className='';ov.onclick=null;const C=CHAP[23];setChapter(23);for(const k of(carry||[]).concat(flags))F[k]=1;
+    C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();return C};
+  const upto23=k=>{const A=CHAP[23].flags;return A.slice(CHAP[23].carry,A.indexOf(k)+1)};
+  /* pics23: the talk in pictures, the pictures in the order of their keys, the same in English and in German */
+  if(stop==='pics23'){await loadLevel(23);const C=await open23(upto23('found'),'beach23');const EL=ACT.elder23,got=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);
+      return[...document.querySelectorAll('#choices .pics button')].map(b=>b.dataset.src)};
+    verb('talk');view(EL.x,EL.y-18);const en=await got(),want=C.pics.map(p=>p.key).sort((a,b)=>mixRank(a)-mixRank(b));
+    ok(en.length===5&&en.join()===want.join()&&[...document.querySelectorAll('#choices .pics button')].every(b=>b.title===T(b.dataset.src)),'five pictures in a row, in the order of their keys: '+en.join(' '));
+    await setLang('de');await wait(200);const de=[...document.querySelectorAll('#choices .pics button')].map(b=>b.dataset.src);
+    ok(de.join()===en.join()&&$('#choices').lastElementChild.dataset.src==='wait_a_moment','in German the same pictures stand in the same order, and the line that only waits stays last');
+    await setLang(lang);await wait(200);halt('pics23')}
+  if(!C23&&/^p[a-z]+23$/.test(stop)){const ALL=()=>CHAP[23].flags;await loadLevel(23);
       /* a carried tablet: from22 and the marks 1, 2, 3, 0, 2, 3 (the flags that are set of the first thirteen) */
-      TAB=ALL.slice(0,C.carry).filter((k,i)=>(1|[1,2,3,0,2,3].reduce((b,v,j)=>b|v<<(2*j+1),0))>>i&1),
-      S={pstub23:[[],'stub23'],pcarry23:[TAB,'stub23']}[stop];   /* STUB: pstub23, pcarry23; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
-    if(!S)throw new Error('no such stop '+stop);setChapter(23);for(const k of S[0])F[k]=1;
-    const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
-    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+      const C0=CHAP[23],TAB=C0.flags.slice(0,C0.carry).filter((k,i)=>(1|[1,2,3,0,2,3].reduce((b,v,j)=>b|v<<(2*j+1),0))>>i&1),
+      S={pscroll23:[[],'stern23'],pstern23:[[],'stern23'],plead23:[[],'lead23'],psecond23:[upto23('lead1'),'lead23'],pbow23:[upto23('anchors'),'bow23'],
+        phold23:[upto23('ropes'),'hold23'],pmeal23:[upto23('spoke'),'hold23'],pbay23:[upto23('spoke'),'bay23'],pwreck23:[upto23('bread'),'wreck23'],
+        pplanks23:[upto23('bread'),'planks23'],psurf23:[upto23('planks'),'surf23'],pbeach23:[upto23('surf'),'beach23'],ptalk23:[upto23('found'),'beach23'],
+        pfire23:[upto23('malta'),'beach23'],pestate23:[upto23('viper'),'estate23'],psick23:[upto23('viper'),'sick23'],pmap23:[upto23('malta'),'beach23'],
+        pcarry23:[[],'tablet23',TAB],ptitle23:[[],'tablet23']}[stop];
+    if(!S)throw new Error('no such stop '+stop);const C=await open23(S[0],S[1],S[2]);L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    if(stop==='pscroll23'){G.scene=DARK;narr(C.told.n27,{dur:60000})}
+    if(stop==='pbay23')G.bay23=.7;
+    if(stop==='psick23'){}
+    if(stop==='pmap23'){const M=await need('map');M.pick(['malta'],'malta',{view:'adria',legs:[['myra','cnidus'],['cnidus','salmone'],['salmone','fairhavens'],['fairhavens','cauda'],['cauda','malta']],regions:['sea_of_adria'],hint:'the_line_from_cauda_to_malta'})}
+    if(stop==='pcarry23'||stop==='ptitle23'){const pts=C.markLine();ok(stop==='pcarry23'?pts.length===7&&pts.slice(1).every((p,i)=>p[0]<pts[i][0])&&pts[4][2]===1&&pts[1][1]>pts[0][1]&&pts[3][1]<pts[2][1]:pts.length===1,
+        stop==='pcarry23'?'the carried tablet: six marks, a line that only runs westward (south-west down, north-west up, a pause for the day only)':'a title start: the strokes of the days only, no line');
+      ok(C.tabletKey()===(stop==='pcarry23'?'luke_my_marks_run_west':'luke_only_the_strokes_of_the_days'),'Luke\'s line for this tablet: '+C.tabletKey())}
     await wait(1100);halt(stop)}
   const ch23=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[23],told=k=>heard.includes(T(C().told[k])),
     until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
     onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    useH=async(id,name,i)=>{verb('use');item(id);await onH(name,null,i)},
+    talkTo=async(a,v)=>{verb(v||'talk');clickView(a.x,a.y-10,a.hs);await idle()},
+    useA=async(id,a,v)=>{verb(v||'use');item(id);clickView(a.x,a.y-10,a.hs);await idle()},
     pray23=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
     hints=async(a,b,where)=>{heard.length=0;const p=await pray23(),first=said(a)&&!said(b),q=await pray23();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
+    asked=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);return[...document.querySelectorAll('#choices button')].map(x=>x.dataset.src)},
+    pickK=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await wait(60)},
+    openTab=async()=>{G.verb='walk';G.item=null;syncVerbs();clickItem('tablet23');await idle()},
+    code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)},
     seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
   heard.length=0;
   if(C23){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
     {const c=chs.find(c=>c.dataset.ch==='23');ok(c&&c.textContent.includes(T('chapter_twenty_three'))&&c.textContent.includes(T('all_safe_to_land_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
       'the title lists Chapter Twenty-Three, All Safe to Land, and the chapters in preparation begin with the twenty-fourth')}}
   (C23?document.querySelector('#overlay [data-ch="23"]'):ov).click();
-  /* STUB: from here to halt('final23') the steps play the stub; LOGIC23 replaces them with the chapter's playthrough */
-  await until(()=>G.ch===23&&G.room==='stub23'&&!G.busy,6000);note();
+  await until(()=>G.ch===23&&G.room==='stern23'&&!G.busy,6000);note();
+  const LK=A('luke23'),SA1=A('sailor23a'),JU=A('julius23'),OLD=A('oldman23'),EL=A('elder23'),PU=A('publius23'),FA=A('father23'),IS4=A('islander23c');
   {const m=[1,2,3,4,5,6].map(C().markOf);
-    ok(C23?!F.from22&&m.every(v=>!v)&&said('stub23_tablet_only_the_days'):!!F.from22&&marks22&&m.join()===marks22.join()&&heard.includes(T('stub23_tablet_carried',{n:m.filter(Boolean).length})),
-      C23?'started from the title, nothing is carried: Luke\'s tablet has only the strokes of the days':'started from the end of Chapter Twenty-Two, Luke\'s tablet is carried in with its marks: '+m)}
-  ok(seenTold.has('stub_open')&&decode(makeCode()).ch===23&&PC()===P&&A('luke23').room==='stub23'&&C().party.join()==='paul,luke23'&&C().swap===false,
-    'STUB: the stub of Chapter Twenty-Three opens in its room, Paul played and Luke with him, and its first line is told: '+makeCode());
-  halt('stub23');
-  await hints('stub23_hint_1','stub23_hint_2','in the stub');
-  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('stub23_stone','look');
-    ok(said('stub23_stone_look')&&treasures().has(23)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'STUB: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
-  heard.length=0;await onH('stub23_path','use');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
+    ok(C23?!F.from22&&m.every(v=>!v)&&said('luke_only_the_strokes_of_the_days'):!!F.from22&&marks22&&m.join()===marks22.join()&&said(C().tabletKey()),
+      C23?'started from the title, nothing is carried: Luke\'s tablet has only the strokes of the days, and he says so':'started from the end of Chapter Twenty-Two, Luke\'s tablet is carried in with its marks ('+m+'), and he says what they would mean: '+C().tabletKey())}
+  ok(seenTold.has('n27')&&PC()===LK&&P.room==='stern23'&&C().party.join()==='paul,luke23'&&C().swap===false&&/^23(-[0-9A-Z]{3}){3,6}$/.test(makeCode())&&decode(makeCode()).ch===23,
+    'the fourteenth night (Acts 27:27), from the scroll; the stern by night, Luke played, Paul with him; wide codes: '+makeCode());
+  ok(AU.score===C().music&&C().music.steps===18&&C().music.root===46&&C().music.group.join()==='4,5,4,5'&&C().music.scale.join()==='0,2,3,5,7,8,11','the chapter\'s score, in B-flat harmonic minor and in bars of eighteen');
+  ok(ART.stern23.light.lamps.length===1&&!ROOMS.stern23.birds,'the stern by night: one lantern, no birds');
+  halt('stern23');
+  /* Luke's tablet, the map button until the island has its name */
+  heard.length=0;await openTab();ok(G.room==='tablet23'&&said(C().tabletKey()),'his tablet opens close, and he says what it holds');
+  heard.length=0;await onH('strokes_of_the_days','look');ok(said('strokes_of_the_days_look'),'the strokes of the days');
+  await onH('put_the_tablet_away','walk');await until(()=>G.room==='stern23'&&!G.busy,3000);ok(G.room==='stern23'&&PC()===LK,'and it is put away: back at the stern');
+  /* twenty, then fifteen */
+  await hints('hint_how_deep_1','hint_how_deep_2','at the stern');
+  heard.length=0;await onH('sounding_line','use');ok(said('luke_ask_the_leadsman')&&G.room==='stern23','the line is the leadsman\'s to throw');
+  heard.length=0;talkTo(SA1);await until(()=>G.room==='lead23'&&!G.busy,6000);
+  ok(said('luke_how_deep_is_it')&&said('leadsman_lets_find_out')&&said('leadsman_read_it_off')&&G.room==='lead23','the leadsman heaves the lead and lays the line out on the deck');
+  halt('lead23');
+  await hints('hint_read_the_line_1','hint_read_the_line_2','at the line');
+  heard.length=0;await onH('tag_epsilon','look');ok(said('tag_epsilon_look'),'the tag at five fathoms, and how the Greeks count with letters');
+  heard.length=0;await onH('tag_iota_epsilon','use');ok(said('luke_still_wet_beyond_this_tag')&&!F.lead1,'at fifteen the line is still wet beyond the tag');
+  heard.length=0;await onH('the_lead','use');ok(said('luke_first_the_tallow'),'the bottom only once the tallow is looked at');
+  heard.length=0;await useH('tablet23','tag_kappa');ok(said('luke_writes_twenty_fathoms'),'wet up to K: twenty fathoms, written');
+  await hints('hint_the_tallow_1','hint_the_tallow_2','with the depth written');
+  heard.length=0;await onH('the_lead','look');ok(said('tallow_with_sand_look'),'sand in the tallow');
+  heard.length=0;onH('the_lead','use');await until(()=>F.lead1&&G.room==='stern23'&&!G.busy,6000);
+  ok(said('luke_writes_sand')&&said('leadsman_twenty_and_sand')&&said('leadsman_again_in_a_while')&&!F.lead2,'sand, written; twenty fathoms and sand, and they will sound again');
+  await hints('hint_sound_again_1','hint_sound_again_2','after the first sounding');
+  heard.length=0;talkTo(SA1);await until(()=>G.room==='lead23'&&!G.busy,6000);ok(said('leadsman_a_little_farther_on'),'a little farther on, again');
+  heard.length=0;await onH('tag_kappa','use');ok(said('luke_dry_this_far_up'),'the second time the line is dry at twenty');
+  heard.length=0;await onH('tag_iota_epsilon','use');heard.length=0;await onH('the_lead','look');ok(said('tallow_with_small_stones_look'),'small stones in the tallow');
+  heard.length=0;onH('the_lead','use');await until(()=>F.anchors&&G.room==='bow23'&&!G.busy,12000);note();
+  ok(said('luke_writes_small_stones')&&seenTold.has('n28')&&said('leadsman_fifteen_and_stones')&&said('pilot_land_is_close')&&seenTold.has('n29')&&seenTold.has('n30')&&PC()===P&&said('paul_the_skiff_at_this_hour'),
+    'twenty, then fifteen (Acts 27:28); the sailors: land is close, maybe rocks; four anchors from the stern (27:29); the sailors and the skiff (27:30); Paul is played at the bow');
+  await code('at the bow',()=>G.room==='bow23'&&PC()===P&&F.anchors&&!F.ropes&&JU.room==='bow23');
+  halt('bow23');
+  /* an anchor from the bow */
+  await hints('hint_look_at_the_bow_1','hint_look_at_the_bow_2','at the bow');
+  heard.length=0;await talkTo(JU);ok(said('paul_not_until_i_am_sure')&&!F.ropes,'to the officer before he has seen it all: not yet');
+  heard.length=0;await talkTo(SA1);ok(said('paul_whats_the_skiff_for')&&said('sailor_anchors_from_the_bow')&&!F.ropes,'a sailor gives the pretext, and nothing changes');
+  heard.length=0;await onH('skiff','look');await talkTo(A('sailor23b'),'look');await onH('covered_anchors','look');
+  ok(F.sawSkiff&&F.sawMen&&F.sawAnchors&&said('skiff_going_down_look')&&said('sailors_at_the_skiff_look')&&said('covered_anchors_look'),'the skiff going down; so many sailors; the bow\'s anchors still under their cover');
+  await hints('hint_tell_the_officer_1','hint_tell_the_officer_2','with all three seen');
+  heard.length=0;talkTo(JU);await until(()=>F.ropes&&G.room==='hold23'&&!G.busy,12000);note();
+  ok(said('these_men_must_stay_on_the_ship')&&seenTold.has('n32')&&seenTold.has('n33'),'to the officer and the soldiers: these men have to stay (Acts 27:31); the ropes cut (27:32); close to daybreak (27:33)');
+  halt('hold23');
+  /* before them all */
+  await hints('hint_where_all_can_see_1','hint_where_all_can_see_2','in the hold');
+  heard.length=0;await talkTo(A('prisoner23a'));ok(said('paul_you_should_eat')&&said('prisoner_i_couldnt_keep_it_down')&&!F.stood,'one at a time: no');
+  heard.length=0;await onH('everyone_in_the_hold','talk');ok(said('paul_half_of_them_cannot_see_me')&&!F.spoke,'from here half of them cannot see him');
+  heard.length=0;await useA('bread23',OLD,'give');ok(said('paul_not_to_one_man')&&!F.bread,'the bread is not handed to one man');
+  heard.length=0;await onH('hanging_lamp','use',1);ok(F.stood&&Math.abs(P.x-C().spot[0])<1&&ROOMS.hold23.walk[0]===ROOMS.hold23.walk[1]&&said('paul_here_they_can_all_see_me'),'under the lamp, where all can see him');
+  await hints('hint_speak_to_all_1','hint_speak_to_all_2','under the lamp');
+  heard.length=0;await useH('bread23','everyone_in_the_hold');ok(said('paul_first_they_need_to_hear_it')&&!F.bread,'first they need to hear why');
+  heard.length=0;await talkTo(A('merchant23'));ok(F.spoke&&said('fourteen_days_in_suspense')&&said('not_a_hair_of_your_head')&&heard.indexOf(T('fourteen_days_in_suspense'))<heard.indexOf(T('not_a_hair_of_your_head')),'to all of them, in the account\'s order: fourteen days; not a hair of your head (Acts 27:33, 34)');
+  await code('under the lamp',()=>G.room==='hold23'&&F.stood&&F.spoke&&Math.abs(P.x-C().spot[0])<1&&has('bread23'));
+  await hints('hint_the_bread_1','hint_the_bread_2','with his words said');
+  heard.length=0;useH('bread23','everyone_in_the_hold');
+  if(stop==='bay23'){await until(()=>G.room==='bay23'&&(G.bay23||0)>.3,6000);await wait(300);halt('bay23')}
+  await until(()=>F.bread&&G.room==='wreck23'&&!G.busy,20000);note();
+  ok(['n35','n36','n37','n38','n39','n40','n41','n42','n43'].every(k=>seenTold.has(k))&&!has('bread23')&&PC()===P&&OLD.room==='wreck23'&&said('paul_four_here_cannot_swim')&&P.wear==='w',
+    'bread, thanks to God before them all, broken and eaten (Acts 27:35); they take courage (27:36); 276 (27:37); the wheat (27:38); the bay, the run in, the shoal (27:39-41); the soldiers\' plan and the officer\'s order (27:42, 43); Paul is wet on the foredeck of the wreck');
+  ok(!heard.some(h=>/sword|blade/i.test(h)),'no blade is named at 27:42');
+  halt('wreck23');
+  /* everyone has a plank */
+  await hints('hint_something_that_floats_1','hint_something_that_floats_2','on the wreck');
+  heard.length=0;onH('planks_and_hatch_cover','use');await until(()=>G.room==='planks23'&&!G.busy,4000);ok(said('paul_two_planks_and_a_hatch_cover'),'two planks and a hatch cover, close');
+  halt('planks23');
+  const pp=k=>ROOMS.planks23.hs.find(h=>h.pk===k),fl=(k,i)=>ROOMS.planks23.hs.filter(h=>h.name===k)[i||0],
+    lay=async(k,f,i)=>{verb('use');clickView(pp(k).x+10,pp(k).y+23,pp(k));await idle();verb('use');const h=fl(f,i);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()};
+  heard.length=0;await lay('soldier','plank');ok(said('paul_not_in_that_mail')&&!G.pk23.on.soldier,'the soldier on a plank: not in that mail');
+  await hints('hint_the_mail_1','hint_the_mail_2','with the mail refused');
+  heard.length=0;verb('talk');clickView(pp('soldier').x+10,pp('soldier').y+23,pp('soldier'));await idle();ok(F.mailOff&&A('soldier23a').look===LOOK.soldier23au&&said('paul_your_mail_take_it_off'),'he takes his mail off when Paul tells him'+(F.mailOff&&A('soldier23a').look===LOOK.soldier23au&&said('paul_your_mail_take_it_off')?'':' [wear '+A('soldier23a').wear+', heard '+heard.join(' / ').slice(0,200)+']'));
+  heard.length=0;await lay('oldman','hatch_cover');await lay('soldier','hatch_cover');ok(said('old_not_beside_a_soldier')&&!G.pk23.on.soldier,'the old prisoner will not go beside a soldier');
+  heard.length=0;await lay('soldier','plank',0);await lay('boy','plank',1);await lay('merchant','plank',0);ok(said('paul_a_plank_holds_one')&&!G.pk23.on.merchant,'a plank holds up one man, not two');
+  heard.length=0;await lay('merchant','hatch_cover');await until(()=>F.planks&&G.room==='surf23'&&!G.busy,6000);
+  ok(F.planks&&said('paul_hold_on_and_kick')&&G.room==='surf23'&&P.pose==='plank','each on what floats: hold on and kick; Paul in the surf on his plank');
+  await code('in the surf',()=>G.room==='surf23'&&F.planks&&!F.surf&&P.pose==='plank');
+  halt('surf23');
+  /* through the surf, on the beat: two hits, three misses, a hit, and the rest by the beat itself as a player would (the waves23 stop drives the misses and the carry) */
+  await hints('hint_the_surf_1','hint_the_surf_2','in the surf');
+  {const till=async(fn,n)=>{for(let i=0;i<(n||800)&&!fn();i++)await wait(10);return!!fn()},room=()=>G.beat&&G.beat.inPause()&&G.beat.next().to-performance.now()>=G.beat.need+150,
+      wave=()=>G.beat&&!G.beat.inPause()&&G.beat.phase()>.02&&G.beat.phase()<G.beat.from-.04,HN=['','floating_spar','rock_in_the_surf','sandbar','the_beach'],
+      step=async i=>{const h=ROOMS.surf23.hs.find(h=>h.name===HN[i]);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()};
+    await till(()=>G.beat&&G.beat.on,600);for(let i=1;i<=4;i++){if(i===3){await till(wave);await step(3);ok(G.at23===2&&G.beat&&G.beat.misses===1,'a miss on the wave: back at the rock')}await till(room);await step(i)}
+    await until(()=>F.surf&&G.room==='beach23'&&!G.busy,6000)}
+  ok(F.surf&&G.room==='beach23'&&PC()===LK&&said('luke_ashore_but_is_everyone')&&!G.beat,'through the surf, hold by hold, to the beach; Luke is played on the beach');
+  halt('beach23');
+  /* the count on the beach */
+  await hints('hint_count_them_1','hint_count_them_2','on the beach');
+  await wait(200);{const c=(G.caps23||[]).at(-1);ok(c&&c.s===T('counted_n_of_276',{n:0})&&c.w<=c.max,'the count stands on the screen: '+(c&&c.s))}
+  heard.length=0;await onH('goat','look');ok(said('goat_look')&&!said('the_goat_is_not_counted'),'the goat, and no joke before everyone is found');
+  heard.length=0;await onH('piece_of_the_stern','look');ok(said('piece_of_the_stern_look')&&!F.found,'a piece of the stern');
+  for(const g of C().groups){heard.length=0;await onH(g.name,'look');ok(F[g.k]&&said(g.say),g.name.replace(/_/g,' ')+': '+g.n)}
+  ok(C().count()===275&&said('luke_two_hundred_seventy_five_one_short'),'two hundred and seventy-five: one short');
+  await hints('hint_one_short_1','hint_one_short_2','one short');
+  heard.length=0;onH('piece_of_the_stern','look');await until(()=>F.found&&!G.busy,9000);note();
+  ok(said('luke_someone_behind_it')&&said('old_they_will_kill_us')&&said('luke_the_officer_forbade_it')&&seenTold.has('n44')&&C().count()===276&&EL.room==='beach23'&&said('luke_one_of_the_islanders'),
+    'the old prisoner, hiding; the officer has forbidden it; all came safe to land (Acts 27:44), told only now; an islander comes down');
+  await wait(200);{const c=(G.caps23||[]).at(-1);ok(!c||phase23_()!=='count','the count is off the screen once it is full')}
+  heard.length=0;await onH('goat','look');ok(said('the_goat_is_not_counted'),'the goat is not counted');
+  heard.length=0;await onH('dog','look');ok(said('the_dog_at_the_fire'),'the dog at the fire');
+  halt('talk23');
+  /* a talk in pictures */
+  await hints('hint_the_islander_1','hint_the_islander_2','with the islander');
+  heard.length=0;talkTo(EL);{const o=await asked();ok(o.length===6&&o.at(-1)==='wait_a_moment'&&C().pics.every(p=>o.includes(p.key)),'five pictures to answer with, and a line that waits')}
+  await pickK('show_the_fire');ok(said('luke_he_points_to_the_fire_already_lit')&&!G.ex23,'a picture that does not fit: a true gesture, nothing moves on');
+  await pickK('show_the_wreck');ok(said('luke_he_looks_at_the_wreck_a_long_time')&&G.ex23===1,'where from: the wreck');
+  await pickK('show_the_wreck');ok(said('luke_he_has_seen_the_wreck_and_waves_again')&&G.ex23===1,'not again');
+  await pickK('show_the_count');ok(said('luke_he_looks_at_the_number_and_along_the_beach')&&G.ex23===2,'how many: the marks on his tablet');
+  await pickK('show_the_count');ok(said('luke_he_knows_how_many_we_are'),'he knows how many already');
+  await pickK('show_this_land');await until(()=>F.malta&&G.room==='beach23'&&!G.busy,9000);note();
+  ok(said('luke_now_my_question')&&said('malta_the_name')&&said('malta_luke_says_it_after_him')&&seenTold.has('m1')&&said('luke_the_name_on_my_tablet')&&seenTold.has('m2'),
+    'where are we: the ground; the island\'s name (Acts 28:1), scratched at the end of Luke\'s line; the fire in the rain (28:2)');
+  heard.length=0;await talkTo(IS4);await talkTo(IS4);ok(said('luke_she_brings_food')&&said('one_word_of_their_language'),'food, and food again: one word of their language');
+  /* from now on his tablet opens the travel map, with the true line from Cauda */
+  {const M=SHARED.map;G.verb='walk';G.item=null;syncVerbs();clickItem('tablet23');for(let i=0;i<300&&!(M&&M.state.places&&G.scene===M.draw);i++)await wait(30);await wait(60);
+    ok(M.state.places.join()==='malta'&&M.state.legs.some(L=>L.a==='cauda'&&L.b==='malta'),'his tablet now opens the travel map: the line from Cauda to Malta');
+    dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));await until(()=>!G.scene&&G.room==='beach23'&&!G.busy,3000)}
+  /* the viper */
+  await hints('hint_by_the_fire_1','hint_by_the_fire_2','by the fire');
+  let hung=0,bowed=0;const vo=setInterval(()=>{if(G.vip23&&(G.vip23.fr===3||G.vip23.fr===4))hung=1;if(Object.values(ACT).some(a=>a.room==='beach23'&&(a.bow||a.kneel)))bowed=1},15);
+  heard.length=0;await talkTo(P);
+  if(stop==='viper23'){await until(()=>hung,3000);await wait(200);clearInterval(vo);halt('viper23')}
+  await until(()=>F.viper&&G.room==='estate23'&&!G.busy,15000);clearInterval(vo);note();
+  ok(said('luke_paul_goes_for_sticks')&&['m3','m4','m5','m6','m7'].every(k=>seenTold.has(k))&&hung&&!bowed&&PC()===LK&&P.wear===''&&LK.wear==='',
+    'the sticks and the viper (Acts 28:3); Justice (28:4); no harm (28:5); a god, and nothing shown, nobody bowing (28:6); Publius (28:7): dry at the estate'+(hung&&!bowed?'':' [hung '+hung+', bowed '+bowed+']'));
+  await code('at the estate',()=>G.room==='estate23'&&PC()===LK&&F.viper&&!F.healed&&PU.room==='estate23');
+  halt('estate23');
+  /* the estate of Publius, the hidden treasure and the healing */
+  await hints('hint_the_estate_1','hint_the_estate_2','at the estate');
+  heard.length=0;await talkTo(P);ok(said('dry_since_crete'),'dry since Crete');
+  heard.length=0;await onH('gateway','walk');ok(said('luke_we_are_guests_here')&&G.room==='estate23','they are his guests');
+  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('stone_at_the_gate','look');
+    ok(said('the_stone_at_the_gate_look')&&treasures().has(23)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'the stone at the gate, its one word copied: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
+  heard.length=0;talkTo(PU);
+  if(stop==='sick23'){await until(()=>G.room==='sick23'&&!$('#dim').style.opacity|0,6000);await wait(400);halt('sick23')}
+  for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
+  ok(said('publius_my_father_is_ill')&&said('paul_may_i_go_in_to_him')&&['m8','m9','m10','m11'].every(k=>seenTold.has(k))&&said('father_i_am_up'),
+    'fever and dysentery; Paul prays and lays his hands on him (Acts 28:8, told); the other sick (28:9); many gifts (28:10); what comes next (28:11)');
   ok(ov.classList.contains('end')&&ov.textContent.includes(T('all_safe_to_land_2'))&&/27:27-28:10/.test(ov.textContent)&&ov.textContent.includes(T('click_to_return_to_the_title'))&&store('paul.save')===null&&inOv(),
     'the end screen of Chapter Twenty-Three returns to the title (until Chapter Twenty-Four is built), and keeps no code to continue from');
-  {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 27:27-28:10 was told'+(miss.length?' MISSING '+miss:''))}
+  {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 27:27-28:11 was told'+(miss.length?' MISSING '+miss:''))}
   halt('final23')};
+  const phase23_=()=>CHAP[23].phase();
   if(C23){await ch23();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    /* STUB: LOGIC23 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
-    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ==== CHAPTER TWENTY-THREE: end ==== */
   /* carry (CONTRIBUTING section 5): a choice carried from one chapter into the next, only in the safe-point code. Chapter Twenty-Three's
      first CHAP[23].carry flags are carried in from Chapter Twenty-Two's end screen: from22, then the six marks of Luke's tablet. For four
@@ -5643,6 +6294,180 @@
         if(exp!==got||G.ch!==n||F.from22)bad.push(n+' flags')}
       ok(!bad.length,'the codes of the twenty-one earlier chapters (each treasure\'s point) decode and restore as before'+(bad.length?': NOT '+bad.join(', '):''))}
     window.showCard=sc;halt('carry')}
+  /* ==== CHAPTER TWENTY-FOUR: begin ==== Chapter Twenty-Four's own stops: whoever builds the chapter extends this section, and nothing outside it
+     but its line in TSTEPS, the chain of the full run (ch24 after ch23) and the title checks of the chapters before it. */
+  /* Chapter Twenty-Four stops start Chapter Twenty-Four from the title screen. FOR NOW, while PLANNED still names it and the title does not
+     list it (building, index.html), they start it as the title's entry would, with startChapter(24); once it is listed, its entry is
+     clicked. The full run is to call its test when Chapter Twenty-Three has ended: LOGIC24, once Chapter Twenty-Three's end screen leads
+     on to Chapter Twenty-Four, chain ch24() and ch25() after ch23() in the full run. all24 halts nowhere. Its halts: STUB: quay24 (the
+     quay, Luke played) · lane24 (the street with two lodgings) · final24 (the end screen with Chapter Twenty-Five's code). After final24 the
+     end screen is clicked: Chapter Twenty-Five opens with from24 and street carried, in the room chosen, and the printed code, typed, gives
+     the same room (the stop carry25, in Chapter Twenty-Five's section, does it for both lodgings). The stops that begin with "p" open one
+     room at once, with the story's flags set for it, and say the safe-point code of their point (CODE): STUB: pquay24 · plane24. rooms24
+     puts every picture on one sheet. The generic stops card24, routes24 and shadows24 (above) run against the chapter's rooms. LOGIC24:
+     replace every STUB name here with the chapter's own halts and room stops, as Chapter Twenty-Three's section does, and add the stops that
+     drive the beat by its exposed phase, on the desktop and on a phone held sideways (Chapter Twenty-Two's waves and phonedeck stops are
+     the model). Keep CHAP[24].end and CHAP[24].carry25 in the chapter's definition: the carry checks play them. */
+  /* rooms24: every picture of Chapter Twenty-Four on one sheet at twice its size (rooms24.png), for the art and the cross-shape check */
+  if(stop==='rooms24'){clearInterval(sk);sk=0;await loadLevel(24);setChapter(24);ov.className='';ov.onclick=null;const C=CHAP[24],ids=C.rooms,K=2;
+    const pic=(id,q,x,y)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
+      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
+      q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
+    const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
+    window.SHEETS={rooms24:c.toDataURL()};halt('rooms24')}
+  const C24=/^(quay24|lane24|final24|all24)$/.test(stop);   /* STUB: quay24, lane24 */
+  if(!C24&&/^p[a-z]+24$/.test(stop)){await loadLevel(24);ov.className='';ov.onclick=null;const C=CHAP[24],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      S={pquay24:[[],'quay24'],plane24:[upto('sailed'),'lane24']}[stop];   /* STUB: pquay24, plane24; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
+    if(!S)throw new Error('no such stop '+stop);setChapter(24);for(const k of S[0])F[k]=1;
+    const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    await wait(1100);halt(stop)}
+  const ch24=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[24],told=k=>heard.includes(T(C().told[k])),
+    until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    pray24=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
+    hints=async(a,b,where)=>{heard.length=0;const p=await pray24(),first=said(a)&&!said(b),q=await pray24();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+  heard.length=0;
+  /* FOR NOW: while the line "in preparation" still names Chapter Twenty-Four, the title does not list it; LOGIC24: when its entry leaves
+     PLANNED at the end, this check becomes the usual one (the title lists Chapter Twenty-Four, He Took Courage) */
+  if(C24){const l=ov.querySelector('.chs'),plans=l.querySelector('.plans');
+    ok(!l.querySelector('[data-ch="24"]')&&building(24)&&plans&&plans.textContent.includes(T('twenty_four')),'FOR NOW: the title does not list Chapter Twenty-Four while the line of the chapters in preparation still names it')}
+  if(C24){const e=document.querySelector('#overlay [data-ch="24"]');if(e)e.click();else startChapter(24)}else ov.click();
+  /* STUB: from here to halt('final24') the steps play the stub; LOGIC24 replaces them with the chapter's playthrough */
+  await until(()=>G.ch===24&&G.room==='quay24'&&!G.busy,6000);note();
+  ok(seenTold.has('n11')&&said('stub24_luke_at_the_quay')&&decode(makeCode()).ch===24&&PC()===A('luke24')&&P.room==='quay24'&&C().party.join()==='paul,luke24'&&C().swap===false,
+    'STUB: the stub of Chapter Twenty-Four opens with Acts 28:11 from the scroll, on the quay, Luke played and Paul by him: '+makeCode());
+  halt('quay24');
+  await hints('stub24_hint_1','stub24_hint_2','on the quay');
+  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('stub24_corner_of_the_quay','look');
+    ok(said('stub24_corner_of_the_quay_look')&&treasures().has(24)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'STUB: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
+  heard.length=0;onH('stub24_gangplank','use');await until(()=>F.sailed&&G.room==='lane24'&&!G.busy,9000);note();
+  ok(seenTold.has('n16')&&said('stub24_two_lodgings')&&!P.room&&PC()===A('luke24'),'STUB: Acts 28:16 from the scroll; Luke in a street of Rome, and Paul away');
+  {const cd=makeCode();await enter(cd);ok(G.ch===24&&G.room==='lane24'&&F.sailed&&!F.chosen&&PC()===A('luke24')&&!P.room,'a code in the street gives the street again: '+cd)}
+  halt('lane24');
+  await hints('stub24_hint_lodging_1','stub24_hint_lodging_2','in the street');
+  heard.length=0;onH('stub24_door_at_street_level','open');for(let i=0;i<4000&&!(ov.classList.contains('end')&&ov.onclick);i++)await wait(30);await wait(120);note();
+  {const bits=3,code=codeOf(25,bits),far=saves().far;
+    ok(said('stub24_the_room_at_street_level')&&F.street&&ov.classList.contains('end')&&ov.textContent.includes(T('he_took_courage_2'))&&/28:11-16/.test(ov.textContent)
+      &&ov.textContent.includes(T('click_to_continue_to_chapter_twenty_five'))&&ov.textContent.includes(T('chapter_twenty_five_code_code',{code}))&&store('paul.save')===code&&far&&far.code===code&&C().carry25()===bits&&inOv(),
+      'the end screen of Chapter Twenty-Four leads on to Chapter Twenty-Five with its first code, which carries the lodging (the room at street level): '+code);
+    halt('final24');
+    /* the carry: the end screen's click opens Chapter Twenty-Five with the card, from24 and street set, in the room at street level; the
+       printed code, typed later, gives the same room */
+    let shown=0;const sc=showCard;window.showCard=n=>{shown=n;return sc(n)};
+    const in25=()=>G.ch===25&&G.room==='lodging25'&&!G.busy&&!ov.classList.contains('card');
+    ov.click();await until(in25,9000);const v=ART.lodging25.variant();
+    ok(shown===25&&F.from24&&F.street&&v.startsWith('street')&&CHAP[25].flags.slice(0,CHAP[25].carry).join()==='from24,street','its click opens Chapter Twenty-Five with the card, from24 and street carried in: the room at street level ('+v+')');
+    shown=0;await restore(code);await until(in25,6000);
+    ok(shown===25&&F.from24&&F.street&&ART.lodging25.variant()===v&&atStart(decode(code)),'the printed code, typed later, gives the same room, and opens with the card: '+code);
+    window.showCard=sc}};
+  if(C24){await ch24();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    /* STUB: LOGIC24 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+  /* ==== CHAPTER TWENTY-FOUR: end ==== */
+  /* ==== CHAPTER TWENTY-FIVE: begin ==== Chapter Twenty-Five's own stops: whoever builds the chapter extends this section, and nothing outside it
+     but its line in TSTEPS, the chain of the full run (ch25 after ch24) and the title checks of the chapters before it. */
+  /* Chapter Twenty-Five stops start Chapter Twenty-Five from the title screen (nothing carried: it is played in the flat), as the title's
+     entry would (FOR NOW by startChapter(25), as for Chapter Twenty-Four); in the full run its test follows Chapter Twenty-Four's, which has
+     opened it with the room at street level carried in. all25 halts nowhere. Its halts: STUB: lodging25 (the lodging, Paul chained to the
+     soldier) · final25 (the door opened, Acts 28:30, 31 told, and the hand-over to the finale; until shared/finale.js is merged, a screen
+     that returns to the title on a click). The stops that begin with "p" open one room at once, with the story's flags set for it, and say
+     the safe-point code of their point (CODE): STUB: plodging25 (the flat) · pstreet25 (the room at street level, carried in). carry25
+     plays Chapter Twenty-Four's end for each lodging and checks the code and the click, and the start from the title and from the plain
+     first code (the flat). rooms25 puts every picture on one sheet, each room in each of its views (CHAP[25].views); the generic stops
+     card25, routes25 and shadows25 (above) run against the chapter's rooms, in each view. The checks that bind to the end: finished is
+     CHAP[25].flags[CHAP[25].done] and the last flag; and from the last safe point to the finale no flag is set (final25). LOGIC25: replace
+     every STUB name here with the chapter's own halts and room stops, one at least for each watch, and keep both end checks. */
+  /* rooms25: every picture of Chapter Twenty-Five on one sheet at twice its size, each room in each of its views (rooms25.png) */
+  if(stop==='rooms25'){clearInterval(sk);sk=0;await loadLevel(25);setChapter(25);ov.className='';ov.onclick=null;const C=CHAP[25],K=2,
+      ids=C.rooms.flatMap(id=>views(25,id).map(([vn,set])=>[id,set]));
+    const pic=([id,set],q,x,y)=>{if(set)set();G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
+      const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
+      q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
+    const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    ids.forEach((e,i)=>pic(e,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
+    window.SHEETS={rooms25:c.toDataURL()};halt('rooms25')}
+  const C25=/^(lodging25|final25|all25)$/.test(stop);   /* STUB: lodging25 */
+  if(!C25&&/^p[a-z]+25$/.test(stop)){await loadLevel(25);ov.className='';ov.onclick=null;const C=CHAP[25],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
+      S={plodging25:[[],'lodging25'],pstreet25:[['from24','street'],'lodging25']}[stop];   /* STUB: plodging25, pstreet25; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
+    if(!S)throw new Error('no such stop '+stop);setChapter(25);for(const k of S[0])F[k]=1;
+    const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
+    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    await wait(1100);halt(stop)}
+  /* carry25 (CONTRIBUTING section 5): the lodging chosen in Chapter Twenty-Four is carried into Chapter Twenty-Five's first two flags, from24
+     and street, only in the safe-point code. For each lodging: Chapter Twenty-Four's end screen prints codeOf(25, bits) and keeps it as the
+     point to continue from and the farthest point; its click and that code, typed later, open the same room with the card. Started from
+     the title, or from the plain first code, nothing is carried, and the chapter is played in the flat. It plays the chapters' own end
+     (CHAP[24].end) and start, so it holds for the stubs and for the chapters alike. */
+  if(stop==='carry25'){await loadLevel(24);await loadLevel(25);
+    const CH24=CHAP[24],CH25=CHAP[25],K=CH25.carry,until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
+      in25=()=>G.ch===25&&G.room==='lodging25'&&!G.busy&&!ov.classList.contains('card');
+    let shown=0;const sc=showCard;window.showCard=n=>{shown=n;return sc(n)};
+    ok(K===2&&CH25.flags.slice(0,K).join()==='from24,street'&&CH24.flags.includes('street')&&typeof CH24.end==='function'&&typeof CH24.carry25==='function'&&CH25.flags[CH25.done]==='finished'&&CH25.flags.at(-1)==='finished',
+      'Chapter Twenty-Five carries two flags, from24 and street, which Chapter Twenty-Four sets from its own flag street; finished is its last flag, at done ('+CH25.done+')');
+    for(const street of[0,1]){const kind=street?'street':'flat',bits=1|street<<1,code=codeOf(25,bits);
+      store('paul.save',null);store('paul.saves',null);applyState(decode(codeOf(24,0)));await idle();if(street)F.street=1;
+      CH24.end();for(let i=0;i<4000&&!(ov.classList.contains('end')&&ov.onclick);i++)await wait(30);await wait(60);
+      const printed=(ov.textContent.match(/\b25-[0-9A-Z]{3}-[0-9A-Z]{3}\b/)||[])[0],far=saves().far;
+      ok(printed===code&&ov.textContent.includes(T('chapter_twenty_five_code_code',{code}))&&store('paul.save')===code&&far&&far.code===code,
+        `${kind}: the end screen prints codeOf(25, ${bits}) = ${printed}, and keeps it as the point to continue from and the farthest point`);
+      shown=0;ov.click();await until(in25,9000);
+      ok(shown===25&&!!F.from24&&!!F.street===!!street&&ART.lodging25.variant().startsWith(kind),`its click opens Chapter Twenty-Five with the card, in the ${kind} (${ART.lodging25.variant()})`);
+      shown=0;await restore(code);await until(in25,6000);
+      ok(shown===25&&!!F.from24&&!!F.street===!!street&&ART.lodging25.variant().startsWith(kind)&&atStart(decode(code)),`the printed code, typed later, gives the same room: ${code}`)}
+    store('paul.save',null);store('paul.saves',null);shown=0;startChapter(25);await until(in25,9000);
+    ok(!F.from24&&!F.street&&shown===25&&G.carry==null&&ART.lodging25.variant().startsWith('flat'),'started from the title, Chapter Twenty-Five has nothing carried, and is played in the flat');
+    shown=0;await restore(codeOf(25,0));await until(in25,6000);
+    ok(!F.from24&&!F.street&&shown===25&&ART.lodging25.variant().startsWith('flat'),'so is its plain first code');
+    window.showCard=sc;halt('carry25')}
+  const ch25=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[25],told=k=>heard.includes(T(C().told[k])),
+    until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
+    onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    pray25=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
+    hints=async(a,b,where)=>{heard.length=0;const p=await pray25(),first=said(a)&&!said(b),q=await pray25();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+  heard.length=0;
+  /* FOR NOW, as for Chapter Twenty-Four: LOGIC25, when its entry leaves PLANNED, the usual check (the title lists Chapter Twenty-Five) */
+  if(C25){const l=ov.querySelector('.chs'),plans=l.querySelector('.plans');
+    ok(!l.querySelector('[data-ch="25"]')&&building(25)&&plans&&plans.textContent.includes(T('twenty_five')),'FOR NOW: the title does not list Chapter Twenty-Five while the line of the chapters in preparation still names it')}
+  if(C25){const e=document.querySelector('#overlay [data-ch="25"]');if(e)e.click();else startChapter(25)}
+  /* STUB: from here to halt('final25') the steps play the stub; LOGIC25 replaces them with the chapter's playthrough (keep the checks
+     of the end: finished at done, and no flag set from the last safe point to the finale) */
+  await until(()=>G.ch===25&&G.room==='lodging25'&&!G.busy,9000);note();
+  {const v=ART.lodging25.variant(),c5=C(),SO=A('soldier25');
+    ok(C25?!F.from24&&!F.street&&v.startsWith('flat'):!!F.from24&&!!F.street&&v.startsWith('street'),
+      C25?'started from the title, nothing is carried: the lodging is the flat ('+v+')':'started from the end of Chapter Twenty-Four, the lodging is the one carried in: the room at street level ('+v+')');
+    ok(c5.flags[c5.done]==='finished'&&c5.flags.at(-1)==='finished'&&!F.finished&&c5.carry===2&&c5.flags.slice(0,2).join()==='from24,street'&&c5.codeBits.flags>=c5.flags.length,
+      'the flags: from24 and street first (carried), finished last, at done ('+c5.done+'), and not set');
+    ok(c5.about&&c5.about.title==='without_hindrance_2'&&c5.about.text==='without_hindrance_about'&&c5.about.based==='based_on_acts_28_17_31'&&['without_hindrance_about','based_on_acts_28_17_31'].every(k=>textOf('en',k)),
+      'the page about the chapter has its keys: '+(c5.about&&Object.values(c5.about).join(', ')));
+    ok(PC()===P&&P.chained&&P.chainTo===SO&&SO.room==='lodging25'&&SO.keeper&&/^25(-[0-9A-Z]{3}){3,6}$/.test(makeCode())&&decode(makeCode()).ch===25,
+      'STUB: Paul is played, chained by one wrist to the soldier of the watch; wide codes: '+makeCode());
+    if(C25)ok(seenTold.has('n17'),'STUB: Acts 28:17 from the scroll')}
+  halt('lodging25');
+  await hints('stub25_hint_1','stub25_hint_2','in the lodging');
+  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('stub25_roll','look');
+    ok(said('stub25_roll_look')&&treasures().has(25)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'STUB: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
+  /* the last safe point, and the door: from here to the finale no flag is set */
+  {const last=store('paul.save'),fl=()=>C().flags.filter(k=>F[k]).join();codeBtn();const f0=fl(),c0=makeCode();
+    ok(store('paul.save')===c0&&decode(c0).ch===25,'the last safe point, kept as the point to continue from: '+c0);
+    heard.length=0;onH('door','open');for(let i=0;i<4000&&!(ov.classList.contains('end')&&ov.onclick)&&!SHARED.finale;i++)await wait(30);await wait(120);note();
+    ok(said('come_in_the_chain_is_on_me')&&seenTold.has('n3031')&&heard.indexOf(T('come_in_the_chain_is_on_me'))<heard.indexOf(T(C().told.n3031)),
+      'the door is opened: come in, the chain is on me; then Acts 28:30, 31 from the narrator');
+    ok(fl()===f0&&!F.finished&&makeCode()===c0&&store('paul.save')===c0,'from the last safe point to the finale no flag is set (finished is not): the code is still '+c0);
+    /* FOR NOW, until shared/finale.js is merged: no end screen; a plain screen whose click returns to the title. LOGIC25: once the finale
+       is merged, this check is the finale's to change (its run() takes over here). */
+    if(!SHARED.finale)ok(ov.classList.contains('end')&&!ov.querySelector('h2')&&ov.textContent.includes(T('click_to_return_to_the_title'))&&inOv(),
+      'there is no end screen: until the finale is merged, a click returns to the title')}
+  halt('final25')};
+  if(C25){await ch25();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
+    ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
+    /* STUB: LOGIC25 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+  /* ==== CHAPTER TWENTY-FIVE: end ==== */
   if(C19){await ch19();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
     ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
