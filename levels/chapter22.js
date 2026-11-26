@@ -274,7 +274,7 @@ const LANT22={x:1.25,y:1.45,z:11.15,c0:1.0,c1:1.5};
 const lant22=()=>{const D=gd22(),y0=D.s(11.3);return{p:D.P(LANT22.x,y0+LANT22.y,LANT22.z),a:D.P(LANT22.c0,y0+1.87,LANT22.z),b:D.P(LANT22.c1,y0+1.87,LANT22.z),floor:D.P(LANT22.x,y0,11.3)}};
 /* the storm sea for each picture: by day, a little lower in the lee of Cauda; by night, the dark one, the lantern's light in its rain */
 const DS22={};
-const ds22=v=>DS22[v]||(DS22[v]=SHARED.storm.deckSea({pal:v==='n'?'night':'day',dx:1,slant:.9,rail:84,deck0:101,height:v==='s'?.72:1,seed:2209,
+const ds22=v=>DS22[v]||(DS22[v]=SHARED.storm.deckSea({pal:v==='n'?'night':'day',dx:1,slant:.9,rail:70,deck0:82,height:v==='s'?.72:1,seed:2209,
   lightning:true,clear:[132,300],lamp:v==='n'?[lant22().p[0],lant22().p[1]+4,34]:undefined}));
 /* the moment in the sea: the beat's own phase when it runs here (its whole part counts the seas, so that each is a little different), else
    a clock of six seconds */
@@ -298,7 +298,10 @@ ART.storm22={w:320,q:12,variant:()=>nightNow22()?'n':phase22()==='skiff'?'s':'d'
   draw(g,t){drawStorm22(g,t)},
   air(g,t){const v=ART.storm22.variant();ds22(v).front(g,t,e22(t))},
   front(){},
-  props:[{y:131,shape(g){mastShape22(g)},foot:()=>[gd22().foot.mast]},{y:112,shape(g){caskDraw22(g,'#000',1)},foot:()=>[caskFoot22()]}]};
+  /* what stands on her deck is laid over the sea that comes aboard and over whoever stands behind it: the mast and the cask (inside the
+     walkable strip, with their footprints), and the hatch with its ladder, the cabin and the windlass (behind it) */
+  props:[{y:131,shape(g){mastShape22(g)},foot:()=>[gd22().foot.mast]},{y:112,shape(g){caskDraw22(g,'#000',1)},foot:()=>[caskFoot22()]},
+    ...['hatch','cabin','windlass'].map(k=>({get y(){const D=gd22();return D.P(0,D.s(D.things[k][2]),D.things[k][2])[1]},shape(g){thingShape22(g,k)}}))]};
 /* the backdrop: the deck in the storm's light, with nothing beyond her (the sea is `behind`), wet; the cask; by night the lantern's glow */
 function paintStorm22(g,v){const N=v==='n',GS=SHARED.grainship,r=rng(2204);
   /* the deck is wet: the bare planks darker and cooler, the grey of the sky lying in them, strongest far aft where we look along them;
@@ -309,7 +312,7 @@ function paintStorm22(g,v){const N=v==='n',GS=SHARED.grainship,r=rng(2204);
     comp(g,'screen',N?.05:.16,()=>{g.fillStyle=lg(g,0,80,0,144,['#c8d0d8','#8a94a0','rgba(0,0,0,0)']);g.fillRect(-20,60,360,90)});
     for(let i=0;i<150;i++){const u=-1.1+r()*2.2,z0=2.4+r()*7,z1=z0+.4+r()*1.6,a=D.P(u*D.b(z0)*.95,D.s(z0),z0),b=D.P(u*D.b(z1)*.95,D.s(z1),z1);
       stroke(g,[a[0],a[1],b[0],b[1]],r()<.6?`rgba(200,210,220,${N?.05:.14})`:`rgba(20,24,34,${N?.2:.18})`,.5)}
-    for(let i=0;i<9;i++){const x=-3.5+r()*7,z=3+r()*6,c=D.P(x,D.s(z),z),w=(6+r()*10)*4/z;comp(g,'screen',N?.04:.12,()=>poly(g,[c[0]-w,c[1],c[0]-w*.4,c[1]-.6,c[0]+w*.5,c[1]-.5,c[0]+w,c[1],c[0]+w*.3,c[1]+.6,c[0]-w*.5,c[1]+.5],'#c0c8d4'))}})};
+    for(let i=0;i<9;i++){const x=-3.5+r()*7,z=3+r()*6,c=D.P(x,D.s(z),z),w=4*(6+r()*10)/z;comp(g,'screen',N?.04:.12,()=>poly(g,[c[0]-w,c[1],c[0]-w*.4,c[1]-.6,c[0]+w*.5,c[1]-.5,c[0]+w,c[1],c[0]+w*.3,c[1]+.6,c[0]-w*.5,c[1]+.5],'#c0c8d4'))}})};
   GS.deck(g,{beyond:()=>{},anchor:false,light:N?'night':'storm',floor:wet});
   comp(g,'source-atop',1,()=>comp(g,'multiply',N?.3:.24,()=>{g.fillStyle=N?'#3a4060':'#6a7488';g.fillRect(-30,-30,380,200)}));
   caskDraw22(g,null,0,N);
@@ -350,6 +353,15 @@ function caskDraw22(g,mono,cut,N){const D=gd22(),{x,z,r,h}=CASK22,y0=D.s(z),fz=z
   /* the head: the lid seen a little from above, its chime a lit rim; wet, it holds the sky's grey */
   poly(g,head,N?'#2e241a':tint(W,.12));stroke(g,head.slice(0,34),N?'#4a3c2c':'#c8b090',.5);
   comp(g,'screen',N?.04:.18,()=>poly(g,head,'#b8c0cc'))}
+/* the outline of a thing on her deck (a box on the planks, as the deck's painter lays it out), for its prop; the hatch with the two rails
+   of its ladder standing out of it */
+function thingShape22(g,k){const D=gd22(),[x0,x1,z0,z1,h]=D.things[k],q=[];
+  for(const x of[x0-.04,x1+.04])for(const z of[z0-.04,z1+.04])for(const y of[0,h+.04])q.push(D.P(x,D.s(z)+y,z));
+  q.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];
+  for(const p of q){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}
+  for(let i=q.length-1;i>=0;i--){const p=q[i];while(up.length>1&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}
+  poly(g,lo.slice(0,-1).concat(up.slice(0,-1)).flat(),'#000');
+  if(k==='hatch')for(const lx of[-.32,.32]){const a=D.P(lx,h-.2,z1-.27),e=D.P(lx-.04,h+.55,z1-.42);poly(g,[a[0]-.8,a[1],a[0]+.8,a[1],e[0]+.8,e[1]-.6,e[0]-.8,e[1]-.6],'#000')}}
 /* the mast's outline, for the prop that lays it over whoever stands behind it: its shaft up out of the picture and its collar */
 function mastShape22(g){const D=gd22(),[x0,x1,z0,z1]=D.things.mast,xm=(x0+x1)/2,zm=(z0+z1)/2,f0=D.P(xm-.3,0,zm-.3),f1=D.P(xm+.3,0,zm-.3);
   R(g,f0[0],-30,f1[0]-f0[0],f0[1]+30,'#000');
@@ -404,8 +416,8 @@ function skiff22(g,t,e){const D=gd22(),S=SKIFF22,n=G.sk22||0,ph=(((e%1)+1)%1),pa
 
 /* ==== ART tablet22: begin ==== */
 /* Luke's wax tablet, close (27:20), by what little light there is: the lantern's, warm, from the upper right. A frame of fine-grained wood,
-   quiet, worn pale along its edges; the dark wax set into it (16..304 by 12..130), smoothed many times, faint level traces of old writing
-   in it. Scratched at its head, as Luke wrote them on the way, the names of the voyage down to Cauda, in the player's language (the map's
+   quiet, worn pale along its edges; the dark wax set into it (16..304 by 12..130), smoothed many times (soft patches, no old
+   traces that a stroke could cross). Scratched at its head, as Luke wrote them on the way, the names of the voyage down to Cauda, in the player's language (the map's
    own keys). Below them six days in six columns (DAYS22: x 44 + 46·i, the stroke's top at y 26): at the top of each a short upright stroke
    for the day, 16 long, standing alone and never struck through; below it, apart (its middle at y 58), the day's mark if it has one
    (SHARED.tablets.lukeMark: a short line with a small solid wedge at its western end, the west end lower for south-west, level for west,
@@ -454,8 +466,6 @@ function paintTablet22(g){const r=rng(2205),[x0,y0,x1,y1]=TAB22.wax;
   clipTo(g,()=>{g.beginPath();g.rect(x0,y0,x1-x0,y1-y0)},()=>{tex(g,'mott',.5,x0,y0,x1-x0,y1-y0,'overlay',1);tex(g,'grain',.18,x0,y0,x1-x0,y1-y0,'overlay',.5);
     /* where it has been smoothed again and again: soft patches a shade lighter or darker, long and low */
     for(let i=0;i<14;i++)pool(g,x0+r()*(x1-x0),y0+r()*(y1-y0),30+r()*50,8+r()*10,r()<.5?'#5a4430':'#0e0906',.25+r()*.2,'source-over');
-    /* faint level traces of old writing smoothed away, all one way */
-    for(let i=0;i<70;i++)R(g,x0+r()*(x1-x0-20),y0+3+r()*(y1-y0-6),3+r()*16,.5,`rgba(${r()<.5?'255,232,190':'0,0,0'},${(.03+r()*.05).toFixed(3)})`);
     /* the lantern's light lying across the wax from the upper right, soft */
     comp(g,'screen',.1,()=>{g.fillStyle=lg(g,x1,y0,x0+80,y1,['#ffc880','rgba(0,0,0,0)']);g.fillRect(x0,y0,x1-x0,y1-y0)});
     ao(g,x0,y0,x1-x0,4,'t',.55,'#0a0604');ao(g,x0,y0,4,y1-y0,'l',.4,'#0a0604')});
