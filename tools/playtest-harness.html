@@ -6475,7 +6475,7 @@
       'Paul is played, without his mantle, chained by his right wrist on the long chain to Fulvius, who sits by the window; wide codes: '+makeCode());
     ok(AU.score===M&&M.steps===17&&M.root===44&&M.group.join()==='4,4,4,5'&&M.scale.join()==='0,2,4,5,7,9,10'&&!M.tracks.some(t=>(t.moods||[]).includes('tense'))&&M.tracks.some(t=>(t.moods||[]).includes('home')),
       'the chapter\'s score, in A-flat Mixolydian and in bars of seventeen; no tense mood, and a mood in which the tune comes home');
-    if(C25)ok(seenTold.has('n17')&&ever('paul_there_they_are'),'Acts 28:17 from the scroll; they knock')}
+    if(C25)ok(seenTold.has('n17')&&ever('paul_there_they_are'),'Acts 28:17 from the scroll; they knock'+(seenTold.has('n17')&&ever('paul_there_they_are')?'':' [n17 '+seenTold.has('n17')+', knock '+ever('paul_there_they_are')+'; '+[...H25].slice(0,4).join(' / ').slice(0,300)+']'))}
   halt('knock25');
   /* ---- the first watch: this chain (Acts 28:17-22) ---- */
   await hints('hint_let_them_in_1','hint_let_them_in_2','at the knock');

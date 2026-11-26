@@ -258,6 +258,8 @@ const own=(k,ms)=>narr(k,{dur:ms||4600});   /* the narrator's own lines, between
 const TP={thought:1,color:'#cfe2ff'};   /* Paul's thoughts */
 const fast=()=>G.speedAll>200;   /* the playtest plays at speed */
 const tw=ms=>wait(fast()?Math.min(40,ms):ms);
+/* a knock at the door: three low raps (as Chapter Two's, which is that chapter's own) */
+const knock25=()=>{try{for(let i=0;i<3;i++)noise({t:now()+i*.18,d:.07,v:.32,f:220,type:'lowpass'})}catch(e){}};
 
 /* ============ WHAT IS PLAYED: the tables ============ */
 /* This chain: what Paul thinks when a point is chosen too early (something comes before it); the fifth is the chain's */
@@ -378,7 +380,7 @@ async function start25(){ov.onclick=null;ov.className='';audioInit();SFX.good();
     /* 28:17, from the narrator's scroll */
     G.scene=DARK;await tell('n17');G.scene=null;
     show25('lodging25');await fade(0,600);
-    await say(P,'paul_they_said_they_would_come_this_morning',TP);await tw(500);SFX.knock();await tw(400);
+    await say(P,'paul_they_said_they_would_come_this_morning',TP);await tw(500);knock25();await tw(400);
     await say(P,'paul_there_they_are',TP);codeBtn()},true)}
 
 /* ---- watch 1: this chain (28:17-22) ---- */
@@ -420,7 +422,7 @@ async function question25(){const w=watch25(),Q=Q25[w],S=S_();if(!Q||F['q'+w])re
     break}
   await say(S,Q.ack,{to:P});return relief25(w)}
 /* relieved: the knock, the dark, and the next watch begins */
-async function relief25(w){SFX.knock();await tw(500);await fade(1,fast()?60:700);F['q'+w]=1;G.seat25=null;G.desk25=0;G.asked25=0;
+async function relief25(w){knock25();await tw(500);await fade(1,fast()?60:700);F['q'+w]=1;G.seat25=null;G.desk25=0;G.asked25=0;
   return[0,begin2,begin3,begin4,begin5,begin6][w]()}
 /* the soldier as he comes on: he knows whose prisoner this is */
 async function onWatch25(w){await say(S_(),ON25[w],{to:P})}
@@ -459,7 +461,7 @@ async function dict25(){if(watch25()!==3)return say(TM,'nothing_to_write_just_no
   if(G.ph25<3)return;
   F.dict=1;codeBtn();await say(TM,'timothy_that_is_the_letter',{to:P});
   /* visitors: the landlady brings Anthus of Caesar's household */
-  SFX.knock();await tw(400);const D=LG.AT.door;place(LL,'lodging25',D[0],D[1],-1);place(AN,'lodging25',D[0]+8,D[1]+4,-1);
+  knock25();await tw(400);const D=LG.AT.door;place(LL,'lodging25',D[0],D[1],-1);place(AN,'lodging25',D[0]+8,D[1]+4,-1);
   await go25(AN,232,116);await say(LL,'landlady_i_rented_to_one_quiet_man',{to:P});await go25(LL,D[0]+12,D[1]-2);LL.room=null;
   await say(AN,'anthus_a_greeting_from_the_household',{to:P});codeBtn()}
 /* Timothy writes (or Paul): the pen moves for a while */
@@ -542,7 +544,7 @@ const ROAD25=[['ephesus','laodicea','new'],['laodicea','colossae','new']];
 /* the chapter's last safe point is this morning (codeBtn in show25, before anything else); from here to the finale no flag is set */
 async function begin7(){G.scene=DARK;await own(PASSED25[7]);G.scene=null;G.w7script=1;show25('lodging25');G.w7script=0;codeBtn();await fade(0,800);return morning25()}
 async function morning25(){if(G.w7run)return;G.w7run=1;const S=CE,D=LG.AT.door,to=SEATS.door;
-  await say(S,ON25[7],{to:P});await tw(900);SFX.knock();await tw(500);
+  await say(S,ON25[7],{to:P});await tw(900);knock25();await tw(500);
   /* he gets up without being asked, and carries his stool to the door */
   S.seat=0;S.fr=0;S.pose='stool';S.free=1;S.speed=fast()?400:0;G.seat25='door';
   const b=CU.reach('lodging25',to,{dir:SDIR.door});if(!inBox25(b,P.x,P.y)){P.free=1;await walk(P,clamp(P.x,b[0]+4,b[1]-4),clamp(P.y,b[2]+1,b[3]-1));P.free=false}
