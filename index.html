@@ -2865,13 +2865,13 @@ const CHAP={
      'lodging', 'grainship' with 'ship', 'coast', 'country', 'temple', 'birds' ...). STUB: treasure.at is the stub's first code, codeOf(24,0):
      replace it with the CODE that the p-stop of the point a little before the reeds by the canal prints (CONTRIBUTING section 2). */
   24:{name:'he_took_courage',label:'chapter_twenty_four',title:'he_took_courage_2',salt:0xA12D,src:'levels/chapter24.js',needs:['materials','cast'],treasure:{name:'the_frogs_tune',at:'24-X2D-57N'}},
-  /* LOGIC25: Chapter Twenty-Five's line, the last chapter. carry: its first two flags (from24: a lodging came in; street: 0 the flat on the
-     second floor, 1 the room at street level) are carried in from Chapter Twenty-Four's end screen (see startChapter and setChapter).
-     done: the place of the flag `finished` in its flags, counted from 0. It is the last flag, appended last, and the level never sets it
-     (the finale does, or nothing does): when flags are added before it, done moves with it (the harness checks flags[done]==='finished').
-     needs: what its stub uses ('finale' is not among them: the level loads it itself, see toFinale). STUB: treasure.at is the stub's first
-     code, codeOf(25,0): replace it with the CODE of the point a little before Luke's roll, in the watch where Luke sits writing. */
-  25:{name:'without_hindrance',label:'chapter_twenty_five',title:'without_hindrance_2',salt:0xB24F,carry:2,done:2,src:'levels/chapter25.js',needs:['materials','cast','coast','temple','lodging'],treasure:{name:'lukes_roll',at:'25-AJ2-XS4'}}};
+  /* Chapter Twenty-Five's line, the last chapter. carry: its first two flags (from24: a lodging came in; street: 0 the flat on the second
+     floor, 1 the room at street level) are carried in from Chapter Twenty-Four's end screen (see startChapter and setChapter). done: the
+     place of the flag `finished` in its flags, counted from 0. It is the last flag, appended last, and the level never sets it (the finale
+     does, or nothing does): when flags are added before it, done moves with it (the harness checks flags[done]==='finished'). needs: what
+     its rooms paint with ('finale' and 'map' are not among them: the level loads them itself). treasure.at: the morning of the third watch,
+     a year and more on, with Luke writing on the bench (the p-stop pphilippi25). */
+  25:{name:'without_hindrance',label:'chapter_twenty_five',title:'without_hindrance_2',salt:0xB24F,carry:2,done:28,src:'levels/chapter25.js',needs:['materials','cast','coast','temple','lodging'],treasure:{name:'lukes_roll',at:'25-14B-1TK-BKX-91C'}}};
 const TITLE={level:1,scene:'title',mood:'ancient',amb:{crickets:.5,wind:.35,owl:.4}};
 const PRO={name:'road_to_damascus',label:'Prologue',title:'the_road_to_damascus',src:'levels/prologue.js',needs:['materials','birds','damascus','temple']};
 /* PLANNED: the chapters that are planned and not built (issue #47). The title lists them, dimmed, under one line that opens them in place.

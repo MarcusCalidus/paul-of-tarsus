@@ -343,7 +343,7 @@ const MEN25=[[JA,84,1],[JC,104,1],[JE,124,1],[JF,168,1],[JD,188,1],[JB,208,1]],S
 const DAY25=[[JA,80,1],[JD,98,1],[JB,116,1],[JH,134,1],[JC,166,1],[JF,184,1],[JG,202,1],[JE,220,1]];
 /* the third watch's people, the fifth's six men and the two who travel, the sixth's two */
 const AT3={tim:[98,121,1],luke:[78,BENCH,1],eph:[206,124,-1]};
-const AT5={aristarchus25:[40,118,1],demas25:[64,132,1],justus25:[198,132,-1],epaphras25:[226,110,-1],mark25:[300,122,-1],luke25:[274,134,-1],tychicus25:[246,107,-1],onesimus25:[262,111,-1]};
+const AT5={aristarchus25:[46,108,1],demas25:[72,108,1],justus25:[198,132,-1],epaphras25:[226,110,-1],mark25:[300,122,-1],luke25:[274,134,-1],tychicus25:[246,107,-1],onesimus25:[262,111,-1]};
 const STOOL25=[];   /* the last watch: where the soldier's own stool stands (the table's, until he carries it to the door) */
 function place25(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a.ges=0;a.kneel=0;a.bound=0;a.bow=false;a.speed=0;a.chained=0;a.chainTo=0;a.held=0;a.keeper=0;a.grips=0;a.wrist=0;a.tether=0;a.free=false;a.pose=0;a.pk=0;a.noTurn=0}
   for(const a of EVERY)a.room=null;if(AU.score!==MUSIC)setScore(MUSIC);
