@@ -20,7 +20,7 @@
    were about, or why Felix thought Paul could pay. The end screen says so. The hearing in the open court of the palace (Chapter
    Nineteen's court, shared/caesarea.js, by morning), the inner hall where Felix and Drusilla hear him, Paul's room with one window over
    the harbor, the governor's clerk who writes at the hearing (the clerk who is played in Chapter Twenty-One), the light chain on one
-   wrist before the governor, the two brothers of Caesarea (Simmias and Kosmas), the coins, the pouch and the cloak from Philip's house,
+   wrist before the governor, the two brothers of Caesarea (Simmias and Phaidros), the coins, the pouch and the cloak from Philip's house,
    and every visit are invented. Luke and Philip visit: Acts names nobody, Insight on the Scriptures says that Luke probably wrote his
    Gospel at Caesarea in these years and that Philip possibly settled there; the end screen says what the account leaves unsaid. Everything
    that is said is invented, except the lines of the account, which stand in our own words (TOLD below, SP ch20 told.md). What Tertullus
@@ -147,7 +147,7 @@ ART.court20={w:320,q:12,paint(g){SCourt20=CS.court(g,{hour:'morning',desk:true})
    sill in the second summer) are the engine's.
    Hotspots (ROOMS.room20): window 36,34,76,62 · bed 188,90,68,16 · water jar 148,88,12,18 · door 270,38,32,64 · the gull on the sill
    (season 5) 60,82,16,10. Walk: 24..300 by 112..138; nothing painted stands in it. Actors: Paul enters at 150,126; Philip 210,122,
-   Simmias 236,128, Kosmas 258,120 (first summer); Luke 212,124 (first winter); the soldier who fetches him 248,122; all face left.
+   Simmias 236,128, Phaidros 258,120 (first summer); Luke 212,124 (first winter); the soldier who fetches him 248,122; all face left.
    Heads come at y 66..92: behind them lie plaster, the plain rectangle of the window, the door; nothing round. */
 const WIN20={x0:40,x1:108,top:34,sill:90},HZRoom20=80,DOOR20={x0:272,x1:300,top:40,b:100},BED20={x0:188,x1:256,top:92,foot:106},JAR20={x0:150,x1:158,top:90,foot:104};
 const OPRoom20=v=>({k:v,win:WIN20,hz:HZRoom20,wallY:100,door:DOOR20,bed:BED20,jar:JAR20}),MRoom20={};
@@ -314,12 +314,12 @@ Object.assign(LOOK,{
   felix20:Object.assign({},RM.felix),drusilla20:Object.assign({},CZ.drusilla),tertullus20:Object.assign({},CZ.tertullus),
   ananias20:Object.assign({},SN.ananias),elder20a:Object.assign({},SN.elder_1),elder20b:Object.assign({},SN.sadducee_3),
   clerk20:Object.assign({},CZ.governors_clerk),officer20:Object.assign({},RM.centurion_crested),soldier20:Object.assign({},RM.legionary_bare,{ph:2900}),
-  philip20:Object.assign({},CZ.philip),simmias20:Object.assign({},CZ.brother_1),kosmas20:Object.assign({},CZ.brother_2),luke20:Object.assign({},CZ.luke)});
+  philip20:Object.assign({},CZ.philip),simmias20:Object.assign({},CZ.brother_1),phaidros20:Object.assign({},CZ.brother_2),luke20:Object.assign({},CZ.luke)});
 const FX=actor('felix20','Felix','#f0e0c8',90),DR=actor('drusilla20','Drusilla','#f0d8e8',220),TT=actor('tertullus20','Tertullus','#e0e0d0',104),
   AN=actor('ananias20','high_priest_ananias','#e8d8c8',92),EL1=actor('elder20a','elder','#e0e0d0',96),EL2=actor('elder20b','elder','#e0d8e0',108),
   CK=actor('clerk20','governors_clerk','#e0e0c0',126),OF=actor('officer20','army_officer','#f0c8b8',98),SO=actor('soldier20','soldier','#d8c8c8',114),
-  PH=actor('philip20','Philip','#e8e0c8',100),SI=actor('simmias20','Simmias','#e0d8c0',94),KO=actor('kosmas20','Kosmas','#d8e0c8',130),LK=actor('luke20','Luke','#d0e8e0',112);
-const EVERY=[FX,DR,TT,AN,EL1,EL2,CK,OF,SO,PH,SI,KO,LK];
+  PH=actor('philip20','Philip','#e8e0c8',100),SI=actor('simmias20','Simmias','#e0d8c0',94),PD=actor('phaidros20','Phaidros','#d8e0c8',130),LK=actor('luke20','Luke','#d0e8e0',112);
+const EVERY=[FX,DR,TT,AN,EL1,EL2,CK,OF,SO,PH,SI,PD,LK];
 
 /* ============ WHAT THE ACCOUNT SAYS ============ */
 /* TOLD: Acts 24, told by the narrator in paraphrase, each line with its reference (SP ch20 told.md, written by the lead from the Study
@@ -412,16 +412,16 @@ async function defense20(){for(const k of DEFENSE20)await say(P,k,{to:FX});
 /* ---- the two years: the first summer ---- */
 async function firstSummer20(){show20('room20');await fade(0,700);AU.mood='room';
   await say(P,'a_room_by_the_sea',TH);
-  for(const a of[PH,SI,KO]){place(a,'room20',DOORIN20[0],DOORIN20[1],-1)}
-  await Promise.all([go20(PH,210,122,50),go20(SI,236,128,50),go20(KO,258,120,50)]);for(const a of[PH,SI,KO])a.dir=-1;P.dir=1;
+  for(const a of[PH,SI,PD]){place(a,'room20',DOORIN20[0],DOORIN20[1],-1)}
+  await Promise.all([go20(PH,210,122,50),go20(SI,236,128,50),go20(PD,258,120,50)]);for(const a of[PH,SI,PD])a.dir=-1;P.dir=1;
   await say(PH,'philip_they_let_us_in',{to:P});await say(P,'paul_philip_and_brothers',{to:PH});codeBtn()}
 async function things20(){if(F.things)return;
   await say(PH,'philip_your_pouch_from_my_house',{to:P});addItem('pouch20');
   await say(SI,'simmias_your_cloak',{to:P});addItem('cloak20');
-  await say(KO,'kosmas_a_few_coins',{to:P});addItem('purse20');
-  await say(P,'paul_its_more_than_enough',{to:KO});await say(PH,'philip_well_come_again',{to:P});
-  await Promise.all([go20(PH,DOORIN20[0],DOORIN20[1],50),go20(SI,DOORIN20[0],DOORIN20[1]+4,50),go20(KO,DOORIN20[0],DOORIN20[1]-2,50)]);
-  for(const a of[PH,SI,KO])a.room=null;F.things=1;codeBtn()}
+  await say(PD,'phaidros_a_few_coins',{to:P});addItem('purse20');
+  await say(P,'paul_its_more_than_enough',{to:PD});await say(PH,'philip_well_come_again',{to:P});
+  await Promise.all([go20(PH,DOORIN20[0],DOORIN20[1],50),go20(SI,DOORIN20[0],DOORIN20[1]+4,50),go20(PD,DOORIN20[0],DOORIN20[1]-2,50)]);
+  for(const a of[PH,SI,PD])a.room=null;F.things=1;codeBtn()}
 /* when he has opened it, the soldier comes for him: a few days after the hearing Felix sends for him, with Drusilla (24:24) */
 async function openPouch20(){await say(P,'paul_my_awl_and_my_needle',TH);delItem('pouch20');addItem('awl');F.pouch=1;
   if(G.room!=='room20')await goto20('room20');return fetch20(1)}
@@ -445,11 +445,11 @@ async function turn20(n){await fade(1,500);F['s'+n]=1;show20('room20');await nar
   if(n===4||n===5)return fetch20(n);
   if(n===3){place(LK,'room20',DOORIN20[0],DOORIN20[1],-1);await go20(LK,212,124,50);LK.dir=-1;P.dir=1;
     await say(LK,'luke_ive_come_with_questions',{to:P});await say(P,'paul_ask_whatever_you_like',{to:LK});return codeBtn()}
-  if(n===6){place(SI,'room20',DOORIN20[0],DOORIN20[1],-1);place(KO,'room20',DOORIN20[0],DOORIN20[1]+6,-1);
-    await Promise.all([go20(SI,214,122,50),go20(KO,240,128,50)]);SI.dir=KO.dir=-1;P.dir=1;
+  if(n===6){place(SI,'room20',DOORIN20[0],DOORIN20[1],-1);place(PD,'room20',DOORIN20[0],DOORIN20[1]+6,-1);
+    await Promise.all([go20(SI,214,122,50),go20(PD,240,128,50)]);SI.dir=PD.dir=-1;P.dir=1;
     await say(SI,'simmias_the_brothers_greet_you',{to:P});await say(P,'paul_greet_them_all_for_me',{to:SI});
-    await say(KO,'kosmas_well_come_after_the_rains',{to:P});
-    await Promise.all([go20(SI,DOORIN20[0],DOORIN20[1],50),go20(KO,DOORIN20[0],DOORIN20[1]+4,50)]);SI.room=KO.room=null;return codeBtn()}
+    await say(PD,'phaidros_well_come_after_the_rains',{to:P});
+    await Promise.all([go20(SI,DOORIN20[0],DOORIN20[1],50),go20(PD,DOORIN20[0],DOORIN20[1]+4,50)]);SI.room=PD.room=null;return codeBtn()}
   await say(P,n===2?'paul_autumn_and_still_here':n===7?'paul_nobody_comes_in_this_weather':'paul_spring_again_here',TH);codeBtn()}
 
 /* ---- not what he wants to hear (24:24, 25) ---- */
@@ -539,7 +539,7 @@ who(OF,{look:'officer20_look',give:bribe20,talk:()=>say(OF,'officer20_wait_for_t
 who(SO,{look:'soldier20_look',give:bribe20,talk:()=>say(SO,'soldier20_talk_to_the_governor',{to:P})});
 who(PH,{look:'philip20_look',talk:()=>things20()});
 who(SI,{look:'simmias_look',talk:()=>F.things?say(SI,'simmias_the_brothers_greet_you',{to:P}):things20()});
-who(KO,{look:'kosmas_look',talk:()=>F.things?say(KO,'kosmas_well_come_after_the_rains',{to:P}):things20()});
+who(PD,{look:'phaidros_look',talk:()=>F.things?say(PD,'phaidros_well_come_after_the_rains',{to:P}):things20()});
 who(LK,{look:'luke20_look',talk:()=>luke20()});
 
 /* ============ ITEMS ============ */
@@ -552,7 +552,7 @@ Object.assign(ITEMS,{
 const TABLETS={
   people:[{name:'Felix',note:'note20_felix'},{name:'Tertullus',note:'note20_tertullus',if:()=>!F.marks},{name:'high_priest_ananias',note:'note20_ananias',if:()=>!F.marks},
     {name:'Drusilla',note:'note20_drusilla',if:()=>!!F.pouch},{name:'Philip',note:'note20_philip',if:()=>!!F.things},{name:'Simmias',note:'note20_simmias',if:()=>!!F.things},
-    {name:'Kosmas',note:'note20_kosmas',if:()=>!!F.things},{name:'Luke',note:'note20_luke',if:()=>!!F.s3}],
+    {name:'Phaidros',note:'note20_phaidros',if:()=>!!F.things},{name:'Luke',note:'note20_luke',if:()=>!!F.s3}],
   tasks:[{t:'task20_answer_the_governor',if:()=>!F.courtesy},{t:'task20_answer_the_charges',if:()=>!!F.courtesy&&!F.marks},
     {t:'task20_my_visitors',if:()=>!!F.marks&&!F.things},{t:'task20_open_my_pouch',if:()=>!!F.things&&!F.pouch},
     {t:'task20_before_felix',if:()=>owed20()==='felix'&&!!F.pouch},{t:'task20_lukes_questions',if:()=>owed20()==='luke'},
@@ -572,7 +572,7 @@ function place20(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
     place(SO,'court20',ENT.court20[0]-18,ENT.court20[1]-.5,1);SO.keeper='far';if(room==='court20'){P.chained=1;P.chainTo=SO}}
   else if(room==='hall20'){pl(FX,'hall20',HALL20.felix);FX.seat=1;if(!F.fright){pl(DR,'hall20',HALL20.drusilla);DR.seat=1}
     place(SO,'hall20',ENT.hall20[0]-18,ENT.hall20[1]-.5,1);SO.keeper='far';P.chained=1;P.chainTo=SO}
-  else{if(n===1&&!F.things){pl(PH,'room20',[210,122,-1]);pl(SI,'room20',[236,128,-1]);pl(KO,'room20',[258,120,-1])}
+  else{if(n===1&&!F.things){pl(PH,'room20',[210,122,-1]);pl(SI,'room20',[236,128,-1]);pl(PD,'room20',[258,120,-1])}
     if(n===3&&!F.luke)pl(LK,'room20',[212,124,-1])}}
 function setup20(){P.hs=null;P.called='Paul';G.mk20=null;G.cv20=G.wv20=G.st20=G.end20=0;G.caps20=[];G.invs={paul:['tablets']};G.inv=G.invs.paul;drawInv()}
 

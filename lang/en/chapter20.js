@@ -12,7 +12,7 @@ TEXTS('en',20,{
   "soldier":"soldier",
   "Philip":"Philip",
   "Simmias":"Simmias",
-  "Kosmas":"Kosmas",
+  "Phaidros":"Phaidros",
   "Luke":"Luke",
 
   /* the narration of the account (told.md) */
@@ -100,12 +100,12 @@ TEXTS('en',20,{
   "paul_philip_and_brothers":"Philip! And brothers. Come in.",
   "philip_your_pouch_from_my_house":"You left your tool pouch at my house. Awl and needle are still in it.",
   "simmias_your_cloak":"And your cloak. The nights are cool here by the water.",
-  "kosmas_a_few_coins":"And a few coins from the brothers. It isn't much.",
+  "phaidros_a_few_coins":"And a few coins from the brothers. It isn't much.",
   "paul_its_more_than_enough":"It's more than enough. Thank everyone for me.",
   "philip_well_come_again":"We'll come again soon.",
   "philip20_look":"Philip the evangelizer. I stayed at his house when I came to Caesarea.",
   "simmias_look":"Simmias, one of the brothers of Caesarea.",
-  "kosmas_look":"Kosmas, the youngest of the brothers here.",
+  "phaidros_look":"Phaidros, the youngest of the brothers here.",
   "tool_pouch":"tool pouch",
   "my_pouch_from_philips_house":"My tool pouch, back from Philip's house.",
   "paul_my_awl_and_my_needle":"My awl and my needle, just where they belong.",
@@ -167,7 +167,7 @@ TEXTS('en',20,{
   "paul_another_talk_with_felix":"Another talk with Felix. He circles round the same thing, and I give him the same truth.",
   "simmias_the_brothers_greet_you":"The brothers greet you, Paul.",
   "paul_greet_them_all_for_me":"Greet them all for me. Tell them I'm well.",
-  "kosmas_well_come_after_the_rains":"We'll come again after the rains.",
+  "phaidros_well_come_after_the_rains":"We'll come again after the rains.",
   "paul_nobody_comes_in_this_weather":"Nobody comes in weather like this. A good time to pray.",
   "paul_spring_again_here":"Spring again. The second since I came here.",
   "paul_autumn_and_still_here":"Autumn already. Felix said some other time, and I'm still here.",
@@ -241,7 +241,7 @@ TEXTS('en',20,{
   "note20_drusilla":"The governor's wife.",
   "note20_philip":"The evangelizer. I stayed at his house in Caesarea.",
   "note20_simmias":"A brother of the congregation here.",
-  "note20_kosmas":"A young brother of the congregation here.",
+  "note20_phaidros":"A young brother of the congregation here.",
   "note20_luke":"He is writing things down, and checks them with me.",
   "task20_answer_the_governor":"Answer the governor.",
   "task20_answer_the_charges":"Answer each of the three charges.",
@@ -275,7 +275,7 @@ TEXTS('en',20,{
 
   /* the end screen */
   "some_other_time_end":"Paul stayed in custody at Caesarea for two years. Felix sent for him often, hoping for money, and Paul offered him none. When Festus took over, Felix left Paul a prisoner. Everything that is said is dramatization, except the lines of the account, which are told in our own words.",
-  "based_on_acts_24_1_27":"Based on Acts 24:1-27. Acts does not say where the hearing was held, where Paul was kept, whether he was chained, who his people were, or what the later talks were about. The room and its window, the clerk, the brothers Simmias and Kosmas, the pouch, the cloak and the coins, the place of the hearing and the chain are invented. Acts names none of his visitors; Insight on the Scriptures says that Luke probably wrote his Gospel at Caesarea in these years, and that Philip possibly settled there.",
+  "based_on_acts_24_1_27":"Based on Acts 24:1-27. Acts does not say where the hearing was held, where Paul was kept, where Felix sent for him, whether he was chained, who his people were, why Felix thought he could pay, or what the later talks were about. The room and its window, the inner hall, the clerk, the brothers Simmias and Phaidros, the pouch, the cloak and the coins, the place of the hearing, the chain, and what Felix says about the gifts are invented. Acts names none of his visitors; Insight on the Scriptures says that Luke probably wrote his Gospel at Caesarea in these years, and that Philip possibly settled there.",
   "click_to_continue_to_chapter_twenty_one":"Click to continue to Chapter Twenty-One",
   "chapter_twenty_one_code_code":"Chapter Twenty-One code: {code}"
 });

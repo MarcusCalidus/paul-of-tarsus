@@ -16,7 +16,7 @@ TEXTS('de',20,{
   "soldier":["Soldat","17i8sdx"],
   "Philip":["Philippus","1txvzqh"],
   "Simmias":["Simmias","12118aa"],
-  "Kosmas":["Kosmas","0da7bhz"],
+  "Phaidros":["Phaidros","01cstkj"],
   "Luke":["Lukas","0nmmdzm"],
 
   /* the narration of the account (told.md) */
@@ -104,12 +104,12 @@ TEXTS('de',20,{
   "paul_philip_and_brothers":["Philippus! Und ihr, Brüder. Kommt herein.","1ixrtg5"],
   "philip_your_pouch_from_my_house":["Deinen Werkzeugbeutel hast du bei mir zu Hause gelassen. Ahle und Nadel sind noch drin.","13rlzek"],
   "simmias_your_cloak":["Und deinen Mantel. Die Nächte hier am Wasser sind kühl.","1nbq88n"],
-  "kosmas_a_few_coins":["Und ein paar Münzen von den Brüdern. Es ist nicht viel.","04ynw9k"],
+  "phaidros_a_few_coins":["Und ein paar Münzen von den Brüdern. Es ist nicht viel.","04ynw9k"],
   "paul_its_more_than_enough":["Das ist mehr als genug. Dankt allen von mir.","0o7gmai"],
   "philip_well_come_again":["Wir kommen bald wieder.","1g9sxb1"],
   "philip20_look":["Philippus, der Evangeliumsverkündiger. Bei ihm habe ich gewohnt, als ich nach Cäsarea gekommen bin.","1fc05jn"],
   "simmias_look":["Simmias, einer der Brüder aus Cäsarea.","09ytbu1"],
-  "kosmas_look":["Kosmas, der jüngste der Brüder hier.","0vtd09n"],
+  "phaidros_look":["Phaidros, der jüngste der Brüder hier.","10l0zpb"],
   "tool_pouch":["Werkzeugbeutel","1moj2tg"],
   "my_pouch_from_philips_house":["Mein Werkzeugbeutel, zurück aus dem Haus von Philippus.","0asntu5"],
   "paul_my_awl_and_my_needle":["Meine Ahle und meine Nadel, genau da, wo sie hingehören.","1xzk0zn"],
@@ -171,7 +171,7 @@ TEXTS('de',20,{
   "paul_another_talk_with_felix":["Wieder ein Gespräch mit Felix. Er kreist um dieselbe Sache, und ich sage ihm dieselbe Wahrheit.","066ub8e"],
   "simmias_the_brothers_greet_you":["Die Brüder grüßen dich, Paulus.","19v0n3v"],
   "paul_greet_them_all_for_me":["Grüßt sie alle von mir. Sagt ihnen, dass es mir gut geht.","0pc69sa"],
-  "kosmas_well_come_after_the_rains":["Nach der Regenzeit kommen wir wieder.","16f4miq"],
+  "phaidros_well_come_after_the_rains":["Nach der Regenzeit kommen wir wieder.","16f4miq"],
   "paul_nobody_comes_in_this_weather":["Bei so einem Wetter kommt niemand. Eine gute Zeit zum Beten.","1a6kxo9"],
   "paul_spring_again_here":["Wieder Frühling. Der zweite, seit ich hier bin.","0yruck0"],
   "paul_autumn_and_still_here":["Schon Herbst. Felix hat gesagt: ein andermal. Und ich bin immer noch hier.","0wdggbr"],
@@ -245,7 +245,7 @@ TEXTS('de',20,{
   "note20_drusilla":["Die Frau des Statthalters.","0ygfprp"],
   "note20_philip":["Der Evangeliumsverkündiger. In seinem Haus in Cäsarea habe ich gewohnt.","0enf2pe"],
   "note20_simmias":["Ein Bruder aus der Versammlung hier.","1s39212"],
-  "note20_kosmas":["Ein junger Bruder aus der Versammlung hier.","1dgcixq"],
+  "note20_phaidros":["Ein junger Bruder aus der Versammlung hier.","1dgcixq"],
   "note20_luke":["Er schreibt einiges auf und prüft es mit mir nach.","095mrn5"],
   "task20_answer_the_governor":["Dem Statthalter antworten.","01gem8g"],
   "task20_answer_the_charges":["Auf jede der drei Anklagen antworten.","0rzn43n"],
@@ -279,7 +279,7 @@ TEXTS('de',20,{
 
   /* the end screen */
   "some_other_time_end":["Paulus blieb zwei Jahre lang in Cäsarea in Haft. Felix ließ ihn oft holen, weil er auf Geld hoffte, und Paulus bot ihm keins an. Als Festus das Amt übernahm, ließ Felix Paulus als Gefangenen zurück. Alles Gesagte ist für diese Darstellung erfunden, außer den Zeilen des Berichts, die mit eigenen Worten erzählt werden.","0h2b38q"],
-  "based_on_acts_24_1_27":["Nach Apostelgeschichte 24:1-27. Die Apostelgeschichte sagt nicht, wo die Anhörung stattfand, wo Paulus festgehalten wurde, ob er gefesselt war, wer seine Leute waren und worum es in den späteren Gesprächen ging. Erfunden sind das Zimmer mit seinem Fenster, der Schreiber, die Brüder Simmias und Kosmas, der Werkzeugbeutel, der Mantel und die Münzen, der Ort der Anhörung und die Kette. Keinen seiner Besucher nennt sie beim Namen; nach „Einsichten über die Heilige Schrift“ schrieb Lukas sein Evangelium wahrscheinlich in diesen Jahren in Cäsarea, und Philippus ließ sich möglicherweise dort nieder.","1ha8tiz"],
+  "based_on_acts_24_1_27":["Nach Apostelgeschichte 24:1-27. Die Apostelgeschichte sagt nicht, wo die Anhörung stattfand, wo Paulus festgehalten wurde, wohin Felix ihn holen ließ, ob er gefesselt war, wer seine Leute waren, warum Felix dachte, er könne zahlen, und worum es in den späteren Gesprächen ging. Erfunden sind das Zimmer mit seinem Fenster, der innere Saal, der Schreiber, die Brüder Simmias und Phaidros, der Werkzeugbeutel, der Mantel und die Münzen, der Ort der Anhörung, die Kette und das, was Felix über die Spenden sagt. Keinen seiner Besucher nennt sie beim Namen; nach „Einsichten über die Heilige Schrift“ schrieb Lukas sein Evangelium wahrscheinlich in diesen Jahren in Cäsarea, und Philippus ließ sich möglicherweise dort nieder.","1ter31t"],
   "click_to_continue_to_chapter_twenty_one":["Klicken, um mit dem einundzwanzigsten Kapitel weiterzumachen","0g7nnbp"],
   "chapter_twenty_one_code_code":["Code für das einundzwanzigste Kapitel: {code}","1q5augq"]
 });
