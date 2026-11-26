@@ -6362,8 +6362,9 @@
   for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
   ok(said('publius_my_father_is_ill')&&said('paul_may_i_go_in_to_him')&&['m8','m9','m10','m11'].every(k=>seenTold.has(k))&&said('father_i_am_up'),
     'fever and dysentery; Paul prays and lays his hands on him (Acts 28:8, told); the other sick (28:9); many gifts (28:10); what comes next (28:11)');
-  ok(ov.classList.contains('end')&&ov.textContent.includes(T('all_safe_to_land_2'))&&/27:27-28:10/.test(ov.textContent)&&ov.textContent.includes(T('click_to_return_to_the_title'))&&store('paul.save')===null&&inOv(),
-    'the end screen of Chapter Twenty-Three returns to the title (until Chapter Twenty-Four is built), and keeps no code to continue from');
+  {const code=codeOf(24,0);ok(ov.classList.contains('end')&&ov.textContent.includes(T('all_safe_to_land_2'))&&/27:27-28:10/.test(ov.textContent)&&ov.textContent.includes(T('click_to_continue_to_chapter_twenty_four'))
+      &&ov.textContent.includes(T('chapter_twenty_four_code_code',{code}))&&store('paul.save')===code&&inOv(),
+    'the end screen of Chapter Twenty-Three leads on to Chapter Twenty-Four with its first code, which carries nothing: '+code)}
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 27:27-28:11 was told'+(miss.length?' MISSING '+miss:''))}
   halt('final23')};
   const phase23_=()=>CHAP[23].phase();

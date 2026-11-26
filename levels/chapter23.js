@@ -1547,11 +1547,12 @@ async function publius23(){if(F.healed)return say(PU,'publius_my_father_is_on_hi
   await tell('m9');const gifts=tween(fast()?60:5200,k=>{G.gifts23=k});await tell('m10');await gifts;return end23()}
 /* the hidden treasure: the stone at the gate, with one word cut in it, which Luke copies */
 async function stone23(){await say(LK,'the_stone_at_the_gate_look',TL);treasure()}
-/* what comes next (28:11), from the narrator's scroll as the picture goes; then the end screen, which returns to the title until
-   Chapter Twenty-Four exists */
+/* what comes next (28:11), from the narrator's scroll as the picture goes; then the end screen, which leads on to Chapter Twenty-Four
+   with its first code (nothing is carried into it) */
 async function end23(){await fade(1,700);await tell('m11');
-  endScreen({title:'all_safe_to_land_2',text:'all_safe_to_land_end',based:'based_on_acts_27_27_28_10',go:'click_to_return_to_the_title'});
-  await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
+  endScreen({title:'all_safe_to_land_2',text:'all_safe_to_land_end',based:'based_on_acts_27_27_28_10',go:'click_to_continue_to_chapter_twenty_four',
+             code:['chapter_twenty_four_code_code',codeOf(24,0)]});
+  await wait(1500);ov.onclick=()=>{ov.onclick=null;startChapter(24)};await new Promise(()=>{})}
 
 /* ---- Luke's tablet: the close view, and after Malta the travel map ---- */
 const LEGS23=[['myra','cnidus'],['cnidus','salmone'],['salmone','fairhavens'],['fairhavens','cauda'],['cauda','malta']];
