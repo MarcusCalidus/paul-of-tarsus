@@ -135,59 +135,514 @@ function stone24(g,x,y,n,o){o=o||{};const w=o.w||10,h=o.h||22;R(g,x-w/2,y-h,w,h,
 const LIGHT={soft:c=>({amb:c,wallY:110})};
 
 /* ==== ART quay24: begin ==== */
-/* The quay of Malta on a spring morning (QUAY24). The far side of the harbor closes the view, so that no mast stands across the sea's
-   horizon. The ship from Alexandria lies along the quay, bow to the right, painted by SHARED.grainship.side with the approved sign on her
-   bow (one figure and the name, the smaller board, along the planks), behind the stone edge of the quay; her gangplank reaches over the
-   edge onto the paving. ART-TODO: the harbor, the far shore, the quay's stones, the gulls' sky. Sun from the left, low: shadows fall to the
-   right and back. */
-const QUAY24={hz:58,edge:96,ship:{x:24,y:100,len:250},plank:[214,78,226,112],walk:[16,304,112,138]};
-ART.quay24={w:320,q:12,paint(g){sky24(g,QUAY24.hz,'#9cbcd8','#e4e2d8');
-    /* the far shore of the harbor, low and long, across the whole horizon */
-    poly(g,[0,QUAY24.hz-10,60,QUAY24.hz-14,150,QUAY24.hz-8,230,QUAY24.hz-13,320,QUAY24.hz-9,320,QUAY24.hz+4,0,QUAY24.hz+4],'#a89a7c');
-    g.fillStyle=lg(g,0,QUAY24.hz+4,0,QUAY24.edge,['#5a8296','#3e6a80']);g.fillRect(0,QUAY24.hz+4,320,QUAY24.edge-QUAY24.hz-4);
-    if(SHARED.grainship)clipTo(g,()=>{g.beginPath();g.rect(0,0,320,QUAY24.edge)},()=>SHARED.grainship.side(g,{x:QUAY24.ship.x,y:QUAY24.ship.y,len:QUAY24.ship.len,state:'moored',
-      sign:{figs:1,size:'small',lay:'skew'}}));
-    ground24(g,QUAY24.edge,'#b8a888');R(g,0,QUAY24.edge,320,2,'#d0c2a2');
-    const[a,b,c,d]=QUAY24.plank;poly(g,[a-5,b,a+5,b,c+6,d,c-6,d],'#8a6a48');R(g,c-6,d-1,12,1.5,'rgba(40,28,20,.35)')},
-  light:{amb:'#f2eadc',sun:[16,-7,.4],wallY:QUAY24.edge},draw(){},front(){}};
+/* The quay of Malta on a spring morning (QUAY24). Which harbor of the island is not said: this one is invented. The far side of the
+   harbor closes the whole view: low hills of the island's pale limestone, green with spring between their ledges, a few flat-roofed
+   houses at the water, so that no line of sea and sky is seen anywhere and the mast stands against the hills and the sky (its top is
+   uneven where the mast crosses it). The ship from Alexandria lies along the quay, bow to the right, painted by SHARED.grainship.side
+   with the approved sign on her bow (one figure and the name, the smaller board, along the planks); she rises and falls a little on the
+   swell behind the stone edge of the quay (draw), with her mooring lines running from her two ends to the mooring stones beyond them;
+   only her gangplank reaches over the edge onto the paving, its cleats stopping inside its sides. The sun is low behind us at the left:
+   the hull's side and the quay are lit, and every shadow falls to the right and a little back.
+   Heads on the walk strip come at about y 66..92: behind them the hull's planks, the hills and the water; nothing round. */
+const QUAY24={hz:58,edge:96,ship:{x:24,y:100,len:250},plank:[214,78,226,112],walk:[16,304,112,138],foot:67};
+const oQuay24={w:320,hz:QUAY24.hz,hour:'morning',cloud:.22,seed:2441,light:-1};
+let SQuay24=null;const SPRQ24={};
+ART.quay24={w:320,q:12,paint(g){paintQuay24(g)},
+  light:{amb:'#f2eadc',sun:[16,-7,.4],wallY:QUAY24.edge},draw(g,t){drawQuay24(g,t)},front(){}};
+function paintQuay24(g){const K=SHARED.coast,CO=SHARED.country,O=oQuay24,{hz,edge,foot}=QUAY24,L=K.light(O);
+  K.sky(g,O);SQuay24=K.sea(g,O);
+  /* the far side of the harbor: a long low ridge in the haze, then the nearer slope of pale limestone with its green ledges. Its top is
+     never level; above the mast (x 158) it rises in a knoll */
+  const f1=x=>24+5*Math.sin(x/53+.4)+3.4*Math.sin(x/19+1.3)+1.6*Math.sin(x/7.1)+.7*Math.sin(x/2.9)+6*Math.exp(-(((x-160)/22)**2)),
+    f2=x=>9+3.6*Math.sin(x/41+2)+2.2*Math.sin(x/13.4+.7)+1*Math.sin(x/4.3)+3*Math.exp(-(((x-150)/14)**2));
+  K.land(g,L,.42,q=>CO.range(q,-2,322,foot,f1,['#b4b090','#a2a07e','#8e8e6e'],{k:.6}));
+  K.land(g,L,.22,q=>{const P=[-2,foot];for(let x=-2;x<=322;x+=1)P.push(x,foot-f2(x));P.push(322,foot);CO.crag(q,P,'#c8bc96',2442,{light:-1,dip:.03,bed:4,scrub:170})});
+  /* green of spring on the ledges, and dark carob and olive trees as small dabs without a trunk */
+  {const r=rng(2444);comp(g,'source-over',1,()=>{for(let i=0;i<420;i++){const x=r()*320,top=foot-f1(x)+2,y=top+r()*(foot-top-1),q=.5+r()*1.4;
+      R(g,x,y,q*1.6,.5+r()*.5,r()<.6?'rgba(120,140,80,.45)':'rgba(150,160,96,.4)')}
+    for(let i=0;i<46;i++){const x=r()*320,top=foot-f2(x),y=top+1+r()*(foot-top-3),q=.8+r()*.9;R(g,x-q,y-q*.7,q*2,q*1.2,'#56603e');R(g,x-q*.6,y-q*.7,q*1.1,.5,'#7a8458')}})}
+  /* a few flat-roofed houses of the island's stone at the water, and a low store with a tiled roof */
+  K.town(g,O,{x0:214,x1:300,base:foot-.5,hill:x=>foot-6-3*Math.sin(x/9),rows:2,size:6,dist:.25,gaps:.2,seed:2445,warehouses:[[236,22,4]]});
+  K.town(g,O,{x0:20,x1:70,base:foot-.5,hill:x=>foot-5-2*Math.sin(x/7),rows:2,size:5,dist:.3,gaps:.35,seed:2446});
+  /* the foot of the far shore at the water (behind the ship's rail where she lies, so that the mast stands on no level line): rock, wet and dark, a fine lace of foam */
+  for(let x=0;x<320;x+=.5){const y=foot-1.2+Math.sin(x/7)*.6+Math.sin(x/2.3)*.3;R(g,x,y,.5,foot+1-y,'#4a4842');if((x*2|0)%5)R(g,x,foot+.6,.5,.5,'rgba(232,236,236,.45)')}
+  SQuay24.open=(x,y)=>y>foot+1.2&&y<edge-.5&&!quayShip24(x,y);
+  /* the quay: its coping along the edge, the paving toward us running back to the horizon, the mooring stones beyond the ship's two ends */
+  K.quay(g,O,{view:'top',y:edge,y1:144,bollards:[22,288],c:'#d2c6a4',cope:'#ddd2b0',seed:2447});
+  const r=rng(2448);
+  /* the morning sun from behind us at the left lies warm on the stone; wear, dust and a little weed along the coping */
+  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,236,200,.9)','rgba(255,244,220,.5)','rgba(230,226,236,.4)']);g.fillRect(0,edge,320,144-edge)});
+  for(let i=0;i<200;i++){const y=100+Math.pow(r(),.8)*44,k=(y-hz)/86,x=r()*320;R(g,x,y,(2+r()*7)*k,.5+k*.5,r()<.55?'rgba(96,80,62,.12)':'rgba(255,246,224,.14)')}
+  for(let i=0;i<70;i++){const x=r()*320;R(g,x,edge+3.4+r()*2.2,1+r()*4,.5,r()<.5?'rgba(84,98,68,.24)':'rgba(70,60,56,.18)')}
+  /* the shade the hull throws on the water close under the quay, and the dark of the water under the coping */
+  comp(g,'multiply',.4,()=>{g.fillStyle=lg(g,0,edge-5,0,edge,['rgba(40,50,70,0)','rgba(40,50,70,1)']);g.fillRect(0,edge-5,320,5)});
+  ao(g,0,128,320,16,'b',.12,'#2a2050')}
+/* where the ship covers the water: a rough box round her hull above the quay's edge */
+const quayShip24=(x,y)=>x>14&&x<284&&y>50;
+/* the ship, painted once by the shared painter and set into the picture by draw(), behind the quay's edge */
+function quayShipSpr24(){if(SPRQ24.s)return SPRQ24.s;const S=QUAY24.ship;
+  return SPRQ24.s=bake(320,g=>{SHARED.grainship.side(g,{x:S.x,y:S.y,len:S.len,state:'moored',post:'bird',sign:{figs:1,size:'small',lay:'skew'}})},12,144)}
+/* the gangplank from her rail over the stone edge to the paving: two side stringers and cleats that stop inside them; its shadow on the
+   paving falls to the right */
+function quayPlank24(g,bob){const G=SHARED.grainship.geo(QUAY24.ship),[a,,c,d]=QUAY24.plank,w0=7,w1=10,x0=a-3.5,y0=G.sheer(a)+.6+bob,x1=c-5,y1=d,
+    P=[x0,y0,x0+w0,y0,x1+w1,y1,x1,y1];
+  comp(g,'multiply',.32,()=>poly(g,[x1+w1-2,y1-14,x1+w1+3.4,y1-13.6,x1+w1+3,y1+.6,x1+w1-.4,y1+.6],'#3a3048'));
+  poly(g,P);g.fillStyle=lg(g,x0,y0,x1,y1,['#a07a4a','#8e6a3e','#7a562e']);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{tex(g,'wood',.22,x0-2,y0-2,x1-x0+w1+4,y1-y0+4,'overlay',.5);
+    for(let i=1;i<=8;i++){const t=i/9,lx=x0+(x1-x0)*t,rx=x0+w0+(x1+w1-(x0+w0))*t,cy=y0+(y1-y0)*t,ax=lx+(rx-lx)*.22,bx=lx+(rx-lx)*.78;
+      R(g,ax,cy-.3,bx-ax,.8,'#5a3c20');R(g,ax,cy-.6,bx-ax,.4,'rgba(255,220,160,.45)')}});
+  stroke(g,[x0,y0,x1,y1],'#e4ba84',.6);stroke(g,[x0+w0,y0,x1+w1,y1],'#5e4024',.6);
+  R(g,x1-.4,y1-.6,w1+.8,.8,'#4a3420');comp(g,'multiply',.4,()=>oval(g,x1+w1/2+1,y1+.5,w1*.7,1.1,'#3a3048'))}
+/* what moves: the sea, and the ship on the swell behind the quay's edge with her mooring lines and her gangplank */
+function drawQuay24(g,t){const{edge}=QUAY24,b=Math.round(Math.sin(t/2100)*1)/2;
+  if(SQuay24)SQuay24.draw(g,t);
+  inRect(g,0,0,320,edge,()=>g.drawImage(quayShipSpr24(),0,b,320,144));
+  const G=SHARED.grainship.geo(QUAY24.ship),H=SHARED.ship.hawser;
+  /* from low on her stern, down to the stone just beyond it at the left (clear of the gull on the coping); from her stem below the bow, to the stone beyond it at the right */
+  H(g,G.edgeAt(G.STERN,91)-.4,91+b,22+1.4,edge+1.2,1,{w:.7});H(g,G.edgeAt(G.STEM,90)+1.4,90+b,288-1.4,edge+1.2,1.2,{w:.7});
+  quayPlank24(g,b)}
 /* ==== ART quay24: end ==== */
 
 /* ==== ART court24: begin ==== */
-/* The court of Herennius's house at Puteoli, on a morning of the week (COURT24): plastered walls on three sides, a strip of sky above,
-   the gate to the street at the right, a bench along the back wall, a vine on the left wall. ART-TODO. The sun stands over the left wall:
-   shadows fall to the right. No well or round basin behind a head. */
-const COURT24={wallY:102,gate:[268,46,34,58],bench:[60,92,100,8],walk:[16,304,112,138]};
-ART.court24={w:320,q:12,paint(g){sky24(g,22,'#a8c6e0','#dce6ea');R(g,0,22,320,COURT24.wallY-22,'#d8c4a2');R(g,0,22,320,3,'#bca480');
-    ground24(g,COURT24.wallY,'#c2ae8a');blocks24(g,[[...COURT24.gate,'#5a4030'],[...COURT24.bench,'#9a7a58'],[12,30,26,64,'#6a7a4a']])},
-  light:{amb:'#f0e6d6',sun:[14,-6,.34],wallY:COURT24.wallY},draw(){},front(){}};
+/* The court of Herennius's house at Puteoli, on a morning of the week (COURT24). Plastered walls on three sides: the back wall of the
+   house, a low wing at each side in perspective, their tiled eaves along the top and a strip of sky above. The back wall is painted as
+   houses of Campania were: a dark red lower zone, a warm ochre upper one, a thin band between (only level bands: no upright line meets
+   them). In it, from the left: an old vine that grows up the wall from its own foot and spreads along it (no lattice, its stems never
+   crossing), a small window with its shutter of upright boards, the stone bench along the wall on two end blocks (no leg under its
+   middle), the doorway into the house with a curtain drawn aside, and at the right the gate to the street in a frame of dressed stone,
+   one leaf of upright boards shut, the other swung back against the wall: through it a narrow street in the sun, closed by the house
+   front opposite. The paving of the court runs back to the foot of the wall (y 102) toward a vanishing point at the eyes of the people.
+   The sun stands high over the left wing, behind us: the walls are lit, the eave throws a band of shade under it, and every shadow falls
+   to the right and a little back. No well, no basin, nothing round: heads come at y 72..100 against the plaster, the vine, the
+   doorway's dark and the gate's boards. */
+const COURT24={wallY:102,gate:[268,46,34,58],bench:[60,92,100,8],walk:[16,304,112,138],hz:82,eave:22,door:[186,52,24,50]};
+const WALL24C='#dcc49a',ZOC24='#8e3e2c';
+ART.court24={w:320,q:12,paint(g){paintCourt24(g)},
+  light:{amb:'#f0e6d6',sun:[14,-6,.34],wallY:COURT24.wallY,wall:[[10,186,102,22],[210,268,102,22],[302,310,102,22]]},draw(){},front(){}};
+function paintCourt24(g){const{wallY:WY,hz,eave:E}=COURT24,r=rng(2451),M=SHARED.materials;
+  /* the sky over the court: clear, a little haze */
+  sky(g,320,E,['#86aad0','#a8c4de','#d0dce6']);
+  {const q=rng(2452);cloud(g,90,6,60,2.6,q,'#fbf8f0','#bcc8d8');cloud(g,250,4,40,2,q,'#fbf8f0','#bcc8d8')}
+  /* the back wall: ochre above, dark red below, a band between; mottled, a crack or two set high where no head comes */
+  plaster(g,10,E,300,WY-E,WALL24C,r,{patch:0,cracks:0,t:.34,top:.02,bot:-.06});
+  const Z0=70;
+  inRect(g,10,Z0,300,WY-Z0,()=>{g.fillStyle=lg(g,0,Z0,0,WY,[tint(ZOC24,.06),ZOC24,tint(ZOC24,-.14)]);g.fillRect(10,Z0,300,WY-Z0);
+    tex(g,'mott',.42,10,Z0,300,WY-Z0,'overlay',1);tex(g,'blotch',.22,10,Z0,300,WY-Z0,'soft-light',.6);
+    /* the red worn paler where shoulders and benches have rubbed it, scuffed at the foot */
+    for(let i=0;i<90;i++){const x=10+r()*300,y=Z0+2+r()*(WY-Z0-3);R(g,x,y,1+r()*3,.5,r()<.6?'rgba(220,160,130,.18)':'rgba(60,20,16,.2)')}
+    ao(g,10,WY-8,300,8,'b',.3,'#2a1010')});
+  R(g,10,Z0-2.2,300,2.2,'#3a2a22');R(g,10,Z0-2.2,300,.5,'#6a5444');R(g,10,Z0-.6,300,.6,'rgba(255,236,200,.2)');
+  R(g,10,Z0-5,300,.8,'rgba(140,60,40,.45)');
+  for(const[x,y,n]of[[132,30,3],[238,27,2],[60,26,2]])M.crack(g,x,y,n,r,.5);
+  /* the small window high in the wall, its shutter of upright boards half open */
+  court24Window(g,98,34,12,11,r);court24Window(g,140,30,8,8,r);court24Window(g,232,30,8,8,r);
+  /* the vine: an old stock from its own foot by the corner, its arms spreading up and along the wall; young leaves of spring */
+  court24Vine(g,r);
+  /* the doorway into the house: a plain opening with a stone threshold, the room dim inside, a curtain drawn aside to the left */
+  court24Door(g,r);
+  /* the gate to the street, and the street beyond it */
+  court24Gate(g,r);
+  /* the two wings in perspective, plastered the same, their eaves running toward us */
+  court24Wing(g,-1,r);court24Wing(g,1,r);
+  /* the eaves: the edge of the tiled roof along the top of the back wall, the soft shade the sun throws under it */
+  court24Eave(g,10,310,E);
+  /* the paving of the court, running back to the foot of the wall; a soft shade along the foot */
+  pave(g,-2,WY,322,144,'#cdb994',r,{vx:160,vy:hz,rows:5,step:30,v:.07,t:.3,rand:1});
+  ao(g,0,WY,320,4,'t',.3,'#4a3a40');
+  /* the bench along the wall: a slab on two blocks set at its ends */
+  court24Bench(g,60,160,r);
+  /* a tall storage jar left of the gate and two pots of herbs by the vine's foot, all against the wall behind the walk */
+  court24Jar(g,256,103,5.6,16,'#b07a52');court24Pot(g,44,102.6,3.4,4.4,'#a8684a',r);court24Pot(g,51,102.8,2.8,3.6,'#b4784e',r);
+  /* the light of the morning: warm from the upper left, the right a shade cooler, the floor's far edge a little dimmer */
+  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,0,320,0,['#ffe8c4','#f4e4cc','#c8c8d8']);g.fillRect(0,0,320,144)});
+  comp(g,'multiply',.12,()=>{g.fillStyle=lg(g,0,0,0,144,['#ffffff','#f0ece8','#b8b0c0']);g.fillRect(0,0,320,144)});
+  ao(g,0,128,320,16,'b',.12,'#2a2050')}
+/* the shade under a thing, soft */
+function sh24c(g,x,y,rx,ry,a){comp(g,'multiply',a,()=>{g.fillStyle=lg(g,0,y-ry,0,y+ry,['rgba(70,56,80,0)','rgba(70,56,80,1)','rgba(70,56,80,0)']);g.fillRect(x-rx,y-ry,rx*2,ry*2)})}
+/* upright planks side by side, quiet grain, each with its lit and its shaded edge; nothing across them */
+function court24Boards(g,x,y,w,h,c,seed){const n=Math.max(1,Math.round(w/4.2)),pw=w/n,q=rng(seed);
+  for(let i=0;i<n;i++){const cc=tint(c,(q()-.5)*.14),px=x+i*pw;g.fillStyle=lg(g,px,0,px+pw,0,[tint(cc,.08),cc,tint(cc,-.14)]);g.fillRect(px,y,pw,h);
+    for(let k=0;k<3;k++)R(g,px+.5+q()*(pw-1.5),y+q()*h*.6,.5,h*(.2+q()*.3),tint(cc,-.16));R(g,px,y,.5,h,tint(cc,.16));R(g,px+pw-.5,y,.5,h,tint(cc,-.36))}
+  inRect(g,x,y,w,h,()=>tex(g,'vert',.2,x,y,w,h,'overlay',.5))}
+function court24Window(g,x,y,w,h,r){R(g,x-2,y-2,w+4,h+4,tint(WALL24C,.12));R(g,x-2,y-2,w+4,.5,tint(WALL24C,.4));
+  R(g,x,y,w,h,'#2a2024');ao(g,x,y,w,4,'t',.5,'#000000');R(g,x+w-1.4,y,1.4,h,'rgba(255,236,200,.12)');
+  /* one leaf folded back against the left reveal, the other half open into the room (seen edge-on as a narrow board) */
+  court24Boards(g,x-5.4,y,4.6,h,'#7a5a3a',2453);R(g,x-.8,y,.8,h,'rgba(40,24,20,.4)');
+  court24Boards(g,x+w-3,y,2.4,h,'#5e4630',2454);
+  R(g,x-3,y+h+1,w+6,1.6,tint(WALL24C,.22));R(g,x-3,y+h+1,w+6,.5,tint(WALL24C,.5));R(g,x-3,y+h+2.6,w+6,.6,tint(WALL24C,-.4));
+  shade(g,[x+w+3,y+h+3.2,x+w+5.6,y+h+3.2,x+w+5.6,y+.6,x+w+2,y-1.4],'#8f95c4',.35)}
+/* the vine: one gnarled stock from its foot at the corner, two arms that part and climb, then run along the wall; the shoots and
+   leaves of spring in clumps along them, lit from the upper left. No stem crosses another, and nothing is tied across them. */
+function court24Vine(g,r){const q=rng(2455),bark='#4e3a2a',barkL='#86684a',barkD='#2e2018';
+  /* the stock and its arms, from the foot up: each a list of points and its thickness at the start */
+  const arms=[[[21,102,20.4,96,22.6,88,20,80,21.4,70,24.6,60,28,50,34,42,44,37,58,34,74,32.6],3],
+    [[20.8,90,16.8,82,14.6,72,15.6,62,14.4,52,16,42,20,34,28,30],1.8],
+    [[24.6,60,31,55,38,53.4,46,52.6],1.1],[[44,37,50,42,55,44],.9],[[58,34,66,38.6,72,40],.8]];
+  const draw=(p,w0,dx,dy,c,k)=>{for(let i=2;i<p.length;i+=2){const t=i/p.length,w=Math.max(.6,w0*(1-t*.75))*k;stroke(g,[p[i-2]+dx,p[i-1]+dy,p[i]+dx,p[i+1]+dy],c,w)}};
+  /* its shadow on the wall, to the right and a little down */
+  comp(g,'multiply',.26,()=>{for(const[p,w]of arms)draw(p,w,2.2,1.2,'#6a5a7a',1.15)});
+  for(const[p,w]of arms){draw(p,w,0,0,barkD,1.1);draw(p,w,-.3,0,bark,.75);draw(p,w,-.6,0,barkL,.3)}
+  /* the stock's foot in a little bed of earth, its shade */
+  R(g,14,100.6,14,1.8,'#6e5a40');R(g,14,100.6,14,.5,'#8a7454');sh24c(g,22,102.4,8,1.2,.45);
+  /* leaves in loose clumps along the arms (none on the bare old stock below 84): each a small leaf of two tones, darker beneath; their
+     shadow on the wall first */
+  const L=[];for(const[p]of arms)for(let i=2;i<p.length;i+=2){const n=Math.max(1,Math.round(Math.hypot(p[i]-p[i-2],p[i+1]-p[i-1])/3));
+    for(let k=0;k<n;k++){const t=(k+q())/n,x=p[i-2]+(p[i]-p[i-2])*t,y=p[i-1]+(p[i+1]-p[i-1])*t;if(y<84)L.push([x,y])}}
+  const leaves=[];for(const[x,y]of L)for(let k=0;k<4;k++){const a=q()*6.28,d=1+q()*2.6;leaves.push([x+Math.cos(a)*d*1.2,y+Math.sin(a)*d*.9-.6,q()])}
+  comp(g,'multiply',.22,()=>{for(const[x,y]of leaves)R(g,x+1.6,y+1.4,2.4,1.6,'#5a4a6a')});
+  leaves.sort((m,n)=>m[1]-n[1]);
+  for(const[x,y,v]of leaves){const lit=v;R(g,x-1.2,y-.2,2.6,1.6,'#3a5224');R(g,x-1,y-.6,2.2,1.2,lit>.66?'#8eaa4c':lit>.3?'#6a8a3a':'#4e6c2c');
+    if(lit>.8)R(g,x-.8,y-.6,1,.5,'#b4c470')}}
+function court24Door(g,r){const[x,y,w,h]=COURT24.door,b=y+h;
+  /* the frame: a deep lintel of stone and plain jambs */
+  R(g,x-3,y-4,w+6,4,tint(WALL24C,.08));R(g,x-3,y-4,w+6,.6,tint(WALL24C,.42));R(g,x-3,y-.6,w+6,.6,tint(WALL24C,-.42));tex(g,'mott',.3,x-3,y-4,w+6,4,'overlay',1);
+  for(const[jx,k]of[[x-3,-.04],[x+w,.1]]){R(g,jx,y,3,h,tint(WALL24C,k));R(g,jx,y,.6,h,tint(WALL24C,.35));R(g,jx+2.4,y,.6,h,tint(WALL24C,-.35));tex(g,'mott',.3,jx,y,3,h,'overlay',1)}
+  /* the room inside: dim, a little light on its floor from the court */
+  g.fillStyle=lg(g,0,y,0,b,['#1e1618','#2a2024','#4a3a34']);g.fillRect(x,y,w,h);ao(g,x,y,w,8,'t',.5,'#000000');
+  poly(g,[x,b,x+w,b,x+w-3,b-6,x+4,b-6],'rgba(200,170,130,.22)');
+  /* the curtain, drawn aside to the left and hanging in soft folds that run down */
+  const cw=8,P=[x,y,x+cw,y,x+cw-1.6,y+h*.55,x+cw+.6,b-1,x,b-1];poly(g,P);g.fillStyle=lg(g,x,0,x+cw,0,['#6a5a3a','#8a7448','#a08a58','#6e5a38']);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{for(let i=1;i<4;i++)stroke(g,[x+i*2,y,x+i*2-.8,y+h*.55,x+i*2.2,b],'rgba(40,30,20,.35)',.5);tex(g,'vert',.3,x,y,cw+1,h,'overlay',.5)});
+  R(g,x-3,b-.4,w+6,2,tint(WALL24C,-.12));R(g,x-3,b-.4,w+6,.5,tint(WALL24C,.3))}
+/* the gate to the street: a frame of dressed stone; the left leaf shut, the right one swung back flat against the wall beyond the frame
+   (both of upright boards, no band across them); through the opening the street in the sun, its paving running back to the house front
+   opposite, which closes the view: a shop's wide opening and a small window above */
+function court24Gate(g,r){const[x,y,w,h]=COURT24.gate,b=y+h,lw=w/2,ox=x+lw,ow=w-lw;
+  /* the street beyond: the house opposite, in sun, then the paving from the threshold back to its foot */
+  inRect(g,ox,y,ow,h,()=>{const hf=b-9;plaster(g,ox,y,ow,hf-y,'#e2cfa8',rng(2456),{patch:0,cracks:0,t:.3});
+    R(g,ox+3,hf-17,ow-5,17,'#2e2420');ao(g,ox+3,hf-17,ow-5,5,'t',.5,'#000');R(g,ox+3,hf-17,ow-5,.6,tint('#e2cfa8',-.4));
+    for(let i=0;i<3;i++)R(g,ox+5+i*3.2,hf-7,2.2,6,['#b07a4a','#a86a3a','#c08a58'][i]);
+    R(g,ox+6,y+8,5,6,'#3a2c28');R(g,ox+5,y+14,7,1,tint('#e2cfa8',.3));
+    g.fillStyle=lg(g,0,hf,0,b,['#b8a684','#cdbb98']);g.fillRect(ox,hf,ow,b-hf);
+    for(let k=0;k<3;k++){const yy=hf+1.5+k*2.6+k*k*.3;R(g,ox,yy,ow,.5,'rgba(90,70,50,.35)')}
+    ao(g,ox,hf,ow,2,'t',.4,'#3a2a24');
+    /* the shade of the gate's frame and of the leaf on the street, to the right */
+    ao(g,ox,y,4,h,'l',.45,'#2a2038');ao(g,ox,y,ow,6,'t',.45,'#2a2038')});
+  /* the frame: jambs and a lintel of dressed stone */
+  const C=tint(WALL24C,.05);ashlar(g,x-4,y-5,w+8,5,C,r,{bw:13,bh:5,v:.06,t:.3});R(g,x-4,y-5,w+8,.6,tint(C,.4));R(g,x-4,y-.6,w+8,.6,tint(C,-.45));
+  for(const jx of[x-4,x+w]){ashlar(g,jx,y,4,h,C,r,{bw:4,bh:7,v:.06,t:.3});R(g,jx,y,.6,h,tint(C,.35));R(g,jx+3.4,y,.6,h,tint(C,-.35))}
+  /* the leaf that is shut, and the one swung back against the wall to the right of the frame (seen nearly flat, in the sun) */
+  court24Boards(g,x,y,lw,h,'#6e5034',2457);ao(g,x,y,lw,5,'t',.45,'#140c08');R(g,x+lw-2,y+h*.5,1.4,1.4,'#2a1c10');R(g,x+lw-2,y+h*.5,1.4,.5,'#a88858');
+  R(g,x+lw-.6,y,.6,h,'#1a1008');
+  court24Boards(g,x+w+4,y+1,6,h-1,'#7a5a3a',2458);R(g,x+w+9.4,y+1,.6,h-1,'rgba(30,20,16,.45)');shade(g,[x+w+10,y+2,x+w+12.4,y+3,x+w+12.4,b,x+w+10,b],'#8f95c4',.4);
+  /* the threshold: one worn slab */
+  R(g,x-4,b-.4,w+8,2,tint(C,-.1));R(g,x-4,b-.4,w+8,.5,tint(C,.35))}
+/* a wing at the side, in perspective toward us: its face turned to the court; d -1 the left, 1 the right */
+function court24Wing(g,d,r){const{wallY:WY,hz,eave:E}=COURT24,xc=d<0?10:310,xe=d<0?0:320,k=(xe-xc),vy=hz,
+    yb=y=>y+(y-vy)*0,P=[xc,E,xe,E-(160-xc)*0+(-12),xe,WY+6,xc,WY];
+  const top=E-12,foot=WY+7;const W=[xc,E,xe,top,xe,foot,xc,WY];
+  poly(g,W);g.fillStyle=lg(g,xc,0,xe,0,d<0?[tint(WALL24C,-.32),tint(WALL24C,-.26)]:[tint(WALL24C,.02),tint(WALL24C,.1)]);g.fill();
+  clipTo(g,()=>poly(g,W),()=>{tex(g,'mott',.4,Math.min(xc,xe),top,Math.abs(k)+1,foot-top,'overlay',1);
+    /* the red lower zone in the same perspective */
+    poly(g,[xc,70,xe,70+(70-hz)*(-.17)*0-4,xe,foot,xc,WY],d<0?tint(ZOC24,-.3):tint(ZOC24,-.06));tex(g,'mott',.4,Math.min(xc,xe),60,Math.abs(k)+1,foot-60,'overlay',1)});
+  /* the corner where the wing meets the back wall: a soft seam of shade */
+  ao(g,d<0?xc:xc-3,E,3,WY-E,d<0?'l':'r',.3,'#3a2a40');
+  void yb;void P}
+/* the eave: the lowest course of the roof's tiles over the wall, its edge in light, the shade under it on the plaster; the roof's slope
+   above it in level rows only */
+function court24Eave(g,x0,x1,E){const q=rng(2459);
+  poly(g,[x0-1,E,x1+1,E,x1+1,E-6,x0-1,E-6],'#a85a3c');
+  clipTo(g,()=>poly(g,[x0-1,E,x1+1,E,x1+1,E-6,x0-1,E-6]),()=>{for(let y=E-6;y<E;y+=1.4)R(g,x0,y,x1-x0,.5,'rgba(70,30,20,.3)');tex(g,'mott',.4,x0,E-6,x1-x0,6,'overlay',1);
+    for(let i=0;i<60;i++)R(g,x0+q()*(x1-x0),E-6+q()*5,1+q()*3,.5,q()<.5?'rgba(255,200,160,.25)':'rgba(60,40,30,.25)')});
+  R(g,x0-1,E-6,x1-x0+2,.6,'#d8906a');R(g,x0-1,E-.8,x1-x0+2,.8,'#5a2a1c');
+  /* the left wing's eave and the right's, running toward us */
+  for(const d of[-1,1]){const xc=d<0?x0:x1,xe=d<0?-2:322,P=[xc,E,xe,E-13,xe,E-21,xc,E-6];poly(g,P,'#9a5236');
+    clipTo(g,()=>poly(g,P),()=>{for(let t=0;t<1;t+=.08)stroke(g,[xc,E-6+t*6,xe,E-21+t*8],'rgba(70,30,20,.25)',.5);tex(g,'mott',.4,Math.min(xc,xe),E-22,14,23,'overlay',1)});
+    stroke(g,[xc,E,xe,E-13],'#5a2a1c',.8)}
+  comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,0,E,0,E+5,['rgba(90,70,110,1)','rgba(90,70,110,0)']);g.fillRect(x0,E,x1-x0,5)})}
+/* the bench: a slab on two blocks set at its ends, its shadow to the right and a little up the wall */
+function court24Bench(g,x0,x1,r){const C=tint(WALL24C,.02),top=COURT24.bench[1],WY=COURT24.wallY;
+  shade(g,[x1,WY,x1,top+1.2,x1+3.4,top+1.8,x1+3.4,WY],'#8f95c4',.4);shade(g,[x0+8,top+3,x1-8,top+3,x1-8,WY,x0+8,WY],'#5a4a6a',.35);
+  for(const x of[x0+2,x1-8]){R(g,x,top+3,6,WY-top-3,tint(C,-.1));R(g,x,top+3,.6,WY-top-3,tint(C,.16));tex(g,'mott',.35,x,top+3,6,WY-top-3,'overlay',1)}
+  ao(g,x0+8,top+3,x1-x0-16,3,'t',.4,'#2a2030');
+  R(g,x0,top,x1-x0,3,C);R(g,x0,top,x1-x0,.6,tint(C,.4));R(g,x0,top+2.4,x1-x0,.6,tint(C,-.3));tex(g,'mott',.35,x0,top,x1-x0,3,'overlay',1);
+  sh24c(g,(x0+x1)/2+1,WY,(x1-x0)/2+1,1.2,.35)}
+/* a tall storage jar: its body swells below a short neck, its mouth a small square rim seen a little from above */
+function court24Jar(g,cx,foot,hw,h,c){sh24c(g,cx+1.4,foot,hw*1.2,1,.45);
+  const wf=t=>t<.12?1.8:t<.22?1.8+(t-.12)/.1*1.6:t<.6?3.4+Math.sin((t-.22)/.38*Math.PI*.5)*(hw-3.4):hw-(t-.6)/.4*(hw-2),L=[],Q=[];
+  for(let i=0;i<=24;i++){const t=i/24,w=wf(t),y=foot-h+t*h;L.push(cx-w,y);Q.unshift(cx+w,y)}
+  const B=L.concat(Q);poly(g,B);g.fillStyle=lg(g,cx-hw,0,cx+hw,0,[tint(c,.2),tint(c,.06),tint(c,-.2),tint(c,-.42)]);g.fill();
+  clipTo(g,()=>poly(g,B),()=>{tex(g,'mott',.35,cx-hw,foot-h,hw*2,h,'overlay',1);R(g,cx-hw*.5,foot-h*.62,.6,h*.38,'rgba(255,232,196,.5)');ao(g,cx-hw,foot-3,hw*2,3,'b',.3,'#2a1610')});
+  R(g,cx-2.2,foot-h-.5,4.4,1.6,tint(c,.1));R(g,cx-2.2,foot-h-.5,4.4,.5,tint(c,.4));R(g,cx-1.6,foot-h+.2,3.2,.6,'#2a1610')}
+/* a pot of herbs: a low pot with a square rim, green sprigs in it that lean one way */
+function court24Pot(g,cx,foot,hw,h,c,r){sh24c(g,cx+1,foot,hw*1.2,.9,.45);poly(g,[cx-hw,foot-h,cx+hw,foot-h,cx+hw*.75,foot,cx-hw*.75,foot]);g.fillStyle=lg(g,cx-hw,0,cx+hw,0,[tint(c,.2),c,tint(c,-.35)]);g.fill();
+  R(g,cx-hw-.3,foot-h-.6,hw*2+.6,1,tint(c,.15));R(g,cx-hw-.3,foot-h-.6,hw*2+.6,.4,tint(c,.45));
+  for(let i=0;i<9;i++){const x=cx-hw+.6+r()*(hw*2-1.2),hh=2+r()*3;stroke(g,[x,foot-h-.4,x+.6+r()*.6,foot-h-hh],r()<.5?'#5a7a34':'#7a9a48',.6)}}
 /* ==== ART court24: end ==== */
 
 /* ==== ART capua24: begin ==== */
-/* A road station by Capua in the afternoon (CAPUA24): the station's long front with its gate arch (above every head), the road running
-   across, the hills of Campania behind, the carter's cart standing at the left (a footprint), the trader's mule at the right (a footprint).
-   ART-TODO: the station, the cart and the mule (SHARED.beasts.mule). Sun from the right: shadows fall to the left. */
-const CAPUA24={hz:66,cart:[22,96,52,22],mule:[250,100,44,22],station:[96,40,140,62],walk:[16,304,112,138]};
-ART.capua24={w:320,q:12,paint(g){sky24(g,CAPUA24.hz,'#9ec0dc','#e6e0d0');poly(g,[0,CAPUA24.hz-12,80,CAPUA24.hz-26,170,CAPUA24.hz-14,260,CAPUA24.hz-30,320,CAPUA24.hz-16,320,CAPUA24.hz,0,CAPUA24.hz],'#8a9a78');
-    ground24(g,CAPUA24.hz,'#b4a480');blocks24(g,[[...CAPUA24.station,'#c8b08a'],[150,64,28,38,'#4a3828'],[...CAPUA24.cart,'#7a5a3a'],[...CAPUA24.mule,'#6a5a4a']])},
-  light:{amb:'#f2e8d8',sun:[-15,-8,.36],wallY:102},draw(){},front(){}};
+/* A road station by Capua in the afternoon (CAPUA24). The road from Puteoli runs across the picture, paved in the same blocks of dark lava
+   as the Appian Way (SHARED.rome.road, held by its curbs), with a footpath of packed gravel between the far curb and the station's front.
+   The station is one long building of two storeys: a base of grey tufa blocks, plaster above it, a roof of tiles in level rows, small
+   shuttered windows upstairs, a door at each end of the ground floor, a stone trough along the wall, and in the middle the gateway into
+   its yard under a low segmental arch (its crown at y 51, its springing at 56: above every head on the walk strip, and too flat to read
+   as a ring). Through the gateway the passage in shade and the yard in the sun beyond, closed by the stable's wall. At the left, behind
+   the fields, the hills of Campania. The carter's two-wheeled cart stands at the left (a cutout prop; its footprint is in ROOMS): a solid
+   wheel of boards whose seams run level, a hub of a square boss, the bed of boards with sacks on it, and the two shafts resting slanting
+   on the paving, so that nothing crosses anything square. The trader's mule, saddled, stands at the right (SHARED.beasts.mule, drawn in
+   draw() so that it takes its place in the depth and casts its own shadows). The sun is behind us at the right: the front is lit, and
+   every shadow falls to the left and a little back. */
+const CAPUA24={hz:66,cart:[22,96,52,22],mule:[250,100,44,22],station:[96,40,140,62],walk:[16,304,112,138],gate:[150,178,51,56],foot:102};
+const VCAP24={hz:66,F:320,H:1.7,cx:160};
+if(!SHARED.beasts)need('beasts');
+ART.capua24={w:320,q:12,paint(g){paintCapua24(g)},
+  light:{amb:'#f2e8d8',sun:[-15,-8,.36],wallY:102,wall:[[96,150,102,40],[178,236,102,40]]},
+  /* the cart is painted into the backdrop and laid over whoever walks behind it */
+  props:[{y:118,shape(g){capua24Cart(g,1)}}],
+  draw(g){const B=SHARED.beasts,[x,y,w,h]=CAPUA24.mule;if(B)B.mule(g,x+w/2,y+h-1,-1,B.pose('mule24',0),0,lightAt('capua24',x+w/2,y+h-1))},front(){}};
+function paintCapua24(g){const{hz,foot}=CAPUA24,R0=SHARED.rome,CO=SHARED.country,r=rng(2461),V=R0.view(VCAP24),Q=R0.frame([1,0]),Zs=y=>V.F*V.H/(y-hz);
+  /* the sky of the afternoon, the sun behind us at the right: warmer at the right */
+  sky(g,320,hz+2,['#86a6cc','#a6bed8','#ccd6de','#e6e0d0']);
+  {const q=rng(2462);cloud(g,60,14,70,3,q,'#fbf6ec','#b8c2d4');cloud(g,220,8,80,2.6,q,'#fbf6ec','#b8c2d4');cloud(g,300,24,40,1.8,q,'#f4f0e8','#c0c6d6')}
+  pool(g,330,30,160,40,'#fff0d8',.25,'screen');
+  /* the hills of Campania: high at the left, falling away to the right, in the haze */
+  CO.range(g,-2,322,hz+1,x=>Math.max(2,30-x*.09+5*Math.sin(x/31+.6)+2.4*Math.sin(x/11+1.4)+1*Math.sin(x/4.1)),['#9aa6b8','#aab2c0','#b8bcc6'],{k:.55,light:1});
+  CO.range(g,-2,140,hz+1,x=>Math.max(1,14-x*.08+3*Math.sin(x/17+2)+1.2*Math.sin(x/5.3)),['#8a9a84','#98a68a'],{k:.5,light:1});
+  /* the plain: fields from the horizon down to the footpath, and trees along a lane at the left and among the fields at the right */
+  CO.plain(g,-2,322,hz,foot,2463,{vx:160,land:'#9aaa66',haze:'#c4ccd2'});
+  for(const[x,y,h,k]of[[14,84,13,'poplar'],[22,85,15,'poplar'],[31,86,12,'poplar'],[58,78,7,'olive'],[70,79,6,'olive'],[252,80,8,'olive'],[266,82,9,'oak'],[300,79,7,'olive'],[312,88,14,'poplar']])
+    CO.tree(g,x,y,h,null,{kind:k,seed:2464+x,light:1});
+  /* the verge of grass along the footpath */
+  CO.turf(g,-2,foot-6,324,foot,'#8e9c58',2465,{wind:-.5,scale:.5,flowers:20,dry:.35});
+  /* the station */
+  capua24Station(g,r);
+  /* the footpath of packed gravel before it, the road and its curbs */
+  {const P=[];for(const y of[foot,Zs(foot)])void y;
+    const y0=foot,y1=107.4;g.fillStyle=lg(g,0,y0,0,y1,['#b4a486','#c4b496']);g.fillRect(-2,y0,324,y1-y0);
+    inRect(g,-2,y0,324,y1-y0,()=>{tex(g,'mott',.5,-2,y0,324,y1-y0,'overlay',1);tex(g,'grain',.25,-2,y0,324,y1-y0,'overlay',.5);for(let i=0;i<500;i++)R(g,r()*320,y0+r()*(y1-y0),.5,.5,r()<.5?'rgba(80,70,60,.3)':'rgba(250,240,220,.3)')});
+    ao(g,-2,y0,324,2.4,'t',.3,'#4a3a40')}
+  const sF=Zs(107.6),sN=Zs(140.6);
+  R0.road(g,V,Q,{s0:sN,s1:sF,cell:.62,seed:2466,sun:[.6,-.8],haze:'#c8c6cc',hz0:12,hz1:60});
+  R0.curb(g,V,Q,{s0:sF,s1:sF+.32,h:.14,u0:-40,u1:40,seed:2467,c:'#a8a294'});
+  R0.curb(g,V,Q,{s0:sN-.36,s1:sN,h:.14,u0:-40,u1:40,seed:2468,c:'#a29c8e',near:1});
+  {const y0=V.P(0,sN-.36,0)[1];g.fillStyle=lg(g,0,y0,0,144,['#b4a486','#a49478']);g.fillRect(-2,y0,324,144-y0);tex(g,'mott',.5,-2,y0,324,144-y0,'overlay',1)}
+  /* the cart */
+  capua24Cart(g,0);
+  /* the afternoon light over the whole: warm from the right, the left a little cooler */
+  comp(g,'soft-light',.35,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(186,190,214,1)','rgba(240,224,200,.8)','rgba(255,216,172,1)']);g.fillRect(0,0,320,144)});
+  ao(g,0,128,320,16,'b',.12,'#2a2440')}
+/* the station: base, plaster, roof, windows, doors, trough and gateway */
+function capua24Station(g,r){const[x0,y0,w]=CAPUA24.station,x1=x0+w,ft=CAPUA24.foot,[gx0,gx1,crown,spring]=CAPUA24.gate,C='#d8c49c',T='#a8a08c',M=SHARED.materials;
+  /* the roof: tiles in level rows from the ridge down to the eave, the ridge against the sky */
+  const rt=y0-8;poly(g,[x0-3,y0+1,x1+3,y0+1,x1-2,rt,x0+2,rt],'#a2583a');
+  clipTo(g,()=>poly(g,[x0-3,y0+1,x1+3,y0+1,x1-2,rt,x0+2,rt]),()=>{for(let y=rt+1;y<y0+1;y+=1.3)R(g,x0-3,y,w+6,.5,'rgba(70,30,20,.3)');tex(g,'mott',.45,x0-3,rt,w+6,9,'overlay',1);
+    for(let i=0;i<80;i++)R(g,x0+r()*w,rt+r()*8,1+r()*3,.5,r()<.5?'rgba(255,206,160,.3)':'rgba(60,36,28,.3)')});
+  R(g,x0+2,rt-.6,w-4,1.2,'#8a4a30');R(g,x0+2,rt-.6,w-4,.5,'#d8906a');R(g,x0-3,y0,w+6,1.2,'#5a2a1c');
+  /* the wall: plaster above, a base of tufa blocks below */
+  plaster(g,x0,y0+1,w,ft-y0-1,C,r,{patch:0,cracks:0,t:.34});
+  ashlar(g,x0,86,w,ft-86,T,r,{bw:12,bh:5.4,v:.1,t:.32});R(g,x0,86,w,.6,tint(T,.3));
+  comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,0,y0+1,0,y0+6,['rgba(90,70,110,1)','rgba(90,70,110,0)']);g.fillRect(x0,y0+1,w,5)});
+  for(const[x,y,n]of[[112,47,2],[226,49,3]])M.crack(g,x,y,n,r,.5);
+  /* the windows upstairs: small openings, a shutter of upright boards folded back beside each */
+  for(const wx of[108,128,200,220]){R(g,wx-1,y0+6,8,8,tint(C,.1));R(g,wx,y0+7,6,6,'#2a2024');ao(g,wx,y0+7,6,2.4,'t',.5,'#000');
+    court24Boards(g,wx-4.2,y0+7,3.6,6,'#7a5a3a',2469+wx);R(g,wx-1,y0+13.4,8,1,tint(C,.3));R(g,wx-1,y0+14.4,8,.5,tint(C,-.4))}
+  /* the doors at the ends of the ground floor: plank leaves, one ajar */
+  for(const[dx,open]of[[106,0],[214,1]]){const dy=72,dw=12,dh=ft-dy;R(g,dx-2,dy-3,dw+4,3,tint(T,.1));R(g,dx-2,dy-3,dw+4,.5,tint(T,.4));
+    R(g,dx,dy,dw,dh,'#221a1a');ao(g,dx,dy,dw,4,'t',.5,'#000');
+    if(open){court24Boards(g,dx,dy,dw*.45,dh,'#6a4c32',2470);R(g,dx+dw*.45,dy,.6,dh,'#140c08')}else court24Boards(g,dx,dy,dw,dh,'#6e5034',2471);
+    R(g,dx-2,ft-1,dw+4,1.4,tint(T,-.1));R(g,dx-2,ft-1,dw+4,.5,tint(T,.3))}
+  /* the gateway: its passage in shade, the yard beyond in the sun, closed by the stable's wall with its doors */
+  const arc=(cx,y,sp,cr,hw)=>{const R2=(hw*hw+(sp-cr)**2)/(2*(sp-cr)),cy=cr+R2;return{R2,cy,a0:Math.PI+Math.asin(Math.min(1,(cy-sp)/R2))}};
+  const hw=(gx1-gx0)/2,cx=(gx0+gx1)/2,A=arc(cx,0,spring,crown,hw);
+  const open=()=>{g.beginPath();g.moveTo(gx0,ft);g.lineTo(gx0,spring);g.arc(cx,A.cy,A.R2,Math.PI*2-Math.asin((A.cy-spring)/A.R2)-Math.PI+Math.PI,0,false);g.closePath()};
+  const opening=()=>{g.beginPath();g.moveTo(gx0,ft);g.lineTo(gx0,spring);const a=Math.asin((A.cy-spring)/A.R2);g.arc(cx,A.cy,A.R2,Math.PI+a,Math.PI*2-a,false);g.lineTo(gx1,ft);g.closePath()};
+  void open;
+  clipTo(g,opening,()=>{/* the yard: the stable's wall across, lit; its foot at y 90; the yard's floor from it to the passage */
+    plaster(g,gx0,crown,gx1-gx0,90-crown,'#e0cca4',rng(2472),{patch:0,cracks:0,t:.3});
+    /* one stable door at the left of the view and a small window at the right, never two openings side by side */
+    R(g,gx0+3,72,9,18,'#2a2020');ao(g,gx0+3,72,9,3,'t',.5,'#000');R(g,gx0+18,70,5,4,'#3a2c28');R(g,gx0+17.4,74,6.2,.8,'#f0dcb4');
+    g.fillStyle=lg(g,0,90,0,96,['#c8b48e','#b8a47e']);g.fillRect(gx0,90,gx1-gx0,6);
+    /* the passage: its floor and its walls in shade, darker toward us */
+    g.fillStyle=lg(g,0,96,0,ft,['#5a4a3c','#3a3030']);g.fillRect(gx0,96,gx1-gx0,ft-96);
+    poly(g,[gx0,crown-2,gx0+4,crown+4,gx0+4,96,gx0,ft],'#4a3a34');poly(g,[gx1,crown-2,gx1-4,crown+4,gx1-4,96,gx1,ft],'#2e2628');
+    comp(g,'multiply',.6,()=>{g.fillStyle=lg(g,0,crown,0,ft,['rgba(60,50,70,1)','rgba(60,50,70,.2)']);g.fillRect(gx0,crown,gx1-gx0,ft-crown)});
+    ao(g,gx0,crown,gx1-gx0,8,'t',.55,'#100808')});
+  /* the arch: a band of wedge-shaped stones, each joint running outward and stopping at the band's edges; the jambs of long and short blocks */
+  const ri=A.R2,ro=A.R2+4,a=Math.asin((A.cy-spring)/A.R2),ao2=Math.asin(Math.min(1,(A.cy-spring+0)/ro));
+  const band=()=>{g.beginPath();g.arc(cx,A.cy,ro,Math.PI+ao2,Math.PI*2-ao2,false);g.lineTo(gx1+3.4,spring);g.arc(cx,A.cy,ri,Math.PI*2-a,Math.PI+a,true);g.lineTo(gx0-3.4,spring);g.closePath()};
+  band();g.fillStyle=lg(g,gx0,0,gx1,0,[tint(T,.0),tint(T,.12),tint(T,.2)]);g.fill();
+  clipTo(g,band,()=>{tex(g,'mott',.35,gx0-5,crown-5,gx1-gx0+10,12,'overlay',1);const n=9;
+    for(let k=1;k<n;k++){const t=Math.PI+a+(Math.PI-2*a)*k/n;stroke(g,[cx+Math.cos(t)*(ri+.3),A.cy+Math.sin(t)*(ri+.3),cx+Math.cos(t)*(ro-.3),A.cy+Math.sin(t)*(ro-.3)],tint(T,-.45),.6)}});
+  for(const[jx,lit]of[[gx0-3.4,-.04],[gx1,.14]]){ashlar(g,jx,spring,3.4,ft-spring,tint(T,lit),r,{bw:3.4,bh:5,v:.06,t:.3});R(g,jx+(jx<cx?2.8:0),spring,.6,ft-spring,tint(T,lit<0?-.35:.35))}
+  /* the trough along the wall at the left of the gateway: stone, water showing the sky; its shadow to the left */
+  {const tx0=118,tx1=144,top=95;shade(g,[tx0,ft,tx0,top+1,tx0-4,top+2,tx0-4,ft],'#8f95c4',.4);
+    R(g,tx0,top,tx1-tx0,ft-top,tint(T,.06));tex(g,'mott',.45,tx0,top,tx1-tx0,ft-top,'overlay',1);R(g,tx0,top,tx1-tx0,.6,tint(T,.42));
+    R(g,tx0+1.4,top+.7,tx1-tx0-2.8,1.1,'#7a8c9c');R(g,tx0+1.4,top+.7,tx1-tx0-2.8,.4,'#4a5a6a');R(g,tx0+1.4,top+1.4,tx1-tx0-2.8,.4,'#a8b8c4');
+    ao(g,tx0,top+2.2,tx1-tx0,2,'t',.25,'#3a3040');sh24c(g,(tx0+tx1)/2-1,ft,(tx1-tx0)/2+1,1.2,.4)}
+  /* sacks set down by the wall at the right of the gateway */
+  for(const[x,w,h,c]of[[186,4.4,6,'#b8a07a'],[193,4,5,'#a8906a'],[189.6,3.6,4.4,'#c4ac84']])sack(g,x,ft-(x===189.6?4:0),w,h,c);
+  /* the soft shade at the foot of the wall, and the light of the sun from the right on the front */
+  ao(g,x0,ft-6,w,6,'b',.25,'#4a3424');
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,x0,0,x1,0,['rgba(120,110,140,1)','rgba(255,236,200,.6)','rgba(255,240,210,1)']);g.fillRect(x0,rt,w,ft-rt)})}
+/* the carter's cart, facing right: the bed of boards on one solid wheel, the two shafts resting on the paving. cut: its outline only (for
+   the prop) */
+function capua24Cart(g,cut){const r=rng(2473),wx=41,wy=108.4,wr=9.6,fy=118,bx0=22,bx1=67,tb=(x,y0,y1)=>y0+(y1-y0)*(x-bx0)/(bx1-bx0),
+    top=x=>tb(x,93.4,95.4),bot=x=>tb(x,104.4,106.4),bed=[bx0,top(bx0),bx1,top(bx1),bx1,bot(bx1),bx0,bot(bx0)],
+    sh0=[64,105,65.8,105.6,75.6,117.8,73.6,117.9],sh1=[62,104,63.4,104,72.6,116.2,71,116.4];
+  if(cut){poly(g,bed,'#000');poly(g,sh0,'#000');poly(g,sh1,'#000');oval(g,wx,wy,wr,wr,'#000');R(g,bx0+3,88.6,bx1-bx0-10,6,'#000');return}
+  /* its shadow on the paving, cast to the left and a little back */
+  comp(g,'multiply',.32,()=>{poly(g,[wx-wr,fy,wx+wr,fy,wx+wr-9,fy-5,wx-wr-9,fy-5],'#5a4a66');poly(g,[bx0+2,fy-1.4,bx1+8,fy-.6,bx1-6,fy-6.4,bx0-12,fy-7],'#5a4a66')});
+  SHARED.materials.shadow(g,wx,fy,4.6,.9,.6);SHARED.materials.shadow(g,74.6,117.9,1.6,.6,.5);
+  /* the far shaft */
+  poly(g,sh1,'#4e3a2a');
+  /* the load: sacks and a folded hide, their tops over the side rail */
+  for(const[x,w,h,c]of[[29,5.2,6.4,'#bca684'],[38.6,5.8,7,'#a8906c'],[48,5,6,'#c8b08c']])sack(g,x,top(x)+2,w,h,c);
+  poly(g,[54,top(54)+1,64,top(64)+1,63.4,top(63)-2.2,55,top(55)-2.6],'#7a5a3e');R(g,55,top(55)-2.6,8,.5,'#a07a54');
+  /* the bed's side: three boards along its length, a top rail, a short tailboard at the back; nothing upright across them but the end posts */
+  poly(g,bed);g.fillStyle=lg(g,0,93.4,0,106.4,['#8e6c46','#725236','#523a28']);g.fill();
+  clipTo(g,()=>poly(g,bed),()=>{tex(g,'wood',.3,bx0,92,bx1-bx0,16,'overlay',.5);for(const t of[.34,.67]){stroke(g,[bx0,top(bx0)+(bot(bx0)-top(bx0))*t,bx1,top(bx1)+(bot(bx1)-top(bx1))*t],'rgba(30,20,14,.55)',.5);
+    stroke(g,[bx0,top(bx0)+(bot(bx0)-top(bx0))*t+.5,bx1,top(bx1)+(bot(bx1)-top(bx1))*t+.5],'rgba(220,180,130,.22)',.5)}
+    ao(g,bx0,90,6,18,'l',.3,'#2a1a10')});
+  stroke(g,[bx0,top(bx0)+.3,bx1,top(bx1)+.3],'#c09466',.7);stroke(g,[bx0,bot(bx0)-.2,bx1,bot(bx1)-.2],'#2e2016',.7);
+  R(g,bx0-.6,top(bx0)-.2,1.6,bot(bx0)-top(bx0)+.4,'#5a4230');R(g,bx1-1,top(bx1)-.2,1.6,bot(bx1)-top(bx1)+.4,'#9a7650');
+  /* the near shaft */
+  poly(g,sh0,'#7a5a3c');stroke(g,[64,105,75.6,117.8],'#b08860',.5);
+  /* the wheel: three boards with level seams, an iron tire, a square boss at the hub; lit from the right */
+  oval(g,wx,wy,wr,wr,'#3a2e28');
+  clipTo(g,()=>oval(g,wx,wy,wr-1.1,wr-1.1),()=>{g.fillStyle=lg(g,wx-wr,0,wx+wr,0,['#5a4230','#7a5a3e','#9a744c']);g.fillRect(wx-wr,wy-wr,wr*2,wr*2);tex(g,'wood',.3,wx-wr,wy-wr,wr*2,wr*2,'overlay',.5);
+    for(const dy of[-3.1,3.1]){R(g,wx-wr,wy+dy-.3,wr*2,.6,'rgba(30,20,14,.6)');R(g,wx-wr,wy+dy+.3,wr*2,.4,'rgba(220,180,130,.25)')}
+    ao(g,wx-wr,wy-wr,wr*2,wr*2,'l',.25,'#1a1010')});
+  g.strokeStyle='#8a8490';g.lineWidth=.6;g.beginPath();g.ellipse(wx,wy,wr-.5,wr-.5,0,-1.3,1.1);g.stroke();
+  R(g,wx-1.6,wy-1.6,3.2,3.2,'#4a3424');R(g,wx-1.6,wy-1.6,3.2,.6,'#a8805a');R(g,wx+1,wy-1.6,.6,3.2,'#c0986a');
+  SHARED.materials.shadow(g,wx,fy-.2,3.4,.6,.55)}
 /* ==== ART capua24: end ==== */
 
 /* ==== ART canal24: begin ==== */
-/* The southern end of the canal through the Pontine Marshes, at dusk (CANAL24): the flat marsh to its horizon, the canal running back
-   into the distance as a thread and widening toward us, its mouth in a basin at the left edge; the barge at the towpath's edge, the mule
-   on the towpath ahead of it (a footprint), reeds along the water at the left (the hidden treasure: G.frogs24, the reeds stir and rings
-   spread on the water while the frogs croak). ART-TODO. After sunset: soft light, no cast shadow. No birds. */
-const CANAL24={hz:70,water:[0,84,320,18],barge:[150,82,110,16],mule:[270,100,36,20],reeds:[0,80,64,30],walk:[16,304,112,138]};
-ART.canal24={w:320,q:12,paint(g){sky24(g,CANAL24.hz,'#4a4e78','#d89a78');ground24(g,CANAL24.hz,'#4e5a44');
-    g.fillStyle=lg(g,0,CANAL24.water[1],0,CANAL24.water[1]+CANAL24.water[3],['#6a6e88','#3a4458']);g.fillRect(...CANAL24.water);
-    blocks24(g,[[...CANAL24.barge,'#4a3424'],[...CANAL24.mule,'#5a4a3e']]);R(g,0,102,320,10,'#6a6248')},
+/* The southern end of the canal through the Pontine Marshes, at dusk (CANAL24). The sun has just gone down at the right: the sky is
+   violet above and warm low over the marsh, with no disc, no rays and no star. Low hills far off at the left; the marsh flat to its
+   horizon (y 70), its pools holding the last light, a few willows and poplars dark against it, a thin mist lying low.
+     The canal comes out of the distance at the right as a thread (its far end at x 306 on the horizon), turns toward us and runs along
+   the picture to the left, where it opens into a basin that runs out of the picture at the left edge: water runs somewhere, and nothing
+   grows in it. Its near bank carries the towpath (y 102..112), which follows the bend away into the distance.
+     The barge lies at the bank (150..260), bow to the right: a long low hull of curved strakes whose butt joints stop inside each course,
+   a small cabin of boards at the stern, the steering oar slanting down into the water, and near the bow the short towing post, its top
+   below the horizon, against the marsh. Its towrope runs slack from the post's top down to the mule on the towpath ahead (drawn in
+   draw(): SHARED.beasts.mule, with its own place in the depth), and is made fast behind it to the trace that runs along its
+   near side to its collar: the rope never lies across the mule's back and is never square to the barge.
+     The reeds stand along the basin at the left, in a dense bed at the edge and a smaller clump by the open water, as long blades that
+   lean together (drawn in draw(), so that they can stir); the far bank behind them is reed too, so that no level line runs behind
+   their stems. The hidden treasure: while G.frogs24 runs (4.2 s), the reeds stir and three wide, low rings spread on the open water at
+   x 30..58, y 93.
+     After sunset the light is soft: no cast shadow, only the contact shade under things, and no birds. */
+const CANAL24={hz:70,water:[0,84,320,18],barge:[150,82,110,16],mule:[270,100,36,20],reeds:[0,80,64,30],walk:[16,304,112,138],
+  post:[257,72.4],far:[306,71.4]};
+/* the two banks of the canal as functions of x: knots joined by cosine steps */
+const knots24=K=>x=>{if(x<=K[0])return K[1];for(let i=2;i<K.length;i+=2)if(x<=K[i]){const t=(x-K[i-2])/(K[i]-K[i-2]),s=(1-Math.cos(t*Math.PI))/2;return K[i-1]+(K[i+1]-K[i-1])*s}return K[K.length-1]};
+const yFar24=knots24([-2,80.6,40,84.4,140,85.4,226,86.4,260,86.4,276,82,290,77,300,73.4,306,71.4]),
+  yNear24=knots24([-2,109,46,102.2,240,102.2,266,99,288,90,300,79,306,71.4]);
+if(!SHARED.beasts)need('beasts');
+ART.canal24={w:320,q:12,paint(g){paintCanal24(g)},
+  /* after sunset: soft light, no cast shadow */
   light:{amb:'#a8a0b0',wallY:102},
-  /* the reeds and the frogs' rings (placeholders): the reeds stand as short upright strokes that lean together; while the frogs croak they
-     stir, and wide low rings spread on the water */
-  draw(g,t){const k=G.frogs24?(performance.now()-G.frogs24)/4200:9,stir=k<1?Math.sin(t/90)*1.6*(1-k):0;
-    for(let i=0;i<16;i++){const x=4+i*3.7,h=16+(i*7)%9,l=stir*(i%2?1:-.7);stroke(g,[x,104,x+l+(i%3-1)*.8,104-h],'#6e7a4a',1)}
-    if(k<1)for(let i=0;i<3;i++){const q=(k*3+i*.33)%1,rx=4+q*16,ry=Math.max(1.6,1+q*2.4);g.strokeStyle=`rgba(220,220,236,${.5*(1-q)})`;g.lineWidth=.6;g.beginPath();g.ellipse(30+i*14,93,rx,ry,0,0,Math.PI*2);g.stroke()}},
-  front(){}};
+  draw(g,t){drawCanal24(g,t)},front(){}};
+function paintCanal24(g){const{hz}=CANAL24,r=rng(2481),CO=SHARED.country;
+  /* the sky of dusk, and the glow low at the right where the sun has gone down: long and low */
+  sky(g,320,hz+1,['#3c4270','#56588a','#8a7a9e','#c49296','#e4ac86']);
+  comp(g,'screen',.5,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,170,110,0)','rgba(255,170,110,.25)','rgba(255,186,120,1)']);g.fillRect(0,hz-26,320,27)});
+  pool(g,320,hz+2,200,16,'#ffc890',.35,'screen');
+  /* thin clouds lit from below, drawn out level */
+  for(const[x,y,w]of[[40,18,90],[190,30,120],[110,44,70],[270,40,60]]){for(let i=0;i<5;i++){const yy=y+i*.8+(r()-.5)*.6,ww=w*(1-i*.14);R(g,x-ww/2+r()*6,yy,ww,.6,rgba(i<2?'#e8b4a4':'#a888a4',.32))}}
+  /* low hills far off at the left, and the line of the marsh to the horizon */
+  ridge(g,-2,150,hz+.5,x=>Math.max(0,13-x*.085+3*Math.sin(x/19+.4)+1.2*Math.sin(x/6.3)),['#4e5070','#5a5a78']);
+  /* the marsh: dark flat land, pools holding the light, reed beds; a thin mist lying low */
+  g.fillStyle=lg(g,0,hz,0,104,['#5a5a62','#4a4e44','#3e4636']);g.fillRect(-2,hz,324,104-hz);
+  inRect(g,-2,hz,324,40,()=>{tex(g,'mott',.4,-2,hz,324,40,'overlay',1);
+    for(let i=0;i<46;i++){const y=hz+1+Math.pow(r(),1.4)*14,k=(y-hz)/14,x=r()*320,w=(6+r()*22)*(.4+k),h=Math.max(.5,.4+k*1.2);if(x+w>226&&x<270||x<40)continue;
+      g.fillStyle=lg(g,0,y,0,y+h,[x>200?'rgba(236,180,140,.55)':'rgba(170,150,176,.5)','rgba(120,110,140,.2)']);g.fillRect(x,y,w,h)}
+    for(let i=0;i<300;i++){const y=hz+.5+Math.pow(r(),1.2)*14,k=(y-hz)/14,x=r()*320;R(g,x,y,.5+k,.5+k*.6,r()<.5?'rgba(40,46,34,.5)':'rgba(70,74,56,.45)')}});
+  for(const[x,y,h,k]of[[96,74,7,'willow'],[118,73.4,5,'willow'],[204,72.4,8,'poplar'],[214,72.6,6,'poplar'],[60,73,4,'bush']])CO.tree(g,x,y,h,'#3e4636',{kind:k,seed:2482+x,cast:false});
+  comp(g,'screen',.14,()=>{g.fillStyle=lg(g,0,hz-2,0,hz+10,['rgba(200,180,200,0)','rgba(200,180,200,1)','rgba(200,180,200,0)']);g.fillRect(-2,hz-2,324,12)});
+  /* the near side: the marsh on the right of the bend, then the towpath and the damp ground toward us */
+  g.fillStyle=lg(g,0,hz,0,144,['#4e5244','#4a503e','#40463a','#383c34']);
+  {const P=[322,hz];for(let x=306;x>=-2;x-=1)P.push(x,yNear24(x));P.push(-2,144,322,144);poly(g,P);g.fill()}
+  /* the near-side marsh beyond the bend: tufts that lean one way */
+  {const q=rng(2486);for(let i=0;i<260;i++){const x=236+q()*86,y0=CANAL24.hz+1,y=y0+q()*(112-y0);if(y<yNear24(Math.min(306,x))+1&&x<306)continue;
+    const h=.6+(y-y0)/40*2.4;stroke(g,[x,y,x+h*.3,y-h],q()<.5?'#2e3626':'#56603e',.5)}}
+  canal24Water(g,r);
+  canal24Path(g,r);
+  canal24Barge(g,r);
+  /* the dusk over everything: cool, and darker toward us */
+  comp(g,'multiply',.35,()=>{g.fillStyle=lg(g,0,0,0,144,['#ffffff','#e8e0ee','#a8a0bc','#787090']);g.fillRect(0,0,320,144)})}
+/* the water of the canal and the basin: the sky of dusk mirrored, warm toward the bend, darker under the far bank; the far bank a ragged
+   margin of reed and grass, never a ruled line */
+function canal24Water(g,r){const W=[];for(let x=-2;x<=306;x+=1)W.push(x,yFar24(x));for(let x=306;x>=-2;x-=1)W.push(x,yNear24(x));
+  poly(g,W);g.fillStyle=lg(g,0,70,0,110,['#d8a490','#9a8aa6','#6a6a8e','#4a4e6e']);g.fill();
+  clipTo(g,()=>poly(g,W),()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(80,80,120,.35)','rgba(80,80,120,0)','rgba(255,190,140,.35)']);g.fillRect(-2,70,324,40);
+    /* the reflection of the far bank: a dark band just under it, with a soft lower edge */
+    for(let x=-2;x<306;x+=.5){const y=yFar24(x),d=2.4+Math.sin(x/5.3)*.8+Math.sin(x/1.9)*.4;g.fillStyle=lg(g,0,y,0,y+d,['rgba(30,34,30,.7)','rgba(30,34,30,0)']);g.fillRect(x,y,.5,d)}
+    /* faint level glints of the sky, out in the open water only (none near the reeds, the barge or the mule) */
+    for(let i=0;i<70;i++){const x=70+r()*180,y=yFar24(x)+3+r()*(yNear24(x)-yFar24(x)-4),w=1.5+r()*5;if(x>140&&x<268&&y<99)continue;R(g,x,y,w,.5,r()<.6?'rgba(240,200,190,.25)':'rgba(170,160,200,.25)')}
+    tex(g,'mott',.25,-2,70,324,40,'overlay',1)});
+  /* the far bank: a low ragged mass of grass and reed with a soft uneven top, never a row of strokes; by the basin a taller bed of reed,
+     so that the near reeds stand against reed and no level line runs behind their stems */
+  {const top=x=>{const k=clamp((306-x)/76,.25,1);return yFar24(x)-(1.4+.7*Math.sin(x/3.7)+.5*Math.sin(x/1.7+1)+(x<36?1.6+1.2*Math.sin(x/6)+(36-x)*.04:x<48?(48-x)*.14:0))*k};
+    const P=[];for(let x=-2;x<=306;x+=.5)P.push(x,top(x));for(let x=306;x>=-2;x-=.5)P.push(x,x<16?yNear24(x)-.4:x<26?yFar24(x)+(yNear24(x)-yFar24(x))*(1-(x-16)/10)**2:yFar24(x)+.4);
+    poly(g,P);g.fillStyle=lg(g,0,74,0,88,['#4a5236','#3a4230','#2e3428']);g.fill();
+    clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.45,-2,70,324,40,'overlay',1);for(let i=0;i<500;i++){const x=r()*306,y=top(x)+r()*(yFar24(x)-top(x));R(g,x,y,.5,.5+r(),r()<.5?'rgba(20,24,18,.4)':'rgba(110,110,80,.3)')}
+      /* in the reed bed by the basin: blades that lean together, dark and a little lit at the tips */
+      for(let i=0;i<190;i++){const x=-2+r()*30,b=yNear24(x)+1,h=6+r()*(x<16?30:22),l=h*(.12+r()*.1);stroke(g,[x,b,x+l,b-h],r()<.5?'#2a3022':'#3e4630',.6);if(r()<.3)R(g,x+l,b-h,.5,.5,'#7a7860')}});
+    for(let x=-2;x<306;x+=.5)if(r()<.25)R(g,x,top(x)-.3,.5,.5,'rgba(190,160,140,.35)')}
+  /* the near bank: a wet dark edge where the water meets the earth */
+  for(let x=-2;x<306;x+=.5){const y=yNear24(x);R(g,x,y-.6,.5,1.2,'#2e3228');R(g,x,y-1.1,.5,.5,'rgba(220,190,190,.3)')}}
+/* the towpath along the near bank, trodden bare, following the bend into the distance; the damp ground toward us with grass, tufts and
+   long low puddles holding the sky */
+function canal24Path(g,r){const P=[],Q=[];for(let x=-2;x<=306;x+=1){const y=yNear24(x),w=Math.max(.6,10*Math.min(1,(306-x)/70));P.push(x,y+.6);Q.unshift(x,y+.6+w)}
+  const T=P.concat(Q);poly(g,T);g.fillStyle=lg(g,0,70,0,114,['#5e5852','#625a50','#544c44']);g.fill();
+  clipTo(g,()=>poly(g,T),()=>{tex(g,'mott',.5,-2,70,324,44,'overlay',1);tex(g,'grain',.25,-2,70,324,44,'overlay',.5);
+    for(let i=0;i<260;i++){const x=r()*306,y=yNear24(x)+1+r()*9;R(g,x,y,.5+r(),.5,r()<.5?'rgba(40,36,30,.35)':'rgba(170,160,150,.25)')}
+    /* the ruts of hooves along it */
+    for(let x=-2;x<300;x+=1.5){const y=yNear24(x)+4+Math.sin(x/9)*.4;R(g,x,y,1,.5,'rgba(40,34,28,.25)')}});
+  /* the ground toward us: grass in tufts that lean one way, puddles long and low */
+  CO24t(g,-2,112,324,144,'#3e4634',2483);
+  comp(g,'multiply',.45,()=>{g.fillStyle=lg(g,0,112,0,144,['#c8c0d0','#8a84a0']);g.fillRect(-2,112,324,32)});
+  for(const[x,y,w]of[[96,128,26],[170,136,34],[232,124,18],[40,140,22]]){poly(g,[x,y,x+w*.3,y-1.2,x+w*.8,y-1,x+w,y+.2,x+w*.7,y+1.4,x+w*.2,y+1.2],'#6e6a86');R(g,x+w*.25,y-.6,w*.4,.5,'rgba(230,190,170,.35)')}}
+const CO24t=(g,x,y0,w,y1,c,seed)=>SHARED.country.turf(g,x,y0,w,y1,c,seed,{wind:.6,scale:.8,flowers:0,dry:0});
+/* the barge, bow to the right: a long low hull of curved strakes, a cabin of boards at the stern, the steering oar, the towing post near
+   the bow; its reflection in the water under it */
+function canal24Barge(g,r){const[x0,y0,w]=CANAL24.barge,x1=x0+w,wl=96.6,gun=x=>86-1.4*Math.pow(Math.max(0,(x0+14-x)/14),2)-2*Math.pow(Math.max(0,(x-(x1-18))/18),2),
+    keel=x=>wl+1.2-.8*Math.pow(Math.abs((x-(x0+x1)/2)/(w/2)),4);
+  /* the reflection: a dark mirrored hull, broken at its lower edge */
+  for(let x=x0+2;x<x1-2;x+=.5){const d=4+Math.sin(x/3.1)*.8+Math.sin(x/1.3)*.5;g.fillStyle=lg(g,0,wl,0,wl+d,['rgba(30,24,30,.7)','rgba(30,24,30,0)']);g.fillRect(x,wl,.5,d)}
+  /* the hull */
+  const H=[];for(let x=x0;x<=x1;x+=1)H.push(x,gun(x));H.push(x1+1.4,gun(x1)+2,x1-3,wl+.6);for(let x=x1-4;x>=x0+4;x-=1)H.push(x,keel(x));H.push(x0-1,gun(x0)+2.4);
+  poly(g,H);g.fillStyle=lg(g,0,82,0,98,['#7a5a3e','#5e4430','#40302a','#2a2020']);g.fill();
+  clipTo(g,()=>poly(g,H),()=>{tex(g,'wood',.25,x0-2,80,w+6,20,'overlay',.5);
+    /* the strakes: curved with the sheer; butt joints stop inside each course */
+    for(let k=1;k<4;k++){const P=[];for(let x=x0-1;x<=x1+2;x+=1)P.push(x,gun(x)+k*2.8+(keel(x)-wl)*.2*k);stroke(g,P,'rgba(24,16,14,.55)',.5);stroke(g,P.map((v,i)=>i%2?v+.5:v),'rgba(200,160,120,.18)',.5);
+      for(let bx=x0+8+k*7;bx<x1-8;bx+=22+((bx*7)%9)){const y=gun(bx)+k*2.8+(keel(bx)-wl)*.2*k;stroke(g,[bx,y+.6,bx,y+2.2],'rgba(24,16,14,.5)',.5)}}
+    ao(g,x0-2,wl-4,w+6,5,'b',.4,'#140c10')});
+  /* the gunwale: a lit rail along the top */
+  {const P=[];for(let x=x0;x<=x1;x+=1)P.push(x,gun(x));stroke(g,P,'#a88458',.8);stroke(g,P.map((v,i)=>i%2?v+.8:v),'#3a2a20',.5)}
+  /* the cabin at the stern: boards set upright, a flat roof of planks with its edge lit */
+  {const cx0=x0+8,cx1=x0+34,ct=78.4,cb=gun(cx0+10)+.4;court24Boards(g,cx0,ct,cx1-cx0,cb-ct,'#6a5038',2484);ao(g,cx0,ct,cx1-cx0,cb-ct,'r',.3,'#1a1014');
+    R(g,cx0-1.4,ct-1.6,cx1-cx0+2.8,1.8,'#7a5c40');R(g,cx0-1.4,ct-1.6,cx1-cx0+2.8,.5,'#b89068');R(g,cx0+9,ct+3,5,4,'#1e1618')}
+  /* bundles and a coil-less heap of sacks amidships, low */
+  for(const[x,ww,hh,c]of[[x0+48,4.6,4,'#8a7a66'],[x0+56,5,4.4,'#7a6a5a'],[x0+64,4.2,3.6,'#8e7e6a']])sack(g,x,gun(x)+1.6,ww,hh,c);
+  /* the steering oar: from the stern down into the water, one slanting loom */
+  stroke(g,[x0+4,gun(x0+4)-3.4,x0-6,wl+2],'#5a4230',1.2);stroke(g,[x0+4,gun(x0+4)-3.4,x0-6,wl+2],'#8a6a4a',.4);
+  /* the towing post near the bow: short, its top against the marsh below the horizon */
+  const[px,py]=CANAL24.post;R(g,px-.8,py,1.6,gun(px)-py+.4,'#4e3a2a');R(g,px-.8,py,.5,gun(px)-py,'#8a6a48');R(g,px-.8,py,1.6,.5,'#9a7a56')}
+/* what moves: the mule on the towpath with its harness and the slack towrope; the reeds, which stir when the frogs set off; and the rings
+   they spread on the water */
+function drawCanal24(g,t){const B=SHARED.beasts,[mx,my,mw,mh]=CANAL24.mule,fx=mx+mw/2,fy=my+mh-1,k=G.frogs24?(performance.now()-G.frogs24)/4200:9;
+  if(k<1)for(let i=0;i<3;i++){const q=(k*3+i*.33)%1,rx=4+q*16,ry=Math.max(1.6,1+q*2.4);g.strokeStyle=`rgba(226,210,226,${.55*(1-q)})`;g.lineWidth=.6;g.beginPath();g.ellipse(30+i*14,93,rx,ry,0,0,Math.PI*2);g.stroke()}
+  canal24Reeds(g,t,k);
+  /* the towrope: from the post's top it sags down to the end of the trace behind the mule; drawn in the queue with the mule, just behind it */
+  const sw=[fx-16.6,fy-19.6];
+  if(B)depth(fy-.1,()=>{const[px,py]=CANAL24.post,P=[];for(let i=0;i<=16;i++){const u=i/16;P.push(px+(sw[0]-px)*u,py+(sw[1]-py)*u+1.4*Math.sin(Math.PI*u))}
+    stroke(g,P,'#2a2420',.9);stroke(g,P.map((v,i)=>i%2?v-.4:v),'#8a7a62',.4)});
+  if(B){B.mule(g,fx,fy,1,B.pose('mule24c',0),-1,lightAt('canal24',fx,fy));
+    /* the harness over it: a collar at the base of the neck, the near trace along its side to where the towrope is made fast */
+    depth(fy+.1,()=>{const cx=fx+9.4,cy=fy-21.6;stroke(g,[sw[0],sw[1],cx,cy],'#3a2a20',.7);stroke(g,[sw[0],sw[1]-.4,cx,cy-.4],'rgba(170,140,110,.35)',.4);
+      /* the collar: a padded band of leather round the base of the neck, curved */
+      stroke(g,[cx-1,cy+.2,cx+.6,cy-1.6,cx+.6,cy-4.4,cx-.6,cy-7.4],'#2e2018',1.6);stroke(g,[cx-.2,cy-1.8,cx-.2,cy-4.4,cx-1.2,cy-7.2],'#7a5a3a',.5)})}}
+/* the reeds: blades from the bank, leaning together, each with a darker foot and some with a seed head; they stir while the frogs croak */
+function canal24Reeds(g,t,k){const stir=k<1?Math.sin(t/90)*1.4*(1-k):0,q=rng(2485);
+  const bed=(x0,x1,n,base,hmin,hmax,lean)=>{for(let i=0;i<n;i++){const x=x0+q()*(x1-x0),b=base(x)+q()*1.2,h=hmin+q()*(hmax-hmin),l=lean*h*(.18+q()*.12)+stir*(i%2?1:-.6)*(h/20),
+      c=q()<.3?'#2e3626':q()<.6?'#3e4a30':'#4e5a3a';stroke(g,[x,b,x+l*.4,b-h*.55,x+l,b-h],c,.7);if(q()<.25){R(g,x+l-.4,b-h-1.4,1,1.6,'#4a3a2a')}}};
+  /* the dense bed along the left edge of the basin, then the clump by the open water */
+  bed(-2,28,70,x=>yNear24(x)-1-(28-x)*.12,12,24,.6);bed(-2,22,30,x=>yFar24(x)+6,10,15,.5);
+  bed(56,68,18,x=>yNear24(x)-.4,9,16,.45)}
 /* ==== ART canal24: end ==== */
 
 /* ==== ART appius24: begin ==== */
