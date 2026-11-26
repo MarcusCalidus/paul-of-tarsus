@@ -176,7 +176,7 @@ TEXTS('en',21,{
   "clerk_the_report_first":"The report first.",
   "clerk_the_field_is_still_empty":"The field for the charge. Still empty.",
   "hall_windows_look":"Long windows high in the wall. The morning light comes in through them.",
-  "hall_bench_look":"The bench where the military commanders and the leading men of the city sit.",
+  "hall_bench_look":"Two benches: the military commanders sit on one, the leading men of the city on the other.",
   "hall_dais_look":"The dais, with three chairs on it: the governor's, the king's and Bernice's.",
   "door_of_the_hall_look":"The door of the hall, to the passage.",
   "governors_clerk_look":"The governor's clerk, with his writing board.",

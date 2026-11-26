@@ -180,7 +180,7 @@ TEXTS('de',21,{
   "clerk_the_report_first":["Erst der Bericht.","1n8kwnm"],
   "clerk_the_field_is_still_empty":["Das Feld für die Anklage. Immer noch leer.","1544985"],
   "hall_windows_look":["Lange Fenster hoch oben in der Wand. Durch sie fällt das Morgenlicht herein.","1r41ax4"],
-  "hall_bench_look":["Die Bank, auf der die Militärbefehlshaber und die angesehenen Männer der Stadt sitzen.","1xawud1"],
+  "hall_bench_look":["Zwei Bänke: Auf der einen sitzen die Militärbefehlshaber, auf der anderen die angesehenen Männer der Stadt.","17afkpz"],
   "hall_dais_look":["Das Podest mit drei Stühlen darauf: für den Statthalter, für den König und für Bernice.","1bfhhcx"],
   "door_of_the_hall_look":["Die Tür des Saals, hinaus zum Gang.","0c4ll3r"],
   "governors_clerk_look":["Der Schreiber des Statthalters, mit seinem Schreibbrett.","1jn6dwh"],
