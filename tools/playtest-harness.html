@@ -4905,9 +4905,11 @@
   onH('back_to_the_table','walk');await until(()=>G.room==='write21'&&!G.busy,3000);
   for(const[h,f]of[['the_commanders_letter','readLetter'],['the_record_before_felix','readRecord'],['my_notes_before_festus','readNotes']]){heard.length=0;await onH(h,'look');ok(F[f]&&C().papers[{readLetter:'letter',readRecord:'record',readNotes:'notes'}[f]].read.every(said),'he reads the '+h.replace(/_/g,' '))}
   onH('the_report','use');await until(()=>G.room==='report21'&&!G.busy,3000);
-  {const w={never:'worship',worship:'never'};for(const c of R){heard.length=0;await mark(c.k,w[c.ok]);ok(said(c.no)&&!(G.mk21||{})[c.k],'a wrong mark on '+c.k+' is answered with the true reason, and not set')}}
+  {const w={never:'worship',worship:'never'};for(const c of R){if(c.also)continue;heard.length=0;await mark(c.k,w[c.ok]);ok(said(c.no)&&!(G.mk21||{})[c.k],'a wrong mark on '+c.k+' is answered with the true reason, and not set')}}
+  {const c=R.find(c=>c.also);ok(c&&c.k==='charge_many_and_serious'&&R.filter(x=>x.also).length===1,'one line takes either mark: the many serious charges before Festus');
+    for(const m of[c.ok,c.also]){heard.length=0;await mark(c.k,m);ok((G.mk21||{})[c.k]===m&&!F.report,'the many serious charges may be marked '+MK[m]+' (Acts 25:7; 25:18, 19)')}}
   heard.length=0;clickHs(rh(R[0].k),'use');{const o=await asked();ok(o.length===3&&o.at(-1)==='leave_it_as_it_is','two marks, and leave it as it is')}await line('leave_it_as_it_is');
-  for(const c of R){heard.length=0;await mark(c.k,c.ok)}
+  for(const c of R){if(c.also)continue;heard.length=0;await mark(c.k,c.ok)}
   ok(F.report&&said('clerk_and_the_field_stays_empty')&&said('clerk_the_governor_must_see_this'),'revolt, the temple and the many serious charges never proved; the sect and their own Law a dispute about their own worship: the field for the charge stays empty');
   heard.length=0;await clickHs(ROOMS.report21.hs.find(h=>h.name==='field_for_the_charge'),'look');ok(said('clerk_the_empty_letter'),'the empty letter');
   {const bad=(G.caps21||[]).filter(c=>c.w>c.max+.5||c.h>c.maxh+.5);ok((G.caps21||[]).length>0&&!bad.length,'every word written on the report fits its place'+(bad.length?': '+bad.slice(0,4).map(c=>c.s).join(' | '):''))}

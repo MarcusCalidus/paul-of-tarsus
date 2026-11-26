@@ -133,7 +133,6 @@ TEXTS('en',21,{
   "clerk_he_admitted_that_one_himself":"Never proved? He said himself, before Felix, that he belongs to it. It's about the way he worships.",
   "clerk_profaning_the_temple_would_be_a_crime":"Profaning the temple would be a crime, not a dispute about worship. A crime needs its witnesses.",
   "clerk_the_commander_named_it_himself":"Proof isn't the point. The commander wrote it plainly: the questions were about their own Law.",
-  "clerk_they_called_them_crimes":"They called them serious crimes, not questions of worship. What counts is whether they proved them.",
   "clerk_and_the_field_stays_empty":"Every line has its mark. And the field for the charge stays empty.",
   "clerk_the_governor_must_see_this":"The governor must see this.",
   "clerk_the_empty_letter":"Twenty years a clerk, and the hardest letter of all is the one with nothing in it.",

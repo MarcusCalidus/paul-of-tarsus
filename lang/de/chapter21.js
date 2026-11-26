@@ -137,7 +137,6 @@ TEXTS('de',21,{
   "clerk_he_admitted_that_one_himself":["Nie bewiesen? Er hat vor Felix selbst gesagt, dass er dazugehört. Es geht darum, wie er Gott anbetet.","1upegpd"],
   "clerk_profaning_the_temple_would_be_a_crime":["Den Tempel zu entweihen wäre ein Verbrechen, kein Streit über die Gottesanbetung. Für ein Verbrechen braucht es Zeugen.","114t4ui"],
   "clerk_the_commander_named_it_himself":["Um Beweise geht es hier nicht. Der Militärbefehlshaber hat es klar geschrieben: Es ging um Fragen ihres eigenen Gesetzes.","05jvdcl"],
-  "clerk_they_called_them_crimes":["Sie haben von schweren Verbrechen gesprochen, nicht von Fragen der Gottesanbetung. Entscheidend ist, ob sie sie bewiesen haben.","0a6gu3l"],
   "clerk_and_the_field_stays_empty":["Jede Zeile hat ihren Vermerk. Und das Feld für die Anklage bleibt leer.","0baesrg"],
   "clerk_the_governor_must_see_this":["Das muss der Statthalter sehen.","001409i"],
   "clerk_the_empty_letter":["Zwanzig Jahre Schreiber, und der schwerste Brief ist der, in dem nichts steht.","0tet9iz"],

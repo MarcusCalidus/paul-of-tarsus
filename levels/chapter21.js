@@ -36,9 +36,9 @@
       On the report every charge ever brought is a line (REPORT21): the three of Felix's hearing, the commander's "questions of their own
       Law", and the many serious charges before Festus. Each takes one of two marks, never proved or a dispute about their own worship
       (25:18, 19: what Festus himself found), and a line can be marked only when the paper that settles it has been read (each line names
-      its paper). The wrong mark is answered at once with the true reason and is not set, so the one arrangement is the only one that
-      stands: revolt, the temple and the many serious charges never proved; the sect and the questions of their own Law a dispute about
-      their own worship. When all five stand, the field for the charge is still empty; the clerk takes it to Festus, who lays the case
+      its paper). The wrong mark is answered at once with the true reason and is not set: revolt and the temple never proved; the sect
+      and the questions of their own Law a dispute about their own worship; the many serious charges before Festus take either mark,
+      since they were never proved (25:7) and Festus himself found them a dispute about their own worship (25:18, 19). When all five stand, the field for the charge is still empty; the clerk takes it to Festus, who lays the case
       before the king (25:14-22).
    3. Two listeners (the audience chamber, 26:24-29). After Festus breaks in, every sentence Paul can say is true, and the player chooses
       the sentence (a mixed choice, the same in every language) by choosing whom he speaks to: Talk to Festus or Talk to King Agrippa
@@ -493,12 +493,14 @@ const fast=()=>G.speedAll>200;   /* the playtest plays at speed */
 const PAPERS21={letter:{name:'the_commanders_letter',flag:'readLetter',read:['letter_greeting','letter_i_rescued_him_as_a_roman','letter_i_took_him_to_their_sanhedrin','letter_nothing_deserving_death_or_chains','letter_a_plot_so_i_send_him','letter_his_accusers_will_speak_before_you']},
   record:{name:'the_record_before_felix',flag:'readRecord',read:['charge_revolt','paul_no_crowd_no_proof','charge_sect','paul_what_i_admit','charge_temple','paul_the_men_from_asia']},
   notes:{name:'my_notes_before_festus',flag:'readNotes',read:['notes21_many_charges_none_proved','paul_no_sin_against_law_temple_caesar']}};
-/* the report: every charge ever brought, the paper that settles it, the one mark that stands, and the true reason the other will not */
+/* the report: every charge ever brought, the paper that settles it, the mark that stands, and the true reason the other will not; the
+   many serious charges before Festus take either mark (also): they were never proved (25:7), and Festus himself found them a dispute about
+   their own worship (25:18, 19) */
 const REPORT21=[{k:'charge_revolt',paper:'record',ok:'never',no:'clerk_a_revolt_is_no_question_of_worship'},
   {k:'charge_sect',paper:'record',ok:'worship',no:'clerk_he_admitted_that_one_himself'},
   {k:'charge_temple',paper:'record',ok:'never',no:'clerk_profaning_the_temple_would_be_a_crime'},
   {k:'charge_questions_of_their_own_law',paper:'letter',ok:'worship',no:'clerk_the_commander_named_it_himself'},
-  {k:'charge_many_and_serious',paper:'notes',ok:'never',no:'clerk_they_called_them_crimes'}];
+  {k:'charge_many_and_serious',paper:'notes',ok:'never',also:'worship'}];
 const MARK21={never:'mark_never_proved',worship:'mark_a_dispute_about_their_own_worship'};
 const FIRST21={letter:'clerk_first_the_commanders_letter',record:'clerk_first_the_record_before_felix',notes:'clerk_first_my_notes'};
 /* the two listeners: each sentence, whether it is the one the account gives to that listener now, and what the other answers */
@@ -528,7 +530,8 @@ const TC={thought:1,color:'#ece0c8'};   /* the clerk's thoughts */
 CL.noPray=1;CL.thought=TC;
 const THP={thought:1,color:'#cfe2ff'};  /* Paul's */
 const mk21=()=>G.mk21||(G.mk21={});
-const markOf21=k=>F.report?REPORT21.find(c=>c.k===k).ok:mk21()[k];
+const markOf21=k=>F.report?mk21()[k]||REPORT21.find(c=>c.k===k).ok:mk21()[k];
+const marked21=c=>{const m=mk21()[c.k];return m===c.ok||m===c.also};
 /* the chain: one light chain on one of Paul's wrists, to the one soldier beside him (shared/cast.js, custody 'one') */
 /* In the court the soldier stands a step behind Paul on his left, so the near wrist is the chained one. In the hall he stands a step ahead of
    him on his right, between him and the dais, so the far wrist is: when Paul raises that hand (26:29), bent, the chain goes up with it and
@@ -600,9 +603,9 @@ async function markLine21(c){if(F.report)return say(CL,'clerk_every_line_has_its
   if(!F[PAPERS21[c.paper].flag])return say(CL,FIRST21[c.paper],TC);
   const opts=['mark_never_proved','mark_a_dispute_about_their_own_worship','leave_it_as_it_is'],i=await choose(opts,{keep:1});
   if(i===2)return;const m=i?'worship':'never';
-  if(m!==c.ok){SFX.nope();return say(CL,c.no,TC)}
+  if(m!==c.ok&&m!==c.also){SFX.nope();return say(CL,c.no,TC)}
   mk21()[c.k]=m;SFX.click();
-  if(REPORT21.every(x=>mk21()[x.k]===x.ok)){F.report=1;SFX.good();await say(CL,'clerk_and_the_field_stays_empty',TC);await say(CL,'clerk_the_governor_must_see_this',TC);codeBtn()}}
+  if(REPORT21.every(marked21)){F.report=1;SFX.good();await say(CL,'clerk_and_the_field_stays_empty',TC);await say(CL,'clerk_the_governor_must_see_this',TC);codeBtn()}}
 async function field21(){return say(CL,F.report?'clerk_the_empty_letter':'the_field_for_the_charge_look',TC)}
 /* in the court: Festus, with the king and his sister; the report taken to him (25:14-22); and the next day the audience */
 async function festus21(){if(!F.report){await say(FS,'festus_is_the_report_ready',{to:CL});return say(CL,'clerk_not_yet_your_excellency',{to:FS})}
