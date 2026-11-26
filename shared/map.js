@@ -57,14 +57,22 @@ const xy=(lon,lat)=>[(lon-LON0)*KX,(LAT0-lat)*KY];
    in it Crete is drawn with its finer coast (CRETE_FINE). adria: from Crete west to Sicily and Malta, with the coast of Africa from
    Cyrenaica round the Syrtis to Tunisia in the south, at four fifths of the usual size, from about 10.5 to 32.2 degrees east and 30.2 to
    38.3 north (Acts 27:13-28:1). italy: from Malta north to Rome, at nine tenths of the usual size, from about 9.9 to 29.2 degrees east and
-   35.2 to 42.4 north, for the last part of the voyage (Acts 28:11-16); its left edge stands east of Sardinia, which is not drawn. */
+   35.2 to 42.4 north, for the last part of the voyage (Acts 28:11-16); its left edge stands east of Sardinia, which is not drawn.
+   For the road to Rome and the letters from Rome, three more. appia: the last road of Acts 28:13-16, four and a half times as close, from
+   about 11.4 to 15.3 degrees east and 40.7 to 42.1 north: from Puteoli on its bay inland to Capua, by the Appian Way along the coast side of
+   the hills to Tarracina, and straight across to the Marketplace of Appius, Three Taverns and Rome, which lie a few pixels apart on
+   the italy window. lycus: the road from Ephesus up the valleys of the Maeander and the Lycus to Laodicea and Colossae, four times as
+   close, from about 25.9 to 30.3 degrees east and 37.0 to 38.7 north, where the two towns of the Lycus lie less than a pixel apart
+   on the others. letters: from Rome to Asia, at four fifths of the usual size, from about 10.2 to 31.9 degrees east and 34.8 to 42.9
+   north: Italy, Greece, the Aegean and the west of Asia Minor in one window, so that Rome, Philippi, Ephesus and Colossae are seen at
+   once, for the letters written in Rome (no road is drawn on it: no account gives the way they went). */
 const VIEWS={north:[26,-41],aegean:[-40,-101],west:[-62,-101],ionia:[-6,-57,2.25],caria:[41,-11,3],levant:[20,-10],journeys:[-62,-96,.86],
-  outward:[-30,-14],crete:[2,37,5],adria:[-234,-19,.8],italy:[-245,-110,.9]};
+  outward:[-30,-14],crete:[2,37,5],adria:[-234,-19,.8],italy:[-245,-110,.9],appia:[-217,-103,4.5],lycus:[50,-27,4],letters:[-240,-121,.8]};
 let OX=0,OY=0,ZM=1,VN='';
 /* where the name of the sea stands: in open water, clear of the routes and of the hint under it, in each view. null: the name is not
    written, where the window names a sea of its own (the Sea of Adria) */
 const SEA={'-62,-96':[60,56],'0,0':[92,84],'26,-41':[60,65],'-40,-101':[95.7,35.4],'-62,-101':[95.7,35.4],'-6,-57':[8.6,-37.7],'41,-11':[46,30],'20,-10':[100,100],
-  '-30,-14':[52,88],'2,37':[20,63],'-234,-19':null,'-245,-110':null};
+  '-30,-14':[52,88],'2,37':[20,63],'-234,-19':null,'-245,-110':null,'-217,-103':[-212,-80],'50,-27':null,'-240,-121':[-132,32]};
 /* where the hint under a map to pick from stands, in screen pixels from the top, where the usual place (H - 14) would cross a coast.
    In the usual window ('') the coast of Marmarica comes into the lower left corner, so the hint stands higher, in the open sea between
    Crete and Africa; in the levant window, where a corner of Marmarica comes in below its left end, a few pixels higher than usual. */
@@ -73,7 +81,15 @@ const HINT={journeys:H-5,'':100,levant:H-18,outward:112};   /* outward: Chapter 
    gives others */
 const VLAB={journeys:{salamis:{lab:'r'},paphos:{lab:'l',dy:2},thessalonica:{lab:'l',dy:-4},corinth:{lab:'l',dy:2},athens:{lab:'r',dy:12}},
   outward:{cnidus:{lab:'l',dx:2.2,dy:.5,sz:4},fairhavens:{lab:'b',dy:3}},crete:{salmone:{lab:'l',dy:-9},lasea:{lab:'r',dy:-4.5},fairhavens:{lab:'l',dy:10},cauda:{lab:'l',dy:-1}},
-  adria:{myra:{quiet:1},cnidus:{quiet:1},salmone:{quiet:1},fairhavens:{quiet:1},cauda:{lab:'l',dy:-4},alexandria:{quiet:1}},italy:{}};
+  adria:{myra:{quiet:1},cnidus:{quiet:1},salmone:{quiet:1},fairhavens:{quiet:1},cauda:{lab:'l',dy:-4},alexandria:{quiet:1}},
+  /* on the italy window the Marketplace of Appius and Three Taverns would touch each other and Rome: the road runs on through them
+     without a dot (the close window appia names them) */
+  italy:{appius:{hide:1},threetaverns:{hide:1},rome:{lab:'r',dy:-2}},
+  appia:{puteoli:{lab:'l',dy:8},rome:{lab:'t'},threetaverns:{lab:'r',dy:-4},appius:{lab:'r',dy:-5.5}},
+  lycus:{ephesus:{lab:'r',dy:-5},laodicea:{lab:'t',dy:-2},colossae:{lab:'r'}},
+  /* on the letters window Laodicea would lie on Colossae: it is left out; the name of Ephesus stands a little higher, clear of the dot
+     of Colossae beside it */
+  letters:{laodicea:{hide:1},ephesus:{lab:'r',dy:-5}}};
 const inView=(x,y,m)=>{m/=ZM;return x>=OX-m&&x<=OX+W/ZM+m&&y>=OY-m&&y<=OY+H/ZM+m};
 /* Rz: a small square of the route, snapped to the canvas pixels of the view however close it is (R, at the usual size) */
 const Rz=(g,x,y,w,h,c)=>{const k=HR*ZM,s=v=>Math.round(v*k)/k;g.fillStyle=c;g.fillRect(s(x),s(y),s(w),s(h))};
@@ -140,10 +156,19 @@ const PLACES={
   salmone:{name:'cape_salmone',at:[26.42,35.27],lab:'r',cape:1,sz:4},
   fairhavens:{name:'fair_havens',at:[24.80,34.93],lab:'b'},lasea:{name:'Lasea',at:[24.89,34.93],lab:'t'},phoenix:{name:'Phoenix',at:[24.08,35.2],lab:'b'},
   cauda:{name:'Cauda',at:[24.06,34.752],lab:'l',cape:1},malta:{name:'Malta',at:[14.42,35.9],lab:'l'},
-  /* for the voyage on from Malta (Acts 28:11-16), to be named when that chapter is built: Syracuse on the east coast of Sicily, Rhegium
-     at the toe of Italy, Puteoli on the Bay of Naples, and Rome. Until then they are points without a dot or a name (hide). */
-  syracuse:{name:'',at:[15.29,37.07],lab:'r',hide:1},rhegium:{name:'',at:[15.65,38.11],lab:'r',hide:1},
-  puteoli:{name:'',at:[14.12,40.82],lab:'l',hide:1},rome:{name:'',at:[12.48,41.9],lab:'r',hide:1}};
+  /* the voyage on from Malta and the road to Rome (Acts 28:11-16). Syracuse, the harbor on the south-east coast of Sicily (28:12);
+     Rhegium at the toe of Italy, on the Strait of Messina (28:13), whose name stands below it in the open sea, for the toe is too
+     narrow to hold it; Puteoli, on its bay some 10 km west-south-west of Naples, where the ship came in (28:13, 14); Capua, inland,
+     where the walk from Puteoli met the Appian Way (there was no road along the coast yet), a point on the road without a dot or a
+     name; the Marketplace of Appius, a station of that road about 65 km from Rome at the northern end of the Pontine Marshes, and Three
+     Taverns, a resting place about 50 km from Rome (28:15), which they reached in that order coming up from the south; and Rome (28:16). */
+  syracuse:{name:'Syracuse',at:[15.29,37.07],lab:'r'},rhegium:{name:'Rhegium',at:[15.65,38.11],lab:'r',dy:8},
+  puteoli:{name:'Puteoli',at:[14.12,40.82],lab:'l'},capua:{name:'',at:[14.25,41.08],hide:1},
+  appius:{name:'marketplace_of_appius',at:[12.99,41.44],lab:'r'},threetaverns:{name:'three_taverns',at:[12.87,41.56],lab:'r'},
+  rome:{name:'Rome',at:[12.48,41.9],lab:'t'},
+  /* Laodicea and Colossae in the valley of the Lycus, inland of Ephesus, some 16 km apart: Colossae farther up the valley, to the
+     east-south-east (the letters of Colossians 4:7-9, 16). Hierapolis, across the river, is not drawn. */
+  laodicea:{name:'Laodicea',at:[29.11,37.84],lab:'t'},colossae:{name:'Colossae',at:[29.28,37.78],lab:'r'}};
 /* waypoints for legs that do not run straight: by sea up the coast and east of Cyprus; by road round the Gulf of Issus; through
    the south of Cyprus, the way tradition has them go from Salamis to Paphos; by sea clear of the western cape of Cyprus; up the valley
    through the Taurus; along the foot of the mountains to Iconium; and home from Attalia by sea, between Cyprus and the coast of Cilicia */
@@ -199,15 +224,31 @@ const VIA={'caesarea-tarsus':[34.42,33.3,34.5,34.7,34.88,35.75],'tarsus-antioch'
   'cnidus-salmone':[27.42,36.45,27.3,36.25,27.0,36.0,26.68,35.62,26.47,35.4],
   'salmone-fairhavens':[26.38,35.08,26.18,34.88,25.7,34.83,25.2,34.82,24.85,34.82,24.8,34.86],
   'fairhavens-cauda':[24.74,34.895,24.6,34.97,24.45,35.03,24.3,34.97,24.22,34.86,24.15,34.765],
-  'cauda-malta':[23.4,34.62,22.3,34.6,20.8,34.8,18.8,35.15,16.8,35.5,15.3,35.78,14.75,35.88]};
+  'cauda-malta':[23.4,34.62,22.3,34.6,20.8,34.8,18.8,35.15,16.8,35.5,15.3,35.78,14.75,35.88],
+  /* Acts 28:11-16. From Malta north-north-east across the open sea, east of Cape Pachynus, into the harbor of Syracuse; north along
+     the east coast of Sicily, off its shore, to Rhegium; through the strait and north-north-west along the coast of Italy, west of the
+     Gulf of Salerno and of the point of Sorrento, into the bay of Puteoli. The account names no course: the lines show open water.
+     Then inland to Capua (there was no road along the coast yet), and the Appian Way: north-west through the hills of Campania, along
+     the coast side of the hills, down to the sea at Tarracina, then straight across the Pontine Marshes to the Marketplace of Appius
+     and Three Taverns, and up along the Alban hills to Rome. The stations between Capua and Tarracina are rough real geography; no
+     source read names them. None of these legs crosses another or the voyage that came in from Cauda. */
+  'malta-syracuse':[14.85,36.05,15.3,36.2,15.52,36.42,15.5,36.78],
+  'syracuse-rhegium':[15.42,37.22,15.36,37.5,15.47,37.78,15.56,37.98],
+  'rhegium-puteoli':[15.64,38.2,15.63,38.33,15.5,38.55,15.3,38.95,15.05,39.5,14.75,40.05,14.45,40.3,14.28,40.45,14.2,40.62,14.16,40.76],
+  'puteoli-capua':[14.16,40.92,14.22,41.0],
+  'capua-appius':[14.1,41.1,13.93,41.12,13.84,41.21,13.74,41.27,13.6,41.29,13.45,41.35,13.3,41.33,13.16,41.37],
+  'threetaverns-rome':[12.66,41.72,12.56,41.82],
+  /* from Ephesus east, up the valley of the Maeander, and south-east up the valley of the Lycus to Laodicea and on to Colossae (the
+     way All Scripture Is Inspired describes for the bearers of the letter to the Colossians); the points between are rough geography */
+  'ephesus-laodicea':[27.58,37.87,27.85,37.87,28.2,37.9,28.55,37.89,28.88,37.86]};
 /* region names sit where no coast, lake or route runs through them. close: a name with its letters set closer together, for a region
    too small to hold a widely spaced one; north: a name shown only in the northern window and the Aegean one, where the mountains make
    room for it; west: a name shown only in the Aegean window */
 const REGIONS=[{name:'CILICIA',at:[32.7,36.72],out:['journeys']},{name:'SYRIA',at:[37.6,35.2]},{name:'CYPRUS',at:[33.2,34.35],sea:1},
-  {name:'PISIDIA',at:[29.62,37.68],out:['adria']},{name:'GALATIA',at:[33.6,38.75]},
+  {name:'PISIDIA',at:[29.62,37.68],out:['adria','lycus','letters']},{name:'GALATIA',at:[33.6,38.75]},
   {name:'PAMPHYLIA',at:[32.015,37.02],close:1,north:1},
-  {name:'PHRYGIA',at:[29.6,38.9],west:1,out:['journeys']},{name:'ASIA',at:[27.75,38.8],west:1,out:['italy']},{name:'MYSIA',at:[27.9,39.6],west:1,out:['italy']},
-  {name:'BITHYNIA',at:[31.3,40.72],west:1},{name:'MACEDONIA',at:[22.75,41.5],west:1,out:['italy']},{name:'ACHAIA',at:[22.2,38.62],west:1,out:['journeys','italy']},
+  {name:'PHRYGIA',at:[29.6,38.9],west:1,out:['journeys','letters']},{name:'ASIA',at:[27.75,38.8],west:1,out:['italy','letters']},{name:'MYSIA',at:[27.9,39.6],west:1,out:['italy','letters']},
+  {name:'BITHYNIA',at:[31.3,40.72],west:1,out:['letters']},{name:'MACEDONIA',at:[22.75,41.5],west:1,out:['italy']},{name:'ACHAIA',at:[22.2,38.62],west:1,out:['journeys','italy','letters']},
   /* Lycia, behind Patara, only in the close window of Chapter Seventeen (in: the views a name is shown in): in the wider ones the
      strip of land between the Taurus and the sea holds Pamphylia and Cilicia already. out: the views a name is not shown in (in the far
    window of the journeys, Cilicia, Phrygia and Achaia would run into coasts, islands or each other; the windows of the voyage of Acts 27
@@ -220,7 +261,11 @@ const REGIONS=[{name:'CILICIA',at:[32.7,36.72],out:['journeys']},{name:'SYRIA',a
      sea off the Gulf of Sidra, the sandbanks the sailors feared (27:17); and the Sea of Adria (27:27), which then covered the waters
      west of Crete and east of Sicily and Malta, written in the open water between Malta and the tip of Greece. */
   {name:'CRETE',at:[24.9,35.85],sea:1,in:['outward','adria']},{name:'CRETE',at:[25.1,35.29],in:['crete']},
-  {name:'SICILY',at:[14.3,36.4],sea:1,in:['adria','italy']},{name:'ITALY',at:[14.92,41.25],in:['italy']},
+  /* on the letters window, which is farther off, Asia stands further inland, clear of the gulfs of its coast, and Italy is named */
+  {name:'ASIA',at:[28.75,38.75],in:['letters']},
+  /* Phrygia over the valley of the Lycus, in its close window */
+  {name:'PHRYGIA',at:[29.4,38.3],in:['lycus']},
+  {name:'SICILY',at:[14.3,36.4],sea:1,in:['adria','italy']},{name:'ITALY',at:[14.92,41.25],in:['italy','letters']},
   {name:'the_syrtis',at:[17.9,32.2],sea:1,in:['adria'],opt:1},{name:'sea_of_adria',at:[19.1,36.05],sea:1,in:['adria'],opt:1}];
 /* the coast of the mainland of Asia: along the Black Sea to the Bosporus, the Propontis and the Hellespont, round the Troad and down
    the Aegean shore, round Asia Minor, down the Syrian and Phoenician coast, and west along Egypt. The first three lines lie above the
@@ -291,28 +336,39 @@ const ISLES=[EUROPE,
   /* west of Greece, seen only in the western window: Corcyra, Leucas, Cephallenia and Zacynthus */
   pts([19.65,39.8,19.95,39.78,20.1,39.4,19.95,39.38,19.75,39.6]),pts([20.6,38.84,20.72,38.8,20.7,38.58,20.56,38.6]),
   pts([20.4,38.47,20.6,38.47,20.8,38.2,20.75,38.07,20.5,38.1,20.35,38.25]),pts([20.63,37.9,20.75,37.92,20.98,37.72,20.85,37.65,20.7,37.72])];
+/* Italy as the wider windows draw it; and with its finer coast from Ostia to the point of Sorrento for the close window of the last
+   road (appia), where the mouth of the Tiber, the long shore of the Pontine plain, Cape Circeo, Tarracina, the bay of Gaeta, the mouth
+   of the Volturnus, Cape Misenum and the bay of Puteoli and Naples can be seen. Only that window uses the finer one. */
+const ITALY_AT=[10.3,43.6,10.52,42.93,10.75,42.8,11.1,42.55,11.15,42.4,11.5,42.33,11.8,42.1,12.2,41.86,12.29,41.73,12.63,41.45,12.9,41.32,13.05,41.22,13.25,41.28,13.57,41.21,
+    13.93,41.02,14.05,40.86,14.08,40.78,14.14,40.8,14.25,40.84,14.45,40.73,14.4,40.63,14.33,40.57,14.5,40.62,14.77,40.67,14.95,40.45,14.9,40.25,15.08,40.15,15.28,40.03,
+    15.63,40.07,15.78,39.9,15.85,39.6,16.0,39.35,16.07,39.13,16.22,38.92,16.05,38.75,15.83,38.62,15.9,38.45,15.72,38.25,15.7,38.2,15.66,38.11,15.68,37.95,15.85,37.92,
+    16.06,37.92,16.15,38.03,16.26,38.24,16.5,38.55,16.55,38.7,16.62,38.82,16.9,38.92,17.1,38.9,17.2,39.03,17.13,39.2,17.16,39.4,16.95,39.5,16.6,39.65,16.5,39.75,
+    16.6,40.05,16.75,40.3,16.95,40.42,17.24,40.47,17.5,40.32,17.9,40.2,17.99,40.06,18.2,39.88,18.36,39.8,18.45,40.0,18.52,40.15,18.3,40.4,17.94,40.64,17.6,40.8,
+    17.3,40.95,16.87,41.13,16.5,41.25,16.28,41.32,15.92,41.6,16.05,41.72,16.18,41.85,16.05,41.95,15.88,41.93,15.6,41.92,15.25,41.93,15.0,42.0,14.71,42.12,14.4,42.36,
+    14.21,42.46,13.95,42.75,13.7,43.0,13.55,43.6],
+  ITALY_RUN=[12.2,41.86,12.29,41.73,12.63,41.45,12.9,41.32,13.05,41.22,13.25,41.28,13.57,41.21,13.93,41.02,14.05,40.86,14.08,40.78,14.14,40.8,14.25,40.84,14.45,40.73,14.4,40.63,14.33,40.57],
+  ITALY_RUN_FINE=[12.2,41.86,12.22,41.8,12.235,41.745,12.29,41.72,12.4,41.64,12.5,41.56,12.6,41.47,12.63,41.445,12.7,41.42,12.8,41.38,12.9,41.32,
+    12.98,41.27,13.02,41.24,13.05,41.225,13.1,41.235,13.15,41.26,13.25,41.285,13.35,41.275,13.43,41.255,13.52,41.225,13.575,41.205,13.6,41.235,13.62,41.255,
+    13.7,41.245,13.77,41.225,13.83,41.17,13.88,41.11,13.93,41.02,13.98,40.97,14.04,40.9,14.06,40.84,14.085,40.785,14.1,40.8,14.12,40.81,14.16,40.795,
+    14.19,40.8,14.25,40.835,14.3,40.83,14.37,40.78,14.45,40.73,14.48,40.7,14.42,40.66,14.37,40.63,14.33,40.57];
+const ITALY=pts(ITALY_AT),ITALY_FINE=(i=>pts([...ITALY_AT.slice(0,i),...ITALY_RUN_FINE,...ITALY_AT.slice(i+ITALY_RUN.length)]))(ITALY_AT.indexOf(ITALY_RUN[0]));
 /* WEST_ISLES: the west, seen only in the windows of the voyage of Acts 27 and 28 (and Cauda, a speck south-west of Crete, in the usual window and
      the journeys window as well). Italy from the middle of the peninsula, closed far above every window: down the west coast by Ostia,
      the Bay of Naples with Puteoli, and the Gulf of Salerno to the toe, past Rhegium, round to the Gulf of Taranto and the heel, and up
      the Adriatic coast by Brundisium and the spur of Garganus. The Strait of Messina is drawn a little wider than it is. Sicily, round
      from Cape Pelorus by Syracuse, Cape Pachynus and Lilybaeum. Malta and Gozo, with a channel between them; Cauda; and off the coast
      of Africa, Djerba and the Kerkennah islands. Each is drawn only in a window that sees it (near). */
-const WEST_ISLES=[
-  pts([10.3,43.6,10.52,42.93,10.75,42.8,11.1,42.55,11.15,42.4,11.5,42.33,11.8,42.1,12.2,41.86,12.29,41.73,12.63,41.45,12.9,41.32,13.05,41.22,13.25,41.28,13.57,41.21,
-    13.93,41.02,14.05,40.86,14.08,40.78,14.14,40.8,14.25,40.84,14.45,40.73,14.4,40.63,14.33,40.57,14.5,40.62,14.77,40.67,14.95,40.45,14.9,40.25,15.08,40.15,15.28,40.03,
-    15.63,40.07,15.78,39.9,15.85,39.6,16.0,39.35,16.07,39.13,16.22,38.92,16.05,38.75,15.83,38.62,15.9,38.45,15.72,38.25,15.7,38.2,15.66,38.11,15.68,37.95,15.85,37.92,
-    16.06,37.92,16.15,38.03,16.26,38.24,16.5,38.55,16.55,38.7,16.62,38.82,16.9,38.92,17.1,38.9,17.2,39.03,17.13,39.2,17.16,39.4,16.95,39.5,16.6,39.65,16.5,39.75,
-    16.6,40.05,16.75,40.3,16.95,40.42,17.24,40.47,17.5,40.32,17.9,40.2,17.99,40.06,18.2,39.88,18.36,39.8,18.45,40.0,18.52,40.15,18.3,40.4,17.94,40.64,17.6,40.8,
-    17.3,40.95,16.87,41.13,16.5,41.25,16.28,41.32,15.92,41.6,16.05,41.72,16.18,41.85,16.05,41.95,15.88,41.93,15.6,41.92,15.25,41.93,15.0,42.0,14.71,42.12,14.4,42.36,
-    14.21,42.46,13.95,42.75,13.7,43.0,13.55,43.6]),
+const WEST_ISLES=[ITALY,
   pts([15.58,38.26,15.52,38.19,15.4,38.0,15.3,37.85,15.18,37.65,15.09,37.5,15.2,37.28,15.29,37.07,15.2,36.85,15.15,36.69,14.85,36.72,14.5,36.78,14.25,37.06,13.93,37.1,
     13.53,37.29,13.08,37.5,12.59,37.65,12.43,37.8,12.5,38.02,12.73,38.18,12.88,38.03,13.1,38.08,13.3,38.2,13.36,38.12,13.6,38.08,13.7,37.98,14.02,38.04,14.3,38.02,
     14.75,38.16,15.0,38.14,15.24,38.27]),
   pts([14.33,35.97,14.41,35.955,14.5,35.91,14.57,35.84,14.53,35.81,14.44,35.82,14.36,35.86,14.32,35.92]),pts([14.19,36.06,14.27,36.08,14.34,36.05,14.33,36.035,14.24,36.03,14.18,36.04]),
   pts([24.03,34.84,24.07,34.872,24.11,34.875,24.15,34.85,24.12,34.805,24.07,34.81]),
   pts([10.75,33.72,10.85,33.66,11.05,33.72,11.08,33.85,10.9,33.9,10.75,33.85]),pts([10.98,34.66,11.12,34.66,11.35,34.83,11.3,34.87,11.1,34.74])];
-/* isl: the islands as the window that is showing draws them (Crete with its finer coast in the close window of its south) */
-const isl=()=>VN==='crete'?ISLES.map(p=>p===CRETE?CRETE_FINE:p):ISLES;
+/* isl, wisl: the islands as the window that is showing draws them (Crete with its finer coast in the close window of its south, Italy
+   with its finer coast in the close window of the last road) */
+const isl=()=>VN==='crete'?ISLES.map(p=>p===CRETE?CRETE_FINE:p):ISLES,
+  wisl=()=>VN==='appia'?WEST_ISLES.map(p=>p===ITALY?ITALY_FINE:p):WEST_ISLES;
 /* near: what the window that is showing paints of the coast of Africa and of the western islands, cut to the window with a margin wide
    enough for the glow along a coast: the runs of the coast that come near it, the part of Africa's land inside it, and the islands that
    lie in it. A window that sees none of them paints the shapes it always painted, in the same order. */
@@ -326,7 +382,7 @@ const runs=(p,x0,y0,x1,y1)=>{const out=[];let cur=null;for(let i=2;i<p.length;i+
   return out};
 function near(){const m=16/ZM,x0=OX-m,y0=OY-m,x1=OX+W/ZM+m,y1=OY+H/ZM+m,
     seen=p=>{let a=1e9,b=1e9,c=-1e9,d=-1e9;for(let i=0;i<p.length;i+=2){a=Math.min(a,p[i]);c=Math.max(c,p[i]);b=Math.min(b,p[i+1]);d=Math.max(d,p[i+1])}return c>=x0&&a<=x1&&d>=y0&&b<=y1};
-  const land=clipRect(AFRICA_LAND,x0,y0,x1,y1),IS=[...isl(),...WEST_ISLES.filter(seen)];
+  const land=clipRect(AFRICA_LAND,x0,y0,x1,y1),IS=[...isl(),...wisl().filter(seen)];
   return{lines:[COAST,...runs(AFRICA,x0,y0,x1,y1)],isles:IS,lands:[LAND,...(land.length>4?[land]:[]),...IS]}}
 const LAKES=[pts([35.46,31.77,35.6,31.76,35.6,31.4,35.52,31.08,35.38,31.12,35.42,31.5]),pts([35.54,32.9,35.64,32.88,35.62,32.72,35.54,32.74])];
 /* ranges of hills and mountains: a line of small peaks, each lit on its north-western face */
@@ -350,8 +406,15 @@ const RANGES_CYR=[[20.85,32.48,21.4,32.62,21.95,32.68,22.4,32.66]],RANGES_SIC=[[
   RANGES_APEN=[[13.45,42.25,13.95,41.92,14.35,41.62],[15.3,40.82,15.7,40.45,16.0,40.05,16.2,39.65,16.45,39.28,16.3,38.85,16.12,38.48,15.95,38.25]],
   RANGES_CRETE=[[23.88,35.33,24.05,35.31,24.22,35.3],[24.62,35.24,24.78,35.23,24.92,35.24],[25.36,35.14,25.5,35.12,25.62,35.13],[25.95,35.1,26.1,35.1]];
 const RANGES_N=[[28.6,37.42,29.3,37.34,29.95,37.3],[31.62,37.22,32.28,37.2],[33.25,36.97,34.3,37.25,35.0,37.35],...RANGES.slice(1),[31.45,38.58,31.9,38.36,32.3,38.2],[28.3,38.3,28.9,38.42],[33.9,37.9,34.5,38.2]];
+/* the close windows of the last road and of the Lycus have hills of their own, standing back from their roads and names: on the
+   appia window the Apennines, the Alban hills beside the road's last stretch, the hills above the road before Tarracina,
+   and Vesuvius over the bay; on the lycus window the ridge north of the Maeander, the hills south of it, and the mountain above
+   Colossae. The letters window takes the relief of every land it holds. */
+const RANGES_APPIA=[RANGES_APEN[0],[14.05,41.5,14.3,41.36],[12.74,41.8,12.82,41.73],[13.55,41.37,13.72,41.33],[14.41,40.835,14.47,40.82]],
+  RANGES_LYC=[[27.5,38.04,27.95,38.07,28.4,38.08,28.85,38.03],[27.85,37.62,28.25,37.6,28.65,37.63],[29.05,37.66,29.32,37.64,29.6,37.68]];
 const RELIEF={outward:[...RANGES_N.filter(r=>r!==RANGES[6]),...RANGES_W,...RANGES_CYR],crete:RANGES_CRETE,
-  adria:[...RANGES_X,...RANGES_SIC,...RANGES_CYR],italy:[...RANGES_X,...RANGES_SIC,...RANGES_APEN,RANGES[6]]};
+  adria:[...RANGES_X,...RANGES_SIC,...RANGES_CYR],italy:[...RANGES_X,...RANGES_SIC,...RANGES_APEN,RANGES[6]],
+  appia:RANGES_APPIA,lycus:RANGES_LYC,letters:[...RANGES_N,...RANGES_X,...RANGES_SIC,...RANGES_APEN]};
 function poly(g,p){g.beginPath();g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1]);g.closePath()}
 function line(g,p){g.beginPath();g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1])}
 function paint(g){const r=rng(1913),N=near(),LN=N.lines,IS=N.isles,lands=N.lands;
@@ -474,7 +537,7 @@ async function go(a,b){const L={a,b,k:0,dots:path(a,b)};ST.legs.push(L);ST.seen.
 /* where: a place in the window that is showing */
 const where=id=>{const[x,y]=at(id);return[(x-OX)*ZM,(y-OY)*ZM]};
 /* lines: every thin line on the map that a name must not cross: the coasts, the islands and the lakes, as lists of points */
-const lines=()=>[COAST,AFRICA,...isl().concat(WEST_ISLES).map(p=>p.concat(p.slice(0,2))),...LAKES.map(p=>p.concat(p.slice(0,2)))];
+const lines=()=>[COAST,AFRICA,...isl().concat(wisl()).map(p=>p.concat(p.slice(0,2))),...LAKES.map(p=>p.concat(p.slice(0,2)))];
 /* window: where the window that is showing lies on the map, [left, top, width, height], so that a test can see whether a name runs out of it */
 return{journey,pick,go,where,lines,trail,ways:WAYS,labels:VLAB,places:PLACES,state:ST,draw,sting,arrive,window:()=>[OX,OY,W/ZM,H/ZM]};
 })();

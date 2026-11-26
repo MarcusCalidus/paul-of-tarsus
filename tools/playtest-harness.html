@@ -404,6 +404,51 @@
       const z=document.createElement('canvas'),Z=6,parts=[[0,76,70,32],[150,90,70,50]];z.width=70*2*Z;z.height=parts.reduce((s,r)=>s+r[3]*2*Z,0);const g=z.getContext('2d');g.imageSmoothingEnabled=false;let y=0;
       for(const[x0,y0,w,h]of parts){g.drawImage(k,x0*2,y0*2,w*2,h*2,0,y,w*2*Z,h*2*Z);y+=h*2*Z}
       window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'map21-zoom']:z.toDataURL()})})}
+  /* map24: the travel map's places and windows for the road to Rome and the letters from Rome (shared/map.js). The window italy with the
+     seven legs of Acts 28:11-16 (by sea from Malta to Syracuse, Rhegium and Puteoli; by land to Capua, the Marketplace of Appius, Three
+     Taverns and Rome), where the two stations have no dot; the close window appia with the four legs by land, where Puteoli, the
+     Marketplace of Appius, Three Taverns and Rome are named; the close window lycus with the road from Ephesus to Laodicea and
+     Colossae; and the window letters, with Rome, Philippi, Ephesus and Colossae lit and no road. On each: no two legs cross, no name
+     crosses a coast, an island, a lake or a route, no two names touch, every name and every place lies inside the window, and in Italy
+     each leg by sea stays off the land and each leg by land on it, in each language (de:map24). It stops on the window appia and hands over
+     map24-sheet.png (de-map24-sheet.png), the four windows twice enlarged, and map24-zoom.png, their crowded corners six times enlarged, for the
+     cross-shape check. It plays in the latest chapter there is. */
+  if(stop==='map24'){clearInterval(sk);sk=0;const n=[24,23,22,21].find(k=>CHAP[k]);await loadLevel(n);setChapter(n);await need('map');ov.className='';ov.onclick=null;G.busy=true;lock(true);status();
+    const M=SHARED.map,cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let k=0;
+        for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))k++;return k},
+      tidy=()=>{const[ox,oy,w,h]=M.window(),bx=M.state.boxes,bad=[];for(const b of bx)if(b[0]<ox-.5||b[2]>ox+w+.5||b[1]<oy-.5||b[3]>oy+h+.5)bad.push(b[4]+' (off the map)');
+        for(let i=0;i<bx.length;i++)for(let j=i+1;j<bx.length;j++){const a=bx[i],b=bx[j];if(a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3])bad.push(a[4]+' on '+b[4])}return bad},
+      inWin=id=>{const[x,y]=M.where(id);return x>6&&x<314&&y>6&&y<138},
+      /* land: whether a point of the map lies on an island's land (Italy, Sicily and Malta are islands of the map), by the window's own coasts */
+      land=([x,y])=>M.lines().slice(2).some(p=>{let c=false;for(let i=2;i<p.length;i+=2){const ax=p[i-2],ay=p[i-1],bx=p[i],by=p[i+1];if((ay>y)!==(by>y)&&x<ax+(bx-ax)*(y-ay)/(by-ay))c=!c}return c}),
+      say=(c,cl,td,out,wet)=>(c?'. CROSSINGS: '+c:'')+(cl?'':'. CROSSES: '+[...mapClear.bad].join(', '))+(td.length?'. NAMES: '+td.join(', '):'')+(out.length?'. OUT: '+out.join(', '):'')+(wet.length?'. GROUND: '+wet.join(', '):'');
+    const SEA=[['malta','syracuse','sea'],['syracuse','rhegium','sea'],['rhegium','puteoli','sea']],ROAD=[['puteoli','capua'],['capua','appius'],['appius','threetaverns'],['threetaverns','rome']],
+      MAPS=[['italy',[...SEA,...ROAD],[],['malta','syracuse','rhegium','puteoli','rome'],['appius','threetaverns','capua']],['appia',ROAD,[],['puteoli','appius','threetaverns','rome'],['capua']],
+        ['lycus',[['ephesus','laodicea'],['laodicea','colossae']],[],['ephesus','laodicea','colossae'],[]],['letters',[],['rome','philippi','ephesus','colossae'],['rome','philippi','ephesus','colossae'],['laodicea']]],
+      pics=[];
+    for(const id of['syracuse','rhegium','puteoli','appius','threetaverns','rome','laodicea','colossae']){const P=M.places[id],s=P.name&&T(P.name);ok(!P.hide&&!!s&&!/_/.test(s),'the map has a dot and a name for '+id+': '+s)}
+    for(const[v,legs,seen,named,unnamed]of MAPS){await M.journey(legs,{view:v,seen,instant:1});
+      /* drawn here, so that the names are noted (state.boxes) for this window and not the one before */
+      const k=document.createElement('canvas');k.width=640;k.height=288;const q=k.getContext('2d');q.scale(2,2);M.draw(q,G.t);pics.push([v,k]);
+      const c=cross(M.state.legs),cl=mapClear(),td=tidy(),over=M.labels[v]||{},out=[...legs.flat().filter(k=>k!=='sea'),...seen].filter(k=>!M.places[k].hide&&!(over[k]||{}).hide&&!inWin(k)),
+        /* the dots of a leg more than four view pixels from its ends (a leg by sea starts and ends at a town on the shore); the ground is
+           checked where the land is an island of the map, in Italy */
+        r=4*M.window()[2]/320,mid=L=>{const[ax,ay]=L.dots[0],[bx,by]=L.dots[L.dots.length-1];return L.dots.filter(([x,y])=>Math.hypot(x-ax,y-ay)>r&&Math.hypot(x-bx,y-by)>r)},
+        wet=v==='lycus'?[]:M.state.legs.filter((L,i)=>{const sea=legs[i][2]==='sea';return mid(L).some(p=>land(p)===sea)}).map(L=>L.a+'-'+L.b),
+        names=M.state.boxes.map(b=>b[4]),miss=named.filter(k=>!names.includes(T(M.places[k].name))),extra=unnamed.filter(k=>M.places[k].name&&names.includes(T(M.places[k].name)));
+      ok(!c&&cl&&!td.length&&!out.length&&!wet.length,'map24, the window '+v+' with '+(legs.length?legs.length+' legs':'no road')+': no leg crosses another, no name crosses a line or another name, everything lies in the window'+(legs.length&&v!=='lycus'?', and each leg keeps to the sea or the land':'')+say(c,cl,td,out,wet));
+      ok(!miss.length&&!extra.length&&seen.every(k=>M.state.seen.has(k)),'map24, the window '+v+' names '+named.map(k=>T(M.places[k].name)).join(', ')+(unnamed.length?' and not '+unnamed.join(', '):'')+(miss.length?'. MISSING: '+miss.join(', '):'')+(extra.length?'. NAMED: '+extra.join(', '):''));
+}
+    ok(M.state.legs.length===0,'no road is drawn on the letters window');
+    await M.journey(ROAD,{view:'appia',instant:1});
+    halt('map24',()=>{const s=document.createElement('canvas');s.width=1280;s.height=576;const g=s.getContext('2d');pics.forEach(([,k],i)=>g.drawImage(k,(i%2)*640,(i>>1)*288));
+      /* the crowded corners, in view pixels of each window: the north of Italy and the strait; the road from Rome to the Marketplace, and
+         Puteoli with Capua; Laodicea and Colossae, and Ephesus; Rome, and Philippi, Ephesus and Colossae */
+      const Z=3,parts=[['italy',20,0,80,45],['italy',60,75,60,60],['appia',70,10,135,65],['appia',190,85,70,55],['lycus',200,55,100,40],['lycus',70,45,80,40],['letters',10,0,80,45],['letters',180,15,140,90]],
+        at=[];let x=0,y=0,rowH=0;for(const[,,,w,h]of parts){if(x+w>280){x=0;y+=rowH;rowH=0}at.push([x,y]);x+=w;rowH=Math.max(rowH,h)}
+      const z=document.createElement('canvas');z.width=2*Z*280;z.height=2*Z*(y+rowH);const zg=z.getContext('2d');zg.imageSmoothingEnabled=false;
+      parts.forEach(([v,x0,y0,w,h],i)=>zg.drawImage(pics.find(p=>p[0]===v)[1],x0*2,y0*2,w*2,h*2,at[i][0]*2*Z,at[i][1]*2*Z,w*2*Z,h*2*Z));
+      const pre=lang==='en'?'':lang+'-';window.SHEETS=Object.assign(window.SHEETS||{},{[pre+'map24-sheet']:s.toDataURL(),[pre+'map24-zoom']:z.toDataURL()})})}
   /* A figure bound with a belt (a.bound; person's fr -6): Agabus binds his own feet and hands with Paul's belt (Acts 21:11). For every look
      of Chapters Three, Sixteen and Seventeen (if it is there) and the usual kinds of dress, facing both ways: each pose is one piece, and
      a.bound seats an actor bound, keeps him from turning, and lets him go when it is cleared. cast-bound.png shows them three times
