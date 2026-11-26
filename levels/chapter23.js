@@ -592,8 +592,8 @@ async function lead23(){const L=ld23(),s=SOUND23[L.n];if(L.bottom)return say(LK,
   if(!L.tallow)return say(LK,'luke_first_the_tallow',TL);L.bottom=1;SFX.click();await say(LK,s.bottom,TL);return written23()}
 async function tallow23(){const L=ld23();L.tallow=1;return say(LK,SOUND23[L.n].tallow,TL)}
 async function written23(){const L=ld23();if(!L.depth||!L.bottom)return;SFX.good();
-  if(!L.n){F.lead1=1;G.ld23=null;await goto23('stern23',96,124,-1);await say(SA1,'leadsman_twenty_and_sand',{to:LK});await say(SA1,'leadsman_again_in_a_while',{to:LK});return codeBtn()}
-  F.lead2=1;G.ld23=null;await goto23('stern23',96,124,-1);
+  if(!L.n){F.lead1=1;G.ld23=null;await goto23('stern23',124,124,-1);await say(SA1,'leadsman_twenty_and_sand',{to:LK});await say(SA1,'leadsman_again_in_a_while',{to:LK});return codeBtn()}
+  F.lead2=1;G.ld23=null;await goto23('stern23',124,124,-1);
   await tell('n28');await say(SA1,'leadsman_fifteen_and_stones',{to:PI});await say(PI,'pilot_land_is_close',{to:SA1});
   /* 27:29: four cables run out over the stern; no anchor is seen. They long for day. */
   place(SA2,'stern23',224,120,1);place(SA3,'stern23',260,118,1);SA2.pose=SA3.pose='payout';
@@ -644,9 +644,10 @@ async function planks23open(){if(F.planks)return say(P,'paul_they_are_in_the_wat
 async function person23(k){const S=pk23();if(S.on[k]){delete S.on[k];S.sel=null;SFX.click();return}S.sel=S.sel===k?null:k;SFX.click()}
 async function float23(f){const S=pk23(),k=S.sel;if(!k)return say(P,f.k==='hatch'?'hatch_cover_look':'plank_look',TP);
   const on=Object.keys(S.on).filter(q=>S.on[q]===f.k);
-  if(k==='soldier'&&!F.mailOff){SFX.nope();G.mailSaid=1;return say(P,'paul_not_in_that_mail',TP)}
-  if(on.length>=f.cap){SFX.nope();return say(P,f.cap===1?'paul_a_plank_holds_one':'paul_the_hatch_cover_holds_two',TP)}
-  if(on.includes('soldier')&&k==='oldman'||on.includes('oldman')&&k==='soldier'){SFX.nope();return say(OLD,'old_not_beside_a_soldier',{to:P})}
+  /* a refusal says why, and lets go of whoever was chosen */
+  if(k==='soldier'&&!F.mailOff){SFX.nope();G.mailSaid=1;S.sel=null;return say(P,'paul_not_in_that_mail',TP)}
+  if(on.length>=f.cap){SFX.nope();S.sel=null;return say(P,f.cap===1?'paul_a_plank_holds_one':'paul_the_hatch_cover_holds_two',TP)}
+  if(on.includes('soldier')&&k==='oldman'||on.includes('oldman')&&k==='soldier'){SFX.nope();S.sel=null;return say(OLD,'old_not_beside_a_soldier',{to:P})}
   S.on[k]=f.k;S.sel=null;SFX.click();
   if(PEOPLE23.every(p=>S.on[p.k]))return launch23()}
 async function mail23(){if(F.mailOff)return say(SO1,'soldier_lighter_now',{to:P});
@@ -751,7 +752,7 @@ ROOMS.lead23={space:.6,walk:NOW,mood:'night',amb:AMB.lead23,hs:[
   {name:'dry_line',get x(){return TAGX23[SOUND23[F.lead1?1:0].tag]+14},y:76,get w(){return 318-this.x},h:18,wx:160,wy:236,look:'dry_line_look'},
   {name:'the_lead',x:10,y:72,w:42,h:34,wx:160,wy:236,def:'look',look:()=>tallow23(),use:()=>lead23(),useWith:it=>it==='tablet23'?lead23():false},
   ...TAGS23.map((tg,i)=>({name:tg.name,x:TAGX23[i]-10,y:lineY23(TAGX23[i])+1,w:22,h:16,wx:160,wy:236,def:'use',look:tg.look,use:()=>tag23(i),useWith:it=>it==='tablet23'?tag23(i):false})),
-  {name:'back_to_the_deck',x:0,y:128,w:96,h:16,wx:160,wy:236,exit:()=>goto23('stern23',96,124,-1),look:'back_to_the_deck_look'}]};
+  {name:'back_to_the_deck',x:0,y:128,w:96,h:16,wx:160,wy:236,exit:()=>goto23('stern23',124,124,-1),look:'back_to_the_deck_look'}]};
 ROOMS.bow23={space:.6,walk:[20,296,114,138],get mood(){return'tense'},amb:AMB.bow23,hs:[
   {name:'dark_sea',x:0,y:40,w:320,h:44,wx:160,wy:120,look:'dark_sea_look'},
   {name:'lantern',x:140,y:28,w:22,h:26,wx:150,wy:120,look:'lantern23_look'},

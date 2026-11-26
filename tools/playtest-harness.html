@@ -5474,7 +5474,7 @@
     lay=async(k,f,i)=>{verb('use');clickView(pp(k).x+10,pp(k).y+23,pp(k));await idle();verb('use');const h=fl(f,i);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()};
   heard.length=0;await lay('soldier','plank');ok(said('paul_not_in_that_mail')&&!G.pk23.on.soldier,'the soldier on a plank: not in that mail');
   await hints('hint_the_mail_1','hint_the_mail_2','with the mail refused');
-  heard.length=0;verb('talk');clickView(pp('soldier').x+10,pp('soldier').y+23,pp('soldier'));await idle();ok(F.mailOff&&A('soldier23a').wear==='au'&&said('paul_your_mail_take_it_off'),'he takes his mail off when Paul tells him');
+  heard.length=0;verb('talk');clickView(pp('soldier').x+10,pp('soldier').y+23,pp('soldier'));await idle();ok(F.mailOff&&A('soldier23a').look===LOOK.soldier23au&&said('paul_your_mail_take_it_off'),'he takes his mail off when Paul tells him'+(F.mailOff&&A('soldier23a').look===LOOK.soldier23au&&said('paul_your_mail_take_it_off')?'':' [wear '+A('soldier23a').wear+', heard '+heard.join(' / ').slice(0,200)+']'));
   heard.length=0;await lay('oldman','hatch_cover');await lay('soldier','hatch_cover');ok(said('old_not_beside_a_soldier')&&!G.pk23.on.soldier,'the old prisoner will not go beside a soldier');
   heard.length=0;await lay('soldier','plank',0);await lay('boy','plank',1);await lay('merchant','plank',0);ok(said('paul_a_plank_holds_one')&&!G.pk23.on.merchant,'a plank holds up one man, not two');
   heard.length=0;await lay('merchant','hatch_cover');await until(()=>F.planks&&G.room==='surf23'&&!G.busy,6000);
@@ -5527,8 +5527,9 @@
   heard.length=0;await talkTo(P);
   if(stop==='viper23'){await until(()=>hung,3000);await wait(200);clearInterval(vo);halt('viper23')}
   await until(()=>F.viper&&G.room==='estate23'&&!G.busy,15000);clearInterval(vo);note();
+  L('viper: sticks '+said('luke_paul_goes_for_sticks')+' told '+['m3','m4','m5','m6','m7'].filter(k=>!seenTold.has(k))+' pc '+PC().id+' wear '+P.wear+'/'+LK.wear);
   ok(said('luke_paul_goes_for_sticks')&&['m3','m4','m5','m6','m7'].every(k=>seenTold.has(k))&&hung&&!bowed&&PC()===LK&&P.wear===''&&LK.wear==='',
-    'the sticks and the viper (Acts 28:3); Justice (28:4); no harm (28:5); a god, and nothing shown, nobody bowing (28:6); Publius (28:7): dry at the estate');
+    'the sticks and the viper (Acts 28:3); Justice (28:4); no harm (28:5); a god, and nothing shown, nobody bowing (28:6); Publius (28:7): dry at the estate'+(hung&&!bowed?'':' [hung '+hung+', bowed '+bowed+']'));
   await code('at the estate',()=>G.room==='estate23'&&PC()===LK&&F.viper&&!F.healed&&PU.room==='estate23');
   halt('estate23');
   /* the estate of Publius, the hidden treasure and the healing */
