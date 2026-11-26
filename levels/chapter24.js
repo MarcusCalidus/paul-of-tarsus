@@ -205,14 +205,159 @@ ART.appius24={w:320,q:12,variant:appiusV,paint(g,v){const dawn=v==='dawn';sky24(
 /* ==== ART appius24: end ==== */
 
 /* ==== ART rome24: begin ==== */
-/* Vibia's house in Rome, the room where the brothers meet, in the afternoon (ROME24): plastered walls, a doorway to the court at the right
-   (soft daylight comes from it), the table in the middle with the board on it (a prop with its footprint), a bench along the back wall.
-   ART-TODO. Soft daylight from the court: no cast shadow. */
+/* Vibia's house in Rome, the room where the brothers meet, in the afternoon (ROME24). Walls of yellow limewash over a socle of red ochre,
+   a ceiling of joists; a floor of red mortar set with white chips (signinum), worn paler where people walk. At the right a doorway to the
+   court: we look through it at the court's far wall, in its own shade, and the paving between in the sun; the afternoon sun stands beyond
+   the court, so its light comes in through the doorway toward us and to the left, a patch on the floor, and the figures' shadows fall that
+   way (sun from the right). A bench of one plank along the back wall, legs only at its ends; a chest of boards at the left, with no band
+   across it; a small square niche with a lamp above head height. The table stands free in the middle, legs only at its four corners, and
+   is cut out of the picture as a prop with its footprint; on it lies the board, the road scratched across it and the pegs at its left
+   end. Nothing round lies behind a head: the doorway and the niche are square. */
 const ROME24={wallY:104,table:[134,100,64,16],board:[142,94,48,8],door:[276,40,32,64],walk:[16,304,112,138]};
-ART.rome24={w:320,q:12,paint(g){R(g,0,0,320,ROME24.wallY,'#c8b494');R(g,0,0,320,8,'#8a7458');ground24(g,ROME24.wallY,'#9a8268');
-    blocks24(g,[[...ROME24.door,'#e8dcc4'],[30,90,90,8,'#7a5e44'],[...ROME24.table,'#7a5a3e'],[...ROME24.board,'#b89a6a']])},
-  light:{amb:'#eee2d0',wallY:ROME24.wallY},draw(){},front(){},
-  props:[{y:ROME24.table[1]+ROME24.table[3],shape(g){R(g,ROME24.table[0],ROME24.board[1],ROME24.table[2],ROME24.table[1]+ROME24.table[3]-ROME24.board[1],'#000')},
+/* VIBIA24: the room's eye (the horizon and the vanishing point of the floor and the ceiling) and its sun (the shadow tip of a figure 46 tall);
+   VTABLE24: the table (its top's back and front edges, the apron, the feet of the near and the far legs); VBOARD24: the board lying on it */
+const VIBIA24={hz:82,vx:150,sun:[-14,8,.4]},VTABLE24={x0:134,x1:198,back:95,top:100,ap:2.4,foot:116,bfoot:111},VBOARD24={x0:142,x1:190,back:95.8,top:99.2};
+const shC24=(...a)=>SHARED.materials.shadow(...a);
+/* the shadow a thing standing on the floor throws in the sun of the room: its foot carried along the light as far as it is high */
+function castC24(g,x0,x1,y,hh,a){const[dx,dy]=VIBIA24.sun,ux=dx/46,uy=dy/46;comp(g,'multiply',a||.22,()=>poly(g,[x0,y,x1,y,x1+hh*ux,y+hh*uy*.6,x0+hh*ux,y+hh*uy*.6],'#5a4a66'))}
+function paintRome24(g){const r=rng(2401),M=SHARED.materials,WY=ROME24.wallY,[dx,dy,dw]=ROME24.door,D={x0:dx,x1:dx+dw,top:dy};
+  courtVibia24(g,D);
+  g.save();g.beginPath();g.rect(-4,-4,328,152);g.rect(D.x0,D.top,D.x1-D.x0,WY-D.top);g.clip('evenodd');
+  plaster(g,0,0,320,WY,'#e2cc9e',r,{patch:0,cracks:0,t:.34,top:.03,bot:-.05});
+  SHARED.temple.age(g,0,8,320,WY-8,rng(2402),.26);
+  /* the socle: red ochre, a dark line along its top and a lit lip over it */
+  const so=89;R(g,0,so,320,WY-so,'#8c4a34');
+  inRect(g,0,so,320,WY-so,()=>{tex(g,'mott',.5,0,so,320,WY-so,'overlay',1);tex(g,'blotch',.25,0,so,320,WY-so,'soft-light',1);
+    for(let i=0;i<46;i++)R(g,r()*320,so+1+r()*(WY-so-2),1+r()*3,.5,r()<.5?'rgba(60,24,16,.25)':'rgba(255,220,190,.12)')});
+  R(g,0,so-.6,320,.8,'#5a2a1e');R(g,0,so-1.2,320,.6,'rgba(255,246,226,.3)');
+  for(const[x,y,n]of[[44,14,3],[124,12,3],[238,14,2]])M.crack(g,x,y,n,r,.4);
+  M.ceiling(g,320,{U:8,x0:14,step:36,vx:VIBIA24.vx,vy:VIBIA24.hz,r,boards:'#3a2a1e',joist:'#6a4e30',plate:'#7a5a38'});
+  floorVibia24(g,r);
+  ao(g,0,WY,320,5,'t',.3,'#3a2c30');R(g,0,WY-.4,320,.8,'rgba(60,44,50,.35)');
+  g.restore();
+  doorVibia24(g,D,r);
+  nicheVibia24(g,70,44,12,10);
+  shelfVibia24(g,166,206,48,57,r);
+  chestVibia24(g,4,28,91,106,r);
+  benchVibia24(g,30,120,92,106,r);
+  basketVibia24(g,104,107,r);
+  tableVibia24(g,r);
+  shadeVibia24(g,D);
+  patchVibia24(g,D)}
+/* the floor: red mortar set with chips of white stone, smaller and closer together far off; worn paler from the doorway to the table */
+function floorVibia24(g,r){const WY=ROME24.wallY;g.fillStyle=lg(g,0,WY,0,144,['#a2705a','#966450','#83543e']);g.fillRect(-2,WY,324,41);
+  tex(g,'mott',.45,0,WY,320,40,'overlay',1);tex(g,'grain',.16,0,WY,320,40,'overlay',.5);
+  for(let i=0;i<1500;i++){const y=WY+.4+Math.pow(r(),1.25)*39.6,k=(y-VIBIA24.hz)/(144-VIBIA24.hz),x=r()*320,w=k>.62&&r()<.5?1:.5;
+    R(g,x,y,w,.5,r()<.75?`rgba(236,226,206,${.22+.38*k})`:`rgba(60,30,24,${.2+.2*k})`)}
+  for(let i=0;i<60;i++){const y=WY+2+r()*38;R(g,r()*320,y,2+r()*6,.5,'rgba(70,40,30,.14)')}
+  pool(g,236,118,96,12,'#f0d4b4',.12,'screen');pool(g,170,126,70,10,'#f0d4b4',.07,'screen')}
+/* the court seen through the doorway: the sky over its far wall, the wall in its own shade (the sun stands beyond it), a door in it, a
+   big pot with a laurel at the right, the paving in perspective to the room's horizon, the far wall's shade on its far part and the sun
+   on the near part up to our threshold */
+function courtVibia24(g,D){const r=rng(2411),M=SHARED.materials,WY=ROME24.wallY,fw=90,ct=51;
+  inRect(g,D.x0,D.top,D.x1-D.x0,WY-D.top,()=>{
+    g.fillStyle=lg(g,0,D.top,0,ct,['#8eb0d4','#b8cce0']);g.fillRect(D.x0,D.top,D.x1-D.x0,ct-D.top);
+    /* the far wall: plaster, its coping of tiles; in shade, lit only by the sky and by the sunny paving */
+    plaster(g,D.x0-2,ct,D.x1-D.x0+4,fw-ct,'#d8c4a2',r,{patch:0,cracks:0,t:.4,top:.04,bot:-.02});
+    R(g,D.x0-2,ct-1.6,D.x1-D.x0+4,2,'#a0583c');R(g,D.x0-2,ct-1.6,D.x1-D.x0+4,.5,'#e09a74');R(g,D.x0-2,ct+.4,D.x1-D.x0+4,.5,'rgba(40,24,20,.5)');
+    /* a door in it, its leaf of upright boards, and above it a small square window */
+    R(g,D.x0+5,64,9,fw-64,'#4a3426');for(let x=D.x0+5;x<D.x0+13.9;x+=3)R(g,x,64,.5,fw-64,'rgba(20,12,8,.5)');R(g,D.x0+4,63,11,1.2,'#6a4c34');
+    R(g,D.x0+20,58,4,4,'#3a2c2a');R(g,D.x0+19.4,62,5.2,.6,'#e8d6b6');
+    comp(g,'multiply',.58,()=>{g.fillStyle=lg(g,0,ct,0,fw,['#7e88b4','#a0a4c4']);g.fillRect(D.x0,ct,D.x1-D.x0,fw-ct)});
+    /* the paving, the shade of the far wall on its far part, the sun from there to our threshold */
+    pave(g,D.x0-2,fw,D.x1+2,WY+.5,'#d0c0a0',r,{vx:VIBIA24.vx,vy:VIBIA24.hz,rows:3,step:30,v:.06,t:.32,rand:0});
+    ao(g,D.x0,fw,D.x1-D.x0,2.4,'t',.35,'#3a3048');
+    comp(g,'multiply',.42,()=>{g.fillStyle='#8a90b4';g.fillRect(D.x0,fw,D.x1-D.x0,5.2)});
+    comp(g,'screen',.22,()=>{g.fillStyle='#ffecc8';g.fillRect(D.x0,fw+5.2,D.x1-D.x0,WY-fw-5)});R(g,D.x0,fw+5.2,D.x1-D.x0,.5,'rgba(255,240,210,.3)');
+    /* the laurel in its pot, standing on the paving in the sun at the right: the pot of red clay, the bush lit from behind at its rim */
+    const px=D.x1-5,pb=99;shC24(g,px-1.6,pb,6,1.1,.5);
+    poly(g,[px-4.6,pb-8,px+4.6,pb-8,px+3.6,pb-1,px+2.4,pb,px-2.4,pb,px-3.6,pb-1],'#a05a36');R(g,px-5,pb-9,10,1.4,'#b8704a');R(g,px-5,pb-9,10,.5,'#e8a070');
+    R(g,px-4,pb-7.4,1.2,6,'rgba(255,200,150,.3)');R(g,px+2.6,pb-7.4,1.6,6,'rgba(60,30,30,.35)');
+    for(let i=0;i<150;i++){const a=r()*6.283,d=Math.sqrt(r()),x=px+Math.cos(a)*d*6.4,y=pb-17+Math.sin(a)*d*7.6;R(g,x,y,.5+r()*.8,.5,['#3a5232','#46603a','#2e4428','#58704a'][i%4])}
+    for(let i=0;i<26;i++){const a=-1.6+r()*1.9,x=px+Math.cos(a)*6,y=pb-17+Math.sin(a)*7.4;R(g,x,y,.5,.5,'rgba(240,226,160,.75)')}
+    R(g,px-.4,pb-10,.8,2,'#4a3424')})}
+/* the doorway: a deep beam over it, the plastered edges of the opening, its right side seen inside the opening in shade, a threshold of
+   travertine standing a little proud of the floor */
+function doorVibia24(g,D,r){const M=SHARED.materials,WY=ROME24.wallY,f=.045,x1f=D.x1-(D.x1-VIBIA24.vx)*f,tf=D.top+(VIBIA24.hz-D.top)*f,wf=WY+(VIBIA24.hz-WY)*f;
+  inRect(g,D.x0,D.top,D.x1-D.x0,WY-D.top,()=>{
+    poly(g,[D.x0,D.top,D.x1,D.top,x1f,tf,D.x0-(D.x0-VIBIA24.vx)*f,tf],'#4a382c');
+    const RV=[D.x1,D.top,x1f,tf,x1f,wf,D.x1,WY];poly(g,RV);g.fillStyle=lg(g,x1f,0,D.x1,0,['#a08a70','#8a7460']);g.fill();
+    clipTo(g,()=>poly(g,RV),()=>{tex(g,'mott',.4,x1f,D.top,D.x1-x1f+1,WY-D.top,'overlay',1);R(g,D.x1-1.4,D.top,1.4,WY-D.top,'#5a2e22')});
+    ao(g,D.x0,D.top,D.x1-D.x0,6,'t',.4,'#1a1012')});
+  M.board(g,D.x0-5,D.top-5,D.x1-D.x0+10,5,'#5e4430',r);R(g,D.x0-5,D.top-5,D.x1-D.x0+10,.5,'rgba(255,230,190,.3)');ao(g,D.x0-5,D.top,D.x1-D.x0+10,3,'t',.3,'#2a1c18');
+  for(const[x,lit]of[[D.x0-1,0],[D.x1,1]]){R(g,x,D.top,1,WY-D.top,lit?'rgba(255,240,214,.5)':'rgba(70,50,46,.4)')}
+  R(g,D.x0-3,WY-1.6,D.x1-D.x0+6,2.6,'#c4b490');R(g,D.x0-3,WY-1.6,D.x1-D.x0+6,.5,'#eee0c0');R(g,D.x0-3,WY+.5,D.x1-D.x0+6,.5,'rgba(50,40,36,.5)');
+  tex(g,'mott',.3,D.x0-3,WY-1.6,D.x1-D.x0+6,2.6,'overlay',1)}
+/* a small square niche above head height, its floor a ledge of stone, a clay lamp in it (unlit by day) */
+function nicheVibia24(g,x,y,w,h){const c='#e2cc9e';R(g,x,y,w,h,tint(c,-.42));ao(g,x,y,w,4,'t',.45,'#1a1012');R(g,x,y,1.4,h,tint(c,-.26));
+  R(g,x-.6,y+h,w+1.2,1.2,tint(c,.04));R(g,x-.6,y+h,w+1.2,.5,'rgba(255,246,226,.5)');R(g,x-.6,y+h+1.2,w+1.2,.5,'rgba(60,44,50,.35)');
+  const lx=x+w*.46,ly=y+h;poly(g,[lx-3.4,ly,lx+2.6,ly,lx+4.4,ly-1,lx+4.6,ly-1.8,lx+2.4,ly-1.6,lx+1.6,ly-2.4,lx-2.8,ly-2.4,lx-3.6,ly-1.4],'#9a5a36');
+  R(g,lx-2.8,ly-2.4,4.4,.5,'#c88a5a');R(g,lx-.8,ly-2.2,1,.6,'#3a2014');R(g,lx+3.8,ly-1.9,.8,.5,'#2a1810')}
+/* a long low recess in the wall above head height, square-cornered, its floor a ledge of stone: a jug, a bowl and folded linen in it */
+function shelfVibia24(g,x0,x1,t,b,r){const c='#e2cc9e',w=x1-x0,h=b-t;R(g,x0,t,w,h,tint(c,-.4));ao(g,x0,t,w,4,'t',.45,'#1a1012');R(g,x0,t,1.4,h,tint(c,-.25));
+  R(g,x0-.6,b,w+1.2,1.2,tint(c,.04));R(g,x0-.6,b,w+1.2,.5,'rgba(255,246,226,.5)');R(g,x0-.6,b+1.2,w+1.2,.5,'rgba(60,44,50,.35)');
+  const jx=x0+6;poly(g,[jx-1.2,b-6,jx+1.2,b-6,jx+1,b-4.8,jx+2.6,b-2.6,jx+1.8,b,jx-1.8,b,jx-2.6,b-2.6,jx-1,b-4.8],'#a06440');R(g,jx-1.2,b-6.4,2.4,.6,'#c88a5a');R(g,jx-2.2,b-3,.6,2.2,'rgba(255,210,170,.3)');
+  const bx=x0+15;poly(g,[bx-3.4,b-2.6,bx+3.4,b-2.6,bx+2.4,b-.4,bx+1.4,b,bx-1.4,b,bx-2.4,b-.4],'#b8865a');R(g,bx-3.4,b-2.8,6.8,.5,'#e0b080');
+  for(let k=0;k<3;k++){const y0=b-1.6-k*1.5,lx=x0+24+k*.3;R(g,lx,y0,12-k*.6,1.5,tint('#d8ccb0',-k*.06));R(g,lx,y0,12-k*.6,.5,'rgba(255,250,236,.5)');R(g,lx,y0+1.1,12-k*.6,.4,'rgba(80,66,60,.3)')}}
+/* a chest of boards laid along its length, its lid a little proud; no band or strap across it; a jug on the lid */
+function chestVibia24(g,x0,x1,t,f,r){const M=SHARED.materials,W='#6a4a2e';castC24(g,x0,x1,f,f-t,.28);shC24(g,(x0+x1)/2,f-.6,(x1-x0)/2+1,1.3,.5);
+  for(let k=0;k<3;k++)M.board(g,x0,t+2.2+k*(f-t-2.2)/3,x1-x0,(f-t-2.2)/3,tint(W,(r()-.5)*.14),r);
+  poly(g,[x0+.6,t-1.2,x1-.6,t-1.2,x1+.6,t+.4,x0-.6,t+.4],tint(W,.22));M.board(g,x0-.6,t+.4,x1-x0+1.2,1.8,tint(W,.06),r);
+  ao(g,x0,t+2.2,x1-x0,2,'t',.35,'#1a1012');R(g,x1-1.2,t+2.2,1.2,f-t-2.2,'rgba(30,20,20,.25)');R(g,x0,f-.5,x1-x0,.5,'#24160c');
+  const jx=x0+7,jb=t-1;shC24(g,jx-.6,jb,3,.6,.5);poly(g,[jx-1.4,jb-6,jx+1.4,jb-6,jx+1.2,jb-4.6,jx+2.8,jb-2.6,jx+2,jb,jx-2,jb,jx-2.8,jb-2.6,jx-1.2,jb-4.6],'#a86a44');
+  R(g,jx-1.4,jb-6.4,2.8,.6,'#c88a5a');R(g,jx+1.6,jb-3.4,1,2.4,'rgba(50,30,24,.4)');R(g,jx-2.2,jb-3,.6,2.2,'rgba(255,210,170,.35)')}
+/* the bench along the back wall: one thick plank on two legs, one near each end; none under its middle */
+function benchVibia24(g,x0,x1,t,f,r){const M=SHARED.materials,W='#6e5034',th=2.4;castC24(g,x0,x1,f,f-t,.24);shC24(g,(x0+x1)/2,f-.5,(x1-x0)/2,1.2,.45);
+  for(const x of[x0+4.6,x1-6.2])R(g,x,t+th,1.4,f-1.6-t-th,tint(W,-.45));
+  for(const x of[x0+3,x1-5.4]){R(g,x,t+th,2.4,f-t-th,tint(W,-.15));R(g,x+1.9,t+th,.5,f-t-th,'rgba(255,220,170,.2)');R(g,x,f-.5,2.4,.5,'#24160c');shC24(g,x+1.2,f,1.4,.5,.4)}
+  poly(g,[x0+1,t-1.2,x1-1,t-1.2,x1,t,x0,t],tint(W,.18));M.board(g,x0,t,x1-x0,th,W,r);R(g,x0,t-1.2,x1-x0,.5,'rgba(255,230,190,.25)')}
+/* a low basket of wicker by the bench's end, the loaves for the road in it: its weave runs one way only, round its body; the loaves are
+   plain round domes, not scored */
+function basketVibia24(g,x,f,r){const w=7,h=5;castC24(g,x-w,x+w,f,h,.2);shC24(g,x,f-.4,w+1,1,.5);
+  for(const[lx,ly,c]of[[x-3.6,f-h-.6,'#c08a50'],[x+3.2,f-h-.4,'#b47e48'],[x-.2,f-h-1.4,'#cc9658']]){poly(g,[lx-3,ly+1.4,lx-2.4,ly-.6,lx-.8,ly-1.6,lx+.8,ly-1.6,lx+2.4,ly-.6,lx+3,ly+1.4],c);
+    R(g,lx-1.6,ly-1.4,2.4,.5,'rgba(255,226,170,.5)');R(g,lx-3,ly+1,6,.5,'rgba(60,34,20,.35)')}
+  const P=[x-w,f-h,x+w,f-h,x+w-.8,f-1,x+w-2,f,x-w+2,f,x-w+.8,f-1];poly(g,P);g.fillStyle=lg(g,x-w,0,x+w,0,['#a4804a','#8a6a3c','#6a4e2a']);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{for(let y=f-h+.8;y<f;y+=1.1)R(g,x-w,y,w*2,.45,'rgba(60,40,20,.4)');tex(g,'mott',.35,x-w,f-h,w*2,h,'overlay',1)});
+  R(g,x-w-.3,f-h-.5,w*2+.6,1,'#b48c52');R(g,x-w-.3,f-h-.5,w*2+.6,.4,'#dcb478')}
+/* the table: plain wood, its top seen a little from above, legs only at its four corners (the far ones up and in from the near); on it
+   the board: pale wood, the road scratched across it, the seven pegs standing at its left end, each with its person's color */
+function tableVibia24(g,r){const M=SHARED.materials,T=VTABLE24,W='#7a5838',lit='#a47a50',f0=T.x0,f1=T.x1,b0=T.x0+3,b1=T.x1-3,ft=T.foot;
+  castC24(g,f0,f1,ft,ft-T.top,.3);shC24(g,(f0+f1)/2,ft-2,(f1-f0)/2+2,3,.42);
+  comp(g,'multiply',.6,()=>{g.fillStyle=lg(g,0,T.back,0,ft,['#5a4a62','#8a7a88']);poly(g,[b0,T.back,b1,T.back,f1,ft-.5,f0,ft-.5]);g.fill()});
+  for(const x of[b0+.6,b1-2])R(g,x,T.back+1,1.6,T.bfoot-T.back-1,tint(W,-.4));
+  const top=[b0,T.back,b1,T.back,f1,T.top,f0,T.top];poly(g,top);g.fillStyle=lg(g,0,T.back,0,T.top,[tint(W,.12),tint(W,.24)]);g.fill();
+  clipTo(g,()=>poly(g,top),()=>{tex(g,'wood',.3,f0,T.back,f1-f0,T.top-T.back,'overlay',.5);for(let i=0;i<14;i++){const y=T.back+r()*(T.top-T.back);R(g,f0+r()*(f1-f0-8),y,4+r()*10,.5,r()<.5?tint(W,-.1):tint(W,.3))}});
+  M.board(g,f0,T.top,f1-f0,T.ap,W,r);R(g,f0,T.top,f1-f0,.5,lit);ao(g,f0,T.top+T.ap,f1-f0,3,'t',.35,'#1a1210');
+  for(const x of[f0+.4,f1-2.6]){R(g,x,T.top+T.ap,2.2,ft-T.top-T.ap,tint(W,-.12));R(g,x+1.7,T.top+T.ap,.5,ft-T.top-T.ap,'rgba(255,220,170,.22)');R(g,x,ft-.5,2.2,.5,'#24160c');shC24(g,x+1.1,ft,1.4,.5,.4)}
+  /* the board on it */
+  const B=VBOARD24,P=[B.x0+.6,B.back,B.x1-.6,B.back,B.x1,B.top,B.x0,B.top];
+  R(g,B.x0-.4,B.top,B.x1-B.x0+.8,.7,'rgba(30,20,14,.45)');poly(g,P);g.fillStyle=lg(g,0,B.back,0,B.top,['#d2b486','#e0c496']);g.fill();
+  clipTo(g,()=>poly(g,P),()=>{tex(g,'wood',.18,B.x0,B.back,B.x1-B.x0,B.top-B.back,'overlay',.5);
+    stroke(g,[167.6,B.back+.2,166.6,B.back+1.6,167.4,B.top-1.2,166.8,B.top],'rgba(70,46,24,.75)',.5)});
+  R(g,B.x0,B.top,B.x1-B.x0,.5,'#9a7a50');R(g,B.x0+.6,B.back,B.x1-B.x0-1.2,.5,'rgba(255,240,206,.5)');
+  /* the pegs, in two rows on the left end */
+  TOK24.forEach((t,i)=>{const x=B.x0+3+(i%4)*2.6+(i>3?1.2:0),y=i>3?B.top-.8:B.back+2.2;R(g,x,y-2.2,1.2,2.2,'#c8a878');R(g,x,y-1.6,1.2,.7,t.c);R(g,x,y-2.2,1.2,.5,'#ecd4a4');R(g,x+.7,y-2.2,.5,2.2,'rgba(60,40,24,.4)')})}
+/* the room's light: indoors, dimmer than the court; lighter toward the doorway, darker in the far corners and under the ceiling; the
+   light of the doorway on the wall and floor round it */
+function shadeVibia24(g,D){const WY=ROME24.wallY,lx=(D.x0+D.x1)/2;
+  g.save();g.beginPath();g.rect(-4,-4,328,152);g.rect(D.x0,D.top,D.x1-D.x0,WY-D.top);g.clip('evenodd');
+  shade(g,[0,0,320,0,320,144,0,144],'#b8a8a8',.4);
+  comp(g,'multiply',.6,()=>{g.fillStyle=rg(g,lx,96,300,['#ffffff','#e8dad2','#a090a8','#786a86']);g.fillRect(0,0,320,144)});
+  comp(g,'screen',.12,()=>{g.fillStyle=rg(g,lx-8,WY+4,80,['#fff0dc','rgba(255,240,220,0)']);g.fillRect(0,0,320,144)});
+  comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,0,0,0,WY,['#8a7a98','#e8dcd8','#ffffff']);g.fillRect(0,0,320,WY)});
+  comp(g,'soft-light',.12,()=>{g.fillStyle='#ffe0b0';g.fillRect(0,0,320,144)});
+  g.restore()}
+/* the patch of sun from the doorway: the opening carried along the sun onto the floor, toward us and to the left, soft at its edges, a
+   faint glow in the air over it, and the light thrown back onto the foot of the wall beside it */
+function patchVibia24(g,D){const WY=ROME24.wallY,[dx,dy]=VIBIA24.sun,ux=dx/46,uy=dy/46,warm='rgba(255,236,200,1)',P=(x,q)=>[x+q*ux,WY+q*uy],h=WY-D.top,
+    Q=[...P(D.x0,0),...P(D.x1,0),...P(D.x1,h),...P(D.x0,h)];
+  for(const[d,a]of[[3,.18],[1.6,.22],[0,.3]])comp(g,'soft-light',a*2,()=>poly(g,[Q[0]-d,Q[1]-d*.4,Q[2]+d,Q[3]-d*.4,Q[4]+d,Q[5]+d*.6,Q[6]-d,Q[7]+d*.6],warm));
+  comp(g,'screen',.36,()=>poly(g,Q,warm));
+  comp(g,'screen',.05,()=>{poly(g,[D.x0,D.top,D.x1,D.top,Q[4],Q[5],Q[6],Q[7]]);g.fillStyle=lg(g,0,D.top,0,Q[5],[warm,'rgba(255,236,200,.1)']);g.fill()});
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,WY,0,WY-22,[warm,'rgba(255,220,170,0)']);g.fillRect(D.x0-60,WY-22,60,22)})}
+ART.rome24={w:320,q:12,paint(g){paintRome24(g)},
+  light:{amb:'#eee2d0',sun:VIBIA24.sun.slice(),wallY:ROME24.wallY},draw(){},front(){},
+  props:[{y:VTABLE24.foot,shape(g){poly(g,[VTABLE24.x0+3,VTABLE24.back,VTABLE24.x1-3,VTABLE24.back,VTABLE24.x1,VTABLE24.top,VTABLE24.x1,VTABLE24.foot,VTABLE24.x0,VTABLE24.foot,VTABLE24.x0,VTABLE24.top],'#000')},
     foot:[ROME24.table[0],ROME24.table[1]+ROME24.table[3]-6,ROME24.table[2],6]}]};
 /* ==== ART rome24: end ==== */
 
@@ -221,21 +366,88 @@ ART.rome24={w:320,q:12,paint(g){R(g,0,0,320,ROME24.wallY,'#c8b494');R(g,0,0,320,
    the south at the bottom, a few stones beside it with their numbers (III, X, XX, XXXIII, XLIII), and two places marked by the road where
    the tokens go: Three Taverns at XXXIII and the Marketplace of Appius at XLIII. At the left the tokens not yet set. A token is a small
    peg of wood with a band of the person's color and the first letter of the name. Nothing on it crosses: the stones lie beside the road,
-   never across it, and the places are boxes that touch nothing. ART-TODO: the wood, the scratched road. No light (a close view). */
+   never across it, and the places are boxes that touch nothing. No light (a close view).
+   Painted to the standard of the close views of Chapters Thirteen and Fourteen: one board of pale wood with a fine, quiet grain and no long
+   streak that could cross a scratch, a soft shade toward its edges. The road is one groove cut with a knife, wandering a little, dark in
+   its depth with a pale lip on its lit side; at its top the gate, an arch scratched without a sill, the road starting inside it. The
+   stones are small marks cut beside the road, never on it, and their numbers are cut letter by letter as strokes: I, V, X and L (an
+   upright and a short foot that stops at it; the X is a letter). The two places are shallow hollows rubbed into the board, long with
+   round ends, so that no ruled line meets another at a corner; the bench where the pegs wait is a separate strip of darker wood lying on
+   the board at the left, with round corners and its own shadow. The pegs are turned pegs of pale boxwood, lit from the upper left, each
+   with its band of color and its letter, standing on their own soft shadow; the peg in hand stands a little higher, ringed in pale gold. */
 const BOARD24={road:[[150,8],[154,40],[148,70],[156,104],[152,140]],gate:[138,2,24,8],
   stones:[['III',14],['X',30],['XX',46],['XXXIII',64],['XLIII',104]],
   T:[210,48,104,28],M:[210,90,104,28],bench:[10,14,104,120]};
 const tokPos24=id=>{const st=G.tok24||{},at=st[id]||'',i=TOK24.filter(t=>(st[t.id]||'')===at).findIndex(t=>t.id===id);
   if(at){const B=BOARD24[at];return[B[0]+4+i*14,B[1]+5]}return[BOARD24.bench[0]+6+(i%4)*24,BOARD24.bench[1]+6+(i/4|0)*28]};
-ART.board24={w:320,q:12,paint(g){g.fillStyle=lg(g,0,0,320,144,['#8a6a46','#7a5a3a']);g.fillRect(0,0,320,144);
-    for(let i=1;i<BOARD24.road.length;i++)stroke(g,[...BOARD24.road[i-1],...BOARD24.road[i]],'#4a3420',3);
-    blocks24(g,[[...BOARD24.gate,'#5a4430']]);
-    for(const[n,y]of BOARD24.stones){R(g,162,y-3,4,6,'#c8c0ac');g.save();g.font='bold 6px monospace';g.fillStyle='#2a1c10';g.fillText(n,169,y+2);g.restore()}
-    for(const k of['T','M']){const[x,y,w,h]=BOARD24[k];R(g,x,y,w,h,'rgba(60,40,24,.35)');R(g,x,y,w,1,'#5a4026');R(g,x,y+h-1,w,1,'#a48460')}
-    R(g,...BOARD24.bench,'rgba(60,40,24,.22)')},
+/* a fine grain running across: many long thin streaks, lighter and darker, none strong, and no edge where a texture's tile would meet */
+function grainBoard24(g,x,y,w,h,r,a){for(let i=0;i<w*h/40;i++){const yy=y+r()*h,l=8+r()*40,xx=x-10+r()*(w+10);R(g,xx,yy,l,.5,r()<.55?`rgba(110,72,36,${a})`:`rgba(255,240,206,${a*1.2})`)}}
+/* a path with round corners (radius q) round a box */
+function rboxBoard24(g,x,y,w,h,q){g.beginPath();g.moveTo(x+q,y);g.lineTo(x+w-q,y);g.quadraticCurveTo(x+w,y,x+w,y+q);g.lineTo(x+w,y+h-q);g.quadraticCurveTo(x+w,y+h,x+w-q,y+h);
+  g.lineTo(x+q,y+h);g.quadraticCurveTo(x,y+h,x,y+h-q);g.lineTo(x,y+q);g.quadraticCurveTo(x,y,x+q,y);g.closePath()}
+/* a cut in the wood along the points p: the dark of its depth, and the pale lip of its lit side (the light comes from the upper left) */
+function cutBoard24(g,p,w){stroke(g,p.map((v,i)=>v+.55),'rgba(255,240,206,.55)',.6);stroke(g,p,'rgba(92,60,30,.55)',w);stroke(g,p,'rgba(58,36,18,.85)',w*.5)}
+/* a number cut letter by letter (I, V, X, L), its middle at y, h high; the foot of an L runs from its upright and stops there */
+function numBoard24(g,s,x,y,h){const W={I:1.2,V:4,X:4,L:3.4},t=y-h/2,b=y+h/2;let cx=x;
+  for(const ch of s){const w=W[ch];
+    if(ch==='I')cutBoard24(g,[cx+.6,t,cx+.6,b],.9);
+    else if(ch==='V')cutBoard24(g,[cx,t,cx+w/2,b,cx+w,t],.9);
+    else if(ch==='X'){cutBoard24(g,[cx,t,cx+w,b],.9);cutBoard24(g,[cx+w,t,cx,b],.9)}
+    else cutBoard24(g,[cx+.5,t,cx+.5,b-.4,cx+w,b-.4],.9);
+    cx+=w+1.5}
+  return cx}
+/* the road through its points, as a smooth curve (sampled), wandering a little as a knife does */
+function roadBoard24(){const P=BOARD24.road,o=[],q=rng(2433);
+  for(let i=0;i<P.length-1;i++){const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(P.length-1,i+2)];
+    for(let k=0;k<10;k++){const t=k/10,t2=t*t,t3=t2*t,f=(a,b,c,d)=>.5*(2*b+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3);o.push(f(p0[0],p1[0],p2[0],p3[0])+(q()-.5)*.3,f(p0[1],p1[1],p2[1],p3[1]))}}
+  o.push(...P[P.length-1]);return o}
+function paintBoard24(g){const r=rng(2431),B=BOARD24;
+  /* the board: pale wood, a fine quiet grain running across, darker toward its edges */
+  g.fillStyle=lg(g,0,0,0,144,['#d4b684','#cdac78','#c09e6a']);g.fillRect(0,0,320,144);
+  tex(g,'mott',.12,0,0,320,144,'overlay',.7);grainBoard24(g,0,0,320,144,r,.08);
+  for(let i=0;i<44;i++)R(g,0,i*3.3+r()*1.6,320,.5,r()<.5?'rgba(110,78,40,.09)':'rgba(255,244,214,.12)');
+  for(let i=0;i<40;i++){const y=r()*144,x=r()*300,l=6+r()*18;R(g,x,y,l,.5,'rgba(120,86,46,.1)')}
+  comp(g,'multiply',.35,()=>{g.fillStyle=rg(g,170,70,240,['#ffffff','#f4ece0','#a08a7a']);g.fillRect(0,0,320,144)});
+  /* the bench where the pegs wait: a strip of darker wood lying on the board, its round corners, its shadow to the lower right */
+  const bx=B.bench[0],by=B.bench[1]-2,bw=B.bench[2],bh=62;
+  /* (first, the marks of use on the board: small nicks of a knife and a pale rub here and there, short and each one way, none near a cut) */
+  for(let i=0;i<26;i++){const x=r()*320,y=r()*144;if(x>120&&x<206||x>206&&(y>44&&y<80||y>86&&y<122))continue;const l=2+r()*4,a=(r()-.5)*.6;
+    stroke(g,[x,y,x+l,y+l*a],'rgba(110,76,40,.22)',.5);stroke(g,[x+.4,y+.4,x+l+.4,y+l*a+.4],'rgba(255,244,214,.2)',.5)}
+  pool(g,262,30,22,6,'#8a6a40',.08,'multiply');pool(g,64,118,30,7,'#fff4dc',.12,'screen');
+  comp(g,'multiply',.32,()=>{rboxBoard24(g,bx+1.6,by+2,bw,bh,4);g.fillStyle='#6a5040';g.fill()});
+  rboxBoard24(g,bx,by,bw,bh,4);g.fillStyle=lg(g,0,by,0,by+bh,['#b08654','#a47a4a','#966e42']);g.fill();
+  clipTo(g,()=>rboxBoard24(g,bx,by,bw,bh,4),()=>{tex(g,'mott',.16,bx,by,bw,bh,'overlay',.7);grainBoard24(g,bx,by,bw,bh,r,.09);
+    ao(g,bx,by+bh-3,bw,3,'b',.3,'#2a1810')});
+  g.save();rboxBoard24(g,bx+.3,by+.3,bw-.6,bh-.6,3.7);g.strokeStyle='rgba(255,226,180,.45)';g.lineWidth=.5;g.stroke();g.restore();
+  /* the two places: shallow hollows rubbed into the board, long, their ends round; darker on their upper edge, a pale lip below */
+  for(const k of['T','M']){const[x,y,w,h]=B[k];
+    rboxBoard24(g,x,y,w,h,h/2);g.fillStyle='rgba(150,112,64,.38)';g.fill();
+    clipTo(g,()=>rboxBoard24(g,x,y,w,h,h/2),()=>{ao(g,x,y,w,4,'t',.3,'#5a3a1a');ao(g,x,y,5,h,'l',.18,'#5a3a1a');tex(g,'mott',.2,x,y,w,h,'overlay',1)});
+    g.save();rboxBoard24(g,x,y,w,h,h/2);g.strokeStyle='rgba(92,60,30,.5)';g.lineWidth=.6;g.stroke();g.restore();
+    g.save();rboxBoard24(g,x+.5,y+.6,w,h,h/2);g.strokeStyle='rgba(255,240,206,.35)';g.lineWidth=.5;g.stroke();g.restore()}
+  /* the gate: an arch scratched without a sill, the road starting inside it */
+  {const[gx,gy,gw,gh]=B.gate,cx=gx+gw/2,P=[cx-7,gy+gh];for(let a=Math.PI;a<=2*Math.PI+.001;a+=Math.PI/12)P.push(cx+Math.cos(a)*7,gy+4.6+Math.sin(a)*3.6);P.push(cx+7,gy+gh);cutBoard24(g,P,1.1)}
+  /* the road */
+  cutBoard24(g,roadBoard24(),1.6);
+  /* the stones beside it, and their numbers */
+  for(const[n,y]of B.stones){const P=[162.2,y+2.4,162.2,y-1.2,163,y-2.6,165,y-2.6,165.8,y-1.2,165.8,y+2.4];
+    poly(g,P,'rgba(110,74,38,.45)');stroke(g,[165.8,y-1.2,165.8,y+2.4,162.2,y+2.4],'rgba(255,240,206,.5)',.5);stroke(g,[162.2,y+2.4,162.2,y-1.2,163,y-2.6,165,y-2.6],'rgba(70,44,22,.7)',.5);
+    numBoard24(g,n,169,y,5.6)}}
+/* a peg: turned boxwood, its top rounded, lit from the upper left; the band of its person's color, the first letter of the name below it */
+function pegBoard24(g,x,y,t,sel){const w=12,h=18;
+  shC24(g,x+w/2+1.2,y+h,7,1.6,.55);
+  if(sel){g.save();rboxBoard24(g,x-1.4,y-1.4,w+2.8,h+2.8,4);g.strokeStyle='#f6e6a8';g.lineWidth=1;g.stroke();g.restore()}
+  const P=new Path2D();P.moveTo(x,y+h);P.lineTo(x,y+4);P.quadraticCurveTo(x,y,x+4,y);P.lineTo(x+w-4,y);P.quadraticCurveTo(x+w,y,x+w,y+4);P.lineTo(x+w,y+h);P.closePath();
+  g.save();g.clip(P);g.fillStyle=lg(g,x,0,x+w,0,['#f2e2bc','#ecd6a8','#d4b886','#a88a5c']);g.fillRect(x,y,w,h);tex(g,'vert',.12,x,y,w,h,'overlay',.5);
+  g.fillStyle=t.c;g.fillRect(x,y+5,w,4);g.fillStyle=lg(g,x,0,x+w,0,['rgba(255,255,255,.22)','rgba(255,255,255,0)','rgba(0,0,0,.3)']);g.fillRect(x,y+5,w,4);
+  R(g,x,y+5,w,.5,'rgba(40,24,12,.35)');R(g,x,y+8.5,w,.5,'rgba(40,24,12,.45)');
+  R(g,x,y+h-1,w,1,'rgba(80,56,30,.45)');g.restore();
+  R(g,x+2,y+.5,w-5,.5,'rgba(255,250,230,.6)');
+  g.save();g.font='bold 7px "Lucida Console",Monaco,"Courier New",monospace';g.textAlign='center';g.fillStyle='rgba(255,246,222,.6)';g.fillText(T(t.name).charAt(0),x+w/2+.5,y+16.3);
+  g.fillStyle='#3a2414';g.fillText(T(t.name).charAt(0),x+w/2,y+15.8);g.restore()}
+ART.board24={w:320,q:12,paint(g){paintBoard24(g)},
   light:null,
-  draw(g){for(const t of TOK24){const[x,y]=tokPos24(t.id),sel=G.sel24===t.id;R(g,x-1,y-1,14,20,sel?'#f0e0a0':'rgba(0,0,0,0)');R(g,x,y,12,18,'#c8a878');R(g,x,y+5,12,4,t.c);
-      g.save();g.font='bold 7px monospace';g.fillStyle='#2a1c10';g.textAlign='center';g.fillText(T(t.name).charAt(0),x+6,y+16);g.restore()}},front(){}};
+  draw(g){for(const t of TOK24){const[x,y]=tokPos24(t.id),sel=G.sel24===t.id;pegBoard24(g,x,y-(sel?1.5:0),t,sel)}},front(){}};
 /* ==== ART board24: end ==== */
 
 /* ==== ART hills24: begin ==== */
@@ -286,22 +498,247 @@ ART.capena24={w:320,q:12,paint(g){SHARED.rome.capena(g)},get light(){return SHAR
 /* ==== ART camp24: begin ==== */
 /* Before the wall of the Praetorians' camp (CAMP24), late in the day: the high wall of red brick running across with its battlements, a
    tower at each end of it (never in its middle), the gate in the wall at the right of the middle, the street before it. No standard, no
-   statue, no altar. ART-TODO. Sun low from the left: long shadows to the right. */
+   statue, no altar. Sun low from the left: long shadows to the right.
+   The camp's wall is of red brick in fine courses, each joint stopping inside its own course, with a band of larger yellower bricks every
+   few feet; its battlements are blocks standing on its level top, the sky between them. The two towers stand forward of the wall at its
+   ends, square, taller, with their own battlements and narrow slits high up; we see the inner side of each a little (the eye stands at
+   the middle): the left tower's side is turned from the sun and in shade, and its shadow lies on the wall beside it as a band; the right
+   tower's side is turned to the sun. The gate has a flat lintel of travertine (no arch behind a head), and its two leaves of upright boards
+   stand shut, with no band across them. Before the wall a strip of beaten earth with weeds at its foot, then the street, paved with
+   blocks of lava (SHARED.rome.road) behind a row of curbstones. Sky only above the battlements: nothing of the camp is seen over them. */
 const CAMP24={wallY:104,wall:[0,30,320,74],towers:[[0,14,34,90],[286,14,34,90]],gate:[190,58,40,46],walk:[16,304,112,138]};
-ART.camp24={w:320,q:12,paint(g){sky24(g,40,'#a8bcd4','#e8d4c0');blocks24(g,[[...CAMP24.wall,'#a24a32'],...CAMP24.towers.map(b=>[...b,'#963e2a']),[...CAMP24.gate,'#3a2418']]);
-    ground24(g,CAMP24.wallY,'#a49684')},
-  light:{amb:'#f2dcc8',sun:[22,-6,.36],wallY:CAMP24.wallY},draw(){},front(){}};
+/* CAMPV24: the eye (horizon, vanishing point), the wall's top under its battlements, the towers' tops, how far forward the towers stand (k:
+   the part of the way from their front to the vanishing point at which the wall's face lies), the shadow of the left tower on the wall */
+const CAMPV24={hz:84,vx:160,wt:37,mt:30,tt:21,tm:14,k:.06,shade:[41.6,98],sun:[22,-6,.36]};
+/* a face of brick in courses (temple.stone's courses: every joint stops inside its own course and none stands over another), then
+   softened toward its own tone so that the courses read as a texture and not as ruled lines, and weathered */
+function brickCamp24(g,x,y,w,h,seed,c,age){const r=rng(seed);SHARED.temple.stone(g,x,y,w,h,r,{bh:1.6,bw:5.2,c,v:.14,honey:'#b8805a',grey:'#7a5248',age:0});
+  inRect(g,x,y,w,h,()=>{comp(g,'source-over',.38,()=>{g.fillStyle=c;g.fillRect(x,y,w,h)});tex(g,'blotch',.4,x,y,w,h,'soft-light',1.2)});
+  SHARED.temple.age(g,x,y,w,h,r,age==null?.6:age)}
+function paintCamp24(g){const r=rng(2451),C=CAMPV24,WY=CAMP24.wallY,K=C.k,wp=(x,y)=>[x+(C.vx-x)*K,y+(C.hz-y)*K],tf=(WY-C.hz*K)/(1-K);
+  /* the sky of the late afternoon, warm low down, a few clouds lit from below at the left */
+  g.fillStyle=lg(g,0,0,0,C.wt+4,['#7c96c0','#aab4cc','#e8ccb0']);g.fillRect(0,0,320,C.wt+4);
+  pool(g,-20,34,140,26,'#ffd8a8',.35,'screen');
+  {const q=rng(2452);cloud(g,110,12,120,4,q,'#fff0dc','#b8a0b8');cloud(g,250,20,90,3,q,'#ffe8d0','#b49cb4');cloud(g,40,6,60,2.4,q,'#fff4e4','#b8a8c0')}
+  /* the wall between the towers: its face of brick, its battlements, the bands of larger bricks */
+  brickCamp24(g,30,C.wt,260,WY-C.wt,2453,'#9e5840');
+  for(const y of[52,70,88])inRect(g,30,y,260,2.2,()=>{brickCamp24(g,30,y,260,2.2,2454+y,'#b07a60',.3);R(g,30,y,260,.5,'rgba(255,230,200,.35)');R(g,30,y+1.7,260,.5,'rgba(60,24,18,.35)')});
+  /* the coping along the wall-walk, and the merlons standing on it: blocks on the level top, the sky between them */
+  R(g,30,C.wt-1.4,260,1.6,'#c49078');R(g,30,C.wt-1.4,260,.5,'#f4c8a8');R(g,30,C.wt+.2,260,.5,'rgba(60,26,20,.5)');
+  for(let x=44;x<280;x+=10){brickCamp24(g,x,C.mt+.8,6,C.wt-1.4-C.mt-.8,2460+x,'#ae5a3e',.25);R(g,x-.3,C.mt,6.6,1,'#c8947a');R(g,x-.3,C.mt,6.6,.5,'#f4caa8');
+    R(g,x+5.5,C.mt+1,.5,C.wt-C.mt-2.4,'rgba(60,24,18,.4)');R(g,x,C.mt+1,.5,C.wt-C.mt-2.4,'rgba(255,220,190,.3)')}
+  /* the gate */
+  gateCamp24(g,r);
+  /* the light on the wall: warm from the low sun at the left, raking along it; grime and damp toward its foot */
+  comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,0,320,0,['#ffc890','#ffb880','#e8a878']);g.fillRect(30,C.mt,260,WY-C.mt)});
+  comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,0,WY-18,0,WY,['rgba(90,60,60,0)','rgba(90,60,60,1)']);g.fillRect(30,WY-18,260,18)});
+  /* the left tower's shadow on the wall beside it: a band from the tower's side to where the low sun reaches the wall again */
+  {const[a,b]=C.shade,sg=()=>lg(g,a,0,b,0,[[0,'#5e5a88'],[.88,'#66608c'],[1,'rgba(122,116,152,0)']]);comp(g,'multiply',.85,()=>{g.fillStyle=sg();g.fillRect(a,C.wt-1.4,b-a,WY-C.wt+1.4)});
+    for(let x=44;x<b;x+=10)comp(g,'multiply',.85,()=>{g.fillStyle=sg();g.fillRect(x-.3,C.mt,6.6,C.wt-1.4-C.mt)})}
+  /* the towers: the side we see of each, then the front */
+  for(const[x0,x1,side]of[[0,34,1],[286,320,-1]]){const ex=side>0?x1:x0,[sx,st]=wp(ex,C.tt),[,sf]=wp(ex,tf),S=[ex,C.tt,sx,st,sx,sf,ex,tf];
+    poly(g,S,side>0?'#6e3628':'#d0805a');clipTo(g,()=>poly(g,S),()=>{brickCamp24(g,Math.min(ex,sx),st,Math.abs(sx-ex)+1,tf-st,2470+x0,side>0?'#7a3a2a':'#d48a62',.3);
+      comp(g,'multiply',side>0?.55:.1,()=>{g.fillStyle=side>0?'#6a6490':'#ffffff';g.fillRect(Math.min(ex,sx),st,Math.abs(sx-ex)+1,tf-st)})});
+    brickCamp24(g,x0,C.tt,x1-x0,tf-C.tt,2480+x0,'#9a5640');
+    for(const y of[40,62,84])inRect(g,x0,y,x1-x0,2.2,()=>{brickCamp24(g,x0,y,x1-x0,2.2,2490+x0+y,'#b07a60',.3);R(g,x0,y,x1-x0,.5,'rgba(255,230,200,.35)')});
+    R(g,x0,C.tt-1.4,x1-x0,1.6,'#c49078');R(g,x0,C.tt-1.4,x1-x0,.5,'#f4c8a8');
+    for(let i=0;i<3;i++){const mx=x0+(side>0?1+i*12:x1-x0-7-i*12);brickCamp24(g,mx,C.tm+.8,6,C.tt-1.4-C.tm-.8,2500+x0+i,'#ae5a3e',.25);R(g,mx-.3,C.tm,6.6,1,'#c8947a');R(g,mx-.3,C.tm,6.6,.5,'#f4caa8')}
+    /* two narrow slits high up, upright, each by itself */
+    for(const sxx of[x0+10,x0+22]){R(g,sxx,32,1.6,7,'#2a1410');R(g,sxx-.4,39,2.4,.6,'#d49a7a');R(g,sxx-.4,31.4,2.4,.6,'rgba(50,20,14,.5)')}
+    comp(g,'soft-light',.4,()=>{g.fillStyle='#ffb880';g.fillRect(x0,C.tm,x1-x0,tf-C.tm)});
+    comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,0,tf-18,0,tf,['rgba(90,60,60,0)','rgba(90,60,60,1)']);g.fillRect(x0,tf-18,x1-x0,18)});
+    R(g,side>0?x1-.6:x0,C.tt,.6,tf-C.tt,side>0?'rgba(60,30,30,.4)':'rgba(255,220,180,.5)');
+    if(side<0)R(g,x0,C.tm,.6,tf-C.tm,'rgba(255,226,190,.4)')}
+  /* the ground: a strip of beaten earth along the wall's foot, weeds against it (none at the gate), then the street of lava blocks
+     behind its curb, running across */
+  const V=SHARED.rome.view({hz:C.hz,F:320,H:1.7,cx:C.vx}),Q=SHARED.rome.frame([1,0]),cz=V.F*V.H/(109-C.hz);
+  g.fillStyle=lg(g,0,WY,0,112,['#9a8670','#ae9a7e']);g.fillRect(-2,WY,324,40);tex(g,'mott',.5,0,WY,320,10,'overlay',1);
+  SHARED.country.ground(g,-2,WY,324,112,'#a8947a',2455,{n:30,size:.5,tufts:0});
+  SHARED.rome.road(g,V,Q,{s0:6,s1:cz,cell:.46,seed:2456,sun:[-.96,-.28],light:'#ffe8d4',haze:'#d8c4b8',hz0:14,hz1:60,y0:108});
+  SHARED.rome.curb(g,V,Q,{s0:cz,s1:cz+.36,h:.14,u0:-16,u1:16,len:1.1,c:'#b4a898',seed:2457});
+  {const P=[];for(let x=-2;x<=322;x+=2)P.push(x,x<34?tf:x>286?tf:WY);for(const[dy,wd,al]of[[-3,6,.08],[-1.2,2.4,.14],[.5,1.4,.2],[.2,.6,.32]])stroke(g,P.map((v,i)=>i%2?v+dy:v),rgba('#4a3028',al),wd)}
+  {const q=rng(2458);for(let i=0;i<34;i++){const x=q()*316,w=3+q()*10;if(x+w>CAMP24.gate[0]-8&&x<CAMP24.gate[0]+CAMP24.gate[2]+8)continue;const y=x<34||x>286?tf:WY;
+    for(let k=0;k<w*2;k++){const xx=x+q()*w,hh=.8+q()*2.2,ln=(q()-.5)*.8;stroke(g,[xx,y+.3,xx+ln,y+.3-hh],q()<.5?'#6a7a44':'#58663a',.5)}}}
+  /* the late light over all: warm at the left, a little cooler at the right; the foot of the picture a shade darker */
+  comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,320,0,['rgba(255,200,150,1)','rgba(244,214,190,.8)','rgba(200,196,220,1)']);g.fillRect(0,0,320,144)});
+  ao(g,0,126,320,18,'b',.14,'#2a2040')}
+/* the gate: a flat lintel of travertine in five wedges, its joints running out from below; the jambs of brick; set back in the wall's
+   thickness the two leaves of upright boards, shut, with no band across them; the right side of the opening, turned to the sun, lit; a
+   threshold of travertine */
+function gateCamp24(g,r){const M=SHARED.materials,[x,y,w,h]=CAMP24.gate,b=y+h,lt=y-6,cx=x+w/2,k=.035,x1f=x+w-(x+w-CAMPV24.vx)*k;
+  /* the leaves */
+  for(let i=0;i<8;i++){const pw=w/8,px=x+i*pw;M.plank(g,px,y,pw,h,['#5e4430','#56402c','#624632','#5a422e'][i%4],r,1);if(i)R(g,px,y,.5,h,'rgba(24,14,10,.55)');R(g,px+.5,y,.5,h,'rgba(220,170,120,.14)')}
+  R(g,cx-.4,y,.8,h,'#1c120c');ao(g,x,y,w,8,'t',.55,'#140c0a');
+  for(const ry of[y+h*.5])for(const kx of[cx-4,cx+2.4]){R(g,kx,ry,1.6,1.6,'#2a1e18');R(g,kx,ry,1.6,.5,'#8a7058')}
+  /* the right side of the opening, in the sun */
+  const RV=[x+w,y,x1f,y+(CAMPV24.hz-y)*k,x1f,b+(CAMPV24.hz-b)*k,x+w,b];poly(g,RV,'#d08a64');clipTo(g,()=>poly(g,RV),()=>brickCamp24(g,x1f-1,y,x+w-x1f+2,h,2462,'#d4906a',.2));
+  /* the lintel */
+  const L=[x-5,lt,x+w+5,lt,x+w+2,y,x-2,y];poly(g,L,'#d8ccb0');
+  clipTo(g,()=>poly(g,L),()=>{tex(g,'mott',.5,x-5,lt,w+10,6,'overlay',1);SHARED.temple.age(g,x-5,lt,w+10,6,rng(2463),.5);
+    for(let i=1;i<5;i++){const fx=x-5+(w+10)*i/5,bx=x-2+(w+4)*i/5;stroke(g,[fx,lt,bx,y],'rgba(70,56,50,.55)',.5);stroke(g,[fx+.5,lt,bx+.5,y],'rgba(255,248,230,.35)',.5)}});
+  R(g,x-5,lt,w+10,.5,'#fff4dc');R(g,x-2,y-.5,w+4,.5,'rgba(60,40,36,.55)');
+  /* the threshold */
+  R(g,x-2,b-1.2,w+4,2.2,'#c8bca0');R(g,x-2,b-1.2,w+4,.5,'#f4e8cc');R(g,x-2,b+.5,w+4,.5,'rgba(60,46,40,.5)')}
+ART.camp24={w:320,q:12,paint(g){paintCamp24(g)},
+  light:{amb:'#f2dcc8',sun:CAMPV24.sun.slice(),wallY:CAMP24.wallY},draw(){},front(){}};
 /* ==== ART camp24: end ==== */
 
 /* ==== ART lane24: begin ==== */
 /* A street of tenements in Rome, in the afternoon (LANE24): house fronts of four and five storeys on both sides of a narrow street, shops
    below with their shutters open; four doors to the lodgings to let (DOORS24): the stair door of the flat on the second floor, the wide
    doorway of the room at street level, the narrow door of the stair up three flights to the room under the roof, and the low door of the
-   small room. The street lies in the shade of its houses: soft light, no cast shadow. Sparrows on a ledge high up. ART-TODO. */
+   small room. The street lies in the shade of its houses: soft light, no cast shadow. Sparrows on a ledge high up.
+   We stand in the street and look at its north side, as the lodgings look out at it: their doorways open on this street, whose paving is
+   the same pale flags in courses, and the houses behind us, across it, are those seen through their doors. The left house has five
+   storeys, plastered in ochre, a band of brick over its ground floor, a wooden balcony on beams along part of its first floor (a solid
+   parapet of boards, no post), and its top storey running out of the picture; the right house has four, its ground floor faced with
+   brick, plaster above, and the room under its roof behind small windows below its eave, on whose edge the sparrows sit. The storeys grow
+   lower as they go up, as such houses were built. The afternoon sun stands behind us at the left, over the houses across the street: their
+   shadow covers the street and our houses up to their upper storeys, which are in the sun, so the people in the street have no cast
+   shadow. The four doors (DOORS24) agree with the rooms behind them: the flat's stair door open on a stair that climbs inside, lit from
+   above; the street room's wide doorway with its jambs faced in brick, its deep beam over it and its threshold with the groove for the
+   night boards, the room dim behind it; the narrow door of the steep stair to the room under the roof; the low door of the small room,
+   its leaf open into it, its limewash and red socle seen inside. Between them shops: one shut with its upright boards, one open with
+   its counter, one with half of its boards taken away. Windows are square, their shutters folded back against the wall, boards upright;
+   grilles run one way only. Nothing round stands behind a head, and no window is set so close to others that their gaps make a cross. */
 const LANE24={wallY:106,walk:[16,304,112,138]};
 const DOORS24={flat:[30,56,24,50],street:[96,60,48,46],garret:[184,62,18,44],small:[250,72,22,34]};
-ART.lane24={w:320,q:12,paint(g){sky24(g,14,'#b8c8d8','#d8dee2');R(g,0,10,160,LANE24.wallY-10,'#b88a64');R(g,160,6,160,LANE24.wallY-6,'#a87c5c');
-    blocks24(g,Object.values(DOORS24).map(b=>[...b,'#4a3222']));ground24(g,LANE24.wallY,'#9a9284')},
+/* LNV24: the eye (horizon and vanishing point), the line of the shade on the house fronts (above it the sun), the house tops and bands */
+const LNV24={hz:82,vx:160,shade:[[0,33],[118,33],[124,25],[320,25]],eave:10,lband:50,rband:52};
+/* a window in a plastered front: the dark opening, its sill, the side of the opening turned to the light; o.sh 'open' (both leaves folded
+   back against the wall), 'left' (one leaf), 'shut' (the leaves in the opening), o.grille (bars upright, one way only), o.pot (a pot on
+   the sill with a plant) */
+function winLane24(g,x,y,w,h,o,r){o=o||{};const M=SHARED.materials,wd=o.wood||'#6e5034';
+  R(g,x-.8,y-.8,w+1.6,h+1.6,'rgba(90,60,50,.3)');R(g,x,y,w,h,'#2a201e');ao(g,x,y,w,Math.min(3,h*.4),'t',.5,'#000');R(g,x+w-.8,y,.8,h,'rgba(220,190,160,.4)');
+  if(o.sh==='shut'){for(let i=0;i<2;i++)M.plank(g,x+i*w/2,y,w/2,h,tint(wd,i?-.05:.05),r,1);R(g,x+w/2-.25,y,.5,h,'rgba(20,12,8,.6)')}
+  else if(o.sh)for(const s of o.sh==='left'?[-1]:[-1,1]){const lx=s<0?x-w/2-.4:x+w+.4;M.plank(g,lx,y,w/2,h,tint(wd,s<0?.04:-.06),r,1);
+    R(g,lx+w/4-.25,y,.5,h,'rgba(30,18,12,.45)');R(g,s<0?lx:lx+w/2-.5,y,.5,h,s<0?'rgba(255,230,190,.25)':'rgba(30,18,12,.4)')}
+  if(o.grille)for(let bx=x+1.4;bx<x+w-.6;bx+=1.8)R(g,bx,y,.6,h,'#4a3a30');
+  R(g,x-1.2,y+h,w+2.4,1.2,'#e4d2b4');R(g,x-1.2,y+h,w+2.4,.4,'#fff4dc');R(g,x-1.2,y+h+1.2,w+2.4,.6,'rgba(60,40,36,.35)');
+  if(o.pot){const px=x+w/2;poly(g,[px-2,y+h-2.4,px+2,y+h-2.4,px+1.4,y+h,px-1.4,y+h],'#a8603c');R(g,px-2,y+h-2.4,4,.5,'#d08a5c');
+    for(let i=0;i<22;i++)R(g,px-3+r()*6,y+h-2.6-r()*3.4,.5+r()*.6,.5,['#4a6a3a','#5e7e44','#3a5430'][i%3])}}
+/* a door with a stair that climbs inside it, from the right up to the left, lit from above (steep: the garret's, narrow and steeper) */
+function stairLane24(g,D,steep,r){const[x,y,w,h]=D,b=y+h,M=SHARED.materials,rise=steep?5.4:4.2,run=steep?2.4:4.4;
+  inRect(g,x,y,w,h,()=>{g.fillStyle=lg(g,0,y,0,b,['#4a3c32','#2e2420','#1e1816']);g.fillRect(x,y,w,h);
+    pool(g,x+w*.3,y+2,w*.8,10,'#d8c4a0',.22,'screen');if(steep)pool(g,x+w*.5,y+h*.45,w,h*.5,'#c8b090',.2,'screen');
+    const P=[x+w+1,b];let sx=x+w-1.4,sy=b;while(sx>x-run&&sy>y){sy-=rise;P.push(sx,sy);sx-=run;P.push(sx,sy)}P.push(x-1,sy,x-1,b);
+    poly(g,P,'#4e4036');for(let i=2;i<P.length-4;i+=4)R(g,P[i+2],P[i+1],run,.6,'rgba(214,190,150,.5)');
+    g.fillStyle=lg(g,0,y,0,b,['rgba(0,0,0,0)','rgba(10,6,6,.45)']);g.fillRect(x,y,w,h);ao(g,x,y,w,6,'t',.55,'#000')});
+  /* the frame: jambs and a lintel of travertine; the threshold */
+  SHARED.temple.stone(g,x-3,y-4,w+6,4,rng(2601+x),{bh:4,bw:w+6,c:'#d8ccb0',v:.05,age:.4});R(g,x-3,y-4,w+6,.5,'rgba(255,248,230,.5)');R(g,x-3,y-.5,w+6,.5,'rgba(50,36,32,.5)');
+  for(const jx of[x-3,x+w]){R(g,jx,y,3,h,'#cfc2a6');tex(g,'mott',.4,jx,y,3,h,'overlay',1);R(g,jx,y,.5,h,'rgba(255,248,230,.35)');R(g,jx+2.5,y,.5,h,'rgba(60,44,40,.35)')}
+  R(g,x-3,b-1,w+6,1.6,'#c4b89c');R(g,x-3,b-1,w+6,.5,'#ece0c4')}
+/* a shop opening: a beam over it, the dark inside with a shelf of jars at the back; o.counter (a counter of masonry along part of its
+   front, the way in left open at its right), o.boards (the upright boards that shut it at night, all or a part of them standing in it) */
+function shopLane24(g,x0,x1,top,o,r){const M=SHARED.materials,b=LANE24.wallY,w=x1-x0;
+  inRect(g,x0,top,w,b-top,()=>{g.fillStyle=lg(g,0,top,0,b,['#3a2e28','#2a201c','#221a18']);g.fillRect(x0,top,w,b-top);
+    const sy=top+(b-top)*.42;R(g,x0,sy,w,1.2,'#5a4232');R(g,x0,sy,w,.5,'#7a5a42');
+    for(let jx=x0+2.5;jx<x1-3;jx+=4.6+r()*1.4){const jh=3.4+r()*1.6;poly(g,[jx-1.2,sy,jx+1.2,sy,jx+1.5,sy-jh*.6,jx+.6,sy-jh,jx-.6,sy-jh,jx-1.5,sy-jh*.6],['#8a5236','#7a4a30','#946044'][Math.floor(r()*3)]);R(g,jx-1.2,sy-jh*.75,.6,jh*.5,'rgba(255,200,160,.2)')}
+    ao(g,x0,top,w,6,'t',.5,'#000');ao(g,x0,top,3,b-top,'l',.4,'#000')});
+  if(o.counter){const cx1=x0+w*o.counter,ct=b-15;R(g,x0,ct,cx1-x0,b-ct,'#c8b494');plaster(g,x0,ct,cx1-x0,b-ct,'#ccb898',r,{patch:0,cracks:0,t:.45});
+    R(g,x0-.4,ct-1.2,cx1-x0+.8,1.6,'#e8e0d0');R(g,x0-.4,ct-1.2,cx1-x0+.8,.5,'#fffaf0');R(g,x0,ct+.4,cx1-x0,.6,'rgba(50,40,36,.4)');R(g,cx1-.8,ct,.8,b-ct,'rgba(50,40,36,.35)');
+    for(const[px,c]of[[x0+5,'#b06c44'],[x0+12,'#c4a070'],[x0+19,'#8a8070']])if(px<cx1-3){poly(g,[px-1.8,ct-1.2,px+1.8,ct-1.2,px+1.4,ct-4.4,px-1.4,ct-4.4],c);R(g,px-1.4,ct-4.4,2.8,.5,tint(c,.3))}}
+  if(o.boards){const from=x0+w*(1-o.boards);for(let bx=from,i=0;bx<x1-.01;bx+=5.2,i++)M.plank(g,bx,top,Math.min(5.2,x1-bx),b-top,tint('#6a4c32',(r()-.5)*.2),r,1);
+    for(let bx=from+5.2;bx<x1-.5;bx+=5.2)R(g,bx,top,.5,b-top,'rgba(20,12,8,.55)')}
+  M.board(g,x0-3,top-4,w+6,4,'#5e4430',r);R(g,x0-3,top-4,w+6,.5,'rgba(255,230,190,.25)');ao(g,x0-3,top,w+6,2,'t',.3,'#1a1010')}
+function paintLane24(g){const r=rng(2591),M=SHARED.materials,WY=LANE24.wallY,V=LNV24,D=DOORS24;
+  /* the sky over the right house's roof, and above the street behind us */
+  g.fillStyle=lg(g,0,0,0,V.eave+2,['#8eaed2','#b4c8de']);g.fillRect(0,0,320,V.eave+2);
+  /* the two house fronts */
+  plaster(g,-2,-2,162,WY+2,'#d8b48a',r,{patch:0,cracks:0,t:.5,top:.04,bot:-.06,brick:'#a0603e'});SHARED.temple.age(g,0,0,160,WY,rng(2592),.55);
+  plaster(g,160,V.eave,162,WY-V.eave,'#d4a284',r,{patch:0,cracks:0,t:.5,top:.04,bot:-.06,brick:'#a0603e'});SHARED.temple.age(g,160,V.eave,160,WY-V.eave,rng(2593),.55);
+  /* the right house's ground floor, faced with brick in courses */
+  SHARED.temple.stone(g,160,V.rband+2.4,160,WY-V.rband-2.4,rng(2594),{bh:1.6,bw:5,c:'#a86a50',v:.14,honey:'#c08a62',grey:'#7a5a50',age:.5});
+  inRect(g,160,V.rband+2.4,160,WY-V.rband-2.4,()=>comp(g,'source-over',.3,()=>{g.fillStyle='#a86c52';g.fillRect(160,V.rband,160,WY)}));
+  /* the bands of brick over the ground floors */
+  for(const[x0,x1,y]of[[-2,160,V.lband],[160,322,V.rband]]){SHARED.temple.stone(g,x0,y,x1-x0,2.4,rng(2595+y),{bh:1.2,bw:4.4,c:'#a85e40',v:.12,age:.3});
+    R(g,x0,y,x1-x0,.5,'rgba(255,226,196,.3)');R(g,x0,y+2.4,x1-x0,.6,'rgba(50,30,26,.4)')}
+  /* where the two houses meet there is no drawn line, only the change of their plaster: their bands stand at different heights and
+     each stops where its own house ends, so that nothing upright runs across a band */
+  /* the right house's eave: the ends of its tiles along its edge, the shade of it under it; it ends against the taller house, the sky
+     above it, so that only a corner is made there */
+  {const e=V.eave,P=[160,e,322,e,322,e+3.4,160,e+3.4];poly(g,P,'#9a5238');clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.5,160,e,162,4,'overlay',1);
+      for(let x=163;x<322;x+=3.2)R(g,x,e+1.6,1.6,1.6,'rgba(60,26,18,.5)')});R(g,160,e,162,.6,'#e8a078');
+    ao(g,160,e+3.4,162,4,'t',.4,'#3a2420')}
+  /* the left house's top: its eave just at the top of the picture */
+  R(g,-2,0,162,1.6,'#9a5238');ao(g,-2,1.6,162,4,'t',.4,'#3a2420');
+  /* the windows: storeys lower and windows smaller as they go up; each row set off from the one below it */
+  const W=(x,y,w,h,o)=>winLane24(g,x,y,w,h,o,r);
+  /* left house: the fourth, third, second and first floors */
+  for(const[x,sh]of[[8,0],[30,'shut'],[52,'open'],[76,0],[100,'left'],[124,0],[146,'shut']])W(x,3,4,4.4,{sh});
+  for(const[x,sh,p]of[[16,'open'],[42,0,1],[66,'shut'],[92,'open'],[116,'left'],[140,'open']])W(x,13,5,5.6,{sh,pot:p});
+  for(const[x,sh,p]of[[8,'left'],[30,'open'],[56,0],[80,'open',1],[106,'shut'],[132,'open']])W(x,23.4,6,7.4,{sh,pot:p});
+  for(const[x,sh]of[[88,'open'],[116,'left'],[142,0]])W(x,36,7,9.4,{sh});
+  /* right house: the room under the roof, the second and the first floors */
+  for(const x of[178,214,258,300])W(x,16,4.4,4.4,{sh:x===258?'shut':0});
+  for(const[x,sh,p]of[[168,'open'],[196,0,1],[222,'left'],[250,'open'],[278,0],[304,'shut']])W(x,26.8,6,7.6,{sh,pot:p});
+  for(const[x,sh,gr]of[[176,'open'],[206,0,1],[236,'open'],[266,'left'],[296,0,1]])W(x,38.6,7,9.4,{sh,grille:gr});
+  /* the balcony along the left house's first floor: a floor on beams that stand out of the wall, a solid parapet of boards laid along
+     it with no post, pots on its rail; behind it a door to it, dark */
+  {const bx0=2,bx1=74,fl=48.6;R(g,24,34,10,fl-34,'#2a201e');ao(g,24,34,10,3,'t',.5,'#000');
+    ao(g,bx0,fl+2,bx1-bx0,5,'t',.4,'#3a2a28');
+    for(let x=bx0+4;x<bx1-2;x+=10){R(g,x,fl+1.8,1.8,1.8,'#5a4030');R(g,x,fl+1.8,1.8,.5,'#8a6a4a')}
+    M.board(g,bx0-1,fl,bx1-bx0+2,1.8,'#6a4c32',r);
+    M.board(g,bx0,fl-7,bx1-bx0,7,'#7a5838',r);R(g,bx0,fl-7,bx1-bx0,.5,'#a07a52');
+    M.board(g,bx0-1.2,fl-8.4,bx1-bx0+2.4,1.4,'#6a4c32',r);R(g,bx0-1.2,fl-8.4,bx1-bx0+2.4,.5,'#b08a5c');
+    for(const px of[10,38,62]){poly(g,[px-2.2,fl-8.4,px+2.2,fl-8.4,px+1.6,fl-11.6,px-1.6,fl-11.6],'#a8603c');R(g,px-2,fl-11.8,4,.5,'#d08a5c');
+      for(let i=0;i<26;i++)R(g,px-3+r()*6,fl-12-r()*4,.5+r()*.6,.5,['#4a6a3a','#5e7e44','#3a5430','#6e8a50'][i%4])}}
+  /* the ground floors: left house: a shop shut with its boards, the flat's stair door, a small window of the street room with its grille,
+     the street room's doorway; right house: the garret's stair door, a shop open with its counter, the small room's door, a shop with half
+     its boards taken away */
+  shopLane24(g,-4,22,64,{boards:1},r);
+  stairLane24(g,D.flat,0,r);
+  W(68,64,10,8,{grille:1});
+  streetDoorLane24(g,D.street,r);
+  stairLane24(g,D.garret,1,r);
+  shopLane24(g,210,244,64,{counter:.7},r);
+  smallDoorLane24(g,D.small,r);
+  shopLane24(g,280,316,66,{boards:.5},r);
+  /* the foot of the houses: grime and damp, the seam where the wall meets the paving */
+  comp(g,'multiply',.3,()=>{g.fillStyle=lg(g,0,WY-14,0,WY,['rgba(90,70,60,0)','rgba(90,70,60,1)']);g.fillRect(0,WY-14,320,14)});
+  /* the street: pale flags in courses, as seen from the lodgings' doors; worn in the middle, a little dirt at the walls' foot */
+  pave(g,-2,WY,322,145,'#c4b89e',r,{vx:V.vx,vy:V.hz,rows:5,step:34,v:.07,t:.34,rand:0});
+  pool(g,160,124,150,10,'#e8dcc4',.1,'screen');
+  for(const[dy,wd,al]of[[-1.2,2.4,.14],[.6,1.4,.2],[.2,.6,.34]])R(g,0,WY+dy-wd/2,320,wd,rgba('#3a2c28',al));
+  for(let i=0;i<40;i++){const x=r()*320;if(Object.values(D).some(d=>x>d[0]-4&&x<d[0]+d[2]+4))continue;R(g,x,WY+.2,1+r()*3,.6+r()*.8,'rgba(80,66,50,.3)')}
+  /* the light: the shade of the houses across the street over the street and our houses up to their upper storeys; the sun above it,
+     warm, from the left */
+  const S=[];for(const[x,y]of V.shade)S.push(x,y);S.push(322,146,-2,146);S.splice(0,0);S[0]=-2;
+  for(const[d,a]of[[1.6,.18],[.8,.2],[0,.34]])comp(g,'multiply',a,()=>poly(g,S.map((v,i)=>i%2&&v<140?v-d:v),'#7a80a8'));
+  comp(g,'soft-light',.4,()=>{poly(g,[-2,0,322,0,322,V.shade[3][1],V.shade[2][0],V.shade[2][1],V.shade[1][0],V.shade[1][1],-2,V.shade[0][1]]);g.fillStyle='#ffd8a4';g.fill()});
+  comp(g,'multiply',.18,()=>{g.fillStyle=lg(g,0,WY,0,144,['#9a9ab8','#c8c4d0']);g.fillRect(0,WY,320,40)});
+  ao(g,0,128,320,16,'b',.12,'#2a2440')}
+/* the street room's doorway: jambs faced with brick, courses whose joints stop inside them; a deep beam over it; the threshold a long
+   stone with the groove for the night boards; inside, the room dim: its flags in perspective, its far wall of old plaster */
+function streetDoorLane24(g,D,r){const M=SHARED.materials,[x,y,w,h]=D,b=y+h;
+  inRect(g,x,y,w,h,()=>{const M2=SHARED.materials,fw=101.6;
+    /* its far wall of old plaster, a bench of one plank along it with legs at its ends, the table before it, legs at its corners only;
+       its floor of flags from the far wall to our threshold */
+    plaster(g,x,y,w,fw-y,'#c8b494',r,{patch:0,cracks:0,t:.45});ao(g,x,fw-12,w,12,'b',.25,'#5a4a3a');
+    R(g,x+30,72,7,5,'#5a4836');R(g,x+29.6,77,7.8,.8,'#d8c8a8');
+    pave(g,x-2,fw,x+w+2,b+.4,'#b0a48c',r,{vx:LNV24.vx,vy:LNV24.hz,rows:2,step:26,v:.05,t:.3,rand:0});ao(g,x,fw,w,1.6,'t',.4,'#2a2020');
+    {const bx0=x+3,bx1=x+31,bt=fw-6;R(g,bx0+2,bt+1.6,1.4,fw-bt-1.6,'#3a2a1e');R(g,bx1-3.4,bt+1.6,1.4,fw-bt-1.6,'#3a2a1e');M2.board(g,bx0,bt,bx1-bx0,1.8,'#6a4c32',r)}
+    {const t0=x+16,t1=x+40,tt=fw-7.4,tf=fw+2.6;M2.shadow(g,(t0+t1)/2,tf,(t1-t0)/2+1,1,.45);
+      for(const lx of[t0+.4,t1-2])R(g,lx,tt+1.8,1.6,tf-tt-1.8,'#3e2c20');R(g,t0+2.6,tt+1.8,1.2,tf-tt-3,'#2e2018');
+      poly(g,[t0+1.6,tt-1.4,t1-1.6,tt-1.4,t1,tt,t0,tt],'#8a6a48');M2.board(g,t0,tt,t1-t0,1.8,'#6e5236',r)}
+    /* dim: lit only by the street, more at the floor near us, less up into the room */
+    comp(g,'multiply',.5,()=>{g.fillStyle=lg(g,0,y,0,b,['#4e465a','#8a7e84','#c4b4a8']);g.fillRect(x,y,w,h)});
+    ao(g,x,y,w,8,'t',.6,'#000');ao(g,x,y,6,h,'l',.35,'#000');ao(g,x+w-6,y,6,h,'r',.3,'#000')});
+  for(const jx of[x-5,x+w])inRect(g,jx,y,5,h,()=>{R(g,jx,y,5,h,'#a8705a');for(let yy=y+1.6,j=0;yy<b;yy+=2.2,j++){R(g,jx,yy,5,.4,'rgba(80,50,36,.45)');R(g,jx+(j%2?1.4:3.2),yy+.4,.4,1.8,'rgba(80,50,36,.4)')}
+    tex(g,'mott',.4,jx,y,5,h,'overlay',1);R(g,jx===x-5?jx:jx+4.5,y,.5,h,'rgba(255,240,220,.3)')});
+  M.board(g,x-7,y-6,w+14,6,'#5e4430',r);R(g,x-7,y-6,w+14,.5,'rgba(255,230,190,.3)');ao(g,x-7,y,w+14,2,'t',.35,'#1a1010');
+  R(g,x-5,b-1.4,w+10,2.4,'#b4a88e');R(g,x-5,b-1.4,w+10,.5,'#e4d8bc');R(g,x,b-.6,w,.5,'rgba(50,40,36,.55)')}
+/* the small room's low door: a frame of dressed stone; inside, its leaf standing open against the room's wall at the left, the clean
+   limewash and the red socle, the flags; the window high in its wall lets in a little light */
+function smallDoorLane24(g,D,r){const[x,y,w,h]=D,b=y+h;
+  inRect(g,x,y,w,h,()=>{R(g,x,y,w,h,'#c8bca4');tex(g,'mott',.35,x,y,w,h,'overlay',1);R(g,x,b-13,w,9,'#94523a');R(g,x,b-13.4,w,.6,'#6a3424');
+    pave(g,x-2,b-4,x+w+2,b+.4,'#b8ac94',r,{vx:LNV24.vx,vy:LNV24.hz,rows:2,step:26,v:.05,t:.3,rand:0});
+    comp(g,'multiply',.45,()=>{g.fillStyle=lg(g,0,y,0,b,['#5a5268','#8a8494']);g.fillRect(x,y,w,h)});
+    const L=[x,y,x+4.4,y+2.2,x+4.4,b-1.2,x,b];poly(g,L,'#5a4030');R(g,x+4,y+2.2,.5,b-y-3.4,'rgba(255,220,180,.3)');ao(g,x,y,w,5,'t',.5,'#000')});
+  SHARED.temple.stone(g,x-3,y-4,w+6,4,rng(2611),{bh:4,bw:w+6,c:'#d8ccb0',v:.05,age:.4});R(g,x-3,y-4,w+6,.5,'rgba(255,248,230,.5)');R(g,x-3,y-.5,w+6,.5,'rgba(50,36,32,.5)');
+  for(const jx of[x-3,x+w]){R(g,jx,y,3,h,'#cfc2a6');tex(g,'mott',.4,jx,y,3,h,'overlay',1);R(g,jx,y,.5,h,'rgba(255,248,230,.35)');R(g,jx+2.5,y,.5,h,'rgba(60,44,40,.35)')}
+  R(g,x-3,b-1,w+6,1.6,'#c4b89c');R(g,x-3,b-1,w+6,.5,'#ece0c4')}
+ART.lane24={w:320,q:12,paint(g){paintLane24(g)},
   light:{amb:'#d8d2cc',wallY:LANE24.wallY},draw(){},front(){}};
 /* ==== ART lane24: end ==== */
 
