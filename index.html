@@ -1263,6 +1263,9 @@ function poseAt(o,ps){const p=poseOn(o,ps);if(!p)return null;const{Q,k,yS,off,si
     far=at(Q.far&&Q.far(k),5,2),near=at(Q.near&&Q.near(k),5,2),r={far,near};
   if(Q.rope){const dx=far[0]-near[0],dy=far[1]-near[1],d=Math.hypot(dx,dy),e=5*FIG.K/d;r.rope=[[near[0]-dx*e,near[1]-dy*e],[far[0]+dx*e,far[1]+dy*e]]}
   return r}
+/* poseSw: the width of a posed figure's contact shadow, as walkSw gives it for the others: none in the water or in bed (the bed has its own),
+   wider for one sitting on the ground, and the stance's own for the poses that stand with their feet apart; a walking pose, the walk's */
+function poseSw(o,ps,fr){const p=poseOn(o,ps);if(!p)return walkSw(o,fr);const Q=p.Q;return Q.water||Q.lie||Q.bed?0:Q.ground?10.5:Q.walk?walkSw(o,fr):p.W?p.W.shadowW:walkSw(o,p.fr)}
 /* person: one figure with its feet at x,y, one drawing unit per canvas pixel, facing right (dir -1 mirrors it).
    fr is the walk: 0 stands; -1 the figure sits (see SEATG: its hips on the seat, the thighs level, the near shin straight down and the far foot drawn back under the seat; bare knees beyond the hem of a short tunic, and under a long robe the cloth hanging from the knees nearly to the floor);
    -2 to -5 it kneels (see KNEEL: on both knees or one, the arms down or the hands folded, the head bowed; the body lower by the length of a shin);
@@ -2559,7 +2562,7 @@ function figure(g,x,y,lit,key,fn,sw,cxOff,z){x=hp(x);y=hp(y);sw=sw==null?8.5:sw;
   figSprite(g,x,y,lit,c)}
 const blinks=(o,ts)=>((ts+o.ph)%4300)<140;
 /* man: a person by look id, for scenes that pose figures themselves (the ship, the road, the prologue). */
-function man(g,x,y,id,dir,fr,lit,ges,sw,bow,bl,pz){const o=LOOK[id];figure(g,x,y,lit,id+dir+'f'+fr+(ges?'g'+ges:'')+(bow?'b':'')+(bl?'k':'')+(pz||''),s=>person(s,0,0,o,dir,fr,0,bow||0,ges||0,bl||0,0,pz),sw!=null?sw:walkSw(o,fr),dir*kneelX(o,fr))}
+function man(g,x,y,id,dir,fr,lit,ges,sw,bow,bl,pz,ps){const o=LOOK[id];figure(g,x,y,lit,id+dir+'f'+fr+(ges?'g'+ges:'')+(bow?'b':'')+(bl?'k':'')+(pz||'')+(ps?'p'+ps:''),s=>person(s,0,0,o,dir,fr,0,bow||0,ges||0,bl||0,0,pz,ps),sw!=null?sw:ps?poseSw(o,ps,fr):walkSw(o,fr),dir*kneelX(o,fr))}
 /* An actor whose dress changes with the story (a cloak torn off him) is given another look and says so in wear, a letter or two that
    names it: the poses of each look are kept apart. A chapter's start gives everyone his own look back (see setChapter). */
 /* moves: what a figure does at this moment, as [mouth, far hand, eyes shut, a sum of MV]. o: the actor; L: its look; ln: the line it is
@@ -2599,7 +2602,7 @@ function moves(o,L,ln,ts){if(L.stone)return[0,0,0,0];
    that holds. An actor marked noTurn keeps his back turned if the scene wants it so; one who bows or walks does not turn; and two who are
    one actor (a mate) turn each on the spot and do not change places. */
 function turnOf(k,x,room,dir){const t=G.turn.get(k);if(!t||t.dir!==dir||t.to.room!==room)return 0;const d=t.to.x-x;return Math.abs(d)<2?0:d>0?1:-1}
-const still=o=>o.noTurn||o.bow||o.walk||o.kneel||o.bound||o.held||o.lifted||o.keeper||o.grips;
+const still=o=>o.noTurn||o.bow||o.walk||o.kneel||o.bound||o.held||o.lifted||o.keeper||o.grips||!!(o.pose&&POSE[o.pose]&&!POSE[o.pose].walk);
 const facing=o=>still(o)?o.dir:turnOf(o,o.x,o.room,o.dir)||(G.with===o&&o.dir===G.withDir?(PC().x>=o.x?1:-1):o.dir);
 /* mateFacing: the mate turns to the one she speaks with, or to the one her actor speaks with, whichever was the later; or with him to the
    one played, who talks with them both */
@@ -2613,8 +2616,8 @@ function drawActor(g,o,ts,id){const pl=planOf(id);if(pl)return pl.drawActor(g,o,
   const m=o.mate;if(m){const L=LOOK[m.fig],mx=o.x+m.dx*o.dir,md=mateFacing(o,mx),[mt,mg,mb,mm]=moves({talk:m.talk,bow:o.bow,fr:o.fr,x:mx},L,m.talk&&ln&&ln.a&&ln.a!==o?ln:null,ts);
     figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+md+'f'+(o.fr===-1?'s':o.fr)+'t'+mt+bow+mg+mb+'m'+mm,s=>person(s,0,0,L,md,o.fr,mt,bow,mg,mb,mm),walkSw(L,o.fr),md*kneelX(L,o.fr))}
   /* custody (see CUFF): the pose, and a soldier's grip */
-  const pz=poseOf(o),gs=o.grips?10:ges,ly=pz==='l'?LIFT:0;
-  figure(g,o.x,o.y-ly,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+'f'+(o.fr===-1?'s':o.fr)+'t'+talk+bow+gs+bl+'m'+mv+pz,s=>person(s,0,0,o.look,dir,o.fr,talk,bow,gs,bl,mv,pz),ly?0:walkSw(o.look,o.fr),dir*kneelX(o.look,o.fr),ly?o.y:null)}
+  const pz=poseOf(o),gs=o.grips?10:ges,ly=pz==='l'?LIFT:0,ps=o.pose&&POSE[o.pose]?o.pose+(o.pk|0):'';
+  figure(g,o.x,o.y-ly,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+'f'+(o.fr===-1?'s':o.fr)+'t'+talk+bow+gs+bl+'m'+mv+pz+(ps?'p'+ps:''),s=>person(s,0,0,o.look,dir,o.fr,talk,bow,gs,bl,mv,pz,ps),ly?0:ps?poseSw(o.look,ps,o.fr):walkSw(o.look,o.fr),dir*kneelX(o.look,o.fr),ly?o.y:null)}
 function render(ts){G.t=ts;update(ts);LID=null;cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   if(G.scene)G.scene(cx,ts);
   else if(G.room){const id=G.room,a=ART[id],z=zoomOf(id),cam=hp(G.cam),cy=hp(G.camY),f=fg(id);if(z!==1)cx.setTransform(HR*z,0,0,HR*z,0,0);backdrop(cx,id,cam,cy);cx.save();cx.translate(-cam,-cy);
@@ -2913,7 +2916,7 @@ function decode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1'
   const c=v%512,b=Math.floor(v/512)^msk(c);return chk(b,CHAP[ch].salt)!==c||(b>>19&3)>2||b>>21?null:{ch,b}}
 function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];G.pc=P;G.invs={};P.hs=null;P.called=null;
   LOOK.paul=paulLook(ch);if(LOOK.barnabas)LOOK.barnabas=Object.assign({skin:'#b8844f',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},ch>2?{hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1}:{hair:'#3a2a1a',beard:'#3a2a1a'});
-  SPR.clear();Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;a.seat=0;a.kneel=0;a.bound=0;a.chained=a.held=a.lifted=a.keeper=a.grips=a.chainTo=0;a.wear='';a.look=LOOK[a.id]});
+  SPR.clear();Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;a.seat=0;a.kneel=0;a.pose=0;a.pk=0;a.bound=0;a.chained=a.held=a.lifted=a.keeper=a.grips=a.chainTo=0;a.wear='';a.look=LOOK[a.id]});
   (CHAP[ch].party||[]).forEach(id=>ACT[id].party=1);
   $('#chname').textContent=T(CHAP[ch].name);G.ship=null;setScore(CHAP[ch].music);CHAP[ch].setup();swapBtn()}
 /* dealInv: rebuild the inventories from the story's flags (the level's inv). Each item goes to the member who carries it (own,
