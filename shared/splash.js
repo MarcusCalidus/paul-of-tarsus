@@ -14,6 +14,10 @@
      side by side and none lies across another; the seams of the cloth run one way, and its stitches run along the seam.
    Only the flame moves, and the small glow round it.
 
+   The game closes on the same bench by day (day): the lamp out, plain daylight from a window on the left, every shadow falling away from
+   it, and more rolls than before. Nothing moves in it. The night's picture is painted exactly as it was: the light is an argument (NIGHT,
+   DAY), and every painter paints by night unless it is given the day.
+
    The overture is the theme of Chapter One, in D Hijaz, in ten bars: two bars that raise the curtain (frame drum, finger cymbals, a
    harp rising and a low horn call), the melody on the ney over a walking bass and a strummed lyre, and the melody again, higher, with
    the aulos and the horn. Then the quiet music of the title follows by itself (then: see sched() in index.html).
@@ -22,7 +26,9 @@
      leave(next,ms)   the picture passes into the scene next over ms milliseconds, and then next is G.scene
      score            the overture
      len, turn        seconds: how long the overture is, and when the picture begins to pass into the title's
-     lamp             where the wick is */
+     lamp             where the wick is
+     day(o)           the same bench by day, for the end of the game: a scene in which nothing moves (see day below)
+     paint(o)         that picture itself, 320 x 210 */
 SHARED.splash=(()=>{
 "use strict";
 /* ---------- helpers ---------- */
@@ -35,10 +41,11 @@ function blob(g,p,c){spline(g,p,1);if(c){g.fillStyle=c;g.fill()}}
 function sline(g,p,c,w){spline(g,p,0);g.strokeStyle=c;g.lineWidth=w||.5;g.lineCap='round';g.lineJoin='round';g.stroke()}
 const at=(g,x,y,a,fn)=>{g.save();g.translate(x,y);g.rotate(a);fn();g.restore()};
 /* cast: paint a thing with a two-part grounded shadow on the bench: a tight dark contact shade directly under it
-   and a softer projected shadow thrown away from the lamp flame */
-function cast(g,x,y,len,fn,contact){const[c,l]=mk(VW*HR,VT*HR),d=Math.hypot(x-LAMP[0],y-LAMP[1])||1,
-    dx=(x-LAMP[0])/d*len*HR,dy=((y-LAMP[1])/d*len*.55+len*.42)*HR;
-  l.setTransform(g.getTransform());fn(l);l.setTransform(1,0,0,1,0,0);l.globalCompositeOperation='source-in';l.fillStyle='#100702';l.fillRect(0,0,c.width,c.height);
+   and a softer projected shadow thrown away from the light L (NIGHT: the lamp flame; DAY: the window, see below).
+   L: at, the point the light comes from; k, how long the shadows are; drop, how far they fall toward us; ink, their colour */
+function cast(g,x,y,len,fn,contact,L){L=L||NIGHT;const[c,l]=mk(VW*HR,VT*HR),P=L.at,d=Math.hypot(x-P[0],y-P[1])||1,
+    dx=(x-P[0])/d*len*L.k*HR,dy=((y-P[1])/d*len*L.k*.55+len*L.k*L.drop)*HR;
+  l.setTransform(g.getTransform());fn(l);l.setTransform(1,0,0,1,0,0);l.globalCompositeOperation='source-in';l.fillStyle=L.ink;l.fillRect(0,0,c.width,c.height);
   g.save();g.setTransform(1,0,0,1,0,0);g.globalCompositeOperation='multiply';
   g.globalAlpha=.28;g.drawImage(c,Math.round(dx),Math.round(dy));
   g.globalAlpha=.36;g.drawImage(c,Math.round(dx*.52),Math.round(dy*.52));
@@ -47,6 +54,12 @@ function cast(g,x,y,len,fn,contact){const[c,l]=mk(VW*HR,VT*HR),d=Math.hypot(x-LA
 
 /* room-pixel layout (320 x 210): wall above, broad seasoned bench below, front bevelled edge at EDGE, flame wick at LAMP */
 const LAMP=[174,129],WALL=114,EDGE=195;
+/* the two lights of the bench. NIGHT: the lamp's flame, close by, low and warm. DAY: the morning, through a window in the wall to the
+   left: a light far off and a little above the bench, so that every shadow falls to the right and only a little toward us. It is plain
+   light: no rays, no beams and no dust in the air (CONTRIBUTING section 3). */
+const NIGHT={at:LAMP,k:1,drop:.42,ink:'#100702'},DAY={day:1,at:[-420,40],k:1.55,drop:.1,ink:'#17111a'},
+  /* DAYW: the same morning with the window in the back wall, behind the bench at the left: the shadows fall to the right and toward us */
+  DAYW={day:1,at:[-160,60],k:1.4,drop:.3,ink:'#17111a'};
 
 /* ---------- the stone wall and the seasoned workbench ---------- */
 function room(g){const r=rng(1803),H=EDGE-WALL;
@@ -86,19 +99,24 @@ function room(g){const r=rng(1803),H=EDGE-WALL;
     tex(g,'mott',.18,0,EDGE+1.8,VW,VT-EDGE,'overlay',.7);ao(g,0,EDGE+1.8,VW,3,'t',.45,'#0e0602')})}
 
 /* ---------- coiled papyrus end-face helper (no stick sticking out, no tie across) ---------- */
-function spiralEnd(g,cx,cy,rx,ry,tone){
+function spiralEnd(g,cx,cy,rx,ry,tone,L){
   oval(g,cx,cy,rx,ry,tint(tone,-.48));
   const rings=[[.88,tint(tone,-.04)],[.76,tint(tone,-.46)],[.64,tint(tone,.08)],[.52,tint(tone,-.44)],[.4,tint(tone,.02)],[.28,tint(tone,-.5)]];
   for(let i=0;i<rings.length;i++){const[k,col]=rings[i];oval(g,cx+(1-k)*.35,cy+(1-k)*.1,Math.max(1.1,rx*k),Math.max(1.2,ry*k),col)}
   /* dark hollow core at the center */
   oval(g,cx+.3,cy,Math.max(1,rx*.18),Math.max(1.1,ry*.22),'#26180c');
-  /* warm rim catchlight on the lamp-facing upper-right lip of the outer turns */
-  g.save();g.strokeStyle=rgba('#fff0c2',.38);g.lineWidth=.55;g.beginPath();g.ellipse(cx,cy,rx*.9,ry*.9,0,-1.3,.35);g.stroke();g.restore()}
+  /* warm rim catchlight on the lamp-facing upper-right lip of the outer turns; by day a cooler one on the upper-left lip, toward the window */
+  g.save();g.strokeStyle=L&&L.day?rgba('#f6f2e6',.34):rgba('#fff0c2',.38);g.lineWidth=.55;g.beginPath();
+  if(L&&L.day)g.ellipse(cx,cy,rx*.9,ry*.9,0,3.5,4.9);else g.ellipse(cx,cy,rx*.9,ry*.9,0,-1.3,.35);g.stroke();g.restore()}
 
 /* ---------- a rolled-up scroll lying on its side: shows only its near coiled end ---------- */
-function roll(g,x,y,len,rad,ang,seed,base){const r=rng(seed),C=base||'#dcc28c';
+/* far: the roll's far end is in the picture too. It is then only the round outline of the roll, in the tones of its side (CONTRIBUTING
+   section 4); otherwise the far end lies beyond the edge of the picture. */
+function roll(g,x,y,len,rad,ang,seed,base,L,far){const r=rng(seed),C=base||'#dcc28c';
   at(g,x,y,ang,()=>{
-    clipTo(g,()=>{g.beginPath();g.rect(-4,-rad,len+4,rad*2);g.ellipse(len,0,rad*.44,rad,0,0,6.2832)},()=>{
+    clipTo(g,()=>{g.beginPath();
+      /* (each end is a subpath of its own, begun with moveTo, so that no line joins it to the next and cuts a wedge out of the roll) */
+      if(far){g.rect(0,-rad,len,rad*2);g.moveTo(rad*.44,0);g.ellipse(0,0,rad*.44,rad,0,0,6.2832);g.moveTo(len+rad*.44,0)}else g.rect(-4,-rad,len+4,rad*2);g.ellipse(len,0,rad*.44,rad,0,0,6.2832)},()=>{
       g.fillStyle=lg(g,0,-rad,0,rad,[[0,tint(C,-.04)],[.18,tint(C,.32)],[.42,C],[.72,tint(C,-.34)],[.9,tint(C,-.54)],[1,tint(C,-.42)]]);
       g.fillRect(-6,-rad-1,len+14,rad*2+2);
       /* fine horizontal papyrus fibers along the roll */
@@ -107,12 +125,12 @@ function roll(g,x,y,len,rad,ang,seed,base){const r=rng(seed),C=base||'#dcc28c';
       for(let u=8;u<len-8;u+=18+r()*16)ao(g,u,-rad,4,rad*2,'l',.08,'#5a3c14');
       tex(g,'mott',.22,-6,-rad-1,len+14,rad*2+2,'overlay',.75);tex(g,'grain',.08,-6,-rad-1,len+14,rad*2+2,'overlay',.5);
       ao(g,len-14,-rad,16,rad*2,'r',.16,'#68481c');
-      /* warm lamplight sheen rising toward the right end closest to the lamp */
-      g.fillStyle=lg(g,0,0,len,0,['rgba(255,224,160,0)','rgba(255,224,160,.16)']);g.fillRect(0,-rad,len,rad*1.3)});
-    spiralEnd(g,len,0,rad*.45,rad,C)})}
+      /* warm lamplight sheen rising toward the right end closest to the lamp; by day a pale sheen toward the window on the left */
+      g.fillStyle=L&&L.day?lg(g,0,0,len,0,['rgba(246,242,232,.18)','rgba(246,242,232,0)']):lg(g,0,0,len,0,['rgba(255,224,160,0)','rgba(255,224,160,.16)']);g.fillRect(0,-rad,len,rad*1.3)});
+    spiralEnd(g,len,0,rad*.45,rad,C,L)})}
 
 /* ---------- the open scroll: worn papyrus fibers running across, handwritten columns, rolled left end, curled right lip ---------- */
-function openScroll(g){const r=rng(424),e=rng(425),x0=84,x1=186,y0=157,y1=189,P=[];
+function openScroll(g,L){const day=L&&L.day;const r=rng(424),e=rng(425),x0=84,x1=186,y0=157,y1=189,P=[];
   const nick=(v,at,wd,d)=>{const k=Math.abs(v-at)/wd;return k<1?d*(1-k*k):0};
   for(let x=x0;x<=x1;x+=2+e()*3)P.push(x,y0+(e()-.5)*.65+nick(x,122,3.5,1.1)+nick(x,162,3,.8)+.35*Math.sin(x/11)+(x-x0)*.012);
   for(let x=x1;x>=x0;x-=2+e()*3)P.push(x,y1+(e()-.5)*.65-nick(x,148,4,1.2)-nick(x,104,3,.8)+.35*Math.sin(x/10)-(x-x0)*.008);
@@ -129,8 +147,8 @@ function openScroll(g){const r=rng(424),e=rng(425),x0=84,x1=186,y0=157,y1=189,P=
     ao(g,x0,y0,11,y1-y0,'l',.42,'#4e3210');
     ao(g,x1-9,y0,10,y1-y0,'r',.32,'#624218');
     pool(g,108,185,13,5,'#9c7432',.2,'multiply');pool(g,166,162,12,4,'#9c7432',.14,'multiply');
-    /* warm highlight pool from the nearby oil lamp on upper-right area of sheet */
-    pool(g,166,164,44,24,'#fff4d0',.22,'screen');
+    /* warm highlight pool from the nearby oil lamp on upper-right area of sheet; by day the daylight lies on its left part */
+    if(day)pool(g,112,172,52,26,'#fbf6ea',.2,'screen');else pool(g,166,164,44,24,'#fff4d0',.22,'screen');
 
     /* two neat columns of ancient Greek bookhand script: level calligraphic letterforms with subtle ink-weight rhythm */
     for(const[cx0,cx1]of[[96,133],[143,178]]){
@@ -157,7 +175,7 @@ function openScroll(g){const r=rng(424),e=rng(425),x0=84,x1=186,y0=157,y1=189,P=
       g.fillRect(-3,-rad-1,len+6,rad*2+2);
       for(let u=0;u<len;u+=2+r()*2)R(g,u,-rad,.8,rad*2,r()<.5?rgba('#7a5824',.06):rgba('#fff8dc',.08));
       tex(g,'mott',.2,-3,-rad-1,len+6,rad*2+2,'overlay',.7)});
-    spiralEnd(g,len,0,rad*.48,rad,'#dcc48c')});
+    spiralEnd(g,len,0,rad*.48,rad,'#dcc48c',L)});
 
   /* left rolled-up portion of the open scroll, thick and naturally wound */
   at(g,82.2,156.2,1.565,()=>{const len=33.2,rad=5.8;
@@ -167,30 +185,34 @@ function openScroll(g){const r=rng(424),e=rng(425),x0=84,x1=186,y0=157,y1=189,P=
       for(let u=0;u<len;u+=1.8+r()*2.2)R(g,u,-rad,.8,rad*2,r()<.5?rgba('#7c5824',.05):rgba('#fff7d8',.07));
       tex(g,'mott',.24,-4,-rad-1,len+8,rad*2+2,'overlay',.75);tex(g,'grain',.08,-4,-rad-1,len+8,rad*2+2,'overlay',.5);
       ao(g,0,-rad,5,rad*2,'l',.22,'#4e3210');ao(g,len-5,-rad,6,rad*2,'r',.22,'#4e3210')});
-    spiralEnd(g,len,0,rad*.45,rad,'#dec690')})}
+    spiralEnd(g,len,0,rad*.45,rad,'#dec690',L)})}
 
 /* ---------- the wheel-turned terracotta inkpot ---------- */
-function inkpot(g){const cx=93,y0=135,B=[cx,y0,cx+6.2,y0+1.1,cx+7.8,y0+4.6,cx+9.8,y0+9.2,cx+9.2,y0+14.2,cx+6.4,y0+16.6,cx,y0+17.2,cx-6.4,y0+16.6,cx-9.2,y0+14.2,cx-9.8,y0+9.2,cx-7.8,y0+4.6,cx-6.2,y0+1.1];
+function inkpot(g,L){const day=L&&L.day,cx=93,y0=135,B=[cx,y0,cx+6.2,y0+1.1,cx+7.8,y0+4.6,cx+9.8,y0+9.2,cx+9.2,y0+14.2,cx+6.4,y0+16.6,cx,y0+17.2,cx-6.4,y0+16.6,cx-9.2,y0+14.2,cx-9.8,y0+9.2,cx-7.8,y0+4.6,cx-6.2,y0+1.1];
   blob(g,B,'#6a3820');
   clipTo(g,()=>blob(g,B),()=>{
     /* 3D spherical-lathe lighting from the oil lamp to the right-above */
-    g.fillStyle=lg(g,cx-10,y0+2,cx+10,y0+15,[[0,'#2e170e'],[.24,'#5a2d1a'],[.52,'#8e4c2a'],[.78,'#c67642'],[.92,'#e69e62'],[1,'#96522c']]);
+    /* (by day the same lathe lighting, turned to come from the window on the left) */
+    g.fillStyle=day?lg(g,cx+10,y0+2,cx-10,y0+15,[[0,'#2e170e'],[.24,'#5a2d1a'],[.52,'#8e4c2a'],[.78,'#c27648'],[.92,'#dca27a'],[1,'#96522c']])
+      :lg(g,cx-10,y0+2,cx+10,y0+15,[[0,'#2e170e'],[.24,'#5a2d1a'],[.52,'#8e4c2a'],[.78,'#c67642'],[.92,'#e69e62'],[1,'#96522c']]);
     g.fillRect(cx-12,y0-2,24,22);
     /* subtle horizontal wheel-turning grooves */
     for(const ry of[y0+5.6,y0+9.2,y0+12.8])stroke(g,[cx-10,ry,cx,ry+1.3,cx+10,ry],rgba('#281006',.22),.55);
     /* warm specular highlight on right shoulder + warm wood bounce near bottom */
-    pool(g,cx+5.5,y0+7.2,4.4,5,'#ffdda4',.42,'screen');
+    if(day)pool(g,cx-5.5,y0+7.2,4.4,5,'#f6eee0',.34,'screen');else pool(g,cx+5.5,y0+7.2,4.4,5,'#ffdda4',.42,'screen');
     pool(g,cx+2,y0+15.2,7,2.4,'#c4864a',.25,'screen');
     tex(g,'mott',.24,cx-12,y0-2,24,22,'overlay',.6);tex(g,'grain',.1,cx-12,y0-2,24,22,'overlay',.5);
     ao(g,cx-11,y0+11,22,7,'b',.55,'#140804')});
   /* rolled terracotta lip and recessed collar */
   oval(g,cx,y0+1.6,6.8,2.6,'#8e4e2c');
-  g.save();g.strokeStyle='#f2ba7c';g.lineWidth=.8;g.beginPath();g.ellipse(cx,y0+1.4,6.4,2.3,0,-.8,.6);g.stroke();g.restore();
+  g.save();g.strokeStyle=day?'#e4b896':'#f2ba7c';g.lineWidth=.8;g.beginPath();if(day)g.ellipse(cx,y0+1.4,6.4,2.3,0,2.5,3.9);else g.ellipse(cx,y0+1.4,6.4,2.3,0,-.8,.6);g.stroke();g.restore();
   oval(g,cx,y0+1.9,5.4,2.05,'#4a2414');
   /* glossy wet black soot ink inside the mouth, with a tiny flame reflection and rim ink smudge */
   oval(g,cx,y0+2.2,4.5,1.65,'#0e0a09');
-  R(g,cx+.6,y0+1.6,2.2,.75,'#7a5434');
-  R(g,cx+1.6,y0+1.55,1.1,.5,'#ffdba0');
+  /* (by day the ink shows the window, a pale square at its left, and no flame) */
+  if(day){R(g,cx-2.8,y0+1.6,2.2,.75,'#5a5458');R(g,cx-2.6,y0+1.55,1.1,.5,'#d8dce2')}
+  else{R(g,cx+.6,y0+1.6,2.2,.75,'#7a5434');
+  R(g,cx+1.6,y0+1.55,1.1,.5,'#ffdba0')}
   blob(g,[cx+2.8,y0+3.5,cx+4.8,y0+3.4,cx+5.4,y0+4.2,cx+3.6,y0+4.6],'rgba(16,10,8,.42)')}
 
 /* ---------- the first-century reed pen (kalamos): hollow cane stalk with long oblique scooped nib ---------- */
@@ -232,7 +254,7 @@ function reedPen(g){
     g.save();g.strokeStyle='#ecd08c';g.lineWidth=.45;g.beginPath();g.ellipse(.25,0,1,W-.05,0,-1.4,.9);g.stroke();g.restore()})}
 
 /* ---------- the hero oil lamp: first-century molded terracotta lamp with recessed discus, soot and wick ---------- */
-function oilLamp(g){const[lx,ly]=LAMP;
+function oilLamp(g,L){const[lx,ly]=LAMP,day=L&&L.day;
   /* molded pierced ring/lug handle at the back-left */
   const lug=[129,130.5,123.5,129.6,120.2,131.6,120.6,135,124.2,136.6,128.8,136.2];
   blob(g,lug,'#763d20');
@@ -248,8 +270,9 @@ function oilLamp(g){const[lx,ly]=LAMP;
     /* vertical clay carination shading: lit upper shoulder, rich deep burnt-terracotta belly */
     g.fillStyle=lg(g,0,126,0,145.5,[[0,'#d8925c'],[.36,'#b4663a'],[.62,'#7e4020'],[.88,'#421d0e'],[1,'#2c1208']]);
     g.fillRect(124,125,58,22);
-    /* directional self-illumination from its own flame on the right nozzle */
-    g.fillStyle=lg(g,126,0,180,0,[[0,'rgba(22,8,4,.56)'],[.38,'rgba(22,8,4,.08)'],[.7,'rgba(255,204,132,.2)'],[1,'rgba(255,228,168,.46)']]);
+    /* directional self-illumination from its own flame on the right nozzle; by day, out, it is lit from the window on the left */
+    g.fillStyle=day?lg(g,126,0,180,0,[[0,'rgba(250,244,232,.28)'],[.34,'rgba(250,244,232,.06)'],[.7,'rgba(22,8,4,.16)'],[1,'rgba(22,8,4,.42)']])
+      :lg(g,126,0,180,0,[[0,'rgba(22,8,4,.56)'],[.38,'rgba(22,8,4,.08)'],[.7,'rgba(255,204,132,.2)'],[1,'rgba(255,228,168,.46)']]);
     g.fillRect(124,125,58,22);
     /* warm golden bounce light along the lower belly reflected from the lit bench */
     pool(g,149,143.5,14,3.2,'#d88c4c',.3,'screen');
@@ -259,13 +282,13 @@ function oilLamp(g){const[lx,ly]=LAMP;
   /* upper discus shoulder & molded concentric rim */
   oval(g,145.2,132.4,16.4,5.4,'#c8804e');
   /* warm highlight rim facing the flame on the right and front */
-  g.save();g.strokeStyle='#fad092';g.lineWidth=.9;g.beginPath();g.ellipse(145.2,132.3,16,5.1,0,-.55,1.25);g.stroke();g.restore();
+  g.save();g.strokeStyle=day?'#e8c4a0':'#fad092';g.lineWidth=.9;g.beginPath();if(day)g.ellipse(145.2,132.3,16,5.1,0,1.9,3.7);else g.ellipse(145.2,132.3,16,5.1,0,-.55,1.25);g.stroke();g.restore();
   /* raised molding ring around the concave basin */
   oval(g,145.2,132.7,14.2,4.4,'#8e4e2a');
   oval(g,145.2,132.8,13.1,3.9,'#ba7444');
   /* concave discus interior: lit on the LEFT inner wall by the flame to the right, shaded on the RIGHT inner wall */
   clipTo(g,()=>oval(g,145.2,132.9,11.6,3.3),()=>{
-    g.fillStyle=lg(g,133,132,157,134,[[0,'#f4be80'],[.32,'#d28e58'],[.68,'#9a5832'],[1,'#623018']]);
+    g.fillStyle=day?lg(g,157,134,133,132,[[0,'#e2b08a'],[.32,'#c88c60'],[.68,'#9a5832'],[1,'#623018']]):lg(g,133,132,157,134,[[0,'#f4be80'],[.32,'#d28e58'],[.68,'#9a5832'],[1,'#623018']]);
     g.fillRect(132,128,27,10);
     tex(g,'mott',.2,132,128,27,10,'overlay',.5)});
   /* subtle decorative molded inner collar around the filling hole */
@@ -277,7 +300,7 @@ function oilLamp(g){const[lx,ly]=LAMP;
   const noz=[157.8,129.6,166.4,130.1,174.6,130.4,179,132.4,175.4,134.8,167.2,135.2,158.6,135.8];
   blob(g,noz,'#ca8450');
   clipTo(g,()=>blob(g,noz),()=>{
-    g.fillStyle=lg(g,158,129,179,135,['#b66e3e','#e4a266','#ffd698','#d68c54']);g.fillRect(157,128,24,10);
+    g.fillStyle=day?lg(g,158,129,179,135,['#c48256','#b8784a','#a0643a','#8a5430']):lg(g,158,129,179,135,['#b66e3e','#e4a266','#ffd698','#d68c54']);g.fillRect(157,128,24,10);
     /* soot stain darkening the tip of the clay nozzle around the wick opening */
     pool(g,lx+1.2,ly+3.2,6.2,3.4,'#180c08',.6,'multiply')});
   /* nozzle rim lip & wick hole */
@@ -285,7 +308,8 @@ function oilLamp(g){const[lx,ly]=LAMP;
   oval(g,lx,ly+2.9,2.6,1.15,'#1c0e08');
   /* twisted flax wick emerging from the hole, glowing ember-orange at the flame base */
   poly(g,[lx-1.1,ly+2.7,lx-.6,ly+.3,lx+.8,ly+.3,lx+1.2,ly+2.7],'#321c10');
-  R(g,lx-.55,ly+.15,1.15,.95,'#ff8224')}
+  /* lit, its end glows; put out, it is charred black */
+  R(g,lx-.55,ly+.15,1.15,.95,day?'#140c0a':'#ff8224')}
 
 /* ---------- the tentmaker's tools: two turned-handle awls and a guardless Roman utility knife ---------- */
 function awl(g,x,y,ang,sc,woodC){
@@ -311,7 +335,7 @@ function awl(g,x,y,ang,sc,woodC){
     poly(g,[18.6,-1.15,39.5,-.12,18.6,.05],'#d6d2c8');
     stroke(g,[18.8,-.6,38,-.06],'#fff6e0',.45)})}
 
-function knife(g,x,y,ang,sc){
+function knife(g,x,y,ang,sc,L){const day=L&&L.day;
   at(g,x,y,ang,()=>{g.scale(sc,sc);
     /* guardless Roman leather/tentmaker's utility knife: subtly contoured walnut handle with aged bronze pins */
     const H=[0,0,1.2,-2.5,6.8,-3.1,15.5,-2.8,19.2,-2.45,19.2,2.45,15.5,2.8,6.8,3.1,1.2,2.5];
@@ -333,7 +357,7 @@ function knife(g,x,y,ang,sc){
       g.fillStyle=lg(g,0,-2.4,0,3.8,[[0,'#444246'],[.18,'#948e88'],[.46,'#c6beb2'],[.72,'#686664'],[.78,'#ece2d0'],[.92,'#fff6e4'],[1,'#d8d0c0']]);
       g.fillRect(18,-3,35,7.5);
       /* warm lamplight reflection on the forged flat nearest the lamp */
-      pool(g,27,-.5,12,2.4,'#ffe4b0',.36,'screen');
+      pool(g,27,-.5,12,2.4,day?'#eef0f2':'#ffe4b0',day?.3:.36,'screen');
       /* hand-forged hammer scale patina along the upper spine */
       R(g,19.2,-2.4,27,1.05,rgba('#26242a',.36));
       tex(g,'grain',.1,18,-3,35,7.5,'overlay',.5);
@@ -341,7 +365,7 @@ function knife(g,x,y,ang,sc){
       sline(g,[19.2,2.1,31.5,2.55,40.5,2.2,46.8,.95,50.8,-.9],rgba('#ffffff',.52),.45)})})}
 
 /* ---------- the ball of coarse waxed linen twine ---------- */
-function twineBall(g){const cx=275,cy=134,rr=9.2,r=rng(771);
+function twineBall(g,L){const day=L&&L.day;const cx=275,cy=134,rr=9.2,r=rng(771);
   clipTo(g,()=>oval(g,cx,cy,rr,rr*.94),()=>{
     g.fillStyle=rg(g,cx-3.2,cy-2.4,rr*1.7,['#f4e6be','#d8c290','#9e8454','#5e4a28','#2e2212']);
     g.fillRect(cx-11,cy-11,22,22);
@@ -351,7 +375,7 @@ function twineBall(g){const cx=275,cy=134,rr=9.2,r=rng(771);
       sline(g,[cx-11,y0+2.8,cx-4,y0+.2,cx+3,y0-1.7,cx+11,y0-4.2],rgba('#fff4d0',.22),.4)}
     tex(g,'grain',.14,cx-11,cy-11,22,22,'overlay',.5);
     /* warm rim-light facing the oil lamp to the left */
-    pool(g,cx-5.6,cy-2,5,6.5,'#ffdfa0',.28,'screen')});
+    pool(g,cx-5.6,cy-2,5,6.5,day?'#f4f0e2':'#ffdfa0',.28,'screen')});
   /* a few fine stray linen wisps catching the lamplight on the left contour */
   for(let i=0;i<5;i++){const a=2.2+i*.32,px=cx+Math.cos(a)*rr,py=cy+Math.sin(a)*rr*.94;
     sline(g,[px,py,px-1.2-r()*.8,py+(r()-.5)*1.4],rgba('#e8d4a4',.45),.38)}}
@@ -421,25 +445,44 @@ function lampShadow(g){
     pool(g,123.4,136.4,7.4,3.6,'#0c0502',.62,'multiply');
     pool(g,165,139,13.5,3.2,'#0c0502',.54,'multiply')})}
 
-/* ---------- assemble all still-life objects in depth order ---------- */
-function things(g){
+/* ---------- the rolls that lie on the bench by day, besides the three of the night: the letters written since ----------
+   [x, y, len, rad, ang, seed, tone] of each roll, as roll() takes them, from the back of the bench forward, so that each is painted behind
+   the next. The first two lie behind the stack at the left, the next two at the back between the lamp and the ball of thread, the last one
+   in front of the stack. Each shows its near end and nothing else (CONTRIBUTING section 4), and none lies across another. */
+const MORE=[[-6,129.5,56,5.2,-.012,61,'#d8bc86'],[-4,138,62,5.9,.008,67,'#e0c690'],
+  [196,121.5,52,4.8,.006,71,'#d4b680'],[190,129.5,58,5.4,-.01,73,'#e2ca96'],[-12,189,70,6.4,.004,79,'#dcc08a']];
+
+/* ---------- assemble all still-life objects in depth order ----------
+   L: the light (NIGHT or DAY). o.rolls: by day, how many rolls lie on the bench in all (three by night). */
+function things(g,L,o){const day=L&&L.day,n=day?clamp(((o&&o.rolls)||5)-3,0,MORE.length):0,
+    /* which of MORE lie there, in the order they are added: first the two at the back on the right, then the two at the left, then the front one */
+    on=new Set([2,3,0,1,4].slice(0,n)),more=i=>{if(!on.has(i))return;const m=MORE[i];
+      cast(g,m[0]+m[2]*.5,m[1]+m[3],m[3]*.6,l=>roll(l,...m,L,m[0]>0),.5,L)};
+  /* by day, the rolls that lie behind the others first */
+  for(let i=0;i<4;i++)more(i);
   /* pyramid of three stacked papyrus scrolls on the left: two touching on the bench, one nestled in the saddle above */
-  cast(g,34,168,4.8,l=>{roll(l,-8,158,72,7.7,-.022,11,'#d0b47c');roll(l,-10,174.5,76,8.3,.018,23,'#c6a66c')});
-  cast(g,36,162,3.4,l=>roll(l,-6,163.5,64,7.4,.01,37,'#e4cc98'));
+  cast(g,34,168,4.8,l=>{roll(l,-8,158,72,7.7,-.022,11,'#d0b47c',L);roll(l,-10,174.5,76,8.3,.018,23,'#c6a66c',L)},undefined,L);
+  cast(g,36,162,3.4,l=>roll(l,-6,163.5,64,7.4,.01,37,'#e4cc98',L),undefined,L);
+  more(4);
+  if(day){
+    /* by day the lamp is out, and throws its shadow away from the window like everything else on the bench */
+    cast(g,93,144,5.4,l=>inkpot(l,L),.52,L);
+    cast(g,150,138,4.2,l=>oilLamp(l,L),.5,L);
+  }else{
   /* oil lamp's cast shadow on the bench (drawn before the inkpot so the pot stands cleanly above the bench shadow) */
   lampShadow(g);
   /* terracotta inkpot, hero oil lamp, reed pen (kalamos), and open scroll */
   cast(g,93,144,5.4,inkpot,.52);
-  oilLamp(g);
-  cast(g,133,150,2.2,reedPen,.46);
-  cast(g,136,174,2.8,openScroll,.48);
+  oilLamp(g)}
+  cast(g,133,150,2.2,reedPen,.46,L);
+  cast(g,136,174,2.8,l=>openScroll(l,L),.48,L);
   /* ball of linen twine and dark goat-hair cloth on the right */
-  cast(g,275,134,5.4,twineBall,.52);
-  cast(g,284,174,3.8,cloth,.48);
+  cast(g,275,134,5.4,l=>twineBall(l,L),.52,L);
+  cast(g,284,174,3.8,cloth,.48,L);
   /* tentmaker's tools side by side in the warm right-center zone (none crossing another, clear of the cloth hem) */
-  cast(g,222,152,2.4,l=>awl(l,199,150,.055,1.22,'#a46430'),.5);
-  cast(g,225,167,2.1,l=>awl(l,205,166,.02,1.02,'#8e5428'),.5);
-  cast(g,223,181,1.8,l=>knife(l,192.5,181.5,-.03,1.16),.5)}
+  cast(g,222,152,2.4,l=>awl(l,199,150,.055,1.22,'#a46430'),.5,L);
+  cast(g,225,167,2.1,l=>awl(l,205,166,.02,1.02,'#8e5428'),.5,L);
+  cast(g,223,181,1.8,l=>knife(l,192.5,181.5,-.03,1.16,L),.5,L)}
 
 /* ---------- chiaroscuro lighting from the single clay oil lamp ---------- */
 function light(g){const[lx,ly]=LAMP,[c,l]=mk(VW*HR,VT*HR);l.scale(HR,HR);
@@ -459,6 +502,64 @@ function light(g){const[lx,ly]=LAMP,[c,l]=mk(VW*HR,VT*HR);l.scale(HR,HR);
   /* soft warm additive aura right around the burning wick */
   pool(g,lx,ly-2,20,14,'#ff983a',.38)}
 
+/* ---------- the window by day, when it is in the picture (o.window 'wall') ----------
+   A deep square opening in the back wall at the left, above the stack of rolls. No bar or post stands in it (CONTRIBUTING section 3), and
+   it is square, high and away from the middle, where nothing round could come to stand behind a head. Through it only the morning sky is
+   seen, pale and a little warmer low down, with a few soft clouds: the opening is above the eyes, so no land and no horizon. We look at it
+   from the right, so its left side, the reveal, is seen, lit by the sky; the underside of the lintel above it is in shade, and the top of
+   the sill below catches the light. */
+const WIN={x0:20,x1:66,top:24,sill:80,d:7};
+function wallWindow(g){const{x0,x1,top,sill,d}=WIN,r=rng(1907);
+  /* the sky */
+  clipTo(g,()=>g.rect(x0+d,top+3,x1-x0-d,sill-top-3),()=>{
+    g.fillStyle=lg(g,0,top,0,sill,['#9cb4d0','#b8cadc','#d6dce0','#eee2cc']);g.fillRect(x0,top,x1-x0,sill-top);
+    for(let i=0;i<5;i++){const cx=x0+d+r()*(x1-x0-d),cy=top+10+r()*30;pool(g,cx,cy,8+r()*10,1.6+r()*1.6,'#fbf6ee',.35+r()*.2,'source-over')}});
+  /* the left reveal: a face of the wall's own stone turned toward the light, with a course joint along it that stops at its edges */
+  poly(g,[x0,top,x0+d,top+3,x0+d,sill-2,x0,sill],'#c8b498');
+  clipTo(g,()=>poly(g,[x0,top,x0+d,top+3,x0+d,sill-2,x0,sill]),()=>{
+    g.fillStyle=lg(g,x0,0,x0+d,0,['#a89478','#d8c6a8']);g.fillRect(x0,top,d,sill-top);
+    for(const y of[top+18,top+35])stroke(g,[x0,y,x0+d,y+.6],rgba('#5a4634',.45),.5);
+    tex(g,'mott',.2,x0,top,d,sill-top,'overlay',.6)});
+  /* the lintel's underside, and the sill */
+  poly(g,[x0,top,x1,top,x1,top+3,x0+d,top+3],'#6e5a48');
+  poly(g,[x0,sill,x0+d,sill-2,x1,sill-2,x1,sill],'#d2c0a2');R(g,x0,sill,x1-x0,.6,'rgba(60,44,30,.5)');
+  /* a little of the edge of the opening on the right, where the wall turns into it, and its shadow on the stone below */
+  R(g,x1-.6,top,.6,sill-top,'rgba(40,28,20,.5)');ao(g,x0-2,sill,x1-x0+4,6,'t',.3,'#2a1c12')}
+
+/* ---------- daylight: the room in the morning, lit from a window on the left ----------
+   o.window 'side': the window is in the left wall, out of the picture, and its light lies on the back wall as a soft patch the shape of the
+   window, slanting, and on the left of the bench. 'wall': the window is in the back wall (wallWindow), and its light falls on the bench
+   below it and spreads to the right. Either way a plain light: no rays, beams or dust (CONTRIBUTING section 3). The top of the picture is
+   left darker, toward the ceiling, and the far right in the room's own shade. */
+/* PATCH: the sun on the back wall from the window out of the picture; FLOOR: the sun on the bench from the window in the back wall */
+const PATCH=[4,30,76,40,82,104,8,108],FLOOR=[22,117,62,117,112,166,58,166];
+function dayLight(g,o){const[c,l]=mk(VW*HR,VT*HR),side=o.window!=='wall',soft=(fn)=>{for(const[ox,oy]of[[0,0],[-1.6,-.9],[1.6,.9],[-.9,1.6],[.9,-1.6]])fn(ox,oy)};
+  l.scale(HR,HR);
+  /* the room's shade: cool, and lighter toward the window */
+  l.fillStyle='#6a6470';l.fillRect(0,0,VW,VT);
+  comp(l,'lighter',1,()=>{l.fillStyle=lg(l,0,0,VW,0,[[0,'rgba(196,182,168,.9)'],[.4,'rgba(170,158,150,.55)'],[1,'rgba(120,112,120,.16)'],]);l.fillRect(0,0,VW,VT)});
+  /* the bench takes more of the light than the wall, warmest and brightest at its left */
+  comp(l,'lighter',1,()=>{l.fillStyle=lg(l,0,0,VW,0,[[0,'rgba(255,232,200,.62)'],[.45,'rgba(240,214,184,.34)'],[1,'rgba(200,184,172,.08)']]);l.fillRect(0,WALL,VW,VT-WALL)});
+  if(side){
+    /* the sun through the window: a slanting patch on the back wall, the window's shape, with soft edges (laid on five times a
+       little apart), and a broad warm stretch on the left of the bench */
+    soft((ox,oy)=>comp(l,'lighter',.15,()=>poly(l,PATCH.map((v,i)=>v+(i%2?oy:ox)),'#ffe8c4')));
+    pool(l,36,156,170,64,'#ffe2b8',.36)}
+  else{
+    /* the sun through the window in the back wall falls on the bench in front of it, slanting to the right and toward us */
+    soft((ox,oy)=>comp(l,'lighter',.16,()=>poly(l,FLOOR.map((v,i)=>v+(i%2?oy:ox)),'#ffe8c4')));
+    pool(l,60,150,150,60,'#ffe2b8',.26)}
+  comp(l,'multiply',1,()=>{
+    ao(l,0,0,VW,64,'t',.5,'#1a1626');
+    ao(l,0,VT-18,VW,18,'b',.36,'#1a1626');
+    ao(l,VW-80,0,80,VT,'r',.3,'#1a1626')});
+  g.save();g.setTransform(1,0,0,1,0,0);g.globalCompositeOperation='multiply';g.drawImage(c,0,0);g.restore();
+  /* where the sun lies, the stone and the wood are lifted a little above their own colour */
+  soft((ox,oy)=>comp(g,'soft-light',.09,()=>poly(g,(side?PATCH:FLOOR).map((v,i)=>v+(i%2?oy:ox)),'#fff4e0')));
+  /* the window's own opening keeps the brightness of the sky */
+  if(!side){g.save();g.beginPath();g.rect(WIN.x0+WIN.d,WIN.top+3,WIN.x1-WIN.x0-WIN.d,WIN.sill-WIN.top-3);g.clip();
+    g.globalCompositeOperation='screen';g.globalAlpha=.55;g.fillStyle='#e8eef4';g.fillRect(0,0,VW,VT);g.restore()}}
+
 /* ---------- organic layered oil-lamp flame (all motion strictly within 24px of LAMP) ---------- */
 function lampFlame(g,lx,ly,t){
   const sw=Math.sin(t/145)*.6+Math.sin(t/89)*.3,ht=10.2+Math.sin(t/113)*.7+Math.sin(t/67)*.3;
@@ -474,6 +575,13 @@ function lampFlame(g,lx,ly,t){
 
 let BG=null,out=null;
 const build=()=>bake(VW,g=>{room(g);things(g);light(g)},12,VT);
+/* day(o): the bench by day, for the end of the game: the same bench and the same things in the morning, the lamp out, and more rolls.
+   o.window: 'side' (the window is out of the picture, on the left) or 'wall' (it is in the back wall, at the left); o.rolls: how many rolls
+   lie on the bench in all (3 to 8). Returns a scene: nothing in it moves. paint(o) is the picture itself. */
+const DAYS={};
+function paint(o){o=Object.assign({window:'side',rolls:5},o);
+  return bake(VW,g=>{room(g);if(o.window==='wall')wallWindow(g);things(g,o.window==='wall'?DAYW:DAY,o);dayLight(g,o)},12,VT)}
+function day(o){const k=JSON.stringify(o||{});return(g,t)=>g.drawImage(DAYS[k]||(DAYS[k]=paint(o)),0,0,VW,VT)}
 function scene(g,t){const k=out?clamp((performance.now()-out.t0)/out.ms,0,1):0;
   if(out){out.next(g,t);if(k>=1){if(G.scene===scene)G.scene=out.next;return}g.globalAlpha=1-k}
   g.drawImage(BG||(BG=build()),0,0,VW,VT);const[lx,ly]=LAMP;
@@ -503,4 +611,4 @@ const _=null,
     [[0,7,6],[6,6,2],[8,5,4],[12,4,4]],[[0,5,4],[4,3,4],[8,2,4],[12,1,4]],[[0,2,4],[4,0,4],[8,1,4],[12,1,4]],[[0,0,14]]]},
   {drum:1,prog:'FFAAABAAAC',seq:{F:'b...d.t.d.ktd.tk',A:'d.skt.s.d.skt.sk',B:'b.skt.s.d.skt.tk',C:'b.skt.s.b...d...'}}]};
 const len=score.bars*16*score.dt;
-return{scene,leave,score,len,turn:len-3.2,lamp:LAMP,get out(){return!!out}}})();
+return{scene,leave,score,len,turn:len-3.2,lamp:LAMP,day,paint,get out(){return!!out}}})();
