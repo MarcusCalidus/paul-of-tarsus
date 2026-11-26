@@ -307,7 +307,7 @@ ART.planks23={w:320,q:12,paint(g){const r=rng(2308);band23(g,0,0,320,144,'#6a5a4
    Called from outside: ART.surf23, HOLDX23, WATER23. Reads G.beat. Hotspots (ROOMS.surf23): the wreck 0,40,34,80 · the floating spar
    96,96,30,30 · the rock 164,90,32,34 · the sandbar 234,100,32,26 · the beach 282,88,38,46. Light: overcast, soft. */
 const HOLDX23=[40,110,180,250,302],WATER23=120,SAILOR_SURF23=[300,126];
-ART.surf23={w:320,q:12,paint(g){const r=rng(2309);band23(g,0,0,320,52,'#7a8088','#a0a6ac');poly(g,[180,58,240,46,320,42,320,62,180,62],'#5c6258');
+ART.surf23={w:320,q:12,paint(g){const r=rng(2309);band23(g,0,0,320,60,'#7a8088','#a0a6ac');poly(g,[180,58,240,46,320,42,320,62,180,62],'#5c6258');
     band23(g,0,58,320,86,'#5a6a72','#2e3c44');poly(g,[280,144,286,96,320,90,320,144],'#c4b48e');
     poly(g,[0,40,30,60,34,120,0,124],'#3a2a1e');
     R(g,98,112,26,3,'#6a5034');poly(g,[166,122,172,96,190,94,196,122],'#5a5650');R(g,234,118,32,3,'#b8a882')},

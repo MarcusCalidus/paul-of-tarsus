@@ -1434,6 +1434,42 @@
     /* the picture: the deck at the game's own pace, the sailor's call standing over it in the pause, with Paul at the second hold */
     G.speedAll=0;clearInterval(sk);enterRoom('beattest',X[1],Y,1);{const k=BT.start({phase:b.from+.01});k.misses=3;k.help=1}await wait(300);
     ok(G.beat.calling()&&G.beat.period===6000,'at the game\'s pace the beat is six seconds from wave to wave, and the call stands in the pause');halt(stop)}
+  /* Chapter Twenty-Three (its section is further down; these two stand here, beside the beat's own stops, because a phone stop must run
+     before the checks of the desktop below). waves23, phonewaves23: the surf crossed by the beat's exposed phase. A click on the next hold is judged at the moment of the click; the
+     test waits for the pause before it clicks, or clicks on the wave to miss. A hit; three misses on the wave (back at the last hold, no
+     line standing) and the sailor's call; a hit, after which the call stays (sticky); three more misses, and he wades out and brings Paul
+     in: on the beach, the beat stopped, Luke played. */
+  if(/^(phone)?waves23$/.test(stop)){const ph=stop==='phonewaves23';if(ph){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120)}
+    await loadLevel(23);G.speedAll=500;
+    const upto23=k=>{const A=CHAP[23].flags;return A.slice(CHAP[23].carry,A.indexOf(k)+1)},open23=async(flags,room)=>{const C=CHAP[23];setChapter(23);ov.className='';ov.onclick=null;G.splash=0;for(const k of flags)F[k]=1;
+      C.place(room);dealInv(room);G.scene=null;enterRoom(room,...C.ent[room]);G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();return C};
+    const C=await open23(upto23('planks'),'surf23');
+    const now=()=>performance.now(),till=async(fn,n)=>{for(let i=0;i<(n||800)&&!fn();i++)await wait(10);return!!fn()},
+      touch=(type,x,y)=>cv.dispatchEvent(new PointerEvent(type,{pointerId:1,pointerType:'touch',isPrimary:true,clientX:x,clientY:y,bubbles:true,cancelable:true})),
+      gap=async()=>{if(ph)await wait(400)},HN=['','floating_spar','rock_in_the_surf','sandbar','the_beach'],
+      click=async i=>{const h=ROOMS.surf23.hs.find(h=>h.name===HN[i]),x=h.x+h.w/2,y=h.y+h.h/2;
+        if(ph){const[cx2,cy2]=toClient(x,y);touch('pointerdown',cx2,cy2);touch('pointerup',cx2,cy2);vp.dispatchEvent(new MouseEvent('click',{clientX:cx2,clientY:cy2,bubbles:true}))}else view(x,y);await idle()},
+      room=()=>G.beat.inPause()&&G.beat.next().to-now()>=G.beat.need+150,
+      wave=()=>!G.beat.inPause()&&G.beat.phase()>.02&&G.beat.phase()<G.beat.from-.04,
+      quiet=()=>!G.skip&&!$('#speech').textContent.trim(),X=C.holds;
+    await till(()=>G.beat&&G.beat.on,600);const b=G.beat;
+    ok(b&&b.on&&b.sticky&&b.room==='surf23'&&b.period===1800&&b.pause===900&&b.need===450&&P.pose==='plank'&&Math.abs(P.x-X[0])<1&&PC()===P,
+      'the surf: the beat starts with the room, sticky, its phase exposed ('+(b&&b.phase().toFixed(3))+'); Paul in the water on his plank at the wreck');
+    await gap();await till(room);await click(1);
+    ok(Math.abs(P.x-X[1])<1&&G.at23===1&&b.misses===0,'a click on the floating spar in the pause between two seas: he is there');
+    for(let n=1;n<=3;n++){await gap();await till(wave);await click(2);
+      ok(Math.abs(P.x-X[1])<1&&G.at23===1&&b.misses===n&&quiet()&&!G.busy,`a click on the wave is a miss (${n}): back at the spar, and no line stands to be clicked away`)}
+    {await till(()=>b.calling(),900);SHARED.beat.cap.last=null;await wait(80);const c=SHARED.beat.cap.last;
+      ok(b.help===1&&b.calling()&&c&&c.key==='now'&&c.s===T('now')&&c.w<=c.max,'after three misses the sailor in the shallows calls the moment: '+(c&&c.s))}
+    if(stop==='phonewaves23'||stop==='waves23'){await gap();await till(room);await click(2)}
+    ok(Math.abs(P.x-X[2])<1&&G.at23===2&&b.help===1&&b.misses===3,'a hit takes him to the rock, and the call stays (sticky)');
+    for(let n=1;n<=3;n++){await gap();await till(wave);await click(3)}
+    await till(()=>F.surf&&G.room==='beach23'&&!G.busy,900);
+    ok(F.surf&&G.room==='beach23'&&PC()===ACT.luke23&&!G.beat,'after three more misses the sailor wades out and brings him in: on the beach, the beat stopped, Luke played');
+    G.speedAll=0;clearInterval(sk);await open23(upto23('planks'),'surf23');await till(()=>G.beat&&G.beat.on,600);
+    /* the picture: at the game's pace, the call standing over the sailor for the whole pause (a step that takes no time) */
+    {const k=SHARED.beat.start({need:0,sticky:true,room:'surf23',phase:G.beat.from+.01});k.misses=3;k.help=1}
+    await till(()=>G.beat.calling(),2400);ok(G.beat.period===6000,'at the game\'s pace the sea comes every six seconds, and the call stands in the pause');await wait(100);halt(stop)}
   /* Pictures as answers (choose with {icon, key}, Chapter Twenty-Three's islanders): picks on the desktop, phonepicks on a phone. Four
      pictures and a last line that only leaves: the pictures stand in a row of squares, mixed by their keys, in the same order in English
      and in German; each says its words to the status line and to a screen reader; a click answers with its place in the options. */
@@ -5327,36 +5363,6 @@
   const open23=async(flags,room,carry)=>{await loadLevel(23);ov.className='';ov.onclick=null;const C=CHAP[23];setChapter(23);for(const k of(carry||[]).concat(flags))F[k]=1;
     C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();return C};
   const upto23=k=>{const A=CHAP[23].flags;return A.slice(CHAP[23].carry,A.indexOf(k)+1)};
-  /* waves23, phonewaves23: the surf crossed by the beat's exposed phase. A click on the next hold is judged at the moment of the click; the
-     test waits for the pause before it clicks, or clicks on the wave to miss. A hit; three misses on the wave (back at the last hold, no
-     line standing) and the sailor's call; a hit, after which the call stays (sticky); three more misses, and he wades out and brings Paul
-     in: on the beach, the beat stopped, Luke played. */
-  if(/^(phone)?waves23$/.test(stop)){const ph=stop==='phonewaves23';if(ph){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120)}
-    await loadLevel(23);G.speedAll=500;const C=await open23(upto23('planks'),'surf23');
-    const now=()=>performance.now(),till=async(fn,n)=>{for(let i=0;i<(n||800)&&!fn();i++)await wait(10);return!!fn()},
-      touch=(type,x,y)=>cv.dispatchEvent(new PointerEvent(type,{pointerId:1,pointerType:'touch',isPrimary:true,clientX:x,clientY:y,bubbles:true,cancelable:true})),
-      gap=async()=>{if(ph)await wait(400)},HN=['','floating_spar','rock_in_the_surf','sandbar','the_beach'],
-      click=async i=>{const h=ROOMS.surf23.hs.find(h=>h.name===HN[i]),x=h.x+h.w/2,y=h.y+h.h/2;
-        if(ph){const[cx2,cy2]=toClient(x,y);touch('pointerdown',cx2,cy2);touch('pointerup',cx2,cy2);vp.dispatchEvent(new MouseEvent('click',{clientX:cx2,clientY:cy2,bubbles:true}))}else view(x,y);await idle()},
-      room=()=>G.beat.inPause()&&G.beat.next().to-now()>=G.beat.need+150,
-      wave=()=>!G.beat.inPause()&&G.beat.phase()>.02&&G.beat.phase()<G.beat.from-.04,
-      quiet=()=>!G.skip&&!$('#speech').textContent.trim(),X=C.holds;
-    await till(()=>G.beat&&G.beat.on,600);const b=G.beat;
-    ok(b&&b.on&&b.sticky&&b.room==='surf23'&&b.period===1800&&b.pause===900&&b.need===450&&P.pose==='plank'&&Math.abs(P.x-X[0])<1&&PC()===P,
-      'the surf: the beat starts with the room, sticky, its phase exposed ('+(b&&b.phase().toFixed(3))+'); Paul in the water on his plank at the wreck');
-    await gap();await till(room);await click(1);
-    ok(Math.abs(P.x-X[1])<1&&G.at23===1&&b.misses===0,'a click on the floating spar in the pause between two seas: he is there');
-    for(let n=1;n<=3;n++){await gap();await till(wave);await click(2);
-      ok(Math.abs(P.x-X[1])<1&&G.at23===1&&b.misses===n&&quiet()&&!G.busy,`a click on the wave is a miss (${n}): back at the spar, and no line stands to be clicked away`)}
-    {await till(()=>b.calling(),900);SHARED.beat.cap.last=null;await wait(80);const c=SHARED.beat.cap.last;
-      ok(b.help===1&&b.calling()&&c&&c.key==='now'&&c.s===T('now')&&c.w<=c.max,'after three misses the sailor in the shallows calls the moment: '+(c&&c.s))}
-    if(stop==='phonewaves23'||stop==='waves23'){await gap();await till(room);await click(2)}
-    ok(Math.abs(P.x-X[2])<1&&G.at23===2&&b.help===1&&b.misses===3,'a hit takes him to the rock, and the call stays (sticky)');
-    for(let n=1;n<=3;n++){await gap();await till(wave);await click(3)}
-    await till(()=>F.surf&&G.room==='beach23'&&!G.busy,900);
-    ok(F.surf&&G.room==='beach23'&&PC()===ACT.luke23&&!G.beat,'after three more misses the sailor wades out and brings him in: on the beach, the beat stopped, Luke played');
-    G.speedAll=0;clearInterval(sk);await open23(upto23('planks'),'surf23');await till(()=>G.beat&&G.beat.on,600);G.beat.misses=3;G.beat.help=1;
-    await till(()=>G.beat.calling(),2400);await wait(200);halt(stop)}
   /* pics23: the talk in pictures, the pictures in the order of their keys, the same in English and in German */
   if(stop==='pics23'){const C=await open23(upto23('found'),'beach23');const EL=ACT.elder23,got=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);
       return[...document.querySelectorAll('#choices .pics button')].map(b=>b.dataset.src)};
