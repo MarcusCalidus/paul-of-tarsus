@@ -156,7 +156,7 @@
   22:async()=>{await act('use','gangplank');const M=SHARED.map;for(let i=0;i<900&&!(M.state.places&&G.scene===M.draw&&!G.busy);i++)await wait(30);await wait(60);
     const[x,y]=M.where('tarsus'),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,clientX:r.left+x*r.width/VW,clientY:r.top+y*r.height/VH}));await wait(120);await idle()}, // Chapter Twenty-Two: from the quay at Caesarea, aboard; on the map of the voyage out, Tarsus is looked at while the leg off Cilicia is shown (nothing has changed until Myra is clicked)
   23:()=>act('look','stone_at_the_gate'), // Chapter Twenty-Three: at the estate of Publius, the stone at the gate with its one word
-  24:()=>act('look','stub24_corner_of_the_quay'), // Chapter Twenty-Four: STUB, the stub's corner of the quay. LOGIC24: from treasure.at, the steps that touch the reeds by the canal at night
+  24:()=>act('use','reeds'), // Chapter Twenty-Four: by the canal at dusk (the trader played), the reeds touched: the frogs croak the chapter's tune
   25:()=>act('look','lukes_roll'), // Chapter Twenty-Five: in the third watch, Luke's roll on the bench beside him
  };
  (async()=>{try{
@@ -6419,61 +6419,247 @@
      but its line in TSTEPS, the chain of the full run (ch24 after ch23) and the title checks of the chapters before it. */
   /* Chapter Twenty-Four stops start Chapter Twenty-Four from the title screen. FOR NOW, while PLANNED still names it and the title does not
      list it (building, index.html), they start it as the title's entry would, with startChapter(24); once it is listed, its entry is
-     clicked. The full run is to call its test when Chapter Twenty-Three has ended: LOGIC24, once Chapter Twenty-Three's end screen leads
-     on to Chapter Twenty-Four, chain ch24() and ch25() after ch23() in the full run. all24 halts nowhere. Its halts: STUB: quay24 (the
-     quay, Luke played) · lane24 (the street with two lodgings) · final24 (the end screen with Chapter Twenty-Five's code). After final24 the
-     end screen is clicked: Chapter Twenty-Five opens with from24 and street carried, in the room chosen, and the printed code, typed, gives
-     the same room (the stop carry25, in Chapter Twenty-Five's section, does it for both lodgings). The stops that begin with "p" open one
-     room at once, with the story's flags set for it, and say the safe-point code of their point (CODE): STUB: pquay24 · plane24. rooms24
-     puts every picture on one sheet. The generic stops card24, routes24 and shadows24 (above) run against the chapter's rooms. LOGIC24:
-     replace every STUB name here with the chapter's own halts and room stops, as Chapter Twenty-Three's section does, and add the stops that
-     drive the beat by its exposed phase, on the desktop and on a phone held sideways (Chapter Twenty-Two's waves and phonedeck stops are
-     the model). Keep CHAP[24].end and CHAP[24].carry25 in the chapter's definition: the carry checks play them. */
-  /* rooms24: every picture of Chapter Twenty-Four on one sheet at twice its size (rooms24.png), for the art and the cross-shape check */
-  if(stop==='rooms24'){clearInterval(sk);sk=0;await loadLevel(24);setChapter(24);ov.className='';ov.onclick=null;const C=CHAP[24],ids=C.rooms,K=2;
-    const pic=(id,q,x,y)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
+     clicked. The full run is to call its test when Chapter Twenty-Three has ended (LOGIC24 for the lead: chain ch24() and ch25() after ch23()
+     in the full run once Chapter Twenty-Three's end screen leads on). all24 halts nowhere. Its halts: quay24 (the quay of Malta, Luke) ·
+     court24 (Puteoli, the news for Rome) · capua24 (the carter played) · canal24 (the trader played, at dusk) · dawn24 (the boatman at the
+     Marketplace at daybreak) · stones24 (Sextus has learned the stones) · rome24 (Vibia's house) · board24 (the board) · hills24 (the road,
+     Paul in step) · marsh24 (weary) · meet24 (28:15) · taverns24 · far24 · capena24 · camp24 · lane24 · look24 (the small room) · final24
+     (the end screen with Chapter Twenty-Five's code). After final24 the end screen is clicked: Chapter Twenty-Five opens with from24 and
+     street carried, in the room chosen, and the printed code, typed, gives the same room. The stops that begin with "p" open one point at
+     once, with the story's flags set for it, and say its safe-point code (CODE): pscroll24 · pquay24 · pcourt24 · pcapua24 · pcanal24 (the
+     treasure's point) · pdawn24 · pstones24 · prome24 · pboard24 · phills24 · pmarsh24 · pmarsh24b · pmeet24 · ptaverns24 · pfar24 · pcapena24
+     · pcamp24 · plane24 · pflat24 · pstreet24 · pgarret24 · psmall24. The timed walk, driven by the beat's exposed phase: beatwalk24 (a hit,
+     a miss with no line, the call after three, the carry after six, a stretch walked to its stone) and phonewalk24 (the same tapped on a phone
+     held sideways). rooms24 puts every picture and variant on one sheet. The generic stops card24, routes24 and shadows24 run against the
+     chapter's rooms. Keep CHAP[24].end and CHAP[24].carry25: the carry checks play them. */
+  /* rooms24: every picture of Chapter Twenty-Four on one sheet at twice its size (rooms24.png), each variant with the flags that call for it */
+  const up24=k=>{const A=CHAP[24].flags;return A.slice(0,A.indexOf(k)+1)};
+  if(stop==='rooms24'){clearInterval(sk);sk=0;await loadLevel(24);setChapter(24);ov.className='';ov.onclick=null;const C=CHAP[24],K=2;
+    const V=[['quay24',[]],['court24',up24('sailed')],['capua24',up24('given1')],['canal24',up24('given2')],['appius24',up24('given3')],['appius24',up24('s3')],
+      ['rome24',up24('news')],['board24',up24('news')],['hills24',up24('onroad')],['marsh24',up24('s1')],['marsh24',up24('s2')],['taverns24',up24('taverns')],
+      ['far24',up24('far')],['capena24',up24('gate')],['camp24',up24('gate')],['lane24',up24('camp')],['look24',up24('camp')],['look24',up24('camp').concat(['lka'])],
+      ['look24',up24('camp').concat(['lkb'])],['look24',up24('camp').concat(['lka','lkb'])]];
+    const pic=(id,fl,q,x,y)=>{for(const k in F)delete F[k];for(const k of fl)F[k]=1;G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
       const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
       q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
-    const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
-    ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
+    const[c,g]=mk(320*K*2+8,Math.ceil(V.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    V.forEach(([id,fl],i)=>pic(id,fl,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];if(SHARED.beat)SHARED.beat.stop();
     window.SHEETS={rooms24:c.toDataURL()};halt('rooms24')}
-  const C24=/^(quay24|lane24|final24|all24)$/.test(stop);   /* STUB: quay24, lane24 */
-  if(!C24&&/^p[a-z]+24$/.test(stop)){await loadLevel(24);ov.className='';ov.onclick=null;const C=CHAP[24],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
-      S={pquay24:[[],'quay24'],plane24:[upto('sailed'),'lane24']}[stop];   /* STUB: pquay24, plane24; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
-    if(!S)throw new Error('no such stop '+stop);setChapter(24);for(const k of S[0])F[k]=1;
-    const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
-    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+  const C24=/^(quay24|court24|capua24|canal24|dawn24|stones24|rome24|board24|hills24|marsh24|meet24|taverns24|far24|capena24|camp24|lane24|look24|final24|all24)$/.test(stop);
+  /* open24: Chapter Twenty-Four at one point at once, with the flags given, in the room given (whoever the story plays there) */
+  const open24=async(fl,room)=>{await loadLevel(24);ov.className='';ov.onclick=null;const C=CHAP[24];setChapter(24);for(const k of fl)F[k]=1;
+    C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn()};
+  if(!C24&&/^p[a-z]+24b?$/.test(stop)&&!/^phone/.test(stop)){await loadLevel(24);const upto=up24,L4=f=>upto('camp').concat(f),
+      S={pscroll24:[[],'quay24'],pquay24:[[],'quay24'],pcourt24:[upto('sailed'),'court24'],pcapua24:[upto('given1'),'capua24'],pcanal24:[upto('given2'),'canal24'],
+        pdawn24:[upto('given3'),'appius24'],pstones24:[upto('given4'),'appius24'],prome24:[upto('news'),'rome24'],pboard24:[upto('news'),'board24'],
+        phills24:[upto('onroad'),'hills24'],pmarsh24:[upto('s1'),'marsh24'],pmarsh24b:[upto('s2'),'marsh24'],pmeet24:[upto('met'),'appius24'],
+        ptaverns24:[upto('taverns'),'taverns24'],pfar24:[upto('far'),'far24'],pcapena24:[upto('gate'),'capena24'],pcamp24:[upto('gate'),'camp24'],
+        plane24:[upto('camp'),'lane24'],pflat24:[L4(['inlook']),'look24'],pstreet24:[L4(['lka','inlook']),'look24'],pgarret24:[L4(['lkb','inlook']),'look24'],
+        psmall24:[L4(['lka','lkb','inlook']),'look24']}[stop];
+    if(!S)throw new Error('no such stop '+stop);await open24(S[0],S[1]);L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    if(stop==='pscroll24'){G.scene=DARK;narr(CHAP[24].told.n11,{dur:60000})}
     await wait(1100);halt(stop)}
+  /* the timed walk, driven by the beat's exposed phase: the stops beatwalk24 and phonewalk24 (and the playthrough) */
+  const B24=()=>G.beat,now24=()=>performance.now(),
+    till24=async(fn,n)=>{for(let i=0;i<(n||900)&&!fn();i++)await wait(10);return!!fn()},
+    calm24=()=>B24()&&B24().inPause()&&B24().next().to-now24()>=B24().need+120,
+    wave24=()=>B24()&&!B24().inPause()&&B24().phase()>.08&&B24().phase()<B24().from-.06,
+    quiet24=()=>!G.skip&&!$('#speech').textContent.trim(),
+    tap24=async(name,ph,cond)=>{if(ph)await wait(400);if(cond)await till24(cond);const h=ROOMS[G.room].hs.find(h=>h.name===name&&(!h.vis||h.vis()));if(!h)throw new Error('no hs '+name);const x=h.x+h.w/2,y=h.y+h.h/2;
+      if(ph){const[cx,cy]=toClient(x,y),pe=t=>cv.dispatchEvent(new PointerEvent(t,{pointerId:1,pointerType:'touch',isPrimary:true,clientX:cx,clientY:cy,bubbles:true,cancelable:true}));
+        pe('pointerdown');pe('pointerup');vp.dispatchEvent(new MouseEvent('click',{clientX:cx,clientY:cy,bubbles:true}))}else view(x,y);await idle()};
+  if(/^(beatwalk24|phonewalk24)$/.test(stop)){const ph=stop==='phonewalk24';await loadLevel(24);if(ph){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120)}
+    G.speedAll=500;await open24(up24('onroad'),'hills24');await till24(()=>B24());const b=B24(),C=CHAP[24],MK=C.marks,SO=ACT.sold24a;
+    ok(G.room==='hills24'&&PC()===P&&b&&b.room==='hills24'&&b.sticky&&b.period===Math.round(C.beat.period*.3)&&b.need===Math.round(C.beat.need*.3)&&C.phase()==='road'&&Math.abs(P.x-MK[0][0])<1&&!P.chained,
+      'the road: Paul in step beside a soldier, unchained; the beat runs from the room, one bar of the music long, shortened under the playtest ('+b.period+' ms, a pause of '+b.pause+', a step of '+b.need+')');
+    ok(C.music.dt*C.music.steps*1000===C.beat.period,'the beat of the walk is the bar of the music ('+C.beat.period+' ms)');
+    {const W=ROOMS.hills24.walk;ok(W[0]===W[1]&&W[2]===W[3],'in step, the floor is his own place: only the road ahead moves him')}
+    await tap24('road_ahead',ph,calm24);ok(G.mark24===1&&Math.abs(P.x-MK[1][0])<1&&Math.abs(SO.x-MK[1][0]-16)<1&&b.misses===0,'a step while the soldier\'s foot is up: Paul and the column go on to the next mark');
+    for(let n=1;n<=3;n++){await tap24('road_ahead',ph,wave24);
+      ok(G.mark24===1&&Math.abs(P.x-MK[1][0])<1&&b.misses===n&&quiet24()&&!G.busy,`a step out of time is a miss (${n}): it costs only the step; the soldier waits, and no line stands to be clicked away`)}
+    ok(b.help===1,'after three misses the soldier calls the step');
+    {await till24(()=>b.calling());SHARED.beat.cap.last=null;await wait(80);const c=SHARED.beat.cap.last;ok(b.calling()&&c&&c.key==='now'&&c.w<=c.max,'he calls it while his foot is up: '+(c&&c.s))}
+    for(let n=4;n<=6;n++)await tap24('road_ahead',ph,wave24);
+    await till24(()=>G.mark24===2&&!G.busy,1500);
+    ok(G.mark24===2&&Math.abs(P.x-MK[2][0])<1&&b.help===0&&b.misses===0,'after six misses the soldier takes his arm and brings him along: nobody can get stuck');
+    for(let m=3;m<=4;m++)await tap24('road_ahead',ph,calm24);
+    await till24(()=>G.room==='marsh24'&&!G.busy,3000);
+    ok(F.s1&&G.room==='marsh24'&&P.look===SHARED.cast.ROME.paul_weary&&ART.marsh24.variant()==='a','the stone at the end of the stretch is read (LXI); the marsh, and Paul is weary');
+    halt(stop)}
   const ch24=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[24],told=k=>heard.includes(T(C().told[k])),
     until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
     onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    talkTo=async(a,v)=>{verb(v||'talk');clickView(a.x,a.y-10,a.hs);await idle()},
+    useOnH=async(id,name)=>{verb('use');item(id);const h=ROOMS[G.room].hs.find(h=>h.name===name&&(!h.vis||h.vis()));clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    useOnA=async(id,a)=>{verb('use');item(id);clickView(a.x,a.y-10,a.hs);await idle()},
     pray24=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
-    hints=async(a,b,where)=>{heard.length=0;const p=await pray24(),first=said(a)&&!said(b),q=await pray24();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
-    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+    hints=async(a,b,where)=>{heard.length=0;const me=PC(),n0=G.prays,p=await pray24(),first=said(a)&&!said(b),q=await pray24(),
+        prayed=heard.some(h=>PRAYERS.concat(PRAYERS2).some(l=>h===T(l,{name:T(storyName(me))})));
+      ok(p&&q&&first&&said(b)&&prayed&&G.prays===n0+2&&$('#pray').dataset.k==='pray_to_jehovah','two prayers '+where+' ('+T(storyName(me))+'): a gentle hint, then a direct one ['+a+', '+b+']')},
+    /* the three who carry the news do not pray: Think it over gives the same two hints as their own thought, and nothing is counted */
+    thinks=async(a,b,where)=>{heard.length=0;const me=PC(),n0=G.prays,p=await pray24(),first=said(a)&&!said(b),q=await pray24(),
+        prayed=heard.some(h=>PRAYERS.concat(PRAYERS2).some(l=>h===T(l,{name:T(storyName(me))})));
+      ok(me.noPray&&p&&q&&first&&said(b)&&!prayed&&G.prays===n0&&$('#pray').dataset.k==='think_it_over','Think it over '+where+' ('+T(storyName(me))+'): no prayer, his own thought, gentle and then direct ['+a+', '+b+']')},
+    asked=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);return[...document.querySelectorAll('#choices button')].map(x=>x.dataset.src)},
+    line=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await idle()},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)},
+    code=async(what,fn)=>{const cd=makeCode();await enter(cd);for(let i=0;i<40&&(G.busy||ov.classList.contains('on'));i++){if(G.skip)G.skip();await wait(50)}await idle();ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
-  /* FOR NOW: while the line "in preparation" still names Chapter Twenty-Four, the title does not list it; LOGIC24: when its entry leaves
-     PLANNED at the end, this check becomes the usual one (the title lists Chapter Twenty-Four, He Took Courage) */
+  /* the roads this chapter draws on the map, for the finale's table (malta, syracuse, rhegium, puteoli, capua, appius, threetaverns, rome) */
+  const ROADS24=[];{const M=await need('map'),j=M.journey,g=M.go;if(!M.journey.rec24){M.journey=async(r,o)=>{for(const[a,b,k]of r)if(/new/.test(k||''))ROADS24.push(a+'-'+b);return j(r,o)};M.journey.rec24=1;
+      M.go=async(a,b)=>{ROADS24.push(a+'-'+b);return g(a,b)}}}
+  /* FOR NOW: while the line "in preparation" still names Chapter Twenty-Four, the title does not list it; when its entry leaves PLANNED at
+     the end, this check becomes the usual one (the title lists Chapter Twenty-Four, He Took Courage) */
   if(C24){const l=ov.querySelector('.chs'),plans=l.querySelector('.plans');
     ok(!l.querySelector('[data-ch="24"]')&&building(24)&&plans&&plans.textContent.includes(T('twenty_four')),'FOR NOW: the title does not list Chapter Twenty-Four while the line of the chapters in preparation still names it')}
   if(C24){const e=document.querySelector('#overlay [data-ch="24"]');if(e)e.click();else startChapter(24)}else ov.click();
-  /* STUB: from here to halt('final24') the steps play the stub; LOGIC24 replaces them with the chapter's playthrough */
   await until(()=>G.ch===24&&G.room==='quay24'&&!G.busy,6000);note();
-  ok(seenTold.has('n11')&&said('stub24_luke_at_the_quay')&&decode(makeCode()).ch===24&&PC()===A('luke24')&&P.room==='quay24'&&C().party.join()==='paul,luke24'&&C().swap===false,
-    'STUB: the stub of Chapter Twenty-Four opens with Acts 28:11 from the scroll, on the quay, Luke played and Paul by him: '+makeCode());
+  const LK=A('luke24'),AR=A('aris24'),JU=A('julius24'),SO=A('sold24a'),SL=A('sailor24'),HE=A('host24'),CA=A('carter24'),TR=A('trader24'),BO=A('boatman24'),DE=A('sextus24'),
+    MI=A('mikon24'),VI=A('vibia24'),AE=A('aemilia24'),PO=A('postumus24'),FI=A('firmus24'),TH=A('thallos24'),IK=A('inn24'),GW=A('watch24'),LL=A('landlord24'),MSG=C().msg,H=C().hand;
+  ok(seenTold.has('n11')&&seenTold.has('n11b')&&said('luke_three_months_on_this_island')&&PC()===LK&&P.room==='quay24'&&AR.room==='quay24'&&JU.room==='quay24'&&SO.room==='quay24'&&SL.room==='quay24'
+    &&C().party.join()==='paul,luke24,sextus24,carter24,trader24,boatman24'&&C().swap===false&&G.inv.includes('ltab24')&&!P.chained,
+    'after three months we sailed, in a ship of Alexandria that had wintered at the island, the Sons of Zeus her figurehead (Acts 28:11), from the scroll; the quay of Malta: Luke is played, Paul, Aristarchus, Julius and a soldier by him, no chain');
+  ok(/^24(-[0-9A-Z]{3}){2,6}$/.test(makeCode())&&decode(makeCode()).ch===24,'a code of Chapter Twenty-Four: '+makeCode());
+  ok(AU.score===C().music&&C().music.steps===15&&C().music.root===60&&C().music.group.join()==='5,5,5'&&C().music.scale.join()==='0,2,4,5,7,9,11','the chapter\'s score, in C major and in bars of fifteen that fall five, five, five');
+  ok(ART.quay24.light.sun&&ROOMS.quay24.birds.gulls&&ROOMS.quay24.hs.filter(h=>/ship/.test(h.name)).length===1,'the quay by day: the sun casts shadows, gulls over the harbor; the ship is one hotspot (no hotspot of her sign)');
   halt('quay24');
-  await hints('stub24_hint_1','stub24_hint_2','on the quay');
-  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('stub24_corner_of_the_quay','look');
-    ok(said('stub24_corner_of_the_quay_look')&&treasures().has(24)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'STUB: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
-  heard.length=0;onH('stub24_gangplank','use');await until(()=>F.sailed&&G.room==='lane24'&&!G.busy,9000);note();
-  ok(seenTold.has('n16')&&said('stub24_two_lodgings')&&!P.room&&PC()===A('luke24'),'STUB: Acts 28:16 from the scroll; Luke in a street of Rome, and Paul away');
-  {const cd=makeCode();await enter(cd);ok(G.ch===24&&G.room==='lane24'&&F.sailed&&!F.chosen&&PC()===A('luke24')&&!P.room,'a code in the street gives the street again: '+cd)}
+  /* what an eyewitness sees */
+  await hints('hint_what_an_eyewitness_sees_1','hint_what_an_eyewitness_sees_2','on the quay');
+  heard.length=0;await onH('gangplank','use');ok(said('luke_not_before_its_written')&&!F.sailed,'not aboard before it is written down');
+  heard.length=0;await onH('ship_from_alexandria','look');ok(said('ship_from_alexandria_look'),'the ship: her sign on her bow, said plainly');
+  heard.length=0;await useOnH('ltab24','ship_from_alexandria');ok(said('luke_i_want_to_know_what_that_sign_is')&&!F.wSign,'her sign is written only when he knows what it is');
+  heard.length=0;await useOnA('ltab24',SL);ok(said('luke_ask_him_first')&&!F.wFrom,'nothing to write from the sailor before he has asked');
+  heard.length=0;talkTo(SL);{const o=await asked();ok(o.join()==='luke_where_is_she_from,luke_has_she_been_here_long,luke_whats_that_on_her_bow,luke_thanks_thats_all','a menu of questions, in its own order')}
+  await line('luke_where_is_she_from');await line('luke_has_she_been_here_long');await line('luke_whats_that_on_her_bow');await line('luke_thanks_thats_all');
+  ok(said('sailor_alexandria_her_home_port')&&said('sailor_all_winter_we_waited_out_the_storms')&&said('sailor_the_twins_sailors_trust_them')&&said(C().lines.courage)&&said('luke_paul_and_i_trust_another'),
+    'the sailor: from Alexandria; all winter here; the twins, whom sailors trust. Luke thinks of Acts 23:11, Chapter Nineteen\'s line: they serve Jehovah');
+  heard.length=0;await useOnA('ltab24',SL);ok(F.wFrom&&F.wWinter&&!F.wSign,'his tablet used on the sailor: from Alexandria, and wintered here');
+  await code('with two things written',()=>G.room==='quay24'&&PC()===LK&&F.wFrom&&F.wWinter&&!F.wSign&&P.room==='quay24');
+  heard.length=0;talkTo(SL);await line('luke_whats_that_on_her_bow');await line('luke_thanks_thats_all');
+  heard.length=0;await useOnH('ltab24','ship_from_alexandria');ok(F.wSign&&said('luke_i_write_her_sign')&&said('luke_three_things_as_i_saw_and_heard_them'),'his tablet used on the ship: her sign. Three things written');
+  {verb('open');item('ltab24');await wait(400);const t=$('#tablets');ok(t&&t.textContent.includes(T('note24_from_alexandria'))&&t.textContent.includes(T('note24_wintered_here'))&&t.textContent.includes(T('note24_her_sign')),'Luke\'s tablet holds the three things');t&&t.click();await wait(200)}
+  await hints('hint_go_aboard24_1','hint_go_aboard24_2','with it all written');
+  /* aboard; Syracuse, Rhegium, Puteoli on the map; the brothers at Puteoli */
+  heard.length=0;onH('gangplank','use');await until(()=>G.room==='court24'&&!G.busy,15000);note();
+  ok(F.sailed&&said('julius_aboard_we_sail')&&seenTold.has('n12')&&seenTold.has('n13')&&seenTold.has('n14a')&&said('luke_a_dockhand_brought_us_here')&&said('luke_the_officer_allowed_the_week')
+    &&said('herennius_have_him_say_it_back')&&PC()===LK&&P.room==='court24'&&CA.room==='court24',
+    'three days at Syracuse (Acts 28:12); Rhegium, the south wind, Puteoli (28:13), on the map; brothers at Puteoli, seven days (28:14, its first sentences); how they were found and the week granted, in Luke\'s own lines; Herennius teaches the hand-over');
+  ok(ROADS24.join()==='malta-syracuse,syracuse-rhegium,rhegium-puteoli','the sea on the map: Malta, Syracuse, Rhegium, Puteoli');
+  halt('court24');
+  await hints('hint_the_news_for_rome_1','hint_the_news_for_rome_2','at Puteoli');
+  /* the news goes ahead: Luke to the carter. A harmless change set right: "That's what I said"; the day set right */
+  heard.length=0;talkTo(CA);{const o=await asked();ok(MSG.every(k=>said(k))&&said('let_me_say_it_back')&&said(H[0].say[0])&&o.length===2&&o.includes('let_it_stand')&&o.includes(MSG[0]),
+      'Luke gives the four parts; the carter says the first back in his own words; let it stand, or say it again (every correction on offer is the part itself, and true)')}
+  await line(MSG[0]);ok(said('thats_what_i_said'),'a harmless change set right: that\'s what I said');
+  await line('let_it_stand');ok(said(H[0].say[2]),'the carter: seven weeks in Puteoli');await line('let_it_stand');await line('let_it_stand');
+  await until(()=>G.room==='capua24'&&!G.busy,9000);
+  ok(F.given1&&said('wait_one_thing_again')&&said(H[0].fix)&&PC()===CA&&CA.noPray&&said('carter_capua_who_goes_on_to_the_coast'),
+    'the day let stand ("weeks"): Luke notices as the carter turns to go, and says it once more; the carter has it right. Capua: the carter is played, and he does not worship Jehovah');
+  ok(ART.capua24.light.sun,'the station by Capua in the afternoon light');
+  halt('capua24');
+  await thinks('think_the_trader_1','think_the_trader_2','at Capua');
+  /* the carter to the trader: the road set right; every other change let stand */
+  heard.length=0;talkTo(TR);await line('let_it_stand');
+  ok(said(H[1].say[1]),'the trader: by sea, to Ostia');await line(MSG[1]);ok(said(H[1].fix),'the road set right: on foot, up the Appian Way');
+  await line('let_it_stand');await line('let_it_stand');
+  await until(()=>G.room==='canal24'&&!G.busy,9000);
+  ok(F.given2&&!said('wait_one_thing_again')&&PC()===TR&&TR.noPray&&!ROOMS.canal24.birds&&!ART.canal24.light.sun,'set right in time, nobody has to call him back. The canal at dusk: the trader is played; no birds, no sun');
+  await code('by the canal at dusk',()=>G.room==='canal24'&&PC()===TR&&F.given2&&!F.given3&&!P.room);
+  halt('canal24');
+  await thinks('think_the_boatman_1','think_the_boatman_2','by the canal');
+  heard.length=0;talkTo(BO);{const o=await asked();ok(o.join()==='trader_who_pulls_the_barge,trader_i_have_a_message_for_rome,trader_never_mind','a menu: who pulls the barge, the message, never mind')}
+  await line('trader_who_pulls_the_barge');ok(said('boatman_the_mule_pulls_the_boat_follows'),'the boatman\'s one joke');
+  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('reeds','use');
+    ok(said('trader_the_whole_marsh_sings')&&G.frogs24&&treasures().has(24)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'the reeds touched: the frogs croak the chapter\'s tune, the reeds stir and rings spread (the hidden treasure); nothing has changed ('+cd+')')}
+  heard.length=0;talkTo(BO);await line('trader_i_have_a_message_for_rome');for(let i=0;i<3;i++)await line('let_it_stand');
+  ok(said(H[2].say[3]),'the boatman: Fabia\'s house');await line(MSG[3]);ok(said(H[2].fix),'the name set right: Vibia');
+  await until(()=>G.room==='appius24'&&!G.busy,9000);
+  ok(F.given3&&PC()===BO&&ART.appius24.variant()==='dawn'&&DE.room==='appius24','the Marketplace of Appius at daybreak: the boatman is played; a young carrier is loading for Rome');
+  halt('dawn24');
+  await thinks('think_the_young_man_1','think_the_young_man_2','at daybreak');
+  /* the boatman to Sextus, who gets it all right in his own words: every correction is answered kindly and changes nothing */
+  heard.length=0;talkTo(DE);await line(MSG[0]);ok(said('thats_what_i_said'),'a correction of nothing: that\'s what I said');for(let i=1;i<4;i++)await line('let_it_stand');
+  await until(()=>PC()===DE&&!G.busy,6000);
+  ok(F.given4&&!said('wait_one_thing_again')&&said('sextus_how_far_is_it_really')&&$('#pray').dataset.k==='pray_to_jehovah','Sextus has it right; he is played now, and he prays');
+  heard.length=0;await onH('road_north','walk');ok(said('sextus_first_what_the_stone_says')&&G.room==='appius24','first the stone');
+  await hints('hint_the_stones_1','hint_the_stones_2','at the stone');
+  heard.length=0;await onH('milestone','look');ok(said('sextus_letters_cut_in_the_stone'),'the stone: XLIII, and he cannot read it');
+  heard.length=0;await talkTo(BO);ok(F.numerals&&said('boatman_i_is_one_v_five_x_ten_l_fifty')&&said('boatman_a_small_one_before_a_big_one_takes_away')&&said('boatman_so_xliii_is_forty_three'),'Varro teaches the stones: I, V, X, L; a smaller one before a bigger takes away; XLIII is forty-three');
+  heard.length=0;await onH('milestone','look');ok(said('xliii_forty_three_miles_to_rome'),'and now he reads it');
+  await code('with the stones learned',()=>G.room==='appius24'&&PC()===DE&&F.numerals&&!F.news&&BO.room==='appius24');
+  halt('stones24');
+  /* Rome: the news, and the board */
+  heard.length=0;onH('road_north','walk');await until(()=>G.room==='rome24'&&!G.busy,9000);
+  ok(F.news&&MSG.every(k=>said(k))&&said('vibia_then_we_go_out_to_meet_him')&&said('mikon_i_know_paul_from_cenchreae')&&PC()===DE&&[VI,AE,MI,PO,FI,TH].every(a=>a.room==='rome24'),
+    'Vibia\'s house: the news reaches Rome whole; seven want to go out, Mikon of Cenchreae among them');
+  halt('rome24');
+  await hints('hint_the_board_1','hint_the_board_2','in Vibia\'s house');
+  for(const[a,k]of[[MI,'mikon_paul_knows_my_face'],[VI,'vibia_bread_on_my_mule'],[AE,'aemilia_i_go_where_my_mother_goes'],[PO,'postumus_vibia_says_thirty_five_miles'],[FI,'firmus_my_oven_cant_spare_a_day'],[TH,'thallos_as_far_as_the_fortieth_mile']]){
+    heard.length=0;await talkTo(a);ok(said(k),T(a.name)+': '+T(k))}
+  heard.length=0;await onH('board','use');await until(()=>G.room==='board24'&&!G.busy,3000);ok(G.room==='board24'&&ART.board24.light===null,'the board, close');
+  halt('board24');
+  const put=async(id,p)=>{const t=C().tok.find(t=>t.id===id);await onH(t.name,'use');await onH(p==='T'?'three_taverns':'marketplace_of_appius','use')};
+  heard.length=0;for(const[id,p]of[['sextus24','M'],['mikon24','M'],['vibia24','M'],['aemilia24','M'],['postumus24','M'],['firmus24','T'],['thallos24','T']])await put(id,p);
+  ok(said('postumus_vibia_wont_hear_of_it')&&!G.tok24.postumus24&&!F.planned,'all set: the first wish broken is said by the one it concerns (Postumus, his knees), and his peg comes back');
+  heard.length=0;await put('postumus24','T');await until(()=>G.room==='hills24'&&!G.busy,15000);note();
+  ok(F.planned&&said('sextus_four_to_the_marketplace_three_to_three_taverns')&&said('vibia_then_its_settled_we_leave_at_dawn')&&seenTold.has('n14b')&&ROADS24.slice(3).join()==='puteoli-capua,capua-appius',
+    'four to the Marketplace, three to Three Taverns; "After that we went on toward Rome" (Acts 28:14, its last sentence); the road on the map');
+  /* the road: in step */
+  ok(PC()===P&&C().phase()==='road'&&!P.chained&&P.look===LOOK.paul&&said('soldier_keep_step_with_me')&&said('paul_a_soldiers_pace')&&ROOMS.hills24.birds.prey,'the Appian Way in the hills: Paul is played, beside a soldier, unchained; the soldier teaches the step; a bird of prey over the hills');
+  halt('hills24');
+  await hints('hint_in_step_1','hint_in_step_2','in the hills');
+  heard.length=0;await onH('paving','look');ok(said('stone_fitted_to_stone_without_a_seam'),'the paving, before he is weary: stone fitted to stone');
+  await till24(()=>B24());
+  for(let s=0;s<3;s++){for(let m=1;m<=4;m++)await tap24('road_ahead',0,calm24);
+    if(s<2){await until(()=>G.room==='marsh24'&&F['s'+(s+1)]&&!G.busy,6000)}}
+  await until(()=>G.room==='appius24'&&F.met&&!G.busy,15000);note();
+  ok(said('paul_lxi_sixty_one_miles_to_rome')&&said('paul_lii_fifty_two')&&said('paul_forty_seven')&&said('paul_frogs_gnats_bad_water')&&said('paul_onward_weary'),'three stretches, each to its stone (LXI, LII, XLVII); his lines grow shorter');
+  {const l=[T('paul_lxi_sixty_one_miles_to_rome'),T('paul_lii_fifty_two'),T('paul_forty_seven')].map(s=>s.length);ok(l[0]>l[1]&&l[1]>l[2],'shorter each time: '+l)}
+  ok(seenTold.has('n15a')&&seenTold.has('n15b')&&said('paul_mikon_the_quay_at_cenchreae')&&said(C().lines.romans)&&P.look===LOOK.paul&&!G.beat&&ART.appius24.variant()==='day'&&MI.room==='appius24'&&DE.room==='appius24',
+    'the brothers came out to meet us (Acts 28:15); at the sight of them Paul thanked God and took courage; Mikon; what he wrote to them (Romans 1:11, 12); the beat no longer has to be kept');
+  await code('at the Marketplace with the brothers',()=>G.room==='appius24'&&PC()===P&&F.met&&!F.taverns&&MI.room==='appius24'&&!G.beat);
+  halt('meet24');
+  heard.length=0;await talkTo(DE);ok(said('sextus_your_news_came_mouth_to_mouth'),'how the news came: a carter, a trader, a boatman');
+  await hints('hint_on_to_rome_1','hint_on_to_rome_2','at the Marketplace');
+  heard.length=0;onH('road_north','walk');await until(()=>G.room==='taverns24'&&!G.busy,6000);
+  ok(F.taverns&&said('postumus_we_waited_here_since_yesterday')&&[PO,FI,TH,IK,MI,LK].every(a=>a.room==='taverns24'),'Three Taverns: the others are waiting; the group that goes on is large');
+  heard.length=0;await talkTo(IK);ok(said('innkeeper_three_taverns_two_are_mine'),'the innkeeper\'s joke');heard.length=0;await talkTo(IK);ok(said('innkeeper_water_for_the_road'),'and only once');
+  heard.length=0;await talkTo(PO);ok(said('postumus_nobody_asked_my_knees'),'the old brother\'s knees');heard.length=0;await talkTo(PO);ok(said('postumus_go_on_paul'),'and only once');
+  halt('taverns24');
+  heard.length=0;onH('road_north','walk');await until(()=>G.room==='far24'&&!G.busy,15000);
+  ok(F.far&&ROADS24.slice(5).join()==='appius-threetaverns,threetaverns-rome'&&heard.every(h=>!C().told||true),'Three Taverns to Rome on the map');
+  {const want='malta-syracuse,syracuse-rhegium,rhegium-puteoli,puteoli-capua,capua-appius,appius-threetaverns,threetaverns-rome';ok(ROADS24.join()===want,'the roads drawn are the finale\'s: '+ROADS24.join())}
+  heard.length=0;await onH('milestone','look');ok(said('paul_iii_three_miles_more'),'the third stone');
+  halt('far24');
+  heard.length=0;await onH('road_on','walk');await until(()=>G.room==='capena24'&&!G.busy,6000);
+  heard.length=0;await onH('circus_maximus','look');ok(said('circus_maximus_look')&&F.gate,'at the Porta Capena: a look line names the Circus Maximus');
+  halt('capena24');
+  await hints('hint_into_rome24_1','hint_into_rome24_2','at the gate');
+  heard.length=0;await onH('porta_capena','walk');await until(()=>G.room==='camp24'&&!G.busy,6000);
+  ok(JU.room==='camp24'&&!P.chained,'the wall of the Praetorians\' camp; Julius a last time');
+  halt('camp24');
+  heard.length=0;talkTo(JU);await until(()=>G.room==='lane24'&&!G.busy,15000);note();
+  ok(said('julius_i_wont_forget_what_i_saw_at_sea')&&said('paul_that_was_gods_doing')&&said('julius_go_well_paul')&&seenTold.has('n16')&&PC()===LK&&!P.room&&GW.room==='lane24'&&LL.room==='lane24',
+    'Julius: what he saw at sea; nobody is handed over on screen; we came into Rome (Acts 28:16), from the scroll; Luke and Sextus look for a lodging');
+  await code('in the street',()=>G.room==='lane24'&&PC()===LK&&F.camp&&!F.chosen&&!P.room);
   halt('lane24');
-  await hints('stub24_hint_lodging_1','stub24_hint_lodging_2','in the street');
-  heard.length=0;onH('stub24_door_at_street_level','open');for(let i=0;i<4000&&!(ov.classList.contains('end')&&ov.onclick);i++)await wait(30);await wait(120);note();
+  await hints('hint_a_room_with_a_door_1','hint_a_room_with_a_door_2','in the street');
+  /* a room with a door: the two that fail, each said by the one it concerns; then the room at street level */
+  heard.length=0;await onH('door_small','open');await until(()=>G.room==='look24'&&!G.busy,3000);
+  ok(ART.look24.variant()==='small','the small room');halt('look24');
+  heard.length=0;await onH('this_room','use');ok(said('sextus_four_would_fill_this_room')&&!F.chosen,'too small: Sextus, for the many who will come');
+  await code('in the small room',()=>G.room==='look24'&&ART.look24.variant()==='small'&&PC()===LK);
+  heard.length=0;await onH('back_to_the_street','walk');await until(()=>G.room==='lane24'&&!G.busy,3000);
+  heard.length=0;await onH('door_garret','open');await until(()=>G.room==='look24'&&!G.busy,3000);
+  heard.length=0;await onH('this_room','use');ok(ART.look24.variant()==='garret'&&said('luke_three_flights_the_old_and_the_lame')&&!F.chosen,'three flights: Luke, for the old and the lame');
+  heard.length=0;await onH('back_to_the_street','walk');await until(()=>G.room==='lane24'&&!G.busy,3000);
+  heard.length=0;await onH('door_street','open');await until(()=>G.room==='look24'&&!G.busy,3000);
+  heard.length=0;onH('this_room','use');for(let i=0;i<4000&&!(ov.classList.contains('end')&&ov.onclick);i++)await wait(30);await wait(120);note();
   {const bits=3,code=codeOf(25,bits),far=saves().far;
-    ok(said('stub24_the_room_at_street_level')&&F.street&&ov.classList.contains('end')&&ov.textContent.includes(T('he_took_courage_2'))&&/28:11-16/.test(ov.textContent)
+    ok(said('watch_my_stool_goes_by_the_door')&&said('luke_the_street_room_will_do')&&F.street&&ov.classList.contains('end')&&ov.textContent.includes(T('he_took_courage_2'))&&/28:11-16/.test(ov.textContent)
       &&ov.textContent.includes(T('click_to_continue_to_chapter_twenty_five'))&&ov.textContent.includes(T('chapter_twenty_five_code_code',{code}))&&store('paul.save')===code&&far&&far.code===code&&C().carry25()===bits&&inOv(),
-      'the end screen of Chapter Twenty-Four leads on to Chapter Twenty-Five with its first code, which carries the lodging (the room at street level): '+code);
+      'the room at street level: the soldier has his place, and Luke says why it will do; the end screen leads on to Chapter Twenty-Five with its first code, which carries the lodging: '+code);
+    {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 28:11-16 was told'+(miss.length?' MISSING '+miss:''))}
     halt('final24');
     /* the carry: the end screen's click opens Chapter Twenty-Five with the card, from24 and street set, in the room at street level; the
        printed code, typed later, gives the same room */
@@ -6486,8 +6672,7 @@
     window.showCard=sc}};
   if(C24){await ch24();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    /* STUB: LOGIC24 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
-    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ==== CHAPTER TWENTY-FOUR: end ==== */
   /* ==== CHAPTER TWENTY-FIVE: begin ==== Chapter Twenty-Five's own stops: whoever builds the chapter extends this section, and nothing outside it
      but its line in TSTEPS, the chain of the full run (ch25 after ch24) and the title checks of the chapters before it. */
