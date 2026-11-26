@@ -27,8 +27,8 @@
      score            the overture
      len, turn        seconds: how long the overture is, and when the picture begins to pass into the title's
      lamp             where the wick is
-     day(o)           the same bench by day, for the end of the game: a scene in which nothing moves (see day below)
-     paint(o)         that picture itself, 320 x 210 */
+     day(g,t)         the same bench by day, for the end of the game: a scene in which nothing moves (see day below)
+     paint()          that picture itself, 320 x 210 */
 SHARED.splash=(()=>{
 "use strict";
 /* ---------- helpers ---------- */
@@ -54,24 +54,25 @@ function cast(g,x,y,len,fn,contact,L){L=L||NIGHT;const[c,l]=mk(VW*HR,VT*HR),P=L.
 
 /* room-pixel layout (320 x 210): wall above, broad seasoned bench below, front bevelled edge at EDGE, flame wick at LAMP */
 const LAMP=[174,129],WALL=114,EDGE=195;
-/* the two lights of the bench. NIGHT: the lamp's flame, close by, low and warm. DAY: the morning, through a window in the wall to the
-   left: a light far off and a little above the bench, so that every shadow falls to the right and only a little toward us. It is plain
+/* the two lights of the bench. NIGHT: the lamp's flame, close by, low and warm. DAY: the morning sun, through a window in the wall to the
+   left, out of the picture: a light far off and low, so that every shadow falls to the right and only a little toward us. It is plain
    light: no rays, no beams and no dust in the air (CONTRIBUTING section 3). */
-const NIGHT={at:LAMP,k:1,drop:.42,ink:'#100702'},DAY={day:1,at:[-420,40],k:1.55,drop:.1,ink:'#17111a'},
-  /* DAYW: the same morning with the window in the back wall, behind the bench at the left: the shadows fall to the right and toward us */
-  DAYW={day:1,at:[-160,60],k:1.4,drop:.3,ink:'#17111a'};
+const NIGHT={at:LAMP,k:1,drop:.42,ink:'#100702'},DAY={day:1,at:[-420,70],k:1.55,drop:.1,ink:'#1e140c'};
 
 /* ---------- the stone wall and the seasoned workbench ---------- */
-function room(g){const r=rng(1803),H=EDGE-WALL;
-  /* weathered limestone workshop wall: warm dressed ashlar courses with subtle lime-plaster wear and warm patina */
-  ashlar(g,0,0,VW,WALL,'#988068',r,{bw:35,bh:15.5,v:.1,t:.36,m:'#544335'});
-  for(let i=0;i<16;i++){const px=r()*VW,py=6+r()*(WALL-12);pool(g,px,py,10+r()*18,4+r()*7,r()<.5?'#6a523e':'#c2aa8c',.09+r()*.08,'source-over')}
+function room(g,L){const r=rng(1803),H=EDGE-WALL,day=L&&L.day;
+  /* weathered limestone workshop wall: warm dressed ashlar courses with subtle lime-plaster wear and warm patina. By day the same
+     courses (the same blocks, from the same numbers) in the stone's own daylight colour, a warm limestone, with soft joints and calm
+     mottling (dayAshlar) */
+  if(day)dayAshlar(g,0,0,VW,WALL,'#c6ad88',r,{bw:35,bh:15.5,v:.06,m:'#a08664'});
+  else ashlar(g,0,0,VW,WALL,'#988068',r,{bw:35,bh:15.5,v:.1,t:.36,m:'#544335'});
+  for(let i=0;i<16;i++){const px=r()*VW,py=6+r()*(WALL-12);pool(g,px,py,10+r()*18,4+r()*7,r()<.5?'#6a523e':'#c2aa8c',(.09+r()*.08)*(day?.3:1),'source-over')}
   for(let i=0;i<6;i++){let qx=24+r()*(VW-48),qy=14+r()*(WALL-30);const p=[qx,qy];
-    for(let s=0;s<4;s++){qx+=(r()-.5)*4;qy+=1.8+r()*3.2;p.push(qx,qy)}stroke(g,p,'rgba(40,26,16,.2)',.5)}
+    for(let s=0;s<4;s++){qx+=(r()-.5)*4;qy+=1.8+r()*3.2;p.push(qx,qy)}stroke(g,p,day?'rgba(90,64,40,.12)':'rgba(40,26,16,.2)',.5)}
   /* warm subtle lime-plaster wash over parts of the masonry so it feels ancient and lived-in */
-  for(const[px,py,rx,ry]of[[68,86,38,14],[248,80,44,16],[168,94,36,12]])pool(g,px,py,rx,ry,'#b69b7c',.14,'source-over');
+  for(const[px,py,rx,ry]of[[68,86,38,14],[248,80,44,16],[168,94,36,12]])pool(g,px,py,rx,ry,day?'#e2cfb0':'#b69b7c',.14,'source-over');
   /* very soft warm soot blush high on the stone above the flame */
-  pool(g,LAMP[0],WALL-36,16,24,'#342014',.14,'multiply');
+  pool(g,LAMP[0],WALL-36,16,24,'#342014',day?.07:.14,'multiply');
   ao(g,0,WALL-11,VW,11,'b',.4,'#22140c');
 
   /* the bench: one broad seasoned walnut-cedar plank, fine undulating horizontal wood grain, no joints across it */
@@ -97,6 +98,18 @@ function room(g){const r=rng(1803),H=EDGE-WALL;
     g.fillStyle=lg(g,0,EDGE+2,0,VT,['#4e321a','#3a2311','#26160a']);g.fillRect(0,EDGE+1.8,VW,VT-EDGE);
     for(let y=EDGE+3;y<VT;y+=1.5+r()*1.5)R(g,0,y,VW,.5,r()<.55?rgba('#180c04',.24):rgba('#9c7040',.1));
     tex(g,'mott',.18,0,EDGE+1.8,VW,VT-EDGE,'overlay',.7);ao(g,0,EDGE+1.8,VW,3,'t',.45,'#0e0602')})}
+
+/* dayAshlar: the wall's courses by day. It lays the same blocks as ashlar() in index.html, drawing the same numbers from r in the same
+   order, so that each block stands where it stands by night; but the joints and the edges of the blocks are soft, as they are in even
+   daylight, and the stone's grain is calm. */
+function dayAshlar(g,x,y,w,h,c,r,o){const bw=o.bw,bh=o.bh,v=o.v,m=o.m;
+  inRect(g,x,y,w,h,()=>{R(g,x,y,w,h,m);
+    for(let j=0,row=0;j<h;j+=bh,row++){let i=-(row%2?bw*.5:0)-r()*bw*.25;
+      while(i<w){const ww=bw*(.75+r()*.5),cc=tint(c,(r()-.5)*v*2),X=x+i,Y=y+j;
+        R(g,X,Y,ww-.5,bh-.5,cc);R(g,X,Y,ww-.5,.5,tint(cc,.08));R(g,X,Y+bh-1,ww-.5,.5,tint(cc,-.05));
+        if(r()<.3)R(g,X+1+r()*(ww-4),Y+1+r()*(bh-3),1+r()*2,.5+r()*.5,tint(cc,-.07));
+        if(r()<.12)R(g,X,Y,1+r()*1.5,1,tint(cc,-.08));i+=ww}}
+    tex(g,'mott',.16,x,y,w,h);tex(g,'grain',.08,x,y,w,h,'overlay',.5)})}
 
 /* ---------- coiled papyrus end-face helper (no stick sticking out, no tie across) ---------- */
 function spiralEnd(g,cx,cy,rx,ry,tone,L){
@@ -446,24 +459,18 @@ function lampShadow(g){
     pool(g,165,139,13.5,3.2,'#0c0502',.54,'multiply')})}
 
 /* ---------- the rolls that lie on the bench by day, besides the three of the night: the letters written since ----------
-   [x, y, len, rad, ang, seed, tone] of each roll, as roll() takes them, from the back of the bench forward, so that each is painted behind
-   the next. The first two lie behind the stack at the left, the next two at the back between the lamp and the ball of thread, the last one
-   in front of the stack. Each shows its near end and nothing else (CONTRIBUTING section 4), and none lies across another. */
-const MORE=[[-6,129.5,56,5.2,-.012,61,'#d8bc86'],[-4,138,62,5.9,.008,67,'#e0c690'],
-  [196,121.5,52,4.8,.006,71,'#d4b680'],[190,129.5,58,5.4,-.01,73,'#e2ca96'],[-12,189,70,6.4,.004,79,'#dcc08a']];
+   [x, y, len, rad, ang, seed, tone] of each roll, as roll() takes them, the far one first. They lie at the back of the bench between the
+   lamp and the ball of thread, wholly on the bench, so each shows its near end and only the round outline of its far end (CONTRIBUTING
+   section 4); none lies across another. */
+const MORE=[[196,121.5,52,4.8,.006,71,'#d4b680'],[190,129.5,58,5.4,-.01,73,'#e2ca96']];
 
 /* ---------- assemble all still-life objects in depth order ----------
-   L: the light (NIGHT or DAY). o.rolls: by day, how many rolls lie on the bench in all (three by night). */
-function things(g,L,o){const day=L&&L.day,n=day?clamp(((o&&o.rolls)||5)-3,0,MORE.length):0,
-    /* which of MORE lie there, in the order they are added: first the two at the back on the right, then the two at the left, then the front one */
-    on=new Set([2,3,0,1,4].slice(0,n)),more=i=>{if(!on.has(i))return;const m=MORE[i];
-      cast(g,m[0]+m[2]*.5,m[1]+m[3],m[3]*.6,l=>roll(l,...m,L,m[0]>0),.5,L)};
-  /* by day, the rolls that lie behind the others first */
-  for(let i=0;i<4;i++)more(i);
+   L: the light (NIGHT, or DAY for the bench by day, which has the rolls of MORE as well) */
+function things(g,L){const day=L&&L.day;
+  if(day)for(const m of MORE)cast(g,m[0]+m[2]*.5,m[1]+m[3],m[3]*.6,l=>roll(l,...m,L,1),.5,L);
   /* pyramid of three stacked papyrus scrolls on the left: two touching on the bench, one nestled in the saddle above */
   cast(g,34,168,4.8,l=>{roll(l,-8,158,72,7.7,-.022,11,'#d0b47c',L);roll(l,-10,174.5,76,8.3,.018,23,'#c6a66c',L)},undefined,L);
   cast(g,36,162,3.4,l=>roll(l,-6,163.5,64,7.4,.01,37,'#e4cc98',L),undefined,L);
-  more(4);
   if(day){
     /* by day the lamp is out, and throws its shadow away from the window like everything else on the bench */
     cast(g,93,144,5.4,l=>inkpot(l,L),.52,L);
@@ -502,63 +509,30 @@ function light(g){const[lx,ly]=LAMP,[c,l]=mk(VW*HR,VT*HR);l.scale(HR,HR);
   /* soft warm additive aura right around the burning wick */
   pool(g,lx,ly-2,20,14,'#ff983a',.38)}
 
-/* ---------- the window by day, when it is in the picture (o.window 'wall') ----------
-   A deep square opening in the back wall at the left, above the stack of rolls. No bar or post stands in it (CONTRIBUTING section 3), and
-   it is square, high and away from the middle, where nothing round could come to stand behind a head. Through it only the morning sky is
-   seen, pale and a little warmer low down, with a few soft clouds: the opening is above the eyes, so no land and no horizon. We look at it
-   from the right, so its left side, the reveal, is seen, lit by the sky; the underside of the lintel above it is in shade, and the top of
-   the sill below catches the light. */
-const WIN={x0:20,x1:66,top:24,sill:80,d:7};
-function wallWindow(g){const{x0,x1,top,sill,d}=WIN,r=rng(1907);
-  /* the sky */
-  clipTo(g,()=>g.rect(x0+d,top+3,x1-x0-d,sill-top-3),()=>{
-    g.fillStyle=lg(g,0,top,0,sill,['#9cb4d0','#b8cadc','#d6dce0','#eee2cc']);g.fillRect(x0,top,x1-x0,sill-top);
-    for(let i=0;i<5;i++){const cx=x0+d+r()*(x1-x0-d),cy=top+10+r()*30;pool(g,cx,cy,8+r()*10,1.6+r()*1.6,'#fbf6ee',.35+r()*.2,'source-over')}});
-  /* the left reveal: a face of the wall's own stone turned toward the light, with a course joint along it that stops at its edges */
-  poly(g,[x0,top,x0+d,top+3,x0+d,sill-2,x0,sill],'#c8b498');
-  clipTo(g,()=>poly(g,[x0,top,x0+d,top+3,x0+d,sill-2,x0,sill]),()=>{
-    g.fillStyle=lg(g,x0,0,x0+d,0,['#a89478','#d8c6a8']);g.fillRect(x0,top,d,sill-top);
-    for(const y of[top+18,top+35])stroke(g,[x0,y,x0+d,y+.6],rgba('#5a4634',.45),.5);
-    tex(g,'mott',.2,x0,top,d,sill-top,'overlay',.6)});
-  /* the lintel's underside, and the sill */
-  poly(g,[x0,top,x1,top,x1,top+3,x0+d,top+3],'#6e5a48');
-  poly(g,[x0,sill,x0+d,sill-2,x1,sill-2,x1,sill],'#d2c0a2');R(g,x0,sill,x1-x0,.6,'rgba(60,44,30,.5)');
-  /* a little of the edge of the opening on the right, where the wall turns into it, and its shadow on the stone below */
-  R(g,x1-.6,top,.6,sill-top,'rgba(40,28,20,.5)');ao(g,x0-2,sill,x1-x0+4,6,'t',.3,'#2a1c12')}
-
-/* ---------- daylight: the room in the morning, lit from a window on the left ----------
-   o.window 'side': the window is in the left wall, out of the picture, and its light lies on the back wall as a soft patch the shape of the
-   window, slanting, and on the left of the bench. 'wall': the window is in the back wall (wallWindow), and its light falls on the bench
-   below it and spreads to the right. Either way a plain light: no rays, beams or dust (CONTRIBUTING section 3). The top of the picture is
-   left darker, toward the ceiling, and the far right in the room's own shade. */
-/* PATCH: the sun on the back wall from the window out of the picture; FLOOR: the sun on the bench from the window in the back wall */
-const PATCH=[4,30,76,40,82,104,8,108],FLOOR=[22,117,62,117,112,166,58,166];
-function dayLight(g,o){const[c,l]=mk(VW*HR,VT*HR),side=o.window!=='wall',soft=(fn)=>{for(const[ox,oy]of[[0,0],[-1.6,-.9],[1.6,.9],[-.9,1.6],[.9,-1.6]])fn(ox,oy)};
+/* ---------- daylight: the room in the morning, lit from a window in the left wall, out of the picture ----------
+   A warm light: the stone toward cream and ochre where the sun lies, a warm brown-grey in the shade, nothing violet. The sun comes in
+   low and lies on the left of the bench and on the foot of the wall above it (SUN), no higher than about a third of the wall, so that the
+   upper wall is in even, soft shade, where the closing screen's words stand. Its edges are soft (it is laid on several times a little
+   apart), and it is a patch of light on the stone and the wood, not a ray: no beam, no shaft and no dust in the air (CONTRIBUTING
+   section 3). */
+/* SUN: the patches of sun, one on the foot of the wall and one on the bench. Their edges bend where the wall meets the bench, as the
+   edge of a patch of light does where it passes from one face to another, and they do not run on as one slanting band. */
+const SUN=[[0,82,60,84,84,WALL,0,WALL],[0,WALL,84,WALL,44,180,0,186]],SOFT=[[0,0],[-2.4,-1.2],[2.4,1.2],[-1.2,2.4],[1.2,-2.4],[-3.6,0],[3.6,0],[0,-3.2],[0,3.2]];
+function dayLight(g){const[c,l]=mk(VW*HR,VT*HR),soft=fn=>{for(const P of SUN)for(const[ox,oy]of SOFT)fn(P.map((v,i)=>v+(i%2?oy:ox)))};
   l.scale(HR,HR);
-  /* the room's shade: cool, and lighter toward the window */
-  l.fillStyle='#6c6670';l.fillRect(0,0,VW,VT);
-  comp(l,'lighter',1,()=>{l.fillStyle=lg(l,0,0,VW,0,[[0,'rgba(200,184,166,.66)'],[.4,'rgba(174,160,150,.5)'],[1,'rgba(120,112,122,.16)']]);l.fillRect(0,0,VW,VT)});
-  /* the bench takes more of the light than the wall, warmest and brightest at its left */
-  comp(l,'lighter',1,()=>{l.fillStyle=lg(l,0,0,VW,0,[[0,'rgba(255,232,200,.62)'],[.45,'rgba(240,214,184,.34)'],[1,'rgba(200,184,172,.08)']]);l.fillRect(0,WALL,VW,VT-WALL)});
-  if(side){
-    /* the sun through the window: a slanting patch on the back wall, the window's shape, with soft edges (laid on five times a
-       little apart), and a broad warm stretch on the left of the bench */
-    soft((ox,oy)=>comp(l,'lighter',.3,()=>poly(l,PATCH.map((v,i)=>v+(i%2?oy:ox)),'#ffe8c4')));
-    pool(l,36,156,170,64,'#ffe2b8',.36)}
-  else{
-    /* the sun through the window in the back wall falls on the bench in front of it, slanting to the right and toward us */
-    soft((ox,oy)=>comp(l,'lighter',.16,()=>poly(l,FLOOR.map((v,i)=>v+(i%2?oy:ox)),'#ffe8c4')));
-    pool(l,60,150,150,60,'#ffe2b8',.26)}
+  /* the room's shade: a warm brown-grey, a little lighter toward the window and on the bench, which faces the light */
+  l.fillStyle='#bcaa96';l.fillRect(0,0,VW,VT);
+  comp(l,'lighter',1,()=>{l.fillStyle=lg(l,0,0,VW,0,[[0,'rgba(58,52,42,1)'],[.5,'rgba(38,32,24,1)'],[1,'rgba(10,8,6,1)']]);l.fillRect(0,0,VW,VT)});
+  comp(l,'lighter',1,()=>{l.fillStyle=lg(l,0,WALL,0,VT,['rgba(40,30,18,1)','rgba(20,14,8,1)']);l.fillRect(0,WALL,VW,VT-WALL)});
+  /* the sun */
+  soft(p=>comp(l,'lighter',.075,()=>poly(l,p,'#ffe8c4')));
   comp(l,'multiply',1,()=>{
-    ao(l,0,0,VW,64,'t',.5,'#1a1626');
-    ao(l,0,VT-18,VW,18,'b',.36,'#1a1626');
-    ao(l,VW-80,0,80,VT,'r',.3,'#1a1626')});
+    ao(l,0,0,VW,36,'t',.18,'#3a2814');
+    ao(l,0,VT-18,VW,18,'b',.3,'#2a1c10');
+    ao(l,VW-80,0,80,VT,'r',.22,'#3a2814')});
   g.save();g.setTransform(1,0,0,1,0,0);g.globalCompositeOperation='multiply';g.drawImage(c,0,0);g.restore();
   /* where the sun lies, the stone and the wood are lifted a little above their own colour */
-  soft((ox,oy)=>comp(g,'soft-light',.2,()=>poly(g,(side?PATCH:FLOOR).map((v,i)=>v+(i%2?oy:ox)),'#fff4e0')));
-  /* the window's own opening keeps the brightness of the sky */
-  if(!side){g.save();g.beginPath();g.rect(WIN.x0+WIN.d,WIN.top+3,WIN.x1-WIN.x0-WIN.d,WIN.sill-WIN.top-3);g.clip();
-    g.globalCompositeOperation='screen';g.globalAlpha=.55;g.fillStyle='#e8eef4';g.fillRect(0,0,VW,VT);g.restore()}}
+  soft(p=>comp(g,'soft-light',.07,()=>poly(g,p,'#fff2d8')))}
 
 /* ---------- organic layered oil-lamp flame (all motion strictly within 24px of LAMP) ---------- */
 function lampFlame(g,lx,ly,t){
@@ -575,13 +549,11 @@ function lampFlame(g,lx,ly,t){
 
 let BG=null,out=null;
 const build=()=>bake(VW,g=>{room(g);things(g);light(g)},12,VT);
-/* day(o): the bench by day, for the end of the game: the same bench and the same things in the morning, the lamp out, and more rolls.
-   o.window: 'side' (the window is out of the picture, on the left) or 'wall' (it is in the back wall, at the left); o.rolls: how many rolls
-   lie on the bench in all (3 to 8). Returns a scene: nothing in it moves. paint(o) is the picture itself. */
-const DAYS={};
-function paint(o){o=Object.assign({window:'side',rolls:5},o);
-  return bake(VW,g=>{room(g);if(o.window==='wall')wallWindow(g);things(g,o.window==='wall'?DAYW:DAY,o);dayLight(g,o)},12,VT)}
-function day(o){const k=JSON.stringify(o||{});return(g,t)=>g.drawImage(DAYS[k]||(DAYS[k]=paint(o)),0,0,VW,VT)}
+/* day: the bench by day, for the end of the game, as a scene (G.scene): the same bench and the same things in the morning, the lamp out,
+   two more rolls. Nothing in it moves. paint() is the picture itself. */
+let DAYBG=null;
+const paint=()=>bake(VW,g=>{room(g,DAY);things(g,DAY);dayLight(g)},12,VT);
+function day(g,t){g.drawImage(DAYBG||(DAYBG=paint()),0,0,VW,VT)}
 function scene(g,t){const k=out?clamp((performance.now()-out.t0)/out.ms,0,1):0;
   if(out){out.next(g,t);if(k>=1){if(G.scene===scene)G.scene=out.next;return}g.globalAlpha=1-k}
   g.drawImage(BG||(BG=build()),0,0,VW,VT);const[lx,ly]=LAMP;
