@@ -12,6 +12,12 @@
                          click. Chapter Eighteen's elders (Acts 21:19) use it on the view journeys with trail(picked) as its legs.
      trail(ids)          the legs to draw for places picked in order (see WAYS)
      go(from, to)        draw one leg and arrive.
+     trace(legs, ms, o)  draw legs one after another on the map that is showing, over ms in all, each taking the share of its length.
+                         Nothing sounds and the music is left as it is: the look back at the end of the game (shared/finale.js) plays a
+                         bar of a chapter's tune while that chapter's roads are drawn. legs: [[from, to], ...]. o.dots(a, b): a leg's
+                         own dotted line where it is not the map's (or nothing); o.stop(): true once the drawing is to end at once,
+                         with every leg drawn whole.
+     light(id)           light a place's dot and set the light on it, without a road
      where(id)           a place's position on the map, in view pixels.
    A place with hide:1 is a point on a road and nothing more: a leg may start or end there, and neither a dot nor a name is drawn.
    A place with cape:1 is a cape: its name is drawn and no dot, and a sea leg may run round it (Cape Lectum).
@@ -26,7 +32,8 @@
    lie across one of the chapter's routes; and o.view: the window a chapter looks through (see VIEWS), when its road leaves the usual one.
    journey takes o.night: the window is darkened, for a road travelled by night; the route and the names stay bright; o.seen: places that
    are shown from the start although no leg of this map reaches them (Athens and Corinth, in Chapter Twelve: the account names no road
-   between them, so none is drawn); and o.pulse: the place where the light stands. Both take o.regions: the names of seas and lands that this chapter's map writes
+   between them, so none is drawn); o.pulse: the place where the light stands; and o.music: the music that is playing is left alone
+   (the map otherwise opens in silence, with wind and waves). Both take o.regions: the names of seas and lands that this chapter's map writes
    although the window does not write them of itself (opt, in REGIONS): {regions:['the_syrtis']}. */
 SHARED.map=(()=>{
 "use strict";
@@ -503,12 +510,12 @@ const hz=p=>tune(p.n,p.oct).map(mtof);
 function sting(){const t=now()+.06;if(!AU.ctx)return;DRUMS.d(t,1.3);DRUMS.d(t+.36,.9);INST.drone(hz(STING.drone)[0],t,2.6,.8);
   hz(STING.harp).forEach((f,i)=>INST.harp(f,t+i*.13,.5,1.3));hz(STING.ney).forEach((f,i)=>INST.ney(f,t+.62+i*.2,i===4?.9:.34,.9))}
 const arrive=()=>{const[a,b]=hz(CHIME);tone({f:a,d:.18,type:'sine',v:.05,echo:1});tone({f:b,t:now()+.08,d:.22,type:'sine',v:.035,echo:1})};
-function show(){G.scene=draw;setScore(null);AU.amb={wind:.25,waves:.25}}
+function show(keep){G.scene=draw;if(!keep)setScore(null);AU.amb={wind:.25,waves:.25}}
 /* journey: between scenes. Fades to the map, shows the legs already travelled, then draws the new ones, city by city. */
 async function journey(route,o){o=o||{};setView(o.view);ST.places=null;ST.hover=null;ST.legs=[];ST.seen=new Set(o.seen||[]);ST.pulse=o.pulse||null;ST.over=o.labels||VLAB[VN]||null;ST.night=!!o.night;ST.regions=new Set(o.regions||[]);
   for(const[a,b,kind]of route){const k=/new/.test(kind||'')?0:1;ST.legs.push({a,b,k,dots:path(a,b)});if(k){ST.seen.add(a);ST.seen.add(b)}}
   const first=ST.legs.find(L=>!L.k);if(first)ST.seen.add(first.a);
-  if(o.instant){show();for(const L of ST.legs){L.k=1;ST.seen.add(L.a);ST.seen.add(L.b)}ST.pulse=o.pulse||(route.length?route[route.length-1][1]:null);return}
+  if(o.instant){show(o.music);for(const L of ST.legs){L.k=1;ST.seen.add(L.a);ST.seen.add(L.b)}ST.pulse=o.pulse||(route.length?route[route.length-1][1]:null);return}
   await fade(1,450);show();codeBtn();await fade(0,550);sting();await wait(700);
   for(const L of ST.legs)if(!L.k){ST.pulse=L.a;await tween(o.speed||1900,k=>{L.k=k});ST.seen.add(L.b);arrive();ST.pulse=L.b;await wait(350)}
   if(o.text)for(const s of[].concat(o.text))await narr(s,{dur:Math.max(3200,1600+s.length*60)})}
@@ -534,10 +541,16 @@ function trail(ids){const out=[];for(let i=1;i<ids.length;i++){const a=ids[i-1],
     for(let k=x;k<y;k++)out.push([w[k],w[k+1]]);break}}return out}
 /* go: draw one leg from a to b on the map that is showing, and arrive */
 async function go(a,b){const L={a,b,k:0,dots:path(a,b)};ST.legs.push(L);ST.seen.add(a);ST.pulse=a;show();await tween(1500,k=>{L.k=k});ST.seen.add(b);arrive();ST.pulse=b;await wait(500)}
+/* trace: draw legs one after another on the map that is showing, over ms in all (see the head of this file) */
+async function trace(legs,ms,o){o=o||{};const L=legs.map(([a,b])=>({a,b,k:0,dots:o.dots&&o.dots(a,b)||path(a,b)})),n=L.reduce((s,l)=>s+l.dots.length,0)||1;
+  for(const l of L){ST.legs.push(l);ST.seen.add(l.a);ST.pulse=l.a;const t=ms*l.dots.length/n,t0=performance.now();
+    await new Promise(res=>{(function f(){const k=o.stop&&o.stop()?1:Math.min(1,(performance.now()-t0)/Math.max(1,t));l.k=k;k<1?requestAnimationFrame(f):res()})()});
+    ST.seen.add(l.b);ST.pulse=l.b}}
+const light=id=>{ST.seen.add(id);ST.pulse=id};
 /* where: a place in the window that is showing */
 const where=id=>{const[x,y]=at(id);return[(x-OX)*ZM,(y-OY)*ZM]};
 /* lines: every thin line on the map that a name must not cross: the coasts, the islands and the lakes, as lists of points */
 const lines=()=>[COAST,AFRICA,...isl().concat(wisl()).map(p=>p.concat(p.slice(0,2))),...LAKES.map(p=>p.concat(p.slice(0,2)))];
 /* window: where the window that is showing lies on the map, [left, top, width, height], so that a test can see whether a name runs out of it */
-return{journey,pick,go,where,lines,trail,ways:WAYS,labels:VLAB,places:PLACES,state:ST,draw,sting,arrive,window:()=>[OX,OY,W/ZM,H/ZM]};
+return{journey,pick,go,trace,light,where,lines,trail,ways:WAYS,labels:VLAB,places:PLACES,state:ST,draw,sting,arrive,window:()=>[OX,OY,W/ZM,H/ZM]};
 })();
