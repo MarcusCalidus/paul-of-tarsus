@@ -15,7 +15,6 @@
    Where the tune's first bar is short (under two seconds) and its first phrase plainly runs over two bars, two are taken (bars:2):
    Chapters Thirteen, Fourteen, Nineteen and Twenty. The Prologue plays on Chapter One's score by moods of its own; its road plays nothing
    (mood "none"), so its bar is the harp of the house of Judas in Damascus (mood "harp"), where that road ends, and not Chapter One's.
-   Chapters Twenty-Four and Twenty-Five are stubs for now: their bars are the stubs' few notes, to be taken again when they are built.
 
      BARS          {pro, 1, 2, ...}: per chapter {dt, steps, group, root, scale, bars, src, tracks}, a score without its then. src: where the
                    bar comes from, {mood, bar, tracks}: the mood, the bar counted from 0 as the chapter's score counts it, and the indices
@@ -166,18 +165,23 @@ const _=null,
   23:{dt:.15,steps:18,group:[4,5,4,5],root:46,scale:[0,2,3,5,7,8,11],bars:1,src:{mood:'night',bar:0,tracks:[0,1]},tracks:[
    {inst:'harp',lines:[[[0,0,4],[4,2,5],[9,4,4],[13,3,5]]],oct:12,vol:.34},
    {inst:'bass',lines:[[[0,0,18]]],oct:0,vol:.2}]},
-  /* Chapter Twenty-Four, STUB: the stub's lyre (levels/chapter24.js:24); to be taken again when the chapter is built */
-  24:{dt:.2,steps:15,group:[5,5,5],root:60,scale:[0,2,4,5,7,9,11],bars:1,src:{mood:'stub24',bar:0,tracks:[0]},tracks:[
-   {inst:'lyre',lines:[[[0,0,5],[5,2,5],[10,4,5]]],oct:0,vol:.4}]},
-  /* Chapter Twenty-Five, STUB: the stub's lyre (levels/chapter25.js:31); to be taken again when the chapter is built */
-  25:{dt:.19,steps:17,group:[4,4,4,5],root:44,scale:[0,2,4,5,7,9,10],bars:1,src:{mood:'stub25',bar:0,tracks:[0]},tracks:[
-   {inst:'lyre',lines:[[[0,0,4],[4,2,4],[8,4,4],[12,7,5]]],oct:12,vol:.4}]}},
+  /* Chapter Twenty-Four, C major in fifteens that fall 5, 5, 5, the bar of the walk, mood "quay" (the harp rests in this bar): lyre, low
+     string (levels/chapter24.js:88, 90; TUNE :82, LOW :85) */
+  24:{dt:.2,steps:15,group:[5,5,5],root:60,scale:[0,2,4,5,7,9,11],bars:1,src:{mood:'quay',bar:0,tracks:[0,2]},tracks:[
+   {inst:'lyre',lines:[[[0,0,5],[5,2,5],[10,4,5]]],oct:0,vol:.44},
+   {inst:'bass',lines:[[[0,0,15]]],oct:-12,vol:.22}]},
+  /* Chapter Twenty-Five, A-flat Mixolydian in seventeens that fall 4, 4, 4, 5, mood "lodging": the lyre, the harp that rocks under it and
+     the low string (levels/chapter25.js:106-108; TUNE :96, ROCK :99, LOW :101) */
+  25:{dt:.19,steps:17,group:[4,4,4,5],root:44,scale:[0,2,4,5,7,9,10],bars:1,src:{mood:'lodging',bar:0,tracks:[0,1,2]},tracks:[
+   {inst:'lyre',lines:[[[0,0,4],[4,2,4],[8,4,4],[12,5,5]]],oct:12,vol:.48},
+   {inst:'harp',lines:[[[0,0,4],[8,4,4]]],oct:12,vol:.28},
+   {inst:'bass',lines:[[[0,0,8],[8,4,9]]],oct:0,vol:.24}]}},
  has=n=>Object.prototype.hasOwnProperty.call(BARS,n),
  len=n=>{const b=BARS[n];return b.bars*b.steps*b.dt},
  /* the silence that follows a bar: a score with no tracks, in the bar's key (setScore keeps the key of the last score, see AU.key) */
  hush=b=>({dt:b.dt,steps:b.steps,root:b.root,scale:b.scale,bars:1,tracks:[]}),
  RMS={pro:-35.2,1:-20.2,2:-23.1,3:-27.9,4:-28.3,5:-28.2,6:-28.3,7:-28.6,8:-27.9,9:-23.9,10:-25.1,11:-30.2,12:-30.5,13:-30.7,14:-31.6,15:-34.6,16:-34.3,
-  17:-34.1,18:-35.7,19:-36,20:-37.5,21:-36.1,22:-35.5,23:-40.2,24:-44.3,25:-44.8},EVEN=-29,
+  17:-34.1,18:-35.7,19:-36,20:-37.5,21:-36.1,22:-35.5,23:-40.2,24:-41.5,25:-40.1},EVEN=-29,
  gain=n=>RMS[n]==null?1:Math.pow(10,clamp(EVEN-RMS[n],-8,8)/20),
  score=(n,then,o)=>{const b=BARS[n],k=o&&o.even?gain(n):1;
   return Object.assign({},b,{tracks:k===1?b.tracks:b.tracks.map(t=>Object.assign({},t,{vol:(t.vol==null?1:t.vol)*k})),then:then||hush(b)})};

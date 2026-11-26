@@ -224,8 +224,7 @@
   if(!/[?&]keep=1/.test(location.search))ok(store('paul.save')===null&&!ov.querySelector('[data-cont]')&&ov.querySelector('[data-pro="1"]').classList.contains('go'),'a first visit has nothing to continue: the Prologue leads the list');
   /* the title screen holds its whole list: nothing on it lies above or below the view, with eight chapters or more */
   const inOv=()=>{const r=ov.getBoundingClientRect();return[...ov.children].every(el=>{const q=el.getBoundingClientRect();return q.top>=r.top-1&&q.bottom<=r.bottom+1})};
-  /* listed: the chapters the title lists. FOR NOW, while Chapters Twenty-Four and Twenty-Five are built, a chapter still named in PLANNED
-     is in CHAP but not on the list (building, index.html); when PLANNED is emptied this is every chapter again. */
+  /* listed: the chapters the title lists: every chapter, unless one is still named in PLANNED (building, index.html) */
   const listed=()=>Object.keys(CHAP).filter(n=>!building(n));
   /* chLine: a chapter's line in the title's list (0: the Prologue), with its part of the account opened first, as a player would open it */
   const chLine=n=>{const el=ov.querySelector(n?`[data-ch="${n}"]`:'[data-pro="1"]'),pt=el&&el.closest('.part');if(pt&&!pt.classList.contains('open'))pt.querySelector('.grp').click();return el};
@@ -1830,6 +1829,17 @@
       const before=rms(Math.max(0,Math.round((crashAt-.25)*sr))),early=rms(0);
       ok(!err&&s===1&&calls.length>=10&&calls.every(c=>c[1]&&c[1]!==AU.fx)&&pk>.02&&Math.abs(pt-crashAt)<.15&&before>early*3,
         `with sound on, the sea is scheduled on the beat's own bus (${calls.length} voices for one sea) and heard where the wave breaks: the loudest moment ${pt.toFixed(2)} s, the crash ${crashAt.toFixed(2)} s, and the swell rising before it`+(err?' ERR '+err.message:''))}
+    /* the step of Chapter Twenty-Four's walk (kind 'step'): scheduled from the same clock on the beat's own bus, heard where the foot comes
+       down, and much quieter than a sea */
+    {BT.stop();const sr=22050,off=new OfflineAudioContext(1,sr*2,sr),c0=AU.ctx,calls=[];
+      const n0=window.noise,t0=window.tone;window.noise=o=>{calls.push(['noise',o.dest]);return n0(o)};window.tone=o=>{calls.push(['tone',o.dest]);return t0(o)};
+      AU.ctx=new Proxy(off,{get(t,k){if(k==='state')return'running';const v=t[k];return typeof v==='function'?v.bind(t):v}});
+      let s,downAt,err=null;try{const k=BT.start({period:3000,pause:1200,at:.55,phase:.3,kind:'step',dest:off.destination,room:null});downAt=(k.crash()-now())/1000;s=k.sounded;k.bus=null}catch(e){err=e}
+      finally{AU.ctx=c0;window.noise=n0;window.tone=t0;BT.stop()}
+      const buf=await off.startRendering(),d=buf.getChannelData(0),win=Math.round(sr*.02),rms=i=>{let e=0;for(let j=i;j<i+win&&j<d.length;j++)e+=d[j]*d[j];return Math.sqrt(e/win)};
+      let pk=0,pt=0,top=0;for(let i=0;i<d.length-win;i+=win/2){const r=rms(i);if(r>pk){pk=r;pt=i/sr}}for(let i=0;i<d.length;i++)top=Math.max(top,Math.abs(d[i]));
+      ok(!err&&s===1&&calls.length>=3&&calls.every(c=>c[1]&&c[1]!==AU.fx)&&pk>.004&&top<.35&&Math.abs(pt-downAt)<.08,
+        `the soldier's step is scheduled on the beat's own bus (${calls.length} voices) and heard where his foot comes down: the loudest moment ${pt.toFixed(2)} s, the footfall ${downAt.toFixed(2)} s, its peak ${top.toFixed(3)}`+(err?' ERR '+err.message:''))}
     /* a code restored in the middle of a crossing: no beat is left running, and the room's own scripts would start one again */
     {BT.start();ok(!!G.beat,'a beat runs again');applyState(decode(codeOf(1,0)));await wait(250);
       ok(G.beat===null&&BT.beat===null&&G.room!=='beattest','a safe-point code restored in the middle of a crossing leaves no beat running')}
@@ -2434,19 +2444,26 @@
         ok(l.classList.contains('down')===(l.scrollTop+l.clientHeight<l.scrollHeight-1)&&l.classList.contains('up')===(l.scrollTop>1),'its edges fade only where more of the list lies beyond them'+(l.scrollHeight>l.clientHeight+1?' (it scrolls: '+Math.round(l.scrollHeight-l.clientHeight)+' pixels)':' (it does not scroll)'));
         halt('titlescroll',noBlink);
         l.scrollTop=l.scrollHeight;l.dispatchEvent(new Event('scroll'));ok(!l.classList.contains('down'),'scrolled to its end, the bottom edge does not fade')}
-      /* a returning player in the last part, with the farthest point and the hidden treasures too: everything fits without scrolling */
+      /* a returning player in the last part, with the farthest point and the hidden treasures too: the whole part is seen in the box (with its four
+         chapters the list is a line longer than the box and scrolls, as it does for the longer parts) */
       store('paul.save',CHAP[22].treasure.at);keepSaves({far:{code:CHAP[23].treasure.at,t:1}});keepTreasures([1,2,3,5,8,13,21]);await redraw();
       {const l=L0(),last=parts().at(-1),h=l.querySelector('.here');
-        ok(openOf()[0]===last&&h&&h.dataset.ch==='22'&&ov.querySelector('[data-far]')&&ov.querySelector('[data-tre]')&&l.scrollHeight<=l.clientHeight+1&&[...last.querySelectorAll('p')].every(inBox)&&inOv(),
-          'a returning player in Chapter Twenty-Two finds the last part open, with Continue, the farthest point and the hidden treasures above and below, and the whole list fits without scrolling');
+        ok(openOf()[0]===last&&h&&h.dataset.ch==='22'&&ov.querySelector('[data-far]')&&ov.querySelector('[data-tre]')&&[...last.querySelectorAll('p')].every(inBox)&&inOv(),
+          'a returning player in Chapter Twenty-Two finds the last part open, with Continue, the farthest point and the hidden treasures above and below, and the whole of that part in the box, to the twenty-fifth chapter');
         halt('titlelast',noBlink)}
       store('paul.save',null);store('paul.saves',null);store('paul.treasures',null);await redraw();
       ok(!ov.querySelector('[data-cont]')&&!ov.querySelector('[data-far]')&&!ov.querySelector('[data-tre]')&&openOf()[0]===parts()[0],'and the title of a first visit is as it was')}
-    /* The chapters in preparation (PLANNED) stand in their part as one dimmed line, which a click neither starts nor closes: "Chapters
-       Twenty-Four to Twenty-Five · in preparation"; with one left it names that chapter, and with none it is gone. The stop `plans`. */
-    {const pl=()=>[...ov.querySelectorAll('.chs .plans')],last=()=>parts().at(-1),next=Math.max(...Object.keys(CHAP).map(Number))+1,
+    /* No chapter is in preparation any more: the account is told to its end, PLANNED is empty, and the title lists every chapter and
+       has no such line. The line itself is still checked, with the last two chapters named as planned for the length of the check: the
+       chapters in preparation stand in their part as one dimmed line, which a click neither starts nor closes ("Chapters Twenty-Four
+       to Twenty-Five · in preparation"); with one left it names that chapter, and with none it is gone. The stop `plans` shows the
+       title as it is, its last part open. */
+    {const pl=()=>[...ov.querySelectorAll('.chs .plans')],last=()=>parts().at(-1);
+      ok(!PLANNED.length&&!pl().length&&listed().length===Object.keys(CHAP).length&&!!ov.querySelector('.chs [data-ch="25"]'),'no chapter is in preparation: the title has no such line, and lists every chapter to the twenty-fifth');
+      PLANNED.push({label:'chapter_twenty_four',short:'chapter_twenty_four'},{label:'chapter_twenty_five',short:'chapter_twenty_five'});await redraw();   /* short: a number word of its own in a real entry; here the label serves */
+      const next=Math.max(...Object.keys(CHAP).map(Number))+1,
         want=PLANNED.length>1?T('chapters_from_to_to',{from:T(PLANNED[0].short),to:T(PLANNED.at(-1).short)}):T(PLANNED[0].label);
-      ok(pl().length===1&&last().contains(pl()[0])&&pl()[0].textContent===want+' · '+T('in_preparation')&&PLANNED.every((c,k)=>partOf(next+k)===PARTS.length-1),'the chapters in preparation stand in the last part as one line: '+(pl()[0]&&pl()[0].textContent));
+      ok(pl().length===1&&last().contains(pl()[0])&&pl()[0].textContent===want+' · '+T('in_preparation')&&!ov.querySelector('.chs [data-ch="24"]')&&PLANNED.every((c,k)=>partOf(next+k)===PARTS.length-1),'named as planned, chapters stand in the last part as one line, and are not listed: '+(pl()[0]&&pl()[0].textContent));
       {const gone=PLANNED.splice(0,PLANNED.length-1);ov.draw();await fade();
         ok(pl().length===1&&pl()[0].textContent===T(PLANNED[0].label)+' \u00b7 '+T('in_preparation'),'with one chapter left in preparation the line names it: '+(pl()[0]&&pl()[0].textContent));
         const rest=PLANNED.splice(0);ov.draw();await fade();ok(!pl().length,'with none left the line is gone');
@@ -2454,6 +2471,8 @@
       last().querySelector('.grp').click();await wait(400);const p=pl()[0];
       ok(seen(p)&&inBox(p)&&getComputedStyle(p).cursor==='default','its part open, the line is seen, and it is not offered as a choice');
       p.click();await wait(300);ok(ov.classList.contains('title')&&!G.room&&last().classList.contains('open'),'a click on it starts nothing and closes nothing');
+      PLANNED.length=0;ov.draw();await fade();
+      ok(!pl().length&&last().classList.contains('open')&&seen(last().querySelector('[data-ch="25"]')),'with nothing in preparation the last part, open, lists the chapters to the twenty-fifth');
       halt('plans',noBlink);
       partOpen=null;ov.draw();await fade()}
   }
@@ -4476,7 +4495,7 @@
   window.say=function(a,t,o){if(!a&&typeof t==='string'&&!(o&&o.plain))toldN[t]=(toldN[t]||0)+1;return say0.apply(this,arguments)};
   heard.length=0;
   if(C15){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans'),plan=l.querySelector('.plan');
-    ok(chs.length>=15&&chs[14].dataset.ch==='15'&&chs[14].textContent.includes(T('chapter_fifteen'))&&chs[14].textContent.includes(T('until_daybreak_2'))&&!!plans&&!plan,'the title lists Until Daybreak as the fifteenth chapter, and the chapters in preparation after the last one built')}
+    ok(chs.length>=15&&chs[14].dataset.ch==='15'&&chs[14].textContent.includes(T('chapter_fifteen'))&&chs[14].textContent.includes(T('until_daybreak_2'))&&!plans&&!plan,'the title lists Until Daybreak as the fifteenth chapter, and no chapter is in preparation')}
   (C15?chLine(15):ov).click();
   await when(()=>G.ch===15&&SHARED.map&&G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===7&&SHARED.map.state.legs.every(l=>l.k===1),3000);
   ok(G.ch===15&&G.scene===SHARED.map.draw,'chapter fifteen opens on the map: from Ephesus to Macedonia and on to Greece (Acts 20:1-3)');road(7,'the road of the opening');halt('open15');
@@ -4961,8 +4980,8 @@
     walkTo=async(x,y)=>{const p=PC();walk(p,x,y);for(let i=0;i<900&&(p.walk||!G.busy&&false);i++)await wait(25);await idle()};
   heard.length=0;
   if(C17){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
-    const c17=chs.find(c=>c.dataset.ch==='17');ok(c17&&c17.textContent.includes(T('chapter_seventeen'))&&c17.textContent.includes(T('the_belt_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
-      'the title lists Chapter Seventeen, The Belt, and the chapters in preparation begin with the twenty-fourth')}
+    const c17=chs.find(c=>c.dataset.ch==='17');ok(c17&&c17.textContent.includes(T('chapter_seventeen'))&&c17.textContent.includes(T('the_belt_2'))&&!PLANNED.length&&!plans,
+      'the title lists Chapter Seventeen, The Belt, and no chapter is in preparation')}
   (C17?chLine(17):ov).click();
   await until(()=>G.ch===17&&G.room==='patara17'&&!G.busy,4000);note();
   const LK=A('luke17'),AK=A('akestor17'),MO=A('moschos17'),KA=A('kallikrates17'),SO=A('sostratos17'),BU=A('butcher17'),MY=A('myrto17'),PN=A('phanias17'),JO=A('joezer17'),
@@ -5127,8 +5146,8 @@
     code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
   if(C18){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
-    {const c18=chs.find(c=>c.dataset.ch==='18');ok(c18&&c18.textContent.includes(T('chapter_eighteen'))&&c18.textContent.includes(T('on_the_stairs_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
-      'the title lists Chapter Eighteen, On the Stairs, and the chapters in preparation begin with the twenty-fourth')}}
+    {const c18=chs.find(c=>c.dataset.ch==='18');ok(c18&&c18.textContent.includes(T('chapter_eighteen'))&&c18.textContent.includes(T('on_the_stairs_2'))&&!PLANNED.length&&!plans,
+      'the title lists Chapter Eighteen, On the Stairs, and no chapter is in preparation')}}
   (C18?chLine(18):ov).click();
   await until(()=>G.ch===18&&G.room==='mnason18'&&!G.busy,4000);note();
   const MN=A('mnason_18'),JA=A('james18'),TR=A('troph18'),CY=A('cyrene18'),GR=A('greek18'),LV=A('levite18'),CM=A('commander18'),OF=A('officer18'),S1=A('sol18a'),BA=A('barber18');
@@ -5306,8 +5325,8 @@
     code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
   if(C19){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],last=chs.at(-1),plans=l.querySelector('.plans');
-    {const c19=chs.find(c=>c.dataset.ch==='19');ok(c19&&c19.textContent.includes(T('chapter_nineteen'))&&c19.textContent.includes(T('the_sisters_son_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
-      'the title lists Chapter Nineteen, The Sister\'s Son, and the chapters in preparation begin with the twenty-fourth')}}
+    {const c19=chs.find(c=>c.dataset.ch==='19');ok(c19&&c19.textContent.includes(T('chapter_nineteen'))&&c19.textContent.includes(T('the_sisters_son_2'))&&!PLANNED.length&&!plans,
+      'the title lists Chapter Nineteen, The Sister\'s Son, and no chapter is in preparation')}}
   (C19?chLine(19):ov).click();
   await until(()=>G.ch===19&&G.room==='council19'&&!G.busy,6000);note();
   const NE=A('nephew19'),SI=A('sister19'),AN=A('ananias19'),PH=A('phar19b'),SA=A('sad19a'),SE=A('sentry19'),GD=A('guard19'),OS=A('oil19'),FX=A('felix19'),M=C().map,X=C().X,Y=C().Y;
@@ -5492,8 +5511,8 @@
       await until(()=>C().season()===n&&(!G.busy||$('#choices').classList.contains('on'))&&!(+$('#dim').style.opacity),9000);note()};
   heard.length=0;
   if(C20){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
-    {const c=chs.find(c=>c.dataset.ch==='20');ok(c&&c.textContent.includes(T('chapter_twenty'))&&c.textContent.includes(T('some_other_time_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
-      'the title lists Chapter Twenty, Some Other Time, and the chapters in preparation begin with the twenty-fourth')}}
+    {const c=chs.find(c=>c.dataset.ch==='20');ok(c&&c.textContent.includes(T('chapter_twenty'))&&c.textContent.includes(T('some_other_time_2'))&&!PLANNED.length&&!plans,
+      'the title lists Chapter Twenty, Some Other Time, and no chapter is in preparation')}}
   (C20?chLine(20):ov).click();
   await until(()=>G.ch===20&&G.room==='court20'&&!G.busy,9000);note();
   const FX=A('felix20'),DR=A('drusilla20'),TT=A('tertullus20'),AN=A('ananias20'),CK=A('clerk20'),SO=A('soldier20'),OF=A('officer20'),PH=A('philip20'),SI=A('simmias20'),PD=A('phaidros20'),LK=A('luke20');
@@ -5676,8 +5695,8 @@
     code=async(what,fn)=>{const cd=makeCode();await enter(cd);ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
   if(C21){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
-    {const c=chs.find(c=>c.dataset.ch==='21');ok(c&&c.textContent.includes(T('chapter_twenty_one'))&&c.textContent.includes(T('to_caesar_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
-      'the title lists Chapter Twenty-One, To Caesar, and the chapters in preparation begin with the twenty-fourth')}}
+    {const c=chs.find(c=>c.dataset.ch==='21');ok(c&&c.textContent.includes(T('chapter_twenty_one'))&&c.textContent.includes(T('to_caesar_2'))&&!PLANNED.length&&!plans,
+      'the title lists Chapter Twenty-One, To Caesar, and no chapter is in preparation')}}
   (C21?chLine(21):ov).click();
   await until(()=>G.ch===21&&G.room==='court21'&&!G.busy,6000);note();
   const CL=A('clerk21'),FS=A('festus21'),AG=A('agrippa21'),BE=A('bernice21'),GU=A('guard21'),R=C().report,MK=C().marks;
@@ -5929,8 +5948,8 @@
     code=async(what,fn)=>{const cd=makeCode();await enter(cd);for(let i=0;i<40&&(G.busy||ov.classList.contains('on'));i++){if(G.skip)G.skip();await wait(50)}await idle();ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
   if(C22){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
-    {const c=chs.find(c=>c.dataset.ch==='22');ok(c&&c.textContent.includes(T('chapter_twenty_two'))&&c.textContent.includes(T('euroaquilo_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
-      'the title lists Chapter Twenty-Two, Euroaquilo, and the chapters in preparation begin with the twenty-fourth')}}
+    {const c=chs.find(c=>c.dataset.ch==='22');ok(c&&c.textContent.includes(T('chapter_twenty_two'))&&c.textContent.includes(T('euroaquilo_2'))&&!PLANNED.length&&!plans,
+      'the title lists Chapter Twenty-Two, Euroaquilo, and no chapter is in preparation')}}
   (C22?chLine(22):ov).click();
   await until(()=>G.ch===22&&G.room==='quay22'&&!G.busy,6000);note();
   const LK=A('luke22'),AR=A('aris22'),JU=A('julius22'),GU=A('guard22'),SA=A('sail22a'),SB=A('sail22b'),SC=A('sail22c'),SD=A('sail22d'),PI=A('pilot22'),OW=A('owner22');
@@ -6213,8 +6232,8 @@
     seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
   heard.length=0;
   if(C23){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
-    {const c=chs.find(c=>c.dataset.ch==='23');ok(c&&c.textContent.includes(T('chapter_twenty_three'))&&c.textContent.includes(T('all_safe_to_land_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
-      'the title lists Chapter Twenty-Three, All Safe to Land, and the chapters in preparation begin with the twenty-fourth')}}
+    {const c=chs.find(c=>c.dataset.ch==='23');ok(c&&c.textContent.includes(T('chapter_twenty_three'))&&c.textContent.includes(T('all_safe_to_land_2'))&&!PLANNED.length&&!plans,
+      'the title lists Chapter Twenty-Three, All Safe to Land, and no chapter is in preparation')}}
   (C23?chLine(23):ov).click();
   await until(()=>G.ch===23&&G.room==='stern23'&&!G.busy,6000);note();
   const LK=A('luke23'),SA1=A('sailor23a'),JU=A('julius23'),OLD=A('oldman23'),EL=A('elder23'),PU=A('publius23'),FA=A('father23'),IS4=A('islander23c');
@@ -6417,10 +6436,8 @@
     window.showCard=sc;halt('carry')}
   /* ==== CHAPTER TWENTY-FOUR: begin ==== Chapter Twenty-Four's own stops: whoever builds the chapter extends this section, and nothing outside it
      but its line in TSTEPS, the chain of the full run (ch24 after ch23) and the title checks of the chapters before it. */
-  /* Chapter Twenty-Four stops start Chapter Twenty-Four from the title screen. FOR NOW, while PLANNED still names it and the title does not
-     list it (building, index.html), they start it as the title's entry would, with startChapter(24); once it is listed, its entry is
-     clicked. The full run is to call its test when Chapter Twenty-Three has ended (LOGIC24 for the lead: chain ch24() and ch25() after ch23()
-     in the full run once Chapter Twenty-Three's end screen leads on). all24 halts nowhere. Its halts: quay24 (the quay of Malta, Luke) ·
+  /* Chapter Twenty-Four stops start Chapter Twenty-Four from the title screen, by a click on its entry. The full run calls its test
+     when Chapter Twenty-Three has ended, whose end screen leads on to it. all24 halts nowhere. Its halts: quay24 (the quay of Malta, Luke) ·
      court24 (Puteoli, the news for Rome) · capua24 (the carter played) · canal24 (the trader played, at dusk) · dawn24 (the boatman at the
      Marketplace at daybreak) · stones24 (Sextus has learned the stones) · rome24 (Vibia's house) · board24 (the board) · hills24 (the road,
      Paul in step) · marsh24 (weary) · meet24 (28:15) · taverns24 · far24 · capena24 · camp24 · lane24 · look24 (the small room) · final24
@@ -6482,8 +6499,8 @@
         pe('pointerdown');pe('pointerup');vp.dispatchEvent(new MouseEvent('click',{clientX:cx,clientY:cy,bubbles:true}))}else view(x,y);await idle()};
   if(/^(beatwalk24|phonewalk24)$/.test(stop)){const ph=stop==='phonewalk24';await loadLevel(24);if(ph){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120)}
     G.speedAll=500;await open24(up24('onroad'),'hills24');await till24(()=>B24());const b=B24(),C=CHAP[24],MK=C.marks,SO=ACT.sold24a;
-    ok(G.room==='hills24'&&PC()===P&&b&&b.room==='hills24'&&b.sticky&&b.period===Math.round(C.beat.period*.3)&&b.need===Math.round(C.beat.need*.3)&&C.phase()==='road'&&Math.abs(P.x-MK[0][0])<1&&!P.chained,
-      'the road: Paul in step beside a soldier, unchained; the beat runs from the room, one bar of the music long, shortened under the playtest ('+b.period+' ms, a pause of '+b.pause+', a step of '+b.need+')');
+    ok(G.room==='hills24'&&PC()===P&&b&&b.room==='hills24'&&b.sticky&&b.period===Math.round(C.beat.period*.3)&&b.need===Math.round(C.beat.need*.3)&&b.sound&&b.kind==='step'&&!CHAP[24].music.tracks.some(t=>t.drum&&(t.moods||[]).includes('walk'))&&C.phase()==='road'&&Math.abs(P.x-MK[0][0])<1&&!P.chained,
+      'the road: Paul in step beside a soldier, unchained; the beat runs from the room and sounds the step itself (the road\'s music keeps no drum beside it), one bar of the music long, shortened under the playtest ('+b.period+' ms, a pause of '+b.pause+', a step of '+b.need+')');
     ok(C.music.dt*C.music.steps*1000===C.beat.period,'the beat of the walk is the bar of the music ('+C.beat.period+' ms)');
     {const W=ROOMS.hills24.walk;ok(W[0]===W[1]&&W[2]===W[3],'in step, the floor is his own place: only the road ahead moves him')}
     await tap24('road_ahead',ph,calm24);ok(G.mark24===1&&Math.abs(P.x-MK[1][0])<1&&Math.abs(SO.x-MK[1][0]-16)<1&&b.misses===0,'a step while the soldier\'s foot is up: Paul and the column go on to the next mark');
@@ -6520,11 +6537,10 @@
   /* the roads this chapter draws on the map, for the finale's table (malta, syracuse, rhegium, puteoli, capua, appius, threetaverns, rome) */
   const ROADS24=[];{const M=await need('map'),j=M.journey,g=M.go;if(!M.journey.rec24){M.journey=async(r,o)=>{for(const[a,b,k]of r)if(/new/.test(k||''))ROADS24.push(a+'-'+b);return j(r,o)};M.journey.rec24=1;
       M.go=async(a,b)=>{ROADS24.push(a+'-'+b);return g(a,b)}}}
-  /* FOR NOW: while the line "in preparation" still names Chapter Twenty-Four, the title does not list it; when its entry leaves PLANNED at
-     the end, this check becomes the usual one (the title lists Chapter Twenty-Four, He Took Courage) */
-  if(C24){const l=ov.querySelector('.chs'),plans=l.querySelector('.plans');
-    ok(!l.querySelector('[data-ch="24"]')&&building(24)&&plans&&plans.textContent.includes(T('twenty_four')),'FOR NOW: the title does not list Chapter Twenty-Four while the line of the chapters in preparation still names it')}
-  if(C24){const e=document.querySelector('#overlay [data-ch="24"]');if(e)e.click();else startChapter(24)}else ov.click();
+  if(C24){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
+    {const c=chs.find(c=>c.dataset.ch==='24');ok(c&&c.textContent.includes(T('chapter_twenty_four'))&&c.textContent.includes(T('he_took_courage_2'))&&!PLANNED.length&&!plans,
+      'the title lists Chapter Twenty-Four, He Took Courage, and no chapter is in preparation')}}
+  (C24?chLine(24):ov).click();
   await until(()=>G.ch===24&&G.room==='quay24'&&!G.busy,6000);note();
   const LK=A('luke24'),AR=A('aris24'),JU=A('julius24'),SO=A('sold24a'),SL=A('sailor24'),HE=A('host24'),CA=A('carter24'),TR=A('trader24'),BO=A('boatman24'),DE=A('sextus24'),
     MI=A('mikon24'),VI=A('vibia24'),AE=A('aemilia24'),PO=A('postumus24'),FI=A('firmus24'),TH=A('thallos24'),IK=A('inn24'),GW=A('watch24'),LL=A('landlord24'),MSG=C().msg,H=C().hand;
@@ -6622,8 +6638,11 @@
   await hints('hint_in_step_1','hint_in_step_2','in the hills');
   heard.length=0;await onH('paving','look');ok(said('stone_fitted_to_stone_without_a_seam'),'the paving, before he is weary: stone fitted to stone');
   await till24(()=>B24());
-  for(let s=0;s<3;s++){for(let m=1;m<=4;m++)await tap24('road_ahead',0,calm24);
-    if(s<2){await until(()=>G.room==='marsh24'&&F['s'+(s+1)]&&!G.busy,6000)}}
+  /* a tap that comes late on a slow machine is only a missed step (it costs that step and nothing else), so the playthrough taps until the
+     stretch is walked, and does not count on four taps being four hits */
+  for(let s=0;s<3;s++){const f='s'+(s+1);
+    for(let n=0;n<60&&!F[f];n++){if(!B24()||G.busy){await wait(40);continue}await tap24('road_ahead',0,calm24);await till24(()=>!G.busy,300)}
+    if(s<2){await until(()=>G.room==='marsh24'&&F[f]&&!G.busy,6000)}}
   await until(()=>G.room==='appius24'&&F.met&&!G.busy,15000);note();
   ok(said('paul_lxi_sixty_one_miles_to_rome')&&said('paul_lii_fifty_two')&&said('paul_forty_seven')&&said('paul_frogs_gnats_bad_water')&&said('paul_onward_weary'),'three stretches, each to its stone (LXI, LII, XLVII); his lines grow shorter');
   {const l=[T('paul_lxi_sixty_one_miles_to_rome'),T('paul_lii_fifty_two'),T('paul_forty_seven')].map(s=>s.length);ok(l[0]>l[1]&&l[1]>l[2],'shorter each time: '+l)}
@@ -6688,8 +6707,8 @@
   /* ==== CHAPTER TWENTY-FOUR: end ==== */
   /* ==== CHAPTER TWENTY-FIVE: begin ==== Chapter Twenty-Five's own stops: whoever builds the chapter extends this section, and nothing outside it
      but its line in TSTEPS, the chain of the full run (ch25 after ch24) and the title checks of the chapters before it. */
-  /* Chapter Twenty-Five stops start Chapter Twenty-Five from the title screen (nothing carried: it is played in the flat), as the title's
-     entry would (FOR NOW by startChapter(25), as for Chapter Twenty-Four); in the full run its test follows Chapter Twenty-Four's, which has
+  /* Chapter Twenty-Five stops start Chapter Twenty-Five from the title screen (nothing carried: it is played in the flat), by a click on its
+     entry; in the full run its test follows Chapter Twenty-Four's, which has
      opened it with the room at street level carried in. all25 halts nowhere. Its halts, one at least for each watch: knock25 (the first
      watch: the leading men at the door, the soldier by the window) · men25 (the leading men on the benches) · day25 (the day of 28:23, its
      first hour) · night25 (the evening told, the soldier's question) · philippi25 (the third watch: Timothy with the pen, Luke writing) ·
@@ -6775,10 +6794,10 @@
     door=()=>F.street?'doorway':'door',chs=()=>$('#choices').classList.contains('on'),
     far=()=>said('paul_the_chain_doesnt_reach')||said('paul_the_chain_doesnt_reach_i_could_ask'),LB=()=>C().labels;
   heard.length=0;
-  /* FOR NOW, as for Chapter Twenty-Four: when its entry leaves PLANNED, the usual check (the title lists Chapter Twenty-Five) */
-  if(C25){const l=ov.querySelector('.chs'),plans=l.querySelector('.plans');
-    ok(!l.querySelector('[data-ch="25"]')&&building(25)&&plans&&plans.textContent.includes(T('twenty_five')),'FOR NOW: the title does not list Chapter Twenty-Five while the line of the chapters in preparation still names it')}
-  if(C25){const e=document.querySelector('#overlay [data-ch="25"]');if(e)e.click();else startChapter(25)}
+  if(C25){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
+    {const c=chs.find(c=>c.dataset.ch==='25');ok(c&&chs.at(-1)===c&&c.textContent.includes(T('chapter_twenty_five'))&&c.textContent.includes(T('without_hindrance_2'))&&!PLANNED.length&&!plans,
+      'the title lists Chapter Twenty-Five, Without Hindrance, as its last chapter, and no chapter is in preparation')}
+    chLine(25).click()}
   await until(()=>G.ch===25&&G.room==='lodging25'&&!G.busy,9000);note();
   const FV=A('fulvius25'),FI=A('valens25'),BA=A('bassus25'),MA=A('macer25'),CE=A('celer25'),TM=A('timothy25'),LK=A('luke25'),SP=A('jew25b'),TY=A('tychicus25'),ON=A('onesimus25');
   {const v=ART.lodging25.variant(),c5=C(),M=c5.music;

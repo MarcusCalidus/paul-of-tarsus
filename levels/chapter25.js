@@ -137,7 +137,7 @@ const stools25=()=>watch25()===7?['desk']:undefined;
    street level when the flag street is set (carried in from Chapter Twenty-Four); the hour is the watch's (hour25). Its light is the hour's
    (sun through the window, or at night the lamp in its niche), its props the table and the stools, its footprints the room's own things
    (ROOMS.lodging25.block). Drawn here: the chain between Paul and the soldier (custody.chains, the long chain), in the fourth watch the cat
-   asleep on it, in the third Luke's roll on the bench beside him (ART-TODO: a placeholder), and in the last watch the soldier's stool where
+   asleep on it, in the third Luke's roll on the bench beside him (roll25), and in the last watch the soldier's stool where
    he has it (custody.stool).
    Places (SHARED.lodging.POS and AT, the same in both variants): the soldier's seats door 238,114 · table 170,121 · window 138,102 (on the
    bench); the desk 98,121 (Paul's stool at the table's left end, facing right); the door's foot 266,108; benches 72..148 and 158..226 (feet
@@ -158,41 +158,256 @@ function draw25(g,t){const S=SO25();
   if(watch25()===4&&P.room==='lodging25'&&P.chained){const pa=CU.path(P,S),f=pa&&pa.floor;if(f&&f.length>8){const q=f[Math.floor(f.length*.45)];G.cat25=[q[0],q[1]+.4];SHARED.cast.cat(g,q[0],q[1]+.4,{room:'lodging25'})}}
   if(watch25()===3&&LK.room==='lodging25')roll25(g);
   if(watch25()===7&&!S.pose){LG.stoolCast(g,STOOL25[0],STOOL25[1],{hour:hour25()});CU.stool(g,STOOL25[0],STOOL25[1],{room:'lodging25'})}}
-/* Luke's roll (ART-TODO): a roll of papyrus lying on the bench beside him, its near end toward us as a face, nothing tied round it */
-function roll25(g){const x=ROLL25.x,y=ROLL25.y;depth(102.2,()=>{R(g,x,y,10,3,'#d8c89c');R(g,x,y,10,.8,'#f2e6c4');R(g,x,y+2.4,10,.6,'rgba(90,70,40,.4)');R(g,x+8.6,y,1.8,3,'#b8a478');R(g,x+9,y+.8,1,1.4,'#8a7650')})}
+/* Luke's roll: a roll of papyrus lying on its side on the seat of bench 1, beside him to his left, its axis along the bench. Of its two
+   ends we see the right one, toward him and toward us, as a face: a pale end of rolled sheets with the dark of its hollow middle, square,
+   for a round under a pixel comes out as a plus sign; the left end is only the roll's own rounded outline, in the tones of its side.
+   A sheet comes off a roll across its axis, never along it, so the part he has just written lies unrolled toward us: it comes from under
+   the roll, as wide as the roll is long (so that roll and sheet never stand as a T), over the seat's front edge, and hangs down the front
+   of the seat, its written side out, two short level lines of writing on it that stop short of its edges. Nothing is tied round the roll and no rod stands out of it. It lies on the seat (its foot at 92.7, the
+   seat's top 91.8 to 93), with a seam of shade under it and its small shadow thrown the way the room's sun throws shadows, at the bench's
+   depth (102.2). Its tones are the bench's own light at the hour (rollLit25: the seat's color in the baked room, against the seat's
+   paint), so it sits in the flat and in the room at street level alike. */
+const RLIT25={};
+function rollLit25(){const k=ART.lodging25.variant();if(RLIT25[k])return RLIT25[k];
+  const c=bg('lodging25'),q=c.getContext('2d'),d=q.getImageData(Math.round(128*HR),Math.round(92.3*HR),Math.round(14*HR),1).data,s=[0,0,0];
+  for(let i=0;i<d.length;i+=4){s[0]+=d[i];s[1]+=d[i+1];s[2]+=d[i+2]}const n=d.length/4,b=hex(tint('#6e5034',.18));
+  return RLIT25[k]=s.map((v,i)=>clamp(v/n/b[i],.2,1))}
+function roll25(g){const x=ROLL25.x,L=rollLit25(),c=(h,a)=>{const p=hex(h);return rgba(toHex(...p.map((v,i)=>clamp(v*L[i],0,255))),a==null?1:a)},
+    S=(LG.light(kind25(),hour25()).sun)||[0,8,.3],sx=S[0]/46*2.8,sy=S[1]/46*2.8,
+    y1=92.7,d=2.8,y0=y1-d,xf=x+.3,xn=x+9.6,cy=y1-d/2;
+  depth(102.2,()=>{
+    /* its shadow on the seat, soft, the way the sun falls; and the seam of shade where it lies */
+    comp(g,'multiply',.5,()=>poly(g,[xf+.6,y1-.2,xn,y1-.2,xn+sx,y1+Math.min(.25,sy*.1),xf+.6+sx,y1+Math.min(.25,sy*.1)],c('#7a6656')));
+    R(g,xf+.4,y1-.35,xn-xf,.5,c('#2a1a10',.55));
+    /* the sheet he has just written, as wide as the roll is long, hanging over the seat's front edge, its written side toward us */
+    const s0=xf+.1,s1=xn+.8;poly(g,[s0,y1-.4,s1,y1-.4,s1+.1,94.7,s1-1.4,95.05,s0+3.6,94.9,s0+1.2,95.1,s0-.1,94.8]);g.fillStyle=lg(g,0,y1,0,95,[c('#ead9b0'),c('#d4be8c'),c('#bea472')]);g.fill();
+    R(g,s0,y1-.4,s1-s0,.45,c('#f8ecca',.7));R(g,s0+.1,94.5,s1-s0-.2,.45,c('#6a5030',.3));R(g,s1-.5,y1,.5,2,c('#6a5030',.25));
+    R(g,s0+1.8,93.6,5.2,.36,c('#4a3018',.8));R(g,s0+1.8,94.4,3.2,.36,c('#4a3018',.8));
+    /* the roll: its side round across, lit from above, its far end only its rounded outline */
+    const P=[xf+.9,y0,xn,y0,xn,y1,xf+.9,y1,xf+.2,y1-.5,xf,cy,xf+.2,y0+.5];poly(g,P);g.fillStyle=lg(g,0,y0,0,y1,[c('#f0e2bc'),c('#e0cc9c'),c('#c0a676'),c('#866c42')]);g.fill();
+    R(g,xf+1,y0+.5,xn-xf-1.6,.4,c('#fff8e0',.6));R(g,xf+.6,y1-.5,xn-xf-.6,.5,c('#5a4220',.55));
+    /* the seam of shade where the roll's underside meets the sheet that comes from under it */
+    R(g,xf+.4,y1,xn-xf+.4,.45,c('#4a3418',.45));
+    /* the near end: the face, a little paler than the side, the hollow in its middle a small dark square */
+    R(g,xn-.9,y0,.7,d,c('#9a7e50',.55));R(g,xn-.2,y0+.15,1.1,d-.3,c('#f4e8c8'));R(g,xn+.15,cy-.3,.5,.6,c('#4a3418'));R(g,xn+.9,y0+.4,.35,d-.8,c('#7a6440',.6))})}
 const ROLL25={x:114,y:90.6};
 const SEATP25=LG.POS.benches.map(b=>({y:b.foot,shape(){},foot:[b.x0,b.foot-4,b.x1-b.x0,5],seat:1}));
 /* ==== ART lodging25: end ==== */
 
 /* ==== ART sheet25: begin ==== */
-/* The sheet on the table, close (ART-TODO: a placeholder; the finished picture follows the close-view standard of Chapters Thirteen and
-   Fourteen): one sheet of papyrus, its fibers running across, lying on the table's dark wood; at its lower right the pen and the inkwell
-   (its mouth a small square); Paul's hand at the sheet's left edge. On the sheet the lines of the letter to Philemon written so far (G.pm25),
-   in the player's language, in the letter's order, made to fit (fit25). No ruled line meets a margin; nothing is tied or sealed.
-   Hotspots: the sheet 60,10,200,120 · back to the room 0,134,120,10. Walk: none (a close view). */
+/* The sheet on the table, close, at noon in the fourth watch (the close-view standard of Chapters Thirteen, Fourteen and Twenty; the
+   light of the day from the window, at the upper left). The table's wood is dark and fine-grained, its grain running one way, quiet; it
+   is one broad board here, so that no seam meets the sheet, the hand or the inkwell. The sheet of papyrus (SH25) lies on it with a soft
+   shadow to the right and down: its outline a little uneven and frayed where the fibers end, its fibers running across only, as strips
+   of their own tone and fine threads that stop and start; inside the box of the writing (x 72..248, y 13..131) the threads are fewer and
+   fainter and no stain lies, so that nothing competes with the letters. Nothing is ruled.
+   Paul's left hand holds the sheet still (paulHand25): seen from above, the back of the hand toward us, it lies over the sheet's lower
+   left corner, the forearm coming in from the lower edge of the picture, the fingers relaxed and pointing away to the upper left, onto
+   the wood beside the sheet; the thumb lies on the sheet along its left margin, parallel to the edge, pointing up, its nail toward us.
+   So the sheet's left edge shows only above the thumb and its lower edge only to the right of the forearm: neither crosses anything, and
+   the hand stays out of the box of the writing. No arm reaches across the sheet. The hand is placed by hand, each part at its own size,
+   and set in a short scale of skin tones made from Paul's own, with the backdrops' dither, lit from the upper left.
+   At the sheet's lower right, on the table: the inkwell, a squat pot of red clay seen a little from above, its mouth a small square with
+   the ink dark in it (ink25); and the reed pen lying beside it, slanting, its cut point toward the sheet, wet with ink, crossing nothing
+   (pen25). Nothing is tied or sealed.
+   On the sheet the lines of the letter to Philemon written so far (G.pm25), in the player's language, in the letter's order, made to fit
+   (fit25, drawSheet25). Called from outside: ART.sheet25 (and letters25 uses table25, papyrus25, light25).
+   Hotspots: the sheet 60,6,200,124 · back to the room 0,134,120,10. Walk: none (a close view). */
 const FONT25=z=>`${z}px Georgia,"Times New Roman",serif`;
+const SH25={x0:62,x1:258,y0:6,y1:137};
 ART.sheet25={w:320,q:12,paint(g){paintSheet25(g)},light:null,draw(g){drawSheet25(g)},front(){}};
-function paintSheet25(g){R(g,0,0,320,144,'#3a2616');for(let y=0;y<144;y+=3)R(g,0,y,320,1,'rgba(20,10,4,.25)');
-  R(g,64,8,192,128,'#d8c89a');for(let y=10;y<134;y+=1.4)R(g,64,y,192,.4,'rgba(140,110,60,.12)');
-  R(g,268,108,8,8,'#2a1a10');R(g,270,110,4,4,'#08060a');R(g,262,98,26,1.2,'#5a3a1a')}
+function paintSheet25(g){const{x0,x1,y0,y1}=SH25;
+  table25(g,rng(2503));
+  /* the sheet's soft shadow on the wood, a little to the right and down, away from the light */
+  for(const[d,a]of[[6,.07],[3.6,.12],[2,.18],[.8,.22]]){g.fillStyle=`rgba(10,5,2,${a})`;g.fillRect(x0-d+2.4,y0-d+2.8,x1-x0+d*2,y1-y0+d*2)}
+  papyrus25(g,SH25,rng(2501),rng(2502),{calm:[70,11,180,123]});
+  ink25(g,289,108);pen25(g);paulHand25(g);
+  light25(g,90)}
+/* table25: the table's dark wood, one broad board, its grain fine and running across, in long waves that never cross; a soft sheen
+   where the light from the window falls on it */
+function table25(g,r){const W='#3e2818';g.fillStyle=lg(g,0,0,0,144,[tint(W,.06),W,tint(W,-.08)]);g.fillRect(0,0,320,144);
+  tex(g,'wood',.2,0,0,320,144,'overlay',.5);
+  for(let y=-2;y<146;y+=.6+r()*1.1){const col=r()<.6?rgba(tint(W,-.4),.1+r()*.14):rgba(tint(W,.26),.05+r()*.07),p=[],f=.012+r()*.02,ph=r()*6,a=.4+r()*.8,x0=-4+r()*300,l=30+r()*140;
+    for(let x=x0;x<=x0+l;x+=3)p.push(x,y+a*Math.sin(x*f+ph));stroke(g,p,col,.5)}
+  tex(g,'mott',.16,0,0,320,144,'overlay',.9);pool(g,40,20,150,40,'#c89068',.07,'screen');pool(g,300,140,110,14,'#2a1408',.25,'multiply')}
+/* papyrus25: a sheet of papyrus in the rectangle S: its frayed outline, fibers across only, a little darker toward its edges, a few faint
+   old stains away from the writing; o.calm: the box of the writing, where the fibers are fainter and no stain lies. Returns its outline */
+function papyrus25(g,S,r,q,o){o=o||{};const{x0,x1,y0,y1}=S,E=[],j=(a,i)=>a*(Math.sin(i*.37+Math.sin(i*.13)*2)*.35+(q()-.5)*.7),[cx,cy,cw,ch]=o.calm||[0,0,0,0],
+    inCalm=(x,y)=>x>cx&&x<cx+cw&&y>cy&&y<cy+ch,th=o.thr||1;
+  const Tp=[],Rp=[],Bp=[],Lp=[];
+  if(o.fold){Tp.push(x0,y0+1.2,x0+.4,y0+.4,x0+1.2,y0);Tp.push(x1-3,y0);Tp.push(x1-1.2,y0,x1-.4,y0+.4,x1,y0+1.2)}
+  else for(let x=x0,i=0;x<=x1;x+=2,i++)Tp.push(x,y0+j(.45,i));for(let y=y0,i=0;y<=y1;y+=2,i++)Rp.push(x1+j(.35,i),y);
+  for(let x=x1,i=0;x>=x0;x-=2,i++)Bp.push(x,y1+j(.45,i));for(let y=y1,i=0;y>=y0;y-=2,i++)Lp.push(x0+j(.35,i),y);E.push(...Tp,...Rp,...Bp,...Lp);
+  clipTo(g,()=>poly(g,E),()=>{g.fillStyle=lg(g,x0,y0,x1,y1,['#efe3bf','#e5d5aa','#d8c492']);g.fillRect(x0-2,y0-2,x1-x0+4,y1-y0+4);
+    /* the strips, laid side by side: tones, not lines */
+    for(let y=y0-1;y<y1+1;){const hh=.8+r()*3.2;R(g,x0-2,y,x1-x0+4,hh,r()<.5?`rgba(146,112,56,${.025+r()*.035})`:`rgba(255,248,220,${.04+r()*.05})`);y+=hh}
+    /* fine threads that stop and start, all across */
+    for(let i=0;i<(x1-x0)*(y1-y0)/80;i++){const y=y0+q()*(y1-y0),x=x0-2+q()*(x1-x0),l=4+q()*26,k=(inCalm(x+l/2,y)?.45:1)*th;
+      R(g,x,y,l,.5,q()<.55?`rgba(120,90,44,${.085*k})`:`rgba(255,250,228,${.15*k})`)}
+    tex(g,'mott',.14,x0,y0,x1-x0,y1-y0,'overlay',.8);tex(g,'grain',.06,x0,y0,x1-x0,y1-y0,'overlay',.5);
+    /* a few faint old stains, only in the margins */
+    for(let k=0;k<9;k++){const t=k%3,px=t===0?x0+3+r()*(cx-x0-4):t===1?cx+cw+1+r()*Math.max(1,x1-cx-cw-3):x0+r()*(x1-x0),py=t===2?y0+1+r()*Math.max(1,cy-y0-2):y0+r()*(y1-y0);
+      if(cw&&!inCalm(px,py))pool(g,px,py,2+r()*4,1.4+r()*2.4,'#a8844a',.06+r()*.07,'multiply')}
+    ao(g,x0,y0,x1-x0,5,'t',.12,'#6e4c1e');ao(g,x0,y1-7,x1-x0,8,'b',.16,'#6e4c1e');ao(g,x1-6,y0,6,y1-y0,'r',.15,'#6e4c1e');ao(g,x0,y0,4,y1-y0,'l',.08,'#6e4c1e')});
+  /* its edges: lit on the side toward the light, a fine dark line where it lies on the wood on the other */
+  if(!o.fold)stroke(g,Tp,'rgba(255,246,214,.7)',.5);stroke(g,Lp,'rgba(255,246,214,.45)',.5);stroke(g,Rp.concat(Bp),'rgba(40,22,8,.35)',.5);return E}
+/* light25: the light of the day from the window at the upper left: warm on the near side, falling off to the right and down */
+function light25(g,lx){comp(g,'soft-light',.3,()=>{g.fillStyle=lg(g,0,0,320,144,['rgba(255,220,170,1)','rgba(255,220,170,.2)','rgba(150,140,186,.55)']);g.fillRect(0,0,320,144)});
+  comp(g,'multiply',.22,()=>{g.fillStyle=rg(g,lx,50,300,['#ffffff','#f2e8e0','#9c94b2']);g.fillRect(0,0,320,144)})}
+/* ink25: the inkwell, its foot at the middle of its base ellipse x, y: a squat pot of red clay seen a little from above, its body swelling
+   below a rounded shoulder that draws in to a flat top; in the top a small square mouth with a raised square lip, the ink dark in it */
+function ink25(g,x,y){const rx=11,ry=5.6,h=10,C='#8a5232',f=t=>t<.08?.84+t*1.4:t<.5?.95+.05*Math.sin((t-.08)/.42*Math.PI/2):1-.32*Math.pow((t-.5)/.5,1.6),
+    tr=f(1)*rx,try_=ry*f(1),top=y-h;
+  /* its shadow on the wood, soft, to the right and down */
+  for(const[d,a]of[[3.4,.12],[1.8,.2],[.7,.26]])oval(g,x+3.2,y+1.4,rx+d,ry+d*.6,`rgba(10,5,2,${a})`);
+  /* the body: its outline from the foot up the left side, over the back of the top, and down the right side */
+  const B=[];for(let i=0;i<=12;i++){const a=i/12*Math.PI;B.push(x+Math.cos(a)*rx*f(0),y+Math.sin(a)*ry*f(0))}
+  for(let i=1;i<=14;i++){const t=i/14;B.push(x-rx*f(t),y-h*t+ry*f(t)*.15*(1-t))}
+  for(let i=1;i<12;i++){const a=Math.PI+i/12*Math.PI;B.push(x+Math.cos(a)*tr,top+Math.sin(a)*try_)}
+  for(let i=14;i>=1;i--){const t=i/14;B.push(x+rx*f(t),y-h*t+ry*f(t)*.15*(1-t))}
+  poly(g,B);g.fillStyle=lg(g,x-rx,0,x+rx,0,[tint(C,.06),tint(C,.3),tint(C,.08),tint(C,-.28),tint(C,-.5)]);g.fill();
+  clipTo(g,()=>poly(g,B),()=>{tex(g,'mott',.4,x-rx,top-ry,rx*2,h+ry*2,'overlay',1);
+    /* the shoulder catches the light; the belly turns away into shade below */
+    g.fillStyle=lg(g,0,top-try_,0,y+ry,['rgba(255,220,180,.0)','rgba(255,220,180,.22)','rgba(0,0,0,0)','rgba(20,8,4,.3)']);g.fillRect(x-rx,top-ry,rx*2,h+ry*2);
+    stroke(g,[x-rx*.6,top+3,x-rx*.66,top+6,x-rx*.6,y-1],'rgba(255,214,170,.3)',.8)});
+  /* the top: a little lighter, the light on its near left */
+  oval(g,x,top,tr,try_,tint(C,.16));pool(g,x-3,top-1,4,1.8,'#ffd8b0',.25,'screen');tex(g,'mott',.3,x-tr,top-try_,tr*2,try_*2,'overlay',1);
+  /* the mouth: a raised square lip, and in it the ink */
+  R(g,x-2.6,top-2,5.2,4,tint(C,.3));R(g,x-2.6,top-2,5.2,.6,'#d89c74');R(g,x+2,top-2,.6,4,tint(C,-.3));R(g,x-2.6,top+1.4,5.2,.6,tint(C,-.36));
+  R(g,x-1.8,top-1.2,3.6,2.6,'#0e0806');R(g,x-1.8,top-1.2,3.6,.5,'#2a1a12');R(g,x-1,top-.2,1,.5,'rgba(200,190,200,.45)')}
+/* pen25: the reed pen, lying on the wood to the right of the sheet and below the inkwell, slanting, its cut point toward the sheet and
+   dark with ink; round across, lit along its upper side; its shadow under it. It crosses nothing */
+function pen25(g){const a=[266,133.4],b=[314,123],w=1.15,dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy),nx=-dy/L*w,ny=dx/L*w,ux=dx/L,uy=dy/L;
+  stroke(g,[a[0]+1,a[1]+1.6,b[0]+1,b[1]+1.6],'rgba(10,5,2,.32)',1.6);
+  /* the reed, from the end of its cut to its far end */
+  const p0=[a[0]+6*ux,a[1]+6*uy];poly(g,[p0[0]+nx,p0[1]+ny,b[0]+nx,b[1]+ny,b[0]+ux*.6,b[1]+uy*.6,b[0]-nx,b[1]-ny,p0[0]-nx,p0[1]-ny]);
+  g.fillStyle=lg(g,p0[0]+nx,p0[1]+ny,p0[0]-nx,p0[1]-ny,['#5a4220','#a8884c','#d4b87a','#e8d4a0']);g.fill();
+  stroke(g,[p0[0]-nx*.5,p0[1]-ny*.5,b[0]-nx*.5,b[1]-ny*.5],'rgba(255,244,210,.45)',.4);
+  /* the cut: tapering to its point, dark with ink */
+  poly(g,[p0[0]+nx,p0[1]+ny,a[0],a[1],p0[0]-nx,p0[1]-ny],'#2a1a0e');poly(g,[p0[0]-nx*.6+ux*.4,p0[1]-ny*.6+uy*.4,a[0]+ux*.8,a[1]+uy*.8,p0[0]-nx*.2+ux*1.4,p0[1]-ny*.2+uy*1.4],'rgba(120,110,120,.5)')}
+/* paulHand25: Paul's left hand on the sheet's lower left corner, seen from above, the back of the hand toward us (see above). Each part is
+   drawn in its own frame, along its own direction, at its own size: KN25 the knuckles (the little finger first) with each finger's
+   direction and length and width, HB25 the back of the hand and the forearm in one, TB25 the thumb (its root, its tip, its widths). Painted
+   in greys as light from the upper left, then set in the skin's tones (tones25) */
+const KN25=[[34.6,109.2,-.68,-.73,17,5.8],[39.1,105.6,-.65,-.76,22,6.4],[44,101.7,-.61,-.79,24,6.8],[49.1,97.7,-.57,-.82,21.5,6.8]],
+  HB25=[31.4,113.6,32,108.6,34.6,106,39,102.4,44,98.6,48.6,95.6,52,95.4,54.4,97.4,57,102,59.4,107,62,111.6,64.4,116.4,66,120.4,67.6,131,69.6,139,72.4,147,
+    51.4,147,47.4,136,45.2,129,41,124.4,36,119.6],
+  TB25={x0:60.2,y0:117,x1:65.6,y1:91,w0:9.6,w1:6.6};
+function paulHand25(g){const K=ramp(P.look&&P.look.skin||PAUL_BASE.skin),S=[];
+  /* nine tones from the skin's darkest to its lightest, each between two of its ramp */
+  for(let i=0;i<9;i++){const t=i/8*4,k=Math.min(3,Math.floor(t));S.push(mix(K[4-k],K[3-k],t-k))}
+  const[c,q]=mk(320*HR,144*HR);q.scale(HR,HR);
+  const GV=v=>{const k=Math.round(clamp(v,0,1)*255);return`rgb(${k},${k},${k})`};
+  /* a finger or the thumb in its own frame: from its root at x, y along ux, uy, len long, w wide at the root and wt at the tip */
+  const part=(x,y,ux,uy,len,w,wt,fn)=>{q.save();q.translate(x,y);q.rotate(Math.atan2(ux,-uy));fn(len,w,wt);q.restore()},
+    capsule=(len,w,wt)=>{const P=[-w/2,2,-w/2,-len*.4,-wt/2,-len+wt*.55,-wt*.36,-len+wt*.16,0,-len,wt*.36,-len+wt*.16,wt/2,-len+wt*.55,w/2,-len*.4,w/2,2];poly(q,P);return P};
+  /* the shadows of the hand on the sheet and the wood, soft, to the right and down */
+  const sil=(G,col)=>{poly(G,HB25,col);for(const[x,y,ux,uy,l,w]of KN25){G.save();G.translate(x,y);G.rotate(Math.atan2(ux,-uy));poly(G,[-w/2,2,-w/2,-l*.4,-w*.4,-l+1,0,-l,w*.4,-l+1,w/2,-l*.4,w/2,2],col);G.restore()}
+    const T=TB25;G.save();G.translate(T.x0,T.y0);G.rotate(Math.atan2(T.x1-T.x0,-(T.y1-T.y0)));const L=Math.hypot(T.x1-T.x0,T.y1-T.y0);poly(G,[-T.w0/2,4,-T.w0/2,-L*.4,-T.w1/2,-L+2,0,-L,T.w1/2,-L+2,T.w0/2,-L*.4,T.w0/2,4],col);G.restore()};
+  for(const[dx,dy,a]of[[3.4,3.8,.22],[2.2,2.6,.3],[1.2,1.4,.3]])comp(g,'multiply',a,()=>{g.save();g.translate(dx,dy);sil(g,'#5a4234');g.restore()});
+  /* the fingers, little finger first: each round across, lit along its left side, a fold over its middle joint, its nail at the tip */
+  KN25.forEach(([x,y,ux,uy,len,w],i)=>part(x,y,ux,uy,len,w,w*.84,(L,W,Wt)=>{const P=capsule(L,W,Wt);
+    clipTo(q,()=>poly(q,P),()=>{q.fillStyle=lg(q,-W/2,0,W/2,0,[GV(.4),GV(.68),GV(.52),GV(.32),GV(.18)]);q.fillRect(-W,-L-1,W*2,L+4);
+      q.fillStyle=lg(q,0,-L,0,0,['rgba(0,0,0,.14)','rgba(0,0,0,0)','rgba(0,0,0,0)','rgba(0,0,0,.08)']);q.fillRect(-W,-L-1,W*2,L+4);
+      for(const k of[.36,.62])sline25(q,[-W*.32,-L*k+.3,0,-L*k-.4,W*.3,-L*k+.3],'rgba(0,0,0,.18)',.5);
+      poly(q,[-Wt*.32,-L+4.4,-Wt*.34,-L+1.8,-Wt*.18,-L+.8,Wt*.18,-L+.8,Wt*.34,-L+1.8,Wt*.32,-L+4.4,0,-L+4.9],GV(.8));R(q,-Wt*.2,-L+1.4,Wt*.26,1.6,GV(.96));
+      R(q,-W/2,-L,.8,L,'rgba(0,0,0,.25)');R(q,W/2-.8,-L,.8,L,'rgba(0,0,0,.3)');tex(q,'mott',.16,-W,-L,W*2,L,'overlay',.5)})}));
+  /* the back of the hand and the forearm, over the roots of the fingers: lit at the upper left and darker toward the wrist and the arm's
+     shaded side; the knuckles catching the light, two soft sinews running back from them */
+  poly(q,HB25,GV(.46));clipTo(q,()=>poly(q,HB25),()=>{q.fillStyle=lg(q,34,98,70,140,[GV(.66),GV(.54),GV(.4),GV(.24)]);q.fillRect(28,92,48,56);
+    q.fillStyle=lg(q,0,120,0,147,['rgba(0,0,0,0)','rgba(0,0,0,.12)']);q.fillRect(28,120,48,28);
+    for(const[x,y,ux,uy]of KN25)pool(q,x-ux*1.6+.6,y-uy*1.6+.4,2.8,2.2,'#ffffff',.24,'source-over');
+    for(const[x,y,ux,uy]of KN25.slice(1,3))sline25(q,[x-ux*2.2+.8,y-uy*2.2,x+5.6,y+9,x+8.6,y+18],'rgba(0,0,0,.07)',1.4);
+    sline25(q,[33,112,38,119,44,126,48,136,51,147],'rgba(255,255,255,.14)',1.6);ao(q,58,96,14,52,'r',.22);tex(q,'mott',.18,28,92,48,56,'overlay',.5)});
+  /* the thumb, lying on the sheet along its margin: round across, lit on its left; its nail toward us; two folds of its joint */
+  const T=TB25,TL=Math.hypot(T.x1-T.x0,T.y1-T.y0);
+  part(T.x0,T.y0,(T.x1-T.x0)/TL,(T.y1-T.y0)/TL,TL,T.w0,T.w1,(L,W,Wt)=>{const P=capsule(L,W,Wt);
+    clipTo(q,()=>poly(q,P),()=>{q.fillStyle=lg(q,-W/2,0,W/2,0,[GV(.44),GV(.74),GV(.58),GV(.38),GV(.22)]);q.fillRect(-W,-L-1,W*2,L+6);
+      q.fillStyle=lg(q,0,0,0,5,['rgba(0,0,0,0)','rgba(0,0,0,.16)']);q.fillRect(-W,0,W*2,6);
+      for(const k of[.42,.48])sline25(q,[-W*.34,-L*k+.4,0,-L*k-.4,W*.32,-L*k+.4],'rgba(0,0,0,.16)',.5);
+      poly(q,[-Wt*.36,-L+6,-Wt*.38,-L+2.4,-Wt*.2,-L+1,Wt*.2,-L+1,Wt*.38,-L+2.4,Wt*.36,-L+6,0,-L+6.6],GV(.84));R(q,-Wt*.22,-L+1.8,Wt*.28,2.2,GV(.98));
+      sline25(q,[-Wt*.36,-L+6,0,-L+6.8,Wt*.36,-L+6],'rgba(0,0,0,.2)',.5);
+      R(q,W/2-.9,-L,.9,L+4,'rgba(0,0,0,.28)');tex(q,'mott',.16,-W,-L,W*2,L+4,'overlay',.5)})});
+  tones25(c,q,S);g.drawImage(c,0,0,320,144)}
+/* sline25: a soft curve through its points */
+function sline25(g,p,c,w){g.beginPath();g.moveTo(p[0],p[1]);for(let i=2;i<p.length-2;i+=2){const mx=(p[i]+p[i+2])/2,my=(p[i+1]+p[i+3])/2;g.quadraticCurveTo(p[i],p[i+1],mx,my)}
+  g.lineTo(p[p.length-2],p[p.length-1]);g.strokeStyle=c;g.lineWidth=w;g.lineCap='round';g.stroke()}
+/* tones25: set a layer painted in greys into a short scale of colors, darkest first, with the backdrops' ordered dither, one cell to the
+   room pixel (as the narrator's scroll sets its hands). What is not painted stays clear */
+function tones25(c,g,pal){const w=c.width,h=c.height,im=g.getImageData(0,0,w,h),d=im.data,n=pal.length-1,Q=pal.map(hex);
+  for(let y=0,i=0;y<h;y++)for(let x=0;x<w;x++,i+=4){if(d[i+3]<128){d[i+3]=0;continue}d[i+3]=255;
+    const v=(d[i]*.3+d[i+1]*.59+d[i+2]*.11)/255*n,t=(BAYER[((y>>1)&3)*4+((x>>1)&3)]+.5)/16,p=Q[clamp(Math.floor(v+t),0,n)];d[i]=p[0];d[i+1]=p[1];d[i+2]=p[2]}
+  g.putImageData(im,0,0)}
 /* the lines on the sheet: the largest of four sizes at which every line fits the sheet */
 function fit25(g,lines,w,h){for(const z of[5.2,4.6,4,3.4]){g.font=FONT25(z);const lh=z*1.25,out=[];
-    for(const s of lines){let cur='';for(const wd of s.split(' ')){const t=cur?cur+' '+wd:wd;if(g.measureText(t).width>w&&cur){out.push(cur);cur=wd}else cur=t}if(cur)out.push(cur);out.push('')}
+    /* a reference stays in one piece: "(Philemon 18, 19)" is never broken after its comma */
+    for(const s0 of lines){const s=s0.replace(/\(([^()]*\d[^()]*)\)$/,m=>m.replace(/ /g,'\u00a0'));let cur='';for(const wd of s.split(' ')){const t=cur?cur+' '+wd:wd;if(g.measureText(t).width>w&&cur){out.push(cur);cur=wd}else cur=t}if(cur)out.push(cur);out.push('')}
     if(out.length*lh<=h||z===3.4)return{z,lh,out}}}
 function drawSheet25(g){const ks=sheetLines25();if(!ks.length)return;const f=fit25(g,ks.map(k=>T(k)),176,118);g.font=FONT25(f.z);g.textBaseline='top';g.fillStyle='#2a1a10';
   f.out.forEach((l,i)=>g.fillText(l,72,13+i*f.lh));G.caps25={n:f.out.length,lh:f.lh,h:118}}
 /* ==== ART sheet25: end ==== */
 
 /* ==== ART letters25: begin ==== */
-/* The three letters for Asia, close, on the table (ART-TODO: a placeholder): one sheet of papyrus folded once (Philemon), a shorter roll
-   (Colossians) and a longer roll (Ephesians), each roll lying on its side with its near end toward us as a face and the far end only its
-   outline; no rod stands out of a roll, nothing is tied round one, nothing is sealed. A letter given away is gone from the table.
-   Hotspots: the sheet 40,50,70,44 · the shorter roll 130,58,64,30 · the longer roll 210,52,90,34 · back to the room 0,134,120,10. */
-ART.letters25={w:320,q:12,paint(g){R(g,0,0,320,144,'#3a2616');for(let y=0;y<144;y+=3)R(g,0,y,320,1,'rgba(20,10,4,.25)')},light:null,draw(g){drawLetters25(g)},front(){}};
-function drawLetters25(g){const on=k=>!has25(k)&&!F[LETTERS25[k].f];
-  if(on('phm')){R(g,40,50,70,44,'#d8c89a');R(g,40,71,70,.8,'rgba(120,90,50,.35)')}
-  if(on('col')){R(g,130,62,56,22,'#d0bf8e');R(g,130,62,56,3,'#e8dcb4');R(g,184,62,8,22,'#b8a478');R(g,186,65,4,16,'#9a865a')}
-  if(on('eph')){R(g,206,56,82,26,'#d0bf8e');R(g,206,56,82,3,'#e8dcb4');R(g,286,56,9,26,'#b8a478');R(g,288,59,5,20,'#9a865a')}}
+/* The three letters for Asia, close, as they lie finished on the table in the sixth watch (the close-view standard of Chapters Thirteen,
+   Fourteen and Twenty; the light of the day from the window, at the upper left). On the table's dark wood (table25), each with its soft
+   shadow to the right and down and a seam of shade where it lies:
+   - the letter to Philemon, one sheet of papyrus folded once (fold25): the fold along its top, rounded and catching the light; at its
+     foot the two free edges, the lower half a little out from under the upper; its fibers running across. Nothing is written on its
+     outside, and it is not tied or sealed;
+   - the letter to Colossae, the shorter roll, and the letter to Ephesus, the longer and a little thicker roll (roll25c), told apart at a
+     glance by their size alone. Each lies on its side with its axis across the picture; of its two ends we see the left one as a face, the
+     turns of the sheet in it as one spiral running in to the dark of its hollow middle, which is square; the right end is only the roll's
+     own rounded outline, in the tones of its side. Along the roll runs the edge of the sheet's last turn; the fibers of its outside run
+     along it. No rod stands out of a roll, nothing is tied round one, nothing is written on it, nothing is sealed.
+   A letter given away is gone from the table: the picture's variant (which of the three still lie there) is baked as its own backdrop.
+   Called from outside: ART.letters25. Hotspots: the sheet 40,50,70,44 · the shorter roll 130,58,64,30 · the longer roll 206,52,90,34
+   (each thing lies inside its box) · back to the room 0,134,120,10. Walk: none (a close view). */
+const on25=k=>!has25(k)&&!F[LETTERS25[k].f];
+ART.letters25={w:320,q:12,variant:()=>['phm','col','eph'].map(k=>on25(k)?k:'').join('.'),paint(g,v){paintLetters25(g,(v||'phm.col.eph').split('.'))},
+  light:null,draw(){},front(){}};
+function paintLetters25(g,on){table25(g,rng(2511));
+  if(on.includes('phm'))fold25(g,44,106,55,89,rng(2512));
+  if(on.includes('col'))roll25c(g,137,187,84,20,rng(2513));
+  if(on.includes('eph'))roll25c(g,214,288,84,24,rng(2514));
+  light25(g,90)}
+/* the sheet folded once, its fold along the top (y0) and its free edges at the foot (y1): the lower half a little out from under the upper */
+function fold25(g,x0,x1,y0,y1,r){
+  for(const[d,a]of[[5,.07],[3,.12],[1.6,.18],[.6,.22]]){g.fillStyle=`rgba(10,5,2,${a})`;g.fillRect(x0-d+2.4,y0-d+2.8,x1-x0+1+d*2,y1-y0+1.2+d*2)}
+  /* the lower half: only its edges show, at the foot and the right, in the shade of the upper half */
+  const L=[x0+.6,y0+3,x1+1.3,y0+3,x1+1.4,y1+1.4,x1-6,y1+1.7,x0+.5,y1+1.5];poly(g,L);g.fillStyle=lg(g,0,y0,0,y1+1,['#cdb886','#bea672']);g.fill();
+  R(g,x0+.5,y1+1.1,x1-x0+.8,.5,'rgba(40,22,8,.45)');R(g,x1+.9,y0+3,.5,y1-y0-1.6,'rgba(40,22,8,.35)');
+  /* the upper half */
+  const E=papyrus25(g,{x0,x1,y0,y1},r,rng(2515),{fold:1,thr:.5});
+  /* the fold: rounded, the light on its crown, the paper curving down from it into a soft band of shade */
+  clipTo(g,()=>poly(g,E),()=>{g.fillStyle=lg(g,0,y0,0,y0+7,['rgba(255,252,236,.5)','rgba(255,252,236,.12)','rgba(110,80,40,.12)','rgba(110,80,40,0)']);g.fillRect(x0-1,y0-1,x1-x0+2,8);
+    R(g,x0+1,y0,x1-x0-2,.6,'rgba(255,252,238,.7)')});
+  /* its rounded ends, where the fold turns: a little shade at each upper corner */
+  for(const x of[x0,x1-1.6])R(g,x,y0+.4,1.6,1.4,'rgba(110,80,40,.14)')}
+/* a roll lying on its side, its axis across: the face at x0 (its left end), the rounded far end at x1, its foot at y, h through */
+function roll25c(g,x0,x1,y,h,r){const rx=h*.28,ry=h/2,cy=y-ry,PI=Math.PI,
+    body=()=>{g.beginPath();g.moveTo(x0,y-h);g.lineTo(x1,y-h);g.ellipse(x1,cy,rx,ry,0,-PI/2,PI/2);g.lineTo(x0,y);g.closePath()};
+  /* its soft shadow on the wood, and the seam of shade along its foot */
+  for(const[d,a]of[[4,.08],[2.4,.14],[1.2,.2]])comp(g,'source-over',1,()=>{g.save();g.translate(2.2,1.6);g.beginPath();g.moveTo(x0-rx*.6,y-h*.55+d*.2);g.lineTo(x1,y-h*.55+d*.2);
+    g.ellipse(x1,y-h*.25,rx+d,h*.3+d*.5,0,-PI/2,PI/2);g.lineTo(x0-rx*.6,y+d*.5);g.closePath();g.fillStyle=`rgba(10,5,2,${a})`;g.fill();g.restore()});
+  R(g,x0,y-.6,x1-x0+rx*.6,.9,'rgba(14,6,2,.45)');
+  /* the side: round across, lit from above and the left */
+  body();g.fillStyle=lg(g,0,y-h,0,y,[[0,'#d4bc88'],[.18,'#f2e4bc'],[.36,'#ead8aa'],[.62,'#d2ba86'],[.84,'#a88a58'],[1,'#7a603a']]);g.fill();
+  clipTo(g,body,()=>{for(let i=0;i<(x1-x0)*h/22;i++){const yy=y-h+r()*h,xx=x0+r()*(x1-x0),l=3+r()*14;R(g,xx,yy,l,.5,r()<.5?'rgba(120,90,44,.07)':'rgba(255,248,222,.14)')}
+    for(let i=0;i<5;i++)pool(g,x0+r()*(x1-x0),y-h*.6+r()*h*.3,6+r()*10,h*.3,r()<.5?'#8a6a34':'#fff6dc',.06,r()<.5?'multiply':'screen');
+    tex(g,'mott',.2,x0,y-h,x1-x0+rx,h,'overlay',.8);
+    /* the rounded far end: its side turns away from us, a little darker toward the outline */
+    g.fillStyle=lg(g,x1-rx*.4,0,x1+rx,0,['rgba(90,60,30,0)','rgba(90,60,30,.32)']);g.fillRect(x1-rx*.4,y-h,rx*1.5,h);
+    /* the edge of the last turn of the sheet, along the roll, low on its near side */
+    const ey=y-h*.27;R(g,x0,ey,x1-x0+rx,.5,'rgba(70,46,20,.42)');R(g,x0,ey-.5,x1-x0+rx,.5,'rgba(255,246,214,.3)');ao(g,x0,ey+.5,x1-x0+rx,2,'t',.12,'#5a3c14')});
+  /* the face: the turns of the sheet as one spiral running in to the hollow middle */
+  oval(g,x0,cy,rx,ry,'#e6d4a6');clipTo(g,()=>oval(g,x0,cy,rx,ry),()=>{g.fillStyle=lg(g,x0-rx,cy-ry,x0+rx,cy+ry,['#f6ead0','#e6d4a6','#bca274']);g.fillRect(x0-rx,cy-ry,rx*2,ry*2);
+    /* one spiral, its turns a little uneven, from the edge of the last turn in to the hollow */
+    const pts=[],turns=3.3,a0=Math.asin(clamp((y-h*.27-cy)/ry,-1,1));for(let t=0;t<=1;t+=.004){const a=a0+t*turns*2*PI,k=(1-t*.8)*(1+.04*Math.sin(t*23));pts.push(x0+Math.cos(a)*rx*k*.97,cy+Math.sin(a)*ry*k*.97)}
+    g.beginPath();g.moveTo(pts[0],pts[1]);for(let i=2;i<pts.length;i+=2)g.lineTo(pts[i],pts[i+1]);g.strokeStyle='rgba(120,88,44,.46)';g.lineWidth=.45;g.lineJoin='round';g.stroke();
+    tex(g,'mott',.2,x0-rx,cy-ry,rx*2,ry*2,'overlay',.8);ao(g,x0+rx*.3,cy-ry,rx*.7,ry*2,'r',.18,'#5a3c14')});
+  const hw=Math.max(1,rx*.2),hh=Math.max(1.2,ry*.16);R(g,x0-hw/2+.2,cy-hh/2+.4,hw,hh,'#3a2812');R(g,x0-hw/2+.2,cy-hh/2+.4,hw,.5,'#1e1208');
+  /* the face's rim, lit toward the light */
+  g.beginPath();g.ellipse(x0,cy,rx,ry,0,PI*.55,PI*1.45);g.strokeStyle='rgba(255,250,230,.55)';g.lineWidth=.5;g.stroke()}
 /* ==== ART letters25: end ==== */
 
 /* ---- the inventory ---- */

@@ -41,8 +41,14 @@
      curb(g, V, Q, o)                 a row of curbstones along the road: o {s0, s1 (its two edges across), h (its height), u0, u1, len
                                       (a stone's length), c, seed}
      milestone(g, x, y, o)            a milestone standing with its foot at x, y: o {w, h (pixels), n (its number in Roman letters, cut
-                                      into it as strokes: I, V and X), sun (-1 the light from the left, 1 from the right), seed}
+                                      into it as strokes: I, V, X and L), lw (how wide V, X and L are, 1 as they are; a long number
+                                      on a narrow stone needs less), gap (between two letters, 1.1), sun (-1 the light from the left, 1 from the right), seed}
      tomb(g, V, Q, o)                 a plain tomb of masonry beside the road: o {u, s, w, d, h (in world units), c, seed}
+     band(g, V, Q, s0, s1, c0, c1, seed, uMax)   a strip of packed earth and gravel along the road (a footpath)
+     verge(g, V, Q, s0, s1, seed, nb) the grass beside the road back to a low bank, with nb bushes on it (14; 0 where a bush would
+                                      stand round behind a walker's head)
+     ditch(g, V, Q, s0, s1, r)        a dry ditch beside the road (r: an rng)
+     weeds(g, x0, y0, x1, y1, n, seed, h)  blades of grass along a line where something stands in the ground
      cypress(g, x, y, h, o)           a cypress with its foot at x, y, h tall: o {c, seed, sun}
      city(g, o)                       the city on its hills far off, between x0 and x1 below the horizon hz: o {hz, temples, aqueduct,
                                       mist, seed}
@@ -150,7 +156,8 @@ function weeds(g,x0,y0,x1,y1,n,seed,h){const q=rng(seed);h=h||2.2;
 /* milestone: a short, thick cylinder of grey stone standing on its own foot in the verge, with no wider base (an upright on a plinth would
    be an upright on a level band). Its top is seen a little from above, an ellipse more than a pixel high; its side is round, lit from
    o.sun's side. The number is cut into it in Roman letters: I a short upright, V two strokes that meet below, X two that cross (a letter in
-   an inscription, CONTRIBUTING section 3), each a groove with its lit lip; no line runs across them. */
+   an inscription, CONTRIBUTING section 3), L an upright with a short foot that starts at it and runs to the right, never beyond it to
+   the left; each a groove with its lit lip; no line runs across them. */
 function milestone(g,x,y,o){o=o||{};const w=o.w||10,h=o.h||26,ry=o.ry||1.6,sun=o.sun==null?1:o.sun,c=o.c||'#b4aea0',r=rng(o.seed||31),hw=w/2,
     st=sun>0?[tint(c,-.42),tint(c,-.18),tint(c,.06),tint(c,.2),tint(c,.06)]:[tint(c,.04),tint(c,.22),tint(c,.06),tint(c,-.2),tint(c,-.42)];
   /* its shadow on the ground, cast away from the light */
@@ -168,11 +175,14 @@ function milestone(g,x,y,o){o=o||{};const w=o.w||10,h=o.h||26,ry=o.ry||1.6,sun=o
   oval(g,x,y-h+ry,hw,ry,tint(c,.22));g.strokeStyle=rgba(tint(c,-.3),.6);g.lineWidth=.5;g.beginPath();g.ellipse(x,y-h+ry,hw-.25,ry-.25,0,0,Math.PI);g.stroke();
   R(g,x-hw*.4,y-h+ry-.6,hw*.8,.5,'rgba(255,250,236,.4)');
   /* the number, cut in strokes */
-  const n=o.n||'III',lh=o.lh||5,top=y-h+ry+(o.ny||5),sp=2.1;let wsum=0;const widths=[...n].map(ch=>ch==='I'?1:2.6);wsum=widths.reduce((s,v)=>s+v,0)+(n.length-1)*1.1;
+  const n=o.n||'III',lh=o.lh||5,top=y-h+ry+(o.ny||5),sp=2.1;let wsum=0;const lw=o.lw||1,gp=o.gap||1.1,widths=[...n].map(ch=>ch==='I'?1:(ch==='L'?2.2:2.6)*lw);wsum=widths.reduce((s,v)=>s+v,0)+(n.length-1)*gp;
   let lx=x-wsum/2+sun*.3;
   const cut=(a,b,c2,d2)=>{stroke(g,[a,b,c2,d2],'rgba(40,36,44,.75)',.6);stroke(g,[a+sun*.5,b,c2+sun*.5,d2],'rgba(255,248,230,.45)',.5)};
   [...n].forEach((ch,i)=>{const wv=widths[i];if(ch==='I')cut(lx+.5,top,lx+.5,top+lh);else if(ch==='V'){cut(lx,top,lx+wv/2,top+lh);cut(lx+wv,top,lx+wv/2,top+lh)}
-    else if(ch==='X'){cut(lx,top,lx+wv,top+lh);cut(lx+wv,top,lx,top+lh)}lx+=wv+1.1});
+    else if(ch==='X'){cut(lx,top,lx+wv,top+lh);cut(lx+wv,top,lx,top+lh)}
+    /* L: an upright, and a short foot that starts at the upright's foot and runs to the right: nothing stands out beyond the upright */
+    /* (its foot is a level groove: its lit lip lies under it, not beside it, so that the light does not cover it) */
+    else if(ch==='L'){cut(lx+.5,top,lx+.5,top+lh);stroke(g,[lx+.5,top+lh-.3,lx+wv,top+lh-.3],'rgba(40,36,44,.8)',.7);stroke(g,[lx+.9,top+lh+.4,lx+wv,top+lh+.4],'rgba(255,248,230,.4)',.5)}lx+=wv+gp});
   void sp;void B}
 
 /* ---------------------------------------------------------------- a cypress ---------------------------------------------------------------- */
@@ -478,8 +488,8 @@ function band(g,V,Q,s0,s1,c0,c1,seed,uMax){const r=rng(seed),P=[],[ua,ub0]=uSpan
   clipTo(g,()=>poly(g,P),()=>{tex(g,'mott',.5,0,80,320,64,'overlay',1);tex(g,'grain',.25,0,80,320,64,'overlay',.5);
     for(let i=0;i<900;i++){const x=r()*320,y=80+r()*64;R(g,x,y,.5,.5,r()<.5?'rgba(80,70,60,.3)':'rgba(250,240,220,.3)')}})}
 /* verge: the grass beside the road from s0 back to about s1, its far edge a low bank that wanders a little, lit along its top, with a
-   few bushes on it; the blades of the grass in the perspective of the road (the turf of shared/country.js, clipped to it) */
-function verge(g,V,Q,s0,s1,seed){const q=rng(seed),P=(u,s)=>{const[X,Z]=Q.w(u,s);return V.P(X,Z,0)},[ua,ub]=uSpan(Q,s0,s1),A=[],B=[],E=[];
+   few bushes on it (nb, 14 unless given); the blades of the grass in the perspective of the road (the turf of shared/country.js, clipped to it) */
+function verge(g,V,Q,s0,s1,seed,nb){const q=rng(seed),P=(u,s)=>{const[X,Z]=Q.w(u,s);return V.P(X,Z,0)},[ua,ub]=uSpan(Q,s0,s1),A=[],B=[],E=[];
   for(let u=ua;u<=ub;u+=.5){A.push(...P(u,s0));const sb=s1+.9*Math.sin(u*.37+seed)+.45*Math.sin(u*1.3+seed*.3);const p=P(u,sb);B.unshift(...p);E.push(...p)}
   const G=A.concat(B);let top=1e9,bot=-1e9;for(let i=1;i<G.length;i+=2){top=Math.min(top,G[i]);bot=Math.max(bot,G[i])}
   poly(g,G);g.fillStyle=lg(g,0,top,0,bot,['#9aaa66','#8c9e56','#86984e']);g.fill();
@@ -487,7 +497,7 @@ function verge(g,V,Q,s0,s1,seed){const q=rng(seed),P=(u,s)=>{const[X,Z]=Q.w(u,s)
     g.fillStyle=lg(g,0,top,0,top+5,['rgba(60,70,50,.18)','rgba(60,70,50,0)']);g.fillRect(-2,top,324,5)});
   /* the bank: a fine line of light along its top, a soft shade under it on the near side, bushes here and there */
   stroke(g,E.map((v,i)=>i%2?v-.2:v),'rgba(240,236,200,.45)',.5);stroke(g,E.map((v,i)=>i%2?v+.6:v),'rgba(60,70,50,.3)',.6);
-  for(let i=0;i<14;i++){const u=ua+q()*(Math.min(ub,40)-ua),sb=s1+.9*Math.sin(u*.37+seed)+.45*Math.sin(u*1.3+seed*.3),[x,y]=P(u,sb);
+  for(let i=0;i<(nb==null?14:nb);i++){const u=ua+q()*(Math.min(ub,40)-ua),sb=s1+.9*Math.sin(u*.37+seed)+.45*Math.sin(u*1.3+seed*.3),[x,y]=P(u,sb);
     if(x<-4||x>324)continue;SHARED.country.tree(g,x,y+.3,3+q()*2.4,'#5a7442',{kind:'bush',seed:seed+i})}}
 /* ditch: the dry ditch beyond the footpath: its near bank in shade, its bed of earth, its far bank grassy and lit */
 function ditch(g,V,Q,s0,s1,r){const P=(u,s)=>{const[X,Z]=Q.w(u,s);return V.P(X,Z,0)},A=[],B=[];
@@ -669,5 +679,5 @@ function curbSide(g,V,Q,s0,s1,h,seed,lit,uMax){const r=rng(seed),Pt=(u,s,hh)=>{c
 function light(room){if(room==='capena')return{amb:'#f6eadc',sun:[-12,-13,.42],wallY:capenaWallY,wall:[[0,GATE.x-6,WTOP,104],[GATE.x+GATE.w+6,320,WTOP,104]]};
   return{amb:'#f6ecdc',sun:[-16,-11,.5],wallY:WALK.far[2]-2}}
 
-return{HZ,WALK,view,frame,road,curb,milestone,tomb,cypress,city,house,farTemple,palace,circus,aqueduct,far,capena,light,
+return{HZ,WALK,view,frame,road,curb,milestone,tomb,cypress,city,house,farTemple,palace,circus,aqueduct,far,capena,light,band,verge,ditch,weeds,
   GATE,CORNER,capenaWallY}})();
