@@ -255,13 +255,15 @@ function appiusBack24(g,W,dawn){const hz=APPIUS24.hz,RM=SHARED.rome,CO=SHARED.co
       for(let x=2;x<118;x+=6+r()*5)R(g,x,88.6,.5,2,'rgba(50,40,40,.4)')});
     R(g,-2,88,120,.6,dawn?'#a49c90':'#e8dcc4');R(g,118,76,.6,12,dawn?'#9a9288':'#dcd0b8');R(g,-2,90.6,123,.6,'rgba(40,30,30,.4)')}
   /* the landing between the quay and the road: beaten earth, a stack of sacks and two baskets by the quay */
-  {g.fillStyle=lg(g,0,90,0,106,dawn?['#6e665a','#7a7064']:['#b4a484','#a8987a']);g.fillRect(-2,90.6,126,16);tex(g,'mott',.5,-2,90,126,16,'overlay',1);
+  {g.fillStyle=lg(g,0,90,0,106,dawn?['#6e665a','#7a7064']:['#b4a484','#a8987a']);const yl=W.V.P(0,W.p1,0)[1]+.4;g.fillRect(-2,90.6,126,yl-90.6);tex(g,'mott',.5,-2,90,126,yl-90,'overlay',1);
     CO.ground(g,-2,91,126,106,dawn?'#7a7064':'#ac9c7e',2648,{n:30,size:.5,tufts:0,light:-1});
     /* the ground trodden darker where carts and porters go between the quay and the road, and grass along the edges */
     pool(g,60,99,50,5,dawn?'#4a4440':'#7a6a52',.25,'multiply');pool(g,96,95,26,3,dawn?'#4a4440':'#7a6a52',.2,'multiply');
     CO.turf(g,-2,100,40,106,dawn?'#5a6050':'#8a9a5a',2649,{wind:-.3,scale:.45,dense:.6,dry:.3});CO.turf(g,84,91,38,96,dawn?'#5a6050':'#8a9a5a',2654,{wind:-.3,scale:.35,dense:.5,dry:.3})}
   /* low trees along the far bank of the canal and on the horizon behind it */
-  for(const[x,y,h,k]of[[14,72.4,7,'willow'],[66,72.4,5,'willow'],[96,72.4,6,'oak']])CO.tree(g,x,y,h,dawn?'#4e5a4e':null,{kind:k,seed:2690+x,cast:false});
+  /* the tracks of carts and of feet across the landing, from the quay to the road */
+  for(const[a,b2,c2,d]of[[104,91.2,74,104.5],[110,91.2,84,104.5],[40,91.2,22,104.5]]){const P=[];for(let t=0;t<=1;t+=.1)P.push(a+(c2-a)*t-4*Math.sin(t*Math.PI)*(a>60?1:-1),b2+(d-b2)*t);
+    stroke(g,P,dawn?'rgba(40,34,36,.35)':'rgba(90,72,54,.35)',.7);stroke(g,P.map((v,i)=>i%2?v+.6:v+.3),dawn?'rgba(150,140,140,.15)':'rgba(230,214,180,.3)',.5)}
   for(const[x,y,w,h]of[[20,97,7,3.6],[26,97.4,6,3],[23,94.2,6,3]]){const c=dawn?'#8e867a':'#cdb994';oval(g,x,y-h/2,w/2,h/2,c);R(g,x-w/2+1,y-h+.3,w-2,.5,tint(c,.25));RM.weeds&&0}
   SHARED.materials.shadow(g,24,97.4,6,1,.4);
   /* the inns and the stalls along the back: the left house, the taller one, with its door and its upper windows; the right one lower, its
